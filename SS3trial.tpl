@@ -8,6 +8,7 @@ DATA_SECTION
 !!version_info+="SS-V3.30a-safe;_10/11/2013;_Stock_Synthesis_by_Richard_Methot_(NOAA)_using_ADMB_10.1";
 !!version_info_short+="#V3.30a";
 !!//  commit one line
+!!//  commit another line
 
 //*********COUNTERS*************************
   int z // counters for size (length)
