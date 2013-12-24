@@ -63,6 +63,8 @@ DATA_SECTION
   int N_CC;
   int N_FC;
 
+  int catch_mult_pointer;
+
   int icycle
   int Ncycle
   int No_Report  //  flag to skip output reports after MCMC and MCeval
@@ -487,12 +489,13 @@ DATA_SECTION
   echoinput<<fleetname<<endl;
  END_CALCS
 
-  init_matrix fleet_setup(1,Nfleet,1,6)  // type, timing, area, units, equ_catch_se, catch_se
+  init_matrix fleet_setup(1,Nfleet,1,7)  // type, timing, area, units, equ_catch_se, catch_se, need_catch_mult
   
   ivector fleet_type(1,Nfleet)   // 1=fleet with catch; 2=discard only fleet with F; 3=survey(ignore catch); 4=ignore completely
   vector surveytime(1,Nfleet)   // fraction of season (not year) in which survey occurs
   ivector fleet_area(1,Nfleet)    // areas in which each fleet/survey operates
   ivector catchunits(1,Nfleet)  // 1=biomass; 2=numbers
+  ivector need_catch_mult(1,Nfleet)  // 0=no, 1=need catch_multiplier parameter
   matrix catch_se(styr-1,TimeMax,1,Nfleet);
 
  LOCAL_CALCS
@@ -502,6 +505,7 @@ DATA_SECTION
     surveytime(f) = fleet_setup(f,2);
     fleet_area(f) = int(fleet_setup(f,3));
     catchunits(f) = int(fleet_setup(f,4));
+    need_catch_mult(f) = int(fleet_setup(f,7));
     if(fleet_type(f)==1)
       {
         catch_se(styr-1,f)=fleet_setup(f,5);
@@ -513,7 +517,7 @@ DATA_SECTION
       }
     }
 
-  echoinput<<"rows are fleets; columns are: fleet_type, timing, area, units, equ_catch_se, catch_se"<<endl;
+  echoinput<<"rows are fleets; columns are: fleet_type, timing, area, units, equ_catch_se, catch_se, need_catch_mult"<<endl;
   for (f=1;f<=Nfleet;f++) /* SS_loop: echo fleet setup */
   {
     echoinput<<fleet_setup(f)<<" # Fleet:_"<<f<<"_ "<<fleetname(f)<<endl;
@@ -3835,9 +3839,9 @@ DATA_SECTION
    init_int MG_adjust_method   //  1=do V1.xx approach to adjustment by env, block or dev; 2=use new logistic approach
    !! echoinput<<MG_adjust_method<<"  MG_adjust_method"<<endl;
 
-  imatrix time_vary_MG(styr-3,YrMax+1,0,6)  // goes to yrmax+1 to allow referencing in forecast, but only endyr+1 is checked
+  imatrix time_vary_MG(styr-3,YrMax+1,0,7)  // goes to yrmax+1 to allow referencing in forecast, but only endyr+1 is checked
                                             // stores years to calc non-constant MG parms (1=natmort; 2=growth; 3=wtlen & fec; 4=recr_dist; 5=movement; 6=ageerrorkey)
-  ivector MG_active(0,6)
+  ivector MG_active(0,7)  // 0=all, 1=M, 2=growth 3=wtlen, 4=recr_dist, 5=migration, 6=ageerror, 7=catchmult
   int do_once;
   int doit;
   vector femfrac(1,N_GP*gender)
@@ -3986,6 +3990,19 @@ DATA_SECTION
     }
   }
   N_MGparm=ParCount;
+  
+  catch_mult_pointer=-1;
+  j=sum(need_catch_mult);  //  number of fleets needing a catch multiplier parameter
+  if(j>0) {catch_mult_pointer=ParCount+1;}
+  for(j=1;j<=Nfleet;j++)
+  {
+    if(need_catch_mult(j)==1)
+    {
+      ParCount++; ParmLabel+="Catch_Mult_fleet:"+NumLbl(j);
+    } 
+  }
+  N_MGparm=ParCount;
+  
  END_CALCS
 
   init_matrix MGparm_1(1,N_MGparm,1,14)   // matrix with natmort and growth parms controls
@@ -4044,6 +4061,7 @@ DATA_SECTION
    mgp_type(MGP_CGD)=2;   // cohort growth dev
    if(do_migration>0)  mgp_type(MGP_CGD+1,N_MGparm)=5;
    if(Use_AgeKeyZero>0) mgp_type(AgeKeyParm,N_MGparm)=6;
+   if(catch_mult_pointer>0) mgp_type(catch_mult_pointer,N_MGparm)=7;
    echoinput<<"mgp_type "<<mgp_type<<endl;
    MGparm_env.initialize();   //  will store the index of environ fxns here
    MGparm_envtype.initialize();
@@ -4449,7 +4467,7 @@ DATA_SECTION
     }
     for (y=styr;y<=YrMax;y++)
     {
-      for (f=1;f<=6;f++)
+      for (f=1;f<=7;f++)
       {
         if(time_vary_MG(y,f)>0)
         {
@@ -4458,7 +4476,7 @@ DATA_SECTION
         }
       }
     }
-    MG_active(0)=sum(MG_active(1,6));
+    MG_active(0)=sum(MG_active(1,7));
     echoinput<<"time_vary_MG"<<endl<<time_vary_MG<<endl<<"MG_active "<<MG_active<<endl;
  END_CALCS
 
@@ -7202,6 +7220,8 @@ PARAMETER_SECTION
   matrix mat_fec_len(1,N_GP,1,nlength)
   matrix mat_age(1,N_GP,0,nages)
   matrix Hermaphro_val(1,N_GP,0,nages)
+  
+  matrix catch_mult(styr-1,YrMax,1,Nfleet)
 
  LOCAL_CALCS
    mat_len=1.0;
@@ -7588,7 +7608,8 @@ PRELIMINARY_CALCS_SECTION
   offset_a.initialize();
   save_sp_len.initialize();
   save_sel_fec.initialize();
-
+  catch_mult=1.0;
+    
 //  SS_Label_Info_6.1.2 #Initialize the dummy parameter as needed
   if(Turn_off_phase<=0) {dummy_parm=0.5;} else {dummy_parm=1.0;}
 
@@ -8193,6 +8214,16 @@ PRELIMINARY_CALCS_SECTION
       age_age=value(age_age);  //   because these are not based on parameters
     }
     echoinput<<" made the age_age' key "<<endl;
+    
+    if (catch_mult_pointer>0) 
+    {
+      get_catch_mult(y, catch_mult_pointer);
+      for(j=styr;j<=YrMax;j++)
+      {
+        catch_mult(j)=catch_mult(y);
+      }
+    }
+      
 //  SS_Label_Info_6.8.9 #Calculated values have been set equal to value() to remove derivative info and save space if their parameters are held constant
 
 //  SS_Label_Info_6.9 #Set up headers for ParmTrace
@@ -8730,7 +8761,7 @@ GLOBALS_SECTION
   random_number_generator radm(long(time(&start)));
 
 //  example function in GLOBALS to do the timing setup in the data section
-  double get_data_timing(int rd_seas_mo, int N_subseas, dvector Y_Mo_F, dvector seasdur, dvector subseasdur_delta, dvector azero_seas)
+  double get_data_timing(int read_seas_mo, int N_subseas, dvector Y_Mo_F, dvector seasdur, dvector subseasdur_delta, dvector azero_seas)
   {
     int t,s,subseas,yr,f;
     double temp, temp1, month, data_timing;
@@ -8740,7 +8771,7 @@ GLOBALS_SECTION
     if(read_seas_mo==1)  // reading season
     {
       s=int(month);  
-      subseas=mid_subseas;
+//      subseas=mid_subseas;
       data_timing=-2;  //   surveytime(f);
       month=1.0 + azero_seas(s)*12. + 12.*temp*seasdur(s);
     }
@@ -11649,6 +11680,14 @@ FUNCTION void get_initial_conditions()
   if(MG_active(3)>0) get_wtlen();
   if(MG_active(4)>0) get_recr_distribution();
   if(MG_active(5)>0) get_migration();
+  if(MG_active(7)>0)  
+  {
+    get_catch_mult(y, catch_mult_pointer);
+    for(j=styr+1;j<=YrMax;j++)
+    {
+      catch_mult(j)=catch_mult(y);
+    }
+  }
   if(do_once==1) cout<<" migr OK"<<endl;
   if(Use_AgeKeyZero>0)
   {
@@ -11878,6 +11917,11 @@ FUNCTION void get_time_series()
       if(time_vary_MG(y,3)>0) get_wtlen();
       if(time_vary_MG(y,4)>0) get_recr_distribution();
       if(time_vary_MG(y,5)>0) get_migration();
+      if(time_vary_MG(y,7)>0)  
+      {
+        get_catch_mult(y, catch_mult_pointer);
+      }
+
       if(save_for_report>0)
       {
         if(time_vary_MG(y,1)>0 || time_vary_MG(y,2)>0 || time_vary_MG(y,3)>0)
@@ -12069,13 +12113,13 @@ FUNCTION void get_time_series()
                   { vbio+=Nmid(g)*sel_al_4(s,g,f);}  // retained catch numbers
 
                 }  //close gmorph loop
-                if(docheckup==1) echoinput<<"fleet vbio obscatch "<<f<<" "<<vbio<<" "<<catch_ret_obs(f,t)<<endl;
+                if(docheckup==1) echoinput<<"fleet vbio obs_catch catch_mult vbio*catchmult"<<f<<" "<<vbio<<" "<<catch_ret_obs(f,t)<<" "<<catch_mult(y,f)<<" "<<catch_mult(y,f)*vbio<<endl;
   //  SS_Label_Info_24.3.3.1.3 #Calculate harvest rate for each fleet from catch/vulnerable biomass
                 crashtemp1=0.;
-                crashtemp=max_harvest_rate-catch_ret_obs(f,t)/(vbio+NilNumbers);
+                crashtemp=max_harvest_rate-catch_ret_obs(f,t)/(catch_mult(y,f)*vbio+NilNumbers);
                 crashtemp1=posfun(crashtemp,0.000001,CrashPen);
                 harvest_rate=max_harvest_rate-crashtemp1;
-                if(crashtemp<0.&&rundetail>=2) {cout<<y<<" "<<f<<" crash vbio "<<catch_ret_obs(f,t)/vbio<<" "<<crashtemp<<
+                if(crashtemp<0.&&rundetail>=2) {cout<<y<<" "<<f<<" crash vbio*catchmult "<<catch_ret_obs(f,t)/(catch_mult(y,f)*(vbio+NilNumbers))<<" "<<crashtemp<<
                  " "<<crashtemp1<<" "<<CrashPen<<" "<<harvest_rate<<endl;}
                 Hrate(f,t) = harvest_rate;
 
@@ -12249,7 +12293,7 @@ FUNCTION void get_time_series()
                         vbio+=elem_prod(natage(t,p,g),sel_al_4(s,g,f)) *Zrate2(g);
                       }
                     }  //close gmorph loop
-                    temp=catch_ret_obs(f,t)/(vbio+0.0001);  //  prototype new F
+                    temp=catch_ret_obs(f,t)/(catch_mult(y,f)*vbio+0.0001);  //  prototype new F
                     join1=1./(1.+mfexp(30.*(temp-0.95*max_harvest_rate)));
                     Hrate(f,t)=join1*temp + (1.-join1)*max_harvest_rate;  //  new F value for this fleet
                   }  // close fishery
@@ -13207,7 +13251,7 @@ FUNCTION void evaluate_the_objective_function()
       {
         if(fleet_type(f)==1 &&  obs_equ_catch(s,f)>0.0)
 //          {equ_catch_like += 0.5*square( (log(obs_equ_catch(f)) -log(est_equ_catch(f)+0.000001)) / catch_se(styr-1,f));}
-          {equ_catch_like += 0.5*square( (log(1.1*obs_equ_catch(s,f)) -log(est_equ_catch(s,f)+0.1*obs_equ_catch(s,f))) / catch_se(styr-1,f));}
+          {equ_catch_like += 0.5*square( (log(1.1*obs_equ_catch(s,f)) -log(est_equ_catch(s,f)*catch_mult(styr-1,f)+0.1*obs_equ_catch(s,f))) / catch_se(styr-1,f));}
       }
       if(do_once==1) cout<<" initequ_catch -log(L) "<<equ_catch_like<<endl;
     }
@@ -13227,7 +13271,7 @@ FUNCTION void evaluate_the_objective_function()
           if(fleet_type(f)==1 && catch_ret_obs(f,t)>0.0)
           {
 //          catch_like(f) += 0.5*square( (log(catch_ret_obs(f,t)) -log(catch_fleet(t,f,i)+0.000001)) / catch_se(t,f));
-            catch_like(f) += 0.5*square( (log(1.1*catch_ret_obs(f,t)) -log(catch_fleet(t,f,i)+0.1*catch_ret_obs(f,t))) / catch_se(t,f));
+            catch_like(f) += 0.5*square( (log(1.1*catch_ret_obs(f,t)) -log(catch_fleet(t,f,i)*catch_mult(y,f)+0.1*catch_ret_obs(f,t))) / catch_se(t,f));
           }
         }
       }
@@ -15476,6 +15520,7 @@ FUNCTION void Get_Forecast()
         get_MGsetup();
         ALK_OK=0;
         get_growth2();  //  in forecast
+        if(time_vary_MG(endyr+1,7)>0)  get_catch_mult(y, catch_mult_pointer);
       }
 
       // ABC_loop:  1=get OFL; 2=get_ABC, use input catches; 3=recalc with caps and allocations
@@ -16750,7 +16795,7 @@ FUNCTION void write_nudata()
   report1<<"#_units of catch:  1=bio; 2=num (ignored for surveys; their units read later)"<<endl;
   report1<<"#_equ_catch_se:  standard error of log(initial equilibrium catch)"<<endl;
   report1<<"#_catch_se:  standard error of log(catch); can be overridden in control file with detailed F input"<<endl;
-  report1<<"#_rows are fleets; columns are: fleet_type, timing, area, units, equ_catch_se, catch_se"<<endl;
+  report1<<"#_rows are fleets; columns are: fleet_type, timing, area, units, equ_catch_se, catch_se, need_catch_mult"<<endl;
   for (f=1;f<=Nfleet;f++)
   {
     report1<<fleet_setup(f)<<" # Fleet:_"<<f<<"_ "<<fleetname(f)<<endl;
@@ -18285,7 +18330,7 @@ FUNCTION void write_bigoutput()
   SS2out<<endl<<"fleet_names: ";
   for (f=1;f<=Nfleet;f++) SS2out<<" "<<fleetname(f);
   SS2out<<endl;
-  SS2out<<"#_rows are fleets; columns are: fleet_type, timing, area, units, equ_catch_se, catch_se survey_units survey_error "<<endl;
+  SS2out<<"#_rows are fleets; columns are: fleet_type, timing, area, units, equ_catch_se, catch_se, catch_mult, survey_units survey_error "<<endl;
   for (f=1;f<=Nfleet;f++)
   {
     SS2out<<fleet_setup(f)<<" "<<Svy_units(f)<<" "<<Svy_errtype(f)<<" # Fleet:_"<<f<<"_ "<<fleetname(f)<<endl;
@@ -18807,22 +18852,36 @@ FUNCTION void write_bigoutput()
      SS2out<<" "<<column(Hrate,t)<<endl;
    }
 
-  SS2out<<endl<<"CATCH "<<endl<<"Fleet Name Yr Seas Yr.S Obs Exp se F  Like"<<endl;
+  SS2out<<endl<<"CATCH "<<endl<<"Fleet Name Yr Seas Yr.S Obs Exp Mult Exp*Mult se F  Like"<<endl;
   for (f=1;f<=Nfleet;f++)
-  for (y=styr;y<=endyr;y++)
-  for (s=1;s<=nseas;s++)
   {
-    t = styr+(y-styr)*nseas+s-1;
-    if(catchunits(f)==1)
-    {gg=3;}  //  biomass
-    else
-    {gg=6;}  //  numbers
-    temp = float(y)+0.01*int(100.*(azero_seas(s)+seasdur_half(s)));
-    SS2out<<f<<" "<<fleetname(f)<<" "<<y<<" "<<s<<" "<<temp<<" "<<catch_ret_obs(f,t)<<" "<<catch_fleet(t,f,gg)<<" "<<catch_se(t,f)<<" "<<Hrate(f,t)<<" ";
-    if(fleet_type(f)==1)
-      {SS2out<<0.5*square( (log(1.1*catch_ret_obs(f,t)) -log(catch_fleet(t,f,gg)+0.1*catch_ret_obs(f,t))) / catch_se(t,f))<<endl;}
-      else
-      {SS2out<<"BYCATCH"<<endl;}
+    if(fleet_type(f)==1 || fleet_type(f)==2)
+    {
+      for (y=styr;y<=endyr;y++)
+      for (s=1;s<=nseas;s++)
+      {
+        t = styr+(y-styr)*nseas+s-1;
+        if(catchunits(f)==1)
+        {gg=3;}  //  biomass
+        else
+        {gg=6;}  //  numbers
+        temp = float(y)+0.01*int(100.*(azero_seas(s)+seasdur_half(s)));
+        SS2out<<f<<" "<<fleetname(f)<<" "<<y<<" "<<s<<" "<<temp<<" "<<catch_ret_obs(f,t)<<" "<<catch_fleet(t,f,gg)<<" "<<catch_mult(y,f)<<" "<<catch_mult(y,f)*catch_fleet(t,f,gg)<<" "<<catch_se(t,f)<<" "<<Hrate(f,t)<<" ";
+        if(fleet_type(f)==1)
+          {
+            if(catch_ret_obs(f,t)>0)
+              {
+                SS2out<<0.5*square( (log(1.1*catch_ret_obs(f,t)) -log(catch_fleet(t,f,gg)*catch_mult(y,f)+0.1*catch_ret_obs(f,t))) / catch_se(t,f))<<endl;
+              }
+              else
+                {
+                  SS2out<<" NA"<<endl;
+                }
+          }
+          else
+          {SS2out<<"BYCATCH"<<endl;}
+      }
+    }
   }
 
    int bio_t;
@@ -19295,7 +19354,7 @@ FUNCTION void write_bigoutput()
   }
 
   SS2out<<"#"<<endl<<"DISCARD_OUTPUT "<<endl;
-  SS2out<<"Fleet Name Yr Seas Yr.S Obs Exp Std_in Std_use Dev Like Like+log(s) SuprPer Use Obs_cat Exp_cat F_rate"<<endl;
+  SS2out<<"Fleet Name Yr Seas Yr.S Obs Exp Std_in Std_use Dev Like Like+log(s) SuprPer Use Obs_cat Exp_cat catch_mult exp_cat*catch_mult F_rate"<<endl;
   data_type=2;
   if(nobs_disc>0)
   for (f=1;f<=Nfleet;f++)
@@ -19352,7 +19411,7 @@ FUNCTION void write_bigoutput()
       {SS2out<<" in_suprper ";}
       else{SS2out<<" _ ";}
       SS2out<<yr_disc_use(f,i);
-      SS2out<<" "<<catch_ret_obs(f,t)<<" "<<catch_fleet(t,f,gg)<<" "<<Hrate(f,t);
+      SS2out<<" "<<catch_ret_obs(f,t)<<" "<<catch_fleet(t,f,gg)<<" "<<catch_mult(y,f)<<" "<<catch_mult(y,f)*catch_fleet(t,f,gg)<<" "<<Hrate(f,t);
       SS2out<<endl;
     }
   }
@@ -21773,3 +21832,19 @@ FUNCTION void Get_expected_values();
   }  //  end loop of subseasons
   return;
   }  //  end function
+
+FUNCTION void get_catch_mult(int y, int catch_mult_pointer)
+  {
+    int j;
+    j=0;
+    for(f=1;f<=Nfleet;f++)
+    {
+      if(need_catch_mult(f)==1)
+        {
+          catch_mult(y,f)=mgp_adj(catch_mult_pointer+j);
+          j++;
+        }
+    }
+    return;
+  }
+
