@@ -760,17 +760,17 @@ DATA_SECTION
               data_timing=(temp1-azero_seas(s))/seasdur(s);  //  remainder converted to fraction of season (but is multiplied by seasdur as it is used, so perhaps change this)
             }
             
+            t=styr+(y-styr)*nseas+s-1;
+            Svy_time_t(f,j)=t;
+
             if(surveytime(f)==-1.)  //  so ignoring month info
             {
               subseas=mid_subseas;
               data_timing=0.5;
             }
-            t=styr+(y-styr)*nseas+s-1;
             ALK_time=(y-styr)*nseas*N_subseas+(s-1)*N_subseas+subseas;
-
-            Svy_time_t(f,j)=t;
             need_ALK(ALK_time)=1;
-            Svy_ALK_time(f,j)=ALK_time;  //  continuous subseas counter in which jth obs from fleet f occurs
+            Svy_ALK_time(f,j)=ALK_time;
             if(data_time(ALK_time,f,1)<0.0)
             {
               data_time(ALK_time,f,1)=real_month;
@@ -784,11 +784,11 @@ DATA_SECTION
             }
             have_data(ALK_time,f,0,0)=1;  //  so have data of some type in this subseas, for this fleet
             have_data(ALK_time,f,data_type,0)++;  //  count the number of observations in this subseas
-            p=have_data(ALK_time,f,data_type,0);  //  current number of observations
+            p=have_data(ALK_time,f,data_type,0);
             have_data(ALK_time,f,data_type,p)=j;  //  store data index for the p'th observation in this subseas
 
-//  example call to a routine in GLOBALS to do some of above
-//            data_timing=get_data_timing(read_seas_mo, N_subseas, Svy_data(i)(1,3), seasdur, subseasdur_delta, azero_seas);
+            data_timing=get_data_timing(read_seas_mo, N_subseas, Svy_data(i)(1,3), seasdur, subseasdur_delta, azero_seas);
+            cout<<" data_timing from routine "<<data_timing<<" y "<<y<<endl;
 
           }  //  end have_data index and timing processing
 
@@ -8729,14 +8729,14 @@ GLOBALS_SECTION
 //  SS_Label_Info_10.3  #start random number generator with seed based on time
   random_number_generator radm(long(time(&start)));
 
-//  example function in GLOBALS to do the timing setup in the data section
   double get_data_timing(int rd_seas_mo, int N_subseas, dvector Y_Mo_F, dvector seasdur, dvector subseasdur_delta, dvector azero_seas)
   {
     int t,s,subseas,yr,f;
     double temp, temp1, month, data_timing;
     yr=int(Y_Mo_F(1));
     month=abs(Y_Mo_F(2));
-    f=int(abs(Y_Mo_F(3)));
+    f=inf(abs(Y_Mo_F(3)));
+    cout<<" y-mo-fleet  "<<yr<<" "<<month<<" "<<fleet<<endl;
     if(read_seas_mo==1)  // reading season
     {
       s=int(month);  
@@ -8746,7 +8746,7 @@ GLOBALS_SECTION
     }
     else  //  reading month.fraction
     {
-      temp1=(month-1.0)/12.;  //  month as fraction of year
+      temp1=(abs(month)-1.0)/12.;  //  month as fraction of year
       s=1;  // earlist possible seas;
       subseas=1;  //  earliest possible subseas in seas
       temp=subseasdur_delta(s);  //  starting value
