@@ -4149,6 +4149,14 @@ DATA_SECTION
       y=Block_Design(z,g+1)+1;  // first year after block
       if(y>endyr+1) y=endyr+1;
       time_vary_MG(y,mgp_type(j))=1;
+      
+      if(mgp_type(j)==7)  //  so doing catch_mult which needs annual values calculated for each year of the block
+      {
+        for(k=Block_Design(z,g);k<=y;k++)
+        {
+          time_vary_MG(y,7)=1;
+        }
+      }
      for (y=Block_Design(z,g);y<=Block_Design(z,g+1);y++)  // loop years for this block, including yrs past endyr+1
      {
       Block_Defs_MG(j,y)=N_MGparm+N_MGparm_env+N_MGparm_blk;
@@ -8218,7 +8226,7 @@ PRELIMINARY_CALCS_SECTION
     if (catch_mult_pointer>0) 
     {
       get_catch_mult(y, catch_mult_pointer);
-      for(j=styr;j<=time_vary_MG(y,7);j++)
+      for(j=styr;j<=YrMax;j++)  //  so get this value for all years, but can be overwritten by time-varying
       {
         catch_mult(j)=catch_mult(y);
       }
