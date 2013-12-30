@@ -238,9 +238,9 @@ DATA_SECTION
     }
  END_CALCS
 
-  init_int F_report_basis // 0=raw; 1=rel Fspr; 2=rel Fmsy ; 3=rel Fbtgt; 4=annual F for range of years
-  !!echoinput<<F_report_basis<<"  F_report_basis"<<endl;
-  !!echoinput<<"For Kobe plot, set depletion_basis=2; depletion_level=1.0; F_reporting=your choose; F_report_basis=2"<<endl;
+  init_int F_std_basis // 0=raw; 1=rel Fspr; 2=rel Fmsy ; 3=rel Fbtgt; 4=annual F for range of years
+  !!echoinput<<F_std_basis<<"  F_std_basis"<<endl;
+  !!echoinput<<"For Kobe plot, set depletion_basis=2; depletion_level=1.0; F_reporting=your choose; F_std_basis=2"<<endl;
   init_int finish_starter
 
  LOCAL_CALCS
@@ -3088,7 +3088,7 @@ DATA_SECTION
   if(Do_Benchmark==0)
   {
     if(Do_Forecast>=1 && Do_Forecast<=3) {Do_Benchmark=1; N_warn++; warning<<" Turn Benchmark on because Forecast needs it"<<endl;}
-    if(Do_Forecast==0 && F_report_basis>0) {F_report_basis=0; N_warn++; warning<<" Set F_report_basis=0 because no benchmark or forecast"<<endl;}
+    if(Do_Forecast==0 && F_std_basis>0) {F_std_basis=0; N_warn++; warning<<" Set F_std_basis=0 because no benchmark or forecast"<<endl;}
     if(depletion_basis==2) {depletion_basis=1; N_warn++; warning<<" Change depletion basis to 1 because benchmarks are off"<<endl;}
     if(SPR_reporting>=1 && SPR_reporting<=3) {SPR_reporting=4; N_warn++; warning<<" Change SPR_reporting to 4 because benchmarks are off"<<endl;}
   }
@@ -4298,9 +4298,38 @@ DATA_SECTION
   init_matrix MGparm_seas_1(1,N_MGparm_seas,1,7)  // read matrix that defines the seasonal parms
   !!if(N_MGparm_seas>0) echoinput<<" MGparm_seas"<<endl<<MGparm_seas_1<<endl;
 
-!!//  SS_Label_Info_4.5.8  #Create vectors (e.g. MGparm_PH) to be used to define the actual estimated parameter array
+!!//  SS_Label_Info_4.5.8 #Set up MG dev standard errors
+  int N_MGparm_dev                            //  number of MGparms that use annual deviations
+ LOCAL_CALCS
+    N_MGparm_dev=0;
+    for(j=1;j<=N_MGparm;j++)
+    {
+    if(MGparm_1(j,9)>=1) 
+      {
+        N_MGparm_dev++;
+        ParCount++;
+        ParmLabel+=ParmLabel(j)+"_dev_se"+CRLF(1);
+        ParCount++;
+        ParmLabel+=ParmLabel(j)+"_dev_rho"+CRLF(1);
+      }
+    }
+ END_CALCS
+  init_matrix MGparm_dev_se_rd(1,2*N_MGparm_dev,1,7)  // read matrix that defines the parms for stderr and rho of devs
+  !!if(N_MGparm_dev>0) echoinput<<"MG dev std.err. and rho for each vector "<<endl<<MGparm_dev_se_rd<<endl;
+  ivector MGparm_dev_minyr(1,N_MGparm_dev)
+  ivector MGparm_dev_maxyr(1,N_MGparm_dev)
+  ivector MGparm_dev_type(1,N_MGparm_dev)  // contains type of dev:  1 for multiplicative, 2 for additive, 3 for additive randwalk, 4=mean reverting additive rwalk
+  ivector MGparm_dev_point(1,N_MGparm)  //  specifies which dev vector will be used by a parameter
+  ivector MGparm_dev_rpoint(1,N_MGparm_dev)  //  reverse point from dev list back to parameter list to get the affected parameter index
+                                             //  e.g.  specifies which parm (f) is affected by the j'th dev vector; only used in ss2out.
+  ivector MGparm_dev_rpoint2(1,N_MGparm_dev)  //  reverse point from dev list back to parameter list to get the parameter index for the se parameter
+                                              //  e.g. points to the parm index that holds the f'th dev's se and rho
+  int MGparm_dev_PH
+
+!!//  SS_Label_Info_4.5.9 #Create vectors (e.g. MGparm_PH) to be used to define the actual estimated parameter array
+
   int N_MGparm2
-  !!N_MGparm2=N_MGparm+N_MGparm_env+N_MGparm_blk+N_MGparm_trend2+N_MGparm_seas;
+  !!N_MGparm2=N_MGparm+N_MGparm_env+N_MGparm_blk+N_MGparm_trend2+N_MGparm_seas+2*N_MGparm_dev;
   vector MGparm_LO(1,N_MGparm2)
   vector MGparm_HI(1,N_MGparm2)
   vector MGparm_RD(1,N_MGparm2)
@@ -4383,27 +4412,40 @@ DATA_SECTION
     MGparm_CV(j)=MGparm_seas_1(f,6);
     MGparm_PH(j)=MGparm_seas_1(f,7);
    }
- END_CALCS
 
-//  SS_Label_Info_4.5.9 #Set up random deviations for MG parms
-  int N_MGparm_dev                            //  number of MGparms that use annual deviations
- LOCAL_CALCS
-    N_MGparm_dev=0;
-    for (f=1;f<=N_MGparm;f++)
-    {
-    if(MGparm_1(f,9)>=1) N_MGparm_dev ++;
-    }
- END_CALCS
+   if(N_MGparm_dev>0)
+   {
+    k=0;
+   for (f=1;f<=N_MGparm_dev;f++)
+   {
+    j++;
+    k++;
+    MGparm_LO(j)=MGparm_dev_se_rd(k,1);
+    MGparm_HI(j)=MGparm_dev_se_rd(k,2);
+    MGparm_RD(j)=MGparm_dev_se_rd(k,3);
+    MGparm_PR(j)=MGparm_dev_se_rd(k,4);
+    MGparm_PRtype(j)=MGparm_dev_se_rd(k,5);
+    MGparm_CV(j)=MGparm_dev_se_rd(k,6);
+    MGparm_PH(j)=MGparm_dev_se_rd(k,7);
+    MGparm_dev_rpoint2(f)=j;  //  specifies which parm holds the f'th dev's se
+    j++;
+    k++;
+    MGparm_LO(j)=MGparm_dev_se_rd(k,1);
+    MGparm_HI(j)=MGparm_dev_se_rd(k,2);
+    MGparm_RD(j)=MGparm_dev_se_rd(k,3);
+    MGparm_PR(j)=MGparm_dev_se_rd(k,4);
+    MGparm_PRtype(j)=MGparm_dev_se_rd(k,5);
+    MGparm_CV(j)=MGparm_dev_se_rd(k,6);
+    MGparm_PH(j)=MGparm_dev_se_rd(k,7);
+   }
+   }
 
-  ivector MGparm_dev_minyr(1,N_MGparm_dev)
-  ivector MGparm_dev_maxyr(1,N_MGparm_dev)
-  vector  MGparm_dev_stddev(1,N_MGparm_dev)
-  ivector MGparm_dev_type(1,N_MGparm_dev)  // contains type of dev:  1 for multiplicative, 2 for additive, 3 for additive randwalk
-  ivector MGparm_dev_select(1,N_MGparm)
-  int MGparm_dev_PH
- LOCAL_CALCS
-   MGparm_dev_select.initialize();
-   int N_MGparm_dev_tot=0;
+  //  SS_Label_Info_4.5.9 #Set up random deviations for MG parms
+
+  //  NOTE:  the parms for the se of the devs are part of the MGparm2 list above, not the dev list below
+   MGparm_dev_point.initialize();
+   int N_MGparm_dev_tot;
+   N_MGparm_dev_tot=0;
    if(N_MGparm_dev>0)
      {
        j=0;
@@ -4414,9 +4456,9 @@ DATA_SECTION
            j++;
            if(MG_adjust_method==2 && MGparm_1(f,9)==1)
            {N_warn++; warning<<" cannot use MG_adjust_method==2 and multiplicative devs for parameter "<<f<<endl;}
-           MGparm_dev_type(j)=MGparm_1(f,9);  //  1 for multiplicative, 2 for additive, 3 for additive randwalk
-           MGparm_dev_select(f)=j;
-           MGparm_dev_stddev(j)=MGparm_1(f,12);
+           MGparm_dev_type(j)=MGparm_1(f,9);  //  1 for multiplicative, 2 for additive, 3 for additive randwalk, 4=mean-reverting rwalk
+           MGparm_dev_point(f)=j;  //  specifies which dev vector is used by the f'th MGparm
+           MGparm_dev_rpoint(j)=f;  //  specifies which parm (f) is affected by the j'th dev vector
            y=MGparm_1(f,10);
            if(y<styr)
            {
@@ -4432,7 +4474,7 @@ DATA_SECTION
              y=endyr;
            }
            MGparm_dev_maxyr(j)=y;
-           for (y=MGparm_dev_minyr(j);y<=MGparm_dev_maxyr(j);y++)
+           for(y=MGparm_dev_minyr(j);y<=MGparm_dev_maxyr(j);y++)
            {
              MG_active(mgp_type(f))=1;
              time_vary_MG(y,mgp_type(f))=1;
@@ -4446,6 +4488,8 @@ DATA_SECTION
              {ParmLabel+=ParmLabel(f)+"_DEVadd_"+onenum+CRLF(1);}
              else if(MGparm_dev_type(j)==3)
              {ParmLabel+=ParmLabel(f)+"_DEVrwalk_"+onenum+CRLF(1);}
+             else if(MGparm_dev_type(j)==4)
+             {ParmLabel+=ParmLabel(f)+"_DEV_MR_rwalk_"+onenum+CRLF(1);}
            else
            {N_warn++; cout<<" EXIT - see warning "<<endl; warning<<" illegal MGparmdevtype for parm "<<f<<endl; exit(1);}
          }
@@ -4461,6 +4505,7 @@ DATA_SECTION
       echoinput<<" don't read MGparm_dev_PH"<<endl;
     }
 
+  //  SS_Label_Info_4.5.95 #Populate time_bio_category array defining when biology changes
      k=YrMax+1;
     for (y=styr+1;y<=YrMax;y++)
     {
@@ -7007,7 +7052,7 @@ DATA_SECTION
     }
   }
 
-  switch (F_report_basis)
+  switch (F_std_basis)
   {
     case 0:  // raw
     {
@@ -7215,6 +7260,8 @@ PARAMETER_SECTION
   
   3darray wtlen_seas(0,nseas,1,N_GP,1,8);  //  contains seasonally adjusted wtlen_p
   matrix wtlen_p(1,N_GP,1,8);
+  vector MGparm_dev_stddev(1,N_MGparm_dev)
+  vector MGparm_dev_rho(1,N_MGparm_dev)  // determines the mean regressive characteristic: with 0 = no autoregressive; 1= all autoregressive
   3darray wt_len(1,nseas,1,N_GP*gender,1,nlength)  //  stores wt at mid-bin
 
 //  following wt_len are defined for 1,N_GP, but only use gp=1 due to complications in vbio, exp_ms and sizefreq calc
@@ -7534,7 +7581,7 @@ PARAMETER_SECTION
   number recr_like
   number Fcast_recr_like
   number parm_like
-  number parm_dev_like
+  vector parm_dev_like(1,N_MGparm_dev+N_selparm_dev)
   number CrashPen
   number SoftBoundPen
   number Equ_penalty
@@ -8256,6 +8303,10 @@ PRELIMINARY_CALCS_SECTION
 //  SS_Label_Section_7.0 #PROCEDURE_SECTION
 PROCEDURE_SECTION
   {
+  Mgmt_quant.initialize();
+  Extra_Std.initialize();
+  CrashPen.initialize();
+
   niter++;
   if(mceval_phase() ) mceval_counter ++;   // increment the counter
   if(initial_params::mc_phase==1) mcmc_counter++;
@@ -8360,6 +8411,16 @@ PROCEDURE_SECTION
     else
     {
       F_Method_use=F_Method;
+    }
+
+  //  SS_Label_Info_7.3.5 #Set up the MGparm stderr and rho parameters for the dev vectors
+  if(N_MGparm_dev>0)
+    {
+      for(i=1;i<=N_MGparm_dev;i++)
+      {
+        MGparm_dev_stddev(i)=MGparm(MGparm_dev_rpoint2(i));
+        MGparm_dev_rho(i)=MGparm(MGparm_dev_rpoint2(i)+1);
+      }
     }
 
 //  SS_Label_Info_7.4 #Do the time series calculations
@@ -8669,11 +8730,10 @@ PROCEDURE_SECTION
         ParmTrace<<current_phase()<<" "<<niter<<" "<<obj_fun<<" "<<obj_fun-last_objfun
         <<" "<<value(SPB_yr(styr))<<" "<<value(SPB_yr(endyr))<<" "<<biasadj(styr)<<" "<<max(biasadj)<<" "<<biasadj(endyr);
         ParmTrace<<" "<<MGparm<<" ";
-        if(N_MGparm_dev>0) ParmTrace<<MGparm_dev<<" ";
         if(N_MGparm_dev>0)
         {
           for (j=1;j<=N_MGparm_dev;j++)
-          {ParmTrace<<MGparm_dev(j)<<" ";}
+          {ParmTrace<<MGparm_dev(j);}
         }
         ParmTrace<<SR_parm<<" ";
         if(recdev_cycle>0) ParmTrace<<recdev_cycle_parm;
@@ -8681,8 +8741,8 @@ PROCEDURE_SECTION
         if(do_recdev==1) {ParmTrace<<recdev1<<" ";}
         if(do_recdev==2) {ParmTrace<<recdev2<<" ";}
         if(Do_Forecast>0) ParmTrace<<Fcast_recruitments<<" "<<Fcast_impl_error<<" ";
-        ParmTrace<<init_F<<" ";
-        if(F_Method==2) ParmTrace<<" "<<F_rate;
+        if(N_init_F>0) ParmTrace<<init_F<<" ";
+        if(F_Method==2) ParmTrace<<F_rate<<" ";
         if(Q_Npar>0) ParmTrace<<Q_parm<<" ";
         ParmTrace<<selparm<<" ";
         if(N_selparm_dev>0)
@@ -9147,13 +9207,23 @@ FUNCTION void get_MGsetup()
   {
     for (k=1;k<=N_MGparm_dev;k++)
     {
-      if(MGparm_dev_type(k)==3)
+      if(MGparm_dev_type(k)==3)  //   random walk
       {
         MGparm_dev_rwalk(k,MGparm_dev_minyr(k))=MGparm_dev(k,MGparm_dev_minyr(k));
         j=MGparm_dev_minyr(k);
         for (j=MGparm_dev_minyr(k)+1;j<=MGparm_dev_maxyr(k);j++)
         {
           MGparm_dev_rwalk(k,j)=MGparm_dev_rwalk(k,j-1)+MGparm_dev(k,j);
+        }
+      }
+      else if(MGparm_dev_type(k)==4) // mean reverting random walk
+      {
+        MGparm_dev_rwalk(k,MGparm_dev_minyr(k))=MGparm_dev(k,MGparm_dev_minyr(k));
+        j=MGparm_dev_minyr(k);
+        for (j=MGparm_dev_minyr(k)+1;j<=MGparm_dev_maxyr(k);j++)
+        {
+          //    =(1-rho)*mean + rho*prevval + dev
+          MGparm_dev_rwalk(k,j)=MGparm_dev_rho(k)*MGparm_dev_rwalk(k,j-1)+MGparm_dev(k,j);
         }
       }
     }
@@ -9197,7 +9267,7 @@ FUNCTION void get_MGsetup()
         }
 
   //  SS_Label_Info_14.4.1.3 #Adjust for Annual deviations
-        k=MGparm_dev_select(f);
+        k=MGparm_dev_point(f);
         if(k>0)
         {
           if(yz>=MGparm_dev_minyr(k) && yz<=MGparm_dev_maxyr(k))
@@ -9206,7 +9276,7 @@ FUNCTION void get_MGsetup()
             {mgp_adj(f) *= mfexp(MGparm_dev(k,yz));}
             else if(MGparm_dev_type(k)==2)  // additive
             {mgp_adj(f) += MGparm_dev(k,yz);}
-            else if(MGparm_dev_type(k)==3)  // additive rwalk
+            else if(MGparm_dev_type(k)>=3)  // additive rwalk or mean-reverting rwalk
             {mgp_adj(f) += MGparm_dev_rwalk(k,yz);}
           }
         }
@@ -9253,7 +9323,7 @@ FUNCTION void get_MGsetup()
         {j=1; temp+=MGparm(MGparm_env(f))* env_data(yz,MGparm_envuse(f));}
 
   //  SS_Label_Info_14.4.2.3 #Adjust for annual deviations
-        k=MGparm_dev_select(f);
+        k=MGparm_dev_point(f);
         if(k>0)
         {
           if(yz>=MGparm_dev_minyr(k) && yz<=MGparm_dev_maxyr(k))
@@ -9261,7 +9331,7 @@ FUNCTION void get_MGsetup()
               j=1;
               if(MGparm_dev_type(k)==2)
               {temp += MGparm_dev(k,yz);}
-              else if(MGparm_dev_type(k)==3)
+              else if(MGparm_dev_type(k)>=3)
               {temp += MGparm_dev_rwalk(k,yz);}  // note that only additive effect is allowed
             }
         }
@@ -11659,9 +11729,6 @@ FUNCTION void get_initial_conditions()
   {
   //*********************************************************************
   /*  SS_Label_Function_23 #get_initial_conditions */
-  Mgmt_quant.initialize();
-  Extra_Std.initialize();
-  CrashPen.initialize();
   natage.initialize();
   catch_fleet.initialize();
   annual_catch.initialize();
@@ -13407,15 +13474,18 @@ FUNCTION void evaluate_the_objective_function()
   //  SS_Label_Info_25.15 #logL for parameter process errors (devs)
     if(MGparm_dev_PH>0 && parm_dev_lambda(k_phase)>0.0 )
     {
-     for (i=1;i<=N_MGparm_dev;i++)
-     for (j=MGparm_dev_minyr(i);j<=MGparm_dev_maxyr(i);j++)
-     {parm_dev_like += 0.5*square( MGparm_dev(i,j) / MGparm_dev_stddev(i) );}
+      for(i=1;i<=N_MGparm_dev;i++)
+      {
+        for(j=MGparm_dev_minyr(i);j<=MGparm_dev_maxyr(i);j++)
+        {parm_dev_like(i) += 0.5*square( MGparm_dev(i,j) / MGparm_dev_stddev(i) );}
+        parm_dev_like(i) += sd_offset*float(MGparm_dev_maxyr(i)-MGparm_dev_maxyr(i)+1.)*log(MGparm_dev_stddev(i));
+      }
     }
 
     for (f=1;f<=Nfleet;f++)
       if(Q_setup(f,4)==3)
       {
-      parm_dev_like += Q_dev_like(f,1); // mean component for dev approach (var component is already in the parm priors)
+//      parm_dev_like += Q_dev_like(f,1); // mean component for dev approach (var component is already in the parm priors)
                                         //  do not include for randwalk (Qsetup==4)
       }
 
@@ -13476,7 +13546,7 @@ FUNCTION void evaluate_the_objective_function()
 //   cout<<" obj_fun recr "<<obj_fun<<endl;
    obj_fun += parm_like*parm_prior_lambda(k_phase);
 //   cout<<" obj_fun parm "<<obj_fun<<endl;
-   obj_fun += parm_dev_like*parm_dev_lambda(k_phase);
+   obj_fun += sum(parm_dev_like)*parm_dev_lambda(k_phase);
 //   cout<<" obj_fun parmdev "<<obj_fun<<endl;
    obj_fun += F_ballpark_like * F_ballpark_lambda(k_phase);
 //   cout<<" obj_fun Fballpark "<<obj_fun<<endl;
@@ -13570,7 +13640,7 @@ FUNCTION void Process_STDquant()
 
 //  init_int Do_Forecast   //  0=none; 1=F(SPR); 2=F(MSY) 3=F(Btgt); 4=F(endyr); 5=Ave F (enter yrs); 6=read Fmult
 //  Use the selected F method for the forecast as the denominator for the F_std ratio
-      switch (F_report_basis)
+      switch (F_std_basis)
       {
         case 0:      // keep as raw value
         {
@@ -14577,7 +14647,7 @@ FUNCTION void get_posteriors()
     der_posts << endl;
 
     if(depletion_basis!=2) post_vecs<<"depletion_basis_is_not_=2;_so_info_below_is_not_B/Bmsy"<<endl;
-    if(F_report_basis!=2) post_vecs<<"F_report_basis_is_not_=2;_so_info_below_is_not_F/Fmsy"<<endl;
+    if(F_std_basis!=2) post_vecs<<"F_std_basis_is_not_=2;_so_info_below_is_not_F/Fmsy"<<endl;
     post_vecs<<"Endyr+1= "<<endyr+1<<endl;
     post_vecs<<"run mceval objfun Numbers Area Sex Ages:"<<age_vector<<endl;
     post_vecs<<"run mceval objfun F_yr ";
@@ -16347,7 +16417,7 @@ FUNCTION void write_summaryoutput()
   report2<<runnumber<<" Like_Emph "<<init_equ_lambda(k)<<" "<<recrdev_lambda(k)<<" " <<Fcast_recr_lambda<<" "
          <<parm_prior_lambda(k)<<" " <<parm_dev_lambda(k)<<" " <<CrashPen_lambda(k)<<endl;
   report2<<runnumber<<" Like_Value*Emph "<<equ_catch_like*init_equ_lambda(k)<<" "<<recr_like*recrdev_lambda(k)<<" "
-         <<Fcast_recr_like<<" "<<parm_like*parm_prior_lambda(k)<<" "<<parm_dev_like*parm_dev_lambda(k)<<" "<<CrashPen*CrashPen_lambda(k)<<endl;
+         <<Fcast_recr_like<<" "<<parm_like*parm_prior_lambda(k)<<" "<<sum(parm_dev_like)*parm_dev_lambda(k)<<" "<<CrashPen*CrashPen_lambda(k)<<endl;
 
   report2 <<runnumber<<" TimeSeries Year Vir Equ "<<years<<" ";
   k=YrMax;
@@ -17640,7 +17710,7 @@ FUNCTION void write_nucontrol()
   {NuStart<<F_reporting_ages<<" #_min and max age over which average F will be calculated"<<endl;}
   else
   {NuStart<<"#COND 10 15 #_min and max age over which average F will be calculated with F_reporting=4"<<endl;}
-  NuStart<<F_report_basis<<" # F_report_basis: 0=raw; 1=F/Fspr; 2=F/Fmsy ; 3=F/Fbtgt"<<endl;
+  NuStart<<F_std_basis<<" # F_std_basis: 0=raw_F_report; 1=F/Fspr; 2=F/Fmsy ; 3=F/Fbtgt"<<endl;
   NuStart<<999<<" # check value for end of file"<<endl;
 
   cout<<" Write new forecast file "<<endl;
@@ -17739,25 +17809,15 @@ FUNCTION void write_nucontrol()
   report4 << "#_data_and_control_files: "<<datfilename<<" // "<<ctlfilename<<endl;
   report4<<"#_"<<version_info<<endl;
   report4 << N_GP << "  #_N_Growth_Patterns"<<endl;
-  report4 << N_platoon << " #_N_Morphs_Within_GrowthPattern "<<endl;
+  report4 << N_platoon << " #_N_platoons_Within_GrowthPattern "<<endl;
   if(N_platoon==1) report4<<"#_Cond ";
   report4<<sd_ratio<<" #_Morph_between/within_stdev_ratio (no read if N_morphs=1)"<<endl;
   if(N_platoon==1) report4<<"#_Cond ";
   report4<<submorphdist(1,N_platoon)<<" #vector_Morphdist_(-1_in_first_val_gives_normal_approx)"<<endl;
   report4<<"#"<<endl;
-  if(N_GP*nseas*pop==1)
-  {
-    report4<<"#_Cond 0  #  N recruitment designs goes here if N_GP*nseas*area>1"<<endl<<
-                   "#_Cond 0  #  placeholder for recruitment interaction request"<<endl<<
-                   "#_Cond 1 1 1  # example recruitment design element for GP=1, seas=1, area=1"<<endl;
-  }
-  else
-  {
-    report4<<N_settle<<" #  number of recruitment settlements per spawning (need this number of parameters also) "<<endl<<
-             recr_dist_inx<< " # year_x_area_x_settlementevent interaction requested"<<endl<<
-             "#GPat month  area (for each settlement assignment)"<<endl<<settlement_pattern_rd<<endl;
-  }
-  report4<<"#"<<endl;
+  report4<<N_settle<<" #  number of recruitment settlements per spawning (need this number of parameters also) "<<endl<<
+             recr_dist_inx<< " # year_x_area_x_settlement_event interaction requested"<<endl<<
+             "#GPat month  area (for each settlement assignment)"<<endl<<settlement_pattern_rd<<endl<<"#"<<endl;
   if(pop==1)
   {report4<<"#_Cond 0 # N_movement_definitions goes here if N_areas > 1"<<endl
     <<"#_Cond 1.0 # first age that moves (real age at begin of season, not integer) also cond on do_migration>0"<<endl
@@ -17889,13 +17949,22 @@ FUNCTION void write_nucontrol()
   report4<<"#"<<endl;
   if(N_MGparm_dev>0)
   {
-   for (i=1;i<=N_MGparm_dev;i++)
-   for (j=MGparm_dev_minyr(i);j<=MGparm_dev_maxyr(i);j++)
+    report4<<"# standard error parameters for MG devs"<<endl;
+   for(i=1;i<=N_MGparm_dev;i++)
+   {
+      NP++; j++;  MGparm_dev_se_rd(i,3)=value(MGparm(j));
+      report4<<MGparm_dev_se_rd(i)<<" # "<<ParmLabel(NP)<<endl;
+      NP++; j++;  MGparm_dev_se_rd(i,3)=value(MGparm(j));
+      report4<<MGparm_dev_se_rd(i)<<" # "<<ParmLabel(NP)<<endl;
+   }
+   report4<<"#_Display_dev_values_and_labels"<<endl;   
+   for(i=1;i<=N_MGparm_dev;i++)
+   for(j=MGparm_dev_minyr(i);j<=MGparm_dev_maxyr(i);j++)
    {
      NP++;
-    report4<<"#DisplayOnly "<<MGparm_dev(i,j)<<" # "<<ParmLabel(NP)<<endl;
+    report4<<"# "<<MGparm_dev(i,j)<<" # "<<ParmLabel(NP)<<endl;
    }
-    report4<<MGparm_dev_PH<<" #_MGparm_Dev_Phase"<<endl;
+    report4<<"#"<<endl<<MGparm_dev_PH<<" #_MGparm_Dev_Phase"<<endl;
   }
   else
   {
@@ -18363,7 +18432,7 @@ FUNCTION void write_bigoutput()
   SS2out <<"Forecast_Recruitment "<<Fcast_recr_like<<" "<<Fcast_recr_lambda<<endl;
   SS2out <<"Parm_priors "<<parm_like*parm_prior_lambda(k)<<" "<<parm_prior_lambda(k)<<endl;
   if(SoftBound>0) SS2out <<"Parm_softbounds "<<SoftBoundPen<<" "<<" NA "<<endl;
-  SS2out <<"Parm_devs "<<parm_dev_like*parm_dev_lambda(k)<<" "<<parm_dev_lambda(k)<<endl;
+  SS2out <<"Parm_devs "<<sum(parm_dev_like)*parm_dev_lambda(k)<<" "<<parm_dev_lambda(k)<<endl;
   if(F_ballpark_yr>0) SS2out <<"F_Ballpark "<<F_ballpark_lambda(k)*F_ballpark_like<<" "<<F_ballpark_lambda(k)<<"  ##:est&obs: "<<annual_F(F_ballpark_yr,2)<<" "<<F_ballpark<<endl;
   SS2out <<"Crash_Pen "<<CrashPen_lambda(k)*CrashPen<<" "<<CrashPen_lambda(k)<<endl;
 
@@ -18632,7 +18701,7 @@ FUNCTION void write_bigoutput()
   SS2out<<"Active_count "<<active_count<<endl<<endl;
   SS2out<<endl<<"DERIVED_QUANTITIES"<<endl;
   SS2out<<"SPR_ratio_basis: "<<SPR_report_label<<endl;
-  SS2out<<"F_report_basis: "<<F_report_label<<endl;
+  SS2out<<"F_std_basis: "<<F_report_label<<endl;
   SS2out<<"B_ratio_denominator: "<<depletion_basis_label<<endl;
 
   SS2out<<" LABEL Value  StdDev (Val-1.0)/Stddev  CumNorm"<<endl;
@@ -18735,6 +18804,18 @@ FUNCTION void write_bigoutput()
       }
     }
  */
+
+  if(N_MGparm_dev>0)
+    {
+      SS2out<<"MGParm_dev_details"<<endl<<"Item Parm_Affected SE  Rho  Like"<<endl;
+      for(i=1;i<=N_MGparm_dev;i++)
+      {
+        SS2out<<i<<" "<<ParmLabel(MGparm_dev_rpoint(i))<<" "<<MGparm_dev_stddev(i)<<" "<<MGparm_dev_rho(i)<<" "<<parm_dev_like(i)<<endl;
+        SS2out<<i<<" devs "<<MGparm_dev(i)<<endl;
+        if(MGparm_dev_type(i)>=3) SS2out<<i<<" rwalk "<<MGparm_dev_rwalk(i)<<endl;
+      }
+    }
+
    if(reportdetail>0) {k1=endyr;} else {k1=styr;}
    SS2out<<endl<<"MGparm_By_Year_after_adjustments"<<endl<<"Year ";
    for (i=1;i<=N_MGparm;i++) SS2out<<" "<<ParmLabel(i);
@@ -19111,7 +19192,7 @@ FUNCTION void write_bigoutput()
   SS2out<<endl<<"NOTE:_GENTIME_is_fecundity_weighted_mean_age"<<endl<<"NOTE:_MnAgeSmry_is_numbers_weighted_meanage_at_and_above_smryage(not_accounting_for_birthseason_offsets)"<<endl;
 
   SS2out<<endl<<"Kobe_Plot"<<endl;
-  if(F_report_basis!=2) SS2out<<"F_report_basis_is_not_=2;_so_info_below_is_not_F/Fmsy"<<endl;
+  if(F_std_basis!=2) SS2out<<"F_std_basis_is_not_=2;_so_info_below_is_not_F/Fmsy"<<endl;
   SS2out<<"MSY_basis:_";
   switch(Do_MSY)
     {
@@ -21359,6 +21440,20 @@ FUNCTION void Get_expected_values();
                   }
                  break;
                }
+             case 35:  // MGparm deviation  #35
+             {
+                k=seltype(f,4);  //  specify which dev vector will be compared to this survey
+                                 //  note that later the value in seltype(f,3) will specify the link function
+                //  should there be an explicit zero-centering of the devs here, or just rely on general tendency for the devs to get zero-centererd?
+                if(y>=MGparm_dev_minyr(k) && y<=MGparm_dev_maxyr(k)) 
+                {
+                  vbio=MGparm_dev(k,y);
+                  //  can the mean dev for years with surveys be calculated here?
+                }
+                else
+                {vbio=0.0;}
+                break;
+              }
              }
            }
            else
