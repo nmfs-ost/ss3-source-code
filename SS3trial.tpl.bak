@@ -5028,7 +5028,11 @@ DATA_SECTION
    if(Q_setup(f,1)>0)
     {
       Q_Npar++; Q_setup_parms(f,1)=Q_Npar;
-      ParCount++; ParmLabel+="Q_power_"+NumLbl(f)+"_"+fleetname(f);
+      ParCount++; 
+      if(Q_setup(f,1)==1)
+      {ParmLabel+="Q_power_"+NumLbl(f)+"_"+fleetname(f);}
+      else if(Q_setup(f,1)==2)
+      {ParmLabel+="Q_offset_"+NumLbl(f)+"_"+fleetname(f);}
       if(Q_setup(f,4)<2) {N_warn++; warning<<" must create base Q parm to use Q_power for fleet: "<<f<<endl;}
     }
   }
@@ -5128,7 +5132,7 @@ DATA_SECTION
         N_warn++;
         warning<<" Lognormal error selected for effort deviations for fleet "<<f<<"; normal error recommended"<<endl;
       }
-      if(Q_setup(f,1)>0)  //  density-dependence
+      if(Q_setup(f,1)==1)  //  density-dependence
       {
         N_warn++;
         warning<<" Do not use Density-dependence for effort deviations (fleet "<<f<<"); "<<endl;
@@ -5245,7 +5249,7 @@ DATA_SECTION
  END_CALCS
 
 !!//  SS_Label_Info_4.9 #Define Selectivity patterns and N parameters needed per pattern
-  ivector seltype_Nparam(0,34)
+  ivector seltype_Nparam(0,35)
  LOCAL_CALCS
    seltype_Nparam(0)=0;   // selex=1.0 for all sizes
    seltype_Nparam(1)=2;   // logistic; with 95% width specification
@@ -5284,6 +5288,7 @@ DATA_SECTION
    seltype_Nparam(32)=0;   //   pre-recruitment (spawnbio * recrdev)
    seltype_Nparam(33)=0;   //   recruitment
    seltype_Nparam(34)=0;   //   spawning biomass depletion
+   seltype_Nparam(35)=0;   //   survey of a dev vector
 
  END_CALCS
 
@@ -9222,7 +9227,7 @@ FUNCTION void get_MGsetup()
         j=MGparm_dev_minyr(k);
         for (j=MGparm_dev_minyr(k)+1;j<=MGparm_dev_maxyr(k);j++)
         {
-          //    =(1-rho)*mean + rho*prevval + dev
+          //    =(1-rho)*mean + rho*prevval + dev   //  where mean = 0.0
           MGparm_dev_rwalk(k,j)=MGparm_dev_rho(k)*MGparm_dev_rwalk(k,j-1)+MGparm_dev(k,j);
         }
       }
@@ -18483,17 +18488,6 @@ FUNCTION void write_bigoutput()
   }
   SS2out<<endl;
 
-  if(N_MGparm_dev>0)
-    {
-      SS2out<<"MGParm_dev_like_details"<<endl<<"Item Parm_Affected SE  Rho  Like"<<endl;
-      for(i=1;i<=N_MGparm_dev;i++)
-      {
-        SS2out<<i<<" "<<ParmLabel(MGparm_dev_rpoint(i))<<" "<<MGparm_dev_stddev(i)<<" "<<MGparm_dev_rho(i)<<" "<<parm_dev_like(i)<<endl;
-        SS2out<<i<<" devs "<<MGparm_dev<<endl;
-        if(MGparm_dev_type(i)>=3) SS2out<<i<<" rwalk "<<MGparm_dev_rwalk<<endl;
-      }
-    }
-
   SS2out<<"Input_Variance_Adjustment"<<endl<<"Fleet ";
   for (i=1;i<=Nfleet;i++) {SS2out<<" "<<i;}
   SS2out<<endl;
@@ -18815,6 +18809,18 @@ FUNCTION void write_bigoutput()
       }
     }
  */
+
+  if(N_MGparm_dev>0)
+    {
+      SS2out<<"MGParm_dev_details"<<endl<<"Item Parm_Affected SE  Rho  Like"<<endl;
+      for(i=1;i<=N_MGparm_dev;i++)
+      {
+        SS2out<<i<<" "<<ParmLabel(MGparm_dev_rpoint(i))<<" "<<MGparm_dev_stddev(i)<<" "<<MGparm_dev_rho(i)<<" "<<parm_dev_like(i)<<endl;
+        SS2out<<i<<" devs "<<MGparm_dev(i)<<endl;
+        if(MGparm_dev_type(i)>=3) SS2out<<i<<" rwalk "<<MGparm_dev_rwalk(i)<<endl;
+      }
+    }
+
    if(reportdetail>0) {k1=endyr;} else {k1=styr;}
    SS2out<<endl<<"MGparm_By_Year_after_adjustments"<<endl<<"Year ";
    for (i=1;i<=N_MGparm;i++) SS2out<<" "<<ParmLabel(i);
