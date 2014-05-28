@@ -5,7 +5,11 @@ DATA_SECTION
 !!//  SS_Label_Section_1.0 #DATA_SECTION
 
 !!//  SS_Label_Info_1.1.1  #Create string with version info
-!!version_info+="SS-V3.30a-safe;_10/11/2013;_Stock_Synthesis_by_Richard_Methot_(NOAA)_using_ADMB_10.1";
+<<<<<<< HEAD
+!!version_info+="SS-V3.30a-safe;_05/28/2014;_Stock_Synthesis_by_Richard_Methot_(NOAA)_using_ADMB_10.1";
+=======
+!!version_info+="SS-V3.30a-safe;_01/28/2014;_Stock_Synthesis_by_Richard_Methot_(NOAA)_using_ADMB_10.1";
+>>>>>>> ce12bdf092c54f528dd0ce7d3d1c6378b82af562
 !!version_info_short+="#V3.30a";
 
 //*********COUNTERS*************************
@@ -466,7 +470,7 @@ DATA_SECTION
   }
  END_CALCS
 
-//  SS_Label_2.1.5  Define fleets, surveys and areas
+//  SS_Label_Info_2.1.5  #Define fleets, surveys and areas
   init_int Nfleet // number of fleets (each one with a different selectivity function)
  !!echoinput<<Nfleet<<" Nfleet "<<endl;
 
@@ -2770,7 +2774,7 @@ DATA_SECTION
 
  LOCAL_CALCS
 //  SS_Label_Info_3.0 #Read forecast.ss
-// /*  SS_Label_Flow  read forecast.ss */
+// /*  SS_Label_Flow  #read forecast.ss */
 //  note that forecast.ss is read before control file in order to st up length of some time dimension arrays
   ad_comm::change_datafile_name("forecast.ss");
   cout<<" reading forecast file "<<endl;
@@ -5009,13 +5013,14 @@ DATA_SECTION
  END_CALCS
 
 !!//  SS_Label_Info_4.8 #Read catchability (Q) setup
-  init_matrix Q_setup(1,Nfleet,1,4)  // do power, env-var,  extra sd, devtype(<0=mirror, 0=float_nobiasadj 1=float_biasadj, 2=parm_nobiasadj, 3=rand, 4=randwalk); num/bio/F, err_type(0=lognormal, >=1 is T-dist-lognormal)
+  init_matrix Q_setup(1,Nfleet,1,5)  // do power, env-var,  extra sd, devtype(<0=mirror, 0=float_nobiasadj 1=float_biasadj, 2=parm_nobiasadj, 3=rand, 4=randwalk); num/bio/F, err_type(0=lognormal, >=1 is T-dist-lognormal)
                                         // change to matrix because devstd has real, not integer, values
+                                        //  new 5th element is for Q offset
   int Q_Npar2
   int Q_Npar
   int ask_detail
 
-  imatrix Q_setup_parms(1,Nfleet,1,4)
+  imatrix Q_setup_parms(1,Nfleet,1,5)
  LOCAL_CALCS
   echoinput<<" Q setup "<<endl<<Q_setup<<endl;
   echoinput<<"Note that the Q parameter has units of ln(q)"<<endl;
@@ -5029,13 +5034,11 @@ DATA_SECTION
     {
       Q_Npar++; Q_setup_parms(f,1)=Q_Npar;
       ParCount++; 
-      if(Q_setup(f,1)==1)
       {ParmLabel+="Q_power_"+NumLbl(f)+"_"+fleetname(f);}
-      else if(Q_setup(f,1)==2)
-      {ParmLabel+="Q_offset_"+NumLbl(f)+"_"+fleetname(f);}
       if(Q_setup(f,4)<2) {N_warn++; warning<<" must create base Q parm to use Q_power for fleet: "<<f<<endl;}
     }
   }
+  
   for (f=1;f<=Nfleet;f++)
   {
     Q_setup_parms(f,2)=0;
@@ -5055,6 +5058,19 @@ DATA_SECTION
       ParCount++; ParmLabel+="Q_extraSD_"+NumLbl(f)+"_"+fleetname(f);
     }
   }
+  
+  for (f=1;f<=Nfleet;f++)
+  {
+    Q_setup_parms(f,5)=0;
+   if(Q_setup(f,5)>0)
+    {
+      Q_Npar++; Q_setup_parms(f,5)=Q_Npar;
+      ParCount++; 
+      ParmLabel+="Q_offset_"+NumLbl(f)+"_"+fleetname(f);
+      if(Q_setup(f,4)<2) {N_warn++; warning<<" must create base Q parm to use Q_offset for fleet: "<<f<<endl;}
+    }
+  }
+
 //  SS_Label_Info_4.8.2 #Create Q parm and time-varying catchability as needed
   Q_Npar2=Q_Npar;
   for (f=1;f<=Nfleet;f++)
@@ -5132,7 +5148,7 @@ DATA_SECTION
         N_warn++;
         warning<<" Lognormal error selected for effort deviations for fleet "<<f<<"; normal error recommended"<<endl;
       }
-      if(Q_setup(f,1)==1)  //  density-dependence
+      if(Q_setup(f,1)>0)  //  density-dependence
       {
         N_warn++;
         warning<<" Do not use Density-dependence for effort deviations (fleet "<<f<<"); "<<endl;
@@ -10485,7 +10501,7 @@ FUNCTION void get_selectivity()
   {
 //*******************************************************************
  /*  SS_Label_Function_22 #get_selectivity */
-  //  SS_Label_Info_22.01  define local variables for selectivity
+  //  SS_Label_Info_22.01  #define local variables for selectivity
   int Ip_env;
   int y1;
   int fs;
@@ -11614,7 +11630,7 @@ FUNCTION void get_selectivity()
               break;
             }
 
-   //  SS_Label_Info_22.7.26 #age selectivity: exponential logistic
+  //  SS_Label_Info_22.7.26 #age selectivity: exponential logistic
             case 26:
             {
               peak = r_ages(0) + sp(2)*(r_ages(nages)-r_ages(0));
@@ -12887,7 +12903,6 @@ FUNCTION void evaluate_the_objective_function()
           else                                               //  Q from parameter
           {
             Svy_log_q(f) = Q_parm(Q_setup_parms(f,4));   // base Q
-                                                        // note that Q is in log space even if normal error structure is used
 
 //  trend or block effect on Q
 
@@ -19394,7 +19409,7 @@ FUNCTION void write_bigoutput()
   }
 
   SS2out <<endl<< "INDEX_1" << endl;
-  SS2out <<"Fleet Do_Power Power Do_Env_var Env_Link Do_ExtraVar Qtype  Q Num=0/Bio=1 Err_type"<<
+  SS2out <<"Fleet Do_Power Power Do_Offset Offset Do_Env_var Env_Link Do_ExtraVar Qtype  Q Num=0/Bio=1 Err_type"<<
     " N Npos r.m.s.e. mean_input_SE Input+VarAdj Input+VarAdj+extra VarAdj New_VarAdj pen_mean_Qdev rmse_Qdev"<<endl;
   for (f=1;f<=Nfleet;f++)
     {
@@ -19403,6 +19418,11 @@ FUNCTION void write_bigoutput()
       {SS2out<<Q_parm(Q_setup(f,1))<<" ";}
     else
       {SS2out<<" 1.0 ";}
+    SS2out<<" "<<Q_setup(f,5)<<" ";
+    if(Q_setup(f,5)>0)
+      {SS2out<<Q_parm(Q_setup(f,5))<<" ";}
+    else
+      {SS2out<<" 0.0 ";}
     SS2out<<Q_setup(f,2)<<" ";
     if(Q_setup(f,2)!=0)
       {SS2out<<Q_parm(Q_setup_parms(f,2));}
@@ -21491,12 +21511,13 @@ FUNCTION void Get_expected_values();
              {vbio=Hrate(f,t);}   //  F rate
            }
            Svy_selec_abund(f,j)=value(vbio);
-           if(Q_setup(f,1)==2) vbio+=Q_parm(Q_setup_parms(f,1));
-           if(Q_setup(f,1)==1) vbio=pow(vbio,1.0+Q_parm(Q_setup_parms(f,1)));
+           if(Q_setup(f,1)>0) vbio=pow(vbio,1.0+Q_parm(Q_setup_parms(f,1)));  //  raise vbio to a power
+           if(Q_setup(f,5)>0) vbio+=Q_parm(Q_setup_parms(f,1));  //  add a constant;
            if(Svy_errtype(f)>=0)  //  lognormal
            {Svy_est(f,j)=log(vbio+0.000001);}
            else
            {Svy_est(f,j)=vbio;}
+           //  Note:  Svy_est() is multiplied by Q in the likelihood section
          }
          break;
                 }  //  end survey index
