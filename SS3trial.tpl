@@ -5,11 +5,8 @@ DATA_SECTION
 !!//  SS_Label_Section_1.0 #DATA_SECTION
 
 !!//  SS_Label_Info_1.1.1  #Create string with version info
-<<<<<<< HEAD
-!!version_info+="SS-V3.30a-safe;_05/28/2014;_Stock_Synthesis_by_Richard_Methot_(NOAA)_using_ADMB_10.1";
-=======
-!!version_info+="SS-V3.30a-safe;_01/28/2014;_Stock_Synthesis_by_Richard_Methot_(NOAA)_using_ADMB_10.1";
->>>>>>> ce12bdf092c54f528dd0ce7d3d1c6378b82af562
+SS-V3.30a-safe;_05/28/2014;_Stock_Synthesis_by_Richard_Methot_(NOAA)_using_ADMB_10.1";
+
 !!version_info_short+="#V3.30a";
 
 //*********COUNTERS*************************
