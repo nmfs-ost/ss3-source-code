@@ -5010,6 +5010,7 @@ DATA_SECTION
  END_CALCS
 
 !!//  SS_Label_Info_4.8 #Read catchability (Q) setup
+!!//  revise approach for Q_offset so that is now a 5th element of Q_setup, rather than a mutually exclusive code in the 1st element (density-dependence)
   init_matrix Q_setup(1,Nfleet,1,5)  // do power, env-var,  extra sd, devtype(<0=mirror, 0=float_nobiasadj 1=float_biasadj, 2=parm_nobiasadj, 3=rand, 4=randwalk); num/bio/F, err_type(0=lognormal, >=1 is T-dist-lognormal)
                                         // change to matrix because devstd has real, not integer, values
                                         //  new 5th element is for Q offset
@@ -21508,6 +21509,7 @@ FUNCTION void Get_expected_values();
              {vbio=Hrate(f,t);}   //  F rate
            }
            Svy_selec_abund(f,j)=value(vbio);
+// SS_Label_Info_46.1.1 #note order of operations,  vbio raised to a power, then constant is added, then later multiplied by Q.  Needs work   
            if(Q_setup(f,1)>0) vbio=pow(vbio,1.0+Q_parm(Q_setup_parms(f,1)));  //  raise vbio to a power
            if(Q_setup(f,5)>0) vbio+=Q_parm(Q_setup_parms(f,1));  //  add a constant;
            if(Svy_errtype(f)>=0)  //  lognormal
