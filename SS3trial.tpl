@@ -4038,7 +4038,7 @@ DATA_SECTION
   int customMGenvsetup  //  0=read one setup (if necessary) and apply to all; 1=read each
   ivector MGparm_env(1,N_MGparm)   // contains the parameter number of the envlink for a
   ivector MGparm_envuse(1,N_MGparm)   // contains the environment data number
-  ivector MGparm_envtype(1,N_MGparm)  // 1=multiplicative; 2= additive
+  ivector MGparm_envtype(1,N_MGparm)  // 1=multiplicative; 2= additive; 3=logistic
   ivector mgp_type(1,N_MGparm)  //  contains category to parameter (1=natmort; 2=growth; 3=wtlen & fec; 4=recr_dist; 5=movement)
 
  LOCAL_CALCS
@@ -9277,12 +9277,29 @@ FUNCTION void get_MGsetup()
         }
 
   //  SS_Label_Info_14.4.1.2 #Adjust for env linkage
+  //  June 6 begin to add 2 parameter env linkages
+  //  P1 will be the current "slope" and P2 will be a new offset
+  //  also add a logistic function
         if(MGparm_env(f)>0)
         {
-          if(MGparm_envtype(f)==1)
-          {mgp_adj(f)*=mfexp(MGparm(MGparm_env(f))*env_data(yz,MGparm_envuse(f)));}
-          else
-          {mgp_adj(f)+=MGparm(MGparm_env(f))*env_data(yz,MGparm_envuse(f));}
+          switch(MGparm_envtype(f))
+          {
+            case 1:  //  exponential MGparm env link
+              {
+                mgp_adj(f)*=mfexp(MGparm(MGparm_env(f))*(env_data(yz,MGparm_envuse(f))-MGparm(MGparm_env(f))));
+                break;
+              }
+            case 2:  //  linear MGparm env link
+              {
+                mgp_adj(f)+=MGparm(MGparm_env(f))*(env_data(yz,MGparm_envuse(f))-MGparm(MGparm_env(f)));
+                break;
+              }
+            case 3:  //  logistic MGparm env link
+              {
+                mgp_adj(f)*=2.00000/(1.00000 + mfexp(-MGparm(MGparm_env(f))*(env_data(yz,MGparm_envuse(f))-MGparm(MGparm_env(f)))));
+                break;
+              }
+          }
         }
 
   //  SS_Label_Info_14.4.1.3 #Adjust for Annual deviations
