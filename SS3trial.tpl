@@ -329,8 +329,11 @@ DATA_SECTION
  END_CALCS
 
 !!//  SS_Label_Info_2.1.2 #Read model time dimensions
-  init_int read_seas_mo    //  1=read integer season; 2=read real months
-
+// REVERT
+//  init_int read_seas_mo    //  1=read integer season; 2=read real months
+  int read_seas_mo    //  1=read integer season; 2=read real months
+  !! read_seas_mo=1;
+  
   init_int styr  //start year of the model
  !!echoinput<<styr<<" start year "<<endl;
 
@@ -343,8 +346,11 @@ DATA_SECTION
   init_vector seasdur(1,nseas) // season duration; enter in units of months, fractions OK; will be rescaled to sum to 1.0 if total is greater than 11.9
  !!echoinput<<seasdur<<" months/seas (fractions OK) "<<endl;
 
-  init_int N_subseas  //  number of subseasons within season; must be even number to get one to be mid_season
- !!echoinput<<N_subseas<<" Number of subseasons (even number only; min 2) for calculation of ALK "<<endl;
+// REVERT
+//  init_int N_subseas  //  number of subseasons within season; must be even number to get one to be mid_season
+// !!echoinput<<N_subseas<<" Number of subseasons (even number only; min 2) for calculation of ALK "<<endl;
+  int N_subseas  //  number of subseasons within season; must be even number to get one to be mid_season
+  !! N_subseas=2;
 
  !! mid_subseas=N_subseas/2 + 1;
 
@@ -428,16 +434,98 @@ DATA_SECTION
    }
  END_CALCS
 
+// REVERT  added here from 3.24
+  init_int Nfleet1 // number of fleets (each one with a different selectivity function)
+ !!echoinput<<Nfleet1<<" Nfleet "<<endl;
+
+  init_int Nsurvey
+  int Nfleet
+  !!echoinput<<Nsurvey<<" Nsurvey "<<endl;
+  !! Nfleet=Nfleet1+Nsurvey;
+//  end addition
+
   init_int pop   // number of areas (populations)
   !!echoinput<<pop<<" N_areas "<<endl;
 
+// REVERT
 //  SS_Label_Info_2.1.4  #define genders and max age
+//  init_int    gender  //  number of sexes in the model
+//  !!echoinput<<gender<<" N genders "<<endl;
+
+//  init_int    nages // Number of ages
+//  !!echoinput<<nages<<" maxage; note that first age is always age 0 "<<endl;
+
+
+//  SS_Label_Info_2.1.5  #Define fleets, surveys and areas
+// REVERT
+//  init_int Nfleet // number of fleets (each one with a different selectivity function)
+// !!echoinput<<Nfleet<<" Nfleet "<<endl;
+
+  imatrix pfleetname(1,Nfleet,1,2)
+  init_adstring fleetnameread;
+
+ LOCAL_CALCS
+  if(pop>1 && F_reporting==3)
+  {N_warn++; warning<<" F-reporting=3 (sum of full Fs) not advised in multiple area models "<<endl;}
+  for (f=1;f<=Nfleet;f++) {pfleetname(f,1)=1; pfleetname(f,2)=1;}    /* SS_loop: set pointer to fleetnames to default in case not enough names are read */
+  f=1;
+  for (i=1;i<=strlen(fleetnameread);i++)  /* SS_loop: read string of fllenames by character */
+  if(adstring(fleetnameread(i))==adstring("%"))
+   {pfleetname(f,2)=i-1; f+=1;  pfleetname(f,1)=i+1;}
+  pfleetname(Nfleet,2)=strlen(fleetnameread);
+  for (f=1;f<=Nfleet;f++)  /* SS_loop: move fleetnames into array of strings */
+  {
+    fleetname+=fleetnameread(pfleetname(f,1),pfleetname(f,2))+CRLF(1);
+  }
+  echoinput<<fleetname<<endl;
+ END_CALCS
+
+//  INSERT from 3.24
+  ivector fleet_type(1,Nfleet)   // 1=fleet with catch; 2=discard only fleet with F; 3=survey(ignore catch); 4=ignore completely
+  ivector need_catch_mult(1,Nfleet)  // 0=no, 1=need catch_multiplier parameter
+
+  init_vector surveytime(1,Nfleet)   // fraction of season (not year) in which survey occurs
+  !!echoinput<<surveytime<<" surveytime(fishery+surveys) "<<endl;
+
+  init_ivector fleet_area(1,Nfleet)    // areas in which each fleet/survey operates
+  !!echoinput<<fleet_area<<" fleet_area(fishery+surveys) "<<endl;
+
+  init_vector catchunits1(1,Nfleet1)  // 1=biomass; 2=numbers
+  !!echoinput<<catchunits1<<" catchunits "<<endl;
+
+  init_vector catch_se_rd1(1,Nfleet1)  // units are se of log(catch); use -1 to ignore input catch values for discard only fleets
+  !!echoinput<<catch_se_rd1<<" catch_se "<<endl;
+  vector catchunits(1,Nfleet)
+  vector catch_se_rd(1,Nfleet)
+ LOCAL_CALCS
+  for (f=1;f<=Nfleet;f++)
+  {
+    if(f<=Nfleet1)
+      {
+        catchunits(f)=catchunits1(f);
+        catch_se_rd(f)=catch_se_rd1(f);
+        fleet_type(f)=1;
+        if(catch_se_rd(f)<0) fleet_type(f)=2; // bycatch only
+        need_catch_mult(f)=0;
+      }
+      else
+      {
+        catchunits(f)=2;
+        catch_se_rd(f)=.1;   
+        fleet_type(f)=3;  
+        need_catch_mult(f)=0;
+      }
+  }
+ END_CALCS
+
+  matrix catch_se(styr-1,TimeMax,1,Nfleet);
+
+//  ProgLabel_2.1.5  define genders and max age
   init_int    gender  //  number of sexes in the model
   !!echoinput<<gender<<" N genders "<<endl;
 
   init_int    nages // Number of ages
-  !!echoinput<<nages<<" maxage; note that first age is always age 0 "<<endl;
-
+  !!echoinput<<nages<<" nages is maxage "<<endl;
   ivector     age_vector(0,nages)
   vector      r_ages(0,nages)
   vector frac_ages(0,nages)
@@ -465,64 +553,61 @@ DATA_SECTION
     F_reporting_ages(1)=nages/2;
     F_reporting_ages(2)=F_reporting_ages(1)+1;
   }
- END_CALCS
 
-//  SS_Label_Info_2.1.5  #Define fleets, surveys and areas
-  init_int Nfleet // number of fleets (each one with a different selectivity function)
- !!echoinput<<Nfleet<<" Nfleet "<<endl;
-
-  imatrix pfleetname(1,Nfleet,1,2)
-  init_adstring fleetnameread;
-
- LOCAL_CALCS
-  if(pop>1 && F_reporting==3)
-  {N_warn++; warning<<" F-reporting=3 (sum of full Fs) not advised in multiple area models "<<endl;}
-  for (f=1;f<=Nfleet;f++) {pfleetname(f,1)=1; pfleetname(f,2)=1;}    /* SS_loop: set pointer to fleetnames to default in case not enough names are read */
-  f=1;
-  for (i=1;i<=strlen(fleetnameread);i++)  /* SS_loop: read string of fllenames by character */
-  if(adstring(fleetnameread(i))==adstring("%"))
-   {pfleetname(f,2)=i-1; f+=1;  pfleetname(f,1)=i+1;}
-  pfleetname(Nfleet,2)=strlen(fleetnameread);
-  for (f=1;f<=Nfleet;f++)  /* SS_loop: move fleetnames into array of strings */
+  for(f=1;f<=Nfleet;f++)
   {
-    fleetname+=fleetnameread(pfleetname(f,1),pfleetname(f,2))+CRLF(1);
-  }
-  echoinput<<fleetname<<endl;
- END_CALCS
-
-  init_matrix fleet_setup(1,Nfleet,1,7)  // type, timing, area, units, equ_catch_se, catch_se, need_catch_mult
-  
-  ivector fleet_type(1,Nfleet)   // 1=fleet with catch; 2=discard only fleet with F; 3=survey(ignore catch); 4=ignore completely
-  vector surveytime(1,Nfleet)   // fraction of season (not year) in which survey occurs
-  ivector fleet_area(1,Nfleet)    // areas in which each fleet/survey operates
-  ivector catchunits(1,Nfleet)  // 1=biomass; 2=numbers
-  ivector need_catch_mult(1,Nfleet)  // 0=no, 1=need catch_multiplier parameter
-  matrix catch_se(styr-1,TimeMax,1,Nfleet);
-
- LOCAL_CALCS
-  for (f=1;f<=Nfleet;f++)  /* SS_loop: move fleet setup info into specific vectors */
-  {
-    fleet_type(f) = int(fleet_setup(f,1));
-    surveytime(f) = fleet_setup(f,2);
-    fleet_area(f) = int(fleet_setup(f,3));
-    catchunits(f) = int(fleet_setup(f,4));
-    need_catch_mult(f) = int(fleet_setup(f,7));
     if(fleet_type(f)==1)
       {
-        catch_se(styr-1,f)=fleet_setup(f,5);
-        for (t=styr;t<=TimeMax;t++) {catch_se(t,f)=fleet_setup(f,6);} /* SS_loop:  set catch se for fishing fleets*/
+        catch_se(styr-1,f)=catch_se_rd(f);
+        for (t=styr;t<=TimeMax;t++) {catch_se(t,f)=catch_se_rd(f);} // set catch se for fishing fleets
       }
       else
       {
-        for (t=styr-1;t<=TimeMax;t++) {catch_se(t,f)=0.1;} /* SS_loop:  set a value for catch se for surveys (not used)*/
+        for (t=styr-1;t<=TimeMax;t++) {catch_se(t,f)=0.1;} // SS_loop:  set a value for catch se for surveys (not used)
       }
-    }
-
-  echoinput<<"rows are fleets; columns are: fleet_type, timing, area, units, equ_catch_se, catch_se, need_catch_mult"<<endl;
-  for (f=1;f<=Nfleet;f++) /* SS_loop: echo fleet setup */
-  {
-    echoinput<<fleet_setup(f)<<" # Fleet:_"<<f<<"_ "<<fleetname(f)<<endl;
   }
+
+ END_CALCS
+//  end insert from 3.24
+
+
+// REVERT
+
+//  init_matrix fleet_setup(1,Nfleet,1,7)  // type, timing, area, units, equ_catch_se, catch_se, need_catch_mult
+  
+//  ivector fleet_type(1,Nfleet)   // 1=fleet with catch; 2=discard only fleet with F; 3=survey(ignore catch); 4=ignore completely
+//  vector surveytime(1,Nfleet)   // fraction of season (not year) in which survey occurs
+//  ivector fleet_area(1,Nfleet)    // areas in which each fleet/survey operates
+//  ivector catchunits(1,Nfleet)  // 1=biomass; 2=numbers
+//  ivector need_catch_mult(1,Nfleet)  // 0=no, 1=need catch_multiplier parameter
+//  matrix catch_se(styr-1,TimeMax,1,Nfleet);
+
+// LOCAL_CALCS
+//  for (f=1;f<=Nfleet;f++)  // SS_loop: move fleet setup info into specific vectors
+//  {
+//    fleet_type(f) = int(fleet_setup(f,1));
+//    surveytime(f) = fleet_setup(f,2);
+//    fleet_area(f) = int(fleet_setup(f,3));
+//    catchunits(f) = int(fleet_setup(f,4));
+//    need_catch_mult(f) = int(fleet_setup(f,7));
+//    if(fleet_type(f)==1)
+//      {
+//        catch_se(styr-1,f)=fleet_setup(f,5);
+//        for (t=styr;t<=TimeMax;t++) {catch_se(t,f)=fleet_setup(f,6);} // SS_loop:  set catch se for fishing fleets
+//      }
+//      else
+//      {
+//        for (t=styr-1;t<=TimeMax;t++) {catch_se(t,f)=0.1;} // SS_loop:  set a value for catch se for surveys (not used)
+//      }
+//    }
+
+//  echoinput<<"rows are fleets; columns are: fleet_type, timing, area, units, equ_catch_se, catch_se, need_catch_mult"<<endl;
+//  for (f=1;f<=Nfleet;f++) // SS_loop: echo fleet setup 
+//  {
+//    echoinput<<fleet_setup(f)<<" # Fleet:_"<<f<<"_ "<<fleetname(f)<<endl;
+//  }
+
+ LOCAL_CALCS  
   ALK_time=(endyr-styr+20)*nseas*N_subseas;  //  sets maximum size for data array
  END_CALCS
 !!//  SS_Label_Info_2.1.6  #Indexes for data timing.  "have_data", "need_ALK" and "data_time" hold pointers for data occurrence, timing, and ALK need
@@ -540,11 +625,25 @@ DATA_SECTION
 //  a warning will be given if subsequent observations have a different month.fraction
 //  an observation's real_month is used to assign it to a season and a subseas within that seas, and it is used to calculate the data_timing within the season for mortality 
 
+//  INSERT from 3.24
+//  ProgLabel_2.2  Read CATCH amount by fleet
+  init_vector obs_equ_catch1(1,Nfleet1)    //  initial, equilibrium catch.  Annual.
+  !!echoinput<<obs_equ_catch1<<" obs_equ_catch "<<endl;
+// end INSERT
+
   matrix obs_equ_catch(1,nseas,1,Nfleet)    //  initial, equilibrium catch.  now seasonal
  LOCAL_CALCS 
    have_data.initialize();
    data_time.initialize();
    obs_equ_catch.initialize();
+   
+//  INSERT for 3.24
+   for(f=1;f<=Nfleet1;f++)
+   {
+    obs_equ_catch(1,f)=obs_equ_catch1(f);
+   }
+//  end INSERT
+   
    for(y=1;y<=ALK_time;y++)
    for(f=1;f<=Nfleet;f++)
    {
@@ -557,7 +656,7 @@ DATA_SECTION
   init_int N_ReadCatch;
   !!echoinput<<N_ReadCatch<<" N_ReadCatch "<<endl;
 
-  init_matrix catch_bioT(1,N_ReadCatch,1,Nfleet+2)
+  init_matrix catch_bioT(1,N_ReadCatch,1,Nfleet1+2)
   !!echoinput<<" catch as read (NEW:  yr,seas first; then read all fleets and surveys)"<<endl<<catch_bioT<<endl;
 
   matrix catch_ret_obs(1,Nfleet,styr-nseas,TimeMax+nseas)
@@ -570,12 +669,13 @@ DATA_SECTION
 
  LOCAL_CALCS
     catch_ret_obs.initialize();
-//    for (s=1;s<=nseas;s++)
-//    for (f=1;f<=Nfleet;f++)
-//      {catch_ret_obs(f,styr-nseas-1+s) = obs_equ_catch(s,f);}
   for (k=1;k<=N_ReadCatch;k++) /* SS_loop:  process lines of catch input */
   {
-    g=catch_bioT(k,1); s=catch_bioT(k,2);
+    
+//  REVERT
+//    g=catch_bioT(k,1); s=catch_bioT(k,2);
+//  for 3.24
+    g=catch_bioT(k,Nfleet1+1); s=catch_bioT(k,Nfleet1+2);
     if(g==-999) {y=styr-1;}  // designates initial equilibrium
       else {y=g;}
     if((g==-999) || (y>=styr && y<=endyr))
@@ -585,10 +685,14 @@ DATA_SECTION
       if(s>0)
       {
         t=styr+(y-styr)*nseas+s-1;
-        for (f=1;f<=Nfleet;f++) catch_ret_obs(f,t) += catch_bioT(k,f+2);
+//  REVERT
+//        for (f=1;f<=Nfleet1;f++) catch_ret_obs(f,t) += catch_bioT(k,f+2);
+//  for 3.24
+        for (f=1;f<=Nfleet1;f++) catch_ret_obs(f,t) += catch_bioT(k,f);
+
         if(g==-999) 
           {
-            for (f=1;f<=Nfleet;f++) {obs_equ_catch(s,f)=catch_ret_obs(f,t);}
+            for (f=1;f<=Nfleet1;f++) {obs_equ_catch(s,f)=catch_ret_obs(f,t);}
           }
       }
       else  // distribute catch equally across seasons
@@ -596,10 +700,14 @@ DATA_SECTION
         for (s=1;s<=nseas;s++)
         {
           t=styr+(y-styr)*nseas+s-1;
-          for (f=1;f<=Nfleet;f++) catch_ret_obs(f,t) += catch_bioT(k,f+2)/nseas;
+//  REVERT
+//          for (f=1;f<=Nfleet1;f++) catch_ret_obs(f,t) += catch_bioT(k,f+2)/nseas;
+//  for 3.24
+          for (f=1;f<=Nfleet1;f++) catch_ret_obs(f,t) += catch_bioT(k,f)/nseas;
+
         if(g==-999) 
           {
-            for (f=1;f<=Nfleet;f++) {obs_equ_catch(s,f)=catch_ret_obs(f,t);}
+            for (f=1;f<=Nfleet1;f++) {obs_equ_catch(s,f)=catch_ret_obs(f,t);}
           }
         }
       }
@@ -1164,6 +1272,15 @@ DATA_SECTION
   init_vector len_bins_rd(1,nlength)
   !!if(nlength>0) echoinput<<len_bins_rd<<" pop length bins as read "<<endl;
 
+//  INSERT from 3.24
+  init_number min_tail  //min_proportion_for_compressing_tails_of_observed_composition
+  !!echoinput<<min_tail<<" min tail for comps "<<endl;
+  init_number min_comp  //  small value added to each composition bins
+  !!echoinput<<min_comp<<" value added to comps "<<endl;
+  init_int CombGender_l  //  combine genders through this length bin
+  !!echoinput<<CombGender_l<<" CombGender_lengths "<<endl;
+//  end INSERT
+
 !!//  SS_Label_Info_2.7 #Start length data section
 !!//  SS_Label_Info_2.7.1 #Read and process data length bins
   init_int nlen_bin //number of length bins in length comp data
@@ -1172,7 +1289,9 @@ DATA_SECTION
   !!echoinput<<nlen_bin<<" nlen_bin_for_data "<<endl;
   !!echoinput<<" len_bins_dat "<<endl<<len_bins_dat<<endl;
 
-  init_matrix process_comp_L(1,Nfleet,1,4)  // column 1 is min_tail; 2 is add_comp; 3=combgender; 4 is maxbin
+//  REVERT
+//  init_matrix process_comp_L(1,Nfleet,1,4)  // column 1 is min_tail; 2 is add_comp; 3=combgender; 4 is maxbin
+//  end REVERT
 
   vector min_tail_L(1,Nfleet)  //min_proportion_for_compressing_tails_of_observed_composition
   vector min_comp_L(1,Nfleet)  //  small value added to each composition bins
@@ -1181,10 +1300,18 @@ DATA_SECTION
  LOCAL_CALCS
   for (f=1;f<=Nfleet;f++)
   {
-    min_tail_L(f) = process_comp_L(f,1);
-    min_comp_L(f) = process_comp_L(f,2);
-    CombGender_L(f) = int(process_comp_L(f,3));
-    AccumBin_L(f) = int(process_comp_L(f,4));
+
+//  REVERT
+//    min_tail_L(f) = process_comp_L(f,1);
+//    min_comp_L(f) = process_comp_L(f,2);
+//    CombGender_L(f) = int(process_comp_L(f,3));
+//    AccumBin_L(f) = int(process_comp_L(f,4));
+//  INSERT for 3.24
+    min_tail_L(f) = min_tail;
+    min_comp_L(f) = min_comp;
+    CombGender_L(f) = CombGender_l;
+    AccumBin_L(f) = 0;
+   
   }
 
   echoinput<<min_tail_L<<" min tail for comps "<<endl;
@@ -1712,10 +1839,19 @@ DATA_SECTION
   vector age_bins_mean(1,n_abins2)  //  holds mean age for each data age bin
 //  number age;
 
+//  INSERT for 3.24
+  init_int nobsa_rd
+  int Nobs_a_tot
+  !!echoinput << nobsa_rd<< " N ageobs"  << endl;
+//  end INSERT
+
   init_int Lbin_method  //#_Lbin_method: 1=poplenbins; 2=datalenbins; 3=lengths
   !!echoinput << Lbin_method<< " Lbin method for defined size ranges "  << endl;
 
-  init_matrix process_comp_A(1,Nfleet,1,4)  // column 1 is min_tail; 2 is add_comp; 3=combgender; 4 is maxbin
+//  REVERT
+//  init_matrix process_comp_A(1,Nfleet,1,4)  // column 1 is min_tail; 2 is add_comp; 3=combgender; 4 is maxbin
+//  insert for 3.24
+  init_int CombGender_a  //  combine genders through this age bin
   
   vector min_tail_A(1,Nfleet)  //min_proportion_for_compressing_tails_of_observed_composition
   vector min_comp_A(1,Nfleet)  //  small value added to each composition bins
@@ -1725,10 +1861,15 @@ DATA_SECTION
  LOCAL_CALCS
   for (f=1;f<=Nfleet;f++)
   {
-    min_tail_A(f) = process_comp_A(f,1);
-    min_comp_A(f) = process_comp_A(f,2);
-    CombGender_A(f) = int(process_comp_A(f,3));
-    AccumBin_A(f) = int(process_comp_A(f,4));
+// REVERT
+//    min_tail_A(f) = process_comp_A(f,1);
+//    min_comp_A(f) = process_comp_A(f,2);
+//    CombGender_A(f) = int(process_comp_A(f,3));
+//    AccumBin_A(f) = int(process_comp_A(f,4));
+    min_tail_A(f) = min_tail;
+    min_comp_A(f) = min_comp;
+    CombGender_A(f) = CombGender_a;
+    AccumBin_A(f) = 0;
   }
 
   echoinput<<min_tail_A<<" min tail for age comps "<<endl;
@@ -1749,9 +1890,10 @@ DATA_SECTION
   }
  END_CALCS
 !!//  SS_Label_Info_2.8.2 #Read Age data
-  init_int nobsa_rd
-  int Nobs_a_tot
-  !!echoinput << nobsa_rd<< " N ageobs"  << endl;
+//  REVERT
+//  init_int nobsa_rd
+//  int Nobs_a_tot
+//  !!echoinput << nobsa_rd<< " N ageobs"  << endl;
 
   init_matrix Age_Data(1,nobsa_rd,1,9+n_abins2)
    !!if(nobsa_rd>0) echoinput<<" first agecomp obs "<<endl<<Age_Data(1)<<endl<<" last obs"<<endl<<Age_Data(nobsa_rd)<<endl;;
@@ -2975,7 +3117,8 @@ DATA_SECTION
   {z=0;}
  END_CALCS
 
-  init_matrix Fcast_RelF_Input(1,z,1,Nfleet)
+//  REVERT  in forecast.ss read, Nfleet has been changed to Nfleet1 for compatibility with 3.24
+  init_matrix Fcast_RelF_Input(1,z,1,Nfleet1)
 
  LOCAL_CALCS
   if(Fcast_RelF_Basis==2)
@@ -2994,9 +3137,9 @@ DATA_SECTION
   }
  END_CALCS
 
-  init_vector Fcast_MaxFleetCatch(1,k*Nfleet)
+  init_vector Fcast_MaxFleetCatch(1,k*Nfleet1)
   init_vector Max_Fcast_Catch(1,k*pop)
-  init_ivector Allocation_Fleet_Assignments(1,k*Nfleet)
+  init_ivector Allocation_Fleet_Assignments(1,k*Nfleet1)
 
  LOCAL_CALCS
   Fcast_Do_Fleet_Cap=0;
@@ -3004,7 +3147,7 @@ DATA_SECTION
   Fcast_Catch_Allocation_Groups=0;
   if(k>0)
   {
-    for (f=1;f<=Nfleet;f++)
+    for (f=1;f<=Nfleet1;f++)
     {if(Fcast_MaxFleetCatch(f)>0.0) Fcast_Do_Fleet_Cap=1;}
     for (p=1;p<=pop;p++)
     {if(Max_Fcast_Catch(p)>0.0) Fcast_Do_Area_Cap=1;}
@@ -3051,7 +3194,7 @@ DATA_SECTION
     {j=4;}
  END_CALCS
 
-  3darray Fcast_InputCatch(k1,y,1,Nfleet,1,2)  //  values and basis to be used
+  3darray Fcast_InputCatch(k1,y,1,Nfleet1,1,2)  //  values and basis to be used
   init_matrix Fcast_InputCatch_rd(1,N_Fcast_Input_Catches,1,j)  //  values to be read:  yr, seas, fleet, value, (basis) 
 
  LOCAL_CALCS
@@ -3059,14 +3202,14 @@ DATA_SECTION
   if(Do_Forecast>0)
   {
     for (t=k1;t<=y;t++)
-    for (f=1;f<=Nfleet;f++)
+    for (f=1;f<=Nfleet1;f++)
     {Fcast_InputCatch(t,f,1)=-1;}
     if(N_Fcast_Input_Catches>0)
     {
       for (i=1;i<=N_Fcast_Input_Catches;i++)
       {
         y=Fcast_InputCatch_rd(i,1); s=Fcast_InputCatch_rd(i,2); f=Fcast_InputCatch_rd(i,3);
-        if(y>endyr && y<=YrMax && f<=Nfleet)
+        if(y>endyr && y<=YrMax && f<=Nfleet1)
         {
           t=styr+(y-styr)*nseas +s-1;
           Fcast_InputCatch(t,f,1)=Fcast_InputCatch_rd(i,4);
@@ -3270,9 +3413,32 @@ DATA_SECTION
 
 !!//  SS_Label_Info_4.2.1.1 #Define indexing vectors to keep track of characteristics of each morph
 
+//  INSERT from 3.24
+ LOCAL_CALCS
+  recr_dist_pattern.initialize();
+  if(N_GP*nseas*pop==1) {j=0;} else {j=2;}
+ END_CALCS
+  init_ivector recr_dist_input(1,j)
+  int N_settle
+  int recr_dist_inx
+ LOCAL_CALCS
+    if(j>0)
+      {
+        N_settle=recr_dist_input(1);
+        recr_dist_inx=recr_dist_input(2);
+      }
+      else
+        {
+          N_settle=1;
+          recr_dist_inx=0;
+        }
+ END_CALCS
+
+
 !!//  SS_Label_Info_4.2.2  #Define distribution of recruitment(settlement) among growth patterns, seasons, areas
-  init_int N_settle;
-  init_int recr_dist_inx;
+//  REVERT
+//  init_int N_settle;
+//  init_int recr_dist_inx;
   int birthseas;
 
  LOCAL_CALCS
@@ -3319,7 +3485,28 @@ DATA_SECTION
   TG_use_morph.initialize();
  END_CALCS
 
-  init_matrix settlement_pattern_rd(1,N_settle,1,3)    //  for each settlement event:  GPat, Month, area
+//  INSERT for 3.24
+  !!if(N_settle==1) {j=0;} else {j=N_settle;}
+  init_matrix settlement_pattern_rd1(1,j,1,3)    //  for each settlement event:  GPat, Month, area
+  matrix settlement_pattern_rd(1,N_settle,1,3);
+ LOCAL_CALCS
+   if(j>0)
+    {
+      for(f=1;f<=j;f++)
+      settlement_pattern_rd(f)=settlement_pattern_rd1(f);
+    }
+    else
+    {
+      for(f=1;f<=N_settle;f++)
+      {settlement_pattern_rd(f).fill("{1,1,1}");}
+    }
+      
+ END_CALCS
+//  end insert 
+  
+//  REVERT
+//  init_matrix settlement_pattern_rd(1,N_settle,1,3)    //  for each settlement event:  GPat, Month, area
+
  LOCAL_CALCS
     echoinput<<" settlement pattern as read "<<endl<<"GPat  Month  Area"<<endl<<settlement_pattern_rd<<endl;
       for (settle=1;settle<=N_settle;settle++)
@@ -3409,7 +3596,7 @@ DATA_SECTION
 
    echoinput<<"g_start "<<g_Start<<endl;
    echoinput<<"g_finder "<<g_finder<<endl;
-   
+   echoinput<<" g  s  subseas  ALK_idx curr_age&calen_age"<<endl;
    for (g=1;g<=gmorph;g++)
    for (s=1;s<=nseas;s++)
    for (subseas=1;subseas<=N_subseas;subseas++)
@@ -3424,8 +3611,10 @@ DATA_SECTION
        {curr_age(g,ALK_idx,a)=0.0; a++;}
      }
      a=0;
+     echoinput<<g<<" "<<s<<" "<<subseas<<" "<<ALK_idx<<" curr_age: "<<curr_age(g,ALK_idx)<<endl;
+     echoinput<<g<<" "<<s<<" "<<subseas<<" "<<ALK_idx<<" cal_age : "<<calen_age(g,ALK_idx)<<endl;
    }
-
+   echoinput<<"done with ALK_idx"<<endl;
     if(N_TG>0)
     {
       for (TG=1;TG<=N_TG;TG++)
@@ -3984,7 +4173,7 @@ DATA_SECTION
 
   if(Use_AgeKeyZero>0)
   {
-    AgeKeyParm=N_MGparm+1;
+    AgeKeyParm=ParCount+1;
     for (k=1;k<=7;k++)
     {
        ParCount++; ParmLabel+="AgeKeyParm"+NumLbl(k);
@@ -4008,6 +4197,45 @@ DATA_SECTION
 
   init_matrix MGparm_1(1,N_MGparm,1,14)   // matrix with natmort and growth parms controls
   ivector MGparm_offset(1,N_MGparm)
+
+//  REVERT
+// insert for 3.24 compatibility:  reorder the input MGparms
+  matrix MGparm_2(1,N_MGparm,1,14)
+ LOCAL_CALCS
+  MGparm_2=MGparm_1;
+  j=0;  //  pointer to matrix as read
+  for(gg=1;gg<=gender;gg++)
+  for(gp=1;gp<=N_GP;gp++)
+  for(f=1;f<=N_natMparms+N_growparms;f++)
+  {
+    j++;
+     echoinput<<f<<" to: "<<MGparm_point(gg,gp)+f-1<<" from: "<<j<<endl;
+    MGparm_2(MGparm_point(gg,gp)+f-1)=MGparm_1(j);
+  }
+  //  j now pointing to wtlen for females
+  gg=1;
+  for(gp=1;gp<=N_GP;gp++)
+  {
+    for(f=1;f<=6;f++)
+    {echoinput<<f<<" to: "<<MGparm_point(gg,gp)+N_natMparms+N_growparms+f-1<<" from: "<<j+f<<endl;
+      MGparm_2(MGparm_point(gg,gp)+N_natMparms+N_growparms+f-1)=MGparm_1(j+f);}
+  }
+  if(gender==2)
+    {
+      for(gp=1;gp<=N_GP;gp++)
+      {
+        for(f=1;f<=2;f++)
+        echoinput<<f<<" to: "<<MGparm_point(2,gp)+N_natMparms+N_growparms+f-1<<" from: "<<j+6+f<<endl;
+        MGparm_2(MGparm_point(2,gp)+N_natMparms+N_growparms+f-1)=MGparm_1(j+6+f);
+      }
+      
+    }
+  
+  echoinput<<MGparm_2<<endl;
+  MGparm_1=MGparm_2;
+
+ END_CALCS
+
 
  LOCAL_CALCS
   echoinput<<" Biology parameter setup"<<endl;
@@ -4912,7 +5140,10 @@ DATA_SECTION
   for (f=1;f<=Nfleet;f++)
   {
     init_F_loc(s,f)=-1;
-    if(fleet_type(f)<=2 && obs_equ_catch(s,f)!=0.0)
+//  REVERT
+//    if(fleet_type(f)<=2 && obs_equ_catch(s,f)!=0.0)
+//  INSERT  back to 3.24 format
+    if(fleet_type(f)<=2)
     {
       N_init_F++;
       init_F_loc(s,f)=N_init_F;
@@ -5011,9 +5242,15 @@ DATA_SECTION
 
 !!//  SS_Label_Info_4.8 #Read catchability (Q) setup
 !!//  revise approach for Q_offset so that is now a 5th element of Q_setup, rather than a mutually exclusive code in the 1st element (density-dependence)
-  init_matrix Q_setup(1,Nfleet,1,5)  // do power, env-var,  extra sd, devtype(<0=mirror, 0=float_nobiasadj 1=float_biasadj, 2=parm_nobiasadj, 3=rand, 4=randwalk); num/bio/F, err_type(0=lognormal, >=1 is T-dist-lognormal)
+
+//  REVERT
+//  init_matrix Q_setup(1,Nfleet,1,5)  // do power, env-var,  extra sd, devtype(<0=mirror, 0=float_nobiasadj 1=float_biasadj, 2=parm_nobiasadj, 3=rand, 4=randwalk); num/bio/F, err_type(0=lognormal, >=1 is T-dist-lognormal)
                                         // change to matrix because devstd has real, not integer, values
                                         //  new 5th element is for Q offset
+//  INSERT  back to 3.24 format for now
+  init_matrix Q_setup(1,Nfleet,1,4)  // do power, env-var,  extra sd, devtype(<0=mirror, 0=float_nobiasadj 1=float_biasadj, 2=parm_nobiasadj, 3=rand, 4=randwalk); num/bio/F, err_type(0=lognormal, >=1 is T-dist-lognormal)
+
+
   int Q_Npar2
   int Q_Npar
   int ask_detail
@@ -5060,13 +5297,15 @@ DATA_SECTION
   for (f=1;f<=Nfleet;f++)
   {
     Q_setup_parms(f,5)=0;
-   if(Q_setup(f,5)>0)
-    {
-      Q_Npar++; Q_setup_parms(f,5)=Q_Npar;
-      ParCount++; 
-      ParmLabel+="Q_offset_"+NumLbl(f)+"_"+fleetname(f);
-      if(Q_setup(f,4)<2) {N_warn++; warning<<" must create base Q parm to use Q_offset for fleet: "<<f<<endl;}
-    }
+
+//  REVERT
+//   if(Q_setup(f,5)>0)
+//    {
+//      Q_Npar++; Q_setup_parms(f,5)=Q_Npar;
+//      ParCount++; 
+//      ParmLabel+="Q_offset_"+NumLbl(f)+"_"+fleetname(f);
+//      if(Q_setup(f,4)<2) {N_warn++; warning<<" must create base Q parm to use Q_offset for fleet: "<<f<<endl;}
+//    }
   }
 
 //  SS_Label_Info_4.8.2 #Create Q parm and time-varying catchability as needed
@@ -10012,9 +10251,11 @@ FUNCTION void get_natmort()
           {
             for (s=1;s<=nseas;s++)
             {
+              if(docheckup==1) echoinput<<"Natmort "<<s<<" "<<gp<<" "<<gpi<<" "<<natMparms(1,gp);
               natM(s,gpi)=natMparms(1,gp);
               surv1(s,gpi)=mfexp(-natMparms(1,gp)*seasdur_half(s));   // refers directly to the constant value
               surv2(s,gpi)=square(surv1(s,gpi));
+              if(docheckup==1) echoinput<<" surv "<<surv1(s,gpi)<<endl;
             }
             break;
           }
@@ -12337,6 +12578,7 @@ FUNCTION void get_time_series()
   //  SS_Label_Info_24.3.3.3.3 #Convert the harvest rate to a starting value for F
                 Hrate(f,t)=-log(1.-temp1)/seasdur(s);  // initial estimate of F (even though labelled as Hrate)
                 //  done with starting values from Pope's approximation
+              if(docheckup==1) echoinput<<"Hybrid_initialvalues "<<y<<" "<<f<<" "<<catch_ret_obs(f,t)<<" "<<vbio<<" "<<Hrate(f,t)<<endl<<Nmid<<endl;
               }
               else
               {
@@ -15506,8 +15748,11 @@ FUNCTION void Get_Forecast()
        for (f=1;f<=Nfleet;f++)
        for (s=1;s<=nseas;s++)
        {
-         t=styr+(y-styr)*nseas+s-1;
-         Fcast_Fmult+=Hrate(f,t);
+        if(fleet_type(f)<=2)
+        {
+          t=styr+(y-styr)*nseas+s-1;
+          Fcast_Fmult+=Hrate(f,t);
+        }
        }
        Fcast_Fmult/=float(Fcast_RelF_yr2-Fcast_RelF_yr1+1);
        Fcurr_Fmult=Fcast_Fmult;
@@ -15598,7 +15843,9 @@ FUNCTION void Get_Forecast()
     if(show_MSY==1)
     {
     report5<<"pop year ABC_Loop season Ctrl_Rule bio-all bio-Smry SpawnBio Depletion recruit-0 ";
-    for (f=1;f<=Nfleet;f++) {report5<<" sel(B):_"<<f<<" dead(B):_"<<f<<" retain(B):_"<<f<<
+    for (f=1;f<=Nfleet;f++) 
+    if(fleet_type(f)<=2)
+    {report5<<" sel(B):_"<<f<<" dead(B):_"<<f<<" retain(B):_"<<f<<
     " sel(N):_"<<f<<" dead(N):_"<<f<<" retain(N):_"<<f<<" F:_"<<f<<" R/C";}
     report5<<" Catch_Cap Total_Catch F_Std"<<endl;
     }
@@ -15622,7 +15869,10 @@ FUNCTION void Get_Forecast()
         {
           t=t_base+s;
           for (f=1;f<=Nfleet;f++)
+          {
+            if(fleet_type(f)<=2)
           {Fcast_Catch_Store(t,f)*=mfexp(Fcast_impl_error(y));}  //  should this be bias adjusted?
+          }
         }
       }
 
@@ -15639,6 +15889,8 @@ FUNCTION void Get_Forecast()
       // ABC_loop:  1=get OFL; 2=get_ABC, use input catches; 3=recalc with caps and allocations
       for (int ABC_Loop=ABC_Loop_start; ABC_Loop<=ABC_Loop_end;ABC_Loop++)
       {
+                         report5<<"here start ABC loop "<<endl;
+
         totcatch=0.;
         if(ABC_Loop==1) Mgmt_quant(Fcast_catch_start+N_Fcast_Yrs+y-endyr)=0.0;   // for OFL
         Mgmt_quant(Fcast_catch_start+y-endyr)=0.0;  //  for ABC
@@ -15751,6 +16003,8 @@ FUNCTION void Get_Forecast()
           }
           else if(ABC_Loop==2 && s==1)  // Calc the buffer in season 1, will use last year's spawnbio if multiseas and spawnseas !=1
           {
+                 report5<<"here abc buffer "<<endl;
+
             temp=SPB_virgin;
             join1=1./(1.+mfexp(10.*(SPB_current-H4010_bot*temp)));
             join2=1./(1.+mfexp(10.*(SPB_current-H4010_top*temp)));
@@ -15787,6 +16041,7 @@ FUNCTION void Get_Forecast()
           }
           for (p=1;p<=pop;p++)  //  loop areas (sub-pops)
           {
+                 report5<<"here loop areas "<<endl;
             totbio.initialize();smrybio.initialize(); smrynum.initialize();
             for (g=1;g<=gmorph;g++)
             if(use_morph(g)>0)
@@ -15815,6 +16070,7 @@ FUNCTION void Get_Forecast()
 //            report5<<y<<" start_num "<<natage(t,p,1)(0,8)<<endl;
             Tune_F_loops=1;
             for (f=1;f<=Nfleet;f++)
+            if(fleet_type(2)<=0)
             {
               switch (ABC_Loop)
               {
@@ -15865,7 +16121,7 @@ FUNCTION void Get_Forecast()
               for (Tune_F=1;Tune_F<=Tune_F_loops;Tune_F++)
               {
                 for (f=1;f<=Nfleet;f++)   // get calculated catch
-                if (fleet_area(f)==p && Fcast_RelF_Use(s,f)>0.0)
+                if (fleet_area(f)==p && Fcast_RelF_Use(s,f)>0.0 && fleet_type(f)<=2)
                 {
                   temp=0.0;
                   if(Do_F_tune(t,f)==1)  // have an input catch, so get expected catch from F and Z
@@ -15917,7 +16173,7 @@ FUNCTION void Get_Forecast()
 //  now get catch details and survivorship
               Nsurv=Nmid;  //  initialize the number of survivors
               for (f=1;f<=Nfleet;f++)       //loop over fishing fleets       SS_Label_105
-              if (fleet_area(f)==p)
+              if (fleet_area(f)==p && fleet_type(f)<=2)
               {
                 catch_fleet(t,f).initialize();
                 temp=Hrate(f,t);
@@ -15964,7 +16220,7 @@ FUNCTION void Get_Forecast()
 //              report5<<endl;
 //              report5<<"Nsurv"<<Nsurv(1)(0,10)<<endl;
 //              report5<<"next_N"<<natage(t+1,1,1)(0,10)<<endl;
-           }  //  end Fmethod=1 pope
+            }  //  end Fmethod=1 pope
 
             else  //  continuous F
             {
@@ -15975,7 +16231,7 @@ FUNCTION void Get_Forecast()
                 {
                   Z_rate(t,p,g)=natM(s,GP3(g));
                   for (f=1;f<=Nfleet;f++)       //loop over fishing fleets to get Z       SS_Label_105
-                  if (fleet_area(f)==p && Fcast_RelF_Use(s,f)>0.0)
+                  if (fleet_area(f)==p && Fcast_RelF_Use(s,f)>0.0 && fleet_type(f)<=2)
                   {
                     Z_rate(t,p,g)+=deadfish(s,g,f)*Hrate(f,t);
                   }
@@ -15983,7 +16239,7 @@ FUNCTION void Get_Forecast()
                 }  //  end morph
 
                 for (f=1;f<=Nfleet;f++)   // get calculated catch
-                if (fleet_area(f)==p && Fcast_RelF_Use(s,f)>0.0)
+                if (fleet_area(f)==p && Fcast_RelF_Use(s,f)>0.0 && fleet_type(f)<=2)
                 {
                   temp=0.0;
                   if(Do_F_tune(t,f)==1)  // have an input catch, so get expected catch from F and Z
@@ -16074,7 +16330,7 @@ FUNCTION void Get_Forecast()
               }  //  done tuning F
 
               for (f=1;f<=Nfleet;f++)       //loop over fishing fleets       SS_Label_105
-              if (fleet_area(f)==p)
+              if (fleet_area(f)==p && fleet_type(f)<=2)
               {
                 catch_fleet(t,f).initialize();
                 for (g=1;g<=gmorph;g++)
@@ -16142,6 +16398,8 @@ FUNCTION void Get_Forecast()
             {report5<<0<<" "<<0<<" "<<0;}
             for (f=1;f<=Nfleet;f++)
             {
+              if(fleet_type(f)<=2)
+              {
             if(fleet_area(f)==p)
             {
               if(F_Method==1)
@@ -16151,12 +16409,13 @@ FUNCTION void Get_Forecast()
             }
             else
             {report5<<" - - - - - - - ";}
+            
             if(Fcast_InputCatch(t,f,1)<0.0) {report5<<" R ";} else {report5<<" C ";}
+             }
             }
             if(s==nseas&&Max_Fcast_Catch(p)>0.) {report5<<" "<<Max_Fcast_Catch(p);} else {report5<<" NA ";} //  a max catch has been set for this area
            }
            if(p<pop && show_MSY==1) report5<<endl;
-
            if(s==1&&Fcast_Loop1==Fcast_Loop_Control(1))
            {
              Smry_Table(y,1)+=totbio;
@@ -16164,6 +16423,7 @@ FUNCTION void Get_Forecast()
              Smry_Table(y,3)+=smrynum;   //sums to accumulate across submorphs and birthseasons
            }
           }  //  end loop of areas
+
           if(do_migration>0)  // movement between areas in forecast
           {
             natage_temp=natage(t+1);
@@ -16180,9 +16440,14 @@ FUNCTION void Get_Forecast()
 
           if( (save_for_report>0) || ((sd_phase() || mceval_phase()) && (initial_params::mc_phase==0)) )
           {
+
             if(Fcast_Loop1==2 && ABC_Loop==1)  // get variance in OFL
             {
-              for (f=1;f<=Nfleet;f++) {Mgmt_quant(Fcast_catch_start+N_Fcast_Yrs+y-endyr)+=catch_fleet(t,f,2);}
+              for (f=1;f<=Nfleet;f++) 
+              {
+                if(fleet_type(f)<=2)
+              {Mgmt_quant(Fcast_catch_start+N_Fcast_Yrs+y-endyr)+=catch_fleet(t,f,2);}
+              }
             }
 
             if(Fcast_Loop1==Fcast_Loop_Control(1) && ABC_Loop==3)  //  in final loop, so do variance quantities
@@ -16191,12 +16456,20 @@ FUNCTION void Get_Forecast()
               {
                 if(F_reporting<=1)
                 {
-                  for (f=1;f<=Nfleet;f++) F_std(STD_Yr_Reverse_F(y))+=catch_fleet(t,f,2);   // add up dead catch biomass
+                  for (f=1;f<=Nfleet;f++) 
+                  {
+                    if(fleet_type(f)<=2)
+                    {F_std(STD_Yr_Reverse_F(y))+=catch_fleet(t,f,2);}   // add up dead catch biomass
+                  }
                   if(s==nseas) F_std(STD_Yr_Reverse_F(y))/=Smry_Table(y,2);
                 }
                 else if(F_reporting==2)
                 {
-                  for (f=1;f<=Nfleet;f++) F_std(STD_Yr_Reverse_F(y))+=catch_fleet(t,f,5);   // add up dead catch numbers
+                  for (f=1;f<=Nfleet;f++) 
+                  {
+                    if(fleet_type(f)<=2)
+                    {F_std(STD_Yr_Reverse_F(y))+=catch_fleet(t,f,5);}   // add up dead catch numbers
+                  }
                   if(s==nseas) F_std(STD_Yr_Reverse_F(y))/=Smry_Table(y,3);
                 }
                 else if(F_reporting==3)
@@ -16205,14 +16478,16 @@ FUNCTION void Get_Forecast()
                   {
                     for (f=1;f<=Nfleet;f++)
                     {
-                      F_std(STD_Yr_Reverse_F(y))+=Hrate(f,t);
+                      if(fleet_type(f)<=2)
+                      {F_std(STD_Yr_Reverse_F(y))+=Hrate(f,t);}
                     }
                   }
                   else
                   {
                     for (f=1;f<=Nfleet;f++)
                     {
-                      F_std(STD_Yr_Reverse_F(y))+=Hrate(f,t)*seasdur(s);
+                      if(fleet_type(f)<=2)
+                      {F_std(STD_Yr_Reverse_F(y))+=Hrate(f,t)*seasdur(s);}
                     }
                   }
                 }
@@ -16248,11 +16523,13 @@ FUNCTION void Get_Forecast()
                   F_std(STD_Yr_Reverse_F(y)) = log(temp2)-log(temp1);
                 }
               }
-
               for (f=1;f<=Nfleet;f++)
               {
-                Mgmt_quant(Fcast_catch_start+y-endyr)+=catch_fleet(t,f,2);
-                if(Do_Retain==1) Mgmt_quant(Fcast_catch_start+2*N_Fcast_Yrs+y-endyr)+=catch_fleet(t,f,3);
+                if(fleet_type(f)<=2)
+                {
+                  Mgmt_quant(Fcast_catch_start+y-endyr)+=catch_fleet(t,f,2);
+                  if(Do_Retain==1) Mgmt_quant(Fcast_catch_start+2*N_Fcast_Yrs+y-endyr)+=catch_fleet(t,f,3);
+                }
               }
             }
           }
@@ -16260,9 +16537,13 @@ FUNCTION void Get_Forecast()
           //  store catches to allow calc of adjusted F to match this catch when doing ABC_loop=3, and then when doing Fcast_loop1=3
           for (f=1;f<=Nfleet;f++)
           {
-            Fcast_Catch_Store(t,f)=catch_fleet(t,f,Fcast_Catch_Basis);
-            totcatch+=Fcast_Catch_Store(t,f);
+            if(fleet_type(f)<=2)
+            {
+              Fcast_Catch_Store(t,f)=catch_fleet(t,f,Fcast_Catch_Basis);
+              totcatch+=Fcast_Catch_Store(t,f);
+            }
           }
+
 //        report5<<Fcast_Loop1<<" "<<y<<" "<<s<<" "<<ABC_Loop<<" "<<SPB_current<<" "<<Recruits<<" "<<ABC_buffer(y)<<" "<<Fcast_Fmult<<" "<<Hrate(1,t);
 //        report5<<" "<<Hrate(2,t)<<" "<<Hrate(3,t)<<" catch "<<Fcast_Catch_Store(t)<<" ";
           if(show_MSY==1)
@@ -16281,15 +16562,18 @@ FUNCTION void Get_Forecast()
           for (f=1;f<=Nfleet;f++)
           for (s=1;s<=nseas;s++)
           {
-            t=t_base+s;
-            Fcast_Catch_Current_Alloc(f)+=catch_fleet(t,f,Fcast_Catch_Basis); //  accumulate annual catch according to catch basis (2=deadbio, 3=ret bio, 5=dead num, 6=ret num)
+            if(fleet_type(f)<=2)
+              {
+              t=t_base+s;
+              Fcast_Catch_Current_Alloc(f)+=catch_fleet(t,f,Fcast_Catch_Basis); //  accumulate annual catch according to catch basis (2=deadbio, 3=ret bio, 5=dead num, 6=ret num)
+              }
           }
 
           if(Fcast_Do_Fleet_Cap>0 && y>=Fcast_Cap_FirstYear)
           {
             for (f=1;f<=Nfleet;f++)   //  adjust ABC catch to fleet caps
             {
-              if(Fcast_MaxFleetCatch(f)>0.)
+              if(Fcast_MaxFleetCatch(f)>0. && fleet_type(f)<=2)
               {
                 temp = Fcast_Catch_Current_Alloc(f)/Fcast_MaxFleetCatch(f);
                 join1=1./(1.+mfexp(1000.*(temp-1.0)));  // steep logistic joiner at adjustment of 1.0
@@ -16313,7 +16597,10 @@ FUNCTION void Get_Forecast()
               Fcast_Catch_ByArea=0.0;
               for (f=1;f<=Nfleet;f++)
               {
-                Fcast_Catch_ByArea(fleet_area(f))+=Fcast_Catch_Current_Alloc(f);
+                if(fleet_type(f)<=2)
+                {
+                  Fcast_Catch_ByArea(fleet_area(f))+=Fcast_Catch_Current_Alloc(f);
+                }
               }
             }
             for (p=1;p<=pop;p++)
@@ -16323,7 +16610,7 @@ FUNCTION void Get_Forecast()
               join1=1./(1.+mfexp(1000.*(temp-1.0)));  // steep logistic joiner at adjustment of 1.0
               temp1=join1*1.0 + (1.-join1)*temp;
               for (f=1;f<=Nfleet;f++)
-              if (fleet_area(f)==p)
+              if (fleet_area(f)==p && fleet_type(f)<=2)
               {
                 Fcast_Catch_Current_Alloc(f)/=temp1;  // adjusts total for the year
                 for (s=1;s<=nseas;s++)
@@ -16338,7 +16625,7 @@ FUNCTION void Get_Forecast()
             Fcast_Catch_Current_Allocation=0.0;
             for (g=1;g<=Fcast_Catch_Allocation_Groups;g++)
             for (f=1;f<=Nfleet;f++)
-            if (Allocation_Fleet_Assignments(f)==g)
+            if (Allocation_Fleet_Assignments(f)==g && fleet_type(f)<=2)
             {
                Fcast_Catch_Current_Allocation(g)+=Fcast_Catch_Current_Alloc(f);
             }
@@ -16349,7 +16636,7 @@ FUNCTION void Get_Forecast()
             {
               temp2=(Fcast_Catch_Allocation(g)/temp1) / (Fcast_Catch_Current_Allocation(g)/temp);
               for (f=1;f<=Nfleet;f++)
-              if (Allocation_Fleet_Assignments(f)==g)
+              if (Allocation_Fleet_Assignments(f)==g && fleet_type(f)<=2)
               {
                 Fcast_Catch_Current_Alloc(f)*=temp2;
                 for (s=1;s<=nseas;s++)
@@ -16369,6 +16656,7 @@ FUNCTION void Get_Forecast()
         eq_yr=y; equ_Recr=Recr_virgin; bio_yr=endyr;
         Fishon=0;
         Do_Equil_Calc();                      //  call function to do equilibrium calculation
+
         SPR_unf=SPB_equil;
         Smry_Table(y,11)=SPR_unf;
         Smry_Table(y,13)=GenTime;
@@ -16386,9 +16674,11 @@ FUNCTION void Get_Forecast()
           Smry_Table(y,20+gmorph+g)=(maxF(g));
         }
       }
+
     }  //  end year loop
   }  //  end Fcast_Loop1  for the different stages of the forecast
 
+    cout<<"end forecast "<<endl;
   }
 //  end forecast function
 
@@ -16911,7 +17201,8 @@ FUNCTION void write_nudata()
   report1<<"#_rows are fleets; columns are: fleet_type, timing, area, units, equ_catch_se, catch_se, need_catch_mult"<<endl;
   for (f=1;f<=Nfleet;f++)
   {
-    report1<<fleet_setup(f)<<" # Fleet:_"<<f<<"_ "<<fleetname(f)<<endl;
+// REVERT
+//    report1<<fleet_setup(f)<<" # Fleet:_"<<f<<"_ "<<fleetname(f)<<endl;
   }
 
   if(Nudat==1)  // report back the input data
@@ -18445,7 +18736,8 @@ FUNCTION void write_bigoutput()
   SS2out<<"#_rows are fleets; columns are: fleet_type, timing, area, units, equ_catch_se, catch_se, catch_mult, survey_units survey_error "<<endl;
   for (f=1;f<=Nfleet;f++)
   {
-    SS2out<<fleet_setup(f)<<" "<<Svy_units(f)<<" "<<Svy_errtype(f)<<" # Fleet:_"<<f<<"_ "<<fleetname(f)<<endl;
+// REVERT
+//    SS2out<<fleet_setup(f)<<" "<<Svy_units(f)<<" "<<Svy_errtype(f)<<" # Fleet:_"<<f<<"_ "<<fleetname(f)<<endl;
   }
 
   SS2out<<endl<<"LIKELIHOOD "<<obj_fun<<endl;                         //SS_Label_310
@@ -19433,11 +19725,16 @@ FUNCTION void write_bigoutput()
       {SS2out<<Q_parm(Q_setup(f,1))<<" ";}
     else
       {SS2out<<" 1.0 ";}
-    SS2out<<" "<<Q_setup(f,5)<<" ";
-    if(Q_setup(f,5)>0)
-      {SS2out<<Q_parm(Q_setup(f,5))<<" ";}
-    else
-      {SS2out<<" 0.0 ";}
+
+//  REVERT
+//    SS2out<<" "<<Q_setup(f,5)<<" ";
+//    if(Q_setup(f,5)>0)
+//      {SS2out<<Q_parm(Q_setup(f,5))<<" ";}
+//    else
+      {SS2out<<" 0  0.0 ";}
+
+//  end REVERT
+      
     SS2out<<Q_setup(f,2)<<" ";
     if(Q_setup(f,2)!=0)
       {SS2out<<Q_parm(Q_setup_parms(f,2));}
@@ -21528,7 +21825,9 @@ FUNCTION void Get_expected_values();
            Svy_selec_abund(f,j)=value(vbio);
 // SS_Label_Info_46.1.1 #note order of operations,  vbio raised to a power, then constant is added, then later multiplied by Q.  Needs work   
            if(Q_setup(f,1)>0) vbio=pow(vbio,1.0+Q_parm(Q_setup_parms(f,1)));  //  raise vbio to a power
-           if(Q_setup(f,5)>0) vbio+=Q_parm(Q_setup_parms(f,1));  //  add a constant;
+
+//  REVERT
+//           if(Q_setup(f,5)>0) vbio+=Q_parm(Q_setup_parms(f,5));  //  add a constant;
            if(Svy_errtype(f)>=0)  //  lognormal
            {Svy_est(f,j)=log(vbio+0.000001);}
            else
