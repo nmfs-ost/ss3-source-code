@@ -2976,6 +2976,7 @@ DATA_SECTION
   vector Fcast_Input(1,22);
 
   int N_Fcast_Yrs
+  !!if(Do_Forecast&&N_Fcast_Yrs<=0) {N_warn++; cout<<"Critical error in forecast input, see warning"<<endl; warning<<"ERROR: cannot do a forecast of zero years"<<endl; exit(1);}
   ivector Fcast_yr(1,4)  // yr range for selex, then yr range foreither allocation or for average F
   int Fcast_Sel_yr1
   int Fcast_Sel_yr2
@@ -3103,6 +3104,7 @@ DATA_SECTION
   Fcast_RelF_yr2=endyr;
   N_Fcast_Yrs=0;
   YrMax=endyr;
+  TimeMax_Fcast_std = styr+(YrMax-styr)*nseas+nseas-1;
   Do_Rebuilder=0;
   }
   if(Fcast_RelF_Basis==2)
@@ -3267,6 +3269,7 @@ DATA_SECTION
 
   imatrix Show_Time(styr,TimeMax_Fcast_std,1,2)  //  for each t:  shows year, season
  LOCAL_CALCS
+  echoinput<<"Now create some arrays for STD quantities "<<Show_Time.indexmin()<<endl;
   t=styr-1;
   for (y=styr;y<=YrMax;y++) /* SS_loop:  fill Show_Time(t,1) with year value */
   for (s=1;s<=nseas;s++) /* SS_loop:  fill Show_Time(t,2) with season value */
@@ -3334,6 +3337,7 @@ DATA_SECTION
       }
     }
   }
+  echoinput<<"Finished creating STD containers and indexes "<<endl;
  END_CALCS
 
  LOCAL_CALCS
@@ -3525,12 +3529,12 @@ DATA_SECTION
         recr_dist_pattern(gp,settle,0)=1;  //  for growth updating
       }
 
-    echoinput<<"Calculated recruitment distribution pattern "<<endl<<"GPat Settle Area"<<endl;
+    echoinput<<"Calculated areas where settlement occurs "<<endl<<"GPat Settle# Month Area Use(0/1)"<<endl;
     for(gp=1;gp<=N_GP;gp++)
     for(settle=1;settle<=N_settle;settle++)
     for(p=1;p<=pop;p++)
     {
-      echoinput<<gp<<" "<<settle<<" "<<p<<" "<<recr_dist_pattern(gp,settle,p)<<endl;
+      echoinput<<gp<<" "<<settle<<" "<<settlement_pattern_rd(settle,2)<<" "<<p<<" :: "<<recr_dist_pattern(gp,settle,p)<<endl;
     }
     
 //  SS_Label_Info_4.2.3 #Set-up arrays and indexing for growth patterns, gender, settlements, platoons
@@ -4154,7 +4158,9 @@ DATA_SECTION
   recr_dist_parms = ParCount+1;  // pointer to first recruitment distribution  parameter
   for (k=1;k<=N_GP;k++) {ParCount++; ParmLabel+="RecrDist_GP_"+NumLbl(k);}
   for (k=1;k<=pop;k++)  {ParCount++; ParmLabel+="RecrDist_Area_"+NumLbl(k);}
-  for (k=1;k<=N_settle;k++){ParCount++; ParmLabel+="RecrDist_settle_"+NumLbl(k);}
+  //  REVERT  because 3.24 has one parameter per season, not per settlement event
+//  for (k=1;k<=N_settle;k++){ParCount++; ParmLabel+="RecrDist_settle_"+NumLbl(k);}
+   for (k=1;k<=nseas;k++){ParCount++; ParmLabel+="RecrDist_seas_"+NumLbl(k);}
 
   if(recr_dist_inx==1) // add for the morph assignments within each area
     {
@@ -4543,6 +4549,8 @@ DATA_SECTION
     if(MGparm_1(j,9)>=1) 
       {
         N_MGparm_dev++;
+
+//  REVERT   these are not parameters in 3.24  so create but do not read
         ParCount++;
         ParmLabel+=ParmLabel(j)+"_dev_se"+CRLF(1);
         ParCount++;
@@ -4550,8 +4558,11 @@ DATA_SECTION
       }
     }
  END_CALCS
-  init_matrix MGparm_dev_se_rd(1,2*N_MGparm_dev,1,7)  // read matrix that defines the parms for stderr and rho of devs
-  !!if(N_MGparm_dev>0) echoinput<<"MG dev std.err. and rho for each vector "<<endl<<MGparm_dev_se_rd<<endl;
+//  REVERT     
+//   init_matrix MGparm_dev_se_rd(1,2*N_MGparm_dev,1,7)  // read matrix that defines the parms for stderr and rho of devs
+//  !!if(N_MGparm_dev>0) echoinput<<"MG dev std.err. and rho for each vector "<<endl<<MGparm_dev_se_rd<<endl;
+  matrix MGparm_dev_se_rd(1,2*N_MGparm_dev,1,7)  // create matrix that defines the parms for stderr and rho of devs but do not read in 3.24
+
   ivector MGparm_dev_minyr(1,N_MGparm_dev)
   ivector MGparm_dev_maxyr(1,N_MGparm_dev)
   ivector MGparm_dev_type(1,N_MGparm_dev)  // contains type of dev:  1 for multiplicative, 2 for additive, 3 for additive randwalk, 4=mean reverting additive rwalk
@@ -4651,29 +4662,67 @@ DATA_SECTION
 
    if(N_MGparm_dev>0)
    {
-    k=0;
-   for (f=1;f<=N_MGparm_dev;f++)
-   {
-    j++;
-    k++;
-    MGparm_LO(j)=MGparm_dev_se_rd(k,1);
-    MGparm_HI(j)=MGparm_dev_se_rd(k,2);
-    MGparm_RD(j)=MGparm_dev_se_rd(k,3);
-    MGparm_PR(j)=MGparm_dev_se_rd(k,4);
-    MGparm_PRtype(j)=MGparm_dev_se_rd(k,5);
-    MGparm_CV(j)=MGparm_dev_se_rd(k,6);
-    MGparm_PH(j)=MGparm_dev_se_rd(k,7);
-    MGparm_dev_rpoint2(f)=j;  //  specifies which parm holds the f'th dev's se
-    j++;
-    k++;
-    MGparm_LO(j)=MGparm_dev_se_rd(k,1);
-    MGparm_HI(j)=MGparm_dev_se_rd(k,2);
-    MGparm_RD(j)=MGparm_dev_se_rd(k,3);
-    MGparm_PR(j)=MGparm_dev_se_rd(k,4);
-    MGparm_PRtype(j)=MGparm_dev_se_rd(k,5);
-    MGparm_CV(j)=MGparm_dev_se_rd(k,6);
-    MGparm_PH(j)=MGparm_dev_se_rd(k,7);
-   }
+     j=0;
+     k=0;
+     for (f=1;f<=N_MGparm;f++)
+     {
+       if(MGparm_1(f,9)>=1)
+       {
+         j++;
+         if(MG_adjust_method==2 && MGparm_1(f,9)==1)
+         {N_warn++; warning<<" cannot use MG_adjust_method==2 and multiplicative devs for parameter "<<f<<endl;}
+         MGparm_dev_type(j)=MGparm_1(f,9);  //  1 for multiplicative, 2 for additive, 3 for additive randwalk, 4=mean-reverting rwalk
+         MGparm_dev_point(f)=j;  //  specifies which dev vector is used by the f'th MGparm
+         MGparm_dev_rpoint(j)=f;  //  specifies which parm (f) is affected by the j'th dev vector
+         
+//  INSERT for 3.24 compatibility
+         k++;
+         MGparm_dev_se_rd(k)=MGparm_1(f,12);
+         k++;
+         MGparm_dev_se_rd(k)=0.0;  //  for rho
+//  end insert           
+
+         y=MGparm_1(f,10);
+         if(y<styr)
+         {
+           N_warn++; warning<<" reset MGparm_dev start year to styr for MGparm: "<<f<<" "<<y<<endl;
+           y=styr;
+         }
+         MGparm_dev_minyr(j)=y;
+
+         y=MGparm_1(f,11);
+         if(y>endyr)
+         {
+           N_warn++; warning<<" reset MGparm_dev end year to endyr for MGparm: "<<f<<" "<<y<<endl;
+           y=endyr;
+         }
+         MGparm_dev_maxyr(j)=y;
+       }
+     }
+         
+      k=0;
+     for (f=1;f<=N_MGparm_dev;f++)
+     {
+      j++;
+      k++;
+      MGparm_LO(j)=MGparm_dev_se_rd(k,1);
+      MGparm_HI(j)=MGparm_dev_se_rd(k,2);
+      MGparm_RD(j)=MGparm_dev_se_rd(k,3);
+      MGparm_PR(j)=MGparm_dev_se_rd(k,4);
+      MGparm_PRtype(j)=MGparm_dev_se_rd(k,5);
+      MGparm_CV(j)=MGparm_dev_se_rd(k,6);
+      MGparm_PH(j)=MGparm_dev_se_rd(k,7);
+      MGparm_dev_rpoint2(f)=j;  //  specifies which parm holds the f'th dev's se
+      j++;
+      k++;
+      MGparm_LO(j)=MGparm_dev_se_rd(k,1);
+      MGparm_HI(j)=MGparm_dev_se_rd(k,2);
+      MGparm_RD(j)=MGparm_dev_se_rd(k,3);
+      MGparm_PR(j)=MGparm_dev_se_rd(k,4);
+      MGparm_PRtype(j)=MGparm_dev_se_rd(k,5);
+      MGparm_CV(j)=MGparm_dev_se_rd(k,6);
+      MGparm_PH(j)=MGparm_dev_se_rd(k,7);
+     }
    }
 
   //  SS_Label_Info_4.5.9 #Set up random deviations for MG parms
@@ -4687,49 +4736,51 @@ DATA_SECTION
        j=0;
        for (f=1;f<=N_MGparm;f++)
        {
-       if(MGparm_1(f,9)>=1)
-       {
-           j++;
-           if(MG_adjust_method==2 && MGparm_1(f,9)==1)
-           {N_warn++; warning<<" cannot use MG_adjust_method==2 and multiplicative devs for parameter "<<f<<endl;}
-           MGparm_dev_type(j)=MGparm_1(f,9);  //  1 for multiplicative, 2 for additive, 3 for additive randwalk, 4=mean-reverting rwalk
-           MGparm_dev_point(f)=j;  //  specifies which dev vector is used by the f'th MGparm
-           MGparm_dev_rpoint(j)=f;  //  specifies which parm (f) is affected by the j'th dev vector
-           y=MGparm_1(f,10);
-           if(y<styr)
-           {
-             N_warn++; warning<<" reset MGparm_dev start year to styr for MGparm: "<<f<<" "<<y<<endl;
-             y=styr;
-           }
-           MGparm_dev_minyr(j)=y;
-
-           y=MGparm_1(f,11);
-           if(y>endyr)
-           {
-             N_warn++; warning<<" reset MGparm_dev end year to endyr for MGparm: "<<f<<" "<<y<<endl;
-             y=endyr;
-           }
-           MGparm_dev_maxyr(j)=y;
-           for(y=MGparm_dev_minyr(j);y<=MGparm_dev_maxyr(j);y++)
-           {
-             MG_active(mgp_type(f))=1;
-             time_vary_MG(y,mgp_type(f))=1;
-             if(y<=endyr) time_vary_MG(y+1,mgp_type(f))=1;   // so will recalculate to null value, even for endyr+1
-             sprintf(onenum, "%d", y);
-             N_MGparm_dev_tot++;
-             ParCount++;
-             if(MGparm_dev_type(j)==1)
-             {ParmLabel+=ParmLabel(f)+"_DEVmult_"+onenum+CRLF(1);}
-             else if(MGparm_dev_type(j)==2)
-             {ParmLabel+=ParmLabel(f)+"_DEVadd_"+onenum+CRLF(1);}
-             else if(MGparm_dev_type(j)==3)
-             {ParmLabel+=ParmLabel(f)+"_DEVrwalk_"+onenum+CRLF(1);}
-             else if(MGparm_dev_type(j)==4)
-             {ParmLabel+=ParmLabel(f)+"_DEV_MR_rwalk_"+onenum+CRLF(1);}
-           else
-           {N_warn++; cout<<" EXIT - see warning "<<endl; warning<<" illegal MGparmdevtype for parm "<<f<<endl; exit(1);}
-         }
-         if(f==MGP_CGD) CGD=1;
+         if(MGparm_1(f,9)>=1)
+         {
+             j++;
+  //           if(MG_adjust_method==2 && MGparm_1(f,9)==1)
+  //           {N_warn++; warning<<" cannot use MG_adjust_method==2 and multiplicative devs for parameter "<<f<<endl;}
+  //           MGparm_dev_type(j)=MGparm_1(f,9);  //  1 for multiplicative, 2 for additive, 3 for additive randwalk, 4=mean-reverting rwalk
+  //           MGparm_dev_point(f)=j;  //  specifies which dev vector is used by the f'th MGparm
+  //           MGparm_dev_rpoint(j)=f;  //  specifies which parm (f) is affected by the j'th dev vector
+  
+  //           y=MGparm_1(f,10);
+  //           if(y<styr)
+  //           {
+  //             N_warn++; warning<<" reset MGparm_dev start year to styr for MGparm: "<<f<<" "<<y<<endl;
+  //             y=styr;
+  //           }
+  //           MGparm_dev_minyr(j)=y;
+  
+  //           y=MGparm_1(f,11);
+  //           if(y>endyr)
+  //           {
+  //             N_warn++; warning<<" reset MGparm_dev end year to endyr for MGparm: "<<f<<" "<<y<<endl;
+  //             y=endyr;
+  //           }
+  //           MGparm_dev_maxyr(j)=y;
+  
+             for(y=MGparm_dev_minyr(j);y<=MGparm_dev_maxyr(j);y++)
+             {
+               MG_active(mgp_type(f))=1;
+               time_vary_MG(y,mgp_type(f))=1;
+               if(y<=endyr) time_vary_MG(y+1,mgp_type(f))=1;   // so will recalculate to null value, even for endyr+1
+               sprintf(onenum, "%d", y);
+               N_MGparm_dev_tot++;
+               ParCount++;
+               if(MGparm_dev_type(j)==1)
+               {ParmLabel+=ParmLabel(f)+"_DEVmult_"+onenum+CRLF(1);}
+               else if(MGparm_dev_type(j)==2)
+               {ParmLabel+=ParmLabel(f)+"_DEVadd_"+onenum+CRLF(1);}
+               else if(MGparm_dev_type(j)==3)
+               {ParmLabel+=ParmLabel(f)+"_DEVrwalk_"+onenum+CRLF(1);}
+               else if(MGparm_dev_type(j)==4)
+               {ParmLabel+=ParmLabel(f)+"_DEV_MR_rwalk_"+onenum+CRLF(1);}
+               else
+               {N_warn++; cout<<" EXIT - see warning "<<endl; warning<<" illegal MGparmdevtype for parm "<<f<<endl; exit(1);}
+             }
+             if(f==MGP_CGD) CGD=1;
          }
        }
        *(ad_comm::global_datafile) >> MGparm_dev_PH;
@@ -4739,7 +4790,7 @@ DATA_SECTION
      {
       MGparm_dev_PH=-6;
       echoinput<<" don't read MGparm_dev_PH"<<endl;
-    }
+     }
 
   //  SS_Label_Info_4.5.95 #Populate time_bio_category array defining when biology changes
      k=YrMax+1;
