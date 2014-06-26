@@ -2976,7 +2976,6 @@ DATA_SECTION
   vector Fcast_Input(1,22);
 
   int N_Fcast_Yrs
-  !!if(Do_Forecast&&N_Fcast_Yrs<=0) {N_warn++; cout<<"Critical error in forecast input, see warning"<<endl; warning<<"ERROR: cannot do a forecast of zero years"<<endl; exit(1);}
   ivector Fcast_yr(1,4)  // yr range for selex, then yr range foreither allocation or for average F
   int Fcast_Sel_yr1
   int Fcast_Sel_yr2
@@ -3027,6 +3026,7 @@ DATA_SECTION
   k=0;
   k++; N_Fcast_Yrs=int(Fcast_Input(k));
   echoinput<<N_Fcast_Yrs<<" N_Fcast_Yrs "<<endl;
+  if(Do_Forecast>0&&N_Fcast_Yrs<=0) {N_warn++; cout<<"Critical error in forecast input, see warning"<<endl; warning<<"ERROR: cannot do a forecast of zero years: "<<N_Fcast_Yrs<<endl; exit(1);}
   YrMax=endyr+N_Fcast_Yrs;
   TimeMax_Fcast_std = styr+(YrMax-styr)*nseas+nseas-1;
   k++; Fcast_Flevel=Fcast_Input(k);
@@ -3993,8 +3993,8 @@ DATA_SECTION
     WTage_rd=1;
   }
  END_CALCS
-  init_matrix Age_Maturity(1,k1,0,nages)
-  init_matrix Length_Maturity(1,k2,1,nlength)
+  init_matrix Age_Maturity(1,k1,0,nages) // for maturity option 3 or 4
+  init_matrix Length_Maturity(1,k2,1,nlength)  //  for maturity option 6
   !!if(k1>0) echoinput<<"  read Age_Maturity for each GP"<<Age_Maturity<<endl;
   !!if(k2>0) echoinput<<"  read Length_Maturity for each GP"<<Length_Maturity<<endl;
 
@@ -8531,7 +8531,6 @@ PRELIMINARY_CALCS_SECTION
     mat_len=value(mat_len);
     mat_fec_len=value(mat_fec_len);
     mat_age=value(mat_age);
-    echoinput<<" did wtlen and maturity"<<endl;
 
     for (s=1;s<=nseas;s++)
     {
@@ -9103,6 +9102,7 @@ TOP_OF_MAIN_SECTION
   gradient_structure::set_CMPDIF_BUFFER_SIZE(200000000); // 2e8 = about 0.2GB
   gradient_structure::set_MAX_NVAR_OFFSET(5000);
   gradient_structure::set_NUM_DEPENDENT_VARIABLES(10000);
+  gradient_structure::set_MAX_DLINKS(10000000);
 
 //  SS_Label_Info_9.2 #Set clock start time
   time(&start); //this is to see how long it takes to run
@@ -10447,12 +10447,18 @@ FUNCTION void get_natmort()
 FUNCTION void get_recr_distribution()
   {
  /*  SS_Label_Function_18 #get_recr_distribution among areas and morphs */
-  dvar_vector recr_dist_parm(1,MGP_CGD-recr_dist_parms);
+
+//  REVERT
+//  dvar_vector recr_dist_parm(1,MGP_CGD-recr_dist_parms);
+    dvar_vector recr_dist_parm(1,MGP_CGD-recr_dist_parms+nseas);
+
   recr_dist.initialize();
 //  SS_Label_Info_18.1  #set rec_dist_parms = exp(mgp_adj) for this year
   Ip=recr_dist_parms-1;
   for (f=1;f<=MGP_CGD-recr_dist_parms;f++)
   {
+    echoinput<<f<<" ";
+    echoinput<<mgp_adj(Ip+f)<<endl;
     recr_dist_parm(f)=mfexp(mgp_adj(Ip+f));
   }
 //  SS_Label_Info_18.2  #loop gp * settlements * area and multiply together the recr_dist_parm values
@@ -10461,6 +10467,10 @@ FUNCTION void get_recr_distribution()
   for (p=1;p<=pop;p++)
   if(recr_dist_pattern(gp,settle,p)>0)
   {
+    echoinput<<gp<<" "<<settle<<" "<<p;
+    echoinput<<" gpparm:"<<recr_dist_parm(gp);
+    echoinput<<" areaparm:"<<recr_dist_parm(N_GP+p);
+    echoinput<<" settleparm:"<<recr_dist_parm(N_GP+pop+settle)<<endl;
     recr_dist(gp,settle,p)=femfrac(gp)*recr_dist_parm(gp)*recr_dist_parm(N_GP+p)*recr_dist_parm(N_GP+pop+settle);
     if(gender==2) recr_dist(gp+N_GP,settle,p)=femfrac(gp+N_GP)*recr_dist_parm(gp)*recr_dist_parm(N_GP+p)*recr_dist_parm(N_GP+pop+settle);  //males
   }
@@ -10551,14 +10561,13 @@ FUNCTION void get_wtlen()
         if(gender==2) wt_len_fd(s,GPat,nlength)=wt_len_fd(s,GPat,nlength-1);
           echoinput<<"wtlen2 "<<endl<<wt_len2<<endl<<wt_len2_sq<<endl<<wt_len_fd<<endl;
       }
-   echoinput<<"here "<<endl;      
   //  SS_Label_Info_19.2.4  #calculate maturity and fecundity if seas = spawn_seas
   //  these calculations are done in spawn_seas, but are not affected by spawn_time within that season
   //  so age-specific inputs will assume to be at correct timing already; size-specific will later be adjusted to use size-at-age at the exact correct spawn_time_seas
   
       if(s==spawn_seas && gg==1)  // get biology of maturity and fecundity
       {
-         echoinput<<"process maturity fecundity "<<endl;
+         echoinput<<"process maturity fecundity using option: "<<Maturity_Option<<endl;
           switch(Maturity_Option)
           {
             case 1:  //  Maturity_Option=1  length logistic
@@ -10642,16 +10651,29 @@ FUNCTION void get_wtlen()
               break;
             }
           }
-  
-     echoinput<<"fec_len "<<endl<<fec_len<<endl;
+// 1=length logistic; 2=age logistic; 3=read age-maturity
+// 4= read age-fecundity by growth_pattern 5=read all from separate wtatage.ss file
+//  6=read length-maturity  
+     if(Maturity_Option!=4 && Maturity_Option!=5)
+     {
+       echoinput<<"fec_len "<<endl<<fec_len(gp)<<endl;
   //  combine length maturity and fecundity; but will be ignored if reading empirical age-fecundity
-          mat_fec_len(gp) = elem_prod(mat_len(gp),fec_len(gp));
-  
+       mat_fec_len(gp) = elem_prod(mat_len(gp),fec_len(gp));
+       echoinput<<"mat_fec_len "<<endl<<mat_fec_len(gp)<<endl;
+     }
+     else if(Maturity_Option==4)
+      {
+        echoinput<<"age-fecundity as read from control file"<<endl<<Age_Maturity(gp)<<endl;
       }
+      else
+     {
+        echoinput<<"age-fecundity read from wtatage.ss"<<endl;
+     }
+    }
     }  // end season loop
   }  // end GP loop
 //  end wt-len and fecundity
-   echoinput<<"end wtlen "<<endl;
+   echoinput<<"end wtlen and maturity-fecundity"<<endl;
 
 //  SS_Label_Info_19.2.5  #Do Hermaphroditism (no seasonality and no gp differences)
 //  should build seasonally component here
