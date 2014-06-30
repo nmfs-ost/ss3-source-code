@@ -5,7 +5,7 @@ DATA_SECTION
 !!//  SS_Label_Section_1.0 #DATA_SECTION
 
 !!//  SS_Label_Info_1.1.1  #Create string with version info
-!!version_info+="SS-V3.30a-safe;_05/28/2014;_Stock_Synthesis_by_Richard_Methot_(NOAA)_using_ADMB_10.1";
+!!version_info+="SS-V3.30a-safe;_06/30/2014;_Stock_Synthesis_by_Richard_Methot_(NOAA)_using_ADMB_10.1";
 
 !!version_info_short+="#V3.30a";
 
@@ -3422,43 +3422,88 @@ DATA_SECTION
 
  END_CALCS
 
-!!//  SS_Label_Info_4.2.1.1 #Define indexing vectors to keep track of characteristics of each morph
-
-//  INSERT from 3.24
- LOCAL_CALCS
-  recr_dist_pattern.initialize();
-  if(N_GP*nseas*pop==1) {j=0;} else {j=2;}
- END_CALCS
-  init_ivector recr_dist_input(1,j)
-  int N_settle
+  int recr_dist_method  //  1=like 3.24; 2=main effects for GP, Settle timing, Area; 3=each Settle entity; 4=none when N_GP*Nsettle*pop==1
+  int N_settle_timings  //  number of recruitment settlement timings per spawning (>=1) - important for growth calculation
+  int N_settle_assignments  //  number of assigned settlements for GP, Settle, Area (>=0)
+  int N_settle  //  temporary so code will compile
+  
   int recr_dist_inx
+  !! recr_dist_method=1;  //  hardwire for 3.24 method  later make this a read item
+//  INSERT for 3.24
  LOCAL_CALCS
-    if(j>0)
+  switch (recr_dist_method)
+  {
+    case 1:  //  like 3.24 format
       {
-        N_settle=recr_dist_input(1);
-        recr_dist_inx=recr_dist_input(2);
+        if(N_GP*nseas*pop==1) {j=0; recr_dist_method=4;} else {j=2;}
+        N_settle_timings=nseas;  //  provision value updated later after the settlement events are read
+        break;
       }
-      else
-        {
-          N_settle=1;
-          recr_dist_inx=0;
-        }
+    case 2:
+      {
+        break;
+      }
+    case 3:
+      {
+        break;
+      }
+    case 4:
+      {
+        if(N_GP*pop==1) {j=0;} else {warning<<"must have a recruitment distribution if N_GP*pop>1"<<endl; exit(1);}
+        N_settle_timings=1;  //  default to one settlement event
+        break;
+      }
+  }
  END_CALCS
-
-
-!!//  SS_Label_Info_4.2.2  #Define distribution of recruitment(settlement) among growth patterns, seasons, areas
-//  REVERT
-//  init_int N_settle;
-//  init_int recr_dist_inx;
-  int birthseas;
+ 
+  init_ivector recr_dist_input(1,j)
 
  LOCAL_CALCS
-  echoinput<<N_settle<<" Number of settlement events to read (>=1) "<<endl;
-  if(N_settle<1) {N_warn++; cout<<"fatal input: N_settle "<<endl; warning<<"Number of settlements must be >=1)"<<endl;exit(1);}
-  echoinput<<recr_dist_inx<<" read interaction parameters for GP x timing x area (0/1)"<<endl;
-  gmorph = gender*N_GP*N_settle*N_platoon;  //  total potential number of biological entities, some may not get used so see use_morph(g)
+  switch (recr_dist_method)
+  {
+    case 1:
+      {
+        if(j>0)
+          {
+            N_settle_assignments=recr_dist_input(1);
+            recr_dist_inx=recr_dist_input(2);
+            N_settle_timings=nseas;
+          }
+        else
+          {
+            N_settle_timings=1;
+            N_settle_assignments=0;
+            recr_dist_inx=0;
+          }
+        break;
+      }
+    case 2:
+      {
+        break;
+      }
+    case 3:
+      {
+        break;
+      }
+    case 4:
+      {
+        break;
+      }
+  }
  END_CALCS
 
+
+  int birthseas;
+!!//  SS_Label_Info_4.2.2  #Define distribution of recruitment(settlement) among growth patterns, seasons, areas
+ LOCAL_CALCS
+  echoinput<<N_settle_timings<<" Number of settlement timings per spawning (>=1) "<<endl;
+  echoinput<<N_settle_assignments<<" Number of settlement events to read (>=0) "<<endl;
+  if(recr_dist_method==1) echoinput<<recr_dist_inx<<" read interaction parameters for GP x timing x area (0/1)"<<endl;
+  gmorph = gender*N_GP*N_settle_timings*N_platoon;  //  total potential number of biological entities, some may not get used so see use_morph(g)
+  exit(1);
+ END_CALCS
+
+!!//  SS_Label_Info_4.2.1.1 #Define indexing vectors to keep track of characteristics of each morph
   ivector sx(1,gmorph) //  define sex for each growth morph
   ivector GP4(1,gmorph)   // index to GPat
   ivector GP(1,gmorph)    //  index for gender*GPat;  note that gp is nested inside gender
@@ -3498,7 +3543,7 @@ DATA_SECTION
 
 //  INSERT for 3.24
   !!if(N_settle==1) {j=0;} else {j=N_settle;}
-  init_matrix settlement_pattern_rd1(1,j,1,3)    //  for each settlement event:  GPat, Month, area
+  init_matrix settlement_pattern_rd1(1,N_settle,1,3)    //  for each settlement event:  GPat, Month, area
   matrix settlement_pattern_rd(1,N_settle,1,3);
  LOCAL_CALCS
    if(j>0)
@@ -3529,7 +3574,7 @@ DATA_SECTION
         recr_dist_pattern(gp,settle,0)=1;  //  for growth updating
       }
 
-    echoinput<<"Calculated areas where settlement occurs "<<endl<<"GPat Settle# Month Area Use(0/1)"<<endl;
+    echoinput<<"Calculated assignments settlement occurs "<<endl<<"GPat Settle# Month Area Use(0/1)"<<endl;
     for(gp=1;gp<=N_GP;gp++)
     for(settle=1;settle<=N_settle;settle++)
     for(p=1;p<=pop;p++)
@@ -9154,6 +9199,7 @@ GLOBALS_SECTION
     yr=int(Y_Mo_F(1));
     month=abs(Y_Mo_F(2));
     f=int(abs(Y_Mo_F(3)));
+    temp=1;  //  temporary assignment
     if(read_seas_mo==1)  // reading season
     {
       s=int(month);  
