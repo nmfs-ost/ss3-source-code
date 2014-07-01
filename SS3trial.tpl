@@ -3500,7 +3500,6 @@ DATA_SECTION
   echoinput<<N_settle_assignments<<" Number of settlement events to read (>=0) "<<endl;
   if(recr_dist_method==1) echoinput<<recr_dist_inx<<" read interaction parameters for GP x timing x area (0/1)"<<endl;
   gmorph = gender*N_GP*N_settle_timings*N_platoon;  //  total potential number of biological entities, some may not get used so see use_morph(g)
-  exit(1);
  END_CALCS
 
 !!//  SS_Label_Info_4.2.1.1 #Define indexing vectors to keep track of characteristics of each morph
@@ -3523,12 +3522,8 @@ DATA_SECTION
 
   3darray lin_grow(1,gmorph,1,nseas*N_subseas,0,nages)  //  during linear phase has fraction of Size at Afix
   ivector first_grow_age2(1,gmorph);
-  3darray recr_dist_pattern(1,N_GP,1,N_settle,0,pop);  //  has flag to indicate each settlement events
+  3darray recr_dist_pattern(1,N_GP,1,N_settle_timings,0,pop);  //  has flag to indicate each settlement events
   int  settle;
-  ivector Settle_offset(1,N_settle)  //  calculated number of seasons between spawning and the season in which settlement occurs
-  vector  Settle_timing(1,N_settle)  //  calculated elapsed time (frac of year) between settlement and the begin of season in which it occurs
-  ivector Settle_age(1,N_settle)  //  calculated age at which settlement occurs, with age 0 being the year in which spawning occurs
-  ivector Settle_seas(1,N_settle)  //  calculated season in which settlement occurs
   ivector settle_g(1,gmorph)   //  settlement pattern for each platoon
   
  LOCAL_CALCS
@@ -3542,18 +3537,17 @@ DATA_SECTION
  END_CALCS
 
 //  INSERT for 3.24
-  !!if(N_settle==1) {j=0;} else {j=N_settle;}
-  init_matrix settlement_pattern_rd1(1,N_settle,1,3)    //  for each settlement event:  GPat, Month, area
-  matrix settlement_pattern_rd(1,N_settle,1,3);
+  !!if(N_settle_assignments==0) {j=1;} else {j=N_settle_assignments;}
+  init_matrix settlement_pattern_rd1(1,N_settle_assignments,1,3)    //  for each settlement event:  GPat, Month, area
+  matrix settlement_pattern_rd(1,j,1,3);
  LOCAL_CALCS
-   if(j>0)
+   if(N_settle_assignments>0)
     {
-      for(f=1;f<=j;f++)
-      settlement_pattern_rd(f)=settlement_pattern_rd1(f);
+      settlement_pattern_rd=settlement_pattern_rd1;
     }
     else
     {
-      for(f=1;f<=N_settle;f++)
+      for(f=1;f<=j;f++)
       {settlement_pattern_rd(f).fill("{1,1,1}");}
     }
       
@@ -3563,31 +3557,66 @@ DATA_SECTION
 //  REVERT
 //  init_matrix settlement_pattern_rd(1,N_settle,1,3)    //  for each settlement event:  GPat, Month, area
 
+  vector settle_timings_tempvec(1,50)
  LOCAL_CALCS
-    echoinput<<" settlement pattern as read "<<endl<<"GPat  Month  Area"<<endl<<settlement_pattern_rd<<endl;
-      for (settle=1;settle<=N_settle;settle++)
+    echoinput<<" settlement pattern as read "<<endl<<"GPat  Month  Area"<<endl<<settlement_pattern_rd1<<endl<<endl<<settlement_pattern_rd<<endl;
+//    Here count the number of unique settlemonths to create the N_settle_timings
+      N_settle_timings=0;
+      settle_timings_tempvec.initialize();
+      for (settle=1;settle<=N_settle_assignments;settle++)
       {
+        if(read_seas_mo==1)
+          {
+           real_month=1.0 + azero_seas(settlement_pattern_rd(settle,2))*12.;
+            echoinput<<settle<<" "<<settlement_pattern_rd(settle,2)<<" "<<azero_seas(settlement_pattern_rd(settle,2))<<" "<<real_month<<endl;
+          }
+          else
+          {
+             real_month=(settlement_pattern_rd(settle,2)-1.0)/12.  ; //  settlement month converted to fraction of year; could be > one year
+          }
+          if(N_settle_timings==0)
+          {
+            N_settle_timings++;
+            settle_timings_tempvec(N_settle_timings)=real_month;
+          }
+          else
+          {
+            k=0;
+            for(j=1;j<=N_settle_timings;j++)
+            {
+              if(settle_timings_tempvec(j)!=real_month)
+              {
+                k=1;
+              }
+            }
+            if(k==1)
+            {
+              N_settle_timings++;
+              settle_timings_tempvec(N_settle_timings)=real_month;
+            }
+          }
+      }
+    echoinput<<"N settle timings: "<<N_settle_timings<<" vector: "<<settle_timings_tempvec(1,N_settle_timings)<<endl;
+    exit(1);
+    echoinput<<"Calculated assignments settlement occurs "<<endl<<"GPat Settle# Month Area Use(0/1)"<<endl;
+    for(gp=1;gp<=N_GP;gp++)
+    for(p=1;p<=pop;p++)
+    {
         gp=settlement_pattern_rd(settle,1); //  growth patterns
-        // settlement_pattern_rd(settle,2); //  settlement month
         p=settlement_pattern_rd(settle,3);  //  settlement area
         recr_dist_pattern(gp,settle,p)=1;  //  indicates that settlement will occur here
         recr_dist_pattern(gp,settle,0)=1;  //  for growth updating
-      }
-
-    echoinput<<"Calculated assignments settlement occurs "<<endl<<"GPat Settle# Month Area Use(0/1)"<<endl;
-    for(gp=1;gp<=N_GP;gp++)
-    for(settle=1;settle<=N_settle;settle++)
-    for(p=1;p<=pop;p++)
-    {
       echoinput<<gp<<" "<<settle<<" "<<settlement_pattern_rd(settle,2)<<" "<<p<<" :: "<<recr_dist_pattern(gp,settle,p)<<endl;
     }
-    
 //  SS_Label_Info_4.2.3 #Set-up arrays and indexing for growth patterns, gender, settlements, platoons
+ END_CALCS  
    int g3i;
-  // Settle_seas(1,N_settle)  //  calculated season in which settlement occurs
-  // Settle_offset(1,N_settle)  //  calculated number of seasons between spawning and the season in which settlement occurs
-  //  Settle_timing(1,N_settle)  //  calculated elapsed time (frac of year) between settlement and the begin of season in which it occurs
-  // Settle_age(1,N_settle)  //  calculated age at which settlement occurs, with age 0 being the year in which spawning occurs
+  ivector Settle_offset(1,N_settle_timings)  //  calculated number of seasons between spawning and the season in which settlement occurs
+  vector  Settle_timing(1,N_settle_timings)  //  calculated elapsed time (frac of year) between settlement and the begin of season in which it occurs
+  ivector Settle_age(1,N_settle_timings)  //  calculated age at which settlement occurs, with age 0 being the year in which spawning occurs
+  ivector Settle_seas(1,N_settle_timings)  //  calculated season in which settlement occurs
+
+ LOCAL_CALCS
   for (settle=1;settle<=N_settle;settle++)
   {
     Settle_timing(settle)=(settlement_pattern_rd(settle,2)-1.0)/12.  ; //  settlement month converted to fraction of year; could be > one year
