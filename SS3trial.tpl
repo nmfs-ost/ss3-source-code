@@ -3103,7 +3103,7 @@ DATA_SECTION
   Fcast_RelF_yr1=endyr;
   Fcast_RelF_yr2=endyr;
   N_Fcast_Yrs=0;
-  YrMax=endyr;
+  YrMax=endyr+1;
   TimeMax_Fcast_std = styr+(YrMax-styr)*nseas+nseas-1;
   Do_Rebuilder=0;
   }
@@ -3426,6 +3426,8 @@ DATA_SECTION
   int N_settle_timings  //  number of recruitment settlement timings per spawning (>=1) - important for growth calculation
   int N_settle_assignments  //  number of assigned settlements for GP, Settle, Area (>=0)
   int N_settle  //  temporary so code will compile
+  int settle  //  index to settle_assignments
+  int settle_time  //  index to setting timings
   
   int recr_dist_inx
   !! recr_dist_method=1;  //  hardwire for 3.24 method  later make this a read item
@@ -3522,20 +3524,8 @@ DATA_SECTION
 
   3darray lin_grow(1,gmorph,1,nseas*N_subseas,0,nages)  //  during linear phase has fraction of Size at Afix
   ivector first_grow_age2(1,gmorph);
-  3darray recr_dist_pattern(1,N_GP,1,N_settle_timings,0,pop);  //  has flag to indicate each settlement events
-  int  settle;
   ivector settle_g(1,gmorph)   //  settlement pattern for each platoon
   
- LOCAL_CALCS
-  recr_dist_pattern.initialize();
-  Settle_offset.initialize();
-  Settle_timing.initialize();
-  Settle_age.initialize();
-  Settle_seas.initialize();
-  use_morph.initialize();
-  TG_use_morph.initialize();
- END_CALCS
-
 //  INSERT for 3.24
   !!if(N_settle_assignments==0) {j=1;} else {j=N_settle_assignments;}
   init_matrix settlement_pattern_rd1(1,N_settle_assignments,1,3)    //  for each settlement event:  GPat, Month, area
@@ -3566,80 +3556,99 @@ DATA_SECTION
       for (settle=1;settle<=N_settle_assignments;settle++)
       {
         if(read_seas_mo==1)
+        {
+         real_month=1.0 + azero_seas(settlement_pattern_rd(settle,2))*12.;
+        }
+        else
+        {
+           real_month=(settlement_pattern_rd(settle,2)-1.0)/12.  ; //  settlement month converted to fraction of year; could be > one year
+        }
+        if(N_settle_timings==0)
+        {
+          N_settle_timings++;
+          settle_timings_tempvec(N_settle_timings)=real_month;
+        }
+        else
+        {
+          k=0;
+          for(j=1;j<=N_settle_timings;j++)
           {
-           real_month=1.0 + azero_seas(settlement_pattern_rd(settle,2))*12.;
-            echoinput<<settle<<" "<<settlement_pattern_rd(settle,2)<<" "<<azero_seas(settlement_pattern_rd(settle,2))<<" "<<real_month<<endl;
+            if(settle_timings_tempvec(j)!=real_month)
+            {
+              k=1;
+            }
           }
-          else
-          {
-             real_month=(settlement_pattern_rd(settle,2)-1.0)/12.  ; //  settlement month converted to fraction of year; could be > one year
-          }
-          if(N_settle_timings==0)
+          if(k==1)
           {
             N_settle_timings++;
             settle_timings_tempvec(N_settle_timings)=real_month;
           }
-          else
-          {
-            k=0;
-            for(j=1;j<=N_settle_timings;j++)
-            {
-              if(settle_timings_tempvec(j)!=real_month)
-              {
-                k=1;
-              }
-            }
-            if(k==1)
-            {
-              N_settle_timings++;
-              settle_timings_tempvec(N_settle_timings)=real_month;
-            }
-          }
+        }
       }
     echoinput<<"N settle timings: "<<N_settle_timings<<" vector: "<<settle_timings_tempvec(1,N_settle_timings)<<endl;
-    exit(1);
-    echoinput<<"Calculated assignments settlement occurs "<<endl<<"GPat Settle# Month Area Use(0/1)"<<endl;
-    for(gp=1;gp<=N_GP;gp++)
-    for(p=1;p<=pop;p++)
-    {
-        gp=settlement_pattern_rd(settle,1); //  growth patterns
-        p=settlement_pattern_rd(settle,3);  //  settlement area
-        recr_dist_pattern(gp,settle,p)=1;  //  indicates that settlement will occur here
-        recr_dist_pattern(gp,settle,0)=1;  //  for growth updating
-      echoinput<<gp<<" "<<settle<<" "<<settlement_pattern_rd(settle,2)<<" "<<p<<" :: "<<recr_dist_pattern(gp,settle,p)<<endl;
-    }
 //  SS_Label_Info_4.2.3 #Set-up arrays and indexing for growth patterns, gender, settlements, platoons
  END_CALCS  
    int g3i;
   ivector Settle_offset(1,N_settle_timings)  //  calculated number of seasons between spawning and the season in which settlement occurs
   vector  Settle_timing(1,N_settle_timings)  //  calculated elapsed time (frac of year) between settlement and the begin of season in which it occurs
+  vector  Settle_month(1,N_settle_timings)  //  calculated month (real)in which settlement occurs
   ivector Settle_age(1,N_settle_timings)  //  calculated age at which settlement occurs, with age 0 being the year in which spawning occurs
   ivector Settle_seas(1,N_settle_timings)  //  calculated season in which settlement occurs
+  3darray recr_dist_pattern(1,N_GP,1,N_settle_timings,0,pop);  //  has flag to indicate each settlement events
 
  LOCAL_CALCS
-  for (settle=1;settle<=N_settle;settle++)
+  Settle_offset.initialize();
+  Settle_timing.initialize();
+  Settle_age.initialize();
+  Settle_seas.initialize();
+  use_morph.initialize();
+  TG_use_morph.initialize();
+  recr_dist_pattern.initialize();
+
+  echoinput<<"Calculated assignments settlement occurs "<<endl<<"Settle_event / GPat / Area / Settle_time / Month / seas / seas_from_spawn / time_from_seas_start / age_at_settle"<<endl;
+  for (settle=1;settle<=N_settle_assignments;settle++)
   {
-    Settle_timing(settle)=(settlement_pattern_rd(settle,2)-1.0)/12.  ; //  settlement month converted to fraction of year; could be > one year
+    gp=settlement_pattern_rd(settle,1); //  growth patterns
+    p=settlement_pattern_rd(settle,3);  //  settlement area
+    if(read_seas_mo==1)
+    {
+     real_month=1.0 + azero_seas(settlement_pattern_rd(settle,2))*12.;
+    }
+    else
+    {
+       real_month=(settlement_pattern_rd(settle,2)-1.0)/12.  ; //  settlement month converted to fraction of year; could be > one year
+    }
+
+//  find the settlement timing this event occurs in
+    settle_time=0;
+    for(j=1;j<=N_settle_timings;j++)
+    {
+      if(real_month==settle_timings_tempvec(j)) {settle_time=j;}
+    }
+    recr_dist_pattern(gp,settle_time,p)=1;  //  indicates that settlement will occur here
+    recr_dist_pattern(gp,settle_time,0)=1;  //  for growth updating
+    echoinput<<settle<<" / "<<gp<<" / "<<p<<" / "<<settle_time<<" / "<<real_month;
+    Settle_month(settle_time)=real_month;
+    Settle_timing(settle_time)=(real_month-1.0)/12.  ; //  settlement month converted to fraction of year; could be > one year
     k=spawn_seas;  //  earliest possible time for settlement
     temp=azero_seas(k)+seasdur(k);  //  starting value
-//    echoinput<<"settle and timing "<<settle<<" "<<Settle_timing(settle)<<endl;
-    while(temp<=Settle_timing(settle))
+    while(temp<=Settle_timing(settle_time))
     {
       if(k==nseas)
-        {k=1; Settle_age(settle)++;}
+        {k=1; Settle_age(settle_time)++;}
         else
         {k++;}
         temp+=seasdur(k);
     }
-    Settle_seas(settle)=k;
-    Settle_offset(settle)=Settle_seas(settle)-spawn_seas+Settle_age(settle)*nseas;
-    Settle_timing(settle)-=(temp-seasdur(k));  //  remainder timing from beginning of this season; needed for natmort correction
-    echoinput<<"seas  "<<Settle_seas(settle)<<" t offset "<<Settle_offset(settle)<<" timing "<<Settle_timing(settle)<<"  age "<<Settle_age(settle)<<endl;
+    Settle_seas(settle_time)=k;
+    Settle_offset(settle_time)=Settle_seas(settle_time)-spawn_seas+Settle_age(settle_time)*nseas;  //  number of seasons between spawning and the season in which settlement occurs
+    Settle_timing(settle_time)-=(temp-seasdur(k));  //  remainder timing from beginning of this season; needed for natmort correction
+    echoinput<<"  /  "<<Settle_seas(settle_time)<<" / "<<Settle_offset(settle_time)<<" / "<<Settle_timing(settle_time)<<"  / "<<Settle_age(settle_time)<<endl;
   }
-
+    
    for (gp=1;gp<=N_GP*gender;gp++)
    {
-      g_Start(gp)=(gp-1)*N_settle*N_platoon+int(N_platoon/2)+1-N_platoon;  // find the mid-morph being processed
+      g_Start(gp)=(gp-1)*N_settle_timings*N_platoon+int(N_platoon/2)+1-N_platoon;  // find the mid-morph being processed
    }
 
    g=0;
@@ -3648,7 +3657,7 @@ DATA_SECTION
    echoinput<<"Index GP Sex Settlement Bseas Sub_Morph Sub_Morph_Dist GP_Gender GP*Gender*settle BirthAge_Rel_Jan1 Used?"<<endl;
    for (gg=1;gg<=gender;gg++)
    for (gp=1;gp<=N_GP;gp++)
-   for (settle=1;settle<=N_settle;settle++)
+   for (settle=1;settle<=N_settle_timings;settle++)
    {
      g3i++;
       {
@@ -3661,8 +3670,8 @@ DATA_SECTION
          GP(g)=gp+(gg-1)*N_GP;   // counter for pattern x gender so gp is nested inside gender
          GP2(g)=gp2; //   reverse pointer to platoon counter
          GP4(g)=gp;  //  counter for growth pattern
-         settle_g(g)=settle;  //  to find the settlement pattern for each platoon
-         azero_G(g)=(settlement_pattern_rd(settle,2)-1.0)/12.  ; //  settlement month converted to fraction of year; could be > one year
+         settle_g(g)=settle;  //  to find the settlement timing for this platoon
+         azero_G(g)=(Settle_month(settle)-1.0)/12.  ; //  settlement month converted to fraction of year; could be > one year
          for (p=1;p<=pop;p++)
          {
            if(recr_dist_pattern(gp,settle,p)>0.)
@@ -3700,6 +3709,7 @@ DATA_SECTION
      echoinput<<g<<" "<<s<<" "<<subseas<<" "<<ALK_idx<<" cal_age : "<<calen_age(g,ALK_idx)<<endl;
    }
    echoinput<<"done with ALK_idx"<<endl;
+
     if(N_TG>0)
     {
       for (TG=1;TG<=N_TG;TG++)
@@ -4230,19 +4240,36 @@ DATA_SECTION
      ParCount+=3;
   }
   recr_dist_parms = ParCount+1;  // pointer to first recruitment distribution  parameter
-  for (k=1;k<=N_GP;k++) {ParCount++; ParmLabel+="RecrDist_GP_"+NumLbl(k);}
-  for (k=1;k<=pop;k++)  {ParCount++; ParmLabel+="RecrDist_Area_"+NumLbl(k);}
-  //  REVERT  because 3.24 has one parameter per season, not per settlement event
-//  for (k=1;k<=N_settle;k++){ParCount++; ParmLabel+="RecrDist_settle_"+NumLbl(k);}
-   for (k=1;k<=nseas;k++){ParCount++; ParmLabel+="RecrDist_seas_"+NumLbl(k);}
-
-  if(recr_dist_inx==1) // add for the morph assignments within each area
+  switch (recr_dist_method)
+  {
+    case 1:  //  like 3.24 method
     {
-      for (gp=1;gp<=N_GP;gp++)
-      for (s=1;s<=N_settle;s++)
-      for (p=1;p<=pop;p++)
-      {ParCount++; ParmLabel+="RecrDist_interaction_GP_"+NumLbl(gp)+"_seas_"+NumLbl(s)+"_area_"+NumLbl(p);}
+      for (k=1;k<=N_GP;k++) {ParCount++; ParmLabel+="RecrDist_GP_"+NumLbl(k);}
+      for (k=1;k<=pop;k++)  {ParCount++; ParmLabel+="RecrDist_Area_"+NumLbl(k);}
+      for (k=1;k<=nseas;k++){ParCount++; ParmLabel+="RecrDist_seas_"+NumLbl(k);}
+
+      if(recr_dist_inx==1) // add for the morph assignments within each area
+      {
+        for (gp=1;gp<=N_GP;gp++)
+        for (s=1;s<=N_settle;s++)
+        for (p=1;p<=pop;p++)
+        {ParCount++; ParmLabel+="RecrDist_interaction_GP_"+NumLbl(gp)+"_seas_"+NumLbl(s)+"_area_"+NumLbl(p);}
+      }
+      break;
     }
+    case 2:  //  new method with main effects only
+    {
+      break;
+    }
+    case 3:  //  new method with parm for each settlement
+    {
+      break;
+    }
+    case 4:   //  no distribution of recruitments
+    {
+      break;
+    }
+  }
 
   MGP_CGD=ParCount+1;  // pointer to cohort growth deviation base parameter
   ParCount++;
@@ -4624,7 +4651,7 @@ DATA_SECTION
       {
         N_MGparm_dev++;
 
-//  REVERT   these are not parameters in 3.24  so create but do not read
+//  REVERT   these are not parameters in 3.24  create anyway
         ParCount++;
         ParmLabel+=ParmLabel(j)+"_dev_se"+CRLF(1);
         ParCount++;
@@ -4733,21 +4760,21 @@ DATA_SECTION
     MGparm_CV(j)=MGparm_seas_1(f,6);
     MGparm_PH(j)=MGparm_seas_1(f,7);
    }
-
+    echoinput<<"here "<<N_MGparm_dev<<endl;
    if(N_MGparm_dev>0)
    {
-     j=0;
+     s=0;
      k=0;
      for (f=1;f<=N_MGparm;f++)
      {
        if(MGparm_1(f,9)>=1)
        {
-         j++;
+         s++;
          if(MG_adjust_method==2 && MGparm_1(f,9)==1)
          {N_warn++; warning<<" cannot use MG_adjust_method==2 and multiplicative devs for parameter "<<f<<endl;}
-         MGparm_dev_type(j)=MGparm_1(f,9);  //  1 for multiplicative, 2 for additive, 3 for additive randwalk, 4=mean-reverting rwalk
-         MGparm_dev_point(f)=j;  //  specifies which dev vector is used by the f'th MGparm
-         MGparm_dev_rpoint(j)=f;  //  specifies which parm (f) is affected by the j'th dev vector
+         MGparm_dev_type(s)=MGparm_1(f,9);  //  1 for multiplicative, 2 for additive, 3 for additive randwalk, 4=mean-reverting rwalk
+         MGparm_dev_point(f)=s;  //  specifies which dev vector is used by the f'th MGparm
+         MGparm_dev_rpoint(s)=f;  //  specifies which parm (f) is affected by the j'th dev vector
          
 //  INSERT for 3.24 compatibility
          k++;
@@ -4762,7 +4789,7 @@ DATA_SECTION
            N_warn++; warning<<" reset MGparm_dev start year to styr for MGparm: "<<f<<" "<<y<<endl;
            y=styr;
          }
-         MGparm_dev_minyr(j)=y;
+         MGparm_dev_minyr(s)=y;
 
          y=MGparm_1(f,11);
          if(y>endyr)
@@ -4770,7 +4797,7 @@ DATA_SECTION
            N_warn++; warning<<" reset MGparm_dev end year to endyr for MGparm: "<<f<<" "<<y<<endl;
            y=endyr;
          }
-         MGparm_dev_maxyr(j)=y;
+         MGparm_dev_maxyr(s)=y;
        }
      }
          
@@ -4782,21 +4809,22 @@ DATA_SECTION
       MGparm_LO(j)=MGparm_dev_se_rd(k,1);
       MGparm_HI(j)=MGparm_dev_se_rd(k,2);
       MGparm_RD(j)=MGparm_dev_se_rd(k,3);
-      MGparm_PR(j)=MGparm_dev_se_rd(k,4);
-      MGparm_PRtype(j)=MGparm_dev_se_rd(k,5);
-      MGparm_CV(j)=MGparm_dev_se_rd(k,6);
-      MGparm_PH(j)=MGparm_dev_se_rd(k,7);
+      MGparm_PR(j)=0.0;
+      MGparm_PRtype(j)=-1.;
+      MGparm_CV(j)=999;
+      MGparm_PH(j)=-1;
       MGparm_dev_rpoint2(f)=j;  //  specifies which parm holds the f'th dev's se
       j++;
       k++;
       MGparm_LO(j)=MGparm_dev_se_rd(k,1);
       MGparm_HI(j)=MGparm_dev_se_rd(k,2);
       MGparm_RD(j)=MGparm_dev_se_rd(k,3);
-      MGparm_PR(j)=MGparm_dev_se_rd(k,4);
-      MGparm_PRtype(j)=MGparm_dev_se_rd(k,5);
-      MGparm_CV(j)=MGparm_dev_se_rd(k,6);
-      MGparm_PH(j)=MGparm_dev_se_rd(k,7);
+      MGparm_PR(j)=0.0;
+      MGparm_PRtype(j)=-1.;
+      MGparm_CV(j)=999;
+      MGparm_PH(j)=-1;
      }
+    echoinput<<"MGparm_RD "<<MGparm_RD<<endl;
    }
 
   //  SS_Label_Info_4.5.9 #Set up random deviations for MG parms
@@ -5267,11 +5295,14 @@ DATA_SECTION
   imatrix init_F_loc(1,nseas,1,Nfleet);  // pointer to init_F parameter for each fleet
   int N_init_F;  
  LOCAL_CALCS
+  init_F_loc.initialize();
   N_init_F=0;
-  for (s=1;s<=nseas;s++)
+
+//  REVERT  no seasons in 3.24
+//  for (s=1;s<=nseas;s++)
+  s=1;
   for (f=1;f<=Nfleet;f++)
   {
-    init_F_loc(s,f)=-1;
 //  REVERT
 //    if(fleet_type(f)<=2 && obs_equ_catch(s,f)!=0.0)
 //  INSERT  back to 3.24 format
@@ -5304,7 +5335,10 @@ DATA_SECTION
    init_F_PRtype=column(init_F_parm_1,5);
    init_F_CV=column(init_F_parm_1,6);
    init_F_PH=ivector(column(init_F_parm_1,7));
-   for (s=1;s<=nseas;s++)
+
+//  REVERT  no seasons in 3.24
+//   for (s=1;s<=nseas;s++)
+   s=1;
    for (f=1;f<=Nfleet;f++)
    {
      if(init_F_loc(s,f)>0)
@@ -7636,9 +7670,9 @@ PARAMETER_SECTION
 //  vector natM1(1,N_GP*gender)
 //  vector natM2(1,N_GP*gender)
   matrix natMparms(1,N_natMparms,1,N_GP*gender)
-  3darray natM(1,nseas,1,N_GP*gender*N_settle,0,nages)   //  need nseas to capture differences due to birthseason
-  3darray surv1(1,nseas,1,N_GP*gender*N_settle,0,nages)
-  3darray surv2(1,nseas,1,N_GP*gender*N_settle,0,nages)
+  3darray natM(1,nseas,1,N_GP*gender*N_settle_timings,0,nages)   //  need nseas to capture differences due to birthseason
+  3darray surv1(1,nseas,1,N_GP*gender*N_settle_timings,0,nages)
+  3darray surv2(1,nseas,1,N_GP*gender*N_settle_timings,0,nages)
   vector CVLmin(1,N_GP*gender)
   vector CVLmax(1,N_GP*gender)
   vector CV_const(1,N_GP*gender)
@@ -7690,7 +7724,7 @@ PARAMETER_SECTION
   3darray Wt_Age_mid(1,nseas,1,gmorph,0,nages)
 
   3darray migrrate(styr-3,endyr+1,1,do_migr2,0,nages)
-  3darray recr_dist(1,N_GP*gender,1,N_settle,1,pop);
+  3darray recr_dist(1,N_GP*gender,1,N_settle_timings,1,pop);
 !!//  SS_Label_Info_5.1.2 #Create SR_parm vector, recruitment vectors
   init_bounded_number_vector SR_parm(1,N_SRparm2,SRvec_LO,SRvec_HI,SRvec_PH)
   number two_sigmaRsq;
@@ -8341,7 +8375,7 @@ PRELIMINARY_CALCS_SECTION
     echoinput<< " set parms to init values in CTL file "<<endl;
     for (i=1;i<=N_MGparm2;i++)
     {MGparm(i) = MGparm_RD(i);}  //  set vector of initial natmort and growth parms
-    echoinput<< " MGparms OK "<<endl;
+    echoinput<< " MGparms OK "<<MGparm<<endl;
 
     for (i=1;i<=N_SRparm2;i++)
     {SR_parm(i)=SR_parm_1(i,3);}
@@ -9952,7 +9986,7 @@ FUNCTION void get_growth2()
   
           g=g_Start(gp);  //  base platoon
   //  SS_Label_Info_16.2.4  #Loop settlement events
-          for (settle=1;settle<=N_settle;settle++)
+          for (settle=1;settle<=N_settle_timings;settle++)
           {
             g+=N_platoon;
             if(use_morph(g)>0)
@@ -10372,7 +10406,7 @@ FUNCTION void get_natmort()
     }  // end have natmort parms
 
     g=g_Start(gp);  //  base platoon
-    for (settle=1;settle<=N_settle;settle++)
+    for (settle=1;settle<=N_settle_timings;settle++)
     {
   //  SS_Label_Info_17.1.2  #loop settlements
       g+=N_platoon;
@@ -10532,20 +10566,14 @@ FUNCTION void get_recr_distribution()
   Ip=recr_dist_parms-1;
   for (f=1;f<=MGP_CGD-recr_dist_parms;f++)
   {
-    echoinput<<f<<" ";
-    echoinput<<mgp_adj(Ip+f)<<endl;
     recr_dist_parm(f)=mfexp(mgp_adj(Ip+f));
   }
 //  SS_Label_Info_18.2  #loop gp * settlements * area and multiply together the recr_dist_parm values
   for (gp=1;gp<=N_GP;gp++)
-  for (settle=1;settle<=N_settle;settle++)
+  for (settle=1;settle<=N_settle_timings;settle++)
   for (p=1;p<=pop;p++)
   if(recr_dist_pattern(gp,settle,p)>0)
   {
-    echoinput<<gp<<" "<<settle<<" "<<p;
-    echoinput<<" gpparm:"<<recr_dist_parm(gp);
-    echoinput<<" areaparm:"<<recr_dist_parm(N_GP+p);
-    echoinput<<" settleparm:"<<recr_dist_parm(N_GP+pop+settle)<<endl;
     recr_dist(gp,settle,p)=femfrac(gp)*recr_dist_parm(gp)*recr_dist_parm(N_GP+p)*recr_dist_parm(N_GP+pop+settle);
     if(gender==2) recr_dist(gp+N_GP,settle,p)=femfrac(gp+N_GP)*recr_dist_parm(gp)*recr_dist_parm(N_GP+p)*recr_dist_parm(N_GP+pop+settle);  //males
   }
@@ -10555,7 +10583,7 @@ FUNCTION void get_recr_distribution()
   {
     f=N_GP+nseas+pop;
     for (gp=1;gp<=N_GP;gp++)
-    for (settle=1;settle<=N_settle;settle++)
+    for (settle=1;settle<=N_settle_timings;settle++)
     for (p=1;p<=pop;p++)
     {
       f++;
@@ -10875,7 +10903,7 @@ FUNCTION void get_saveGparm()
     {
       gp++;
       g=g_Start(gp);  //  base platoon
-      for (settle=1;settle<=N_settle;settle++)
+      for (settle=1;settle<=N_settle_timings;settle++)
       {
         g+=N_platoon;
         save_gparm++;
@@ -12890,7 +12918,7 @@ FUNCTION void get_time_series()
 // distribute Recruitment of age 0 fish among the current and future settlements; and among areas and morphs
 //  note that because SPB_current is calculated at end of season to take into account Z,
 //  this means that recruitment cannot occur until a subsequent season
-//        for (settle=1;settle<=N_settle;settle++)
+//        for (settle=1;settle<=N_settle_timings;settle++)
 //        {
           for (g=1;g<=gmorph;g++)
           if(use_morph(g)>0)
@@ -13791,6 +13819,7 @@ FUNCTION void evaluate_the_objective_function()
           }
         }
       }
+      if(do_once==1) cout<<" catch -log(L) "<<catch_like<<endl;
     }
 
   //  SS_Label_Info_25.12 #Likelihood for the recruitment deviations
@@ -14404,8 +14433,6 @@ FUNCTION void Do_Equil_Calc()
    smryage=0.0;
    smrynum=0.0;
 // first seed the recruits
-//      for (settle=1;settle<=N_settle;settle++)
-//      {
         for (g=1;g<=gmorph;g++)
         {
         if(use_morph(g)>0)
@@ -14760,7 +14787,7 @@ FUNCTION void Make_AgeLength_Key(const int s, const int subseas)
     {
       gp=gp+1;
       gstart=g_Start(gp);  //  base platoon
-      for (settle=1;settle<=N_settle;settle++)
+      for (settle=1;settle<=N_settle_timings;settle++)
       {
         gstart+=N_platoon;
         if(recr_dist_pattern(GPat,settle,0)>0)
@@ -18282,7 +18309,7 @@ FUNCTION void write_nucontrol()
   if(N_platoon==1) report4<<"#_Cond ";
   report4<<submorphdist(1,N_platoon)<<" #vector_Morphdist_(-1_in_first_val_gives_normal_approx)"<<endl;
   report4<<"#"<<endl;
-  report4<<N_settle<<" #  number of recruitment settlements per spawning (need this number of parameters also) "<<endl<<
+  report4<<N_settle_timings<<" #  number of recruitment settlements per spawning (need this number of parameters also) "<<endl<<
              recr_dist_inx<< " # year_x_area_x_settlement_event interaction requested"<<endl<<
              "#GPat month  area (for each settlement assignment)"<<endl<<settlement_pattern_rd<<endl<<"#"<<endl;
   if(pop==1)
@@ -19308,7 +19335,7 @@ FUNCTION void write_bigoutput()
      }
 
    SS2out<<endl<<"RECRUITMENT_DIST"<<endl<<"Settle# G_pattern Area Settle_Month Seas Age Time_w/in_seas Frac/sex"<<endl;
-   for (settle=1;settle<=N_settle;settle++)
+   for (settle=1;settle<=N_settle_timings;settle++)
    {
       gp=settlement_pattern_rd(settle,1); //  growth patterns
       p=settlement_pattern_rd(settle,3);  //  settlement area
@@ -20505,7 +20532,7 @@ FUNCTION void write_bigoutput()
       g=0;
       for (gg=1;gg<=gender;gg++)
       for (gp=1;gp<=N_GP;gp++)
-      for (settle=1;settle<=N_settle;settle++)
+      for (settle=1;settle<=N_settle_timings;settle++)
       {
         g++;
         if(use_morph(g)>0)
