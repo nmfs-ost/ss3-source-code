@@ -660,8 +660,7 @@ DATA_SECTION
   !!echoinput<<" catch as read (NEW:  yr,seas first; then read all fleets and surveys)"<<endl<<catch_bioT<<endl;
 
   matrix catch_ret_obs(1,Nfleet,styr-nseas,TimeMax+nseas)
-  !! k=Nfleet*(TimeMax-styr+1);
-  ivector have_catch(1,k);
+  imatrix do_Fparm(1,Nfleet,styr-nseas,TimeMax+nseas)
   3darray catch_seas_area(styr,TimeMax,1,pop,0,Nfleet)
   matrix totcatch_byarea(styr,TimeMax,1,pop)
   vector totcat(styr-1,endyr)
@@ -3437,7 +3436,7 @@ DATA_SECTION
   {
     case 1:  //  like 3.24 format
       {
-        if(N_GP*nseas*pop==1) {j=0; recr_dist_method=4;} else {j=2;}
+        if(N_GP*nseas*pop==1) {j=0;} else {j=2;}
         N_settle_timings=nseas;  //  provision value updated later after the settlement events are read
         break;
       }
@@ -3553,6 +3552,13 @@ DATA_SECTION
 //    Here count the number of unique settlemonths to create the N_settle_timings
       N_settle_timings=0;
       settle_timings_tempvec.initialize();
+      if(N_settle_assignments==0)
+      {
+        N_settle_timings=1;
+        settle_timings_tempvec(1)=1.0;
+      }
+      else
+      {
       for (settle=1;settle<=N_settle_assignments;settle++)
       {
         if(read_seas_mo==1)
@@ -3585,6 +3591,7 @@ DATA_SECTION
           }
         }
       }
+      }
     echoinput<<"N settle timings: "<<N_settle_timings<<" vector: "<<settle_timings_tempvec(1,N_settle_timings)<<endl;
 //  SS_Label_Info_4.2.3 #Set-up arrays and indexing for growth patterns, gender, settlements, platoons
  END_CALCS  
@@ -3606,44 +3613,56 @@ DATA_SECTION
   recr_dist_pattern.initialize();
 
   echoinput<<"Calculated assignments settlement occurs "<<endl<<"Settle_event / GPat / Area / Settle_time / Month / seas / seas_from_spawn / time_from_seas_start / age_at_settle"<<endl;
-  for (settle=1;settle<=N_settle_assignments;settle++)
+  if(N_settle_assignments>0)
   {
-    gp=settlement_pattern_rd(settle,1); //  growth patterns
-    p=settlement_pattern_rd(settle,3);  //  settlement area
-    if(read_seas_mo==1)
+    for (settle=1;settle<=N_settle_assignments;settle++)
     {
-     real_month=1.0 + azero_seas(settlement_pattern_rd(settle,2))*12.;
+      gp=settlement_pattern_rd(settle,1); //  growth patterns
+      p=settlement_pattern_rd(settle,3);  //  settlement area
+      if(read_seas_mo==1)
+      {
+       real_month=1.0 + azero_seas(settlement_pattern_rd(settle,2))*12.;
+      }
+      else
+      {
+         real_month=(settlement_pattern_rd(settle,2)-1.0)/12.  ; //  settlement month converted to fraction of year; could be > one year
+      }
+  
+  //  find the settlement timing this event occurs in
+      settle_time=0;
+      for(j=1;j<=N_settle_timings;j++)
+      {
+        if(real_month==settle_timings_tempvec(j)) {settle_time=j;}
+      }
+      recr_dist_pattern(gp,settle_time,p)=1;  //  indicates that settlement will occur here
+      recr_dist_pattern(gp,settle_time,0)=1;  //  for growth updating
+      echoinput<<settle<<" / "<<gp<<" / "<<p<<" / "<<settle_time<<" / "<<real_month;
+      Settle_month(settle_time)=real_month;
+      k=spawn_seas;  //  earliest possible time for settlement
+      temp=azero_seas(k)+seasdur(k);  //  starting value
+      while(temp<=Settle_timing(settle_time))
+      {
+        if(k==nseas)
+          {k=1; Settle_age(settle_time)++;}
+          else
+          {k++;}
+          temp+=seasdur(k);
+      }
+      Settle_seas(settle_time)=k;
+      Settle_offset(settle_time)=Settle_seas(settle_time)-spawn_seas+Settle_age(settle_time)*nseas;  //  number of seasons between spawning and the season in which settlement occurs
+      Settle_timing(settle_time)-=(temp-seasdur(k));  //  remainder timing from beginning of this season; needed for natmort correction
+      echoinput<<"  /  "<<Settle_seas(settle_time)<<" / "<<Settle_offset(settle_time)<<" / "<<Settle_timing(settle_time)<<"  / "<<Settle_age(settle_time)<<endl;
     }
-    else
-    {
-       real_month=(settlement_pattern_rd(settle,2)-1.0)/12.  ; //  settlement month converted to fraction of year; could be > one year
-    }
-
-//  find the settlement timing this event occurs in
-    settle_time=0;
-    for(j=1;j<=N_settle_timings;j++)
-    {
-      if(real_month==settle_timings_tempvec(j)) {settle_time=j;}
-    }
-    recr_dist_pattern(gp,settle_time,p)=1;  //  indicates that settlement will occur here
-    recr_dist_pattern(gp,settle_time,0)=1;  //  for growth updating
-    echoinput<<settle<<" / "<<gp<<" / "<<p<<" / "<<settle_time<<" / "<<real_month;
-    Settle_month(settle_time)=real_month;
-    Settle_timing(settle_time)=(real_month-1.0)/12.  ; //  settlement month converted to fraction of year; could be > one year
-    k=spawn_seas;  //  earliest possible time for settlement
-    temp=azero_seas(k)+seasdur(k);  //  starting value
-    while(temp<=Settle_timing(settle_time))
-    {
-      if(k==nseas)
-        {k=1; Settle_age(settle_time)++;}
-        else
-        {k++;}
-        temp+=seasdur(k);
-    }
-    Settle_seas(settle_time)=k;
-    Settle_offset(settle_time)=Settle_seas(settle_time)-spawn_seas+Settle_age(settle_time)*nseas;  //  number of seasons between spawning and the season in which settlement occurs
-    Settle_timing(settle_time)-=(temp-seasdur(k));  //  remainder timing from beginning of this season; needed for natmort correction
-    echoinput<<"  /  "<<Settle_seas(settle_time)<<" / "<<Settle_offset(settle_time)<<" / "<<Settle_timing(settle_time)<<"  / "<<Settle_age(settle_time)<<endl;
+  }
+  else
+  {
+    recr_dist_pattern(1,1,1)=1;
+    recr_dist_pattern(1,1,0)=1;
+    Settle_month(1)=1.;
+    Settle_timing(1)=0.0;
+    Settle_seas(1)=1;
+    Settle_offset(1)=0;
+    Settle_age(1)=0;
   }
     
    for (gp=1;gp<=N_GP*gender;gp++)
@@ -5261,7 +5280,7 @@ DATA_SECTION
  END_CALCS
 
   init_vector F_setup(1,k)
-  vector F_rate_max(1,j)
+//  vector F_rate_max(1,j)
 // setup for F_rate with F_Method=2
 // F_setup(1) = overall initial value
 // F_setup(2) = overall phase
@@ -5277,7 +5296,7 @@ DATA_SECTION
       echoinput<<F_setup<<" initial F value, F phase, N_detailed Fsetups to read "<<endl;
       F_detail=F_setup(3);
       F_Tune=4;
-      F_rate_max=max_harvest_rate;  // used to set upper bound on F_rate parameter
+//      F_rate_max=max_harvest_rate;  // used to set upper bound on F_rate parameter
     }
     else if(F_Method==3)
     {
@@ -5323,6 +5342,9 @@ DATA_SECTION
   vector init_F_PRtype(1,N_init_F)
   vector init_F_CV(1,N_init_F)
   ivector init_F_PH(1,N_init_F)
+    int N_Fparm
+    int Fparm_start
+
 
  LOCAL_CALCS
 
@@ -5362,43 +5384,62 @@ DATA_SECTION
      }
    }
   }
+ END_CALCS
 
+ LOCAL_CALCS
 //  SS_Label_Info_4.7.2 #Create parameter labels for F parameters if F_method==2
   if(F_Method==2)
   {
+    Fparm_start = ParCount;
+    N_Fparm=0;
+    do_Fparm.initialize();
     for (f=1;f<=Nfleet;f++)
     for (y=styr;y<=endyr;y++)
     for (s=1;s<=nseas;s++)
     {
-//      _itoa(y,onenum,10);
-      sprintf(onenum, "%d", y);
-      ParCount++;
-      ParmLabel+="F_fleet_"+NumLbl(f)+"_YR_"+onenum+"_s_"+NumLbl(s)+CRLF(1);
-    }
-      g=0;
-      for (f=1;f<=Nfleet;f++)
-      for (y=styr;y<=endyr;y++)
-      for (s=1;s<=nseas;s++)
+      t=styr+(y-styr)*nseas+s-1;
+      if(catch_ret_obs(f,t)>0. && fleet_type(f)<=2)
       {
-        t=styr+(y-styr)*nseas+s-1;
-        g++;
-        if(catch_ret_obs(f,t)>0.)
-        {
-          have_catch(g)=F_setup(2);
-        }
-        else
-        {
-          have_catch(g)=-1;
-        }
+        N_Fparm++;
+        sprintf(onenum, "%d", y);
+        ParCount++;
+        do_Fparm(f,t)=N_Fparm;
+        ParmLabel+="F_fleet_"+NumLbl(f)+"_YR_"+onenum+"_s_"+NumLbl(s)+CRLF(1);
       }
+    }
+    echoinput<<" N F parameters "<<N_Fparm<<endl;
+  }
+ END_CALCS
+  ivector Fparm_PH(1,N_Fparm);
+  imatrix Fparm_loc(1,N_Fparm,1,2);  //  stores f,t
+  vector Fparm_max(1,N_Fparm);
+
+ LOCAL_CALCS
+  if(F_Method==2)
+  {
+    Fparm_max=max_harvest_rate;  //  populate vector with input value
+    Fparm_PH=F_setup(2);
+    g=0;
+    for (f=1;f<=Nfleet;f++)
+    for (y=styr;y<=endyr;y++)
+    for (s=1;s<=nseas;s++)
+    {
+      t=styr+(y-styr)*nseas+s-1;
+      if(catch_ret_obs(f,t)>0. && fleet_type(f)<=2)
+      {
+        g++;
+        Fparm_loc(g,1)=f; Fparm_loc(g,2)=t;
+      }
+    }
+
       if(F_detail>0)
       {
         for (k=1;k<=F_detail;k++)
         {
           f=F_setup2(k,1); y=F_setup2(k,2); s=F_setup2(k,3);
-          g=(f-1)*(TimeMax-styr+1)+(y-styr)*nseas+s;
           t=styr+(y-styr)*nseas+s-1;
-          if(F_setup2(k,6)!=-999) have_catch(g)=F_setup2(k,6);    //   used to setup the phase for F_rate
+          j=do_Fparm(f,t);
+          if(F_setup2(k,6)!=-999) Fparm_PH(j)=F_setup2(k,6);    //   used to setup the phase for F_rate
           if(F_setup2(k,5)!=-999) catch_se(t,f)=F_setup2(k,5);    //    reset the se for this observation
           //  setup of F_rate values occurs later in the parameter section
         }
@@ -7002,13 +7043,13 @@ DATA_SECTION
 
   if(F_Method==2)
   {
-    for (g=1;g<=Nfleet*(TimeMax-styr+1);g++)
+    for (g=1;g<=N_Fparm;g++)
     {
       ParCount++;
-      if(depletion_fleet>0 && have_catch(g)>0) have_catch(g)++;
-      if(have_catch(g) > Turn_off_phase) have_catch(g) =-1;
-      if(have_catch(g) > max_phase) max_phase=have_catch(g);
-      if(have_catch(g)>=0)
+      if(depletion_fleet>0 && Fparm_PH(g)>0) Fparm_PH(g)++;  //  increase phase by 1
+      if(Fparm_PH(g) > Turn_off_phase) Fparm_PH(g) =-1;
+      if(Fparm_PH(g) > max_phase) max_phase=Fparm_PH(g);
+      if(Fparm_PH(g)>0)
       {
         active_count++; active_parm(active_count)=ParCount;
       }
@@ -7842,11 +7883,12 @@ PARAMETER_SECTION
 
  LOCAL_CALCS
   if(F_Method==2)    // continuous F
-    {k=Nfleet*(TimeMax-styr+1);}
+//    {k=Nfleet*(TimeMax-styr+1);}
+     {k=N_Fparm;}
   else
     {k=-1;}
  END_CALCS
- init_bounded_number_vector F_rate(1,k,0.,F_rate_max,have_catch)
+ init_bounded_number_vector F_rate(1,k,0.,Fparm_max,Fparm_PH)
 
   vector Nmigr(1,pop);
   number Nsurvive;
@@ -8442,19 +8484,12 @@ PRELIMINARY_CALCS_SECTION
     {
       if(readparfile==0)
       {
-      g=0;
-      for (f=1;f<=Nfleet;f++)
-      for (y=styr;y<=endyr;y++)
-      for (s=1;s<=nseas;s++)
+      for (g=1;g<=N_Fparm;g++)
       {
-        t=styr+(y-styr)*nseas+s-1;
-        g++;
-        if(catch_ret_obs(f,t)>0.)  //have_catch
-        {
-          F_rate(g)=F_setup(1); Hrate(f,t)=F_setup(1);
-        }
-        else
-        {F_rate(g)=0.; Hrate(f,t)=0.0;}
+          F_rate(g)=F_setup(1); 
+          f=Fparm_loc(g,1);
+          t=Fparm_loc(g,2);
+          Hrate(f,t)=F_setup(1);
       }
       if(F_detail>0)
       {
@@ -8462,9 +8497,9 @@ PRELIMINARY_CALCS_SECTION
         {
           f=F_setup2(k,1); y=F_setup2(k,2); s=F_setup2(k,3);
           t=styr+(y-styr)*nseas+s-1;
-          g=(f-1)*(TimeMax-styr+1)+(y-styr)*nseas+s;
+          g=do_Fparm(f,t);
           if(F_setup2(k,4)!=-999) 
-            {F_rate(g)=F_setup2(k,4); Hrate(f,t)-F_setup2(k,4);}
+            {F_rate(g)=F_setup2(k,4); Hrate(f,t)=F_setup2(k,4);}
         }
       }
        echoinput<< " Fmort_parms have been reset "<<endl;
@@ -8822,11 +8857,10 @@ PROCEDURE_SECTION
     {
       if(current_phase()>=F_setup(2))
       {
-        g=0;
-        for (f=1;f<=Nfleet;f++)
-        for (t=styr;t<=TimeMax;t++)
+        for (g=1;g<=N_Fparm;g++)
         {
-          g++;
+          f=Fparm_loc(g,1);
+          t=Fparm_loc(g,2);
           Hrate(f,t)=F_rate(g);
         }
       }
@@ -9126,9 +9160,9 @@ PROCEDURE_SECTION
         }
         if(F_Method==2)    // continuous F
         {
-          for (k=1;k<=F_rate.indexmax();k++)
+          for (k=1;k<=N_Fparm;k++)
           {
-            if(have_catch(k)>0) {ParmTrace<<" "<<F_rate(k);}
+            if(Fparm_PH(k)>0) {ParmTrace<<" "<<F_rate(k);}
           }
         }
         for (f=1;f<=Q_Npar;f++)
@@ -9307,12 +9341,11 @@ BETWEEN_PHASES_SECTION
     {
       if(F_setup(2)>1 && j_phase==F_setup(2) && readparfile==0)  //  so now start doing F as paameters
       {
-        g=0;
         for (f=1;f<=Nfleet;f++)
         for (t=styr;t<=TimeMax;t++)
         {
-          g++;
-          F_rate(g)=Hrate(f,t);
+          g=do_Fparm(f,t);
+          if(g>0) {echoinput<<f<<" "<<t<<" "<<g<<endl; F_rate(g)=Hrate(f,t);}
         }
       }
     }
@@ -9983,7 +10016,7 @@ FUNCTION void get_growth2()
             }
             LinfR=pow(L_inf(gp),Richards(gp));
           }
-  
+          if(do_once==1) echoinput<<gp<<" Lmin: "<<Lmin(gp)<<" Lmax: "<<L_inf(gp)<<endl;
           g=g_Start(gp);  //  base platoon
   //  SS_Label_Info_16.2.4  #Loop settlement events
           for (settle=1;settle<=N_settle_timings;settle++)
@@ -9995,7 +10028,7 @@ FUNCTION void get_growth2()
               if(y==styr)
               {
   //  SS_Label_Info_16.2.4.1  #set up the delta in growth variability across ages if needed
-        if( g==1) echoinput<<y<<" initial yr do CV setup for gp, g: "<<gp<<" "<<g<<endl;
+        if( g==1 && do_once==1) echoinput<<y<<" initial yr do CV setup for gp, g: "<<gp<<" "<<g<<endl;
                 if(CV_const(gp)>0)
                 {
                   if(CV_depvar_a==0)
@@ -10356,7 +10389,6 @@ FUNCTION void get_natmort()
   int Do_AveAge;
   Do_AveAge=0;
   t_base=styr+(yz-styr)*nseas-1;
-  echoinput<<"in natmort"<<endl;
   Ip=-N_M_Grow_parms;   // start counter for MGparms
   //  SS_Label_Info_17.1  #loop growth patterns in each gender
   gp=0;
@@ -10368,7 +10400,7 @@ FUNCTION void get_natmort()
   	if(N_natMparms>0)
   	{
   //  SS_Label_Info_17.1.1 #Copy parameter values from mgp_adj to natMparms(gp), doing direct or offset for gp>1
-    for (j=1;j<=N_natMparms;j++) natMparms(j,gp)=mgp_adj(Ip+j);
+    for (j=1;j<=N_natMparms;j++) {natMparms(j,gp)=mgp_adj(Ip+j);}
     switch(MGparm_def)   //  switch for natmort parms
     {
       case 1:  // direct
@@ -10762,28 +10794,26 @@ FUNCTION void get_wtlen()
        echoinput<<"fec_len "<<endl<<fec_len(gp)<<endl;
   //  combine length maturity and fecundity; but will be ignored if reading empirical age-fecundity
        mat_fec_len(gp) = elem_prod(mat_len(gp),fec_len(gp));
-       echoinput<<"mat_fec_len "<<endl<<mat_fec_len(gp)<<endl;
+       if(do_once==1) echoinput<<"mat_fec_len "<<endl<<mat_fec_len(gp)<<endl;
      }
      else if(Maturity_Option==4)
       {
-        echoinput<<"age-fecundity as read from control file"<<endl<<Age_Maturity(gp)<<endl;
+        if(do_once==1) echoinput<<"age-fecundity as read from control file"<<endl<<Age_Maturity(gp)<<endl;
       }
       else
      {
-        echoinput<<"age-fecundity read from wtatage.ss"<<endl;
+        if(do_once==1) echoinput<<"age-fecundity read from wtatage.ss"<<endl;
      }
     }
     }  // end season loop
   }  // end GP loop
 //  end wt-len and fecundity
-   echoinput<<"end wtlen and maturity-fecundity"<<endl;
 
 //  SS_Label_Info_19.2.5  #Do Hermaphroditism (no seasonality and no gp differences)
 //  should build seasonally component here
 //  only one hermaphroditism definition is allowed (3 parameters), but it is stored by Gpat, so referenced by GP4(g)
     if(Hermaphro_Option>0)
     {
-    echoinput<<"do herm "<<MGparm_Hermaphro<<endl;
       dvariable infl;  // inflection
       dvariable stdev;  // standard deviation
       dvariable maxval;  // max value
@@ -12409,9 +12439,6 @@ FUNCTION void get_initial_conditions()
      {natage(t+s,p,g)(0,nages)=equ_numbers(s,p,g)(0,nages);}
 
    if(docheckup==1) echoinput<<" init age comp for styr "<<styr<<endl<<natage(styr)<<endl<<endl;
-//   echoinput<<"MGparms "<<mgp_adj<<endl;
-//   echoinput<<" avesize for styr "<<styr<<endl<<Ave_Size(styr,1)<<endl;
-//   echoinput<<" init age comp for styr "<<styr<<endl<<natage(styr)<<endl<<endl;
 
    // if recrdevs start before styr, then use them to adjust the initial agecomp
    //  apply a fraction of the bias adjustment, so bias adjustment gets less linearly as proceed back in time
@@ -12586,8 +12613,6 @@ FUNCTION void get_time_series()
               if(y==styr) natage(t+Settle_offset(settle),p,g,Settle_age(settle))=0.0;  //  to negate the additive code 
               natage(t+Settle_offset(settle),p,g,Settle_age(settle)) += Recruits*recr_dist(GP(g),settle,p)*submorphdist(GP2(g))*
                mfexp(natM(s,GP3(g),Settle_age(settle))*Settle_timing(settle));
-//               echoinput<<"distribute settlers timing 0 "<<y<<" "<<s<<" "<<g<<" "<<Recruits<<" dist "<<recr_dist(GP(g),settle,p)<<" M "<<natM(s,GP3(g),Settle_age(settle))<<" sub "<<submorphdist(GP2(g))
-//               <<" timing "<<Settle_timing(settle)<<" mortadj "<<mfexp(natM(s,GP3(g),Settle_age(settle))*Settle_timing(settle))<<" new N "<<natage(t+Settle_offset(settle),p,g,Settle_age(settle))<<endl;
             }
           }
       }
@@ -12914,7 +12939,6 @@ FUNCTION void get_time_series()
         }
   //  SS_Label_Info_24.3.4.1 #Get recruitment from this spawning biomass
         Recruits=Spawn_Recr(SPB_current);  // calls to function Spawn_Recr
-//        echoinput<<"SPB Recr "<<SPB_current<<" "<<Recruits<<endl;
 // distribute Recruitment of age 0 fish among the current and future settlements; and among areas and morphs
 //  note that because SPB_current is calculated at end of season to take into account Z,
 //  this means that recruitment cannot occur until a subsequent season
@@ -12930,19 +12954,15 @@ FUNCTION void get_time_series()
                 
               natage(t+Settle_offset(settle),p,g,Settle_age(settle)) += Recruits*recr_dist(GP(g),settle,p)*submorphdist(GP2(g))*
                mfexp(natM(s,GP3(g),Settle_age(settle))*Settle_timing(settle));
-//               echoinput<<"distribute settlers "<<y<<" "<<s<<" "<<g<<" "<<Recruits<<" dist "<<recr_dist(GP(g),settle,p)<<" M "<<natM(s,GP3(g),Settle_age(settle))<<" sub "<<submorphdist(GP2(g))
-//               <<" timing "<<Settle_timing(settle)<<" mortadj "<<mfexp(natM(s,GP3(g),Settle_age(settle))*Settle_timing(settle))<<" new N "<<natage(t+Settle_offset(settle),p,g,Settle_age(settle))<<endl;
           if(docheckup==1) echoinput<<p<<" "<<g<<" "<<GP3(g)<<" area & morph "<<endl<<"N-at-age after recruits "<<natage(t,p,g)(0,min(6,nages))<<endl
            <<"survival "<<surv1(s,GP3(g))(0,min(6,nages))<<endl;
             }
           }
-//        }
       }
 
   //  SS_Label_Info_24.6 #Survival to next season
   for (p=1;p<=pop;p++)
   {
-//      echoinput<<y<<" "<<s<<" before survival "<<natage(t)<<endl;
         if(s==nseas) {k=1;} else {k=0;}   //      advance age or not
         for (g=1;g<=gmorph;g++)
         if(use_morph(g)>0)
@@ -13024,7 +13044,6 @@ FUNCTION void get_time_series()
 
   //  SS_Label_Info_24.9  #migration
 //do migration between populations, for each gmorph and age  PROBLEM  need new container so future recruits not wiped out!
-//      echoinput<<y<<" "<<s<<" before migration "<<natage(t,1,1)(0,2)<<endl<<" in t+1 "<<natage(t+1,1,1)(0,2)<<endl;
       if(do_migration>0)  // movement between areas in time series
       {
         natage_temp=natage(t+1);
@@ -13120,7 +13139,6 @@ FUNCTION void get_time_series()
           }
         }  //  end s==nseas
       }
-//      echoinput<<y<<" "<<s<<" end season "<<natage(t,1,1)(0,2)<<endl<<"t+1 "<<natage(t+1,1,1)(0,2)<<endl;
     } //close season loop
   //  SS_Label_Info_24.12 #End loop of seasons
 
@@ -15195,7 +15213,7 @@ FUNCTION void get_posteriors()
   }
   if(F_Method==2)
   {
-    for (i=1;i<=Nfleet*(TimeMax-styr+1);i++)
+    for (i=1;i<=N_Fparm;i++)
     {
       if(active(F_rate(i))) posts<<F_rate(i)<<" ";
     }
@@ -17008,9 +17026,9 @@ FUNCTION void write_summaryoutput()
     if(F_Method==2)
     {
       report2<<runnumber<<" F_rate ";
-      for (i=1;i<=Nfleet*(TimeMax-styr+1);i++) {NP++; report2<<" "<<ParmLabel(NP);}
+      for (i=1;i<=N_Fparm;i++) {NP++; report2<<" "<<ParmLabel(NP);}
       report2<<endl<<runnumber<<" F_rate ";
-      for (i=1;i<=Nfleet*(TimeMax-styr+1);i++) report2<<" "<<F_rate(i);
+      for (i=1;i<=N_Fparm;i++) report2<<" "<<F_rate(i);
       report2<<endl;
     }
 
@@ -18587,13 +18605,10 @@ FUNCTION void write_nucontrol()
    if(F_Method==2)
    {
     report4<<endl<<"# F rates for Fmethod=2"<<endl;
-    k=0;
-    for (f=1;f<=Nfleet;f++)
-    for (y=styr;y<=endyr;y++)
-    for (s=1;s<=nseas;s++)
+    for (g=1;g<=N_Fparm;g++)
     {
-      NP++; k++;
-      report4<<"# "<<F_rate(k)<< " "<<ParmLabel(NP)<<endl;
+      NP++;
+      report4<<"# "<<F_rate(g)<< " "<<ParmLabel(NP)<<endl;
     }
    }
    report4<<"#"<<endl;
@@ -19127,13 +19142,13 @@ FUNCTION void write_bigoutput()
 
     if(F_Method==2)
     {
-      for (i=1;i<=Nfleet*(TimeMax-styr+1);i++)
+      for (i=1;i<=N_Fparm;i++)
       {
         NP++;  SS2out<<NP<<" "<<ParmLabel(NP)<<" "<<F_rate(i);
         if(active(F_rate(i)))
         {
           active_count++;
-          SS2out<<" "<<active_count<<" "<<have_catch(i)<<" 0.0  8.0  _ act "<<CoVar(active_count,1);
+          SS2out<<" "<<active_count<<" "<<Fparm_PH(i)<<" 0.0  8.0  _ act "<<CoVar(active_count,1);
         }
         else
         {SS2out<<" _ _ _ _ _ NA _ ";}
