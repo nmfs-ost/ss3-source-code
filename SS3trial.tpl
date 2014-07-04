@@ -531,7 +531,7 @@ DATA_SECTION
   vector frac_ages(0,nages)
   ivector     years(styr,endyr) // vector of the years of the model
   vector    r_years(styr,endyr);
-  ivector ALK_OK(1,nseas*N_subseas);
+  ivector ALK_subseas_update(1,nseas*N_subseas);  //  0 means ALK is OK for this subseas, 1 means that recalc is needed
 
   ivector F_reporting_ages(1,2);
 
@@ -7879,7 +7879,7 @@ PARAMETER_SECTION
   vector Get_EquilCalc(1,2);
 
   4darray Z_rate(styr-3*nseas,k,1,pop,1,gmorph,0,nages)
-  matrix Zrate2(1,gmorph,0,nages)
+  3darray Zrate2(1,pop,1,gmorph,0,nages)
 
  LOCAL_CALCS
   if(F_Method==2)    // continuous F
@@ -8630,7 +8630,7 @@ PRELIMINARY_CALCS_SECTION
 
 //  SS_Label_Info_6.8 #Go thru biological calculations once, with do_once flag=1 to produce extra output to echoinput.sso
     echoinput<< " ready to evaluate once "<<endl;
-    ALK_OK=0;  //  vector to indicate if ALK needs recalculating
+    ALK_subseas_update=1;  //  vector to indicate if ALK needs recalculating
     do_once=1;
     niter=0;
     y=styr;
@@ -12248,7 +12248,7 @@ FUNCTION void get_initial_conditions()
   if(do_once==1) cout<<" growth OK"<<endl;
   if(MG_active(2)>0 || save_for_report>0)
   {
-    ALK_OK.initialize();  //  to indicate that all ALKs need calculation
+    ALK_subseas_update=1;  //  to indicate that all ALKs need calculation
     get_growth2();   // initial year;  do growth before natmort in case lorenzen M is used
   }
   if(do_once==1) cout<<" growth OK"<<endl;
@@ -12484,7 +12484,7 @@ FUNCTION void get_time_series()
       if(time_vary_MG(y,0)>0 || save_for_report>0) get_MGsetup();
       if(time_vary_MG(y,2)>0)  
         {
-          ALK_OK=0;  // indicate that all ALKs will need re-estimation
+          ALK_subseas_update=1;  // indicate that all ALKs will need re-estimation
           get_growth2();  // years after styr;  do growth before natmort in case lorensen M is used
         }
       if(time_vary_MG(y,1)>0) get_natmort();
@@ -12753,7 +12753,7 @@ FUNCTION void get_time_series()
                 {
                   Z_rate(t,p,g)+=deadfish(s,g,f)*Hrate(f,t);
                 }
-                Zrate2(g)=elem_div( (1.-mfexp(-seasdur(s)*Z_rate(t,p,g))), Z_rate(t,p,g));
+                Zrate2(p,g)=elem_div( (1.-mfexp(-seasdur(s)*Z_rate(t,p,g))), Z_rate(t,p,g));
               }
 
   //  SS_Label_Info_24.3.3.2.2 #For each fleet, loop platoons and accumulate catch
@@ -12763,13 +12763,13 @@ FUNCTION void get_time_series()
                 for (g=1;g<=gmorph;g++)
                 if(use_morph(g)>0)
                 {
-                  catch_fleet(t,f,1)+=Hrate(f,t)*elem_prod(natage(t,p,g),sel_al_1(s,g,f))*Zrate2(g);
-                  catch_fleet(t,f,2)+=Hrate(f,t)*elem_prod(natage(t,p,g),deadfish_B(s,g,f))*Zrate2(g);
-                  catch_fleet(t,f,3)+=Hrate(f,t)*elem_prod(natage(t,p,g),sel_al_2(s,g,f))*Zrate2(g); // retained bio
-                  catch_fleet(t,f,4)+=Hrate(f,t)*elem_prod(natage(t,p,g),sel_al_3(s,g,f))*Zrate2(g);
-                  catch_fleet(t,f,5)+=Hrate(f,t)*elem_prod(natage(t,p,g),deadfish(s,g,f))*Zrate2(g);
-                  catch_fleet(t,f,6)+=Hrate(f,t)*elem_prod(natage(t,p,g),sel_al_4(s,g,f))*Zrate2(g);  // retained numbers
-                  catage(t,f,g)=Hrate(f,t)*elem_prod(elem_prod(natage(t,p,g),deadfish(s,g,f)),Zrate2(g));
+                  catch_fleet(t,f,1)+=Hrate(f,t)*elem_prod(natage(t,p,g),sel_al_1(s,g,f))*Zrate2(p,g);
+                  catch_fleet(t,f,2)+=Hrate(f,t)*elem_prod(natage(t,p,g),deadfish_B(s,g,f))*Zrate2(p,g);
+                  catch_fleet(t,f,3)+=Hrate(f,t)*elem_prod(natage(t,p,g),sel_al_2(s,g,f))*Zrate2(p,g); // retained bio
+                  catch_fleet(t,f,4)+=Hrate(f,t)*elem_prod(natage(t,p,g),sel_al_3(s,g,f))*Zrate2(p,g);
+                  catch_fleet(t,f,5)+=Hrate(f,t)*elem_prod(natage(t,p,g),deadfish(s,g,f))*Zrate2(p,g);
+                  catch_fleet(t,f,6)+=Hrate(f,t)*elem_prod(natage(t,p,g),sel_al_4(s,g,f))*Zrate2(p,g);  // retained numbers
+                  catage(t,f,g)=Hrate(f,t)*elem_prod(elem_prod(natage(t,p,g),deadfish(s,g,f)),Zrate2(p,g));
                 }  //close gmorph loop
               }  // close fishery
               break;
@@ -12816,7 +12816,7 @@ FUNCTION void get_time_series()
                   {
                     Z_rate(t,p,g)+=deadfish(s,g,f)*Hrate(f,t);
                   }
-                  Zrate2(g)=elem_div( (1.-mfexp(-seasdur(s)*Z_rate(t,p,g))), Z_rate(t,p,g));
+                  Zrate2(p,g)=elem_div( (1.-mfexp(-seasdur(s)*Z_rate(t,p,g))), Z_rate(t,p,g));
                 }
 
   //  SS_Label_Info_24.3.3.3.6 #Now calc adjustment to Z based on changes to be made to Hrate
@@ -12832,11 +12832,11 @@ FUNCTION void get_time_series()
                     {
                       if(catchunits(f)==1)
                       {
-                        interim_tot_catch+=Hrate(f,t)*elem_prod(natage(t,p,g),sel_al_2(s,g,f))*Zrate2(g);  // biomass basis
+                        interim_tot_catch+=Hrate(f,t)*elem_prod(natage(t,p,g),sel_al_2(s,g,f))*Zrate2(p,g);  // biomass basis
                       }
                       else
                       {
-                        interim_tot_catch+=Hrate(f,t)*elem_prod(natage(t,p,g),sel_al_4(s,g,f))*Zrate2(g);  //  numbers basis
+                        interim_tot_catch+=Hrate(f,t)*elem_prod(natage(t,p,g),sel_al_4(s,g,f))*Zrate2(p,g);  //  numbers basis
                       }
                     }  //close gmorph loop
                   }  // close fishery
@@ -12845,7 +12845,7 @@ FUNCTION void get_time_series()
                   if(use_morph(g)>0)
                   {
                     Z_rate(t,p,g)=natM(s,GP3(g)) + Z_adjuster*(Z_rate(t,p,g)-natM(s,GP3(g)));  // need to modify to only do the exact catches
-                    Zrate2(g)=elem_div( (1.-mfexp(-seasdur(s)*Z_rate(t,p,g))), Z_rate(t,p,g));
+                    Zrate2(p,g)=elem_div( (1.-mfexp(-seasdur(s)*Z_rate(t,p,g))), Z_rate(t,p,g));
                   }
                   for (f=1;f<=Nfleet;f++)       //loop over fishing fleets       TAG_105
                   if(catch_seas_area(t,p,f)==1 && catch_se_rd(f)>0.0)
@@ -12858,11 +12858,11 @@ FUNCTION void get_time_series()
                     {
                       if(catchunits(f)==1)
                       {
-                        vbio+=elem_prod(natage(t,p,g),sel_al_2(s,g,f)) *Zrate2(g);
+                        vbio+=elem_prod(natage(t,p,g),sel_al_2(s,g,f)) *Zrate2(p,g);
                       }
                       else
                       {
-                        vbio+=elem_prod(natage(t,p,g),sel_al_4(s,g,f)) *Zrate2(g);
+                        vbio+=elem_prod(natage(t,p,g),sel_al_4(s,g,f)) *Zrate2(p,g);
                       }
                     }  //close gmorph loop
                     temp=catch_ret_obs(f,t)/(catch_mult(y,f)*vbio+0.0001);  //  prototype new F
@@ -12879,13 +12879,13 @@ FUNCTION void get_time_series()
                   for (g=1;g<=gmorph;g++)
                   if(use_morph(g)>0)
                   {
-                    catch_fleet(t,f,1)+=Hrate(f,t)*elem_prod(natage(t,p,g),sel_al_1(s,g,f))*Zrate2(g);
-                    catch_fleet(t,f,2)+=Hrate(f,t)*elem_prod(natage(t,p,g),deadfish_B(s,g,f))*Zrate2(g);
-                    catch_fleet(t,f,3)+=Hrate(f,t)*elem_prod(natage(t,p,g),sel_al_2(s,g,f))*Zrate2(g);
-                    catch_fleet(t,f,4)+=Hrate(f,t)*elem_prod(natage(t,p,g),sel_al_3(s,g,f))*Zrate2(g);
-                    catch_fleet(t,f,5)+=Hrate(f,t)*elem_prod(natage(t,p,g),deadfish(s,g,f))*Zrate2(g);
-                    catch_fleet(t,f,6)+=Hrate(f,t)*elem_prod(natage(t,p,g),sel_al_4(s,g,f))*Zrate2(g);
-                    catage(t,f,g)=Hrate(f,t)*elem_prod(elem_prod(natage(t,p,g),deadfish(s,g,f)),Zrate2(g));
+                    catch_fleet(t,f,1)+=Hrate(f,t)*elem_prod(natage(t,p,g),sel_al_1(s,g,f))*Zrate2(p,g);
+                    catch_fleet(t,f,2)+=Hrate(f,t)*elem_prod(natage(t,p,g),deadfish_B(s,g,f))*Zrate2(p,g);
+                    catch_fleet(t,f,3)+=Hrate(f,t)*elem_prod(natage(t,p,g),sel_al_2(s,g,f))*Zrate2(p,g);
+                    catch_fleet(t,f,4)+=Hrate(f,t)*elem_prod(natage(t,p,g),sel_al_3(s,g,f))*Zrate2(p,g);
+                    catch_fleet(t,f,5)+=Hrate(f,t)*elem_prod(natage(t,p,g),deadfish(s,g,f))*Zrate2(p,g);
+                    catch_fleet(t,f,6)+=Hrate(f,t)*elem_prod(natage(t,p,g),sel_al_4(s,g,f))*Zrate2(p,g);
+                    catage(t,f,g)=Hrate(f,t)*elem_prod(elem_prod(natage(t,p,g),deadfish(s,g,f)),Zrate2(p,g));
                   }  //close gmorph loop
                 }  // close fishery
                 }
@@ -14665,18 +14665,18 @@ FUNCTION void Do_Equil_Calc()
            {
              if(F_Method>=2)
              {
-               Zrate2(g)=elem_div( (1.-mfexp(-seasdur(s)*equ_Z(s,p,g))), equ_Z(s,p,g));
-               if(s<Bseas(g)) Zrate2(g,0)=0.0;
+               Zrate2(p,g)=elem_div( (1.-mfexp(-seasdur(s)*equ_Z(s,p,g))), equ_Z(s,p,g));
+               if(s<Bseas(g)) Zrate2(p,g,0)=0.0;
                for (f=1;f<=Nfleet;f++)
                if (fleet_area(f)==p && Hrate(f,t)>0.0)
                {
-                 equ_catch_fleet(2,s,f)+=Hrate(f,t)*elem_prod(equ_numbers(s,p,g)(0,nages),deadfish_B(s,g,f))*Zrate2(g);      // dead catch bio
-                 equ_catch_fleet(5,s,f)+=Hrate(f,t)*elem_prod(equ_numbers(s,p,g)(0,nages),deadfish(s,g,f))*Zrate2(g);      // deadfish catch numbers
-                 equ_catch_fleet(3,s,f)+=Hrate(f,t)*elem_prod(equ_numbers(s,p,g)(0,nages),sel_al_2(s,g,f))*Zrate2(g);      // retained catch bio
-                   equ_catage(s,f,g)=elem_prod(elem_prod(equ_numbers(s,p,g)(0,nages),deadfish(s,g,f)) , Zrate2(g));
-                   equ_catch_fleet(1,s,f)+=Hrate(f,t)*elem_prod(equ_numbers(s,p,g)(0,nages),sel_al_1(s,g,f))*Zrate2(g);      // encountered catch bio
-                   equ_catch_fleet(4,s,f)+=Hrate(f,t)*elem_prod(equ_numbers(s,p,g)(0,nages),sel_al_3(s,g,f))*Zrate2(g);      // encountered catch bio
-                   equ_catch_fleet(6,s,f)+=Hrate(f,t)*elem_prod(equ_numbers(s,p,g)(0,nages),sel_al_4(s,g,f))*Zrate2(g);      // retained catch numbers
+                 equ_catch_fleet(2,s,f)+=Hrate(f,t)*elem_prod(equ_numbers(s,p,g)(0,nages),deadfish_B(s,g,f))*Zrate2(p,g);      // dead catch bio
+                 equ_catch_fleet(5,s,f)+=Hrate(f,t)*elem_prod(equ_numbers(s,p,g)(0,nages),deadfish(s,g,f))*Zrate2(p,g);      // deadfish catch numbers
+                 equ_catch_fleet(3,s,f)+=Hrate(f,t)*elem_prod(equ_numbers(s,p,g)(0,nages),sel_al_2(s,g,f))*Zrate2(p,g);      // retained catch bio
+                   equ_catage(s,f,g)=elem_prod(elem_prod(equ_numbers(s,p,g)(0,nages),deadfish(s,g,f)) , Zrate2(p,g));
+                   equ_catch_fleet(1,s,f)+=Hrate(f,t)*elem_prod(equ_numbers(s,p,g)(0,nages),sel_al_1(s,g,f))*Zrate2(p,g);      // encountered catch bio
+                   equ_catch_fleet(4,s,f)+=Hrate(f,t)*elem_prod(equ_numbers(s,p,g)(0,nages),sel_al_3(s,g,f))*Zrate2(p,g);      // encountered catch bio
+                   equ_catch_fleet(6,s,f)+=Hrate(f,t)*elem_prod(equ_numbers(s,p,g)(0,nages),sel_al_4(s,g,f))*Zrate2(p,g);      // retained catch numbers
                }
              }
              else  // F_method=1
@@ -14795,10 +14795,10 @@ FUNCTION void Make_AgeLength_Key(const int s, const int subseas)
    ALK_idx=(s-1)*N_subseas+subseas;
    dvar_vector use_Ave_Size_W(0,nages);
    dvar_vector use_SD_Size(0,nages);
-   if(ALK_OK(ALK_idx)==0) //  so need to calculate
+   if(ALK_subseas_update(ALK_idx)==1) //  so need to calculate
    {
 
-   ALK_OK(ALK_idx)=1;
+   ALK_subseas_update(ALK_idx)=0;
    gp=0;
     for (int sex=1;sex<=gender;sex++)
     for (GPat=1;GPat<=N_GP;GPat++)
@@ -16091,7 +16091,7 @@ FUNCTION void Get_Forecast()
       if(time_vary_MG(endyr+1,2)>0 || save_for_report>0)  //  so uses endyr+1 timevary setting for duration of forecast
       {
         get_MGsetup();
-        ALK_OK=0;
+    ALK_subseas_update=1;  //  vector to indicate if ALK needs recalculating
         get_growth2();  //  in forecast
         if(time_vary_MG(endyr+1,7)>0)  get_catch_mult(y, catch_mult_pointer);
       }
@@ -16439,7 +16439,7 @@ FUNCTION void Get_Forecast()
                   {
                     Z_rate(t,p,g)+=deadfish(s,g,f)*Hrate(f,t);
                   }
-                  Zrate2(g)=elem_div( (1.-mfexp(-seasdur(s)*Z_rate(t,p,g))), Z_rate(t,p,g));
+                  Zrate2(p,g)=elem_div( (1.-mfexp(-seasdur(s)*Z_rate(t,p,g))), Z_rate(t,p,g));
                 }  //  end morph
 
                 for (f=1;f<=Nfleet;f++)   // get calculated catch
@@ -16456,16 +16456,16 @@ FUNCTION void Get_Forecast()
                         if(catchunits(f)==1)  //  catch in weight
                         {
                           if(Fcast_InputCatch(t,f,2)==2)
-                            {temp+=elem_prod(natage(t,p,g),deadfish_B(s,g,f))*Zrate2(g);}      // dead catch bio
+                            {temp+=elem_prod(natage(t,p,g),deadfish_B(s,g,f))*Zrate2(p,g);}      // dead catch bio
                           else if(Fcast_InputCatch(t,f,2)==3)
-                            {temp+=elem_prod(natage(t,p,g),sel_al_2(s,g,f))*Zrate2(g);}      // retained catch bio
+                            {temp+=elem_prod(natage(t,p,g),sel_al_2(s,g,f))*Zrate2(p,g);}      // retained catch bio
                         }
                         else   //  catch in numbers
                         {
                           if(Fcast_InputCatch(t,f,2)==2)
-                          {temp+=elem_prod(natage(t,p,g),deadfish(s,g,f))*Zrate2(g);}      // deadfish catch numbers
+                          {temp+=elem_prod(natage(t,p,g),deadfish(s,g,f))*Zrate2(p,g);}      // deadfish catch numbers
                           else if(Fcast_InputCatch(t,f,2)==3)
-                          {temp+=elem_prod(natage(t,p,g),sel_al_4(s,g,f))*Zrate2(g);}      // retained catch numbers
+                          {temp+=elem_prod(natage(t,p,g),sel_al_4(s,g,f))*Zrate2(p,g);}      // retained catch numbers
                         }
                       }  //close gmorph loop
                       temp*=Hrate(f,t);
@@ -16490,13 +16490,13 @@ FUNCTION void Get_Forecast()
                       if(use_morph(g)>0)
                       {
                         if(Fcast_Catch_Basis==2)
-                        {temp+=elem_prod(natage(t,p,g),deadfish_B(s,g,f))*Zrate2(g);}      // dead catch bio
+                        {temp+=elem_prod(natage(t,p,g),deadfish_B(s,g,f))*Zrate2(p,g);}      // dead catch bio
                         else if(Fcast_Catch_Basis==3)
-                        {temp+=elem_prod(natage(t,p,g),sel_al_2(s,g,f))*Zrate2(g);}      // retained catch bio
+                        {temp+=elem_prod(natage(t,p,g),sel_al_2(s,g,f))*Zrate2(p,g);}      // retained catch bio
                         else if(Fcast_Catch_Basis==5)
-                        {temp+=elem_prod(natage(t,p,g),deadfish(s,g,f))*Zrate2(g);}      // deadfish catch numbers
+                        {temp+=elem_prod(natage(t,p,g),deadfish(s,g,f))*Zrate2(p,g);}      // deadfish catch numbers
                         else if(Fcast_Catch_Basis==6)
-                        {temp+=elem_prod(natage(t,p,g),sel_al_4(s,g,f))*Zrate2(g);}      // retained catch numbers
+                        {temp+=elem_prod(natage(t,p,g),sel_al_4(s,g,f))*Zrate2(p,g);}      // retained catch numbers
                       }  //close gmorph loop
                       temp*=Hrate(f,t);
 //                      Hrate(f,t)*=(Fcast_Catch_Store(t,f)+1.0)/(temp+1.0);  //  apply adjustment
@@ -16530,7 +16530,7 @@ FUNCTION void Get_Forecast()
                 for (g=1;g<=gmorph;g++)
                 if(use_morph(g)>0)
                 {
-                  tempvec_a=Hrate(f,t)*Zrate2(g);
+                  tempvec_a=Hrate(f,t)*Zrate2(p,g);
                   catch_fleet(t,f,1)+=tempvec_a*elem_prod(natage(t,p,g),sel_al_1(s,g,f));      // encountered catch bio
                   catch_fleet(t,f,2)+=tempvec_a*elem_prod(natage(t,p,g),deadfish_B(s,g,f));      // dead catch bio
                   catch_fleet(t,f,3)+=tempvec_a*elem_prod(natage(t,p,g),sel_al_2(s,g,f));      // retained catch bio
@@ -21840,13 +21840,10 @@ FUNCTION void Get_expected_values();
 //  make age-length key if needed
     ALK_idx=(s-1)*N_subseas+subseas;
     ALK_time=(y-styr)*nseas*N_subseas+(s-1)*N_subseas+subseas;
-    if(ALK_OK(ALK_idx)==0)  //  check to see if ALK has already been updated for this subseason
+    if(ALK_subseas_update(ALK_idx)==1 || need_ALK(ALK_time)>0)  //  need ALK update for this subseason
     {
-      if(need_ALK(ALK_time)>0)  //  this is related to the data
-      {
-        get_growth3(s, subseas);
-        Make_AgeLength_Key(s, subseas);
-      }
+      get_growth3(s, subseas);
+      Make_AgeLength_Key(s, subseas);
     }
 
     for (f=1;f<=Nfleet;f++)
@@ -21868,9 +21865,9 @@ FUNCTION void Get_expected_values();
             { L1=1; L2=nlength; A2=0;}
 
             if(F_Method==1 && surveytime(f)<0.0) //  Pope's approximation
-            {tempvec_a=elem_prod(Nmid(g),sel_a(y,f,gg));}
+            {tempvec_a=elem_prod(Nmid(g),sel_a(y,f,gg));}  //  CHECK   Nmid may not exist correctly unless still within the area loop
             else if(surveytime(f)<0.0) // mimic fishery catch, but without Hrate so gets available numbers
-            {tempvec_a=elem_prod(natage(t,p,g),elem_prod(Zrate2(g),sel_a(y,f,gg)));}
+            {tempvec_a=elem_prod(natage(t,p,g),elem_prod(Zrate2(p,g),sel_a(y,f,gg)));}
             else  //  explicit timing
             {tempvec_a=elem_prod(natage(t,p,g),elem_prod(mfexp(-Z_rate(t,p,g)*timing),sel_a(y,f,gg)));}
 
@@ -21898,7 +21895,6 @@ FUNCTION void Get_expected_values();
           {exp_l_temp_ret=elem_prod(exp_l_temp,retain(y,f));}
            else
           {exp_l_temp_ret=exp_l_temp;}
-
 //          end creation of selected A-L
         }
 
