@@ -3008,6 +3008,7 @@ DATA_SECTION
   {
     k=0;
     echoinput<<"No forecast selected, so rest of forecast file will not be read and can be omitted"<<endl;
+    echoinput<<"No forecast selected, default forecast of 1 yr created"<<endl;
     if(Bmark_RelF_Basis==2) {N_warn++; cout<<" EXIT - see warning "<<endl; warning<<"Fatal stop:  no forecast, but bmark set to use fcast"<<endl;  exit(1);}
   }
   else
@@ -3095,17 +3096,31 @@ DATA_SECTION
   }
   else
   {
-    //  placeholders here until bio_ranges get coded
+  N_Fcast_Yrs=1;
+  YrMax=endyr+1;
+  TimeMax_Fcast_std = styr+(YrMax-styr)*nseas+nseas-1;
+  Fcast_Flevel=1.;
+  Fcast_yr=0;
   Fcast_RelF_Basis=1;
   Fcast_Sel_yr1=endyr;
   Fcast_Sel_yr2=endyr;
   Fcast_RelF_yr1=endyr;
   Fcast_RelF_yr2=endyr;
-  N_Fcast_Yrs=0;
-  YrMax=endyr+1;
-  TimeMax_Fcast_std = styr+(YrMax-styr)*nseas+nseas-1;
+  HarvestPolicy=1;
+  H4010_top=0.001;
+  H4010_bot=0.0001;
+  H4010_scale=1.0;
+  Fcast_Loop_Control.fill("{1,1,0,0,0}");
+  Fcast_Cap_FirstYear=endyr+1;
+  Impl_Error_Std=0.0;
+  Do_Impl_Error=0;
   Do_Rebuilder=0;
-  }
+  Rebuild_Ydecl=endyr;
+  Rebuild_Yinit=endyr;
+  Fcast_RelF_Basis=1;  
+  Fcast_Catch_Basis=2;
+  }  //  end of defaults for do_forecast = 0
+
   if(Fcast_RelF_Basis==2)
   {
     if(Do_Forecast==4)
@@ -3124,25 +3139,29 @@ DATA_SECTION
   init_matrix Fcast_RelF_Input(1,z,1,Nfleet1)
 
  LOCAL_CALCS
-  if(Fcast_RelF_Basis==2)
+  if(Fcast_RelF_Basis==2 && Do_Forecast>0)
   {
     echoinput<<" fleet relative F by season and fleet as read"<<endl<<Fcast_RelF_Input<<endl;
     // later set Fcast_RelF_Use=Fcast_RelF_Input;
   }
   else
   {
-    echoinput<<" do not include relative F by season and fleet, uses endyr instead "<<endl;
+    echoinput<<" do not read relative F by season and fleet "<<endl;
   }
-  if(Do_Forecast>0) {k=1;} else {k=0;}
   if(Do_Forecast>0)
   {
+    k=1;
     echoinput<<"Now read cap for each fleet, then cap for each area (even if only 1 area), then allocation assignment for each fleet"<<endl;
   }
+  else 
+    {k=0;}
  END_CALCS
 
-  init_vector Fcast_MaxFleetCatch(1,k*Nfleet1)
-  init_vector Max_Fcast_Catch(1,k*pop)
+  init_vector Fcast_MaxFleetCatch_rd(1,k*Nfleet1)
+  init_vector Max_Fcast_Catch_rd(1,k*pop)
   init_ivector Allocation_Fleet_Assignments_rd(1,k*Nfleet1)
+  vector Fcast_MaxFleetCatch(1,Nfleet1)
+  vector Max_Fcast_Catch(1,pop)
   ivector Allocation_Fleet_Assignments(1,Nfleet)
  LOCAL_CALCS
   Fcast_Do_Fleet_Cap=0;
@@ -3160,6 +3179,15 @@ DATA_SECTION
     for (p=1;p<=pop;p++)
     {if(Max_Fcast_Catch(p)>0.0) Fcast_Do_Area_Cap=1;}
     Fcast_Catch_Allocation_Groups=max(Allocation_Fleet_Assignments);
+  }
+  else
+  {
+    Fcast_MaxFleetCatch.initialize();
+    Fcast_Do_Fleet_Cap=0;
+    Allocation_Fleet_Assignments.initialize();
+    Max_Fcast_Catch.initialize();
+    Fcast_Do_Area_Cap=0;
+    Fcast_Catch_Allocation_Groups=0;
   }
  END_CALCS
 
@@ -3193,6 +3221,8 @@ DATA_SECTION
   }
   else
   {
+    N_Fcast_Input_Catches=0;
+    Fcast_InputCatch_Basis=2;
     k1=1;
     y=0;
   }
@@ -3264,6 +3294,7 @@ DATA_SECTION
  LOCAL_CALCS
   if(Do_Forecast>0 && fif!=999) {cout<<" EXIT, must have 999 to verify end of forecast inputs "<<fif<<endl; exit(1);}
   echoinput<<" done reading forecast "<<endl<<endl;
+  if(Do_Forecast==0) Do_Forecast=4;
  END_CALCS
 
   imatrix Show_Time(styr,TimeMax_Fcast_std,1,2)  //  for each t:  shows year, season
@@ -4692,6 +4723,14 @@ DATA_SECTION
   ivector MGparm_dev_rpoint2(1,N_MGparm_dev)  //  reverse point from dev list back to parameter list to get the parameter index for the se parameter
                                               //  e.g. points to the parm index that holds the f'th dev's se and rho
   int MGparm_dev_PH
+ LOCAL_CALCS
+  MGparm_dev_minyr.initialize();
+  MGparm_dev_maxyr.initialize();
+  MGparm_dev_type.initialize();
+  MGparm_dev_point.initialize();
+  MGparm_dev_rpoint.initialize();
+  MGparm_dev_rpoint2.initialize();
+ END_CALCS
 
 !!//  SS_Label_Info_4.5.9 #Create vectors (e.g. MGparm_PH) to be used to define the actual estimated parameter array
 
@@ -4779,7 +4818,6 @@ DATA_SECTION
     MGparm_CV(j)=MGparm_seas_1(f,6);
     MGparm_PH(j)=MGparm_seas_1(f,7);
    }
-    echoinput<<"here "<<N_MGparm_dev<<endl;
    if(N_MGparm_dev>0)
    {
      s=0;
@@ -4794,7 +4832,6 @@ DATA_SECTION
          MGparm_dev_type(s)=MGparm_1(f,9);  //  1 for multiplicative, 2 for additive, 3 for additive randwalk, 4=mean-reverting rwalk
          MGparm_dev_point(f)=s;  //  specifies which dev vector is used by the f'th MGparm
          MGparm_dev_rpoint(s)=f;  //  specifies which parm (f) is affected by the j'th dev vector
-         
 //  INSERT for 3.24 compatibility
          k++;
          MGparm_dev_se_rd(k)=MGparm_1(f,12);
@@ -4819,7 +4856,6 @@ DATA_SECTION
          MGparm_dev_maxyr(s)=y;
        }
      }
-         
       k=0;
      for (f=1;f<=N_MGparm_dev;f++)
      {
@@ -4849,7 +4885,6 @@ DATA_SECTION
   //  SS_Label_Info_4.5.9 #Set up random deviations for MG parms
 
   //  NOTE:  the parms for the se of the devs are part of the MGparm2 list above, not the dev list below
-   MGparm_dev_point.initialize();
    int N_MGparm_dev_tot;
    N_MGparm_dev_tot=0;
    if(N_MGparm_dev>0)
@@ -8855,7 +8890,7 @@ PROCEDURE_SECTION
 //  SS_Label_Info_7.3 #Reset Fmethod 2 to Fmethod 3 according to the phase
     if(F_Method==2)
     {
-      if(current_phase()>=F_setup(2))
+      if(current_phase()>=F_setup(2) || (readparfile==1 && current_phase()<=1)) //  set Hrate = Frate parameters on first call if readparfile=1, or for advanced phases
       {
         for (g=1;g<=N_Fparm;g++)
         {
@@ -12432,12 +12467,13 @@ FUNCTION void get_initial_conditions()
      }
    }
 
-   t=styr-1;
+   t=styr-nseas-1;
+
    for (p=1;p<=pop;p++)
    for (g=1;g<=gmorph;g++)
    for (s=1;s<=nseas;s++)
      {natage(t+s,p,g)(0,nages)=equ_numbers(s,p,g)(0,nages);}
-
+   natage(styr) = natage(t);
    if(docheckup==1) echoinput<<" init age comp for styr "<<styr<<endl<<natage(styr)<<endl<<endl;
 
    // if recrdevs start before styr, then use them to adjust the initial agecomp
@@ -19470,7 +19506,7 @@ FUNCTION void write_bigoutput()
           {
             if(catch_ret_obs(f,t)>0)
               {
-                SS2out<<0.5*square( (log(1.1*catch_ret_obs(f,t)) -log(catch_fleet(t,f,gg)*catch_mult(y,f)+0.1*catch_ret_obs(f,t))) / catch_se(t,f))<<endl;
+                SS2out<<0.5*square( (log(1.1*catch_ret_obs(f,t)) -log(catch_fleet(t,f,gg)*catch_mult(y,f)+0.1*catch_ret_obs(f,t))) / catch_se(t,f));
               }
               else
                 {
