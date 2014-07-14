@@ -12013,7 +12013,7 @@ FUNCTION void get_selectivity()
 
               for (a=1;a<=lastage;a++)
               {
-                if(sp(a+1)>-999.) {lastsel=sp(a+1);}  //  so, lastsel stays constant until changed, so could create a linear change in ln(selex)
+                if(sp(a+1)>-999.) {lastsel=sp(a+1);}  //  with use of -999, lastsel stays constant until changed, so could create a linear change in ln(selex)
                                                       // use of (a+1) is because the first element, sp(1), is for age zero
                 tempvec_a(a)=tempvec_a(a-1)+lastsel;   // cumulative log(selex)
               }
