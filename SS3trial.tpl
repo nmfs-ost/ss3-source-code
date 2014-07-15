@@ -3155,39 +3155,40 @@ DATA_SECTION
   }
   else 
     {k=0;}
+
  END_CALCS
 
   init_vector Fcast_MaxFleetCatch_rd(1,k*Nfleet1)
-  init_vector Max_Fcast_Catch_rd(1,k*pop)
+  init_vector Fcast_MaxAreaCatch_rd(1,k*pop)
   init_ivector Allocation_Fleet_Assignments_rd(1,k*Nfleet1)
-  vector Fcast_MaxFleetCatch(1,Nfleet1)
-  vector Max_Fcast_Catch(1,pop)
+  vector Fcast_MaxFleetCatch(1,Nfleet)
+  vector Fcast_MaxAreaCatch(1,pop)
   ivector Allocation_Fleet_Assignments(1,Nfleet)
  LOCAL_CALCS
-  Fcast_Do_Fleet_Cap=0;
-  Fcast_Do_Area_Cap=0;
-  Fcast_Catch_Allocation_Groups=0;
-  Allocation_Fleet_Assignments=0;
+    for(f=1;f<=Nfleet;f++) Fcast_MaxFleetCatch(f)=-1;
+    Fcast_Do_Fleet_Cap=0;
+    Allocation_Fleet_Assignments.initialize();
+    for(p=1;p<=pop;p++) Fcast_MaxAreaCatch(p)=-1;
+    Fcast_Do_Area_Cap=0;
+    Fcast_Catch_Allocation_Groups=0;
   if(k>0)
   {
+    Fcast_MaxAreaCatch=Fcast_MaxAreaCatch_rd;
     for (f=1;f<=Nfleet1;f++)
-    {if(Fcast_MaxFleetCatch(f)>0.0) Fcast_Do_Fleet_Cap=1;}
+    {
+      Fcast_MaxFleetCatch(f)=Fcast_MaxFleetCatch_rd(f);
+      if(Fcast_MaxFleetCatch(f)>0.0) Fcast_Do_Fleet_Cap=1;
+    }
 //  REVERT
     for (f=1;f<=Nfleet1;f++)
     {Allocation_Fleet_Assignments(f)=Allocation_Fleet_Assignments_rd(f);}
 
     for (p=1;p<=pop;p++)
-    {if(Max_Fcast_Catch(p)>0.0) Fcast_Do_Area_Cap=1;}
+    {if(Fcast_MaxAreaCatch(p)>0.0) Fcast_Do_Area_Cap=1;}
     Fcast_Catch_Allocation_Groups=max(Allocation_Fleet_Assignments);
   }
   else
   {
-    Fcast_MaxFleetCatch.initialize();
-    Fcast_Do_Fleet_Cap=0;
-    Allocation_Fleet_Assignments.initialize();
-    Max_Fcast_Catch.initialize();
-    Fcast_Do_Area_Cap=0;
-    Fcast_Catch_Allocation_Groups=0;
   }
  END_CALCS
 
@@ -3198,7 +3199,7 @@ DATA_SECTION
   {
     k=2;
     echoinput<<" Max totalcatch by fleet "<<endl<<Fcast_MaxFleetCatch<<endl;
-    echoinput<<" Max totalcatch by area "<<endl<<Max_Fcast_Catch<<endl;
+    echoinput<<" Max totalcatch by area "<<endl<<Fcast_MaxAreaCatch<<endl;
     echoinput<<" Assign fleets to allocation groups (0 means not in a group) "<<endl<<Allocation_Fleet_Assignments<<endl;
     echoinput<<" calculated number of allocation groups "<<Fcast_Catch_Allocation_Groups<<endl;
     echoinput<<" Allocation among groups (N entries must match number of allocation groups created) "<<Fcast_Catch_Allocation<<endl;
@@ -3239,11 +3240,11 @@ DATA_SECTION
   if(N_Fcast_Input_Catches>0) echoinput<<" Fcast_catches_input "<<endl<<Fcast_InputCatch_rd<<endl;
   if(Do_Forecast>0)
   {
-    for (t=k1;t<=y;t++)
-    for (f=1;f<=Nfleet1;f++)
-    {Fcast_InputCatch(t,f,1)=-1;}
     if(N_Fcast_Input_Catches>0)
     {
+      for (t=k1;t<=y;t++)
+      for (f=1;f<=Nfleet1;f++)
+      {Fcast_InputCatch(t,f,1)=-1;}
       for (i=1;i<=N_Fcast_Input_Catches;i++)
       {
         y=Fcast_InputCatch_rd(i,1); s=Fcast_InputCatch_rd(i,2); f=Fcast_InputCatch_rd(i,3);
@@ -15978,15 +15979,14 @@ FUNCTION void Get_Forecast()
 
   Do_F_tune.initialize();
 
-   report5<<"Forecast_Option:_"<<Do_Forecast<<endl;
    switch(Do_Forecast)
    {
      case 1:
-       {Fcast_Fmult=SPR_Fmult; if(show_MSY==1) report5<<"Forecast_using_Fspr"<<endl; break;}
+       {Fcast_Fmult=SPR_Fmult; if(show_MSY==1) report5<<"1:  Forecast_using_Fspr"<<endl; break;}
      case 2:
-       {Fcast_Fmult=MSY_Fmult; if(show_MSY==1) report5<<"Forecast_using_Fmsy"<<endl; break;}
+       {Fcast_Fmult=MSY_Fmult; if(show_MSY==1) report5<<"2:  Forecast_using_Fmsy"<<endl; break;}
      case 3:
-       {Fcast_Fmult=Btgt_Fmult; if(show_MSY==1) report5<<"Forecast_using_F(Btarget)"<<endl; break;}
+       {Fcast_Fmult=Btgt_Fmult; if(show_MSY==1) report5<<"3:  Forecast_using_F(Btarget)"<<endl; break;}
      case 4:
      {
        Fcast_Fmult=0.0;
@@ -16002,10 +16002,10 @@ FUNCTION void Get_Forecast()
        }
        Fcast_Fmult/=float(Fcast_RelF_yr2-Fcast_RelF_yr1+1);
        Fcurr_Fmult=Fcast_Fmult;
-       if(show_MSY==1) report5<<"Forecast_using_ave_F_from:_"<<Fcast_RelF_yr1<<"_"<<Fcast_RelF_yr2<<endl; break;
+       if(show_MSY==1) report5<<"4:  Forecast_using_ave_F_from:_"<<Fcast_RelF_yr1<<"_"<<Fcast_RelF_yr2<<endl; break;
      }
      case 5:
-     {Fcast_Fmult=Fcast_Flevel; if(show_MSY==1) report5<<"Forecast_using_input_F "<<endl; break;}
+     {Fcast_Fmult=Fcast_Flevel; if(show_MSY==1) report5<<"5:  Forecast_using_input_F "<<endl; break;}
    }
 
   if(show_MSY==1)  //  write more headers
@@ -16014,7 +16014,7 @@ FUNCTION void Get_Forecast()
     report5<<"Fmultiplier_during_selected_relF_years_was: "<<Fcurr_Fmult<<endl;
     report5<<"Selectivity_averaged_over_yrs:_"<<Fcast_Sel_yr1<<"_to_"<<Fcast_Sel_yr2<<endl;
     report5<<"Cap_totalcatch_by_fleet "<<endl<<Fcast_MaxFleetCatch<<endl;
-    report5<<"Cap_totalcatch_by_area "<<endl<<Max_Fcast_Catch<<endl;
+    report5<<"Cap_totalcatch_by_area "<<endl<<Fcast_MaxAreaCatch<<endl;
     report5<<"Assign_fleets_to_allocation_groups_(0_means_not_in_a_group) "<<endl<<Allocation_Fleet_Assignments<<endl;
     report5<<"Calculated_number_of_allocation_groups "<<Fcast_Catch_Allocation_Groups<<endl;
     report5<<"Allocation_among_groups "<<Fcast_Catch_Allocation<<endl;
@@ -16059,7 +16059,6 @@ FUNCTION void Get_Forecast()
     if(HarvestPolicy==1) {report5<<" adjust_catch_below_Inflection(west_coast)"<<endl;} else {report5<<" adjust_F_below_Inflection"<<endl;}
     report5<<"#"<<endl;
   }
-
   for (int Fcast_Loop1=1; Fcast_Loop1<=Fcast_Loop_Control(1);Fcast_Loop1++)  //   for different forecast conditions
   {
     switch(Fcast_Loop1)  //  select which ABC_loops to use
@@ -16322,6 +16321,7 @@ FUNCTION void Get_Forecast()
                 case 2:
                 {
                   Hrate(f,t)=ABC_buffer(y)*Fcast_Fmult*Fcast_RelF_Use(s,f);
+                  if(N_Fcast_Input_Catches>0)
                   if(Fcast_InputCatch(t,f,1)>-1.0)  //  have an input
                   {
                     if(Fcast_InputCatch(t,f,2)<=3)  //  input is catch
@@ -16366,7 +16366,7 @@ FUNCTION void Get_Forecast()
                   temp=0.0;
                   if(Do_F_tune(t,f)==1)  // have an input catch, so get expected catch from F and Z
                   {
-                    if(ABC_Loop==2)  //  tune to input catch
+                    if(ABC_Loop==2 && N_Fcast_Input_Catches>0)  //  tune to input catch
                     {
                       for (g=1;g<=gmorph;g++)
                       if(use_morph(g)>0)
@@ -16484,7 +16484,7 @@ FUNCTION void Get_Forecast()
                   temp=0.0;
                   if(Do_F_tune(t,f)==1)  // have an input catch, so get expected catch from F and Z
                   {
-                    if(ABC_Loop==2)  //  tune to input catch
+                    if(ABC_Loop==2 && N_Fcast_Input_Catches>0)  //  tune to input catch
                     {
                       for (g=1;g<=gmorph;g++)
                       if(use_morph(g)>0)
@@ -16639,11 +16639,17 @@ FUNCTION void Get_Forecast()
             }
             else
             {report5<<" - - - - - - - ";}
-            
-            if(Fcast_InputCatch(t,f,1)<0.0) {report5<<" R ";} else {report5<<" C ";}
+
+            if(N_Fcast_Input_Catches==0)
+              {
+                report5<<" R ";
+              }
+            else
+              {
+                if(Fcast_InputCatch(t,f,1)<0.0) {report5<<" R ";} else {report5<<" C ";}}
              }
             }
-            if(s==nseas&&Max_Fcast_Catch(p)>0.) {report5<<" "<<Max_Fcast_Catch(p);} else {report5<<" NA ";} //  a max catch has been set for this area
+            if(s==nseas&&Fcast_MaxAreaCatch(p)>0.) {report5<<" "<<Fcast_MaxAreaCatch(p);} else {report5<<" NA ";} //  a max catch has been set for this area
            }
            if(p<pop && show_MSY==1) report5<<endl;
            if(s==1&&Fcast_Loop1==Fcast_Loop_Control(1))
@@ -16812,7 +16818,7 @@ FUNCTION void Get_Forecast()
               }
             }
           }
-          if(Fcast_Do_Area_Cap>0  && y>=Fcast_Cap_FirstYear)  // scale down if Totcatch exceeds Max_Fcast_Catch (in this area)
+          if(Fcast_Do_Area_Cap>0  && y>=Fcast_Cap_FirstYear)  // scale down if Totcatch exceeds Fcast_MaxAreaCatch (in this area)
           {
             if(pop==1)  // one area
             {
@@ -16830,9 +16836,9 @@ FUNCTION void Get_Forecast()
               }
             }
             for (p=1;p<=pop;p++)
-            if(Max_Fcast_Catch(p)>0.0)
+            if(Fcast_MaxAreaCatch(p)>0.0)
             {
-              temp = Fcast_Catch_ByArea(p)/Max_Fcast_Catch(p);
+              temp = Fcast_Catch_ByArea(p)/Fcast_MaxAreaCatch(p);
               join1=1./(1.+mfexp(1000.*(temp-1.0)));  // steep logistic joiner at adjustment of 1.0
               temp1=join1*1.0 + (1.-join1)*temp;
               for (f=1;f<=Nfleet;f++)
@@ -18327,7 +18333,7 @@ FUNCTION void write_nucontrol()
   NuFore<<"# max totalcatch by fleet (-1 to have no max) must enter value for each fleet"<<endl;
   NuFore<<Fcast_MaxFleetCatch<<endl;
   NuFore<<"# max totalcatch by area (-1 to have no max); must enter value for each fleet "<<endl;
-  NuFore<<Max_Fcast_Catch<<endl;
+  NuFore<<Fcast_MaxAreaCatch<<endl;
   NuFore<<"# fleet assignment to allocation group (enter group ID# for each fleet, 0 for not included in an alloc group)"<<endl;
   NuFore<<Allocation_Fleet_Assignments<<endl;
   NuFore<<"#_Conditional on >1 allocation group"<<endl<<"# allocation fraction for each of: "<<Fcast_Catch_Allocation_Groups<<" allocation groups"<<endl;
