@@ -519,6 +519,7 @@ DATA_SECTION
  END_CALCS
 
   matrix catch_se(styr-1,TimeMax,1,Nfleet);
+  matrix fleet_setup(1,Nfleet,1,7)  // type, timing, area, units, equ_catch_se, catch_se, need_catch_mult
 
 //  ProgLabel_2.1.5  define genders and max age
   init_int    gender  //  number of sexes in the model
@@ -565,6 +566,13 @@ DATA_SECTION
       {
         for (t=styr-1;t<=TimeMax;t++) {catch_se(t,f)=0.1;} // set a value for catch se for surveys and bycatch fleets (not used)
       }
+    fleet_setup(f,1)=fleet_type(f);
+    fleet_setup(f,2)=surveytime(f);
+    fleet_setup(f,3)=fleet_area(f);
+    fleet_setup(f,4)=catchunits(f);
+    fleet_setup(f,7)=need_catch_mult(f);
+    fleet_setup(f,5)=catch_se_rd(f);
+    fleet_setup(f,6)=catch_se_rd(f);
   }
 
  END_CALCS
@@ -17428,10 +17436,7 @@ FUNCTION void write_nudata()
   report1<<"#_catch_se:  standard error of log(catch); can be overridden in control file with detailed F input"<<endl;
   report1<<"#_rows are fleets; columns are: fleet_type, timing, area, units, equ_catch_se, catch_se, need_catch_mult"<<endl;
   for (f=1;f<=Nfleet;f++)
-  {
-// REVERT
-//    report1<<fleet_setup(f)<<" # Fleet:_"<<f<<"_ "<<fleetname(f)<<endl;
-  }
+  {report1<<fleet_setup(f)<<" # Fleet:_"<<f<<"_ "<<fleetname(f)<<endl;}
 
   if(Nudat==1)  // report back the input data
   {
@@ -18369,8 +18374,9 @@ FUNCTION void write_nucontrol()
   if(N_platoon==1) report4<<"#_Cond ";
   report4<<submorphdist(1,N_platoon)<<" #vector_Morphdist_(-1_in_first_val_gives_normal_approx)"<<endl;
   report4<<"#"<<endl;
-  report4<<N_settle_timings<<" #  number of recruitment settlements per spawning (need this number of parameters also) "<<endl<<
-             recr_dist_inx<< " # year_x_area_x_settlement_event interaction requested"<<endl<<
+  report4<<recr_dist_method<<" # recr_dist_method for parameters:  1=like 3.24; 2=main effects for GP, Settle timing, Area; 3=each Settle entity; 4=none when N_GP*Nsettle*pop==1"<<endl;
+  report4<<N_settle_assignments<<" #  number of recruitment settlement assignments "<<endl<<
+             recr_dist_inx<< " # year_x_area_x_settlement_event interaction requested (only for recr_dist_method=1)"<<endl<<
              "#GPat month  area (for each settlement assignment)"<<endl<<settlement_pattern_rd<<endl<<"#"<<endl;
   if(pop==1)
   {report4<<"#_Cond 0 # N_movement_definitions goes here if N_areas > 1"<<endl
@@ -18378,7 +18384,7 @@ FUNCTION void write_nucontrol()
     <<"#_Cond 1 1 1 2 4 10 # example move definition for seas=1, morph=1, source=1 dest=2, age1=4, age2=10"<<endl;}
   else
   {
-    report4<<endl<<do_migration<<" #_N_movement_definitions"<<endl;
+    report4<<do_migration<<" #_N_movement_definitions"<<endl;
     if(do_migration>0)
     {
       report4<<migr_firstage<<" # first age that moves (real age at begin of season, not integer)"<<endl
@@ -18507,18 +18513,17 @@ FUNCTION void write_nucontrol()
    for(i=1;i<=N_MGparm_dev;i++)
    {
       NP++; j++;  MGparm_dev_se_rd(i,3)=value(MGparm(j));
-      report4<<MGparm_dev_se_rd(i)<<" # "<<ParmLabel(NP)<<endl;
+      report4<<"# "<<MGparm_dev_se_rd(i)<<" # "<<ParmLabel(NP)<<endl;
       NP++; j++;  MGparm_dev_se_rd(i,3)=value(MGparm(j));
-      report4<<MGparm_dev_se_rd(i)<<" # "<<ParmLabel(NP)<<endl;
+      report4<<"# "<<MGparm_dev_se_rd(i)<<" # "<<ParmLabel(NP)<<" # "<<endl<<"# "<<ParmLabel(NP+1);
+      for(j=MGparm_dev_minyr(i);j<=MGparm_dev_maxyr(i);j++)
+      {
+        NP++;
+        report4<<" "<<MGparm_dev(i,j);
+      }
+      report4<<endl;
    }
-   report4<<"#_Display_dev_values_and_labels"<<endl;   
-   for(i=1;i<=N_MGparm_dev;i++)
-   for(j=MGparm_dev_minyr(i);j<=MGparm_dev_maxyr(i);j++)
-   {
-     NP++;
-    report4<<"# "<<MGparm_dev(i,j)<<" # "<<ParmLabel(NP)<<endl;
-   }
-    report4<<"#"<<endl<<MGparm_dev_PH<<" #_MGparm_Dev_Phase"<<endl;
+   report4<<"#"<<endl<<MGparm_dev_PH<<" #_MGparm_Dev_Phase"<<endl;
   }
   else
   {
@@ -18589,36 +18594,40 @@ FUNCTION void write_nucontrol()
       report4<<"#_Yr Input_value"<<endl;
     }
     report4<<"#"<<endl;
-    report4<<"# all recruitment deviations"<<endl;
-
+    report4<<"# all recruitment deviations"<<endl<<"# ";
+    if(recdev_do_early>0)
+    {
+      for (y=recdev_early_start;y<=recdev_early_end;y++) {report4<<" "<<y<<"E";}
+    }
+    if(do_recdev>0)
+    {
+      for (y=recdev_start;y<=recdev_end;y++) {report4<<" "<<y<<"R";}
+    }
+    if(Do_Forecast>0)
+    {
+      for (y=recdev_end+1;y<=YrMax;y++) {report4<<" "<<y<<"F";}
+    }
+    report4<<endl<<"# ";
   if(recdev_do_early>0)
   {
-    for (y=recdev_early_start;y<=recdev_early_end;y++)
-    {
-      NP++;  report4<<"#DisplayOnly "<<recdev(y)<<" # "<<ParmLabel(NP)<<endl;
-    }
+    for (y=recdev_early_start;y<=recdev_early_end;y++)  {NP++;  report4<<" "<<recdev(y);}
   }
 
     if(do_recdev>0)
     {
-      for (y=recdev_start;y<=recdev_end;y++)
-      {
-        NP++;  report4<<"#DisplayOnly "<<recdev(y)<<" # "<<ParmLabel(NP)<<endl;
-      }
+      for (y=recdev_start;y<=recdev_end;y++)  {NP++;  report4<<" "<<recdev(y);}
     }
 
     if(Do_Forecast>0)
     {
-      for (y=recdev_end+1;y<=YrMax;y++)
-      {
-        NP++;  report4<<"#DisplayOnly "<<recdev(y)<<" # "<<ParmLabel(NP)<<endl;
-      }
+      for (y=recdev_end+1;y<=YrMax;y++)  {NP++;  report4<<" "<<recdev(y);}
+      report4<<endl<<"# implementation error by year in forecast: ";
       for (y=endyr+1;y<=YrMax;y++)
       {
-        NP++;  report4<<"#DisplayOnly "<<Fcast_impl_error(y)<<" # "<<ParmLabel(NP)<<endl;
+        NP++;  report4<<" "<<Fcast_impl_error(y);
       }
     }
-  report4<<"#"<<endl;
+  report4<<endl<<"#"<<endl;
   report4<<"#Fishing Mortality info "<<endl<<F_ballpark<<" # F ballpark"<<endl;
   report4<<F_ballpark_yr<<" # F ballpark year (neg value to disable)"<<endl;
   report4<<F_Method<<" # F_Method:  1=Pope; 2=instan. F; 3=hybrid (hybrid is recommended)"<<endl;
@@ -18644,15 +18653,22 @@ FUNCTION void write_nucontrol()
     report4<<init_F_parm_1(f)<<" # "<<ParmLabel(NP)<<endl;
    }
 
-   if(F_Method==2)
-   {
-    report4<<endl<<"# F rates for Fmethod=2"<<endl;
-    for (g=1;g<=N_Fparm;g++)
+    report4<<"#"<<endl<<"# F rates by fleet"<<endl;
+    report4<<"# Yr: ";
+    for(y=styr;y<=YrMax;y++)
+    for(s=1;s<=nseas;s++)
+    {report4<<" "<<y;}
+    report4<<endl<<"# seas: ";
+    for(y=styr;y<=YrMax;y++)
+    for(s=1;s<=nseas;s++)
+    {report4<<" "<<s;}
+    report4<<endl;
+    for (f=1;f<=Nfleet;f++)
+    if(fleet_type(f)<=2)
     {
-      NP++;
-      report4<<"# "<<F_rate(g)<< " "<<ParmLabel(NP)<<endl;
+      report4<<"# "<<fleetname(f)<<Hrate(f)(styr,TimeMax+nseas)<<endl;
     }
-   }
+   NP+=N_Fparm;
    report4<<"#"<<endl;
    report4<<"#_Q_setup"<<endl<<
    " # Q_type options:  <0=mirror, 0=float_nobiasadj, 1=float_biasadj, 2=parm_nobiasadj, 3=parm_w_random_dev, 4=parm_w_randwalk, 5=mean_unbiased_float_assign_to_parm"<<endl;
