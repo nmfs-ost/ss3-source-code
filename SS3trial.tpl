@@ -5,7 +5,7 @@ DATA_SECTION
 !!//  SS_Label_Section_1.0 #DATA_SECTION
 
 !!//  SS_Label_Info_1.1.1  #Create string with version info
-!!version_info+="SS-V3.30a-safe;_06/30/2014;_Stock_Synthesis_by_Richard_Methot_(NOAA)_using_ADMB_10.1";
+!!version_info+="SS-V3.30a-safe;_07/16/2014;_Stock_Synthesis_by_Richard_Methot_(NOAA)_using_ADMB_10.1";
 
 !!version_info_short+="#V3.30a";
 
@@ -12476,13 +12476,19 @@ FUNCTION void get_initial_conditions()
      }
    }
 
-   t=styr-nseas-1;
 
-   for (p=1;p<=pop;p++)
-   for (g=1;g<=gmorph;g++)
    for (s=1;s<=nseas;s++)
-     {natage(t+s,p,g)(0,nages)=equ_numbers(s,p,g)(0,nages);}
-   natage(styr) = natage(t);
+   {
+     t=styr-nseas-1+s;
+     a=styr-1+s;
+     for (p=1;p<=pop;p++)
+     for (g=1;g<=gmorph;g++)
+     {
+       natage(t,p,g)(0,nages)=equ_numbers(s,p,g)(0,nages);
+       natage(a,p,g)(0,nages)=equ_numbers(s,p,g)(0,nages);
+     }
+   }
+
    if(docheckup==1) echoinput<<" init age comp for styr "<<styr<<endl<<natage(styr)<<endl<<endl;
 
    // if recrdevs start before styr, then use them to adjust the initial agecomp
