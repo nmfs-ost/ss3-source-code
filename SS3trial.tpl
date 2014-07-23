@@ -21852,10 +21852,15 @@ FUNCTION dvar_vector Equil_Spawn_Recr_Fxn()
 //  SS_Label_44.1.8  3 parameter Shepard
       case 8:  // Shepard
       {
-        R_equil = (SPB_virgin/(SPR_temp*Recr_virgin)) *
-        pow(                 
-        ( ((5.0*steepness*(1.0-Shepard_c2)* SPR_temp) / (SPB_virgin-(1.0-5.0*steepness* Shepard_c2) )) / (5.0*steepness-1.0) )
-        ,1.0/Shepard_c);
+        dvariable Shep_top;
+        dvariable Shep_bot;
+//  Andre's FORTRAN
+//        TOP = 5*Steep*(1-0.2**POWER)*SPR/SPRF0-(1-5*Steep*0.2**POWER)
+//      BOT = (5*Steep-1)
+//       REC = (TOP/BOT)**(1.0/POWER)*SPRF0/SPR
+        Shep_top=5.0*steepness*(1.0-Shepard_c2)*(SPR_temp*Recr_virgin)/SPB_virgin-(1.0-5.0*steepness*Shepard_c2);
+        Shep_bot=5.0*steepness-1.0;
+        R_equil=(SPB_virgin/SPR_temp) * pow((Shep_top/Shep_bot),(1.0/Shepard_c));
         B_equil=R_equil*SPR_temp;
         break;
       }
