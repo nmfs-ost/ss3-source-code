@@ -4989,9 +4989,9 @@ DATA_SECTION
 // read setup for SR parameters:  LO, HI, INIT, PRIOR, PRtype, CV, PHASE
   init_int SR_fxn
   ivector N_SRparm(1,10)
-  !!N_SRparm.fill("{0,2,2,2,3,2,3,0,0,0}");
+  !!N_SRparm.fill("{0,2,2,2,3,2,3,3,0,0}");
   int N_SRparm2
-  !!echoinput<<SR_fxn<<" #_SR_function: 1=null; 2=Ricker; 3=std_B-H; 4=SCAA; 5=Hockey; 6=B-H_flattop; 7=Survival_3Parm "<<endl;
+  !!echoinput<<SR_fxn<<" #_SR_function: 1=null; 2=Ricker; 3=std_B-H; 4=SCAA; 5=Hockey; 6=B-H_flattop; 7=Survival_3Parm; 8=Shepard "<<endl;
   !!N_SRparm2=N_SRparm(SR_fxn)+4;
   init_matrix SR_parm_1(1,N_SRparm2,1,7)
   !!echoinput<<" SR parms "<<endl<<SR_parm_1<<endl;
@@ -5060,6 +5060,12 @@ DATA_SECTION
     {
       ParmLabel+="SR_surv_Sfrac";
       ParmLabel+="SR_surv_Beta";
+      break;
+    }
+    case 8:  // shepard
+    {
+      ParmLabel+="SR_steepness";
+      ParmLabel+="SR_Shepard_c";
       break;
     }
   }
@@ -18537,7 +18543,7 @@ FUNCTION void write_nucontrol()
   }
 
   report4<<"#"<<endl;
-   report4<<"#_Spawner-Recruitment"<<endl<<SR_fxn<<" #_SR_function: 2=Ricker; 3=std_B-H; 4=SCAA; 5=Hockey; 6=B-H_flattop; 7=survival_3Parm"<<endl;
+   report4<<"#_Spawner-Recruitment"<<endl<<SR_fxn<<" #_SR_function: 2=Ricker; 3=std_B-H; 4=SCAA; 5=Hockey; 6=B-H_flattop; 7=survival_3Parm; 8=Shepard_3Parm"<<endl;
    report4<<"#_LO HI INIT PRIOR PR_type SD PHASE"<<endl;
    for (f=1;f<=N_SRparm2;f++)
    { NP++;
@@ -21613,6 +21619,8 @@ FUNCTION dvariable Spawn_Recr(const prevariable& SPB_current)
     dvariable Recr_virgin_adj;
     dvariable SPB_virgin_adj;
     dvariable steepness;
+    dvariable Shepard_c;
+    dvariable Shepard_c2;
     dvariable SPB_curr_adj;
     dvariable join;
     dvariable SRZ_0;
@@ -21623,6 +21631,11 @@ FUNCTION dvariable Spawn_Recr(const prevariable& SPB_current)
     SPB_curr_adj = SPB_current + 0.100;   // robust
     Recr_virgin_adj=Recr_virgin;  SPB_virgin_adj=SPB_virgin;
     steepness=SR_parm(2);
+    if(SR_fxn==8)
+      {
+        Shepard_c=SR_parm(3);
+        Shepard_c2=pow(0.2,Shepard_c);
+      }
     
 //  SS_Label_43.2  adjust for environmental effects on S-R parameters: Rzero or steepness
     if(SR_env_target==2)
@@ -21717,6 +21730,15 @@ FUNCTION dvariable Spawn_Recr(const prevariable& SPB_current)
         exp_rec(y,4) = NewRecruits;
         break;
       }
+
+//  SS_Label_43.3.8  Shepard
+      case 8:  // Shepard 3-parameter SRR.  per Punt document at PFMC
+      {
+        temp=(SPB_curr_adj)/(SPB_virgin_adj);
+        NewRecruits =  (5.*steepness*Recr_virgin_adj*(1.-Shepard_c2)*temp) /
+        (1.0 - 5.0*steepness*Shepard_c2 + (5.*steepness-1.)*pow(temp,Shepard_c));
+        break;
+      }
     }
 
     if(SR_fxn!=7)
@@ -21756,10 +21778,18 @@ FUNCTION dvar_vector Equil_Spawn_Recr_Fxn()
     dvariable temp;
     dvariable join;
     dvariable steepness;
+    dvariable Shepard_c;
+    dvariable Shepard_c2;
     dvariable SRZ_0;
     dvariable SRZ_max;
     dvariable SRZ_surv;
     steepness=SR_parm(2);
+    if(SR_fxn==8)
+      {
+        Shepard_c=SR_parm(3);
+        Shepard_c2=pow(0.2,Shepard_c);
+      }
+
 //  SS_Label_44.1  calc equilibrium SpawnBio and Recruitment from input SPR_temp, which is spawning biomass per recruit at some given F level
     switch(SR_fxn)
     {
@@ -21808,7 +21838,7 @@ FUNCTION dvar_vector Equil_Spawn_Recr_Fxn()
         R_equil=Join_Fxn(0.0*SPB_virgin, SPB_virgin, SPB_virgin*steepness, B_equil, alpha+beta*B_equil, Recr_virgin);
         break;
       }
-//  SS_Label_44.1.6  3 parameter survival based
+//  SS_Label_44.1.7  3 parameter survival based
       case 7:  // survival
       {
         SRZ_0=log(1.0/(SPB_virgin/Recr_virgin));
@@ -21818,6 +21848,18 @@ FUNCTION dvar_vector Equil_Spawn_Recr_Fxn()
         R_equil=B_equil*SRZ_surv;
         break;
       }
+
+//  SS_Label_44.1.8  3 parameter Shepard
+      case 8:  // Shepard
+      {
+        R_equil = (SPB_virgin/(SPR_temp*Recr_virgin)) *
+        pow(                 
+        ( ((5.0*steepness*(1.0-Shepard_c2)* SPR_temp) / (SPB_virgin-(1.0-5.0*steepness* Shepard_c2) )) / (5.0*steepness-1.0) )
+        ,1.0/Shepard_c);
+        B_equil=R_equil*SPR_temp;
+        break;
+      }
+      
     }
     EquilCalc(1)=B_equil;
     EquilCalc(2)=R_equil;
