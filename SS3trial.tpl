@@ -2965,10 +2965,14 @@ DATA_SECTION
   {
     if(Bmark_Yr_rd(i)==-999)
     {Bmark_Yr(i)=styr;}
-    else if(Bmark_Yr_rd(i)>0)
+    else if(Bmark_Yr_rd(i)>=styr)
     {Bmark_Yr(i)=Bmark_Yr_rd(i);}
-    else
+    else if(Bmark_Yr_rd(i)<=0)
     {Bmark_Yr(i)=endyr+Bmark_Yr_rd(i);}
+    else
+    {
+      N_warn++;Bmark_Yr(i)=styr;warning<<"benchmark year less than styr; reset to equal styr"<<endl;
+    }
   }
   Bmark_t(1)=styr+(Bmark_Yr(1)-styr)*nseas;
   Bmark_t(2)=styr+(Bmark_Yr(2)-styr)*nseas;
@@ -3559,10 +3563,8 @@ DATA_SECTION
   vector azero_G(1,gmorph);  //  time since Jan 1 at beginning of settlement in which "g" was born
   3darray curr_age(1,gmorph,1,nseas*N_subseas,0,nages);  // real age since settlement
   3darray calen_age(1,gmorph,1,nseas*N_subseas,0,nages);  // real age since Jan 1 of birth year
-  int first_grow_age;
 
   3darray lin_grow(1,gmorph,1,nseas*N_subseas,0,nages)  //  during linear phase has fraction of Size at Afix
-  ivector first_grow_age2(1,gmorph);
   ivector settle_g(1,gmorph)   //  settlement pattern for each platoon
   
 //  INSERT for 3.24
@@ -3971,6 +3973,7 @@ DATA_SECTION
   number AFIX2_forCV;
   number AFIX_delta;
   number AFIX_plus;
+  int first_grow_age;
   !! k=0;
   !! if(Grow_type<=2) {k=2;}  //  AFIX and AFIX2
   !! if (Grow_type==3) {k=3;}  //  min and max age for age-specific K
@@ -4017,13 +4020,12 @@ DATA_SECTION
    {AFIX_plus=1.0e-06;}
   N_M_Grow_parms=N_natMparms+N_growparms;
   lin_grow.initialize();
-  first_grow_age2.initialize();
   
-  echoinput<<"g a seas subseas ALK_idx curr_age calen_age lin_grow first_grow_age"<<endl;
+  echoinput<<"g a seas subseas ALK_idx curr_age calen_age lin_grow"<<endl;
   for (g=1;g<=gmorph;g++)
   if(use_morph(g)>0)
   {
-//    first_grow_age=0;
+    first_grow_age=0;
     for (a=0;a<=nages;a++)
     {
       for (s=1;s<=nseas;s++)
@@ -4031,23 +4033,24 @@ DATA_SECTION
       {
         ALK_idx=(s-1)*N_subseas+subseas;
         if(a==0 && s<Bseas(g))
-          {lin_grow(g,ALK_idx,a)=0.0;}
+          {lin_grow(g,ALK_idx,a)=0.0;}  //  so fish are not yet born so will get zero length
         else if(curr_age(g,ALK_idx,a)<AFIX)
-          {lin_grow(g,ALK_idx,a)=curr_age(g,ALK_idx,a)/AFIX_plus;}
+          {lin_grow(g,ALK_idx,a)=curr_age(g,ALK_idx,a)/AFIX_plus;}  //  on linear portion of the growth
         else if(curr_age(g,ALK_idx,a)==AFIX)
           {
-            lin_grow(g,ALK_idx,a)=1.0;
-//            if(subseas==N_subseas) {first_grow_age2(g)=1;}
+            lin_grow(g,ALK_idx,a)=1.0;  //  at the transition from linear to VBK growth
           }
-        else if (first_grow_age2(g)==0)
-        {
-          lin_grow(g,ALK_idx,a)=-1.0;  //  flag for first age on growth curve
-          if(subseas==N_subseas) {first_grow_age2(g)=1;}
-        }
+        else if (first_grow_age==0)
+          {
+            lin_grow(g,ALK_idx,a)=-1.0;  //  flag for first age on growth curve
+//            if(subseas==N_subseas) {first_grow_age2(g)=1;}
+            {first_grow_age=1;}
+          }
         else
-        {lin_grow(g,ALK_idx,a)=-2.0;}  //  flag for being in growth curve
+          {lin_grow(g,ALK_idx,a)=-2.0;}  //  flag for being in growth curve
+
         if(lin_grow(g,ALK_idx,a)>-2.0) echoinput<<g<<" "<<a<<" "<<s<<" "<<subseas<<" "<<ALK_idx<<" "<<curr_age(g,ALK_idx,a)
-          <<" "<<calen_age(g,ALK_idx,a)<<" "<<lin_grow(g,ALK_idx,a)<<" "<<first_grow_age2(g)<<endl;
+          <<" "<<calen_age(g,ALK_idx,a)<<" "<<lin_grow(g,ALK_idx,a)<<" "<<first_grow_age<<endl;
       }
     }
   }
