@@ -4035,16 +4035,17 @@ DATA_SECTION
         else if(curr_age(g,ALK_idx,a)<AFIX)
           {lin_grow(g,ALK_idx,a)=curr_age(g,ALK_idx,a)/AFIX_plus;}
         else if(curr_age(g,ALK_idx,a)==AFIX)
-          {lin_grow(g,ALK_idx,a)=1.0;
-          if(subseas==N_subseas) {first_grow_age2(g)=1;}
-           }
+          {
+            lin_grow(g,ALK_idx,a)=1.0;
+//            if(subseas==N_subseas) {first_grow_age2(g)=1;}
+          }
         else if (first_grow_age2(g)==0)
         {
-          lin_grow(g,ALK_idx,a)=-1.0;
+          lin_grow(g,ALK_idx,a)=-1.0;  //  flag for first age on growth curve
           if(subseas==N_subseas) {first_grow_age2(g)=1;}
         }
         else
-        {lin_grow(g,ALK_idx,a)=-2.0;}
+        {lin_grow(g,ALK_idx,a)=-2.0;}  //  flag for being in growth curve
         if(lin_grow(g,ALK_idx,a)>-2.0) echoinput<<g<<" "<<a<<" "<<s<<" "<<subseas<<" "<<ALK_idx<<" "<<curr_age(g,ALK_idx,a)
           <<" "<<calen_age(g,ALK_idx,a)<<" "<<lin_grow(g,ALK_idx,a)<<" "<<first_grow_age2(g)<<endl;
       }
@@ -10326,7 +10327,7 @@ FUNCTION void get_growth2()
           }  // end loop of settlements
           Ip+=N_M_Grow_parms;
         }    // end loop of growth patterns, gp
-      
+      warning<<current_phase()<<" "<<"growth "<<y<<" "<<Lmin(1)<<" "<<Lmax_temp(1)<<" "<<L_inf(1)<<" "<<VBK(1)(0,6)<<" size "<<Ave_Size(t,1,1)(0,6)<<endl;
   //  SS_Label_Info_16.2.4.4  #end of growth
   } // end do growth
 
@@ -10352,6 +10353,7 @@ FUNCTION void get_growth3(const int s, const int subseas)
                 //  subseasdur is cumulative time to start of this subseas
                 if(lin_grow(g,ALK_idx,a)>=0.0)  // in linear phase for subseas
                 {
+                  if(g==1) warning<<"t-subseas-a:  "<<t<<" "<<subseas<<" "<<a<<" lmin: "<<Cohort_Lmin(gp,y,a)<<" L(A): "<<Ave_Size(t,subseas,g,a)<<endl;
                   Ave_Size(t,subseas,g,a) = len_bins(1)+lin_grow(g,ALK_idx,a)*(Cohort_Lmin(gp,y,a)-len_bins(1));
                 }
 
@@ -19843,6 +19845,18 @@ FUNCTION void write_bigoutput()
     else if(SR_env_target==3)
       {SS2out<<"_Steepness";}
     }
+    if(SR_fxn==8)
+      {
+        dvariable Shepard_c;
+        dvariable Shepard_c2;
+        dvariable Hupper;
+        Shepard_c=SR_parm(3);
+        Shepard_c2=pow(0.2,Shepard_c);
+        Hupper=1.0/(5.0*Shepard_c2);
+        temp=0.2+(SR_parm(2)-0.2)/(0.8)*(Hupper-0.2);
+        SS2out<<endl<<"Shepard: Power: "<<Shepard_c<<" steepness_limit: "<<Hupper<<" Adjusted_steepness: "<<temp<<" Bmsy/Bzero: "<<Bmsy/SPB_virgin;
+      }
+
   SS2out<<endl<<SR_parm(N_SRparm2-1)<<" init_eq "<<mfexp(SR_parm(1)+SR_parm(N_SRparm2-1))<<endl<<
   recdev_start<<" "<<recdev_end<<" main_recdev:start_end"<<endl<<
   recdev_adj(1)<<" "<<recdev_adj(2,5)<<" breakpoints_for_bias_adjustment_ramp "<<endl;
@@ -21621,6 +21635,8 @@ FUNCTION dvariable Spawn_Recr(const prevariable& SPB_current)
     dvariable steepness;
     dvariable Shepard_c;
     dvariable Shepard_c2;
+    dvariable Hupper;
+    dvariable steep2;
     dvariable SPB_curr_adj;
     dvariable join;
     dvariable SRZ_0;
@@ -21635,6 +21651,8 @@ FUNCTION dvariable Spawn_Recr(const prevariable& SPB_current)
       {
         Shepard_c=SR_parm(3);
         Shepard_c2=pow(0.2,Shepard_c);
+        Hupper=1.0/(5.0*Shepard_c2);
+        steep2=0.2+(steepness-0.2)/(0.8)*(Hupper-0.2);
       }
     
 //  SS_Label_43.2  adjust for environmental effects on S-R parameters: Rzero or steepness
@@ -21735,8 +21753,8 @@ FUNCTION dvariable Spawn_Recr(const prevariable& SPB_current)
       case 8:  // Shepard 3-parameter SRR.  per Punt document at PFMC
       {
         temp=(SPB_curr_adj)/(SPB_virgin_adj);
-        NewRecruits =  (5.*steepness*Recr_virgin_adj*(1.-Shepard_c2)*temp) /
-        (1.0 - 5.0*steepness*Shepard_c2 + (5.*steepness-1.)*pow(temp,Shepard_c));
+        NewRecruits =  (5.*steep2*Recr_virgin_adj*(1.-Shepard_c2)*temp) /
+        (1.0 - 5.0*steep2*Shepard_c2 + (5.*steep2-1.)*pow(temp,Shepard_c));
         break;
       }
     }
@@ -21784,11 +21802,6 @@ FUNCTION dvar_vector Equil_Spawn_Recr_Fxn()
     dvariable SRZ_max;
     dvariable SRZ_surv;
     steepness=SR_parm(2);
-    if(SR_fxn==8)
-      {
-        Shepard_c=SR_parm(3);
-        Shepard_c2=pow(0.2,Shepard_c);
-      }
 
 //  SS_Label_44.1  calc equilibrium SpawnBio and Recruitment from input SPR_temp, which is spawning biomass per recruit at some given F level
     switch(SR_fxn)
@@ -21854,13 +21867,23 @@ FUNCTION dvar_vector Equil_Spawn_Recr_Fxn()
       {
         dvariable Shep_top;
         dvariable Shep_bot;
+        dvariable Hupper;
+        dvariable steep2;
 //  Andre's FORTRAN
 //        TOP = 5*Steep*(1-0.2**POWER)*SPR/SPRF0-(1-5*Steep*0.2**POWER)
 //      BOT = (5*Steep-1)
 //       REC = (TOP/BOT)**(1.0/POWER)*SPRF0/SPR
-        Shep_top=5.0*steepness*(1.0-Shepard_c2)*(SPR_temp*Recr_virgin)/SPB_virgin-(1.0-5.0*steepness*Shepard_c2);
-        Shep_bot=5.0*steepness-1.0;
-        R_equil=(SPB_virgin/SPR_temp) * pow((Shep_top/Shep_bot),(1.0/Shepard_c));
+// Power = exp(logC);
+// Hupper = 1.0/(5.0 * pow(0.2,Power));
+        Shepard_c=SR_parm(3);
+        Shepard_c2=pow(0.2,Shepard_c);
+        Hupper=1.0/(5.0*Shepard_c2);
+        steep2=0.2+(steepness-0.2)/(0.8)*(Hupper-0.2);
+        Shep_top=5.0*steep2*(1.0-Shepard_c2)*(SPR_temp*Recr_virgin)/SPB_virgin-(1.0-5.0*steep2*Shepard_c2);
+        Shep_bot=5.0*steep2-1.0;
+        dvariable Shep_top2;
+        Shep_top2=posfun(Shep_top,0.001,temp);  
+        R_equil=(SPB_virgin/SPR_temp) * pow((Shep_top2/Shep_bot),(1.0/Shepard_c));
         B_equil=R_equil*SPR_temp;
         break;
       }
