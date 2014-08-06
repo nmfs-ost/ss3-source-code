@@ -5,7 +5,7 @@ DATA_SECTION
 !!//  SS_Label_Section_1.0 #DATA_SECTION
 
 !!//  SS_Label_Info_1.1.1  #Create string with version info
-!!version_info+="SS-V3.30a-safe;_07/16/2014;_Stock_Synthesis_by_Richard_Methot_(NOAA)_using_ADMB_10.1";
+!!version_info+="SS-V3.30a-safe;_07/28/2014;_Stock_Synthesis_by_Richard_Methot_(NOAA)_using_ADMB_10.1";
 
 !!version_info_short+="#V3.30a";
 
@@ -614,24 +614,31 @@ DATA_SECTION
 //  {
 //    echoinput<<fleet_setup(f)<<" # Fleet:_"<<f<<"_ "<<fleetname(f)<<endl;
 //  }
+  int ALK_idx_max
 
  LOCAL_CALCS  
-  ALK_time=(endyr-styr+20)*nseas*N_subseas;  //  sets maximum size for data array
+  ALK_idx_max=(endyr-styr+20)*nseas*N_subseas;  //  sets maximum size for data array indexing  20 years into forecast is allowed
  END_CALCS
-!!//  SS_Label_Info_2.1.6  #Indexes for data timing.  "have_data", "need_ALK" and "data_time" hold pointers for data occurrence, timing, and ALK need
+!!//  SS_Label_Info_2.1.6  #Indexes for data timing.  "have_data" and "data_time" hold pointers for data occurrence, timing, and ALK need
   int data_type
   number data_timing
-  ivector need_ALK(1,ALK_time)
-  4darray have_data(1,ALK_time,1,Nfleet,0,9,0,60);  //  how to make this a 4d integer array???
-  3darray data_time(1,ALK_time,1,Nfleet,1,3)
-//  where ALK_time=(y-styr)*nseas*N_subseas+(s-1)*N_subseas+subseas   This is index to subseas and used to indicate which ALK is being referenced
-// need_ALK()  indicates which subseas need to have an ALK.  But these can be set to zero for years before time_vary_growth starts
+  4darray have_data(1,ALK_idx_max,0,Nfleet,0,9,0,60);  //  this can be a i4array in ADMB 11
+//    4iarray have_data(1,ALK_idx_max,0,Nfleet,0,9,0,60);  //  this can be a i4array in ADMB 11
+
+//  have_data stores the data index of each datum occurring at time ALK_time, for fleet f of observation type k.  Up to 60 data are allowed due to CAAL data
+//  have_data(ALK_idx,0,0,0) is overall indicator that some datum requires ALK update in this ALK_time
 //  have_data() 3rd element:  0=any; 1=survey/CPUE/effort; 2=discard; 3=mnwt; 4=length; 5=age; 6=SizeFreq; 7=sizeage; 8=morphcomp; 9=tags
 //  have_data() 4th element;  zero'th element contains N obs for this subseas; allows for 20 observations per datatype per fleet per subseason
-//  data_time():  first value will hold real month; 2nd will hold the timing within season; 3rd holds timing from beginning of year
+
+  3darray data_time(1,ALK_idx_max,1,Nfleet,1,3)
+//  data_time():  first value will hold real month; 2nd is timing within season; 3rd is year.fraction
 //  for a given fleet x subseas, all observations must have the same specific timing (month.fraction)
 //  a warning will be given if subsequent observations have a different month.fraction
 //  an observation's real_month is used to assign it to a season and a subseas within that seas, and it is used to calculate the data_timing within the season for mortality 
+
+//  where ALK_idx=(y-styr)*nseas*N_subseas+(s-1)*N_subseas+subseas   This is index to subseas and used to indicate which ALK is being referenced
+
+//  3darray data_ALK_time(1,Nfleet,0,9,1,<nobsperkind/fleet>)   stores ALK_time
 
 //  INSERT from 3.24
 //  ProgLabel_2.2  Read CATCH amount by fleet
@@ -657,7 +664,6 @@ DATA_SECTION
    {
      data_time(y,f,1)=-1.0;  //  set to illegal value since 0.0 is valid
    }
-   need_ALK.initialize();
  END_CALCS
 !!//  SS_Label_Info_2.2 #Read CATCH amount by fleet
 
@@ -859,8 +865,8 @@ DATA_SECTION
             {
               s=int(temp);  
               subseas=mid_subseas;
-              data_timing=surveytime(f);
-              real_month=1.0 + azero_seas(s)*12. + 12.*temp*seasdur(s);
+              data_timing=surveytime(f);  //  fraction of seaason
+              real_month=1.0 + azero_seas(s)*12. + 12.*data_timing*seasdur(s);
             }
             else  //  reading month.fraction
             {
@@ -889,19 +895,19 @@ DATA_SECTION
             ALK_time=(y-styr)*nseas*N_subseas+(s-1)*N_subseas+subseas;
 
             Svy_time_t(f,j)=t;
-            need_ALK(ALK_time)=1;
             Svy_ALK_time(f,j)=ALK_time;  //  continuous subseas counter in which jth obs from fleet f occurs
             if(data_time(ALK_time,f,1)<0.0)
             {
               data_time(ALK_time,f,1)=real_month;
               data_time(ALK_time,f,2)=data_timing;  //  fraction of season
-              data_time(ALK_time,f,3)=float(y)+(real_month-1.)/12.;  //  fraction of year
+              data_time(ALK_time,f,3)=float(y)+(real_month-1.)/12.;  //  year.fraction
             }
             else if (real_month!=  data_time(ALK_time,f,1))
             {
               N_warn++;
               warning<<"SURVEY: data_month already set for y,s,f: "<<y<<" "<<s<<" "<<f<<" to real month: "<< data_time(ALK_time,f,1)<<"  but read value is: "<<real_month<<endl;
             }
+            have_data(ALK_time,0,0,0)=1;
             have_data(ALK_time,f,0,0)=1;  //  so have data of some type in this subseas, for this fleet
             have_data(ALK_time,f,data_type,0)++;  //  count the number of observations in this subseas
             p=have_data(ALK_time,f,data_type,0);  //  current number of observations
@@ -1059,7 +1065,7 @@ DATA_SECTION
             s=int(temp);  
             subseas=mid_subseas;
             data_timing=0.5;
-            real_month=1.0 + azero_seas(s)*12. + 12.*temp*seasdur(s);
+            real_month=1.0 + azero_seas(s)*12. + 12.*data_timing*seasdur(s);
           }
           else  //  reading month.fraction
           {
@@ -1087,14 +1093,14 @@ DATA_SECTION
               data_timing=0.5;
           }
           ALK_time=(y-styr)*nseas*N_subseas+(s-1)*N_subseas+subseas;
-          need_ALK(ALK_time)=1;
+          have_data(ALK_time,0,0,0)=1;
               
             disc_time_ALK(f,j)=ALK_time;  //  subseas that this observation is in
             if(data_time(ALK_time,f,1)<0.0)
             {
               data_time(ALK_time,f,1)=real_month;
               data_time(ALK_time,f,2)=data_timing;  //  fraction of season
-              data_time(ALK_time,f,3)=float(y)+(real_month-1.)/12.;  //  fraction of year
+              data_time(ALK_time,f,3)=float(y)+(real_month-1.)/12.;  //  year.fraction
             }
             else if (real_month!=  data_time(ALK_time,f,1))
             {
@@ -1181,7 +1187,7 @@ DATA_SECTION
         s=int(temp);  
         subseas=mid_subseas;
         data_timing=surveytime(f);
-        real_month=1.0 + azero_seas(s)*12. + 12.*temp*seasdur(s);
+        real_month=1.0 + azero_seas(s)*12. + 12.*data_timing*seasdur(s);
       }
       else  //  reading month.fraction
       {
@@ -1209,7 +1215,7 @@ DATA_SECTION
       }
           
       ALK_time=(y-styr)*nseas*N_subseas+(s-1)*N_subseas+subseas;
-      need_ALK(ALK_time)=1;
+      have_data(ALK_time,0,0,0)=1;
             if(data_time(ALK_time,f,1)<0.0)
             {
               data_time(ALK_time,f,1)=real_month;
@@ -1578,7 +1584,7 @@ DATA_SECTION
             s=int(temp);  
             subseas=mid_subseas;
             data_timing=surveytime(f);
-            real_month=1.0 + azero_seas(s)*12. + 12.*temp*seasdur(s);
+            real_month=1.0 + azero_seas(s)*12. + 12.*data_timing*seasdur(s);
           }
           else  //  reading month.fraction
           {
@@ -1606,7 +1612,7 @@ DATA_SECTION
             data_timing=0.5;
           }
             ALK_time=(y-styr)*nseas*N_subseas+(s-1)*N_subseas+subseas;
-            need_ALK(ALK_time)=1;
+            have_data(ALK_time,0,0,0)=1;
             Len_time_ALK(f,j)=ALK_time;
             if(data_time(ALK_time,f,1)<0.0)
             {
@@ -2016,13 +2022,12 @@ DATA_SECTION
            
           {  //  start have_data index and timing processing
           temp=abs(Age_Data(i,2));  //  read value that could be season or month; abs ()because neg value indicates super period
-//          warning<<f<<" "<<y<<" "<<temp;
           if(read_seas_mo==1)  // reading season
           {
             s=int(temp);  
             subseas=mid_subseas;
             data_timing=surveytime(f);
-            real_month=1.0 + azero_seas(s)*12. + 12.*temp*seasdur(s);
+            real_month=1.0 + azero_seas(s)*12. + 12.*data_timing*seasdur(s);
           }
           else  //  reading month.fraction
           {
@@ -2052,7 +2057,7 @@ DATA_SECTION
 
             ALK_time=(y-styr)*nseas*N_subseas+(s-1)*N_subseas+subseas;
 //            warning<<" ALKtime "<<ALK_time<<" ";
-            need_ALK(ALK_time)=1;
+            have_data(ALK_time,0,0,0)=1;
             Age_time_ALK(f,j)=ALK_time;
             if(data_time(ALK_time,f,1)<0.0)
             {
@@ -2394,7 +2399,7 @@ DATA_SECTION
             s=int(temp);  
             subseas=mid_subseas;
             data_timing=surveytime(f);
-            real_month=1.0 + azero_seas(s)*12. + 12.*temp*seasdur(s);
+            real_month=1.0 + azero_seas(s)*12. + 12.*data_timing*seasdur(s);
           }
           else  //  reading month.fraction
           {
@@ -2422,7 +2427,7 @@ DATA_SECTION
             data_timing=0.5;
           }
             ALK_time=(y-styr)*nseas*N_subseas+(s-1)*N_subseas+subseas;
-            need_ALK(ALK_time)=1;
+            have_data(ALK_time,0,0,0)=1;
             msz_time_ALK(f,j)=ALK_time;
             if(data_time(ALK_time,f,1)<0.0)
             {
@@ -3311,8 +3316,8 @@ DATA_SECTION
  END_CALCS
 
   imatrix Show_Time(styr,TimeMax_Fcast_std,1,2)  //  for each t:  shows year, season
+  imatrix Show_Time2(1,ALK_idx_max,1,2)  //  for each ALK_idx:  shows year, season
  LOCAL_CALCS
-  echoinput<<"Now create some arrays for STD quantities "<<Show_Time.indexmin()<<endl;
   t=styr-1;
   for (y=styr;y<=YrMax;y++) /* SS_loop:  fill Show_Time(t,1) with year value */
   for (s=1;s<=nseas;s++) /* SS_loop:  fill Show_Time(t,2) with season value */
@@ -3320,6 +3325,15 @@ DATA_SECTION
     t++; 
     Show_Time(t,1)=y;
     Show_Time(t,2)=s;
+  }
+  ALK_idx=0;
+  for (y=styr;y<=endyr+19;y++) 
+  for (s=1;s<=nseas;s++)
+  for (subseas=1;subseas<=N_subseas;subseas++)
+  {
+    ALK_idx++; 
+    Show_Time2(ALK_idx,1)=y;
+    Show_Time2(ALK_idx,2)=s;
   }
  END_CALCS
 
@@ -3481,7 +3495,6 @@ DATA_SECTION
     case 1:  //  like 3.24 format
       {
         if(N_GP*nseas*pop==1) {j=0;} else {j=2;}
-        N_settle_timings=nseas;  //  provision value updated later after the settlement events are read
         break;
       }
     case 2:
@@ -3495,7 +3508,6 @@ DATA_SECTION
     case 4:
       {
         if(N_GP*pop==1) {j=0;} else {warning<<"must have a recruitment distribution if N_GP*pop>1"<<endl; exit(1);}
-        N_settle_timings=1;  //  default to one settlement event
         break;
       }
   }
@@ -3512,11 +3524,9 @@ DATA_SECTION
           {
             N_settle_assignments=recr_dist_input(1);
             recr_dist_inx=recr_dist_input(2);
-            N_settle_timings=nseas;
           }
         else
           {
-            N_settle_timings=1;
             N_settle_assignments=0;
             recr_dist_inx=0;
           }
@@ -3541,32 +3551,11 @@ DATA_SECTION
   int birthseas;
 !!//  SS_Label_Info_4.2.2  #Define distribution of recruitment(settlement) among growth patterns, seasons, areas
  LOCAL_CALCS
-  echoinput<<N_settle_timings<<" Number of settlement timings per spawning (>=1) "<<endl;
   echoinput<<N_settle_assignments<<" Number of settlement events to read (>=0) "<<endl;
   if(recr_dist_method==1) echoinput<<recr_dist_inx<<" read interaction parameters for GP x timing x area (0/1)"<<endl;
-  gmorph = gender*N_GP*N_settle_timings*N_platoon;  //  total potential number of biological entities, some may not get used so see use_morph(g)
  END_CALCS
 
-!!//  SS_Label_Info_4.2.1.1 #Define indexing vectors to keep track of characteristics of each morph
-  ivector sx(1,gmorph) //  define sex for each growth morph
-  ivector GP4(1,gmorph)   // index to GPat
-  ivector GP(1,gmorph)    //  index for gender*GPat;  note that gp is nested inside gender
-  ivector GP3(1,gmorph)   // index for main gender*GPat*settlement
-  ivector GP2(1,gmorph)  // reverse pointer for platoon
-  imatrix g_finder(1,N_GP,1,gender)  //  reverse pointer to middle "g" for each main morph (used only with Growth_Std
-  ivector g_Start(1,N_GP*gender)  //  base "g" for this growth pattern
-  ivector Bseas(1,gmorph)  // birth season
-//  following two containers are used to track which morphs are being used
-  ivector use_morph(1,gmorph)
-  imatrix TG_use_morph(1,N_TG2,1,gmorph)
 
-  vector azero_G(1,gmorph);  //  time since Jan 1 at beginning of settlement in which "g" was born
-  3darray curr_age(1,gmorph,1,nseas*N_subseas,0,nages);  // real age since settlement
-  3darray calen_age(1,gmorph,1,nseas*N_subseas,0,nages);  // real age since Jan 1 of birth year
-
-  3darray lin_grow(1,gmorph,1,nseas*N_subseas,0,nages)  //  during linear phase has fraction of Size at Afix
-  ivector settle_g(1,gmorph)   //  settlement pattern for each platoon
-  
 //  INSERT for 3.24
   !!if(N_settle_assignments==0) {j=1;} else {j=N_settle_assignments;}
   init_matrix settlement_pattern_rd1(1,N_settle_assignments,1,3)    //  for each settlement event:  GPat, Month, area
@@ -3634,7 +3623,9 @@ DATA_SECTION
         }
       }
       }
-    echoinput<<"N settle timings: "<<N_settle_timings<<" vector: "<<settle_timings_tempvec(1,N_settle_timings)<<endl;
+    echoinput<<"N settle timings: "<<N_settle_timings<<endl<<" vector: "<<settle_timings_tempvec(1,N_settle_timings)<<endl;
+    gmorph = gender*N_GP*N_settle_timings*N_platoon;  //  total potential number of biological entities, some may not get used so see use_morph(g)
+
 //  SS_Label_Info_4.2.3 #Set-up arrays and indexing for growth patterns, gender, settlements, platoons
  END_CALCS  
    int g3i;
@@ -3644,6 +3635,26 @@ DATA_SECTION
   ivector Settle_age(1,N_settle_timings)  //  calculated age at which settlement occurs, with age 0 being the year in which spawning occurs
   ivector Settle_seas(1,N_settle_timings)  //  calculated season in which settlement occurs
   3darray recr_dist_pattern(1,N_GP,1,N_settle_timings,0,pop);  //  has flag to indicate each settlement events
+
+!!//  SS_Label_Info_4.2.1.1 #Define indexing vectors to keep track of characteristics of each morph
+  ivector sx(1,gmorph) //  define sex for each growth morph
+  ivector GP4(1,gmorph)   // index to GPat
+  ivector GP(1,gmorph)    //  index for gender*GPat;  note that gp is nested inside gender
+  ivector GP3(1,gmorph)   // index for main gender*GPat*settlement
+  ivector GP2(1,gmorph)  // reverse pointer for platoon
+  imatrix g_finder(1,N_GP,1,gender)  //  reverse pointer to middle "g" for each main morph (used only with Growth_Std
+  ivector g_Start(1,N_GP*gender)  //  base "g" for this growth pattern
+  ivector Bseas(1,gmorph)  // birth season
+//  following two containers are used to track which morphs are being used
+  ivector use_morph(1,gmorph)
+  imatrix TG_use_morph(1,N_TG2,1,gmorph)
+
+  vector azero_G(1,gmorph);  //  time since Jan 1 at beginning of settlement in which "g" was born
+  3darray curr_age(1,gmorph,1,nseas*N_subseas,0,nages);  // real age since settlement
+  3darray calen_age(1,gmorph,1,nseas*N_subseas,0,nages);  // real age since Jan 1 of birth year
+
+  3darray lin_grow(1,gmorph,1,nseas*N_subseas,0,nages)  //  during linear phase has fraction of Size at Afix
+  ivector settle_g(1,gmorph)   //  settlement pattern for each platoon
 
  LOCAL_CALCS
   Settle_offset.initialize();
@@ -3706,6 +3717,7 @@ DATA_SECTION
     Settle_offset(1)=0;
     Settle_age(1)=0;
   }
+
     
    for (gp=1;gp<=N_GP*gender;gp++)
    {
@@ -3830,7 +3842,7 @@ DATA_SECTION
       {
         if(move_pattern(s,gp,p,p)==0) {k++; move_pattern(s,gp,p,p)=k;} //  no explicit migration for staying in this area, so create implicit
       }
-      do_migr2=k;
+      do_migr2=k;  //  number of explicit plus implicit movement rates
       migr_start.initialize();
       // need to modify so it only does the calc for the first settlement used for each GP???
       for (gp=1;gp<=N_GP;gp++)
@@ -4043,8 +4055,7 @@ DATA_SECTION
         else if (first_grow_age==0)
           {
             lin_grow(g,ALK_idx,a)=-1.0;  //  flag for first age on growth curve
-//            if(subseas==N_subseas) {first_grow_age2(g)=1;}
-            {first_grow_age=1;}
+            if(subseas==N_subseas) {first_grow_age=1;}  //  so that lingrow will be -1 for rest of this season
           }
         else
           {lin_grow(g,ALK_idx,a)=-2.0;}  //  flag for being in growth curve
@@ -8705,7 +8716,7 @@ PRELIMINARY_CALCS_SECTION
 
 //  SS_Label_Info_6.8.3 #Call fxn get_growth2() to calculate size-at-age
     get_growth2(); //   in preliminary calcs
-    echoinput<<" did growth2"<<endl<<Ave_Size(styr,1,1)<<endl;
+    echoinput<<" did growth2 in prelim calcs"<<endl<<Ave_Size(styr,1,1)<<endl;
     if(minL>10.0) {N_warn++; warning<<" Minimum size bin is:_"<<minL<<"; which is >10cm, which is large for use as size-at-age 0.0 recruitment"<<endl;}
     temp=Ave_Size(styr,1,1,nages);
     echoinput<<temp<<" "<<len_bins(nlength)<<endl;
@@ -9309,6 +9320,7 @@ GLOBALS_SECTION
 //  {
   #include <admodel.h>
   #include <time.h>
+  #include <fvar.hpp>
   time_t start,finish;
   long hour,minute,second;
   double elapsed_time;
@@ -10070,7 +10082,6 @@ FUNCTION void get_growth2()
             }
             LinfR=pow(L_inf(gp),Richards(gp));
           }
-          if(do_once==1) echoinput<<gp<<" Lmin: "<<Lmin(gp)<<" Lmax: "<<L_inf(gp)<<endl;
           g=g_Start(gp);  //  base platoon
   //  SS_Label_Info_16.2.4  #Loop settlement events
           for (settle=1;settle<=N_settle_timings;settle++)
@@ -10117,11 +10128,9 @@ FUNCTION void get_growth2()
                         Ave_Size(styr,1,g,a1) = Ave_Size(styr,1,g,a1-1) + (Ave_Size(styr,1,g,a1-1)-L_inf(gp))* (mfexp(VBK(gp,a1-1)*VBK_seas(0))-1.0);
                         t2=Ave_Size(styr,1,g,a1-1)-L_inf(gp);
                       }
-  //    if(a<5) echoinput<<gp<<" "<<g<<" "<<1<<" "<<1<<" "<<1<<" "<<a<<" "<<curr_age(g,1,a)<<" "<<lin_grow(g,1,a)<<" "
-  //      <<Ave_Size(styr,1,g,a-1)<<" "<<t2<<" "<<Ave_Size(styr,1,g,a)<<endl;
                     }  // done ageloop
-                    if(do_once==1&&g==1) echoinput<<" avesize_w/o_linear_section "<<Ave_Size(styr,1,g)<<endl
-                     <<"GP g s subseas ALK_idx a curr_age  calen_age lin_grow size1  potential size next "<<endl;
+                    if(do_once==1&&g==1) echoinput<<" avesize_in_styr_w/o_linear_section "<<Ave_Size(styr,1,g)<<endl;
+//                     <<"GP g s subseas ALK_idx a curr_age  calen_age lin_grow size1  potential size next "<<endl;
   
                     if(settle>1) Ave_Size(styr,1,g,0)=len_bins(1);  //  PROBLEM:  this should refer to the season of the settlement,, not the settlement index???
                     break;
@@ -10159,14 +10168,14 @@ FUNCTION void get_growth2()
                   temp4*=temp2;  //  decay numbers at age by exp(-0.2)
                 }
                 Ave_Size(styr,1,g,nages)=temp/temp1;  //  this is weighted mean size at nages
-  //              if(do_once==1) echoinput<<"Adjusted size at maxage: "<<Ave_Size(styr,1,g,nages)<<endl;
+                if(do_once==1&&g==1) echoinput<<" adjusted size at maxage "<<Ave_Size(styr,1,g,nages)<<endl;
               }  //  end initial year calcs
   
   //  SS_Label_Info_16.2.4.2  #loop seasons for growth calculation
               for (s=1;s<=nseas;s++)
               {
                 t=t_base+s;
-                ALK_idx=s*N_subseas;  // last subseas of season; so checks to see if still in linear phase
+                ALK_idx=s*N_subseas;  // last subseas of season; so checks to see if still in linear phase at end of this season
                 if(s==nseas)
                 {
                   ALK_idx2=1;  //  first subseas of next year
@@ -10175,38 +10184,27 @@ FUNCTION void get_growth2()
                 {
                   ALK_idx2=s*N_subseas+1;  //  for the beginning of first subseas of next season
                 }
-//       if( g==1)  echoinput<<y<<" "<<s<<" grow1 "<<" ALK_idx, g: "<<ALK_idx<<"  "<<g<<endl;
                 if(s==nseas) add_age=1; else add_age=0;   //      advance age or not
-  // growth to mid-period and next period
+  // growth to next season
                 switch(Grow_type)
                 {
                   default:
                   {
-  //  SS_Label_Info_16.2.4.2.1  #standard von Bert growth, loop ages
+  //  SS_Label_Info_16.2.4.2.1  #standard von Bert growth, loop ages to get size at age at beginning of next season (t+1) which is subseas=1
                     for (a=0;a<=nages;a++)
                     {
                       if(a<nages) {k2=a+add_age;} else {k2=a;}  // where add_age =1 if s=nseas, else 0  (k2 assignment could be in a matrix so not recalculated
-//                      for (subseas=1;subseas<=N_subseas;subseas++)
-//                      {
-  
-//                      //  subseasdur is cumulative time to start of this subseas
-//                      if(lin_grow(g,ALK_idx,a)>=0.0)  // in linear phase for subseas
-//                      {
-//                        Ave_Size(t,subseas,g,a) = len_bins(1)+lin_grow(g,ALK_idx,a)*(Cohort_Lmin(gp,y,a)-len_bins(1));
-//                      }
   // NOTE:  there is no seasonal interpolation, or real age adjustment for age-specific K.  Maybe someday....
                       if(lin_grow(g,ALK_idx,a)==-1.0)  // first time point beyond AFIX;  lin_grow will stay at -1 for all remaining subseas of this season
                       {
-//                        Ave_Size(t,subseas,g,a) = Cohort_Lmin(gp,y,a) + (Cohort_Lmin(gp,y,a)-L_inf(gp))*
-//                                                  (mfexp(VBK(gp,a)*(curr_age(g,ALK_idx,a)-AFIX)*VBK_seas(s))-1.0)*Cohort_Growth(y,a);
-//                          if((subseas==N_subseas))
-//                            {
-                               Ave_Size(t+1,1,g,k2) = Cohort_Lmin(gp,y,a) + (Cohort_Lmin(gp,y,a)-L_inf(gp))*
-                                                      (mfexp(VBK(gp,a)*(curr_age(g,ALK_idx2,k2)-AFIX)*VBK_seas(s))-1.0)*Cohort_Growth(y,a);
-//                            }
+                         Ave_Size(t+1,1,g,k2) = Cohort_Lmin(gp,y,a) + (Cohort_Lmin(gp,y,a)-L_inf(gp))*
+                         (mfexp(VBK(gp,a)*(curr_age(g,ALK_idx2,k2)-AFIX)*VBK_seas(s))-1.0)*Cohort_Growth(y,a);
                       }
-  
-                      else if(lin_grow(g,ALK_idx,a)==-2.0)  //  so doing growth curve
+//                      else if(lin_grow(g,ALK_idx,a)>=0.0)  // in linear phase for subseas
+//                      {
+//                        Ave_Size(t+1,1,g,a) = len_bins(1)+lin_grow(g,ALK_idx,a)*(Cohort_Lmin(gp,y,a)-len_bins(1));
+//                      }
+                      else //   if(lin_grow(g,ALK_idx,a)==-2.0)  //  so doing growth curve
                       {
                           t2=Ave_Size(t,1,g,a)-L_inf(gp);  //  remaining growth potential from first subseas
                           if(time_vary_MG(y,2)>0 && t2>-1.)
@@ -10214,20 +10212,17 @@ FUNCTION void get_growth2()
                             join1=1.0/(1.0+mfexp(-(50.*t2/(1.0+fabs(t2)))));  //  note the logit transform is not perfect, so growth near Linf will not be exactly same as with native growth function
                             t2*=(1.-join1);  // trap to prevent decrease in size-at-age
                           }
-//                          Ave_Size(t,subseas,g,a) = Ave_Size(t,1,g,a) + (mfexp(VBK(gp,a)*subseasdur(s,subseas)*VBK_seas(s))-1.0)*t2*Cohort_Growth(y,a);
   
   //  SS_Label_info_16.2.4.2.1.1  #calc size at end of the season, which will be size at begin of next season using current seasons growth parms
                             //  with k2 adding an age if at the end of the year
                           if((a<nages || s<nseas)) Ave_Size(t+1,1,g,k2) = Ave_Size(t,1,g,a) + (mfexp(VBK(gp,a)*seasdur(s)*VBK_seas(s))-1.0)*t2*Cohort_Growth(y,a);
                       }
-//      if(a<6) warning<<gp<<" "<<g<<" "<<s<<" "<<a<<" "<<curr_age(g,ALK_idx,a)<<" "<<calen_age(g,ALK_idx,a)<<" "<<lin_grow(g,ALK_idx,a)<<" "<<Ave_Size(t,1,g,a)<<" "<<t2<<" "<<Ave_Size(t+1,1,g,k2)<<endl;
-//                      }  //  end subseason
                     }  // done ageloop
   
   //  SS_Label_Info_16.2.4.2.1.2  #after age loop, if(s=nseas) get weighted average for size_at_maxage from carryover fish and fish newly moving into this age
                     if(s==nseas)
                     {
-                      temp=( (natage(t,1,g,nages-1)+0.01)*Ave_Size(t+1,1,g,nages) + (natage(t,1,g,nages)+0.01)*temp1) / (natage(t,1,g,nages-1)+natage(t,1,g,nages)+0.02);
+                      temp=( (natage(t,1,g,nages-1)+0.01)*Ave_Size(t+1,1,g,nages) + (natage(t,1,g,nages)+0.01)*Ave_Size(t,1,g,nages)) / (natage(t,1,g,nages-1)+natage(t,1,g,nages)+0.02);
                       Ave_Size(t+1,1,g,nages)=temp;
                     }
                     break;
@@ -10299,10 +10294,8 @@ FUNCTION void get_growth2()
                     break;
                   }
                 }
-                if(docheckup==1) echoinput<<y<<" "<<s<<" "<<g<<" "<<gp<<" Lmin: "<<Lmin(gp)<<" Linf: "<<L_inf(gp)<<" VBK: "<<VBK(gp,nages)<<endl
-                <<" size-st  "<<Ave_Size(t,1,g)(0,min(6,nages))<<" "<<Ave_Size(t,1,g,nages)<<endl
-                <<" size-mid "<<Ave_Size(t,mid_subseas,g)(0,min(6,nages))<<" "<<Ave_Size(t,mid_subseas,g,nages)<<endl
-                <<" size+1   "<<Ave_Size(t+1,1,g)(0,min(6,nages))<<" "<<Ave_Size(t+1,1,g,nages)<<endl;
+                if(docheckup==1) echoinput<<y<<" s "<<s<<" sex "<<sx(g)<<" gp "<<gp<<" Lmin: "<<Lmin(gp)<<" Linf: "<<L_inf(gp)<<" VBK: "<<VBK(gp,nages)<<endl
+                <<" size@t+1   "<<Ave_Size(t+1,1,g)(0,min(6,nages))<<" "<<Ave_Size(t+1,1,g,nages)<<endl;
               }  // end of season
   //  SS_Label_Info_16.2.4.3  #propagate Ave_Size from early years forward until first year that has time-vary growth
               k=y+1;
@@ -10317,10 +10310,6 @@ FUNCTION void get_growth2()
                   {
                     Ave_Size(t+nseas,1,g)=Ave_Size(t,1,g);  // prep for time-vary next yr
                   }
-//                  for (subseas=2;subseas<=N_subseas;subseas++)
-//                  {
-//                    Ave_Size(t,subseas,g)=Ave_Size(t-nseas,subseas,g);
-//                  }
                 }  // end season loop
                 k++;
                 if(j<endyr+1) j++;
@@ -10330,7 +10319,7 @@ FUNCTION void get_growth2()
           }  // end loop of settlements
           Ip+=N_M_Grow_parms;
         }    // end loop of growth patterns, gp
-      warning<<current_phase()<<" "<<"growth "<<y<<" "<<Lmin(1)<<" "<<Lmax_temp(1)<<" "<<L_inf(1)<<" "<<VBK(1)(0,6)<<" size "<<Ave_Size(t,1,1)(0,6)<<endl;
+//      warning<<current_phase()<<" "<<"growth "<<y<<" "<<Lmin(1)<<" "<<Lmax_temp(1)<<" "<<L_inf(1)<<" "<<VBK(1)(0,6)<<" size "<<Ave_Size(t,1,1)(0,6)<<endl;
   //  SS_Label_Info_16.2.4.4  #end of growth
   } // end do growth
 
@@ -10341,14 +10330,12 @@ FUNCTION void get_growth3(const int s, const int subseas)
 //   get mean size at the beginning and end of the season
     int k2;
     int add_age;
-    int ALK_idx2;  //  beginning of first subseas of next season
 
         ALK_idx=(s-1)*N_subseas+subseas;  //  note that this changes a global value
         for (g=g_Start(1)+N_platoon;g<=gmorph;g+=N_platoon)
         {
           if(use_morph(g)>0)
           {
-//        if( g==1) echoinput<<y<<" "<<s<<" grow2 "<<" subseas "<<subseas<<" ALK_idx, g: "<<ALK_idx<<" "<<g<<endl;
             gp=GP(g);
             for (a=0;a<=nages;a++)
             {
@@ -10356,7 +10343,6 @@ FUNCTION void get_growth3(const int s, const int subseas)
                 //  subseasdur is cumulative time to start of this subseas
                 if(lin_grow(g,ALK_idx,a)>=0.0)  // in linear phase for subseas
                 {
-                  if(g==1) warning<<"t-subseas-a:  "<<t<<" "<<subseas<<" "<<a<<" lmin: "<<Cohort_Lmin(gp,y,a)<<" L(A): "<<Ave_Size(t,subseas,g,a)<<endl;
                   Ave_Size(t,subseas,g,a) = len_bins(1)+lin_grow(g,ALK_idx,a)*(Cohort_Lmin(gp,y,a)-len_bins(1));
                 }
 
@@ -10377,7 +10363,6 @@ FUNCTION void get_growth3(const int s, const int subseas)
                     }
                     Ave_Size(t,subseas,g,a) = Ave_Size(t,1,g,a) + (mfexp(VBK(gp,a)*subseasdur(s,subseas)*VBK_seas(s))-1.0)*t2*Cohort_Growth(y,a);
                 }
-//   if(a<5) echoinput<<gp<<" "<<g<<" "<<s<<" "<<subseas<<" "<<ALK_idx<<" "<<a<<" "<<curr_age(g,ALK_idx,a)<<" "<<calen_age(g,ALK_idx,a)<<" "<<lin_grow(g,ALK_idx,a)<<" "<<Ave_Size(t,1,g,a)<<" "<<t2<<" "<<Ave_Size(t,subseas,g,a)<<" "<<Ave_Size(t+1,1,g,k2)<<endl;
             }  // done ageloop
 
   //  SS_Label_Info_16.5.2  #do calculations related to std.dev. of size-at-age
@@ -10385,7 +10370,6 @@ FUNCTION void get_growth3(const int s, const int subseas)
 //  doing this just at y=styr prevents the CV from changing as time-vary growth updates over time
             if(CV_const(gp)>0 && y==styr)
             {
-//        if( g==1) echoinput<<y<<" "<<s<<" do CV_G  ALK_idx, g  "<<ALK_idx<<" "<<g<<endl;
               for (a=0;a<=nages;a++)
               {
                 if(curr_age(g,ALK_idx,a)<AFIX)
@@ -10404,7 +10388,6 @@ FUNCTION void get_growth3(const int s, const int subseas)
             }
     
   //  SS_Label_Info_16.5.4  #calc stddev of size-at-age from CV_G(gp,s,a) and Ave_Size(t,g,a)
-//        if( g==1) echoinput<<y<<" "<<s<<" do sd_size for ALK, g: "<<ALK_idx<<" "<<g<<endl;
             if(CV_depvar_b==0)
             {
               Sd_Size_within(ALK_idx,g)=SD_add_to_LAA+elem_prod(CV_G(gp,ALK_idx),Ave_Size(t,subseas,g));
@@ -10423,10 +10406,10 @@ FUNCTION void get_growth3(const int s, const int subseas)
 
             if(docheckup==1)
             {
-              echoinput<<y<<" s "<<s<<" subseas "<<subseas<<" alk_idx "<<ALK_idx<<" g "<<g<<" gp "<<gp<<endl;
-              echoinput<<"size "<<Ave_Size(t,subseas,g)<<endl;
-              echoinput<<"CV   "<<CV_G(gp,ALK_idx)<<endl;
-              echoinput<<"sd   "<<Sd_Size_within(ALK_idx,g)<<endl;
+              echoinput<<"with lingrow; subseas: "<<subseas<<" sex: "<<sx(g)<<" gp: "<<GP4(g)<<" platoon: "<<g<<endl;
+              echoinput<<"size "<<Ave_Size(t,subseas,g)(0,min(6,nages))<<" @nages "<<Ave_Size(t,subseas,g,nages)<<endl;
+              echoinput<<"CV   "<<CV_G(gp,ALK_idx)(0,min(6,nages))<<" @nages "<<CV_G(gp,ALK_idx,nages)<<endl;
+              echoinput<<"sd   "<<Sd_Size_within(ALK_idx,g)(0,min(6,nages))<<" @nages "<<Sd_Size_within(ALK_idx,g,nages)<<endl;
             }
           }  //  end need this platoon
         }  //  done platoon
@@ -10633,7 +10616,7 @@ FUNCTION void get_natmort()
         }
           if(do_once==1)
              {
-         for(s=1;s<=nseas;s++) echoinput<<"Natmort seas:"<<s<<" sex:"<<gg<<" Gpat:"<<GPat<<" gp:"<<gp<<" settlement:"<<settle<<" gpi:"<<gpi<<" M: "<<natM(s,gpi)<<endl;
+         for(s=1;s<=nseas;s++) echoinput<<"Natmort seas:"<<s<<" sex:"<<gg<<" Gpat:"<<GPat<<" sex*Gpat:"<<gp<<" settlement:"<<settle<<" gpi:"<<gpi<<" M: "<<natM(s,gpi)<<endl;
         }
       } //  end use of this morph
     } // end settlement
@@ -10703,7 +10686,7 @@ FUNCTION void get_wtlen()
     {
       for(f=7;f<=8;f++) {wtlen_p(GPat,f)=mgp_adj(MGparm_point(gg,GPat)+N_M_Grow_parms+(f-6)-1);}
     }
-    echoinput<<"get wtlen parms "<<gg<<" "<<GPat<<" "<<gp<<" "<<wtlen_p(GPat)<<endl;
+    echoinput<<"get wtlen parms sex: "<<gg<<" Gpat: "<<GPat<<" sex*Gpat: "<<gp<<" "<<wtlen_p(GPat)<<endl;
   
     for (s=1;s<=nseas;s++)
     {
@@ -10789,8 +10772,8 @@ FUNCTION void get_wtlen()
               break;
             }
           }
-           echoinput<<"gp: "<<gp<<" matlen: "<<mat_len(gp)<<endl;
-           echoinput<<"gp: "<<gp<<" matage: "<<mat_age(gp)<<endl;
+           echoinput<<"gp: "<<GPat<<" matlen: "<<mat_len(gp)<<endl;
+           echoinput<<"gp: "<<GPat<<" matage: "<<mat_age(gp)<<endl;
           if(First_Mature_Age>0)
           {mat_age(gp)(0,First_Mature_Age-1)=0.;}
             
@@ -10901,7 +10884,7 @@ FUNCTION void get_migration()
   for (k=1;k<=do_migr2;k++)   //  loop all movement rates for this year (includes seas, morphs)
   {
     t=styr+(yz-styr)*nseas+move_def2(k,1)-1;
-    if(k<=do_migration) 
+    if(k<=do_migration) //  so an explicit movement rate
     {
 //  SS_Label_Info_20.1.1  #age-specific movement strength based on parameters for selected area pairs
       temp=1./(move_def2(k,6)-move_def2(k,5));
@@ -14860,7 +14843,7 @@ FUNCTION void Make_AgeLength_Key(const int s, const int subseas)
    if(ALK_subseas_update(ALK_idx)==1) //  so need to calculate
    {
 
-   ALK_subseas_update(ALK_idx)=0;
+   ALK_subseas_update(ALK_idx)=0;  //  reset to 0 to indicate update not needed
    gp=0;
     for (int sex=1;sex<=gender;sex++)
     for (GPat=1;GPat<=N_GP;GPat++)
@@ -16151,7 +16134,7 @@ FUNCTION void Get_Forecast()
       if(time_vary_MG(endyr+1,2)>0 || save_for_report>0)  //  so uses endyr+1 timevary setting for duration of forecast
       {
         get_MGsetup();
-    ALK_subseas_update=1;  //  vector to indicate if ALK needs recalculating
+        ALK_subseas_update=1;  //  vector to indicate if ALK needs recalculating
         get_growth2();  //  in forecast
         if(time_vary_MG(endyr+1,7)>0)  get_catch_mult(y, catch_mult_pointer);
       }
@@ -21977,7 +21960,7 @@ FUNCTION void Get_expected_values();
 //  make age-length key if needed
     ALK_idx=(s-1)*N_subseas+subseas;
     ALK_time=(y-styr)*nseas*N_subseas+(s-1)*N_subseas+subseas;
-    if(ALK_subseas_update(ALK_idx)==1 || need_ALK(ALK_time)>0)  //  need ALK update for this subseason
+    if(ALK_subseas_update(ALK_idx)==1 || have_data(ALK_time,0,0,0)>0)  //  need ALK update for growth reasons or for data reasons
     {
       get_growth3(s, subseas);
       Make_AgeLength_Key(s, subseas);
