@@ -19841,10 +19841,23 @@ FUNCTION void write_bigoutput()
    if(n_rmse(3)>0. && rmse(3)>0.) rmse(3) = sqrt(rmse(3)/n_rmse(3));  //rmse during early period
    if(n_rmse(3)>0.) rmse(4) = rmse(4)/n_rmse(3);  // mean biasadj during early period
 
+    dvariable Shepard_c;
+    dvariable Shepard_c2;
+    dvariable Hupper;
+    if(SR_fxn==8)
+    {
+      Shepard_c=SR_parm(3);
+      Shepard_c2=pow(0.2,Shepard_c);
+      Hupper=1.0/(5.0*Shepard_c2);
+      temp=0.2+(SR_parm(2)-0.2)/(0.8)*(Hupper-0.2);
+    }
   SS2out<<endl<<"SPAWN_RECRUIT Function: "<<SR_fxn<<" _ _ _ _ _ _"<<endl<<
   SR_parm(1)<<" Ln(R0) "<<mfexp(SR_parm(1))<<endl<<
   SR_parm(2)<<" steep"<<endl<<
-  sigmaR<<" sigmaR"<<endl;
+  Bmsy/SPB_virgin<<" Bmsy/Bzero ";
+  if(SR_fxn==8) SS2out<<Shepard_c<<" Shepard_c "<<Hupper<<" steepness_limit "<<temp<<" Adjusted_steepness";
+  SS2out<<endl;
+  SS2out<<sigmaR<<" sigmaR"<<endl;
   SS2out<<SR_parm(N_SRparm2-2)<<" env_link_";
   if(SR_env_link>0)
     {
@@ -19856,18 +19869,6 @@ FUNCTION void write_bigoutput()
     else if(SR_env_target==3)
       {SS2out<<"_Steepness";}
     }
-    if(SR_fxn==8)
-      {
-        dvariable Shepard_c;
-        dvariable Shepard_c2;
-        dvariable Hupper;
-        Shepard_c=SR_parm(3);
-        Shepard_c2=pow(0.2,Shepard_c);
-        Hupper=1.0/(5.0*Shepard_c2);
-        temp=0.2+(SR_parm(2)-0.2)/(0.8)*(Hupper-0.2);
-        SS2out<<endl<<"Shepard: Power: "<<Shepard_c<<" steepness_limit: "<<Hupper<<" Adjusted_steepness: "<<temp<<" Bmsy/Bzero: "<<Bmsy/SPB_virgin;
-      }
-
   SS2out<<endl<<SR_parm(N_SRparm2-1)<<" init_eq "<<mfexp(SR_parm(1)+SR_parm(N_SRparm2-1))<<endl<<
   recdev_start<<" "<<recdev_end<<" main_recdev:start_end"<<endl<<
   recdev_adj(1)<<" "<<recdev_adj(2,5)<<" breakpoints_for_bias_adjustment_ramp "<<endl;
