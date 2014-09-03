@@ -5,7 +5,7 @@ DATA_SECTION
 !!//  SS_Label_Section_1.0 #DATA_SECTION
 
 !!//  SS_Label_Info_1.1.1  #Create string with version info
-!!version_info+="SS-V3.30a-safe;_07/28/2014;_Stock_Synthesis_by_Richard_Methot_(NOAA)_using_ADMB_10.1";
+!!version_info+="SS-V3.30a-safe;_09/02/2014;_Stock_Synthesis_by_Richard_Methot_(NOAA)_using_ADMB_11.1";
 
 !!version_info_short+="#V3.30a";
 
@@ -242,10 +242,17 @@ DATA_SECTION
   init_int F_std_basis // 0=raw; 1=rel Fspr; 2=rel Fmsy ; 3=rel Fbtgt; 4=annual F for range of years
   !!echoinput<<F_std_basis<<"  F_std_basis"<<endl;
   !!echoinput<<"For Kobe plot, set depletion_basis=2; depletion_level=1.0; F_reporting=your choose; F_std_basis=2"<<endl;
-  init_int finish_starter
+  init_number finish_starter
 
  LOCAL_CALCS
-   if(finish_starter!=999) {cout<<"CRITICAL error reading starter file "<<finish_starter<<endl; exit(1);}
+
+   if(finish_starter==999.)
+    {echoinput<<"Read files in 3.24 format"<<endl;}
+    else
+   if(finish_starter==3.30)
+   {echoinput<<"Read files in 3.30 format"<<endl;}
+   else
+   {cout<<"CRITICAL error reading finish_starter in starter.ss: "<<finish_starter<<endl; exit(1);}    
    echoinput<<"  finish reading starter.ss"<<endl<<endl;
  END_CALCS
 
@@ -332,8 +339,14 @@ DATA_SECTION
 // REVERT
 //  init_int read_seas_mo    //  1=read integer season; 2=read real months
   int read_seas_mo    //  1=read integer season; 2=read real months
-  !! read_seas_mo=1;
-  
+ LOCAL_CALCS
+  if(finish_starter==999)
+    {read_seas_mo=1;}
+  else
+    {*(ad_comm::global_datafile) >> read_seas_mo;}
+      echoinput<<read_seas_mo<<"  read_seas_mo"<<endl;
+ END_CALCS
+ 
   init_int styr  //start year of the model
  !!echoinput<<styr<<" start year "<<endl;
 
@@ -346,13 +359,15 @@ DATA_SECTION
   init_vector seasdur(1,nseas) // season duration; enter in units of months, fractions OK; will be rescaled to sum to 1.0 if total is greater than 11.9
  !!echoinput<<seasdur<<" months/seas (fractions OK) "<<endl;
 
-// REVERT
-//  init_int N_subseas  //  number of subseasons within season; must be even number to get one to be mid_season
-// !!echoinput<<N_subseas<<" Number of subseasons (even number only; min 2) for calculation of ALK "<<endl;
   int N_subseas  //  number of subseasons within season; must be even number to get one to be mid_season
-  !! N_subseas=2;
-
- !! mid_subseas=N_subseas/2 + 1;
+ LOCAL_CALCS
+  if(finish_starter==999)
+    {N_subseas=2;}
+  else
+    {*(ad_comm::global_datafile) >> N_subseas;}
+  echoinput<<N_subseas<<" Number of subseasons (even number only; min 2) for calculation of ALK "<<endl;
+  mid_subseas=N_subseas/2 + 1;
+ END_CALCS
 
   int TimeMax
   int TimeMax_Fcast_std
@@ -434,33 +449,23 @@ DATA_SECTION
    }
  END_CALCS
 
-// REVERT  added here from 3.24
   init_int Nfleet1 // number of fleets (each one with a different selectivity function)
  !!echoinput<<Nfleet1<<" Nfleet "<<endl;
 
-  init_int Nsurvey
+  int Nsurvey
   int Nfleet
-  !!echoinput<<Nsurvey<<" Nsurvey "<<endl;
-  !! Nfleet=Nfleet1+Nsurvey;
-//  end addition
+ LOCAL_CALCS
+  if(finish_starter==999)
+  {*(ad_comm::global_datafile) >> Nsurvey;}
+  else 
+  {Nsurvey=0;}
+  Nfleet=Nfleet1+Nsurvey;
+ END_CALCS
 
   init_int pop   // number of areas (populations)
   !!echoinput<<pop<<" N_areas "<<endl;
 
-// REVERT
-//  SS_Label_Info_2.1.4  #define genders and max age
-//  init_int    gender  //  number of sexes in the model
-//  !!echoinput<<gender<<" N genders "<<endl;
-
-//  init_int    nages // Number of ages
-//  !!echoinput<<nages<<" maxage; note that first age is always age 0 "<<endl;
-
-
 //  SS_Label_Info_2.1.5  #Define fleets, surveys and areas
-// REVERT
-//  init_int Nfleet // number of fleets (each one with a different selectivity function)
-// !!echoinput<<Nfleet<<" Nfleet "<<endl;
-
   imatrix pfleetname(1,Nfleet,1,2)
   init_adstring fleetnameread;
 
@@ -497,6 +502,9 @@ DATA_SECTION
   !!echoinput<<catch_se_rd1<<" catch_se "<<endl;
   vector catchunits(1,Nfleet)
   vector catch_se_rd(1,Nfleet)
+  matrix catch_se(styr-nseas,TimeMax,1,Nfleet);
+  matrix fleet_setup(1,Nfleet,1,7)  // type, timing, area, units, equ_catch_se, catch_se, need_catch_mult
+
  LOCAL_CALCS
   for (f=1;f<=Nfleet;f++)
   {
@@ -515,48 +523,6 @@ DATA_SECTION
         fleet_type(f)=3;  
         need_catch_mult(f)=0;
       }
-  }
- END_CALCS
-
-  matrix catch_se(styr-nseas,TimeMax,1,Nfleet);
-  matrix fleet_setup(1,Nfleet,1,7)  // type, timing, area, units, equ_catch_se, catch_se, need_catch_mult
-
-//  ProgLabel_2.1.5  define genders and max age
-  init_int    gender  //  number of sexes in the model
-  !!echoinput<<gender<<" N genders "<<endl;
-
-  init_int    nages // Number of ages
-  !!echoinput<<nages<<" nages is maxage "<<endl;
-  ivector     age_vector(0,nages)
-  vector      r_ages(0,nages)
-  vector frac_ages(0,nages)
-  ivector     years(styr,endyr) // vector of the years of the model
-  vector    r_years(styr,endyr);
-  ivector ALK_subseas_update(1,nseas*N_subseas);  //  0 means ALK is OK for this subseas, 1 means that recalc is needed
-
-  ivector F_reporting_ages(1,2);
-
- LOCAL_CALCS
-  for (a=0;a<=nages;a++) age_vector(a) = a; /* SS_loop: fill ivector age vector */
-  for (a=0;a<=nages;a++) r_ages(a) = double(a); /* SS_loop: fill real vector r_ages */
-  frac_ages=r_ages/r_ages(nages);
-  for (y=styr;y<=endyr;y++) {years(y)=y; r_years(y)=y;}    //year vector
-  if (F_reporting==4)
-  {
-    F_reporting_ages=F_reporting_ages_R;
-    if(F_reporting_ages(1)>(nages-2) || F_reporting_ages(1)<0)
-    {N_warn++; warning<<" reset lower end of F_reporting_ages to be nages-2  "<<endl; F_reporting_ages(1)=nages-2;}
-    if(F_reporting_ages(2)>(nages-2) || F_reporting_ages(2)<0)
-    {N_warn++; warning<<" reset upper end of F_reporting_ages to be nages-2  "<<endl; F_reporting_ages(2)=nages-2;}
-  }
-  else
-  {
-    F_reporting_ages(1)=nages/2;
-    F_reporting_ages(2)=F_reporting_ages(1)+1;
-  }
-
-  for(f=1;f<=Nfleet;f++)
-  {
     if(fleet_type(f)==1)
       {
         for (t=styr-nseas;t<=TimeMax;t++) {catch_se(t,f)=catch_se_rd(f);} // set catch se for fishing fleets
@@ -573,10 +539,7 @@ DATA_SECTION
     fleet_setup(f,5)=catch_se_rd(f);
     fleet_setup(f,6)=catch_se_rd(f);
   }
-
  END_CALCS
-//  end insert from 3.24
-
 
 // REVERT
 
@@ -613,6 +576,47 @@ DATA_SECTION
 //  {
 //    echoinput<<fleet_setup(f)<<" # Fleet:_"<<f<<"_ "<<fleetname(f)<<endl;
 //  }
+
+ 
+//  ProgLabel_2.1.5  define genders and max age
+  init_int    gender  //  number of sexes in the model
+  !!echoinput<<gender<<" N genders "<<endl;
+
+  init_int    nages // Number of ages
+  !!echoinput<<nages<<" nages is maxage "<<endl;
+  ivector     age_vector(0,nages)
+  vector      r_ages(0,nages)
+  vector frac_ages(0,nages)
+  ivector     years(styr,endyr) // vector of the years of the model
+  vector    r_years(styr,endyr);
+  ivector ALK_subseas_update(1,nseas*N_subseas);  //  0 means ALK is OK for this subseas, 1 means that recalc is needed
+
+  ivector F_reporting_ages(1,2);
+
+ LOCAL_CALCS
+  for (a=0;a<=nages;a++) age_vector(a) = a; /* SS_loop: fill ivector age vector */
+  for (a=0;a<=nages;a++) r_ages(a) = double(a); /* SS_loop: fill real vector r_ages */
+  frac_ages=r_ages/r_ages(nages);
+  for (y=styr;y<=endyr;y++) {years(y)=y; r_years(y)=y;}    //year vector
+  if (F_reporting==4)
+  {
+    F_reporting_ages=F_reporting_ages_R;
+    if(F_reporting_ages(1)>(nages-2) || F_reporting_ages(1)<0)
+    {N_warn++; warning<<" reset lower end of F_reporting_ages to be nages-2  "<<endl; F_reporting_ages(1)=nages-2;}
+    if(F_reporting_ages(2)>(nages-2) || F_reporting_ages(2)<0)
+    {N_warn++; warning<<" reset upper end of F_reporting_ages to be nages-2  "<<endl; F_reporting_ages(2)=nages-2;}
+  }
+  else
+  {
+    F_reporting_ages(1)=nages/2;
+    F_reporting_ages(2)=F_reporting_ages(1)+1;
+  }
+
+
+ END_CALCS
+//  end insert from 3.24
+
+
   int ALK_time_max
 
  LOCAL_CALCS  
