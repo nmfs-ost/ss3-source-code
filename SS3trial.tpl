@@ -336,8 +336,6 @@ DATA_SECTION
  END_CALCS
 
 !!//  SS_Label_Info_2.1.2 #Read model time dimensions
-// REVERT
-//  init_int read_seas_mo    //  1=read integer season; 2=read real months
   int read_seas_mo    //  1=read integer season; 2=read real months
  LOCAL_CALCS
   if(finish_starter==999)
@@ -448,30 +446,56 @@ DATA_SECTION
      N_warn++; warning<<" spawn_seas index must be <= nseas "<<endl;
    }
  END_CALCS
-
-  init_int Nfleet1 // number of fleets (each one with a different selectivity function)
- !!echoinput<<Nfleet1<<" Nfleet "<<endl;
-
+  int pop   // number of areas (populations)
+  int gender  //  number of sexes
+  int nages  //  maxage as accumulator
   int Nsurvey
   int Nfleet
+  int Nfleet1  // used with 3.24 for number of fishing fleets
+  
  LOCAL_CALCS
   if(finish_starter==999)
-  {*(ad_comm::global_datafile) >> Nsurvey;}
+  {
+    *(ad_comm::global_datafile) >> Nfleet1;
+    *(ad_comm::global_datafile) >> Nsurvey;
+    Nfleet=Nfleet1+Nsurvey;
+    echoinput<<Nfleet1<<" "<<Nsurvey<<"  Nfleetss and surveys "<<endl;
+    *(ad_comm::global_datafile) >> pop;
+    echoinput<<pop<<" N_areas "<<endl;
+    if(pop>1 && F_reporting==3)
+    {N_warn++; warning<<" F-reporting=3 (sum of full Fs) not advised in multiple area models "<<endl;}
+  }
   else 
-  {Nsurvey=0;}
-  Nfleet=Nfleet1+Nsurvey;
+  {
+    *(ad_comm::global_datafile) >> gender;
+    *(ad_comm::global_datafile) >> nages;
+    echoinput<<gender<<" N sexes "<<endl<<"Accumulator age "<<nages<<endl;
+    *(ad_comm::global_datafile) >> pop;
+    echoinput<<pop<<" N_areas "<<endl;
+    *(ad_comm::global_datafile) >> Nfleet;
+    Nfleet1=Nfleet;
+    Nsurvey=0;
+    echoinput<<Nfleet<<" total number of fishing fleets and surveys "<<endl;
+  }
  END_CALCS
-
-  init_int pop   // number of areas (populations)
-  !!echoinput<<pop<<" N_areas "<<endl;
 
 //  SS_Label_Info_2.1.5  #Define fleets, surveys and areas
   imatrix pfleetname(1,Nfleet,1,2)
-  init_adstring fleetnameread;
+  ivector fleet_type(1,Nfleet)   // 1=fleet with catch; 2=discard only fleet with F; 3=survey(ignore catch); 4=ignore completely
+  ivector need_catch_mult(1,Nfleet)  // 0=no, 1=need catch_multiplier parameter
+  vector surveytime(1,Nfleet)   // fraction of season (not year) in which survey occurs
+  ivector fleet_area(1,Nfleet)    // areas in which each fleet/survey operates
+  vector catchunits1(1,Nfleet1)  // 1=biomass; 2=numbers
+  vector catch_se_rd1(1,Nfleet1)  // units are se of log(catch); use -1 to ignore input catch values for discard only fleets
+  vector catchunits(1,Nfleet)
+  vector catch_se_rd(1,Nfleet)
+  matrix catch_se(styr-nseas,TimeMax,1,Nfleet);
+  matrix fleet_setup(1,Nfleet,1,7)  // type, timing, area, units, equ_catch_se, catch_se, need_catch_mult
 
  LOCAL_CALCS
-  if(pop>1 && F_reporting==3)
-  {N_warn++; warning<<" F-reporting=3 (sum of full Fs) not advised in multiple area models "<<endl;}
+  if(finish_starter==999.)
+  {
+    *(ad_comm::global_datafile) >> fleetnameread;
   for (f=1;f<=Nfleet;f++) {pfleetname(f,1)=1; pfleetname(f,2)=1;}    /* SS_loop: set pointer to fleetnames to default in case not enough names are read */
   f=1;
   for (i=1;i<=strlen(fleetnameread);i++)  /* SS_loop: read string of fllenames by character */
@@ -483,107 +507,89 @@ DATA_SECTION
     fleetname+=fleetnameread(pfleetname(f,1),pfleetname(f,2))+CRLF(1);
   }
   echoinput<<fleetname<<endl;
- END_CALCS
 
-//  INSERT from 3.24
-  ivector fleet_type(1,Nfleet)   // 1=fleet with catch; 2=discard only fleet with F; 3=survey(ignore catch); 4=ignore completely
-  ivector need_catch_mult(1,Nfleet)  // 0=no, 1=need catch_multiplier parameter
-
-  init_vector surveytime(1,Nfleet)   // fraction of season (not year) in which survey occurs
-  !!echoinput<<surveytime<<" surveytime(fishery+surveys) "<<endl;
-
-  init_ivector fleet_area(1,Nfleet)    // areas in which each fleet/survey operates
-  !!echoinput<<fleet_area<<" fleet_area(fishery+surveys) "<<endl;
-
-  init_vector catchunits1(1,Nfleet1)  // 1=biomass; 2=numbers
-  !!echoinput<<catchunits1<<" catchunits "<<endl;
-
-  init_vector catch_se_rd1(1,Nfleet1)  // units are se of log(catch); use -1 to ignore input catch values for discard only fleets
-  !!echoinput<<catch_se_rd1<<" catch_se "<<endl;
-  vector catchunits(1,Nfleet)
-  vector catch_se_rd(1,Nfleet)
-  matrix catch_se(styr-nseas,TimeMax,1,Nfleet);
-  matrix fleet_setup(1,Nfleet,1,7)  // type, timing, area, units, equ_catch_se, catch_se, need_catch_mult
-
- LOCAL_CALCS
-  for (f=1;f<=Nfleet;f++)
+    *(ad_comm::global_datafile) >> surveytime;
+    echoinput<<surveytime<<" surveytime "<<endl;
+    *(ad_comm::global_datafile) >> fleet_area;
+    echoinput<<fleet_area<<" fleet_area "<<endl;
+    *(ad_comm::global_datafile) >> catchunits1;
+    echoinput<<catchunits1<<" catchunits "<<endl;
+    *(ad_comm::global_datafile) >> catch_se_rd1;
+    echoinput<<catch_se_rd1<<" catch_se "<<endl;
+    for(f=1;f<=Nfleet;f++)
+    {
+      if(f<=Nfleet1)
+        {
+          catchunits(f)=catchunits1(f);
+          catch_se_rd(f)=catch_se_rd1(f);
+          fleet_type(f)=1;
+          if(catch_se_rd(f)<0) fleet_type(f)=2; // bycatch only
+          need_catch_mult(f)=0;
+        }
+        else
+        {
+          catchunits(f)=2;
+          catch_se_rd(f)=.1;   
+          fleet_type(f)=3;  
+          need_catch_mult(f)=0;
+        }
+      if(fleet_type(f)==1)
+        {
+          for (t=styr-nseas;t<=TimeMax;t++) {catch_se(t,f)=catch_se_rd(f);} // set catch se for fishing fleets
+        }
+        else
+        {
+          for (t=styr-nseas;t<=TimeMax;t++) {catch_se(t,f)=0.1;} // set a value for catch se for surveys and bycatch fleets (not used)
+        }
+      fleet_setup(f,1)=fleet_type(f);
+      fleet_setup(f,2)=surveytime(f);
+      fleet_setup(f,3)=fleet_area(f);
+      fleet_setup(f,4)=catchunits(f);
+      fleet_setup(f,7)=need_catch_mult(f);
+      fleet_setup(f,5)=catch_se_rd(f);
+      fleet_setup(f,6)=catch_se_rd(f);
+  
+  
+    }
+  }
+  else
   {
-    if(f<=Nfleet1)
+  echoinput<<"rows are fleets; columns are: Fleet_#, fleet_type, timing, area, units, equ_catch_se, catch_se, need_catch_mult"<<endl;
+    for(f=1;f<=Nfleet;f++)
+    {
+      *(ad_comm::global_datafile) >> fleet_setup(f)(1,7);
+        *(ad_comm::global_datafile) >> anystring;
+      fleetname+=anystring;
+      fleet_type(f) = int(fleet_setup(f,1));
+      surveytime(f) = fleet_setup(f,2);
+      fleet_area(f) = int(fleet_setup(f,3));
+      catchunits(f) = int(fleet_setup(f,4));
+      need_catch_mult(f) = int(fleet_setup(f,7));
+      if(fleet_type(f)==1)
       {
-        catchunits(f)=catchunits1(f);
-        catch_se_rd(f)=catch_se_rd1(f);
-        fleet_type(f)=1;
-        if(catch_se_rd(f)<0) fleet_type(f)=2; // bycatch only
-        need_catch_mult(f)=0;
+        catch_se(styr-1,f)=fleet_setup(f,5);
+        for (t=styr;t<=TimeMax;t++) {catch_se(t,f)=fleet_setup(f,6);} // SS_loop:  set catch se for fishing fleets
       }
       else
       {
-        catchunits(f)=2;
-        catch_se_rd(f)=.1;   
-        fleet_type(f)=3;  
-        need_catch_mult(f)=0;
+        for (t=styr-1;t<=TimeMax;t++) {catch_se(t,f)=0.1;} // SS_loop:  set a value for catch se for surveys (not used)
       }
-    if(fleet_type(f)==1)
-      {
-        for (t=styr-nseas;t<=TimeMax;t++) {catch_se(t,f)=catch_se_rd(f);} // set catch se for fishing fleets
-      }
-      else
-      {
-        for (t=styr-nseas;t<=TimeMax;t++) {catch_se(t,f)=0.1;} // set a value for catch se for surveys and bycatch fleets (not used)
-      }
-    fleet_setup(f,1)=fleet_type(f);
-    fleet_setup(f,2)=surveytime(f);
-    fleet_setup(f,3)=fleet_area(f);
-    fleet_setup(f,4)=catchunits(f);
-    fleet_setup(f,7)=need_catch_mult(f);
-    fleet_setup(f,5)=catch_se_rd(f);
-    fleet_setup(f,6)=catch_se_rd(f);
+      echoinput<<f<<" # "<<fleet_setup(f)<<" # "<<fleetname(f)<<endl;
+    }
+  }
+ END_CALCS
+ 
+//  ProgLabel_2.1.5  define genders and max age
+ LOCAL_CALCS
+  if(finish_starter==999)
+  {
+     *(ad_comm::global_datafile) >> gender;
+     echoinput<<gender<<" N sexes "<<endl;
+     *(ad_comm::global_datafile) >> nages;
+     echoinput<<nages<<" nages is maxage "<<endl;
   }
  END_CALCS
 
-// REVERT
-
-//  init_matrix fleet_setup(1,Nfleet,1,7)  // type, timing, area, units, equ_catch_se, catch_se, need_catch_mult
-  
-//  ivector fleet_type(1,Nfleet)   // 1=fleet with catch; 2=discard only fleet with F; 3=survey(ignore catch); 4=ignore completely
-//  vector surveytime(1,Nfleet)   // fraction of season (not year) in which survey occurs
-//  ivector fleet_area(1,Nfleet)    // areas in which each fleet/survey operates
-//  ivector catchunits(1,Nfleet)  // 1=biomass; 2=numbers
-//  ivector need_catch_mult(1,Nfleet)  // 0=no, 1=need catch_multiplier parameter
-//  matrix catch_se(styr-1,TimeMax,1,Nfleet);
-
-// LOCAL_CALCS
-//  for (f=1;f<=Nfleet;f++)  // SS_loop: move fleet setup info into specific vectors
-//  {
-//    fleet_type(f) = int(fleet_setup(f,1));
-//    surveytime(f) = fleet_setup(f,2);
-//    fleet_area(f) = int(fleet_setup(f,3));
-//    catchunits(f) = int(fleet_setup(f,4));
-//    need_catch_mult(f) = int(fleet_setup(f,7));
-//    if(fleet_type(f)==1)
-//      {
-//        catch_se(styr-1,f)=fleet_setup(f,5);
-//        for (t=styr;t<=TimeMax;t++) {catch_se(t,f)=fleet_setup(f,6);} // SS_loop:  set catch se for fishing fleets
-//      }
-//      else
-//      {
-//        for (t=styr-1;t<=TimeMax;t++) {catch_se(t,f)=0.1;} // SS_loop:  set a value for catch se for surveys (not used)
-//      }
-//    }
-
-//  echoinput<<"rows are fleets; columns are: fleet_type, timing, area, units, equ_catch_se, catch_se, need_catch_mult"<<endl;
-//  for (f=1;f<=Nfleet;f++) // SS_loop: echo fleet setup 
-//  {
-//    echoinput<<fleet_setup(f)<<" # Fleet:_"<<f<<"_ "<<fleetname(f)<<endl;
-//  }
-
- 
-//  ProgLabel_2.1.5  define genders and max age
-  init_int    gender  //  number of sexes in the model
-  !!echoinput<<gender<<" N genders "<<endl;
-
-  init_int    nages // Number of ages
-  !!echoinput<<nages<<" nages is maxage "<<endl;
   ivector     age_vector(0,nages)
   vector      r_ages(0,nages)
   vector frac_ages(0,nages)
@@ -643,24 +649,17 @@ DATA_SECTION
 
 //  3darray data_ALK_time(1,Nfleet,0,9,1,<nobsperkind/fleet>)   stores ALK_time
 
-//  INSERT from 3.24
 //  ProgLabel_2.2  Read CATCH amount by fleet
-  init_vector obs_equ_catch1(1,Nfleet1)    //  initial, equilibrium catch.  Annual.
-  !!echoinput<<obs_equ_catch1<<" obs_equ_catch "<<endl;
-// end INSERT
-
   matrix obs_equ_catch(1,nseas,1,Nfleet)    //  initial, equilibrium catch.  now seasonal
- LOCAL_CALCS 
+ LOCAL_CALCS
    have_data.initialize();
    obs_equ_catch.initialize();
-   
-//  INSERT for 3.24
-   for(f=1;f<=Nfleet1;f++)
-   {
-    obs_equ_catch(1,f)=obs_equ_catch1(f);
-   }
-//  end INSERT
-   
+  if(finish_starter==999)
+  {
+    *(ad_comm::global_datafile) >> obs_equ_catch(1)(1,Nfleet1);  // only read season fpr 3.24
+    echoinput<<obs_equ_catch<<" obs_equ_catch "<<endl;
+  }
+  
    for(y=1;y<=ALK_time_max;y++)
    for(f=1;f<=Nfleet;f++)
    {
@@ -687,38 +686,55 @@ DATA_SECTION
   for (k=1;k<=N_ReadCatch;k++) /* SS_loop:  process lines of catch input */
   {
     
-//  REVERT
-//    g=catch_bioT(k,1); s=catch_bioT(k,2);
-//  for 3.24
-    g=catch_bioT(k,Nfleet1+1); s=catch_bioT(k,Nfleet1+2);
-    if(g==-999) {y=styr-1;}  // designates initial equilibrium
-      else {y=g;}
-    if((g==-999) || (y>=styr && y<=endyr))
+    if(finish_starter==999)
+    {
+      g=catch_bioT(k,Nfleet1+1); s=catch_bioT(k,Nfleet1+2);
+    }
+    else
+    {
+      g=catch_bioT(k,1); s=catch_bioT(k,2);
+    }
+
+    if(g==-999)
+    {y=styr-1;}  // designates initial equilibrium
+    else 
+    {y=g;}
+    if((g==-999) || (y>=styr && y<=endyr))  //  observation is in date range
     {
       if(s>nseas) s=nseas;   // allows for collapsing multiple season catch data down into fewer seasons
                              //  typically to collapse to annual because accumulation will all be in the index "nseas"
       if(s>0)
       {
         t=styr+(y-styr)*nseas+s-1;
-//  REVERT
-//        for (f=1;f<=Nfleet1;f++) catch_ret_obs(f,t) += catch_bioT(k,f+2);
-//  for 3.24
-        for (f=1;f<=Nfleet1;f++) catch_ret_obs(f,t) += catch_bioT(k,f);
 
+        if(finish_starter==999)
+        {
+          for (f=1;f<=Nfleet1;f++) catch_ret_obs(f,t) += catch_bioT(k,f);
+        }
+        else
+        {
+          for (f=1;f<=Nfleet1;f++) catch_ret_obs(f,t) += catch_bioT(k,f+2);
+        }
+  
         if(g==-999) 
-          {
-            for (f=1;f<=Nfleet1;f++) {obs_equ_catch(s,f)=catch_ret_obs(f,t);}
-          }
+        {
+          for (f=1;f<=Nfleet1;f++) {obs_equ_catch(s,f)=catch_ret_obs(f,t);}
+        }
       }
       else  // distribute catch equally across seasons
       {
         for (s=1;s<=nseas;s++)
         {
           t=styr+(y-styr)*nseas+s-1;
-//  REVERT
-//          for (f=1;f<=Nfleet1;f++) catch_ret_obs(f,t) += catch_bioT(k,f+2)/nseas;
-//  for 3.24
+
+        if(finish_starter==999)
+        {
           for (f=1;f<=Nfleet1;f++) catch_ret_obs(f,t) += catch_bioT(k,f)/nseas;
+        }
+        else
+        {
+          for (f=1;f<=Nfleet1;f++) catch_ret_obs(f,t) += catch_bioT(k,f+2)/nseas;
+        }
 
         if(g==-999) 
           {
@@ -9364,6 +9380,7 @@ GLOBALS_SECTION
 //  SS_Label_Info_10.2 #Define some adstring variables
   adstring_array ParmLabel;  // extendable array to hold the parameter labels
   adstring_array fleetname;
+  adstring fleetnameread;
   adstring depletion_basis_label;
   adstring F_report_label;
   adstring SPR_report_label;
