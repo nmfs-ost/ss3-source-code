@@ -617,11 +617,7 @@ DATA_SECTION
     F_reporting_ages(1)=nages/2;
     F_reporting_ages(2)=F_reporting_ages(1)+1;
   }
-
-
  END_CALCS
-//  end insert from 3.24
-
 
   int ALK_time_max
 
@@ -1316,58 +1312,65 @@ DATA_SECTION
   init_vector len_bins_rd(1,nlength)
   !!if(nlength>0) echoinput<<len_bins_rd<<" pop length bins as read "<<endl;
 
-//  INSERT from 3.24
-  init_number min_tail  //min_proportion_for_compressing_tails_of_observed_composition
-  !!echoinput<<min_tail<<" min tail for comps "<<endl;
-  init_number min_comp  //  small value added to each composition bins
-  !!echoinput<<min_comp<<" value added to comps "<<endl;
-  init_int CombGender_l  //  combine genders through this length bin
-  !!echoinput<<CombGender_l<<" CombGender_lengths "<<endl;
-//  end INSERT
-
 !!//  SS_Label_Info_2.7 #Start length data section
+
+  number min_tail  //min_proportion_for_compressing_tails_of_observed_composition
+  number min_comp  //  small value added to each composition bins
+  int CombGender_l  //  combine genders through this length bin
 !!//  SS_Label_Info_2.7.1 #Read and process data length bins
-  init_int nlen_bin //number of length bins in length comp data
-  init_vector len_bins_dat(1,nlen_bin) // length bin lower boundaries
-
-  !!echoinput<<nlen_bin<<" nlen_bin_for_data "<<endl;
-  !!echoinput<<" len_bins_dat "<<endl<<len_bins_dat<<endl;
-
-//  REVERT
-//  init_matrix process_comp_L(1,Nfleet,1,4)  // column 1 is min_tail; 2 is add_comp; 3=combgender; 4 is maxbin
-//  end REVERT
-
+  int nlen_bin //number of length bins in length comp data
+  matrix process_comp_L(1,Nfleet,1,4)  // column 1 is min_tail; 2 is add_comp; 3=combgender; 4 is maxbin
   vector min_tail_L(1,Nfleet)  //min_proportion_for_compressing_tails_of_observed_composition
   vector min_comp_L(1,Nfleet)  //  small value added to each composition bins
   ivector CombGender_L(1,Nfleet)  //  combine genders through this length bin (0 or -1 for no combine)
   ivector AccumBin_L(1,Nfleet)  //  collapse bins down to this bin number (0 for no collapse; positive value for number to accumulate)
  LOCAL_CALCS
-  for (f=1;f<=Nfleet;f++)
+  if(finish_starter==999)
   {
-
-//  REVERT
-//    min_tail_L(f) = process_comp_L(f,1);
-//    min_comp_L(f) = process_comp_L(f,2);
-//    CombGender_L(f) = int(process_comp_L(f,3));
-//    AccumBin_L(f) = int(process_comp_L(f,4));
-//  INSERT for 3.24
-    min_tail_L(f) = min_tail;
-    min_comp_L(f) = min_comp;
-    CombGender_L(f) = CombGender_l;
-    AccumBin_L(f) = 0;
-   
+    *(ad_comm::global_datafile) >> min_tail;
+    echoinput<<min_tail<<" min tail for comps "<<endl;
+    *(ad_comm::global_datafile) >> min_comp;
+    echoinput<<min_comp<<" value added to comps "<<endl;
+    *(ad_comm::global_datafile) >> CombGender_l;
+    echoinput<<CombGender_l<<" CombGender_lengths "<<endl;
+    for (f=1;f<=Nfleet;f++)
+    {
+      min_tail_L(f) = min_tail;
+      min_comp_L(f) = min_comp;
+      CombGender_L(f) = CombGender_l;
+      AccumBin_L(f) = 0;
+    }
   }
+  else
+  {
+    *(ad_comm::global_datafile) >> process_comp_L;
+    for (f=1;f<=Nfleet;f++)
+    {
+      min_tail_L(f) = process_comp_L(f,1);
+      min_comp_L(f) = process_comp_L(f,2);
+      CombGender_L(f) = int(process_comp_L(f,3));
+      AccumBin_L(f) = int(process_comp_L(f,4));
+    }
+    echoinput<<min_tail_L<<" min tail for comps "<<endl;
+    echoinput<<min_comp_L<<" value added to comps "<<endl;
+    echoinput<<CombGender_L<<" CombGender_lengths "<<endl;
+    echoinput<<AccumBin_L<<" maxbin (0 for no collapse; positive values for number of bins to accumulate) "<<endl;
+  }
+  *(ad_comm::global_datafile) >> nlen_bin;
+  echoinput<<nlen_bin<<" nlen_bin_for_data "<<endl;
+ END_CALCS
+  vector len_bins_dat(1,nlen_bin) // length bin lower boundaries
+ LOCAL_CALCS
+  *(ad_comm::global_datafile) >> len_bins_dat;
+  echoinput<<" len_bins_dat "<<endl<<len_bins_dat<<endl;
 
-  echoinput<<min_tail_L<<" min tail for comps "<<endl;
-  echoinput<<min_comp_L<<" value added to comps "<<endl;
-  echoinput<<CombGender_L<<" CombGender_lengths "<<endl;
-  echoinput<<AccumBin_L<<" maxbin (0 for no collapse; positive values for number of bins to accumulate) "<<endl;
   for (f=1;f<=Nfleet;f++)
   {
   if(CombGender_L(f)>nlen_bin)
   {
     N_warn++; warning<<"Combgender_L(f) cannot be greater than nlen_bin; resetting for fleet: "<<f<<endl;  CombGender_L(f)=nlen_bin;
-  }}
+  }
+  }
   nlen_binP=nlen_bin+1;
   nlen_bin2=gender*nlen_bin;
  END_CALCS
