@@ -1857,8 +1857,7 @@ DATA_SECTION
 
 !!//  SS_Label_Info_2.8 #Start age composition data section
 !!//  SS_Label_Info_2.8.1 #Read Age bin and ageing error vectors
-  init_int n_abins // age classes for data
-   !!echoinput<<n_abins<<" N age bins "<<endl;
+  int n_abins // age classes for data
   int n_abins1;
   int n_abins2;
   int Use_AgeKeyZero;  //  set to ageerr_type for the age data that use parameter approach
@@ -1868,16 +1867,20 @@ DATA_SECTION
   int AgeKey_Linear2;
 
  LOCAL_CALCS
+   *(ad_comm::global_datafile) >> n_abins;
+  echoinput<<n_abins<<" N age bins "<<endl;
   n_abins1=n_abins+1;
   n_abins2=gender*n_abins;
  END_CALCS
 
   init_vector age_bins1(1,n_abins) // age classes for data
   !!echoinput << age_bins1<< " agebins "  << endl;
+
   init_int N_ageerr   // number of ageing error matrices to be calculated
    !!echoinput<<N_ageerr<<" N age error defs "<<endl;
   init_3darray age_err_rd(1,N_ageerr,1,2,0,nages) // ageing imprecision as stddev for each age
  LOCAL_CALCS
+  echoinput<<"ageerror_definitions_as_read"<<endl<<age_err_rd<<endl;
   Use_AgeKeyZero=0;
   if(N_ageerr>0)
   {
@@ -1888,47 +1891,50 @@ DATA_SECTION
     echoinput<<"set agekey: "<<Use_AgeKeyZero<<" to create key from parameters"<<endl;
   }
  END_CALCS
-  vector age_bins(1,n_abins2) // age classes for data
-  vector age_bins_mean(1,n_abins2)  //  holds mean age for each data age bin
-//  number age;
-
-//  INSERT for 3.24
-  init_int nobsa_rd
-  int Nobs_a_tot
-  !!echoinput << nobsa_rd<< " N ageobs"  << endl;
-//  end INSERT
-
-  init_int Lbin_method  //#_Lbin_method: 1=poplenbins; 2=datalenbins; 3=lengths
-  !!echoinput << Lbin_method<< " Lbin method for defined size ranges "  << endl;
-
-//  REVERT
-//  init_matrix process_comp_A(1,Nfleet,1,4)  // column 1 is min_tail; 2 is add_comp; 3=combgender; 4 is maxbin
-//  insert for 3.24
-  init_int CombGender_a  //  combine genders through this age bin
-  
   vector min_tail_A(1,Nfleet)  //min_proportion_for_compressing_tails_of_observed_composition
   vector min_comp_A(1,Nfleet)  //  small value added to each composition bins
   ivector CombGender_A(1,Nfleet)  //  combine genders through this age bin (0 or -1 for no combine)
   ivector AccumBin_A(1,Nfleet)  //  collapse bins down to this bin number (0 for no collapse; positive value for N to accumulate)
-
+  int Nobs_a_tot
+  int nobsa_rd
+  int Lbin_method  //#_Lbin_method: 1=poplenbins; 2=datalenbins; 3=lengths
+  int CombGender_a  //  combine genders through this age bin
+  
  LOCAL_CALCS
-  for (f=1;f<=Nfleet;f++)
+  if(finish_starter==999)
   {
-// REVERT
-//    min_tail_A(f) = process_comp_A(f,1);
-//    min_comp_A(f) = process_comp_A(f,2);
-//    CombGender_A(f) = int(process_comp_A(f,3));
-//    AccumBin_A(f) = int(process_comp_A(f,4));
-    min_tail_A(f) = min_tail;
-    min_comp_A(f) = min_comp;
-    CombGender_A(f) = CombGender_a;
-    AccumBin_A(f) = 0;
+    *(ad_comm::global_datafile) >> nobsa_rd;
+    echoinput << nobsa_rd<< " N ageobs"  << endl;
+    *(ad_comm::global_datafile) >> Lbin_method;
+    echoinput << Lbin_method<< " Lbin method for defined size ranges "  << endl;
+    *(ad_comm::global_datafile) >> CombGender_a;
+    echoinput<<CombGender_a<<" CombGender_a "<<endl;
+    for (f=1;f<=Nfleet;f++)
+    {
+      min_tail_A(f) = min_tail;
+      min_comp_A(f) = min_comp;
+      CombGender_A(f) = CombGender_a;
+      AccumBin_A(f) = 0;
+    }
   }
-
-  echoinput<<min_tail_A<<" min tail for age comps "<<endl;
-  echoinput<<min_comp_A<<" value added to age comps "<<endl;
-  echoinput<<CombGender_A<<" CombGender_age "<<endl;
-  echoinput<<AccumBin_A<<" maxbin (0 for no collapse; positive values for number of bins to accumulate) "<<endl;
+  else
+  {
+    for (f=1;f<=Nfleet;f++)
+    {
+    *(ad_comm::global_datafile) >> min_tail_A(f);
+    *(ad_comm::global_datafile) >> min_comp_A(f);
+    *(ad_comm::global_datafile) >> CombGender_A(f);
+    *(ad_comm::global_datafile) >> AccumBin_A(f);
+    }
+    echoinput<<min_tail_A<<" min tail for comps, by fleet "<<endl;
+    echoinput<<min_comp_A<<" value added to comps, by fleet "<<endl;
+    echoinput<<CombGender_A<<" Combine young males and females through this age, by fleet "<<endl;
+    echoinput<<AccumBin_A<<" maxbin (0 for no collapse; positive values for number of bins to accumulate) "<<endl;
+    *(ad_comm::global_datafile) >> Lbin_method;
+    echoinput << Lbin_method<< " Lbin method for defined size ranges "  << endl;
+    *(ad_comm::global_datafile) >> nobsa_rd;
+    echoinput << nobsa_rd<< " N ageobs"  << endl;
+  }
 
   if(nobsa_rd>0 && N_ageerr==0)
   {
@@ -1943,15 +1949,14 @@ DATA_SECTION
   }
  END_CALCS
 !!//  SS_Label_Info_2.8.2 #Read Age data
-//  REVERT
-//  init_int nobsa_rd
-//  int Nobs_a_tot
-//  !!echoinput << nobsa_rd<< " N ageobs"  << endl;
 
   init_matrix Age_Data(1,nobsa_rd,1,9+n_abins2)
    !!if(nobsa_rd>0) echoinput<<" first agecomp obs "<<endl<<Age_Data(1)<<endl<<" last obs"<<endl<<Age_Data(nobsa_rd)<<endl;;
   ivector Nobs_a(1,Nfleet)
   ivector N_suprper_a(1,Nfleet)      // N super_yrs per obs
+
+  vector age_bins(1,n_abins2) // age classes for data  female then male end-to-end
+  vector age_bins_mean(1,n_abins2)  //  holds mean age for each data age bin
 
  LOCAL_CALCS
   data_type=5;  //  for age data
@@ -3197,7 +3202,6 @@ DATA_SECTION
   {z=0;}
  END_CALCS
 
-//  REVERT  in forecast.ss read, Nfleet has been changed to Nfleet1 for compatibility with 3.24
   init_matrix Fcast_RelF_Input(1,z,1,Nfleet1)
 
  LOCAL_CALCS
@@ -3241,7 +3245,7 @@ DATA_SECTION
       Fcast_MaxFleetCatch(f)=Fcast_MaxFleetCatch_rd(f);
       if(Fcast_MaxFleetCatch(f)>0.0) Fcast_Do_Fleet_Cap=1;
     }
-//  REVERT
+
     for (f=1;f<=Nfleet1;f++)
     {Allocation_Fleet_Assignments(f)=Allocation_Fleet_Assignments_rd(f);}
 
@@ -3299,11 +3303,13 @@ DATA_SECTION
   init_matrix Fcast_InputCatch_rd(1,N_Fcast_Input_Catches,1,j)  //  values to be read:  yr, seas, fleet, value, (basis) 
 
  LOCAL_CALCS
+  Fcast_InputCatch.initialize();
   if(N_Fcast_Input_Catches>0) echoinput<<" Fcast_catches_input "<<endl<<Fcast_InputCatch_rd<<endl;
   if(Do_Forecast>0)
   {
     if(N_Fcast_Input_Catches>0)
     {
+      echoinput<<"Forecast input catches as read "<<endl<<Fcast_InputCatch_rd<<endl;
       for (t=k1;t<=y;t++)
       for (f=1;f<=Nfleet1;f++)
       {Fcast_InputCatch(t,f,1)=-1;}
@@ -3326,7 +3332,7 @@ DATA_SECTION
       	}
       }
     }
-    echoinput<<"Processed "<<endl<<Fcast_InputCatch<<endl;
+    if(N_Fcast_Input_Catches>0) echoinput<<"Processed forecast input catches:"<<endl<<Fcast_InputCatch<<endl;
   }
 
   if(Do_Rebuilder>0 && Do_Forecast<=0) {N_warn++; cout<<" EXIT - see warning "<<endl; warning<<" error: Rebuilder output selected without requesting forecast"<<endl; exit(1);}
@@ -3524,55 +3530,43 @@ DATA_SECTION
 
  END_CALCS
 
+!!//  SS_Label_Info_4.2.2  #Define distribution of recruitment(settlement) among growth patterns, areas, months
+
   int recr_dist_method  //  1=like 3.24; 2=main effects for GP, Settle timing, Area; 3=each Settle entity; 4=none when N_GP*Nsettle*pop==1
-  int N_settle_timings  //  number of recruitment settlement timings per spawning (>=1) - important for growth calculation
-  int N_settle_assignments  //  number of assigned settlements for GP, Settle, Area (>=0)
-  int N_settle  //  temporary so code will compile
+  int N_settle_assignments  //  number of assigned settlements for GP, Settle_month, Area (>=0)
+  int N_settle_timings  //  number of recruitment settlement timings per spawning (>=1) - important for number of morphs calculation
+                         //  will be calculated from the number of unique settle_months among the settle_assignments
   int settle  //  index to settle_assignments
   int settle_time  //  index to setting timings
   
   int recr_dist_inx
-  !! recr_dist_method=1;  //  hardwire for 3.24 method  later make this a read item
-//  INSERT for 3.24
  LOCAL_CALCS
-  switch (recr_dist_method)
+  if(finish_starter==999)
+  {recr_dist_method=1;}  //  hardwire for 3.24 method
+  else
   {
-    case 1:  //  like 3.24 format
-      {
-        if(N_GP*nseas*pop==1) {j=0;} else {j=2;}
-        break;
-      }
-    case 2:
-      {
-        break;
-      }
-    case 3:
-      {
-        break;
-      }
-    case 4:
-      {
-        if(N_GP*pop==1) {j=0;} else {warning<<"must have a recruitment distribution if N_GP*pop>1"<<endl; exit(1);}
-        break;
-      }
+    *(ad_comm::global_datafile) >> recr_dist_method;
+    echoinput<<recr_dist_method<<"  // Recruitment distribution method; where: 1=like 3.24; 2=main effects for GP, Settle timing, Area; 3=each Settle entity; 4=none when N_GP*Nsettle*pop==1"<<endl;
   }
- END_CALCS
- 
-  init_ivector recr_dist_input(1,j)
 
- LOCAL_CALCS
   switch (recr_dist_method)
   {
     case 1:
       {
-        if(j>0)
+        if(finish_starter!=999)
+        {
+           *(ad_comm::global_datafile) >> N_settle_assignments;
+           *(ad_comm::global_datafile) >> recr_dist_inx;
+           echoinput<<N_settle_assignments<<" nsettle "<<endl;
+        }
+        else if(N_GP*pop*nseas>1)
           {
-            N_settle_assignments=recr_dist_input(1);
-            recr_dist_inx=recr_dist_input(2);
+            *(ad_comm::global_datafile) >> N_settle_assignments;
+            *(ad_comm::global_datafile) >> recr_dist_inx;
           }
         else
           {
-            N_settle_assignments=0;
+            N_settle_assignments=1;  //  all will go to 1, 1, 1
             recr_dist_inx=0;
           }
         break;
@@ -3592,39 +3586,33 @@ DATA_SECTION
   }
  END_CALCS
 
+  int birthseas;  //  is this still needed??
 
-  int birthseas;
-!!//  SS_Label_Info_4.2.2  #Define distribution of recruitment(settlement) among growth patterns, seasons, areas
+  matrix settlement_pattern_rd(1,N_settle_assignments,1,3);   //  for each settlement event:  GPat, Month, area
  LOCAL_CALCS
-  echoinput<<N_settle_assignments<<" Number of settlement events to read (>=0) "<<endl;
-  if(recr_dist_method==1) echoinput<<recr_dist_inx<<" read interaction parameters for GP x timing x area (0/1)"<<endl;
- END_CALCS
-
-
-//  INSERT for 3.24
-  !!if(N_settle_assignments==0) {j=1;} else {j=N_settle_assignments;}
-  init_matrix settlement_pattern_rd1(1,N_settle_assignments,1,3)    //  for each settlement event:  GPat, Month, area
-  matrix settlement_pattern_rd(1,j,1,3);
- LOCAL_CALCS
-   if(N_settle_assignments>0)
+  if(recr_dist_method==1 && finish_starter==999 && N_settle_assignments==1)
     {
-      settlement_pattern_rd=settlement_pattern_rd1;
+      {settlement_pattern_rd(1).fill("{1,1,1}");}
     }
     else
     {
-      for(f=1;f<=j;f++)
-      {settlement_pattern_rd(f).fill("{1,1,1}");}
+      *(ad_comm::global_datafile) >> settlement_pattern_rd;
+      echoinput<<N_settle_assignments<<" Number of settlement events to read (>=0) "<<endl;
+      echoinput<<recr_dist_inx<<" read interaction parameters for GP x area X timing (0/1)"<<endl;
+      if(finish_starter==999)
+      {
+         echoinput<<" settlement pattern as read "<<endl<<"GPat  Birthseas  Area"<<endl<<settlement_pattern_rd<<endl;
+     }
+      else
+      {
+        echoinput<<" settlement pattern as read "<<endl<<"GPat  Month  Area"<<endl<<"*"<<settlement_pattern_rd<<"*"<<endl;
+      }
     }
       
  END_CALCS
-//  end insert 
-  
-//  REVERT
-//  init_matrix settlement_pattern_rd(1,N_settle,1,3)    //  for each settlement event:  GPat, Month, area
 
   vector settle_timings_tempvec(1,50)
  LOCAL_CALCS
-    echoinput<<" settlement pattern as read "<<endl<<"GPat  Month  Area"<<endl<<settlement_pattern_rd1<<endl<<endl<<settlement_pattern_rd<<endl;
 //    Here count the number of unique settlemonths to create the N_settle_timings
       N_settle_timings=0;
       settle_timings_tempvec.initialize();
@@ -3639,7 +3627,7 @@ DATA_SECTION
       {
         if(read_seas_mo==1)
         {
-         real_month=1.0 + azero_seas(settlement_pattern_rd(settle,2))*12.;
+         real_month=1.0 + azero_seas(settlement_pattern_rd(settle,2))*12.;  //  converts birthseason to month
         }
         else
         {
@@ -4370,9 +4358,9 @@ DATA_SECTION
       if(recr_dist_inx==1) // add for the morph assignments within each area
       {
         for (gp=1;gp<=N_GP;gp++)
-        for (s=1;s<=N_settle;s++)
         for (p=1;p<=pop;p++)
-        {ParCount++; ParmLabel+="RecrDist_interaction_GP_"+NumLbl(gp)+"_seas_"+NumLbl(s)+"_area_"+NumLbl(p);}
+        for (s=1;s<=nseas;s++)
+        {ParCount++; ParmLabel+="RecrDist_interaction_GP_"+NumLbl(gp)+"_area_"+NumLbl(p)+"_seas_"+NumLbl(s);}
       }
       break;
     }
@@ -4431,10 +4419,10 @@ DATA_SECTION
   init_matrix MGparm_1(1,N_MGparm,1,14)   // matrix with natmort and growth parms controls
   ivector MGparm_offset(1,N_MGparm)
 
-//  REVERT
-// insert for 3.24 compatibility:  reorder the input MGparms
   matrix MGparm_2(1,N_MGparm,1,14)
  LOCAL_CALCS
+  if(finish_starter==999)
+  {
   MGparm_2=MGparm_1;
   j=0;  //  pointer to matrix as read
   for(gg=1;gg<=gender;gg++)
@@ -4461,14 +4449,12 @@ DATA_SECTION
         echoinput<<f<<" to: "<<MGparm_point(2,gp)+N_natMparms+N_growparms+f-1<<" from: "<<j+6+f<<endl;
         MGparm_2(MGparm_point(2,gp)+N_natMparms+N_growparms+f-1)=MGparm_1(j+6+f);
       }
-      
     }
   
   echoinput<<MGparm_2<<endl;
   MGparm_1=MGparm_2;
-
+  }
  END_CALCS
-
 
  LOCAL_CALCS
   echoinput<<" Biology parameter setup"<<endl;
@@ -4770,7 +4756,7 @@ DATA_SECTION
       {
         N_MGparm_dev++;
 
-//  REVERT   these are not parameters in 3.24  create anyway
+//  these are not parameters in 3.24  need to create anyway
         ParCount++;
         ParmLabel+=ParmLabel(j)+"_dev_se"+CRLF(1);
         ParCount++;
@@ -4778,11 +4764,8 @@ DATA_SECTION
       }
     }
  END_CALCS
-//  REVERT     
-//   init_matrix MGparm_dev_se_rd(1,2*N_MGparm_dev,1,7)  // read matrix that defines the parms for stderr and rho of devs
-//  !!if(N_MGparm_dev>0) echoinput<<"MG dev std.err. and rho for each vector "<<endl<<MGparm_dev_se_rd<<endl;
-  matrix MGparm_dev_se_rd(1,2*N_MGparm_dev,1,7)  // create matrix that defines the parms for stderr and rho of devs but do not read in 3.24
 
+  matrix MGparm_dev_se_rd(1,2*N_MGparm_dev,1,7)  // create matrix that defines the parms for stderr and rho of devs but do not read in 3.24
   ivector MGparm_dev_minyr(1,N_MGparm_dev)
   ivector MGparm_dev_maxyr(1,N_MGparm_dev)
   ivector MGparm_dev_type(1,N_MGparm_dev)  // contains type of dev:  1 for multiplicative, 2 for additive, 3 for additive randwalk, 4=mean reverting additive rwalk
@@ -4901,12 +4884,14 @@ DATA_SECTION
          MGparm_dev_type(s)=MGparm_1(f,9);  //  1 for multiplicative, 2 for additive, 3 for additive randwalk, 4=mean-reverting rwalk
          MGparm_dev_point(f)=s;  //  specifies which dev vector is used by the f'th MGparm
          MGparm_dev_rpoint(s)=f;  //  specifies which parm (f) is affected by the j'th dev vector
-//  INSERT for 3.24 compatibility
-         k++;
-         MGparm_dev_se_rd(k)=MGparm_1(f,12);
-         k++;
-         MGparm_dev_se_rd(k)=0.0;  //  for rho
-//  end insert           
+
+         if(finish_starter==999)
+         {
+           k++;
+           MGparm_dev_se_rd(k)=MGparm_1(f,12);
+           k++;
+           MGparm_dev_se_rd(k)=0.0;  //  for rho
+         }
 
          y=MGparm_1(f,10);
          if(y<styr)
@@ -5427,18 +5412,22 @@ DATA_SECTION
   init_F_loc.initialize();
   N_init_F=0;
 
-//  REVERT  no seasons in 3.24
-//  for (s=1;s<=nseas;s++)
-  s=1;
-  for (f=1;f<=Nfleet;f++)
+//  no seasons in 3.24
+  if(finish_starter==999)
+  {k=1;}
+  else
+  {k=nseas;}
+
+  for (s=1;s<=k;s++)
+  for (f=1;f<=Nfleet1;f++)
   {
-//  REVERT
-//    if(fleet_type(f)<=2 && obs_equ_catch(s,f)!=0.0)
-//  INSERT  back to 3.24 format
     if(fleet_type(f)<=2)
     {
-      N_init_F++;
-      init_F_loc(s,f)=N_init_F;
+      if(finish_starter==999 || obs_equ_catch(s,f)!=0.0)
+      {
+        N_init_F++;
+        init_F_loc(s,f)=N_init_F;
+      }
     }
   }
  END_CALCS
@@ -5468,10 +5457,14 @@ DATA_SECTION
    init_F_CV=column(init_F_parm_1,6);
    init_F_PH=ivector(column(init_F_parm_1,7));
 
-//  REVERT  no seasons in 3.24
-//   for (s=1;s<=nseas;s++)
-   s=1;
-   for (f=1;f<=Nfleet;f++)
+//  no seasons in 3.24
+  if(finish_starter==999)
+  {k=1;}
+  else
+  {k=nseas;}
+
+   for (s=1;s<=k;s++)
+   for (f=1;f<=Nfleet1;f++)
    {
      if(init_F_loc(s,f)>0)
      {
@@ -5555,17 +5548,28 @@ DATA_SECTION
         }
       }
   }
+
+//  SS_Label_Info_4.8 #Read catchability (Q) setup
+//  revise approach for Q_offset so that is now a 5th element of Q_setup, rather than a mutually exclusive code in the 1st element (density-dependence)
+
+  if(finish_starter==999)
+  {k=4;}
+  else
+  {k=5;}
  END_CALCS
 
-!!//  SS_Label_Info_4.8 #Read catchability (Q) setup
-!!//  revise approach for Q_offset so that is now a 5th element of Q_setup, rather than a mutually exclusive code in the 1st element (density-dependence)
-
-//  REVERT
-//  init_matrix Q_setup(1,Nfleet,1,5)  // do power, env-var,  extra sd, devtype(<0=mirror, 0=float_nobiasadj 1=float_biasadj, 2=parm_nobiasadj, 3=rand, 4=randwalk); num/bio/F, err_type(0=lognormal, >=1 is T-dist-lognormal)
+  matrix Q_setup(1,Nfleet,1,5)  // do power, env-var,  extra sd, devtype(<0=mirror, 0=float_nobiasadj 1=float_biasadj, 2=parm_nobiasadj, 3=rand, 4=randwalk); num/bio/F, err_type(0=lognormal, >=1 is T-dist-lognormal)
                                         // change to matrix because devstd has real, not integer, values
                                         //  new 5th element is for Q offset
-//  INSERT  back to 3.24 format for now
-  init_matrix Q_setup(1,Nfleet,1,4)  // do power, env-var,  extra sd, devtype(<0=mirror, 0=float_nobiasadj 1=float_biasadj, 2=parm_nobiasadj, 3=rand, 4=randwalk); num/bio/F, err_type(0=lognormal, >=1 is T-dist-lognormal)
+ LOCAL_CALCS
+  Q_setup.initialize();
+  if(finish_starter==999)
+  {k=4;}
+  else
+  {k=5;}
+  for(f=1;f<=Nfleet;f++)
+  {*(ad_comm::global_datafile) >> Q_setup(f)(1,k);}  
+ END_CALCS
 
 
   int Q_Npar2
@@ -5611,18 +5615,20 @@ DATA_SECTION
     }
   }
   
-  for (f=1;f<=Nfleet;f++)
+  if(finish_starter!=999)
   {
-    Q_setup_parms(f,5)=0;
-
-//  REVERT
-//   if(Q_setup(f,5)>0)
-//    {
-//      Q_Npar++; Q_setup_parms(f,5)=Q_Npar;
-//      ParCount++; 
-//      ParmLabel+="Q_offset_"+NumLbl(f)+"_"+fleetname(f);
-//      if(Q_setup(f,4)<2) {N_warn++; warning<<" must create base Q parm to use Q_offset for fleet: "<<f<<endl;}
-//    }
+    for (f=1;f<=Nfleet;f++)
+    {
+     if(Q_setup(f,5)>0)
+      {
+        Q_Npar++; Q_setup_parms(f,5)=Q_Npar;
+        ParCount++; 
+        ParmLabel+="Q_offset_"+NumLbl(f)+"_"+fleetname(f);
+        if(Q_setup(f,4)<2) {N_warn++; warning<<" must create base Q parm to use Q_offset for fleet: "<<f<<endl;}
+      }
+      else
+      {Q_setup_parms(f,5)=0;}
+    }
   }
 
 //  SS_Label_Info_4.8.2 #Create Q parm and time-varying catchability as needed
@@ -9000,7 +9006,7 @@ PROCEDURE_SECTION
 //  SS_Label_Info_7.4.1 #Call fxn get_initial_conditions() to get the virgin and initial equilibrium population
     get_initial_conditions();
       if(do_once==1) cout<<" OK with initial conditions "<<endl;
-//  SS_Label_Info_7.4.2 #Call fxn get_time_series() to do population calculations for each yeaer and get expected values for observations
+//  SS_Label_Info_7.4.2 #Call fxn get_time_series() to do population calculations for each year and get expected values for observations
     get_time_series();  //  in procedure_section
       if(do_once==1) cout<<" OK with time series "<<endl;
 
@@ -10673,9 +10679,11 @@ FUNCTION void get_recr_distribution()
   {
  /*  SS_Label_Function_18 #get_recr_distribution among areas and morphs */
 
-//  REVERT
-//  dvar_vector recr_dist_parm(1,MGP_CGD-recr_dist_parms);
-    dvar_vector recr_dist_parm(1,MGP_CGD-recr_dist_parms+nseas);
+  if(finish_starter==999)
+  {k=MGP_CGD-recr_dist_parms+nseas;}
+  else
+  {k=MGP_CGD-recr_dist_parms;}
+  dvar_vector recr_dist_parm(1,k);
 
   recr_dist.initialize();
 //  SS_Label_Info_18.1  #set rec_dist_parms = exp(mgp_adj) for this year
@@ -10686,21 +10694,21 @@ FUNCTION void get_recr_distribution()
   }
 //  SS_Label_Info_18.2  #loop gp * settlements * area and multiply together the recr_dist_parm values
   for (gp=1;gp<=N_GP;gp++)
-  for (settle=1;settle<=N_settle_timings;settle++)
   for (p=1;p<=pop;p++)
+  for (settle=1;settle<=N_settle_timings;settle++)
   if(recr_dist_pattern(gp,settle,p)>0)
   {
     recr_dist(gp,settle,p)=femfrac(gp)*recr_dist_parm(gp)*recr_dist_parm(N_GP+p)*recr_dist_parm(N_GP+pop+settle);
     if(gender==2) recr_dist(gp+N_GP,settle,p)=femfrac(gp+N_GP)*recr_dist_parm(gp)*recr_dist_parm(N_GP+p)*recr_dist_parm(N_GP+pop+settle);  //males
+//    echoinput<<"gp: "<<gp<<" settle: "<<settle<<" area: "<<p<<" gpval "<<recr_dist_parm(gp)<<" areaval "<<recr_dist_parm(N_GP+p)<<" settleval "<<recr_dist_parm(N_GP+pop+settle)<<endl;
   }
-
 //  SS_Label_Info_18.3  #if recr_dist_interaction is chosen, then multiply these in also
   if(recr_dist_inx==1)
   {
     f=N_GP+nseas+pop;
     for (gp=1;gp<=N_GP;gp++)
-    for (settle=1;settle<=N_settle_timings;settle++)
     for (p=1;p<=pop;p++)
+    for (settle=1;settle<=N_settle_timings;settle++)
     {
       f++;
       if(recr_dist_pattern(gp,settle,p)>0)
@@ -12569,6 +12577,7 @@ FUNCTION void get_time_series()
     yz=y;
     if(STD_Yr_Reverse_F(y)>0) F_std(STD_Yr_Reverse_F(y))=0.0;
     t_base=styr+(y-styr)*nseas-1;
+    
     if(y>styr)
     {
   //  SS_Label_Info_24.1.1 #Update the time varying biology factors if necessary
@@ -12649,6 +12658,7 @@ FUNCTION void get_time_series()
         }
         }
       }
+
   //  SS_Label_Info_24.2.2 #Compute spawning biomass if this is spawning season so recruits could occur later this season
       if(s==spawn_seas && spawn_time_seas<0.0001)    //  compute spawning biomass if spawning at beginning of season so recruits could occur later this season
       {
@@ -12712,7 +12722,6 @@ FUNCTION void get_time_series()
       {
         //  spawning biomass and total recruits will be calculated later so they can use Z
       }
-
 
   //  SS_Label_Info_24.3 #Loop the areas
       for (p=1;p<=pop;p++)
@@ -13113,7 +13122,6 @@ FUNCTION void get_time_series()
 
   //  SS_Label_Info_24.7  #call to Get_expected_values
     Get_expected_values();
-
   //  SS_Label_Info_24.8  #hermaphroditism
       if(Hermaphro_Option>0)
       {
@@ -19023,8 +19031,7 @@ FUNCTION void write_bigoutput()
   SS2out<<"#_rows are fleets; columns are: fleet_type, timing, area, units, equ_catch_se, catch_se, catch_mult, survey_units survey_error "<<endl;
   for (f=1;f<=Nfleet;f++)
   {
-// REVERT
-//    SS2out<<fleet_setup(f)<<" "<<Svy_units(f)<<" "<<Svy_errtype(f)<<" # Fleet:_"<<f<<"_ "<<fleetname(f)<<endl;
+    SS2out<<fleet_setup(f)<<" "<<Svy_units(f)<<" "<<Svy_errtype(f)<<" # Fleet:_"<<f<<"_ "<<fleetname(f)<<endl;
   }
 
   SS2out<<endl<<"LIKELIHOOD "<<obj_fun<<endl;                         //SS_Label_310
@@ -20030,15 +20037,12 @@ FUNCTION void write_bigoutput()
     else
       {SS2out<<" 1.0 ";}
 
-//  REVERT
-//    SS2out<<" "<<Q_setup(f,5)<<" ";
-//    if(Q_setup(f,5)>0)
-//      {SS2out<<Q_parm(Q_setup(f,5))<<" ";}
-//    else
-      {SS2out<<" 0  0.0 ";}
+    SS2out<<" "<<Q_setup(f,5)<<" ";
+    if(Q_setup(f,5)>0)
+    {SS2out<<Q_parm(Q_setup(f,5))<<" ";}
+    else
+    {SS2out<<" 0  0.0 ";}
 
-//  end REVERT
-      
     SS2out<<Q_setup(f,2)<<" ";
     if(Q_setup(f,2)!=0)
       {SS2out<<Q_parm(Q_setup_parms(f,2));}
@@ -22085,8 +22089,8 @@ FUNCTION void Get_expected_values();
 
         for (data_type=1;data_type<=9;data_type++)
         {
-              switch(data_type)
-              {
+          switch(data_type)
+          {
                 case(1):  //  surveyindex
                 {
    /* SS_Label_46.1 expected abundance index */
@@ -22191,8 +22195,7 @@ FUNCTION void Get_expected_values();
 // SS_Label_Info_46.1.1 #note order of operations,  vbio raised to a power, then constant is added, then later multiplied by Q.  Needs work   
            if(Q_setup(f,1)>0) vbio=pow(vbio,1.0+Q_parm(Q_setup_parms(f,1)));  //  raise vbio to a power
 
-//  REVERT
-//           if(Q_setup(f,5)>0) vbio+=Q_parm(Q_setup_parms(f,5));  //  add a constant;
+           if(Q_setup(f,5)>0) vbio+=Q_parm(Q_setup_parms(f,5));  //  add a constant;
            if(Svy_errtype(f)>=0)  //  lognormal
            {Svy_est(f,j)=log(vbio+0.000001);}
            else
@@ -22635,7 +22638,7 @@ FUNCTION void Get_expected_values();
            break;
             }  //  end mean size-at-age
   
-            }  // end switch(data_type)
+          }  // end switch(data_type)
         }  //  end loop for types of data
       }
     }  //  end loop of fleets
