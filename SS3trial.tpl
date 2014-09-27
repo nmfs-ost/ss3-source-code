@@ -2127,6 +2127,7 @@ DATA_SECTION
 
           if(Age_Data(i,6)<0.0)
             {N_warn++; warning<<"negative values not allowed for age comp sample size, use -fleet to omit from -logL"<<endl;}
+          header_a(f,j)(1,9)=Age_Data(i)(1,9);  
           header_a(f,j,1) = y;
           if(Age_Data(i,3)<0)
           {
@@ -17477,11 +17478,11 @@ FUNCTION void write_nudata()
   report1 << 12.*seasdur<<" #_months/season"<< endl;
   report1 << N_subseas<<" #_N_subseasons(even number, minimum is 2)"<<endl;
   report1 << spawn_seas <<" #_spawn_seas"<< endl;
-  report1 << pop<<" #_N_areas"<<endl;
   report1 << gender<<" #_Ngenders"<< endl;
-  report1 << nages<<" #_Nages"<< endl;
+  report1 << nages<<" #_Nages=accumulator age"<< endl;
+  report1 << pop<<" #_N_areas"<<endl;
   report1 << Nfleet<<" #_Nfleets (including surveys)"<< endl;
-  report1 << fleetnameread<<endl;
+//  report1 << fleetnameread<<endl;
   report1<<"#_fleet_type: 1=catch fleet; 2=bycatch only fleet; 3=survey; 4=ignore "<<endl;
   report1<<"#_survey_timing: -1=for use of catch-at-age to override the month value associated with a datum "<<endl;
   report1<<"#_fleet_area:  area the fleet/survey operates in "<<endl;
@@ -17490,14 +17491,14 @@ FUNCTION void write_nudata()
   report1<<"#_catch_se:  standard error of log(catch); can be overridden in control file with detailed F input"<<endl;
   report1<<"#_rows are fleets; columns are: fleet_type, timing, area, units, equ_catch_se, catch_se, need_catch_mult"<<endl;
   for (f=1;f<=Nfleet;f++)
-  {report1<<fleet_setup(f)<<" # Fleet:_"<<f<<"_ "<<fleetname(f)<<endl;}
+  {report1<<fleet_setup(f)<<" "<<fleetname(f)<<endl;}
 
   if(Nudat==1)  // report back the input data
   {
 
   report1 << N_ReadCatch<<" #_N_lines_of_catch_to_read"<<endl;
   report1 << "#_catch_columns_are_year, season, fleet (including surveys)(year=-999 for initial equilibrium)"<<endl;
-  report1 << catch_bioT<< endl << endl;
+  report1 << catch_bioT<<endl;
   report1<<"#"<<endl;
 
   report1 << Svy_N_rd <<" #_N_cpue_and_surveyabundance_observations"<< endl;
@@ -17517,7 +17518,7 @@ FUNCTION void write_nudata()
       report1 << Svy_obs(f,i)<<" "<<Svy_se_rd(f,i)<<" #_ "<<fleetname(f)<<endl;
     }
 
-  report1<<endl<<Ndisc_fleets<<" #_N_fleets_with_discard"<<endl;
+  report1<<"#"<<endl<<Ndisc_fleets<<" #_N_fleets_with_discard"<<endl;
   if(Ndisc_fleets>0)
   {
     report1<<"#_discard_units (1=same_as_catchunits(bio/num); 2=fraction; 3=numbers)"<< endl;
@@ -17557,7 +17558,7 @@ FUNCTION void write_nudata()
     }
    }
 
-  report1<<endl<<LenBin_option<<" # length bin method: 1=use databins; 2=generate from binwidth,min,max below; 3=read vector"<<endl;
+  report1<<"#"<<endl<<LenBin_option<<" # length bin method: 1=use databins; 2=generate from binwidth,min,max below; 3=read vector"<<endl;
   if(LenBin_option==1)
   {report1<<"# no additional input for option 1"<<endl;
     report1<<"# read binwidth, minsize, lastbin size for option 2"<<endl;
@@ -17574,15 +17575,15 @@ FUNCTION void write_nudata()
     report1<<len_bins<<endl;
   }
 
-  report1<<nlen_bin<<" #_N_LengthBins"<<endl<<len_bins_dat<<endl;
   report1<<"#_mintailcomp: upper and lower distribution for females and males separately are accumulated until exceeding this level."<<endl;
   report1<<"#_addtocomp:  after accumulation of tails; this value added to all bins"<<endl;
   report1<<"#_males and females treated as combined gender below this bin number "<<endl;
   report1<<"#_compressbins: accumulate upper tail by this number of bins; acts simultaneous with mintailcomp; set=0 for no forced accumulation"<<endl;
   report1<<"#_mintailcomp_addtocomp_combM+F_CompressBins"<<endl;
   for (f=1;f<=Nfleet;f++)
-  {report1<<min_tail_L(f)<<" "<<min_comp_L(f)<<" "<<CombGender_L(f)<<" "<<AccumBin_L(f)<<" #_fleet:"<<f<<endl;}
+  {report1<<min_tail_L(f)<<" "<<min_comp_L(f)<<" "<<CombGender_L(f)<<" "<<AccumBin_L(f)<<" #_fleet:"<<f<<"_"<<fleetname(f)<<endl;}
 
+  report1<<nlen_bin<<" #_N_LengthBins"<<endl<<len_bins_dat<<endl;
   report1<<nobsl_rd<<" #_N_Length_obs"<<endl;
   report1<<"#_yr month fleet gender part Nsamp datavector(female-male)"<<endl;
    for (f=1;f<=Nfleet;f++)
@@ -17596,19 +17597,19 @@ FUNCTION void write_nudata()
      }
      }
 
-   report1 <<endl<<n_abins<<" #_N_age_bins"<<endl;
+   report1 <<"#"<<endl<<n_abins<<" #_N_age_bins"<<endl;
   if(n_abins>0) report1<<age_bins1<<endl;
   report1 << N_ageerr <<" #_N_ageerror_definitions"<< endl;
   if(N_ageerr>0) report1 << age_err_rd << endl;
 
-  report1<<Lbin_method<<" #_Lbin_method_for_Age_Data: 1=poplenbins; 2=datalenbins; 3=lengths"<<endl;
   report1<<"#_mintailcomp: upper and lower distribution for females and males separately are accumulated until exceeding this level."<<endl;
   report1<<"#_addtocomp:  after accumulation of tails; this value added to all bins"<<endl;
   report1<<"#_males and females treated as combined gender below this bin number "<<endl;
   report1<<"#_compressbins: accumulate upper tail by this number of bins; acts simultaneous with mintailcomp; set=0 for no forced accumulation"<<endl;
   report1<<"#_mintailcomp_addtocomp_combM+F_CompressBins"<<endl;
   for (f=1;f<=Nfleet;f++)
-  {report1<<min_tail_A(f)<<" "<<min_comp_A(f)<<" "<<CombGender_A(f)<<" "<<AccumBin_A(f)<<" #_fleet:"<<f<<endl;}
+  {report1<<min_tail_A(f)<<" "<<min_comp_A(f)<<" "<<CombGender_A(f)<<" "<<AccumBin_A(f)<<" #_fleet:"<<f<<"_"<<fleetname(f)<<endl;}
+  report1<<Lbin_method<<" #_Lbin_method_for_Age_Data: 1=poplenbins; 2=datalenbins; 3=lengths"<<endl;
   report1<<nobsa_rd<<" #_N_Agecomp_obs"<<endl;
   report1<<"#_yr month fleet gender part ageerr Lbin_lo Lbin_hi Nsamp datavector(female-male)"<<endl;
    if(Nobs_a_tot>0)
@@ -17623,7 +17624,7 @@ FUNCTION void write_nudata()
     }
    }
 
-  report1 <<endl<<nobs_ms_rd<<" #_N_MeanSize-at-Age_obs"<<endl;
+  report1 <<"#"<<endl<<nobs_ms_rd<<" #_N_MeanSize-at-Age_obs"<<endl;
   report1<<"#_yr month fleet gender part ageerr ignore datavector(female-male)"<<endl;
   report1<<"#                                          samplesize(female-male)"<<endl;
    for (f=1;f<=Nfleet;f++)
@@ -17638,7 +17639,7 @@ FUNCTION void write_nudata()
     }
    }
 
-    report1 << endl << N_envvar<<" #_N_environ_variables"<<endl<<N_envdata<<" #_N_environ_obs"<<endl;
+    report1<<"#"<<endl << N_envvar<<" #_N_environ_variables"<<endl<<N_envdata<<" #_N_environ_obs"<<endl;
     if(N_envdata>0) report1<<env_temp<<endl;
 
   report1<<SzFreq_Nmeth<<" # N sizefreq methods to read "<<endl;
@@ -17655,7 +17656,7 @@ FUNCTION void write_nudata()
   }
 
   // begin tagging data section #1 (observed data)
-  report1<<endl<<Do_TG<<" # do tags (0/1)"<<endl;
+  report1<<"#"<<endl<<Do_TG<<" # do tags (0/1)"<<endl;
   if(Do_TG>0)
   {
     // info on dimensions of tagging data
@@ -17680,21 +17681,25 @@ FUNCTION void write_nudata()
   }
   // end tagging data section #1 (observed data)
 
-    report1<<endl<<0<<" # no morphcomp data "<<endl;
-    report1 << endl << "999" << endl << endl;
+    report1<<"#"<<endl<<0<<" # no morphcomp data "<<endl;
+    report1<<"#"<<endl<<"999" << endl << endl;
 
   }
 
   else if(Nudat==2)  // report expected value with no added error
   {
 
-  report1 << est_equ_catch<<" #_init_equil_catch_for_each_season&fishery"<<endl;
-  report1 << (endyr-styr+1)*nseas<<" #_N_lines_of_catch_to_read"<<endl;
-  report1 << "#_catch_biomass(mtons):_columns_are_fisheries,year,season"<<endl;
-  for (y=styr; y<=endyr; y++)
+  report1 << (endyr-styr+2)*nseas<<" #_N_lines_of_catch_to_read"<<endl;
+  report1 << "#_catch_biomass(mtons):_columns_are_year,season,fleets(including surveys with no catch)"<<endl;
+  for (y=styr-1; y<=endyr; y++)
   for (s=1; s<=nseas;s++)
   {
     t=styr+(y-styr)*nseas+s-1;
+    if(y==styr-1)
+      {report1<<-999<<" "<<s<<" "<<est_equ_catch(s)<<endl;}
+      else
+      {
+        report1<<y<<" "<<s<<" ";
     for (f=1;f<=Nfleet;f++)
     {
       if(fleet_type(f)==2 && catch_ret_obs(f,t)>0.0)
@@ -17706,11 +17711,10 @@ FUNCTION void write_nudata()
       else
       {report1<<catch_fleet(t,f,6)<<" ";}
     }
-    report1<<y<<" "<<s<<endl;
+    report1<<endl;
   }
-  report1<<"#"<<endl;
-
-    report1 << Svy_N <<" #_N_cpue_and_surveyabundance_observations"<< endl;
+  }
+  report1<<"#"<<endl<< Svy_N <<" #_N_cpue_and_surveyabundance_observations"<< endl;
     report1<<"#_Units:  0=numbers; 1=biomass; 2=F"<<endl;
     report1<<"#_Errtype:  -1=normal; 0=lognormal; >0=T"<<endl;
     report1<<"#_Fleet Units Errtype"<<endl;
@@ -17741,7 +17745,7 @@ FUNCTION void write_nudata()
       report1 <<" "<<Svy_se_rd(f,i)<<" #_orig_obs: "<<Svy_obs(f,i)<<" "<<fleetname(f)<<endl;
     }
 
-  report1<<endl<<Ndisc_fleets<<" #_N_fleets_with_discard"<<endl;
+  report1<<"#"<<endl<<Ndisc_fleets<<" #_N_fleets_with_discard"<<endl;
   if(Ndisc_fleets>0)
   {
     report1<<"#_discard_units (1=same_as_catchunits(bio/num); 2=fraction; 3=numbers)"<< endl;
@@ -17786,7 +17790,7 @@ FUNCTION void write_nudata()
     }
    }
 
-  report1<<endl<<LenBin_option<<" # length bin method: 1=use databins; 2=generate from binwidth,min,max below; 3=read vector"<<endl;
+  report1<<"#"<<endl<<LenBin_option<<" # length bin method: 1=use databins; 2=generate from binwidth,min,max below; 3=read vector"<<endl;
   if(LenBin_option==1)
   {report1<<"# no additional input for option 1"<<endl;
     report1<<"# read binwidth, minsize, lastbin size for option 2"<<endl;
@@ -17803,14 +17807,14 @@ FUNCTION void write_nudata()
     report1<<len_bins<<endl;
   }
 
-  report1<<nlen_bin<<" #_N_LengthBins"<<endl<<len_bins_dat<<endl;
   report1<<"#_mintailcomp: upper and lower distribution for females and males separately are accumulated until exceeding this level."<<endl;
   report1<<"#_addtocomp:  after accumulation of tails; this value added to all bins"<<endl;
   report1<<"#_males and females treated as combined gender below this bin number "<<endl;
   report1<<"#_compressbins: accumulate upper tail by this number of bins; acts simultaneous with mintailcomp; set=0 for no forced accumulation"<<endl;
   report1<<"#_mintailcomp_addtocomp_combM+F_CompressBins"<<endl;
   for (f=1;f<=Nfleet;f++)
-  {report1<<min_tail_L(f)<<" "<<min_comp_L(f)<<" "<<CombGender_L(f)<<" "<<AccumBin_L(f)<<" #_fleet:"<<f<<endl;}
+  {report1<<min_tail_L(f)<<" "<<min_comp_L(f)<<" "<<CombGender_L(f)<<" "<<AccumBin_L(f)<<" #_fleet:"<<f<<"_"<<fleetname(f)<<endl;}
+  report1<<nlen_bin<<" #_N_LengthBins"<<endl<<len_bins_dat<<endl;
   report1<<sum(Nobs_l)<<" #_N_Length_obs"<<endl;
   report1<<"#_yr month fleet gender part Nsamp datavector(female-male)"<<endl;
    for (f=1;f<=Nfleet;f++)
@@ -17829,19 +17833,19 @@ FUNCTION void write_nudata()
      report1 << header_l(f,i)(1,3)<<" "<<gen_l(f,i)<<" "<<mkt_l(f,i)<<" "<<nsamp_l(f,i)<<" "<<exp_l_temp_dat<<endl;
     }}}
 
-   report1 <<endl<<n_abins<<" #_N_age_bins"<<endl;
+   report1<<"#"<<endl<<n_abins<<" #_N_age_bins"<<endl;
   if(n_abins>0) report1<<age_bins1<<endl;
   report1 << N_ageerr <<" #_N_ageerror_definitions"<< endl;
   if(N_ageerr>0) report1 << age_err_rd << endl;
 
-  report1<<Lbin_method<<" #_Lbin_method_for_Age_Data: 1=poplenbins; 2=datalenbins; 3=lengths"<<endl;
   report1<<"#_mintailcomp: upper and lower distribution for females and males separately are accumulated until exceeding this level."<<endl;
   report1<<"#_addtocomp:  after accumulation of tails; this value added to all bins"<<endl;
   report1<<"#_males and females treated as combined gender below this bin number "<<endl;
   report1<<"#_compressbins: accumulate upper tail by this number of bins; acts simultaneous with mintailcomp; set=0 for no forced accumulation"<<endl;
   report1<<"#_mintailcomp_addtocomp_combM+F_CompressBins"<<endl;
   for (f=1;f<=Nfleet;f++)
-  {report1<<min_tail_A(f)<<" "<<min_comp_A(f)<<" "<<CombGender_A(f)<<" "<<AccumBin_A(f)<<" #_fleet:"<<f<<endl;}
+  {report1<<min_tail_A(f)<<" "<<min_comp_A(f)<<" "<<CombGender_A(f)<<" "<<AccumBin_A(f)<<" #_fleet:"<<f<<"_"<<fleetname(f)<<endl;}
+  report1<<Lbin_method<<" #_Lbin_method_for_Age_Data: 1=poplenbins; 2=datalenbins; 3=lengths"<<endl;
   report1<<nobsa_rd<<" #_N_Agecomp_obs"<<endl;
   report1<<"#_yr month fleet gender part ageerr Lbin_lo Lbin_hi Nsamp datavector(female-male)"<<endl;
    if(Nobs_a_tot>0)
@@ -17863,7 +17867,7 @@ FUNCTION void write_nudata()
     }
     }
    }
-  report1 <<endl<<nobs_ms_tot<<" #_N_MeanSize-at-Age_obs"<<endl;
+  report1<<"#"<<endl<<nobs_ms_tot<<" #_N_MeanSize-at-Age_obs"<<endl;
   report1<<"#_yr month fleet gender part ageerr ignore datavector(female-male)"<<endl;
   report1<<"#                                          samplesize(female-male)"<<endl;
    if(nobs_ms_tot>0)
@@ -17890,10 +17894,10 @@ FUNCTION void write_nudata()
      }
     }
    }
-    report1 << endl << N_envvar<<" #_N_environ_variables"<<endl<<N_envdata<<" #_N_environ_obs"<<endl;
+    report1<<"#"<< endl << N_envvar<<" #_N_environ_variables"<<endl<<N_envdata<<" #_N_environ_obs"<<endl;
     if(N_envdata>0) report1<<env_temp<<endl;
 
-  report1<<SzFreq_Nmeth<<" # N sizefreq methods to read "<<endl;
+  report1<<"#"<<SzFreq_Nmeth<<" # N sizefreq methods to read "<<endl;
   if(SzFreq_Nmeth>0)
   {
     report1<<SzFreq_Nbins<<" #Sizefreq N bins per method"<<endl;
@@ -17918,7 +17922,7 @@ FUNCTION void write_nudata()
   }
 
   // begin tagging data section #2 (expected values)
-  report1<<endl<<Do_TG<<" # do tags (0/1)"<<endl;
+  report1<<"#"<<endl<<Do_TG<<" # do tags (0/1)"<<endl;
   if(Do_TG>0)
   {
     // info on dimensions of tagging data
@@ -17950,16 +17954,23 @@ FUNCTION void write_nudata()
   }
   // end tagging data section #2 (expected values)
 
-    report1<<endl<<0<<" # no morphcomp data "<<endl;
-    report1 << endl << "999" << endl << endl;
+    report1<<"#"<<endl<<0<<" # no morphcomp data "<<endl;
+    report1<<"#"<< endl << "999" << endl << endl;
 
   }
 
   else  //  create bootstrap data
   {
 
-    for (s=1;s<=nseas;s++)
+  report1 <<(endyr-styr+2)*nseas<<" #_N_lines_of_catch_to_read"<<endl;
+  report1 << "#_catch_biomass(mtons):_columns_are_fisheries,year,season"<<endl;
+  for (y=styr-1; y<=endyr; y++)
+  for (s=1; s<=nseas;s++)
+  {
+    t=styr+(y-styr)*nseas+s-1;
+    if(y==styr-1)
     {
+      report1<<-999<<" "<<s<<" ";
       for (f=1;f<=Nfleet;f++)
       {
         if(obs_equ_catch(s,f)>0.0 && fleet_type(f)<=2)
@@ -17969,14 +17980,11 @@ FUNCTION void write_nudata()
         else
         {report1<<" 0.0 ";}
       }
-      report1 <<" #_init_equil_catch_for_each_fishery in season:_"<<s<<endl;
+      report1 <<" #_init_equil_catch_for_each_fleet"<<endl;
     }
-  report1 <<(endyr-styr+1)*nseas<<" #_N_lines_of_catch_to_read"<<endl;
-  report1 << "#_catch_biomass(mtons):_columns_are_fisheries,year,season"<<endl;
-  for (y=styr; y<=endyr; y++)
-  for (s=1; s<=nseas;s++)
-  {
-    t=styr+(y-styr)*nseas+s-1;
+    else
+      {
+    report1<<y<<" "<<s<<" ";
     for (f=1;f<=Nfleet;f++)
     {
       if(fleet_type(f)==2 && catch_ret_obs(f,t)>0.0)
@@ -17988,7 +17996,9 @@ FUNCTION void write_nudata()
       else
       {report1<<catch_fleet(t,f,6)*mfexp(randn(radm)*catch_se(t,f) - 0.5*catch_se(t,f)*catch_se(t,f))<<" ";}
     }
-    report1<<y<<" "<<s<<endl;
+    report1<<endl;
+
+      }
   }
   report1<<"#"<<endl;
 
@@ -18028,7 +18038,7 @@ FUNCTION void write_nudata()
     report1 <<" "<<Svy_se_rd(f,i)<<" #_orig_obs: "<<Svy_obs(f,i)<<" "<<fleetname(f)<<endl;
   }
 
-  report1<<endl<<Ndisc_fleets<<" #_N_fleets_with_discard"<<endl;
+  report1<<"#"<<endl<<Ndisc_fleets<<" #_N_fleets_with_discard"<<endl;
   if(Ndisc_fleets>0)
   {
     report1<<"#_discard_units (1=same_as_catchunits(bio/num); 2=fraction; 3=numbers)"<< endl;
@@ -18089,7 +18099,7 @@ FUNCTION void write_nudata()
       temp<<" "<<mnwtdata(6,i)<<" #_orig_obs: "<<mnwtdata(5,i)<<"  #_ "<<fleetname(mnwtdata(3,i))<<endl;    }
   }
 
-  report1<<endl<<LenBin_option<<" # length bin method: 1=use databins; 2=generate from binwidth,min,max below; 3=read vector"<<endl;
+  report1<<"#"<<endl<<LenBin_option<<" # length bin method: 1=use databins; 2=generate from binwidth,min,max below; 3=read vector"<<endl;
   if(LenBin_option==1)
   {report1<<"# no additional input for option 1"<<endl;
     report1<<"# read binwidth, minsize, lastbin size for option 2"<<endl;
@@ -18106,14 +18116,14 @@ FUNCTION void write_nudata()
     report1<<len_bins<<endl;
   }
 
-  report1<<nlen_bin<<" #_N_LengthBins"<<endl<<len_bins_dat<<endl;
   report1<<"#_mintailcomp: upper and lower distribution for females and males separately are accumulated until exceeding this level."<<endl;
   report1<<"#_addtocomp:  after accumulation of tails; this value added to all bins"<<endl;
   report1<<"#_males and females treated as combined gender below this bin number "<<endl;
   report1<<"#_compressbins: accumulate upper tail by this number of bins; acts simultaneous with mintailcomp; set=0 for no forced accumulation"<<endl;
   report1<<"#_mintailcomp_addtocomp_combM+F_CompressBins"<<endl;
   for (f=1;f<=Nfleet;f++)
-  {report1<<min_tail_L(f)<<" "<<min_comp_L(f)<<" "<<CombGender_L(f)<<" "<<AccumBin_L(f)<<" #_fleet:"<<f<<endl;}
+  {report1<<min_tail_L(f)<<" "<<min_comp_L(f)<<" "<<CombGender_L(f)<<" "<<AccumBin_L(f)<<" #_fleet:"<<f<<"_"<<fleetname(f)<<endl;}
+  report1<<nlen_bin<<" #_N_LengthBins"<<endl<<len_bins_dat<<endl;
   report1<<sum(Nobs_l)<<" #_N_Length_obs"<<endl;
   report1<<"#_yr month fleet gender part Nsamp datavector(female-male)"<<endl;
    for (f=1;f<=Nfleet;f++)
@@ -18136,20 +18146,20 @@ FUNCTION void write_nudata()
      report1 << header_l(f,i)(1,3)<<" "<<gen_l(f,i)<<" "<<mkt_l(f,i)<<" "<<nsamp_l(f,i)<<" "<<exp_l_temp_dat<<endl;
     }}}
 
-   report1 <<endl<<n_abins<<" #_N_age_bins"<<endl;
+   report1<<"#"<<endl<<n_abins<<" #_N_age_bins"<<endl;
   if(n_abins>0) report1<<age_bins1<<endl;
   report1 << N_ageerr <<" #_N_ageerror_definitions"<< endl;
   if(N_ageerr>0) report1 << age_err_rd << endl;
 
-  report1<<Lbin_method<<" #_Lbin_method_for_Age_Data: 1=poplenbins; 2=datalenbins; 3=lengths"<<endl;
   report1<<"#_mintailcomp: upper and lower distribution for females and males separately are accumulated until exceeding this level."<<endl;
   report1<<"#_addtocomp:  after accumulation of tails; this value added to all bins"<<endl;
   report1<<"#_males and females treated as combined gender below this bin number "<<endl;
   report1<<"#_compressbins: accumulate upper tail by this number of bins; acts simultaneous with mintailcomp; set=0 for no forced accumulation"<<endl;
   report1<<"#_mintailcomp_addtocomp_combM+F_CompressBins"<<endl;
   for (f=1;f<=Nfleet;f++)
-  {report1<<min_tail_A(f)<<" "<<min_comp_A(f)<<" "<<CombGender_A(f)<<" "<<AccumBin_A(f)<<" #_fleet:"<<f<<endl;}
-  report1<<nobsa_rd<<" #_N_Agecomp_obs"<<endl;
+  {report1<<min_tail_A(f)<<" "<<min_comp_A(f)<<" "<<CombGender_A(f)<<" "<<AccumBin_A(f)<<" #_fleet:"<<f<<"_"<<fleetname(f)<<endl;}
+  report1<<Lbin_method<<" #_Lbin_method_for_Age_Data: 1=poplenbins; 2=datalenbins; 3=lengths"<<endl;
+  report1<<sum(Nobs_a)<<" #_N_Agecomp_obs"<<endl;
   report1<<"#_yr month fleet gender part ageerr Lbin_lo Lbin_hi Nsamp datavector(female-male)"<<endl;
    if(Nobs_a_tot>0)
    for (f=1;f<=Nfleet;f++)
@@ -18174,7 +18184,7 @@ FUNCTION void write_nudata()
     }
     }
     }
-  report1 <<endl<<nobs_ms_tot<<" #_N_MeanSize-at-Age_obs"<<endl;
+  report1<<"#"<<endl<<nobs_ms_tot<<" #_N_MeanSize-at-Age_obs"<<endl;
   report1<<"#_yr month fleet gender part ageerr ignore datavector(female-male)"<<endl;
   report1<<"#                                          samplesize(female-male)"<<endl;
    if(nobs_ms_tot>0)
@@ -18200,10 +18210,10 @@ FUNCTION void write_nudata()
       }
       }
       }
-    report1 << endl << N_envvar<<" #_N_environ_variables"<<endl<<N_envdata<<" #_N_environ_obs"<<endl;
+    report1<<"#"<< endl << N_envvar<<" #_N_environ_variables"<<endl<<N_envdata<<" #_N_environ_obs"<<endl;
     if(N_envdata>0) report1<<env_temp<<endl;
 
-  report1<<SzFreq_Nmeth<<" # N sizefreq methods to read "<<endl;
+  report1<<"#"<<endl<<SzFreq_Nmeth<<" # N sizefreq methods to read "<<endl;
   if(SzFreq_Nmeth>0)
   {
     report1<<SzFreq_Nbins<<" #Sizefreq N bins per method"<<endl;
@@ -18237,7 +18247,7 @@ FUNCTION void write_nudata()
     }
   }
   // begin tagging data section #3 (bootstrap data)
- report1<<endl<<Do_TG<<" # do tags (0/1)"<<endl;
+ report1<<"#"<<endl<<Do_TG<<" # do tags (0/1)"<<endl;
   if(Do_TG>0)
   {
     dvector temp_negbin(1,1);
@@ -18275,9 +18285,8 @@ FUNCTION void write_nudata()
     }
   }
   // end tagging data section #3 (bootstrap data)
-
-    report1<<endl<<0<<" # no morphcomp data "<<endl;
-    report1 << endl << "999" << endl << endl;
+    report1<<"#"<<endl<<0<<" # no morphcomp data "<<endl;
+    report1<<"#"<<endl << "999" << endl << endl;
   }
   }
 
@@ -18324,7 +18333,7 @@ FUNCTION void write_nucontrol()
   else
   {NuStart<<"#COND 10 15 #_min and max age over which average F will be calculated with F_reporting=4"<<endl;}
   NuStart<<F_std_basis<<" # F_std_basis: 0=raw_F_report; 1=F/Fspr; 2=F/Fmsy ; 3=F/Fbtgt"<<endl;
-  NuStart<<999<<" # check value for end of file"<<endl;
+  NuStart<<3.30<<" # check value for end of file and for version control"<<endl;
 
   cout<<" Write new forecast file "<<endl;
   ofstream NuFore("forecast.ss_new");
@@ -18416,6 +18425,7 @@ FUNCTION void write_nucontrol()
 
 //**********************************************************
   cout<<" Write new control file "<<endl;
+  
   ofstream report4("control.ss_new");
   report4<<version_info_short<<endl;
   if(N_CC>0) report4<<Control_Comments<<endl;
@@ -18889,16 +18899,17 @@ FUNCTION void write_nucontrol()
   report4<<"# "<< recrdev_lambda<<" #_recruitments"<<endl;
   report4<<"# "<< parm_prior_lambda<<" #_parameter-priors"<<endl;
   report4<<"# "<< parm_dev_lambda<<" #_parameter-dev-vectors"<<endl;
-  report4<<"# "<< CrashPen_lambda<<" #_crashPenLambda"<<endl;
-  if(Do_Morphcomp>0) report4<<"# "<< Morphcomp_lambda<<" #_Morphcomplambda"<<endl;
   if(Do_TG>0)
   {
   for (TG=1;TG<=N_TG;TG++) report4<<"# "<<TG_lambda1(TG)<<" #_TG-comp_group:_"<<TG<<endl;
   for (TG=1;TG<=N_TG;TG++) report4<<"# "<<TG_lambda2(TG)<<" #_TG-negbin_group:_"<<TG<<endl;
   }
+  report4<<"# "<< CrashPen_lambda<<" #_crashPenLambda"<<endl;
+  if(Do_Morphcomp>0) report4<<"# "<< Morphcomp_lambda<<" #_Morphcomplambda"<<endl;
   report4<<"# "<<F_ballpark_lambda<<" # F_ballpark_lambda"<<endl;
 
   report4<<Do_More_Std<<" # (0/1) read specs for more stddev reporting "<<endl;
+
   if(Do_More_Std>0)
   {
     report4<<More_Std_Input<<" # selex type, len/age, year, N selex bins, Growth pattern, N growth ages, NatAge_area(-1 for all), NatAge_yr, N Natages"<<endl;
