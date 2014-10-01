@@ -17,7 +17,7 @@ DATA_SECTION
   int  L2  //  used for l+nlength to get length bin for males
   int  A2  //  used for a+nages+1 to get true age bin for males
   int a1  // use to track a subset of ages
-  int f // counter for fleets and surveys
+  int f // counter for fleets and surveys.  total is Ntypes
   int fs  //  counter for fleets when looping across size and ageselex; so = f-Ntypes
 
   int gmorph // number of biological entities:  gender*GP*BirthEvent*Platoon
@@ -1172,15 +1172,24 @@ DATA_SECTION
 //  note that syntax for storing this info internal is done differently than for surveys and discard
    init_int nobs_mnwt_rd
    int nobs_mnwt
-  !!echoinput<<nobs_mnwt_rd<<" nobs_mnwt "<<endl;
-  init_number DF_bodywt  // DF For meanbodywt T-distribution
-  !!echoinput<<DF_bodywt<<" degrees of freedom for bodywt T-distribution "<<endl;
+  number DF_bodywt  // DF For meanbodywt T-distribution
+  !!echoinput<<nobs_mnwt_rd<<" nobs_mean body wt.  If 0, then no additional input in 3.30 "<<endl;
 
-   init_matrix mnwtdata1(1,nobs_mnwt_rd,1,6)
+   matrix mnwtdata1(1,nobs_mnwt_rd,1,6)
  LOCAL_CALCS
+  if(finish_starter==999 || nobs_mnwt_rd>0)
+  {
+    *(ad_comm::global_datafile) >> DF_bodywt;
+    echoinput<<DF_bodywt<<" degrees of freedom for bodywt T-distribution "<<endl;
+  }
+  
+  if(nobs_mnwt_rd>0)
+  {
+    *(ad_comm::global_datafile) >> mnwtdata1;
+    echoinput<<" meanbodywt_data "<<endl<<mnwtdata1<<endl;
+  }
   data_type=3;
   nobs_mnwt=0;
-  if(nobs_mnwt_rd>0) echoinput<<" meanbodywt_data "<<endl<<mnwtdata1<<endl;
   for (i=1;i<=nobs_mnwt_rd;i++)
   {
     y=mnwtdata1(i,1);
@@ -1193,6 +1202,7 @@ DATA_SECTION
 
  LOCAL_CALCS
   yr_mnwt2.initialize();
+  mnwtdata.initialize();
   j=0;
   if(nobs_mnwt>0)  //  number in date range
   for (i=1;i<=nobs_mnwt_rd;i++)  //   loop all obs
@@ -1270,7 +1280,7 @@ DATA_SECTION
       for (k=3;k<=6;k++) mnwtdata(k,j)=mnwtdata1(i,k);
     }
   }
-  echoinput<<"Successful read of mean-body-wt data, N= "<< nobs_mnwt <<endl;
+  echoinput<<"Successful read of mean-bodywt data, N= "<< nobs_mnwt <<endl<<trans(mnwtdata)<<endl<<yr_mnwt2<<endl;
  END_CALCS
 
 !!//  SS_Label_Info_2.6 #Setup population Length bins
@@ -4354,14 +4364,14 @@ DATA_SECTION
     {
       for (k=1;k<=N_GP;k++) {ParCount++; ParmLabel+="RecrDist_GP_"+NumLbl(k);}
       for (k=1;k<=pop;k++)  {ParCount++; ParmLabel+="RecrDist_Area_"+NumLbl(k);}
-      for (k=1;k<=nseas;k++){ParCount++; ParmLabel+="RecrDist_seas_"+NumLbl(k);}
+      for (k=1;k<=nseas;k++){ParCount++; ParmLabel+="RecrDist_settle_"+NumLbl(k);}
 
       if(recr_dist_inx==1) // add for the morph assignments within each area
       {
         for (gp=1;gp<=N_GP;gp++)
         for (p=1;p<=pop;p++)
         for (s=1;s<=nseas;s++)
-        {ParCount++; ParmLabel+="RecrDist_interaction_GP_"+NumLbl(gp)+"_area_"+NumLbl(p)+"_seas_"+NumLbl(s);}
+        {ParCount++; ParmLabel+="RecrDist_interaction_GP_"+NumLbl(gp)+"_area_"+NumLbl(p)+"_settle_"+NumLbl(s);}
       }
       break;
     }
@@ -4410,7 +4420,7 @@ DATA_SECTION
   {
     if(need_catch_mult(j)==1)
     {
-      ParCount++; ParmLabel+="Catch_Mult_fleet:"+NumLbl(j);
+      ParCount++; ParmLabel+="Catch_Mult:_"+NumLbl(j)+"_"+fleetname(j);
     } 
   }
   N_MGparm=ParCount;
@@ -10787,7 +10797,7 @@ FUNCTION void get_wtlen()
         wt_len2_sq(s,GPat)=elem_prod(wt_len2(s,GPat),wt_len2(s,GPat));
         wt_len_fd(s,GPat)=first_difference(wt_len_low(s,GPat));
         if(gender==2) wt_len_fd(s,GPat,nlength)=wt_len_fd(s,GPat,nlength-1);
-          echoinput<<"wtlen2 "<<endl<<wt_len2<<endl<<wt_len2_sq<<endl<<wt_len_fd<<endl;
+          echoinput<<"wtlen2 "<<endl<<wt_len2<<endl<<"wtlen2^2 "<<wt_len2_sq<<endl<<"wtlen2:firstdiff "<<wt_len_fd<<endl;
       }
   //  SS_Label_Info_19.2.4  #calculate maturity and fecundity if seas = spawn_seas
   //  these calculations are done in spawn_seas, but are not affected by spawn_time within that season
@@ -17547,6 +17557,7 @@ FUNCTION void write_nudata()
   }
 
   report1 <<"#"<<endl<< nobs_mnwt_rd <<" #_N_meanbodywt_obs"<< endl;
+  if(nobs_mnwt_rd==0) report1<<"#_COND_";
   report1<<DF_bodywt<<" #_DF_for_meanbodywt_T-distribution_like"<<endl;
   report1<<"#_yr month fleet part obs stderr"<<endl;
   if(nobs_mnwt>0)
@@ -17778,6 +17789,7 @@ FUNCTION void write_nudata()
   }
 
   report1 <<"#"<<endl<< nobs_mnwt <<" #_N_meanbodywt_obs"<< endl;
+  if(nobs_mnwt_rd==0) report1<<"#_COND_";
   report1<<DF_bodywt<<" #_DF_for_meanbodywt_T-distribution_like"<<endl;
   report1<<"#_yr month fleet part obs stderr"<<endl;
   if(nobs_mnwt>0)
@@ -18080,6 +18092,7 @@ FUNCTION void write_nudata()
   }
 
   report1 <<"#"<<endl<< nobs_mnwt <<" #_N_meanbodywt_obs"<< endl;
+  if(nobs_mnwt_rd==0) report1<<"#_COND_";
   report1<<DF_bodywt<<" #_DF_for_meanbodywt_T-distribution_like"<<endl;
   report1<<"#_yr month fleet part obs stderr"<<endl;
   if(nobs_mnwt>0)
@@ -18532,6 +18545,7 @@ FUNCTION void write_nucontrol()
   if(N_MGparm_blk>0)
   {
     report4<<1<<" #_custom_MG-block_setup (0/1)"<<endl;
+    report4<<"#_LO HI INIT PRIOR PR_type SD PHASE"<<endl;
     for (f=1;f<=N_MGparm_blk;f++)
     {j++; NP++; if(customblocksetup_MG==0) {k=1;} else {k=f;}
     MGparm_blk_1(k,3)=value(MGparm(j));report4<<MGparm_blk_1(k)<<" # "<<ParmLabel(NP)<<endl;}
@@ -18539,6 +18553,7 @@ FUNCTION void write_nucontrol()
   else
   {
     report4<<"#_Cond 0  #custom_MG-block_setup (0/1)"<<endl;
+    report4<<"#_LO HI INIT PRIOR PR_type SD PHASE"<<endl;
     report4<<"#_Cond -2 2 0 0 -1 99 -2 #_placeholder when no MG-block parameters"<<endl;
   }
    if(N_MGparm_trend>0)
@@ -18558,6 +18573,7 @@ FUNCTION void write_nucontrol()
 
   report4<<"#"<<endl;
   report4<<"#_seasonal_effects_on_biology_parms"<<endl<<MGparm_seas_effects<<" #_femwtlen1,femwtlen2,mat1,mat2,fec1,fec2,Malewtlen1,malewtlen2,L1,K"<<endl;
+  report4<<"#_LO HI INIT PRIOR PR_type SD PHASE"<<endl;
   if(MGparm_doseas>0)
   {
     for (f=1;f<=N_MGparm_seas;f++)
@@ -20170,7 +20186,7 @@ FUNCTION void write_bigoutput()
   {
     t=mnwtdata(1,i);
     f=abs(mnwtdata(3,i));
-    SS2out << mnwtdata(3,i)<<" "<<fleetname(f)<<" "<<Show_Time(t)<<" "
+    SS2out << mnwtdata(3,i)<<" "<<fleetname(f)<<" "<<Show_Time(t)<<" NA "
     <<mnwtdata(4,i)<<" "<<mnwtdata(5,i)<<" "<<exp_mnwt(i)<<" "<<mnwtdata(6,i);
     if(mnwtdata(3,i)>0.)
     {
@@ -22251,11 +22267,10 @@ FUNCTION void Get_expected_values();
             case(3):  // mean body weight
    /* SS_Label_46.3 expected mean body weight */
             {
-  
-          if(nobs_mnwt>0)
-            {
             j=have_data(ALK_time,f,data_type,0);  //  number of observations
-            j=yr_mnwt2(f,t,0);   //  redundant
+          if(j>0)
+            {
+            j=yr_mnwt2(f,t,0);
             if(j>0) {exp_mnwt(j) = (exp_l_temp*wt_len2(s,1)) / sum(exp_l_temp);}  // total sample
             j=yr_mnwt2(f,t,1);
             if(j>0) exp_mnwt(j) = (exp_l_temp-exp_l_temp_ret)*wt_len2(s,1) / (sum(exp_l_temp)-sum(exp_l_temp_ret));  // discard sample
