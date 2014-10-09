@@ -3692,6 +3692,7 @@ DATA_SECTION
 //  following two containers are used to track which morphs are being used
   ivector use_morph(1,gmorph)
   imatrix TG_use_morph(1,N_TG2,1,gmorph)
+  3darray ALK_range_g(1,gmorph,0,nages,1,2)  //  later to do this with a i3darray
 
   vector azero_G(1,gmorph);  //  time since Jan 1 at beginning of settlement in which "g" was born
   3darray curr_age(1,gmorph,1,nseas*N_subseas,0,nages);  // real age since settlement
@@ -7880,7 +7881,7 @@ PARAMETER_SECTION
   3darray age_age(0,N_ageerr,1,n_abins2,0,gender*nages+gender-1)
   3darray age_err(1,N_ageerr,1,2,0,nages) // ageing imprecision as stddev for each age
 
-// Age-length keys for each gmorph
+// Age-length keys for each gmorph  
   4darray ALK(1,N_subseas*nseas,1,gmorph,0,nages,1,nlength)
   matrix exp_AL(0,gender*nages+gender-1,1,nlength2);
   3darray Sd_Size_within(1,N_subseas*nseas,1,gmorph,0,nages)  //  2*nseas stacks begin of seas and end of seas
@@ -14899,12 +14900,20 @@ FUNCTION void Do_Equil_Calc()
 
 //********************************************************************
  /*  SS_Label_FUNCTION 31 Make_AgeLength_Key */
+ //  this is called for each subseason of each year
+ //  checks to see if a re-calc of the ALK is needed for that time step
+ //  if it is, then it loops through all possible biological entities "g" (sex, growth pattern, settlement event, platoon)
+ //  then it retrieves the previously calculated and stored mean size-at-age from Ave_Size(t,subseas,gstart)
+ //  moves these mean sizes into a _W working vector 
+ //  then it calls calc_ALK to make and store the age-length key for that subseason for each biological entity
+ 
 FUNCTION void Make_AgeLength_Key(const int s, const int subseas)
   {
   int gstart;
    ALK_idx=(s-1)*N_subseas+subseas;
    dvar_vector use_Ave_Size_W(0,nages);
    dvar_vector use_SD_Size(0,nages);
+   dmatrix ALK_range_use(0,nages,1,2);
    if(ALK_subseas_update(ALK_idx)==1) //  so need to calculate
    {
 
@@ -14930,7 +14939,9 @@ FUNCTION void Make_AgeLength_Key(const int s, const int subseas)
 
             if(Grow_logN==0)
             {
-              ALK(ALK_idx,g)=calc_ALK(len_bins,use_Ave_Size_W,use_SD_Size);
+              ALK_range_g(g)=calc_ALK_range(len_bins,use_Ave_Size_W,use_SD_Size);  //  later need to offset according to g
+              ALK_range_use=ALK_range_g(g);
+              ALK(ALK_idx,g)=calc_ALK(len_bins,ALK_range_use,use_Ave_Size_W,use_SD_Size);
             }
             else
             {
@@ -14961,7 +14972,40 @@ FUNCTION void Make_AgeLength_Key(const int s, const int subseas)
    }
   }  //  end Make_AgeLength_Key
 
-FUNCTION dvar_matrix calc_ALK(const dvector &len_bins, const dvar_vector &mean_len_at_age, const dvar_vector &sd_len_at_age)
+//  the function calc_ALK_range finds the range for the distribution of length for each age
+FUNCTION dmatrix calc_ALK_range(const dvector &len_bins, const dvar_vector &mean_len_at_age, const dvar_vector &sd_len_at_age)
+  {
+//   RETURN_ARRAYS_INCREMENT();
+  int a, z;  // declare indices
+  int nlength = len_bins.indexmax(); // find number of lengths
+  int nages = mean_len_at_age.indexmax(); // find number of ages
+  dmatrix ALK_range(0,nages,1,2); // stores minimum and maximum   later convert this to integer
+  dvar_vector AL(1,nlength+1); // create temporary vector
+  dvariable len_dev;
+  
+  AL(1)=0.0; AL(nlength+1)=1.0;  //  terminal values that are not recalculated
+  //  initialize
+  for (a=0;a<=nages;a++)
+  {
+    ALK_range(a,1)=nlength;  //  max permissable value for the min range
+    ALK_range(a,2)=2;  //  min permissable value for the max range
+  }
+  for (a = 0; a <= nages; a++)
+  {
+    for (z = 2; z <= nlength; z++) 
+    { 
+      len_dev = (len_bins(z) - mean_len_at_age(a)) / (sd_len_at_age(a));
+      AL(z) = cumd_norm (len_dev);
+      if(AL(z)>0.0001 && ALK_range(a,1)==nlength) ALK_range(a,1)=z;
+      if(AL(z)<0.9999) ALK_range(a,2)=z;
+    } // end length loop
+  }   // end age loop
+//  RETURN_ARRAYS_DECREMENT();
+  return (ALK_range);
+  }
+
+//  the function calc_ALK is called by Make_AgeLength_Key to calculate the distribution of length for each age
+FUNCTION dvar_matrix calc_ALK(const dvector &len_bins, const dmatrix &ALK_range, const dvar_vector &mean_len_at_age, const dvar_vector &sd_len_at_age)
   {
    RETURN_ARRAYS_INCREMENT();
  //SS_Label_FUNCTION_31.2 #Calculate the ALK
@@ -14971,18 +15015,22 @@ FUNCTION dvar_matrix calc_ALK(const dvector &len_bins, const dvar_vector &mean_l
   dvar_matrix ALK_w(0,nages, 1,nlength); // create matrix to return with length vectors for each age
   dvar_vector AL(1,nlength+1); // create temporary vector
   dvariable len_dev;
-  
-  AL(1)=0.0; AL(nlength+1)=1.0;  //  terminal values that are not recalculated
+  AL.initialize();
 
   for (a = 0; a <= nages; a++)
   {
+    AL(1,ALK_range(a,1))=0.0; AL(ALK_range(a,2),nlength+1)=1.0;  //  terminal values that are not recalculated
     for (z = 2; z <= nlength; z++) 
+//    for (z = ALK_range(a,1); z <= ALK_range(a,2); z++) 
     { 
       len_dev = (len_bins(z) - mean_len_at_age(a)) / (sd_len_at_age(a));
       AL(z) = cumd_norm (len_dev);
+      ALK_w(a,z-1)=AL(z)-AL(z-1);
     } // end length loop
-    ALK_w(a) = first_difference(AL);
+//    ALK_w(a) = first_difference(AL);
+//    echoinput<<ALK_w(a)<<endl;
   }   // end age loop
+
   RETURN_ARRAYS_DECREMENT();
   return (ALK_w);
   }
@@ -15017,6 +15065,8 @@ FUNCTION dvar_matrix calc_ALK_log(const dvector &len_bins, const dvar_vector &me
   }
 
 //********************************************************************
+//  this Make_Fecundity function does the dot product of the distribution of length-at-age (ALK) with maturity and fecundity vectors
+//  to calculate the mean fecundity at each age
  /* SS_Label_31.1 FUNCTION Make_Fecundity */
 FUNCTION void Make_Fecundity()
   {
@@ -15095,6 +15145,8 @@ FUNCTION void Make_Fecundity()
     }
   }
 
+//  Similar to Make_Fecundity, this function does the dot product of length distribution with length selectivity and retention vectors
+//  to calculate equivalent mean quantities at age
 //********************************************************************
  /*  SS_Label_FUNCTION 32 Make_FishSelex */
 FUNCTION void Make_FishSelex()
