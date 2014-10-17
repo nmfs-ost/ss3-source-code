@@ -14939,7 +14939,7 @@ FUNCTION void Make_AgeLength_Key(const int s, const int subseas)
 
             if(Grow_logN==0)
             {
-              ALK_range_g(g)=calc_ALK_range(len_bins,use_Ave_Size_W,use_SD_Size);  //  later need to offset according to g
+              if(do_once==1) ALK_range_g(g)=calc_ALK_range(len_bins,use_Ave_Size_W,use_SD_Size);  //  later need to offset according to g
               ALK_range_use=ALK_range_g(g);
               ALK(ALK_idx,g)=calc_ALK(len_bins,ALK_range_use,use_Ave_Size_W,use_SD_Size);
             }
@@ -15015,22 +15015,21 @@ FUNCTION dvar_matrix calc_ALK(const dvector &len_bins, const dmatrix &ALK_range,
   dvar_matrix ALK_w(0,nages, 1,nlength); // create matrix to return with length vectors for each age
   dvar_vector AL(1,nlength+1); // create temporary vector
   dvariable len_dev;
-  AL.initialize();
 
   for (a = 0; a <= nages; a++)
   {
-    AL(1,ALK_range(a,1))=0.0; AL(ALK_range(a,2),nlength+1)=1.0;  //  terminal values that are not recalculated
-    for (z = 2; z <= nlength; z++) 
-//    for (z = ALK_range(a,1); z <= ALK_range(a,2); z++) 
+    AL.initialize();
+    AL(ALK_range(a,2)+1)=1.0;  //  terminal values that are not recalculated
+//    for (z = 2; z <= nlength; z++) 
+    for (z = ALK_range(a,1); z <= ALK_range(a,2); z++) 
     { 
       len_dev = (len_bins(z) - mean_len_at_age(a)) / (sd_len_at_age(a));
       AL(z) = cumd_norm (len_dev);
-      ALK_w(a,z-1)=AL(z)-AL(z-1);
+//      ALK_w(a,z-1)=AL(z)-AL(z-1);
     } // end length loop
-//    ALK_w(a) = first_difference(AL);
-//    echoinput<<ALK_w(a)<<endl;
+    ALK_w(a)(ALK_range(a,1)-1,ALK_range(a,2)) = first_difference(AL(ALK_range(a,1)-1,ALK_range(a,2)+1));
+//    echoinput<<a<<" "<<ALK_range(a)<<" AL "<<AL<<endl<<"A A A "<<ALK_w(a)<<endl;
   }   // end age loop
-
   RETURN_ARRAYS_DECREMENT();
   return (ALK_w);
   }
@@ -15081,46 +15080,82 @@ FUNCTION void Make_Fecundity()
       {
         case 1:  //  Maturity_Option=1  length logistic
         {
-          fec(g) = elem_prod(ALK(ALK_idx,g)*mat_fec_len(GPat),mat_age(GPat));  //  reproductive output at age
-          make_mature_numbers(g)=elem_prod(ALK(ALK_idx,g)*mat_len(GPat),mat_age(GPat));  //  mature numbers at age
-          make_mature_bio(g)=elem_prod(ALK(ALK_idx,g)*elem_prod(mat_len(GPat),wt_len(s,GP(g))),mat_age(GPat));  //  mature biomass at age
+          for(a=0;a<=nages;a++)
+          {
+            fec(g,a) = ALK(ALK_idx,g,a)(ALK_range_g(g,a,1),ALK_range_g(g,a,2)) *mat_fec_len(GPat)(ALK_range_g(g,a,1),ALK_range_g(g,a,2))*mat_age(GPat,a);  //  reproductive output at age
+          }
+//          fec(g) = elem_prod(ALK(ALK_idx,g)*mat_fec_len(GPat),mat_age(GPat));  //  reproductive output at age
           break;
         }
         case 2:  //  Maturity_Option=2  age logistic
         {
           fec(g) = elem_prod(ALK(ALK_idx,g)*mat_fec_len(GPat),mat_age(GPat));  //  reproductive output at age
+          break;
+        }
+        case 3:  //  Maturity_Option=3  read age-maturity
+        {
+          fec(g) = elem_prod(ALK(ALK_idx,g)*mat_fec_len(GPat),mat_age(GPat));  //  reproductive output at age
+          break;
+        }
+        case 4:  //  Maturity_Option=4   read age-fecundity, so no age-maturity
+        {
+          fec(g)=Age_Maturity(GPat);
+          break;
+        }
+        case 5:  //  Maturity_Option=5   read age-fecundity from wtatage.ss
+        {
+          fec(g)=WTage_emp(t,GP3(g),-2);
+           break;
+        }
+        case 6:  //  Maturity_Option=6   read length-maturity
+        {
+          fec(g) = elem_prod(ALK(ALK_idx,g)*mat_fec_len(GPat),mat_age(GPat));  //  reproductive output at age
+          break;
+        }
+      }
+
+      if( (save_for_report>0) || ((sd_phase() || mceval_phase()) && (initial_params::mc_phase==0)) )
+      {
+      switch(Maturity_Option)
+      {
+        case 1:  //  Maturity_Option=1  length logistic
+        {
+          make_mature_numbers(g)=elem_prod(ALK(ALK_idx,g)*mat_len(GPat),mat_age(GPat));  //  mature numbers at age
+          make_mature_bio(g)=elem_prod(ALK(ALK_idx,g)*elem_prod(mat_len(GPat),wt_len(s,GP(g))),mat_age(GPat));  //  mature biomass at age
+          
+          break;
+        }
+        case 2:  //  Maturity_Option=2  age logistic
+        {
           make_mature_numbers(g)=elem_prod(ALK(ALK_idx,g)*mat_len(GPat),mat_age(GPat));  //  mature numbers at age
           make_mature_bio(g)=elem_prod(ALK(ALK_idx,g)*elem_prod(mat_len(GPat),wt_len(s,GP(g))),mat_age(GPat));  //  mature biomass at age
           break;
         }
         case 3:  //  Maturity_Option=3  read age-maturity
         {
-          fec(g) = elem_prod(ALK(ALK_idx,g)*mat_fec_len(GPat),mat_age(GPat));  //  reproductive output at age
           make_mature_numbers(g)=elem_prod(ALK(ALK_idx,g)*mat_len(GPat),mat_age(GPat));  //  mature numbers at age (Age_Maturity already copied to mat_age)
           make_mature_bio(g)=elem_prod(ALK(ALK_idx,g)*elem_prod(mat_len(GPat),wt_len(s,GP(g))),mat_age(GPat));  //  mature biomass at age
           break;
         }
         case 4:  //  Maturity_Option=4   read age-fecundity, so no age-maturity
         {
-          fec(g)=Age_Maturity(GPat);
           make_mature_numbers(g)=fec(g);  //  not defined
           make_mature_bio(g)=fec(g);   //  not defined
           break;
         }
         case 5:  //  Maturity_Option=5   read age-fecundity from wtatage.ss
         {
-          fec(g)=WTage_emp(t,GP3(g),-2);
           make_mature_numbers(g)=fec(g);  //  not defined
           make_mature_bio(g)=fec(g);   //  not defined
           break;
         }
         case 6:  //  Maturity_Option=6   read length-maturity
         {
-          fec(g) = elem_prod(ALK(ALK_idx,g)*mat_fec_len(GPat),mat_age(GPat));  //  reproductive output at age
           make_mature_numbers(g)=elem_prod(ALK(ALK_idx,g)*mat_len(GPat),mat_age(GPat));  //  mature numbers at age (Length_Maturity already copied to mat_len)
           make_mature_bio(g)=elem_prod(ALK(ALK_idx,g)*elem_prod(mat_len(GPat),wt_len(s,GP(g))),mat_age(GPat));  //  mature biomass at age
           break;
         }
+      }
       }
       
  /*
