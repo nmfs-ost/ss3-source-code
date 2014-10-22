@@ -3692,7 +3692,8 @@ DATA_SECTION
 //  following two containers are used to track which morphs are being used
   ivector use_morph(1,gmorph)
   imatrix TG_use_morph(1,N_TG2,1,gmorph)
-  3darray ALK_range_g(1,gmorph,0,nages,1,2)  //  later to do this with a i3darray
+  imatrix ALK_range_g_lo(1,gmorph,0,nages)
+  imatrix ALK_range_g_hi(1,gmorph,0,nages)
 
   vector azero_G(1,gmorph);  //  time since Jan 1 at beginning of settlement in which "g" was born
   3darray curr_age(1,gmorph,1,nseas*N_subseas,0,nages);  // real age since settlement
@@ -14913,7 +14914,7 @@ FUNCTION void Make_AgeLength_Key(const int s, const int subseas)
    ALK_idx=(s-1)*N_subseas+subseas;
    dvar_vector use_Ave_Size_W(0,nages);
    dvar_vector use_SD_Size(0,nages);
-   dmatrix ALK_range_use(0,nages,1,2);
+   imatrix ALK_range_use(0,nages,1,2);
    if(ALK_subseas_update(ALK_idx)==1) //  so need to calculate
    {
 
@@ -14939,9 +14940,13 @@ FUNCTION void Make_AgeLength_Key(const int s, const int subseas)
 
             if(Grow_logN==0)
             {
-              if(do_once==1) ALK_range_g(g)=calc_ALK_range(len_bins,use_Ave_Size_W,use_SD_Size);  //  later need to offset according to g
-              ALK_range_use=ALK_range_g(g);
-              ALK(ALK_idx,g)=calc_ALK(len_bins,ALK_range_use,use_Ave_Size_W,use_SD_Size);
+              if(do_once==1)
+              {
+                ALK_range_use=calc_ALK_range(len_bins,use_Ave_Size_W,use_SD_Size);  //  later need to offset according to g
+                ALK_range_g_lo(g)=column(ALK_range_use,1);
+                ALK_range_g_hi(g)=column(ALK_range_use,2);
+              }
+              ALK(ALK_idx,g)=calc_ALK(len_bins,ALK_range_g_lo(g),ALK_range_g_hi(g),use_Ave_Size_W,use_SD_Size);
             }
             else
             {
@@ -14973,13 +14978,13 @@ FUNCTION void Make_AgeLength_Key(const int s, const int subseas)
   }  //  end Make_AgeLength_Key
 
 //  the function calc_ALK_range finds the range for the distribution of length for each age
-FUNCTION dmatrix calc_ALK_range(const dvector &len_bins, const dvar_vector &mean_len_at_age, const dvar_vector &sd_len_at_age)
+FUNCTION imatrix calc_ALK_range(const dvector &len_bins, const dvar_vector &mean_len_at_age, const dvar_vector &sd_len_at_age)
   {
 //   RETURN_ARRAYS_INCREMENT();
   int a, z;  // declare indices
   int nlength = len_bins.indexmax(); // find number of lengths
   int nages = mean_len_at_age.indexmax(); // find number of ages
-  dmatrix ALK_range(0,nages,1,2); // stores minimum and maximum   later convert this to integer
+  imatrix ALK_range(0,nages,1,2); // stores minimum and maximum   later convert this to integer
   dvar_vector AL(1,nlength+1); // create temporary vector
   dvariable len_dev;
   
@@ -14996,8 +15001,8 @@ FUNCTION dmatrix calc_ALK_range(const dvector &len_bins, const dvar_vector &mean
     { 
       len_dev = (len_bins(z) - mean_len_at_age(a)) / (sd_len_at_age(a));
       AL(z) = cumd_norm (len_dev);
-      if(AL(z)>0.0001 && ALK_range(a,1)==nlength) ALK_range(a,1)=z;
-      if(AL(z)<0.9999) ALK_range(a,2)=z;
+      if(AL(z)>0.001 && ALK_range(a,1)==nlength) ALK_range(a,1)=z;
+      if(AL(z)<0.999) ALK_range(a,2)=z;
     } // end length loop
   }   // end age loop
 //  RETURN_ARRAYS_DECREMENT();
@@ -15005,7 +15010,7 @@ FUNCTION dmatrix calc_ALK_range(const dvector &len_bins, const dvar_vector &mean
   }
 
 //  the function calc_ALK is called by Make_AgeLength_Key to calculate the distribution of length for each age
-FUNCTION dvar_matrix calc_ALK(const dvector &len_bins, const dmatrix &ALK_range, const dvar_vector &mean_len_at_age, const dvar_vector &sd_len_at_age)
+FUNCTION dvar_matrix calc_ALK(const dvector &len_bins, const ivector &ALK_range_lo, const ivector &ALK_range_hi, const dvar_vector &mean_len_at_age, const dvar_vector &sd_len_at_age)
   {
    RETURN_ARRAYS_INCREMENT();
  //SS_Label_FUNCTION_31.2 #Calculate the ALK
@@ -15019,15 +15024,15 @@ FUNCTION dvar_matrix calc_ALK(const dvector &len_bins, const dmatrix &ALK_range,
   for (a = 0; a <= nages; a++)
   {
     AL.initialize();
-    AL(ALK_range(a,2)+1)=1.0;  //  terminal values that are not recalculated
+    AL(ALK_range_hi(a)+1)=1.0;  //  terminal values that are not recalculated
 //    for (z = 2; z <= nlength; z++) 
-    for (z = ALK_range(a,1); z <= ALK_range(a,2); z++) 
+    for (z = ALK_range_lo(a); z <= ALK_range_hi(a); z++) 
     { 
       len_dev = (len_bins(z) - mean_len_at_age(a)) / (sd_len_at_age(a));
       AL(z) = cumd_norm (len_dev);
 //      ALK_w(a,z-1)=AL(z)-AL(z-1);
     } // end length loop
-    ALK_w(a)(ALK_range(a,1)-1,ALK_range(a,2)) = first_difference(AL(ALK_range(a,1)-1,ALK_range(a,2)+1));
+    ALK_w(a)(ALK_range_lo(a)-1,ALK_range_hi(a)) = first_difference(AL(ALK_range_lo(a)-1,ALK_range_hi(a)+1));
 //    echoinput<<a<<" "<<ALK_range(a)<<" AL "<<AL<<endl<<"A A A "<<ALK_w(a)<<endl;
   }   // end age loop
   RETURN_ARRAYS_DECREMENT();
@@ -15082,7 +15087,7 @@ FUNCTION void Make_Fecundity()
         {
           for(a=0;a<=nages;a++)
           {
-            fec(g,a) = ALK(ALK_idx,g,a)(ALK_range_g(g,a,1),ALK_range_g(g,a,2)) *mat_fec_len(GPat)(ALK_range_g(g,a,1),ALK_range_g(g,a,2))*mat_age(GPat,a);  //  reproductive output at age
+            fec(g,a) = ALK(ALK_idx,g,a)(ALK_range_g_lo(g,a),ALK_range_g_hi(g,a)) *mat_fec_len(GPat)(ALK_range_g_lo(g,a),ALK_range_g_hi(g,a))*mat_age(GPat,a);  //  reproductive output at age
           }
 //          fec(g) = elem_prod(ALK(ALK_idx,g)*mat_fec_len(GPat),mat_age(GPat));  //  reproductive output at age
           break;
@@ -15188,6 +15193,8 @@ FUNCTION void Make_FishSelex()
   {
     ALK_idx=(s-1)*N_subseas+mid_subseas;  //for midseason
     dvar_matrix ALK_w=ALK(ALK_idx,g);        //  shallow copy
+    ivector ALK_range_lo=ALK_range_g_lo(g);
+    ivector ALK_range_hi=ALK_range_g_hi(g);
     int yf;
     int tz;
 
@@ -15213,8 +15220,16 @@ FUNCTION void Make_FishSelex()
         }
         else
         {
-          sel_al_1(s,g,f)=elem_prod(sel_a(yf,f,gg),(ALK_w * elem_prod( sel_l(yf,f,gg),wt_len(s,GP(g)) )) );
-          sel_al_3(s,g,f)=elem_prod(sel_a(yf,f,gg),(ALK_w * sel_l(yf,f,gg) ));
+          tempvec_l=elem_prod(sel_l(yf,f,gg),wt_len(s,GP(g)));  //  combine size selex and wt_at_len
+          sel_al_1(s,g,f).initialize();
+          sel_al_3(s,g,f).initialize();
+          for(a=0;a<=nages;a++)
+          {
+            sel_al_1(s,g,f,a)=sel_a(yf,f,gg,a)*(ALK_w(a)(ALK_range_lo(a),ALK_range_hi(a)) * tempvec_l(ALK_range_lo(a),ALK_range_hi(a)));
+            sel_al_3(s,g,f,a)=sel_a(yf,f,gg,a)*(ALK_w(a)(ALK_range_lo(a),ALK_range_hi(a)) * sel_l(yf,f,gg)(ALK_range_lo(a),ALK_range_hi(a)));
+          }
+//          sel_al_1(s,g,f)=elem_prod(sel_a(yf,f,gg),(ALK_w *tempvec_l) );
+//          sel_al_3(s,g,f)=elem_prod(sel_a(yf,f,gg),(ALK_w * sel_l(yf,f,gg) ));
         }
 
         if(mceval_phase() || save_for_report>0)
@@ -15227,7 +15242,7 @@ FUNCTION void Make_FishSelex()
           <<" "<<f<<" "<<fish_body_wt(tz,g,f)<<endl;
         }
 
-        if(seltype(f,2)!=0)
+        if(seltype(f,2)!=0)  //  discard, so need retention function
         {
           if(WTage_rd==0)
             {sel_al_2(s,g,f)=elem_prod(sel_a(yf,f,gg),(ALK_w * elem_prod( sel_l_r(yf,f,gg),wt_len(s,GP(g)) )) );}
