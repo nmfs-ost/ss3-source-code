@@ -17610,7 +17610,22 @@ FUNCTION void write_nudata()
 
   report1 << N_ReadCatch<<" #_N_lines_of_catch_to_read"<<endl;
   report1 << "#_catch_columns_are_year, season, fleet (including surveys)(year=-999 for initial equilibrium)"<<endl;
-  report1 << catch_bioT<<endl;
+  if(finish_starter==999)
+    {
+      for(y=1;y<=N_ReadCatch;y++)
+      {
+        report1<<catch_bioT(y)(Nfleet1+1,Nfleet1+2)<<" "<<catch_bioT(y)(1,Nfleet1);
+        if(Nfleet>Nfleet1) 
+          {
+            for(j=Nfleet1+1;j<=Nfleet;j++) report1<<" 0";  //  for the survey fleets
+          }
+          report1<<endl;
+      }
+    }
+    else
+    {
+      report1 << catch_bioT<<endl;
+    }
   report1<<"#"<<endl;
 
   report1 << Svy_N_rd <<" #_N_cpue_and_surveyabundance_observations"<< endl;
