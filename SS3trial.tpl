@@ -15001,9 +15001,11 @@ FUNCTION imatrix calc_ALK_range(const dvector &len_bins, const dvar_vector &mean
     { 
       len_dev = (len_bins(z) - mean_len_at_age(a)) / (sd_len_at_age(a));
       AL(z) = cumd_norm (len_dev);
-      if(AL(z)>0.001 && ALK_range(a,1)==nlength) ALK_range(a,1)=z;
-      if(AL(z)<0.999) ALK_range(a,2)=z;
+      if(AL(z)>0.0001 && ALK_range(a,1)==nlength) ALK_range(a,1)=z;
+      if(AL(z)<0.9999) ALK_range(a,2)=z;
     } // end length loop
+//    ALK_range(a,1)=2;
+//    ALK_range(a,2)=nlength;
   }   // end age loop
 //  RETURN_ARRAYS_DECREMENT();
   return (ALK_range);
@@ -15080,15 +15082,38 @@ FUNCTION void Make_Fecundity()
     {
       GPat=GP4(g);
       gg=sx(g);
+      
+      switch(Maturity_Option)
+      {
+        case 4:  //  Maturity_Option=4   read age-fecundity into age-maturity
+        {
+          fec(g)=Age_Maturity(GPat);
+          break;
+        }
+        case 5:  //  Maturity_Option=5   read age-fecundity from wtatage.ss
+        {
+          fec(g)=WTage_emp(t,GP3(g),-2);
+           break;
+        }
+        default:
+        {
+          for(a=0;a<=nages;a++)
+          {
+            tempvec_a(a) = ALK(ALK_idx,g,a)(ALK_range_g_lo(g,a),ALK_range_g_hi(g,a)) *mat_fec_len(GPat)(ALK_range_g_lo(g,a),ALK_range_g_hi(g,a));
+          }
+          fec(g) = elem_prod(tempvec_a,mat_age(GPat));  //  reproductive output at age
+        }
+      }
 
+ /*
       switch(Maturity_Option)
       {
         case 1:  //  Maturity_Option=1  length logistic
         {
-          for(a=0;a<=nages;a++)
-          {
-            fec(g,a) = ALK(ALK_idx,g,a)(ALK_range_g_lo(g,a),ALK_range_g_hi(g,a)) *mat_fec_len(GPat)(ALK_range_g_lo(g,a),ALK_range_g_hi(g,a))*mat_age(GPat,a);  //  reproductive output at age
-          }
+//          for(a=0;a<=nages;a++)
+//          {
+//            fec(g,a) = ALK(ALK_idx,g,a)(ALK_range_g_lo(g,a),ALK_range_g_hi(g,a)) *mat_fec_len(GPat)(ALK_range_g_lo(g,a),ALK_range_g_hi(g,a))*mat_age(GPat,a);  //  reproductive output at age
+//          }
 //          fec(g) = elem_prod(ALK(ALK_idx,g)*mat_fec_len(GPat),mat_age(GPat));  //  reproductive output at age
           break;
         }
@@ -15102,7 +15127,7 @@ FUNCTION void Make_Fecundity()
           fec(g) = elem_prod(ALK(ALK_idx,g)*mat_fec_len(GPat),mat_age(GPat));  //  reproductive output at age
           break;
         }
-        case 4:  //  Maturity_Option=4   read age-fecundity, so no age-maturity
+        case 4:  //  Maturity_Option=4   read age-fecundity into age-maturity
         {
           fec(g)=Age_Maturity(GPat);
           break;
@@ -15118,7 +15143,7 @@ FUNCTION void Make_Fecundity()
           break;
         }
       }
-
+ */
       if( (save_for_report>0) || ((sd_phase() || mceval_phase()) && (initial_params::mc_phase==0)) )
       {
       switch(Maturity_Option)
@@ -15221,13 +15246,22 @@ FUNCTION void Make_FishSelex()
         else
         {
           tempvec_l=elem_prod(sel_l(yf,f,gg),wt_len(s,GP(g)));  //  combine size selex and wt_at_len
-          sel_al_1(s,g,f).initialize();
-          sel_al_3(s,g,f).initialize();
+//          for(a=0;a<=nages;a++)
+//          {
+//            temp=0.0;
+//            for(z=ALK_range_lo(a);z<=ALK_range_hi(a);z++) temp+=ALK_w(a,z)*tempvec_l(z);
+//            sel_al_1(s,g,f,a)=sel_a(yf,f,gg,a)*temp;
+//            temp=0.0;
+//            for(z=ALK_range_lo(a);z<=ALK_range_hi(a);z++) temp+=ALK_w(a,z)*sel_l(yf,f,gg,z);
+//            sel_al_3(s,g,f,a)=sel_a(yf,f,gg,a)*temp;
+//          }
+
           for(a=0;a<=nages;a++)
           {
             sel_al_1(s,g,f,a)=sel_a(yf,f,gg,a)*(ALK_w(a)(ALK_range_lo(a),ALK_range_hi(a)) * tempvec_l(ALK_range_lo(a),ALK_range_hi(a)));
             sel_al_3(s,g,f,a)=sel_a(yf,f,gg,a)*(ALK_w(a)(ALK_range_lo(a),ALK_range_hi(a)) * sel_l(yf,f,gg)(ALK_range_lo(a),ALK_range_hi(a)));
           }
+
 //          sel_al_1(s,g,f)=elem_prod(sel_a(yf,f,gg),(ALK_w *tempvec_l) );
 //          sel_al_3(s,g,f)=elem_prod(sel_a(yf,f,gg),(ALK_w * sel_l(yf,f,gg) ));
         }
@@ -22188,9 +22222,13 @@ FUNCTION void Get_expected_values();
 //  make selected age-length sample for this fleet and with this timing
         {
           exp_AL.initialize();
+          exp_l_temp.initialize();
           for (g=1;g<=gmorph;g++)
           if(use_morph(g)>0)
           {
+            ivector ALK_range_lo=ALK_range_g_lo(g);
+            ivector ALK_range_hi=ALK_range_g_hi(g);
+
             gg=sx(g);
             if(gg==2)
             { L1=nlength1; L2= nlength2; A2=nages+1;}    //  move over on length dimension to store males
@@ -22204,13 +22242,35 @@ FUNCTION void Get_expected_values();
             else  //  explicit timing
             {tempvec_a=elem_prod(natage(t,p,g),elem_prod(mfexp(-Z_rate(t,p,g)*timing),sel_a(y,f,gg)));}
 
+            pre_AL.initialize();
             for (a=0;a<=nages;a++)
             {
+//              if(dolen(f)==1)
+//              {
+//                pre_AL.shift(1)=tempvec_a(a)*elem_prod(ALK(ALK_idx,g,a),sel_l(y,f,gg));
+//              }
+//              else
+//              {pre_AL.shift(1)=tempvec_a(a)*ALK(ALK_idx,g,a);}
+//              exp_AL(a+A2)(L1,L2) += pre_AL.shift(L1);  // shifted to store males in right place and accumulated across morphs
+
               if(dolen(f)==1)
-              {pre_AL.shift(1)=tempvec_a(a)*elem_prod(ALK(ALK_idx,g,a),sel_l(y,f,gg));}
+              {
+                for(z=ALK_range_lo(a);z<=ALK_range_hi(a);z++)
+                {
+                  temp=tempvec_a(a)*ALK(ALK_idx,g,a,z)*sel_l(y,f,gg,z);
+                  exp_AL(a+A2,L1-1+z)+=temp;
+                  exp_l_temp(L1-1+z)+=temp;
+                }
+              }
               else
-              {pre_AL.shift(1)=tempvec_a(a)*ALK(ALK_idx,g,a);}
-              exp_AL(a+A2)(L1,L2) += pre_AL.shift(L1);  // shifted to store males in right place and accumulated across morphs
+              {
+                for(z=ALK_range_lo(a);z<=ALK_range_hi(a);z++)
+                {
+                  temp=tempvec_a(a)*ALK(ALK_idx,g,a,z);
+                  exp_AL(a+A2,L1-1+z)+=temp;
+                  exp_l_temp(L1-1+z)+=temp;
+                }
+              }
             }
 
             if(Do_Morphcomp)
@@ -22222,7 +22282,7 @@ FUNCTION void Get_expected_values();
             }
           } //close gmorph loop
 
-          exp_l_temp=colsum(exp_AL);
+//          exp_l_temp=colsum(exp_AL);
           if(docheckup==1) echoinput<<"exp_l: "<<exp_l_temp<<endl;
           if(seltype(f,2)!=0)
           {exp_l_temp_ret=elem_prod(exp_l_temp,retain(y,f));}
