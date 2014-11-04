@@ -10186,38 +10186,32 @@ FUNCTION void get_growth2()
                       if(lin_grow(g,1,a1)>=-1.0)  // younger or equal to AFIX, so use youngest age groups VBK
                       {
                         Ave_Size(styr,1,g,a1) = Lmin(gp) + (Lmin(gp)-L_inf(gp))* (mfexp(VBK(gp,0)*VBK_seas(0)*(curr_age(g,1,a1)-AFIX))-1.0);
-                        t2=Lmin(gp)-L_inf(gp);
                       }
                       else
                       {
                         Ave_Size(styr,1,g,a1) = Ave_Size(styr,1,g,a1-1) + (Ave_Size(styr,1,g,a1-1)-L_inf(gp))* (mfexp(VBK(gp,a1-1)*VBK_seas(0))-1.0);
-                        t2=Ave_Size(styr,1,g,a1-1)-L_inf(gp);
                       }
                     }  // done ageloop
-                    if(do_once==1&&g==1) echoinput<<" avesize_in_styr_w/o_linear_section "<<Ave_Size(styr,1,g)<<endl;
-//                     <<"GP g s subseas ALK_idx a curr_age  calen_age lin_grow size1  potential size next "<<endl;
-  
-                    if(settle>1) Ave_Size(styr,1,g,0)=len_bins(1);  //  PROBLEM:  this should refer to the season of the settlement,, not the settlement index???
+
+//  not sure why next line is there; NEED to check on this.  Perhaps should be if(settle_age(settle)>1)
+//                    if(settle>1) Ave_Size(styr,1,g,0)=len_bins(1);  //  PROBLEM:  this should refer to the season of the settlement,, not the settlement index???
                     break;
                   }
                   case 2:  //  Richards; age-specific VBK not allowed here
   //  SS_Label_Info_16.2.4.1.3  #for Richards
                   {
-                    if(do_once==1&&g==1) echoinput<<" growth, gp, g: "<<gp<<" "<<g<<" "<<LminR<<" "<<LinfR<<" "<<-VBK(gp,nages)<<endl<<"Avesize (ages 0 to 6): "<<Ave_Size(styr,1,g)(0,min(6,nages))<<endl;
-                    for (a=0;a<=nages;a++)
+                    temp=LinfR + (LminR-LinfR)*mfexp(VBK(gp,nages)*VBK_seas(0)*(curr_age(g,1,0)-AFIX));
+                    Ave_Size(styr,1,g,0) = pow(temp,inv_Richards);
+                    for (a=1;a<=nages+Settle_age(settle);a++)
                     {
-                      if(lin_grow(g,1,a)<0.0)  // so in growth curve
-                      {
-                        temp=LinfR + (LminR-LinfR)*mfexp(VBK(gp,nages)*VBK_seas(0)*(curr_age(g,1,a)-AFIX));
-                        Ave_Size(styr,1,g,a) = pow(temp,inv_Richards);
-                      }
-                      else
-                      {Ave_Size(styr,1,g,a) = len_bins(1);}  //  will be replaced later when doing the linear portion
-                    }
-  //                  if(docheckup==1) checkup<<" growth "<<g<<" "<<gp<<" Lmin: "<<Lmin(gp)<<" Linf: "<<LinfR<<" VBK: "<<VBK(gp)<<endl<<Ave_Size(styr,1,g)(0,min(6,nages))<<endl;
+                      a1=a-Settle_age(settle);
+                      temp=LinfR + (LminR-LinfR)*mfexp(VBK(gp,nages)*VBK_seas(0)*(curr_age(g,1,a1)-AFIX));
+                      Ave_Size(styr,1,g,a1) = pow(temp,inv_Richards);
+                    }  // done ageloop
                     break;
                   }
                 }
+                if(do_once==1&&g==1) echoinput<<" avesize_in_styr_w/o_linear_section "<<Ave_Size(styr,1,g)<<endl;
   
   //  SS_Label_Info_16.2.4.1.4  #calc approximation to mean size at maxage to account for growth after reaching the maxage (accumulator age)
                 temp=0.0;
@@ -10265,10 +10259,6 @@ FUNCTION void get_growth2()
                          Ave_Size(t+1,1,g,k2) = Cohort_Lmin(gp,y,a) + (Cohort_Lmin(gp,y,a)-L_inf(gp))*
                          (mfexp(VBK(gp,a)*(curr_age(g,ALK_idx2,k2)-AFIX)*VBK_seas(s))-1.0)*Cohort_Growth(y,a);
                       }
-//                      else if(lin_grow(g,ALK_idx,a)>=0.0)  // in linear phase for subseas
-//                      {
-//                        Ave_Size(t+1,1,g,a) = len_bins(1)+lin_grow(g,ALK_idx,a)*(Cohort_Lmin(gp,y,a)-len_bins(1));
-//                      }
                       else //   if(lin_grow(g,ALK_idx,a)==-2.0)  //  so doing growth curve
                       {
                           t2=Ave_Size(t,1,g,a)-L_inf(gp);  //  remaining growth potential from first subseas
