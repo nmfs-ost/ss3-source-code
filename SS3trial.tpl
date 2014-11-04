@@ -8779,7 +8779,10 @@ PRELIMINARY_CALCS_SECTION
     CVLmax=value(CVLmax);
 
 //  SS_Label_Info_6.8.3 #Call fxn get_growth2() to calculate size-at-age
-    get_growth2(); //   in preliminary calcs
+    if(Grow_type!=2)
+    {get_growth2();} //   in preliminary calcs
+    else
+    {get_growth2_Richards();} //   in preliminary calcs
     echoinput<<" did growth2 in prelim calcs"<<endl<<Ave_Size(styr,1,1)<<endl;
     if(minL>10.0) {N_warn++; warning<<" Minimum size bin is:_"<<minL<<"; which is >10cm, which is large for use as size-at-age 0.0 recruitment"<<endl;}
     temp=Ave_Size(styr,1,1,nages);
@@ -10052,332 +10055,417 @@ FUNCTION void get_growth2()
   {
 //  progress mean growth through time series, accounting for seasonality and possible change in parameters
 //   get mean size at the beginning and end of the season
-    dvariable grow;
-    dvariable growhalf;
-    dvariable LminR;
-    dvariable LmaxR;
-    dvariable LinfR;
-    dvariable inv_Richards;
+//    dvariable grow;
     int k2;
     int add_age;
     int ALK_idx2;  //  beginning of first subseas of next season
 
   //  SS_Label_Info_16.1 #Create Cohort_Growth offset for the cohort borne (age 0) this year
-        if(CGD>0)   //  cohort specific growth multiplier
-        {
-          temp=mgp_adj(MGP_CGD);
-          k=min(nages,(YrMax-y));
-          for (a=0;a<=k;a++) {Cohort_Growth(y+a,a)=temp;}  //  so this multiplier on VBK is stored on a diagonal into the future
-        }
+    if(CGD>0)   //  cohort specific growth multiplier
+    {
+      temp=mgp_adj(MGP_CGD);
+      k=min(nages,(YrMax-y));
+      for (a=0;a<=k;a++) {Cohort_Growth(y+a,a)=temp;}  //  so this multiplier on VBK is stored on a diagonal into the future
+    }
   
   //  SS_Label_Info_16.2 #Loop growth patterns (sex*N_GP)
-        gp=0;
-        for(gg=1;gg<=gender;gg++)
-        for (GPat=1;GPat<=N_GP;GPat++)
+    gp=0;
+    for(gg=1;gg<=gender;gg++)
+    for (GPat=1;GPat<=N_GP;GPat++)
+    {
+      gp++;
+      Ip=MGparm_point(gg,GPat)+N_natMparms;
+//  SS_Label_Info_16.2.1  #set Lmin, Lmax, VBK, Richards to this year's values for mgp_adj
+      if(MGparm_def>1 && gp>1)   // switch for growth parms
+      {
+        Lmin(gp)=Lmin(1)*mfexp(mgp_adj(Ip));
+        Lmax_temp(gp)=Lmax_temp(1)*mfexp(mgp_adj(Ip+1));
+        VBK(gp)=VBK(1)*mfexp(mgp_adj(Ip+2));  //  assigns to all ages
+      }
+      else
+      {
+        Lmin(gp)=mgp_adj(Ip);
+        Lmax_temp(gp)=mgp_adj(Ip+1);
+        VBK(gp)=-mgp_adj(Ip+2);  // because always used as negative; assigns to all ages
+      }
+      
+//  SS_Label_Info_16.2.2  #Set up age specific k
+      if(Grow_type==3)  //  age specific k
+      {
+        j=1;
+        for (a=1;a<=nages;a++)
         {
-          gp++;
-          Ip=MGparm_point(gg,GPat)+N_natMparms;
-  //  SS_Label_Info_16.2.1  #set Lmin, Lmax, VBK, Richards to this year's values for mgp_adj
-          if(MGparm_def>1 && gp>1)   // switch for growth parms
+          if(a==Age_K_points(j))
           {
-            Lmin(gp)=Lmin(1)*mfexp(mgp_adj(Ip));
-            Lmax_temp(gp)=Lmax_temp(1)*mfexp(mgp_adj(Ip+1));
-            VBK(gp)=VBK(1)*mfexp(mgp_adj(Ip+2));  //  assigns to all ages
-            if(Grow_type==2) Richards(gp)=Richards(1)*mfexp(mgp_adj(Ip+3));
+            VBK(gp,a)=VBK(gp,a-1)*mgp_adj(Ip+2+j);
+            if(j<Age_K_count) j++;
           }
           else
           {
-            Lmin(gp)=mgp_adj(Ip);
-            Lmax_temp(gp)=mgp_adj(Ip+1);
-            VBK(gp)=-mgp_adj(Ip+2);  // because always used as negative; assigns to all ages
-            if(Grow_type==2) Richards(gp)=mgp_adj(Ip+3);
+            VBK(gp,a)=VBK(gp,a-1);
           }
-          
-  //  SS_Label_Info_16.2.2  #Set up age specific k
-          if(Grow_type==3)  //  age specific k
+        }
+      }
+
+//  SS_Label_Info_16.2.3  #Set up Lmin and Lmax in Start Year
+      if(y==styr)
+      {
+        Cohort_Lmin(gp)=Lmin(gp);   //  sets for all years and ages
+      }
+      else if(time_vary_MG(y,2)>0)  //  using time-vary growth
+      {
+        k=min(nages,(YrMax-y));
+        for (a=0;a<=k;a++) {Cohort_Lmin(gp,y+a,a)=Lmin(gp);}  //  sets for future years so cohort remembers its size at birth; with Lmin(gp) being size at birth this year
+      }
+
+      if(AFIX2==999)
+      {L_inf(gp)=Lmax_temp(gp);}
+      else
+      {
+        L_inf(gp)=Lmin(gp)+(Lmax_temp(gp)-Lmin(gp))/(1.-mfexp(VBK(gp,nages)*VBK_seas(0)*(AFIX_delta)));
+      }
+
+      g=g_Start(gp);  //  base platoon
+//  SS_Label_Info_16.2.4  #Loop settlement events
+      for (settle=1;settle<=N_settle_timings;settle++)
+      {
+        g+=N_platoon;
+        if(use_morph(g)>0)
+        {
+          if(y==styr)
           {
-            j=1;
-            for (a=1;a<=nages;a++)
+//  SS_Label_Info_16.2.4.1  #set up the delta in growth variability across ages if needed
+    if( g==1 && do_once==1) echoinput<<y<<" initial yr do CV setup for gp, g: "<<gp<<" "<<g<<endl;
+            if(CV_const(gp)>0)
             {
-              if(a==Age_K_points(j))
+              if(CV_depvar_a==0)
+                {CV_delta(gp)=(CVLmax(gp)-CVLmin(gp))/(Lmax_temp(gp)-Lmin(gp));}
+              else
+                {CV_delta(gp)=(CVLmax(gp)-CVLmin(gp))/(AFIX2_forCV-AFIX);}
+            }
+            else
+            {
+              CV_delta(gp)=0.0;
+              CV_G(gp)=CVLmin(gp);  // sets all seasons and whole age range
+            }
+
+//  SS_Label_Info_16.2.4.1.1  #if y=styr, get size-at-age in first subseason of first season of this first year
+            if(do_once==1 && g==1) echoinput<<y<<" "<<s<<" growth gp,g: "<<gp<<" "<<g<<" Lmin: "<<Lmin(gp)<<" "<<L_inf(gp)<<" "<<-VBK(gp)<<" settleage "<<Settle_age(settle)<<endl;
+            Ave_Size(styr,1,g,0)=L_inf(gp) + (Lmin(gp)-L_inf(gp))*mfexp(VBK(gp,0)*VBK_seas(0)*(curr_age(g,1,0)-AFIX));
+            for (a=1;a<=nages+Settle_age(settle);a++)
+            {
+              a1=a-Settle_age(settle);
+              if(lin_grow(g,1,a1)>=-1.0)  // younger or equal to AFIX, so use youngest age groups VBK
               {
-                VBK(gp,a)=VBK(gp,a-1)*mgp_adj(Ip+2+j);
-                if(j<Age_K_count) j++;
+                Ave_Size(styr,1,g,a1) = Lmin(gp) + (Lmin(gp)-L_inf(gp))* (mfexp(VBK(gp,0)*VBK_seas(0)*(curr_age(g,1,a1)-AFIX))-1.0);
               }
               else
               {
-                VBK(gp,a)=VBK(gp,a-1);
+                Ave_Size(styr,1,g,a1) = Ave_Size(styr,1,g,a1-1) + (Ave_Size(styr,1,g,a1-1)-L_inf(gp))* (mfexp(VBK(gp,a1-1)*VBK_seas(0))-1.0);
               }
-            }
-          }
-  
-  //  SS_Label_Info_16.2.3  #Set up Lmin and Lmax
-          if(y==styr)
-          {
-            Cohort_Lmin(gp)=Lmin(gp);   //  sets for all years and ages
-          }
-          else if(time_vary_MG(y,2)>0)  //  using time-vary growth
-          {
-            k=min(nages,(YrMax-y));
-            for (a=0;a<=k;a++) {Cohort_Lmin(gp,y+a,a)=Lmin(gp);}  //  sets for future years so cohort remembers its size at birth; with Lmin(gp) being size at birth this year
-          }
-  
-          if(Grow_type!=2)  //  not Richards, set-up Linf
-          {
-            if(AFIX2==999)
-            {L_inf(gp)=Lmax_temp(gp);}
-            else
-            {
-              L_inf(gp)=Lmin(gp)+(Lmax_temp(gp)-Lmin(gp))/(1.-mfexp(VBK(gp,nages)*VBK_seas(0)*(AFIX_delta)));
-            }
-          }
-          else   //  Richards
-          {
-            inv_Richards=1.0/Richards(gp);
-            LminR=pow(Lmin(gp),Richards(gp));
-            if(AFIX2==999)
-            {
-              L_inf(gp)=Lmax_temp(gp);
-            }
-            else
-            {
-              LmaxR=pow(Lmax_temp(gp), Richards(gp));
-              temp=LminR+(LmaxR-LminR)/(1.-mfexp(VBK(gp,nages)*VBK_seas(0)*(AFIX_delta)));
-              L_inf(gp)=pow(temp,inv_Richards);
-            }
-            LinfR=pow(L_inf(gp),Richards(gp));
-          }
-          g=g_Start(gp);  //  base platoon
-  //  SS_Label_Info_16.2.4  #Loop settlement events
-          for (settle=1;settle<=N_settle_timings;settle++)
-          {
-            g+=N_platoon;
-            if(use_morph(g)>0)
-            {
-  
-              if(y==styr)
-              {
-  //  SS_Label_Info_16.2.4.1  #set up the delta in growth variability across ages if needed
-        if( g==1 && do_once==1) echoinput<<y<<" initial yr do CV setup for gp, g: "<<gp<<" "<<g<<endl;
-                if(CV_const(gp)>0)
-                {
-                  if(CV_depvar_a==0)
-                    {CV_delta(gp)=(CVLmax(gp)-CVLmin(gp))/(Lmax_temp(gp)-Lmin(gp));}
-                  else
-                    {CV_delta(gp)=(CVLmax(gp)-CVLmin(gp))/(AFIX2_forCV-AFIX);}
-                }
-                else
-                {
-                  CV_delta(gp)=0.0;
-                  CV_G(gp)=CVLmin(gp);  // sets all seasons and whole age range
-                }
-  
-  //  SS_Label_Info_16.2.4.1.1  #if y=styr, get size-at-age in first subseason of first season of this first year
-        if(do_once==1 && g==1) echoinput<<y<<" "<<s<<" growth gp,g: "<<gp<<" "<<g<<" Lmin: "<<Lmin(gp)<<" "<<L_inf(gp)<<" "<<-VBK(gp)<<" settleage "<<Settle_age(settle)<<endl;
-                switch(Grow_type)
-                {
-                  default:
-  //  SS_Label_info_16.2.4.1.2  #for non-Richards
-                  {
-                    Ave_Size(styr,1,g,0)=L_inf(gp) + (Lmin(gp)-L_inf(gp))*mfexp(VBK(gp,0)*VBK_seas(0)*(curr_age(g,1,0)-AFIX));
-                    for (a=1;a<=nages+Settle_age(settle);a++)
-                    {
-                      a1=a-Settle_age(settle);
-                      if(lin_grow(g,1,a1)>=-1.0)  // younger or equal to AFIX, so use youngest age groups VBK
-                      {
-                        Ave_Size(styr,1,g,a1) = Lmin(gp) + (Lmin(gp)-L_inf(gp))* (mfexp(VBK(gp,0)*VBK_seas(0)*(curr_age(g,1,a1)-AFIX))-1.0);
-                      }
-                      else
-                      {
-                        Ave_Size(styr,1,g,a1) = Ave_Size(styr,1,g,a1-1) + (Ave_Size(styr,1,g,a1-1)-L_inf(gp))* (mfexp(VBK(gp,a1-1)*VBK_seas(0))-1.0);
-                      }
-                    }  // done ageloop
+            }  // done ageloop
 
 //  not sure why next line is there; NEED to check on this.  Perhaps should be if(settle_age(settle)>1)
 //                    if(settle>1) Ave_Size(styr,1,g,0)=len_bins(1);  //  PROBLEM:  this should refer to the season of the settlement,, not the settlement index???
-                    break;
-                  }
-                  case 2:  //  Richards; age-specific VBK not allowed here
-  //  SS_Label_Info_16.2.4.1.3  #for Richards
-                  {
-                    temp=LinfR + (LminR-LinfR)*mfexp(VBK(gp,nages)*VBK_seas(0)*(curr_age(g,1,0)-AFIX));
-                    Ave_Size(styr,1,g,0) = pow(temp,inv_Richards);
-                    for (a=1;a<=nages+Settle_age(settle);a++)
-                    {
-                      a1=a-Settle_age(settle);
-                      temp=LinfR + (LminR-LinfR)*mfexp(VBK(gp,nages)*VBK_seas(0)*(curr_age(g,1,a1)-AFIX));
-                      Ave_Size(styr,1,g,a1) = pow(temp,inv_Richards);
-                    }  // done ageloop
-                    break;
-                  }
-                }
-                if(do_once==1&&g==1) echoinput<<" avesize_in_styr_w/o_linear_section "<<Ave_Size(styr,1,g)<<endl;
-  
-  //  SS_Label_Info_16.2.4.1.4  #calc approximation to mean size at maxage to account for growth after reaching the maxage (accumulator age)
-                temp=0.0;
-                temp1=0.0;
-                temp2=mfexp(-0.2);  //  cannot use natM or Z because growth is calculated first
-                temp3=L_inf(gp)-Ave_Size(styr,1,g,nages);  // delta between linf and the size at nages
-                //  frac_ages = age/nages, so is fraction of a lifetime
-                temp4=1.0;
-                for (a=0;a<=nages;a++)
-                {
-                  temp+=temp4*(Ave_Size(styr,1,g,nages)+frac_ages(a)*temp3);  // so grows linearly from size at nages to size at nages+nages
-                  temp1+=temp4;   //  accumulate numbers to create denominator for mean size calculation
-                  temp4*=temp2;  //  decay numbers at age by exp(-0.2)
-                }
-                Ave_Size(styr,1,g,nages)=temp/temp1;  //  this is weighted mean size at nages
-                if(do_once==1&&g==1) echoinput<<" adjusted size at maxage "<<Ave_Size(styr,1,g,nages)<<endl;
-              }  //  end initial year calcs
-  
-  //  SS_Label_Info_16.2.4.2  #loop seasons for growth calculation
-              for (s=1;s<=nseas;s++)
+
+            if(do_once==1&&g==1) echoinput<<" avesize_in_styr_w/o_linear_section "<<Ave_Size(styr,1,g)<<endl;
+
+//  SS_Label_Info_16.2.4.1.4  #calc approximation to mean size at maxage to account for growth after reaching the maxage (accumulator age)
+            temp=0.0;
+            temp1=0.0;
+            temp2=mfexp(-0.2);  //  cannot use natM or Z because growth is calculated first
+            temp3=L_inf(gp)-Ave_Size(styr,1,g,nages);  // delta between linf and the size at nages
+            //  frac_ages = age/nages, so is fraction of a lifetime
+            temp4=1.0;
+            for (a=0;a<=nages;a++)
+            {
+              temp+=temp4*(Ave_Size(styr,1,g,nages)+frac_ages(a)*temp3);  // so grows linearly from size at nages to size at nages+nages
+              temp1+=temp4;   //  accumulate numbers to create denominator for mean size calculation
+              temp4*=temp2;  //  decay numbers at age by exp(-0.2)
+            }
+            Ave_Size(styr,1,g,nages)=temp/temp1;  //  this is weighted mean size at nages
+            if(do_once==1&&g==1) echoinput<<" adjusted size at maxage "<<Ave_Size(styr,1,g,nages)<<endl;
+          }  //  end initial year calcs
+
+//  SS_Label_Info_16.2.4.2  #loop seasons for growth calculation
+          for (s=1;s<=nseas;s++)
+          {
+            t=t_base+s;
+            ALK_idx=s*N_subseas;  // last subseas of season; so checks to see if still in linear phase at end of this season
+            if(s==nseas)
+            {
+              ALK_idx2=1;  //  first subseas of next year
+            }
+            else
+            {
+              ALK_idx2=s*N_subseas+1;  //  for the beginning of first subseas of next season
+            }
+            if(s==nseas) add_age=1; else add_age=0;   //      advance age or not
+// growth to next season
+//  SS_Label_Info_16.2.4.2.1  #standard von Bert growth, loop ages to get size at age at beginning of next season (t+1) which is subseas=1
+            for (a=0;a<=nages;a++)
+            {
+              if(a<nages) {k2=a+add_age;} else {k2=a;}  // where add_age =1 if s=nseas, else 0  (k2 assignment could be in a matrix so not recalculated
+// NOTE:  there is no seasonal interpolation, or real age adjustment for age-specific K.  Maybe someday....
+              if(lin_grow(g,ALK_idx,a)==-1.0)  // first time point beyond AFIX;  lin_grow will stay at -1 for all remaining subseas of this season
               {
-                t=t_base+s;
-                ALK_idx=s*N_subseas;  // last subseas of season; so checks to see if still in linear phase at end of this season
-                if(s==nseas)
-                {
-                  ALK_idx2=1;  //  first subseas of next year
-                }
-                else
-                {
-                  ALK_idx2=s*N_subseas+1;  //  for the beginning of first subseas of next season
-                }
-                if(s==nseas) add_age=1; else add_age=0;   //      advance age or not
-  // growth to next season
-                switch(Grow_type)
-                {
-                  default:
-                  {
-  //  SS_Label_Info_16.2.4.2.1  #standard von Bert growth, loop ages to get size at age at beginning of next season (t+1) which is subseas=1
-                    for (a=0;a<=nages;a++)
-                    {
-                      if(a<nages) {k2=a+add_age;} else {k2=a;}  // where add_age =1 if s=nseas, else 0  (k2 assignment could be in a matrix so not recalculated
-  // NOTE:  there is no seasonal interpolation, or real age adjustment for age-specific K.  Maybe someday....
-                      if(lin_grow(g,ALK_idx,a)==-1.0)  // first time point beyond AFIX;  lin_grow will stay at -1 for all remaining subseas of this season
-                      {
-                         Ave_Size(t+1,1,g,k2) = Cohort_Lmin(gp,y,a) + (Cohort_Lmin(gp,y,a)-L_inf(gp))*
-                         (mfexp(VBK(gp,a)*(curr_age(g,ALK_idx2,k2)-AFIX)*VBK_seas(s))-1.0)*Cohort_Growth(y,a);
-                      }
-                      else //   if(lin_grow(g,ALK_idx,a)==-2.0)  //  so doing growth curve
-                      {
-                          t2=Ave_Size(t,1,g,a)-L_inf(gp);  //  remaining growth potential from first subseas
-                          if(time_vary_MG(y,2)>0 && t2>-1.)
-                          {
-                            join1=1.0/(1.0+mfexp(-(50.*t2/(1.0+fabs(t2)))));  //  note the logit transform is not perfect, so growth near Linf will not be exactly same as with native growth function
-                            t2*=(1.-join1);  // trap to prevent decrease in size-at-age
-                          }
-  
-  //  SS_Label_info_16.2.4.2.1.1  #calc size at end of the season, which will be size at begin of next season using current seasons growth parms
-                            //  with k2 adding an age if at the end of the year
-                          if((a<nages || s<nseas)) Ave_Size(t+1,1,g,k2) = Ave_Size(t,1,g,a) + (mfexp(VBK(gp,a)*seasdur(s)*VBK_seas(s))-1.0)*t2*Cohort_Growth(y,a);
-                      }
-                    }  // done ageloop
-  
-  //  SS_Label_Info_16.2.4.2.1.2  #after age loop, if(s=nseas) get weighted average for size_at_maxage from carryover fish and fish newly moving into this age
-                    if(s==nseas)
-                    {
-                      temp=( (natage(t,1,g,nages-1)+0.01)*Ave_Size(t+1,1,g,nages) + (natage(t,1,g,nages)+0.01)*Ave_Size(t,1,g,nages)) / (natage(t,1,g,nages-1)+natage(t,1,g,nages)+0.02);
-                      Ave_Size(t+1,1,g,nages)=temp;
-                    }
-                    break;
-                  }
-  
-                  case 2:   //  Richards
-                  {
-                    growhalf = (mfexp(VBK(gp,nages)*seasdur_half(s)*VBK_seas(s))-1.0);
-                    for (a=0;a<=nages;a++)
-                    {
-  //  SS_Label_Info_16.2.4.2.2  #von Bert growth with Richards coefficient, loop ages
-  //  SS_Label_Info_16.2.4.2.2.1  #NOTE - not updated to use subseas protocols
-  //  SS_Label_Info_16.2.4.2.2.2  #calc midseas size-at-age from begin season size-at-age, accounting for transition from linear to von Bert as necessary
-                      if(lin_grow(g,ALK_idx,a)>=0.0)  // in linear phase for begin seas
-                      {
-                        Ave_Size(t,1,g,a) = len_bins(1)+lin_grow(g,ALK_idx,a)*(Cohort_Lmin(gp,y,a)-len_bins(1));  // begin of season
-                      }
-                      if(lin_grow(g,ALK_idx_mid,a)>=0.0)  // in linear phase for midseas
-                      {
-                        Ave_Size(t,mid_subseas,g,a) = len_bins(1)+lin_grow(g,ALK_idx_mid,a)*(Cohort_Lmin(gp,y,a)-len_bins(1));  // mid season
-                      }
-  
-                      if(lin_grow(g,ALK_idx,a)==-1.0)  // first time point beyond AFIX
-                      {
-                        temp=pow(Cohort_Lmin(gp,y,a),Richards(gp));
-                        temp1=temp+(temp-LinfR)*(mfexp(VBK(gp,nages)*(curr_age(g,ALK_idx,a)-AFIX)*VBK_seas(s))-1.0)*Cohort_Growth(y,a);
-                        Ave_Size(t,1,g,a) = pow(temp1,inv_Richards);
-                      }
-  
-                      if(lin_grow(g,ALK_idx_mid,a)<0.0)  //  so doing growth curve by mid of this seas, so project with growth to begin of next
-                      {
-                        if(lin_grow(g,ALK_idx_mid,a)==-1.0)  // first time point beyond AFIX
-                        {
-                          temp=pow(Cohort_Lmin(gp,y,a),Richards(gp));
-                          temp1=temp+(temp-LinfR)*(mfexp(VBK(gp,nages)*(curr_age(g,ALK_idx_mid,a)-AFIX)*VBK_seas(s))-1.0)*Cohort_Growth(y,a);
-                          Ave_Size(t,mid_subseas,g,a) = pow(temp1,inv_Richards);
-                        }
-                        else  //  calc midseas size starting from size at beginning of this season
-                        {
-                          temp=pow(Ave_Size(t,1,g,a),Richards(gp));
-                          t2=temp-LinfR;  //  remaining growth potential
-                          if(time_vary_MG(y,2)>0 && t2>-1.)
-                          {
-                            join1=1.0/(1.0+mfexp(-(50.*t2/(1.0+fabs(t2)))));  //  note the logit transform is not perfect, so growth near Linf will not be exactly same as with native growth function
-                            t2*=(1.-join1);  // trap to prevent decrease in size-at-age
-                          }
-                          Ave_Size(t,mid_subseas,g,a) = pow((temp+growhalf*(t2)*Cohort_Growth(y,a)),inv_Richards);
-                        }
-  
-  //  SS_Label_Info_16.2.4.2.2.3  #calc size at end of the season, which will be size at begin of next season using current seasons growth parms
-                      if(a<nages) {k2=a+add_age;} else {k2=a;}  // where add_age =1 if s=nseas, else 0
-                        temp=pow(Ave_Size(t,mid_subseas,g,a),Richards(gp));
-                        t2=temp-LinfR;  //  remaining growth potential
-                        if(time_vary_MG(y,2)>0 && t2>-1.)
-                        {
-                          join1=1.0/(1.0+mfexp(-(50.*t2/(1.0+fabs(t2)))));  //  note the logit transform is not perfect, so growth near Linf will not be exactly same as with native growth function
-                          t2*=(1.-join1);  // trap to prevent decrease in size-at-age
-                        }
-                        temp1 = pow((temp+growhalf*t2*Cohort_Growth(y,a)),inv_Richards);
-                        if((a<nages || s<nseas)) {Ave_Size(t+1,1,g,k2) = temp1;}
-                      }
-                    }  // done age loop
-  //  SS_Label_Info_16.2.4.2.2.4  #after age loop, if(s=nseas) get weighted average for size_at_maxage from carryover fish and fish newly moving into this age
-                    if(s==nseas)
-                    {
-                      temp=( (natage(t,1,g,nages-1)+0.01)*Ave_Size(t+1,1,g,nages) + (natage(t,1,g,nages)+0.01)*temp1) / (natage(t,1,g,nages-1)+natage(t,1,g,nages)+0.02);
-                      Ave_Size(t+1,1,g,nages)=temp;
-                    }
-                    break;
-                  }
-                }
-                if(docheckup==1) echoinput<<y<<" s "<<s<<" sex "<<sx(g)<<" gp "<<gp<<" Lmin: "<<Lmin(gp)<<" Linf: "<<L_inf(gp)<<" VBK: "<<VBK(gp,nages)<<endl
-                <<" size@t+1   "<<Ave_Size(t+1,1,g)(0,min(6,nages))<<" "<<Ave_Size(t+1,1,g,nages)<<endl;
-              }  // end of season
-  //  SS_Label_Info_16.2.4.3  #propagate Ave_Size from early years forward until first year that has time-vary growth
-              k=y+1;
-              j=yz+1;
-              while(time_vary_MG(j,2)==0 && k<=YrMax)
-              {
-                for (s=1;s<=nseas;s++)
-                {
-                  t=styr+(k-styr)*nseas+s-1;
-                  Ave_Size(t,1,g)=Ave_Size(t-nseas,1,g);
-                  if(s==1 && k<YrMax)
-                  {
-                    Ave_Size(t+nseas,1,g)=Ave_Size(t,1,g);  // prep for time-vary next yr
-                  }
-                }  // end season loop
-                k++;
-                if(j<endyr+1) j++;
-  
+                Ave_Size(t+1,1,g,k2) = Cohort_Lmin(gp,y,a) + (Cohort_Lmin(gp,y,a)-L_inf(gp))*
+                (mfexp(VBK(gp,a)*(curr_age(g,ALK_idx2,k2)-AFIX)*VBK_seas(s))-1.0)*Cohort_Growth(y,a);
               }
-            }  // end need to consider this GP x settlement combo (usemorph>0)
-          }  // end loop of settlements
-          Ip+=N_M_Grow_parms;
-        }    // end loop of growth patterns, gp
+              else if(lin_grow(g,ALK_idx,a)==-2.0)  //  so doing growth curve
+              {
+                t2=Ave_Size(t,1,g,a)-L_inf(gp);  //  remaining growth potential from first subseas
+                if(time_vary_MG(y,2)>0 && t2>-1.)
+                {
+                  join1=1.0/(1.0+mfexp(-(50.*t2/(1.0+fabs(t2)))));  //  note the logit transform is not perfect, so growth near Linf will not be exactly same as with native growth function
+                  t2*=(1.-join1);  // trap to prevent decrease in size-at-age
+                }
+
+//  SS_Label_info_16.2.4.2.1.1  #calc size at end of the season, which will be size at begin of next season using current seasons growth parms
+                  //  with k2 adding an age if at the end of the year
+                if((a<nages || s<nseas)) Ave_Size(t+1,1,g,k2) = Ave_Size(t,1,g,a) + (mfexp(VBK(gp,a)*seasdur(s)*VBK_seas(s))-1.0)*t2*Cohort_Growth(y,a);
+              }
+            }  // done ageloop
+
+//  SS_Label_Info_16.2.4.2.1.2  #after age loop, if(s=nseas) get weighted average for size_at_maxage from carryover fish and fish newly moving into this age
+            if(s==nseas)
+            {
+              temp=( (natage(t,1,g,nages-1)+0.01)*Ave_Size(t+1,1,g,nages) + (natage(t,1,g,nages)+0.01)*Ave_Size(t,1,g,nages)) / (natage(t,1,g,nages-1)+natage(t,1,g,nages)+0.02);
+              Ave_Size(t+1,1,g,nages)=temp;
+            }
+
+            if(docheckup==1) echoinput<<y<<" s "<<s<<" sex "<<sx(g)<<" gp "<<gp<<" Lmin: "<<Lmin(gp)<<" Linf: "<<L_inf(gp)<<" VBK: "<<VBK(gp,nages)<<endl
+            <<" size@t+1   "<<Ave_Size(t+1,1,g)(0,min(6,nages))<<" "<<Ave_Size(t+1,1,g,nages)<<endl;
+          }  // end of season
+//  SS_Label_Info_16.2.4.3  #propagate Ave_Size from early years forward until first year that has time-vary growth
+          k=y+1;
+          j=yz+1;
+          while(time_vary_MG(j,2)==0 && k<=YrMax)
+          {
+            for (s=1;s<=nseas;s++)
+            {
+              t=styr+(k-styr)*nseas+s-1;
+              Ave_Size(t,1,g)=Ave_Size(t-nseas,1,g);
+              if(s==1 && k<YrMax)
+              {
+                Ave_Size(t+nseas,1,g)=Ave_Size(t,1,g);  // prep for time-vary next yr
+              }
+            }  // end season loop
+            k++;
+            if(j<endyr+1) j++;
+          }
+        }  // end need to consider this GP x settlement combo (usemorph>0)
+      }  // end loop of settlements
+      Ip+=N_M_Grow_parms;
+    }    // end loop of growth patterns, gp
 //      warning<<current_phase()<<" "<<"growth "<<y<<" "<<Lmin(1)<<" "<<Lmax_temp(1)<<" "<<L_inf(1)<<" "<<VBK(1)(0,6)<<" size "<<Ave_Size(t,1,1)(0,6)<<endl;
   //  SS_Label_Info_16.2.4.4  #end of growth
   } // end do growth
 
+//********************************************************************
+ /*  SS_Label_Function_ 16a #get_growth2_Richards; (do seasonal growth calculations for a selected year) */
+FUNCTION void get_growth2_Richards()
+  {
+//  progress mean growth through time series, accounting for seasonality and possible change in parameters
+//   get mean size at the beginning and end of the season
+    dvariable LminR;
+    dvariable LmaxR;
+    dvariable LinfR;
+    dvariable inv_Richards;
+    dvariable VBK_temp;  //  constant across ages with Richards
+    dvariable VBK_temp2;  //  with VBKseas(s) multiplied
+    int k2;
+    int add_age;
+    int ALK_idx2;  //  beginning of first subseas of next season
+
+  //  SS_Label_Info_16.1 #Create Cohort_Growth offset for the cohort borne (age 0) this year
+    if(CGD>0)   //  cohort specific growth multiplier
+    {
+      temp=mgp_adj(MGP_CGD);
+      k=min(nages,(YrMax-y));
+      for (a=0;a<=k;a++) {Cohort_Growth(y+a,a)=temp;}  //  so this multiplier on VBK is stored on a diagonal into the future
+    }
+  
+  //  SS_Label_Info_16.2 #Loop growth patterns (sex*N_GP)
+    gp=0;
+    for(gg=1;gg<=gender;gg++)
+    for (GPat=1;GPat<=N_GP;GPat++)
+    {
+      gp++;
+      Ip=MGparm_point(gg,GPat)+N_natMparms;
+//  SS_Label_Info_16.2.1  #set Lmin, Lmax, VBK, Richards to this year's values for mgp_adj
+      if(MGparm_def>1 && gp>1)   // switch for growth parms
+      {
+        Lmin(gp)=Lmin(1)*mfexp(mgp_adj(Ip));
+        Lmax_temp(gp)=Lmax_temp(1)*mfexp(mgp_adj(Ip+1));
+        VBK(gp,nages)=VBK(1,nages)*mfexp(mgp_adj(Ip+2));
+        VBK_temp=VBK(1,nages)*mfexp(mgp_adj(Ip+2));
+        Richards(gp)=Richards(1)*mfexp(mgp_adj(Ip+3));
+      }
+      else
+      {
+        Lmin(gp)=mgp_adj(Ip);
+        Lmax_temp(gp)=mgp_adj(Ip+1);
+        VBK(gp,nages)=-mgp_adj(Ip+2);
+        VBK_temp=-mgp_adj(Ip+2);  // because always used as negative; constant across ages for Richards
+        Richards(gp)=mgp_adj(Ip+3);
+      }
+      
+//  SS_Label_Info_16.2.3  #Set up Lmin and Lmax
+      if(y==styr)
+      {
+        Cohort_Lmin(gp)=Lmin(gp);   //  sets for all years and ages
+      }
+      else if(time_vary_MG(y,2)>0)  //  using time-vary growth
+      {
+        k=min(nages,(YrMax-y));
+        for (a=0;a<=k;a++) {Cohort_Lmin(gp,y+a,a)=Lmin(gp);}  //  sets for future years so cohort remembers its size at birth; with Lmin(gp) being size at birth this year
+      }
+
+      inv_Richards=1.0/Richards(gp);
+      LminR=pow(Lmin(gp),Richards(gp));
+      if(AFIX2==999)
+      {
+        L_inf(gp)=Lmax_temp(gp);
+      }
+      else
+      {
+        LmaxR=pow(Lmax_temp(gp), Richards(gp));
+        temp=LminR+(LmaxR-LminR)/(1.-mfexp(VBK_temp*VBK_seas(0)*(AFIX_delta)));
+        L_inf(gp)=pow(temp,inv_Richards);
+      }
+      LinfR=pow(L_inf(gp),Richards(gp));
+      
+      g=g_Start(gp);  //  base platoon
+//  SS_Label_Info_16.2.4  #Loop settlement events
+      for (settle=1;settle<=N_settle_timings;settle++)
+      {
+        g+=N_platoon;
+        if(use_morph(g)>0)
+        {
+          if(y==styr)
+          {
+//  SS_Label_Info_16.2.4.1  #set up the delta in growth variability across ages if needed
+            if( g==1 && do_once==1) echoinput<<y<<" initial yr do CV setup for gp, g: "<<gp<<" "<<g<<endl;
+            if(CV_const(gp)>0)
+            {
+              if(CV_depvar_a==0)
+                {CV_delta(gp)=(CVLmax(gp)-CVLmin(gp))/(Lmax_temp(gp)-Lmin(gp));}
+              else
+                {CV_delta(gp)=(CVLmax(gp)-CVLmin(gp))/(AFIX2_forCV-AFIX);}
+            }
+            else
+            {
+              CV_delta(gp)=0.0;
+              CV_G(gp)=CVLmin(gp);  // sets all seasons and whole age range
+            }
+
+//  SS_Label_Info_16.2.4.1.1  #if y=styr, get size-at-age in first subseason of first season of this first year
+            if(do_once==1 && g==1) echoinput<<y<<" "<<s<<" growth gp,g: "<<gp<<" "<<g<<" Lmin: "<<Lmin(gp)<<" "<<L_inf(gp)<<" "<<-VBK(gp)<<" settleage "<<Settle_age(settle)<<endl;
+
+            VBK_temp2=VBK_temp*VBK_seas(0);
+            temp=LinfR + (LminR-LinfR)*mfexp(VBK_temp2*(curr_age(g,1,0)-AFIX));
+            Ave_Size(styr,1,g,0) = pow(temp,inv_Richards);
+            for (a=1;a<=nages+Settle_age(settle);a++)
+            {
+              a1=a-Settle_age(settle);
+              temp=LinfR + (LminR-LinfR)*mfexp(VBK_temp2*(curr_age(g,1,a1)-AFIX));
+              Ave_Size(styr,1,g,a1) = pow(temp,inv_Richards);
+            }  // done ageloop
+            if(do_once==1&&g==1) echoinput<<" avesize_in_styr_w/o_linear_section "<<Ave_Size(styr,1,g)<<endl;
+
+//  SS_Label_Info_16.2.4.1.4  #calc approximation to mean size at maxage to account for growth after reaching the maxage (accumulator age)
+            temp=0.0;
+            temp1=0.0;
+            temp2=mfexp(-0.2);  //  cannot use natM or Z because growth is calculated first
+            temp3=L_inf(gp)-Ave_Size(styr,1,g,nages);  // delta between linf and the size at nages
+            //  frac_ages = age/nages, so is fraction of a lifetime
+            temp4=1.0;
+            for (a=0;a<=nages;a++)
+            {
+              temp+=temp4*(Ave_Size(styr,1,g,nages)+frac_ages(a)*temp3);  // so grows linearly from size at nages to size at nages+nages
+              temp1+=temp4;   //  accumulate numbers to create denominator for mean size calculation
+              temp4*=temp2;  //  decay numbers at age by exp(-0.2)
+            }
+            Ave_Size(styr,1,g,nages)=temp/temp1;  //  this is weighted mean size at nages
+            if(do_once==1&&g==1) echoinput<<" adjusted size at maxage "<<Ave_Size(styr,1,g,nages)<<endl;
+          }  //  end initial year calcs
+
+//  SS_Label_Info_16.2.4.2  #loop seasons for growth calculation
+          for (s=1;s<=nseas;s++)
+          {
+            t=t_base+s;
+            ALK_idx=s*N_subseas;  // last subseas of season; so checks to see if still in linear phase at end of this season
+            if(s==nseas)
+            {
+              ALK_idx2=1;  //  first subseas of next year
+            }
+            else
+            {
+              ALK_idx2=s*N_subseas+1;  //  for the beginning of first subseas of next season
+            }
+            if(s==nseas) add_age=1; else add_age=0;   //      advance age or not
+            VBK_temp2=VBK_temp*VBK_seas(s);
+// growth to next season
+//  SS_Label_Info_16.2.4.2.1  #standard von Bert growth, loop ages to get size at age at beginning of next season (t+1) which is subseas=1
+            for (a=0;a<=nages;a++)
+            {
+              if(a<nages) {k2=a+add_age;} else {k2=a;}  // where add_age =1 if s=nseas, else 0  (k2 assignment could be in a matrix so not recalculated
+// NOTE:  there is no seasonal interpolation, or real age adjustment for age-specific K.  Maybe someday....
+              if(lin_grow(g,ALK_idx,a)==-1.0)  // first time point beyond AFIX;  lin_grow will stay at -1 for all remaining subseas of this season
+              {
+                temp=LminR + (LminR-LinfR)*(mfexp(VBK_temp2*(curr_age(g,ALK_idx2,k2)-AFIX))-1.0)*Cohort_Growth(y,a);
+                Ave_Size(t+1,1,g,k2) = pow(temp,inv_Richards);
+              }
+              else if(lin_grow(g,ALK_idx,a)==-2.0)
+              {
+                temp=pow(Ave_Size(t,1,g,a),Richards(gp));
+                t2=temp-LinfR;  //  remaining growth potential
+                if(time_vary_MG(y,2)>0 && t2>-1.)
+                {
+                  join1=1.0/(1.0+mfexp(-(50.*t2/(1.0+fabs(t2)))));  //  note the logit transform is not perfect, so growth near Linf will not be exactly same as with native growth function
+                  t2*=(1.-join1);  // trap to prevent decrease in size-at-age
+                }
+                if((a<nages || s<nseas)) Ave_Size(t+1,1,g,k2) = 
+                  pow((temp+(mfexp(VBK_temp2*seasdur(s))-1.0)*(t2)*Cohort_Growth(y,a)),inv_Richards);
+              }
+            }  // done ageloop
+
+//  SS_Label_Info_16.2.4.2.1.2  #after age loop, if(s=nseas) get weighted average for size_at_maxage from carryover fish and fish newly moving into this age
+            if(s==nseas)
+            {
+              temp=( (natage(t,1,g,nages-1)+0.01)*Ave_Size(t+1,1,g,nages) + (natage(t,1,g,nages)+0.01)*Ave_Size(t,1,g,nages)) / (natage(t,1,g,nages-1)+natage(t,1,g,nages)+0.02);
+              Ave_Size(t+1,1,g,nages)=temp;
+            }
+
+            if(docheckup==1) echoinput<<y<<" s "<<s<<" sex "<<sx(g)<<" gp "<<gp<<" Lmin: "<<Lmin(gp)<<" Linf: "<<L_inf(gp)<<" VBK: "<<VBK(gp,nages)<<endl
+            <<" size@t+1   "<<Ave_Size(t+1,1,g)(0,min(6,nages))<<" "<<Ave_Size(t+1,1,g,nages)<<endl;
+          }  // end of season
+//  SS_Label_Info_16.2.4.3  #propagate Ave_Size from early years forward until first year that has time-vary growth
+          k=y+1;
+          j=yz+1;
+          while(time_vary_MG(j,2)==0 && k<=YrMax)
+          {
+            for (s=1;s<=nseas;s++)
+            {
+              t=styr+(k-styr)*nseas+s-1;
+              Ave_Size(t,1,g)=Ave_Size(t-nseas,1,g);
+              if(s==1 && k<YrMax)
+              {
+                Ave_Size(t+nseas,1,g)=Ave_Size(t,1,g);  // prep for time-vary next yr
+              }
+            }  // end season loop
+            k++;
+            if(j<endyr+1) j++;
+          }
+        }  // end need to consider this GP x settlement combo (usemorph>0)
+      }  // end loop of settlements
+      Ip+=N_M_Grow_parms;
+    }    // end loop of growth patterns, gp
+  //  SS_Label_Info_16.2.4.4  #end of growth
+  } // end do growth2 for Richards
+
+  //  *******************************************************************************************************
   //  SS_Label_Function_16.5  #get_growth3 which calculates mean size-at-age for selected subseason
 FUNCTION void get_growth3(const int s, const int subseas)
   {
@@ -10386,88 +10474,88 @@ FUNCTION void get_growth3(const int s, const int subseas)
     int k2;
     int add_age;
 
-        ALK_idx=(s-1)*N_subseas+subseas;  //  note that this changes a global value
-        for (g=g_Start(1)+N_platoon;g<=gmorph;g+=N_platoon)
+    ALK_idx=(s-1)*N_subseas+subseas;  //  note that this changes a global value
+    for (g=g_Start(1)+N_platoon;g<=gmorph;g+=N_platoon)
+    {
+      if(use_morph(g)>0)
+      {
+        gp=GP(g);
+        for (a=0;a<=nages;a++)
         {
-          if(use_morph(g)>0)
+//  SS_Label_Info_16.5.1  #calc subseas size-at-age from begin season size-at-age, accounting for transition from linear to von Bert as necessary
+          //  subseasdur is cumulative time to start of this subseas
+          if(lin_grow(g,ALK_idx,a)>=0.0)  // in linear phase for subseas
           {
-            gp=GP(g);
-            for (a=0;a<=nages;a++)
-            {
-  //  SS_Label_Info_16.5.1  #calc subseas size-at-age from begin season size-at-age, accounting for transition from linear to von Bert as necessary
-                //  subseasdur is cumulative time to start of this subseas
-                if(lin_grow(g,ALK_idx,a)>=0.0)  // in linear phase for subseas
-                {
-                  Ave_Size(t,subseas,g,a) = len_bins(1)+lin_grow(g,ALK_idx,a)*(Cohort_Lmin(gp,y,a)-len_bins(1));
-                }
+            Ave_Size(t,subseas,g,a) = len_bins(1)+lin_grow(g,ALK_idx,a)*(Cohort_Lmin(gp,y,a)-len_bins(1));
+          }
 
 // NOTE:  there is no seasonal interpolation, or real age adjustment for age-specific K.  Maybe someday....
-                else if(lin_grow(g,ALK_idx,a)==-1.0)  // first time point beyond AFIX;  lin_grow will stay at -1 for all remaining subseas of this season
-                {
-                  Ave_Size(t,subseas,g,a) = Cohort_Lmin(gp,y,a) + (Cohort_Lmin(gp,y,a)-L_inf(gp))*
-                                            (mfexp(VBK(gp,a)*(curr_age(g,ALK_idx,a)-AFIX)*VBK_seas(s))-1.0)*Cohort_Growth(y,a);
-                }
+//  NOTE:  need to add Richards growth here
+          else if(lin_grow(g,ALK_idx,a)==-1.0)  // first time point beyond AFIX;  lin_grow will stay at -1 for all remaining subseas of this season
+          {
+            Ave_Size(t,subseas,g,a) = Cohort_Lmin(gp,y,a) + (Cohort_Lmin(gp,y,a)-L_inf(gp))*
+             (mfexp(VBK(gp,a)*(curr_age(g,ALK_idx,a)-AFIX)*VBK_seas(s))-1.0)*Cohort_Growth(y,a);
+          }
+          else if(lin_grow(g,ALK_idx,a)==-2.0)  //  so doing growth curve
+          {
+            t2=Ave_Size(t,1,g,a)-L_inf(gp);  //  remaining growth potential from first subseas
+            if(time_vary_MG(y,2)>0 && t2>-1.)
+            {
+              join1=1.0/(1.0+mfexp(-(50.*t2/(1.0+fabs(t2)))));  //  note the logit transform is not perfect, so growth near Linf will not be exactly same as with native growth function
+              t2*=(1.-join1);  // trap to prevent decrease in size-at-age
+            }
+            Ave_Size(t,subseas,g,a) = Ave_Size(t,1,g,a) + (mfexp(VBK(gp,a)*subseasdur(s,subseas)*VBK_seas(s))-1.0)*t2*Cohort_Growth(y,a);
+          }
+        }  // done ageloop
 
-                else if(lin_grow(g,ALK_idx,a)==-2.0)  //  so doing growth curve
-                {
-                    t2=Ave_Size(t,1,g,a)-L_inf(gp);  //  remaining growth potential from first subseas
-                    if(time_vary_MG(y,2)>0 && t2>-1.)
-                    {
-                      join1=1.0/(1.0+mfexp(-(50.*t2/(1.0+fabs(t2)))));  //  note the logit transform is not perfect, so growth near Linf will not be exactly same as with native growth function
-                      t2*=(1.-join1);  // trap to prevent decrease in size-at-age
-                    }
-                    Ave_Size(t,subseas,g,a) = Ave_Size(t,1,g,a) + (mfexp(VBK(gp,a)*subseasdur(s,subseas)*VBK_seas(s))-1.0)*t2*Cohort_Growth(y,a);
-                }
-            }  // done ageloop
-
-  //  SS_Label_Info_16.5.2  #do calculations related to std.dev. of size-at-age
-  //  SS_Label_Info_16.5.3 #if (y=styr), calc CV_G(gp,s,a) by interpolation on age or LAA
+//  SS_Label_Info_16.5.2  #do calculations related to std.dev. of size-at-age
+//  SS_Label_Info_16.5.3 #if (y=styr), calc CV_G(gp,s,a) by interpolation on age or LAA
 //  doing this just at y=styr prevents the CV from changing as time-vary growth updates over time
-            if(CV_const(gp)>0 && y==styr)
-            {
-              for (a=0;a<=nages;a++)
-              {
-                if(curr_age(g,ALK_idx,a)<AFIX)
-                {CV_G(gp,ALK_idx,a)=CVLmin(gp);}
-                else if(curr_age(g,ALK_idx,a)>=AFIX2_forCV)
-                {CV_G(gp,ALK_idx,a)=CVLmax(gp);}
-                else if(CV_depvar_a==0)
-                {CV_G(gp,ALK_idx,a)=CVLmin(gp) + (Ave_Size(t,subseas,g,a)-Lmin(gp))*CV_delta(gp);}
-                else
-                {CV_G(gp,ALK_idx,a)=CVLmin(gp) + (curr_age(g,ALK_idx,a)-AFIX)*CV_delta(gp);}
-              }   // end age loop
-            }
+        if(CV_const(gp)>0 && y==styr)
+        {
+          for (a=0;a<=nages;a++)
+          {
+            if(curr_age(g,ALK_idx,a)<AFIX)
+            {CV_G(gp,ALK_idx,a)=CVLmin(gp);}
+            else if(curr_age(g,ALK_idx,a)>=AFIX2_forCV)
+            {CV_G(gp,ALK_idx,a)=CVLmax(gp);}
+            else if(CV_depvar_a==0)
+            {CV_G(gp,ALK_idx,a)=CVLmin(gp) + (Ave_Size(t,subseas,g,a)-Lmin(gp))*CV_delta(gp);}
             else
-            {
-              //  already set constant to CVLmi
-            }
-    
-  //  SS_Label_Info_16.5.4  #calc stddev of size-at-age from CV_G(gp,s,a) and Ave_Size(t,g,a)
-            if(CV_depvar_b==0)
-            {
-              Sd_Size_within(ALK_idx,g)=SD_add_to_LAA+elem_prod(CV_G(gp,ALK_idx),Ave_Size(t,subseas,g));
-            }
-            else
-            {
-              Sd_Size_within(ALK_idx,g)=SD_add_to_LAA+CV_G(gp,ALK_idx);
-            }
-    
-  //  SS_Label_Info_16.3.5  #if platoons being used, calc the stddev between platoons
-            if(N_platoon>1)
-            {
-              Sd_Size_between(ALK_idx,g)=Sd_Size_within(ALK_idx,g)*sd_between_platoon;
-              Sd_Size_within(ALK_idx,g)*=sd_within_platoon;
-            }
+            {CV_G(gp,ALK_idx,a)=CVLmin(gp) + (curr_age(g,ALK_idx,a)-AFIX)*CV_delta(gp);}
+          }   // end age loop
+        }
+        else
+        {
+          //  already set constant to CVLmi
+        }
 
-            if(docheckup==1)
-            {
-              echoinput<<"with lingrow; subseas: "<<subseas<<" sex: "<<sx(g)<<" gp: "<<GP4(g)<<" platoon: "<<g<<endl;
-              echoinput<<"size "<<Ave_Size(t,subseas,g)(0,min(6,nages))<<" @nages "<<Ave_Size(t,subseas,g,nages)<<endl;
-              echoinput<<"CV   "<<CV_G(gp,ALK_idx)(0,min(6,nages))<<" @nages "<<CV_G(gp,ALK_idx,nages)<<endl;
-              echoinput<<"sd   "<<Sd_Size_within(ALK_idx,g)(0,min(6,nages))<<" @nages "<<Sd_Size_within(ALK_idx,g,nages)<<endl;
-            }
-          }  //  end need this platoon
-        }  //  done platoon
+//  SS_Label_Info_16.5.4  #calc stddev of size-at-age from CV_G(gp,s,a) and Ave_Size(t,g,a)
+        if(CV_depvar_b==0)
+        {
+          Sd_Size_within(ALK_idx,g)=SD_add_to_LAA+elem_prod(CV_G(gp,ALK_idx),Ave_Size(t,subseas,g));
+        }
+        else
+        {
+          Sd_Size_within(ALK_idx,g)=SD_add_to_LAA+CV_G(gp,ALK_idx);
+        }
+
+//  SS_Label_Info_16.3.5  #if platoons being used, calc the stddev between platoons
+        if(N_platoon>1)
+        {
+          Sd_Size_between(ALK_idx,g)=Sd_Size_within(ALK_idx,g)*sd_between_platoon;
+          Sd_Size_within(ALK_idx,g)*=sd_within_platoon;
+        }
+
+        if(docheckup==1)
+        {
+          echoinput<<"with lingrow; subseas: "<<subseas<<" sex: "<<sx(g)<<" gp: "<<GP4(g)<<" platoon: "<<g<<endl;
+          echoinput<<"size "<<Ave_Size(t,subseas,g)(0,min(6,nages))<<" @nages "<<Ave_Size(t,subseas,g,nages)<<endl;
+          echoinput<<"CV   "<<CV_G(gp,ALK_idx)(0,min(6,nages))<<" @nages "<<CV_G(gp,ALK_idx,nages)<<endl;
+          echoinput<<"sd   "<<Sd_Size_within(ALK_idx,g)(0,min(6,nages))<<" @nages "<<Sd_Size_within(ALK_idx,g,nages)<<endl;
+        }
+      }  //  end need this platoon
+    }  //  done platoon
   }  //  end  calc size-at-age at a particular subseason
 
 
@@ -12344,7 +12432,10 @@ FUNCTION void get_initial_conditions()
   if(MG_active(2)>0 || save_for_report>0)
   {
     ALK_subseas_update=1;  //  to indicate that all ALKs need calculation
-    get_growth2();   // initial year;  do growth before natmort in case lorenzen M is used
+    if(Grow_type!=2)
+    {get_growth2();}
+    else
+    {get_growth2_Richards();}
   }
   if(do_once==1) cout<<" growth OK"<<endl;
   if(MG_active(1)>0) get_natmort();
@@ -12588,7 +12679,10 @@ FUNCTION void get_time_series()
       if(time_vary_MG(y,2)>0)  
         {
           ALK_subseas_update=1;  // indicate that all ALKs will need re-estimation
-          get_growth2();  // years after styr;  do growth before natmort in case lorensen M is used
+          if(Grow_type!=2)
+          {get_growth2();}
+          else
+          {get_growth2_Richards();}
         }
       if(time_vary_MG(y,1)>0) get_natmort();
       if(time_vary_MG(y,3)>0) get_wtlen();
@@ -16326,7 +16420,10 @@ FUNCTION void Get_Forecast()
       {
         get_MGsetup();
         ALK_subseas_update=1;  //  vector to indicate if ALK needs recalculating
-        get_growth2();  //  in forecast
+        if(Grow_type!=2)
+        {get_growth2();}
+        else
+        {get_growth2_Richards();}
         if(time_vary_MG(endyr+1,7)>0)  get_catch_mult(y, catch_mult_pointer);
       }
 
