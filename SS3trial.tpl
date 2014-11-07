@@ -562,6 +562,8 @@ DATA_SECTION
       fleetname+=anystring;
       fleet_type(f) = int(fleet_setup(f,1));
       surveytime(f) = fleet_setup(f,2);
+      if(surveytime(y)!=-1. && surveytime(y)!=0.5)
+        {warning<<"fleet: "<<f<<"surveytime= "<<surveytime(y)<<" will not be used in V3.3; must set for each datum"<<endl;}
       fleet_area(f) = int(fleet_setup(f,3));
       catchunits(f) = int(fleet_setup(f,4));
       need_catch_mult(f) = int(fleet_setup(f,7));
@@ -15052,10 +15054,12 @@ FUNCTION void Make_AgeLength_Key(const int s, const int subseas)
             use_SD_Size=Sd_Size_within(ALK_idx,gstart);
             if(N_platoon>1) use_Ave_Size_W += shadow(gp2)*Sd_Size_between(ALK_idx,gstart);
 
+            int ALK_phase;
             if(Grow_logN==0)
             {
-              if(do_once==1)
+              if((do_once==1 || current_phase()>ALK_phase) && !last_phase())
               {
+                ALK_phase=current_phase();
                 ALK_range_use=calc_ALK_range(len_bins,use_Ave_Size_W,use_SD_Size);  //  later need to offset according to g
                 ALK_range_g_lo(g)=column(ALK_range_use,1);
                 ALK_range_g_hi(g)=column(ALK_range_use,2);
@@ -15120,6 +15124,11 @@ FUNCTION imatrix calc_ALK_range(const dvector &len_bins, const dvar_vector &mean
     } // end length loop
 //    ALK_range(a,1)=2;
 //    ALK_range(a,2)=nlength;
+      if((ALK_range(a,2)-ALK_range(a,1))<3)
+        {
+          if(ALK_range(a,1)>1) ALK_range(a,1)-=1;
+          if(ALK_range(a,2)<nlength) ALK_range(a,1)+=1;
+        }
   }   // end age loop
 //  RETURN_ARRAYS_DECREMENT();
   return (ALK_range);
@@ -15334,6 +15343,8 @@ FUNCTION void Make_FishSelex()
     dvar_matrix ALK_w=ALK(ALK_idx,g);        //  shallow copy
     ivector ALK_range_lo=ALK_range_g_lo(g);
     ivector ALK_range_hi=ALK_range_g_hi(g);
+    dvar_vector sel_l_r_w(1,nlength);
+    dvar_vector disc_wt(1,nlength);
     int yf;
     int tz;
 
@@ -15360,63 +15371,60 @@ FUNCTION void Make_FishSelex()
         else
         {
           tempvec_l=elem_prod(sel_l(yf,f,gg),wt_len(s,GP(g)));  //  combine size selex and wt_at_len
-//          for(a=0;a<=nages;a++)
-//          {
-//            temp=0.0;
-//            for(z=ALK_range_lo(a);z<=ALK_range_hi(a);z++) temp+=ALK_w(a,z)*tempvec_l(z);
-//            sel_al_1(s,g,f,a)=sel_a(yf,f,gg,a)*temp;
-//            temp=0.0;
-//            for(z=ALK_range_lo(a);z<=ALK_range_hi(a);z++) temp+=ALK_w(a,z)*sel_l(yf,f,gg,z);
-//            sel_al_3(s,g,f,a)=sel_a(yf,f,gg,a)*temp;
-//          }
+        }
 
-          for(a=0;a<=nages;a++)
+        if(seltype(f,2)!=0 && WTage_rd==0)  sel_l_r_w=elem_prod(sel_l_r(yf,f,gg),wt_len(s,GP(g)));
+        if(seltype(f,2)>=2) disc_wt=elem_prod(discmort2(yf,f,gg),wt_len(s,GP(g)));
+
+        for(a=0;a<=nages;a++)
+        {
+          int llo=ALK_range_lo(a);
+          int lhi=ALK_range_hi(a);
+          if(seltype(f,1)>0)  //  size selectivity
           {
-            sel_al_1(s,g,f,a)=sel_a(yf,f,gg,a)*(ALK_w(a)(ALK_range_lo(a),ALK_range_hi(a)) * tempvec_l(ALK_range_lo(a),ALK_range_hi(a)));
-            sel_al_3(s,g,f,a)=sel_a(yf,f,gg,a)*(ALK_w(a)(ALK_range_lo(a),ALK_range_hi(a)) * sel_l(yf,f,gg)(ALK_range_lo(a),ALK_range_hi(a)));
+            sel_al_1(s,g,f,a)=sel_a(yf,f,gg,a)*(ALK_w(a)(llo,lhi) * tempvec_l(llo,lhi));
+            sel_al_3(s,g,f,a)=sel_a(yf,f,gg,a)*(ALK_w(a)(llo,lhi) * sel_l(yf,f,gg)(llo,lhi));
           }
 
-//          sel_al_1(s,g,f)=elem_prod(sel_a(yf,f,gg),(ALK_w *tempvec_l) );
-//          sel_al_3(s,g,f)=elem_prod(sel_a(yf,f,gg),(ALK_w * sel_l(yf,f,gg) ));
-        }
-
-        if(mceval_phase() || save_for_report>0)
-        {
-          if(WTage_rd==0)
-          {fish_body_wt(tz,g,f)=elem_div( ALK_w*elem_prod(sel_l(yf,f,gg),wt_len(s,gg)) , ALK_w*sel_l(yf,f,gg));}
-          else
-          {fish_body_wt(tz,g,f)=WTage_emp(tz,GP3(g),f);}
-          if(save_for_report==2 && ishadow(GP2(g))==0) bodywtout<<-y<<" "<<s<<" "<<gg<<" "<<GP4(g)<<" "<<Bseas(g)
-          <<" "<<f<<" "<<fish_body_wt(tz,g,f)<<endl;
-        }
-
-        if(seltype(f,2)!=0)  //  discard, so need retention function
-        {
-          if(WTage_rd==0)
-            {sel_al_2(s,g,f)=elem_prod(sel_a(yf,f,gg),(ALK_w * elem_prod( sel_l_r(yf,f,gg),wt_len(s,GP(g)) )) );}
-          else
-            {sel_al_2(s,g,f)=elem_prod(sel_a(yf,f,gg),WTage_emp(tz,GP3(g),f));}
-          sel_al_4(s,g,f)=elem_prod(sel_a(yf,f,gg),(ALK_w * sel_l_r(yf,f,gg) ));
-        }
-        else
-        {
+          if(mceval_phase() || save_for_report>0)
+          {
+            if(WTage_rd==0)
+            {fish_body_wt(tz,g,f,a)=(ALK_w(a)(llo,lhi)*tempvec_l(llo,lhi)) / (ALK_w(a)(llo,lhi)*sel_l(yf,f,gg)(llo,lhi));}
+            else
+            {fish_body_wt(tz,g,f,a)=WTage_emp(tz,GP3(g),f,a);}
+            if(save_for_report==2 && ishadow(GP2(g))==0 &&a==nages) bodywtout<<-y<<" "<<s<<" "<<gg<<" "<<GP4(g)<<" "<<Bseas(g)
+            <<" "<<f<<" "<<fish_body_wt(tz,g,f)<<endl;
+          }
+  
+          if(seltype(f,2)!=0)  //  discard, so need retention function
+          {
+            if(WTage_rd==0)
+              {sel_al_2(s,g,f,a)=sel_a(yf,f,gg,a)*(ALK_w(a)(llo,lhi) * sel_l_r_w(llo,lhi) );}
+            else if (a==nages)
+              {sel_al_2(s,g,f)=elem_prod(sel_a(yf,f,gg),WTage_emp(tz,GP3(g),f));}
+              
+            sel_al_4(s,g,f,a)=sel_a(yf,f,gg,a)* (ALK_w(a)(llo,lhi) * sel_l_r(yf,f,gg)(llo,lhi) );
+          }
+          else if(a==nages)
+          {
             sel_al_2(s,g,f)=sel_al_1(s,g,f);
             sel_al_4(s,g,f)=sel_al_3(s,g,f);
-        }
-
-        if(seltype(f,2)>=2)
-        {
-          deadfish(s,g,f)=elem_prod(sel_a(yf,f,gg),(ALK_w * discmort2(yf,f,gg)));  //  selected dead by numbers
-          if(WTage_rd==0)
-          {deadfish_B(s,g,f)=elem_prod(sel_a(yf,f,gg),(ALK_w * elem_prod(discmort2(yf,f,gg),wt_len(s,GP(g))) ));} // selected dead by weight
-          else
-          {deadfish_B(s,g,f)=sel_al_2(s,g,f);} // not quite correct, for now set equal to selected wt of retained fish without adjusting for discmort
-        }
-        else
-        {
-            deadfish_B(s,g,f)=sel_al_1(s,g,f);
-            deadfish(s,g,f)=sel_al_3(s,g,f);
-        }
+          }
+  
+          if(seltype(f,2)>=2)
+          {
+            deadfish(s,g,f,a)=sel_a(yf,f,gg,a)*(ALK_w(a)(llo,lhi) * discmort2(yf,f,gg)(llo,lhi));  //  selected dead by numbers
+            if(WTage_rd==0)
+            {deadfish_B(s,g,f,a)=sel_a(yf,f,gg,a)*(ALK_w(a)(llo,lhi) * disc_wt(llo,lhi));} // selected dead by weight
+            else if(a==nages)
+            {deadfish_B(s,g,f)=sel_al_2(s,g,f);} // not quite correct, for now set equal to selected wt of retained fish without adjusting for discmort
+          }
+          else if(a==nages)
+          {
+              deadfish_B(s,g,f)=sel_al_1(s,g,f);
+              deadfish(s,g,f)=sel_al_3(s,g,f);
+          }
+        }  //  end age loop
 
       }  // end need to do it
       save_sel_fec(t,g,f)= value(sel_al_3(s,g,f));  //  save sel_al_3 in save_fecundity array for output
@@ -22549,6 +22557,7 @@ FUNCTION void Get_expected_values();
                   exp_disc(f,j)=catch_fleet(t,f,4)-catch_fleet(t,f,6);   // discard in numbers
                   if(disc_units(f)==2) exp_disc(f,j) /= (catch_fleet(t,f,4) + 0.0000001);
                 }
+                if(exp_disc(f,j)<0.0) warning<<f<<" "<<j<<" "<<exp_disc(f,j)<<" catches "<<catch_fleet(t,f)<<endl;
               }
               else
               {
