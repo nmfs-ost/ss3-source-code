@@ -15126,7 +15126,7 @@ FUNCTION imatrix calc_ALK_range(const dvector &len_bins, const dvar_vector &mean
 //    ALK_range(a,2)=nlength;
       if((ALK_range(a,2)-ALK_range(a,1))<3)
         {
-          if(ALK_range(a,1)>1) ALK_range(a,1)-=1;
+          if(ALK_range(a,1)>2) ALK_range(a,1)-=1;
           if(ALK_range(a,2)<nlength) ALK_range(a,1)+=1;
         }
   }   // end age loop
