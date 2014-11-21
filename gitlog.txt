@@ -1,0 +1,442 @@
+commit 9831ab2dc2aed8734a9d27b27265c968987b673c
+Author: RickMethot <richard.methot@noaa.gov>
+Date:   Thu Nov 6 16:19:12 2014 -0800
+
+    improve the ALK range
+    
+    update range calc at begin of each phase, except the last phase;
+    make minimum range to be 3 bins
+
+commit df24767bc18f57dc43a1acbdb5c6e6c3cd22a202
+Author: RickMethot <richard.methot@noaa.gov>
+Date:   Wed Nov 5 11:35:31 2014 -0800
+
+    finish work on Richards growth
+    
+    complete work on growth2_Richards
+    and embedding Richards options with growth3.
+    note that Richards growth is not set up to also allow age-specific K, so
+    it uses the K stored in nages.
+    test with simple and with red snapper.
+
+commit ed1ea76e29465f624a36b09b7880c127801dff00
+Author: RickMethot <richard.methot@noaa.gov>
+Date:   Tue Nov 4 14:49:34 2014 -0800
+
+    convert richards growth to separate function
+    
+    growth2_richards now implemented
+    
+    still need a Richards version of growth3
+
+commit 2f3a601031f6266a8db2d08b37fc79c5f07735ab
+Author: RickMethot <richard.methot@noaa.gov>
+Date:   Mon Nov 3 21:50:40 2014 -0800
+
+    work on Richards growth
+    
+    get Richards growth working for the initial year.
+    Still need to do the time series updating and the growth3 interpolations
+
+commit 9c1d73d548b4f1ba558b121654c6ed3b0198efe4
+Author: RickMethot <richard.methot@noaa.gov>
+Date:   Thu Oct 23 16:24:38 2014 -0700
+
+    more on ALK_range
+    
+    streamline calc of fec(g);
+    extend ALK_range usage into calc of exp_AL
+    optimal setting for the tail seems to be 0.0001
+    getting more iterations per second with more compression,
+    but more iterations are needed to converge
+    very big tails (0.05) are much faster, but don't get same biomass and
+    logL
+
+commit b8a214f894ec16632af487a02deb686d5798092e
+Author: RickMethot <richard.methot@noaa.gov>
+Date:   Thu Oct 23 13:11:48 2014 -0700
+
+    make a fix to data.ss_new
+    
+    in the catch output if reading 3.24 format
+
+commit 76a4af5bff056f6db26ffc4785480ece8ebe98a2
+Author: RickMethot <richard.methot@noaa.gov>
+Date:   Wed Oct 22 16:45:59 2014 -0700
+
+    work on ALK range in fishselex
+    
+    works, but needing to loop over ages makes model slower than original
+
+commit 9db6ef13e227d5dbf76b0855f90093c215a83c2f
+Author: RickMethot <richard.methot@noaa.gov>
+Date:   Fri Oct 17 16:31:49 2014 -0700
+
+    more on ALK_range
+    
+    only call make_ALK_range once
+    begin work on using ALK_range in Make_Fecundity
+
+commit 53f92f6d782c63e141c3c1df2d54d295d1082419
+Author: RickMethot <richard.methot@noaa.gov>
+Date:   Wed Oct 8 20:30:59 2014 -0700
+
+    begin use of ALK_range
+    
+    only calculate the ALK over the range 0.0001 to 0.9999 for each age's
+    length distribution.  See variable ALK_range.   Later need to convert
+    this to an imatrix.  Also still need to use this reduced range for calc
+    of the fecundity, bodywt, and fishselex.
+
+commit 4a06b0d747137f21eada3000cddb4b96e2fa91f8
+Author: RickMethot <richard.methot@noaa.gov>
+Date:   Tue Sep 30 18:29:52 2014 -0700
+
+    finish data.ss_new upgrade
+    
+    also make df_mnwt conditional read in 3.30
+    NOTE!!!  wt_len defaults to GP=1, so not GP-specific when making
+    expected values
+    TODO:  still have format issues for timing in ss2out
+
+commit 859303e20c203abb5788f02de1931fac30133145
+Author: RickMethot <richard.methot@noaa.gov>
+Date:   Fri Sep 26 16:25:45 2014 -1000
+
+    working on data.ss_new formats
+
+commit 508febc94279ba5936a3f0e94c91c07aa3f595f1
+Author: RickMethot <richard.methot@noaa.gov>
+Date:   Thu Sep 11 19:58:07 2014 -0700
+
+    functional status for conditional read
+
+commit c25101ad3d627e9c51bc0ea44c012215bea1d2b3
+Author: RickMethot <richard.methot@noaa.gov>
+Date:   Thu Sep 4 17:53:00 2014 -0700
+
+    more progress
+
+commit d7291c5932b470b2818b0dfe2cc28691e6d58c77
+Author: RickMethot <richard.methot@noaa.gov>
+Date:   Thu Sep 4 14:11:14 2014 -0700
+
+    further progress on conditional read
+
+commit 9cd67ae4d31e6401cba026e6bc3d03c277ffdcd4
+Author: RickMethot <richard.methot@noaa.gov>
+Date:   Wed Sep 3 16:01:54 2014 -0700
+
+    begin conditional read depending on version
+    
+    read finish_starter
+    if=999, then read 3.24 format
+    else if =3.30, then read 3.30 format
+
+commit 8c96f901ba14ea3cec3589044b2a4e8b7830e95f
+Author: RickMethot <richard.methot@noaa.gov>
+Date:   Fri Aug 29 11:37:00 2014 -0700
+
+    with Shepard SRR
+    
+    adding SRR #8 with Shepard 3-parameter relationship.  Per Andre's math
+
+commit f0442dd9180a3bad6a5770f8ecd324722efe4b57
+Author: RickMethot <richard.methot@noaa.gov>
+Date:   Thu Aug 7 18:34:44 2014 -0700
+
+    output looks good for yr, seas, month
+
+commit 8e0baf1ed6401f5dc839061ffd22bc1adec9a236
+Author: RickMethot <richard.methot@noaa.gov>
+Date:   Tue Aug 5 21:31:58 2014 -0700
+
+    working on arrays for keeping track of time
+
+commit 2179d00bfc454368e70deb10d53877b7d4127b16
+Author: RickMethot <richard.methot@noaa.gov>
+Date:   Fri Jul 25 16:31:06 2014 -0700
+
+    complete fix to lin_growth coding
+
+commit 0a1bced20035391bbc736bdc6744bcf488d956bd
+Author: RickMethot <richard.methot@noaa.gov>
+Date:   Thu Jul 24 17:08:58 2014 -0700
+
+    working on fix in growth
+
+commit 2da499f98bf7fb3030ebab739299c23a5cb5b27e
+Author: RickMethot <richard.methot@noaa.gov>
+Date:   Wed Jul 23 15:51:59 2014 -0700
+
+    make corrections to Shepard SRR code
+
+commit bc78ed4814615a3c8b2dde9aa8ac26d6275aef57
+Author: RickMethot <richard.methot@noaa.gov>
+Date:   Tue Jul 22 22:34:17 2014 -0700
+
+    add Shepard SRR thx to Andre
+
+commit 46aabc25564050126eb0ad41b7d6af00de738784
+Author: RickMethot <richard.methot@noaa.gov>
+Date:   Wed Jul 16 21:06:24 2014 -0700
+
+    Finish test version of 3.30a
+    
+    note that a 1 year forecast is now the default,
+
+commit 01148d86423b5f998369e7b1fc7f6e77fc822ff6
+Author: RickMethot <richard.methot@noaa.gov>
+Date:   Tue Jul 15 18:34:50 2014 -0400
+
+    work on ss_new outputs
+
+commit 1428c171a24c9c9051053dd3bbd5ab7371eccd55
+Author: RickMethot <richard.methot@noaa.gov>
+Date:   Mon Jul 14 22:08:36 2014 -0400
+
+    forecast - default is 1 year
+    
+    finish fixing the forecast module so that a default forecast of 1 year
+    will always occur
+
+commit f7144adfb5c5d147195e3c6b74978b59ae7387e4
+Author: RickMethot <richard.methot@noaa.gov>
+Date:   Mon Jul 14 15:29:28 2014 -0700
+
+    small update to comments
+
+commit ef0fac0dcfa2951e98f17a449cc8d86caed0c77d
+Author: RickMethot <richard.methot@noaa.gov>
+Date:   Mon Jul 14 12:59:18 2014 -0400
+
+    working on forecast
+    
+    working towards having a default simple forecast of 1 year
+
+commit d311c38c020b60614fd7172ebb66e1a8c99be46c
+Author: RickMethot <richard.methot@noaa.gov>
+Date:   Thu Jul 3 18:41:51 2014 -0700
+
+    Success - matches 3.24 with 2 area model
+
+commit 74ecddbfa88d4fc196ac8f3903ef47b3d34b386f
+Author: RickMethot <richard.methot@noaa.gov>
+Date:   Wed Jul 2 16:16:09 2014 -0700
+
+    changes to restore capability when no recrdist
+    
+    still have an issue that seems related to not updating the have_data ALK
+    for each fleet
+
+commit f41c91ef3b63f9816fa6c9cba1db7e0dc8e573ad
+Author: RickMethot <richard.methot@noaa.gov>
+Date:   Tue Jul 1 16:56:09 2014 -0700
+
+    New settlement approach now working
+    
+    Also fix the MGparm indexing so that MGparm dev se and rho get created
+    as parameters
+
+commit b71dac96dbbae78cc6f4cb7f9b2cb01578d76a57
+Author: RickMethot <richard.methot@noaa.gov>
+Date:   Mon Jun 30 20:09:00 2014 -0700
+
+    continue work on new settlement approach
+    
+    work on counting the number of settlement timings
+
+commit cfd30691b53fe56c6c936779b9fa7f18edc283f1
+Author: RickMethot <richard.methot@noaa.gov>
+Date:   Mon Jun 30 15:58:41 2014 -0700
+
+    change settlement approach
+    
+    create 4 recr_dist_methods, with 1= like 3.24;
+    separate concept of N_settle_timings, from N_settle_assignments.
+    Now work carefully to convert all references to N_settle to either
+    assignment or timing
+
+commit 281f55ce171e68744a4699d59dce05fd7a9e982a
+Author: RickMethot <richard.methot@noaa.gov>
+Date:   Thu Jun 26 15:19:37 2014 -0700
+
+    still working on recrdist and settlement
+
+commit 0ce7e17f067b8183b1df2cba36a701f1655369e0
+Author: RickMethot <richard.methot@noaa.gov>
+Date:   Wed Jun 25 16:52:22 2014 -0700
+
+    work on recrdist and mgparm_dev
+
+commit 77561fa0179ebab9108378f225ece172729b9c60
+Author: RickMethot <richard.methot@noaa.gov>
+Date:   Tue Jun 24 19:06:56 2014 -0700
+
+    fixes to 3.30 to match 3.24
+    
+    fix hermaphroditism
+    fix forecast catch
+    still have issue that will affect forecast when there are multiple
+    settlement events
+
+commit 486bcb3b4f791d4f25faa5d926bf18ac18b7f10d
+Author: RickMethot <richard.methot@noaa.gov>
+Date:   Mon Jun 16 15:43:11 2014 -0700
+
+    revise 3.3 to read 3.24 input format
+    
+    lots of changes
+    complete version of 3.3 saved outside of git
+
+commit edb3e4c7828ea0ba7b45e374a8d3c6b1ecf54ed8
+Author: RickMethot <richard.methot@noaa.gov>
+Date:   Fri Jun 6 15:17:26 2014 -0700
+
+    env and density-dependent linkages
+    
+    begin to add logistic link
+    with all links as 2 parameter
+    need still to modify initial trial at envtype==3
+
+commit 992066a66bb8f9d1514fe0bdea97541cd809f781
+Author: RickMethot <richard.methot@noaa.gov>
+Date:   Mon Jun 2 15:04:02 2014 -0700
+
+    revise the Q_offset approach
+    
+    Q_offset is now a 5th element in Q_setup, rather than an alternative use
+    of the 1st element (density-dependence)
+    // SS_Label_Info_46.1.1 #note order of operations,  vbio raised to a
+    power, then constant is added, then later multiplied by Q.  Needs work
+
+commit 6aac0ac6a67eeaab87a0a3ab0c02a95d3be539d8
+Author: RickMethot <richard.methot@noaa.gov>
+Date:   Mon Jun 2 14:44:22 2014 -0700
+
+    fix version info line
+
+commit 4dc0cc0264cd7509f64591147be65e62f6667304
+Merge: da0fef1 ce12bdf
+Author: RickMethot <richard.methot@noaa.gov>
+Date:   Thu May 29 08:42:32 2014 -0700
+
+    Merge branch 'master' of https://github.com/RickMethot/StockSynthesis_3.3
+    
+    Conflicts:
+    	SS3trial.tpl
+
+commit da0fef122205fe417723a5c3df19f9ded0074387
+Author: RickMethot <richard.methot@noaa.gov>
+Date:   Wed May 28 16:40:30 2014 -0700
+
+    Merge branch 'master' of https://github.com/RickMethot/StockSynthesis_3.3
+    
+    Conflicts:
+    	SS3trial.tpl
+
+commit ce12bdf092c54f528dd0ce7d3d1c6378b82af562
+Author: RickMethot <richard.methot@noaa.gov>
+Date:   Tue Jan 28 15:52:06 2014 -0800
+
+    add description for 12/28 changes
+    
+    create basic survey of a mgparm dev
+    add special selectivity type 35 to indicate such a survey
+    add option for a Q additive offset in Q_setup(f,1).
+    If ==1, then parm is density dependence per status quo code;
+    if ==2 then parameter is additive offset.
+    So these are mutually exclusive options.
+
+commit 4faaa44b2e54365c74aeff52d68cd30c33d5d2d5
+Author: RickMethot <richard.methot@noaa.gov>
+Date:   Tue Jan 28 09:46:36 2014 -0800
+
+    remove *.bak from repo
+
+commit 0790c42c69b31a0123fd57eac9b76df9704e4b30
+Author: RickMethot <richard.methot@noaa.gov>
+Date:   Mon Dec 30 20:21:41 2013 -0800
+
+    with basic survey of a mgdev
+
+commit c4d692434a65c268a3eef9a904038da2a1f5003c
+Author: RickMethot <richard.methot@noaa.gov>
+Date:   Mon Dec 30 15:12:33 2013 -0800
+
+    complete initial development of MGparm_dev
+    
+    create mean reverting random walk using rho.  Implement this as
+    mgparm_dev_type=4
+    //    =(1-rho)*mean + rho*prevval + dev   //  where mean = 0.0
+    
+    MGparm_dev_rwalk(k,j)=MGparm_dev_rho(k)*MGparm_dev_rwalk(k,j-1)+MGparm_dev(k,j);
+    For each dev vector created, read the stdev and rho as short parameter
+    lines just before reading mgparm_dev_phase
+    0 2 1 0 -1 0 -5 # L_at_Amin_Fem_GP_1_dev_se
+    0 2 0.2 0 -1 0 -5 # L_at_Amin_Fem_GP_1_dev_rho
+    0 2 1 0 -1 0 -5 # L_at_Amax_Fem_GP_1_dev_se
+    0 2 0.2 0 -1 0 -5 # L_at_Amax_Fem_GP_1_dev_rho
+    6 #_MGparm_Dev_Phase
+
+commit 61ad32604900a6a184608827d0ad1031d1537467
+Author: RickMethot <richard.methot@noaa.gov>
+Date:   Fri Dec 27 12:47:25 2013 -0800
+
+    completion of catch_multiplier
+    
+    Create a fleet-specific catch multiplier.
+    So in the catch_Like calculation, expected catch is multiplied by
+    catch_mult before doing the logL
+    Also apply the multiplier within Pope's approx and within hybrid so that
+    adjusted catch is matched to the observed, retained catch
+    Create these multipliers as additional MGPARM so that they can inherit
+    time-varying properties
+    Internally, catch_mult(y,f) is year (not season) and fleet specific
+    Because it is year-specific in storage (unlike growth which retains
+    value until changed), a switch within mgparmsetup assures updating for
+    each year of a block
+    add FLAG in the data read to indicate which fleets will need a
+    catch_mult created
+    Output result in the CATCH section of report.sso
+
+commit 8a016fbf75a428806305461c2a3100fd59862dfa
+Author: RickMethot <richard.methot@noaa.gov>
+Date:   Tue Dec 24 14:46:45 2013 -0800
+
+    basic setup for catch_multiplier
+    
+    still need to test for all F methods and to test time-varying
+
+commit ec279833e7a63278dc8ce9404b4f5ff277ad03c0
+Author: RickMethot <richard.methot@noaa.gov>
+Date:   Tue Dec 24 10:30:10 2013 -0800
+
+    before add of catch multiplier
+    
+    disable the trial GLOBAL function to do data_timing, but keep in the
+    code
+
+commit ba95d269d80d1ea696f431568d1789ea14231762
+Author: RickMethot <richard.methot@noaa.gov>
+Date:   Mon Dec 23 15:41:21 2013 -0800
+
+    commit another line
+
+commit 02423e6b4b957a207e145a446a47f1a254965a0d
+Author: RickMethot <richard.methot@noaa.gov>
+Date:   Mon Dec 23 15:40:24 2013 -0800
+
+    commit one line
+
+commit d0da9a5b83eedc3189ea5f35ef4418979f6dd554
+Author: RickMethot <richard.methot@noaa.gov>
+Date:   Mon Dec 23 15:22:06 2013 -0800
+
+    add SS to git
+
+commit 86505af89fe75d2ae8eeb6f327c45c23c8744b2a
+Author: RickMethot <richard.methot@noaa.gov>
+Date:   Mon Dec 23 15:16:05 2013 -0800
+
+    Initial commit
