@@ -562,7 +562,7 @@ DATA_SECTION
       fleetname+=anystring;
       fleet_type(f) = int(fleet_setup(f,1));
       surveytime(f) = fleet_setup(f,2);
-      if(surveytime(y)!=-1. && surveytime(y)!=0.5)
+      if(surveytime(f)!=-1. && surveytime(f)!=0.5)
         {warning<<"fleet: "<<f<<"surveytime= "<<surveytime(y)<<" will not be used in V3.3; must set for each datum"<<endl;}
       fleet_area(f) = int(fleet_setup(f,3));
       catchunits(f) = int(fleet_setup(f,4));
@@ -2515,6 +2515,7 @@ DATA_SECTION
           if(sizeAge_Data(i,6)<0.0)
             {N_warn++; warning<<"negative values not allowed for size-at-age sample size, use -fleet to omit from -logL"<<endl;}
 
+           header_ms(f,j)(1,7)=sizeAge_Data(i)(1,7);
           header_ms(f,j,1) = y;
           if(sizeAge_Data(i,2)<0)
           {
@@ -2527,8 +2528,6 @@ DATA_SECTION
           header_ms(f,j,3) = sizeAge_Data(i,3);   // fleet
           //  note that following storage is redundant with Show_Time(t,3) calculated later
           header_ms(f,j,0) = float(y)+0.01*int(100.*(azero_seas(s)+seasdur_half(s)));  //
-
-//           header_ms(f,j)(1,7)=sizeAge_Data(i)(1,7);
 
            gen_ms(f,j)=sizeAge_Data(i,4);
            mkt_ms(f,j)=sizeAge_Data(i,5);
@@ -3487,7 +3486,7 @@ DATA_SECTION
   }
  END_CALCS
 
-!!//  SS_Label_Info_4.2 #Read info for growth patterns, gender, settlement events, sub-morphs
+!!//  SS_Label_Info_4.2 #Read info for growth patterns, gender, settlement events, platoons
   init_int N_GP  // number of growth patterns (morphs)
   !!echoinput<<N_GP<<" N growth patterns "<<endl;
   init_int N_platoon  //  number of platoons  1, 3, 5 are best values to use
@@ -3497,32 +3496,32 @@ DATA_SECTION
   number sd_between_platoon
   ivector ishadow(1,N_platoon)
   vector shadow(1,N_platoon)
-  vector submorphdist(1,N_platoon);
+  vector platoon_distr(1,N_platoon);
  LOCAL_CALCS
   if(N_platoon>1)
   {
     *(ad_comm::global_datafile) >> sd_ratio;
-    *(ad_comm::global_datafile) >> submorphdist;
+    *(ad_comm::global_datafile) >> platoon_distr;
   echoinput<<sd_ratio<<"  sd_ratio"<<endl;
-  echoinput<<submorphdist<<"  submorphdist"<<endl;
+  echoinput<<platoon_distr<<"  platoon_distr"<<endl;
   }
   else
   {
     sd_ratio=1.;
-    submorphdist(1)=1.;
-    echoinput<<"  do not read sd_ratio or submorphdist"<<endl;
+    platoon_distr(1)=1.;
+    echoinput<<"  do not read sd_ratio or platoon_distr"<<endl;
   }
 //  SS_Label_Info_4.2.1 #Assign distribution among growth platoons if needed
-  if(submorphdist(1)<0.)
+  if(platoon_distr(1)<0.)
   {
     if(N_platoon==1)
-      {submorphdist(1)=1.;}
+      {platoon_distr(1)=1.;}
     else if (N_platoon==3)
-      {submorphdist.fill("{0.15,0.70,0.15}");}
+      {platoon_distr.fill("{0.15,0.70,0.15}");}
     else if (N_platoon==5)
-      {submorphdist.fill("{0.031, 0.237, 0.464, 0.237, 0.031}");}
+      {platoon_distr.fill("{0.031, 0.237, 0.464, 0.237, 0.031}");}
   }
-  submorphdist/=sum(submorphdist);
+  platoon_distr/=sum(platoon_distr);
 
   if(N_platoon>1)
   {
@@ -3539,7 +3538,7 @@ DATA_SECTION
    else if (N_platoon==5)
      {ishadow.fill_seqadd(-2,1); shadow.fill_seqadd(-2.,1.);}
    else
-     {N_warn++; cout<<" EXIT - see warning "<<endl; warning<<" illegal N submorphs, must be 1, 3 or 5 "<<N_platoon<<endl; cout<<" exit - see warning "<<endl; exit(1);}
+     {N_warn++; cout<<" EXIT - see warning "<<endl; warning<<" illegal N platoons, must be 1, 3 or 5 "<<N_platoon<<endl; cout<<" exit - see warning "<<endl; exit(1);}
 
  END_CALCS
 
@@ -3775,7 +3774,7 @@ DATA_SECTION
    g=0;
    g3i=0;
    echoinput<<endl<<"MORPH_INDEXING"<<endl;
-   echoinput<<"Index GP Sex Settlement Bseas Sub_Morph Sub_Morph_Dist GP_Gender GP*Gender*settle BirthAge_Rel_Jan1 Used?"<<endl;
+   echoinput<<"Index GP Sex Settlement Bseas Platoon Platoon_Dist GP_Gender GP*Gender*settle BirthAge_Rel_Jan1 Used?"<<endl;
    for (gg=1;gg<=gender;gg++)
    for (gp=1;gp<=N_GP;gp++)
    for (settle=1;settle<=N_settle_timings;settle++)
@@ -3804,7 +3803,7 @@ DATA_SECTION
          {
            if( (N_platoon==1) || (N_platoon==3 && gp2==2) || (N_platoon==5 && gp2==3) ) g_finder(gp,gg)=g;  // finds g for a given GP and gender and last birstseason
          }
-     echoinput<<g<<" "<<GP4(g)<<" "<<sx(g)<<" "<<settle<<" "<<Bseas(g)<<" "<<GP2(g)<<" "<<submorphdist(GP2(g))<<" "<<GP(g)<<" "<<GP3(g)<<" "<<azero_G(g)<<" "<<use_morph(g)<<endl;
+     echoinput<<g<<" "<<GP4(g)<<" "<<sx(g)<<" "<<settle<<" "<<Bseas(g)<<" "<<GP2(g)<<" "<<platoon_distr(GP2(g))<<" "<<GP(g)<<" "<<GP3(g)<<" "<<azero_G(g)<<" "<<use_morph(g)<<endl;
        }
       }
    }
@@ -5422,27 +5421,37 @@ DATA_SECTION
 !!//  SS_Label_Info_4.7.1 #Read setup for init_F parameters and create init_F parameter labels
 //  NEW  only read for catch fleets with positive initial equ catch
   imatrix init_F_loc(1,nseas,1,Nfleet);  // pointer to init_F parameter for each fleet
-  int N_init_F;  
+  int N_init_F;
+  int N_init_F2;  //  for conversion of 3.24 to 3.30  
  LOCAL_CALCS
   init_F_loc.initialize();
   N_init_F=0;
+  N_init_F2=0;
 
 //  no seasons in 3.24
   if(finish_starter==999)
-  {k=1;}
-  else
-  {k=nseas;}
-
-  for (s=1;s<=k;s++)
-  for (f=1;f<=Nfleet1;f++)
   {
-    if(fleet_type(f)<=2)
+    for (f=1;f<=Nfleet1;f++)
     {
-      if(finish_starter==999 || obs_equ_catch(s,f)!=0.0)
+      init_F_loc(1,f)=f;
+      if(obs_equ_catch(1,f)!=0.0) N_init_F2++;  //  number of fleets with catch, so number to be written in data.ss_new
+    }
+    N_init_F=Nfleet1;
+  }
+  else
+  {
+    for (s=1;s<=nseas;s++)
+    for (f=1;f<=Nfleet;f++)
+    {
+      if(fleet_type(f)<=2)
       {
-        N_init_F++;
-        init_F_loc(s,f)=N_init_F;
+        if(obs_equ_catch(s,f)!=0.0)
+        {
+          N_init_F++;
+          init_F_loc(s,f)=N_init_F;
+        }
       }
+      N_init_F2=N_init_F;
     }
   }
  END_CALCS
@@ -5565,12 +5574,6 @@ DATA_SECTION
   }
 
 //  SS_Label_Info_4.8 #Read catchability (Q) setup
-//  revise approach for Q_offset so that is now a 5th element of Q_setup, rather than a mutually exclusive code in the 1st element (density-dependence)
-
-  if(finish_starter==999)
-  {k=4;}
-  else
-  {k=5;}
  END_CALCS
 
   matrix Q_setup(1,Nfleet,1,5)  // do power, env-var,  extra sd, devtype(<0=mirror, 0=float_nobiasadj 1=float_biasadj, 2=parm_nobiasadj, 3=rand, 4=randwalk); num/bio/F, err_type(0=lognormal, >=1 is T-dist-lognormal)
@@ -5578,10 +5581,12 @@ DATA_SECTION
                                         //  new 5th element is for Q offset
  LOCAL_CALCS
   Q_setup.initialize();
+//  revise approach for Q_offset so that is now a 5th element of Q_setup, rather than a mutually exclusive code in the 1st element (density-dependence)
   if(finish_starter==999)
   {k=4;}
   else
   {k=5;}
+
   for(f=1;f<=Nfleet;f++)
   {*(ad_comm::global_datafile) >> Q_setup(f)(1,k);}  
  END_CALCS
@@ -5761,7 +5766,8 @@ DATA_SECTION
 //  SS_Label_Info_4.8.3 #Read catchability parameters as necessary
   init_matrix Q_parm_2(1,j,1,7)
  LOCAL_CALCS
-  if(j>0) echoinput<<" Catchability parameters"<<endl<<Q_parm_2<<endl;
+  Q_parm_1.initialize();
+  echoinput<<" Catchability parameters"<<endl<<Q_parm_2<<endl;
   if(Q_parm_detail==0)
   {
     Q_Npar=0;  Q_Npar2=0;
@@ -7842,7 +7848,7 @@ PARAMETER_SECTION
 //  vector natM1(1,N_GP*gender)
 //  vector natM2(1,N_GP*gender)
   matrix natMparms(1,N_natMparms,1,N_GP*gender)
-  3darray natM(1,nseas,1,N_GP*gender*N_settle_timings,0,nages)   //  need nseas to capture differences due to birthseason
+  3darray natM(1,nseas,1,N_GP*gender*N_settle_timings,0,nages)   //  need nseas to capture differences due to settlement
   3darray surv1(1,nseas,1,N_GP*gender*N_settle_timings,0,nages)
   3darray surv2(1,nseas,1,N_GP*gender*N_settle_timings,0,nages)
   vector CVLmin(1,N_GP*gender)
@@ -8002,8 +8008,8 @@ PARAMETER_SECTION
   number totbio;
   number smrybio;
   number smrynum;
-  number smryage;  // mean age of the summary numbers (not accounting for birthseason)
-  number catch_mnage;  //  mean age of the catch (not accounting for birthseason or season of the catch)
+  number smryage;  // mean age of the summary numbers (not accounting for settlement timing)
+  number catch_mnage;  //  mean age of the catch (not accounting for settlement timing or season of the catch)
   number catch_mnage_d;  // total catch numbers for calc of mean age
   number harvest_rate;                        // Harvest rate
   number maxpossF;
@@ -10478,16 +10484,16 @@ FUNCTION void get_growth3(const int s, const int subseas)
     dvariable inv_Richards;
 
     ALK_idx=(s-1)*N_subseas+subseas;  //  note that this changes a global value
-    for (g=g_Start(1)+N_platoon;g<=gmorph;g+=N_platoon)
+    for (g=g_Start(1)+N_platoon;g<=gmorph;g+=N_platoon)  // looping the middle platoons for each sex*gp
     {
       if(use_morph(g)>0)
       {
         gp=GP(g);
         if(Grow_type==2)
-          {
-            LinfR=pow(L_inf(gp),Richards(gp));
-            inv_Richards=1.0/Richards(gp);
-          }
+        {
+          LinfR=pow(L_inf(gp),Richards(gp));
+          inv_Richards=1.0/Richards(gp);
+        }
         for (a=0;a<=nages;a++)
         {
 //  SS_Label_Info_16.5.1  #calc subseas size-at-age from begin season size-at-age, accounting for transition from linear to von Bert as necessary
@@ -10581,7 +10587,7 @@ FUNCTION void get_growth3(const int s, const int subseas)
 
         if(docheckup==1)
         {
-          echoinput<<"with lingrow; subseas: "<<subseas<<" sex: "<<sx(g)<<" gp: "<<GP4(g)<<" platoon: "<<g<<endl;
+          echoinput<<"with lingrow; subseas: "<<subseas<<" sex: "<<sx(g)<<" gp: "<<GP4(g)<<" g: "<<g<<endl;
           echoinput<<"size "<<Ave_Size(t,subseas,g)(0,min(6,nages))<<" @nages "<<Ave_Size(t,subseas,g,nages)<<endl;
           echoinput<<"CV   "<<CV_G(gp,ALK_idx)(0,min(6,nages))<<" @nages "<<CV_G(gp,ALK_idx,nages)<<endl;
           echoinput<<"sd   "<<Sd_Size_within(ALK_idx,g)(0,min(6,nages))<<" @nages "<<Sd_Size_within(ALK_idx,g,nages)<<endl;
@@ -12783,7 +12789,7 @@ FUNCTION void get_time_series()
         for (p=1;p<=pop;p++)
         {
           Smry_Table(y,2)+=natage(t,p,g)(Smry_Age,nages)*Save_Wt_Age(t,g)(Smry_Age,nages);
-          Smry_Table(y,3)+=sum(natage(t,p,g)(Smry_Age,nages));   //sums to accumulate across submorphs and settlements
+          Smry_Table(y,3)+=sum(natage(t,p,g)(Smry_Age,nages));   //sums to accumulate across platoons and settlements
         }
         }
       }
@@ -12841,7 +12847,7 @@ FUNCTION void get_time_series()
             for (p=1;p<=pop;p++)
             { 
               if(y==styr) natage(t+Settle_offset(settle),p,g,Settle_age(settle))=0.0;  //  to negate the additive code 
-              natage(t+Settle_offset(settle),p,g,Settle_age(settle)) += Recruits*recr_dist(GP(g),settle,p)*submorphdist(GP2(g))*
+              natage(t+Settle_offset(settle),p,g,Settle_age(settle)) += Recruits*recr_dist(GP(g),settle,p)*platoon_distr(GP2(g))*
                mfexp(natM(s,GP3(g),Settle_age(settle))*Settle_timing(settle));
             }
           }
@@ -13181,7 +13187,7 @@ FUNCTION void get_time_series()
             { 
               if(y==styr) natage(t+Settle_offset(settle),p,g,Settle_age(settle))=0.0;  //  to negate the additive code 
                 
-              natage(t+Settle_offset(settle),p,g,Settle_age(settle)) += Recruits*recr_dist(GP(g),settle,p)*submorphdist(GP2(g))*
+              natage(t+Settle_offset(settle),p,g,Settle_age(settle)) += Recruits*recr_dist(GP(g),settle,p)*platoon_distr(GP2(g))*
                mfexp(natM(s,GP3(g),Settle_age(settle))*Settle_timing(settle));
           if(docheckup==1) echoinput<<p<<" "<<g<<" "<<GP3(g)<<" area & morph "<<endl<<"N-at-age after recruits "<<natage(t,p,g)(0,min(6,nages))<<endl
            <<"survival "<<surv1(s,GP3(g))(0,min(6,nages))<<endl;
@@ -14686,7 +14692,7 @@ FUNCTION void Do_Equil_Calc()
           settle=settle_g(g);
           for (p=1;p<=pop;p++)
           { 
-            equ_numbers(Settle_seas(settle),p,g,Settle_age(settle)) = equ_Recr*recr_dist(GP(g),settle,p)*submorphdist(GP2(g))*
+            equ_numbers(Settle_seas(settle),p,g,Settle_age(settle)) = equ_Recr*recr_dist(GP(g),settle,p)*platoon_distr(GP2(g))*
              mfexp(natM(Settle_seas(settle),GP3(g),Settle_age(settle))*Settle_timing(settle));
           }
         }
@@ -14712,14 +14718,14 @@ FUNCTION void Do_Equil_Calc()
 //           if(a==0 && s==Bseas(g))
 //           {
 //             for (p=1;p<=pop;p++)
-//             {equ_numbers(s,p,g,0) = equ_Recr*recr_dist(GP(g),s,p)*submorphdist(GP2(g));}   // get the age 0 recruits for season=recr_seas
+//             {equ_numbers(s,p,g,0) = equ_Recr*recr_dist(GP(g),s,p)*platoon_distr(GP2(g));}   // get the age 0 recruits for season=recr_seas
 //           }
 
            for (p=1;p<=pop;p++)
            {
              if(s==Settle_seas(settle) && a==Settle_age(settle))
               {
-                equ_numbers(Settle_seas(settle),p,g,Settle_age(settle)) = equ_Recr*recr_dist(GP(g),settle,p)*submorphdist(GP2(g))*
+                equ_numbers(Settle_seas(settle),p,g,Settle_age(settle)) = equ_Recr*recr_dist(GP(g),settle,p)*platoon_distr(GP2(g))*
                 mfexp(natM(Settle_seas(settle),GP3(g),Settle_age(settle))*Settle_timing(settle));
               }
 
@@ -15057,7 +15063,7 @@ FUNCTION void Make_AgeLength_Key(const int s, const int subseas)
             int ALK_phase;
             if(Grow_logN==0)
             {
-              if((do_once==1 || current_phase()>ALK_phase) && !last_phase())
+              if((do_once==1 || (current_phase()>ALK_phase) && !last_phase()))
               {
                 ALK_phase=current_phase();
                 ALK_range_use=calc_ALK_range(len_bins,use_Ave_Size_W,use_SD_Size);  //  later need to offset according to g
@@ -15145,20 +15151,16 @@ FUNCTION dvar_matrix calc_ALK(const dvector &len_bins, const ivector &ALK_range_
   dvar_matrix ALK_w(0,nages, 1,nlength); // create matrix to return with length vectors for each age
   dvar_vector AL(1,nlength+1); // create temporary vector
   dvariable len_dev;
-
   for (a = 0; a <= nages; a++)
   {
     AL.initialize();
     AL(ALK_range_hi(a)+1)=1.0;  //  terminal values that are not recalculated
-//    for (z = 2; z <= nlength; z++) 
     for (z = ALK_range_lo(a); z <= ALK_range_hi(a); z++) 
     { 
       len_dev = (len_bins(z) - mean_len_at_age(a)) / (sd_len_at_age(a));
       AL(z) = cumd_norm (len_dev);
-//      ALK_w(a,z-1)=AL(z)-AL(z-1);
-    } // end length loop
+    }
     ALK_w(a)(ALK_range_lo(a)-1,ALK_range_hi(a)) = first_difference(AL(ALK_range_lo(a)-1,ALK_range_hi(a)+1));
-//    echoinput<<a<<" "<<ALK_range(a)<<" AL "<<AL<<endl<<"A A A "<<ALK_w(a)<<endl;
   }   // end age loop
   RETURN_ARRAYS_DECREMENT();
   return (ALK_w);
@@ -16567,8 +16569,8 @@ FUNCTION void Get_Forecast()
                 for (p=1;p<=pop;p++)
                 { 
                   if(y==endyr+1) natage(t+Settle_offset(settle),p,g,Settle_age(settle))=0.0;  //  to negate the additive code 
-//                  natage(t+Settle_offset(settle),p,g,Settle_age(settle)) += Recruits*recr_dist(GP(g),settle,p)*submorphdist(GP2(g))*
-                  natage(t+Settle_offset(settle),p,g,Settle_age(settle)) = Recruits*recr_dist(GP(g),settle,p)*submorphdist(GP2(g))*
+//                  natage(t+Settle_offset(settle),p,g,Settle_age(settle)) += Recruits*recr_dist(GP(g),settle,p)*platoon_distr(GP2(g))*
+                  natage(t+Settle_offset(settle),p,g,Settle_age(settle)) = Recruits*recr_dist(GP(g),settle,p)*platoon_distr(GP2(g))*
                    mfexp(natM(s,GP3(g),Settle_age(settle))*Settle_timing(settle));
                 }
               }
@@ -16615,7 +16617,7 @@ FUNCTION void Get_Forecast()
           else
           {  //  ABC buffer remains at previously calculated value
           }
-          for (p=1;p<=pop;p++)  //  loop areas (sub-pops)
+          for (p=1;p<=pop;p++)  //  loop areas
           {
             totbio.initialize();smrybio.initialize(); smrynum.initialize();
             for (g=1;g<=gmorph;g++)
@@ -16990,7 +16992,7 @@ FUNCTION void Get_Forecast()
            {
              Smry_Table(y,1)+=totbio;
              Smry_Table(y,2)+=smrybio;  // in forecast
-             Smry_Table(y,3)+=smrynum;   //sums to accumulate across submorphs and birthseasons
+             Smry_Table(y,3)+=smrynum;   //sums to accumulate across platoons and settlements
            }
           }  //  end loop of areas
 
@@ -18725,7 +18727,7 @@ FUNCTION void write_nucontrol()
   if(N_platoon==1) report4<<"#_Cond ";
   report4<<sd_ratio<<" #_Morph_between/within_stdev_ratio (no read if N_morphs=1)"<<endl;
   if(N_platoon==1) report4<<"#_Cond ";
-  report4<<submorphdist(1,N_platoon)<<" #vector_Morphdist_(-1_in_first_val_gives_normal_approx)"<<endl;
+  report4<<platoon_distr(1,N_platoon)<<" #vector_Morphdist_(-1_in_first_val_gives_normal_approx)"<<endl;
   report4<<"#"<<endl;
   report4<<recr_dist_method<<" # recr_dist_method for parameters:  1=like 3.24; 2=main effects for GP, Settle timing, Area; 3=each Settle entity; 4=none when N_GP*Nsettle*pop==1"<<endl;
   report4<<N_settle_assignments<<" #  number of recruitment settlement assignments "<<endl<<
@@ -19002,7 +19004,7 @@ FUNCTION void write_nucontrol()
    report4<<"#"<<endl;
    report4<<"#_initial_F_parms"<<endl;
    report4<<"#_LO HI INIT PRIOR PR_type SD PHASE"<<endl;
-   for (f=1;f<=N_init_F;f++)
+   for (f=1;f<=N_init_F2;f++)
    {
     NP++;
     init_F_parm_1(f,3)=value(init_F(f));
@@ -19031,7 +19033,9 @@ FUNCTION void write_nucontrol()
    report4<<"#_for_env-var:_enter_index_of_the_env-var_to_be_linked"<<endl;
    report4<<"#_Den-dep  env-var  extra_se  Q_type"<<endl;
    for (f=1;f<=Nfleet;f++)
-   report4<<Q_setup(f)<<" # "<<f<<" "<<fleetname(f)<<endl;
+   {
+     report4<<Q_setup(f)<<" # "<<f<<" "<<fleetname(f)<<endl;
+   }
    report4<<"#"<<endl;
    if(ask_detail>0)  // report q_parm_detail
    {
@@ -19773,10 +19777,10 @@ FUNCTION void write_bigoutput()
    }
 
    SS2out<<endl<<"MORPH_INDEXING"<<endl;
-   SS2out<<"Index GP Gender Bseas Sub_Morph Sub_Morph_Dist GP_Gender GP_Gender_Bseas BirthAge_Rel_Jan1"<<endl;
+   SS2out<<"Index GP Sex Bseas Platoon Platoon_Dist Sex*GP Sex*GP*Settle BirthAge_Rel_Jan1"<<endl;
    for (g=1; g<=gmorph; g++)
    {
-     SS2out<<g<<" "<<GP4(g)<<" "<<sx(g)<<" "<<Bseas(g)<<" "<<GP2(g)<<" "<<submorphdist(GP2(g))<<" "<<GP(g)<<" "<<GP3(g)<<" "<<azero_G(g)<<endl;
+     SS2out<<g<<" "<<GP4(g)<<" "<<sx(g)<<" "<<Bseas(g)<<" "<<GP2(g)<<" "<<platoon_distr(GP2(g))<<" "<<GP(g)<<" "<<GP3(g)<<" "<<azero_G(g)<<endl;
    }
 
 //  3darray SzFreqTrans(1,SzFreq_Nmeth*nseas,1,nlength2,1,SzFreq_Nbins_seas_g);
@@ -19949,8 +19953,8 @@ FUNCTION void write_bigoutput()
      if(s==Bseas(g)) Recr(p,y)+=natage(t,p,g,0);
      gg=sx(g);
      temp=natage(t,p,g)(Smry_Age,nages)*Save_Wt_Age(bio_t,g)(Smry_Age,nages);
-     Bio_Comp(GP(g))+=value(temp);   //sums to accumulate across submorphs and birthseasons
-     Num_Comp(GP(g))+=value(sum(natage(t,p,g)(Smry_Age,nages)));   //sums to accumulate across submorphs and birthseasons
+     Bio_Comp(GP(g))+=value(temp);   //sums to accumulate across platoons and settlements
+     Num_Comp(GP(g))+=value(sum(natage(t,p,g)(Smry_Age,nages)));   //sums to accumulate across platoons and settlements
      totbio+= natage(t,p,g)*Save_Wt_Age(bio_t,g);
      smrybio+= temp;
      smrynum+=sum(natage(t,p,g)(Smry_Age,nages));
@@ -20117,7 +20121,7 @@ FUNCTION void write_bigoutput()
    } // end year loop
 
 // end SPR time series
-  SS2out<<endl<<"NOTE:_GENTIME_is_fecundity_weighted_mean_age"<<endl<<"NOTE:_MnAgeSmry_is_numbers_weighted_meanage_at_and_above_smryage(not_accounting_for_birthseason_offsets)"<<endl;
+  SS2out<<endl<<"NOTE:_GENTIME_is_fecundity_weighted_mean_age"<<endl<<"NOTE:_MnAgeSmry_is_numbers_weighted_meanage_at_and_above_smryage(not_accounting_for_settlement_offsets)"<<endl;
 
   SS2out<<endl<<"Kobe_Plot"<<endl;
   if(F_std_basis!=2) SS2out<<"F_std_basis_is_not_=2;_so_info_below_is_not_F/Fmsy"<<endl;
@@ -20847,7 +20851,7 @@ FUNCTION void write_bigoutput()
   if(reportdetail>0)
   {
     SS2out << endl << "NUMBERS_AT_AGE" << endl;       // SS_Label_410
-    SS2out << "Area Bio_Pattern Gender BirthSeas SubMorph Morph Yr Seas Time Beg/Mid Era"<<age_vector <<endl;
+    SS2out << "Area Bio_Pattern Gender Settlement Platoon Morph Yr Seas Time Beg/Mid Era"<<age_vector <<endl;
     for (p=1;p<=pop;p++)
     for (g=1;g<=gmorph;g++)
     if(use_morph(g)>0)
@@ -20882,7 +20886,7 @@ FUNCTION void write_bigoutput()
       }
 
     SS2out << endl << "NUMBERS_AT_LENGTH" << endl;
-    SS2out << "Area Bio_Pattern Gender BirthSeas SubMorph Morph Yr Seas Time Beg/Mid Era "<<len_bins <<endl;
+    SS2out << "Area Bio_Pattern Gender Settlement Platoon Morph Yr Seas Time Beg/Mid Era "<<len_bins <<endl;
     for (p=1;p<=pop;p++)
     for (g=1;g<=gmorph;g++)
     if(use_morph(g)>0)
@@ -20917,7 +20921,7 @@ FUNCTION void write_bigoutput()
       }
 
     SS2out << endl << "BIOMASS_AT_LENGTH" << endl;
-    SS2out << "Area Bio_Pattern Gender BirthSeas SubMorph Morph Yr Seas Time Beg/Mid Era "<<len_bins <<endl;
+    SS2out << "Area Bio_Pattern Gender Settlement Platoon Morph Yr Seas Time Beg/Mid Era "<<len_bins <<endl;
     for (p=1;p<=pop;p++)
     for (g=1;g<=gmorph;g++)
     if(use_morph(g)>0)
@@ -20985,7 +20989,7 @@ FUNCTION void write_bigoutput()
       SS2out<<" "<<fec_len(gp,z)<<endl;
      }
 
-    SS2out<<endl<<"Natural_Mortality Method:_"<<natM_type<<endl<<"Bio_Pattern Gender BirthSeas Seas "<<age_vector<<endl;
+    SS2out<<endl<<"Natural_Mortality Method:_"<<natM_type<<endl<<"Bio_Pattern Gender Settlement Seas "<<age_vector<<endl;
       g=0;
       for (gg=1;gg<=gender;gg++)
       for (gp=1;gp<=N_GP;gp++)
@@ -20993,7 +20997,7 @@ FUNCTION void write_bigoutput()
       {
         g++;
         if(use_morph(g)>0)
-        {for (s=1;s<=nseas;s++) SS2out<<gp<<" "<<gg<<" "<<birthseas<<" "<<s<<" "<<natM(s,g)<<endl;}
+        {for (s=1;s<=nseas;s++) SS2out<<gp<<" "<<gg<<" "<<settle<<" "<<s<<" "<<natM(s,g)<<endl;}
       }
 
     if(Grow_type==3)  //  age-specific K
@@ -21069,7 +21073,7 @@ FUNCTION void write_bigoutput()
   }
     
    SS2out<<endl;
-   SS2out<<"Seas Morph Bio_Pattern Gender BirthSeas Platoon Age Age_Beg Age_Mid M Len_Beg Len_Mid SD_Beg SD_Mid Wt_Beg Wt_Mid Len_Mat Age_Mat Mat*Fecund";
+   SS2out<<"Seas Morph Bio_Pattern Gender Settlement Platoon Age Age_Beg Age_Mid M Len_Beg Len_Mid SD_Beg SD_Mid Wt_Beg Wt_Mid Len_Mat Age_Mat Mat*Fecund";
    if(Hermaphro_Option>0) SS2out<<" Herma_Trans Herma_Cum ";
    for (f=1;f<=Nfleet;f++) SS2out<<" Len:_"<<f<<" SelWt:_"<<f<<" RetWt:_"<<f;
    SS2out<<endl;
@@ -21168,7 +21172,7 @@ FUNCTION void write_bigoutput()
     s=1;
     for (i=1;i<=gender;i++)
     {
-      SS2out<<endl<<"mean_size_Jan_1_for_gender: "<<i<<" NOTE:_combines_all_birthseasons_areas_GP_and_submorphs"<<endl;
+      SS2out<<endl<<"mean_size_Jan_1_for_gender: "<<i<<" NOTE:_combines_all_settlements_areas_GP_and_platoons"<<endl;
       SS2out <<"Gender Yr Seas Beg "<<age_vector<<endl;
       for (y=styr;y<=YrMax;y++)
       {
@@ -21966,7 +21970,7 @@ FUNCTION void write_Bzero_output()
     }
     SS2out<<" Note:  Z calculated as -ln(Nt+1 / Nt)"<<endl;
     SS2out<<" Note:  Z calculation for maxage-1 includes numbers at maxage, so is approximate"<<endl;
-    if(nseas>1) SS2out<<" Age zero fish summed across birthseasons, but Z calc is as if all born in season 1"<<endl;
+    if(nseas>1) SS2out<<" Age zero fish summed across settlements, but Z calc is as if all born in season 1"<<endl;
     fishery_on_off=1;
     return;
   }  //  end write bzero
