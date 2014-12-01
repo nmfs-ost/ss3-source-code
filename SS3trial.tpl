@@ -5,7 +5,7 @@ DATA_SECTION
 !!//  SS_Label_Section_1.0 #DATA_SECTION
 
 !!//  SS_Label_Info_1.1.1  #Create string with version info
-!!version_info+="SS-V3.30a-safe;_11/05/2014;_Stock_Synthesis_by_Richard_Methot_(NOAA)_using_ADMB_11.1";
+!!version_info+="SS-V3.30a-safe;_11/28/2014;_Stock_Synthesis_by_Richard_Methot_(NOAA)_using_ADMB_11.1";
 
 !!version_info_short+="#V3.30a";
 
@@ -3569,7 +3569,6 @@ DATA_SECTION
         {
            *(ad_comm::global_datafile) >> N_settle_assignments;
            *(ad_comm::global_datafile) >> recr_dist_inx;
-           echoinput<<N_settle_assignments<<" nsettle "<<endl;
         }
         else if(N_GP*pop*nseas>1)
           {
@@ -3585,10 +3584,14 @@ DATA_SECTION
       }
     case 2:
       {
+        *(ad_comm::global_datafile) >> N_settle_assignments;
+        *(ad_comm::global_datafile) >> recr_dist_inx;
         break;
       }
     case 3:
       {
+        *(ad_comm::global_datafile) >> N_settle_assignments;
+        *(ad_comm::global_datafile) >> recr_dist_inx;
         break;
       }
     case 4:
@@ -3596,11 +3599,15 @@ DATA_SECTION
         break;
       }
   }
+  echoinput<<N_settle_assignments<<" Number of GP/area/settle_timing events to read (>=0) "<<endl;
+  echoinput<<recr_dist_inx<<" read interaction parameters for GP x area X timing (0/1)"<<endl;
  END_CALCS
 
   int birthseas;  //  is this still needed??
 
   matrix settlement_pattern_rd(1,N_settle_assignments,1,3);   //  for each settlement event:  GPat, Month, area
+  ivector settle_assignments_timing(1,N_settle_assignments);  //  stores the settle_timing index for each assignment
+  vector settle_timings_tempvec(1,N_settle_assignments)  //  temporary storage for real_month of each settlement assignment
  LOCAL_CALCS
   if(recr_dist_method==1 && finish_starter==999 && N_settle_assignments==1)
     {
@@ -3609,8 +3616,6 @@ DATA_SECTION
     else
     {
       *(ad_comm::global_datafile) >> settlement_pattern_rd;
-      echoinput<<N_settle_assignments<<" Number of settlement events to read (>=0) "<<endl;
-      echoinput<<recr_dist_inx<<" read interaction parameters for GP x area X timing (0/1)"<<endl;
       if(finish_starter==999)
       {
          echoinput<<" settlement pattern as read "<<endl<<"GPat  Birthseas  Area"<<endl<<settlement_pattern_rd<<endl;
@@ -3620,12 +3625,10 @@ DATA_SECTION
         echoinput<<" settlement pattern as read "<<endl<<"GPat  Month  Area"<<endl<<"*"<<settlement_pattern_rd<<"*"<<endl;
       }
     }
-      
  END_CALCS
 
-  vector settle_timings_tempvec(1,50)
  LOCAL_CALCS
-//    Here count the number of unique settlemonths to create the N_settle_timings
+  echoinput<<"Now calculate the number of unique settle timings, which will dictate the number of recr_dist_timing parameters "<<endl;
       N_settle_timings=0;
       settle_timings_tempvec.initialize();
       if(N_settle_assignments==0)
@@ -3635,51 +3638,103 @@ DATA_SECTION
       }
       else
       {
-      for (settle=1;settle<=N_settle_assignments;settle++)
-      {
-        if(read_seas_mo==1)
+        for (settle=1;settle<=N_settle_assignments;settle++)
         {
-         real_month=1.0 + azero_seas(settlement_pattern_rd(settle,2))*12.;  //  converts birthseason to month
-        }
-        else
-        {
-           real_month=(settlement_pattern_rd(settle,2)-1.0)/12.  ; //  settlement month converted to fraction of year; could be > one year
-        }
-        if(N_settle_timings==0)
-        {
-          N_settle_timings++;
-          settle_timings_tempvec(N_settle_timings)=real_month;
-        }
-        else
-        {
-          k=0;
-          for(j=1;j<=N_settle_timings;j++)
+          if(read_seas_mo==1)
           {
-            if(settle_timings_tempvec(j)!=real_month)
-            {
-              k=1;
-            }
+           real_month=1.0 + azero_seas(settlement_pattern_rd(settle,2))*12.;  //  converts birthseason to month
           }
-          if(k==1)
+          else
+          {
+//             real_month=(settlement_pattern_rd(settle,2)-1.0)/12.  ; //  settlement month converted to fraction of year; could be > one year
+             real_month=settlement_pattern_rd(settle,2);
+          }
+          if(N_settle_timings==0)
           {
             N_settle_timings++;
             settle_timings_tempvec(N_settle_timings)=real_month;
           }
+          else
+          {
+            k=0;
+            for(j=1;j<=N_settle_timings;j++)
+            {
+              if(settle_timings_tempvec(j)!=real_month)
+              {
+                k=1;
+              }
+            }
+            if(k==1)
+            {
+              N_settle_timings++;
+              settle_timings_tempvec(N_settle_timings)=real_month;
+            }
+          }
+          settle_assignments_timing(settle)=N_settle_timings;
         }
       }
-      }
-    echoinput<<"N settle timings: "<<N_settle_timings<<endl<<" vector: "<<settle_timings_tempvec(1,N_settle_timings)<<endl;
-    gmorph = gender*N_GP*N_settle_timings*N_platoon;  //  total potential number of biological entities, some may not get used so see use_morph(g)
+    echoinput<<"N settle timings: "<<N_settle_timings<<endl<<" settle_month: "<<settle_timings_tempvec(1,N_settle_timings)<<endl;
 
 //  SS_Label_Info_4.2.3 #Set-up arrays and indexing for growth patterns, gender, settlements, platoons
  END_CALCS  
    int g3i;
-  ivector Settle_offset(1,N_settle_timings)  //  calculated number of seasons between spawning and the season in which settlement occurs
-  vector  Settle_timing(1,N_settle_timings)  //  calculated elapsed time (frac of year) between settlement and the begin of season in which it occurs
-  vector  Settle_month(1,N_settle_timings)  //  calculated month (real)in which settlement occurs
-  ivector Settle_age(1,N_settle_timings)  //  calculated age at which settlement occurs, with age 0 being the year in which spawning occurs
   ivector Settle_seas(1,N_settle_timings)  //  calculated season in which settlement occurs
+  ivector Settle_seas_offset(1,N_settle_timings)  //  calculated number of seasons between spawning and the season in which settlement occurs
+  vector  Settle_timing_seas(1,N_settle_timings)  //  calculated elapsed time (frac of year) between settlement and the begin of season in which it occurs
+  vector  Settle_month(1,N_settle_timings)  //  month (real)in which settlement occurs
+  ivector Settle_age(1,N_settle_timings)  //  calculated age at which settlement occurs, with age 0 being the year in which spawning occurs
   3darray recr_dist_pattern(1,N_GP,1,N_settle_timings,0,pop);  //  has flag to indicate each settlement events
+
+ LOCAL_CALCS
+  Settle_seas_offset.initialize();
+  Settle_timing_seas.initialize();
+  Settle_age.initialize();
+  Settle_seas.initialize();
+  recr_dist_pattern.initialize();
+
+  echoinput<<"Calculated assignments in which settlement occurs "<<endl<<"Settle_event / GPat / Area / Settle_time / Month / seas / seas_from_spawn / time_from_seas_start / age_at_settle"<<endl;
+  if(N_settle_assignments>0)
+  {
+    for (settle=1;settle<=N_settle_assignments;settle++)
+    {
+      gp=settlement_pattern_rd(settle,1); //  growth patterns
+      p=settlement_pattern_rd(settle,3);  //  settlement area
+      settle_time=settle_assignments_timing(settle);
+      recr_dist_pattern(gp,settle_time,p)=1;  //  indicates that settlement will occur here
+      recr_dist_pattern(gp,settle_time,0)=1;  //  for growth updating
+      Settle_month(settle_time)=settle_timings_tempvec(settle);
+      k=spawn_seas;  //  earliest possible time for settlement
+      temp=azero_seas(k); //  annual elapsed time fraction at begin of this season
+      Settle_timing_seas(settle_time)=(Settle_month(settle_time)-1.0)/12.;
+      while((temp+seasdur(k))<=Settle_timing_seas(settle_time))
+      {
+        if(k==nseas)
+          {k=1; Settle_age(settle_time)++;}
+          else
+          {k++;}
+          temp+=seasdur(k);
+      }
+      Settle_seas(settle_time)=k;
+      Settle_seas_offset(settle_time)=Settle_seas(settle_time)-spawn_seas+Settle_age(settle_time)*nseas;  //  number of seasons between spawning and the season in which settlement occurs
+      Settle_timing_seas(settle_time)-=temp;  //  timing from beginning of this season; needed for mortality calculation
+      echoinput<<settle<<" / "<<gp<<" / "<<p<<" / "<<settle_time<<" / "<<Settle_month(settle_time);
+      echoinput<<"  /  "<<Settle_seas(settle_time)<<" / "<<Settle_seas_offset(settle_time)<<" / "
+      <<Settle_timing_seas(settle_time)<<"  / "<<Settle_age(settle_time)<<endl;
+    }
+  }
+  else
+  {
+    recr_dist_pattern(1,1,1)=1;
+    recr_dist_pattern(1,1,0)=1;
+    Settle_month(1)=1.;
+    Settle_timing_seas(1)=0.0;
+    Settle_seas(1)=1;
+    Settle_seas_offset(1)=0;
+    Settle_age(1)=0;
+  }
+
+  gmorph = gender*N_GP*N_settle_timings*N_platoon;  //  total potential number of biological entities, some may not get used so see use_morph(g)
+ END_CALCS
 
 !!//  SS_Label_Info_4.2.1.1 #Define indexing vectors to keep track of characteristics of each morph
   ivector sx(1,gmorph) //  define sex for each growth morph
@@ -3697,75 +3752,15 @@ DATA_SECTION
   imatrix ALK_range_g_hi(1,gmorph,0,nages)
 
   vector azero_G(1,gmorph);  //  time since Jan 1 at beginning of settlement in which "g" was born
-  3darray curr_age(1,gmorph,1,nseas*N_subseas,0,nages);  // real age since settlement
+  3darray real_age(1,gmorph,1,nseas*N_subseas,0,nages);  // real age since settlement
   3darray calen_age(1,gmorph,1,nseas*N_subseas,0,nages);  // real age since Jan 1 of birth year
 
   3darray lin_grow(1,gmorph,1,nseas*N_subseas,0,nages)  //  during linear phase has fraction of Size at Afix
   ivector settle_g(1,gmorph)   //  settlement pattern for each platoon
 
- LOCAL_CALCS
-  Settle_offset.initialize();
-  Settle_timing.initialize();
-  Settle_age.initialize();
-  Settle_seas.initialize();
+ LOCAL_CALCS    
   use_morph.initialize();
   TG_use_morph.initialize();
-  recr_dist_pattern.initialize();
-
-  echoinput<<"Calculated assignments settlement occurs "<<endl<<"Settle_event / GPat / Area / Settle_time / Month / seas / seas_from_spawn / time_from_seas_start / age_at_settle"<<endl;
-  if(N_settle_assignments>0)
-  {
-    for (settle=1;settle<=N_settle_assignments;settle++)
-    {
-      gp=settlement_pattern_rd(settle,1); //  growth patterns
-      p=settlement_pattern_rd(settle,3);  //  settlement area
-      if(read_seas_mo==1)
-      {
-       real_month=1.0 + azero_seas(settlement_pattern_rd(settle,2))*12.;
-      }
-      else
-      {
-         real_month=(settlement_pattern_rd(settle,2)-1.0)/12.  ; //  settlement month converted to fraction of year; could be > one year
-      }
-  
-  //  find the settlement timing this event occurs in
-      settle_time=0;
-      for(j=1;j<=N_settle_timings;j++)
-      {
-        if(real_month==settle_timings_tempvec(j)) {settle_time=j;}
-      }
-      recr_dist_pattern(gp,settle_time,p)=1;  //  indicates that settlement will occur here
-      recr_dist_pattern(gp,settle_time,0)=1;  //  for growth updating
-      echoinput<<settle<<" / "<<gp<<" / "<<p<<" / "<<settle_time<<" / "<<real_month;
-      Settle_month(settle_time)=real_month;
-      k=spawn_seas;  //  earliest possible time for settlement
-      temp=azero_seas(k)+seasdur(k);  //  starting value
-      while(temp<=Settle_timing(settle_time))
-      {
-        if(k==nseas)
-          {k=1; Settle_age(settle_time)++;}
-          else
-          {k++;}
-          temp+=seasdur(k);
-      }
-      Settle_seas(settle_time)=k;
-      Settle_offset(settle_time)=Settle_seas(settle_time)-spawn_seas+Settle_age(settle_time)*nseas;  //  number of seasons between spawning and the season in which settlement occurs
-      Settle_timing(settle_time)-=(temp-seasdur(k));  //  remainder timing from beginning of this season; needed for natmort correction
-      echoinput<<"  /  "<<Settle_seas(settle_time)<<" / "<<Settle_offset(settle_time)<<" / "<<Settle_timing(settle_time)<<"  / "<<Settle_age(settle_time)<<endl;
-    }
-  }
-  else
-  {
-    recr_dist_pattern(1,1,1)=1;
-    recr_dist_pattern(1,1,0)=1;
-    Settle_month(1)=1.;
-    Settle_timing(1)=0.0;
-    Settle_seas(1)=1;
-    Settle_offset(1)=0;
-    Settle_age(1)=0;
-  }
-
-    
    for (gp=1;gp<=N_GP*gender;gp++)
    {
       g_Start(gp)=(gp-1)*N_settle_timings*N_platoon+int(N_platoon/2)+1-N_platoon;  // find the mid-morph being processed
@@ -3810,22 +3805,22 @@ DATA_SECTION
 
    echoinput<<"g_start "<<g_Start<<endl;
    echoinput<<"g_finder "<<g_finder<<endl;
-   echoinput<<" g  s  subseas  ALK_idx curr_age&calen_age"<<endl;
+   echoinput<<" g  s  subseas  ALK_idx real_age&calen_age"<<endl;
    for (g=1;g<=gmorph;g++)
    for (s=1;s<=nseas;s++)
    for (subseas=1;subseas<=N_subseas;subseas++)
    {
      ALK_idx=(s-1)*N_subseas+subseas;
-     curr_age(g,ALK_idx)=r_ages+azero_seas(s)-azero_G(g)+double(subseas-1)/double(N_subseas)*seasdur(s);
-     calen_age(g,ALK_idx)=curr_age(g,ALK_idx)+azero_G(g);
+     real_age(g,ALK_idx)=r_ages+azero_seas(s)-azero_G(g)+double(subseas-1)/double(N_subseas)*seasdur(s);
+     calen_age(g,ALK_idx)=real_age(g,ALK_idx)+azero_G(g);
      if(azero_G(g)>=azero_seas(s))
      {
        a=0;
-       while(curr_age(g,ALK_idx,a)<0.0)
-       {curr_age(g,ALK_idx,a)=0.0; a++;}
+       while(real_age(g,ALK_idx,a)<0.0)
+       {real_age(g,ALK_idx,a)=0.0; a++;}
      }
      a=0;
-     echoinput<<g<<" "<<s<<" "<<subseas<<" "<<ALK_idx<<" curr_age: "<<curr_age(g,ALK_idx)<<endl;
+     echoinput<<g<<" "<<s<<" "<<subseas<<" "<<ALK_idx<<" real_age: "<<real_age(g,ALK_idx)<<endl;
      echoinput<<g<<" "<<s<<" "<<subseas<<" "<<ALK_idx<<" cal_age : "<<calen_age(g,ALK_idx)<<endl;
    }
    echoinput<<"done with ALK_idx"<<endl;
@@ -3910,7 +3905,7 @@ DATA_SECTION
         {
           a=0;
           ALK_idx=(s-1)*N_subseas+subseas;
-          while(curr_age(g,ALK_idx,a)<migr_firstage) {a++;}
+          while(real_age(g,ALK_idx,a)<migr_firstage) {a++;}
           migr_start(s,GP4(g))=a;
         }
       }
@@ -4080,7 +4075,7 @@ DATA_SECTION
   N_M_Grow_parms=N_natMparms+N_growparms;
   lin_grow.initialize();
   
-  echoinput<<"g a seas subseas ALK_idx curr_age calen_age lin_grow"<<endl;
+  echoinput<<"g a seas subseas ALK_idx real_age calen_age lin_grow first_grow_age"<<endl;
   for (g=1;g<=gmorph;g++)
   if(use_morph(g)>0)
   {
@@ -4093,21 +4088,21 @@ DATA_SECTION
         ALK_idx=(s-1)*N_subseas+subseas;
         if(a==0 && s<Bseas(g))
           {lin_grow(g,ALK_idx,a)=0.0;}  //  so fish are not yet born so will get zero length
-        else if(curr_age(g,ALK_idx,a)<AFIX)
-          {lin_grow(g,ALK_idx,a)=curr_age(g,ALK_idx,a)/AFIX_plus;}  //  on linear portion of the growth
-        else if(curr_age(g,ALK_idx,a)==AFIX)
+        else if(real_age(g,ALK_idx,a)<AFIX)
+          {lin_grow(g,ALK_idx,a)=real_age(g,ALK_idx,a)/AFIX_plus;}  //  on linear portion of the growth
+        else if(real_age(g,ALK_idx,a)==AFIX)
           {
             lin_grow(g,ALK_idx,a)=1.0;  //  at the transition from linear to VBK growth
           }
         else if (first_grow_age==0)
           {
-            lin_grow(g,ALK_idx,a)=-1.0;  //  flag for first age on growth curve
+            lin_grow(g,ALK_idx,a)=-1.0;  //  flag for first age on growth curve beyond AFIX
             if(subseas==N_subseas) {first_grow_age=1;}  //  so that lingrow will be -1 for rest of this season
           }
         else
           {lin_grow(g,ALK_idx,a)=-2.0;}  //  flag for being in growth curve
 
-        if(lin_grow(g,ALK_idx,a)>-2.0) echoinput<<g<<" "<<a<<" "<<s<<" "<<subseas<<" "<<ALK_idx<<" "<<curr_age(g,ALK_idx,a)
+        if(lin_grow(g,ALK_idx,a)>-2.0) echoinput<<g<<" "<<a<<" "<<s<<" "<<subseas<<" "<<ALK_idx<<" "<<real_age(g,ALK_idx,a)
           <<" "<<calen_age(g,ALK_idx,a)<<" "<<lin_grow(g,ALK_idx,a)<<" "<<first_grow_age<<endl;
       }
     }
@@ -4367,7 +4362,7 @@ DATA_SECTION
     {
       for (k=1;k<=N_GP;k++) {ParCount++; ParmLabel+="RecrDist_GP_"+NumLbl(k);}
       for (k=1;k<=pop;k++)  {ParCount++; ParmLabel+="RecrDist_Area_"+NumLbl(k);}
-      for (k=1;k<=nseas;k++){ParCount++; ParmLabel+="RecrDist_settle_"+NumLbl(k);}
+      for (k=1;k<=nseas;k++){ParCount++; ParmLabel+="RecrDist_Bseas_"+NumLbl(k);}
 
       if(recr_dist_inx==1) // add for the morph assignments within each area
       {
@@ -4380,10 +4375,23 @@ DATA_SECTION
     }
     case 2:  //  new method with main effects only
     {
+      for (k=1;k<=N_GP;k++) {ParCount++; ParmLabel+="RecrDist_GP_"+NumLbl(k);}
+      for (k=1;k<=pop;k++)  {ParCount++; ParmLabel+="RecrDist_Area_"+NumLbl(k);}
+      for (k=1;k<=N_settle_assignments;k++){ParCount++; ParmLabel+="RecrDist_settle_"+NumLbl(k);}
+
+      if(recr_dist_inx==1) // add for the morph assignments within each area
+      {
+        for (gp=1;gp<=N_GP;gp++)
+        for (p=1;p<=pop;p++)
+        for (s=1;s<=N_settle_assignments;s++)
+        {ParCount++; ParmLabel+="RecrDist_interaction_GP_"+NumLbl(gp)+"_area_"+NumLbl(p)+"_settle_"+NumLbl(s);}
+      }
       break;
     }
     case 3:  //  new method with parm for each settlement
     {
+      for (s=1;s<=N_settle_assignments;s++)
+      {ParCount++; ParmLabel+="RecrDist_settle_"+NumLbl(s);}
       break;
     }
     case 4:   //  no distribution of recruitments
@@ -8794,7 +8802,6 @@ PRELIMINARY_CALCS_SECTION
     echoinput<<" did growth2 in prelim calcs"<<endl<<Ave_Size(styr,1,1)<<endl;
     if(minL>10.0) {N_warn++; warning<<" Minimum size bin is:_"<<minL<<"; which is >10cm, which is large for use as size-at-age 0.0 recruitment"<<endl;}
     temp=Ave_Size(styr,1,1,nages);
-    echoinput<<temp<<" "<<len_bins(nlength)<<endl;
     if(temp>0.95*len_bins(nlength)) {N_warn++; warning<<" Maximum size at age: "<<temp
     <<"; is within 5% of the largest size bin: "<<len_bins(nlength)<<"; Add more bins"<<endl;}
 
@@ -10158,25 +10165,15 @@ FUNCTION void get_growth2()
             }
 
 //  SS_Label_Info_16.2.4.1.1  #if y=styr, get size-at-age in first subseason of first season of this first year
-            if(do_once==1 && g==1) echoinput<<y<<" "<<s<<" growth gp,g: "<<gp<<" "<<g<<" Lmin: "<<Lmin(gp)<<" "<<L_inf(gp)<<" "<<-VBK(gp)<<" settleage "<<Settle_age(settle)<<endl;
-            Ave_Size(styr,1,g,0)=L_inf(gp) + (Lmin(gp)-L_inf(gp))*mfexp(VBK(gp,0)*VBK_seas(0)*(curr_age(g,1,0)-AFIX));
+            if(do_once==1) echoinput<<y<<" seas: "<<s<<" growth gp,g: "<<gp<<" "<<g<<" settle_age "<<Settle_age(settle)<<" Lmin: "<<Lmin(gp)<<" Linf: "<<L_inf(gp)<<endl<<" K@age: "<<-VBK(gp)<<endl;
+            Ave_Size(styr,1,g,0)=L_inf(gp) + (Lmin(gp)-L_inf(gp))*mfexp(VBK(gp,0)*VBK_seas(0)*(real_age(g,1,0)-AFIX));
             for (a=1;a<=nages+Settle_age(settle);a++)
             {
               a1=a-Settle_age(settle);
-              if(lin_grow(g,1,a1)>=-1.0)  // younger or equal to AFIX, so use youngest age groups VBK
-              {
-                Ave_Size(styr,1,g,a1) = Lmin(gp) + (Lmin(gp)-L_inf(gp))* (mfexp(VBK(gp,0)*VBK_seas(0)*(curr_age(g,1,a1)-AFIX))-1.0);
-              }
-              else
-              {
-                Ave_Size(styr,1,g,a1) = Ave_Size(styr,1,g,a1-1) + (Ave_Size(styr,1,g,a1-1)-L_inf(gp))* (mfexp(VBK(gp,a1-1)*VBK_seas(0))-1.0);
-              }
+                Ave_Size(styr,1,g,a1) = Lmin(gp) + (Lmin(gp)-L_inf(gp))* (mfexp(VBK(gp,0)*VBK_seas(0)*(real_age(g,1,a1)-AFIX))-1.0);
             }  // done ageloop
 
-//  not sure why next line is there; NEED to check on this.  Perhaps should be if(settle_age(settle)>1)
-//                    if(settle>1) Ave_Size(styr,1,g,0)=len_bins(1);  //  PROBLEM:  this should refer to the season of the settlement,, not the settlement index???
-
-            if(do_once==1&&g==1) echoinput<<" avesize_in_styr_w/o_linear_section "<<Ave_Size(styr,1,g)<<endl;
+            if(do_once==1) echoinput<<" L@A(w/o lin): "<<Ave_Size(styr,1,g)<<endl;
 
 //  SS_Label_Info_16.2.4.1.4  #calc approximation to mean size at maxage to account for growth after reaching the maxage (accumulator age)
             temp=0.0;
@@ -10218,7 +10215,7 @@ FUNCTION void get_growth2()
               if(lin_grow(g,ALK_idx,a)==-1.0)  // first time point beyond AFIX;  lin_grow will stay at -1 for all remaining subseas of this season
               {
                 Ave_Size(t+1,1,g,k2) = Cohort_Lmin(gp,y,a) + (Cohort_Lmin(gp,y,a)-L_inf(gp))*
-                (mfexp(VBK(gp,a)*(curr_age(g,ALK_idx2,k2)-AFIX)*VBK_seas(s))-1.0)*Cohort_Growth(y,a);
+                (mfexp(VBK(gp,a)*(real_age(g,ALK_idx2,k2)-AFIX)*VBK_seas(s))-1.0)*Cohort_Growth(y,a);
               }
               else if(lin_grow(g,ALK_idx,a)==-2.0)  //  so doing growth curve
               {
@@ -10242,7 +10239,7 @@ FUNCTION void get_growth2()
               Ave_Size(t+1,1,g,nages)=temp;
             }
 
-            if(docheckup==1) echoinput<<y<<" s "<<s<<" sex "<<sx(g)<<" gp "<<gp<<" Lmin: "<<Lmin(gp)<<" Linf: "<<L_inf(gp)<<" VBK: "<<VBK(gp,nages)<<endl
+            if(docheckup==1) echoinput<<y<<" seas: "<<s<<" sex: "<<sx(g)<<" gp: "<<gp<<" settle: "<<settle_g(g)<<" Lmin: "<<Lmin(gp)<<" Linf: "<<L_inf(gp)<<" VBK: "<<VBK(gp,nages)<<endl
             <<" size@t+1   "<<Ave_Size(t+1,1,g)(0,min(6,nages))<<" "<<Ave_Size(t+1,1,g,nages)<<endl;
           }  // end of season
 //  SS_Label_Info_16.2.4.3  #propagate Ave_Size from early years forward until first year that has time-vary growth
@@ -10368,15 +10365,16 @@ FUNCTION void get_growth2_Richards()
             }
 
 //  SS_Label_Info_16.2.4.1.1  #if y=styr, get size-at-age in first subseason of first season of this first year
-            if(do_once==1 && g==1) echoinput<<y<<" "<<s<<" growth gp,g: "<<gp<<" "<<g<<" Lmin: "<<Lmin(gp)<<" "<<L_inf(gp)<<" "<<-VBK(gp)<<" settleage "<<Settle_age(settle)<<endl;
+            if(do_once==1) echoinput<<y<<" seas: "<<s<<" growth gp,g: "<<gp<<" "<<g<<" settle_age "<<Settle_age(settle)<<" Lmin: "<<Lmin(gp)<<" Linf: "<<L_inf(gp)<<" K(nages): "<<-VBK(gp,nages)<<endl;
 
             VBK_temp2=VBK_temp*VBK_seas(0);
-            temp=LinfR + (LminR-LinfR)*mfexp(VBK_temp2*(curr_age(g,1,0)-AFIX));
+            temp=LinfR + (LminR-LinfR)*mfexp(VBK_temp2*(real_age(g,1,0)-AFIX));
             Ave_Size(styr,1,g,0) = pow(temp,inv_Richards);
+            first_grow_age=0;
             for (a=1;a<=nages+Settle_age(settle);a++)
             {
               a1=a-Settle_age(settle);
-              temp=LinfR + (LminR-LinfR)*mfexp(VBK_temp2*(curr_age(g,1,a1)-AFIX));
+              temp=LinfR + (LminR-LinfR)*mfexp(VBK_temp2*(real_age(g,1,a1)-AFIX));
               Ave_Size(styr,1,g,a1) = pow(temp,inv_Richards);
             }  // done ageloop
             if(do_once==1&&g==1) echoinput<<" avesize_in_styr_w/o_linear_section "<<Ave_Size(styr,1,g)<<endl;
@@ -10421,7 +10419,7 @@ FUNCTION void get_growth2_Richards()
 // NOTE:  there is no seasonal interpolation, or real age adjustment for age-specific K.  Maybe someday....
               if(lin_grow(g,ALK_idx,a)==-1.0)  // first time point beyond AFIX;  lin_grow will stay at -1 for all remaining subseas of this season
               {
-                temp=Cohort_Lmin(gp,y,a) + (Cohort_Lmin(gp,y,a)-LinfR)*(mfexp(VBK_temp2*(curr_age(g,ALK_idx2,k2)-AFIX))-1.0)*Cohort_Growth(y,a);
+                temp=Cohort_Lmin(gp,y,a) + (Cohort_Lmin(gp,y,a)-LinfR)*(mfexp(VBK_temp2*(real_age(g,ALK_idx2,k2)-AFIX))-1.0)*Cohort_Growth(y,a);
                 Ave_Size(t+1,1,g,k2) = pow(temp,inv_Richards);
               }
               else if(lin_grow(g,ALK_idx,a)==-2.0)
@@ -10445,7 +10443,7 @@ FUNCTION void get_growth2_Richards()
               Ave_Size(t+1,1,g,nages)=temp;
             }
 
-            if(docheckup==1) echoinput<<y<<" s "<<s<<" sex "<<sx(g)<<" gp "<<gp<<" Lmin: "<<Lmin(gp)<<" Linf: "<<L_inf(gp)<<" VBK: "<<VBK(gp,nages)<<endl
+            if(docheckup==1) echoinput<<y<<" seas: "<<s<<" sex: "<<sx(g)<<" gp: "<<gp<<" settle: "<<settle_g(g)<<" Lmin: "<<Lmin(gp)<<" Linf: "<<L_inf(gp)<<" VBK: "<<VBK(gp,nages)<<endl
             <<" size@t+1   "<<Ave_Size(t+1,1,g)(0,min(6,nages))<<" "<<Ave_Size(t+1,1,g,nages)<<endl;
           }  // end of season
 //  SS_Label_Info_16.2.4.3  #propagate Ave_Size from early years forward until first year that has time-vary growth
@@ -10508,7 +10506,7 @@ FUNCTION void get_growth3(const int s, const int subseas)
             if(lin_grow(g,ALK_idx,a)==-1.0)  // first time point beyond AFIX;  lin_grow will stay at -1 for all remaining subseas of this season
             {
               Ave_Size(t,subseas,g,a) = Cohort_Lmin(gp,y,a) + (Cohort_Lmin(gp,y,a)-L_inf(gp))*
-              (mfexp(VBK(gp,a)*(curr_age(g,ALK_idx,a)-AFIX)*VBK_seas(s))-1.0)*Cohort_Growth(y,a);
+              (mfexp(VBK(gp,a)*(real_age(g,ALK_idx,a)-AFIX)*VBK_seas(s))-1.0)*Cohort_Growth(y,a);
             }
             else if(lin_grow(g,ALK_idx,a)==-2.0)  //  so doing growth curve
             {
@@ -10528,7 +10526,7 @@ FUNCTION void get_growth3(const int s, const int subseas)
             if(lin_grow(g,ALK_idx,a)==-1.0)  // first time point beyond AFIX;  lin_grow will stay at -1 for all remaining subseas of this season
             {
               temp=Cohort_Lmin(gp,y,a) + (Cohort_Lmin(gp,y,a)-LinfR)*
-              (mfexp(VBK(gp,nages)*(curr_age(g,ALK_idx,a)-AFIX)*VBK_seas(s))-1.0)*Cohort_Growth(y,a);
+              (mfexp(VBK(gp,nages)*(real_age(g,ALK_idx,a)-AFIX)*VBK_seas(s))-1.0)*Cohort_Growth(y,a);
               Ave_Size(t,subseas,g,a) = pow(temp,inv_Richards);
             }
             else if(lin_grow(g,ALK_idx,a)==-2.0)  //  so doing growth curve
@@ -10553,14 +10551,14 @@ FUNCTION void get_growth3(const int s, const int subseas)
         {
           for (a=0;a<=nages;a++)
           {
-            if(curr_age(g,ALK_idx,a)<AFIX)
+            if(real_age(g,ALK_idx,a)<AFIX)
             {CV_G(gp,ALK_idx,a)=CVLmin(gp);}
-            else if(curr_age(g,ALK_idx,a)>=AFIX2_forCV)
+            else if(real_age(g,ALK_idx,a)>=AFIX2_forCV)
             {CV_G(gp,ALK_idx,a)=CVLmax(gp);}
             else if(CV_depvar_a==0)
             {CV_G(gp,ALK_idx,a)=CVLmin(gp) + (Ave_Size(t,subseas,g,a)-Lmin(gp))*CV_delta(gp);}
             else
-            {CV_G(gp,ALK_idx,a)=CVLmin(gp) + (curr_age(g,ALK_idx,a)-AFIX)*CV_delta(gp);}
+            {CV_G(gp,ALK_idx,a)=CVLmin(gp) + (real_age(g,ALK_idx,a)-AFIX)*CV_delta(gp);}
           }   // end age loop
         }
         else
@@ -10849,8 +10847,9 @@ FUNCTION void get_recr_distribution()
   }
 //  SS_Label_Info_18.4  #scale the recr_dist matrix to sum to 1.0
   recr_dist/=sum(recr_dist);
+    if(do_once==1) echoinput<<"recruitment distribution "<<endl<<recr_dist<<endl;
   }
-
+  
 //*******************************************************************
  /*  SS_Label_Function 19 get_wtlen, maturity, fecundity, hermaphroditism */
 FUNCTION void get_wtlen()
@@ -12844,11 +12843,12 @@ FUNCTION void get_time_series()
           if(use_morph(g)>0)
           {
             settle=settle_g(g);
+            echoinput<<"distribute recruits "<<endl<<settle<<" "<<Settle_seas_offset(settle)<<" "<<Settle_age(settle)<<endl;
             for (p=1;p<=pop;p++)
             { 
-              if(y==styr) natage(t+Settle_offset(settle),p,g,Settle_age(settle))=0.0;  //  to negate the additive code 
-              natage(t+Settle_offset(settle),p,g,Settle_age(settle)) += Recruits*recr_dist(GP(g),settle,p)*platoon_distr(GP2(g))*
-               mfexp(natM(s,GP3(g),Settle_age(settle))*Settle_timing(settle));
+              if(y==styr) natage(t+Settle_seas_offset(settle),p,g,Settle_age(settle))=0.0;  //  to negate the additive code 
+              natage(t+Settle_seas_offset(settle),p,g,Settle_age(settle)) += Recruits*recr_dist(GP(g),settle,p)*platoon_distr(GP2(g))*
+               mfexp(natM(s,GP3(g),Settle_age(settle))*Settle_timing_seas(settle));
             }
           }
       }
@@ -13185,10 +13185,10 @@ FUNCTION void get_time_series()
             settle=settle_g(g);
             for (p=1;p<=pop;p++)
             { 
-              if(y==styr) natage(t+Settle_offset(settle),p,g,Settle_age(settle))=0.0;  //  to negate the additive code 
+              if(y==styr) natage(t+Settle_seas_offset(settle),p,g,Settle_age(settle))=0.0;  //  to negate the additive code 
                 
-              natage(t+Settle_offset(settle),p,g,Settle_age(settle)) += Recruits*recr_dist(GP(g),settle,p)*platoon_distr(GP2(g))*
-               mfexp(natM(s,GP3(g),Settle_age(settle))*Settle_timing(settle));
+              natage(t+Settle_seas_offset(settle),p,g,Settle_age(settle)) += Recruits*recr_dist(GP(g),settle,p)*platoon_distr(GP2(g))*
+               mfexp(natM(s,GP3(g),Settle_age(settle))*Settle_timing_seas(settle));
           if(docheckup==1) echoinput<<p<<" "<<g<<" "<<GP3(g)<<" area & morph "<<endl<<"N-at-age after recruits "<<natage(t,p,g)(0,min(6,nages))<<endl
            <<"survival "<<surv1(s,GP3(g))(0,min(6,nages))<<endl;
             }
@@ -14693,7 +14693,7 @@ FUNCTION void Do_Equil_Calc()
           for (p=1;p<=pop;p++)
           { 
             equ_numbers(Settle_seas(settle),p,g,Settle_age(settle)) = equ_Recr*recr_dist(GP(g),settle,p)*platoon_distr(GP2(g))*
-             mfexp(natM(Settle_seas(settle),GP3(g),Settle_age(settle))*Settle_timing(settle));
+             mfexp(natM(Settle_seas(settle),GP3(g),Settle_age(settle))*Settle_timing_seas(settle));
           }
         }
         }
@@ -14726,7 +14726,7 @@ FUNCTION void Do_Equil_Calc()
              if(s==Settle_seas(settle) && a==Settle_age(settle))
               {
                 equ_numbers(Settle_seas(settle),p,g,Settle_age(settle)) = equ_Recr*recr_dist(GP(g),settle,p)*platoon_distr(GP2(g))*
-                mfexp(natM(Settle_seas(settle),GP3(g),Settle_age(settle))*Settle_timing(settle));
+                mfexp(natM(Settle_seas(settle),GP3(g),Settle_age(settle))*Settle_timing_seas(settle));
               }
 
            if(equ_numbers(s,p,g,a)>0.0)  //  will only be zero if not yet settled
@@ -16568,10 +16568,10 @@ FUNCTION void Get_Forecast()
                 settle=settle_g(g);  //  get settlement event
                 for (p=1;p<=pop;p++)
                 { 
-                  if(y==endyr+1) natage(t+Settle_offset(settle),p,g,Settle_age(settle))=0.0;  //  to negate the additive code 
-//                  natage(t+Settle_offset(settle),p,g,Settle_age(settle)) += Recruits*recr_dist(GP(g),settle,p)*platoon_distr(GP2(g))*
-                  natage(t+Settle_offset(settle),p,g,Settle_age(settle)) = Recruits*recr_dist(GP(g),settle,p)*platoon_distr(GP2(g))*
-                   mfexp(natM(s,GP3(g),Settle_age(settle))*Settle_timing(settle));
+                  if(y==endyr+1) natage(t+Settle_seas_offset(settle),p,g,Settle_age(settle))=0.0;  //  to negate the additive code 
+//                  natage(t+Settle_seas_offset(settle),p,g,Settle_age(settle)) += Recruits*recr_dist(GP(g),settle,p)*platoon_distr(GP2(g))*
+                  natage(t+Settle_seas_offset(settle),p,g,Settle_age(settle)) = Recruits*recr_dist(GP(g),settle,p)*platoon_distr(GP2(g))*
+                   mfexp(natM(s,GP3(g),Settle_age(settle))*Settle_timing_seas(settle));
                 }
               }
 
@@ -19773,7 +19773,7 @@ FUNCTION void write_bigoutput()
       gp=settlement_pattern_rd(settle,1); //  growth patterns
       p=settlement_pattern_rd(settle,3);  //  settlement area
       SS2out<<settle<<" "<<gp<<" "<<p<<" "<<settlement_pattern_rd(settle,2)<<" "<<Settle_seas(settle)<<" "<<
-      Settle_age(settle)<<" "<<Settle_timing(settle)<<" "<<recr_dist(gp,settle,p)<<endl;
+      Settle_age(settle)<<" "<<Settle_timing_seas(settle)<<" "<<recr_dist(gp,settle,p)<<endl;
    }
 
    SS2out<<endl<<"MORPH_INDEXING"<<endl;
@@ -21073,7 +21073,7 @@ FUNCTION void write_bigoutput()
   }
     
    SS2out<<endl;
-   SS2out<<"Seas Morph Bio_Pattern Gender Settlement Platoon Age Age_Beg Age_Mid M Len_Beg Len_Mid SD_Beg SD_Mid Wt_Beg Wt_Mid Len_Mat Age_Mat Mat*Fecund";
+   SS2out<<"Seas Morph Bio_Pattern Gender Settlement Platoon int_Age Real_Age Age_Beg Age_Mid M Len_Beg Len_Mid SD_Beg SD_Mid Wt_Beg Wt_Mid Len_Mat Age_Mat Mat*Fecund";
    if(Hermaphro_Option>0) SS2out<<" Herma_Trans Herma_Cum ";
    for (f=1;f<=Nfleet;f++) SS2out<<" Len:_"<<f<<" SelWt:_"<<f<<" RetWt:_"<<f;
    SS2out<<endl;
@@ -21089,7 +21089,7 @@ FUNCTION void write_bigoutput()
      for (a=0;a<=nages;a++)
      {
 
-      SS2out<<s<<" "<<g<<" "<<GP4(g)<<" "<<sx(g)<<" "<<Bseas(g)<<" "<<GP2(g)<<" "<<a<<" "<<a+azero_seas(s)-azero_G(g)<<" "<<a+azero_seas(s)-azero_G(g)+seasdur_half(s);
+      SS2out<<s<<" "<<g<<" "<<GP4(g)<<" "<<sx(g)<<" "<<settle_g(g)<<" "<<GP2(g)<<" "<<a<<" "<<real_age(g,ALK_idx,a)<<" "<<calen_age(g,ALK_idx,a)<<" "<<calen_age(g,ALK_idx_mid,a);
       SS2out<<" "<<natM(s,GP3(g),a)<<" "<<Ave_Size(t,1,g,a)<<" "<<Ave_Size(t,mid_subseas,g,a)<<" "
         <<Sd_Size_within(ALK_idx,g,a)<<" "<<Sd_Size_within(ALK_idx_mid,g,a)<<" "
       <<Wt_Age_beg(s,g,a)<<" "<<Wt_Age_mid(s,g,a)<<" "<<ALK(ALK_idx,g,a)*mat_len(GP4(g))<<" ";
