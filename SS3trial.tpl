@@ -20335,7 +20335,7 @@ FUNCTION void write_bigoutput()
 
   SS2out <<endl<< "INDEX_1" << endl;
   SS2out <<"Fleet Do_Power Power Do_Offset Offset Do_Env_var Env_Link Do_ExtraVar Qtype  Q Num=0/Bio=1 Err_type"<<
-    " N Npos r.m.s.e. mean_input_SE Input+VarAdj Input+VarAdj+extra VarAdj New_VarAdj pen_mean_Qdev rmse_Qdev"<<endl;
+    " N Npos r.m.s.e. mean_input_SE Input+VarAdj Input+VarAdj+extra VarAdj New_VarAdj penalty_mean_Qdev rmse_Qdev fleetname"<<endl;
   for (f=1;f<=Nfleet;f++)
     {
     SS2out<<f<<" "<<Q_setup(f,1)<<" ";
@@ -20348,7 +20348,7 @@ FUNCTION void write_bigoutput()
     if(Q_setup(f,5)>0)
     {SS2out<<Q_parm(Q_setup(f,5))<<" ";}
     else
-    {SS2out<<" 0  0.0 ";}
+    {SS2out<<" 0.0 ";}
 
     SS2out<<Q_setup(f,2)<<" ";
     if(Q_setup(f,2)!=0)
@@ -20370,7 +20370,7 @@ FUNCTION void write_bigoutput()
       <<" "<<var_adjust(1,f)+rmse(f)-mean_CV(f)
       <<" "<<Q_dev_like(f,1)<<" "<<Q_dev_like(f,2)<<" "<<fleetname(f)<<endl;
     }
-    SS2out<<"rmse_Qdev_not_in_logL"<<endl<<"pen_mean_Qdev_not_in_logL_in_randwalk_approach"<<endl;
+    SS2out<<"rmse_Qdev_not_in_logL"<<endl<<"penalty_mean_Qdev_not_in_logL_in_randwalk_approach"<<endl;
 
   SS2out <<"#"<<endl<< "INDEX_3"<<endl<<"Fleet  Q_parm_assignments"<<endl;
   for (f=1;f<=Nfleet;f++)
