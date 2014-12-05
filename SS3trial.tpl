@@ -548,8 +548,6 @@ DATA_SECTION
       fleet_setup(f,7)=need_catch_mult(f);
       fleet_setup(f,5)=catch_se_rd(f);
       fleet_setup(f,6)=catch_se_rd(f);
-  
-  
     }
   }
   else
@@ -13001,7 +12999,9 @@ FUNCTION void get_time_series()
             {
   //  SS_Label_Info_24.3.3.3.1 #Start by doing a Pope's approximation
               for (f=1;f<=Nfleet;f++)
-              if (catch_seas_area(t,p,f)==1 && catch_se_rd(f)>0.0)  // do exact catch for this fleet; skipping adjustment for bycatch fleets
+              if(fleet_type(f)==1)  // do exact catch for this fleet; skipping adjustment for bycatch fleets and surveys
+              {
+              if (catch_seas_area(t,p,f)==1)  
               {
                 vbio.initialize();
                 for (g=1;g<=gmorph;g++)
@@ -13023,6 +13023,7 @@ FUNCTION void get_time_series()
               else
               {
                 // Hrate(f,t) previously set to zero or set to a parameter value
+              }
               }
   //  SS_Label_Info_24.3.3.3.4 #Do a specified number of loops to tune up these F values to more closely match the observed catch
             	for (int tune_F=1;tune_F<=F_Tune;tune_F++)
@@ -13046,7 +13047,9 @@ FUNCTION void get_time_series()
                   //  now calc adjustment to Z based on changes to be made to Hrate
                   interim_tot_catch=0.0;   // this is the expected total catch that would occur with the current Hrates and Z
                   for (f=1;f<=Nfleet;f++)
-                  if (catch_seas_area(t,p,f)==1 && catch_se_rd(f)>0.0)  //  skips bycatch fleets
+                  if(fleet_type(f)==1)   //  skips bycatch fleet
+                  {
+                  if (catch_seas_area(t,p,f)==1)
                   {
                     for (g=1;g<=gmorph;g++)
                     if(use_morph(g)>0)
@@ -13061,6 +13064,7 @@ FUNCTION void get_time_series()
                       }
                     }  //close gmorph loop
                   }  // close fishery
+                  }
                   Z_adjuster = totcatch_byarea(t,p)/(interim_tot_catch+0.0001);   // but this totcatch_by_area needs to exclude fisheries with F from param
                   for (g=1;g<=gmorph;g++)
                   if(use_morph(g)>0)
@@ -13068,8 +13072,10 @@ FUNCTION void get_time_series()
                     Z_rate(t,p,g)=natM(s,GP3(g)) + Z_adjuster*(Z_rate(t,p,g)-natM(s,GP3(g)));  // need to modify to only do the exact catches
                     Zrate2(p,g)=elem_div( (1.-mfexp(-seasdur(s)*Z_rate(t,p,g))), Z_rate(t,p,g));
                   }
-                  for (f=1;f<=Nfleet;f++)       //loop over fishing fleets       TAG_105
-                  if(catch_seas_area(t,p,f)==1 && catch_se_rd(f)>0.0)
+                  for (f=1;f<=Nfleet;f++)
+                  if(fleet_type(f)==1)
+                  {
+                  if(catch_seas_area(t,p,f)==1)
                   {
                     vbio=0.;  // now use this to calc the selected vulnerable biomass (numbers) to each fishery with the adjusted Zrate2
                     //  since catch = N * F*sel * (1-e(-Z))/Z 
@@ -13089,6 +13095,7 @@ FUNCTION void get_time_series()
                     temp=catch_ret_obs(f,t)/(catch_mult(y,f)*vbio+0.0001);  //  prototype new F
                     join1=1./(1.+mfexp(30.*(temp-0.95*max_harvest_rate)));
                     Hrate(f,t)=join1*temp + (1.-join1)*max_harvest_rate;  //  new F value for this fleet
+                  }
                   }  // close fishery
                 }
                 else
@@ -14700,12 +14707,6 @@ FUNCTION void Do_Equil_Calc()
          {
            gg=sx(g);    // gender
            settle=settle_g(g);
-
-//           if(a==0 && s==Bseas(g))
-//           {
-//             for (p=1;p<=pop;p++)
-//             {equ_numbers(s,p,g,0) = equ_Recr*recr_dist(GP(g),s,p)*platoon_distr(GP2(g));}   // get the age 0 recruits for season=recr_seas
-//           }
 
            for (p=1;p<=pop;p++)
            {
@@ -21701,7 +21702,8 @@ FUNCTION void write_bigoutput()
   if(Do_Benchmark>0)
   {
         SS2out<<endl<<"SPR/YPR_Profile "<<endl<<"Iter Fmult F_std SPR Catch SSB Recruits SSB/Bzero YPR";
-        for (f=1;f<=Nfleet;f++) {SS2out<<" catch:_"<<f;}
+        for (f=1;f<=Nfleet;f++)
+        if(fleet_type(f)<3) {SS2out<<" "<<fleetname(f);}
         for (p=1;p<=pop;p++)
         for (gp=1;gp<=N_GP;gp++)
         {SS2out<<" Area:"<<p<<"_GP:"<<gp;}
@@ -21771,13 +21773,17 @@ FUNCTION void write_bigoutput()
           for (SPRloop=1; SPRloop<=40; SPRloop++)
           {
             for (f=1;f<=Nfleet;f++)
-            for (s=1;s<=nseas;s++)
+            if(fleet_type(f)<3)
             {
-              t=bio_t_base+s;
-              Hrate(f,t)=Fmult2*Bmark_RelF_Use(s,f);
+              for (s=1;s<=nseas;s++)
+              {
+                t=bio_t_base+s;
+                Hrate(f,t)=Fmult2*Bmark_RelF_Use(s,f);
+              }
             }
 
             Fishon=1;
+            
             Do_Equil_Calc();
             SPR_temp=SPB_equil;
             Get_EquilCalc = Equil_Spawn_Recr_Fxn();   // call  function
@@ -21790,10 +21796,19 @@ FUNCTION void write_bigoutput()
             }
             SS2out<<SPRloop<<" "<<Fmult2<<" "<<equ_F_std<<" "<<value(SPB_equil/SPR_unf)<<" "
             <<value(YPR_dead*Btgt_prof_rec)<<" "<<Btgt_prof<<" "<<Btgt_prof_rec<<" "<<value(Btgt_prof/SPB_virgin)
-            <<" "<<value(YPR_dead)<<" "<<value(sum(equ_catch_fleet(2))*Btgt_prof_rec);
+            <<" "<<value(YPR_dead)<<" ";
+            for(f=1;f<=Nfleet;f++)
+            if(fleet_type(f)<3)
+            {
+              temp=0.0;
+              for(s=1;s<=nseas;s++)
+              {temp+=equ_catch_fleet(2,s,f);}
+              temp*=Btgt_prof_rec;
+              SS2out<<" "<<temp;
+            }
             for (p=1;p<=pop;p++)
             for (gp=1;gp<=N_GP;gp++)
-            {SS2out<<" "<<SPB_equil_pop_gp(p,gp)*Btgt_prof_rec;}
+            {SS2out<<" f"<<SPB_equil_pop_gp(p,gp)*Btgt_prof_rec;}
             SS2out<<endl;
             if(SPRloop1==0)
               {Fmult2-=Fmultchanger0;}
@@ -21818,11 +21833,14 @@ FUNCTION void write_bigoutput()
           SPR_last=SPR_trial;
           YPR_last=YPR_dead;
           for (f=1;f<=Nfleet;f++)
-          for (s=1;s<=nseas;s++)
+//          if(fleet_type(f)<3)
           {
-            t=bio_t_base+s;
-            Hrate(f,t)=Fmult2*Bmark_RelF_Use(s,f);
-          }
+            for (s=1;s<=nseas;s++)
+            {
+              t=bio_t_base+s;
+              Hrate(f,t)=Fmult2*Bmark_RelF_Use(s,f);
+            }
+            }
           SPRloop+=1;
           Fishon=1;
           Do_Equil_Calc();
@@ -21833,7 +21851,16 @@ FUNCTION void write_bigoutput()
           SPR_trial=value(SPB_equil/SPR_unf);
           SS2out<<SPRloop<<" "<<Fmult2<<" "<<equ_F_std<<" "<<SPR_trial<<" "
           <<value(YPR_dead*Btgt_prof_rec)<<" "<<Btgt_prof<<" "<<Btgt_prof_rec<<" "<<value(Btgt_prof/SPB_virgin)
-          <<" "<<value(YPR_dead)<<" "<<value(sum(equ_catch_fleet(2))*Btgt_prof_rec);
+          <<" "<<value(YPR_dead)<<" ";
+            for(f=1;f<=Nfleet;f++)
+            if(fleet_type(f)<3)
+            {
+              temp=0.0;
+              for(s=1;s<=nseas;s++)
+              {temp+=equ_catch_fleet(2,s,f);}
+              temp*=Btgt_prof_rec;
+              SS2out<<" "<<temp;
+            }
           for (p=1;p<=pop;p++)
           for (gp=1;gp<=N_GP;gp++)
           {SS2out<<" "<<SPB_equil_pop_gp(p,gp)*Btgt_prof_rec;}
