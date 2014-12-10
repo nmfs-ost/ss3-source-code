@@ -16281,7 +16281,7 @@ FUNCTION void Get_Forecast()
   dvar_vector ABC_buffer(endyr+1,YrMax);
   imatrix Do_F_tune(t_base,TimeMax_Fcast_std,1,Nfleet);  //  flag for doing F from catch
   dvar_matrix Fcast_Catch_Store(t_base,TimeMax_Fcast_std,1,Nfleet);
-  dvar_vector Fcast_Catch_Current_Alloc(1,Nfleet);
+  dvar_vector Fcast_Catch_Calc_Annual(1,Nfleet);
   dvar_vector Fcast_Catch_Allocation_Group(1,Fcast_Catch_Allocation_Groups);
   dvar_vector Fcast_Catch_ByArea(1,pop);
 
@@ -17115,14 +17115,14 @@ FUNCTION void Get_Forecast()
         if(ABC_Loop==2)
         {
           // calculate annual catch for each fleet
-          Fcast_Catch_Current_Alloc.initialize();
+          Fcast_Catch_Calc_Annual.initialize();
           for (f=1;f<=Nfleet;f++)
           for (s=1;s<=nseas;s++)
           {
             if(fleet_type(f)<=2)
               {
               t=t_base+s;
-              Fcast_Catch_Current_Alloc(f)+=catch_fleet(t,f,Fcast_Catch_Basis); //  accumulate annual catch according to catch basis (2=deadbio, 3=ret bio, 5=dead num, 6=ret num)
+              Fcast_Catch_Calc_Annual(f)+=catch_fleet(t,f,Fcast_Catch_Basis); //  accumulate annual catch according to catch basis (2=deadbio, 3=ret bio, 5=dead num, 6=ret num)
               }
           }
           if(Fcast_Do_Fleet_Cap>0 && y>=Fcast_Cap_FirstYear)
@@ -17131,10 +17131,10 @@ FUNCTION void Get_Forecast()
             {
               if(Fcast_MaxFleetCatch(f)>0. && fleet_type(f)<=2)
               {
-                temp = Fcast_Catch_Current_Alloc(f)/Fcast_MaxFleetCatch(f);
+                temp = Fcast_Catch_Calc_Annual(f)/Fcast_MaxFleetCatch(f);
                 join1=1./(1.+mfexp(1000.*(temp-1.0)));  // steep logistic joiner at adjustment of 1.0
                 temp1=join1*1.0 + (1.-join1)*temp;
-                Fcast_Catch_Current_Alloc(f)/=temp1;
+                Fcast_Catch_Calc_Annual(f)/=temp1;
                 for (s=1;s<=nseas;s++)
                 {Fcast_Catch_Store(t_base+s,f)/=temp1;}
               }
@@ -17144,7 +17144,7 @@ FUNCTION void Get_Forecast()
           {
             if(pop==1)  // one area
             {
-              Fcast_Catch_ByArea(1)=sum(Fcast_Catch_Current_Alloc(1,Nfleet));
+              Fcast_Catch_ByArea(1)=sum(Fcast_Catch_Calc_Annual(1,Nfleet));
             }
             else
             {
@@ -17153,7 +17153,7 @@ FUNCTION void Get_Forecast()
               {
                 if(fleet_type(f)<=2)
                 {
-                  Fcast_Catch_ByArea(fleet_area(f))+=Fcast_Catch_Current_Alloc(f);
+                  Fcast_Catch_ByArea(fleet_area(f))+=Fcast_Catch_Calc_Annual(f);
                 }
               }
             }
@@ -17166,12 +17166,12 @@ FUNCTION void Get_Forecast()
               for (f=1;f<=Nfleet;f++)
               if (fleet_area(f)==p && fleet_type(f)<=2)
               {
-                Fcast_Catch_Current_Alloc(f)/=temp1;  // adjusts total for the year
+                Fcast_Catch_Calc_Annual(f)/=temp1;  // adjusts total for the year
                 for (s=1;s<=nseas;s++)
                 {Fcast_Catch_Store(t_base+s,f)/=temp1;}
               }
             }
-//            report5<<Tune_F<<" tune_area"<<Fcast_Catch_Current_Alloc<<endl;
+//            report5<<Tune_F<<" tune_area"<<Fcast_Catch_Calc_Annual<<endl;
           }
           if(Fcast_Catch_Allocation_Groups>0  && y>=Fcast_Cap_FirstYear)  // adjust to get a specific fleet allocation
           {
@@ -17180,7 +17180,7 @@ FUNCTION void Get_Forecast()
             for (f=1;f<=Nfleet;f++)
             if (Allocation_Fleet_Assignments(f)==g && fleet_type(f)<=2)
             {
-               Fcast_Catch_Allocation_Group(g)+=Fcast_Catch_Current_Alloc(f);
+               Fcast_Catch_Allocation_Group(g)+=Fcast_Catch_Calc_Annual(f);
             }
             temp=sum(Fcast_Catch_Allocation_Group);  // total catch for all fleets that are part of the allocation scheme
             temp1=sum(Fcast_Catch_Allocation);  // total of all allocation fractions for all fleets that are part of the allocation scheme
@@ -17190,7 +17190,7 @@ FUNCTION void Get_Forecast()
               for (f=1;f<=Nfleet;f++)
               if (Allocation_Fleet_Assignments(f)==g && fleet_type(f)<=2)
               {
-                Fcast_Catch_Current_Alloc(f)*=temp2;
+                Fcast_Catch_Calc_Annual(f)*=temp2;
                 for (s=1;s<=nseas;s++)
                 {
                   Fcast_Catch_Store(t_base+s,f)*=temp2;
@@ -19870,7 +19870,7 @@ FUNCTION void write_bigoutput()
   SS2out<<endl<<"CATCH "<<endl<<"Fleet Name Yr Seas Yr.frac Obs Exp Mult Exp*Mult se F  Like sel_bio kill_bio ret_bio sel_num kill_num ret_num"<<endl;
   for (f=1;f<=Nfleet;f++)
   {
-    if(fleet_type(f)==1 || fleet_type(f)==2)
+    if(fleet_type(f)<=2)
     {
       for (y=styr-1;y<=endyr;y++)
       for (s=1;s<=nseas;s++)
