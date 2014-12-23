@@ -5,7 +5,7 @@ DATA_SECTION
 !!//  SS_Label_Section_1.0 #DATA_SECTION
 
 !!//  SS_Label_Info_1.1.1  #Create string with version info
-!!version_info+="SS-V3.30a-safe;_11/28/2014;_Stock_Synthesis_by_Richard_Methot_(NOAA)_using_ADMB_11.1";
+!!version_info+="SS-V3.30a-safe;_12/23/2014;_Stock_Synthesis_by_Richard_Methot_(NOAA)_using_ADMB_11.1";
 
 !!version_info_short+="#V3.30a";
 
@@ -3569,6 +3569,7 @@ DATA_SECTION
 !!//  SS_Label_Info_4.2.2  #Define distribution of recruitment(settlement) among growth patterns, areas, months
 
   int recr_dist_method  //  1=like 3.24; 2=main effects for GP, Settle timing, Area; 3=each Settle entity; 4=none when N_GP*Nsettle*pop==1
+  int recr_dist_area  //  1=no effect; 2=multiple area-specific recruitment by ratio of SPB(p)/SPB(p,0)
   int N_settle_assignments  //  number of assigned settlements for GP, Settle_month, Area (>=0)
   int N_settle_timings  //  number of recruitment settlement timings per spawning (>=1) - important for number of morphs calculation
                          //  will be calculated from the number of unique settle_months among the settle_assignments
@@ -3578,13 +3579,18 @@ DATA_SECTION
   int recr_dist_inx
  LOCAL_CALCS
   if(finish_starter==999)
-  {recr_dist_method=1;}  //  hardwire for 3.24 method
+  {
+    recr_dist_method=1;  //  hardwire for 3.24 method
+    recr_dist_area=1;
+  }
   else
   {
     *(ad_comm::global_datafile) >> recr_dist_method;
     echoinput<<recr_dist_method<<"  // Recruitment distribution method; where: 1=like 3.24; 2=main effects for GP, Settle timing, Area; 3=each Settle entity; 4=none when N_GP*Nsettle*pop==1"<<endl;
+    *(ad_comm::global_datafile) >> recr_dist_area;
+    echoinput<<recr_dist_area<<"  // Recruitment distribution follows SPB distribution; where: 1=no effect; 2=use effect"<<endl;
   }
-
+  
   switch (recr_dist_method)
   {
     case 1:
@@ -10838,6 +10844,12 @@ FUNCTION void get_recr_distribution()
   {
     recr_dist(gp,settle,p)=femfrac(gp)*recr_dist_parm(gp)*recr_dist_parm(N_GP+p)*recr_dist_parm(N_GP+pop+settle);
     if(gender==2) recr_dist(gp+N_GP,settle,p)=femfrac(gp+N_GP)*recr_dist_parm(gp)*recr_dist_parm(N_GP+p)*recr_dist_parm(N_GP+pop+settle);  //males
+    if(recr_dist_area==2 && y>styr)  //  so recrdist stays same for styr and styr-2 and styr-1
+    {
+//      echoinput<<"SPB for recrdist "<<y<<" "<<p<<" "<<SPB_pop_gp(y,p,gp)<<" "<<SPB_pop_gp(styr-2,p,gp)<<endl;
+      recr_dist(gp,settle,p)*=SPB_pop_gp(y,p,gp)/SPB_pop_gp(styr-2,p,gp);
+      if(gender==2) recr_dist(gp+N_GP,settle,p)*=SPB_pop_gp(y,p,gp)/SPB_pop_gp(styr-2,p,gp);
+    }
 //    echoinput<<"gp: "<<gp<<" settle: "<<settle<<" area: "<<p<<" gpval "<<recr_dist_parm(gp)<<" areaval "<<recr_dist_parm(N_GP+p)<<" settleval "<<recr_dist_parm(N_GP+pop+settle)<<endl;
   }
 //  SS_Label_Info_18.3  #if recr_dist_interaction is chosen, then multiply these in also
@@ -10858,7 +10870,7 @@ FUNCTION void get_recr_distribution()
   }
 //  SS_Label_Info_18.4  #scale the recr_dist matrix to sum to 1.0
   recr_dist/=sum(recr_dist);
-    if(do_once==1) echoinput<<"recruitment distribution "<<endl<<recr_dist<<endl;
+    if(do_once==1) echoinput<<"recruitment distribution in year: "<<y<<"  DIST: "<<recr_dist<<endl;
   }
   
 //*******************************************************************
@@ -12693,7 +12705,7 @@ FUNCTION void get_initial_conditions()
        natage(styr,p,g,a) *=mfexp(recdev(j)-biasadj(j)*half_sigmaRsq);
      }
    }
-
+   SPB_pop_gp(styr)=SPB_pop_gp(styr-1);  //  placeholder in case not calculated early in styr
    //  note:  the above keeps SPB_pop_gp(styr) = SPB_equil.  It does not adjust for initial agecomp, but probably should
   }  //  end initial_conditions
 
@@ -12734,7 +12746,7 @@ FUNCTION void get_time_series()
         }
       if(time_vary_MG(y,1)>0) get_natmort();
       if(time_vary_MG(y,3)>0) get_wtlen();
-      if(time_vary_MG(y,4)>0) get_recr_distribution();
+//      if(time_vary_MG(y,4)>0) get_recr_distribution();  //  move to after spawn bio calculation
       if(time_vary_MG(y,5)>0) get_migration();
       if(time_vary_MG(y,7)>0)  
       {
@@ -12817,10 +12829,10 @@ FUNCTION void get_time_series()
             SPB_B_yr(y) += make_mature_bio(GP4(g))*natage(t,p,g);
             SPB_N_yr(y) += make_mature_numbers(GP4(g))*natage(t,p,g);
           }
+//        echoinput<<"calc spb "<<y<<" "<<p<<" "<<SPB_pop_gp(y,p)<<endl;
         }
         SPB_current=sum(SPB_pop_gp(y));
         SPB_yr(y)=SPB_current;
-
         if(Hermaphro_Option>0)  // get male biomass
         {
           MaleSPB(y).initialize();
@@ -12838,6 +12850,8 @@ FUNCTION void get_time_series()
             SPB_yr(y)=SPB_current;
           }
         }
+
+        if(time_vary_MG(y,4)>0 || recr_dist_area==2) get_recr_distribution();  //   moved to after 
 
   //  SS_Label_Info_24.2.3 #Get the total recruitment produced by this spawning biomass
         Recruits=Spawn_Recr(SPB_current);  // calls to function Spawn_Recr
@@ -15083,8 +15097,6 @@ FUNCTION void Make_AgeLength_Key(const int s, const int subseas)
                 ALK_range_use=calc_ALK_range(len_bins,use_Ave_Size_W,use_SD_Size);  //  later need to offset according to g
                 ALK_range_g_lo(g)=column(ALK_range_use,1);
                 ALK_range_g_hi(g)=column(ALK_range_use,2);
-                cout<<"phase "<<current_phase()<<endl;
-                cout<<ALK_range_use<<endl;
               }
               ALK(ALK_idx,g)=calc_ALK(len_bins,ALK_range_g_lo(g),ALK_range_g_hi(g),use_Ave_Size_W,use_SD_Size);
             }
@@ -18763,6 +18775,7 @@ FUNCTION void write_nucontrol()
   report4<<platoon_distr(1,N_platoon)<<" #vector_Morphdist_(-1_in_first_val_gives_normal_approx)"<<endl;
   report4<<"#"<<endl;
   report4<<recr_dist_method<<" # recr_dist_method for parameters:  1=like 3.24; 2=main effects for GP, Settle timing, Area; 3=each Settle entity; 4=none when N_GP*Nsettle*pop==1"<<endl;
+  report4<<recr_dist_area<<" # Recruitment distribution follows SPB distribution: 1=no effect; 2=use effect"<<endl;
   report4<<N_settle_assignments<<" #  number of recruitment settlement assignments "<<endl<<
              recr_dist_inx<< " # year_x_area_x_settlement_event interaction requested (only for recr_dist_method=1)"<<endl<<
              "#GPat month  area (for each settlement assignment)"<<endl<<settlement_pattern_rd<<endl<<"#"<<endl;
