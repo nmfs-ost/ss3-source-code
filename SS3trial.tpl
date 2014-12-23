@@ -21765,9 +21765,8 @@ FUNCTION void write_bigoutput()
 //  Do Btarget profile
   if(Do_Benchmark>0)
   {
-        SS2out<<endl<<"SPR/YPR_Profile "<<endl<<"Iter Fmult F_std SPR YPR YPR*Recr SSB Recruits SSB/Bzero Tot_Catch ";
+        SS2out<<endl<<"SPR/YPR_Profile "<<endl<<"SPRloop Iter Fmult F_std SPR YPR YPR*Recr SSB Recruits SSB/Bzero Tot_Catch ";
         for (f=1;f<=Nfleet;f++) {if(fleet_type(f)<3) SS2out<<" "<<fleetname(f)<<"("<<f<<")";}
-        SS2out<<endl;
         for (p=1;p<=pop;p++)
         for (gp=1;gp<=N_GP;gp++)
         {SS2out<<" Area:"<<p<<"_GP:"<<gp;}
@@ -21798,9 +21797,7 @@ FUNCTION void write_bigoutput()
       {  
         subseas=1;
         ALK_idx=(s-1)*N_subseas+subseas;  //  for midseason
-        SS2out<<" call ALK "<<endl;
         Make_AgeLength_Key(s, subseas);  //  for begin season
-//        SS2out<<"  ALK done "<<endl;
         subseas=mid_subseas;
         ALK_idx=(s-1)*N_subseas+subseas;  //  for midseason
         Make_AgeLength_Key(s, subseas);  //  for midseason
@@ -21815,14 +21812,12 @@ FUNCTION void write_bigoutput()
           Make_Fecundity();
         }
       }
-//        SS2out<<" call fish selex  "<<endl;
       for (g=1;g<=gmorph;g++)
       if(use_morph(g)>0)
       {
         ALK_idx=(s-1)*N_subseas+mid_subseas;  //  for midseason
         Make_FishSelex();
       }
-//             SS2out<<" selex ok "<<endl;
     }
 
     equ_Recr=1.0;
@@ -21855,7 +21850,7 @@ FUNCTION void write_bigoutput()
               if(Btgt_prof<0.001 && Btgt_prof_rec<0.001)
               {Fcrash=Fmult2;}
             }
-            SS2out<<SPRloop<<" "<<Fmult2<<" "<<equ_F_std<<" "<<value(SPB_equil/SPR_unf)<<" "<<value(YPR_dead)<<" "
+            SS2out<<SPRloop1<<" "<<SPRloop<<" "<<Fmult2<<" "<<equ_F_std<<" "<<value(SPB_equil/SPR_unf)<<" "<<value(YPR_dead)<<" "
             <<value(YPR_dead*Btgt_prof_rec)<<" "<<Btgt_prof<<" "<<Btgt_prof_rec<<" "<<value(Btgt_prof/SPB_virgin)
             <<" "<<value(sum(equ_catch_fleet(2))*Btgt_prof_rec);
             for(f=1;f<=Nfleet;f++)
@@ -21906,14 +21901,20 @@ FUNCTION void write_bigoutput()
           Btgt_prof=Get_EquilCalc(1);
           Btgt_prof_rec=Get_EquilCalc(2);
           SPR_trial=value(SPB_equil/SPR_unf);
-          SS2out<<SPRloop<<" "<<Fmult2<<" "<<equ_F_std<<" "<<SPR_trial<<" "
-          <<value(YPR_dead*Btgt_prof_rec)<<" "<<Btgt_prof<<" "<<Btgt_prof_rec<<" "<<value(Btgt_prof/SPB_virgin)
-          <<" "<<value(YPR_dead)<<" "<<value(sum(equ_catch_fleet(2))*Btgt_prof_rec);
-          for (p=1;p<=pop;p++)
-          for (gp=1;gp<=N_GP;gp++)
-          {SS2out<<" "<<SPB_equil_pop_gp(p,gp)*Btgt_prof_rec;}
-          SS2out<<endl;
-        }
+            SS2out<<"3 "<<SPRloop<<" "<<Fmult2<<" "<<equ_F_std<<" "<<value(SPB_equil/SPR_unf)<<" "<<value(YPR_dead)<<" "
+            <<value(YPR_dead*Btgt_prof_rec)<<" "<<Btgt_prof<<" "<<Btgt_prof_rec<<" "<<value(Btgt_prof/SPB_virgin)
+            <<" "<<value(sum(equ_catch_fleet(2))*Btgt_prof_rec);
+            for(f=1;f<=Nfleet;f++)
+            if(fleet_type(f)<3)
+            {
+              temp=0.0;
+              for(s=1;s<=nseas;s++) {temp+=equ_catch_fleet(2,s,f);}
+              SS2out<<" "<<temp*Btgt_prof_rec;
+            }
+            for (p=1;p<=pop;p++)
+            for (gp=1;gp<=N_GP;gp++)
+            {SS2out<<" "<<SPB_equil_pop_gp(p,gp)*Btgt_prof_rec;}
+            SS2out<<endl;        }
         // end Btarget profile
         SS2out<<"Finish SPR/YPR profile"<<endl;
     }
