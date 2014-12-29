@@ -3569,7 +3569,7 @@ DATA_SECTION
 !!//  SS_Label_Info_4.2.2  #Define distribution of recruitment(settlement) among growth patterns, areas, months
 
   int recr_dist_method  //  1=like 3.24; 2=main effects for GP, Settle timing, Area; 3=each Settle entity; 4=none when N_GP*Nsettle*pop==1
-  int recr_dist_area  //  1=no effect; 2=multiple area-specific recruitment by ratio of SPB(p)/SPB(p,0)
+  int recr_dist_area  //  1=global SRR; 2=area-specific SRR
   int N_settle_assignments  //  number of assigned settlements for GP, Settle_month, Area (>=0)
   int N_settle_timings  //  number of recruitment settlement timings per spawning (>=1) - important for number of morphs calculation
                          //  will be calculated from the number of unique settle_months among the settle_assignments
@@ -3588,9 +3588,9 @@ DATA_SECTION
     *(ad_comm::global_datafile) >> recr_dist_method;
     echoinput<<recr_dist_method<<"  // Recruitment distribution method; where: 1=like 3.24; 2=main effects for GP, Settle timing, Area; 3=each Settle entity; 4=none when N_GP*Nsettle*pop==1"<<endl;
     *(ad_comm::global_datafile) >> recr_dist_area;
-    echoinput<<recr_dist_area<<"  // Recruitment distribution follows SPB distribution; where: 1=no effect; 2=use effect"<<endl;
+    echoinput<<recr_dist_area<<"  // recr_dist_area: 1 means global SRR; 2 means area-specific SRR"<<endl;
   }
-  recr_dist_area=2;  //hardwire for testing
+  recr_dist_area=1;  //hardwire for testing
   
   switch (recr_dist_method)
   {
@@ -10845,13 +10845,6 @@ FUNCTION void get_recr_distribution()
   {
     recr_dist(gp,settle,p)=femfrac(gp)*recr_dist_parm(gp)*recr_dist_parm(N_GP+p)*recr_dist_parm(N_GP+pop+settle);
     if(gender==2) recr_dist(gp+N_GP,settle,p)=femfrac(gp+N_GP)*recr_dist_parm(gp)*recr_dist_parm(N_GP+p)*recr_dist_parm(N_GP+pop+settle);  //males
-    if(recr_dist_area==2 && y>styr)  //  so recrdist stays same for styr and styr-2 and styr-1
-    {
-//      echoinput<<"SPB for recrdist "<<y<<" "<<p<<" "<<SPB_pop_gp(y,p,gp)<<" "<<SPB_pop_gp(styr-2,p,gp)<<endl;
-      recr_dist(gp,settle,p)*=SPB_pop_gp(y,p,gp)/SPB_pop_gp(styr-2,p,gp);
-      if(gender==2) recr_dist(gp+N_GP,settle,p)*=SPB_pop_gp(y,p,gp)/SPB_pop_gp(styr-2,p,gp);
-    }
-//    echoinput<<"gp: "<<gp<<" settle: "<<settle<<" area: "<<p<<" gpval "<<recr_dist_parm(gp)<<" areaval "<<recr_dist_parm(N_GP+p)<<" settleval "<<recr_dist_parm(N_GP+pop+settle)<<endl;
   }
 //  SS_Label_Info_18.3  #if recr_dist_interaction is chosen, then multiply these in also
   if(recr_dist_inx==1)
@@ -12561,35 +12554,42 @@ FUNCTION void get_initial_conditions()
   if(do_once==1) cout<<" ready for virgin age struc "<<endl;
   //  SS_Label_Info_23.4 #calculate unfished (virgin) numbers-at-age
   eq_yr=styr-2;
+  bio_yr=styr;
+  Fishon=0;
   virg_fec = fec;
-  Recr_virgin=mfexp(SR_parm(1));
-  exp_rec(eq_yr,1)=Recr_virgin;  //  expected Recr from s-r parms
-  exp_rec(eq_yr,2)=Recr_virgin; 
-  exp_rec(eq_yr,3)=Recr_virgin; 
-  exp_rec(eq_yr,4)=Recr_virgin;
 
-   bio_yr=styr;
-   Fishon=0;
-   equ_Recr=Recr_virgin;
-
-   Do_Equil_Calc();                      //  call function to do equilibrium calculation
-   SPB_virgin=SPB_equil;
-      Mgmt_quant(1)=SPB_equil;
-      if(Do_Benchmark>0)
-      {
-        Mgmt_quant(2)=totbio;
-        Mgmt_quant(3)=smrybio;
-        Mgmt_quant(4)=Recr_virgin;
-      }
-
-   SPB_pop_gp(eq_yr)=SPB_equil_pop_gp;   // dimensions of pop x N_GP
-   if(Hermaphro_Option>0) MaleSPB(eq_yr)=MaleSPB_equil_pop_gp;
-   SPB_yr(eq_yr)=SPB_equil;
-   t=styr-2*nseas-1;
-   for (p=1;p<=pop;p++)
-   for (g=1;g<=gmorph;g++)
-   for (s=1;s<=nseas;s++)
-     {natage(t+s,p,g)(0,nages)=value(equ_numbers(s,p,g)(0,nages));}
+  if(recr_dist_area==1 || pop==1)  //  do global spawn_recruitment calculations
+  {
+    Recr_virgin=mfexp(SR_parm(1));
+    equ_Recr=Recr_virgin;
+    exp_rec(eq_yr,1)=Recr_virgin;  //  expected Recr from s-r parms
+    exp_rec(eq_yr,2)=Recr_virgin; 
+    exp_rec(eq_yr,3)=Recr_virgin; 
+    exp_rec(eq_yr,4)=Recr_virgin;
+  
+    Do_Equil_Calc();                      //  call function to do equilibrium calculation
+    SPB_virgin=SPB_equil;
+    Mgmt_quant(1)=SPB_equil;
+    if(Do_Benchmark>0)
+    {
+      Mgmt_quant(2)=totbio;
+      Mgmt_quant(3)=smrybio;
+      Mgmt_quant(4)=Recr_virgin;
+    }
+  
+    SPB_pop_gp(eq_yr)=SPB_equil_pop_gp;   // dimensions of pop x N_GP
+    if(Hermaphro_Option>0) MaleSPB(eq_yr)=MaleSPB_equil_pop_gp;
+    SPB_yr(eq_yr)=SPB_equil;
+    t=styr-2*nseas-1;
+    for (p=1;p<=pop;p++)
+    for (g=1;g<=gmorph;g++)
+    for (s=1;s<=nseas;s++)
+    {natage(t+s,p,g)(0,nages)=equ_numbers(s,p,g)(0,nages);}
+  }
+  else  //  area-specific spawn-recruitment
+  {
+    
+  }
 
   //  SS_Label_Info_23.5  #Calculate equilibrium using initial F
   if(do_once==1) cout<<" ready for initial age struc "<<endl;
@@ -12852,10 +12852,8 @@ FUNCTION void get_time_series()
           }
         }
 
-        if(time_vary_MG(y,4)>0 || recr_dist_area==2) get_recr_distribution();  //   moved to after 
-
   //  SS_Label_Info_24.2.3 #Get the total recruitment produced by this spawning biomass
-        Recruits=Spawn_Recr(SPB_current);  // calls to function Spawn_Recr
+        Recruits=Spawn_Recr(SPB_virgin,Recr_virgin,SPB_current);  // calls to function Spawn_Recr
 // distribute Recruitment of age 0 fish among the current and future settlements; and among areas and morphs
             //  use t offset for each birth event:  Settlement_offset(settle)
             //  so the total number of Recruits will be relative to their numbers at the time of the set of settlement_events.
@@ -13207,7 +13205,7 @@ FUNCTION void get_time_series()
           }
         }
   //  SS_Label_Info_24.3.4.1 #Get recruitment from this spawning biomass
-        Recruits=Spawn_Recr(SPB_current);  // calls to function Spawn_Recr
+        Recruits=Spawn_Recr(SPB_virgin,Recr_virgin,SPB_current);  // calls to function Spawn_Recr
 // distribute Recruitment of age 0 fish among the current and future settlements; and among areas and morphs
 //  note that because SPB_current is calculated at end of season to take into account Z,
 //  this means that recruitment cannot occur until a subsequent season
@@ -16581,7 +16579,7 @@ FUNCTION void Get_Forecast()
                 SPB_yr(y)=SPB_current;
               }
             }
-            Recruits=Spawn_Recr(SPB_current);    //  recruitment with deviations
+            Recruits=Spawn_Recr(SPB_virgin,Recr_virgin,SPB_current);    //  recruitment with deviations
             if(Fcast_Loop1<Fcast_Loop_Control(2))    //  use expected recruitment  this should include environ effect - CHECK THIS
             {
               Recruits=exp_rec(y,2);
@@ -18770,7 +18768,7 @@ FUNCTION void write_nucontrol()
   report4<<platoon_distr(1,N_platoon)<<" #vector_Morphdist_(-1_in_first_val_gives_normal_approx)"<<endl;
   report4<<"#"<<endl;
   report4<<recr_dist_method<<" # recr_dist_method for parameters:  1=like 3.24; 2=main effects for GP, Settle timing, Area; 3=each Settle entity; 4=none when N_GP*Nsettle*pop==1"<<endl;
-  report4<<recr_dist_area<<" # Recruitment distribution follows SPB distribution: 1=no effect; 2=use effect"<<endl;
+  report4<<recr_dist_area<<" # Recruitment: 1=global; 2=by area"<<endl;
   report4<<N_settle_assignments<<" #  number of recruitment settlement assignments "<<endl<<
              recr_dist_inx<< " # year_x_area_x_settlement_event interaction requested (only for recr_dist_method=1)"<<endl<<
              "#GPat month  area (for each settlement assignment)"<<endl<<settlement_pattern_rd<<endl<<"#"<<endl;
@@ -22069,7 +22067,7 @@ FUNCTION dvariable Join_Fxn(const prevariable& MinPoss, const prevariable& MaxPo
 
 //********************************************************************
  /*  SS_Label_FUNCTION 43 Spawner-recruitment function */
-FUNCTION dvariable Spawn_Recr(const prevariable& SPB_current)
+FUNCTION dvariable Spawn_Recr(const prevariable& SPB_virgin, const prevariable& Recr_virgin, const prevariable& SPB_current)
   {
     dvariable NewRecruits;
     dvariable SPB_BH1;
@@ -22088,20 +22086,8 @@ FUNCTION dvariable Spawn_Recr(const prevariable& SPB_current)
 
 //  SS_Label_43.1  add 0.1 to input spawning biomass value to make calculation more rebust
     SPB_curr_adj = SPB_current + 0.100;   // robust
-    Recr_virgin_adj=Recr_virgin;  SPB_virgin_adj=SPB_virgin;
-    steepness=SR_parm(2);
-    if(SR_fxn==8)
-      {
-        Shepard_c=SR_parm(3);
-        Shepard_c2=pow(0.2,Shepard_c);
-        Hupper=1.0/(5.0*Shepard_c2);
-        steep2=0.2+(steepness-0.2)/(0.8)*(Hupper-0.2);
-      }
-      else if(SR_fxn==6 || SR_fxn==3)
-    {
-      alpha = 4.0 * steepness*Recr_virgin / (5.*steepness-1.);
-      beta = (SPB_virgin*(1.-steepness)) / (5.*steepness-1.);
-    }
+    Recr_virgin_adj=Recr_virgin;
+    SPB_virgin_adj=SPB_virgin;
 
 //  SS_Label_43.2  adjust for environmental effects on S-R parameters: Rzero or steepness
     if(SR_env_target==2)
@@ -22109,15 +22095,33 @@ FUNCTION dvariable Spawn_Recr(const prevariable& SPB_current)
       Recr_virgin_adj*=mfexp(SR_parm(N_SRparm2-2)* env_data(y,SR_env_link));
       SPB_virgin_adj*=mfexp(SR_parm(N_SRparm2-2)* env_data(y,SR_env_link));
     }
-    else if(SR_env_target==3)
+
+    if(SR_env_target==3)
     {
       temp=log((SRvec_HI(2)-SRvec_LO(2)+0.0000002)/(SR_parm(2)-SRvec_LO(2)+0.0000001)-1.)/(-2.);
       temp+=SR_parm(N_SRparm2-2)* env_data(y,SR_env_link);
       steepness=SRvec_LO(2)+(SRvec_HI(2)-SRvec_LO(2))/(1.+mfexp(-2.*temp));
     }
-
-// functions below use Recr_virgin_adj,SPB_virgin_adj which could be adjusted to differ from R0,SPB_virgin
+    else
+    {
+      steepness=SR_parm(2);
+    }
+    
+    if(SR_fxn==8)
+    {
+      Shepard_c=SR_parm(3);
+      Shepard_c2=pow(0.2,Shepard_c);
+      Hupper=1.0/(5.0*Shepard_c2);
+      steep2=0.2+(steepness-0.2)/(0.8)*(Hupper-0.2);
+    }
+    else if(SR_fxn==6 || SR_fxn==3)
+    {
+      alpha = 4.0 * steepness*Recr_virgin / (5.*steepness-1.);
+      beta = (SPB_virgin*(1.-steepness)) / (5.*steepness-1.);
+    }
+    
 //  SS_Label_43.3  calculate expected recruitment from the input spawning biomass and the SR curve
+// functions below use Recr_virgin_adj,SPB_virgin_adj which could have been adjusted adjusted above from R0,SPB_virgin
     switch(SR_fxn)
     {
       case 1: // previous placement for B-H constrained
@@ -22250,12 +22254,6 @@ FUNCTION dvar_vector Equil_Spawn_Recr_Fxn(const prevariable &steepness, const pr
     dvariable SRZ_0;
     dvariable SRZ_max;
     dvariable SRZ_surv;
-    if(SR_fxn==6 || SR_fxn==3)
-    {
-      alpha = 4.0 * steepness*Recr_virgin / (5.*steepness-1.);
-      beta = (SPB_virgin*(1.-steepness)) / (5.*steepness-1.);
-    }
-
 
 //  SS_Label_44.1  calc equilibrium SpawnBio and Recruitment from input SPR_temp, which is spawning biomass per recruit at some given F level
     switch(SR_fxn)
@@ -22268,6 +22266,8 @@ FUNCTION dvar_vector Equil_Spawn_Recr_Fxn(const prevariable &steepness, const pr
 //  SS_Label_44.1.1  Beverton-Holt with flattop beyond Bzero
       case 6: //Beverton-Holt
       {
+        alpha = 4.0 * steepness*Recr_virgin / (5.*steepness-1.);
+        beta = (SPB_virgin*(1.-steepness)) / (5.*steepness-1.);
         B_equil=alpha * SPR_temp - beta;
         B_equil=posfun(B_equil,0.0001,temp);
         R_equil=(4.*steepness*Recr_virgin*B_equil) / (SPB_virgin*(1.-steepness)+(5.*steepness-1.)*B_equil);
@@ -22284,6 +22284,8 @@ FUNCTION dvar_vector Equil_Spawn_Recr_Fxn(const prevariable &steepness, const pr
 //  SS_Label_44.1.3  Beverton-Holt
       case 3:  // same as case 6
       {
+        alpha = 4.0 * steepness*Recr_virgin / (5.*steepness-1.);
+        beta = (SPB_virgin*(1.-steepness)) / (5.*steepness-1.);
         B_equil=alpha * SPR_temp - beta;
         B_equil=posfun(B_equil,0.0001,temp);
         R_equil=(4.*steepness*Recr_virgin*B_equil) / (SPB_virgin*(1.-steepness)+(5.*steepness-1.)*B_equil); //Beverton-Holt
