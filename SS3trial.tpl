@@ -3569,6 +3569,7 @@ DATA_SECTION
 !!//  SS_Label_Info_4.2.2  #Define distribution of recruitment(settlement) among growth patterns, areas, months
 
   int recr_dist_method  //  1=like 3.24; 2=main effects for GP, Settle timing, Area; 3=each Settle entity; 4=none when N_GP*Nsettle*pop==1
+  int recr_dist_area  //  1=global SRR; 2=area-specific SRR
   int N_settle_assignments  //  number of assigned settlements for GP, Settle_month, Area (>=0)
   int N_settle_timings  //  number of recruitment settlement timings per spawning (>=1) - important for number of morphs calculation
                          //  will be calculated from the number of unique settle_months among the settle_assignments
@@ -3578,13 +3579,19 @@ DATA_SECTION
   int recr_dist_inx
  LOCAL_CALCS
   if(finish_starter==999)
-  {recr_dist_method=1;}  //  hardwire for 3.24 method
+  {
+    recr_dist_method=1;  //  hardwire for 3.24 method
+    recr_dist_area=1;
+  }
   else
   {
     *(ad_comm::global_datafile) >> recr_dist_method;
     echoinput<<recr_dist_method<<"  // Recruitment distribution method; where: 1=like 3.24; 2=main effects for GP, Settle timing, Area; 3=each Settle entity; 4=none when N_GP*Nsettle*pop==1"<<endl;
+    *(ad_comm::global_datafile) >> recr_dist_area;
+    echoinput<<recr_dist_area<<"  // recr_dist_area: 1 means global SRR; 2 means area-specific SRR"<<endl;
   }
-
+  recr_dist_area=1;  //hardwire for testing
+  
   switch (recr_dist_method)
   {
     case 1:
@@ -8032,7 +8039,7 @@ PARAMETER_SECTION
   number catch_mnage_d;  // total catch numbers for calc of mean age
   number harvest_rate;                        // Harvest rate
   number maxpossF;
-  vector Get_EquilCalc(1,2);
+  vector Equ_SpawnRecr_Result(1,2);
 
   4darray Z_rate(styr-3*nseas,k,1,pop,1,gmorph,0,nages)
   3darray Zrate2(1,pop,1,gmorph,0,nages)
@@ -9161,7 +9168,7 @@ PROCEDURE_SECTION
           {
             tempvec_a.initialize();
             for (y=Bmark_Yr(1);y<=Bmark_Yr(2);y++){tempvec_a+=migrrate(y,j);}
-            migrrate(styr-3,j)=tempvec_a/(Bmark_Yr(2)-Bmark_Yr(1)+1.);
+            migrrate(styr-3,j)=tempvec_a/temp;
           }
         }
 
@@ -10838,7 +10845,6 @@ FUNCTION void get_recr_distribution()
   {
     recr_dist(gp,settle,p)=femfrac(gp)*recr_dist_parm(gp)*recr_dist_parm(N_GP+p)*recr_dist_parm(N_GP+pop+settle);
     if(gender==2) recr_dist(gp+N_GP,settle,p)=femfrac(gp+N_GP)*recr_dist_parm(gp)*recr_dist_parm(N_GP+p)*recr_dist_parm(N_GP+pop+settle);  //males
-//    echoinput<<"gp: "<<gp<<" settle: "<<settle<<" area: "<<p<<" gpval "<<recr_dist_parm(gp)<<" areaval "<<recr_dist_parm(N_GP+p)<<" settleval "<<recr_dist_parm(N_GP+pop+settle)<<endl;
   }
 //  SS_Label_Info_18.3  #if recr_dist_interaction is chosen, then multiply these in also
   if(recr_dist_inx==1)
@@ -10858,7 +10864,7 @@ FUNCTION void get_recr_distribution()
   }
 //  SS_Label_Info_18.4  #scale the recr_dist matrix to sum to 1.0
   recr_dist/=sum(recr_dist);
-    if(do_once==1) echoinput<<"recruitment distribution "<<endl<<recr_dist<<endl;
+    if(do_once==1) echoinput<<"recruitment distribution in year: "<<y<<"  DIST: "<<recr_dist<<endl;
   }
   
 //*******************************************************************
@@ -12548,35 +12554,42 @@ FUNCTION void get_initial_conditions()
   if(do_once==1) cout<<" ready for virgin age struc "<<endl;
   //  SS_Label_Info_23.4 #calculate unfished (virgin) numbers-at-age
   eq_yr=styr-2;
+  bio_yr=styr;
+  Fishon=0;
   virg_fec = fec;
-  Recr_virgin=mfexp(SR_parm(1));
-  exp_rec(eq_yr,1)=Recr_virgin;  //  expected Recr from s-r parms
-  exp_rec(eq_yr,2)=Recr_virgin; 
-  exp_rec(eq_yr,3)=Recr_virgin; 
-  exp_rec(eq_yr,4)=Recr_virgin;
 
-   bio_yr=styr;
-   Fishon=0;
-   equ_Recr=Recr_virgin;
-
-   Do_Equil_Calc();                      //  call function to do equilibrium calculation
-   SPB_virgin=SPB_equil;
-      Mgmt_quant(1)=SPB_equil;
-      if(Do_Benchmark>0)
-      {
-        Mgmt_quant(2)=totbio;
-        Mgmt_quant(3)=smrybio;
-        Mgmt_quant(4)=Recr_virgin;
-      }
-
-   SPB_pop_gp(eq_yr)=SPB_equil_pop_gp;   // dimensions of pop x N_GP
-   if(Hermaphro_Option>0) MaleSPB(eq_yr)=MaleSPB_equil_pop_gp;
-   SPB_yr(eq_yr)=SPB_equil;
-   t=styr-2*nseas-1;
-   for (p=1;p<=pop;p++)
-   for (g=1;g<=gmorph;g++)
-   for (s=1;s<=nseas;s++)
-     {natage(t+s,p,g)(0,nages)=value(equ_numbers(s,p,g)(0,nages));}
+  if(recr_dist_area==1 || pop==1)  //  do global spawn_recruitment calculations
+  {
+    Recr_virgin=mfexp(SR_parm(1));
+    equ_Recr=Recr_virgin;
+    exp_rec(eq_yr,1)=Recr_virgin;  //  expected Recr from s-r parms
+    exp_rec(eq_yr,2)=Recr_virgin; 
+    exp_rec(eq_yr,3)=Recr_virgin; 
+    exp_rec(eq_yr,4)=Recr_virgin;
+  
+    Do_Equil_Calc();                      //  call function to do equilibrium calculation
+    SPB_virgin=SPB_equil;
+    Mgmt_quant(1)=SPB_equil;
+    if(Do_Benchmark>0)
+    {
+      Mgmt_quant(2)=totbio;
+      Mgmt_quant(3)=smrybio;
+      Mgmt_quant(4)=Recr_virgin;
+    }
+  
+    SPB_pop_gp(eq_yr)=SPB_equil_pop_gp;   // dimensions of pop x N_GP
+    if(Hermaphro_Option>0) MaleSPB(eq_yr)=MaleSPB_equil_pop_gp;
+    SPB_yr(eq_yr)=SPB_equil;
+    t=styr-2*nseas-1;
+    for (p=1;p<=pop;p++)
+    for (g=1;g<=gmorph;g++)
+    for (s=1;s<=nseas;s++)
+    {natage(t+s,p,g)(0,nages)=equ_numbers(s,p,g)(0,nages);}
+  }
+  else  //  area-specific spawn-recruitment
+  {
+    
+  }
 
   //  SS_Label_Info_23.5  #Calculate equilibrium using initial F
   if(do_once==1) cout<<" ready for initial age struc "<<endl;
@@ -12619,9 +12632,9 @@ FUNCTION void get_initial_conditions()
 
   SPR_temp=SPB_equil/equ_Recr;  //  spawners per recruit at initial F
 //  next the rquilibrium SSB and recruitment from SPR_temp
-  Get_EquilCalc = Equil_Spawn_Recr_Fxn();  //  returns 2 element vector containing equilibrium biomass and recruitment at this SPR
+  Equ_SpawnRecr_Result = Equil_Spawn_Recr_Fxn(SR_parm(2), SR_parm(3), SPB_virgin, Recr_virgin, SPR_temp);  //  returns 2 element vector containing equilibrium biomass and recruitment at this SPR
 
-  R1_exp=Get_EquilCalc(2);     //  set the expected recruitment equal to this equilibrium
+  R1_exp=Equ_SpawnRecr_Result(2);     //  set the expected recruitment equal to this equilibrium
   exp_rec(eq_yr,1)=R1_exp;
   if(SR_env_target==2) {R1_exp*=mfexp(SR_parm(N_SRparm2-2)* env_data(eq_yr,SR_env_link));}  //  adjust for environment
   exp_rec(eq_yr,2)=R1_exp;
@@ -12651,7 +12664,7 @@ FUNCTION void get_initial_conditions()
      {
       est_equ_catch(s,f)=equ_catch_fleet(5,s,f);
      }
-    }
+   }
    if(save_for_report>0)
    {
      for (s=1;s<=nseas;s++)
@@ -12693,7 +12706,7 @@ FUNCTION void get_initial_conditions()
        natage(styr,p,g,a) *=mfexp(recdev(j)-biasadj(j)*half_sigmaRsq);
      }
    }
-
+   SPB_pop_gp(styr)=SPB_pop_gp(styr-1);  //  placeholder in case not calculated early in styr
    //  note:  the above keeps SPB_pop_gp(styr) = SPB_equil.  It does not adjust for initial agecomp, but probably should
   }  //  end initial_conditions
 
@@ -12820,7 +12833,6 @@ FUNCTION void get_time_series()
         }
         SPB_current=sum(SPB_pop_gp(y));
         SPB_yr(y)=SPB_current;
-
         if(Hermaphro_Option>0)  // get male biomass
         {
           MaleSPB(y).initialize();
@@ -12840,7 +12852,7 @@ FUNCTION void get_time_series()
         }
 
   //  SS_Label_Info_24.2.3 #Get the total recruitment produced by this spawning biomass
-        Recruits=Spawn_Recr(SPB_current);  // calls to function Spawn_Recr
+        Recruits=Spawn_Recr(SPB_virgin,Recr_virgin,SPB_current);  // calls to function Spawn_Recr
 // distribute Recruitment of age 0 fish among the current and future settlements; and among areas and morphs
             //  use t offset for each birth event:  Settlement_offset(settle)
             //  so the total number of Recruits will be relative to their numbers at the time of the set of settlement_events.
@@ -13192,7 +13204,7 @@ FUNCTION void get_time_series()
           }
         }
   //  SS_Label_Info_24.3.4.1 #Get recruitment from this spawning biomass
-        Recruits=Spawn_Recr(SPB_current);  // calls to function Spawn_Recr
+        Recruits=Spawn_Recr(SPB_virgin,Recr_virgin,SPB_current);  // calls to function Spawn_Recr
 // distribute Recruitment of age 0 fish among the current and future settlements; and among areas and morphs
 //  note that because SPB_current is calculated at end of season to take into account Z,
 //  this means that recruitment cannot occur until a subsequent season
@@ -14703,9 +14715,9 @@ FUNCTION void Do_Equil_Calc()
    smrybio=0.0;
    smryage=0.0;
    smrynum=0.0;
-// first seed the recruits
-        for (g=1;g<=gmorph;g++)
-        {
+// first seed the recruits; seems redundant
+      for (g=1;g<=gmorph;g++)
+      {
         if(use_morph(g)>0)
         {
           settle=settle_g(g);
@@ -14715,9 +14727,8 @@ FUNCTION void Do_Equil_Calc()
              mfexp(natM(Settle_seas(settle),GP3(g),Settle_age(settle))*Settle_timing_seas(settle));
           }
         }
-        }
-        
-//      }
+      }
+
      for (a=0;a<=3*nages;a++)     // go to 3x nages to approximate the infinite tail, then add the infinite tail
      {
        if(a<=nages) {a1=a;} else {a1=nages;}    // because selex and biology max out at nages
@@ -14766,7 +14777,7 @@ FUNCTION void Do_Equil_Calc()
                    }
 
                    for (f=1;f<=Nfleet;f++)
-                   if (fleet_area(f)==p && Hrate(f,t)>0.)
+                   if (fleet_area(f)==p && Hrate(f,t)>0. && fleet_type(f)<=2)
                    {
                      temp=N_mid*Hrate(f,t)*harvest_rate;     // numbers that would be caught if fully selected
                      Nsurvive-=temp*deadfish(s,g,f,a1);       //  survival from fishery kill
@@ -14804,7 +14815,7 @@ FUNCTION void Do_Equil_Calc()
                    if(a1<=nages)
                    {
                      for (f=1;f<=Nfleet;f++)       //loop over fishing fleets to get Z
-                     if (fleet_area(f)==p && Hrate(f,t)>0.0)
+                     if (fleet_area(f)==p && Hrate(f,t)>0.0 && fleet_type(f)<=2)
                      {
                        equ_Z(s,p,g,a1)+=deadfish(s,g,f,a1)*Hrate(f,t);
                      }
@@ -14895,7 +14906,7 @@ FUNCTION void Do_Equil_Calc()
             }
           }
         }  // end season
-      }  // end age
+     }  // end age
 
 // now calc contribution to catch and ssb
        for (g=1;g<=gmorph;g++)
@@ -14915,7 +14926,8 @@ FUNCTION void Do_Equil_Calc()
                Zrate2(p,g)=elem_div( (1.-mfexp(-seasdur(s)*equ_Z(s,p,g))), equ_Z(s,p,g));
                if(s<Bseas(g)) Zrate2(p,g,0)=0.0;
                for (f=1;f<=Nfleet;f++)
-               if (fleet_area(f)==p && Hrate(f,t)>0.0)
+               if (fleet_area(f)==p && fleet_type(f)<=2)
+               if(Hrate(f,t)>0.0)
                {
                  equ_catch_fleet(2,s,f)+=Hrate(f,t)*elem_prod(equ_numbers(s,p,g)(0,nages),deadfish_B(s,g,f))*Zrate2(p,g);      // dead catch bio
                  equ_catch_fleet(5,s,f)+=Hrate(f,t)*elem_prod(equ_numbers(s,p,g)(0,nages),deadfish(s,g,f))*Zrate2(p,g);      // deadfish catch numbers
@@ -15083,8 +15095,6 @@ FUNCTION void Make_AgeLength_Key(const int s, const int subseas)
                 ALK_range_use=calc_ALK_range(len_bins,use_Ave_Size_W,use_SD_Size);  //  later need to offset according to g
                 ALK_range_g_lo(g)=column(ALK_range_use,1);
                 ALK_range_g_hi(g)=column(ALK_range_use,2);
-                cout<<"phase "<<current_phase()<<endl;
-                cout<<ALK_range_use<<endl;
               }
               ALK(ALK_idx,g)=calc_ALK(len_bins,ALK_range_g_lo(g),ALK_range_g_hi(g),use_Ave_Size_W,use_SD_Size);
             }
@@ -15759,12 +15769,6 @@ FUNCTION void Get_Benchmarks()
       Make_FishSelex();
     }
 
-    if(SR_fxn==6 || SR_fxn==3)
-    {
-      alpha = 4.0 * SR_parm(2)*Recr_virgin / (5.*SR_parm(2)-1.);
-      beta = (SPB_virgin*(1.-SR_parm(2))) / (5.*SR_parm(2)-1.);
-    }
-
 //  the spawner-recruitment function has Bzero based on virgin biology, not benchmark biology
 //  need to deal with possibility that with time-varying biology, the SPB_virgin calculated from virgin conditions will differ from the SPB_virgin used for benchmark conditions
 
@@ -15870,10 +15874,10 @@ FUNCTION void Get_Benchmarks()
     }
 
     SPR_temp=SPR_actual*SPR_unf;
-    Get_EquilCalc = Equil_Spawn_Recr_Fxn();   // call  function
+    Equ_SpawnRecr_Result = Equil_Spawn_Recr_Fxn(SR_parm(2), SR_parm(3), SPB_virgin, Recr_virgin, SPR_temp);  //  returns 2 element vector containing equilibrium biomass and recruitment at this SPR
 
-    Bspr=Get_EquilCalc(1);
-    Bspr_rec=Get_EquilCalc(2);
+    Bspr=Equ_SpawnRecr_Result(1);
+    Bspr_rec=Equ_SpawnRecr_Result(2);
     YPR_tgt_enc  = YPR_enc;         //  total encountered yield per recruit
     YPR_tgt_dead = YPR_dead;           // total dead yield per recruit
     YPR_tgt_N_dead = YPR_N_dead;
@@ -15881,8 +15885,8 @@ FUNCTION void Get_Benchmarks()
     if(rundetail>0 && mceval_counter==0) cout<<" got Fspr "<<SPR_Fmult<<" "<<SPR_actual<<endl;
     YPR_spr=YPR_tgt_dead; Vbio_spr=totbio; Vbio1_spr=smrybio;
     Mgmt_quant(10)=equ_F_std;
-    Mgmt_quant(9)=Get_EquilCalc(1);
-    Mgmt_quant(11)=YPR_dead*Get_EquilCalc(2);
+    Mgmt_quant(9)=Equ_SpawnRecr_Result(1);
+    Mgmt_quant(11)=YPR_dead*Equ_SpawnRecr_Result(2);
 
     SPR_at_target=SPR_actual;
 //   end finding Fspr
@@ -15925,11 +15929,11 @@ FUNCTION void Get_Benchmarks()
         Do_Equil_Calc();
         SPR_Btgt = SPB_equil/SPR_unf;   //  here for SPR it uses benchmark's SPB_virgin for consistency
         SPR_temp=SPB_equil;
-        Get_EquilCalc = Equil_Spawn_Recr_Fxn();   // call  function
-        yld1(ii)=Get_EquilCalc(1);
+        Equ_SpawnRecr_Result = Equil_Spawn_Recr_Fxn(SR_parm(2), SR_parm(3), SPB_virgin, Recr_virgin, SPR_temp);  //  returns 2 element vector containing equilibrium biomass and recruitment at this SPR
+        yld1(ii)=Equ_SpawnRecr_Result(1);
       }
 
-      Btgt=Get_EquilCalc(1);  //  so uses benchmark average years
+      Btgt=Equ_SpawnRecr_Result(1);  //  so uses benchmark average years
 
       if(jj==3)
         {
@@ -15952,17 +15956,17 @@ FUNCTION void Get_Benchmarks()
 
       if(show_MSY==1)
       {
-        report5<<j<<" "<<Fmult<<" "<<equ_F_std<<" "<<(Btgt/Get_EquilCalc(2))/SPR_unf<<" "<<YPR_dead*Get_EquilCalc(2)<<" "<<Btgt<<" "<<Get_EquilCalc(2)
-        <<" "<<Btgt/SPB_virgin<<" "<<sum(equ_catch_fleet(2))*Get_EquilCalc(2);
+        report5<<j<<" "<<Fmult<<" "<<equ_F_std<<" "<<(Btgt/Equ_SpawnRecr_Result(2))/SPR_unf<<" "<<YPR_dead*Equ_SpawnRecr_Result(2)<<" "<<Btgt<<" "<<Equ_SpawnRecr_Result(2)
+        <<" "<<Btgt/SPB_virgin<<" "<<sum(equ_catch_fleet(2))*Equ_SpawnRecr_Result(2);
         for (p=1;p<=pop;p++)
         for (gp=1;gp<=N_GP;gp++)
-        {report5<<" "<<SPB_equil_pop_gp(p,gp)*Get_EquilCalc(2);}
+        {report5<<" "<<SPB_equil_pop_gp(p,gp)*Equ_SpawnRecr_Result(2);}
         report5<<endl;
       }
 
       }   // end search loop
 
-    Btgt_Rec=Get_EquilCalc(2);
+    Btgt_Rec=Equ_SpawnRecr_Result(2);
     if(fabs(log(Btgt/Btgttgt))>=0.001)
     {N_warn++; warning<<" warning: poor convergence in Btarget search "<<Btgttgt<<" "<<Btgt<<endl;}
     
@@ -16060,9 +16064,9 @@ FUNCTION void Get_Benchmarks()
           Do_Equil_Calc();
           MSY_SPR = SPB_equil/SPR_unf;
           SPR_temp=SPB_equil;
-          Get_EquilCalc = Equil_Spawn_Recr_Fxn();   // call  function
-          Bmsy=Get_EquilCalc(1);
-          Recr_msy=Get_EquilCalc(2);
+          Equ_SpawnRecr_Result = Equil_Spawn_Recr_Fxn(SR_parm(2), SR_parm(3), SPB_virgin, Recr_virgin, SPR_temp);  //  returns 2 element vector containing equilibrium biomass and recruitment at this SPR
+          Bmsy=Equ_SpawnRecr_Result(1);
+          Recr_msy=Equ_SpawnRecr_Result(2);
           yld1(ii)=YPR_dead*Recr_msy;   //  *mfexp(-Equ_penalty);
           Yield=YPR_dead*Recr_msy;
           bestF1+=F1(ii)*(pow(mfexp(Yield/1.0e08),5)-1.);
@@ -16574,7 +16578,7 @@ FUNCTION void Get_Forecast()
                 SPB_yr(y)=SPB_current;
               }
             }
-            Recruits=Spawn_Recr(SPB_current);    //  recruitment with deviations
+            Recruits=Spawn_Recr(SPB_virgin,Recr_virgin,SPB_current);    //  recruitment with deviations
             if(Fcast_Loop1<Fcast_Loop_Control(2))    //  use expected recruitment  this should include environ effect - CHECK THIS
             {
               Recruits=exp_rec(y,2);
@@ -18763,6 +18767,7 @@ FUNCTION void write_nucontrol()
   report4<<platoon_distr(1,N_platoon)<<" #vector_Morphdist_(-1_in_first_val_gives_normal_approx)"<<endl;
   report4<<"#"<<endl;
   report4<<recr_dist_method<<" # recr_dist_method for parameters:  1=like 3.24; 2=main effects for GP, Settle timing, Area; 3=each Settle entity; 4=none when N_GP*Nsettle*pop==1"<<endl;
+  report4<<recr_dist_area<<" # Recruitment: 1=global; 2=by area"<<endl;
   report4<<N_settle_assignments<<" #  number of recruitment settlement assignments "<<endl<<
              recr_dist_inx<< " # year_x_area_x_settlement_event interaction requested (only for recr_dist_method=1)"<<endl<<
              "#GPat month  area (for each settlement assignment)"<<endl<<settlement_pattern_rd<<endl<<"#"<<endl;
@@ -21841,10 +21846,9 @@ FUNCTION void write_bigoutput()
             Fishon=1;
             Do_Equil_Calc();
             SPR_temp=SPB_equil;
-            
-            Get_EquilCalc = Equil_Spawn_Recr_Fxn();   // call  function
-            Btgt_prof=Get_EquilCalc(1);
-            Btgt_prof_rec=Get_EquilCalc(2);
+            Equ_SpawnRecr_Result = Equil_Spawn_Recr_Fxn(SR_parm(2), SR_parm(3), SPB_virgin, Recr_virgin, SPR_temp);  //  returns 2 element vector containing equilibrium biomass and recruitment at this SPR
+            Btgt_prof=Equ_SpawnRecr_Result(1);
+            Btgt_prof_rec=Equ_SpawnRecr_Result(2);
             if(SPRloop1==0)
             {
               if(Btgt_prof<0.001 && Btgt_prof_rec<0.001)
@@ -21897,9 +21901,9 @@ FUNCTION void write_bigoutput()
           Fishon=1;
           Do_Equil_Calc();
           SPR_temp=SPB_equil;
-          Get_EquilCalc = Equil_Spawn_Recr_Fxn();   // call  function
-          Btgt_prof=Get_EquilCalc(1);
-          Btgt_prof_rec=Get_EquilCalc(2);
+          Equ_SpawnRecr_Result = Equil_Spawn_Recr_Fxn(SR_parm(2), SR_parm(3), SPB_virgin, Recr_virgin, SPR_temp);  //  returns 2 element vector containing equilibrium biomass and recruitment at this SPR
+          Btgt_prof=Equ_SpawnRecr_Result(1);
+          Btgt_prof_rec=Equ_SpawnRecr_Result(2);
           SPR_trial=value(SPB_equil/SPR_unf);
             SS2out<<"3 "<<SPRloop<<" "<<Fmult2<<" "<<equ_F_std<<" "<<value(SPB_equil/SPR_unf)<<" "<<value(YPR_dead)<<" "
             <<value(YPR_dead*Btgt_prof_rec)<<" "<<Btgt_prof<<" "<<Btgt_prof_rec<<" "<<value(Btgt_prof/SPB_virgin)
@@ -22062,7 +22066,7 @@ FUNCTION dvariable Join_Fxn(const prevariable& MinPoss, const prevariable& MaxPo
 
 //********************************************************************
  /*  SS_Label_FUNCTION 43 Spawner-recruitment function */
-FUNCTION dvariable Spawn_Recr(const prevariable& SPB_current)
+FUNCTION dvariable Spawn_Recr(const prevariable& SPB_virgin, const prevariable& Recr_virgin, const prevariable& SPB_current)
   {
     dvariable NewRecruits;
     dvariable SPB_BH1;
@@ -22081,31 +22085,42 @@ FUNCTION dvariable Spawn_Recr(const prevariable& SPB_current)
 
 //  SS_Label_43.1  add 0.1 to input spawning biomass value to make calculation more rebust
     SPB_curr_adj = SPB_current + 0.100;   // robust
-    Recr_virgin_adj=Recr_virgin;  SPB_virgin_adj=SPB_virgin;
-    steepness=SR_parm(2);
-    if(SR_fxn==8)
-      {
-        Shepard_c=SR_parm(3);
-        Shepard_c2=pow(0.2,Shepard_c);
-        Hupper=1.0/(5.0*Shepard_c2);
-        steep2=0.2+(steepness-0.2)/(0.8)*(Hupper-0.2);
-      }
-    
+    Recr_virgin_adj=Recr_virgin;
+    SPB_virgin_adj=SPB_virgin;
+
 //  SS_Label_43.2  adjust for environmental effects on S-R parameters: Rzero or steepness
     if(SR_env_target==2)
     {
       Recr_virgin_adj*=mfexp(SR_parm(N_SRparm2-2)* env_data(y,SR_env_link));
       SPB_virgin_adj*=mfexp(SR_parm(N_SRparm2-2)* env_data(y,SR_env_link));
     }
-    else if(SR_env_target==3)
+
+    if(SR_env_target==3)
     {
       temp=log((SRvec_HI(2)-SRvec_LO(2)+0.0000002)/(SR_parm(2)-SRvec_LO(2)+0.0000001)-1.)/(-2.);
       temp+=SR_parm(N_SRparm2-2)* env_data(y,SR_env_link);
       steepness=SRvec_LO(2)+(SRvec_HI(2)-SRvec_LO(2))/(1.+mfexp(-2.*temp));
     }
-
-// functions below use Recr_virgin_adj,SPB_virgin_adj which could be adjusted to differ from R0,SPB_virgin
+    else
+    {
+      steepness=SR_parm(2);
+    }
+    
+    if(SR_fxn==8)
+    {
+      Shepard_c=SR_parm(3);
+      Shepard_c2=pow(0.2,Shepard_c);
+      Hupper=1.0/(5.0*Shepard_c2);
+      steep2=0.2+(steepness-0.2)/(0.8)*(Hupper-0.2);
+    }
+    else if(SR_fxn==6 || SR_fxn==3)
+    {
+      alpha = 4.0 * steepness*Recr_virgin / (5.*steepness-1.);
+      beta = (SPB_virgin*(1.-steepness)) / (5.*steepness-1.);
+    }
+    
 //  SS_Label_43.3  calculate expected recruitment from the input spawning biomass and the SR curve
+// functions below use Recr_virgin_adj,SPB_virgin_adj which could have been adjusted adjusted above from R0,SPB_virgin
     switch(SR_fxn)
     {
       case 1: // previous placement for B-H constrained
@@ -22224,20 +22239,20 @@ FUNCTION dvariable Spawn_Recr(const prevariable& SPB_current)
 
 //********************************************************************
  /*  SS_Label_FUNCTION 44 Equil_Spawn_Recr_Fxn */
-FUNCTION dvar_vector Equil_Spawn_Recr_Fxn()
+FUNCTION dvar_vector Equil_Spawn_Recr_Fxn(const prevariable &steepness, const prevariable &SRparm3, 
+         const prevariable& SPB_virgin, const prevariable& Recr_virgin, const prevariable& SPR_temp)
   {
-    dvar_vector EquilCalc(1,2);
-    dvariable B_equil;
+    RETURN_ARRAYS_INCREMENT();
+    dvar_vector Equil_Spawn_Recr_Calc(1,2);  // values to return 1 is B_equil, 2 is R_equil
+    dvariable B_equil;  
     dvariable R_equil;
     dvariable temp;
     dvariable join;
-    dvariable steepness;
     dvariable Shepard_c;
     dvariable Shepard_c2;
     dvariable SRZ_0;
     dvariable SRZ_max;
     dvariable SRZ_surv;
-    steepness=SR_parm(2);
 
 //  SS_Label_44.1  calc equilibrium SpawnBio and Recruitment from input SPR_temp, which is spawning biomass per recruit at some given F level
     switch(SR_fxn)
@@ -22250,24 +22265,29 @@ FUNCTION dvar_vector Equil_Spawn_Recr_Fxn()
 //  SS_Label_44.1.1  Beverton-Holt with flattop beyond Bzero
       case 6: //Beverton-Holt
       {
+        alpha = 4.0 * steepness*Recr_virgin / (5.*steepness-1.);
+        beta = (SPB_virgin*(1.-steepness)) / (5.*steepness-1.);
         B_equil=alpha * SPR_temp - beta;
         B_equil=posfun(B_equil,0.0001,temp);
-        R_equil=(4.*SR_parm(2)*Recr_virgin*B_equil) / (SPB_virgin*(1.-SR_parm(2))+(5.*SR_parm(2)-1.)*B_equil);
+        R_equil=(4.*steepness*Recr_virgin*B_equil) / (SPB_virgin*(1.-steepness)+(5.*steepness-1.)*B_equil);
         break;
       }
 //  SS_Label_44.1.2  Ricker
       case 2: // Ricker
       {
-        B_equil=SPB_virgin*(1.+(log(Recr_virgin/SPB_virgin)+log(SPR_temp))/SR_parm(2));
-        R_equil=Recr_virgin*B_equil/SPB_virgin * mfexp(SR_parm(2)*(1.-B_equil/SPB_virgin));
+        B_equil=SPB_virgin*(1.+(log(Recr_virgin/SPB_virgin)+log(SPR_temp))/steepness);
+        R_equil=Recr_virgin*B_equil/SPB_virgin * mfexp(steepness*(1.-B_equil/SPB_virgin));
+        
         break;
       }
 //  SS_Label_44.1.3  Beverton-Holt
       case 3:  // same as case 6
       {
+        alpha = 4.0 * steepness*Recr_virgin / (5.*steepness-1.);
+        beta = (SPB_virgin*(1.-steepness)) / (5.*steepness-1.);
         B_equil=alpha * SPR_temp - beta;
         B_equil=posfun(B_equil,0.0001,temp);
-        R_equil=(4.*SR_parm(2)*Recr_virgin*B_equil) / (SPB_virgin*(1.-SR_parm(2))+(5.*SR_parm(2)-1.)*B_equil); //Beverton-Holt
+        R_equil=(4.*steepness*Recr_virgin*B_equil) / (SPB_virgin*(1.-steepness)+(5.*steepness-1.)*B_equil); //Beverton-Holt
         break;
       }
 
@@ -22280,7 +22300,7 @@ FUNCTION dvar_vector Equil_Spawn_Recr_Fxn()
 //  SS_Label_44.1.5  Hockey Stick
       case 5: // hockey stick
       {
-        alpha=SR_parm(3)*Recr_virgin;  // min recruitment level
+        alpha=SRparm3*Recr_virgin;  // min recruitment level
 //        temp=SPB_virgin/R0*steepness;  // spawners per recruit at inflection
         beta=(Recr_virgin-alpha)/(steepness*SPB_virgin);   //  slope of recruitment on spawners below the inflection
         B_equil=Join_Fxn(0.0*SPB_virgin/Recr_virgin, SPB_virgin/Recr_virgin, SPB_virgin/Recr_virgin*steepness, SPR_temp, alpha/((1./SPR_temp)-beta), SPR_temp*Recr_virgin);
@@ -22291,8 +22311,8 @@ FUNCTION dvar_vector Equil_Spawn_Recr_Fxn()
       case 7:  // survival
       {
         SRZ_0=log(1.0/(SPB_virgin/Recr_virgin));
-        SRZ_max=SRZ_0+SR_parm(2)*(0.0-SRZ_0);
-        B_equil = SPB_virgin * (1. - (log(1./SPR_temp) - SRZ_0)/pow((SRZ_max - SRZ_0),(1./SR_parm(3)) ));
+        SRZ_max=SRZ_0+steepness*(0.0-SRZ_0);
+        B_equil = SPB_virgin * (1. - (log(1./SPR_temp) - SRZ_0)/pow((SRZ_max - SRZ_0),(1./SRparm3) ));
         SRZ_surv=mfexp((1.-pow((B_equil/SPB_virgin),SR_parm(3)) )*(SRZ_max-SRZ_0)+SRZ_0);  //  survival
         R_equil=B_equil*SRZ_surv;
         break;
@@ -22305,29 +22325,29 @@ FUNCTION dvar_vector Equil_Spawn_Recr_Fxn()
         dvariable Shep_bot;
         dvariable Hupper;
         dvariable steep2;
+        dvariable Shep_top2;
 //  Andre's FORTRAN
 //        TOP = 5*Steep*(1-0.2**POWER)*SPR/SPRF0-(1-5*Steep*0.2**POWER)
 //      BOT = (5*Steep-1)
 //       REC = (TOP/BOT)**(1.0/POWER)*SPRF0/SPR
 // Power = exp(logC);
 // Hupper = 1.0/(5.0 * pow(0.2,Power));
-        Shepard_c=SR_parm(3);
+        Shepard_c=SRparm3;
         Shepard_c2=pow(0.2,Shepard_c);
         Hupper=1.0/(5.0*Shepard_c2);
         steep2=0.2+(steepness-0.2)/(0.8)*(Hupper-0.2);
         Shep_top=5.0*steep2*(1.0-Shepard_c2)*(SPR_temp*Recr_virgin)/SPB_virgin-(1.0-5.0*steep2*Shepard_c2);
         Shep_bot=5.0*steep2-1.0;
-        dvariable Shep_top2;
         Shep_top2=posfun(Shep_top,0.001,temp);  
         R_equil=(SPB_virgin/SPR_temp) * pow((Shep_top2/Shep_bot),(1.0/Shepard_c));
         B_equil=R_equil*SPR_temp;
         break;
       }
-      
     }
-    EquilCalc(1)=B_equil;
-    EquilCalc(2)=R_equil;
-    return EquilCalc;
+    Equil_Spawn_Recr_Calc(1)=B_equil;
+    Equil_Spawn_Recr_Calc(2)=R_equil;
+    RETURN_ARRAYS_DECREMENT();
+    return Equil_Spawn_Recr_Calc;
   }  //  end Equil_Spawn_Recr_Fxn
 
 //********************************************************************
