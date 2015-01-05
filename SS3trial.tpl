@@ -243,6 +243,7 @@ DATA_SECTION
   !!echoinput<<F_std_basis<<"  F_std_basis"<<endl;
   !!echoinput<<"For Kobe plot, set depletion_basis=2; depletion_level=1.0; F_reporting=your choose; F_std_basis=2"<<endl;
   init_number finish_starter
+  number ALK_tolerance
 
  LOCAL_CALCS
 
@@ -254,6 +255,7 @@ DATA_SECTION
    else
    {cout<<"CRITICAL error reading finish_starter in starter.ss: "<<finish_starter<<endl; exit(1);}    
    echoinput<<"  finish reading starter.ss"<<endl<<endl;
+   ALK_tolerance=0.0001;   //  later put this into the starter.ss input
  END_CALCS
 
   //  end reading  from Starter file
@@ -15092,7 +15094,7 @@ FUNCTION void Make_AgeLength_Key(const int s, const int subseas)
               if((do_once==1 || (current_phase()>ALK_phase) && !last_phase()))
               {
                 ALK_phase=current_phase();
-                ALK_range_use=calc_ALK_range(len_bins,use_Ave_Size_W,use_SD_Size);  //  later need to offset according to g
+                ALK_range_use=calc_ALK_range(len_bins,use_Ave_Size_W,use_SD_Size,ALK_tolerance);  //  later need to offset according to g
                 ALK_range_g_lo(g)=column(ALK_range_use,1);
                 ALK_range_g_hi(g)=column(ALK_range_use,2);
               }
@@ -15128,19 +15130,21 @@ FUNCTION void Make_AgeLength_Key(const int s, const int subseas)
   }  //  end Make_AgeLength_Key
 
 //  the function calc_ALK_range finds the range for the distribution of length for each age
-FUNCTION imatrix calc_ALK_range(const dvector &len_bins, const dvar_vector &mean_len_at_age, const dvar_vector &sd_len_at_age)
+FUNCTION imatrix calc_ALK_range(const dvector &len_bins, const dvar_vector &mean_len_at_age, const dvar_vector &sd_len_at_age,
+                 const double ALK_tolerance)
   {
   int a, z;  // declare indices
   int nlength = len_bins.indexmax(); // find number of lengths
   int nages = mean_len_at_age.indexmax(); // find number of ages
   imatrix ALK_range(0,nages,1,2); // stores minimum and maximum
   dvariable len_dev;
-  
+  double ALK_tolerance_2;
+  ALK_tolerance_2=1.0-ALK_tolerance;
   for (a = 0; a <= nages; a++)
   {
     z=0;
     temp=0.0;
-    while(temp<0.0001 && z<nlength-1)
+    while(temp<ALK_tolerance && z<nlength-1)
     { 
       z++;
       len_dev = (len_bins(z) - mean_len_at_age(a)) / (sd_len_at_age(a));
@@ -15149,7 +15153,7 @@ FUNCTION imatrix calc_ALK_range(const dvector &len_bins, const dvar_vector &mean
     ALK_range(a,1)=z;
     z+=2;
     temp=0.0;
-    while(temp<0.9999 && z<nlength-1)
+    while(temp<ALK_tolerance_2 && z<nlength-1)
     {
       z++;
       len_dev = (len_bins(z) - mean_len_at_age(a)) / (sd_len_at_age(a));
