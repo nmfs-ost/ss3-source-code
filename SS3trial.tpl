@@ -412,6 +412,7 @@ DATA_SECTION
 
  END_CALCS
 
+//  SPAWN-RECR:   define spawning season
   init_number spawn_rd
    number spawn_month  //  month that spawning occurs
    int spawn_seas    //  spawning occurs in this season
@@ -3711,6 +3712,7 @@ DATA_SECTION
 //  SS_Label_Info_4.2.3 #Set-up arrays and indexing for growth patterns, gender, settlements, platoons
  END_CALCS  
    int g3i;
+//  SPAWN-RECR:   define settlement timings
   ivector Settle_seas(1,N_settle_timings)  //  calculated season in which settlement occurs
   ivector Settle_seas_offset(1,N_settle_timings)  //  calculated number of seasons between spawning and the season in which settlement occurs
   vector  Settle_timing_seas(1,N_settle_timings)  //  calculated elapsed time (frac of year) between settlement and the begin of season in which it occurs
@@ -5087,7 +5089,7 @@ DATA_SECTION
  END_CALCS
 
 !!//  SS_Label_Info_4.6 #Read setup for Spawner-Recruitment parameters
-// read setup for SR parameters:  LO, HI, INIT, PRIOR, PRtype, CV, PHASE
+//  SPAWN-RECR: read setup for SR parameters:  LO, HI, INIT, PRIOR, PRtype, CV, PHASE
   init_int SR_fxn
   ivector N_SRparm(1,10)
   !!N_SRparm.fill("{0,2,2,2,3,2,3,3,0,0}");
@@ -7971,6 +7973,7 @@ PARAMETER_SECTION
  END_CALCS
   init_bounded_vector Fcast_impl_error(endyr+1,YrMax,-1,1,k)
 
+//  SPAWN-RECR:   define some spawning biomass and recruitment entities
   number SPB_current;                            // Spawning biomass
   number SPB_vir_LH
   number Recr_virgin
@@ -8026,6 +8029,7 @@ PARAMETER_SECTION
   matrix make_mature_bio(1,gmorph,0,nages)  //  mature female weight at age
   matrix make_mature_numbers(1,gmorph,0,nages)  //  mature females at age
   matrix virg_fec(1,gmorph,0,nages)
+  vector Equ_SpawnRecr_Result(1,2);
   number fish_bio;
   number fish_bio_r;
   number fish_bio_e;
@@ -8041,7 +8045,6 @@ PARAMETER_SECTION
   number catch_mnage_d;  // total catch numbers for calc of mean age
   number harvest_rate;                        // Harvest rate
   number maxpossF;
-  vector Equ_SpawnRecr_Result(1,2);
 
   4darray Z_rate(styr-3*nseas,k,1,pop,1,gmorph,0,nages)
   3darray Zrate2(1,pop,1,gmorph,0,nages)
@@ -8852,6 +8855,7 @@ PRELIMINARY_CALCS_SECTION
         Make_AgeLength_Key(s,subseas);   //  ALK_idx calculated within Make_AgeLength_Key
         ALK(ALK_idx) = value(ALK(ALK_idx));
       }
+//  SPAWN-RECR:   calc fecundity in preliminary_calcs
       if(s==spawn_seas)
       {
         subseas=spawn_subseas;
@@ -10938,6 +10942,7 @@ FUNCTION void get_wtlen()
   //  SS_Label_Info_19.2.4  #calculate maturity and fecundity if seas = spawn_seas
   //  these calculations are done in spawn_seas, but are not affected by spawn_time within that season
   //  so age-specific inputs will assume to be at correct timing already; size-specific will later be adjusted to use size-at-age at the exact correct spawn_time_seas
+//  SPAWN-RECR:   calculate maturity and fecundity vectors
   
       if(s==spawn_seas && gg==1)  // get biology of maturity and fecundity
       {
@@ -12535,6 +12540,7 @@ FUNCTION void get_initial_conditions()
         Make_AgeLength_Key(s, subseas);
       }
 
+//  SPAWN-RECR:   call Make_Fecundity()
       if(s==spawn_seas)
       {
         subseas=spawn_subseas;
@@ -12560,6 +12566,7 @@ FUNCTION void get_initial_conditions()
   Fishon=0;
   virg_fec = fec;
 
+//  SPAWN-RECR:   get expected recruitment globally or by area
   if(recr_dist_area==1 || pop==1)  //  do global spawn_recruitment calculations
   {
     Recr_virgin=mfexp(SR_parm(1));
@@ -12608,6 +12615,7 @@ FUNCTION void get_initial_conditions()
    }
    
   //  SS_Label_Info_23.5.1  #Apply adjustments to the recruitment level
+//  SPAWN-RECR:   adjust recruitment for the initial equilibrium
   if(SR_parm_1(N_SRparm2-1,5)>-999)  //  using the PR_type as a flag
   {
   //  SS_Label_Info_23.5.1.1  #Adjustments do not include spawner-recruitment function
@@ -12625,29 +12633,30 @@ FUNCTION void get_initial_conditions()
   }
   else
   {
-  //  SS_Label_Info_23.5.1.2  #Adjustments do include spawner-recruitment function
-  //  do initial equilibrium with R1 based on offset from spawner-recruitment curve, using same approach as the benchmark calculations
-  //  first get SPR for this init_F
-  equ_Recr=Recr_virgin;
-  Do_Equil_Calc();
-  CrashPen += Equ_penalty;
-
-  SPR_temp=SPB_equil/equ_Recr;  //  spawners per recruit at initial F
-//  next the rquilibrium SSB and recruitment from SPR_temp
-  Equ_SpawnRecr_Result = Equil_Spawn_Recr_Fxn(SR_parm(2), SR_parm(3), SPB_virgin, Recr_virgin, SPR_temp);  //  returns 2 element vector containing equilibrium biomass and recruitment at this SPR
-
-  R1_exp=Equ_SpawnRecr_Result(2);     //  set the expected recruitment equal to this equilibrium
-  exp_rec(eq_yr,1)=R1_exp;
-  if(SR_env_target==2) {R1_exp*=mfexp(SR_parm(N_SRparm2-2)* env_data(eq_yr,SR_env_link));}  //  adjust for environment
-  exp_rec(eq_yr,2)=R1_exp;
-  exp_rec(eq_yr,3)=R1_exp;
-
-  equ_Recr = R1_exp*mfexp(SR_parm(N_SRparm2-1));  // apply R1 offset
-  R1=equ_Recr;
-  exp_rec(eq_yr,4)=equ_Recr;
-
-  Do_Equil_Calc();  // calculated SPB_equil
-  CrashPen += Equ_penalty;
+    //  SS_Label_Info_23.5.1.2  #Adjustments do include spawner-recruitment function
+    //  do initial equilibrium with R1 based on offset from spawner-recruitment curve, using same approach as the benchmark calculations
+    //  first get SPR for this init_F
+//  SPAWN-RECR:   calc initial equilibrium pop, SPB, Recruitment
+    equ_Recr=Recr_virgin;
+    Do_Equil_Calc();
+    CrashPen += Equ_penalty;
+  
+    SPR_temp=SPB_equil/equ_Recr;  //  spawners per recruit at initial F
+  //  next the rquilibrium SSB and recruitment from SPR_temp
+    Equ_SpawnRecr_Result = Equil_Spawn_Recr_Fxn(SR_parm(2), SR_parm(3), SPB_virgin, Recr_virgin, SPR_temp);  //  returns 2 element vector containing equilibrium biomass and recruitment at this SPR
+  
+    R1_exp=Equ_SpawnRecr_Result(2);     //  set the expected recruitment equal to this equilibrium
+    exp_rec(eq_yr,1)=R1_exp;
+    if(SR_env_target==2) {R1_exp*=mfexp(SR_parm(N_SRparm2-2)* env_data(eq_yr,SR_env_link));}  //  adjust for environment
+    exp_rec(eq_yr,2)=R1_exp;
+    exp_rec(eq_yr,3)=R1_exp;
+  
+    equ_Recr = R1_exp*mfexp(SR_parm(N_SRparm2-1));  // apply R1 offset
+    R1=equ_Recr;
+    exp_rec(eq_yr,4)=equ_Recr;
+  
+    Do_Equil_Calc();  // calculated SPB_equil
+    CrashPen += Equ_penalty;
   }
 
    SPB_pop_gp(eq_yr)=SPB_equil_pop_gp;   // dimensions of pop x N_GP
@@ -12722,6 +12731,7 @@ FUNCTION void get_time_series()
   if(Do_Morphcomp) Morphcomp_exp.initialize();
 
   //  SS_Label_Info_24.0 #Retrieve spawning biomass and recruitment from the initial equilibrium 
+//  SPAWN-RECR:   begin of time series, retrieve last spbio and recruitment
   SPB_current = SPB_yr(styr);  //  need these initial assignments in case recruitment distribution occurs before spawnbio&recruits
   if(recdev_doit(styr-1)>0)
   { Recruits = R1 * mfexp(recdev(styr-1)-biasadj(styr-1)*half_sigmaRsq); }
@@ -12783,6 +12793,7 @@ FUNCTION void get_time_series()
         ALK_idx=(s-1)*N_subseas+subseas;
         get_growth3(s, subseas);
         Make_AgeLength_Key(s, subseas);  //  for midseason
+//  SPAWN-RECR:   call Make_Fecundity in time series
         if(s==spawn_seas)
         {
           if(spawn_subseas!=1 && spawn_subseas!=mid_subseas)
@@ -12820,6 +12831,7 @@ FUNCTION void get_time_series()
       }
 
   //  SS_Label_Info_24.2.2 #Compute spawning biomass if this is spawning season so recruits could occur later this season
+//  SPAWN-RECR:   calc SPB in time series if spawning is at beginning of the season
       if(s==spawn_seas && spawn_time_seas<0.0001)    //  compute spawning biomass if spawning at beginning of season so recruits could occur later this season
       {
         SPB_pop_gp(y).initialize();
@@ -12854,6 +12866,7 @@ FUNCTION void get_time_series()
         }
 
   //  SS_Label_Info_24.2.3 #Get the total recruitment produced by this spawning biomass
+//  SPAWN-RECR:   calc recruitment in time series; need to make this area-specific
         Recruits=Spawn_Recr(SPB_virgin,Recr_virgin,SPB_current);  // calls to function Spawn_Recr
 // distribute Recruitment of age 0 fish among the current and future settlements; and among areas and morphs
             //  use t offset for each birth event:  Settlement_offset(settle)
@@ -13172,6 +13185,7 @@ FUNCTION void get_time_series()
    } //close area loop
 
   //  SS_Label_Info_24.3.4 #Compute spawning biomass if occurs after start of current season
+//  SPAWN-RECR:   calc spawn biomass in time series if after beginning of the season
       if(s==spawn_seas && spawn_time_seas>=0.0001)    //  compute spawning biomass
       {
         SPB_pop_gp(y).initialize();
@@ -13206,12 +13220,12 @@ FUNCTION void get_time_series()
           }
         }
   //  SS_Label_Info_24.3.4.1 #Get recruitment from this spawning biomass
+//  SPAWN-RECR:   calc recruitment in time series; need to make this area-specififc
         Recruits=Spawn_Recr(SPB_virgin,Recr_virgin,SPB_current);  // calls to function Spawn_Recr
 // distribute Recruitment of age 0 fish among the current and future settlements; and among areas and morphs
 //  note that because SPB_current is calculated at end of season to take into account Z,
 //  this means that recruitment cannot occur until a subsequent season
-//        for (settle=1;settle<=N_settle_timings;settle++)
-//        {
+//  SPAWN-RECR:   distribute recruits among areas, settlements, morphs
           for (g=1;g<=gmorph;g++)
           if(use_morph(g)>0)
           {
@@ -14953,6 +14967,7 @@ FUNCTION void Do_Equil_Calc()
              smrynum += sum(equ_numbers(s,p,g)(Smry_Age,nages));
              smryage += equ_numbers(s,p,g)(Smry_Age,nages) * r_ages(Smry_Age,nages);
            }
+//  SPAWN-RECR:   calc generation time, etc.
            if(s==spawn_seas)
            {
              if(gg==1)  // compute equilibrium spawning biomass for females
@@ -15223,6 +15238,7 @@ FUNCTION dvar_matrix calc_ALK_log(const dvector &len_bins, const dvar_vector &me
 //  this Make_Fecundity function does the dot product of the distribution of length-at-age (ALK) with maturity and fecundity vectors
 //  to calculate the mean fecundity at each age
  /* SS_Label_31.1 FUNCTION Make_Fecundity */
+//  SPAWN-RECR:   here is the make_Fecundity function
 FUNCTION void Make_Fecundity()
   {
     ALK_idx=(spawn_seas-1)*N_subseas+spawn_subseas;
@@ -15753,6 +15769,7 @@ FUNCTION void Get_Benchmarks()
       ALK_idx=(s-1)*N_subseas+subseas;
       Make_AgeLength_Key(s, subseas);  
 
+//  SPAWN-RECR:   call make_fecundity for benchmarks
       if(s==spawn_seas)
       {
         subseas=spawn_subseas;
@@ -15773,6 +15790,7 @@ FUNCTION void Get_Benchmarks()
       Make_FishSelex();
     }
 
+//  SPAWN-RECR:   notes regarding virgin vs. benchmark biology usage in spawn-recr
 //  the spawner-recruitment function has Bzero based on virgin biology, not benchmark biology
 //  need to deal with possibility that with time-varying biology, the SPB_virgin calculated from virgin conditions will differ from the SPB_virgin used for benchmark conditions
 
@@ -15877,6 +15895,7 @@ FUNCTION void Get_Benchmarks()
       }
     }
 
+//  SPAWN-RECR:   calc equil spawn-recr in YPR; need to make this area-specific
     SPR_temp=SPR_actual*SPR_unf;
     Equ_SpawnRecr_Result = Equil_Spawn_Recr_Fxn(SR_parm(2), SR_parm(3), SPB_virgin, Recr_virgin, SPR_temp);  //  returns 2 element vector containing equilibrium biomass and recruitment at this SPR
 
@@ -15932,6 +15951,7 @@ FUNCTION void Get_Benchmarks()
         }
         Do_Equil_Calc();
         SPR_Btgt = SPB_equil/SPR_unf;   //  here for SPR it uses benchmark's SPB_virgin for consistency
+//  SPAWN-RECR:   calc equil spawn-recr for Btarget calcs;  need to make area-specific
         SPR_temp=SPB_equil;
         Equ_SpawnRecr_Result = Equil_Spawn_Recr_Fxn(SR_parm(2), SR_parm(3), SPB_virgin, Recr_virgin, SPR_temp);  //  returns 2 element vector containing equilibrium biomass and recruitment at this SPR
         yld1(ii)=Equ_SpawnRecr_Result(1);
@@ -16066,6 +16086,7 @@ FUNCTION void Get_Benchmarks()
             {t=bio_t_base+s; Hrate(f,t)=Fmult*Bmark_RelF_Use(s,f);}
 
           Do_Equil_Calc();
+//  SPAWN-RECR:   calc spawn-recr for MSY calcs;  need to make area-specific
           MSY_SPR = SPB_equil/SPR_unf;
           SPR_temp=SPB_equil;
           Equ_SpawnRecr_Result = Equil_Spawn_Recr_Fxn(SR_parm(2), SR_parm(3), SPB_virgin, Recr_virgin, SPR_temp);  //  returns 2 element vector containing equilibrium biomass and recruitment at this SPR
@@ -16522,6 +16543,7 @@ FUNCTION void Get_Forecast()
               get_growth3(s, subseas);
               Make_AgeLength_Key(s, subseas);  //  for middle of season (begin of 3rd quarter)
         
+//  SPAWN-RECR:   call Make_Fecundity in forecast
               if(s==spawn_seas)
               {
                 subseas=spawn_subseas;
@@ -16549,6 +16571,7 @@ FUNCTION void Get_Forecast()
 
           if(s==nseas) {adv_age=1;} else {adv_age=0;}   //      advance age or not when doing survivorship
 
+//  SPAWN-RECR:   calc area-specific spawning biomass in forecast
           if(s==spawn_seas)    //  get spawnbio in a forecast year
           {
             SPB_pop_gp(y).initialize();
@@ -16582,13 +16605,15 @@ FUNCTION void Get_Forecast()
                 SPB_yr(y)=SPB_current;
               }
             }
+//  SPAWN-RECR:   get recruitment in forecast;  needs to be area-specific
             Recruits=Spawn_Recr(SPB_virgin,Recr_virgin,SPB_current);    //  recruitment with deviations
             if(Fcast_Loop1<Fcast_Loop_Control(2))    //  use expected recruitment  this should include environ effect - CHECK THIS
             {
               Recruits=exp_rec(y,2);
               exp_rec(y,4)=exp_rec(y,2);  // within the spawn_recr function this has value with recrdev, so need to reset here
             }
-// distribute Recruitment of age 0 fish among the current and future settlements; and among areas and morphs
+
+//  SPAWN-RECR: distribute Recruitment of age 0 fish among the current and future settlements; and among areas and morphs
               for (g=1;g<=gmorph;g++)
               if(use_morph(g)>0)
               {
@@ -16604,6 +16629,7 @@ FUNCTION void Get_Forecast()
 
           }  //  end of spawner-recruitment calculations
 
+//  SPAWN-RECR:  total spawn bio used in F policy.  Make this area-specific too?
           if(ABC_Loop==1)  //  doing OFL this loop
           {
             ABC_buffer(y)=1.0;
@@ -20256,6 +20282,7 @@ FUNCTION void write_bigoutput()
       Hupper=1.0/(5.0*Shepard_c2);
       temp=0.2+(SR_parm(2)-0.2)/(0.8)*(Hupper-0.2);
     }
+//  SPAWN-RECR: output to report.sso
   SS2out<<endl<<"SPAWN_RECRUIT Function: "<<SR_fxn<<" _ _ _ _ _ _"<<endl<<
   SR_parm(1)<<" Ln(R0) "<<mfexp(SR_parm(1))<<endl<<
   SR_parm(2)<<" steep"<<endl<<
@@ -21799,6 +21826,7 @@ FUNCTION void write_bigoutput()
     t_base=y+(y-styr)*nseas-1;
     bio_t_base=styr+(bio_yr-styr)*nseas-1;
 
+//  SPAWN-RECR:  call make_fecundity for benchmark bio for SPR loop
     for (s=1;s<=nseas;s++)
     {
       t = styr-3*nseas+s-1;
@@ -21849,6 +21877,7 @@ FUNCTION void write_bigoutput()
             }
             Fishon=1;
             Do_Equil_Calc();
+//  SPAWN-RECR:   calc equil spawn-recr in the SPR loop
             SPR_temp=SPB_equil;
             Equ_SpawnRecr_Result = Equil_Spawn_Recr_Fxn(SR_parm(2), SR_parm(3), SPB_virgin, Recr_virgin, SPR_temp);  //  returns 2 element vector containing equilibrium biomass and recruitment at this SPR
             Btgt_prof=Equ_SpawnRecr_Result(1);
@@ -22070,6 +22099,7 @@ FUNCTION dvariable Join_Fxn(const prevariable& MinPoss, const prevariable& MaxPo
 
 //********************************************************************
  /*  SS_Label_FUNCTION 43 Spawner-recruitment function */
+//  SPAWN-RECR:   function: to calc R from S
 FUNCTION dvariable Spawn_Recr(const prevariable& SPB_virgin, const prevariable& Recr_virgin, const prevariable& SPB_current)
   {
     dvariable NewRecruits;
@@ -22243,6 +22273,7 @@ FUNCTION dvariable Spawn_Recr(const prevariable& SPB_virgin, const prevariable& 
 
 //********************************************************************
  /*  SS_Label_FUNCTION 44 Equil_Spawn_Recr_Fxn */
+//  SPAWN-RECR:   function  Equil_Spawn_Recr_Fxn
 FUNCTION dvar_vector Equil_Spawn_Recr_Fxn(const prevariable &steepness, const prevariable &SRparm3, 
          const prevariable& SPB_virgin, const prevariable& Recr_virgin, const prevariable& SPR_temp)
   {
