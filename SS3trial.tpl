@@ -569,7 +569,9 @@ DATA_SECTION
     for(f=1;f<=Nfleet;f++)
     {
       *(ad_comm::global_datafile) >> fleet_setup(f)(1,7);
+        echoinput<<"read the 7 numerics "<<fleet_setup(f)<<endl;
         *(ad_comm::global_datafile) >> anystring;
+          echoinput<<" read fleetname "<<anystring<<endl;
       fleetname+=anystring;
       fleet_type(f) = int(fleet_setup(f,1));
       if(fleet_type(f)==2) N_bycatch++;
@@ -3260,9 +3262,9 @@ DATA_SECTION
   }
   else 
     {k=0;}
+  echoinput<<" dimensions "<<k<<" "<<Nfleet1<<" "<<Nfleet<<endl;
 
  END_CALCS
-
   init_vector Fcast_MaxFleetCatch_rd(1,k*Nfleet1)
   init_vector Fcast_MaxAreaCatch_rd(1,k*pop)
   init_ivector Allocation_Fleet_Assignments_rd(1,k*Nfleet1)
@@ -17304,7 +17306,7 @@ FUNCTION void Get_Forecast()
 FUNCTION void write_summaryoutput()
   {
   random_number_generator radm(long(time(&finish)));
-
+  cout<<"in summary report "<<endl;
   time(&finish);
   elapsed_time = difftime(finish,start);
   report2<<runnumber<<" -logL: "<<obj_fun<<" Spbio(Vir_Start_End): "<<SPB_yr(styr-2)<<" "<<SPB_yr(styr)<<" "<<SPB_yr(endyr)<<endl;
@@ -17386,10 +17388,10 @@ FUNCTION void write_summaryoutput()
   if(do_recdev==1) {report2<<recdev1<<" ";}
   if(do_recdev==2) {report2<<recdev2<<" ";}
   if(Do_Forecast>0) report2<<Fcast_recruitments<<" "<<Fcast_impl_error<<" ";
-  report2<<init_F<<" ";
+  if(N_init_F>0) report2<<init_F<<" ";
   if(F_Method==2) report2<<" "<<F_rate;
   if(Q_Npar>0) report2<<Q_parm<<" ";
-  report2<<selparm<<" ";
+  if(N_selparm2>0) report2<<selparm<<" ";
   if(N_selparm_dev>0) report2<<selparm_dev<<" ";
   if(Do_TG>0) report2<<TG_parm<<" ";
   report2<<endl;
@@ -17544,6 +17546,7 @@ FUNCTION void write_summaryoutput()
       }
     }
     report2<<endl;
+    cout<<"ending summary "<<endl;
   }  //  end summary output
 
 //********************************************************************
@@ -17818,7 +17821,7 @@ FUNCTION void write_nudata()
   report1<<"#_units of catch:  1=bio; 2=num (ignored for surveys; their units read later)"<<endl;
   report1<<"#_equ_catch_se:  standard error of log(initial equilibrium catch)"<<endl;
   report1<<"#_catch_se:  standard error of log(catch); can be overridden in control file with detailed F input"<<endl;
-  report1<<"#_rows are fleets"<<endl<<"fleet_type, timing, area, units, equ_catch_se, catch_se, need_catch_mult fleetname"<<endl;
+  report1<<"#_rows are fleets"<<endl<<"#_fleet_type, timing, area, units, equ_catch_se, catch_se, need_catch_mult fleetname"<<endl;
   for (f=1;f<=Nfleet;f++)
   {report1<<fleet_setup(f)<<" "<<fleetname(f)<<"  # "<<f<<endl;}
   report1<<"#Bycatch_fleet_input_goes_next"<<endl;
