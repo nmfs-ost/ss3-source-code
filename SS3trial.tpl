@@ -569,9 +569,7 @@ DATA_SECTION
     for(f=1;f<=Nfleet;f++)
     {
       *(ad_comm::global_datafile) >> fleet_setup(f)(1,7);
-        echoinput<<"read the 7 numerics "<<fleet_setup(f)<<endl;
-        *(ad_comm::global_datafile) >> anystring;
-          echoinput<<" read fleetname "<<anystring<<endl;
+      *(ad_comm::global_datafile) >> anystring;
       fleetname+=anystring;
       fleet_type(f) = int(fleet_setup(f,1));
       if(fleet_type(f)==2) N_bycatch++;
@@ -594,6 +592,7 @@ DATA_SECTION
         {N_warn++; warning<<"Need_catch_mult can be used only for fleet_type=1 fleet= "<<f<<endl; exit(1);}
       echoinput<<f<<" # "<<fleet_setup(f)<<" # "<<fleetname(f)<<endl;
     }
+  /*
     if(N_bycatch>0)
     {
       echoinput<<"Now read bycatch fleet characteristics for "<<N_bycatch<<" fleets"<<endl;
@@ -605,8 +604,8 @@ DATA_SECTION
           echoinput<<f<<" "<<fleetname(f)<<" bycatch_setup: "<<bycatch_setup<<endl;
         }
       }
-      exit(1);
     }
+  */
   }
  END_CALCS
  
@@ -17824,16 +17823,18 @@ FUNCTION void write_nudata()
   report1<<"#_rows are fleets"<<endl<<"#_fleet_type, timing, area, units, equ_catch_se, catch_se, need_catch_mult fleetname"<<endl;
   for (f=1;f<=Nfleet;f++)
   {report1<<fleet_setup(f)<<" "<<fleetname(f)<<"  # "<<f<<endl;}
-  report1<<"#Bycatch_fleet_input_goes_next"<<endl;
-  report1<<"#a:  1=use retention curve like other fleets; 2=all discarded"<<endl;
-  report1<<"#b:  1=deadfish in MSY, ABC and other benchmark and forecast output; 2=omit from MSY and ABC (but still include the mortality)"<<endl;
-  report1<<"#c:  1=Fmult scales with other fleets; 2=bycatch F constant at input value; 3=bycatch F form range of years"<<endl;
-  report1<<"#d:  F or first year of range"<<endl;
-  report1<<"#e:  last year of range"<<endl;
-  report1<<"#   a   b   c   d   e"<<endl;
   if(N_bycatch>0)
   {
+ /*
+    report1<<"#Bycatch_fleet_input_goes_next"<<endl;
+    report1<<"#a:  1=use retention curve like other fleets; 2=all discarded"<<endl;
+    report1<<"#b:  1=deadfish in MSY, ABC and other benchmark and forecast output; 2=omit from MSY and ABC (but still include the mortality)"<<endl;
+    report1<<"#c:  1=Fmult scales with other fleets; 2=bycatch F constant at input value; 3=bycatch F form range of years"<<endl;
+    report1<<"#d:  F or first year of range"<<endl;
+    report1<<"#e:  last year of range"<<endl;
+    report1<<"#   a   b   c   d   e"<<endl;
     report1<<bycatch_setup<<endl;
+ */
   }
 
   if(Nudat==1)  // report back the input data
