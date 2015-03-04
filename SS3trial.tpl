@@ -9057,6 +9057,7 @@ PROCEDURE_SECTION
 //  SS_Label_Info_7.4 #Do the time series calculations
   if(mceval_counter==0 || (mceval_counter>burn_intvl &&  ((double(mceval_counter)/double(thin_intvl)) - double((mceval_counter/thin_intvl))==0)  )) // check to see if burn in period is over
   {
+//  add dynamic Bzero here
 
     y=styr;
 //  SS_Label_Info_7.4.1 #Call fxn get_initial_conditions() to get the virgin and initial equilibrium population
