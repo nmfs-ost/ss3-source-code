@@ -3298,7 +3298,7 @@ DATA_SECTION
   }
  END_CALCS
 
-  init_vector Fcast_Catch_Allocation(1,Fcast_Catch_Allocation_Groups);
+  init_matrix Fcast_Catch_Allocation(1,N_Fcast_Yrs,1,Fcast_Catch_Allocation_Groups);
 
  LOCAL_CALCS
   if(Do_Forecast>0)
@@ -3308,7 +3308,7 @@ DATA_SECTION
     echoinput<<" Max totalcatch by area "<<endl<<Fcast_MaxAreaCatch<<endl;
     echoinput<<" Assign fleets to allocation groups (0 means not in a group) "<<endl<<Allocation_Fleet_Assignments<<endl;
     echoinput<<" calculated number of allocation groups "<<Fcast_Catch_Allocation_Groups<<endl;
-    echoinput<<" Allocation among groups (N entries must match number of allocation groups created) "<<Fcast_Catch_Allocation<<endl;
+    echoinput<<" Allocation among groups (N entries must match number of allocation groups created and N fcast years) "<<endl<<Fcast_Catch_Allocation<<endl;
   }
   else
   {k=0;}
@@ -17251,10 +17251,10 @@ FUNCTION void Get_Forecast()
                Fcast_Catch_Allocation_Group(g)+=Fcast_Catch_Calc_Annual(f);
             }
             temp=sum(Fcast_Catch_Allocation_Group);  // total catch for all fleets that are part of the allocation scheme
-            temp1=sum(Fcast_Catch_Allocation);  // total of all allocation fractions for all fleets that are part of the allocation scheme
+            temp1=sum(Fcast_Catch_Allocation(y-endyr));  // total of all allocation fractions for all fleets that are part of the allocation scheme
             for (g=1;g<=Fcast_Catch_Allocation_Groups;g++)
             {
-              temp2=(Fcast_Catch_Allocation(g)/temp1) / (Fcast_Catch_Allocation_Group(g)/temp);
+              temp2=(Fcast_Catch_Allocation(y-endyr,g)/temp1) / (Fcast_Catch_Allocation_Group(g)/temp);
               for (f=1;f<=Nfleet;f++)
               if (Allocation_Fleet_Assignments(f)==g && fleet_type(f)<=2)
               {
