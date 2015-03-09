@@ -11094,6 +11094,10 @@ FUNCTION void get_migration()
     t=styr+(yz-styr)*nseas+move_def2(k,1)-1;
     if(k<=do_migration) //  so an explicit movement rate
     {
+//  set some movement rates same as the first movement rate
+      if(mgp_adj(Ip+1)==-9999.) mgp_adj(Ip+1)=mgp_adj(MGP_CGD+1);
+      if(mgp_adj(Ip+2)==-9999.) mgp_adj(Ip+2)=mgp_adj(MGP_CGD+2);
+
 //  SS_Label_Info_20.1.1  #age-specific movement strength based on parameters for selected area pairs
       temp=1./(move_def2(k,6)-move_def2(k,5));
       temp1=temp*(mgp_adj(Ip+2)-mgp_adj(Ip+1));
