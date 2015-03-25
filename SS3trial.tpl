@@ -343,8 +343,7 @@ DATA_SECTION
   if(finish_starter==999)
     {read_seas_mo=1;}
   else
-    {*(ad_comm::global_datafile) >> read_seas_mo;}
-      echoinput<<read_seas_mo<<"  read_seas_mo"<<endl;
+    {read_seas_mo=2;}
  END_CALCS
  
   init_int styr  //start year of the model
@@ -17808,7 +17807,6 @@ FUNCTION void write_nudata()
   else
   {report1 << "#_bootstrap file: " << Nudat-2 << endl;}
   report1<<version_info_short<<endl;
-  report1<<"2 #_read_seas_month (1=read seas; 2=read month)"<<endl;
   report1 << styr << " #_styr"<<endl;
   report1 << endyr <<" #_endyr"<< endl;
   report1 << nseas <<" #_nseas"<< endl;
