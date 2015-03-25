@@ -15466,7 +15466,8 @@ FUNCTION void Make_FishSelex()
             if(WTage_rd==0)
             {deadfish_B(s,g,f,a)=sel_a(yf,f,gg,a)*(ALK_w(a)(llo,lhi) * disc_wt(llo,lhi));} // selected dead by weight
             else if(a==nages)
-            {deadfish_B(s,g,f)=sel_al_2(s,g,f);} // not quite correct, for now set equal to selected wt of retained fish without adjusting for discmort
+          {//deadfish_B(s,g,f)=sel_al_2(s,g,f);} // not quite correct, for now set equal to selected wt of retained fish without adjusting for discmort
+            deadfish_B(s,g,f)=elem_prod(deadfish(s,g,f),WTage_emp(tz,GP3(g),f));}
           }
           else if(a==nages)
           {
@@ -19120,7 +19121,7 @@ FUNCTION void write_nucontrol()
    report4<<"#_Q_setup"<<endl<<
    " # Q_type options:  <0=mirror, 0=float_nobiasadj, 1=float_biasadj, 2=parm_nobiasadj, 3=parm_w_random_dev, 4=parm_w_randwalk, 5=mean_unbiased_float_assign_to_parm"<<endl;
    report4<<"#_for_env-var:_enter_index_of_the_env-var_to_be_linked"<<endl;
-   report4<<"#_Den-dep  env-var  extra_se  Q_type"<<endl;
+   report4<<"#_Den-dep  env-var  extra_se  Q_type Q_offset"<<endl;
    for (f=1;f<=Nfleet;f++)
    {
      report4<<Q_setup(f)<<" # "<<f<<" "<<fleetname(f)<<endl;
