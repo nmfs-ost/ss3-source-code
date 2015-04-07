@@ -1383,6 +1383,7 @@ DATA_SECTION
       CombGender_L(f) = CombGender_l;
       AccumBin_L(f) = 0;
       Comp_Err_L(f)=0;  //  for multinomial
+      Comp_Err_L2(f)=0;  // no parameter needed
     }
   }
   else
@@ -1393,6 +1394,7 @@ DATA_SECTION
     echoinput<<"#_males and females treated as combined gender below this bin number "<<endl;
     echoinput<<"#_compressbins: accumulate upper tail by this number of bins; acts simultaneous with mintailcomp; set=0 for no forced accumulation"<<endl;
     echoinput<<"#_Comp_Error:  0=multinomial, 1=Direchlet"<<endl;
+    echoinput<<"#_Comp_ERR-2:  index of parameter to use"<<endl;
     for (f=1;f<=Nfleet;f++)
     {
     *(ad_comm::global_datafile) >> min_tail_L(f);
@@ -1400,8 +1402,8 @@ DATA_SECTION
     *(ad_comm::global_datafile) >> CombGender_L(f);
     *(ad_comm::global_datafile) >> AccumBin_L(f);
     *(ad_comm::global_datafile) >> Comp_Err_L(f);
-    echoinput<<min_tail_L(f)<<" "<<min_comp_L(f)<<" "<<CombGender_L(f)<<" "<<AccumBin_L(f)<<" "<<Comp_Err_L(f)<<"  #_fleet: "<<f<<" "<<fleetname(f)<<endl;
-    if(Comp_Err_L(f)>0) Comp_Err_ParmCount++;
+    *(ad_comm::global_datafile) >> Comp_Err_L2(f);
+    echoinput<<min_tail_L(f)<<" "<<min_comp_L(f)<<" "<<CombGender_L(f)<<" "<<AccumBin_L(f)<<" "<<Comp_Err_L(f)<<" "<<Comp_Err_L2(f)<<"  #_fleet: "<<f<<" "<<fleetname(f)<<endl;
     }
   }
   *(ad_comm::global_datafile) >> nlen_bin;
@@ -1967,6 +1969,7 @@ DATA_SECTION
       CombGender_A(f) = CombGender_a;
       AccumBin_A(f) = 0;
       Comp_Err_A(f)=0;  //  for multinomial
+      Comp_Err_A2(f)=0;  //  no parameter needed
     }
   }
   else
@@ -1977,6 +1980,7 @@ DATA_SECTION
     echoinput<<"#_males and females treated as combined gender below this bin number "<<endl;
     echoinput<<"#_compressbins: accumulate upper tail by this number of bins; acts simultaneous with mintailcomp; set=0 for no forced accumulation"<<endl;
     echoinput<<"#_Comp_Error:  0=multinomial, 1=Direchlet"<<endl;
+    echoinput<<"#_Comp_ERR-2:  index of parameter to use"<<endl;
 
     for (f=1;f<=Nfleet;f++)
     {
@@ -1985,9 +1989,12 @@ DATA_SECTION
     *(ad_comm::global_datafile) >> CombGender_A(f);
     *(ad_comm::global_datafile) >> AccumBin_A(f);
     *(ad_comm::global_datafile) >> Comp_Err_A(f);
-    echoinput<<min_tail_A(f)<<" "<<min_comp_A(f)<<" "<<CombGender_A(f)<<" "<<AccumBin_A(f)<<" "<<Comp_Err_A(f)<<"  #_fleet: "<<f<<" "<<fleetname(f)<<endl;
-    if(Comp_Err_L(f)>0) Comp_Err_ParmCount++;
+    *(ad_comm::global_datafile) >> Comp_Err_A2(f);
+    echoinput<<min_tail_A(f)<<" "<<min_comp_A(f)<<" "<<CombGender_A(f)<<" "<<AccumBin_A(f)<<" "<<Comp_Err_A(f)<<" "<<Comp_Err_A2(f)<<"  #_fleet: "<<f<<" "<<fleetname(f)<<endl;
     }
+    f=max(Comp_Err_L2);
+    j=max(Comp_Err_A2);
+    Comp_Err_ParmCount=max(f,j);  //  this will be the number of parameters needed
     *(ad_comm::global_datafile) >> Lbin_method;
     echoinput << Lbin_method<< " Lbin method for defined size ranges "  << endl;
     *(ad_comm::global_datafile) >> nobsa_rd;
@@ -6146,12 +6153,8 @@ DATA_SECTION
     {
       echoinput<<Comp_Err_ParmCount<<"  #_parameters are needed"<<endl;
       int Comp_Err_Parm_Start=N_selparm+1;
-      for(f=1;f<=Nfleet;f++)
-      if(Comp_Err_L(f)>0)
-        {N_selparm++; ParCount++; Comp_Err_L2(f)=N_selparm; ParmLabel+="LenComp_Err_"+NumLbl(f)+"_"+fleetname(f-Nfleet);}
-      for(f=1;f<=Nfleet;f++)
-      if(Comp_Err_A(f)>0)
-        {N_selparm++; ParCount++; Comp_Err_A2(f)=N_selparm; ParmLabel+="AgeComp_Err_"+NumLbl(f)+"_"+fleetname(f-Nfleet);}
+      for(f=1;f<=Comp_Err_ParmCount;f++)
+        {N_selparm++; ParCount++; ParmLabel+="ln(EffN_mult)_"+NumLbl(f);}
     }
   }
 
@@ -17997,9 +18000,10 @@ FUNCTION void write_nudata()
   report1<<"#_males and females treated as combined gender below this bin number "<<endl;
   report1<<"#_compressbins: accumulate upper tail by this number of bins; acts simultaneous with mintailcomp; set=0 for no forced accumulation"<<endl;
   report1<<"#_Comp_Error:  0=multinomial, 1=Direchlet"<<endl;
-  report1<<"#_mintailcomp_addtocomp_combM+F_CompressBins_CompError"<<endl;
+  report1<<"#_Comp_Error2:  parm number  for Direchlet"<<endl;
+  report1<<"#_mintailcomp_addtocomp_combM+F_CompressBins_CompError_ParmSelect"<<endl;
   for (f=1;f<=Nfleet;f++)
-  {report1<<min_tail_L(f)<<" "<<min_comp_L(f)<<" "<<CombGender_L(f)<<" "<<AccumBin_L(f)<<" "<<Comp_Err_L(f)<<" #_fleet:"<<f<<"_"<<fleetname(f)<<endl;}
+  {report1<<min_tail_L(f)<<" "<<min_comp_L(f)<<" "<<CombGender_L(f)<<" "<<AccumBin_L(f)<<" "<<Comp_Err_L(f)<<" "<<Comp_Err_L2(f)<<" #_fleet:"<<f<<"_"<<fleetname(f)<<endl;}
 
   report1<<nlen_bin<<" #_N_LengthBins"<<endl<<len_bins_dat<<endl;
   report1<<nobsl_rd<<" #_N_Length_obs"<<endl;
@@ -18025,9 +18029,10 @@ FUNCTION void write_nudata()
   report1<<"#_males and females treated as combined gender below this bin number "<<endl;
   report1<<"#_compressbins: accumulate upper tail by this number of bins; acts simultaneous with mintailcomp; set=0 for no forced accumulation"<<endl;
   report1<<"#_Comp_Error:  0=multinomial, 1=Direchlet"<<endl;
-  report1<<"#_mintailcomp_addtocomp_combM+F_CompressBins_CompError"<<endl;
+  report1<<"#_Comp_Error2:  parm number  for Direchlet"<<endl;
+  report1<<"#_mintailcomp_addtocomp_combM+F_CompressBins_CompError_ParmSelect"<<endl;
   for (f=1;f<=Nfleet;f++)
-  {report1<<min_tail_A(f)<<" "<<min_comp_A(f)<<" "<<CombGender_A(f)<<" "<<AccumBin_A(f)<<" "<<Comp_Err_A(f)<<" #_fleet:"<<f<<"_"<<fleetname(f)<<endl;}
+  {report1<<min_tail_A(f)<<" "<<min_comp_A(f)<<" "<<CombGender_A(f)<<" "<<AccumBin_A(f)<<" "<<Comp_Err_A(f)<<" "<<Comp_Err_A2(f)<<" #_fleet:"<<f<<"_"<<fleetname(f)<<endl;}
   report1<<Lbin_method<<" #_Lbin_method_for_Age_Data: 1=poplenbins; 2=datalenbins; 3=lengths"<<endl;
   report1<<nobsa_rd<<" #_N_Agecomp_obs"<<endl;
   report1<<"#_yr month fleet gender part ageerr Lbin_lo Lbin_hi Nsamp datavector(female-male)"<<endl;
@@ -18232,9 +18237,10 @@ FUNCTION void write_nudata()
   report1<<"#_males and females treated as combined gender below this bin number "<<endl;
   report1<<"#_compressbins: accumulate upper tail by this number of bins; acts simultaneous with mintailcomp; set=0 for no forced accumulation"<<endl;
   report1<<"#_Comp_Error:  0=multinomial, 1=Direchlet"<<endl;
-  report1<<"#_mintailcomp_addtocomp_combM+F_CompressBins_CompError"<<endl;
+  report1<<"#_Comp_Error2:  parm number  for Direchlet"<<endl;
+  report1<<"#_mintailcomp_addtocomp_combM+F_CompressBins_CompError_ParmSelect"<<endl;
   for (f=1;f<=Nfleet;f++)
-  {report1<<min_tail_L(f)<<" "<<min_comp_L(f)<<" "<<CombGender_L(f)<<" "<<AccumBin_L(f)<<" "<<Comp_Err_L(f)<<" #_fleet:"<<f<<"_"<<fleetname(f)<<endl;}
+  {report1<<min_tail_L(f)<<" "<<min_comp_L(f)<<" "<<CombGender_L(f)<<" "<<AccumBin_L(f)<<" "<<Comp_Err_L(f)<<" "<<Comp_Err_L2(f)<<" #_fleet:"<<f<<"_"<<fleetname(f)<<endl;}
   report1<<nlen_bin<<" #_N_LengthBins"<<endl<<len_bins_dat<<endl;
   report1<<sum(Nobs_l)<<" #_N_Length_obs"<<endl;
   report1<<"#_yr month fleet gender part Nsamp datavector(female-male)"<<endl;
@@ -18264,9 +18270,10 @@ FUNCTION void write_nudata()
   report1<<"#_males and females treated as combined gender below this bin number "<<endl;
   report1<<"#_compressbins: accumulate upper tail by this number of bins; acts simultaneous with mintailcomp; set=0 for no forced accumulation"<<endl;
   report1<<"#_Comp_Error:  0=multinomial, 1=Direchlet"<<endl;
-  report1<<"#_mintailcomp_addtocomp_combM+F_CompressBins_CompError"<<endl;
+  report1<<"#_Comp_Error2:  parm number  for Direchlet"<<endl;
+  report1<<"#_mintailcomp_addtocomp_combM+F_CompressBins_CompError_ParmSelect"<<endl;
   for (f=1;f<=Nfleet;f++)
-  {report1<<min_tail_A(f)<<" "<<min_comp_A(f)<<" "<<CombGender_A(f)<<" "<<AccumBin_A(f)<<" "<<Comp_Err_A(f)<<" #_fleet:"<<f<<"_"<<fleetname(f)<<endl;}
+  {report1<<min_tail_A(f)<<" "<<min_comp_A(f)<<" "<<CombGender_A(f)<<" "<<AccumBin_A(f)<<" "<<Comp_Err_A(f)<<" "<<Comp_Err_A2(f)<<" #_fleet:"<<f<<"_"<<fleetname(f)<<endl;}
   report1<<Lbin_method<<" #_Lbin_method_for_Age_Data: 1=poplenbins; 2=datalenbins; 3=lengths"<<endl;
   report1<<nobsa_rd<<" #_N_Agecomp_obs"<<endl;
   report1<<"#_yr month fleet gender part ageerr Lbin_lo Lbin_hi Nsamp datavector(female-male)"<<endl;
@@ -18544,9 +18551,10 @@ FUNCTION void write_nudata()
   report1<<"#_males and females treated as combined gender below this bin number "<<endl;
   report1<<"#_compressbins: accumulate upper tail by this number of bins; acts simultaneous with mintailcomp; set=0 for no forced accumulation"<<endl;
   report1<<"#_Comp_Error:  0=multinomial, 1=Direchlet"<<endl;
-  report1<<"#_mintailcomp_addtocomp_combM+F_CompressBins_CompError"<<endl;
+  report1<<"#_Comp_Error2:  parm number  for Direchlet"<<endl;
+  report1<<"#_mintailcomp_addtocomp_combM+F_CompressBins_CompError_ParmSelect"<<endl;
   for (f=1;f<=Nfleet;f++)
-  {report1<<min_tail_L(f)<<" "<<min_comp_L(f)<<" "<<CombGender_L(f)<<" "<<AccumBin_L(f)<<" "<<Comp_Err_L(f)<<" #_fleet:"<<f<<"_"<<fleetname(f)<<endl;}
+  {report1<<min_tail_L(f)<<" "<<min_comp_L(f)<<" "<<CombGender_L(f)<<" "<<AccumBin_L(f)<<" "<<Comp_Err_L(f)<<" "<<Comp_Err_L2(f)<<" #_fleet:"<<f<<"_"<<fleetname(f)<<endl;}
   report1<<nlen_bin<<" #_N_LengthBins"<<endl<<len_bins_dat<<endl;
   report1<<sum(Nobs_l)<<" #_N_Length_obs"<<endl;
   report1<<"#_yr month fleet gender part Nsamp datavector(female-male)"<<endl;
@@ -18580,9 +18588,10 @@ FUNCTION void write_nudata()
   report1<<"#_males and females treated as combined gender below this bin number "<<endl;
   report1<<"#_compressbins: accumulate upper tail by this number of bins; acts simultaneous with mintailcomp; set=0 for no forced accumulation"<<endl;
   report1<<"#_Comp_Error:  0=multinomial, 1=Direchlet"<<endl;
-  report1<<"#_mintailcomp_addtocomp_combM+F_CompressBins_CompError"<<endl;
+  report1<<"#_Comp_Error2:  parm number  for Direchlet"<<endl;
+  report1<<"#_mintailcomp_addtocomp_combM+F_CompressBins_CompError_ParmSelect"<<endl;
   for (f=1;f<=Nfleet;f++)
-  {report1<<min_tail_A(f)<<" "<<min_comp_A(f)<<" "<<CombGender_A(f)<<" "<<AccumBin_A(f)<<" "<<Comp_Err_A(f)<<" #_fleet:"<<f<<"_"<<fleetname(f)<<endl;}
+  {report1<<min_tail_A(f)<<" "<<min_comp_A(f)<<" "<<CombGender_A(f)<<" "<<AccumBin_A(f)<<" "<<Comp_Err_A(f)<<" "<<Comp_Err_A2(f)<<" #_fleet:"<<f<<"_"<<fleetname(f)<<endl;}
   report1<<Lbin_method<<" #_Lbin_method_for_Age_Data: 1=poplenbins; 2=datalenbins; 3=lengths"<<endl;
   report1<<sum(Nobs_a)<<" #_N_Agecomp_obs"<<endl;
   report1<<"#_yr month fleet gender part ageerr Lbin_lo Lbin_hi Nsamp datavector(female-male)"<<endl;
