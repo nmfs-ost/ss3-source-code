@@ -1393,7 +1393,7 @@ DATA_SECTION
     echoinput<<"#_addtocomp:  after accumulation of tails; this value added to all bins"<<endl;
     echoinput<<"#_males and females treated as combined gender below this bin number "<<endl;
     echoinput<<"#_compressbins: accumulate upper tail by this number of bins; acts simultaneous with mintailcomp; set=0 for no forced accumulation"<<endl;
-    echoinput<<"#_Comp_Error:  0=multinomial, 1=Direchlet"<<endl;
+    echoinput<<"#_Comp_Error:  0=multinomial, 1=dirichlet"<<endl;
     echoinput<<"#_Comp_ERR-2:  index of parameter to use"<<endl;
     for (f=1;f<=Nfleet;f++)
     {
@@ -1979,7 +1979,7 @@ DATA_SECTION
     echoinput<<"#_addtocomp:  after accumulation of tails; this value added to all bins"<<endl;
     echoinput<<"#_males and females treated as combined gender below this bin number "<<endl;
     echoinput<<"#_compressbins: accumulate upper tail by this number of bins; acts simultaneous with mintailcomp; set=0 for no forced accumulation"<<endl;
-    echoinput<<"#_Comp_Error:  0=multinomial, 1=Direchlet"<<endl;
+    echoinput<<"#_Comp_Error:  0=multinomial, 1=dirichlet"<<endl;
     echoinput<<"#_Comp_ERR-2:  index of parameter to use"<<endl;
 
     for (f=1;f<=Nfleet;f++)
@@ -7978,7 +7978,7 @@ PARAMETER_SECTION
   number half_sigmaRsq;
   number sigmaR
   number rho;
-  number direchlet_Parm;
+  number dirichlet_Parm;
  LOCAL_CALCS
   Ave_Size.initialize();
   if(SR_parm(N_SRparm2)!=0.0 || SRvec_PH(N_SRparm2)>0) {SR_autocorr=1;} else {SR_autocorr=0;}  // flag for recruitment autocorrelation
@@ -13923,18 +13923,42 @@ FUNCTION void evaluate_the_objective_function()
      {
       if(Comp_Err_L(f)==0) // multinomial
       {
+        // get female or combined sex logL
        if(gen_l(f,i) !=2) length_like(f) -= nsamp_l(f,i) *
        obs_l(f,i)(tails_w(1),tails_w(2)) * log(exp_l(f,i)(tails_w(1),tails_w(2)));
+       //  add male logL
        if(gen_l(f,i) >=2 && gender==2) length_like(f) -= nsamp_l(f,i) *
        obs_l(f,i)(tails_w(3),tails_w(4)) * log(exp_l(f,i)(tails_w(3),tails_w(4)));
       }
-      else  //  direchlet
+//      else  //  dirichlet
       {
-        direchlet_Parm=selparm(Comp_Err_L2(f));
-        //  your code goes here
+        temp=nsamp_l(f,i) *
+        (obs_l(f,i)(tails_w(1),tails_w(2)) * log(exp_l(f,i)(tails_w(1),tails_w(2)))
+        +
+        obs_l(f,i)(tails_w(3),tails_w(4)) * log(exp_l(f,i)(tails_w(3),tails_w(4))));
+        echoinput<<" multi "<<-temp<<" ";
+//         echoinput<<Comp_Err_L2(f)<<" "<<selparm(Comp_Err_L2(f))<<" "<<dirichlet_Parm<<endl;
+//       dirichlet_Parm=mfexp(selparm(Comp_Err_L2(f)))*nsamp_l(f,i);
+        dirichlet_Parm=100*nsamp_l(f,i);   
+        temp = gammln(dirichlet_Parm) - gammln(nsamp_l(f,i)+dirichlet_Parm);
+        // get female or combined sex logL
+        if(gen_l(f,i) !=2) 
+        {
+          for(z=tails_w(1);z<=tails_w(2);z++)
+          {temp+=gammln(nsamp_l(f,i)*obs_l(f,i,z) + dirichlet_Parm*exp_l(f,i,z))
+          - gammln(dirichlet_Parm*exp_l(f,i,z));}
+        }
+        //  add male logL
+        if(gen_l(f,i) >=2 && gender==2)
+        {
+          for(z=tails_w(3);z<=tails_w(4);z++)
+          {temp+=gammln(nsamp_l(f,i)*obs_l(f,i,z) + dirichlet_Parm*exp_l(f,i,z))
+          - gammln(dirichlet_Parm*exp_l(f,i,z));}
+        }
+        echoinput<<" dirichlet "<<-temp<<endl;
       }
      }
-     }
+    }
     }
    }
   if(do_once==1) cout<<" did lencomp obj_fun "<<length_like<<endl;
@@ -14045,9 +14069,9 @@ FUNCTION void evaluate_the_objective_function()
               if(gen_a(f,i) >=2 && gender==2) age_like(f) -= nsamp_a(f,i) *
               obs_a(f,i)(tails_w(3),tails_w(4)) * log(exp_a(f,i)(tails_w(3),tails_w(4)));
             }
-            else  // direchlet
+            else  // dirichlet
             {
-              direchlet_Parm=Comp_Err_A2(f);
+              dirichlet_Parm=Comp_Err_A2(f);
               //  your code goes here
             }
           }
@@ -17999,8 +18023,8 @@ FUNCTION void write_nudata()
   report1<<"#_addtocomp:  after accumulation of tails; this value added to all bins"<<endl;
   report1<<"#_males and females treated as combined gender below this bin number "<<endl;
   report1<<"#_compressbins: accumulate upper tail by this number of bins; acts simultaneous with mintailcomp; set=0 for no forced accumulation"<<endl;
-  report1<<"#_Comp_Error:  0=multinomial, 1=Direchlet"<<endl;
-  report1<<"#_Comp_Error2:  parm number  for Direchlet"<<endl;
+  report1<<"#_Comp_Error:  0=multinomial, 1=dirichlet"<<endl;
+  report1<<"#_Comp_Error2:  parm number  for dirichlet"<<endl;
   report1<<"#_mintailcomp_addtocomp_combM+F_CompressBins_CompError_ParmSelect"<<endl;
   for (f=1;f<=Nfleet;f++)
   {report1<<min_tail_L(f)<<" "<<min_comp_L(f)<<" "<<CombGender_L(f)<<" "<<AccumBin_L(f)<<" "<<Comp_Err_L(f)<<" "<<Comp_Err_L2(f)<<" #_fleet:"<<f<<"_"<<fleetname(f)<<endl;}
@@ -18028,8 +18052,8 @@ FUNCTION void write_nudata()
   report1<<"#_addtocomp:  after accumulation of tails; this value added to all bins"<<endl;
   report1<<"#_males and females treated as combined gender below this bin number "<<endl;
   report1<<"#_compressbins: accumulate upper tail by this number of bins; acts simultaneous with mintailcomp; set=0 for no forced accumulation"<<endl;
-  report1<<"#_Comp_Error:  0=multinomial, 1=Direchlet"<<endl;
-  report1<<"#_Comp_Error2:  parm number  for Direchlet"<<endl;
+  report1<<"#_Comp_Error:  0=multinomial, 1=dirichlet"<<endl;
+  report1<<"#_Comp_Error2:  parm number  for dirichlet"<<endl;
   report1<<"#_mintailcomp_addtocomp_combM+F_CompressBins_CompError_ParmSelect"<<endl;
   for (f=1;f<=Nfleet;f++)
   {report1<<min_tail_A(f)<<" "<<min_comp_A(f)<<" "<<CombGender_A(f)<<" "<<AccumBin_A(f)<<" "<<Comp_Err_A(f)<<" "<<Comp_Err_A2(f)<<" #_fleet:"<<f<<"_"<<fleetname(f)<<endl;}
@@ -18236,8 +18260,8 @@ FUNCTION void write_nudata()
   report1<<"#_addtocomp:  after accumulation of tails; this value added to all bins"<<endl;
   report1<<"#_males and females treated as combined gender below this bin number "<<endl;
   report1<<"#_compressbins: accumulate upper tail by this number of bins; acts simultaneous with mintailcomp; set=0 for no forced accumulation"<<endl;
-  report1<<"#_Comp_Error:  0=multinomial, 1=Direchlet"<<endl;
-  report1<<"#_Comp_Error2:  parm number  for Direchlet"<<endl;
+  report1<<"#_Comp_Error:  0=multinomial, 1=dirichlet"<<endl;
+  report1<<"#_Comp_Error2:  parm number  for dirichlet"<<endl;
   report1<<"#_mintailcomp_addtocomp_combM+F_CompressBins_CompError_ParmSelect"<<endl;
   for (f=1;f<=Nfleet;f++)
   {report1<<min_tail_L(f)<<" "<<min_comp_L(f)<<" "<<CombGender_L(f)<<" "<<AccumBin_L(f)<<" "<<Comp_Err_L(f)<<" "<<Comp_Err_L2(f)<<" #_fleet:"<<f<<"_"<<fleetname(f)<<endl;}
@@ -18269,8 +18293,8 @@ FUNCTION void write_nudata()
   report1<<"#_addtocomp:  after accumulation of tails; this value added to all bins"<<endl;
   report1<<"#_males and females treated as combined gender below this bin number "<<endl;
   report1<<"#_compressbins: accumulate upper tail by this number of bins; acts simultaneous with mintailcomp; set=0 for no forced accumulation"<<endl;
-  report1<<"#_Comp_Error:  0=multinomial, 1=Direchlet"<<endl;
-  report1<<"#_Comp_Error2:  parm number  for Direchlet"<<endl;
+  report1<<"#_Comp_Error:  0=multinomial, 1=dirichlet"<<endl;
+  report1<<"#_Comp_Error2:  parm number  for dirichlet"<<endl;
   report1<<"#_mintailcomp_addtocomp_combM+F_CompressBins_CompError_ParmSelect"<<endl;
   for (f=1;f<=Nfleet;f++)
   {report1<<min_tail_A(f)<<" "<<min_comp_A(f)<<" "<<CombGender_A(f)<<" "<<AccumBin_A(f)<<" "<<Comp_Err_A(f)<<" "<<Comp_Err_A2(f)<<" #_fleet:"<<f<<"_"<<fleetname(f)<<endl;}
@@ -18550,8 +18574,8 @@ FUNCTION void write_nudata()
   report1<<"#_addtocomp:  after accumulation of tails; this value added to all bins"<<endl;
   report1<<"#_males and females treated as combined gender below this bin number "<<endl;
   report1<<"#_compressbins: accumulate upper tail by this number of bins; acts simultaneous with mintailcomp; set=0 for no forced accumulation"<<endl;
-  report1<<"#_Comp_Error:  0=multinomial, 1=Direchlet"<<endl;
-  report1<<"#_Comp_Error2:  parm number  for Direchlet"<<endl;
+  report1<<"#_Comp_Error:  0=multinomial, 1=dirichlet"<<endl;
+  report1<<"#_Comp_Error2:  parm number  for dirichlet"<<endl;
   report1<<"#_mintailcomp_addtocomp_combM+F_CompressBins_CompError_ParmSelect"<<endl;
   for (f=1;f<=Nfleet;f++)
   {report1<<min_tail_L(f)<<" "<<min_comp_L(f)<<" "<<CombGender_L(f)<<" "<<AccumBin_L(f)<<" "<<Comp_Err_L(f)<<" "<<Comp_Err_L2(f)<<" #_fleet:"<<f<<"_"<<fleetname(f)<<endl;}
@@ -18587,8 +18611,8 @@ FUNCTION void write_nudata()
   report1<<"#_addtocomp:  after accumulation of tails; this value added to all bins"<<endl;
   report1<<"#_males and females treated as combined gender below this bin number "<<endl;
   report1<<"#_compressbins: accumulate upper tail by this number of bins; acts simultaneous with mintailcomp; set=0 for no forced accumulation"<<endl;
-  report1<<"#_Comp_Error:  0=multinomial, 1=Direchlet"<<endl;
-  report1<<"#_Comp_Error2:  parm number  for Direchlet"<<endl;
+  report1<<"#_Comp_Error:  0=multinomial, 1=dirichlet"<<endl;
+  report1<<"#_Comp_Error2:  parm number  for dirichlet"<<endl;
   report1<<"#_mintailcomp_addtocomp_combM+F_CompressBins_CompError_ParmSelect"<<endl;
   for (f=1;f<=Nfleet;f++)
   {report1<<min_tail_A(f)<<" "<<min_comp_A(f)<<" "<<CombGender_A(f)<<" "<<AccumBin_A(f)<<" "<<Comp_Err_A(f)<<" "<<Comp_Err_A2(f)<<" #_fleet:"<<f<<"_"<<fleetname(f)<<endl;}
