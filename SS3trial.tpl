@@ -8234,7 +8234,6 @@ PARAMETER_SECTION
   vector exp_l_temp_dat(1,nlen_bin2);
   vector offset_l(1,Nfleet) // Compute OFFSET for multinomial (i.e, value for the multinonial function
   vector length_like(1,Nfleet)  // likelihood of the length-frequency data
-
   matrix SzFreq_exp(1,SzFreq_totobs,1,SzFreq_Setup2);
   vector SzFreq_like(1,SzFreq_N_Like)
   3darray exp_a(1,Nfleet,1,Nobs_a,1,n_abins2)
@@ -8420,7 +8419,7 @@ PRELIMINARY_CALCS_SECTION
     if(gen_l(f,i) >=2 && gender==2) offset_l(f) -= nsamp_l(f,i) *
     obs_l(f,i)(tails_l(f,i,3),tails_l(f,i,4))*log(obs_l(f,i)(tails_l(f,i,3),tails_l(f,i,4)));
   }
-  echoinput<<" length_comp offset: "<<offset_l<<endl;
+//  echoinput<<" length_comp offset: "<<offset_l<<endl;
 
 //  SS_Label_Info_6.2.4.1 #Get sample weights for the super-period components in length comp
 //  the combined obs will have a logL sample size equal to the sample size input for the accumulator observation
@@ -9305,7 +9304,7 @@ PROCEDURE_SECTION
        if(Svy_N>0) cout<<" CPUE " <<surv_like<<endl;
        if(nobs_disc>0) cout<<" Disc " <<disc_like<<endl;
        if(nobs_mnwt>0) cout<<" MnWt " <<mnwt_like<<endl;
-       if(Nobs_l_tot>0) cout<<" LEN  " <<length_like<<endl;
+       if(Nobs_l_tot>0) cout<<" did lencomp obj_fun  " <<length_like<<endl;
        if(Nobs_a_tot>0) cout<<" AGE  " <<age_like<<endl;
        if(nobs_ms_tot>0) cout<<" L-at-A  " <<sizeage_like<<endl;
        if(SzFreq_Nmeth>0) cout<<" sizefreq "<<SzFreq_like<<endl;
@@ -13638,7 +13637,7 @@ FUNCTION void get_time_series()
  /*  SS_Label_FUNCTION 25 evaluate_the_objective_function */
 FUNCTION void evaluate_the_objective_function()
   {
-  surv_like.initialize();   Q_dev_like.initialize(); disc_like.initialize();   length_like.initialize(); age_like.initialize();
+  surv_like.initialize();   Q_dev_like.initialize(); disc_like.initialize(); length_like.initialize(); age_like.initialize();
   sizeage_like.initialize(); parm_like.initialize(); parm_dev_like.initialize(); Svy_log_q.initialize();
   mnwt_like.initialize(); equ_catch_like.initialize(); recr_like.initialize(); Fcast_recr_like.initialize();
   catch_like.initialize(); Morphcomp_like.initialize(); TG_like1.initialize(); TG_like2.initialize();
@@ -13862,8 +13861,8 @@ FUNCTION void evaluate_the_objective_function()
     {
     if(Nobs_l(f)>=1)
     {
+     length_like(f) = -offset_l(f);  //  so a perfect fit will approach 0.0
 
-     length_like(f) = -offset_l(f);
      for (j=1;j<=N_suprper_l(f);j++)                  // do each super period
      {
        exp_l_temp_dat.initialize();
@@ -13930,38 +13929,34 @@ FUNCTION void evaluate_the_objective_function()
        if(gen_l(f,i) >=2 && gender==2) length_like(f) -= nsamp_l(f,i) *
        obs_l(f,i)(tails_w(3),tails_w(4)) * log(exp_l(f,i)(tails_w(3),tails_w(4)));
       }
-//      else  //  dirichlet
+      else  //  dirichlet
       {
-        temp=nsamp_l(f,i) *
-        (obs_l(f,i)(tails_w(1),tails_w(2)) * log(exp_l(f,i)(tails_w(1),tails_w(2)))
-        +
-        obs_l(f,i)(tails_w(3),tails_w(4)) * log(exp_l(f,i)(tails_w(3),tails_w(4))));
-        echoinput<<" multi "<<-temp<<" ";
-//         echoinput<<Comp_Err_L2(f)<<" "<<selparm(Comp_Err_L2(f))<<" "<<dirichlet_Parm<<endl;
-//       dirichlet_Parm=mfexp(selparm(Comp_Err_L2(f)))*nsamp_l(f,i);
-        dirichlet_Parm=100*nsamp_l(f,i);   
+       dirichlet_Parm=mfexp(selparm(Comp_Err_L2(f)))*nsamp_l(f,i);
+//        dirichlet_Parm=100*nsamp_l(f,i);  
+// from Thorson:  NLL -= gammln(A) - gammln(ninput_t(t)+A) + sum(gammln(ninput_t(t)*extract_row(pobs_ta,t) + A*extract_row(pexp_ta,t))) - sum(lgamma(A*extract_row(pexp_ta,t))) \
+
         temp = gammln(dirichlet_Parm) - gammln(nsamp_l(f,i)+dirichlet_Parm);
         // get female or combined sex logL
-        if(gen_l(f,i) !=2) 
+        if(gen_l(f,i) !=2) //  so not male only
         {
-          for(z=tails_w(1);z<=tails_w(2);z++)
-          {temp+=gammln(nsamp_l(f,i)*obs_l(f,i,z) + dirichlet_Parm*exp_l(f,i,z))
-          - gammln(dirichlet_Parm*exp_l(f,i,z));}
+          temp+=sum(gammln(nsamp_l(f,i)*  obs_l(f,i)(tails_w(1),tails_w(2))
+                         + dirichlet_Parm*exp_l(f,i)(tails_w(1),tails_w(2))));
+          temp-=sum(gammln(dirichlet_Parm*exp_l(f,i)(tails_w(1),tails_w(2))));
         }
         //  add male logL
         if(gen_l(f,i) >=2 && gender==2)
         {
-          for(z=tails_w(3);z<=tails_w(4);z++)
-          {temp+=gammln(nsamp_l(f,i)*obs_l(f,i,z) + dirichlet_Parm*exp_l(f,i,z))
-          - gammln(dirichlet_Parm*exp_l(f,i,z));}
+          temp+=sum(gammln(nsamp_l(f,i)*  obs_l(f,i)(tails_w(3),tails_w(4))
+                         + dirichlet_Parm*exp_l(f,i)(tails_w(3),tails_w(4))));
+          temp-=sum(gammln(dirichlet_Parm*exp_l(f,i)(tails_w(3),tails_w(4))));
         }
-        echoinput<<" dirichlet "<<-temp<<endl;
+        length_like(f,i)-=temp;
       }
      }
     }
     }
    }
-  if(do_once==1) cout<<" did lencomp obj_fun "<<length_like<<endl;
+    if(do_once==1) cout<<" did lencomp obj_fun  " <<length_like<<endl;
    }
 
   //  SS_Label_Info_25.5 #Fit to age composition
