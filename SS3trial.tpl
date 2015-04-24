@@ -1405,6 +1405,9 @@ DATA_SECTION
     *(ad_comm::global_datafile) >> Comp_Err_L2(f);
     echoinput<<min_tail_L(f)<<" "<<min_comp_L(f)<<" "<<CombGender_L(f)<<" "<<AccumBin_L(f)<<" "<<Comp_Err_L(f)<<" "<<Comp_Err_L2(f)<<"  #_fleet: "<<f<<" "<<fleetname(f)<<endl;
     }
+    //  get count of needed dirichlet composition parameters
+    //  the count for age data will be added after reading the age data setup
+    Comp_Err_ParmCount=max(Comp_Err_L2);
   }
   *(ad_comm::global_datafile) >> nlen_bin;
   echoinput<<nlen_bin<<" nlen_bin_for_data "<<endl;
@@ -1622,6 +1625,7 @@ DATA_SECTION
   imatrix Len_time_ALK(1,Nfleet,1,Nobs_l)
   3darray obs_l(1,Nfleet,1,Nobs_l,1,nlen_bin2)
   3darray obs_l_all(1,4,1,Nfleet,1,nlen_bin)  //  for the sum of all length comp data
+  vector offset_l(1,Nfleet) // Compute OFFSET for multinomial (i.e, value for the multinonial function
   matrix  nsamp_l(1,Nfleet,1,Nobs_l)
   matrix  nsamp_l_read(1,Nfleet,1,Nobs_l)
   imatrix  gen_l(1,Nfleet,1,Nobs_l)
@@ -1947,6 +1951,7 @@ DATA_SECTION
   ivector AccumBin_A(1,Nfleet)  //  collapse bins down to this bin number (0 for no collapse; positive value for N to accumulate)
   ivector Comp_Err_A(1,Nfleet)  //  composition error type
   ivector Comp_Err_A2(1,Nfleet)  //  composition error parameter location
+  vector offset_a(1,Nfleet) // Compute OFFSET for multinomial (i.e, value for the multinonial function
   int Nobs_a_tot
   int nobsa_rd
   int Lbin_method  //#_Lbin_method: 1=poplenbins; 2=datalenbins; 3=lengths
@@ -1992,9 +1997,9 @@ DATA_SECTION
     *(ad_comm::global_datafile) >> Comp_Err_A2(f);
     echoinput<<min_tail_A(f)<<" "<<min_comp_A(f)<<" "<<CombGender_A(f)<<" "<<AccumBin_A(f)<<" "<<Comp_Err_A(f)<<" "<<Comp_Err_A2(f)<<"  #_fleet: "<<f<<" "<<fleetname(f)<<endl;
     }
-    f=max(Comp_Err_L2);
+    //  get count of needed dirichlet composition parameters
     j=max(Comp_Err_A2);
-    Comp_Err_ParmCount=max(f,j);  //  this will be the number of parameters needed
+    Comp_Err_ParmCount=max(Comp_Err_ParmCount,j);  //  get the maximum parameter number referred to
     *(ad_comm::global_datafile) >> Lbin_method;
     echoinput << Lbin_method<< " Lbin method for defined size ranges "  << endl;
     *(ad_comm::global_datafile) >> nobsa_rd;
@@ -8232,7 +8237,7 @@ PARAMETER_SECTION
   vector exp_l_temp(1,nlength2);
   vector exp_l_temp_ret(1,nlength2);     // retained lengthcomp
   vector exp_l_temp_dat(1,nlen_bin2);
-  vector offset_l(1,Nfleet) // Compute OFFSET for multinomial (i.e, value for the multinonial function
+//  vector offset_l(1,Nfleet) // Compute OFFSET for multinomial (i.e, value for the multinonial function
   vector length_like(1,Nfleet)  // likelihood of the length-frequency data
   matrix SzFreq_exp(1,SzFreq_totobs,1,SzFreq_Setup2);
   vector SzFreq_like(1,SzFreq_N_Like)
@@ -8242,7 +8247,6 @@ PARAMETER_SECTION
   vector tempvec_a(0,nages)
   vector agetemp(0,gender*nages+gender-1)
   matrix neff_a(1,Nfleet,1,Nobs_a)
-  vector offset_a(1,Nfleet) // Compute OFFSET for multinomial (i.e, value for the multinonial function
   vector age_like(1,Nfleet)  // likelihood of the age-frequency data
   vector sizeage_like(1,Nfleet)  // likelihood of the age-frequency data
   3darray exp_ms(1,Nfleet,1,Nobs_ms,1,n_abins2)
@@ -13931,10 +13935,8 @@ FUNCTION void evaluate_the_objective_function()
       }
       else  //  dirichlet
       {
-       dirichlet_Parm=mfexp(selparm(Comp_Err_L2(f)))*nsamp_l(f,i);
-//        dirichlet_Parm=100*nsamp_l(f,i);  
 // from Thorson:  NLL -= gammln(A) - gammln(ninput_t(t)+A) + sum(gammln(ninput_t(t)*extract_row(pobs_ta,t) + A*extract_row(pexp_ta,t))) - sum(lgamma(A*extract_row(pexp_ta,t))) \
-
+        dirichlet_Parm=mfexp(selparm(Comp_Err_L2(f)))*nsamp_l(f,i);
         temp = gammln(dirichlet_Parm) - gammln(nsamp_l(f,i)+dirichlet_Parm);
         // get female or combined sex logL
         if(gen_l(f,i) !=2) //  so not male only
@@ -14001,7 +14003,7 @@ FUNCTION void evaluate_the_objective_function()
           }
           exp_a(f,i) /= (1.0e-15+sum(exp_a(f,i)));                      // proportion at binned age
 
-          if(save_for_report==1)
+          if(save_for_report==1)  //  get expected mean age for ease of display for conditional age-at-length
           {
             exp_a_temp=exp_a(f,i);
             exp_meanage(f,i,2)=sum(elem_prod(exp_a_temp,age_bins_mean));  //  get mean age across both sexes before adding min_comp and compressing
@@ -14009,7 +14011,7 @@ FUNCTION void evaluate_the_objective_function()
             temp1=0.0;
             if(gender==2) temp+=exp_a_temp(1+n_abins);
             z=1;
-            while(temp<=0.05)
+            while(temp<=0.05)  //  lower 5%tile
             {
               temp1=temp;
               z++;
@@ -14021,7 +14023,7 @@ FUNCTION void evaluate_the_objective_function()
             else
               {exp_meanage(f,i,1)=age_bins_mean(z);}
 
-            while(temp<=0.95)
+            while(temp<=0.95)  //  upper 5%tile
             {
               temp1=temp;
               z++;
@@ -14066,8 +14068,24 @@ FUNCTION void evaluate_the_objective_function()
             }
             else  // dirichlet
             {
-              dirichlet_Parm=Comp_Err_A2(f);
-              //  your code goes here
+// from Thorson:  NLL -= gammln(A) - gammln(ninput_t(t)+A) + sum(gammln(ninput_t(t)*extract_row(pobs_ta,t) + A*extract_row(pexp_ta,t))) - sum(lgamma(A*extract_row(pexp_ta,t))) \
+              dirichlet_Parm=mfexp(selparm(Comp_Err_A2(f)))*nsamp_a(f,i);
+              temp = gammln(dirichlet_Parm) - gammln(nsamp_a(f,i)+dirichlet_Parm);
+              // get female or combined sex logL
+              if(gen_a(f,i) !=2) //  so not male only
+              {
+                temp+=sum(gammln(nsamp_a(f,i)*  obs_a(f,i)(tails_w(1),tails_w(2))
+                               + dirichlet_Parm*exp_a(f,i)(tails_w(1),tails_w(2))));
+                temp-=sum(gammln(dirichlet_Parm*exp_a(f,i)(tails_w(1),tails_w(2))));
+              }
+              //  add male logL
+              if(gen_a(f,i) >=2 && gender==2)
+              {
+                temp+=sum(gammln(nsamp_a(f,i)*  obs_a(f,i)(tails_w(3),tails_w(4))
+                               + dirichlet_Parm*exp_a(f,i)(tails_w(3),tails_w(4))));
+                temp-=sum(gammln(dirichlet_Parm*exp_a(f,i)(tails_w(3),tails_w(4))));
+              }
+              age_like(f,i)-=temp;
             }
           }
         }
@@ -18585,12 +18603,25 @@ FUNCTION void write_nudata()
      {
       if(header_l(f,i,3)>0) // do only if this was a real observation
       {
-       k=1000;  if(nsamp_l(f,i)<k) k=nsamp_l(f,i);
-       exp_l_temp_dat.initialize();
-       temp_probs = value(exp_l(f,i));
-       temp_mult.fill_multinomial(radm,temp_probs);  // create multinomial draws with prob = expected values
-       for (compindex=1; compindex<=k; compindex++) // cumulate the multinomial draws by index in the new data
-       {exp_l_temp_dat(temp_mult(compindex)) += 1.0;}
+        if(Comp_Err_L(f)==0)  //  multinomial
+        {
+           k=1000;  if(nsamp_l(f,i)<k) k=nsamp_l(f,i);
+           exp_l_temp_dat.initialize();
+           temp_probs = value(exp_l(f,i));
+           temp_mult.fill_multinomial(radm,temp_probs);  // create multinomial draws with prob = expected values
+           for (compindex=1; compindex<=k; compindex++) // cumulate the multinomial draws by index in the new data
+           {exp_l_temp_dat(temp_mult(compindex)) += 1.0;}
+        }
+        else  //  Dirichlet
+        {
+//  need to replace this with Dirichlet equivalent
+           k=1000;  if(nsamp_l(f,i)<k) k=nsamp_l(f,i);
+           exp_l_temp_dat.initialize();
+           temp_probs = value(exp_l(f,i));
+           temp_mult.fill_multinomial(radm,temp_probs);  // create multinomial draws with prob = expected values
+           for (compindex=1; compindex<=k; compindex++) // cumulate the multinomial draws by index in the new data
+           {exp_l_temp_dat(temp_mult(compindex)) += 1.0;}
+        }
       }
       else
       {exp_l_temp_dat = obs_l(f,i);}
@@ -18623,13 +18654,28 @@ FUNCTION void write_nudata()
      {
      if(header_a(f,i,3)>0) // if real observation
      {
-      k=1000;  if(nsamp_a(f,i)<k) k=nsamp_a(f,i);  // note that nsamp is adjusted by var_adjust, so var_adjust
-                                                   // should be reset to 1.0 in control files that read the nudata.dat files
-      exp_a_temp = 0.0;
-      temp_probs2 = value(exp_a(f,i));
-      temp_mult.fill_multinomial(radm,temp_probs2);
-      for (compindex=1; compindex<=k; compindex++) // cumulate the multinomial draws by index in the new data
-      {exp_a_temp(temp_mult(compindex)) += 1.0;}
+      if(Comp_Err_A(f)==0) //  multinomial
+      {
+        k=1000;  if(nsamp_a(f,i)<k) k=nsamp_a(f,i);  // note that nsamp is adjusted by var_adjust, so var_adjust
+                                                     // should be reset to 1.0 in control files that read the nudata.dat files
+        exp_a_temp = 0.0;
+        temp_probs2 = value(exp_a(f,i));
+        temp_mult.fill_multinomial(radm,temp_probs2);
+        for (compindex=1; compindex<=k; compindex++) // cumulate the multinomial draws by index in the new data
+        {exp_a_temp(temp_mult(compindex)) += 1.0;}
+      }
+      else  //  Dirichlet
+      {
+        //  need to replace this with code for dirichlet
+        k=1000;  if(nsamp_a(f,i)<k) k=nsamp_a(f,i);  // note that nsamp is adjusted by var_adjust, so var_adjust
+                                                     // should be reset to 1.0 in control files that read the nudata.dat files
+        exp_a_temp = 0.0;
+        temp_probs2 = value(exp_a(f,i));
+        temp_mult.fill_multinomial(radm,temp_probs2);
+        for (compindex=1; compindex<=k; compindex++) // cumulate the multinomial draws by index in the new data
+        {exp_a_temp(temp_mult(compindex)) += 1.0;}
+      }
+        
      }
      else
      {exp_a_temp = obs_a(f,i);}
