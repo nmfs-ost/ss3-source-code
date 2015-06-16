@@ -91,7 +91,7 @@
                          //  will be calculated from the number of unique settle_months among the settle_assignments
   int settle  //  index to settle_assignments
   int settle_time  //  index to setting timings
-  
+  int Comp_Err_Parm_Start
   int recr_dist_inx
  LOCAL_CALCS
   if(finish_starter==999)
@@ -2640,7 +2640,7 @@
     if(Comp_Err_ParmCount>0)
     {
       echoinput<<Comp_Err_ParmCount<<"  #_parameters are needed"<<endl;
-      int Comp_Err_Parm_Start=N_selparm+1;
+      Comp_Err_Parm_Start=N_selparm;
       for(f=1;f<=Comp_Err_ParmCount;f++)
         {N_selparm++; ParCount++; ParmLabel+="ln(EffN_mult)_"+NumLbl(f);}
     }
