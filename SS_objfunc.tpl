@@ -298,7 +298,8 @@ FUNCTION void evaluate_the_objective_function()
       else  //  dirichlet
       {
 // from Thorson:  NLL -= gammln(A) - gammln(ninput_t(t)+A) + sum(gammln(ninput_t(t)*extract_row(pobs_ta,t) + A*extract_row(pexp_ta,t))) - sum(lgamma(A*extract_row(pexp_ta,t))) \
-        dirichlet_Parm=mfexp(selparm(Comp_Err_Parm_Start+Comp_Err_L2(f)))*nsamp_l(f,i);
+//        dirichlet_Parm=mfexp(selparm(Comp_Err_Parm_Start+Comp_Err_L2(f)))*nsamp_l(f,i);
+        dirichlet_Parm=mfexp(selparm(Comp_Err_Parm_Start+Comp_Err_L2(f)));
         temp = gammln(dirichlet_Parm) - gammln(nsamp_l(f,i)+dirichlet_Parm);
         // get female or combined sex logL
         if(gen_l(f,i) !=2) //  so not male only
@@ -431,7 +432,8 @@ FUNCTION void evaluate_the_objective_function()
             else  // dirichlet
             {
 // from Thorson:  NLL -= gammln(A) - gammln(ninput_t(t)+A) + sum(gammln(ninput_t(t)*extract_row(pobs_ta,t) + A*extract_row(pexp_ta,t))) - sum(lgamma(A*extract_row(pexp_ta,t))) \
-              dirichlet_Parm=mfexp(selparm(Comp_Err_Parm_Start+Comp_Err_A2(f)))*nsamp_a(f,i);
+//              dirichlet_Parm=mfexp(selparm(Comp_Err_Parm_Start+Comp_Err_A2(f)))*nsamp_a(f,i);
+              dirichlet_Parm=mfexp(selparm(Comp_Err_Parm_Start+Comp_Err_A2(f)));
               temp = gammln(dirichlet_Parm) - gammln(nsamp_a(f,i)+dirichlet_Parm);
               // get female or combined sex logL
               if(gen_a(f,i) !=2) //  so not male only
