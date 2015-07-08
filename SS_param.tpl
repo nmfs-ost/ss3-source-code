@@ -100,7 +100,13 @@ PARAMETER_SECTION
   number dirichlet_Parm;
  LOCAL_CALCS
   Ave_Size.initialize();
-  if(SR_parm(N_SRparm2)!=0.0 || SRvec_PH(N_SRparm2)>0) {SR_autocorr=1;} else {SR_autocorr=0;}  // flag for recruitment autocorrelation
+//  if(SR_parm(N_SRparm2)!=0.0 || SRvec_PH(N_SRparm2)>0) {SR_autocorr=1;} else {SR_autocorr=0;}  // flag for recruitment autocorrelation
+  if(SR_parm_1(N_SRparm2,3)!=0.0 || SR_parm_1(N_SRparm2,7)>0) 
+    {SR_autocorr=1;}
+  else
+    {SR_autocorr=0;}
+  // flag for recruitment autocorrelation
+  echoinput<<" Do recruitment_autocorr: "<<SR_autocorr<<endl;
   if(do_recdev==1)
   {k=recdev_start; j=recdev_end; s=1; p=-1;}
   else if(do_recdev==2)

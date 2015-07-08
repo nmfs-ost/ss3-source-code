@@ -630,6 +630,20 @@ FUNCTION void evaluate_the_objective_function()
       Fcast_recr_like += (norm2(Fcast_recruitments(endyr+1,YrMax)))/two_sigmaRsq;  // ss3
       if(Do_Impl_Error>0) Fcast_recr_like+=(norm2(Fcast_impl_error(endyr+1,YrMax)))/(2.0*Impl_Error_Std*Impl_Error_Std);  // implementation error
     }
+//      Fcast_recr_like += (norm2(Fcast_recruitments(endyr+1,YrMax)))/two_sigmaRsq;  // ss3
+      if(SR_autocorr==0)
+      {
+        Fcast_recr_like += (norm2(Fcast_recruitments(endyr+1,YrMax)))/two_sigmaRsq;
+      }
+      else
+      {
+        Fcast_recr_like += square(Fcast_recruitments(recdev_end+1)-rho*recdev(recdev_end)) / ((1.0-rho*rho)*two_sigmaRsq);  //  for the transition year
+        for(y=recdev_end+2;y<=YrMax;y++)
+        {Fcast_recr_like += square(Fcast_recruitments(y)-rho*Fcast_recruitments(y-1)) / ((1.0-rho*rho)*two_sigmaRsq);}
+      }
+
+
+
 
   //  SS_Label_Info_25.13 #Penalty for the parameter priors
     dvariable mu; dvariable tau; dvariable Aprior; dvariable Bprior;
