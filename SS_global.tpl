@@ -272,8 +272,8 @@ REPORT_SECTION
   if(Svy_N>0) report<<" CPUE " <<surv_like<<endl;
   if(nobs_disc>0) report<<" Disc " <<disc_like<<endl;
   if(nobs_mnwt>0) report<<" MnWt " <<mnwt_like<<endl;
-  if(Nobs_l_tot>0) report<<" LEN  " <<length_like<<endl;
-  if(Nobs_a_tot>0) report<<" AGE  " <<age_like<<endl;
+  if(Nobs_l_tot>0)report<<" LEN  "<<length_like_tot<<endl;
+  if(Nobs_a_tot>0)report<<" AGE  "<<age_like_tot<<endl;
   if(nobs_ms_tot>0) report<<" L-at-A  " <<sizeage_like<<endl;
   report<<" EQUL " <<equ_catch_like<<endl;
   report<<" Recr " <<recr_like<<endl;

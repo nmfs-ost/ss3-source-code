@@ -343,8 +343,8 @@ PROCEDURE_SECTION
        if(Svy_N>0) cout<<" CPUE " <<surv_like<<endl;
        if(nobs_disc>0) cout<<" Disc " <<disc_like<<endl;
        if(nobs_mnwt>0) cout<<" MnWt " <<mnwt_like<<endl;
-       if(Nobs_l_tot>0) cout<<" did lencomp obj_fun  " <<length_like<<endl;
-       if(Nobs_a_tot>0) cout<<" AGE  " <<age_like<<endl;
+       if(Nobs_l_tot>0) cout<<" did lencomp obj_fun  " <<length_like_tot<<endl;
+       if(Nobs_a_tot>0) cout<<" AGE  " <<age_like_tot<<endl;
        if(nobs_ms_tot>0) cout<<" L-at-A  " <<sizeage_like<<endl;
        if(SzFreq_Nmeth>0) cout<<" sizefreq "<<SzFreq_like<<endl;
        if(Do_TG>0) cout<<" TG-fleetcomp "<<TG_like1<<endl<<" TG-negbin "<<TG_like2<<endl;

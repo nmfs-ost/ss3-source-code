@@ -38,9 +38,9 @@ FUNCTION void write_summaryoutput()
   if(nobs_mnwt>0) report2<<runnumber<<" Like_Emph MeanBodyWt All "<<column(mnwt_lambda,k)<<endl<<
   runnumber<<" Like_Value MeanBodyWt "<<mnwt_like*column(mnwt_lambda,k)<<" " <<mnwt_like<<endl;
   if(Nobs_l_tot>0) report2<<runnumber<<" Like_Emph LenComp All "<<column(length_lambda,k)<<endl<<
-  runnumber<<" Like_Value LenComp "<<length_like*column(length_lambda,k)<<" " <<length_like<<endl;
+  runnumber<<" Like_Value LenComp "<<length_like_tot*column(length_lambda,k)<<" " <<length_like_tot<<endl;
   if(Nobs_a_tot>0) report2<<runnumber<<" Like_Emph AgeComp All "<<column(age_lambda,k)<<endl<<
-  runnumber<<" Like_Value AgeComp "<<age_like*column(age_lambda,k)<<" " <<age_like<<endl;
+  runnumber<<" Like_Value AgeComp "<<age_like_tot*column(age_lambda,k)<<" " <<age_like_tot<<endl;
   if(nobs_ms_tot>0) report2<<runnumber<<" Like_Emph MeanLAA All "<<column(sizeage_lambda,k)<<endl<<
   runnumber<<" Like_Value MeanLAA "<<sizeage_like*column(sizeage_lambda,k)<<" " <<sizeage_like<<endl;
   if(F_Method>1) report2<<runnumber<<" Like_Emph Catch All "<<column(catch_lambda,k)<<endl<<
@@ -2182,8 +2182,8 @@ FUNCTION void write_bigoutput()
   if(Svy_N>0) SS2out <<"Survey "<<surv_like*column(surv_lambda,k)<<endl;
   if(nobs_disc>0) SS2out <<"Discard "<<disc_like*column(disc_lambda,k)<<endl;
   if(nobs_mnwt>0) SS2out <<"Mean_body_wt "<<mnwt_like*column(mnwt_lambda,k)<<endl;
-  if(Nobs_l_tot>0) SS2out <<"Length_comp "<<length_like*column(length_lambda,k)<<endl;
-  if(Nobs_a_tot>0) SS2out <<"Age_comp "<<age_like*column(age_lambda,k)<<endl;
+  if(Nobs_l_tot>0) SS2out <<"Length_comp "<<length_like_tot*column(length_lambda,k)<<endl;
+  if(Nobs_a_tot>0) SS2out <<"Age_comp "<<age_like_tot*column(age_lambda,k)<<endl;
   if(nobs_ms_tot>0) SS2out <<"Size_at_age "<<sizeage_like*column(sizeage_lambda,k)<<endl;
   if(SzFreq_Nmeth>0) SS2out <<"SizeFreq "<<SzFreq_like*column(SzFreq_lambda,k)<<endl;
   if(Do_Morphcomp>0) SS2out <<"Morphcomp "<<Morphcomp_lambda(k)*Morphcomp_like<<" "<<Morphcomp_lambda(k)<<endl;
@@ -2204,8 +2204,8 @@ FUNCTION void write_bigoutput()
   if(Svy_N>0) SS2out<<"Surv_lambda: _ "<<column(surv_lambda,k)<<endl<<"Surv_like: "<<surv_like*column(surv_lambda,k)<<" "<<surv_like<<endl;
   if(nobs_disc>0) SS2out<<"Disc_lambda: _ "<<column(disc_lambda,k)<<endl<<"Disc_like: "<<disc_like*column(disc_lambda,k)<<" "<<disc_like<<endl;
   if(nobs_mnwt>0) SS2out<<"mnwt_lambda: _ "<<column(mnwt_lambda,k)<<endl<<"mnwt_like: "<<mnwt_like*column(mnwt_lambda,k)<<" "<<mnwt_like<<endl;
-  if(Nobs_l_tot>0) SS2out<<"Length_lambda: _ "<<column(length_lambda,k)<<endl<<"Length_like: "<<length_like*column(length_lambda,k)<<" "<<length_like<<endl;
-  if(Nobs_a_tot>0) SS2out<<"Age_lambda: _ "<<column(age_lambda,k)<<endl<<"Age_like: "<<age_like*column(age_lambda,k)<<" "<<age_like<<endl;
+  if(Nobs_l_tot>0) SS2out<<"Length_lambda: _ "<<column(length_lambda,k)<<endl<<"Length_like: "<<length_like_tot*column(length_lambda,k)<<" "<<length_like_tot<<endl;
+  if(Nobs_a_tot>0) SS2out<<"Age_lambda: _ "<<column(age_lambda,k)<<endl<<"Age_like: "<<age_like_tot*column(age_lambda,k)<<" "<<age_like_tot<<endl;
   if(nobs_ms_tot>0) SS2out<<"Sizeatage_lambda: _ "<<column(sizeage_lambda,k)<<endl<<"sizeatage_like: "<<sizeage_like*column(sizeage_lambda,k)<<" "<<sizeage_like<<endl;
 
   if(SzFreq_Nmeth>0)
@@ -3338,23 +3338,12 @@ FUNCTION void write_bigoutput()
    for (f=1;f<=Nfleet;f++)
    for (i=1;i<=Nobs_l(f);i++)
    {
-     temp=0.00;
      t=Len_time_t(f,i);
      ALK_time=Len_time_ALK(f,i);
-      if(header_l(f,i,3)>0)
-      {
+     if(header_l(f,i,3)>0)
+     {
        neff_l(f,i)  = exp_l(f,i)*(1-exp_l(f,i))+1.0e-06;     // constant added for stability
        neff_l(f,i) /= (obs_l(f,i)-exp_l(f,i))*(obs_l(f,i)-exp_l(f,i))+1.0e-06;
-       if(gen_l(f,i) !=2)
-       {
-         temp -= obs_l(f,i)(tails_l(f,i,1),tails_l(f,i,2)) * log(exp_l(f,i)(tails_l(f,i,1),tails_l(f,i,2)));
-         temp += obs_l(f,i)(tails_l(f,i,1),tails_l(f,i,2)) * log(obs_l(f,i)(tails_l(f,i,1),tails_l(f,i,2)));
-       }
-       if(gen_l(f,i) >=2 && gender==2)
-       {
-         temp -= obs_l(f,i)(tails_l(f,i,3),tails_l(f,i,4)) * log(exp_l(f,i)(tails_l(f,i,3),tails_l(f,i,4)));
-         temp += obs_l(f,i)(tails_l(f,i,3),tails_l(f,i,4)) * log(obs_l(f,i)(tails_l(f,i,3),tails_l(f,i,4)));
-       }
        n_rmse(f)+=1.;
        rmse(f)+=value(neff_l(f,i));
        mean_CV(f)+=nsamp_l(f,i);
@@ -3364,11 +3353,10 @@ FUNCTION void write_bigoutput()
       else
       {
         neff_l(f,i)=0.;
-        temp=0.;
       }
 
        SS2out<<f<<" "<<header_l(f,i,1)<<" "<<abs(header_l(f,i,2))<<" "<<Show_Time2(ALK_time,2)<<" "<<data_time(ALK_time,f,3)<<" "<<gen_l(f,i)<<" "<<mkt_l(f,i)<<" "<<nsamp_l(f,i)<<" "<<neff_l(f,i)<<" "<<
-      temp*sfabs(nsamp_l(f,i))<<" ";
+      length_like(f,i)<<" ";
       if(header_l(f,i,2)<0 && in_superperiod==0)
       {SS2out<<" start "; in_superperiod=1;}
       else if (header_l(f,i,2)<0 && in_superperiod==1)
@@ -3406,32 +3394,21 @@ FUNCTION void write_bigoutput()
       ALK_time=Age_time_ALK(f,i);
 
      if(nsamp_a(f,i)>0 && header_a(f,i,3)>0)
-       {
-      neff_a(f,i)  = exp_a(f,i)*(1-exp_a(f,i))+1.0e-06;     // constant added for stability
-      neff_a(f,i) /= (obs_a(f,i)-exp_a(f,i))*(obs_a(f,i)-exp_a(f,i))+1.0e-06;
-      temp=0.00;
-     if(gen_a(f,i) !=2)
-      {temp -= obs_a(f,i)(tails_a(f,i,1),tails_a(f,i,2)) * log(exp_a(f,i)(tails_a(f,i,1),tails_a(f,i,2)));
-       temp += obs_a(f,i)(tails_a(f,i,1),tails_a(f,i,2)) * log(obs_a(f,i)(tails_a(f,i,1),tails_a(f,i,2)));
+     {
+       neff_a(f,i)  = exp_a(f,i)*(1-exp_a(f,i))+1.0e-06;     // constant added for stability
+       neff_a(f,i) /= (obs_a(f,i)-exp_a(f,i))*(obs_a(f,i)-exp_a(f,i))+1.0e-06;
+       n_rmse(f)+=1.;
+       rmse(f)+=value(neff_a(f,i));
+       mean_CV(f)+=nsamp_a(f,i);
+       Hrmse(f)+=value(1./neff_a(f,i));
+       Rrmse(f)+=value(neff_a(f,i)/nsamp_a(f,i));
       }
-     if(gen_a(f,i) >=2 && gender==2)
-      {temp -= obs_a(f,i)(tails_a(f,i,3),tails_a(f,i,4)) * log(exp_a(f,i)(tails_a(f,i,3),tails_a(f,i,4)));
-       temp += obs_a(f,i)(tails_a(f,i,3),tails_a(f,i,4)) * log(obs_a(f,i)(tails_a(f,i,3),tails_a(f,i,4)));
+      else
+      {
+        neff_a(f,i)=0.;
       }
-        n_rmse(f)+=1.;
-        rmse(f)+=value(neff_a(f,i));
-        mean_CV(f)+=nsamp_a(f,i);
-        Hrmse(f)+=value(1./neff_a(f,i));
-        Rrmse(f)+=value(neff_a(f,i)/nsamp_a(f,i));
-       }
-       else
-        {
-          neff_a(f,i)=0.;
-          temp=0.;
-        }
       SS2out<<f<<" "<<header_a(f,i,1)<<" "<<abs(header_a(f,i,2))<<" "<<Show_Time2(ALK_time,2)<<" "<<data_time(ALK_time,f,3)<<" "<<gen_a(f,i)<<" "<<mkt_a(f,i)<<" "<<ageerr_type_a(f,i)<<" "<<Lbin_lo(f,i)<<" "<<Lbin_hi(f,i)<<" "<<nsamp_a(f,i)<<" "<<neff_a(f,i)<<" "<<
-      temp*sfabs(nsamp_a(f,i));
-      SS2out<<exp_meanage(f,i)<<" ";
+      age_like(f,i)<<exp_meanage(f,i)<<" ";
      if(header_a(f,i,2)<0 && in_superperiod==0)
       {SS2out<<" start "; in_superperiod=1;}
       else if (header_a(f,i,2)<0 && in_superperiod==1)

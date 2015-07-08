@@ -1625,7 +1625,7 @@ DATA_SECTION
   imatrix Len_time_ALK(1,Nfleet,1,Nobs_l)
   3darray obs_l(1,Nfleet,1,Nobs_l,1,nlen_bin2)
   3darray obs_l_all(1,4,1,Nfleet,1,nlen_bin)  //  for the sum of all length comp data
-  vector offset_l(1,Nfleet) // Compute OFFSET for multinomial (i.e, value for the multinonial function
+  matrix offset_l(1,Nfleet,1,Nobs_l) // Compute OFFSET for multinomial (i.e, value for the multinonial function
   matrix  nsamp_l(1,Nfleet,1,Nobs_l)
   matrix  nsamp_l_read(1,Nfleet,1,Nobs_l)
   imatrix  gen_l(1,Nfleet,1,Nobs_l)
@@ -1951,7 +1951,6 @@ DATA_SECTION
   ivector AccumBin_A(1,Nfleet)  //  collapse bins down to this bin number (0 for no collapse; positive value for N to accumulate)
   ivector Comp_Err_A(1,Nfleet)  //  composition error type
   ivector Comp_Err_A2(1,Nfleet)  //  composition error parameter location
-  vector offset_a(1,Nfleet) // Compute OFFSET for multinomial (i.e, value for the multinonial function
   int Nobs_a_tot
   int nobsa_rd
   int Lbin_method  //#_Lbin_method: 1=poplenbins; 2=datalenbins; 3=lengths
@@ -2086,6 +2085,7 @@ DATA_SECTION
       {if(Nobs_a(f)==0) Nobs_a(f)=1;}  //  why is this needed?
  END_CALCS
 
+  matrix offset_a(1,Nfleet,1,Nobs_a) // Compute OFFSET for multinomial (i.e, value for the multinonial function
   imatrix Age_time_t(1,Nfleet,1,Nobs_a)
   imatrix Age_time_ALK(1,Nfleet,1,Nobs_a)
   3darray obs_a(1,Nfleet,1,Nobs_a,1,gender*n_abins)

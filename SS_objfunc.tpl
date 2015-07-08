@@ -6,6 +6,7 @@ FUNCTION void evaluate_the_objective_function()
   sizeage_like.initialize(); parm_like.initialize(); MGparm_dev_like.initialize(); selparm_dev_like.initialize(); Svy_log_q.initialize();
   mnwt_like.initialize(); equ_catch_like.initialize(); recr_like.initialize(); Fcast_recr_like.initialize();
   catch_like.initialize(); Morphcomp_like.initialize(); TG_like1.initialize(); TG_like2.initialize();
+  length_like_tot.initialize(); age_like_tot.initialize();
   obj_fun=0.0;
 
     int k_phase=current_phase();
@@ -226,7 +227,6 @@ FUNCTION void evaluate_the_objective_function()
     {
     if(Nobs_l(f)>=1)
     {
-     length_like(f) = -offset_l(f);  //  so a perfect fit will approach 0.0
 
      for (j=1;j<=N_suprper_l(f);j++)                  // do each super period
      {
@@ -244,6 +244,7 @@ FUNCTION void evaluate_the_objective_function()
 
      for (i=1;i<=Nobs_l(f);i++)
      {
+     length_like(f,i) = -offset_l(f,i);  //  so a perfect fit will approach 0.0
      if(gender==2)
      {
        if(gen_l(f,i)==0) 
@@ -288,16 +289,17 @@ FUNCTION void evaluate_the_objective_function()
       if(Comp_Err_L(f)==0) // multinomial
       {
         // get female or combined sex logL
-       if(gen_l(f,i) !=2) length_like(f) -= nsamp_l(f,i) *
+       if(gen_l(f,i) !=2) length_like(f,i) -= nsamp_l(f,i) *
        obs_l(f,i)(tails_w(1),tails_w(2)) * log(exp_l(f,i)(tails_w(1),tails_w(2)));
        //  add male logL
-       if(gen_l(f,i) >=2 && gender==2) length_like(f) -= nsamp_l(f,i) *
+       if(gen_l(f,i) >=2 && gender==2) length_like(f,i) -= nsamp_l(f,i) *
        obs_l(f,i)(tails_w(3),tails_w(4)) * log(exp_l(f,i)(tails_w(3),tails_w(4)));
       }
       else  //  dirichlet
       {
 // from Thorson:  NLL -= gammln(A) - gammln(ninput_t(t)+A) + sum(gammln(ninput_t(t)*extract_row(pobs_ta,t) + A*extract_row(pexp_ta,t))) - sum(lgamma(A*extract_row(pexp_ta,t))) \
-        dirichlet_Parm=mfexp(selparm(Comp_Err_L2(f)))*nsamp_l(f,i);
+//        dirichlet_Parm=mfexp(selparm(Comp_Err_Parm_Start+Comp_Err_L2(f)))*nsamp_l(f,i);
+        dirichlet_Parm=mfexp(selparm(Comp_Err_Parm_Start+Comp_Err_L2(f)));
         temp = gammln(dirichlet_Parm) - gammln(nsamp_l(f,i)+dirichlet_Parm);
         // get female or combined sex logL
         if(gen_l(f,i) !=2) //  so not male only
@@ -316,10 +318,11 @@ FUNCTION void evaluate_the_objective_function()
         length_like(f,i)-=temp;
       }
      }
-    }
+     }
+     length_like_tot(f)=sum(length_like(f));
     }
    }
-    if(do_once==1) cout<<" did lencomp obj_fun  " <<length_like<<endl;
+    if(do_once==1) cout<<" did lencomp obj_fun  " <<length_like_tot<<endl;
    }
 
   //  SS_Label_Info_25.5 #Fit to age composition
@@ -330,8 +333,6 @@ FUNCTION void evaluate_the_objective_function()
     {
       if(Nobs_a(f)>=1)
       {
-        age_like(f) = -offset_a(f);
-
         for (j=1;j<=N_suprper_a(f);j++)                  // do super years  Max of 20 allowed per type(f)
         {
           exp_a_temp.initialize();
@@ -345,6 +346,7 @@ FUNCTION void evaluate_the_objective_function()
 
         for (i=1;i<=Nobs_a(f);i++)
         {
+          age_like(f,i) = -offset_a(f,i);  //  so a perfect fit will approach 0.0
           if(gender==2)
           {
             if(gen_a(f,i)==0)                         // combined sex observation
@@ -422,15 +424,16 @@ FUNCTION void evaluate_the_objective_function()
           {
             if(Comp_Err_A(f)==0)  //  multinomial
             {
-              if(gen_a(f,i) !=2) age_like(f) -= nsamp_a(f,i) *
+              if(gen_a(f,i) !=2) age_like(f,i) -= nsamp_a(f,i) *
               obs_a(f,i)(tails_w(1),tails_w(2)) * log(exp_a(f,i)(tails_w(1),tails_w(2)));
-              if(gen_a(f,i) >=2 && gender==2) age_like(f) -= nsamp_a(f,i) *
+              if(gen_a(f,i) >=2 && gender==2) age_like(f,i) -= nsamp_a(f,i) *
               obs_a(f,i)(tails_w(3),tails_w(4)) * log(exp_a(f,i)(tails_w(3),tails_w(4)));
             }
             else  // dirichlet
             {
 // from Thorson:  NLL -= gammln(A) - gammln(ninput_t(t)+A) + sum(gammln(ninput_t(t)*extract_row(pobs_ta,t) + A*extract_row(pexp_ta,t))) - sum(lgamma(A*extract_row(pexp_ta,t))) \
-              dirichlet_Parm=mfexp(selparm(Comp_Err_A2(f)))*nsamp_a(f,i);
+//              dirichlet_Parm=mfexp(selparm(Comp_Err_Parm_Start+Comp_Err_A2(f)))*nsamp_a(f,i);
+              dirichlet_Parm=mfexp(selparm(Comp_Err_Parm_Start+Comp_Err_A2(f)));
               temp = gammln(dirichlet_Parm) - gammln(nsamp_a(f,i)+dirichlet_Parm);
               // get female or combined sex logL
               if(gen_a(f,i) !=2) //  so not male only
@@ -450,9 +453,10 @@ FUNCTION void evaluate_the_objective_function()
             }
           }
         }
+        age_like_tot(f)=sum(age_like(f));
       }
     }
-    if(do_once==1) cout<<" did agecomp obj_fun "<<age_like<<endl;
+    if(do_once==1) cout<<" did agecomp obj_fun "<<age_like_tot<<endl;
   }
 
   //  SS_Label_Info_25.6 #Fit to mean size@age
@@ -762,9 +766,9 @@ FUNCTION void evaluate_the_objective_function()
 //   cout<<" obj_fun disc "<<obj_fun<<endl;
    obj_fun += column(mnwt_lambda,k_phase)*mnwt_like;
 //   cout<<" obj_fun mnwt "<<obj_fun<<endl;
-   obj_fun += column(length_lambda,k_phase)*length_like;
+   obj_fun += column(length_lambda,k_phase)*length_like_tot;
 //   cout<<" obj_fun len "<<obj_fun<<endl;
-   obj_fun += column(age_lambda,k_phase)*age_like;
+   obj_fun += column(age_lambda,k_phase)*age_like_tot;
 //   cout<<" obj_fun age "<<obj_fun<<endl;
    obj_fun += column(sizeage_lambda,k_phase)*sizeage_like;
 //   cout<<" obj_fun ms "<<obj_fun<<endl;

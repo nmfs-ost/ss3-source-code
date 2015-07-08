@@ -354,7 +354,8 @@ PARAMETER_SECTION
   vector exp_l_temp_ret(1,nlength2);     // retained lengthcomp
   vector exp_l_temp_dat(1,nlen_bin2);
 //  vector offset_l(1,Nfleet) // Compute OFFSET for multinomial (i.e, value for the multinonial function
-  vector length_like(1,Nfleet)  // likelihood of the length-frequency data
+  matrix length_like(1,Nfleet,1,Nobs_l)  // likelihood of the length-frequency data
+  vector length_like_tot(1,Nfleet)  // likelihood of the length-frequency data
   matrix SzFreq_exp(1,SzFreq_totobs,1,SzFreq_Setup2);
   vector SzFreq_like(1,SzFreq_N_Like)
   3darray exp_a(1,Nfleet,1,Nobs_a,1,n_abins2)
@@ -363,7 +364,8 @@ PARAMETER_SECTION
   vector tempvec_a(0,nages)
   vector agetemp(0,gender*nages+gender-1)
   matrix neff_a(1,Nfleet,1,Nobs_a)
-  vector age_like(1,Nfleet)  // likelihood of the age-frequency data
+  matrix age_like(1,Nfleet,1,Nobs_a)  // likelihood of the age-frequency data
+  vector age_like_tot(1,Nfleet)  // likelihood of the age-frequency data
   vector sizeage_like(1,Nfleet)  // likelihood of the age-frequency data
   3darray exp_ms(1,Nfleet,1,Nobs_ms,1,n_abins2)
   3darray exp_ms_sq(1,Nfleet,1,Nobs_ms,1,n_abins2)
