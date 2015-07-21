@@ -5,7 +5,7 @@ DATA_SECTION
 !!//  SS_Label_Section_1.0 #DATA_SECTION
 
 !!//  SS_Label_Info_1.1.1  #Create string with version info
-!!version_info+="SS-V3.30a-safe;_11/28/2014;_Stock_Synthesis_by_Richard_Methot_(NOAA)_using_ADMB_11.1";
+!!version_info+="SS-V3.30a-safe;_07_20_2015;_Stock_Synthesis_by_Richard_Methot_(NOAA)_using_ADMB_11.1";
 
 !!version_info_short+="#V3.30a";
 
@@ -695,10 +695,9 @@ DATA_SECTION
 
   init_int N_ReadCatch;
   !!echoinput<<N_ReadCatch<<" N_ReadCatch "<<endl;
-
-  init_matrix catch_bioT(1,N_ReadCatch,1,Nfleet1+2)
-  !!echoinput<<" catch as read (NEW:  yr,seas first; then read all fleets and surveys)"<<endl<<catch_bioT<<endl;
-
+  matrix catch_bioT(1,N_ReadCatch,1,Nfleet1+2)
+  vector tempvec(1,5);
+ 
   matrix catch_ret_obs(1,Nfleet,styr-nseas,TimeMax+nseas)
   imatrix do_Fparm(1,Nfleet,styr-nseas,TimeMax+nseas)
   3darray catch_seas_area(styr,TimeMax,1,pop,0,Nfleet)
@@ -707,17 +706,41 @@ DATA_SECTION
   int first_catch_yr
 
  LOCAL_CALCS
-    catch_ret_obs.initialize();
-  for (k=1;k<=N_ReadCatch;k++) /* SS_loop:  process lines of catch input */
+  catch_ret_obs.initialize();
+  k=0;
+  int k_test;
+  if(N_ReadCatch>0) {k_test=N_ReadCatch;} else {k_test=-9999;}
+  
+  while (k!=k_test)
   {
-    
-    if(finish_starter==999)
+    if(N_ReadCatch>0)  //  do read in table format
     {
-      g=catch_bioT(k,Nfleet1+1); s=catch_bioT(k,Nfleet1+2);
+      k++;
+      *(ad_comm::global_datafile) >> catch_bioT(k)(1,Nfleet1+2);
+      echoinput<<" catch as read: "<<endl<<catch_bioT(k)<<endl;
+    }
+    else  //  do read in list format  y, s, f, catch, catch_se
+    {
+      *(ad_comm::global_datafile) >> tempvec(1,5);
+      echoinput<<" catch as read: "<<endl<<catch_bioT(k)<<endl;
+      k=tempvec(1);
+    }
+
+    
+    if (N_ReadCatch>0)
+    {
+      if(finish_starter==999)
+      {
+        g=catch_bioT(k,Nfleet1+1); s=catch_bioT(k,Nfleet1+2);
+      }
+      else 
+      {
+        g=catch_bioT(k,1); s=catch_bioT(k,2);
+      }
     }
     else
     {
-      g=catch_bioT(k,1); s=catch_bioT(k,2);
+      g=tempvec(1); s=tempvec(2); f=tempvec(3);
     }
 
     if(g==-999)
@@ -732,18 +755,20 @@ DATA_SECTION
       {
         t=styr+(y-styr)*nseas+s-1;
 
-        if(finish_starter==999)
+        if(N_ReadCatch>0)
         {
-          for (f=1;f<=Nfleet1;f++) catch_ret_obs(f,t) += catch_bioT(k,f);
+          if(finish_starter==999)
+          {
+            for (f=1;f<=Nfleet1;f++) catch_ret_obs(f,t) += catch_bioT(k,f);
+          }
+          else 
+          {
+            for (f=1;f<=Nfleet1;f++) catch_ret_obs(f,t) += catch_bioT(k,f+2);
+          }
         }
         else
         {
-          for (f=1;f<=Nfleet1;f++) catch_ret_obs(f,t) += catch_bioT(k,f+2);
-        }
-  
-        if(g==-999) 
-        {
-          for (f=1;f<=Nfleet1;f++) {obs_equ_catch(s,f)=catch_ret_obs(f,t);}
+          catch_ret_obs(f,t) += tempvec(4);
         }
       }
       else  // distribute catch equally across seasons
@@ -751,24 +776,31 @@ DATA_SECTION
         for (s=1;s<=nseas;s++)
         {
           t=styr+(y-styr)*nseas+s-1;
-
-        if(finish_starter==999)
-        {
-          for (f=1;f<=Nfleet1;f++) catch_ret_obs(f,t) += catch_bioT(k,f)/nseas;
-        }
-        else
-        {
-          for (f=1;f<=Nfleet1;f++) catch_ret_obs(f,t) += catch_bioT(k,f+2)/nseas;
-        }
-
-        if(g==-999) 
+          if(N_ReadCatch>0)
           {
-            for (f=1;f<=Nfleet1;f++) {obs_equ_catch(s,f)=catch_ret_obs(f,t);}
+          if(finish_starter==999)
+          {
+            for (f=1;f<=Nfleet1;f++) catch_ret_obs(f,t) += catch_bioT(k,f)/nseas;
+          }
+          else
+          {
+            for (f=1;f<=Nfleet1;f++) catch_ret_obs(f,t) += catch_bioT(k,f+2)/nseas;
+          }
+          }
+          else
+          {
+            catch_ret_obs(f,t) += tempvec(4)/nseas;
           }
         }
       }
     }
   }
+  
+  for(s=1;s<=nseas;s++)
+  {
+    for (f=1;f<=Nfleet1;f++) {obs_equ_catch(s,f)=catch_ret_obs(f,styr-nseas-1+s);}
+  }
+
   echoinput<<" processed catch "<<endl<<trans(catch_ret_obs)<<endl;
 
 //  calc total catch by year so can calculate the first year with catch and to omit zero catch years from sdreport
