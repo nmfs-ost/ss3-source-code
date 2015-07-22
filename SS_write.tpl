@@ -558,6 +558,26 @@ FUNCTION void write_nudata()
     }
   report1<<"#"<<endl;
 
+  report1<<"#_Catch data: yr, seas, fleet, catch, catch_se"<<endl;
+  k=0;
+  for(f=1;f<=Nfleet;f++)
+  {
+    if(fleet_type(f)<=2)
+    {
+      for(y=styr-1;y<=endyr;y++)
+      {
+        for(s=1;s<=nseas;s++)
+        {
+          k++;
+          t=styr+(y-styr)*nseas+s-1;
+          if(finish_starter==999)
+          {report1<<catch_bioT(k)(Nfleet1+1,Nfleet1+2)<<" "<<f<<" "<<catch_ret_obs(f,t)<<" "<<catch_se(t,f)<<endl;}
+          else
+          {report1<<catch_bioT(k)(1,3)<<" "<<catch_ret_obs(f,t)<<" "<<catch_se(t,f)<<endl;}
+        }
+      }
+    }
+  }
   report1 << Svy_N_rd <<" #_N_cpue_and_surveyabundance_observations"<< endl;
   report1<<"#_Units:  0=numbers; 1=biomass; 2=F"<<endl;
   report1<<"#_Errtype:  -1=normal; 0=lognormal; >0=T"<<endl;

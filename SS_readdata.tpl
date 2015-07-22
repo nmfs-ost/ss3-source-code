@@ -495,6 +495,7 @@ DATA_SECTION
   matrix fleet_setup(1,Nfleet,1,7)  // type, timing, area, units, equ_catch_se, catch_se, need_catch_mult
   matrix bycatch_setup(1,Nfleet,1,5)
   int N_bycatch;  //  number of bycatch only fleets
+  int N_catchfleets; //  number of bycatch plus landed catch fleets
 
  LOCAL_CALCS
   bycatch_setup.initialize();
@@ -564,6 +565,7 @@ DATA_SECTION
   else  //  read 3.30 format
   {
     N_bycatch=0;
+    N_catchfleets=0;
     echoinput<<"rows are fleets; columns are: Fleet_#, fleet_type, timing, area, units, equ_catch_se, catch_se, need_catch_mult"<<endl;
     for(f=1;f<=Nfleet;f++)
     {
@@ -572,6 +574,7 @@ DATA_SECTION
       fleetname+=anystring;
       fleet_type(f) = int(fleet_setup(f,1));
       if(fleet_type(f)==2) N_bycatch++;
+      if(fleet_type(f)<=2) N_catchfleets++;
       surveytime(f) = fleet_setup(f,2);
       if(surveytime(f)!=-1. && surveytime(f)!=0.5)
         {warning<<"fleet: "<<f<<"surveytime= "<<surveytime(y)<<" will not be used in V3.3; must set for each datum"<<endl;}
@@ -694,38 +697,46 @@ DATA_SECTION
 !!//  SS_Label_Info_2.2 #Read CATCH amount by fleet
 
   init_int N_ReadCatch;
-  !!echoinput<<N_ReadCatch<<" N_ReadCatch "<<endl;
-  matrix catch_bioT(1,N_ReadCatch,1,Nfleet1+2)
-  vector tempvec(1,5);
- 
+  int Catch_read;
+ LOCAL_CALCS
+  if(N_ReadCatch>0) 
+  {
+    echoinput<<N_ReadCatch<<" N_ReadCatch is positive so read this number of rows with fleets as columns"<<endl;
+    Catch_read=N_ReadCatch;
+    j=Nfleet1+2;
+  } 
+    else 
+    {
+      echoinput<<N_ReadCatch<<" N_ReadCatch is negative so read list until -9999"<<endl;
+      Catch_read=-9999;
+      N_ReadCatch=(endyr-styr+1)*nseas*N_catchfleets;  //  maximum number of catch values to store
+      j=5;
+      }
+ END_CALCS
+  matrix catch_bioT(1,N_ReadCatch,1,j)
   matrix catch_ret_obs(1,Nfleet,styr-nseas,TimeMax+nseas)
   imatrix do_Fparm(1,Nfleet,styr-nseas,TimeMax+nseas)
   3darray catch_seas_area(styr,TimeMax,1,pop,0,Nfleet)
   matrix totcatch_byarea(styr,TimeMax,1,pop)
   vector totcat(styr-1,endyr)  //  by year, not by t
   int first_catch_yr
+  vector tempvec(1,5)
 
  LOCAL_CALCS
   catch_ret_obs.initialize();
   k=0;
-  int k_test;
-  if(N_ReadCatch>0) {k_test=N_ReadCatch;} else {k_test=-9999;}
   
-  while (k!=k_test)
+  while (k!=Catch_read)
   {
-    if(N_ReadCatch>0)  //  do read in table format
+    k++;
+    if(Catch_read>0)  //  do read in table format
     {
-      k++;
       *(ad_comm::global_datafile) >> catch_bioT(k)(1,Nfleet1+2);
-      echoinput<<" catch as read: "<<endl<<catch_bioT(k)<<endl;
     }
     else  //  do read in list format  y, s, f, catch, catch_se
     {
       *(ad_comm::global_datafile) >> tempvec(1,5);
-      echoinput<<" catch as read: "<<endl<<catch_bioT(k)<<endl;
-      k=tempvec(1);
     }
-
     
     if (N_ReadCatch>0)
     {
@@ -741,7 +752,9 @@ DATA_SECTION
     else
     {
       g=tempvec(1); s=tempvec(2); f=tempvec(3);
+      if(k<=N_ReadCatch) catch_bioT(k)=tempvec;  //  only store if in dimensioned range
     }
+    echoinput<<" catch as read: "<<catch_bioT(k)<<endl;
 
     if(g==-999)
     {y=styr-1;}  // designates initial equilibrium
@@ -769,6 +782,7 @@ DATA_SECTION
         else
         {
           catch_ret_obs(f,t) += tempvec(4);
+          catch_se(t,f) = tempvec(5);
         }
       }
       else  // distribute catch equally across seasons
