@@ -538,26 +538,6 @@ FUNCTION void write_nudata()
   if(Nudat==1)  // report back the input data
   {
 
-  report1 << N_ReadCatch<<" #_N_lines_of_catch_to_read"<<endl;
-  report1 << "#_catch_columns_are_year, season, fleet (including surveys)(year=-999 for initial equilibrium)"<<endl;
-  if(finish_starter==999)
-    {
-      for(y=1;y<=N_ReadCatch;y++)
-      {
-        report1<<catch_bioT(y)(Nfleet1+1,Nfleet1+2)<<" "<<catch_bioT(y)(1,Nfleet1);
-        if(Nfleet>Nfleet1) 
-          {
-            for(j=Nfleet1+1;j<=Nfleet;j++) report1<<" 0";  //  for the survey fleets
-          }
-          report1<<endl;
-      }
-    }
-    else
-    {
-      report1 << catch_bioT<<endl;
-    }
-  report1<<"#"<<endl;
-
   report1<<"#_Catch data: yr, seas, fleet, catch, catch_se"<<endl;
   k=0;
   for(f=1;f<=Nfleet;f++)
@@ -570,14 +550,14 @@ FUNCTION void write_nudata()
         {
           k++;
           t=styr+(y-styr)*nseas+s-1;
-          if(finish_starter==999)
-          {report1<<catch_bioT(k)(Nfleet1+1,Nfleet1+2)<<" "<<f<<" "<<catch_ret_obs(f,t)<<" "<<catch_se(t,f)<<endl;}
-          else
-          {report1<<catch_bioT(k)(1,3)<<" "<<catch_ret_obs(f,t)<<" "<<catch_se(t,f)<<endl;}
+          if(y==styr-1) {g=-999;} else {g=y;}
+          report1<<g<<" "<<s<<" "<<f<<" "<<catch_ret_obs(f,t)<<" "<<catch_se(t,f)<<endl;
         }
       }
     }
   }
+  report1<<"-9999 0 0 0 0"<<endl<<"#"<<endl;
+  
   report1 << Svy_N_rd <<" #_N_cpue_and_surveyabundance_observations"<< endl;
   report1<<"#_Units:  0=numbers; 1=biomass; 2=F"<<endl;
   report1<<"#_Errtype:  -1=normal; 0=lognormal; >0=T"<<endl;
@@ -771,31 +751,41 @@ FUNCTION void write_nudata()
   else if(Nudat==2)  // report expected value with no added error
   {
 
-  report1 << (endyr-styr+2)*nseas<<" #_N_lines_of_catch_to_read"<<endl;
-  report1 << "#_catch_biomass(mtons):_columns_are_year,season,fleets(including surveys with no catch)"<<endl;
-  for (y=styr-1; y<=endyr; y++)
-  for (s=1; s<=nseas;s++)
+  report1 << "#_catch:_columns_are_year,season,fleet,catch,catch_se"<<endl;
+  report1<<"#_Catch data: yr, seas, fleet, catch, catch_se"<<endl;
+  k=0;
+  for(f=1;f<=Nfleet;f++)
   {
-    t=styr+(y-styr)*nseas+s-1;
-    if(y==styr-1)
-      {report1<<-999<<" "<<s<<" "<<est_equ_catch(s)<<endl;}
-      else
-      {
-        report1<<y<<" "<<s<<" ";
-    for (f=1;f<=Nfleet;f++)
+    if(fleet_type(f)<=2)
     {
-      if(fleet_type(f)==2 && catch_ret_obs(f,t)>0.0)
+      for(y=styr-1;y<=endyr;y++)
+      {
+        for(s=1;s<=nseas;s++)
         {
-          report1<<" 0.1 ";  //  for bycatch only fleet
+          k++;
+          t=styr+(y-styr)*nseas+s-1;
+          if(y==styr-1)
+          {
+            report1<<-999<<" "<<s<<" "<<f<<" "<<est_equ_catch(s,f)<<" "<<catch_se(t,f)<<endl;
+          }
+          else
+          {
+            report1<<y<<" "<<s<<" "<<f<<" ";
+            if (fleet_type(f)==2 && catch_ret_obs(f,t)>0.0)
+            {
+              report1<<0.1<<" "<<catch_se(t,f)<<endl;  //  for bycatch only fleet
+            }
+            else if(catchunits(f)==1)
+            {report1<<catch_fleet(t,f,3)<<" "<<catch_se(t,f)<<endl;}
+            else
+            {report1<<catch_fleet(t,f,6)<<" "<<catch_se(t,f)<<endl;}
+           }
         }
-      else if(catchunits(f)==1)
-      {report1<<catch_fleet(t,f,3)<<" ";}
-      else
-      {report1<<catch_fleet(t,f,6)<<" ";}
+      }
     }
-    report1<<endl;
   }
-  }
+  report1<<"-9999 0 0 0 0"<<endl<<"#"<<endl;
+
   report1<<"#"<<endl<< Svy_N <<" #_N_cpue_and_surveyabundance_observations"<< endl;
     report1<<"#_Units:  0=numbers; 1=biomass; 2=F"<<endl;
     report1<<"#_Errtype:  -1=normal; 0=lognormal; >0=T"<<endl;
@@ -1049,45 +1039,45 @@ FUNCTION void write_nudata()
   else  //  create bootstrap data
   {
 
-  report1 <<(endyr-styr+2)*nseas<<" #_N_lines_of_catch_to_read"<<endl;
   report1 << "#_catch_biomass(mtons):_columns_are_fisheries,year,season"<<endl;
-  for (y=styr-1; y<=endyr; y++)
-  for (s=1; s<=nseas;s++)
+  report1 << "#_catch:_columns_are_year,season,fleet,catch,catch_se"<<endl;
+  report1<<"#_Catch data: yr, seas, fleet, catch, catch_se"<<endl;
+  k=0;
+  for(f=1;f<=Nfleet;f++)
   {
-    t=styr+(y-styr)*nseas+s-1;
-    if(y==styr-1)
+    if(fleet_type(f)<=2)
     {
-      report1<<-999<<" "<<s<<" ";
-      for (f=1;f<=Nfleet;f++)
+      for(y=styr-1;y<=endyr;y++)
       {
-        if(obs_equ_catch(s,f)>0.0 && fleet_type(f)<=2)
+        for(s=1;s<=nseas;s++)
         {
-          report1<<est_equ_catch(s,f)*mfexp(randn(radm)*catch_se(styr-1,f) - 0.5*catch_se(styr-1,f)*catch_se(styr-1,f))<<" ";
+          k++;
+          t=styr+(y-styr)*nseas+s-1;
+          if(y==styr-1)
+          {
+            report1<<-999<<" "<<s<<" "<<f<<" "
+            <<est_equ_catch(s,f)*mfexp(randn(radm)*catch_se(styr-1,f) - 0.5*catch_se(styr-1,f)*catch_se(styr-1,f))
+            <<" "<<catch_se(t,f)<<endl;
+          }
+          else
+          {
+            report1<<y<<" "<<s<<" "<<f<<" ";
+            if (fleet_type(f)==2 && catch_ret_obs(f,t)>0.0)
+            {
+              report1<<0.1<<" "<<catch_se(t,f)<<endl;  //  for bycatch only fleet
+            }
+            else if(catchunits(f)==1)
+            {report1<<catch_fleet(t,f,3)*mfexp(randn(radm)*catch_se(t,f) - 0.5*catch_se(t,f)*catch_se(t,f))
+              <<" "<<catch_se(t,f)<<endl;}
+            else
+            {report1<<catch_fleet(t,f,6)*mfexp(randn(radm)*catch_se(t,f) - 0.5*catch_se(t,f)*catch_se(t,f))
+              <<" "<<catch_se(t,f)<<endl;}
+          }
         }
-        else
-        {report1<<" 0.0 ";}
       }
-      report1 <<" #_init_equil_catch_for_each_fleet"<<endl;
     }
-    else
-      {
-    report1<<y<<" "<<s<<" ";
-    for (f=1;f<=Nfleet;f++)
-    {
-      if(fleet_type(f)==2 && catch_ret_obs(f,t)>0.0)
-        {
-          report1<<" 0.1 ";  //  for bycatch only fleet
-        }
-      else if(catchunits(f)==1)
-      {report1<<catch_fleet(t,f,3)*mfexp(randn(radm)*catch_se(t,f) - 0.5*catch_se(t,f)*catch_se(t,f))<<" ";}
-      else
-      {report1<<catch_fleet(t,f,6)*mfexp(randn(radm)*catch_se(t,f) - 0.5*catch_se(t,f)*catch_se(t,f))<<" ";}
-    }
-    report1<<endl;
-
-      }
   }
-  report1<<"#"<<endl;
+  report1<<"-9999 0 0 0 0"<<endl<<"#"<<endl;
 
   report1 << Svy_N <<" #_N_cpue_and_surveyabundance_observations"<< endl;
   report1<<"#_Units:  0=numbers; 1=biomass; 2=F"<<endl;

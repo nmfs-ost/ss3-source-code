@@ -696,22 +696,23 @@ DATA_SECTION
  END_CALCS
 !!//  SS_Label_Info_2.2 #Read CATCH amount by fleet
 
-  init_int N_ReadCatch;
+  int N_ReadCatch;
   int Catch_read;
  LOCAL_CALCS
-  if(N_ReadCatch>0) 
+  if(finish_starter==999) 
   {
-    echoinput<<N_ReadCatch<<" N_ReadCatch is positive so read this number of rows with fleets as columns"<<endl;
+    *(ad_comm::global_datafile) >> N_ReadCatch;
+    echoinput<<N_ReadCatch<<" N_ReadCatch read catch as table with fleets as columns"<<endl;
     Catch_read=N_ReadCatch;
     j=Nfleet1+2;
   } 
-    else 
-    {
-      echoinput<<N_ReadCatch<<" N_ReadCatch is negative so read list until -9999"<<endl;
-      Catch_read=-9999;
-      N_ReadCatch=(endyr-styr+1)*nseas*N_catchfleets;  //  maximum number of catch values to store
-      j=5;
-      }
+  else 
+  {
+    echoinput<<" read list until -9999"<<endl;
+    Catch_read=-9999;
+    N_ReadCatch=(endyr-styr+1)*nseas*N_catchfleets;  //  maximum number of catch values to store
+    j=5;  // number of columns to read and store
+  }
  END_CALCS
   matrix catch_bioT(1,N_ReadCatch,1,j)
   matrix catch_ret_obs(1,Nfleet,styr-nseas,TimeMax+nseas)
@@ -724,9 +725,10 @@ DATA_SECTION
 
  LOCAL_CALCS
   catch_ret_obs.initialize();
-  k=0;
+  tempvec.initialize();
+  k=0;  // counter for reading catch records
   
-  while (k!=Catch_read)
+  while (k!=Catch_read && tempvec(1)!=Catch_read)  // first is for 3.24, second for 3.30
   {
     k++;
     if(Catch_read>0)  //  do read in table format
@@ -738,46 +740,32 @@ DATA_SECTION
       *(ad_comm::global_datafile) >> tempvec(1,5);
     }
     
-    if (N_ReadCatch>0)
+    if(finish_starter==999)
     {
-      if(finish_starter==999)
-      {
-        g=catch_bioT(k,Nfleet1+1); s=catch_bioT(k,Nfleet1+2);
-      }
-      else 
-      {
-        g=catch_bioT(k,1); s=catch_bioT(k,2);
-      }
+      y=catch_bioT(k,Nfleet1+1); s=catch_bioT(k,Nfleet1+2);
     }
     else
     {
       g=tempvec(1); s=tempvec(2); f=tempvec(3);
+      if(g==-999)
+      {y=styr-1;}  // designates initial equilibrium
+      else 
+      {y=g;}
       if(k<=N_ReadCatch) catch_bioT(k)=tempvec;  //  only store if in dimensioned range
     }
-    echoinput<<" catch as read: "<<catch_bioT(k)<<endl;
+    echoinput<<catch_bioT(k)<<endl;
 
-    if(g==-999)
-    {y=styr-1;}  // designates initial equilibrium
-    else 
-    {y=g;}
-    if((g==-999) || (y>=styr && y<=endyr))  //  observation is in date range
+    if(y>=styr-1 && y<=endyr)  //  observation is in date range
     {
       if(s>nseas) s=nseas;   // allows for collapsing multiple season catch data down into fewer seasons
-                             //  typically to collapse to annual because accumulation will all be in the index "nseas"
+                               //  typically to collapse to annual because accumulation will all be in the index "nseas"
       if(s>0)
       {
         t=styr+(y-styr)*nseas+s-1;
-
-        if(N_ReadCatch>0)
+  
+        if(finish_starter==999 && y>=styr)
         {
-          if(finish_starter==999)
-          {
-            for (f=1;f<=Nfleet1;f++) catch_ret_obs(f,t) += catch_bioT(k,f);
-          }
-          else 
-          {
-            for (f=1;f<=Nfleet1;f++) catch_ret_obs(f,t) += catch_bioT(k,f+2);
-          }
+          for (f=1;f<=Nfleet1;f++) catch_ret_obs(f,t) += catch_bioT(k,f);
         }
         else
         {
@@ -790,16 +778,9 @@ DATA_SECTION
         for (s=1;s<=nseas;s++)
         {
           t=styr+(y-styr)*nseas+s-1;
-          if(N_ReadCatch>0)
-          {
           if(finish_starter==999)
           {
             for (f=1;f<=Nfleet1;f++) catch_ret_obs(f,t) += catch_bioT(k,f)/nseas;
-          }
-          else
-          {
-            for (f=1;f<=Nfleet1;f++) catch_ret_obs(f,t) += catch_bioT(k,f+2)/nseas;
-          }
           }
           else
           {
@@ -810,9 +791,12 @@ DATA_SECTION
     }
   }
   
-  for(s=1;s<=nseas;s++)
+  if(finish_starter!=999)
   {
-    for (f=1;f<=Nfleet1;f++) {obs_equ_catch(s,f)=catch_ret_obs(f,styr-nseas-1+s);}
+    for(s=1;s<=nseas;s++)
+    {
+      for (f=1;f<=Nfleet1;f++) {obs_equ_catch(s,f)=catch_ret_obs(f,styr-nseas-1+s);}
+    }
   }
 
   echoinput<<" processed catch "<<endl<<trans(catch_ret_obs)<<endl;
