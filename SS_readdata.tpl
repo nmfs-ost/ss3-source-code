@@ -727,10 +727,22 @@ DATA_SECTION
   catch_ret_obs.initialize();
   tempvec.initialize();
   k=0;  // counter for reading catch records
-//  typedef std::char_traits<char>::pos_type pos_type;
-//  pos_type mark_pos = ad_comm::global_datafile.tellg();
-//    echoinput<<"markpos "<<mark_pos<<endl;
-    
+  /*
+  typedef std::char_traits<char>::pos_type pos_type;
+  pos_type mark_pos = ad_comm::global_datafile->tellg();
+    if(Catch_read<0)
+      {
+        while(tempvec(1)!=Catch_read)
+        {
+          *(ad_comm::global_datafile) >> tempvec;
+          pos_type mark_pos = ad_comm::global_datafile->tellg();
+          k++;      
+        }
+      }
+  k=0; 
+  tempvec(1)=0;
+  ad_comm::global_datafile->seekg(mark_pos);
+  */
   while (k!=Catch_read && tempvec(1)!=Catch_read)  // first is for 3.24, second for 3.30
   {
     if(Catch_read>0)  //  do read in table format
