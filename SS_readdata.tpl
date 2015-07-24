@@ -710,7 +710,7 @@ DATA_SECTION
   {
     echoinput<<" read list until -9999"<<endl;
     Catch_read=-9999;
-    N_ReadCatch=(endyr-styr+1)*nseas*N_catchfleets;  //  maximum number of catch values to store
+    N_ReadCatch=(endyr-styr+2)*nseas*N_catchfleets;  //  maximum number of catch values to store
     j=5;  // number of columns to read and store
   }
  END_CALCS
@@ -727,33 +727,30 @@ DATA_SECTION
   catch_ret_obs.initialize();
   tempvec.initialize();
   k=0;  // counter for reading catch records
-  
+//  typedef std::char_traits<char>::pos_type pos_type;
+//  pos_type mark_pos = ad_comm::global_datafile.tellg();
+//    echoinput<<"markpos "<<mark_pos<<endl;
+    
   while (k!=Catch_read && tempvec(1)!=Catch_read)  // first is for 3.24, second for 3.30
   {
-    k++;
     if(Catch_read>0)  //  do read in table format
     {
+      k++;
       *(ad_comm::global_datafile) >> catch_bioT(k)(1,Nfleet1+2);
-    }
+      y=catch_bioT(k,Nfleet1+1); s=catch_bioT(k,Nfleet1+2);
+      echoinput<<catch_bioT(k)<<endl;
+   }
     else  //  do read in list format  y, s, f, catch, catch_se
     {
       *(ad_comm::global_datafile) >> tempvec(1,5);
-    }
-    
-    if(finish_starter==999)
-    {
-      y=catch_bioT(k,Nfleet1+1); s=catch_bioT(k,Nfleet1+2);
-    }
-    else
-    {
       g=tempvec(1); s=tempvec(2); f=tempvec(3);
+      echoinput<<tempvec<<endl;
       if(g==-999)
       {y=styr-1;}  // designates initial equilibrium
       else 
       {y=g;}
-      if(k<=N_ReadCatch) catch_bioT(k)=tempvec;  //  only store if in dimensioned range
     }
-    echoinput<<catch_bioT(k)<<endl;
+    
 
     if(y>=styr-1 && y<=endyr)  //  observation is in date range
     {
