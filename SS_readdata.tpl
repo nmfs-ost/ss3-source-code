@@ -698,19 +698,28 @@ DATA_SECTION
 
   int N_ReadCatch;
   int Catch_read;
+  vector tempvec(1,5)  //  number of elements to read from each catch record
  LOCAL_CALCS
   if(finish_starter==999) 
   {
     *(ad_comm::global_datafile) >> N_ReadCatch;
     echoinput<<N_ReadCatch<<" N_ReadCatch read catch as table with fleets as columns"<<endl;
-    Catch_read=N_ReadCatch;
     j=Nfleet1+2;
   } 
   else 
   {
     echoinput<<" read list until -9999"<<endl;
-    Catch_read=-9999;
-    N_ReadCatch=(endyr-styr+2)*nseas*N_catchfleets;  //  maximum number of catch values to store
+    k=0;
+    typedef std::char_traits<char>::pos_type pos_type;
+    pos_type mark_pos = ad_comm::global_datafile->tellg();
+    while(tempvec(1)!=-9999.)
+    {
+      k++;
+      *(ad_comm::global_datafile) >> tempvec;
+    }
+    ad_comm::global_datafile->seekg(mark_pos);
+    echoinput<<" number of catch records = "<<k<<endl;
+    N_ReadCatch=k;  //  number of catch records to read
     j=5;  // number of columns to read and store
   }
  END_CALCS
@@ -721,48 +730,28 @@ DATA_SECTION
   matrix totcatch_byarea(styr,TimeMax,1,pop)
   vector totcat(styr-1,endyr)  //  by year, not by t
   int first_catch_yr
-  vector tempvec(1,5)
 
  LOCAL_CALCS
   catch_ret_obs.initialize();
   tempvec.initialize();
   k=0;  // counter for reading catch records
-  /*
-  typedef std::char_traits<char>::pos_type pos_type;
-  pos_type mark_pos = ad_comm::global_datafile->tellg();
-    if(Catch_read<0)
-      {
-        while(tempvec(1)!=Catch_read)
-        {
-          *(ad_comm::global_datafile) >> tempvec;
-          pos_type mark_pos = ad_comm::global_datafile->tellg();
-          k++;      
-        }
-      }
-  k=0; 
-  tempvec(1)=0;
-  ad_comm::global_datafile->seekg(mark_pos);
-  */
-  while (k!=Catch_read && tempvec(1)!=Catch_read)  // first is for 3.24, second for 3.30
+  for (k=1;k<=N_ReadCatch;k++)
   {
-    if(Catch_read>0)  //  do read in table format
+    if(finish_starter==999)  //  do read in table format
     {
-      k++;
       *(ad_comm::global_datafile) >> catch_bioT(k)(1,Nfleet1+2);
       y=catch_bioT(k,Nfleet1+1); s=catch_bioT(k,Nfleet1+2);
-      echoinput<<catch_bioT(k)<<endl;
    }
     else  //  do read in list format  y, s, f, catch, catch_se
     {
-      *(ad_comm::global_datafile) >> tempvec(1,5);
-      g=tempvec(1); s=tempvec(2); f=tempvec(3);
-      echoinput<<tempvec<<endl;
+      *(ad_comm::global_datafile) >> catch_bioT(k)(1,5);
+      g=catch_bioT(k,1); s=catch_bioT(k,2); f=catch_bioT(k,3);
       if(g==-999)
       {y=styr-1;}  // designates initial equilibrium
       else 
       {y=g;}
     }
-    
+    echoinput<<catch_bioT(k)<<endl;
 
     if(y>=styr-1 && y<=endyr)  //  observation is in date range
     {
@@ -778,8 +767,8 @@ DATA_SECTION
         }
         else
         {
-          catch_ret_obs(f,t) += tempvec(4);
-          catch_se(t,f) = tempvec(5);
+          catch_ret_obs(f,t) += catch_bioT(k,4);
+          catch_se(t,f) = catch_bioT(k,5);
         }
       }
       else  // distribute catch equally across seasons
@@ -793,7 +782,7 @@ DATA_SECTION
           }
           else
           {
-            catch_ret_obs(f,t) += tempvec(4)/nseas;
+            catch_ret_obs(f,t) += catch_bioT(k,4)/nseas;
           }
         }
       }
