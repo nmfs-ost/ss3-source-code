@@ -644,7 +644,7 @@ FUNCTION void write_nudata()
   {report1<<min_tail_L(f)<<" "<<min_comp_L(f)<<" "<<CombGender_L(f)<<" "<<AccumBin_L(f)<<" "<<Comp_Err_L(f)<<" "<<Comp_Err_L2(f)<<" #_fleet:"<<f<<"_"<<fleetname(f)<<endl;}
 
   report1<<nlen_bin<<" #_N_LengthBins"<<endl<<len_bins_dat<<endl;
-  report1<<nobsl_rd<<" #_N_Length_obs"<<endl;
+//  report1<<nobsl_rd<<" #_N_Length_obs"<<endl;
   report1<<"#_yr month fleet gender part Nsamp datavector(female-male)"<<endl;
    for (f=1;f<=Nfleet;f++)
     {
@@ -656,6 +656,9 @@ FUNCTION void write_nudata()
      }
      }
      }
+    report1<<-9999.<<" ";
+    for(j=2;j<=6+nlen_bin2;j++) report1<<"0 ";
+    report1<<endl;
 
    report1 <<"#"<<endl<<n_abins<<" #_N_age_bins"<<endl;
   if(n_abins>0) report1<<age_bins1<<endl;
@@ -890,7 +893,7 @@ FUNCTION void write_nudata()
   for (f=1;f<=Nfleet;f++)
   {report1<<min_tail_L(f)<<" "<<min_comp_L(f)<<" "<<CombGender_L(f)<<" "<<AccumBin_L(f)<<" "<<Comp_Err_L(f)<<" "<<Comp_Err_L2(f)<<" #_fleet:"<<f<<"_"<<fleetname(f)<<endl;}
   report1<<nlen_bin<<" #_N_LengthBins"<<endl<<len_bins_dat<<endl;
-  report1<<sum(Nobs_l)<<" #_N_Length_obs"<<endl;
+//  report1<<sum(Nobs_l)<<" #_N_Length_obs"<<endl;
   report1<<"#_yr month fleet gender part Nsamp datavector(female-male)"<<endl;
    for (f=1;f<=Nfleet;f++)
     {
@@ -907,6 +910,9 @@ FUNCTION void write_nudata()
       {exp_l_temp_dat = obs_l(f,i);}
      report1 << header_l(f,i)(1,3)<<" "<<gen_l(f,i)<<" "<<mkt_l(f,i)<<" "<<nsamp_l(f,i)<<" "<<exp_l_temp_dat<<endl;
     }}}
+    report1<<-9999.<<" ";
+    for(j=2;j<=6+nlen_bin2;j++) report1<<"0 ";
+    report1<<endl;
 
    report1<<"#"<<endl<<n_abins<<" #_N_age_bins"<<endl;
   if(n_abins>0) report1<<age_bins1<<endl;
@@ -1204,7 +1210,7 @@ FUNCTION void write_nudata()
   for (f=1;f<=Nfleet;f++)
   {report1<<min_tail_L(f)<<" "<<min_comp_L(f)<<" "<<CombGender_L(f)<<" "<<AccumBin_L(f)<<" "<<Comp_Err_L(f)<<" "<<Comp_Err_L2(f)<<" #_fleet:"<<f<<"_"<<fleetname(f)<<endl;}
   report1<<nlen_bin<<" #_N_LengthBins"<<endl<<len_bins_dat<<endl;
-  report1<<sum(Nobs_l)<<" #_N_Length_obs"<<endl;
+//  report1<<sum(Nobs_l)<<" #_N_Length_obs"<<endl;
   report1<<"#_yr month fleet gender part Nsamp datavector(female-male)"<<endl;
    for (f=1;f<=Nfleet;f++)
     {
@@ -1238,6 +1244,9 @@ FUNCTION void write_nudata()
       {exp_l_temp_dat = obs_l(f,i);}
      report1 << header_l(f,i)(1,3)<<" "<<gen_l(f,i)<<" "<<mkt_l(f,i)<<" "<<nsamp_l(f,i)<<" "<<exp_l_temp_dat<<endl;
     }}}
+    report1<<-9999.<<" ";
+    for(j=2;j<=6+nlen_bin2;j++) report1<<"0 ";
+    report1<<endl;
 
    report1<<"#"<<endl<<n_abins<<" #_N_age_bins"<<endl;
   if(n_abins>0) report1<<age_bins1<<endl;

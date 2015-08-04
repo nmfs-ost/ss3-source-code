@@ -712,6 +712,7 @@ DATA_SECTION
     k=0;
     typedef std::char_traits<char>::pos_type pos_type;
     pos_type mark_pos = ad_comm::global_datafile->tellg();
+    tempvec.initialize();
     while(tempvec(1)!=-9999.)
     {
       k++;
@@ -1610,9 +1611,32 @@ DATA_SECTION
 
 
 !!//  SS_Label_Info_2.7.4 #Read Length composition data
-   init_int nobsl_rd
+   int nobsl_rd
    int Nobs_l_tot
-   !!echoinput<<nobsl_rd<<" N length comp obs "<<endl;
+   vector tempvec_lenread(1,6+nlen_bin2);
+   
+ LOCAL_CALCS
+  if(finish_starter==999) 
+  {
+    *(ad_comm::global_datafile) >> nobsl_rd;
+  } 
+  else 
+  {
+    k=0;
+    tempvec_lenread.initialize();
+    typedef std::char_traits<char>::pos_type pos_type;
+    pos_type mark_pos = ad_comm::global_datafile->tellg();
+    while(tempvec_lenread(1)!=-9999.)
+    {
+      k++;
+      *(ad_comm::global_datafile) >> tempvec_lenread;
+    }
+    ad_comm::global_datafile->seekg(mark_pos);
+    nobsl_rd=k;
+  }
+   echoinput<<nobsl_rd<<" N length comp obs "<<endl;
+ END_CALCS
+   
    init_matrix lendata(1,nobsl_rd,1,6+nlen_bin2)
    !!if(nobsl_rd>0) echoinput<<" first lencomp obs "<<endl<<lendata(1)<<endl<<" last obs"<<endl<<lendata(nobsl_rd)<<endl;;
 
