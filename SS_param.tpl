@@ -315,6 +315,12 @@ PARAMETER_SECTION
   4darray sel_a(styr-3,endyr+1,1,Nfleet,1,gender,0,nages)
   vector sel(1,nlength)  //  used to multiply by ALK
 
+  4darray retain_a(styr-3,endyr+1,1,Nfleet,1,gender,0,nages)
+  4darray discmort_a(styr-3,endyr+1,1,Nfleet,1,gender,0,nages)
+  4darray discmort2_a(styr-3,endyr+1,1,Nfleet,1,gender,0,nages)
+  4darray sel_a_r(styr-3,endyr+1,1,Nfleet,1,gender,0,nages)
+
+
 !!//  SS_Label_Info_5.1.6 #Create tag parameters and associated arrays
   matrix TG_alive(1,pop,1,gmorph)
   matrix TG_alive_temp(1,pop,1,gmorph)

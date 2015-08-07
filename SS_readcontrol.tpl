@@ -2562,6 +2562,7 @@
    }
    for (f=Nfleet+1;f<=2*Nfleet;f++)
    {
+     int f1=f-Nfleet;  // actual fleet number
      if(seltype(f,1)==15) // mirror
      {
        if(seltype(f,4)==0 || seltype(f,4)>=f-Nfleet)
@@ -2605,6 +2606,42 @@
          ParCount++; ParmLabel+="AgeSel_P"+NumLbl(j)+"_"+fleetname(f-Nfleet)+"("+NumLbl(f-Nfleet)+")";
        }
      }
+
+//  age-specific retention function
+     if(seltype(f,2)>=1)
+     {
+       if(WTage_rd>0)
+       {
+        N_warn++; warning<<" BEWARE: Retention functions not implemented fully when reading empirical wt-at-age "<<endl;
+       }
+       if(Do_Retain==1)
+        {
+          N_warn++; cout<<" EXIT - see warning "<<endl; warning<<" ERROR:  cannot have both age and size retention functions "<<f<<"  but retention parms not setup "<<endl; exit(1);
+        }
+        else
+        {
+          Do_Retain=2;
+        }
+       if(seltype(f,2)==3)
+       {RetainParm(f1)=0;}  //  no parameters needed
+       else
+       {
+         RetainParm(f1)=N_selparmvec(f)+1;
+         N_selparmvec(f) +=4*seltype(f,2);          // N retention parms first 4 for retention; next 4 for mortality
+         for (j=1;j<=4;j++)
+         {
+           ParCount++; ParmLabel+="Retain_age_P"+NumLbl(j)+"_"+fleetname(f1)+"("+NumLbl(f1)+")";
+         }
+         if(seltype(f,2)==2)
+         {
+           for (j=1;j<=4;j++)
+           {
+             ParCount++; ParmLabel+="DiscMort_age_P"+NumLbl(j)+"_"+fleetname(f1)+"("+NumLbl(f1)+")";
+           }
+         }
+       }
+     }
+
      if(seltype(f,3)>=1)
       {
         if(gender==1) {N_warn++; cout<<"Critical error"<<endl; warning<<" Male selex cannot be used in one sex model; fleet: "<<f<<endl; exit(1);}

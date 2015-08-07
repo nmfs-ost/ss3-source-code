@@ -1222,6 +1222,83 @@ FUNCTION void get_selectivity()
             if(docheckup==1) echoinput<<" sel-age "<<sel_a(y,fs)<<endl;
           }
         }  //  end gender loop
+  {
+//   calculation of age retention and discard mortality here
+  //  SS_Label_Info_22.5.1 #Calculate age-specific retention and discmort
+  // discmort_a is the fraction of discarded fish that die
+  //  discmort2_a is fraction that die from being retained or are dead discard
+  //   = elem_prod(sel_a,(retain_a + (1-retain_a)*discmort_a)) */
+      if(seltype(f,2)==0)  //  no discard, all retained
+      {
+        retain_a(y,fs)=1.0;
+        sel_a_r(y,fs)=sel_a(y,fs);
+        discmort_a(y,fs)=1.0;
+        discmort2_a(y,fs)=sel_a(y,fs);
+      }
+      else if(seltype(f,2)==3)  // none retained; all dead
+      {
+        retain_a(y,fs)=0.0;
+        discmort_a(y,fs)=1.0;
+        sel_a_r(y,fs)=0.0;
+        discmort2_a(y,fs)=sel_a(y,fs);
+      }
+      else
+      {
+        if(seltype(f,2)<0)  // mirror
+        {
+          k=-seltype(f,2);
+          retain_a(y,fs)=retain_a(y,k);
+          discmort_a(y,fs)=discmort_a(y,k);
+          if(seltype(k,2)==1)
+          {
+            discmort2_a(y,fs)=sel_a(y,fs);  //  all selected fish are dead;  this statement does both genders implicitly
+          }
+          else
+          {
+            discmort2_a(y,fs,1)=elem_prod(sel_a(y,fs,1), retain_a(y,fs,1) + elem_prod((1.-retain_a(y,fs,1)),discmort_a(y,fs,1)) );
+            if(gender==2) discmort2_a(y,fs,2)=elem_prod(sel_a(y,fs,2), retain_a(y,fs,2) + elem_prod((1.-retain_a(y,fs,2)),discmort_a(y,fs,2)) );
+          }
+        }
+        else
+        {
+          k=RetainParm(fs);
+          temp=1.-sp(k+2);
+          temp1=1.-posfun(temp,0.0,CrashPen);
+          retain_a(y,fs,1)=temp1/(1.+mfexp(-(r_ages-(sp(k)))/sp(k+1)));
+          if(gender==2) retain_a(y,fs,2)=temp1/(1.+mfexp(-(r_ages-(sp(k)+sp(k+3)))/sp(k+1)));  // males
+          if(docheckup==1&&y==styr) echoinput<<"parms "<<sp(k)<<" "<<sp(k+1)<<" "<<sp(k+3)<<" "<<temp1<<endl<<"maleoff "<<male_offset<<endl;
+          if(docheckup==1&&y==styr) echoinput<<"ages "<<r_ages<<endl;
+          if(docheckup==1&&y==styr) echoinput<<"retention "<<retain_a(y,fs)<<endl;
+  
+          if(seltype(f,2)==1)  // all discards are dead
+          {
+            discmort_a(y,fs)=1.0;
+            discmort2_a(y,fs)=sel_a(y,fs);  //  all selected fish are dead;
+          }
+          else
+          {
+            k+=4;  // first discard mortality parm
+            temp=1.-sp(k+2);
+            temp1=posfun(temp,0.0,CrashPen);
+            discmort_a(y,fs,1)=(1.-temp1/(1+mfexp(-(r_ages-(sp(k)))/sp(k+1))));
+            if(gender==2) discmort_a(y,fs,2)=(1.-temp1/(1+mfexp(-(r_ages-(sp(k)+sp(k+3)))/sp(k+1))));  // males
+            if(docheckup==1&&y==styr) echoinput<<"discmort "<<discmort_a(y,fs)<<endl;
+            discmort2_a(y,fs,1)=elem_prod(sel_a(y,fs,1), retain_a(y,fs,1) + elem_prod((1.-retain_a(y,fs,1)),discmort_a(y,fs,1) ));
+            if(gender==2) discmort2_a(y,fs,2)=elem_prod(sel_a(y,fs,2), retain_a(y,fs,2) + elem_prod((1.-retain_a(y,fs,2)),discmort_a(y,fs,2) ));
+          }
+        }
+  
+        sel_a_r(y,fs,1)=elem_prod(sel_a(y,fs,1),retain_a(y,fs,1));
+        if(gender==2)
+        {
+          sel_a_r(y,f,2)=elem_prod(sel_a(y,f,2),retain_a(y,fs,2));
+        }
+      }
+      if(docheckup==1&&y==styr) echoinput<<"sel-age-ret "<<sel_a_r(y,fs)<<endl;
+      if(docheckup==1&&y==styr) echoinput<<" dead "<<discmort2_a(y,fs)<<endl;
+//  end age discard
+  }
+
       }  // end calc of age selex
     }  //  end recalc of selex
 

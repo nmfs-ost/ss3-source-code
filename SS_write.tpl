@@ -72,7 +72,9 @@ FUNCTION void write_summaryoutput()
   report2 <<runnumber<<" Timeseries SmryBio-"<<Smry_Age<<" "<<column(Smry_Table,2)<<endl;
   report2 <<runnumber<<" Timeseries TotCatch "<<column(Smry_Table,4)<<endl;
   report2 <<runnumber<<" Timeseries RetCatch "<<column(Smry_Table,5)<<endl;
-  if(Do_Benchmark>0) report2<<runnumber<<" Mgmt_Quant "<<Mgmt_quant(1,6+Do_Retain)<<endl;
+  j=0;
+  if(Do_Retain>0) j=1;
+  if(Do_Benchmark>0) report2<<runnumber<<" Mgmt_Quant "<<Mgmt_quant(1,6+j)<<endl;
 
   report2<<runnumber<<" Parm Labels ";
   for (i=1;i<=ParCount;i++) {report2<<" "<<ParmLabel(i);}

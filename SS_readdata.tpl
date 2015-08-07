@@ -18,6 +18,7 @@ DATA_SECTION
   int  A2  //  used for a+nages+1 to get true age bin for males
   int a1  // use to track a subset of ages
   int f // counter for fleets and surveys.  total is Ntypes
+  int f1  // another fleet counter
   int fs  //  counter for fleets when looping across size and ageselex; so = f-Ntypes
 
   int gmorph // number of biological entities:  gender*GP*BirthEvent*Platoon
