@@ -1734,12 +1734,12 @@ FUNCTION void write_nucontrol()
    report4<<do_recdev<<" #do_recdev:  0=none; 1=devvector; 2=simple deviations"<<endl;
    report4<<recdev_start<<" # first year of main recr_devs; early devs can preceed this era"<<endl;
    report4<<recdev_end<<" # last year of main recr_devs; forecast devs start in following year"<<endl;
-   report4<<recdev_PH<<" #_recdev phase "<<endl;
+   report4<<recdev_PH_rd<<" #_recdev phase "<<endl;
    report4<<recdev_adv<<" # (0/1) to read 13 advanced options"<<endl;
    if(recdev_adv==0) {onenum="#_Cond ";} else {onenum=" ";}
    report4<<onenum<<recdev_early_start_rd<<" #_recdev_early_start (0=none; neg value makes relative to recdev_start)"<<endl;
-   report4<<onenum<<recdev_early_PH<<" #_recdev_early_phase"<<endl;
-   report4<<onenum<<Fcast_recr_PH<<" #_forecast_recruitment phase (incl. late recr) (0 value resets to maxphase+1)"<<endl;
+   report4<<onenum<<recdev_early_PH_rd<<" #_recdev_early_phase"<<endl;
+   report4<<onenum<<Fcast_recr_PH_rd<<" #_forecast_recruitment phase (incl. late recr) (0 value resets to maxphase+1)"<<endl;
    report4<<onenum<<Fcast_recr_lambda<<" #_lambda for Fcast_recr_like occurring before endyr+1"<<endl;
    report4<<onenum<<recdev_adj(1)<<" #_last_early_yr_nobias_adj_in_MPD"<<endl;
    report4<<onenum<<recdev_adj(2)<<" #_first_yr_fullbias_adj_in_MPD"<<endl;

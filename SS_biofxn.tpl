@@ -459,10 +459,12 @@ FUNCTION void get_growth2()
             temp3=L_inf(gp)-Ave_Size(styr,1,g,nages);  // delta between linf and the size at nages
             //  frac_ages = age/nages, so is fraction of a lifetime
             temp4=1.0;
+            if(do_once==1&&g==1) echoinput<<" get max size "<<L_inf(gp)<<" "<<Ave_Size(styr,1,g,nages)<<endl;
             for (a=0;a<=nages;a++)
             {
               temp+=temp4*(Ave_Size(styr,1,g,nages)+frac_ages(a)*temp3);  // so grows linearly from size at nages to size at nages+nages
               temp1+=temp4;   //  accumulate numbers to create denominator for mean size calculation
+              if(do_once==1&&g==1) echoinput<<a<<" "<<temp4<<" "<<Ave_Size(styr,1,g,nages)+frac_ages(a)*temp3<<" "<<temp/temp1<<endl;
               temp4*=temp2;  //  decay numbers at age by exp(-0.2)
             }
             Ave_Size(styr,1,g,nages)=temp/temp1;  //  this is weighted mean size at nages

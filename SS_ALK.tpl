@@ -48,9 +48,7 @@ FUNCTION void Make_AgeLength_Key(const int s, const int subseas)
                 ALK_range_g_lo(ALK_finder)=column(ALK_range_use,1);
                 ALK_range_g_hi(ALK_finder)=column(ALK_range_use,2);
               }
-              echoinput<<" use to calc_ALK "<<endl;
               ALK(ALK_idx,g)=calc_ALK(len_bins,ALK_range_g_lo(ALK_finder),ALK_range_g_hi(ALK_finder),use_Ave_Size_W,use_SD_Size);
-              echoinput<<" OK "<<endl;
             }
             else
             {

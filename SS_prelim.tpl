@@ -641,7 +641,15 @@ PRELIMINARY_CALCS_SECTION
     ParmTrace<<endl;
 
 //  SS_Label_Info_6.10 #Preliminary calcs done; Ready for estimation
-    if(Turn_off_phase<0) {cout<<" Requested exit after read when turn_off_phase < 0 "<<endl; exit(1);}
+    if(Turn_off_phase<0) 
+      {
+        cout<<" Requested exit after read when turn_off_phase < 0 "<<endl;
+        write_nudata();
+        cout<<" finished nudata report "<<endl;
+        write_nucontrol();
+        cout<<" finished nucontrol report "<<endl;
+        exit(1);
+      }
     cout<<endl<<endl<<"Estimating...please wait..."<<endl;
     last_objfun=1.0e30;
   }  // end PRELIMINARY_CALCS_SECTION

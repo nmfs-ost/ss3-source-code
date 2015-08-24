@@ -1712,6 +1712,8 @@
   int recdev_early_start
   int recdev_early_end
   int recdev_first
+  int recdev_early_PH_rd
+  int Fcast_recr_PH_rd
   int recdev_early_PH
   int Fcast_recr_PH
   int Fcast_recr_PH2
@@ -1731,8 +1733,8 @@
   {
     recdev_options(1,13)=recdev_options_rd(1,13);
     recdev_early_start_rd=recdev_options(1);
-    recdev_early_PH=recdev_options(2);
-    Fcast_recr_PH=recdev_options(3);
+    recdev_early_PH_rd=recdev_options(2);
+    Fcast_recr_PH_rd=recdev_options(3);
     Fcast_recr_lambda=recdev_options(4);
     recdev_adj(1)=recdev_options(5);
     recdev_adj(2)=recdev_options(6);
@@ -1749,10 +1751,10 @@
   {
     recdev_early_start_rd=0;   // 0 means no early
     recdev_early_end=-1;
-    recdev_early_PH=-4;
-    recdev_options(2)=recdev_early_PH;
-    Fcast_recr_PH=0;  // so will be reset to maxphase+1
-    recdev_options(3)=Fcast_recr_PH;
+    recdev_early_PH_rd=-4;
+    recdev_options(2)=recdev_early_PH_rd;
+    Fcast_recr_PH_rd=0;  // so will be reset to maxphase+1
+    recdev_options(3)=Fcast_recr_PH_rd;
     Fcast_recr_lambda=1.;
     recdev_adj(1)=double(styr)-1000.;
     recdev_adj(2)=styr-nages;
@@ -1772,8 +1774,8 @@
   {echoinput<<"# advanced options not read;  defaults displayed below"<<endl;}
 
     echoinput<<recdev_early_start_rd<<" #_recdev_early_start (0=none; neg value makes relative to recdev_start)"<<endl;
-    echoinput<<recdev_early_PH<<" #_recdev_early_phase"<<endl;
-    echoinput<<Fcast_recr_PH<<" #_forecast_recruitment phase (incl. late recr) (0 value resets to maxphase+1)"<<endl;
+    echoinput<<recdev_early_PH_rd<<" #_recdev_early_phase"<<endl;
+    echoinput<<Fcast_recr_PH_rd<<" #_forecast_recruitment phase (incl. late recr) (0 value resets to maxphase+1)"<<endl;
     echoinput<<Fcast_recr_lambda<<" #_lambda for Fcast_recr_like occurring before endyr+1"<<endl;
     echoinput<<recdev_adj(1)<<" #_last_early_yr_nobias_adj_in_MPD"<<endl;
     echoinput<<recdev_adj(2)<<" #_first_yr_fullbias_adj_in_MPD"<<endl;
@@ -1814,7 +1816,7 @@
   {
     recdev_do_early=0;
     recdev_early_end=-1;
-    if(recdev_early_PH>0) recdev_early_PH=-recdev_early_PH;
+    if(recdev_early_PH_rd>0) recdev_early_PH_rd=-recdev_early_PH_rd;
   }
   else
   {
@@ -3781,8 +3783,12 @@
     }
   }
 
-  if(depletion_fleet>0 && recdev_early_PH>0) recdev_early_PH++;  //  add 1 to phase if using depletion fleet
-  if(recdev_early_PH > Turn_off_phase) recdev_early_PH =-1;
+  if(depletion_fleet>0 && recdev_early_PH_rd>0) recdev_early_PH_rd++;  //  add 1 to phase if using depletion fleet
+  if(recdev_early_PH_rd > Turn_off_phase) 
+    {recdev_early_PH =-1;}
+    else
+    {recdev_early_PH =recdev_early_PH_rd;}
+      
   if(recdev_early_PH > max_phase) max_phase=recdev_early_PH;
 
   if(recdev_do_early>0)
@@ -3807,11 +3813,12 @@
   }
 
   Fcast_recr_PH2=max_phase+1;
+  Fcast_recr_PH=Fcast_recr_PH_rd;
   if(Do_Forecast>0)
   {
     if(Turn_off_phase>0)
     {
-      if(Fcast_recr_PH!=0)  // read value for forecast_PH
+      if(Fcast_recr_PH_rd!=0)  // read value for forecast_PH
       {
         Fcast_recr_PH2=Fcast_recr_PH;
         if(depletion_fleet>0 && Fcast_recr_PH2>0) Fcast_recr_PH2++;
