@@ -351,7 +351,8 @@ FUNCTION void get_growth2()
     int k2;
     int add_age;
     int ALK_idx2;  //  beginning of first subseas of next season
-
+    dvariable plusgroupsize;
+    dvariable current_size;
   //  SS_Label_Info_16.1 #Create Cohort_Growth offset for the cohort borne (age 0) this year
     if(CGD>0)   //  cohort specific growth multiplier
     {
@@ -453,22 +454,23 @@ FUNCTION void get_growth2()
             if(do_once==1) echoinput<<" L@A(w/o lin): "<<Ave_Size(styr,1,g)<<endl;
 
 //  SS_Label_Info_16.2.4.1.4  #calc approximation to mean size at maxage to account for growth after reaching the maxage (accumulator age)
-            temp=0.0;
-            temp1=0.0;
-            temp2=mfexp(-0.2);  //  cannot use natM or Z because growth is calculated first
-            temp3=L_inf(gp)-Ave_Size(styr,1,g,nages);  // delta between linf and the size at nages
-            //  frac_ages = age/nages, so is fraction of a lifetime
+            current_size=Ave_Size(styr,1,g,nages);
+            temp1=1.0;
             temp4=1.0;
-            if(do_once==1&&g==1) echoinput<<" get max size "<<L_inf(gp)<<" "<<Ave_Size(styr,1,g,nages)<<endl;
-            for (a=0;a<=nages;a++)
+            temp=current_size;
+            temp2=mfexp(-0.08);  //  cannot use natM or Z because growth is calculated first
+            if(do_once==1&&g==1) echoinput<<" L_inf "<<L_inf(gp)<<" size@exactly maxage "<<current_size<<endl;
+            for (a=nages+1;a<=3*nages;a++)
             {
-              temp+=temp4*(Ave_Size(styr,1,g,nages)+frac_ages(a)*temp3);  // so grows linearly from size at nages to size at nages+nages
+              temp4*=temp2;  //  decay numbers at age by exp(-0.xxx)
+              current_size+=(L_inf(gp)-current_size)* (1.0-mfexp(VBK(gp,0)*VBK_seas(0)));
+              temp+=temp4*current_size;
               temp1+=temp4;   //  accumulate numbers to create denominator for mean size calculation
-              if(do_once==1&&g==1) echoinput<<a<<" "<<temp4<<" "<<Ave_Size(styr,1,g,nages)+frac_ages(a)*temp3<<" "<<temp/temp1<<endl;
-              temp4*=temp2;  //  decay numbers at age by exp(-0.2)
+              if(do_once==1&&g==1) echoinput<<a<<" "<<temp4<<" "<<current_size<<" "<<temp/temp1<<endl;
             }
             Ave_Size(styr,1,g,nages)=temp/temp1;  //  this is weighted mean size at nages
-            if(do_once==1&&g==1) echoinput<<" adjusted size at maxage "<<Ave_Size(styr,1,g,nages)<<endl;
+            if(do_once==1&&g==1) echoinput<<" adjusted size at maxage "<<Ave_Size(styr,1,g,nages)<<endl
+              <<" ratio "<<temp1/temp2<<endl;
           }  //  end initial year calcs
 
 //  SS_Label_Info_16.2.4.2  #loop seasons for growth calculation
@@ -508,14 +510,26 @@ FUNCTION void get_growth2()
 //  SS_Label_info_16.2.4.2.1.1  #calc size at end of the season, which will be size at begin of next season using current seasons growth parms
                   //  with k2 adding an age if at the end of the year
                 if((a<nages || s<nseas)) Ave_Size(t+1,1,g,k2) = Ave_Size(t,1,g,a) + (mfexp(VBK(gp,a)*seasdur(s)*VBK_seas(s))-1.0)*t2*Cohort_Growth(y,a);
+                if(a==nages && s==nseas) plusgroupsize = Ave_Size(t,1,g,nages) + (mfexp(VBK(gp,nages)*seasdur(s)*VBK_seas(s))-1.0)*t2*Cohort_Growth(y,nages);
               }
             }  // done ageloop
 
 //  SS_Label_Info_16.2.4.2.1.2  #after age loop, if(s=nseas) get weighted average for size_at_maxage from carryover fish and fish newly moving into this age
             if(s==nseas)
             {
-              temp=( (natage(t,1,g,nages-1)+0.01)*Ave_Size(t+1,1,g,nages) + (natage(t,1,g,nages)+0.01)*Ave_Size(t,1,g,nages)) / (natage(t,1,g,nages-1)+natage(t,1,g,nages)+0.02);
-              Ave_Size(t+1,1,g,nages)=temp;
+              if(y>styr)
+                {
+                  temp4= square(natage(t,1,g,nages-1)+0.00000001)/(natage(t-1,1,g,nages-2)+0.00000001);
+                  temp=temp4*Ave_Size(t+1,1,g,nages)+(natage(t,1,g,nages)-temp4+0.00000001)*plusgroupsize;
+                  if(do_once==1&&g==1) echoinput<<" plus group "<<t<<" N "<<temp4<<" "<<natage(t,1,g,nages)<<
+                  " size "<<Ave_Size(t+1,1,g,nages)<<" "<<plusgroupsize<<" ";
+                  Ave_Size(t+1,1,g,nages)=temp/(natage(t,1,g,nages)+0.00000001);
+                }
+                else
+                {               
+                  Ave_Size(t+1,1,g,nages)=Ave_Size(t,1,g,nages);
+                }
+              if(do_once==1&&g==1) echoinput<<" new_val "<<Ave_Size(t+1,1,g,nages)<<endl;
             }
 
             if(docheckup==1) echoinput<<y<<" seas: "<<s<<" sex: "<<sx(g)<<" gp: "<<gp<<" settle: "<<settle_g(g)<<" Lmin: "<<Lmin(gp)<<" Linf: "<<L_inf(gp)<<" VBK: "<<VBK(gp,nages)<<endl
