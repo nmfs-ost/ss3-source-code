@@ -327,7 +327,9 @@ FUNCTION void Get_Benchmarks()
       }
     else
     {
-      if(F_Method>=2) {Fmax=maxpossF/sum(Bmark_RelF_Use);}
+//      if(F_Method>=2) {Fmax=maxpossF/sum(Bmark_RelF_Use);}
+      if(F_Method>=2) {Fmax=3.00*Btgt_Fmult;}
+
       switch(Do_MSY)
         {
         case 1:  // set Fmsy=Fspr
