@@ -3128,6 +3128,11 @@ DATA_SECTION
 
   int did_MSY;
   int show_MSY;
+  int wrote_bigreport;
+  !! show_MSY=0;
+  !! did_MSY=0;
+  !! wrote_bigreport=0;
+  
   init_number SPR_target
   !!echoinput<<SPR_target<<" SPR_target "<<endl;
   init_number BTGT_target

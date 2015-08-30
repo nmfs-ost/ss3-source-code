@@ -1409,12 +1409,23 @@ FUNCTION void Make_FishSelex()
               sel_al_2(s,g,f,a)=sel_a(yf,f,gg,a)*(ALK_w(a)(llo,lhi) * sel_l_r_w(llo,lhi) );
               sel_al_4(s,g,f,a)=sel_a(yf,f,gg,a)* (ALK_w(a)(llo,lhi) * sel_l_r(yf,f,gg)(llo,lhi) );
             }
+            else if (a==nages)
+            {
+              sel_al_2(s,g,f)=sel_al_1(s,g,f);
+              sel_al_4(s,g,f)=sel_al_3(s,g,f);
+            }             
     
             if(seltype(f,2)>=2)  //  calc discard mortality
             {
               deadfish(s,g,f,a)=sel_a(yf,f,gg,a)*(ALK_w(a)(llo,lhi) * discmort2(yf,f,gg)(llo,lhi));  //  selected dead by numbers
               deadfish_B(s,g,f,a)=sel_a(yf,f,gg,a)*(ALK_w(a)(llo,lhi) * disc_wt(llo,lhi)); // selected dead by weight
             }
+            else if(a==nages)
+            {
+              deadfish_B(s,g,f)=sel_al_1(s,g,f);
+              deadfish(s,g,f)=sel_al_3(s,g,f);
+            }
+            
           }  //  end age loop
         }
         if(save_for_report==2 && ishadow(GP2(g))==0) bodywtout<<-y<<" "<<s<<" "<<gg<<" "<<GP4(g)<<" "<<Bseas(g)

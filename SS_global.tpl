@@ -206,10 +206,11 @@ FINAL_SECTION
     evaluate_the_objective_function();
 
 //  SS_Label_Info_12.3.3 #Do benchmarks and forecast and stdquantities with save_for_report=1
-    if(mceval_phase()==0) {show_MSY=1;}
+    if(mceval_phase()==0) {show_MSY=1;} else {show_MSY=0;}
     if(Do_Benchmark>0)
     {
-      if(did_MSY==0) Get_Benchmarks();
+      report5<<"show MSY before call in global "<<show_MSY<<endl;
+      if(did_MSY==0) Get_Benchmarks(show_MSY);
     }
     else
     {Mgmt_quant(1)=SPB_virgin;}
@@ -228,7 +229,7 @@ FINAL_SECTION
 //  SS_Label_Info_12.4 #Do Outputs
 //  SS_Label_Info_12.4.1 #Call fxn write_bigoutput()
     write_bigoutput();
-    cout<<" finished big report "<<endl;
+    cout<<" finished big report in final_section"<<endl;
 
 //  SS_Label_Info_12.4.2 #Call fxn write_summaryoutput() to produce report.sso and compreport.sso
     if(Do_CumReport>0) write_summaryoutput();
@@ -341,7 +342,9 @@ REPORT_SECTION
     get_initial_conditions();
     get_time_series();  //  in ADMB's report_section
     evaluate_the_objective_function();
+    wrote_bigreport=0;
     write_bigoutput();
+    cout<<" finished writing bigoutput for last_phase in report section and before hessian "<<endl;
     save_for_report=0;
     SS2out.close();
     }

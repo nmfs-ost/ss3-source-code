@@ -1,4 +1,4 @@
-FUNCTION void Get_Benchmarks()
+FUNCTION void Get_Benchmarks(const int show_MSY)
   {
 //********************************************************************
  /*  SS_Label_FUNCTION 34 Get_Benchmarks(Find Fspr, MSY) */
@@ -24,13 +24,7 @@ FUNCTION void Get_Benchmarks()
   dvariable bestF1;
   dvariable bestF2;
 
-  show_MSY=0;
-  if(mceval_phase()==0) {show_MSY=1;}
-  if(show_MSY==1)
-  {
-    report5<<version_info_short<<endl;
-    report5<<version_info<<endl<<ctime(&start);
-  }
+//  if(mceval_phase()==0) {show_MSY=1;}
       maxpossF.initialize();
       for (g=1;g<=gmorph;g++)
         for (s=1;s<=nseas;s++)
@@ -41,48 +35,58 @@ FUNCTION void Get_Benchmarks()
           if(temp>maxpossF) maxpossF=temp;
         }
         maxpossF =max_harvest_rate/maxpossF;    //  applies to any F_method
-        report5<<"Calculated_Max_Allowable_F "<<maxpossF<<endl<<"Bmark_relF(by_fleet_&seas)"<<endl<<Bmark_RelF_Use<<endl<<"#"<<endl;
-        report5<<"NOTE:_SPR_is_spawner_potential_ratio=(fishedSSB/R)/(unfishedSSB/R))"<<endl;
+        if(show_MSY==1)
+        {
+          report5<<version_info_short<<endl;
+          report5<<version_info<<endl<<ctime(&start);
+          report5<<"Calculated_Max_Allowable_F "<<maxpossF<<endl<<"Bmark_relF(by_fleet_&seas)"<<endl<<Bmark_RelF_Use<<endl<<"#"<<endl;
+          report5<<"NOTE:_SPR_is_spawner_potential_ratio=(fishedSSB/R)/(unfishedSSB/R))"<<endl;
+        }
     y=styr-3;  //  the average biology from specified benchmark years is stored here
     yz=y;
     bio_yr=y;
     eq_yr=y;
     t_base=y+(y-styr)*nseas-1;
     bio_t_base=styr+(bio_yr-styr)*nseas-1;
-
-    for (s=1;s<=nseas;s++)
+    if(show_MSY==2)
     {
-      t = styr-3*nseas+s-1;
-
-      subseas=1;  //   for begin of season   ALK_idx calculated within Make_AgeLength_Key
-      ALK_idx=(s-1)*N_subseas+subseas;
-      Make_AgeLength_Key(s, subseas);  //  begin season
-
-      subseas=mid_subseas;
-      ALK_idx=(s-1)*N_subseas+subseas;
-      Make_AgeLength_Key(s, subseas);  
-
-//  SPAWN-RECR:   call make_fecundity for benchmarks
-      if(s==spawn_seas)
+      //  do not recal the age-specific vectors
+    }
+    else
+    {
+      for (s=1;s<=nseas;s++)
       {
-        subseas=spawn_subseas;
+        t = styr-3*nseas+s-1;
+  
+        subseas=1;  //   for begin of season   ALK_idx calculated within Make_AgeLength_Key
         ALK_idx=(s-1)*N_subseas+subseas;
-        if(spawn_subseas!=1 && spawn_subseas!=mid_subseas)
+        Make_AgeLength_Key(s, subseas);  //  begin season
+  
+        subseas=mid_subseas;
+        ALK_idx=(s-1)*N_subseas+subseas;
+        Make_AgeLength_Key(s, subseas);  
+  
+  //  SPAWN-RECR:   call make_fecundity for benchmarks
+        if(s==spawn_seas)
         {
-          Make_AgeLength_Key(s, subseas);  //  spawn subseas
+          subseas=spawn_subseas;
+          ALK_idx=(s-1)*N_subseas+subseas;
+          if(spawn_subseas!=1 && spawn_subseas!=mid_subseas)
+          {
+            Make_AgeLength_Key(s, subseas);  //  spawn subseas
+          }
+          Make_Fecundity();
         }
-        Make_Fecundity();
+      }
+  
+      for (s=1;s<=nseas;s++)
+      for (g=1;g<=gmorph;g++)
+      if(use_morph(g)>0)
+      {
+        ALK_idx=(s-1)*N_subseas+mid_subseas;;  //  for midseason
+        Make_FishSelex();
       }
     }
-
-    for (s=1;s<=nseas;s++)
-    for (g=1;g<=gmorph;g++)
-    if(use_morph(g)>0)
-    {
-      ALK_idx=(s-1)*N_subseas+mid_subseas;;  //  for midseason
-      Make_FishSelex();
-    }
-
 //  SPAWN-RECR:   notes regarding virgin vs. benchmark biology usage in spawn-recr
 //  the spawner-recruitment function has Bzero based on virgin biology, not benchmark biology
 //  need to deal with possibility that with time-varying biology, the SPB_virgin calculated from virgin conditions will differ from the SPB_virgin used for benchmark conditions
@@ -198,7 +202,7 @@ FUNCTION void Get_Benchmarks()
     YPR_tgt_dead = YPR_dead;           // total dead yield per recruit
     YPR_tgt_N_dead = YPR_N_dead;
     YPR_tgt_ret = YPR_ret;  SPR_Fmult=Fmult;
-    if(rundetail>0 && mceval_counter==0) cout<<" got Fspr "<<SPR_Fmult<<" "<<SPR_actual<<endl;
+    if(rundetail>0 && mceval_counter==0 && show_MSY==1) cout<<" got Fspr "<<SPR_Fmult<<" "<<SPR_actual<<endl;
     YPR_spr=YPR_tgt_dead; Vbio_spr=totbio; Vbio1_spr=smrybio;
     Mgmt_quant(10)=equ_F_std;
     Mgmt_quant(9)=Equ_SpawnRecr_Result(1);
@@ -301,7 +305,7 @@ FUNCTION void Get_Benchmarks()
     }
     
     Btgt_Fmult=Fmult;
-    if(rundetail>0 && mceval_counter==0) cout<<" got_Btgt "<<Btgt_Fmult<<" "<<Btgt/SPB_virgin<<endl;
+    if(rundetail>0 && mceval_counter==0 && show_MSY==1) cout<<" got_Btgt "<<Btgt_Fmult<<" "<<Btgt/SPB_virgin<<endl;
     YPR_Btgt_enc  = YPR_enc;         //  total encountered yield per recruit
     YPR_Btgt_dead = YPR_dead;           // total dead yield per recruit
     YPR_Btgt_N_dead = YPR_N_dead;           // total dead yield per recruit
@@ -523,93 +527,107 @@ FUNCTION void Get_Benchmarks()
       }
     }
 
-    if(rundetail>0 && mceval_counter==0) cout<<" got Fmsy "<<MSY_Fmult<<" "<<MSY<<endl;
+    if(rundetail>0 && mceval_counter==0 && show_MSY==1) cout<<" got Fmsy "<<MSY_Fmult<<" "<<MSY<<endl;
 
 // ***************** show management report   SS_Label_740
     if(show_MSY==1)
-      {
-    report5<<"+ + + + +"<<endl<<"Management_report"<<endl;
-    report5<<"Steepness_Recr_SPB_virgin "<<SR_parm(2)<<" "<<Recr_virgin<<" "<<SPB_virgin<<endl;
-    report5<<"+"<<endl<<"Element Value Bio/Recr Bio/R0 Numbers N/R0 (B_in_mT;_N_in_thousands)"<<endl;
-    report5<<"Recr_unfished(R0) "<<Recr_virgin<<" -- -- "<<endl;
-    report5<<"SPB_unfished(B0) "<<SPB_virgin<<" -- -- "<<endl;
-    report5<<"BIO_Smry_unfished "<<Vbio1_unfished*Recr_virgin<<" "<<Vbio1_unfished<<" "<<Vbio1_unfished<<endl<<"+ + + + +"<<endl;
-
-    report5<<"SPR_target "<<SPR_target<<endl;
-    report5<<"SPR_calc "<<SPR_actual<<endl;
-    report5<<"Fmult "<<SPR_Fmult<<endl;
-    report5<<"F_std "<<Mgmt_quant(10)<<endl;
-    report5<<"Exploit(Y/Bsmry) "<<YPR_spr/Vbio1_spr<<endl;
-    report5<<"Recruits@Fspr "<<Bspr_rec<<" -- -- "<<Bspr_rec<<" "<<Bspr_rec/Recr_virgin<<" "<<endl;
-    report5<<"SPBio "<<SPR_at_target*Bspr_rec*SPR_unf<<" "<<SPR_at_target*SPR_unf<<" -- "<<endl;
-    report5<<"YPR_encountered "<<YPR_tgt_enc*Bspr_rec<<" "<<YPR_tgt_enc<<" -- "<<endl;
-    report5<<"YPR_dead "<<YPR_tgt_dead*Bspr_rec<<" "<<YPR_tgt_dead<<" -- "<<" "<<YPR_tgt_N_dead*Bspr_rec<<endl;
-    report5<<"YPR_retain "<<YPR_tgt_ret*Bspr_rec<<" "<<YPR_tgt_ret<<" -- "<<endl;
-    report5<<"Biomass_Smry "<<Vbio1_spr*Bspr_rec<<" "<<Vbio1_spr<<" -- "<<endl<<"+ + + + +"<<endl;
-
-    report5<<"Btarget  "<<BTGT_target<<endl;
-    report5<<"Btgt_calc_rel_SPB_virgin "<<Btgt/SPB_virgin<<endl;
-    report5<<"SPR_for_Btgt "<<SPR_Btgt<<endl;
-    report5<<"Fmult "<<Btgt_Fmult<<endl;
-    report5<<"F_std "<<Mgmt_quant(7)<<endl;
-    report5<<"Exploit(Y/Bsmry) "<<YPR_Btgt_dead/Vbio1_Btgt<<endl;
-    report5<<"Recruits@Btgt "<<Btgt_Rec<<" -- -- "<<Btgt_Rec<<" "<<Btgt_Rec/Recr_virgin<<endl;
-    report5<<"SPBio "<<Btgt<<" "<<Btgt/Btgt_Rec<<" -- "<<endl;
-    report5<<"YPR_encountered "<<YPR_Btgt_enc*Btgt_Rec<<" "<<YPR_Btgt_enc<<" -- "<<endl;
-    report5<<"YPR_dead "<<YPR_Btgt_dead*Btgt_Rec<<" "<<YPR_Btgt_dead<<" -- "<<YPR_Btgt_N_dead*Btgt_Rec<<endl;
-    report5<<"YPR_retain "<<YPR_Btgt_ret*Btgt_Rec<<" "<<YPR_Btgt_ret<<" -- "<<endl;
-    report5<<"Biomass_Smry "<<Vbio1_Btgt*Btgt_Rec<<" "<<Vbio1_Btgt<<" -- "<<endl<<"+ + + + +"<<endl;
-
-        switch(Do_MSY)
-          {
-          case 1:  // set Fmsy=Fspr
-            {report5<<"set_Fmsy=Fspr"<<endl;
-            break;}
-          case 2:  // calc Fmsy
-            {report5<<"calculate_FMSY"<<endl;
-            break;}
-          case 3:  // set Fmsy=Fbtgt
-            {report5<<"set_Fmsy=Fbtgt"<<endl;
-            break;}
-          case 4:   //  set fmult for Fmsy to 1
-            {report5<<"set_Fmsy_using_Fmult=1.0"<<endl;
-            break;}
-          }
-    report5<<"SPR "<<MSY_SPR<<endl;
-    report5<<"Fmult "<<MSY_Fmult<<endl;
-    report5<<"F_std "<<Mgmt_quant(14)<<endl;
-    report5<<"Exploit(Y/Bsmry) "<<MSY/(Vbio1_MSY*Recr_msy)<<endl;
-    report5<<"Recruits@MSY "<<Recr_msy<<" -- -- "<<Recr_msy<<" "<<Recr_msy/Recr_virgin<<endl;
-    report5<<"SPBio "<<Bmsy<<" "<<Bmsy/Recr_msy<<" -- "<<endl;
-    report5<<"SPBmsy/SPBzero(using_SPB_virgin) "<<Bmsy/SPB_virgin<<" -- --"<<endl;  // new version
-    report5<<"SPBmsy/SPBzero(using_BenchmarkYr_biology) "<<Bmsy/(Recr_virgin*SPR_unf)<<" -- --"<<endl;
-    report5<<"MSY_for_optimize "<<MSY<<" "<<MSY/Recr_msy<<" -- "<<endl;
-    report5<<"MSY_encountered "<<YPR_msy_enc*Recr_msy<<" "<<YPR_msy_enc<<" -- "<<endl;
-    report5<<"MSY_dead "<<YPR_msy_dead*Recr_msy<<" "<<YPR_msy_dead<<" -- "<<YPR_msy_N_dead*Recr_msy<<endl;
-    report5<<"MSY_retain "<<YPR_msy_ret*Recr_msy<<" "<<YPR_msy_ret<<" -- "<<endl;
-    report5<<"Biomass_Smry "<<Vbio1_MSY*Recr_msy<<" "<<Vbio1_MSY<<" -- "<<endl<<"+"<<endl;
-    report5<<"Summary_age: "<<Smry_Age<<endl<<"#"<<endl;
-    report5<<"#_note when there is time-varying biology"<<endl;
-    report5<<"#_virgin outputs use biology at begin of time series"<<endl;
-    report5<<"#_SPR outputs use biology averaged over years: "<<Bmark_Yr(1)<<" "<<Bmark_Yr(2)<<endl;
-    report5<<"#_Btgt uses Bmark years biology to search for fraction of SPB_virgin, so take care in interpretation "<<endl;
-    report5<<"#_MSY and Bmsy use Bmark years biology"<<endl<<"#"<<endl;
-    if(F_Method==1)
     {
-      report5<<"F_reported_below_is_Pope's_midseason_exploitation_rate=MSY_Fmult*Alloc"<<endl;
-      report5<<"seas seas_dur "; for (f=1;f<=Nfleet;f++) {report5<<" fleet:"<<f;}
-      report5<<endl;
-      for (s=1;s<=nseas;s++) {report5<<s<<" "<<seasdur(s)<<" "<<MSY_Fmult*Bmark_RelF_Use(s)<<endl;}
+  report5<<"+ + + + +"<<endl<<"Management_report"<<endl;
+  report5<<"Steepness_Recr_SPB_virgin "<<SR_parm(2)<<" "<<Recr_virgin<<" "<<SPB_virgin<<endl;
+  report5<<"+"<<endl<<"Element Value Bio/Recr Bio/R0 Numbers N/R0 (B_in_mT;_N_in_thousands)"<<endl;
+  report5<<"Recr_unfished(R0) "<<Recr_virgin<<" -- -- "<<endl;
+  report5<<"SPB_unfished(B0) "<<SPB_virgin<<" -- -- "<<endl;
+  report5<<"BIO_Smry_unfished "<<Vbio1_unfished*Recr_virgin<<" "<<Vbio1_unfished<<" "<<Vbio1_unfished<<endl<<"+ + + + +"<<endl;
+
+  report5<<"SPR_target "<<SPR_target<<endl;
+  report5<<"SPR_calc "<<SPR_actual<<endl;
+  report5<<"Fmult "<<SPR_Fmult<<endl;
+  report5<<"F_std "<<Mgmt_quant(10)<<endl;
+  report5<<"Exploit(Y/Bsmry) "<<YPR_spr/Vbio1_spr<<endl;
+  report5<<"Recruits@Fspr "<<Bspr_rec<<" -- -- "<<Bspr_rec<<" "<<Bspr_rec/Recr_virgin<<" "<<endl;
+  report5<<"SPBio "<<SPR_at_target*Bspr_rec*SPR_unf<<" "<<SPR_at_target*SPR_unf<<" -- "<<endl;
+  report5<<"YPR_encountered "<<YPR_tgt_enc*Bspr_rec<<" "<<YPR_tgt_enc<<" -- "<<endl;
+  report5<<"YPR_dead "<<YPR_tgt_dead*Bspr_rec<<" "<<YPR_tgt_dead<<" -- "<<" "<<YPR_tgt_N_dead*Bspr_rec<<endl;
+  report5<<"YPR_retain "<<YPR_tgt_ret*Bspr_rec<<" "<<YPR_tgt_ret<<" -- "<<endl;
+  report5<<"Biomass_Smry "<<Vbio1_spr*Bspr_rec<<" "<<Vbio1_spr<<" -- "<<endl<<"+ + + + +"<<endl;
+
+  report5<<"Btarget  "<<BTGT_target<<endl;
+  report5<<"Btgt_calc_rel_SPB_virgin "<<Btgt/SPB_virgin<<endl;
+  report5<<"SPR_for_Btgt "<<SPR_Btgt<<endl;
+  report5<<"Fmult "<<Btgt_Fmult<<endl;
+  report5<<"F_std "<<Mgmt_quant(7)<<endl;
+  report5<<"Exploit(Y/Bsmry) "<<YPR_Btgt_dead/Vbio1_Btgt<<endl;
+  report5<<"Recruits@Btgt "<<Btgt_Rec<<" -- -- "<<Btgt_Rec<<" "<<Btgt_Rec/Recr_virgin<<endl;
+  report5<<"SPBio "<<Btgt<<" "<<Btgt/Btgt_Rec<<" -- "<<endl;
+  report5<<"YPR_encountered "<<YPR_Btgt_enc*Btgt_Rec<<" "<<YPR_Btgt_enc<<" -- "<<endl;
+  report5<<"YPR_dead "<<YPR_Btgt_dead*Btgt_Rec<<" "<<YPR_Btgt_dead<<" -- "<<YPR_Btgt_N_dead*Btgt_Rec<<endl;
+  report5<<"YPR_retain "<<YPR_Btgt_ret*Btgt_Rec<<" "<<YPR_Btgt_ret<<" -- "<<endl;
+  report5<<"Biomass_Smry "<<Vbio1_Btgt*Btgt_Rec<<" "<<Vbio1_Btgt<<" -- "<<endl<<"+ + + + +"<<endl;
+
+      switch(Do_MSY)
+        {
+        case 1:  // set Fmsy=Fspr
+          {report5<<"set_Fmsy=Fspr"<<endl;
+          break;}
+        case 2:  // calc Fmsy
+          {report5<<"calculate_FMSY"<<endl;
+          break;}
+        case 3:  // set Fmsy=Fbtgt
+          {report5<<"set_Fmsy=Fbtgt"<<endl;
+          break;}
+        case 4:   //  set fmult for Fmsy to 1
+          {report5<<"set_Fmsy_using_Fmult=1.0"<<endl;
+          break;}
+        }
+  report5<<"SPR "<<MSY_SPR<<endl;
+  report5<<"Fmult "<<MSY_Fmult<<endl;
+  report5<<"F_std "<<Mgmt_quant(14)<<endl;
+  report5<<"Exploit(Y/Bsmry) "<<MSY/(Vbio1_MSY*Recr_msy)<<endl;
+  report5<<"Recruits@MSY "<<Recr_msy<<" -- -- "<<Recr_msy<<" "<<Recr_msy/Recr_virgin<<endl;
+  report5<<"SPBio "<<Bmsy<<" "<<Bmsy/Recr_msy<<" -- "<<endl;
+  report5<<"SPBmsy/SPBzero(using_SPB_virgin) "<<Bmsy/SPB_virgin<<" -- --"<<endl;  // new version
+  report5<<"SPBmsy/SPBzero(using_BenchmarkYr_biology) "<<Bmsy/(Recr_virgin*SPR_unf)<<" -- --"<<endl;
+  report5<<"MSY_for_optimize "<<MSY<<" "<<MSY/Recr_msy<<" -- "<<endl;
+  report5<<"MSY_encountered "<<YPR_msy_enc*Recr_msy<<" "<<YPR_msy_enc<<" -- "<<endl;
+  report5<<"MSY_dead "<<YPR_msy_dead*Recr_msy<<" "<<YPR_msy_dead<<" -- "<<YPR_msy_N_dead*Recr_msy<<endl;
+  report5<<"MSY_retain "<<YPR_msy_ret*Recr_msy<<" "<<YPR_msy_ret<<" -- "<<endl;
+  report5<<"Biomass_Smry "<<Vbio1_MSY*Recr_msy<<" "<<Vbio1_MSY<<" -- "<<endl<<"+"<<endl;
+  report5<<"Summary_age: "<<Smry_Age<<endl<<"#"<<endl;
+  report5<<"#_note when there is time-varying biology"<<endl;
+  report5<<"#_virgin outputs use biology at begin of time series"<<endl;
+  report5<<"#_SPR outputs use biology averaged over years: "<<Bmark_Yr(1)<<" "<<Bmark_Yr(2)<<endl;
+  report5<<"#_Btgt uses Bmark years biology to search for fraction of SPB_virgin, so take care in interpretation "<<endl;
+  report5<<"#_MSY and Bmsy use Bmark years biology"<<endl<<"#"<<endl;
+  if(F_Method==1)
+  {
+    report5<<"F_reported_below_is_Pope's_midseason_exploitation_rate=MSY_Fmult*Alloc"<<endl;
+    report5<<"seas seas_dur "; for (f=1;f<=Nfleet;f++) {report5<<" fleet:"<<f;}
+    report5<<endl;
+    for (s=1;s<=nseas;s++) {report5<<s<<" "<<seasdur(s)<<" "<<MSY_Fmult*Bmark_RelF_Use(s)<<endl;}
+  }
+  else
+  {
+    report5<<"F_reported_here_is_Seasonal_apicalF=MSY_Fmult*Alloc*seas_dur_(can_be>F_std_because_of_selex)"<<endl;
+    report5<<"seas seas_dur "; for (f=1;f<=Nfleet;f++) {report5<<" fleet:"<<f;}
+    report5<<endl;
+    for (s=1;s<=nseas;s++) {report5<<s<<" "<<seasdur(s)<<" "<<MSY_Fmult*Bmark_RelF_Use(s)*seasdur(s)<<endl;}
+  }
+  report5<<"#"<<endl;
     }
-    else
+    else if(show_MSY==2)  //  do brief output
     {
-      report5<<"F_reported_here_is_Seasonal_apicalF=MSY_Fmult*Alloc*seas_dur_(can_be>F_std_because_of_selex)"<<endl;
-      report5<<"seas seas_dur "; for (f=1;f<=Nfleet;f++) {report5<<" fleet:"<<f;}
-      report5<<endl;
-      for (s=1;s<=nseas;s++) {report5<<s<<" "<<seasdur(s)<<" "<<MSY_Fmult*Bmark_RelF_Use(s)*seasdur(s)<<endl;}
+      SS2out<<SPR_actual<<" "<<Mgmt_quant(10)<<" "<<YPR_spr/Vbio1_spr<<" "<<Bspr_rec<<" "
+      <<SPR_at_target*Bspr_rec*SPR_unf<<" "<<YPR_tgt_dead*Bspr_rec<<" "<<YPR_tgt_ret*Bspr_rec
+      <<" "<<Vbio1_spr*Bspr_rec<<" # ";
+
+      SS2out<<SPR_Btgt<<" "<<Btgt/SPB_virgin<<" "<<Mgmt_quant(7)<<" "<<YPR_Btgt_dead/Vbio1_Btgt<<" "<<Btgt_Rec<<" "
+      <<Btgt<<" "<<YPR_Btgt_dead*Btgt_Rec<<" "<<YPR_Btgt_ret*Btgt_Rec
+      <<" "<<Vbio1_Btgt*Btgt_Rec<<" # ";
+
+      SS2out<<MSY_SPR<<" "<<Bmsy/SPB_virgin<<" "<<Mgmt_quant(14)<<" "<<MSY/(Vbio1_MSY*Recr_msy)<<" "<<Recr_msy<<" "
+      <<Bmsy<<" "<<MSY<<" "<<YPR_msy_dead*Recr_msy<<" "<<YPR_msy_ret*Recr_msy
+      <<" "<<Vbio1_MSY*Recr_msy<<" # "<<endl;
     }
-    report5<<"#"<<endl;
-      }
   }   //  end benchmarks
 
 FUNCTION void Get_Forecast()

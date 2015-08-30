@@ -598,6 +598,9 @@ FUNCTION void get_time_series()
                   temp1=join1*temp + (1.-join1)*0.95;
     //  SS_Label_Info_24.3.3.3.3 #Convert the harvest rate to a starting value for F
                   Hrate(f,t)=-log(1.-temp1)/seasdur(s);  // initial estimate of F (even though labelled as Hrate)
+                  //echoinput<<t<<" "<<vbio<<" "<<catch_ret_obs(f,t)<<" "<<temp<<" "<<Hrate(f,t)<<endl<<
+                  //Nmid(1)<<endl<<sel_al_2(s,1,f)<<endl;
+                  //if(catch_ret_obs(f,t)>0.0) exit(1);
                   //  done with starting values from Pope's approximation
                 }
                 else

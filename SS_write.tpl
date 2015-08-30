@@ -3997,7 +3997,7 @@ FUNCTION void write_bigoutput()
   }
 
   SS2out <<endl<< "MEAN_SIZE_TIMESERIES" << endl;           // SS_Label_450
-  SS2out <<"Morph Yr Seas Beg/Mid"<<age_vector<<endl;
+  SS2out <<"Morph Yr Seas Beg/Miglobd"<<age_vector<<endl;
   if(reportdetail>0)
   {
     for (g=1;g<=gmorph;g++)
@@ -4549,15 +4549,7 @@ FUNCTION void write_bigoutput()
   SS2out<<" end selex output "<<endl;
 
 // ******************************************************
-//  Do Btarget profile
-  if(Do_Benchmark>0)
-  {
-        SS2out<<endl<<"SPR/YPR_Profile "<<endl<<"SPRloop Iter Fmult F_std SPR YPR YPR*Recr SSB Recruits SSB/Bzero Tot_Catch ";
-        for (f=1;f<=Nfleet;f++) {if(fleet_type(f)<=2) SS2out<<" "<<fleetname(f)<<"("<<f<<")";}
-        for (p=1;p<=pop;p++)
-        for (gp=1;gp<=N_GP;gp++)
-        {SS2out<<" Area:"<<p<<"_GP:"<<gp;}
-        SS2out<<endl;
+//  Do Ypr/Spr profile
         int SPRloop;
         int bio_t_base;
         dvariable Fmult2=maxpossF;
@@ -4570,6 +4562,14 @@ FUNCTION void write_bigoutput()
         dvariable SPR_last;
         dvariable SPR_trial;
 
+  if(Do_Benchmark>0 && wrote_bigreport==1)
+  {
+        SS2out<<endl<<"SPR/YPR_Profile "<<endl<<"SPRloop Iter Fmult F_std SPR YPR YPR*Recr SSB Recruits SSB/Bzero Tot_Catch ";
+        for (f=1;f<=Nfleet;f++) {if(fleet_type(f)<=2) SS2out<<" "<<fleetname(f)<<"("<<f<<")";}
+        for (p=1;p<=pop;p++)
+        for (gp=1;gp<=N_GP;gp++)
+        {SS2out<<" Area:"<<p<<"_GP:"<<gp;}
+        SS2out<<endl;
     y=styr-3;
     yz=y;
     bio_yr=y;
@@ -4705,8 +4705,62 @@ FUNCTION void write_bigoutput()
             SS2out<<endl;        }
         // end Btarget profile
         SS2out<<"Finish SPR/YPR profile"<<endl;
+  }
+
+// ******************************************************
+//  GLOBAL_MSY with knife-edge age recruitment
+  if(Do_Benchmark>0 && wrote_bigreport==1)
+  {
+    SS2out<<endl<<"GLOBAL_MSY "<<endl<<
+    "------  SPR  SPR SPR     SPR     SPR SPR    SPR   SPR   BTGT  BTGT  BTGT BTGT    BTGT    BTGT BTGT   BTGT  BTGT "<<
+     "   MSY  MSY  MSY MSY    MSY    MSY MSY   MSY  MSY "<<endl<<
+    "Sel_Age SPR  F   Exploit Recruit SSB Y_dead Y_ret VBIO  SPR   B/B0  F    Exploit Recruit SSB  Y_dead Y_ret VBIO "<<
+      " SPR   B/B0  F    Exploit Recruit SSB  Y_dead Y_ret VBIO "<<endl;
+
+    y=styr-3;  //  stores the averaged 
+    yz=y;
+    bio_yr=y;
+    eq_yr=y;
+    t_base=y+(y-styr)*nseas-1;
+    bio_t_base=styr+(bio_yr-styr)*nseas-1;
+
+    sel_al_1.initialize();
+    sel_al_2.initialize();
+    sel_al_3.initialize();
+    sel_al_4.initialize();
+    deadfish.initialize();
+    deadfish_B.initialize();
+    
+    for (int SPRloop1=nages-1;SPRloop1>=1;SPRloop1--)
+    {
+      SS2out<<SPRloop1<<" ";      
+      for (s=1;s<=nseas;s++)
+      {
+        t = styr-3*nseas+s-1;
+        for (g=1;g<=gmorph;g++)
+        if(use_morph(g)>0)
+        {
+          for(f=1;f<=Nfleet;f++)
+          {
+            sel_al_1(s,g,f)(SPRloop1,nages)=Wt_Age_mid(s,g)(SPRloop1,nages);  // selected * wt
+            sel_al_2(s,g,f)(SPRloop1,nages)=Wt_Age_mid(s,g)(SPRloop1,nages);  // selected * retained * wt
+            sel_al_3(s,g,f)(SPRloop1,nages)=1.00;  // selected numbers
+            sel_al_4(s,g,f)(SPRloop1,nages)=1.00;  // selected * retained numbers
+            deadfish(s,g,f)(SPRloop1,nages)=1.00;  // sel * (retain + (1-retain)*discmort)
+            deadfish_B(s,g,f)(SPRloop1,nages)=Wt_Age_mid(s,g)(SPRloop1,nages);  // sel * (retain + (1-retain)*discmort) * wt
+           }
+        }
+      }
+      show_MSY=2;  //  invokes just brief output in benchmark
+      did_MSY=0;
+      Get_Benchmarks(show_MSY);
+      did_MSY=0;
+      
     }
-    return;
+    SS2out<<"#Finish_GLOBAL_MSY"<<endl;
+  }
+  wrote_bigreport=1;  // flag so that second call to writebigreport will do extra output
+   return;
   }  //  end writebigreport
 
 //********************************************************************

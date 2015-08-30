@@ -4,8 +4,7 @@ PROCEDURE_SECTION
   {
   Mgmt_quant.initialize();
   Extra_Std.initialize();
-  CrashPen.initialize();
-
+  CrashPen.initialize(); 
   niter++;
   if(mceval_phase() ) mceval_counter ++;   // increment the counter
   if(initial_params::mc_phase==1) mcmc_counter++;
@@ -33,6 +32,7 @@ PROCEDURE_SECTION
   }
   else
   {
+    echoinput<<"Biasadjustment_timepoints "<<recdev_adj<<endl;
     for (y=styr-nages; y<=YrMax; y++)
     {
       if(y<recdev_first)  // before start of recrdevs
@@ -47,10 +47,10 @@ PROCEDURE_SECTION
         {biasadj_full(y)=recdev_adj(5)-(y-recdev_adj(3)) / (recdev_adj(4)-recdev_adj(3))*recdev_adj(5);}
       else
         {biasadj_full(y)=0.;}
+      echoinput<<y<<" "<<biasadj_full(y)<<endl;
     }
-    echoinput<<"Biasadjustment_full "<<recdev_adj<<endl<<biasadj_full(recdev_adj(2),YrMax)<<endl;
   }
-  
+
   echoinput<<"controls "<<do_recdev<<" "<<recdev_PH_rd<<endl;
   if(SR_fxn==4 || do_recdev==0)
   {
@@ -61,12 +61,12 @@ PROCEDURE_SECTION
     if(recdev_do_early>0 && recdev_options(2)>=0 )    //  do logic on basis of recdev_options(2), which is read, not recdev_PH which can be reset to a neg. value
     {
       for (i=recdev_early_start;i<=recdev_early_end;i++)
-      {biasadj(i)=biasadj_full(i);}
+      {if(i>=styr-nages) biasadj(i)=biasadj_full(i);}
     }
     if(do_recdev>0 && recdev_PH_rd>=0 )
     {
       for (i=recdev_start;i<=recdev_end;i++)
-      {biasadj(i)=biasadj_full(i);}
+      {if(i>=styr-nages) biasadj(i)=biasadj_full(i);}
     }
     if(Do_Forecast>0 && recdev_options(3)>=0 )
     {
@@ -82,7 +82,7 @@ PROCEDURE_SECTION
       }
     }
   }
-    echoinput<<"Biasadjustment      "<<recdev_adj<<endl<<biasadj(recdev_adj(2),YrMax)<<endl;
+//  echoinput<<"Biasadjustment      "<<recdev_adj<<endl<<biasadj(recdev_adj(2),YrMax)<<endl;
   sd_offset_rec=sum(biasadj)*sd_offset;
 
 //  SS_Label_Info_7.2 #Copy recdev parm vectors into full time series vector
@@ -240,6 +240,11 @@ PROCEDURE_SECTION
             tempvec_a.initialize();
             for (t=Bmark_t(1);t<=Bmark_t(2);t+=nseas) {tempvec_a+=Ave_Size(t+s,mid_subseas,g);}
             Ave_Size(styr-3*nseas+s,mid_subseas,g)=tempvec_a/temp;
+
+            tempvec_a.initialize();
+            for (t=Bmark_t(1);t<=Bmark_t(2);t+=nseas) {tempvec_a+=Save_Wt_Age(t+s,g);}
+            Save_Wt_Age(styr-3*nseas+s,g)=tempvec_a/temp;
+
             for (f=0;f<=Nfleet;f++)
             {
               tempvec_a.initialize();
@@ -318,7 +323,8 @@ PROCEDURE_SECTION
 //  SS_Label_Info_7.6.1 #Call fxn Get_Benchmarks()
       if(Do_Benchmark>0)
       {
-        Get_Benchmarks();
+      report5<<"show MSY before call in procedure "<<show_MSY<<endl;
+        Get_Benchmarks(show_MSY);
         did_MSY=1;
       }
       else
