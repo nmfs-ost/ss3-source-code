@@ -24,24 +24,13 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
   dvariable bestF1;
   dvariable bestF2;
 
-//  if(mceval_phase()==0) {show_MSY=1;}
-      maxpossF.initialize();
-      for (g=1;g<=gmorph;g++)
-        for (s=1;s<=nseas;s++)
-        {
-          tempvec_a.initialize();
-          for (f=1;f<=Nfleet;f++) {tempvec_a+=Bmark_RelF_Use(s,f)*deadfish(s,g,f);}
-          temp=max(tempvec_a);
-          if(temp>maxpossF) maxpossF=temp;
-        }
-        maxpossF =max_harvest_rate/maxpossF;    //  applies to any F_method
-        if(show_MSY==1)
-        {
-          report5<<version_info_short<<endl;
-          report5<<version_info<<endl<<ctime(&start);
-          report5<<"Calculated_Max_Allowable_F "<<maxpossF<<endl<<"Bmark_relF(by_fleet_&seas)"<<endl<<Bmark_RelF_Use<<endl<<"#"<<endl;
-          report5<<"NOTE:_SPR_is_spawner_potential_ratio=(fishedSSB/R)/(unfishedSSB/R))"<<endl;
-        }
+   if(show_MSY==1)
+   {
+     report5<<version_info_short<<endl;
+     report5<<version_info<<endl<<ctime(&start);
+     report5<<"Bmark_relF(by_fleet_&seas)"<<endl<<Bmark_RelF_Use<<endl<<"#"<<endl;
+     report5<<"NOTE:_SPR_is_spawner_potential_ratio=(fishedSSB/R)/(unfishedSSB/R))"<<endl;
+   }
     y=styr-3;  //  the average biology from specified benchmark years is stored here
     yz=y;
     bio_yr=y;
@@ -138,7 +127,7 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
 
       for (int ii=jj;ii>=1;ii--)
         {
-          Fmult=mfexp(F1(ii));
+          Fmult=40.00/(1+mfexp(-F1(ii)));
 
           for (f=1;f<=Nfleet;f++)
           for (s=1;s<=nseas;s++)
@@ -153,9 +142,9 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
           if(jj==3)
             {
             Closer*=0.5;
-              dyld=(yld1(2) - yld1(3))/df;                      // First derivative (to find the root of this)
+              dyld=(yld1(2) - yld1(3))/df;   // First derivative (to find the root of this)
               if(dyld!=0.)
-                {last_F1=F1(1); F1(1) += (SPR_target-SPR_actual)/dyld;
+                {last_F1=F1(1); F1(1) += (SPR_target-SPR_actual)/(dyld+0.001);
                  F1(1)=(1.-Closer)*F1(1)+Closer*last_F1;
                 }        // averages with last good value to keep from changing too fast
               else
@@ -163,7 +152,10 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
             }
           else
             {
-              if((last_calc-SPR_target)*(SPR_actual-SPR_target)<0.0) {Fchange*=-0.5;}   // changed sign, so reverse search direction
+//              if((last_calc-SPR_target)*(SPR_actual-SPR_target)<0.0) {Fchange*=-0.5;}   // changed sign, so reverse search direction
+              temp=(last_calc-SPR_target)*(SPR_actual-SPR_target)/(sfabs(last_calc-SPR_target)*sfabs(SPR_actual-SPR_target));  // values of -1 or 1
+              temp1=temp-1.;  // values of -2 or 0
+              Fchange*=exp(temp1/4.)*temp;
               F1(1)+=Fchange;  last_calc=SPR_actual;
             }
 
@@ -201,7 +193,8 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
     YPR_tgt_enc  = YPR_enc;         //  total encountered yield per recruit
     YPR_tgt_dead = YPR_dead;           // total dead yield per recruit
     YPR_tgt_N_dead = YPR_N_dead;
-    YPR_tgt_ret = YPR_ret;  SPR_Fmult=Fmult;
+    YPR_tgt_ret = YPR_ret;
+    SPR_Fmult=Fmult;
     if(rundetail>0 && mceval_counter==0 && show_MSY==1) cout<<" got Fspr "<<SPR_Fmult<<" "<<SPR_actual<<endl;
     YPR_spr=YPR_tgt_dead; Vbio_spr=totbio; Vbio1_spr=smrybio;
     Mgmt_quant(10)=equ_F_std;
@@ -240,7 +233,7 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
         {jj=1;}
       for (int ii=jj;ii>=1;ii--)
       {
-        if(j==0) {Fmult=0.0;} else {Fmult=mfexp(F1(ii));}
+        if(j==0) {Fmult=0.0;} else {Fmult=40.00/(1.00+mfexp(-F1(ii)));}
         for (f=1;f<=Nfleet;f++)
         for (s=1;s<=nseas;s++)
         {
@@ -261,7 +254,7 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
         Closer *=0.5;
         dyld=(yld1(2) - yld1(3))/df;                      // First derivative
         if(dyld!=0.)
-          {last_F1=F1(1); F1(1) -= (Btgt-Btgttgt)/dyld;
+          {last_F1=F1(1); F1(1) -= (Btgt-Btgttgt)/(dyld+0.001);
            F1(1)=(1.-Closer)*F1(1)+(Closer)*last_F1;
           }        // weighted average with last good value to keep from changing too fast
         else
@@ -321,8 +314,6 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
 
 // ******************************************************
 //  start finding Fmsy     SS_Label_730
-//  consider using maxpossF here, instead of calculating a new Fmax
-
     if(Do_MSY==0)
       {
        Fmax=1.; MSY=-1; Bmsy=-1; Recr_msy=-1; MSY_SPR=-1; Yield=-1; totbio=1; smrybio=1.; MSY_Fmult=-1.;   //  use these values if MSY is not calculated
@@ -331,7 +322,6 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
       }
     else
     {
-//      if(F_Method>=2) {Fmax=maxpossF/sum(Bmark_RelF_Use);}
       if(F_Method>=2) {Fmax=3.00*Btgt_Fmult;}
 
       switch(Do_MSY)
@@ -379,7 +369,7 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
           F1(3) = F1(2) - df;
         for (int ii=jj;ii>=1;ii--)
           {
-          Fmult=Fmax/(1+mfexp(-F1(ii)));
+          Fmult=Fmax/(1.00+mfexp(-F1(ii)));
           for (f=1;f<=Nfleet;f++)
           for (s=1;s<=nseas;s++)
             {t=bio_t_base+s; Hrate(f,t)=Fmult*Bmark_RelF_Use(s,f);}
@@ -616,15 +606,15 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
     }
     else if(show_MSY==2)  //  do brief output
     {
-      SS2out<<SPR_actual<<" "<<Mgmt_quant(10)<<" "<<YPR_spr/Vbio1_spr<<" "<<Bspr_rec<<" "
+      SS2out<<SPR_actual<<" "<<SPR_Fmult<<" "<<Mgmt_quant(10)<<" "<<YPR_spr/Vbio1_spr<<" "<<Bspr_rec<<" "
       <<SPR_at_target*Bspr_rec*SPR_unf<<" "<<YPR_tgt_dead*Bspr_rec<<" "<<YPR_tgt_ret*Bspr_rec
       <<" "<<Vbio1_spr*Bspr_rec<<" # ";
 
-      SS2out<<SPR_Btgt<<" "<<Btgt/SPB_virgin<<" "<<Mgmt_quant(7)<<" "<<YPR_Btgt_dead/Vbio1_Btgt<<" "<<Btgt_Rec<<" "
+      SS2out<<SPR_Btgt<<" "<<Btgt/SPB_virgin<<" "<<Btgt_Fmult<<" "<<Mgmt_quant(7)<<" "<<YPR_Btgt_dead/Vbio1_Btgt<<" "<<Btgt_Rec<<" "
       <<Btgt<<" "<<YPR_Btgt_dead*Btgt_Rec<<" "<<YPR_Btgt_ret*Btgt_Rec
       <<" "<<Vbio1_Btgt*Btgt_Rec<<" # ";
 
-      SS2out<<MSY_SPR<<" "<<Bmsy/SPB_virgin<<" "<<Mgmt_quant(14)<<" "<<MSY/(Vbio1_MSY*Recr_msy)<<" "<<Recr_msy<<" "
+      SS2out<<MSY_SPR<<" "<<Bmsy/SPB_virgin<<" "<<MSY_Fmult<<" "<<Mgmt_quant(14)<<" "<<MSY/(Vbio1_MSY*Recr_msy)<<" "<<Recr_msy<<" "
       <<Bmsy<<" "<<MSY<<" "<<YPR_msy_dead*Recr_msy<<" "<<YPR_msy_ret*Recr_msy
       <<" "<<Vbio1_MSY*Recr_msy<<" # "<<endl;
     }

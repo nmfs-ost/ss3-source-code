@@ -2178,6 +2178,7 @@ FUNCTION void write_bigoutput()
   SS2out<<"X CATCH_AT_AGE"<<endl;
   SS2out<<"X BIOLOGY"<<endl;
   SS2out<<"X SPR/YPR_PROFILE"<<endl;
+  SS2out<<"X GLOBAL_MSY"<<endl;
   SS2out<<"X Dynamic_Bzero "<<endl;
 
   SS2out<<endl<<"DEFINITIONS"<<endl;
@@ -4708,15 +4709,9 @@ FUNCTION void write_bigoutput()
   }
 
 // ******************************************************
-//  GLOBAL_MSY with knife-edge age recruitment
+//  GLOBAL_MSY with knife-edge age selection, then slot-age selection
   if(Do_Benchmark>0 && wrote_bigreport==1)
   {
-    SS2out<<endl<<"GLOBAL_MSY "<<endl<<
-    "------  SPR  SPR SPR     SPR     SPR SPR    SPR   SPR   BTGT  BTGT  BTGT BTGT    BTGT    BTGT BTGT   BTGT  BTGT "<<
-     "   MSY  MSY  MSY MSY    MSY    MSY MSY   MSY  MSY "<<endl<<
-    "Sel_Age SPR  F   Exploit Recruit SSB Y_dead Y_ret VBIO  SPR   B/B0  F    Exploit Recruit SSB  Y_dead Y_ret VBIO "<<
-      " SPR   B/B0  F    Exploit Recruit SSB  Y_dead Y_ret VBIO "<<endl;
-
     y=styr-3;  //  stores the averaged 
     yz=y;
     bio_yr=y;
@@ -4724,43 +4719,78 @@ FUNCTION void write_bigoutput()
     t_base=y+(y-styr)*nseas-1;
     bio_t_base=styr+(bio_yr-styr)*nseas-1;
 
-    sel_al_1.initialize();
-    sel_al_2.initialize();
-    sel_al_3.initialize();
-    sel_al_4.initialize();
-    deadfish.initialize();
-    deadfish_B.initialize();
-    
-    for (int SPRloop1=nages-1;SPRloop1>=1;SPRloop1--)
+    for (int MSY_loop=0;MSY_loop<=2;MSY_loop++)
     {
-      SS2out<<SPRloop1<<" ";      
-      for (s=1;s<=nseas;s++)
+      if(MSY_loop==0)
+      {SS2out<<endl<<"ACTUAL_SELECTIVITY_MSY "<<endl;}
+      else if(MSY_loop==1)
+      {SS2out<<endl<<"KNIFE_AGE_SELECTIVITY_MSY "<<endl;}
+      else
+      {SS2out<<endl<<"SLOT_AGE_SELECTIVITY_MSY "<<endl;}
+      SS2out<<"------  SPR  SPR SPR SPR    SPR     SPR SPR    SPR   SPR #  BTGT BTGT BTGT  BTGT BTGT    BTGT #   BTGT BTGT   BTGT  BTGT "<<
+       "   MSY MSY MSY  MSY MSY    MSY    MSY MSY   MSY  MSY "<<endl<<
+      "Age SPR  Fmult Fstd   Exploit Recruit SSB Y_dead Y_ret VBIO # SPR   B/B0  Fmult Fstd    Exploit Recruit SSB  Y_dead Y_ret VBIO "<<
+        " # SPR   B/B0  Fmult Fstd  Exploit Recruit SSB  Y_dead Y_ret VBIO "<<endl;
+
+      if(MSY_loop>0)
       {
-        t = styr-3*nseas+s-1;
-        for (g=1;g<=gmorph;g++)
-        if(use_morph(g)>0)
+        for (int SPRloop1=1;SPRloop1<=nages-1;SPRloop1++)
         {
-          for(f=1;f<=Nfleet;f++)
+          sel_al_1.initialize();
+          sel_al_2.initialize();
+          sel_al_3.initialize();
+          sel_al_4.initialize();
+          deadfish.initialize();
+          deadfish_B.initialize();
+          SS2out<<SPRloop1<<" ";      
+          for (s=1;s<=nseas;s++)
           {
-            sel_al_1(s,g,f)(SPRloop1,nages)=Wt_Age_mid(s,g)(SPRloop1,nages);  // selected * wt
-            sel_al_2(s,g,f)(SPRloop1,nages)=Wt_Age_mid(s,g)(SPRloop1,nages);  // selected * retained * wt
-            sel_al_3(s,g,f)(SPRloop1,nages)=1.00;  // selected numbers
-            sel_al_4(s,g,f)(SPRloop1,nages)=1.00;  // selected * retained numbers
-            deadfish(s,g,f)(SPRloop1,nages)=1.00;  // sel * (retain + (1-retain)*discmort)
-            deadfish_B(s,g,f)(SPRloop1,nages)=Wt_Age_mid(s,g)(SPRloop1,nages);  // sel * (retain + (1-retain)*discmort) * wt
-           }
+            t = styr-3*nseas+s-1;
+            for (g=1;g<=gmorph;g++)
+            if(use_morph(g)>0)
+            {
+              for(f=1;f<=Nfleet;f++)
+              {
+              if(MSY_loop==1)
+              {
+                sel_al_1(s,g,f)(SPRloop1,nages)=Wt_Age_mid(s,g)(SPRloop1,nages);  // selected * wt
+                sel_al_2(s,g,f)(SPRloop1,nages)=Wt_Age_mid(s,g)(SPRloop1,nages);  // selected * retained * wt
+                sel_al_3(s,g,f)(SPRloop1,nages)=1.00;  // selected numbers
+                sel_al_4(s,g,f)(SPRloop1,nages)=1.00;  // selected * retained numbers
+                deadfish(s,g,f)(SPRloop1,nages)=1.00;  // sel * (retain + (1-retain)*discmort)
+                deadfish_B(s,g,f)(SPRloop1,nages)=Wt_Age_mid(s,g)(SPRloop1,nages);  // sel * (retain + (1-retain)*discmort) * wt
+              }
+               else
+              {
+                sel_al_1(s,g,f,SPRloop1)=Wt_Age_mid(s,g,SPRloop1);  // selected * wt
+                sel_al_2(s,g,f,SPRloop1)=Wt_Age_mid(s,g,SPRloop1);  // selected * retained * wt
+                sel_al_3(s,g,f,SPRloop1)=1.00;  // selected numbers
+                sel_al_4(s,g,f,SPRloop1)=1.00;  // selected * retained numbers
+                deadfish(s,g,f,SPRloop1)=1.00;  // sel * (retain + (1-retain)*discmort)
+                deadfish_B(s,g,f,SPRloop1)=Wt_Age_mid(s,g,SPRloop1);  // sel * (retain + (1-retain)*discmort) * wt
+              }
+              }
+            }
+          }
+          show_MSY=2;  //  invokes just brief output in benchmark
+          did_MSY=0;
+          Get_Benchmarks(show_MSY);
+          did_MSY=0;
         }
       }
-      show_MSY=2;  //  invokes just brief output in benchmark
-      did_MSY=0;
-      Get_Benchmarks(show_MSY);
-      did_MSY=0;
-      
+      else
+      {
+        SS2out<<"Actual ";
+        show_MSY=2;  //  invokes just brief output in benchmark
+        did_MSY=0;
+        Get_Benchmarks(show_MSY);
+        did_MSY=0;
+      }
     }
-    SS2out<<"#Finish_GLOBAL_MSY"<<endl;
   }
+  SS2out<<"#"<<endl;
   wrote_bigreport=1;  // flag so that second call to writebigreport will do extra output
-   return;
+  return;
   }  //  end writebigreport
 
 //********************************************************************
