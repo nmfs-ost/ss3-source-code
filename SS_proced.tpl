@@ -321,6 +321,7 @@ PROCEDURE_SECTION
     {
 
 //  SS_Label_Info_7.6.1 #Call fxn Get_Benchmarks()
+      if(mceval_phase()==0) {show_MSY=1;}
       if(Do_Benchmark>0)
       {
       report5<<"show MSY before call in procedure "<<show_MSY<<endl;
@@ -330,7 +331,6 @@ PROCEDURE_SECTION
       else
       {Mgmt_quant(1)=SPB_virgin;}
 
-      if(mceval_phase()==0) {show_MSY=1;}
 
 //  SS_Label_Info_7.6.2 #Call fxn Get_Forecast()
       if(Do_Forecast>0)

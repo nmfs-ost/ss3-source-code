@@ -4727,10 +4727,10 @@ FUNCTION void write_bigoutput()
       {SS2out<<endl<<"KNIFE_AGE_SELECTIVITY_MSY "<<endl;}
       else
       {SS2out<<endl<<"SLOT_AGE_SELECTIVITY_MSY "<<endl;}
-      SS2out<<"------  SPR  SPR SPR SPR    SPR     SPR SPR    SPR   SPR #  BTGT BTGT BTGT  BTGT BTGT    BTGT #   BTGT BTGT   BTGT  BTGT "<<
-       "   MSY MSY MSY  MSY MSY    MSY    MSY MSY   MSY  MSY "<<endl<<
+      SS2out<<"------  SPR  SPR SPR SPR SPR SPR SPR SPR SPR # BTGT BTGT BTGT BTGT BTGT BTGT BTGT BTGT   BTGT  BTGT # "<<
+       "   MSY MSY MSY MSY MSY MSY MSY MSY MSY MSY MSY"<<endl<<
       "Age SPR  Fmult Fstd   Exploit Recruit SSB Y_dead Y_ret VBIO # SPR   B/B0  Fmult Fstd    Exploit Recruit SSB  Y_dead Y_ret VBIO "<<
-        " # SPR   B/B0  Fmult Fstd  Exploit Recruit SSB  Y_dead Y_ret VBIO "<<endl;
+        " # SPR   B/B0  Fmult Fstd  Exploit Recruit SSB  Y_MSY Y_dead Y_ret VBIO "<<endl;
 
       if(MSY_loop>0)
       {

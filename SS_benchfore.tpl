@@ -169,10 +169,10 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
           }
     }   // end search loop
 
-    if(fabs(SPR_actual-SPR_target)>=0.001)
-    {N_warn++; warning<<" warning: poor convergence in Fspr search "<<SPR_target<<" "<<SPR_actual<<endl;}
     if(show_MSY==1)
     {
+      if(fabs(SPR_actual-SPR_target)>=0.001)
+      {N_warn++; warning<<" warning: poor convergence in Fspr search "<<SPR_target<<" "<<SPR_actual<<endl;}
       report5<<"seas fleet encB deadB retB encN deadN retN): "<<endl;
       for (s=1;s<=nseas;s++)
       for (f=1;f<=Nfleet;f++)
@@ -281,11 +281,11 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
       }   // end search loop
 
     Btgt_Rec=Equ_SpawnRecr_Result(2);
-    if(fabs(log(Btgt/Btgttgt))>=0.001)
-    {N_warn++; warning<<" warning: poor convergence in Btarget search "<<Btgttgt<<" "<<Btgt<<endl;}
     
     if(show_MSY==1)
     {
+      if(fabs(log(Btgt/Btgttgt))>=0.001)
+      {N_warn++; warning<<" warning: poor convergence in Btarget search "<<Btgttgt<<" "<<Btgt<<endl;}
       report5<<"seas fleet encB deadB retB encN deadN retN): "<<endl;
       for (s=1;s<=nseas;s++)
       for (f=1;f<=Nfleet;f++)
@@ -407,8 +407,6 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
         else
           {F1(1)=temp;}
         }   // end search loop
-    if(fabs(dyld/dyldp)>=0.001 && Do_MSY==2)
-    {N_warn++; warning<<" warning: poor convergence in Fmsy, final dy/dy2= "<<dyld/dyldp<<endl;}
 
       YPR_msy_enc = YPR_enc;
       YPR_msy_dead = YPR_dead;           // total dead yieldt
@@ -426,6 +424,8 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
 
       if(show_MSY==1)
       {
+      if(fabs(dyld/dyldp)>=0.001)
+      {N_warn++; warning<<" warning: poor convergence in Fmsy, final dy/dy2= "<<dyld/dyldp<<endl;}
       report5<<"seas fleet encB deadB retB encN deadN retN): "<<endl;
       for (s=1;s<=nseas;s++)
       for (f=1;f<=Nfleet;f++)
@@ -692,7 +692,16 @@ FUNCTION void Get_Forecast()
     report5<<"Cap_totalcatch_by_area "<<endl<<Fcast_MaxAreaCatch<<endl;
     report5<<"Assign_fleets_to_allocation_groups_(0_means_not_in_a_group) "<<endl<<Allocation_Fleet_Assignments<<endl;
     report5<<"Calculated_number_of_allocation_groups "<<Fcast_Catch_Allocation_Groups<<endl;
-    report5<<"Allocation_among_groups "<<Fcast_Catch_Allocation<<endl;
+    if(Fcast_Catch_Allocation_Groups>0)
+    {
+      report5<<"Year ";
+      for (f=1;f<=Fcast_Catch_Allocation_Groups;f++) report5<<" group_"<<f;
+      report5<<endl;
+      for(y=endyr+1;y<=YrMax;y++)
+      {
+        report5<<y<<" "<<Fcast_Catch_Allocation(y)<<endl;
+      }
+     }
     if(Fcast_Catch_Basis==2)
     {report5<<"2:_Caps_&_Alloc_use_dead_catchbio"<<endl;}
     else if(Fcast_Catch_Basis==3)
