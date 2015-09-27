@@ -1104,11 +1104,8 @@ DATA_SECTION
 
    matrix mnwtdata1(1,nobs_mnwt_rd,1,6)
  LOCAL_CALCS
-  if(nobs_mnwt_rd>0)
-  {
     *(ad_comm::global_datafile) >> DF_bodywt;
     echoinput<<DF_bodywt<<" degrees of freedom for bodywt T-distribution "<<endl;
-  }
   
   if(nobs_mnwt_rd>0)
   {

@@ -341,10 +341,7 @@ DATA_SECTION
 !!//  SS_Label_Info_2.1.2 #Read model time dimensions
   int read_seas_mo    //  1=read integer season; 2=read real months
  LOCAL_CALCS
-  if(finish_starter==999)
-    {read_seas_mo=1;}
-  else
-    {read_seas_mo=2;}
+   read_seas_mo=2;
  END_CALCS
  
   init_int styr  //start year of the model
@@ -361,10 +358,7 @@ DATA_SECTION
 
   int N_subseas  //  number of subseasons within season; must be even number to get one to be mid_season
  LOCAL_CALCS
-  if(finish_starter==999)
-    {N_subseas=2;}
-  else
-    {*(ad_comm::global_datafile) >> N_subseas;}
+  *(ad_comm::global_datafile) >> N_subseas;
   echoinput<<N_subseas<<" Number of subseasons (even number only; min 2) for calculation of ALK "<<endl;
   mid_subseas=N_subseas/2 + 1;
  END_CALCS
@@ -457,18 +451,6 @@ DATA_SECTION
   int Nfleet1  // used with 3.24 for number of fishing fleets
   
  LOCAL_CALCS
-  if(finish_starter==999)
-  {
-    *(ad_comm::global_datafile) >> Nfleet1;
-    *(ad_comm::global_datafile) >> Nsurvey;
-    Nfleet=Nfleet1+Nsurvey;
-    echoinput<<Nfleet1<<" "<<Nsurvey<<"  Nfleetss and surveys "<<endl;
-    *(ad_comm::global_datafile) >> pop;
-    echoinput<<pop<<" N_areas "<<endl;
-    if(pop>1 && F_reporting==3)
-    {N_warn++; warning<<" F-reporting=3 (sum of full Fs) not advised in multiple area models "<<endl;}
-  }
-  else 
   {
     *(ad_comm::global_datafile) >> gender;
     *(ad_comm::global_datafile) >> nages;
@@ -500,70 +482,6 @@ DATA_SECTION
 
  LOCAL_CALCS
   bycatch_setup.initialize();
-  if(finish_starter==999.)
-  {
-    *(ad_comm::global_datafile) >> fleetnameread;
-  for (f=1;f<=Nfleet;f++) {pfleetname(f,1)=1; pfleetname(f,2)=1;}    /* SS_loop: set pointer to fleetnames to default in case not enough names are read */
-  f=1;
-  for (i=1;i<=strlen(fleetnameread);i++)  /* SS_loop: read string of fllenames by character */
-  if(adstring(fleetnameread(i))==adstring("%"))
-   {pfleetname(f,2)=i-1; f+=1;  pfleetname(f,1)=i+1;}
-  pfleetname(Nfleet,2)=strlen(fleetnameread);
-  for (f=1;f<=Nfleet;f++)  /* SS_loop: move fleetnames into array of strings */
-  {
-    fleetname+=fleetnameread(pfleetname(f,1),pfleetname(f,2))+CRLF(1);
-  }
-  echoinput<<fleetname<<endl;
-
-    *(ad_comm::global_datafile) >> surveytime;
-    echoinput<<surveytime<<" surveytime "<<endl;
-    *(ad_comm::global_datafile) >> fleet_area;
-    echoinput<<fleet_area<<" fleet_area "<<endl;
-    *(ad_comm::global_datafile) >> catchunits1;
-    echoinput<<catchunits1<<" catchunits "<<endl;
-    *(ad_comm::global_datafile) >> catch_se_rd1;
-    echoinput<<catch_se_rd1<<" catch_se "<<endl;
-    for(f=1;f<=Nfleet;f++)
-    {
-      if(f<=Nfleet1)
-      {
-        catchunits(f)=catchunits1(f);
-        catch_se_rd(f)=catch_se_rd1(f);
-        fleet_type(f)=1;
-        if(catch_se_rd(f)<0) // bycatch only;  set values to default from SS_3.24
-        {
-          fleet_type(f)=2;
-          bycatch_setup(f,1)=1;  //  do retention fxn like fleet_type=1
-          bycatch_setup(f,2)=1;  //  include dead bycatch in benchmark and forecast quantities
-          bycatch_setup(f,3)=1;  //  scale F with Fmult like other fleets
-        }
-        need_catch_mult(f)=0;
-      }
-      else
-      {
-        catchunits(f)=2;
-        catch_se_rd(f)=.1;   
-        fleet_type(f)=3;  
-        need_catch_mult(f)=0;
-      }
-      if(fleet_type(f)==1)
-        {
-          for (t=styr-nseas;t<=TimeMax;t++) {catch_se(t,f)=catch_se_rd(f);} // set catch se for fishing fleets
-        }
-        else
-        {
-          for (t=styr-nseas;t<=TimeMax;t++) {catch_se(t,f)=0.1;} // set a value for catch se for surveys and bycatch fleets (not used)
-        }
-      fleet_setup(f,1)=fleet_type(f);
-      fleet_setup(f,2)=surveytime(f);
-      fleet_setup(f,3)=fleet_area(f);
-      fleet_setup(f,4)=catchunits(f);
-      fleet_setup(f,7)=need_catch_mult(f);
-      fleet_setup(f,5)=catch_se_rd(f);
-      fleet_setup(f,6)=catch_se_rd(f);
-    }
-  }
-  else  //  read 3.30 format
   {
     N_bycatch=0;
     N_catchfleets=0;
@@ -613,15 +531,6 @@ DATA_SECTION
  END_CALCS
  
 //  ProgLabel_2.1.5  define genders and max age
- LOCAL_CALCS
-  if(finish_starter==999)
-  {
-     *(ad_comm::global_datafile) >> gender;
-     echoinput<<gender<<" N sexes "<<endl;
-     *(ad_comm::global_datafile) >> nages;
-     echoinput<<nages<<" nages is maxage "<<endl;
-  }
- END_CALCS
 
   ivector     age_vector(0,nages)
   vector      r_ages(0,nages)
@@ -683,11 +592,6 @@ DATA_SECTION
  LOCAL_CALCS
    have_data.initialize();
    obs_equ_catch.initialize();
-  if(finish_starter==999)
-  {
-    *(ad_comm::global_datafile) >> obs_equ_catch(1)(1,Nfleet1);  // only read season fpr 3.24
-    echoinput<<obs_equ_catch<<" obs_equ_catch "<<endl;
-  }
   
    for(y=1;y<=ALK_time_max;y++)
    for(f=1;f<=Nfleet;f++)
@@ -701,13 +605,6 @@ DATA_SECTION
   int Catch_read;
   vector tempvec(1,5)  //  number of elements to read from each catch record
  LOCAL_CALCS
-  if(finish_starter==999) 
-  {
-    *(ad_comm::global_datafile) >> N_ReadCatch;
-    echoinput<<N_ReadCatch<<" N_ReadCatch read catch as table with fleets as columns"<<endl;
-    j=Nfleet1+2;
-  } 
-  else 
   {
     echoinput<<" read list until -9999"<<endl;
     k=0;
@@ -739,12 +636,7 @@ DATA_SECTION
   k=0;  // counter for reading catch records
   for (k=1;k<=N_ReadCatch;k++)
   {
-    if(finish_starter==999)  //  do read in table format
-    {
-      *(ad_comm::global_datafile) >> catch_bioT(k)(1,Nfleet1+2);
-      y=catch_bioT(k,Nfleet1+1); s=catch_bioT(k,Nfleet1+2);
-   }
-    else  //  do read in list format  y, s, f, catch, catch_se
+    //  do read in list format  y, s, f, catch, catch_se
     {
       *(ad_comm::global_datafile) >> catch_bioT(k)(1,5);
       g=catch_bioT(k,1); s=catch_bioT(k,2); f=catch_bioT(k,3);
@@ -763,11 +655,6 @@ DATA_SECTION
       {
         t=styr+(y-styr)*nseas+s-1;
   
-        if(finish_starter==999 && y>=styr)
-        {
-          for (f=1;f<=Nfleet1;f++) catch_ret_obs(f,t) += catch_bioT(k,f);
-        }
-        else
         {
           catch_ret_obs(f,t) += catch_bioT(k,4);
           catch_se(t,f) = catch_bioT(k,5);
@@ -778,11 +665,6 @@ DATA_SECTION
         for (s=1;s<=nseas;s++)
         {
           t=styr+(y-styr)*nseas+s-1;
-          if(finish_starter==999)
-          {
-            for (f=1;f<=Nfleet1;f++) catch_ret_obs(f,t) += catch_bioT(k,f)/nseas;
-          }
-          else
           {
             catch_ret_obs(f,t) += catch_bioT(k,4)/nseas;
           }
@@ -791,13 +673,10 @@ DATA_SECTION
     }
   }
   
-  if(finish_starter!=999)
-  {
     for(s=1;s<=nseas;s++)
     {
       for (f=1;f<=Nfleet1;f++) {obs_equ_catch(s,f)=catch_ret_obs(f,styr-nseas-1+s);}
     }
-  }
 
   echoinput<<" processed catch "<<endl<<trans(catch_ret_obs)<<endl;
 
@@ -1236,7 +1115,7 @@ DATA_SECTION
 
    matrix mnwtdata1(1,nobs_mnwt_rd,1,6)
  LOCAL_CALCS
-  if(finish_starter==999 || nobs_mnwt_rd>0)
+  if(nobs_mnwt_rd>0)
   {
     *(ad_comm::global_datafile) >> DF_bodywt;
     echoinput<<DF_bodywt<<" degrees of freedom for bodywt T-distribution "<<endl;
@@ -1398,25 +1277,6 @@ DATA_SECTION
  LOCAL_CALCS
   Comp_Err_ParmCount=0;
   Comp_Err_L2.initialize();
-  if(finish_starter==999)
-  {
-    *(ad_comm::global_datafile) >> min_tail;
-    echoinput<<min_tail<<" min tail for comps "<<endl;
-    *(ad_comm::global_datafile) >> min_comp;
-    echoinput<<min_comp<<" value added to comps "<<endl;
-    *(ad_comm::global_datafile) >> CombGender_l;
-    echoinput<<CombGender_l<<" CombGender_lengths "<<endl;
-    for (f=1;f<=Nfleet;f++)
-    {
-      min_tail_L(f) = min_tail;
-      min_comp_L(f) = min_comp;
-      CombGender_L(f) = CombGender_l;
-      AccumBin_L(f) = 0;
-      Comp_Err_L(f)=0;  //  for multinomial
-      Comp_Err_L2(f)=0;  // no parameter needed
-    }
-  }
-  else
   {
     echoinput<<"#_now read for each fleet info for processing the length comps:"<<endl;
     echoinput<<"#_mintailcomp: upper and lower distribution for females and males separately are accumulated until exceeding this level."<<endl;
@@ -1617,11 +1477,6 @@ DATA_SECTION
    vector tempvec_lenread(1,6+nlen_bin2);
    
  LOCAL_CALCS
-  if(finish_starter==999) 
-  {
-    *(ad_comm::global_datafile) >> nobsl_rd;
-  } 
-  else 
   {
     k=0;
     tempvec_lenread.initialize();
@@ -2011,25 +1866,6 @@ DATA_SECTION
   
  LOCAL_CALCS
   Comp_Err_A2.initialize();
-  if(finish_starter==999)
-  {
-    *(ad_comm::global_datafile) >> nobsa_rd;
-    echoinput << nobsa_rd<< " N ageobs"  << endl;
-    *(ad_comm::global_datafile) >> Lbin_method;
-    echoinput << Lbin_method<< " Lbin method for defined size ranges "  << endl;
-    *(ad_comm::global_datafile) >> CombGender_a;
-    echoinput<<CombGender_a<<" CombGender_a "<<endl;
-    for (f=1;f<=Nfleet;f++)
-    {
-      min_tail_A(f) = min_tail;
-      min_comp_A(f) = min_comp;
-      CombGender_A(f) = CombGender_a;
-      AccumBin_A(f) = 0;
-      Comp_Err_A(f)=0;  //  for multinomial
-      Comp_Err_A2(f)=0;  //  no parameter needed
-    }
-  }
-  else
   {
     echoinput<<"#_now read for each fleet info for processing the age comps:"<<endl;
     echoinput<<"#_mintailcomp: upper and lower distribution for females and males separately are accumulated until exceeding this level."<<endl;

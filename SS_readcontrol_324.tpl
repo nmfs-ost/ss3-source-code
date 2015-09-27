@@ -94,17 +94,9 @@
   int Comp_Err_Parm_Start
   int recr_dist_inx
  LOCAL_CALCS
-  if(finish_starter==999)
   {
     recr_dist_method=1;  //  hardwire for 3.24 method
     recr_dist_area=1;
-  }
-  else
-  {
-    *(ad_comm::global_datafile) >> recr_dist_method;
-    echoinput<<recr_dist_method<<"  // Recruitment distribution method; where: 1=like 3.24; 2=main effects for GP, Settle timing, Area; 3=each Settle entity; 4=none when N_GP*Nsettle*pop==1"<<endl;
-    *(ad_comm::global_datafile) >> recr_dist_area;
-    echoinput<<recr_dist_area<<"  // recr_dist_area: 1 means global SRR; 2 means area-specific SRR"<<endl;
   }
   recr_dist_area=1;  //hardwire for testing
   N_settle_assignments_rd=0;
@@ -114,13 +106,7 @@
   {
     case 1:
       {
-        if(finish_starter!=999)
-        {
-           *(ad_comm::global_datafile) >> N_settle_assignments_rd;
-           *(ad_comm::global_datafile) >> recr_dist_inx;
-            N_settle_assignments=N_settle_assignments_rd;
-        }
-        else if(N_GP*pop*nseas>1)
+        if(N_GP*pop*nseas>1)
           {
             *(ad_comm::global_datafile) >> N_settle_assignments_rd;
             *(ad_comm::global_datafile) >> recr_dist_inx;
@@ -160,7 +146,7 @@
   ivector settle_assignments_timing(1,N_settle_assignments);  //  stores the settle_timing index for each assignment
   vector settle_timings_tempvec(1,N_settle_assignments)  //  temporary storage for real_month of each settlement assignment
  LOCAL_CALCS
-  if(recr_dist_method==1 && finish_starter==999 && N_settle_assignments_rd==0)
+  if(recr_dist_method==1 && N_settle_assignments_rd==0)
     {
       {settlement_pattern_rd(1).fill("{1,1,1}");}
       echoinput<<" settlement pattern auto-filled "<<endl<<"GPat  Birthseas  Area"<<endl<<settlement_pattern_rd<<endl;
@@ -168,14 +154,7 @@
     else
     {
       *(ad_comm::global_datafile) >> settlement_pattern_rd;
-      if(finish_starter==999)
-      {
-         echoinput<<" settlement pattern as read "<<endl<<"GPat  Birthseas  Area"<<endl<<settlement_pattern_rd<<endl;
-     }
-      else
-      {
-        echoinput<<" settlement pattern as read "<<endl<<"GPat  Month  Area"<<endl<<"*"<<settlement_pattern_rd<<"*"<<endl;
-      }
+      echoinput<<" settlement pattern as read "<<endl<<"GPat  Birthseas  Area"<<endl<<settlement_pattern_rd<<endl;
     }
  END_CALCS
 
@@ -997,7 +976,6 @@
 
   matrix MGparm_2(1,N_MGparm,1,14)
  LOCAL_CALCS
-  if(finish_starter==999)
   {
   MGparm_2=MGparm_1;
   j=0;  //  pointer to matrix as read
@@ -1466,7 +1444,6 @@
          MGparm_dev_point(f)=s;  //  specifies which dev vector is used by the f'th MGparm
          MGparm_dev_rpoint(s)=f;  //  specifies which parm (f) is affected by the j'th dev vector
 
-         if(finish_starter==999)
          {
            k++;
            MGparm_dev_se_rd(k,3)=MGparm_1(f,12);
@@ -1484,14 +1461,6 @@
            MGparm_dev_se_rd(k,5)=0;  // pr_type=normal
            MGparm_dev_se_rd(k,6)=0.2;  //  prior+stdev
            MGparm_dev_se_rd(k,7)=-5;  //  phase
-         }
-         else
-         {
-           k++;
-           *(ad_comm::global_datafile) >> MGparm_dev_se_rd(k)(1,7);
-           k++;
-           *(ad_comm::global_datafile) >> MGparm_dev_se_rd(k)(1,7);
-
          }
 
          y=MGparm_1(f,10);
@@ -1989,7 +1958,6 @@
   N_init_F2=0;
 
 //  no seasons in 3.24
-  if(finish_starter==999)
   {
     for (f=1;f<=Nfleet1;f++)
     {
@@ -1998,25 +1966,9 @@
     }
     N_init_F=Nfleet1;
   }
-  else
-  {
-    for (s=1;s<=nseas;s++)
-    for (f=1;f<=Nfleet;f++)
-    {
-      if(fleet_type(f)<=2)
-      {
-        if(obs_equ_catch(s,f)!=0.0)
-        {
-          N_init_F++;
-          init_F_loc(s,f)=N_init_F;
-        }
-      }
-      N_init_F2=N_init_F;
-    }
-  }
  END_CALCS
   !! echoinput<<" ready to read init_F setup for: "<<N_init_F<<" fleet x season with initial equilibrium catch"<<endl; 
-  !! if(finish_starter==999) echoinput<<"Number of init_F parameters to be retained for non-zero catch = "<<N_init_F2<<endl;
+  !! echoinput<<"Number of init_F parameters to be retained for non-zero catch = "<<N_init_F2<<endl;
   init_matrix init_F_parm_1(1,N_init_F,1,7)
   !! echoinput<<" initial equil F parameter setup"<<endl<<init_F_parm_1<<endl;
   vector init_F_LO(1,N_init_F)
@@ -2043,10 +1995,7 @@
    init_F_PH=ivector(column(init_F_parm_1,7));
 
 //  no seasons in 3.24
-  if(finish_starter==999)
-  {k=1;}
-  else
-  {k=nseas;}
+  k=1;
 
    for (s=1;s<=k;s++)
    for (f=1;f<=Nfleet1;f++)
@@ -2143,10 +2092,7 @@
  LOCAL_CALCS
   Q_setup.initialize();
 //  revise approach for Q_offset so that is now a 5th element of Q_setup, rather than a mutually exclusive code in the 1st element (density-dependence)
-  if(finish_starter==999)
-  {k=4;}
-  else
-  {k=5;}
+  k=4;
 
   for(f=1;f<=Nfleet;f++)
   {*(ad_comm::global_datafile) >> Q_setup(f)(1,k);}  
@@ -2196,22 +2142,6 @@
     }
   }
   
-  if(finish_starter!=999)
-  {
-    for (f=1;f<=Nfleet;f++)
-    {
-     if(Q_setup(f,5)>0)
-      {
-        Q_Npar++; Q_setup_parms(f,5)=Q_Npar;
-        ParCount++; 
-        ParmLabel+="Q_offset_"+fleetname(f)+"("+NumLbl(f)+")";
-        if(Q_setup(f,4)<2) {N_warn++; warning<<" must create base Q parm to use Q_offset for fleet: "<<f<<endl;}
-      }
-      else
-      {Q_setup_parms(f,5)=0;}
-    }
-  }
-
 //  SS_Label_Info_4.8.2 #Create Q parm and time-varying catchability as needed
   Q_Npar2=Q_Npar;
   for (f=1;f<=Nfleet;f++)
@@ -2673,18 +2603,6 @@
    }
 
 //  SS_Label_Info_4.097 #Read parameters needed for estimating variance of composition data
-   if(finish_starter!=999)
-  {
-    echoinput<<"#Now read parameters for variance of composition data; CANNOT be time-varying"<<endl;
-    if(Comp_Err_ParmCount>0)
-    {
-      echoinput<<Comp_Err_ParmCount<<"  #_parameters are needed"<<endl;
-      Comp_Err_Parm_Start=N_selparm;
-      for(f=1;f<=Comp_Err_ParmCount;f++)
-        {N_selparm++; ParCount++; ParmLabel+="ln(EffN_mult)_"+NumLbl(f);}
-    }
-  }
-
    for (f=1;f<=Nfleet;f++)
      {
      if(disc_N_fleet(f)>0 && seltype(f,2)==0)
@@ -3026,7 +2944,6 @@
          selparm_dev_point(f)=s;  //  specifies which dev vector is used by the f'th selparm
          selparm_dev_rpoint(s)=f;  //  specifies which parm (f) is affected by the j'th dev vector
 
-         if(finish_starter==999)
          {
            k++;
            selparm_dev_se_rd(k,3)=selparm_1(f,12);
@@ -3044,13 +2961,6 @@
            selparm_dev_se_rd(k,5)=0;  // pr_type=normal
            selparm_dev_se_rd(k,6)=0.2;  //  prior+stdev
            selparm_dev_se_rd(k,7)=-5;  //  phase
-         }
-         else
-         {
-           k++;
-           *(ad_comm::global_datafile) >> selparm_dev_se_rd(k)(1,7);
-           k++;
-           *(ad_comm::global_datafile) >> selparm_dev_se_rd(k)(1,7);
          }
 
          y=selparm_1(f,10);
