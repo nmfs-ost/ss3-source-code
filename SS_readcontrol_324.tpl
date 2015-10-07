@@ -2396,7 +2396,8 @@
      if(seltype(f,1)==6) N_selparmvec(f) +=seltype(f,4);  // special setup of N parms
      if(seltype(f,1)==21) N_selparmvec(f) +=2*(seltype(f,4)-1);  // special setup of N parms
      if(seltype(f,1)==27) N_selparmvec(f) +=2*seltype(f,4);  // special setup of N parms for cubic spline
-     if(seltype(f,1)>0 && seltype(f,1)<30) {dolen(f)=1;} else {dolen(f)=0;}
+     if(seltype(f,1)>=30) {Svy_units(f)=seltype(f,1); seltype(f,1)=0;}  //  special expected values, no size selectivity
+     if(seltype(f,1)>0 && Svy_units(f)<30) {dolen(f)=1;} else {dolen(f)=0;}
 
      if(seltype(f,1)==27)
      {
@@ -2420,7 +2421,7 @@
        }
      }
 
-     if(seltype(f,1)==34)  //  special code for depletion, so adjust phases and lambdas
+     if(Svy_units(f)==34)  //  special code for depletion, so adjust phases and lambdas
       {
         depletion_fleet=f;
       }

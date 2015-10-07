@@ -106,98 +106,110 @@ FUNCTION void Get_expected_values();
          if(j>0)
          {
            j=have_data(ALK_time,f,data_type,1);  //  for now, only one observations is allowed for surveys
-           if (seltype(f,1)>=30)
+           switch(Svy_units(f))
            {
-             switch(seltype(f,1))
+             case 1:  //  biomass
              {
-               case 30:  // spawning biomass  #30
-               {
-                 if(pop==1 || fleet_area(f)==0)
-                 {
-                   vbio=SPB_current;
-                  }
-                  else
-                  {
-                    vbio=sum(SPB_pop_gp(y,fleet_area(f)));
-                  }
-                 break;
-               }
-               case 31:  // recruitment deviation  #31
-               {
-                if(y>=recdev_start && y<=recdev_end) 
-                {vbio=mfexp(recdev(y));}
-                else
-                {vbio=1.0;}
-                break;
-               }
-               case 32:  // recruitment without density-dependence (for pre-recruit survey) #32
-               {
-                if(y>=recdev_start && y<=recdev_end) 
-                {vbio=SPB_current*mfexp(recdev(y));}
-                else
-                {vbio=SPB_current;}
-                break;
-               }
-               case 33:  // recruitment  #33
-               {vbio=Recruits; break;}
-  
-               case 34:  // spawning biomass depletion
-               {
-                 if(pop==1 || fleet_area(f)==0)
-                 {
-                   vbio=(SPB_current+1.0e-06)/(SPB_virgin+1.0e-06);
-                  }
-                  else
-                  {
-                    vbio=(sum(SPB_pop_gp(y,fleet_area(f)))+1.0e-06)/(SPB_virgin+1.0e-06);
-                  }
-                 break;
-               }
-             case 35:  // MGparm deviation  #35
+             if(WTage_rd==1)  //  using empirical wt-at-age;  note that this cannot use GP specific bodyweights
              {
-                k=seltype(f,4);  //  specify which dev vector will be compared to this survey
-                                 //  note that later the value in seltype(f,3) will specify the link function
-                //  should there be an explicit zero-centering of the devs here, or just rely on general tendency for the devs to get zero-centererd?
-                if(y>=MGparm_dev_minyr(k) && y<=MGparm_dev_maxyr(k)) 
-                {
-                  vbio=MGparm_dev(k,y);
-                  //  can the mean dev for years with surveys be calculated here?
-                }
-                else
-                {vbio=0.0;}
-                break;
-              }
-             }
-           }
-           else
-           {
-             if(Svy_units(f)==1)  //  biomass
-             {
-               if(WTage_rd==1)  //  using empirical wt-at-age;  note that this cannot use GP specific bodyweights
+               if(seltype(f,2)>=1)
                {
-                 if(seltype(f,2)>=1)
-                 {
-                   agetemp = exp_AL * retain(y,f);    // retained only
-                 }
-                 else
-                 {
-                   agetemp=rowsum(exp_AL);
-                 }
-                 vbio=0.0;
-                 for (a=0;a<=nages;a++) vbio+=WTage_emp(y,1,f,a)*agetemp(a);
-                 if(gender==2)
-                 {
-                   for (a=0;a<=nages;a++) vbio+=WTage_emp(y,2,f,a)*agetemp(a+nages+1);
-                 }
+                 agetemp = exp_AL * retain(y,f);    // retained only
                }
                else
-               {vbio=exp_l_temp_ret*wt_len2(s,1);}   // biomass  TEMPORARY CODE.  Using gp=1 wt at length
+               {
+                 agetemp=rowsum(exp_AL);
+               }
+               vbio=0.0;
+               for (a=0;a<=nages;a++) vbio+=WTage_emp(y,1,f,a)*agetemp(a);
+               if(gender==2)
+               {
+                 for (a=0;a<=nages;a++) vbio+=WTage_emp(y,2,f,a)*agetemp(a+nages+1);
+               }
              }
-             else if(Svy_units(f)==0)
-               {vbio=sum(exp_l_temp_ret);}              // numbers
-             else if(Svy_units(f)==2)
-             {vbio=Hrate(f,t);}   //  F rate
+             else
+             {vbio=exp_l_temp_ret*wt_len2(s,1);}   // biomass  TEMPORARY CODE.  Using gp=1 wt at length
+             break;
+             }
+             case 0:  //  numbers
+             {
+              vbio=sum(exp_l_temp_ret);
+              break;
+             }
+             case 2:   //  F rate
+             {
+              vbio=Hrate(f,t);
+              break;
+             }
+             case 30:  // spawning biomass  #30
+             {
+               if(pop==1 || fleet_area(f)==0)
+               {
+                 vbio=SPB_current;
+                }
+                else
+                {
+                  vbio=sum(SPB_pop_gp(y,fleet_area(f)));
+                }
+               break;
+             }
+             case 31:  // recruitment deviation  #31
+             {
+              if(y>=recdev_start && y<=recdev_end) 
+              {vbio=mfexp(recdev(y));}
+              else
+              {vbio=1.0;}
+              break;
+             }
+             case 32:  // recruitment without density-dependence (for pre-recruit survey) #32
+             {
+              if(y>=recdev_start && y<=recdev_end) 
+              {vbio=SPB_current*mfexp(recdev(y));}
+              else
+              {vbio=SPB_current;}
+              break;
+             }
+             case 33:  // recruitment  #33
+             {vbio=Recruits; break;}
+
+             case 34:  // spawning biomass depletion
+             {
+               if(pop==1 || fleet_area(f)==0)
+               {
+                 vbio=(SPB_current+1.0e-06)/(SPB_virgin+1.0e-06);
+                }
+                else
+                {
+                  vbio=(sum(SPB_pop_gp(y,fleet_area(f)))+1.0e-06)/(SPB_virgin+1.0e-06);
+                }
+               break;
+             }
+           case 35:  // MGparm deviation  #35
+           {
+              k=seltype(f,4);  //  specify which dev vector will be compared to this survey
+                               //  note that later the value in seltype(f,3) will specify the link function
+              //  should there be an explicit zero-centering of the devs here, or just rely on general tendency for the devs to get zero-centererd?
+              if(y>=MGparm_dev_minyr(k) && y<=MGparm_dev_maxyr(k)) 
+              {
+                vbio=MGparm_dev(k,y);
+                //  can the mean dev for years with surveys be calculated here?
+              }
+              else
+              {vbio=0.0;}
+              break;
            }
+           case 36:  //  selparm deviation  #36
+            {
+              //  need code here
+              break;
+            }
+           case 37:  //  Q deviation  #37
+            {
+              //  need code here
+              break;
+            }
+           }
+
            Svy_selec_abund(f,j)=value(vbio);
 // SS_Label_Info_46.1.1 #note order of operations,  vbio raised to a power, then constant is added, then later multiplied by Q.  Needs work   
            if(Q_setup(f,1)>0) vbio=pow(vbio,1.0+Q_parm(Q_setup_parms(f,1)));  //  raise vbio to a power

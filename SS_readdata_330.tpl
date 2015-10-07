@@ -720,13 +720,13 @@ DATA_SECTION
   data_type=1;  //  for surveys
  END_CALCS
   init_imatrix Svy_units_rd(1,Nfleet,1,k)
-  ivector Svy_units(1,j)   //0=num/1=bio/2=F
+  ivector Svy_units(1,j)   //0=num; 1=bio; 2=F; >=30 for special patterns
   ivector Svy_errtype(1,j)  // -1=normal / 0=lognormal / >0=T
 
  LOCAL_CALCS
   if(k>0)
   {
-    echoinput<<"Units:  0=numbers; 1=biomass; 2=F"<<endl;
+    echoinput<<"Units:  0=numbers; 1=biomass; 2=F; >=30 for special patterns"<<endl;
     echoinput<<"Errtype:  -1=normal; 0=lognormal; >0=T"<<endl;
     echoinput<<"Fleet Units Err_Type"<<endl;
     echoinput<<Svy_units_rd<<endl;
