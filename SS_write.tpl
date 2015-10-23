@@ -3353,10 +3353,23 @@ FUNCTION void write_bigoutput()
   }
 
   SS2out <<endl<< "FIT_LEN_COMPS" << endl;                     // SS_Label_350
-  SS2out<<"Fleet Yr Month Seas Yr.frac Sex Mkt Nsamp effN Like Period Use"<<endl;
+  SS2out<<"Fleet Yr Month Seas Yr.frac Sex Mkt Nsamp effN Like Period Use F_obs F_exp F_delta M_obs M_exp M_delta All_obs All_exp All_delta %female_obs %female_exp F_corr M_corr"<<endl;
   rmse = 0.0;  n_rmse = 0.0; mean_CV=0.0;  Hrmse=0.0; Rrmse=0.0; neff_l.initialize();
   in_superperiod=0;
   data_type=4;
+  dvector more_comp_info(1,15);
+  //mean_female_obs;
+  //mean_male_obs;
+  //mean_all_obs;
+  //mean_female_exp;
+  //mean_male_exp;
+  //mean_all_exp;
+  //sexratio_obs;
+  //sexratio_exp;
+  //DurbinWatson_female;
+  //DurbinWatson_male;
+  //DurbinWatson_all;
+  
    for (f=1;f<=Nfleet;f++)
    for (i=1;i<=Nobs_l(f);i++)
    {
@@ -3371,6 +3384,56 @@ FUNCTION void write_bigoutput()
        mean_CV(f)+=nsamp_l(f,i);
        Hrmse(f)+=value(1./neff_l(f,i));
        Rrmse(f)+=value(neff_l(f,i)/nsamp_l(f,i));
+       more_comp_info.initialize();
+       if(gen_l(f,i)==1 || gen_l(f,i)==3)
+       {
+         more_comp_info(1)=(obs_l(f,i)(tails_l(f,i,1),tails_l(f,i,2))*len_bins_m2(tails_l(f,i,1),tails_l(f,i,2)))/sum(obs_l(f,i)(tails_l(f,i,1),tails_l(f,i,2)));
+         more_comp_info(2)=value((exp_l(f,i)(tails_l(f,i,1),tails_l(f,i,2))*len_bins_m2(tails_l(f,i,1),tails_l(f,i,2)))/sum(exp_l(f,i)(tails_l(f,i,1),tails_l(f,i,2))));
+         more_comp_info(3)=more_comp_info(1)-more_comp_info(2);
+         for(z=tails_l(f,i,1);z<=tails_l(f,i,2);z++)
+         {
+          temp=obs_l(f,i,z)-exp_l(f,i,z);  //  obs-exp
+          if(z>tails_l(f,i,1)) 
+          {
+            more_comp_info(12)+=value(square(temp2-temp));
+            more_comp_info(14)+=value(square(temp));
+          }
+          temp2=temp;
+         }
+         more_comp_info(12)/=more_comp_info(14);
+       }
+       if(gen_l(f,i)==2 || gen_l(f,i)==3)
+       {
+         more_comp_info(4)=(obs_l(f,i)(tails_l(f,i,3),tails_l(f,i,4))*len_bins_m2(tails_l(f,i,3),tails_l(f,i,4)))/sum(obs_l(f,i)(tails_l(f,i,3),tails_l(f,i,4)));
+         more_comp_info(5)=value((exp_l(f,i)(tails_l(f,i,3),tails_l(f,i,4))*len_bins_m2(tails_l(f,i,3),tails_l(f,i,4)))/sum(exp_l(f,i)(tails_l(f,i,3),tails_l(f,i,4))));
+         more_comp_info(6)=more_comp_info(4)-more_comp_info(5);
+         for(z=tails_l(f,i,3);z<=tails_l(f,i,4);z++)
+         {
+          temp=obs_l(f,i,z)-exp_l(f,i,z);  //  obs-exp
+          if(z>tails_l(f,i,1)) 
+          {
+            more_comp_info(13)+=value(square(temp2-temp));
+            more_comp_info(15)+=value(square(temp));
+          }
+          temp2=temp;
+         }
+         more_comp_info(13)/=more_comp_info(15);
+       }
+       if(gen_l(f,i)==0)
+       {
+         more_comp_info(7)=obs_l(f,i)(tails_l(f,i,1),tails_l(f,i,2))*len_bins_m2(tails_l(f,i,1),tails_l(f,i,2));
+         more_comp_info(8)=value(exp_l(f,i)(tails_l(f,i,1),tails_l(f,i,2))*len_bins_m2(tails_l(f,i,1),tails_l(f,i,2)));
+         more_comp_info(9)=more_comp_info(7)-more_comp_info(8);
+       }
+       if(gen_l(f,i)==3)
+       {
+         more_comp_info(7)=obs_l(f,i)(tails_l(f,i,1),tails_l(f,i,4))*len_bins_m2(tails_l(f,i,1),tails_l(f,i,4));
+         more_comp_info(8)=value(exp_l(f,i)(tails_l(f,i,1),tails_l(f,i,4))*len_bins_m2(tails_l(f,i,1),tails_l(f,i,4)));
+         more_comp_info(9)=more_comp_info(7)-more_comp_info(8);
+         more_comp_info(10)=sum(obs_l(f,i)(tails_l(f,i,1),tails_l(f,i,2)));
+         more_comp_info(11)=value(sum(exp_l(f,i)(tails_l(f,i,1),tails_l(f,i,2))));
+       }
+       
       }
       else
       {
@@ -3388,9 +3451,10 @@ FUNCTION void write_bigoutput()
       else
       {SS2out<<" _ ";}
       if(header_l(f,i,3)<0)
-      {SS2out<<" skip "<<endl;}
+      {SS2out<<" skip ";}
       else
-      {SS2out<<" _ "<<endl;}
+      {SS2out<<" _ ";}
+      SS2out<<more_comp_info(1,11)<<" "<<more_comp_info(12,13)-2.0<<endl;
     }
 
    SS2out<<endl<<"Fleet N Npos mean_effN mean(inputN*Adj) HarMean(effN) Mean(effN/inputN) MeaneffN/MeaninputN Var_Adj"<<endl;
