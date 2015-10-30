@@ -1320,6 +1320,7 @@ DATA_SECTION
 
   vector len_bins_dat2(1,nlen_bin2)  //; doubled for males; for output only
   vector len_bins_dat_m(1,nlen_bin)  //; midbin; for output only
+  vector len_bins_dat_m2(1,nlen_bin2)  //; doubled for males; for output only
 
  LOCAL_CALCS
   //  SS_Label_Info_2.7.2 #Process length bins, create mean length per bin, etc.
@@ -1410,6 +1411,8 @@ DATA_SECTION
     {
       len_bins_dat_m(z)=len_bins_dat_m(z-1)+ (len_bins_dat(z)-len_bins_dat(z-1));
     }
+    len_bins_dat_m2(z)=len_bins_dat_m(z);
+    len_bins_dat_m2(z+nlen_bin)=len_bins_dat_m(z);
   }
   if(len_bins_dat(nlen_bin)>len_bins(nlength))
   {

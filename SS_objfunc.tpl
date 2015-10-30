@@ -366,39 +366,6 @@ FUNCTION void evaluate_the_objective_function()
           }
           exp_a(f,i) /= (1.0e-15+sum(exp_a(f,i)));                      // proportion at binned age
 
-          if(save_for_report==1)  //  get expected mean age for ease of display for conditional age-at-length
-          {
-            exp_a_temp=exp_a(f,i);
-            exp_meanage(f,i,2)=sum(elem_prod(exp_a_temp,age_bins_mean));  //  get mean age across both sexes before adding min_comp and compressing
-            temp=exp_a_temp(1);
-            temp1=0.0;
-            if(gender==2) temp+=exp_a_temp(1+n_abins);
-            z=1;
-            while(temp<=0.05)  //  lower 5%tile
-            {
-              temp1=temp;
-              z++;
-              temp+=exp_a_temp(z);
-              if(gender==2) temp+=exp_a_temp(z+n_abins);
-            }
-            if(z<n_abins) 
-              {exp_meanage(f,i,1)=age_bins(z) + (0.05-temp1)/(temp-temp1);}
-            else
-              {exp_meanage(f,i,1)=age_bins_mean(z);}
-
-            while(temp<=0.95)  //  upper 5%tile
-            {
-              temp1=temp;
-              z++;
-              temp+=exp_a_temp(z);
-              if(gender==2) temp+=exp_a_temp(z+n_abins);
-            }
-            if(z<n_abins) 
-              {exp_meanage(f,i,3)=age_bins(z) + (0.95-temp1)/(temp-temp1);}
-            else
-              {exp_meanage(f,i,3)=age_bins_mean(z);}
-          }
-
           tails_w=ivector(tails_a(f,i));
           if(gen_a(f,i)!=2)
           {

@@ -1299,6 +1299,7 @@ DATA_SECTION
 
   vector len_bins_dat2(1,nlen_bin2)  //; doubled for males; for output only
   vector len_bins_dat_m(1,nlen_bin)  //; midbin; for output only
+  vector len_bins_dat_m2(1,nlen_bin2)  //; doubled for males; for output only
 
  LOCAL_CALCS
   //  SS_Label_Info_2.7.2 #Process length bins, create mean length per bin, etc.
@@ -1389,6 +1390,8 @@ DATA_SECTION
     {
       len_bins_dat_m(z)=len_bins_dat_m(z-1)+ (len_bins_dat(z)-len_bins_dat(z-1));
     }
+    len_bins_dat_m2(z)=len_bins_dat_m(z);
+    len_bins_dat_m2(z+nlen_bin)=len_bins_dat_m(z);
   }
   if(len_bins_dat(nlen_bin)>len_bins(nlength))
   {
@@ -1726,6 +1729,9 @@ DATA_SECTION
             }
             obs_l(f,j)(tails_l(f,j,3),tails_l(f,j,4)) += min_comp_L(f);  // add min_comp to bins in range
           }   // end doing males
+          else  //  set upper tail same as female tail to ease code in write section
+          {tails_l(f,j,3)=tails_l(f,j,1); tails_l(f,j,4)=tails_l(f,j,2);}
+            
           obs_l(f,j) /= sum(obs_l(f,j));                  // make sum to 1.00 again after adding min_comp
           if(gender==1 || gen_l(f,j)!=2) {obs_l_all(1,f)(1,nlen_bin)+=obs_l(f,j)(1,nlen_bin);}  //  females or combined
           if(gender==2)
@@ -2242,6 +2248,9 @@ DATA_SECTION
             }
             obs_a(f,j)(tails_a(f,j,3),tails_a(f,j,4)) += min_comp_A(f);  // add min_comp to bins in range
            }
+           else  //  set upper tail same as female tail to ease code in write section
+           {tails_a(f,j,3)=tails_a(f,j,1); tails_a(f,j,4)=tails_a(f,j,2);}
+
            if(sum(obs_a(f,j))>0.) obs_a(f,j) /= sum(obs_a(f,j));                  // make sum to 1.00 again after adding min_comp
            if(gender==1 || gen_a(f,j)!=2) obs_a_all(1,f)(1,n_abins)+=obs_a(f,j)(1,n_abins);  //  females or combined
            if(gender==2 && gen_a(f,j)>=2)

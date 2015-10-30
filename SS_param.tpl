@@ -371,7 +371,6 @@ PARAMETER_SECTION
   matrix SzFreq_exp(1,SzFreq_totobs,1,SzFreq_Setup2);
   vector SzFreq_like(1,SzFreq_N_Like)
   3darray exp_a(1,Nfleet,1,Nobs_a,1,n_abins2)
-  3darray  exp_meanage(1,Nfleet,1,Nobs_a,1,3)  //  will hold mean age' and 95% range for the range of sizes identified for this age comp observation
   vector exp_a_temp(1,n_abins2)
   vector tempvec_a(0,nages)
   vector agetemp(0,gender*nages+gender-1)
