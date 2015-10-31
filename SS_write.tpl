@@ -2012,21 +2012,17 @@ FUNCTION void write_nucontrol()
     <<"#_Cond -6 6 1 1 2 0.01 -4 0 0 0 0 0 0 0  #_placeholder if no parameters"<<endl;;
   }
 
-  report4<<"#"<<endl<<Do_Var_adjust<<" #_Variance_adjustments_to_input_values"<<endl;
-  report4 <<"#_fleet: ";  for (f=1;f<=Nfleet;f++) {report4<<f<<" ";}
-  report4 <<endl;
-  if(Do_Var_adjust==0)
-  {onenum="#_Cond ";}
-  else
-  {onenum=" ";}
-
-  report4<<onenum<<var_adjust(1)<<" #_add_to_survey_CV"<<endl;
-  report4<<onenum<<var_adjust(2)<<" #_add_to_discard_stddev"<<endl;
-  report4<<onenum<<var_adjust(3)<<" #_add_to_bodywt_CV"<<endl;
-  report4<<onenum<<var_adjust(4)<<" #_mult_by_lencomp_N"<<endl;
-  report4<<onenum<<var_adjust(5)<<" #_mult_by_agecomp_N"<<endl;
-  report4<<onenum<<var_adjust(6)<<" #_mult_by_size-at-age_N"<<endl;
-
+  report4<<"# Input variance adjustments; factors: "<<endl;
+  report4<<" #_1=add_to_survey_CV"<<endl;
+  report4<<" #_2=add_to_discard_stddev"<<endl;
+  report4<<" #_3=add_to_bodywt_CV"<<endl;
+  report4<<" #_4=mult_by_lencomp_N"<<endl;
+  report4<<" #_5=mult_by_agecomp_N"<<endl;
+  report4<<" #_6=mult_by_size-at-age_N"<<endl;
+  report4<<" #_7=mult_by_generalized sizecomp (not implemented yet)"<<endl;
+  report4<<"#_Factor  Fleet  Value"<<endl;
+  if(Do_Var_adjust>0) report4<<var_adjust_list<<endl;
+  report4<<" -9999 1 0  # null to end list"<<endl;
   report4<<"#"<<endl<<max_lambda_phase<<" #_maxlambdaphase"<<endl;
   report4<<sd_offset<<" #_sd_offset"<<endl;
 

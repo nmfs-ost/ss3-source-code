@@ -3263,13 +3263,14 @@
 !!//  SS_Label_Info_4.11 #Read variance adjustment and various variance related inputs
   init_int Do_Var_adjust
   init_matrix var_adjust1(1,6*Do_Var_adjust,1,Nfleet)
-  matrix var_adjust(1,6,1,Nfleet)
+  matrix var_adjust(1,7,1,Nfleet)
  LOCAL_CALCS
   echoinput<<Do_Var_adjust<<" Do_Var_adjust "<<endl;
   if(Do_Var_adjust>0)
   {
-    var_adjust=var_adjust1;
-   echoinput<<" Varadjustments as read "<<endl<<var_adjust1<<endl;
+    for(j=1;j<=6;j++) var_adjust(j)=var_adjust1(j);
+    var_adjust(7)=1.0;  // generalized size comp
+    echoinput<<" Varadjustments as read "<<endl<<var_adjust1<<endl;
   }
   else
   {
@@ -3279,9 +3280,43 @@
     var_adjust(4)=1.;
     var_adjust(5)=1.;
     var_adjust(6)=1.;
+    var_adjust(7)=1.;
   }
+//  convert to list format for version 3.30
+  k=0;
+  for(f=1;f<=Nfleet;f++)
+  {
+    for(j=1;j<=3;j++)
+    {
+      if(var_adjust(j,f)!=0.0) {k++;}
+    }
+    for(j=4;j<=6;j++)
+    {
+      if(var_adjust(j,f)!=1.0) k++;
+    }
+  }
+  Do_Var_adjust=k;
+  echoinput<<" create var_adjust_list with elements = "<<Do_Var_adjust<<endl;
+ END_CALCS
+  matrix var_adjust_list(1,Do_Var_adjust,1,3)
+
+ LOCAL_CALCS
+  if(Do_Var_adjust>0)
+  {
+    k=0;
+    for(f=1;f<=Nfleet;f++)
+    {
+    for(j=1;j<=3;j++)
+    {if(var_adjust(j,f)!=0.0) {k++; var_adjust_list(k,1)=j; var_adjust_list(k,2)=f; var_adjust_list(k,3)=var_adjust(j,f);}  }
+    for(j=4;j<=7;j++)
+    {if(var_adjust(j,f)!=1.0) {k++; var_adjust_list(k,1)=j; var_adjust_list(k,2)=f; var_adjust_list(k,3)=var_adjust(j,f);}  }
+    }
+    echoinput<<"variance adjustment as list; per 3.30 format "<<endl<<var_adjust_list<<endl;
+  }
+    
  END_CALCS
 
+  
   init_number max_lambda_phase
   init_number sd_offset
 

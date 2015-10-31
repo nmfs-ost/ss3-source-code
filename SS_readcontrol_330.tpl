@@ -3217,15 +3217,44 @@
  END_CALCS
 
 !!//  SS_Label_Info_4.11 #Read variance adjustment and various variance related inputs
-  init_int Do_Var_adjust
-  init_matrix var_adjust1(1,6*Do_Var_adjust,1,Nfleet)
-  matrix var_adjust(1,6,1,Nfleet)
+  int Do_Var_adjust
+ LOCAL_CALCS
+  {
+    echoinput<<" read list until -9999"<<endl;
+    k=0;
+    typedef std::char_traits<char>::pos_type pos_type;
+    pos_type mark_pos = ad_comm::global_datafile->tellg();
+    tempvec.initialize();
+    while(tempvec(1)!=-9999.)
+    {
+      k++;
+      *(ad_comm::global_datafile) >> tempvec(1);
+      *(ad_comm::global_datafile) >> tempvec(2);
+      *(ad_comm::global_datafile) >> tempvec(3);
+    }
+    ad_comm::global_datafile->seekg(mark_pos);
+    echoinput<<" number of variance adjustment records = "<<k<<endl;
+    Do_Var_adjust=k;  //  number of catch records to read
+  }
+ END_CALCS
+  matrix var_adjust(1,7,1,Nfleet)
+  init_matrix var_adjust_list(1,Do_Var_adjust,1,3)
+  
  LOCAL_CALCS
   echoinput<<Do_Var_adjust<<" Do_Var_adjust "<<endl;
+  var_adjust.initialize();
+  for(j=4;j<=7;j++)
+  {
+    var_adjust(j)=1.0;  //  null value
+  }
+   echoinput<<" Var_adjustments null"<<endl<<var_adjust<<endl;
   if(Do_Var_adjust>0)
   {
-    var_adjust=var_adjust1;
-   echoinput<<" Varadjustments as read "<<endl<<var_adjust1<<endl;
+    for(j=1;j<=Do_Var_adjust-1;j++)
+    {
+      var_adjust(var_adjust_list(j,1),var_adjust_list(j,2)) = var_adjust_list(j,3);
+    }
+   echoinput<<" Var_adjustments as read "<<endl<<var_adjust<<endl;
   }
   else
   {
@@ -3235,6 +3264,7 @@
     var_adjust(4)=1.;
     var_adjust(5)=1.;
     var_adjust(6)=1.;
+    var_adjust(7)=1.;
   }
  END_CALCS
 
