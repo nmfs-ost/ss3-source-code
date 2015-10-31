@@ -619,7 +619,7 @@ DATA_SECTION
 
   int N_ReadCatch;
   int Catch_read;
-  vector tempvec(1,5)  //  number of elements to read from each catch record
+  vector tempvec(1,6)  //  vector used for temporary reads
  LOCAL_CALCS
     *(ad_comm::global_datafile) >> N_ReadCatch;
     echoinput<<N_ReadCatch<<" N_ReadCatch read catch as table with fleets as columns"<<endl;

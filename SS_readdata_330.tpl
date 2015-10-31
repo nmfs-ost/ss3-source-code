@@ -603,7 +603,7 @@ DATA_SECTION
 
   int N_ReadCatch;
   int Catch_read;
-  vector tempvec(1,5)  //  number of elements to read from each catch record
+  vector tempvec(1,6)  //  vector used for temporary reads
  LOCAL_CALCS
   {
     echoinput<<" read list until -9999"<<endl;
@@ -614,7 +614,7 @@ DATA_SECTION
     while(tempvec(1)!=-9999.)
     {
       k++;
-      *(ad_comm::global_datafile) >> tempvec;
+      *(ad_comm::global_datafile) >> tempvec(1,5);
     }
     ad_comm::global_datafile->seekg(mark_pos);
     echoinput<<" number of catch records = "<<k<<endl;

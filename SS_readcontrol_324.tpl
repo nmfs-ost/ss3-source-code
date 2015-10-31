@@ -3296,7 +3296,6 @@
     }
   }
   Do_Var_adjust=k;
-  echoinput<<" create var_adjust_list with elements = "<<Do_Var_adjust<<endl;
  END_CALCS
   matrix var_adjust_list(1,Do_Var_adjust,1,3)
 

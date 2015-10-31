@@ -3220,37 +3220,33 @@
   int Do_Var_adjust
  LOCAL_CALCS
   {
-    echoinput<<" read list until -9999"<<endl;
+    echoinput<<" read var_adjust list until -9999"<<endl;
     k=0;
     typedef std::char_traits<char>::pos_type pos_type;
-    pos_type mark_pos = ad_comm::global_datafile->tellg();
+    pos_type mark_pos = ad_comm::global_datafile->tellg();  //  mark current position
     tempvec.initialize();
     while(tempvec(1)!=-9999.)
     {
       k++;
-      *(ad_comm::global_datafile) >> tempvec(1);
-      *(ad_comm::global_datafile) >> tempvec(2);
-      *(ad_comm::global_datafile) >> tempvec(3);
+      *(ad_comm::global_datafile) >> tempvec(1,3);  //  read 3 numerics from line
     }
-    ad_comm::global_datafile->seekg(mark_pos);
-    echoinput<<" number of variance adjustment records = "<<k<<endl;
-    Do_Var_adjust=k;  //  number of catch records to read
+    ad_comm::global_datafile->seekg(mark_pos);  //  back to marked position
+    echoinput<<" number of variance adjustment records = "<<k-1<<endl;
+    Do_Var_adjust=k-1;  //  number of catch records to read
   }
  END_CALCS
   matrix var_adjust(1,7,1,Nfleet)
-  init_matrix var_adjust_list(1,Do_Var_adjust,1,3)
+  init_matrix var_adjust_list(1,Do_Var_adjust+1,1,3)
   
  LOCAL_CALCS
-  echoinput<<Do_Var_adjust<<" Do_Var_adjust "<<endl;
   var_adjust.initialize();
   for(j=4;j<=7;j++)
   {
     var_adjust(j)=1.0;  //  null value
   }
-   echoinput<<" Var_adjustments null"<<endl<<var_adjust<<endl;
   if(Do_Var_adjust>0)
   {
-    for(j=1;j<=Do_Var_adjust-1;j++)
+    for(j=1;j<=Do_Var_adjust;j++)
     {
       var_adjust(var_adjust_list(j,1),var_adjust_list(j,2)) = var_adjust_list(j,3);
     }
@@ -3305,10 +3301,27 @@
   vector F_ballpark_lambda(1,max_lambda_phase)
 
 !!//  SS_Label_Info_4.11.2 #Read and process any lambda adjustments
-  init_int N_lambda_changes
-  init_matrix Lambda_changes(1,N_lambda_changes,1,5)
+  int N_lambda_changes
   int N_changed_lambdas
  LOCAL_CALCS
+    echoinput<<" read lambda changes list until -9999"<<endl;
+    k=0;
+    typedef std::char_traits<char>::pos_type pos_type;
+    pos_type mark_pos = ad_comm::global_datafile->tellg();  //  mark current position
+    tempvec.initialize();
+    while(tempvec(1)!=-9999.)
+    {
+      k++;
+      *(ad_comm::global_datafile) >> tempvec(1,5);  //  read 5 numerics from line
+    }
+    ad_comm::global_datafile->seekg(mark_pos);  //  back to marked position
+    echoinput<<" number of lambda change records = "<<k-1<<endl;
+    N_lambda_changes=k-1;  //  number of catch records to read
+ END_CALCS
+
+  init_matrix Lambda_changes(1,N_lambda_changes,1,5)
+ LOCAL_CALCS
+   *(ad_comm::global_datafile) >> tempvec(1,5);  //  read 5 numerics from line
    echoinput<<N_lambda_changes<<" N lambda changes "<<endl;
    if(N_lambda_changes>0) echoinput<<" lambda changes "<<endl<<Lambda_changes<<endl;
    surv_lambda=1.;  // 1

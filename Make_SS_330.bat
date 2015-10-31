@@ -1,4 +1,4 @@
-cd "C:\Users\richard.methot\Documents\SS_model\Compile"
+cd "C:\Users\richard.methot\Documents\SS_model\Test_Model"
 del *.exe
 
 cd "C:\Users\Richard.Methot\Documents\GitHub\StockSynthesis_3.3"

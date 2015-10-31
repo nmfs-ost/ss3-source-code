@@ -32,7 +32,6 @@ PROCEDURE_SECTION
   }
   else
   {
-    echoinput<<"Biasadjustment_timepoints "<<recdev_adj<<endl;
     for (y=styr-nages; y<=YrMax; y++)
     {
       if(y<recdev_first)  // before start of recrdevs
@@ -47,11 +46,9 @@ PROCEDURE_SECTION
         {biasadj_full(y)=recdev_adj(5)-(y-recdev_adj(3)) / (recdev_adj(4)-recdev_adj(3))*recdev_adj(5);}
       else
         {biasadj_full(y)=0.;}
-      echoinput<<y<<" "<<biasadj_full(y)<<endl;
     }
   }
 
-  echoinput<<"controls "<<do_recdev<<" "<<recdev_PH_rd<<endl;
   if(SR_fxn==4 || do_recdev==0)
   {
     // keep all at 0.0 if not using SR fxn
@@ -82,7 +79,6 @@ PROCEDURE_SECTION
       }
     }
   }
-//  echoinput<<"Biasadjustment      "<<recdev_adj<<endl<<biasadj(recdev_adj(2),YrMax)<<endl;
   sd_offset_rec=sum(biasadj)*sd_offset;
 
 //  SS_Label_Info_7.2 #Copy recdev parm vectors into full time series vector
