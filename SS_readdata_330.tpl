@@ -605,24 +605,10 @@ DATA_SECTION
   int Catch_read;
   vector tempvec(1,6)  //  vector used for temporary reads
  LOCAL_CALCS
-  {
-    echoinput<<" read list until -9999"<<endl;
-    k=0;
-    typedef std::char_traits<char>::pos_type pos_type;
-    pos_type mark_pos = ad_comm::global_datafile->tellg();
-    tempvec.initialize();
-    while(tempvec(1)!=-9999.)
-    {
-      k++;
-      *(ad_comm::global_datafile) >> tempvec(1,5);
-    }
-    ad_comm::global_datafile->seekg(mark_pos);
-    echoinput<<" number of catch records = "<<k<<endl;
-    N_ReadCatch=k;  //  number of catch records to read
-    j=5;  // number of columns to read and store
-  }
+  N_ReadCatch=count_records(5);
  END_CALCS
-  matrix catch_bioT(1,N_ReadCatch,1,j)
+
+  matrix catch_bioT(1,N_ReadCatch,1,5)
   matrix catch_ret_obs(1,Nfleet,styr-nseas,TimeMax+nseas)
   imatrix do_Fparm(1,Nfleet,styr-nseas,TimeMax+nseas)
   3darray catch_seas_area(styr,TimeMax,1,pop,0,Nfleet)
@@ -1477,21 +1463,12 @@ DATA_SECTION
 !!//  SS_Label_Info_2.7.4 #Read Length composition data
    int nobsl_rd
    int Nobs_l_tot
-   vector tempvec_lenread(1,6+nlen_bin2);
+//   vector tempvec_lenread(1,6+nlen_bin2);
    
  LOCAL_CALCS
   {
-    k=0;
-    tempvec_lenread.initialize();
-    typedef std::char_traits<char>::pos_type pos_type;
-    pos_type mark_pos = ad_comm::global_datafile->tellg();
-    while(tempvec_lenread(1)!=-9999.)
-    {
-      k++;
-      *(ad_comm::global_datafile) >> tempvec_lenread;
-    }
-    ad_comm::global_datafile->seekg(mark_pos);
-    nobsl_rd=k;
+    k=6+nlen_bin2;
+    nobsl_rd=count_records(k);
   }
    echoinput<<nobsl_rd<<" N length comp obs "<<endl;
  END_CALCS

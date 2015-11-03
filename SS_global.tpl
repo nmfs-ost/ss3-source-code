@@ -98,6 +98,28 @@ GLOBALS_SECTION
     return (data_timing);
   }
   
+//  global routine to count the number of records before reaching an end condition
+  int count_records(int N_fields)  //  function definition
+  {
+    int N_records;
+    int k;
+    dvector tempvec(1,N_fields);  //  vector used for temporary reads
+    echoinput<<" read list until -9999"<<endl;
+    k=0;
+    typedef std::char_traits<char>::pos_type pos_type;
+    pos_type mark_pos = ad_comm::global_datafile->tellg();
+    tempvec.initialize();
+    while(tempvec(1)!=-9999.)
+    {
+      k++;
+      *(ad_comm::global_datafile) >> tempvec;
+    }
+    ad_comm::global_datafile->seekg(mark_pos);
+    echoinput<<" number of records = "<<k<<endl;
+    N_records=k;  //  number of records to read
+    return N_records;
+  }
+
 //  }  //  end GLOBALS_SECTION
 
 //  SS_Label_Section_11. #BETWEEN_PHASES_SECTION
