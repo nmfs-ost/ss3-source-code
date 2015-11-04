@@ -64,59 +64,99 @@ GLOBALS_SECTION
   random_number_generator radm(long(time(&start)));
 
 //  example function in GLOBALS to do the timing setup in the data section
-  double get_data_timing(int read_seas_mo, int N_subseas, dvector Y_Mo_F, dvector seasdur, dvector subseasdur_delta, dvector azero_seas)
+  void get_data_timing(const dvector& to_process, const ivector& timing_constants, ivector i_result, dvector r_result, const dvector& seasdur, const dvector& subseasdur_delta, const dvector& azero_seas, const dvector& surveytime)
   {
-    int t,s,subseas,yr,f;
-    double temp, temp1, month, data_timing;
-    yr=int(Y_Mo_F(1));
-    month=abs(Y_Mo_F(2));
-    f=int(abs(Y_Mo_F(3)));
-    temp=1;  //  temporary assignment
-    if(read_seas_mo==1)  // reading season
+
+    // r_result(1,3) will contain: real_month, data_timing_seas, data_timing_yr, 
+    // i_result(1,6) will contain y, t, s, f, ALK_time, use_midseas
+    int f,s,subseas,y;
+    double temp, temp1, month, data_timing_seas, data_timing_yr;
+//  timing_constants(1)=read_seas_mo;
+//  timing_constants(2)=nseas;
+//  timing_constants(3)=N_subseas;
+//  timing_constants(4)=mid_subseas;
+//  timing_constants(5)=styr;
+//  timing_constants(6)-endyr;
+    
+    y=int(to_process(1));
+    month=abs(to_process(2));
+    f=abs(int(to_process(3)));
+
+    if(timing_constants(1)==1)  // reading season
     {
       s=int(month);  
-//      subseas=mid_subseas;
-      data_timing=-2;  //   surveytime(f);
-      month=1.0 + azero_seas(s)*12. + 12.*temp*seasdur(s);
+      subseas=timing_constants(4);  //  mid subseas
+      if(surveytime(f)>=0.) 
+      {  //  fraction of season
+        data_timing_seas=surveytime(f);
+        i_result(6)=0;
+      }  
+      else
+      {  //  use midseason and Nmid abundance
+        data_timing_seas=0.5;
+        i_result(6)=1;
+      }
+      month=1.0 + azero_seas(s)*12. + 12.*data_timing_seas*seasdur(s);
     }
     else  //  reading month.fraction
     {
+      if(month>999)
+        {  // this observation uses mean abundance during the season
+          month-=1000;
+          i_result(6)=1.;
+        }
+        else
+        {
+          i_result(6)=0.;
+        }
+
       temp1=(month-1.0)/12.;  //  month as fraction of year
       s=1;  // earlist possible seas;
       subseas=1;  //  earliest possible subseas in seas
       temp=subseasdur_delta(s);  //  starting value
       while(temp<=temp1)
       {
-        if(subseas==N_subseas)
+        if(subseas==timing_constants(3))
         {s++; subseas=1;}
         else
         {subseas++;}
         temp+=subseasdur_delta(s);
       }
+      data_timing_seas=(temp1-azero_seas(s))/seasdur(s);  //  remainder converted to fraction of season (and multiplied by seasdur when used)
     }
-    data_timing=(temp1-azero_seas(s))/seasdur(s);  //  remainder converted to fraction of season (but is multiplied by seasdur as it is used, so perhaps change this)
-    return (data_timing);
+
+//    t=styr+(y-styr)*nseas+s-1;
+//    ALK_time=(yr-styr)*nseas*N_subseas+(s-1)*N_subseas+subseas;
+    i_result(1)=y;
+    i_result(2)=timing_constants(5)+(y-timing_constants(5))*timing_constants(2)+s-1;  //  t
+    i_result(3)=s;
+    i_result(4)=f;
+    i_result(5)=(y-timing_constants(5))*timing_constants(2)*timing_constants(3)+(s-1)*timing_constants(3)+subseas;  //  ALK_time
+
+    r_result(1)=month;
+    r_result(2)=data_timing_seas;
+    r_result(3)=float(y)+(month-1.)/12.;  //  year.fraction
+
+    return;
   }
   
 //  global routine to count the number of records before reaching an end condition
   int count_records(int N_fields)  //  function definition
   {
     int N_records;
-    int k;
     dvector tempvec(1,N_fields);  //  vector used for temporary reads
     echoinput<<" read list until -9999"<<endl;
-    k=0;
+    N_records=0;
     typedef std::char_traits<char>::pos_type pos_type;
-    pos_type mark_pos = ad_comm::global_datafile->tellg();
+    pos_type mark_pos = ad_comm::global_datafile->tellg();  // record current file position
     tempvec.initialize();
     while(tempvec(1)!=-9999.)
     {
-      k++;
+      N_records++;
       *(ad_comm::global_datafile) >> tempvec;
     }
-    ad_comm::global_datafile->seekg(mark_pos);
-    echoinput<<" number of records = "<<k<<endl;
-    N_records=k;  //  number of records to read
+    ad_comm::global_datafile->seekg(mark_pos);  //  go back to the recorded position
+    echoinput<<" number of records = "<<N_records<<endl;
     return N_records;
   }
 

@@ -560,7 +560,7 @@ FUNCTION void write_nudata()
   }
   report1<<"-9999 0 0 0 0"<<endl<<"#"<<endl;
   
-  report1 << Svy_N_rd <<" #_N_cpue_and_surveyabundance_observations"<< endl;
+  report1 << " #_CPUE_and_surveyabundance_observations"<< endl;
   report1<<"#_Units:  0=numbers; 1=biomass; 2=F; >=30 for special types"<<endl;
   report1<<"#_Errtype:  -1=normal; 0=lognormal; >0=T"<<endl;
   report1<<"#_Fleet Units Errtype"<<endl;
@@ -576,6 +576,7 @@ FUNCTION void write_nudata()
       report1 << Show_Time(t,1)<<" "<<Svy_super(f,i)*data_time(ALK_time,f,1)<<" "<<f*Svy_use(f,i)<<" ";
       report1 << Svy_obs(f,i)<<" "<<Svy_se_rd(f,i)<<" #_ "<<fleetname(f)<<endl;
     }
+    report1<<"-9999 1 1 1 1 # terminator for survey observations "<<endl;
 
   report1<<"#"<<endl<<Ndisc_fleets<<" #_N_fleets_with_discard"<<endl;
   if(Ndisc_fleets>0)
@@ -791,7 +792,7 @@ FUNCTION void write_nudata()
   }
   report1<<"-9999 0 0 0 0"<<endl<<"#"<<endl;
 
-  report1<<"#"<<endl<< Svy_N <<" #_N_cpue_and_surveyabundance_observations"<< endl;
+  report1<<"#"<<endl<<" #_CPUE_and_surveyabundance_observations"<< endl;
     report1<<"#_Units:  0=numbers; 1=biomass; 2=F; >=30 for special types"<<endl;
     report1<<"#_Errtype:  -1=normal; 0=lognormal; >0=T"<<endl;
     report1<<"#_Fleet Units Errtype"<<endl;
@@ -821,6 +822,7 @@ FUNCTION void write_nudata()
       }
       report1 <<" "<<Svy_se_rd(f,i)<<" #_orig_obs: "<<Svy_obs(f,i)<<" "<<fleetname(f)<<endl;
     }
+    report1<<"-9999 1 1 1 1 # terminator for survey observations "<<endl;
 
   report1<<"#"<<endl<<Ndisc_fleets<<" #_N_fleets_with_discard"<<endl;
   if(Ndisc_fleets>0)
@@ -1087,7 +1089,7 @@ FUNCTION void write_nudata()
   }
   report1<<"-9999 0 0 0 0"<<endl<<"#"<<endl;
 
-  report1 << Svy_N <<" #_N_cpue_and_surveyabundance_observations"<< endl;
+  report1 <<" #_CPUE_and_surveyabundance_observations"<< endl;
   report1<<"#_Units:  0=numbers; 1=biomass; 2=F;  >=30 for special types"<<endl;
   report1<<"#_Errtype:  -1=normal; 0=lognormal; >0=T"<<endl;
   report1<<"#_Fleet Units Errtype"<<endl;
@@ -1122,6 +1124,7 @@ FUNCTION void write_nudata()
     }
     report1 <<" "<<Svy_se_rd(f,i)<<" #_orig_obs: "<<Svy_obs(f,i)<<" "<<fleetname(f)<<endl;
   }
+  report1<<"-9999 1 1 1 1 # terminator for survey observations "<<endl;
 
   report1<<"#"<<endl<<Ndisc_fleets<<" #_N_fleets_with_discard"<<endl;
   if(Ndisc_fleets>0)

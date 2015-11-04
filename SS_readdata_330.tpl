@@ -357,10 +357,17 @@ DATA_SECTION
  !!echoinput<<seasdur<<" months/seas (fractions OK) "<<endl;
 
   int N_subseas  //  number of subseasons within season; must be even number to get one to be mid_season
+  ivector timing_constants(1,6)
  LOCAL_CALCS
   *(ad_comm::global_datafile) >> N_subseas;
   echoinput<<N_subseas<<" Number of subseasons (even number only; min 2) for calculation of ALK "<<endl;
   mid_subseas=N_subseas/2 + 1;
+  timing_constants(1)=read_seas_mo;
+  timing_constants(2)=nseas;
+  timing_constants(3)=N_subseas;
+  timing_constants(4)=mid_subseas;
+  timing_constants(5)=styr;
+  timing_constants(6)=endyr;
  END_CALCS
 
   int TimeMax
@@ -664,7 +671,7 @@ DATA_SECTION
       for (f=1;f<=Nfleet1;f++) {obs_equ_catch(s,f)=catch_ret_obs(f,styr-nseas-1+s);}
     }
 
-  echoinput<<" processed catch "<<endl<<trans(catch_ret_obs)<<endl;
+  echoinput<<" processed catch thru endyr+1"<<endl<<trans(catch_ret_obs)<<endl;
 
 //  calc total catch by year so can calculate the first year with catch and to omit zero catch years from sdreport
   totcat.initialize();
@@ -698,32 +705,24 @@ DATA_SECTION
  END_CALCS
 
   //  SS_Label_Info_2.3 #Read fishery CPUE, effort, and Survey index or abundance 
-  init_int Svy_N_rd
+  !!echoinput<<"#_  now read fleet #, svyunits, svyerrtype for each fleet "<<endl;
+  int Svy_N_rd
   int Svy_N
- LOCAL_CALCS
-  echoinput<<Svy_N_rd<<" nobs_survey "<<endl;
-  if(Svy_N_rd>0) {k=3; j=Nfleet;} else {k=0; j=Nfleet;}
-  data_type=1;  //  for surveys
- END_CALCS
-  init_imatrix Svy_units_rd(1,Nfleet,1,k)
-  ivector Svy_units(1,j)   //0=num; 1=bio; 2=F; >=30 for special patterns
-  ivector Svy_errtype(1,j)  // -1=normal / 0=lognormal / >0=T
+  init_imatrix Svy_units_rd(1,Nfleet,1,3)
+  ivector Svy_units(1,Nfleet)   //0=num; 1=bio; 2=F; >=30 for special patterns
+  ivector Svy_errtype(1,Nfleet)  // -1=normal / 0=lognormal / >0=T
 
  LOCAL_CALCS
-  if(k>0)
-  {
-    echoinput<<"Units:  0=numbers; 1=biomass; 2=F; >=30 for special patterns"<<endl;
-    echoinput<<"Errtype:  -1=normal; 0=lognormal; >0=T"<<endl;
-    echoinput<<"Fleet Units Err_Type"<<endl;
-    echoinput<<Svy_units_rd<<endl;
-    Svy_units=column(Svy_units_rd,2);
-    Svy_errtype=column(Svy_units_rd,3);
-  }
-  else
-    {
-      Svy_units=0;
-      Svy_errtype=0;
-    }
+  data_type=1;  //  for surveys
+  echoinput<<"Units:  0=numbers; 1=biomass; 2=F; >=30 for special patterns"<<endl;
+  echoinput<<"Errtype:  -1=normal; 0=lognormal; >0=T"<<endl;
+  echoinput<<"Fleet Units Err_Type"<<endl;
+  echoinput<<Svy_units_rd<<endl;
+  Svy_units=column(Svy_units_rd,2);
+  Svy_errtype=column(Svy_units_rd,3);
+
+  Svy_N_rd=count_records(5);
+  echoinput<<Svy_N_rd<<" nobs_survey "<<endl;
  END_CALCS
 
    init_matrix Svy_data(1,Svy_N_rd,1,5)
@@ -780,118 +779,81 @@ DATA_SECTION
   imatrix Svy_super_end(1,Nfleet,1,Svy_super_N)
   matrix Svy_super_weight(1,Nfleet,1,Svy_N_fleet)
   number  real_month
+  vector timing_input(1,3)
+  vector timing_r_result(1,4)
+  ivector timing_i_result(1,6)
   
  LOCAL_CALCS
 //  SS_Label_Info_2.3.1  #Process survey observations, move info into working arrays,create super-periods as needed
-    Svy_super_N.initialize();
-    Svy_N_fleet.initialize();
-    in_superperiod=0;
-    if(Svy_N>0)  /* SS_Logic proceed if any survey data in yr range */
+  Svy_super_N.initialize();
+  Svy_N_fleet.initialize();
+  in_superperiod=0;
+  if(Svy_N>0)
+  {
+    for (i=1;i<=Svy_N_rd;i++)  // loop all, including those out of yr range
     {
-      for (i=1;i<=Svy_N_rd;i++)  // loop all, including those out of yr range
+      y=Svy_data(i,1);
+      if(y>=styr && y<=endyr)
       {
-        y=Svy_data(i,1);
-        if(y>=styr && y<=endyr)
+        f=abs(Svy_data(i,3));
+        timing_input(1,3)=Svy_data(i)(1,3);  //  function will return: data_timing, ALK_time, real_month, use_midseas
+//  call a global function to calculate data timing and create various indexes
+        get_data_timing(timing_input, timing_constants, timing_i_result, timing_r_result, seasdur, subseasdur_delta, azero_seas, surveytime);
+
+        t=timing_i_result(2);
+        ALK_time=timing_i_result(5);
+        
+        Svy_N_fleet(f)++;  //  count obs by fleet
+        j=Svy_N_fleet(f);  //  index of observation as stored in working array
+//  some fleet specific indexes and working versions of the data and se
+        Svy_time_t(f,j)=t;
+        Svy_ALK_time(f,j)=ALK_time;  //  continuous subseas counter in which jth obs from fleet f occurs
+        Svy_se_rd(f,j)=Svy_data(i,5);   // later adjust with varadjust, copy to se_cr_use, then adjust with extra se parameter
+        if(Svy_data(i,3)<0) {Svy_use(f,j)=-1;} else {Svy_use(f,j)=1;}
+        Svy_obs(f,j)=Svy_data(i,4);
+
+//  some all fleet indexes
+        if(data_time(ALK_time,f,1)<0.0)  //  so first occurrence of data at ALK_time,f
+          {data_time(ALK_time,f)(1,3)=timing_r_result(1,3);}  // real_month,fraction of season, year.fraction
+        else if (timing_r_result(1) !=  data_time(ALK_time,f,1))
+          {N_warn++; warning<<"SURVEY: data_month already set for y,s,f: "<<y<<" "<<s<<" "<<f<<" to real month: "<< data_time(ALK_time,f,1)<<"  but read value is: "<<real_month<<endl;}
+        have_data(ALK_time,0,0,0)=1;
+        have_data(ALK_time,f,0,0)=1;  //  so have data of some type in this subseas, for this fleet
+        have_data(ALK_time,f,data_type,0)++;  //  count the number of observations in this subseas
+        p=have_data(ALK_time,f,data_type,0);  //  current number of observations
+        have_data(ALK_time,f,data_type,p)=j;  //  store data index for the p'th observation in this subseas
+        
+        //  create super_year indexes
+        if(Svy_data(i,2)<0) // start or stop a super-period;  ALL observations must be continguous in the file
         {
-          f=abs(Svy_data(i,3));
-          Svy_N_fleet(f)++;  //  count obs by fleet
-          j=Svy_N_fleet(f);
-
-          {  //  start have_data index and timing processing
-            temp=abs(Svy_data(i,2));  //  read value that could be season or month; abs ()because neg value indicates super period
-            if(read_seas_mo==1)  // reading season
-            {
-              s=int(temp);  
-              subseas=mid_subseas;
-              if(surveytime(f)>=0.) 
-              {data_timing=surveytime(f);}  //  fraction of season
-              else
-              {data_timing=0.5;}
-              real_month=1.0 + azero_seas(s)*12. + 12.*data_timing*seasdur(s);
-            }
-            else  //  reading month.fraction
-            {
-              real_month=temp;
-              temp1=(temp-1.0)/12.;  //  month as fraction of year
-              s=1;  // earlist possible seas;
-              subseas=1;  //  earliest possible subseas in seas
-              temp=subseasdur_delta(s);  //  starting value
-              while(temp<=temp1)
-              {
-                if(subseas==N_subseas)
-                {s++; subseas=1;}
-                else
-                {subseas++;}
-                temp+=subseasdur_delta(s);
-              }
-              data_timing=(temp1-azero_seas(s))/seasdur(s);  //  remainder converted to fraction of season (but is multiplied by seasdur as it is used, so perhaps change this)
-              if(surveytime(f)==-1.)  //  so ignoring month info
-              {
-                subseas=mid_subseas;
-                data_timing=0.5;
-              }
-            }
-            
-            t=styr+(y-styr)*nseas+s-1;
-            ALK_time=(y-styr)*nseas*N_subseas+(s-1)*N_subseas+subseas;
-
-            Svy_time_t(f,j)=t;
-            Svy_ALK_time(f,j)=ALK_time;  //  continuous subseas counter in which jth obs from fleet f occurs
-            if(data_time(ALK_time,f,1)<0.0)  //  so first occurrence of data at ALK_time,f
-            {
-              data_time(ALK_time,f,1)=real_month;
-              data_time(ALK_time,f,2)=data_timing;  //  fraction of season
-              data_time(ALK_time,f,3)=float(y)+(real_month-1.)/12.;  //  year.fraction
-            }
-            else if (real_month!=  data_time(ALK_time,f,1))
-            {
-              N_warn++;
-              warning<<"SURVEY: data_month already set for y,s,f: "<<y<<" "<<s<<" "<<f<<" to real month: "<< data_time(ALK_time,f,1)<<"  but read value is: "<<real_month<<endl;
-            }
-            have_data(ALK_time,0,0,0)=1;
-            have_data(ALK_time,f,0,0)=1;  //  so have data of some type in this subseas, for this fleet
-            have_data(ALK_time,f,data_type,0)++;  //  count the number of observations in this subseas
-            p=have_data(ALK_time,f,data_type,0);  //  current number of observations
-            have_data(ALK_time,f,data_type,p)=j;  //  store data index for the p'th observation in this subseas
-
-          }  //  end have_data index and timing processing
-
-          Svy_se_rd(f,j)=Svy_data(i,5);   // later adjust with varadjust, copy to se_cr_use, then adjust with extra se parameter
-          if(Svy_data(i,3)<0) {Svy_use(f,j)=-1;} else {Svy_use(f,j)=1;}
-
-          Svy_obs(f,j)=Svy_data(i,4);
-          
-          //  create super_year indexes
-          if(Svy_data(i,2)<0) // start or stop a super-period;  ALL observations must be continguous in the file
-          {
-            Svy_super(f,j)=-1;
-           if(in_superperiod==0) // start superperiod
-           {Svy_super_N(f)++; Svy_super_start(f,Svy_super_N(f))=j; in_superperiod=1;}
-            else
-            {
-              if(in_superperiod==1)  // end superperiod
-              {
-                Svy_super_end(f,Svy_super_N(f))=j;
-                in_superperiod=0;
-              }
-              else
-              {
-              }
-            }
-          }
+          Svy_super(f,j)=-1;
+         if(in_superperiod==0) // start superperiod
+         {Svy_super_N(f)++; Svy_super_start(f,Svy_super_N(f))=j; in_superperiod=1;}
           else
           {
-            Svy_super(f,j)=1;
+            if(in_superperiod==1)  // end superperiod
+            {
+              Svy_super_end(f,Svy_super_N(f))=j;
+              in_superperiod=0;
+            }
+            else
+            {
+            }
           }
         }
+        else
+        {
+          Svy_super(f,j)=1;
+        }
       }
-
-      echoinput<<" processed survey data "<<endl;
-      for (f=1;f<=Nfleet;f++)
-      {echoinput<<f<<" "<<fleetname(f)<<" "<<Svy_obs(f)<<endl;}
     }
-    echoinput<<"Successful read of index data; N= "<<Svy_N<< endl;
-    echoinput<<"Number of survey superperiods by fleet: "<<Svy_super_N<<endl;
+
+    echoinput<<" processed survey data "<<endl;
+    for (f=1;f<=Nfleet;f++)
+    {echoinput<<f<<" "<<fleetname(f)<<" "<<Svy_obs(f)<<endl;}
+  }
+  echoinput<<"Successful read of index data; N= "<<Svy_N<< endl;
+  echoinput<<"Number of survey superperiods by fleet: "<<Svy_super_N<<endl;
  END_CALCS
 
    init_int Ndisc_fleets
