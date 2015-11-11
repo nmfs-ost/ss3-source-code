@@ -1528,23 +1528,31 @@ FUNCTION void write_nucontrol()
   NuFore<<Fcast_MaxAreaCatch<<endl;
   NuFore<<"# fleet assignment to allocation group (enter group ID# for each fleet, 0 for not included in an alloc group)"<<endl;
   NuFore<<Allocation_Fleet_Assignments<<endl;
-  NuFore<<"#_Conditional on >1 allocation group"<<endl<<"# allocation fraction for each of: "<<Fcast_Catch_Allocation_Groups<<" allocation groups"<<endl;
-  if(Fcast_Catch_Allocation_Groups>0) {NuFore<<Fcast_Catch_Allocation<<endl;} else {NuFore<<"# no allocation groups"<<endl;}
+  NuFore<<"# SS's count of the number of unique allocation group IDs: "<<Fcast_Catch_Allocation_Groups<<endl;
+  NuFore<<"#_if N allocation groups >0, list year, allocation fraction for each group "<<endl;
+  NuFore<<"# list sequentially because read values fill to end of N forecast"<<endl;
+  NuFore<<"# terminate with -9999 in year field "<<endl;
 
-  NuFore<<N_Fcast_Input_Catches<<" # Number of forecast catch levels to input (else calc catch from forecast F) "<<endl;
-  NuFore<<Fcast_InputCatch_Basis<<" # basis for input Fcast catch:  2=dead catch; 3=retained catch; 99=input Hrate(F) (units are from fleetunits; note new codes in SSV3.20)"<<endl;
+  if(Fcast_Catch_Allocation_Groups>0) {NuFore<<Fcast_Catch_Allocation_list<<endl;} else {NuFore<<"# no allocation groups"<<endl;}
 
-  NuFore<<"# Input fixed catch values"<<endl;
-  NuFore<<"#Year Seas Fleet Catch(or_F) Basis"<<endl;
-  if(N_Fcast_Input_Catches>0)
-  {
+  NuFore<<Fcast_InputCatch_Basis<<
+  " # basis for input Fcast catch: -1=read basis with each obs; 2=dead catch; 3=retained catch; 99=input Hrate(F)"<<endl;
+  if(Fcast_InputCatch_Basis==-1)
+    {k=5;}
+    else
+    {k=4;}
+
+  NuFore<<"#enter list of Fcast catches; terminate with line having year=-9999"<<endl;
+  NuFore<<"#_Year Seas Fleet Catch(or_F)";
+  if(Fcast_InputCatch_Basis==-1) NuFore<<" Basis";
+  NuFore<<endl;
     for(j=1;j<=N_Fcast_Input_Catches;j++)
     {
-      y=Fcast_InputCatch_rd(j,1); s=Fcast_InputCatch_rd(j,2); f=Fcast_InputCatch_rd(j,3);
-      t=styr+(y-styr)*nseas +s-1;
-      NuFore<<Fcast_InputCatch_rd(j)<<" "<<Fcast_InputCatch(t,f,2)<<endl;
+      NuFore<<Fcast_InputCatch_rd(j)(1,k)<<endl;
     }
-  }
+    NuFore<<"-9999 1 1 0 ";
+    if(Fcast_InputCatch_Basis==-1) NuFore<<" 2 ";
+    NuFore<<endl;
   NuFore<<"#"<<endl<<999<<" # verify end of input "<<endl;
 
 //**********************************************************

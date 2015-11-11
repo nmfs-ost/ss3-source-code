@@ -3186,11 +3186,28 @@ DATA_SECTION
   }
  END_CALCS
 
-  init_matrix Fcast_Catch_Allocation(1,N_Fcast_Yrs,1,Fcast_Catch_Allocation_Groups);
-
+  matrix Fcast_Catch_Allocation(1,N_Fcast_Yrs,1,Fcast_Catch_Allocation_Groups);
+  matrix Fcast_Catch_Allocation_list(1,2,1,Fcast_Catch_Allocation_Groups+1);
+  
  LOCAL_CALCS
   if(Do_Forecast>0)
   {
+    if(Fcast_Catch_Allocation_Groups>0)
+    {
+      *(ad_comm::global_datafile) >> Fcast_Catch_Allocation(1);
+      for(y=1;y<=N_Fcast_Yrs;y++)
+      {Fcast_Catch_Allocation(y)=Fcast_Catch_Allocation(1);}
+      Fcast_Catch_Allocation_list(1)=endyr+1;
+      for(j=1;j<=Fcast_Catch_Allocation_Groups;j++) {Fcast_Catch_Allocation_list(1,j+1)=Fcast_Catch_Allocation(1,j);}
+      Fcast_Catch_Allocation_list(2)=-9999;
+      for(j=1;j<=Fcast_Catch_Allocation_Groups;j++) {Fcast_Catch_Allocation_list(2,j+1)=Fcast_Catch_Allocation(1,j);}
+    }
+    else
+    {
+      Fcast_Catch_Allocation.initialize();
+      Fcast_Catch_Allocation_list.initialize();
+    }
+
     k=2;
     echoinput<<" Max totalcatch by fleet "<<endl<<Fcast_MaxFleetCatch<<endl;
     echoinput<<" Max totalcatch by area "<<endl<<Fcast_MaxAreaCatch<<endl;

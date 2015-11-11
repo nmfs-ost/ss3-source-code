@@ -3162,13 +3162,42 @@ DATA_SECTION
   else
   {
   }
+  
+  if(Fcast_Catch_Allocation_Groups>0)
+    {
+      j=count_records(Fcast_Catch_Allocation_Groups+1);
+      echoinput<<"# number of unique allocation group years to read "<<j<<endl;
+    }
  END_CALCS
 
-  init_matrix Fcast_Catch_Allocation(1,N_Fcast_Yrs,1,Fcast_Catch_Allocation_Groups);
+  matrix Fcast_Catch_Allocation(1,N_Fcast_Yrs,1,Fcast_Catch_Allocation_Groups);
+  matrix Fcast_Catch_Allocation_list(1,j,1,Fcast_Catch_Allocation_Groups+1);
 
  LOCAL_CALCS
   if(Do_Forecast>0)
   {
+    
+   if(Fcast_Catch_Allocation_Groups>0)
+    {
+      *(ad_comm::global_datafile) >> Fcast_Catch_Allocation_list;
+        echoinput<<" forecast alloc list as read "<<endl<<Fcast_Catch_Allocation_list<<endl;
+      for(k=1;k<=j-1;k++)
+      {
+        for(y=Fcast_Catch_Allocation_list(k,1)-endyr;y<=N_Fcast_Yrs;y++)
+        {
+           for(a=1;a<=Fcast_Catch_Allocation_Groups;a++) 
+           {
+            Fcast_Catch_Allocation(y,a)=Fcast_Catch_Allocation_list(k,a+1);
+            }
+        }
+      }
+    }
+    else
+    {
+      Fcast_Catch_Allocation.initialize();
+      Fcast_Catch_Allocation_list.initialize();
+    }
+    
     k=2;
     echoinput<<" Max totalcatch by fleet "<<endl<<Fcast_MaxFleetCatch<<endl;
     echoinput<<" Max totalcatch by area "<<endl<<Fcast_MaxAreaCatch<<endl;
@@ -3180,17 +3209,13 @@ DATA_SECTION
   {k=0;}
  END_CALCS
 
-  init_ivector more_Fcast_input(1,k);
  LOCAL_CALCS
   if(k>0)
   {
-    N_Fcast_Input_Catches=more_Fcast_input(1);
-    Fcast_InputCatch_Basis=more_Fcast_input(2);
-    echoinput<<N_Fcast_Input_Catches<<" N_Fcast_input_catches "<<endl;
-    echoinput<<Fcast_InputCatch_Basis<<" # basis for input Fcast catch:  2=dead catch; 3=retained catch; 99=input Hrate(F); -1=read fleet/time specific (bio/num units are from fleetunits; note new codes in SSV3.20)"<<endl;
+  *(ad_comm::global_datafile) >> Fcast_InputCatch_Basis;
+    echoinput<<Fcast_InputCatch_Basis<<" # basis for input Fcast catch:  -1= read with each obs; 2=dead catch; 3=retained catch; 99=input Hrate(F); -1=read fleet/time specific (bio/num units are from fleetunits; note new codes in SSV3.20)"<<endl;
     k1 = styr+(endyr-styr)*nseas-1 + nseas + 1;
     y=k1+(N_Fcast_Yrs)*nseas-1;
-    if(N_Fcast_Input_Catches>0) echoinput<<"Now read "<<N_Fcast_Input_Catches<<" of fixed forecast catches (yr, seas, fleet, catch) "<<endl;
   }
   else
   {
@@ -3200,9 +3225,12 @@ DATA_SECTION
     y=0;
   }
   if(Fcast_InputCatch_Basis==-1)
-    {j=5;}
+    {j=5; echoinput<<"# yr seas fleet catch basis"<<endl;}
     else
-    {j=4;}
+    {j=4;echoinput<<"# yr seas fleet catch"<<endl;}
+    N_Fcast_Input_Catches=count_records(j);
+    if(N_Fcast_Input_Catches>0) echoinput<<"Now read "<<N_Fcast_Input_Catches<<
+      " rows of input forecast catch (or F)"<<endl;
  END_CALCS
 
   3darray Fcast_InputCatch(k1,y,1,Nfleet1,1,2)  //  values and basis to be used
@@ -3210,7 +3238,6 @@ DATA_SECTION
 
  LOCAL_CALCS
   Fcast_InputCatch.initialize();
-  if(N_Fcast_Input_Catches>0) echoinput<<" Fcast_catches_input "<<endl<<Fcast_InputCatch_rd<<endl;
   if(Do_Forecast>0)
   {
     if(N_Fcast_Input_Catches>0)

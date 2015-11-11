@@ -699,7 +699,7 @@ FUNCTION void Get_Forecast()
       report5<<endl;
       for(y=endyr+1;y<=YrMax;y++)
       {
-        report5<<y<<" "<<Fcast_Catch_Allocation(y)<<endl;
+        report5<<y<<" "<<Fcast_Catch_Allocation(y-endyr)<<endl;
       }
      }
     if(Fcast_Catch_Basis==2)
