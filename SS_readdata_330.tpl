@@ -612,10 +612,23 @@ DATA_SECTION
   int Catch_read;
   vector tempvec(1,6)  //  vector used for temporary reads
  LOCAL_CALCS
-  N_ReadCatch=count_records(5);
+    typedef std::char_traits<char>::pos_type pos_type;
+    pos_type mark_pos = ad_comm::global_datafile->tellg();  // record current file position
+//  N_ReadCatch=count_records(5);
+//    ad_comm::global_datafile->seekg(mark_pos);  //  go back to the recorded position
+  std::vector<dvector> catch_read;
+    int ender;
+    ender=0;
+  do {
+    dvector tempvec(1,5);
+      *(ad_comm::global_datafile) >> tempvec(1,5);
+        if(tempvec(1)==-9999.) ender=1;
+    catch_read.push_back (tempvec(1,5));
+  } while (ender==0);
+  N_ReadCatch=catch_read.size()-1;
+   echoinput<<N_ReadCatch<<" records"<<endl;
  END_CALCS
 
-  matrix catch_bioT(1,N_ReadCatch,1,5)
   matrix catch_ret_obs(1,Nfleet,styr-nseas,TimeMax+nseas)
   imatrix do_Fparm(1,Nfleet,styr-nseas,TimeMax+nseas)
   3darray catch_seas_area(styr,TimeMax,1,pop,0,Nfleet)
@@ -627,18 +640,16 @@ DATA_SECTION
   catch_ret_obs.initialize();
   tempvec.initialize();
   k=0;  // counter for reading catch records
-  for (k=1;k<=N_ReadCatch;k++)
+  for (k=0;k<=N_ReadCatch-1;k++)
   {
     //  do read in list format  y, s, f, catch, catch_se
-    {
-      *(ad_comm::global_datafile) >> catch_bioT(k)(1,5);
-      g=catch_bioT(k,1); s=catch_bioT(k,2); f=catch_bioT(k,3);
+      tempvec(1,5)=catch_read[k];
+      g=tempvec(1); s=tempvec(2); f=tempvec(3);
       if(g==-999)
       {y=styr-1;}  // designates initial equilibrium
       else 
       {y=g;}
-    }
-    echoinput<<catch_bioT(k)<<endl;
+    echoinput<<tempvec(1,5)<<endl;
 
     if(y>=styr-1 && y<=endyr)  //  observation is in date range
     {
@@ -649,8 +660,8 @@ DATA_SECTION
         t=styr+(y-styr)*nseas+s-1;
   
         {
-          catch_ret_obs(f,t) += catch_bioT(k,4);
-          catch_se(t,f) = catch_bioT(k,5);
+          catch_ret_obs(f,t) += tempvec(4);
+          catch_se(t,f) = tempvec(5);
         }
       }
       else  // distribute catch equally across seasons
@@ -659,7 +670,7 @@ DATA_SECTION
         {
           t=styr+(y-styr)*nseas+s-1;
           {
-            catch_ret_obs(f,t) += catch_bioT(k,4)/nseas;
+            catch_ret_obs(f,t) += tempvec(4)/nseas;
           }
         }
       }
@@ -669,9 +680,13 @@ DATA_SECTION
     for(s=1;s<=nseas;s++)
     {
       for (f=1;f<=Nfleet1;f++) {obs_equ_catch(s,f)=catch_ret_obs(f,styr-nseas-1+s);}
+      echoinput<<" equ, seas:   -1 "<<s<<" catches: "<<obs_equ_catch(s)<<endl;
     }
-
-  echoinput<<" processed catch thru endyr+1"<<endl<<trans(catch_ret_obs)<<endl;
+    for(y=styr;y<=endyr;y++)
+    for(s=1;s<=nseas;s++)
+    {
+      echoinput<<"year, seas: "<<y<<" "<<s<<" catches: "<<trans(catch_ret_obs)(y-nseas-1+s)<<endl;
+    }
 
 //  calc total catch by year so can calculate the first year with catch and to omit zero catch years from sdreport
   totcat.initialize();

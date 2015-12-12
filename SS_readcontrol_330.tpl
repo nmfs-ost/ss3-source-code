@@ -3223,7 +3223,7 @@
     echoinput<<" read var_adjust list until -9999"<<endl;
     k=0;
     typedef std::char_traits<char>::pos_type pos_type;
-    pos_type mark_pos = ad_comm::global_datafile->tellg();  //  mark current position
+    mark_pos = ad_comm::global_datafile->tellg();  //  mark current position
     tempvec.initialize();
     while(tempvec(1)!=-9999.)
     {
@@ -3307,7 +3307,7 @@
     echoinput<<" read lambda changes list until -9999"<<endl;
     k=0;
     typedef std::char_traits<char>::pos_type pos_type;
-    pos_type mark_pos = ad_comm::global_datafile->tellg();  //  mark current position
+    mark_pos = ad_comm::global_datafile->tellg();  //  mark current position
     tempvec.initialize();
     while(tempvec(1)!=-9999.)
     {

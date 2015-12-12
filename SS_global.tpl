@@ -29,6 +29,7 @@ GLOBALS_SECTION
   #include <admodel.h>
   #include <time.h>
   #include <fvar.hpp>
+  #include <vector>
   time_t start,finish;
   long hour,minute,second;
   double elapsed_time;
@@ -147,15 +148,12 @@ GLOBALS_SECTION
     dvector tempvec(1,N_fields);  //  vector used for temporary reads
     echoinput<<" read list until -9999"<<endl;
     N_records=0;
-    typedef std::char_traits<char>::pos_type pos_type;
-    pos_type mark_pos = ad_comm::global_datafile->tellg();  // record current file position
     tempvec.initialize();
-    while(tempvec(1)!=-9999.)
-    {
+    do {
       N_records++;
       *(ad_comm::global_datafile) >> tempvec;
-    }
-    ad_comm::global_datafile->seekg(mark_pos);  //  go back to the recorded position
+        echoinput<<N_records<<" A "<<tempvec<<endl;
+    } while(tempvec(1)!=-9999.);
     echoinput<<" number of records = "<<N_records<<endl;
     return N_records;
   }
