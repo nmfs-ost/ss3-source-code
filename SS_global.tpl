@@ -64,6 +64,10 @@ GLOBALS_SECTION
 //  SS_Label_Info_10.3  #start random number generator with seed based on time
   random_number_generator radm(long(time(&start)));
 
+  std::vector<dvector> Fcast_Catch_Allocation_list;
+  std::vector<dvector> Fcast_InputCatch_rd;
+  std::vector<dvector> env_temp;
+
 //  example function in GLOBALS to do the timing setup in the data section
   void get_data_timing(const dvector& to_process, const ivector& timing_constants, ivector i_result, dvector r_result, const dvector& seasdur, const dvector& subseasdur_delta, const dvector& azero_seas, const dvector& surveytime)
   {

@@ -1554,7 +1554,7 @@ FUNCTION void Get_Forecast()
           }
           if(Fcast_Catch_Allocation_Groups>0  && y>=Fcast_Cap_FirstYear)  // adjust to get a specific fleet allocation
           {
-            Fcast_Catch_Allocation_Group=0.0;
+            Fcast_Catch_Allocation_Group.initialize();
             for (g=1;g<=Fcast_Catch_Allocation_Groups;g++)
             for (f=1;f<=Nfleet;f++)
             if (Allocation_Fleet_Assignments(f)==g && fleet_type(f)<=2)

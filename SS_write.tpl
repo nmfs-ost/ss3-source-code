@@ -513,7 +513,6 @@ FUNCTION void write_nudata()
   report1 << nages<<" #_Nages=accumulator age"<< endl;
   report1 << pop<<" #_N_areas"<<endl;
   report1 << Nfleet<<" #_Nfleets (including surveys)"<< endl;
-//  report1 << fleetnameread<<endl;
   report1<<"#_fleet_type: 1=catch fleet; 2=bycatch only fleet; 3=survey; 4=ignore "<<endl;
   report1<<"#_survey_timing: -1=for use of catch-at-age to override the month value associated with a datum "<<endl;
   report1<<"#_fleet_area:  area the fleet/survey operates in "<<endl;
@@ -579,17 +578,16 @@ FUNCTION void write_nudata()
     report1<<"-9999 1 1 1 1 # terminator for survey observations "<<endl;
 
   report1<<"#"<<endl<<Ndisc_fleets<<" #_N_fleets_with_discard"<<endl;
+  report1<<"#_discard_units (1=same_as_catchunits(bio/num); 2=fraction; 3=numbers)"<< endl;
+  report1<<"#_discard_errtype:  >0 for DF of T-dist(read CV below); 0 for normal with CV; -1 for normal with se; -2 for lognormal"<<endl;
+  report1<<"# note, only have units and errtype for fleets with discard "<<endl;
+  report1<<"#_Fleet units errtype"<<endl;
   if(Ndisc_fleets>0)
   {
-    report1<<"#_discard_units (1=same_as_catchunits(bio/num); 2=fraction; 3=numbers)"<< endl;
-    report1<<"#_discard_errtype:  >0 for DF of T-dist(read CV below); 0 for normal with CV; -1 for normal with se; -2 for lognormal"<<endl;
-    report1<<"#_Fleet units errtype"<<endl;
     for (f=1;f<=Nfleet;f++)
     if(disc_units(f)>0) report1<<f<<" "<<disc_units(f)<<" "<<disc_errtype(f)<<" # "<<fleetname(f)<<endl;
-    report1<<disc_N_read<<" #_N_discard_obs"<< endl;
     report1<<"#_yr month fleet obs stderr"<<endl;
     for (f=1;f<=Nfleet;f++)
-    if(disc_N_fleet(f)>0)
     for (i=1;i<=disc_N_fleet(f);i++)
     {
       ALK_time=disc_time_ALK(f,i);
@@ -599,16 +597,14 @@ FUNCTION void write_nudata()
   }
   else
   {
-    report1<<"#_discard_units (1=same_as_catchunits(bio/num); 2=fraction; 3=numbers)"<< endl;
-    report1<<"#_discard_errtype:  >0 for DF of T-dist(read CV below); 0 for normal with CV; -1 for normal with se; -2 for lognormal"<<endl;
-    report1<<"#Fleet Disc_units err_type"<<endl;
-    report1<<"0 #N discard obs"<<endl;
-    report1<<"#_yr month fleet obs stderr"<<endl;
+    report1<<"# ";
   }
+  report1<<"-9999 0 0 0.0 0.0 # terminator for discard data "<<endl; 
 
-  report1 <<"#"<<endl<< nobs_mnwt_rd <<" #_N_meanbodywt_obs"<< endl;
+  report1 <<"#"<<endl<< do_meanbodywt <<" #_use meanbodysize_data (0/1)"<< endl;
   if(nobs_mnwt_rd==0) report1<<"#_COND_";
-  report1<<DF_bodywt<<" #_DF_for_meanbodywt_T-distribution_like"<<endl;
+  report1<<DF_bodywt<<" #_DF_for_meanbodysize_T-distribution_like"<<endl;
+  report1<<"# note:  use positive partition value for mean body wt, negative partition for mean body length "<<endl;
   report1<<"#_yr month fleet part obs stderr"<<endl;
   if(nobs_mnwt>0)
    {
@@ -618,8 +614,11 @@ FUNCTION void write_nudata()
      mnwtdata(5,i)<<" "<<mnwtdata(6,i)<<" #_ "<<fleetname(mnwtdata(3,i))<< endl;
     }
    }
+  if(do_meanbodywt==0) report1<<"# ";
+  report1<<" -9999 0 0 0 0 0 # terminator for mean body size data "<<endl;
 
-  report1<<"#"<<endl<<LenBin_option<<" # length bin method: 1=use databins; 2=generate from binwidth,min,max below; 3=read vector"<<endl;
+  report1<<"#"<<endl<<"# set up population length bin structure (note - irrelevant if not using size data and using empirical wtatage"<<endl;
+  report1<<LenBin_option<<" # length bin method: 1=use databins; 2=generate from binwidth,min,max below; 3=read vector"<<endl;
   if(LenBin_option==1)
   {report1<<"# no additional input for option 1"<<endl;
     report1<<"# read binwidth, minsize, lastbin size for option 2"<<endl;
@@ -636,6 +635,9 @@ FUNCTION void write_nudata()
     report1<<len_bins<<endl;
   }
 
+  report1<<use_length_data<<" # use length composition data (0/1)"<<endl;
+  if(use_length_data>0)
+  {
   report1<<"#_mintailcomp: upper and lower distribution for females and males separately are accumulated until exceeding this level."<<endl;
   report1<<"#_addtocomp:  after accumulation of tails; this value added to all bins"<<endl;
   report1<<"#_males and females treated as combined gender below this bin number "<<endl;
@@ -646,11 +648,11 @@ FUNCTION void write_nudata()
   for (f=1;f<=Nfleet;f++)
   {report1<<min_tail_L(f)<<" "<<min_comp_L(f)<<" "<<CombGender_L(f)<<" "<<AccumBin_L(f)<<" "<<Comp_Err_L(f)<<" "<<Comp_Err_L2(f)<<" #_fleet:"<<f<<"_"<<fleetname(f)<<endl;}
 
-  report1<<nlen_bin<<" #_N_LengthBins"<<endl<<len_bins_dat<<endl;
+  report1<<nlen_bin<<" #_N_LengthBins; then enter lower edge of each length bin"<<endl<<len_bins_dat<<endl;
 //  report1<<nobsl_rd<<" #_N_Length_obs"<<endl;
   report1<<"#_yr month fleet gender part Nsamp datavector(female-male)"<<endl;
    for (f=1;f<=Nfleet;f++)
-    {
+   {
     if(Nobs_l(f)>0)
     {
      for (i=1;i<=Nobs_l(f);i++)
@@ -658,10 +660,15 @@ FUNCTION void write_nudata()
       report1 << header_l(f,i)(1,3)<<" "<<gen_l(f,i)<<" "<<mkt_l(f,i)<<" "<<nsamp_l(f,i)<<" "<<obs_l(f,i)<<endl;
      }
      }
-     }
+   }
     report1<<-9999.<<" ";
     for(j=2;j<=6+nlen_bin2;j++) report1<<"0 ";
     report1<<endl;
+  }
+  else
+  {
+    report1<<"# see manual for format of length composition data "<<endl;
+  }
 
    report1 <<"#"<<endl<<n_abins<<" #_N_age_bins"<<endl;
   if(n_abins>0) report1<<age_bins1<<endl;
@@ -678,7 +685,6 @@ FUNCTION void write_nudata()
   for (f=1;f<=Nfleet;f++)
   {report1<<min_tail_A(f)<<" "<<min_comp_A(f)<<" "<<CombGender_A(f)<<" "<<AccumBin_A(f)<<" "<<Comp_Err_A(f)<<" "<<Comp_Err_A2(f)<<" #_fleet:"<<f<<"_"<<fleetname(f)<<endl;}
   report1<<Lbin_method<<" #_Lbin_method_for_Age_Data: 1=poplenbins; 2=datalenbins; 3=lengths"<<endl;
-  report1<<nobsa_rd<<" #_N_Agecomp_obs"<<endl;
   report1<<"#_yr month fleet gender part ageerr Lbin_lo Lbin_hi Nsamp datavector(female-male)"<<endl;
    if(Nobs_a_tot>0)
    for (f=1;f<=Nfleet;f++)
@@ -691,8 +697,14 @@ FUNCTION void write_nudata()
      }
     }
    }
-
-  report1 <<"#"<<endl<<nobs_ms_rd<<" #_N_MeanSize-at-Age_obs"<<endl;
+  f=exp_a_temp.size();
+  report1 << "-9999 ";
+  for(i=1;i<=f;i++) report1<<" 0";
+  report1<<endl;
+    
+  report1<<"#"<<endl<<use_meansizedata<<" #_Use_MeanSize-at-Age_obs (0/1)"<<endl;
+  if(use_meansizedata>0)
+  {
   report1<<"#_yr month fleet gender part ageerr ignore datavector(female-male)"<<endl;
   report1<<"#                                          samplesize(female-male)"<<endl;
    for (f=1;f<=Nfleet;f++)
@@ -706,9 +718,18 @@ FUNCTION void write_nudata()
      }
     }
    }
-
-    report1<<"#"<<endl << N_envvar<<" #_N_environ_variables"<<endl<<N_envdata<<" #_N_environ_obs"<<endl;
-    if(N_envdata>0) report1<<env_temp<<endl;
+    report1<<"-9999 ";
+    for (j=1;j<=6+n_abins2;j++) report1<<" 0";
+    report1<<endl;
+    for (j=1;j<=n_abins2;j++) report1<<" 0";
+    report1<<endl;
+  }
+    report1<<"#"<<endl << N_envvar<<" #_N_environ_variables"<<endl;
+    report1<<"Year Variable Value"<<endl;
+    if(N_envdata>0) 
+      {for(i=0;i<=N_envdata-1;i++) report1<<env_temp[i]<<endl;
+       report1<<"-9999 0 0"<<endl;
+      }
 
   report1<<SzFreq_Nmeth<<" # N sizefreq methods to read "<<endl;
   if(SzFreq_Nmeth>0)
@@ -825,14 +846,14 @@ FUNCTION void write_nudata()
     report1<<"-9999 1 1 1 1 # terminator for survey observations "<<endl;
 
   report1<<"#"<<endl<<Ndisc_fleets<<" #_N_fleets_with_discard"<<endl;
+  report1<<"#_discard_units (1=same_as_catchunits(bio/num); 2=fraction; 3=numbers)"<< endl;
+  report1<<"#_discard_errtype:  >0 for DF of T-dist(read CV below); 0 for normal with CV; -1 for normal with se; -2 for lognormal"<<endl;
+  report1<<"# note, only have units and errtype for fleets with discard "<<endl;
+  report1<<"#_Fleet units errtype"<<endl;
   if(Ndisc_fleets>0)
   {
-    report1<<"#_discard_units (1=same_as_catchunits(bio/num); 2=fraction; 3=numbers)"<< endl;
-    report1<<"#_discard_errtype:  >0 for DF of T-dist(read CV below); 0 for normal with CV; -1 for normal with se; -2 for lognormal"<<endl;
-    report1<<"#_Fleet units errtype"<<endl;
     for (f=1;f<=Nfleet;f++)
     if(disc_units(f)>0) report1<<f<<" "<<disc_units(f)<<" "<<disc_errtype(f)<<" # "<<fleetname(f)<<endl;
-    report1<<nobs_disc<<" #_N_discard_obs"<< endl;
     report1<<"#_yr month fleet obs stderr"<<endl;
     for (f=1;f<=Nfleet;f++)
     if(disc_N_fleet(f)>0)
@@ -849,16 +870,15 @@ FUNCTION void write_nudata()
   }
   else
   {
-    report1<<"#_discard_units (1=same_as_catchunits(bio/num); 2=fraction; 3=numbers)"<< endl;
-    report1<<"#_discard_errtype:  >0 for DF of T-dist(read CV below); 0 for normal with CV; -1 for normal with se; -2 for lognormal"<<endl;
-    report1<<"#Fleet Disc_units err_type"<<endl;
-    report1<<"0 #N discard obs"<<endl;
-    report1<<"#_yr month fleet obs stderr"<<endl;
+    report1<<"# ";
   }
+  report1<<"-9999 0 0 0.0 0.0 # terminator for discard data "<<endl; 
 
-  report1 <<"#"<<endl<< nobs_mnwt <<" #_N_meanbodywt_obs"<< endl;
+  report1 <<"#"<<endl<< do_meanbodywt <<" #_use meanbodysize_data (0/1)"<< endl;
+
   if(nobs_mnwt_rd==0) report1<<"#_COND_";
-  report1<<DF_bodywt<<" #_DF_for_meanbodywt_T-distribution_like"<<endl;
+  report1<<DF_bodywt<<" #_DF_for_meanbodysize_T-distribution_like"<<endl;
+  report1<<"# note:  use positive partition value for mean body wt, negative partition for mean body length "<<endl;
   report1<<"#_yr month fleet part obs stderr"<<endl;
   if(nobs_mnwt>0)
    {
@@ -869,8 +889,11 @@ FUNCTION void write_nudata()
      exp_mnwt(i)<<" "<<mnwtdata(6,i)<<" #_orig_obs: "<<mnwtdata(5,i)<<"  #_ "<<fleetname(mnwtdata(3,i))<<endl;
     }
    }
+  if(do_meanbodywt==0) report1<<"# ";
+  report1<<" -9999 0 0 0 0 0 # terminator for mean body size data "<<endl;
 
-  report1<<"#"<<endl<<LenBin_option<<" # length bin method: 1=use databins; 2=generate from binwidth,min,max below; 3=read vector"<<endl;
+  report1<<"#"<<endl<<"# set up population length bin structure (note - irrelevant if not using size data and using empirical wtatage"<<endl;
+  report1<<LenBin_option<<" # length bin method: 1=use databins; 2=generate from binwidth,min,max below; 3=read vector"<<endl;
   if(LenBin_option==1)
   {report1<<"# no additional input for option 1"<<endl;
     report1<<"# read binwidth, minsize, lastbin size for option 2"<<endl;
@@ -887,6 +910,9 @@ FUNCTION void write_nudata()
     report1<<len_bins<<endl;
   }
 
+  report1<<use_length_data<<" # use length composition data (0/1)"<<endl;
+  if(use_length_data>0)
+  {
   report1<<"#_mintailcomp: upper and lower distribution for females and males separately are accumulated until exceeding this level."<<endl;
   report1<<"#_addtocomp:  after accumulation of tails; this value added to all bins"<<endl;
   report1<<"#_males and females treated as combined gender below this bin number "<<endl;
@@ -917,6 +943,11 @@ FUNCTION void write_nudata()
     report1<<-9999.<<" ";
     for(j=2;j<=6+nlen_bin2;j++) report1<<"0 ";
     report1<<endl;
+  }
+  else
+  {
+    report1<<"# see manual for format of length composition data "<<endl;
+  }
 
    report1<<"#"<<endl<<n_abins<<" #_N_age_bins"<<endl;
   if(n_abins>0) report1<<age_bins1<<endl;
@@ -933,7 +964,6 @@ FUNCTION void write_nudata()
   for (f=1;f<=Nfleet;f++)
   {report1<<min_tail_A(f)<<" "<<min_comp_A(f)<<" "<<CombGender_A(f)<<" "<<AccumBin_A(f)<<" "<<Comp_Err_A(f)<<" "<<Comp_Err_A2(f)<<" #_fleet:"<<f<<"_"<<fleetname(f)<<endl;}
   report1<<Lbin_method<<" #_Lbin_method_for_Age_Data: 1=poplenbins; 2=datalenbins; 3=lengths"<<endl;
-  report1<<nobsa_rd<<" #_N_Agecomp_obs"<<endl;
   report1<<"#_yr month fleet gender part ageerr Lbin_lo Lbin_hi Nsamp datavector(female-male)"<<endl;
    if(Nobs_a_tot>0)
    for (f=1;f<=Nfleet;f++)
@@ -954,10 +984,16 @@ FUNCTION void write_nudata()
     }
     }
    }
-  report1<<"#"<<endl<<nobs_ms_tot<<" #_N_MeanSize-at-Age_obs"<<endl;
+  f=exp_a_temp.size();
+  report1 << "-9999 ";
+  for(i=1;i<=f;i++) report1<<" 0";
+  report1<<endl;
+    
+  report1<<"#"<<endl<<use_meansizedata<<" #_Use_MeanSize-at-Age_obs (0/1)"<<endl;
+  if(use_meansizedata>0)
+  {
   report1<<"#_yr month fleet gender part ageerr ignore datavector(female-male)"<<endl;
   report1<<"#                                          samplesize(female-male)"<<endl;
-   if(nobs_ms_tot>0)
    for (f=1;f<=Nfleet;f++)
    {
     if(Nobs_ms(f)>0)
@@ -981,8 +1017,19 @@ FUNCTION void write_nudata()
      }
     }
    }
-    report1<<"#"<< endl << N_envvar<<" #_N_environ_variables"<<endl<<N_envdata<<" #_N_environ_obs"<<endl;
-    if(N_envdata>0) report1<<env_temp<<endl;
+    report1<<"-9999 ";
+    for (j=1;j<=6+n_abins2;j++) report1<<" 0";
+    report1<<endl;
+    for (j=1;j<=n_abins2;j++) report1<<" 0";
+    report1<<endl;
+  }
+
+    report1<<"#"<<endl << N_envvar<<" #_N_environ_variables"<<endl;
+    report1<<"Year Variable Value"<<endl;
+    if(N_envdata>0) 
+      {for(i=0;i<=N_envdata-1;i++) report1<<env_temp[i]<<endl;
+       report1<<"-9999 0 0"<<endl;
+      }
 
   report1<<"#"<<SzFreq_Nmeth<<" # N sizefreq methods to read "<<endl;
   if(SzFreq_Nmeth>0)
@@ -1127,17 +1174,16 @@ FUNCTION void write_nudata()
   report1<<"-9999 1 1 1 1 # terminator for survey observations "<<endl;
 
   report1<<"#"<<endl<<Ndisc_fleets<<" #_N_fleets_with_discard"<<endl;
+  report1<<"#_discard_units (1=same_as_catchunits(bio/num); 2=fraction; 3=numbers)"<< endl;
+  report1<<"#_discard_errtype:  >0 for DF of T-dist(read CV below); 0 for normal with CV; -1 for normal with se; -2 for lognormal"<<endl;
+  report1<<"# note, only have units and errtype for fleets with discard "<<endl;
+  report1<<"#_Fleet units errtype"<<endl;
   if(Ndisc_fleets>0)
   {
-    report1<<"#_discard_units (1=same_as_catchunits(bio/num); 2=fraction; 3=numbers)"<< endl;
-    report1<<"#_discard_errtype:  >0 for DF of T-dist(read CV below); 0 for normal with CV; -1 for normal with se; -2 for lognormal"<<endl;
-    report1<<"#_Fleet units errtype"<<endl;
     for (f=1;f<=Nfleet;f++)
     if(disc_units(f)>0) report1<<f<<" "<<disc_units(f)<<" "<<disc_errtype(f)<<" # "<<fleetname(f)<<endl;
-    report1<<nobs_disc<<" #_N_discard_obs"<< endl;
     report1<<"#_yr month fleet obs stderr"<<endl;
     for (f=1;f<=Nfleet;f++)
-    if(disc_N_fleet(f)>0)
     for (i=1;i<=disc_N_fleet(f);i++)
     {
       ALK_time=disc_time_ALK(f,i);
@@ -1160,16 +1206,14 @@ FUNCTION void write_nudata()
   }
   else
   {
-    report1<<"#_discard_units (1=same_as_catchunits(bio/num); 2=fraction; 3=numbers)"<< endl;
-    report1<<"#_discard_errtype:  >0 for DF of T-dist(read CV below); 0 for normal with CV; -1 for normal with se; -2 for lognormal"<<endl;
-    report1<<"#Fleet Disc_units err_type"<<endl;
-    report1<<"0 #N discard obs"<<endl;
-    report1<<"#_yr month fleet obs stderr"<<endl;
+    report1<<"# ";
   }
+  report1<<"-9999 0 0 0.0 0.0 # terminator for discard data "<<endl; 
 
-  report1 <<"#"<<endl<< nobs_mnwt <<" #_N_meanbodywt_obs"<< endl;
-  if(nobs_mnwt_rd==0) report1<<"#_COND_";
-  report1<<DF_bodywt<<" #_DF_for_meanbodywt_T-distribution_like"<<endl;
+  report1 <<"#"<<endl<< do_meanbodywt <<" #_use meanbodysize_data (0/1)"<< endl;
+  if(do_meanbodywt==0) report1<<"#_COND_";
+  report1<<DF_bodywt<<" #_DF_for_meanbodysize_T-distribution_like"<<endl;
+  report1<<"# note:  use positive partition value for mean body wt, negative partition for mean body length "<<endl;
   report1<<"#_yr month fleet part obs stderr"<<endl;
   if(nobs_mnwt>0)
   {
@@ -1187,8 +1231,11 @@ FUNCTION void write_nudata()
       report1 << Show_Time(mnwtdata(1,i),1)<<" "<<mnwtdata(2,i)<<" "<<mnwtdata(3,i)<<" "<<mnwtdata(4,i)<<" "<<
       temp<<" "<<mnwtdata(6,i)<<" #_orig_obs: "<<mnwtdata(5,i)<<"  #_ "<<fleetname(mnwtdata(3,i))<<endl;    }
   }
+  if(do_meanbodywt==0) report1<<"# ";
+  report1<<" -9999 0 0 0 0 0 # terminator for mean body size data "<<endl;
 
-  report1<<"#"<<endl<<LenBin_option<<" # length bin method: 1=use databins; 2=generate from binwidth,min,max below; 3=read vector"<<endl;
+  report1<<"#"<<endl<<"# set up population length bin structure (note - irrelevant if not using size data and using empirical wtatage"<<endl;
+  report1<<LenBin_option<<" # length bin method: 1=use databins; 2=generate from binwidth,min,max below; 3=read vector"<<endl;
   if(LenBin_option==1)
   {report1<<"# no additional input for option 1"<<endl;
     report1<<"# read binwidth, minsize, lastbin size for option 2"<<endl;
@@ -1205,6 +1252,9 @@ FUNCTION void write_nudata()
     report1<<len_bins<<endl;
   }
 
+  report1<<use_length_data<<" # use length composition data (0/1)"<<endl;
+  if(use_length_data>0)
+  {
   report1<<"#_mintailcomp: upper and lower distribution for females and males separately are accumulated until exceeding this level."<<endl;
   report1<<"#_addtocomp:  after accumulation of tails; this value added to all bins"<<endl;
   report1<<"#_males and females treated as combined gender below this bin number "<<endl;
@@ -1252,6 +1302,11 @@ FUNCTION void write_nudata()
     report1<<-9999.<<" ";
     for(j=2;j<=6+nlen_bin2;j++) report1<<"0 ";
     report1<<endl;
+  }
+  else
+  {
+    report1<<"# see manual for format of length composition data "<<endl;
+  }
 
    report1<<"#"<<endl<<n_abins<<" #_N_age_bins"<<endl;
   if(n_abins>0) report1<<age_bins1<<endl;
@@ -1268,74 +1323,92 @@ FUNCTION void write_nudata()
   for (f=1;f<=Nfleet;f++)
   {report1<<min_tail_A(f)<<" "<<min_comp_A(f)<<" "<<CombGender_A(f)<<" "<<AccumBin_A(f)<<" "<<Comp_Err_A(f)<<" "<<Comp_Err_A2(f)<<" #_fleet:"<<f<<"_"<<fleetname(f)<<endl;}
   report1<<Lbin_method<<" #_Lbin_method_for_Age_Data: 1=poplenbins; 2=datalenbins; 3=lengths"<<endl;
-  report1<<sum(Nobs_a)<<" #_N_Agecomp_obs"<<endl;
   report1<<"#_yr month fleet gender part ageerr Lbin_lo Lbin_hi Nsamp datavector(female-male)"<<endl;
-   if(Nobs_a_tot>0)
-   for (f=1;f<=Nfleet;f++)
-    {
+  if(Nobs_a_tot>0)
+  for (f=1;f<=Nfleet;f++)
+  {
     if(Nobs_a(f)>=1)
     {
-     for (i=1;i<=Nobs_a(f);i++)
-     {
-     if(header_a(f,i,3)>0) // if real observation
-     {
-      if(Comp_Err_A(f)==0) //  multinomial
-      {
-        k=1000;  if(nsamp_a(f,i)<k) k=nsamp_a(f,i);  // note that nsamp is adjusted by var_adjust, so var_adjust
-                                                     // should be reset to 1.0 in control files that read the nudata.dat files
-        exp_a_temp = 0.0;
-        temp_probs2 = value(exp_a(f,i));
-        temp_mult.fill_multinomial(radm,temp_probs2);
-        for (compindex=1; compindex<=k; compindex++) // cumulate the multinomial draws by index in the new data
-        {exp_a_temp(temp_mult(compindex)) += 1.0;}
+       for (i=1;i<=Nobs_a(f);i++)
+       {
+       if(header_a(f,i,3)>0) // if real observation
+       {
+        if(Comp_Err_A(f)==0) //  multinomial
+        {
+          k=1000;  if(nsamp_a(f,i)<k) k=nsamp_a(f,i);  // note that nsamp is adjusted by var_adjust, so var_adjust
+                                                       // should be reset to 1.0 in control files that read the nudata.dat files
+          exp_a_temp = 0.0;
+          temp_probs2 = value(exp_a(f,i));
+          temp_mult.fill_multinomial(radm,temp_probs2);
+          for (compindex=1; compindex<=k; compindex++) // cumulate the multinomial draws by index in the new data
+          {exp_a_temp(temp_mult(compindex)) += 1.0;}
+        }
+        else  //  Dirichlet
+        {
+          //  need to replace this with code for dirichlet
+          k=1000;  if(nsamp_a(f,i)<k) k=nsamp_a(f,i);  // note that nsamp is adjusted by var_adjust, so var_adjust
+                                                       // should be reset to 1.0 in control files that read the nudata.dat files
+          exp_a_temp = 0.0;
+          temp_probs2 = value(exp_a(f,i));
+          temp_mult.fill_multinomial(radm,temp_probs2);
+          for (compindex=1; compindex<=k; compindex++) // cumulate the multinomial draws by index in the new data
+          {exp_a_temp(temp_mult(compindex)) += 1.0;}
+        }
+          
+       }
+       else
+       {exp_a_temp = obs_a(f,i);}
+       report1 << header_a(f,i)(1,8)<<" "<<nsamp_a(f,i)<<" "<<exp_a_temp<<endl;
       }
-      else  //  Dirichlet
-      {
-        //  need to replace this with code for dirichlet
-        k=1000;  if(nsamp_a(f,i)<k) k=nsamp_a(f,i);  // note that nsamp is adjusted by var_adjust, so var_adjust
-                                                     // should be reset to 1.0 in control files that read the nudata.dat files
-        exp_a_temp = 0.0;
-        temp_probs2 = value(exp_a(f,i));
-        temp_mult.fill_multinomial(radm,temp_probs2);
-        for (compindex=1; compindex<=k; compindex++) // cumulate the multinomial draws by index in the new data
-        {exp_a_temp(temp_mult(compindex)) += 1.0;}
-      }
-        
-     }
-     else
-     {exp_a_temp = obs_a(f,i);}
-    report1 << header_a(f,i)(1,8)<<" "<<nsamp_a(f,i)<<" "<<exp_a_temp<<endl;
     }
-    }
-    }
-  report1<<"#"<<endl<<nobs_ms_tot<<" #_N_MeanSize-at-Age_obs"<<endl;
-  report1<<"#_yr month fleet gender part ageerr ignore datavector(female-male)"<<endl;
-  report1<<"#                                          samplesize(female-male)"<<endl;
-   if(nobs_ms_tot>0)
-   for (f=1;f<=Nfleet;f++)
+  }
+  f=exp_a_temp.size();
+  report1 << "-9999 ";
+  for(i=1;i<=f;i++) report1<<" 0";
+  report1<<endl;
+    
+    
+  report1<<"#"<<endl<<use_meansizedata<<" #_Use_MeanSize-at-Age_obs (0/1)"<<endl;
+  if(use_meansizedata>0)
+  {
+    report1<<"#_yr month fleet gender part ageerr ignore datavector(female-male)"<<endl;
+    report1<<"#                                          samplesize(female-male)"<<endl;
+    for (f=1;f<=Nfleet;f++)
     {
-    if(Nobs_ms(f)>0)
-    {
-     for (i=1;i<=Nobs_ms(f);i++)
+     if(Nobs_ms(f)>0)
      {
-     report1 << header_ms(f,i)(1,7);
-     for (a=1;a<=n_abins2;a++)
-     {
-     report1 << " " ;
-         if(obs_ms_n(f,i,a)>0)
-          {temp=exp_ms(f,i,a)+randn(radm)*exp_ms_sq(f,i,a)/obs_ms_n(f,i,a);
-          if(temp<=0.) {temp=0.0001;}
-          report1 << temp;}
-         else
-             {report1 << exp_ms(f,i,a) ;}
+       for (i=1;i<=Nobs_ms(f);i++)
+       {
+         report1 << header_ms(f,i)(1,7);
+         for (a=1;a<=n_abins2;a++)
+         {
+          report1<< " " ;
+          if(obs_ms_n(f,i,a)>0)
+          {
+            temp=exp_ms(f,i,a)+randn(radm)*exp_ms_sq(f,i,a)/obs_ms_n(f,i,a);
+            if(temp<=0.) {temp=0.0001;}
+            report1 << temp;
+          }
+          else
+          {report1 << exp_ms(f,i,a) ;}
          }
+         report1 << endl<< elem_prod(obs_ms_n(f,i),obs_ms_n(f,i)) << endl;
+       }
+     }
+    }
+    report1<<"-9999 ";
+    for (j=1;j<=6+n_abins2;j++) report1<<" 0";
+    report1<<endl;
+    for (j=1;j<=n_abins2;j++) report1<<" 0";
+    report1<<endl;
+  }
 
-     report1 << endl<< elem_prod(obs_ms_n(f,i),obs_ms_n(f,i)) << endl;
+    report1<<"#"<<endl << N_envvar<<" #_N_environ_variables"<<endl;
+    report1<<"Year Variable Value"<<endl;
+    if(N_envdata>0) 
+      {for(i=0;i<=N_envdata-1;i++) report1<<env_temp[i]<<endl;
+       report1<<"-9999 0 0"<<endl;
       }
-      }
-      }
-    report1<<"#"<< endl << N_envvar<<" #_N_environ_variables"<<endl<<N_envdata<<" #_N_environ_obs"<<endl;
-    if(N_envdata>0) report1<<env_temp<<endl;
 
   report1<<"#"<<endl<<SzFreq_Nmeth<<" # N sizefreq methods to read "<<endl;
   if(SzFreq_Nmeth>0)
@@ -1522,18 +1595,38 @@ FUNCTION void write_nucontrol()
       }
     }
 
-  NuFore<<"# max totalcatch by fleet (-1 to have no max) must enter value for each fleet"<<endl;
-  NuFore<<Fcast_MaxFleetCatch<<endl;
-  NuFore<<"# max totalcatch by area (-1 to have no max); must enter value for each fleet "<<endl;
-  NuFore<<Fcast_MaxAreaCatch<<endl;
-  NuFore<<"# fleet assignment to allocation group (enter group ID# for each fleet, 0 for not included in an alloc group)"<<endl;
-  NuFore<<Allocation_Fleet_Assignments<<endl;
-  NuFore<<"# SS's count of the number of unique allocation group IDs: "<<Fcast_Catch_Allocation_Groups<<endl;
+  NuFore<<"# enter list of fleet number and max for fleets with max annual catch; terminate with fleet=-9999"<<endl;
+  for(f=1;f<=Nfleet;f++)
+  {
+    if(Fcast_MaxFleetCatch(f)>-1) NuFore<<f<<" "<<Fcast_MaxFleetCatch(f)<<endl;
+  }
+  NuFore<<"-9999 -1"<<endl;
+
+  NuFore<<"# enter list of area ID and max annual catch; terminate with area=-9999"<<endl;
+  for(p=1;p<=pop;p++)
+  {
+    if(Fcast_MaxAreaCatch(p)>-1) NuFore<<p<<" "<<Fcast_MaxAreaCatch(p)<<endl;
+  }
+  NuFore<<"-9999 -1"<<endl;
+
+  NuFore<<"# enter list of fleet number and allocation group assignment, if any; terminate with fleet=-9999"<<endl;
+  for(f=1;f<=Nfleet;f++)
+  {
+    if(Allocation_Fleet_Assignments(f)>0) NuFore<<f<<" "<<Allocation_Fleet_Assignments(f)<<endl;
+  }
+  NuFore<<"-9999 -1"<<endl;
+
   NuFore<<"#_if N allocation groups >0, list year, allocation fraction for each group "<<endl;
   NuFore<<"# list sequentially because read values fill to end of N forecast"<<endl;
   NuFore<<"# terminate with -9999 in year field "<<endl;
 
-  if(Fcast_Catch_Allocation_Groups>0) {NuFore<<Fcast_Catch_Allocation_list<<endl;} else {NuFore<<"# no allocation groups"<<endl;}
+  if(Fcast_Catch_Allocation_Groups>0)
+    {
+      j=Fcast_Catch_Allocation_list.size()-1;
+      for(k=0;k<=j;k++)  NuFore<<Fcast_Catch_Allocation_list[k]<<endl;
+    }
+    else
+    {NuFore<<"# no allocation groups"<<endl;}
 
   NuFore<<Fcast_InputCatch_Basis<<
   " # basis for input Fcast catch: -1=read basis with each obs; 2=dead catch; 3=retained catch; 99=input Hrate(F)"<<endl;
@@ -1546,9 +1639,9 @@ FUNCTION void write_nucontrol()
   NuFore<<"#_Year Seas Fleet Catch(or_F)";
   if(Fcast_InputCatch_Basis==-1) NuFore<<" Basis";
   NuFore<<endl;
-    for(j=1;j<=N_Fcast_Input_Catches;j++)
+    for(j=0;j<=N_Fcast_Input_Catches-1;j++)
     {
-      NuFore<<Fcast_InputCatch_rd(j)(1,k)<<endl;
+      NuFore<<Fcast_InputCatch_rd[j](1,k)<<endl;
     }
     NuFore<<"-9999 1 1 0 ";
     if(Fcast_InputCatch_Basis==-1) NuFore<<" 2 ";

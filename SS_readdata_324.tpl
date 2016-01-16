@@ -1247,7 +1247,8 @@ DATA_SECTION
   !!if(nlength>0) echoinput<<len_bins_rd<<" pop length bins as read "<<endl;
 
 !!//  SS_Label_Info_2.7 #Start length data section
-
+  int use_length_data
+!! use_length_data=1;  //  for compatibility with version 3.30
   number min_tail  //min_proportion_for_compressing_tails_of_observed_composition
   number min_comp  //  small value added to each composition bins
   int CombGender_l  //  combine genders through this length bin

@@ -523,7 +523,6 @@ FUNCTION void evaluate_the_objective_function()
       for (f=1;f<=Nfleet;f++)
       {
         if(fleet_type(f)==1 &&  obs_equ_catch(s,f)>0.0)
-//          {equ_catch_like += 0.5*square( (log(obs_equ_catch(f)) -log(est_equ_catch(f)+0.000001)) / catch_se(styr-1,f));}
           {equ_catch_like += 0.5*square( (log(1.1*obs_equ_catch(s,f)) -log(est_equ_catch(s,f)*catch_mult(styr-1,f)+0.1*obs_equ_catch(s,f))) / catch_se(styr-1,f));}
       }
       if(do_once==1) cout<<" initequ_catch -log(L) "<<equ_catch_like<<endl;
