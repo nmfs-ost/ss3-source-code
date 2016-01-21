@@ -1099,6 +1099,7 @@ DATA_SECTION
 //  note that syntax for storing this info internal is done differently than for surveys and discard
    init_int nobs_mnwt_rd
    int nobs_mnwt
+   int do_meanbodywt
   number DF_bodywt  // DF For meanbodywt T-distribution
   !!echoinput<<nobs_mnwt_rd<<" nobs_mean body wt.  If 0, then no additional input in 3.30 "<<endl;
 
@@ -1106,12 +1107,14 @@ DATA_SECTION
  LOCAL_CALCS
     *(ad_comm::global_datafile) >> DF_bodywt;
     echoinput<<DF_bodywt<<" degrees of freedom for bodywt T-distribution "<<endl;
-  
+  do_meanbodywt=0;
   if(nobs_mnwt_rd>0)
   {
     *(ad_comm::global_datafile) >> mnwtdata1;
     echoinput<<" meanbodywt_data "<<endl<<mnwtdata1<<endl;
+    do_meanbodywt=1;
   }
+
   data_type=3;
   nobs_mnwt=0;
   for (i=1;i<=nobs_mnwt_rd;i++)
@@ -2292,6 +2295,7 @@ DATA_SECTION
 !!//  SS_Label_Info_2.9 #Read mean Size_at_Age data
   init_int nobs_ms_rd
   int nobs_ms_tot
+  int use_meansizedata
   !!echoinput<<nobs_ms_rd<<" N mean size-at-age obs "<<endl;
   init_matrix sizeAge_Data(1,nobs_ms_rd,1,7+2*n_abins2)
    !!if(nobs_ms_rd>0) echoinput<<" first size-at-age obs "<<endl<<sizeAge_Data(1)<<endl<<" last obs"<<endl<<sizeAge_Data(nobs_ms_rd)<<endl;;
@@ -2299,10 +2303,13 @@ DATA_SECTION
   ivector N_suprper_ms(1,Nfleet)      // N super_yrs per obs
 
  LOCAL_CALCS
+  use_meansizedata=0;
   data_type=7;  //  for size (length or weight)-at-age data
   Nobs_ms=0;
   N_suprper_ms=0;
   if(nobs_ms_rd>0)
+  {
+  use_meansizedata=1;
   for (i=1;i<=nobs_ms_rd;i++)
   {
     y=sizeAge_Data(i,1);
@@ -2313,6 +2320,7 @@ DATA_SECTION
       if(sizeAge_Data(i,2)<0) N_suprper_ms(f)++;     // count the number of starts and ends of super-periods if seas<0 or sampsize<0
       Nobs_ms(f)++;
     }
+  }
   }
   for (f=1;f<=Nfleet;f++) 
   {
