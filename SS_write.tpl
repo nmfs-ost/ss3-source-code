@@ -1624,6 +1624,9 @@ FUNCTION void write_nucontrol()
     {
       j=Fcast_Catch_Allocation_list.size()-1;
       for(k=0;k<=j;k++)  NuFore<<Fcast_Catch_Allocation_list[k]<<endl;
+      NuFore<<" -9999 ";
+    for (j=1;j<=Fcast_Catch_Allocation_Groups;j++) {NuFore<<" 1 ";}
+      NuFore<<endl;
     }
     else
     {NuFore<<"# no allocation groups"<<endl;}
@@ -1637,12 +1640,16 @@ FUNCTION void write_nucontrol()
 
   NuFore<<"#enter list of Fcast catches; terminate with line having year=-9999"<<endl;
   NuFore<<"#_Year Seas Fleet Catch(or_F)";
-  if(Fcast_InputCatch_Basis==-1) NuFore<<" Basis";
+  if(Fcast_InputCatch_Basis==-1) NuFore<<" Basis ";
   NuFore<<endl;
-    for(j=0;j<=N_Fcast_Input_Catches-1;j++)
-    {
-      NuFore<<Fcast_InputCatch_rd[j](1,k)<<endl;
-    }
+  if(finish_starter==999)
+  {
+    for(j=1;j<=N_Fcast_Input_Catches;j++) {NuFore<<Fcast_InputCatch_rd(j)(1,k)<<endl;}
+  }
+  else
+  {
+    for(j=0;j<=N_Fcast_Input_Catches-1;j++) {NuFore<<Fcast_InputCatch_rd[j](1,k)<<endl;}
+  }
     NuFore<<"-9999 1 1 0 ";
     if(Fcast_InputCatch_Basis==-1) NuFore<<" 2 ";
     NuFore<<endl;

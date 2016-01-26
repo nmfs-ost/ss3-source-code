@@ -2612,6 +2612,12 @@ DATA_SECTION
     SzFreq_HaveObs2.initialize();
     for (k=1;k<=SzFreq_Nmeth;k++)
     {
+      if(SzFreq_units(k)==1 && SzFreq_scale(k)>2)
+      {
+        N_warn++; cout<<" EXIT - see warning "<<endl;
+        warning<<" error:  cannot accumulate biomass into length-based szfreq scale for method: "<<k<<endl;
+        exit(1);
+      }
       SzFreq_Nbins3(k)=gender*SzFreq_Nbins(k);
     for (s=1;s<=nseas;s++)
     {
@@ -2637,6 +2643,8 @@ DATA_SECTION
   for (k=1;k<=SzFreq_Nmeth;k++)
   {
 // set flag for accumulating, or not, fish from small pop len bins up into first SzFreq data bin
+// if first bin is positive, then fish smaller than that bin are ignored (omitsmall set =1)
+// if first bin is negative, then smaller fish are accumulated up into that first bin
     SzFreq_Omit_Small(k)=1;
     if(SzFreq_bins1(k,1)<0)
     {

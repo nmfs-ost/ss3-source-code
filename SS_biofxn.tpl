@@ -1168,6 +1168,9 @@ FUNCTION void get_wtlen()
       t=styr+(y-styr)*nseas+s-1;
 //  SS_Label_Info_19.2.1  #calc wt_at_length for each season to include seasonal effects on wtlen
 
+//  NOTES  wt_len is by gp, but wt_len2 and wt_len_low have males stacked after females
+//  so referenced by GPat
+
       if(gg==1)
       {
       if(MGparm_seas_effects(1)>0 || MGparm_seas_effects(2)>0 )        //  get seasonal effect on FEMALE wtlen parameters
@@ -1197,7 +1200,6 @@ FUNCTION void get_wtlen()
         }
         wt_len2(s,GPat)(nlength1,nlength2)=wt_len(s,gp).shift(nlength1);
         wt_len(s,gp).shift(1);
-        echoinput<<wt_len(s,gp)<<endl;
       }
       
 //  SS_Label_Info_19.2.3  #calculate first diff of wt_len for use in generalized sizp comp bin calculations

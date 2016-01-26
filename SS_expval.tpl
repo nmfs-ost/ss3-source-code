@@ -353,6 +353,7 @@ FUNCTION void Get_expected_values();
           {
             if(do_once==1 || (MG_active(3)>0 && (time_vary_MG(y,3)>0 )))  // calc the matrix because it may have changed
             {
+
               for (gg=1;gg<=gender;gg++)
               {
                 if(gg==1)
@@ -361,14 +362,27 @@ FUNCTION void Get_expected_values();
                 {z1=nlength1; z2=nlength2; ibin=0; ibinsave=SzFreq_Nbins(SzFreqMethod);}   // male
                 topbin=0.;
                 botbin=0.;
-  
-                switch(SzFreq_units(SzFreqMethod))    // biomass vs. numbers
+
+//  NOTE:  wt_len_low is  calculated separately for each growth pattern (GPat)  
+//  but the code below still just uses GPat=1 for calculation of the sizefreq transition matrix
+
+                switch(SzFreq_units(SzFreqMethod))    // biomass vs. numbers are accumulated in the bins
                 {
                   case(1):  // units are biomass, so accumulate body weight into the bins;  Assume that bin demarcations are also in biomass
                   {
                     if(SzFreq_Omit_Small(SzFreqMethod)==1)
-                    {while(wt_len_low(s,1,z1+1)<SzFreq_bins(SzFreqMethod,1)) {z1++;}}      // ignore tiny fish
-  
+                    {
+                      while(wt_len_low(s,1,z1+1)<SzFreq_bins(SzFreqMethod,1) && z1<z2) 
+                      {z1++;}
+                    }      // ignore tiny fish
+                    if(z1+1>=z2)
+                    {
+                      N_warn++; cout<<" EXIT - see warning "<<endl;
+                      warning<<" error:  max population size "<<wt_len_low(s,1,z1)<<" is less than first data bin "<<
+                      SzFreq_bins(SzFreqMethod,1)<<" for SzFreqMethod "<<SzFreqMethod<<endl;
+                      exit(1);
+                    }
+
                     if( wt_len_low(s,1,nlength2) < SzFreq_bins(SzFreqMethod,SzFreq_Nbins(SzFreqMethod)))
                     {
                       N_warn++; cout<<" EXIT - see warning "<<endl;
@@ -428,8 +442,17 @@ FUNCTION void Get_expected_values();
                     if(SzFreq_scale(SzFreqMethod)<=2)   //  bin demarcations are in weight units (1=kg, 2=lbs), so uses wt_len to compare to bins
                     {
                       if(SzFreq_Omit_Small(SzFreqMethod)==1)
-                      {while(wt_len_low(s,1,z1+1)<SzFreq_bins(SzFreqMethod,1)) {z1++;}}      // ignore tiny fish
-  
+                      {
+                        while(wt_len_low(s,1,z1+1)<SzFreq_bins(SzFreqMethod,1) && z1<z2) 
+                        {z1++;}
+                      }      // ignore tiny fish
+                      if(z1+1>=z2)
+                      {
+                        N_warn++; cout<<" EXIT - see warning "<<endl;
+                        warning<<" error:  max population size "<<wt_len_low(s,1,z1)<<" is less than first data bin "<<
+                        SzFreq_bins(SzFreqMethod,1)<<" for SzFreqMethod "<<SzFreqMethod<<endl;
+                        exit(1);
+                      }
                       if( wt_len_low(s,1,nlength2) < SzFreq_bins(SzFreqMethod,SzFreq_Nbins(SzFreqMethod)))
                       {
                         N_warn++; cout<<" EXIT - see warning "<<endl;
@@ -470,7 +493,8 @@ FUNCTION void Get_expected_values();
                     else       //  bin demarcations are in length unit (3=cm, 4=inch) so uses population len_bins to compare to data bins
                     {
                       if(SzFreq_Omit_Small(SzFreqMethod)==1)
-                      {while(len_bins2(z1+1)<SzFreq_bins(SzFreqMethod,1)) {z1++;}}      // ignore tiny fish
+                      {while(len_bins2(z1+1)<SzFreq_bins(SzFreqMethod,1)) {z1++;}
+                        echoinput<<"accumulate starting at bin: "<<z1<<endl;}      // ignore tiny fish
                       for (z=z1;z<=z2;z++)
                       {
                         if(ibin==SzFreq_Nbins(SzFreqMethod))
@@ -506,7 +530,7 @@ FUNCTION void Get_expected_values();
               }  // end gender loop
             }  //  end needing to calc the matrix because it may have changed
           }  // done calculating the SzFreqTransition matrix for this method
-  
+
           if(SzFreq_HaveObs(f,SzFreqMethod,t,1)>0)
           {
             for (iobs=SzFreq_HaveObs(f,SzFreqMethod,t,1);iobs<=SzFreq_HaveObs(f,SzFreqMethod,t,2);iobs++)

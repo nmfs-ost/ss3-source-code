@@ -1,4 +1,8 @@
+cd "C:\Users\richard.methot\Documents\SS_model\Trans_324_330"
+del *.exe
+
 cd "C:\Users\richard.methot\Documents\SS_model\Compile"
+del *.obj
 del *.exe
 
 cd "C:\Users\Richard.Methot\Documents\GitHub\StockSynthesis_3.3"

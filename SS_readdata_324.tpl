@@ -2529,12 +2529,20 @@ DATA_SECTION
 
  LOCAL_CALCS
   g=0;
+  data_type=6;  //  for generalized size composition data
+
   if(SzFreq_Nmeth>0)
   {
     SzFreq_HaveObs.initialize();
     SzFreq_HaveObs2.initialize();
     for (k=1;k<=SzFreq_Nmeth;k++)
     {
+      if(SzFreq_units(k)==1 && SzFreq_scale(k)>2)
+      {
+        N_warn++; cout<<" EXIT - see warning "<<endl;
+        warning<<" error:  cannot accumulate biomass into length-based szfreq scale for method: "<<k<<endl;
+        exit(1);
+      }
       SzFreq_Nbins3(k)=gender*SzFreq_Nbins(k);
     for (s=1;s<=nseas;s++)
     {
@@ -2560,6 +2568,9 @@ DATA_SECTION
   for (k=1;k<=SzFreq_Nmeth;k++)
   {
 // set flag for accumulating, or not, fish from small pop len bins up into first SzFreq data bin
+// if first bin is positive, then fish smaller than that bin are ignored (omitsmall set =1)
+// if first bin is negative, then smaller fish are accumulated up into that first bin
+
     SzFreq_Omit_Small(k)=1;
     if(SzFreq_bins1(k,1)<0)
     {
@@ -2680,9 +2691,13 @@ DATA_SECTION
           if(SzFreq_HaveObs(f,k,t,1)==0) SzFreq_HaveObs(f,k,t,1)=iobs;  // save first counter in time x fleet locations with data
           SzFreq_HaveObs(f,k,t,2)=iobs;  // saves last pointer to this source of data
           if(SzFreq_HaveObs2(k,t)==0 || f<=SzFreq_HaveObs2(k,t)) SzFreq_HaveObs2(k,t)=f;  // find the smallest numbered f index that uses this method
-//  CODE HERE NEEDS UPDATE
-          have_data(t,f,6,1)=1;
-          have_data(t,f,6,2)=s;  // season or month; later will be processed according to value of readseasmo
+
+          have_data(ALK_time,0,0,0)=1;
+          have_data(ALK_time,f,0,0)=1;  //  so have data of some type
+          have_data(ALK_time,f,data_type,0)++;  //  count the number of observations in this subseas
+          p=have_data(ALK_time,f,data_type,0);
+          have_data(ALK_time,f,data_type,p)=j;  //  store data index for the p'th observation in this subseas
+
           if(SzFreq_obs_hdr(iobs,7)<0) SzFreq_obs_hdr(iobs,3)=-abs(SzFreq_obs_hdr(iobs,3));  //  old method for excluding from logL
         }
         else
@@ -3196,25 +3211,33 @@ DATA_SECTION
  END_CALCS
 
   matrix Fcast_Catch_Allocation(1,N_Fcast_Yrs,1,Fcast_Catch_Allocation_Groups);
-  matrix Fcast_Catch_Allocation_list(1,2,1,Fcast_Catch_Allocation_Groups+1);
+//  matrix Fcast_Catch_Allocation_list(1,2,1,Fcast_Catch_Allocation_Groups+1);
   
  LOCAL_CALCS
   if(Do_Forecast>0)
   {
+    echoinput<<" alloc groups "<<Fcast_Catch_Allocation_Groups<<endl;
     if(Fcast_Catch_Allocation_Groups>0)
     {
       *(ad_comm::global_datafile) >> Fcast_Catch_Allocation(1);
       for(y=1;y<=N_Fcast_Yrs;y++)
       {Fcast_Catch_Allocation(y)=Fcast_Catch_Allocation(1);}
-      Fcast_Catch_Allocation_list(1)=endyr+1;
-      for(j=1;j<=Fcast_Catch_Allocation_Groups;j++) {Fcast_Catch_Allocation_list(1,j+1)=Fcast_Catch_Allocation(1,j);}
-      Fcast_Catch_Allocation_list(2)=-9999;
-      for(j=1;j<=Fcast_Catch_Allocation_Groups;j++) {Fcast_Catch_Allocation_list(2,j+1)=Fcast_Catch_Allocation(1,j);}
+      
+      dvector tempvec(1,1+Fcast_Catch_Allocation_Groups);
+      tempvec(1)=endyr+1;
+      for(j=1;j<=Fcast_Catch_Allocation_Groups;j++) {tempvec(j+1)=Fcast_Catch_Allocation(1,j);}
+      Fcast_Catch_Allocation_list.push_back (tempvec);
+      j=Fcast_Catch_Allocation_list.size()-1;
+  
+        echoinput<<" read group allocation fractions "<<j<<endl;
+        for(k=0;k<=j-1;k++)
+        {
+          echoinput<<Fcast_Catch_Allocation_list[k]<<endl;
+        }
     }
     else
     {
       Fcast_Catch_Allocation.initialize();
-      Fcast_Catch_Allocation_list.initialize();
     }
 
     k=2;
