@@ -1,1 +1,3 @@
 *.bak; *.temp; *.tmp
+*.bak
+*.temp

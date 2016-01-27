@@ -616,7 +616,6 @@ DATA_SECTION
     pos_type mark_pos = ad_comm::global_datafile->tellg();  // record current file position
 //  N_ReadCatch=count_records(5);
 //    ad_comm::global_datafile->seekg(mark_pos);  //  go back to the recorded position
-  std::vector<dvector> catch_read;
     int ender;
     ender=0;
   do {
@@ -736,7 +735,6 @@ DATA_SECTION
   Svy_units=column(Svy_units_rd,2);
   Svy_errtype=column(Svy_units_rd,3);
 
-  std::vector<dvector> Svy_data;
   ender=0;
   do {
     dvector tempvec(1,5);
@@ -918,7 +916,6 @@ DATA_SECTION
     }
   }
 
-  std::vector<dvector> discdata;
   ender=0;
   do {
     dvector tempvec(1,5);
@@ -1096,7 +1093,6 @@ DATA_SECTION
 
 //   matrix mnwtdata1(1,nobs_mnwt_rd,1,6)
  LOCAL_CALCS
-  std::vector<dvector> mnwtdata1;
   if(do_meanbodywt>0)
   {
     *(ad_comm::global_datafile) >> DF_bodywt;
@@ -1490,7 +1486,6 @@ DATA_SECTION
     k=6+nlen_bin2;
     Nobs_l.initialize();
     N_suprper_l.initialize();
-    std::vector<dvector> lendata;
     if(use_length_data>0)
     {
     ender=0;
@@ -1868,7 +1863,6 @@ DATA_SECTION
   vector age_bins_mean(1,n_abins2)  //  holds mean age for each data age bin
   
  LOCAL_CALCS
-  std::vector<dvector> Age_Data;
   if(n_abins>0)
   {
     *(ad_comm::global_datafile) >> age_bins1;
@@ -2360,7 +2354,6 @@ DATA_SECTION
   ivector N_suprper_ms(1,Nfleet)      // N super_yrs per obs
 
  LOCAL_CALCS
-  std::vector<dvector> sizeAge_Data;
   if(use_meansizedata>0)
   {
     k=7+2*n_abins2;
@@ -2565,7 +2558,6 @@ DATA_SECTION
  LOCAL_CALCS
   echoinput<<N_envvar<<" N_envvar "<<endl;
   
-//  std::vector<dvector> env_temp;  create in GLOBAL
   ender=0;
   j=endyr;  //  use to store maxyear with env data
   do {
@@ -3229,9 +3221,7 @@ DATA_SECTION
   vector Fcast_MaxAreaCatch(1,pop)
   ivector Allocation_Fleet_Assignments(1,Nfleet)
   matrix Fcast_Catch_Allocation(1,N_Fcast_Yrs,1,Nfleet);  //   dimension to Nfleet but use only to N alloc groups
-//  below are defined in GLOBAL
-//  std::vector<dvector> Fcast_Catch_Allocation_list;
-//  std::vector<dvector> Fcast_InputCatch_rd;
+
 
  LOCAL_CALCS
   if(Do_Forecast>0)
@@ -3334,7 +3324,7 @@ DATA_SECTION
         for(y=1;y<=N_Fcast_Yrs;y++)
         echoinput<<y+endyr<<" "<<Fcast_Catch_Allocation(1,Fcast_Catch_Allocation_Groups)<<endl;
     }
-    
+      
     *(ad_comm::global_datafile) >> Fcast_InputCatch_Basis;
     echoinput<<Fcast_InputCatch_Basis<<" # basis for input Fcast catch:  -1= read with each obs; 2=dead catch; 3=retained catch; 99=input Hrate(F); -1=read fleet/time specific (bio/num units are from fleetunits; note new codes in SSV3.20)"<<endl;
     k1 = styr+(endyr-styr)*nseas-1 + nseas + 1;
@@ -3349,10 +3339,10 @@ DATA_SECTION
       dvector tempvec(1,j);
       *(ad_comm::global_datafile) >> tempvec(1,j);
       if(tempvec(1)==-9999.) ender=1;
-      Fcast_InputCatch_rd.push_back (tempvec(1,j));
+      Fcast_InputCatch_list.push_back (tempvec(1,j));
       echoinput<<tempvec<<endl;
     } while (ender==0);
-    N_Fcast_Input_Catches=Fcast_InputCatch_rd.size()-1;
+    N_Fcast_Input_Catches=Fcast_InputCatch_list.size()-1;
   }
   else
   {
@@ -3361,13 +3351,14 @@ DATA_SECTION
     k1=1;
     y=0;
   }
-
  END_CALCS
 
   3darray Fcast_InputCatch(k1,y,1,Nfleet1,1,2)  //  values and basis to be used
+  matrix Fcast_InputCatch_rd(1,N_Fcast_Input_Catches,1,j)
 
  LOCAL_CALCS
   Fcast_InputCatch.initialize();
+  Fcast_InputCatch_rd.initialize();
   if(Do_Forecast>0)
   {
     if(N_Fcast_Input_Catches>0)
@@ -3378,15 +3369,17 @@ DATA_SECTION
 
       for (i=0;i<=N_Fcast_Input_Catches-1;i++)
       {
-        y=Fcast_InputCatch_rd[i](1); s=Fcast_InputCatch_rd[i](2); f=Fcast_InputCatch_rd[i](3);
+   echoinput<<i<<" "<<Fcast_InputCatch_list[i]<<endl;
+        Fcast_InputCatch_rd(i+1)=Fcast_InputCatch_list[i];
+        y=Fcast_InputCatch_rd(i+1,1); s=Fcast_InputCatch_rd(i+1,2); f=Fcast_InputCatch_rd(i+1,3);
         if(y>endyr && y<=YrMax && f<=Nfleet1)
         {
           t=styr+(y-styr)*nseas +s-1;
-          Fcast_InputCatch(t,f,1)=Fcast_InputCatch_rd[i](4);
+          Fcast_InputCatch(t,f,1)=Fcast_InputCatch_rd(i+1,4);
           if(y>=Fcast_Cap_FirstYear) {N_warn++;warning<<"Input catches in "<<y<<" can be overridden by caps or allocations"<<endl;}
           if(Fcast_InputCatch_Basis==-1)
           {
-            Fcast_InputCatch(t,f,2)=Fcast_InputCatch_rd[i](5);  //  new method
+            Fcast_InputCatch(t,f,2)=Fcast_InputCatch_rd(i+1,5);  //  new method
           }
           else
           {

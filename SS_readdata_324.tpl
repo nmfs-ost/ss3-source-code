@@ -3211,7 +3211,6 @@ DATA_SECTION
  END_CALCS
 
   matrix Fcast_Catch_Allocation(1,N_Fcast_Yrs,1,Fcast_Catch_Allocation_Groups);
-//  matrix Fcast_Catch_Allocation_list(1,2,1,Fcast_Catch_Allocation_Groups+1);
   
  LOCAL_CALCS
   if(Do_Forecast>0)
@@ -3222,18 +3221,6 @@ DATA_SECTION
       *(ad_comm::global_datafile) >> Fcast_Catch_Allocation(1);
       for(y=1;y<=N_Fcast_Yrs;y++)
       {Fcast_Catch_Allocation(y)=Fcast_Catch_Allocation(1);}
-      
-      dvector tempvec(1,1+Fcast_Catch_Allocation_Groups);
-      tempvec(1)=endyr+1;
-      for(j=1;j<=Fcast_Catch_Allocation_Groups;j++) {tempvec(j+1)=Fcast_Catch_Allocation(1,j);}
-      Fcast_Catch_Allocation_list.push_back (tempvec);
-      j=Fcast_Catch_Allocation_list.size()-1;
-  
-        echoinput<<" read group allocation fractions "<<j<<endl;
-        for(k=0;k<=j-1;k++)
-        {
-          echoinput<<Fcast_Catch_Allocation_list[k]<<endl;
-        }
     }
     else
     {
