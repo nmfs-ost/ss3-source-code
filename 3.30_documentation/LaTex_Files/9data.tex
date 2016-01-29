@@ -1,0 +1,910 @@
+\section{Data File}
+\subsection{Overview of Data File}
+	\begin{enumerate}
+		\item Dimensions (years, ages, N fleets, N surveys, etc.)
+		\item Fleet and survey names, timing, etc.
+		\item Catch biomass
+		\item Discard
+		\item Mean body weight
+		\item Length composition set-up
+		\item Length composition
+		\item Age composition set-up
+		\item Age imprecision definitions
+		\item Age composition
+		\item Mean length of bodyweight-at-age
+		\item Generalized size composition (e.g. weight frequency)
+		\item Tag-recapture
+		\item Stock composition
+		\item Environmental data
+	\end{enumerate}
+	
+\subsection{Units of Measure}
+The normal units of measure are as follows:
+\begin{itemize}
+	\item Catch biomass -- metric tons	
+	\item Body weight -- kilograms	
+	\item Body length -- usually in cm, weight at length parameters must correspond to the units of body length and body weight.	
+	\item Survey abundance -- any units if q is freely scaled; metric tons or thousands of fish if q has a quantitative interpretation	
+	\item Output biomass -- metric tons	
+	\item Numbers -- thousands of fish, because catch is in mtons and body weight is in kg	
+	\item Spawning biomass -- metric tons of mature females if eggs/kg = 1 for all weights; otherwise has units that are proportional to egg production	
+\end{itemize}
+
+
+\subsection{Time Units}
+Year
+	\begin{itemize}
+		\item Spawning is restricted to happening once per year at a specified time of year (in real months).
+		\item Time-varying parameters are allowed to change annually.
+		\item Rates like growth and mortality are per year.
+		\item All fish advance to the next older integer age on January 1, no matter when they were born during the year
+	\end{itemize}
+Seasons
+	 \begin{itemize}
+	 	\item Seasons are the time step during which constant rates apply
+	 	\item Seasons are the time step for which catch and discard is input and for which F is calculated
+	 	\item The year can have just 1 annual season, or be subdivided into seasons of unequal length.
+	 	\item Season duration is input in real months and is converted into fractions of an annum.  Annual rate values are multiplied by the per annum season duration.
+	 	\item If the sum of the input season durations is not close to 12.0, then the input durations is divided by 12.  This allows for a special situation in which the year could be only 0.25 in duration (e.g. seasons as years) so that spawning and time-varying parameters can occur more frequently.	 	
+	 \end{itemize}
+
+\subsection{Data File Syntax}
+\subsubsection{Model Dimensions}
+\begin{center}
+	\begin{tabular}{p{4cm} p{12cm}}
+			\textbf{Typical Value} & \textbf{Description} \\
+			\hline
+			\#C data using new survey & \multirow{1}{1cm}[-0.1cm]{\parbox{12cm}{Data file comment. Must start with \#C to be retained then written to top of various output files.  These comments can occur anywhere in the data file, but must have \#C in columns 1-2.}} \\
+			&  \\
+			\hline
+			1971 & Start year \\
+			\hline
+			2001 & End year \\
+			\hline
+			1 & Number of seasons per year \\
+			\hline
+			12 & \multirow{1}{1cm}[-0.1cm]{\parbox{12cm}{Vector with N months in each season.  These do not need to be integers.  Note:  If the sum of this vector is close to 12.0, then it is rescaled to sum to 1.0 so that season duration is a fraction of a year.  But if the sum is not close to 12.0, then the entered values are simply divided by 12.  So with one season per year and 3 months per season, the calculated season duration will be 0.25, which allows a quarterly model to be run as if quarters are years.  All rates in SS are now calculated in v3.3 by season (growth, mortality, etc.).}} \\
+			& \\
+			& \\
+			& \\
+			& \\
+			& \\
+			& \\
+			& \\
+			\hline
+			2 & \multirow{1}{1cm}[-0.1cm]{\parbox{12cm}{The number of subseasons.  Entry must be even and the minimum value is 2. This is for the purpose of finer temporal granularity in calculating and using the length-at-age.}}\\
+			& \\
+			& \\
+			& \\
+			\hline
+			1 & \multirow{1}{1cm}[-0.1cm]{\parbox{12cm}{Spawning month; spawning biomass is calculated at this time of year and used as basis for the total recruitment of all settlement events resulting from this spawning.}}\\
+			& \\
+			& \\
+			\hline
+			2 & Number of genders \\
+			\hline
+			20 & Number of ages. The value here will be the plus-group age.  SS start age 0. \\
+			\hline
+			1 & Number of areas \\
+			\hline
+	\end{tabular}
+\end{center}
+
+
+\subsubsection{Fleet Definitions }
+The catch data input has been modified to improve the user flexibility to add/subtract fishing and survey fleets to a model set-up.  The fleet setup input is transposed so each fleet is now a row.  Previous versions (3.24 and earlier) required that fishing fleets be listed first followed by survey only fleets.  In version 3.30 all fleets now have the same status within the model structure and each has a specified fleet type.  Available types are: catch fleet, bycatch only, or survey.  
+
+\begin{center}
+	\begin{tabular}{p{1.6cm} p{1.6cm} p{1.6cm} p{1.6cm} p{1.9cm} p{1.6cm} p{1.6cm} p{1.7cm}}
+		\multicolumn{8}{l}{Inputs that define the fishing and survey fleets:}\\
+		\hline
+		2 & \multicolumn{7}{l}{\#Number of fleets which includes survey in any order} \\
+		\hline
+		\#Fleet Type & 
+		Timing & 
+		Area & 
+		Catch Units & 
+		Eq. Catch SE & 
+		Catch SE & 
+		Catch Mult. &
+	    Fleet Name \\
+		
+		%\textbf{Fleet Type} & 
+		%\textbf{Timing} & 
+		%\textbf{Area} & 
+		%\textbf{Catch Units} & 
+		%\textbf{Equil. Catch SE} & 
+		%\textbf{Catch SE} & 
+		%\textbf{Catch Mult.} &
+		%\textbf{Fleet Name} \\
+		\hline
+		1 & -1 & 1 & 1 & 0.01 & 0.01 & 0 & FISHERY1\\
+		1 & -1 & 1 & 2 & 0.01 & 0.01 & 0 & SURVEY1\\
+		\hline
+		
+	\end{tabular}
+\end{center}
+
+\begin{description}
+  \item[Fleet Type] \ %\hfill \\
+	  \begin{itemize}
+	  	\item 1 = fleet with input retained catch
+	  	\item 2 = bycatch fleet
+	  	\item 3 = survey
+	  	\item 4 = ignored (not yet implemented)
+	  \end{itemize}
+	  %1 = fleet with input retained catch, 2 = bycatch fleet, 3 = survey, 4 = ignored (not yet implemented)
+  \item[Timing]\hfill\\
+   Carryover from 3.24 approach, now superseded by real month input for data observations.
+	  \begin{itemize}
+	  	\item 0.50 = now ignored in v3.30
+	  	\item -1 = treat as catch from whole season
+	  \end{itemize}
+  \item[Area]\hfill\\
+  An integer value indicating the area in which a fleet operates.
+  \item[Catch Units] \hfill\\
+   Ignored for survey fleets.
+  \item[Equil. Catch SE] \hfill\\
+  Standard error of the initial equilibrium catch.
+  \item[Catch SE] \hfill\\
+  Standard error of retained catch; ignored for survey fleets and bycatch fleets and with Pope's F method.
+  \item[Catch Multiplier] \hfill\\
+  Invokes use of a catch multiplier, which is then entered as a parameter in the MG parameter section.  The estimated value or fixed value of the catch multiplier is multiplied by the estimated catch before being compared to the observed catch. 
+	  \begin{itemize}
+	  	\item 0 = no catch multiplier used
+	  	\item 1 = Apply a catch multiplier which is defined as an estimatable parameter in the control file after the cohort growth deviation in the biology parameter section. The model’s estimated retained catch will be multiplied by this factor before being compared to the observed retained catch.
+	  \end{itemize}  
+\end{description}
+
+After reading the fleet-specific indicators, a list of catch values by fleet and season are read in by the model.  The format for the catches is year, season that the catch will be attributed to, fleet, a catch value, and a year specific catch standard error.   To include an equilibrium catch value the year should be noted as -999 and be included as the first entry for the associated fleet.  There is no longer a need to specify the number of catch records to be read; instead the list is terminated by entering a record with the value of -9999 in the year field.  Additionally, initial equilibrium catch is now season specific and can be specified using -999 in the year column.
+
+In addition, it is possible to collapse the number of seasons.  So if a season value is greater than the N seasons for a particular model, that catch is added to the catch for N seasons.  This is generally to collapse a seasonal model into an annual model.  In a seasonal model, use of season=0 will cause SS to distribute the input value of catch equally among the N seasons.
+
+If a bycatch fleet is included the continuous F method must be selected (F\textunderscore method = 2) and are excluded from the catch log-likelihood.  Bycatch fleets have selectivity and retention functions, so even though they are considered to have unknown catch levels, this does not mena that their calculated retained catch is zero.  MSY and yield per recruit are calculated in terms of dead catch, and they currently include catch from bycatch fleets.  The F for bycatch only fleets is kept constant in benchmark and forecast calculations, so it is not included in any forecast cap and allocation calculations.  It is not part of the acceptable biological catch, but it is still calculated and reported.  
+
+\subsubsection{Catch}
+The new format for version 3.30 for a 2 season model with 2 fisheries looks like the table below.  The example is sorted by fleet, but the sort order does not matter.  In data.ss\textunderscore new, the sort order is fleet, year, season.
+
+\begin{center}
+	\begin{tabular}{p{3cm} p{3cm} p{3cm} p{3cm} p{2cm}}
+		\multicolumn{5}{l}{\#Catches by year, season for every fleet:}\\
+		\hline
+		\# Year & Season & Fleet & Catches & Catch SE \\
+		\hline
+		-999 & 1 & 1 & 56  & 0.05 \\
+		-999 & 2 & 1 & 62  & 0.05 \\
+		1975 & 1 & 1 & 876 & 0.05 \\
+		1975 & 2 & 1 & 343 & 0.05 \\
+		...  & ...   & ...   & ...   & ...  \\
+		-999 & 1 & 2 & 55  & 0.05 \\
+		-999 & 2 & 2 & 22  & 0.05 \\
+		1975 & 1 & 2 & 555 & 0.05 \\
+		1975 & 2 & 2 & 873 & 0.05 \\
+		...  & ...   & ...   & ...   & ...  \\
+		-9999 & 0 & 0 & 0 & 0.05 \\
+		\hline
+	\end{tabular}
+\end{center}
+
+\begin{itemize}
+	\item Catch can be in terms of biomass or numbers for each fleet.
+	\item Catch is retained catch. If there is discard also, then it is handled in the discard section below.
+	\item If there is reason to believe that the retained catch values underestimate the true catch, then it is possible in the retention parameter set up to create the ability for the model to estimate the degree of unrecorded catch.  However, this is better handled with the new catch multiplier option.
+\end{itemize}
+
+If a bycatch fleet is used, continuous F (F\textunderscore method 2) must be used and are excluded from the catch log likelihood.  Bycatch fleets have selectivity and retention functions, so even though they are considered to have unknown catch levels, this does not mean that their retained catch is zero.  SS v3.30 will later add the option for bycatch fleets to have retained and discarded catch calculated or have all their catch be assigned to discard.  MSY and yield per recruit are calculated in terms of dead catch, and currently include catch from bycatch fleets. Future bycatch fleet options will address this.
+
+\subsubsection{Abundance Indices}
+For fishing fleets, catch-per-unit-effor (CPUE) is defined in terms of retained catch (biomass or numbers).  For fishery independent surveys, retention/discard is not defined so CPUE is implicitly in terms of total CPUE.  If a survey has its selectivity mirrored to that of a fishery, only the selectivity is mirrored so the expected CPUE for this mirrored survey is in terms of total catch.  Also, fishing effort is related to F, which is the F for total catch.
+
+If the statistical analysis used to create the CPUE index of a fishery has been conducted in such a way that its inherent size/age selectivity differs from the size/age selectivity estimated from the fishery’s size and age composition, then you may want to enter the CPUE as if it was a separate survey and with a selectivity that differs from the fishery’s estimated selectivity.  The need for this split arises because the fishery size and age composition should be derived through a catch-weighted approach (to appropriately represent the removals by the fishery) and the CPUE should be derived through an area-weighted GLM (to appropriately serve as if it was a survey of stock abundance.
+
+If the fishery or survey has time-varying selectivity, then this changing selectivity will be taken into account when calculating expected values for the CPUE or survey index.
+
+
+\begin{center}
+	\begin{tabular}{p{3cm} p{2cm} p{3cm} p{3cm} p{3cm}}
+		\multicolumn{5}{l}{\#CPUE and Suvey Abundance Observations:}\\
+		\hline
+		\#Fleet/Survey & Units & \multicolumn{3}{l}{\#Error Distribution}\\
+		\hline
+		1 & 1 & \multicolumn{3}{l}{0}\\
+		2 & 1 & \multicolumn{3}{l}{0}\\
+		... & ... & \multicolumn{3}{l}{...}\\
+		\hline
+		\#Year & Month & Fleet/Survey & Observation & SE of log(value) \\
+		\hline
+		1991 & 7   & 3   & 80000 & 0.056 \\
+		1995 & 7.2 & 3   & 65000 & 0.056 \\
+		...  & ... & ... & ...   & ... \\
+		2000 & 7.1 & 3   & 42000 & 0.056 \\
+		\hline
+	\end{tabular}
+\end{center}
+
+\begin{description}
+	\item[Units]\hfill\\
+	NOTE:  the “effort” option can only be used for a fishing fleet and not for a survey, even if the survey is mirrored to a fishing fleet.  The values of these effort data are interpreted as proportional to the level of the fishery F values.  No adjustment is made for differentiating between continuous F values versus exploitation rate values coming from Pope’s approximation.  A normal error structure is recommended so that the input effort data are compared directly to the model’s calculated F, rather than to loge(F).  The resultant proportionality constant has units of 1/Q.
+	\item[Error Distribution]\
+		\begin{itemize}
+			\item -1 = normal error
+			\item  0 = lognormal error
+			\item >0 = Student's t-distribution in log space with degrees of freedom equal to this value.  For DF>30, results will be nearly identical to that for lognormal distribution.  A DF value of about 4 gives a fat-tail to the distribution (see Chen (2003)).  The se values entered in the data file must be the standard error in log\textsubscript{e} space.
+		\end{itemize}
+\end{description}
+
+Abundance indices typically have a lognormal error structure with units of standard error of log\textsubscript{e}(index).  If the variance of the observations is available only as a CV, then the value of se can be approximated as $\sqrt{(log\textsubscript{e}(1+(CV)\textsuperscript{2}))}$ where CV is the standard error of the observation divided by the mean value of the observation.
+
+For the normal error structure, the entered values for se are interpreted directly as a se in arithmetic space and not as a CV.  Thus switching from a lognormal to a normal error structure forces the user to provide different values for the se input in the data file.
+
+If the data exist as a set of normalized Z-scores, you can either:  assert a lognormal error structure after entering the data as exp(Z-score) because it will be logged by SS.  Preferably, the Z-scores would be entered directly and the normal error structure would be used.
+
+\begin{description}
+	\item[Data Format]\
+	\begin{itemize}
+		\item Year values that are before start year or after end year are excluded from model, so the easiest way to include provisional data in a data file is to put a negative sign on its year value.
+		\item Duplicate survey observations are not allowed.
+		\item Observations can be entered in any order, except if the super-year feature is used.
+		\item Observations that are to be included in the model but not included in the –logL need to have a negative sign on their fleet ID.  Previously the code for not using observations was to enter the observation itself as a negative value.  However, that old approach prevented use of a Z-score environmental index as a “survey”.
+		\item Super-periods are turned on and then turned back off again by putting a negative sign on the season.  Previously, super-periods were started and stopped by entering -9999 and the -9998 in the se field.  See the “Data Super-Period” section of this manual for more information.
+	\end{itemize}
+	\item[Special Surveys]\hfill\\
+	Four special kinds of surveys are defined in SS.  Here in the survey data section, there is no change in the way in which these survey data are entered.  Then in the size-selectivity section of the control file, the selectivity pattern used to generate expected values for these surveys is specified by entering the selectivity pattern as 30, 31, 32, or 33.  These four survey “selectivity” pattern options bypass the calculation of survey selectivity from explicit selectivity parameters.
+	\begin{itemize}
+		\item 30 = spawning biomass (e.g. for an egg and larvae survey)
+		\item 31 = exp(recruitment deviation), useful for environmental index affecting recruitment
+		\item 32 = spawning biomass * exp(recruitment deviation), for a pre-recruit survey occurring before density-dependence
+		\item 33 = recruitment, age-0 recruits
+	\end{itemize}
+	
+\end{description}
+
+\subsubsection{Discard}
+If discard is not a feature of the model specification, then just a single input is needed:
+
+	\begin{center}
+		\begin{tabular}{p{2cm} p{8cm}}
+			\#Input & Description\\
+			\hline
+			0 & \#Number of fleets with discard observations\\
+			\hline
+		\end{tabular}
+	\end{center}
+	
+\noindent	
+If discard is being used, the input syntax is:
+	\begin{center}
+		\begin{tabular}{p{3cm} p{3cm} p{3cm} p{3cm} p{3cm}}
+			\#Input & \multicolumn{4}{l}{Description}\\
+			\hline
+			3 & \multicolumn{4}{l}{\#Number of fleets with discard observations}\\
+			\hline
+			\#Fleet & Units & \multicolumn{3}{l}{Error}\\
+			\hline
+			1 & 2 & \multicolumn{3}{l}{-1}\\
+			3 & 2 & \multicolumn{3}{l}{-1}\\
+			%\hline
+			%2 & \multicolumn{4}{l}{\#Number of discard observations}\\
+			\#Year & Season & Fleet & Observation & Error \\
+			\hline
+			1980  & 1 & 1 & 0.05 & 0.25 \\
+			1991  & 1 & 1 & 0.10 & 0.25 \\
+			-9999 & 0 & 0 & 0    & 0 \\
+			\hline
+		\end{tabular}
+	\end{center}
+	
+\begin{description}
+	\item[Discard Units]\ 
+	\begin{itemize}
+		\item 1 = values are amount of discard in either biomass or numbers according to the selection made for retained catch
+		\item 2 = values are fraction (in biomass or numbers) of total catch discarded; bio/num selection matches that of retained catch
+		\item 3 = values are in numbers (thousands) of fish discarded, even if retained catch has units of biomass
+	\end{itemize}
+	\item[Discard Error Structure]\hfill\\
+	The four options for discard error are:
+	\begin{itemize}
+		\item >= 1 = degrees of freedom for Student's t-distribution used to scale mean body weight deviations.  Value of error in data file in interpreted as CV of the observation.
+		\item 0 = normal distribution, value of error in data file in interpreted as CV of the observation
+		\item -1 = normal distribution, value of error in data file is interpreted as standard error of the observation
+		\item -2 = lognormal distribution, value of error in data file is interpreted as standard error of the observation in log space 
+	\end{itemize}
+	\item[Data Format]\
+	\begin{itemize}
+		\item Since discard refers to catch, its time units are in seasons, not months.
+		\item Year values that are before start year or after end year are excluded from model, so the easiest way to include provisional data in a data file is to put a negative sign on its year value.
+		\item Negative value for fleet causes it to be included in the calculation of expected values, but excluded from the log likelihood.
+		\item Zero (0.0) is a legitimate discard observation, unless lognormal error structure is used.
+		\item Duplicate survey observations are not allowed.
+		\item Observations can be entered in any order, except if the super-period feature is used. 
+	\end{itemize}
+	\item[Cautionary Note]\hfill\\
+	The use of CV as the measure of variance can cause a small discard value to appear to be overly precise, even with the minimum standard error (std. err.) of the discard observation set to 0.001.  In the control file, there is an option to add an extra amount of variance.  This amount is added to the standard error, not to the CV, to help correct this problem of underestimated variance.
+\end{description}
+
+\subsubsection{Mean Body Weight}
+This is the overall mean body weight across all selected sizes and ages.  This may be useful in situations where individual fish are not measured but mean weight is obtained by counting the number of fish in a specified sample, e.g. a 25 kg basket.  Version 3.24r added the capability to use mean length data by modifying the mean weight data approach.  Now observations can be entered in terms of mean length by setting switching the partition code to 10=all, 11=discard, and 12=retained rather than the 0, 1, and 2 typically used with the mean body weight approach.
+
+\begin{center}
+	\begin{tabular}{p{2cm} p{2cm} p{2cm} p{2cm} p{2cm} p{2cm}}
+		\multicolumn{5}{l}{\#Mean Body Weight Data Section}\\
+		\hline
+		%\\
+		30 & \multicolumn{5}{l}{\parbox{11cm }{\#Degrees of freedom for Student's t-distribution used to evaluate mean body weight deviation.  This is not a conditional input, must be here even if there are no mean body weight observations.}}\\
+		\hline
+		\#Year & Month & Fleet & Partition & Value & CV \\
+		\hline
+		1990 & 1 & 1 & 0 & 4.0 & 0.95 \\
+		1990 & 1 & 1 & 0 & 1.0 & 0.95 \\
+		-9999& 0 & 0 & 0 & 0   & 0 \\
+		\hline
+	\end{tabular}
+\end{center}
+
+\begin{description}
+	\item[Partition]\hfill\\
+	Mean weight data and composition data require specification of what group the sample originated from (e.g. discard, retained, discard + retained).
+	\begin{itemize}
+		\item 0 = whole catch in units of weight (discard + retained)
+		\item 1 = discarded catch in units of weight
+		\item 2 = retained catch in units of weight
+		\item 10 = whole catch in units of length (discard + retained)
+		\item 11 = discarded catch in units of weight
+		\item 12 retained catch in units of length
+	\end{itemize}
+	\item[Value - Units]\hfill\\
+	Units must correspond to the units of body weight (or mean length in cm), normally in kilograms.  The expected value of mean body weight (or mean length) is calculated in a way that incorporates effect of selectivity and retention.
+	\item[Error]\hfill\\
+	Error is entered as the CV of the observed mean body weight (or mean length)
+\end{description}
+
+\subsubsection{Population Length Bins}
+The beginning of the length composition section sets up the bin structure for both the population and for the length composition data.
+
+\begin{center}
+	\begin{tabular}{p{2cm} p{5cm} p{8cm}}
+		\hline
+		1 & 1 = use data bins &  \multirow{1}{8cm}[-0.1cm]{Length bin method - creates a conditional read situation below.} \\
+		  & 2 = generate from bin width min max below & \\
+		  & 3 = read vector & \\
+		\hline
+		COND = 1 & \multicolumn{2}{l}{Selects option 1, no additional input necessary} \\
+		\hline
+		COND = 2 & \multicolumn{2}{l}{Selects option 2, read 3 additional input values. } \\
+		\multirow{4}{2cm}[-0.1cm]{} & 2 & Bin width \\
+								    & 10 & Lower size of first bin\\
+									& 82 & Lower size of largest bin\\
+		\multicolumn{3}{l}{The number of bins is then calculated from: (max Lread - min Lread)/(bin width) + 1}\\
+		\hline
+		COND = 3 & \multicolumn{2}{l}{Selects option 3 - read 1 value and then read vector of bin boundaries} \\
+		\multirow{2}{2cm}[-0.1cm]{} & 25 & Number of population length bins to be read\\ 
+									& 26 28 30 ... & Vector containing lower edge of each population size bin \\
+		\hline
+		\multicolumn{3}{l}{End of conditional inputs for length bin method.}\\
+		\hline										  
+	\end{tabular}
+	
+\end{center}
+\begin{description}
+	\item[Notes:]\
+	\begin{itemize}
+		\item For option 2, bin width should be a factor of min size and max size.  For options 2 and 3, the population length bins must not be wider than the length data bins, but the boundaries of the bins do not have to align.  In SS\textunderscore v3.02B and earlier, the data boundaries needed to align with the population boundaries but this requirement has been removed.  The transition matrix is output to checkup.sso.
+		\item The mean size at age 0.0 (virtual recruitment age) is set equal to the min size of the first population length bin.
+		\item When using more population length bins than data bins, SS will run slower (more calculations to do), the calculated weights at age will be less aliased by the bin structure, and you may or may not get better fits to your data.
+		\item While exploring the performance of models with finer bin structure, a potentially pathological situation has been identified.  When the bin structure is coarse (note that some applications have used 10 cm bin widths for the largest fish), it is possible for a selectivity slope parameter or a retention parameter to become so steep that all of the action occurs within the range of a single size bin.  In this case, the model will lose the gradient of the log likelihood with respect to that parameter and convergence will be hampered.  A generic guidance to avoid this situation is not yet available.
+	\end{itemize}
+\end{description}
+
+%\begin{description}
+%	\item[Length Composition Data Specifications]\
+%\end{description}
+
+\begin{center}
+	\begin{tabular}{p{2cm} p{2cm} p{2cm} p{2cm} p{2cm} p{2cm} p{2cm}}
+		\multicolumn{6}{l}{Specify bin compression and error structure for length composition data:}\\
+		\hline
+		\#Min Tail Compression & Constant added to proportions & Combine males \& females & Compress Bins & Error Distribution & Dirichlet Parameter Number & \\
+		\hline
+		0 & 0.0001 & 0 & 0 & 0 & 0 & \#Fleet 1\\
+		0 & 0.0001 & 0 & 0 & 0 & 0 & \#Fleet 2\\
+		\hline
+	\end{tabular}
+\end{center}
+
+\begin{description}
+	\item[Minimum Tail Compression]\hfill\\
+	Compress tails of composition until observed proportion is greater than this value; negative value causes no compression; Advise using no compression if data are very sparse, and especially if the set-up is using agecomp within length bins because of the sparseness of these data.
+	\item[Added Constant]\hfill\\
+	Constant added to observed and expected proportions at length and age to make logL calculations more robust.  Tail compression occurs before adding this constant.  Proportions are renormalized to sum to 1.0 after constant is added.
+	\item[Combine Males \& Females]\hfill\\
+	Combine males into females at or below this bin number.  This is useful if the gender determination of very small fish is doubtful so allows the small fish to be treated as combined gender.  If CombGender>0, then add males into females for bins 1 thru this number, zero out the males, set male data to start at the first bin above this bin.  Note that CombGender is entered as a bin index, not as the size associated with that bin.  Comparable option is available for age composition data.
+	\item[Error Distribution]\
+	\begin{itemize}
+		\item 0 = Multinomial Error
+		\item 1 = Dirichlet Error
+	\end{itemize}
+	\item[Dirichlet Parameter Number]\hfill\\
+	If the dirichlet error distribution is selected a number of parameters must be specified.
+	\item[Notes:]\
+	\begin{itemize}
+		\item The tail compression and added constant are used in the processing of both the length composition and the age composition data.  They do not apply to the generalized size composition data.
+		\item If broad length bins are used, then beware of steep selectivity and retention parameters.  An overly steep curve can disappear within the domain of a single length bin, thus causing ADMB to lose track of its gradient.
+		\item The mean weight-at-length, maturity-at-length and size-selectivity are based on the mid-length of the population bins.  So these quantities will be rougher approximations if broad bins are defined.
+		\item Provide a wide enough range of population size bins so that the mean body weight-at-age will be calculated correctly for the youngest and oldest fish.  If the growth curve extends beyond the largest size bin, then these fish will be assigned a length equal to the mid-bin size for the purpose of calculating their body weight.
+		\item More bins create a bigger model internal structure and slower run times.
+		\item When fish recruit at age 0.0, they are assigned a size equal to the lower edge of the smallest population size bin.
+		\item Fish smaller than the first data bin are placed in the first bin.
+	\end{itemize}
+\end{description}
+
+\subsubsection{Length Composition Data}
+\begin{center}
+	\begin{tabular}{p{1.5cm} p{1.5cm} p{1.5cm} p{1.5cm} p{1.5cm} p{1.5cm} p{5cm}}
+		\hline
+		\multicolumn{2}{l}{30} & \multicolumn{5}{l}{\#Number of length bins for data}\\
+		\hline
+		\multicolumn{2}{l}{26 28 30 ... 88 90} &  \multicolumn{5}{l}{\#Vector of length bins associated with the length data}\\
+		\hline
+		\\ \\
+		\multicolumn{7}{l}{Example of a single length composition observation:} \\
+		\hline
+		\#Year & Month & Fleet & Gender & Partition & Nsamp & data vector\\
+		\hline
+		1986 & 1 & 1 & 3 & 0 & 20 & <female then male data> \\
+		... & ...& ... & ... & ...& ... & ... \\
+		-9999 & 0 & 0 & 0 & 0 & 0 & 0 \\
+		\hline	
+	\end{tabular}
+\end{center}
+
+\begin{description}
+	\item[Gender]\hfill\\
+	If model has only one gender defined in the set-up, all observations must have gender set equal to 0 or 1.  In a 2 gender model, the data vector always has female data followed by male data, even if only one of the two genders has data that will be used.
+	\begin{itemize}
+		\item Gender = 0 means combined male and female (must already be combined and information placed in the female portion of the data vector) (entries in male portion of vector must exist and will be ignored).
+		\item Gender = 1 means female only (male entries must exist for correct data reading, then will be ignored).
+		\item Gender = 2 means male only (female entries must exist and will be ignored after being read).
+		\item Gender = 3 means both data from both genders will be used and they are scaled so that they together sum to 1.0
+	\end{itemize}
+	\item[Partition]\hfill\\
+	Partition indicates samples from either discards,retained, or combined.
+	\begin{itemize}
+		\item 0 = combined
+		\item 1 = discard
+		\item 3 = retained
+	\end{itemize}
+	\item[Excluding Data]\
+	\begin{itemize}
+		\item If the value of year is negative, then that observation is not transferred into the working array.  This feature is the easiest way to include observations in a data file but not to use them in a particular model scenario.
+		\item If the value of fleet is negative, then the observation is processed and its logL is calculated, but this logL is not included in the total logL.  This feature allows the user to see the fit to a provisional observation without having that observation affect the model.
+	\end{itemize}
+	\item[Note:]\
+	\begin{itemize}
+		\item Version 3.30 no longer requires that the number of length composition lines to be read be specified.  Entering -9999 at the end of the data matrix will indicate to the model the end of length composition lines to be read.
+		\item Each observation can be stored as one row for ease of data management in a spreadsheet and for sorting of the observations.  However, the 6 header values, the female vector and the male vector could each be on a separate line because ADMB reads values consecutively from the input file and will move to the next line as necessary to read additional values.
+		\item The composition observations can be in any order.  However, if the super-period approach is used, then each super-periods’ observations must be contiguous in the data file.
+	\end{itemize}
+\end{description}
+
+\subsubsection{Age Composition Bin Setup}
+The age composition section begins by reading a definition of the age bin structure, then the definition of ageing imprecision, then the age composition data itself.  The bins are in terms of observed age (here age’).  The ageing imprecision definitions are used to create one or more matrices to translate true age structure into expected age structure in terms of age’.
+
+\begin{center}
+	\begin{tabular}{p{.5cm} p{.5cm} p{.5cm} p{.5cm} p{.5cm} p{.5cm} p{.5cm} p{.5cm} p{.5cm} p{.5cm} p{.5cm} p{.5cm} p{.5cm} p{.5cm} p{.5cm} p{.5cm} p{.5cm}}
+		\hline
+		\multicolumn{2}{l}{17} & \multicolumn{15}{l}{\#Number of age' bins;} \\
+		\multicolumn{2}{l}{}   & \multicolumn{15}{l}{\#can be equal to 0 if age data not used;}\\
+		\multicolumn{2}{l}{}   & \multicolumn{15}{l}{\#do not include a vector of agebins if Nage' bins is set equal to 0.}\\
+		\hline
+		1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 & 11 & 12 & 13 & 14 & 15 & 20 & 25 \\
+		\hline		
+	\end{tabular}
+\end{center}
+Above is the vector with lower age of age' bins.  The first and last bins work as accumulators.  So in this example any age 0 fish that are caught would be accumulated into the age’1 bin.
+
+\subsubsection{Ageing Error}
+Here, the capability to create a distribution of age’ (e.g. age with possible bias and imprecision) from true age is created.  One or many age error definitions can be created.  For each, there is input of a vector of mean age’ and stddev of age’.  For one definition, the input vectors can be replaced by vectors created from estimable parameters.  In the future, capability to read a full age’ – age matrix could be created.
+
+\begin{center}
+	\begin{tabular}{p{2cm} p{2cm} p{2cm} p{2cm} p{3cm} }
+		\hline
+		\multicolumn{1}{l}{2} & \multicolumn{4}{l}{\# Number of ageing error matrices to generate}\\
+		\hline
+		\# Age-0 & Age-1 & Age-2  &  ... & Max Age\\
+		\hline
+		-1 & -1 & -1  & ... & -1 \\
+		0.001 & 0.001 & 0.001 & ... & 0.001 \\
+		\hline
+		0.5 & 1.5 & 2.3 & ... & Max Age + 0.5 \\
+		0.5 & 0.65 & 0.67 & ... & 4.3 \\
+		\hline
+	\end{tabular}
+\end{center}
+The above table shows the values for the first 3 ages for each of two age transition definitions: the first defines a matrix with no bias and negligible imprecision and the second shows a small negative bias beginning at age 2.
+
+\begin{description}
+	\item[Note:]\
+	\begin{itemize}		
+		\item If no age data, there can be 0 vectors.
+		\item In principle, one could have year or laboratory specific matrices.
+		\item For each matrix, enter a vector with mean age’ for each true age; if there is no ageing bias, then set age’ equal to true age + 0.5.  Alternatively, -1 value for mean age’ means to set it equal to true age plus 0.5.  The addition of +0.5 is needed so that fish will get assigned to the intended interger age’.
+		\item The length of the input vector is Nage+1, with the first entry being for age 0 fish and the last for fish of age Nage. The following line is a a vector with the standard deviation (stddev) of age’ for each true age.
+		\item SS is able to create one ageing error matrix from parameters, rather than from an input vector.  The range of conditions in which this new feature will perform well has not been evaluated, so it should be considered as a preliminary implementation and subject to modification.
+			\begin{itemize}
+				\item To invoke this option, for the selected ageing error vector, set the stddev of ageing error to a negative value for age 0.  This will cause creation of an ageing error matrix from parameters and any age or size-at-age data that specify use of this age error pattern will use this matrix. Then in the control file, add 7 parameters below the cohort growth dev parameter.  These parameters are described in the control file section of this manual.
+			\end{itemize}			  
+	\end{itemize}
+\end{description}
+
+\begin{center}
+	\begin{tabular}{p{2cm} p{2cm} p{2cm} p{2cm} p{2cm} p{2cm} p{2cm}}
+		\multicolumn{6}{l}{Specify bin compression and error structure for age composition data:}\\
+		\hline
+		\#Min Tail Compression & Constant added to proportions & Combine males \& females & Compress Bins & Error Distribution & Dirichlet Parameter Number & \\
+		\hline
+		0 & 0.0001 & 1 & 0 & 0 & 0 & \#Fleet 1\\
+		0 & 0.0001 & 1 & 0 & 0 & 0 & \#Fleet 2\\
+		0 & 0.0001 & 1 & 0 & 0 & 0 & \#Survey 2\\
+		\hline
+		1 & \multicolumn{6}{l}{Bin method for age data}\\
+		  & \multicolumn{6}{l}{1 = value refers to population bin index}\\
+		  & \multicolumn{6}{l}{2 = value refers to data bin index}\\
+		  & \multicolumn{6}{l}{3 = value is actual length (which must correspond to population }\\
+		  & \multicolumn{6}{l}{length bin boundary)}\\
+	    \hline
+	    %26 & \multicolumn{6}{l}{\# Number of age observations}
+	\end{tabular}
+\end{center}
+
+\begin{center}
+	\begin{tabular}{p{1cm} p{1cm} p{1cm} p{1cm} p{1.5cm} p{1cm} p{1.5cm} p{1.5cm} p{1cm} p{2.5cm}}
+		\multicolumn{10}{l}{An example age composition observation:}\\
+		\hline
+		\#Year & Month & Fleet & Gender & Partition & AgeErr & Lbin lo & Lbin hi & Nsamp & Data Vector \\
+		\hline
+		1987 & 1 & 1 & 3 & 0 & 2 & -1 & -1 & 79 & <enter data values>\\
+		-9999 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0\\
+		\hline
+	\end{tabular}
+\end{center}
+
+\begin{description}
+	\item[Note:]\
+	\begin{itemize}		
+		\item Syntax for Gender, Partition, and data vector are same as for length.
+		\item Ageerr identifies which ageing error matrix to use to generate expected value for this observation.
+		\item The data vector has female values then male values, just as for the length composition data.
+		\item As with the length comp data, a negative value for year causes the observation to not be read into the working matrix, a negative value for fleetcauses the observation to be included in expected values calculation, but not in contribution to total logL.
+		\item Lbin lo, and Lbin hi are the range of length bins that this age composition observation refers to.  Normally these are entered with a value of 1 and Maxbin.  Whether these are entered as population bin number, length data bin number, or actual length is controlled by the value of the length bin range method above.
+		\begin{itemize}
+			\item Entering value of 0 or –1 for Lbin lo converts Lbin lo to 1;
+			\item Entering value of 0 or -1 for Lbin hi converts Lbin hi to Maxbin;
+			\item It is strongly advised to use the “-1” codes to select the full size range.  If you use explicit values, then the model could unintentionally exclude information from some size range if the population bin structure is changed.
+			\item In reporting to the comp\textunderscore report.sso, the reported Lbin\textunderscore lo and Lbin\textunderscore hi values are always converted to actual length.
+		\end{itemize}			  
+	\end{itemize}
+\end{description}
+
+\subsubsection{Conditional Age'-at-Length}
+Use of conditional age’-at-length will greatly increase the total number of age’ composition observations and associated model run time, but it is a superior approach for several reasons.  First, it avoids double use of fish for both age’ and size information because the age’ information is considered conditional on the length information.  Second, it contains more detailed information about the relationship between size and age so provides stronger ability to estimate growth parameters, especially the variance of size-at-age.  Lastly, where age data are collected in a length-stratified program, the conditional age’-at-length approach can directly match the protocols of the sampling program.
+
+In a two gender model, it is best to enter these conditional age’-at-length data as single gender observations (gender =1 for females and = 2 for males), rather than as joint gender observations (gender = 3).  In this way, it isolates the age composition data from any gender selectivity as well.
+
+When Lbin\textunderscore lo and Lbin\textunderscore hi are used to select a subset of the total size range, the expected value for these age’ data is calculated within that specified size range, so is age’ conditional on length.
+
+\subsubsection{Sex Ratio-at-Length}
+The conditional age’-at-length approach can be used to analyze sex ratio-at-length data.  If you have no age data, then the following simple setup will allow entry of sex-ratio at length.  Note that it must use the joint gender (code 3) approach.
+
+\begin{center}
+	\begin{tabular}{p{1cm} p{1cm} p{1cm} p{1cm} p{1cm} p{1cm} p{1cm} p{1cm} p{1cm} p{0.2cm} p{0.2cm} p{.2cm} p{.2cm} p{.2cm} p{.2cm} p{.2cm} p{0.2cm} }
+		\multicolumn{17}{l}{\#Example setup for sex ratio-at-length data:}\\
+		\hline
+		1 & \multicolumn{16}{l}{\#N age bins so all fish are put into a single "age" bind regardless of their true age}\\
+		\hline
+		10 & \multicolumn{16}{l}{\#Assigned "age" for this one bin}\\
+		\hline
+		1  & \multicolumn{16}{l}{\#N of age error definitions}\\
+		\hline
+		10.5 & 10.5 & 10.5 & 10.5 & ... & \multicolumn{12}{l}{repeat for each true age in model, beginning at age-0}\\
+		0.001 & 0.001 & 0.001 & 0.001 & ... & \multicolumn{12}{l}{repeat for each true age in model, beginning at age-0}\\
+		\hline
+		1 & \multicolumn{16}{l}{\# Lbin method: 1 = population length bins, 2 = data length bins, 3 = lengths}\\
+		\hline
+		0 & \multicolumn{16}{l}{\#Combine males and females at or below this bin number}\\
+		\hline
+		\multicolumn{17}{l}{\#There are 4 females and 8 males in the 25th population length bin}\\
+		\hline
+		\#Yr & Month & Fleet & Gender & Part & AgeErr & Lbinlo & Lbinhi & Nsamp & & & & & & & \\
+		\hline
+		1971 & 1 & 1 & 3 & 0 & 1 & 25 & 25 & 12 & 0 & 4 & 0 & 0 & 8 & 0 & ...\\
+		-9999  & \multicolumn{16}{l}{}\\
+		\hline
+	\end{tabular}
+\end{center}
+
+If you have both real age data and sex ratio at length data, then you will need to set up the number of age bins to match the real age data, define an additional age error type to use for the sex ratio data, put the sex ratio data into the correct bin.  For example:
+
+\begin{center}
+	\begin{tabular}{p{1cm} p{1cm} p{1cm} p{1cm} p{1cm} p{1cm} p{1cm} p{1cm} p{1cm} p{0.2cm} p{0.2cm} p{.2cm} p{.2cm} p{.2cm} p{.2cm} p{.2cm} p{0.2cm} }
+		\hline
+		5 & \multicolumn{16}{l}{\#N age bins so all fish are put into a single "age" bind regardless of their true age}\\
+		\hline
+		1 2 3 4 5 & \multicolumn{16}{l}{\#Assigned "age" for this one bin}\\
+		\hline
+		2  & \multicolumn{16}{l}{\#N of age error definitions}\\
+		\hline
+		-1 & 1 & 1 & 1 & ... & \multicolumn{12}{l}{repeat for each true age in model, beginning at age-0}\\
+		0.2 & 0.4 & 0.5 & 0.8 & ... & \multicolumn{12}{l}{repeat for each true age in model, beginning at age-0}\\
+	    3.5 & 3.5 & 3.5 & 3.5 & ... & \multicolumn{12}{l}{repeat for each true age in model, beginning at age-0}\\
+	    0.001 & 0.001 & 0.001 & 0.001 & ... & \multicolumn{12}{l}{repeat for each true age in model, beginning at age-0}\\
+		\hline
+		1 & \multicolumn{16}{l}{\# Lbin method: 1 = population length bins, 2 = data length bins, 3 = lengths}\\
+		\hline
+		0 & \multicolumn{16}{l}{\#Combine males and females at or below this bin number}\\
+		\hline
+		\multicolumn{17}{l}{\#There are 4 females and 8 males in the 25th population length bin}\\
+		\hline
+		\#Yr & Month & Fleet & Gender & Part & AgeErr & Lbinlo & Lbinhi & Nsamp & & & & & & & \\
+		\hline
+		1971 & 1 & 1 & 3 & 0 & 1 & -1 & -1 & 25 & 1 & 2 & 4 & ... &\multicolumn{3}{l}{\#real age}\\
+		     &   &   &   &   &   &    &    &    &   &   &   &     &\multicolumn{3}{l}{data 5}\\
+		1971 & 1 & 1 & 3 & 0 & 1 & 25 & 25 & 12 & 0 & 0 & 4 & ... &\multicolumn{3}{l}{\#sex ratio}\\
+		     &   &   &   &   &   &    &    &    &   &   &   &     &\multicolumn{3}{l}{in bin 3}\\
+		-9999  & \multicolumn{16}{l}{}\\
+		\hline
+	\end{tabular}
+\end{center}
+
+\subsubsection{Mean Length or Body Weight-at-Age}
+SS also accepts input of mean length-at-age’ or mean bodywt-at-age’.  This is done in terms of age’, not true age, to take into account the effects of ageing imprecision on expected mean size-at-age’.  If the value of “AgeErr” is positive, then the observation is interpreted as mean length-at-age’.  If the value of “AgeErr” is negative, then the observation is interpreted as mean bodywt-at-age’ and the abs(AgeErr) is used as AgeErr.
+
+\begin{center}
+	\begin{tabular}{p{1cm} p{1cm} p{1cm} p{1cm} p{1cm} p{1cm} p{1cm} p{1cm} p{1cm} p{1cm} p{1cm}}
+		\multicolumn{11}{l}{An example observation:}\\
+		\hline
+		\#Yr & Month & Fleet & Gender & Part & AgeErr & Nsamp & Female Data & Male Data & Female N & Male N \\
+		\hline
+		1989 & 1 & 1 & 3 & 0 & 2 & 999 &<Mean size values> & <Mean size values> & <N fish> & <N fish>\\
+		-9999 & \multicolumn{10}{l}{}\\
+		\hline
+	\end{tabular}
+\end{center}
+
+\begin{description}
+	\item[Note:]\
+	\begin{itemize}
+		\item Nsamp value is ignored if positive, but a negative value will cause the entire observation to be ignore.
+		\item Negatively valued mean size entries with be ignored in fitting.
+		\item Nfish value of 0 will cause mean size value to be ignored in fitting.
+		\item Negative value for year causes observation to not be included in the working matrix.
+		\item Each genders' data vector and N fish vector has length equal to the number of age' bins.
+		\item Where age data are being entered as conditional age’-at-length and growth parameters are being estimated, it may be useful to include a mean length-at-age vector with nil emphasis to provide another view on the model’s estimates.
+		
+	\end{itemize}
+\end{description}
+
+\subsubsection{Environmental Data}
+SS accepts input of time series of environmental data.  Parameters can be made to be time-varying by making them a function of one of these environmental time series.
+
+\begin{center}
+	\begin{tabular}{p{3cm} p{3cm} p{3cm}}
+		\multicolumn{3}{l}{\# Parameter values can be a function of an environmental data series: }\\
+		\hline
+		2 & \multicolumn{2}{l}{\#Number of environmental variables}\\
+		\hline
+		10 & \multicolumn{2}{l}{\#Number of environmental observations}\\
+		\hline
+		\multicolumn{3}{l}{\# Example of 2 environmental observations:}\\
+		\hline
+		\#Year & Variable & Value \\
+		\hline
+		1990 & 1 & 0.10 \\
+		1991 & 1 & 0.15 \\
+		\hline
+	\end{tabular}
+\end{center}
+
+\begin{description}
+	\item[Note:]\
+	\begin{itemize}
+		\item Any years for which environmental data are not read are assigned a value of 0.0.
+		\item It is permissible to include a year that is one year before the start year in order to assign environmental conditions for the initial equilibrium year.  But this works only for recruitment parameters, not biology or selectivity parameters.
+		\item Environmental data can be read for up to 100 years after the end year of the model.  Then, if the recruitment-environment link has been activated, the future recruitments will be influenced by any future environmental data.  This could be used to create a future “regime shift” by setting historical values of the relevant environmental variable equal to zero and future values equal to 1, in which case the magnitude of the regime shift would be dictated by the value of the environmental linkage parameter.  Note that only future recruitment and growth can be modified by the environmental inputs; there are no options to allow environmentally-linked selectivity in the forecast years.
+	\end{itemize}
+\end{description}
+
+\subsubsection{Generalized Size Composition Data}
+A new feature with SS\textunderscore v3 is a generalized approach to size composition information.  It was designed initially to provide a means to include weight frequency data, but was implemented to provide a generalized capability.  The user can define as many size frequency methods as necessary.
+
+\begin{itemize}
+	\item Each method has a specified number of bins.
+	\item Each method has "units" so the frequencies can be in units of biomass or numbers.
+	\item Each method has “scale” so the bins can be in terms of weight or length (including ability to convert bin definitions in pounds or inches to kg or cm). 
+	\item The composition data is input as females then males, just like all other composition data in SS.  So, in a two-gender model, the new composition data can be combined gender, single gender, or both gender.
+	\item If a retention function has been defined, then the new composition data can be from the combined discard + retained, discard only or retained only.
+\end{itemize}
+
+\begin{center}
+	\begin{tabular}{p{1.4cm} p{0.5cm} p{13 cm}}
+		\multicolumn{3}{l}{Example entry:}\\
+		\hline
+		2 &  & \#N of weight frequency methods\\
+		\hline
+		25 & 4 & \#Nbins per method\\
+		\hline
+		2 & 1 & \#Units per each method (1 = biomass, 2 = numbers)\\
+		\hline
+		3 & 2 & \#Scale per each method (1 = kg, 2 = lbs, 3 = cm, 4 = inches)\\
+		\hline
+		0.00001 & -1 & \#Min compression to add to each observation (entry for each method)\\
+		\hline
+		40 & 5 & \#N observations per weight frequency method \\
+		\hline
+	\end{tabular}
+\end{center}
+
+\begin{center}
+	\begin{tabular}{p{0.4cm} p{0.4cm} p{0.4cm} p{0.4cm} p{0.4cm} p{0.4cm} p{0.5cm} p{0.5cm} p{0.5cm} p{0.5cm} p{0.5cm} p{0.5cm} p{0.5cm} p{0.5cm} p{0.5cm} p{0.5cm} p{0.5cm} p{0.5cm} p{0.5cm} p{0.25cm}}
+		\multicolumn{18}{l}{Then enter the lower edge of the bins for each method. The two row vectors shown}\\
+		\multicolumn{18}{l}{below contain the bin definitions for methods 1 and 2 respectively:}\\
+		\hline
+		26 & 28 & 30 & 32 & 34 & 36 & 38 & 40 & 42 & ... & 60 & 62 & 64 & 68 & 72 & 76 & 80 & 90\\
+		1 & 2.4 & 4 & 9 & ... & ... & ... & ... & ... & ... & ... & ... & ... & ... & ... & ... & ... & 1 \\
+		\hline 
+	\end{tabular}
+\end{center}
+
+\begin{description}
+	\item[Note:]\
+	\begin{itemize}
+		\item There is no tail compression for generalized size frequency data.
+		\item Super-period capability is enabled for generalized size comps beginning with V3.20.
+		\item There are two options for treating fish that in population size bins that are smaller than the smallest size frequency bin.
+		\begin{itemize}
+			\item Option 1:  By default, these fish are excluded (unlike length composition data where the small fish are automatically accumulated up into the first bin.
+			\item Option 2:  If the first size bin is given a negative value, then:  accumulation is turned on and the negative of the entered value is used as the lower edge of the first size bin;
+		\end{itemize}
+		\item By choosing units=2 and scale=3, the size comp method can be nearly identical to the length comp method if the bins are set identically;
+		\item Bin boundaries can be real numbers so obviously do not have to align with population length bin boundaries, SS interpolates as necessary;
+		\item Size bins cannot be defined to be narrower than the population binwidth; an untrapped error will occur;
+		\item Because the transition matrix can depend upon weight-at-length, it is calculated internally for each gender and for each season because weight-at-length can differ between genders and can vary seasonally.
+	\end{itemize}
+\end{description}
+
+An example observation is below.  Note that its format is identical to the length composition data, including gender and partition options, except for the addition of the first column to indicate the size frequency method.
+
+\begin{center}
+	\begin{tabular}{p{1.5cm} p{1cm} p{1cm} p{1cm} p{1cm} p{1cm} p{1cm} p{5cm}}
+		\hline
+		\#Method & Year & Month & Fleet & Gender & Part & Sample Size & <composition females then males>\\
+		\hline
+		1 & 1975 & 1 & 1 & 3 & 0 & 43 & <data> \\
+		\hline
+	\end{tabular}
+\end{center}
+
+\subsubsection{Tag-Recapture Data}
+The ability to analyze tag-recapture data has been introduced with SS\textunderscore v3.  Each released tag group is characterized by an area, time, gender and age at release.  Each recapture event is characterized by a time and fleet.  Because SS fleet’s each operate in only one area, it is not necessary to record the area of recapture.  Inside the model, the tag cohort is apportioned across all growth patterns in that area at that time (with options to apportion to only one gender or to both).  The tag cohort x growth pattern then behaves according to the movement and mortality of that growth pattern.  The number of tagged fish is modeled as a negligible fraction of the total population.  This means that a tagging event does not move fish from an untagged group to a tagged group.  Instead it acts as if the tags are seeded into the population with no impact at all on the total population abundance or mortality.  The choice to require assignment of a predominant age at release for each tag group is a pragmatic coding and model efficiency choice.  By assigning a tag group to a single age, rather than distributing it across all possible ages according to the size composition of the release group, it can be tracked as a single diagonal cohort through the age x time matrix with minimal overhead to the rest of the model.  Tags are considered to be released at the beginning of a season (period).
+
+\begin{center}
+	\begin{tabular}{p{1.1cm} p{1.1cm} p{1.1cm} p{1.1cm} p{1.1cm} p{1.1cm} p{1.1cm} p{1.1cm} p{1.1cm}}
+		\multicolumn{9}{l}{Example set-up for tagging data:}\\
+		\hline
+		1 & & \multicolumn{7}{l}{\#Do tags - if this value is 0, then omit all entries below}\\
+		\hline
+		\multicolumn{9}{l}{COND = 1 All subsequent tag-recapture entries must be omitted if "Do Tags" = 0}\\
+		%\hline
+		 & 3 & \multicolumn{7}{l}{\#Number of tag groups}\\
+		 \hline
+		 & 12 & \multicolumn{7}{l}{\#Number of recapture events}\\
+		 \hline
+		 & 2 & \multicolumn{7}{l}{\#Mixing latency period: N periods to delay before comparing }\\
+		 &   &  \multicolumn{7}{l}{observed to expected recoveries (0 = release period)}\\
+		 \hline
+		 & 10 & \multicolumn{7}{l}{\#Max periods (months) to track recoveries, after which tags enter}\\
+		 &    & \multicolumn{7}{l}{ accumulator}\\
+		 \hline
+		 & \multicolumn{8}{l}{\#Release Data} \\
+		 & \#TG & Area & Year & Month & <tfill> & Gender & Age & N Release\\ 
+		 \hline
+		 & 1 & 1 & 1980 & 1 & 999 & 0 & 24 & 2000 \\
+		 & 2 & 1 & 1995 & 1 & 999 & 1 & 24 & 1000 \\
+		 & 3 & 1 & 1985 & 1 & 999 & 2 & 24 & 10 \\
+		 \hline
+		 & \multicolumn{8}{l}{\#Recapture Data}\\
+		 & \#TG &  & Year&  & Month &  & Fleet  & Number\\ 
+		 \hline
+		 & 1 & & 1982 & & 1 & & 1 & 7 \\
+		 & 1 & & 1982 & & 1 & & 2 & 5 \\
+		 & 1 & & 1985 & & 1 & & 2 & 0 \\
+		 & 2 & & 1997 & & 1 & & 1 & 6 \\
+		 & 2 & & 1997 & & 2 & & 1 & 4 \\
+		 & 3 & & 1986 & & 1 & & 1 & 7 \\
+		 & 3 & & 1986 & & 2 & & 1 & 5 \\
+		 \hline
+	\end{tabular}
+\end{center}
+
+\begin{description}
+	\item[Note:]\
+	\begin{itemize}
+		\item The release data must be enter in TG order.
+		\item <tfill> values are place holders and are replaced by program generated values for model time.
+	\end{itemize}
+\end{description}
+
+\subsubsection{Stock Composition Data}
+It is sometimes possible to observe the fraction of a sample that is composed of fish from different stocks.  These data could come from genetics, otolith microchemistry, tags or other means.  The growth pattern feature in SS allows definition of cohorts of fish that have different biological characteristics and which are independently tracked as they move among areas.  SS now incorporates the capability to calculate the expected proportion of a sample of fish that come from different growth patterns.  In the inaugural application of this feature, there was a 3 area model with one stock spawning and recruiting in area 1, the other stock in area 3, then seasonally the stocks would move into area 2 where stock composition observations were collected, then they moved back to their natal area later in the year.
+
+\begin{center}
+	\begin{tabular}{p{1.1cm} p{1.1cm} p{1.1cm} p{1.1cm} p{1.1cm} p{1.1cm} p{1.1cm} p{1.1cm} p{1.1cm}}
+		\multicolumn{9}{l}{Stock composition data can be entered in SS as follows:}\\
+		\hline
+		1 &  \multicolumn{8}{l}{\#Do morphcomp (if zero, then do not enter any further input below)}\\
+		\hline
+		\multicolumn{9}{l}{COND = 1}\\ 
+		& 3 & \multicolumn{7}{l}{\#Number of observations}\\
+		\hline
+		& 2 & \multicolumn{7}{l}{\#Number of stocks}\\
+		\hline
+		& 0.0001 & \multicolumn{7}{l}{\#Minimum Compression}\\
+		\hline
+		& \#Year & Month & Fleet & Part & Nsamp & \multicolumn{3}{l}{Data Vector} \\
+		\hline
+		& 1980 & 1 & 1 & 0 & 36 & 0.4 & 0.6 & ...\\
+		& 1981 & 1 & 1 & 0 & 40 & 0.44 & 0.62 & ...\\
+		& 1982 & 1 & 1 & 0 & 50 & 0.49 & 0.50 & ...\\
+		\hline
+	\end{tabular}
+\end{center}
+
+\begin{description}
+	\item[Note:]\
+	\begin{itemize}
+		\item The N stocks entered with these data must match the N growth patterns in the control file.
+		\item The expected value is combined across genders.
+		\item The “partition” flag is included here in the data, but cannot be used because the expected value is calculated before the catch is partitioned into discard and retained components.
+		\item Note that there is a specific value of mincomp to add to all values of observed and expected.
+	\end{itemize}
+\end{description}
+
+\begin{tabular}{p{2cm} p{13cm}}
+	\multicolumn{2}{l}{End of Data File}\\
+	\hline
+	999 & \#End of data file marker\\
+	\hline
+\end{tabular}
+
+\subsubsection{Excluding Data}
+Data that are <styr or > retroyr are not moved into the internal working arrays at all.  So if you have any alternative observations that are used in some model runs and not in others, you can simply give them a negative year value rather than having to comment them out and revise the observation read counter. The first output to data.ss\textunderscore new has the unaltered and complete input data.  Subsequent reports to data.ss\textunderscore new produce expected values or bootstraps only for the data that are being used.  Note that the Nobs values are adjusted accordingly.
+
+Data that are to be included in the calculations of expected values, but excluded from the calculation of negative log likelihood, are flagged by use of a negative value for fleet ID.
+
+\subsubsection{Data Super Periods}
+The “Super-Period” capability allows the user to introduce data that represent a blend across a set of time steps and to cause the model to create an expected value for this observation that uses the specified set of time steps.  The option is available for all types of data and a similar syntax is used.  The syntax is revised for SS version 3.23 and higher.  Previously, super-periods were started with a -9999 flag in a standard error (se) or Nsamp field and then stopped with a -9998 flag in that field.  This was cumbersome and did not allow for super-periods with only 2 time periods.  With model version 3.23 and higher, super-periods are started with a negative value for season, and then stopped with a negative value for season, placeholder observations within the super-period are designated with a negative fleet field.  The standard error (se) or Nsamp field is now used for weighting of the expected values.  An error message will be generated if the old syntax is used.  Similarly, negative fleet is the sole allowable flag for omitting observations from the log likelihood calculation.   An error message is generated if the super-period does not contain exactly one observation with a positive fleet field.
+
+All super-period observations must be contiguous in the data file.  All but one of the observations in the sequence will have a negative value for fleet ID so the data associated with these dummy observations will be ignored. The observed values must be combined outside of the model and then inserted into the data file for the one observation with a positive fleet ID.
+An expected value for the observation will be computed for each selected time period within in the super-period.  Beginning with V3.23b, the expected values are weighted according to the values entered in the se (or Nsamp) field for all observations expect the single observation holding the combined data.  The expected value for that year gets a relative weight of 1.0.  So in the example below, the relative weights are:  1982, 1.0 (fixed); 1983, 0.85; 1985, 0.4; 1986, 0.4.  These weights are summed and rescaled to sum to 1.0, and are output in the echoinput.sso file.
+
+Not all time steps within the extent of a super-period need be included.  For example, in a 3 season model a super-period could be set up to combine information from season 2 across 3 years, e.g. skip over the season 1 and season 2 for the purposes of calculating the expected value for the super-period.  The key is to create a dummy observation (negative fleet value) for all time steps, except 1, that will be included in the super-period and to include one real observation (positive fleet value; which contains the real combined data from all the specified time steps).
+
+\begin{center}
+	\begin{tabular}{p{1cm} p{1cm} p{1cm} p{1cm} p{1cm} p{8cm}}
+		\multicolumn{6}{l}{Example:}\\
+		\hline
+		\#Year & Month & Fleet & Obs & SE & Comment \\
+		\hline
+		1982 & \textbf{-2} & 3 & 34.2 & 0.3 & Start super-period.  This observation has positive fleet value, so is expected to contain combined data from all identified periods of the super-period.  The se entered here is use as the se of the combined observation.  The expected value for the survey in 1982 will have a relative weight of 1.0 (default) in calculating the combined expected value.\\
+		\hline
+		1983 & 2 & \textbf{-3} & 55 & 0.3 & In super-period; entered obs is ignored.  The expected value for the survey in 1983 will have a relative weight equal to the value in the se field (0.85) in calculating the combined expected value.\\
+		\hline
+		1985 & 2 & \textbf{-3}& 88 & 0.40 & Note that 1984 is not included in the supe-rperiod.  Relative weight for 1985 is 0.4\\
+		\hline
+		1986 & \textbf{-2} & \textbf{-3} & 88 & 0.40 & End super-period\\
+		\hline
+	\end{tabular}
+\end{center}
+
+A time step that is within the time extent of the super-period can still have its own separate observation.  In the above example, the survey observation in 1984 could be entered as a separate observation, but it must not be entered inside of the contiguous block of super-period observations.  For composition data (which allow for replicate observations), a particular time steps observations could be entered as a member of a super-period and as a separate observation.
+
+The super-period concept can also be used to combine seasons within a year with multiple seasons.  This usage could be preferred if fish are growing rapidly within the year so their effective age selectivity is changing within year as they grow; fish are growing within the year so fishery data collected year round have a broader size-at-age modes than a mid-year model approximation can produce; and it could be useful in situations with very high fishing mortality.

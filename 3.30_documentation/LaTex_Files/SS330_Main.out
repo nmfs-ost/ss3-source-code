@@ -1,0 +1,67 @@
+\BOOKMARK [1][-]{section*.2}{List of Figures}{}% 1
+\BOOKMARK [1][-]{section.1}{Introduction}{}% 2
+\BOOKMARK [1][-]{section.2}{New Features 3.30}{}% 3
+\BOOKMARK [1][-]{section.3}{File Organization}{}% 4
+\BOOKMARK [2][-]{subsection.3.1}{Input Files}{section.3}% 5
+\BOOKMARK [2][-]{subsection.3.2}{Output Files}{section.3}% 6
+\BOOKMARK [2][-]{subsection.3.3}{Auxiliary Files}{section.3}% 7
+\BOOKMARK [1][-]{section.4}{Starting SS}{}% 8
+\BOOKMARK [1][-]{section.5}{Computer Requirements and Recommendations}{}% 9
+\BOOKMARK [1][-]{section.6}{Starter}{}% 10
+\BOOKMARK [2][-]{subsection.6.1}{Jitter}{section.6}% 11
+\BOOKMARK [1][-]{section.7}{Forecast}{}% 12
+\BOOKMARK [1][-]{section.8}{Optional Inputs}{}% 13
+\BOOKMARK [2][-]{subsection.8.1}{Empirical Weight-at-Age \(wtatage.ss\)}{section.8}% 14
+\BOOKMARK [2][-]{subsection.8.2}{runnumbers.ss}{section.8}% 15
+\BOOKMARK [2][-]{subsection.8.3}{profilevalues.ss}{section.8}% 16
+\BOOKMARK [1][-]{section.9}{Data File}{}% 17
+\BOOKMARK [2][-]{subsection.9.1}{Overview of Data File}{section.9}% 18
+\BOOKMARK [2][-]{subsection.9.2}{Units of Measure}{section.9}% 19
+\BOOKMARK [2][-]{subsection.9.3}{Time Units}{section.9}% 20
+\BOOKMARK [2][-]{subsection.9.4}{Data File Syntax}{section.9}% 21
+\BOOKMARK [3][-]{subsubsection.9.4.1}{Model Dimensions}{subsection.9.4}% 22
+\BOOKMARK [3][-]{subsubsection.9.4.2}{Fleet Definitions }{subsection.9.4}% 23
+\BOOKMARK [3][-]{subsubsection.9.4.3}{Catch}{subsection.9.4}% 24
+\BOOKMARK [3][-]{subsubsection.9.4.4}{Abundance Indices}{subsection.9.4}% 25
+\BOOKMARK [3][-]{subsubsection.9.4.5}{Discard}{subsection.9.4}% 26
+\BOOKMARK [3][-]{subsubsection.9.4.6}{Mean Body Weight}{subsection.9.4}% 27
+\BOOKMARK [3][-]{subsubsection.9.4.7}{Population Length Bins}{subsection.9.4}% 28
+\BOOKMARK [3][-]{subsubsection.9.4.8}{Length Composition Data}{subsection.9.4}% 29
+\BOOKMARK [3][-]{subsubsection.9.4.9}{Age Composition Bin Setup}{subsection.9.4}% 30
+\BOOKMARK [3][-]{subsubsection.9.4.10}{Ageing Error}{subsection.9.4}% 31
+\BOOKMARK [3][-]{subsubsection.9.4.11}{Conditional Age'-at-Length}{subsection.9.4}% 32
+\BOOKMARK [3][-]{subsubsection.9.4.12}{Sex Ratio-at-Length}{subsection.9.4}% 33
+\BOOKMARK [3][-]{subsubsection.9.4.13}{Mean Length or Body Weight-at-Age}{subsection.9.4}% 34
+\BOOKMARK [3][-]{subsubsection.9.4.14}{Environmental Data}{subsection.9.4}% 35
+\BOOKMARK [3][-]{subsubsection.9.4.15}{Generalized Size Composition Data}{subsection.9.4}% 36
+\BOOKMARK [3][-]{subsubsection.9.4.16}{Tag-Recapture Data}{subsection.9.4}% 37
+\BOOKMARK [3][-]{subsubsection.9.4.17}{Stock Composition Data}{subsection.9.4}% 38
+\BOOKMARK [3][-]{subsubsection.9.4.18}{Excluding Data}{subsection.9.4}% 39
+\BOOKMARK [3][-]{subsubsection.9.4.19}{Data Super Periods}{subsection.9.4}% 40
+\BOOKMARK [1][-]{section.10}{Control File}{}% 41
+\BOOKMARK [2][-]{subsection.10.1}{Overview of Control File}{section.10}% 42
+\BOOKMARK [2][-]{subsection.10.2}{Parameter Line Elements}{section.10}% 43
+\BOOKMARK [2][-]{subsection.10.3}{Control File Syntax}{section.10}% 44
+\BOOKMARK [3][-]{subsubsection.10.3.1}{Biology}{subsection.10.3}% 45
+\BOOKMARK [3][-]{subsubsection.10.3.2}{Read Mortality-Growth Parameters}{subsection.10.3}% 46
+\BOOKMARK [3][-]{subsubsection.10.3.3}{Natural Mortality Notes}{subsection.10.3}% 47
+\BOOKMARK [3][-]{subsubsection.10.3.4}{Growth Notes}{subsection.10.3}% 48
+\BOOKMARK [3][-]{subsubsection.10.3.5}{Growth Patterns \(morphs\) and Sub-Morphs}{subsection.10.3}% 49
+\BOOKMARK [3][-]{subsubsection.10.3.6}{Recruitment, Age, and Growth}{subsection.10.3}% 50
+\BOOKMARK [3][-]{subsubsection.10.3.7}{Cohort Growth Deviation}{subsection.10.3}% 51
+\BOOKMARK [3][-]{subsubsection.10.3.8}{Movement Parameters}{subsection.10.3}% 52
+\BOOKMARK [3][-]{subsubsection.10.3.9}{Recruitment Allocation and Movement Parameters}{subsection.10.3}% 53
+\BOOKMARK [3][-]{subsubsection.10.3.10}{Catch Multiplier}{subsection.10.3}% 54
+\BOOKMARK [3][-]{subsubsection.10.3.11}{Ageing Error Parameters}{subsection.10.3}% 55
+\BOOKMARK [3][-]{subsubsection.10.3.12}{Time-Varying Biology Parameters}{subsection.10.3}% 56
+\BOOKMARK [3][-]{subsubsection.10.3.13}{Notes on Seasonal Biology Parameters}{subsection.10.3}% 57
+\BOOKMARK [3][-]{subsubsection.10.3.14}{Empirical Weight-at-Age \(wtatage.ss\)}{subsection.10.3}% 58
+\BOOKMARK [3][-]{subsubsection.10.3.15}{Spawner-Recruitment}{subsection.10.3}% 59
+\BOOKMARK [3][-]{subsubsection.10.3.16}{Spawner-Recruitment Function}{subsection.10.3}% 60
+\BOOKMARK [3][-]{subsubsection.10.3.17}{Recruitment Eras}{subsection.10.3}% 61
+\BOOKMARK [3][-]{subsubsection.10.3.18}{Recruitment Likelihood}{subsection.10.3}% 62
+\BOOKMARK [3][-]{subsubsection.10.3.19}{Recruitment Bias Adjustment}{subsection.10.3}% 63
+\BOOKMARK [3][-]{subsubsection.10.3.20}{Recruitment Autocorrelation}{subsection.10.3}% 64
+\BOOKMARK [3][-]{subsubsection.10.3.21}{Recruitment Cycle}{subsection.10.3}% 65
+\BOOKMARK [3][-]{subsubsection.10.3.22}{Initial Age Composition}{subsection.10.3}% 66
+\BOOKMARK [3][-]{subsubsection.10.3.23}{Fishing Mortality Method}{subsection.10.3}% 67

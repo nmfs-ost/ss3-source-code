@@ -1,0 +1,100 @@
+% Preamble =========================================================================================
+%\input{preamble}
+
+\documentclass[12pt]{article}
+
+\usepackage{lipsum}
+\usepackage[margin=1in,left=1in,includefoot]{geometry}
+\usepackage{graphicx} %allows for impage import
+\usepackage[hidelinks]{hyper ref} % Allows for clickable links
+\usepackage{sectsty}
+\usepackage{multirow}
+\usepackage{booktabs}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage[none]{hyphenat}
+\usepackage{array}
+\usepackage{lscape}
+\usepackage{geometry}
+\usepackage{pdflscape}
+\usepackage{longtable}
+\usepackage[utf8]{inputenc}
+\usepackage[english]{babel}
+%\usepackage[table]{xcolor}
+\usepackage{colortbl}
+\usepackage{fixltx2e}
+\usepackage{hhline}
+\usepackage{dcolumn}
+\usepackage{hyperref}
+\hypersetup{pdftex,colorlinks=true,allcolors=black}
+\usepackage{hypcap}
+\usepackage{amsmath}
+
+\definecolor{lightgray}{gray}{0.92}
+
+\newcolumntype{L}{>{\centering\arraybackslash}m{3in}}
+%\newcolumntype{L}{>{\centering\arraybackslash}m{2in}}
+%\newcolumntype{L}{>{\centering\arraybackslash}m{1in}}
+
+%\sectionfont{\LARGE}
+%\subsectionfont{\Large}
+%\subsubsectionfont{\large}
+
+\usepackage{float}
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\fancyhead{}
+
+\setlength{\extrarowheight}{1.5pt}
+\setlength{\arraycolsep}{1.5pt}
+
+
+\begin{document}
+	\begin{titlepage}
+			\begin{center}
+				\huge{\bfseries User Manual}\\
+				\huge{\bfseries Stock Synthesis}\\
+				[0.50in]
+				\huge{\bfseries Version 3.30 beta}\\
+				[1in]
+				\huge{August 15, 2015}\\
+				[1in]
+				\huge{Richard D. Methot Jr.}\\
+				NOAA Fisheries\\
+				Seattle, WA USA\\		
+			\end{center}
+		\end{titlepage}
+		
+		% ====== Table of Contents ===================================================
+		\pagenumbering{roman}
+		\tableofcontents
+		\thispagestyle{empty}
+		\cleardoublepage
+		\setcounter{page}{1}
+		\newpage
+		
+		% ====  List of figures ========================================================
+		\renewcommand{\headrulewidth}{0pt} % removes the top line across each page
+		\listoffigures
+		\addcontentsline{toc}{section}{\numberline{}List of Figures}
+		\cleardoublepage
+
+		% ====== Section 1 - 5 =============================================================
+		\pagenumbering{arabic}
+		\input{section1_5}
+		
+		% ======== Section 6: Starter File
+		\input{6starter}
+		% ======== Section 7: Forecast File
+		\input{7forecast}
+		% ======== Section 8: Optional Inputs
+		\input{8optional_inputs}
+		% ======== Section 8: Data File
+		\input{9data}
+		% ======== Section 7: Control File
+		\input{10control}
+		
+\end{document}
+
+
+

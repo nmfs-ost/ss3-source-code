@@ -1,0 +1,68 @@
+\select@language {english}
+\contentsline {section}{\hbox to\@tempdima {\hfil }List of Figures}{i}{section*.2}
+\contentsline {section}{\numberline {1}Introduction}{1}{section.1}
+\contentsline {section}{\numberline {2}New Features 3.30}{1}{section.2}
+\contentsline {section}{\numberline {3}File Organization}{1}{section.3}
+\contentsline {subsection}{\numberline {3.1}Input Files}{1}{subsection.3.1}
+\contentsline {subsection}{\numberline {3.2}Output Files}{2}{subsection.3.2}
+\contentsline {subsection}{\numberline {3.3}Auxiliary Files}{3}{subsection.3.3}
+\contentsline {section}{\numberline {4}Starting SS}{4}{section.4}
+\contentsline {section}{\numberline {5}Computer Requirements and Recommendations}{4}{section.5}
+\contentsline {section}{\numberline {6}Starter}{4}{section.6}
+\contentsline {subsection}{\numberline {6.1}Jitter}{12}{subsection.6.1}
+\contentsline {section}{\numberline {7}Forecast}{12}{section.7}
+\contentsline {section}{\numberline {8}Optional Inputs}{18}{section.8}
+\contentsline {subsection}{\numberline {8.1}Empirical Weight-at-Age (wtatage.ss)}{18}{subsection.8.1}
+\contentsline {subsection}{\numberline {8.2}runnumbers.ss}{19}{subsection.8.2}
+\contentsline {subsection}{\numberline {8.3}profilevalues.ss}{20}{subsection.8.3}
+\contentsline {section}{\numberline {9}Data File}{20}{section.9}
+\contentsline {subsection}{\numberline {9.1}Overview of Data File}{20}{subsection.9.1}
+\contentsline {subsection}{\numberline {9.2}Units of Measure}{21}{subsection.9.2}
+\contentsline {subsection}{\numberline {9.3}Time Units}{21}{subsection.9.3}
+\contentsline {subsection}{\numberline {9.4}Data File Syntax}{22}{subsection.9.4}
+\contentsline {subsubsection}{\numberline {9.4.1}Model Dimensions}{22}{subsubsection.9.4.1}
+\contentsline {subsubsection}{\numberline {9.4.2}Fleet Definitions }{22}{subsubsection.9.4.2}
+\contentsline {subsubsection}{\numberline {9.4.3}Catch}{24}{subsubsection.9.4.3}
+\contentsline {subsubsection}{\numberline {9.4.4}Abundance Indices}{25}{subsubsection.9.4.4}
+\contentsline {subsubsection}{\numberline {9.4.5}Discard}{27}{subsubsection.9.4.5}
+\contentsline {subsubsection}{\numberline {9.4.6}Mean Body Weight}{28}{subsubsection.9.4.6}
+\contentsline {subsubsection}{\numberline {9.4.7}Population Length Bins}{29}{subsubsection.9.4.7}
+\contentsline {subsubsection}{\numberline {9.4.8}Length Composition Data}{32}{subsubsection.9.4.8}
+\contentsline {subsubsection}{\numberline {9.4.9}Age Composition Bin Setup}{33}{subsubsection.9.4.9}
+\contentsline {subsubsection}{\numberline {9.4.10}Ageing Error}{34}{subsubsection.9.4.10}
+\contentsline {subsubsection}{\numberline {9.4.11}Conditional Age'-at-Length}{36}{subsubsection.9.4.11}
+\contentsline {subsubsection}{\numberline {9.4.12}Sex Ratio-at-Length}{36}{subsubsection.9.4.12}
+\contentsline {subsubsection}{\numberline {9.4.13}Mean Length or Body Weight-at-Age}{37}{subsubsection.9.4.13}
+\contentsline {subsubsection}{\numberline {9.4.14}Environmental Data}{38}{subsubsection.9.4.14}
+\contentsline {subsubsection}{\numberline {9.4.15}Generalized Size Composition Data}{38}{subsubsection.9.4.15}
+\contentsline {subsubsection}{\numberline {9.4.16}Tag-Recapture Data}{40}{subsubsection.9.4.16}
+\contentsline {subsubsection}{\numberline {9.4.17}Stock Composition Data}{41}{subsubsection.9.4.17}
+\contentsline {subsubsection}{\numberline {9.4.18}Excluding Data}{42}{subsubsection.9.4.18}
+\contentsline {subsubsection}{\numberline {9.4.19}Data Super Periods}{43}{subsubsection.9.4.19}
+\contentsline {section}{\numberline {10}Control File}{44}{section.10}
+\contentsline {subsection}{\numberline {10.1}Overview of Control File}{44}{subsection.10.1}
+\contentsline {subsection}{\numberline {10.2}Parameter Line Elements}{46}{subsection.10.2}
+\contentsline {subsection}{\numberline {10.3}Control File Syntax}{47}{subsection.10.3}
+\contentsline {subsubsection}{\numberline {10.3.1}Biology}{48}{subsubsection.10.3.1}
+\contentsline {subsubsection}{\numberline {10.3.2}Read Mortality-Growth Parameters}{52}{subsubsection.10.3.2}
+\contentsline {subsubsection}{\numberline {10.3.3}Natural Mortality Notes}{56}{subsubsection.10.3.3}
+\contentsline {subsubsection}{\numberline {10.3.4}Growth Notes}{56}{subsubsection.10.3.4}
+\contentsline {subsubsection}{\numberline {10.3.5}Growth Patterns (morphs) and Sub-Morphs}{57}{subsubsection.10.3.5}
+\contentsline {subsubsection}{\numberline {10.3.6}Recruitment, Age, and Growth}{57}{subsubsection.10.3.6}
+\contentsline {subsubsection}{\numberline {10.3.7}Cohort Growth Deviation}{58}{subsubsection.10.3.7}
+\contentsline {subsubsection}{\numberline {10.3.8}Movement Parameters}{58}{subsubsection.10.3.8}
+\contentsline {subsubsection}{\numberline {10.3.9}Recruitment Allocation and Movement Parameters}{59}{subsubsection.10.3.9}
+\contentsline {subsubsection}{\numberline {10.3.10}Catch Multiplier}{61}{subsubsection.10.3.10}
+\contentsline {subsubsection}{\numberline {10.3.11}Ageing Error Parameters}{61}{subsubsection.10.3.11}
+\contentsline {subsubsection}{\numberline {10.3.12}Time-Varying Biology Parameters}{62}{subsubsection.10.3.12}
+\contentsline {subsubsection}{\numberline {10.3.13}Notes on Seasonal Biology Parameters}{64}{subsubsection.10.3.13}
+\contentsline {subsubsection}{\numberline {10.3.14}Empirical Weight-at-Age (wtatage.ss)}{64}{subsubsection.10.3.14}
+\contentsline {subsubsection}{\numberline {10.3.15}Spawner-Recruitment}{64}{subsubsection.10.3.15}
+\contentsline {subsubsection}{\numberline {10.3.16}Spawner-Recruitment Function}{69}{subsubsection.10.3.16}
+\contentsline {subsubsection}{\numberline {10.3.17}Recruitment Eras}{71}{subsubsection.10.3.17}
+\contentsline {subsubsection}{\numberline {10.3.18}Recruitment Likelihood}{72}{subsubsection.10.3.18}
+\contentsline {subsubsection}{\numberline {10.3.19}Recruitment Bias Adjustment}{72}{subsubsection.10.3.19}
+\contentsline {subsubsection}{\numberline {10.3.20}Recruitment Autocorrelation}{73}{subsubsection.10.3.20}
+\contentsline {subsubsection}{\numberline {10.3.21}Recruitment Cycle}{73}{subsubsection.10.3.21}
+\contentsline {subsubsection}{\numberline {10.3.22}Initial Age Composition}{74}{subsubsection.10.3.22}
+\contentsline {subsubsection}{\numberline {10.3.23}Fishing Mortality Method}{74}{subsubsection.10.3.23}
