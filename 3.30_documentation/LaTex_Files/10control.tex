@@ -596,7 +596,7 @@ These 7 parameters are only included in the control file if one of the ageing er
 
 Until a more complete description and examples are developed, here is the code for creation of the vectors of mean age’ and stddev of age’:
 \\\\
-INSERT CODE HERE
+\includegraphics{age_error}
 \\\\
 The 7 parameters are:
 
@@ -828,9 +828,13 @@ The number of age-0 fish is related to spawning biomass according to a stock-rec
 			\item $Pups\_equil = Pups\_0 * (1 - (LN(1/PPR) - Z\_0)/(Z\_max - Z\_0))^{(1/Beta)} $
 			\item Then, $R\_equil = Pups\_equil * exp(-(1 - (Pups\_equil/Pups\_0)^Beta)*(Z\_max-Z\_0)+Z\_0)$
 		\end{itemize}
-		\item Some example plots for various levels of S\_frac and beta are shown below:
+		\item Code for the survival based recruitment is shown below:
 	\end{itemize}
-	INSERT IMAGE
+		
+	%\includegraphics{survival_1}\\
+	%\includegraphics{survival_2}
+	%\includegraphics{survival_3}
+	\includegraphics{survival_code}
 	
 	\item[Shepherd]\hfil\\
 	The Shepherd stock recruit curve is calculated as:

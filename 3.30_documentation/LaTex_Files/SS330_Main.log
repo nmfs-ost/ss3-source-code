@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.15 (MiKTeX 2.9 64-bit) (preloaded format=pdflatex 2015.8.21)  1 FEB 2016 09:40
+This is pdfTeX, Version 3.14159265-2.6-1.40.15 (MiKTeX 2.9 64-bit) (preloaded format=pdflatex 2015.8.21)  1 FEB 2016 14:28
 entering extended mode
 **SS330_Main.tex
 (SS330_Main.tex
@@ -568,9 +568,9 @@ Package: dcolumn 2014/10/28 v1.06 decimal alignment package (DPC)
 )
 
 Package hyperref Warning: Option `pdftex' has already been used,
-(hyperref)                setting the option has no effect on input line 29.
+(hyperref)                setting the option has no effect on input line 30.
 
-Package hyperref Info: Option `colorlinks' set `true' on input line 29.
+Package hyperref Info: Option `colorlinks' set `true' on input line 30.
 (C:\Users\Chantell.Wetzel\Documents\Latex\tex\latex\oberdiek\hypcap.sty
 Package: hypcap 2011/02/16 v1.11 Adjusting the anchors of captions (HO)
 )
@@ -652,21 +652,21 @@ Package: float 2001/11/08 v1.3d Float enhancements (AL)
 \f@ncyO@orf=\skip62
 )
 (SS330_Main.aux)
-LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 52.
-LaTeX Font Info:    ... okay on input line 52.
-LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 52.
-LaTeX Font Info:    ... okay on input line 52.
-LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 52.
-LaTeX Font Info:    ... okay on input line 52.
-LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 52.
-LaTeX Font Info:    ... okay on input line 52.
-LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 52.
-LaTeX Font Info:    ... okay on input line 52.
-LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 52.
-LaTeX Font Info:    ... okay on input line 52.
-LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 52.
-LaTeX Font Info:    ... okay on input line 52.
-LaTeX Font Info:    Try loading font information for T1+lmr on input line 52.
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 53.
+LaTeX Font Info:    ... okay on input line 53.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 53.
+LaTeX Font Info:    ... okay on input line 53.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 53.
+LaTeX Font Info:    ... okay on input line 53.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 53.
+LaTeX Font Info:    ... okay on input line 53.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 53.
+LaTeX Font Info:    ... okay on input line 53.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 53.
+LaTeX Font Info:    ... okay on input line 53.
+LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 53.
+LaTeX Font Info:    ... okay on input line 53.
+LaTeX Font Info:    Try loading font information for T1+lmr on input line 53.
 
 (C:\Users\Chantell.Wetzel\Documents\Latex\tex\latex\lm\t1lmr.fd
 File: t1lmr.fd 2009/10/30 v1.6 Font defs for Latin Modern
@@ -720,7 +720,7 @@ File: t1lmr.fd 2009/10/30 v1.6 Font defs for Latin Modern
 \everyMPtoPDFconversion=\toks29
 )
 \AtBeginShipoutBox=\box35
-Package hyperref Info: Link coloring ON on input line 52.
+Package hyperref Info: Link coloring ON on input line 53.
  (C:\Users\Chantell.Wetzel\Documents\Latex\tex\latex\hyperref\nameref.sty
 Package: nameref 2012/10/27 v2.43 Cross-referencing by name of section
 
@@ -730,9 +730,9 @@ Package: gettitlestring 2010/12/03 v1.4 Cleanup title references (HO)
 )
 \c@section@level=\count131
 )
-LaTeX Info: Redefining \ref on input line 52.
-LaTeX Info: Redefining \pageref on input line 52.
-LaTeX Info: Redefining \nameref on input line 52.
+LaTeX Info: Redefining \ref on input line 53.
+LaTeX Info: Redefining \pageref on input line 53.
+LaTeX Info: Redefining \nameref on input line 53.
  (SS330_Main.out) (SS330_Main.out)
 \@outlinefile=\write3
  [1
@@ -774,7 +774,7 @@ pdfTeX warning (ext4): destination with the same identifier (name{page.i}) has
 been already used, duplicate ignored
 <to be read again> 
                    \relax 
-l.83 		\cleardoublepage
+l.84 		\cleardoublepage
                         [1
 
 ] (section1_5.tex
@@ -2296,9 +2296,20 @@ Overfull \hbox (11.5237pt too wide) in paragraph at lines 543--543
 []|\T1/lmr/m/n/12 entries>| 
  []
 
-[59] [60]
+[59] [60] <images/age_error.png, id=755, 481.8pt x 311.66437pt>
+File: images/age_error.png Graphic file (type png)
+
+<use images/age_error.png>
+Package pdftex.def Info: images/age_error.png used on input line 599.
+(pdftex.def)             Requested size: 481.79881pt x 311.6636pt.
+
 Underfull \hbox (badness 10000) in paragraph at lines 597--602
 
+ []
+
+
+Overfull \hbox (12.0438pt too wide) in paragraph at lines 597--602
+[] 
  []
 
 
@@ -2306,7 +2317,7 @@ Underfull \hbox (badness 10000) in paragraph at lines 597--602
 
  []
 
-[61]
+[61 <./images/age_error.png>] [62]
 Overfull \hbox (14.49142pt too wide) in paragraph at lines 631--631
 []|\T1/lmr/m/n/12 Value| 
  []
@@ -2357,7 +2368,7 @@ Underfull \hbox (badness 10000) in paragraph at lines 660--660
 \T1/lmr/m/n/12 pa-ram-e-ter
  []
 
-[62] [63]
+[63]
 Overfull \hbox (10.22188pt too wide) in paragraph at lines 714--714
 []|\T1/lmr/m/n/12 log(R0)| 
  []
@@ -2425,12 +2436,12 @@ Underfull \hbox (badness 10000) in paragraph at lines 742--742
 []|\T1/lmr/m/n/12 Advanced
  []
 
-[64] [65]
+[64] [65] [66]
 Underfull \hbox (badness 10000) in paragraph at lines 774--774
 []|\T1/lmr/m/n/12 <parameter
  []
 
-[66] [67] [68]
+[67] [68]
 Overfull \hbox (11.61137pt too wide) in paragraph at lines 784--785
 \T1/lmr/m/n/12 re-la-tion-ship. SS has the op-tion of the Beverton-Holt, Ricker
 , Hockey-Stick, and a survival-based
@@ -2442,119 +2453,125 @@ Overfull \hbox (8.37704pt too wide) in paragraph at lines 823--824
 for a right-shifted
  []
 
-[70] [71]
-Overfull \hbox (3.77077pt too wide) in paragraph at lines 853--854
+[70] <images/survival_code.png, id=813, 431.36156pt x 489.32813pt>
+File: images/survival_code.png Graphic file (type png)
+
+<use images/survival_code.png>
+Package pdftex.def Info: images/survival_code.png used on input line 837.
+(pdftex.def)             Requested size: 431.3605pt x 489.32692pt.
+ [71] [72 <./images/survival_code.png>]
+Overfull \hbox (3.77077pt too wide) in paragraph at lines 857--858
 \T1/lmr/m/n/12 The re-cruit-ment bias ad-just-ment im-ple-mented in SS is based
  upon the work be-ing doc-u-mented
  []
 
 
-Overfull \hbox (6.43156pt too wide) in paragraph at lines 853--854
+Overfull \hbox (6.43156pt too wide) in paragraph at lines 857--858
 \T1/lmr/m/n/12 con-cept is based upon the fol-low-ing logic. Sig-maR rep-re-sen
 ts the true vari-abil-ity of re-cruit-ment
  []
 
-[72]
-Overfull \hbox (7.12862pt too wide) in paragraph at lines 864--865
+[73]
+Overfull \hbox (7.12862pt too wide) in paragraph at lines 868--869
 \T1/lmr/m/n/12 of the off-set then de-pends upon the par-ti-tion-ing of sig-maR
  into be-tween and within re-cruit-ment
  []
 
 
-Overfull \hbox (21.97087pt too wide) in paragraph at lines 871--872
+Overfull \hbox (21.97087pt too wide) in paragraph at lines 875--876
 []\T1/lmr/m/n/12 In MCMC mode, the model still draws re-cruit-ment de-vi-a-tion
 s from the log-nor-mal dis-tri-bu-tion,
  []
 
 
-Overfull \hbox (15.91344pt too wide) in paragraph at lines 871--872
+Overfull \hbox (15.91344pt too wide) in paragraph at lines 875--876
 \T1/lmr/m/n/12 re-cruit-ment de-vi-a-tions be-cause the model is now re-samplin
 g from the full log-nor-mal dis-tri-bu-tion
  []
 
-[73]
-Overfull \hbox (7.68166pt too wide) in paragraph at lines 887--888
+[74]
+Overfull \hbox (7.68166pt too wide) in paragraph at lines 891--892
 \T1/lmr/m/n/12 A non-equilibrium ini-tial age com-po-si-tion is achieved by set
 -ting the first year of the re-cruit-ment
  []
 
-
-Underfull \hbox (badness 2626) in paragraph at lines 937--937
+[75]
+Underfull \hbox (badness 2626) in paragraph at lines 941--941
 []|\T1/lmr/m/n/12 1 1980 1 0.20
  []
 
-[74] [75]
-Overfull \hbox (0.83087pt too wide) in paragraph at lines 973--974
+[76] [77]
+Overfull \hbox (0.83087pt too wide) in paragraph at lines 977--978
 []\T1/lmr/m/n/12 <0 = mir-ror the Q from an-other (lower num-bered sur-vey des-
 ig-nated by abs(value)) 
  []
 
 
-Overfull \hbox (5.7429pt too wide) in paragraph at lines 976--977
+Overfull \hbox (5.7429pt too wide) in paragraph at lines 980--981
 \T1/lmr/m/n/12 prior sec-tion. How-ever, be-cause there is no in-her-ent con-st
 raint that these de-vi-a-tions
  []
 
-[76]
-Overfull \hbox (7.16463pt too wide) in paragraph at lines 977--978
+
+Overfull \hbox (7.16463pt too wide) in paragraph at lines 981--982
 \T1/lmr/m/n/12 ob-ser-va-tions will be de-vi-a-tions in ran-dom walk of ln(Q). 
 These de-vi-a-tion pa-ram-e-ters
  []
 
 
-Overfull \hbox (7.26268pt too wide) in alignment at lines 985--990
+Overfull \hbox (7.26268pt too wide) in alignment at lines 989--994
  [] [] [] [] [] 
  []
 
 
-Overfull \hbox (7.26268pt too wide) in alignment at lines 990--995
+Overfull \hbox (7.26268pt too wide) in alignment at lines 994--999
  [] [] [] [] [] 
  []
 
 
-Overfull \hbox (7.26268pt too wide) in alignment at lines 995--998
+Overfull \hbox (7.26268pt too wide) in alignment at lines 999--1002
  [] [] [] [] [] 
  []
 
 
-Overfull \hbox (7.26268pt too wide) in alignment at lines 998--999
+Overfull \hbox (7.26268pt too wide) in alignment at lines 1002--1003
  [] [] [] [] [] 
  []
 
 
-Overfull \vbox (84.00002pt too high) detected at line 1014
+Overfull \vbox (84.00002pt too high) detected at line 1018
  []
 
 
-Overfull \vbox (69.50002pt too high) detected at line 1023
+Overfull \vbox (69.50002pt too high) detected at line 1027
  []
 
 
-Overfull \hbox (7.26268pt too wide) in alignment at lines 999--1025
+Overfull \hbox (7.26268pt too wide) in alignment at lines 1003--1029
  [] [] [] [] [] 
  []
 
 
-Overfull \hbox (7.26268pt too wide) in alignment at lines 1025--1031
+Overfull \hbox (7.26268pt too wide) in alignment at lines 1029--1035
  [] [] [] [] [] 
  []
 
-[77])
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 100.
- [78]
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 100.
+[78] [79])
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 101.
+ [80]
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 101.
  (SS330_Main.aux)
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 100.
-Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 100.
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 101.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 101.
 Package rerunfilecheck Info: File `SS330_Main.out' has not changed.
 (rerunfilecheck)             Checksum: CD3EE9B5FD4888E502D2482A5762B240;5261.
-Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 100.
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 101.
  ) 
 Here is how much of TeX's memory you used:
- 8211 strings out of 493698
- 116348 string characters out of 3139169
- 344276 words of memory out of 3000000
- 11052 multiletter control sequences out of 15000+200000
+ 8225 strings out of 493698
+ 116617 string characters out of 3139169
+ 344287 words of memory out of 3000000
+ 11060 multiletter control sequences out of 15000+200000
  50307 words of font info for 38 fonts, out of 3000000 for 9000
  1025 hyphenation exceptions out of 8191
  34i,15n,43p,1454b,564s stack positions out of 5000i,500n,10000p,200000b,50000s
@@ -2576,9 +2593,9 @@ lmr8.pfb><C:/Users/Chantell.Wetzel/Documents/Latex/fonts/type1/public/lm/lmri12
 ><C:/Users/Chantell.Wetzel/Documents/Latex/fonts/type1/public/lm/lmsy6.pfb><C:/
 Users/Chantell.Wetzel/Documents/Latex/fonts/type1/public/lm/lmsy8.pfb><C:/Users
 /Chantell.Wetzel/Documents/Latex/fonts/type1/public/lm/lmtt12.pfb>
-Output written on SS330_Main.pdf (82 pages, 462359 bytes).
+Output written on SS330_Main.pdf (84 pages, 494167 bytes).
 PDF statistics:
- 987 PDF objects out of 1000 (max. 8388607)
- 305 named destinations out of 1000 (max. 500000)
- 553 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 998 PDF objects out of 1000 (max. 8388607)
+ 307 named destinations out of 1000 (max. 500000)
+ 563 words of extra memory for PDF output out of 10000 (max. 10000000)
 
