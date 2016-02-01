@@ -306,320 +306,319 @@ FUNCTION void Get_expected_values();
            }  // end lengthcomp loop
             }
            break;
-          }  // end  length composition
+            }  // end  length composition
   
             case(5):  //  age composition
    /* SS_Label_46.5  age composition */
-          {
-          if(have_data(ALK_time,f,data_type,0)>0)
             {
-           for (j=1;j<=have_data(ALK_time,f,data_type,0);j++)                          // loop all obs of this type
-           {
-            i=have_data(ALK_time,f,data_type,j);
-            k=ageerr_type_a(f,i);                           //  age-err type
-  
-            if(use_Lbin_filter(f,i)==0)
-             {                                              // sum across all length bins
-            if(mkt_a(f,i)==0) agetemp = rowsum(exp_AL);             //  numbers at binned age = age_age(bins,age) * sum(age)
-            if(mkt_a(f,i)==1) agetemp = exp_AL * (1.-retain(y,f));  // discard sample
-            if(mkt_a(f,i)==2) agetemp = exp_AL * retain(y,f);    // retained only
-             }
-            else
-             {            // only use ages from specified range of size bins
-                          // Lbin_filter is a vector with 0 for unselected size bins and 1 for selected bins
-            if(mkt_a(f,i)==0) agetemp = exp_AL * Lbin_filter(f,i);             //  numbers at binned age = age_age(bins,age) * sum(age)
-            if(mkt_a(f,i)==1) agetemp = exp_AL * elem_prod(Lbin_filter(f,i),(1.-retain(y,f)));  // discard sample
-            if(mkt_a(f,i)==2) agetemp = exp_AL * elem_prod(Lbin_filter(f,i),retain(y,f));    // retained only
-             }
-            exp_a(f,i) = age_age(k) * agetemp;
-  
-            if(docheckup==1) echoinput<<" real age "<<agetemp<<endl<<" obs "<<obs_a(f,i)<<endl<<" exp "<<exp_a(f,i)<<endl;
-  
-           }  // end agecomp loop within fleet/time
-          }
-           break;
-          }  // end age composition
+            if(have_data(ALK_time,f,data_type,0)>0)
+              {
+             for (j=1;j<=have_data(ALK_time,f,data_type,0);j++)                          // loop all obs of this type
+             {
+              i=have_data(ALK_time,f,data_type,j);
+              k=ageerr_type_a(f,i);                           //  age-err type
+    
+              if(use_Lbin_filter(f,i)==0)
+               {                                              // sum across all length bins
+              if(mkt_a(f,i)==0) agetemp = rowsum(exp_AL);             //  numbers at binned age = age_age(bins,age) * sum(age)
+              if(mkt_a(f,i)==1) agetemp = exp_AL * (1.-retain(y,f));  // discard sample
+              if(mkt_a(f,i)==2) agetemp = exp_AL * retain(y,f);    // retained only
+               }
+              else
+               {            // only use ages from specified range of size bins
+                            // Lbin_filter is a vector with 0 for unselected size bins and 1 for selected bins
+              if(mkt_a(f,i)==0) agetemp = exp_AL * Lbin_filter(f,i);             //  numbers at binned age = age_age(bins,age) * sum(age)
+              if(mkt_a(f,i)==1) agetemp = exp_AL * elem_prod(Lbin_filter(f,i),(1.-retain(y,f)));  // discard sample
+              if(mkt_a(f,i)==2) agetemp = exp_AL * elem_prod(Lbin_filter(f,i),retain(y,f));    // retained only
+               }
+              exp_a(f,i) = age_age(k) * agetemp;
+    
+              if(docheckup==1) echoinput<<" real age "<<agetemp<<endl<<" obs "<<obs_a(f,i)<<endl<<" exp "<<exp_a(f,i)<<endl;
+    
+             }  // end agecomp loop within fleet/time
+            }
+             break;
+            }  // end age composition
   
             case(6):  //  weight composition (generalized size composition)
    /* SS_Label_46.6  weight composition (generalized size composition) */
             {
-      if(SzFreq_Nmeth>0)       //  have some sizefreq data
-      {
-  //     create the transition matrices to convert population length bins to weight freq
-        for (SzFreqMethod=1;SzFreqMethod<=SzFreq_Nmeth;SzFreqMethod++)
-        {
-          SzFreqMethod_seas=nseas*(SzFreqMethod-1)+s;     // index that combines sizefreqmethod and season and used in SzFreqTrans
-          if(SzFreq_HaveObs2(SzFreqMethod,t)==f)  // first occurrence of this method at this time is with fleet = f
-          {
-            if(do_once==1 || (MG_active(3)>0 && (time_vary_MG(y,3)>0 )))  // calc the matrix because it may have changed
+            if(SzFreq_Nmeth>0)       //  have some sizefreq data
             {
 
-              for (gg=1;gg<=gender;gg++)
+              if(have_data(ALK_time,f,data_type,0)>0)
               {
-                if(gg==1)
-                {z1=1;z2=nlength;ibin=0; ibinsave=0;}  // female
-                else
-                {z1=nlength1; z2=nlength2; ibin=0; ibinsave=SzFreq_Nbins(SzFreqMethod);}   // male
-                topbin=0.;
-                botbin=0.;
-
-//  NOTE:  wt_len_low is  calculated separately for each growth pattern (GPat)  
-//  but the code below still just uses GPat=1 for calculation of the sizefreq transition matrix
-
-                switch(SzFreq_units(SzFreqMethod))    // biomass vs. numbers are accumulated in the bins
+                for (j=1;j<=have_data(ALK_time,f,data_type,0);j++)                          // loop all obs of this type
                 {
-                  case(1):  // units are biomass, so accumulate body weight into the bins;  Assume that bin demarcations are also in biomass
+                  iobs=have_data(ALK_time,f,data_type,j);  //  observation index
+                  SzFreqMethod=SzFreq_obs_hdr(iobs,6);
+                  SzFreqMethod_seas=nseas*(SzFreqMethod-1)+s;     // index that combines sizefreqmethod and season and used in SzFreqTrans
+                  if(SzFreq_obs_hdr(iobs,9)>0)  // first occurrence of this method at this time is with fleet = f
                   {
-                    if(SzFreq_Omit_Small(SzFreqMethod)==1)
+                    if(do_once==1 || (MG_active(3)>0 && (time_vary_MG(y,3)>0 )))  // calc  matrix because wtlen parameters have changed
                     {
-                      while(wt_len_low(s,1,z1+1)<SzFreq_bins(SzFreqMethod,1) && z1<z2) 
-                      {z1++;}
-                    }      // ignore tiny fish
-                    if(z1+1>=z2)
-                    {
-                      N_warn++; cout<<" EXIT - see warning "<<endl;
-                      warning<<" error:  max population size "<<wt_len_low(s,1,z1)<<" is less than first data bin "<<
-                      SzFreq_bins(SzFreqMethod,1)<<" for SzFreqMethod "<<SzFreqMethod<<endl;
-                      exit(1);
-                    }
-
-                    if( wt_len_low(s,1,nlength2) < SzFreq_bins(SzFreqMethod,SzFreq_Nbins(SzFreqMethod)))
-                    {
-                      N_warn++; cout<<" EXIT - see warning "<<endl;
-                      warning<<" error:  max population size "<<wt_len_low(s,1,nlength2)<<" is less than max data bin "<<
-                      SzFreq_bins(SzFreqMethod,SzFreq_Nbins(SzFreqMethod))<<
-                      " for SzFreqMethod "<<SzFreqMethod<<endl;
-                      exit(1);
-                    }
-  
-                    for (z=z1;z<=z2;z++)
-                    {
-                      if(ibin==SzFreq_Nbins(SzFreqMethod))
+                      for (gg=1;gg<=gender;gg++)
                       {
-                        SzFreqTrans(SzFreqMethod_seas,z,ibinsave)=wt_len2(s,1,z);
-                      }
-                      else
-                      {
-                        if(wt_len_low(s,1,z)>=topbin)
-                        {
-                          ibin++; ibinsave++;
-                        }
-                        if(ibin>1)  {botbin=SzFreq_bins2(SzFreqMethod,ibin);}
-                        if(ibin==SzFreq_Nbins(SzFreqMethod))
-                        {
-                          SzFreqTrans(SzFreqMethod_seas,z,ibinsave)=wt_len2(s,1,z);
-                          topbin=99999.;
-                        }
+                        if(gg==1)
+                        {z1=1;z2=nlength;ibin=0; ibinsave=0;}  // female
                         else
+                        {z1=nlength1; z2=nlength2; ibin=0; ibinsave=SzFreq_Nbins(SzFreqMethod);}   // male
+                        topbin=0.;
+                        botbin=0.;
+        
+        //  NOTE:  wt_len_low is  calculated separately for each growth pattern (GPat)  
+        //  but the code below still just uses GPat=1 for calculation of the sizefreq transition matrix
+        
+                        switch(SzFreq_units(SzFreqMethod))    // biomass vs. numbers are accumulated in the bins
                         {
-                          topbin=SzFreq_bins2(SzFreqMethod,ibin+1);
-                          if(wt_len_low(s,1,z)>=botbin && wt_len_low(s,1,z+1)<=topbin )
+                          case(1):  // units are biomass, so accumulate body weight into the bins;  Assume that bin demarcations are also in biomass
                           {
-                            SzFreqTrans(SzFreqMethod_seas,z,ibinsave)=wt_len2(s,1,z);
-                          }
-                          else
-                          {
-                            temp=(wt_len_low(s,1,z+1)-topbin)/wt_len_fd(s,1,z);  // frac in pop bin above (data bin +1)
-                            temp1=wt_len_low(s,1,z)+(1.-temp*0.5)*wt_len_fd(s,1,z);  // approx body wt for these fish
-                            temp2=wt_len_low(s,1,z)+(1.-temp)*0.5*wt_len_fd(s,1,z);  // approx body wt for  fish below
-                            SzFreqTrans(SzFreqMethod_seas,z,ibinsave+1)=temp*temp1;
-                            SzFreqTrans(SzFreqMethod_seas,z,ibinsave)=(1.-temp)*temp2;
-                          }
-                        }
-                      }
-                    }
-                    if(SzFreq_scale(SzFreqMethod)==2 && gg==gender)  // convert to pounds
-                    {
-                      SzFreqTrans(SzFreqMethod_seas)/=0.4536;
-                    }
-                    break;
-                  }  //  end of units in biomass
-                  // NOTE: even though  the transition matrix is currently in units of biomass distribution, there is no need to
-                  // normalize to sum to 1.0 here because the normalization will occur after it gets used to create SzFreq_exp
-  
-                  case(2):   // units are numbers
-                  {
-                    if(SzFreq_scale(SzFreqMethod)<=2)   //  bin demarcations are in weight units (1=kg, 2=lbs), so uses wt_len to compare to bins
-                    {
-                      if(SzFreq_Omit_Small(SzFreqMethod)==1)
-                      {
-                        while(wt_len_low(s,1,z1+1)<SzFreq_bins(SzFreqMethod,1) && z1<z2) 
-                        {z1++;}
-                      }      // ignore tiny fish
-                      if(z1+1>=z2)
-                      {
-                        N_warn++; cout<<" EXIT - see warning "<<endl;
-                        warning<<" error:  max population size "<<wt_len_low(s,1,z1)<<" is less than first data bin "<<
-                        SzFreq_bins(SzFreqMethod,1)<<" for SzFreqMethod "<<SzFreqMethod<<endl;
-                        exit(1);
-                      }
-                      if( wt_len_low(s,1,nlength2) < SzFreq_bins(SzFreqMethod,SzFreq_Nbins(SzFreqMethod)))
-                      {
-                        N_warn++; cout<<" EXIT - see warning "<<endl;
-                        warning<<" error:  max population size "<<wt_len_low(s,1,nlength2)<<" is less than max data bin "<<
-                        SzFreq_bins(SzFreqMethod,SzFreq_Nbins(SzFreqMethod))<<
-                        " for SzFreqMethod "<<SzFreqMethod<<endl;
-                        exit(1);
-                      }
-  
-                      for (z=z1;z<=z2;z++)
-                      {
-                        if(ibin==SzFreq_Nbins(SzFreqMethod))
-                        {SzFreqTrans(SzFreqMethod_seas,z,ibinsave)=1.;}  //checkup<<" got to last ibin, so put rest of popbins here"<<endl;
-                        else
-                        {
-                          if(wt_len_low(s,1,z)>=topbin) {ibin++; ibinsave++;}  //checkup<<" incr ibin "<<z<<" "<<ibin<<" "<<len_bins(z)<<" "<<len_bins_dat(ibin);
-                          if(ibin>1)  {botbin=SzFreq_bins2(SzFreqMethod,ibin);}
-                          if(ibin==SzFreq_Nbins(SzFreqMethod))  // checkup<<" got to last ibin, so put rest of popbins here"<<endl;
-                          {
-                            SzFreqTrans(SzFreqMethod_seas,z,ibinsave)=1.;
-                            topbin=99999.;
-                          }
-                          else
-                          {
-                            topbin=SzFreq_bins2(SzFreqMethod,ibin+1);
-                            if(wt_len_low(s,1,z)>=botbin && wt_len_low(s,1,z+1)<=topbin )  //checkup<<" pop inside dat, put here"<<endl;
-                            {SzFreqTrans(SzFreqMethod_seas,z,ibinsave)=1.;}
-                            else       // checkup<<" overlap"<<endl;
+                            if(SzFreq_Omit_Small(SzFreqMethod)==1)
                             {
-                              SzFreqTrans(SzFreqMethod_seas,z,ibinsave+1)=(wt_len_low(s,1,z+1)-topbin)/wt_len_fd(s,1,z);
-                              SzFreqTrans(SzFreqMethod_seas,z,ibinsave)=1.-SzFreqTrans(SzFreqMethod_seas,z,ibinsave+1);
-                            }
-                          }
-                        }
-                      }
-                    }
-  
-                    else       //  bin demarcations are in length unit (3=cm, 4=inch) so uses population len_bins to compare to data bins
-                    {
-                      if(SzFreq_Omit_Small(SzFreqMethod)==1)
-                      {while(len_bins2(z1+1)<SzFreq_bins(SzFreqMethod,1)) {z1++;}
-                        echoinput<<"accumulate starting at bin: "<<z1<<endl;}      // ignore tiny fish
-                      for (z=z1;z<=z2;z++)
-                      {
-                        if(ibin==SzFreq_Nbins(SzFreqMethod))
-                        {SzFreqTrans(SzFreqMethod_seas,z,ibinsave)=1.;} //checkup<<" got to last ibin, so put rest of popbins here"<<endl;
-                        else
-                        {
-                          if(len_bins2(z)>=topbin) {ibin++; ibinsave++;}  //checkup<<" incr ibin "<<z<<" "<<ibin<<" "<<len_bins(z)<<" "<<len_bins_dat(ibin);
-                          if(ibin>1)  {botbin=SzFreq_bins2(SzFreqMethod,ibin);}
-                          if(ibin==SzFreq_Nbins(SzFreqMethod))  // checkup<<" got to last ibin, so put rest of popbins here"<<endl;
-                          {
-                            SzFreqTrans(SzFreqMethod_seas,z,ibinsave)=1.;
-                            topbin=99999.;
-                          }
-                          else
-                          {
-                            topbin=SzFreq_bins2(SzFreqMethod,ibin+1);
-                            if(len_bins2(z)>=botbin && len_bins2(z+1)<=topbin )  //checkup<<" pop inside dat, put here"<<endl;
-                            {SzFreqTrans(SzFreqMethod_seas,z,ibinsave)=1.;}
-                            else       // checkup<<" overlap"<<endl;
+                              while(wt_len_low(s,1,z1+1)<SzFreq_bins(SzFreqMethod,1) && z1<z2) 
+                              {z1++;}
+                            }      // ignore tiny fish
+                            if(z1+1>=z2)
                             {
-                              SzFreqTrans(SzFreqMethod_seas,z,ibinsave+1)=(len_bins2(z+1)-topbin)/(len_bins2(z+1)-len_bins2(z));
-                              SzFreqTrans(SzFreqMethod_seas,z,ibinsave)=1.-SzFreqTrans(SzFreqMethod_seas,z,ibinsave+1);
+                              N_warn++; cout<<" EXIT - see warning "<<endl;
+                              warning<<" error:  max population size "<<wt_len_low(s,1,z1)<<" is less than first data bin "<<
+                              SzFreq_bins(SzFreqMethod,1)<<" for SzFreqMethod "<<SzFreqMethod<<endl;
+                              exit(1);
                             }
-                          }
+        
+                            if( wt_len_low(s,1,nlength2) < SzFreq_bins(SzFreqMethod,SzFreq_Nbins(SzFreqMethod)))
+                            {
+                              N_warn++; cout<<" EXIT - see warning "<<endl;
+                              warning<<" error:  max population size "<<wt_len_low(s,1,nlength2)<<" is less than max data bin "<<
+                              SzFreq_bins(SzFreqMethod,SzFreq_Nbins(SzFreqMethod))<<
+                              " for SzFreqMethod "<<SzFreqMethod<<endl;
+                              exit(1);
+                            }
+          
+                            for (z=z1;z<=z2;z++)
+                            {
+                              if(ibin==SzFreq_Nbins(SzFreqMethod))
+                              {
+                                SzFreqTrans(SzFreqMethod_seas,z,ibinsave)=wt_len2(s,1,z);
+                              }
+                              else
+                              {
+                                if(wt_len_low(s,1,z)>=topbin)
+                                {
+                                  ibin++; ibinsave++;
+                                }
+                                if(ibin>1)  {botbin=SzFreq_bins2(SzFreqMethod,ibin);}
+                                if(ibin==SzFreq_Nbins(SzFreqMethod))
+                                {
+                                  SzFreqTrans(SzFreqMethod_seas,z,ibinsave)=wt_len2(s,1,z);
+                                  topbin=99999.;
+                                }
+                                else
+                                {
+                                  topbin=SzFreq_bins2(SzFreqMethod,ibin+1);
+                                  if(wt_len_low(s,1,z)>=botbin && wt_len_low(s,1,z+1)<=topbin )
+                                  {
+                                    SzFreqTrans(SzFreqMethod_seas,z,ibinsave)=wt_len2(s,1,z);
+                                  }
+                                  else
+                                  {
+                                    temp=(wt_len_low(s,1,z+1)-topbin)/wt_len_fd(s,1,z);  // frac in pop bin above (data bin +1)
+                                    temp1=wt_len_low(s,1,z)+(1.-temp*0.5)*wt_len_fd(s,1,z);  // approx body wt for these fish
+                                    temp2=wt_len_low(s,1,z)+(1.-temp)*0.5*wt_len_fd(s,1,z);  // approx body wt for  fish below
+                                    SzFreqTrans(SzFreqMethod_seas,z,ibinsave+1)=temp*temp1;
+                                    SzFreqTrans(SzFreqMethod_seas,z,ibinsave)=(1.-temp)*temp2;
+                                  }
+                                }
+                              }
+                            }
+                            if(SzFreq_scale(SzFreqMethod)==2 && gg==gender)  // convert to pounds
+                            {
+                              SzFreqTrans(SzFreqMethod_seas)/=0.4536;
+                            }
+                            break;
+                          }  //  end of units in biomass
+                          // NOTE: even though  the transition matrix is currently in units of biomass distribution, there is no need to
+                          // normalize to sum to 1.0 here because the normalization will occur after it gets used to create SzFreq_exp
+          
+                          case(2):   // units are numbers
+                          {
+                            if(SzFreq_scale(SzFreqMethod)<=2)   //  bin demarcations are in weight units (1=kg, 2=lbs), so uses wt_len to compare to bins
+                            {
+                              if(SzFreq_Omit_Small(SzFreqMethod)==1)
+                              {
+                                while(wt_len_low(s,1,z1+1)<SzFreq_bins(SzFreqMethod,1) && z1<z2) 
+                                {z1++;}
+                              }      // ignore tiny fish
+                              if(z1+1>=z2)
+                              {
+                                N_warn++; cout<<" EXIT - see warning "<<endl;
+                                warning<<" error:  max population size "<<wt_len_low(s,1,z1)<<" is less than first data bin "<<
+                                SzFreq_bins(SzFreqMethod,1)<<" for SzFreqMethod "<<SzFreqMethod<<endl;
+                                exit(1);
+                              }
+                              if( wt_len_low(s,1,nlength2) < SzFreq_bins(SzFreqMethod,SzFreq_Nbins(SzFreqMethod)))
+                              {
+                                N_warn++; cout<<" EXIT - see warning "<<endl;
+                                warning<<" error:  max population size "<<wt_len_low(s,1,nlength2)<<" is less than max data bin "<<
+                                SzFreq_bins(SzFreqMethod,SzFreq_Nbins(SzFreqMethod))<<
+                                " for SzFreqMethod "<<SzFreqMethod<<endl;
+                                exit(1);
+                              }
+          
+                              for (z=z1;z<=z2;z++)
+                              {
+                                if(ibin==SzFreq_Nbins(SzFreqMethod))
+                                {SzFreqTrans(SzFreqMethod_seas,z,ibinsave)=1.;}  //checkup<<" got to last ibin, so put rest of popbins here"<<endl;
+                                else
+                                {
+                                  if(wt_len_low(s,1,z)>=topbin) {ibin++; ibinsave++;}  //checkup<<" incr ibin "<<z<<" "<<ibin<<" "<<len_bins(z)<<" "<<len_bins_dat(ibin);
+                                  if(ibin>1)  {botbin=SzFreq_bins2(SzFreqMethod,ibin);}
+                                  if(ibin==SzFreq_Nbins(SzFreqMethod))  // checkup<<" got to last ibin, so put rest of popbins here"<<endl;
+                                  {
+                                    SzFreqTrans(SzFreqMethod_seas,z,ibinsave)=1.;
+                                    topbin=99999.;
+                                  }
+                                  else
+                                  {
+                                    topbin=SzFreq_bins2(SzFreqMethod,ibin+1);
+                                    if(wt_len_low(s,1,z)>=botbin && wt_len_low(s,1,z+1)<=topbin )  //checkup<<" pop inside dat, put here"<<endl;
+                                    {SzFreqTrans(SzFreqMethod_seas,z,ibinsave)=1.;}
+                                    else       // checkup<<" overlap"<<endl;
+                                    {
+                                      SzFreqTrans(SzFreqMethod_seas,z,ibinsave+1)=(wt_len_low(s,1,z+1)-topbin)/wt_len_fd(s,1,z);
+                                      SzFreqTrans(SzFreqMethod_seas,z,ibinsave)=1.-SzFreqTrans(SzFreqMethod_seas,z,ibinsave+1);
+                                    }
+                                  }
+                                }
+                              }
+                            }
+          
+                            else       //  bin demarcations are in length unit (3=cm, 4=inch) so uses population len_bins to compare to data bins
+                            {
+                              if(SzFreq_Omit_Small(SzFreqMethod)==1)
+                              {while(len_bins2(z1+1)<SzFreq_bins(SzFreqMethod,1)) {z1++;}
+                                //  echoinput<<"accumulate starting at bin: "<<z1<<endl;
+                              }      // ignore tiny fish
+                              for (z=z1;z<=z2;z++)
+                              {
+                                if(ibin==SzFreq_Nbins(SzFreqMethod))
+                                {SzFreqTrans(SzFreqMethod_seas,z,ibinsave)=1.;} //checkup<<" got to last ibin, so put rest of popbins here"<<endl;
+                                else
+                                {
+                                  if(len_bins2(z)>=topbin) {ibin++; ibinsave++;}  //checkup<<" incr ibin "<<z<<" "<<ibin<<" "<<len_bins(z)<<" "<<len_bins_dat(ibin);
+                                  if(ibin>1)  {botbin=SzFreq_bins2(SzFreqMethod,ibin);}
+                                  if(ibin==SzFreq_Nbins(SzFreqMethod))  // checkup<<" got to last ibin, so put rest of popbins here"<<endl;
+                                  {
+                                    SzFreqTrans(SzFreqMethod_seas,z,ibinsave)=1.;
+                                    topbin=99999.;
+                                  }
+                                  else
+                                  {
+                                    topbin=SzFreq_bins2(SzFreqMethod,ibin+1);
+                                    if(len_bins2(z)>=botbin && len_bins2(z+1)<=topbin )  //checkup<<" pop inside dat, put here"<<endl;
+                                    {SzFreqTrans(SzFreqMethod_seas,z,ibinsave)=1.;}
+                                    else       // checkup<<" overlap"<<endl;
+                                    {
+                                      SzFreqTrans(SzFreqMethod_seas,z,ibinsave+1)=(len_bins2(z+1)-topbin)/(len_bins2(z+1)-len_bins2(z));
+                                      SzFreqTrans(SzFreqMethod_seas,z,ibinsave)=1.-SzFreqTrans(SzFreqMethod_seas,z,ibinsave+1);
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                            break;
+                          }  //  end of units in numbers
                         }
-                      }
-                    }
-                    break;
-                  }  //  end of units in numbers
-                }
-                if(docheckup==1 && gg==gender) echoinput<<" sizefreq trans_matrix: method/season "<<SzFreqMethod<<" / "<<s<<endl
-                <<trans(SzFreqTrans(SzFreqMethod_seas))<<endl;
-              }  // end gender loop
-            }  //  end needing to calc the matrix because it may have changed
-          }  // done calculating the SzFreqTransition matrix for this method
+                        if(docheckup==1 && gg==gender) echoinput<<" sizefreq trans_matrix: method/season "<<SzFreqMethod<<" / "<<s<<endl
+                        <<trans(SzFreqTrans(SzFreqMethod_seas))<<endl;
+                      }  // end gender loop
+                    }  //  end needing to calc the matrix because it may have changed
+                  }  // done calculating the SzFreqTransition matrix for this method
 
-          if(SzFreq_HaveObs(f,SzFreqMethod,t,1)>0)
-          {
-            for (iobs=SzFreq_HaveObs(f,SzFreqMethod,t,1);iobs<=SzFreq_HaveObs(f,SzFreqMethod,t,2);iobs++)
-            {
-              switch(SzFreq_obs_hdr(iobs,5))   // discard/retained partition
-              {
-                case(0):
-                {
-                  SzFreq_exp(iobs)=trans(SzFreqTrans(SzFreqMethod_seas))*exp_l_temp;
-                  break;
-                }
-                case(1):
-                {
-                  SzFreq_exp(iobs)=trans(SzFreqTrans(SzFreqMethod_seas))*(exp_l_temp-exp_l_temp_ret);
-                  break;
-                }
-                case(2):
-                {
-                  SzFreq_exp(iobs)=trans(SzFreqTrans(SzFreqMethod_seas))*exp_l_temp_ret;
-                  break;
-                }
-              }
-              if(gender==2)
-              {
-                k=SzFreq_obs_hdr(iobs,8);  // max bins for this method
-                switch(SzFreq_obs_hdr(iobs,4))   //  combine, select or each gender
-                {
-                  case(0):                    // combine genders
+                  switch(SzFreq_obs_hdr(iobs,5))   // discard/retained partition
                   {
-                    for (ibin=1;ibin<=k;ibin++) SzFreq_exp(iobs,ibin)+=SzFreq_exp(iobs,k+ibin);
-                    SzFreq_exp(iobs)(k+1,2*k)=0.0;
+                    case(0):
+                    {
+                      SzFreq_exp(iobs)=trans(SzFreqTrans(SzFreqMethod_seas))*exp_l_temp;
+                      break;
+                    }
+                    case(1):
+                    {
+                      SzFreq_exp(iobs)=trans(SzFreqTrans(SzFreqMethod_seas))*(exp_l_temp-exp_l_temp_ret);
+                      break;
+                    }
+                    case(2):
+                    {
+                      SzFreq_exp(iobs)=trans(SzFreqTrans(SzFreqMethod_seas))*exp_l_temp_ret;
+                      break;
+                    }
+                  }
+                  if(gender==2)
+                  {
+                    k=SzFreq_obs_hdr(iobs,8);  // max bins for this method
+                    switch(SzFreq_obs_hdr(iobs,4))   //  combine, select or each gender
+                    {
+                      case(0):                    // combine genders
+                      {
+                        for (ibin=1;ibin<=k;ibin++) SzFreq_exp(iobs,ibin)+=SzFreq_exp(iobs,k+ibin);
+                        SzFreq_exp(iobs)(k+1,2*k)=0.0;
+                        SzFreq_exp(iobs)(1,k)/=sum(SzFreq_exp(iobs)(1,k));
+                        if(SzFreq_mincomp(SzFreqMethod)>0.0)
+                        {
+                          SzFreq_exp(iobs)(1,k)+=SzFreq_mincomp(SzFreqMethod);
+                          SzFreq_exp(iobs)(1,k)/=sum(SzFreq_exp(iobs)(1,k));
+                        }
+                        break;
+                      }
+                      case(1):     // female only
+                      {
+                        SzFreq_exp(iobs)(k+1,2*k)=0.0;  //  zero out the males so will not interfere with data generation
+                        SzFreq_exp(iobs)(1,k)/=sum(SzFreq_exp(iobs)(1,k));
+                        if(SzFreq_mincomp(SzFreqMethod)>0.0)
+                        {
+                          SzFreq_exp(iobs)(1,k)+=SzFreq_mincomp(SzFreqMethod);
+                          SzFreq_exp(iobs)(1,k)/=sum(SzFreq_exp(iobs)(1,k));
+                        }
+                        break;
+                      }
+                      case(2):            //   male only
+                      {
+                        ibin=SzFreq_obs_hdr(iobs,7);
+                        SzFreq_exp(iobs)(1,ibin-1)=0.0;  //  zero out the females so will not interfere with data generation
+                        SzFreq_exp(iobs)(ibin,k)/=sum(SzFreq_exp(iobs)(ibin,k));
+                        if(SzFreq_mincomp(SzFreqMethod)>0.0)
+                        {
+                          SzFreq_exp(iobs)(ibin,k)+=SzFreq_mincomp(SzFreqMethod);
+                          SzFreq_exp(iobs)(ibin,k)/=sum(SzFreq_exp(iobs)(ibin,k));
+                        }
+                        break;
+                      }
+                      case(3):           //  each gender
+                      {
+                        SzFreq_exp(iobs)/=sum(SzFreq_exp(iobs));
+                        if(SzFreq_mincomp(SzFreqMethod)>0.0)
+                        {
+                          SzFreq_exp(iobs)+=SzFreq_mincomp(SzFreqMethod);
+                          SzFreq_exp(iobs)/=sum(SzFreq_exp(iobs));
+                        }
+                        break;
+                      }
+                    }  //  end gender switch
+                  }  // end have 2 genders
+                  else
+                  {
+                    k=SzFreq_obs_hdr(iobs,8);  // max bins for this method
                     SzFreq_exp(iobs)(1,k)/=sum(SzFreq_exp(iobs)(1,k));
                     if(SzFreq_mincomp(SzFreqMethod)>0.0)
                     {
                       SzFreq_exp(iobs)(1,k)+=SzFreq_mincomp(SzFreqMethod);
                       SzFreq_exp(iobs)(1,k)/=sum(SzFreq_exp(iobs)(1,k));
                     }
-                    break;
                   }
-                  case(1):     // female only
-                  {
-                    SzFreq_exp(iobs)(k+1,2*k)=0.0;  //  zero out the males so will not interfere with data generation
-                    SzFreq_exp(iobs)(1,k)/=sum(SzFreq_exp(iobs)(1,k));
-                    if(SzFreq_mincomp(SzFreqMethod)>0.0)
-                    {
-                      SzFreq_exp(iobs)(1,k)+=SzFreq_mincomp(SzFreqMethod);
-                      SzFreq_exp(iobs)(1,k)/=sum(SzFreq_exp(iobs)(1,k));
-                    }
-                    break;
-                  }
-                  case(2):            //   male only
-                  {
-                    ibin=SzFreq_obs_hdr(iobs,7);
-                    SzFreq_exp(iobs)(1,ibin-1)=0.0;  //  zero out the females so will not interfere with data generation
-                    SzFreq_exp(iobs)(ibin,k)/=sum(SzFreq_exp(iobs)(ibin,k));
-                    if(SzFreq_mincomp(SzFreqMethod)>0.0)
-                    {
-                      SzFreq_exp(iobs)(ibin,k)+=SzFreq_mincomp(SzFreqMethod);
-                      SzFreq_exp(iobs)(ibin,k)/=sum(SzFreq_exp(iobs)(ibin,k));
-                    }
-                    break;
-                  }
-                  case(3):           //  each gender
-                  {
-                    SzFreq_exp(iobs)/=sum(SzFreq_exp(iobs));
-                    if(SzFreq_mincomp(SzFreqMethod)>0.0)
-                    {
-                      SzFreq_exp(iobs)+=SzFreq_mincomp(SzFreqMethod);
-                      SzFreq_exp(iobs)/=sum(SzFreq_exp(iobs));
-                    }
-                    break;
-                  }
-                }  //  end gender switch
-              }  // end have 2 genders
-              else
-              {
-                k=SzFreq_obs_hdr(iobs,8);  // max bins for this method
-                SzFreq_exp(iobs)(1,k)/=sum(SzFreq_exp(iobs)(1,k));
-                if(SzFreq_mincomp(SzFreqMethod)>0.0)
-                {
-                  SzFreq_exp(iobs)(1,k)+=SzFreq_mincomp(SzFreqMethod);
-                  SzFreq_exp(iobs)(1,k)/=sum(SzFreq_exp(iobs)(1,k));
-                }
-              }
-            }  // end loop of obs for fleet = f
-          }   //  end having some obs for this method in this fleet
-        }  // end loop of sizefreqmethods
-      }    //  end use of wt freq data
-      break;
+                }  // end loop of obs for fleet = f
+              }   //  end having some obs for this method in this fleet
+            }    //  end use of generalized size freq data
+            break;
             }  //  end generalized size composition
   
             case(7):  //  mean size-at-age

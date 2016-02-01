@@ -589,7 +589,7 @@ DATA_SECTION
 //  have_data stores the data index of each datum occurring at time ALK_time, for fleet f of observation type k.  Up to 60 data are allowed due to CAAL data
 //  have_data(ALK_idx,0,0,0) is overall indicator that some datum requires ALK update in this ALK_time
 //  have_data() 3rd element:  0=any; 1=survey/CPUE/effort; 2=discard; 3=mnwt; 4=length; 5=age; 6=SizeFreq; 7=sizeage; 8=morphcomp; 9=tags
-//  have_data() 4th element;  zero'th element contains N obs for this subseas; allows for 20 observations per datatype per fleet per subseason
+//  have_data() 4th element;  zero'th element contains N obs for this subseas; allows for 60 observations per datatype per fleet per subseason
 
   3darray data_time(1,ALK_time_max,1,Nfleet,1,3)
 //  data_time():  first value will hold real month; 2nd is timing within season; 3rd is year.fraction
@@ -2510,8 +2510,7 @@ DATA_SECTION
   int iobs;
   init_int SzFreq_Nmeth;                                   // number of sizefreq methods to be read
   !!echoinput<<SzFreq_Nmeth<<" N sizefreq methods to read "<<endl;
-  4darray SzFreq_HaveObs(1,Nfleet,1,SzFreq_Nmeth,styr,TimeMax,0,2)
-  imatrix SzFreq_HaveObs2(1,SzFreq_Nmeth,styr,TimeMax)
+  imatrix SzFreq_HaveObs2(1,SzFreq_Nmeth,1,ALK_time_max)
   init_ivector SzFreq_Nbins(1,SzFreq_Nmeth);               //  number of bins for each method
   !!if(SzFreq_Nmeth>0) echoinput<<SzFreq_Nbins<<" Sizefreq N bins per method"<<endl;
   init_ivector SzFreq_units(1,SzFreq_Nmeth);               //  units for proportions (1 = biomass; 2=numbers ) for each method
@@ -2533,7 +2532,6 @@ DATA_SECTION
 
   if(SzFreq_Nmeth>0)
   {
-    SzFreq_HaveObs.initialize();
     SzFreq_HaveObs2.initialize();
     for (k=1;k<=SzFreq_Nmeth;k++)
     {
@@ -2628,9 +2626,9 @@ DATA_SECTION
 !!//  to do super-period, obs must be sorted by fleet and time within each method
   init_matrix SzFreq_obs1(1,SzFreq_totobs,1,SzFreq_Setup);
    !!if(SzFreq_totobs>0) echoinput<<" first sizefreq obs "<<endl<<SzFreq_obs1(1)<<endl<<" last obs"<<endl<<SzFreq_obs1(SzFreq_totobs)<<endl;;
-  imatrix SzFreq_obs_hdr(1,SzFreq_totobs,1,8);
+  imatrix SzFreq_obs_hdr(1,SzFreq_totobs,1,9);
   // SzFreq_obs1:     Method, Year, season, Fleet, Gender, Partition, SampleSize, <data>
-  // SzFreq_obs_hdr:           1=y; 2=s;    3=f;   4=gender; 5=partition; 6=method&skip flag; 7=first bin to use; 8=last bin(e.g. to include males or not)
+  // SzFreq_obs_hdr:     1=y; 2=s; 3=f; 4=gender; 5=partition; 6=method&skip flag; 7=first bin to use; 8=last bin(e.g. to include males or not); 9=flag to indicate transition matrix needs calculation
   vector SzFreq_sampleN(1,SzFreq_totobs);
   vector SzFreq_effN(1,SzFreq_totobs);
   vector SzFreq_eachlike(1,SzFreq_totobs);
@@ -2673,30 +2671,67 @@ DATA_SECTION
         SzFreq_obs(iobs)+=SzFreq_mincomp(k);
         SzFreq_obs(iobs)/=sum(SzFreq_obs(iobs));
         y=SzFreq_obs_hdr(iobs,1);
-        s=abs(SzFreq_obs_hdr(iobs,2));
-          if(s>nseas)
-          {N_warn++; cout<<" EXIT - see warning "<<endl; warning<<" Critical error, season for general sizecomp  method, obs "<<k<<" "<<j<<" is > nseas"<<endl; exit(1);}
+        temp=abs(SzFreq_obs_hdr(iobs,2));
+        if(read_seas_mo==1)  // reading season
+        {
+              s=int(temp);  
+              if(s>nseas)
+              {N_warn++; cout<<" EXIT - see warning "<<endl; warning<<" Critical error, season for general sizecomp  method, obs "<<k<<" "<<j<<" is > nseas"<<endl; exit(1);}
+              subseas=mid_subseas;
+              if(surveytime(f)>=0.) 
+              {data_timing=surveytime(f);}  //  fraction of season
+              else
+              {data_timing=0.5;}
+              real_month=1.0 + azero_seas(s)*12. + 12.*data_timing*seasdur(s);
+        }
+        else  //  reading month.fraction
+        {
+          real_month=temp;
+          temp1=(temp-1.0)/12.;  //  month as fraction of year
+          s=1;  // earlist possible seas;
+          subseas=1;  //  earliest possible subseas in seas
+          temp=subseasdur_delta(s);  //  starting value
+          while(temp<=temp1)
+          {
+            if(subseas==N_subseas)
+            {s++; subseas=1;}
+            else
+            {subseas++;}
+            temp+=subseasdur_delta(s);
+          }
+          data_timing=(temp1-azero_seas(s))/seasdur(s);  //  remainder converted to fraction of season (but is multiplied by seasdur as it is used, so perhaps change this)
+          if(surveytime(f)==-1.)  //  so ignoring month info
+          {
+            subseas=mid_subseas;
+            data_timing=0.5;
+          }
+        }
+            
         t=styr+(y-styr)*nseas+s-1;
         f=abs(SzFreq_obs_hdr(iobs,3));
+        ALK_time=(y-styr)*nseas*N_subseas+(s-1)*N_subseas+subseas;
         if(gender==1) {SzFreq_obs_hdr(iobs,4)=0;}
         z=SzFreq_obs_hdr(iobs,4);  // gender
 // get min and max index according to use of 0, 1, 2, 3 gender index
         if(z!=2) {SzFreq_obs_hdr(iobs,7)=1;} else {SzFreq_obs_hdr(iobs,7)=SzFreq_Nbins(k)+1;}
         if(z<=1) {SzFreq_obs_hdr(iobs,8)=SzFreq_Nbins(k);} else {SzFreq_obs_hdr(iobs,8)=2*SzFreq_Nbins(k);}
   //      SzFreq_obs_hdr(iobs,5);  // partition
-        SzFreq_obs_hdr(iobs,6)=k;  if(k!=SzFreq_obs1(iobs,1)) {N_warn++; warning<<" sizefreq ID # doesn't match "<<endl; } // save method code for later use
+        SzFreq_obs_hdr(iobs,6)=k;
+        if(k!=SzFreq_obs1(iobs,1)) {N_warn++; warning<<" sizefreq ID # doesn't match "<<endl; } // save method code for later use
         if(y>=styr && y<=retro_yr)
         {
           SzFreq_LikeComponent(f,k)=1;    // indicates that this combination is being used
-          if(SzFreq_HaveObs(f,k,t,1)==0) SzFreq_HaveObs(f,k,t,1)=iobs;  // save first counter in time x fleet locations with data
-          SzFreq_HaveObs(f,k,t,2)=iobs;  // saves last pointer to this source of data
-          if(SzFreq_HaveObs2(k,t)==0 || f<=SzFreq_HaveObs2(k,t)) SzFreq_HaveObs2(k,t)=f;  // find the smallest numbered f index that uses this method
+          if(SzFreq_HaveObs2(k,ALK_time)==0)  //  transition matirx needs calculation
+            {
+            	SzFreq_HaveObs2(k,ALK_time)=1;  // flad showing condition met
+            	SzFreq_obs_hdr(iobs,9)=1;  //  flag that will be ehecked in ss_expval
+            }
 
           have_data(ALK_time,0,0,0)=1;
           have_data(ALK_time,f,0,0)=1;  //  so have data of some type
           have_data(ALK_time,f,data_type,0)++;  //  count the number of observations in this subseas
           p=have_data(ALK_time,f,data_type,0);
-          have_data(ALK_time,f,data_type,p)=j;  //  store data index for the p'th observation in this subseas
+          have_data(ALK_time,f,data_type,p)=iobs;  //  store data index for the p'th observation in this subseas
 
           if(SzFreq_obs_hdr(iobs,7)<0) SzFreq_obs_hdr(iobs,3)=-abs(SzFreq_obs_hdr(iobs,3));  //  old method for excluding from logL
         }

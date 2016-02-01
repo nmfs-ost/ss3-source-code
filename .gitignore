@@ -1,3 +1,5 @@
-*.bak; *.temp; *.tmp
+*.bak
 *.bak
 *.temp
+*.pdf
+
