@@ -596,7 +596,7 @@ These 7 parameters are only included in the control file if one of the ageing er
 
 Until a more complete description and examples are developed, here is the code for creation of the vectors of mean age’ and stddev of age’:
 \\\\
-\includegraphics{age_error}
+INSERT CODE HERE
 \\\\
 The 7 parameters are:
 
@@ -828,13 +828,9 @@ The number of age-0 fish is related to spawning biomass according to a stock-rec
 			\item $Pups\_equil = Pups\_0 * (1 - (LN(1/PPR) - Z\_0)/(Z\_max - Z\_0))^{(1/Beta)} $
 			\item Then, $R\_equil = Pups\_equil * exp(-(1 - (Pups\_equil/Pups\_0)^Beta)*(Z\_max-Z\_0)+Z\_0)$
 		\end{itemize}
-		\item Code for the survival based recruitment is shown below:
+		\item Some example plots for various levels of S\_frac and beta are shown below:
 	\end{itemize}
-		
-	%\includegraphics{survival_1}\\
-	%\includegraphics{survival_2}
-	%\includegraphics{survival_3}
-	\includegraphics{survival_code}
+	INSERT IMAGE
 	
 	\item[Shepherd]\hfil\\
 	The Shepherd stock recruit curve is calculated as:
@@ -892,145 +888,3 @@ A non-equilibrium initial age composition is achieved by setting the first year 
 
 \subsubsection{Fishing Mortality Method}
 There are now three methods available for calculation of fishing mortality.  These are:  Pope’s approximation, continuous F with each F as a model parameter, and a hybrid method that does a Pope’s approximation to provide initial values for iterative adjustment of the continuous F values to closely approximate the observed catch.  With the hybrid method, the final values are in terms of continuous F, but do not need to be specified as full parameters.  In a 2 fishery, low F case, it is just as fast as the Pope approx. and produces identical result.  When F is very high, the problem becomes quite stiff for Pope’s and the hybrid method so convergence may slow.  It may still be better to use F option 2 (continuous F as full parameters) in these high F cases.  F as parameter is also preferred for situations where catch is known imprecisely and you are willing to accept a solution in which the final F values do not reproduce the input catch levels exactly.  Option 1 (Pope’s approx) still exists, but my recommendation is to switch to option 3. 
-
-\begin{center}
-		\begin{longtable}{p{1cm} p{3cm} p{11cm}}
-			\multicolumn{3}{l}{Control file continued:}\\
-			\hline
-			Value &   &  Description\\
-			\hline
-			\endfirsthead
-			
-			\hline	
-			Value &  &  Description\\
-			\hline
-			\endhead
-			
-			%\hline
-			\endfoot		
-			\endlastfoot
-			
-			0.2 & & F ballpark\\
-			    & & This value is compared to the sum of the F’s for the specified year.  The sum is over all seasons and areas.  The lambda for the comparison goes down by a factor of 10 each phase and goes to 0.0 in the final phase.\\
-		   \hline
-			-1990 & & F ballpark year \\
-			      & & Negative value disable F ballpark \\
-		   \hline
-			-3  & & F Method \\
-			    & & 1 = Pope's \\
-			    & & 2 = Continuous F as a parameter \\
-			    & & 3 = Hybrid F \\
-		   \hline
-		   0.9 & & Maximum F \\
-		       & & This maximum is applied within each season and area.   A value of 0.9 is recommended for F method 1, and a value of about 4 is recommended for F method 2 and 3. \\
-		   \hline
-		   \multicolumn{3}{l}{COND: Depending on the F method} \\
-		   \hline
-		   \multicolumn{3}{l}{COND = 1: No additional input for Pope's approximation}\\
-		   \hline
-		   \multicolumn{3}{l}{COND = 2: Continuous F}\\
-		   & 0.10 & Starting value for each F.  Initializing value for each F parameter.\\
-		   & 1 & Phase for F parameters becoming active.  \\
-		   &   & For phases prior to this value,  SS will use the hybrid option and the F values so calculated become the starting values for the F parameters when this phase is reached.\\
-		   & 1 & Number of detailed F inputs to read below. \\
-		   \hline
-		   \multicolumn{3}{l}{COND = 3: Hybrid F}\\
-		   & 4 & Number of tuning iterations in hybrid method. A value of 2 or 3 is sufficient with a single fleet and low Fs.  A value of 5 or so may be needed to match the catch near exactly when there are many fleets and high F. \\
-		   \hline
-		   \multicolumn{3}{l}{If N for F detail is > 0}\\
-		   & 1 1980 1 0.20 0.05 4 & fleet, year, season, F, SE, phase - these values override the catch se values in the data file and the overall starting F value and phase read just above.\\
-		   \hline
-	\end{longtable}
-\end{center}
-
-\subsubsection{Initial Fishing Mortality}
-Read a short parameter setup line for each fishery.  The parameters are the fishing mortalities for the initial equilibrium.  Do not try to estimate parameters for fisheries with zero initial equilibrium catch.  If there is catch, then give a starting value greater than zero and it generally is best to estimate the parameter in phase 1.
-
-It is possible to use the initial F method to achieve an estimate of the initial equilibrium Z in cases where the initial equilibrium catch is unknown.  To do this:
-\begin{itemize}
-	\item Include a positive value for the initial equilibrium catch;
-	\item Set the lambda for the logL for initial equilibrium catch to a nil value (hence causing SS to ignore the lack of fit to the input catch level;
-	\item Allow the initial F parameter to be estimated.  It will be influenced by the early age and size comps which should have some information about the early levels of Z.
-\end{itemize}
-
-\subsubsection{Catchability}
-For each fishery and survey, enter a row with these 4 entries as described below:
-
-\begin{enumerate}
-	\item Do\_Power
-	\begin{enumerate}
-		\item 0 = skip, so the survey is directly proportional to abundance (typical)
-		\item 1 = establish a parameter for non-linearity in survey-abundance linkage
-	\end{enumerate}
-	\item Do\_Env\_Link
-	\begin{enumerate}
-		\item 0 = skip, no environmental on Q (typical)
-		\item 1 = establish a parameter to create environmental effect on Q, where the integer is the index of the environmental variable to be linked.  The relationship is:  $ ln(q_y) = ln(q_{base}) + Q_{env\_link\_para}*Env\_Value_y$.
-	\end{enumerate}
-	\item Do\_extra SD
-	\begin{enumerate}
-		\item 0 = skip (typical)
-		\item 1 = estimate a parameter that will contain an additive constant to be added to the input stddev of the survey variability.  This extra SD approach is highly redundant with the older code that provided for iterative input of variance adjustment factors.  The newer code for extra SD estimation is recommended.
-	\end{enumerate}
-	\item Q Type
-	\begin{enumerate}
-		\item <0 = mirror the Q from another (lower numbered survey designated by abs(value))
-		\item 0 = set Q as a scaling factor such that the estimate is median unbiased.  This is comparable to the old “float” option.  This option is not available if a normal error structure is used.
-		\item 2 = establish one parameter that will be the ln(Q).  Note that Q is in log units even if the error structure is normal.
-		\item 3 = establish one parameter that will be the base ln(Q) and a set of additional parameters for each year of the survey that will be deviations in ln(Q).  These deviation parameters are full parameters, so each has a prior and variance, so surveys with high uncertainty in their calibration can be given a more diffuse prior to allow a larger deviation.  Because each of these Q deviations is coded as a separate parameter, rather than a member of a deviation vector, the contribution of these deviations to the model’s objective function is captured in the parameter prior section.  However, because there is no inherent constraint that these deviations have a zero sum, a separate log(L) contribution is calculated from the sum of the deviations ($(1+(\sum(devs))^2)^2-1$) and added to the “parm\_dev\_like” component.
-		\item 4 = establish one parameter that will be the base ln(Q) and used as the Q for the first survey observation.  Subsequent N-1 parameters for remaining survey observations will be deviations in random walk of ln(Q).  These deviation parameters are otherwise treated identically to those generated by option (3) above, except that the extra contribution for the mean deviation is not calculated.
-		\item 5 = This option will calculate the survey Q according to mean unbiased scaling, then assigns this value to the parameter (which must be set up in the control file and be given a negative phase).  Advantage is that the calculated Q can now have a prior.
-	\end{enumerate}
-\end{enumerate}
-
-So for a setup with 2 fisheries and 2 surveys, the Q setup matrix could be:
-
-\begin{center}
-	\begin{longtable}{p{2.75cm} p{2.75cm} p{2.75cm} p{3cm} p{2cm}}
-		%\multicolumn{3}{l}{Control file continued:}\\
-		%\hline
-		%Value &   &  Description\\
-		\hline
-		\endfirsthead
-		
-		%\hline	
-		%Value &  &  Description\\
-		\hline
-		\endhead
-		
-		%\hline
-		\endfoot		
-		\endlastfoot
-	    \#Do\_power & Env-Var & Extra SD & \multicolumn{2}{l}{Devtype (<0=mirror, 0/1=none}\\
-	    (Den\_depend)& & & \multicolumn{2}{l}{2=cons, 3=rand, 4=randwalk)} \\
-	    \hline
-	    1 & 0 & 1 & 2 & \#Fishery 1 \\
-	    0 & 0 & 1 & 2 & \#Fishery 2 \\
-	    0 & 0 & 0 & 4 & \#Survey 1 \\
-	    0 & 0 & 1 & 2 & \#Survey 2 \\
-	    \hline
-	    \multicolumn{5}{l}{\multirow{3}{16cm}{COND: If any fishery or survey uses random devs or random walk, there is an option to either read detailed input to set up the deviation, or to just read a template.}}\\
-	    \\
-	    \\
-	    \#Value & & \multicolumn{3}{l}{Label, Description, and Options} \\
-	    \hline
-	    & 1 & \multicolumn{2}{l}{Read detailed input for random effects}& \\ 
-	    &   & \multicolumn{3}{l}{\multirow{2}{10cm}{0:  read one parameter line and use it as a template to create a time series of parameters for each observation for each fleet/survey that uses random effects.  The output to control.ss\_new will be in detailed format even if the input is not detailed.  Therefore a simple way to create a detailed setup file is to start with a simple template then edit the control.ss\_new file to create a detailed input for subsequent model runs;}}\\
-		\\
-		\\
-		\\
-		\\
-		\\
-		\\
-		%\hline
-	    \pagebreak
-	    &  & \multicolumn{3}{l}{\multirow{2}{8cm}{1:  read a parameter line for each observation of each fleet/survey that uses random effects, thus allowing customization.  If the Q option for a fleet is 3 (random devs), then read one parameter for each observation.  If the Q option is 4, then read (N observations -1) parameters.}}\\
-	    \\
-	    \\
-	    \\
-	    \\
-	    \\
-	    \\
-	    \hline
-	\end{longtable}
-\end{center}
