@@ -64,7 +64,8 @@
 \contentsline {subsubsection}{\numberline {10.3.19}Recruitment Bias Adjustment}{73}{subsubsection.10.3.19}
 \contentsline {subsubsection}{\numberline {10.3.20}Recruitment Autocorrelation}{75}{subsubsection.10.3.20}
 \contentsline {subsubsection}{\numberline {10.3.21}Recruitment Cycle}{75}{subsubsection.10.3.21}
-\contentsline {subsubsection}{\numberline {10.3.22}Initial Age Composition}{75}{subsubsection.10.3.22}
-\contentsline {subsubsection}{\numberline {10.3.23}Fishing Mortality Method}{75}{subsubsection.10.3.23}
+\contentsline {subsubsection}{\numberline {10.3.22}Initial Age Composition}{76}{subsubsection.10.3.22}
+\contentsline {subsubsection}{\numberline {10.3.23}Fishing Mortality Method}{76}{subsubsection.10.3.23}
 \contentsline {subsubsection}{\numberline {10.3.24}Initial Fishing Mortality}{77}{subsubsection.10.3.24}
-\contentsline {subsubsection}{\numberline {10.3.25}Catchability}{77}{subsubsection.10.3.25}
+\contentsline {subsubsection}{\numberline {10.3.25}Catchability}{78}{subsubsection.10.3.25}
+\contentsline {subsubsection}{\numberline {10.3.26}Selectivity and Discard}{80}{subsubsection.10.3.26}

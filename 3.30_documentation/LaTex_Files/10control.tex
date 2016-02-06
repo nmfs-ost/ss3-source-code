@@ -340,7 +340,7 @@ Next, SS reads the MG parameters in generally the following order (may vary base
 		
 		\endlastfoot
 		
-		\hline
+		%\hline
 		\multicolumn{2}{l}{Females} & Female natural mortality and growth parameters in the following order by GP\\
 		& natM & Natural mortality for female GP1, where the number of natural mortality parameters depends on the option selected.\\
 		& Lmin & Length at Amin (units in cm) for female, GP1 \\
@@ -684,12 +684,12 @@ The spawner-recruitment section starts by specification of the functional relati
 	\begin{longtable}{p{1cm} p{3cm} p{11cm}}
 		\multicolumn{3}{l}{Control file continued:}\\
 		\hline
-		Value &  &  Description\\
+		Value & Label &  Description\\
 		\hline
 		\endfirsthead
 		
 		\hline	
-		Value &  &  Description\\
+		Value & Label &  Description\\
 		\hline
 		\endhead
 		
@@ -711,36 +711,46 @@ The spawner-recruitment section starts by specification of the functional relati
 		\multicolumn{3}{l}{Read the required number of short parameter set-up lines (ex. LO HI INIT PRIOR }\\  
 		\multicolumn{3}{l}{PR\_Type SD PHASE).  These parameters are:}\\
 		\hline
-		log(R0) & & Log of virgin recruitment level \\
-		\multicolumn{2}{l}{steepness}  & Steepness of S-R, bound by 0.2 and 1.0 for the Beverton-Holt \\
+		8.5 & log(R0) & Log of virgin recruitment level \\
+		\hline
+		0.60 & Steepness  & Steepness of S-R, bound by 0.2 and 1.0 for the Beverton-Holt \\
 		\hline
 		\multicolumn{2}{l}{COND:} & If SRR = 5, 7, or 8\\
 		& 3rd Parameter & Optional depending on which SRR function is used \\
 		\hline
-		sigma-R & &  std.dev. of log recruitment;
+		0.60 & sigma-R &  std.dev. of log recruitment;
 		This parameter has two related roles.  It penalizes deviations from the spawner-recruitment curve, and it defines the offset between the arithmetic mean spawner-recruitment curve (as calculated from log(R0) and steepness) and the expected geometric mean (which is the basis from which the deviations are calculated.  Thus the value of sigmaR must be selected to approximate the true average recruitment deviation.\\
-		env-link & & environmental linkage coefficient. The recruitment parameters are short parameters, so cannot have the generic block or environmental link options.  Instead, this dedicated env-link is provided.  It is used to create a multiplicative adjustment to the target parameter, so $P_{y’} = P *exp(env/_link * env/_data_y)$.  An alternative that provides an additive link is under development.\\
-		log(R1) & & Offset for initial equilibrium recruitment to virgin recruitment.\\
+		\hline
+		0 & env-link & environmental linkage coefficient. The recruitment parameters are short parameters, so cannot have the generic block or environmental link options.  Instead, this dedicated env-link is provided.  It is used to create a multiplicative adjustment to the target parameter, so $P_{y’} = P *exp(env/_link * env/_data_y)$.  An alternative that provides an additive link is under development.\\
+		\hline
+		8.5 & log(R1) & Offset for initial equilibrium recruitment to virgin recruitment.\\
+		\hline
 		\multicolumn{2}{l}{AutoCorrelation} & Autocorrelation in recruitment \\
 		\hline
 		\\
 		\multicolumn{3}{l}{Then read additional spawner-recruitment conditions:}\\
 		\hline
 		0 & SR\_env\_link & This is the index of the environmental variable that will be used as the basis for adjustment of SR expectations.  This works for both the forecast period and for the initial equilibrium (by entering a value for the environmental variable one year before the start of the time series).\\
+		\hline
 		3 & SR\_env\_target & This factor determines what aspect of spawner-recruitment is affected by the environmental variable.  The options are:\\
 		& & 1: annual deviations\\
 		& & 2: R0 \\
 		& & 3: steepness\\
 		& & If the application needs to compare the environment to annual recruitment deviations, then the preferred option is to transform the environmental variable into an age 0 pre-recruit survey and enter these as a survey with expected value based on selectivity option \#31.  Use of SR\_env\_target=1 is discouraged because it interacts with the level of residual recruitment variability and there is no implementation of a bias correction for the variability in recruitment caused by the environmental variable.  If the application is investigating regime shifts, then enter an environmental variable with a time series of zeros and ones to describe the regime periods, then use SR\_env\_target of 2 or 3 to adjust the expected level of recruitment according to the regime variable.  Note that MSY related quantities will be calculated with the regime in the zero state only.  However, the forecast can be responsive to designated regime levels.\\
+		\hline
 		1 & Do\_Recr\_Dev & This selects the way in which recruitment deviations are coded:\\
 		  &  & 0:  none (so all recruitments come from S-R curve)\\
 		  &  & 1:  dev vector (previously the only option).  Here the deviations are encoded as a dev\_vector, so ADMB enforces a sum-to-zero constraint.\\
 		  &  & 2:  simple deviations.  Here the deviations do not have an explicit constraint to sum to zero, although they still should end up having close to a zero sum.  The difference in model performance between options (1) and (2) has not been fully explored to date.\\
+		\hline
 		1971 & Main recr devs begin year & If begin year is less than the model start year, then the early deviations are used to modify the initial age composition.   However, if set to be more than Nages before start year, it is changed to equal Nages before start year. \\
+		\hline
 		1999 & Main recr devs end year & If recr devs end year is later than retro year, it is reset to equal retro year. \\
+		\hline
 		3    & Main recr dev phase & \\
-		1 & Advanced Options & 0: Use default values for advanced options \\
-		  &                  & 1: Read values for the 11 advanced options \\
+		\hline
+		1 & Advanced  & 0: Use default values for advanced options \\
+		  & Options  & 1: Read values for the 11 advanced options \\
 		\hline
 		\multicolumn{3}{l}{COND = 1 Beginning of advanced options}\\
 		& 1950 & Early Recruitment Deviation Start Year: \\
@@ -867,7 +877,9 @@ The correct offset (bias adjustment) to apply to the expected value for recruitm
 
 \noindent of the offset then depends upon the partitioning of sigmaR into between and within recruitment variability.  The most appropriate degree of bias adjustment can be approximated from the relationship among sigmaR, recruitment variability (the signal), and recruitment residual error.
 
-INSERT FIGURE HERE
+\begin{center}
+	\includegraphics{10_bias}
+\end{center}
 
 Because the quantity and quality of data varies during a time series, SS allows the user to control the rate at which the offset is ramped in during the early, data-poor years, and then ramped back to zero for the forecast years.
 On output to report.sso, SS calculates the mean bias adjustment during the early and main eras and compares it to the rmse of estimated recruitment devs.  A warning is generated if the rmse is small and the bias adjustment is larger than 2.0 times the ratio of $rmse^2$ to $sigmaR^2$.
@@ -1012,18 +1024,16 @@ So for a setup with 2 fisheries and 2 surveys, the Q setup matrix could be:
 	    \multicolumn{5}{l}{\multirow{3}{16cm}{COND: If any fishery or survey uses random devs or random walk, there is an option to either read detailed input to set up the deviation, or to just read a template.}}\\
 	    \\
 	    \\
-	    \#Value & & \multicolumn{3}{l}{Label, Description, and Options} \\
+	    \#Value & Label & \multicolumn{3}{l}{Label, Description, and Options} \\
 	    \hline
-	    & 1 & \multicolumn{2}{l}{Read detailed input for random effects}& \\ 
-	    &   & \multicolumn{3}{l}{\multirow{2}{10cm}{0:  read one parameter line and use it as a template to create a time series of parameters for each observation for each fleet/survey that uses random effects.  The output to control.ss\_new will be in detailed format even if the input is not detailed.  Therefore a simple way to create a detailed setup file is to start with a simple template then edit the control.ss\_new file to create a detailed input for subsequent model runs;}}\\
+	    1 & Random effects & \multicolumn{3}{l}{\multirow{2}{10cm}{0:  read one parameter line and use it as a template to create a time series of parameters for each observation for each fleet/survey that uses random effects.  The output to control.ss\_new will be in detailed format even if the input is not detailed.  Therefore a simple way to create a detailed setup file is to start with a simple template then edit the control.ss\_new file to create a detailed input for subsequent model runs;}}\\
 		\\
 		\\
 		\\
 		\\
 		\\
 		\\
-		%\hline
-	    \pagebreak
+		\\
 	    &  & \multicolumn{3}{l}{\multirow{2}{8cm}{1:  read a parameter line for each observation of each fleet/survey that uses random effects, thus allowing customization.  If the Q option for a fleet is 3 (random devs), then read one parameter for each observation.  If the Q option is 4, then read (N observations -1) parameters.}}\\
 	    \\
 	    \\
@@ -1034,3 +1044,29 @@ So for a setup with 2 fisheries and 2 surveys, the Q setup matrix could be:
 	    \hline
 	\end{longtable}
 \end{center}
+For each positive element in columns for the catchability (Q) setup above, read a short parameter setup line.  The order is: fishery 1 through survey N within power transformation, then within environment link, then within extra standard deviation, then within Q.  If no elements are selected, then there must be no parameter setup lines.
+
+\begin{center}
+	\begin{longtable}{p{1.1cm} p{1.1cm} p{1.2cm} p{1.2cm} p{1.5cm} p{1.1cm} p{1.1cm} p{4.8cm}}
+		\multicolumn{8}{l}{The list of parameters to be read from the above setup would be:}\\
+		\hline
+		\#Lo & Hi & Init & Prior & PR\_type & SD & Phase & Label \\
+		\hline
+		0  & 3   & 1 & 1 & 0 & 0.10 & 3 & \#Fishery1 power\\
+		0  & 0.5 & 0.10 & 0.10 & 0 & 0 & 4 & \#Fishery1 extra SD\\
+		0  & 0.5 & 0.10 & 0.10 & 0 & 0 & 4 & \#Fishery2 extra SD\\
+		0  & 0.5 & 0.10 & 0.10 & 0 & 0 & 4 & \#Survey2 extra SD\\
+		-7 & 5   & 0.50 & 0.50 & -1 & 1 & 4 & \#Fishery1 base Q\\
+		-7 & 5   & 0.50 & 0.50 & -1 & 1 & 4 & \#Fishery2 base Q\\
+		-7 & 5   & 0.50 & 0.50 & -1 & 1 & 4 & \#Survey1 base Q\\
+		0  & 1   & 0 & 0 & 1 & 0.10 & 3 & \#Survey1 Qrandwalk obs2\\
+		0  & 1   & 0 & 0 & 1 & 0.10 & 3 & \#Survey1 Qrandwalk obs3\\
+		0  & 1   & 0 & 0 & 1 & 0.10 & 3 & \#Survey1 Qrandwalk obs4\\
+		... & ... & ... & ... & ... & ... & ... & ... \\
+		-7 & 5   & 0.50 & 0.50 & -1 & 1 & 4 & \#Survey3 base Q\\
+		\hline
+	\end{longtable}
+\end{center}
+
+\subsubsection{Selectivity and Discard}
+
