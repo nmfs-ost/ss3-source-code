@@ -697,7 +697,7 @@ FUNCTION void write_nudata()
      }
     }
    }
-  f=exp_a_temp.size();
+  f=exp_a_temp.size()+8;
   report1 << "-9999 ";
   for(i=1;i<=f;i++) report1<<" 0";
   report1<<endl;
@@ -725,8 +725,8 @@ FUNCTION void write_nudata()
     report1<<endl;
   }
     report1<<"#"<<endl << N_envvar<<" #_N_environ_variables"<<endl;
-    report1<<"Year Variable Value"<<endl;
-    if(N_envdata>0) 
+    report1<<"#Year Variable Value"<<endl;
+    if(N_envvar>0) 
       {for(i=0;i<=N_envdata-1;i++) report1<<env_temp[i]<<endl;
        report1<<"-9999 0 0"<<endl;
       }
@@ -984,7 +984,7 @@ FUNCTION void write_nudata()
     }
     }
    }
-  f=exp_a_temp.size();
+  f=exp_a_temp.size()+8;
   report1 << "-9999 ";
   for(i=1;i<=f;i++) report1<<" 0";
   report1<<endl;
@@ -1025,8 +1025,8 @@ FUNCTION void write_nudata()
   }
 
     report1<<"#"<<endl << N_envvar<<" #_N_environ_variables"<<endl;
-    report1<<"Year Variable Value"<<endl;
-    if(N_envdata>0) 
+    report1<<"#Year Variable Value"<<endl;
+    if(N_envvar>0) 
       {for(i=0;i<=N_envdata-1;i++) report1<<env_temp[i]<<endl;
        report1<<"-9999 0 0"<<endl;
       }
@@ -1362,7 +1362,7 @@ FUNCTION void write_nudata()
       }
     }
   }
-  f=exp_a_temp.size();
+  f=exp_a_temp.size()+8;
   report1 << "-9999 ";
   for(i=1;i<=f;i++) report1<<" 0";
   report1<<endl;
@@ -1404,8 +1404,8 @@ FUNCTION void write_nudata()
   }
 
     report1<<"#"<<endl << N_envvar<<" #_N_environ_variables"<<endl;
-    report1<<"Year Variable Value"<<endl;
-    if(N_envdata>0) 
+    report1<<"#Year Variable Value"<<endl;
+    if(N_envvar>0) 
       {for(i=0;i<=N_envdata-1;i++) report1<<env_temp[i]<<endl;
        report1<<"-9999 0 0"<<endl;
       }
@@ -3919,9 +3919,9 @@ FUNCTION void write_bigoutput()
         }
     }
 
-   SS2out << endl<<"ENVIRONMENTAL_DATA Begins_in_startyr-1"<<endl;         // SS_Label_397
-   if(N_envdata>=1)
+   if(N_envvar>0)
    {
+   SS2out << endl<<"ENVIRONMENTAL_DATA Begins_in_startyr-1"<<endl;         // SS_Label_397
    SS2out<<"Year "; for (i=-2;i<=N_envvar;i++) SS2out<<" "<<i;
    SS2out<<endl;
     for (y=styr-1;y<=YrMax;y++)

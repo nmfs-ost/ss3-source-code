@@ -648,7 +648,8 @@ DATA_SECTION
       {y=styr-1;}  // designates initial equilibrium
       else 
       {y=g;}
-    echoinput<<tempvec(1,5)<<endl;
+      if(k==0) echoinput<<"first catch record: "<<tempvec(1,5)<<endl;
+      if(k==(N_ReadCatch-1)) echoinput<<"last catch record: "<<tempvec(1,5)<<endl;
 
     if(y>=styr-1 && y<=endyr)  //  observation is in date range
     {
@@ -684,7 +685,8 @@ DATA_SECTION
     for(y=styr;y<=endyr;y++)
     for(s=1;s<=nseas;s++)
     {
-      echoinput<<"year, seas: "<<y<<" "<<s<<" catches: "<<trans(catch_ret_obs)(y-nseas-1+s)<<endl;
+      t=styr+(y-styr)*nseas+s-1;
+      echoinput<<"year, seas: "<<y<<" "<<s<<" catches: "<<trans(catch_ret_obs)(t)<<endl;
     }
 
 //  calc total catch by year so can calculate the first year with catch and to omit zero catch years from sdreport
@@ -2559,17 +2561,21 @@ DATA_SECTION
   echoinput<<N_envvar<<" N_envvar "<<endl;
   
   ender=0;
+  N_envdata=0;
   j=endyr;  //  use to store maxyear with env data
-  do {
-    dvector tempvec(1,3);
-    *(ad_comm::global_datafile) >> tempvec(1,3);
-    if(tempvec(1)==-9999.) ender=1;
-    if(tempvec(1)>j) j=tempvec(1);
-    env_temp.push_back (tempvec(1,3));
-  } while (ender==0);
-  N_envdata=env_temp.size()-1;
-  echoinput<<" successful read of "<<N_envdata<<" environmental observations "<<endl;
-  //  after forecast.ss is read, then N_forecast years will be known so env_data_RD can be dimensioned
+  if(N_envvar>0)
+  {
+    do {
+      dvector tempvec(1,3);
+      *(ad_comm::global_datafile) >> tempvec(1,3);
+      if(tempvec(1)==-9999.) ender=1;
+      if(tempvec(1)>j) j=tempvec(1);
+      env_temp.push_back (tempvec(1,3));
+    } while (ender==0);
+    N_envdata=env_temp.size()-1;
+    echoinput<<" successful read of "<<N_envdata<<" environmental observations "<<endl;
+    //  after forecast.ss is read, then N_forecast years will be known so env_data_RD can be dimensioned
+  }
  END_CALCS
 
 !!//  SS_Label_Info_2.11 #Start generalized size composition section
