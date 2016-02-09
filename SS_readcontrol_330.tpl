@@ -101,7 +101,7 @@
   recr_dist_area=1;  //hardwire for testing
   N_settle_assignments_rd=0;
   N_settle_assignments=1;  // default
-  
+
   switch (recr_dist_method)
   {
     case 1:
@@ -191,7 +191,7 @@
     echoinput<<"N settle timings: "<<N_settle_timings<<endl<<" settle_month: "<<settle_timings_tempvec(1,N_settle_timings)<<endl;
 
 //  SS_Label_Info_4.2.3 #Set-up arrays and indexing for growth patterns, gender, settlements, platoons
- END_CALCS  
+ END_CALCS
    int g3i;
 //  SPAWN-RECR:   define settlement timings
   ivector Settle_seas(1,N_settle_timings)  //  calculated season in which settlement occurs
@@ -274,7 +274,7 @@
   3darray lin_grow(1,gmorph,1,nseas*N_subseas,0,nages)  //  during linear phase has fraction of Size at Afix
   ivector settle_g(1,gmorph)   //  settlement pattern for each platoon
 
- LOCAL_CALCS    
+ LOCAL_CALCS
   use_morph.initialize();
   TG_use_morph.initialize();
    for (gp=1;gp<=N_GP*gender;gp++)
@@ -591,7 +591,7 @@
    {AFIX_plus=1.0e-06;}
   N_M_Grow_parms=N_natMparms+N_growparms;
   lin_grow.initialize();
-  
+
   echoinput<<"g a seas subseas ALK_idx real_age calen_age lin_grow first_grow_age"<<endl;
   for (g=1;g<=gmorph;g++)
   if(use_morph(g)>0)
@@ -703,7 +703,7 @@
     {k2=N_GP;}
   else
     {k2=0;}
-    
+
   if(Maturity_Option==5)
   {
     echoinput<<" fecundity and weight at age to be read from file:  wtatage.ss"<<endl;
@@ -768,8 +768,8 @@
   int CGD;  //  switch for cohort growth dev
 
  LOCAL_CALCS
-  femfrac(1,N_GP)=fracfemale;
-  if(gender==2) femfrac(N_GP+1,N_GP+N_GP)=1.-fracfemale;
+  // femfrac(1,N_GP)=fracfemale;
+  // if(gender==2) femfrac(N_GP+1,N_GP+N_GP)=1.-fracfemale;
 
   ParCount=0;
 
@@ -940,7 +940,7 @@
     }
   }
   N_MGparm=ParCount;
-  
+
   catch_mult_pointer=-1;
   j=sum(need_catch_mult);  //  number of fleets needing a catch multiplier parameter
   if(j>0) {catch_mult_pointer=ParCount+1;}
@@ -949,10 +949,17 @@
     if(need_catch_mult(j)==1)
     {
       ParCount++; ParmLabel+="Catch_Mult:_"+NumLbl(j)+"_"+fleetname(j);
-    } 
+    }
   }
   N_MGparm=ParCount;
-  
+
+  frac_female_pointer=ParCount+1;
+  for(gp=1;gp<=N_GP;gp++)
+  {
+    ParCount++; ParmLabel+="FracFemale_GP_"+NumLbl(gp);
+  }
+  N_MGparm=ParCount;
+
  END_CALCS
 
   init_matrix MGparm_1(1,N_MGparm,1,14)   // matrix with natmort and growth parms controls
@@ -1101,7 +1108,7 @@
       y=Block_Design(z,g+1)+1;  // first year after block
       if(y>endyr+1) y=endyr+1;
       time_vary_MG(y,mgp_type(j))=1;
-      
+
       if(mgp_type(j)==7)  //  so doing catch_mult which needs annual values calculated for each year of the block
       {
         for(k=Block_Design(z,g);k<=y;k++)
@@ -1256,7 +1263,7 @@
     N_MGparm_dev=0;
     for(j=1;j<=N_MGparm;j++)
     {
-    if(MGparm_1(j,9)>0) 
+    if(MGparm_1(j,9)>0)
       {
         N_MGparm_dev++;
 //  these are not parameters in 3.24  need to create anyway
@@ -1374,7 +1381,7 @@
     MGparm_CV(j)=MGparm_seas_1(f,6);
     MGparm_PH(j)=MGparm_seas_1(f,7);
    }
-   
+
   //  SS_Label_Info_4.5.9 #Set up random deviations for MG parms
   //  NOTE:  the parms for the se of the devs are part of the MGparm2 list above, not the dev list below
    int N_MGparm_dev_tot;
@@ -1890,7 +1897,7 @@
 //  NEW  only read for catch fleets with positive initial equ catch
   imatrix init_F_loc(1,nseas,1,Nfleet);  // pointer to init_F parameter for each fleet
   int N_init_F;
-  int N_init_F2;  //  for conversion of 3.24 to 3.30  
+  int N_init_F2;  //  for conversion of 3.24 to 3.30
  LOCAL_CALCS
   init_F_loc.initialize();
   N_init_F=0;
@@ -1912,7 +1919,7 @@
     }
   }
  END_CALCS
-  !! echoinput<<" ready to read init_F setup for: "<<N_init_F<<" fleet x season with initial equilibrium catch"<<endl; 
+  !! echoinput<<" ready to read init_F setup for: "<<N_init_F<<" fleet x season with initial equilibrium catch"<<endl;
   init_matrix init_F_parm_1(1,N_init_F,1,7)
   !! echoinput<<" initial equil F parameter setup"<<endl<<init_F_parm_1<<endl;
   vector init_F_LO(1,N_init_F)
@@ -2038,7 +2045,7 @@
   k=5;
 
   for(f=1;f<=Nfleet;f++)
-  {*(ad_comm::global_datafile) >> Q_setup(f)(1,k);}  
+  {*(ad_comm::global_datafile) >> Q_setup(f)(1,k);}
  END_CALCS
 
 
@@ -2059,12 +2066,12 @@
    if(Q_setup(f,1)>0)
     {
       Q_Npar++; Q_setup_parms(f,1)=Q_Npar;
-      ParCount++; 
+      ParCount++;
       {ParmLabel+="Q_power_"+fleetname(f)+"("+NumLbl(f)+")";}
       if(Q_setup(f,4)<2) {N_warn++; warning<<" must create base Q parm to use Q_power for fleet: "<<f<<endl;}
     }
   }
-  
+
   for (f=1;f<=Nfleet;f++)
   {
     Q_setup_parms(f,2)=0;
@@ -2084,14 +2091,14 @@
       ParCount++; ParmLabel+="Q_extraSD_"+fleetname(f)+"("+NumLbl(f)+")";
     }
   }
-  
+
   {
     for (f=1;f<=Nfleet;f++)
     {
      if(Q_setup(f,5)>0)
       {
         Q_Npar++; Q_setup_parms(f,5)=Q_Npar;
-        ParCount++; 
+        ParCount++;
         ParmLabel+="Q_offset_"+fleetname(f)+"("+NumLbl(f)+")";
         if(Q_setup(f,4)<2) {N_warn++; warning<<" must create base Q parm to use Q_offset for fleet: "<<f<<endl;}
       }
@@ -2382,7 +2389,7 @@
       {
         depletion_fleet=f;
       }
-      
+
      if(seltype(f,2)>=1)
      {
        if(WTage_rd>0)
@@ -2828,7 +2835,7 @@
   selparm_dev_point.initialize();
   selparm_dev_rpoint.initialize();
   selparm_dev_rpoint2.initialize();
- END_CALCS      
+ END_CALCS
 
 !!//  SS_Label_Info_4.9.9 #Create arrays for the total set of selex parameters
   !!N_selparm2=N_selparm+N_selparm_env+N_selparm_blk+N_selparm_trend2+2*N_selparm_dev;
@@ -3237,7 +3244,7 @@
  END_CALCS
   matrix var_adjust(1,7,1,Nfleet)
   init_matrix var_adjust_list(1,Do_Var_adjust+1,1,3)
-  
+
  LOCAL_CALCS
   var_adjust.initialize();
   for(j=4;j<=7;j++)
@@ -3694,11 +3701,11 @@
   }
 
   if(depletion_fleet>0 && recdev_early_PH_rd>0) recdev_early_PH_rd++;  //  add 1 to phase if using depletion fleet
-  if(recdev_early_PH_rd > Turn_off_phase) 
+  if(recdev_early_PH_rd > Turn_off_phase)
     {recdev_early_PH =-1;}
     else
     {recdev_early_PH =recdev_early_PH_rd;}
-      
+
   if(recdev_early_PH > max_phase) max_phase=recdev_early_PH;
 
   if(recdev_do_early>0)
@@ -3997,7 +4004,7 @@
       }
     }
   }
-  
+
   if(Do_Forecast>0 && Turn_off_phase>0)
   {
     if(Fcast_recr_PH==0)  // read value for forecast_PH.  This code is repeats earlier code in case other parameters have changed maxphase

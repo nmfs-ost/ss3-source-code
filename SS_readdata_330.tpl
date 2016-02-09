@@ -67,6 +67,8 @@ DATA_SECTION
 
   int catch_mult_pointer;
 
+  int frac_female_pointer;
+
   int icycle
   int Ncycle
   int No_Report  //  flag to skip output reports after MCMC and MCeval
@@ -232,8 +234,8 @@ DATA_SECTION
  END_CALCS
   init_ivector F_reporting_ages_R(1,k);
   //  convert to F_reporting_ages later after nages is read.
- LOCAL_CALCS  
-  if(k>0) 
+ LOCAL_CALCS
+  if(k>0)
     {
       echoinput<<F_reporting_ages<<"  F_reporting_ages_R"<<endl;
       echoinput<<"Will be checked against maxage later "<<endl;
@@ -254,7 +256,7 @@ DATA_SECTION
    if(finish_starter==3.30)
    {echoinput<<"Read files in 3.30 format"<<endl;}
    else
-   {cout<<"CRITICAL error reading finish_starter in starter.ss: "<<finish_starter<<endl; exit(1);}    
+   {cout<<"CRITICAL error reading finish_starter in starter.ss: "<<finish_starter<<endl; exit(1);}
    echoinput<<"  finish reading starter.ss"<<endl<<endl;
    ALK_tolerance=0.0001;   //  later put this into the starter.ss input
  END_CALCS
@@ -343,7 +345,7 @@ DATA_SECTION
  LOCAL_CALCS
    read_seas_mo=2;
  END_CALCS
- 
+
   init_int styr  //start year of the model
  !!echoinput<<styr<<" start year "<<endl;
 
@@ -391,7 +393,7 @@ DATA_SECTION
   else
     {seasdur /=12.;}
   seasdur_half = seasdur*0.5;   // half a season
-  subseasdur_delta=seasdur/double(N_subseas); 
+  subseasdur_delta=seasdur/double(N_subseas);
   TimeMax = styr+(endyr-styr)*nseas+nseas-1;
   retro_yr=endyr+retro_yr;
 
@@ -417,7 +419,7 @@ DATA_SECTION
   init_number spawn_rd
    number spawn_month  //  month that spawning occurs
    int spawn_seas    //  spawning occurs in this season
-   int spawn_subseas  //  
+   int spawn_subseas  //
    number spawn_time_seas  //  real time within season for mortality calculation
  LOCAL_CALCS
   if(read_seas_mo==1)  //  so reading values of integer season
@@ -456,7 +458,7 @@ DATA_SECTION
   int Nsurvey
   int Nfleet
   int Nfleet1  // used with 3.24 for number of fishing fleets
-  
+
  LOCAL_CALCS
   {
     *(ad_comm::global_datafile) >> gender;
@@ -536,7 +538,7 @@ DATA_SECTION
   */
   }
  END_CALCS
- 
+
 //  ProgLabel_2.1.5  define genders and max age
 
   ivector     age_vector(0,nages)
@@ -570,7 +572,7 @@ DATA_SECTION
 
   int ALK_time_max
 
- LOCAL_CALCS  
+ LOCAL_CALCS
   ALK_time_max=(endyr-styr+20)*nseas*N_subseas;  //  sets maximum size for data array indexing  20 years into forecast is allowed
  END_CALCS
 !!//  SS_Label_Info_2.1.6  #Indexes for data timing.  "have_data" and "data_time" hold pointers for data occurrence, timing, and ALK need
@@ -588,7 +590,7 @@ DATA_SECTION
 //  data_time():  first value will hold real month; 2nd is timing within season; 3rd is year.fraction
 //  for a given fleet x subseas, all observations must have the same specific timing (month.fraction)
 //  a warning will be given if subsequent observations have a different month.fraction
-//  an observation's real_month is used to assign it to a season and a subseas within that seas, and it is used to calculate the data_timing within the season for mortality 
+//  an observation's real_month is used to assign it to a season and a subseas within that seas, and it is used to calculate the data_timing within the season for mortality
 
 //  where ALK_idx=(y-styr)*nseas*N_subseas+(s-1)*N_subseas+subseas   This is index to subseas and used to indicate which ALK is being referenced
 
@@ -599,7 +601,7 @@ DATA_SECTION
  LOCAL_CALCS
    have_data.initialize();
    obs_equ_catch.initialize();
-  
+
    for(y=1;y<=ALK_time_max;y++)
    for(f=1;f<=Nfleet;f++)
    {
@@ -646,7 +648,7 @@ DATA_SECTION
       g=tempvec(1); s=tempvec(2); f=tempvec(3);
       if(g==-999)
       {y=styr-1;}  // designates initial equilibrium
-      else 
+      else
       {y=g;}
       if(k==0) echoinput<<"first catch record: "<<tempvec(1,5)<<endl;
       if(k==(N_ReadCatch-1)) echoinput<<"last catch record: "<<tempvec(1,5)<<endl;
@@ -658,7 +660,7 @@ DATA_SECTION
       if(s>0)
       {
         t=styr+(y-styr)*nseas+s-1;
-  
+
         {
           catch_ret_obs(f,t) += tempvec(4);
           catch_se(t,f) = tempvec(5);
@@ -676,7 +678,7 @@ DATA_SECTION
       }
     }
   }
-  
+
     for(s=1;s<=nseas;s++)
     {
       for (f=1;f<=Nfleet1;f++) {obs_equ_catch(s,f)=catch_ret_obs(f,styr-nseas-1+s);}
@@ -720,7 +722,7 @@ DATA_SECTION
   }
  END_CALCS
 
-  //  SS_Label_Info_2.3 #Read fishery CPUE, effort, and Survey index or abundance 
+  //  SS_Label_Info_2.3 #Read fishery CPUE, effort, and Survey index or abundance
   !!echoinput<<"#_  now read fleet #, svyunits, svyerrtype for each fleet "<<endl;
   int Svy_N_rd
   int Svy_N
@@ -807,7 +809,7 @@ DATA_SECTION
   vector timing_input(1,3)
   vector timing_r_result(1,4)
   ivector timing_i_result(1,6)
-  
+
  LOCAL_CALCS
 //  SS_Label_Info_2.3.1  #Process survey observations, move info into working arrays,create super-periods as needed
   Svy_super_N.initialize();
@@ -827,7 +829,7 @@ DATA_SECTION
 
         t=timing_i_result(2);
         ALK_time=timing_i_result(5);
-        
+
         Svy_N_fleet(f)++;  //  count obs by fleet
         j=Svy_N_fleet(f);  //  index of observation as stored in working array
 //  some fleet specific indexes and working versions of the data and se
@@ -847,7 +849,7 @@ DATA_SECTION
         have_data(ALK_time,f,data_type,0)++;  //  count the number of observations in this subseas
         p=have_data(ALK_time,f,data_type,0);  //  current number of observations
         have_data(ALK_time,f,data_type,p)=j;  //  store data index for the p'th observation in this subseas
-        
+
         //  create super_year indexes
         if( Svy_data[i](2)<0) // start or stop a super-period;  ALL observations must be continguous in the file
         {
@@ -993,9 +995,9 @@ DATA_SECTION
           temp=abs( discdata[i](2));  //  read value that could be season or month; abs ()because neg value indicates super period
             if(read_seas_mo==1)  // reading season
             {
-              s=int(temp);  
+              s=int(temp);
               subseas=mid_subseas;
-              if(surveytime(f)>=0.) 
+              if(surveytime(f)>=0.)
               {data_timing=surveytime(f);}  //  fraction of season
               else
               {data_timing=0.5;}
@@ -1023,7 +1025,7 @@ DATA_SECTION
                 data_timing=0.5;
               }
             }
-            
+
             t=styr+(y-styr)*nseas+s-1;
             ALK_time=(y-styr)*nseas*N_subseas+(s-1)*N_subseas+subseas;
 
@@ -1056,7 +1058,7 @@ DATA_SECTION
 
          cv_disc(f,j)= discdata[i](5);
          obs_disc(f,j)=abs( discdata[i](4));
-         
+
          if( discdata[i](4)<0.0)  discdata[i](3)=-abs( discdata[i](3));  //  convert to new format using negative fleet
          if( discdata[i](3)<0) {yr_disc_use(f,j)=-1;} else {yr_disc_use(f,j)=1;}
          if(catch_ret_obs(f,t)<=0.0)
@@ -1139,9 +1141,9 @@ DATA_SECTION
       temp=abs(mnwtdata1[i](2));  //  read value that could be season or month; abs ()because neg value indicates super period
             if(read_seas_mo==1)  // reading season
             {
-              s=int(temp);  
+              s=int(temp);
               subseas=mid_subseas;
-              if(surveytime(f)>=0.) 
+              if(surveytime(f)>=0.)
               {data_timing=surveytime(f);}  //  fraction of season
               else
               {data_timing=0.5;}
@@ -1169,7 +1171,7 @@ DATA_SECTION
                 data_timing=0.5;
               }
             }
-            
+
             t=styr+(y-styr)*nseas+s-1;
             ALK_time=(y-styr)*nseas*N_subseas+(s-1)*N_subseas+subseas;
 
@@ -1483,7 +1485,7 @@ DATA_SECTION
   ivector N_suprper_l(1,Nfleet)      // N super_yrs per obs
 
 //   vector tempvec_lenread(1,6+nlen_bin2);
-   
+
  LOCAL_CALCS
     k=6+nlen_bin2;
     Nobs_l.initialize();
@@ -1517,7 +1519,7 @@ DATA_SECTION
       }
     }
     Nobs_l_tot=sum(Nobs_l);
-  for (f=1;f<=Nfleet;f++) 
+  for (f=1;f<=Nfleet;f++)
   {
     s=N_suprper_l(f)/2.;
     if(s*2!=N_suprper_l(f))
@@ -1586,9 +1588,9 @@ DATA_SECTION
           temp=abs( lendata[i](2));  //  read value that could be season or month; abs ()because neg value indicates super period
             if(read_seas_mo==1)  // reading season
             {
-              s=int(temp);  
+              s=int(temp);
               subseas=mid_subseas;
-              if(surveytime(f)>=0.) 
+              if(surveytime(f)>=0.)
               {data_timing=surveytime(f);}  //  fraction of season
               else
               {data_timing=0.5;}
@@ -1616,10 +1618,10 @@ DATA_SECTION
                 data_timing=0.5;
               }
             }
-            
+
             t=styr+(y-styr)*nseas+s-1;
             ALK_time=(y-styr)*nseas*N_subseas+(s-1)*N_subseas+subseas;
-  
+
             Len_time_t(f,j)=t;     // sequential time = year+season
             Len_time_ALK(f,j)=ALK_time;
             if(data_time(ALK_time,f,1)<0.0)
@@ -1639,7 +1641,7 @@ DATA_SECTION
             p=have_data(ALK_time,f,data_type,0);
             have_data(ALK_time,f,data_type,p)=j;  //  store data index for the p'th observation in this subseas
           }  //  end have_data index and timing processing
-  
+
           if(s>nseas)
            {N_warn++; cout<<" EXIT - see warning "<<endl; warning<<" Critical error, season for length obs "<<i<<" is > nseas"<<endl; exit(1);}
 
@@ -1671,7 +1673,7 @@ DATA_SECTION
             else if(in_superperiod==1)  // end a super-year
             {suprper_l2(f,N_suprper_l(f))=j; in_superperiod=0;}
           }
-          
+
           for (z=1;z<=nlen_bin2;z++)   // get the composition vector
            {obs_l(f,j,z)= lendata[i](6+z);}
 
@@ -1863,7 +1865,7 @@ DATA_SECTION
   vector age_bins1(1,n_abins) // age classes for data
   vector age_bins(1,n_abins2) // age classes for data  female then male end-to-end
   vector age_bins_mean(1,n_abins2)  //  holds mean age for each data age bin
-  
+
  LOCAL_CALCS
   if(n_abins>0)
   {
@@ -1896,7 +1898,7 @@ DATA_SECTION
       }
       echoinput<<"AgeKey: "<<Use_AgeKeyZero<<" will create key from parameters"<<endl;
     }
-  
+
     Comp_Err_A2.initialize();
     echoinput<<"#_now read for each fleet info for processing the age comps:"<<endl;
     echoinput<<"#_mintailcomp: upper and lower distribution for females and males separately are accumulated until exceeding this level."<<endl;
@@ -1921,7 +1923,7 @@ DATA_SECTION
     Comp_Err_ParmCount=max(Comp_Err_ParmCount,j);  //  get the maximum parameter number referred to
     *(ad_comm::global_datafile) >> Lbin_method;
     echoinput << Lbin_method<< " Lbin method for defined size ranges "  << endl;
-  
+
     if(nobsa_rd>0 && N_ageerr==0)
     {
       N_warn++; cout<<" EXIT - see warning "<<endl; warning<<" must define ageerror vectors because age data exist"<<endl; exit(1);
@@ -1936,7 +1938,7 @@ DATA_SECTION
     for (b=1;b<=n_abins;b++)
     {
      age_bins(b) = age_bins1(b);
-  
+
      if(b<n_abins)
      {age_bins_mean(b) =(age_bins1(b)+age_bins1(b+1))*0.5;}
      else
@@ -1975,11 +1977,11 @@ DATA_SECTION
      if(Age_Data[i](9)<0) {N_warn++; cout<<"error in age data "<<endl; warning<<"Error: negative sample size no longer valid as indicator of skip data or superperiods "<<endl; exit(1);}
      if(Age_Data[i](6)==0 || Age_Data[i](6)>N_ageerr) {N_warn++; cout<<"error in age data "<<endl; warning<<"Error: undefined age_error type: "<<Age_Data[i](6)<<"  in obs: "<<i<<endl; exit(1);}
      if(Age_Data[i](2)<0) N_suprper_a(f)++;     // count the number of starts and ends of super-periods if seas<0 or sampsize<0
-    
+
      Nobs_a(f)++;
     }
   }
-  for (f=1;f<=Nfleet;f++) 
+  for (f=1;f<=Nfleet;f++)
   {
     s=N_suprper_a(f)/2.;
     if(s*2!=N_suprper_a(f))
@@ -2043,14 +2045,14 @@ DATA_SECTION
          {
            Nobs_a(f)++;  //  redoing this pointer just to create index j used below
            j=Nobs_a(f);
-           
+
           {  //  start have_data index and timing processing
           temp=abs(Age_Data[i](2));  //  read value that could be season or month; abs ()because neg value indicates super period
             if(read_seas_mo==1)  // reading season
             {
-              s=int(temp);  
+              s=int(temp);
               subseas=mid_subseas;
-              if(surveytime(f)>=0.) 
+              if(surveytime(f)>=0.)
               {data_timing=surveytime(f);}  //  fraction of season
               else
               {data_timing=0.5;}
@@ -2078,7 +2080,7 @@ DATA_SECTION
                 data_timing=0.5;
               }
             }
-            
+
             t=styr+(y-styr)*nseas+s-1;
             ALK_time=(y-styr)*nseas*N_subseas+(s-1)*N_subseas+subseas;
 
@@ -2102,13 +2104,13 @@ DATA_SECTION
 //            warning<<" datatype: "<<data_type<<" p: "<<p;
             have_data(ALK_time,f,data_type,p)=j;  //  store data index for the p'th observation in this subseas
           }  //  end have_data index and timing processing
-  
+
           if(s>nseas)
            {N_warn++; cout<<" EXIT - see warning "<<endl; warning<<" Critical error, season for age obs "<<i<<" is > nseas"<<endl; exit(1);}
 
           if(Age_Data[i](6)<0.0)
             {N_warn++; warning<<"negative values not allowed for age comp sample size, use -fleet to omit from -logL"<<endl;}
-          header_a(f,j)(1,9)=Age_Data[i](1,9);  
+          header_a(f,j)(1,9)=Age_Data[i](1,9);
           header_a(f,j,1) = y;
           if(Age_Data[i](3)<0)
           {
@@ -2385,7 +2387,7 @@ DATA_SECTION
       Nobs_ms(f)++;
     }
   }
-  for (f=1;f<=Nfleet;f++) 
+  for (f=1;f<=Nfleet;f++)
   {
     s=N_suprper_ms(f)/2.;
     if(s*2!=N_suprper_ms(f))
@@ -2443,9 +2445,9 @@ DATA_SECTION
           temp=abs(sizeAge_Data[i](2));  //  read value that could be season or month; abs ()because neg value indicates super period
             if(read_seas_mo==1)  // reading season
             {
-              s=int(temp);  
+              s=int(temp);
               subseas=mid_subseas;
-              if(surveytime(f)>=0.) 
+              if(surveytime(f)>=0.)
               {data_timing=surveytime(f);}  //  fraction of season
               else
               {data_timing=0.5;}
@@ -2473,12 +2475,12 @@ DATA_SECTION
                 data_timing=0.5;
               }
             }
-            
+
             t=styr+(y-styr)*nseas+s-1;
             ALK_time=(y-styr)*nseas*N_subseas+(s-1)*N_subseas+subseas;
 
            msz_time_t(f,j)=t;
-    
+
             msz_time_ALK(f,j)=ALK_time;
             if(data_time(ALK_time,f,1)<0.0)
             {
@@ -2559,7 +2561,7 @@ DATA_SECTION
   int N_envdata
  LOCAL_CALCS
   echoinput<<N_envvar<<" N_envvar "<<endl;
-  
+
   ender=0;
   N_envdata=0;
   j=endyr;  //  use to store maxyear with env data
@@ -2748,11 +2750,11 @@ DATA_SECTION
         temp=abs(SzFreq_obs_hdr(iobs,2));
         if(read_seas_mo==1)  // reading season
         {
-              s=int(temp);  
+              s=int(temp);
               if(s>nseas)
               {N_warn++; cout<<" EXIT - see warning "<<endl; warning<<" Critical error, season for general sizecomp  method, obs "<<k<<" "<<j<<" is > nseas"<<endl; exit(1);}
               subseas=mid_subseas;
-              if(surveytime(f)>=0.) 
+              if(surveytime(f)>=0.)
               {data_timing=surveytime(f);}  //  fraction of season
               else
               {data_timing=0.5;}
@@ -2780,7 +2782,7 @@ DATA_SECTION
             data_timing=0.5;
           }
         }
-            
+
         t=styr+(y-styr)*nseas+s-1;
         f=abs(SzFreq_obs_hdr(iobs,3));
         ALK_time=(y-styr)*nseas*N_subseas+(s-1)*N_subseas+subseas;
@@ -2870,7 +2872,7 @@ DATA_SECTION
 // identify super-period starts and stops
       if(s<0) // start/stop a super-period  ALL observations must be continguous in the file
       {
-        if(in_superperiod==0) 
+        if(in_superperiod==0)
         {
           N_suprper_SzFreq++;
           suprper_SzFreq_start(N_suprper_SzFreq)=iobs;
@@ -3065,7 +3067,7 @@ DATA_SECTION
   !! show_MSY=0;
   !! did_MSY=0;
   !! wrote_bigreport=0;
-  
+
   init_number SPR_target
   !!echoinput<<SPR_target<<" SPR_target "<<endl;
   init_number BTGT_target
@@ -3245,7 +3247,7 @@ DATA_SECTION
   Do_Rebuilder=0;
   Rebuild_Ydecl=endyr;
   Rebuild_Yinit=endyr;
-  Fcast_RelF_Basis=1;  
+  Fcast_RelF_Basis=1;
   Fcast_Catch_Basis=2;
   }  //  end of defaults for do_forecast = 0
 
@@ -3283,7 +3285,7 @@ DATA_SECTION
       echoinput<<" do not read relative F by season and fleet "<<endl;
     }
 
-    echoinput<<"Read list of fleet ID and max annual catch;  end with fleet=-9999"<<endl; 
+    echoinput<<"Read list of fleet ID and max annual catch;  end with fleet=-9999"<<endl;
     for(f=1;f<=Nfleet;f++) Fcast_MaxFleetCatch(f)=-1;
     Fcast_Do_Fleet_Cap=0;
     ender=0;
@@ -3302,7 +3304,7 @@ DATA_SECTION
     } while (ender==0);
     echoinput<<" Processed Max totalcatch by fleet "<<endl<<Fcast_MaxFleetCatch<<endl;
 
-    echoinput<<"Read list of area ID and max annual catch;  end with area=-9999"<<endl; 
+    echoinput<<"Read list of area ID and max annual catch;  end with area=-9999"<<endl;
     for(p=1;p<=pop;p++) Fcast_MaxAreaCatch(p)=-1;
     Fcast_Do_Area_Cap=0;
     ender=0;
@@ -3321,7 +3323,7 @@ DATA_SECTION
     } while (ender==0);
     echoinput<<" processed Max totalcatch by area "<<endl<<Fcast_MaxAreaCatch<<endl;
 
-    echoinput<<"Read list of fleet ID and assignment to allocation group;  end with fleet ID=-9999"<<endl; 
+    echoinput<<"Read list of fleet ID and assignment to allocation group;  end with fleet ID=-9999"<<endl;
     echoinput<<"fishing fleets not assigned to allocation group are processed normally"<<endl;
     Allocation_Fleet_Assignments.initialize();
     Fcast_Catch_Allocation_Groups=0;
@@ -3354,14 +3356,14 @@ DATA_SECTION
         Fcast_Catch_Allocation_list.push_back (tempvec(1,k));
       } while (ender==0);
       j=Fcast_Catch_Allocation_list.size()-1;
-  
+
         echoinput<<" read group allocation fractions "<<endl;
         for(k=0;k<=j-1;k++)
         {
           echoinput<<Fcast_Catch_Allocation_list[k]<<endl;
           for(y=Fcast_Catch_Allocation_list[k](1)-endyr;y<=N_Fcast_Yrs;y++)
           {
-            for(a=1;a<=Fcast_Catch_Allocation_Groups;a++) 
+            for(a=1;a<=Fcast_Catch_Allocation_Groups;a++)
             {
               Fcast_Catch_Allocation(y,a)=Fcast_Catch_Allocation_list[k](a+1);
             }
@@ -3371,7 +3373,7 @@ DATA_SECTION
         for(y=1;y<=N_Fcast_Yrs;y++)
         echoinput<<y+endyr<<" "<<Fcast_Catch_Allocation(1,Fcast_Catch_Allocation_Groups)<<endl;
     }
-      
+
     *(ad_comm::global_datafile) >> Fcast_InputCatch_Basis;
     echoinput<<Fcast_InputCatch_Basis<<" # basis for input Fcast catch:  -1= read with each obs; 2=dead catch; 3=retained catch; 99=input Hrate(F); -1=read fleet/time specific (bio/num units are from fleetunits; note new codes in SSV3.20)"<<endl;
     k1 = styr+(endyr-styr)*nseas-1 + nseas + 1;
@@ -3475,16 +3477,16 @@ DATA_SECTION
   for (y=styr;y<=YrMax;y++) /* SS_loop:  fill Show_Time(t,1) with year value */
   for (s=1;s<=nseas;s++) /* SS_loop:  fill Show_Time(t,2) with season value */
   {
-    t++; 
+    t++;
     Show_Time(t,1)=y;
     Show_Time(t,2)=s;
   }
   ALK_idx=0;
-  for (y=styr;y<=endyr+19;y++) 
+  for (y=styr;y<=endyr+19;y++)
   for (s=1;s<=nseas;s++)
   for (subseas=1;subseas<=N_subseas;subseas++)
   {
-    ALK_idx++; 
+    ALK_idx++;
     Show_Time2(ALK_idx,1)=y;
     Show_Time2(ALK_idx,2)=s;
   }
