@@ -290,7 +290,10 @@ This section controls the biology parameters.  These include:  natural mortality
 	     & & 5 = Eggs = $a+b*wt$\\
 	  \hline
 	  
-	  0 & & Hermaphroditisim Option: 0 = no, 1 = invoke female to male transition, -1 = invoke male to female transition \\
+	  0 & & Hermaphroditisim Option:\\
+	   &  & 0 = not used, \\
+	   &  & 1 = invoke female to male transition, \\
+	   &  & -1 = invoke male to female transition \\
 	  \hline
 	  
 	  \multicolumn{2}{l}{COND = 1}& Read 2 lines below if hermaphroditism. is selected; also read 3 parameters after reading the male weight-length parameter\\
@@ -1069,4 +1072,87 @@ For each positive element in columns for the catchability (Q) setup above, read 
 \end{center}
 
 \subsubsection{Selectivity and Discard}
+For each fleet and survey, read a definition line for size selectivity and retention.  The four values read from each line are:
+
+\begin{description}
+	\item[Pattern]\hfill\\
+	Valid length selectivity pattern code.
+	
+	\item[Discard]\hfill\\
+	(0/1/2/3 or -index)  If value is 1, then program will read 4 retention parameters after reading the specified number of selectivity parameters and all discarded fish are assumed dead.  If the value is 2, then the program will read 4 retention parameters and 4 discard mortality parameters.  If the value is 3, then no additional parameters are read and all fish are assumed discarded and dead. If the value is a negative number, then it will mirror the retention and discard mortality pattern of the lower numbered fleet.
+	
+	\item[Male]\hfill\\
+	(0/1/2/3/4)  If value is 1, then program will read 4 additional parameters to define the male selectivity relative to the female selectivity.  Anytime the male selectivity is caused to be greater than 1.0; the entire male/female matrix of selectivity values is scaled by the max so that the realized max is 1.0.  Hopefully this does not cause gradient problems.  If the value is 2, then the main selectivity parameters define male selectivity and female selectivity is estimated as an offset from male selectivity.  This alternative is preferable if female selectivity is less than male selectivity.  The option 3 is only available if the selectivity pattern is 1, 20, or 24 and it causes the male selectivity parameters to be offset from the female parameters, rather than the male selectivity being an offset from the female selectivity.
+	
+	\item[Special]\hfill\\
+	(0/value).  This value is used in different ways depending on the context.  If the selectivity type is to mirror another selectivity type, then put the index of that source fleet or survey here.  It must refer to a lower numbered fleet/survey.  If the selectivity type is 6 (linear segment), then put the number of segments here.  If the selectivity type is 7, then put a 1 here to keep selectivity constant above the mean average size for old fish of morph 1.	
+\end{description}
+
+For each fleet and survey, read a definition line for age selectivity.  The 4 values to be read are the same as for the size-selectivity.  However, the retention value must be set to 0.
+
+\begin{center}
+	\begin{longtable}{p{2cm} p{2cm} p{2cm} p{2cm} p{3cm} }
+		\hline
+		\multicolumn{5}{l}{\#Example Setup for Size Selectivity Types}\\
+		\#Pattern & Discard & Male & Special & Label \\
+		\hline
+		27 & 0 & 0 & 3 & \#Fishery1\\
+		1  & 0 & 0 & 0 & \#Survey1\\
+		0  & 0 & 0 & 0 & \#Survey2\\
+		\multicolumn{5}{l}{\#Age Selectivity Types}\\
+		\hline
+		11 & 0 & 0 & 3 & \#Fishery1\\
+		11  & 0 & 0 & 0 & \#Survey1\\
+		11  & 0 & 0 & 0 & \#Survey2\\
+		\hline
+	\end{longtable}
+\end{center}
+
+\subsubsection{Selectivity Patterns}
+The currently defined selectivity patterns, and corresponding required number of parameters, are:
+
+\begin{center}
+	\begin{longtable}{p{2cm} p{3cm} p{10cm}}
+		\hline
+		\multicolumn{3}{c}{SIZE SELECTIVITY}\\
+		Pattern & N Parameters & Description \\
+		\hline
+		0 & 0 & Selectivity equals 1.0 for all sizes \\
+		1 & 2 & Logistic \\
+		2 & 8 & Discontinued: Double logistic with defined peak (uses IF joiners). Use pattern \#8 instead.\\
+		3 & 6 & Discontinued \\
+		4 & 0 & Discontinued: Set size selectivity equal to female fecundity. Use pattern \#30 instead.\\
+		5 & 2 & Mirror another selectivity. The two parameters select bin range.\\
+		6 & 2 + special value & Non-parametric \\
+		7 & 8 & Discontinued: Double logistic with defined peak, uses smooth joiners; special = 1 causes constant selectivity above Linf for morph 1.  Use pattern \#8.\\
+		8 & 8 & Double logistic, with defined peak, uses smooth joiners; special=1 causes constant selectivity above Linf for morph 1.  \\
+		9 & 6 & Simple double logistic with no defined peak.\\
+		15 & 0 & Mirror another selectivity (same as for age selectivity).\\
+		22 & 4 & Double normal; similar to CASAL.\\
+		23 & 6 & Same as the double normal pattern \#24 except the final selectivity is now directly interpreted as the terminal selectivity value.\\\
+		24 & 6 & Double normal with defined initial and final selectivity level – Recommended option.  Test using SELEX-24.xls. \\
+		25 & 3 & Exponential-logistic \\
+		27 & 3+2*N nodes & Cubic spline\\
+		\hline
+		\\
+		\multicolumn{3}{c}{SPECIAL SELECTIVITY}\\
+		Pattern & N Parameters & Description \\
+		\hline
+		30 & 0 & Sets expected survey abundance equal to spawning biomass (population fecundity). \\
+		31 & 0 & Sets expected survey abundance equal to exp(recruitment deviation).  This is useful if environmental data is used as an index of recruitment variability. \\
+		32 & 0 & Sets expected survey abundance equal to exp(recruitment deviation ) * SpawnBiomass.  So this is recruitment without density-dependence (for pre-recruit survey) because most ecological logic places the density-dependent stage during the juvenile period following the larval stage that is most sensitive to environmental perturbation.\\
+		33 & 0 & Sets expected survey abundance equal to age-0 recruitment.\\
+		34 & 0 & Spawning biomass depletion (B/B0).\\
+		\hline		
+	\end{longtable}
+\end{center}
+
+\begin{description}
+	\item[Notes on Special Selectivity Options:]\hfil
+	\begin{itemize}
+		\item Do not input any size/age composition data for surveys using pattern 30-33.
+		\item The "catchability" coefficient for these selectivity patterns 30-33 have all the general properties of the catchability coefficient for real surveys, e.g. they can be time-varying, use power relationship, etc.
+	\end{itemize}
+\end{description}
+
 

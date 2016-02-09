@@ -69,3 +69,4 @@
 \contentsline {subsubsection}{\numberline {10.3.24}Initial Fishing Mortality}{77}{subsubsection.10.3.24}
 \contentsline {subsubsection}{\numberline {10.3.25}Catchability}{78}{subsubsection.10.3.25}
 \contentsline {subsubsection}{\numberline {10.3.26}Selectivity and Discard}{80}{subsubsection.10.3.26}
+\contentsline {subsubsection}{\numberline {10.3.27}Selectivity Patterns}{82}{subsubsection.10.3.27}

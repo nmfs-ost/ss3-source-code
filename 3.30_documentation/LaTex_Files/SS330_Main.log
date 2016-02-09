@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.15 (MiKTeX 2.9 64-bit) (preloaded format=pdflatex 2015.8.21)  8 FEB 2016 14:22
+This is pdfTeX, Version 3.14159265-2.6-1.40.15 (MiKTeX 2.9 64-bit) (preloaded format=pdflatex 2015.8.21)  8 FEB 2016 17:32
 entering extended mode
 **SS330_Main.tex
 (SS330_Main.tex
@@ -2127,434 +2127,472 @@ Underfull \hbox (badness 2865) in paragraph at lines 249--250
 []|\T1/lmr/m/n/12 Growth Amax (A2): Ref-er-ence age for sec-ond size-at-age
  []
 
-[49]
-Underfull \hbox (badness 10000) in paragraph at lines 310--311
+[49] [50]
+Underfull \hbox (badness 10000) in paragraph at lines 313--314
 []|\T1/lmr/m/n/12 3 = for each GP x gen-der, pa-ram-e-ter de-fines off-set
  []
 
 
-Underfull \hbox (badness 3989) in paragraph at lines 310--311
+Underfull \hbox (badness 3989) in paragraph at lines 313--314
 \T1/lmr/m/n/12 from GP 1 gen-der 1. For fe-males, given that natM
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 310--311
+Underfull \hbox (badness 10000) in paragraph at lines 313--314
 \T1/lmr/m/n/12 op-tion is break-point and there are two break-points,
  []
 
 
-Underfull \hbox (badness 1097) in paragraph at lines 310--311
+Underfull \hbox (badness 1097) in paragraph at lines 313--314
 \T1/lmr/m/n/12 pa-ram-e-ter de-fines off-set from early age (e.g., old_female_M
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 310--311
+Underfull \hbox (badness 10000) in paragraph at lines 313--314
 \T1/lmr/m/n/12 = young_female_M * exp(old_female_M_parameter).
  []
 
 
-Underfull \hbox (badness 4899) in paragraph at lines 310--311
+Underfull \hbox (badness 4899) in paragraph at lines 313--314
 \T1/lmr/m/n/12 For males, given that natM op-tion is break-point and
  []
 
 
-Underfull \hbox (badness 3449) in paragraph at lines 310--311
+Underfull \hbox (badness 3449) in paragraph at lines 313--314
 \T1/lmr/m/n/12 there are two break-points, pa-ram-e-ter is de-fined as off-set
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 310--311
+Underfull \hbox (badness 10000) in paragraph at lines 313--314
 \T1/lmr/m/n/12 from fe-males AND from early age (e.g., old_male_M
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 310--311
+Underfull \hbox (badness 10000) in paragraph at lines 313--314
 \T1/lmr/m/n/12 = young_female_M * exp(young_male_M_parameter) *
  []
 
-[50] [51]
-Overfull \hbox (24.90932pt too wide) in paragraph at lines 330--330
+[51]
+Overfull \hbox (24.90932pt too wide) in paragraph at lines 333--333
 []|\T1/lmr/m/n/12 Parameter| 
  []
 
 
-Overfull \hbox (24.90932pt too wide) in paragraph at lines 334--334
+Overfull \hbox (24.90932pt too wide) in paragraph at lines 337--337
 []|\T1/lmr/m/n/12 Parameter| 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 351--351
+Underfull \hbox (badness 10000) in paragraph at lines 354--354
 []|\T1/lmr/m/n/12 Richards
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 370--370
+Underfull \hbox (badness 10000) in paragraph at lines 373--373
 []|\T1/lmr/m/n/12 Richards
  []
 
 
-Underfull \hbox (badness 1845) in paragraph at lines 386--387
+Underfull \hbox (badness 1845) in paragraph at lines 389--390
 []|\T1/lmr/m/n/12 Two fe-cun-dity pa-ram-e-ters; us-age de-pends on the
  []
 
 [52]
-Underfull \hbox (badness 1281) in paragraph at lines 397--398
+Underfull \hbox (badness 1281) in paragraph at lines 400--401
 []|\T1/lmr/m/n/12 3 pa-ram-e-ters de-fine a nor-mal dis-tri-bu-tion for the
  []
 
 
-Underfull \hbox (badness 2020) in paragraph at lines 404--405
+Underfull \hbox (badness 2020) in paragraph at lines 407--408
 []|\T1/lmr/m/n/12 Recruitment ap-por-tion-ment by sea-son, if mul-ti-ple
  []
 
 
-Underfull \hbox (badness 4765) in paragraph at lines 407--408
+Underfull \hbox (badness 4765) in paragraph at lines 410--411
 []|\T1/lmr/m/n/12 Note that the or-der of re-cruit-ment dis-tri-bu-tion
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 414--414
+Underfull \hbox (badness 10000) in paragraph at lines 417--417
 []|\T1/lmr/m/n/12 Catch
  []
 
 [53] [54]
-Overfull \hbox (2.53735pt too wide) in paragraph at lines 443--444
+Overfull \hbox (2.53735pt too wide) in paragraph at lines 446--447
 []|\T1/lmr/m/n/12 #L_-at_-Amin_-Fem_-GP_-1| 
  []
 
 
-Overfull \hbox (4.82187pt too wide) in paragraph at lines 444--445
+Overfull \hbox (4.82187pt too wide) in paragraph at lines 447--448
 []|\T1/lmr/m/n/12 #L_-at_-Amax_-Fem_-GP_-1| 
  []
 
 
-Overfull \hbox (0.7405pt too wide) in paragraph at lines 455--456
+Overfull \hbox (0.7405pt too wide) in paragraph at lines 458--459
 []|\T1/lmr/m/n/12 #L_-at_-Amin_-Mal_-GP_-1| 
  []
 
 
-Overfull \hbox (3.02501pt too wide) in paragraph at lines 456--457
+Overfull \hbox (3.02501pt too wide) in paragraph at lines 459--460
 []|\T1/lmr/m/n/12 #L_-at_-Amax_-Mal_-GP_-1| 
  []
 
 [55]
-Overfull \hbox (2.86699pt too wide) in paragraph at lines 484--486
+Overfull \hbox (2.86699pt too wide) in paragraph at lines 487--489
 \T1/lmr/m/n/12 A new growth op-tion, #3, has been in-tro-duced in V3.23. This o
 p-tion cre-ates age-specific
  []
 
 [56]
-Overfull \hbox (16.63116pt too wide) in paragraph at lines 492--493
+Overfull \hbox (16.63116pt too wide) in paragraph at lines 495--496
 \T1/lmr/m/n/12 biomass pro-duces one an-nual to-tal re-cruit-ment value and thi
 s an-nual re-cruit-ment was dis-tributed
  []
 
 [57]
-Overfull \hbox (4.14752pt too wide) in paragraph at lines 504--505
+Overfull \hbox (4.14752pt too wide) in paragraph at lines 507--508
 \T1/lmr/m/n/12 us-ing the des-ig-nated start age and end age. Pa-ram-e-ter val-
 ues are the ln(movement co-ef-fi-cient).
  []
 
 [58]
-Overfull \hbox (13.74422pt too wide) in paragraph at lines 508--509
+Overfull \hbox (13.74422pt too wide) in paragraph at lines 511--512
 []\T1/lmr/m/n/12 An added fea-ture is the read-ing of migr_firstage im-me-di-at
 ely af-ter read-ing the do_migration
  []
 
 
-Overfull \hbox (4.60443pt too wide) in paragraph at lines 536--536
+Overfull \hbox (4.60443pt too wide) in paragraph at lines 539--539
 []|\T1/lmr/m/n/12 <other| 
  []
 
 
-Overfull \hbox (5.8551pt too wide) in paragraph at lines 537--537
+Overfull \hbox (5.8551pt too wide) in paragraph at lines 540--540
 []|\T1/lmr/m/n/12 INIT| 
  []
 
 
-Overfull \hbox (11.5237pt too wide) in paragraph at lines 537--537
+Overfull \hbox (11.5237pt too wide) in paragraph at lines 540--540
 []|\T1/lmr/m/n/12 entries>| 
  []
 
 
-Overfull \hbox (4.60443pt too wide) in paragraph at lines 542--542
+Overfull \hbox (4.60443pt too wide) in paragraph at lines 545--545
 []|\T1/lmr/m/n/12 <other| 
  []
 
 
-Overfull \hbox (5.8551pt too wide) in paragraph at lines 543--543
+Overfull \hbox (5.8551pt too wide) in paragraph at lines 546--546
 []|\T1/lmr/m/n/12 INIT| 
  []
 
 
-Overfull \hbox (11.5237pt too wide) in paragraph at lines 543--543
+Overfull \hbox (11.5237pt too wide) in paragraph at lines 546--546
 []|\T1/lmr/m/n/12 entries>| 
  []
 
-[59] [60] <images/age_error.png, id=760, 481.8pt x 311.66437pt>
+[59] [60] <images/age_error.png, id=765, 481.8pt x 311.66437pt>
 File: images/age_error.png Graphic file (type png)
 
 <use images/age_error.png>
-Package pdftex.def Info: images/age_error.png used on input line 599.
+Package pdftex.def Info: images/age_error.png used on input line 602.
 (pdftex.def)             Requested size: 481.79881pt x 311.6636pt.
 
-Underfull \hbox (badness 10000) in paragraph at lines 597--602
+Underfull \hbox (badness 10000) in paragraph at lines 600--605
 
  []
 
 
-Overfull \hbox (12.0438pt too wide) in paragraph at lines 597--602
+Overfull \hbox (12.0438pt too wide) in paragraph at lines 600--605
 [] 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 597--602
+Underfull \hbox (badness 10000) in paragraph at lines 600--605
 
  []
 
 [61 <./images/age_error.png>] [62]
-Overfull \hbox (14.49142pt too wide) in paragraph at lines 631--631
+Overfull \hbox (14.49142pt too wide) in paragraph at lines 634--634
 []|\T1/lmr/m/n/12 Value| 
  []
 
 
-Overfull \hbox (14.49142pt too wide) in paragraph at lines 636--636
+Overfull \hbox (14.49142pt too wide) in paragraph at lines 639--639
 []|\T1/lmr/m/n/12 Value| 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 648--648
+Underfull \hbox (badness 10000) in paragraph at lines 651--651
 []|\T1/lmr/m/n/12 <short
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 648--648
+Underfull \hbox (badness 10000) in paragraph at lines 651--651
 \T1/lmr/m/n/12 pa-ram-e-ter
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 654--654
+Underfull \hbox (badness 10000) in paragraph at lines 657--657
 []|\T1/lmr/m/n/12 <short
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 654--654
+Underfull \hbox (badness 10000) in paragraph at lines 657--657
 \T1/lmr/m/n/12 pa-ram-e-ter
  []
 
 
-Underfull \hbox (badness 1648) in paragraph at lines 657--658
+Underfull \hbox (badness 1648) in paragraph at lines 660--661
 \T1/lmr/m/n/12 se-lects that fac-tor for sea-son-al-ity ([][]\T1/lmr/m/it/12 cl
 ick here for more
  []
 
 
-Underfull \hbox (badness 2762) in paragraph at lines 659--660
+Underfull \hbox (badness 2762) in paragraph at lines 662--663
 []|\T1/lmr/m/n/12 If any fac-tors have sea-son-al-ity, then read N sea-sons
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 660--660
+Underfull \hbox (badness 10000) in paragraph at lines 663--663
 []|\T1/lmr/m/n/12 <short
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 660--660
+Underfull \hbox (badness 10000) in paragraph at lines 663--663
 \T1/lmr/m/n/12 pa-ram-e-ter
  []
 
 [63]
 
-LaTeX Warning: Command \textquoteright invalid in math mode on input line 724.
+LaTeX Warning: Command \textquoteright invalid in math mode on input line 727.
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 724--725
+Underfull \hbox (badness 10000) in paragraph at lines 727--728
 []|\T1/lmr/m/n/12 environmental link-age co-ef-fi-cient. The re-cruit-ment
  []
 
 
-Underfull \hbox (badness 2608) in paragraph at lines 724--725
+Underfull \hbox (badness 2608) in paragraph at lines 727--728
 \T1/lmr/m/n/12 pa-ram-e-ters are short pa-ram-e-ters, so can-not have the
  []
 
 
-Underfull \hbox (badness 1824) in paragraph at lines 724--725
+Underfull \hbox (badness 1824) in paragraph at lines 727--728
 \T1/lmr/m/n/12 generic block or en-vi-ron-men-tal link op-tions. In-stead,
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 726--727
+Underfull \hbox (badness 10000) in paragraph at lines 729--730
 []|\T1/lmr/m/n/12 Offset for ini-tial equi-lib-rium re-cruit-ment to vir-gin
  []
 
 
-Underfull \hbox (badness 1424) in paragraph at lines 733--734
+Underfull \hbox (badness 1424) in paragraph at lines 736--737
 \T1/lmr/m/n/12 equi-lib-rium (by en-ter-ing a value for the en-vi-ron-men-tal
  []
 
 
-Underfull \hbox (badness 1178) in paragraph at lines 746--746
+Underfull \hbox (badness 1178) in paragraph at lines 749--749
 []|\T1/lmr/m/n/12 Main recr devs
  []
 
 
-Underfull \hbox (badness 1178) in paragraph at lines 748--748
+Underfull \hbox (badness 1178) in paragraph at lines 751--751
 []|\T1/lmr/m/n/12 Main recr devs
  []
 
 
-Underfull \hbox (badness 4144) in paragraph at lines 750--750
+Underfull \hbox (badness 4144) in paragraph at lines 753--753
 []|\T1/lmr/m/n/12 Main recr dev
  []
 
 [64] [65] [66]
-Underfull \hbox (badness 10000) in paragraph at lines 784--784
+Underfull \hbox (badness 10000) in paragraph at lines 787--787
 []|\T1/lmr/m/n/12 <parameter
  []
 
 [67] [68]
-Overfull \hbox (11.61137pt too wide) in paragraph at lines 794--795
+Overfull \hbox (11.61137pt too wide) in paragraph at lines 797--798
 \T1/lmr/m/n/12 re-la-tion-ship. SS has the op-tion of the Beverton-Holt, Ricker
 , Hockey-Stick, and a survival-based
  []
 
 [69]
-Overfull \hbox (8.37704pt too wide) in paragraph at lines 833--834
+Overfull \hbox (8.37704pt too wide) in paragraph at lines 836--837
 \T1/lmr/m/n/12 about 0.4 for a left-shifted spawner-recruitment curve, and 3.0 
 for a right-shifted
  []
 
-[70] <images/survival_code.png, id=818, 431.36156pt x 489.32813pt>
+[70] <images/survival_code.png, id=823, 431.36156pt x 489.32813pt>
 File: images/survival_code.png Graphic file (type png)
 
 <use images/survival_code.png>
-Package pdftex.def Info: images/survival_code.png used on input line 847.
+Package pdftex.def Info: images/survival_code.png used on input line 850.
 (pdftex.def)             Requested size: 431.3605pt x 489.32692pt.
  [71] [72 <./images/survival_code.png>]
-Overfull \hbox (3.77077pt too wide) in paragraph at lines 867--868
+Overfull \hbox (3.77077pt too wide) in paragraph at lines 870--871
 \T1/lmr/m/n/12 The re-cruit-ment bias ad-just-ment im-ple-mented in SS is based
  upon the work be-ing doc-u-mented
  []
 
 
-Overfull \hbox (6.43156pt too wide) in paragraph at lines 867--868
+Overfull \hbox (6.43156pt too wide) in paragraph at lines 870--871
 \T1/lmr/m/n/12 con-cept is based upon the fol-low-ing logic. Sig-maR rep-re-sen
 ts the true vari-abil-ity of re-cruit-ment
  []
 
 [73]
-Overfull \hbox (7.12862pt too wide) in paragraph at lines 878--879
+Overfull \hbox (7.12862pt too wide) in paragraph at lines 881--882
 \T1/lmr/m/n/12 of the off-set then de-pends upon the par-ti-tion-ing of sig-maR
  into be-tween and within re-cruit-ment
  []
 
-<images/10_bias.png, id=833, 286.06876pt x 224.33812pt>
+<images/10_bias.png, id=838, 286.06876pt x 224.33812pt>
 File: images/10_bias.png Graphic file (type png)
 
 <use images/10_bias.png>
-Package pdftex.def Info: images/10_bias.png used on input line 881.
+Package pdftex.def Info: images/10_bias.png used on input line 884.
 (pdftex.def)             Requested size: 286.06805pt x 224.33757pt.
  [74]
-Overfull \hbox (21.97087pt too wide) in paragraph at lines 887--888
+Overfull \hbox (21.97087pt too wide) in paragraph at lines 890--891
 []\T1/lmr/m/n/12 In MCMC mode, the model still draws re-cruit-ment de-vi-a-tion
 s from the log-nor-mal dis-tri-bu-tion,
  []
 
 
-Overfull \hbox (15.91344pt too wide) in paragraph at lines 887--888
+Overfull \hbox (15.91344pt too wide) in paragraph at lines 890--891
 \T1/lmr/m/n/12 re-cruit-ment de-vi-a-tions be-cause the model is now re-samplin
 g from the full log-nor-mal dis-tri-bu-tion
  []
 
 [75 <./images/10_bias.png>]
-Overfull \hbox (7.68166pt too wide) in paragraph at lines 903--904
+Overfull \hbox (7.68166pt too wide) in paragraph at lines 906--907
 \T1/lmr/m/n/12 A non-equilibrium ini-tial age com-po-si-tion is achieved by set
 -ting the first year of the re-cruit-ment
  []
 
 
-Underfull \hbox (badness 2626) in paragraph at lines 953--953
+Underfull \hbox (badness 2626) in paragraph at lines 956--956
 []|\T1/lmr/m/n/12 1 1980 1 0.20
  []
 
 [76] [77]
-Overfull \hbox (0.83087pt too wide) in paragraph at lines 989--990
+Overfull \hbox (0.83087pt too wide) in paragraph at lines 992--993
 []\T1/lmr/m/n/12 <0 = mir-ror the Q from an-other (lower num-bered sur-vey des-
 ig-nated by abs(value)) 
  []
 
 
-Overfull \hbox (5.7429pt too wide) in paragraph at lines 992--993
+Overfull \hbox (5.7429pt too wide) in paragraph at lines 995--996
 \T1/lmr/m/n/12 prior sec-tion. How-ever, be-cause there is no in-her-ent con-st
 raint that these de-vi-a-tions
  []
 
 [78]
-Overfull \hbox (7.16463pt too wide) in paragraph at lines 993--994
+Overfull \hbox (7.16463pt too wide) in paragraph at lines 996--997
 \T1/lmr/m/n/12 ob-ser-va-tions will be de-vi-a-tions in ran-dom walk of ln(Q). 
 These de-vi-a-tion pa-ram-e-ters
  []
 
 
-Overfull \hbox (7.26268pt too wide) in alignment at lines 1001--1006
+Overfull \hbox (7.26268pt too wide) in alignment at lines 1004--1009
  [] [] [] [] [] 
  []
 
 
-Overfull \hbox (7.26268pt too wide) in alignment at lines 1006--1011
+Overfull \hbox (7.26268pt too wide) in alignment at lines 1009--1014
  [] [] [] [] [] 
  []
 
 
-Overfull \hbox (7.26268pt too wide) in alignment at lines 1011--1014
+Overfull \hbox (7.26268pt too wide) in alignment at lines 1014--1017
  [] [] [] [] [] 
  []
 
 
-Overfull \hbox (7.26268pt too wide) in alignment at lines 1014--1015
+Overfull \hbox (7.26268pt too wide) in alignment at lines 1017--1018
  [] [] [] [] [] 
  []
 
 
-Overfull \vbox (84.00002pt too high) detected at line 1029
+Overfull \vbox (84.00002pt too high) detected at line 1032
  []
 
 
-Overfull \vbox (69.50002pt too high) detected at line 1037
+Overfull \vbox (69.50002pt too high) detected at line 1040
  []
 
 
-Overfull \hbox (7.26268pt too wide) in alignment at lines 1015--1039
+Overfull \hbox (7.26268pt too wide) in alignment at lines 1018--1042
  [] [] [] [] [] 
  []
 
 
-Overfull \hbox (7.26268pt too wide) in alignment at lines 1039--1045
+Overfull \hbox (7.26268pt too wide) in alignment at lines 1042--1048
  [] [] [] [] [] 
  []
 
 [79]
-Overfull \hbox (5.29118pt too wide) in paragraph at lines 1053--1053
+Overfull \hbox (5.29118pt too wide) in paragraph at lines 1056--1056
 []|\T1/lmr/m/n/12 PR_-type| 
  []
 
-)
+[80]
+Underfull \vbox (badness 10000) detected at line 1108
+ []
+
+[81]
+Underfull \hbox (badness 1454) in paragraph at lines 1124--1125
+[]|\T1/lmr/m/n/12 Discontinued: Set size se-lec-tiv-ity equal to fe-male
+ []
+
+
+Underfull \vbox (badness 10000) detected at line 1139
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 1142--1143
+[]|\T1/lmr/m/n/12 Sets ex-pected sur-vey abun-dance equal to
+ []
+
+
+Underfull \hbox (badness 7869) in paragraph at lines 1142--1143
+\T1/lmr/m/n/12 exp(recruitment de-vi-a-tion). This is use-ful if
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 1143--1144
+[]|\T1/lmr/m/n/12 Sets ex-pected sur-vey abun-dance equal to
+ []
+
+
+Underfull \hbox (badness 1259) in paragraph at lines 1143--1144
+\T1/lmr/m/n/12 exp(recruitment de-vi-a-tion ) * Spawn-Biomass. So
+ []
+
+
+Underfull \hbox (badness 4846) in paragraph at lines 1144--1145
+[]|\T1/lmr/m/n/12 Sets ex-pected sur-vey abun-dance equal to age-0
+ []
+
+[82])
 Package atveryend Info: Empty hook `BeforeClearDocument' on input line 101.
- [80]
+ [83]
 Package atveryend Info: Empty hook `AfterLastShipout' on input line 101.
  (SS330_Main.aux)
 Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 101.
 Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 101.
 Package rerunfilecheck Info: File `SS330_Main.out' has not changed.
-(rerunfilecheck)             Checksum: 78082B7A43746C53C88EB4C9DFB8F30E;5348.
+(rerunfilecheck)             Checksum: BCF5385AAF99A3FF925407079817D36C;5432.
 Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 101.
  ) 
 Here is how much of TeX's memory you used:
- 8234 strings out of 493698
- 116777 string characters out of 3139169
- 344413 words of memory out of 3000000
- 11066 multiletter control sequences out of 15000+200000
+ 8243 strings out of 493698
+ 116871 string characters out of 3139169
+ 344541 words of memory out of 3000000
+ 11069 multiletter control sequences out of 15000+200000
  50307 words of font info for 38 fonts, out of 3000000 for 9000
  1025 hyphenation exceptions out of 8191
  34i,15n,43p,1454b,564s stack positions out of 5000i,500n,10000p,200000b,50000s
@@ -2576,9 +2614,9 @@ lmr8.pfb><C:/Users/Chantell.Wetzel/Documents/Latex/fonts/type1/public/lm/lmri12
 ><C:/Users/Chantell.Wetzel/Documents/Latex/fonts/type1/public/lm/lmsy6.pfb><C:/
 Users/Chantell.Wetzel/Documents/Latex/fonts/type1/public/lm/lmsy8.pfb><C:/Users
 /Chantell.Wetzel/Documents/Latex/fonts/type1/public/lm/lmtt12.pfb>
-Output written on SS330_Main.pdf (84 pages, 510229 bytes).
+Output written on SS330_Main.pdf (87 pages, 516892 bytes).
 PDF statistics:
- 1005 PDF objects out of 1200 (max. 8388607)
- 309 named destinations out of 1000 (max. 500000)
- 576 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 1026 PDF objects out of 1200 (max. 8388607)
+ 315 named destinations out of 1000 (max. 500000)
+ 584 words of extra memory for PDF output out of 10000 (max. 10000000)
 
