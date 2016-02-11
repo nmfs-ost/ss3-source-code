@@ -1120,7 +1120,6 @@ FUNCTION void get_recr_distribution()
       {
         femfrac(gp) = value(mgp_adj(Ip + gp));
         if(gender==2) femfrac(N_GP+gp) = 1.0 - femfrac(gp);
-        cout << "femfrac for gp " << gp << ": " << femfrac(gp) << endl;
       }
   }
 
