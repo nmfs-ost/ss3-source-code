@@ -969,7 +969,7 @@
   }
   N_MGparm=ParCount;
 
-  frac_female_pointer=ParCount+1;
+  frac_female_pointer=-1;   // indicates 3.24 version
   // for(gp=1;gp<=N_GP;gp++)
   // {
   //   ParCount++; ParmLabel+="FracFemale_GP_"+NumLbl(gp);

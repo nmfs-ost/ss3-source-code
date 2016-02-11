@@ -499,10 +499,10 @@
   imatrix MGparm_point(1,gender,1,N_GP)
   number natM_amin;
   number natM_amax;
-  init_number fracfemale;
-  !!echoinput<<fracfemale<<" fracfemale"<<endl;
-  !!if(fracfemale>=1.0) fracfemale=0.999999;
-  !!if(fracfemale<=0.0) fracfemale=0.000001;
+  // init_number fracfemale;
+  // !!echoinput<<fracfemale<<" fracfemale"<<endl;
+  // !!if(fracfemale>=1.0) fracfemale=0.999999;
+  // !!if(fracfemale<=0.0) fracfemale=0.000001;
 
 // read natmort setup
   init_int natM_type;  //  0=1Parm; 1=segmented; 2=Lorenzen; 3=agespecific; 4=agespec with seas interpolate

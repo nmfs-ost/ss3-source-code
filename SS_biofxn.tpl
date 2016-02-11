@@ -360,7 +360,7 @@ FUNCTION void get_growth2()
       k=min(nages,(YrMax-y));
       for (a=0;a<=k;a++) {Cohort_Growth(y+a,a)=temp;}  //  so this multiplier on VBK is stored on a diagonal into the future
     }
-  
+
   //  SS_Label_Info_16.2 #Loop growth patterns (sex*N_GP)
     gp=0;
     for(gg=1;gg<=gender;gg++)
@@ -381,7 +381,7 @@ FUNCTION void get_growth2()
         Lmax_temp(gp)=mgp_adj(Ip+1);
         VBK(gp)=-mgp_adj(Ip+2);  // because always used as negative; assigns to all ages
       }
-      
+
 //  SS_Label_Info_16.2.2  #Set up age specific k
       if(Grow_type==3)  //  age specific k
       {
@@ -526,7 +526,7 @@ FUNCTION void get_growth2()
                   Ave_Size(t+1,1,g,nages)=temp/(natage(t,1,g,nages)+0.00000001);
                 }
                 else
-                {               
+                {
                   Ave_Size(t+1,1,g,nages)=Ave_Size(t,1,g,nages);
                 }
               if(do_once==1&&g==1) echoinput<<" new_val "<<Ave_Size(t+1,1,g,nages)<<endl;
@@ -582,7 +582,7 @@ FUNCTION void get_growth2_Richards()
       k=min(nages,(YrMax-y));
       for (a=0;a<=k;a++) {Cohort_Growth(y+a,a)=temp;}  //  so this multiplier on VBK is stored on a diagonal into the future
     }
-  
+
   //  SS_Label_Info_16.2 #Loop growth patterns (sex*N_GP)
     gp=0;
     for(gg=1;gg<=gender;gg++)
@@ -607,7 +607,7 @@ FUNCTION void get_growth2_Richards()
         VBK_temp=-mgp_adj(Ip+2);  // because always used as negative; constant across ages for Richards
         Richards(gp)=mgp_adj(Ip+3);
       }
-      
+
 //  SS_Label_Info_16.2.3  #Set up Lmin and Lmax
       LminR=pow(Lmin(gp),Richards(gp));
       if(y==styr)
@@ -632,7 +632,7 @@ FUNCTION void get_growth2_Richards()
         LinfR=LminR+(LmaxR-LminR)/(1.-mfexp(VBK_temp*VBK_seas(0)*(AFIX_delta)));
         L_inf(gp)=pow(LinfR,inv_Richards);
       }
-      
+
       g=g_Start(gp);  //  base platoon
 //  SS_Label_Info_16.2.4  #Loop settlement events
       for (settle=1;settle<=N_settle_timings;settle++)
@@ -724,7 +724,7 @@ FUNCTION void get_growth2_Richards()
                   join1=1.0/(1.0+mfexp(-(50.*t2/(1.0+fabs(t2)))));  //  note the logit transform is not perfect, so growth near Linf will not be exactly same as with native growth function
                   t2*=(1.-join1);  // trap to prevent decrease in size-at-age
                 }
-                if((a<nages || s<nseas)) Ave_Size(t+1,1,g,k2) = 
+                if((a<nages || s<nseas)) Ave_Size(t+1,1,g,k2) =
                   pow((temp+(mfexp(VBK_temp2*seasdur(s))-1.0)*(t2)*Cohort_Growth(y,a)),inv_Richards);
               }
             }  // done ageloop
@@ -1112,6 +1112,18 @@ FUNCTION void get_recr_distribution()
   {
     recr_dist_parm(f)=mfexp(mgp_adj(Ip+f));
   }
+//  SS_Label_Info_18.15  #get fraction female (these could be time-varying in a future version)
+  if (frac_female_pointer > 0)
+  {
+      Ip = frac_female_pointer - 1;
+      for (gp=1;gp<=N_GP;gp++)
+      {
+        femfrac(gp) = value(mgp_adj(Ip + gp));
+        if(gender==2) femfrac(N_GP+gp) = 1.0 - femfrac(gp);
+        cout << "femfrac for gp " << gp << ": " << femfrac(gp) << endl;
+      }
+  }
+
 //  SS_Label_Info_18.2  #loop gp * settlements * area and multiply together the recr_dist_parm values
   for (gp=1;gp<=N_GP;gp++)
   for (p=1;p<=pop;p++)
@@ -1141,7 +1153,7 @@ FUNCTION void get_recr_distribution()
   recr_dist/=sum(recr_dist);
     if(do_once==1) echoinput<<"recruitment distribution in year: "<<y<<"  DIST: "<<recr_dist<<endl;
   }
-  
+
 //*******************************************************************
  /*  SS_Label_Function 19 get_wtlen, maturity, fecundity, hermaphroditism */
 FUNCTION void get_wtlen()
@@ -1161,7 +1173,7 @@ FUNCTION void get_wtlen()
       for(f=7;f<=8;f++) {wtlen_p(GPat,f)=mgp_adj(MGparm_point(gg,GPat)+N_M_Grow_parms+(f-6)-1);}
     }
     echoinput<<"get wtlen parms sex: "<<gg<<" Gpat: "<<GPat<<" sex*Gpat: "<<gp<<" "<<wtlen_p(GPat)<<endl;
-  
+
     for (s=1;s<=nseas;s++)
     {
 //  SS_Label_Info_19.2  #loop seasons for wt-len calc
@@ -1201,7 +1213,7 @@ FUNCTION void get_wtlen()
         wt_len2(s,GPat)(nlength1,nlength2)=wt_len(s,gp).shift(nlength1);
         wt_len(s,gp).shift(1);
       }
-      
+
 //  SS_Label_Info_19.2.3  #calculate first diff of wt_len for use in generalized sizp comp bin calculations
       if(gg==gender)
       {
@@ -1214,7 +1226,7 @@ FUNCTION void get_wtlen()
   //  these calculations are done in spawn_seas, but are not affected by spawn_time within that season
   //  so age-specific inputs will assume to be at correct timing already; size-specific will later be adjusted to use size-at-age at the exact correct spawn_time_seas
 //  SPAWN-RECR:   calculate maturity and fecundity vectors
-  
+
       if(s==spawn_seas && gg==1)  // get biology of maturity and fecundity
       {
          echoinput<<"process maturity fecundity using option: "<<Maturity_Option<<endl;
@@ -1253,7 +1265,7 @@ FUNCTION void get_wtlen()
            echoinput<<"gp: "<<GPat<<" matage: "<<mat_age(gp)<<endl;
           if(First_Mature_Age>0)
           {mat_age(gp)(0,First_Mature_Age-1)=0.;}
-            
+
           switch (Fecund_Option)
           {
             case 1:    // as eggs/kg (SS original configuration)
@@ -1303,7 +1315,7 @@ FUNCTION void get_wtlen()
           }
 // 1=length logistic; 2=age logistic; 3=read age-maturity
 // 4= read age-fecundity by growth_pattern 5=read all from separate wtatage.ss file
-//  6=read length-maturity  
+//  6=read length-maturity
      if(Maturity_Option!=4 && Maturity_Option!=5)
      {
        echoinput<<"fec_len "<<endl<<fec_len(gp)<<endl;
@@ -1510,7 +1522,7 @@ FUNCTION void Make_Fecundity()
     {
       GPat=GP4(g);
       gg=sx(g);
-      
+
       switch(Maturity_Option)
       {
         case 4:  //  Maturity_Option=4   read age-fecundity into age-maturity
@@ -1581,7 +1593,7 @@ FUNCTION void Make_Fecundity()
         {
           make_mature_numbers(g)=elem_prod(ALK(ALK_idx,g)*mat_len(GPat),mat_age(GPat));  //  mature numbers at age
           make_mature_bio(g)=elem_prod(ALK(ALK_idx,g)*elem_prod(mat_len(GPat),wt_len(s,GP(g))),mat_age(GPat));  //  mature biomass at age
-          
+
           break;
         }
         case 2:  //  Maturity_Option=2  age logistic
@@ -1616,7 +1628,7 @@ FUNCTION void Make_Fecundity()
         }
       }
       }
-      
+
  /*
       if(Maturity_Option<=3)
       {

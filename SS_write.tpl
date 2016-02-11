@@ -209,39 +209,39 @@ FUNCTION void write_summaryoutput()
        {
          ALK_time=Svy_ALK_time(f,i);
          report2<<data_time(ALK_time,f,3)<<" ";
-       } 
+       }
        report2 <<endl<<runnumber<<" Index:"<<f<<" OBS "<<Svy_obs(f)<<endl;
        if(Svy_errtype(f)>=0)  // lognormal or lognormal T_dist
        {report2 <<runnumber<<" Index:"<<f<<" EXP "<<elem_prod(mfexp(Svy_log_q(f)),mfexp(Svy_est(f)))<<endl;}
        else  // normal error
        {report2 <<runnumber<<" Index:"<<f<<" EXP "<<elem_prod(Svy_q(f),Svy_est(f))<<endl;}
       }
-  
+
       data_type=4;
       for (f=1;f<=Nfleet;f++)
       if(Nobs_l(f)>0)
       {
        report2 <<runnumber<<" Len:"<<f<<" YR ";
-       for (i=1;i<=Nobs_l(f);i++) 
+       for (i=1;i<=Nobs_l(f);i++)
        {
          t=Len_time_t(f,i);
          ALK_time=Len_time_ALK(f,i);
          report2<<data_time(ALK_time,f,3)<<" ";
-       } 
+       }
        report2 <<endl<<runnumber<<" Len:"<<f<<" effN "<<neff_l(f)<<endl;
       }
-  
+
       data_type=5;
       for (f=1;f<=Nfleet;f++)
       if(Nobs_a(f)>0)
       {
        report2 <<runnumber<<" Age:"<<f<<" YR ";
-       for (i=1;i<=Nobs_a(f);i++) 
+       for (i=1;i<=Nobs_a(f);i++)
        {
          t=Age_time_t(f,i);
          ALK_time=Age_time_ALK(f,i);
          report2<<data_time(ALK_time,f,3)<<" ";
-       } 
+       }
        report2 <<endl<<runnumber<<" Age:"<<f<<" effN "<<neff_a(f)<<endl;
       }
     }
@@ -558,7 +558,7 @@ FUNCTION void write_nudata()
     }
   }
   report1<<"-9999 0 0 0 0"<<endl<<"#"<<endl;
-  
+
   report1 << " #_CPUE_and_surveyabundance_observations"<< endl;
   report1<<"#_Units:  0=numbers; 1=biomass; 2=F; >=30 for special types"<<endl;
   report1<<"#_Errtype:  -1=normal; 0=lognormal; >0=T"<<endl;
@@ -599,7 +599,7 @@ FUNCTION void write_nudata()
   {
     report1<<"# ";
   }
-  report1<<"-9999 0 0 0.0 0.0 # terminator for discard data "<<endl; 
+  report1<<"-9999 0 0 0.0 0.0 # terminator for discard data "<<endl;
 
   report1 <<"#"<<endl<< do_meanbodywt <<" #_use meanbodysize_data (0/1)"<< endl;
   if(nobs_mnwt_rd==0) report1<<"#_COND_";
@@ -701,7 +701,7 @@ FUNCTION void write_nudata()
   report1 << "-9999 ";
   for(i=1;i<=f;i++) report1<<" 0";
   report1<<endl;
-    
+
   report1<<"#"<<endl<<use_meansizedata<<" #_Use_MeanSize-at-Age_obs (0/1)"<<endl;
   if(use_meansizedata>0)
   {
@@ -726,7 +726,7 @@ FUNCTION void write_nudata()
   }
     report1<<"#"<<endl << N_envvar<<" #_N_environ_variables"<<endl;
     report1<<"#Year Variable Value"<<endl;
-    if(N_envvar>0) 
+    if(N_envvar>0)
       {for(i=0;i<=N_envdata-1;i++) report1<<env_temp[i]<<endl;
        report1<<"-9999 0 0"<<endl;
       }
@@ -872,7 +872,7 @@ FUNCTION void write_nudata()
   {
     report1<<"# ";
   }
-  report1<<"-9999 0 0 0.0 0.0 # terminator for discard data "<<endl; 
+  report1<<"-9999 0 0 0.0 0.0 # terminator for discard data "<<endl;
 
   report1 <<"#"<<endl<< do_meanbodywt <<" #_use meanbodysize_data (0/1)"<< endl;
 
@@ -884,7 +884,7 @@ FUNCTION void write_nudata()
    {
    for (i=1;i<=nobs_mnwt;i++)
     {
-     
+
      report1 << Show_Time(mnwtdata(1,i),1)<<" "<<mnwtdata(2,i)<<" "<<mnwtdata(3,i)<<" "<<mnwtdata(4,i)<<" "<<
      exp_mnwt(i)<<" "<<mnwtdata(6,i)<<" #_orig_obs: "<<mnwtdata(5,i)<<"  #_ "<<fleetname(mnwtdata(3,i))<<endl;
     }
@@ -988,7 +988,7 @@ FUNCTION void write_nudata()
   report1 << "-9999 ";
   for(i=1;i<=f;i++) report1<<" 0";
   report1<<endl;
-    
+
   report1<<"#"<<endl<<use_meansizedata<<" #_Use_MeanSize-at-Age_obs (0/1)"<<endl;
   if(use_meansizedata>0)
   {
@@ -1026,7 +1026,7 @@ FUNCTION void write_nudata()
 
     report1<<"#"<<endl << N_envvar<<" #_N_environ_variables"<<endl;
     report1<<"#Year Variable Value"<<endl;
-    if(N_envvar>0) 
+    if(N_envvar>0)
       {for(i=0;i<=N_envdata-1;i++) report1<<env_temp[i]<<endl;
        report1<<"-9999 0 0"<<endl;
       }
@@ -1071,7 +1071,7 @@ FUNCTION void write_nudata()
     report1<<TG_release<<endl;
 
     // tag recaptures
-    report1<<"#_Note: Expected values for tag recaptures are reported only for the same combinations of"<<endl; 
+    report1<<"#_Note: Expected values for tag recaptures are reported only for the same combinations of"<<endl;
     report1<<"#       group, year, area, and fleet that had observed recaptures. "<<endl;
     report1<<"#_TAG  Year Season Fleet Nrecap"<<endl;
     for(j=1;j<=N_TG_recap;j++)
@@ -1208,7 +1208,7 @@ FUNCTION void write_nudata()
   {
     report1<<"# ";
   }
-  report1<<"-9999 0 0 0.0 0.0 # terminator for discard data "<<endl; 
+  report1<<"-9999 0 0 0.0 0.0 # terminator for discard data "<<endl;
 
   report1 <<"#"<<endl<< do_meanbodywt <<" #_use meanbodysize_data (0/1)"<< endl;
   if(do_meanbodywt==0) report1<<"#_COND_";
@@ -1354,7 +1354,7 @@ FUNCTION void write_nudata()
           for (compindex=1; compindex<=k; compindex++) // cumulate the multinomial draws by index in the new data
           {exp_a_temp(temp_mult(compindex)) += 1.0;}
         }
-          
+
        }
        else
        {exp_a_temp = obs_a(f,i);}
@@ -1366,8 +1366,8 @@ FUNCTION void write_nudata()
   report1 << "-9999 ";
   for(i=1;i<=f;i++) report1<<" 0";
   report1<<endl;
-    
-    
+
+
   report1<<"#"<<endl<<use_meansizedata<<" #_Use_MeanSize-at-Age_obs (0/1)"<<endl;
   if(use_meansizedata>0)
   {
@@ -1405,7 +1405,7 @@ FUNCTION void write_nudata()
 
     report1<<"#"<<endl << N_envvar<<" #_N_environ_variables"<<endl;
     report1<<"#Year Variable Value"<<endl;
-    if(N_envvar>0) 
+    if(N_envvar>0)
       {for(i=0;i<=N_envdata-1;i++) report1<<env_temp[i]<<endl;
        report1<<"-9999 0 0"<<endl;
       }
@@ -1461,7 +1461,7 @@ FUNCTION void write_nudata()
     report1<<TG_release<<endl;
 
     // tag recaptures
-    report1<<"#_Note: Bootstrap values for tag recaptures are produced only for the same combinations of"<<endl; 
+    report1<<"#_Note: Bootstrap values for tag recaptures are produced only for the same combinations of"<<endl;
     report1<<"#       group, year, area, and fleet that had observed recaptures. "<<endl;
     report1<<"#_TAG  Year Season Fleet Nrecap"<<endl;
     for(j=1;j<=N_TG_recap;j++)
@@ -1653,7 +1653,7 @@ FUNCTION void write_nucontrol()
 
 //**********************************************************
   cout<<" Write new control file "<<endl;
-  
+
   ofstream report4("control.ss_new");
   report4<<version_info_short<<endl;
   if(N_CC>0) report4<<Control_Comments<<endl;
@@ -1697,7 +1697,7 @@ FUNCTION void write_nucontrol()
   {report4<<"#_Cond "<<0<<" #_blocks_per_pattern "<<endl<<"# begin and end years of blocks"<<endl;}
   report4<<"#"<<endl;
 
-  report4<<fracfemale<<" #_fracfemale "<<endl;
+  // report4<<fracfemale<<" #_fracfemale "<<endl;
   report4<<natM_type<<" #_natM_type:_0=1Parm; 1=N_breakpoints;_2=Lorenzen;_3=agespecific;_4=agespec_withseasinterpolate"<<endl;
     if(natM_type==1)
     {report4<<N_natMparms<<" #_N_breakpoints"<<endl<<NatM_break<<" # age(real) at M breakpoints"<<endl;}
@@ -1742,6 +1742,14 @@ FUNCTION void write_nucontrol()
     NP++;
     MGparm_1(f,3)=value(MGparm(f));
     report4<<MGparm_1(f)<<" # "<<ParmLabel(NP)<<endl;
+  }
+  if(frac_female_pointer == -1)
+  {
+    // placeholders to change fracfemale (3.24) to MGparm (3.30)
+    for (gp=1;gp<=N_GP;gp++)
+    {
+        report4 << "0.000001 0.999999 " << femfrac(gp) << " 0.5 -1 0.5 -99 0 0 0 0 0 0 0 " << "# FracFemale_GP_" << gp << endl;
+    }
   }
   report4<<"#"<<endl;
   j=N_MGparm;
@@ -2086,7 +2094,7 @@ FUNCTION void write_nucontrol()
       NP++; j++;  k++; selparm_dev_se_rd(k,3)=value(selparm(j));
       report4<<selparm_dev_se_rd(k)<<" # "<<ParmLabel(NP)<<" # "<<endl;
     }
- 
+
     for (i=1;i<=N_selparm_dev;i++)
     for (j=selparm_dev_minyr(i);j<=selparm_dev_maxyr(i);j++)
     {
@@ -2583,7 +2591,7 @@ FUNCTION void write_bigoutput()
       Report_Parm(NP, active_count, Activ, TG_parm(j), TG_parm_LO(j), TG_parm_HI(j), TG_parm2(j,3), TG_parm2(j,4), TG_parm2(j,5), TG_parm2(j,6), TG_parm_PH(j), TG_parm_Like(j));
     }
   }
-  
+
   SS2out<<endl<<"Number_of_active_parameters_on_or_near_bounds: "<<Nparm_on_bound<<endl;
   SS2out<<"Active_count "<<active_count<<endl<<endl;
   SS2out<<endl<<"DERIVED_QUANTITIES"<<endl;
@@ -2634,7 +2642,7 @@ FUNCTION void write_bigoutput()
   }
   post_vecs<<endl;
   post_vecs<<runnumber<<" 0 "<<obj_fun<<" B/Bmsy_stdev ";
- 
+
   for (j=1;j<=N_STD_Yr_Dep;j++)
   {
     NP++;  SS2out<<" "<<ParmLabel(NP)<<" "<<depletion(j);
@@ -2653,7 +2661,7 @@ FUNCTION void write_bigoutput()
   {
     NP++; active_count++;
     SS2out<<" "<<ParmLabel(NP)<<" "<<Mgmt_quant(j);
-    
+
     SS2out<<" "<<CoVar(active_count,1)<<endl;
   }
 
@@ -2797,11 +2805,11 @@ FUNCTION void write_bigoutput()
    SS2out<<endl<<"EXPLOITATION"<<endl<<"F_Method: "<<F_Method;
    if(F_Method==1) {SS2out<<"  Pope's_approx ";} else {SS2out<<"  Continuous_F;_(NOTE:_F_std_adjusts_for_seasdur_but_each_fleet_F_is_annual)";}
    SS2out<<endl<<"F_std_units: "<<F_reporting<<F_report_label<<endl<<"_ _ _ ";
-   for (f=1;f<=Nfleet;f++) 
+   for (f=1;f<=Nfleet;f++)
    if(fleet_type(f)<=2)
    {if(catchunits(f)==1) {SS2out<<" Bio ";} else {SS2out<<" Num ";}}
    SS2out<<endl<<"_ _ _ ";
-   for (f=1;f<=Nfleet;f++) 
+   for (f=1;f<=Nfleet;f++)
    if(fleet_type(f)<=2)
    {SS2out<<" "<<f;}
    SS2out<<endl<<"Yr Seas F_std";
@@ -2814,7 +2822,7 @@ FUNCTION void write_bigoutput()
      for (s=1;s<=nseas;s++)
      {
        SS2out<<"init_yr "<<s<<" _ ";
-       for (f=1;f<=Nfleet;f++) 
+       for (f=1;f<=Nfleet;f++)
        if(fleet_type(f)<=2)
        {
          if(init_F_loc(s,f)>0)
@@ -2987,7 +2995,7 @@ FUNCTION void write_bigoutput()
         SS2out<<" "<<catch_fleet(t,f)<<" ";
         if(y<=endyr) {SS2out<<catch_ret_obs(f,t)<<" "<<Hrate(f,t);} else {SS2out<<" _ "<<Hrate(f,t);}
         if(y<=endyr) {Smry_Table(y,4)+=catch_fleet(t,f,1); Smry_Table(y,5)+=catch_fleet(t,f,2); Smry_Table(y,6)+=catch_fleet(t,f,3);}
-        
+
       }
       else
       {SS2out<<" 0 0 0 0 0 0 0 0 ";}
@@ -3487,7 +3495,7 @@ FUNCTION void write_bigoutput()
   //Durbin-Watson_M;  18
   //sexratio_obs; 19
   //sexratio_exp; 20
-  
+
    for (f=1;f<=Nfleet;f++)
    for (i=1;i<=Nobs_l(f);i++)
    {
@@ -3502,7 +3510,7 @@ FUNCTION void write_bigoutput()
        mean_CV(f)+=nsamp_l(f,i);
        Hrmse(f)+=value(1./neff_l(f,i));
        Rrmse(f)+=value(neff_l(f,i)/nsamp_l(f,i));
-       
+
        more_comp_info.initialize();
 
        // do both sexes  tails_l(f,i,4) has been set to tails_l(f,i,2) if males not in this sample
@@ -3532,7 +3540,7 @@ FUNCTION void write_bigoutput()
           cumdist_save=cumdist;
 
           temp=obs_l(f,i,z)-exp_l(f,i,z);  //  obs-exp
-          if(z>tails_l(f,i,1)) 
+          if(z>tails_l(f,i,1))
           {
             more_comp_info(6)+=value(square(temp2-temp));
             temp1+=value(square(temp));
@@ -3546,7 +3554,7 @@ FUNCTION void write_bigoutput()
            for(z=tails_l(f,i,3);z<=tails_l(f,i,4);z++)
            {
             temp=obs_l(f,i,z)-exp_l(f,i,z);  //  obs-exp
-            if(z>tails_l(f,i,1)) 
+            if(z>tails_l(f,i,1))
             {
               more_comp_info(6)+=value(square(temp2-temp));
               temp1+=value(square(temp));
@@ -3583,9 +3591,9 @@ FUNCTION void write_bigoutput()
             more_comp_info(11)=len_bins_dat2(z)+(len_bins_dat2(min(z+1,nlen_bin))-len_bins_dat2(z))*(0.95*more_comp_info(20)-cumdist_save)/(cumdist-cumdist_save);
           }
           cumdist_save=cumdist;
-          
+
           temp=obs_l(f,i,z)-exp_l(f,i,z);  //  obs-exp
-          if(z>tails_l(f,i,1)) 
+          if(z>tails_l(f,i,1))
           {
             more_comp_info(12)+=value(square(temp2-temp));
             temp1+=value(square(temp));
@@ -3619,9 +3627,9 @@ FUNCTION void write_bigoutput()
             more_comp_info(17)=len_bins_dat2(z)+(len_bins_dat2(min(z+1,nlen_bin2))-len_bins_dat2(z))*(0.95*more_comp_info(20)-cumdist_save)/(cumdist-cumdist_save);
           }
           cumdist_save=cumdist;
-          
+
           temp=obs_l(f,i,z)-exp_l(f,i,z);  //  obs-exp
-          if(z>tails_l(f,i,1)) 
+          if(z>tails_l(f,i,1))
           {
             more_comp_info(18)+=value(square(temp2-temp));
             temp1+=value(square(temp));
@@ -3767,7 +3775,7 @@ FUNCTION void write_bigoutput()
           {
             SzFreq_effN(iobs)=0.;
             SzFreq_eachlike(iobs)=0.;
-          }       
+          }
           SS2out<<f<<" "<<y<<" "<<s<<" "<<k<<" "<<gg<<" "<<p<<" "<<SzFreq_sampleN(iobs)<<" "<<SzFreq_effN(iobs)<<" "<<SzFreq_eachlike(iobs)<<endl;
         }
       }
@@ -3818,7 +3826,7 @@ FUNCTION void write_bigoutput()
   SS2out << "MORT_is_discard_mortality" << endl;            // SS_Label_390
   SS2out << "KEEP_is_sel*retain" << endl;     // SS_Label_370
   SS2out << "DEAD_is_sel*(retain+(1-retain)*discmort)";     // SS_Label_370
-  SS2out<<"; Year_styr-3_("<<styr-3<<")_stores_average_used_for_benchmark"<<endl; 
+  SS2out<<"; Year_styr-3_("<<styr-3<<")_stores_average_used_for_benchmark"<<endl;
   SS2out<<"Factor Fleet year gender label "<<len_bins_m<<endl;
   for (f=1;f<=Nfleet;f++)
   {
@@ -3864,7 +3872,7 @@ FUNCTION void write_bigoutput()
   SS2out<<"Asel_is_age_selectivity_alone"<<endl;
   SS2out<<"Asel2_is_sizesel*size_at_age(ALK)"<<endl;
   SS2out<<"COMBINED_ALK*selL*selA*wtlen*ret*discmort_in_makefishsel_yr: "<<makefishsel_yr<<" With_MeanSel_From: "<<Fcast_Sel_yr1<<" - "<<Fcast_Sel_yr2;     // SS_Label_380
-  SS2out<<"; Year_styr-3_("<<styr-3<<")_stores_average_used_for_benchmark"<<endl; 
+  SS2out<<"; Year_styr-3_("<<styr-3<<")_stores_average_used_for_benchmark"<<endl;
 
   SS2out<<"factor fleet year seas gender morph label ";
   for (a=0;a<=nages;a++) {SS2out<<" "<<a;}
@@ -4191,7 +4199,7 @@ FUNCTION void write_bigoutput()
    case 4:
    {SS2out<<"logSD=f(A)"; break;}
   }
-    
+
    SS2out<<endl;
    SS2out<<"Seas Morph Bio_Pattern Gender Settlement Platoon int_Age Real_Age Age_Beg Age_Mid M Len_Beg Len_Mid SD_Beg SD_Mid Wt_Beg Wt_Mid Len_Mat Age_Mat Mat*Fecund";
    if(Hermaphro_Option>0) SS2out<<" Herma_Trans Herma_Cum ";
@@ -4205,7 +4213,7 @@ FUNCTION void write_bigoutput()
      for (g=1;g<=gmorph;g++)
      if(use_morph(g)>0)
      {
-     Herma_Cum=fracfemale;
+     Herma_Cum=femfrac(g);
      for (a=0;a<=nages;a++)
      {
 
@@ -4852,7 +4860,7 @@ FUNCTION void write_bigoutput()
     {
       t = styr-3*nseas+s-1;
       if(MG_active(2)>0 || MG_active(3)>0 || save_for_report>0 || WTage_rd>0)
-      {  
+      {
         subseas=1;
         ALK_idx=(s-1)*N_subseas+subseas;  //  for midseason
         Make_AgeLength_Key(s, subseas);  //  for begin season
@@ -4866,7 +4874,7 @@ FUNCTION void write_bigoutput()
           {
         //don't call get_growth3(subseas) because using an average ave_size
             Make_AgeLength_Key(s, subseas);  //  spawn subseas
-          }  
+          }
           Make_Fecundity();
         }
       }
@@ -4981,7 +4989,7 @@ FUNCTION void write_bigoutput()
 //  GLOBAL_MSY with knife-edge age selection, then slot-age selection
   if(Do_Benchmark>0 && wrote_bigreport==1)
   {
-    y=styr-3;  //  stores the averaged 
+    y=styr-3;  //  stores the averaged
     yz=y;
     bio_yr=y;
     eq_yr=y;
@@ -5011,7 +5019,7 @@ FUNCTION void write_bigoutput()
           sel_al_4.initialize();
           deadfish.initialize();
           deadfish_B.initialize();
-          SS2out<<SPRloop1<<" ";      
+          SS2out<<SPRloop1<<" ";
           for (s=1;s<=nseas;s++)
           {
             t = styr-3*nseas+s-1;
@@ -5087,7 +5095,7 @@ FUNCTION void write_Bzero_output()
       {
         get_initial_conditions();
         get_time_series();  //  in write_big_report
-        
+
         if(Do_Forecast>0)
         {
           show_MSY=0;
