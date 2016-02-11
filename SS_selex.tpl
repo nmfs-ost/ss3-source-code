@@ -1301,7 +1301,7 @@ FUNCTION void get_selectivity()
     }  //  end recalc of selex
 
     else
-  //  SS_Label_Info_22.9 #Carryover selex from last year becuase not time-varying
+  //  SS_Label_Info_22.9 #Carryover selex from last year because not time-varying
     {
       if(f<=Nfleet)
       {
@@ -1314,6 +1314,7 @@ FUNCTION void get_selectivity()
       else  // age
       {
         sel_a(y,fs)=sel_a(y-1,fs);  // does both genders
+        retain_a(y,fs)=retain_a(y-1,fs);
       }
     }
 

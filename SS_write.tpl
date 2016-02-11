@@ -73,7 +73,7 @@ FUNCTION void write_summaryoutput()
   report2 <<runnumber<<" Timeseries TotCatch "<<column(Smry_Table,4)<<endl;
   report2 <<runnumber<<" Timeseries RetCatch "<<column(Smry_Table,5)<<endl;
   j=0;
-  if(Do_Retain>0) j=1;
+  if(max(Do_Retain)>0) j=1;
   if(Do_Benchmark>0) report2<<runnumber<<" Mgmt_Quant "<<Mgmt_quant(1,6+j)<<endl;
 
   report2<<runnumber<<" Parm Labels ";
@@ -2663,7 +2663,6 @@ FUNCTION void write_bigoutput()
     SS2out<<" "<<ParmLabel(NP)<<" "<<Extra_Std(j);
     SS2out<<" "<<CoVar(active_count,1)<<endl;
   }
-
  /*
     SS2out<<endl<<"MGParm_Block_Assignments"<<endl;
     if(N_MGparm_blk>0)

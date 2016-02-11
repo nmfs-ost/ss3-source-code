@@ -2335,7 +2335,7 @@
   ivector dolen(1,Nfleet)
   int blkparm
   int firstselparm
-  int Do_Retain
+  ivector Do_Retain(1,Nfleet)  // indicates 0=none, 1=length based, 2=age based
 
  LOCAL_CALCS
 //  SS_Label_Info_4.9.2 #Process selectivity parameter count and create parameter labels
@@ -2343,7 +2343,7 @@
   depletion_fleet=0;
    firstselparm=ParCount;
    N_selparm=0;
-   Do_Retain=0;
+   Do_Retain.initialize();
    for (f=1;f<=Nfleet;f++)
    {
      if(WTage_rd>0 && seltype(f,1)>0)
@@ -2389,7 +2389,7 @@
        {
         N_warn++; warning<<" BEWARE: Retention functions not implemented fully when reading empirical wt-at-age "<<endl;
        }
-       Do_Retain=1;
+       Do_Retain(f)=1;
        if(seltype(f,2)==3)
        {RetainParm(f)=0;}  //  no parameters needed
        else
@@ -2500,17 +2500,14 @@
 //  age-specific retention function
      if(seltype(f,2)>=1)
      {
+     	 Do_Retain(f1)=2;
        if(WTage_rd>0)
        {
         N_warn++; warning<<" BEWARE: Retention functions not implemented fully when reading empirical wt-at-age "<<endl;
        }
-       if(Do_Retain==1)
+       if(seltype(f1,2)>0)
         {
           N_warn++; cout<<" EXIT - see warning "<<endl; warning<<" ERROR:  cannot have both age and size retention functions "<<f<<"  but retention parms not setup "<<endl; exit(1);
-        }
-        else
-        {
-          Do_Retain=2;
         }
        if(seltype(f,2)==3)
        {RetainParm(f1)=0;}  //  no parameters needed
@@ -2574,7 +2571,7 @@
 
    for (f=1;f<=Nfleet;f++)
      {
-     if(disc_N_fleet(f)>0 && seltype(f,2)==0)
+     if(disc_N_fleet(f)>0 && seltype(f,2)==0 && seltype(f+Nfleet,2)==0)
        {N_warn++; cout<<" EXIT - see warning "<<endl; warning<<" ERROR:  discard data exist for fleet "<<f<<"  but retention parms not setup "<<endl; exit(1);}
      else if (disc_N_fleet(f)==0 && seltype(f,2)!=0)
        {N_warn++; warning<<" WARNING:  no discard amount data for fleet "<<f<<"  but retention parms have been defined "<<endl;}
@@ -3619,7 +3616,8 @@
   else
   {N_STD_Mgmt_Quant=1;}
   Fcast_catch_start=N_STD_Mgmt_Quant;
-  if(Do_Forecast>0) {N_STD_Mgmt_Quant+=N_Fcast_Yrs*(1+Do_Retain)+N_Fcast_Yrs;}
+  if(max(Do_Retain)>0) {j=1;} else {j=0;}
+  if(Do_Forecast>0) {N_STD_Mgmt_Quant+=N_Fcast_Yrs*(1+j)+N_Fcast_Yrs;}
   k=ParCount+2*N_STD_Yr+N_STD_Yr_Dep+N_STD_Yr_Ofish+N_STD_Yr_F+N_STD_Mgmt_Quant+gender*Selex_Std_Cnt+gender*Growth_Std_Cnt;
   echoinput<<"N parameters: "<<ParCount<<endl<<"Parameters plus derived quant: "<<k<<endl;
  END_CALCS
@@ -4131,7 +4129,7 @@
         sprintf(onenum, "%d", y);
         ParmLabel+="OFLCatch_"+onenum+CRLF(1);
       }
-      if(Do_Retain==1)
+      if(max(Do_Retain)>0)
       {
         for (y=endyr+1;y<=YrMax;y++)
         {
