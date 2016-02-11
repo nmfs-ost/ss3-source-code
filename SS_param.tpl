@@ -80,7 +80,8 @@ PARAMETER_SECTION
 
 // Age-length keys for each gmorph  
   4darray ALK(1,N_subseas*nseas,1,gmorph,0,nages,1,nlength)
-  matrix exp_AL(0,gender*nages+gender-1,1,nlength2);
+  matrix exp_AL(0,nages2,1,nlength2);
+  matrix exp_AL_ret(0,nages2,1,nlength2);
   3darray Sd_Size_within(1,N_subseas*nseas,1,gmorph,0,nages)  //  2*nseas stacks begin of seas and end of seas
   3darray Sd_Size_between(1,N_subseas*nseas,1,gmorph,0,nages)  //  2*nseas stacks begin of seas and end of seas
   4darray Ave_Size(styr-3*nseas,TimeMax_Fcast_std+nseas,1,N_subseas,1,gmorph,0,nages)
@@ -363,6 +364,7 @@ PARAMETER_SECTION
   matrix neff_l(1,Nfleet,1,Nobs_l)
   vector tempvec_l(1,nlength);
   vector exp_l_temp(1,nlength2);
+  vector exp_truea_ret(0,nages2);
   vector exp_l_temp_ret(1,nlength2);     // retained lengthcomp
   vector exp_l_temp_dat(1,nlen_bin2);
 //  vector offset_l(1,Nfleet) // Compute OFFSET for multinomial (i.e, value for the multinonial function

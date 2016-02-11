@@ -833,7 +833,7 @@ FUNCTION void Get_Forecast()
         totcatch=0.;
         if(ABC_Loop==1) Mgmt_quant(Fcast_catch_start+N_Fcast_Yrs+y-endyr)=0.0;   // for OFL
         Mgmt_quant(Fcast_catch_start+y-endyr)=0.0;  //  for ABC
-        if(Do_Retain>0) Mgmt_quant(Fcast_catch_start+2*N_Fcast_Yrs+y-endyr)=0.0;  // for retained ABC
+        if(max(Do_Retain)>0) Mgmt_quant(Fcast_catch_start+2*N_Fcast_Yrs+y-endyr)=0.0;  // for retained ABC
         if(STD_Yr_Reverse_F(y)>0) F_std(STD_Yr_Reverse_F(y))=0.0;
 
         for (s=1;s<=nseas;s++)
@@ -1465,7 +1465,7 @@ FUNCTION void Get_Forecast()
                 if(fleet_type(f)<=2)
                 {
                   Mgmt_quant(Fcast_catch_start+y-endyr)+=catch_fleet(t,f,2);
-                  if(Do_Retain>0) Mgmt_quant(Fcast_catch_start+2*N_Fcast_Yrs+y-endyr)+=catch_fleet(t,f,3);
+                  if(max(Do_Retain)>0) Mgmt_quant(Fcast_catch_start+2*N_Fcast_Yrs+y-endyr)+=catch_fleet(t,f,3);
                 }
               }
             }

@@ -455,6 +455,7 @@ DATA_SECTION
   int pop   // number of areas (populations)
   int gender  //  number of sexes
   int nages  //  maxage as accumulator
+  int nages2  //  doubled vector to store males after females = gender*nages+gender-1
   int Nsurvey
   int Nfleet
   int Nfleet1  // used with 3.24 for number of fishing fleets
@@ -469,6 +470,7 @@ DATA_SECTION
     *(ad_comm::global_datafile) >> Nfleet;
     Nfleet1=Nfleet;
     Nsurvey=0;
+    nages2=gender*nages+gender-1;
     echoinput<<Nfleet<<" total number of fishing fleets and surveys "<<endl;
   }
  END_CALCS
