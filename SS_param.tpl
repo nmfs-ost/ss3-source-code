@@ -375,7 +375,7 @@ PARAMETER_SECTION
   3darray exp_a(1,Nfleet,1,Nobs_a,1,n_abins2)
   vector exp_a_temp(1,n_abins2)
   vector tempvec_a(0,nages)
-  vector agetemp(0,gender*nages+gender-1)
+  vector agetemp(0,nages2)
   matrix neff_a(1,Nfleet,1,Nobs_a)
   matrix age_like(1,Nfleet,1,Nobs_a)  // likelihood of the age-frequency data
   vector age_like_tot(1,Nfleet)  // likelihood of the age-frequency data

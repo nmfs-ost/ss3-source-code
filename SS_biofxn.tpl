@@ -466,11 +466,9 @@ FUNCTION void get_growth2()
               current_size+=(L_inf(gp)-current_size)* (1.0-mfexp(VBK(gp,0)*VBK_seas(0)));
               temp+=temp4*current_size;
               temp1+=temp4;   //  accumulate numbers to create denominator for mean size calculation
-              if(do_once==1&&g==1) echoinput<<a<<" "<<temp4<<" "<<current_size<<" "<<temp/temp1<<endl;
             }
             Ave_Size(styr,1,g,nages)=temp/temp1;  //  this is weighted mean size at nages
-            if(do_once==1&&g==1) echoinput<<" adjusted size at maxage "<<Ave_Size(styr,1,g,nages)<<endl
-              <<" ratio "<<temp1/temp2<<endl;
+            if(do_once==1&&g==1) echoinput<<" adjusted size at maxage "<<Ave_Size(styr,1,g,nages)<<endl;
           }  //  end initial year calcs
 
 //  SS_Label_Info_16.2.4.2  #loop seasons for growth calculation
@@ -529,7 +527,7 @@ FUNCTION void get_growth2()
                 {
                   Ave_Size(t+1,1,g,nages)=Ave_Size(t,1,g,nages);
                 }
-              if(do_once==1&&g==1) echoinput<<" new_val "<<Ave_Size(t+1,1,g,nages)<<endl;
+              if(do_once==1&&g==1) echoinput<<" final_val "<<Ave_Size(t+1,1,g,nages)<<endl;
             }
 
             if(docheckup==1) echoinput<<y<<" seas: "<<s<<" sex: "<<sx(g)<<" gp: "<<gp<<" settle: "<<settle_g(g)<<" Lmin: "<<Lmin(gp)<<" Linf: "<<L_inf(gp)<<" VBK: "<<VBK(gp,nages)<<endl

@@ -2,8 +2,8 @@
  /*  SS_Label_FUNCTION 46  Get_expected_values:  check for data */
 FUNCTION void Get_expected_values();
   {
-  dvar_vector pre_AL(1,nlength);
-
+  	dvariable temp1;
+  	dvar_vector age_exp(0,nages2);
   for (subseas=1;subseas<=N_subseas;subseas++)
   {
 //  make age-length key if needed
@@ -24,7 +24,7 @@ FUNCTION void Get_expected_values();
 //  make selected age-length sample for this fleet and with this timing
         {
           exp_AL.initialize();
-          exp_l_temp.initialize();
+          exp_AL_ret.initialize();
           for (g=1;g<=gmorph;g++)
           if(use_morph(g)>0)
           {
@@ -45,37 +45,63 @@ FUNCTION void Get_expected_values();
             else  //  explicit timing
             {tempvec_a=elem_prod(natage(t,p,g),elem_prod(mfexp(-Z_rate(t,p,g)*timing),sel_a(y,f,gg)));}
 
-            pre_AL.initialize();
-            for (a=0;a<=nages;a++)
+            int retflag;
+            retflag=0;
+            if(Do_Retain(f)==0)
             {
-//              if(dolen(f)==1)
-//              {
-//                pre_AL.shift(1)=tempvec_a(a)*elem_prod(ALK(ALK_idx,g,a),sel_l(y,f,gg));
-//              }
-//              else
-//              {pre_AL.shift(1)=tempvec_a(a)*ALK(ALK_idx,g,a);}
-//              exp_AL(a+A2)(L1,L2) += pre_AL.shift(L1);  // shifted to store males in right place and accumulated across morphs
-
               if(dolen(f)==1)
               {
-                for(z=ALK_range_lo(a);z<=ALK_range_hi(a);z++)
+                for (a=0;a<=nages;a++)
                 {
-                  temp=tempvec_a(a)*ALK(ALK_idx,g,a,z)*sel_l(y,f,gg,z);
-                  exp_AL(a+A2,L1-1+z)+=temp;
-                  exp_l_temp(L1-1+z)+=temp;
+                	temp=tempvec_a(a);
+                  for(z=ALK_range_lo(a);z<=ALK_range_hi(a);z++)
+                  {
+                    exp_AL(a+A2,L1-1+z)+=temp*ALK(ALK_idx,g,a,z)*sel_l(y,f,gg,z);;  //  note that A2 and L1 depend on what sex g is
+                  }
                 }
               }
               else
               {
-                for(z=ALK_range_lo(a);z<=ALK_range_hi(a);z++)
+                for (a=0;a<=nages;a++)
                 {
-                  temp=tempvec_a(a)*ALK(ALK_idx,g,a,z);
-                  exp_AL(a+A2,L1-1+z)+=temp;
-                  exp_l_temp(L1-1+z)+=temp;
+                	temp=tempvec_a(a);
+                  for(z=ALK_range_lo(a);z<=ALK_range_hi(a);z++)
+                  {
+                    exp_AL(a+A2,L1-1+z)+=temp*ALK(ALK_idx,g,a,z);
+                  }
                 }
               }
             }
-
+            else  //  need retain matrix
+            {
+              if(dolen(f)==1)  //  need retention and length
+              {
+                for (a=0;a<=nages;a++)
+                {
+                	temp=tempvec_a(a);
+                	temp1=tempvec_a(a)*retain_a(y,f,gg,a);
+                  for(z=ALK_range_lo(a);z<=ALK_range_hi(a);z++)
+                  {
+                    exp_AL(a+A2,L1-1+z)+=temp*ALK(ALK_idx,g,a,z)*sel_l(y,f,gg,z);  //  note that A2 and L1 depend on what sex g is
+                    exp_AL_ret(a+A2,L1-1+z)+=temp1*ALK(ALK_idx,g,a,z)*sel_l(y,f,gg,z)*retain(y,f,L1-1+z);  //  note that A2 and L1 depend on what sex g is
+                  }
+                }
+              }
+              else  //  need retention, but no length selex
+              {
+                for (a=0;a<=nages;a++)
+                {
+                	temp=tempvec_a(a);
+                	temp1=tempvec_a(a)*retain_a(y,f,gg,a);
+                  for(z=ALK_range_lo(a);z<=ALK_range_hi(a);z++)
+                  {
+                    exp_AL(a+A2,L1-1+z)+=temp*ALK(ALK_idx,g,a,z);
+                    exp_AL_ret(a+A2,L1-1+z)+=temp1*ALK(ALK_idx,g,a,z)*retain(y,f,L1-1+z);
+                  }
+                }
+              }
+            }
+            
             if(Do_Morphcomp)
             {
               if(Morphcomp_havedata(f,t,0)>0)
@@ -85,12 +111,15 @@ FUNCTION void Get_expected_values();
             }
           } //close gmorph loop
 
-//          exp_l_temp=colsum(exp_AL);
-          if(docheckup==1) echoinput<<"exp_l: "<<exp_l_temp<<endl;
-          if(seltype(f,2)!=0)
-          {exp_l_temp_ret=elem_prod(exp_l_temp,retain(y,f));}
-           else
-          {exp_l_temp_ret=exp_l_temp;}
+          exp_l_temp=colsum(exp_AL);  //  total size composition
+          agetemp=rowsum(exp_AL);  //  total age composition
+          
+          if(Do_Retain(f)>0)
+          {
+             exp_l_temp_ret=colsum(exp_AL_ret);
+             exp_truea_ret=rowsum(exp_AL_ret);
+        	}
+//          if(docheckup==1) echoinput<<"exp_l: "<<exp_l_temp<<endl<<"exp_l_ret: "<<exp_l_temp_ret<<endl;
 //          end creation of selected A-L
         }
 
@@ -98,8 +127,8 @@ FUNCTION void Get_expected_values();
         {
           switch(data_type)
           {
-                case(1):  //  surveyindex
-                {
+            case(1):  //  surveyindex
+            {
    /* SS_Label_46.1 expected abundance index */
   // NOTE that the Q scaler is factored in later on
          j=have_data(ALK_time,f,data_type,0);  //  number of observations for this time,f,type
@@ -112,28 +141,47 @@ FUNCTION void Get_expected_values();
              {
              if(WTage_rd==1)  //  using empirical wt-at-age;  note that this cannot use GP specific bodyweights
              {
-               if(seltype(f,2)>=1)
+               vbio=0.0;
+               if(Do_Retain(f)==0)  //  all retained
                {
-                 agetemp = exp_AL * retain(y,f);    // retained only
+               	for (a=0;a<=nages;a++) vbio+=WTage_emp(y,1,f,a)*agetemp(a);
+                if(gender==2)
+                {
+                 for (a=0;a<=nages;a++) vbio+=WTage_emp(y,2,f,a)*agetemp(a+nages+1);
+                }
                }
                else
                {
-                 agetemp=rowsum(exp_AL);
-               }
-               vbio=0.0;
-               for (a=0;a<=nages;a++) vbio+=WTage_emp(y,1,f,a)*agetemp(a);
-               if(gender==2)
-               {
-                 for (a=0;a<=nages;a++) vbio+=WTage_emp(y,2,f,a)*agetemp(a+nages+1);
+               	for (a=0;a<=nages;a++) vbio+=WTage_emp(y,1,f,a)*exp_truea_ret(a);
+                if(gender==2)
+                {
+                 for (a=0;a<=nages;a++) vbio+=WTage_emp(y,2,f,a)*exp_truea_ret(a+nages+1);
+                }
                }
              }
              else
-             {vbio=exp_l_temp_ret*wt_len2(s,1);}   // biomass  TEMPORARY CODE.  Using gp=1 wt at length
+             {
+             	if(Do_Retain(f)==0)
+           		{
+                vbio=exp_l_temp*wt_len2(s,1);// biomass  TEMPORARY CODE.  Using gp=1 wt at length
+           		}
+           		else
+         			{
+                vbio=exp_l_temp_ret*wt_len2(s,1);
+           		}
+             	}   
              break;
              }
              case 0:  //  numbers
              {
-              vbio=sum(exp_l_temp_ret);
+             	if(Do_Retain(f)==0)
+           		{
+                vbio=sum(exp_l_temp);
+           		}
+           		else
+         			{
+                vbio=sum(exp_l_temp_ret);
+           		}
               break;
              }
              case 2:   //  F rate
@@ -209,7 +257,6 @@ FUNCTION void Get_expected_values();
               break;
             }
            }
-
            Svy_selec_abund(f,j)=value(vbio);
 // SS_Label_Info_46.1.1 #note order of operations,  vbio raised to a power, then constant is added, then later multiplied by Q.  Needs work   
            if(Q_setup(f,1)>0) vbio=pow(vbio,1.0+Q_parm(Q_setup_parms(f,1)));  //  raise vbio to a power
@@ -222,13 +269,13 @@ FUNCTION void Get_expected_values();
            //  Note:  Svy_est() is multiplied by Q in the likelihood section
          }
          break;
-                }  //  end survey index
+            }  //  end survey index
   
-                case(2):  //  DISCARD_OUTPUT
+            case(2):  //  DISCARD_OUTPUT
    /* SS_Label_46.2 expected discard amount */
-                {
-          j=have_data(ALK_time,f,data_type,0);  //  number of observations
-          if(j>0)
+            {
+              j=have_data(ALK_time,f,data_type,0);  //  number of observations
+            if(j>0)
             {
               j=have_data(ALK_time,f,data_type,1);  //  only getting first observation for now
               if(catch_ret_obs(f,t)>0.0)
@@ -255,13 +302,14 @@ FUNCTION void Get_expected_values();
               }
             }
             break;
-                }  //  end discard
+            }  //  end discard
   
             case(3):  // mean body weight
    /* SS_Label_46.3 expected mean body weight */
             {
             if(have_data(ALK_time,f,data_type,0)>0)  //  number of observations
             {
+            	warning<<exp_l_temp<<endl<<exp_l_temp_ret<<endl;
             j=yr_mnwt2(f,t,0); //   sample from total catch
             if(j>0) {exp_mnwt(j) = (exp_l_temp*wt_len2(s,1)) / sum(exp_l_temp);}  // total sample
             else if(j<0)
@@ -276,6 +324,7 @@ FUNCTION void Get_expected_values();
             if(j>0) exp_mnwt(j) = (exp_l_temp_ret*wt_len2(s,1)) / sum(exp_l_temp_ret);    // retained only
             else if(j<0)
             {exp_mnwt(-j) = (exp_l_temp_ret*len_bins_m2) / sum(exp_l_temp_ret);}
+            warning<<y<<" expmnwt "<<exp_mnwt<<endl;
             }
             
             break;
@@ -319,21 +368,23 @@ FUNCTION void Get_expected_values();
               k=ageerr_type_a(f,i);                           //  age-err type
     
               if(use_Lbin_filter(f,i)==0)
-               {                                              // sum across all length bins
-              if(mkt_a(f,i)==0) agetemp = rowsum(exp_AL);             //  numbers at binned age = age_age(bins,age) * sum(age)
-              if(mkt_a(f,i)==1) agetemp = exp_AL * (1.-retain(y,f));  // discard sample
-              if(mkt_a(f,i)==2) agetemp = exp_AL * retain(y,f);    // retained only
-               }
+              {                                              // sum across all length bins
+               if(mkt_a(f,i)==0) age_exp = agetemp;
+               if(mkt_a(f,i)==1) age_exp = agetemp-exp_truea_ret;  // discard sample
+               if(mkt_a(f,i)==2) age_exp = exp_truea_ret;    // retained only
+              }
               else
-               {            // only use ages from specified range of size bins
+              {            // only use ages from specified range of size bins
                             // Lbin_filter is a vector with 0 for unselected size bins and 1 for selected bins
-              if(mkt_a(f,i)==0) agetemp = exp_AL * Lbin_filter(f,i);             //  numbers at binned age = age_age(bins,age) * sum(age)
-              if(mkt_a(f,i)==1) agetemp = exp_AL * elem_prod(Lbin_filter(f,i),(1.-retain(y,f)));  // discard sample
-              if(mkt_a(f,i)==2) agetemp = exp_AL * elem_prod(Lbin_filter(f,i),retain(y,f));    // retained only
-               }
-              exp_a(f,i) = age_age(k) * agetemp;
+                if(mkt_a(f,i)==0) age_exp = exp_AL * Lbin_filter(f,i);
+                if(mkt_a(f,i)==1) age_exp = (exp_AL-exp_AL_ret) * Lbin_filter(f,i);  // discard sample
+                if(mkt_a(f,i)==2) age_exp = exp_AL_ret * Lbin_filter(f,i);    // retained only
+              }
+              exp_a(f,i) = age_age(k) * age_exp;
+              //  add code here to store exp_a_true(f,i)=age_exp
+              //  then in data generation the sample can be from true age before ageing error is applied
     
-              if(docheckup==1) echoinput<<" real age "<<agetemp<<endl<<" obs "<<obs_a(f,i)<<endl<<" exp "<<exp_a(f,i)<<endl;
+              if(docheckup==1) echoinput<<" real age "<<age_exp<<endl<<" obs "<<obs_a(f,i)<<endl<<" exp with ageerr "<<exp_a(f,i)<<endl;
     
              }  // end agecomp loop within fleet/time
             }
@@ -632,44 +683,47 @@ FUNCTION void Get_expected_values();
              k=abs(ageerr_type_ms(f,i));                           //  age-err type  where the sign selects length vs. weight
              if(ageerr_type_ms(f,i)>0)  // values are length at age
              {
-               if(mkt_ms(f,i)==0)
+               if(mkt_ms(f,i)==0)  //  total catch
                {
-                 exp_a_temp = age_age(k) * rowsum(exp_AL);             //  numbers at binned age = age_age(bins,age) * sum(age)
+                 exp_a_temp = age_age(k) * agetemp;             //  numbers at binned age 
                  exp_ms(f,i) = age_age(k) * (exp_AL * len_bins_m2);  // numbers * length
                  exp_ms_sq(f,i) = age_age(k) * (exp_AL * len_bins_sq);  // numbers * length^2
                }
-               if(mkt_ms(f,i)==1)
+               if(mkt_ms(f,i)==1) //  discard
                {
-                 exp_a_temp = age_age(k) * (exp_AL * (1-retain(y,f)));             //  numbers at binned age = age_age(bins,age) * sum(age)
-                 exp_ms(f,i) = age_age(k) * (exp_AL * elem_prod((1-retain(y,f)),len_bins_m2));  // numbers * length
-                 exp_ms_sq(f,i) = age_age(k) * (exp_AL * elem_prod((1-retain(y,f)),len_bins_sq));  // numbers * length^2
+//                 exp_a_temp = age_age(k) * (exp_AL * (1-retain(y,f)));             //  numbers at binned age = age_age(bins,age) * sum(age)
+//                 exp_ms(f,i) = age_age(k) * (exp_AL * elem_prod((1-retain(y,f)),len_bins_m2));  // numbers * length
+//                 exp_ms_sq(f,i) = age_age(k) * (exp_AL * elem_prod((1-retain(y,f)),len_bins_sq));  // numbers * length^2
+                 exp_a_temp = age_age(k) * (agetemp-exp_truea_ret);
+                 exp_ms(f,i) = age_age(k) * ((exp_AL-exp_AL_ret) * len_bins_m2);  // numbers * length
+                 exp_ms_sq(f,i) = age_age(k) * ((exp_AL-exp_AL_ret) * len_bins_sq);  // numbers * length^2
                }
-               if(mkt_ms(f,i)==2)
+               if(mkt_ms(f,i)==2)  //  retained
                {
-                 exp_a_temp = age_age(k) * (exp_AL * retain(y,f) );             //  numbers at binned age = age_age(bins,age) * sum(age)
-                 exp_ms(f,i) = age_age(k) * (exp_AL * elem_prod((retain(y,f)),len_bins_m2));  // numbers * length
-                 exp_ms_sq(f,i) = age_age(k) * (exp_AL * elem_prod((retain(y,f)),len_bins_sq));  // numbers * length^2
+                 exp_a_temp = age_age(k) * exp_truea_ret;             //  numbers at binned age = age_age(bins,age) * sum(age)
+                 exp_ms(f,i) = age_age(k) * (exp_AL_ret * len_bins_m2);  // numbers * length
+                 exp_ms_sq(f,i) = age_age(k) * (exp_AL_ret * len_bins_sq);  // numbers * length^2
                }
              }
              else  // values are weight at age
              {
                if(mkt_ms(f,i)==0)
                {
-                 exp_a_temp = age_age(k) * rowsum(exp_AL);             //  numbers at binned age = age_age(bins,age) * sum(age)
+                 exp_a_temp = age_age(k) * agetemp;             //  numbers at binned age = age_age(bins,age) * sum(age)
                  exp_ms(f,i) = age_age(k) * (exp_AL * wt_len2(s,1));  // numbers * bodywt
                  exp_ms_sq(f,i) = age_age(k) * (exp_AL * wt_len2_sq(s,1));  // numbers * bodywt^2
                }
                if(mkt_ms(f,i)==1)
                {
-                 exp_a_temp = age_age(k) * (exp_AL * (1-retain(y,f)));             //  numbers at binned age = age_age(bins,age) * sum(age)
-                 exp_ms(f,i) = age_age(k) * (exp_AL * elem_prod((1-retain(y,f)),wt_len2(s,1)));  // numbers * bodywt
-                 exp_ms_sq(f,i) = age_age(k) * (exp_AL * elem_prod((1-retain(y,f)),wt_len2_sq(s,1)));  // numbers * bodywt^2
+                 exp_a_temp = age_age(k) * (agetemp-exp_truea_ret);            //  numbers at binned age = age_age(bins,age) * sum(age)
+                 exp_ms(f,i) = age_age(k) * ((exp_AL-exp_AL_ret) * wt_len2(s,1));  // numbers * bodywt
+                 exp_ms_sq(f,i) = age_age(k) * ((exp_AL-exp_AL_ret) * wt_len2_sq(s,1));  // numbers * bodywt^2
                }
                if(mkt_ms(f,i)==2)
                {
-                 exp_a_temp = age_age(k) * (exp_AL * retain(y,f) );             //  numbers at binned age = age_age(bins,age) * sum(age)
-                 exp_ms(f,i) = age_age(k) * (exp_AL * elem_prod((retain(y,f)),wt_len2(s,1)));  // numbers * bodywt
-                 exp_ms_sq(f,i) = age_age(k) * (exp_AL * elem_prod((retain(y,f)),wt_len2_sq(s,1)));  // numbers * bodywt^2
+                 exp_a_temp = age_age(k) * exp_truea_ret;             //  numbers at binned age = age_age(bins,age) * sum(age)
+                 exp_ms(f,i) = age_age(k) * (exp_AL_ret* wt_len2(s,1));  // numbers * bodywt
+                 exp_ms_sq(f,i) = age_age(k) * (exp_AL_ret * wt_len2_sq(s,1));  // numbers * bodywt^2
                }
              }
              exp_ms(f,i)+=1.0e-6;
