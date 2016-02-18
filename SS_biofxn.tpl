@@ -153,17 +153,22 @@ FUNCTION void get_MGsetup()
           {
             case 1:  //  exponential MGparm env link
               {
-                mgp_adj(f)*=mfexp(MGparm(MGparm_env(f))*(env_data(yz,MGparm_envuse(f))-MGparm(MGparm_env(f))));
+                mgp_adj(f)*=mfexp(MGparm(MGparm_env(f))*(env_data(yz,MGparm_envuse(f))));
                 break;
               }
             case 2:  //  linear MGparm env link
               {
-                mgp_adj(f)+=MGparm(MGparm_env(f))*(env_data(yz,MGparm_envuse(f))-MGparm(MGparm_env(f)));
+                mgp_adj(f)+=MGparm(MGparm_env(f))*env_data(yz,MGparm_envuse(f));
                 break;
               }
-            case 3:  //  logistic MGparm env link
+            case 3:
+            	{
+            		//  not implemented
+            	}
+            case 4:  //  logistic MGparm env link
               {
-                mgp_adj(f)*=2.00000/(1.00000 + mfexp(-MGparm(MGparm_env(f))*(env_data(yz,MGparm_envuse(f))-MGparm(MGparm_env(f)))));
+              	// first parm is offset ; second is slope
+                mgp_adj(f)*=2.00000/(1.00000 + mfexp(-MGparm(MGparm_env(f)+1)*(env_data(yz,MGparm_envuse(f))-MGparm(MGparm_env(f)))));
                 break;
               }
           }

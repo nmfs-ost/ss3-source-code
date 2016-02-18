@@ -1046,7 +1046,7 @@
   int customMGenvsetup  //  0=read one setup (if necessary) and apply to all; 1=read each
   ivector MGparm_env(1,N_MGparm)   // contains the parameter number of the envlink for a
   ivector MGparm_envuse(1,N_MGparm)   // contains the environment data number
-  ivector MGparm_envtype(1,N_MGparm)  // 1=multiplicative; 2= additive; 3=logistic
+  ivector MGparm_envtype(1,N_MGparm)  // >0  =multiplicative; <0 = additive; -999 = density-dependent 
   ivector mgp_type(1,N_MGparm)  //  contains category to parameter (1=natmort; 2=growth; 3=wtlen & fec; 4=recr_dist; 5=movement)
 
  LOCAL_CALCS
@@ -1085,11 +1085,16 @@
        ParCount++; ParmLabel+=ParmLabel(f)+"_ENV_mult"; MGparm_envtype(f)=1; MGparm_envuse(f)=MGparm_1(f,8);
        if(MG_adjust_method==2) {N_warn++; cout<<" EXIT - see warning "<<endl; warning<<"multiplicative env effect on MGparm: "<<f
         <<" not allowed because MG_adjust_method==2; STOP"<<endl; exit(1);}
+       MGparm_1(f,8)+=100;  //  convert to 3.30 format
      }
      else if(MGparm_1(f,8)==-999)
-     {ParCount++; ParmLabel+=ParmLabel(f)+"_ENV_densdep"; MGparm_envtype(f)=3;  MGparm_envuse(f)=-1;}
-     else
-     {ParCount++; ParmLabel+=ParmLabel(f)+"_ENV_add"; MGparm_envtype(f)=2; MGparm_envuse(f)=-MGparm_1(f,8);}
+     {
+     	  cout<<" EXIT - see warning "<<endl; warning<<"density-dependent env effect on MGparm: "<<f
+      <<" not implemented; STOP"<<endl; exit(1);}
+//        ParCount++; ParmLabel+=ParmLabel(f)+"_ENV_densdep"; MGparm_envtype(f)=3;  MGparm_envuse(f)=-1;}
+     else if (MGparm_1(f,8)<0)
+     {ParCount++; ParmLabel+=ParmLabel(f)+"_ENV_add"; MGparm_envtype(f)=2; MGparm_envuse(f)=-MGparm_1(f,8);
+     	MGparm_1(f,8) = 200+abs(MGparm_1(f,8));}
 
      if(f==MGP_CGD) CGD=1;    // cohort growth dev is a fxn of environ, so turn on CGD calculation
      for (y=styr;y<=endyr;y++)

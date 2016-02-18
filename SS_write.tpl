@@ -727,7 +727,7 @@ FUNCTION void write_nudata()
     report1<<"#"<<endl << N_envvar<<" #_N_environ_variables"<<endl;
     report1<<"#Year Variable Value"<<endl;
     if(N_envvar>0)
-      {for(i=0;i<=N_envdata-1;i++) report1<<env_temp[i]<<endl;
+      {for(i=1;i<=N_envdata;i++) report1<<env_temp[i]<<endl;
        report1<<"-9999 0 0"<<endl;
       }
 
@@ -1027,7 +1027,7 @@ FUNCTION void write_nudata()
     report1<<"#"<<endl << N_envvar<<" #_N_environ_variables"<<endl;
     report1<<"#Year Variable Value"<<endl;
     if(N_envvar>0)
-      {for(i=0;i<=N_envdata-1;i++) report1<<env_temp[i]<<endl;
+      {for(i=1;i<=N_envdata;i++) report1<<env_temp[i]<<endl;
        report1<<"-9999 0 0"<<endl;
       }
 
@@ -1406,7 +1406,7 @@ FUNCTION void write_nudata()
     report1<<"#"<<endl << N_envvar<<" #_N_environ_variables"<<endl;
     report1<<"#Year Variable Value"<<endl;
     if(N_envvar>0)
-      {for(i=0;i<=N_envdata-1;i++) report1<<env_temp[i]<<endl;
+      {for(i=1;i<=N_envdata;i++) report1<<env_temp[i]<<endl;
        report1<<"-9999 0 0"<<endl;
       }
 
