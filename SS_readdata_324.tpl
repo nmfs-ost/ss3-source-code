@@ -1399,7 +1399,7 @@ DATA_SECTION
       len_bins_dat_m(z)=len_bins_dat_m(z-1)+ (len_bins_dat(z)-len_bins_dat(z-1));
     }
     len_bins_dat_m2(z)=len_bins_dat_m(z);
-    len_bins_dat_m2(z+nlen_bin)=len_bins_dat_m(z);
+    if(gender==2) len_bins_dat_m2(z+nlen_bin)=len_bins_dat_m(z);
   }
   if(len_bins_dat(nlen_bin)>len_bins(nlength))
   {
