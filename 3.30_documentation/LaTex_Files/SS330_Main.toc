@@ -70,3 +70,4 @@
 \contentsline {subsubsection}{\numberline {10.3.25}Catchability}{78}{subsubsection.10.3.25}
 \contentsline {subsubsection}{\numberline {10.3.26}Selectivity and Discard}{80}{subsubsection.10.3.26}
 \contentsline {subsubsection}{\numberline {10.3.27}Selectivity Patterns}{82}{subsubsection.10.3.27}
+\contentsline {subsubsection}{\numberline {10.3.28}Selectivity Pattern Details}{84}{subsubsection.10.3.28}

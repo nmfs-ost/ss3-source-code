@@ -1113,6 +1113,17 @@ The currently defined selectivity patterns, and corresponding required number of
 
 \begin{center}
 	\begin{longtable}{p{2cm} p{3cm} p{10cm}}
+		\endfirsthead
+		
+		\hline	
+		Pattern & N Parameters & Description \\
+		\hline
+		\endhead
+		
+		%\hline
+		\endfoot		
+		\endlastfoot
+		
 		\hline
 		\multicolumn{3}{c}{SIZE SELECTIVITY}\\
 		Pattern & N Parameters & Description \\
@@ -1154,5 +1165,96 @@ The currently defined selectivity patterns, and corresponding required number of
 		\item The "catchability" coefficient for these selectivity patterns 30-33 have all the general properties of the catchability coefficient for real surveys, e.g. they can be time-varying, use power relationship, etc.
 	\end{itemize}
 \end{description}
+
+\begin{center}
+	\begin{longtable}{p{2cm} p{3cm} p{10cm}}
+
+		\endfirsthead
+		
+		\hline	
+		Pattern & N Parameters & Description \\
+		\hline
+		\endhead
+		
+		%\hline
+		\endfoot		
+		\endlastfoot
+		
+		\hline
+		\multicolumn{3}{c}{AGE SELECTIVITY}\\
+		Pattern & N Parameters & Description \\
+		\hline
+		10 & 0 & Age selectivity = 1.0 for all ages beginning at age 1.  If it is desired that age-0 fish be selected, then use pattern \#11 and set minimum age to 1.0. \\
+		11 & 2 & Pick min-max age\\
+		12 & 2 & Logistic\\
+		13 & 8 & Double logistic, IF joiners.  Use discouraged.  Use pattern \#18 instead.\\
+		14 & nages+1 & Each age, value at age is $\frac{1}{1+exp(-x)}$ \\
+		15 & 0 & Mirror another selectivity\\
+		16 & 2 & Coleraine single Gaussian\\
+		17 & nages + 1 & Each age as random walk from previous age.  For all ages in the population beginning with Amin = 1 for the fishery and 2 for the survey, there is a corresponding set of selectivity parameters for each fleet, $p_a$. \hyperlink{RandWalk}{Click here for more information.}\\
+		18 & 8 & Double logistic, with defined peak, uses smooth joiners.  \\
+		19 & 6 & Simple double logistic with no defined peak.\\
+		20 & 6 & Double normal with defined initial and final level.  Recommended option. Test using SELEX-24.xls.\\
+		26 & 3 & Exponential logistic\\
+		27 & 3+2*N\_nodes & Cubic Spline\\
+		\hline	
+	\end{longtable}
+\end{center}
+
+\subsubsection{Selectivity Pattern Details}
+%\begin{description}
+%	\item[Pattern \#1 (size) - Logistic]\hfil\\
+%\end{description}
+\underline{Pattern \#1 (size) and \#12 (age) - Simple Logistic}\\
+\begin{itemize}
+	\item p1 - size/age at inflection
+	\item p2 - width for 95\% selection; a negative width causes a descending curve. 
+\end{itemize}
+Within SS logistic selectivity for the primary gender (if selectivity varies by gender) is formulated as: 
+\begin{equation}
+	S_l = \frac{1.0}{1+exp(-ln(19)(L_l - p1)/p2)}
+\end{equation}
+where $L_l$ is the length bin.  If age based selectivity is selected then the length bin is replaced by the age vector. If gender specific selectivity is specified the non-primary gender the p1 and p2 parameters are estimated as offsets.  Note that with a large p2 parameter, selectivity may not reach 1.0 at the largest size bin.\\
+\\
+\underline{Pattern \#5 (size) - Mirror Selectivity}\\
+\indent Two parameters select the min and max bin number (not min max size) of the source pattern.  If first parameter has value <=0, then interpreted as a value of 1 (e.g. first bin).  If second parameter has value <=0, then interpreted as nlength (e.g. last bin). The source pattern must have a lower type number.\\
+\\
+\underline{Pattern \#6 (size) - Non-parametric selectivity}\\
+\indent Non-parametric size selectivity uses a set of linear segments.  The first waypoint is at Length = p1 and the last waypoint is at Length = p2.  The total number of waypoints is specified by the value of the Special factor in the selectivity set-up, so the N intervals is one less than the number of waypoints.  Intermediate waypoints are located at equidistant intervals between p1 and p2.  Parameters 3 to N are the selectivity values at the waypoints, entered as logistic, e.g. $1/(1+exp(-x))$.  Ramps from –10 to p3 if L<p1.  Constant at pN if L>p2.  Note that prior to version 3.03 the waypoints were specified in terms of bin number, rather than length.\\
+\\
+\underline{Pattern \#8 (size) and \#18 (age) - Double Logistic}\\
+\begin{itemize}
+		\item  p1 – PEAK:  size (age) for peak. Should be an integer and should be at bin boundary and not estimated.  But options 7 and 18 may allow estimation.
+		\item p2 – INIT:  selectivity at lengthbin=1 (minL) or age=0. 
+		\item p3 – INIT:  selectivity at lengthbin=1 (minL) or age=0. A logit transform $(1/(1+exp(-x))$ is used so that the transformed value will be between 0 and 1.  So a p1 value of –1.1 will be transformed to 0.25 and used to set the selectivity equal to 0.5 at a size (age) equal to 0.25 of the way between minL and PEAK.  (see SS3-selex.xls).
+		\item p4 – SLOPE1:  log(slope) of left side (ascending) selectivity.
+		\item p5 – FINAL:  logit transform for selectivity at maxL (or maxage).
+		\item p6 – INFL2:  logit transform for size(age) at right side selectivity equal to half way between PEAK+PEAKWIDTH and maxL (or max age).
+		\item p7 – SLOPE2:  log(slope) of right side (descending) selectivity
+		\item p8 – PEAKWIDTH:  in width of flattop.
+\end{itemize} 
+\underline{Pattern \#14 (age) - Revise Age}\\
+Age-selectivity pattern \#14 to allow selectivity-at-age to be the same as selectivity at the next younger age.  When using this option, the range on each parameter should be approximately -5 to 9 to prevent the parameters from drifting into extreme values with nil gradient. SS calculates the age-based selectivity as:
+\begin{equation}
+	\begin{split}
+			temp = 9 - max(p(1:(nages+1)))\\
+			S_a = \frac{1}{1+exp(-(p(a+1) + temp))}
+	\end{split}
+\end{equation}
+\\
+\underline{Pattern \#17 (age) - Random Walk}\\
+This selectivity pattern provides for a random walk in ln(selectivity).  In typical usage:
+\begin{itemize}
+	\item First parameter (for age 0) could have a value of -1000 so that the age 0 fish would get a selectivity of 0.0;
+	\item 	Second parameter (for age 1) could have a value of 0.0 and not be estimated, so age 1 is the reference age against which subsequent changes occur;
+	\item 	Next parameters get estimated values.  To assure that selectivity increases for the younger ages, the parameter min for these parameters could be set to 0.0 or a slightly negative value.
+	\item If dome-shaped selectivity is expected, then the parameters for older ages could have a range with the max set to 0.0 so they cannot increase further.
+	\item To keep selectivity at a particular age the same as selectivity at the next younger age, set its parameter value to 0.0 and not estimated.  This allows for all older ages to have the same selectivity.
+	\item 	To keep a constant rate of change in selectivity across a range of ages, use the -999 flag to keep the same rate of change in ln(selectivity) as for the previous age.
+\end{itemize}
+\begin{center}
+	\includegraphics{Selex17_RandomWalk}
+\end{center}
+
 
 
