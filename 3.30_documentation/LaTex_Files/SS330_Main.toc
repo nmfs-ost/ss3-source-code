@@ -71,3 +71,13 @@
 \contentsline {subsubsection}{\numberline {10.3.26}Selectivity and Discard}{80}{subsubsection.10.3.26}
 \contentsline {subsubsection}{\numberline {10.3.27}Selectivity Patterns}{82}{subsubsection.10.3.27}
 \contentsline {subsubsection}{\numberline {10.3.28}Selectivity Pattern Details}{84}{subsubsection.10.3.28}
+\contentsline {subsubsection}{\numberline {10.3.29}Retention}{94}{subsubsection.10.3.29}
+\contentsline {subsubsection}{\numberline {10.3.30}Discard Mortality}{94}{subsubsection.10.3.30}
+\contentsline {subsubsection}{\numberline {10.3.31}Male Selectivity}{95}{subsubsection.10.3.31}
+\contentsline {subsubsection}{\numberline {10.3.32}Reading the Selectivity and Retention Parameters}{96}{subsubsection.10.3.32}
+\contentsline {subsubsection}{\numberline {10.3.33}Tag Recapture Parameters}{98}{subsubsection.10.3.33}
+\contentsline {subsubsection}{\numberline {10.3.34}Variance Adjustment Factors}{98}{subsubsection.10.3.34}
+\contentsline {subsubsection}{\numberline {10.3.35}Lambdas (Emphasis Factors)}{100}{subsubsection.10.3.35}
+\contentsline {subsubsection}{\numberline {10.3.36}Controls for Variance of Derived Quantities}{101}{subsubsection.10.3.36}
+\contentsline {subsubsection}{\numberline {10.3.37}Time-Varying Parameter Options}{103}{subsubsection.10.3.37}
+\contentsline {subsubsection}{\numberline {10.3.38}Parameter Priors}{107}{subsubsection.10.3.38}

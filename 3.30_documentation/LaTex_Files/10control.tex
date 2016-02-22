@@ -1202,10 +1202,7 @@ The currently defined selectivity patterns, and corresponding required number of
 \end{center}
 
 \subsubsection{Selectivity Pattern Details}
-%\begin{description}
-%	\item[Pattern \#1 (size) - Logistic]\hfil\\
-%\end{description}
-\underline{Pattern \#1 (size) and \#12 (age) - Simple Logistic}\\
+\underline{Pattern \#1 (size) and \#12 (age) - Simple Logistic}
 \begin{itemize}
 	\item p1 - size/age at inflection
 	\item p2 - width for 95\% selection; a negative width causes a descending curve. 
@@ -1215,14 +1212,17 @@ Within SS logistic selectivity for the primary gender (if selectivity varies by 
 	S_l = \frac{1.0}{1+exp(-ln(19)(L_l - p1)/p2)}
 \end{equation}
 where $L_l$ is the length bin.  If age based selectivity is selected then the length bin is replaced by the age vector. If gender specific selectivity is specified the non-primary gender the p1 and p2 parameters are estimated as offsets.  Note that with a large p2 parameter, selectivity may not reach 1.0 at the largest size bin.\\
+\hfil
 \\
 \underline{Pattern \#5 (size) - Mirror Selectivity}\\
-\indent Two parameters select the min and max bin number (not min max size) of the source pattern.  If first parameter has value <=0, then interpreted as a value of 1 (e.g. first bin).  If second parameter has value <=0, then interpreted as nlength (e.g. last bin). The source pattern must have a lower type number.\\
+Two parameters select the min and max bin number (not min max size) of the source pattern.  If first parameter has value <=0, then interpreted as a value of 1 (e.g. first bin).  If second parameter has value <=0, then interpreted as nlength (e.g. last bin). The source pattern must have a lower type number.\\
+\hfil
 \\
 \underline{Pattern \#6 (size) - Non-parametric selectivity}\\
-\indent Non-parametric size selectivity uses a set of linear segments.  The first waypoint is at Length = p1 and the last waypoint is at Length = p2.  The total number of waypoints is specified by the value of the Special factor in the selectivity set-up, so the N intervals is one less than the number of waypoints.  Intermediate waypoints are located at equidistant intervals between p1 and p2.  Parameters 3 to N are the selectivity values at the waypoints, entered as logistic, e.g. $1/(1+exp(-x))$.  Ramps from –10 to p3 if L<p1.  Constant at pN if L>p2.  Note that prior to version 3.03 the waypoints were specified in terms of bin number, rather than length.\\
+Non-parametric size selectivity uses a set of linear segments.  The first waypoint is at Length = p1 and the last waypoint is at Length = p2.  The total number of waypoints is specified by the value of the Special factor in the selectivity set-up, so the N intervals is one less than the number of waypoints.  Intermediate waypoints are located at equidistant intervals between p1 and p2.  Parameters 3 to N are the selectivity values at the waypoints, entered as logistic, e.g. $1/(1+exp(-x))$.  Ramps from –10 to p3 if L<p1.  Constant at pN if L>p2.  Note that prior to version 3.03 the waypoints were specified in terms of bin number, rather than length.\\
+\hfil
 \\
-\underline{Pattern \#8 (size) and \#18 (age) - Double Logistic}\\
+\underline{Pattern \#8 (size) and \#18 (age) - Double Logistic}
 \begin{itemize}
 		\item  p1 – PEAK:  size (age) for peak. Should be an integer and should be at bin boundary and not estimated.  But options 7 and 18 may allow estimation.
 		\item p2 – INIT:  selectivity at lengthbin=1 (minL) or age=0. 
@@ -1232,7 +1232,9 @@ where $L_l$ is the length bin.  If age based selectivity is selected then the le
 		\item p6 – INFL2:  logit transform for size(age) at right side selectivity equal to half way between PEAK+PEAKWIDTH and maxL (or max age).
 		\item p7 – SLOPE2:  log(slope) of right side (descending) selectivity
 		\item p8 – PEAKWIDTH:  in width of flattop.
-\end{itemize} 
+\end{itemize}
+\hfil
+\\
 \underline{Pattern \#14 (age) - Revise Age}\\
 Age-selectivity pattern \#14 to allow selectivity-at-age to be the same as selectivity at the next younger age.  When using this option, the range on each parameter should be approximately -5 to 9 to prevent the parameters from drifting into extreme values with nil gradient. SS calculates the age-based selectivity as:
 \begin{equation}
@@ -1241,6 +1243,7 @@ Age-selectivity pattern \#14 to allow selectivity-at-age to be the same as selec
 			S_a = \frac{1}{1+exp(-(p(a+1) + temp))}
 	\end{split}
 \end{equation}
+\hfil
 \\
 \underline{Pattern \#17 (age) - Random Walk}\\
 This selectivity pattern provides for a random walk in ln(selectivity).  In typical usage:
@@ -1254,7 +1257,610 @@ This selectivity pattern provides for a random walk in ln(selectivity).  In typi
 \end{itemize}
 \begin{center}
 	\includegraphics{Selex17_RandomWalk}
+\end{center} 
+\hfil
+\\
+\underline{Pattern \#9 (size) and \#19 (age) - Simple Double Logistic with no defined peak}
+\begin{itemize}
+	\item p1 - INFL1:  ascending inflection size (in cm)
+	\item p2 – SLOPE1:  ascending slope
+	\item p3 – INFL2:  descending inflection size (in cm)
+	\item p4 – SLOPE2:  descending slope
+	\item p5 – first BIN: bin number for the first bin with non-zero selectivity (must be an integer bin number, not a size)
+	\item p6 – offset:  enter 0 if P3 is independent of P1; enter 1 if P3 is an offset from P1
+\end{itemize} 
+\hfil
+\\
+\underline{Pattern \#22 (size) - Double Normal with Plateau}
+\begin{itemize}
+	\item p1 – PEAK1:  beginning size for the plateau (in cm)
+	\item p2 – PEAK2:  ending size for the plateau.  Calculated as a fraction of the distance between PEAK1 and 99\% of the lower edge of the last size bin in the model.  Transformed as (1/(1+exp(-p2)).   So a value of 0 results in PEAK2 being halfway between PEAK1 and 99\% of the last bin
+	\item p3 – upslope:  ln(variance) on ascending side
+	\item p4 – downslope:  ln(variance) on descending side
+\end{itemize}
+\hfil
+\\
+\underline{Pattern\#23 (size) and \#24 (size) - Double Normal Selectivity}\\
+
+\begin{itemize}
+	\item p1 – PEAK:  beginning size for the plateau (in cm)
+	\item p2 – TOP:  width of plateau, as logistic between PEAK and MAXLEN
+	\item p3 – ASC-WIDTH:  parameter value is ln(width)
+	\item p4 – DESC-WIDTH:  parameter value is ln(width)
+	\item p5 – INIT:  selectivity at first bin, as logistic between 0 and 1.
+	\item p6 – FINAL: selectivity at last bin, as logistic between 0 and 1.  (for pattern \#24) or
+	\item p6 – FINAL: selectivity at last bin, as absolute value, so can be >1.0.  (for pattern \#23).  Warning:  Do not allow this value to go above 1.0 if the F\_method uses Pope’s approximation.  OK to go above 1.0 when F is in exponential form.  When this parameter is above 1.0, the overall selectivity pattern will have an intermediate plateau at 1.0 (according to peak and top), then will ascend further to the final value.	
+\end{itemize}
+\hfil
+\\
+Notes for Double Normal Selectivity:	
+\begin{itemize}
+		\item See spreadsheet SELEX-24.xls for parameterization example.
+		\item For the initial selectivity parameter (\#5)
+		\begin{itemize}
+			\item -999 or –1000:   ignore the initial selectivity algorithm and simply decay the small fish selectivity according to P3,
+			\item < -1000:  ignore the initial selectivity algorithm as above and then set selectivity equal to 1.0e-06 for size bins 1 through bin =  -1001 –value.  So a value of –1003 would set selectivity to a nil level for bins 1 through 2 and begin using the modeled selectivity in bin 3.
+		\end{itemize}
+		\item For the final selectivity parameter (\#6)
+		\begin{itemize}
+			\item -999 or –1000:   ignore the final selectivity algorithm and simply decay the large fish selectivity according to parameter \#4,
+			\item <-1000:  set selectivity constant for bins greater than bin number =  -1000 – value.
+		\end{itemize}
+\end{itemize}
+Selectivity pattern \#24, double normal, showing sub-functions and steep logistic joiners:
+\begin{center}
+	\includegraphics{DoubleNormal}
+\end{center} 
+\hfil
+\\
+\underline{Pattern \#15 (age) - Mirror}\\
+No parameters.  Whole age range is mirrored from a user-specified fleet.\\
+\hfil
+\\
+\underline{Pattern \#16 - Gaussian (similar to Coleraine)}
+\begin{itemize}
+	\item p1 – age below which selectivity declines
+	\item p2 – scaling factor for decline
+\end{itemize}
+\hfil
+\\
+\underline{Pattern \#9 (size) and \#19 (age) - Simple Double Logistic}
+\begin{itemize}
+	\item p1 – ascending inflection age/size
+	\item p2 – ascending slope
+	\item p3 – descending inflection age/size
+	\item p4 – descending slope
+	\item p5 – age or size at first selection; this is a specification parameter, so must not be estimated.  Enter integer that is age for pattern 19 and is bin number for pattern 9
+	\item p6 – (0/1)  where a value of 0 causes the descending inflection to be a standalone parameter, and a value of 1 causes the descending inflection to be interpreted as an offset from the ascending inflection.  This is a specification parameter, so must not be estimated.	
+\end{itemize}
+A value of 1.0e-6 is added to the selectivity for all ages, even those below the minage.\\
+\hfil
+\\
+\underline{Pattern \#25 (size) and \#26 (age) - Exponential logistic}
+\begin{itemize}
+	\item p1 – ascending rate, min: 0.02, max: 1.0, reasonable start value:  0.1
+	\item p2 – peak, as fraction of way between min size and max size.  Parameter min value:  0.01; max:  0.99; reasonable start value:  0.5
+	\item p2 – minsize + p2*(maxsize-minsize)
+	\item p3 – descending rate, min: 0.001, max: 0.5, reasonable start value:  0.01.  A value of 0.001 provides a nearly asymptotic curve.  Values above 0.2 provide strongly dome-shaped function in which the p3 and p1 parameters interact strongly.	
+\end{itemize}
+\begin{equation}
+	\frac{e^{p3*p1(p2'-size)}}{1-p3(1-e^{p1(p2'-size)})}
+\end{equation}
+Example: Exponential logistic selectivity with p1 = 0.30, p2 = 0.50, and p3 = 0.02:\\
+\begin{center}
+	\includegraphics{ExpLogistic}
+\end{center} 
+\hfil
+\\
+\underline{Pattern \#27 (size and age)- Cubic Spline}\\
+This selectivity pattern uses the ADMB implementation of the cubic spline function. This function requires input of the number of nodes, the positions of those nodes, the parameter values at those nodes, and the slope of the function at the first and last node.  In SS, the number of nodes is specified in the “special” column of the selectivity set-up.  The pattern number 27 is used to invoke cubic spline for size selectivity and for age selectivity; the input syntax is identical.\\
+\\
+For a 3 node setup, the SS input parameters would be:
+\begin{itemize}
+	\item p1 – 	code for initial set-up (0, 1 or 2) as explained below
+	\item p2 – 	gradient at the first node (should be a small positive value)
+	\item p3 – 	gradient at the last node (should be zero or a small negative value)
+	\item p4-p6 – the nodes in units of cm; must be in rank order and inside of the range of the population length bins.  These must be held constant (not estimated, e.g. negative phase value) during a model run.
+	\item  p7-p9 – the values at the nodes.  Units are ln(selectivity).  
+\end{itemize}
+\hfil
+\\
+Notes:
+\begin{itemize}
+	\item There must be at least 3 nodes.
+	\item One of these selectivity parameter values should be held constant so others are estimated relative to it.
+	\item Selectivity is forced to be constant for sizes greater than the size at the last node
+	\item The overall selectivity curve is scaled to have a peak equal to 1.0.
+	\item Terminal nodes cannot be at the min or max population length bins.	
+\end{itemize}
+
+Cubic spline selectivity is implemented within SS using the following code:\\
+\begin{center}
+	\includegraphics{CubicSplineCode}
+\end{center} 
+
+The figure below compares a 3 node and a 6 node cubic spline with a 2 parameter logistic function.  In fitting these functions, the 2 cubic spline approaches fit slightly better than the logistic, presumably because the data were slightly indicative of a small dome in selectivity.\\
+\begin{center}
+	\includegraphics{CubicSpline}
+\end{center} 
+\hfil
+\\
+Auto-Generation of Cubic Spline Control File Set-Up:\\
+A New SS feature pioneered with the cubic spline function is a capability to produce more specific parameter labels and to auto-generate selectivity parameter setup.  The auto-generation feature is controlled by the first selectivity parameter value for each fleet that is specified to use the cubic spline.  There are 3 possible values for this setup parameter:
+\begin{itemize}
+	\item 0: no auto-generation, process parameter setup as read.
+	\item 1: auto-generate the node locations based on the specified number of nodes and on the cumulative size distribution of the data for this fleet/survey.
+	\item 2: auto-generate the nodes and also the min, max, prior, init, and phase for each parameter.
+\end{itemize}	
+
+With either the auto-generate option \#1 or \#2, it still is necessary to include in the parameter file placeholder rows of values so that the init\_matrix command can input the current number of values because all selectivity parameter lines are read as a single matrix dimensioned as N parameters x 14 columns.  The read values of min, max, init, prior, prior type, prior stddev, and phase will be overwritten.
+
+Cumulative size and age distribution is calculated for each fleet, summing across all samples and both genders.  These distributions are output in echoinput.sso and in a new OVERALL\_COMPS section of report.sso.
+
+When the nodes are auto-generated, the first node is placed at the size corresponding to the 2.5\% percentile of the cumulative size distribution, the last is placed at the 97.5\% percentile of the size distribution, and the remainder are placed at equally spaced percentiles along the cumulative size distribution.  These calculated node values are output into control.ss\_new.  So, the user could extract these nodes from control.ss\_new, edit them to desired values, then, insert them into the input control file.  Remember to turn off auto-generation in the revised control file.
+
+When the complete auto-generation is selected, the control.ss\_new would look like the table below. 
+
+\begin{center}
+	\begin{longtable}{p{1cm} p{1cm} p{1cm} p{1cm} p{1.75cm} p{1cm} p{1.2cm} p{1cm} p{3.8cm}}
+		\#LO & HI & INIT & PR & PR\_TYPE & SD & PHASE &  ... & \#Label \\
+		\hline
+		     0 &     2 &   2.0 & 0 & -1 & 0     & -99 & 0 & \#SizeSpline Code\\
+		-0.001 & 	 1 &  0.13 & 0 &  1 & 0.001 & 	3 & 0 & \#SizeSpline GradLo\\
+			-1 & 0.001 & -0.03 & 0 &  0 & 0.001 & 	3 & 0 & \#SizeSpline GradHi\\
+			11 & 	95 & 	38 & 0 & -1 & 	  0 & -99 & 0 & \#SizeSpline Knot1\\
+			11 & 	95 & 	59 & 0 & -1 &     0 & -99 & 0 & \#SizeSpline Knot2\\
+		    11 & 	95 & 	74 & 0 & -1 & 	  0 & -99 & 0 & \#SizeSpline Knot3\\
+			-9 & 	 7 & 	-3 & 0 &  1 & 0.001 & 	2 & 0 & \#SizeSpline Value1\\
+			-9 &   	 7 & 	-1 & 0 & -1 & 0.001 &  99 & 0 & \#SizeSpline Value2\\
+			-9 & 	 7 & -0.78 & 0 &  1 & 0.001 & 	2 & 0 & \#SizeSpline Value3\\
+		\hline		
+	\end{longtable}
+\end{center}
+\hfil\\
+\underline{Survey Pattern \#34 - Depletion}\\
+This option allows a specified degree of stock depletion (in terms of spawning biomass) to be entered as the ratio of current year’s spawning biomass relative to Bzero.  With this option, it is not necessary or reasonable to estimate the Q for this fleet, but you must set ln(Q) = 0.0 as a fixed value for absolute abundance.  Also, if this option is used, then automatic adjustments to phase and lambda are made such that:
+
+\begin{itemize}
+	\item all parameter phases are adjusted by +1 so that only R0 is active in phase 1
+	\item all lambdas are set to 0 in phase 1, except the lambda for this depletion survey.  Internally, the flag "depletion\_fleet" is turned on (= to the index of that fleet) if there is a fleet with selex = \#34
+\end{itemize}
+  
+Essentially, these automated features cause SS to mimic DB-SRA in phase 1.  If the model is only run through phase 1, then this will be the final result.  Alternatively, use of this option could just be used to get the R0 parameter into a reasonable range before proceeding to estimate other parameters.  The lambda for the depletion survey could remain at 1.0 for the entire model run, or it could be reduced in later phases to prevent influencing final model results.
+
+\subsubsection{Retention}
+Retention is defined as a logistic function of size.  It does not apply to surveys.  Four parameters are used:
+\begin{itemize}
+	\item p1 – inflection
+	\item p2 – slope
+	\item p3 – asymptotic retention (often a time-varying quantity to match the observed amount of discard)
+	\item p4 – male offset to inflection (arithmetic, not multiplicative)
+\end{itemize}
+\begin{equation}
+	Retention = \frac{P3}{1 + e^{\frac{-(L-(P1+P4*male))}{P2}}}
+\end{equation}
+
+\subsubsection{Discard Mortality}
+Discard mortality is defined as a logistic function of size such that mortality declines from 1.0 to an asymptotic level as fish get larger.  It does not apply to surveys and it does not affect the calculation of expected values for discard data.   It is applied so that the total mortality rate is:\\
+\begin{center}
+	deadfish = selex * (retain + (1.0-retain)*discmort)
+\end{center}
+If discmort is 1.0, all selected fish are dead; if discmort is 0.0, only the retained fish are dead.
+
+Four parameters are used:
+\begin{itemize}
+	\item p1 – inflection
+	\item p2 – slope
+	\item p3 – asymptotic mortality
+	\item p4 – male offset to inflection (arithmetic, not multiplicative)
+\end{itemize}
+
+Discard mortality is calculated as:
+\begin{equation}
+	Mortality = 1 - \frac{1-P3}{1+e^{\frac{-(L-(P1+P4*male))}{P2}}}
+\end{equation}
+
+\subsubsection{Male Selectivity}
+There are two approaches to specifying gender specific selectivity.  One approach allows male selectivity to be specified as a fraction of female selectivity (or vice versa).  This first approach can be used for any selectivity pattern.  The other option allows for separate selectivity parameters for each gender plus an additional parameter to define the scaling of one gender’s peak selectivity relative to the other gender’s peak.  This second approach has only been implemented for a few selectivity patterns.\\
+\\
+Approach \#1:\\
+If the “domale” flag is set to 1, then the selectivity parameters define female selectivity and the offset defined below sets male selectivity relative to female selectivity.  The two genders switch roles if the “domale” flag is set to 2.  Generally it is best to select the option so that the dependent gender has lower selectivity, thus obviating the need to rescale for selectivities that are greater than 1.0.  Gender specific selectivity is done the same way for all size and age selectivity options.
+\begin{itemize}
+	\item P1 – size (age) at which a dogleg occurs (set to an integer at a bin boundary and do not estimate)
+	\item P2 – log(relative selectivity) at minL or age=0.  Typically this will be set to a value of 0.0 (for no offset) and not estimated.  It would be a rare circumstance in which the youngest/smallest fish had gender-specific selectivity.
+	\item P3 – log(relative selectivity) at the dogleg
+	\item P4 – log(relative selectivity) at maxL or max age.
+\end{itemize}
+
+For intermediate ages, the log values are linearly interpolated on size (age).
+
+If selectivity for the dependent gender is greater than the selectivity for the first gender (which always peaks at 1.0), then the male-female selectivity matrix is rescaled to have a maximum of 1.0.\\
+\\
+Approach \#2:\\
+A new gender selectivity option (3 or 4) has been implemented for size selectivity patterns 1 (logistic) and 23 and 24 (double normal) or age selectivity pattern 20 (double normal age).  Rather than calculate male selectivity as an offset from female selectivity, here the male selectivity is calculated by making the male parameters an offset from the female parameters (option 3), or females are offset from males with option 4.  The description below applies to option 3. If the size selectivity pattern is 1 (logistic), then read 3 parameters:
+\begin{itemize}
+	\item male parm 1 is added to the first selectivity parm (inflection)
+	\item male parm 2 is added to the second selectivity parm (width of curve)
+	\item male parm 3 is the asymptotic selectivity
+\end{itemize}
+
+If the size selectivity pattern is 20, 23 or 24 (double normal), then:
+\begin{itemize}
+	\item male parm 1 is added to the first selectivity parm (peak)
+	\item male parm 2 is added to the third selectivity parm (width of ascending side); then exp(this sum) per previous transform
+	\item male parm 3 is added to the fourth selectivity parm (width of descending side); then exp(sum) per previous transform
+	\item male parm 4 is added to the sixth selectivity parm (selectivity at final size bin); then 1/(1+exp(-sum)) per previous transform
+	\item male parm 5 is the apical selectivity for males
+\end{itemize}
+
+Note that the male selectivity offsets currently cannot be time-varying (need to check on this).  Because they are offsets from female selectivity, they inherit the time-varying characteristics of the female selectivity.
+
+\subsubsection{Reading the Selectivity and Retention Parameters}
+Read the required number of parameter setup lines as specified by the definition lines above.  The complete order of the parameter setup lines is:
+\begin{enumerate}
+	\item Size selectivity for fishery 1
+	\item Retention for fishery 1
+	\item Male offsets for size selectivity for fishery 1
+	\item <repeat for additional fleets and surveys>
+	\item Age selectivity for fishery 1
+	\item Male offsets for age selectivity for fishery 1
+	\item <repeat for additional fleets and surveys>.
+\end{enumerate}
+
+The time-varying options for selectivity parameters are identical to the time-varying options for biology parameters.  These options are described below in the Time-Varying Parameter Options section.  After reading the selectivity parameters, which will include possible instructions to create environmental link, blocks, or dev vectors, then read the following section.  Note that all inputs in this section are conditional (COND) on entries in the selectivity parameter section.  So if no selectivity parameters invoke any time-varying properties, this section is left blank (or completely commented out with \#).
+
+\begin{center}
+	\begin{longtable}{p{2cm} p{1cm} p{4cm} p{8cm}}
+		Value & & Label & Description\\
+		\hline
+		\endfirsthead
+	
+	Value & & Label & Description\\
+		\hline
+		\endhead
+
+		\endfoot
+	
+		\endlastfoot
+			
+			%Value & & Label & Description \\
+			COND &  & & If any selectivity parameters use environmental linkage, then read next line and associated parameter line(s).\\
+			     & 0 & Custom Environmental Linkage	& \\
+			\hline
+			COND &  & & If custom=0, then read one parameter line below and apply to all env functions;
+			If custom>0, then read a setup line for each SEL-parm with Env-var>0. Note that control.ss\_new will write out with custom=1 so it can write all the parameter values.\\
+			\hline
+			\multicolumn{4}{l}{Enter proper number of short set-up lines (0, 1, several) for the SEL-parm environmental}\\
+			\multicolumn{4}{l}{linkages.  Each line will have 7 values:  LO, HI, INIT, PRIOR, PR\_type, SD, PHASE.}\\
+			\hline
+			COND & & & If any selectivity parameters use time blocks, then read next line and associated parameter line(s). \\
+			     & 0 & Custom block setup & If custom=0, then read one setup and apply to all Block fxns;
+			     If custom>0, then read a setup line for each SEL-parm with Block>0.  \\
+			\hline
+			\multicolumn{4}{l}{Enter proper number of short set-up lines (0, 1, several) for the SEL-parm block linkages.}\\ 
+			\multicolumn{4}{l}{Each line will have 7 values:  LO, HI, INIT, PRIOR, PR\_type, SD, PHASE.} \\
+			\hline
+			COND &  & & If any selectivity parameters use annual devs, then read  value\\     
+			     & -4 & Selparm dev phase & Phase in which selparm devs, if any, are estimated. \\
+			\hline
+			COND &  & & If any selectivity parameters use environmental links, blocks or annual devs, then read value.\\
+			     & 2 & Selparm Adjust Method & 1 = parameter adjustments for env, block and dev are applied directly and resulting value is not compared to base parameter bounds\\
+			     &   & & 2 = parameter adjustments use a logistic transformation to assure that adjusted parameter value stays within bounds of base parameter.\\
+			\hline			     						
+	\end{longtable}
 \end{center}
 
+\subsubsection{Tag Recapture Parameters}
+Specify if tagging data are being used:
+\begin{center}
+	\begin{longtable}{p{0.75cm} p{0.75cm} p{0.75cm} p{1.25cm} p{1.75cm} p{1cm} p{1.5cm} p{0.75cm} p{4.5cm}}
+		
+		\multicolumn{3}{l}{Value} &  \multicolumn{3}{l}{Label} & \multicolumn{3}{l}{Description}\\
+		\hline
+		\multicolumn{3}{l}{1} &  \multicolumn{3}{l}{Tagging Data Present} & \multicolumn{3}{l} {0 = no read}\\
+		\multicolumn{3}{l}{} &  \multicolumn{3}{l}{} & \multicolumn{3}{l} {1 = read following lines}\\
+		\\
+		\multicolumn{8}{l}{COND = 1}\\
+		\#LO & HI & INIT & PRIOR & PR\_TYPE& SD & PHASE & ... & LABEL\\
+		\hline
+		-10 & 10 & 9 & 9 & 1 & 0.001 & -4 & 0 & \#TG loss init 1\\
+		-10 & 10 & 9 & 9 & 1 & 0.001 & -4 & 0 & \#TG loss init 2\\
+		-10 & 10 & 9 & 9 & 1 & 0.001 & -4 & 0 & \#TG loss init 3\\
+		-10 & 10 & 9 & 9 & 1 & 0.001 & -4 & 0 & \#TG loss chronic1\\
+		-10 & 10 & 9 & 9 & 1 & 0.001 & -4 & 0 & \#TG loss chronic2\\
+		-10 & 10 & 9 & 9 & 1 & 0.001 & -4 & 0 & \#TG loss chronic3\\
+		  1 & 10 & 2 & 2 & 1 & 0.001 & -4 & 0 & \#TG loss overdisperion1\\
+		  1 & 10 & 2 & 2 & 1 & 0.001 & -4 & 0 & \#TG loss overdisperion2\\
+		  1 & 10 & 2 & 2 & 1 & 0.001 & -4 & 0 & \#TG loss overdisperion3\\
+		-10 & 10 & 9 & 9 & 1 & 0.001 & -4 & 0 & \#TG report fleet1\\
+		-10 & 10 & 9 & 9 & 1 & 0.001 & -4 & 0 & \#TG report fleet2\\
+		 -4 &  0 & 0 & 0 & 0 &     2 & -4 & 0 & \#TG report decay1\\
+		 -4 &  0 & 0 & 0 & 0 &     2 & -4 & 0 & \#TG report decay2\\
+		 \hline
+	\end{longtable}
+\end{center}
 
+The tagging reporting rate parameter is transformed within SS during estimation to maintain a positive value and is reported according to the transformation:
+\begin{equation}
+	Tagging\_Reporting\_Rate = \frac{e^{input\_parameter}}{1+e^{input\_parameter}}
+\end{equation}
+
+\subsubsection{Variance Adjustment Factors}
+When doing iterative reweighting of the input variance factors, it is convenient to do this in the control file, rather than the data file.  This section creates that capability. 
+\begin{center}
+	\begin{longtable}{p{2.75cm} p{2.75cm} p{2.75cm} p{2.75cm} p{3.5cm}}
+		
+		Value & Description & & Options & \\
+		\hline
+		1 & \multicolumn{2}{l}{Variance Adjustment Factors } & \multicolumn{2}{l}{0 = none, 1 = read table}\\
+		\\
+		\multicolumn{5}{l}{There are six rows and a value for each Fleet \& Survey on each row.}\\
+		\\
+		Fleet/Survey 1 & Fleet/Survey 2 & Fleet/Survey 3 & Fleet/Survey 4 & Label \\
+		\hline
+		0 & 0 & 0 & 0 & \#Survey CV\\
+		0 & 0 & 0 & 0 & \#Discard CV\\
+		0 & 0 & 0 & 0 & \#Mean BodyWght SD\\
+		1 & 1 & 1 & 1 & \#Length Comp\\
+		1 & 1 & 1 & 1 & \#Age Comp\\
+		1 & 1 & 1 & 1 & \#Size-at-Age\\
+		\hline		
+	\end{longtable}
+\end{center} 
+
+\begin{description}
+	\item[Survey CV]\hfil\\  
+	The survey input variance (labeled survey CV) is actually the standard deviation of the ln(survey).  The variance adjustment is added directly to this standard deviation.  Set to 0.0 for no effect.  Negative values are OK, but will crash if adjusted value becomes negative.
+	\item[Discard]\hfil\\  
+	The input variance is the CV of the observation.  Because this will cause observations of near zero discard to appear overly precise, the variance adjustment is added to the discard standard deviation, not to the CV.  Set to 0.0 for no effect.
+	\item[Mean Body Weight]\hfil\\ 
+	The input variance is in terms of the CV of the observation.  Because such data are typically not very noisy, the variance adjustment is added to the CV and then multiplied by the observation to get the adjusted standard deviation of the observation.
+	\item[Length Composition]\hfil\\  
+	The input variance is in terms of an effective sample size.  The variance adjustment is multiplied times this sample size.  Set variance adjustment to 1.0 for no effect.
+	\item[Age Composition]\hfill\\
+	Age composition is treated the same way as length composition.
+	\item[Size-at-Age]\hfill\\
+	Size-at-age input variance is the sample size for the N observations at each age.  The variance adjustment is multiplied times these N values. Set to 1.0 for no effect.
+	\item[Usage Notes]\hfill
+	\begin{itemize}
+		\item The report.sso output file contains information useful for determining if an adjustment of these input values is warranted to better match the scale of the average residual to the input variance scale.
+		\item Because the actual input variance factors are modified, it is these modified variance factors that are used when creating parametric bootstrap data files.  So, the control files used to analyze bootstrap generated data files should have the variance adjustment factors reset to null levels.
+	\end{itemize}	
+\end{description}
+
+\subsubsection{Lambdas (Emphasis Factors)}
+These values are multiplied by the corresponding likelihood component to calculate the overall negative log likelihood to be minimized.
+
+\begin{center}
+	\begin{tabular}{p{2cm} p{14cm}}
+		Value & Description \\
+		\hline
+		4 & Max\_lambda\_phase: read this number of lambda values for each element below.  The last lambda value is used for all higher numbered phases.\\
+		1 & sd\_offset; value=0 causes log(like) to omit the +log(s) term; value=1 causes log(like) to include the log(s) term for CPUE, discard, meanbodywt, recruitment deviations. \\
+		\hline 	
+	\end{tabular}
+\end{center}
+
+\begin{description}
+	\item[Usage Note:]\hfil\\
+	If the CV for size-at-age is being estimated and the model contains mean size-at-age data, then the flag for inclusion of the +log(stddev) term in the likelihood must be included.  Otherwise, the model will always get a better fit to the mean size-at-age data by increasing the parameter for CV of size-at-age.	
+\end{description}
+	
+The reading of the lambda values has been substantially altered with SS\_v3.  Instead of reading a matrix containing all the needed lambda values, SS now just reads those elements that will be given a value other than 1.0.  After reading the datafile, SS sets lambda equal to 0.0 if there are no data for a particular fleet/data type, and a value of 1.0 if data exist.  So beware if your data files had data but you had set the lambda to 0.0 in a previous version of SS.  First read an integer for the number of changes.
+
+\begin{center}
+	\begin{longtable}{p{3cm} p{3cm} p{2cm} p{3cm} p{3cm}}
+		\hline
+		3 & \multicolumn{4}{l}{\#Number of changes to make to default lambdas (default value is 1.0)}\\
+		\multicolumn{5}{l}{\#Then read that number of lines containing the change information:}\\
+		\#Component & Fleet/Survey & Phase & Lambda & SizeFreq Method \\
+		\hline
+		1 & 2 & 2 & 1.5 & 1 \\
+		4 & 2 & 2 & 10 & 1 \\
+		4 & 2 & 3 & 0.2 & 1 \\
+		\hline
+	\end{longtable}
+\end{center}
+The codes for component are:\\
+	1 = survey; 2 = discard; 3 = mean weight; 4 = length; 5 = age; 6 = size frequency; 7 = size-at-age; 8 = catch; 9 = initial equilibrium catch; 10 = recruitment deviations; 11 = parameter priors; 12 = parameter deviations; 13 = crash penalty; 14 = morph composition; 15 = tag composition; 16 = tag negbin.
+\\
+\\
+On output to control.ss\_new, the full table is written:
+\begin{center}
+	\begin{longtable}{p{2cm} p{2cm} p{2cm} p{2cm} p{5cm}}
+		\multicolumn{5}{l}{\#Lambdas (for information only; columns are phases)}\\
+		\hline
+		\# 0 & 0 & 0 & 0 & \#CPUE/survey: 1\\
+		\# 1 & 1.5 & 1.5 & 1.5 & \#CPUE/survey: 2\\
+		\# 1 & 1 & 1 & 1 & \#CPUE/survey: 3\\
+		\# 1 & 1 & 1 & 1 & \#lencomp: 1\\
+		\# 1 & 10 & 2 & 2 & \#lencomp: 2\\
+		\# 0 & 0 & 0 & 0 & \#lencomp: 3\\
+		\# 1 & 1 & 1 & 1 & \#agecomp: 1\\
+		\# 1 & 1 & 1 & 1 & \#agecomp: 2\\
+		\# 0 & 0 & 0 & 0 & \#agecomp: 3\\
+		\# 1 & 1 & 1 & 1 & \#size-at-at-age: 1\\
+		\# 1 & 1 & 1 & 1 & \#size-at-at-age: 2\\
+		\# 0 & 0 & 0 & 0 & \#size-at-at-age: 3\\
+		\# 1 & 1 & 1 & 1 & \#init\_equil\_catch \\
+		\# 1 & 1 & 1 & 1 & \#recruitments \\
+		\# 1 & 1 & 1 & 1 & \#parameter priors\\
+		\# 1 & 1 & 1 & 1 & \#parameter dev vectors\\
+		\# 1 & 1 & 1 & 1 & \#crash penalty lambda\\
+		\hline		
+	\end{longtable}
+\end{center}
+  
+\subsubsection{Controls for Variance of Derived Quantities}
+Add option to get variance estimates for one selectivity pattern and for size-at-age.  At the end of the control file, just before the "999", add:
+\begin{center}
+	\begin{longtable}{p{1cm} p{1.2cm} p{1.2cm} p{1.2cm} p{1.2cm} p{1.2cm} p{1.5cm} p{1.5cm} p{1.8cm}}
+		\hline
+		1 & \multicolumn{8}{l}{0 = no additional std dev reporting, 1 = read values}\\
+		\multicolumn{2}{l}{COND > 0} & \multicolumn{7}{l}{If the above value is "0", then do not include any more entries.}\\ 
+		  & & \multicolumn{7}{l}{If the above value is "1", then read 9 more integers:}\\
+		\#Fleet & Len/Age & Year & Nselex Bins & Growth Pattern & Ngrowth Areas & Area for Natage & Year for Natage & N ages to report\\
+		\hline
+		1 & 1 & -1 & 7 & 1 & 5 & -1 & -1 & 5\\
+		\hline
+	\end{longtable}
+\end{center}
+
+Where:
+\begin{itemize}
+	\item FLEET:  is the index of the fleet to be output.  A value of zero causes there to be no selectivity variance output;
+	\item LEN/AGE:  enter "1" to select length selex or "2" to select age selectivity.  There is no option to get the combined age selectivity that incorporates the size selectivity;
+	\item YEAR:  enter a value for the selected year, or enter -1 to get the selectivity in the end year
+	\item 	N Selectivity bins:  enter the number of bins for which selectivity will be output.  This number controls the number of items to be read below, even if the FLEET is set to zero.  In other words, the read occurs even if the effect of the read is disabled.
+	\item GROWTH PATTERN:  growth pattern is the number of the growth pattern to be output.  Enter "0" to get no variance output for size-at-age.   Note that in a multiple season model, SS will output the size-at-age for the last birth season that gets any recruits within the year.  Also, if growth parameters are not estimated, then stddev output of mean size-at-age is disabled.
+	\item 	N growth bins:  Number of ages for which size-at-age variance is requested.  This number controls the number of items to be read below, even if the growth pattern selection is set to zero.   In other words, the read occurs even if the effect of the read is disabled.
+	\item 	Area:  specifies the area for which output of numbers at age is requested.  A value of 0 disables this output.  A value of -1 requests that numbers-at-age be summed across all areas.  In all cases, numbers-at-age is summed across all growth patterns and sub-morphs and output for each gender.
+	\item 	Year:  specifies the year for which numbers-at-age are output.  A value of -1 requests output for year equal to endyear+1, hence the year that starts the forecast period.
+	\item N numbers-at-age bins:  as with the N growth bins. 
+\end{itemize}
+For size selex, these are population bin numbers.  For age selex, they refer directly to age.  Entering a negative value for the first bin causes SS to self-generate an evenly spaced set. 
+
+\begin{center}
+	\begin{tabular}{p{4cm} p{12cm}}
+		\hline
+		5 10 16 22 27 38 46 & \#Vector with selex std bin picks (-1 in first bin to self generate)\\
+		\hline
+	\end{tabular}
+\end{center}
+If the number of growth bins to be output is >0, then read a vector of ages to be output.  Entering a negative value for the first bin causes SS to self-generate a set that begins at AFIX, ends at Nages, and is denser at younger ages.
+\begin{center}
+	\begin{tabular}{p{4cm} p{12cm}}
+		\hline
+		1 2 14 26 40 & \#Vector with growth std bin picks (-1 in first bin to self generate)\\
+		\hline
+	\end{tabular}
+\end{center}
+If the number of numbers-at-age bins to be output is >0, then read a vector of ages to be output.  Entering a negative value for the first bin causes SS to self-generate a set that begins at 1, ends at Nages, and is denser at younger ages.
+\begin{center}
+	\begin{tabular}{p{4cm} p{12cm}}
+		\hline
+		1 2 14 26 40 & \#Vector with n-at-age std bin picks (-1 in first bin to self generate)\\
+		\hline
+	\end{tabular}
+\end{center}
+
+\begin{center}
+	\begin{longtable}{p{1cm} p{1cm} p{1cm} p{1cm} p{1cm} p{1cm} p{1cm} p{1cm} p{1cm} p{3.5cm}}
+		\multicolumn{10}{l}{So a complete input looks like:}\\
+		\hline
+		1 & & \multicolumn{8}{l}{\# 0 = no additional input, 1 = read stdev reporting lines}\\
+		\multicolumn{10}{l}{COND > 0}\\
+		& 1 & 1 & -1 & 5 & 1 & 5 & 1 & -1 & 5 \\
+		& 5 & 16 & 27 & 38 & 46 & \multicolumn{4}{l}{\#Vector with selex std bin picks}\\ 
+		& 1 & 2 & 14 & 26 & 40 & \multicolumn{4}{l}{\#Vector with growth std bin picks}\\ 
+		& 1 & 2 & 14 & 26 & 40 & \multicolumn{4}{l}{\#Vector with n-at-age std bin picks}\\ 
+		\hline
+		\\
+		\\
+		\multicolumn{10}{l}{End Control File Input}\\
+		\bfseries{999} & \multicolumn{9}{l}{\#End of file}
+	\end{longtable}
+\end{center}
+
+\subsubsection{Time-Varying Parameter Options}
+Biology parameters and selectivity parameters can vary over time.  There are four options for time-varying parameters:  blocks, trends, environmental linkage, and annual deviations.  
+
+Elements 8 through 14 of the full parameter lines are used to setup the time-varying properties.  If any parameter of the biology section is made to be time-varying, then one or more conditional inputs at the end of the biology section (or end of the selectivity section) will need to be turned on, and one or more parameter lines will need to be inserted to contain the parameter linkages and offsets that have been selected.  This is done separately for the block of biology parameters and then for the selectivity parameters.
+
+With version SS v3, the options for time-varying parameters have been expanded to include more additive effects.  This is because it is not logical for a parameter whose range spans 0.0 to have a time-varying effect defined in a multiplicative way.  This is especially true for those parameters that are exponentiated as they are being used.  For example, the parameters that define the allocation of recruitment among areas and seasons should be made time-varying only through an additive function.
+The order in which time-varying effects are calculated is:  first blocks or trends, then environmental effects, then annual deviations. 
+
+All time-varying options work on an annual time step, so in a multi-season model the parameters remain constant for the entire year.  The exception is for the select biology parameters that have a separate capability to vary seasonally.
+
+If the parameter adjustment method is set to a value of 2, then each parameter time-varying adjustments has an intermediate logistic transformation so the adjusted parameter stays within the min-max bounds of the parameter being adjusted.  With this method, multiplicative adjustments are not implemented and the additive adjustments are in the domain of the logistic transformed base parameter.  So, the adjustment coefficients will not have intuitive values.
+
+The available options for time-varying parameters are described below:
+\begin{itemize}
+	\item Env Var - Element 8 in parameter setup
+		\begin{itemize}
+			\item >0: multiplicative
+			\item <0: additive
+			\item abs(value): environmental index
+		\end{itemize}
+	\item Use Dev - Element 9 in parameter setup
+	\begin{itemize}
+		\item 1: multiplicative
+		\item 2: additive
+		\item 3: additive random walk
+	\end{itemize}
+	\item Dev minyr - Element 10 in parameter setup
+	\begin{itemize}
+		\item Year for deviations to start for parameter
+	\end{itemize}
+	\item Dev maxyr - Element 11 in parameter setup
+		\begin{itemize}
+			\item Year for deviations to end for parameter
+		\end{itemize}
+	\item Dev StdDev - Element 12 in parameter setup
+		\begin{itemize}
+			\item Standard deviation for deviations 
+		\end{itemize}
+	\item Blocks - Element 13 in parameter setup
+		\begin{itemize}
+			\item >0: block index for parameter
+			\item <0: trend
+		\end{itemize}
+	\item Block Functional Form: Element 14 in parameter setup
+		\begin{itemize}
+			\item 0: multiplicative
+			\item 1: additive
+			\item 2: replace
+			\item 3: random walk
+		\end{itemize}
+\end{itemize}
+\begin{center}
+	\begin{longtable}{p{2cm} p{2cm} p{2cm} p{2cm} p{2cm} p{2.25cm} p{1.75cm}}
+		\multicolumn{7}{l}{Example of location for specifying time-varying parameters}\\
+		\hline
+		Env Var & Use Dev & Dev Minyr & Dev Maxyr & Dev StDev & Blocks & Block Fxn\\
+		\hline
+		>0: mult & 1:mult & 1973 & 1985 & 0.40 & block index & 0:mult\\
+		\hline
+	\end{longtable}
+\end{center}
+\begin{center}
+	\includegraphics{TimeVarying}
+\end{center} 
+\begin{center}
+	\begin{longtable}{p{2.5cm} p{13cm}}
+		\hline
+		ENV & A positive value, g, causes SS to set the annual working value of this parameter equal to a multiplicative function of Environmental Variable\\
+		    & \multicolumn{1}{c}{g:parm’(y) = parm * exp(link * env(y,g))} \\
+			& A negative value, g, causes SS to set the annual working value of this parameter equal to a additive function of Environmental Variable g:\\
+		    & \multicolumn{1}{c}{parm’(y) = parm + link * env(y,-g)}\\
+			& Where, link is the environmental link parameter, parm is the base parameter being adjusted, parm’ is the value after adjustment, and env(y,-g) is the value of the environmental input g in year y. SS counts the number of parameters that invoke use of an Environmental Variable.  After SS finishes reading the section’s parameter lines, it then creates/reads additional short parameter line(s) to set up the link parameters.  If custom=0, then one short parameter line is used to define the min, max, init, etc, for each of the link parameters.  If custom=1, then a separate line is read for each.\\
+		\hline
+		Use\_Dev & A value of 1 invokes multiplicative:  parm’(y) = parm * exp(dev(y))\\
+			& A value of 2 invokes additive:  parm’(y) = parm + dev(y)\\
+			& A value of 3 invokes additive random walk:  parm’(y) = parm’(y-1) + dev(y)\\
+		    & The vector of devs is simply a vector of offsets; there is no inherent sum to zero constraint.  However, the fact that they are each penalized by the DEV std.dev. below will tend to make them sum towards 0.0.\\
+		\hline
+		Dev min yr & Beginning year for the dev vector for this parameter\\
+		\hline
+		Dev max yr & Ending year for the dev vector for this parameter\\
+		\hline
+		Dev Std Dev. & Standard deviation for elements in the dev vector for this parameter \\
+		\hline
+		Use Block & Block: A positive value identifies which block pattern will be used for time changes to a parameter value.  Block patterns are simply numbered sequentially as they are defined near the top of the control file, so the index here must be correct for the order in which they are defined.  More than one parameter can use the same block definition.  The order of generated block parameters is by the order of the parameters that call for creation of the block parameters, then by the order of the blocks within that pattern. \\
+				  & Trend:  A negative value for the Use\_Block input causes SS to create a parameter time trend instead of blocks.  This time trend requires 3 parameters (instead of the normal one parameter per block).  The base parameter is the value for the adjusted parameter in year = start year.  For subsequent years, the three parameters define a normal distribution of change over time:\\
+				  & P1:  parameter value for year = end year.  Either as logistic offset from base P (if Use\_Block=-1), or as direct usage (if Use\_Block=-2)\\
+				  & P2:  inflection year;  if HI value for the base parameter is >1.1, then use as year, else use as fraction of range styr - endyr\\
+				  & P3:  width of change (units of std.dev. of years)\\
+		\hline
+		Block Type & This selects the way in which the block parameter creates an offset from the base parameter. \\
+				   & 0 means that parm’ = baseparm * exp(blockparm)\\
+				   & 1 means that parm’ = baseparm + blockparm\\
+				   & 2 means that parm’ = blockparm\\
+				   & 3 means that parm’ = is additive offset from previous block.  Note that blocks must be contiguous to use this option properly.\\
+		\hline									
+	\end{longtable}
+\end{center}
+
+\subsubsection{Parameter Priors}
+Priors on parameters fulfill two roles in SS.  First, for parameters provided with an informative prior, SS is receiving additional information about the true value of the parameter.  This information works with the information in the data through the overall logL function to arrive at the final parameter estimate.  Second, diffuse priors provide only weak information about the value of a prior and serve to manage model performance during execution.  For example, some selectivity parameters may become unimportant depending upon the values of other parameters of that selectivity function.  In the double normal selectivity function, the parameters controlling the width of the peak and the slope of the descending side become redundant if the parameter controlling the final selectivity moves to a value indicating asymptotic selectivity.  The width and slope parameters would no longer have any effect on the logL, so they would have no gradient in the logL and would drift aimlessly.  A diffuse prior would then steer them towards a central value and avoid them crashing into the bounds.  Another benefit of diffuse priors is the control of parameters that are given unnaturally wide bounds.  When a parameter is given too broad of a bound, then early in a model run it could drift into this tail and potentially get into a situation where the gradient with respect that parameter approaches zero even though it is not at its global best value.  Here the diffuse prior helps move the parameter back towards the middle of its range where it presumably will be more influential and estimable.  The options for parameter priors are:
 
