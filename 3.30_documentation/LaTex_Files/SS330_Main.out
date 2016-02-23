@@ -80,3 +80,16 @@
 \BOOKMARK [3][-]{subsubsection.10.3.36}{Controls for Variance of Derived Quantities}{subsection.10.3}% 80
 \BOOKMARK [3][-]{subsubsection.10.3.37}{Time-Varying Parameter Options}{subsection.10.3}% 81
 \BOOKMARK [3][-]{subsubsection.10.3.38}{Parameter Priors}{subsection.10.3}% 82
+\BOOKMARK [1][-]{section.11}{Output Files}{}% 83
+\BOOKMARK [2][-]{subsection.11.1}{Standard ADMB output files}{section.11}% 84
+\BOOKMARK [2][-]{subsection.11.2}{Derived Quantities}{section.11}% 85
+\BOOKMARK [3][-]{subsubsection.11.2.1}{Metric for Fishing Mortality}{subsection.11.2}% 86
+\BOOKMARK [3][-]{subsubsection.11.2.2}{Equilibrium SPR}{subsection.11.2}% 87
+\BOOKMARK [3][-]{subsubsection.11.2.3}{F std}{subsection.11.2}% 88
+\BOOKMARK [3][-]{subsubsection.11.2.4}{F-at-Age}{subsection.11.2}% 89
+\BOOKMARK [3][-]{subsubsection.11.2.5}{MSY and other Benchmark Items}{subsection.11.2}% 90
+\BOOKMARK [2][-]{subsection.11.3}{Brief cumulative output}{section.11}% 91
+\BOOKMARK [2][-]{subsection.11.4}{Output for Rebuilder Package}{section.11}% 92
+\BOOKMARK [2][-]{subsection.11.5}{Bootstrap Data Files}{section.11}% 93
+\BOOKMARK [2][-]{subsection.11.6}{Forecast and Reference Points}{section.11}% 94
+\BOOKMARK [2][-]{subsection.11.7}{Main Output File, report.sso}{section.11}% 95

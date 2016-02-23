@@ -1515,7 +1515,7 @@ The time-varying options for selectivity parameters are identical to the time-va
 		\hline
 		\endfirsthead
 	
-	Value & & Label & Description\\
+		Value & & Label & Description\\
 		\hline
 		\endhead
 
@@ -1863,4 +1863,51 @@ The available options for time-varying parameters are described below:
 
 \subsubsection{Parameter Priors}
 Priors on parameters fulfill two roles in SS.  First, for parameters provided with an informative prior, SS is receiving additional information about the true value of the parameter.  This information works with the information in the data through the overall logL function to arrive at the final parameter estimate.  Second, diffuse priors provide only weak information about the value of a prior and serve to manage model performance during execution.  For example, some selectivity parameters may become unimportant depending upon the values of other parameters of that selectivity function.  In the double normal selectivity function, the parameters controlling the width of the peak and the slope of the descending side become redundant if the parameter controlling the final selectivity moves to a value indicating asymptotic selectivity.  The width and slope parameters would no longer have any effect on the logL, so they would have no gradient in the logL and would drift aimlessly.  A diffuse prior would then steer them towards a central value and avoid them crashing into the bounds.  Another benefit of diffuse priors is the control of parameters that are given unnaturally wide bounds.  When a parameter is given too broad of a bound, then early in a model run it could drift into this tail and potentially get into a situation where the gradient with respect that parameter approaches zero even though it is not at its global best value.  Here the diffuse prior helps move the parameter back towards the middle of its range where it presumably will be more influential and estimable.  The options for parameter priors are:
+\begin{itemize}
+	\item -1 = No prior applied.
+	\item  0 = Normal prior. Note that this function is independent of the parameter.
+	\begin{equation}
+		Pr\_Like = 0.50*(\frac{Pval - Prior}{Prior\_SD})^2
+	\end{equation}
+	\item  1 = Symmetric bet prior is scaled between parameter bounds, imposing a larger penalty near the bounds.  Prior standard deviation of 0.05 is very diffuse and a value of 5.0 provides a smooth U-shaped prior. 
+	\begin{equation}  \mu = -P\_SD*(log((Pmax+Pmin)*0.5-Pmin)-P\_SD*(log(0.5)) \end{equation}
+	\begin{equation}  
+		\begin{split}
+			Prior\_Like = -(\mu + (P\_SD*(log(Pval-Pmin+Pconst))) + \\
+			(P\_SD*(log(1-(\frac{(Pval-Pmin-Pconst)}{(Pmax-Pmin)})))))
+		\end{split}
+	\end{equation}
+	
+	\begin{center}			
+			\includegraphics{Beta}\\
+			Prior distributions for the symmetric beta distribution.
+	\end{center}
+	
+	\item 2 = Beta prior.  The definition of $\mu$ is consistent with CASAL's formulation with the Bprior and Aprior corresponding to the m and n parameter. 	
+	\begin{equation}
+		\begin{split}
+			\mu = \frac{Prior-Pmin}{Pmax-Pmin} \\
+			\tau  = \frac{(Prior-Pmin)(Pmax-Prior)}{P\_SD^2}-1.0\\
+			Bprior  = \tau*\mu; Aprior = \tau (1.0-\mu)\\
+		\end{split}
+	\end{equation}
+		\begin{equation}
+		\begin{split}
+		Prior\_Like = (1.0-Bprior)*log(Pconst+Pval-Pmin) + \\
+		(1.0-Aprior)*log(Pconst+Pmax-Pval) - \\
+		(1.0-Bprior)*log(Pconst + Prior - Pmin) - \\
+		(1.0-Aprior)*log(Pconst + Pmax - Prior)
+		\end{split}
+	\end{equation}
+	
+	\begin{center}
+		\includegraphics{BetaComparison}\\
+		Comparison of the symmetric beta and the beta prior functions
+	\end{center}
 
+	\item 3 = Lognormal prior.  Note that lower bound on the parameter must be >0.0. The prior value is input into the parameter line in log space while the initial parameter value is defined in normal space (e.g. INIT = 0.20, PRIOR = -1.609438).
+	\begin{equation}
+		Prior\_Like = 0.50*\Big(\frac{(log(Pval)-Prior)}{Pr\_SD}\Big)^2
+	\end{equation}
+	\item Pval is the value of the parameter for which a prior is being calculated, Pmin and Pmax are the bounds on the parameter, Prior is the value of the parameter prior, or the first of the 2 factors controlling the calculation of the prior, Pr\_SD is the value of the prior's standard deviation, or the second of the 2 factors controlling the calculation of the prior, Pconst is a small constant (0.0001), and Prior\_Like is the calculated value of the prior's contribution to the log likelihood.
+\end{itemize}

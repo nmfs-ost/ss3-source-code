@@ -81,3 +81,16 @@
 \contentsline {subsubsection}{\numberline {10.3.36}Controls for Variance of Derived Quantities}{101}{subsubsection.10.3.36}
 \contentsline {subsubsection}{\numberline {10.3.37}Time-Varying Parameter Options}{103}{subsubsection.10.3.37}
 \contentsline {subsubsection}{\numberline {10.3.38}Parameter Priors}{107}{subsubsection.10.3.38}
+\contentsline {section}{\numberline {11}Output Files}{110}{section.11}
+\contentsline {subsection}{\numberline {11.1}Standard ADMB output files}{110}{subsection.11.1}
+\contentsline {subsection}{\numberline {11.2}Derived Quantities}{110}{subsection.11.2}
+\contentsline {subsubsection}{\numberline {11.2.1}Metric for Fishing Mortality}{110}{subsubsection.11.2.1}
+\contentsline {subsubsection}{\numberline {11.2.2}Equilibrium SPR}{110}{subsubsection.11.2.2}
+\contentsline {subsubsection}{\numberline {11.2.3}F std}{111}{subsubsection.11.2.3}
+\contentsline {subsubsection}{\numberline {11.2.4}F-at-Age}{112}{subsubsection.11.2.4}
+\contentsline {subsubsection}{\numberline {11.2.5}MSY and other Benchmark Items}{112}{subsubsection.11.2.5}
+\contentsline {subsection}{\numberline {11.3}Brief cumulative output}{113}{subsection.11.3}
+\contentsline {subsection}{\numberline {11.4}Output for Rebuilder Package}{113}{subsection.11.4}
+\contentsline {subsection}{\numberline {11.5}Bootstrap Data Files}{116}{subsection.11.5}
+\contentsline {subsection}{\numberline {11.6}Forecast and Reference Points}{116}{subsection.11.6}
+\contentsline {subsection}{\numberline {11.7}Main Output File, report.sso}{121}{subsection.11.7}
