@@ -2631,8 +2631,8 @@
   }
  END_CALCS
 
-  imatrix time_vary_sel(styr-3,endyr+1,1,2*Nfleet)
-  imatrix time_vary_makefishsel(styr-3,endyr+1,1,Nfleet)
+  imatrix time_vary_sel(styr-3,YrMax,1,2*Nfleet)
+  imatrix time_vary_makefishsel(styr-3,YrMax,1,Nfleet)
   int makefishsel_yr
 !!//  SS_Label_Info_4.9.4 #Create and label environmental linkages for selectivity parameters
   int N_selparm_env                            // number of selparms that use env linkage

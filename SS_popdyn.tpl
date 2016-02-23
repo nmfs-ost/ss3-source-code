@@ -148,7 +148,7 @@ FUNCTION void get_initial_conditions()
   //  SS_Label_Info_23.5.1.1  #Adjustments do not include spawner-recruitment function
    R1_exp=Recr_virgin;
    exp_rec(eq_yr,1)=R1_exp;
-   if(SR_env_target==2) {R1_exp*=mfexp(SR_parm(N_SRparm2-2)* env_data(eq_yr,SR_env_link));}
+   if(SR_env_target==2) {R1_exp*=mfexp(SR_parm(N_SRparm2-2)* env_data(styr-1,SR_env_link));}
    exp_rec(eq_yr,2)=R1_exp;
    exp_rec(eq_yr,3)=R1_exp;
    R1 = R1_exp*mfexp(SR_parm(N_SRparm2-1));
@@ -190,6 +190,10 @@ FUNCTION void get_initial_conditions()
    if(Hermaphro_Option>0) MaleSPB(eq_yr)=MaleSPB_equil_pop_gp;
    SPB_yr(eq_yr)=SPB_equil;
    SPB_yr(styr)=SPB_equil;
+   env_data(styr-1,-1)=SPB_equil;
+   env_data(styr-1,-2)=1.0;
+   env_data(styr-1,-3)=smrybio;
+   env_data(styr-1,-4)=smrynum;
 
    for (s=1;s<=nseas;s++)
    for (f=1;f<=Nfleet;f++)
@@ -264,14 +268,46 @@ FUNCTION void get_time_series()
   { Recruits = R1 * mfexp(recdev(styr-1)-biasadj(styr-1)*half_sigmaRsq); }
   else
   { Recruits = R1;}
-
+  
   //  SS_Label_Info_24.1 #Loop the years
   for (y=styr;y<=endyr;y++)
   {
     yz=y;
     if(STD_Yr_Reverse_F(y)>0) F_std(STD_Yr_Reverse_F(y))=0.0;
     t_base=styr+(y-styr)*nseas-1;
-    
+
+//    if( )
+    	{
+    		
+    		env_data(y,-1)=SPB_current/SPB_yr(styr-1);  //  store most recent value for density-dependent effects, NOTE - off by a year if recalc'ed at beginning of season 1
+        env_data(y,-2)=mfexp(recdev(y)); //  store so can do density-dependence
+        t=t_base+1;  // first season
+        if(time_vary_MG(y,2)>0 || time_vary_MG(y,3)>0 || save_for_report==1 || WTage_rd>0)
+        {
+          s=1;
+          subseas=1;  //  begin season  note that ALK_idx re-calculated inside get_growth3
+          ALK_idx=(s-1)*N_subseas+subseas;  //  redundant with calc inside get_growth3 ????
+  //      get_growth3(s, subseas);  //  not needed because size-at-age already has been propagated to seas 1 subseas 1
+          Make_AgeLength_Key(s, subseas);  //  this will give wt_age_beg before any time-varying parameter changes for this year
+        }
+        smrybio=0.0;
+        smrynum=0.0;
+        s=1;
+        for (g=1;g<=gmorph;g++)
+        if(use_morph(g)>0)
+        {
+          for (p=1;p<=pop;p++)
+          {
+            smrybio+=natage(t,p,g)(Smry_Age,nages)*Wt_Age_beg(s,g)(Smry_Age,nages);
+            smrynum+=sum(natage(t,p,g)(Smry_Age,nages));   //sums to accumulate across platoons and settlements
+          }
+        }
+        env_data(y,-3)=smrybio/env_data(styr-1,-3);
+        env_data(y,-4)=smrynum/env_data(styr-1,-4);
+        Smry_Table(y,2)=smrybio;
+        Smry_Table(y,3)=smrynum;
+    	}
+
     if(y>styr)
     {
   //  SS_Label_Info_24.1.1 #Update the time varying biology factors if necessary
@@ -1478,6 +1514,7 @@ FUNCTION void Do_Equil_Calc()
    SPB_equil=sum(SPB_equil_pop_gp);
    GenTime/=SPB_equil;
    smryage /= smrynum;
+
    cumF/=(r_ages(nages)-r_ages(Smry_Age)+1.);
    if(Hermaphro_maleSPB==1) SPB_equil+=sum(MaleSPB_equil_pop_gp);
 
