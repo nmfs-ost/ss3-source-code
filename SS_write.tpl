@@ -1728,8 +1728,8 @@ FUNCTION void write_nucontrol()
     report4<<First_Mature_Age<<" #_First_Mature_Age"<<endl;
 
     report4<<Fecund_Option<<" #_fecundity option:(1)eggs=Wt*(a+b*Wt);(2)eggs=a*L^b;(3)eggs=a*Wt^b; (4)eggs=a+b*L; (5)eggs=a+b*W"<<endl;
-    report4<<Hermaphro_Option<<" #_hermaphroditism option:  0=none; 1=age-specific fxn"<<endl;
-    if (Hermaphro_Option>0) report4<<Hermaphro_seas<<" # Hermaphro_season "<<endl<<Hermaphro_maleSPB<<" # Hermaphro_maleSPB "<<endl;
+    report4<<Hermaphro_Option<<" #_hermaphroditism option:  0=none; 1=female-to-male age-specific fxn; -1=male-to-female age-specific fxn"<<endl;
+    if (Hermaphro_Option!=0) report4<<Hermaphro_seas<<" # Hermaphro_season "<<endl<<Hermaphro_maleSPB<<" # Hermaphro_maleSPB "<<endl;
     report4<<MGparm_def<<" #_parameter_offset_approach (1=none, 2= M, G, CV_G as offset from female-GP1, 3=like SS2 V1.x)"<<endl;
     report4<<MG_adjust_method<<
     " #_env/block/dev_adjust_method (1=standard; 2=logistic transform keeps in base parm bounds; 3=standard w/ no bound check)"<<endl;
@@ -2888,7 +2888,7 @@ FUNCTION void write_bigoutput()
    if(F_Method==1) {SS2out<<"  Pope's_approx"<<endl;} else {SS2out<<"  Continuous_F"<<endl;}
   SS2out<<"Area Yr Era Seas Bio_all Bio_smry SpawnBio Recruit_0 ";
   for (gp=1;gp<=N_GP;gp++) SS2out<<" Spbio_GP:"<<gp;
-  if(Hermaphro_Option>0)
+  if(Hermaphro_Option!=0)
   {
     for (gp=1;gp<=N_GP;gp++) SS2out<<" MaleSpbio_GP:"<<gp;
   }
@@ -2975,7 +2975,7 @@ FUNCTION void write_bigoutput()
     if(s==spawn_seas)
     {
       SS2out<<SPB_pop_gp(y,p);
-      if(Hermaphro_Option>0) SS2out<<MaleSPB(y,p);
+      if(Hermaphro_Option!=0) SS2out<<MaleSPB(y,p);
     }
     else
     {
@@ -3902,7 +3902,7 @@ FUNCTION void write_bigoutput()
       for (g=1;g<=gmorph;g++)
       if(use_morph(g)>0 && (y==styr-3 || y>=styr))
       {
-        if(s==spawn_seas && (sx(g)==1 || Hermaphro_Option>0) ) SS2out<<"Fecund "<<" NA "<<" "<<y<<" "<<s<<" "<<sx(g)<<" "<<g<<" "<<y<<"_"<<"Fecund"<<save_sel_fec(t,g,0)<<endl;
+        if(s==spawn_seas && (sx(g)==1 || Hermaphro_Option!=0) ) SS2out<<"Fecund "<<" NA "<<" "<<y<<" "<<s<<" "<<sx(g)<<" "<<g<<" "<<y<<"_"<<"Fecund"<<save_sel_fec(t,g,0)<<endl;
         for (f=1;f<=Nfleet;f++)
         {
           SS2out<<"Asel2 "<<f<<" "<<y<<" "<<s<<" "<<sx(g)<<" "<<g<<" "<<y<<"_"<<f<<"_Asel2"<<save_sel_fec(t,g,f)<<endl;
@@ -4201,7 +4201,7 @@ FUNCTION void write_bigoutput()
 
    SS2out<<endl;
    SS2out<<"Seas Morph Bio_Pattern Gender Settlement Platoon int_Age Real_Age Age_Beg Age_Mid M Len_Beg Len_Mid SD_Beg SD_Mid Wt_Beg Wt_Mid Len_Mat Age_Mat Mat*Fecund";
-   if(Hermaphro_Option>0) SS2out<<" Herma_Trans Herma_Cum ";
+   if(Hermaphro_Option!=0) SS2out<<" Herma_Trans Herma_Cum ";
    for (f=1;f<=Nfleet;f++) SS2out<<" Len:_"<<f<<" SelWt:_"<<f<<" RetWt:_"<<f;
    SS2out<<endl;
    for (s=1;s<=nseas;s++)
@@ -4227,7 +4227,7 @@ FUNCTION void write_bigoutput()
       else
         {SS2out<<-1.;}
       SS2out<<" "<<fec(g,a)<<" "<<make_mature_bio(g,a)<<" "<<make_mature_numbers(g,a);
-      if(Hermaphro_Option>0)
+      if(Hermaphro_Option!=0)
       {
         if(a>1) Herma_Cum*=(1.0-Hermaphro_val(GP4(g),a-1));
         SS2out<<" "<<Hermaphro_val(GP4(g),a)<<" "<<Herma_Cum;
@@ -5152,10 +5152,10 @@ FUNCTION void write_Bzero_output()
 
     SS2out << endl << "Z_AT_AGE_Annual";
     if(fishery_on_off==0) {SS2out<<"_1 No_fishery_for_Z=M_and_dynamic_Bzero";} else {SS2out<<"_2 With_fishery";}
-    if(Hermaphro_Option>0) SS2out<<"_hermaphrodites_combined_gender_output";
+    if(Hermaphro_Option!=0) SS2out<<"_hermaphrodites_combined_gender_output";
     SS2out << endl;
     SS2out << "Bio_Pattern Gender Year "<<age_vector <<endl;
-    if(Hermaphro_Option>0)
+    if(Hermaphro_Option!=0)
     {k=1;}
     else
     {k=gender;}
@@ -5169,7 +5169,7 @@ FUNCTION void write_Bzero_output()
       for (g=1;g<=gmorph;g++)
       if(use_morph(g)>0)
       {
-        if(GP4(g)==gp && (sx(g)==gg || Hermaphro_Option>0)) tempvec_a+= value(natage(t,p,g));
+        if(GP4(g)==gp && (sx(g)==gg || Hermaphro_Option!=0)) tempvec_a+= value(natage(t,p,g));
       }
       if(nseas>1)
       {
@@ -5179,7 +5179,7 @@ FUNCTION void write_Bzero_output()
         for (g=1;g<=gmorph;g++)
         if(use_morph(g)>0 && Bseas(g)==s)
         {
-          if(GP4(g)==gp && (sx(g)==gg || Hermaphro_Option>0)) tempvec_a(0) += value(natage(t,p,g,0));
+          if(GP4(g)==gp && (sx(g)==gg || Hermaphro_Option!=0)) tempvec_a(0) += value(natage(t,p,g,0));
         }
       }
       if(y>styr)
