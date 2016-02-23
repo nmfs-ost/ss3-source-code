@@ -47,7 +47,7 @@ PARAMETER_SECTION
   matrix Cohort_Growth(styr,YrMax,0,nages)
   3darray Cohort_Lmin(1,N_GP*gender,styr,YrMax,0,nages)
   vector VBK_seas(0,nseas);
-  
+
   3darray wtlen_seas(0,nseas,1,N_GP,1,8);  //  contains seasonally adjusted wtlen_p
   matrix wtlen_p(1,N_GP,1,8);
   vector MGparm_dev_stddev(1,N_MGparm_dev)
@@ -59,13 +59,13 @@ PARAMETER_SECTION
   3darray wt_len2_sq(1,nseas,1,N_GP,1,nlength2)    //  stores wt at midbin^2; stacked genders
   3darray wt_len_low(1,nseas,1,N_GP,1,nlength2)  //  wt at lower edge of size bin
   3darray wt_len_fd(1,nseas,1,N_GP,1,nlength2-1)  //  first diff of wt_len_low
-  
+
   matrix mat_len(1,N_GP,1,nlength)
   matrix fec_len(1,N_GP,1,nlength)   // fecundity at length
   matrix mat_fec_len(1,N_GP,1,nlength)
   matrix mat_age(1,N_GP,0,nages)
   matrix Hermaphro_val(1,N_GP,0,nages)
-  
+
   matrix catch_mult(styr-1,YrMax,1,Nfleet)
 
  LOCAL_CALCS
@@ -78,7 +78,7 @@ PARAMETER_SECTION
   3darray age_age(0,N_ageerr,1,n_abins2,0,gender*nages+gender-1)
   3darray age_err(1,N_ageerr,1,2,0,nages) // ageing imprecision as stddev for each age
 
-// Age-length keys for each gmorph  
+// Age-length keys for each gmorph
   4darray ALK(1,N_subseas*nseas,1,gmorph,0,nages,1,nlength)
   matrix exp_AL(0,nages2,1,nlength2);
   matrix exp_AL_ret(0,nages2,1,nlength2);
@@ -102,7 +102,7 @@ PARAMETER_SECTION
  LOCAL_CALCS
   Ave_Size.initialize();
 //  if(SR_parm(N_SRparm2)!=0.0 || SRvec_PH(N_SRparm2)>0) {SR_autocorr=1;} else {SR_autocorr=0;}  // flag for recruitment autocorrelation
-  if(SR_parm_1(N_SRparm2,3)!=0.0 || SR_parm_1(N_SRparm2,7)>0) 
+  if(SR_parm_1(N_SRparm2,3)!=0.0 || SR_parm_1(N_SRparm2,7)>0)
     {SR_autocorr=1;}
   else
     {SR_autocorr=0;}
@@ -154,7 +154,7 @@ PARAMETER_SECTION
   number equ_mat_bio
   number equ_mat_num
   !!k=0;
-  !!if(Hermaphro_Option>0) k=1;
+  !!if(Hermaphro_Option!=0) k=1;
 
   3darray MaleSPB(styr-3,YrMax*k,1,pop,1,N_GP)         //Male Spawning biomass
 
