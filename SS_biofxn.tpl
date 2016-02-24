@@ -1336,7 +1336,7 @@ FUNCTION void get_wtlen()
 //  SS_Label_Info_19.2.5  #Do Hermaphroditism (no seasonality and no gp differences)
 //  should build seasonally component here
 //  only one hermaphroditism definition is allowed (3 parameters), but it is stored by Gpat, so referenced by GP4(g)
-    if(Hermaphro_Option>0)
+    if(Hermaphro_Option!=0)
     {
       dvariable infl;  // inflection
       dvariable stdev;  // standard deviation

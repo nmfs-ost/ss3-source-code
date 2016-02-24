@@ -4,13 +4,13 @@
 #_data_and_control_files: simple_disc.dat // simple_lendisc.ctl
 #_SS-V3.30a-safe;_07_20_2015;_Stock_Synthesis_by_Richard_Methot_(NOAA)_using_ADMB_11.1
 1  #_N_Growth_Patterns
-1 #_N_platoons_Within_GrowthPattern 
+1 #_N_platoons_Within_GrowthPattern
 #_Cond 1 #_Morph_between/within_stdev_ratio (no read if N_morphs=1)
 #_Cond  1 #vector_Morphdist_(-1_in_first_val_gives_normal_approx)
 #
 1 # recr_dist_method for parameters:  1=like 3.24; 2=main effects for GP, Settle timing, Area; 3=each Settle entity; 4=none when N_GP*Nsettle*pop==1
 1 # Recruitment: 1=global; 2=by area
-1 #  number of recruitment settlement assignments 
+1 #  number of recruitment settlement assignments
 0 # year_x_area_x_settlement_event interaction requested (only for recr_dist_method=1)
 #GPat month  area (for each settlement assignment)
  1 1 1
@@ -20,10 +20,9 @@
 #_Cond 1 1 1 2 4 10 # example move definition for seas=1, morph=1, source=1 dest=2, age1=4, age2=10
 #
 0 #_Nblock_Patterns
-#_Cond 0 #_blocks_per_pattern 
+#_Cond 0 #_blocks_per_pattern
 # begin and end years of blocks
 #
-0.5 #_fracfemale 
 0 #_natM_type:_0=1Parm; 1=N_breakpoints;_2=Lorenzen;_3=agespecific;_4=agespec_withseasinterpolate
   #_no additional input for selected M option; read 1P per morph
 1 # GrowthModel: 1=vonBert with L1&L2; 2=Richards with L1&L2; 3=age_speciific_K; 4=not implemented
@@ -65,6 +64,7 @@
  0 0 0 0 -1 0 -4 0 0 0 0 0 0 0 # RecrDist_Area_1
  0 0 0 0 -1 0 -4 0 0 0 0 0 0 0 # RecrDist_Bseas_1
  0 0 0 0 -1 0 -4 0 0 0 0 0 0 0 # CohortGrowDev
+ 0.000001 0.999999 0.5 0.5 -1 0.5 -99 0 0 0 0 0 0 0 # FracFemale_GP_1
 #
 #_Cond 0  #custom_MG-env_setup (0/1)
 #_Cond -2 2 0 0 -1 99 -2 #_placeholder when no MG-environ parameters
@@ -72,7 +72,7 @@
 #_Cond 0  #custom_MG-block_setup (0/1)
 #_LO HI INIT PRIOR PR_type SD PHASE
 #_Cond -2 2 0 0 -1 99 -2 #_placeholder when no MG-block parameters
-#_Cond No MG parm trends 
+#_Cond No MG parm trends
 #
 #_seasonal_effects_on_biology_parms
  0 0 0 0 0 0 0 0 0 0 #_femwtlen1,femwtlen2,mat1,mat2,fec1,fec2,Malewtlen1,malewtlen2,L1,K
@@ -95,7 +95,7 @@
 1 #do_recdev:  0=none; 1=devvector; 2=simple deviations
 1971 # first year of main recr_devs; early devs can preceed this era
 2001 # last year of main recr_devs; forecast devs start in following year
-2 #_recdev phase 
+2 #_recdev phase
 1 # (0/1) to read 13 advanced options
  0 #_recdev_early_start (0=none; neg value makes relative to recdev_start)
  -4 #_recdev_early_phase
@@ -121,7 +121,7 @@
 #  0.333893 -0.172679 -0.154039 0.0571632 0.285534 0.442637 -0.400503 0.0615064 0.352022 -0.0797021 0.141684 -0.00260806 -0.522652 -0.322361 0.0768214 0.914228 0.0986032 0.130951 -0.18242 0.464425 -0.110084 -0.345367 -1.12631 0.378274 -0.268808 0.321053 0.916954 -0.249261 -1.08365 0.481312 -0.436625 0 0 0
 # implementation error by year in forecast:  0 0 0
 #
-#Fishing Mortality info 
+#Fishing Mortality info
 0.3 # F ballpark
 -2001 # F ballpark year (neg value to disable)
 3 # F_Method:  1=Pope; 2=instan. F; 3=hybrid (hybrid is recommended)
@@ -185,18 +185,18 @@
  0 40 40 6 -1 99 -1 0 0 0 0 0 0 0 # AgeSel_P2_SURVEY1(2)
  0 40 0 5 -1 99 -1 0 0 0 0 0 0 0 # AgeSel_P1_SURVEY2(3)
  0 40 0 6 -1 99 -1 0 0 0 0 0 0 0 # AgeSel_P2_SURVEY2(3)
-#_Cond 0 #_custom_sel-env_setup (0/1) 
+#_Cond 0 #_custom_sel-env_setup (0/1)
 #_Cond -2 2 0 0 -1 99 -2 #_placeholder when no enviro fxns
-#_Cond 0 #_custom_sel-blk_setup (0/1) 
+#_Cond 0 #_custom_sel-blk_setup (0/1)
 #_Cond -2 2 0 0 -1 99 -2 #_placeholder when no block usage
-#_Cond No selex parm trends 
+#_Cond No selex parm trends
 #_Cond -4 # placeholder for selparm_Dev_Phase
 #_Cond 0 #_env/block/dev_adjust_method (1=standard; 2=logistic trans to keep in base parm bounds; 3=standard w/ no bound check)
 #
 # Tag loss and Tag reporting parameters go next
 0  # TG_custom:  0=no read; 1=read if tags exist
 #_Cond -6 6 1 1 2 0.01 -4 0 0 0 0 0 0 0  #_placeholder if no parameters
-# Input variance adjustments; factors: 
+# Input variance adjustments; factors:
  #_1=add_to_survey_CV
  #_2=add_to_discard_stddev
  #_3=add_to_bodywt_CV
@@ -210,7 +210,7 @@
 4 #_maxlambdaphase
 1 #_sd_offset
 # read 3 changes to default Lambdas (default value is 1.0)
-# Like_comp codes:  1=surv; 2=disc; 3=mnwt; 4=length; 5=age; 6=SizeFreq; 7=sizeage; 8=catch; 9=init_equ_catch; 
+# Like_comp codes:  1=surv; 2=disc; 3=mnwt; 4=length; 5=age; 6=SizeFreq; 7=sizeage; 8=catch; 9=init_equ_catch;
 # 10=recrdev; 11=parm_prior; 12=parm_dev; 13=CrashPen; 14=Morphcomp; 15=Tag-comp; 16=Tag-negbin; 17=F_ballpark
 #like_comp fleet  phase  value  sizefreq_method
  1 2 2 1 1
@@ -243,7 +243,7 @@
 #  1 1 1 1 #_parameter-dev-vectors
 #  1 1 1 1 #_crashPenLambda
 #  0 0 0 0 # F_ballpark_lambda
-1 # (0/1) read specs for more stddev reporting 
+1 # (0/1) read specs for more stddev reporting
  1 1 -1 5 1 5 1 -1 5 # selex type, len/age, year, N selex bins, Growth pattern, N growth ages, NatAge_area(-1 for all), NatAge_yr, N Natages
  5 15 25 35 43 # vector with selex std bin picks (-1 in first bin to self-generate)
  1 2 14 26 40 # vector with growth std bin picks (-1 in first bin to self-generate)

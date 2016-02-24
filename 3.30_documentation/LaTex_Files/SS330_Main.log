@@ -1,12 +1,12 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.15 (MiKTeX 2.9 64-bit) (preloaded format=pdflatex 2015.8.21)  8 FEB 2016 17:32
+This is pdfTeX, Version 3.14159265-2.6-1.40.16 (MiKTeX 2.9) (preloaded format=pdflatex 2016.1.27)  24 FEB 2016 10:00
 entering extended mode
-**SS330_Main.tex
+**./SS330_Main.tex
 (SS330_Main.tex
-LaTeX2e <2014/05/01>
-Babel <3.9l> and hyphenation patterns for 68 languages loaded.
-(C:\Users\Chantell.Wetzel\Documents\Latex\tex\latex\base\article.cls
+LaTeX2e <2015/10/01> patch level 2
+Babel <3.9n> and hyphenation patterns for 69 languages loaded.
+("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\base\article.cls"
 Document Class: article 2014/09/29 v1.4h Standard LaTeX document class
-(C:\Users\Chantell.Wetzel\Documents\Latex\tex\latex\base\size12.clo
+("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\base\size12.clo"
 File: size12.clo 2014/09/29 v1.4h Standard LaTeX file (size option)
 )
 \c@part=\count79
@@ -21,26 +21,26 @@ File: size12.clo 2014/09/29 v1.4h Standard LaTeX file (size option)
 \belowcaptionskip=\skip42
 \bibindent=\dimen102
 )
-(C:\Users\Chantell.Wetzel\Documents\Latex\tex\latex\lipsum\lipsum.sty
+("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\lipsum\lipsum.sty"
 Package: lipsum 2014/07/27 v1.3 150 paragraphs of Lorem Ipsum dummy text
 \c@lips@count=\count87
 )
-(C:\Users\Chantell.Wetzel\Documents\Latex\tex\latex\geometry\geometry.sty
+("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\geometry\geometry.sty"
 Package: geometry 2010/09/12 v5.6 Page Geometry
 
-(C:\Users\Chantell.Wetzel\Documents\Latex\tex\latex\graphics\keyval.sty
+("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\graphics\keyval.sty"
 Package: keyval 2014/10/28 v1.15 key=value parser (DPC)
 \KV@toks@=\toks14
 )
-(C:\Users\Chantell.Wetzel\Documents\Latex\tex\generic\oberdiek\ifpdf.sty
+("C:\Program Files (x86)\MiKTeX 2.9\tex\generic\oberdiek\ifpdf.sty"
 Package: ifpdf 2011/01/30 v2.3 Provides the ifpdf switch (HO)
 Package ifpdf Info: pdfTeX in PDF mode is detected.
 )
-(C:\Users\Chantell.Wetzel\Documents\Latex\tex\generic\oberdiek\ifvtex.sty
+("C:\Program Files (x86)\MiKTeX 2.9\tex\generic\oberdiek\ifvtex.sty"
 Package: ifvtex 2010/03/01 v1.5 Detect VTeX and its facilities (HO)
 Package ifvtex Info: VTeX not detected.
 )
-(C:\Users\Chantell.Wetzel\Documents\Latex\tex\generic\ifxetex\ifxetex.sty
+("C:\Program Files (x86)\MiKTeX 2.9\tex\generic\ifxetex\ifxetex.sty"
 Package: ifxetex 2010/09/12 v0.6 Provides ifxetex conditional
 )
 \Gm@cnth=\count88
@@ -56,28 +56,28 @@ Package: ifxetex 2010/09/12 v0.6 Provides ifxetex conditional
 \Gm@layoutvoffset=\dimen110
 \Gm@dimlist=\toks15
 
-(C:\Users\Chantell.Wetzel\Documents\Latex\tex\latex\geometry\geometry.cfg))
-(C:\Users\Chantell.Wetzel\Documents\Latex\tex\latex\graphics\graphicx.sty
+("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\geometry\geometry.cfg"))
+("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\graphics\graphicx.sty"
 Package: graphicx 2014/10/28 v1.0g Enhanced LaTeX Graphics (DPC,SPQR)
 
-(C:\Users\Chantell.Wetzel\Documents\Latex\tex\latex\graphics\graphics.sty
-Package: graphics 2014/10/28 v1.0p Standard LaTeX Graphics (DPC,SPQR)
+("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\graphics\graphics.sty"
+Package: graphics 2016/01/03 v1.0q Standard LaTeX Graphics (DPC,SPQR)
 
-(C:\Users\Chantell.Wetzel\Documents\Latex\tex\latex\graphics\trig.sty
-Package: trig 1999/03/16 v1.09 sin cos tan (DPC)
+("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\graphics\trig.sty"
+Package: trig 2016/01/03 v1.10 sin cos tan (DPC)
 )
-(C:\Users\Chantell.Wetzel\Documents\Latex\tex\latex\00miktex\graphics.cfg
-File: graphics.cfg 2007/01/18 v1.5 graphics configuration of teTeX/TeXLive
+("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\00miktex\graphics.cfg"
+File: graphics.cfg 2010/04/23 v1.9 graphics configuration of TeX Live
 )
-Package graphics Info: Driver file: pdftex.def on input line 91.
+Package graphics Info: Driver file: pdftex.def on input line 95.
 
-(C:\Users\Chantell.Wetzel\Documents\Latex\tex\latex\pdftex-def\pdftex.def
+("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\pdftex-def\pdftex.def"
 File: pdftex.def 2011/05/27 v0.06d Graphics/color for pdfTeX
 
-(C:\Users\Chantell.Wetzel\Documents\Latex\tex\generic\oberdiek\infwarerr.sty
+("C:\Program Files (x86)\MiKTeX 2.9\tex\generic\oberdiek\infwarerr.sty"
 Package: infwarerr 2010/04/08 v1.3 Providing info/warning/error messages (HO)
 )
-(C:\Users\Chantell.Wetzel\Documents\Latex\tex\generic\oberdiek\ltxcmds.sty
+("C:\Program Files (x86)\MiKTeX 2.9\tex\generic\oberdiek\ltxcmds.sty"
 Package: ltxcmds 2011/11/09 v1.22 LaTeX kernel commands for general use (HO)
 )
 \Gread@gobject=\count91
@@ -85,16 +85,14 @@ Package: ltxcmds 2011/11/09 v1.22 LaTeX kernel commands for general use (HO)
 \Gin@req@height=\dimen111
 \Gin@req@width=\dimen112
 )
-(C:\Users\Chantell.Wetzel\Documents\Latex\tex\latex\hyperref\hyperref.sty
+("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\hyperref\hyperref.sty"
 Package: hyperref 2012/11/06 v6.83m Hypertext links for LaTeX
 
-(C:\Users\Chantell.Wetzel\Documents\Latex\tex\generic\oberdiek\hobsub-hyperref.
-sty
+("C:\Program Files (x86)\MiKTeX 2.9\tex\generic\oberdiek\hobsub-hyperref.sty"
 Package: hobsub-hyperref 2012/04/25 v1.12 Bundle oberdiek, subset hyperref (HO)
 
 
-(C:\Users\Chantell.Wetzel\Documents\Latex\tex\generic\oberdiek\hobsub-generic.s
-ty
+("C:\Program Files (x86)\MiKTeX 2.9\tex\generic\oberdiek\hobsub-generic.sty"
 Package: hobsub-generic 2012/04/25 v1.12 Bundle oberdiek, subset generic (HO)
 Package: hobsub 2012/04/25 v1.12 Construct package bundles (HO)
 Package hobsub Info: Skipping package `infwarerr' (already loaded).
@@ -132,22 +130,23 @@ Package atveryend Info: \enddocument detected (standard20110627).
 Package: atbegshi 2011/10/05 v1.16 At begin shipout hook (HO)
 Package: refcount 2011/10/16 v3.4 Data extraction from label references (HO)
 Package: hycolor 2011/01/30 v1.7 Color options for hyperref/bookmark (HO)
-) (C:\Users\Chantell.Wetzel\Documents\Latex\tex\latex\oberdiek\auxhook.sty
+)
+("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\oberdiek\auxhook.sty"
 Package: auxhook 2011/03/04 v1.3 Hooks for auxiliary files (HO)
 )
-(C:\Users\Chantell.Wetzel\Documents\Latex\tex\latex\oberdiek\kvoptions.sty
+("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\oberdiek\kvoptions.sty"
 Package: kvoptions 2011/06/30 v3.11 Key value format for package options (HO)
 )
 \@linkdim=\dimen113
 \Hy@linkcounter=\count92
 \Hy@pagecounter=\count93
 
-(C:\Users\Chantell.Wetzel\Documents\Latex\tex\latex\hyperref\pd1enc.def
+("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\hyperref\pd1enc.def"
 File: pd1enc.def 2012/11/06 v6.83m Hyperref: PDFDocEncoding definition (HO)
 )
 \Hy@SavedSpaceFactor=\count94
 
-(C:\Users\Chantell.Wetzel\Documents\Latex\tex\latex\00miktex\hyperref.cfg
+("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\00miktex\hyperref.cfg"
 File: hyperref.cfg 2002/06/06 v1.2 hyperref configuration of TeXLive
 )
 Package hyperref Info: Hyper figures OFF on input line 4443.
@@ -159,7 +158,7 @@ Package hyperref Info: Implicit mode ON; LaTeX internals redefined.
 Package hyperref Info: Bookmarks ON on input line 4688.
 \c@Hy@tempcnt=\count95
 
-(C:\Users\Chantell.Wetzel\Documents\Latex\tex\latex\url\url.sty
+("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\url\url.sty"
 \Urlmuskip=\muskip10
 Package: url 2013/09/16  ver 3.4  Verb mode for urls, etc.
 )
@@ -184,25 +183,26 @@ LaTeX Info: Redefining \pageref on input line 6369.
 
 Package hyperref Message: Driver (autodetected): hpdftex.
 
-(C:\Users\Chantell.Wetzel\Documents\Latex\tex\latex\hyperref\hpdftex.def
+("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\hyperref\hpdftex.def"
 File: hpdftex.def 2012/11/06 v6.83m Hyperref driver for pdfTeX
 \Fld@listcount=\count100
 \c@bookmark@seq@number=\count101
 
-(C:\Users\Chantell.Wetzel\Documents\Latex\tex\latex\oberdiek\rerunfilecheck.sty
+("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\oberdiek\rerunfilecheck.sty"
 Package: rerunfilecheck 2011/04/15 v1.7 Rerun checks for auxiliary files (HO)
 Package uniquecounter Info: New unique counter `rerunfilecheck' on input line 2
 82.
 )
 \Hy@SectionHShift=\skip43
-) (C:\Users\Chantell.Wetzel\Documents\Latex\tex\latex\sectsty\sectsty.sty
+)
+("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\sectsty\sectsty.sty"
 Package: sectsty 2002/02/25 v2.0.2 Commands to change all sectional heading sty
 les
 )
-(C:\Users\Chantell.Wetzel\Documents\Latex\tex\latex\multirow\multirow.sty
+("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\multirow\multirow.sty"
 \bigstrutjot=\dimen117
 )
-(C:\Users\Chantell.Wetzel\Documents\Latex\tex\latex\booktabs\booktabs.sty
+("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\booktabs\booktabs.sty"
 Package: booktabs 2005/04/14 v1.61803 publication quality tables
 \heavyrulewidth=\dimen118
 \lightrulewidth=\dimen119
@@ -222,14 +222,14 @@ Package: booktabs 2005/04/14 v1.61803 publication quality tables
 \@lastruleclass=\count105
 \@thisrulewidth=\dimen130
 )
-(C:\Users\Chantell.Wetzel\Documents\Latex\tex\latex\base\fontenc.sty
+("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\base\fontenc.sty"
 Package: fontenc 2005/09/27 v1.99g Standard LaTeX package
 
-(C:\Users\Chantell.Wetzel\Documents\Latex\tex\latex\base\t1enc.def
+("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\base\t1enc.def"
 File: t1enc.def 2005/09/27 v1.99g Standard LaTeX file
-LaTeX Font Info:    Redeclaring font encoding T1 on input line 43.
+LaTeX Font Info:    Redeclaring font encoding T1 on input line 48.
 ))
-(C:\Users\Chantell.Wetzel\Documents\Latex\tex\latex\lm\lmodern.sty
+("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\lm\lmodern.sty"
 Package: lmodern 2009/10/30 v1.6 Latin Modern Fonts
 LaTeX Font Info:    Overwriting symbol font `operators' in version `normal'
 (Font)                  OT1/cmr/m/n --> OT1/lmr/m/n on input line 22.
@@ -264,12 +264,12 @@ LaTeX Font Info:    Overwriting math alphabet `\mathit' in version `bold'
 LaTeX Font Info:    Overwriting math alphabet `\mathtt' in version `bold'
 (Font)                  OT1/cmtt/m/n --> OT1/lmtt/m/n on input line 38.
 )
-(C:\Users\Chantell.Wetzel\Documents\Latex\tex\latex\hyphenat\hyphenat.sty
+("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\hyphenat\hyphenat.sty"
 Package: hyphenat 2009/09/02 v2.3c hyphenation utilities
-\langwohyphens=\language69
+\langwohyphens=\language70
 LaTeX Info: Redefining \_ on input line 43.
 )
-(C:\Users\Chantell.Wetzel\Documents\Latex\tex\latex\tools\array.sty
+("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\tools\array.sty"
 Package: array 2014/10/28 v2.4c Tabular extension package (FMi)
 \col@sep=\dimen131
 \extrarowheight=\dimen132
@@ -277,14 +277,14 @@ Package: array 2014/10/28 v2.4c Tabular extension package (FMi)
 \extratabsurround=\skip44
 \backup@length=\skip45
 )
-(C:\Users\Chantell.Wetzel\Documents\Latex\tex\latex\graphics\lscape.sty
+("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\graphics\lscape.sty"
 Package: lscape 2000/10/22 v3.01 Landscape Pages (DPC)
 )
-(C:\Users\Chantell.Wetzel\Documents\Latex\tex\latex\oberdiek\pdflscape.sty
+("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\oberdiek\pdflscape.sty"
 Package: pdflscape 2008/08/11 v0.10 Display of landscape pages in PDF (HO)
 Package pdflscape Info: Auto-detected driver: pdftex on input line 80.
 )
-(C:\Users\Chantell.Wetzel\Documents\Latex\tex\latex\tools\longtable.sty
+("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\tools\longtable.sty"
 Package: longtable 2014/10/28 v4.11 Multi-page Table package (DPC)
 \LTleft=\skip46
 \LTright=\skip47
@@ -302,23 +302,25 @@ Package: longtable 2014/10/28 v4.11 Multi-page Table package (DPC)
 \c@LT@chunks=\count110
 \LT@p@ftn=\toks17
 )
-(C:\Users\Chantell.Wetzel\Documents\Latex\tex\latex\base\inputenc.sty
-Package: inputenc 2014/04/30 v1.2b Input encoding file
+("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\base\inputenc.sty"
+Package: inputenc 2015/03/17 v1.2c Input encoding file
 \inpenc@prehook=\toks18
 \inpenc@posthook=\toks19
 
-(C:\Users\Chantell.Wetzel\Documents\Latex\tex\latex\base\utf8.def
-File: utf8.def 2014/09/29 v1.1m UTF-8 support for inputenc
+("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\base\utf8.def"
+File: utf8.def 2015/12/03 v1.1r UTF-8 support for inputenc
 Now handling font encoding OML ...
 ... no UTF-8 mapping file for font encoding OML
 Now handling font encoding T1 ...
 ... processing UTF-8 mapping file for font encoding T1
 
-(C:\Users\Chantell.Wetzel\Documents\Latex\tex\latex\base\t1enc.dfu
-File: t1enc.dfu 2014/09/29 v1.1m UTF-8 support for inputenc
+("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\base\t1enc.dfu"
+File: t1enc.dfu 2015/12/03 v1.1r UTF-8 support for inputenc
+   defining Unicode char U+00A0 (decimal 160)
    defining Unicode char U+00A1 (decimal 161)
    defining Unicode char U+00A3 (decimal 163)
    defining Unicode char U+00AB (decimal 171)
+   defining Unicode char U+00AD (decimal 173)
    defining Unicode char U+00BB (decimal 187)
    defining Unicode char U+00BF (decimal 191)
    defining Unicode char U+00C0 (decimal 192)
@@ -383,50 +385,94 @@ File: t1enc.dfu 2014/09/29 v1.1m UTF-8 support for inputenc
    defining Unicode char U+00FD (decimal 253)
    defining Unicode char U+00FE (decimal 254)
    defining Unicode char U+00FF (decimal 255)
+   defining Unicode char U+0100 (decimal 256)
+   defining Unicode char U+0101 (decimal 257)
    defining Unicode char U+0102 (decimal 258)
    defining Unicode char U+0103 (decimal 259)
    defining Unicode char U+0104 (decimal 260)
    defining Unicode char U+0105 (decimal 261)
    defining Unicode char U+0106 (decimal 262)
    defining Unicode char U+0107 (decimal 263)
+   defining Unicode char U+0108 (decimal 264)
+   defining Unicode char U+0109 (decimal 265)
+   defining Unicode char U+010A (decimal 266)
+   defining Unicode char U+010B (decimal 267)
    defining Unicode char U+010C (decimal 268)
    defining Unicode char U+010D (decimal 269)
    defining Unicode char U+010E (decimal 270)
    defining Unicode char U+010F (decimal 271)
    defining Unicode char U+0110 (decimal 272)
    defining Unicode char U+0111 (decimal 273)
+   defining Unicode char U+0112 (decimal 274)
+   defining Unicode char U+0113 (decimal 275)
+   defining Unicode char U+0114 (decimal 276)
+   defining Unicode char U+0115 (decimal 277)
+   defining Unicode char U+0116 (decimal 278)
+   defining Unicode char U+0117 (decimal 279)
    defining Unicode char U+0118 (decimal 280)
    defining Unicode char U+0119 (decimal 281)
    defining Unicode char U+011A (decimal 282)
    defining Unicode char U+011B (decimal 283)
+   defining Unicode char U+011C (decimal 284)
+   defining Unicode char U+011D (decimal 285)
    defining Unicode char U+011E (decimal 286)
    defining Unicode char U+011F (decimal 287)
+   defining Unicode char U+0120 (decimal 288)
+   defining Unicode char U+0121 (decimal 289)
+   defining Unicode char U+0122 (decimal 290)
+   defining Unicode char U+0123 (decimal 291)
+   defining Unicode char U+0124 (decimal 292)
+   defining Unicode char U+0125 (decimal 293)
+   defining Unicode char U+0128 (decimal 296)
+   defining Unicode char U+0129 (decimal 297)
+   defining Unicode char U+012A (decimal 298)
+   defining Unicode char U+012B (decimal 299)
+   defining Unicode char U+012C (decimal 300)
+   defining Unicode char U+012D (decimal 301)
+   defining Unicode char U+012E (decimal 302)
+   defining Unicode char U+012F (decimal 303)
    defining Unicode char U+0130 (decimal 304)
    defining Unicode char U+0131 (decimal 305)
    defining Unicode char U+0132 (decimal 306)
    defining Unicode char U+0133 (decimal 307)
+   defining Unicode char U+0134 (decimal 308)
+   defining Unicode char U+0135 (decimal 309)
+   defining Unicode char U+0136 (decimal 310)
+   defining Unicode char U+0137 (decimal 311)
    defining Unicode char U+0139 (decimal 313)
    defining Unicode char U+013A (decimal 314)
+   defining Unicode char U+013B (decimal 315)
+   defining Unicode char U+013C (decimal 316)
    defining Unicode char U+013D (decimal 317)
    defining Unicode char U+013E (decimal 318)
    defining Unicode char U+0141 (decimal 321)
    defining Unicode char U+0142 (decimal 322)
    defining Unicode char U+0143 (decimal 323)
    defining Unicode char U+0144 (decimal 324)
+   defining Unicode char U+0145 (decimal 325)
+   defining Unicode char U+0146 (decimal 326)
    defining Unicode char U+0147 (decimal 327)
    defining Unicode char U+0148 (decimal 328)
    defining Unicode char U+014A (decimal 330)
    defining Unicode char U+014B (decimal 331)
+   defining Unicode char U+014C (decimal 332)
+   defining Unicode char U+014D (decimal 333)
+   defining Unicode char U+014E (decimal 334)
+   defining Unicode char U+014F (decimal 335)
    defining Unicode char U+0150 (decimal 336)
    defining Unicode char U+0151 (decimal 337)
    defining Unicode char U+0152 (decimal 338)
    defining Unicode char U+0153 (decimal 339)
    defining Unicode char U+0154 (decimal 340)
    defining Unicode char U+0155 (decimal 341)
+   defining Unicode char U+0156 (decimal 342)
+   defining Unicode char U+0157 (decimal 343)
    defining Unicode char U+0158 (decimal 344)
    defining Unicode char U+0159 (decimal 345)
    defining Unicode char U+015A (decimal 346)
    defining Unicode char U+015B (decimal 347)
+   defining Unicode char U+015C (decimal 348)
+   defining Unicode char U+015D (decimal 349)
    defining Unicode char U+015E (decimal 350)
    defining Unicode char U+015F (decimal 351)
    defining Unicode char U+0160 (decimal 352)
@@ -435,10 +481,22 @@ File: t1enc.dfu 2014/09/29 v1.1m UTF-8 support for inputenc
    defining Unicode char U+0163 (decimal 355)
    defining Unicode char U+0164 (decimal 356)
    defining Unicode char U+0165 (decimal 357)
+   defining Unicode char U+0168 (decimal 360)
+   defining Unicode char U+0169 (decimal 361)
+   defining Unicode char U+016A (decimal 362)
+   defining Unicode char U+016B (decimal 363)
+   defining Unicode char U+016C (decimal 364)
+   defining Unicode char U+016D (decimal 365)
    defining Unicode char U+016E (decimal 366)
    defining Unicode char U+016F (decimal 367)
    defining Unicode char U+0170 (decimal 368)
    defining Unicode char U+0171 (decimal 369)
+   defining Unicode char U+0172 (decimal 370)
+   defining Unicode char U+0173 (decimal 371)
+   defining Unicode char U+0174 (decimal 372)
+   defining Unicode char U+0175 (decimal 373)
+   defining Unicode char U+0176 (decimal 374)
+   defining Unicode char U+0177 (decimal 375)
    defining Unicode char U+0178 (decimal 376)
    defining Unicode char U+0179 (decimal 377)
    defining Unicode char U+017A (decimal 378)
@@ -446,6 +504,31 @@ File: t1enc.dfu 2014/09/29 v1.1m UTF-8 support for inputenc
    defining Unicode char U+017C (decimal 380)
    defining Unicode char U+017D (decimal 381)
    defining Unicode char U+017E (decimal 382)
+   defining Unicode char U+01CD (decimal 461)
+   defining Unicode char U+01CE (decimal 462)
+   defining Unicode char U+01CF (decimal 463)
+   defining Unicode char U+01D0 (decimal 464)
+   defining Unicode char U+01D1 (decimal 465)
+   defining Unicode char U+01D2 (decimal 466)
+   defining Unicode char U+01D3 (decimal 467)
+   defining Unicode char U+01D4 (decimal 468)
+   defining Unicode char U+01E2 (decimal 482)
+   defining Unicode char U+01E3 (decimal 483)
+   defining Unicode char U+01E6 (decimal 486)
+   defining Unicode char U+01E7 (decimal 487)
+   defining Unicode char U+01E8 (decimal 488)
+   defining Unicode char U+01E9 (decimal 489)
+   defining Unicode char U+01EA (decimal 490)
+   defining Unicode char U+01EB (decimal 491)
+   defining Unicode char U+01F0 (decimal 496)
+   defining Unicode char U+01F4 (decimal 500)
+   defining Unicode char U+01F5 (decimal 501)
+   defining Unicode char U+0218 (decimal 536)
+   defining Unicode char U+0219 (decimal 537)
+   defining Unicode char U+021A (decimal 538)
+   defining Unicode char U+021B (decimal 539)
+   defining Unicode char U+01E02 (decimal 7682)
+   defining Unicode char U+01E03 (decimal 7683)
    defining Unicode char U+200C (decimal 8204)
    defining Unicode char U+2013 (decimal 8211)
    defining Unicode char U+2014 (decimal 8212)
@@ -464,10 +547,12 @@ File: t1enc.dfu 2014/09/29 v1.1m UTF-8 support for inputenc
 Now handling font encoding OT1 ...
 ... processing UTF-8 mapping file for font encoding OT1
 
-(C:\Users\Chantell.Wetzel\Documents\Latex\tex\latex\base\ot1enc.dfu
-File: ot1enc.dfu 2014/09/29 v1.1m UTF-8 support for inputenc
+("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\base\ot1enc.dfu"
+File: ot1enc.dfu 2015/12/03 v1.1r UTF-8 support for inputenc
+   defining Unicode char U+00A0 (decimal 160)
    defining Unicode char U+00A1 (decimal 161)
    defining Unicode char U+00A3 (decimal 163)
+   defining Unicode char U+00AD (decimal 173)
    defining Unicode char U+00B8 (decimal 184)
    defining Unicode char U+00BF (decimal 191)
    defining Unicode char U+00C5 (decimal 197)
@@ -485,6 +570,14 @@ File: ot1enc.dfu 2014/09/29 v1.1m UTF-8 support for inputenc
    defining Unicode char U+0142 (decimal 322)
    defining Unicode char U+0152 (decimal 338)
    defining Unicode char U+0153 (decimal 339)
+   defining Unicode char U+0174 (decimal 372)
+   defining Unicode char U+0175 (decimal 373)
+   defining Unicode char U+0176 (decimal 374)
+   defining Unicode char U+0177 (decimal 375)
+   defining Unicode char U+0218 (decimal 536)
+   defining Unicode char U+0219 (decimal 537)
+   defining Unicode char U+021A (decimal 538)
+   defining Unicode char U+021B (decimal 539)
    defining Unicode char U+2013 (decimal 8211)
    defining Unicode char U+2014 (decimal 8212)
    defining Unicode char U+2018 (decimal 8216)
@@ -495,8 +588,8 @@ File: ot1enc.dfu 2014/09/29 v1.1m UTF-8 support for inputenc
 Now handling font encoding OMS ...
 ... processing UTF-8 mapping file for font encoding OMS
 
-(C:\Users\Chantell.Wetzel\Documents\Latex\tex\latex\base\omsenc.dfu
-File: omsenc.dfu 2014/09/29 v1.1m UTF-8 support for inputenc
+("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\base\omsenc.dfu"
+File: omsenc.dfu 2015/12/03 v1.1r UTF-8 support for inputenc
    defining Unicode char U+00A7 (decimal 167)
    defining Unicode char U+00B6 (decimal 182)
    defining Unicode char U+00B7 (decimal 183)
@@ -521,20 +614,20 @@ Now handling font encoding PD1 ...
    defining Unicode char U+2122 (decimal 8482)
    defining Unicode char U+2423 (decimal 9251)
 ))
-(C:\Users\Chantell.Wetzel\Documents\Latex\tex\latex\babel\babel.sty
-Package: babel 2014/09/25 3.9l The Babel package
+("C:\Program Files (x86)\MiKTeX 2.9\tex\generic\babel\babel.sty"
+Package: babel 2016/01/08 3.9n The Babel package
 
 *************************************
 * Local config file bblopts.cfg used
 *
-(C:\Users\Chantell.Wetzel\Documents\Latex\tex\latex\00miktex\bblopts.cfg
+("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\00miktex\bblopts.cfg"
 File: bblopts.cfg 2006/07/31 v1.0 MiKTeX 'babel' configuration
 )
-(C:\Users\Chantell.Wetzel\Documents\Latex\tex\latex\babel-english\english.ldf
+("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\babel-english\english.ldf"
 Language: english 2012/08/20 v3.3p English support from the babel system
 
-(C:\Users\Chantell.Wetzel\Documents\Latex\tex\latex\babel\babel.def
-File: babel.def 2014/09/25 3.9l Babel common definitions
+("C:\Program Files (x86)\MiKTeX 2.9\tex\generic\babel\babel.def"
+File: babel.def 2016/01/08 3.9n Babel common definitions
 \babel@savecnt=\count111
 \U@D=\dimen134
 )
@@ -542,28 +635,32 @@ File: babel.def 2014/09/25 3.9l Babel common definitions
 \l@australian = a dialect from \language\l@british 
 \l@newzealand = a dialect from \language\l@british 
 ))
-(C:\Users\Chantell.Wetzel\Documents\Latex\tex\latex\colortbl\colortbl.sty
+("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\colortbl\colortbl.sty"
 Package: colortbl 2012/02/13 v1.0a Color table columns (DPC)
 
-(C:\Users\Chantell.Wetzel\Documents\Latex\tex\latex\graphics\color.sty
-Package: color 2014/10/28 v1.1a Standard LaTeX Color (DPC)
+("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\graphics\color.sty"
+Package: color 2016/01/03 v1.1b Standard LaTeX Color (DPC)
 
-(C:\Users\Chantell.Wetzel\Documents\Latex\tex\latex\00miktex\color.cfg
+("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\00miktex\color.cfg"
 File: color.cfg 2007/01/18 v1.5 color configuration of teTeX/TeXLive
 )
-Package color Info: Driver file: pdftex.def on input line 137.
+Package color Info: Driver file: pdftex.def on input line 143.
 )
 \everycr=\toks20
 \minrowclearance=\skip50
 )
-(C:\Users\Chantell.Wetzel\Documents\Latex\tex\latex\base\fixltx2e.sty
-Package: fixltx2e 2014/09/29 v1.1s fixes to LaTeX
-LaTeX Info: Redefining \em on input line 430.
-)
-(C:\Users\Chantell.Wetzel\Documents\Latex\tex\latex\tools\hhline.sty
+("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\base\fixltx2e.sty"
+Package: fixltx2e 2015/06/22 v2.0b fixes to LaTeX (obsolete)
+
+
+Package fixltx2e Warning: fixltx2e is not required with releases after 2015
+(fixltx2e)                All fixes are now in the LaTeX kernel.
+(fixltx2e)                See the latexrelease package for details.
+
+) ("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\tools\hhline.sty"
 Package: hhline 2014/10/28 v2.03 Table rule package (DPC)
 )
-(C:\Users\Chantell.Wetzel\Documents\Latex\tex\latex\tools\dcolumn.sty
+("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\tools\dcolumn.sty"
 Package: dcolumn 2014/10/28 v1.06 decimal alignment package (DPC)
 )
 
@@ -571,27 +668,27 @@ Package hyperref Warning: Option `pdftex' has already been used,
 (hyperref)                setting the option has no effect on input line 30.
 
 Package hyperref Info: Option `colorlinks' set `true' on input line 30.
-(C:\Users\Chantell.Wetzel\Documents\Latex\tex\latex\oberdiek\hypcap.sty
+("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\oberdiek\hypcap.sty"
 Package: hypcap 2011/02/16 v1.11 Adjusting the anchors of captions (HO)
 )
-(C:\Users\Chantell.Wetzel\Documents\Latex\tex\latex\amsmath\amsmath.sty
+("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\amsmath\amsmath.sty"
 Package: amsmath 2013/01/14 v2.14 AMS math features
 \@mathmargin=\skip51
 
 For additional information on amsmath, use the `?' option.
-(C:\Users\Chantell.Wetzel\Documents\Latex\tex\latex\amsmath\amstext.sty
+("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\amsmath\amstext.sty"
 Package: amstext 2000/06/29 v2.01
 
-(C:\Users\Chantell.Wetzel\Documents\Latex\tex\latex\amsmath\amsgen.sty
+("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\amsmath\amsgen.sty"
 File: amsgen.sty 1999/11/30 v2.0
 \@emptytoks=\toks21
 \ex@=\dimen135
 ))
-(C:\Users\Chantell.Wetzel\Documents\Latex\tex\latex\amsmath\amsbsy.sty
+("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\amsmath\amsbsy.sty"
 Package: amsbsy 1999/11/29 v1.2d
 \pmbraise@=\dimen136
 )
-(C:\Users\Chantell.Wetzel\Documents\Latex\tex\latex\amsmath\amsopn.sty
+("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\amsmath\amsopn.sty"
 Package: amsopn 1999/12/14 v2.01 operator names
 )
 \inf@bad=\count112
@@ -632,7 +729,7 @@ LaTeX Font Info:    Redeclaring font encoding OMS on input line 567.
 LaTeX Info: Redefining \[ on input line 2665.
 LaTeX Info: Redefining \] on input line 2666.
 )
-(C:\Users\Chantell.Wetzel\Documents\Latex\tex\latex\float\float.sty
+("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\float\float.sty"
 Package: float 2001/11/08 v1.3d Float enhancements (AL)
 \c@float@type=\count124
 \float@exts=\toks26
@@ -640,7 +737,7 @@ Package: float 2001/11/08 v1.3d Float enhancements (AL)
 \@float@everytoks=\toks27
 \@floatcapt=\box33
 )
-(C:\Users\Chantell.Wetzel\Documents\Latex\tex\latex\fancyhdr\fancyhdr.sty
+("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\fancyhdr\fancyhdr.sty"
 \fancy@headwidth=\skip54
 \f@ncyO@elh=\skip55
 \f@ncyO@erh=\skip56
@@ -652,6 +749,8 @@ Package: float 2001/11/08 v1.3d Float enhancements (AL)
 \f@ncyO@orf=\skip62
 )
 (SS330_Main.aux)
+\openout1 = `SS330_Main.aux'.
+
 LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 53.
 LaTeX Font Info:    ... okay on input line 53.
 LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 53.
@@ -667,8 +766,7 @@ LaTeX Font Info:    ... okay on input line 53.
 LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 53.
 LaTeX Font Info:    ... okay on input line 53.
 LaTeX Font Info:    Try loading font information for T1+lmr on input line 53.
-
-(C:\Users\Chantell.Wetzel\Documents\Latex\tex\latex\lm\t1lmr.fd
+ ("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\lm\t1lmr.fd"
 File: t1lmr.fd 2009/10/30 v1.6 Font defs for Latin Modern
 )
 *geometry* driver: auto-detecting
@@ -705,7 +803,7 @@ File: t1lmr.fd 2009/10/30 v1.6 Font defs for Latin Modern
 * \@reversemarginfalse
 * (1in=72.27pt=25.4mm, 1cm=28.453pt)
 
-(C:\Users\Chantell.Wetzel\Documents\Latex\tex\context\base\supp-pdf.mkii
+("C:\Program Files (x86)\MiKTeX 2.9\tex\context\base\supp-pdf.mkii"
 [Loading MPS to PDF converter (version 2006.09.02).]
 \scratchcounter=\count125
 \scratchdimen=\dimen144
@@ -718,14 +816,24 @@ File: t1lmr.fd 2009/10/30 v1.6 Font defs for Latin Modern
 \MPnumerator=\count129
 \makeMPintoPDFobject=\count130
 \everyMPtoPDFconversion=\toks29
+) ("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\oberdiek\epstopdf-base.sty"
+Package: epstopdf-base 2010/02/09 v2.5 Base part for package epstopdf
+
+("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\oberdiek\grfext.sty"
+Package: grfext 2010/08/19 v1.1 Manage graphics extensions (HO)
+)
+Package grfext Info: Graphics extension search list:
+(grfext)             [.png,.pdf,.jpg,.mps,.jpeg,.jbig2,.jb2,.PNG,.PDF,.JPG,.JPE
+G,.JBIG2,.JB2,.eps]
+(grfext)             \AppendGraphicsExtensions on input line 452.
 )
 \AtBeginShipoutBox=\box35
 Package hyperref Info: Link coloring ON on input line 53.
- (C:\Users\Chantell.Wetzel\Documents\Latex\tex\latex\hyperref\nameref.sty
+
+("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\hyperref\nameref.sty"
 Package: nameref 2012/10/27 v2.43 Cross-referencing by name of section
 
-(C:\Users\Chantell.Wetzel\Documents\Latex\tex\generic\oberdiek\gettitlestring.s
-ty
+("C:\Program Files (x86)\MiKTeX 2.9\tex\generic\oberdiek\gettitlestring.sty"
 Package: gettitlestring 2010/12/03 v1.4 Cleanup title references (HO)
 )
 \c@section@level=\count131
@@ -733,30 +841,33 @@ Package: gettitlestring 2010/12/03 v1.4 Cleanup title references (HO)
 LaTeX Info: Redefining \ref on input line 53.
 LaTeX Info: Redefining \pageref on input line 53.
 LaTeX Info: Redefining \nameref on input line 53.
- (SS330_Main.out) (SS330_Main.out)
+
+(SS330_Main.out) (SS330_Main.out)
 \@outlinefile=\write3
+\openout3 = `SS330_Main.out'.
+
  [1
 
-{C:/Users/Chantell.Wetzel/AppData/Local/MiKTeX/2.9/pdftex/config/pdftex.map}] (
-SS330_Main.toc
+{C:/Users/teresa.amar/AppData/Local/MiKTeX/2.9/pdftex/config/pdftex.map}] (SS33
+0_Main.toc
 LaTeX Font Info:    Try loading font information for OT1+lmr on input line 6.
 
-(C:\Users\Chantell.Wetzel\Documents\Latex\tex\latex\lm\ot1lmr.fd
+("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\lm\ot1lmr.fd"
 File: ot1lmr.fd 2009/10/30 v1.6 Font defs for Latin Modern
 )
 LaTeX Font Info:    Try loading font information for OML+lmm on input line 6.
 
-(C:\Users\Chantell.Wetzel\Documents\Latex\tex\latex\lm\omllmm.fd
+("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\lm\omllmm.fd"
 File: omllmm.fd 2009/10/30 v1.6 Font defs for Latin Modern
 )
 LaTeX Font Info:    Try loading font information for OMS+lmsy on input line 6.
 
-(C:\Users\Chantell.Wetzel\Documents\Latex\tex\latex\lm\omslmsy.fd
+("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\lm\omslmsy.fd"
 File: omslmsy.fd 2009/10/30 v1.6 Font defs for Latin Modern
 )
 LaTeX Font Info:    Try loading font information for OMX+lmex on input line 6.
 
-(C:\Users\Chantell.Wetzel\Documents\Latex\tex\latex\lm\omxlmex.fd
+("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\lm\omxlmex.fd"
 File: omxlmex.fd 2009/10/30 v1.6 Font defs for Latin Modern
 )
 LaTeX Font Info:    External font `lmex10' loaded for size
@@ -765,11 +876,15 @@ LaTeX Font Info:    External font `lmex10' loaded for size
 (Font)              <8> on input line 6.
 LaTeX Font Info:    External font `lmex10' loaded for size
 (Font)              <6> on input line 6.
- [1])
+ [1] [2])
 \tf@toc=\write4
+\openout4 = `SS330_Main.toc'.
 
-[2] (SS330_Main.lof)
+ [3]
+(SS330_Main.lof)
 \tf@lof=\write5
+\openout5 = `SS330_Main.lof'.
+
 pdfTeX warning (ext4): destination with the same identifier (name{page.i}) has 
 been already used, duplicate ignored
 <to be read again> 
@@ -1401,12 +1516,12 @@ Overfull \hbox (13.07784pt too wide) in alignment at lines 215--221
 [16] [17]) (8optional_inputs.tex
 LaTeX Font Info:    Try loading font information for T1+lmtt on input line 7.
 
-(C:\Users\Chantell.Wetzel\Documents\Latex\tex\latex\lm\t1lmtt.fd
+("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\lm\t1lmtt.fd"
 File: t1lmtt.fd 2009/10/30 v1.6 Font defs for Latin Modern
 )
 LaTeX Font Info:    Try loading font information for OMS+lmr on input line 29.
 
-(C:\Users\Chantell.Wetzel\Documents\Latex\tex\latex\lm\omslmr.fd
+("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\lm\omslmr.fd"
 File: omslmr.fd 2009/10/30 v1.6 Font defs for Latin Modern
 )
 LaTeX Font Info:    Font shape `OMS/lmr/m/n' in size <12> not available
@@ -2003,218 +2118,213 @@ Underfull \hbox (badness 10000) in paragraph at lines 9--11
  []
 
 [44]
-Underfull \hbox (badness 10000) in paragraph at lines 20--22
+Underfull \hbox (badness 10000) in paragraph at lines 21--23
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 23--25
+Underfull \hbox (badness 10000) in paragraph at lines 24--26
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 26--28
+Underfull \hbox (badness 10000) in paragraph at lines 27--29
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 29--31
+Underfull \hbox (badness 10000) in paragraph at lines 30--32
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 37--39
+Underfull \hbox (badness 10000) in paragraph at lines 38--40
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 39--41
+Underfull \hbox (badness 10000) in paragraph at lines 40--42
 
  []
 
 [45]
-Underfull \hbox (badness 10000) in paragraph at lines 76--80
+Underfull \hbox (badness 10000) in paragraph at lines 77--81
 
  []
 
 [46]
-Overfull \hbox (14.22638pt too wide) in paragraph at lines 126--126
+Overfull \hbox (14.22638pt too wide) in paragraph at lines 127--127
 []|$[]$|  
  []
 
 
-Overfull \vbox (10.50002pt too high) detected at line 126
+Overfull \vbox (10.50002pt too high) detected at line 127
  []
 
 
-Overfull \hbox (14.22638pt too wide) in paragraph at lines 128--128
+Overfull \hbox (14.22638pt too wide) in paragraph at lines 129--129
 []|$[]$|  
  []
 
 
-Overfull \hbox (14.22638pt too wide) in paragraph at lines 131--131
+Overfull \hbox (14.22638pt too wide) in paragraph at lines 132--132
 []|$[]$|  
  []
 
 
-Overfull \vbox (10.50002pt too high) detected at line 131
+Overfull \vbox (10.50002pt too high) detected at line 132
  []
 
 
-Overfull \hbox (14.22638pt too wide) in paragraph at lines 135--135
+Overfull \hbox (14.22638pt too wide) in paragraph at lines 136--136
 []|$[]$|  
  []
 
 
-Overfull \hbox (14.22638pt too wide) in paragraph at lines 147--147
+Overfull \hbox (14.22638pt too wide) in paragraph at lines 148--148
 []|$[]$|  
  []
 
 
-Overfull \vbox (27.5pt too high) detected at line 151
+Overfull \vbox (27.5pt too high) detected at line 152
  []
 
 
-Overfull \hbox (170.71654pt too wide) in paragraph at lines 154--154
+Overfull \hbox (170.71654pt too wide) in paragraph at lines 155--155
 []|$[]$|  
  []
 
 
-Overfull \hbox (170.71654pt too wide) in paragraph at lines 160--160
+Overfull \hbox (170.71654pt too wide) in paragraph at lines 161--161
 []|$[]$|  
  []
 
 
-Overfull \vbox (21.2665pt too high) detected at line 160
+Overfull \vbox (21.2665pt too high) detected at line 161
  []
 
 
-Overfull \vbox (27.5pt too high) detected at line 167
+Overfull \vbox (27.5pt too high) detected at line 168
  []
 
 [47]
-Overfull \vbox (13.0pt too high) detected at line 171
+Overfull \vbox (13.0pt too high) detected at line 172
  []
 
 [48]
-Overfull \hbox (6.66258pt too wide) in paragraph at lines 200--200
-[]|\T1/lmr/m/n/12 0.50| 
+Overfull \vbox (56.5pt too high) detected at line 211
  []
 
 
-Overfull \vbox (56.5pt too high) detected at line 213
+Overfull \vbox (129.0pt too high) detected at line 219
  []
 
 
-Overfull \vbox (129.0pt too high) detected at line 221
+Overfull \vbox (42.0pt too high) detected at line 229
  []
 
 
-Overfull \vbox (42.0pt too high) detected at line 231
+Overfull \vbox (13.0pt too high) detected at line 233
  []
 
 
-Overfull \vbox (13.0pt too high) detected at line 235
- []
-
-
-Overfull \hbox (6.66258pt too wide) in paragraph at lines 246--246
+Overfull \hbox (6.66258pt too wide) in paragraph at lines 244--244
 []|\T1/lmr/m/n/12 1.66| 
  []
 
 
-Underfull \hbox (badness 2865) in paragraph at lines 249--250
+Underfull \hbox (badness 2865) in paragraph at lines 247--248
 []|\T1/lmr/m/n/12 Growth Amax (A2): Ref-er-ence age for sec-ond size-at-age
  []
 
 [49] [50]
-Underfull \hbox (badness 10000) in paragraph at lines 313--314
+Underfull \hbox (badness 10000) in paragraph at lines 311--312
 []|\T1/lmr/m/n/12 3 = for each GP x gen-der, pa-ram-e-ter de-fines off-set
  []
 
 
-Underfull \hbox (badness 3989) in paragraph at lines 313--314
+Underfull \hbox (badness 3989) in paragraph at lines 311--312
 \T1/lmr/m/n/12 from GP 1 gen-der 1. For fe-males, given that natM
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 313--314
+Underfull \hbox (badness 10000) in paragraph at lines 311--312
 \T1/lmr/m/n/12 op-tion is break-point and there are two break-points,
  []
 
 
-Underfull \hbox (badness 1097) in paragraph at lines 313--314
+Underfull \hbox (badness 1097) in paragraph at lines 311--312
 \T1/lmr/m/n/12 pa-ram-e-ter de-fines off-set from early age (e.g., old_female_M
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 313--314
+Underfull \hbox (badness 10000) in paragraph at lines 311--312
 \T1/lmr/m/n/12 = young_female_M * exp(old_female_M_parameter).
  []
 
 
-Underfull \hbox (badness 4899) in paragraph at lines 313--314
+Underfull \hbox (badness 4899) in paragraph at lines 311--312
 \T1/lmr/m/n/12 For males, given that natM op-tion is break-point and
  []
 
 
-Underfull \hbox (badness 3449) in paragraph at lines 313--314
+Underfull \hbox (badness 3449) in paragraph at lines 311--312
 \T1/lmr/m/n/12 there are two break-points, pa-ram-e-ter is de-fined as off-set
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 313--314
+Underfull \hbox (badness 10000) in paragraph at lines 311--312
 \T1/lmr/m/n/12 from fe-males AND from early age (e.g., old_male_M
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 313--314
+Underfull \hbox (badness 10000) in paragraph at lines 311--312
 \T1/lmr/m/n/12 = young_female_M * exp(young_male_M_parameter) *
  []
 
 [51]
-Overfull \hbox (24.90932pt too wide) in paragraph at lines 333--333
+Overfull \hbox (24.90932pt too wide) in paragraph at lines 331--331
 []|\T1/lmr/m/n/12 Parameter| 
  []
 
 
-Overfull \hbox (24.90932pt too wide) in paragraph at lines 337--337
+Overfull \hbox (24.90932pt too wide) in paragraph at lines 335--335
 []|\T1/lmr/m/n/12 Parameter| 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 354--354
+Underfull \hbox (badness 10000) in paragraph at lines 352--352
 []|\T1/lmr/m/n/12 Richards
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 373--373
+Underfull \hbox (badness 10000) in paragraph at lines 371--371
 []|\T1/lmr/m/n/12 Richards
  []
 
 
-Underfull \hbox (badness 1845) in paragraph at lines 389--390
+Underfull \hbox (badness 1845) in paragraph at lines 387--388
 []|\T1/lmr/m/n/12 Two fe-cun-dity pa-ram-e-ters; us-age de-pends on the
  []
 
 [52]
-Underfull \hbox (badness 1281) in paragraph at lines 400--401
+Underfull \hbox (badness 1281) in paragraph at lines 398--399
 []|\T1/lmr/m/n/12 3 pa-ram-e-ters de-fine a nor-mal dis-tri-bu-tion for the
  []
 
 
-Underfull \hbox (badness 2020) in paragraph at lines 407--408
+Underfull \hbox (badness 2020) in paragraph at lines 405--406
 []|\T1/lmr/m/n/12 Recruitment ap-por-tion-ment by sea-son, if mul-ti-ple
  []
 
 
-Underfull \hbox (badness 4765) in paragraph at lines 410--411
+Underfull \hbox (badness 4765) in paragraph at lines 408--409
 []|\T1/lmr/m/n/12 Note that the or-der of re-cruit-ment dis-tri-bu-tion
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 417--417
+Underfull \hbox (badness 10000) in paragraph at lines 415--415
 []|\T1/lmr/m/n/12 Catch
  []
 
@@ -2239,384 +2349,848 @@ Overfull \hbox (3.02501pt too wide) in paragraph at lines 459--460
  []
 
 [55]
-Overfull \hbox (2.86699pt too wide) in paragraph at lines 487--489
+Overfull \hbox (2.86699pt too wide) in paragraph at lines 488--490
 \T1/lmr/m/n/12 A new growth op-tion, #3, has been in-tro-duced in V3.23. This o
 p-tion cre-ates age-specific
  []
 
 [56]
-Overfull \hbox (16.63116pt too wide) in paragraph at lines 495--496
+Overfull \hbox (16.63116pt too wide) in paragraph at lines 496--497
 \T1/lmr/m/n/12 biomass pro-duces one an-nual to-tal re-cruit-ment value and thi
 s an-nual re-cruit-ment was dis-tributed
  []
 
 [57]
-Overfull \hbox (4.14752pt too wide) in paragraph at lines 507--508
+Overfull \hbox (4.14752pt too wide) in paragraph at lines 508--509
 \T1/lmr/m/n/12 us-ing the des-ig-nated start age and end age. Pa-ram-e-ter val-
 ues are the ln(movement co-ef-fi-cient).
  []
 
 [58]
-Overfull \hbox (13.74422pt too wide) in paragraph at lines 511--512
+Overfull \hbox (13.74422pt too wide) in paragraph at lines 512--513
 []\T1/lmr/m/n/12 An added fea-ture is the read-ing of migr_firstage im-me-di-at
 ely af-ter read-ing the do_migration
  []
 
 
-Overfull \hbox (4.60443pt too wide) in paragraph at lines 539--539
+Overfull \hbox (4.60443pt too wide) in paragraph at lines 540--540
 []|\T1/lmr/m/n/12 <other| 
  []
 
 
-Overfull \hbox (5.8551pt too wide) in paragraph at lines 540--540
+Overfull \hbox (5.8551pt too wide) in paragraph at lines 541--541
 []|\T1/lmr/m/n/12 INIT| 
  []
 
 
-Overfull \hbox (11.5237pt too wide) in paragraph at lines 540--540
+Overfull \hbox (11.5237pt too wide) in paragraph at lines 541--541
 []|\T1/lmr/m/n/12 entries>| 
  []
 
 
-Overfull \hbox (4.60443pt too wide) in paragraph at lines 545--545
+Overfull \hbox (4.60443pt too wide) in paragraph at lines 546--546
 []|\T1/lmr/m/n/12 <other| 
  []
 
 
-Overfull \hbox (5.8551pt too wide) in paragraph at lines 546--546
+Overfull \hbox (5.8551pt too wide) in paragraph at lines 547--547
 []|\T1/lmr/m/n/12 INIT| 
  []
 
 
-Overfull \hbox (11.5237pt too wide) in paragraph at lines 546--546
+Overfull \hbox (11.5237pt too wide) in paragraph at lines 547--547
 []|\T1/lmr/m/n/12 entries>| 
  []
 
-[59] [60] <images/age_error.png, id=765, 481.8pt x 311.66437pt>
+[59] [60] <images/age_error.png, id=890, 481.8pt x 311.66437pt>
 File: images/age_error.png Graphic file (type png)
 
 <use images/age_error.png>
-Package pdftex.def Info: images/age_error.png used on input line 602.
+Package pdftex.def Info: images/age_error.png used on input line 603.
 (pdftex.def)             Requested size: 481.79881pt x 311.6636pt.
 
-Underfull \hbox (badness 10000) in paragraph at lines 600--605
+Underfull \hbox (badness 10000) in paragraph at lines 601--606
 
  []
 
 
-Overfull \hbox (12.0438pt too wide) in paragraph at lines 600--605
+Overfull \hbox (12.0438pt too wide) in paragraph at lines 601--606
 [] 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 600--605
+Underfull \hbox (badness 10000) in paragraph at lines 601--606
 
  []
 
 [61 <./images/age_error.png>] [62]
-Overfull \hbox (14.49142pt too wide) in paragraph at lines 634--634
+Overfull \hbox (14.49142pt too wide) in paragraph at lines 635--635
 []|\T1/lmr/m/n/12 Value| 
  []
 
 
-Overfull \hbox (14.49142pt too wide) in paragraph at lines 639--639
+Overfull \hbox (14.49142pt too wide) in paragraph at lines 640--640
 []|\T1/lmr/m/n/12 Value| 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 651--651
+Underfull \hbox (badness 10000) in paragraph at lines 652--652
 []|\T1/lmr/m/n/12 <short
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 651--651
+Underfull \hbox (badness 10000) in paragraph at lines 652--652
 \T1/lmr/m/n/12 pa-ram-e-ter
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 657--657
+Underfull \hbox (badness 10000) in paragraph at lines 658--658
 []|\T1/lmr/m/n/12 <short
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 657--657
+Underfull \hbox (badness 10000) in paragraph at lines 658--658
 \T1/lmr/m/n/12 pa-ram-e-ter
  []
 
 
-Underfull \hbox (badness 1648) in paragraph at lines 660--661
+Underfull \hbox (badness 1648) in paragraph at lines 661--662
 \T1/lmr/m/n/12 se-lects that fac-tor for sea-son-al-ity ([][]\T1/lmr/m/it/12 cl
 ick here for more
  []
 
 
-Underfull \hbox (badness 2762) in paragraph at lines 662--663
+Underfull \hbox (badness 2762) in paragraph at lines 663--664
 []|\T1/lmr/m/n/12 If any fac-tors have sea-son-al-ity, then read N sea-sons
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 663--663
+Underfull \hbox (badness 10000) in paragraph at lines 664--664
 []|\T1/lmr/m/n/12 <short
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 663--663
+Underfull \hbox (badness 10000) in paragraph at lines 664--664
 \T1/lmr/m/n/12 pa-ram-e-ter
  []
 
 [63]
 
-LaTeX Warning: Command \textquoteright invalid in math mode on input line 727.
+LaTeX Warning: Command \textquoteright invalid in math mode on input line 728.
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 727--728
+Underfull \hbox (badness 10000) in paragraph at lines 728--729
 []|\T1/lmr/m/n/12 environmental link-age co-ef-fi-cient. The re-cruit-ment
  []
 
 
-Underfull \hbox (badness 2608) in paragraph at lines 727--728
+Underfull \hbox (badness 2608) in paragraph at lines 728--729
 \T1/lmr/m/n/12 pa-ram-e-ters are short pa-ram-e-ters, so can-not have the
  []
 
 
-Underfull \hbox (badness 1824) in paragraph at lines 727--728
+Underfull \hbox (badness 1824) in paragraph at lines 728--729
 \T1/lmr/m/n/12 generic block or en-vi-ron-men-tal link op-tions. In-stead,
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 729--730
+Underfull \hbox (badness 10000) in paragraph at lines 730--731
 []|\T1/lmr/m/n/12 Offset for ini-tial equi-lib-rium re-cruit-ment to vir-gin
  []
 
 
-Underfull \hbox (badness 1424) in paragraph at lines 736--737
+Underfull \hbox (badness 1424) in paragraph at lines 737--738
 \T1/lmr/m/n/12 equi-lib-rium (by en-ter-ing a value for the en-vi-ron-men-tal
  []
 
 
-Underfull \hbox (badness 1178) in paragraph at lines 749--749
+Underfull \hbox (badness 1178) in paragraph at lines 750--750
 []|\T1/lmr/m/n/12 Main recr devs
  []
 
 
-Underfull \hbox (badness 1178) in paragraph at lines 751--751
+Underfull \hbox (badness 1178) in paragraph at lines 752--752
 []|\T1/lmr/m/n/12 Main recr devs
  []
 
 
-Underfull \hbox (badness 4144) in paragraph at lines 753--753
+Underfull \hbox (badness 4144) in paragraph at lines 754--754
 []|\T1/lmr/m/n/12 Main recr dev
  []
 
 [64] [65] [66]
-Underfull \hbox (badness 10000) in paragraph at lines 787--787
+Underfull \hbox (badness 10000) in paragraph at lines 788--788
 []|\T1/lmr/m/n/12 <parameter
  []
 
 [67] [68]
-Overfull \hbox (11.61137pt too wide) in paragraph at lines 797--798
+Overfull \hbox (11.61137pt too wide) in paragraph at lines 798--799
 \T1/lmr/m/n/12 re-la-tion-ship. SS has the op-tion of the Beverton-Holt, Ricker
 , Hockey-Stick, and a survival-based
  []
 
 [69]
-Overfull \hbox (8.37704pt too wide) in paragraph at lines 836--837
+Overfull \hbox (8.37704pt too wide) in paragraph at lines 837--838
 \T1/lmr/m/n/12 about 0.4 for a left-shifted spawner-recruitment curve, and 3.0 
 for a right-shifted
  []
 
-[70] <images/survival_code.png, id=823, 431.36156pt x 489.32813pt>
+[70] <images/survival_code.png, id=948, 431.36156pt x 489.32813pt>
 File: images/survival_code.png Graphic file (type png)
 
 <use images/survival_code.png>
-Package pdftex.def Info: images/survival_code.png used on input line 850.
+Package pdftex.def Info: images/survival_code.png used on input line 851.
 (pdftex.def)             Requested size: 431.3605pt x 489.32692pt.
  [71] [72 <./images/survival_code.png>]
-Overfull \hbox (3.77077pt too wide) in paragraph at lines 870--871
+Overfull \hbox (3.77077pt too wide) in paragraph at lines 871--872
 \T1/lmr/m/n/12 The re-cruit-ment bias ad-just-ment im-ple-mented in SS is based
  upon the work be-ing doc-u-mented
  []
 
 
-Overfull \hbox (6.43156pt too wide) in paragraph at lines 870--871
+Overfull \hbox (6.43156pt too wide) in paragraph at lines 871--872
 \T1/lmr/m/n/12 con-cept is based upon the fol-low-ing logic. Sig-maR rep-re-sen
 ts the true vari-abil-ity of re-cruit-ment
  []
 
 [73]
-Overfull \hbox (7.12862pt too wide) in paragraph at lines 881--882
+Overfull \hbox (7.12862pt too wide) in paragraph at lines 882--883
 \T1/lmr/m/n/12 of the off-set then de-pends upon the par-ti-tion-ing of sig-maR
  into be-tween and within re-cruit-ment
  []
 
-<images/10_bias.png, id=838, 286.06876pt x 224.33812pt>
+<images/10_bias.png, id=963, 286.06876pt x 224.33812pt>
 File: images/10_bias.png Graphic file (type png)
 
 <use images/10_bias.png>
-Package pdftex.def Info: images/10_bias.png used on input line 884.
+Package pdftex.def Info: images/10_bias.png used on input line 885.
 (pdftex.def)             Requested size: 286.06805pt x 224.33757pt.
  [74]
-Overfull \hbox (21.97087pt too wide) in paragraph at lines 890--891
+Overfull \hbox (21.97087pt too wide) in paragraph at lines 891--892
 []\T1/lmr/m/n/12 In MCMC mode, the model still draws re-cruit-ment de-vi-a-tion
 s from the log-nor-mal dis-tri-bu-tion,
  []
 
 
-Overfull \hbox (15.91344pt too wide) in paragraph at lines 890--891
+Overfull \hbox (15.91344pt too wide) in paragraph at lines 891--892
 \T1/lmr/m/n/12 re-cruit-ment de-vi-a-tions be-cause the model is now re-samplin
 g from the full log-nor-mal dis-tri-bu-tion
  []
 
 [75 <./images/10_bias.png>]
-Overfull \hbox (7.68166pt too wide) in paragraph at lines 906--907
+Overfull \hbox (7.68166pt too wide) in paragraph at lines 907--908
 \T1/lmr/m/n/12 A non-equilibrium ini-tial age com-po-si-tion is achieved by set
 -ting the first year of the re-cruit-ment
  []
 
 
-Underfull \hbox (badness 2626) in paragraph at lines 956--956
+Underfull \hbox (badness 2626) in paragraph at lines 957--957
 []|\T1/lmr/m/n/12 1 1980 1 0.20
  []
 
 [76] [77]
-Overfull \hbox (0.83087pt too wide) in paragraph at lines 992--993
+Overfull \hbox (0.83087pt too wide) in paragraph at lines 993--994
 []\T1/lmr/m/n/12 <0 = mir-ror the Q from an-other (lower num-bered sur-vey des-
 ig-nated by abs(value)) 
  []
 
 
-Overfull \hbox (5.7429pt too wide) in paragraph at lines 995--996
+Overfull \hbox (5.7429pt too wide) in paragraph at lines 996--997
 \T1/lmr/m/n/12 prior sec-tion. How-ever, be-cause there is no in-her-ent con-st
 raint that these de-vi-a-tions
  []
 
 [78]
-Overfull \hbox (7.16463pt too wide) in paragraph at lines 996--997
+Overfull \hbox (7.16463pt too wide) in paragraph at lines 997--998
 \T1/lmr/m/n/12 ob-ser-va-tions will be de-vi-a-tions in ran-dom walk of ln(Q). 
 These de-vi-a-tion pa-ram-e-ters
  []
 
 
-Overfull \hbox (7.26268pt too wide) in alignment at lines 1004--1009
+Overfull \hbox (7.26268pt too wide) in alignment at lines 1005--1010
  [] [] [] [] [] 
  []
 
 
-Overfull \hbox (7.26268pt too wide) in alignment at lines 1009--1014
+Overfull \hbox (7.26268pt too wide) in alignment at lines 1010--1015
  [] [] [] [] [] 
  []
 
 
-Overfull \hbox (7.26268pt too wide) in alignment at lines 1014--1017
+Overfull \hbox (7.26268pt too wide) in alignment at lines 1015--1018
  [] [] [] [] [] 
  []
 
 
-Overfull \hbox (7.26268pt too wide) in alignment at lines 1017--1018
+Overfull \hbox (7.26268pt too wide) in alignment at lines 1018--1019
  [] [] [] [] [] 
  []
 
 
-Overfull \vbox (84.00002pt too high) detected at line 1032
+Overfull \vbox (84.00002pt too high) detected at line 1033
  []
 
 
-Overfull \vbox (69.50002pt too high) detected at line 1040
+Overfull \vbox (69.50002pt too high) detected at line 1041
  []
 
 
-Overfull \hbox (7.26268pt too wide) in alignment at lines 1018--1042
+Overfull \hbox (7.26268pt too wide) in alignment at lines 1019--1043
  [] [] [] [] [] 
  []
 
 
-Overfull \hbox (7.26268pt too wide) in alignment at lines 1042--1048
+Overfull \hbox (7.26268pt too wide) in alignment at lines 1043--1049
  [] [] [] [] [] 
  []
 
 [79]
-Overfull \hbox (5.29118pt too wide) in paragraph at lines 1056--1056
+Overfull \hbox (5.29118pt too wide) in paragraph at lines 1057--1057
 []|\T1/lmr/m/n/12 PR_-type| 
  []
 
 [80]
-Underfull \vbox (badness 10000) detected at line 1108
+Underfull \vbox (badness 10000) detected at line 1109
  []
 
 [81]
-Underfull \hbox (badness 1454) in paragraph at lines 1124--1125
+Underfull \hbox (badness 1454) in paragraph at lines 1136--1137
 []|\T1/lmr/m/n/12 Discontinued: Set size se-lec-tiv-ity equal to fe-male
  []
 
 
-Underfull \vbox (badness 10000) detected at line 1139
+Underfull \vbox (badness 10000) detected at line 1151
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 1142--1143
+Underfull \hbox (badness 10000) in paragraph at lines 1154--1155
 []|\T1/lmr/m/n/12 Sets ex-pected sur-vey abun-dance equal to
  []
 
 
-Underfull \hbox (badness 7869) in paragraph at lines 1142--1143
+Underfull \hbox (badness 7869) in paragraph at lines 1154--1155
 \T1/lmr/m/n/12 exp(recruitment de-vi-a-tion). This is use-ful if
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 1143--1144
+Underfull \hbox (badness 10000) in paragraph at lines 1155--1156
 []|\T1/lmr/m/n/12 Sets ex-pected sur-vey abun-dance equal to
  []
 
 
-Underfull \hbox (badness 1259) in paragraph at lines 1143--1144
+Underfull \hbox (badness 1259) in paragraph at lines 1155--1156
 \T1/lmr/m/n/12 exp(recruitment de-vi-a-tion ) * Spawn-Biomass. So
  []
 
 
-Underfull \hbox (badness 4846) in paragraph at lines 1144--1145
+Underfull \hbox (badness 4846) in paragraph at lines 1156--1157
 []|\T1/lmr/m/n/12 Sets ex-pected sur-vey abun-dance equal to age-0
  []
 
-[82])
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 101.
- [83]
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 101.
+[82]
+Underfull \vbox (badness 10000) detected at line 1202
+ []
+
+[83]
+Underfull \hbox (badness 10000) in paragraph at lines 1214--1227
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 1214--1227
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 1214--1227
+
+ []
+
+[84] [85] <images/Selex17_RandomWalk.png, id=1044, 433.62pt x 410.2828pt>
+File: images/Selex17_RandomWalk.png Graphic file (type png)
+
+<use images/Selex17_RandomWalk.png>
+Package pdftex.def Info: images/Selex17_RandomWalk.png used on input line 1260.
+
+(pdftex.def)             Requested size: 433.61894pt x 410.2818pt.
+ [86 <./images/Selex17_RandomWalk.png>]
+Overfull \hbox (4.56143pt too wide) in paragraph at lines 1278--1279
+\T1/lmr/m/n/12 be-tween PEAK1 and 99% of the lower edge of the last size bin in
+ the model. Trans-formed
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 1282--1285
+
+ []
+
+[87] <images/DoubleNormal.png, id=1054, 313.9228pt x 228.855pt>
+File: images/DoubleNormal.png Graphic file (type png)
+
+<use images/DoubleNormal.png>
+Package pdftex.def Info: images/DoubleNormal.png used on input line 1313.
+(pdftex.def)             Requested size: 313.92203pt x 228.85443pt.
+
+Underfull \hbox (badness 10000) in paragraph at lines 1315--1322
+
+ []
+
+[88 <./images/DoubleNormal.png>]
+Underfull \hbox (badness 10000) in paragraph at lines 1337--1341
+
+ []
+
+
+Overfull \hbox (8.61852pt too wide) in paragraph at lines 1345--1346
+\T1/lmr/m/n/12 0.001 pro-vides a nearly asymp-totic curve. Val-ues above 0.2 pr
+o-vide strongly dome-shaped
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 1349--1351
+
+ []
+
+<images/ExpLogistic.png, id=1059, 367.3725pt x 218.31563pt>
+File: images/ExpLogistic.png Graphic file (type png)
+
+<use images/ExpLogistic.png>
+Package pdftex.def Info: images/ExpLogistic.png used on input line 1352.
+(pdftex.def)             Requested size: 367.37158pt x 218.31508pt.
+ [89]
+Underfull \hbox (badness 10000) in paragraph at lines 1354--1360
+
+ []
+
+
+Overfull \hbox (2.3972pt too wide) in paragraph at lines 1372--1373
+[]\T1/lmr/m/n/12 One of these se-lec-tiv-ity pa-ram-e-ter val-ues should be hel
+d con-stant so oth-ers are es-ti-mated
+ []
+
+[90 <./images/ExpLogistic.png>]
+Underfull \hbox (badness 10000) in paragraph at lines 1378--1379
+
+ []
+
+<images/CubicSplineCode.png, id=1069, 460.72125pt x 264.99pt>
+File: images/CubicSplineCode.png Graphic file (type png)
+
+<use images/CubicSplineCode.png>
+Package pdftex.def Info: images/CubicSplineCode.png used on input line 1380.
+(pdftex.def)             Requested size: 460.72012pt x 264.98935pt.
+
+Underfull \hbox (badness 10000) in paragraph at lines 1383--1384
+
+ []
+
+<images/CubicSpline.png, id=1070, 344.78813pt x 237.13594pt>
+File: images/CubicSpline.png Graphic file (type png)
+
+<use images/CubicSpline.png>
+Package pdftex.def Info: images/CubicSpline.png used on input line 1385.
+(pdftex.def)             Requested size: 344.78728pt x 237.13535pt.
+ [91 <./images/CubicSplineCode.png>]
+Overfull \hbox (10.83955pt too wide) in paragraph at lines 1387--1391
+\T1/lmr/m/n/12 spe-cific pa-ram-e-ter la-bels and to auto-generate se-lec-tiv-i
+ty pa-ram-e-ter setup. The auto-generation
+ []
+
+
+Overfull \hbox (32.83586pt too wide) in paragraph at lines 1401--1402
+\T1/lmr/m/n/12 along the cu-mu-la-tive size dis-tri-bu-tion. These cal-cu-lated
+ node val-ues are out-put into con-trol.ss_-new.
+ []
+
+[92 <./images/CubicSpline.png>]
+Overfull \hbox (8.94019pt too wide) in paragraph at lines 1407--1407
+[]|\T1/lmr/m/n/12 PR_-TYPE| 
+ []
+
+
+Overfull \hbox (5.98978pt too wide) in paragraph at lines 1407--1407
+[]|\T1/lmr/m/n/12 PHASE| 
+ []
+
+
+Overfull \hbox (2.22786pt too wide) in paragraph at lines 1410--1410
+[]|\T1/lmr/m/n/12 -0.001| 
+ []
+
+
+Overfull \hbox (1.01752pt too wide) in alignment at lines 1406--1419
+ [] [] [] [] [] [] [] [] [] 
+ []
+
+[93]
+Underfull \hbox (badness 10000) in paragraph at lines 1445--1446
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 1465--1469
+
+ []
+
+[94]
+Underfull \hbox (badness 10000) in paragraph at lines 1478--1482
+
+ []
+
+[95]
+Overfull \hbox (5.03629pt too wide) in alignment at lines 1514--1517
+ [] [] [] [] 
+ []
+
+
+Overfull \hbox (5.03629pt too wide) in alignment at lines 1517--1521
+ [] [] [] [] 
+ []
+
+
+Overfull \hbox (5.03629pt too wide) in alignment at lines 1521--1523
+ [] [] [] [] 
+ []
+
+
+Overfull \hbox (5.03629pt too wide) in alignment at lines 1523--1525
+ [] [] [] [] 
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 1528--1529
+[]|\T1/lmr/m/n/12 If any se-lec-tiv-ity pa-ram-e-ters use
+ []
+
+
+Underfull \hbox (badness 5741) in paragraph at lines 1528--1529
+\T1/lmr/m/n/12 en-vi-ron-men-tal link-age, then read next
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 1529--1529
+[]|\T1/lmr/m/n/12 Custom
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 1529--1529
+\T1/lmr/m/n/12 En-vi-ron-men-tal
+ []
+
+
+Underfull \hbox (badness 1769) in paragraph at lines 1531--1533
+\T1/lmr/m/n/12 SEL-parm with Env-var>0. Note that
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 1547--1548
+[]|\T1/lmr/m/n/12 If any se-lec-tiv-ity pa-ram-e-ters use
+ []
+
+
+Underfull \hbox (badness 7796) in paragraph at lines 1547--1548
+\T1/lmr/m/n/12 en-vi-ron-men-tal links, blocks or an-nual
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 1548--1548
+[]|\T1/lmr/m/n/12 Selparm Ad-just
+ []
+
+
+Underfull \hbox (badness 5022) in paragraph at lines 1549--1550
+\T1/lmr/m/n/12 trans-for-ma-tion to as-sure that ad-justed
+ []
+
+
+Overfull \hbox (5.03629pt too wide) in alignment at lines 1525--1551
+ [] [] [] [] 
+ []
+
+[96] [97]
+Overfull \hbox (4.93297pt too wide) in paragraph at lines 1565--1565
+[]|\T1/lmr/m/n/12 #LO| 
+ []
+
+
+Overfull \hbox (4.43239pt too wide) in paragraph at lines 1565--1565
+[]|\T1/lmr/m/n/12 INIT| 
+ []
+
+
+Overfull \hbox (3.10057pt too wide) in paragraph at lines 1565--1565
+[]|\T1/lmr/m/n/12 PRIOR| 
+ []
+
+
+Overfull \hbox (8.94019pt too wide) in paragraph at lines 1565--1565
+[]|\T1/lmr/m/n/12 PR_-TYPE| 
+ []
+
+
+Overfull \hbox (8.1307pt too wide) in alignment at lines 1557--1581
+ [] [] [] [] [] [] [] [] [] 
+ []
+
+
+Overfull \hbox (2.8099pt too wide) in alignment at lines 1592--1609
+ [] [] [] [] [] 
+ []
+
+[98]
+Overfull \hbox (17.93597pt too wide) in paragraph at lines 1627--1628
+[]\T1/lmr/m/n/12 The re-port.sso out-put file con-tains in-for-ma-tion use-ful 
+for de-ter-min-ing if an ad-just-ment
+ []
+
+
+Overfull \hbox (0.66605pt too wide) in paragraph at lines 1628--1629
+[]\T1/lmr/m/n/12 Because the ac-tual in-put vari-ance fac-tors are mod-i-fied, 
+it is these mod-i-fied vari-ance
+ []
+
+
+Overfull \hbox (0.30878pt too wide) in paragraph at lines 1628--1629
+\T1/lmr/m/n/12 con-trol files used to an-a-lyze boot-strap gen-er-ated data fil
+es should have the vari-ance
+ []
+
+[99]
+Overfull \hbox (9.48906pt too wide) in paragraph at lines 1636--1643
+ [] 
+ []
+
+
+Overfull \hbox (2.73993pt too wide) in alignment at lines 1653--1663
+ [] [] [] [] [] 
+ []
+
+
+Underfull \vbox (badness 10000) detected at line 1663
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 1665--1670
+
+ []
+
+[100]
+Overfull \hbox (7.28456pt too wide) in paragraph at lines 1703--1703
+[]|\T1/lmr/m/n/12 #Fleet| 
+ []
+
+
+Overfull \hbox (10.72821pt too wide) in paragraph at lines 1703--1703
+[]|\T1/lmr/m/n/12 Len/Age| 
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 1703--1703
+[]|\T1/lmr/m/n/12 Nselex
+ []
+
+
+Overfull \hbox (4.777pt too wide) in paragraph at lines 1703--1703
+[]|\T1/lmr/m/n/12 Growth
+ []
+
+
+Overfull \hbox (4.85785pt too wide) in paragraph at lines 1703--1703
+\T1/lmr/m/n/12 Pat-tern| 
+ []
+
+
+Overfull \hbox (10.24098pt too wide) in paragraph at lines 1703--1703
+[]|\T1/lmr/m/n/12 Ngrowth
+ []
+
+
+Underfull \vbox (badness 10000) detected at line 1707
+ []
+
+[101]
+Overfull \hbox (9.48906pt too wide) in paragraph at lines 1725--1730
+ [] 
+ []
+
+
+Overfull \hbox (9.48906pt too wide) in paragraph at lines 1733--1738
+ [] 
+ []
+
+[102]
+Overfull \hbox (9.48906pt too wide) in paragraph at lines 1741--1746
+ [] 
+ []
+
+
+Overfull \hbox (5.90431pt too wide) in alignment at lines 1749--1763
+ [] [] [] [] [] [] [] [] [] [] 
+ []
+
+[103]
+Overfull \hbox (5.91924pt too wide) in paragraph at lines 1776--1777
+[]\T1/lmr/m/n/12 If the pa-ram-e-ter ad-just-ment method is set to a value of 2
+, then each pa-ram-e-ter time-varying
+ []
+
+
+Overfull \hbox (5.48772pt too wide) in paragraph at lines 1776--1777
+\T1/lmr/m/n/12 within the min-max bounds of the pa-ram-e-ter be-ing ad-justed. 
+With this method, mul-ti-plica-tive
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 1821--1822
+[]|\T1/lmr/m/n/12 Block
+ []
+
+
+Overfull \hbox (12.5835pt too wide) in alignment at lines 1818--1825
+ [] [] [] [] [] [] [] 
+ []
+
+[104] <images/TimeVarying.png, id=1149, 431.36156pt x 321.45094pt>
+File: images/TimeVarying.png Graphic file (type png)
+
+<use images/TimeVarying.png>
+Package pdftex.def Info: images/TimeVarying.png used on input line 1828.
+(pdftex.def)             Requested size: 431.3605pt x 321.45015pt.
+
+Underfull \vbox (badness 10000) detected at line 1859
+ []
+
+[105 <./images/TimeVarying.png>] [106]
+<images/Beta.png, id=1159, 356.83313pt x 318.43968pt>
+File: images/Beta.png Graphic file (type png)
+ <use images/Beta.png>
+Package pdftex.def Info: images/Beta.png used on input line 1883.
+(pdftex.def)             Requested size: 356.83224pt x 318.4389pt.
+
+[107] <images/BetaComparison.png, id=1167, 368.1253pt x 335.75438pt>
+File: images/BetaComparison.png Graphic file (type png)
+
+<use images/BetaComparison.png>
+Package pdftex.def Info: images/BetaComparison.png used on input line 1905.
+(pdftex.def)             Requested size: 368.1244pt x 335.75356pt.
+ [108 <./images/Beta.png>]) (11output.tex
+Underfull \hbox (badness 10000) in paragraph at lines 3--12
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 3--12
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 3--12
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 3--12
+
+ []
+
+[109 <./images/BetaComparison.png>] [110] [111] [112]
+Underfull \hbox (badness 10000) in paragraph at lines 89--216
+
+ []
+
+
+Overfull \hbox (2.00708pt too wide) in paragraph at lines 89--216
+\T1/lmr/m/n/12 8853.43 8658.22 8651.96 8645.41 8638.43 8630.75 <deleted val-ues
+> 1594.53 2075.34 #re-cruits;
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 89--216
+
+ []
+
+[113] [114] [115]
+Overfull \hbox (0.2572pt too wide) in paragraph at lines 221--222
+\T1/lmr/m/n/12 FORECAST-REPORT.sso: This file con-tains out-put of fish-ery ref
+-er-ence points and fore-casts.
+ []
+
+[116]
+Underfull \hbox (badness 10000) in paragraph at lines 225--228
+
+ []
+
+<images/ManagementReport.png, id=1210, 414.04688pt x 432.11438pt>
+File: images/ManagementReport.png Graphic file (type png)
+
+<use images/ManagementReport.png>
+Package pdftex.def Info: images/ManagementReport.png used on input line 239.
+(pdftex.def)             Requested size: 414.04585pt x 432.11331pt.
+ [117] [118 <./images/ManagementReport.png>]
+<images/Forecast.png, id=1219, 650.43pt x 295.1025pt>
+File: images/Forecast.png Graphic file (type png)
+
+<use images/Forecast.png>
+Package pdftex.def Info: images/Forecast.png used on input line 247.
+(pdftex.def)             Requested size: 650.4284pt x 295.10176pt.
+
+Overfull \hbox (29.9984pt too wide) in paragraph at lines 247--248
+ [] 
+ []
+
+[119
+
+ <./images/Forecast.png>] [120
+
+]
+<images/HCR.png, id=1228, 417.81094pt x 283.0575pt>
+File: images/HCR.png Graphic file (type png)
+ <use images/HCR.png>
+Package pdftex.def Info: images/HCR.png used on input line 285.
+(pdftex.def)             Requested size: 417.80992pt x 283.0568pt.
+)
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 102.
+
+[121 <./images/HCR.png>]
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 102.
  (SS330_Main.aux)
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 101.
-Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 101.
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 102.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 102.
 Package rerunfilecheck Info: File `SS330_Main.out' has not changed.
-(rerunfilecheck)             Checksum: BCF5385AAF99A3FF925407079817D36C;5432.
-Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 101.
+(rerunfilecheck)             Checksum: 69ACFDB6A42822D57A17E6B97174C312;7414.
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 102.
  ) 
 Here is how much of TeX's memory you used:
- 8243 strings out of 493698
- 116871 string characters out of 3139169
- 344541 words of memory out of 3000000
- 11069 multiletter control sequences out of 15000+200000
+ 8626 strings out of 493634
+ 121280 string characters out of 3141252
+ 349659 words of memory out of 3000000
+ 11393 multiletter control sequences out of 15000+200000
  50307 words of font info for 38 fonts, out of 3000000 for 9000
  1025 hyphenation exceptions out of 8191
- 34i,15n,43p,1454b,564s stack positions out of 5000i,500n,10000p,200000b,50000s
-{C:/Users/Chantell.Wetzel/Documents/Latex/fonts/enc/dvips/lm/lm-rm.enc}{C:/Us
-ers/Chantell.Wetzel/Documents/Latex/fonts/enc/dvips/lm/lm-mathsy.enc}{C:/Users/
-Chantell.Wetzel/Documents/Latex/fonts/enc/dvips/lm/lm-mathit.enc}{C:/Users/Chan
-tell.Wetzel/Documents/Latex/fonts/enc/dvips/lm/lm-mathex.enc}{C:/Users/Chantell
-.Wetzel/Documents/Latex/fonts/enc/dvips/lm/lm-ec.enc}<C:/Users/Chantell.Wetzel/
-Documents/Latex/fonts/type1/public/lm/lmbx12.pfb><C:/Users/Chantell.Wetzel/Docu
-ments/Latex/fonts/type1/public/lm/lmex10.pfb><C:/Users/Chantell.Wetzel/Document
-s/Latex/fonts/type1/public/lm/lmmi12.pfb><C:/Users/Chantell.Wetzel/Documents/La
-tex/fonts/type1/public/lm/lmmi6.pfb><C:/Users/Chantell.Wetzel/Documents/Latex/f
-onts/type1/public/lm/lmmi8.pfb><C:/Users/Chantell.Wetzel/Documents/Latex/fonts/
-type1/public/lm/lmr12.pfb><C:/Users/Chantell.Wetzel/Documents/Latex/fonts/type1
-/public/lm/lmr17.pfb><C:/Users/Chantell.Wetzel/Documents/Latex/fonts/type1/publ
-ic/lm/lmr6.pfb><C:/Users/Chantell.Wetzel/Documents/Latex/fonts/type1/public/lm/
-lmr8.pfb><C:/Users/Chantell.Wetzel/Documents/Latex/fonts/type1/public/lm/lmri12
-.pfb><C:/Users/Chantell.Wetzel/Documents/Latex/fonts/type1/public/lm/lmsy10.pfb
-><C:/Users/Chantell.Wetzel/Documents/Latex/fonts/type1/public/lm/lmsy6.pfb><C:/
-Users/Chantell.Wetzel/Documents/Latex/fonts/type1/public/lm/lmsy8.pfb><C:/Users
-/Chantell.Wetzel/Documents/Latex/fonts/type1/public/lm/lmtt12.pfb>
-Output written on SS330_Main.pdf (87 pages, 516892 bytes).
+ 34i,18n,43p,1677b,564s stack positions out of 5000i,500n,10000p,200000b,50000s
+pdfTeX warning (dest): name{RandWalk} has been referenced but does not exist,
+ replaced by a fixed one
+
+{C:/Program Files (x86)/MiKTeX 2.9/fonts/enc/dvips/lm/lm-rm.enc}{C:/Program Fil
+es (x86)/MiKTeX 2.9/fonts/enc/dvips/lm/lm-mathsy.enc}{C:/Program Files (x86)/Mi
+KTeX 2.9/fonts/enc/dvips/lm/lm-mathit.enc}{C:/Program Files (x86)/MiKTeX 2.9/fo
+nts/enc/dvips/lm/lm-mathex.enc}{C:/Program Files (x86)/MiKTeX 2.9/fonts/enc/dvi
+ps/lm/lm-ec.enc}<C:/Program Files (x86)/MiKTeX 2.9/fonts/type1/public/lm/lmbx12
+.pfb><C:/Program Files (x86)/MiKTeX 2.9/fonts/type1/public/lm/lmex10.pfb><C:/Pr
+ogram Files (x86)/MiKTeX 2.9/fonts/type1/public/lm/lmmi12.pfb><C:/Program Files
+ (x86)/MiKTeX 2.9/fonts/type1/public/lm/lmmi6.pfb><C:/Program Files (x86)/MiKTe
+X 2.9/fonts/type1/public/lm/lmmi8.pfb><C:/Program Files (x86)/MiKTeX 2.9/fonts/
+type1/public/lm/lmr12.pfb><C:/Program Files (x86)/MiKTeX 2.9/fonts/type1/public
+/lm/lmr17.pfb><C:/Program Files (x86)/MiKTeX 2.9/fonts/type1/public/lm/lmr6.pfb
+><C:/Program Files (x86)/MiKTeX 2.9/fonts/type1/public/lm/lmr8.pfb><C:/Program 
+Files (x86)/MiKTeX 2.9/fonts/type1/public/lm/lmri12.pfb><C:/Program Files (x86)
+/MiKTeX 2.9/fonts/type1/public/lm/lmsy10.pfb><C:/Program Files (x86)/MiKTeX 2.9
+/fonts/type1/public/lm/lmsy6.pfb><C:/Program Files (x86)/MiKTeX 2.9/fonts/type1
+/public/lm/lmsy8.pfb><C:/Program Files (x86)/MiKTeX 2.9/fonts/type1/public/lm/l
+mtt12.pfb>
+Output written on SS330_Main.pdf (126 pages, 760673 bytes).
 PDF statistics:
- 1026 PDF objects out of 1200 (max. 8388607)
- 315 named destinations out of 1000 (max. 500000)
- 584 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 1374 PDF objects out of 1440 (max. 8388607)
+ 411 named destinations out of 1000 (max. 500000)
+ 831 words of extra memory for PDF output out of 10000 (max. 10000000)
 

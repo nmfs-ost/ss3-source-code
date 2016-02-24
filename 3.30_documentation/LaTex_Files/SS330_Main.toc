@@ -34,7 +34,7 @@
 \contentsline {subsubsection}{\numberline {9.4.12}Sex Ratio-at-Length}{36}{subsubsection.9.4.12}
 \contentsline {subsubsection}{\numberline {9.4.13}Mean Length or Body Weight-at-Age}{37}{subsubsection.9.4.13}
 \contentsline {subsubsection}{\numberline {9.4.14}Environmental Data}{38}{subsubsection.9.4.14}
-\contentsline {subsubsection}{\numberline {9.4.15}Generalized Size Composition Data}{38}{subsubsection.9.4.15}
+\contentsline {subsubsection}{\numberline {9.4.15}Generalized Size Composition Data}{39}{subsubsection.9.4.15}
 \contentsline {subsubsection}{\numberline {9.4.16}Tag-Recapture Data}{40}{subsubsection.9.4.16}
 \contentsline {subsubsection}{\numberline {9.4.17}Stock Composition Data}{41}{subsubsection.9.4.17}
 \contentsline {subsubsection}{\numberline {9.4.18}Excluding Data}{42}{subsubsection.9.4.18}
@@ -70,3 +70,27 @@
 \contentsline {subsubsection}{\numberline {10.3.25}Catchability}{78}{subsubsection.10.3.25}
 \contentsline {subsubsection}{\numberline {10.3.26}Selectivity and Discard}{80}{subsubsection.10.3.26}
 \contentsline {subsubsection}{\numberline {10.3.27}Selectivity Patterns}{82}{subsubsection.10.3.27}
+\contentsline {subsubsection}{\numberline {10.3.28}Selectivity Pattern Details}{84}{subsubsection.10.3.28}
+\contentsline {subsubsection}{\numberline {10.3.29}Retention}{94}{subsubsection.10.3.29}
+\contentsline {subsubsection}{\numberline {10.3.30}Discard Mortality}{94}{subsubsection.10.3.30}
+\contentsline {subsubsection}{\numberline {10.3.31}Male Selectivity}{95}{subsubsection.10.3.31}
+\contentsline {subsubsection}{\numberline {10.3.32}Reading the Selectivity and Retention Parameters}{96}{subsubsection.10.3.32}
+\contentsline {subsubsection}{\numberline {10.3.33}Tag Recapture Parameters}{98}{subsubsection.10.3.33}
+\contentsline {subsubsection}{\numberline {10.3.34}Variance Adjustment Factors}{98}{subsubsection.10.3.34}
+\contentsline {subsubsection}{\numberline {10.3.35}Lambdas (Emphasis Factors)}{100}{subsubsection.10.3.35}
+\contentsline {subsubsection}{\numberline {10.3.36}Controls for Variance of Derived Quantities}{101}{subsubsection.10.3.36}
+\contentsline {subsubsection}{\numberline {10.3.37}Time-Varying Parameter Options}{103}{subsubsection.10.3.37}
+\contentsline {subsubsection}{\numberline {10.3.38}Parameter Priors}{107}{subsubsection.10.3.38}
+\contentsline {section}{\numberline {11}Output Files}{110}{section.11}
+\contentsline {subsection}{\numberline {11.1}Standard ADMB output files}{110}{subsection.11.1}
+\contentsline {subsection}{\numberline {11.2}Derived Quantities}{110}{subsection.11.2}
+\contentsline {subsubsection}{\numberline {11.2.1}Metric for Fishing Mortality}{110}{subsubsection.11.2.1}
+\contentsline {subsubsection}{\numberline {11.2.2}Equilibrium SPR}{110}{subsubsection.11.2.2}
+\contentsline {subsubsection}{\numberline {11.2.3}F std}{111}{subsubsection.11.2.3}
+\contentsline {subsubsection}{\numberline {11.2.4}F-at-Age}{112}{subsubsection.11.2.4}
+\contentsline {subsubsection}{\numberline {11.2.5}MSY and other Benchmark Items}{112}{subsubsection.11.2.5}
+\contentsline {subsection}{\numberline {11.3}Brief cumulative output}{113}{subsection.11.3}
+\contentsline {subsection}{\numberline {11.4}Output for Rebuilder Package}{113}{subsection.11.4}
+\contentsline {subsection}{\numberline {11.5}Bootstrap Data Files}{116}{subsection.11.5}
+\contentsline {subsection}{\numberline {11.6}Forecast and Reference Points}{116}{subsection.11.6}
+\contentsline {subsection}{\numberline {11.7}Main Output File, report.sso}{121}{subsection.11.7}

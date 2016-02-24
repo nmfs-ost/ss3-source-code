@@ -46,15 +46,15 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
       for (s=1;s<=nseas;s++)
       {
         t = styr-3*nseas+s-1;
-  
+
         subseas=1;  //   for begin of season   ALK_idx calculated within Make_AgeLength_Key
         ALK_idx=(s-1)*N_subseas+subseas;
         Make_AgeLength_Key(s, subseas);  //  begin season
-  
+
         subseas=mid_subseas;
         ALK_idx=(s-1)*N_subseas+subseas;
-        Make_AgeLength_Key(s, subseas);  
-  
+        Make_AgeLength_Key(s, subseas);
+
   //  SPAWN-RECR:   call make_fecundity for benchmarks
         if(s==spawn_seas)
         {
@@ -67,7 +67,7 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
           Make_Fecundity();
         }
       }
-  
+
       for (s=1;s<=nseas;s++)
       for (g=1;g<=gmorph;g++)
       if(use_morph(g)>0)
@@ -177,7 +177,7 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
       for (s=1;s<=nseas;s++)
       for (f=1;f<=Nfleet;f++)
       if(fleet_type(f)<=2)
-      { 
+      {
         report5<<s<<" "<<f;
         for (g=1;g<=6;g++) {report5<<" "<<equ_catch_fleet(g,s,f);}
         report5<<endl;
@@ -281,7 +281,7 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
       }   // end search loop
 
     Btgt_Rec=Equ_SpawnRecr_Result(2);
-    
+
     if(show_MSY==1)
     {
       if(fabs(log(Btgt/Btgttgt))>=0.001)
@@ -290,13 +290,13 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
       for (s=1;s<=nseas;s++)
       for (f=1;f<=Nfleet;f++)
       if(fleet_type(f)<=2)
-      { 
+      {
         report5<<s<<" "<<f;
         for (g=1;g<=6;g++) {report5<<" "<<Btgt_Rec*equ_catch_fleet(g,s,f);}
         report5<<endl;
       }
     }
-    
+
     Btgt_Fmult=Fmult;
     if(rundetail>0 && mceval_counter==0 && show_MSY==1) cout<<" got_Btgt "<<Btgt_Fmult<<" "<<Btgt/SPB_virgin<<endl;
     YPR_Btgt_enc  = YPR_enc;         //  total encountered yield per recruit
@@ -430,7 +430,7 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
       for (s=1;s<=nseas;s++)
       for (f=1;f<=Nfleet;f++)
       if(fleet_type(f)<=2)
-      { 
+      {
         report5<<s<<" "<<f;
         for (g=1;g<=6;g++) {report5<<" "<<Recr_msy*equ_catch_fleet(g,s,f);}
         report5<<endl;
@@ -781,7 +781,7 @@ FUNCTION void Get_Forecast()
     if(show_MSY==1)
     {
     report5<<"pop year ABC_Loop season Ctrl_Rule bio-all bio-Smry SpawnBio Depletion recruit-0 ";
-    for (f=1;f<=Nfleet;f++) 
+    for (f=1;f<=Nfleet;f++)
     if(fleet_type(f)<=2)
     {report5<<" sel(B):_"<<f<<" dead(B):_"<<f<<" retain(B):_"<<f<<
     " sel(N):_"<<f<<" dead(N):_"<<f<<" retain(N):_"<<f<<" F:_"<<f<<" R/C";}
@@ -849,12 +849,12 @@ FUNCTION void Get_Forecast()
               ALK_idx=(s-1)*N_subseas+subseas;
               get_growth3(s, subseas);
               Make_AgeLength_Key(s, subseas);  //  begin season
-        
+
               subseas=mid_subseas;
               ALK_idx=(s-1)*N_subseas+subseas;
               get_growth3(s, subseas);
               Make_AgeLength_Key(s, subseas);  //  for middle of season (begin of 3rd quarter)
-        
+
 //  SPAWN-RECR:   call Make_Fecundity in forecast
               if(s==spawn_seas)
               {
@@ -900,7 +900,7 @@ FUNCTION void Get_Forecast()
             SPB_current=sum(SPB_pop_gp(y));
             SPB_yr(y)=SPB_current;
 
-            if(Hermaphro_Option>0)  // get male biomass
+            if(Hermaphro_Option!=0)  // get male biomass
             {
               MaleSPB(y).initialize();
               for (p=1;p<=pop;p++)
@@ -931,8 +931,8 @@ FUNCTION void Get_Forecast()
               {
                 settle=settle_g(g);  //  get settlement event
                 for (p=1;p<=pop;p++)
-                { 
-                  if(y==endyr+1) natage(t+Settle_seas_offset(settle),p,g,Settle_age(settle))=0.0;  //  to negate the additive code 
+                {
+                  if(y==endyr+1) natage(t+Settle_seas_offset(settle),p,g,Settle_age(settle))=0.0;  //  to negate the additive code
 //                  natage(t+Settle_seas_offset(settle),p,g,Settle_age(settle)) += Recruits*recr_dist(GP(g),settle,p)*platoon_distr(GP2(g))*
                   natage(t+Settle_seas_offset(settle),p,g,Settle_age(settle)) = Recruits*recr_dist(GP(g),settle,p)*platoon_distr(GP2(g))*
                    mfexp(natM(s,GP3(g),Settle_age(settle))*Settle_timing_seas(settle));
@@ -1110,7 +1110,7 @@ FUNCTION void Get_Forecast()
                   }  // end have fixed catch to be matched
                 }  // end fishery loop
               }  //  end finding the Hrates
-              
+
 //  now get catch details and survivorship
               Nsurv=Nmid;  //  initialize the number of survivors
               for (f=1;f<=Nfleet;f++)       //loop over fishing fleets       SS_Label_105
@@ -1275,7 +1275,7 @@ FUNCTION void Get_Forecast()
                   catch_fleet(t,f,5)+=tempvec_a*elem_prod(natage(t,p,g),deadfish(s,g,f));      // deadfish catch numbers
                   catch_fleet(t,f,6)+=tempvec_a*elem_prod(natage(t,p,g),sel_al_4(s,g,f));      // retained catch numbers
                 }  //close gmorph loop
-                
+
               }  // close fishery
               for (g=1;g<=gmorph;g++)
               if(use_morph(g)>0)
@@ -1300,7 +1300,7 @@ FUNCTION void Get_Forecast()
 //  SS_Label_106  call to Get_expected_values
 //            Get_expected_values();
 
-            if(Hermaphro_Option>0)  //hermaphroditism
+            if(Hermaphro_Option!=0)  //hermaphroditism
             {
               if(Hermaphro_seas==-1 || Hermaphro_seas==s)
               {
@@ -1308,10 +1308,21 @@ FUNCTION void Get_Forecast()
                 for (g=1;g<=k;g++)  //  loop females
                 if(use_morph(g)>0)
                 {
-                  for (a=1;a<nages;a++)
+                  if(Hermaphro_Option==1)
                   {
-                    natage(t+1,p,g+k,a) += natage(t+1,p,g,a)*Hermaphro_val(GP4(g),a-1); // increment males
-                    natage(t+1,p,g,a) *= (1.-Hermaphro_val(GP4(g),a-1)); // decrement females
+                    for (a=1;a<nages;a++)
+                    {
+                      natage(t+1,p,g+k,a) += natage(t+1,p,g,a)*Hermaphro_val(GP4(g),a-1); // increment males
+                      natage(t+1,p,g,a) *= (1.-Hermaphro_val(GP4(g),a-1)); // decrement females
+                    }
+                  } else
+                  if(Hermaphro_Option==-1)
+                  {
+                    for (a=1;a<nages;a++)
+                    {
+                      natage(t+1,p,g+k,a) += natage(t+1,p,g,a)*(1.-Hermaphro_val(GP4(g),a-1)); // decrement males
+                      natage(t+1,p,g,a) *= Hermaphro_val(GP4(g),a-1); // increment females
+                    }
                   }
                 }
               }
@@ -1380,7 +1391,7 @@ FUNCTION void Get_Forecast()
 
             if(Fcast_Loop1==2 && ABC_Loop==1)  // get variance in OFL
             {
-              for (f=1;f<=Nfleet;f++) 
+              for (f=1;f<=Nfleet;f++)
               {
                 if(fleet_type(f)<=2)
               {Mgmt_quant(Fcast_catch_start+N_Fcast_Yrs+y-endyr)+=catch_fleet(t,f,2);}
@@ -1393,7 +1404,7 @@ FUNCTION void Get_Forecast()
               {
                 if(F_reporting<=1)
                 {
-                  for (f=1;f<=Nfleet;f++) 
+                  for (f=1;f<=Nfleet;f++)
                   {
                     if(fleet_type(f)<=2)
                     {F_std(STD_Yr_Reverse_F(y))+=catch_fleet(t,f,2);}   // add up dead catch biomass
@@ -1402,7 +1413,7 @@ FUNCTION void Get_Forecast()
                 }
                 else if(F_reporting==2)
                 {
-                  for (f=1;f<=Nfleet;f++) 
+                  for (f=1;f<=Nfleet;f++)
                   {
                     if(fleet_type(f)<=2)
                     {F_std(STD_Yr_Reverse_F(y))+=catch_fleet(t,f,5);}   // add up dead catch numbers

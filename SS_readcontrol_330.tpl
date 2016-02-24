@@ -732,7 +732,7 @@
   !! echoinput<<Hermaphro_Option<<"  Hermaphro_Option "<<endl;
   !! MGparm_Hermaphro=0;
   !! k=0;
-  !! if(Hermaphro_Option>0) k=2;
+  !! if(Hermaphro_Option!=0) k=2;
   init_ivector Hermaphro_more(1,k);
   int Hermaphro_seas;
   int Hermaphro_maleSPB;
@@ -748,6 +748,7 @@
   }
  END_CALCS
 // if Hermaphro_Option=1, then read 3 parameters for switch from female to male by age
+// if Hermaphro_Option=-1, then read 3 parameters for switch from male to female by age
 // FUTURE if Hermaphro_Option=2, then read 3 parameters for switch from female to male by age for each GrowPattern
 // FUTURE if Hermaphro_Option=3, then read 3 parameters for switch from female to male by length
 // FUTURE if Hermaphro_Option=4, then read 3 parameters for switch from female to male by length for each GrowPattern
@@ -864,7 +865,7 @@
     }
   }
 
-  if(Hermaphro_Option==1)
+  if(Hermaphro_Option==1 || Hermaphro_Option==-1)
   {
      MGparm_Hermaphro=ParCount+1;  // pointer to first hermaphroditism parameter
      ParmLabel+="Herm_Infl_age";
@@ -1015,7 +1016,7 @@
      mgp_type(Ip,Ip+1)=3;   // wtlen
      if(gg==1) {mgp_type(Ip+2,Ip+4)=3;}  // maturity and fecundity
    }
-   if(Hermaphro_Option>0) {mgp_type(MGparm_Hermaphro,MGparm_Hermaphro+2)=3;}  //   herma parameters done with wtlen and fecundity
+   if(Hermaphro_Option!=0) {mgp_type(MGparm_Hermaphro,MGparm_Hermaphro+2)=3;}  //   herma parameters done with wtlen and fecundity
    mgp_type(Ip,MGP_CGD-1)=4;   // recruit apportionments
    mgp_type(MGP_CGD)=2;   // cohort growth dev
    if(do_migration>0)  mgp_type(MGP_CGD+1,N_MGparm)=5;
