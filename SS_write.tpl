@@ -727,7 +727,7 @@ FUNCTION void write_nudata()
     report1<<"#"<<endl << N_envvar<<" #_N_environ_variables"<<endl;
     report1<<"#Year Variable Value"<<endl;
     if(N_envvar>0)
-      {for(i=0;i<=N_envdata-1;i++) report1<<env_temp[i]<<endl;
+      {for(i=1;i<=N_envdata;i++) report1<<env_temp[i]<<endl;
        report1<<"-9999 0 0"<<endl;
       }
 
@@ -1027,7 +1027,7 @@ FUNCTION void write_nudata()
     report1<<"#"<<endl << N_envvar<<" #_N_environ_variables"<<endl;
     report1<<"#Year Variable Value"<<endl;
     if(N_envvar>0)
-      {for(i=0;i<=N_envdata-1;i++) report1<<env_temp[i]<<endl;
+      {for(i=1;i<=N_envdata;i++) report1<<env_temp[i]<<endl;
        report1<<"-9999 0 0"<<endl;
       }
 
@@ -1406,7 +1406,7 @@ FUNCTION void write_nudata()
     report1<<"#"<<endl << N_envvar<<" #_N_environ_variables"<<endl;
     report1<<"#Year Variable Value"<<endl;
     if(N_envvar>0)
-      {for(i=0;i<=N_envdata-1;i++) report1<<env_temp[i]<<endl;
+      {for(i=1;i<=N_envdata;i++) report1<<env_temp[i]<<endl;
        report1<<"-9999 0 0"<<endl;
       }
 
@@ -3929,7 +3929,7 @@ FUNCTION void write_bigoutput()
    if(N_envvar>0)
    {
    SS2out << endl<<"ENVIRONMENTAL_DATA Begins_in_startyr-1"<<endl;         // SS_Label_397
-   SS2out<<"Year "; for (i=-2;i<=N_envvar;i++) SS2out<<" "<<i;
+   SS2out<<"Year rel_smrynum rel_smrybio exp(decdev) rel_SPB null "; for (i=1;i<=N_envvar;i++) SS2out<<" env:_"<<i;
    SS2out<<endl;
     for (y=styr-1;y<=YrMax;y++)
     {

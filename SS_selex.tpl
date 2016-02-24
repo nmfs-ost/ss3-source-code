@@ -1347,7 +1347,6 @@ FUNCTION void Make_FishSelex()
     dvar_vector disc_wt(1,nlength);
     int yf;
     int tz;
-
     gg=sx(g);
     if(y>endyr) {yz=endyr; } else {yz=y;}
     if(y>endyr+1) {yf=endyr+1;} else {yf=y;}    //  yf stores in endyr+1 the average selex from a range of years

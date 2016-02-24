@@ -997,7 +997,7 @@
   int customMGenvsetup  //  0=read one setup (if necessary) and apply to all; 1=read each
   ivector MGparm_env(1,N_MGparm)   // contains the parameter number of the envlink for a
   ivector MGparm_envuse(1,N_MGparm)   // contains the environment data number
-  ivector MGparm_envtype(1,N_MGparm)  // 1=multiplicative; 2= additive; 3=logistic
+  ivector MGparm_envtype(1,N_MGparm)  // 1=multiplicative (input val 100-199); 2= additive (200-299); 3=logistic
   ivector mgp_type(1,N_MGparm)  //  contains category to parameter (1=natmort; 2=growth; 3=wtlen & fec; 4=recr_dist; 5=movement)
 
  LOCAL_CALCS
@@ -1028,29 +1028,54 @@
    N_MGparm_env=0;
    for (f=1;f<=N_MGparm;f++)
    {
-    if(MGparm_1(f,8)!=0)
+    if(MGparm_1(f,8)>0)
     {
-     N_MGparm_env ++;  MGparm_env(f)=N_MGparm+N_MGparm_env;
-     if(MGparm_1(f,8)>0)
+     N_MGparm_env ++;
+     MGparm_env(f)=N_MGparm+N_MGparm_env;  //  store starting parameter value for this linkage
+     k=int(MGparm_1(f,8)/100);  //  find the link code
+   	 MGparm_envtype(f)=k;
+   	 MGparm_envuse(f)=MGparm_1(f,8)-k*100;
+   	 if(MGparm_envuse(f)==99) MGparm_envuse(f)=-1;  //  for linking to rel_spawn biomass
+   	 if(MGparm_envuse(f)==98) MGparm_envuse(f)=-2;  //  for linking to exp(recdev)
+   	 if(MGparm_envuse(f)==97) MGparm_envuse(f)=-3;  //  for linking to rel_smrybio
+   	 if(MGparm_envuse(f)==96) MGparm_envuse(f)=-4;  //  for linking to rel_smry_num
+     switch (k)
      {
-       ParCount++; ParmLabel+=ParmLabel(f)+"_ENV_mult"; MGparm_envtype(f)=1; MGparm_envuse(f)=MGparm_1(f,8);
-       if(MG_adjust_method==2) {N_warn++; cout<<" EXIT - see warning "<<endl; warning<<"multiplicative env effect on MGparm: "<<f
-        <<" not allowed because MG_adjust_method==2; STOP"<<endl; exit(1);}
+     	 case 1:  //  multiplicative
+     	 	{
+          ParCount++; ParmLabel+=ParmLabel(f)+"_ENV_mult";
+          if(MG_adjust_method==2) {N_warn++; cout<<" EXIT - see warning "<<endl; warning<<"multiplicative env effect on MGparm: "<<f
+          <<" not allowed because MG_adjust_method==2; STOP"<<endl; exit(1);}
+     	 		break;
+     	 	}
+     	 case 2:  //  additive
+     	 	{
+          ParCount++; ParmLabel+=ParmLabel(f)+"_ENV_add";
+     	 		break;
+     	 	}
+     	 case 4:  //  logistic with offset
+     	 	{ 
+          if(MG_adjust_method==2) {N_warn++; cout<<" EXIT - see warning "<<endl; warning<<"multiplicative env effect on MGparm: "<<f
+          <<" not allowed because MG_adjust_method==2; STOP"<<endl; exit(1);}
+          ParCount++; ParmLabel+=ParmLabel(f)+"_ENV_offset"; 
+          ParCount++; ParmLabel+=ParmLabel(f)+"_ENV_lgst_slope"; 
+          N_MGparm_env ++;  //  for the second parameter
+     	 		break;
+     	 	}
      }
-     else if(MGparm_1(f,8)==-999)
-     {ParCount++; ParmLabel+=ParmLabel(f)+"_ENV_densdep"; MGparm_envtype(f)=3;  MGparm_envuse(f)=-1;}
-     else
-     {ParCount++; ParmLabel+=ParmLabel(f)+"_ENV_add"; MGparm_envtype(f)=2; MGparm_envuse(f)=-MGparm_1(f,8);}
 
      if(f==MGP_CGD) CGD=1;    // cohort growth dev is a fxn of environ, so turn on CGD calculation
      for (y=styr;y<=endyr;y++)
      {
-      if(env_data_RD(y,MGparm_envuse(f))!=0.0 || MGparm_envtype(f)==3) {time_vary_MG(y,mgp_type(f))=1; time_vary_MG(y+1,mgp_type(f))=1; }
+     	if(MGparm_envuse(f)>0 )
+     		{if(env_data_RD(y,MGparm_envuse(f))!=0.0) {time_vary_MG(y,mgp_type(f))=1; time_vary_MG(y+1,mgp_type(f))=1; }
+     		}
+     	else if (MGparm_envuse(f)<0 )  //  density-dependence being used
+     		{time_vary_MG(y,mgp_type(f))=1; time_vary_MG(y+1,mgp_type(f))=1; }
       //       non-zero data were read    or fxn uses biomass or recruitment
      }
     }
    }
-
   if(N_MGparm_env>0)
   {
     *(ad_comm::global_datafile) >> customMGenvsetup;
@@ -1068,7 +1093,7 @@
 
 !!//  Ss_Label_Info_4.5.5 #Set up block for MG parms
   int N_MGparm_blk                            // number of MGparms that use blocks
-  imatrix Block_Defs_MG(1,N_MGparm,styr,endyr+1)
+  imatrix Block_Defs_MG(1,N_MGparm,styr,YrMax)
   int N_MGparm_trend     //   number of MG parameters using trend or cycle
   int N_MGparm_trend2     //   number of parameters needed to define trends and cycles
   ivector MGparm_trend_point(1,N_MGparm)   //  index of trend parameters associated with each MG parm
@@ -1639,7 +1664,7 @@
   int recdev_read
   number recdev_LO;
   number recdev_HI;
-  ivector recdev_doit(styr-nages,endyr+1)
+  ivector recdev_doit(styr-nages,YrMax)
 
  LOCAL_CALCS
 //  SS_Label_Info_4.6.2 #Setup advanced recruitment options
@@ -2595,8 +2620,8 @@
   }
  END_CALCS
 
-  imatrix time_vary_sel(styr-3,endyr+1,1,2*Nfleet)
-  imatrix time_vary_makefishsel(styr-3,endyr+1,1,Nfleet)
+  imatrix time_vary_sel(styr-3,YrMax,1,2*Nfleet)
+  imatrix time_vary_makefishsel(styr-3,YrMax,1,Nfleet)
   int makefishsel_yr
 !!//  SS_Label_Info_4.9.4 #Create and label environmental linkages for selectivity parameters
   int N_selparm_env                            // number of selparms that use env linkage
@@ -2621,7 +2646,7 @@
         ParCount++; ParmLabel+=ParmLabel(j+firstselparm)+"_ENV_mult"; selparm_envtype(j)=1; selparm_envuse(j)=selparm_1(j,8);
        }
        else if(selparm_1(j,8)==-999)
-       {ParCount++; ParmLabel+=ParmLabel(j+firstselparm)+"_ENV_densdep"; selparm_envtype(j)=3;  MGparm_envuse(j)=-1;}
+       {ParCount++; ParmLabel+=ParmLabel(j+firstselparm)+"_ENV_densdep"; selparm_envtype(j)=3;  selparm_envuse(j)=-1;}
        else
        {ParCount++; ParmLabel+=ParmLabel(j+firstselparm)+"_ENV_add"; selparm_envtype(j)=2; selparm_envuse(j)=-selparm_1(j,8);}
     }

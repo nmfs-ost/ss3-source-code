@@ -144,26 +144,40 @@ FUNCTION void get_MGsetup()
         }
 
   //  SS_Label_Info_14.4.1.2 #Adjust for env linkage
-  //  June 6 begin to add 2 parameter env linkages
-  //  P1 will be the current "slope" and P2 will be a new offset
-  //  also add a logistic function
+  // where:  MGparm_env is zero if no link else contains the parameter # of the first link parameter
+  //         MGparm_envtype identifies the form of the linkage, some of which take more than one link parameeter
+  //         MGparm_envuse identifies the ID of the environmental time series being linked to
+  //         env_data is a dvar_matrix populated with the read env data for columns 1-N_envvariables
+  //         and populated with summary biamass for column -1 to allow for density-dependence
+  //         the integer values of MGparm_envtype are created when parsing the input:
+  //           k=int(MGparm_1(f,8)/100);  //  find the link code
+  // 	         MGparm_envtype(f)=k;
+  // 	         MGparm_envuse(f)=MGparm_1(f,8)-k*100;
+  //   	       if(MGparm_envuse(f)==99) MGparm_envuse(f)=-1;  //  for linking to spawn biomass
+  //        	 if(MGparm_envuse(f)==98) MGparm_envuse(f)=-2;  //  for linking to recruitment
+
         if(MGparm_env(f)>0)
         {
           switch(MGparm_envtype(f))
           {
             case 1:  //  exponential MGparm env link
               {
-                mgp_adj(f)*=mfexp(MGparm(MGparm_env(f))*(env_data(yz,MGparm_envuse(f))-MGparm(MGparm_env(f))));
+                mgp_adj(f)*=mfexp(MGparm(MGparm_env(f))*(env_data(yz,MGparm_envuse(f))));
                 break;
               }
             case 2:  //  linear MGparm env link
               {
-                mgp_adj(f)+=MGparm(MGparm_env(f))*(env_data(yz,MGparm_envuse(f))-MGparm(MGparm_env(f)));
+                mgp_adj(f)+=MGparm(MGparm_env(f))*env_data(yz,MGparm_envuse(f));
                 break;
               }
-            case 3:  //  logistic MGparm env link
+            case 3:
+            	{
+            		//  not implemented
+            	}
+            case 4:  //  logistic MGparm env link
               {
-                mgp_adj(f)*=2.00000/(1.00000 + mfexp(-MGparm(MGparm_env(f))*(env_data(yz,MGparm_envuse(f))-MGparm(MGparm_env(f)))));
+              	// first parm is offset ; second is slope
+                mgp_adj(f)*=2.00000/(1.00000 + mfexp(-MGparm(MGparm_env(f)+1)*(env_data(yz,MGparm_envuse(f))-MGparm(MGparm_env(f)))));
                 break;
               }
           }

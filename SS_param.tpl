@@ -42,7 +42,7 @@ PARAMETER_SECTION
   vector CVLmin(1,N_GP*gender)
   vector CVLmax(1,N_GP*gender)
   vector CV_const(1,N_GP*gender)
-  matrix mgp_save(styr,endyr+1,1,N_MGparm2);
+  matrix mgp_save(styr,YrMax,1,N_MGparm2);
   vector mgp_adj(1,N_MGparm2);
   matrix Cohort_Growth(styr,YrMax,0,nages)
   3darray Cohort_Lmin(1,N_GP*gender,styr,YrMax,0,nages)
@@ -90,7 +90,7 @@ PARAMETER_SECTION
   3darray Wt_Age_beg(1,nseas,1,gmorph,0,nages)
   3darray Wt_Age_mid(1,nseas,1,gmorph,0,nages)
 
-  3darray migrrate(styr-3,endyr+1,1,do_migr2,0,nages)
+  3darray migrrate(styr-3,YrMax,1,do_migr2,0,nages)
   3darray recr_dist(1,N_GP*gender,1,N_settle_timings,1,pop);
 !!//  SS_Label_Info_5.1.2 #Create SR_parm vector, recruitment vectors
   init_bounded_number_vector SR_parm(1,N_SRparm2,SRvec_LO,SRvec_HI,SRvec_PH)
@@ -291,9 +291,9 @@ PARAMETER_SECTION
   vector mnwt_like(1,Nfleet) // likelihood of the mean body wt
 
   matrix exp_disc(1,Nfleet,1,disc_N_fleet)
-  3darray retain(styr-3,endyr+1,1,Nfleet,1,nlength2)
+  3darray retain(styr-3,YrMax,1,Nfleet,1,nlength2)
   vector retain_M(1,nlength)
-  3darray discmort(styr-3,endyr+1,1,Nfleet,1,nlength2)
+  3darray discmort(styr-3,YrMax,1,Nfleet,1,nlength2)
   vector discmort_M(1,nlength)
   vector exp_mnwt(1,nobs_mnwt)
 
@@ -303,23 +303,23 @@ PARAMETER_SECTION
 
 !!//  SS_Label_Info_5.1.5 #Selectivity-related parameters
   init_bounded_number_vector selparm(1,N_selparm2,selparm_LO,selparm_HI,selparm_PH)
-  matrix selparm_trend(1,N_selparm_trend,styr,endyr);
-  matrix selparm_block_val(1,N_selparm,styr,endyr);
+  matrix selparm_trend(1,N_selparm_trend,styr,YrMax);
+  matrix selparm_block_val(1,N_selparm,styr,YrMax);
 
   init_bounded_matrix selparm_dev(1,N_selparm_dev,selparm_dev_minyr,selparm_dev_maxyr,-10,10,selparm_dev_PH)
   matrix selparm_dev_rwalk(1,N_selparm_dev,selparm_dev_minyr,selparm_dev_maxyr)
   vector selparm_dev_stddev(1,N_selparm_dev)
   vector selparm_dev_rho(1,N_selparm_dev)  // determines the mean regressive characteristic: with 0 = no autoregressive; 1= all autoregressive
-  4darray sel_l(styr-3,endyr+1,1,Nfleet,1,gender,1,nlength)
-  4darray sel_l_r(styr-3,endyr+1,1,Nfleet,1,gender,1,nlength)   //  selex x retained
-  4darray discmort2(styr-3,endyr+1,1,Nfleet,1,gender,1,nlength)
-  4darray sel_a(styr-3,endyr+1,1,Nfleet,1,gender,0,nages)
+  4darray sel_l(styr-3,YrMax,1,Nfleet,1,gender,1,nlength)
+  4darray sel_l_r(styr-3,YrMax,1,Nfleet,1,gender,1,nlength)   //  selex x retained
+  4darray discmort2(styr-3,YrMax,1,Nfleet,1,gender,1,nlength)
+  4darray sel_a(styr-3,YrMax,1,Nfleet,1,gender,0,nages)
   vector sel(1,nlength)  //  used to multiply by ALK
 
-  4darray retain_a(styr-3,endyr+1,1,Nfleet,1,gender,0,nages)
-  4darray discmort_a(styr-3,endyr+1,1,Nfleet,1,gender,0,nages)
-  4darray discmort2_a(styr-3,endyr+1,1,Nfleet,1,gender,0,nages)
-  4darray sel_a_r(styr-3,endyr+1,1,Nfleet,1,gender,0,nages)
+  4darray retain_a(styr-3,YrMax,1,Nfleet,1,gender,0,nages)
+  4darray discmort_a(styr-3,YrMax,1,Nfleet,1,gender,0,nages)
+  4darray discmort2_a(styr-3,YrMax,1,Nfleet,1,gender,0,nages)
+  4darray sel_a_r(styr-3,YrMax,1,Nfleet,1,gender,0,nages)
 
 
 !!//  SS_Label_Info_5.1.6 #Create tag parameters and associated arrays
@@ -358,7 +358,7 @@ PARAMETER_SECTION
   vector TG_report(1,Nfleet*Do_TG);
   vector TG_rep_decay(1,Nfleet*Do_TG);
 
-  3darray save_sp_len(styr,endyr+1,1,2*Nfleet,1,50);     // use to output selex parm values after adjustment
+  3darray save_sp_len(styr,YrMax,1,2*Nfleet,1,50);     // use to output selex parm values after adjustment
 
   3darray exp_l(1,Nfleet,1,Nobs_l,1,nlen_bin2)
   matrix neff_l(1,Nfleet,1,Nobs_l)
@@ -427,7 +427,7 @@ PARAMETER_SECTION
   // 18, 19, 20  not used
   // 21+cumF-bymorph, maxF-by morph
 
-  matrix env_data(styr-1,YrMax,-2,N_envvar)
+  matrix env_data(styr-1,YrMax,-4,N_envvar)
   matrix TG_save(1,N_TG,1,3+TG_endtime)
 
 !!//  SS_Label_Info_5.2 #Create sdreport vectors

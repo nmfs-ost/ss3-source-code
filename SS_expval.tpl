@@ -309,7 +309,6 @@ FUNCTION void Get_expected_values();
             {
             if(have_data(ALK_time,f,data_type,0)>0)  //  number of observations
             {
-            	warning<<exp_l_temp<<endl<<exp_l_temp_ret<<endl;
             j=yr_mnwt2(f,t,0); //   sample from total catch
             if(j>0) {exp_mnwt(j) = (exp_l_temp*wt_len2(s,1)) / sum(exp_l_temp);}  // total sample
             else if(j<0)
@@ -324,7 +323,6 @@ FUNCTION void Get_expected_values();
             if(j>0) exp_mnwt(j) = (exp_l_temp_ret*wt_len2(s,1)) / sum(exp_l_temp_ret);    // retained only
             else if(j<0)
             {exp_mnwt(-j) = (exp_l_temp_ret*len_bins_m2) / sum(exp_l_temp_ret);}
-            warning<<y<<" expmnwt "<<exp_mnwt<<endl;
             }
             
             break;

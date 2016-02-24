@@ -797,6 +797,33 @@ FUNCTION void Get_Forecast()
     for (y=endyr+1;y<=YrMax;y++)
     {
       t_base=styr+(y-styr)*nseas-1;
+     	env_data(y,-1)=SPB_current/SPB_yr(styr-1);  //  store most recent value for density-dependent effects, NOTE - off by a year if recalc'ed at beginning of season 1
+      env_data(y,-2)=mfexp(recdev(y));  //  store for density-dependent effects
+        if(time_vary_MG(y,2)>0 || time_vary_MG(y,3)>0 || save_for_report==1 || WTage_rd>0)
+        {
+          s=1;
+          subseas=1;  //  begin season  note that ALK_idx re-calculated inside get_growth3
+          ALK_idx=(s-1)*N_subseas+subseas;  //  redundant with calc inside get_growth3 ????
+  //      get_growth3(s, subseas);  //  not needed because size-at-age already has been propagated to seas 1 subseas 1
+          Make_AgeLength_Key(s, subseas);  //  this will give wt_age_beg before any time-varying parameter changes for this year
+        }
+
+        smrybio=0.0;
+        smrynum=0.0;
+        s=1;
+        t=t_base+1;
+        for (g=1;g<=gmorph;g++)
+        if(use_morph(g)>0)
+        {
+          for (p=1;p<=pop;p++)
+          {
+            smrybio+=natage(t,p,g)(Smry_Age,nages)*Wt_Age_beg(s,g)(Smry_Age,nages);
+            smrynum+=sum(natage(t,p,g)(Smry_Age,nages));   //sums to accumulate across platoons and settlements
+          }
+        }
+        env_data(y,-3)=smrybio/env_data(styr-1,-3);
+        env_data(y,-4)=smrynum/env_data(styr-1,-4);
+
 
       Smry_Table(y).initialize();
 
@@ -824,8 +851,22 @@ FUNCTION void Get_Forecast()
         {get_growth2();}
         else
         {get_growth2_Richards();}
-        if(time_vary_MG(endyr+1,7)>0)  get_catch_mult(y, catch_mult_pointer);
       }
+      if(time_vary_MG(endyr+1,1)>0) get_natmort();
+      if(time_vary_MG(endyr+1,3)>0) get_wtlen();
+      if(time_vary_MG(endyr+1,4)>0) get_recr_distribution();
+      if(time_vary_MG(endyr+1,5)>0) get_migration();
+      if(time_vary_MG(endyr+1,7)>0)  get_catch_mult(y, catch_mult_pointer);
+
+      if(save_for_report>0 && Fcast_Loop1==Fcast_Loop_Control(1))
+      {
+        if(time_vary_MG(endyr+1,1)>0 || time_vary_MG(endyr+1,2)>0 || time_vary_MG(endyr+1,3)>0)
+        {
+          get_saveGparm();
+        }
+      }
+  //  SS_Label_Info_24.1.2  #Call selectivity, which does its own internal check for time-varying changes
+      get_selectivity();
 
       // ABC_loop:  1=get OFL; 2=get_ABC, use input catches; 3=recalc with caps and allocations
       for (int ABC_Loop=ABC_Loop_start; ABC_Loop<=ABC_Loop_end;ABC_Loop++)
