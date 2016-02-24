@@ -844,10 +844,21 @@ FUNCTION void get_time_series()
           for (g=1;g<=k;g++)  //  loop females
           if(use_morph(g)>0)
           {
-            for (a=1;a<nages;a++)
+            if(Hermaphro_Option==1)
             {
-              natage(t+1,p,g+k,a) += natage(t+1,p,g,a)*Hermaphro_val(GP4(g),a-1); // increment males
-              natage(t+1,p,g,a) *= (1.-Hermaphro_val(GP4(g),a-1)); // decrement females
+              for (a=1;a<nages;a++)
+              {
+                natage(t+1,p,g+k,a) += natage(t+1,p,g,a)*Hermaphro_val(GP4(g),a-1); // increment males
+                natage(t+1,p,g,a) *= (1.-Hermaphro_val(GP4(g),a-1)); // decrement females
+              }
+            } else
+            if(Hermaphro_Option==-1)
+            {
+              for (a=1;a<nages;a++)
+              {
+                natage(t+1,p,g+k,a) += natage(t+1,p,g,a)*(1.-Hermaphro_val(GP4(g),a-1)); // decrement males
+                natage(t+1,p,g,a) *= Hermaphro_val(GP4(g),a-1); // increment females
+              }
             }
           }
         }
@@ -1086,8 +1097,16 @@ FUNCTION void get_time_series()
               for (g=1;g<=k;g++)  //  loop females
               if(use_morph(g)>0)
               {
-                TG_alive(p,g+k) += TG_alive(p,g)*Hermaphro_val(GP4(g),a1); // increment males
-                TG_alive(p,g) *= (1.-Hermaphro_val(GP4(g),a1)); // decrement females
+                if(Hermaphro_Option==1)
+                {
+                  TG_alive(p,g+k) += TG_alive(p,g)*Hermaphro_val(GP4(g),a1); // increment males
+                  TG_alive(p,g) *= (1.-Hermaphro_val(GP4(g),a1)); // decrement females
+                } else
+                if(Hermaphro_Option==-1)
+                {
+                  TG_alive(p,g+k) += TG_alive(p,g)*(1.-Hermaphro_val(GP4(g),a1)); // decrement males
+                  TG_alive(p,g) *= Hermaphro_val(GP4(g),a1); // increment females
+                }
               }
             }
           }
@@ -1284,8 +1303,16 @@ FUNCTION void Do_Equil_Calc()
                for (g=1;g<=k;g++)
                if(use_morph(g)>0)
                {
-                 Survivors(p,g+k) += Survivors(p,g)*Hermaphro_val(GP4(g),a1); // increment males
-                 Survivors(p,g) *= (1.-Hermaphro_val(GP4(g),a1)); // decrement females
+                 if(Hermaphro_Option==1)
+                 {
+                   Survivors(p,g+k) += Survivors(p,g)*Hermaphro_val(GP4(g),a1); // increment males
+                   Survivors(p,g) *= (1.-Hermaphro_val(GP4(g),a1)); // decrement females
+                 } else
+                 if(Hermaphro_Option==-1)
+                 {
+                   Survivors(p,g+k) += Survivors(p,g)*(1.-Hermaphro_val(GP4(g),a1)); // decrement males
+                   Survivors(p,g) *= Hermaphro_val(GP4(g),a1); // increment females
+                 }
                }
              }
            }

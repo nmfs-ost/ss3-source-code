@@ -1352,10 +1352,6 @@ FUNCTION void get_wtlen()
       {
         Hermaphro_val(1,a)=0.0 + temp * (cumd_norm((r_ages(a)-infl)/stdev)-temp2);
       }
-      if(Hermaphro_Option==-1)
-      {
-        Hermaphro_val(1) = 1.0 - Hermaphro_val(1);
-      }
       if(N_GP>1)
         for(gp=2;gp<=N_GP;gp++)
         {

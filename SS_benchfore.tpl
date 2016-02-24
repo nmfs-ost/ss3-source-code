@@ -1308,10 +1308,21 @@ FUNCTION void Get_Forecast()
                 for (g=1;g<=k;g++)  //  loop females
                 if(use_morph(g)>0)
                 {
-                  for (a=1;a<nages;a++)
+                  if(Hermaphro_Option==1)
                   {
-                    natage(t+1,p,g+k,a) += natage(t+1,p,g,a)*Hermaphro_val(GP4(g),a-1); // increment males
-                    natage(t+1,p,g,a) *= (1.-Hermaphro_val(GP4(g),a-1)); // decrement females
+                    for (a=1;a<nages;a++)
+                    {
+                      natage(t+1,p,g+k,a) += natage(t+1,p,g,a)*Hermaphro_val(GP4(g),a-1); // increment males
+                      natage(t+1,p,g,a) *= (1.-Hermaphro_val(GP4(g),a-1)); // decrement females
+                    }
+                  } else
+                  if(Hermaphro_Option==-1)
+                  {
+                    for (a=1;a<nages;a++)
+                    {
+                      natage(t+1,p,g+k,a) += natage(t+1,p,g,a)*(1.-Hermaphro_val(GP4(g),a-1)); // decrement males
+                      natage(t+1,p,g,a) *= Hermaphro_val(GP4(g),a-1); // increment females
+                    }
                   }
                 }
               }
