@@ -278,7 +278,7 @@ FUNCTION void get_time_series()
 
 //    if( )
     	{
-    		
+
     		env_data(y,-1)=SPB_current/SPB_yr(styr-1);  //  store most recent value for density-dependent effects, NOTE - off by a year if recalc'ed at beginning of season 1
         env_data(y,-2)=mfexp(recdev(y)); //  store so can do density-dependence
         t=t_base+1;  // first season
@@ -617,7 +617,7 @@ FUNCTION void get_time_series()
               for (f=1;f<=Nfleet;f++)
               if(fleet_type(f)==1) // do exact catch for this fleet; skipping adjustment for bycatch fleets
               {
-                if (catch_seas_area(t,p,f)==1)  
+                if (catch_seas_area(t,p,f)==1)
                 {
                   vbio.initialize();
                   for (g=1;g<=gmorph;g++)
@@ -647,7 +647,7 @@ FUNCTION void get_time_series()
   //  SS_Label_Info_24.3.3.3.4 #Do a specified number of loops to tune up these F values to more closely match the observed catch
             	for (int tune_F=1;tune_F<=F_Tune;tune_F++)
               {
-  //  SS_Label_Info_24.3.3.3.5 #add F+M to get Z 
+  //  SS_Label_Info_24.3.3.3.5 #add F+M to get Z
                 for (g=1;g<=gmorph;g++)
                 if(use_morph(g)>0)
                 {
@@ -884,7 +884,7 @@ FUNCTION void get_time_series()
             {
               for (a=1;a<nages;a++)
               {
-                natage(t+1,p,g+k,a) += natage(t+1,p,g,a)*Hermaphro_val(GP4(g),a-1); // increment males
+                natage(t+1,p,g+k,a) += natage(t+1,p,g,a)*Hermaphro_val(GP4(g),a-1); // increment males with females
                 natage(t+1,p,g,a) *= (1.-Hermaphro_val(GP4(g),a-1)); // decrement females
               }
             } else
@@ -892,8 +892,8 @@ FUNCTION void get_time_series()
             {
               for (a=1;a<nages;a++)
               {
-                natage(t+1,p,g+k,a) += natage(t+1,p,g,a)*(1.-Hermaphro_val(GP4(g),a-1)); // decrement males
-                natage(t+1,p,g,a) *= Hermaphro_val(GP4(g),a-1); // increment females
+                natage(t+1,p,g,a) += natage(t+1,p,g+k,a)*Hermaphro_val(GP4(g+k),a-1); // increment females with males
+                natage(t+1,p,g+k,a) *= (1.-Hermaphro_val(GP4(g+k),a-1)); // decrement males
               }
             }
           }
@@ -1135,13 +1135,13 @@ FUNCTION void get_time_series()
               {
                 if(Hermaphro_Option==1)
                 {
-                  TG_alive(p,g+k) += TG_alive(p,g)*Hermaphro_val(GP4(g),a1); // increment males
+                  TG_alive(p,g+k) += TG_alive(p,g)*Hermaphro_val(GP4(g),a1); // increment males with females
                   TG_alive(p,g) *= (1.-Hermaphro_val(GP4(g),a1)); // decrement females
                 } else
                 if(Hermaphro_Option==-1)
                 {
-                  TG_alive(p,g+k) += TG_alive(p,g)*(1.-Hermaphro_val(GP4(g),a1)); // decrement males
-                  TG_alive(p,g) *= Hermaphro_val(GP4(g),a1); // increment females
+                  TG_alive(p,g) += TG_alive(p,g+k)*Hermaphro_val(GP4(g+k),a1); // increment females with males
+                  TG_alive(p,g+k) *= (1.-Hermaphro_val(GP4(g+k),a1)); // decrement males
                 }
               }
             }
@@ -1341,13 +1341,13 @@ FUNCTION void Do_Equil_Calc()
                {
                  if(Hermaphro_Option==1)
                  {
-                   Survivors(p,g+k) += Survivors(p,g)*Hermaphro_val(GP4(g),a1); // increment males
+                   Survivors(p,g+k) += Survivors(p,g)*Hermaphro_val(GP4(g),a1); // increment males with females
                    Survivors(p,g) *= (1.-Hermaphro_val(GP4(g),a1)); // decrement females
                  } else
                  if(Hermaphro_Option==-1)
                  {
-                   Survivors(p,g+k) += Survivors(p,g)*(1.-Hermaphro_val(GP4(g),a1)); // decrement males
-                   Survivors(p,g) *= Hermaphro_val(GP4(g),a1); // increment females
+                   Survivors(p,g) += Survivors(p,g+k)*Hermaphro_val(GP4(g+k),a1); // increment females with males
+                   Survivors(p,g+k) *= (1.-Hermaphro_val(GP4(g+k),a1)); // decrement males
                  }
                }
              }

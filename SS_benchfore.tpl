@@ -1353,7 +1353,7 @@ FUNCTION void Get_Forecast()
                   {
                     for (a=1;a<nages;a++)
                     {
-                      natage(t+1,p,g+k,a) += natage(t+1,p,g,a)*Hermaphro_val(GP4(g),a-1); // increment males
+                      natage(t+1,p,g+k,a) += natage(t+1,p,g,a)*Hermaphro_val(GP4(g),a-1); // increment males with females
                       natage(t+1,p,g,a) *= (1.-Hermaphro_val(GP4(g),a-1)); // decrement females
                     }
                   } else
@@ -1361,8 +1361,8 @@ FUNCTION void Get_Forecast()
                   {
                     for (a=1;a<nages;a++)
                     {
-                      natage(t+1,p,g+k,a) += natage(t+1,p,g,a)*(1.-Hermaphro_val(GP4(g),a-1)); // decrement males
-                      natage(t+1,p,g,a) *= Hermaphro_val(GP4(g),a-1); // increment females
+                      natage(t+1,p,g,a) += natage(t+1,p,g+k,a)*Hermaphro_val(GP4(g+k),a-1); // increment females with males
+                      natage(t+1,p,g+k,a) *= (1.-Hermaphro_val(GP4(g+k),a-1)); // decrement males
                     }
                   }
                 }
