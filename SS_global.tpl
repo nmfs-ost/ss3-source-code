@@ -60,7 +60,7 @@ GLOBALS_SECTION
   adstring_array Data_Comments;
   adstring_array Control_Comments;
   adstring_array Forecast_Comments;
-  
+
 //  SS_Label_Info_10.3  #start random number generator with seed based on time
   random_number_generator radm(long(time(&start)));
 
@@ -79,7 +79,7 @@ GLOBALS_SECTION
   void get_data_timing(const dvector& to_process, const ivector& timing_constants, ivector i_result, dvector r_result, const dvector& seasdur, const dvector& subseasdur_delta, const dvector& azero_seas, const dvector& surveytime)
   {
 
-    // r_result(1,3) will contain: real_month, data_timing_seas, data_timing_yr, 
+    // r_result(1,3) will contain: real_month, data_timing_seas, data_timing_yr,
     // i_result(1,6) will contain y, t, s, f, ALK_time, use_midseas
     int f,s,subseas,y;
     double temp, temp1, month, data_timing_seas, data_timing_yr;
@@ -89,20 +89,20 @@ GLOBALS_SECTION
 //  timing_constants(4)=mid_subseas;
 //  timing_constants(5)=styr;
 //  timing_constants(6)-endyr;
-    
+
     y=int(to_process(1));
     month=abs(to_process(2));
     f=abs(int(to_process(3)));
 
     if(timing_constants(1)==1)  // reading season
     {
-      s=int(month);  
+      s=int(month);
       subseas=timing_constants(4);  //  mid subseas
-      if(surveytime(f)>=0.) 
+      if(surveytime(f)>=0.)
       {  //  fraction of season
         data_timing_seas=surveytime(f);
         i_result(6)=0;
-      }  
+      }
       else
       {  //  use midseason and Nmid abundance
         data_timing_seas=0.5;
@@ -151,7 +151,7 @@ GLOBALS_SECTION
 
     return;
   }
-  
+
 //  global routine to count the number of records before reaching an end condition
   int count_records(int N_fields)  //  function definition
   {
@@ -250,10 +250,10 @@ FINAL_SECTION
     cout<<"Finished writing COVAR.SSO"<<endl;
 
     get_posteriors();
-    
+
 //  SS_Label_Info_12.3 #Go thru time series calculations again to get extra output quantities
 
-//  SS_Label_Info_12.3.1 #Write out body weights to wtatage.ss_new.  Occurs while doing procedure with save_for_report=2 
+//  SS_Label_Info_12.3.1 #Write out body weights to wtatage.ss_new.  Occurs while doing procedure with save_for_report=2
     save_for_report=2;
     bodywtout<<1<<"  #_user_must_replace_this_value_with_number_of_lines_with_wtatage_below"<<endl;
     bodywtout<<N_WTage_maxage<<" # maxage"<<endl;
@@ -324,7 +324,7 @@ FINAL_SECTION
     if(MG_adjust_method==3) warning<<"time-vary MGparms not bound checked"<<endl;
     if(selparm_adjust_method==3) warning<<"time-vary selparms not bound checked"<<endl;
     cout<<endl<<"!!  Run has completed  !!            ";
-    
+
 //  SS_Label_Info_12.4.7 #Finish up with final writes to warning.sso
     if(N_changed_lambdas>0)
       {N_warn++; warning<<"Reminder: Number of lamdas !=0.0 and !=1.0:  "<<N_changed_lambdas<<endl; }
@@ -340,6 +340,8 @@ FINAL_SECTION
 //  SS_Label_Section_13. #REPORT_SECTION  produces SS3.rep,which is less extensive than report.sso produced in final section
 REPORT_SECTION
   {
+    save_gradients(gradients);
+
 //  SS_Label_Info_13.1 #Write limited output to SS3.rep
   if(Svy_N>0) report<<" CPUE " <<surv_like<<endl;
   if(nobs_disc>0) report<<" Disc " <<disc_like<<endl;
@@ -369,7 +371,7 @@ REPORT_SECTION
   report<<endl<<"yr seas"; for (f=1;f<=Nfleet;f++) report<<" "<<f;
   report<<endl<<"init_yr 1 ";
   for (s=1;s<=nseas;s++)
-  for (f=1;f<=Nfleet;f++) 
+  for (f=1;f<=Nfleet;f++)
   {
     if(init_F_loc(s,f)>0)
       {report<<" "<<init_F(init_F_loc(s,f));}
