@@ -2347,12 +2347,6 @@
    seltype_Nparam(27)=3;   // cubic spline for selex at length, additional parm count is in seltype(f,4)
 //   seltype_Nparam(28)=3;   // cubic spline for selex at age, additional parm count is in seltype(f,4)
    seltype_Nparam(29)=0;   //   undefined
-   seltype_Nparam(30)=0;   //   spawning biomass
-   seltype_Nparam(31)=0;   //   recruitment dev
-   seltype_Nparam(32)=0;   //   pre-recruitment (spawnbio * recrdev)
-   seltype_Nparam(33)=0;   //   recruitment
-   seltype_Nparam(34)=0;   //   spawning biomass depletion
-   seltype_Nparam(35)=0;   //   survey of a dev vector
 
  END_CALCS
 
@@ -2422,7 +2416,7 @@
        }
      }
 
-     if(seltype(f,1)==34)  //  special code for depletion, so adjust phases and lambdas
+     if(Svy_units(f)==34)  //  special code for depletion, so adjust phases and lambdas
       {
         depletion_fleet=f;
       }

@@ -743,47 +743,12 @@ FUNCTION void get_selectivity()
             sel = mfexp(tempvec_l);
             break;
           }
-
-  //  SS_Label_Info_22.3.30 #cases 30-35 size selectivity set to 1.0 for special survey definitions that bypass selectivity
-          case 30:
-          {
-            sel=1.0;
-            break;
-          }
-          case 31:
-          {
-            sel=1.0;
-            break;
-          }
-          case 32:
-          {
-            sel=1.0;
-            break;
-          }
-          case 33:
-          {
-            sel=1.0;
-            break;
-          }
-          case 34:
-          {
-            sel=1.0;
-            break;
-          }
-          case 35:
-          {
-            sel=1.0;
-            break;
-          }
-
-  //  SS_Label_Info_22.3.90 #seltype not found. 
-
-          default:   //  seltype not found.  But really need this check earlier when the N selex parameters are being processed.
-          {
-            N_warn++; cout<<"Critical error, see warning"<<endl; warning<<"Size_selex option not valid "<<seltype(f,1)<<endl; exit(1);
-            break;
-          }
-
+          
+          default:
+          	{
+          		sel=1.0;
+          		break;
+          	}
           }
           sel_l(y,f,gg)=sel;    // Store size-selex in year*type array
         }  // end direct calc of selex from parameters
