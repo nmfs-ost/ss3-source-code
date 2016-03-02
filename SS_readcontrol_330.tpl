@@ -2313,6 +2313,7 @@
 
 !!//  SS_Label_Info_4.9 #Define Selectivity patterns and N parameters needed per pattern
   ivector seltype_Nparam(0,35)
+  int selparm_adjust_method   //  1=do V1.xx approach to adjustment by env, block or dev; 2=use new logistic approach; 3=no check
  LOCAL_CALCS
    seltype_Nparam(0)=0;   // selex=1.0 for all sizes
    seltype_Nparam(1)=2;   // logistic; with 95% width specification
@@ -2358,7 +2359,18 @@
 !!//  SS_Label_Info_4.9.1 #Read selectivity definitions
 //  do 2*Nfleet to create options for size-selex (first), then age-selex
   init_imatrix seltype(1,2*Nfleet,1,4)    // read selex type for each fleet/survey, Do_retention, Do_male
-  !! echoinput<<" selex types "<<endl<<seltype<<endl;
+
+ LOCAL_CALCS
+  echoinput<<" selex types "<<endl<<seltype<<endl;
+    *(ad_comm::global_datafile) >> selparm_adjust_method;
+    echoinput<<selparm_adjust_method<<" selparm_adjust_method"<<endl;
+    if(selparm_adjust_method<1 || selparm_adjust_method>3)
+    {
+      N_warn++; cout<<" EXIT - see warning "<<endl;
+      warning<<" illegal selparm_adjust_method; must be 1 or 2 or 3 "<<endl;  exit(1);
+    }
+ END_CALCS
+  
   int N_selparm   // figure out the Total number of selex parameters
   int N_selparm2                 // N selparms plus env links and blocks
   ivector N_selparmvec(1,2*Nfleet)  //  N selparms by type, including extra parms for male selex, retention, etc.
@@ -2591,7 +2603,7 @@
 
 //  SS_Label_Info_4.097 #Read parameters needed for estimating variance of composition data
   {
-    echoinput<<"#Now read parameters for variance of composition data; CANNOT be time-varying"<<endl;
+    echoinput<<"#Now count parameters for variance of composition data; CANNOT be time-varying"<<endl;
     if(Comp_Err_ParmCount>0)
     {
       echoinput<<Comp_Err_ParmCount<<"  #_parameters are needed"<<endl;
@@ -2625,7 +2637,7 @@
   int makefishsel_yr
 !!//  SS_Label_Info_4.9.4 #Create and label environmental linkages for selectivity parameters
   int N_selparm_env                            // number of selparms that use env linkage
-  int customenvsetup  //  0=read one setup and apply to all; 1=read each
+  int custom_selenv_setup  //  0=read one setup and apply to all; 1=read each
   ivector selparm_env(1,N_selparm)             //  pointer to parameter with env link for each selparm
   ivector selparm_envuse(1,N_selparm)   // contains the environment data number
   ivector selparm_envtype(1,N_selparm)  // 1=multiplicative; 2= additive
@@ -2638,29 +2650,52 @@
 
   for (j=1;j<=N_selparm;j++)
   {
-    if(selparm_1(j,8)!=0)
+    if(selparm_1(j,8)>0)
     {
-      N_selparm_env++; selparm_env(j)=N_selparm+N_selparm_env;
-      if(selparm_1(j,8)>0)
-      {
-        ParCount++; ParmLabel+=ParmLabel(j+firstselparm)+"_ENV_mult"; selparm_envtype(j)=1; selparm_envuse(j)=selparm_1(j,8);
-       }
-       else if(selparm_1(j,8)==-999)
-       {ParCount++; ParmLabel+=ParmLabel(j+firstselparm)+"_ENV_densdep"; selparm_envtype(j)=3;  selparm_envuse(j)=-1;}
-       else
-       {ParCount++; ParmLabel+=ParmLabel(j+firstselparm)+"_ENV_add"; selparm_envtype(j)=2; selparm_envuse(j)=-selparm_1(j,8);}
+      selparm_env(j)=N_selparm+N_selparm_env+1;  //   first parameter for this link
+      k=int(selparm_1(j,8)/100);  //  find the link code
+    	selparm_envtype(j)=k;
+    	selparm_envuse(j)=selparm_1(j,8)-k*100;
+    	if(selparm_envuse(j)==99) selparm_envuse(j)=-1;  //  for linking to rel_spawn biomass
+    	if(selparm_envuse(j)==98) selparm_envuse(j)=-2;  //  for linking to exp(recdev)
+      if(selparm_envuse(j)==97) selparm_envuse(j)=-3;  //  for linking to rel_smrybio
+      if(selparm_envuse(j)==96) selparm_envuse(j)=-4;  //  for linking to rel_smry_num
+     switch (k)
+     {
+     	 case 1:  //  multiplicative
+     	 	{
+          N_selparm_env ++; ParCount++; ParmLabel+=ParmLabel(j+firstselparm)+"_ENV_mult";
+          if(selparm_adjust_method==2) {N_warn++; cout<<" EXIT - see warning "<<endl; warning<<"multiplicative env effect on selparm: "<<j+firstselparm
+          <<" not allowed because selparm_adjust_method==2; STOP"<<endl; exit(1);}
+     	 		break;
+     	 	}
+     	 case 2:  //  additive
+     	 	{
+          N_selparm_env ++; ParCount++; ParmLabel+=ParmLabel(j+firstselparm)+"_ENV_add";
+     	 		break;
+     	 	}
+     	 case 4:  //  logistic with offset
+     	 	{ 
+          if(selparm_adjust_method==2) {N_warn++; cout<<" EXIT - see warning "<<endl; warning<<"multiplicative env effect on selparm: "<<j+firstselparm
+          <<" not allowed because selparm_adjust_method==2; STOP"<<endl; exit(1);}
+          N_selparm_env ++; ParCount++; ParmLabel+=ParmLabel(j+firstselparm)+"_ENV_offset"; 
+          N_selparm_env ++; ParCount++; ParmLabel+=ParmLabel(j+firstselparm)+"_ENV_lgst_slope"; 
+     	 		break;
+     	 	}
+     }
+
     }
   }
 
   if(N_selparm_env>0)
   {
-    *(ad_comm::global_datafile) >> customenvsetup;
-    if(customenvsetup==0) {k1=1;} else {k1=N_selparm_env;}
-    echoinput<<customenvsetup<<" customenvsetup"<<endl;
+    *(ad_comm::global_datafile) >> custom_selenv_setup;
+    if(custom_selenv_setup==0) {k1=1;} else {k1=N_selparm_env;}
+    echoinput<<custom_selenv_setup<<" custom_selenv_setup for "<<k1<<" "<<" link parameters"<<endl;
   }
   else
-  {customenvsetup=0; k1=0;
-    echoinput<<" no envlinks; so don't read customenvsetup"<<endl;
+  {custom_selenv_setup=0; k1=0;
+    echoinput<<" no envlinks; so don't read custom_selenv_setup"<<endl;
     }
  END_CALCS
 
@@ -2819,7 +2854,6 @@
   }
  END_CALCS
 
-  int selparm_adjust_method   //  1=do V1.xx approach to adjustment by env, block or dev; 2=use new logistic approach; 3=no check
 !!//  SS_Label_Info_4.9.7 #Create and label selectivity parameter annual devs
   int N_selparm_dev   // number of selparms that use random deviations
   int N_selparm_dev_tot   // number of selparms that use random deviations
@@ -2887,7 +2921,7 @@
    for (f=1;f<=N_selparm_env;f++)
    {
     j++;
-    if(customenvsetup==0) k=1;
+    if(custom_selenv_setup==0) k=1;
     else k=f;
     selparm_LO(j)=selparm_env_1(k,1);
     selparm_HI(j)=selparm_env_1(k,2);
@@ -3027,22 +3061,6 @@
      echoinput<<" No selparm devs selected, so don't read selparm_dev_PH"<<endl;
    }
 
-  if(N_selparm_env+N_selparm_blk+N_selparm_dev > 0)
-  {
-    *(ad_comm::global_datafile) >> selparm_adjust_method;
-    echoinput<<selparm_adjust_method<<" selparm_adjust_method"<<endl;
-    if(selparm_adjust_method<1 || selparm_adjust_method>3)
-    {
-      N_warn++; cout<<" EXIT - see warning "<<endl;
-      warning<<" illegal selparm_adjust_method; must be 1 or 2 or 3 "<<endl;  exit(1);
-    }
-  }
-  else
-  {
-    selparm_adjust_method=0;
-    echoinput<<" No selparm adjustments, so don't read selparm_adjust_method"<<endl;
-  }
-
 //  SS_Label_Info_4.9.10 #Special bound checking for size selex parameters
     z=0;  // parameter counter within this section
     for (f=1;f<=Nfleet;f++)
@@ -3090,10 +3108,12 @@
           for (j=1;j<=N_selparmvec(f);j++)
           {
             z++;
-            if(selparm_envuse(z)!=0)          // env linkage
+            if(selparm_envuse(z)>0)          // env linkage
             {
-             if((env_data_RD(y,selparm_envuse(z))!=env_data_RD(y-1,selparm_envuse(z)) || selparm_envtype(z)==3 )) time_vary_sel(y,f)=1;
+             if((env_data_RD(y,selparm_envuse(z))!=env_data_RD(y-1,selparm_envuse(z)))) time_vary_sel(y,f)=1;
             }
+            else if (selparm_envuse(z)<0) // density-dependent link
+            {time_vary_sel(y,f)=1;}
             if(selparm_1(z,9)>=1)  // dev vector
             {
               s=selparm_1(z,11)+1;

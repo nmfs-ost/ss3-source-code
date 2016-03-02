@@ -2637,7 +2637,7 @@
   int makefishsel_yr
 !!//  SS_Label_Info_4.9.4 #Create and label environmental linkages for selectivity parameters
   int N_selparm_env                            // number of selparms that use env linkage
-  int customenvsetup  //  0=read one setup and apply to all; 1=read each
+  int custom_selenv_setup  //  0=read one setup and apply to all; 1=read each
   ivector selparm_env(1,N_selparm)             //  pointer to parameter with env link for each selparm
   ivector selparm_envuse(1,N_selparm)   // contains the environment data number
   ivector selparm_envtype(1,N_selparm)  // 1=multiplicative; 2= additive
@@ -2666,13 +2666,13 @@
 
   if(N_selparm_env>0)
   {
-    *(ad_comm::global_datafile) >> customenvsetup;
-    if(customenvsetup==0) {k1=1;} else {k1=N_selparm_env;}
-    echoinput<<customenvsetup<<" customenvsetup"<<endl;
+    *(ad_comm::global_datafile) >> custom_selenv_setup;
+    if(custom_selenv_setup==0) {k1=1;} else {k1=N_selparm_env;}
+    echoinput<<custom_selenv_setup<<" custom_selenv_setup"<<endl;
   }
   else
-  {customenvsetup=0; k1=0;
-    echoinput<<" no envlinks; so don't read customenvsetup"<<endl;
+  {custom_selenv_setup=0; k1=0;
+    echoinput<<" no envlinks; so don't read custom_selenv_setup"<<endl;
     }
  END_CALCS
 
@@ -2899,7 +2899,7 @@
    for (f=1;f<=N_selparm_env;f++)
    {
     j++;
-    if(customenvsetup==0) k=1;
+    if(custom_selenv_setup==0) k=1;
     else k=f;
     selparm_LO(j)=selparm_env_1(k,1);
     selparm_HI(j)=selparm_env_1(k,2);

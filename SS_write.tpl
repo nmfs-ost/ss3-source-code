@@ -2026,6 +2026,10 @@ FUNCTION void write_nucontrol()
    report4<<"#_age_selex_types"<<endl;
    report4<<"#_Pattern ___ Male Special"<<endl;
    for (f=1;f<=Nfleet;f++) report4<<seltype(f+Nfleet)<<" # "<<f<<" "<<fleetname(f)<<endl;
+   
+   report4<<selparm_adjust_method<<
+   " #_env/block/dev_adjust_method (1=standard; 2=logistic trans to keep in base parm bounds; 3=standard w/ no bound check)"<<endl;
+   
    report4<<"#_LO HI INIT PRIOR PR_type SD PHASE env-var use_dev dev_minyr dev_maxyr dev_stddev Block Block_Fxn"<<endl;
 
   for (f=1;f<=N_selparm;f++)
@@ -2043,7 +2047,7 @@ FUNCTION void write_nucontrol()
      for (f=1;f<=N_selparm_env;f++)
      {
        j++;  NP++;
-       if(customenvsetup==0) {k=1;} else {k=f;}  // use read value of custom here
+       if(custom_selenv_setup==0) {k=1;} else {k=f;}  // use read value of custom here
        selparm_env_1(k,3)=value(selparm(j)); report4<<selparm_env_1(k)<<" # "<<ParmLabel(NP)<<endl;
      }
    }
@@ -2107,9 +2111,6 @@ FUNCTION void write_nucontrol()
     report4<<"#_Cond -4 # placeholder for selparm_Dev_Phase"<<endl;
   }
 
-  if(N_selparm_env+N_selparm_blk+N_selparm_dev == 0) report4<<"#_Cond ";
-   report4<<selparm_adjust_method<<
-   " #_env/block/dev_adjust_method (1=standard; 2=logistic trans to keep in base parm bounds; 3=standard w/ no bound check)"<<endl;
 
   report4<<"#"<<endl<<"# Tag loss and Tag reporting parameters go next"<<endl;
   if(Do_TG>0)

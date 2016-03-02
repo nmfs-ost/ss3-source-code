@@ -179,13 +179,46 @@ FUNCTION void get_selectivity()
                 }
               }
 
-              if(selparm_env(Ip+j)>0)       // if env then modify sp
+  //  SS_Label_Info_14.4.1.2 #Adjust for env linkage
+  // where:  selparm_env is zero if no link else contains the parameter # of the first link parameter
+  //         selparm_envtype identifies the form of the linkage, some of which take more than one link parameeter
+  //         selparm_envuse identifies the ID of the environmental time series being linked to
+  //         env_data is a dvar_matrix populated with the read env data for columns 1-N_envvariables
+  //         and populated with summary biamass for column -1 to allow for density-dependence
+  //         the integer values of selparm_envtype are created when parsing the input:
+  //           k=int(selparm_1(f,8)/100);  //  find the link code
+  // 	         selparm_envtype(f)=k;
+  // 	         selparm_envuse(f)=selparm_1(f,8)-k*100;
+  //   	       if(selparm_envuse(f)==99) selparm_envuse(f)=-1;  //  for linking to spawn biomass
+  //        	 if(selparm_envuse(f)==98) selparm_envuse(f)=-2;  //  for linking to recruitment
+
+        if(selparm_env(Ip+j)>0)
+        {
+          switch(selparm_envtype(Ip+j))
+          {
+            case 1:  //  exponential selparm env link
               {
-                if(selparm_envtype(Ip+j)==1)
-                  {sp(j) *= mfexp(selparm(selparm_env(Ip+j))* env_data(y,selparm_envuse(Ip+j)));}
-                else
-                  {sp(j) += selparm(selparm_env(Ip+j))* env_data(y,selparm_envuse(Ip+j));}
+                sp(j)*=mfexp(selparm(selparm_env(Ip+j))*(env_data(y,selparm_envuse(Ip+j))));
+                break;
               }
+            case 2:  //  linear selparm env link
+              {
+                sp(j)+=selparm(selparm_env(Ip+j))*env_data(y,selparm_envuse(Ip+j));
+                break;
+              }
+            case 3:
+            	{
+            		//  not implemented
+            		break;
+            	}
+            case 4:  //  logistic selparm env link
+              {
+              	// first parm is offset ; second is slope
+                sp(j)*=2.00000/(1.00000 + mfexp(-selparm(selparm_env(Ip+j)+1)*(env_data(y,selparm_envuse(Ip+j))-selparm(selparm_env(Ip+j)))));
+                break;
+              }
+          }
+        }
 
               k=selparm_dev_point(Ip+j);     // if dev then modify sp
               if(k>0)
@@ -238,8 +271,38 @@ FUNCTION void get_selectivity()
                 }
               }
 
-              if(selparm_env(Ip+j)>0)  //  do environmental effect  only additive allowed
-                {doit=1;temp += selparm(selparm_env(Ip+j))* env_data(y,selparm_envuse(Ip+j));}
+        if(selparm_env(Ip+j)>0)
+        {
+          switch(selparm_envtype(Ip+j))
+          {
+            case 1:  //  exponential selparm env link
+              {
+                //  NOT ALLOWED  sp(j)*=mfexp(selparm(selparm_env(Ip+j))*(env_data(y,selparm_envuse(Ip+j))));
+                break;
+              }
+            case 2:  //  linear selparm env link
+              {
+                doit=1;
+                temp += selparm(selparm_env(Ip+j))*env_data(y,selparm_envuse(Ip+j));
+//                sp(j)+= selparm(selparm_env(Ip+j))*env_data(y,selparm_envuse(Ip+j));
+                break;
+              }
+            case 3:
+            	{
+            		//  not implemented
+            		break;
+            	}
+            case 4:  //  logistic selparm env link
+              {
+              	// first parm is offset ; second is slope
+                //  NOT ALLOWED sp(j)*=2.00000/(1.00000 + mfexp(-selparm(selparm_env(Ip+j)+1)*(env_data(y,selparm_envuse(Ip+j))-selparm(selparm_env(Ip+j)))));
+                break;
+              }
+          }
+        }
+
+
+
 
               k=selparm_dev_point(Ip+j); //  Annual deviations;  use kth dev series
               if(k>0)
@@ -1348,7 +1411,7 @@ FUNCTION void Make_FishSelex()
     int yf;
     int tz;
     gg=sx(g);
-    if(y>endyr) {yz=endyr; } else {yz=y;}
+//    if(y>endyr) {yz=endyr; } else {yz=y;}  //  not used
     if(y>endyr+1) {yf=endyr+1;} else {yf=y;}    //  yf stores in endyr+1 the average selex from a range of years
     tz=styr+(y-styr)*nseas+s-1;  // can use y, not yf, because wtage_emp values are read in and can extend into forecast
     for (f=1;f<=Nfleet;f++)
