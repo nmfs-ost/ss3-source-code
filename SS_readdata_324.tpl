@@ -478,6 +478,9 @@ DATA_SECTION
   int N_bycatch;  //  number of bycatch only fleets
   int N_catchfleets; //  number of bycatch plus landed catch fleets
 
+  ivector retParmLoc(1,2*Nfleet)    // could have both retained and disc mort params for each fleet
+  int N_retParm
+
  LOCAL_CALCS
   bycatch_setup.initialize();
     *(ad_comm::global_datafile) >> fleetnameread;
@@ -540,6 +543,7 @@ DATA_SECTION
       fleet_setup(f,5)=catch_se_rd(f);
       fleet_setup(f,6)=catch_se_rd(f);
     }
+    N_retParm=0;
  END_CALCS
 
 //  ProgLabel_2.1.5  define genders and max age

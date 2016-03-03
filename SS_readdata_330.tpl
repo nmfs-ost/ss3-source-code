@@ -492,6 +492,9 @@ DATA_SECTION
   int N_bycatch;  //  number of bycatch only fleets
   int N_catchfleets; //  number of bycatch plus landed catch fleets
 
+  ivector retParmLoc(1,1)
+  int N_retParm
+
  LOCAL_CALCS
   bycatch_setup.initialize();
   {
@@ -539,6 +542,7 @@ DATA_SECTION
       }
     }
   */
+    N_retParm=0;
   }
  END_CALCS
 

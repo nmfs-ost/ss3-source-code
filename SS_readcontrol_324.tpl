@@ -2456,6 +2456,8 @@
        {
          ParCount++; ParmLabel+="Retain_P"+NumLbl(j)+"_"+fleetname(f)+"("+NumLbl(f)+")";
        }
+       // location of where to insert placeholder params
+       N_retParm++; retParmLoc(N_retParm)=RetainParm(f)+4;
        // placeholders for 3.30 dome-shaped retention
        for (j=5;j<=7;j++)
        {
@@ -2467,6 +2469,8 @@
          {
            ParCount++; ParmLabel+="DiscMort_P"+NumLbl(j)+"_"+fleetname(f)+"("+NumLbl(f)+")";
          }
+         // location of where to insert placeholder params
+         N_retParm++; retParmLoc(N_retParm)=RetainParm(f)+4*2;
          // placeholders for 3.30 dome-shaped discard mortality
          for (j=5;j<=7;j++)
          {
@@ -2585,6 +2589,8 @@
          {
            ParCount++; ParmLabel+="Retain_age_P"+NumLbl(j)+"_"+fleetname(f1)+"("+NumLbl(f1)+")";
          }
+         // location of where to insert placeholder params
+         N_retParm++; retParmLoc(N_retParm)=RetainParm(f1)+4;
          // placeholders for 3.30 dome-shaped retention
          for (j=5;j<=7;j++)
          {
@@ -2596,6 +2602,8 @@
            {
              ParCount++; ParmLabel+="DiscMort_age_P"+NumLbl(j)+"_"+fleetname(f1)+"("+NumLbl(f1)+")";
            }
+           // location of where to insert placeholder params
+           N_retParm++; retParmLoc(N_retParm)=RetainParm(f1)+4*2;
            // placeholders for 3.30 dome-shaped discard mortality
            for (j=5;j<=7;j++)
            {
