@@ -2032,7 +2032,7 @@ FUNCTION void write_nucontrol()
 
    report4<<"#_LO HI INIT PRIOR PR_type SD PHASE env-var use_dev dev_minyr dev_maxyr dev_stddev Block Block_Fxn"<<endl;
 
-  if(retParmCount<=0)
+  if(retParCount<=0)
   {
       for (f=1;f<=N_selparm;f++)
       {
