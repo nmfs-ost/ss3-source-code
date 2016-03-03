@@ -743,7 +743,7 @@ FUNCTION void get_selectivity()
             sel = mfexp(tempvec_l);
             break;
           }
-          
+
           default:
           	{
           		sel=1.0;
@@ -875,10 +875,24 @@ FUNCTION void get_selectivity()
           temp=1.-sp(k+2);
           temp1=1.-posfun(temp,0.0,CrashPen);
           retain(y,f)=temp1/(1.+mfexp(-(len_bins_m2-(sp(k)+male_offset*sp(k+3)))/sp(k+1)));  // males are at end of vector, so automatically get done
-          if(docheckup==1&&y==styr) echoinput<<"parms "<<sp(k)<<" "<<sp(k+1)<<" "<<sp(k+3)<<" "<<temp1<<endl<<"maleoff "<<male_offset<<endl;
+          if(retParCount==-1)
+          {
+            // allow for dome-shaped retention in 3.30 only
+            retain(y,f) = retain(y,f)*(1.-(1./(1.+mfexp(-(len_bins_m2-(sp(k+4)+male_offset*sp(k+6)))/sp(k+5)))));
+          }
+          if(docheckup==1&&y==styr)
+          {
+            echoinput<<"parms "<<sp(k)<<" "<<sp(k+1)<<" "<<sp(k+3)<<" "<<temp1;
+            if(retParCount==-1)
+            {
+                // additional dome-shaped retention parameters
+                echoinput<<" "<<sp(k+4)<<" "<<sp(k+5)<<" "<<sp(k+6);
+            }
+            echoinput<<endl<<"maleoff "<<male_offset<<endl;
+          }
           if(docheckup==1&&y==styr) echoinput<<"lenbins "<<len_bins_m2<<endl;
           if(docheckup==1&&y==styr) echoinput<<"retention "<<retain(y,f)<<endl;
-  
+
           if(seltype(f,2)==1)  // all discards are dead
           {
             discmort(y,f)=1.0;
@@ -890,11 +904,16 @@ FUNCTION void get_selectivity()
             temp=1.-sp(k+2);
             temp1=posfun(temp,0.0,CrashPen);
             discmort(y,f)=(1.-temp1/(1+mfexp(-(len_bins_m2-(sp(k)+male_offset*sp(k+3)))/sp(k+1))));  // males are at end of vector, so automatically get done
+            if(retParCount==-1)
+            {
+                // allow for dome-shaped discard mortality in 3.30 only
+                discmort(y,f) = discmort(y,f)*(1.-(1./(1.+mfexp(-(len_bins_m2-(sp(k+4)+male_offset*sp(k+6)))/sp(k+5)))));
+            }
             if(docheckup==1&&y==styr) echoinput<<"discmort "<<discmort(y,f)<<endl;
             discmort2(y,f,1)=elem_prod(sel_l(y,f,1), retain(y,f)(1,nlength) + elem_prod((1.-retain(y,f)(1,nlength)),discmort(y,f)(1,nlength)) );
           }
         }
-  
+
         sel_l_r(y,f,1)=elem_prod(sel_l(y,f,1),retain(y,f)(1,nlength));
         if(gender==2)
         {
@@ -976,7 +995,7 @@ FUNCTION void get_selectivity()
               }    // end double logistic
 
   //  SS_Label_Info_22.7.14 #age selectivity - separate parm for each age
-              case 14:                  
+              case 14:
             {
              temp=9.-max(sp(1,nages+1));  //  this forces at least one age to have selex weight equal to 9
              for (a=0;a<=nages;a++)
@@ -1013,7 +1032,7 @@ FUNCTION void get_selectivity()
 
   //  SS_Label_Info_22.7.17 #age selectivity: each age has parameter as random walk
   //    transformation as selex=exp(parm); some special codes */
-              case 17:                  // 
+              case 17:                  //
             {
               lastsel=0.0;  //  value is the change in log(selex);  this is the reference value for age 0
               tempvec_a=-999.;
@@ -1292,11 +1311,32 @@ FUNCTION void get_selectivity()
           temp=1.-sp(k+2);
           temp1=1.-posfun(temp,0.0,CrashPen);
           retain_a(y,fs,1)=temp1/(1.+mfexp(-(r_ages-(sp(k)))/sp(k+1)));
-          if(gender==2) retain_a(y,fs,2)=temp1/(1.+mfexp(-(r_ages-(sp(k)+sp(k+3)))/sp(k+1)));  // males
-          if(docheckup==1&&y==styr) echoinput<<"parms "<<sp(k)<<" "<<sp(k+1)<<" "<<sp(k+3)<<" "<<temp1<<endl<<"maleoff "<<male_offset<<endl;
+          if(retParCount==-1)
+          {
+            // allow for dome-shaped retention in 3.30 only
+            retain_a(y,fs,1)=retain_a(y,fs,1)*(1.-(1./(1.+mfexp(-(r_ages-(sp(k+4)))/sp(k+5)))));
+          }
+          if(gender==2)
+          {
+            // males
+            retain_a(y,fs,2)=temp1/(1.+mfexp(-(r_ages-(sp(k)+sp(k+3)))/sp(k+1)));
+            if(retParCount==-1)
+            {
+                retain_a(y,fs,2)=retain_a(y,fs,2)*(1.-(1./(1.+mfexp(-(r_ages-(sp(k+4)+sp(k+6)))/sp(k+5)))));
+            }
+          }
+          if(docheckup==1&&y==styr)
+          {
+            echoinput<<"parms "<<sp(k)<<" "<<sp(k+1)<<" "<<sp(k+3)<<" "<<temp1;
+            if(retParCount==-1)
+            {
+                echoinput<<" "<<sp(k+4)<<" "<<sp(k+5)<<" "<<sp(k+6);
+            }
+            echoinput<<endl<<"maleoff "<<male_offset<<endl;
+          }
           if(docheckup==1&&y==styr) echoinput<<"ages "<<r_ages<<endl;
           if(docheckup==1&&y==styr) echoinput<<"retention "<<retain_a(y,fs)<<endl;
-  
+
           if(seltype(f,2)==1)  // all discards are dead
           {
             discmort_a(y,fs)=1.0;
@@ -1308,13 +1348,26 @@ FUNCTION void get_selectivity()
             temp=1.-sp(k+2);
             temp1=posfun(temp,0.0,CrashPen);
             discmort_a(y,fs,1)=(1.-temp1/(1+mfexp(-(r_ages-(sp(k)))/sp(k+1))));
-            if(gender==2) discmort_a(y,fs,2)=(1.-temp1/(1+mfexp(-(r_ages-(sp(k)+sp(k+3)))/sp(k+1))));  // males
+            if(retParCount==-1)
+            {
+                // allow for dome-shaped discard mortality in 3.30 only
+                discmort_a(y,fs,1)=discmort_a(y,fs,1)*(1.-(1./(1.+mfexp(-(r_ages-(sp(k+4)))/sp(k+5)))));
+            }
+            if(gender==2)
+            {
+                // males
+                discmort_a(y,fs,2)=(1.-temp1/(1+mfexp(-(r_ages-(sp(k)+sp(k+3)))/sp(k+1))));
+                if(retParCount==-1)
+                {
+                    discmort_a(y,fs,2)=discmort_a(y,fs,2)*(1.-(1./(1+mfexp(-(r_ages-(sp(k+4)+sp(k+6)))/sp(k+5)))));
+                }
+            }
             if(docheckup==1&&y==styr) echoinput<<"discmort "<<discmort_a(y,fs)<<endl;
             discmort2_a(y,fs,1)=elem_prod(sel_a(y,fs,1), retain_a(y,fs,1) + elem_prod((1.-retain_a(y,fs,1)),discmort_a(y,fs,1) ));
             if(gender==2) discmort2_a(y,fs,2)=elem_prod(sel_a(y,fs,2), retain_a(y,fs,2) + elem_prod((1.-retain_a(y,fs,2)),discmort_a(y,fs,2) ));
           }
         }
-  
+
         sel_a_r(y,fs,1)=elem_prod(sel_a(y,fs,1),retain_a(y,fs,1));
         if(gender==2)
         {
@@ -1431,7 +1484,7 @@ FUNCTION void Make_FishSelex()
             sel_al_1(s,g,f,a)=sel_a(yf,f,gg,a)*(ALK_w(a)(llo,lhi) * tempvec_l(llo,lhi));
             sel_al_3(s,g,f,a)=sel_a(yf,f,gg,a)*(ALK_w(a)(llo,lhi) * sel_l(yf,f,gg)(llo,lhi));
             fish_body_wt(tz,g,f,a)=(ALK_w(a)(llo,lhi)*tempvec_l(llo,lhi)) / (ALK_w(a)(llo,lhi)*sel_l(yf,f,gg)(llo,lhi));
-   
+
             if(seltype(f,2)!=0)  //  size discard, so need retention function
             {
               sel_al_2(s,g,f,a)=sel_a(yf,f,gg,a)*(ALK_w(a)(llo,lhi) * sel_l_r_w(llo,lhi) );
@@ -1441,8 +1494,8 @@ FUNCTION void Make_FishSelex()
             {
               sel_al_2(s,g,f)=sel_al_1(s,g,f);
               sel_al_4(s,g,f)=sel_al_3(s,g,f);
-            }             
-    
+            }
+
             if(seltype(f,2)>=2)  //  calc discard mortality
             {
               deadfish(s,g,f,a)=sel_a(yf,f,gg,a)*(ALK_w(a)(llo,lhi) * discmort2(yf,f,gg)(llo,lhi));  //  selected dead by numbers
@@ -1453,7 +1506,7 @@ FUNCTION void Make_FishSelex()
               deadfish_B(s,g,f)=sel_al_1(s,g,f);
               deadfish(s,g,f)=sel_al_3(s,g,f);
             }
-            
+
           }  //  end age loop
         }
         if(save_for_report==2 && ishadow(GP2(g))==0) bodywtout<<-y<<" "<<s<<" "<<gg<<" "<<GP4(g)<<" "<<Bseas(g)
