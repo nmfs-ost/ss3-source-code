@@ -789,6 +789,7 @@
   if(gender==2) femfrac(N_GP+1,N_GP+N_GP)=1.-fracfemale;
 
   ParCount=0;
+  retParCount=0;    // for 3.24 -> 3.30 dome-shaped retention
 
 //  SS_Label_Info_4.5.3 #Set up indexing and parameter names for MG parameters
   for (gg=1;gg<=gender;gg++)
@@ -1047,7 +1048,7 @@
   int customMGenvsetup  //  0=read one setup (if necessary) and apply to all; 1=read each
   ivector MGparm_env(1,N_MGparm)   // contains the parameter number of the envlink for a
   ivector MGparm_envuse(1,N_MGparm)   // contains the environment data number
-  ivector MGparm_envtype(1,N_MGparm)  // >0  =multiplicative; <0 = additive; -999 = density-dependent 
+  ivector MGparm_envtype(1,N_MGparm)  // >0  =multiplicative; <0 = additive; -999 = density-dependent
   ivector mgp_type(1,N_MGparm)  //  contains category to parameter (1=natmort; 2=growth; 3=wtlen & fec; 4=recr_dist; 5=movement)
 
  LOCAL_CALCS
@@ -2455,11 +2456,21 @@
        {
          ParCount++; ParmLabel+="Retain_P"+NumLbl(j)+"_"+fleetname(f)+"("+NumLbl(f)+")";
        }
+       // placeholders for 3.30 dome-shaped retention
+       for (j=5;j<=7;j++)
+       {
+         retParCount++; retParmLabel+="Retain_P"+NumLbl(j)+"_"+fleetname(f)+"("+NumLbl(f)+")";
+       }
        if(seltype(f,2)==2)
        {
          for (j=1;j<=4;j++)
          {
            ParCount++; ParmLabel+="DiscMort_P"+NumLbl(j)+"_"+fleetname(f)+"("+NumLbl(f)+")";
+         }
+         // placeholders for 3.30 dome-shaped discard mortality
+         for (j=5;j<=7;j++)
+         {
+           retParCount++; retParmLabel+="DiscMort_P"+NumLbl(j)+"_"+fleetname(f)+"("+NumLbl(f)+")";
          }
        }
       }
@@ -2574,11 +2585,21 @@
          {
            ParCount++; ParmLabel+="Retain_age_P"+NumLbl(j)+"_"+fleetname(f1)+"("+NumLbl(f1)+")";
          }
+         // placeholders for 3.30 dome-shaped retention
+         for (j=5;j<=7;j++)
+         {
+           retParCount++; retParmLabel+="Retain_age_P"+NumLbl(j)+"_"+fleetname(f1)+"("+NumLbl(f1)+")";
+         }
          if(seltype(f,2)==2)
          {
            for (j=1;j<=4;j++)
            {
              ParCount++; ParmLabel+="DiscMort_age_P"+NumLbl(j)+"_"+fleetname(f1)+"("+NumLbl(f1)+")";
+           }
+           // placeholders for 3.30 dome-shaped discard mortality
+           for (j=5;j<=7;j++)
+           {
+             retParCount++; retParmLabel+="DiscMort_age_P"+NumLbl(j)+"_"+fleetname(f1)+"("+NumLbl(f1)+")";
            }
          }
        }

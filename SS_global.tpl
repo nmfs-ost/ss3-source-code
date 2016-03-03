@@ -46,6 +46,7 @@ GLOBALS_SECTION
 
 //  SS_Label_Info_10.2 #Define some adstring variables
   adstring_array ParmLabel;  // extendable array to hold the parameter labels
+  adstring_array retParmLabel;  // extendable array for the 3.24 -> 3.30 retention parameter labels
   adstring_array fleetname;
   adstring fleetnameread;
   adstring depletion_basis_label;

@@ -60,6 +60,7 @@ DATA_SECTION
   int TG_t;  // time counter (in seasons) for tag groups
   int Fcast_catch_start
   int ParCount;
+  int retParCount;
   int N_SC;  // counter for starter comments
   int N_DC;
   int N_CC;

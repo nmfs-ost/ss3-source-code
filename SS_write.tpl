@@ -2026,17 +2026,24 @@ FUNCTION void write_nucontrol()
    report4<<"#_age_selex_types"<<endl;
    report4<<"#_Pattern ___ Male Special"<<endl;
    for (f=1;f<=Nfleet;f++) report4<<seltype(f+Nfleet)<<" # "<<f<<" "<<fleetname(f)<<endl;
-   
+
    report4<<selparm_adjust_method<<
    " #_env/block/dev_adjust_method (1=standard; 2=logistic trans to keep in base parm bounds; 3=standard w/ no bound check)"<<endl;
-   
+
    report4<<"#_LO HI INIT PRIOR PR_type SD PHASE env-var use_dev dev_minyr dev_maxyr dev_stddev Block Block_Fxn"<<endl;
 
-  for (f=1;f<=N_selparm;f++)
+  if(retParmCount<=0)
   {
-    NP++;
-    selparm_1(f,3)=value(selparm(f));
-    report4<<selparm_1(f)<<" # "<<ParmLabel(NP)<<endl;
+      for (f=1;f<=N_selparm;f++)
+      {
+        NP++;
+        selparm_1(f,3)=value(selparm(f));
+        report4<<selparm_1(f)<<" # "<<ParmLabel(NP)<<endl;
+      }
+  }
+  else
+  {
+    // shenanigans for inserting dome-shaped retention parameter placeholders for 3.24 -> 3.30
   }
 
   j=N_selparm;

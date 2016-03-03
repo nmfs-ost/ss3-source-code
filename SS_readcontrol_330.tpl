@@ -773,6 +773,7 @@
   // if(gender==2) femfrac(N_GP+1,N_GP+N_GP)=1.-fracfemale;
 
   ParCount=0;
+  retParCount=-1;   // for 3.24 -> 3.30 dome-shaped retention
 
 //  SS_Label_Info_4.5.3 #Set up indexing and parameter names for MG parameters
   for (gg=1;gg<=gender;gg++)
@@ -1054,11 +1055,11 @@
      	 		break;
      	 	}
      	 case 4:  //  logistic with offset
-     	 	{ 
+     	 	{
           if(MG_adjust_method==2) {N_warn++; cout<<" EXIT - see warning "<<endl; warning<<"multiplicative env effect on MGparm: "<<f
           <<" not allowed because MG_adjust_method==2; STOP"<<endl; exit(1);}
-          ParCount++; ParmLabel+=ParmLabel(f)+"_ENV_offset"; 
-          ParCount++; ParmLabel+=ParmLabel(f)+"_ENV_lgst_slope"; 
+          ParCount++; ParmLabel+=ParmLabel(f)+"_ENV_offset";
+          ParCount++; ParmLabel+=ParmLabel(f)+"_ENV_lgst_slope";
           N_MGparm_env ++;  //  for the second parameter
      	 		break;
      	 	}
@@ -2364,7 +2365,7 @@
       warning<<" illegal selparm_adjust_method; must be 1 or 2 or 3 "<<endl;  exit(1);
     }
  END_CALCS
-  
+
   int N_selparm   // figure out the Total number of selex parameters
   int N_selparm2                 // N selparms plus env links and blocks
   ivector N_selparmvec(1,2*Nfleet)  //  N selparms by type, including extra parms for male selex, retention, etc.
@@ -2373,6 +2374,7 @@
   ivector dolen(1,Nfleet)
   int blkparm
   int firstselparm
+  int N_ret_parm
   ivector Do_Retain(1,Nfleet)  // indicates 0=none, 1=length based, 2=age based
 
  LOCAL_CALCS
@@ -2381,6 +2383,7 @@
   depletion_fleet=0;
    firstselparm=ParCount;
    N_selparm=0;
+   N_ret_parm=7;    // to allow for dome-shaped retention
    Do_Retain.initialize();
    for (f=1;f<=Nfleet;f++)
    {
@@ -2433,14 +2436,14 @@
        else
        {
        RetainParm(f)=N_selparmvec(f)+1;
-       N_selparmvec(f) +=4*seltype(f,2);          // N retention parms first 4 for retention; next 4 for mortality
-       for (j=1;j<=4;j++)
+       N_selparmvec(f) +=N_ret_parm*seltype(f,2);          // N retention parms first [N_ret_parm] for retention; next [N_ret_parm] for discard mortality
+       for (j=1;j<=N_ret_parm;j++)
        {
          ParCount++; ParmLabel+="Retain_P"+NumLbl(j)+"_"+fleetname(f)+"("+NumLbl(f)+")";
        }
        if(seltype(f,2)==2)
        {
-         for (j=1;j<=4;j++)
+         for (j=1;j<=N_ret_parm;j++)
          {
            ParCount++; ParmLabel+="DiscMort_P"+NumLbl(j)+"_"+fleetname(f)+"("+NumLbl(f)+")";
          }
@@ -2552,14 +2555,14 @@
        else
        {
          RetainParm(f1)=N_selparmvec(f)+1;
-         N_selparmvec(f) +=4*seltype(f,2);          // N retention parms first 4 for retention; next 4 for mortality
-         for (j=1;j<=4;j++)
+         N_selparmvec(f) +=N_ret_parm*seltype(f,2);          // N retention parms first [N_ret_parm] for retention; next [N_ret_parm] for discard mortality
+         for (j=1;j<=N_ret_parm;j++)
          {
            ParCount++; ParmLabel+="Retain_age_P"+NumLbl(j)+"_"+fleetname(f1)+"("+NumLbl(f1)+")";
          }
          if(seltype(f,2)==2)
          {
-           for (j=1;j<=4;j++)
+           for (j=1;j<=N_ret_parm;j++)
            {
              ParCount++; ParmLabel+="DiscMort_age_P"+NumLbl(j)+"_"+fleetname(f1)+"("+NumLbl(f1)+")";
            }
@@ -2669,11 +2672,11 @@
      	 		break;
      	 	}
      	 case 4:  //  logistic with offset
-     	 	{ 
+     	 	{
           if(selparm_adjust_method==2) {N_warn++; cout<<" EXIT - see warning "<<endl; warning<<"multiplicative env effect on selparm: "<<j+firstselparm
           <<" not allowed because selparm_adjust_method==2; STOP"<<endl; exit(1);}
-          N_selparm_env ++; ParCount++; ParmLabel+=ParmLabel(j+firstselparm)+"_ENV_offset"; 
-          N_selparm_env ++; ParCount++; ParmLabel+=ParmLabel(j+firstselparm)+"_ENV_lgst_slope"; 
+          N_selparm_env ++; ParCount++; ParmLabel+=ParmLabel(j+firstselparm)+"_ENV_offset";
+          N_selparm_env ++; ParCount++; ParmLabel+=ParmLabel(j+firstselparm)+"_ENV_lgst_slope";
      	 		break;
      	 	}
      }
