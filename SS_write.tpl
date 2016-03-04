@@ -2163,7 +2163,7 @@ FUNCTION void write_nucontrol()
   report4<<" #_7=mult_by_generalized sizecomp (not implemented yet)"<<endl;
   report4<<"#_Factor  Fleet  Value"<<endl;
   {
-    for(f=1;f<=Do_Var_adjust;f++) report4<<var_adjust_data[j]<<endl;
+    for(f=1;f<=Do_Var_adjust;f++) report4<<var_adjust_data[f-1]<<endl;
   }
   report4<<" -9999 1 0  # terminator"<<endl;
   report4<<"#"<<endl<<max_lambda_phase<<" #_maxlambdaphase"<<endl;
