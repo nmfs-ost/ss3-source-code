@@ -2162,7 +2162,9 @@ FUNCTION void write_nucontrol()
   report4<<" #_6=mult_by_size-at-age_N"<<endl;
   report4<<" #_7=mult_by_generalized sizecomp (not implemented yet)"<<endl;
   report4<<"#_Factor  Fleet  Value"<<endl;
-  if(Do_Var_adjust>0) report4<<var_adjust_list<<endl;
+  {
+    for(f=1;f<=Do_Var_adjust;f++) report4<<var_adjust_data[j]<<endl;
+  }
   report4<<" -9999 1 0  # terminator"<<endl;
   report4<<"#"<<endl<<max_lambda_phase<<" #_maxlambdaphase"<<endl;
   report4<<sd_offset<<" #_sd_offset"<<endl;

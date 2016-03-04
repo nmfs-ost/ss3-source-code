@@ -3267,22 +3267,20 @@
  LOCAL_CALCS
   {
     echoinput<<" read var_adjust list until -9999"<<endl;
-    k=0;
-    typedef std::char_traits<char>::pos_type pos_type;
-    mark_pos = ad_comm::global_datafile->tellg();  //  mark current position
-    tempvec.initialize();
-    while(tempvec(1)!=-9999.)
+    ender=0;
+    do
     {
-      k++;
-      *(ad_comm::global_datafile) >> tempvec(1,3);  //  read 3 numerics from line
-    }
-    ad_comm::global_datafile->seekg(mark_pos);  //  back to marked position
-    echoinput<<" number of variance adjustment records = "<<k-1<<endl;
-    Do_Var_adjust=k-1;  //  number of catch records to read
+      dvector tempvec(1,3);
+      *(ad_comm::global_datafile) >> tempvec(1,3);
+      if(tempvec(1)==-9999.) ender=1;
+      var_adjust_data.push_back(tempvec(1,3));
+    } while(ender==0);
+    Do_Var_adjust=var_adjust_data.size()-1;
+    echoinput<<" number of variance adjustment records = "<<Do_Var_adjust<<endl;
   }
  END_CALCS
   matrix var_adjust(1,7,1,Nfleet)
-  init_matrix var_adjust_list(1,Do_Var_adjust+1,1,3)
+  // init_matrix var_adjust_list(1,Do_Var_adjust+1,1,3)
 
  LOCAL_CALCS
   var_adjust.initialize();
@@ -3294,7 +3292,7 @@
   {
     for(j=1;j<=Do_Var_adjust;j++)
     {
-      var_adjust(var_adjust_list(j,1),var_adjust_list(j,2)) = var_adjust_list(j,3);
+      var_adjust(var_adjust_data[j](1),var_adjust_data[j](2)) = var_adjust_data[j](3);
     }
    echoinput<<" Var_adjustments as read "<<endl<<var_adjust<<endl;
   }
