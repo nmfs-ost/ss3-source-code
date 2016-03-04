@@ -1097,8 +1097,7 @@
   int N_MGparm_trend     //   number of MG parameters using trend or cycle
   int N_MGparm_trend2     //   number of parameters needed to define trends and cycles
   ivector MGparm_trend_point(1,N_MGparm)   //  index of trend parameters associated with each MG parm
-
-
+  
  LOCAL_CALCS
   echoinput<<"Process and create labels for the MGparm adjustments"<<endl;
   Block_Defs_MG.initialize();
@@ -1106,7 +1105,7 @@
 
   for (j=1;j<=N_MGparm;j++)
   {
-   z=MGparm_1(j,13);    // specified block definition
+  	z=MGparm_1(j,13);
    if(z>N_Block_Designs) {N_warn++; warning<<" ERROR, Block > N Blocks "<<z<<" "<<N_Block_Designs<<endl;}
    if(z>0)
    {
@@ -2706,7 +2705,7 @@
 
 !!//  SS_Label_Info_4.9.5 #Create and label block patterns for selectivity parameters
   int N_selparm_blk                            // number of selparms that use blocks
-  imatrix Block_Defs_Sel(1,N_selparm,styr,endyr)
+  imatrix Block_Defs_Sel(1,N_selparm,styr,YrMax)
   int customblocksetup  //  0=read one setup and apply to all; 1=read each
 
   int N_selparm_trend     //   number of selex parameters using trend
@@ -3257,6 +3256,193 @@
     TG_parm_HI.initialize();
     TG_parm_PH.initialize();
   }
+ END_CALCS
+
+//  Pre-process all block and trend
+//  get the count
+  int N_blktrend
+ LOCAL_CALCS
+  N_blktrend=0;
+  // MG parms
+  for (j=1;j<=N_MGparm; j++)
+  {
+  	if(MGparm_1(j,13)!=0) N_blktrend++;
+  }
+  // SRR parms
+  // Q parms
+  //  selex parms
+  for (j=1;j<=N_selparm; j++)
+  {
+  	if(selparm_1(j,13)!=0) N_blktrend++;
+  }
+  //  tag parms
+ END_CALCS
+  
+  ivector MGparm_blktrend(1,N_MGparm)  //  holds index of blktrend used by this base parameter
+  ivector selparm_blktrend(1,N_MGparm)  //  holds index of blktrend used by this base parameter
+  ivector blktrend_parm1(1,N_blktrend)  //  holds index of first parameter for this def, will also be used ofr selex, and q
+  int blktrend_cnt
+  int blktrend_parm_cnt;
+  
+ LOCAL_CALCS
+   blktrend_cnt=0;
+   blktrend_parm_cnt=0;
+   MGparm_blktrend.initialize();
+   selparm_blktrend.initialize();
+   blktrend_parm1.initialize();
+   for (j=1;j<=N_MGparm;j++)
+   {
+     z=MGparm_1(j,13);    // specified block or trend definition
+     if(z==0)    //  no blocks or trends
+     {  }
+  
+     else if (z>0)  //  blocks with z as the block pattern
+     {
+       if(z>N_Block_Designs) {N_warn++; warning<<" ERROR, Block > N Blocks "<<z<<" "<<N_Block_Designs<<endl; exit(1);}
+       blktrend_cnt++;
+       MGparm_blktrend(j)=blktrend_cnt;  //  base parameter will use this blktrend
+       blktrend_parm1(blktrend_cnt)=blktrend_parm_cnt+1;  //  first parameter
+       g=1;  //  index to list in block design
+       for (a=1;a<=Nblk(z);a++)
+       {
+        blktrend_parm_cnt++;
+        y=Block_Design(z,g);
+        time_vary_MG(y,mgp_type(j))=1;
+        sprintf(onenum, "%d", y);
+        ParCount++;
+        k=int(MGparm_1(j,14));
+        switch(k)
+        {
+          case 0:
+          {ParmLabel+=ParmLabel(j)+"_BLK"+NumLbl(z)+"mult_"+onenum+CRLF(1);  break;}
+          case 1:
+          {ParmLabel+=ParmLabel(j)+"_BLK"+NumLbl(z)+"add_"+onenum+CRLF(1);  break;}
+          case 2:
+          {ParmLabel+=ParmLabel(j)+"_BLK"+NumLbl(z)+"repl_"+onenum+CRLF(1);  break;}
+          case 3:
+          {ParmLabel+=ParmLabel(j)+"_BLK"+NumLbl(z)+"delta_"+onenum+CRLF(1);  break;}
+        }
+  
+        y=Block_Design(z,g+1)+1;  // first year after block
+        if(y>endyr+1) y=endyr+1;
+        time_vary_MG(y,mgp_type(j))=1;
+  
+        if(mgp_type(j)==7)  //  so doing catch_mult which needs annual values calculated for each year of the block
+        {
+          for(k=Block_Design(z,g);k<=y;k++)
+          {
+            time_vary_MG(k,7)=1;
+          }
+        }
+        g+=2;
+      }
+      if(j==MGP_CGD) CGD=1;
+     }
+     
+     else //  (z<0) so invoke a trend
+     {
+       blktrend_cnt++;
+       MGparm_blktrend(j)=blktrend_cnt;  //  base parameter will use this blktrend
+       blktrend_parm1(blktrend_cnt)=blktrend_parm_cnt+1;  //  first parameter
+        if(MGparm_1(j,13)==-1)
+        {
+          ParCount++; ParmLabel+=ParmLabel(j)+"_TrendFinal_Offset"+CRLF(1);
+          ParCount++; ParmLabel+=ParmLabel(j)+"_TrendInfl_"+CRLF(1);
+          ParCount++; ParmLabel+=ParmLabel(j)+"_TrendWidth_"+CRLF(1);
+          blktrend_parm_cnt+=3;  //  for the 3 trend parameters
+        }
+        else if(MGparm_1(j,13)==-2)
+        {
+          ParCount++; ParmLabel+=ParmLabel(j)+"_TrendFinal_"+CRLF(1);
+          ParCount++; ParmLabel+=ParmLabel(j)+"_TrendInfl_"+CRLF(1);
+          ParCount++; ParmLabel+=ParmLabel(j)+"_TrendWidth_"+CRLF(1);
+          blktrend_parm_cnt+=3;  //  for the 3 trend parameters
+        }
+        else
+        {
+          for (icycle=1;icycle<=Ncycle;icycle++)
+          {
+            ParCount++; ParmLabel+=ParmLabel(j)+"_Cycle_"+NumLbl(icycle)+CRLF(1);
+            blktrend_parm_cnt+=1;  //  for the 3 trend parameters
+          }
+        }
+     	
+     }
+   }
+   
+   
+   for (j=1;j<=N_selparm;j++)
+   {
+   	 j1=firstselparm+j-1;
+     z=selparm_1(j,13);    // specified block or trend definition
+     if(z==0)    //  no blocks or trends
+     {  }
+  
+     else if (z>0)  //  blocks with z as the block pattern
+     {
+       if(z>N_Block_Designs) {N_warn++; warning<<" ERROR, Block > N Blocks "<<z<<" "<<N_Block_Designs<<endl; exit(1);}
+       blktrend_cnt++;
+       selparm_blktrend(j)=blktrend_cnt;  //  base parameter will use this blktrend
+       blktrend_parm1(blktrend_cnt)=blktrend_parm_cnt+1;  //  first parameter
+       g=1;  //  index to list in block design
+       for (a=1;a<=Nblk(z);a++)
+       {
+        blktrend_parm_cnt++;
+        y=Block_Design(z,g);
+        //  time_vary_sel(  //  need to know which fleet
+        sprintf(onenum, "%d", y);
+        ParCount++;
+        k=int(selparm_1(j,14));
+        switch(k)
+        {
+          case 0:
+          {ParmLabel+=ParmLabel(j1)+"_BLK"+NumLbl(z)+"mult_"+onenum+CRLF(1);  break;}
+          case 1:
+          {ParmLabel+=ParmLabel(j1)+"_BLK"+NumLbl(z)+"add_"+onenum+CRLF(1);  break;}
+          case 2:
+          {ParmLabel+=ParmLabel(j1)+"_BLK"+NumLbl(z)+"repl_"+onenum+CRLF(1);  break;}
+          case 3:
+          {ParmLabel+=ParmLabel(j1)+"_BLK"+NumLbl(z)+"delta_"+onenum+CRLF(1);  break;}
+        }
+  
+        y=Block_Design(z,g+1)+1;  // first year after block
+        if(y>endyr+1) y=endyr+1;
+        //  time_vary_sel(   time_vary_MG(y,mgp_type(j))=1;
+  
+        g+=2;
+      }
+     }
+     
+     else //  (z<0) so invoke a trend
+     {
+       blktrend_cnt++;
+       selparm_blktrend(j)=blktrend_cnt;  //  base parameter will use this blktrend
+       blktrend_parm1(blktrend_cnt)=blktrend_parm_cnt+1;  //  first parameter
+        if(selparm_1(j,13)==-1)
+        {
+          ParCount++; ParmLabel+=ParmLabel(j1)+"_TrendFinal_Offset"+CRLF(1);
+          ParCount++; ParmLabel+=ParmLabel(j1)+"_TrendInfl_"+CRLF(1);
+          ParCount++; ParmLabel+=ParmLabel(j1)+"_TrendWidth_"+CRLF(1);
+          blktrend_parm_cnt+=3;  //  for the 3 trend parameters
+        }
+        else if(selparm_1(j,13)==-2)
+        {
+          ParCount++; ParmLabel+=ParmLabel(j1)+"_TrendFinal_"+CRLF(1);
+          ParCount++; ParmLabel+=ParmLabel(j1)+"_TrendInfl_"+CRLF(1);
+          ParCount++; ParmLabel+=ParmLabel(j1)+"_TrendWidth_"+CRLF(1);
+          blktrend_parm_cnt+=3;  //  for the 3 trend parameters
+        }
+        else
+        {
+          for (icycle=1;icycle<=Ncycle;icycle++)
+          {
+            ParCount++; ParmLabel+=ParmLabel(j1)+"_Cycle_"+NumLbl(icycle)+CRLF(1);
+            blktrend_parm_cnt+=1;  //  for the 3 trend parameters
+          }
+        }
+     	
+     }
+   }
  END_CALCS
 
 !!//  SS_Label_Info_4.11 #Read variance adjustment and various variance related inputs

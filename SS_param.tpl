@@ -303,8 +303,8 @@ PARAMETER_SECTION
 
 !!//  SS_Label_Info_5.1.5 #Selectivity-related parameters
   init_bounded_number_vector selparm(1,N_selparm2,selparm_LO,selparm_HI,selparm_PH)
-  matrix selparm_trend(1,N_selparm_trend,styr,YrMax);
-  matrix selparm_block_val(1,N_selparm,styr,YrMax);
+  matrix selparm_trend(1,N_selparm_trend,styr,YrMax+1);
+  matrix selparm_block_val(1,N_selparm,styr,YrMax+1);
 
   init_bounded_matrix selparm_dev(1,N_selparm_dev,selparm_dev_minyr,selparm_dev_maxyr,-10,10,selparm_dev_PH)
   matrix selparm_dev_rwalk(1,N_selparm_dev,selparm_dev_minyr,selparm_dev_maxyr)
