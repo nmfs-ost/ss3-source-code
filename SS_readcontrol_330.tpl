@@ -3292,7 +3292,7 @@
   {
     for(j=1;j<=Do_Var_adjust;j++)
     {
-      var_adjust(var_adjust_data[j](1),var_adjust_data[j](2)) = var_adjust_data[j](3);
+      var_adjust(var_adjust_data[j-1](1),var_adjust_data[j-1](2)) = var_adjust_data[j-1](3);
     }
    echoinput<<" Var_adjustments as read "<<endl<<var_adjust<<endl;
   }
