@@ -3262,7 +3262,7 @@
   }
  END_CALCS
 
-!!//  SS_Label_Info_4.11 #Read variance adjustment and various variance related inputs
+//  SS_Label_Info_4.11 #Read variance adjustment and various variance related inputs
   int Do_Var_adjust
  LOCAL_CALCS
   {
@@ -3348,24 +3348,23 @@
   int N_lambda_changes
   int N_changed_lambdas
  LOCAL_CALCS
-    echoinput<<" read lambda changes list until -9999"<<endl;
-    k=0;
-    typedef std::char_traits<char>::pos_type pos_type;
-    mark_pos = ad_comm::global_datafile->tellg();  //  mark current position
-    tempvec.initialize();
-    while(tempvec(1)!=-9999.)
-    {
-      k++;
-      *(ad_comm::global_datafile) >> tempvec(1,5);  //  read 5 numerics from line
-    }
-    ad_comm::global_datafile->seekg(mark_pos);  //  back to marked position
-    echoinput<<" number of lambda change records = "<<k-1<<endl;
-    N_lambda_changes=k-1;  //  number of catch records to read
+   echoinput<<" read lambda changes list until -9999"<<endl;
+   ender=0;
+   do
+   {
+     dvector tempvec(1,5);
+     *(ad_comm::global_datafile) >> tempvec(1,5);
+     if(tempvec(1)==-9999.) ender=1;
+     lambda_change_data.push_back(tempvec(1,5));
+   } while(ender==0);
+   N_lambda_changes=lambda_change_data.size()-1;
+   echoinput<<" number of lambda change records = "<<N_lambda_changes<<endl;
  END_CALCS
 
-  init_matrix Lambda_changes(1,N_lambda_changes,1,5)
+  matrix Lambda_changes(1,N_lambda_changes,1,5)
  LOCAL_CALCS
-   *(ad_comm::global_datafile) >> tempvec(1,5);  //  read 5 numerics from line
+   for(f=1;f<=N_lambda_changes;f++) Lambda_changes(f)=lambda_change_data[f-1];
+   // *(ad_comm::global_datafile) >> tempvec(1,5);  //  read 5 numerics from line
    echoinput<<N_lambda_changes<<" N lambda changes "<<endl;
    if(N_lambda_changes>0) echoinput<<" lambda changes "<<endl<<Lambda_changes<<endl;
    surv_lambda=1.;  // 1

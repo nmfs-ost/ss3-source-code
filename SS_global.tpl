@@ -76,6 +76,7 @@ GLOBALS_SECTION
   std::vector<dvector> Fcast_Catch_Allocation_list;
   std::vector<dvector> env_temp;
   std::vector<dvector> var_adjust_data;
+  std::vector<dvector> lambda_change_data;
 
 //  example function in GLOBALS to do the timing setup in the data section
   void get_data_timing(const dvector& to_process, const ivector& timing_constants, ivector i_result, dvector r_result, const dvector& seasdur, const dvector& subseasdur_delta, const dvector& azero_seas, const dvector& surveytime)
