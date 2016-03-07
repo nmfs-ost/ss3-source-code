@@ -901,13 +901,14 @@ FUNCTION void get_selectivity()
           else
           {
             k+=4;  // first discard mortality parm
+            if(retParCount==-1) k+=3;
             temp=1.-sp(k+2);
             temp1=posfun(temp,0.0,CrashPen);
             discmort(y,f)=(1.-temp1/(1+mfexp(-(len_bins_m2-(sp(k)+male_offset*sp(k+3)))/sp(k+1))));  // males are at end of vector, so automatically get done
             if(retParCount==-1)
             {
                 // allow for dome-shaped discard mortality in 3.30 only
-                discmort(y,f) = discmort(y,f)*(1.-(1./(1.+mfexp(-(len_bins_m2-(sp(k+4)+male_offset*sp(k+6)))/sp(k+5)))));
+                discmort(y,f)=discmort(y,f)*(1./(1.+mfexp(-(len_bins_m2-(sp(k+4)+male_offset*sp(k+6)))/sp(k+5))));
             }
             if(docheckup==1&&y==styr) echoinput<<"discmort "<<discmort(y,f)<<endl;
             discmort2(y,f,1)=elem_prod(sel_l(y,f,1), retain(y,f)(1,nlength) + elem_prod((1.-retain(y,f)(1,nlength)),discmort(y,f)(1,nlength)) );
@@ -1345,13 +1346,14 @@ FUNCTION void get_selectivity()
           else
           {
             k+=4;  // first discard mortality parm
+            if(retParCount==-1) k+=3;
             temp=1.-sp(k+2);
             temp1=posfun(temp,0.0,CrashPen);
             discmort_a(y,fs,1)=(1.-temp1/(1+mfexp(-(r_ages-(sp(k)))/sp(k+1))));
             if(retParCount==-1)
             {
                 // allow for dome-shaped discard mortality in 3.30 only
-                discmort_a(y,fs,1)=discmort_a(y,fs,1)*(1.-(1./(1.+mfexp(-(r_ages-(sp(k+4)))/sp(k+5)))));
+                discmort_a(y,fs,1)=discmort_a(y,fs,1)*(1./(1.+mfexp(-(r_ages-(sp(k+4)))/sp(k+5))));
             }
             if(gender==2)
             {
@@ -1359,7 +1361,7 @@ FUNCTION void get_selectivity()
                 discmort_a(y,fs,2)=(1.-temp1/(1+mfexp(-(r_ages-(sp(k)+sp(k+3)))/sp(k+1))));
                 if(retParCount==-1)
                 {
-                    discmort_a(y,fs,2)=discmort_a(y,fs,2)*(1.-(1./(1+mfexp(-(r_ages-(sp(k+4)+sp(k+6)))/sp(k+5)))));
+                    discmort_a(y,fs,2)=discmort_a(y,fs,2)*(1./(1.+mfexp(-(r_ages-(sp(k+4)+sp(k+6)))/sp(k+5))));
                 }
             }
             if(docheckup==1&&y==styr) echoinput<<"discmort "<<discmort_a(y,fs)<<endl;
