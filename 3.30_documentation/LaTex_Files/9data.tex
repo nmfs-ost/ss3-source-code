@@ -77,7 +77,7 @@ Seasons
 			& \\
 			& \\
 			\hline
-			1 & \multirow{1}{1cm}[-0.1cm]{\parbox{12cm}{Spawning month; spawning biomass is calculated at this time of year and used as basis for the total recruitment of all settlement events resulting from this spawning.}}\\
+			1 & \multirow{1}{1cm}[-0.1cm]{\parbox{12cm}{Spawning subseason; spawning biomass is calculated at this time of year and used as basis for the total recruitment of all settlement events resulting from this spawning.}}\\
 			& \\
 			& \\
 			\hline
@@ -86,6 +86,8 @@ Seasons
 			20 & Number of ages. The value here will be the plus-group age.  SS start age 0. \\
 			\hline
 			1 & Number of areas \\
+			\hline
+			2 & Number of fleets (including surveys)\\
 			\hline
 	\end{tabular}
 \end{center}
@@ -100,23 +102,8 @@ The catch data input has been modified to improve the user flexibility to add/su
 		\hline
 		2 & \multicolumn{7}{l}{\#Number of fleets which includes survey in any order} \\
 		\hline
-		\#Fleet Type & 
-		Timing & 
-		Area & 
-		Catch Units & 
-		Eq. Catch SE & 
-		Catch SE & 
-		Catch Mult. &
-	    Fleet Name \\
-		
-		%\textbf{Fleet Type} & 
-		%\textbf{Timing} & 
-		%\textbf{Area} & 
-		%\textbf{Catch Units} & 
-		%\textbf{Equil. Catch SE} & 
-		%\textbf{Catch SE} & 
-		%\textbf{Catch Mult.} &
-		%\textbf{Fleet Name} \\
+		\#Fleet Type & Timing & Area & Catch Units & Eq. Catch SE & Catch SE & Catch Mult. & Fleet Name \\
+
 		\hline
 		1 & -1 & 1 & 1 & 0.01 & 0.01 & 0 & FISHERY1\\
 		1 & -1 & 1 & 2 & 0.01 & 0.01 & 0 & SURVEY1\\
@@ -126,7 +113,7 @@ The catch data input has been modified to improve the user flexibility to add/su
 \end{center}
 
 \begin{description}
-  \item[Fleet Type] \ %\hfill \\
+  \item[Fleet Type] \ 
 	  \begin{itemize}
 	  	\item 1 = fleet with input retained catch
 	  	\item 2 = bycatch fleet
@@ -143,7 +130,11 @@ The catch data input has been modified to improve the user flexibility to add/su
   \item[Area]\hfill\\
   An integer value indicating the area in which a fleet operates.
   \item[Catch Units] \hfill\\
-   Ignored for survey fleets.
+  Ignored for survey fleets, their units are read later
+	  \begin{itemize}
+	  	\item 1 = biomass
+	  	\item 2 = numbers
+	  \end{itemize}   
   \item[Equil. Catch SE] \hfill\\
   Standard error of the initial equilibrium catch.
   \item[Catch SE] \hfill\\
@@ -181,7 +172,7 @@ The new format for version 3.30 for a 2 season model with 2 fisheries looks like
 		1975 & 1 & 2 & 555 & 0.05 \\
 		1975 & 2 & 2 & 873 & 0.05 \\
 		...  & ...   & ...   & ...   & ...  \\
-		-9999 & 0 & 0 & 0 & 0.05 \\
+		-9999 & 0 & 0 & 0 & 0 \\
 		\hline
 	\end{tabular}
 \end{center}
@@ -218,6 +209,7 @@ If the fishery or survey has time-varying selectivity, then this changing select
 		1995 & 7.2 & 3   & 65000 & 0.056 \\
 		...  & ... & ... & ...   & ... \\
 		2000 & 7.1 & 3   & 42000 & 0.056 \\
+		-9999 & 1  & 1   & 1     & 1 \\ 
 		\hline
 	\end{tabular}
 \end{center}
@@ -277,19 +269,16 @@ If discard is being used, the input syntax is:
 		\begin{tabular}{p{3cm} p{3cm} p{3cm} p{3cm} p{3cm}}
 			\#Input & \multicolumn{4}{l}{Description}\\
 			\hline
-			3 & \multicolumn{4}{l}{\#Number of fleets with discard observations}\\
+			1 & \multicolumn{4}{l}{\#Number of fleets with discard observations}\\
 			\hline
 			\#Fleet & Units & \multicolumn{3}{l}{Error}\\
 			\hline
 			1 & 2 & \multicolumn{3}{l}{-1}\\
-			3 & 2 & \multicolumn{3}{l}{-1}\\
-			%\hline
-			%2 & \multicolumn{4}{l}{\#Number of discard observations}\\
-			\#Year & Season & Fleet & Observation & Error \\
+			\#Year & Month & Fleet  & Observation & Error \\
 			\hline
-			1980  & 1 & 1 & 0.05 & 0.25 \\
-			1991  & 1 & 1 & 0.10 & 0.25 \\
-			-9999 & 0 & 0 & 0    & 0 \\
+			1980  & 7 & 1 & 0.05 & 0.25 \\
+			1991  & 7 & 1 & 0.10 & 0.25 \\
+			-9999 & 1 & 1 & 0    & 0 \\
 			\hline
 		\end{tabular}
 	\end{center}
@@ -334,9 +323,9 @@ This is the overall mean body weight across all selected sizes and ages.  This m
 		\hline
 		\#Year & Month & Fleet & Partition & Value & CV \\
 		\hline
-		1990 & 1 & 1 & 0 & 4.0 & 0.95 \\
-		1990 & 1 & 1 & 0 & 1.0 & 0.95 \\
-		-9999& 0 & 0 & 0 & 0   & 0 \\
+		1990  & 7 & 1 & 0 & 4.0 & 0.95 \\
+		1990  & 7 & 1 & 0 & 1.0 & 0.95 \\
+		-9999 & 1 & 1 & 0 & 0   & 0 \\
 		\hline
 	\end{tabular}
 \end{center}
@@ -617,7 +606,7 @@ The conditional age’-at-length approach can be used to analyze sex ratio-at-le
 		\#Yr & Month & Fleet & Gender & Part & AgeErr & Lbinlo & Lbinhi & Nsamp & & & & & & & \\
 		\hline
 		1971 & 1 & 1 & 3 & 0 & 1 & 25 & 25 & 12 & 0 & 4 & 0 & 0 & 8 & 0 & ...\\
-		-9999  & \multicolumn{16}{l}{}\\
+		-9999  & 1 & 1 & 3 & 0 & 1 & 25 & 25 & 12 & 0 & 4 & 0 & 0 & 8 & 0 & ...\\
 		\hline
 	\end{tabular}
 \end{center}
@@ -650,7 +639,7 @@ If you have both real age data and sex ratio at length data, then you will need 
 		     &   &   &   &   &   &    &    &    &   &   &   &     &\multicolumn{3}{l}{data 5}\\
 		1971 & 1 & 1 & 3 & 0 & 1 & 25 & 25 & 12 & 0 & 0 & 4 & ... &\multicolumn{3}{l}{\#sex ratio}\\
 		     &   &   &   &   &   &    &    &    &   &   &   &     &\multicolumn{3}{l}{in bin 3}\\
-		-9999  & \multicolumn{16}{l}{}\\
+		-9999  & 1 & 1 & 3 & 0 & 1 & 25 & 25 & 12 & 0 & 0 & 4 & ... &\multicolumn{3}{l}{}\\
 		\hline
 	\end{tabular}
 \end{center}
@@ -665,7 +654,7 @@ SS also accepts input of mean length-at-age’ or mean bodywt-at-age’.  This i
 		\#Yr & Month & Fleet & Gender & Part & AgeErr & Nsamp & Female Data & Male Data & Female N & Male N \\
 		\hline
 		1989 & 1 & 1 & 3 & 0 & 2 & 999 &<Mean size values> & <Mean size values> & <N fish> & <N fish>\\
-		-9999 & \multicolumn{10}{l}{}\\
+		-9999 & 1 & 1 & 3 & 0 & 2 & 999 &  & &  & \\
 		\hline
 	\end{tabular}
 \end{center}
@@ -692,14 +681,13 @@ SS accepts input of time series of environmental data.  Parameters can be made t
 		\hline
 		2 & \multicolumn{2}{l}{\#Number of environmental variables}\\
 		\hline
-		10 & \multicolumn{2}{l}{\#Number of environmental observations}\\
-		\hline
 		\multicolumn{3}{l}{\# Example of 2 environmental observations:}\\
 		\hline
 		\#Year & Variable & Value \\
 		\hline
 		1990 & 1 & 0.10 \\
 		1991 & 1 & 0.15 \\
+		-9999 & 0 & 0 \\
 		\hline
 	\end{tabular}
 \end{center}

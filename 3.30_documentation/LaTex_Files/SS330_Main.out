@@ -93,3 +93,13 @@
 \BOOKMARK [2][-]{subsection.11.5}{Bootstrap Data Files}{section.11}% 93
 \BOOKMARK [2][-]{subsection.11.6}{Forecast and Reference Points}{section.11}% 94
 \BOOKMARK [2][-]{subsection.11.7}{Main Output File, report.sso}{section.11}% 95
+\BOOKMARK [1][-]{section.12}{Running SS}{}% 96
+\BOOKMARK [2][-]{subsection.12.1}{Example of DOS batch input file}{section.12}% 97
+\BOOKMARK [3][-]{subsubsection.12.1.1}{Simple Batch}{subsection.12.1}% 98
+\BOOKMARK [3][-]{subsubsection.12.1.2}{Complicated Batch}{subsection.12.1}% 99
+\BOOKMARK [3][-]{subsubsection.12.1.3}{Batch Using PROFILEVALUES.SS}{subsection.12.1}% 100
+\BOOKMARK [3][-]{subsubsection.12.1.4}{Re-Starting a Run}{subsection.12.1}% 101
+\BOOKMARK [3][-]{subsubsection.12.1.5}{Debugging Tips}{subsection.12.1}% 102
+\BOOKMARK [3][-]{subsubsection.12.1.6}{Keyboard Tips}{subsection.12.1}% 103
+\BOOKMARK [3][-]{subsubsection.12.1.7}{Running MCMC}{subsection.12.1}% 104
+\BOOKMARK [3][-]{subsubsection.12.1.8}{Using R To View Model Output}{subsection.12.1}% 105

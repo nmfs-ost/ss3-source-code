@@ -1002,56 +1002,91 @@ For each fishery and survey, enter a row with these 4 entries as described below
 So for a setup with 2 fisheries and 2 surveys, the Q setup matrix could be:
 
 \begin{center}
-	\begin{longtable}{p{2.75cm} p{2.75cm} p{2.75cm} p{3cm} p{2cm}}
-		%\multicolumn{3}{l}{Control file continued:}\\
-		%\hline
-		%Value &   &  Description\\
+	\begin{longtable}{p{2.75cm} p{2.75cm} p{2.75cm} p{2cm} p{2cm} p{2cm}}
+
 		\hline
 		\endfirsthead
 
-		%\hline
-		%Value &  &  Description\\
 		\hline
 		\endhead
 
-		%\hline
 		\endfoot
 		\endlastfoot
-	    \#Do\_power & Env-Var & Extra SD & \multicolumn{2}{l}{Devtype (<0=mirror, 0/1=none}\\
-	    (Den\_depend)& & & \multicolumn{2}{l}{2=cons, 3=rand, 4=randwalk)} \\
+	    \#Do\_power   & Env-Var & Extra SD & Q type & Q offset  & Fleet \\
+	    (Den\_depend) &         &          &        &           & \\
 	    \hline
-	    1 & 0 & 1 & 2 & \#Fishery 1 \\
-	    0 & 0 & 1 & 2 & \#Fishery 2 \\
-	    0 & 0 & 0 & 4 & \#Survey 1 \\
-	    0 & 0 & 1 & 2 & \#Survey 2 \\
-	    \hline
-	    \multicolumn{5}{l}{\multirow{3}{16cm}{COND: If any fishery or survey uses random devs or random walk, there is an option to either read detailed input to set up the deviation, or to just read a template.}}\\
-	    \\
-	    \\
-	    \#Value & Label & \multicolumn{3}{l}{Label, Description, and Options} \\
-	    \hline
-	    1 & Random effects & \multicolumn{3}{l}{\multirow{2}{10cm}{0:  read one parameter line and use it as a template to create a time series of parameters for each observation for each fleet/survey that uses random effects.  The output to control.ss\_new will be in detailed format even if the input is not detailed.  Therefore a simple way to create a detailed setup file is to start with a simple template then edit the control.ss\_new file to create a detailed input for subsequent model runs;}}\\
-		\\
-		\\
-		\\
-		\\
-		\\
-		\\
-		\\
-	    &  & \multicolumn{3}{l}{\multirow{2}{8cm}{1:  read a parameter line for each observation of each fleet/survey that uses random effects, thus allowing customization.  If the Q option for a fleet is 3 (random devs), then read one parameter for each observation.  If the Q option is 4, then read (N observations -1) parameters.}}\\
-	    \\
-	    \\
-	    \\
-	    \\
-	    \\
-	    \\
+	    1 & 0 & 1 & 2 & 0 & \#Fishery 1 \\
+	    0 & 0 & 1 & 2 & 0 & \#Fishery 2 \\
+	    0 & 0 & 0 & 4 & 0 & \#Survey 1 \\
+	    0 & 0 & 1 & 2 & 0 & \#Survey 2 \\
 	    \hline
 	\end{longtable}
 \end{center}
-For each positive element in columns for the catchability (Q) setup above, read a short parameter setup line.  The order is: fishery 1 through survey N within power transformation, then within environment link, then within extra standard deviation, then within Q.  If no elements are selected, then there must be no parameter setup lines.
+
+\noindent Q types
+\begin{itemize}
+	\item <0 = mirror another fleet
+	\item 0 = float no bias adjustment
+	\item 1 = float bias adjustment
+	\item 2 = parameter no bias adjustment
+	\item 3 = parameter with random deviations
+	\item 4 = parameter with random walk
+	\item 5 = mean unbiased float assignment to parameter
+\end{itemize}
+
+\noindent COND: If any fishery or survey uses random devs or random walk, there is an option to either read detailed input to set up the deviation, or to just read a template.
+
+\begin{center}
+	\begin{longtable}{p{2.75cm} p{2.75cm} p{2.75cm} p{2cm} p{2cm} p{2cm}}
+		\endfirsthead
+				
+		\hline
+		\#Value & Label & \multicolumn{4}{l}{Label, Description, and Options} \\
+		\hline
+		\endhead
+				
+				%\hline
+		\endfoot
+		\endlastfoot
+		
+		\hline
+		\#Value & Label & \multicolumn{4}{l}{Label, Description, and Options} \\
+		\hline
+		1 & Random effects & \multicolumn{4}{l}{\multirow{2}{10cm}{0:  read one parameter line and use it as a template to create a time series of parameters for each observation for each fleet/survey that uses random effects.  The output to control.ss\_new will be in detailed format even if the input is not detailed.  Therefore a simple way to create a detailed setup file is to start with a simple template then edit the control.ss\_new file to create a detailed input for subsequent model runs;}}\\
+		\\
+		\\
+		\\
+		\\
+		\\
+		\\
+		\\
+		&  & \multicolumn{4}{l}{\multirow{2}{8cm}{1:  read a parameter line for each observation of each fleet/survey that uses random effects, thus allowing customization.  If the Q option for a fleet is 3 (random devs), then read one parameter for each observation.  If the Q option is 4, then read (N observations -1) parameters.}}\\
+		\\
+		\\
+		\\
+		\\
+		\\
+		\\
+		\hline
+	\end{longtable}
+\end{center}
+	    
+
+\noindent For each positive element in columns for the catchability (Q) setup above, read a short parameter setup line.  The order is: fishery 1 through survey N within power transformation, then within environment link, then within extra standard deviation, then within Q.  If no elements are selected, then there must be no parameter setup lines.
 
 \begin{center}
 	\begin{longtable}{p{1.1cm} p{1.1cm} p{1.2cm} p{1.2cm} p{1.5cm} p{1.1cm} p{1.1cm} p{4.8cm}}
+		\endfirsthead
+		
+		\hline
+		\#Lo & Hi & Init & Prior & PR\_type & SD & Phase & Label \\
+		\hline
+		\endhead
+		
+		\hline
+		\endfoot
+		\endlastfoot
+		
 		\multicolumn{8}{l}{The list of parameters to be read from the above setup would be:}\\
 		\hline
 		\#Lo & Hi & Init & Prior & PR\_type & SD & Phase & Label \\
@@ -1589,39 +1624,48 @@ The tagging reporting rate parameter is transformed within SS during estimation 
 \subsubsection{Variance Adjustment Factors}
 When doing iterative reweighting of the input variance factors, it is convenient to do this in the control file, rather than the data file.  This section creates that capability.
 \begin{center}
-	\begin{longtable}{p{2.75cm} p{2.75cm} p{2.75cm} p{2.75cm} p{3.5cm}}
+	\begin{longtable}{p{3cm} p{3cm} p{7cm} }
 
-		Value & Description & & Options & \\
-		\hline
-		1 & \multicolumn{2}{l}{Variance Adjustment Factors } & \multicolumn{2}{l}{0 = none, 1 = read table}\\
+		%Value & Description & & Options & \\
+		%\hline
+		%0 & \multicolumn{2}{l}{Variance Adjustment Factors } & \multicolumn{2}{l}{0 = none, 1 = read table}\\
+		 \multicolumn{3}{l}{Variance Adjustment Factors }\\
+		 \hline
+		-9999 1 0 & \multicolumn{2}{l}{No variance adjustment factors applied }\\
 		\\
-		\multicolumn{5}{l}{There are six rows and a value for each Fleet \& Survey on each row.}\\
-		\\
-		Fleet/Survey 1 & Fleet/Survey 2 & Fleet/Survey 3 & Fleet/Survey 4 & Label \\
+		\multicolumn{3}{l}{If variance adjustment factors are to be applied:}\\
 		\hline
-		0 & 0 & 0 & 0 & \#Survey CV\\
-		0 & 0 & 0 & 0 & \#Discard CV\\
-		0 & 0 & 0 & 0 & \#Mean BodyWght SD\\
-		1 & 1 & 1 & 1 & \#Length Comp\\
-		1 & 1 & 1 & 1 & \#Age Comp\\
-		1 & 1 & 1 & 1 & \#Size-at-Age\\
+		%Fleet/Survey 1 & Fleet/Survey 2 & Fleet/Survey 3 & Fleet/Survey 4 & Label \\
+		Factor & Fleet & Value \\
+		\hline
+		1 & 2 & 0.5 \\
+		4 & 1 & 0.25 \\
+		4 & 2 & 0.75 \\
+		%0 & 0 & 0 & 0 & \#Survey CV\\
+		%0 & 0 & 0 & 0 & \#Discard CV\\
+		%0 & 0 & 0 & 0 & \#Mean BodyWght SD\\
+		%1 & 1 & 1 & 1 & \#Length Comp\\
+		%1 & 1 & 1 & 1 & \#Age Comp\\
+		%1 & 1 & 1 & 1 & \#Size-at-Age\\
 		\hline
 	\end{longtable}
 \end{center}
 
 \begin{description}
-	\item[Survey CV]\hfil\\
+	\item[Survey CV - Factor 1]\hfil\\
 	The survey input variance (labeled survey CV) is actually the standard deviation of the ln(survey).  The variance adjustment is added directly to this standard deviation.  Set to 0.0 for no effect.  Negative values are OK, but will crash if adjusted value becomes negative.
-	\item[Discard]\hfil\\
+	\item[Discard - Factor 2]\hfil\\
 	The input variance is the CV of the observation.  Because this will cause observations of near zero discard to appear overly precise, the variance adjustment is added to the discard standard deviation, not to the CV.  Set to 0.0 for no effect.
-	\item[Mean Body Weight]\hfil\\
+	\item[Mean Body Weight - Factor 3]\hfil\\
 	The input variance is in terms of the CV of the observation.  Because such data are typically not very noisy, the variance adjustment is added to the CV and then multiplied by the observation to get the adjusted standard deviation of the observation.
-	\item[Length Composition]\hfil\\
+	\item[Length Composition - Factor 4]\hfil\\
 	The input variance is in terms of an effective sample size.  The variance adjustment is multiplied times this sample size.  Set variance adjustment to 1.0 for no effect.
-	\item[Age Composition]\hfill\\
+	\item[Age Composition - Factor 5]\hfill\\
 	Age composition is treated the same way as length composition.
-	\item[Size-at-Age]\hfill\\
+	\item[Size-at-Age - Factor 6]\hfill\\
 	Size-at-age input variance is the sample size for the N observations at each age.  The variance adjustment is multiplied times these N values. Set to 1.0 for no effect.
+	\item[Generalized Size Comp - Factor 7]\hfill\\
+	Not yet implemented
 	\item[Usage Notes]\hfill
 	\begin{itemize}
 		\item The report.sso output file contains information useful for determining if an adjustment of these input values is warranted to better match the scale of the average residual to the input variance scale.
@@ -1652,23 +1696,53 @@ The reading of the lambda values has been substantially altered with SS\_v3.  In
 \begin{center}
 	\begin{longtable}{p{3cm} p{3cm} p{2cm} p{3cm} p{3cm}}
 		\hline
-		3 & \multicolumn{4}{l}{\#Number of changes to make to default lambdas (default value is 1.0)}\\
+		%3 & \multicolumn{4}{l}{\#Number of changes to make to default lambdas (default value is 1.0)}\\
 		\multicolumn{5}{l}{\#Then read that number of lines containing the change information:}\\
 		\#Component & Fleet/Survey & Phase & Lambda & SizeFreq Method \\
 		\hline
 		1 & 2 & 2 & 1.5 & 1 \\
 		4 & 2 & 2 & 10 & 1 \\
 		4 & 2 & 3 & 0.2 & 1 \\
+		-9999 & 1 & 1 & 1 & 1 \\
 		\hline
 	\end{longtable}
 \end{center}
-The codes for component are:\\
-	1 = survey; 2 = discard; 3 = mean weight; 4 = length; 5 = age; 6 = size frequency; 7 = size-at-age; 8 = catch; 9 = initial equilibrium catch; 10 = recruitment deviations; 11 = parameter priors; 12 = parameter deviations; 13 = crash penalty; 14 = morph composition; 15 = tag composition; 16 = tag negbin.
-\\
-\\
-On output to control.ss\_new, the full table is written:
+
 \begin{center}
-	\begin{longtable}{p{2cm} p{2cm} p{2cm} p{2cm} p{5cm}}
+	\begin{longtable}{p{16cm}}
+		The codes for component are:\\
+		1 = survey;\\
+		2 = discard;\\
+		3 = mean weight;\\
+		4 = length;\\
+		5 = age; \\
+		6 = size frequency;\\ 
+		7 = size-at-age; \\
+		8 = catch; \\
+		9 = initial equilibrium catch;\\
+	    10 = recruitment deviations; \\
+		11 = parameter priors; \\
+		12 = parameter deviations;\\ 
+		13 = crash penalty; \\
+		14 = morph composition;v 
+		15 = tag composition;\\
+		16 = tag negbin.\\
+	\end{longtable}
+\end{center}
+
+\begin{center}
+	\begin{longtable}{p{2cm} p{2cm} p{2cm} p{2cm} p{6cm}}
+		\hline		
+		\endfirsthead
+
+		\hline
+		\endhead
+		\hline
+				
+		\endfoot
+		\endlastfoot
+		
+		\multicolumn{5}{l}{On output to control.ss\_new, the full table is written:}\\
 		\multicolumn{5}{l}{\#Lambdas (for information only; columns are phases)}\\
 		\hline
 		\# 0 & 0 & 0 & 0 & \#CPUE/survey: 1\\
@@ -1747,16 +1821,17 @@ If the number of numbers-at-age bins to be output is >0, then read a vector of a
 
 \begin{center}
 	\begin{longtable}{p{1cm} p{1cm} p{1cm} p{1cm} p{1cm} p{1cm} p{1cm} p{1cm} p{1cm} p{3.5cm}}
+
 		\multicolumn{10}{l}{So a complete input looks like:}\\
 		\hline
 		1 & & \multicolumn{8}{l}{\# 0 = no additional input, 1 = read stdev reporting lines}\\
+		\hline
 		\multicolumn{10}{l}{COND > 0}\\
 		& 1 & 1 & -1 & 5 & 1 & 5 & 1 & -1 & 5 \\
 		& 5 & 16 & 27 & 38 & 46 & \multicolumn{4}{l}{\#Vector with selex std bin picks}\\
 		& 1 & 2 & 14 & 26 & 40 & \multicolumn{4}{l}{\#Vector with growth std bin picks}\\
 		& 1 & 2 & 14 & 26 & 40 & \multicolumn{4}{l}{\#Vector with n-at-age std bin picks}\\
 		\hline
-		\\
 		\\
 		\multicolumn{10}{l}{End Control File Input}\\
 		\bfseries{999} & \multicolumn{9}{l}{\#End of file}

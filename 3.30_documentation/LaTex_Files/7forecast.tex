@@ -177,33 +177,30 @@ The specification of options for forecasts is contained in the mandatory input f
    &  &  0.10  0.10  0.30 \# Area2 \\  
  \pagebreak
  
- -1 -1 -1 & Maximum total catch by fleet & \multirow{1}{1cm}[-0.1cm]{\parbox{11cm}{Must enter value for each fleet.  Starting in version 3.3 this now also includes surveys which are treated similar to fleets.}} \\
-  & -1 = no maximum & \\
+  1 50 & Maximum total catch by fleet & \multirow{1}{1cm}[-0.1cm]{\parbox{11cm}{Must enter value for each fleet.  Starting in version 3.3 this now also includes surveys which are treated similar to fleets.}} \\
+  -9999 -1 & -1 = no maximum & \\
   
   \hline
-  -1 & Maximum total catch by area & \multirow{1}{1cm}[-0.1cm]{\parbox{11cm}{Must enter value for each area. Starting in version 3.3 this now also includes surveys which are treated similar to fleets.}} \\
+  -9999 -1 & Maximum total catch by area & \multirow{1}{1cm}[-0.1cm]{\parbox{11cm}{Must enter value for each area. Starting in version 3.3 this now also includes surveys which are treated similar to fleets.}} \\
      & -1 = no maximum & \\
      
   \hline
-  0 0 0 & Fleet assignment to allocation group & \multirow{1}{1cm}[-0.1cm]{\parbox{11cm}{Enter group ID \# for each fleet. Starting in version 3.3 this now also includes surveys which are treated similar to fleets.}} \\
-    & 0 = Fleet not included in allocation group & \\
+  1 1  & Fleet assignment to allocation group & \multirow{1}{1cm}[-0.1cm]{\parbox{11cm}{Enter group ID \# for each fleet. Starting in version 3.3 this now also includes surveys which are treated similar to fleets.}} \\
+  -9999 -1  & 0 = Fleet not included in allocation group & \\
     
   \hline
   \multicolumn{3}{l}{COND: >0 } \\
   %\hhline{|*3{-}|} 
-  \multicolumn{1}{r}{0.2 0.3 0.5}  & Allocation to each group for each year of the forecast & For each year of the forecast, enter the allocation fraction to each group.  Annual values are rescaled to sum to 1.0.  Protocol for entering year-specifc info will be changing \\
-  
-  \hline
-  0 & Forecast catch levels & \multirow{1}{1cm}[-0.1cm]{\parbox{11cm}{Number of forecast catch levels to input, else calculated from the forecast F.}} \\
-  \\
+  \multicolumn{1}{r}{2002 1}  & Allocation to each group for each year of the forecast & For each year of the forecast, enter the allocation fraction to each group.  Annual values are rescaled to sum to 1.0. \\
+  \multicolumn{1}{r}{-9999 1} & \\
   
   %\hline
-  %\multicolumn{3}{l}{COND: >0 } \\
-  %\hhline{|*3{-}|} 
-  %  &  &  \\
+  %0 & Forecast catch levels & \multirow{1}{1cm}[-0.1cm]{\parbox{11cm}{Number of forecast catch levels to input, else calculated from the forecast F.}} \\
+  %\\
   
   \hline
-  3 & Basis for forecast catch & \\
+  -1 & Basis for forecast catch & \\
+    & -1 = Read basis with each observation, allows for a mixture of dead, retained, or F basis by different fleets for the fixed catches below.\\
     & 2 = Dead catch & \\
     & 3 = Retained catch & \\
     & 99 = Input harvest rate (F) & \\
@@ -211,7 +208,9 @@ The specification of options for forecasts is contained in the mandatory input f
   \hline
   \multicolumn{1}{l}{COND: >0 }& \multicolumn{2}{l}{Forecasted catches - enter one line per number of fixed forecast year catch }\\
   %\hhline{|*3{-}|} 
-  \multicolumn{1}{r}{2012 1 1 1200}  & Year Season Fleet Catch (of F value)  &  \\
+  \multicolumn{1}{r}{2012 1 1 1200 2}  & \multicolumn{2}{l}{Year Season Fleet Catch (of F value) Basis}  \\
+  \multicolumn{1}{r}{2013 1 1 1200 2}  & \multicolumn{2}{l}{Year Season Fleet Catch (of F value) Basis}  \\
+  \multicolumn{1}{r}{-9999 1 1 0   2}  & \multicolumn{2}{l}{Year Season Fleet Catch (of F value) Basis}  \\
   
   \hline
   999 & End of Input & \\
