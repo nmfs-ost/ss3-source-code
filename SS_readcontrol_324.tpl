@@ -1123,7 +1123,7 @@
 
 !!//  Ss_Label_Info_4.5.5 #Set up block for MG parms
   int N_MGparm_blk                            // number of MGparms that use blocks
-  imatrix Block_Defs_MG(1,N_MGparm,styr,endyr+1)
+  imatrix Block_Defs_MG(1,N_MGparm,styr,YrMax)
   int N_MGparm_trend     //   number of MG parameters using trend or cycle
   int N_MGparm_trend2     //   number of parameters needed to define trends and cycles
   ivector MGparm_trend_point(1,N_MGparm)   //  index of trend parameters associated with each MG parm
@@ -2689,7 +2689,7 @@
 
 !!//  SS_Label_Info_4.9.5 #Create and label block patterns for selectivity parameters
   int N_selparm_blk                            // number of selparms that use blocks
-  imatrix Block_Defs_Sel(1,N_selparm,styr,endyr)
+  imatrix Block_Defs_Sel(1,N_selparm,styr,YrMax)
   int customblocksetup  //  0=read one setup and apply to all; 1=read each
 
   int N_selparm_trend     //   number of selex parameters using trend

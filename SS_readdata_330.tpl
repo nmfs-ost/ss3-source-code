@@ -2745,6 +2745,7 @@ DATA_SECTION
         }
         if(gender==1) SzFreq_obs_hdr(iobs,4)=1;  // just in case
 
+        f=abs(SzFreq_obs_hdr(iobs,3));
         SzFreq_obs(iobs)/=sum(SzFreq_obs(iobs));
         SzFreq_obs(iobs)+=SzFreq_mincomp(k);
         SzFreq_obs(iobs)/=sum(SzFreq_obs(iobs));
@@ -2786,7 +2787,6 @@ DATA_SECTION
         }
 
         t=styr+(y-styr)*nseas+s-1;
-        f=abs(SzFreq_obs_hdr(iobs,3));
         ALK_time=(y-styr)*nseas*N_subseas+(s-1)*N_subseas+subseas;
         if(gender==1) {SzFreq_obs_hdr(iobs,4)=0;}
         z=SzFreq_obs_hdr(iobs,4);  // gender

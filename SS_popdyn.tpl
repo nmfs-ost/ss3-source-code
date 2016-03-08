@@ -6,6 +6,7 @@ FUNCTION void get_initial_conditions()
   catch_fleet.initialize();
   annual_catch.initialize();
   annual_F.initialize();
+  
   if(SzFreq_Nmeth>0) SzFreq_exp.initialize();
 
   //  SS_Label_Info_23.1 #call biology and selectivity functions for the initial year
@@ -249,6 +250,7 @@ FUNCTION void get_initial_conditions()
      }
    }
    SPB_pop_gp(styr)=SPB_pop_gp(styr-1);  //  placeholder in case not calculated early in styr
+   
    //  note:  the above keeps SPB_pop_gp(styr) = SPB_equil.  It does not adjust for initial agecomp, but probably should
   }  //  end initial_conditions
 
@@ -278,13 +280,16 @@ FUNCTION void get_time_series()
 
 //    if( )
     	{
-
     		env_data(y,-1)=SPB_current/SPB_yr(styr-1);  //  store most recent value for density-dependent effects, NOTE - off by a year if recalc'ed at beginning of season 1
-        env_data(y,-2)=mfexp(recdev(y)); //  store so can do density-dependence
+        if(recdev_doit(y)>0) 
+        	{env_data(y,-2)=mfexp(recdev(y));} //  store so can do density-dependence
+        	else
+        	{  //  should be 0.0 
+        	}
         t=t_base+1;  // first season
+        s=1;
         if(time_vary_MG(y,2)>0 || time_vary_MG(y,3)>0 || save_for_report==1 || WTage_rd>0)
         {
-          s=1;
           subseas=1;  //  begin season  note that ALK_idx re-calculated inside get_growth3
           ALK_idx=(s-1)*N_subseas+subseas;  //  redundant with calc inside get_growth3 ????
   //      get_growth3(s, subseas);  //  not needed because size-at-age already has been propagated to seas 1 subseas 1
@@ -292,7 +297,6 @@ FUNCTION void get_time_series()
         }
         smrybio=0.0;
         smrynum=0.0;
-        s=1;
         for (g=1;g<=gmorph;g++)
         if(use_morph(g)>0)
         {

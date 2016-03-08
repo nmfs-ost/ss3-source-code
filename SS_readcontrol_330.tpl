@@ -1054,11 +1054,11 @@
      	 		break;
      	 	}
      	 case 4:  //  logistic with offset
-     	 	{ 
+     	 	{
           if(MG_adjust_method==2) {N_warn++; cout<<" EXIT - see warning "<<endl; warning<<"multiplicative env effect on MGparm: "<<f
           <<" not allowed because MG_adjust_method==2; STOP"<<endl; exit(1);}
-          ParCount++; ParmLabel+=ParmLabel(f)+"_ENV_offset"; 
-          ParCount++; ParmLabel+=ParmLabel(f)+"_ENV_lgst_slope"; 
+          ParCount++; ParmLabel+=ParmLabel(f)+"_ENV_offset";
+          ParCount++; ParmLabel+=ParmLabel(f)+"_ENV_lgst_slope";
           N_MGparm_env ++;  //  for the second parameter
      	 		break;
      	 	}
@@ -1097,7 +1097,7 @@
   int N_MGparm_trend     //   number of MG parameters using trend or cycle
   int N_MGparm_trend2     //   number of parameters needed to define trends and cycles
   ivector MGparm_trend_point(1,N_MGparm)   //  index of trend parameters associated with each MG parm
-  
+
  LOCAL_CALCS
   echoinput<<"Process and create labels for the MGparm adjustments"<<endl;
   Block_Defs_MG.initialize();
@@ -2363,7 +2363,7 @@
       warning<<" illegal selparm_adjust_method; must be 1 or 2 or 3 "<<endl;  exit(1);
     }
  END_CALCS
-  
+
   int N_selparm   // figure out the Total number of selex parameters
   int N_selparm2                 // N selparms plus env links and blocks
   ivector N_selparmvec(1,2*Nfleet)  //  N selparms by type, including extra parms for male selex, retention, etc.
@@ -2668,11 +2668,11 @@
      	 		break;
      	 	}
      	 case 4:  //  logistic with offset
-     	 	{ 
+     	 	{
           if(selparm_adjust_method==2) {N_warn++; cout<<" EXIT - see warning "<<endl; warning<<"multiplicative env effect on selparm: "<<j+firstselparm
           <<" not allowed because selparm_adjust_method==2; STOP"<<endl; exit(1);}
-          N_selparm_env ++; ParCount++; ParmLabel+=ParmLabel(j+firstselparm)+"_ENV_offset"; 
-          N_selparm_env ++; ParCount++; ParmLabel+=ParmLabel(j+firstselparm)+"_ENV_lgst_slope"; 
+          N_selparm_env ++; ParCount++; ParmLabel+=ParmLabel(j+firstselparm)+"_ENV_offset";
+          N_selparm_env ++; ParCount++; ParmLabel+=ParmLabel(j+firstselparm)+"_ENV_lgst_slope";
      	 		break;
      	 	}
      }
@@ -3277,13 +3277,13 @@
   }
   //  tag parms
  END_CALCS
-  
+
   ivector MGparm_blktrend(1,N_MGparm)  //  holds index of blktrend used by this base parameter
   ivector selparm_blktrend(1,N_MGparm)  //  holds index of blktrend used by this base parameter
-  ivector blktrend_parm1(1,N_blktrend)  //  holds index of first parameter for this def, will also be used ofr selex, and q
+  ivector blktrend_parm1(1,N_blktrend)  //  holds index of first parameter for this def, will also be used for MG, selex, and q
   int blktrend_cnt
   int blktrend_parm_cnt;
-  
+
  LOCAL_CALCS
    blktrend_cnt=0;
    blktrend_parm_cnt=0;
@@ -3295,7 +3295,7 @@
      z=MGparm_1(j,13);    // specified block or trend definition
      if(z==0)    //  no blocks or trends
      {  }
-  
+
      else if (z>0)  //  blocks with z as the block pattern
      {
        if(z>N_Block_Designs) {N_warn++; warning<<" ERROR, Block > N Blocks "<<z<<" "<<N_Block_Designs<<endl; exit(1);}
@@ -3322,11 +3322,11 @@
           case 3:
           {ParmLabel+=ParmLabel(j)+"_BLK"+NumLbl(z)+"delta_"+onenum+CRLF(1);  break;}
         }
-  
+
         y=Block_Design(z,g+1)+1;  // first year after block
         if(y>endyr+1) y=endyr+1;
         time_vary_MG(y,mgp_type(j))=1;
-  
+
         if(mgp_type(j)==7)  //  so doing catch_mult which needs annual values calculated for each year of the block
         {
           for(k=Block_Design(z,g);k<=y;k++)
@@ -3338,7 +3338,7 @@
       }
       if(j==MGP_CGD) CGD=1;
      }
-     
+
      else //  (z<0) so invoke a trend
      {
        blktrend_cnt++;
@@ -3366,18 +3366,17 @@
             blktrend_parm_cnt+=1;  //  for the 3 trend parameters
           }
         }
-     	
+
      }
    }
-   
-   
+
    for (j=1;j<=N_selparm;j++)
    {
-   	 j1=firstselparm+j-1;
+   	 j1=firstselparm+j;
      z=selparm_1(j,13);    // specified block or trend definition
      if(z==0)    //  no blocks or trends
      {  }
-  
+
      else if (z>0)  //  blocks with z as the block pattern
      {
        if(z>N_Block_Designs) {N_warn++; warning<<" ERROR, Block > N Blocks "<<z<<" "<<N_Block_Designs<<endl; exit(1);}
@@ -3404,15 +3403,14 @@
           case 3:
           {ParmLabel+=ParmLabel(j1)+"_BLK"+NumLbl(z)+"delta_"+onenum+CRLF(1);  break;}
         }
-  
+
         y=Block_Design(z,g+1)+1;  // first year after block
-        if(y>endyr+1) y=endyr+1;
-        //  time_vary_sel(   time_vary_MG(y,mgp_type(j))=1;
-  
+        if(y>endyr+1) y=endyr+1;  //  need to revise to deal with interaction of retrospective and blocks
+        //  time_vary_sel(    //  placeholder;  need to know fleet
         g+=2;
       }
      }
-     
+
      else //  (z<0) so invoke a trend
      {
        blktrend_cnt++;
@@ -3437,12 +3435,19 @@
           for (icycle=1;icycle<=Ncycle;icycle++)
           {
             ParCount++; ParmLabel+=ParmLabel(j1)+"_Cycle_"+NumLbl(icycle)+CRLF(1);
-            blktrend_parm_cnt+=1;  //  for the 3 trend parameters
+            blktrend_parm_cnt+=1;
           }
         }
-     	
+
      }
    }
+   echoinput<<" MGparm_blktrend"<<endl<<MGparm_blktrend<<endl;
+   echoinput<<" selparm_blktrend"<<endl<<selparm_blktrend<<endl;
+   echoinput<<" blktrend_parm1 "<<endl<<blktrend_parm1<<endl;
+   echoinput<<ParmLabel<<endl;
+   ParCount-=blktrend_parm_cnt;  //  reset so rest of code will run
+//   exit(1);
+
  END_CALCS
 
 !!//  SS_Label_Info_4.11 #Read variance adjustment and various variance related inputs

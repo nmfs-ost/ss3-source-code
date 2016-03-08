@@ -892,7 +892,7 @@ FUNCTION void get_growth3(const int s, const int subseas)
         {
           echoinput<<"with lingrow; subseas: "<<subseas<<" sex: "<<sx(g)<<" gp: "<<GP4(g)<<" g: "<<g<<endl;
           echoinput<<"size "<<Ave_Size(t,subseas,g)(0,min(6,nages))<<" @nages "<<Ave_Size(t,subseas,g,nages)<<endl;
-          echoinput<<"CV   "<<CV_G(gp,ALK_idx)(0,min(6,nages))<<" @nages "<<CV_G(gp,ALK_idx,nages)<<endl;
+          if(CV_depvar_b==0) echoinput<<"CV   "<<CV_G(gp,ALK_idx)(0,min(6,nages))<<" @nages "<<CV_G(gp,ALK_idx,nages)<<endl;
           echoinput<<"sd   "<<Sd_Size_within(ALK_idx,g)(0,min(6,nages))<<" @nages "<<Sd_Size_within(ALK_idx,g,nages)<<endl;
         }
       }  //  end need this platoon
@@ -1329,7 +1329,6 @@ FUNCTION void get_wtlen()
 //  6=read length-maturity
      if(Maturity_Option!=4 && Maturity_Option!=5)
      {
-       echoinput<<"fec_len "<<endl<<fec_len(gp)<<endl;
   //  combine length maturity and fecundity; but will be ignored if reading empirical age-fecundity
        mat_fec_len(gp) = elem_prod(mat_len(gp),fec_len(gp));
        if(do_once==1) echoinput<<"mat_fec_len "<<endl<<mat_fec_len(gp)<<endl;
@@ -1533,7 +1532,6 @@ FUNCTION void Make_Fecundity()
     {
       GPat=GP4(g);
       gg=sx(g);
-
       switch(Maturity_Option)
       {
         case 4:  //  Maturity_Option=4   read age-fecundity into age-maturity
@@ -1551,7 +1549,7 @@ FUNCTION void Make_Fecundity()
               int ALK_finder=(ALK_idx-1)*gmorph+g;
           for(a=0;a<=nages;a++)
           {
-            tempvec_a(a) = ALK(ALK_idx,g,a)(ALK_range_g_lo(ALK_finder,a),ALK_range_g_hi(ALK_finder,a)) *mat_fec_len(GPat)(ALK_range_g_lo(g,a),ALK_range_g_hi(g,a));
+            tempvec_a(a) = ALK(ALK_idx,g,a)(ALK_range_g_lo(ALK_finder,a),ALK_range_g_hi(ALK_finder,a)) *mat_fec_len(GPat)(ALK_range_g_lo(ALK_finder,a),ALK_range_g_hi(ALK_finder,a));
           }
           fec(g) = elem_prod(tempvec_a,mat_age(GPat));  //  reproductive output at age
         }
@@ -1654,7 +1652,6 @@ FUNCTION void Make_Fecundity()
       else
       {fec(g)=WTage_emp(t,GP3(g),-2);}
  */
-
         save_sel_fec(t,g,0)= fec(g);   //  save sel_al_3 and save fecundity for output
         if(y==endyr) save_sel_fec(t+nseas,g,0)=fec(g);
         if(save_for_report==2

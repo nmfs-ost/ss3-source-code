@@ -477,6 +477,7 @@ FUNCTION void evaluate_the_objective_function()
           f=abs(SzFreq_obs_hdr(iobs,3));
           z1=SzFreq_obs_hdr(iobs,7);
           z2=SzFreq_obs_hdr(iobs,8);
+          //  is there a check for ignored obs with f<0?
           SzFreq_like(SzFreq_LikeComponent(f,k))-=SzFreq_sampleN(iobs)*SzFreq_obs(iobs)(z1,z2)*log(SzFreq_exp(iobs)(z1,z2));
         }
       }
