@@ -166,6 +166,8 @@
  11 0 0 0 # 1 FISHERY1
  11 0 0 0 # 2 SURVEY1
  11 0 0 0 # 3 SURVEY2
+#
+1 #_env/block/dev_adjust_method (1=standard; 2=logistic trans to keep in base parm bounds; 3=standard w/ no bound check)
 #_LO HI INIT PRIOR PR_type SD PHASE env-var use_dev dev_minyr dev_maxyr dev_stddev Block Block_Fxn
  19 80 53.4032 50 1 0.01 2 0 0 0 0 0 0 0 # SizeSel_P1_FISHERY1(1)
  0.01 60 18.8267 15 1 0.01 3 0 0 0 0 0 0 0 # SizeSel_P2_FISHERY1(1)
@@ -173,10 +175,16 @@
  0.1 10 6.58451 1 0 99 -3 0 0 0 0 0 0 0 # Retain_P2_FISHERY1(1)
  0.001 1 0.98 1 0 99 -3 0 0 0 0 0 0 0 # Retain_P3_FISHERY1(1)
  -10 10 1 0 0 99 -3 0 0 0 0 0 0 0 # Retain_P4_FISHERY1(1)
+  1 100 100   0   -1  99  -99  0   0   0   0   0   0   0 # Retain_P5_FISHERY1(1)
+-10  10   1   0   -1  99  -99  0   0   0   0   0   0   0 # Retain_P6_FISHERY1(1)
+-10  10   1   0   -1  99  -99  0   0   0   0   0   0   0 # Retain_P7_FISHERY1(1)
  0.1 1 46 0.8 0 99 -3 0 0 0 0 0 0 0 # DiscMort_P1_FISHERY1(1)
  -2 2 0.8 0 0 99 -3 0 0 0 0 0 0 0 # DiscMort_P2_FISHERY1(1)
  20 70 0.92 40 0 99 -3 0 0 0 0 0 0 0 # DiscMort_P3_FISHERY1(1)
  0.1 10 0 1 0 99 -3 0 0 0 0 0 0 0 # DiscMort_P4_FISHERY1(1)
+-100 1 -100   0   -1  99  -99  0   0   0   0   0   0   0 # DiscMort_P5_FISHERY1(1)
+-10  10   1   0   -1  99  -99  0   0   0   0   0   0   0 # DiscMort_P6_FISHERY1(1)
+-10  10   1   0   -1  99  -99  0   0   0   0   0   0   0 # DiscMort_P7_FISHERY1(1)
  19 70 36.2751 30 1 0.01 2 0 0 0 0 0 0 0 # SizeSel_P1_SURVEY1(2)
  0.01 60 6.6277 10 1 0.01 3 0 0 0 0 0 0 0 # SizeSel_P2_SURVEY1(2)
  0 40 0 5 -1 99 -1 0 0 0 0 0 0 0 # AgeSel_P1_FISHERY1(1)
