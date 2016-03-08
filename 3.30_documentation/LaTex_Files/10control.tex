@@ -1465,7 +1465,7 @@ This option allows a specified degree of stock depletion (in terms of spawning b
 Essentially, these automated features cause SS to mimic DB-SRA in phase 1.  If the model is only run through phase 1, then this will be the final result.  Alternatively, use of this option could just be used to get the R0 parameter into a reasonable range before proceeding to estimate other parameters.  The lambda for the depletion survey could remain at 1.0 for the entire model run, or it could be reduced in later phases to prevent influencing final model results.
 
 \subsubsection{Retention}
-Retention is defined as a logistic function of size.  It does not apply to surveys.  Four parameters are used:
+Retention is defined as a logistic function of size and can be dome-shaped.  It does not apply to surveys.  Seven parameters are used:
 \begin{itemize}
 	\item p1 – ascending inflection
 	\item p2 – ascending slope
@@ -1476,7 +1476,7 @@ Retention is defined as a logistic function of size.  It does not apply to surve
 	\item p7 – male offset to descending inflection (arithmetic, not multiplicative)
 \end{itemize}
 \begin{equation}
-	Retention = \frac{P3}{1 + e^{\frac{-(L-(P1+P4*male))}{P2}}}
+	Retention = \left(\frac{P3}{1 + e^{\frac{-(L-(P1+P4*male))}{P2}}}\right)*\left(1 - \frac{1}{1 + e^{\frac{-(L-(P5+P7*male))}{P6}}}\right)
 \end{equation}
 
 \subsubsection{Discard Mortality}
@@ -1486,7 +1486,7 @@ Discard mortality is defined as a logistic function of size such that mortality 
 \end{center}
 If discmort is 1.0, all selected fish are dead; if discmort is 0.0, only the retained fish are dead.
 
-Four parameters are used:
+Seven parameters are used:
 \begin{itemize}
 	\item p1 – descending inflection
 	\item p2 – descending slope
@@ -1499,7 +1499,7 @@ Four parameters are used:
 
 Discard mortality is calculated as:
 \begin{equation}
-	Mortality = 1 - \frac{1-P3}{1+e^{\frac{-(L-(P1+P4*male))}{P2}}}
+	Mortality = \left(1 - \frac{1-P3}{1+e^{\frac{-(L-(P1+P4*male))}{P2}}}\right)*\left(\frac{1}{1 + e^{\frac{-(L-(P5+P7*male))}{P6}}}\right)
 \end{equation}
 
 \subsubsection{Male Selectivity}

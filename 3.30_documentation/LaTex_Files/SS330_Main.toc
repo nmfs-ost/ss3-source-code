@@ -72,9 +72,9 @@
 \contentsline {subsubsection}{\numberline {10.3.27}Selectivity Patterns}{83}{subsubsection.10.3.27}
 \contentsline {subsubsection}{\numberline {10.3.28}Selectivity Pattern Details}{85}{subsubsection.10.3.28}
 \contentsline {subsubsection}{\numberline {10.3.29}Retention}{95}{subsubsection.10.3.29}
-\contentsline {subsubsection}{\numberline {10.3.30}Discard Mortality}{95}{subsubsection.10.3.30}
+\contentsline {subsubsection}{\numberline {10.3.30}Discard Mortality}{96}{subsubsection.10.3.30}
 \contentsline {subsubsection}{\numberline {10.3.31}Male Selectivity}{96}{subsubsection.10.3.31}
-\contentsline {subsubsection}{\numberline {10.3.32}Reading the Selectivity and Retention Parameters}{97}{subsubsection.10.3.32}
+\contentsline {subsubsection}{\numberline {10.3.32}Reading the Selectivity and Retention Parameters}{98}{subsubsection.10.3.32}
 \contentsline {subsubsection}{\numberline {10.3.33}Tag Recapture Parameters}{99}{subsubsection.10.3.33}
 \contentsline {subsubsection}{\numberline {10.3.34}Variance Adjustment Factors}{100}{subsubsection.10.3.34}
 \contentsline {subsubsection}{\numberline {10.3.35}Lambdas (Emphasis Factors)}{101}{subsubsection.10.3.35}
