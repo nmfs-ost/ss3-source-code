@@ -1039,16 +1039,16 @@ So for a setup with 2 fisheries and 2 surveys, the Q setup matrix could be:
 \begin{center}
 	\begin{longtable}{p{2.75cm} p{2.75cm} p{2.75cm} p{2cm} p{2cm} p{2cm}}
 		\endfirsthead
-				
+
 		\hline
 		\#Value & Label & \multicolumn{4}{l}{Label, Description, and Options} \\
 		\hline
 		\endhead
-				
+
 				%\hline
 		\endfoot
 		\endlastfoot
-		
+
 		\hline
 		\#Value & Label & \multicolumn{4}{l}{Label, Description, and Options} \\
 		\hline
@@ -1070,23 +1070,23 @@ So for a setup with 2 fisheries and 2 surveys, the Q setup matrix could be:
 		\hline
 	\end{longtable}
 \end{center}
-	    
+
 
 \noindent For each positive element in columns for the catchability (Q) setup above, read a short parameter setup line.  The order is: fishery 1 through survey N within power transformation, then within environment link, then within extra standard deviation, then within Q.  If no elements are selected, then there must be no parameter setup lines.
 
 \begin{center}
 	\begin{longtable}{p{1.1cm} p{1.1cm} p{1.2cm} p{1.2cm} p{1.5cm} p{1.1cm} p{1.1cm} p{4.8cm}}
 		\endfirsthead
-		
+
 		\hline
 		\#Lo & Hi & Init & Prior & PR\_type & SD & Phase & Label \\
 		\hline
 		\endhead
-		
+
 		\hline
 		\endfoot
 		\endlastfoot
-		
+
 		\multicolumn{8}{l}{The list of parameters to be read from the above setup would be:}\\
 		\hline
 		\#Lo & Hi & Init & Prior & PR\_type & SD & Phase & Label \\
@@ -1467,10 +1467,13 @@ Essentially, these automated features cause SS to mimic DB-SRA in phase 1.  If t
 \subsubsection{Retention}
 Retention is defined as a logistic function of size.  It does not apply to surveys.  Four parameters are used:
 \begin{itemize}
-	\item p1 – inflection
-	\item p2 – slope
+	\item p1 – ascending inflection
+	\item p2 – ascending slope
 	\item p3 – asymptotic retention (often a time-varying quantity to match the observed amount of discard)
-	\item p4 – male offset to inflection (arithmetic, not multiplicative)
+	\item p4 – male offset to ascending inflection (arithmetic, not multiplicative)
+	\item p5 – descending inflection
+	\item p6 – descending slope
+	\item p7 – male offset to descending inflection (arithmetic, not multiplicative)
 \end{itemize}
 \begin{equation}
 	Retention = \frac{P3}{1 + e^{\frac{-(L-(P1+P4*male))}{P2}}}
@@ -1485,10 +1488,13 @@ If discmort is 1.0, all selected fish are dead; if discmort is 0.0, only the ret
 
 Four parameters are used:
 \begin{itemize}
-	\item p1 – inflection
-	\item p2 – slope
+	\item p1 – descending inflection
+	\item p2 – descending slope
 	\item p3 – asymptotic mortality
-	\item p4 – male offset to inflection (arithmetic, not multiplicative)
+	\item p4 – male offset to descending inflection (arithmetic, not multiplicative)
+	\item p5 – ascending inflection
+	\item p6 – ascending slope
+	\item p7 – male offset to ascending inflection (arithmetic, not multiplicative)
 \end{itemize}
 
 Discard mortality is calculated as:
@@ -1716,15 +1722,15 @@ The reading of the lambda values has been substantially altered with SS\_v3.  In
 		3 = mean weight;\\
 		4 = length;\\
 		5 = age; \\
-		6 = size frequency;\\ 
+		6 = size frequency;\\
 		7 = size-at-age; \\
 		8 = catch; \\
 		9 = initial equilibrium catch;\\
 	    10 = recruitment deviations; \\
 		11 = parameter priors; \\
-		12 = parameter deviations;\\ 
+		12 = parameter deviations;\\
 		13 = crash penalty; \\
-		14 = morph composition;v 
+		14 = morph composition;v
 		15 = tag composition;\\
 		16 = tag negbin.\\
 	\end{longtable}
@@ -1732,16 +1738,16 @@ The reading of the lambda values has been substantially altered with SS\_v3.  In
 
 \begin{center}
 	\begin{longtable}{p{2cm} p{2cm} p{2cm} p{2cm} p{6cm}}
-		\hline		
+		\hline
 		\endfirsthead
 
 		\hline
 		\endhead
 		\hline
-				
+
 		\endfoot
 		\endlastfoot
-		
+
 		\multicolumn{5}{l}{On output to control.ss\_new, the full table is written:}\\
 		\multicolumn{5}{l}{\#Lambdas (for information only; columns are phases)}\\
 		\hline
