@@ -416,7 +416,7 @@ DATA_SECTION
   if(read_seas_mo==1)  //  so reading values of integer season
     {
       spawn_seas=spawn_rd;
-      spawn_month=1.0 + azero_seas(spawn_seas)/12.;
+      spawn_month=1.0 + azero_seas(spawn_seas)*12.;
       spawn_subseas=1;
       spawn_time_seas=0.0;
     }
@@ -1216,7 +1216,7 @@ DATA_SECTION
       for (k=3;k<=6;k++) mnwtdata(k,j)=mnwtdata1(i,k);
     }
   }
-  echoinput<<"Successful read of mean-bodywt data, N= "<< nobs_mnwt <<endl<<trans(mnwtdata)<<endl<<yr_mnwt2<<endl;
+  echoinput<<"Successful read of mean-bodywt data, N= "<< nobs_mnwt <<endl;
  END_CALCS
 
 !!//  SS_Label_Info_2.6 #Setup population Length bins
@@ -1386,6 +1386,10 @@ DATA_SECTION
   minL=len_bins(1);
   minL_m=len_bins_m(1);
   if(LenBin_option!=2) binwidth2=binwidth(nlength/2);  // set a reasonable value in case LenBin_option !=2
+  if(len_bins_dat(nlen_bin)>len_bins(nlength))
+  {
+    N_warn++; cout<<"Critical error, see warning.sso"<<endl; warning<<" Data length bins extend beyond pop len bins "<<len_bins_dat(nlen_bin)<<" "<<len_bins(nlength)<<endl; exit(1);
+  }
 
   startbin=1;
   while(len_bins(startbin)<len_bins_dat(1))
@@ -1405,10 +1409,6 @@ DATA_SECTION
     }
     len_bins_dat_m2(z)=len_bins_dat_m(z);
     if(gender==2) len_bins_dat_m2(z+nlen_bin)=len_bins_dat_m(z);
-  }
-  if(len_bins_dat(nlen_bin)>len_bins(nlength))
-  {
-    N_warn++; cout<<"Critical error, see warning.sso"<<endl; warning<<" Data length bins extend beyond pop len bins "<<len_bins_dat(nlen_bin)<<" "<<len_bins(nlength)<<endl; exit(1);
   }
   echoinput<<endl<<"Processed Data length bin info "<<endl;
  END_CALCS
@@ -2674,6 +2674,7 @@ DATA_SECTION
         {
           for (z=SzFreq_Nbins(k)+1;z<=SzFreq_Setup2(iobs);z++) {SzFreq_obs(iobs,z)=SzFreq_obs1(iobs,7+z);}
         }
+        f=abs(SzFreq_obs_hdr(iobs,3));
         if(gender==1) SzFreq_obs_hdr(iobs,4)=1;  // just in case
 
         SzFreq_obs(iobs)/=sum(SzFreq_obs(iobs));
@@ -2717,7 +2718,6 @@ DATA_SECTION
         }
 
         t=styr+(y-styr)*nseas+s-1;
-        f=abs(SzFreq_obs_hdr(iobs,3));
         ALK_time=(y-styr)*nseas*N_subseas+(s-1)*N_subseas+subseas;
         if(gender==1) {SzFreq_obs_hdr(iobs,4)=0;}
         z=SzFreq_obs_hdr(iobs,4);  // gender

@@ -142,7 +142,6 @@ FUNCTION void get_selectivity()
           else
           {sp(j)=selparm(Ip+j);}
         }
-
         switch(selparm_adjust_method)
         {
           default:

@@ -2709,7 +2709,7 @@
 
 !!//  SS_Label_Info_4.9.5 #Create and label block patterns for selectivity parameters
   int N_selparm_blk                            // number of selparms that use blocks
-  imatrix Block_Defs_Sel(1,N_selparm,styr,endyr)
+  imatrix Block_Defs_Sel(1,N_selparm,styr,YrMax)
   int customblocksetup  //  0=read one setup and apply to all; 1=read each
 
   int N_selparm_trend     //   number of selex parameters using trend
@@ -3262,7 +3262,25 @@
   }
  END_CALCS
 
-//  SS_Label_Info_4.11 #Read variance adjustment and various variance related inputs
+//  Pre-process all block and trend
+//  get the count
+  int N_blktrend
+ LOCAL_CALCS
+  N_blktrend=0;
+  // MG parms
+  for (j=1;j<=N_MGparm; j++)
+  {
+  	if(MGparm_1(j,13)!=0) N_blktrend++;
+  }
+  // SRR parms
+  // Q parms
+  //  selex parms
+  for (j=1;j<=N_selparm; j++)
+  {
+  	if(selparm_1(j,13)!=0) N_blktrend++;
+  }
+  //  tag parms
+ END_CALCS
   int Do_Var_adjust
  LOCAL_CALCS
   {
