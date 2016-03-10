@@ -874,7 +874,7 @@ FUNCTION void get_selectivity()
           temp=1.-sp(k+2);
           temp1=1.-posfun(temp,0.0,CrashPen);
           retain(y,f)=temp1/(1.+mfexp(-(len_bins_m2-(sp(k)+male_offset*sp(k+3)))/sp(k+1)));  // males are at end of vector, so automatically get done
-          if(retParCount==-1)
+          if(seltype(f,2)==4)
           {
             // allow for dome-shaped retention in 3.30 only
             retain(y,f) = retain(y,f)*(1.-(1./(1.+mfexp(-(len_bins_m2-(sp(k+4)+male_offset*sp(k+6)))/sp(k+5)))));
@@ -882,7 +882,7 @@ FUNCTION void get_selectivity()
           if(docheckup==1&&y==styr)
           {
             echoinput<<"parms "<<sp(k)<<" "<<sp(k+1)<<" "<<sp(k+3)<<" "<<temp1;
-            if(retParCount==-1)
+            if(N_ret_parm(seltype(f,2)))
             {
                 // additional dome-shaped retention parameters
                 echoinput<<" "<<sp(k+4)<<" "<<sp(k+5)<<" "<<sp(k+6);
@@ -900,11 +900,11 @@ FUNCTION void get_selectivity()
           else
           {
             k+=4;  // first discard mortality parm
-            if(retParCount==-1) k+=3;
+            if(seltype(f,2)==4) k+=3;
             temp=1.-sp(k+2);
             temp1=posfun(temp,0.0,CrashPen);
             discmort(y,f)=(1.-temp1/(1+mfexp(-(len_bins_m2-(sp(k)+male_offset*sp(k+3)))/sp(k+1))));  // males are at end of vector, so automatically get done
-            if(retParCount==-1)
+            if(seltype(f,2)==4)
             {
                 // allow for dome-shaped discard mortality in 3.30 only
                 discmort(y,f)=discmort(y,f)*(1./(1.+mfexp(-(len_bins_m2-(sp(k+4)+male_offset*sp(k+6)))/sp(k+5))));
@@ -1311,7 +1311,7 @@ FUNCTION void get_selectivity()
           temp=1.-sp(k+2);
           temp1=1.-posfun(temp,0.0,CrashPen);
           retain_a(y,fs,1)=temp1/(1.+mfexp(-(r_ages-(sp(k)))/sp(k+1)));
-          if(retParCount==-1)
+          if(seltype(f,2)==4)
           {
             // allow for dome-shaped retention in 3.30 only
             retain_a(y,fs,1)=retain_a(y,fs,1)*(1.-(1./(1.+mfexp(-(r_ages-(sp(k+4)))/sp(k+5)))));
@@ -1320,7 +1320,7 @@ FUNCTION void get_selectivity()
           {
             // males
             retain_a(y,fs,2)=temp1/(1.+mfexp(-(r_ages-(sp(k)+sp(k+3)))/sp(k+1)));
-            if(retParCount==-1)
+            if(seltype(f,2)==4)
             {
                 retain_a(y,fs,2)=retain_a(y,fs,2)*(1.-(1./(1.+mfexp(-(r_ages-(sp(k+4)+sp(k+6)))/sp(k+5)))));
             }
@@ -1328,7 +1328,7 @@ FUNCTION void get_selectivity()
           if(docheckup==1&&y==styr)
           {
             echoinput<<"parms "<<sp(k)<<" "<<sp(k+1)<<" "<<sp(k+3)<<" "<<temp1;
-            if(retParCount==-1)
+            if(seltype(f,2)==4)
             {
                 echoinput<<" "<<sp(k+4)<<" "<<sp(k+5)<<" "<<sp(k+6);
             }
@@ -1345,11 +1345,11 @@ FUNCTION void get_selectivity()
           else
           {
             k+=4;  // first discard mortality parm
-            if(retParCount==-1) k+=3;
+            if(seltype(f,2)==4) k+=3;
             temp=1.-sp(k+2);
             temp1=posfun(temp,0.0,CrashPen);
             discmort_a(y,fs,1)=(1.-temp1/(1+mfexp(-(r_ages-(sp(k)))/sp(k+1))));
-            if(retParCount==-1)
+            if(seltype(f,2)==4)
             {
                 // allow for dome-shaped discard mortality in 3.30 only
                 discmort_a(y,fs,1)=discmort_a(y,fs,1)*(1./(1.+mfexp(-(r_ages-(sp(k+4)))/sp(k+5))));
@@ -1358,7 +1358,7 @@ FUNCTION void get_selectivity()
             {
                 // males
                 discmort_a(y,fs,2)=(1.-temp1/(1+mfexp(-(r_ages-(sp(k)+sp(k+3)))/sp(k+1))));
-                if(retParCount==-1)
+                if(seltype(f,2)==4)
                 {
                     discmort_a(y,fs,2)=discmort_a(y,fs,2)*(1./(1.+mfexp(-(r_ages-(sp(k+4)+sp(k+6)))/sp(k+5))));
                 }

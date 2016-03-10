@@ -2032,7 +2032,7 @@ FUNCTION void write_nucontrol()
 
    report4<<"#_LO HI INIT PRIOR PR_type SD PHASE env-var use_dev dev_minyr dev_maxyr dev_stddev Block Block_Fxn"<<endl;
 
-  if(retParCount<=0)
+//  if(seltype(f,2)==4)
   {
       for (f=1;f<=N_selparm;f++)
       {
@@ -2041,28 +2041,28 @@ FUNCTION void write_nucontrol()
         report4<<selparm_1(f)<<" # "<<ParmLabel(NP)<<endl;
       }
   }
-  else
-  {
-    // shenanigans for inserting dome-shaped retention parameter placeholders for 3.24 -> 3.30
-      int NsrP=1;   // number of sets of placeholder retention parameters for 3.24
-      int NrP=0;    // number of placeholder retention parameters for 3.24
-      for (f=1;f<=N_selparm;f++)
-      {
-        if(f==retParmLoc(NsrP))
-        {
-            // insert the placeholders
-            NrP++; report4<<"  1 100 100   0   -1  99  -99  0   0   0   0   0   0   0"<<" # "<<retParmLabel(NrP)<<endl;
-            NrP++; report4<<"-10  10   1   0   -1  99  -99  0   0   0   0   0   0   0"<<" # "<<retParmLabel(NrP)<<endl;
-            NrP++; report4<<"-10  10   1   0   -1  99  -99  0   0   0   0   0   0   0"<<" # "<<retParmLabel(NrP)<<endl;
+//  else
+//  {
+//    // shenanigans for inserting dome-shaped retention parameter placeholders for 3.24 -> 3.30
+//      int NsrP=1;   // number of sets of placeholder retention parameters for 3.24
+//      int NrP=0;    // number of placeholder retention parameters for 3.24
+//      for (f=1;f<=N_selparm;f++)
+//      {
+//        if(f==retParmLoc(NsrP))
+//        {
+//            // insert the placeholders
+//            NrP++; report4<<"  1 100 100   0   -1  99  -99  0   0   0   0   0   0   0"<<" # "<<retParmLabel(NrP)<<endl;
+//            NrP++; report4<<"-10  10   1   0   -1  99  -99  0   0   0   0   0   0   0"<<" # "<<retParmLabel(NrP)<<endl;
+//            NrP++; report4<<"-10  10   1   0   -1  99  -99  0   0   0   0   0   0   0"<<" # "<<retParmLabel(NrP)<<endl;
 
-            NsrP++;
-        }
+//            NsrP++;
+//        }
 
-        NP++;
-        selparm_1(f,3)=value(selparm(f));
-        report4<<selparm_1(f)<<" # "<<ParmLabel(NP)<<endl;
-      }
-  }
+//        NP++;
+//        selparm_1(f,3)=value(selparm(f));
+//        report4<<selparm_1(f)<<" # "<<ParmLabel(NP)<<endl;
+//      }
+//  }
 
   j=N_selparm;
 
