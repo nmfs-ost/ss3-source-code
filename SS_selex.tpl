@@ -28,86 +28,6 @@ FUNCTION void get_selectivity()
 
   Ip=0;
 
-  //  SS_Label_Info_22.1 #Setup for possible time-varying selectivity
-  //  SS_Label_Info_22.1.1 #Calc any trends that will be needed for any of the selex parameters
-  if(y==styr && N_selparm_trend>0)
-  {
-    for (f=1;f<=N_selparm_trend;f++)
-    {
-      j=selparm_trend_rev(f);  //  parameter affected; would include size selex, discard, discmort, ageselex
-      k=selparm_trend_rev_1(f);  // base index for trend parameters
-      //  calc endyr value, but use logistic transform to keep with bounds of the base parameter
-      if(selparm_1(j,13)==-1)
-      {
-        temp=log((selparm_1(j,2)-selparm_1(j,1)+0.0000002)/(selparm(j)-selparm_1(j,1)+0.0000001)-1.)/(-2.);   // transform the base parameter
-        temp+=selparm(k+1);     //  add the offset  Note that offset value is in the transform space
-        temp1=selparm_1(j,1)+(selparm_1(j,2)-selparm_1(j,1))/(1.+mfexp(-2.*temp));   // backtransform
-      }
-      else if(selparm_1(j,13)==-2)
-      {
-        temp1=selparm(k+1);  // set ending value directly
-      }
-
-      if(selparm_HI(k+2)<=1.1)  // use max bound as switch
-      {temp3=r_years(styr)+selparm(k+2)*(r_years(endyr)-r_years(styr));}  // infl year
-      else
-      {temp3=selparm(k+2);}
-
-      temp2=cumd_norm((r_years(styr)-temp3)/selparm(k+3));     //  cum_norm at styr
-      temp=(temp1-selparm(j)) / (cumd_norm((r_years(endyr)-temp3)/selparm(k+3))-temp2);   //  delta in cum_norm between styr and endyr
-      for (int y1=styr;y1<=endyr;y1++)
-      {
-        selparm_trend(f,y1)=selparm(j) + temp * (cumd_norm((r_years(y1)-temp3)/selparm(k+3) )-temp2);
-      }
-    }
-  }
-
-  //  SS_Label_Info_22.1.2 #Set up the block values time series
-  if (N_selparm_blk>0 && y==styr)  // set up the block values time series
-  {
-    for (j=1;j<=N_selparm;j++)
-    {
-      z=selparm_1(j,13);    // specified block pattern
-      if(z>0)  // uses blocks
-      {
-//        if(y==styr)
-        {
-          g=1;
-          if(selparm_1(j,14)<3)  //  not as offset from previous block
-          {
-            for (a=1;a<=Nblk(z);a++)
-            {
-              for (int y1=Block_Design(z,g);y1<=Block_Design(z,g+1);y1++)  // loop years for this block
-              {
-                if(y1<=endyr)
-                {
-                  k=Block_Defs_Sel(j,y1);  // identifies parameter that holds the block effect
-                  selparm_block_val(j,y1)=selparm(k);
-                }
-              }
-              g+=2;
-            }
-          }
-          else   // as additive offset to previous block
-          {
-            temp=0.0;
-            for (a=1;a<=Nblk(z);a++)
-            {
-              y1=Block_Design(z,g);   // first year of block
-              k=Block_Defs_Sel(j,y1);  // identifies parameter that holds the block effect
-              temp+=selparm(k);  // increment by the block delta
-              for (int y1=Block_Design(z,g);y1<=Block_Design(z,g+1);y1++)  // loop years for this block
-              {
-                if(y1<=endyr) selparm_block_val(j,y1)=temp;
-              }
-              g+=2;
-            }
-          }
-        }  // end block setup
-      }  // end uses blocks
-    }  // end parameter loop
-  }  // end block section
-
   //  SS_Label_Info_22.1.3 #Set up the selectivity deviation time series
   if(N_selparm_dev>0 && y==styr)
   {
@@ -124,7 +44,6 @@ FUNCTION void get_selectivity()
       }
     }
   }
-
   //  SS_Label_Info_22.2 #Loop all fisheries and surveys twice; first for size selectivity, then for age selectivity
   for (f=1;f<=2*Nfleet;f++)
   {
@@ -135,13 +54,6 @@ FUNCTION void get_selectivity()
     {    // recalculate the selex in this year x type
       if(N_selparmvec(f)>0)      // type has parms, so look for adjustments
       {
-        for (j=1;j<=N_selparmvec(f);j++)
-        {
-          if(selparm_1(Ip+j,13)<0)
-          {sp(j)=selparm_trend(selparm_trend_point(Ip+j),y);}
-          else
-          {sp(j)=selparm(Ip+j);}
-        }
         switch(selparm_adjust_method)
         {
           default:
@@ -161,22 +73,12 @@ FUNCTION void get_selectivity()
           {
             for (j=1;j<=N_selparmvec(f);j++)
             {
-              if(selparm_1(Ip+j,13)>0)     //   uses blocks
+              if(selparm_1(Ip+j,13)!=0)
               {
-                blkparm=Block_Defs_Sel(Ip+j,y);
-                if(blkparm>0)
-                {
-                  k=selparm_1(Ip+j,14);
-                  if(k==0)  // multiplicative
-                  {sp(j) *= mfexp(selparm_block_val(Ip+j,y));}
-                  else if(k==1)  // additive
-                  {sp(j) += selparm_block_val(Ip+j,y);}
-                  else if(k==2)  // replacement
-                  {sp(j) = selparm_block_val(Ip+j,y);}
-                  else if(k==3)  // additive, but additions are cumulative
-                  {sp(j) += selparm_block_val(Ip+j,y);}
-                }
+                sp(j)=parm_timevary(selparm_timevary(Ip+j,1),y);
               }
+              else
+              {sp(j)=selparm(Ip+j);}
 
   //  SS_Label_Info_14.4.1.2 #Adjust for env linkage
   // where:  selparm_env is zero if no link else contains the parameter # of the first link parameter
@@ -191,56 +93,56 @@ FUNCTION void get_selectivity()
   //   	       if(selparm_envuse(f)==99) selparm_envuse(f)=-1;  //  for linking to spawn biomass
   //        	 if(selparm_envuse(f)==98) selparm_envuse(f)=-2;  //  for linking to recruitment
 
-        if(selparm_env(Ip+j)>0)
-        {
-          switch(selparm_envtype(Ip+j))
-          {
-            case 1:  //  exponential selparm env link
-              {
-                sp(j)*=mfexp(selparm(selparm_env(Ip+j))*(env_data(y,selparm_envuse(Ip+j))));
-                break;
-              }
-            case 2:  //  linear selparm env link
-              {
-                sp(j)+=selparm(selparm_env(Ip+j))*env_data(y,selparm_envuse(Ip+j));
-                break;
-              }
-            case 3:
-            	{
-            		//  not implemented
-            		break;
-            	}
-            case 4:  //  logistic selparm env link
-              {
-              	// first parm is offset ; second is slope
-                sp(j)*=2.00000/(1.00000 + mfexp(-selparm(selparm_env(Ip+j)+1)*(env_data(y,selparm_envuse(Ip+j))-selparm(selparm_env(Ip+j)))));
-                break;
-              }
-          }
-        }
+             if(selparm_env(Ip+j)>0)
+             {
+                switch(selparm_envtype(Ip+j))
+                {
+                  case 1:  //  exponential selparm env link
+                    {
+                      sp(j)*=mfexp(selparm(selparm_env(Ip+j))*(env_data(y,selparm_envuse(Ip+j))));
+                      break;
+                    }
+                  case 2:  //  linear selparm env link
+                    {
+                      sp(j)+=selparm(selparm_env(Ip+j))*env_data(y,selparm_envuse(Ip+j));
+                      break;
+                    }
+                  case 3:
+                  	{
+                  		//  not implemented
+                  		break;
+                  	}
+                  case 4:  //  logistic selparm env link
+                    {
+                    	// first parm is offset ; second is slope
+                      sp(j)*=2.00000/(1.00000 + mfexp(-selparm(selparm_env(Ip+j)+1)*(env_data(y,selparm_envuse(Ip+j))-selparm(selparm_env(Ip+j)))));
+                      break;
+                    }
+                }
+             }
 
-              k=selparm_dev_point(Ip+j);     // if dev then modify sp
-              if(k>0)
+            k=selparm_dev_point(Ip+j);     // if dev then modify sp
+            if(k>0)
+            {
+              if(y>=selparm_dev_minyr(k) && y<=selparm_dev_maxyr(k))
               {
-                if(y>=selparm_dev_minyr(k) && y<=selparm_dev_maxyr(k))
-                {
-                  if(selparm_dev_type(k)==1)
-                  {sp(j) *= mfexp(selparm_dev(k,y));}
-                  else if(selparm_dev_type(k)==2)
-                  {sp(j) += selparm_dev(k,y);}
-                  else if(selparm_dev_type(k)==3)
-                  {sp(j)+=selparm_dev_rwalk(k,y);}
-                }
+                if(selparm_dev_type(k)==1)
+                {sp(j) *= mfexp(selparm_dev(k,y));}
+                else if(selparm_dev_type(k)==2)
+                {sp(j) += selparm_dev(k,y);}
+                else if(selparm_dev_type(k)==3)
+                {sp(j)+=selparm_dev_rwalk(k,y);}
               }
-              if(selparm_adjust_method==1 && (save_for_report>0 || do_once==1))  // so does not check bounds if adjust_method==3
+            }
+            if(selparm_adjust_method==1 && (save_for_report>0 || do_once==1))  // so does not check bounds if adjust_method==3
+            {
+              if(sp(j)<selparm_1(Ip+j,1) || sp(j)>selparm_1(Ip+j,2))
               {
-                if(sp(j)<selparm_1(Ip+j,1) || sp(j)>selparm_1(Ip+j,2))
-                {
-                  N_warn++;
-                  warning<<" adjusted selparm out of bounds (Parm#, yr, min, max, base, value) "<<
-                  Ip+j<<" "<<y<<" "<<selparm_1(Ip+j,1)<<" "<<selparm_1(Ip+j,2)<<" "<<selparm(Ip+j)<<" "<<sp(j)<<endl;
-                }
+                N_warn++;
+                warning<<" adjusted selparm out of bounds (Parm#, yr, min, max, base, value) "<<
+                Ip+j<<" "<<y<<" "<<selparm_1(Ip+j,1)<<" "<<selparm_1(Ip+j,2)<<" "<<selparm(Ip+j)<<" "<<sp(j)<<endl;
               }
+            }
             }  // end j parm loop
             break;
           }
@@ -248,79 +150,65 @@ FUNCTION void get_selectivity()
           case(2):
           {
             for (j=1;j<=N_selparmvec(f);j++)
+            {
+              if(selparm_1(Ip+j,13)!=0)
               {
+                sp(j)=parm_timevary(selparm_timevary(Ip+j,1),y);  //  bound constraint needs to have been done in timevaryparm.tpl
+              }
+              else
+              {sp(j)=selparm(Ip+j);}
 
-              temp=log((selparm_1(Ip+j,2)-selparm_1(Ip+j,1)+0.0000002)/(sp(j)-selparm_1(Ip+j,1)+0.0000001)-1.)/(-2.);   // transform the parameter
               doit=0;
-              if(selparm_1(Ip+j,13)>0)   // blocks
-              {
-                blkparm=Block_Defs_Sel(Ip+j,y);  // identifies parameter that holds the block effect
-                if(blkparm>0)
-                {
-                  k=selparm_1(Ip+j,14);
-                  doit=1;
-                  if(k==1)
-                    {temp += selparm_block_val(Ip+j,y);}
-                  else if (k==2)  //  replacement
-                    {temp=log((selparm_1(Ip+j,2)-selparm_1(Ip+j,1)+0.0000002)/(selparm_block_val(Ip+j,y)-selparm_1(Ip+j,1)+0.0000001)-1.)/(-2.);}  // block as replacement
-                  else if(k==3)  // additive, but based on cumulative blocks
-                    {temp += selparm_block_val(Ip+j,y);}
-                  else
-                    {N_warn++; warning<<" disabled multiplicative block effect with logistic approach"<<endl;}
-                }
-              }
-
-        if(selparm_env(Ip+j)>0)
-        {
-          switch(selparm_envtype(Ip+j))
-          {
-            case 1:  //  exponential selparm env link
-              {
-                //  NOT ALLOWED  sp(j)*=mfexp(selparm(selparm_env(Ip+j))*(env_data(y,selparm_envuse(Ip+j))));
-                break;
-              }
-            case 2:  //  linear selparm env link
+              if(selparm_env(Ip+j)>0 || selparm_dev_point(Ip+j))
               {
                 doit=1;
-                temp += selparm(selparm_env(Ip+j))*env_data(y,selparm_envuse(Ip+j));
-//                sp(j)+= selparm(selparm_env(Ip+j))*env_data(y,selparm_envuse(Ip+j));
-                break;
-              }
-            case 3:
-            	{
-            		//  not implemented
-            		break;
-            	}
-            case 4:  //  logistic selparm env link
-              {
-              	// first parm is offset ; second is slope
-                //  NOT ALLOWED sp(j)*=2.00000/(1.00000 + mfexp(-selparm(selparm_env(Ip+j)+1)*(env_data(y,selparm_envuse(Ip+j))-selparm(selparm_env(Ip+j)))));
-                break;
-              }
-          }
-        }
-
-
-
-
-              k=selparm_dev_point(Ip+j); //  Annual deviations;  use kth dev series
-              if(k>0)
+                temp=log((selparm_1(Ip+j,2)-selparm_1(Ip+j,1)+0.0000002)/(sp(j)-selparm_1(Ip+j,1)+0.0000001)-1.)/(-2.);   // transform the parameter
+                if(selparm_env(Ip+j)>0)
+                {
+                  switch(selparm_envtype(Ip+j))
+                  {
+                    case 2:  //  linear selparm env link
+                      {
+                        temp += selparm(selparm_env(Ip+j))*env_data(y,selparm_envuse(Ip+j));
+        //                sp(j)+= selparm(selparm_env(Ip+j))*env_data(y,selparm_envuse(Ip+j));
+                        break;
+                      }
+                    case 1:  //  exponential selparm env link
+                      {
+                        //  NOT ALLOWED  sp(j)*=mfexp(selparm(selparm_env(Ip+j))*(env_data(y,selparm_envuse(Ip+j))));
+                        break;
+                      }
+                    case 3:
+                    	{
+                    		//  not implemented
+                    		break;
+                    	}
+                    case 4:  //  logistic selparm env link
+                      {
+                      	// first parm is offset ; second is slope
+                        //  NOT ALLOWED sp(j)*=2.00000/(1.00000 + mfexp(-selparm(selparm_env(Ip+j)+1)*(env_data(y,selparm_envuse(Ip+j))-selparm(selparm_env(Ip+j)))));
+                        break;
+                      }
+                  }
+                }
+                k=selparm_dev_point(Ip+j); //  Annual deviations;  use kth dev series
+                if(k>0)
                 {
                 if(y>=selparm_dev_minyr(k) && y<=selparm_dev_maxyr(k))
                   {
-                    doit=1;
                     if(selparm_dev_type(k)==2)
                     {temp += selparm_dev(k,y);}
                     else if(selparm_dev_type(k)==3)
                     {temp += selparm_dev_rwalk(k,y);}
                   }
                 }
-              if(doit==1) sp(j)=selparm_1(Ip+j,1)+(selparm_1(Ip+j,2)-selparm_1(Ip+j,1))/(1+mfexp(-2.*temp));   // backtransform
-              }  // end parameter loop j
+                sp(j)=selparm_1(Ip+j,1)+(selparm_1(Ip+j,2)-selparm_1(Ip+j,1))/(1+mfexp(-2.*temp));   // backtransform
+              }
+            }  // end parameter loop j
             break;
           }
         }
-        if(docheckup==1) echoinput<<" selex parms "<<f<<" "<<endl<<sp(1,N_selparmvec(f))<<endl;
+        if(docheckup==1) echoinput<<" selex parms for fleet: "<<f<<" "<<endl<<sp(1,N_selparmvec(f))<<endl;
         if(save_for_report>0 || do_once==1)
         {for (j=1;j<=N_selparmvec(f);j++) save_sp_len(y,f,j)=sp(j);}
       }  // end adjustment of parms

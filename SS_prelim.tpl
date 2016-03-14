@@ -408,6 +408,8 @@ PRELIMINARY_CALCS_SECTION
           echoinput<< " Tag_parms OK "<<endl;
     }
   }
+  
+  cout<<" have unallocated vectors happened yet ?"<<endl;
 
 
 //  SS_Label_Info_6.5 #Check parameter bounds and do jitter
@@ -520,7 +522,9 @@ PRELIMINARY_CALCS_SECTION
     y=styr;
     yz=styr;
     t_base=styr+(y-styr)*nseas-1;
-
+    
+    make_timevaryparm();
+    
 //  SS_Label_Info_6.8.1 #Call fxn get_MGsetup() to copy MGparms to working array and applies time-varying factors
     get_MGsetup();
     echoinput<<" did MG setup"<<endl;

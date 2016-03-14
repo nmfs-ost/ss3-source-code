@@ -1732,7 +1732,7 @@ FUNCTION void write_nucontrol()
     if (Hermaphro_Option!=0) report4<<Hermaphro_seas<<" # Hermaphro_season "<<endl<<Hermaphro_maleSPB<<" # Hermaphro_maleSPB "<<endl;
     report4<<MGparm_def<<" #_parameter_offset_approach (1=none, 2= M, G, CV_G as offset from female-GP1, 3=like SS2 V1.x)"<<endl;
     report4<<MG_adjust_method<<
-    " #_env/block/dev_adjust_method (1=standard; 2=logistic transform keeps in base parm bounds; 3=standard w/ no bound check)"<<endl;
+    " #_env/block/dev_adjust_method for  MG parms (1=standard; 2=logistic transform keeps in base parm bounds; 3=standard w/ no bound check)"<<endl;
   report4<<"#"<<endl;
   report4<<"#_growth_parms"<<endl;
   report4<<"#_LO HI INIT PRIOR PR_type SD PHASE env-var use_dev dev_minyr dev_maxyr dev_stddev Block Block_Fxn"<<endl;
@@ -1766,34 +1766,22 @@ FUNCTION void write_nucontrol()
     report4<<"#_Cond -2 2 0 0 -1 99 -2 #_placeholder when no MG-environ parameters"<<endl;
   }
   report4<<"#"<<endl;
-  if(N_MGparm_blk>0)
+  if(timevary_parm_cnt_MG>0)
   {
-    report4<<1<<" #_custom_MG-block_setup (0/1)"<<endl;
+    report4<<1<<" #_custom_MG_blocktrend_setup (0/1)"<<endl;
     report4<<"#_LO HI INIT PRIOR PR_type SD PHASE"<<endl;
-    for (f=1;f<=N_MGparm_blk;f++)
-    {j++; NP++; if(customblocksetup_MG==0) {k=1;} else {k=f;}
-    MGparm_blk_1(k,3)=value(MGparm(j));report4<<MGparm_blk_1(k)<<" # "<<ParmLabel(NP)<<endl;}
+    
+    for (f=1;f<=timevary_parm_cnt_MG;f++)
+    {NP++;
+    timevary_parm_rd[f-1](3)=value(timevary_parm(f));
+    report4<<timevary_parm_rd[f-1]<<" # "<<ParmLabel(NP)<<endl;}
   }
   else
   {
-    report4<<"#_Cond 0  #custom_MG-block_setup (0/1)"<<endl;
+    report4<<"#_Cond 0  #custom_MG_blocktrend_setup (0/1)"<<endl;
     report4<<"#_LO HI INIT PRIOR PR_type SD PHASE"<<endl;
-    report4<<"#_Cond -2 2 0 0 -1 99 -2 #_placeholder when no MG-block parameters"<<endl;
+    report4<<"#_Cond -2 2 0 0 -1 99 -2 #_placeholder when no MG-block or trend parameters"<<endl;
   }
-   if(N_MGparm_trend>0)
-   {
-     report4<<"#_MGtrend_&_cycle_parms "<<endl;
-     for (f=1;f<=N_MGparm_trend2;f++)
-     {
-       j++;  NP++;
-       MGparm_trend_1(f,3)=value(MGparm(j)); report4<<MGparm_trend_1(f)<<" # "<<ParmLabel(NP)<<endl;
-     }
-   }
-  else
-  {
-    report4<<"#_Cond No MG parm trends "<<endl;
-  }
-
 
   report4<<"#"<<endl;
   report4<<"#_seasonal_effects_on_biology_parms"<<endl<<MGparm_seas_effects<<" #_femwtlen1,femwtlen2,mat1,mat2,fec1,fec2,Malewtlen1,malewtlen2,L1,K"<<endl;
@@ -2027,9 +2015,8 @@ FUNCTION void write_nucontrol()
    report4<<"#_Pattern ___ Male Special"<<endl;
    for (f=1;f<=Nfleet;f++) report4<<seltype(f+Nfleet)<<" # "<<f<<" "<<fleetname(f)<<endl;
 
-   report4<<selparm_adjust_method<<
-   " #_env/block/dev_adjust_method (1=standard; 2=logistic trans to keep in base parm bounds; 3=standard w/ no bound check)"<<endl;
-
+    report4<<selparm_adjust_method<<
+    " #_env/block/dev_adjust_method for  MG parms (1=standard; 2=logistic transform keeps in base parm bounds; 3=standard w/ no bound check)"<<endl;
    report4<<"#_LO HI INIT PRIOR PR_type SD PHASE env-var use_dev dev_minyr dev_maxyr dev_stddev Block Block_Fxn"<<endl;
 
 //  if(seltype(f,2)==4)
@@ -2082,34 +2069,21 @@ FUNCTION void write_nucontrol()
     report4<<"#_Cond -2 2 0 0 -1 99 -2 #_placeholder when no enviro fxns"<<endl;
   }
 
-   if(N_selparm_blk>0)
+   if(timevary_parm_cnt_sel>0)
    {
-     report4<<1<<" #_custom_sel-blk_setup (0/1) "<<endl;
-     for (f=1;f<=N_selparm_blk;f++)
+     report4<<"1 #_custom_setup_for_sel_blocks&trends (0/1) "<<endl;
+     for (f=timevary_parm_cnt_MG+1;f<=timevary_parm_cnt;f++)
      {
-       j++;  NP++;
+       NP++;
        if(customblocksetup==0) {k=1;} else {k=f;}  // use read value of custom here
-       selparm_blk_1(k,3)=value(selparm(j)); report4<<selparm_blk_1(k)<<" # "<<ParmLabel(NP)<<endl;
+       timevary_parm_rd[f-1](3)=value(timevary_parm(f));
+       report4<<timevary_parm_rd[f-1]<<" # "<<ParmLabel(NP)<<endl;
      }
    }
   else
   {
-    report4<<"#_Cond 0 #_custom_sel-blk_setup (0/1) "<<endl;
+     report4<<"#0 #_custom_setup_for_sel_blocks&trends (0/1) "<<endl;
     report4<<"#_Cond -2 2 0 0 -1 99 -2 #_placeholder when no block usage"<<endl;
-  }
-
-   if(N_selparm_trend>0)
-   {
-     report4<<"#_seltrend_parms "<<endl;
-     for (f=1;f<=N_selparm_trend2;f++)
-     {
-       j++;  NP++;
-       selparm_trend_1(f,3)=value(selparm(j)); report4<<selparm_trend_1(f)<<" # "<<ParmLabel(NP)<<endl;
-     }
-   }
-  else
-  {
-    report4<<"#_Cond No selex parm trends "<<endl;
   }
 
   if(N_selparm_dev>0)
