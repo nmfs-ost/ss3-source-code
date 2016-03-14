@@ -104,3 +104,23 @@
 \contentsline {subsubsection}{\numberline {12.1.6}Keyboard Tips}{132}{subsubsection.12.1.6}
 \contentsline {subsubsection}{\numberline {12.1.7}Running MCMC}{132}{subsubsection.12.1.7}
 \contentsline {subsubsection}{\numberline {12.1.8}Using R To View Model Output}{134}{subsubsection.12.1.8}
+\contentsline {section}{\numberline {13}Special Set-ups}{139}{section.13}
+\contentsline {subsection}{\numberline {13.1}Continuous seasonal recruitment}{139}{subsection.13.1}
+\contentsline {section}{\numberline {14}Change Log}{140}{section.14}
+\contentsline {section}{\numberline {15}Appendix A }{140}{section.15}
+\contentsline {subsection}{\numberline {15.1}Recruitment Variability and Bias Correction}{140}{subsection.15.1}
+\contentsline {subsubsection}{\numberline {15.1.1}Issues with Including Environmental Effects}{146}{subsubsection.15.1.1}
+\contentsline {subsubsection}{\numberline {15.1.2}Initial Age Composition}{147}{subsubsection.15.1.2}
+\contentsline {section}{\numberline {16}Appendix B}{147}{section.16}
+\contentsline {subsection}{\numberline {16.1}Forecast Module}{147}{subsection.16.1}
+\contentsline {subsubsection}{\numberline {16.1.1}Introduction}{147}{subsubsection.16.1.1}
+\contentsline {subsubsection}{\numberline {16.1.2}Multiple Pass Forecast}{149}{subsubsection.16.1.2}
+\contentsline {subsubsection}{\numberline {16.1.3}Example Effects on Correlations}{150}{subsubsection.16.1.3}
+\contentsline {subsubsection}{\numberline {16.1.4}Future Work}{151}{subsubsection.16.1.4}
+\contentsline {section}{\numberline {17}Example Input Files}{152}{section.17}
+\contentsline {subsection}{\numberline {17.1}Starter File}{152}{subsection.17.1}
+\contentsline {subsection}{\numberline {17.2}Run Number}{152}{subsection.17.2}
+\contentsline {subsection}{\numberline {17.3}Profile Values}{152}{subsection.17.3}
+\contentsline {subsection}{\numberline {17.4}Forecast File}{152}{subsection.17.4}
+\contentsline {subsection}{\numberline {17.5}Control File}{152}{subsection.17.5}
+\contentsline {subsection}{\numberline {17.6}Data File}{152}{subsection.17.6}

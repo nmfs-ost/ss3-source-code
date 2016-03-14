@@ -103,3 +103,23 @@
 \BOOKMARK [3][-]{subsubsection.12.1.6}{Keyboard Tips}{subsection.12.1}% 103
 \BOOKMARK [3][-]{subsubsection.12.1.7}{Running MCMC}{subsection.12.1}% 104
 \BOOKMARK [3][-]{subsubsection.12.1.8}{Using R To View Model Output}{subsection.12.1}% 105
+\BOOKMARK [1][-]{section.13}{Special Set-ups}{}% 106
+\BOOKMARK [2][-]{subsection.13.1}{Continuous seasonal recruitment}{section.13}% 107
+\BOOKMARK [1][-]{section.14}{Change Log}{}% 108
+\BOOKMARK [1][-]{section.15}{Appendix A }{}% 109
+\BOOKMARK [2][-]{subsection.15.1}{Recruitment Variability and Bias Correction}{section.15}% 110
+\BOOKMARK [3][-]{subsubsection.15.1.1}{Issues with Including Environmental Effects}{subsection.15.1}% 111
+\BOOKMARK [3][-]{subsubsection.15.1.2}{Initial Age Composition}{subsection.15.1}% 112
+\BOOKMARK [1][-]{section.16}{Appendix B}{}% 113
+\BOOKMARK [2][-]{subsection.16.1}{Forecast Module}{section.16}% 114
+\BOOKMARK [3][-]{subsubsection.16.1.1}{Introduction}{subsection.16.1}% 115
+\BOOKMARK [3][-]{subsubsection.16.1.2}{Multiple Pass Forecast}{subsection.16.1}% 116
+\BOOKMARK [3][-]{subsubsection.16.1.3}{Example Effects on Correlations}{subsection.16.1}% 117
+\BOOKMARK [3][-]{subsubsection.16.1.4}{Future Work}{subsection.16.1}% 118
+\BOOKMARK [1][-]{section.17}{Example Input Files}{}% 119
+\BOOKMARK [2][-]{subsection.17.1}{Starter File}{section.17}% 120
+\BOOKMARK [2][-]{subsection.17.2}{Run Number}{section.17}% 121
+\BOOKMARK [2][-]{subsection.17.3}{Profile Values}{section.17}% 122
+\BOOKMARK [2][-]{subsection.17.4}{Forecast File}{section.17}% 123
+\BOOKMARK [2][-]{subsection.17.5}{Control File}{section.17}% 124
+\BOOKMARK [2][-]{subsection.17.6}{Data File}{section.17}% 125
