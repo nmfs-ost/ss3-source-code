@@ -1,0 +1,105 @@
+\section{Appendix B}
+\subsection{Forecast Module}
+
+\subsubsection{Introduction}
+Version 3.20 of Stock Synthesis (SS) introduced substantial upgrades to the benchmark and forecast module.  The general intent was to make the forecast outputs more consistent with the requirement to set catch limits that have a known probability of exceeding the overfishing limit.  In addition, this upgrade addressed several inadequacies with the previous module, including:
+
+\begin{itemize}
+	\item The average selectivity and relative F was the same for the benchmark and the forecast calculations;
+	\item The biology-at-age in endyr+1 was used as the biology for the benchmark, but biology–at-age propagated forward in the forecast if there was time-varying growth;
+	\item The forecast module had a kluge approach to calculation of OFL conditioned on previously catching ABC;
+	\item The forecast module implementation of catch caps was incomplete and applied some caps on a seasonally, rather than the more logical annual basis;
+	\item The Fmult scalar for fishing intensity presented a confusing concept for many users;
+	\item No provision for specification of catch allocation among fleets;
+	\item The forecast allowed for a blend of fixed input catches and catches calculated from target F; this is not optimal for calculation of the variance of F conditioned on a catch policy that sets ACLs.
+\end{itemize}
+
+The V3.20 module addressed these issues by:
+\begin{itemize}
+	\item Providing for unique specification of a range of years from which to calculate average selectivity for benchmark, average selectivity for forecast, relative F for benchmark, and relative F for forecast;
+	\item Create a new specification for the range of years over which to average size-at-age and fecundity-at-age for the benchmark calculation.  In a setup with time-varying growth, it may make sense to do this over the entire range of years in the time series.  Note that some additional quantities still use their endyr values, notably the migration rates and the allocation of recruitments among areas.  This will be addressed shortly;
+	\item Create a multiple pass approach that rectifies the OFL calculation;
+	\item Improve the specification of catch caps and implement specification of catch allocations so that there can be an annual cap for each fleet, an annual cap for each area, and an annual allocation among groups of fleets (e.g. all recreational fleets vs. all commercial fleets);
+	\item Introduce capability to have implementation error in the forecast catch (single value applied to all fleets in all seasons of the year).
+\end{itemize}
+
+\subsubsection{Multiple Pass Forecast}
+The most complicated aspect of the changes is with regard to the multiple pass aspect of the forecast.  This multiple pass approach is needed to calculate both OFL and ABC in a single model run.  More importantly, the multiple passes are needed in order to mimic the actual sequence of assessment-management action – catch over a multi-year period.  The first pass calculates OFL based on catching OFL each year, so presents the absolute maximum upper limit to catches.  The second pass forecasts a catch based on a harvest policy, then applies catch caps and allocations, then updates the F’s to match these catches.  In the third pass, stochastic recruitment and catch implementation error are implemented and SS calculates the F that would be needed in order to catch the adjusted catch amount previously calculated in the second pass.  With this approach, SS is able to produce improved estimates of the probability that F would exceed the overfishing F.  In effect it is the complement of the P* approach.  Rather than the P* approach that calculates the stream of annual catches that would have an annual probability of F>Flimit, SS calculates the expected time series of P* that would result from a specified harvest policy implemented as a buffer between Ftarget and Flimit.
+
+The sequence of multiple forecast passes is as follows:
+\begin{enumerate}
+	\item Pass 1 (a.k.a. Fcast\_Loop1)
+	\begin{enumerate}
+		\item Loop Years
+		\begin{enumerate}
+			\item SubLoop (a.k.a. ABC\_Loop) = 1
+			\begin{enumerate}
+				\item R=f(SSB) with no deviations
+				\item F=Flimit
+				\item Fixed input catch amounts ignored
+				\item No catch adjustments (caps and allocations)
+				\item No implementation error
+				\item Result: OFL conditioned on catching OFL each year
+			\end{enumerate}
+		\end{enumerate}
+	\end{enumerate}
+	\item Pass 2
+	\begin{enumerate}
+		\item Loop Years
+		\begin{enumerate}
+			\item SubLoop = 1
+			\begin{enumerate}
+				\item R=f(SSB) with no deviations
+				\item F=Flimit
+				\item Fixed input catch amounts ignored
+				\item No catch adjustments (caps and allocations)
+				\item No implementation error
+				\item Result: OFL conditioned on catching ABC previous year. Stored in std\_vector.
+			\end{enumerate}
+			\item SubLoop = 2
+			\begin{enumerate}
+				\item R=f(SSB) with no deviations
+				\item F=Ftarget to get catc for each fleet in each season
+				\item Fixed input catch amounts replace catch from step 2
+				\item Catch adjustments (caps and allocations) applied on annual basis (after looping through seasons and and areas within this year). These adjustments utilize the logistic joiner approach common in SS so the overall results remain completely differentiable.
+				\item No implementation error
+				\item Result: ABC as adjusted for caps and allocations
+			\end{enumerate}
+			\item SubLoop = 3
+			\begin{enumerate}
+				\item R=f(SSB) with no deviations
+				\item Catches from Pass 2 multiplied by the random term for implementation error
+				\item F=adjusted to match the catch*error while taking into account the random recruitments.  This is most easily visualized in a MCMC context where the recruitment deviation and the implementation error deviations take on non-zero values in each instance.  In MLE, because the forecast recruitments and implementation error are estimated parameters with variance, their variance still propagates to the derived quantities in the forecast.
+				\item Result:  Values for F, SSB, Recruitment, Catch are stored in std-vectors
+				\begin{itemize}
+					\item In addition, the ratios F/Flimit and SSB/SSBlimit or SSB/SSBtarget are also stored in std\_vectors.
+					\item Estimated variance in these ratios allows calculation of annual probability that F>Flimit or B<Blimit.  This is essentially the realized P* conditioned on the specified harvest policy.
+				\end{itemize}
+			\end{enumerate}
+		\end{enumerate}
+	\end{enumerate}
+\end{enumerate}
+
+\subsubsection{Example Effects on Correlations}
+An example that illustrates the above process was conducted.  The situation was a low M, late-maturing species, so changes are not dramatic.  The example conducted a 10 year forecast and examined correlations with derived quantities in the last year of the forecast.  This was done once with the full set of 3 passes as described above, and again with only 2 passes and stochastic recruitment occurring in pass 2, rather than 3.  This alternative setup is more similar to forecasts done using previous model versions.
+
+INSERT TABLE HERE!!!!!!!!!!!!!!!!!!!!!
+
+Correlation A2 shows a small positive correlation between the recruitment deviation in 2002 and the F in 2011.  This is probably due to the fact that a positive deviation in recruitment in 2002 will reduce the chances that the biomass in 2011 will be below the inflection point in the control rule.  This occurs because in calculating catch from F, the model effectively “knows” the future recruitments.  I predict that this B1 correlation would be near zero if there was no inflection in the control rule.
+Correlation A1 shows this turning into a negative correlation.  This is because the future catches are first calculated from equilibrium recruitment, then when random recruitments are implemented, a positive recruitment deviation will cause a negative deviation in the F needed to catch that now “fixed” amount of future catch.
+
+Correlations B1 and B2 are in terms of absolute recruitment, not recruitment deviation.  Now overall model conditions that cause a higher absolute recruitment level will also result in a higher forecast level.  No surprise there, and the correlation is stronger when variance is based on catch is calculated from F (B2).
+
+Correlation C2 shows a positive correlation between recruitment deviation in 2002 and forecast catch in 2011.  However, correlation C1 is 0.0 because the forecast catch in 2011 is set based on equilibrium recruitment and is not influenced by the recruitment deviations.
+
+\subsubsection{Future Work}
+\begin{itemize}
+	\item More testing with high M, rapid turnover conditions
+	\item Testing without inflection in control rule
+	\item Consider separating implementation error into a pass \#4 so results will more clearly show effect of assessment uncertainty separate from implementation uncertainty
+	\item 	Consider adding a random “assessment” error which essentially is a random variable that scales population abundance before passing into the forecast stage.  Complication is figuring out how to link it to the correlated error in the benchmark quantities
+	\item Because all of these calculations occur only in the sdphase or the mceval phase, it would be feasible for mceval calls to add an additional pass that is implemented many times and in which random forecast recruitment draws are made.
+	\item Factors like selectivity and fleet relative F levels are calculated as an average of these values during the time series.  This is internally consistent if these factors do not vary during the time series (although clearly this is a stiff model that will underestimate process variance).  However, if these factors do vary over time, then the average used for the forecast will under-represent the variance.  A better approach would be to set up the parameters of selectivity as a random process that extends throughout the forecast period, and to update estimated selectivity in each year of the forecast based upon the random realization of these parameters.
+\end{itemize}
+
+	
