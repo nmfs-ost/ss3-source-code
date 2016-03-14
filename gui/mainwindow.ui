@@ -1,0 +1,824 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>701</width>
+    <height>601</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Stock Synthesis</string>
+  </property>
+  <property name="windowIcon">
+   <iconset resource="stock_synth.qrc">
+    <normaloff>:/icons/StockSynth_icon_128.png</normaloff>:/icons/StockSynth_icon_128.png</iconset>
+  </property>
+  <property name="toolTip">
+   <string/>
+  </property>
+  <property name="iconSize">
+   <size>
+    <width>32</width>
+    <height>32</height>
+   </size>
+  </property>
+  <property name="tabShape">
+   <enum>QTabWidget::Triangular</enum>
+  </property>
+  <widget class="QWidget" name="centralWidget">
+   <layout class="QVBoxLayout" name="verticalLayout_7">
+    <item>
+     <widget class="QStackedWidget" name="stackedWidget">
+      <property name="enabled">
+       <bool>true</bool>
+      </property>
+      <property name="currentIndex">
+       <number>0</number>
+      </property>
+      <widget class="QWidget" name="stackedWidget_files">
+       <layout class="QVBoxLayout" name="verticalLayout_2">
+        <item>
+         <layout class="QGridLayout" name="files_layout"/>
+        </item>
+       </layout>
+      </widget>
+      <widget class="QWidget" name="stackedWidget_model">
+       <layout class="QHBoxLayout" name="horizontalLayout">
+        <item>
+         <layout class="QVBoxLayout" name="model_layout"/>
+        </item>
+       </layout>
+      </widget>
+      <widget class="QWidget" name="stackedWidget_forecast">
+       <layout class="QVBoxLayout" name="verticalLayout_9">
+        <item>
+         <layout class="QVBoxLayout" name="forecast_layout"/>
+        </item>
+       </layout>
+      </widget>
+      <widget class="QWidget" name="stackedWidget_parameters">
+       <layout class="QVBoxLayout" name="verticalLayout_3">
+        <item>
+         <layout class="QVBoxLayout" name="parameters_layout"/>
+        </item>
+       </layout>
+      </widget>
+      <widget class="QWidget" name="stackedWidget_populations">
+       <layout class="QVBoxLayout" name="verticalLayout">
+        <item>
+         <layout class="QHBoxLayout" name="populations_layout"/>
+        </item>
+       </layout>
+      </widget>
+      <widget class="QWidget" name="stackedWidget_surveys">
+       <layout class="QHBoxLayout" name="horizontalLayout_3">
+        <item>
+         <layout class="QVBoxLayout" name="surveys_layout"/>
+        </item>
+       </layout>
+      </widget>
+      <widget class="QWidget" name="stackedWidget_fisheries">
+       <layout class="QHBoxLayout" name="horizontalLayout_2">
+        <item>
+         <layout class="QVBoxLayout" name="fisheries_layout"/>
+        </item>
+       </layout>
+      </widget>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QMenuBar" name="menuBar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>701</width>
+     <height>26</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menu_File">
+    <property name="title">
+     <string>&amp;File</string>
+    </property>
+    <addaction name="action_Open"/>
+    <addaction name="action_Save_data"/>
+    <addaction name="action_New"/>
+    <addaction name="separator"/>
+    <addaction name="action_Exit"/>
+   </widget>
+   <widget class="QMenu" name="menu_Run">
+    <property name="title">
+     <string>&amp;Run</string>
+    </property>
+    <addaction name="action_Run_Stock_Synthesis"/>
+   </widget>
+   <widget class="QMenu" name="menu_Help">
+    <property name="title">
+     <string>&amp;Help</string>
+    </property>
+    <addaction name="actionAbout_SS_GUI"/>
+    <addaction name="action_About"/>
+    <addaction name="action_About_NFT"/>
+    <addaction name="separator"/>
+    <addaction name="action_User_Manual"/>
+    <addaction name="action_Using_SS"/>
+    <addaction name="separator"/>
+    <addaction name="action_About_ADMB"/>
+    <addaction name="separator"/>
+    <addaction name="action_About_Qt"/>
+    <addaction name="separator"/>
+   </widget>
+   <widget class="QMenu" name="menuData">
+    <property name="title">
+     <string>&amp;Data</string>
+    </property>
+    <addaction name="action_Import_Additional_Data_Observations"/>
+    <addaction name="action_Add_Rows_to_Data_Grids"/>
+    <addaction name="action_Remove_blank_lines_from_data_grids"/>
+    <addaction name="action_Display_data_snapshot"/>
+   </widget>
+   <widget class="QMenu" name="menuView">
+    <property name="title">
+     <string>&amp;View</string>
+    </property>
+    <addaction name="action_Report_File"/>
+   </widget>
+   <widget class="QMenu" name="menu_Options">
+    <property name="title">
+     <string>&amp;Options</string>
+    </property>
+    <addaction name="actionSelect_default_directory"/>
+    <addaction name="separator"/>
+    <addaction name="actionLocate_SS_executable"/>
+    <addaction name="actionLocate_documents"/>
+   </widget>
+   <widget class="QMenu" name="menu_Windows">
+    <property name="title">
+     <string>&amp;Windows</string>
+    </property>
+    <addaction name="action_Files"/>
+    <addaction name="action_Model_Data"/>
+    <addaction name="action_Forecast"/>
+    <addaction name="action_Populations"/>
+    <addaction name="action_Fleets"/>
+    <addaction name="separator"/>
+    <addaction name="actionTitle_Window"/>
+   </widget>
+   <addaction name="menu_File"/>
+   <addaction name="menuData"/>
+   <addaction name="menuView"/>
+   <addaction name="menu_Run"/>
+   <addaction name="menu_Options"/>
+   <addaction name="menu_Windows"/>
+   <addaction name="menu_Help"/>
+  </widget>
+  <widget class="QToolBar" name="mainToolBar">
+   <property name="windowTitle">
+    <string>Stock Synthesis tool bar</string>
+   </property>
+   <attribute name="toolBarArea">
+    <enum>TopToolBarArea</enum>
+   </attribute>
+   <attribute name="toolBarBreak">
+    <bool>false</bool>
+   </attribute>
+   <addaction name="action_Open"/>
+   <addaction name="action_Save_data"/>
+   <addaction name="action_New"/>
+   <addaction name="separator"/>
+   <addaction name="action_Run_Stock_Synthesis"/>
+   <addaction name="separator"/>
+   <addaction name="action_Files"/>
+   <addaction name="action_Model_Data"/>
+   <addaction name="action_Fleets"/>
+   <addaction name="action_Populations"/>
+   <addaction name="action_Forecast"/>
+  </widget>
+  <widget class="QStatusBar" name="statusBar"/>
+  <widget class="QDockWidget" name="dockWidget_help">
+   <property name="floating">
+    <bool>true</bool>
+   </property>
+   <property name="allowedAreas">
+    <set>Qt::TopDockWidgetArea</set>
+   </property>
+   <property name="windowTitle">
+    <string>Information and Resources</string>
+   </property>
+   <attribute name="dockWidgetArea">
+    <number>4</number>
+   </attribute>
+   <widget class="QWidget" name="dockWidgetContents">
+    <layout class="QVBoxLayout" name="verticalLayout_4">
+     <item>
+      <widget class="QLabel" name="label_banner">
+       <property name="toolTip">
+        <string>NOAA Fisheries Toolbox</string>
+       </property>
+       <property name="whatsThis">
+        <string>Go to NOAA Fisheries Toolbox Website</string>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+       <property name="pixmap">
+        <pixmap resource="stock_synth.qrc">:/images/images/NOAA_fisheries_banner_fish_trans.png</pixmap>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignCenter</set>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLabel" name="label_ss_ver">
+       <property name="text">
+        <string>Stock Synthesis 3</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignCenter</set>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLabel" name="label_gui_ver">
+       <property name="text">
+        <string>User Interface Version 2</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignCenter</set>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLabel" name="label_ss_icon">
+       <property name="text">
+        <string/>
+       </property>
+       <property name="pixmap">
+        <pixmap resource="stock_synth.qrc">:/images/images/image7_no_background.png</pixmap>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignCenter</set>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <layout class="QHBoxLayout" name="horizontalLayout_buttons">
+       <item>
+        <widget class="QPushButton" name="pushButton_about_gui">
+         <property name="text">
+          <string/>
+         </property>
+         <property name="icon">
+          <iconset resource="stock_synth.qrc">
+           <normaloff>:/images/icons/help_icon_128.png</normaloff>:/images/icons/help_icon_128.png</iconset>
+         </property>
+         <property name="iconSize">
+          <size>
+           <width>32</width>
+           <height>32</height>
+          </size>
+         </property>
+         <property name="flat">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="pushButton_about_ss">
+         <property name="toolTip">
+          <string>About Stock Synthesis</string>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+         <property name="icon">
+          <iconset resource="stock_synth.qrc">
+           <normaloff>:/icons/StockSynth_icon_128.png</normaloff>:/icons/StockSynth_icon_128.png</iconset>
+         </property>
+         <property name="iconSize">
+          <size>
+           <width>32</width>
+           <height>32</height>
+          </size>
+         </property>
+         <property name="flat">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="pushButton_about_ftb">
+         <property name="toolTip">
+          <string>About the Fisheries Toolbox</string>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+         <property name="icon">
+          <iconset resource="stock_synth.qrc">
+           <normaloff>:/images/images/NOAA_circle_trans.png</normaloff>:/images/images/NOAA_circle_trans.png</iconset>
+         </property>
+         <property name="iconSize">
+          <size>
+           <width>32</width>
+           <height>32</height>
+          </size>
+         </property>
+         <property name="flat">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="pushButton_about_admb">
+         <property name="toolTip">
+          <string>About ADMB</string>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+         <property name="icon">
+          <iconset resource="stock_synth.qrc">
+           <normaloff>:/images/icons/admb_icon_128.png</normaloff>:/images/icons/admb_icon_128.png</iconset>
+         </property>
+         <property name="iconSize">
+          <size>
+           <width>32</width>
+           <height>32</height>
+          </size>
+         </property>
+         <property name="flat">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="pushButton_about_qt">
+         <property name="toolTip">
+          <string>About Qt</string>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+         <property name="icon">
+          <iconset resource="stock_synth.qrc">
+           <normaloff>:/images/images/qt-logo.png</normaloff>:/images/images/qt-logo.png</iconset>
+         </property>
+         <property name="iconSize">
+          <size>
+           <width>32</width>
+           <height>32</height>
+          </size>
+         </property>
+         <property name="flat">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </item>
+    </layout>
+   </widget>
+  </widget>
+  <action name="action_New">
+   <property name="icon">
+    <iconset resource="stock_synth.qrc">
+     <normaloff>:/images/icons/dir-new.png</normaloff>:/images/icons/dir-new.png</iconset>
+   </property>
+   <property name="text">
+    <string>Create a &amp;new model</string>
+   </property>
+   <property name="toolTip">
+    <string>Create a new model in a separate directory</string>
+   </property>
+  </action>
+  <action name="action_Open">
+   <property name="icon">
+    <iconset resource="stock_synth.qrc">
+     <normaloff>:/images/icons/file-open.png</normaloff>:/images/icons/file-open.png</iconset>
+   </property>
+   <property name="text">
+    <string>&amp;Open existing model</string>
+   </property>
+   <property name="toolTip">
+    <string>Open an existing model</string>
+   </property>
+  </action>
+  <action name="action_Save_As">
+   <property name="icon">
+    <iconset resource="stock_synth.qrc">
+     <normaloff>:/images/icons/file-save-as.png</normaloff>:/images/icons/file-save-as.png</iconset>
+   </property>
+   <property name="text">
+    <string>Save &amp;as a new model</string>
+   </property>
+   <property name="toolTip">
+    <string>Save as a new model in different directory</string>
+   </property>
+  </action>
+  <action name="action_About">
+   <property name="icon">
+    <iconset resource="stock_synth.qrc">
+     <normaloff>:/icons/StockSynth_icon_128.png</normaloff>:/icons/StockSynth_icon_128.png</iconset>
+   </property>
+   <property name="text">
+    <string>About Stock Synthesis</string>
+   </property>
+   <property name="whatsThis">
+    <string>About Stock Synthesis</string>
+   </property>
+  </action>
+  <action name="action_About_Qt">
+   <property name="icon">
+    <iconset resource="stock_synth.qrc">
+     <normaloff>:/images/images/qt-logo.png</normaloff>:/images/images/qt-logo.png</iconset>
+   </property>
+   <property name="text">
+    <string>About &amp;Qt</string>
+   </property>
+   <property name="whatsThis">
+    <string>About Qt Toolkit</string>
+   </property>
+  </action>
+  <action name="action_Run_Stock_Synthesis">
+   <property name="icon">
+    <iconset resource="stock_synth.qrc">
+     <normaloff>:/icons/flat_go_button.png</normaloff>:/icons/flat_go_button.png</iconset>
+   </property>
+   <property name="text">
+    <string>&amp;Run Stock Synthesis</string>
+   </property>
+   <property name="toolTip">
+    <string>Save all inputs and run</string>
+   </property>
+   <property name="whatsThis">
+    <string>Save all inputs and run</string>
+   </property>
+  </action>
+  <action name="action_Print">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="stock_synth.qrc">
+     <normaloff>:/images/icons/file-print.png</normaloff>:/images/icons/file-print.png</iconset>
+   </property>
+   <property name="text">
+    <string>&amp;Print</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+P</string>
+   </property>
+  </action>
+  <action name="action_Exit">
+   <property name="text">
+    <string>E&amp;xit</string>
+   </property>
+  </action>
+  <action name="action_Selection">
+   <property name="text">
+    <string>Selection</string>
+   </property>
+  </action>
+  <action name="action_All">
+   <property name="text">
+    <string>All</string>
+   </property>
+  </action>
+  <action name="action_Current">
+   <property name="text">
+    <string>Current</string>
+   </property>
+  </action>
+  <action name="action_Print_Current">
+   <property name="text">
+    <string>Current</string>
+   </property>
+  </action>
+  <action name="action_Select">
+   <property name="text">
+    <string>Selection</string>
+   </property>
+  </action>
+  <action name="action_Print_All">
+   <property name="text">
+    <string>All</string>
+   </property>
+  </action>
+  <action name="action_Starter_wiz">
+   <property name="text">
+    <string>STARTER.SS</string>
+   </property>
+   <property name="toolTip">
+    <string>A Wizard to create a STARTER.SS file.</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Shift+S</string>
+   </property>
+  </action>
+  <action name="action_Forecast_wiz">
+   <property name="text">
+    <string>FORECAST.SS</string>
+   </property>
+   <property name="toolTip">
+    <string>A Wizard to create a FORECAST.SS file.</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Shift+F</string>
+   </property>
+  </action>
+  <action name="action_Import_Additional_Data_Observations">
+   <property name="text">
+    <string>&amp;Import Additional Data Observations</string>
+   </property>
+  </action>
+  <action name="action_Add_Rows_to_Data_Grids">
+   <property name="text">
+    <string>&amp;Add Rows to Data Grids</string>
+   </property>
+  </action>
+  <action name="action_Remove_blank_lines_from_data_grids">
+   <property name="text">
+    <string>&amp;Remove blank lines from data grids</string>
+   </property>
+  </action>
+  <action name="action_Display_selected_data_observations">
+   <property name="text">
+    <string>&amp;Display selected data observations</string>
+   </property>
+  </action>
+  <action name="action_Display_data_snapshot">
+   <property name="text">
+    <string>Display data &amp;snapshot</string>
+   </property>
+  </action>
+  <action name="action_Upddate_control_parameters">
+   <property name="icon">
+    <iconset resource="stock_synth.qrc">
+     <normaloff>:/images/icons/document-properties.png</normaloff>:/images/icons/document-properties.png</iconset>
+   </property>
+   <property name="text">
+    <string>&amp;Update control parameters</string>
+   </property>
+   <property name="iconText">
+    <string>Update control parameters</string>
+   </property>
+   <property name="toolTip">
+    <string>Update control parameters</string>
+   </property>
+  </action>
+  <action name="action_View_parameter_list">
+   <property name="text">
+    <string>&amp;View parameter list</string>
+   </property>
+  </action>
+  <action name="action_View_selectivity_functions">
+   <property name="text">
+    <string>&amp;Selectivity functions</string>
+   </property>
+  </action>
+  <action name="action_Weight_Maturity_Fecundity_functions">
+   <property name="text">
+    <string>&amp;Weight - Maturity - Fecundity functions</string>
+   </property>
+  </action>
+  <action name="action_Retention_Discard_mortality">
+   <property name="text">
+    <string>&amp;Retention &amp; Discard mortality</string>
+   </property>
+  </action>
+  <action name="action_Report_File">
+   <property name="text">
+    <string>Report &amp;File</string>
+   </property>
+  </action>
+  <action name="action_Scan_results_from_previous_run">
+   <property name="text">
+    <string>&amp;Scan results from previous run</string>
+   </property>
+  </action>
+  <action name="action_Files">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="stock_synth.qrc">
+     <normaloff>:/images/icons/document-files.png</normaloff>:/images/icons/document-files.png</iconset>
+   </property>
+   <property name="text">
+    <string>&amp;Files</string>
+   </property>
+  </action>
+  <action name="action_Observed_data">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>&amp;Observed data</string>
+   </property>
+  </action>
+  <action name="action_Populations">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="stock_synth.qrc">
+     <normaloff>:/icons/multiple_line_no_background.png</normaloff>:/icons/multiple_line_no_background.png</iconset>
+   </property>
+   <property name="text">
+    <string>&amp;Populations</string>
+   </property>
+  </action>
+  <action name="action_Control_parameters">
+   <property name="text">
+    <string>Model &amp;Parameters</string>
+   </property>
+  </action>
+  <action name="action_Forecast_specification">
+   <property name="text">
+    <string>&amp;Forecast specification</string>
+   </property>
+  </action>
+  <action name="action_Save_data">
+   <property name="icon">
+    <iconset resource="stock_synth.qrc">
+     <normaloff>:/images/icons/file-save.png</normaloff>:/images/icons/file-save.png</iconset>
+   </property>
+   <property name="text">
+    <string>&amp;Save current model</string>
+   </property>
+   <property name="toolTip">
+    <string>Save current model data</string>
+   </property>
+  </action>
+  <action name="action_User_Manual">
+   <property name="icon">
+    <iconset resource="stock_synth.qrc">
+     <normaloff>:/icons/book_32.png</normaloff>:/icons/book_32.png</iconset>
+   </property>
+   <property name="text">
+    <string>&amp;User Manual</string>
+   </property>
+   <property name="toolTip">
+    <string>Open the User Manual</string>
+   </property>
+  </action>
+  <action name="action_Using_SS">
+   <property name="icon">
+    <iconset resource="stock_synth.qrc">
+     <normaloff>:/icons/book_tech_32.png</normaloff>:/icons/book_tech_32.png</iconset>
+   </property>
+   <property name="text">
+    <string>&amp;Tecnical Description</string>
+   </property>
+  </action>
+  <action name="action_IncreaseFont">
+   <property name="text">
+    <string>increaseFont</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Up</string>
+   </property>
+  </action>
+  <action name="action_DecreaseFont">
+   <property name="text">
+    <string>decreaseFont</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Down</string>
+   </property>
+  </action>
+  <action name="action_Locate_SS">
+   <property name="text">
+    <string>Locate SS</string>
+   </property>
+  </action>
+  <action name="action_Text_viewer">
+   <property name="text">
+    <string>Text file viewer</string>
+   </property>
+  </action>
+  <action name="action_Surveys">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="stock_synth.qrc">
+     <normaloff>:/images/icons/trawler_NOAA_lg.png</normaloff>:/images/icons/trawler_NOAA_lg.png</iconset>
+   </property>
+   <property name="text">
+    <string>&amp;Survey Fleets</string>
+   </property>
+  </action>
+  <action name="action_Fleets">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="stock_synth.qrc">
+     <normaloff>:/images/icons/trawler_NOAA_lg.png</normaloff>:/images/icons/trawler_NOAA_lg.png</iconset>
+   </property>
+   <property name="text">
+    <string>F&amp;leets</string>
+   </property>
+  </action>
+  <action name="action_Model_Data">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="stock_synth.qrc">
+     <normaloff>:/images/images/admb_icon_trans.png</normaloff>:/images/images/admb_icon_trans.png</iconset>
+   </property>
+   <property name="text">
+    <string>&amp;Configuration</string>
+   </property>
+   <property name="toolTip">
+    <string>Model configuration data</string>
+   </property>
+  </action>
+  <action name="action_Forecast">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="stock_synth.qrc">
+     <normaloff>:/images/icons/binoculars_64.png</normaloff>:/images/icons/binoculars_64.png</iconset>
+   </property>
+   <property name="text">
+    <string>F&amp;orecast</string>
+   </property>
+  </action>
+  <action name="action_About_ADMB">
+   <property name="icon">
+    <iconset resource="stock_synth.qrc">
+     <normaloff>:/images/icons/admb_icon_128.png</normaloff>:/images/icons/admb_icon_128.png</iconset>
+   </property>
+   <property name="text">
+    <string>About A&amp;DMB</string>
+   </property>
+   <property name="whatsThis">
+    <string>About ADMB Toolkit</string>
+   </property>
+  </action>
+  <action name="action_About_NFT">
+   <property name="icon">
+    <iconset resource="stock_synth.qrc">
+     <normaloff>:/images/images/NOAA_circle_trans.png</normaloff>:/images/images/NOAA_circle_trans.png</iconset>
+   </property>
+   <property name="text">
+    <string>About NOAA Fisheries Toolbox</string>
+   </property>
+   <property name="whatsThis">
+    <string/>
+   </property>
+  </action>
+  <action name="actionTitle_Window">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="stock_synth.qrc">
+     <normaloff>:/icons/StockSynth_icon_128.png</normaloff>:/icons/StockSynth_icon_128.png</iconset>
+   </property>
+   <property name="text">
+    <string>Title Window</string>
+   </property>
+  </action>
+  <action name="actionLocate_SS_executable">
+   <property name="text">
+    <string>Locate SS executable</string>
+   </property>
+  </action>
+  <action name="actionSelect_default_directory">
+   <property name="text">
+    <string>Select default directory</string>
+   </property>
+  </action>
+  <action name="actionAbout_SS_GUI">
+   <property name="icon">
+    <iconset resource="stock_synth.qrc">
+     <normaloff>:/images/icons/help-browser.png</normaloff>:/images/icons/help-browser.png</iconset>
+   </property>
+   <property name="text">
+    <string>&amp;About Stock Synthesis GUI</string>
+   </property>
+  </action>
+  <action name="actionLocate_documents">
+   <property name="text">
+    <string>Locate documents</string>
+   </property>
+  </action>
+ </widget>
+ <layoutdefault spacing="6" margin="11"/>
+ <resources>
+  <include location="stock_synth.qrc"/>
+ </resources>
+ <connections/>
+</ui>
