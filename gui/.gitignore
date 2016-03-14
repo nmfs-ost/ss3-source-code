@@ -6,3 +6,5 @@
 ui_*.h
 moc_*.*
 rcc_*.*
+Makefile.*
+
