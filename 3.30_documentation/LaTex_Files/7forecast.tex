@@ -138,14 +138,16 @@ The specification of options for forecasts is contained in the mandatory input f
  
  \hline
  0 & Implementation Error & \multirow{1}{1cm}[-0.1cm]{\parbox{11cm}{The standard deviation of the log of the ratio between the realized catch and the target catch in the forecast. (set value > 0.0 to cause active implementation error).}} \\
+   &   & \\
+   &   & \\
+  \pagebreak
  
- \hline
+ %\hline
  0 & Rebuilder & \\
    & 0 = omit West Coast rebuilder output & \\
    & 1 = do rebuilder output & \\
- \pagebreak
    
- %\hline
+ \hline
  2004 & Rebuilder catch (Year Declared) & \\
       & >0 = year first catch should be set to zero & \\
       & -1 = set to 1999 & \\
@@ -170,18 +172,16 @@ The specification of options for forecasts is contained in the mandatory input f
  \hline  
  \multicolumn{3}{l}{COND: 2 (Conditional input for fleet relative F)} \\
  %\hhline{|*3{-}|} 
- \multicolumn{1}{r}{0.1 0.8 0.1}  & Fleet allocation by relative F fraction & The fraction of the forecast F value.  For a multiple area model user must define a fraction for each fleet and each area.  The total fractions must sum to one over all fleets and areas.  Starting in version 3.3 this now also includes surveys which are treated similar to fleets.
- Ex:   \\
-   &  &  \# Fleet 1  Fleet 2  Survey X \\ 
-   &  &  0.10  0.10  0.30 \# Area1 \\
-   &  &  0.10  0.10  0.30 \# Area2 \\  
+ \multicolumn{1}{r}{0.1 0.8 0.1}  & Fleet allocation by relative F fraction & The fraction of the forecast F value.  For a multiple area model user must define a fraction for each fleet and each area.  The total fractions must sum to one over all fleets and areas.  Starting in version 3.3 this now also includes surveys which are treated similar to fleets.\\
+   &  &  Ex: \# Fleet 1  Fleet 2  Survey X (rows are seasons)\\ 
  \pagebreak
  
+  %\hline
   1 50 & Maximum total catch by fleet & \multirow{1}{1cm}[-0.1cm]{\parbox{11cm}{Must enter value for each fleet.  Starting in version 3.3 this now also includes surveys which are treated similar to fleets.}} \\
   -9999 -1 & -1 = no maximum & \\
   
   \hline
-  -9999 -1 & Maximum total catch by area & \multirow{1}{1cm}[-0.1cm]{\parbox{11cm}{Must enter value for each area. Starting in version 3.3 this now also includes surveys which are treated similar to fleets.}} \\
+  -9999 -1 & Maximum total catch by area & \multirow{1}{1cm}[-0.1cm]{\parbox{11cm}{Must enter value for each area.}} \\
      & -1 = no maximum & \\
      
   \hline

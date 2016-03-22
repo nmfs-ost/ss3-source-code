@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.15 (MiKTeX 2.9 64-bit) (preloaded format=pdflatex 2015.8.21)  14 MAR 2016 15:33
+This is pdfTeX, Version 3.14159265-2.6-1.40.15 (MiKTeX 2.9 64-bit) (preloaded format=pdflatex 2015.8.21)  22 MAR 2016 09:13
 entering extended mode
 **SS330_Main.tex
 (SS330_Main.tex
@@ -1113,7 +1113,7 @@ Overfull \hbox (170.71654pt too wide) in paragraph at lines 223--223
  []
 
 
-Overfull \vbox (81.59981pt too high) detected at line 223
+Overfull \vbox (51.8985pt too high) detected at line 223
  []
 
 
@@ -1131,7 +1131,7 @@ Overfull \hbox (13.07784pt too wide) in alignment at lines 195--227
  []
 
 [9]
-Overfull \hbox (13.07784pt too wide) in alignment at lines 227--233
+Overfull \hbox (13.07784pt too wide) in alignment at lines 227--231
  [] [] [] 
  []
 
@@ -1348,7 +1348,7 @@ Overfull \vbox (24.2665pt too high) detected at line 140
  []
 
 
-Overfull \hbox (13.07784pt too wide) in alignment at lines 135--173
+Overfull \hbox (13.07784pt too wide) in alignment at lines 135--170
  [] [] [] 
  []
 
@@ -1367,10 +1367,6 @@ Overfull \hbox (284.52756pt too wide) in paragraph at lines 184--184
  []
 
 
-Overfull \vbox (9.09981pt too high) detected at line 184
- []
-
-
 Overfull \hbox (284.52756pt too wide) in paragraph at lines 188--188
 []|$[]$|  
  []
@@ -1380,7 +1376,7 @@ Overfull \vbox (9.09981pt too high) detected at line 188
  []
 
 
-Overfull \hbox (13.07784pt too wide) in alignment at lines 173--212
+Overfull \hbox (13.07784pt too wide) in alignment at lines 170--212
  [] [] [] 
  []
 
@@ -2288,7 +2284,7 @@ Overfull \hbox (11.5237pt too wide) in paragraph at lines 547--547
 []|\T1/lmr/m/n/12 entries>| 
  []
 
-[60] [61] <images/age_error.png, id=1054, 481.8pt x 311.66437pt>
+[60] [61] <images/age_error.png, id=1049, 481.8pt x 311.66437pt>
 File: images/age_error.png Graphic file (type png)
 
 <use images/age_error.png>
@@ -2421,7 +2417,7 @@ Overfull \hbox (8.37704pt too wide) in paragraph at lines 837--838
 for a right-shifted
  []
 
-[71] <images/survival_code.png, id=1111, 431.36156pt x 489.32813pt>
+[71] <images/survival_code.png, id=1106, 431.36156pt x 489.32813pt>
 File: images/survival_code.png Graphic file (type png)
 
 <use images/survival_code.png>
@@ -2445,7 +2441,7 @@ Overfull \hbox (7.12862pt too wide) in paragraph at lines 882--883
  into be-tween and within re-cruit-ment
  []
 
-<images/10_bias.png, id=1127, 286.06876pt x 224.33812pt>
+<images/10_bias.png, id=1122, 286.06876pt x 224.33812pt>
 File: images/10_bias.png Graphic file (type png)
 
 <use images/10_bias.png>
@@ -2621,7 +2617,7 @@ Underfull \hbox (badness 10000) in paragraph at lines 1249--1262
 
  []
 
-[85] [86] <images/Selex17_RandomWalk.png, id=1208, 433.62pt x 410.2828pt>
+[85] [86] <images/Selex17_RandomWalk.png, id=1203, 433.62pt x 410.2828pt>
 File: images/Selex17_RandomWalk.png Graphic file (type png)
 
 <use images/Selex17_RandomWalk.png>
@@ -2639,7 +2635,7 @@ Underfull \hbox (badness 10000) in paragraph at lines 1317--1320
 
  []
 
-[89] <images/DoubleNormal.png, id=1222, 313.9228pt x 228.855pt>
+[89] <images/DoubleNormal.png, id=1217, 313.9228pt x 228.855pt>
 File: images/DoubleNormal.png Graphic file (type png)
 
 <use images/DoubleNormal.png>
@@ -2666,7 +2662,7 @@ Underfull \hbox (badness 10000) in paragraph at lines 1384--1386
 
  []
 
-<images/ExpLogistic.png, id=1227, 367.3725pt x 218.31563pt>
+<images/ExpLogistic.png, id=1222, 367.3725pt x 218.31563pt>
 File: images/ExpLogistic.png Graphic file (type png)
 
 <use images/ExpLogistic.png>
@@ -2688,7 +2684,7 @@ Underfull \hbox (badness 10000) in paragraph at lines 1413--1414
 
  []
 
-<images/CubicSplineCode.png, id=1234, 460.72125pt x 264.99pt>
+<images/CubicSplineCode.png, id=1229, 460.72125pt x 264.99pt>
 File: images/CubicSplineCode.png Graphic file (type png)
 
 <use images/CubicSplineCode.png>
@@ -2699,7 +2695,7 @@ Underfull \hbox (badness 10000) in paragraph at lines 1418--1419
 
  []
 
-<images/CubicSpline.png, id=1239, 344.78813pt x 237.13594pt>
+<images/CubicSpline.png, id=1234, 344.78813pt x 237.13594pt>
 File: images/CubicSpline.png Graphic file (type png)
 
 <use images/CubicSpline.png>
@@ -2954,7 +2950,7 @@ Overfull \hbox (12.5835pt too wide) in alignment at lines 1899--1906
 Overfull \vbox (37.26993pt too high) has occurred while \output is active []
 
 
-[106] <images/TimeVarying.png, id=1318, 431.36156pt x 321.45094pt>
+[106] <images/TimeVarying.png, id=1313, 431.36156pt x 321.45094pt>
 File: images/TimeVarying.png Graphic file (type png)
 
 <use images/TimeVarying.png>
@@ -2965,13 +2961,13 @@ Underfull \vbox (badness 10000) detected at line 1940
  []
 
 [107 <./images/TimeVarying.png>] [108]
-<images/Beta.png, id=1328, 356.83313pt x 318.43968pt>
+<images/Beta.png, id=1323, 356.83313pt x 318.43968pt>
 File: images/Beta.png Graphic file (type png)
  <use images/Beta.png>
 Package pdftex.def Info: images/Beta.png used on input line 1964.
 (pdftex.def)             Requested size: 356.83224pt x 318.4389pt.
 
-[109] <images/BetaComparison.png, id=1337, 368.1253pt x 335.75438pt>
+[109] <images/BetaComparison.png, id=1332, 368.1253pt x 335.75438pt>
 File: images/BetaComparison.png Graphic file (type png)
 
 <use images/BetaComparison.png>
@@ -3024,14 +3020,14 @@ Underfull \hbox (badness 10000) in paragraph at lines 225--228
 
  []
 
-<images/ManagementReport.png, id=1379, 414.04688pt x 432.11438pt>
+<images/ManagementReport.png, id=1374, 414.04688pt x 432.11438pt>
 File: images/ManagementReport.png Graphic file (type png)
 
 <use images/ManagementReport.png>
 Package pdftex.def Info: images/ManagementReport.png used on input line 239.
 (pdftex.def)             Requested size: 414.04585pt x 432.11331pt.
  [119] [120 <./images/ManagementReport.png>]
-<images/Forecast.png, id=1388, 650.43pt x 295.1025pt>
+<images/Forecast.png, id=1383, 650.43pt x 295.1025pt>
 File: images/Forecast.png Graphic file (type png)
 
 <use images/Forecast.png>
@@ -3047,7 +3043,7 @@ Overfull \hbox (29.9984pt too wide) in paragraph at lines 247--248
  <./images/Forecast.png>] [122
 
 ]
-<images/HCR.png, id=1398, 417.81094pt x 283.0575pt>
+<images/HCR.png, id=1393, 417.81094pt x 283.0575pt>
 File: images/HCR.png Graphic file (type png)
  <use images/HCR.png>
 Package pdftex.def Info: images/HCR.png used on input line 285.
@@ -3090,7 +3086,7 @@ ummed over sub-morphs
  []
 
 ) (12runningSS.tex [128] [129] [130] [131] [132] [133]
-<images/r4ss_output.png, id=1456, 423.83344pt x 557.08125pt>
+<images/r4ss_output.png, id=1451, 423.83344pt x 557.08125pt>
 File: images/r4ss_output.png Graphic file (type png)
 
 <use images/r4ss_output.png>
@@ -3112,7 +3108,7 @@ Underfull \hbox (badness 10000) in paragraph at lines 163--168
  []
 
 [135 <./images/r4ss_output.png>]
-<images/r4ss_plots.png, id=1465, 433.62pt x 432.86719pt>
+<images/r4ss_plots.png, id=1460, 433.62pt x 432.86719pt>
 File: images/r4ss_plots.png Graphic file (type png)
 
 <use images/r4ss_plots.png>
@@ -3130,7 +3126,7 @@ Overfull \hbox (8.21594pt too wide) in paragraph at lines 221--221
 
 [136 <./images/r4ss_plots.png>] [137] [138]) (13special.tex [139])
 (14changelog.tex) (15appendixA.tex
-<images/appendixA_recruits.png, id=1484, 459.96844pt x 388.45125pt>
+<images/appendixA_recruits.png, id=1479, 459.96844pt x 388.45125pt>
 File: images/appendixA_recruits.png Graphic file (type png)
 
 <use images/appendixA_recruits.png>
@@ -3147,7 +3143,7 @@ Overfull \hbox (11.7312pt too wide) in paragraph at lines 7--9
 d rock-fish (Gert-seva and Thor-son,
  []
 
-[140] <images/appendixA_logdevs.png, id=1489, 432.86719pt x 264.99pt>
+[140] <images/appendixA_logdevs.png, id=1484, 432.86719pt x 264.99pt>
 File: images/appendixA_logdevs.png Graphic file (type png)
 
 <use images/appendixA_logdevs.png>
@@ -3160,21 +3156,21 @@ Overfull \hbox (14.27818pt too wide) in paragraph at lines 22--23
 ve a vari-ance that con-tributes
  []
 
-[143] <images/appendixA_asymerror.png, id=1502, 433.62pt x 280.79906pt>
+[143] <images/appendixA_asymerror.png, id=1497, 433.62pt x 280.79906pt>
 File: images/appendixA_asymerror.png Graphic file (type png)
 
 <use images/appendixA_asymerror.png>
 Package pdftex.def Info: images/appendixA_asymerror.png used on input line 30.
 (pdftex.def)             Requested size: 433.61894pt x 280.79837pt.
 
-<images/appendixA_biasadj.png, id=1503, 432.86719pt x 265.74281pt>
+<images/appendixA_biasadj.png, id=1498, 432.86719pt x 265.74281pt>
 File: images/appendixA_biasadj.png Graphic file (type png)
 
 <use images/appendixA_biasadj.png>
 Package pdftex.def Info: images/appendixA_biasadj.png used on input line 33.
 (pdftex.def)             Requested size: 432.86612pt x 265.74216pt.
  [144 <./images/appendixA_asymerror.png>]
-<images/appendixA_depl.png, id=1508, 433.62pt x 309.40594pt>
+<images/appendixA_depl.png, id=1503, 433.62pt x 309.40594pt>
 File: images/appendixA_depl.png Graphic file (type png)
 
 <use images/appendixA_depl.png>
@@ -3217,36 +3213,105 @@ Overfull \hbox (13.18764pt too wide) in paragraph at lines 76--77
 P* con-di-tioned
  []
 
-[150]) (17inputfiles.tex)
+
+Overfull \hbox (3.30206pt too wide) in paragraph at lines 94--94
+[]|\T1/lmr/m/n/12 A1| 
+ []
+
+
+Overfull \hbox (2.22786pt too wide) in paragraph at lines 94--94
+[]|\T1/lmr/m/n/12 -0.126| 
+ []
+
+
+Overfull \hbox (3.30206pt too wide) in paragraph at lines 94--94
+[]|\T1/lmr/m/n/12 A2| 
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 94--94
+[]|\T1/lmr/m/n/12 RecrDev
+ []
+
+
+Overfull \hbox (2.81506pt too wide) in paragraph at lines 95--95
+[]|\T1/lmr/m/n/12 B1| 
+ []
+
+
+Overfull \hbox (2.81506pt too wide) in paragraph at lines 95--95
+[]|\T1/lmr/m/n/12 B2| 
+ []
+
+
+Overfull \hbox (2.98004pt too wide) in paragraph at lines 96--96
+[]|\T1/lmr/m/n/12 C1| 
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 96--96
+[]|\T1/lmr/m/n/12 ForeCatch
+ []
+
+
+Overfull \hbox (2.98004pt too wide) in paragraph at lines 96--96
+[]|\T1/lmr/m/n/12 C2| 
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 96--96
+[]|\T1/lmr/m/n/12 ForeCatch
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 96--96
+[]|\T1/lmr/m/n/12 RecrDev
+ []
+
+
+Overfull \hbox (3.46806pt too wide) in paragraph at lines 97--97
+[]|\T1/lmr/m/n/12 D1| 
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 97--97
+[]|\T1/lmr/m/n/12 ForeCatch
+ []
+
+
+Overfull \hbox (3.46806pt too wide) in paragraph at lines 97--97
+[]|\T1/lmr/m/n/12 D2| 
+ []
+
+
+Overfull \hbox (8.16188pt too wide) in alignment at lines 87--99
+ [] [] [] [] [] [] [] [] 
+ []
+
+
+Underfull \vbox (badness 10000) detected at line 99
+ []
+
+[150] [151]) (17inputfiles.tex)
 Package atveryend Info: Empty hook `BeforeClearDocument' on input line 116.
- [151] [152]
+ [152]
 Package atveryend Info: Empty hook `AfterLastShipout' on input line 116.
  (SS330_Main.aux)
 Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 116.
 Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 116.
-
-
-Package rerunfilecheck Warning: File `SS330_Main.out' has changed.
-(rerunfilecheck)                Rerun to get outlines right
-(rerunfilecheck)                or use package `bookmark'.
-
-Package rerunfilecheck Info: Checksums for `SS330_Main.out':
-(rerunfilecheck)             Before: CF4229758EC50C8D5CEF0D259CF575EF;9677
-(rerunfilecheck)             After:  C848E12C52F0D2B4F63C8CB2CBB41EE4;9628.
+Package rerunfilecheck Info: File `SS330_Main.out' has not changed.
+(rerunfilecheck)             Checksum: C848E12C52F0D2B4F63C8CB2CBB41EE4;9628.
 Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 116.
  ) 
 Here is how much of TeX's memory you used:
  8635 strings out of 493698
- 122922 string characters out of 3139169
- 346913 words of memory out of 3000000
+ 122916 string characters out of 3139169
+ 347042 words of memory out of 3000000
  11218 multiletter control sequences out of 15000+200000
  50307 words of font info for 38 fonts, out of 3000000 for 9000
  1025 hyphenation exceptions out of 8191
  34i,18n,43p,1675b,654s stack positions out of 5000i,500n,10000p,200000b,50000s
 pdfTeX warning (dest): name{RandWalk} has been referenced but does not exist,
- replaced by a fixed one
-
-pdfTeX warning (dest): name{section.18} has been referenced but does not exist,
  replaced by a fixed one
 
 {C:/Users/Chantell.Wetzel/Documents/Latex/fonts/enc/dvips/lm/lm-rm.enc}{C:/User
@@ -3267,9 +3332,9 @@ fb><C:/Users/Chantell.Wetzel/Documents/Latex/fonts/type1/public/lm/lmsy10.pfb><
 C:/Users/Chantell.Wetzel/Documents/Latex/fonts/type1/public/lm/lmsy6.pfb><C:/Us
 ers/Chantell.Wetzel/Documents/Latex/fonts/type1/public/lm/lmsy8.pfb><C:/Users/C
 hantell.Wetzel/Documents/Latex/fonts/type1/public/lm/lmtt12.pfb>
-Output written on SS330_Main.pdf (158 pages, 1255635 bytes).
+Output written on SS330_Main.pdf (158 pages, 1255763 bytes).
 PDF statistics:
- 1738 PDF objects out of 2073 (max. 8388607)
+ 1734 PDF objects out of 2073 (max. 8388607)
  519 named destinations out of 1000 (max. 500000)
- 1114 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 1106 words of extra memory for PDF output out of 10000 (max. 10000000)
 
