@@ -83,7 +83,21 @@ The sequence of multiple forecast passes is as follows:
 \subsubsection{Example Effects on Correlations}
 An example that illustrates the above process was conducted.  The situation was a low M, late-maturing species, so changes are not dramatic.  The example conducted a 10 year forecast and examined correlations with derived quantities in the last year of the forecast.  This was done once with the full set of 3 passes as described above, and again with only 2 passes and stochastic recruitment occurring in pass 2, rather than 3.  This alternative setup is more similar to forecasts done using previous model versions.
 
-INSERT TABLE HERE!!!!!!!!!!!!!!!!!!!!!
+\begin{center}
+	\begin{longtable}{p{0.4cm} p{2.75cm} p{3cm} p{1cm} p{0.4cm} p{2.75cm} p{2cm} p{1cm}}
+		\hline
+		 & \multicolumn{3}{l}{2 Forecast Passes with F from} & & \multicolumn{3}{l}{2 Forecast Passes with catch from}\\
+		 & \multicolumn{3}{l}{ABC and random recruitment} & & \multicolumn{3}{l}{target F and equilibrium recruitment}\\
+		\hline
+		 & Factor X & Factor Y & Corr &  & Factor X & Factor Y & Corr \\
+		 \hline
+		 A1 & F 2011 & RecrDev 2002 & -0.126 & A2 & F 2011 & RecrDev 2002 & 0.090 \\
+		 B1 & F 2011 & Recr 2002    &  0.312 & B2 & F 2011 & Recr    2002 & 0.518 \\
+		 C1 & ForeCatch 2011 & RecrDev 2002 & 0.000 & C2 & ForeCatch 2011 & RecrDev 2002 & 0.129 \\
+		 D1 & ForeCatch 2011 & Recr 2002    & 0.455 & D2 & Forecatch 2011 & Recr 2002    & 0.555 \\
+		 \hline		
+	\end{longtable}
+\end{center}
 
 Correlation A2 shows a small positive correlation between the recruitment deviation in 2002 and the F in 2011.  This is probably due to the fact that a positive deviation in recruitment in 2002 will reduce the chances that the biomass in 2011 will be below the inflection point in the control rule.  This occurs because in calculating catch from F, the model effectively “knows” the future recruitments.  I predict that this B1 correlation would be near zero if there was no inflection in the control rule.
 Correlation A1 shows this turning into a negative correlation.  This is because the future catches are first calculated from equilibrium recruitment, then when random recruitments are implemented, a positive recruitment deviation will cause a negative deviation in the F needed to catch that now “fixed” amount of future catch.
