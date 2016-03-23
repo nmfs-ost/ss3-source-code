@@ -697,7 +697,7 @@ FUNCTION void write_nudata()
      }
     }
    }
-  f=exp_a_temp.size()+8;
+  f=exp_a_temp.size()+9;
   report1 << "-9999 ";
   for(i=1;i<=f;i++) report1<<" 0";
   report1<<endl;
@@ -984,7 +984,7 @@ FUNCTION void write_nudata()
     }
     }
    }
-  f=exp_a_temp.size()+8;
+  f=exp_a_temp.size()+9;
   report1 << "-9999 ";
   for(i=1;i<=f;i++) report1<<" 0";
   report1<<endl;
@@ -1362,7 +1362,7 @@ FUNCTION void write_nudata()
       }
     }
   }
-  f=exp_a_temp.size()+8;
+  f=exp_a_temp.size()+9;
   report1 << "-9999 ";
   for(i=1;i<=f;i++) report1<<" 0";
   report1<<endl;
