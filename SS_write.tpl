@@ -648,9 +648,11 @@ FUNCTION void write_nudata()
   for (f=1;f<=Nfleet;f++)
   {report1<<min_tail_L(f)<<" "<<min_comp_L(f)<<" "<<CombGender_L(f)<<" "<<AccumBin_L(f)<<" "<<Comp_Err_L(f)<<" "<<Comp_Err_L2(f)<<" #_fleet:"<<f<<"_"<<fleetname(f)<<endl;}
 
+  report1<<"# sex codes:  0=combined; 1=use female only; 2=use male only; 3=use both as joint sexxlength distribution"<<endl;
+  report1<<"# partition codes:  (0=combined; 1=discard; 2=retained"<<endl;
   report1<<nlen_bin<<" #_N_LengthBins; then enter lower edge of each length bin"<<endl<<len_bins_dat<<endl;
 //  report1<<nobsl_rd<<" #_N_Length_obs"<<endl;
-  report1<<"#_yr month fleet gender part Nsamp datavector(female-male)"<<endl;
+  report1<<"#_yr month fleet sex part Nsamp datavector(female-male)"<<endl;
    for (f=1;f<=Nfleet;f++)
    {
     if(Nobs_l(f)>0)
@@ -685,7 +687,9 @@ FUNCTION void write_nudata()
   for (f=1;f<=Nfleet;f++)
   {report1<<min_tail_A(f)<<" "<<min_comp_A(f)<<" "<<CombGender_A(f)<<" "<<AccumBin_A(f)<<" "<<Comp_Err_A(f)<<" "<<Comp_Err_A2(f)<<" #_fleet:"<<f<<"_"<<fleetname(f)<<endl;}
   report1<<Lbin_method<<" #_Lbin_method_for_Age_Data: 1=poplenbins; 2=datalenbins; 3=lengths"<<endl;
-  report1<<"#_yr month fleet gender part ageerr Lbin_lo Lbin_hi Nsamp datavector(female-male)"<<endl;
+  report1<<"# sex codes:  0=combined; 1=use female only; 2=use male only; 3=use both as joint sexxlength distribution"<<endl;
+  report1<<"# partition codes:  (0=combined; 1=discard; 2=retained"<<endl;
+  report1<<"#_yr month fleet sex part ageerr Lbin_lo Lbin_hi Nsamp datavector(female-male)"<<endl;
    if(Nobs_a_tot>0)
    for (f=1;f<=Nfleet;f++)
    {
@@ -705,7 +709,10 @@ FUNCTION void write_nudata()
   report1<<"#"<<endl<<use_meansizedata<<" #_Use_MeanSize-at-Age_obs (0/1)"<<endl;
   if(use_meansizedata>0)
   {
-  report1<<"#_yr month fleet gender part ageerr ignore datavector(female-male)"<<endl;
+  report1<<"# sex codes:  0=combined; 1=use female only; 2=use male only; 3=use both as joint sexxlength distribution"<<endl;
+  report1<<"# partition codes:  (0=combined; 1=discard; 2=retained"<<endl;
+  report1<<"# ageerr codes:  positive means mean length-at-age; negative means mean bodywt_at_age"<<endl;
+  report1<<"#_yr month fleet sex part ageerr ignore datavector(female-male)"<<endl;
   report1<<"#                                          samplesize(female-male)"<<endl;
    for (f=1;f<=Nfleet;f++)
    {
@@ -922,9 +929,11 @@ FUNCTION void write_nudata()
   report1<<"#_mintailcomp_addtocomp_combM+F_CompressBins_CompError_ParmSelect"<<endl;
   for (f=1;f<=Nfleet;f++)
   {report1<<min_tail_L(f)<<" "<<min_comp_L(f)<<" "<<CombGender_L(f)<<" "<<AccumBin_L(f)<<" "<<Comp_Err_L(f)<<" "<<Comp_Err_L2(f)<<" #_fleet:"<<f<<"_"<<fleetname(f)<<endl;}
+  report1<<"# sex codes:  0=combined; 1=use female only; 2=use male only; 3=use both as joint sexxlength distribution"<<endl;
+  report1<<"# partition codes:  (0=combined; 1=discard; 2=retained"<<endl;
   report1<<nlen_bin<<" #_N_LengthBins"<<endl<<len_bins_dat<<endl;
 //  report1<<sum(Nobs_l)<<" #_N_Length_obs"<<endl;
-  report1<<"#_yr month fleet gender part Nsamp datavector(female-male)"<<endl;
+  report1<<"#_yr month fleet sex part Nsamp datavector(female-male)"<<endl;
    for (f=1;f<=Nfleet;f++)
     {
     if(Nobs_l(f)>0)
@@ -964,7 +973,10 @@ FUNCTION void write_nudata()
   for (f=1;f<=Nfleet;f++)
   {report1<<min_tail_A(f)<<" "<<min_comp_A(f)<<" "<<CombGender_A(f)<<" "<<AccumBin_A(f)<<" "<<Comp_Err_A(f)<<" "<<Comp_Err_A2(f)<<" #_fleet:"<<f<<"_"<<fleetname(f)<<endl;}
   report1<<Lbin_method<<" #_Lbin_method_for_Age_Data: 1=poplenbins; 2=datalenbins; 3=lengths"<<endl;
-  report1<<"#_yr month fleet gender part ageerr Lbin_lo Lbin_hi Nsamp datavector(female-male)"<<endl;
+  report1<<"# sex codes:  0=combined; 1=use female only; 2=use male only; 3=use both as joint sexxlength distribution"<<endl;
+  report1<<"# partition codes:  (0=combined; 1=discard; 2=retained"<<endl;
+
+  report1<<"#_yr month fleet sex part ageerr Lbin_lo Lbin_hi Nsamp datavector(female-male)"<<endl;
    if(Nobs_a_tot>0)
    for (f=1;f<=Nfleet;f++)
    {
@@ -992,7 +1004,10 @@ FUNCTION void write_nudata()
   report1<<"#"<<endl<<use_meansizedata<<" #_Use_MeanSize-at-Age_obs (0/1)"<<endl;
   if(use_meansizedata>0)
   {
-  report1<<"#_yr month fleet gender part ageerr ignore datavector(female-male)"<<endl;
+  report1<<"# sex codes:  0=combined; 1=use female only; 2=use male only; 3=use both as joint sexxlength distribution"<<endl;
+  report1<<"# partition codes:  (0=combined; 1=discard; 2=retained"<<endl;
+  report1<<"# ageerr codes:  positive means mean length-at-age; negative means mean bodywt_at_age"<<endl;
+  report1<<"#_yr month fleet sex part ageerr ignore datavector(female-male)"<<endl;
   report1<<"#                                          samplesize(female-male)"<<endl;
    for (f=1;f<=Nfleet;f++)
    {
@@ -1266,7 +1281,9 @@ FUNCTION void write_nudata()
   {report1<<min_tail_L(f)<<" "<<min_comp_L(f)<<" "<<CombGender_L(f)<<" "<<AccumBin_L(f)<<" "<<Comp_Err_L(f)<<" "<<Comp_Err_L2(f)<<" #_fleet:"<<f<<"_"<<fleetname(f)<<endl;}
   report1<<nlen_bin<<" #_N_LengthBins"<<endl<<len_bins_dat<<endl;
 //  report1<<sum(Nobs_l)<<" #_N_Length_obs"<<endl;
-  report1<<"#_yr month fleet gender part Nsamp datavector(female-male)"<<endl;
+  report1<<"# sex codes:  0=combined; 1=use female only; 2=use male only; 3=use both as joint sexxlength distribution"<<endl;
+  report1<<"# partition codes:  (0=combined; 1=discard; 2=retained"<<endl;
+  report1<<"#_yr month fleet sex part Nsamp datavector(female-male)"<<endl;
    for (f=1;f<=Nfleet;f++)
     {
     if(Nobs_l(f)>0)
@@ -1323,7 +1340,10 @@ FUNCTION void write_nudata()
   for (f=1;f<=Nfleet;f++)
   {report1<<min_tail_A(f)<<" "<<min_comp_A(f)<<" "<<CombGender_A(f)<<" "<<AccumBin_A(f)<<" "<<Comp_Err_A(f)<<" "<<Comp_Err_A2(f)<<" #_fleet:"<<f<<"_"<<fleetname(f)<<endl;}
   report1<<Lbin_method<<" #_Lbin_method_for_Age_Data: 1=poplenbins; 2=datalenbins; 3=lengths"<<endl;
-  report1<<"#_yr month fleet gender part ageerr Lbin_lo Lbin_hi Nsamp datavector(female-male)"<<endl;
+  report1<<"# sex codes:  0=combined; 1=use female only; 2=use male only; 3=use both as joint sexxlength distribution"<<endl;
+  report1<<"# partition codes:  (0=combined; 1=discard; 2=retained"<<endl;
+
+  report1<<"#_yr month fleet sex part ageerr Lbin_lo Lbin_hi Nsamp datavector(female-male)"<<endl;
   if(Nobs_a_tot>0)
   for (f=1;f<=Nfleet;f++)
   {
@@ -1371,7 +1391,10 @@ FUNCTION void write_nudata()
   report1<<"#"<<endl<<use_meansizedata<<" #_Use_MeanSize-at-Age_obs (0/1)"<<endl;
   if(use_meansizedata>0)
   {
-    report1<<"#_yr month fleet gender part ageerr ignore datavector(female-male)"<<endl;
+    report1<<"# sex codes:  0=combined; 1=use female only; 2=use male only; 3=use both as joint sexxlength distribution"<<endl;
+    report1<<"# partition codes:  (0=combined; 1=discard; 2=retained"<<endl;
+    report1<<"# ageerr codes:  positive means mean length-at-age; negative means mean bodywt_at_age"<<endl;
+    report1<<"#_yr month fleet sex part ageerr ignore datavector(female-male)"<<endl;
     report1<<"#                                          samplesize(female-male)"<<endl;
     for (f=1;f<=Nfleet;f++)
     {

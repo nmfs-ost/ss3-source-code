@@ -4354,7 +4354,7 @@
 // fleet 0 contains begin season pop WT
 // fleet -1 contains mid season pop WT
 // fleet -2 contains maturity*fecundity
-
+  int f2
  LOCAL_CALCS
   if(k1>0)
   {
@@ -4365,8 +4365,9 @@
     {
       y=abs(WTage_in(i,1));
       if(y<styr) y=styr;
-      if(WTage_in(i,1)<0) {y2=YrMax;} else {y2=y;}
-      s=WTage_in(i,2);
+      if(WTage_in(i,1)<0) {y2=YrMax;} else {y2=y;}  //  allows filling to end of time series
+      s=abs(WTage_in(i,2));
+      if(WTage_in(i,2)<0) {f2=Nfleet;} else {f2=f;}  //  allows filling all fleets
       gg=WTage_in(i,3);
       gp=WTage_in(i,4);
       birthseas=WTage_in(i,5);
@@ -4376,10 +4377,13 @@
       {
         for (j=y;j<=y2;j++)  // loop years
         {
+        	for(k=f;k<=f2;k++)
+        	{
           t=styr+(j-styr)*nseas+s-1;
-          for (a=0;a<=N_WTage_maxage;a++) WTage_emp(t,g,f,a)=WTage_in(i,7+a);
+          for (a=0;a<=N_WTage_maxage;a++) WTage_emp(t,g,k,a)=WTage_in(i,7+a);
           for (a=N_WTage_maxage;a<=nages;a++) WTage_emp(t,g,f,a)=WTage_emp(t,g,f,N_WTage_maxage);  //  fills out remaining ages, if any
-          if(j==y) echoinput<<y<<" s "<<s<<" sex "<<gg<<" gp "<<gp<<" bs "<<birthseas<<" morph "<<g<<" pop/fleet "<<f<<" "<<WTage_emp(t,g,f)(0,min(6,nages))<<endl;
+          if(j==y && k==f) echoinput<<"year "<<y<<" s "<<s<<" sex "<<gg<<" gp "<<gp<<" bs "<<birthseas<<" morph "<<g<<" pop/fleet "<<f<<" "<<WTage_emp(t,g,f)(0,min(6,nages))<<endl;
+          }
         }
       }
       temp=float(Bmark_Yr(2)-Bmark_Yr(1)+1.);  //  get denominator
