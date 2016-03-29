@@ -408,6 +408,8 @@ PRELIMINARY_CALCS_SECTION
           echoinput<< " Tag_parms OK "<<endl;
     }
   }
+  
+  cout<<" have unallocated vectors happened yet ?"<<endl;
 
 
 //  SS_Label_Info_6.5 #Check parameter bounds and do jitter
@@ -520,7 +522,9 @@ PRELIMINARY_CALCS_SECTION
     y=styr;
     yz=styr;
     t_base=styr+(y-styr)*nseas-1;
-
+    
+    make_timevaryparm();
+    
 //  SS_Label_Info_6.8.1 #Call fxn get_MGsetup() to copy MGparms to working array and applies time-varying factors
     get_MGsetup();
     echoinput<<" did MG setup"<<endl;
@@ -563,6 +567,7 @@ PRELIMINARY_CALCS_SECTION
 
     for (s=1;s<=nseas;s++)
     {
+    	echoinput<<" prelim:  growth3 for seas: "<<s<<endl;
       t = styr+s-1;
       for(subseas=1;subseas<=N_subseas;subseas++)
       {
@@ -570,14 +575,17 @@ PRELIMINARY_CALCS_SECTION
         get_growth3(s, subseas);  //  this will calculate the cv of growth for all subseasons of first year
         Make_AgeLength_Key(s,subseas);   //  ALK_idx calculated within Make_AgeLength_Key
         ALK(ALK_idx) = value(ALK(ALK_idx));
+        echoinput<<" ok  subseas "<<subseas<<endl;
       }
 //  SPAWN-RECR:   calc fecundity in preliminary_calcs
       if(s==spawn_seas)
       {
+      	echoinput<<" spawn "<<endl;
         subseas=spawn_subseas;
         ALK_idx=(s-1)*N_subseas+subseas;
         // get_growth3 already done for all subseasons
         Make_Fecundity();
+        echoinput<<" fecundity ok "<<endl;
       }
     }
 

@@ -77,6 +77,8 @@ GLOBALS_SECTION
   std::vector<dvector> env_temp;
   std::vector<dvector> var_adjust_data;
   std::vector<dvector> lambda_change_data;
+  std::vector<dvector> timevary_parm_rd;
+  std::vector<ivector> timevary_parm1;
 
 //  example function in GLOBALS to do the timing setup in the data section
   void get_data_timing(const dvector& to_process, const ivector& timing_constants, ivector i_result, dvector r_result, const dvector& seasdur, const dvector& subseasdur_delta, const dvector& azero_seas, const dvector& surveytime)
@@ -260,7 +262,8 @@ FINAL_SECTION
     save_for_report=2;
     bodywtout<<1<<"  #_user_must_replace_this_value_with_number_of_lines_with_wtatage_below"<<endl;
     bodywtout<<N_WTage_maxage<<" # maxage"<<endl;
-    bodywtout<<"# if yr=-yr, then fill remaining years for that seas, growpattern, gender, fleet"<<endl;
+    bodywtout<<"# if yr is negative, then fill remaining years for that seas, growpattern, gender, fleet"<<endl;
+    bodywtout<<"# if season is negative, then fill from read fleet to Nfleet"<<endl;
     bodywtout<<"# fleet 0 contains begin season pop WT"<<endl;
     bodywtout<<"# fleet -1 contains mid season pop WT"<<endl;
     bodywtout<<"# fleet -2 contains maturity*fecundity"<<endl;

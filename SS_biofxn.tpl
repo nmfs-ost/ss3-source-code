@@ -6,6 +6,7 @@ FUNCTION void get_MGsetup()
   int y1;
 
   //  SS_Label_Info_14.1 #Calculate any trends that will be needed for any of the MG parameters
+ /*
   if(N_MGparm_trend>0)
   {
     for (f=1;f<=N_MGparm_trend;f++)
@@ -38,7 +39,7 @@ FUNCTION void get_MGsetup()
           if(y1<=endyr)
           {MGparm_trend(f,y1)=MGparm(j) + temp * (cumd_norm((r_years(y1)-temp3)/MGparm(k+3) )-temp2);}
           else
-          {MGparm_trend(f,y1)=MGparm_trend(f,y1-1);}
+          {MGparm_trend(f,y1)=MGparm_trend(f,endyr);}
         }
       }
       mgp_adj(j)=MGparm_trend(MGparm_trend_point(j),y);
@@ -46,7 +47,7 @@ FUNCTION void get_MGsetup()
   }
 
   //  SS_Label_Info_14.2 #Else create MGparm block values
-  else if (N_MGparm_blk>0)
+  if (N_MGparm_blk>0)
   {
     for (j=1;j<=N_MGparm;j++)
     {
@@ -87,7 +88,7 @@ FUNCTION void get_MGsetup()
       }  // end uses blocks
     }  // end parameter loop
   }  // end block section
-
+ */
   //  SS_Label_Info_14.3 #Create MGparm dev randwalks if needed
   if(N_MGparm_dev>0 && y==styr)
   {
@@ -127,6 +128,12 @@ FUNCTION void get_MGsetup()
     {
       for (f=1;f<=N_MGparm;f++)
       {
+        
+        if(MGparm_1(f,13)!=0)   // blocks or trends
+        {
+          mgp_adj(f)=parm_timevary(MGparm_timevary(f,1),yz);
+        }
+ /*        
   //  SS_Label_Info_14.4.1.1 #Adjust for blocks
         if(MGparm_1(f,13)>0)   // blocks
         {
@@ -142,7 +149,7 @@ FUNCTION void get_MGsetup()
               {mgp_adj(f) += MGparm_block_val(f,yz);}
           }
         }
-
+ */
   //  SS_Label_Info_14.4.1.2 #Adjust for env linkage
   // where:  MGparm_env is zero if no link else contains the parameter # of the first link parameter
   //         MGparm_envtype identifies the form of the linkage, some of which take more than one link parameeter
@@ -218,9 +225,15 @@ FUNCTION void get_MGsetup()
       for (f=1;f<=N_MGparm;f++)
       {
         j=0;
+
+        if(MGparm_1(f,13)!=0)   // blocks or trends
+        {
+          mgp_adj(f)=parm_timevary(MGparm_timevary(f,1),yz);
+        }
         temp=log((MGparm_HI(f)-MGparm_LO(f)+0.0000002)/(mgp_adj(f)-MGparm_LO(f)+0.0000001)-1.)/(-2.);   // transform the parameter
 
   //  SS_Label_Info_14.4.2.1 #Adjust for blocks
+ /*
         if(MGparm_1(f,13)>0)   // blocks
         {
           if(Block_Defs_MG(f,yz)>0)
@@ -234,7 +247,7 @@ FUNCTION void get_MGsetup()
               {temp += MGparm_block_val(f,yz);}
           }
         }
-
+ */
   //  SS_Label_Info_14.4.2.2 #Adjust for env linkage
         if(MGparm_env(f)>0)  //  do environmental effect;  only additive allowed for adjustment method=2
         {j=1; temp+=MGparm(MGparm_env(f))* env_data(yz,MGparm_envuse(f));}
@@ -892,7 +905,7 @@ FUNCTION void get_growth3(const int s, const int subseas)
         {
           echoinput<<"with lingrow; subseas: "<<subseas<<" sex: "<<sx(g)<<" gp: "<<GP4(g)<<" g: "<<g<<endl;
           echoinput<<"size "<<Ave_Size(t,subseas,g)(0,min(6,nages))<<" @nages "<<Ave_Size(t,subseas,g,nages)<<endl;
-          echoinput<<"CV   "<<CV_G(gp,ALK_idx)(0,min(6,nages))<<" @nages "<<CV_G(gp,ALK_idx,nages)<<endl;
+          if(CV_depvar_b==0) echoinput<<"CV   "<<CV_G(gp,ALK_idx)(0,min(6,nages))<<" @nages "<<CV_G(gp,ALK_idx,nages)<<endl;
           echoinput<<"sd   "<<Sd_Size_within(ALK_idx,g)(0,min(6,nages))<<" @nages "<<Sd_Size_within(ALK_idx,g,nages)<<endl;
         }
       }  //  end need this platoon
@@ -1329,7 +1342,6 @@ FUNCTION void get_wtlen()
 //  6=read length-maturity
      if(Maturity_Option!=4 && Maturity_Option!=5)
      {
-       echoinput<<"fec_len "<<endl<<fec_len(gp)<<endl;
   //  combine length maturity and fecundity; but will be ignored if reading empirical age-fecundity
        mat_fec_len(gp) = elem_prod(mat_len(gp),fec_len(gp));
        if(do_once==1) echoinput<<"mat_fec_len "<<endl<<mat_fec_len(gp)<<endl;
@@ -1533,7 +1545,6 @@ FUNCTION void Make_Fecundity()
     {
       GPat=GP4(g);
       gg=sx(g);
-
       switch(Maturity_Option)
       {
         case 4:  //  Maturity_Option=4   read age-fecundity into age-maturity
@@ -1551,7 +1562,7 @@ FUNCTION void Make_Fecundity()
               int ALK_finder=(ALK_idx-1)*gmorph+g;
           for(a=0;a<=nages;a++)
           {
-            tempvec_a(a) = ALK(ALK_idx,g,a)(ALK_range_g_lo(ALK_finder,a),ALK_range_g_hi(ALK_finder,a)) *mat_fec_len(GPat)(ALK_range_g_lo(g,a),ALK_range_g_hi(g,a));
+            tempvec_a(a) = ALK(ALK_idx,g,a)(ALK_range_g_lo(ALK_finder,a),ALK_range_g_hi(ALK_finder,a)) *mat_fec_len(GPat)(ALK_range_g_lo(ALK_finder,a),ALK_range_g_hi(ALK_finder,a));
           }
           fec(g) = elem_prod(tempvec_a,mat_age(GPat));  //  reproductive output at age
         }
@@ -1654,7 +1665,6 @@ FUNCTION void Make_Fecundity()
       else
       {fec(g)=WTage_emp(t,GP3(g),-2);}
  */
-
         save_sel_fec(t,g,0)= fec(g);   //  save sel_al_3 and save fecundity for output
         if(y==endyr) save_sel_fec(t+nseas,g,0)=fec(g);
         if(save_for_report==2

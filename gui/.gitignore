@@ -1,0 +1,10 @@
+*.bak
+*.autosave.*
+*.temp
+*.pdf
+*.pro.user.*
+ui_*.h
+moc_*.*
+rcc_*.*
+Makefile.*
+

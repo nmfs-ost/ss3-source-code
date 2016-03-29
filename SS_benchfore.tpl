@@ -845,6 +845,7 @@ FUNCTION void Get_Forecast()
       yz=endyr+1;  //  biology year for parameters
       if(time_vary_MG(endyr+1,2)>0 || save_for_report>0)  //  so uses endyr+1 timevary setting for duration of forecast
       {
+        make_timevaryparm();
         get_MGsetup();
         ALK_subseas_update=1;  //  vector to indicate if ALK needs recalculating
         if(Grow_type!=2)

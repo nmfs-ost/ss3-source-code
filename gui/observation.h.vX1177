@@ -1,0 +1,76 @@
+#ifndef OBSERVATION_H
+#define OBSERVATION_H
+
+#include <QList>
+
+class observation
+{
+public:
+    observation(int size = 0);
+
+    void set_size (int size);
+    int size () {return female_data.count();}
+    void set_year (int year) {i_year = year;}
+    int year () {return i_year;}
+    void set_season (int season) {i_season = season;}
+    int season () {return i_season;}
+    void set_fleet (int fleet) {i_fleet = fleet;}
+    int fleet () {return i_fleet;}
+    void set_gender (int gender) {i_gender = gender;}
+    int gender () {return i_gender;}
+    void set_partition (int part) {i_partition = part;}
+    int partition () {return i_partition;}
+    void set_n_sample (int num_samp) {i_num_samples = num_samp;}
+    int num_sample () {return i_num_samples;}
+    void set_low_bin_low (int val) {i_low_bin_min = val;}
+    int low_bin_low () {return i_low_bin_min;}
+    void set_low_bin_hi (int val) {i_low_bin_max = val;}
+    int low_bin_hi () {return i_low_bin_max;}
+    void set_ageerr (int err_type) {i_age_err = err_type;}
+    int ageerr () {return i_age_err;}
+    void add_female_data_value (float val) {f_data.append(val);}
+    void set_female_data_value (int index, float val) {f_data[index] = val;}
+    int female_data_count () {return f_data.count();}
+    float female_data_value (int index) {return f_data[index];}
+    void add_female_sample_size (int val) {f_sample_size.append(val);}
+    void set_female_sample_size (int index, int val) {f_sample_size[index] = val;}
+    int female_sample_count () {return f_sample_size.count();}
+    int female_sample_size (int index) {return f_sample_size[index];}
+
+    void add_male_data_value (float val) {m_data.append (val);}
+    void set_male_data_value (int index, float val) {m_data[index] = val;}
+    int male_data_count () {return m_data.count();}
+    float male_data_value (int index) {return m_data[index];}
+    void add_male_sample_size (int val) {m_sample_size.append(val);}
+    void set_male_sample_size (int index, int val) {m_sample_size[index] = val;}
+    int male_sample_count () {return m_sample_size.count();}
+    int male_sample_size (int index) {return m_sample_size[index];}
+
+    void set_float_data (float val) {f_data[0] = val;}
+    int data_count () {return f_data.count();}
+    float float_data () {return f_data[0];}
+    void set_error (float err) {m_data[0] = err;}
+    int error_count () {return m_data.count();}
+    float error () {return m_data[0];}
+    void set_ignore (int val) {i_gender = val;}
+    int ignore () {return i_gender;}
+
+private:
+    int i_year;
+    int i_season;
+    int i_fleet;
+    int i_gender;
+    int i_partition;
+    int i_num_samples;
+    int i_low_bin_min;
+    int i_low_bin_max;
+    int i_age_err;
+
+    QList<float> f_data;
+    QList<int> f_sample_size;
+    QList<float> m_data;
+    QList<int> m_sample_size;
+
+};
+
+#endif // OBSERVATION_H

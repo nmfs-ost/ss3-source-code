@@ -648,9 +648,11 @@ FUNCTION void write_nudata()
   for (f=1;f<=Nfleet;f++)
   {report1<<min_tail_L(f)<<" "<<min_comp_L(f)<<" "<<CombGender_L(f)<<" "<<AccumBin_L(f)<<" "<<Comp_Err_L(f)<<" "<<Comp_Err_L2(f)<<" #_fleet:"<<f<<"_"<<fleetname(f)<<endl;}
 
+  report1<<"# sex codes:  0=combined; 1=use female only; 2=use male only; 3=use both as joint sexxlength distribution"<<endl;
+  report1<<"# partition codes:  (0=combined; 1=discard; 2=retained"<<endl;
   report1<<nlen_bin<<" #_N_LengthBins; then enter lower edge of each length bin"<<endl<<len_bins_dat<<endl;
 //  report1<<nobsl_rd<<" #_N_Length_obs"<<endl;
-  report1<<"#_yr month fleet gender part Nsamp datavector(female-male)"<<endl;
+  report1<<"#_yr month fleet sex part Nsamp datavector(female-male)"<<endl;
    for (f=1;f<=Nfleet;f++)
    {
     if(Nobs_l(f)>0)
@@ -685,7 +687,9 @@ FUNCTION void write_nudata()
   for (f=1;f<=Nfleet;f++)
   {report1<<min_tail_A(f)<<" "<<min_comp_A(f)<<" "<<CombGender_A(f)<<" "<<AccumBin_A(f)<<" "<<Comp_Err_A(f)<<" "<<Comp_Err_A2(f)<<" #_fleet:"<<f<<"_"<<fleetname(f)<<endl;}
   report1<<Lbin_method<<" #_Lbin_method_for_Age_Data: 1=poplenbins; 2=datalenbins; 3=lengths"<<endl;
-  report1<<"#_yr month fleet gender part ageerr Lbin_lo Lbin_hi Nsamp datavector(female-male)"<<endl;
+  report1<<"# sex codes:  0=combined; 1=use female only; 2=use male only; 3=use both as joint sexxlength distribution"<<endl;
+  report1<<"# partition codes:  (0=combined; 1=discard; 2=retained"<<endl;
+  report1<<"#_yr month fleet sex part ageerr Lbin_lo Lbin_hi Nsamp datavector(female-male)"<<endl;
    if(Nobs_a_tot>0)
    for (f=1;f<=Nfleet;f++)
    {
@@ -697,7 +701,7 @@ FUNCTION void write_nudata()
      }
     }
    }
-  f=exp_a_temp.size()+8;
+  f=exp_a_temp.size()+9;
   report1 << "-9999 ";
   for(i=1;i<=f;i++) report1<<" 0";
   report1<<endl;
@@ -705,7 +709,10 @@ FUNCTION void write_nudata()
   report1<<"#"<<endl<<use_meansizedata<<" #_Use_MeanSize-at-Age_obs (0/1)"<<endl;
   if(use_meansizedata>0)
   {
-  report1<<"#_yr month fleet gender part ageerr ignore datavector(female-male)"<<endl;
+  report1<<"# sex codes:  0=combined; 1=use female only; 2=use male only; 3=use both as joint sexxlength distribution"<<endl;
+  report1<<"# partition codes:  (0=combined; 1=discard; 2=retained"<<endl;
+  report1<<"# ageerr codes:  positive means mean length-at-age; negative means mean bodywt_at_age"<<endl;
+  report1<<"#_yr month fleet sex part ageerr ignore datavector(female-male)"<<endl;
   report1<<"#                                          samplesize(female-male)"<<endl;
    for (f=1;f<=Nfleet;f++)
    {
@@ -922,9 +929,11 @@ FUNCTION void write_nudata()
   report1<<"#_mintailcomp_addtocomp_combM+F_CompressBins_CompError_ParmSelect"<<endl;
   for (f=1;f<=Nfleet;f++)
   {report1<<min_tail_L(f)<<" "<<min_comp_L(f)<<" "<<CombGender_L(f)<<" "<<AccumBin_L(f)<<" "<<Comp_Err_L(f)<<" "<<Comp_Err_L2(f)<<" #_fleet:"<<f<<"_"<<fleetname(f)<<endl;}
+  report1<<"# sex codes:  0=combined; 1=use female only; 2=use male only; 3=use both as joint sexxlength distribution"<<endl;
+  report1<<"# partition codes:  (0=combined; 1=discard; 2=retained"<<endl;
   report1<<nlen_bin<<" #_N_LengthBins"<<endl<<len_bins_dat<<endl;
 //  report1<<sum(Nobs_l)<<" #_N_Length_obs"<<endl;
-  report1<<"#_yr month fleet gender part Nsamp datavector(female-male)"<<endl;
+  report1<<"#_yr month fleet sex part Nsamp datavector(female-male)"<<endl;
    for (f=1;f<=Nfleet;f++)
     {
     if(Nobs_l(f)>0)
@@ -964,7 +973,10 @@ FUNCTION void write_nudata()
   for (f=1;f<=Nfleet;f++)
   {report1<<min_tail_A(f)<<" "<<min_comp_A(f)<<" "<<CombGender_A(f)<<" "<<AccumBin_A(f)<<" "<<Comp_Err_A(f)<<" "<<Comp_Err_A2(f)<<" #_fleet:"<<f<<"_"<<fleetname(f)<<endl;}
   report1<<Lbin_method<<" #_Lbin_method_for_Age_Data: 1=poplenbins; 2=datalenbins; 3=lengths"<<endl;
-  report1<<"#_yr month fleet gender part ageerr Lbin_lo Lbin_hi Nsamp datavector(female-male)"<<endl;
+  report1<<"# sex codes:  0=combined; 1=use female only; 2=use male only; 3=use both as joint sexxlength distribution"<<endl;
+  report1<<"# partition codes:  (0=combined; 1=discard; 2=retained"<<endl;
+
+  report1<<"#_yr month fleet sex part ageerr Lbin_lo Lbin_hi Nsamp datavector(female-male)"<<endl;
    if(Nobs_a_tot>0)
    for (f=1;f<=Nfleet;f++)
    {
@@ -984,7 +996,7 @@ FUNCTION void write_nudata()
     }
     }
    }
-  f=exp_a_temp.size()+8;
+  f=exp_a_temp.size()+9;
   report1 << "-9999 ";
   for(i=1;i<=f;i++) report1<<" 0";
   report1<<endl;
@@ -992,7 +1004,10 @@ FUNCTION void write_nudata()
   report1<<"#"<<endl<<use_meansizedata<<" #_Use_MeanSize-at-Age_obs (0/1)"<<endl;
   if(use_meansizedata>0)
   {
-  report1<<"#_yr month fleet gender part ageerr ignore datavector(female-male)"<<endl;
+  report1<<"# sex codes:  0=combined; 1=use female only; 2=use male only; 3=use both as joint sexxlength distribution"<<endl;
+  report1<<"# partition codes:  (0=combined; 1=discard; 2=retained"<<endl;
+  report1<<"# ageerr codes:  positive means mean length-at-age; negative means mean bodywt_at_age"<<endl;
+  report1<<"#_yr month fleet sex part ageerr ignore datavector(female-male)"<<endl;
   report1<<"#                                          samplesize(female-male)"<<endl;
    for (f=1;f<=Nfleet;f++)
    {
@@ -1266,7 +1281,9 @@ FUNCTION void write_nudata()
   {report1<<min_tail_L(f)<<" "<<min_comp_L(f)<<" "<<CombGender_L(f)<<" "<<AccumBin_L(f)<<" "<<Comp_Err_L(f)<<" "<<Comp_Err_L2(f)<<" #_fleet:"<<f<<"_"<<fleetname(f)<<endl;}
   report1<<nlen_bin<<" #_N_LengthBins"<<endl<<len_bins_dat<<endl;
 //  report1<<sum(Nobs_l)<<" #_N_Length_obs"<<endl;
-  report1<<"#_yr month fleet gender part Nsamp datavector(female-male)"<<endl;
+  report1<<"# sex codes:  0=combined; 1=use female only; 2=use male only; 3=use both as joint sexxlength distribution"<<endl;
+  report1<<"# partition codes:  (0=combined; 1=discard; 2=retained"<<endl;
+  report1<<"#_yr month fleet sex part Nsamp datavector(female-male)"<<endl;
    for (f=1;f<=Nfleet;f++)
     {
     if(Nobs_l(f)>0)
@@ -1323,7 +1340,10 @@ FUNCTION void write_nudata()
   for (f=1;f<=Nfleet;f++)
   {report1<<min_tail_A(f)<<" "<<min_comp_A(f)<<" "<<CombGender_A(f)<<" "<<AccumBin_A(f)<<" "<<Comp_Err_A(f)<<" "<<Comp_Err_A2(f)<<" #_fleet:"<<f<<"_"<<fleetname(f)<<endl;}
   report1<<Lbin_method<<" #_Lbin_method_for_Age_Data: 1=poplenbins; 2=datalenbins; 3=lengths"<<endl;
-  report1<<"#_yr month fleet gender part ageerr Lbin_lo Lbin_hi Nsamp datavector(female-male)"<<endl;
+  report1<<"# sex codes:  0=combined; 1=use female only; 2=use male only; 3=use both as joint sexxlength distribution"<<endl;
+  report1<<"# partition codes:  (0=combined; 1=discard; 2=retained"<<endl;
+
+  report1<<"#_yr month fleet sex part ageerr Lbin_lo Lbin_hi Nsamp datavector(female-male)"<<endl;
   if(Nobs_a_tot>0)
   for (f=1;f<=Nfleet;f++)
   {
@@ -1362,7 +1382,7 @@ FUNCTION void write_nudata()
       }
     }
   }
-  f=exp_a_temp.size()+8;
+  f=exp_a_temp.size()+9;
   report1 << "-9999 ";
   for(i=1;i<=f;i++) report1<<" 0";
   report1<<endl;
@@ -1371,7 +1391,10 @@ FUNCTION void write_nudata()
   report1<<"#"<<endl<<use_meansizedata<<" #_Use_MeanSize-at-Age_obs (0/1)"<<endl;
   if(use_meansizedata>0)
   {
-    report1<<"#_yr month fleet gender part ageerr ignore datavector(female-male)"<<endl;
+    report1<<"# sex codes:  0=combined; 1=use female only; 2=use male only; 3=use both as joint sexxlength distribution"<<endl;
+    report1<<"# partition codes:  (0=combined; 1=discard; 2=retained"<<endl;
+    report1<<"# ageerr codes:  positive means mean length-at-age; negative means mean bodywt_at_age"<<endl;
+    report1<<"#_yr month fleet sex part ageerr ignore datavector(female-male)"<<endl;
     report1<<"#                                          samplesize(female-male)"<<endl;
     for (f=1;f<=Nfleet;f++)
     {
@@ -1732,7 +1755,7 @@ FUNCTION void write_nucontrol()
     if (Hermaphro_Option!=0) report4<<Hermaphro_seas<<" # Hermaphro_season "<<endl<<Hermaphro_maleSPB<<" # Hermaphro_maleSPB "<<endl;
     report4<<MGparm_def<<" #_parameter_offset_approach (1=none, 2= M, G, CV_G as offset from female-GP1, 3=like SS2 V1.x)"<<endl;
     report4<<MG_adjust_method<<
-    " #_env/block/dev_adjust_method (1=standard; 2=logistic transform keeps in base parm bounds; 3=standard w/ no bound check)"<<endl;
+    " #_env/block/dev_adjust_method for  MG parms (1=standard; 2=logistic transform keeps in base parm bounds; 3=standard w/ no bound check)"<<endl;
   report4<<"#"<<endl;
   report4<<"#_growth_parms"<<endl;
   report4<<"#_LO HI INIT PRIOR PR_type SD PHASE env-var use_dev dev_minyr dev_maxyr dev_stddev Block Block_Fxn"<<endl;
@@ -1766,34 +1789,22 @@ FUNCTION void write_nucontrol()
     report4<<"#_Cond -2 2 0 0 -1 99 -2 #_placeholder when no MG-environ parameters"<<endl;
   }
   report4<<"#"<<endl;
-  if(N_MGparm_blk>0)
+  if(timevary_parm_cnt_MG>0)
   {
-    report4<<1<<" #_custom_MG-block_setup (0/1)"<<endl;
+    report4<<1<<" #_custom_MG_blocktrend_setup (0/1)"<<endl;
     report4<<"#_LO HI INIT PRIOR PR_type SD PHASE"<<endl;
-    for (f=1;f<=N_MGparm_blk;f++)
-    {j++; NP++; if(customblocksetup_MG==0) {k=1;} else {k=f;}
-    MGparm_blk_1(k,3)=value(MGparm(j));report4<<MGparm_blk_1(k)<<" # "<<ParmLabel(NP)<<endl;}
+    
+    for (f=1;f<=timevary_parm_cnt_MG;f++)
+    {NP++;
+    timevary_parm_rd[f-1](3)=value(timevary_parm(f));
+    report4<<timevary_parm_rd[f-1]<<" # "<<ParmLabel(NP)<<endl;}
   }
   else
   {
-    report4<<"#_Cond 0  #custom_MG-block_setup (0/1)"<<endl;
+    report4<<"#_Cond 0  #custom_MG_blocktrend_setup (0/1)"<<endl;
     report4<<"#_LO HI INIT PRIOR PR_type SD PHASE"<<endl;
-    report4<<"#_Cond -2 2 0 0 -1 99 -2 #_placeholder when no MG-block parameters"<<endl;
+    report4<<"#_Cond -2 2 0 0 -1 99 -2 #_placeholder when no MG-block or trend parameters"<<endl;
   }
-   if(N_MGparm_trend>0)
-   {
-     report4<<"#_MGtrend_&_cycle_parms "<<endl;
-     for (f=1;f<=N_MGparm_trend2;f++)
-     {
-       j++;  NP++;
-       MGparm_trend_1(f,3)=value(MGparm(j)); report4<<MGparm_trend_1(f)<<" # "<<ParmLabel(NP)<<endl;
-     }
-   }
-  else
-  {
-    report4<<"#_Cond No MG parm trends "<<endl;
-  }
-
 
   report4<<"#"<<endl;
   report4<<"#_seasonal_effects_on_biology_parms"<<endl<<MGparm_seas_effects<<" #_femwtlen1,femwtlen2,mat1,mat2,fec1,fec2,Malewtlen1,malewtlen2,L1,K"<<endl;
@@ -2027,12 +2038,11 @@ FUNCTION void write_nucontrol()
    report4<<"#_Pattern ___ Male Special"<<endl;
    for (f=1;f<=Nfleet;f++) report4<<seltype(f+Nfleet)<<" # "<<f<<" "<<fleetname(f)<<endl;
 
-   report4<<selparm_adjust_method<<
-   " #_env/block/dev_adjust_method (1=standard; 2=logistic trans to keep in base parm bounds; 3=standard w/ no bound check)"<<endl;
-
+    report4<<selparm_adjust_method<<
+    " #_env/block/dev_adjust_method for  MG parms (1=standard; 2=logistic transform keeps in base parm bounds; 3=standard w/ no bound check)"<<endl;
    report4<<"#_LO HI INIT PRIOR PR_type SD PHASE env-var use_dev dev_minyr dev_maxyr dev_stddev Block Block_Fxn"<<endl;
 
-  if(retParCount<=0)
+//  if(seltype(f,2)==4)
   {
       for (f=1;f<=N_selparm;f++)
       {
@@ -2041,28 +2051,28 @@ FUNCTION void write_nucontrol()
         report4<<selparm_1(f)<<" # "<<ParmLabel(NP)<<endl;
       }
   }
-  else
-  {
-    // shenanigans for inserting dome-shaped retention parameter placeholders for 3.24 -> 3.30
-      int NsrP=1;   // number of sets of placeholder retention parameters for 3.24
-      int NrP=0;    // number of placeholder retention parameters for 3.24
-      for (f=1;f<=N_selparm;f++)
-      {
-        if(f==retParmLoc(NsrP))
-        {
-            // insert the placeholders
-            NrP++; report4<<"  1 100 100   0   -1  99  -99  0   0   0   0   0   0   0"<<" # "<<retParmLabel(NrP)<<endl;
-            NrP++; report4<<"-10  10   1   0   -1  99  -99  0   0   0   0   0   0   0"<<" # "<<retParmLabel(NrP)<<endl;
-            NrP++; report4<<"-10  10   1   0   -1  99  -99  0   0   0   0   0   0   0"<<" # "<<retParmLabel(NrP)<<endl;
+//  else
+//  {
+//    // shenanigans for inserting dome-shaped retention parameter placeholders for 3.24 -> 3.30
+//      int NsrP=1;   // number of sets of placeholder retention parameters for 3.24
+//      int NrP=0;    // number of placeholder retention parameters for 3.24
+//      for (f=1;f<=N_selparm;f++)
+//      {
+//        if(f==retParmLoc(NsrP))
+//        {
+//            // insert the placeholders
+//            NrP++; report4<<"  1 100 100   0   -1  99  -99  0   0   0   0   0   0   0"<<" # "<<retParmLabel(NrP)<<endl;
+//            NrP++; report4<<"-10  10   1   0   -1  99  -99  0   0   0   0   0   0   0"<<" # "<<retParmLabel(NrP)<<endl;
+//            NrP++; report4<<"-10  10   1   0   -1  99  -99  0   0   0   0   0   0   0"<<" # "<<retParmLabel(NrP)<<endl;
 
-            NsrP++;
-        }
+//            NsrP++;
+//        }
 
-        NP++;
-        selparm_1(f,3)=value(selparm(f));
-        report4<<selparm_1(f)<<" # "<<ParmLabel(NP)<<endl;
-      }
-  }
+//        NP++;
+//        selparm_1(f,3)=value(selparm(f));
+//        report4<<selparm_1(f)<<" # "<<ParmLabel(NP)<<endl;
+//      }
+//  }
 
   j=N_selparm;
 
@@ -2082,34 +2092,21 @@ FUNCTION void write_nucontrol()
     report4<<"#_Cond -2 2 0 0 -1 99 -2 #_placeholder when no enviro fxns"<<endl;
   }
 
-   if(N_selparm_blk>0)
+   if(timevary_parm_cnt_sel>0)
    {
-     report4<<1<<" #_custom_sel-blk_setup (0/1) "<<endl;
-     for (f=1;f<=N_selparm_blk;f++)
+     report4<<"1 #_custom_setup_for_sel_blocks&trends (0/1) "<<endl;
+     for (f=timevary_parm_cnt_MG+1;f<=timevary_parm_cnt;f++)
      {
-       j++;  NP++;
+       NP++;
        if(customblocksetup==0) {k=1;} else {k=f;}  // use read value of custom here
-       selparm_blk_1(k,3)=value(selparm(j)); report4<<selparm_blk_1(k)<<" # "<<ParmLabel(NP)<<endl;
+       timevary_parm_rd[f-1](3)=value(timevary_parm(f));
+       report4<<timevary_parm_rd[f-1]<<" # "<<ParmLabel(NP)<<endl;
      }
    }
   else
   {
-    report4<<"#_Cond 0 #_custom_sel-blk_setup (0/1) "<<endl;
+     report4<<"#0 #_custom_setup_for_sel_blocks&trends (0/1) "<<endl;
     report4<<"#_Cond -2 2 0 0 -1 99 -2 #_placeholder when no block usage"<<endl;
-  }
-
-   if(N_selparm_trend>0)
-   {
-     report4<<"#_seltrend_parms "<<endl;
-     for (f=1;f<=N_selparm_trend2;f++)
-     {
-       j++;  NP++;
-       selparm_trend_1(f,3)=value(selparm(j)); report4<<selparm_trend_1(f)<<" # "<<ParmLabel(NP)<<endl;
-     }
-   }
-  else
-  {
-    report4<<"#_Cond No selex parm trends "<<endl;
   }
 
   if(N_selparm_dev>0)

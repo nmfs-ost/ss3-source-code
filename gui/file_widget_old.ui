@@ -1,0 +1,798 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>starter_widget</class>
+ <widget class="QWidget" name="starter_widget">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>654</width>
+    <height>620</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Form</string>
+  </property>
+  <layout class="QHBoxLayout" name="horizontalLayout">
+   <item>
+    <widget class="QTabWidget" name="tabWidget">
+     <property name="currentIndex">
+      <number>0</number>
+     </property>
+     <widget class="QWidget" name="tab_input">
+      <attribute name="title">
+       <string>Input Files</string>
+      </attribute>
+      <layout class="QGridLayout" name="gridLayout_3">
+       <item row="9" column="0" colspan="2">
+        <layout class="QHBoxLayout" name="horizontalLayout_26">
+         <item>
+          <widget class="QCheckBox" name="checkBox_parameter_file">
+           <property name="text">
+            <string>Read inital values from SS3.PAR file</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <spacer name="horizontalSpacer_25">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>40</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+        </layout>
+       </item>
+       <item row="1" column="0" colspan="4">
+        <widget class="QLabel" name="label_app_name">
+         <property name="text">
+          <string>Stock Synthesis</string>
+         </property>
+         <property name="textFormat">
+          <enum>Qt::PlainText</enum>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="0" colspan="4">
+        <widget class="QLabel" name="label_app_version">
+         <property name="text">
+          <string>Version 3.3</string>
+         </property>
+         <property name="textFormat">
+          <enum>Qt::RichText</enum>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignCenter</set>
+         </property>
+         <property name="textInteractionFlags">
+          <set>Qt::NoTextInteraction</set>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="0" colspan="4">
+        <layout class="QHBoxLayout" name="horizontalLayout_14">
+         <item>
+          <spacer name="horizontalSpacer_15">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>40</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+         <item>
+          <widget class="QLabel" name="label_toolbox">
+           <property name="text">
+            <string>NOAA Fisheries Toolbox</string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignCenter</set>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLabel" name="label_NOAA_bird">
+           <property name="text">
+            <string/>
+           </property>
+           <property name="pixmap">
+            <pixmap resource="stock_synth.qrc">:/images/images/circle_only.jpg</pixmap>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <spacer name="horizontalSpacer_14">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>40</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+        </layout>
+       </item>
+       <item row="12" column="0">
+        <spacer name="verticalSpacer">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>20</width>
+           <height>40</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item row="13" column="0" colspan="2">
+        <layout class="QHBoxLayout" name="horizontalLayout_24">
+         <item>
+          <widget class="QLabel" name="label_note">
+           <property name="text">
+            <string>Note: </string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLabel" name="label_end_of_file">
+           <property name="text">
+            <string>Check value for end of file =</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QSpinBox" name="spinBox_end_of_file">
+           <property name="buttonSymbols">
+            <enum>QAbstractSpinBox::NoButtons</enum>
+           </property>
+           <property name="prefix">
+            <string/>
+           </property>
+           <property name="maximum">
+            <number>9989</number>
+           </property>
+           <property name="value">
+            <number>999</number>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <spacer name="horizontalSpacer_31">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>40</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+        </layout>
+       </item>
+       <item row="10" column="0">
+        <widget class="QCheckBox" name="checkBox">
+         <property name="text">
+          <string>Track number of runs with RunNumber.SS
+(output in CumReport.SSO and used when processing ProfileValues.SS)</string>
+         </property>
+        </widget>
+       </item>
+       <item row="8" column="0" colspan="4">
+        <widget class="QFrame" name="frame">
+         <property name="frameShape">
+          <enum>QFrame::StyledPanel</enum>
+         </property>
+         <property name="frameShadow">
+          <enum>QFrame::Raised</enum>
+         </property>
+         <layout class="QGridLayout" name="gridLayout">
+          <item row="0" column="2">
+           <widget class="QPushButton" name="pushButton_starter_file">
+            <property name="text">
+             <string>Info</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="1">
+           <widget class="QLineEdit" name="lineEdit_forecast_file">
+            <property name="text">
+             <string/>
+            </property>
+            <property name="readOnly">
+             <bool>false</bool>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="0">
+           <widget class="QLabel" name="label_starter_file">
+            <property name="text">
+             <string>Starter File:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="1">
+           <widget class="QLineEdit" name="lineEdit_starter_file">
+            <property name="text">
+             <string/>
+            </property>
+            <property name="readOnly">
+             <bool>false</bool>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="0">
+           <widget class="QLabel" name="label_forecast_file">
+            <property name="text">
+             <string>Forecast File:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="6" column="1">
+           <widget class="QLineEdit" name="lineEdit_runno_file">
+            <property name="text">
+             <string>RunNumber.SS</string>
+            </property>
+            <property name="readOnly">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item row="7" column="1">
+           <widget class="QLineEdit" name="lineEdit_pro_file">
+            <property name="text">
+             <string>ProfileValues.SS</string>
+            </property>
+            <property name="readOnly">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="1">
+           <widget class="QLineEdit" name="lineEdit_data_file">
+            <property name="text">
+             <string/>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="2">
+           <widget class="QPushButton" name="pushButton_fcast_file">
+            <property name="text">
+             <string>Info</string>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="2">
+           <widget class="QPushButton" name="pushButton_data_file">
+            <property name="text">
+             <string>Info</string>
+            </property>
+           </widget>
+          </item>
+          <item row="6" column="2">
+           <widget class="QPushButton" name="pushButton_runno_file">
+            <property name="text">
+             <string>Info</string>
+            </property>
+           </widget>
+          </item>
+          <item row="6" column="0">
+           <widget class="QLabel" name="label_runno_file">
+            <property name="text">
+             <string>Run number:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="3" column="2">
+           <widget class="QPushButton" name="pushButton_control_file">
+            <property name="text">
+             <string>Info</string>
+            </property>
+           </widget>
+          </item>
+          <item row="3" column="1">
+           <widget class="QLineEdit" name="lineEdit_control_file">
+            <property name="text">
+             <string/>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="0">
+           <widget class="QLabel" name="label_data_file">
+            <property name="text">
+             <string>Data File:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="7" column="2">
+           <widget class="QPushButton" name="pushButton_pro_file">
+            <property name="text">
+             <string>Info</string>
+            </property>
+           </widget>
+          </item>
+          <item row="3" column="0">
+           <widget class="QLabel" name="label_control_file">
+            <property name="text">
+             <string>Control File:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="7" column="0">
+           <widget class="QLabel" name="label_pro_file">
+            <property name="text">
+             <string>Profile values:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="4" column="1">
+           <widget class="QLineEdit" name="lineEdit_par_file">
+            <property name="text">
+             <string>SS3.PAR</string>
+            </property>
+           </widget>
+          </item>
+          <item row="4" column="2">
+           <widget class="QPushButton" name="pushButton_par_file">
+            <property name="text">
+             <string>Info</string>
+            </property>
+           </widget>
+          </item>
+          <item row="4" column="0">
+           <widget class="QLabel" name="label_par_file">
+            <property name="text">
+             <string>Parameter File:</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item row="11" column="0">
+        <widget class="QCheckBox" name="checkBox_2">
+         <property name="text">
+          <string>Use ProfileValues.SS for batch processing.</string>
+         </property>
+        </widget>
+       </item>
+       <item row="9" column="3" rowspan="4">
+        <layout class="QHBoxLayout" name="horizontalLayout_app_icon">
+         <item>
+          <spacer name="horizontalSpacer_2">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>40</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+         <item>
+          <widget class="QLabel" name="label_app_icon">
+           <property name="text">
+            <string/>
+           </property>
+           <property name="pixmap">
+            <pixmap resource="stock_synth.qrc">:/images/images/image7_no_background.png</pixmap>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <spacer name="horizontalSpacer_3">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>40</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+        </layout>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="tab_output">
+      <attribute name="title">
+       <string>Output Files</string>
+      </attribute>
+      <layout class="QGridLayout" name="gridLayout_4">
+       <item row="0" column="0" colspan="2">
+        <widget class="QLabel" name="label_detail_level">
+         <property name="text">
+          <string>Display run detail level</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="2">
+        <layout class="QHBoxLayout" name="horizontalLayout_16">
+         <item>
+          <widget class="QComboBox" name="comboBox_detail_level"/>
+         </item>
+         <item>
+          <spacer name="horizontalSpacer_17">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>40</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+        </layout>
+       </item>
+       <item row="1" column="0" colspan="2">
+        <widget class="QLabel" name="label_report_level">
+         <property name="text">
+          <string>Include detailed age-structured reports in Report.sso</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="2">
+        <layout class="QHBoxLayout" name="horizontalLayout_23">
+         <item>
+          <widget class="QCheckBox" name="checkBox_report">
+           <property name="text">
+            <string/>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <spacer name="horizontalSpacer_24">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>40</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+        </layout>
+       </item>
+       <item row="2" column="0" colspan="2">
+        <widget class="QLabel" name="label_checkup">
+         <property name="text">
+          <string>Generate detailed Checkup.sso file</string>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="2">
+        <layout class="QHBoxLayout" name="horizontalLayout_25">
+         <item>
+          <widget class="QCheckBox" name="checkBox_checkup">
+           <property name="text">
+            <string/>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <spacer name="horizontalSpacer_26">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>40</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+        </layout>
+       </item>
+       <item row="3" column="0" colspan="2">
+        <widget class="QLabel" name="label_parm_trace">
+         <property name="text">
+          <string>Write parameter values to ParmTrace.sso</string>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="2">
+        <layout class="QHBoxLayout" name="horizontalLayout_17">
+         <item>
+          <widget class="QCheckBox" name="checkBox_parm_trace">
+           <property name="text">
+            <string/>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QComboBox" name="comboBox_parm_trace_iter"/>
+         </item>
+         <item>
+          <widget class="QComboBox" name="comboBox_parm_trace_param"/>
+         </item>
+         <item>
+          <spacer name="horizontalSpacer_18">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>40</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+        </layout>
+       </item>
+       <item row="4" column="0" colspan="2">
+        <widget class="QLabel" name="label_cum_report_level">
+         <property name="text">
+          <string>Write to Cumreport.sso</string>
+         </property>
+        </widget>
+       </item>
+       <item row="4" column="2">
+        <layout class="QHBoxLayout" name="horizontalLayout_18">
+         <item>
+          <widget class="QCheckBox" name="checkBox_cumrpt_like">
+           <property name="text">
+            <string>like and timeseries</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QCheckBox" name="checkBox_cumrpt_fits">
+           <property name="text">
+            <string>survey fits</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <spacer name="horizontalSpacer_19">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>40</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+        </layout>
+       </item>
+       <item row="5" column="0" colspan="2">
+        <widget class="QLabel" name="label_prior_likelihood">
+         <property name="text">
+          <string>Include prior likelihood for non-estimated parameters</string>
+         </property>
+        </widget>
+       </item>
+       <item row="5" column="2">
+        <layout class="QHBoxLayout" name="horizontalLayout_27">
+         <item>
+          <widget class="QCheckBox" name="checkBox_prior_likelihood">
+           <property name="text">
+            <string/>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <spacer name="horizontalSpacer_28">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>40</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+        </layout>
+       </item>
+       <item row="6" column="0" colspan="2">
+        <widget class="QLabel" name="label_datafiles">
+         <property name="text">
+          <string>Number of data files to produce</string>
+         </property>
+        </widget>
+       </item>
+       <item row="6" column="2">
+        <layout class="QHBoxLayout" name="horizontalLayout_15">
+         <item>
+          <widget class="QSpinBox" name="spinBox_datafiles"/>
+         </item>
+         <item>
+          <widget class="QLabel" name="label">
+           <property name="text">
+            <string>1st is input, 2nd is estimates,
+3rd and higher are bootstrap</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <spacer name="horizontalSpacer_16">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>40</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+        </layout>
+       </item>
+       <item row="7" column="0">
+        <spacer name="horizontalSpacer_29">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>40</width>
+           <height>20</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item row="8" column="0" colspan="3">
+        <widget class="QFrame" name="frame_2">
+         <property name="frameShape">
+          <enum>QFrame::StyledPanel</enum>
+         </property>
+         <property name="frameShadow">
+          <enum>QFrame::Raised</enum>
+         </property>
+         <layout class="QGridLayout" name="gridLayout_2">
+          <item row="0" column="2">
+           <widget class="QPushButton" name="pushButton_report">
+            <property name="text">
+             <string>Info</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="0">
+           <widget class="QLabel" name="label_report">
+            <property name="text">
+             <string>Primary Report:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="1">
+           <widget class="QLineEdit" name="lineEdit_report">
+            <property name="text">
+             <string/>
+            </property>
+            <property name="readOnly">
+             <bool>false</bool>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="1">
+           <widget class="QLineEdit" name="lineEdit_comp_report">
+            <property name="text">
+             <string/>
+            </property>
+            <property name="readOnly">
+             <bool>false</bool>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="1">
+           <widget class="QLineEdit" name="lineEdit_cum_report">
+            <property name="text">
+             <string/>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="0">
+           <widget class="QLabel" name="label_cum_report">
+            <property name="text">
+             <string>Cumulative Data:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="2">
+           <widget class="QPushButton" name="pushButton_cum_report">
+            <property name="text">
+             <string>Info</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="2">
+           <widget class="QPushButton" name="pushButton_comp_report">
+            <property name="text">
+             <string>Info</string>
+            </property>
+           </widget>
+          </item>
+          <item row="3" column="0">
+           <widget class="QLabel" name="label_fcast_report">
+            <property name="text">
+             <string>Forecast Report:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="3" column="2">
+           <widget class="QPushButton" name="pushButton_fcast_report">
+            <property name="text">
+             <string>Info</string>
+            </property>
+           </widget>
+          </item>
+          <item row="3" column="1">
+           <widget class="QLineEdit" name="lineEdit_fcast_report">
+            <property name="text">
+             <string/>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="0">
+           <widget class="QLabel" name="label_comp_report">
+            <property name="text">
+             <string>Composition Data:</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item row="9" column="0">
+        <widget class="QLabel" name="label_16">
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+       </item>
+       <item row="9" column="1" rowspan="3">
+        <spacer name="verticalSpacer_2">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>20</width>
+           <height>40</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+      </layout>
+     </widget>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <resources>
+  <include location="stock_synth.qrc"/>
+ </resources>
+ <connections/>
+</ui>

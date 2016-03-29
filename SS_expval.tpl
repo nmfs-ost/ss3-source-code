@@ -122,6 +122,12 @@ FUNCTION void Get_expected_values();
 //          if(docheckup==1) echoinput<<"exp_l: "<<exp_l_temp<<endl<<"exp_l_ret: "<<exp_l_temp_ret<<endl;
 //          end creation of selected A-L
         }
+        
+        if(sum(exp_l_temp)<1.0e-8)
+        	{
+        		if(do_once==1) {N_warn++; warning<<"warn just once for:  Observation exists, but nil selected fish for year, seas, fleet "<<y<<" "<<s<<" "<<f<<endl;}
+        		exp_l_temp+=1.0e-05;
+        	}
 
         for (data_type=1;data_type<=9;data_type++)
         {

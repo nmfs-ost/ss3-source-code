@@ -21,8 +21,8 @@ PARAMETER_SECTION
 !!//  SS_Label_Info_5.1.1 #Create MGparm vector and associated arrays
   // natural mortality and growth
   init_bounded_number_vector MGparm(1,N_MGparm2,MGparm_LO,MGparm_HI,MGparm_PH)
-  matrix MGparm_trend(1,N_MGparm_trend,styr,YrMax+1);
-  matrix MGparm_block_val(1,N_MGparm,styr,YrMax+1);
+//  matrix MGparm_trend(1,N_MGparm_trend,styr,YrMax+1);
+//  matrix MGparm_block_val(1,N_MGparm,styr,YrMax+1);
   init_bounded_matrix MGparm_dev(1,N_MGparm_dev,MGparm_dev_minyr,MGparm_dev_maxyr,-10,10,MGparm_dev_PH)
   matrix MGparm_dev_rwalk(1,N_MGparm_dev,MGparm_dev_minyr,MGparm_dev_maxyr);
   vector L_inf(1,N_GP*gender);
@@ -222,7 +222,7 @@ PARAMETER_SECTION
   else
     {k=-1;}
  END_CALCS
- init_bounded_number_vector F_rate(1,k,0.,Fparm_max,Fparm_PH)
+  init_bounded_number_vector F_rate(1,k,0.,Fparm_max,Fparm_PH)
 
   vector Nmigr(1,pop);
   number Nsurvive;
@@ -303,8 +303,6 @@ PARAMETER_SECTION
 
 !!//  SS_Label_Info_5.1.5 #Selectivity-related parameters
   init_bounded_number_vector selparm(1,N_selparm2,selparm_LO,selparm_HI,selparm_PH)
-  matrix selparm_trend(1,N_selparm_trend,styr,YrMax);
-  matrix selparm_block_val(1,N_selparm,styr,YrMax);
 
   init_bounded_matrix selparm_dev(1,N_selparm_dev,selparm_dev_minyr,selparm_dev_maxyr,-10,10,selparm_dev_PH)
   matrix selparm_dev_rwalk(1,N_selparm_dev,selparm_dev_minyr,selparm_dev_maxyr)
@@ -335,6 +333,9 @@ PARAMETER_SECTION
  END_CALCS
 
   init_bounded_number_vector TG_parm(1,k,TG_parm_LO,TG_parm_HI,TG_parm_PH);
+
+  vector timevary_parm(1,timevary_parm_cnt);  //  will map to the MGparms and selparms that are the actual parameters
+  matrix parm_timevary(1,timevary_cnt,styr-1,YrMax);  //  tim,e series of adjusted parm values for block and trend
 
  LOCAL_CALCS
   if(Do_Forecast>0)

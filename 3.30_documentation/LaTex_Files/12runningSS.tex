@@ -152,11 +152,9 @@ Typing “Q”  during a run will cause ADMB to immediately go to the final phas
 When SS switches to MCMC or MCEVAL mode, it sets all the bias adjustment factors to 1.0 for any years with recruitment deviations defined.  SS does not create a report file after completing MCMC because it would show values based on the last MCMC step.
 
 \subsubsection{Using R To View Model Output}
-A collection of functions developed as a package, r4ss, for the statistical software R has been created to explore SS model output.  The functions include tools for summarizing and plotting results, manipulating files, visualizing model parameterizations, and various other tasks.  Currently, information on the code can be found at code.goole.com/p/r4ss which facilities exploration of the functions, code, information on any major changes, and allows for submission of questions or issues.  Specific information on the R package, r4ss, can be found on the CRAN website (cran.r-project.org/web/packages/r4ss/index.html).  The software package is under constant development to maintain compatibility with new versions of SS and to improve functionality.  The code in package form can be installed within R using the commands: \\
-> install.packages(“r4ss”) \\
-> library(r4ss).  \\
+A collection of functions developed as a package, r4ss, for the statistical software R has been created to explore SS model output.  The functions include tools for summarizing and plotting results, manipulating files, visualizing model parameterizations, and various other tasks.  Currently, information on the code, including installation instructions, can be found at https://github.com/r4ss/r4ss.  The software package is under constant development to maintain compatibility with new versions of SS and to improve functionality. 
 
-Two of the most commonly useful functions for model diagnostics are SS\_output and SS\_plots.  After running a model using SS the report can be read into R by the SS\_output function which stores quantities in a list with named objects.  The SS\_plots function creates a series of plots that are useful to visual the model fit to the data and the estimated and fixed parameters.
+Two of the most commonly used functions for model diagnostics are SS\_output and SS\_plots.  After running a model using SS, the report can be read into R by the SS\_output function which stores quantities in a list with named objects.  This list can then be passed to the SS\_plots function which creates a series of over 100 plots that are useful to visualize output such as model fit to the data and time series of quantities of interest. 
 
 Example of the data displayed used by the SS\_output function:
 \begin{center}
@@ -173,7 +171,7 @@ Example of the plots created using the SS\_plots function:
 
 The functions included in r4ss ranging from general use to functions developed for specific model applications:
 \begin{center}
-	\begin{longtable}{p{3cm} p{12cm}}
+	\begin{longtable}{p{4.5cm} p{10.52cm}}
 		Core Functions & \\
 		\hline
 		SS\_output & A function to create a list object for the output from Stock Synthesis\\
@@ -186,6 +184,90 @@ The functions included in r4ss ranging from general use to functions developed f
 		SSplotCatch   & Plot catch related quantities \\
 		SSplotCohorts & Plot cumulative catch by cohort \\
 		SSplotComps   & Plot composition data and fits \\
+		SSplotData    & Timeline of presence/absence data by type, year, and fleet \\
+		SSplotDiscard & Plot fit to discard fraction \\
+		SSplotIndices & Plot indices of abundance and associated quantities \\
+		SSplotMnwt    & Plot mean weight data and fits \\
+		SSplotMovementMap & Show movement rates on a map \\
+		SSplotMovementRates & Show movement rates on a map \\
+		SSplotNumbers & Plot numbers-at-age related data and fits \\
+		SSplotRecdevs & Plot recruitment deviations \\
+		SSplotRecdist & Plot of recruitment distribution among areas and seasons \\
+		SSplotSelex   & Plot selectivity \\
+		SSplotSexRatio & Plot sex ratios \\
+		SSplotSummaryF & Plot time series summary of F (or harvest rate) \\
+		SSplotSpawnrecruit & Plot spawner-recruit curve \\
+		SSplotSPR     & Plot SPR quantities \\
+		SSplotTags    & Plot tagging data and fits \\
+		SSplotTimeseries & Plot time series data \\
+		SSplotYield   & Plot yield and surplus production \\
+		SS\_html       & Create HTML files to view figures in browser \\
+		SS\_fitbiasramp & Estimate bias adjustment for recruitment deviates \\
+		\hline
+		\\
+		\multicolumn{2}{l}{Model Comparisons and other diagnostics} \\
+		\hline
+		SSplotPars    & Plot distributions of priors, posteriors, and estimates \\
+		SSplotProfile & Plot likelihood profile results \\
+		PinerPlot     & Plot fleet-specific contributions to likelihood profile \\
+		SSplotRetroRecruits & Make retrospective patter of recruitment estimates (a.k.a squid plot) as seen in Pacific hake assessments \\
+		\hline
+		\\
+		\multicolumn{2}{l}{Functions related to MCMC diagnostics}\\
+		\hline 
+		mcmc\_nuisance & Summarize nuisance MCMC output \\
+		mcmc\_out      & Summarize, analyze, and plot key MCMC output \\
+		SSgetMCMC      & Read MCMC output \\
+		SSplotMCMC\_ExtraSelex & Plot uncertainty around chosen selectivity ogive from MCMC \\
+		\hline
+		\\
+		\multicolumn{2}{l}{Interactive tools for exploring functional forms} \\
+		\hline
+		movepars      & Explore movement parameterization \\
+		selfit        & A function to visualize parameterization of double normal and double logistic selectivity in SS \\
+		selfit\_spline & Visualize parameterization of cubic spline selectivity in SS \\
+		sel\_line     & A function for drawing selectivity curves \\
+		\hline
+		\\
+		\multicolumn{2}{l}{File manipulation for inputs}\\
+		\hline
+		SS\_readdat   & Read data file \\
+		SS\_readforecast & Read forecast file \\
+		SS\_readstarter  & Read starter file \\
+		SS\_writedat  & Write data file \\
+		SS\_writeforecast & Write forecast file \\
+		SS\_writestarter  & Write starter file \\
+		SS\_makedatlist   & Make a list for SS data \\
+		SS\_parlines      & Get parameter lines from SS control file \\
+		SS\_changepars    & Change parameters in the control file \\
+		SSmakeMmatrix     & Create inputs for entering a matrix of natural mortality by age and year \\
+		SS\_profile       & Run a likelihood profile in SS (incomplete) \\
+		NegLogInt\_Fn     & Calculated variances of time-varying parameters using SS implementation of the Laplace Approximation \\
+		\hline
+		\\
+		\multicolumn{2}{l}{File manipulations for outputs}\\
+		\hline
+		SS\_recdevs      & Insert a vector of recruitment deviations into the control file \\
+		SS\_splitdat     & Split apart bootstrap data to make input file \\
+		\hline
+		\\
+		\multicolumn{2}{l}{Minor plotting functions}\\
+		\hline
+		bubble3          & Create a bubble plot \\
+		make\_multifig   & Create multi-figure plots \\
+		Make\_multifig\_sexratio & Create multi-figure plots of sex ratios \\
+		plotCI           & Plot points with confidence intervals \\
+		rich\_colors\_short & Make a vector of colors \\
+		stackpoly        & Plot stacked polygons \\
+		mountains        & Make shaded polygons with a mountain-like appearance \\
+		\hline
+		\\
+		\multicolumn{2}{l}{Really specialized functions} \\
+		\hline
+		DoProjectPlots   & Make plots from Rebuilder program \\
+		IOTCmove         & Make a map of movement for a 5-area Indian Ocean model \\
+		SSFishGraph      & A function for converting SS output to the format used by FishGraph \\
+		TSCplot          & Create a plot for the TSC report \\
 		\hline
 	\end{longtable}
 \end{center}

@@ -1,0 +1,21 @@
+\section{Special Set-ups}
+
+\subsection{Continuous seasonal recruitment}
+It is awkward in SS to set up a seasonal model such that recruitment can occur with similar and independent probability in any season of any year.  Consequently, some users have attempted to setup SS so that each quarter appears as a year.  They have set up all the data and parameters to treat quarters as if they were years (i.e. each still has a duration of 1.0 time step).  This can work, but requires that all rate parameters be re-scaled to be correct for the quarters being treated as years.
+
+Another option is available.  If there is one season per year and the season duration is set to 3 (rather than the normal 12), then the season duration is calculated to be 3/12 or 0.25.  This means that the rate parameters can stay in their normal per year scaling and this shorter season duration makes the necessary adjustments internally.  Some other adjustments to make when doing quarters as years include:
+
+\begin{itemize}
+	\item re-index all "year seas" inputs to be in terms of quarter-year because all are now season 1; increase endyr value in sync with this
+	\item increase max age because age is now in quarters
+	\item in the age error definitions, increase the number of entries in accord with new max age
+	\item in the age error definitions, recode so that each quarter-age gets assigned to the correct agebin;  This is because the age data are still in terms of agebins; i.e. the first 4 entries for quarter-ages 1 through 4 will all be assigned to agebin 1.5; the next four to agebin 2.5;  you cannot accomplish the same result by editing the age bin values because the stddev of ageing error is in terms of agebin
+	\item in the control file, multiple the natM age breakpoints  and growth AFIX values by 1/seasdur
+	\item decrease the R0 parameter starting value because it is now the average number of recruitments per qtryear
+	\item edit the rec\_dev start and endyrs to be in terms of qtryear
+	\item edit any age selectivity parameters that refer to age to now refer to qtrage
+	\item if there needs to be some degree of seasonality to recruitment or some parameter, then you could create a cyclic pattern in the environmental input and make recruitment or some other parameter a function of this cyclic pattern
+\end{itemize}
+	
+A good test showing comparability of the 3 approaches to setting up a quarterly model should be done.
+
