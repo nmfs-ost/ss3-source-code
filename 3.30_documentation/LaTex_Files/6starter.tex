@@ -2,13 +2,13 @@
 \section{Starter}
 
 SS begins by reading the file starter.ss.  Its format and content is as follows.  Note that the term COND in the Typical Value column means that the existence of input shown there is conditional on a value specified earlier in the file.  Omit or comment out these entries if the appropriate condition has not been selected.
-%\newgeometry{margin = 2cm}
+
 \begin{landscape}
 
 \centerline{\large{STARTER.SS}} 
 \vspace{0.25in}
 
-%\setlength{\extrarowheight}{2pt}
+
 \begin{longtable}{p{3cm} p{7cm} p{11cm}} 
 
  \hline
@@ -100,9 +100,9 @@ SS begins by reading the file starter.ss.  Its format and content is as follows.
 
  \hline
  8 & Turn off estimation &  \multirow{1}{1cm}[-0.1cm]{\parbox{11cm}{The 0 option is useful for (1) quickly reading in a messy set of input files and producing the annotated CONTROL.SS\textunderscore new and DATA.SS\textunderscore new files, or (2) examining model output based solely on input parameter values.  Similarly, the value option allows examination of model output after completing a specified phase.  Also see usage note for restarting from a specified phase.}}\\
-  & -1 = exit after reading input files & \\
-  & 0 = exit after one call to the calculation routines and production of SSO and SS\textunderscore New files & \\
-  & <positive value> = exit after completing this phase & \\	  
+   & -1 = exit after reading input files & \\
+   & 0 = exit after one call to the calculation routines and production of SSO and SS\textunderscore New files & \\
+   & <positive value> = exit after completing this phase & \\	  
 	     
  \hline
  10 & MCMC burn interval & Need to document this and set good default \\
@@ -112,58 +112,54 @@ SS begins by reading the file starter.ss.  Its format and content is as follows.
 	   
  \hline 
  0.0 & Jitter & \multirow{1}{1cm}[-0.1cm]{\parbox{11cm}{The jitter factor is multiplied by a random normal deviation rdev = N(0,1) to a transformed parameter value based upon the predefined parameter bounds. \hyperlink{Jitter}{\textit{click here for more information}} }}\\
-	& A positive value here will add a small random jitter to the initial parameter values & \\
-	& &  \\
+	 & A positive value here will add a small random jitter to the initial parameter values & \\
+	 & &  \\
 	
  \hline
  -1 & SD Report Start & \\
-   & -1 = begin annual SD report in start year & \\
-   & <year> = begin SD report this year & \\
+    & -1 = begin annual SD report in start year & \\
+    & <year> = begin SD report this year & \\
 	      
  %\hline
  \pagebreak
  -1 & SD Report End & \\
-   & -1 = end annual SD report in end year & \\
-   & -2 = end annual SD report in last forecast year & \\
-   & <value> = end SD report in this year & \\
+    & -1 = end annual SD report in end year & \\
+    & -2 = end annual SD report in last forecast year & \\
+    & <value> = end SD report in this year & \\
 	   
  \hline
  2 & Extra SD Report Years & \multirow{1}{1cm}[-0.1cm]{\parbox{11cm}{In a long time series application, the model variance calculations will be smaller and faster if not all years are included in the SD reporting.  For example, the annual SD reporting could start in 1960 and the extra option could select reporting in each decade before then.}}\\
-  & 0 = none & \\
-  & <value> = number of years to read &  \\
-  & & \\
-  & & \\
+   & 0 = none & \\
+   & <value> = number of years to read &  \\
+   & & \\
+   & & \\
 
  \hline  
  \multicolumn{3}{l}{COND: If Extra SD report years > 0} \\
 
- %\hline 
- %\hhline{|*3{-}|}
- %\multicolumn{1}{r}{\cellcolor{lightgray}1940 1950}  & \multicolumn{2}{l}{Vector of years for additional SD reporting} \\
  \multicolumn{1}{r}{1940 1950} & \multicolumn{2}{l}{Vector of years for additional SD reporting} \\
- %\pagebreak
 
  \hline
  0.0001 & Final convergence & \multirow{1}{1cm}[-0.1cm]{\parbox{11cm}{This is a reasonable default value for the change in logL denoting convergence.  For applications with much data and thus a large total logL value, a larger convergence criterion may still provide acceptable convergence}}\\
- & & \\
- & & \\
- & & \\ 
+        & & \\
+        & & \\
+		& & \\ 
  
  \hline
  0 & Retrospective year & \multirow{1}{1cm}[-0.1cm]{\parbox{11cm}{Adjusts the model end year and disregards data after this year.  May not handle time varying parameters completely.}} \\
-  & 0 = none & \\
-  & -x = retrospective year relative to end year & \\
+   & 0 = none & \\
+   & -x = retrospective year relative to end year & \\
   
  \hline
  0 & Summary biomass min age & \multirow{1}{1cm}[-0.1cm]{\parbox{11cm}{Minimum integer age for inclusion in the summary biomass used for reporting and for calculation of total exploitation rate}}\\
-  & & \\ 
+   & & \\ 
 
  \hline
  1 & Depletion basis & \multirow{1}{1cm}[-0.1cm]{\parbox{11cm}{Selects the basis for the denominator when calculating degree of depletion in SSB.  The calculated values are reported to the SD report.}}\\
-  & 0 = skip & \\
-  & 1 = X*B0 & \\
-  & 2 = X*B\textsubscript{MSY} & \\
-  & 3 = X*B\textsubscript{styr} & \\
+   & 0 = skip & \\
+   & 1 = X*B0 & \\
+   & 2 = X*B\textsubscript{MSY} & \\
+   & 3 = X*B\textsubscript{styr} & \\
   
  \hline
  0.40 & Fraction (X) for depletion denominator & So would calculate the ratio of SSBy/(0.40*SSB0)\\
@@ -172,61 +168,61 @@ SS begins by reading the file starter.ss.  Its format and content is as follows.
  \pagebreak
  1 & SPR report basis & \multirow{1}{1cm}[-0.1cm]{\parbox{11cm}{SPR is the equilibrium SSB per recruit that would result from the current year’s pattern and intensity of F’s.  The SPR approach to measuring fishing intensity was implemented because the concept of a single annual F does not exist in SS.
 		The quantities identified by 1, 2, and 3 here are all calculated in the benchmarks section.  Then the one specified here is used as the selected denominator in a ratio with the annual value of (1.0 – SPR). This ratio (and its variance) is reported to the SD report output for the years selected above in the SD report year selection.}}\\
-  & 0 = skip & \\
-  & 1 = use 1-SPR\textsubscript{TARGET} & \\
-  & 2 = use 1-SPR at MSY & \\
-  & 3 = use 1-SPR at B\textsubscript{TARGET} & \\
-  & 4 = no denominator, so report actual 1-SPR values & \\
-  & & \\
-  & & \\
-  & & \\
+   & 0 = skip & \\
+   & 1 = use 1-SPR\textsubscript{TARGET} & \\
+   & 2 = use 1-SPR at MSY & \\
+   & 3 = use 1-SPR at B\textsubscript{TARGET} & \\
+   & 4 = no denominator, so report actual 1-SPR values & \\
+   & & \\
+   & & \\
+   & & \\
   
  %\pagebreak
  \hline 
  4 & F std report value &  \multirow{1}{1cm}[-0.1cm]{\parbox{11cm}{In addition to SPR, an additional proxy for annual F can be specified here.  As with SPR, the selected quantity will be calculated annually and in the benchmarks section.  The ratio of the annual value to the selected (see F report basis below) benchmark value is reported to the SD report vector.  Options 1 and 2 use total catch for the year and summary abundance at the beginning of the year, so combines seasons and areas.  But if most catch occurs in one area and there is little movement between areas, this ratio is not informative about the F in the area where the catch is occurring.  Option 3 is a simple sum of the full F’s by fleet, so may provide non-intuitive results when there are multi areas or seasons or when the selectivities by fleet do not have good overlap in age.  Option 4 is a real annual F calculated as a numbers weighted F for a specified range of ages (read below).  The F is calculated as Z-M where Z and M are each calculated an ln(N(t+1)/N(t)) with and without F active, respectively. The numbers are summed over all biology morphs and all areas for the beginning of the year, so subsumes any seasonal pattern.}}\\
-  & 0 = skip & \\
-  & 1 = exploitation rate in biomass & \\
-  & 2 = exploitation rate in numbers & \\
-  & 3 = sum(full F's by fleet) & \\
-  & 4 = population F for range of ages & \\
-  & & \\
-  & & \\
-  & & \\
-  & & \\
-  & & \\
-  & & \\
-  & & \\  
-  & & \\
-  & & \\
-  & & \\  
-  & & \\
-  & & \\
+   & 0 = skip & \\
+   & 1 = exploitation rate in biomass & \\
+   & 2 = exploitation rate in numbers & \\
+   & 3 = sum(full F's by fleet) & \\
+   & 4 = population F for range of ages & \\
+   & & \\
+   & & \\
+   & & \\
+   & & \\
+   & & \\
+   & & \\
+   & & \\  
+   & & \\
+   & & \\
+   & & \\  
+   & & \\
+   & & \\
   
  %\hline
  %\pagebreak
  \multicolumn{2}{l}{COND: If F std reporting = 4 } & \multirow{1}{1cm}[-0.1cm]{\parbox{11cm}{Specify range of ages. Upper age must be less than maxage because of incomplete handling of the accumulator age for this calculation.}} \\
- %\hhline{|*3{-}|} 
- %\multicolumn{1}{r}{\cellcolor{lightgray} 13 17}  & Age range if F std reporting = 4 & Specify range of ages. Upper age must be less than maxage because of incomplete handling of the accumulator age for this calculation.\\
-  \multicolumn{1}{r}{13 17}  & Age range if F std reporting = 4 & \\
+
+ \multicolumn{1}{r}{13 17}  & Age range if F std reporting = 4 & \\
   \\
 
  \hline
  1 & F report basis &  \multirow{1}{1cm}[-0.1cm]{\parbox{11cm}{Selects the denominator to use when reporting the F std report values.  Note that order of these options differs from the biomass report basis options.}}\\
-  & 0 = not relative, report raw values & \\
-  & 1 = use F std value corresponding to SPR\textsubscript{TARGET} & \\
-  & 2 = use F std value corresponding to F\textsubscript{MSY} & \\
-  & 3 = use F std value corresponding to F\textsubscript{BTARGET} & \\
+   & 0 = not relative, report raw values & \\
+   & 1 = use F std value corresponding to SPR\textsubscript{TARGET} & \\
+   & 2 = use F std value corresponding to F\textsubscript{MSY} & \\
+   & 3 = use F std value corresponding to F\textsubscript{BTARGET} & \\
   
  %\pagebreak
  \hline
- 999 
- & \multirow{1}{1cm}[-0.1cm]{\parbox{7cm}{999: Indicates that the control and data file are in a previous SS 3.24 version and will be converted to the new formatting in the control.ss\textunderscore new and data.ss\textunderscore new files.}} 
- & \multirow{1}{1cm}[-0.1cm]{\parbox{11cm}{SSv3.30 will create converted files in the new format from previous version when 999 is given.  All ss\textunderscore new files are in the 3.30 format, so starter.ss\textunderscore new has 3.30 on the last line.  Some Mgparms are in new sequence, so 3.30 cannot read a ss3.par file produced by version 3.24 and earlier. }}\\
-	& & \\
-    & & \\
-   	& & \\
-    & & \\
-    & 3.3: Indicates that the control and data files are currently in SS3.30 format. & \\
+ 3.3 & 3.3: Indicates that the control and data files are currently in SS3.30 format. 
+	 & \multirow{1}{1cm}[-0.1cm]{\parbox{11cm}{The transition executable for SSv3.30 will create converted files in the new format from previous version when 999 is given.  All ss\_new files are in the 3.30 format, so starter.ss\_new has 3.30 on the last line.  Some Mgparms are in new sequence, so 3.30 cannot read a ss3.par file produced by version 3.24 and earlier. }}\\
+     & \multirow{1}{1cm}[-0.1cm]{\parbox{7cm}{999: Indicates that the control and data file are in a previous SS 3.24 version.  The transition executable for 3.3 should be used which will convert the files to the new format in the control.ss\_new and data.ss\_new files.}}  & \\  
+     & & \\  
+	 & & \\
+     & & \\
+   	 & & \\
+     & & \\
+    
     	
 \end{longtable}
 \end{landscape}

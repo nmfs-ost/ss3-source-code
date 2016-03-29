@@ -1181,26 +1181,26 @@ The currently defined selectivity patterns, and corresponding required number of
 		25 & 3 & Exponential-logistic \\
 		27 & 3+2*N nodes & Cubic spline\\
 		\hline
-		\\
-		\multicolumn{3}{c}{SPECIAL SELECTIVITY}\\
-		Pattern & N Parameters & Description \\
-		\hline
-		30 & 0 & Sets expected survey abundance equal to spawning biomass (population fecundity). \\
-		31 & 0 & Sets expected survey abundance equal to exp(recruitment deviation).  This is useful if environmental data is used as an index of recruitment variability. \\
-		32 & 0 & Sets expected survey abundance equal to exp(recruitment deviation ) * SpawnBiomass.  So this is recruitment without density-dependence (for pre-recruit survey) because most ecological logic places the density-dependent stage during the juvenile period following the larval stage that is most sensitive to environmental perturbation.\\
-		33 & 0 & Sets expected survey abundance equal to age-0 recruitment.\\
-		34 & 0 & Spawning biomass depletion (B/B0).\\
-		\hline
+		%\\
+		%\multicolumn{3}{c}{SPECIAL SELECTIVITY}\\
+		%Pattern & N Parameters & Description \\
+		%\hline
+		%30 & 0 & Sets expected survey abundance equal to spawning biomass (population fecundity). \\
+		%31 & 0 & Sets expected survey abundance equal to exp(recruitment deviation).  This is useful if environmental data is used as an index of recruitment variability. \\
+		%32 & 0 & Sets expected survey abundance equal to exp(recruitment deviation ) * SpawnBiomass.  So this is recruitment without density-dependence (for pre-recruit survey) because most ecological logic places the density-dependent stage during the juvenile period following the larval stage that is most sensitive to environmental perturbation.\\
+		%33 & 0 & Sets expected survey abundance equal to age-0 recruitment.\\
+		%34 & 0 & Spawning biomass depletion (B/B0).\\
+		%\hline
 	\end{longtable}
 \end{center}
 
-\begin{description}
-	\item[Notes on Special Selectivity Options:]\hfil
-	\begin{itemize}
-		\item Do not input any size/age composition data for surveys using pattern 30-33.
-		\item The "catchability" coefficient for these selectivity patterns 30-33 have all the general properties of the catchability coefficient for real surveys, e.g. they can be time-varying, use power relationship, etc.
-	\end{itemize}
-\end{description}
+%\begin{description}
+%	\item[Notes on Special Selectivity Options:]\hfil
+%	\begin{itemize}
+%		\item Do not input any size/age composition data for surveys using pattern 30-33.
+%		\item The "catchability" coefficient for these selectivity patterns 30-33 have all the general properties of the catchability coefficient for real surveys, e.g. they can be time-varying, use power relationship, etc.
+%	\end{itemize}
+%\end{description}
 
 \begin{center}
 	\begin{longtable}{p{2cm} p{3cm} p{10cm}}
@@ -1238,28 +1238,34 @@ The currently defined selectivity patterns, and corresponding required number of
 \end{center}
 
 \subsubsection{Selectivity Pattern Details}
-\underline{Pattern \#1 (size) and \#12 (age) - Simple Logistic}
-\begin{itemize}
-	\item p1 - size/age at inflection
-	\item p2 - width for 95\% selection; a negative width causes a descending curve.
-\end{itemize}
-Within SS logistic selectivity for the primary gender (if selectivity varies by gender) is formulated as:
-\begin{equation}
+\begin{description}
+	\item[Pattern \#1 (size) and \#12 (age) - Simple Logistic]\hfill\\
+	Within SS logistic selectivity for the primary gender (if selectivity varies by gender) is formulated as:
+	\begin{equation}
 	S_l = \frac{1.0}{1+exp(-ln(19)(L_l - p1)/p2)}
-\end{equation}
-where $L_l$ is the length bin.  If age based selectivity is selected then the length bin is replaced by the age vector. If gender specific selectivity is specified the non-primary gender the p1 and p2 parameters are estimated as offsets.  Note that with a large p2 parameter, selectivity may not reach 1.0 at the largest size bin.\\
-\hfil
-\\
-\underline{Pattern \#5 (size) - Mirror Selectivity}\\
-Two parameters select the min and max bin number (not min max size) of the source pattern.  If first parameter has value <=0, then interpreted as a value of 1 (e.g. first bin).  If second parameter has value <=0, then interpreted as nlength (e.g. last bin). The source pattern must have a lower type number.\\
-\hfil
-\\
-\underline{Pattern \#6 (size) - Non-parametric selectivity}\\
-Non-parametric size selectivity uses a set of linear segments.  The first waypoint is at Length = p1 and the last waypoint is at Length = p2.  The total number of waypoints is specified by the value of the Special factor in the selectivity set-up, so the N intervals is one less than the number of waypoints.  Intermediate waypoints are located at equidistant intervals between p1 and p2.  Parameters 3 to N are the selectivity values at the waypoints, entered as logistic, e.g. $1/(1+exp(-x))$.  Ramps from –10 to p3 if L<p1.  Constant at pN if L>p2.  Note that prior to version 3.03 the waypoints were specified in terms of bin number, rather than length.\\
-\hfil
-\\
-\underline{Pattern \#8 (size) and \#18 (age) - Double Logistic}
-\begin{itemize}
+	\end{equation}
+	where $L_l$ is the length bin.  If age based selectivity is selected then the length bin is replaced by the age vector. If gender specific selectivity is specified the non-primary gender the p1 and p2 parameters are estimated as offsets.  Note that with a large p2 parameter, selectivity may not reach 1.0 at the largest size bin. The parameters are:
+		\begin{itemize}
+			\item p1 - size/age at inflection
+			\item p2 - width for 95\% selection; a negative width causes a descending curve.
+		\end{itemize}
+\end{description}
+
+
+\begin{description}
+	\item[Pattern \#5 (size) - Mirror Selectivity]\hfil\\
+	Two parameters select the min and max bin number (not min max size) of the source pattern.  If first parameter has value <=0, then interpreted as a value of 1 (e.g. first bin).  If second parameter has value <=0, then interpreted as nlength (e.g. last bin). The source pattern must have a lower type number
+\end{description}	
+
+
+\begin{description}
+	\item[Pattern \#6 (size) - Non-parametric selectivity]\hfil\\
+	Non-parametric size selectivity uses a set of linear segments.  The first waypoint is at Length = p1 and the last waypoint is at Length = p2.  The total number of waypoints is specified by the value of the Special factor in the selectivity set-up, so the N intervals is one less than the number of waypoints.  Intermediate waypoints are located at equidistant intervals between p1 and p2.  Parameters 3 to N are the selectivity values at the waypoints, entered as logistic, e.g. $1/(1+exp(-x))$.  Ramps from –10 to p3 if L<p1.  Constant at pN if L>p2.  Note that prior to version 3.03 the waypoints were specified in terms of bin number, rather than length.
+\end{description}
+
+\begin{description}
+	\item[Pattern \#8 (size) and \#18 (age) - Double Logistic]\hfil
+	\begin{itemize}
 		\item  p1 – PEAK:  size (age) for peak. Should be an integer and should be at bin boundary and not estimated.  But options 7 and 18 may allow estimation.
 		\item p2 – INIT:  selectivity at lengthbin=1 (minL) or age=0.
 		\item p3 – INIT:  selectivity at lengthbin=1 (minL) or age=0. A logit transform $(1/(1+exp(-x))$ is used so that the transformed value will be between 0 and 1.  So a p1 value of –1.1 will be transformed to 0.25 and used to set the selectivity equal to 0.5 at a size (age) equal to 0.25 of the way between minL and PEAK.  (see SS3-selex.xls).
@@ -1268,69 +1274,71 @@ Non-parametric size selectivity uses a set of linear segments.  The first waypoi
 		\item p6 – INFL2:  logit transform for size(age) at right side selectivity equal to half way between PEAK+PEAKWIDTH and maxL (or max age).
 		\item p7 – SLOPE2:  log(slope) of right side (descending) selectivity
 		\item p8 – PEAKWIDTH:  in width of flattop.
-\end{itemize}
-\hfil
-\\
-\underline{Pattern \#14 (age) - Revise Age}\\
-Age-selectivity pattern \#14 to allow selectivity-at-age to be the same as selectivity at the next younger age.  When using this option, the range on each parameter should be approximately -5 to 9 to prevent the parameters from drifting into extreme values with nil gradient. SS calculates the age-based selectivity as:
-\begin{equation}
-	\begin{split}
-			temp = 9 - max(p(1:(nages+1)))\\
-			S_a = \frac{1}{1+exp(-(p(a+1) + temp))}
-	\end{split}
-\end{equation}
-\hfil
-\\
-\underline{Pattern \#17 (age) - Random Walk}\\
-This selectivity pattern provides for a random walk in ln(selectivity).  In typical usage:
-\begin{itemize}
-	\item First parameter (for age 0) could have a value of -1000 so that the age 0 fish would get a selectivity of 0.0;
-	\item 	Second parameter (for age 1) could have a value of 0.0 and not be estimated, so age 1 is the reference age against which subsequent changes occur;
-	\item 	Next parameters get estimated values.  To assure that selectivity increases for the younger ages, the parameter min for these parameters could be set to 0.0 or a slightly negative value.
-	\item If dome-shaped selectivity is expected, then the parameters for older ages could have a range with the max set to 0.0 so they cannot increase further.
-	\item To keep selectivity at a particular age the same as selectivity at the next younger age, set its parameter value to 0.0 and not estimated.  This allows for all older ages to have the same selectivity.
-	\item 	To keep a constant rate of change in selectivity across a range of ages, use the -999 flag to keep the same rate of change in ln(selectivity) as for the previous age.
-\end{itemize}
-\begin{center}
-	\includegraphics{Selex17_RandomWalk}
-\end{center}
-\hfil
-\\
-\underline{Pattern \#9 (size) and \#19 (age) - Simple Double Logistic with no defined peak}
-\begin{itemize}
-	\item p1 - INFL1:  ascending inflection size (in cm)
-	\item p2 – SLOPE1:  ascending slope
-	\item p3 – INFL2:  descending inflection size (in cm)
-	\item p4 – SLOPE2:  descending slope
-	\item p5 – first BIN: bin number for the first bin with non-zero selectivity (must be an integer bin number, not a size)
-	\item p6 – offset:  enter 0 if P3 is independent of P1; enter 1 if P3 is an offset from P1
-\end{itemize}
-\hfil
-\\
-\underline{Pattern \#22 (size) - Double Normal with Plateau}
-\begin{itemize}
-	\item p1 – PEAK1:  beginning size for the plateau (in cm)
-	\item p2 – PEAK2:  ending size for the plateau.  Calculated as a fraction of the distance between PEAK1 and 99\% of the lower edge of the last size bin in the model.  Transformed as (1/(1+exp(-p2)).   So a value of 0 results in PEAK2 being halfway between PEAK1 and 99\% of the last bin
-	\item p3 – upslope:  ln(variance) on ascending side
-	\item p4 – downslope:  ln(variance) on descending side
-\end{itemize}
-\hfil
-\\
-\underline{Pattern\#23 (size) and \#24 (size) - Double Normal Selectivity}\\
+	\end{itemize}
+\end{description}
 
-\begin{itemize}
-	\item p1 – PEAK:  beginning size for the plateau (in cm)
-	\item p2 – TOP:  width of plateau, as logistic between PEAK and MAXLEN
-	\item p3 – ASC-WIDTH:  parameter value is ln(width)
-	\item p4 – DESC-WIDTH:  parameter value is ln(width)
-	\item p5 – INIT:  selectivity at first bin, as logistic between 0 and 1.
-	\item p6 – FINAL: selectivity at last bin, as logistic between 0 and 1.  (for pattern \#24) or
-	\item p6 – FINAL: selectivity at last bin, as absolute value, so can be >1.0.  (for pattern \#23).  Warning:  Do not allow this value to go above 1.0 if the F\_method uses Pope’s approximation.  OK to go above 1.0 when F is in exponential form.  When this parameter is above 1.0, the overall selectivity pattern will have an intermediate plateau at 1.0 (according to peak and top), then will ascend further to the final value.
-\end{itemize}
-\hfil
-\\
-Notes for Double Normal Selectivity:
-\begin{itemize}
+\begin{description}
+	\item[Pattern \#14 (age) - Revise Age]\hfil\\
+	Age-selectivity pattern \#14 to allow selectivity-at-age to be the same as selectivity at the next younger age.  When using this option, the range on each parameter should be approximately -5 to 9 to prevent the parameters from drifting into extreme values with nil gradient. SS calculates the age-based selectivity as:
+	\begin{equation}
+		 \begin{split}
+		 temp = 9 - max(p(1:(nages+1)))\\
+		S_a = \frac{1}{1+exp(-(p(a+1) + temp))}
+		\end{split}
+	\end{equation}	
+\end{description}
+
+\begin{description}
+	\item[Pattern \#17 (age) - Random Walk]\hfill\\
+	This selectivity pattern provides for a random walk in ln(selectivity).  In typical usage:
+	\begin{itemize}
+		\item First parameter (for age 0) could have a value of -1000 so that the age 0 fish would get a selectivity of 0.0;
+		\item 	Second parameter (for age 1) could have a value of 0.0 and not be estimated, so age 1 is the reference age against which subsequent changes occur;
+		\item 	Next parameters get estimated values.  To assure that selectivity increases for the younger ages, the parameter min for these parameters could be set to 0.0 or a slightly negative value.
+		\item If dome-shaped selectivity is expected, then the parameters for older ages could have a range with the max set to 0.0 so they cannot increase further.
+		\item To keep selectivity at a particular age the same as selectivity at the next younger age, set its parameter value to 0.0 and not estimated.  This allows for all older ages to have the same selectivity.
+		\item 	To keep a constant rate of change in selectivity across a range of ages, use the -999 flag to keep the same rate of change in ln(selectivity) as for the previous age.
+	\end{itemize}
+	\begin{center}
+		\includegraphics{Selex17_RandomWalk}
+	\end{center}
+\end{description}
+
+\begin{description}
+	\item[Pattern \#9 (size) and \#19 (age) - Simple Double Logistic with no defined peak]\hfil
+	\begin{itemize}
+		\item p1 - INFL1:  ascending inflection size (in cm)
+		\item p2 – SLOPE1:  ascending slope
+		\item p3 – INFL2:  descending inflection size (in cm)
+		\item p4 – SLOPE2:  descending slope
+		\item p5 – first BIN: bin number for the first bin with non-zero selectivity (must be an integer bin number, not a size)
+		\item p6 – offset:  enter 0 if P3 is independent of P1; enter 1 if P3 is an offset from P1
+	\end{itemize}
+\end{description}
+
+\begin{description}
+	\item[Pattern \#22 (size) - Double Normal with Plateau]\hfil
+	\begin{itemize}
+		\item p1 – PEAK1:  beginning size for the plateau (in cm)
+		\item p2 – PEAK2:  ending size for the plateau.  Calculated as a fraction of the distance between PEAK1 and 99\% of the lower edge of the last size bin in the model.  Transformed as (1/(1+exp(-p2)).   So a value of 0 results in PEAK2 being halfway between PEAK1 and 99\% of the last bin
+		\item p3 – upslope:  ln(variance) on ascending side
+		\item p4 – downslope:  ln(variance) on descending side
+	\end{itemize}
+\end{description}
+
+\begin{description}
+	\item[Pattern\#23 (size) and \#24 (size) - Double Normal Selectivity]\hfil
+	\begin{itemize}
+		\item p1 – PEAK:  beginning size for the plateau (in cm)
+		\item p2 – TOP:  width of plateau, as logistic between PEAK and MAXLEN
+		\item p3 – ASC-WIDTH:  parameter value is ln(width)
+		\item p4 – DESC-WIDTH:  parameter value is ln(width)
+		\item p5 – INIT:  selectivity at first bin, as logistic between 0 and 1.
+		\item p6 – FINAL: selectivity at last bin, as logistic between 0 and 1.  (for pattern \#24) or
+		\item p6 – FINAL: selectivity at last bin, as absolute value, so can be >1.0.  (for pattern \#23).  Warning:  Do not allow this value to go above 1.0 if the F\_method uses Pope’s approximation.  OK to go above 1.0 when F is in exponential form.  When this parameter is above 1.0, the overall selectivity pattern will have an intermediate plateau at 1.0 (according to peak and top), then will ascend further to the final value.
+	\end{itemize}
+	Notes for Double Normal Selectivity:
+	\begin{itemize}
 		\item See spreadsheet SELEX-24.xls for parameterization example.
 		\item For the initial selectivity parameter (\#5)
 		\begin{itemize}
@@ -1342,127 +1350,131 @@ Notes for Double Normal Selectivity:
 			\item -999 or –1000:   ignore the final selectivity algorithm and simply decay the large fish selectivity according to parameter \#4,
 			\item <-1000:  set selectivity constant for bins greater than bin number =  -1000 – value.
 		\end{itemize}
-\end{itemize}
-Selectivity pattern \#24, double normal, showing sub-functions and steep logistic joiners:
-\begin{center}
-	\includegraphics{DoubleNormal}
-\end{center}
-\hfil
-\\
-\underline{Pattern \#15 (age) - Mirror}\\
-No parameters.  Whole age range is mirrored from a user-specified fleet.\\
-\hfil
-\\
-\underline{Pattern \#16 - Gaussian (similar to Coleraine)}
-\begin{itemize}
-	\item p1 – age below which selectivity declines
-	\item p2 – scaling factor for decline
-\end{itemize}
-\hfil
-\\
-\underline{Pattern \#9 (size) and \#19 (age) - Simple Double Logistic}
-\begin{itemize}
-	\item p1 – ascending inflection age/size
-	\item p2 – ascending slope
-	\item p3 – descending inflection age/size
-	\item p4 – descending slope
-	\item p5 – age or size at first selection; this is a specification parameter, so must not be estimated.  Enter integer that is age for pattern 19 and is bin number for pattern 9
-	\item p6 – (0/1)  where a value of 0 causes the descending inflection to be a standalone parameter, and a value of 1 causes the descending inflection to be interpreted as an offset from the ascending inflection.  This is a specification parameter, so must not be estimated.
-\end{itemize}
-A value of 1.0e-6 is added to the selectivity for all ages, even those below the minage.\\
-\hfil
-\\
-\underline{Pattern \#25 (size) and \#26 (age) - Exponential logistic}
-\begin{itemize}
-	\item p1 – ascending rate, min: 0.02, max: 1.0, reasonable start value:  0.1
-	\item p2 – peak, as fraction of way between min size and max size.  Parameter min value:  0.01; max:  0.99; reasonable start value:  0.5
-	\item p2 – minsize + p2*(maxsize-minsize)
-	\item p3 – descending rate, min: 0.001, max: 0.5, reasonable start value:  0.01.  A value of 0.001 provides a nearly asymptotic curve.  Values above 0.2 provide strongly dome-shaped function in which the p3 and p1 parameters interact strongly.
-\end{itemize}
-\begin{equation}
+	\end{itemize}
+	Selectivity pattern \#24, double normal, showing sub-functions and steep logistic joiners:
+	\begin{center}
+		\includegraphics{DoubleNormal}
+	\end{center}
+\end{description}
+
+\begin{description}
+	\item[Pattern \#15 (age) - Mirror]\hfil\\
+	No parameters.  Whole age range is mirrored from a user-specified fleet.
+\end{description}
+
+\begin{description}
+	\item[Pattern \#16 - Gaussian (similar to Coleraine)]\hfil
+	\begin{itemize}
+		\item p1 – age below which selectivity declines
+		\item p2 – scaling factor for decline
+	\end{itemize}
+\end{description}
+
+\begin{description}
+	\item[Pattern \#9 (size) and \#19 (age) - Simple Double Logistic]\hfil
+	\begin{itemize}
+		\item p1 – ascending inflection age/size
+		\item p2 – ascending slope
+		\item p3 – descending inflection age/size
+		\item p4 – descending slope
+		\item p5 – age or size at first selection; this is a specification parameter, so must not be estimated.  Enter integer that is age for pattern 19 and is bin number for pattern 9
+		\item p6 – (0/1)  where a value of 0 causes the descending inflection to be a standalone parameter, and a value of 1 causes the descending inflection to be interpreted as an offset from the ascending inflection.  This is a specification parameter, so must not be estimated.
+	\end{itemize}
+	A value of 1.0e-6 is added to the selectivity for all ages, even those below the minage.\\
+\end{description}
+
+\begin{description}
+	\item[Pattern \#25 (size) and \#26 (age) - Exponential logistic]\hfil
+	\begin{itemize}
+		\item p1 – ascending rate, min: 0.02, max: 1.0, reasonable start value:  0.1
+		\item p2 – peak, as fraction of way between min size and max size.  Parameter min value:  0.01; max:  0.99; reasonable start value:  0.5
+		\item p2 – minsize + p2*(maxsize-minsize)
+		\item p3 – descending rate, min: 0.001, max: 0.5, reasonable start value:  0.01.  A value of 0.001 provides a nearly asymptotic curve.  Values above 0.2 provide strongly dome-shaped function in which the p3 and p1 parameters interact strongly.
+	\end{itemize}
+	\begin{equation}
 	\frac{e^{p3*p1(p2'-size)}}{1-p3(1-e^{p1(p2'-size)})}
-\end{equation}
-Example: Exponential logistic selectivity with p1 = 0.30, p2 = 0.50, and p3 = 0.02:\\
-\begin{center}
-	\includegraphics{ExpLogistic}
-\end{center}
-\hfil
-\\
-\underline{Pattern \#27 (size and age)- Cubic Spline}\\
-This selectivity pattern uses the ADMB implementation of the cubic spline function. This function requires input of the number of nodes, the positions of those nodes, the parameter values at those nodes, and the slope of the function at the first and last node.  In SS, the number of nodes is specified in the “special” column of the selectivity set-up.  The pattern number 27 is used to invoke cubic spline for size selectivity and for age selectivity; the input syntax is identical.\\
-\\
-For a 3 node setup, the SS input parameters would be:
-\begin{itemize}
-	\item p1 – 	code for initial set-up (0, 1 or 2) as explained below
-	\item p2 – 	gradient at the first node (should be a small positive value)
-	\item p3 – 	gradient at the last node (should be zero or a small negative value)
-	\item p4-p6 – the nodes in units of cm; must be in rank order and inside of the range of the population length bins.  These must be held constant (not estimated, e.g. negative phase value) during a model run.
-	\item  p7-p9 – the values at the nodes.  Units are ln(selectivity).
-\end{itemize}
-\hfil
-\\
-Notes:
-\begin{itemize}
-	\item There must be at least 3 nodes.
-	\item One of these selectivity parameter values should be held constant so others are estimated relative to it.
-	\item Selectivity is forced to be constant for sizes greater than the size at the last node
-	\item The overall selectivity curve is scaled to have a peak equal to 1.0.
-	\item Terminal nodes cannot be at the min or max population length bins.
-\end{itemize}
+	\end{equation}
+	Example: Exponential logistic selectivity with p1 = 0.30, p2 = 0.50, and p3 = 0.02:\\
+	\begin{center}
+		\includegraphics{ExpLogistic}
+	\end{center}
+\end{description}
 
-Cubic spline selectivity is implemented within SS using the following code:\\
-\begin{center}
-	\includegraphics{CubicSplineCode}
-\end{center}
-
-The figure below compares a 3 node and a 6 node cubic spline with a 2 parameter logistic function.  In fitting these functions, the 2 cubic spline approaches fit slightly better than the logistic, presumably because the data were slightly indicative of a small dome in selectivity.\\
-\begin{center}
-	\includegraphics{CubicSpline}
-\end{center}
-\hfil
-\\
-Auto-Generation of Cubic Spline Control File Set-Up:\\
-A New SS feature pioneered with the cubic spline function is a capability to produce more specific parameter labels and to auto-generate selectivity parameter setup.  The auto-generation feature is controlled by the first selectivity parameter value for each fleet that is specified to use the cubic spline.  There are 3 possible values for this setup parameter:
-\begin{itemize}
-	\item 0: no auto-generation, process parameter setup as read.
-	\item 1: auto-generate the node locations based on the specified number of nodes and on the cumulative size distribution of the data for this fleet/survey.
-	\item 2: auto-generate the nodes and also the min, max, prior, init, and phase for each parameter.
-\end{itemize}
-
-With either the auto-generate option \#1 or \#2, it still is necessary to include in the parameter file placeholder rows of values so that the init\_matrix command can input the current number of values because all selectivity parameter lines are read as a single matrix dimensioned as N parameters x 14 columns.  The read values of min, max, init, prior, prior type, prior stddev, and phase will be overwritten.
-
-Cumulative size and age distribution is calculated for each fleet, summing across all samples and both genders.  These distributions are output in echoinput.sso and in a new OVERALL\_COMPS section of report.sso.
-
-When the nodes are auto-generated, the first node is placed at the size corresponding to the 2.5\% percentile of the cumulative size distribution, the last is placed at the 97.5\% percentile of the size distribution, and the remainder are placed at equally spaced percentiles along the cumulative size distribution.  These calculated node values are output into control.ss\_new.  So, the user could extract these nodes from control.ss\_new, edit them to desired values, then, insert them into the input control file.  Remember to turn off auto-generation in the revised control file.
-
-When the complete auto-generation is selected, the control.ss\_new would look like the table below.
-
-\begin{center}
-	\begin{longtable}{p{1cm} p{1cm} p{1cm} p{1cm} p{1.75cm} p{1cm} p{1.2cm} p{1cm} p{3.8cm}}
-		\#LO & HI & INIT & PR & PR\_TYPE & SD & PHASE &  ... & \#Label \\
-		\hline
-		     0 &     2 &   2.0 & 0 & -1 & 0     & -99 & 0 & \#SizeSpline Code\\
-		-0.001 & 	 1 &  0.13 & 0 &  1 & 0.001 & 	3 & 0 & \#SizeSpline GradLo\\
+\begin{description}
+	\item[Pattern \#27 (size and age)- Cubic Spline]\hfil\\
+	This selectivity pattern uses the ADMB implementation of the cubic spline function. This function requires input of the number of nodes, the positions of those nodes, the parameter values at those nodes, and the slope of the function at the first and last node.  In SS, the number of nodes is specified in the “special” column of the selectivity set-up.  The pattern number 27 is used to invoke cubic spline for size selectivity and for age selectivity; the input syntax is identical.\\
+	\\
+	For a 3 node setup, the SS input parameters would be:
+	\begin{itemize}
+		\item p1 – 	code for initial set-up (0, 1 or 2) as explained below
+		\item p2 – 	gradient at the first node (should be a small positive value)
+		\item p3 – 	gradient at the last node (should be zero or a small negative value)
+		\item p4-p6 – the nodes in units of cm; must be in rank order and inside of the range of the population length bins.  These must be held constant (not estimated, e.g. negative phase value) during a model run.
+		\item  p7-p9 – the values at the nodes.  Units are ln(selectivity).
+	\end{itemize}
+	Notes:
+	\begin{itemize}
+		\item There must be at least 3 nodes.
+		\item One of these selectivity parameter values should be held constant so others are estimated relative to it.
+		\item Selectivity is forced to be constant for sizes greater than the size at the last node
+		\item The overall selectivity curve is scaled to have a peak equal to 1.0.
+		\item Terminal nodes cannot be at the min or max population length bins.
+	\end{itemize}
+	
+	Cubic spline selectivity is implemented within SS using the following code:\\
+	\begin{center}
+		\includegraphics{CubicSplineCode}
+	\end{center}
+	
+	The figure below compares a 3 node and a 6 node cubic spline with a 2 parameter logistic function.  In fitting these functions, the 2 cubic spline approaches fit slightly better than the logistic, presumably because the data were slightly indicative of a small dome in selectivity.\\
+	\begin{center}
+		\includegraphics{CubicSpline}
+	\end{center}
+	
+	Auto-Generation of Cubic Spline Control File Set-Up:\\
+	A New SS feature pioneered with the cubic spline function is a capability to produce more specific parameter labels and to auto-generate selectivity parameter setup.  The auto-generation feature is controlled by the first selectivity parameter value for each fleet that is specified to use the cubic spline.  There are 3 possible values for this setup parameter:
+	\begin{itemize}
+		\item 0: no auto-generation, process parameter setup as read.
+		\item 1: auto-generate the node locations based on the specified number of nodes and on the cumulative size distribution of the data for this fleet/survey.
+		\item 2: auto-generate the nodes and also the min, max, prior, init, and phase for each parameter.
+	\end{itemize}
+	
+	With either the auto-generate option \#1 or \#2, it still is necessary to include in the parameter file placeholder rows of values so that the init\_matrix command can input the current number of values because all selectivity parameter lines are read as a single matrix dimensioned as N parameters x 14 columns.  The read values of min, max, init, prior, prior type, prior stddev, and phase will be overwritten.
+	
+	Cumulative size and age distribution is calculated for each fleet, summing across all samples and both genders.  These distributions are output in echoinput.sso and in a new OVERALL\_COMPS section of report.sso.
+	
+	When the nodes are auto-generated, the first node is placed at the size corresponding to the 2.5\% percentile of the cumulative size distribution, the last is placed at the 97.5\% percentile of the size distribution, and the remainder are placed at equally spaced percentiles along the cumulative size distribution.  These calculated node values are output into control.ss\_new.  So, the user could extract these nodes from control.ss\_new, edit them to desired values, then, insert them into the input control file.  Remember to turn off auto-generation in the revised control file.
+	
+	When the complete auto-generation is selected, the control.ss\_new would look like the table below:
+	
+	\begin{center}
+		\begin{longtable}{p{1cm} p{1cm} p{1cm} p{1cm} p{1.75cm} p{1cm} p{1.2cm} p{1cm} p{3.8cm}}
+			\#LO & HI & INIT & PR & PR\_TYPE & SD & PHASE &  ... & \#Label \\
+			\hline
+			0 &     2 &   2.0 & 0 & -1 & 0     & -99 & 0 & \#SizeSpline Code\\
+			-0.001 & 	 1 &  0.13 & 0 &  1 & 0.001 & 	3 & 0 & \#SizeSpline GradLo\\
 			-1 & 0.001 & -0.03 & 0 &  0 & 0.001 & 	3 & 0 & \#SizeSpline GradHi\\
 			11 & 	95 & 	38 & 0 & -1 & 	  0 & -99 & 0 & \#SizeSpline Knot1\\
 			11 & 	95 & 	59 & 0 & -1 &     0 & -99 & 0 & \#SizeSpline Knot2\\
-		    11 & 	95 & 	74 & 0 & -1 & 	  0 & -99 & 0 & \#SizeSpline Knot3\\
+			11 & 	95 & 	74 & 0 & -1 & 	  0 & -99 & 0 & \#SizeSpline Knot3\\
 			-9 & 	 7 & 	-3 & 0 &  1 & 0.001 & 	2 & 0 & \#SizeSpline Value1\\
 			-9 &   	 7 & 	-1 & 0 & -1 & 0.001 &  99 & 0 & \#SizeSpline Value2\\
 			-9 & 	 7 & -0.78 & 0 &  1 & 0.001 & 	2 & 0 & \#SizeSpline Value3\\
-		\hline
-	\end{longtable}
-\end{center}
-\hfil\\
-\underline{Survey Pattern \#34 - Depletion}\\
-This option allows a specified degree of stock depletion (in terms of spawning biomass) to be entered as the ratio of current year’s spawning biomass relative to Bzero.  With this option, it is not necessary or reasonable to estimate the Q for this fleet, but you must set ln(Q) = 0.0 as a fixed value for absolute abundance.  Also, if this option is used, then automatic adjustments to phase and lambda are made such that:
+			\hline
+		\end{longtable}
+	\end{center}
+\end{description}
 
-\begin{itemize}
-	\item all parameter phases are adjusted by +1 so that only R0 is active in phase 1
-	\item all lambdas are set to 0 in phase 1, except the lambda for this depletion survey.  Internally, the flag "depletion\_fleet" is turned on (= to the index of that fleet) if there is a fleet with selex = \#34
-\end{itemize}
-
-Essentially, these automated features cause SS to mimic DB-SRA in phase 1.  If the model is only run through phase 1, then this will be the final result.  Alternatively, use of this option could just be used to get the R0 parameter into a reasonable range before proceeding to estimate other parameters.  The lambda for the depletion survey could remain at 1.0 for the entire model run, or it could be reduced in later phases to prevent influencing final model results.
+%\begin{description}
+%	\item[Survey Pattern \#34 - Depletion]\hfil\\
+%	This option allows a specified degree of stock depletion (in terms of spawning biomass) to be entered as the ratio of current year’s spawning biomass relative to Bzero.  With this option, it is not necessary or reasonable to estimate the Q for this fleet, but you must set ln(Q) = 0.0 as a fixed value for absolute abundance.  Also, if this option is used, then automatic adjustments to phase and lambda are made such that:
+%	\begin{itemize}
+%		\item all parameter phases are adjusted by +1 so that only R0 is active in phase 1
+%		\item all lambdas are set to 0 in phase 1, except the lambda for this depletion survey.  Internally, the flag "depletion\_fleet" is turned on (= to the index of that fleet) if there is a fleet with selex = \#34
+%	\end{itemize}
+	
+%	Essentially, these automated features cause SS to mimic DB-SRA in phase 1.  If the model is only run through phase 1, then this will be the final result.  Alternatively, use of this option could just be used to get the R0 parameter into a reasonable range before proceeding to estimate other parameters.  The lambda for the depletion survey could remain at 1.0 for the entire model run, or it could be reduced in later phases to prevent influencing final model results.
+%\end{description}
 
 \subsubsection{Retention}
 Retention is defined as a logistic function of size and can be dome-shaped.  It does not apply to surveys.  Seven parameters are used:

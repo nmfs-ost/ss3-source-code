@@ -216,7 +216,20 @@ If the fishery or survey has time-varying selectivity, then this changing select
 
 \begin{description}
 	\item[Units]\hfill\\
-	NOTE:  the “effort” option can only be used for a fishing fleet and not for a survey, even if the survey is mirrored to a fishing fleet.  The values of these effort data are interpreted as proportional to the level of the fishery F values.  No adjustment is made for differentiating between continuous F values versus exploitation rate values coming from Pope’s approximation.  A normal error structure is recommended so that the input effort data are compared directly to the model’s calculated F, rather than to loge(F).  The resultant proportionality constant has units of 1/Q.
+	NOTE:  the “effort” option can only be used for a fishing fleet and not for a survey, even if the survey is mirrored to a fishing fleet.  The values of these effort data are interpreted as proportional to the level of the fishery F values.  No adjustment is made for differentiating between continuous F values versus exploitation rate values coming from Pope’s approximation.  A normal error structure is recommended so that the input effort data are compared directly to the model’s calculated F, rather than to loge(F).  The resultant proportionality constant has units of 1/Q. The options for units are:
+		\begin{itemize}
+				\item 0  = numbers
+				\item 1  = biomass
+				\item 2  = F
+				\item >=30 special survey types.  Four special kinds of surveys are defined in SS.  Here in the survey data section, there is no change in the way in which these survey data are entered.  These four survey “selectivity” pattern options bypass the calculation of survey selectivity from explicit selectivity  parameters.
+				\begin{itemize}
+					\item 30 = spawning biomass (e.g. for an egg and larvae survey)
+					\item 31 = exp(recruitment deviation), useful for environmental index affecting recruitment
+					\item 32 = spawning biomass * exp(recruitment deviation), for a pre-recruit survey occurring before density-dependence
+					\item 33 = recruitment, age-0 recruits
+				\end{itemize}
+		\end{itemize}		
+	
 	\item[Error Distribution]\
 		\begin{itemize}
 			\item -1 = normal error
@@ -240,15 +253,6 @@ If the data exist as a set of normalized Z-scores, you can either:  assert a log
 		\item Observations that are to be included in the model but not included in the –logL need to have a negative sign on their fleet ID.  Previously the code for not using observations was to enter the observation itself as a negative value.  However, that old approach prevented use of a Z-score environmental index as a “survey”.
 		\item Super-periods are turned on and then turned back off again by putting a negative sign on the season.  Previously, super-periods were started and stopped by entering -9999 and the -9998 in the se field.  See the “Data Super-Period” section of this manual for more information.
 	\end{itemize}
-	\item[Special Surveys]\hfill\\
-	Four special kinds of surveys are defined in SS.  Here in the survey data section, there is no change in the way in which these survey data are entered.  Then in the size-selectivity section of the control file, the selectivity pattern used to generate expected values for these surveys is specified by entering the selectivity pattern as 30, 31, 32, or 33.  These four survey “selectivity” pattern options bypass the calculation of survey selectivity from explicit selectivity parameters.
-	\begin{itemize}
-		\item 30 = spawning biomass (e.g. for an egg and larvae survey)
-		\item 31 = exp(recruitment deviation), useful for environmental index affecting recruitment
-		\item 32 = spawning biomass * exp(recruitment deviation), for a pre-recruit survey occurring before density-dependence
-		\item 33 = recruitment, age-0 recruits
-	\end{itemize}
-	
 \end{description}
 
 \subsubsection{Discard}
@@ -274,6 +278,7 @@ If discard is being used, the input syntax is:
 			\#Fleet & Units & \multicolumn{3}{l}{Error}\\
 			\hline
 			1 & 2 & \multicolumn{3}{l}{-1}\\
+			\hline
 			\#Year & Month & Fleet  & Observation & Error \\
 			\hline
 			1980  & 7 & 1 & 0.05 & 0.25 \\
@@ -293,7 +298,7 @@ If discard is being used, the input syntax is:
 	\item[Discard Error Structure]\hfill\\
 	The four options for discard error are:
 	\begin{itemize}
-		\item >= 1 = degrees of freedom for Student's t-distribution used to scale mean body weight deviations.  Value of error in data file in interpreted as CV of the observation.
+		\item >0 = degrees of freedom for Student's t-distribution used to scale mean body weight deviations.  Value of error in data file in interpreted as CV of the observation.
 		\item 0 = normal distribution, value of error in data file in interpreted as CV of the observation
 		\item -1 = normal distribution, value of error in data file is interpreted as standard error of the observation
 		\item -2 = lognormal distribution, value of error in data file is interpreted as standard error of the observation in log space 
@@ -319,7 +324,10 @@ This is the overall mean body weight across all selected sizes and ages.  This m
 		\multicolumn{5}{l}{\#Mean Body Weight Data Section}\\
 		\hline
 		%\\
-		30 & \multicolumn{5}{l}{\parbox{11cm }{\#Degrees of freedom for Student's t-distribution used to evaluate mean body weight deviation.  This is not a conditional input, must be here even if there are no mean body weight observations.}}\\
+		0  & \multicolumn{5}{l}{Use mean body size data (0/1) } \\
+		\hline
+		30 & \multicolumn{5}{l}{\#Degrees of freedom for Student's t-distribution used to evaluate mean } \\
+		   & \multicolumn{5}{l}{\parbox{13cm }{ body weight deviation.  This is not a conditional input, must be here even if there are no mean body weight observations.}}\\
 		\hline
 		\#Year & Month & Fleet & Partition & Value & CV \\
 		\hline
@@ -377,20 +385,17 @@ The beginning of the length composition section sets up the bin structure for bo
 \begin{description}
 	\item[Notes:]\
 	\begin{itemize}
-		\item For option 2, bin width should be a factor of min size and max size.  For options 2 and 3, the population length bins must not be wider than the length data bins, but the boundaries of the bins do not have to align.  In SS\textunderscore v3.02B and earlier, the data boundaries needed to align with the population boundaries but this requirement has been removed.  The transition matrix is output to checkup.sso.
+		\item For option 2, bin width should be a factor of min size and max size.  For options 2 and 3, the population length bins must not be wider than the length data bins, but the boundaries of the bins do not have to align.  In SSv3.02B and earlier, the data boundaries needed to align with the population boundaries but this requirement has been removed.  The transition matrix is output to checkup.sso.
 		\item The mean size at age 0.0 (virtual recruitment age) is set equal to the min size of the first population length bin.
 		\item When using more population length bins than data bins, SS will run slower (more calculations to do), the calculated weights at age will be less aliased by the bin structure, and you may or may not get better fits to your data.
 		\item While exploring the performance of models with finer bin structure, a potentially pathological situation has been identified.  When the bin structure is coarse (note that some applications have used 10 cm bin widths for the largest fish), it is possible for a selectivity slope parameter or a retention parameter to become so steep that all of the action occurs within the range of a single size bin.  In this case, the model will lose the gradient of the log likelihood with respect to that parameter and convergence will be hampered.  A generic guidance to avoid this situation is not yet available.
 	\end{itemize}
 \end{description}
 
-%\begin{description}
-%	\item[Length Composition Data Specifications]\
-%\end{description}
 
 \begin{center}
 	\begin{tabular}{p{2cm} p{2cm} p{2cm} p{2cm} p{2cm} p{2cm} p{2cm}}
-		\multicolumn{6}{l}{Specify bin compression and error structure for length composition data:}\\
+		\multicolumn{7}{l}{Specify bin compression and error structure for length composition data:}\\
 		\hline
 		\#Min Tail Compression & Constant added to proportions & Combine males \& females & Compress Bins & Error Distribution & Dirichlet Parameter Number & \\
 		\hline
@@ -434,7 +439,7 @@ The beginning of the length composition section sets up the bin structure for bo
 		\hline
 		\multicolumn{2}{l}{26 28 30 ... 88 90} &  \multicolumn{5}{l}{\#Vector of length bins associated with the length data}\\
 		\hline
-		\\ \\
+		\\
 		\multicolumn{7}{l}{Example of a single length composition observation:} \\
 		\hline
 		\#Year & Month & Fleet & Gender & Partition & Nsamp & data vector\\
@@ -465,7 +470,7 @@ The beginning of the length composition section sets up the bin structure for bo
 	\item[Excluding Data]\
 	\begin{itemize}
 		\item If the value of year is negative, then that observation is not transferred into the working array.  This feature is the easiest way to include observations in a data file but not to use them in a particular model scenario.
-		\item If the value of fleet is negative, then the observation is processed and its logL is calculated, but this logL is not included in the total logL.  This feature allows the user to see the fit to a provisional observation without having that observation affect the model.
+		\item If the value of fleet is negative, then the observation is processed and its log likelihood is calculated, but this log likelihood is not included in the total log likelihood.  This feature allows the user to see the fit to a provisional observation without having that observation affect the model.
 	\end{itemize}
 	\item[Note:]\
 	\begin{itemize}
@@ -479,13 +484,11 @@ The beginning of the length composition section sets up the bin structure for bo
 The age composition section begins by reading a definition of the age bin structure, then the definition of ageing imprecision, then the age composition data itself.  The bins are in terms of observed age (here age’).  The ageing imprecision definitions are used to create one or more matrices to translate true age structure into expected age structure in terms of age’.
 
 \begin{center}
-	\begin{tabular}{p{.5cm} p{.5cm} p{.5cm} p{.5cm} p{.5cm} p{.5cm} p{.5cm} p{.5cm} p{.5cm} p{.5cm} p{.5cm} p{.5cm} p{.5cm} p{.5cm} p{.5cm} p{.5cm} p{.5cm}}
+	\begin{tabular}{p{3cm} p{12cm}  }
 		\hline
-		\multicolumn{2}{l}{17} & \multicolumn{15}{l}{\#Number of age' bins;} \\
-		\multicolumn{2}{l}{}   & \multicolumn{15}{l}{\#can be equal to 0 if age data not used;}\\
-		\multicolumn{2}{l}{}   & \multicolumn{15}{l}{\#do not include a vector of agebins if Nage' bins is set equal to 0.}\\
+		17 & \#Number of age' bins; can be equal to 0 if age data not used; do not include a vector of agebins if Nage' bins is set equal to 0.\\
 		\hline
-		1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 & 11 & 12 & 13 & 14 & 15 & 20 & 25 \\
+		1 2 3 ... 20 25 & \# Vector of ages\\
 		\hline		
 	\end{tabular}
 \end{center}
@@ -581,80 +584,83 @@ In a two gender model, it is best to enter these conditional age’-at-length da
 
 When Lbin\textunderscore lo and Lbin\textunderscore hi are used to select a subset of the total size range, the expected value for these age’ data is calculated within that specified size range, so is age’ conditional on length.
 
-\subsubsection{Sex Ratio-at-Length}
-The conditional age’-at-length approach can be used to analyze sex ratio-at-length data.  If you have no age data, then the following simple setup will allow entry of sex-ratio at length.  Note that it must use the joint gender (code 3) approach.
+%\subsubsection{Sex Ratio-at-Length}
+%The conditional age’-at-length approach can be used to analyze sex ratio-at-length data.  If you have no age data, then the following simple setup will allow entry of sex-ratio at length.  Note that it must use the joint gender (code 3) approach.
 
-\begin{center}
-	\begin{tabular}{p{1cm} p{1cm} p{1cm} p{1cm} p{1cm} p{1cm} p{1cm} p{1cm} p{1cm} p{0.2cm} p{0.2cm} p{.2cm} p{.2cm} p{.2cm} p{.2cm} p{.2cm} p{0.2cm} }
-		\multicolumn{17}{l}{\#Example setup for sex ratio-at-length data:}\\
-		\hline
-		1 & \multicolumn{16}{l}{\#N age bins so all fish are put into a single "age" bind regardless of their true age}\\
-		\hline
-		10 & \multicolumn{16}{l}{\#Assigned "age" for this one bin}\\
-		\hline
-		1  & \multicolumn{16}{l}{\#N of age error definitions}\\
-		\hline
-		10.5 & 10.5 & 10.5 & 10.5 & ... & \multicolumn{12}{l}{repeat for each true age in model, beginning at age-0}\\
-		0.001 & 0.001 & 0.001 & 0.001 & ... & \multicolumn{12}{l}{repeat for each true age in model, beginning at age-0}\\
-		\hline
-		1 & \multicolumn{16}{l}{\# Lbin method: 1 = population length bins, 2 = data length bins, 3 = lengths}\\
-		\hline
-		0 & \multicolumn{16}{l}{\#Combine males and females at or below this bin number}\\
-		\hline
-		\multicolumn{17}{l}{\#There are 4 females and 8 males in the 25th population length bin}\\
-		\hline
-		\#Yr & Month & Fleet & Gender & Part & AgeErr & Lbinlo & Lbinhi & Nsamp & & & & & & & \\
-		\hline
-		1971 & 1 & 1 & 3 & 0 & 1 & 25 & 25 & 12 & 0 & 4 & 0 & 0 & 8 & 0 & ...\\
-		-9999  & 1 & 1 & 3 & 0 & 1 & 25 & 25 & 12 & 0 & 4 & 0 & 0 & 8 & 0 & ...\\
-		\hline
-	\end{tabular}
-\end{center}
+%\begin{center}
+%	\begin{tabular}{p{1cm} p{1cm} p{1cm} p{1cm} p{1cm} p{1cm} p{1cm} p{1cm} p{1cm} p{0.2cm} p{0.2cm} p{.2cm} p{.2cm} p{.2cm} p{.2cm} p{.2cm} p{0.2cm} }
+%		\multicolumn{17}{l}{\#Example setup for sex ratio-at-length data:}\\
+%		\hline
+%		1 & \multicolumn{16}{l}{\#N age bins so all fish are put into a single "age" bind regardless of their true age}\\
+%		\hline
+%		10 & \multicolumn{16}{l}{\#Assigned "age" for this one bin}\\
+%		\hline
+%		1  & \multicolumn{16}{l}{\#N of age error definitions}\\
+%		\hline
+%		10.5 & 10.5 & 10.5 & 10.5 & ... & \multicolumn{12}{l}{repeat for each true age in model, beginning at age-0}\\
+%		0.001 & 0.001 & 0.001 & 0.001 & ... & \multicolumn{12}{l}{repeat for each true age in model, beginning at age-0}\\
+%		\hline
+%		1 & \multicolumn{16}{l}{\# Lbin method: 1 = population length bins, 2 = data length bins, 3 = lengths}\\
+%		\hline
+%		0 & \multicolumn{16}{l}{\#Combine males and females at or below this bin number}\\
+%		\hline
+%		\multicolumn{17}{l}{\#There are 4 females and 8 males in the 25th population length bin}\\
+%		\hline
+%		\#Yr & Month & Fleet & Gender & Part & AgeErr & Lbinlo & Lbinhi & Nsamp & & & & & & & \\
+%		\hline
+%		1971 & 1 & 1 & 3 & 0 & 1 & 25 & 25 & 12 & 0 & 4 & 0 & 0 & 8 & 0 & ...\\
+%		-9999  & 1 & 1 & 3 & 0 & 1 & 25 & 25 & 12 & 0 & 4 & 0 & 0 & 8 & 0 & ...\\
+%		\hline
+%	\end{tabular}
+%\end{center}
 
-If you have both real age data and sex ratio at length data, then you will need to set up the number of age bins to match the real age data, define an additional age error type to use for the sex ratio data, put the sex ratio data into the correct bin.  For example:
+%If you have both real age data and sex ratio at length data, then you will need to set up the number of age bins to match the real age data, define an additional age error type to use for the sex ratio data, put the sex ratio data into the correct bin.  For example:
 
-\begin{center}
-	\begin{tabular}{p{1cm} p{1cm} p{1cm} p{1cm} p{1cm} p{1cm} p{1cm} p{1cm} p{1cm} p{0.2cm} p{0.2cm} p{.2cm} p{.2cm} p{.2cm} p{.2cm} p{.2cm} p{0.2cm} }
-		\hline
-		5 & \multicolumn{16}{l}{\#N age bins so all fish are put into a single "age" bind regardless of their true age}\\
-		\hline
-		1 2 3 4 5 & \multicolumn{16}{l}{\#Assigned "age" for this one bin}\\
-		\hline
-		2  & \multicolumn{16}{l}{\#N of age error definitions}\\
-		\hline
-		-1 & 1 & 1 & 1 & ... & \multicolumn{12}{l}{repeat for each true age in model, beginning at age-0}\\
-		0.2 & 0.4 & 0.5 & 0.8 & ... & \multicolumn{12}{l}{repeat for each true age in model, beginning at age-0}\\
-	    3.5 & 3.5 & 3.5 & 3.5 & ... & \multicolumn{12}{l}{repeat for each true age in model, beginning at age-0}\\
-	    0.001 & 0.001 & 0.001 & 0.001 & ... & \multicolumn{12}{l}{repeat for each true age in model, beginning at age-0}\\
-		\hline
-		1 & \multicolumn{16}{l}{\# Lbin method: 1 = population length bins, 2 = data length bins, 3 = lengths}\\
-		\hline
-		0 & \multicolumn{16}{l}{\#Combine males and females at or below this bin number}\\
-		\hline
-		\multicolumn{17}{l}{\#There are 4 females and 8 males in the 25th population length bin}\\
-		\hline
-		\#Yr & Month & Fleet & Gender & Part & AgeErr & Lbinlo & Lbinhi & Nsamp & & & & & & & \\
-		\hline
-		1971 & 1 & 1 & 3 & 0 & 1 & -1 & -1 & 25 & 1 & 2 & 4 & ... &\multicolumn{3}{l}{\#real age}\\
-		     &   &   &   &   &   &    &    &    &   &   &   &     &\multicolumn{3}{l}{data 5}\\
-		1971 & 1 & 1 & 3 & 0 & 1 & 25 & 25 & 12 & 0 & 0 & 4 & ... &\multicolumn{3}{l}{\#sex ratio}\\
-		     &   &   &   &   &   &    &    &    &   &   &   &     &\multicolumn{3}{l}{in bin 3}\\
-		-9999  & 1 & 1 & 3 & 0 & 1 & 25 & 25 & 12 & 0 & 0 & 4 & ... &\multicolumn{3}{l}{}\\
-		\hline
-	\end{tabular}
-\end{center}
+%\begin{center}
+%	\begin{tabular}{p{1cm} p{1cm} p{1cm} p{1cm} p{1cm} p{1cm} p{1cm} p{1cm} p{1cm} p{0.2cm} p{0.2cm} p{.2cm} p{.2cm} p{.2cm} p{.2cm} p{.2cm} p{0.2cm} }
+%		\hline
+%		5 & \multicolumn{16}{l}{\#N age bins so all fish are put into a single "age" bind regardless of their true age}\\
+%		\hline
+%		1 2 3 4 5 & \multicolumn{16}{l}{\#Assigned "age" for this one bin}\\
+%		\hline
+%		2  & \multicolumn{16}{l}{\#N of age error definitions}\\
+%		\hline
+%		-1 & 1 & 1 & 1 & ... & \multicolumn{12}{l}{repeat for each true age in model, beginning at age-0}\\
+%		0.2 & 0.4 & 0.5 & 0.8 & ... & \multicolumn{12}{l}{repeat for each true age in model, beginning at age-0}\\
+%	    3.5 & 3.5 & 3.5 & 3.5 & ... & \multicolumn{12}{l}{repeat for each true age in model, beginning at age-0}\\
+%	    0.001 & 0.001 & 0.001 & 0.001 & ... & \multicolumn{12}{l}{repeat for each true age in model, beginning at age-0}\\
+%		\hline
+%		1 & \multicolumn{16}{l}{\# Lbin method: 1 = population length bins, 2 = data length bins, 3 = lengths}\\
+%		\hline
+%		0 & \multicolumn{16}{l}{\#Combine males and females at or below this bin number}\\
+%		\hline
+%		\multicolumn{17}{l}{\#There are 4 females and 8 males in the 25th population length bin}\\
+%		\hline
+%		\#Yr & Month & Fleet & Gender & Part & AgeErr & Lbinlo & Lbinhi & Nsamp & & & & & & & \\
+%		\hline
+%		1971 & 1 & 1 & 3 & 0 & 1 & -1 & -1 & 25 & 1 & 2 & 4 & ... &\multicolumn{3}{l}{\#real age}\\
+%		     &   &   &   &   &   &    &    &    &   &   &   &     &\multicolumn{3}{l}{data 5}\\
+%		1971 & 1 & 1 & 3 & 0 & 1 & 25 & 25 & 12 & 0 & 0 & 4 & ... &\multicolumn{3}{l}{\#sex ratio}\\
+%		     &   &   &   &   &   &    &    &    &   &   &   &     &\multicolumn{3}{l}{in bin 3}\\
+%		-9999  & 1 & 1 & 3 & 0 & 1 & 25 & 25 & 12 & 0 & 0 & 4 & ... &\multicolumn{3}{l}{}\\
+%		\hline
+%	\end{tabular}
+%\end{center}
 
 \subsubsection{Mean Length or Body Weight-at-Age}
 SS also accepts input of mean length-at-age’ or mean bodywt-at-age’.  This is done in terms of age’, not true age, to take into account the effects of ageing imprecision on expected mean size-at-age’.  If the value of “AgeErr” is positive, then the observation is interpreted as mean length-at-age’.  If the value of “AgeErr” is negative, then the observation is interpreted as mean bodywt-at-age’ and the abs(AgeErr) is used as AgeErr.
 
 \begin{center}
-	\begin{tabular}{p{1cm} p{1cm} p{1cm} p{1cm} p{1cm} p{1cm} p{1cm} p{1cm} p{1cm} p{1cm} p{1cm}}
-		\multicolumn{11}{l}{An example observation:}\\
+	\begin{tabular}{p{0.75cm} p{1cm} p{0.75cm} p{1cm} p{0.75cm} p{1cm} p{1cm} p{3.2cm} p{3.2cm} }
 		\hline
-		\#Yr & Month & Fleet & Gender & Part & AgeErr & Nsamp & Female Data & Male Data & Female N & Male N \\
+		6 & \multicolumn{8}{l}{\# Number of mean size-at-age observation} \\
+		\multicolumn{9}{l}{An example observation:}\\
 		\hline
-		1989 & 1 & 1 & 3 & 0 & 2 & 999 &<Mean size values> & <Mean size values> & <N fish> & <N fish>\\
-		-9999 & 1 & 1 & 3 & 0 & 2 & 999 &  & &  & \\
+		\#Yr & Month & Fleet & Gender & Part & AgeErr & Ignore & Data Vector (Female - Male) & Sample Size (Female - Male) \\
+		\hline
+		1989  & 7 & 1 & 3 & 0 & 1 & 2 & <Mean Size values> & <Sample Sizes> \\
+		...   &   &   &   &   &   &   &  & \\
+		-9999 & 7 & 1 & 3 & 0 & 1 & 2 &  & \\
 		\hline
 	\end{tabular}
 \end{center}
@@ -676,18 +682,16 @@ SS also accepts input of mean length-at-age’ or mean bodywt-at-age’.  This i
 SS accepts input of time series of environmental data.  Parameters can be made to be time-varying by making them a function of one of these environmental time series.
 
 \begin{center}
-	\begin{tabular}{p{3cm} p{3cm} p{3cm}}
-		\multicolumn{3}{l}{\# Parameter values can be a function of an environmental data series: }\\
+	\begin{tabular}{p{1cm} p{3cm} p{3cm} p{3cm}}
+		\multicolumn{4}{l}{\# Parameter values can be a function of an environmental data series: }\\
 		\hline
-		2 & \multicolumn{2}{l}{\#Number of environmental variables}\\
+		0 & \multicolumn{3}{l}{\#Number of environmental variables}\\
 		\hline
-		\multicolumn{3}{l}{\# Example of 2 environmental observations:}\\
-		\hline
-		\#Year & Variable & Value \\
-		\hline
-		1990 & 1 & 0.10 \\
-		1991 & 1 & 0.15 \\
-		-9999 & 0 & 0 \\
+		\multicolumn{4}{l}{COND > 0  Example of 2 environmental observations:} \\
+		  & \#Year & Variable & Value \\
+		  & 1990 & 1 & 0.10 \\
+		  & 1991 & 1 & 0.15 \\
+		  & -9999 & 0 & 0 \\
 		\hline
 	\end{tabular}
 \end{center}
@@ -716,17 +720,18 @@ A new feature with SS\textunderscore v3 is a generalized approach to size compos
 	\begin{tabular}{p{1.4cm} p{0.5cm} p{13 cm}}
 		\multicolumn{3}{l}{Example entry:}\\
 		\hline
-		2 &  & \#N of weight frequency methods\\
+		0 &  & \#N of weight frequency methods\\
 		\hline
-		25 & 4 & \#Nbins per method\\
-		\hline
-		2 & 1 & \#Units per each method (1 = biomass, 2 = numbers)\\
-		\hline
-		3 & 2 & \#Scale per each method (1 = kg, 2 = lbs, 3 = cm, 4 = inches)\\
-		\hline
-		0.00001 & -1 & \#Min compression to add to each observation (entry for each method)\\
-		\hline
-		40 & 5 & \#N observations per weight frequency method \\
+		\multicolumn{3}{l}{COND > 0 }  \\
+		\multicolumn{2}{r}{25 4} & \#Nbins per method\\
+		%\hline
+		\multicolumn{2}{r}{2 1} & \#Units per each method (1 = biomass, 2 = numbers)\\
+		%\hline
+		\multicolumn{2}{r}{3 2} & \#Scale per each method (1 = kg, 2 = lbs, 3 = cm, 4 = inches)\\
+		%\hline
+		\multicolumn{2}{r}{ 0.00001 -1} & \#Min compression to add to each observation (entry for each method)\\
+		%\hline
+		\multicolumn{2}{r}{40 5} & \#N observations per weight frequency method \\
 		\hline
 	\end{tabular}
 \end{center}

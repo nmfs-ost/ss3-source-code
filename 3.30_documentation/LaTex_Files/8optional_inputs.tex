@@ -4,21 +4,22 @@
 With version 3.04, SS adds the capability to read empirical body weight at age for the population and each fleet, in lieu of generating these weights internally from the growth parameters, weight-at-length, and size-selectivity.  Selection of this option is done by setting Maturity\textunderscore Option equal to 5.  The values are read from a separate file named, wtatage.ss.  This file is only required to exist if this option is selected.  
 
 The format of this input file is:
-\verb|#| syntax for optional input file:  wtatage.ss
 \begin{center}
 	\begin{tabular}{l l l l l l l l l }
 		\hline
-		\multicolumn{2}{l}{10} & \multicolumn{7}{l}{\# Number of rows} \\
-		\hline
+		%\multicolumn{2}{l}{10} & \multicolumn{7}{l}{\# Number of rows} \\
+		%\hline
 		\multicolumn{2}{l}{40} & \multicolumn{7}{l}{\# Number of ages (equal to Maximum Age)} \\
 		\hline
 		\#Year & Season & Gender & GP & Birth Season & Fleet & Age-0 & Age-1 & ... \\
 		\hline
 		\-1971 & 1 & 1 & 1 & 1 & 1 & 0.0128586 & 0.13718 & 0.432243 \\
-		\hline
+		%\hline
 		\-1971 & 1 & 1 & 1 & 1 & 2 & ... & ... & ... \\
-		\hline
+		%\hline
 		\-1971 & 1 & 1 & 1 & 1 & 0 & ... & ... & ... \\
+		%\hline
+		-9999 & 1 & 1 & 1 & 1 & 0 & ... & ... & ... \\
 		\hline
 	\end{tabular}
 \end{center}

@@ -24,103 +24,102 @@
 \contentsline {subsubsection}{\numberline {9.4.2}Fleet Definitions }{22}{subsubsection.9.4.2}
 \contentsline {subsubsection}{\numberline {9.4.3}Catch}{24}{subsubsection.9.4.3}
 \contentsline {subsubsection}{\numberline {9.4.4}Abundance Indices}{25}{subsubsection.9.4.4}
-\contentsline {subsubsection}{\numberline {9.4.5}Discard}{27}{subsubsection.9.4.5}
+\contentsline {subsubsection}{\numberline {9.4.5}Discard}{28}{subsubsection.9.4.5}
 \contentsline {subsubsection}{\numberline {9.4.6}Mean Body Weight}{29}{subsubsection.9.4.6}
 \contentsline {subsubsection}{\numberline {9.4.7}Population Length Bins}{30}{subsubsection.9.4.7}
 \contentsline {subsubsection}{\numberline {9.4.8}Length Composition Data}{32}{subsubsection.9.4.8}
-\contentsline {subsubsection}{\numberline {9.4.9}Age Composition Bin Setup}{33}{subsubsection.9.4.9}
+\contentsline {subsubsection}{\numberline {9.4.9}Age Composition Bin Setup}{34}{subsubsection.9.4.9}
 \contentsline {subsubsection}{\numberline {9.4.10}Ageing Error}{34}{subsubsection.9.4.10}
 \contentsline {subsubsection}{\numberline {9.4.11}Conditional Age'-at-Length}{36}{subsubsection.9.4.11}
-\contentsline {subsubsection}{\numberline {9.4.12}Sex Ratio-at-Length}{36}{subsubsection.9.4.12}
-\contentsline {subsubsection}{\numberline {9.4.13}Mean Length or Body Weight-at-Age}{37}{subsubsection.9.4.13}
-\contentsline {subsubsection}{\numberline {9.4.14}Environmental Data}{38}{subsubsection.9.4.14}
-\contentsline {subsubsection}{\numberline {9.4.15}Generalized Size Composition Data}{39}{subsubsection.9.4.15}
-\contentsline {subsubsection}{\numberline {9.4.16}Tag-Recapture Data}{40}{subsubsection.9.4.16}
-\contentsline {subsubsection}{\numberline {9.4.17}Stock Composition Data}{42}{subsubsection.9.4.17}
-\contentsline {subsubsection}{\numberline {9.4.18}Excluding Data}{43}{subsubsection.9.4.18}
-\contentsline {subsubsection}{\numberline {9.4.19}Data Super Periods}{43}{subsubsection.9.4.19}
-\contentsline {section}{\numberline {10}Control File}{44}{section.10}
-\contentsline {subsection}{\numberline {10.1}Overview of Control File}{44}{subsection.10.1}
-\contentsline {subsection}{\numberline {10.2}Parameter Line Elements}{46}{subsection.10.2}
-\contentsline {subsection}{\numberline {10.3}Control File Syntax}{47}{subsection.10.3}
-\contentsline {subsubsection}{\numberline {10.3.1}Biology}{49}{subsubsection.10.3.1}
-\contentsline {subsubsection}{\numberline {10.3.2}Read Mortality-Growth Parameters}{53}{subsubsection.10.3.2}
-\contentsline {subsubsection}{\numberline {10.3.3}Natural Mortality Notes}{57}{subsubsection.10.3.3}
-\contentsline {subsubsection}{\numberline {10.3.4}Growth Notes}{57}{subsubsection.10.3.4}
-\contentsline {subsubsection}{\numberline {10.3.5}Growth Patterns (morphs) and Sub-Morphs}{58}{subsubsection.10.3.5}
-\contentsline {subsubsection}{\numberline {10.3.6}Recruitment, Age, and Growth}{58}{subsubsection.10.3.6}
-\contentsline {subsubsection}{\numberline {10.3.7}Cohort Growth Deviation}{59}{subsubsection.10.3.7}
-\contentsline {subsubsection}{\numberline {10.3.8}Movement Parameters}{59}{subsubsection.10.3.8}
-\contentsline {subsubsection}{\numberline {10.3.9}Recruitment Allocation and Movement Parameters}{60}{subsubsection.10.3.9}
-\contentsline {subsubsection}{\numberline {10.3.10}Catch Multiplier}{62}{subsubsection.10.3.10}
-\contentsline {subsubsection}{\numberline {10.3.11}Ageing Error Parameters}{62}{subsubsection.10.3.11}
-\contentsline {subsubsection}{\numberline {10.3.12}Time-Varying Biology Parameters}{63}{subsubsection.10.3.12}
-\contentsline {subsubsection}{\numberline {10.3.13}Notes on Seasonal Biology Parameters}{65}{subsubsection.10.3.13}
-\contentsline {subsubsection}{\numberline {10.3.14}Empirical Weight-at-Age (wtatage.ss)}{65}{subsubsection.10.3.14}
-\contentsline {subsubsection}{\numberline {10.3.15}Spawner-Recruitment}{65}{subsubsection.10.3.15}
-\contentsline {subsubsection}{\numberline {10.3.16}Spawner-Recruitment Function}{70}{subsubsection.10.3.16}
-\contentsline {subsubsection}{\numberline {10.3.17}Recruitment Eras}{74}{subsubsection.10.3.17}
-\contentsline {subsubsection}{\numberline {10.3.18}Recruitment Likelihood}{74}{subsubsection.10.3.18}
-\contentsline {subsubsection}{\numberline {10.3.19}Recruitment Bias Adjustment}{74}{subsubsection.10.3.19}
-\contentsline {subsubsection}{\numberline {10.3.20}Recruitment Autocorrelation}{76}{subsubsection.10.3.20}
-\contentsline {subsubsection}{\numberline {10.3.21}Recruitment Cycle}{76}{subsubsection.10.3.21}
-\contentsline {subsubsection}{\numberline {10.3.22}Initial Age Composition}{77}{subsubsection.10.3.22}
-\contentsline {subsubsection}{\numberline {10.3.23}Fishing Mortality Method}{77}{subsubsection.10.3.23}
-\contentsline {subsubsection}{\numberline {10.3.24}Initial Fishing Mortality}{78}{subsubsection.10.3.24}
-\contentsline {subsubsection}{\numberline {10.3.25}Catchability}{79}{subsubsection.10.3.25}
-\contentsline {subsubsection}{\numberline {10.3.26}Selectivity and Discard}{82}{subsubsection.10.3.26}
-\contentsline {subsubsection}{\numberline {10.3.27}Selectivity Patterns}{83}{subsubsection.10.3.27}
-\contentsline {subsubsection}{\numberline {10.3.28}Selectivity Pattern Details}{85}{subsubsection.10.3.28}
-\contentsline {subsubsection}{\numberline {10.3.29}Retention}{95}{subsubsection.10.3.29}
-\contentsline {subsubsection}{\numberline {10.3.30}Discard Mortality}{96}{subsubsection.10.3.30}
-\contentsline {subsubsection}{\numberline {10.3.31}Male Selectivity}{96}{subsubsection.10.3.31}
-\contentsline {subsubsection}{\numberline {10.3.32}Reading the Selectivity and Retention Parameters}{98}{subsubsection.10.3.32}
-\contentsline {subsubsection}{\numberline {10.3.33}Tag Recapture Parameters}{99}{subsubsection.10.3.33}
-\contentsline {subsubsection}{\numberline {10.3.34}Variance Adjustment Factors}{100}{subsubsection.10.3.34}
-\contentsline {subsubsection}{\numberline {10.3.35}Lambdas (Emphasis Factors)}{101}{subsubsection.10.3.35}
-\contentsline {subsubsection}{\numberline {10.3.36}Controls for Variance of Derived Quantities}{103}{subsubsection.10.3.36}
-\contentsline {subsubsection}{\numberline {10.3.37}Time-Varying Parameter Options}{105}{subsubsection.10.3.37}
-\contentsline {subsubsection}{\numberline {10.3.38}Parameter Priors}{108}{subsubsection.10.3.38}
-\contentsline {section}{\numberline {11}Output Files}{112}{section.11}
-\contentsline {subsection}{\numberline {11.1}Standard ADMB output files}{112}{subsection.11.1}
-\contentsline {subsection}{\numberline {11.2}Derived Quantities}{112}{subsection.11.2}
-\contentsline {subsubsection}{\numberline {11.2.1}Metric for Fishing Mortality}{112}{subsubsection.11.2.1}
-\contentsline {subsubsection}{\numberline {11.2.2}Equilibrium SPR}{112}{subsubsection.11.2.2}
-\contentsline {subsubsection}{\numberline {11.2.3}F std}{113}{subsubsection.11.2.3}
-\contentsline {subsubsection}{\numberline {11.2.4}F-at-Age}{114}{subsubsection.11.2.4}
-\contentsline {subsubsection}{\numberline {11.2.5}MSY and other Benchmark Items}{114}{subsubsection.11.2.5}
-\contentsline {subsection}{\numberline {11.3}Brief cumulative output}{115}{subsection.11.3}
-\contentsline {subsection}{\numberline {11.4}Output for Rebuilder Package}{115}{subsection.11.4}
-\contentsline {subsection}{\numberline {11.5}Bootstrap Data Files}{118}{subsection.11.5}
-\contentsline {subsection}{\numberline {11.6}Forecast and Reference Points}{118}{subsection.11.6}
-\contentsline {subsection}{\numberline {11.7}Main Output File, report.sso}{123}{subsection.11.7}
-\contentsline {section}{\numberline {12}Running SS}{128}{section.12}
-\contentsline {subsection}{\numberline {12.1}Example of DOS batch input file}{129}{subsection.12.1}
-\contentsline {subsubsection}{\numberline {12.1.1}Simple Batch}{129}{subsubsection.12.1.1}
-\contentsline {subsubsection}{\numberline {12.1.2}Complicated Batch}{130}{subsubsection.12.1.2}
-\contentsline {subsubsection}{\numberline {12.1.3}Batch Using PROFILEVALUES.SS}{130}{subsubsection.12.1.3}
-\contentsline {subsubsection}{\numberline {12.1.4}Re-Starting a Run}{131}{subsubsection.12.1.4}
-\contentsline {subsubsection}{\numberline {12.1.5}Debugging Tips}{132}{subsubsection.12.1.5}
-\contentsline {subsubsection}{\numberline {12.1.6}Keyboard Tips}{132}{subsubsection.12.1.6}
-\contentsline {subsubsection}{\numberline {12.1.7}Running MCMC}{132}{subsubsection.12.1.7}
-\contentsline {subsubsection}{\numberline {12.1.8}Using R To View Model Output}{134}{subsubsection.12.1.8}
-\contentsline {section}{\numberline {13}Special Set-ups}{139}{section.13}
-\contentsline {subsection}{\numberline {13.1}Continuous seasonal recruitment}{139}{subsection.13.1}
-\contentsline {section}{\numberline {14}Change Log}{140}{section.14}
-\contentsline {section}{\numberline {15}Appendix A }{140}{section.15}
-\contentsline {subsection}{\numberline {15.1}Recruitment Variability and Bias Correction}{140}{subsection.15.1}
-\contentsline {subsubsection}{\numberline {15.1.1}Issues with Including Environmental Effects}{146}{subsubsection.15.1.1}
-\contentsline {subsubsection}{\numberline {15.1.2}Initial Age Composition}{147}{subsubsection.15.1.2}
-\contentsline {section}{\numberline {16}Appendix B}{147}{section.16}
-\contentsline {subsection}{\numberline {16.1}Forecast Module}{147}{subsection.16.1}
-\contentsline {subsubsection}{\numberline {16.1.1}Introduction}{147}{subsubsection.16.1.1}
-\contentsline {subsubsection}{\numberline {16.1.2}Multiple Pass Forecast}{149}{subsubsection.16.1.2}
-\contentsline {subsubsection}{\numberline {16.1.3}Example Effects on Correlations}{150}{subsubsection.16.1.3}
-\contentsline {subsubsection}{\numberline {16.1.4}Future Work}{151}{subsubsection.16.1.4}
-\contentsline {section}{\numberline {17}Example Input Files}{152}{section.17}
-\contentsline {subsection}{\numberline {17.1}Starter File}{152}{subsection.17.1}
-\contentsline {subsection}{\numberline {17.2}Run Number}{152}{subsection.17.2}
-\contentsline {subsection}{\numberline {17.3}Profile Values}{152}{subsection.17.3}
-\contentsline {subsection}{\numberline {17.4}Forecast File}{152}{subsection.17.4}
-\contentsline {subsection}{\numberline {17.5}Control File}{152}{subsection.17.5}
-\contentsline {subsection}{\numberline {17.6}Data File}{152}{subsection.17.6}
+\contentsline {subsubsection}{\numberline {9.4.12}Mean Length or Body Weight-at-Age}{36}{subsubsection.9.4.12}
+\contentsline {subsubsection}{\numberline {9.4.13}Environmental Data}{37}{subsubsection.9.4.13}
+\contentsline {subsubsection}{\numberline {9.4.14}Generalized Size Composition Data}{38}{subsubsection.9.4.14}
+\contentsline {subsubsection}{\numberline {9.4.15}Tag-Recapture Data}{39}{subsubsection.9.4.15}
+\contentsline {subsubsection}{\numberline {9.4.16}Stock Composition Data}{41}{subsubsection.9.4.16}
+\contentsline {subsubsection}{\numberline {9.4.17}Excluding Data}{41}{subsubsection.9.4.17}
+\contentsline {subsubsection}{\numberline {9.4.18}Data Super Periods}{42}{subsubsection.9.4.18}
+\contentsline {section}{\numberline {10}Control File}{43}{section.10}
+\contentsline {subsection}{\numberline {10.1}Overview of Control File}{43}{subsection.10.1}
+\contentsline {subsection}{\numberline {10.2}Parameter Line Elements}{45}{subsection.10.2}
+\contentsline {subsection}{\numberline {10.3}Control File Syntax}{46}{subsection.10.3}
+\contentsline {subsubsection}{\numberline {10.3.1}Biology}{47}{subsubsection.10.3.1}
+\contentsline {subsubsection}{\numberline {10.3.2}Read Mortality-Growth Parameters}{51}{subsubsection.10.3.2}
+\contentsline {subsubsection}{\numberline {10.3.3}Natural Mortality Notes}{55}{subsubsection.10.3.3}
+\contentsline {subsubsection}{\numberline {10.3.4}Growth Notes}{55}{subsubsection.10.3.4}
+\contentsline {subsubsection}{\numberline {10.3.5}Growth Patterns (morphs) and Sub-Morphs}{56}{subsubsection.10.3.5}
+\contentsline {subsubsection}{\numberline {10.3.6}Recruitment, Age, and Growth}{56}{subsubsection.10.3.6}
+\contentsline {subsubsection}{\numberline {10.3.7}Cohort Growth Deviation}{57}{subsubsection.10.3.7}
+\contentsline {subsubsection}{\numberline {10.3.8}Movement Parameters}{57}{subsubsection.10.3.8}
+\contentsline {subsubsection}{\numberline {10.3.9}Recruitment Allocation and Movement Parameters}{58}{subsubsection.10.3.9}
+\contentsline {subsubsection}{\numberline {10.3.10}Catch Multiplier}{60}{subsubsection.10.3.10}
+\contentsline {subsubsection}{\numberline {10.3.11}Ageing Error Parameters}{60}{subsubsection.10.3.11}
+\contentsline {subsubsection}{\numberline {10.3.12}Time-Varying Biology Parameters}{61}{subsubsection.10.3.12}
+\contentsline {subsubsection}{\numberline {10.3.13}Notes on Seasonal Biology Parameters}{63}{subsubsection.10.3.13}
+\contentsline {subsubsection}{\numberline {10.3.14}Empirical Weight-at-Age (wtatage.ss)}{63}{subsubsection.10.3.14}
+\contentsline {subsubsection}{\numberline {10.3.15}Spawner-Recruitment}{63}{subsubsection.10.3.15}
+\contentsline {subsubsection}{\numberline {10.3.16}Spawner-Recruitment Function}{68}{subsubsection.10.3.16}
+\contentsline {subsubsection}{\numberline {10.3.17}Recruitment Eras}{72}{subsubsection.10.3.17}
+\contentsline {subsubsection}{\numberline {10.3.18}Recruitment Likelihood}{72}{subsubsection.10.3.18}
+\contentsline {subsubsection}{\numberline {10.3.19}Recruitment Bias Adjustment}{72}{subsubsection.10.3.19}
+\contentsline {subsubsection}{\numberline {10.3.20}Recruitment Autocorrelation}{74}{subsubsection.10.3.20}
+\contentsline {subsubsection}{\numberline {10.3.21}Recruitment Cycle}{74}{subsubsection.10.3.21}
+\contentsline {subsubsection}{\numberline {10.3.22}Initial Age Composition}{75}{subsubsection.10.3.22}
+\contentsline {subsubsection}{\numberline {10.3.23}Fishing Mortality Method}{75}{subsubsection.10.3.23}
+\contentsline {subsubsection}{\numberline {10.3.24}Initial Fishing Mortality}{76}{subsubsection.10.3.24}
+\contentsline {subsubsection}{\numberline {10.3.25}Catchability}{77}{subsubsection.10.3.25}
+\contentsline {subsubsection}{\numberline {10.3.26}Selectivity and Discard}{80}{subsubsection.10.3.26}
+\contentsline {subsubsection}{\numberline {10.3.27}Selectivity Patterns}{81}{subsubsection.10.3.27}
+\contentsline {subsubsection}{\numberline {10.3.28}Selectivity Pattern Details}{83}{subsubsection.10.3.28}
+\contentsline {subsubsection}{\numberline {10.3.29}Retention}{91}{subsubsection.10.3.29}
+\contentsline {subsubsection}{\numberline {10.3.30}Discard Mortality}{92}{subsubsection.10.3.30}
+\contentsline {subsubsection}{\numberline {10.3.31}Male Selectivity}{92}{subsubsection.10.3.31}
+\contentsline {subsubsection}{\numberline {10.3.32}Reading the Selectivity and Retention Parameters}{94}{subsubsection.10.3.32}
+\contentsline {subsubsection}{\numberline {10.3.33}Tag Recapture Parameters}{95}{subsubsection.10.3.33}
+\contentsline {subsubsection}{\numberline {10.3.34}Variance Adjustment Factors}{96}{subsubsection.10.3.34}
+\contentsline {subsubsection}{\numberline {10.3.35}Lambdas (Emphasis Factors)}{97}{subsubsection.10.3.35}
+\contentsline {subsubsection}{\numberline {10.3.36}Controls for Variance of Derived Quantities}{99}{subsubsection.10.3.36}
+\contentsline {subsubsection}{\numberline {10.3.37}Time-Varying Parameter Options}{101}{subsubsection.10.3.37}
+\contentsline {subsubsection}{\numberline {10.3.38}Parameter Priors}{104}{subsubsection.10.3.38}
+\contentsline {section}{\numberline {11}Output Files}{108}{section.11}
+\contentsline {subsection}{\numberline {11.1}Standard ADMB output files}{108}{subsection.11.1}
+\contentsline {subsection}{\numberline {11.2}Derived Quantities}{108}{subsection.11.2}
+\contentsline {subsubsection}{\numberline {11.2.1}Metric for Fishing Mortality}{108}{subsubsection.11.2.1}
+\contentsline {subsubsection}{\numberline {11.2.2}Equilibrium SPR}{108}{subsubsection.11.2.2}
+\contentsline {subsubsection}{\numberline {11.2.3}F std}{109}{subsubsection.11.2.3}
+\contentsline {subsubsection}{\numberline {11.2.4}F-at-Age}{110}{subsubsection.11.2.4}
+\contentsline {subsubsection}{\numberline {11.2.5}MSY and other Benchmark Items}{110}{subsubsection.11.2.5}
+\contentsline {subsection}{\numberline {11.3}Brief cumulative output}{111}{subsection.11.3}
+\contentsline {subsection}{\numberline {11.4}Output for Rebuilder Package}{111}{subsection.11.4}
+\contentsline {subsection}{\numberline {11.5}Bootstrap Data Files}{114}{subsection.11.5}
+\contentsline {subsection}{\numberline {11.6}Forecast and Reference Points}{114}{subsection.11.6}
+\contentsline {subsection}{\numberline {11.7}Main Output File, report.sso}{119}{subsection.11.7}
+\contentsline {section}{\numberline {12}Running SS}{124}{section.12}
+\contentsline {subsection}{\numberline {12.1}Example of DOS batch input file}{125}{subsection.12.1}
+\contentsline {subsubsection}{\numberline {12.1.1}Simple Batch}{125}{subsubsection.12.1.1}
+\contentsline {subsubsection}{\numberline {12.1.2}Complicated Batch}{126}{subsubsection.12.1.2}
+\contentsline {subsubsection}{\numberline {12.1.3}Batch Using PROFILEVALUES.SS}{126}{subsubsection.12.1.3}
+\contentsline {subsubsection}{\numberline {12.1.4}Re-Starting a Run}{127}{subsubsection.12.1.4}
+\contentsline {subsubsection}{\numberline {12.1.5}Debugging Tips}{128}{subsubsection.12.1.5}
+\contentsline {subsubsection}{\numberline {12.1.6}Keyboard Tips}{128}{subsubsection.12.1.6}
+\contentsline {subsubsection}{\numberline {12.1.7}Running MCMC}{128}{subsubsection.12.1.7}
+\contentsline {subsubsection}{\numberline {12.1.8}Using R To View Model Output}{130}{subsubsection.12.1.8}
+\contentsline {section}{\numberline {13}Special Set-ups}{135}{section.13}
+\contentsline {subsection}{\numberline {13.1}Continuous seasonal recruitment}{135}{subsection.13.1}
+\contentsline {section}{\numberline {14}Change Log}{136}{section.14}
+\contentsline {section}{\numberline {15}Appendix A }{136}{section.15}
+\contentsline {subsection}{\numberline {15.1}Recruitment Variability and Bias Correction}{136}{subsection.15.1}
+\contentsline {subsubsection}{\numberline {15.1.1}Issues with Including Environmental Effects}{142}{subsubsection.15.1.1}
+\contentsline {subsubsection}{\numberline {15.1.2}Initial Age Composition}{143}{subsubsection.15.1.2}
+\contentsline {section}{\numberline {16}Appendix B}{143}{section.16}
+\contentsline {subsection}{\numberline {16.1}Forecast Module}{143}{subsection.16.1}
+\contentsline {subsubsection}{\numberline {16.1.1}Introduction}{143}{subsubsection.16.1.1}
+\contentsline {subsubsection}{\numberline {16.1.2}Multiple Pass Forecast}{145}{subsubsection.16.1.2}
+\contentsline {subsubsection}{\numberline {16.1.3}Example Effects on Correlations}{146}{subsubsection.16.1.3}
+\contentsline {subsubsection}{\numberline {16.1.4}Future Work}{147}{subsubsection.16.1.4}
+\contentsline {section}{\numberline {17}Example Input Files}{148}{section.17}
+\contentsline {subsection}{\numberline {17.1}Starter File}{148}{subsection.17.1}
+\contentsline {subsection}{\numberline {17.2}Run Number}{148}{subsection.17.2}
+\contentsline {subsection}{\numberline {17.3}Profile Values}{148}{subsection.17.3}
+\contentsline {subsection}{\numberline {17.4}Forecast File}{148}{subsection.17.4}
+\contentsline {subsection}{\numberline {17.5}Control File}{148}{subsection.17.5}
+\contentsline {subsection}{\numberline {17.6}Data File}{148}{subsection.17.6}
