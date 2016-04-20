@@ -10,9 +10,9 @@ FUNCTION void make_timevaryparm()
     dvariable infl_year;
     dvariable slope;
     dvariable norm_styr;
-    
+
     //  note:  need to implement the approach that keeps within bouns of base parameter
-     
+
     int trnd;
     if(timevary_parm_cnt_MG>0)
       {
@@ -88,7 +88,7 @@ FUNCTION void make_timevaryparm()
               break;
             }
           }
-                   
+
           for (int y1=Block_Design(z,g);y1<=Block_Design(z,g+1);y1++)  // loop years for this block
           {
             parm_timevary(trnd,y1)=temp;
@@ -96,6 +96,7 @@ FUNCTION void make_timevaryparm()
           g+=2;
           timevary_parm_cnt++;
         }
+        timevary_parm_cnt--;    // back out last increment
       }  // end uses blocks
 
       else if(itempvec(4)<0)  //  trend
