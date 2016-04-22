@@ -2018,11 +2018,7 @@ FUNCTION void write_nucontrol()
      		report4<<" "<<setw(8)<<f;
      	  for(j=1;j<=5;j++) report4<<setw(9)<<Q_setup(f,j);
      	  report4<<"  #  "<<fleetname(f)<<endl;
-<<<<<<< HEAD
       }  
-=======
-     }
->>>>>>> a415a72a8c508a9c83c899ae0fd1dfc8302f0026
    }
    report4<<"-9999 0 0 0 0 0"<<endl<<"#"<<endl;
 
