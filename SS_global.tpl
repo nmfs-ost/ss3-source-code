@@ -30,6 +30,7 @@ GLOBALS_SECTION
   #include <time.h>
   #include <fvar.hpp>
   #include <vector>
+  #include <iostream>
   time_t start,finish;
   long hour,minute,second;
   double elapsed_time;

@@ -538,9 +538,9 @@ File: babel.def 2014/09/25 3.9l Babel common definitions
 \babel@savecnt=\count111
 \U@D=\dimen134
 )
-\l@canadian = a dialect from \language\l@american 
-\l@australian = a dialect from \language\l@british 
-\l@newzealand = a dialect from \language\l@british 
+\l@canadian = a dialect from \language\l@american
+\l@australian = a dialect from \language\l@british
+\l@newzealand = a dialect from \language\l@british
 ))
 (C:\Users\Chantell.Wetzel\Documents\Latex\tex\latex\colortbl\colortbl.sty
 Package: colortbl 2012/02/13 v1.0a Color table columns (DPC)
@@ -678,7 +678,7 @@ File: t1lmr.fd 2009/10/30 v1.6 Font defs for Latin Modern
 * paper: <default>
 * layout: <same size as paper>
 * layoutoffset:(h,v)=(0.0pt,0.0pt)
-* modes: includefoot 
+* modes: includefoot
 * h-part:(L,W,R)=(72.26999pt, 469.75502pt, 72.26999pt)
 * v-part:(T,H,B)=(72.26999pt, 650.43001pt, 72.26999pt)
 * \paperwidth=614.295pt
@@ -770,23 +770,23 @@ LaTeX Font Info:    External font `lmex10' loaded for size
 \tf@toc=\write4
  [4] (SS330_Main.lof)
 \tf@lof=\write5
-pdfTeX warning (ext4): destination with the same identifier (name{page.i}) has 
+pdfTeX warning (ext4): destination with the same identifier (name{page.i}) has
 been already used, duplicate ignored
-<to be read again> 
-                   \relax 
+<to be read again>
+                   \relax
 l.84 		\cleardoublepage
                         [1
 
 ] (section1_5.tex
 Overfull \hbox (27.02003pt too wide) in paragraph at lines 3--4
-\T1/lmr/m/n/12 avail-able from the NOAA Fish-eries Stock As-sess-ment Tool-box 
+\T1/lmr/m/n/12 avail-able from the NOAA Fish-eries Stock As-sess-ment Tool-box
 web-site: http://nft.nefsc.noaa.gov/.
  []
 
 
 Overfull \hbox (5.01175pt too wide) in paragraph at lines 22--23
 []\T1/lmr/m/n/12 datafile: file con-tain-ing model di-men-sions and the data wi
-th file ex-ten-sion .dat (re-quired) 
+th file ex-ten-sion .dat (re-quired)
  []
 
 
@@ -795,10 +795,10 @@ Overfull \hbox (30.56723pt too wide) in paragraph at lines 26--27
 num-ber in out-put to Cum-Re-port.sso
  []
 
-pdfTeX warning (ext4): destination with the same identifier (name{page.1}) has 
+pdfTeX warning (ext4): destination with the same identifier (name{page.1}) has
 been already used, duplicate ignored
-<to be read again> 
-                   \relax 
+<to be read again>
+                   \relax
 l.27 		\item p
               rofilevalues.ss:  file contain special conditions for batch fi...
 [1
@@ -817,7 +817,7 @@ Overfull \hbox (5.90953pt too wide) in paragraph at lines 40--41
 
 
 Overfull \hbox (17.53856pt too wide) in paragraph at lines 41--42
-[]\T1/lmr/m/n/12 data.ss_new: con-tains a user-specified num-ber of datafiles, 
+[]\T1/lmr/m/n/12 data.ss_new: con-tains a user-specified num-ber of datafiles,
 gen-er-ated through a para-met-ric
  []
 
@@ -829,7 +829,7 @@ Overfull \hbox (2.12834pt too wide) in paragraph at lines 42--43
 
 [2]
 Overfull \hbox (12.50307pt too wide) in paragraph at lines 67--68
-\T1/lmr/m/n/12 curve. Pos-i-tive val-ues yield in-creas-ing se-lec-tiv-ity and 
+\T1/lmr/m/n/12 curve. Pos-i-tive val-ues yield in-creas-ing se-lec-tiv-ity and
 neg-a-tive val-ues yield de-creas-ing
  []
 
@@ -841,22 +841,22 @@ Overfull \hbox (18.9059pt too wide) in paragraph at lines 89--90
 
 ) (6starter.tex [4] [5]
 Overfull \hbox (13.07784pt too wide) in alignment at lines 12--17
- [] [] [] 
+ [] [] []
  []
 
 
 Overfull \hbox (13.07784pt too wide) in alignment at lines 17--21
- [] [] [] 
+ [] [] []
  []
 
 
 Overfull \hbox (13.07784pt too wide) in alignment at lines 21--24
- [] [] [] 
+ [] [] []
  []
 
 
 Overfull \hbox (13.07784pt too wide) in alignment at lines 24--29
- [] [] [] 
+ [] [] []
  []
 
 
@@ -866,7 +866,7 @@ Underfull \hbox (badness 5652) in paragraph at lines 31--31
 
 
 Overfull \hbox (284.52756pt too wide) in paragraph at lines 40--40
-[]|$[]$|  
+[]|$[]$|
  []
 
 
@@ -880,7 +880,7 @@ Underfull \hbox (badness 1701) in paragraph at lines 45--45
 
 
 Overfull \hbox (284.52756pt too wide) in paragraph at lines 45--45
-[]|$[]$|  
+[]|$[]$|
  []
 
 
@@ -889,12 +889,12 @@ Overfull \vbox (23.59981pt too high) detected at line 45
 
 
 Overfull \hbox (284.52756pt too wide) in paragraph at lines 51--51
-[]|$[]$|  
+[]|$[]$|
  []
 
 
 Overfull \hbox (284.52756pt too wide) in paragraph at lines 56--56
-[]|$[]$|  
+[]|$[]$|
  []
 
 
@@ -913,7 +913,7 @@ Underfull \hbox (badness 10000) in paragraph at lines 58--58
 
 
 Overfull \hbox (284.52756pt too wide) in paragraph at lines 62--62
-[]|$[]$|  
+[]|$[]$|
  []
 
 
@@ -922,7 +922,7 @@ Overfull \vbox (52.59981pt too high) detected at line 62
 
 
 Overfull \hbox (13.07784pt too wide) in alignment at lines 29--66
- [] [] [] 
+ [] [] []
  []
 
 
@@ -937,7 +937,7 @@ Underfull \hbox (badness 5417) in paragraph at lines 71--71
 
 
 Overfull \hbox (284.52756pt too wide) in paragraph at lines 71--71
-[]|$[]$|  
+[]|$[]$|
  []
 
 
@@ -946,7 +946,7 @@ Overfull \vbox (52.59981pt too high) detected at line 71
 
 
 Overfull \hbox (284.52756pt too wide) in paragraph at lines 78--78
-[]|$[]$|  
+[]|$[]$|
  []
 
 
@@ -960,7 +960,7 @@ Underfull \hbox (badness 2057) in paragraph at lines 83--83
 
 
 Overfull \hbox (284.52756pt too wide) in paragraph at lines 83--83
-[]|$[]$|  
+[]|$[]$|
  []
 
 
@@ -969,7 +969,7 @@ Overfull \vbox (96.09981pt too high) detected at line 83
 
 
 Overfull \hbox (284.52756pt too wide) in paragraph at lines 94--94
-[]|$[]$|  
+[]|$[]$|
  []
 
 
@@ -978,14 +978,14 @@ Overfull \vbox (110.59981pt too high) detected at line 94
 
 
 Overfull \hbox (13.07784pt too wide) in alignment at lines 66--96
- [] [] [] 
+ [] [] []
  []
 
 [6
 
 ]
 Overfull \hbox (284.52756pt too wide) in paragraph at lines 102--102
-[]|$[]$|  
+[]|$[]$|
  []
 
 
@@ -999,7 +999,7 @@ Underfull \hbox (badness 10000) in paragraph at lines 105--105
 
 
 Overfull \hbox (284.52756pt too wide) in paragraph at lines 114--114
-[]|$[]$|  
+[]|$[]$|
  []
 
 
@@ -1008,7 +1008,7 @@ Overfull \vbox (38.09981pt too high) detected at line 114
 
 
 Overfull \hbox (13.07784pt too wide) in alignment at lines 96--129
- [] [] [] 
+ [] [] []
  []
 
 [7]
@@ -1018,7 +1018,7 @@ Underfull \hbox (badness 1960) in paragraph at lines 131--131
 
 
 Overfull \hbox (284.52756pt too wide) in paragraph at lines 131--131
-[]|$[]$|  
+[]|$[]$|
  []
 
 
@@ -1027,7 +1027,7 @@ Overfull \vbox (52.59981pt too high) detected at line 131
 
 
 Overfull \hbox (284.52756pt too wide) in paragraph at lines 143--143
-[]|$[]$|  
+[]|$[]$|
  []
 
 
@@ -1036,7 +1036,7 @@ Overfull \vbox (38.09981pt too high) detected at line 143
 
 
 Overfull \hbox (284.52756pt too wide) in paragraph at lines 149--149
-[]|$[]$|  
+[]|$[]$|
  []
 
 
@@ -1045,7 +1045,7 @@ Overfull \vbox (9.09981pt too high) detected at line 149
 
 
 Overfull \hbox (284.52756pt too wide) in paragraph at lines 154--154
-[]|$[]$|  
+[]|$[]$|
  []
 
 
@@ -1054,7 +1054,7 @@ Overfull \vbox (9.09981pt too high) detected at line 154
 
 
 Overfull \hbox (284.52756pt too wide) in paragraph at lines 158--158
-[]|$[]$|  
+[]|$[]$|
  []
 
 
@@ -1063,12 +1063,12 @@ Overfull \vbox (23.59981pt too high) detected at line 158
 
 
 Overfull \hbox (13.07784pt too wide) in alignment at lines 129--162
- [] [] [] 
+ [] [] []
  []
 
 [8]
 Overfull \hbox (284.52756pt too wide) in paragraph at lines 170--170
-[]|$[]$|  
+[]|$[]$|
  []
 
 
@@ -1077,7 +1077,7 @@ Overfull \vbox (125.09981pt too high) detected at line 170
 
 
 Overfull \hbox (284.52756pt too wide) in paragraph at lines 182--182
-[]|$[]$|  
+[]|$[]$|
  []
 
 
@@ -1086,12 +1086,12 @@ Overfull \vbox (255.59981pt too high) detected at line 182
 
 
 Overfull \hbox (13.07784pt too wide) in alignment at lines 162--191
- [] [] [] 
+ [] [] []
  []
 
 
 Overfull \hbox (284.52756pt too wide) in paragraph at lines 203--203
-[]|$[]$|  
+[]|$[]$|
  []
 
 
@@ -1100,7 +1100,7 @@ Overfull \vbox (21.2665pt too high) detected at line 203
 
 
 Overfull \hbox (284.52756pt too wide) in paragraph at lines 209--209
-[]|$[]$|  
+[]|$[]$|
  []
 
 
@@ -1109,7 +1109,7 @@ Overfull \vbox (23.59981pt too high) detected at line 209
 
 
 Overfull \hbox (284.52756pt too wide) in paragraph at lines 218--218
-[]|$[]$|  
+[]|$[]$|
  []
 
 
@@ -1118,7 +1118,7 @@ Overfull \vbox (67.09981pt too high) detected at line 218
 
 
 Overfull \hbox (170.71654pt too wide) in paragraph at lines 219--219
-[]|$[]$|  
+[]|$[]$|
  []
 
 
@@ -1127,12 +1127,12 @@ Overfull \vbox (66.3985pt too high) detected at line 219
 
 
 Overfull \hbox (13.07784pt too wide) in alignment at lines 191--221
- [] [] [] 
+ [] [] []
  []
 
 [9]
 Overfull \hbox (13.07784pt too wide) in alignment at lines 221--227
- [] [] [] 
+ [] [] []
  []
 
 [10] [11]) (7forecast.tex [12
@@ -1140,27 +1140,27 @@ Overfull \hbox (13.07784pt too wide) in alignment at lines 221--227
 
 ]
 Overfull \hbox (13.07784pt too wide) in alignment at lines 9--14
- [] [] [] 
+ [] [] []
  []
 
 
 Overfull \hbox (13.07784pt too wide) in alignment at lines 14--18
- [] [] [] 
+ [] [] []
  []
 
 
 Overfull \hbox (13.07784pt too wide) in alignment at lines 18--21
- [] [] [] 
+ [] [] []
  []
 
 
 Overfull \hbox (13.07784pt too wide) in alignment at lines 21--26
- [] [] [] 
+ [] [] []
  []
 
 
 Overfull \hbox (284.52756pt too wide) in paragraph at lines 29--29
-[]|$[]$|  
+[]|$[]$|
  []
 
 
@@ -1169,7 +1169,7 @@ Overfull \vbox (23.59981pt too high) detected at line 29
 
 
 Overfull \hbox (284.52756pt too wide) in paragraph at lines 34--34
-[]|$[]$|  
+[]|$[]$|
  []
 
 
@@ -1178,7 +1178,7 @@ Overfull \vbox (9.09981pt too high) detected at line 34
 
 
 Overfull \hbox (284.52756pt too wide) in paragraph at lines 55--55
-[]|$[]$|  
+[]|$[]$|
  []
 
 
@@ -1187,7 +1187,7 @@ Overfull \vbox (21.2665pt too high) detected at line 55
 
 
 Overfull \hbox (284.52756pt too wide) in paragraph at lines 60--60
-[]|$[]$|  
+[]|$[]$|
  []
 
 
@@ -1196,7 +1196,7 @@ Overfull \vbox (38.09981pt too high) detected at line 60
 
 
 Overfull \hbox (284.52756pt too wide) in paragraph at lines 66--66
-[]|$[]$|  
+[]|$[]$|
  []
 
 
@@ -1205,17 +1205,17 @@ Overfull \vbox (23.59981pt too high) detected at line 66
 
 
 Overfull \hbox (284.52756pt too wide) in paragraph at lines 72--72
-[]|$[]$|  
+[]|$[]$|
  []
 
 
 Overfull \hbox (13.07784pt too wide) in alignment at lines 26--73
- [] [] [] 
+ [] [] []
  []
 
 
 Overfull \hbox (284.52756pt too wide) in paragraph at lines 77--77
-[]|$[]$|  
+[]|$[]$|
  []
 
 
@@ -1224,7 +1224,7 @@ Overfull \vbox (52.59981pt too high) detected at line 77
 
 
 Overfull \hbox (284.52756pt too wide) in paragraph at lines 86--86
-[]|$[]$|  
+[]|$[]$|
  []
 
 
@@ -1233,12 +1233,12 @@ Overfull \vbox (9.09981pt too high) detected at line 86
 
 
 Overfull \hbox (284.52756pt too wide) in paragraph at lines 90--90
-[]|$[]$|  
+[]|$[]$|
  []
 
 
 Overfull \hbox (284.52756pt too wide) in paragraph at lines 93--93
-[]|$[]$|  
+[]|$[]$|
  []
 
 
@@ -1247,17 +1247,17 @@ Overfull \vbox (52.59981pt too high) detected at line 93
 
 
 Overfull \hbox (13.07784pt too wide) in alignment at lines 73--103
- [] [] [] 
+ [] [] []
  []
 
 
 Overfull \hbox (284.52756pt too wide) in paragraph at lines 105--105
-[]|$[]$|  
+[]|$[]$|
  []
 
 
 Overfull \hbox (284.52756pt too wide) in paragraph at lines 108--108
-[]|$[]$|  
+[]|$[]$|
  []
 
 
@@ -1266,12 +1266,12 @@ Overfull \vbox (7.50002pt too high) detected at line 108
 
 
 Overfull \hbox (284.52756pt too wide) in paragraph at lines 112--112
-[]|$[]$|  
+[]|$[]$|
  []
 
 
 Overfull \hbox (284.52756pt too wide) in paragraph at lines 115--115
-[]|$[]$|  
+[]|$[]$|
  []
 
 
@@ -1285,7 +1285,7 @@ Underfull \hbox (badness 2913) in paragraph at lines 120--120
 
 
 Overfull \hbox (284.52756pt too wide) in paragraph at lines 120--120
-[]|$[]$|  
+[]|$[]$|
  []
 
 
@@ -1294,27 +1294,27 @@ Overfull \vbox (38.09981pt too high) detected at line 120
 
 
 Overfull \hbox (284.52756pt too wide) in paragraph at lines 125--125
-[]|$[]$|  
+[]|$[]$|
  []
 
 
 Overfull \hbox (284.52756pt too wide) in paragraph at lines 128--128
-[]|$[]$|  
+[]|$[]$|
  []
 
 
 Overfull \hbox (284.52756pt too wide) in paragraph at lines 131--131
-[]|$[]$|  
+[]|$[]$|
  []
 
 
 Overfull \hbox (284.52756pt too wide) in paragraph at lines 134--134
-[]|$[]$|  
+[]|$[]$|
  []
 
 
 Overfull \hbox (284.52756pt too wide) in paragraph at lines 137--137
-[]|$[]$|  
+[]|$[]$|
  []
 
 
@@ -1323,14 +1323,14 @@ Overfull \vbox (24.2665pt too high) detected at line 137
 
 
 Overfull \hbox (13.07784pt too wide) in alignment at lines 103--145
- [] [] [] 
+ [] [] []
  []
 
 [13
 
 ]
 Overfull \hbox (284.52756pt too wide) in paragraph at lines 175--175
-[]|$[]$|  
+[]|$[]$|
  []
 
 
@@ -1339,12 +1339,12 @@ Overfull \vbox (23.59981pt too high) detected at line 175
 
 
 Overfull \hbox (13.07784pt too wide) in alignment at lines 145--178
- [] [] [] 
+ [] [] []
  []
 
 [14]
 Overfull \hbox (284.52756pt too wide) in paragraph at lines 180--180
-[]|$[]$|  
+[]|$[]$|
  []
 
 
@@ -1353,7 +1353,7 @@ Overfull \vbox (6.7665pt too high) detected at line 180
 
 
 Overfull \hbox (284.52756pt too wide) in paragraph at lines 184--184
-[]|$[]$|  
+[]|$[]$|
  []
 
 
@@ -1362,7 +1362,7 @@ Overfull \vbox (23.59981pt too high) detected at line 184
 
 
 Overfull \hbox (13.07784pt too wide) in alignment at lines 178--212
- [] [] [] 
+ [] [] []
  []
 
 [15] [16] [17]) (8optional_inputs.tex
@@ -1383,7 +1383,7 @@ Underfull \hbox (badness 1314) in paragraph at lines 57--57
 
 
 Overfull \hbox (312.98032pt too wide) in paragraph at lines 57--57
-[]|$[]$|  
+[]|$[]$|
  []
 
 
@@ -1392,7 +1392,7 @@ Overfull \vbox (23.59981pt too high) detected at line 57
 
 
 Overfull \hbox (312.98032pt too wide) in paragraph at lines 66--66
-[]|$[]$|  
+[]|$[]$|
  []
 
 
@@ -1401,7 +1401,7 @@ Overfull \vbox (96.7665pt too high) detected at line 66
 
 
 Overfull \hbox (312.98032pt too wide) in paragraph at lines 75--75
-[]|$[]$|  
+[]|$[]$|
  []
 
 
@@ -1410,7 +1410,7 @@ Overfull \vbox (23.59981pt too high) detected at line 75
 
 
 Overfull \hbox (312.98032pt too wide) in paragraph at lines 80--80
-[]|$[]$|  
+[]|$[]$|
  []
 
 
@@ -1419,7 +1419,7 @@ Overfull \vbox (23.59981pt too high) detected at line 80
 
 
 Overfull \hbox (9.48906pt too wide) in paragraph at lines 54--93
- [] 
+ []
  []
 
 [21]
@@ -1449,34 +1449,34 @@ Underfull \hbox (badness 10000) in paragraph at lines 105--106
 
 
 Overfull \hbox (9.21872pt too wide) in paragraph at lines 108--109
-[]|\T1/lmr/m/n/12 FISHERY1| 
+[]|\T1/lmr/m/n/12 FISHERY1|
  []
 
 
 Overfull \hbox (5.79329pt too wide) in paragraph at lines 109--110
-[]|\T1/lmr/m/n/12 SURVEY1| 
+[]|\T1/lmr/m/n/12 SURVEY1|
  []
 
 
 Overfull \hbox (1.82211pt too wide) in paragraph at lines 100--113
- [] 
+ []
  []
 
 [22]
 Overfull \hbox (7.94823pt too wide) in paragraph at lines 124--126
 \T1/lmr/m/n/12 Carryover from 3.24 ap-proach, now su-per-seded by real month in
--put for data ob-ser-va-tions. 
+-put for data ob-ser-va-tions.
  []
 
 [23] [24] [25] [26] [27]
 Overfull \hbox (17.03629pt too wide) in paragraph at lines 273--289
- [] 
+ []
  []
 
 
 Overfull \hbox (4.95494pt too wide) in paragraph at lines 301--302
 \T1/lmr/m/n/12 weight de-vi-a-tions. Value of er-ror in data file in in-ter-pre
-ted as CV of the ob-ser-va-tion. 
+ted as CV of the ob-ser-va-tion.
  []
 
 [28] [29]
@@ -1490,7 +1490,7 @@ Underfull \hbox (badness 6775) in paragraph at lines 378--379
 
 [30]
 Overfull \hbox (8.50308pt too wide) in paragraph at lines 400--400
-\T1/lmr/m/n/12 Com-pres-sion| 
+\T1/lmr/m/n/12 Com-pres-sion|
  []
 
 
@@ -1505,7 +1505,7 @@ Underfull \hbox (badness 10000) in paragraph at lines 400--400
 
 
 Overfull \hbox (2.23647pt too wide) in paragraph at lines 400--400
-\T1/lmr/m/n/12 pro-por-tions| 
+\T1/lmr/m/n/12 pro-por-tions|
  []
 
 
@@ -1530,7 +1530,7 @@ Underfull \hbox (badness 10000) in paragraph at lines 400--400
 
 
 Overfull \hbox (5.6621pt too wide) in paragraph at lines 400--400
-\T1/lmr/m/n/12 Dis-tri-bu-tion| 
+\T1/lmr/m/n/12 Dis-tri-bu-tion|
  []
 
 
@@ -1545,23 +1545,23 @@ Underfull \hbox (badness 10000) in paragraph at lines 400--400
 
 
 Overfull \hbox (12.5835pt too wide) in paragraph at lines 397--406
- [] 
+ []
  []
 
 [31]
 Overfull \hbox (33.42963pt too wide) in paragraph at lines 426--427
-\T1/lmr/m/n/12 the mid-length of the pop-u-la-tion bins. So these quan-ti-ties 
+\T1/lmr/m/n/12 the mid-length of the pop-u-la-tion bins. So these quan-ti-ties
 will be rougher ap-prox-i-ma-tions
  []
 
 
 Overfull \hbox (3.50293pt too wide) in paragraph at lines 445--445
-[]|\T1/lmr/m/n/12 Partition| 
+[]|\T1/lmr/m/n/12 Partition|
  []
 
 
 Overfull \hbox (12.5835pt too wide) in paragraph at lines 436--452
- [] 
+ []
  []
 
 [32] [33]
@@ -1572,7 +1572,7 @@ g. age with pos-si-ble bias and im-pre-ci-sion)
 
 [34]
 Overfull \hbox (8.50308pt too wide) in paragraph at lines 535--535
-\T1/lmr/m/n/12 Com-pres-sion| 
+\T1/lmr/m/n/12 Com-pres-sion|
  []
 
 
@@ -1587,7 +1587,7 @@ Underfull \hbox (badness 10000) in paragraph at lines 535--535
 
 
 Overfull \hbox (2.23647pt too wide) in paragraph at lines 535--535
-\T1/lmr/m/n/12 pro-por-tions| 
+\T1/lmr/m/n/12 pro-por-tions|
  []
 
 
@@ -1612,7 +1612,7 @@ Underfull \hbox (badness 10000) in paragraph at lines 535--535
 
 
 Overfull \hbox (5.6621pt too wide) in paragraph at lines 535--535
-\T1/lmr/m/n/12 Dis-tri-bu-tion| 
+\T1/lmr/m/n/12 Dis-tri-bu-tion|
  []
 
 
@@ -1627,37 +1627,37 @@ Underfull \hbox (badness 10000) in paragraph at lines 535--535
 
 
 Overfull \hbox (12.5835pt too wide) in paragraph at lines 532--549
- [] 
+ []
  []
 
 
 Overfull \hbox (4.83441pt too wide) in paragraph at lines 555--555
-[]|\T1/lmr/m/n/12 #Year| 
+[]|\T1/lmr/m/n/12 #Year|
  []
 
 
 Overfull \hbox (5.48814pt too wide) in paragraph at lines 555--555
-[]|\T1/lmr/m/n/12 Month| 
+[]|\T1/lmr/m/n/12 Month|
  []
 
 
 Overfull \hbox (8.83553pt too wide) in paragraph at lines 555--555
-[]|\T1/lmr/m/n/12 Gender| 
+[]|\T1/lmr/m/n/12 Gender|
  []
 
 
 Overfull \hbox (3.50293pt too wide) in paragraph at lines 555--555
-[]|\T1/lmr/m/n/12 Partition| 
+[]|\T1/lmr/m/n/12 Partition|
  []
 
 
 Overfull \hbox (8.5854pt too wide) in paragraph at lines 555--555
-[]|\T1/lmr/m/n/12 AgeErr| 
+[]|\T1/lmr/m/n/12 AgeErr|
  []
 
 
 Overfull \hbox (7.1849pt too wide) in paragraph at lines 555--555
-[]|\T1/lmr/m/n/12 Nsamp| 
+[]|\T1/lmr/m/n/12 Nsamp|
  []
 
 
@@ -1667,7 +1667,7 @@ Underfull \hbox (badness 10000) in paragraph at lines 557--558
 
 
 Overfull \hbox (20.13069pt too wide) in paragraph at lines 552--561
- [] 
+ []
  []
 
 
@@ -1678,37 +1678,37 @@ s for the length com-po-si-tion
 
 [35]
 Overfull \hbox (0.85063pt too wide) in paragraph at lines 659--659
-[]|\T1/lmr/m/n/12 #Yr| 
+[]|\T1/lmr/m/n/12 #Yr|
  []
 
 
 Overfull \hbox (5.48814pt too wide) in paragraph at lines 659--659
-[]|\T1/lmr/m/n/12 Month| 
+[]|\T1/lmr/m/n/12 Month|
  []
 
 
 Overfull \hbox (4.60574pt too wide) in paragraph at lines 659--659
-[]|\T1/lmr/m/n/12 Fleet| 
+[]|\T1/lmr/m/n/12 Fleet|
  []
 
 
 Overfull \hbox (8.83553pt too wide) in paragraph at lines 659--659
-[]|\T1/lmr/m/n/12 Gender| 
+[]|\T1/lmr/m/n/12 Gender|
  []
 
 
 Overfull \hbox (1.34221pt too wide) in paragraph at lines 659--659
-[]|\T1/lmr/m/n/12 Part| 
+[]|\T1/lmr/m/n/12 Part|
  []
 
 
 Overfull \hbox (8.5854pt too wide) in paragraph at lines 659--659
-[]|\T1/lmr/m/n/12 AgeErr| 
+[]|\T1/lmr/m/n/12 AgeErr|
  []
 
 
 Overfull \hbox (3.85551pt too wide) in paragraph at lines 659--659
-[]|\T1/lmr/m/n/12 Ignore| 
+[]|\T1/lmr/m/n/12 Ignore|
  []
 
 
@@ -1723,7 +1723,7 @@ Underfull \hbox (badness 10000) in paragraph at lines 659--660
 
 
 Overfull \hbox (2.16039pt too wide) in paragraph at lines 661--661
-[]|\T1/lmr/m/n/12 1989| 
+[]|\T1/lmr/m/n/12 1989|
  []
 
 
@@ -1733,7 +1733,7 @@ Underfull \hbox (badness 10000) in paragraph at lines 661--661
 
 
 Overfull \hbox (6.07706pt too wide) in paragraph at lines 663--663
-[]|\T1/lmr/m/n/12 -9999| 
+[]|\T1/lmr/m/n/12 -9999|
  []
 
 [36]
@@ -1744,7 +1744,7 @@ ngth and growth pa-ram-e-ters
 
 [37]
 Overfull \hbox (3.63304pt too wide) in paragraph at lines 745--745
-[]|\T1/lmr/m/n/12 2.4| 
+[]|\T1/lmr/m/n/12 2.4|
  []
 
 [38]
@@ -1755,17 +1755,17 @@ s iden-ti-cal to the length com-po-si-tion
 
 
 Overfull \hbox (6.92854pt too wide) in paragraph at lines 772--772
-[]|\T1/lmr/m/n/12 #Method| 
+[]|\T1/lmr/m/n/12 #Method|
  []
 
 
 Overfull \hbox (5.48814pt too wide) in paragraph at lines 772--772
-[]|\T1/lmr/m/n/12 Month| 
+[]|\T1/lmr/m/n/12 Month|
  []
 
 
 Overfull \hbox (8.83553pt too wide) in paragraph at lines 772--772
-[]|\T1/lmr/m/n/12 Gender| 
+[]|\T1/lmr/m/n/12 Gender|
  []
 
 
@@ -1775,17 +1775,17 @@ Overfull \hbox (8.7562pt too wide) in paragraph at lines 772--772
 
 [39]
 Overfull \hbox (2.64268pt too wide) in paragraph at lines 801--801
-[]|\T1/lmr/m/n/12 Month| 
+[]|\T1/lmr/m/n/12 Month|
  []
 
 
 Overfull \hbox (4.60512pt too wide) in paragraph at lines 801--801
-[]|\T1/lmr/m/n/12 <tfill>| 
+[]|\T1/lmr/m/n/12 <tfill>|
  []
 
 
 Overfull \hbox (5.99007pt too wide) in paragraph at lines 801--801
-[]|\T1/lmr/m/n/12 Gender| 
+[]|\T1/lmr/m/n/12 Gender|
  []
 
 
@@ -1795,47 +1795,47 @@ Underfull \hbox (badness 10000) in paragraph at lines 801--802
 
 
 Overfull \hbox (6.7884pt too wide) in paragraph at lines 801--802
-\T1/lmr/m/n/12 Re-lease| 
+\T1/lmr/m/n/12 Re-lease|
  []
 
 
 Overfull \hbox (2.64268pt too wide) in paragraph at lines 808--808
-[]|\T1/lmr/m/n/12 Month| 
+[]|\T1/lmr/m/n/12 Month|
  []
 
 
 Overfull \hbox (10.14908pt too wide) in paragraph at lines 808--809
-[]|\T1/lmr/m/n/12 Number| 
+[]|\T1/lmr/m/n/12 Number|
  []
 
 [40]
 Overfull \hbox (1.34071pt too wide) in paragraph at lines 843--843
-[]|\T1/lmr/m/n/12 0.0001| 
+[]|\T1/lmr/m/n/12 0.0001|
  []
 
 
 Overfull \hbox (1.98895pt too wide) in paragraph at lines 845--845
-[]|\T1/lmr/m/n/12 #Year| 
+[]|\T1/lmr/m/n/12 #Year|
  []
 
 
 Overfull \hbox (2.64268pt too wide) in paragraph at lines 845--845
-[]|\T1/lmr/m/n/12 Month| 
+[]|\T1/lmr/m/n/12 Month|
  []
 
 
 Overfull \hbox (4.33945pt too wide) in paragraph at lines 845--845
-[]|\T1/lmr/m/n/12 Nsamp| 
+[]|\T1/lmr/m/n/12 Nsamp|
  []
 
 [41]
 Overfull \hbox (4.83441pt too wide) in paragraph at lines 888--888
-[]|\T1/lmr/m/n/12 #Year| 
+[]|\T1/lmr/m/n/12 #Year|
  []
 
 
 Overfull \hbox (5.48814pt too wide) in paragraph at lines 888--888
-[]|\T1/lmr/m/n/12 Month| 
+[]|\T1/lmr/m/n/12 Month|
  []
 
 
@@ -1885,7 +1885,7 @@ Underfull \hbox (badness 10000) in paragraph at lines 77--81
 
 [45]
 Overfull \hbox (14.22638pt too wide) in paragraph at lines 127--127
-[]|$[]$|  
+[]|$[]$|
  []
 
 
@@ -1894,12 +1894,12 @@ Overfull \vbox (10.50002pt too high) detected at line 127
 
 
 Overfull \hbox (14.22638pt too wide) in paragraph at lines 129--129
-[]|$[]$|  
+[]|$[]$|
  []
 
 
 Overfull \hbox (14.22638pt too wide) in paragraph at lines 132--132
-[]|$[]$|  
+[]|$[]$|
  []
 
 
@@ -1908,12 +1908,12 @@ Overfull \vbox (10.50002pt too high) detected at line 132
 
 
 Overfull \hbox (14.22638pt too wide) in paragraph at lines 136--136
-[]|$[]$|  
+[]|$[]$|
  []
 
 
 Overfull \hbox (14.22638pt too wide) in paragraph at lines 148--148
-[]|$[]$|  
+[]|$[]$|
  []
 
 
@@ -1922,12 +1922,12 @@ Overfull \vbox (27.5pt too high) detected at line 152
 
 
 Overfull \hbox (170.71654pt too wide) in paragraph at lines 155--155
-[]|$[]$|  
+[]|$[]$|
  []
 
 
 Overfull \hbox (170.71654pt too wide) in paragraph at lines 161--161
-[]|$[]$|  
+[]|$[]$|
  []
 
 
@@ -1960,7 +1960,7 @@ Overfull \vbox (13.0pt too high) detected at line 233
 
 
 Overfull \hbox (6.66258pt too wide) in paragraph at lines 244--244
-[]|\T1/lmr/m/n/12 1.66| 
+[]|\T1/lmr/m/n/12 1.66|
  []
 
 
@@ -2016,12 +2016,12 @@ Underfull \hbox (badness 10000) in paragraph at lines 311--312
 
 [50]
 Overfull \hbox (24.90932pt too wide) in paragraph at lines 331--331
-[]|\T1/lmr/m/n/12 Parameter| 
+[]|\T1/lmr/m/n/12 Parameter|
  []
 
 
 Overfull \hbox (24.90932pt too wide) in paragraph at lines 335--335
-[]|\T1/lmr/m/n/12 Parameter| 
+[]|\T1/lmr/m/n/12 Parameter|
  []
 
 
@@ -2061,22 +2061,22 @@ Underfull \hbox (badness 10000) in paragraph at lines 415--415
 
 [52] [53]
 Overfull \hbox (2.53735pt too wide) in paragraph at lines 446--447
-[]|\T1/lmr/m/n/12 #L_-at_-Amin_-Fem_-GP_-1| 
+[]|\T1/lmr/m/n/12 #L_-at_-Amin_-Fem_-GP_-1|
  []
 
 
 Overfull \hbox (4.82187pt too wide) in paragraph at lines 447--448
-[]|\T1/lmr/m/n/12 #L_-at_-Amax_-Fem_-GP_-1| 
+[]|\T1/lmr/m/n/12 #L_-at_-Amax_-Fem_-GP_-1|
  []
 
 
 Overfull \hbox (0.7405pt too wide) in paragraph at lines 458--459
-[]|\T1/lmr/m/n/12 #L_-at_-Amin_-Mal_-GP_-1| 
+[]|\T1/lmr/m/n/12 #L_-at_-Amin_-Mal_-GP_-1|
  []
 
 
 Overfull \hbox (3.02501pt too wide) in paragraph at lines 459--460
-[]|\T1/lmr/m/n/12 #L_-at_-Amax_-Mal_-GP_-1| 
+[]|\T1/lmr/m/n/12 #L_-at_-Amax_-Mal_-GP_-1|
  []
 
 [54]
@@ -2105,32 +2105,32 @@ ely af-ter read-ing the do_migration
 
 
 Overfull \hbox (4.60443pt too wide) in paragraph at lines 540--540
-[]|\T1/lmr/m/n/12 <other| 
+[]|\T1/lmr/m/n/12 <other|
  []
 
 
 Overfull \hbox (5.8551pt too wide) in paragraph at lines 541--541
-[]|\T1/lmr/m/n/12 INIT| 
+[]|\T1/lmr/m/n/12 INIT|
  []
 
 
 Overfull \hbox (11.5237pt too wide) in paragraph at lines 541--541
-[]|\T1/lmr/m/n/12 entries>| 
+[]|\T1/lmr/m/n/12 entries>|
  []
 
 
 Overfull \hbox (4.60443pt too wide) in paragraph at lines 546--546
-[]|\T1/lmr/m/n/12 <other| 
+[]|\T1/lmr/m/n/12 <other|
  []
 
 
 Overfull \hbox (5.8551pt too wide) in paragraph at lines 547--547
-[]|\T1/lmr/m/n/12 INIT| 
+[]|\T1/lmr/m/n/12 INIT|
  []
 
 
 Overfull \hbox (11.5237pt too wide) in paragraph at lines 547--547
-[]|\T1/lmr/m/n/12 entries>| 
+[]|\T1/lmr/m/n/12 entries>|
  []
 
 [58] [59] <images/age_error.png, id=1037, 481.8pt x 311.66437pt>
@@ -2146,7 +2146,7 @@ Underfull \hbox (badness 10000) in paragraph at lines 601--606
 
 
 Overfull \hbox (12.0438pt too wide) in paragraph at lines 601--606
-[] 
+[]
  []
 
 
@@ -2156,12 +2156,12 @@ Underfull \hbox (badness 10000) in paragraph at lines 601--606
 
 [60 <./images/age_error.png>] [61]
 Overfull \hbox (14.49142pt too wide) in paragraph at lines 635--635
-[]|\T1/lmr/m/n/12 Value| 
+[]|\T1/lmr/m/n/12 Value|
  []
 
 
 Overfull \hbox (14.49142pt too wide) in paragraph at lines 640--640
-[]|\T1/lmr/m/n/12 Value| 
+[]|\T1/lmr/m/n/12 Value|
  []
 
 
@@ -2262,7 +2262,7 @@ Overfull \hbox (11.61137pt too wide) in paragraph at lines 798--799
 
 [68]
 Overfull \hbox (8.37704pt too wide) in paragraph at lines 837--838
-\T1/lmr/m/n/12 about 0.4 for a left-shifted spawner-recruitment curve, and 3.0 
+\T1/lmr/m/n/12 about 0.4 for a left-shifted spawner-recruitment curve, and 3.0
 for a right-shifted
  []
 
@@ -2322,7 +2322,7 @@ Underfull \hbox (badness 2626) in paragraph at lines 957--957
 [75] [76]
 Overfull \hbox (0.83087pt too wide) in paragraph at lines 993--994
 []\T1/lmr/m/n/12 <0 = mir-ror the Q from an-other (lower num-bered sur-vey des-
-ig-nated by abs(value)) 
+ig-nated by abs(value))
  []
 
 
@@ -2333,53 +2333,53 @@ raint that these de-vi-a-tions
 
 [77]
 Overfull \hbox (7.16463pt too wide) in paragraph at lines 997--998
-\T1/lmr/m/n/12 ob-ser-va-tions will be de-vi-a-tions in ran-dom walk of ln(Q). 
+\T1/lmr/m/n/12 ob-ser-va-tions will be de-vi-a-tions in ran-dom walk of ln(Q).
 These de-vi-a-tion pa-ram-e-ters
  []
 
 
 Overfull \hbox (7.6967pt too wide) in alignment at lines 1005--1008
- [] [] [] [] [] [] 
+ [] [] [] [] [] []
  []
 
 
 Overfull \hbox (7.6967pt too wide) in alignment at lines 1008--1011
- [] [] [] [] [] [] 
+ [] [] [] [] [] []
  []
 
 
 Overfull \hbox (7.6967pt too wide) in alignment at lines 1011--1013
- [] [] [] [] [] [] 
+ [] [] [] [] [] []
  []
 
 
 Overfull \hbox (7.6967pt too wide) in alignment at lines 1013--1014
- [] [] [] [] [] [] 
+ [] [] [] [] [] []
  []
 
 
 Overfull \hbox (7.6967pt too wide) in alignment at lines 1014--1023
- [] [] [] [] [] [] 
+ [] [] [] [] [] []
  []
 
 [78]
 Overfull \hbox (7.26268pt too wide) in alignment at lines 1040--1041
- [] [] [] [] [] [] 
+ [] [] [] [] [] []
  []
 
 
 Overfull \hbox (7.26268pt too wide) in alignment at lines 1041--1046
- [] [] [] [] [] [] 
+ [] [] [] [] [] []
  []
 
 
 Overfull \hbox (7.26268pt too wide) in alignment at lines 1046--1049
- [] [] [] [] [] [] 
+ [] [] [] [] [] []
  []
 
 
 Overfull \hbox (7.26268pt too wide) in alignment at lines 1049--1050
- [] [] [] [] [] [] 
+ [] [] [] [] [] []
  []
 
 
@@ -2392,7 +2392,7 @@ Overfull \vbox (69.50002pt too high) detected at line 1063
 
 
 Overfull \hbox (7.26268pt too wide) in alignment at lines 1050--1071
- [] [] [] [] [] [] 
+ [] [] [] [] [] []
  []
 
 
@@ -2401,12 +2401,12 @@ Underfull \vbox (badness 10000) detected at line 1071
 
 
 Overfull \hbox (5.29118pt too wide) in paragraph at lines 1082--1082
-[]|\T1/lmr/m/n/12 PR_-type| 
+[]|\T1/lmr/m/n/12 PR_-type|
  []
 
 
 Overfull \hbox (5.29118pt too wide) in paragraph at lines 1092--1092
-[]|\T1/lmr/m/n/12 PR_-type| 
+[]|\T1/lmr/m/n/12 PR_-type|
  []
 
 [79] [80]
@@ -2456,7 +2456,7 @@ ove and then set se-lec-tiv-ity
 
 Overfull \hbox (2.4656pt too wide) in paragraph at lines 1354--1355
 \T1/lmr/m/n/12 Selectivity pat-tern #24, dou-ble nor-mal, show-ing sub-function
-s and steep lo-gis-tic join-ers: 
+s and steep lo-gis-tic join-ers:
  []
 
 <images/DoubleNormal.png, id=1198, 313.9228pt x 228.855pt>
@@ -2499,7 +2499,7 @@ Package pdftex.def Info: images/CubicSplineCode.png used on input line 1426.
 (pdftex.def)             Requested size: 460.72012pt x 264.98935pt.
 
 Overfull \hbox (20.3398pt too wide) in paragraph at lines 1426--1427
- [] 
+ []
  []
 
 
@@ -2522,22 +2522,22 @@ Overfull \hbox (1.82309pt too wide) in paragraph at lines 1446--1447
 
 [90 <./images/CubicSpline.png>]
 Overfull \hbox (8.94019pt too wide) in paragraph at lines 1452--1452
-[]|\T1/lmr/m/n/12 PR_-TYPE| 
+[]|\T1/lmr/m/n/12 PR_-TYPE|
  []
 
 
 Overfull \hbox (5.98978pt too wide) in paragraph at lines 1452--1452
-[]|\T1/lmr/m/n/12 PHASE| 
+[]|\T1/lmr/m/n/12 PHASE|
  []
 
 
 Overfull \hbox (2.22786pt too wide) in paragraph at lines 1455--1455
-[]|\T1/lmr/m/n/12 -0.001| 
+[]|\T1/lmr/m/n/12 -0.001|
  []
 
 
 Overfull \hbox (1.01752pt too wide) in alignment at lines 1451--1464
- [] [] [] [] [] [] [] [] [] 
+ [] [] [] [] [] [] [] [] []
  []
 
 
@@ -2557,22 +2557,22 @@ Underfull \hbox (badness 10000) in paragraph at lines 1531--1535
 
 [93]
 Overfull \hbox (5.03629pt too wide) in alignment at lines 1567--1570
- [] [] [] [] 
+ [] [] [] []
  []
 
 
 Overfull \hbox (5.03629pt too wide) in alignment at lines 1570--1574
- [] [] [] [] 
+ [] [] [] []
  []
 
 
 Overfull \hbox (5.03629pt too wide) in alignment at lines 1574--1576
- [] [] [] [] 
+ [] [] [] []
  []
 
 
 Overfull \hbox (5.03629pt too wide) in alignment at lines 1576--1578
- [] [] [] [] 
+ [] [] [] []
  []
 
 
@@ -2622,43 +2622,43 @@ Underfull \hbox (badness 5022) in paragraph at lines 1602--1603
 
 
 Overfull \hbox (5.03629pt too wide) in alignment at lines 1578--1604
- [] [] [] [] 
+ [] [] [] []
  []
 
 [94]
 Overfull \hbox (4.93297pt too wide) in paragraph at lines 1618--1618
-[]|\T1/lmr/m/n/12 #LO| 
+[]|\T1/lmr/m/n/12 #LO|
  []
 
 
 Overfull \hbox (4.43239pt too wide) in paragraph at lines 1618--1618
-[]|\T1/lmr/m/n/12 INIT| 
+[]|\T1/lmr/m/n/12 INIT|
  []
 
 
 Overfull \hbox (3.10057pt too wide) in paragraph at lines 1618--1618
-[]|\T1/lmr/m/n/12 PRIOR| 
+[]|\T1/lmr/m/n/12 PRIOR|
  []
 
 
 Overfull \hbox (8.94019pt too wide) in paragraph at lines 1618--1618
-[]|\T1/lmr/m/n/12 PR_-TYPE| 
+[]|\T1/lmr/m/n/12 PR_-TYPE|
  []
 
 
 Overfull \hbox (8.1307pt too wide) in alignment at lines 1610--1634
- [] [] [] [] [] [] [] [] [] 
+ [] [] [] [] [] [] [] [] []
  []
 
 [95] [96]
 Overfull \hbox (17.93597pt too wide) in paragraph at lines 1689--1690
-[]\T1/lmr/m/n/12 The re-port.sso out-put file con-tains in-for-ma-tion use-ful 
+[]\T1/lmr/m/n/12 The re-port.sso out-put file con-tains in-for-ma-tion use-ful
 for de-ter-min-ing if an ad-just-ment
  []
 
 
 Overfull \hbox (0.66605pt too wide) in paragraph at lines 1690--1691
-[]\T1/lmr/m/n/12 Because the ac-tual in-put vari-ance fac-tors are mod-i-fied, 
+[]\T1/lmr/m/n/12 Because the ac-tual in-put vari-ance fac-tors are mod-i-fied,
 it is these mod-i-fied vari-ance
  []
 
@@ -2670,7 +2670,7 @@ es should have the vari-ance
 
 
 Overfull \hbox (9.48906pt too wide) in paragraph at lines 1698--1705
- [] 
+ []
  []
 
 [97]
@@ -2679,12 +2679,12 @@ Underfull \vbox (badness 10000) detected at line 1726
 
 [98]
 Overfull \hbox (7.28456pt too wide) in paragraph at lines 1795--1795
-[]|\T1/lmr/m/n/12 #Fleet| 
+[]|\T1/lmr/m/n/12 #Fleet|
  []
 
 
 Overfull \hbox (10.72821pt too wide) in paragraph at lines 1795--1795
-[]|\T1/lmr/m/n/12 Len/Age| 
+[]|\T1/lmr/m/n/12 Len/Age|
  []
 
 
@@ -2699,7 +2699,7 @@ Overfull \hbox (4.777pt too wide) in paragraph at lines 1795--1795
 
 
 Overfull \hbox (4.85785pt too wide) in paragraph at lines 1795--1795
-\T1/lmr/m/n/12 Pat-tern| 
+\T1/lmr/m/n/12 Pat-tern|
  []
 
 
@@ -2713,22 +2713,22 @@ Underfull \vbox (badness 10000) detected at line 1799
 
 [99]
 Overfull \hbox (9.48906pt too wide) in paragraph at lines 1817--1822
- [] 
+ []
  []
 
 
 Overfull \hbox (9.48906pt too wide) in paragraph at lines 1825--1830
- [] 
+ []
  []
 
 
 Overfull \hbox (9.48906pt too wide) in paragraph at lines 1833--1838
- [] 
+ []
  []
 
 [100]
 Overfull \hbox (5.90431pt too wide) in alignment at lines 1841--1856
- [] [] [] [] [] [] [] [] [] [] 
+ [] [] [] [] [] [] [] [] [] []
  []
 
 
@@ -2739,7 +2739,7 @@ Overfull \hbox (5.91924pt too wide) in paragraph at lines 1869--1870
 
 
 Overfull \hbox (5.48772pt too wide) in paragraph at lines 1869--1870
-\T1/lmr/m/n/12 within the min-max bounds of the pa-ram-e-ter be-ing ad-justed. 
+\T1/lmr/m/n/12 within the min-max bounds of the pa-ram-e-ter be-ing ad-justed.
 With this method, mul-ti-plica-tive
  []
 
@@ -2750,7 +2750,7 @@ Underfull \hbox (badness 10000) in paragraph at lines 1914--1915
 
 
 Overfull \hbox (12.5835pt too wide) in alignment at lines 1911--1918
- [] [] [] [] [] [] [] 
+ [] [] [] [] [] [] []
  []
 
 
@@ -2842,7 +2842,7 @@ Package pdftex.def Info: images/Forecast.png used on input line 247.
 (pdftex.def)             Requested size: 650.4284pt x 295.10176pt.
 
 Overfull \hbox (29.9984pt too wide) in paragraph at lines 247--248
- [] 
+ []
  []
 
 [117
@@ -2876,14 +2876,14 @@ d-just-ment by en-vi-ron-men-tal
 
 
 Overfull \hbox (0.86844pt too wide) in paragraph at lines 353--354
-\T1/lmr/m/n/12 sub-morphs are used, they are nested within the Bio_-Pat-tern x 
+\T1/lmr/m/n/12 sub-morphs are used, they are nested within the Bio_-Pat-tern x
 Gen-der x Birth-seas
  []
 
 [121] [122]
 Overfull \hbox (1.48438pt too wide) in paragraph at lines 405--406
 \T1/lmr/m/n/12 Once so mir-rored, they may en-able density-dependent ef-fects o
-n model pa-ram-e-ters. 
+n model pa-ram-e-ters.
  []
 
 [123]
@@ -2928,7 +2928,7 @@ Underfull \hbox (badness 2351) in paragraph at lines 178--179
 
 
 Overfull \hbox (8.21594pt too wide) in paragraph at lines 221--221
-[]|\T1/lmr/m/n/12 SSplotMCMC_-Ex-traSe-lex| 
+[]|\T1/lmr/m/n/12 SSplotMCMC_-Ex-traSe-lex|
  []
 
 [132 <./images/r4ss_plots.png>] [133] [134]) (13special.tex [135])
@@ -2941,7 +2941,7 @@ Package pdftex.def Info: images/appendixA_recruits.png used on input line 7.
 (pdftex.def)             Requested size: 459.96732pt x 388.45029pt.
 
 Overfull \hbox (7.83711pt too wide) in paragraph at lines 7--9
-[][] 
+[][]
  []
 
 
@@ -3016,23 +3016,23 @@ Overfull \hbox (8.40865pt too wide) in paragraph at lines 77--78
 
 
 Overfull \hbox (13.18764pt too wide) in paragraph at lines 77--78
-\T1/lmr/m/n/12 that F>Flimit or B<Blimit. This is es-sen-tially the re-al-ized 
+\T1/lmr/m/n/12 that F>Flimit or B<Blimit. This is es-sen-tially the re-al-ized
 P* con-di-tioned
  []
 
 
 Overfull \hbox (3.30206pt too wide) in paragraph at lines 95--95
-[]|\T1/lmr/m/n/12 A1| 
+[]|\T1/lmr/m/n/12 A1|
  []
 
 
 Overfull \hbox (2.22786pt too wide) in paragraph at lines 95--95
-[]|\T1/lmr/m/n/12 -0.126| 
+[]|\T1/lmr/m/n/12 -0.126|
  []
 
 
 Overfull \hbox (3.30206pt too wide) in paragraph at lines 95--95
-[]|\T1/lmr/m/n/12 A2| 
+[]|\T1/lmr/m/n/12 A2|
  []
 
 
@@ -3042,17 +3042,17 @@ Underfull \hbox (badness 10000) in paragraph at lines 95--95
 
 
 Overfull \hbox (2.81506pt too wide) in paragraph at lines 96--96
-[]|\T1/lmr/m/n/12 B1| 
+[]|\T1/lmr/m/n/12 B1|
  []
 
 
 Overfull \hbox (2.81506pt too wide) in paragraph at lines 96--96
-[]|\T1/lmr/m/n/12 B2| 
+[]|\T1/lmr/m/n/12 B2|
  []
 
 
 Overfull \hbox (2.98004pt too wide) in paragraph at lines 97--97
-[]|\T1/lmr/m/n/12 C1| 
+[]|\T1/lmr/m/n/12 C1|
  []
 
 
@@ -3062,7 +3062,7 @@ Underfull \hbox (badness 10000) in paragraph at lines 97--97
 
 
 Overfull \hbox (2.98004pt too wide) in paragraph at lines 97--97
-[]|\T1/lmr/m/n/12 C2| 
+[]|\T1/lmr/m/n/12 C2|
  []
 
 
@@ -3077,7 +3077,7 @@ Underfull \hbox (badness 10000) in paragraph at lines 97--97
 
 
 Overfull \hbox (3.46806pt too wide) in paragraph at lines 98--98
-[]|\T1/lmr/m/n/12 D1| 
+[]|\T1/lmr/m/n/12 D1|
  []
 
 
@@ -3087,12 +3087,12 @@ Underfull \hbox (badness 10000) in paragraph at lines 98--98
 
 
 Overfull \hbox (3.46806pt too wide) in paragraph at lines 98--98
-[]|\T1/lmr/m/n/12 D2| 
+[]|\T1/lmr/m/n/12 D2|
  []
 
 
 Overfull \hbox (8.16188pt too wide) in alignment at lines 88--100
- [] [] [] [] [] [] [] [] 
+ [] [] [] [] [] [] [] []
  []
 
 
@@ -3109,7 +3109,7 @@ Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 116.
 Package rerunfilecheck Info: File `SS330_Main.out' has not changed.
 (rerunfilecheck)             Checksum: 15BF1DD8F486C1412FA43B3077295EF7;9546.
 Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 116.
- ) 
+ )
 Here is how much of TeX's memory you used:
  8590 strings out of 493698
  122192 string characters out of 3139169

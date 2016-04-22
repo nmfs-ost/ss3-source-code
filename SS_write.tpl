@@ -2004,7 +2004,7 @@ FUNCTION void write_nucontrol()
 // 2:  extra input for link, i.e. mirror fleet
 // 3:  0/1 to select extra sd parameter
 // 4:  0/1 for biasadj or not
-// 5:  0/1 to float 
+// 5:  0/1 to float
 
 //  Link types
 //  1  simple q, 1 parm
@@ -2013,12 +2013,16 @@ FUNCTION void write_nucontrol()
    report4<<"#_  fleet     link link_info extra_se  biasadj   float  #  fleetname"<<endl;
    for (f=1;f<=Nfleet;f++)
    {
-     if(Svy_N_fleet(f)>0)  
+     if(Svy_N_fleet(f)>0)
      	{
      		report4<<" "<<setw(8)<<f;
      	  for(j=1;j<=5;j++) report4<<setw(9)<<Q_setup(f,j);
      	  report4<<"  #  "<<fleetname(f)<<endl;
+<<<<<<< HEAD
       }  
+=======
+     }
+>>>>>>> a415a72a8c508a9c83c899ae0fd1dfc8302f0026
    }
    report4<<"-9999 0 0 0 0 0"<<endl<<"#"<<endl;
 
@@ -2031,7 +2035,8 @@ FUNCTION void write_nucontrol()
       NP++;
       Q_parm_1(f,3)=value(Q_parm(f));
       for(j=1;j<=6;j++) report4<<std::setprecision(4)<<std::fixed<<setw(10)<<Q_parm_1(f,j);
-      for(j=7;j<=14;j++) report4<<std::setprecision(0)<<std::defaultfloat<<setw(8)<<Q_parm_1(f,j);
+      report4.unsetf(std::ios_base::floatfield);
+      for(j=7;j<=14;j++) report4<<std::setprecision(0)<<setw(8)<<Q_parm_1(f,j);
       report4<<"  #  "<<ParmLabel(NP)<<endl;
     }
    }
