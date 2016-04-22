@@ -2226,59 +2226,106 @@
 //  SS_Label_Info_4.8 #Read catchability (Q) setup
  END_CALCS
 
-  matrix Q_setup(1,Nfleet,1,5)  // do power, env-var,  extra sd, devtype(<0=mirror, 0=float_nobiasadj 1=float_biasadj, 2=parm_nobiasadj, 3=rand, 4=randwalk); num/bio/F, err_type(0=lognormal, >=1 is T-dist-lognormal)
+  imatrix Q_setup_324(1,Nfleet,1,5)  // do power, env-var,  extra sd, devtype(<0=mirror, 0=float_nobiasadj 1=float_biasadj, 2=parm_nobiasadj, 3=rand, 4=randwalk); num/bio/F, err_type(0=lognormal, >=1 is T-dist-lognormal)
                                         // change to matrix because devstd has real, not integer, values
-                                        //  new 5th element is for Q offset
- LOCAL_CALCS
-  Q_setup.initialize();
-//  revise approach for Q_offset so that is now a 5th element of Q_setup, rather than a mutually exclusive code in the 1st element (density-dependence)
-  k=4;
 
-  for(f=1;f<=Nfleet;f++)
-  {*(ad_comm::global_datafile) >> Q_setup(f)(1,k);}
- END_CALCS
+  imatrix Q_setup_parms_324(1,Nfleet,1,5)
 
-
+  imatrix Q_setup(1,Nfleet,1,5)
+  imatrix Q_setup_parms(1,Nfleet,1,5)  //  index of first parameter for:  1=base q with link; 2=env; 3=block/trend; 4=dev; 5=extrastd; 
+  int parm330_cnt
   int Q_Npar2
   int Q_Npar
   int ask_detail
+  int Q_parm_detail
 
-  imatrix Q_setup_parms(1,Nfleet,1,5)
  LOCAL_CALCS
-  echoinput<<" Q setup "<<endl<<Q_setup<<endl;
+  Q_setup_324.initialize();
+  Q_setup.initialize();
+  Q_setup_parms_324.initialize();
+  Q_setup_parms.initialize();
+  parm330_cnt=0;
+//Q_setup for 3.30
+// 1:  link type
+// 2:  extra input for link, i.e. mirror fleet
+// 3:  0/1 to select extra sd parameter
+// 4:  0/1 for biasadj or not
+// 5:  0/1 to float 
+
+//  Link types
+//  1  simple q, 1 parm
+//  2  mirror simple q, 1 mirrored parameter
+//  3  q and power, 2 parm
+
+  for(f=1;f<=Nfleet;f++)
+  {
+  	*(ad_comm::global_datafile) >> Q_setup_324(f)(1,4);
+    	parm330_cnt++;
+      Q_setup(f,1)=1;  //  set default link function to be q as a simple multiplier
+      if(Q_setup_324(f,4)<0)   //  mirror
+    	{
+        Q_setup(f,1)=2;  //  set  link function to mirror
+    		Q_setup(f,2)=abs(Q_setup_324(f,4));
+    	}
+      if(Q_setup_324(f,1)>0)  //  old do_power option
+    	{
+      	parm330_cnt++;
+        Q_setup(f,2)=3;  //  set  link function to be same as 3.24 power
+    	}
+    	
+      if(Q_setup_324(f,2)>0)   //  env link
+      	{
+        	parm330_cnt++;
+      		//  this will be flagged later in the long parameter line for the base Q
+      	}
+    	
+      if(Q_setup_324(f,3)>0) 
+      	{
+        	parm330_cnt++;
+      		Q_setup(f,3)=1;  // do extra sd
+      	}
+      
+      if(Q_setup_324(f,4)==0 || Q_setup_324(f,4)==1 || Q_setup_324(f,4)==5 ) Q_setup(f,5)=2;   //  float Q
+      if(Q_setup_324(f,4)==0 || Q_setup_324(f,4)==2) {Q_setup(f,4)=0;} else {Q_setup(f,4)=1;}  //  biasadj or not
+      if(Q_setup_324(f,4)==3 || Q_setup_324(f,4)==4)
+    	{
+    		N_warn++; warning<<" the Q devs or randwalk for fleet "<<f<<" cannot be converted to 3.30; recreate this option in 3.30 parameter line"<<endl;
+    	}
+  }
+
+  echoinput<<" Q setup "<<endl<<Q_setup_324<<endl;
   echoinput<<"Note that the Q parameter has units of ln(q)"<<endl;
   Q_Npar=0;
   ask_detail=0;
 //  SS_Label_Info_4.8.1 #Create index to the catchability parameters and create parameter names
   for (f=1;f<=Nfleet;f++)
   {
-    Q_setup_parms(f,1)=0;
-   if(Q_setup(f,1)>0)
+   if(Q_setup_324(f,1)>0)
     {
-      Q_Npar++; Q_setup_parms(f,1)=Q_Npar;
-      ParCount++;
-      {ParmLabel+="Q_power_"+fleetname(f)+"("+NumLbl(f)+")";}
-      if(Q_setup(f,4)<2) {N_warn++; warning<<" must create base Q parm to use Q_power for fleet: "<<f<<endl;}
+      Q_Npar++; Q_setup_parms_324(f,1)=Q_Npar;
+//      ParCount++;
+//      {ParmLabel+="Q_power_"+fleetname(f)+"("+NumLbl(f)+")";}
+//      if(Q_setup_324(f,4)<2) {N_warn++; warning<<" must create base Q parm to use Q_power for fleet: "<<f<<endl;}
     }
   }
 
   for (f=1;f<=Nfleet;f++)
   {
-    Q_setup_parms(f,2)=0;
-    if(Q_setup(f,2)!=0)
+    Q_setup_parms_324(f,2)=0;
+    if(Q_setup_324(f,2)!=0)
       {
-        Q_Npar++; Q_setup_parms(f,2)=Q_Npar;
-        ParCount++; ParmLabel+="Q_envlink_"+fleetname(f)+"("+NumLbl(f)+")";
-        if(Q_setup(f,4)<2) {N_warn++; warning<<" must create base Q parm to use Q_envlink for fleet: "<<f<<endl;}
+        Q_Npar++; Q_setup_parms_324(f,2)=Q_Npar;
+//        ParCount++; ParmLabel+="Q_envlink_"+fleetname(f)+"("+NumLbl(f)+")";
+//        if(Q_setup_324(f,4)<2) {N_warn++; warning<<" must create base Q parm to use Q_envlink for fleet: "<<f<<endl;}
        }
   }
   for (f=1;f<=Nfleet;f++)
   {
-    Q_setup_parms(f,3)=0;
-    if(Q_setup(f,3)>0)
+    Q_setup_parms_324(f,3)=0;
+    if(Q_setup_324(f,3)>0)
     {
-      Q_Npar++; Q_setup_parms(f,3)=Q_Npar;
-      ParCount++; ParmLabel+="Q_extraSD_"+fleetname(f)+"("+NumLbl(f)+")";
+      Q_Npar++; Q_setup_parms_324(f,3)=Q_Npar;
+//      ParCount++; ParmLabel+="Q_extraSD_"+fleetname(f)+"("+NumLbl(f)+")";
     }
   }
 
@@ -2286,20 +2333,19 @@
   Q_Npar2=Q_Npar;
   for (f=1;f<=Nfleet;f++)
   {
-    Q_setup_parms(f,4)=0;
-    if(Q_setup(f,4)>=2)
+    if(Q_setup_324(f,4)>=2)
     {
-      Q_Npar++; Q_Npar2++; Q_setup_parms(f,4)=Q_Npar;
-      ParCount++;
+      Q_Npar++; Q_Npar2++; Q_setup_parms_324(f,4)=Q_Npar;
+//      ParCount++;
       if(Svy_errtype(f)==-1)
       {
-        ParmLabel+="Q_base_"+fleetname(f)+"("+NumLbl(f)+")";
+//        ParmLabel+="Q_base_"+fleetname(f)+"("+NumLbl(f)+")";
       }
       else
       {
-        ParmLabel+="LnQ_base_"+fleetname(f)+"("+NumLbl(f)+")";
+//        ParmLabel+="LnQ_base_"+fleetname(f)+"("+NumLbl(f)+")";
       }
-      if(Q_setup(f,4)==3)
+      if(Q_setup_324(f,4)==3)
       {
         ask_detail=1;
         Q_Npar2++;
@@ -2308,13 +2354,13 @@
         {
           y=Show_Time(Svy_time_t(f,j),1);
           s=Show_Time(Svy_time_t(f,j),2);
-          ParCount++;
+//          ParCount++;
           sprintf(onenum, "%d", y);
           onenum+=CRLF(1);
-          ParmLabel+="Q_dev_"+onenum+"_"+fleetname(f)+"("+NumLbl(f)+")";
+//          ParmLabel+="Q_dev_"+onenum+"_"+fleetname(f)+"("+NumLbl(f)+")";
         }
       }
-      if(Q_setup(f,4)==4)
+      if(Q_setup_324(f,4)==4)
       {
         ask_detail=1;
         Q_Npar2++;
@@ -2323,11 +2369,11 @@
         {
           y=Show_Time(Svy_time_t(f,j),1);
           s=Show_Time(Svy_time_t(f,j),2);
-          ParCount++;
+//          ParCount++;
 //          _itoa(y,onenum,10);
           sprintf(onenum, "%d", y);
           onenum+=CRLF(1);
-          ParmLabel+="Q_walk_"+onenum+"_"+fleetname(f)+"("+NumLbl(f)+")";
+//          ParmLabel+="Q_walk_"+onenum+"_"+fleetname(f)+"("+NumLbl(f)+")";
         }
       }
     }
@@ -2344,7 +2390,7 @@
         N_warn++;
         warning<<" Lognormal error selected for effort deviations for fleet "<<f<<"; normal error recommended"<<endl;
       }
-      if(Q_setup(f,1)>0)  //  density-dependence
+      if(Q_setup_324(f,1)>0)  //  density-dependence
       {
         N_warn++;
         warning<<" Do not use Density-dependence for effort deviations (fleet "<<f<<"); "<<endl;
@@ -2352,18 +2398,6 @@
     }
   }
 
-  if(Q_Npar>0)
-    {k=Q_Npar;}
-  else
-    {k=1;}
- END_CALCS
-
-  vector Q_parm_LO(1,k)
-  vector Q_parm_HI(1,k)
-  ivector Q_parm_PH(1,k)
-
-  int Q_parm_detail
- LOCAL_CALCS
   if(ask_detail>0)
   {
     *(ad_comm::global_datafile) >> Q_parm_detail;
@@ -2377,88 +2411,107 @@
   if(Q_parm_detail==1) {j=Q_Npar;} else {j=Q_Npar2;}
  END_CALCS
 
- matrix Q_parm_1(1,Q_Npar,1,7)
-
 //  SS_Label_Info_4.8.3 #Read catchability parameters as necessary
   init_matrix Q_parm_2(1,j,1,7)
+  matrix Q_parm_1(1,parm330_cnt,1,13)
+
  LOCAL_CALCS
+//  convert to 3.30 format where parameters are in fleet order, not fleet within parameter type
+  parm330_cnt=0;  //  restart the index
   Q_parm_1.initialize();
-  echoinput<<" Catchability parameters"<<endl<<Q_parm_2<<endl;
-  if(Q_parm_detail==0)
+  echoinput<<" Catchability parameters in 3.24"<<endl<<Q_parm_2<<endl;
+  for (f=1;f<=Nfleet;f++)
   {
-    Q_Npar=0;  Q_Npar2=0;
-    for (f=1;f<=Nfleet;f++)
+  	if(Svy_N_fleet(f)>0)
+  	{
+//  do base Q
+    
+  	parm330_cnt++;
+  	ParCount++;
+    Q_setup_parms(f,1)=parm330_cnt;  //  first parameter index for this fleet that has obs so needs a Q
+  	if(Q_setup_324(f,4)>=2)  //  so a base Q exists in 3.24
     {
-     if(Q_setup(f,1)>0)
-      {
-        Q_Npar++;
-        Q_parm_1(Q_Npar)=Q_parm_2(Q_Npar);
-      }
+    	Q_parm_1(Q_setup_parms(f,1))(1,7)=Q_parm_2(Q_setup_parms_324(f,4))(1,7);
     }
-    for (f=1;f<=Nfleet;f++)
+    else
     {
-      if(Q_setup(f,2)!=0)
-      {
-        Q_Npar++;
-        Q_parm_1(Q_Npar)=Q_parm_2(Q_Npar);
-      }
+    	Q_parm_1(Q_setup_parms(f,1)).fill("{-15,15,0,0,-1,1,-1, 0, 0, 0, 0, 0, 0}");
     }
-    for (f=1;f<=Nfleet;f++)
+    if(Q_setup(f,1)<0)  //  mirror
     {
-     if(Q_setup(f,3)>0)
-      {
-        Q_Npar++;
-        Q_parm_1(Q_Npar)=Q_parm_2(Q_Npar);
-      }
+    	Q_parm_1(Q_setup_parms(f,1)).fill("{-15,15,0,0,-1,1,-1, 0, 0, 0, 0, 0, 0}");
+      // because Q is a vector for each time series of observations, the mirror is to the first observation's Q
+      // so time-varying property cannot be mirrored
+      //  need to trap for this when reading
     }
-    Q_Npar2=Q_Npar;
-    for (f=1;f<=Nfleet;f++)
+    	
+    if(Svy_errtype(f)==-1)
     {
-      if(Q_setup(f,4)>=2)
-      {
-        Q_Npar++; Q_Npar2++;
-        Q_parm_1(Q_Npar)=Q_parm_2(Q_Npar2);
-        if(Q_setup(f,4)==3)
-        {
-          Q_Npar2++;
-          for (j=1;j<=Svy_N_fleet(f);j++)
-          {
-            Q_Npar++;
-            Q_parm_1(Q_Npar)=Q_parm_2(Q_Npar2);
-          }
-        }
-        if(Q_setup(f,4)==4)
-        {
-          Q_Npar2++;
-          for (j=2;j<=Svy_N_fleet(f);j++)
-          {
-            Q_Npar++;
-            Q_parm_1(Q_Npar)=Q_parm_2(Q_Npar2);
-          }
-        }
-      }
+      ParmLabel+="Q_base_"+fleetname(f)+"("+NumLbl(f)+")";
+    }
+    else
+    {
+      ParmLabel+="LnQ_base_"+fleetname(f)+"("+NumLbl(f)+")";
+    }
+    if(Q_setup_324(f,1)>0)  //  do_power  provided for compatibility, but will be replaced by link function
+    {
+     	parm330_cnt++;
+  	  ParCount++;
+      ParmLabel+="Q_power_"+fleetname(f)+"("+NumLbl(f)+")";
+    	Q_parm_1(Q_setup_parms(f,1)+1)(1,7)=Q_parm_2(Q_setup_parms_324(f,1))(1,7);
+    }
+    	
+//  do envlink
+  	if(Q_setup_324(f,2)!=0)  //  so envlink exists in 3.24
+    {
+    	parm330_cnt++;
+      ParCount++;
+      Q_setup_parms(f,2)=parm330_cnt;
+    	Q_parm_1(Q_setup_parms(f,2))(1,7)=Q_parm_2(Q_setup_parms_324(f,2))(1,7);
+    	Q_parm_1(Q_setup_parms(f,2),8)=Q_setup_324(f,2);  //  put env info into the  new long parameter line
+      ParmLabel+="Q_envlink_"+fleetname(f)+"("+NumLbl(f)+")";
+    }
+    
+    //   in 3.30, the block/trend parameters will go here
+//      Q_setup_parms(j,3)=parm330_cnt;
+    //  in 3.30, the dev parameters will go here
+//      Q_setup_parms(j,4)=parm330_cnt;
+    
+//  do extra sd
+  	if(Q_setup_324(f,3)>0)  //  so extra sd  exists in 3.24
+    {
+    	parm330_cnt++;
+      ParCount++;
+      Q_setup_parms(f,5)=parm330_cnt;
+    	Q_parm_1(Q_setup_parms(f,5))(1,7)=Q_parm_2(Q_setup_parms_324(f,3))(1,7);
+      ParmLabel+="Q_extraSD_"+fleetname(f)+"("+NumLbl(f)+")";
+    }
     }
   }
-  else
+
+  for(i=1;i<=parm330_cnt;i++)
   {
-    Q_parm_1=Q_parm_2;
+  	echoinput<<i<<" "<<ParCount-parm330_cnt+i<<" "<<ParmLabel(ParCount-parm330_cnt+i)<<" "<<Q_parm_1(i)<<endl;
   }
  END_CALCS
 
-  !! if(Q_Npar>0 ) echoinput<<" processed Q parms "<<endl<<Q_parm_1<<endl;
+  vector Q_parm_LO(1,parm330_cnt)
+  vector Q_parm_HI(1,parm330_cnt)
+  ivector Q_parm_PH(1,parm330_cnt)
 
  LOCAL_CALCS
-   if(Q_Npar>0)
-     {
-     for (f=1;f<=Q_Npar;f++)
-       {
-       Q_parm_LO(f)=Q_parm_1(f,1);
-       Q_parm_HI(f)=Q_parm_1(f,2);
-       Q_parm_PH(f)=Q_parm_1(f,7);
-       }
-     }
-   else
-     {Q_parm_LO=-1.; Q_parm_HI=1.; Q_parm_PH=-4;}
+  if(parm330_cnt==0)
+  {Q_parm_LO=-1.; Q_parm_HI=1.; Q_parm_PH=-4;}
+  else
+ 	{
+ 		for(i=1;i<=parm330_cnt;i++)
+ 		{
+      Q_parm_LO(i)=Q_parm_1(i,1);
+      Q_parm_HI(i)=Q_parm_1(i,2);
+      Q_parm_PH(i)=Q_parm_1(i,7);
+    }		
+ 	}
+ 	Q_Npar=parm330_cnt;
  END_CALCS
 
 !!//  SS_Label_Info_4.9 #Define Selectivity patterns and N parameters needed per pattern

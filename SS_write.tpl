@@ -3340,42 +3340,19 @@ FUNCTION void write_bigoutput()
   }
 
   SS2out <<endl<< "INDEX_1" << endl;
-  SS2out <<"Fleet Do_Power Power Do_Offset Offset Do_Env_var Env_Link Do_ExtraVar Qtype  Q Num=0/Bio=1 Err_type"<<
+  SS2out <<"Fleet Link Link+ ExtraStd BiasAdj Float   Q Num=0/Bio=1 Err_type"<<
     " N Npos r.m.s.e. mean_input_SE Input+VarAdj Input+VarAdj+extra VarAdj New_VarAdj penalty_mean_Qdev rmse_Qdev fleetname"<<endl;
   for (f=1;f<=Nfleet;f++)
     {
-    SS2out<<f<<" "<<Q_setup(f,1)<<" ";
-    if(Q_setup(f,1)>0)
-      {SS2out<<Q_parm(Q_setup(f,1))<<" ";}
-    else
-      {SS2out<<" 1.0 ";}
-
-    SS2out<<" "<<Q_setup(f,5)<<" ";
-    if(Q_setup(f,5)>0)
-    {SS2out<<Q_parm(Q_setup(f,5))<<" ";}
-    else
-    {SS2out<<" 0.0 ";}
-
-    SS2out<<Q_setup(f,2)<<" ";
-    if(Q_setup(f,2)!=0)
-      {SS2out<<Q_parm(Q_setup_parms(f,2));}
-    else
-      {SS2out<<" 0.0";}
-    SS2out<<Q_setup(f,3)<<" ";
-    if(Q_setup(f,3)>0)
-      {SS2out<<Q_parm(Q_setup_parms(f,3));}
-    else
-      {SS2out<<" 0.0";}
-    SS2out<<" "<<Q_setup(f,4)<<" ";
-    if(Svy_N_fleet(f)>0)
-      {SS2out<<Svy_q(f,1);}
-    else
-      {SS2out<<" _";}
-    SS2out<<" "<<Svy_units(f)<<" "<<Svy_errtype(f)<<" "<<Svy_N_fleet(f)<<" "<<n_rmse(f)<<" "<<rmse(f)<<" "
+    	if(Svy_N_fleet(f)>0)
+    		{
+        SS2out<<f<<" "<<Q_setup(f)<<" "<<Q_parm(Q_setup(f,1))<<" "<<Svy_q(f,1)
+      <<" "<<Svy_units(f)<<" "<<Svy_errtype(f)<<" "<<Svy_N_fleet(f)<<" "<<n_rmse(f)<<" "<<rmse(f)<<" "
       <<mean_CV(f)-var_adjust(1,f)<<" "<<mean_CV(f)<<" "<<mean_CV2(f)<<" "<<var_adjust(1,f)
       <<" "<<var_adjust(1,f)+rmse(f)-mean_CV(f)
       <<" "<<Q_dev_like(f,1)<<" "<<Q_dev_like(f,2)<<" "<<fleetname(f)<<endl;
     }
+  }
     SS2out<<"rmse_Qdev_not_in_logL"<<endl<<"penalty_mean_Qdev_not_in_logL_in_randwalk_approach"<<endl;
 
   SS2out <<"#"<<endl<< "INDEX_3"<<endl<<"Fleet  Q_parm_assignments"<<endl;
