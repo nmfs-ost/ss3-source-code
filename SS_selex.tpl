@@ -62,6 +62,10 @@ FUNCTION void get_selectivity()
           }
           case 0:
           {
+            for (j=1;j<=N_selparmvec(f);j++)
+            {
+              sp(j)=selparm(Ip+j);
+              }
             break;
           }
           case 3:

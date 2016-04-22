@@ -1793,7 +1793,7 @@ FUNCTION void write_nucontrol()
   {
     report4<<1<<" #_custom_MG_blocktrend_setup (0/1)"<<endl;
     report4<<"#_LO HI INIT PRIOR PR_type SD PHASE"<<endl;
-    
+
     for (f=1;f<=timevary_parm_cnt_MG;f++)
     {NP++;
     timevary_parm_rd[f-1](3)=value(timevary_parm(f));
@@ -2037,6 +2037,7 @@ FUNCTION void write_nucontrol()
    report4<<"#_age_selex_types"<<endl;
    report4<<"#_Pattern ___ Male Special"<<endl;
    for (f=1;f<=Nfleet;f++) report4<<seltype(f+Nfleet)<<" # "<<f<<" "<<fleetname(f)<<endl;
+   report4<<"#"<<endl;
 
     report4<<selparm_adjust_method<<
     " #_env/block/dev_adjust_method for  MG parms (1=standard; 2=logistic transform keeps in base parm bounds; 3=standard w/ no bound check)"<<endl;
