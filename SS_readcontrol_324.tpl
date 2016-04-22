@@ -2260,6 +2260,8 @@
   for(f=1;f<=Nfleet;f++)
   {
   	*(ad_comm::global_datafile) >> Q_setup_324(f)(1,4);
+     if(Svy_N_fleet(f)>0)
+     	{
     	parm330_cnt++;
       Q_setup(f,1)=1;  //  set default link function to be q as a simple multiplier
       if(Q_setup_324(f,4)<0)   //  mirror
@@ -2270,7 +2272,7 @@
       if(Q_setup_324(f,1)>0)  //  old do_power option
     	{
       	parm330_cnt++;
-        Q_setup(f,2)=3;  //  set  link function to be same as 3.24 power
+        Q_setup(f,1)=3;  //  set  link function to be same as 3.24 power
     	}
     	
       if(Q_setup_324(f,2)>0)   //  env link
@@ -2285,12 +2287,13 @@
       		Q_setup(f,3)=1;  // do extra sd
       	}
       
-      if(Q_setup_324(f,4)==0 || Q_setup_324(f,4)==1 || Q_setup_324(f,4)==5 ) Q_setup(f,5)=2;   //  float Q
+      if(Q_setup_324(f,4)==0 || Q_setup_324(f,4)==1 || Q_setup_324(f,4)==5 ) Q_setup(f,5)=1;   //  float Q
       if(Q_setup_324(f,4)==0 || Q_setup_324(f,4)==2) {Q_setup(f,4)=0;} else {Q_setup(f,4)=1;}  //  biasadj or not
       if(Q_setup_324(f,4)==3 || Q_setup_324(f,4)==4)
     	{
     		N_warn++; warning<<" the Q devs or randwalk for fleet "<<f<<" cannot be converted to 3.30; recreate this option in 3.30 parameter line"<<endl;
     	}
+    }
   }
 
   echoinput<<" Q setup "<<endl<<Q_setup_324<<endl;
@@ -2413,7 +2416,7 @@
 
 //  SS_Label_Info_4.8.3 #Read catchability parameters as necessary
   init_matrix Q_parm_2(1,j,1,7)
-  matrix Q_parm_1(1,parm330_cnt,1,13)
+  matrix Q_parm_1(1,parm330_cnt,1,14)
 
  LOCAL_CALCS
 //  convert to 3.30 format where parameters are in fleet order, not fleet within parameter type
@@ -2435,11 +2438,11 @@
     }
     else
     {
-    	Q_parm_1(Q_setup_parms(f,1)).fill("{-15,15,0,0,-1,1,-1, 0, 0, 0, 0, 0, 0}");
+    	Q_parm_1(Q_setup_parms(f,1)).fill("{-15,15,0,0,-1,1,-1, 0, 0, 0, 0, 0, 0, 0}");
     }
     if(Q_setup(f,1)<0)  //  mirror
     {
-    	Q_parm_1(Q_setup_parms(f,1)).fill("{-15,15,0,0,-1,1,-1, 0, 0, 0, 0, 0, 0}");
+    	Q_parm_1(Q_setup_parms(f,1)).fill("{-15,15,0,0,-1,1,-1, 0, 0, 0, 0, 0, 0, 0}");
       // because Q is a vector for each time series of observations, the mirror is to the first observation's Q
       // so time-varying property cannot be mirrored
       //  need to trap for this when reading
@@ -2493,6 +2496,8 @@
   {
   	echoinput<<i<<" "<<ParCount-parm330_cnt+i<<" "<<ParmLabel(ParCount-parm330_cnt+i)<<" "<<Q_parm_1(i)<<endl;
   }
+  echoinput<<"q setup "<<endl<<Q_setup<<endl;
+  echoinput<<"q setup parms "<<endl<<Q_setup_parms<<endl;
  END_CALCS
 
   vector Q_parm_LO(1,parm330_cnt)

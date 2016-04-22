@@ -47,7 +47,7 @@ FUNCTION void evaluate_the_objective_function()
           }
 
   // SS_Label_Info_25.1.2 #apply catchability, Q
-          if(Q_setup(f,5)==1 )  //  do float Q
+          if(Q_setup(f,5)>0 )  //  do float Q
           {                                       //  NOTE:  cannot use float option if error type is normal
             temp=0.; temp1=0.; temp2=0.;
             for (i=1;i<=Svy_N_fleet(f);i++)
@@ -64,7 +64,8 @@ FUNCTION void evaluate_the_objective_function()
             {Svy_log_q(f) = temp2/temp;}
             else                  // for value = 1 or 5       // mean q with variance bias adjustment
             {Svy_log_q(f) = (temp2 + temp1*0.5)/temp;}
-            Q_parm(Q_setup_parms(f,4))=Svy_log_q(f,1);    // base Q  So this sets parameter equal to the scaling coefficient and can then have a prior
+            Q_parm(Q_setup_parms(f,1))=Svy_log_q(f,1);    // base Q  So this sets parameter equal to the scaling coefficient and can then have a prior
+            
           }
           else if(Q_setup(f,1)==2)        // mirror Q from lower numbered survey
                                            // because Q is a vector for each observation, the mirror is to the first observation's Q

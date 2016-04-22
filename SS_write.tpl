@@ -1999,33 +1999,40 @@ FUNCTION void write_nucontrol()
     }
    NP+=N_Fparm;
    report4<<"#"<<endl;
-   report4<<"#_Q_setup"<<endl<<
-   " # Q_type options:  <0=mirror, 0=float_nobiasadj, 1=float_biasadj, 2=parm_nobiasadj, 3=parm_w_random_dev, 4=parm_w_randwalk, 5=mean_unbiased_float_assign_to_parm"<<endl;
-   report4<<"#_for_env-var:_enter_index_of_the_env-var_to_be_linked"<<endl;
-   report4<<"#_Den-dep  env-var  extra_se  Q_type Q_offset"<<endl;
+   report4<<"#_Q_setup"<<endl;
+// 1:  link type
+// 2:  extra input for link, i.e. mirror fleet
+// 3:  0/1 to select extra sd parameter
+// 4:  0/1 for biasadj or not
+// 5:  0/1 to float 
+
+//  Link types
+//  1  simple q, 1 parm
+//  2  mirror simple q, 1 mirrored parameter
+//  3  q and power, 2 parm   " # Q_type options:  <0=mirror, 0=float_nobiasadj, 1=float_biasadj, 2=parm_nobiasadj, 3=parm_w_random_dev, 4=parm_w_randwalk, 5=mean_unbiased_float_assign_to_parm"<<endl;
+   report4<<"#_  fleet     link link_info extra_se  biasadj   float  #  fleetname"<<endl;
    for (f=1;f<=Nfleet;f++)
    {
-     report4<<Q_setup(f)<<" # "<<f<<" "<<fleetname(f)<<endl;
+     if(Svy_N_fleet(f)>0)  
+     	{
+     		report4<<" "<<setw(8)<<f;
+     	  for(j=1;j<=5;j++) report4<<setw(9)<<Q_setup(f,j);
+     	  report4<<"  #  "<<fleetname(f)<<endl;
+     }  
    }
    report4<<"#"<<endl;
-   if(ask_detail>0)  // report q_parm_detail
-   {
-    report4<<1<<" #_0=read one parm for each fleet with random q; 1=read a parm for each year of index"<<endl;
-   }
-  else
-  {
-    report4<<"#_Cond 0 #_If q has random component, then 0=read one parm for each fleet with random q; 1=read a parm for each year of index"<<endl;
-  }
 
    report4<<"#_Q_parms(if_any);Qunits_are_ln(q)"<<endl;
    if(Q_Npar>0)
    {
-    report4<<"# LO HI INIT PRIOR PR_type SD PHASE"<<endl;
+   report4<<"#_      LO        HI      INIT     PRIOR   PR_type        SD   PHASE env-var use_dev dv_mnyr dv_mxyr dv_stdv   Block Blk_Fxn  #  parm_name"<<endl;
     for (f=1;f<=Q_Npar;f++)
     {
       NP++;
       Q_parm_1(f,3)=value(Q_parm(f));
-      report4<<Q_parm_1(f)<<" # "<<ParmLabel(NP)<<endl;
+      for(j=1;j<=6;j++) report4<<std::setprecision(4)<<std::fixed<<setw(10)<<Q_parm_1(f,j);
+      for(j=7;j<=14;j++) report4<<std::setprecision(0)<<std::defaultfloat<<setw(8)<<Q_parm_1(f,j);
+      report4<<"  #  "<<ParmLabel(NP)<<endl;
     }
    }
    report4<<"#"<<endl;
