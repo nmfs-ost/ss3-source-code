@@ -10,10 +10,23 @@ FUNCTION void evaluate_the_objective_function()
   obj_fun=0.0;
 
     int k_phase=current_phase();
+    int fs;
     if(k_phase>max_lambda_phase) k_phase=max_lambda_phase;
 
 
-  // SS_Label_Info_25.1 #Fit to surveys and CPUE
+//Q_setup for 3.30
+// 1:  link type
+// 2:  extra input for link, i.e. mirror fleet
+// 3:  0/1 to select extra sd parameter
+// 4:  0/1 for biasadj or not
+// 5:  0/1 to float  k=4;
+
+//  Link types
+//  1  simple q, 1 parm
+//  2  mirror simple q, 1 mirrored parameter
+//  3  q and power, 2 parm
+
+//  Q_setup_parms(1,Nfleet_svy,1,5)  //  index of first parameter for:  1=base q with link; 2=env; 3=block/trend; 4=dev; 5=extrastd; 
     if(Svy_N>0)
     {
       for (f=1;f<=Nfleet;f++)
@@ -22,7 +35,7 @@ FUNCTION void evaluate_the_objective_function()
         if(Svy_N_fleet(f)>0)
         {
           Svy_se_use(f) = Svy_se_rd(f);
-          if(Q_setup(f,3)>0) Svy_se_use(f)+=Q_parm(Q_setup_parms(f,3));  // add extra stderr
+          if(Q_setup(f,3)>0) Svy_se_use(f)+=Q_parm(Q_setup_parms(f,5));  // add extra stderr
 
   // SS_Label_Info_25.1.1 #combine for super-periods
           for (j=1;j<=Svy_super_N(f);j++)
@@ -34,7 +47,7 @@ FUNCTION void evaluate_the_objective_function()
           }
 
   // SS_Label_Info_25.1.2 #apply catchability, Q
-          if(Q_setup(f,4)==0 || Q_setup(f,4)==1  || Q_setup(f,4)==5 )
+          if(Q_setup(f,5)>0 )  //  do float Q
           {                                       //  NOTE:  cannot use float option if error type is normal
             temp=0.; temp1=0.; temp2=0.;
             for (i=1;i<=Svy_N_fleet(f);i++)
@@ -51,16 +64,17 @@ FUNCTION void evaluate_the_objective_function()
             {Svy_log_q(f) = temp2/temp;}
             else                  // for value = 1 or 5       // mean q with variance bias adjustment
             {Svy_log_q(f) = (temp2 + temp1*0.5)/temp;}
-            if(Q_setup(f,4)==5) Q_parm(Q_setup_parms(f,4))=Svy_log_q(f,1);    // base Q  So this sets parameter equal to the scaling coefficient and can then have a prior
+            Q_parm(Q_setup_parms(f,1))=Svy_log_q(f,1);    // base Q  So this sets parameter equal to the scaling coefficient and can then have a prior
+            
           }
-          else if(Q_setup(f,4)<=-1)        // mirror Q from lower numbered survey
+          else if(Q_setup(f,1)==2)        // mirror Q from lower numbered survey
                                            // because Q is a vector for each observation, the mirror is to the first observation's Q
                                            // so time-varying property cannot be mirrored
-          {Svy_log_q(f) = Svy_log_q(-Q_setup(f,4),1);}
+          {Svy_log_q(f) = Svy_log_q(Q_setup(f,2),1);}
 
           else                                               //  Q from parameter
           {
-            Svy_log_q(f) = Q_parm(Q_setup_parms(f,4));   // base Q
+            Svy_log_q(f) = Q_parm(Q_setup_parms(f,1));   // base Q
 
 //  trend or block effect on Q
 
@@ -79,6 +93,7 @@ FUNCTION void evaluate_the_objective_function()
             }
 
 // random deviations or random walk
+ /*
             if(Q_setup(f,4)==3 || Q_setup(f,4)==4 )
             {
               temp=0.0; temp2=0.0; temp1=0.;
@@ -103,6 +118,7 @@ FUNCTION void evaluate_the_objective_function()
               Q_dev_like(f,1)=square(1.+square(temp))-1.;  // not used for randwalk
               if(temp1>0.0) Q_dev_like(f,2)=sqrt((temp2+0.0000001)/temp1);  // this is calculated but not used because redundant with the prior penalty
             }
+ */
           }
 
   // SS_Label_Info_25.1.3 #log or not

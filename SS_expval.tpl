@@ -265,9 +265,12 @@ FUNCTION void Get_expected_values();
            }
            Svy_selec_abund(f,j)=value(vbio);
 // SS_Label_Info_46.1.1 #note order of operations,  vbio raised to a power, then constant is added, then later multiplied by Q.  Needs work   
-           if(Q_setup(f,1)>0) vbio=pow(vbio,1.0+Q_parm(Q_setup_parms(f,1)));  //  raise vbio to a power
+           if(Q_setup(f,1)==3) 
+           	{
+           		vbio=pow(vbio,1.0+Q_parm(Q_setup_parms(f,1)+1));  //  raise vbio to a power
+           	}
 
-           if(Q_setup(f,5)>0) vbio+=Q_parm(Q_setup_parms(f,5));  //  add a constant;
+//           if(Q_setup(f,5)>0) vbio+=Q_parm(Q_setup_parms(f,5));  //  add a constant;
            if(Svy_errtype(f)>=0)  //  lognormal
            {Svy_est(f,j)=log(vbio+0.000001);}
            else
