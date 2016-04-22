@@ -2232,7 +2232,7 @@
   imatrix Q_setup_parms_324(1,Nfleet,1,5)
 
   imatrix Q_setup(1,Nfleet,1,5)
-  imatrix Q_setup_parms(1,Nfleet,1,5)  //  index of first parameter for:  1=base q with link; 2=env; 3=block/trend; 4=dev; 5=extrastd; 
+  imatrix Q_setup_parms(1,Nfleet,1,5)  //  index of first parameter for:  1=base q with link;  2=extrastd; 3=env; 4=block/trend; 5=dev;
   int parm330_cnt
   int Q_Npar2
   int Q_Npar
@@ -2424,11 +2424,9 @@
   Q_parm_1.initialize();
   echoinput<<" Catchability parameters in 3.24"<<endl<<Q_parm_2<<endl;
   for (f=1;f<=Nfleet;f++)
+  if(Svy_N_fleet(f)>0)
   {
-  	if(Svy_N_fleet(f)>0)
-  	{
 //  do base Q
-    
   	parm330_cnt++;
   	ParCount++;
     Q_setup_parms(f,1)=parm330_cnt;  //  first parameter index for this fleet that has obs so needs a Q
@@ -2463,34 +2461,39 @@
       ParmLabel+="Q_power_"+fleetname(f)+"("+NumLbl(f)+")";
     	Q_parm_1(Q_setup_parms(f,1)+1)(1,7)=Q_parm_2(Q_setup_parms_324(f,1))(1,7);
     }
-    	
-//  do envlink
-  	if(Q_setup_324(f,2)!=0)  //  so envlink exists in 3.24
+  }  	
+//  do extra sd
+  for(f=1;f<=Nfleet;f++)
+  if(Svy_N_fleet(f)>0)
+  {
+  	if(Q_setup_324(f,3)>0)  //  so extra sd  exists in 3.24
     {
     	parm330_cnt++;
       ParCount++;
       Q_setup_parms(f,2)=parm330_cnt;
-    	Q_parm_1(Q_setup_parms(f,2))(1,7)=Q_parm_2(Q_setup_parms_324(f,2))(1,7);
-    	Q_parm_1(Q_setup_parms(f,2),8)=Q_setup_324(f,2);  //  put env info into the  new long parameter line
+    	Q_parm_1(Q_setup_parms(f,2))(1,7)=Q_parm_2(Q_setup_parms_324(f,3))(1,7);
+      ParmLabel+="Q_extraSD_"+fleetname(f)+"("+NumLbl(f)+")";
+    }
+  }
+//  do envlink
+  for(f=1;f<=Nfleet;f++)
+  if(Svy_N_fleet(f)>0)
+  {
+  	if(Q_setup_324(f,2)!=0)  //  so envlink exists in 3.24
+    {
+    	parm330_cnt++;
+      ParCount++;
+      Q_setup_parms(f,3)=parm330_cnt;
+    	Q_parm_1(Q_setup_parms(f,3))(1,7)=Q_parm_2(Q_setup_parms_324(f,3))(1,7);
+    	Q_parm_1(Q_setup_parms(f,3),8)=Q_setup_324(f,2);  //  put env info into the  new long parameter line
       ParmLabel+="Q_envlink_"+fleetname(f)+"("+NumLbl(f)+")";
     }
-    
+  }  
     //   in 3.30, the block/trend parameters will go here
 //      Q_setup_parms(j,3)=parm330_cnt;
     //  in 3.30, the dev parameters will go here
 //      Q_setup_parms(j,4)=parm330_cnt;
     
-//  do extra sd
-  	if(Q_setup_324(f,3)>0)  //  so extra sd  exists in 3.24
-    {
-    	parm330_cnt++;
-      ParCount++;
-      Q_setup_parms(f,5)=parm330_cnt;
-    	Q_parm_1(Q_setup_parms(f,5))(1,7)=Q_parm_2(Q_setup_parms_324(f,3))(1,7);
-      ParmLabel+="Q_extraSD_"+fleetname(f)+"("+NumLbl(f)+")";
-    }
-    }
-  }
 
   for(i=1;i<=parm330_cnt;i++)
   {

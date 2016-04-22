@@ -701,7 +701,7 @@ FUNCTION void write_nudata()
      }
     }
    }
-  f=exp_a_temp.size()+9;
+  f=exp_a_temp.size()+8;
   report1 << "-9999 ";
   for(i=1;i<=f;i++) report1<<" 0";
   report1<<endl;
@@ -996,7 +996,7 @@ FUNCTION void write_nudata()
     }
     }
    }
-  f=exp_a_temp.size()+9;
+  f=exp_a_temp.size()+8;
   report1 << "-9999 ";
   for(i=1;i<=f;i++) report1<<" 0";
   report1<<endl;
@@ -1382,7 +1382,7 @@ FUNCTION void write_nudata()
       }
     }
   }
-  f=exp_a_temp.size()+9;
+  f=exp_a_temp.size()+8;
   report1 << "-9999 ";
   for(i=1;i<=f;i++) report1<<" 0";
   report1<<endl;
@@ -2018,9 +2018,9 @@ FUNCTION void write_nucontrol()
      		report4<<" "<<setw(8)<<f;
      	  for(j=1;j<=5;j++) report4<<setw(9)<<Q_setup(f,j);
      	  report4<<"  #  "<<fleetname(f)<<endl;
-     }  
+      }  
    }
-   report4<<"#"<<endl;
+   report4<<"-9999 0 0 0 0 0"<<endl<<"#"<<endl;
 
    report4<<"#_Q_parms(if_any);Qunits_are_ln(q)"<<endl;
    if(Q_Npar>0)

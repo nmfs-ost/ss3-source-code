@@ -594,6 +594,9 @@
  LOCAL_CALCS
   disc_units.initialize();
   disc_errtype.initialize();
+  nobs_disc=0;
+  disc_N_fleet=0;
+  N_suprper_disc=0;
   if(Ndisc_fleets>0)
   {
     echoinput<<"#_discard_units (1=same_as_catchunits(bio/num);2=fraction; 3=numbers)"<<endl;
@@ -607,7 +610,6 @@
       disc_errtype(f)=disc_units_rd(j,3);
       disc_errtype_r(f)=float(disc_errtype(f));
     }
-  }
 
   ender=0;
   do {
@@ -619,9 +621,6 @@
   disc_N_read=discdata.size()-1;
   echoinput<<disc_N_read<<" N discard obs "<<endl;
 
-  nobs_disc=0;
-  disc_N_fleet=0;
-  N_suprper_disc=0;
   if(disc_N_read>0)
   {
     for (i=0;i<=disc_N_read-1;i++)  // get count of observations in date range
@@ -650,6 +649,7 @@
         N_suprper_disc(f)=j;
       }
     }
+  }
   }
  END_CALCS
 

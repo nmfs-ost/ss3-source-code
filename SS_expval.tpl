@@ -2,8 +2,8 @@
  /*  SS_Label_FUNCTION 46  Get_expected_values:  check for data */
 FUNCTION void Get_expected_values();
   {
-  	dvariable temp1;
-  	dvar_vector age_exp(0,nages2);
+    dvariable temp1;
+    dvar_vector age_exp(0,nages2);
   for (subseas=1;subseas<=N_subseas;subseas++)
   {
 //  make age-length key if needed
@@ -53,7 +53,7 @@ FUNCTION void Get_expected_values();
               {
                 for (a=0;a<=nages;a++)
                 {
-                	temp=tempvec_a(a);
+                  temp=tempvec_a(a);
                   for(z=ALK_range_lo(a);z<=ALK_range_hi(a);z++)
                   {
                     exp_AL(a+A2,L1-1+z)+=temp*ALK(ALK_idx,g,a,z)*sel_l(y,f,gg,z);;  //  note that A2 and L1 depend on what sex g is
@@ -64,7 +64,7 @@ FUNCTION void Get_expected_values();
               {
                 for (a=0;a<=nages;a++)
                 {
-                	temp=tempvec_a(a);
+                  temp=tempvec_a(a);
                   for(z=ALK_range_lo(a);z<=ALK_range_hi(a);z++)
                   {
                     exp_AL(a+A2,L1-1+z)+=temp*ALK(ALK_idx,g,a,z);
@@ -78,8 +78,8 @@ FUNCTION void Get_expected_values();
               {
                 for (a=0;a<=nages;a++)
                 {
-                	temp=tempvec_a(a);
-                	temp1=tempvec_a(a)*retain_a(y,f,gg,a);
+                  temp=tempvec_a(a);
+                  temp1=tempvec_a(a)*retain_a(y,f,gg,a);
                   for(z=ALK_range_lo(a);z<=ALK_range_hi(a);z++)
                   {
                     exp_AL(a+A2,L1-1+z)+=temp*ALK(ALK_idx,g,a,z)*sel_l(y,f,gg,z);  //  note that A2 and L1 depend on what sex g is
@@ -91,8 +91,8 @@ FUNCTION void Get_expected_values();
               {
                 for (a=0;a<=nages;a++)
                 {
-                	temp=tempvec_a(a);
-                	temp1=tempvec_a(a)*retain_a(y,f,gg,a);
+                  temp=tempvec_a(a);
+                  temp1=tempvec_a(a)*retain_a(y,f,gg,a);
                   for(z=ALK_range_lo(a);z<=ALK_range_hi(a);z++)
                   {
                     exp_AL(a+A2,L1-1+z)+=temp*ALK(ALK_idx,g,a,z);
@@ -118,16 +118,16 @@ FUNCTION void Get_expected_values();
           {
              exp_l_temp_ret=colsum(exp_AL_ret);
              exp_truea_ret=rowsum(exp_AL_ret);
-        	}
+          }
 //          if(docheckup==1) echoinput<<"exp_l: "<<exp_l_temp<<endl<<"exp_l_ret: "<<exp_l_temp_ret<<endl;
 //          end creation of selected A-L
         }
         
         if(sum(exp_l_temp)<1.0e-8)
-        	{
-        		if(do_once==1) {N_warn++; warning<<"warn just once for:  Observation exists, but nil selected fish for year, seas, fleet "<<y<<" "<<s<<" "<<f<<endl;}
-        		exp_l_temp+=1.0e-05;
-        	}
+          {
+            if(do_once==1) {N_warn++; warning<<"warn just once for:  Observation exists, but nil selected fish for year, seas, fleet "<<y<<" "<<s<<" "<<f<<endl;}
+            exp_l_temp+=1.0e-05;
+          }
 
         for (data_type=1;data_type<=9;data_type++)
         {
@@ -150,7 +150,7 @@ FUNCTION void Get_expected_values();
                vbio=0.0;
                if(Do_Retain(f)==0)  //  all retained
                {
-               	for (a=0;a<=nages;a++) vbio+=WTage_emp(y,1,f,a)*agetemp(a);
+                for (a=0;a<=nages;a++) vbio+=WTage_emp(y,1,f,a)*agetemp(a);
                 if(gender==2)
                 {
                  for (a=0;a<=nages;a++) vbio+=WTage_emp(y,2,f,a)*agetemp(a+nages+1);
@@ -158,7 +158,7 @@ FUNCTION void Get_expected_values();
                }
                else
                {
-               	for (a=0;a<=nages;a++) vbio+=WTage_emp(y,1,f,a)*exp_truea_ret(a);
+                for (a=0;a<=nages;a++) vbio+=WTage_emp(y,1,f,a)*exp_truea_ret(a);
                 if(gender==2)
                 {
                  for (a=0;a<=nages;a++) vbio+=WTage_emp(y,2,f,a)*exp_truea_ret(a+nages+1);
@@ -167,27 +167,27 @@ FUNCTION void Get_expected_values();
              }
              else
              {
-             	if(Do_Retain(f)==0)
-           		{
+              if(Do_Retain(f)==0)
+              {
                 vbio=exp_l_temp*wt_len2(s,1);// biomass  TEMPORARY CODE.  Using gp=1 wt at length
-           		}
-           		else
-         			{
+              }
+              else
+              {
                 vbio=exp_l_temp_ret*wt_len2(s,1);
-           		}
-             	}   
+              }
+              }   
              break;
              }
              case 0:  //  numbers
              {
-             	if(Do_Retain(f)==0)
-           		{
+              if(Do_Retain(f)==0)
+              {
                 vbio=sum(exp_l_temp);
-           		}
-           		else
-         			{
+              }
+              else
+              {
                 vbio=sum(exp_l_temp_ret);
-           		}
+              }
               break;
              }
              case 2:   //  F rate
@@ -266,11 +266,10 @@ FUNCTION void Get_expected_values();
            Svy_selec_abund(f,j)=value(vbio);
 // SS_Label_Info_46.1.1 #note order of operations,  vbio raised to a power, then constant is added, then later multiplied by Q.  Needs work   
            if(Q_setup(f,1)==3) 
-           	{
-           		vbio=pow(vbio,1.0+Q_parm(Q_setup_parms(f,1)+1));  //  raise vbio to a power
-           	}
+            {
+              vbio=pow(vbio,1.0+Q_parm(Q_setup_parms(f,1)+1));  //  raise vbio to a power
+            }
 
-//           if(Q_setup(f,5)>0) vbio+=Q_parm(Q_setup_parms(f,5));  //  add a constant;
            if(Svy_errtype(f)>=0)  //  lognormal
            {Svy_est(f,j)=log(vbio+0.000001);}
            else

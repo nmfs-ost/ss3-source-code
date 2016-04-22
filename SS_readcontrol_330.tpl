@@ -1034,45 +1034,45 @@
      N_MGparm_env ++;
      MGparm_env(f)=N_MGparm+N_MGparm_env;  //  store starting parameter value for this linkage
      k=int(MGparm_1(f,8)/100);  //  find the link code
-   	 MGparm_envtype(f)=k;
-   	 MGparm_envuse(f)=MGparm_1(f,8)-k*100;
-   	 if(MGparm_envuse(f)==99) MGparm_envuse(f)=-1;  //  for linking to rel_spawn biomass
-   	 if(MGparm_envuse(f)==98) MGparm_envuse(f)=-2;  //  for linking to exp(recdev)
-   	 if(MGparm_envuse(f)==97) MGparm_envuse(f)=-3;  //  for linking to rel_smrybio
-   	 if(MGparm_envuse(f)==96) MGparm_envuse(f)=-4;  //  for linking to rel_smry_num
+     MGparm_envtype(f)=k;
+     MGparm_envuse(f)=MGparm_1(f,8)-k*100;
+     if(MGparm_envuse(f)==99) MGparm_envuse(f)=-1;  //  for linking to rel_spawn biomass
+     if(MGparm_envuse(f)==98) MGparm_envuse(f)=-2;  //  for linking to exp(recdev)
+     if(MGparm_envuse(f)==97) MGparm_envuse(f)=-3;  //  for linking to rel_smrybio
+     if(MGparm_envuse(f)==96) MGparm_envuse(f)=-4;  //  for linking to rel_smry_num
      switch (k)
      {
-     	 case 1:  //  multiplicative
-     	 	{
+       case 1:  //  multiplicative
+        {
           ParCount++; ParmLabel+=ParmLabel(f)+"_ENV_mult";
           if(MG_adjust_method==2) {N_warn++; cout<<" EXIT - see warning "<<endl; warning<<"multiplicative env effect on MGparm: "<<f
           <<" not allowed because MG_adjust_method==2; STOP"<<endl; exit(1);}
-     	 		break;
-     	 	}
-     	 case 2:  //  additive
-     	 	{
+          break;
+        }
+       case 2:  //  additive
+        {
           ParCount++; ParmLabel+=ParmLabel(f)+"_ENV_add";
-     	 		break;
-     	 	}
-     	 case 4:  //  logistic with offset
-     	 	{
+          break;
+        }
+       case 4:  //  logistic with offset
+        {
           if(MG_adjust_method==2) {N_warn++; cout<<" EXIT - see warning "<<endl; warning<<"multiplicative env effect on MGparm: "<<f
           <<" not allowed because MG_adjust_method==2; STOP"<<endl; exit(1);}
           ParCount++; ParmLabel+=ParmLabel(f)+"_ENV_offset";
           ParCount++; ParmLabel+=ParmLabel(f)+"_ENV_lgst_slope";
           N_MGparm_env ++;  //  for the second parameter
-     	 		break;
-     	 	}
+          break;
+        }
      }
 
      if(f==MGP_CGD) CGD=1;    // cohort growth dev is a fxn of environ, so turn on CGD calculation
      for (y=styr;y<=endyr;y++)
      {
-     	if(MGparm_envuse(f)>0 )
-     		{if(env_data_RD(y,MGparm_envuse(f))!=0.0) {time_vary_MG(y,mgp_type(f))=1; time_vary_MG(y+1,mgp_type(f))=1; }
-     		}
-     	else if (MGparm_envuse(f)<0 )  //  density-dependence being used
-     		{time_vary_MG(y,mgp_type(f))=1; time_vary_MG(y+1,mgp_type(f))=1; }
+      if(MGparm_envuse(f)>0 )
+        {if(env_data_RD(y,MGparm_envuse(f))!=0.0) {time_vary_MG(y,mgp_type(f))=1; time_vary_MG(y+1,mgp_type(f))=1; }
+        }
+      else if (MGparm_envuse(f)<0 )  //  density-dependence being used
+        {time_vary_MG(y,mgp_type(f))=1; time_vary_MG(y+1,mgp_type(f))=1; }
       //       non-zero data were read    or fxn uses biomass or recruitment
      }
     }
@@ -2027,89 +2027,57 @@
       }
   }
 
+ END_CALCS
+
 //  SS_Label_Info_4.8 #Read catchability (Q) setup
- END_CALCS
-
-  matrix Q_setup(1,Nfleet,1,5)  // do power, env-var,  extra sd, devtype(<0=mirror, 0=float_nobiasadj 1=float_biasadj, 2=parm_nobiasadj, 3=rand, 4=randwalk); num/bio/F, err_type(0=lognormal, >=1 is T-dist-lognormal)
-                                        // change to matrix because devstd has real, not integer, values
-                                        //  new 5th element is for Q offset
- LOCAL_CALCS
-  Q_setup.initialize();
-//  revise approach for Q_offset so that is now a 5th element of Q_setup, rather than a mutually exclusive code in the 1st element (density-dependence)
-  k=5;
-
-  for(f=1;f<=Nfleet;f++)
-  {*(ad_comm::global_datafile) >> Q_setup(f)(1,k);}
- END_CALCS
-
-
+  imatrix Q_setup(1,Nfleet,1,5)
+  ivector Q_setup_check(1,Nfleet)
+  imatrix Q_setup_parms(1,Nfleet,1,5)  //  index of first parameter for:  1=base q with link;  2=extrastd; 3=env; 4=block/trend; 5=dev;
+  int parm330_cnt
   int Q_Npar2
   int Q_Npar
-  int ask_detail
-
-  imatrix Q_setup_parms(1,Nfleet,1,5)
+  ivector Q_link(1,10)
+  
  LOCAL_CALCS
-  echoinput<<" Q setup "<<endl<<Q_setup<<endl;
-  echoinput<<"Note that the Q parameter has units of ln(q)"<<endl;
+  Q_link(1)=1;  //  simple q, 1 parm
+  Q_link(2)=1;  //  mirror simple q, 1 mirrored parameter
+  Q_link(3)=2;  //  q and power, 2 parm
+
+//Q_setup for 3.30
+// 1:  link type
+// 2:  extra input for link, i.e. mirror fleet
+// 3:  0/1 to select extra sd parameter
+// 4:  0/1 for biasadj or not
+// 5:  0/1 to float 
+
+//  read setup and get the parameter count  
+  Q_setup.initialize();
+  Q_setup_parms.initialize();
   Q_Npar=0;
-  ask_detail=0;
-//  SS_Label_Info_4.8.1 #Create index to the catchability parameters and create parameter names
-  for (f=1;f<=Nfleet;f++)
+  Q_setup_check.initialize();
+  j=1;
+  do
   {
-    Q_setup_parms(f,1)=0;
-   if(Q_setup(f,1)>0)
-    {
-      Q_Npar++; Q_setup_parms(f,1)=Q_Npar;
-      ParCount++;
-      {ParmLabel+="Q_power_"+fleetname(f)+"("+NumLbl(f)+")";}
-      if(Q_setup(f,4)<2) {N_warn++; warning<<" must create base Q parm to use Q_power for fleet: "<<f<<endl;}
-    }
-  }
+    *(ad_comm::global_datafile) >>j;
+    if(j>0)
+   {*(ad_comm::global_datafile) >>Q_setup(j);
+    Q_setup_check(j)=1;}
+    else
+   {*(ad_comm::global_datafile) >>tempvec(1,5);}
+  } while(j>0);
+  echoinput<<Q_setup<<endl;
 
-  for (f=1;f<=Nfleet;f++)
+//  get base parameter count
+  for(f=1;f<=Nfleet;f++)
   {
-    Q_setup_parms(f,2)=0;
-    if(Q_setup(f,2)!=0)
-      {
-        Q_Npar++; Q_setup_parms(f,2)=Q_Npar;
-        ParCount++; ParmLabel+="Q_envlink_"+fleetname(f)+"("+NumLbl(f)+")";
-        if(Q_setup(f,4)<2) {N_warn++; warning<<" must create base Q parm to use Q_envlink for fleet: "<<f<<endl;}
-       }
-  }
-  for (f=1;f<=Nfleet;f++)
+  if(Svy_N_fleet(f)>0)
   {
-    Q_setup_parms(f,3)=0;
-    if(Q_setup(f,3)>0)
+    if(Q_setup_check(f)==0)
     {
-      Q_Npar++; Q_setup_parms(f,3)=Q_Npar;
-      ParCount++; ParmLabel+="Q_extraSD_"+fleetname(f)+"("+NumLbl(f)+")";
+      N_warn++; warning<<f<<" fatal Qsetup error;  survey obs exist but no Q setup was read "<<endl; exit(1);
     }
-  }
-
-  {
-    for (f=1;f<=Nfleet;f++)
-    {
-     if(Q_setup(f,5)>0)
-      {
-        Q_Npar++; Q_setup_parms(f,5)=Q_Npar;
-        ParCount++;
-        ParmLabel+="Q_offset_"+fleetname(f)+"("+NumLbl(f)+")";
-        if(Q_setup(f,4)<2) {N_warn++; warning<<" must create base Q parm to use Q_offset for fleet: "<<f<<endl;}
-      }
-      else
-      {Q_setup_parms(f,5)=0;}
-    }
-  }
-
-//  SS_Label_Info_4.8.2 #Create Q parm and time-varying catchability as needed
-  Q_Npar2=Q_Npar;
-  for (f=1;f<=Nfleet;f++)
-  {
-    Q_setup_parms(f,4)=0;
-    if(Q_setup(f,4)>=2)
-    {
-      Q_Npar++; Q_Npar2++; Q_setup_parms(f,4)=Q_Npar;
-      ParCount++;
+      Q_Npar++;  ParCount++;
+      Q_setup_parms(f,1)=Q_Npar;  //  first parameter index for this fleet that has obs so needs a Q
       if(Svy_errtype(f)==-1)
       {
         ParmLabel+="Q_base_"+fleetname(f)+"("+NumLbl(f)+")";
@@ -2118,159 +2086,61 @@
       {
         ParmLabel+="LnQ_base_"+fleetname(f)+"("+NumLbl(f)+")";
       }
-      if(Q_setup(f,4)==3)
+   	  switch (Q_setup(f,1))
       {
-        ask_detail=1;
-        Q_Npar2++;
-        Q_Npar+=Svy_N_fleet(f);
-        for (j=1;j<=Svy_N_fleet(f);j++)
+        case 1:  //  simple Q
         {
-          y=Show_Time(Svy_time_t(f,j),1);
-          s=Show_Time(Svy_time_t(f,j),2);
-          ParCount++;
-          sprintf(onenum, "%d", y);
-          onenum+=CRLF(1);
-          ParmLabel+="Q_dev_"+onenum+"_"+fleetname(f)+"("+NumLbl(f)+")";
+          break;
+        }
+        case 2:  //  nirror
+        {
+          break;
+        }
+        case 3:  //  add power
+        {
+          Q_Npar++;  ParCount++;
+          ParmLabel+="Q_power_"+fleetname(f)+"("+NumLbl(f)+")";
+          break;
         }
       }
-      if(Q_setup(f,4)==4)
-      {
-        ask_detail=1;
-        Q_Npar2++;
-        Q_Npar+=Svy_N_fleet(f)-1;
-        for (j=2;j<=Svy_N_fleet(f);j++)
-        {
-          y=Show_Time(Svy_time_t(f,j),1);
-          s=Show_Time(Svy_time_t(f,j),2);
-          ParCount++;
-//          _itoa(y,onenum,10);
-          sprintf(onenum, "%d", y);
-          onenum+=CRLF(1);
-          ParmLabel+="Q_walk_"+onenum+"_"+fleetname(f)+"("+NumLbl(f)+")";
-        }
-      }
-    }
-    else if(Svy_errtype(f)==-1)
-    {N_warn++; cout<<" EXIT - see warning "<<endl; warning<<" Error, cannot use scaling approach to Q if error type is normal "<<endl; exit(1);}
-  }
-
-  for (f=1;f<=Nfleet;f++)
-  {
-    if(Svy_units(f)==2)  // effort deviations
-    {
-      if(Svy_errtype(f)>=0)  //  lognormal
-      {
-        N_warn++;
-        warning<<" Lognormal error selected for effort deviations for fleet "<<f<<"; normal error recommended"<<endl;
-      }
-      if(Q_setup(f,1)>0)  //  density-dependence
-      {
-        N_warn++;
-        warning<<" Do not use Density-dependence for effort deviations (fleet "<<f<<"); "<<endl;
-      }
-    }
-  }
-
-  if(Q_Npar>0)
-    {k=Q_Npar;}
-  else
-    {k=1;}
- END_CALCS
-
-  vector Q_parm_LO(1,k)
-  vector Q_parm_HI(1,k)
-  ivector Q_parm_PH(1,k)
-
-  int Q_parm_detail
- LOCAL_CALCS
-  if(ask_detail>0)
-  {
-    *(ad_comm::global_datafile) >> Q_parm_detail;
-    echoinput<<Q_parm_detail<<" Q_parm detail for time-varying parameters "<<endl;
   }
   else
   {
-    Q_parm_detail=0;
-    echoinput<<" # No time-varying Q parms, so no q_parm_detail input needed "<<endl;
+    if(Q_setup_check(f)>0)
+    {
+      N_warn++; warning<<f<<" Qsetup error;  no survey obs but  Q setup was read "<<endl;
+    }
   }
-  if(Q_parm_detail==1) {j=Q_Npar;} else {j=Q_Npar2;}
+  }
+
+//  get extrastd parameter count
+  for(f=1;f<=Nfleet;f++)
+  {
+    if(Q_setup(f,3)>0)
+    {
+       Q_Npar++;  ParCount++;
+       Q_setup_parms(f,2)=Q_Npar;
+      ParmLabel+="Q_extraSD_"+fleetname(f)+"("+NumLbl(f)+")";
+    }
+  }
+//  get env parameter count
+//  get block/trend parameter count
+//  get dev parameter count
+  echoinput<<"q setup "<<endl<<Q_setup<<endl;
+  echoinput<<"q setup parms "<<endl<<Q_setup_parms<<endl;
  END_CALCS
 
- matrix Q_parm_1(1,Q_Npar,1,7)
-
-//  SS_Label_Info_4.8.3 #Read catchability parameters as necessary
-  init_matrix Q_parm_2(1,j,1,7)
- LOCAL_CALCS
-  Q_parm_1.initialize();
-  echoinput<<" Catchability parameters"<<endl<<Q_parm_2<<endl;
-  if(Q_parm_detail==0)
-  {
-    Q_Npar=0;  Q_Npar2=0;
-    for (f=1;f<=Nfleet;f++)
-    {
-     if(Q_setup(f,1)>0)
-      {
-        Q_Npar++;
-        Q_parm_1(Q_Npar)=Q_parm_2(Q_Npar);
-      }
-    }
-    for (f=1;f<=Nfleet;f++)
-    {
-      if(Q_setup(f,2)!=0)
-      {
-        Q_Npar++;
-        Q_parm_1(Q_Npar)=Q_parm_2(Q_Npar);
-      }
-    }
-    for (f=1;f<=Nfleet;f++)
-    {
-     if(Q_setup(f,3)>0)
-      {
-        Q_Npar++;
-        Q_parm_1(Q_Npar)=Q_parm_2(Q_Npar);
-      }
-    }
-    Q_Npar2=Q_Npar;
-    for (f=1;f<=Nfleet;f++)
-    {
-      if(Q_setup(f,4)>=2)
-      {
-        Q_Npar++; Q_Npar2++;
-        Q_parm_1(Q_Npar)=Q_parm_2(Q_Npar2);
-        if(Q_setup(f,4)==3)
-        {
-          Q_Npar2++;
-          for (j=1;j<=Svy_N_fleet(f);j++)
-          {
-            Q_Npar++;
-            Q_parm_1(Q_Npar)=Q_parm_2(Q_Npar2);
-          }
-        }
-        if(Q_setup(f,4)==4)
-        {
-          Q_Npar2++;
-          for (j=2;j<=Svy_N_fleet(f);j++)
-          {
-            Q_Npar++;
-            Q_parm_1(Q_Npar)=Q_parm_2(Q_Npar2);
-          }
-        }
-      }
-    }
-  }
-  else
-  {
-    Q_parm_1=Q_parm_2;
-  }
- END_CALCS
-
-  !! if(Q_Npar>0 ) echoinput<<" processed Q parms "<<endl<<Q_parm_1<<endl;
+  init_matrix Q_parm_1(1,Q_Npar,1,14)
+  vector Q_parm_LO(1,Q_Npar)
+  vector Q_parm_HI(1,Q_Npar)
+  ivector Q_parm_PH(1,Q_Npar)
 
  LOCAL_CALCS
    if(Q_Npar>0)
      {
      for (f=1;f<=Q_Npar;f++)
        {
+       echoinput<<f<<" "<<ParCount-Q_Npar+f<<" "<<ParmLabel(ParCount-Q_Npar+f)<<" "<<Q_parm_1(f)<<endl;
        Q_parm_LO(f)=Q_parm_1(f,1);
        Q_parm_HI(f)=Q_parm_1(f,2);
        Q_parm_PH(f)=Q_parm_1(f,7);
@@ -2517,7 +2387,7 @@
 //  age-specific retention function
      if(seltype(f,2)>=1)
      {
-     	 Do_Retain(f1)=2;
+       Do_Retain(f1)=2;
        if(WTage_rd>0)
        {
         N_warn++; warning<<" BEWARE: Retention functions not implemented fully when reading empirical wt-at-age "<<endl;
@@ -2631,34 +2501,34 @@
     {
       selparm_env(j)=N_selparm+N_selparm_env+1;  //   first parameter for this link
       k=int(selparm_1(j,8)/100);  //  find the link code
-    	selparm_envtype(j)=k;
-    	selparm_envuse(j)=selparm_1(j,8)-k*100;
-    	if(selparm_envuse(j)==99) selparm_envuse(j)=-1;  //  for linking to rel_spawn biomass
-    	if(selparm_envuse(j)==98) selparm_envuse(j)=-2;  //  for linking to exp(recdev)
+      selparm_envtype(j)=k;
+      selparm_envuse(j)=selparm_1(j,8)-k*100;
+      if(selparm_envuse(j)==99) selparm_envuse(j)=-1;  //  for linking to rel_spawn biomass
+      if(selparm_envuse(j)==98) selparm_envuse(j)=-2;  //  for linking to exp(recdev)
       if(selparm_envuse(j)==97) selparm_envuse(j)=-3;  //  for linking to rel_smrybio
       if(selparm_envuse(j)==96) selparm_envuse(j)=-4;  //  for linking to rel_smry_num
      switch (k)
      {
-     	 case 1:  //  multiplicative
-     	 	{
+       case 1:  //  multiplicative
+        {
           N_selparm_env ++; ParCount++; ParmLabel+=ParmLabel(j+firstselparm)+"_ENV_mult";
           if(selparm_adjust_method==2) {N_warn++; cout<<" EXIT - see warning "<<endl; warning<<"multiplicative env effect on selparm: "<<j+firstselparm
           <<" not allowed because selparm_adjust_method==2; STOP"<<endl; exit(1);}
-     	 		break;
-     	 	}
-     	 case 2:  //  additive
-     	 	{
+          break;
+        }
+       case 2:  //  additive
+        {
           N_selparm_env ++; ParCount++; ParmLabel+=ParmLabel(j+firstselparm)+"_ENV_add";
-     	 		break;
-     	 	}
-     	 case 4:  //  logistic with offset
-     	 	{
+          break;
+        }
+       case 4:  //  logistic with offset
+        {
           if(selparm_adjust_method==2) {N_warn++; cout<<" EXIT - see warning "<<endl; warning<<"multiplicative env effect on selparm: "<<j+firstselparm
           <<" not allowed because selparm_adjust_method==2; STOP"<<endl; exit(1);}
           N_selparm_env ++; ParCount++; ParmLabel+=ParmLabel(j+firstselparm)+"_ENV_offset";
           N_selparm_env ++; ParCount++; ParmLabel+=ParmLabel(j+firstselparm)+"_ENV_lgst_slope";
-     	 		break;
-     	 	}
+          break;
+        }
      }
 
     }
@@ -2701,7 +2571,7 @@
    for (j=1;j<=N_selparm;j++)
    {
      ivector itempvec(1,5);
-   	 j1=firstselparm+j;
+     j1=firstselparm+j;
      z=selparm_1(j,13);    // specified block or trend definition
      if(z==0)    //  no blocks or trends
      {timevary_Nread=0;}
@@ -4377,8 +4247,8 @@
       {
         for (j=y;j<=y2;j++)  // loop years
         {
-        	for(k=f;k<=f2;k++)
-        	{
+          for(k=f;k<=f2;k++)
+          {
           t=styr+(j-styr)*nseas+s-1;
           for (a=0;a<=N_WTage_maxage;a++) WTage_emp(t,g,k,a)=WTage_in(i,7+a);
           for (a=N_WTage_maxage;a<=nages;a++) WTage_emp(t,g,f,a)=WTage_emp(t,g,f,N_WTage_maxage);  //  fills out remaining ages, if any

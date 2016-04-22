@@ -26,7 +26,6 @@ FUNCTION void evaluate_the_objective_function()
 //  2  mirror simple q, 1 mirrored parameter
 //  3  q and power, 2 parm
 
-//  Q_setup_parms(1,Nfleet_svy,1,5)  //  index of first parameter for:  1=base q with link; 2=env; 3=block/trend; 4=dev; 5=extrastd; 
     if(Svy_N>0)
     {
       for (f=1;f<=Nfleet;f++)
@@ -35,7 +34,7 @@ FUNCTION void evaluate_the_objective_function()
         if(Svy_N_fleet(f)>0)
         {
           Svy_se_use(f) = Svy_se_rd(f);
-          if(Q_setup(f,3)>0) Svy_se_use(f)+=Q_parm(Q_setup_parms(f,5));  // add extra stderr
+          if(Q_setup(f,3)>0) Svy_se_use(f)+=Q_parm(Q_setup_parms(f,2));  // add extra stderr
 
   // SS_Label_Info_25.1.1 #combine for super-periods
           for (j=1;j<=Svy_super_N(f);j++)
@@ -84,12 +83,12 @@ FUNCTION void evaluate_the_objective_function()
             if(Q_setup(f,2)>0)    // environ effect on log(q)  multiplicative
             {
               for (i=1;i<=Svy_N_fleet(f);i++)
-              {Svy_log_q(f,i) += Q_parm(Q_setup_parms(f,2)) * env_data(Show_Time(Svy_time_t(f,i),1),Q_setup(f,2));}  // note that this environ effect is after the dev effect!
+              {Svy_log_q(f,i) += Q_parm(Q_setup_parms(f,3)) * env_data(Show_Time(Svy_time_t(f,i),1),Q_setup(f,3));}  // note that this environ effect is after the dev effect!
             }
             else if(Q_setup(f,2)<0)    // environ effect on log(q)  additive
             {
               for (i=1;i<=Svy_N_fleet(f);i++)
-              {Svy_log_q(f,i) += Q_parm(Q_setup_parms(f,2)) + env_data(Show_Time(Svy_time_t(f,i),1),-Q_setup(f,2));}
+              {Svy_log_q(f,i) += Q_parm(Q_setup_parms(f,3)) + env_data(Show_Time(Svy_time_t(f,i),1),-Q_setup(f,3));}
             }
 
 // random deviations or random walk
