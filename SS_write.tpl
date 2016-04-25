@@ -517,9 +517,8 @@ FUNCTION void write_nudata()
   report1<<"#_survey_timing: -1=for use of catch-at-age to override the month value associated with a datum "<<endl;
   report1<<"#_fleet_area:  area the fleet/survey operates in "<<endl;
   report1<<"#_units of catch:  1=bio; 2=num (ignored for surveys; their units read later)"<<endl;
-  report1<<"#_equ_catch_se:  standard error of log(initial equilibrium catch)"<<endl;
-  report1<<"#_catch_se:  standard error of log(catch); can be overridden in control file with detailed F input"<<endl;
-  report1<<"#_rows are fleets"<<endl<<"#_fleet_type, timing, area, units, equ_catch_se, catch_se, need_catch_mult fleetname"<<endl;
+  report1<<"#_catch_mult: 0=no; 1=yes"<<endl;
+  report1<<"#_rows are fleets"<<endl<<"#_fleet_type, timing, area, units, need_catch_mult fleetname"<<endl;
   for (f=1;f<=Nfleet;f++)
   {report1<<fleet_setup(f)<<" "<<fleetname(f)<<"  # "<<f<<endl;}
   if(N_bycatch>0)
@@ -540,6 +539,7 @@ FUNCTION void write_nudata()
   {
 
   report1<<"#_Catch data: yr, seas, fleet, catch, catch_se"<<endl;
+  report1<<"#_catch_se:  standard error of log(catch); can be overridden in control file with detailed F input"<<endl;
   k=0;
   for(f=1;f<=Nfleet;f++)
   {
@@ -1755,7 +1755,7 @@ FUNCTION void write_nucontrol()
     if (Hermaphro_Option!=0) report4<<Hermaphro_seas<<" # Hermaphro_season "<<endl<<Hermaphro_maleSPB<<" # Hermaphro_maleSPB "<<endl;
     report4<<MGparm_def<<" #_parameter_offset_approach (1=none, 2= M, G, CV_G as offset from female-GP1, 3=like SS2 V1.x)"<<endl;
     report4<<MG_adjust_method<<
-    " #_env/block/dev_adjust_method for  MG parms (1=standard; 2=logistic transform keeps in base parm bounds; 3=standard w/ no bound check)"<<endl;
+    " #_env/block/dev_adjust_method for MG parms (1=standard; 2=logistic transform keeps in base parm bounds; 3=standard w/ no bound check)"<<endl;
   report4<<"#"<<endl;
   report4<<"#_growth_parms"<<endl;
   report4<<"#_LO HI INIT PRIOR PR_type SD PHASE env-var use_dev dev_minyr dev_maxyr dev_stddev Block Block_Fxn"<<endl;
@@ -2018,7 +2018,7 @@ FUNCTION void write_nucontrol()
      		report4<<" "<<setw(8)<<f;
      	  for(j=1;j<=5;j++) report4<<setw(9)<<Q_setup(f,j);
      	  report4<<"  #  "<<fleetname(f)<<endl;
-      }  
+      }
    }
    report4<<"-9999 0 0 0 0 0"<<endl<<"#"<<endl;
 
@@ -2048,7 +2048,7 @@ FUNCTION void write_nucontrol()
    report4<<"#"<<endl;
 
     report4<<selparm_adjust_method<<
-    " #_env/block/dev_adjust_method for  MG parms (1=standard; 2=logistic transform keeps in base parm bounds; 3=standard w/ no bound check)"<<endl;
+    " #_env/block/dev_adjust_method for sel parms (1=standard; 2=logistic transform keeps in base parm bounds; 3=standard w/ no bound check)"<<endl;
    report4<<"#_LO HI INIT PRIOR PR_type SD PHASE env-var use_dev dev_minyr dev_maxyr dev_stddev Block Block_Fxn"<<endl;
 
 //  if(seltype(f,2)==4)
@@ -2336,7 +2336,7 @@ FUNCTION void write_bigoutput()
   SS2out<<endl<<"fleet_names: ";
   for (f=1;f<=Nfleet;f++) SS2out<<" "<<fleetname(f);
   SS2out<<endl;
-  SS2out<<"#_rows are fleets; columns are: fleet_type, timing, area, units, equ_catch_se, catch_se, catch_mult, survey_units survey_error "<<endl;
+  SS2out<<"#_rows are fleets; columns are: fleet_type, timing, area, units, catch_mult, survey_units survey_error "<<endl;
   for (f=1;f<=Nfleet;f++)
   {
     SS2out<<fleet_setup(f)<<" "<<Svy_units(f)<<" "<<Svy_errtype(f)<<" # Fleet:_"<<f<<"_ "<<fleetname(f)<<endl;

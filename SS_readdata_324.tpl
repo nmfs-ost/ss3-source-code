@@ -157,7 +157,7 @@
   vector catchunits(1,Nfleet)
   vector catch_se_rd(1,Nfleet)
   matrix catch_se(styr-nseas,TimeMax,1,Nfleet);
-  matrix fleet_setup(1,Nfleet,1,7)  // type, timing, area, units, equ_catch_se, catch_se, need_catch_mult
+  matrix fleet_setup(1,Nfleet,1,5)  // type, timing, area, units, need_catch_mult
   matrix bycatch_setup(1,Nfleet,1,5)
   int N_bycatch;  //  number of bycatch only fleets
   int N_catchfleets; //  number of bycatch plus landed catch fleets
@@ -223,9 +223,7 @@
       fleet_setup(f,2)=surveytime(f);
       fleet_setup(f,3)=fleet_area(f);
       fleet_setup(f,4)=catchunits(f);
-      fleet_setup(f,7)=need_catch_mult(f);
-      fleet_setup(f,5)=catch_se_rd(f);
-      fleet_setup(f,6)=catch_se_rd(f);
+      fleet_setup(f,5)=need_catch_mult(f);
     }
     N_retParm=0;
  END_CALCS

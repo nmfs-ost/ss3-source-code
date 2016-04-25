@@ -169,7 +169,7 @@
   vector catchunits(1,Nfleet)
   vector catch_se_rd(1,Nfleet)
   matrix catch_se(styr-nseas,TimeMax,1,Nfleet);
-  matrix fleet_setup(1,Nfleet,1,7)  // type, timing, area, units, equ_catch_se, catch_se, need_catch_mult
+  matrix fleet_setup(1,Nfleet,1,5)  // type, timing, area, units, need_catch_mult
   matrix bycatch_setup(1,Nfleet,1,5)
   int N_bycatch;  //  number of bycatch only fleets
   int N_catchfleets; //  number of bycatch plus landed catch fleets
@@ -182,10 +182,10 @@
   {
     N_bycatch=0;
     N_catchfleets=0;
-    echoinput<<"rows are fleets; columns are: Fleet_#, fleet_type, timing, area, units, equ_catch_se, catch_se, need_catch_mult"<<endl;
+    echoinput<<"rows are fleets; columns are: Fleet_#, fleet_type, timing, area, units, need_catch_mult"<<endl;
     for(f=1;f<=Nfleet;f++)
     {
-      *(ad_comm::global_datafile) >> fleet_setup(f)(1,7);
+      *(ad_comm::global_datafile) >> fleet_setup(f)(1,5);
       *(ad_comm::global_datafile) >> anystring;
       fleetname+=anystring;
       fleet_type(f) = int(fleet_setup(f,1));
@@ -196,16 +196,7 @@
         {warning<<"fleet: "<<f<<"surveytime= "<<surveytime(y)<<" will not be used in V3.3; must set for each datum"<<endl;}
       fleet_area(f) = int(fleet_setup(f,3));
       catchunits(f) = int(fleet_setup(f,4));
-      need_catch_mult(f) = int(fleet_setup(f,7));
-      if(fleet_type(f)==1)
-      {
-        catch_se(styr-1,f)=fleet_setup(f,5);
-        for (t=styr;t<=TimeMax;t++) {catch_se(t,f)=fleet_setup(f,6);} // SS_loop:  set catch se for fishing fleets
-      }
-      else
-      {
-        for (t=styr-1;t<=TimeMax;t++) {catch_se(t,f)=0.1;} // SS_loop:  set a value for catch se for surveys (not used)
-      }
+      need_catch_mult(f) = int(fleet_setup(f,5));
       if(fleet_type(f)>1 && need_catch_mult(f)>0)
         {N_warn++; warning<<"Need_catch_mult can be used only for fleet_type=1 fleet= "<<f<<endl; exit(1);}
       echoinput<<f<<" # "<<fleet_setup(f)<<" # "<<fleetname(f)<<endl;
