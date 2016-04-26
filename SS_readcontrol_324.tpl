@@ -1145,8 +1145,8 @@
      z=MGparm_1(j,13);    // specified block or trend definition
      if(z==0)    //  no blocks or trends
      {timevary_Nread=0;}
-     else 
-     { 
+     else
+     {
        timevary_cnt++;
        MGparm_timevary(j,1)=timevary_cnt;  //  base parameter will use this timevary
        itempvec(1)=1; //  indicates a MG parm
@@ -1157,7 +1157,7 @@
        if (z>0)  //  blocks with z as the block pattern
        {
          if(z>N_Block_Designs) {N_warn++; warning<<"parm: "<<j<<" ERROR, Block > N Blocks "<<z<<" "<<N_Block_Designs<<endl; exit(1);}
-  
+
          timevary_Nread=Nblk(z);  //  N parameters
          g=1;  //  index to list in block design
          for (a=1;a<=Nblk(z);a++)
@@ -1168,7 +1168,7 @@
           time_vary_MG(y,mgp_type(j))=1;
           sprintf(onenum, "%d", y);
           ParCount++;
-  
+
           k=int(MGparm_1(j,14));
           switch(k)
           {
@@ -1230,7 +1230,7 @@
    }
    timevary_parm_cnt_MG=timevary_parm_cnt;
    echoinput<<" N_timevary "<<timevary_cnt<<"  using "<<timevary_parm_cnt_MG<<" parameters "<<endl;
-   if(timevary_cnt>0)  
+   if(timevary_cnt>0)
    {
      *(ad_comm::global_datafile) >> customblocksetup_MG;
      echoinput<<customblocksetup_MG<<" customblocksetup_MG"<<endl;
@@ -2250,7 +2250,7 @@
 // 2:  extra input for link, i.e. mirror fleet
 // 3:  0/1 to select extra sd parameter
 // 4:  0/1 for biasadj or not
-// 5:  0/1 to float 
+// 5:  0/1 to float
 
 //  Link types
 //  1  simple q, 1 parm
@@ -2274,19 +2274,19 @@
       	parm330_cnt++;
         Q_setup(f,1)=3;  //  set  link function to be same as 3.24 power
     	}
-    	
+
       if(Q_setup_324(f,2)>0)   //  env link
       	{
         	parm330_cnt++;
       		//  this will be flagged later in the long parameter line for the base Q
       	}
-    	
-      if(Q_setup_324(f,3)>0) 
+
+      if(Q_setup_324(f,3)>0)
       	{
         	parm330_cnt++;
       		Q_setup(f,3)=1;  // do extra sd
       	}
-      
+
       if(Q_setup_324(f,4)==0 || Q_setup_324(f,4)==1 || Q_setup_324(f,4)==5 ) Q_setup(f,5)=1;   //  float Q
       if(Q_setup_324(f,4)==0 || Q_setup_324(f,4)==2) {Q_setup(f,4)=0;} else {Q_setup(f,4)=1;}  //  biasadj or not
       if(Q_setup_324(f,4)==3 || Q_setup_324(f,4)==4)
@@ -2445,7 +2445,7 @@
       // so time-varying property cannot be mirrored
       //  need to trap for this when reading
     }
-    	
+
     if(Svy_errtype(f)==-1)
     {
       ParmLabel+="Q_base_"+fleetname(f)+"("+NumLbl(f)+")";
@@ -2461,7 +2461,7 @@
       ParmLabel+="Q_power_"+fleetname(f)+"("+NumLbl(f)+")";
     	Q_parm_1(Q_setup_parms(f,1)+1)(1,7)=Q_parm_2(Q_setup_parms_324(f,1))(1,7);
     }
-  }  	
+  }
 //  do extra sd
   for(f=1;f<=Nfleet;f++)
   if(Svy_N_fleet(f)>0)
@@ -2488,12 +2488,12 @@
     	Q_parm_1(Q_setup_parms(f,3),8)=Q_setup_324(f,2);  //  put env info into the  new long parameter line
       ParmLabel+="Q_envlink_"+fleetname(f)+"("+NumLbl(f)+")";
     }
-  }  
+  }
     //   in 3.30, the block/trend parameters will go here
 //      Q_setup_parms(j,3)=parm330_cnt;
     //  in 3.30, the dev parameters will go here
 //      Q_setup_parms(j,4)=parm330_cnt;
-    
+
 
   for(i=1;i<=parm330_cnt;i++)
   {
@@ -2517,7 +2517,7 @@
       Q_parm_LO(i)=Q_parm_1(i,1);
       Q_parm_HI(i)=Q_parm_1(i,2);
       Q_parm_PH(i)=Q_parm_1(i,7);
-    }		
+    }
  	}
  	Q_Npar=parm330_cnt;
  END_CALCS
@@ -2579,15 +2579,23 @@
   int blkparm
   int firstselparm
   ivector N_ret_parm(0,6)  //  6 possible retention functions allowed
+  ivector N_disc_mort_parm(0,6)  //  6 possible discard mortality functions allowed
   ivector Do_Retain(1,Nfleet)  // indicates 0=none, 1=length based, 2=age based
 
  LOCAL_CALCS
 //  define number of parameters for each retention type
   N_ret_parm(0)= 0;
-  N_ret_parm(1)= 0;
-  N_ret_parm(2)=4;
-  N_ret_parm(3)= 0;  //  all dead
-  N_ret_parm(4)=7;  //  for dome retention and discard mort
+  N_ret_parm(1)= 4; // for asymptotic retention
+  N_ret_parm(2)= 4; // for asymptotic retention and 4 param discard mort
+  N_ret_parm(3)= 0; // all dead
+  N_ret_parm(4)= 7; // for dome-shaped retention and 4 param discard mort
+
+//  define number of discard mortality parameters for each retention type
+  N_disc_mort_parm(0)= 0;
+  N_disc_mort_parm(1)= 0;   // for asymptotic retention
+  N_disc_mort_parm(2)= 4;   // for asymptotic retention and 4 param discard mort
+  N_disc_mort_parm(3)= 0;   // all dead
+  N_disc_mort_parm(4)= 4;   // for dome-shaped retention and 4 param discard mort
 
 //  SS_Label_Info_4.9.2 #Process selectivity parameter count and create parameter labels
   int depletion_fleet;  //  stores fleet(survey) number for the fleet that is defined as "depletion"
@@ -2655,9 +2663,9 @@
        // location of where to insert placeholder params
 //       N_retParm++; retParmLoc(N_retParm)=RetainParm(f)+4;
 
-       if(seltype(f,2)==2)
+       if(seltype(f,2)==2 || seltype(f,2)==4)
        {
-         for (j=1;j<=N_ret_parm(seltype(f,2));j++)//  reads same number of discard parms
+         for (j=1;j<=N_disc_mort_parm(seltype(f,2));j++)
          {
            ParCount++; N_selparmvec(f)++; ParmLabel+="DiscMort_P"+NumLbl(j)+"_"+fleetname(f)+"("+NumLbl(f)+")";
          }
@@ -2774,11 +2782,11 @@
          {
            ParCount++; N_selparmvec(f)++; ParmLabel+="Retain_age_P"+NumLbl(j)+"_"+fleetname(f1)+"("+NumLbl(f1)+")";
          }
-         if(seltype(f,2)==2)
+         if(seltype(f,2)==2 || seltype(f,2)==4)
          {
-           for (j=1;j<=N_ret_parm(seltype(f,2));j++)
+           for (j=1;j<=N_disc_mort_parm(seltype(f,2));j++)
            {
-             ParCount++; ParmLabel+="DiscMort_age_P"+NumLbl(j)+"_"+fleetname(f1)+"("+NumLbl(f1)+")";
+             ParCount++; N_selparmvec(f)++; ParmLabel+="DiscMort_age_P"+NumLbl(j)+"_"+fleetname(f1)+"("+NumLbl(f1)+")";
            }
          }
        }
@@ -2902,7 +2910,7 @@
     selparm_timevary.initialize();
    N_selparm_blk=0;  // counter for assigned parms
    N_selparm_trend=0;
-  
+
    for (j=1;j<=N_selparm;j++)
    {
      ivector itempvec(1,5);
@@ -2911,7 +2919,7 @@
      if(z==0)    //  no blocks or trends
      {timevary_Nread=0;}
      else
-     { 
+     {
        timevary_cnt++;
        selparm_timevary(j,1)=timevary_cnt;  //  base parameter will use this timevary
        itempvec(1)=2; //  indicates a sel parm
@@ -2986,7 +2994,7 @@
    }
    timevary_parm_cnt_sel=timevary_parm_cnt-timevary_parm_cnt_MG;
    echoinput<<"timevaryparmcount "<<timevary_parm_cnt_MG<<" "<<timevary_parm_cnt_sel<<" "<<timevary_parm_cnt<<endl;
-   if(timevary_parm_cnt_sel>0)  
+   if(timevary_parm_cnt_sel>0)
    {
      *(ad_comm::global_datafile) >> customblocksetup;
      echoinput<<customblocksetup<<" customblocksetup"<<endl;
