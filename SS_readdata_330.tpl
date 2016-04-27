@@ -193,7 +193,7 @@
       if(fleet_type(f)<=2) N_catchfleets++;
       surveytime(f) = fleet_setup(f,2);
       if(surveytime(f)!=-1. && surveytime(f)!=0.5)
-        {warning<<"fleet: "<<f<<"surveytime= "<<surveytime(y)<<" will not be used in V3.3; must set for each datum"<<endl;}
+        {warning<<"fleet: "<<f<<" surveytime="<<surveytime(f)<<" will not be used in V3.30; must set for each datum"<<endl;}
       fleet_area(f) = int(fleet_setup(f,3));
       catchunits(f) = int(fleet_setup(f,4));
       need_catch_mult(f) = int(fleet_setup(f,5));
