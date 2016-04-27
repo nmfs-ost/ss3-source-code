@@ -2051,6 +2051,9 @@ FUNCTION void write_nucontrol()
     " #_env/block/dev_adjust_method for sel parms (1=standard; 2=logistic transform keeps in base parm bounds; 3=standard w/ no bound check)"<<endl;
    report4<<"#_LO HI INIT PRIOR PR_type SD PHASE env-var use_dev dev_minyr dev_maxyr dev_stddev Block Block_Fxn"<<endl;
 
+   // set back to default configuration for output
+   report4.precision(6); report4.unsetf(std::ios_base::fixed); report4.unsetf(std::ios_base::floatfield);
+
 //  if(seltype(f,2)==4)
   {
       for (f=1;f<=N_selparm;f++)

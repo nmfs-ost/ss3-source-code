@@ -4638,3 +4638,8 @@
   }
  END_CALCS
 
+ LOCAL_CALCS
+
+  if (N_nudata < 1) N_nudata=1; // output the new version of the DAT file
+
+ END_CALCS
