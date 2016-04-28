@@ -755,8 +755,8 @@
 
    init_int MGparm_def       //  offset approach (1=none, 2= M, G, CV_G as offset from female-GP1, 3=like SS2 V1.x)
    !! echoinput<<MGparm_def<<"  MGparm_def"<<endl;
-   init_int MG_adjust_method   //  1=do V1.xx approach to adjustment by env, block or dev; 2=use new logistic approach
-   !! echoinput<<MG_adjust_method<<"  MG_adjust_method"<<endl;
+   init_int parm_adjust_method   //  1=do V1.xx approach to adjustment by env, block or dev; 2=use new logistic approach
+   !! echoinput<<parm_adjust_method<<"  parm_adjust_method"<<endl;
 
   imatrix time_vary_MG(styr-3,YrMax+1,0,7)  // goes to yrmax+1 to allow referencing in forecast, but only endyr+1 is checked
                                             // stores years to calc non-constant MG parms (1=natmort; 2=growth; 3=wtlen & fec; 4=recr_dist; 5=movement; 6=ageerrorkey)
@@ -769,6 +769,11 @@
   int CGD;  //  switch for cohort growth dev
 
  LOCAL_CALCS
+    if(parm_adjust_method<1 || parm_adjust_method>3)
+    {
+      N_warn++; cout<<" EXIT - see warning "<<endl;
+      warning<<" illegal parm_adjust_method; must be 1 or 2 or 3 "<<endl;  exit(1);
+    }
   // femfrac(1,N_GP)=fracfemale;
   // if(gender==2) femfrac(N_GP+1,N_GP+N_GP)=1.-fracfemale;
 
@@ -1045,8 +1050,8 @@
        case 1:  //  multiplicative
         {
           ParCount++; ParmLabel+=ParmLabel(f)+"_ENV_mult";
-          if(MG_adjust_method==2) {N_warn++; cout<<" EXIT - see warning "<<endl; warning<<"multiplicative env effect on MGparm: "<<f
-          <<" not allowed because MG_adjust_method==2; STOP"<<endl; exit(1);}
+          if(parm_adjust_method==2) {N_warn++; cout<<" EXIT - see warning "<<endl; warning<<"multiplicative env effect on MGparm: "<<f
+          <<" not allowed because parm_adjust_method==2; STOP"<<endl; exit(1);}
           break;
         }
        case 2:  //  additive
@@ -1056,8 +1061,8 @@
         }
        case 4:  //  logistic with offset
         {
-          if(MG_adjust_method==2) {N_warn++; cout<<" EXIT - see warning "<<endl; warning<<"multiplicative env effect on MGparm: "<<f
-          <<" not allowed because MG_adjust_method==2; STOP"<<endl; exit(1);}
+          if(parm_adjust_method==2) {N_warn++; cout<<" EXIT - see warning "<<endl; warning<<"multiplicative env effect on MGparm: "<<f
+          <<" not allowed because parm_adjust_method==2; STOP"<<endl; exit(1);}
           ParCount++; ParmLabel+=ParmLabel(f)+"_ENV_offset";
           ParCount++; ParmLabel+=ParmLabel(f)+"_ENV_lgst_slope";
           N_MGparm_env ++;  //  for the second parameter
@@ -1388,8 +1393,8 @@
        if(MGparm_1(f,9)>=1)
        {
          s++;
-         if(MG_adjust_method==2 && MGparm_1(f,9)==1)
-         {N_warn++; warning<<" cannot use MG_adjust_method==2 and multiplicative devs for parameter "<<f<<endl;}
+         if(parm_adjust_method==2 && MGparm_1(f,9)==1)
+         {N_warn++; warning<<" cannot use parm_adjust_method==2 and multiplicative devs for parameter "<<f<<endl;}
          MGparm_dev_type(s)=MGparm_1(f,9);  //  1 for multiplicative, 2 for additive, 3 for additive randwalk, 4=mean-reverting rwalk
          MGparm_dev_point(f)=s;  //  specifies which dev vector is used by the f'th MGparm
          MGparm_dev_rpoint(s)=f;  //  specifies which parm (f) is affected by the j'th dev vector
@@ -2152,7 +2157,6 @@
 
 !!//  SS_Label_Info_4.9 #Define Selectivity patterns and N parameters needed per pattern
   ivector seltype_Nparam(0,35)
-  int selparm_adjust_method   //  1=do V1.xx approach to adjustment by env, block or dev; 2=use new logistic approach; 3=no check
  LOCAL_CALCS
    seltype_Nparam(0)=0;   // selex=1.0 for all sizes
    seltype_Nparam(1)=2;   // logistic; with 95% width specification
@@ -2193,17 +2197,6 @@
 //  do 2*Nfleet to create options for size-selex (first), then age-selex
   init_imatrix seltype(1,2*Nfleet,1,4)    // read selex type for each fleet/survey, Do_retention, Do_male
 
- LOCAL_CALCS
-  echoinput<<" selex types "<<endl<<seltype<<endl;
-    *(ad_comm::global_datafile) >> selparm_adjust_method;
-    echoinput<<selparm_adjust_method<<" selparm_adjust_method"<<endl;
-    if(selparm_adjust_method<1 || selparm_adjust_method>3)
-    {
-      N_warn++; cout<<" EXIT - see warning "<<endl;
-      warning<<" illegal selparm_adjust_method; must be 1 or 2 or 3 "<<endl;  exit(1);
-    }
- END_CALCS
-
   int N_selparm   // figure out the Total number of selex parameters
   int N_selparm2                 // N selparms plus env links and blocks
   ivector N_selparmvec(1,2*Nfleet)  //  N selparms by type, including extra parms for male selex, retention, etc.
@@ -2217,6 +2210,7 @@
   ivector Do_Retain(1,Nfleet)  // indicates 0=none, 1=length based, 2=age based
 
  LOCAL_CALCS
+  echoinput<<" selex types "<<endl<<seltype<<endl;
 
 //  define number of parameters for each retention type
   N_ret_parm(0)= 0;
@@ -2520,8 +2514,8 @@
        case 1:  //  multiplicative
         {
           N_selparm_env ++; ParCount++; ParmLabel+=ParmLabel(j+firstselparm)+"_ENV_mult";
-          if(selparm_adjust_method==2) {N_warn++; cout<<" EXIT - see warning "<<endl; warning<<"multiplicative env effect on selparm: "<<j+firstselparm
-          <<" not allowed because selparm_adjust_method==2; STOP"<<endl; exit(1);}
+          if(parm_adjust_method==2) {N_warn++; cout<<" EXIT - see warning "<<endl; warning<<"multiplicative env effect on selparm: "<<j+firstselparm
+          <<" not allowed because parm_adjust_method==2; STOP"<<endl; exit(1);}
           break;
         }
        case 2:  //  additive
@@ -2531,8 +2525,8 @@
         }
        case 4:  //  logistic with offset
         {
-          if(selparm_adjust_method==2) {N_warn++; cout<<" EXIT - see warning "<<endl; warning<<"multiplicative env effect on selparm: "<<j+firstselparm
-          <<" not allowed because selparm_adjust_method==2; STOP"<<endl; exit(1);}
+          if(parm_adjust_method==2) {N_warn++; cout<<" EXIT - see warning "<<endl; warning<<"multiplicative env effect on selparm: "<<j+firstselparm
+          <<" not allowed because parm_adjust_method==2; STOP"<<endl; exit(1);}
           N_selparm_env ++; ParCount++; ParmLabel+=ParmLabel(j+firstselparm)+"_ENV_offset";
           N_selparm_env ++; ParCount++; ParmLabel+=ParmLabel(j+firstselparm)+"_ENV_lgst_slope";
           break;
@@ -2796,8 +2790,8 @@
        if(selparm_1(f,9)>=1)
        {
          s++;
-         if(selparm_adjust_method==2 && selparm_1(f,9)==1)
-         {N_warn++; warning<<" cannot use selparm_adjust_method==2 and multiplicative devs for parameter "<<f<<endl;}
+         if(parm_adjust_method==2 && selparm_1(f,9)==1)
+         {N_warn++; warning<<" cannot use parm_adjust_method==2 and multiplicative devs for parameter "<<f<<endl;}
          selparm_dev_type(s)=selparm_1(f,9);  //  1 for multiplicative, 2 for additive, 3 for additive randwalk, 4=mean-reverting rwalk
          selparm_dev_point(f)=s;  //  specifies which dev vector is used by the f'th selparm
          selparm_dev_rpoint(s)=f;  //  specifies which parm (f) is affected by the j'th dev vector

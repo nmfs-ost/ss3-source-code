@@ -771,8 +771,8 @@
 
    init_int MGparm_def       //  offset approach (1=none, 2= M, G, CV_G as offset from female-GP1, 3=like SS2 V1.x)
    !! echoinput<<MGparm_def<<"  MGparm_def"<<endl;
-   init_int MG_adjust_method   //  1=do V1.xx approach to adjustment by env, block or dev; 2=use new logistic approach
-   !! echoinput<<MG_adjust_method<<"  MG_adjust_method"<<endl;
+   init_int parm_adjust_method   //  1=do V1.xx approach to adjustment by env, block or dev; 2=use new logistic approach
+   !! echoinput<<parm_adjust_method<<"  parm_adjust_method"<<endl;
 
   imatrix time_vary_MG(styr-3,YrMax+1,0,7)  // goes to yrmax+1 to allow referencing in forecast, but only endyr+1 is checked
                                             // stores years to calc non-constant MG parms (1=natmort; 2=growth; 3=wtlen & fec; 4=recr_dist; 5=movement; 6=ageerrorkey)
@@ -785,6 +785,11 @@
   int CGD;  //  switch for cohort growth dev
 
  LOCAL_CALCS
+    if(parm_adjust_method<1 || parm_adjust_method>3)
+    {
+      N_warn++; cout<<" EXIT - see warning "<<endl;
+      warning<<" illegal parm_adjust_method; must be 1 or 2 or 3 "<<endl;  exit(1);
+    }
   femfrac(1,N_GP)=fracfemale;
   if(gender==2) femfrac(N_GP+1,N_GP+N_GP)=1.-fracfemale;
 
@@ -1085,8 +1090,8 @@
      if(MGparm_1(f,8)>0)
      {
        ParCount++; ParmLabel+=ParmLabel(f)+"_ENV_mult"; MGparm_envtype(f)=1; MGparm_envuse(f)=MGparm_1(f,8);
-       if(MG_adjust_method==2) {N_warn++; cout<<" EXIT - see warning "<<endl; warning<<"multiplicative env effect on MGparm: "<<f
-        <<" not allowed because MG_adjust_method==2; STOP"<<endl; exit(1);}
+       if(parm_adjust_method==2) {N_warn++; cout<<" EXIT - see warning "<<endl; warning<<"multiplicative env effect on MGparm: "<<f
+        <<" not allowed because parm_adjust_method==2; STOP"<<endl; exit(1);}
        MGparm_1(f,8)+=100;  //  convert to 3.30 format
      }
      else if(MGparm_1(f,8)==-999)
@@ -1579,8 +1584,8 @@
        if(MGparm_1(f,9)>=1)
        {
          s++;
-         if(MG_adjust_method==2 && MGparm_1(f,9)==1)
-         {N_warn++; warning<<" cannot use MG_adjust_method==2 and multiplicative devs for parameter "<<f<<endl;}
+         if(parm_adjust_method==2 && MGparm_1(f,9)==1)
+         {N_warn++; warning<<" cannot use parm_adjust_method==2 and multiplicative devs for parameter "<<f<<endl;}
          MGparm_dev_type(s)=MGparm_1(f,9);  //  1 for multiplicative, 2 for additive, 3 for additive randwalk, 4=mean-reverting rwalk
          MGparm_dev_point(f)=s;  //  specifies which dev vector is used by the f'th MGparm
          MGparm_dev_rpoint(s)=f;  //  specifies which parm (f) is affected by the j'th dev vector
@@ -3030,13 +3035,12 @@
 
   matrix selparm_blk_1(1,timevary_cnt,1,7);  // double check this matrix that defines the block parms and trend parms
 
-  int selparm_adjust_method   //  1=do V1.xx approach to adjustment by env, block or dev; 2=use new logistic approach; 3=no check
   !!//  SS_Label_Info_4.9.7 #Create and label selectivity parameter annual devs
   int N_selparm_dev   // number of selparms that use random deviations
   int N_selparm_dev_tot   // number of selparms that use random deviations
  LOCAL_CALCS
   N_selparm_dev=0;
-  selparm_adjust_method=3;  //  this will be overwritten later, but need a value for early checking
+//  parm_adjust_method=3;  //  this will be overwritten later, but need a value for early checking
   N_selparm_dev_tot=0;
   for (j=1;j<=N_selparm;j++)
   {
@@ -3134,8 +3138,8 @@
        if(selparm_1(f,9)>=1)
        {
          s++;
-         if(selparm_adjust_method==2 && selparm_1(f,9)==1)
-         {N_warn++; warning<<" cannot use selparm_adjust_method==2 and multiplicative devs for parameter "<<f<<endl;}
+         if(parm_adjust_method==2 && selparm_1(f,9)==1)
+         {N_warn++; warning<<" cannot use parm_adjust_method==2 and multiplicative devs for parameter "<<f<<endl;}
          selparm_dev_type(s)=selparm_1(f,9);  //  1 for multiplicative, 2 for additive, 3 for additive randwalk, 4=mean-reverting rwalk
          selparm_dev_point(f)=s;  //  specifies which dev vector is used by the f'th selparm
          selparm_dev_rpoint(s)=f;  //  specifies which parm (f) is affected by the j'th dev vector
@@ -3240,18 +3244,8 @@
 //  this should move up ahead of reading the sel parms, as in 3.30
   if(N_selparm_env+N_selparm_blk+N_selparm_dev > 0)
   {
-    *(ad_comm::global_datafile) >> selparm_adjust_method;
-    echoinput<<selparm_adjust_method<<" selparm_adjust_method"<<endl;
-    if(selparm_adjust_method<1 || selparm_adjust_method>3)
-    {
-      N_warn++; cout<<" EXIT - see warning "<<endl;
-      warning<<" illegal selparm_adjust_method; must be 1 or 2 or 3 "<<endl;  exit(1);
-    }
-  }
-  else
-  {
-    selparm_adjust_method=0;
-    echoinput<<" No selparm adjustments, so don't read selparm_adjust_method"<<endl;
+    *(ad_comm::global_datafile) >> temp;
+     echoinput<<temp<<" dummy read of parm_adjust_method"<<endl;
   }
 
 //  SS_Label_Info_4.9.10 #Special bound checking for size selex parameters

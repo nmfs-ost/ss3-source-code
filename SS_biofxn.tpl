@@ -116,14 +116,14 @@ FUNCTION void get_MGsetup()
     }
   }
 
-  //  SS_Label_Info_14.4 #Switch(MG_adjust_method)
-  switch(MG_adjust_method)
+  //  SS_Label_Info_14.4 #Switch(parm_adjust_method)
+  switch(parm_adjust_method)
   {
     case 3:
     {
       //  no break statement, so will execute case 1 code
     }
-  //  SS_Label_Info_14.4.1 #Standard MG_adjust_method (1 or 3), loop MGparms
+  //  SS_Label_Info_14.4.1 #Standard parm_adjust_method (1 or 3), loop MGparms
     case 1:
     {
       for (f=1;f<=N_MGparm;f++)
@@ -205,8 +205,8 @@ FUNCTION void get_MGsetup()
           }
         }
 
-  //  SS_Label_Info_14.4.1.4 #Do bound check if MG_adjust_method=1
-        if(MG_adjust_method==1 && (save_for_report==1 || do_once==1))  // so does not check bounds if MG_adjust_method==3
+  //  SS_Label_Info_14.4.1.4 #Do bound check if parm_adjust_method=1
+        if(parm_adjust_method==1 && (save_for_report==1 || do_once==1))  // so does not check bounds if parm_adjust_method==3
         {
           if(mgp_adj(f)<MGparm_1(f,1) || mgp_adj(f)>MGparm_1(f,2))
           {
@@ -219,7 +219,7 @@ FUNCTION void get_MGsetup()
       break;
     }
 
-  //  SS_Label_Info_14.4.2 #Constrained MG_adjust_method (2), loop MGparms
+  //  SS_Label_Info_14.4.2 #Constrained parm_adjust_method (2), loop MGparms
     case 2:
     {
       for (f=1;f<=N_MGparm;f++)

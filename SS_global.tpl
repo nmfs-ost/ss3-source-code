@@ -328,8 +328,8 @@ FINAL_SECTION
 //  SS_Label_Info_12.4.6 #Call fxn write_Bzero_output()  appended to report.sso
     write_Bzero_output();
     warning<<" N warnings: "<<N_warn<<endl;
-    if(MG_adjust_method==3) warning<<"time-vary MGparms not bound checked"<<endl;
-    if(selparm_adjust_method==3) warning<<"time-vary selparms not bound checked"<<endl;
+    if(parm_adjust_method==3) warning<<"time-vary MGparms not bound checked"<<endl;
+    if(parm_adjust_method==3) warning<<"time-vary selparms not bound checked"<<endl;
     cout<<endl<<"!!  Run has completed  !!            ";
 
 //  SS_Label_Info_12.4.7 #Finish up with final writes to warning.sso

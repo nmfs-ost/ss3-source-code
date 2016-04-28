@@ -54,7 +54,7 @@ FUNCTION void get_selectivity()
     {    // recalculate the selex in this year x type
       if(N_selparmvec(f)>0)      // type has parms, so look for adjustments
       {
-        switch(selparm_adjust_method)
+        switch(parm_adjust_method)
         {
           default:
           {
@@ -138,7 +138,7 @@ FUNCTION void get_selectivity()
                 {sp(j)+=selparm_dev_rwalk(k,y);}
               }
             }
-            if(selparm_adjust_method==1 && (save_for_report>0 || do_once==1))  // so does not check bounds if adjust_method==3
+            if(parm_adjust_method==1 && (save_for_report>0 || do_once==1))  // so does not check bounds if adjust_method==3
             {
               if(sp(j)<selparm_1(Ip+j,1) || sp(j)>selparm_1(Ip+j,2))
               {
