@@ -64,7 +64,7 @@ FUNCTION void evaluate_the_objective_function()
             else                  // for value = 1 or 5       // mean q with variance bias adjustment
             {Svy_log_q(f) = (temp2 + temp1*0.5)/temp;}
             Q_parm(Q_setup_parms(f,1))=Svy_log_q(f,1);    // base Q  So this sets parameter equal to the scaling coefficient and can then have a prior
-            
+
           }
           else if(Q_setup(f,1)==2)        // mirror Q from lower numbered survey
                                            // because Q is a vector for each observation, the mirror is to the first observation's Q
@@ -246,7 +246,7 @@ FUNCTION void evaluate_the_objective_function()
      for (j=1;j<=N_suprper_l(f);j++)                  // do each super period
      {
        exp_l_temp_dat.initialize();
-       for (i=suprper_l1(f,j);i<=suprper_l2(f,j);i++) 
+       for (i=suprper_l1(f,j);i<=suprper_l2(f,j);i++)
        {
          exp_l_temp_dat+=exp_l(f,i)*suprper_l_sampwt(f,i);  // combine across range of observations
        }
@@ -262,7 +262,7 @@ FUNCTION void evaluate_the_objective_function()
      length_like(f,i) = -offset_l(f,i);  //  so a perfect fit will approach 0.0
      if(gender==2)
      {
-       if(gen_l(f,i)==0) 
+       if(gen_l(f,i)==0)
        {
          for (z=1;z<=nlen_bin;z++) {exp_l(f,i,z)+=exp_l(f,i,z+nlen_bin);}
          exp_l(f,i)(nlen_binP,nlen_bin2)=0.00;
@@ -280,7 +280,7 @@ FUNCTION void evaluate_the_objective_function()
      exp_l(f,i) /= sum(exp_l(f,i));
      tails_w=ivector(tails_l(f,i));
 
-        if(gen_l(f,i)!=2) 
+        if(gen_l(f,i)!=2)
         {
          if(tails_w(1)>1)
            {exp_l(f,i,tails_w(1))=sum(exp_l(f,i)(1,tails_w(1)));  exp_l(f,i)(1,tails_w(1)-1)=0.;}
@@ -351,7 +351,7 @@ FUNCTION void evaluate_the_objective_function()
         for (j=1;j<=N_suprper_a(f);j++)                  // do super years  Max of 20 allowed per type(f)
         {
           exp_a_temp.initialize();
-          for (i=suprper_a1(f,j);i<=suprper_a2(f,j);i++) 
+          for (i=suprper_a1(f,j);i<=suprper_a2(f,j);i++)
           {
             exp_a_temp+=exp_a(f,i)*suprper_a_sampwt(f,i);  // combine across range of observations
           }
@@ -553,7 +553,7 @@ FUNCTION void evaluate_the_objective_function()
         {i=3;}  //  biomass
         else
         {i=6;}  //  numbers
-      
+
         for (t=styr;t<=TimeMax;t++)
         {
           if(fleet_type(f)==1 && catch_ret_obs(f,t)>0.0)
@@ -734,7 +734,7 @@ FUNCTION void evaluate_the_objective_function()
         {temp=annual_F(F_ballpark_yr,1);}
         else
         {temp=annual_F(F_ballpark_yr,2);}
-//  in future, could allow specification of a range of years for averaging the F statistic        
+//  in future, could allow specification of a range of years for averaging the F statistic
         F_ballpark_like = 0.5*square( log((F_ballpark+1.0e-6)/(temp+1.0e-6)) / 1.0) + sd_offset*log(1.0);
       }
     else
@@ -1054,7 +1054,7 @@ FUNCTION dvariable Get_Prior(const int T, const double& Pmin, const double& Pmax
       {
         double warnif=1e-15;
         if(Pmin<0.0) {N_warn++; warning<<"Lower bound for gamma prior must be >=0.  Suggestion " << warnif*10.0 <<endl;}
-        else 
+        else
         {
 //Gamma is defined over [0,+inf) but x=zero causes trouble for some mean/variance combos.
           if(Pval < warnif) {N_warn++; warning<<"Pval too close to zero in gamma prior - can not guarantee reliable calculations.  Suggest rescaling data (e.g. * 1000)? "<<endl;}
@@ -1156,7 +1156,7 @@ FUNCTION void get_posteriors()
       if(STD_Yr_Reverse_Dep(y)>0) post_vecs<<y<<" ";
     }
     post_vecs<<endl;
-    
+
   };  //  end writing headers for mceval_counter==1
 
 

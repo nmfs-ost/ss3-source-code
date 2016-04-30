@@ -2475,8 +2475,8 @@
     {
     	parm330_cnt++;
       ParCount++;
-      Q_setup_parms(f,3)=parm330_cnt;
-    	Q_parm_1(Q_setup_parms(f,3))(1,7)=Q_parm_2(Q_setup_parms_324(f,3))(1,7);
+      Q_setup_parms(f,2)=parm330_cnt;
+    	Q_parm_1(Q_setup_parms(f,2))(1,7)=Q_parm_2(Q_setup_parms_324(f,3))(1,7);
       ParmLabel+="Q_extraSD_"+fleetname(f)+"("+NumLbl(f)+")";
     }
   }
@@ -2488,9 +2488,9 @@
     {
     	parm330_cnt++;
       ParCount++;
-      Q_setup_parms(f,2)=parm330_cnt;
-    	Q_parm_1(Q_setup_parms(f,2))(1,7)=Q_parm_2(Q_setup_parms_324(f,2))(1,7);
-    	Q_parm_1(Q_setup_parms(f,2),8)=Q_setup_324(f,2);  //  put env info into the  new long parameter line
+      Q_setup_parms(f,3)=parm330_cnt;
+    	Q_parm_1(Q_setup_parms(f,3))(1,7)=Q_parm_2(Q_setup_parms_324(f,2))(1,7);
+    	Q_parm_1(Q_setup_parms(f,3),8)=Q_setup_324(f,2);  //  put env info into the  new long parameter line
       ParmLabel+="Q_envlink_"+fleetname(f)+"("+NumLbl(f)+")";
     }
   }
