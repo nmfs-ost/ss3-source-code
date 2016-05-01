@@ -3355,9 +3355,9 @@ FUNCTION void write_bigoutput()
     {
     	if(Svy_N_fleet(f)>0)
     		{
-        SS2out<<f<<" "<<Q_setup(f)<<" "<<Q_parm(Q_setup(f,1))<<" "<<Svy_q(f,1)
-      <<" "<<Svy_units(f)<<" "<<Svy_errtype(f)<<" "<<Svy_N_fleet(f)<<" "<<n_rmse(f)<<" "<<rmse(f)<<" "
-      <<mean_CV(f)-var_adjust(1,f)<<" "<<mean_CV(f)<<" "<<mean_CV2(f)<<" "<<var_adjust(1,f)
+        SS2out<<f<<" "<<Q_setup(f)<<" "<<Svy_q(f,1)<<" "<<Svy_units(f)<<" "<<Svy_errtype(f)
+      <<" "<<Svy_N_fleet(f)<<" "<<n_rmse(f)<<" "<<rmse(f)
+      <<" "<<mean_CV(f)-var_adjust(1,f)<<" "<<mean_CV(f)<<" "<<mean_CV2(f)<<" "<<var_adjust(1,f)
       <<" "<<var_adjust(1,f)+rmse(f)-mean_CV(f)
       <<" "<<Q_dev_like(f,1)<<" "<<Q_dev_like(f,2)<<" "<<fleetname(f)<<endl;
     }

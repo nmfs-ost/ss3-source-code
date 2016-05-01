@@ -83,12 +83,12 @@ FUNCTION void evaluate_the_objective_function()
             if(Q_setup(f,2)>0)    // environ effect on log(q)  multiplicative
             {
               for (i=1;i<=Svy_N_fleet(f);i++)
-              {Svy_log_q(f,i) += Q_parm(Q_setup_parms(f,3)) * env_data(Show_Time(Svy_time_t(f,i),1),Q_setup(f,3));}  // note that this environ effect is after the dev effect!
+              {Svy_log_q(f,i) += Q_parm(Q_setup_parms(f,3)) * env_data(Show_Time(Svy_time_t(f,i),1),Q_parm_1(Q_setup_parms(f,3),8));}  // note that this environ effect is after the dev effect!
             }
             else if(Q_setup(f,2)<0)    // environ effect on log(q)  additive
             {
               for (i=1;i<=Svy_N_fleet(f);i++)
-              {Svy_log_q(f,i) += Q_parm(Q_setup_parms(f,3)) + env_data(Show_Time(Svy_time_t(f,i),1),-Q_setup(f,3));}
+              {Svy_log_q(f,i) += Q_parm(Q_setup_parms(f,3)) + env_data(Show_Time(Svy_time_t(f,i),1),Q_parm_1(Q_setup_parms(f,3),8));}
             }
 
 // random deviations or random walk

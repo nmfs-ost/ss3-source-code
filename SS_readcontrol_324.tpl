@@ -2284,6 +2284,7 @@
       	{
         	parm330_cnt++;
       		//  this will be flagged later in the long parameter line for the base Q
+            Q_setup(f,2)=1;
       	}
 
       if(Q_setup_324(f,3)>0)
