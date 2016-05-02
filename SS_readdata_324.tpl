@@ -1744,7 +1744,7 @@
             {N_warn++; warning<<"negative values not allowed for age comp sample size, use -fleet to omit from -logL"<<endl;}
           header_a(f,j)(1,9)=Age_Data(i)(1,9);
           header_a(f,j,1) = y;
-          if(Age_Data(i,3)<0)
+          if(Age_Data(i,2)<0)
           {
             header_a(f,j,2) = -real_month;  //  month with sign for super periods
           }
