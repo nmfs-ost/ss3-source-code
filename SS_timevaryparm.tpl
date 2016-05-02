@@ -11,7 +11,7 @@ FUNCTION void make_timevaryparm()
     dvariable slope;
     dvariable norm_styr;
 
-    //  note:  need to implement the approach that keeps within bouns of base parameter
+    //  note:  need to implement the approach that keeps within bounds of base parameter
 
     int trnd;
     if(timevary_parm_cnt_MG>0)
@@ -20,7 +20,7 @@ FUNCTION void make_timevaryparm()
         for(f=1;f<=timevary_parm_cnt_MG;f++)
         {
           j++; timevary_parm(f)=MGparm(j);
-          echoinput<<" map MGparm for blksel "<<timevary_parm(f)<<endl;
+          // echoinput<<" map MGparm for blksel "<<timevary_parm(f)<<endl;
         }
       }
     if(timevary_parm_cnt_sel>0)
@@ -29,7 +29,7 @@ FUNCTION void make_timevaryparm()
         for(f=timevary_parm_cnt_MG+1;f<=timevary_parm_cnt;f++)
         {
           j++; timevary_parm(f)=selparm(j);
-          echoinput<<" map selparm for blksel "<<timevary_parm(f)<<endl;
+          // echoinput<<" map selparm for blksel "<<timevary_parm(f)<<endl;
         }
       }
     for (trnd=1;trnd<=timevary_cnt;trnd++)
