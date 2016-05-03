@@ -75,20 +75,34 @@ FUNCTION void evaluate_the_objective_function()
           {
             Svy_log_q(f) = Q_parm(Q_setup_parms(f,1));   // base Q
 
-//  trend or block effect on Q
 
-//  seasonal or cyclic effect on Q
+            if(Q_setup(f,1) == 1)
+            {
+                // environmental effect on Q
+                if (Q_setup(f,2)==1)    // environ effect on log(q)  multiplicative
+                {
+                  for (i=1;i<=Svy_N_fleet(f);i++)
+                  {Svy_log_q(f,i) += Q_parm(Q_setup_parms(f,3)) * env_data(Show_Time(Svy_time_t(f,i),1),Q_parm_1(Q_setup_parms(f,3),8));}  // note that this environ effect is after the dev effect!
+                }
+                else if(Q_setup(f,2)==-1)    // environ effect on log(q)  additive
+                {
+                  for (i=1;i<=Svy_N_fleet(f);i++)
+                  {Svy_log_q(f,i) += Q_parm(Q_setup_parms(f,3)) + env_data(Show_Time(Svy_time_t(f,i),1),Q_parm_1(Q_setup_parms(f,3),8));}
+                }
 
-// environmental effect on Q
-            if(Q_setup(f,2)>0)    // environ effect on log(q)  multiplicative
-            {
-              for (i=1;i<=Svy_N_fleet(f);i++)
-              {Svy_log_q(f,i) += Q_parm(Q_setup_parms(f,3)) * env_data(Show_Time(Svy_time_t(f,i),1),Q_parm_1(Q_setup_parms(f,3),8));}  // note that this environ effect is after the dev effect!
-            }
-            else if(Q_setup(f,2)<0)    // environ effect on log(q)  additive
-            {
-              for (i=1;i<=Svy_N_fleet(f);i++)
-              {Svy_log_q(f,i) += Q_parm(Q_setup_parms(f,3)) + env_data(Show_Time(Svy_time_t(f,i),1),Q_parm_1(Q_setup_parms(f,3),8));}
+                // trend or block effect on Q
+                else if (Q_setup(f,2)==2)
+                {
+                    // TODO
+                }
+
+                // random deviations
+                else if (Q_setup(f,2)==3)
+                {
+                    // TODO
+                }
+
+                // seasonal or cyclic effect on Q
             }
 
 // random deviations or random walk

@@ -2113,7 +2113,7 @@
   {
     if(Q_setup_check(f)>0)
     {
-      N_warn++; warning<<f<<" Qsetup error;  no survey obs but  Q setup was read "<<endl;
+      N_warn++; warning<<f<<" Q setup error; no survey obs but Q setup was read "<<endl;
     }
   }
   }
@@ -2132,7 +2132,7 @@
 //  get env parameter count
   for(f=1;f<=Nfleet;f++)
   {
-    if(Q_setup(f,2)>0)
+    if(Q_setup(f,1) == 1 && abs(Q_setup(f,2)) == 1)
     {
        Q_Npar++;  ParCount++;
        Q_setup_parms(f,3)=Q_Npar;
@@ -2141,10 +2141,30 @@
   }
 
 //  get block/trend parameter count
+  for(f=1;f<=Nfleet;f++)
+  {
+    if(Q_setup(f,1) == 1 && Q_setup(f,2) == 2)
+    {
+       Q_Npar++;  ParCount++;
+       Q_setup_parms(f,4)=Q_Npar;
+      ParmLabel+="Q_trend-block_"+fleetname(f)+"("+NumLbl(f)+")";
+    }
+  }
+
 //  get dev parameter count
+  for(f=1;f<=Nfleet;f++)
+  {
+    if(Q_setup(f,1) == 1 && Q_setup(f,2) == 3)
+    {
+       Q_Npar++;  ParCount++;
+       Q_setup_parms(f,5)=Q_Npar;
+      ParmLabel+="Q_dev_"+fleetname(f)+"("+NumLbl(f)+")";
+    }
+  }
 
   echoinput<<"q setup "<<endl<<Q_setup<<endl;
   echoinput<<"q setup parms "<<endl<<Q_setup_parms<<endl;
+
  END_CALCS
 
   init_matrix Q_parm_1(1,Q_Npar,1,14)
