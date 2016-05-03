@@ -326,6 +326,13 @@
 
  LOCAL_CALCS
   catch_ret_obs.initialize();
+
+  // insert initial equilibrium catch
+  for (f=1; f<= Nfleet1; f++)
+  {
+    catch_ret_obs(f,styr-1) = obs_equ_catch(1,f);
+  }
+
   tempvec.initialize();
   k=0;  // counter for reading catch records
   for (k=1;k<=N_ReadCatch;k++)
