@@ -2070,7 +2070,7 @@
     else
    {*(ad_comm::global_datafile) >>tempvec(1,5);}
   } while(j>0);
-  echoinput<<Q_setup<<endl;
+  // echoinput<<"q setup "<<endl<<Q_setup<<endl;
 
 //  get base parameter count
   for(f=1;f<=Nfleet;f++)
@@ -2128,9 +2128,21 @@
       ParmLabel+="Q_extraSD_"+fleetname(f)+"("+NumLbl(f)+")";
     }
   }
+
 //  get env parameter count
+  for(f=1;f<=Nfleet;f++)
+  {
+    if(Q_setup(f,2)>0)
+    {
+       Q_Npar++;  ParCount++;
+       Q_setup_parms(f,3)=Q_Npar;
+      ParmLabel+="Q_envlink_"+fleetname(f)+"("+NumLbl(f)+")";
+    }
+  }
+
 //  get block/trend parameter count
 //  get dev parameter count
+
   echoinput<<"q setup "<<endl<<Q_setup<<endl;
   echoinput<<"q setup parms "<<endl<<Q_setup_parms<<endl;
  END_CALCS
