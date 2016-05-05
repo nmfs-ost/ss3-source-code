@@ -255,11 +255,19 @@ DATA_SECTION
     {echoinput<<"Read files in 3.24 format"<<endl;}
     else
    if(finish_starter==3.30)
-   {echoinput<<"Read files in 3.30 format"<<endl;}
+   {
+     echoinput<<"Read files in 3.30 format"<<endl;
+     echoinput<<"Now read ALK tolerance (suggest 0.0001)"<<endl;
+     *(ad_comm::global_datafile) >> ALK_tolerance;
+     echoinput<<"ALK tolerance:  "<<ALK_tolerance<<endl;
+     // enforce valid range of ALK_tolerance here
+     // TODO
+   }
    else
    {cout<<"CRITICAL error reading finish_starter in starter.ss: "<<finish_starter<<endl; exit(1);}
    echoinput<<"  finish reading starter.ss"<<endl<<endl;
-   ALK_tolerance=0.0001;   //  later put this into the starter.ss input
+   // ALK_tolerance=0.0001;   //  later put this into the starter.ss input
+
  END_CALCS
 
   //  end reading  from Starter file
