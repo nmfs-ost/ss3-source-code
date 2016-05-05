@@ -1554,6 +1554,8 @@ FUNCTION void write_nucontrol()
   {NuStart<<"#COND 10 15 #_min and max age over which average F will be calculated with F_reporting=4"<<endl;}
   NuStart<<F_std_basis<<" # F_std_basis: 0=raw_F_report; 1=F/Fspr; 2=F/Fmsy ; 3=F/Fbtgt"<<endl;
   NuStart<<3.30<<" # check value for end of file and for version control"<<endl;
+  NuStart<<ALK_tolerance<<" # ALK tolerance (example 0.0001)"<<endl;
+  NuStart.close();
 
   cout<<" Write new forecast file "<<endl;
   ofstream NuFore("forecast.ss_new");
@@ -1673,6 +1675,7 @@ FUNCTION void write_nucontrol()
   if(Fcast_InputCatch_Basis==-1) NuFore<<" 2 ";
   NuFore<<endl;
   NuFore<<"#"<<endl<<999<<" # verify end of input "<<endl;
+  NuFore.close();
 
 //**********************************************************
   cout<<" Write new control file "<<endl;
