@@ -250,7 +250,7 @@ DATA_SECTION
   number ALK_tolerance
 
  LOCAL_CALCS
-
+   ALK_tolerance=0.0;
    if(finish_starter==999.)
     {echoinput<<"Read files in 3.24 format"<<endl;}
     else
@@ -266,7 +266,6 @@ DATA_SECTION
    else
    {cout<<"CRITICAL error reading finish_starter in starter.ss: "<<finish_starter<<endl; exit(1);}
    echoinput<<"  finish reading starter.ss"<<endl<<endl;
-   // ALK_tolerance=0.0001;   //  later put this into the starter.ss input
 
  END_CALCS
 
