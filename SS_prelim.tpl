@@ -97,6 +97,7 @@ PRELIMINARY_CALCS_SECTION
     obs_l(f,i)(tails_l(f,i,3),tails_l(f,i,4))*log(obs_l(f,i)(tails_l(f,i,3),tails_l(f,i,4)));
   }
 //  echoinput<<" length_comp offset: "<<offset_l<<endl;
+  echoinput<<" length comp var adjust has been set-up "<<endl;
 
 //  SS_Label_Info_6.2.4.1 #Get sample weights for the super-period components in length comp
 //  the combined obs will have a logL sample size equal to the sample size input for the accumulator observation
@@ -235,32 +236,6 @@ PRELIMINARY_CALCS_SECTION
     }
   }
 
-  if(N_suprper_SzFreq>0)
-  {
-    echoinput<<"Create superperiod sample weights for sizecomp obs "<<endl<<"Fleet Super OBS Super fleet Sample_N_read samp_wt"<<endl;
-    for (j=1;j<=N_suprper_SzFreq;j++)                  // do each super period
-    {
-      temp=1.0;  //  relative sample weight for time period the accumulator observation
-      k=0;  // count of samples with real information
-      for (iobs=suprper_SzFreq_start(j);iobs<=suprper_SzFreq_end(j);iobs++)  //  loop obs of this super period
-      {
-        if(SzFreq_obs_hdr(iobs,3)<0)  //  so one of the obs to be combined
-        {temp+=SzFreq_sampleN(iobs);}
-        else
-        {k++;}  //  so counts the obs that are not just placeholders
-      }
-      if(k!=1) {N_warn++; cout<<"error in sizecomp data"; warning<<" must have only 1 sample with real info in sizecomp superperiod "<<j<<endl; exit(1);}
-      for (iobs=suprper_SzFreq_start(j);iobs<=suprper_SzFreq_end(j);iobs++)
-      {
-        if(SzFreq_obs_hdr(iobs,3)<0)  //  so one of the obs to be combined
-        {suprper_SzFreq_sampwt(iobs)=SzFreq_sampleN(iobs)/value(temp);}
-        else
-        {suprper_SzFreq_sampwt(iobs)=1.0/value(temp);}  //  for the element holding the combined observation
-        echoinput<<SzFreq_obs_hdr(iobs,3)<<" "<<j<<" "<<iobs<<" "<<SzFreq_sampleN(iobs)<<" "<<suprper_SzFreq_sampwt(iobs)<<endl;
-      }
-    }
-  }
-
 //  SS_Label_Info_6.2.5 #Do variance adjustment and compute OFFSET for age comp
   if(Nobs_a_tot>0)
   for (f=1; f <= Nfleet; f++)
@@ -275,6 +250,7 @@ PRELIMINARY_CALCS_SECTION
     obs_a(f,i)(tails_a(f,i,3),tails_a(f,i,4))*log(obs_a(f,i)(tails_a(f,i,3),tails_a(f,i,4)));
   }
 //   echoinput<<" agecomp offset "<<offset_a<<endl;
+  echoinput<<" age comp var adjust has been set-up "<<endl;
 
 //  SS_Label_Info_6.2.6 #Do variance adjustment for mean size-at-age data
   if(nobs_ms_tot>0)
@@ -294,10 +270,74 @@ PRELIMINARY_CALCS_SECTION
 //  SS_Label_Info_6.2.7 #Input variance adjustment for generalized size comp
   if(SzFreq_Nmeth>0)
   {
-    for (i=1; i <= SzFreq_totobs; i++)
+    N_suprper_SzFreq=0;  // redo this counter so can use the counter
+
+    for (iobs=1; iobs <= SzFreq_totobs; iobs++)
     {
-        SzFreq_sampleN(i)*=var_adjust(7,SzFreq_obs1(i,4));
-        if (SzFreq_sampleN(i) < 1.0) SzFreq_sampleN(i) = 1.;
+        in_superperiod=0;
+
+        if (var_adjust(7,SzFreq_obs1(iobs,4)) != 1.0)
+        {
+            SzFreq_sampleN(iobs)*=var_adjust(7,SzFreq_obs1(iobs,4));
+            if (SzFreq_sampleN(iobs) < 1.0) SzFreq_sampleN(iobs) = 1.;
+        }
+
+        k=SzFreq_obs_hdr(iobs,6);  //  get the method
+        f=abs(SzFreq_obs_hdr(iobs,3));
+        s=SzFreq_obs_hdr(iobs,2);  // sign used to indicate start/stop of super period
+        if(SzFreq_obs_hdr(iobs,3)>0)  // negative for out of range or skip
+        {
+            z1=SzFreq_obs_hdr(iobs,7);
+            z2=SzFreq_obs_hdr(iobs,8);
+            g=SzFreq_LikeComponent(f,k);
+            SzFreq_like_base(g)-=SzFreq_sampleN(iobs)*SzFreq_obs(iobs)(z1,z2)*log(SzFreq_obs(iobs)(z1,z2));
+        }
+
+// identify super-period starts and stops
+        if(s<0) // start/stop a super-period  ALL observations must be continguous in the file
+        {
+            if(in_superperiod==0)
+            {
+                N_suprper_SzFreq++;
+                suprper_SzFreq_start(N_suprper_SzFreq)=iobs;
+                in_superperiod=1;
+            }
+            else if(in_superperiod==1)  // end a super-period
+            {
+                suprper_SzFreq_end(N_suprper_SzFreq)=iobs;
+                in_superperiod=0;
+            }
+        }
+    }
+
+    echoinput<<" gen size comp var adjust has been set-up "<<endl;
+
+    if(N_suprper_SzFreq>0)
+    {
+        echoinput<<"sizefreq superperiod start obs: "<<suprper_SzFreq_start<<endl<<"sizefreq superperiod end obs:   "<<suprper_SzFreq_end<<endl;
+
+        echoinput<<"Create superperiod sample weights for sizecomp obs "<<endl<<"Fleet Super OBS Super fleet Sample_N_read samp_wt"<<endl;
+        for (j=1;j<=N_suprper_SzFreq;j++)                  // do each super period
+        {
+          temp=1.0;  //  relative sample weight for time period the accumulator observation
+          k=0;  // count of samples with real information
+          for (iobs=suprper_SzFreq_start(j);iobs<=suprper_SzFreq_end(j);iobs++)  //  loop obs of this super period
+          {
+            if(SzFreq_obs_hdr(iobs,3)<0)  //  so one of the obs to be combined
+            {temp+=SzFreq_sampleN(iobs);}
+            else
+            {k++;}  //  so counts the obs that are not just placeholders
+          }
+          if(k!=1) {N_warn++; cout<<"error in sizecomp data"; warning<<" must have only 1 sample with real info in sizecomp superperiod "<<j<<endl; exit(1);}
+          for (iobs=suprper_SzFreq_start(j);iobs<=suprper_SzFreq_end(j);iobs++)
+          {
+            if(SzFreq_obs_hdr(iobs,3)<0)  //  so one of the obs to be combined
+            {suprper_SzFreq_sampwt(iobs)=SzFreq_sampleN(iobs)/value(temp);}
+            else
+            {suprper_SzFreq_sampwt(iobs)=1.0/value(temp);}  //  for the element holding the combined observation
+            echoinput<<SzFreq_obs_hdr(iobs,3)<<" "<<j<<" "<<iobs<<" "<<SzFreq_sampleN(iobs)<<" "<<suprper_SzFreq_sampwt(iobs)<<endl;
+          }
+        }
     }
   }
 
