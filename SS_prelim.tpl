@@ -14,7 +14,7 @@ PRELIMINARY_CALCS_SECTION
   save_sp_len.initialize();
   save_sel_fec.initialize();
   catch_mult=1.0;
-    
+
 //  SS_Label_Info_6.1.2 #Initialize the dummy parameter as needed
   if(Turn_off_phase<=0) {dummy_parm=0.5;} else {dummy_parm=1.0;}
 
@@ -97,6 +97,7 @@ PRELIMINARY_CALCS_SECTION
     obs_l(f,i)(tails_l(f,i,3),tails_l(f,i,4))*log(obs_l(f,i)(tails_l(f,i,3),tails_l(f,i,4)));
   }
 //  echoinput<<" length_comp offset: "<<offset_l<<endl;
+  echoinput<<" length comp var adjust has been set-up "<<endl;
 
 //  SS_Label_Info_6.2.4.1 #Get sample weights for the super-period components in length comp
 //  the combined obs will have a logL sample size equal to the sample size input for the accumulator observation
@@ -234,32 +235,6 @@ PRELIMINARY_CALCS_SECTION
       }
     }
   }
-  
-  if(N_suprper_SzFreq>0)
-  {
-    echoinput<<"Create superperiod sample weights for sizecomp obs "<<endl<<"Fleet Super OBS Super fleet Sample_N_read samp_wt"<<endl;
-    for (j=1;j<=N_suprper_SzFreq;j++)                  // do each super period
-    {
-      temp=1.0;  //  relative sample weight for time period the accumulator observation
-      k=0;  // count of samples with real information
-      for (iobs=suprper_SzFreq_start(j);iobs<=suprper_SzFreq_end(j);iobs++)  //  loop obs of this super period
-      {
-        if(SzFreq_obs_hdr(iobs,3)<0)  //  so one of the obs to be combined
-        {temp+=SzFreq_sampleN(iobs);}
-        else
-        {k++;}  //  so counts the obs that are not just placeholders
-      }
-      if(k!=1) {N_warn++; cout<<"error in sizecomp data"; warning<<" must have only 1 sample with real info in sizecomp superperiod "<<j<<endl; exit(1);}
-      for (iobs=suprper_SzFreq_start(j);iobs<=suprper_SzFreq_end(j);iobs++)
-      {
-        if(SzFreq_obs_hdr(iobs,3)<0)  //  so one of the obs to be combined
-        {suprper_SzFreq_sampwt(iobs)=SzFreq_sampleN(iobs)/value(temp);}
-        else
-        {suprper_SzFreq_sampwt(iobs)=1.0/value(temp);}  //  for the element holding the combined observation
-        echoinput<<SzFreq_obs_hdr(iobs,3)<<" "<<j<<" "<<iobs<<" "<<SzFreq_sampleN(iobs)<<" "<<suprper_SzFreq_sampwt(iobs)<<endl;
-      }
-    }
-  }
 
 //  SS_Label_Info_6.2.5 #Do variance adjustment and compute OFFSET for age comp
   if(Nobs_a_tot>0)
@@ -275,6 +250,7 @@ PRELIMINARY_CALCS_SECTION
     obs_a(f,i)(tails_a(f,i,3),tails_a(f,i,4))*log(obs_a(f,i)(tails_a(f,i,3),tails_a(f,i,4)));
   }
 //   echoinput<<" agecomp offset "<<offset_a<<endl;
+  echoinput<<" age comp var adjust has been set-up "<<endl;
 
 //  SS_Label_Info_6.2.6 #Do variance adjustment for mean size-at-age data
   if(nobs_ms_tot>0)
@@ -291,7 +267,79 @@ PRELIMINARY_CALCS_SECTION
   }
   echoinput<<" setup stderr for mean size-at-age: "<<endl;
 
-//  SS_Label_Info_6.2.7 #Input variance adjustment not implemented for generalized size comp
+//  SS_Label_Info_6.2.7 #Input variance adjustment for generalized size comp
+  if(SzFreq_Nmeth>0)
+  {
+    N_suprper_SzFreq=0;  // redo this counter so can use the counter
+
+    for (iobs=1; iobs <= SzFreq_totobs; iobs++)
+    {
+        in_superperiod=0;
+
+        if (var_adjust(7,SzFreq_obs1(iobs,4)) != 1.0)
+        {
+            SzFreq_sampleN(iobs)*=var_adjust(7,SzFreq_obs1(iobs,4));
+            if (SzFreq_sampleN(iobs) < 1.0) SzFreq_sampleN(iobs) = 1.;
+        }
+
+        k=SzFreq_obs_hdr(iobs,6);  //  get the method
+        f=abs(SzFreq_obs_hdr(iobs,3));
+        s=SzFreq_obs_hdr(iobs,2);  // sign used to indicate start/stop of super period
+        if(SzFreq_obs_hdr(iobs,3)>0)  // negative for out of range or skip
+        {
+            z1=SzFreq_obs_hdr(iobs,7);
+            z2=SzFreq_obs_hdr(iobs,8);
+            g=SzFreq_LikeComponent(f,k);
+            SzFreq_like_base(g)-=SzFreq_sampleN(iobs)*SzFreq_obs(iobs)(z1,z2)*log(SzFreq_obs(iobs)(z1,z2));
+        }
+
+// identify super-period starts and stops
+        if(s<0) // start/stop a super-period  ALL observations must be continguous in the file
+        {
+            if(in_superperiod==0)
+            {
+                N_suprper_SzFreq++;
+                suprper_SzFreq_start(N_suprper_SzFreq)=iobs;
+                in_superperiod=1;
+            }
+            else if(in_superperiod==1)  // end a super-period
+            {
+                suprper_SzFreq_end(N_suprper_SzFreq)=iobs;
+                in_superperiod=0;
+            }
+        }
+    }
+
+    echoinput<<" gen size comp var adjust has been set-up "<<endl;
+
+    if(N_suprper_SzFreq>0)
+    {
+        echoinput<<"sizefreq superperiod start obs: "<<suprper_SzFreq_start<<endl<<"sizefreq superperiod end obs:   "<<suprper_SzFreq_end<<endl;
+
+        echoinput<<"Create superperiod sample weights for sizecomp obs "<<endl<<"Fleet Super OBS Super fleet Sample_N_read samp_wt"<<endl;
+        for (j=1;j<=N_suprper_SzFreq;j++)                  // do each super period
+        {
+          temp=1.0;  //  relative sample weight for time period the accumulator observation
+          k=0;  // count of samples with real information
+          for (iobs=suprper_SzFreq_start(j);iobs<=suprper_SzFreq_end(j);iobs++)  //  loop obs of this super period
+          {
+            if(SzFreq_obs_hdr(iobs,3)<0)  //  so one of the obs to be combined
+            {temp+=SzFreq_sampleN(iobs);}
+            else
+            {k++;}  //  so counts the obs that are not just placeholders
+          }
+          if(k!=1) {N_warn++; cout<<"error in sizecomp data"; warning<<" must have only 1 sample with real info in sizecomp superperiod "<<j<<endl; exit(1);}
+          for (iobs=suprper_SzFreq_start(j);iobs<=suprper_SzFreq_end(j);iobs++)
+          {
+            if(SzFreq_obs_hdr(iobs,3)<0)  //  so one of the obs to be combined
+            {suprper_SzFreq_sampwt(iobs)=SzFreq_sampleN(iobs)/value(temp);}
+            else
+            {suprper_SzFreq_sampwt(iobs)=1.0/value(temp);}  //  for the element holding the combined observation
+            echoinput<<SzFreq_obs_hdr(iobs,3)<<" "<<j<<" "<<iobs<<" "<<SzFreq_sampleN(iobs)<<" "<<suprper_SzFreq_sampwt(iobs)<<endl;
+          }
+        }
+    }
+  }
 
 //  SS_Label_Info_6.4 #Conditionally copy the initial parameter values read from the "CTL" file into the parameter arrays
 //   skip this assignment if the parameters are being read from a "SS2.PAR" file
@@ -370,7 +418,7 @@ PRELIMINARY_CALCS_SECTION
       {
       for (g=1;g<=N_Fparm;g++)
       {
-          F_rate(g)=F_setup(1); 
+          F_rate(g)=F_setup(1);
           f=Fparm_loc(g,1);
           t=Fparm_loc(g,2);
           Hrate(f,t)=F_setup(1);
@@ -382,7 +430,7 @@ PRELIMINARY_CALCS_SECTION
           f=F_setup2(k,1); y=F_setup2(k,2); s=F_setup2(k,3);
           t=styr+(y-styr)*nseas+s-1;
           g=do_Fparm(f,t);
-          if(F_setup2(k,4)!=-999) 
+          if(F_setup2(k,4)!=-999)
             {F_rate(g)=F_setup2(k,4); Hrate(f,t)=F_setup2(k,4);}
         }
       }
@@ -408,7 +456,7 @@ PRELIMINARY_CALCS_SECTION
           echoinput<< " Tag_parms OK "<<endl;
     }
   }
-  
+
   cout<<" have unallocated vectors happened yet ?"<<endl;
 
 
@@ -522,9 +570,9 @@ PRELIMINARY_CALCS_SECTION
     y=styr;
     yz=styr;
     t_base=styr+(y-styr)*nseas-1;
-    
+
     make_timevaryparm();
-    
+
 //  SS_Label_Info_6.8.1 #Call fxn get_MGsetup() to copy MGparms to working array and applies time-varying factors
     get_MGsetup();
     echoinput<<" did MG setup"<<endl;
@@ -624,8 +672,8 @@ PRELIMINARY_CALCS_SECTION
       age_age=value(age_age);  //   because these are not based on parameters
     }
     echoinput<<" made the age_age' key "<<endl;
-    
-    if (catch_mult_pointer>0) 
+
+    if (catch_mult_pointer>0)
     {
       get_catch_mult(y, catch_mult_pointer);
       for(j=styr;j<=YrMax;j++)  //  so get this value for all years, but can be overwritten by time-varying
@@ -633,7 +681,7 @@ PRELIMINARY_CALCS_SECTION
         catch_mult(j)=catch_mult(y);
       }
     }
-      
+
 //  SS_Label_Info_6.8.9 #Calculated values have been set equal to value() to remove derivative info and save space if their parameters are held constant
 
 //  SS_Label_Info_6.9 #Set up headers for ParmTrace
@@ -649,7 +697,7 @@ PRELIMINARY_CALCS_SECTION
     ParmTrace<<endl;
 
 //  SS_Label_Info_6.10 #Preliminary calcs done; Ready for estimation
-    if(Turn_off_phase<0) 
+    if(Turn_off_phase<0)
       {
         cout<<" Requested exit after read when turn_off_phase < 0 "<<endl;
         write_nudata();

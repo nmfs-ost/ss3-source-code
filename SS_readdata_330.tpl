@@ -2527,7 +2527,7 @@
     suprper_SzFreq_start.initialize();
     suprper_SzFreq_end.initialize();
     suprper_SzFreq_sampwt.initialize();
-    N_suprper_SzFreq=0;  // redo this counter so can use the counter
+//     N_suprper_SzFreq=0;  // redo this counter so can use the counter
 //  count the number of type x methods being used to create vector length for the likelihoods
     g=0;
     for (f=1;f<=Nfleet;f++)
@@ -2535,39 +2535,39 @@
     {
       if(SzFreq_LikeComponent(f,k)>0) {g++; SzFreq_LikeComponent(f,k)=g;}  //  so stored value g gives index in list of logL elements
     }
-    in_superperiod=0;
-    for (iobs=1;iobs<=SzFreq_totobs;iobs++)
-    {
-      k=SzFreq_obs_hdr(iobs,6);  //  get the method
-      f=abs(SzFreq_obs_hdr(iobs,3));
-      s=SzFreq_obs_hdr(iobs,2);  // sign used to indicate start/stop of super period
-      if(SzFreq_obs_hdr(iobs,3)>0)  // negative for out of range or skip
-      {
-        z1=SzFreq_obs_hdr(iobs,7);
-        z2=SzFreq_obs_hdr(iobs,8);
-        g=SzFreq_LikeComponent(f,k);
-        SzFreq_like_base(g)-=SzFreq_sampleN(iobs)*SzFreq_obs(iobs)(z1,z2)*log(SzFreq_obs(iobs)(z1,z2));
-      }
+//     in_superperiod=0;
+//     for (iobs=1;iobs<=SzFreq_totobs;iobs++)
+//     {
+//       k=SzFreq_obs_hdr(iobs,6);  //  get the method
+//       f=abs(SzFreq_obs_hdr(iobs,3));
+//       s=SzFreq_obs_hdr(iobs,2);  // sign used to indicate start/stop of super period
+//       if(SzFreq_obs_hdr(iobs,3)>0)  // negative for out of range or skip
+//       {
+//         z1=SzFreq_obs_hdr(iobs,7);
+//         z2=SzFreq_obs_hdr(iobs,8);
+//         g=SzFreq_LikeComponent(f,k);
+//         SzFreq_like_base(g)-=SzFreq_sampleN(iobs)*SzFreq_obs(iobs)(z1,z2)*log(SzFreq_obs(iobs)(z1,z2));
+//       }
 
 // identify super-period starts and stops
-      if(s<0) // start/stop a super-period  ALL observations must be continguous in the file
-      {
-        if(in_superperiod==0)
-        {
-          N_suprper_SzFreq++;
-          suprper_SzFreq_start(N_suprper_SzFreq)=iobs;
-          in_superperiod=1;
-        }
-        else if(in_superperiod==1)  // end a super-period
-        {
-          suprper_SzFreq_end(N_suprper_SzFreq)=iobs;
-          in_superperiod=0;
-        }
-      }
-    }
+//       if(s<0) // start/stop a super-period  ALL observations must be continguous in the file
+//       {
+//         if(in_superperiod==0)
+//         {
+//           N_suprper_SzFreq++;
+//           suprper_SzFreq_start(N_suprper_SzFreq)=iobs;
+//           in_superperiod=1;
+//         }
+//         else if(in_superperiod==1)  // end a super-period
+//         {
+//           suprper_SzFreq_end(N_suprper_SzFreq)=iobs;
+//           in_superperiod=0;
+//         }
+//       }
+//     }
   }
   echoinput<<" finished processing sizefreq data "<<endl;
-  if(N_suprper_SzFreq>0) echoinput<<"sizefreq superperiod start obs: "<<suprper_SzFreq_start<<endl<<"sizefreq superperiod end obs:   "<<suprper_SzFreq_end<<endl;
+//   if(N_suprper_SzFreq>0) echoinput<<"sizefreq superperiod start obs: "<<suprper_SzFreq_start<<endl<<"sizefreq superperiod end obs:   "<<suprper_SzFreq_end<<endl;
  END_CALCS
 
 !!//  SS_Label_Info_2.12 #Read tag release and recapture data
