@@ -2695,7 +2695,7 @@
   init_number BTGT_target
   !!echoinput<<BTGT_target<<" BTGT_target "<<endl;
 
-  ivector Bmark_Yr(1,6)
+  ivector Bmark_Yr(1,8)
   ivector Bmark_t(1,2)  //  for range of time values for averaging body size
   init_ivector Bmark_Yr_rd(1,6)
   init_int Bmark_RelF_Basis
@@ -2714,6 +2714,10 @@
       N_warn++;Bmark_Yr(i)=styr;warning<<"benchmark year less than styr; reset to equal styr"<<endl;
     }
   }
+  // default for transition to 3.30
+  Bmark_Yr(7) = styr;
+  Bmark_Yr(8) = endyr;
+
   Bmark_t(1)=styr+(Bmark_Yr(1)-styr)*nseas;
   Bmark_t(2)=styr+(Bmark_Yr(2)-styr)*nseas;
 

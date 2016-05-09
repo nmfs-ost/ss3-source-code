@@ -2753,13 +2753,13 @@
   init_number BTGT_target
   !!echoinput<<BTGT_target<<" BTGT_target "<<endl;
 
-  ivector Bmark_Yr(1,6)
+  ivector Bmark_Yr(1,8)
   ivector Bmark_t(1,2)  //  for range of time values for averaging body size
-  init_ivector Bmark_Yr_rd(1,6)
+  init_ivector Bmark_Yr_rd(1,8)
   init_int Bmark_RelF_Basis
  LOCAL_CALCS
-  echoinput<<Bmark_Yr_rd<<" Benchmark years as read:  beg-end bio; beg-end selex; beg-end relF"<<endl;
-  for (i=1;i<=6;i++)  //  beg-end bio; beg-end selex; beg-end relF
+  echoinput<<Bmark_Yr_rd<<" Benchmark years as read:  beg-end bio; beg-end selex; beg-end relF; beg-end recruits"<<endl;
+  for (i=1;i<=8;i++)  //  beg-end bio; beg-end selex; beg-end relF
   {
     if(Bmark_Yr_rd(i)==-999)
     {Bmark_Yr(i)=styr;}
@@ -2775,7 +2775,7 @@
   Bmark_t(1)=styr+(Bmark_Yr(1)-styr)*nseas;
   Bmark_t(2)=styr+(Bmark_Yr(2)-styr)*nseas;
 
-  echoinput<<Bmark_Yr<<" Benchmark years as processed:  beg-end bio; beg-end selex; beg-end relF"<<endl;
+  echoinput<<Bmark_Yr<<" Benchmark years as processed:  beg-end bio; beg-end selex; beg-end relF; beg-end recruits"<<endl;
   echoinput<<Bmark_RelF_Basis<<"  1=use range of years for relF; 2 = set same as forecast relF below"<<endl;
  END_CALCS
 
