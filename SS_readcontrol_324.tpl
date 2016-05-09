@@ -1070,15 +1070,17 @@
      mgp_type(Ip,Ip+N_growparms-1)=2;  // growth parms
      Ip=Ip+N_growparms;
      mgp_type(Ip,Ip+1)=3;   // wtlen
-     if(gg==1) {mgp_type(Ip+2,Ip+4)=3;}  // maturity and fecundity
+     if(gg==1) {mgp_type(Ip+2,Ip+5)=3;}  // maturity and fecundity
    }
    if(Hermaphro_Option!=0) {mgp_type(MGparm_Hermaphro,MGparm_Hermaphro+2)=3;}  //   herma parameters done with wtlen and fecundity
    mgp_type(Ip,MGP_CGD-1)=4;   // recruit apportionments
    mgp_type(MGP_CGD)=2;   // cohort growth dev
-   if(do_migration>0)  mgp_type(MGP_CGD+1,N_MGparm)=5;
+   if(do_migration>0)  mgp_type(MGP_CGD+1,N_MGparm)=5;  // note that it fills until end of MGparm list, but some get overwritten
    if(Use_AgeKeyZero>0) mgp_type(AgeKeyParm,N_MGparm)=6;
    if(catch_mult_pointer>0) mgp_type(catch_mult_pointer,N_MGparm)=7;
-   echoinput<<"mgp_type "<<mgp_type<<endl;
+   for(f=frac_female_pointer; f<=frac_female_pointer+N_GP-1;f++) mgp_type(f)=3;
+   echoinput<<"mgparm_type for each parm: 1=M; 2=growth; 3=wtlen,mat,fec,hermo,sexratio; 4=recr; 5=migr; 6=ageerror; 7=catchmult "<<endl<<mgp_type<<endl;
+
    MGparm_env.initialize();   //  will store the index of environ fxns here
    MGparm_envtype.initialize();
    N_MGparm_env=0;
