@@ -14,7 +14,7 @@ PRELIMINARY_CALCS_SECTION
   save_sp_len.initialize();
   save_sel_fec.initialize();
   catch_mult=1.0;
-    
+
 //  SS_Label_Info_6.1.2 #Initialize the dummy parameter as needed
   if(Turn_off_phase<=0) {dummy_parm=0.5;} else {dummy_parm=1.0;}
 
@@ -234,7 +234,7 @@ PRELIMINARY_CALCS_SECTION
       }
     }
   }
-  
+
   if(N_suprper_SzFreq>0)
   {
     echoinput<<"Create superperiod sample weights for sizecomp obs "<<endl<<"Fleet Super OBS Super fleet Sample_N_read samp_wt"<<endl;
@@ -291,7 +291,15 @@ PRELIMINARY_CALCS_SECTION
   }
   echoinput<<" setup stderr for mean size-at-age: "<<endl;
 
-//  SS_Label_Info_6.2.7 #Input variance adjustment not implemented for generalized size comp
+//  SS_Label_Info_6.2.7 #Input variance adjustment for generalized size comp
+  if(SzFreq_Nmeth>0)
+  {
+    for (i=1; i <= SzFreq_totobs; i++)
+    {
+        SzFreq_sampleN(i)*=var_adjust(7,SzFreq_obs1(i,4));
+        if (SzFreq_sampleN(i) < 1.0) SzFreq_sampleN(i) = 1.;
+    }
+  }
 
 //  SS_Label_Info_6.4 #Conditionally copy the initial parameter values read from the "CTL" file into the parameter arrays
 //   skip this assignment if the parameters are being read from a "SS2.PAR" file
@@ -370,7 +378,7 @@ PRELIMINARY_CALCS_SECTION
       {
       for (g=1;g<=N_Fparm;g++)
       {
-          F_rate(g)=F_setup(1); 
+          F_rate(g)=F_setup(1);
           f=Fparm_loc(g,1);
           t=Fparm_loc(g,2);
           Hrate(f,t)=F_setup(1);
@@ -382,7 +390,7 @@ PRELIMINARY_CALCS_SECTION
           f=F_setup2(k,1); y=F_setup2(k,2); s=F_setup2(k,3);
           t=styr+(y-styr)*nseas+s-1;
           g=do_Fparm(f,t);
-          if(F_setup2(k,4)!=-999) 
+          if(F_setup2(k,4)!=-999)
             {F_rate(g)=F_setup2(k,4); Hrate(f,t)=F_setup2(k,4);}
         }
       }
@@ -408,7 +416,7 @@ PRELIMINARY_CALCS_SECTION
           echoinput<< " Tag_parms OK "<<endl;
     }
   }
-  
+
   cout<<" have unallocated vectors happened yet ?"<<endl;
 
 
@@ -522,9 +530,9 @@ PRELIMINARY_CALCS_SECTION
     y=styr;
     yz=styr;
     t_base=styr+(y-styr)*nseas-1;
-    
+
     make_timevaryparm();
-    
+
 //  SS_Label_Info_6.8.1 #Call fxn get_MGsetup() to copy MGparms to working array and applies time-varying factors
     get_MGsetup();
     echoinput<<" did MG setup"<<endl;
@@ -624,8 +632,8 @@ PRELIMINARY_CALCS_SECTION
       age_age=value(age_age);  //   because these are not based on parameters
     }
     echoinput<<" made the age_age' key "<<endl;
-    
-    if (catch_mult_pointer>0) 
+
+    if (catch_mult_pointer>0)
     {
       get_catch_mult(y, catch_mult_pointer);
       for(j=styr;j<=YrMax;j++)  //  so get this value for all years, but can be overwritten by time-varying
@@ -633,7 +641,7 @@ PRELIMINARY_CALCS_SECTION
         catch_mult(j)=catch_mult(y);
       }
     }
-      
+
 //  SS_Label_Info_6.8.9 #Calculated values have been set equal to value() to remove derivative info and save space if their parameters are held constant
 
 //  SS_Label_Info_6.9 #Set up headers for ParmTrace
@@ -649,7 +657,7 @@ PRELIMINARY_CALCS_SECTION
     ParmTrace<<endl;
 
 //  SS_Label_Info_6.10 #Preliminary calcs done; Ready for estimation
-    if(Turn_off_phase<0) 
+    if(Turn_off_phase<0)
       {
         cout<<" Requested exit after read when turn_off_phase < 0 "<<endl;
         write_nudata();
