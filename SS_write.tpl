@@ -1850,13 +1850,13 @@ FUNCTION void write_nucontrol()
       for(j=1;j<=6;j++) report4<<std::setprecision(4)<<std::fixed<<setw(10)<<SR_parm_1(f,j);
       report4.unsetf(std::ios_base::floatfield);
       for(j=7;j<=14;j++) report4<<std::setprecision(0)<<setw(8)<<SR_parm_1(f,j);
-      report4<<endl;
+      report4<<" # "<<ParmLabel(NP)<<endl;
    }
-   report4<<"#Next are short parm lines for enveffects on R0, steepness, and annual dev"<<endl;
-   report4<<"#Then short parm lines for block/trend effects on R0, steepness, and annual dev";
+   report4<<"#Next are short parm lines, if requested, for env effects on R0, steepness, and annual dev"<<endl;
+   report4<<"#Then short parm lines, if requested, for block/trend effects on R0, steepness, and annual dev"<<endl;
    
-   report4<<SR_env_link<<" #_SR_env_link"<<endl;
-   report4<<SR_env_target_RD<<" #_SR_env_target_0=none;1=devs;_2=R0;_3=steepness"<<endl;
+//   report4<<SR_env_link<<" #_SR_env_link"<<endl;
+//   report4<<SR_env_target_RD<<" #_SR_env_target_0=none;1=devs;_2=R0;_3=steepness"<<endl;
    report4<<do_recdev<<" #do_recdev:  0=none; 1=devvector; 2=simple deviations"<<endl;
    report4<<recdev_start<<" # first year of main recr_devs; early devs can preceed this era"<<endl;
    report4<<recdev_end<<" # last year of main recr_devs; forecast devs start in following year"<<endl;

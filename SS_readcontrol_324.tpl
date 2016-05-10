@@ -1829,7 +1829,7 @@
     }
   }
   ParmLabel+="SR_sigmaR";
-  ParmLabel+="SR_nullparm";
+//  ParmLabel+="SR_nullparm";
   ParmLabel+="SR_AnnualDevMult";
   ParmLabel+="SR_autocorr";
   ParCount+=N_SRparm2;

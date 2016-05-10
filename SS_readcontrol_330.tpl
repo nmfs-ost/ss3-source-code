@@ -1523,13 +1523,13 @@
   !!N_SRparm.fill("{0,2,2,2,3,2,3,3,0,0}");
   int N_SRparm2
   !!echoinput<<SR_fxn<<" #_SR_function: 1=null; 2=Ricker; 3=std_B-H; 4=SCAA; 5=Hockey; 6=B-H_flattop; 7=Survival_3Parm; 8=Shepard "<<endl;
-  !!N_SRparm2=N_SRparm(SR_fxn)+4;
-  init_matrix SR_parm_1(1,N_SRparm2,1,7)
+  !!N_SRparm2=N_SRparm(SR_fxn)+3;
+  init_matrix SR_parm_1(1,N_SRparm2,1,14)
   !!echoinput<<" SR parms "<<endl<<SR_parm_1<<endl;
-  init_int SR_env_link
-  !!echoinput<<SR_env_link<<" SR_env_link "<<endl;
-  init_int SR_env_target_RD   // 0=none; 1=devs; 2=R0; 3=steepness
-  !!echoinput<<SR_env_target_RD<<" SR_env_target_RD "<<endl;
+   int SR_env_link
+//  !!echoinput<<SR_env_link<<" SR_env_link "<<endl;
+    int SR_env_target_RD   // 0=none; 1=devs; 2=R0; 3=steepness
+//  !!echoinput<<SR_env_target_RD<<" SR_env_target_RD "<<endl;
   int SR_env_target
   int SR_autocorr;  // will be calculated later
 
@@ -1542,6 +1542,7 @@
    SRvec_LO=column(SR_parm_1,1);
    SRvec_HI=column(SR_parm_1,2);
    SRvec_PH=ivector(column(SR_parm_1,7));
+   SR_env_link=0;
    if(SR_env_link>N_envvar)
    {
      N_warn++;
@@ -1601,7 +1602,6 @@
     }
   }
   ParmLabel+="SR_sigmaR";
-  ParmLabel+="SR_envlink";
   ParmLabel+="SR_R1_offset";
   ParmLabel+="SR_autocorr";
   ParCount+=N_SRparm2;
