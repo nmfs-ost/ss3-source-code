@@ -17,7 +17,7 @@ PROCEDURE_SECTION
   }
 
 //  SS_Label_Info_7.1 #Set up recruitment bias_adjustment vector
-  sigmaR=SR_parm(N_SRparm2-3);
+  sigmaR=SR_parm(N_SRparm(SR_fxn)+1);
   two_sigmaRsq=2.0*sigmaR*sigmaR;
   half_sigmaRsq=0.5*sigmaR*sigmaR;
 

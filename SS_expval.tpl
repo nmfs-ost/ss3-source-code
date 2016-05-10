@@ -113,11 +113,12 @@ FUNCTION void Get_expected_values();
 
           exp_l_temp=colsum(exp_AL);  //  total size composition
           agetemp=rowsum(exp_AL);  //  total age composition
-          
+          if(do_once==1) echoinput<<y<<" "<<f<<" total  size "<<exp_l_temp<<endl;
           if(Do_Retain(f)>0)
           {
              exp_l_temp_ret=colsum(exp_AL_ret);
              exp_truea_ret=rowsum(exp_AL_ret);
+          if(do_once==1) echoinput<<y<<" "<<f<<" retain size "<<exp_l_temp_ret<<endl;
           }
 //          if(docheckup==1) echoinput<<"exp_l: "<<exp_l_temp<<endl<<"exp_l_ret: "<<exp_l_temp_ret<<endl;
 //          end creation of selected A-L
@@ -610,6 +611,8 @@ FUNCTION void Get_expected_values();
                       break;
                     }
                   }
+                  if(do_once==1) echoinput<<y<<" "<<f<<" szfreq_exp_initial  "<<SzFreq_exp(iobs)<<endl;
+
                   if(gender==2)
                   {
                     k=SzFreq_obs_hdr(iobs,8);  // max bins for this method
@@ -672,6 +675,7 @@ FUNCTION void Get_expected_values();
                       SzFreq_exp(iobs)(1,k)/=sum(SzFreq_exp(iobs)(1,k));
                     }
                   }
+                  if(do_once==1) echoinput<<y<<" "<<f<<" szfreq_exp_final  "<<SzFreq_exp(iobs)<<endl;
                 }  // end loop of obs for fleet = f
               }   //  end having some obs for this method in this fleet
             }    //  end use of generalized size freq data

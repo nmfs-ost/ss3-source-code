@@ -1726,8 +1726,20 @@
   int N_SRparm2
   !!echoinput<<SR_fxn<<" #_SR_function: 1=null; 2=Ricker; 3=std_B-H; 4=SCAA; 5=Hockey; 6=B-H_flattop; 7=Survival_3Parm; 8=Shepard "<<endl;
   !!N_SRparm2=N_SRparm(SR_fxn)+4;
-  init_matrix SR_parm_1(1,N_SRparm2,1,7)
-  !!echoinput<<" SR parms "<<endl<<SR_parm_1<<endl;
+  matrix SR_parm_1(1,N_SRparm2,1,14)
+ LOCAL_CALCS
+   SR_parm_1.initialize();
+   for(f=1;f<=N_SRparm2;f++)
+   {
+     *(ad_comm::global_datafile) >> SR_parm_1(f)(1,7);
+   }
+  SR_parm_1(N_SRparm(SR_fxn)+2)=SR_parm_1(N_SRparm(SR_fxn)+3);  //  overwrite envlink with R1_offset (now dev multiplier)
+  SR_parm_1(N_SRparm(SR_fxn)+3)=SR_parm_1(N_SRparm(SR_fxn)+4);  //  overwrite old r1_offset with autocorr
+  SR_parm_1(N_SRparm(SR_fxn)+4)=0;  //  null unused line
+  N_SRparm2-=1;
+  echoinput<<" SR parms without the envlink line "<<endl<<SR_parm_1(1,N_SRparm2)<<endl;
+ END_CALCS
+  
   init_int SR_env_link
   !!echoinput<<SR_env_link<<" SR_env_link "<<endl;
   init_int SR_env_target_RD   // 0=none; 1=devs; 2=R0; 3=steepness
@@ -1735,15 +1747,28 @@
   int SR_env_target
   int SR_autocorr;  // will be calculated later
 
+ LOCAL_CALCS
+//  adjust for revision to envlink approach
+  if(SR_env_link>0)
+    {
+      echoinput<<"SR_envlink has been read but will not converted; please re-create in 3.30 approach"<<endl;
+      N_warn++; warning<<"SR_envlink has been read but will not converted; please re-create in 3.30 approach"<<endl;
+      SR_env_link=0;
+    }
+ END_CALCS
   vector SRvec_LO(1,N_SRparm2)
   vector SRvec_HI(1,N_SRparm2)
   ivector SRvec_PH(1,N_SRparm2)
 
  LOCAL_CALCS
 //  SS_Label_Info_4.6.1 #Create S-R parameter labels
-   SRvec_LO=column(SR_parm_1,1);
-   SRvec_HI=column(SR_parm_1,2);
-   SRvec_PH=ivector(column(SR_parm_1,7));
+  for(f=1;f<=N_SRparm2;f++)
+  {
+   SRvec_LO(f)=SR_parm_1(f,1);
+   SRvec_HI(f)=SR_parm_1(f,2);
+   SRvec_PH(f)=int(SR_parm_1(f,7));
+  }
+  /*
    if(SR_env_link>N_envvar)
    {
      N_warn++;
@@ -1754,6 +1779,7 @@
    if(SR_env_link==0) SR_env_target=0;
    if(SR_env_link==0 && SR_env_target_RD>0)
    {N_warn++; warning<<" WARNING:  SR_env_target was set, but no SR_env_link selected, SR_env_target set to 0"<<endl;}
+  */
 //#_SR_function: 1=null; 2=Ricker; 3=std_B-H; 4=SCAA; 5=Hockey; 6=B-H_flattop; 7=Survival_3Parm "<<endl;
   ParmLabel+="SR_LN(R0)";
   switch(SR_fxn)
@@ -1803,8 +1829,8 @@
     }
   }
   ParmLabel+="SR_sigmaR";
-  ParmLabel+="SR_envlink";
-  ParmLabel+="SR_R1_offset";
+  ParmLabel+="SR_nullparm";
+  ParmLabel+="SR_AnnualDevMult";
   ParmLabel+="SR_autocorr";
   ParCount+=N_SRparm2;
  END_CALCS
