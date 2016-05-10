@@ -41,9 +41,9 @@
 #_growth_parms
 #_LO HI INIT PRIOR PR_type SD PHASE env-var use_dev dev_minyr dev_maxyr dev_stddev Block Block_Fxn
  0.05 0.15 0.1 0.1 -1 0.8 -3 0 0 0 0 0 0 0 # NatM_p_1_Fem_GP_1
- -10 45 22.2354 36 0 10 2 201 0 0 0 0 0 0 # L_at_Amin_Fem_GP_1
- 40 90 71.7893 70 0 10 4 0 0 0 0 0 0 0 # L_at_Amax_Fem_GP_1
- 0.05 0.25 0.146998 0.15 0 0.8 4 0 0 0 0 0 0 0 # VonBert_K_Fem_GP_1
+ -10 45 22.2323 36 0 10 2 0 0 0 0 0 0 0 # L_at_Amin_Fem_GP_1
+ 40 90 71.7894 70 0 10 4 0 0 0 0 0 0 0 # L_at_Amax_Fem_GP_1
+ 0.05 0.25 0.147003 0.15 0 0.8 4 0 0 0 0 0 0 0 # VonBert_K_Fem_GP_1
  0.05 0.25 0.1 0.1 -1 0.8 -3 0 0 0 0 0 0 0 # CV_young_Fem_GP_1
  0.05 0.25 0.1 0.1 -1 0.8 -3 0 0 0 0 0 0 0 # CV_old_Fem_GP_1
  -3 3 2.44e-006 2.44e-006 -1 0.8 -3 0 0 0 0 0 0 0 # Wtlen_1_Fem
@@ -54,8 +54,8 @@
  -3 3 0 0 -1 0.8 -3 0 0 0 0 0 0 0 # Eggs/kg_slope_wt_Fem
  0.05 0.15 0.1 0.1 -1 0.8 -3 0 0 0 0 0 0 0 # NatM_p_1_Mal_GP_1
  1 45 0 36 -1 10 -3 0 0 0 0 0 0 0 # L_at_Amin_Mal_GP_1
- 40 90 69.6397 70 0 10 4 0 0 0 0 0 0 0 # L_at_Amax_Mal_GP_1
- 0.05 0.25 0.161309 0.15 0 0.8 4 0 0 0 0 0 0 0 # VonBert_K_Mal_GP_1
+ 40 90 69.6396 70 0 10 4 0 0 0 0 0 0 0 # L_at_Amax_Mal_GP_1
+ 0.05 0.25 0.161322 0.15 0 0.8 4 0 0 0 0 0 0 0 # VonBert_K_Mal_GP_1
  0.05 0.25 0.1 0.1 -1 0.8 -3 0 0 0 0 0 0 0 # CV_young_Mal_GP_1
  0.05 0.25 0.1 0.1 -1 0.8 -3 0 0 0 0 0 0 0 # CV_old_Mal_GP_1
  -3 3 2.044e-006 2.44e-006 -1 0.8 -3 0 0 0 0 0 0 0 # Wtlen_1_Mal
@@ -64,10 +64,10 @@
  0 0 0 0 -1 0 -4 0 0 0 0 0 0 0 # RecrDist_Area_1
  0 0 0 0 -1 0 -4 0 0 0 0 0 0 0 # RecrDist_Bseas_1
  0 0 0 0 -1 0 -4 0 0 0 0 0 0 0 # CohortGrowDev
-0.000001 0.999999 0.5 0.5 -1 0.5 -99 0 0 0 0 0 0 0 # FracFemale_GP_1
+ 1e-006 0.999999 0.5 0.5 -1 0.5 -99 0 0 0 0 0 0 0 # FracFemale_GP_1
 #
-1 #_custom_MG-env_setup (0/1)
- -2 2 0.01 0 -1 99 -2 # L_at_Amin_Fem_GP_1_ENV_add
+#_Cond 0  #custom_MG-env_setup (0/1)
+#_Cond -2 2 0 0 -1 99 -2 #_placeholder when no MG-environ parameters
 #
 #_Cond 0  #custom_MG_blocktrend_setup (0/1)
 #_LO HI INIT PRIOR PR_type SD PHASE
@@ -82,15 +82,14 @@
 #
 #_Spawner-Recruitment
 3 #_SR_function: 2=Ricker; 3=std_B-H; 4=SCAA; 5=Hockey; 6=B-H_flattop; 7=survival_3Parm; 8=Shepard_3Parm
-#_LO HI INIT PRIOR PR_type SD PHASE
- 3 31 9.03092 10.3 -1 10 1 # SR_LN(R0)
- 0.2 1 0.622614 0.7 1 0.05 4 # SR_BH_steep
- 0 2 0.6 0.8 -1 0.8 -4 # SR_sigmaR
- -5 5 0.1 0 -1 1 -3 # SR_envlink
- -5 5 0 0 -1 1 -4 # SR_R1_offset
- 0 0 0 0 -1 0 -99 # SR_autocorr
-0 #_SR_env_link
-0 #_SR_env_target_0=none;1=devs;_2=R0;_3=steepness
+#_      LO        HI      INIT     PRIOR   PR_type        SD   PHASE env-var use_dev dv_mnyr dv_mxyr dv_stdv   Block Blk_Fxn  #  parm_name
+    3.0000   31.0000    9.0310   10.3000   -1.0000   10.0000       1       0       0       0       0       0       0       0 # SR_LN(R0)
+    0.2000    1.0000    0.6231    0.7000    1.0000    0.0500       4       0       0       0       0       0       0       0 # SR_BH_steep
+    0.0000    2.0000    0.6000    0.8000   -1.0000    0.8000      -4       0       0       0       0       0       0       0 # SR_sigmaR
+   -5.0000    5.0000    0.0000    0.0000   -1.0000    1.0000      -4       0       0       0       0       0       0       0 # SR_R1_offset
+    0.0000    0.0000    0.0000    0.0000   -1.0000    0.0000     -99       0       0       0       0       0       0       0 # SR_autocorr
+#Next are short parm lines, if requested, for env effects on R0, steepness, and annual dev
+#Then short parm lines, if requested, for block/trend effects on R0, steepness, and annual dev
 1 #do_recdev:  0=none; 1=devvector; 2=simple deviations
 1971 # first year of main recr_devs; early devs can preceed this era
 2001 # last year of main recr_devs; forecast devs start in following year
@@ -116,9 +115,9 @@
 #_Yr Input_value
 #
 # all recruitment deviations
-#  1971R 1972R 1973R 1974R 1975R 1976R 1977R 1978R 1979R 1980R 1981R 1982R 1983R 1984R 1985R 1986R 1987R 1988R 1989R 1990R 1991R 1992R 1993R 1994R 1995R 1996R 1997R 1998R 1999R 2000R 2001R 2002F 2003F 2004F
-#  0.343239 -0.182489 -0.153068 0.0613982 0.277942 0.447292 -0.400483 0.0618044 0.351042 -0.077463 0.143533 0.00133774 -0.517051 -0.314373 0.0784939 0.929117 0.109087 0.145611 -0.164873 0.471151 -0.103187 -0.335481 -1.14245 0.358204 -0.226704 0.286448 0.998917 -0.409253 -1.07647 0.488384 -0.44966 0 0 0
-# implementation error by year in forecast:  0 0 0
+#  1971R 1972R 1973R 1974R 1975R 1976R 1977R 1978R 1979R 1980R 1981R 1982R 1983R 1984R 1985R 1986R 1987R 1988R 1989R 1990R 1991R 1992R 1993R 1994R 1995R 1996R 1997R 1998R 1999R 2000R 2001R 2002F
+#  0.341894 -0.181261 -0.153289 0.0610862 0.278363 0.446738 -0.400267 0.0620271 0.350598 -0.0776035 0.14374 0.000605445 -0.517164 -0.31431 0.0778051 0.928447 0.109032 0.144272 -0.16524 0.470155 -0.103838 -0.336848 -1.14504 0.365472 -0.220756 0.288482 0.99213 -0.407489 -1.07578 0.487718 -0.449673 0
+# implementation error by year in forecast:  0
 #
 #Fishing Mortality info 
 0.3 # F ballpark
@@ -134,9 +133,9 @@
 #_LO HI INIT PRIOR PR_type SD PHASE
 #
 # F rates by fleet
-# Yr:  1971 1972 1973 1974 1975 1976 1977 1978 1979 1980 1981 1982 1983 1984 1985 1986 1987 1988 1989 1990 1991 1992 1993 1994 1995 1996 1997 1998 1999 2000 2001 2002 2003 2004
-# seas:  1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1
-# FISHERY1 0 0.00190507 0.00962238 0.00971526 0.0194359 0.0304831 0.0411463 0.0539715 0.0668772 0.0942828 0.127937 0.141096 0.156791 0.173247 0.196583 0.218399 0.253562 0.269029 0.270027 0.25555 0.239573 0.160712 0.160035 0.159005 0.160942 0.166396 0.129095 0.131791 0.130096 0.131802 0.129243 0.0611849
+# Yr:  1971 1972 1973 1974 1975 1976 1977 1978 1979 1980 1981 1982 1983 1984 1985 1986 1987 1988 1989 1990 1991 1992 1993 1994 1995 1996 1997 1998 1999 2000 2001 2002
+# seas:  1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1
+# FISHERY1 0 0.00190472 0.00962065 0.00971355 0.0194327 0.0304782 0.0411401 0.0539639 0.0668682 0.0942707 0.127921 0.14108 0.156774 0.17323 0.196566 0.218383 0.25355 0.269024 0.270032 0.255565 0.239598 0.160736 0.160066 0.159042 0.16098 0.166437 0.12914 0.13186 0.130186 0.131901 0.129336 0.129336
 #
 #_Q_setup
 #_  fleet     link link_info extra_se  biasadj   float  #  fleetname
@@ -146,7 +145,7 @@
 #
 #_Q_parms(if_any);Qunits_are_ln(q)
 #_      LO        HI      INIT     PRIOR   PR_type        SD   PHASE env-var use_dev dv_mnyr dv_mxyr dv_stdv   Block Blk_Fxn  #  parm_name
-   -7.0000    5.0000    0.6037    0.0000   -1.0000    1.0000       1       0       0       0       0       0       0       0  #  LnQ_base_SURVEY1(2)
+   -7.0000    5.0000    0.6041    0.0000   -1.0000    1.0000       1       0       0       0       0       0       0       0  #  LnQ_base_SURVEY1(2)
    -7.0000    5.0000   -7.0000    0.0000   -1.0000    1.0000       1       0       0       0       0       0       0       0  #  LnQ_base_SURVEY2(3)
     0.0000    0.5000    0.0000    0.0500    1.0000    0.0000      -4       0       0       0       0       0       0       0  #  Q_extraSD_SURVEY1(2)
 #
@@ -164,8 +163,8 @@
  11 0 0 0 # 3 SURVEY2
 #
 #_LO HI INIT PRIOR PR_type SD PHASE env-var use_dev dev_minyr dev_maxyr dev_stddev Block Block_Fxn
- 19 80 53.5559 50 1 0.01 2 0 0 0 0 0 0 0 # SizeSel_P1_FISHERY1(1)
- 0.01 60 18.9982 15 1 0.01 3 0 0 0 0 0 0 0 # SizeSel_P2_FISHERY1(1)
+ 19 80 53.5509 50 1 0.01 2 0 0 0 0 0 0 0 # SizeSel_P1_FISHERY1(1)
+ 0.01 60 18.9949 15 1 0.01 3 0 0 0 0 0 0 0 # SizeSel_P2_FISHERY1(1)
  20 70 38.6461 40 0 99 -3 0 0 0 0 0 0 0 # Retain_P1_FISHERY1(1)
  0.1 10 6.58451 1 0 99 -3 0 0 0 0 0 0 0 # Retain_P2_FISHERY1(1)
  0.001 1 0.98 1 0 99 -3 0 0 0 0 0 0 0 # Retain_P3_FISHERY1(1)
@@ -174,8 +173,8 @@
  -2 2 0.8 0 0 99 -3 0 0 0 0 0 0 0 # DiscMort_P2_FISHERY1(1)
  20 70 0.92 40 0 99 -3 0 0 0 0 0 0 0 # DiscMort_P3_FISHERY1(1)
  0.1 10 0 1 0 99 -3 0 0 0 0 0 0 0 # DiscMort_P4_FISHERY1(1)
- 19 70 36.2645 30 1 0.01 2 0 0 0 0 0 0 0 # SizeSel_P1_SURVEY1(2)
- 0.01 60 6.62522 10 1 0.01 3 0 0 0 0 0 0 0 # SizeSel_P2_SURVEY1(2)
+ 19 70 36.2684 30 1 0.01 2 0 0 0 0 0 0 0 # SizeSel_P1_SURVEY1(2)
+ 0.01 60 6.64169 10 1 0.01 3 0 0 0 0 0 0 0 # SizeSel_P2_SURVEY1(2)
  0 40 0 5 -1 99 -1 0 0 0 0 0 0 0 # AgeSel_P1_FISHERY1(1)
  0 40 40 6 -1 99 -1 0 0 0 0 0 0 0 # AgeSel_P2_FISHERY1(1)
  0 40 0 5 -1 99 -1 0 0 0 0 0 0 0 # AgeSel_P1_SURVEY1(2)
@@ -191,6 +190,7 @@
 # Tag loss and Tag reporting parameters go next
 0  # TG_custom:  0=no read; 1=read if tags exist
 #_Cond -6 6 1 1 2 0.01 -4 0 0 0 0 0 0 0  #_placeholder if no parameters
+#
 # Input variance adjustments; factors: 
  #_1=add_to_survey_CV
  #_2=add_to_discard_stddev
@@ -198,7 +198,7 @@
  #_4=mult_by_lencomp_N
  #_5=mult_by_agecomp_N
  #_6=mult_by_size-at-age_N
- #_7=mult_by_generalized sizecomp (not implemented yet)
+ #_7=mult_by_generalized sizecomp
 #_Factor  Fleet  Value
  -9999 1 0  # terminator
 #
