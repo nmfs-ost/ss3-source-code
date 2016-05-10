@@ -1158,32 +1158,36 @@
 !!//  SS_Label_Info_2.7.4 #Read Length composition data
    int nobsl_rd
    int Nobs_l_tot
-   vector tempvec_lenread(1,6+nlen_bin2);
 
  LOCAL_CALCS
     *(ad_comm::global_datafile) >> nobsl_rd;
    echoinput<<nobsl_rd<<" N length comp obs "<<endl;
  END_CALCS
 
-   init_matrix lendata(1,nobsl_rd,1,6+nlen_bin2)
-   !!if(nobsl_rd>0) echoinput<<" first lencomp obs "<<endl<<lendata(1)<<endl<<" last obs"<<endl<<lendata(nobsl_rd)<<endl;;
-
   ivector Nobs_l(1,Nfleet)
   ivector N_suprper_l(1,Nfleet)      // N super_yrs per obs
 
  LOCAL_CALCS
+    for(i=0;i<=nobsl_rd-1;i++)
+     {
+       dvector tempvec_lenread(1,6+nlen_bin2);
+        *(ad_comm::global_datafile) >> tempvec_lenread(1,6+nlen_bin2);
+      lendata.push_back (tempvec_lenread(1,6+nlen_bin2));
+    }   
+    if(nobsl_rd>0) echoinput<<" first lencomp obs "<<endl<<lendata[0]<<endl<<" last obs"<<endl<<lendata[nobsl_rd-1]<<endl;;
+
     data_type=4;
     Nobs_l=0;                       //  number of observations from each fleet/survey
     N_suprper_l=0;
     if(nobsl_rd>0)
-    for (i=1;i<=nobsl_rd;i++)
+    for(i=0;i<=nobsl_rd-1;i++)
     {
-      y=lendata(i,1);
+      y=lendata[i](1);
       if(y>=styr && y<=retro_yr)
       {
-      f=abs(lendata(i,3));
-      if(lendata(i,6)<0) {N_warn++; cout<<"error in length data "<<endl; warning<<"Error: negative sample size no longer valid as indicator of skip data or superperiods "<<endl; exit(1);}
-      if(lendata(i,2)<0) N_suprper_l(f)++;     // count the number of starts and ends of super-periods if seas<0
+      f=abs(lendata[i](3));
+      if(lendata[i](6)<0) {N_warn++; cout<<"error in length data "<<endl; warning<<"Error: negative sample size no longer valid as indicator of skip data or superperiods "<<endl; exit(1);}
+      if(lendata[i](2)<0) N_suprper_l(f)++;     // count the number of starts and ends of super-periods if seas<0
       Nobs_l(f)++;
       }
     }
@@ -1234,19 +1238,19 @@
   {
      echoinput<<"process length comps "<<endl;
     for (floop=1;floop<=Nfleet;floop++)    //  loop fleets
-    for (i=1;i<=nobsl_rd;i++)   //  loop all observations to find those for this fleet/time
+    for(i=0;i<=nobsl_rd-1;i++)   //  loop all observations to find those for this fleet/time
     {
-      y=lendata(i,1);
+      y=lendata[i](1);
       if(y>=styr && y<=retro_yr)
       {
-        f=abs(lendata(i,3));
+        f=abs(lendata[i](3));
         if(f==floop)
         {
           Nobs_l(f)++;
           j=Nobs_l(f);
 
           {  //  start have_data index and timing processing
-          temp=abs(lendata(i,2));  //  read value that could be season or month; abs ()because neg value indicates super period
+          temp=abs(lendata[i](2));  //  read value that could be season or month; abs ()because neg value indicates super period
             if(read_seas_mo==1)  // reading season
             {
               s=int(temp);
@@ -1282,7 +1286,7 @@
 
             t=styr+(y-styr)*nseas+s-1;
             ALK_time=(y-styr)*nseas*N_subseas+(s-1)*N_subseas+subseas;
-
+            lendata[i](2)=lendata[i](2)/abs(lendata[i](2))*real_month;
             Len_time_t(f,j)=t;     // sequential time = year+season
             Len_time_ALK(f,j)=ALK_time;
             if(data_time(ALK_time,f,1)<0.0)
@@ -1306,10 +1310,10 @@
           if(s>nseas)
            {N_warn++; cout<<" EXIT - see warning "<<endl; warning<<" Critical error, season for length obs "<<i<<" is > nseas"<<endl; exit(1);}
 
-          if(lendata(i,6)<0.0)
+          if(lendata[i](6)<0.0)
             {N_warn++; warning<<"negative values not allowed for lengthcomp sample size, use -fleet to omit from -logL"<<endl;}
           header_l(f,j,1) = y;
-          if(lendata(i,2)<0)
+          if(lendata[i](2)<0)
           {
             header_l(f,j,2) = -real_month;  // month with sign to indicate super period
           }
@@ -1318,16 +1322,16 @@
             header_l(f,j,2) = real_month;  // month
           }
 
-          header_l(f,j,3) = lendata(i,3);   // fleet with sign
+          header_l(f,j,3) = lendata[i](3);   // fleet with sign
           //  note that following storage is redundant with Show_Time(t,3) calculated later
           header_l(f,j,0) = float(y)+0.01*int(100.*(azero_seas(s)+seasdur_half(s)));  //
-          gen_l(f,j)=lendata(i,4);         // gender 0=combined, 1=female, 2=male, 3=both
-          mkt_l(f,j)=lendata(i,5);         // partition: 0=all, 1=discard, 2=retained
-          nsamp_l_read(f,j)=lendata(i,6);  // assigned sample size for observation
+          gen_l(f,j)=lendata[i](4);         // gender 0=combined, 1=female, 2=male, 3=both
+          mkt_l(f,j)=lendata[i](5);         // partition: 0=all, 1=discard, 2=retained
+          nsamp_l_read(f,j)=lendata[i](6);  // assigned sample size for observation
           nsamp_l(f,j)=nsamp_l_read(f,j);
 
   //  SS_Label_Info_2.7.6 #Create super-periods for length compositions
-          if(lendata(i,2)<0)  // start/stop a super-period  ALL observations must be continguous in the file
+          if(lendata[i](2)<0)  // start/stop a super-period  ALL observations must be continguous in the file
           {
             if(in_superperiod==0)  // start a super-period  ALL observations must be continguous in the file
             {N_suprper_l(f)++; suprper_l1(f,N_suprper_l(f))=j; in_superperiod=1;}
@@ -1336,7 +1340,7 @@
           }
 
           for (z=1;z<=nlen_bin2;z++)   // get the composition vector
-           {obs_l(f,j,z)=lendata(i,6+z);}
+           {obs_l(f,j,z)=lendata[i](6+z);}
 
           if(sum(obs_l(f,j))<=0.0) {N_warn++; warning<<" zero fish in size comp (fleet, year) "<<f<<" "<<y<<endl; cout<<" EXIT - see warning "<<endl; exit(1);}
           tails_l(f,j,1)=1;
@@ -1571,8 +1575,7 @@
  END_CALCS
 !!//  SS_Label_Info_2.8.2 #Read Age data
 
-  init_matrix Age_Data(1,nobsa_rd,1,9+n_abins2)
-   !!if(nobsa_rd>0) echoinput<<" first agecomp obs "<<endl<<Age_Data(1)<<endl<<" last obs"<<endl<<Age_Data(nobsa_rd)<<endl;;
+//  init_matrix Age_Data(1,nobsa_rd,1,9+n_abins2)
   ivector Nobs_a(1,Nfleet)
   ivector N_suprper_a(1,Nfleet)      // N super_yrs per obs
 
@@ -1605,18 +1608,26 @@
       }
   }
 
+    for(i=0;i<=nobsa_rd-1;i++)
+     {
+       dvector tempvec_ageread(1,9+n_abins2);
+        *(ad_comm::global_datafile) >> tempvec_ageread(1,9+n_abins2);
+      Age_Data.push_back (tempvec_ageread(1,9+n_abins2));
+    }   
+    if(nobsa_rd>0) echoinput<<" first agecomp obs "<<endl<<Age_Data[0]<<endl<<" last obs"<<endl<<Age_Data[nobsa_rd-1]<<endl;;
+
   Nobs_a=0;
   N_suprper_a=0;
 
-  for (i=1;i<=nobsa_rd;i++)
+    for(i=0;i<=nobsa_rd-1;i++)
   {
-    y=Age_Data(i,1);
+    y=Age_Data[i](1);
     if(y>=styr && y<=retro_yr)
     {
-     f=abs(Age_Data(i,3));
-     if(Age_Data(i,9)<0) {N_warn++; cout<<"error in age data "<<endl; warning<<"Error: negative sample size no longer valid as indicator of skip data or superperiods "<<endl; exit(1);}
-     if(Age_Data(i,6)==0 || Age_Data(i,6)>N_ageerr) {N_warn++; cout<<"error in age data "<<endl; warning<<"Error: undefined age_error type: "<<Age_Data(i,6)<<"  in obs: "<<i<<endl; exit(1);}
-     if(Age_Data(i,2)<0) N_suprper_a(f)++;     // count the number of starts and ends of super-periods if seas<0 or sampsize<0
+     f=abs(Age_Data[i](3));
+     if(Age_Data[i](9)<0) {N_warn++; cout<<"error in age data "<<endl; warning<<"Error: negative sample size no longer valid as indicator of skip data or superperiods "<<endl; exit(1);}
+     if(Age_Data[i](6)==0 || Age_Data[i](6)>N_ageerr) {N_warn++; cout<<"error in age data "<<endl; warning<<"Error: undefined age_error type: "<<Age_Data[i](6)<<"  in obs: "<<i<<endl; exit(1);}
+     if(Age_Data[i](2)<0) N_suprper_a(f)++;     // count the number of starts and ends of super-periods if seas<0 or sampsize<0
 
      Nobs_a(f)++;
     }
@@ -1674,19 +1685,19 @@
    {
      echoinput<<"process age comps "<<endl;
      for (floop=1;floop<=Nfleet;floop++)
-     for (i=1;i<=nobsa_rd;i++)
+    for(i=0;i<=nobsa_rd-1;i++)
      {
-       y=Age_Data(i,1);
+       y=Age_Data[i](1);
        if(y>=styr && y<=retro_yr)
        {
-         f=abs(Age_Data(i,3));
+         f=abs(Age_Data[i](3));
          if(f==floop)
          {
            Nobs_a(f)++;  //  redoing this pointer just to create index j used below
            j=Nobs_a(f);
 
           {  //  start have_data index and timing processing
-          temp=abs(Age_Data(i,2));  //  read value that could be season or month; abs ()because neg value indicates super period
+          temp=abs(Age_Data[i](2));  //  read value that could be season or month; abs ()because neg value indicates super period
             if(read_seas_mo==1)  // reading season
             {
               s=int(temp);
@@ -1722,6 +1733,7 @@
 
             t=styr+(y-styr)*nseas+s-1;
             ALK_time=(y-styr)*nseas*N_subseas+(s-1)*N_subseas+subseas;
+            Age_Data[i](2)=Age_Data[i](2)/abs(Age_Data[i](2))*real_month;
 
           Age_time_t(f,j)=t;                     // sequential time = year+season
           Age_time_ALK(f,j)=ALK_time;
@@ -1747,11 +1759,11 @@
           if(s>nseas)
            {N_warn++; cout<<" EXIT - see warning "<<endl; warning<<" Critical error, season for age obs "<<i<<" is > nseas"<<endl; exit(1);}
 
-          if(Age_Data(i,6)<0.0)
+          if(Age_Data[i](6)<0.0)
             {N_warn++; warning<<"negative values not allowed for age comp sample size, use -fleet to omit from -logL"<<endl;}
-          header_a(f,j)(1,9)=Age_Data(i)(1,9);
+          header_a(f,j)(1,9)=Age_Data[i](1,9);
           header_a(f,j,1) = y;
-          if(Age_Data(i,2)<0)
+          if(Age_Data[i](2)<0)
           {
             header_a(f,j,2) = -real_month;  //  month with sign for super periods
           }
@@ -1759,33 +1771,33 @@
           {
             header_a(f,j,2) = real_month;  // month
           }
-          header_a(f,j,3) = Age_Data(i,3);   // fleet
+          header_a(f,j,3) = Age_Data[i](3);   // fleet
           //  note that following storage is redundant with Show_Time(t,3) calculated later
           header_a(f,j,0) = float(y)+0.01*int(100.*(azero_seas(s)+seasdur_half(s)));  //
-          gen_a(f,j)=Age_Data(i,4);         // gender 0=combined, 1=female, 2=male, 3=both
-          mkt_a(f,j)=Age_Data(i,5);         // partition: 0=all, 1=discard, 2=retained
-          nsamp_a_read(f,j)=Age_Data(i,9);  // assigned sample size for observation
+          gen_a(f,j)=Age_Data[i](4);         // gender 0=combined, 1=female, 2=male, 3=both
+          mkt_a(f,j)=Age_Data[i](5);         // partition: 0=all, 1=discard, 2=retained
+          nsamp_a_read(f,j)=Age_Data[i](9);  // assigned sample size for observation
           nsamp_a(f,j)=nsamp_a_read(f,j);
 
-           if(Age_Data(i,6)>N_ageerr)
+           if(Age_Data[i](6)>N_ageerr)
            {
               N_warn++; cout<<" EXIT - see warning "<<endl; warning<<" ageerror type must be <= "<<N_ageerr<<endl; exit(1);
            }
-           ageerr_type_a(f,j)=Age_Data(i,6);
+           ageerr_type_a(f,j)=Age_Data[i](6);
 
   //  SS_Label_Info_2.8.4 #Create super-periods for age compositions
-           if(in_superperiod==0 && Age_Data(i,2)<0)  // start a super-year  ALL observations must be continguous in the file
+           if(in_superperiod==0 && Age_Data[i](2)<0)  // start a super-year  ALL observations must be continguous in the file
            {N_suprper_a(f)++; suprper_a1(f,N_suprper_a(f))=j; in_superperiod=1;}
-           else if(in_superperiod==1 && Age_Data(i,2)<0)  // end a super-year
+           else if(in_superperiod==1 && Age_Data[i](2)<0)  // end a super-year
            {suprper_a2(f,N_suprper_a(f))=j; in_superperiod=0;}
 
            for (b=1;b<=gender*n_abins;b++)   // get the composition vector
-           {obs_a(f,j,b)=Age_Data(i,9+b);}
+           {obs_a(f,j,b)=Age_Data[i](9+b);}
            if(sum(obs_a(f,j))<=0.0)
            {N_warn++; cout<<" EXIT - see warning "<<endl; warning<<" zero fish in age comp "<<header_a(f,j)<<endl;  exit(1);}
 
-           Lbin_lo(f,j)=Age_Data(i,7);
-           Lbin_hi(f,j)=Age_Data(i,8);
+           Lbin_lo(f,j)=Age_Data[i](7);
+           Lbin_hi(f,j)=Age_Data[i](8);
            switch (Lbin_method)   //  here all 3 methods are converted to poplenbins for use internally
            {
              case 1:  // values are population length bin numbers
@@ -2010,12 +2022,12 @@
   use_meansizedata=1;
   for (i=1;i<=nobs_ms_rd;i++)
   {
-    y=sizeAge_Data(i,1);
+    y=sizeAge_Data[i](1);
     if(y>=styr && y<=retro_yr)
     {
-      f=abs(sizeAge_Data(i,3));
-      if(sizeAge_Data(i,7)<0) {N_warn++; cout<<"error in meansize"<<endl; warning<<"error.  cannot use negative sampsize for meansize data ";exit(1);;}
-      if(sizeAge_Data(i,2)<0) N_suprper_ms(f)++;     // count the number of starts and ends of super-periods if seas<0 or sampsize<0
+      f=abs(sizeAge_Data[i](3));
+      if(sizeAge_Data[i](7)<0) {N_warn++; cout<<"error in meansize"<<endl; warning<<"error.  cannot use negative sampsize for meansize data ";exit(1);;}
+      if(sizeAge_Data[i](2)<0) N_suprper_ms(f)++;     // count the number of starts and ends of super-periods if seas<0 or sampsize<0
       Nobs_ms(f)++;
     }
   }
@@ -2059,17 +2071,17 @@
      for (floop=1;floop<=Nfleet;floop++)
      for (i=1;i<=nobs_ms_rd;i++)
      {
-       y=sizeAge_Data(i,1);
+       y=sizeAge_Data[i](1);
        if(y>=styr && y<=retro_yr)
        {
-         f=abs(sizeAge_Data(i,3));
+         f=abs(sizeAge_Data[i](3));
          if(f==floop)
          {
            Nobs_ms(f)++;
            j=Nobs_ms(f);  //  observation counter
 
           {  //  start have_data index and timing processing
-          temp=abs(sizeAge_Data(i,2));  //  read value that could be season or month; abs ()because neg value indicates super period
+          temp=abs(sizeAge_Data[i](2));  //  read value that could be season or month; abs ()because neg value indicates super period
             if(read_seas_mo==1)  // reading season
             {
               s=int(temp);
@@ -2130,12 +2142,12 @@
           if(s>nseas)
            {N_warn++; cout<<" EXIT - see warning "<<endl; warning<<" Critical error, season for size-age obs "<<i<<" is > nseas"<<endl; exit(1);}
 
-          if(sizeAge_Data(i,6)<0.0)
+          if(sizeAge_Data[i](6)<0.0)
             {N_warn++; warning<<"negative values not allowed for size-at-age sample size, use -fleet to omit from -logL"<<endl;}
 
            header_ms(f,j)(1,7)=sizeAge_Data(i)(1,7);
           header_ms(f,j,1) = y;
-          if(sizeAge_Data(i,2)<0)
+          if(sizeAge_Data[i](2)<0)
           {
             header_ms(f,j,2) = -real_month;  //month
           }
@@ -2143,22 +2155,22 @@
           {
             header_ms(f,j,2) = real_month;  //month
           }
-          header_ms(f,j,3) = sizeAge_Data(i,3);   // fleet
+          header_ms(f,j,3) = sizeAge_Data[i](3);   // fleet
           //  note that following storage is redundant with Show_Time(t,3) calculated later
           header_ms(f,j,0) = float(y)+0.01*int(100.*(azero_seas(s)+seasdur_half(s)));  //
 
-           gen_ms(f,j)=sizeAge_Data(i,4);
-           mkt_ms(f,j)=sizeAge_Data(i,5);
-           if(sizeAge_Data(i,6)>N_ageerr)
+           gen_ms(f,j)=sizeAge_Data[i](4);
+           mkt_ms(f,j)=sizeAge_Data[i](5);
+           if(sizeAge_Data[i](6)>N_ageerr)
            {
               N_warn++;cout<<" EXIT - see warning "<<endl;
               warning<<" in meansize, ageerror type must be <= "<<N_ageerr<<endl; exit(1);
            }
-           ageerr_type_ms(f,j)=sizeAge_Data(i,6);
-           if(sizeAge_Data(i,3)>0) {use_ms(f,j)=1;} else {use_ms(f,j)=-1;}
+           ageerr_type_ms(f,j)=sizeAge_Data[i](6);
+           if(sizeAge_Data[i](3)>0) {use_ms(f,j)=1;} else {use_ms(f,j)=-1;}
 
   //  SS_Label_Info_2.9.1 #Create super-periods for meansize data
-           if(sizeAge_Data(i,2)<0)  // start/stop a super-period  ALL observations must be continguous in the file
+           if(sizeAge_Data[i](2)<0)  // start/stop a super-period  ALL observations must be continguous in the file
            {
              if(in_superperiod==0)  //  start superperiod
              {N_suprper_ms(f)++; suprper_ms1(f,N_suprper_ms(f))=j; in_superperiod=1;}
@@ -2168,11 +2180,11 @@
            }
 
            for (b=1;b<=n_abins2;b++)
-           {obs_ms(f,j,b)=sizeAge_Data(i,7+b);}
+           {obs_ms(f,j,b)=sizeAge_Data[i](7+b);}
            for (b=1;b<=n_abins2;b++)
            {
-             obs_ms_n(f,j,b)=sizeAge_Data(i,7+b+n_abins2);
-             obs_ms_n_read(f,j,b)=sizeAge_Data(i,7+b+n_abins2);
+             obs_ms_n(f,j,b)=sizeAge_Data[i](7+b+n_abins2);
+             obs_ms_n_read(f,j,b)=sizeAge_Data[i](7+b+n_abins2);
            }
          }
        }
@@ -2307,6 +2319,8 @@
 //  NOTE:  for the szfreq data, which are stored in one list and not by fleet, it is not possible to exclude from the working array on basis of before styr or after retroyr
   ivector SzFreq_Setup(1,SzFreq_totobs);  //  stores the number of bins plus header info to read into ragged array
   ivector SzFreq_Setup2(1,SzFreq_totobs);   //  stores the number of bins for each obs to create the ragged array
+  ivector SzFreq_time_t(1,SzFreq_totobs)
+  ivector SzFreq_time_ALK(1,SzFreq_totobs)
 
  LOCAL_CALCS
   if(SzFreq_Nmeth>0)
@@ -2405,9 +2419,13 @@
             data_timing=0.5;
           }
         }
-
+        SzFreq_obs_hdr(iobs,2)=SzFreq_obs_hdr(iobs,2)/abs(SzFreq_obs_hdr(iobs,2))*real_month;
+        SzFreq_obs1(iobs,3)=real_month;
+        
         t=styr+(y-styr)*nseas+s-1;
         ALK_time=(y-styr)*nseas*N_subseas+(s-1)*N_subseas+subseas;
+        SzFreq_time_t(iobs)=t;
+        SzFreq_time_ALK(iobs)=ALK_time;
         if(gender==1) {SzFreq_obs_hdr(iobs,4)=0;}
         z=SzFreq_obs_hdr(iobs,4);  // gender
 // get min and max index according to use of 0, 1, 2, 3 gender index

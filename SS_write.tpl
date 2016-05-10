@@ -653,16 +653,11 @@ FUNCTION void write_nudata()
   report1<<nlen_bin<<" #_N_LengthBins; then enter lower edge of each length bin"<<endl<<len_bins_dat<<endl;
 //  report1<<nobsl_rd<<" #_N_Length_obs"<<endl;
   report1<<"#_yr month fleet sex part Nsamp datavector(female-male)"<<endl;
-   for (f=1;f<=Nfleet;f++)
-   {
-    if(Nobs_l(f)>0)
-    {
-     for (i=1;i<=Nobs_l(f);i++)
-     {
-      report1 << header_l(f,i)(1,3)<<" "<<gen_l(f,i)<<" "<<mkt_l(f,i)<<" "<<nsamp_l(f,i)<<" "<<obs_l(f,i)<<endl;
-     }
-     }
-   }
+  if(nobsl_rd>0)
+  {
+    for(i=0;i<=nobsl_rd-1;i++)
+    { report1<<lendata[i]<<endl;}
+  }
     report1<<-9999.<<" ";
     for(j=2;j<=6+nlen_bin2;j++) report1<<"0 ";
     report1<<endl;
@@ -690,17 +685,11 @@ FUNCTION void write_nudata()
   report1<<"# sex codes:  0=combined; 1=use female only; 2=use male only; 3=use both as joint sexxlength distribution"<<endl;
   report1<<"# partition codes:  (0=combined; 1=discard; 2=retained"<<endl;
   report1<<"#_yr month fleet sex part ageerr Lbin_lo Lbin_hi Nsamp datavector(female-male)"<<endl;
-   if(Nobs_a_tot>0)
-   for (f=1;f<=Nfleet;f++)
-   {
-    if(Nobs_a(f)>=1)
-    {
-     for (i=1;i<=Nobs_a(f);i++)
-     {
-       report1<<header_a(f,i)(1,9)<<" "<<obs_a(f,i)<<endl;
-     }
-    }
-   }
+  if(nobsa_rd>0)
+  {
+    for(i=0;i<=nobsa_rd-1;i++)
+    { report1<<Age_Data[i]<<endl;}
+  }
   f=exp_a_temp.size()+8;
   report1 << "-9999 ";
   for(i=1;i<=f;i++) report1<<" 0";
@@ -4688,6 +4677,7 @@ FUNCTION void write_bigoutput()
     if(SzFreq_Nmeth>0)       //  have some sizefreq data
     {
       in_superperiod=0;
+      last_t=-999;
       for (iobs=1;iobs<=SzFreq_totobs;iobs++)
       {
         y=SzFreq_obs_hdr(iobs,1);
@@ -4698,7 +4688,6 @@ FUNCTION void write_bigoutput()
           temp1=0.0;
           s=abs(SzFreq_obs_hdr(iobs,2));
 //          temp=float(y)+float(abs(s)-1.)/float(nseas);
-          temp = float(y)+0.01*int(100.*(azero_seas(s)+seasdur_half(s)));
           f=abs(SzFreq_obs_hdr(iobs,3));
           gg=SzFreq_obs_hdr(iobs,4);  // gender
           k=SzFreq_obs_hdr(iobs,6);
@@ -4717,12 +4706,18 @@ FUNCTION void write_bigoutput()
           p=SzFreq_obs_hdr(iobs,5);  // partition
           z1=SzFreq_obs_hdr(iobs,7);
           z2=SzFreq_obs_hdr(iobs,8);
+          t=SzFreq_time_t(iobs);
+          ALK_time=SzFreq_time_ALK(iobs);
           temp2=0.0;
           temp1=0.0;
+          if(t==last_t)
+          {repli++;}
+          else
+          {repli=1;last_t=t;}
           for (z=z1;z<=z2;z++)
           {
             s_off=1;
-            SS_compout<<y<<" "<<s<<" "<<temp<<" "<<f<<" "<<1<<" "<<gg<<" SIZE "<<p<<" "<<k;
+            SS_compout<<Show_Time(t,1)<<" "<<Show_Time(t,2)<<" "<<data_time(ALK_time,f,3)<<" "<<f<<" "<<repli<<" "<<gg<<" SIZE "<<p<<" "<<k;
             if(z>SzFreq_Nbins(k)) s_off=2;
             SS_compout<<" "<<s_off<<" "<<SzFreq_units(k)<<" "<<SzFreq_scale(k)<<" ";
             if(s_off==1) {SS_compout<<SzFreq_bins1(k,z);} else {SS_compout<<SzFreq_bins1(k,z-SzFreq_Nbins(k));}

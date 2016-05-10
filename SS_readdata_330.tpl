@@ -2365,6 +2365,8 @@
 //  NOTE:  for the szfreq data, which are stored in one list and not by fleet, it is not possible to exclude from the working array on basis of before styr or after retroyr
   ivector SzFreq_Setup(1,SzFreq_totobs);  //  stores the number of bins plus header info to read into ragged array
   ivector SzFreq_Setup2(1,SzFreq_totobs);   //  stores the number of bins for each obs to create the ragged array
+  ivector SzFreq_time_t(1,SzFreq_totobs)
+  ivector SzFreq_time_ALK(1,SzFreq_totobs)
 
  LOCAL_CALCS
   if(SzFreq_Nmeth>0)
@@ -2464,8 +2466,13 @@
           }
         }
 
+        SzFreq_obs_hdr(iobs,2)=SzFreq_obs_hdr(iobs,2)/abs(SzFreq_obs_hdr(iobs,2))*real_month;
+        SzFreq_obs1(iobs,3)=real_month;
+        
         t=styr+(y-styr)*nseas+s-1;
         ALK_time=(y-styr)*nseas*N_subseas+(s-1)*N_subseas+subseas;
+        SzFreq_time_t(iobs)=t;
+        SzFreq_time_ALK(iobs)=ALK_time;
         if(gender==1) {SzFreq_obs_hdr(iobs,4)=0;}
         z=SzFreq_obs_hdr(iobs,4);  // gender
 // get min and max index according to use of 0, 1, 2, 3 gender index
