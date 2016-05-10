@@ -2731,11 +2731,13 @@
   vector Fcast_Input(1,22);
 
   int N_Fcast_Yrs
-  ivector Fcast_yr(1,4)  // yr range for selex, then yr range foreither allocation or for average F
+  ivector Fcast_yr(1,6)  // yr range for selex, then yr range foreither allocation or for average F
   int Fcast_Sel_yr1
   int Fcast_Sel_yr2
   int Fcast_RelF_yr1
   int Fcast_RelF_yr2
+  int Fcast_Rec_yr1
+  int Fcast_Rec_yr2
   int Fcast_RelF_Basis  // 1=use year range; 2=read below
   number Fcast_Flevel
   int Do_Rebuilder
@@ -2770,7 +2772,7 @@
   else
   {
     k=22;
-    echoinput<<"Forecast selected; next 20 input values will be read as a block then parsed and procesed "<<endl;
+    echoinput<<"Forecast selected; next 22 input values will be read as a block then parsed and procesed "<<endl;
   }
  END_CALCS
   init_vector Fcast_Input_rd(1,k)
@@ -2791,6 +2793,11 @@
   k++; Fcast_yr(2)=int(Fcast_Input(k));
   k++; Fcast_yr(3)=int(Fcast_Input(k));
   k++; Fcast_yr(4)=int(Fcast_Input(k));
+
+  // default values for 3.30
+  Fcast_yr(5) = styr;
+  Fcast_yr(6) = endyr;
+
   echoinput<<Fcast_yr<<" Begin-end yrs for average selex; begin-end yrs for allocation"<<endl;
   for (i=1;i<=4;i++)
   {
@@ -2805,7 +2812,9 @@
   Fcast_Sel_yr2=Fcast_yr(2);
   Fcast_RelF_yr1=Fcast_yr(3);
   Fcast_RelF_yr2=Fcast_yr(4);
-  echoinput<<Fcast_yr<<"  After Transformation:  begin-end yrs for average selex; begin-end yrs for rel F"<<endl;
+  Fcast_Rec_yr1=Fcast_yr(5);
+  Fcast_Rec_yr2=Fcast_yr(6);
+  echoinput<<Fcast_yr<<"  After Transformation:  begin-end yrs for average selex; begin-end yrs for rel F; begin-end yrs for recruits"<<endl;
 
   k++; HarvestPolicy=int(Fcast_Input(k));
   k++; H4010_top=Fcast_Input(k);
@@ -2862,6 +2871,8 @@
   Fcast_Sel_yr2=endyr;
   Fcast_RelF_yr1=endyr;
   Fcast_RelF_yr2=endyr;
+  Fcast_Rec_yr1=styr;
+  Fcast_Rec_yr2=endyr;
   HarvestPolicy=1;
   H4010_top=0.001;
   H4010_bot=0.0001;
