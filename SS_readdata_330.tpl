@@ -2365,6 +2365,8 @@
 //  NOTE:  for the szfreq data, which are stored in one list and not by fleet, it is not possible to exclude from the working array on basis of before styr or after retroyr
   ivector SzFreq_Setup(1,SzFreq_totobs);  //  stores the number of bins plus header info to read into ragged array
   ivector SzFreq_Setup2(1,SzFreq_totobs);   //  stores the number of bins for each obs to create the ragged array
+  ivector SzFreq_time_t(1,SzFreq_totobs)
+  ivector SzFreq_time_ALK(1,SzFreq_totobs)
 
  LOCAL_CALCS
   if(SzFreq_Nmeth>0)
@@ -2464,8 +2466,13 @@
           }
         }
 
+        SzFreq_obs_hdr(iobs,2)=SzFreq_obs_hdr(iobs,2)/abs(SzFreq_obs_hdr(iobs,2))*real_month;
+        SzFreq_obs1(iobs,3)=real_month;
+        
         t=styr+(y-styr)*nseas+s-1;
         ALK_time=(y-styr)*nseas*N_subseas+(s-1)*N_subseas+subseas;
+        SzFreq_time_t(iobs)=t;
+        SzFreq_time_ALK(iobs)=ALK_time;
         if(gender==1) {SzFreq_obs_hdr(iobs,4)=0;}
         z=SzFreq_obs_hdr(iobs,4);  // gender
 // get min and max index according to use of 0, 1, 2, 3 gender index
@@ -2753,13 +2760,13 @@
   init_number BTGT_target
   !!echoinput<<BTGT_target<<" BTGT_target "<<endl;
 
-  ivector Bmark_Yr(1,6)
+  ivector Bmark_Yr(1,8)
   ivector Bmark_t(1,2)  //  for range of time values for averaging body size
-  init_ivector Bmark_Yr_rd(1,6)
+  init_ivector Bmark_Yr_rd(1,8)
   init_int Bmark_RelF_Basis
  LOCAL_CALCS
-  echoinput<<Bmark_Yr_rd<<" Benchmark years as read:  beg-end bio; beg-end selex; beg-end relF"<<endl;
-  for (i=1;i<=6;i++)  //  beg-end bio; beg-end selex; beg-end relF
+  echoinput<<Bmark_Yr_rd<<" Benchmark years as read:  beg-end bio; beg-end selex; beg-end relF; beg-end recruits"<<endl;
+  for (i=1;i<=8;i++)  //  beg-end bio; beg-end selex; beg-end relF
   {
     if(Bmark_Yr_rd(i)==-999)
     {Bmark_Yr(i)=styr;}
@@ -2775,21 +2782,23 @@
   Bmark_t(1)=styr+(Bmark_Yr(1)-styr)*nseas;
   Bmark_t(2)=styr+(Bmark_Yr(2)-styr)*nseas;
 
-  echoinput<<Bmark_Yr<<" Benchmark years as processed:  beg-end bio; beg-end selex; beg-end relF"<<endl;
+  echoinput<<Bmark_Yr<<" Benchmark years as processed:  beg-end bio; beg-end selex; beg-end relF; beg-end recruits"<<endl;
   echoinput<<Bmark_RelF_Basis<<"  1=use range of years for relF; 2 = set same as forecast relF below"<<endl;
  END_CALCS
 
   init_int Do_Forecast   //  0=none; 1=F(SPR); 2=F(MSY) 3=F(Btgt); 4=Ave F (enter yrs); 5=read Fmult
   !!echoinput<<Do_Forecast<<" Do_Forecast "<<endl;
 
-  vector Fcast_Input(1,22);
+  vector Fcast_Input(1,24);
 
   int N_Fcast_Yrs
-  ivector Fcast_yr(1,4)  // yr range for selex, then yr range foreither allocation or for average F
+  ivector Fcast_yr(1,6)  // yr range for selex, then yr range foreither allocation or for average F
   int Fcast_Sel_yr1
   int Fcast_Sel_yr2
   int Fcast_RelF_yr1
   int Fcast_RelF_yr2
+  int Fcast_Rec_yr1
+  int Fcast_Rec_yr2
   int Fcast_RelF_Basis  // 1=use year range; 2=read below
   number Fcast_Flevel
   int Do_Rebuilder
@@ -2823,8 +2832,8 @@
   }
   else
   {
-    k=22;
-    echoinput<<"Forecast selected; next 20 input values will be read as a block then parsed and procesed "<<endl;
+    k=24;
+    echoinput<<"Forecast selected; next 24 input values will be read as a block then parsed and procesed "<<endl;
   }
  END_CALCS
   init_vector Fcast_Input_rd(1,k)
@@ -2845,8 +2854,10 @@
   k++; Fcast_yr(2)=int(Fcast_Input(k));
   k++; Fcast_yr(3)=int(Fcast_Input(k));
   k++; Fcast_yr(4)=int(Fcast_Input(k));
+  k++; Fcast_yr(5)=int(Fcast_Input(k));
+  k++; Fcast_yr(6)=int(Fcast_Input(k));
   echoinput<<Fcast_yr<<" Begin-end yrs for average selex; begin-end yrs for allocation"<<endl;
-  for (i=1;i<=4;i++)
+  for (i=1;i<=6;i++)
   {
     if(Fcast_yr(i)==-999)
     {Fcast_yr(i)=styr;}
@@ -2859,7 +2870,9 @@
   Fcast_Sel_yr2=Fcast_yr(2);
   Fcast_RelF_yr1=Fcast_yr(3);
   Fcast_RelF_yr2=Fcast_yr(4);
-  echoinput<<Fcast_yr<<"  After Transformation:  begin-end yrs for average selex; begin-end yrs for rel F"<<endl;
+  Fcast_Rec_yr1=Fcast_yr(5);
+  Fcast_Rec_yr2=Fcast_yr(6);
+  echoinput<<Fcast_yr<<"  After Transformation:  begin-end yrs for average selex; begin-end yrs for rel F; begin-end yrs for recruits"<<endl;
 
   k++; HarvestPolicy=int(Fcast_Input(k));
   k++; H4010_top=Fcast_Input(k);
@@ -2916,6 +2929,8 @@
   Fcast_Sel_yr2=endyr;
   Fcast_RelF_yr1=endyr;
   Fcast_RelF_yr2=endyr;
+  Fcast_Rec_yr1=styr;
+  Fcast_Rec_yr2=endyr;
   HarvestPolicy=1;
   H4010_top=0.001;
   H4010_bot=0.0001;
