@@ -1542,8 +1542,8 @@ FUNCTION void write_nucontrol()
   else
   {NuStart<<"#COND 10 15 #_min and max age over which average F will be calculated with F_reporting=4"<<endl;}
   NuStart<<F_std_basis<<" # F_std_basis: 0=raw_F_report; 1=F/Fspr; 2=F/Fmsy ; 3=F/Fbtgt"<<endl;
-  NuStart<<3.30<<" # check value for end of file and for version control"<<endl;
   NuStart<<ALK_tolerance<<" # ALK tolerance (example 0.0001)"<<endl;
+  NuStart<<"3.30 # check value for end of file and for version control"<<endl;
   NuStart.close();
 
   cout<<" Write new forecast file "<<endl;
@@ -1854,7 +1854,7 @@ FUNCTION void write_nucontrol()
    }
    report4<<"#Next are short parm lines, if requested, for env effects on R0, steepness, and annual dev"<<endl;
    report4<<"#Then short parm lines, if requested, for block/trend effects on R0, steepness, and annual dev"<<endl;
-   
+
 //   report4<<SR_env_link<<" #_SR_env_link"<<endl;
 //   report4<<SR_env_target_RD<<" #_SR_env_target_0=none;1=devs;_2=R0;_3=steepness"<<endl;
    report4<<do_recdev<<" #do_recdev:  0=none; 1=devvector; 2=simple deviations"<<endl;
