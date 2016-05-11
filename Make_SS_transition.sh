@@ -2,6 +2,10 @@
 
 cd vlab/stock-synthesis
 
+if [ ! -d SS330_tr ]; then
+    mkdir SS330_tr
+fi
+
 if [ -f SS_functions.temp ]; then
     rm SS_functions.temp
 fi
