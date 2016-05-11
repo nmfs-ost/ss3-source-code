@@ -489,7 +489,7 @@ FUNCTION void write_nudata()
   cout << " N_nudata: " << N_nudata << endl;
   ofstream report1("data.ss_new");
   report1<<version_info_short<<endl;
-  report1<<"#_"<<version_info<<endl<<"#_Start_time: "<<ctime(&start);
+  report1<<"#_"<<version_info<<endl<<"#_"<<version_info2<<endl<<"#_Start_time: "<<ctime(&start);
   report1  << "#_Number_of_datafiles: " << N_nudata << endl;
   for (Nudat=1;Nudat<=N_nudata;Nudat++)
   {
@@ -1675,7 +1675,7 @@ FUNCTION void write_nucontrol()
   report4<<version_info_short<<endl;
   if(N_CC>0) report4<<Control_Comments<<endl;
   report4 << "#_data_and_control_files: "<<datfilename<<" // "<<ctlfilename<<endl;
-  report4<<"#_"<<version_info<<endl;
+  report4<<"#_"<<version_info<<endl<<"#_"<<version_info2<<endl;
   report4 << N_GP << "  #_N_Growth_Patterns"<<endl;
   report4 << N_platoon << " #_N_platoons_Within_GrowthPattern "<<endl;
   if(N_platoon==1) report4<<"#_Cond ";
@@ -2238,7 +2238,7 @@ FUNCTION void write_bigoutput()
   k=current_phase();
   if(k>max_lambda_phase) k=max_lambda_phase;
   SS2out<<version_info_short<<endl;
-  SS2out<<version_info<<endl<<endl;
+  SS2out<<version_info<<endl<<version_info2<<endl<<endl;
   time(&finish);
   SS_compout<<version_info_short<<endl;
   SS_compout<<version_info<<endl<<"StartTime: "<<ctime(&start);
