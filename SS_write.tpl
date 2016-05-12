@@ -1512,7 +1512,7 @@ FUNCTION void write_nucontrol()
   NuStart<<version_info_short<<endl;
   if(N_SC>0) NuStart<<Starter_Comments<<endl;
   NuStart<<datfilename<<endl<<ctlfilename<<endl;
-  NuStart<<readparfile<<" # 0=use init values in control file; 1=use ss3.par"<<endl;
+  NuStart<<readparfile<<" # 0=use init values in control file; 1=use ss.par"<<endl;
   NuStart<<rundetail<<" # run display detail (0,1,2)"<<endl;
   NuStart<<reportdetail<<" # detailed age-structured reports in REPORT.SSO (0,1) "<<endl;
   NuStart<<docheckup<<" # write detailed checkup.sso file (0,1) "<<endl;

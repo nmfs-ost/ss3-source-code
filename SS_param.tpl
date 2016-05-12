@@ -6,9 +6,13 @@ PARAMETER_SECTION
 //  {
 //  SS_Label_Info_5.0.1 #Setup convergence critera and max func evaluations
  LOCAL_CALCS
+
+    // set the filename to all ADMB output files to "ss.[ext]"
+    ad_comm::adprogram_name = "ss";
+
     if(readparfile>=1)
     {cout<<" read parm file"<<endl;
-    ad_comm::change_pinfile_name("ss3.par");}
+    ad_comm::change_pinfile_name("ss.par");}
     maximum_function_evaluations.allocate(func_eval.indexmin(),func_eval.indexmax());
     maximum_function_evaluations=func_eval;
     convergence_criteria.allocate(func_conv.indexmin(),func_conv.indexmax());
