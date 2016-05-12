@@ -5,9 +5,10 @@ DATA_SECTION
 !!//  SS_Label_Section_1.0 #DATA_SECTION
 
 !!//  SS_Label_Info_1.1.1  #Create string with version info
-!!version_info+="SS-V3.30a-safe;_03_23_2016;_Stock_Synthesis_by_Richard_Methot_(NOAA)_using_ADMB_11.1";
+!!version_info+="SS-V3.30_beta-safe;_2016_05_16;_Stock_Synthesis_by_Richard_Methot_(NOAA)_using_ADMB_11.1";
+!!version_info2+="SS-V3.30_beta-safe;user_info_available_at:https://vlab.ncep.noaa.gov/group/stock-synthesis";
 
-!!version_info_short+="#V3.30a";
+!!version_info_short+="#V3.30_beta";
 
 //*********COUNTERS*************************
   int z // counters for size (length)
@@ -247,6 +248,7 @@ DATA_SECTION
   !!echoinput<<F_std_basis<<"  F_std_basis"<<endl;
   !!echoinput<<"For Kobe plot, set depletion_basis=2; depletion_level=1.0; F_reporting=your choose; F_std_basis=2"<<endl;
   init_number finish_starter
+  init_number finish_starter2
   number ALK_tolerance
 
  LOCAL_CALCS
@@ -254,17 +256,26 @@ DATA_SECTION
    if(finish_starter==999.)
     {echoinput<<"Read files in 3.24 format"<<endl;}
     else
-   if(finish_starter==3.30)
+   // if(finish_starter==3.30)
    {
      echoinput<<"Read files in 3.30 format"<<endl;
      echoinput<<"Now read ALK tolerance (suggest 0.0001)"<<endl;
-     *(ad_comm::global_datafile) >> ALK_tolerance;
+     ALK_tolerance = finish_starter;
      echoinput<<"ALK tolerance:  "<<ALK_tolerance<<endl;
-     // enforce valid range of ALK_tolerance here
-     // TODO
+     // enforce valid range of ALK_tolerance
+     if (ALK_tolerance < 0.0 || ALK_tolerance > 0.1)
+     {
+         echoinput<<"Error: ALK tolerance must be between 0.0 and 0.1"<<endl;
+         cout<<"Error: ALK_tolerance must be between 0.0 and 0.1: "<<ALK_tolerance<<endl; exit(1);
+     }
+
+     // *(ad_comm::global_datafile) >> finish_starter;
+     if (finish_starter2 != 3.30)
+     {
+        echoinput<<"Error: the last line of starter.ss should be '3.30'"<<endl;
+        cout<<"CRITICAL error reading finish_starter in starter.ss: "<<finish_starter2<<endl; exit(1);
+     }
    }
-   else
-   {cout<<"CRITICAL error reading finish_starter in starter.ss: "<<finish_starter<<endl; exit(1);}
    echoinput<<"  finish reading starter.ss"<<endl<<endl;
 
  END_CALCS

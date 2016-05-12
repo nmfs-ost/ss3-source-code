@@ -489,7 +489,7 @@ FUNCTION void write_nudata()
   cout << " N_nudata: " << N_nudata << endl;
   ofstream report1("data.ss_new");
   report1<<version_info_short<<endl;
-  report1<<"#_"<<version_info<<endl<<"#_Start_time: "<<ctime(&start);
+  report1<<"#_"<<version_info<<endl<<"#_"<<version_info2<<endl<<"#_Start_time: "<<ctime(&start);
   report1  << "#_Number_of_datafiles: " << N_nudata << endl;
   for (Nudat=1;Nudat<=N_nudata;Nudat++)
   {
@@ -1512,7 +1512,7 @@ FUNCTION void write_nucontrol()
   NuStart<<version_info_short<<endl;
   if(N_SC>0) NuStart<<Starter_Comments<<endl;
   NuStart<<datfilename<<endl<<ctlfilename<<endl;
-  NuStart<<readparfile<<" # 0=use init values in control file; 1=use ss3.par"<<endl;
+  NuStart<<readparfile<<" # 0=use init values in control file; 1=use ss.par"<<endl;
   NuStart<<rundetail<<" # run display detail (0,1,2)"<<endl;
   NuStart<<reportdetail<<" # detailed age-structured reports in REPORT.SSO (0,1) "<<endl;
   NuStart<<docheckup<<" # write detailed checkup.sso file (0,1) "<<endl;
@@ -1542,8 +1542,8 @@ FUNCTION void write_nucontrol()
   else
   {NuStart<<"#COND 10 15 #_min and max age over which average F will be calculated with F_reporting=4"<<endl;}
   NuStart<<F_std_basis<<" # F_std_basis: 0=raw_F_report; 1=F/Fspr; 2=F/Fmsy ; 3=F/Fbtgt"<<endl;
-  NuStart<<3.30<<" # check value for end of file and for version control"<<endl;
   NuStart<<ALK_tolerance<<" # ALK tolerance (example 0.0001)"<<endl;
+  NuStart<<"3.30 # check value for end of file and for version control"<<endl;
   NuStart.close();
 
   cout<<" Write new forecast file "<<endl;
@@ -1675,7 +1675,7 @@ FUNCTION void write_nucontrol()
   report4<<version_info_short<<endl;
   if(N_CC>0) report4<<Control_Comments<<endl;
   report4 << "#_data_and_control_files: "<<datfilename<<" // "<<ctlfilename<<endl;
-  report4<<"#_"<<version_info<<endl;
+  report4<<"#_"<<version_info<<endl<<"#_"<<version_info2<<endl;
   report4 << N_GP << "  #_N_Growth_Patterns"<<endl;
   report4 << N_platoon << " #_N_platoons_Within_GrowthPattern "<<endl;
   if(N_platoon==1) report4<<"#_Cond ";
@@ -1854,7 +1854,7 @@ FUNCTION void write_nucontrol()
    }
    report4<<"#Next are short parm lines, if requested, for env effects on R0, steepness, and annual dev"<<endl;
    report4<<"#Then short parm lines, if requested, for block/trend effects on R0, steepness, and annual dev"<<endl;
-   
+
 //   report4<<SR_env_link<<" #_SR_env_link"<<endl;
 //   report4<<SR_env_target_RD<<" #_SR_env_target_0=none;1=devs;_2=R0;_3=steepness"<<endl;
    report4<<do_recdev<<" #do_recdev:  0=none; 1=devvector; 2=simple deviations"<<endl;
@@ -2238,7 +2238,7 @@ FUNCTION void write_bigoutput()
   k=current_phase();
   if(k>max_lambda_phase) k=max_lambda_phase;
   SS2out<<version_info_short<<endl;
-  SS2out<<version_info<<endl<<endl;
+  SS2out<<version_info<<endl<<version_info2<<endl<<endl;
   time(&finish);
   SS_compout<<version_info_short<<endl;
   SS_compout<<version_info<<endl<<"StartTime: "<<ctime(&start);

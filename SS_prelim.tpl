@@ -438,7 +438,7 @@ PRELIMINARY_CALCS_SECTION
       }
       else
       {
-      echoinput<< " Fmort_parms obtained from ss3.par "<<endl;
+      echoinput<< " Fmort_parms obtained from ss.par "<<endl;
       }
     }
 
