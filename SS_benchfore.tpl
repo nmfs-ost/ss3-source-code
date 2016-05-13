@@ -688,6 +688,7 @@ FUNCTION void Get_Forecast()
     report5<<"Annual_Forecast_Fmult: "<<Fcast_Fmult<<endl;
     report5<<"Fmultiplier_during_selected_relF_years_was: "<<Fcurr_Fmult<<endl;
     report5<<"Selectivity_averaged_over_yrs:_"<<Fcast_Sel_yr1<<"_to_"<<Fcast_Sel_yr2<<endl;
+    report5<<"Recruitment_averaged_over_yrs:_"<<Fcast_Rec_yr1<<"_to_"<<Fcast_Rec_yr2<<endl;
     report5<<"Cap_totalcatch_by_fleet "<<endl<<Fcast_MaxFleetCatch<<endl;
     report5<<"Cap_totalcatch_by_area "<<endl<<Fcast_MaxAreaCatch<<endl;
     report5<<"Assign_fleets_to_allocation_groups_(0_means_not_in_a_group) "<<endl<<Allocation_Fleet_Assignments<<endl;
