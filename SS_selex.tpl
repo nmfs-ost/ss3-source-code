@@ -769,7 +769,7 @@ FUNCTION void get_selectivity()
           if(seltype(f,2)==4)
           {
             // allow for dome-shaped retention in 3.30 only
-            retain(y,f) = retain(y,f)*(1.-(1./(1.+mfexp(-(len_bins_m2-(sp(k+4)+male_offset*sp(k+6)))/sp(k+5)))));
+            retain(y,f) = elem_prod(retain(y,f),(1.-(1./(1.+mfexp(-(len_bins_m2-(sp(k+4)+male_offset*sp(k+6)))/sp(k+5))))));
           }
           if(docheckup==1&&y==styr)
           {
@@ -1200,7 +1200,7 @@ FUNCTION void get_selectivity()
           if(seltype(f,2)==4)
           {
             // allow for dome-shaped retention in 3.30 only
-            retain_a(y,fs,1)=retain_a(y,fs,1)*(1.-(1./(1.+mfexp(-(r_ages-(sp(k+4)))/sp(k+5)))));
+            retain_a(y,fs,1)=elem_prod(retain_a(y,fs,1),(1.-(1./(1.+mfexp(-(r_ages-(sp(k+4)))/sp(k+5))))));
           }
           if(gender==2)
           {
@@ -1208,7 +1208,7 @@ FUNCTION void get_selectivity()
             retain_a(y,fs,2)=temp1/(1.+mfexp(-(r_ages-(sp(k)+sp(k+3)))/sp(k+1)));
             if(seltype(f,2)==4)
             {
-                retain_a(y,fs,2)=retain_a(y,fs,2)*(1.-(1./(1.+mfexp(-(r_ages-(sp(k+4)+sp(k+6)))/sp(k+5)))));
+                retain_a(y,fs,2)=elem_prod(retain_a(y,fs,2),(1.-(1./(1.+mfexp(-(r_ages-(sp(k+4)+sp(k+6)))/sp(k+5))))));
             }
           }
           if(docheckup==1&&y==styr)
