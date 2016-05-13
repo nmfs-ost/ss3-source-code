@@ -1103,7 +1103,8 @@
 //        ParCount++; ParmLabel+=ParmLabel(f)+"_ENV_densdep"; MGparm_envtype(f)=3;  MGparm_envuse(f)=-1;}
      else if (MGparm_1(f,8)<0)
      {ParCount++; ParmLabel+=ParmLabel(f)+"_ENV_add"; MGparm_envtype(f)=2; MGparm_envuse(f)=-MGparm_1(f,8);
-     	MGparm_1(f,8) = 200+abs(MGparm_1(f,8));}
+     	MGparm_1(f,8) = 200+abs(MGparm_1(f,8));
+     	}
 
      if(f==MGP_CGD) CGD=1;    // cohort growth dev is a fxn of environ, so turn on CGD calculation
      for (y=styr;y<=endyr;y++)
@@ -1113,7 +1114,6 @@
      }
     }
    }
-
   if(N_MGparm_env>0)
   {
     *(ad_comm::global_datafile) >> customMGenvsetup;
