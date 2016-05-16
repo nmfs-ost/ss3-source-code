@@ -1848,10 +1848,11 @@ FUNCTION void write_nucontrol()
    { NP++;
      SR_parm_1(f,3)=value(SR_parm(f));
       for(j=1;j<=6;j++) report4<<std::setprecision(4)<<std::fixed<<setw(10)<<SR_parm_1(f,j);
-      report4.unsetf(std::ios_base::floatfield);
-      for(j=7;j<=14;j++) report4<<std::setprecision(0)<<setw(8)<<SR_parm_1(f,j);
+      report4.precision(6); report4.unsetf(std::ios_base::fixed); report4.unsetf(std::ios_base::floatfield);
+      for(j=7;j<=14;j++) report4<<setw(8)<<SR_parm_1(f,j);
       report4<<" # "<<ParmLabel(NP)<<endl;
    }
+   report4.precision(6); report4.unsetf(std::ios_base::fixed); report4.unsetf(std::ios_base::floatfield);
    report4<<"#Next are short parm lines, if requested, for env effects on R0, steepness, and annual dev"<<endl;
    report4<<"#Then short parm lines, if requested, for block/trend effects on R0, steepness, and annual dev"<<endl;
 
@@ -2031,10 +2032,11 @@ FUNCTION void write_nucontrol()
       NP++;
       Q_parm_1(f,3)=value(Q_parm(f));
       for(j=1;j<=6;j++) report4<<std::setprecision(4)<<std::fixed<<setw(10)<<Q_parm_1(f,j);
-      report4.unsetf(std::ios_base::floatfield);
-      for(j=7;j<=14;j++) report4<<std::setprecision(0)<<setw(8)<<Q_parm_1(f,j);
+      report4.precision(6); report4.unsetf(std::ios_base::fixed); report4.unsetf(std::ios_base::floatfield);
+      for(j=7;j<=14;j++) report4<<setw(8)<<Q_parm_1(f,j);
       report4<<"  #  "<<ParmLabel(NP)<<endl;
     }
+     report4.precision(6); report4.unsetf(std::ios_base::fixed); report4.unsetf(std::ios_base::floatfield);
    }
    report4<<"#"<<endl;
    report4<<"#_size_selex_types"<<endl;
