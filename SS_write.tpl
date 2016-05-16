@@ -2043,7 +2043,7 @@ FUNCTION void write_nucontrol()
    for (f=1;f<=Nfleet;f++) report4<<seltype(f)<<" # "<<f<<" "<<fleetname(f)<<endl;
    report4<<"#"<<endl;
    report4<<"#_age_selex_types"<<endl;
-   report4<<"#_Pattern ___ Male Special"<<endl;
+   report4<<"#_Pattern Discard Male Special"<<endl;
    for (f=1;f<=Nfleet;f++) report4<<seltype(f+Nfleet)<<" # "<<f<<" "<<fleetname(f)<<endl;
    report4<<"#"<<endl;
 
@@ -2167,7 +2167,7 @@ FUNCTION void write_nucontrol()
   report4<<" #_4=mult_by_lencomp_N"<<endl;
   report4<<" #_5=mult_by_agecomp_N"<<endl;
   report4<<" #_6=mult_by_size-at-age_N"<<endl;
-  report4<<" #_7=mult_by_generalized sizecomp"<<endl;
+  report4<<" #_7=mult_by_generalized_sizecomp"<<endl;
   report4<<"#_Factor  Fleet  Value"<<endl;
   {
     if (var_adjust_data.size() > 0) for(f=1;f<=Do_Var_adjust;f++) report4<<var_adjust_data[f-1]<<endl;
