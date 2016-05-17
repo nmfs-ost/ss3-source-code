@@ -3528,6 +3528,7 @@ FUNCTION void write_bigoutput()
        more_comp_info.initialize();
 
        // do both sexes  tails_l(f,i,4) has been set to tails_l(f,i,2) if males not in this sample
+       if(gen_l(f,i)==3 || gen_l(f,i)==0)
        {
          more_comp_info(1)=obs_l(f,i)(tails_l(f,i,1),tails_l(f,i,4))*len_bins_dat_m2(tails_l(f,i,1),tails_l(f,i,4));
          more_comp_info(2)=value(exp_l(f,i)(tails_l(f,i,1),tails_l(f,i,4))*len_bins_dat_m2(tails_l(f,i,1),tails_l(f,i,4)));
@@ -3539,7 +3540,8 @@ FUNCTION void write_bigoutput()
          cumdist=0.0;
          for(z=1;z<=nlen_bin;z++)
          {
-          cumdist+=value(exp_l(f,i,z) + exp_l(f,i,z+nlen_bin));  // add males and females
+          cumdist+=exp_l(f,i,z);
+          if(gender==2)  cumdist+=exp_l(f,i,z+nlen_bin);  // add males and females
           if(cumdist>=0.05 && cumdist_save<0.05)  //  found bin for 5%
           {
             if(z==1)
