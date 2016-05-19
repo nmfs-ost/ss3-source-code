@@ -235,13 +235,22 @@
       recr_dist_pattern(gp,settle_time,p)=1;  //  indicates that settlement will occur here
       recr_dist_pattern(gp,settle_time,0)=1;  //  for growth updating
       Settle_month(settle_time)=settle_timings_tempvec(settle);
-      k=spawn_seas;  //  earliest possible time for settlement
+      if(spawn_month>Settle_month(settle_time))
+        {
+//          k=1; Settle_age(settle_time)++;
+          k=1; Settle_age(settle_time)=0;
+        }
+        else
+        {
+          k=spawn_seas;  //  earliest possible season for settlement
+        }
       temp=azero_seas(k); //  annual elapsed time fraction at begin of this season
-      Settle_timing_seas(settle_time)=(Settle_month(settle_time)-1.0)/12.;
+      Settle_timing_seas(settle_time)=(Settle_month(settle_time)-1.0)/12.;  //  fraction of year at settlement month
       while((temp+seasdur(k))<=Settle_timing_seas(settle_time))
       {
         if(k==nseas)
-          {k=1; Settle_age(settle_time)++;}
+//          {k=1; Settle_age(settle_time)++;}
+          {k=1; Settle_age(settle_time)=0;}
           else
           {k++;}
           temp+=seasdur(k);
@@ -264,7 +273,6 @@
     Settle_seas_offset(1)=0;
     Settle_age(1)=0;
   }
-
   gmorph = gender*N_GP*N_settle_timings*N_platoon;  //  total potential number of biological entities, some may not get used so see use_morph(g)
  END_CALCS
 
@@ -1733,11 +1741,11 @@
    {
      *(ad_comm::global_datafile) >> SR_parm_1(f)(1,7);
    }
-  SR_parm_1(N_SRparm(SR_fxn)+2)=SR_parm_1(N_SRparm(SR_fxn)+3);  //  overwrite envlink with R1_offset (now dev multiplier)
-  SR_parm_1(N_SRparm(SR_fxn)+3)=SR_parm_1(N_SRparm(SR_fxn)+4);  //  overwrite old r1_offset with autocorr
-  SR_parm_1(N_SRparm(SR_fxn)+4)=0;  //  null unused line
-  N_SRparm2-=1;
-  echoinput<<" SR parms without the envlink line "<<endl<<SR_parm_1(1,N_SRparm2)<<endl;
+//  SR_parm_1(N_SRparm(SR_fxn)+2)=SR_parm_1(N_SRparm(SR_fxn)+3);  //  overwrite envlink with R1_offset (now dev multiplier)
+//  SR_parm_1(N_SRparm(SR_fxn)+3)=SR_parm_1(N_SRparm(SR_fxn)+4);  //  overwrite old r1_offset with autocorr
+//  SR_parm_1(N_SRparm(SR_fxn)+4)=0;  //  null unused line
+//  N_SRparm2-=1;
+  echoinput<<" SR parms "<<endl<<SR_parm_1<<endl;
  END_CALCS
   
   init_int SR_env_link
@@ -1829,8 +1837,8 @@
     }
   }
   ParmLabel+="SR_sigmaR";
-//  ParmLabel+="SR_nullparm";
-  ParmLabel+="SR_AnnualDevMult";
+  ParmLabel+="SR_nullparm";
+  ParmLabel+="SR_R1_offset";
   ParmLabel+="SR_autocorr";
   ParCount+=N_SRparm2;
  END_CALCS

@@ -1523,7 +1523,7 @@
   !!N_SRparm.fill("{0,2,2,2,3,2,3,3,0,0}");
   int N_SRparm2
   !!echoinput<<SR_fxn<<" #_SR_function: 1=null; 2=Ricker; 3=std_B-H; 4=SCAA; 5=Hockey; 6=B-H_flattop; 7=Survival_3Parm; 8=Shepard "<<endl;
-  !!N_SRparm2=N_SRparm(SR_fxn)+3;
+  !!N_SRparm2=N_SRparm(SR_fxn)+4;
   init_matrix SR_parm_1(1,N_SRparm2,1,14)
   !!echoinput<<" SR parms "<<endl<<SR_parm_1<<endl;
    int SR_env_link
@@ -1602,6 +1602,7 @@
     }
   }
   ParmLabel+="SR_sigmaR";
+  ParmLabel+="SR_notused";
   ParmLabel+="SR_R1_offset";
   ParmLabel+="SR_autocorr";
   ParCount+=N_SRparm2;
