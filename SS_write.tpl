@@ -4229,7 +4229,7 @@ FUNCTION void write_bigoutput()
      for (g=1;g<=gmorph;g++)
      if(use_morph(g)>0)
      {
-     Herma_Cum=femfrac(g);
+     Herma_Cum=femfrac(GP(g));
      for (a=0;a<=nages;a++)
      {
 
