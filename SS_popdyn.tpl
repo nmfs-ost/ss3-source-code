@@ -403,7 +403,6 @@ FUNCTION void get_time_series()
 //  SPAWN-RECR:   calc SPB in time series if spawning is at beginning of the season
       if(s==spawn_seas && spawn_time_seas<0.0001)    //  compute spawning biomass if spawning at beginning of season so recruits could occur later this season
       {
-        echoinput<<"spawnseas "<<s<<endl;
         SPB_pop_gp(y).initialize();
         for (p=1;p<=pop;p++)
         {
@@ -457,7 +456,7 @@ FUNCTION void get_time_series()
               natage(t+Settle_seas_offset(settle),p,g,Settle_age(settle)) += 
                Recruits*recr_dist(GP(g),settle,p)*platoon_distr(GP2(g))*
                mfexp(natM(s,GP3(g),Settle_age(settle))*Settle_timing_seas(settle));
-               echoinput<<y<<" "<<g<<" Recruits "<<Recruits<<" dist "<<recr_dist(GP(g),settle,p)<<" surv "<<mfexp(natM(s,GP3(g),Settle_age(settle))*Settle_timing_seas(settle))<<"timing "<<Settle_timing_seas(settle)<<" result "<<natage(t+Settle_seas_offset(settle),p,g,Settle_age(settle))<<endl;
+               //  the adjustment for mortality increases recruit value for elapsed time since begin of season because M will then be applied from beginning of season
             }
           }
       }
@@ -494,7 +493,6 @@ FUNCTION void get_time_series()
               Save_PopAge(t,p,g,a)=value(natage(t,p,g,a));
             } // close age loop
           }
-//      echoinput<<y<<" "<<s<<" "<<g<<" nmid for catch "<<Nmid(g)<<endl;
         }
 
   //  SS_Label_Info_24.3.3 #Do fishing mortality using switch(F_method)
@@ -763,7 +761,6 @@ FUNCTION void get_time_series()
 //  SPAWN-RECR:   calc spawn biomass in time series if after beginning of the season
       if(s==spawn_seas && spawn_time_seas>=0.0001)    //  compute spawning biomass
       {
-        echoinput<<"spawnseas "<<s<<endl;
         SPB_pop_gp(y).initialize();
         for (p=1;p<=pop;p++)
         {
@@ -855,22 +852,16 @@ FUNCTION void get_time_series()
           else   // continuous F
  */
           {
-//   warning<<t<<" Ninit "<<natage(t,p,g)<<endl;
-//            if(s<nseas && Settle_seas(settle)<=s) natage(t+1,p,g,0) = natage(t,p,g,0)*mfexp(-Z_rate(t,p,g,0)*seasdur(s));  // advance age zero within year
-//            for (a=1;a<nages;a++) {natage(t+1,p,g,a) = natage(t,p,g,a-k)*mfexp(-Z_rate(t,p,g,a-k)*seasdur(s));}
             j=Settle_age(settle);
             if(s<nseas && Settle_seas(settle)<=s) 
               {
                 natage(t+1,p,g,j) = natage(t,p,g,j)*mfexp(-Z_rate(t,p,g,j)*seasdur(s));  // advance new recruits within year
-//                warning<<s<<" advance new recruits "<<endl;
               }
             for (a=j+1;a<nages;a++) {
               natage(t+1,p,g,a) = natage(t,p,g,a-k)*mfexp(-Z_rate(t,p,g,a-k)*seasdur(s));
-//              if(a<5) warning<<a<<" "<<natage(t,p,g,a-k)<<" "<<natage(t+1,p,g,a)<<endl;
               }
             natage(t+1,p,g,nages) = natage(t,p,g,nages)*mfexp(-Z_rate(t,p,g,nages)*seasdur(s));   // plus group
             if(s==nseas) natage(t+1,p,g,nages) += natage(t,p,g,nages-1)*mfexp(-Z_rate(t,p,g,nages-1)*seasdur(s));
-//       warning<<t+1<<" Nsurv "<<natage(t+1,p,g)<<endl<<endl;
               if(save_for_report==1)
               {
                 j=p+pop;

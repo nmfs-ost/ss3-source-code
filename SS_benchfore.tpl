@@ -976,9 +976,9 @@ FUNCTION void Get_Forecast()
                 for (p=1;p<=pop;p++)
                 {
                   if(y==endyr+1) natage(t+Settle_seas_offset(settle),p,g,Settle_age(settle))=0.0;  //  to negate the additive code
-//                  natage(t+Settle_seas_offset(settle),p,g,Settle_age(settle)) += Recruits*recr_dist(GP(g),settle,p)*platoon_distr(GP2(g))*
                   natage(t+Settle_seas_offset(settle),p,g,Settle_age(settle)) = Recruits*recr_dist(GP(g),settle,p)*platoon_distr(GP2(g))*
                    mfexp(natM(s,GP3(g),Settle_age(settle))*Settle_timing_seas(settle));
+                   //  the adjustment for mortality increases recruit value for elapsed time since begin of season because M will then be applied from beginning of season
                 }
               }
 
@@ -1179,8 +1179,9 @@ FUNCTION void Get_Forecast()
               for (g=1;g<=gmorph;g++)
               if(use_morph(g)>0)
               {
-                if(s<nseas) natage(t+1,p,g,0) = Nsurv(g,0)*surv1(s,GP3(g),0);  // advance age zero within year
-                for (a=1;a<nages;a++) {natage(t+1,p,g,a) = Nsurv(g,a-adv_age)*surv1(s,GP3(g),a-adv_age);}
+                j=Settle_age(settle);
+                if(s<nseas && Settle_seas(settle)<=s) natage(t+1,p,g,j) = Nsurv(g,j)*surv1(s,GP3(g),j);  // advance age zero within year
+                for (a=j+1;a<nages;a++) {natage(t+1,p,g,a) = Nsurv(g,a-adv_age)*surv1(s,GP3(g),a-adv_age);}
                 natage(t+1,p,g,nages) = Nsurv(g,nages)*surv1(s,GP3(g),nages);   // plus group
                 if(s==nseas) natage(t+1,p,g,nages) += Nsurv(g,nages-1)*surv1(s,GP3(g),nages-1);
                 if(save_for_report==1)

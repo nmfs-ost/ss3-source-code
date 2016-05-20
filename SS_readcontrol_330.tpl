@@ -219,16 +219,23 @@
       recr_dist_pattern(gp,settle_time,p)=1;  //  indicates that settlement will occur here
       recr_dist_pattern(gp,settle_time,0)=1;  //  for growth updating
       Settle_month(settle_time)=settle_timings_tempvec(settle);
-      k=spawn_seas;  //  earliest possible time for settlement
+      if(spawn_month>Settle_month(settle_time))
+        {
+          k=1; Settle_age(settle_time)++;
+        }
+        else
+        {
+          k=spawn_seas;  //  earliest possible season for settlement
+        }
       temp=azero_seas(k); //  annual elapsed time fraction at begin of this season
-      Settle_timing_seas(settle_time)=(Settle_month(settle_time)-1.0)/12.;
+      Settle_timing_seas(settle_time)=(Settle_month(settle_time)-1.0)/12.;  //  fraction of year at settlement month
       while((temp+seasdur(k))<=Settle_timing_seas(settle_time))
       {
+        temp+=seasdur(k);
         if(k==nseas)
-          {k=1; Settle_age(settle_time)++;}
-          else
-          {k++;}
-          temp+=seasdur(k);
+        {k=1; Settle_age(settle_time)++;}
+        else
+        {k++;}
       }
       Settle_seas(settle_time)=k;
       Settle_seas_offset(settle_time)=Settle_seas(settle_time)-spawn_seas+Settle_age(settle_time)*nseas;  //  number of seasons between spawning and the season in which settlement occurs
