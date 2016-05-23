@@ -128,12 +128,12 @@ FUNCTION void get_MGsetup()
     {
       for (f=1;f<=N_MGparm;f++)
       {
-        
+
         if(MGparm_1(f,13)!=0)   // blocks or trends
         {
           mgp_adj(f)=parm_timevary(MGparm_timevary(f,1),yz);
         }
- /*        
+ /*
   //  SS_Label_Info_14.4.1.1 #Adjust for blocks
         if(MGparm_1(f,13)>0)   // blocks
         {
@@ -1227,7 +1227,7 @@ FUNCTION void get_wtlen()
         if(MGparm_seas_effects(7)>0 || MGparm_seas_effects(8)>0 )        //  get seasonal effect on male wt-len parameters
         {
           wt_len(s,gp) = (wtlen_p(GPat,7)*wtlen_seas(s,GPat,7))*pow(len_bins_m(1,nlength),(wtlen_p(GPat,8)*wtlen_seas(s,GPat,8)));
-          wt_len_low(s,GPat)(nlength1,nlength) = (wtlen_p(GPat,7)*wtlen_seas(s,GPat,7))*pow(len_bins2(nlength1,nlength2),(wtlen_p(GPat,8)*wtlen_seas(s,GPat,8)));
+          wt_len_low(s,GPat)(nlength1,nlength2) = (wtlen_p(GPat,7)*wtlen_seas(s,GPat,7))*pow(len_bins2(nlength1,nlength2),(wtlen_p(GPat,8)*wtlen_seas(s,GPat,8)));
         }
         else
         {
