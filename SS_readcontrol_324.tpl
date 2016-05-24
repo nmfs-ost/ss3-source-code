@@ -1745,7 +1745,7 @@
 //  N_SRparm2-=1;
   echoinput<<" SR parms "<<endl<<SR_parm_1<<endl;
  END_CALCS
-  
+
   init_int SR_env_link
   !!echoinput<<SR_env_link<<" SR_env_link "<<endl;
   init_int SR_env_target_RD   // 0=none; 1=devs; 2=R0; 3=steepness
@@ -3495,7 +3495,7 @@
   {
     for(j=1;j<=6;j++) var_adjust(j)=var_adjust1(j);
     var_adjust(7)=1.0;  // generalized size comp
-    echoinput<<" Varadjustments as read "<<endl<<var_adjust1<<endl;
+    echoinput<<" Variance adjustments as read "<<endl<<var_adjust1<<endl;
   }
   else
   {
@@ -3535,7 +3535,8 @@
     for(j=4;j<=7;j++)
     {if(var_adjust(j,f)!=1.0) {k++; var_adjust_list(k,1)=j; var_adjust_list(k,2)=f; var_adjust_list(k,3)=var_adjust(j,f);}  }
     }
-    echoinput<<"variance adjustment as list; per 3.30 format "<<endl<<var_adjust_list<<endl;
+    echoinput<<"Variance adjustments as list; per 3.30 format "<<endl<<var_adjust_list<<endl;
+    for (i=1; i <= Do_Var_adjust; i++) var_adjust_data.push_back(var_adjust_list(i));
   }
 
  END_CALCS

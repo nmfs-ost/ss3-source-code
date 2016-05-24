@@ -2437,6 +2437,7 @@ FUNCTION void write_bigoutput()
   SS2out << "effN_mult_Lencomp "<<var_adjust(4)<<endl;
   SS2out << "effN_mult_Agecomp "<<var_adjust(5)<<endl;
   SS2out << "effN_mult_Len_at_age "<<var_adjust(6)<<endl;
+  SS2out << "effN_mult_generalized_sizecomp "<<var_adjust(7)<<endl;
 
   SS2out<<"MG_parms"<<"Using_offset_approach_#:_"<<MGparm_def<<"  (1=none, 2= M, G, CV_G as offset from female_GP1, 3=like SS2 V1.x)"<<endl;
 
