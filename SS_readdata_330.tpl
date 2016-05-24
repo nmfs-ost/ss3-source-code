@@ -1566,6 +1566,8 @@
   init_3darray age_err_rd(1,N_ageerr,1,2,0,nages) // ageing imprecision as stddev for each age
 
  LOCAL_CALCS
+  Nobs_a=0;
+  N_suprper_a=0;
   if(n_abins>0)
   {
     echoinput<<"ageerror_definitions_as_read"<<endl<<age_err_rd<<endl;
@@ -1644,9 +1646,6 @@
   if(nobsa_rd>0) echoinput<<" first agecomp obs "<<endl<<Age_Data[0]<<endl<<" last obs"<<endl<<Age_Data[nobsa_rd-1]<<endl;;
 
   data_type=5;  //  for age data
-
-  Nobs_a=0;
-  N_suprper_a=0;
 
   for (i=0;i<=nobsa_rd-1;i++)
   {
@@ -2024,8 +2023,8 @@
        echoinput<<f<<" freq "<<obs_a_all(1,f)<<endl;
        echoinput<<f<<" cuml "<<obs_a_all(2,f)<<endl;
      }
+     echoinput<<endl<<"Successful processing of age data "<<endl;
    }
-   echoinput<<endl<<"Successful processing of age data "<<endl;
  END_CALCS
 
 !!//  SS_Label_Info_2.9 #Read mean Size_at_Age data
@@ -2619,10 +2618,10 @@
   init_matrix TG_release(1,N_TG,1,8)
   // TG area  year season tindex gender age N_released
  LOCAL_CALCS
-   echoinput<<" Tag Releases "<<endl<<"TG area year seas tindex gender age N_released "<<endl<<TG_release<<endl;
    TG_endtime(1)=0;
    if(N_TG>0)
    {
+   echoinput<<" Tag Releases "<<endl<<"TG area year seas tindex gender age N_released "<<endl<<TG_release<<endl;
    for (TG=1;TG<=N_TG;TG++)
    {
      t=styr+int((TG_release(TG,3)-styr)*nseas+TG_release(TG,4)-1);
