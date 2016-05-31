@@ -144,7 +144,8 @@
 
   matrix settlement_pattern_rd(1,N_settle_assignments,1,3);   //  for each settlement event:  GPat, Month, area
   ivector settle_assignments_timing(1,N_settle_assignments);  //  stores the settle_timing index for each assignment
-  vector settle_timings_tempvec(1,N_settle_assignments)  //  temporary storage for real_month of each settlement assignment
+  vector settle_timings_tempvec(1,N_settle_assignments)  //  temporary storage for real_month of each settlement_timing
+                                                        //  dimensioned by assignments, but only uses N_settle_timings of these
  LOCAL_CALCS
   if(recr_dist_method==1 && N_settle_assignments_rd==0)
     {
@@ -156,10 +157,7 @@
       *(ad_comm::global_datafile) >> settlement_pattern_rd;
       echoinput<<" settlement pattern as read "<<endl<<"GPat  Birthseas  Area"<<endl<<settlement_pattern_rd<<endl;
     }
- END_CALCS
-
- LOCAL_CALCS
-  echoinput<<"Now calculate the number of unique settle timings, which will dictate the number of recr_dist_timing parameters "<<endl;
+    echoinput<<"Now calculate the number of unique settle timings, which will dictate the number of recr_dist_timing parameters "<<endl;
       N_settle_timings=0;
       settle_timings_tempvec.initialize();
       if(N_settle_assignments==0)
@@ -171,15 +169,7 @@
       {
         for (settle=1;settle<=N_settle_assignments;settle++)
         {
-          if(read_seas_mo==1)
-          {
-           real_month=1.0 + azero_seas(settlement_pattern_rd(settle,2))*12.;  //  converts birthseason to month
-          }
-          else
-          {
-//             real_month=(settlement_pattern_rd(settle,2)-1.0)/12.  ; //  settlement month converted to fraction of year; could be > one year
-             real_month=settlement_pattern_rd(settle,2);
-          }
+          real_month=1.0 + azero_seas(settlement_pattern_rd(settle,2))*12.;  //  converts birthseason to month
           if(N_settle_timings==0)
           {
             N_settle_timings++;
@@ -224,7 +214,7 @@
   Settle_seas.initialize();
   recr_dist_pattern.initialize();
 
-  echoinput<<"Calculated assignments in which settlement occurs "<<endl<<"Settle_event / GPat / Area / Settle_time / Month / seas / seas_from_spawn / time_from_seas_start / age_at_settle"<<endl;
+  echoinput<<"Calculated assignments in which settlement occurs "<<endl<<"Settle_timing  / Month / seas / seas_from_spawn / time_from_seas_start / age_at_settle"<<endl;
   if(N_settle_assignments>0)
   {
     for (settle=1;settle<=N_settle_assignments;settle++)
@@ -234,15 +224,18 @@
       settle_time=settle_assignments_timing(settle);
       recr_dist_pattern(gp,settle_time,p)=1;  //  indicates that settlement will occur here
       recr_dist_pattern(gp,settle_time,0)=1;  //  for growth updating
-      Settle_month(settle_time)=settle_timings_tempvec(settle);
+      Settle_month(settle_time)=settle_timings_tempvec(settle_time);
+    }
+    for (settle_time=1;settle_time<=N_settle_timings;settle_time++)
+    {
       if(spawn_month>Settle_month(settle_time))
-        {
-          k=1; Settle_age(settle_time)++;
-        }
-        else
-        {
-          k=spawn_seas;  //  earliest possible season for settlement
-        }
+      {
+        k=1; Settle_age(settle_time)++;
+      }
+      else
+      {
+        k=spawn_seas;  //  earliest possible season for settlement
+      }
       temp=azero_seas(k); //  annual elapsed time fraction at begin of this season
       Settle_timing_seas(settle_time)=(Settle_month(settle_time)-1.0)/12.;  //  fraction of year at settlement month
       while((temp+seasdur(k))<=Settle_timing_seas(settle_time))
@@ -256,7 +249,7 @@
       Settle_seas(settle_time)=k;
       Settle_seas_offset(settle_time)=Settle_seas(settle_time)-spawn_seas+Settle_age(settle_time)*nseas;  //  number of seasons between spawning and the season in which settlement occurs
       Settle_timing_seas(settle_time)-=temp;  //  timing from beginning of this season; needed for mortality calculation
-      echoinput<<settle<<" / "<<gp<<" / "<<p<<" / "<<settle_time<<" / "<<Settle_month(settle_time);
+      echoinput<<settle_time<<" / "<<Settle_month(settle_time);
       echoinput<<"  /  "<<Settle_seas(settle_time)<<" / "<<Settle_seas_offset(settle_time)<<" / "
       <<Settle_timing_seas(settle_time)<<"  / "<<Settle_age(settle_time)<<endl;
     }
@@ -307,7 +300,7 @@
    g=0;
    g3i=0;
    echoinput<<endl<<"MORPH_INDEXING"<<endl;
-   echoinput<<"Index GP Sex Settlement Bseas Platoon Platoon_Dist GP_Gender GP*Gender*settle BirthAge_Rel_Jan1 Used?"<<endl;
+   echoinput<<"g Sex GP Settlement Season Platoon Platoon% Sex*GP Sex*GP*settle_time Used(0/1) SettleTime_frac_yr"<<endl;
    for (gg=1;gg<=gender;gg++)
    for (gp=1;gp<=N_GP;gp++)
    for (settle=1;settle<=N_settle_timings;settle++)
@@ -336,7 +329,9 @@
          {
            if( (N_platoon==1) || (N_platoon==3 && gp2==2) || (N_platoon==5 && gp2==3) ) g_finder(gp,gg)=g;  // finds g for a given GP and gender and last birstseason
          }
-     echoinput<<g<<" "<<GP4(g)<<" "<<sx(g)<<" "<<settle<<" "<<Bseas(g)<<" "<<GP2(g)<<" "<<platoon_distr(GP2(g))<<" "<<GP(g)<<" "<<GP3(g)<<" "<<azero_G(g)<<" "<<use_morph(g)<<endl;
+     echoinput<<g<<"   "<<sx(g)<<"  "<<GP4(g)<<"       "<<settle<<"       "<<Bseas(g)<<"       "
+     <<GP2(g)<<"       "<<100.*platoon_distr(GP2(g))<<"       "<<GP(g)<<"        "<<GP3(g)<<
+     "               "<<use_morph(g)<<"       "<<azero_G(g)<<endl;
        }
       }
    }
