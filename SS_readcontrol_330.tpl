@@ -134,13 +134,13 @@
 
   int birthseas;  //  is this still needed??
 
-  matrix settlement_pattern_rd(1,N_settle_assignments,1,3);   //  for each settlement event:  GPat, Month, area
+  matrix settlement_pattern_rd(1,N_settle_assignments,1,4);   //  for each settlement event:  GPat, Month, area, age
   ivector settle_assignments_timing(1,N_settle_assignments);  //  stores the settle_timing index for each assignment
   vector settle_timings_tempvec(1,N_settle_assignments)  //  temporary storage for real_month of each settlement_timing
                                                         //  dimensioned by assignments, but only uses N_settle_timings of these
  LOCAL_CALCS
    *(ad_comm::global_datafile) >> settlement_pattern_rd;
-   echoinput<<" settlement pattern as read "<<endl<<"GPat  Month  Area"<<endl<<"*"<<settlement_pattern_rd<<"*"<<endl;
+   echoinput<<" settlement pattern as read "<<endl<<"GPat  Month  Area Age"<<endl<<"*"<<settlement_pattern_rd<<"*"<<endl;
    echoinput<<"Now calculate the number of unique settle timings, which will dictate the number of recr_dist_timing parameters "<<endl;
       N_settle_timings=0;
       settle_timings_tempvec.initialize();
@@ -205,16 +205,18 @@
     {
       gp=settlement_pattern_rd(settle,1); //  growth patterns
       p=settlement_pattern_rd(settle,3);  //  settlement area
+      Settle_age(settle_time)=settlement_pattern_rd(settle,4);  //  settlement age as read
       settle_time=settle_assignments_timing(settle);
       recr_dist_pattern(gp,settle_time,p)=1;  //  indicates that settlement will occur here
       recr_dist_pattern(gp,settle_time,0)=1;  //  for growth updating
       Settle_month(settle_time)=settle_timings_tempvec(settle);
     }
+    j=0;  //  temp value for calculated settlement age
     for (settle_time=1;settle_time<=N_settle_timings;settle_time++)
     {
       if(spawn_month>Settle_month(settle_time))
       {
-        k=1; Settle_age(settle_time)++;
+        k=1; j++;
       }
       else
       {
@@ -226,9 +228,15 @@
       {
         temp+=seasdur(k);
         if(k==nseas)
-        {k=1; Settle_age(settle_time)++;}
+        {k=1; j++;}
         else
         {k++;}
+      }
+      if(j!=Settle_age(settle_time))
+      {
+        N_warn++; warning<<"logical age at settlement calculated to be: "<<j<<
+        "  for settle_time "<<settle_time<<".  Does not match read value of "
+        <<settle_age(settle_time)<<" are you sure? "<<endl;
       }
       Settle_seas(settle_time)=k;
       Settle_seas_offset(settle_time)=Settle_seas(settle_time)-spawn_seas+Settle_age(settle_time)*nseas;  //  number of seasons between spawning and the season in which settlement occurs

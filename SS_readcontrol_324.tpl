@@ -142,20 +142,24 @@
 
   int birthseas;  //  is this still needed??
 
-  matrix settlement_pattern_rd(1,N_settle_assignments,1,3);   //  for each settlement event:  GPat, Month, area
+  matrix settlement_pattern_rd(1,N_settle_assignments,1,4);   //  for each settlement event:  GPat, Month, area, age
   ivector settle_assignments_timing(1,N_settle_assignments);  //  stores the settle_timing index for each assignment
   vector settle_timings_tempvec(1,N_settle_assignments)  //  temporary storage for real_month of each settlement_timing
                                                         //  dimensioned by assignments, but only uses N_settle_timings of these
  LOCAL_CALCS
+  settlement_pattern_rd.initialize();
   if(recr_dist_method==1 && N_settle_assignments_rd==0)
     {
-      {settlement_pattern_rd(1).fill("{1,1,1}");}
-      echoinput<<" settlement pattern auto-filled "<<endl<<"GPat  Birthseas  Area"<<endl<<settlement_pattern_rd<<endl;
+      {settlement_pattern_rd(1).fill("{1,1,1,0}");}
+      echoinput<<" settlement pattern auto-filled "<<endl<<"GPat  Birthseas  Area Age"<<endl<<settlement_pattern_rd<<endl;
     }
     else
     {
-      *(ad_comm::global_datafile) >> settlement_pattern_rd;
-      echoinput<<" settlement pattern as read "<<endl<<"GPat  Birthseas  Area"<<endl<<settlement_pattern_rd<<endl;
+      for(j=1;j<=N_settle_assignments_rd;j++)
+      {
+      *(ad_comm::global_datafile) >> settlement_pattern_rd(j)(1,3);
+      }
+      echoinput<<" settlement pattern as read "<<endl<<"GPat  Birthseas  Area Age"<<endl<<settlement_pattern_rd<<endl;
     }
     echoinput<<"Now calculate the number of unique settle timings, which will dictate the number of recr_dist_timing parameters "<<endl;
       N_settle_timings=0;
@@ -195,6 +199,7 @@
         }
       }
     echoinput<<"N settle timings: "<<N_settle_timings<<endl<<" settle_month: "<<settle_timings_tempvec(1,N_settle_timings)<<endl;
+    echoinput<<"settle_assignments_timing: "<<settle_assignments_timing<<endl;
 
 //  SS_Label_Info_4.2.3 #Set-up arrays and indexing for growth patterns, gender, settlements, platoons
  END_CALCS
@@ -246,8 +251,14 @@
         else
         {k++;}
       }
+      if(Settle_age(settle_time)>0)
+        {
+          N_warn++; warning<<"age at settlement calculated to be: "<<Settle_age(settle_time)<<
+          "  for settle_time "<<settle_time<<".  Will be reset to 0 to match 3.24 protocol"<<endl;
+        }
       Settle_seas(settle_time)=k;
       Settle_seas_offset(settle_time)=Settle_seas(settle_time)-spawn_seas+Settle_age(settle_time)*nseas;  //  number of seasons between spawning and the season in which settlement occurs
+//      Settle_age(settle_time)=0;  // set to 0 to match 3.24, but use calculated value in code line above
       Settle_timing_seas(settle_time)-=temp;  //  timing from beginning of this season; needed for mortality calculation
       echoinput<<settle_time<<" / "<<Settle_month(settle_time);
       echoinput<<"  /  "<<Settle_seas(settle_time)<<" / "<<Settle_seas_offset(settle_time)<<" / "

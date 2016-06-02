@@ -1696,10 +1696,10 @@ FUNCTION void write_nucontrol()
   report4<<platoon_distr(1,N_platoon)<<" #vector_Morphdist_(-1_in_first_val_gives_normal_approx)"<<endl;
   report4<<"#"<<endl;
   report4<<recr_dist_method<<" # recr_dist_method for parameters:  1=like 3.24; 2=main effects for GP, Settle timing, Area; 3=each Settle entity; 4=none when N_GP*Nsettle*pop==1"<<endl;
-  report4<<recr_dist_area<<" # Recruitment: 1=global; 2=by area"<<endl;
+  report4<<recr_dist_area<<" # Recruitment: 1=global; 2=by area (future option)"<<endl;
   report4<<N_settle_assignments<<" #  number of recruitment settlement assignments "<<endl<<
              recr_dist_inx<< " # year_x_area_x_settlement_event interaction requested (only for recr_dist_method=1)"<<endl<<
-             "#GPat month  area (for each settlement assignment)"<<endl<<settlement_pattern_rd<<endl<<"#"<<endl;
+             "#GPat month  area age (for each settlement assignment)"<<endl<<settlement_pattern_rd<<endl<<"#"<<endl;
   if(pop==1)
   {report4<<"#_Cond 0 # N_movement_definitions goes here if N_areas > 1"<<endl
     <<"#_Cond 1.0 # first age that moves (real age at begin of season, not integer) also cond on do_migration>0"<<endl
@@ -2784,13 +2784,14 @@ FUNCTION void write_bigoutput()
      if(k>0) SS2out<<f-Nfleet<<" "<<y<<" "<<save_sp_len(y,f)(1,k)<<endl;
      }
 
-   SS2out<<endl<<"RECRUITMENT_DIST"<<endl<<"Settle# G_pattern Area Settle_Month Seas Age Time_w/in_seas Frac/sex"<<endl;
-   for (settle=1;settle<=N_settle_timings;settle++)
+   SS2out<<endl<<"RECRUITMENT_DIST"<<endl<<"Settle# settle_timing# G_pattern Area Settle_Month Seas Age Time_w/in_seas Frac/sex"<<endl;
+   for (settle=1;settle<=N_settle_assignments;settle++)
    {
       gp=settlement_pattern_rd(settle,1); //  growth patterns
       p=settlement_pattern_rd(settle,3);  //  settlement area
-      SS2out<<settle<<" "<<gp<<" "<<p<<" "<<settlement_pattern_rd(settle,2)<<" "<<Settle_seas(settle)<<" "<<
-      Settle_age(settle)<<" "<<Settle_timing_seas(settle)<<" "<<recr_dist(gp,settle,p)<<endl;
+      settle_time=settle_assignments_timing(settle);
+      SS2out<<settle<<" "<<settle_time<<" "<<gp<<" "<<p<<" "<<Settle_month(settle_time)<<" "<<Settle_seas(settle_time)<<" "<<
+      Settle_age(settle_time)<<" "<<Settle_timing_seas(settle_time)<<" "<<recr_dist(gp,settle_time,p)<<endl;
    }
 
    SS2out<<endl<<"MORPH_INDEXING"<<endl;
