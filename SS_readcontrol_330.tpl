@@ -236,7 +236,7 @@
       {
         N_warn++; warning<<"logical age at settlement calculated to be: "<<j<<
         "  for settle_time "<<settle_time<<".  Does not match read value of "
-        <<settle_age(settle_time)<<" are you sure? "<<endl;
+        <<Settle_age(settle_time)<<" are you sure? "<<endl;
       }
       Settle_seas(settle_time)=k;
       Settle_seas_offset(settle_time)=Settle_seas(settle_time)-spawn_seas+Settle_age(settle_time)*nseas;  //  number of seasons between spawning and the season in which settlement occurs
