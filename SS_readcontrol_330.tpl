@@ -205,8 +205,8 @@
     {
       gp=settlement_pattern_rd(settle,1); //  growth patterns
       p=settlement_pattern_rd(settle,3);  //  settlement area
-      Settle_age(settle_time)=settlement_pattern_rd(settle,4);  //  settlement age as read
       settle_time=settle_assignments_timing(settle);
+      Settle_age(settle_time)=settlement_pattern_rd(settle,4);  //  settlement age as read
       recr_dist_pattern(gp,settle_time,p)=1;  //  indicates that settlement will occur here
       recr_dist_pattern(gp,settle_time,0)=1;  //  for growth updating
       Settle_month(settle_time)=settle_timings_tempvec(settle);
