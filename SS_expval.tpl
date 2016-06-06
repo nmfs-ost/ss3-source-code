@@ -113,12 +113,17 @@ FUNCTION void Get_expected_values();
 
           exp_l_temp=colsum(exp_AL);  //  total size composition
           agetemp=rowsum(exp_AL);  //  total age composition
-          if(do_once==1) echoinput<<y<<" "<<f<<" total  size "<<exp_l_temp<<endl;
+          if(do_once==1) echoinput<<y<<" "<<f<<" total  size "<<exp_l_temp<<endl<<" total  age "<<agetemp<<endl;;
           if(Do_Retain(f)>0)
           {
              exp_l_temp_ret=colsum(exp_AL_ret);
              exp_truea_ret=rowsum(exp_AL_ret);
-          if(do_once==1) echoinput<<y<<" "<<f<<" retain size "<<exp_l_temp_ret<<endl;
+          if(do_once==1) echoinput<<y<<" "<<f<<" retain size "<<exp_l_temp_ret<<endl<<" retain age "<<exp_truea_ret<<endl;;
+          }
+          else
+          {
+            exp_truea_ret=agetemp;  //  covers cases where retention not used, but observations have partition=2
+            exp_l_temp_ret=exp_l_temp;
           }
 //          if(docheckup==1) echoinput<<"exp_l: "<<exp_l_temp<<endl<<"exp_l_ret: "<<exp_l_temp_ret<<endl;
 //          end creation of selected A-L
@@ -373,7 +378,6 @@ FUNCTION void Get_expected_values();
              {
               i=have_data(ALK_time,f,data_type,j);
               k=ageerr_type_a(f,i);                           //  age-err type
-    
               if(use_Lbin_filter(f,i)==0)
               {                                              // sum across all length bins
                if(mkt_a(f,i)==0) age_exp = agetemp;
