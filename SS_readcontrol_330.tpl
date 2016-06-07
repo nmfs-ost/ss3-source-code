@@ -4237,33 +4237,26 @@
    if(WTage_rd>0)
    {
      ad_comm::change_datafile_name("wtatage.ss");
-     k1=2;
+     *(ad_comm::global_datafile) >>N_WTage_maxage;
+     k=7+N_WTage_maxage;
+     ender=0;
+     do
+     {
+      dvector tempvec(1,k);
+      *(ad_comm::global_datafile) >> tempvec(1,k);
+      if(tempvec(1)==-9999.) ender=1;
+      WTage_in.push_back (tempvec(1,k));
+     } while (ender==0);
+     N_WTage_rd=WTage_in.size()-1;
+     k2=TimeMax_Fcast_std+1;
    }
    else
    {
-    k1=0;
-    N_WTage_rd=0;
-    N_WTage_maxage=0;
+     N_WTage_maxage=nages;
+     k2=styr;
    }
+   echoinput<<" N_WTage_rd "<<N_WTage_rd<<endl;
  END_CALCS
-
-  init_vector junkvec(1,k1)
- LOCAL_CALCS
-  if(k1>0)
-  {
-    echoinput<<"WT-at-age input"<<junkvec<<endl;
-    N_WTage_rd=junkvec(1);
-    N_WTage_maxage=junkvec(2);
-    k2=TimeMax_Fcast_std+1;
-  }
-  else
-  {
-    k2=styr;
-    N_WTage_maxage=nages;
-  }
-
- END_CALCS
-  init_matrix WTage_in(1,N_WTage_rd,1,7+N_WTage_maxage)
   vector junkvec2(0,nages)
   4darray WTage_emp(styr-3*nseas,k2,1,gender*N_GP*nseas,-2,Nfleet,0,nages)  //  set to begin period for pop (type=0), or mid period for fleet/survey
 // read:  yr, seas, gender, morph, settlement, fleet, <age vec> where first value is for age 0!
@@ -4273,23 +4266,23 @@
 // fleet -2 contains maturity*fecundity
   int f2
  LOCAL_CALCS
-  if(k1>0)
+  if(WTage_rd>0)
   {
-    echoinput<<"Wt_age input"<<endl<<WTage_in<<endl<<"end"<<endl;
     WTage_emp.initialize();
     if(N_WTage_maxage>nages) N_WTage_maxage=nages;  //  so extra ages being read will be ignored
     for (i=1;i<=N_WTage_rd;i++)
     {
-      y=abs(WTage_in(i,1));
+      tempvec=WTage_in[i];
+      y=abs(tempvec(1));
       if(y<styr) y=styr;
-      if(WTage_in(i,1)<0) {y2=YrMax;} else {y2=y;}  //  allows filling to end of time series
-      s=abs(WTage_in(i,2));
-      if(WTage_in(i,2)<0) {f2=Nfleet;} else {f2=f;}  //  allows filling all fleets
-      gg=WTage_in(i,3);
-      gp=WTage_in(i,4);
-      birthseas=WTage_in(i,5);
+      if(tempvec(1)<0) {y2=YrMax;} else {y2=y;}  //  allows filling to end of time series
+      s=abs(tempvec(2));
+      if(tempvec(2)<0) {f2=Nfleet;} else {f2=f;}  //  allows filling all fleets
+      gg=tempvec(3);
+      gp=tempvec(4);
+      birthseas=tempvec(5);
       g=(gg-1)*N_GP*nseas + (gp-1)*nseas + birthseas;
-      f=WTage_in(i,6);
+      f=tempvec(6);
       if(s<=nseas && gg<=gender && gp<=N_GP && birthseas<=nseas && f<=Nfleet)
       {
         for (j=y;j<=y2;j++)  // loop years
@@ -4297,7 +4290,7 @@
           for(k=f;k<=f2;k++)
           {
           t=styr+(j-styr)*nseas+s-1;
-          for (a=0;a<=N_WTage_maxage;a++) WTage_emp(t,g,k,a)=WTage_in(i,7+a);
+          for (a=0;a<=N_WTage_maxage;a++) WTage_emp(t,g,k,a)=tempvec(7+a);
           for (a=N_WTage_maxage;a<=nages;a++) WTage_emp(t,g,f,a)=WTage_emp(t,g,f,N_WTage_maxage);  //  fills out remaining ages, if any
           if(j==y && k==f) echoinput<<"year "<<y<<" s "<<s<<" sex "<<gg<<" gp "<<gp<<" bs "<<birthseas<<" morph "<<g<<" pop/fleet "<<f<<" "<<WTage_emp(t,g,f)(0,min(6,nages))<<endl;
           }

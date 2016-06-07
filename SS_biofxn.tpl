@@ -1667,7 +1667,11 @@ FUNCTION void Make_Fecundity()
  */
         save_sel_fec(t,g,0)= fec(g);   //  save sel_al_3 and save fecundity for output
         if(y==endyr) save_sel_fec(t+nseas,g,0)=fec(g);
-        if(save_for_report==2
-           && ishadow(GP2(g))==0) bodywtout<<-y<<" "<<s<<" "<<sx(g)<<" "<<GP4(g)<<" "<<Bseas(g)<<" "<<-2<<" "<<fec(g)<<endl;
+        if(save_for_report==2 && ishadow(GP2(g))==0) 
+        {
+          bodywtout<<y<<" "<<s<<" "<<sx(g)<<" "<<GP4(g)<<" "<<Bseas(g)<<" "<<-2<<" "<<fec(g)<<" #fecundity "<<endl;
+          bodywtout<<y<<" "<<s<<" "<<gg<<" "<<GP4(g)<<" "<<Bseas(g)<<" "<<0<<" "<<Wt_Age_beg(s,g)<<" #popwt_beg "<<endl;
+          bodywtout<<y<<" "<<s<<" "<<gg<<" "<<GP4(g)<<" "<<Bseas(g)<<" "<<-1<<" "<<Wt_Age_mid(s,g)<<" #popwt_mid "<<endl;
+        }
     }
   }

@@ -1317,9 +1317,17 @@ FUNCTION void Make_FishSelex()
         fs=f+Nfleet;  //  for the age dimensioning
         if (WTage_rd==1 || seltype(f,1)==0)  //  empirical wt-at-age; no size-based calculations
         {
-          sel_al_1(s,g,f)=elem_prod(sel_a(yf,f,gg),Wt_Age_mid(s,g));   // selected wt-at-age
+          if(WTage_rd==1)
+          {
+            sel_al_1(s,g,f)=elem_prod(sel_a(yf,f,gg),WTage_emp(tz,GP3(g),f));   // selected wt-at-age
+            fish_body_wt(tz,g,f)=WTage_emp(tz,GP3(g),f);
+          }
+          else
+          {
+            sel_al_1(s,g,f)=elem_prod(sel_a(yf,f,gg),Wt_Age_mid(s,g));   // selected wt-at-age
+            fish_body_wt(tz,g,f)=Wt_Age_mid(s,g);
+          }
           sel_al_3(s,g,f)=sel_a(yf,f,gg);  //  selected numbers
-          fish_body_wt(tz,g,f)=Wt_Age_mid(s,g);
           switch(seltype(fs,2))  //  retention function
           {
             case 0:
@@ -1386,8 +1394,20 @@ FUNCTION void Make_FishSelex()
 
           }  //  end age loop
         }
-        if(save_for_report==2 && ishadow(GP2(g))==0) bodywtout<<-y<<" "<<s<<" "<<gg<<" "<<GP4(g)<<" "<<Bseas(g)
-            <<" "<<f<<" "<<fish_body_wt(tz,g,f)<<endl;
+        if(save_for_report==2 && ishadow(GP2(g))==0) 
+          {
+            if(sum(fish_body_wt(tz,g,f))>0.00001)
+            {
+              bodywtout<<y<<" "<<s<<" "<<gg<<" "<<GP4(g)<<" "<<Bseas(g)
+              <<" "<<f<<" "<<fish_body_wt(tz,g,f)<<endl;
+            }
+            else
+            {
+              bodywtout<<y<<" "<<s<<" "<<gg<<" "<<GP4(g)<<" "<<Bseas(g)
+              <<" "<<f<<" "<<Wt_Age_beg(s,g)<<endl;
+            }
+            
+          }
       }  // end need to do it
       save_sel_fec(t,g,f)= value(sel_al_3(s,g,f));  //  save sel_al_3 in save_fecundity array for output
 

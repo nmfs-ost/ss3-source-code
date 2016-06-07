@@ -882,6 +882,17 @@ FUNCTION void Get_Forecast()
         for (s=1;s<=nseas;s++)
         {
           t = t_base+s;
+          if(WTage_rd>0)
+          {
+            for (g=1;g<=gmorph;g++)
+            if(use_morph(g)>0)
+            {
+            Wt_Age_beg(s,g)=WTage_emp(t,GP3(g),0);
+            Wt_Age_mid(s,g)=WTage_emp(t,GP3(g),-1);
+            }
+          }
+          Save_Wt_Age(t)=Wt_Age_beg(s);
+
           bio_t=styr+(endyr-styr)*nseas+s-1;
 
           if(ABC_Loop==ABC_Loop_start)  // do seasonal ALK and fishery selex

@@ -77,6 +77,7 @@ GLOBALS_SECTION
   std::vector<dvector> Fcast_InputCatch_list;
   std::vector<dvector> Fcast_Catch_Allocation_list;
   std::vector<dvector> env_temp;
+  std::vector<dvector> WTage_in;
   std::vector<dvector> var_adjust_data;
   std::vector<dvector> lambda_change_data;
   std::vector<dvector> timevary_parm_rd;
@@ -263,10 +264,10 @@ FINAL_SECTION
 
 //  SS_Label_Info_12.3.1 #Write out body weights to wtatage.ss_new.  Occurs while doing procedure with save_for_report=2
     save_for_report=2;
-    bodywtout<<1<<"  #_user_must_replace_this_value_with_number_of_lines_with_wtatage_below"<<endl;
+//    bodywtout<<1<<"  #_user_must_replace_this_value_with_number_of_lines_with_wtatage_below"<<endl;
     bodywtout<<N_WTage_maxage<<" # maxage"<<endl;
     bodywtout<<"# if yr is negative, then fill remaining years for that seas, growpattern, gender, fleet"<<endl;
-    bodywtout<<"# if season is negative, then fill from read fleet to Nfleet"<<endl;
+    bodywtout<<"# filling will fill through forecast yeaers, so be explicit"<<endl;
     bodywtout<<"# fleet 0 contains begin season pop WT"<<endl;
     bodywtout<<"# fleet -1 contains mid season pop WT"<<endl;
     bodywtout<<"# fleet -2 contains maturity*fecundity"<<endl;
@@ -275,6 +276,8 @@ FINAL_SECTION
     y=styr;
    get_initial_conditions();
     get_time_series();  //  in final_section
+    Get_Forecast();
+    bodywtout<<-9999<<" "<<1<<" "<<1<<" "<<1<<" "<<1<<" "<<0<<" "<<Wt_Age_mid(1,1)<<" #terminator "<<endl;
     bodywtout.close();
 
 //  SS_Label_Info_12.3.2 #Set save_for_report=1 then call initial_conditions and time_series to get other output quantities

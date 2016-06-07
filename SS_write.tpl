@@ -4305,7 +4305,7 @@ FUNCTION void write_bigoutput()
   }
 
   SS2out <<endl<< "MEAN_SIZE_TIMESERIES" << endl;           // SS_Label_450
-  SS2out <<"Morph Yr Seas Beg/Miglobd"<<age_vector<<endl;
+  SS2out <<"Morph Yr Seas SubSeas"<<age_vector<<endl;
   if(reportdetail>0)
   {
     for (g=1;g<=gmorph;g++)

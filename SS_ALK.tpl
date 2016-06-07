@@ -58,18 +58,11 @@ FUNCTION void Make_AgeLength_Key(const int s, const int subseas)
             {
               if(WTage_rd==0)
               {Wt_Age_beg(s,g)=(ALK(ALK_idx,g)*wt_len(s,GP(g)));}   // wt-at-age at beginning of period
-              else
-              {Wt_Age_beg(s,g)=WTage_emp(t,GP3(g),0);}
-              if(save_for_report==2 && ishadow(GP2(g))==0) bodywtout<<-y<<" "<<s<<" "<<gg<<" "<<GP4(g)<<" "<<Bseas(g)<<" "<<0<<" "<<Wt_Age_beg(s,g)<<endl;
             }
-
             if(subseas==mid_subseas)
             {
               if(WTage_rd==0)
               {Wt_Age_mid(s,g)=ALK(ALK_idx,g)*wt_len(s,GP(g));}  // use for fisheries with no size selectivity
-              else
-              {Wt_Age_mid(s,g)=WTage_emp(t,GP3(g),-1);}
-              if(save_for_report==2 && ishadow(GP2(g))==0) bodywtout<<-y<<" "<<s<<" "<<gg<<" "<<GP4(g)<<" "<<Bseas(g)<<" "<<-1<<" "<<Wt_Age_mid(s,g)<<endl;
             }
           }  // end platoon loop
         }

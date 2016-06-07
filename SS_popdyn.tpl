@@ -59,6 +59,17 @@ FUNCTION void get_initial_conditions()
   for (s=1;s<=nseas;s++)
   {
     t = styr+s-1;
+
+    if(WTage_rd>0)
+    {
+      for (g=1;g<=gmorph;g++)
+      if(use_morph(g)>0)
+      {
+      Wt_Age_beg(s,g)=WTage_emp(t,GP3(g),0);
+      Wt_Age_mid(s,g)=WTage_emp(t,GP3(g),-1);
+      }
+    }
+
     if(MG_active(2)>0 || MG_active(3)>0 || save_for_report>0 || WTage_rd>0)  //  initial year; if growth parms are active, get growth
     {
       for(subseas=1;subseas<=N_subseas;subseas++)  //  do all subseasons in first year
@@ -79,7 +90,6 @@ FUNCTION void get_initial_conditions()
         Make_Fecundity();
       }
     }
-
     for (g=1;g<=gmorph;g++)
     if(use_morph(g)>0)
     {
@@ -351,6 +361,17 @@ FUNCTION void get_time_series()
       if (docheckup==1) echoinput<<endl<<"************************************"<<endl<<" year, seas "<<y<<" "<<s<<endl;
       t = t_base+s;
   //  SS_Label_Info_24.2.1 #Update the age-length key and the fishery selectivity for this season
+
+      if(WTage_rd>0)
+      {
+        for (g=1;g<=gmorph;g++)
+        if(use_morph(g)>0)
+        {
+        Wt_Age_beg(s,g)=WTage_emp(t,GP3(g),0);
+        Wt_Age_mid(s,g)=WTage_emp(t,GP3(g),-1);
+        }
+      }
+
       if(time_vary_MG(y,2)>0 || time_vary_MG(y,3)>0 || save_for_report==1 || WTage_rd>0)
       {
         subseas=1;  //  begin season  note that ALK_idx re-calculated inside get_growth3
