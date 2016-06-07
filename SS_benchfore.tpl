@@ -173,6 +173,8 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
     {
       if(fabs(SPR_actual-SPR_target)>=0.001)
       {N_warn++; warning<<" warning: poor convergence in Fspr search "<<SPR_target<<" "<<SPR_actual<<endl;}
+      if(SPR_actual/SPR_target>=1.01)
+      {N_warn++; warning<<" warning: high Fmult for Fspr: "<<Fmult<<" needed to come close to low SPR "<<SPR_target<<" "<<SPR_actual<<endl;}
       report5<<"seas fleet encB deadB retB encN deadN retN): "<<endl;
       for (s=1;s<=nseas;s++)
       for (f=1;f<=Nfleet;f++)
@@ -424,7 +426,7 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
 
       if(show_MSY==1)
       {
-      if(fabs(dyld/dyldp)>=0.001)
+      if(Do_MSY==2 && fabs(dyld/dyldp)>=0.001)
       {N_warn++; warning<<" warning: poor convergence in Fmsy, final dy/dy2= "<<dyld/dyldp<<endl;}
       report5<<"seas fleet encB deadB retB encN deadN retN): "<<endl;
       for (s=1;s<=nseas;s++)

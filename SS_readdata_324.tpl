@@ -2786,6 +2786,8 @@
     echoinput<<"No forecast selected, so rest of forecast file will not be read and can be omitted"<<endl;
     echoinput<<"No forecast selected, default forecast of 1 yr created"<<endl;
     if(Bmark_RelF_Basis==2) {N_warn++; cout<<" EXIT - see warning "<<endl; warning<<"Fatal stop:  no forecast, but bmark set to use fcast"<<endl;  exit(1);}
+    Fcast_yr.initialize();
+    Fcast_Loop_Control.initialize();
   }
   else
   {
