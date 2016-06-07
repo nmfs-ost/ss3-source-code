@@ -265,9 +265,10 @@ FINAL_SECTION
 //  SS_Label_Info_12.3.1 #Write out body weights to wtatage.ss_new.  Occurs while doing procedure with save_for_report=2
     save_for_report=2;
 //    bodywtout<<1<<"  #_user_must_replace_this_value_with_number_of_lines_with_wtatage_below"<<endl;
-    bodywtout<<N_WTage_maxage<<" # maxage"<<endl;
+    bodywtout<<nages<<" # maxage"<<endl;
     bodywtout<<"# if yr is negative, then fill remaining years for that seas, growpattern, gender, fleet"<<endl;
-    bodywtout<<"# filling will fill through forecast yeaers, so be explicit"<<endl;
+    bodywtout<<"# if season is negative, then fill remaining fleets for that seas, growpattern, gender, fleet"<<endl;
+    bodywtout<<"# will fill through forecast years, so be careful"<<endl;
     bodywtout<<"# fleet 0 contains begin season pop WT"<<endl;
     bodywtout<<"# fleet -1 contains mid season pop WT"<<endl;
     bodywtout<<"# fleet -2 contains maturity*fecundity"<<endl;

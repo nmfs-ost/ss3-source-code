@@ -4239,12 +4239,14 @@
      ad_comm::change_datafile_name("wtatage.ss");
      *(ad_comm::global_datafile) >>N_WTage_maxage;
      k=7+N_WTage_maxage;
+   echoinput<<" N_WTage_max "<<N_WTage_maxage<<endl;
      ender=0;
      do
      {
       dvector tempvec(1,k);
       *(ad_comm::global_datafile) >> tempvec(1,k);
       if(tempvec(1)==-9999.) ender=1;
+        echoinput<<tempvec(1,k)<<endl;
       WTage_in.push_back (tempvec(1,k));
      } while (ender==0);
      N_WTage_rd=WTage_in.size()-1;
@@ -4270,19 +4272,23 @@
   {
     WTage_emp.initialize();
     if(N_WTage_maxage>nages) N_WTage_maxage=nages;  //  so extra ages being read will be ignored
-    for (i=1;i<=N_WTage_rd;i++)
+    dvector tempvec(1,7+N_WTage_maxage);
+    for (i=0;i<=N_WTage_rd-1;i++)
     {
-      tempvec=WTage_in[i];
+//      for(j=1;j<=7+N_WTage_maxage;j++) 
+//      {
+        tempvec(1,7+N_WTage_maxage)=WTage_in[i](1,7+N_WTage_maxage);
+//      }
       y=abs(tempvec(1));
       if(y<styr) y=styr;
       if(tempvec(1)<0) {y2=YrMax;} else {y2=y;}  //  allows filling to end of time series
       s=abs(tempvec(2));
+      f=tempvec(6);
       if(tempvec(2)<0) {f2=Nfleet;} else {f2=f;}  //  allows filling all fleets
       gg=tempvec(3);
       gp=tempvec(4);
       birthseas=tempvec(5);
       g=(gg-1)*N_GP*nseas + (gp-1)*nseas + birthseas;
-      f=tempvec(6);
       if(s<=nseas && gg<=gender && gp<=N_GP && birthseas<=nseas && f<=Nfleet)
       {
         for (j=y;j<=y2;j++)  // loop years
