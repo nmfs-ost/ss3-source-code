@@ -1399,12 +1399,12 @@ FUNCTION void Make_FishSelex()
             if(sum(fish_body_wt(tz,g,f))>0.00001)
             {
               bodywtout<<y<<" "<<s<<" "<<gg<<" "<<GP4(g)<<" "<<Bseas(g)
-              <<" "<<f<<" "<<fish_body_wt(tz,g,f)<<endl;
+              <<" "<<f<<" "<<fish_body_wt(tz,g,f)<<"#wt_flt_"<<f<<endl;
             }
             else
             {
               bodywtout<<y<<" "<<s<<" "<<gg<<" "<<GP4(g)<<" "<<Bseas(g)
-              <<" "<<f<<" "<<Wt_Age_beg(s,g)<<endl;
+              <<" "<<f<<" "<<Wt_Age_beg(s,g)<<"#wt_flt_"<<f<<endl;
             }
             
           }
