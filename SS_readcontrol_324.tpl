@@ -258,7 +258,7 @@
         }
       Settle_seas(settle_time)=k;
       Settle_seas_offset(settle_time)=Settle_seas(settle_time)-spawn_seas+Settle_age(settle_time)*nseas;  //  number of seasons between spawning and the season in which settlement occurs
-//      Settle_age(settle_time)=0;  // set to 0 to match 3.24, but use calculated value in code line above
+      Settle_age(settle_time)=0;  // set to 0 to match 3.24, but use calculated value in code line above
       Settle_timing_seas(settle_time)-=temp;  //  timing from beginning of this season; needed for mortality calculation
       echoinput<<settle_time<<" / "<<Settle_month(settle_time);
       echoinput<<"  /  "<<Settle_seas(settle_time)<<" / "<<Settle_seas_offset(settle_time)<<" / "
