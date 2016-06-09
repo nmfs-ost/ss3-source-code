@@ -1737,9 +1737,12 @@ FUNCTION void write_nucontrol()
     else
     {report4<<"  #_no additional input for selected M option; read 1P per morph"<<endl;}
 
-    report4<<Grow_type<<" # GrowthModel: 1=vonBert with L1&L2; 2=Richards with L1&L2; 3=age_speciific_K; 4=not implemented"<<endl;
+    report4<<Grow_type<<" # GrowthModel: 1=vonBert with L1&L2; 2=Richards with L1&L2; 3=age_specific_K; 4=not implemented"<<endl;
     if(Grow_type<=3)
-    {report4<<AFIX<<" #_Growth_Age_for_L1"<<endl<<AFIX2<<" #_Growth_Age_for_L2 (999 to use as Linf)"<<endl;}
+    {report4<<AFIX<<" #_Growth_Age_for_L1"<<endl<<
+      AFIX2<<" #_Growth_Age_for_L2 (999 to use as Linf)"<<endl<<
+      Linf_decay<<" #_exponential decay for growth above maxage (fixed at 0.2 in 3.24; should approx initial Z)"<<endl;
+      }
     else
     {report4<<" #_No Growth_Age_for_L1 and L2"<<endl;}
     if(Grow_type==3)

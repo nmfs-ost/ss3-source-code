@@ -572,6 +572,8 @@
   number AFIX2_forCV;
   number AFIX_delta;
   number AFIX_plus;
+  number Linf_decay;  //  decay factor to calculate mean L at maxage from Linf and the decaying abundance above maxage
+                      //  forced equal to 0.20 in 3.24 (which also assumed linear, not VBK, growth) 
   int first_grow_age;
   !! k=0;
   !! if(Grow_type<=2) {k=2;}  //  AFIX and AFIX2
@@ -585,6 +587,7 @@
   k1=0;
   AFIX=0.;
   AFIX2=999.;  // this value invokes setting Linf equal to the L2 parameter
+  Linf_decay=0.20;  //  initialize to match 3.24
   if(Grow_type==1)
   {
     N_growparms=5;

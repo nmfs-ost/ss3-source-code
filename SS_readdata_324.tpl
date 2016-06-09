@@ -330,7 +330,7 @@
   // insert initial equilibrium catch
   for (f=1; f<= Nfleet1; f++)
   {
-    catch_ret_obs(f,styr-1) = obs_equ_catch(1,f);
+    catch_ret_obs(f,styr-nseas) = obs_equ_catch(1,f);
   }
 
   tempvec.initialize();

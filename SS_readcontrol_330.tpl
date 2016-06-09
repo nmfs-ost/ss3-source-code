@@ -554,10 +554,12 @@
   number AFIX2_forCV;
   number AFIX_delta;
   number AFIX_plus;
+  number Linf_decay;  //  decay factor to calculate mean L at maxage from Linf and the decaying abundance above maxage
+                      //  forced equal to 0.20 in 3.24 (which also assumed linear, not VBK, growth) 
   int first_grow_age;
   !! k=0;
-  !! if(Grow_type<=2) {k=2;}  //  AFIX and AFIX2
-  !! if (Grow_type==3) {k=3;}  //  min and max age for age-specific K
+  !! if(Grow_type<=2) {k=3;}  //  AFIX and AFIX2
+  !! if (Grow_type==3) {k=4;}  //  min and max age for age-specific K
   init_vector tempvec5(1,k)
   int Age_K_count;
 
@@ -567,23 +569,27 @@
   k1=0;
   AFIX=0.;
   AFIX2=999.;  // this value invokes setting Linf equal to the L2 parameter
+  Linf_decay=0.0;  //  initialize
   if(Grow_type==1)
   {
     N_growparms=5;
     AFIX=tempvec5(1);
     AFIX2=tempvec5(2);
+    Linf_decay=tempvec5(3);
   }
   else if(Grow_type==2)
   {
     N_growparms=6;
     AFIX=tempvec5(1);
     AFIX2=tempvec5(2);
+    Linf_decay=tempvec5(3);
   }
   else if(Grow_type==3)
   {
     AFIX=tempvec5(1);
     AFIX2=tempvec5(2);
-    Age_K_count=tempvec5(3);
+    Linf_decay=tempvec5(3);
+    Age_K_count=tempvec5(4);
     N_growparms=5+Age_K_count;;
   }
   else if(Grow_type==4)

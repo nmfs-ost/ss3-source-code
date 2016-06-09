@@ -470,7 +470,7 @@ FUNCTION void get_growth2()
             }
 
 //  SS_Label_Info_16.2.4.1.1  #if y=styr, get size-at-age in first subseason of first season of this first year
-            if(do_once==1) echoinput<<y<<" seas: "<<s<<" growth gp,g: "<<gp<<" "<<g<<" settle_age "<<Settle_age(settle)<<" Lmin: "<<Lmin(gp)<<" Linf: "<<L_inf(gp)<<endl<<" K@age: "<<-VBK(gp)<<endl;
+            if(do_once==1) echoinput<<y<<" seas: "<<1<<" growth gp,g: "<<gp<<" "<<g<<" settle_age "<<Settle_age(settle)<<" Lmin: "<<Lmin(gp)<<" Linf: "<<L_inf(gp)<<endl<<" K@age: "<<-VBK(gp)<<endl;
             Ave_Size(styr,1,g,0)=L_inf(gp) + (Lmin(gp)-L_inf(gp))*mfexp(VBK(gp,0)*VBK_seas(0)*(real_age(g,1,0)-AFIX));
             for (a=1;a<=nages+Settle_age(settle);a++)
             {
@@ -485,7 +485,8 @@ FUNCTION void get_growth2()
             temp1=1.0;
             temp4=1.0;
             temp=current_size;
-            temp2=mfexp(-0.08);  //  cannot use natM or Z because growth is calculated first
+//            temp2=mfexp(-0.20);  //  cannot use natM or Z because growth is calculated first; 3.24 forced 0.20
+            temp2=mfexp(-Linf_decay);  //  cannot use natM or Z because growth is calculated first
             if(do_once==1&&g==1) echoinput<<" L_inf "<<L_inf(gp)<<" size@exactly maxage "<<current_size<<endl;
             for (a=nages+1;a<=3*nages;a++)
             {
@@ -495,7 +496,8 @@ FUNCTION void get_growth2()
               temp1+=temp4;   //  accumulate numbers to create denominator for mean size calculation
             }
             Ave_Size(styr,1,g,nages)=temp/temp1;  //  this is weighted mean size at nages
-            if(do_once==1&&g==1) echoinput<<" adjusted size at maxage "<<Ave_Size(styr,1,g,nages)<<endl;
+            if(do_once==1&&g==1) echoinput<<" adjusted size at maxage "<<Ave_Size(styr,1,g,nages)<<
+              "  using decay of: "<<Linf_decay<<endl;
           }  //  end initial year calcs
 
 //  SS_Label_Info_16.2.4.2  #loop seasons for growth calculation
