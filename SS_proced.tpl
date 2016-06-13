@@ -311,17 +311,16 @@ PROCEDURE_SECTION
       }  //  end being in a phase for these calcs
     }  //  end getting quantities for benchmarks
 
-
 //  SS_Label_Info_7.6 #If sdphase or mcevalphase, do benchmarks and forecast and derived quantities
     if( (sd_phase() || mceval_phase()) && (initial_params::mc_phase==0))
     {
-
+       cout<<" in sd_phase "<<endl;
 //  SS_Label_Info_7.6.1 #Call fxn Get_Benchmarks()
       if(mceval_phase()==0) {show_MSY=1;}
       if(Do_Benchmark>0)
       {
-      report5<<"show MSY before call in procedure "<<show_MSY<<endl;
         Get_Benchmarks(show_MSY);
+        cout<<"finished benchmark for STD quantities "<<endl;
         did_MSY=1;
       }
       else
@@ -333,10 +332,12 @@ PROCEDURE_SECTION
       {
         report5<<"THIS FORECAST FOR PURPOSES OF STD REPORTING"<<endl;
         Get_Forecast();
+        cout<<"finished forecast  for STD quantities "<<F_std<<endl;
         did_MSY=1;
       }
 
 //  SS_Label_Info_7.7 #Call fxn Process_STDquant() to move calculated values into sd_containers
+      cout<<" process STD "<<endl;
       Process_STDquant();
     }  // end of things to do in std_phase
 

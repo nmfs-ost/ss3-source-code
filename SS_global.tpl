@@ -216,7 +216,8 @@ FINAL_SECTION
   hour = long(elapsed_time)/3600;
   minute = long(elapsed_time)%3600/60;
   second = (long(elapsed_time)%3600)%60;
-  cout<<endl<<"Finish time: "<<ctime(&finish);
+  cout<<endl<<"In final section "<<endl;
+  cout<<"Finish time: "<<ctime(&finish);
   cout<<"Elapsed time: ";
   cout<<hour<<" hours, "<<minute<<" minutes, "<<second<<" seconds."<<endl;
 
@@ -256,30 +257,12 @@ FINAL_SECTION
         }
       }
     }
-    cout<<"Finished writing COVAR.SSO"<<endl;
+    cout<<" finished COVAR.SSO"<<endl;
 
     get_posteriors();
 
 //  SS_Label_Info_12.3 #Go thru time series calculations again to get extra output quantities
 
-//  SS_Label_Info_12.3.1 #Write out body weights to wtatage.ss_new.  Occurs while doing procedure with save_for_report=2
-    save_for_report=2;
-//    bodywtout<<1<<"  #_user_must_replace_this_value_with_number_of_lines_with_wtatage_below"<<endl;
-    bodywtout<<nages<<" # maxage"<<endl;
-    bodywtout<<"# if yr is negative, then fill remaining years for that seas, growpattern, gender, fleet"<<endl;
-    bodywtout<<"# if season is negative, then fill remaining fleets for that seas, growpattern, gender, fleet"<<endl;
-    bodywtout<<"# will fill through forecast years, so be careful"<<endl;
-    bodywtout<<"# fleet 0 contains begin season pop WT"<<endl;
-    bodywtout<<"# fleet -1 contains mid season pop WT"<<endl;
-    bodywtout<<"# fleet -2 contains maturity*fecundity"<<endl;
-    bodywtout<<"#yr seas gender growpattern birthseas fleet "<<age_vector<<endl;
-    save_gparm=0;
-    y=styr;
-   get_initial_conditions();
-    get_time_series();  //  in final_section
-    Get_Forecast();
-    bodywtout<<-9999<<" "<<1<<" "<<1<<" "<<1<<" "<<1<<" "<<0<<" "<<Wt_Age_mid(1,1)<<" #terminator "<<endl;
-    bodywtout.close();
 
 //  SS_Label_Info_12.3.2 #Set save_for_report=1 then call initial_conditions and time_series to get other output quantities
     save_for_report=1;
@@ -293,27 +276,26 @@ FINAL_SECTION
     if(mceval_phase()==0) {show_MSY=1;} else {show_MSY=0;}
     if(Do_Benchmark>0)
     {
-      report5<<"show MSY before call in global "<<show_MSY<<endl;
       if(did_MSY==0) Get_Benchmarks(show_MSY);
+      cout<<" finished benchmark"<<endl;
     }
     else
     {Mgmt_quant(1)=SPB_virgin;}
-     cout<<"finished benchmark"<<endl;
     if(Do_Forecast>0)
     {
       report5<<"THIS FORECAST FOR PURPOSES OF GETTING DISPLAY QUANTITIES"<<endl;
       Get_Forecast();
+      cout<<" finished forecast "<<endl;
     }
-    cout<<" finished forecast "<<endl;
 
 //  SS_Label_Info_12.3.4  #call fxn STDquant()
-    Process_STDquant();
-    cout<<" finished STD quantities "<<endl;
+     Process_STDquant();
+     cout<<" finished STD quantities "<<endl;
 
 //  SS_Label_Info_12.4 #Do Outputs
 //  SS_Label_Info_12.4.1 #Call fxn write_bigoutput()
     write_bigoutput();
-    cout<<" finished big report in final_section"<<endl;
+    cout<<" finished big report"<<endl;
 
 //  SS_Label_Info_12.4.2 #Call fxn write_summaryoutput() to produce report.sso and compreport.sso
     if(Do_CumReport>0) write_summaryoutput();
@@ -333,6 +315,29 @@ FINAL_SECTION
 
 //  SS_Label_Info_12.4.6 #Call fxn write_Bzero_output()  appended to report.sso
     write_Bzero_output();
+    cout<<" finished Bzero and global MSY "<<endl;
+    
+//  SS_Label_Info_12.3.1 #Write out body weights to wtatage.ss_new.  Occurs while doing procedure with save_for_report=2
+    save_for_report=2;
+//    bodywtout<<1<<"  #_user_must_replace_this_value_with_number_of_lines_with_wtatage_below"<<endl;
+    bodywtout<<nages<<" # maxage"<<endl;
+    bodywtout<<"# if yr is negative, then fill remaining years for that seas, growpattern, gender, fleet"<<endl;
+    bodywtout<<"# if season is negative, then fill remaining fleets for that seas, growpattern, gender, fleet"<<endl;
+    bodywtout<<"# will fill through forecast years, so be careful"<<endl;
+    bodywtout<<"# fleet 0 contains begin season pop WT"<<endl;
+    bodywtout<<"# fleet -1 contains mid season pop WT"<<endl;
+    bodywtout<<"# fleet -2 contains maturity*fecundity"<<endl;
+    bodywtout<<"#yr seas gender growpattern birthseas fleet "<<age_vector<<endl;
+    save_gparm=0;
+    y=styr;
+    fishery_on_off=1;
+    get_initial_conditions();
+    get_time_series();  //  in final_section
+    Get_Forecast();
+    bodywtout<<-9999<<" "<<1<<" "<<1<<" "<<1<<" "<<1<<" "<<0<<" "<<Wt_Age_mid(1,1)<<" #terminator "<<endl;
+    bodywtout.close();
+    cout<<" write wtatage.ss_new "<<endl;
+    
     warning<<" N warnings: "<<N_warn<<endl;
     if(parm_adjust_method==3) warning<<"time-vary MGparms not bound checked"<<endl;
     if(parm_adjust_method==3) warning<<"time-vary selparms not bound checked"<<endl;

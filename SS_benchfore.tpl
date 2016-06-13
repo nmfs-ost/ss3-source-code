@@ -76,6 +76,18 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
         Make_FishSelex();
       }
     }
+
+      maxpossF.initialize();
+      for(g=1;g<=gmorph;g++)
+        for(s=1;s<=nseas;s++)
+        {
+          tempvec_a.initialize();
+          for(f=1;f<=Nfleet;f++) {tempvec_a+=Bmark_RelF_Use(s,f)*deadfish(s,g,f);}
+          temp=max(tempvec_a);
+          if(temp>maxpossF) maxpossF=temp;
+        }
+        maxpossF =max_harvest_rate/maxpossF;    //  applies to any F_method
+
 //  SPAWN-RECR:   notes regarding virgin vs. benchmark biology usage in spawn-recr
 //  the spawner-recruitment function has Bzero based on virgin biology, not benchmark biology
 //  need to deal with possibility that with time-varying biology, the SPB_virgin calculated from virgin conditions will differ from the SPB_virgin used for benchmark conditions
@@ -626,7 +638,6 @@ FUNCTION void Get_Forecast()
   {
 //********************************************************************
  /*  SS_Label_FUNCTION 35 Get_Forecast */
-  if(rundetail>0 && mceval_counter==0) cout<<" Do Forecast "<<YrMax<<endl;
   t_base=styr+(endyr-styr)*nseas-1;
   int Do_4010;
   int bio_t;
@@ -656,33 +667,40 @@ FUNCTION void Get_Forecast()
 
   Do_F_tune.initialize();
 
-   switch(Do_Forecast)
+   if(fishery_on_off==1)
    {
-     case 1:
-       {Fcast_Fmult=SPR_Fmult; if(show_MSY==1) report5<<"1:  Forecast_using_Fspr"<<endl; break;}
-     case 2:
-       {Fcast_Fmult=MSY_Fmult; if(show_MSY==1) report5<<"2:  Forecast_using_Fmsy"<<endl; break;}
-     case 3:
-       {Fcast_Fmult=Btgt_Fmult; if(show_MSY==1) report5<<"3:  Forecast_using_F(Btarget)"<<endl; break;}
-     case 4:
-     {
-       Fcast_Fmult=0.0;
-       for (y=Fcast_RelF_yr1;y<=Fcast_RelF_yr2;y++)
-       for (f=1;f<=Nfleet;f++)
-       for (s=1;s<=nseas;s++)
-       {
-        if(fleet_type(f)<=2)
+    switch(Do_Forecast)
+    {
+      case 1:
+        {Fcast_Fmult=SPR_Fmult; if(show_MSY==1) report5<<"1:  Forecast_using_Fspr"<<endl; break;}
+      case 2:
+        {Fcast_Fmult=MSY_Fmult; if(show_MSY==1) report5<<"2:  Forecast_using_Fmsy"<<endl; break;}
+      case 3:
+        {Fcast_Fmult=Btgt_Fmult; if(show_MSY==1) report5<<"3:  Forecast_using_F(Btarget)"<<endl; break;}
+      case 4:
+      {
+        Fcast_Fmult=0.0;
+        for (y=Fcast_RelF_yr1;y<=Fcast_RelF_yr2;y++)
+        for (f=1;f<=Nfleet;f++)
+        for (s=1;s<=nseas;s++)
         {
-          t=styr+(y-styr)*nseas+s-1;
-          Fcast_Fmult+=Hrate(f,t);
+         if(fleet_type(f)<=2)
+         {
+           t=styr+(y-styr)*nseas+s-1;
+           Fcast_Fmult+=Hrate(f,t);
+         }
         }
-       }
-       Fcast_Fmult/=float(Fcast_RelF_yr2-Fcast_RelF_yr1+1);
-       Fcurr_Fmult=Fcast_Fmult;
-       if(show_MSY==1) report5<<"4:  Forecast_using_ave_F_from:_"<<Fcast_RelF_yr1<<"_"<<Fcast_RelF_yr2<<endl; break;
-     }
-     case 5:
-     {Fcast_Fmult=Fcast_Flevel; if(show_MSY==1) report5<<"5:  Forecast_using_input_F "<<endl; break;}
+        Fcast_Fmult/=float(Fcast_RelF_yr2-Fcast_RelF_yr1+1);
+        Fcurr_Fmult=Fcast_Fmult;
+        if(show_MSY==1) report5<<"4:  Forecast_using_ave_F_from:_"<<Fcast_RelF_yr1<<"_"<<Fcast_RelF_yr2<<endl; break;
+      }
+      case 5:
+      {Fcast_Fmult=Fcast_Flevel; if(show_MSY==1) report5<<"5:  Forecast_using_input_F "<<endl; break;}
+    }
+   }
+   else
+   {
+     Fcast_Fmult=0.0;
    }
 
   if(show_MSY==1)  //  write more headers
@@ -755,7 +773,12 @@ FUNCTION void Get_Forecast()
     if(HarvestPolicy==1) {report5<<" adjust_catch_below_Inflection(west_coast)"<<endl;} else {report5<<" adjust_F_below_Inflection"<<endl;}
     report5<<"#"<<endl;
   }
-  for (int Fcast_Loop1=1; Fcast_Loop1<=Fcast_Loop_Control(1);Fcast_Loop1++)  //   for different forecast conditions
+  int jloop;
+  if(fishery_on_off==1)
+  {jloop=Fcast_Loop_Control(1);}
+  else
+  {jloop=1;}
+  for (int Fcast_Loop1=1; Fcast_Loop1<=jloop;Fcast_Loop1++)  //   for different forecast conditions
   {
     switch(Fcast_Loop1)  //  select which ABC_loops to use
     {
@@ -796,7 +819,6 @@ FUNCTION void Get_Forecast()
     //  would be better to back up to last mainrecrdev and start with begin of forecast
     SPB_current=SPB_yr(endyr);
     Recruits=exp_rec(endyr,4);
-
     for (y=endyr+1;y<=YrMax;y++)
     {
       t_base=styr+(y-styr)*nseas-1;
@@ -940,7 +962,7 @@ FUNCTION void Get_Forecast()
           if(s==nseas) {adv_age=1;} else {adv_age=0;}   //      advance age or not when doing survivorship
 
 //  SPAWN-RECR:   calc area-specific spawning biomass in forecast
-          if(s==spawn_seas)    //  get spawnbio in a forecast year
+          if(s==spawn_seas && spawn_time_seas<0.0001)    //  get spawnbio in a forecast year
           {
             SPB_pop_gp(y).initialize();
             for (p=1;p<=pop;p++)
@@ -948,9 +970,12 @@ FUNCTION void Get_Forecast()
               for (g=1;g<=gmorph;g++)
               if(sx(g)==1 && use_morph(g)>0)     //  female
               {
-                SPB_pop_gp(y,p,GP4(g)) += fec(g)*elem_prod(natage(t,p,g),mfexp(-Z_rate(t,p,g)*spawn_time_seas));   // accumulates SSB by area and by growthpattern
-                SPB_B_yr(y) += make_mature_bio(GP4(g))*elem_prod(natage(t,p,g),mfexp(-Z_rate(t,p,g)*spawn_time_seas));
-                SPB_N_yr(y) += make_mature_numbers(GP4(g))*elem_prod(natage(t,p,g),mfexp(-Z_rate(t,p,g)*spawn_time_seas));
+//                SPB_pop_gp(y,p,GP4(g)) += fec(g)*elem_prod(natage(t,p,g),mfexp(-Z_rate(t,p,g)*spawn_time_seas));   // accumulates SSB by area and by growthpattern
+//                SPB_B_yr(y) += make_mature_bio(GP4(g))*elem_prod(natage(t,p,g),mfexp(-Z_rate(t,p,g)*spawn_time_seas));
+//                SPB_N_yr(y) += make_mature_numbers(GP4(g))*elem_prod(natage(t,p,g),mfexp(-Z_rate(t,p,g)*spawn_time_seas));
+                SPB_pop_gp(y,p,GP4(g)) += fec(g)*natage(t,p,g);   // accumulates SSB by area and by growthpattern
+                SPB_B_yr(y) += make_mature_bio(GP4(g))*natage(t,p,g);
+                SPB_N_yr(y) += make_mature_numbers(GP4(g))*natage(t,p,g);
               }
             }
             SPB_current=sum(SPB_pop_gp(y));
@@ -1146,7 +1171,7 @@ FUNCTION void Get_Forecast()
                       temp=max_harvest_rate-Fcast_InputCatch(t,f,1)/(temp+NilNumbers);
                       Hrate(f,t)=max_harvest_rate-posfun(temp,0.0001,Fcast_Crash);
                     }
-                    else  //  tune to adjusted catch calculated from ABC_Loop=2 (note different basis for catch)
+                    else if (fishery_on_off==1) //  tune to adjusted catch calculated from ABC_Loop=2 (note different basis for catch)
                     {
                       for (g=1;g<=gmorph;g++)
                       if(use_morph(g)>0)
@@ -1166,7 +1191,6 @@ FUNCTION void Get_Forecast()
                   }  // end have fixed catch to be matched
                 }  // end fishery loop
               }  //  end finding the Hrates
-
 //  now get catch details and survivorship
               Nsurv=Nmid;  //  initialize the number of survivors
               for (f=1;f<=Nfleet;f++)       //loop over fishing fleets       SS_Label_105
@@ -1194,7 +1218,11 @@ FUNCTION void Get_Forecast()
               {
                 j=Settle_age(settle);
                 if(s<nseas && Settle_seas(settle)<=s) natage(t+1,p,g,j) = Nsurv(g,j)*surv1(s,GP3(g),j);  // advance age zero within year
-                for (a=j+1;a<nages;a++) {natage(t+1,p,g,a) = Nsurv(g,a-adv_age)*surv1(s,GP3(g),a-adv_age);}
+                for (a=j+1;a<nages;a++)
+                {
+                  natage(t+1,p,g,a) = Nsurv(g,a-adv_age)*surv1(s,GP3(g),a-adv_age);
+                  Z_rate(t,p,g,a)=-log(natage(t+1,p,g,a)/natage(t,p,g,a-adv_age))/seasdur(s);
+                }
                 natage(t+1,p,g,nages) = Nsurv(g,nages)*surv1(s,GP3(g),nages);   // plus group
                 if(s==nseas) natage(t+1,p,g,nages) += Nsurv(g,nages-1)*surv1(s,GP3(g),nages-1);
                 if(save_for_report==1)
@@ -1208,16 +1236,6 @@ FUNCTION void Get_Forecast()
                   } // close age loop
                 }
               }
-//              report5<<"NatAge"<<natage(t,1,1)(0,10)<<endl;
-//              report5<<"surv1"<<surv1(1,GP3(1))(0,10)<<endl;
-//              report5<<"Nmid"<<Nmid(1)(0,10)<<endl;
-//              report5<<"deadfish"<<deadfish(1,1,10)(0,10)<<endl;
-//              report5<<"deadfishB"<<deadfish_B(1,1,10)(0,10)<<endl;
-//              report5<<"catchfleet ";
-//              for (f=1;f<=Nfleet;f++) report5<<catch_fleet(t,f,2)<<" ";
-//              report5<<endl;
-//              report5<<"Nsurv"<<Nsurv(1)(0,10)<<endl;
-//              report5<<"next_N"<<natage(t+1,1,1)(0,10)<<endl;
             }  //  end Fmethod=1 pope
 
             else  //  continuous F
@@ -1278,7 +1296,7 @@ FUNCTION void Get_Forecast()
                         H_old(f)=H_temp(f);
                       }
                     }
-                    else  //  tune to adjusted catch calculated in ABC_Loop=2 (note different basis for catch)
+                    else if (fishery_on_off==1) //  tune to adjusted catch calculated in ABC_Loop=2 (note different basis for catch)
                     {
                       for (g=1;g<=gmorph;g++)
                       if(use_morph(g)>0)
@@ -1311,7 +1329,6 @@ FUNCTION void Get_Forecast()
                         C_old(f)=C_temp(f);
                         H_old(f)=H_temp(f);
                       }
-
                     }
                   }  // end have fixed catch to be matched
                 }  // end fishery loop
@@ -1334,6 +1351,7 @@ FUNCTION void Get_Forecast()
                 }  //close gmorph loop
 
               }  // close fishery
+
               for (g=1;g<=gmorph;g++)
               if(use_morph(g)>0)
               {
@@ -1353,6 +1371,63 @@ FUNCTION void Get_Forecast()
                 }
               }  // end morph loop
             }  // end continuous F
+
+
+  //  SS_Label_Info_24.3.4 #Compute spawning biomass if occurs after start of current season
+//  SPAWN-RECR:   calc spawn biomass in time series if after beginning of the season
+      if(s==spawn_seas && spawn_time_seas>=0.0001)    //  compute spawning biomass
+      {
+        SPB_pop_gp(y).initialize();
+        for (p=1;p<=pop;p++)
+        {
+          for (g=1;g<=gmorph;g++)
+          if(sx(g)==1 && use_morph(g)>0)     //  female
+          {
+            SPB_pop_gp(y,p,GP4(g)) += fec(g)*elem_prod(natage(t,p,g),mfexp(-Z_rate(t,p,g)*spawn_time_seas));   // accumulates SSB by area and by growthpattern
+            SPB_B_yr(y) += make_mature_bio(GP4(g))*elem_prod(natage(t,p,g),mfexp(-Z_rate(t,p,g)*spawn_time_seas));
+            SPB_N_yr(y) += make_mature_numbers(GP4(g))*elem_prod(natage(t,p,g),mfexp(-Z_rate(t,p,g)*spawn_time_seas));
+          }
+        }
+        SPB_current=sum(SPB_pop_gp(y));
+        SPB_yr(y)=SPB_current;
+
+        if(Hermaphro_Option!=0)  // get male biomass
+        {
+          MaleSPB(y).initialize();
+          for (p=1;p<=pop;p++)
+          {
+            for (g=1;g<=gmorph;g++)
+            if(sx(g)==2 && use_morph(g)>0)     //  male; all assumed to be mature
+            {
+              MaleSPB(y,p,GP4(g)) += Save_Wt_Age(t,g)*elem_prod(natage(t,p,g),mfexp(-Z_rate(t,p,g)*spawn_time_seas));   // accumulates SSB by area and by growthpattern
+            }
+          }
+          if(Hermaphro_maleSPB==1) // add MaleSPB to female SSB
+          {
+            SPB_current+=sum(MaleSPB(y));
+            SPB_yr(y)=SPB_current;
+          }
+        }
+  //  SS_Label_Info_24.3.4.1 #Get recruitment from this spawning biomass
+//  SPAWN-RECR:   calc recruitment in time series; need to make this area-specififc
+        Recruits=Spawn_Recr(SPB_virgin,Recr_virgin,SPB_current);  // calls to function Spawn_Recr
+// distribute Recruitment of age 0 fish among the current and future settlements; and among areas and morphs
+//  note that because SPB_current is calculated at end of season to take into account Z,
+//  this means that recruitment cannot occur until a subsequent season
+//  SPAWN-RECR:   distribute recruits among areas, settlements, morphs
+          for (g=1;g<=gmorph;g++)
+          if(use_morph(g)>0)
+          {
+            settle=settle_g(g);
+            for (p=1;p<=pop;p++)
+            {
+              if(y==styr) natage(t+Settle_seas_offset(settle),p,g,Settle_age(settle))=0.0;  //  to negate the additive code
+
+              natage(t+Settle_seas_offset(settle),p,g,Settle_age(settle)) += Recruits*recr_dist(GP(g),settle,p)*platoon_distr(GP2(g))*
+               mfexp(natM(s,GP3(g),Settle_age(settle))*Settle_timing_seas(settle));
+            }
+          }
+      }
 
 //  SS_Label_106  call to Get_expected_values
 //            Get_expected_values();
@@ -1549,8 +1624,6 @@ FUNCTION void Get_Forecast()
             }
           }
 
-//        report5<<Fcast_Loop1<<" "<<y<<" "<<s<<" "<<ABC_Loop<<" "<<SPB_current<<" "<<Recruits<<" "<<ABC_buffer(y)<<" "<<Fcast_Fmult<<" "<<Hrate(1,t);
-//        report5<<" "<<Hrate(2,t)<<" "<<Hrate(3,t)<<" catch "<<Fcast_Catch_Store(t)<<" ";
           if(show_MSY==1)
           {
             if(s==nseas) {report5<<" "<<totcatch<<" ";} else {report5<<" NA ";}
@@ -1673,9 +1746,9 @@ FUNCTION void Get_Forecast()
       }
 
     }  //  end year loop
+    if(save_for_report==2) save_for_report=1;
   }  //  end Fcast_Loop1  for the different stages of the forecast
 
-    cout<<"end forecast "<<endl;
   }
 //  end forecast function
 

@@ -819,7 +819,6 @@ FUNCTION void evaluate_the_objective_function()
  /*  SS_Label_FUNCTION 26 Process_STDquant */
 FUNCTION void Process_STDquant()
   {
-      if(rundetail>0 && mceval_counter==0) cout<<" Process STD quant "<<endl;
       for (y=styr-2; y<=YrMax;y++)
       {
         if(STD_Yr_Reverse(y)>0)
@@ -829,8 +828,6 @@ FUNCTION void Process_STDquant()
         }
         if(STD_Yr_Reverse_Dep(y)>0) {depletion(STD_Yr_Reverse_Dep(y))=SPB_yr(y);}
       }
-
-      if(rundetail>0 && mceval_counter==0) cout<<" STD OK "<<endl;
 
       switch(depletion_basis)
       {
@@ -855,7 +852,6 @@ FUNCTION void Process_STDquant()
           break;
         }
       }
-      if(rundetail>0 && mceval_counter==0) cout<<" depletion OK "<<endl;
 
       switch (SPR_reporting)
       {
@@ -885,7 +881,6 @@ FUNCTION void Process_STDquant()
           break;
         }
       }
-      if(rundetail>0 && mceval_counter==0) cout<<" SPR OK "<<endl;
 
 //  init_int Do_Forecast   //  0=none; 1=F(SPR); 2=F(MSY) 3=F(Btgt); 4=F(endyr); 5=Ave F (enter yrs); 6=read Fmult
 //  Use the selected F method for the forecast as the denominator for the F_std ratio

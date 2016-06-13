@@ -113,7 +113,7 @@ FUNCTION void Get_expected_values();
 
           exp_l_temp=colsum(exp_AL);  //  total size composition
           agetemp=rowsum(exp_AL);  //  total age composition
-          if(do_once==1) echoinput<<y<<" "<<f<<" total  size "<<exp_l_temp<<endl<<" total  age "<<agetemp<<endl;;
+          if(do_once==1) echoinput<<y<<" "<<f<<" sampled  size "<<exp_l_temp<<endl<<" sampled  age "<<agetemp<<endl;;
           if(Do_Retain(f)>0)
           {
              exp_l_temp_ret=colsum(exp_AL_ret);

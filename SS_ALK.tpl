@@ -135,6 +135,7 @@ FUNCTION dvar_matrix calc_ALK(const dvector &len_bins, const ivector &ALK_range_
     }
     AL(ALK_range_hi(a)+1,nlength+1)=1.0;
     ALK_w(a)=first_difference(AL);
+    ALK_w(a,1)+=AL(1);  //  because first bin is from cumulative calc
   }   // end age loop
   RETURN_ARRAYS_DECREMENT();
   return (ALK_w);

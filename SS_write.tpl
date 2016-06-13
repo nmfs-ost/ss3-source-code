@@ -2343,7 +2343,9 @@ FUNCTION void write_bigoutput()
   SS2out<<"X CATCH_AT_AGE"<<endl;
   SS2out<<"X BIOLOGY"<<endl;
   SS2out<<"X SPR/YPR_PROFILE"<<endl;
-  SS2out<<"X GLOBAL_MSY"<<endl;
+  SS2out<<"X ACTUAL_SELECTIVITY_MSY"<<endl;
+  SS2out<<"X KNIFE_AGE_SELECTIVITY_MSY"<<endl;
+  SS2out<<"X SLOT_AGE_SELECTIVITY_MSY"<<endl;
   SS2out<<"X Dynamic_Bzero "<<endl;
 
   SS2out<<endl<<"DEFINITIONS"<<endl;
@@ -5178,6 +5180,7 @@ FUNCTION void write_Bzero_output()
         if(Do_Forecast>0)
         {
           show_MSY=0;
+        report5<<"#"<<endl<<" FORECAST: in Bzero report with fishery onoff= "<<fishery_on_off<<endl;
           Get_Forecast();
         }
       }
