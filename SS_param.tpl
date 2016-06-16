@@ -25,8 +25,6 @@ PARAMETER_SECTION
 !!//  SS_Label_Info_5.1.1 #Create MGparm vector and associated arrays
   // natural mortality and growth
   init_bounded_number_vector MGparm(1,N_MGparm2,MGparm_LO,MGparm_HI,MGparm_PH)
-//  matrix MGparm_trend(1,N_MGparm_trend,styr,YrMax+1);
-//  matrix MGparm_block_val(1,N_MGparm,styr,YrMax+1);
   init_bounded_matrix MGparm_dev(1,N_MGparm_dev,MGparm_dev_minyr,MGparm_dev_maxyr,-10,10,MGparm_dev_PH)
   matrix MGparm_dev_rwalk(1,N_MGparm_dev,MGparm_dev_minyr,MGparm_dev_maxyr);
   vector L_inf(1,N_GP*gender);

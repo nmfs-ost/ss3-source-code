@@ -5,90 +5,6 @@ FUNCTION void get_MGsetup()
   mgp_adj=MGparm;
   int y1;
 
-  //  SS_Label_Info_14.1 #Calculate any trends that will be needed for any of the MG parameters
- /*
-  if(N_MGparm_trend>0)
-  {
-    for (f=1;f<=N_MGparm_trend;f++)
-    {
-      j=MGparm_trend_rev(f);  //  parameter affected
-      k=MGparm_trend_rev_1(f);  // base index for trend parameters
-      if(y==styr)
-      {
-        //  calc endyr value, but use logistic transform to keep with bounds of the base parameter
-        if(MGparm_1(j,13)==-1)
-        {
-          temp=log((MGparm_1(j,2)-MGparm_1(j,1)+0.0000002)/(MGparm(j)-MGparm_1(j,1)+0.0000001)-1.)/(-2.);   // transform the base parameter
-          temp+=MGparm(k+1);     //  add the offset  Note that offset value is in the transform space
-          temp1=MGparm_1(j,1)+(MGparm_1(j,2)-MGparm_1(j,1))/(1.+mfexp(-2.*temp));   // backtransform
-        }
-        else if(MGparm_1(j,13)==-2)
-        {
-          temp1=MGparm(k+1);  // set ending value directly
-        }
-
-        if(MGparm_HI(k+2)<=1.1)  // use max bound as switch
-        {temp3=r_years(styr)+MGparm(k+2)*(r_years(endyr)-r_years(styr));}  // infl year
-        else
-        {temp3=MGparm(k+2);}
-
-        temp2=cumd_norm((r_years(styr)-temp3)/MGparm(k+3));     //  cum_norm at styr
-        temp=(temp1-MGparm(j)) / (cumd_norm((r_years(endyr)-temp3)/MGparm(k+3))-temp2);   //  delta in cum_norm between styr and endyr
-        for (int y1=styr;y1<=YrMax;y1++)
-        {
-          if(y1<=endyr)
-          {MGparm_trend(f,y1)=MGparm(j) + temp * (cumd_norm((r_years(y1)-temp3)/MGparm(k+3) )-temp2);}
-          else
-          {MGparm_trend(f,y1)=MGparm_trend(f,endyr);}
-        }
-      }
-      mgp_adj(j)=MGparm_trend(MGparm_trend_point(j),y);
-    }
-  }
-
-  //  SS_Label_Info_14.2 #Else create MGparm block values
-  if (N_MGparm_blk>0)
-  {
-    for (j=1;j<=N_MGparm;j++)
-    {
-      z=MGparm_1(j,13);    // specified block pattern
-      if(z>0)  // uses blocks
-      {
-        if(y==styr)  // set up the block values time series
-        {
-          g=1;
-          if(MGparm_1(j,14)<3)
-          {
-            for (a=1;a<=Nblk(z);a++)
-            {
-              for (int y1=Block_Design(z,g);y1<=Block_Design(z,g+1);y1++)  // loop years for this block
-              {
-                k=Block_Defs_MG(j,y1);  // identifies parameter that holds the block effect
-                MGparm_block_val(j,y1)=MGparm(k);
-              }
-              g+=2;
-            }
-          }
-          else
-          {
-            temp=0.0;
-            for (a=1;a<=Nblk(z);a++)
-            {
-              y1=Block_Design(z,g);   // first year of block
-              k=Block_Defs_MG(j,y1);  // identifies parameter that holds the block effect
-              temp+=MGparm(k);  // increment by the block delta
-              for (int y1=Block_Design(z,g);y1<=Block_Design(z,g+1);y1++)  // loop years for this block
-              {
-                MGparm_block_val(j,y1)=temp;
-              }
-              g+=2;
-            }
-          }
-        }  // end block setup
-      }  // end uses blocks
-    }  // end parameter loop
-  }  // end block section
- */
   //  SS_Label_Info_14.3 #Create MGparm dev randwalks if needed
   if(N_MGparm_dev>0 && y==styr)
   {
@@ -129,65 +45,10 @@ FUNCTION void get_MGsetup()
       for (f=1;f<=N_MGparm;f++)
       {
 
-        if(MGparm_1(f,13)!=0)   // blocks or trends
+        if(MGparm_timevary(f,1)>0)   // has timevary
         {
           mgp_adj(f)=parm_timevary(MGparm_timevary(f,1),yz);
-        }
- /*
-  //  SS_Label_Info_14.4.1.1 #Adjust for blocks
-        if(MGparm_1(f,13)>0)   // blocks
-        {
-          if(Block_Defs_MG(f,yz)>0)
-          {
-            if(MGparm_1(f,14)==0)
-              {mgp_adj(f) *= mfexp(MGparm_block_val(f,yz));}
-            else if(MGparm_1(f,14)==1)
-              {mgp_adj(f) += MGparm_block_val(f,yz);}
-            else if(MGparm_1(f,14)==2)
-              {mgp_adj(f) = MGparm_block_val(f,yz);}
-            else if(MGparm_1(f,14)==3)  // additive based on delta approach
-              {mgp_adj(f) += MGparm_block_val(f,yz);}
-          }
-        }
- */
-  //  SS_Label_Info_14.4.1.2 #Adjust for env linkage
-  // where:  MGparm_env is zero if no link else contains the parameter # of the first link parameter
-  //         MGparm_envtype identifies the form of the linkage, some of which take more than one link parameeter
-  //         MGparm_envuse identifies the ID of the environmental time series being linked to
-  //         env_data is a dvar_matrix populated with the read env data for columns 1-N_envvariables
-  //         and populated with summary biamass for column -1 to allow for density-dependence
-  //         the integer values of MGparm_envtype are created when parsing the input:
-  //           k=int(MGparm_1(f,8)/100);  //  find the link code
-  // 	         MGparm_envtype(f)=k;
-  // 	         MGparm_envuse(f)=MGparm_1(f,8)-k*100;
-  //   	       if(MGparm_envuse(f)==99) MGparm_envuse(f)=-1;  //  for linking to spawn biomass
-  //        	 if(MGparm_envuse(f)==98) MGparm_envuse(f)=-2;  //  for linking to recruitment
-
-        if(MGparm_env(f)>0)
-        {
-          switch(MGparm_envtype(f))
-          {
-            case 1:  //  exponential MGparm env link
-              {
-                mgp_adj(f)*=mfexp(MGparm(MGparm_env(f))*(env_data(yz,MGparm_envuse(f))));
-                break;
-              }
-            case 2:  //  linear MGparm env link
-              {
-                mgp_adj(f)+=MGparm(MGparm_env(f))*env_data(yz,MGparm_envuse(f));
-                break;
-              }
-            case 3:
-            	{
-            		//  not implemented
-            	}
-            case 4:  //  logistic MGparm env link
-              {
-              	// first parm is offset ; second is slope
-                mgp_adj(f)*=2.00000/(1.00000 + mfexp(-MGparm(MGparm_env(f)+1)*(env_data(yz,MGparm_envuse(f))-MGparm(MGparm_env(f)))));
-                break;
-              }
-          }
+          echoinput<<" adjusted parm in biofxn "<<f<<" "<<mgp_adj(f)<<endl;
         }
 
   //  SS_Label_Info_14.4.1.3 #Adjust for Annual deviations
@@ -381,7 +242,7 @@ FUNCTION void get_growth2()
     dvariable plusgroupsize;
     dvariable current_size;
   //  SS_Label_Info_16.1 #Create Cohort_Growth offset for the cohort borne (age 0) this year
-    if(CGD>0)   //  cohort specific growth multiplier
+    if(CGD_onoff>0)   //  cohort specific growth multiplier
     {
       temp=mgp_adj(MGP_CGD);
       k=min(nages,(YrMax-y));
@@ -603,7 +464,7 @@ FUNCTION void get_growth2_Richards()
     int add_age;
     int ALK_idx2;  //  beginning of first subseas of next season
   //  SS_Label_Info_16.1 #Create Cohort_Growth offset for the cohort borne (age 0) this year
-    if(CGD>0)   //  cohort specific growth multiplier
+    if(CGD_onoff>0)   //  cohort specific growth multiplier
     {
       temp=mgp_adj(MGP_CGD);
       k=min(nages,(YrMax-y));

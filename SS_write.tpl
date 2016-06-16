@@ -2727,33 +2727,6 @@ FUNCTION void write_bigoutput()
     SS2out<<" "<<ParmLabel(NP)<<" "<<Extra_Std(j);
     SS2out<<" "<<CoVar(active_count,1)<<endl;
   }
- /*
-    SS2out<<endl<<"MGParm_Block_Assignments"<<endl;
-    if(N_MGparm_blk>0)
-    {
-      SS2out<<"Base_parm# ";
-      for (y=styr;y<=endyr;y++)
-      {SS2out<<" "<<y;}
-      SS2out<<endl;
-      for (j=1;j<=N_MGparm;j++)
-      {
-        if(MGparm_1(j,13)>0) SS2out<<j<<" "<<Block_Defs_MG(j)<<endl;
-      }
-    }
-
-    SS2out<<endl<<"Selex_Block_Assignments"<<endl;
-    if(N_selparm_blk>0)
-    {
-      SS2out<<"Base_parm# ";
-      for (y=styr;y<=endyr;y++) {SS2out<<" "<<y;}
-      SS2out<<endl;
-      for (j=1;j<=N_selparm;j++)
-      {
-        if(selparm_1(j,13)>0)
-        SS2out<<j<<" "<<Block_Defs_Sel(j)<<endl;
-      }
-    }
- */
 
   if(N_MGparm_dev>0)
     {
