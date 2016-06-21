@@ -1394,19 +1394,19 @@ FUNCTION void Make_FishSelex()
 
           }  //  end age loop
         }
-        if(save_for_report==2 && ishadow(GP2(g))==0) 
+        if(save_for_report==2 && ishadow(GP2(g))==0)
           {
             if(sum(fish_body_wt(tz,g,f))>0.00001)
             {
               bodywtout<<y<<" "<<s<<" "<<gg<<" "<<GP4(g)<<" "<<Bseas(g)
-              <<" "<<f<<" "<<fish_body_wt(tz,g,f)<<"#wt_flt_"<<f<<endl;
+              <<" "<<f<<" "<<fish_body_wt(tz,g,f)<<" #wt_flt_"<<f<<endl;
             }
             else
             {
               bodywtout<<y<<" "<<s<<" "<<gg<<" "<<GP4(g)<<" "<<Bseas(g)
-              <<" "<<f<<" "<<Wt_Age_beg(s,g)<<"#wt_flt_"<<f<<endl;
+              <<" "<<f<<" "<<Wt_Age_beg(s,g)<<" #wt_flt_"<<f<<endl;
             }
-            
+
           }
       }  // end need to do it
       save_sel_fec(t,g,f)= value(sel_al_3(s,g,f));  //  save sel_al_3 in save_fecundity array for output
