@@ -326,7 +326,6 @@ FUNCTION void get_time_series()
     if(y>styr)
     {
   //  SS_Label_Info_24.1.1 #Update the time varying biology factors if necessary
-//      make_timevaryparm();
       if(time_vary_MG(y,0)>0 || save_for_report>0) get_MGsetup();
       if(time_vary_MG(y,2)>0)
         {

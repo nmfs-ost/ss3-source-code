@@ -109,16 +109,6 @@ PROCEDURE_SECTION
       F_Method_use=F_Method;
     }
 
-  //  SS_Label_Info_7.3.5 #Set up the MGparm stderr and rho parameters for the dev vectors
-  if(N_MGparm_dev>0)
-    {
-      for(i=1;i<=N_MGparm_dev;i++)
-      {
-        MGparm_dev_stddev(i)=MGparm(MGparm_dev_rpoint2(i));
-        MGparm_dev_rho(i)=MGparm(MGparm_dev_rpoint2(i)+1);
-      }
-    }
-
   //  SS_Label_Info_7.3.5 #Set up the selparm stderr and rho parameters for the dev vectors
   if(N_selparm_dev>0)
     {
@@ -385,10 +375,12 @@ PROCEDURE_SECTION
         {
           if(MGparm_PH(j)>=0) {ParmTrace<<" "<<MGparm(j);}
         }
-        if(MGparm_dev_PH>0 && N_MGparm_dev>0)
+        if(N_MGparm_dev>0)
         {
           for (j=1;j<=N_MGparm_dev;j++)
-          {ParmTrace<<MGparm_dev(j)<<" ";}
+          {
+            if(MGparm_dev_PH(j)>0) ParmTrace<<MGparm_dev(j)<<" ";
+          }
         }
         for (j=1;j<=SRvec_PH.indexmax();j++)
         {

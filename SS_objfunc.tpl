@@ -718,13 +718,15 @@ FUNCTION void evaluate_the_objective_function()
       parm_like+=10000.*temp*temp;  //  similar to ADMB's approach to getting zero-centered dev_vectors
     }
   //  SS_Label_Info_25.15 #logL for parameter process errors (devs)
-    if(MGparm_dev_PH>0 && parm_dev_lambda(k_phase)>0.0 )
     {
       for(i=1;i<=N_MGparm_dev;i++)
       {
+        if(MGparm_dev_PH(i)>0 && parm_dev_lambda(k_phase)>0.0 )
+        {
         for(j=MGparm_dev_minyr(i);j<=MGparm_dev_maxyr(i);j++)
         {MGparm_dev_like(i) += 0.5*square( MGparm_dev(i,j) / MGparm_dev_stddev(i) );}
         MGparm_dev_like(i) += sd_offset*float(MGparm_dev_maxyr(i)-MGparm_dev_minyr(i)+1.)*log(MGparm_dev_stddev(i));
+        }
       }
     }
 
@@ -1185,7 +1187,7 @@ FUNCTION void get_posteriors()
     for (i=1;i<=N_MGparm_dev;i++)
     for (j=MGparm_dev_minyr(i);j<=MGparm_dev_maxyr(i);j++)
     {
-      if(active(MGparm_dev)) posts<<MGparm_dev(i,j)<<" ";
+      if(MGparm_dev_PH(i)>0) posts<<MGparm_dev(i,j)<<" ";
     }
   }
   for (i=1;i<=N_SRparm2;i++)

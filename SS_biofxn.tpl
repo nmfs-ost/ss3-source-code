@@ -5,33 +5,6 @@ FUNCTION void get_MGsetup()
   mgp_adj=MGparm;
   int y1;
 
-  //  SS_Label_Info_14.3 #Create MGparm dev randwalks if needed
-  if(N_MGparm_dev>0 && y==styr)
-  {
-    for (k=1;k<=N_MGparm_dev;k++)
-    {
-      if(MGparm_dev_type(k)==3)  //   random walk
-      {
-        MGparm_dev_rwalk(k,MGparm_dev_minyr(k))=MGparm_dev(k,MGparm_dev_minyr(k));
-        j=MGparm_dev_minyr(k);
-        for (j=MGparm_dev_minyr(k)+1;j<=MGparm_dev_maxyr(k);j++)
-        {
-          MGparm_dev_rwalk(k,j)=MGparm_dev_rwalk(k,j-1)+MGparm_dev(k,j);
-        }
-      }
-      else if(MGparm_dev_type(k)==4) // mean reverting random walk
-      {
-        MGparm_dev_rwalk(k,MGparm_dev_minyr(k))=MGparm_dev(k,MGparm_dev_minyr(k));
-        j=MGparm_dev_minyr(k);
-        for (j=MGparm_dev_minyr(k)+1;j<=MGparm_dev_maxyr(k);j++)
-        {
-          //    =(1-rho)*mean + rho*prevval + dev   //  where mean = 0.0
-          MGparm_dev_rwalk(k,j)=MGparm_dev_rho(k)*MGparm_dev_rwalk(k,j-1)+MGparm_dev(k,j);
-        }
-      }
-    }
-  }
-
   //  SS_Label_Info_14.4 #Switch(parm_adjust_method)
   switch(parm_adjust_method)
   {
@@ -45,25 +18,10 @@ FUNCTION void get_MGsetup()
       for (f=1;f<=N_MGparm;f++)
       {
 
-        if(MGparm_timevary(f,1)>0)   // has timevary
+        if(MGparm_timevary(f)>0)   // has timevary
         {
-          mgp_adj(f)=parm_timevary(MGparm_timevary(f,1),yz);
+          mgp_adj(f)=parm_timevary(MGparm_timevary(f),yz);
           echoinput<<" adjusted parm in biofxn "<<f<<" "<<mgp_adj(f)<<endl;
-        }
-
-  //  SS_Label_Info_14.4.1.3 #Adjust for Annual deviations
-        k=MGparm_dev_point(f);
-        if(k>0)
-        {
-          if(yz>=MGparm_dev_minyr(k) && yz<=MGparm_dev_maxyr(k))
-          {
-            if(MGparm_dev_type(k)==1)  // multiplicative
-            {mgp_adj(f) *= mfexp(MGparm_dev(k,yz));}
-            else if(MGparm_dev_type(k)==2)  // additive
-            {mgp_adj(f) += MGparm_dev(k,yz);}
-            else if(MGparm_dev_type(k)>=3)  // additive rwalk or mean-reverting rwalk
-            {mgp_adj(f) += MGparm_dev_rwalk(k,yz);}
-          }
         }
 
   //  SS_Label_Info_14.4.1.4 #Do bound check if parm_adjust_method=1
@@ -89,43 +47,14 @@ FUNCTION void get_MGsetup()
 
         if(MGparm_1(f,13)!=0)   // blocks or trends
         {
-          mgp_adj(f)=parm_timevary(MGparm_timevary(f,1),yz);
+          mgp_adj(f)=parm_timevary(MGparm_timevary(f),yz);
         }
         temp=log((MGparm_HI(f)-MGparm_LO(f)+0.0000002)/(mgp_adj(f)-MGparm_LO(f)+0.0000001)-1.)/(-2.);   // transform the parameter
 
-  //  SS_Label_Info_14.4.2.1 #Adjust for blocks
- /*
-        if(MGparm_1(f,13)>0)   // blocks
-        {
-          if(Block_Defs_MG(f,yz)>0)
-          {
-            j=1;  //  change is being made
-            if(MGparm_1(f,14)==1)
-              {temp+=MGparm_block_val(f,yz);}
-            else if(MGparm_1(f,14)==2)  // block as replacement
-              {temp=log((MGparm_HI(f)-MGparm_LO(f)+0.0000002)/(MGparm_block_val(f,yz)-MGparm_LO(f)+0.0000001)-1.)/(-2.);}
-            else if(MGparm_1(f,14)==3)  // additive based on delta approach
-              {temp += MGparm_block_val(f,yz);}
-          }
-        }
- */
   //  SS_Label_Info_14.4.2.2 #Adjust for env linkage
         if(MGparm_env(f)>0)  //  do environmental effect;  only additive allowed for adjustment method=2
         {j=1; temp+=MGparm(MGparm_env(f))* env_data(yz,MGparm_envuse(f));}
 
-  //  SS_Label_Info_14.4.2.3 #Adjust for annual deviations
-        k=MGparm_dev_point(f);
-        if(k>0)
-        {
-          if(yz>=MGparm_dev_minyr(k) && yz<=MGparm_dev_maxyr(k))
-            {
-              j=1;
-              if(MGparm_dev_type(k)==2)
-              {temp += MGparm_dev(k,yz);}
-              else if(MGparm_dev_type(k)>=3)
-              {temp += MGparm_dev_rwalk(k,yz);}  // note that only additive effect is allowed
-            }
-        }
         if(j==1) mgp_adj(f)=MGparm_LO(f)+(MGparm_HI(f)-MGparm_LO(f))/(1.+mfexp(-2.*temp));   // backtransform
       }  // end parameter loop (f)
       break;

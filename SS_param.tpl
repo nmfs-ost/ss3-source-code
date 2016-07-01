@@ -25,7 +25,7 @@ PARAMETER_SECTION
 !!//  SS_Label_Info_5.1.1 #Create MGparm vector and associated arrays
   // natural mortality and growth
   init_bounded_number_vector MGparm(1,N_MGparm2,MGparm_LO,MGparm_HI,MGparm_PH)
-  init_bounded_matrix MGparm_dev(1,N_MGparm_dev,MGparm_dev_minyr,MGparm_dev_maxyr,-10,10,MGparm_dev_PH)
+  init_bounded_vector_vector MGparm_dev(1,N_MGparm_dev,MGparm_dev_minyr,MGparm_dev_maxyr,-10,10,MGparm_dev_PH)
   matrix MGparm_dev_rwalk(1,N_MGparm_dev,MGparm_dev_minyr,MGparm_dev_maxyr);
   vector L_inf(1,N_GP*gender);
   vector Lmax_temp(1,N_GP*gender);
@@ -336,8 +336,9 @@ PARAMETER_SECTION
 
   init_bounded_number_vector TG_parm(1,k,TG_parm_LO,TG_parm_HI,TG_parm_PH);
 
+  init_bounded_number checksum999(998,1000,-999)  //  set value to 999 to check reading of ss.par
   vector timevary_parm(1,timevary_parm_cnt);  //  will map to the MGparms and selparms that are the actual parameters
-  matrix parm_timevary(1,timevary_cnt,styr-1,YrMax);  //  tim,e series of adjusted parm values for block and trend
+  matrix parm_timevary(1,timevary_cnt,styr-1,YrMax);  //  time series of adjusted parm values for block and trend
 
  LOCAL_CALCS
   if(Do_Forecast>0)

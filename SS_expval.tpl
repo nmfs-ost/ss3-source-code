@@ -246,15 +246,16 @@ FUNCTION void Get_expected_values();
              }
            case 35:  // MGparm deviation  #35
            {
-              k=seltype(f,4);  //  specify which dev vector will be compared to this survey
+              k=seltype(f,4);  //  specify which parameter's time-vary vector will be compared to this survey
                                //  note that later the value in seltype(f,3) will specify the link function
               //  should there be an explicit zero-centering of the devs here, or just rely on general tendency for the devs to get zero-centererd?
-              if(y>=MGparm_dev_minyr(k) && y<=MGparm_dev_maxyr(k)) 
-              {
-                vbio=MGparm_dev(k,y);
+              
+//              if(y>=selparm_dev_minyr(k) && y<=MGparm_dev_maxyr(k)) 
+//              {
+//                vbio=MGparm_dev(k,y);
                 //  can the mean dev for years with surveys be calculated here?
-              }
-              else
+//              }
+//              else
               {vbio=0.0;}
               break;
            }

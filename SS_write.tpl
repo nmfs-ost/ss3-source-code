@@ -81,7 +81,10 @@ FUNCTION void write_summaryoutput()
   report2<<endl;
   report2<<runnumber<<" Parm Values ";
   report2<<" "<<MGparm<<" ";
-  if(N_MGparm_dev>0) report2<<MGparm_dev<<" ";
+  if(N_MGparm_dev>0) 
+    {
+      for(j=1;j<=N_MGparm_dev;j++)  report2<<MGparm_dev(j)<<" ";
+    }
   report2<<SR_parm<<" ";
   if(recdev_cycle>0) report2<<recdev_cycle_parm<<" ";
   if(recdev_do_early>0) report2<<recdev_early<<" ";
@@ -106,9 +109,11 @@ FUNCTION void write_summaryoutput()
   {
     report2<<runnumber<<" MG_parm_dev ";
     for (i=1;i<=N_MGparm_dev;i++)
-    for (j=MGparm_dev_minyr(i);j<=MGparm_dev_maxyr(i);j++)
-    {NP++; report2<<" "<<ParmLabel(NP);}
-    report2<<endl<<runnumber<<" MG_parm_dev "<<MGparm_dev<<endl;
+    {
+      for (j=MGparm_dev_minyr(i);j<=MGparm_dev_maxyr(i);j++)
+      {NP++; report2<<" "<<ParmLabel(NP);}
+      report2<<endl<<runnumber<<" MG_parm_dev "<<MGparm_dev(i)<<endl;
+    }
   }
 
     report2<<runnumber<<" SR_parm ";
@@ -1725,9 +1730,20 @@ FUNCTION void write_nucontrol()
   else
   {report4<<"#_Cond "<<0<<" #_blocks_per_pattern "<<endl<<"# begin and end years of blocks"<<endl;}
   report4<<"#"<<endl;
+  report4<<"# controls for all timevary parameters "<<endl;
+  report4<<parm_adjust_method<<
+   " #_env/block/dev_adjust_method for all time-vary parms (1=standard; 2=logistic transform keeps in base parm bounds; 3=standard w/ no bound check)"<<endl;
+  if(timevary_cnt>0)  //  corresponds to custom_MGsetup
+  {
+    report4<<1<<" # timevarying parameter autogenerate (0) or read (1)"<<endl;
+  }
+  else
+  {
+    report4<<0<<" # timevarying parameter autogenerate (0) or read (1)"<<endl;
+  }
 
-  // report4<<fracfemale<<" #_fracfemale "<<endl;
-  report4<<natM_type<<" #_natM_type:_0=1Parm; 1=N_breakpoints;_2=Lorenzen;_3=agespecific;_4=agespec_withseasinterpolate"<<endl;
+  report4<<"#"<<endl<<"# setup for M, growth, maturity, fecundity, recruitment distibution, movement "<<endl;
+  report4<<"#"<<endl<<natM_type<<" #_natM_type:_0=1Parm; 1=N_breakpoints;_2=Lorenzen;_3=agespecific;_4=agespec_withseasinterpolate"<<endl;
     if(natM_type==1)
     {report4<<N_natMparms<<" #_N_breakpoints"<<endl<<NatM_break<<" # age(real) at M breakpoints"<<endl;}
     else if(natM_type==2)
@@ -1763,8 +1779,6 @@ FUNCTION void write_nucontrol()
     report4<<Hermaphro_Option<<" #_hermaphroditism option:  0=none; 1=female-to-male age-specific fxn; -1=male-to-female age-specific fxn"<<endl;
     if (Hermaphro_Option!=0) report4<<Hermaphro_seas<<" # Hermaphro_season "<<endl<<Hermaphro_maleSPB<<" # Hermaphro_maleSPB "<<endl;
     report4<<MGparm_def<<" #_parameter_offset_approach (1=none, 2= M, G, CV_G as offset from female-GP1, 3=like SS2 V1.x)"<<endl;
-    report4<<parm_adjust_method<<
-    " #_env/block/dev_adjust_method for all time-vary  parms (1=standard; 2=logistic transform keeps in base parm bounds; 3=standard w/ no bound check)"<<endl;
   report4<<"#"<<endl;
   report4<<"#_growth_parms"<<endl;
   report4<<"#_LO HI INIT PRIOR PR_type SD PHASE env-var use_dev dev_minyr dev_maxyr dev_stddev Block Block_Fxn"<<endl;
@@ -1785,24 +1799,9 @@ FUNCTION void write_nucontrol()
   }
   report4<<"#"<<endl;
   j=N_MGparm;
-  if(N_MGparm_env>0)
-  {
-    report4<<1<<" #_custom_MG-env_setup (0/1)"<<endl;
-    for (f=1;f<=N_MGparm_env;f++)
-    {j++; NP++; if(customMGenvsetup==0) {k=1;} else {k=f;}  // use read value of custom here
-    MGparm_env_1(k,3)=value(MGparm(j)); report4<<MGparm_env_1(k)<<" # "<<ParmLabel(NP)<<endl;}
-   }
-  else
-  {
-    report4<<"#_Cond 0  #custom_MG-env_setup (0/1)"<<endl;
-    report4<<"#_Cond -2 2 0 0 -1 99 -2 #_placeholder when no MG-environ parameters"<<endl;
-  }
-  report4<<"#"<<endl;
   if(timevary_parm_cnt_MG>0)
   {
-    report4<<1<<" #_custom_MG_blocktrend_setup (0/1)"<<endl;
-    report4<<"#_LO HI INIT PRIOR PR_type SD PHASE"<<endl;
-
+    report4<<"# timevary MG parameters "<<endl<<"#_LO HI INIT PRIOR PR_type SD PHASE"<<endl;
     for (f=1;f<=timevary_parm_cnt_MG;f++)
     {NP++;
     timevary_parm_rd[f-1](3)=value(timevary_parm(f));
@@ -1810,9 +1809,7 @@ FUNCTION void write_nucontrol()
   }
   else
   {
-    report4<<"#_Cond 0  #custom_MG_blocktrend_setup (0/1)"<<endl;
-    report4<<"#_LO HI INIT PRIOR PR_type SD PHASE"<<endl;
-    report4<<"#_Cond -2 2 0 0 -1 99 -2 #_placeholder when no MG-block or trend parameters"<<endl;
+    report4<<"#_no timevary MG parameters"<<endl;
   }
 
   report4<<"#"<<endl;
@@ -1829,31 +1826,6 @@ FUNCTION void write_nucontrol()
   else
   {
     report4<<"#_Cond -2 2 0 0 -1 99 -2 #_placeholder when no seasonal MG parameters"<<endl;
-  }
-  report4<<"#"<<endl;
-  if(N_MGparm_dev>0)
-  {
-    report4<<"# standard error parameters for MG devs"<<endl;
-    k=0;
-   for(i=1;i<=N_MGparm_dev;i++)
-   {
-      NP++; j++;  k++; MGparm_dev_se_rd(k,3)=value(MGparm(j));
-      report4<<MGparm_dev_se_rd(k)<<" # "<<ParmLabel(NP)<<endl;
-      NP++; j++;  k++; MGparm_dev_se_rd(k,3)=value(MGparm(j));
-      report4<<MGparm_dev_se_rd(k)<<" # "<<ParmLabel(NP)<<" # "<<endl;
-   }
-   for(i=1;i<=N_MGparm_dev;i++)
-   {
-      for(j=MGparm_dev_minyr(i);j<=MGparm_dev_maxyr(i);j++)
-      {
-        NP++; report4<<" # "<<i<<" "<<j<<" "<<MGparm_dev(i,j)<<" # "<<ParmLabel(NP)<<endl;
-      }
-   }
-   report4<<"#"<<endl<<MGparm_dev_PH<<" #_MGparm_Dev_Phase"<<endl;
-  }
-  else
-  {
-    report4<<"#_Cond -4 #_MGparm_Dev_Phase"<<endl;
   }
 
   report4<<"#"<<endl;
@@ -2471,10 +2443,10 @@ FUNCTION void write_bigoutput()
     for (j=MGparm_dev_minyr(i);j<=MGparm_dev_maxyr(i);j++)
     {
       NP++;  SS2out<<NP<<" "<<ParmLabel(NP)<<" "<<MGparm_dev(i,j);
-      if(active(MGparm_dev))
+      if(MGparm_dev_PH(i)>0)
       {
         active_count++;
-        SS2out<<" "<<active_count<<" "<<MGparm_dev_PH<<" _ _ _ act "<<CoVar(active_count,1);
+        SS2out<<" "<<active_count<<" "<<MGparm_dev_PH(i)<<" _ _ _ act "<<CoVar(active_count,1);
       }
       else
       {SS2out<<" _ _ _ _ _ NA _ ";}
@@ -2731,11 +2703,12 @@ FUNCTION void write_bigoutput()
   if(N_MGparm_dev>0)
     {
       SS2out<<"MGParm_dev_details"<<endl<<"Item Parm_Affected SE  Rho  Like"<<endl;
+   SS2out<<" need to create code "<<endl;
       for(i=1;i<=N_MGparm_dev;i++)
       {
-        SS2out<<i<<" "<<ParmLabel(MGparm_dev_rpoint(i))<<" "<<MGparm_dev_stddev(i)<<" "<<MGparm_dev_rho(i)<<" "<<MGparm_dev_like(i)<<endl;
-        SS2out<<i<<" devs "<<MGparm_dev(i)<<endl;
-        if(MGparm_dev_type(i)>=3) SS2out<<i<<" rwalk "<<MGparm_dev_rwalk(i)<<endl;
+//        SS2out<<i<<" "<<ParmLabel(MGparm_dev_rpoint(i))<<" "<<MGparm_dev_stddev(i)<<" "<<MGparm_dev_rho(i)<<" "<<MGparm_dev_like(i)<<endl;
+//        SS2out<<i<<" devs "<<MGparm_dev(i)<<endl;
+//        if(MGparm_dev_type(i)>=3) SS2out<<i<<" rwalk "<<MGparm_dev_rwalk(i)<<endl;
       }
     }
 
