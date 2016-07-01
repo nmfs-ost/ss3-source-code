@@ -1781,7 +1781,7 @@ FUNCTION void write_nucontrol()
     report4<<MGparm_def<<" #_parameter_offset_approach (1=none, 2= M, G, CV_G as offset from female-GP1, 3=like SS2 V1.x)"<<endl;
   report4<<"#"<<endl;
   report4<<"#_growth_parms"<<endl;
-  report4<<"#_LO HI INIT PRIOR PR_type SD PHASE env-var use_dev dev_minyr dev_maxyr dev_stddev Block Block_Fxn"<<endl;
+  report4<<"#_LO HI INIT PRIOR PR_type SD PHASE env_var&link dev_link dev_minyr dev_maxyr dev_phase Block Block_Fxn"<<endl;
   NP=0;
   for (f=1;f<=N_MGparm;f++)
   {
@@ -2148,6 +2148,25 @@ FUNCTION void write_nucontrol()
     report4<<"0  # TG_custom:  0=no read; 1=read if tags exist"<<endl
     <<"#_Cond -6 6 1 1 2 0.01 -4 0 0 0 0 0 0 0  #_placeholder if no parameters"<<endl;;
   }
+  report4<<"#"<<endl;
+  if(timevary_cnt==0)
+    {report4<<"# no timevary parameters"<<endl<<"#"<<endl;}
+    else
+    {
+      report4<<"# deviation vectors for timevary parameters"<<endl
+      <<"#  base   base first block   block  env  env   dev   dev   dev   dev   dev"<<endl
+      <<"#  type  index  parm trend pattern link  var  vectr link _mnyr  mxyr phase"<<endl;
+      
+      for(j=1;j<=timevary_cnt;j++)
+      {
+        report4<<"# "<<std::setprecision(0)<<std::fixed<<setw(5)<<timevary_def[j-1](1,12);
+        if(timevary_def[j-1](8)>0)  //  now show devs
+        {
+          report4<<"   devs: "<<std::setprecision(4)<<std::fixed<<setw(6)<<MGparm_dev(timevary_def[j-1](8));
+        }
+        report4<<endl;
+      }
+    }
 
   report4<<"#"<<endl<<"# Input variance adjustments; factors: "<<endl;
   report4<<" #_1=add_to_survey_CV"<<endl;
@@ -2437,23 +2456,6 @@ FUNCTION void write_bigoutput()
     Report_Parm(NP, active_count, Activ, MGparm(j), MGparm_LO(j), MGparm_HI(j), MGparm_RD(j), MGparm_PR(j), MGparm_PRtype(j), MGparm_CV(j), MGparm_PH(j), MGparm_Like(j));
   }
 
-  if(N_MGparm_dev>0)
-  {
-    for (i=1;i<=N_MGparm_dev;i++)
-    for (j=MGparm_dev_minyr(i);j<=MGparm_dev_maxyr(i);j++)
-    {
-      NP++;  SS2out<<NP<<" "<<ParmLabel(NP)<<" "<<MGparm_dev(i,j);
-      if(MGparm_dev_PH(i)>0)
-      {
-        active_count++;
-        SS2out<<" "<<active_count<<" "<<MGparm_dev_PH(i)<<" _ _ _ act "<<CoVar(active_count,1);
-      }
-      else
-      {SS2out<<" _ _ _ _ _ NA _ ";}
-      SS2out<<" dev "<<endl;
-    }
-  }
-
   for (j=1;j<=N_SRparm2;j++)
   {
     NP++;
@@ -2619,6 +2621,24 @@ FUNCTION void write_bigoutput()
       Report_Parm(NP, active_count, Activ, TG_parm(j), TG_parm_LO(j), TG_parm_HI(j), TG_parm2(j,3), TG_parm2(j,4), TG_parm2(j,5), TG_parm2(j,6), TG_parm_PH(j), TG_parm_Like(j));
     }
   }
+
+  if(N_MGparm_dev>0)
+  {
+    for (i=1;i<=N_MGparm_dev;i++)
+    for (j=MGparm_dev_minyr(i);j<=MGparm_dev_maxyr(i);j++)
+    {
+      NP++;  SS2out<<NP<<" "<<ParmLabel(NP)<<" "<<MGparm_dev(i,j);
+      if(MGparm_dev_PH(i)>0)
+      {
+        active_count++;
+        SS2out<<" "<<active_count<<" "<<MGparm_dev_PH(i)<<" _ _ _ act "<<CoVar(active_count,1);
+      }
+      else
+      {SS2out<<" _ _ _ _ _ NA _ ";}
+      SS2out<<" dev "<<endl;
+    }
+  }
+
 
   SS2out<<endl<<"Number_of_active_parameters_on_or_near_bounds: "<<Nparm_on_bound<<endl;
   SS2out<<"Active_count "<<active_count<<endl<<endl;

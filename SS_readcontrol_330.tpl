@@ -1330,7 +1330,14 @@
            y=endyr;
          }
          timevary_setup(11)=y;
-         timevary_setup(12)=MGparm_1(j,11); //  dev phase
+         MG_active(mgp_type(j))=1;
+         if(j==MGP_CGD) CGD_onoff=1;    // cohort growth dev is a fxn of dev, so turn on CGD calculation
+         for (y=timevary_setup(10);y<=timevary_setup(11)+1;y++)
+         {
+          time_vary_MG(y,mgp_type(j))=1;
+         }
+
+         timevary_setup(12)=MGparm_1(j,12); //  dev phase
          ParCount++;
          ParmLabel+=ParmLabel(j)+"_dev_se"+CRLF(1);
          timevary_parm_cnt++;
@@ -1338,7 +1345,10 @@
          if(custom_MGsetup==1)
          {*(ad_comm::global_datafile) >> tempvec(1,7);}
          else
-         {tempvec.fill("{0.0001,2.0,0.5,0.5,0,0.5,5}");}
+         {
+          tempvec.fill("{0.0001,2.0,0.5,0.5,0,0.5,5}");
+          timevary_setup(12)=5; MGparm_1(j,12)=5;  //  set reasonable phase for devs
+         }
          timevary_parm_rd.push_back (dvector(tempvec(1,7)));
 
          ParCount++;
@@ -1375,16 +1385,16 @@
    }
 
  END_CALCS
-   ivector MGparm_dev_minyr(1,N_MGparm_dev);
-   ivector MGparm_dev_maxyr(1,N_MGparm_dev);
-   ivector MGparm_dev_PH(1,N_MGparm_dev);
+//   ivector MGparm_dev_minyr(1,N_MGparm_dev);
+//   ivector MGparm_dev_maxyr(1,N_MGparm_dev);
+//   ivector MGparm_dev_PH(1,N_MGparm_dev);
  LOCAL_CALCS
+  /*
   //  SS_Label_Info_4.5.9 #Set up random deviations for MG parms
   //  NOTE:  the parms for the se of the devs are part of the MGparm2 list above, not the dev list below
    N_MGparm_dev_tot=0;
    if(N_MGparm_dev>0)
    {
-     k=0;  //  count for dev vector used
      for (f=1;f<=N_MGparm;f++)  //  loop mgparm and set parameters for devs
      {
        if(MGparm_1(f,9)>0)
@@ -1396,11 +1406,9 @@
            MGparm_dev_minyr(k)=timevary_setup(10);  //  used for dimensioning the dev vectors in SS_param
            MGparm_dev_maxyr(k)=timevary_setup(11);
            MGparm_dev_PH(k)=timevary_setup(12);
+           echoinput<<" setup dev "<<k<<" vector "<<timevary_setup<<" phase "<<MGparm_dev_PH(k)<<endl;
            for(y=MGparm_dev_minyr(k);y<=MGparm_dev_maxyr(k);y++)
            {
-             MG_active(mgp_type(f))=1;
-             time_vary_MG(y,mgp_type(f))=1;
-             if(y<=endyr) time_vary_MG(y+1,mgp_type(f))=1;   // so will recalculate to null value, even for endyr+1
              sprintf(onenum, "%d", y);
              N_MGparm_dev_tot++;
              ParCount++;
@@ -1415,11 +1423,12 @@
              else
              {N_warn++; cout<<" EXIT - see warning "<<endl; warning<<" illegal MGparmdevtype for parm "<<f<<endl; exit(1);}
            }
-
-           if(f==MGP_CGD) CGD_onoff=1;
        }
      }
    }
+  */
+  //  SS_Label_Info_4.5.9 #Set up random deviations for MG parms
+  //  NOTE:  the parms for the se of the devs are part of the MGparm2 list above, not the dev list below
 
   //  SS_Label_Info_4.5.95 #Populate time_bio_category array defining when biology changes
      k=YrMax+1;
@@ -3570,24 +3579,6 @@
     }
   }
 
-  if(N_MGparm_dev>0)
-  {
-    for(j=1;j<=N_MGparm_dev;j++)
-    {
-      if(depletion_fleet>0 && MGparm_dev_PH(j)>0) MGparm_dev_PH(j)++;//  add 1 to phase if using depletion fleet
-      if(MGparm_dev_PH(j)>Turn_off_phase) MGparm_dev_PH(j) =-1;
-      if(MGparm_dev_PH(j)>max_phase) max_phase=MGparm_dev_PH(j);
-      for(y=MGparm_dev_minyr(j);y<=MGparm_dev_maxyr(j);y++)
-      {
-        ParCount++;
-        if(MGparm_dev_PH(j)>=0)
-        {
-          active_count++; active_parm(active_count)=ParCount;
-        }
-      }
-    }
-  }  
-
   for (j=1;j<=SRvec_PH.indexmax();j++)
   {
     ParCount++;
@@ -3929,8 +3920,66 @@
       Fcast_recr_PH2=max_phase+1;
     }
   }
+ END_CALCS
+ 
+   ivector MGparm_dev_minyr(1,N_MGparm_dev);
+   ivector MGparm_dev_maxyr(1,N_MGparm_dev);
+   ivector MGparm_dev_PH(1,N_MGparm_dev);
+
+ LOCAL_CALCS
+   N_MGparm_dev_tot=0;
+   if(timevary_cnt>0)
+   {
+     for (j=1;j<=timevary_cnt;j++)  //  loop set up devs
+     {
+       ivector timevary_setup(1,12);
+       timevary_setup(1,12)=timevary_def[j-1](1,12);
+       if(timevary_setup(8)>0)
+       {
+         k=timevary_setup(8);  //  dev vector used
+         MGparm_dev_minyr(k)=timevary_setup(10);  //  used for dimensioning the dev vectors in SS_param
+         MGparm_dev_maxyr(k)=timevary_setup(11);
+         MGparm_dev_PH(k)=timevary_setup(12);
+         if(depletion_fleet>0 && MGparm_dev_PH(k)>0) MGparm_dev_PH(k)++;//  add 1 to phase if using depletion fleet
+         if(MGparm_dev_PH(k)>Turn_off_phase) MGparm_dev_PH(k) =-1;
+         if(MGparm_dev_PH(k)>max_phase) max_phase=MGparm_dev_PH(k);
+         echoinput<<" setup dev "<<k<<" vector "<<timevary_setup<<" phase "<<MGparm_dev_PH(k)<<endl;
+         if(timevary_setup(1)==1) //  MGparm
+          {
+            f=0+timevary_setup(2);  //  index of base parameter
+          }
+          else
+          {
+            //  need to implement for other types
+          }
+         for(y=MGparm_dev_minyr(k);y<=MGparm_dev_maxyr(k);y++)
+         {
+           sprintf(onenum, "%d", y);
+           N_MGparm_dev_tot++;
+           ParCount++;
+           if(timevary_setup(9)==1)
+           {ParmLabel+=ParmLabel(f)+"_DEVmult_"+onenum+CRLF(1);}
+           else if(timevary_setup(9)==2)
+           {ParmLabel+=ParmLabel(f)+"_DEVadd_"+onenum+CRLF(1);}
+           else if(timevary_setup(9)==3)
+           {ParmLabel+=ParmLabel(f)+"_DEVrwalk_"+onenum+CRLF(1);}
+           else if(timevary_setup(9)==4)
+           {ParmLabel+=ParmLabel(f)+"_DEV_MR_rwalk_"+onenum+CRLF(1);}
+           else
+           {N_warn++; cout<<" EXIT - see warning "<<endl; warning<<" illegal MGparmdevtype for parm "<<f<<endl; exit(1);}
+            if(MGparm_dev_PH(k)>=0)
+            {
+              active_count++; active_parm(active_count)=ParCount;
+            }
+         }
+       }
+     }
+   }
+  
+  echoinput<<ParmLabel<<endl; 
 
   echoinput<<"Active parameters: "<<active_count<<endl<<"Turn_off_phase "<<Turn_off_phase<<endl<<" max_phase "<<max_phase<<endl;
+
   if(Turn_off_phase<=0)
   {func_eval(1)=1;}
   else

@@ -19,8 +19,8 @@ FUNCTION void make_timevaryparm()
     for (int tvary=1;tvary<=timevary_cnt;tvary++)
     {
       if(do_once==1) echoinput<<" loop time vary effect #: "<<tvary<<endl;
-      ivector timevary_setup(1,11);
-      timevary_setup(1,11)=timevary_def[tvary-1](1,11);
+      ivector timevary_setup(1,12);
+      timevary_setup(1,12)=timevary_def[tvary-1](1,12);
       echoinput<<timevary_setup<<endl<<MGparm<<endl;
       //  what type of parameter is being affected?  get the baseparm and its bounds
       switch(timevary_setup(1))      //  parameter type
@@ -205,9 +205,25 @@ FUNCTION void make_timevaryparm()
         k=timevary_setup(8);   //  dev used
         MGparm_dev_stddev(k)=timevary_parm(timevary_parm_cnt);
         MGparm_dev_rho(k)=timevary_parm(timevary_parm_cnt+1);
-        echoinput<<k<<" devs:  se and rho "<<MGparm_dev_stddev(k)<<" "<<MGparm_dev_rho(k)<<endl;
+//        echoinput<<k<<" devs:  se and rho "<<MGparm_dev_stddev(k)<<" "<<MGparm_dev_rho(k)<<" link "<<timevary_setup(9)<<endl;
         switch(timevary_setup(9))
         {
+          case 1:
+          {
+            for (j=timevary_setup(10);j<=timevary_setup(11);j++)
+            {
+              parm_timevary(tvary,j)*=mfexp(MGparm_dev(k,j));
+            }
+            break;
+          }
+          case 2:
+          {
+            for (j=timevary_setup(10);j<=timevary_setup(11);j++)
+            {
+              parm_timevary(tvary,j)+=MGparm_dev(k,j);
+            }
+            break;
+          }
           case 3:
           {
             MGparm_dev_rwalk(k,timevary_setup(10))=MGparm_dev(k,timevary_setup(10));
