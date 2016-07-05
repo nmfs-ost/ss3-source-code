@@ -1041,30 +1041,22 @@
   int timevary_parm_cnt_MG;
   int timevary_parm_cnt_sel;
   ivector MGparm_timevary(1,N_MGparm)  //  holds index of timevary used by this base parameter
-  int N_MGparm_env                            //  number of MGparms that use env linkage
   int customMGenvsetup  //  0=read one setup (if necessary) and apply to all; 1=read each
-  ivector MGparm_env(1,N_MGparm)   // contains the parameter number of the envlink for a
-  ivector MGparm_envuse(1,N_MGparm)   // contains the environment data number
-  ivector MGparm_envtype(1,N_MGparm)  // 1=multiplicative (input val 100-199); 2= additive (200-299); 3=logistic
   int customblocksetup_MG  //  0=read one setup and apply to all; 1=read each
-  int N_MGparm_dev                            //  number of MGparms that use annual deviations
-  int N_MGparm_dev_tot;
-  matrix MGparm_env_1(1,3,1,8)   //  temporary placeholder
+  int N_parm_dev                            //  number of MGparms that use annual deviations
+  int N_parm_dev_tot;
   imatrix time_vary_MG(styr-3,YrMax+1,0,7)  // goes to yrmax+1 to allow referencing in forecast, but only endyr+1 is checked
                                             // stores years to calc non-constant MG parms (1=natmort; 2=growth; 3=wtlen & fec; 4=recr_dist; 5=movement; 6=ageerrorkey)
   ivector MG_active(0,7)  // 0=all, 1=M, 2=growth 3=wtlen, 4=recr_dist, 5=migration, 6=ageerror, 7=catchmult
-//  !!if(N_MGparm_env>0) echoinput<<" MGparm-env setup "<<endl<<MGparm_env_1<<endl;
  
  LOCAL_CALCS
    echoinput<<"Now read env, block/trend, and dev adjustments to MGparms "<<endl;
    time_vary_MG.initialize();    // stores years to calc non-constant MG parms (1=natmort; 2=growth; 3=wtlen & fec; 4=recr_dist; 5=movement)
+   MG_active.initialize();
    CGD_onoff=0;
 
-   MGparm_env.initialize();   //  will store the index of environ fxns here
-   MGparm_envtype.initialize();
-   N_MGparm_env=0;
    timevary_cnt=0;
-   N_MGparm_dev=0;
+   N_parm_dev=0;
    timevary_parm_cnt=0;
    MGparm_timevary.initialize();
    for (j=1;j<=N_MGparm;j++)
@@ -1312,8 +1304,8 @@
        if(MGparm_1(j,9)>0)  //  devs are used
        {
         echoinput<<j<<" this parameter uses devs "<<MGparm_1(j)<<endl;
-         N_MGparm_dev++;  //  count of dev vectors that are used
-         timevary_setup(8)=N_MGparm_dev;  //    specifies which dev vector will be used by a parameter
+         N_parm_dev++;  //  count of dev vectors that are used
+         timevary_setup(8)=N_parm_dev;  //    specifies which dev vector will be used by a parameter
          timevary_setup(9)=MGparm_1(j,9);  //   code for dev link type
          y=MGparm_1(j,10);
          if(y<styr)
@@ -1383,50 +1375,6 @@
      for(j=0;j<=timevary_parm_cnt-1;j++)
      {echoinput<<timevary_parm_rd[j]<<" # "<<ParmLabel(N_MGparm+1+j)<<endl;}
    }
-
- END_CALCS
-//   ivector MGparm_dev_minyr(1,N_MGparm_dev);
-//   ivector MGparm_dev_maxyr(1,N_MGparm_dev);
-//   ivector MGparm_dev_PH(1,N_MGparm_dev);
- LOCAL_CALCS
-  /*
-  //  SS_Label_Info_4.5.9 #Set up random deviations for MG parms
-  //  NOTE:  the parms for the se of the devs are part of the MGparm2 list above, not the dev list below
-   N_MGparm_dev_tot=0;
-   if(N_MGparm_dev>0)
-   {
-     for (f=1;f<=N_MGparm;f++)  //  loop mgparm and set parameters for devs
-     {
-       if(MGparm_1(f,9)>0)
-       {
-           j=MGparm_timevary(f);  //  timevary_setup used
-           ivector timevary_setup(1,12);
-           timevary_setup(1,12)=timevary_def[j-1](1,12);
-           k=timevary_setup(8);  //  dev vector used
-           MGparm_dev_minyr(k)=timevary_setup(10);  //  used for dimensioning the dev vectors in SS_param
-           MGparm_dev_maxyr(k)=timevary_setup(11);
-           MGparm_dev_PH(k)=timevary_setup(12);
-           echoinput<<" setup dev "<<k<<" vector "<<timevary_setup<<" phase "<<MGparm_dev_PH(k)<<endl;
-           for(y=MGparm_dev_minyr(k);y<=MGparm_dev_maxyr(k);y++)
-           {
-             sprintf(onenum, "%d", y);
-             N_MGparm_dev_tot++;
-             ParCount++;
-             if(timevary_setup(9)==1)
-             {ParmLabel+=ParmLabel(f)+"_DEVmult_"+onenum+CRLF(1);}
-             else if(timevary_setup(9)==2)
-             {ParmLabel+=ParmLabel(f)+"_DEVadd_"+onenum+CRLF(1);}
-             else if(timevary_setup(9)==3)
-             {ParmLabel+=ParmLabel(f)+"_DEVrwalk_"+onenum+CRLF(1);}
-             else if(timevary_setup(9)==4)
-             {ParmLabel+=ParmLabel(f)+"_DEV_MR_rwalk_"+onenum+CRLF(1);}
-             else
-             {N_warn++; cout<<" EXIT - see warning "<<endl; warning<<" illegal MGparmdevtype for parm "<<f<<endl; exit(1);}
-           }
-       }
-     }
-   }
-  */
   //  SS_Label_Info_4.5.9 #Set up random deviations for MG parms
   //  NOTE:  the parms for the se of the devs are part of the MGparm2 list above, not the dev list below
 
@@ -1454,7 +1402,6 @@
         }
       }
     }
-    MG_active(0)=sum(MG_active(1,7));
  END_CALCS
 
 !!//  SS_Label_Info_4.5.7 #Set up seasonal effects for MG parms
@@ -1482,7 +1429,7 @@
     {
       if(MGparm_seas_effects(j)>0)
       {
-        MGparm_seas_effects(j)=N_MGparm+N_MGparm_env+N_MGparm_seas;  // store base parameter count
+        MGparm_seas_effects(j)=N_MGparm+N_MGparm_seas;  // store base parameter count
         for (s=1;s<=nseas;s++)
         {
           N_MGparm_seas++; ParCount++; ParmLabel+=MGseasLbl(j)+"_seas_"+NumLbl(s);
@@ -1506,7 +1453,6 @@
   ivector MGparm_PH(1,N_MGparm2)
 
  LOCAL_CALCS
-   MG_active=0;   // initializes
    for (f=1;f<=N_MGparm;f++)  //  loop mgparm and map setup to _LO , _HI etc.
    {
     MGparm_LO(f)=MGparm_1(f,1);
@@ -1547,6 +1493,7 @@
     MGparm_CV(j)=MGparm_seas_1(f,6);
     MGparm_PH(j)=MGparm_seas_1(f,7);
    }
+   MG_active(0)=sum(MG_active(1,7));
  END_CALCS
  
   !!//  SS_Label_Info_4.6 #Read setup for Spawner-Recruitment parameters
@@ -3922,12 +3869,12 @@
   }
  END_CALCS
  
-   ivector MGparm_dev_minyr(1,N_MGparm_dev);
-   ivector MGparm_dev_maxyr(1,N_MGparm_dev);
-   ivector MGparm_dev_PH(1,N_MGparm_dev);
+   ivector parm_dev_minyr(1,N_parm_dev);
+   ivector parm_dev_maxyr(1,N_parm_dev);
+   ivector parm_dev_PH(1,N_parm_dev);
 
  LOCAL_CALCS
-   N_MGparm_dev_tot=0;
+   N_parm_dev_tot=0;
    if(timevary_cnt>0)
    {
      for (j=1;j<=timevary_cnt;j++)  //  loop set up devs
@@ -3937,13 +3884,13 @@
        if(timevary_setup(8)>0)
        {
          k=timevary_setup(8);  //  dev vector used
-         MGparm_dev_minyr(k)=timevary_setup(10);  //  used for dimensioning the dev vectors in SS_param
-         MGparm_dev_maxyr(k)=timevary_setup(11);
-         MGparm_dev_PH(k)=timevary_setup(12);
-         if(depletion_fleet>0 && MGparm_dev_PH(k)>0) MGparm_dev_PH(k)++;//  add 1 to phase if using depletion fleet
-         if(MGparm_dev_PH(k)>Turn_off_phase) MGparm_dev_PH(k) =-1;
-         if(MGparm_dev_PH(k)>max_phase) max_phase=MGparm_dev_PH(k);
-         echoinput<<" setup dev "<<k<<" vector "<<timevary_setup<<" phase "<<MGparm_dev_PH(k)<<endl;
+         parm_dev_minyr(k)=timevary_setup(10);  //  used for dimensioning the dev vectors in SS_param
+         parm_dev_maxyr(k)=timevary_setup(11);
+         parm_dev_PH(k)=timevary_setup(12);
+         if(depletion_fleet>0 && parm_dev_PH(k)>0) parm_dev_PH(k)++;//  add 1 to phase if using depletion fleet
+         if(parm_dev_PH(k)>Turn_off_phase) parm_dev_PH(k) =-1;
+         if(parm_dev_PH(k)>max_phase) max_phase=parm_dev_PH(k);
+         echoinput<<" setup dev "<<k<<" vector "<<timevary_setup<<" phase "<<parm_dev_PH(k)<<endl;
          if(timevary_setup(1)==1) //  MGparm
           {
             f=0+timevary_setup(2);  //  index of base parameter
@@ -3952,10 +3899,10 @@
           {
             //  need to implement for other types
           }
-         for(y=MGparm_dev_minyr(k);y<=MGparm_dev_maxyr(k);y++)
+         for(y=parm_dev_minyr(k);y<=parm_dev_maxyr(k);y++)
          {
            sprintf(onenum, "%d", y);
-           N_MGparm_dev_tot++;
+           N_parm_dev_tot++;
            ParCount++;
            if(timevary_setup(9)==1)
            {ParmLabel+=ParmLabel(f)+"_DEVmult_"+onenum+CRLF(1);}
@@ -3967,7 +3914,7 @@
            {ParmLabel+=ParmLabel(f)+"_DEV_MR_rwalk_"+onenum+CRLF(1);}
            else
            {N_warn++; cout<<" EXIT - see warning "<<endl; warning<<" illegal MGparmdevtype for parm "<<f<<endl; exit(1);}
-            if(MGparm_dev_PH(k)>=0)
+            if(parm_dev_PH(k)>=0)
             {
               active_count++; active_parm(active_count)=ParCount;
             }

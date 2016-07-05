@@ -51,10 +51,6 @@ FUNCTION void get_MGsetup()
         }
         temp=log((MGparm_HI(f)-MGparm_LO(f)+0.0000002)/(mgp_adj(f)-MGparm_LO(f)+0.0000001)-1.)/(-2.);   // transform the parameter
 
-  //  SS_Label_Info_14.4.2.2 #Adjust for env linkage
-        if(MGparm_env(f)>0)  //  do environmental effect;  only additive allowed for adjustment method=2
-        {j=1; temp+=MGparm(MGparm_env(f))* env_data(yz,MGparm_envuse(f));}
-
         if(j==1) mgp_adj(f)=MGparm_LO(f)+(MGparm_HI(f)-MGparm_LO(f))/(1.+mfexp(-2.*temp));   // backtransform
       }  // end parameter loop (f)
       break;
@@ -198,7 +194,6 @@ FUNCTION void get_growth2()
         Lmax_temp(gp)=mgp_adj(Ip+1);
         VBK(gp)=-mgp_adj(Ip+2);  // because always used as negative; assigns to all ages
       }
-
 //  SS_Label_Info_16.2.2  #Set up age specific k
       if(Grow_type==3)  //  age specific k
       {

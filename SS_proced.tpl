@@ -345,7 +345,7 @@ PROCEDURE_SECTION
        if(Do_TG>0) cout<<" TG-fleetcomp "<<TG_like1<<endl<<" TG-negbin "<<TG_like2<<endl;
        cout<<" Recr " <<recr_like<<endl;
        cout<<" Parm_Priors " <<parm_like<<endl;
-       cout<<" MGParm_devs " <<MGparm_dev_like<<" "<<" seldevs: "<<selparm_dev_like<<endl;
+       cout<<" MGParm_devs " <<parm_dev_like<<" "<<" seldevs: "<<selparm_dev_like<<endl;
        cout<<" SoftBound "<<SoftBoundPen<<endl;
        cout<<" F_ballpark " <<F_ballpark_like<<endl;
        if(F_Method>1) {cout<<"Catch "<<catch_like;} else {cout<<"  crash "<<CrashPen;}
@@ -375,11 +375,11 @@ PROCEDURE_SECTION
         {
           if(MGparm_PH(j)>=0) {ParmTrace<<" "<<MGparm(j);}
         }
-        if(N_MGparm_dev>0)
+        if(N_parm_dev>0)
         {
-          for (j=1;j<=N_MGparm_dev;j++)
+          for (j=1;j<=N_parm_dev;j++)
           {
-            if(MGparm_dev_PH(j)>0) ParmTrace<<MGparm_dev(j)<<" ";
+            if(parm_dev_PH(j)>0) ParmTrace<<MGparm_dev(j)<<" ";
           }
         }
         for (j=1;j<=SRvec_PH.indexmax();j++)
@@ -436,9 +436,9 @@ PROCEDURE_SECTION
         ParmTrace<<current_phase()<<" "<<niter<<" "<<obj_fun<<" "<<obj_fun-last_objfun
         <<" "<<value(SPB_yr(styr))<<" "<<value(SPB_yr(endyr))<<" "<<biasadj(styr)<<" "<<max(biasadj)<<" "<<biasadj(endyr);
         ParmTrace<<" "<<MGparm<<" ";
-        if(N_MGparm_dev>0)
+        if(N_parm_dev>0)
         {
-          for (j=1;j<=N_MGparm_dev;j++)
+          for (j=1;j<=N_parm_dev;j++)
           {ParmTrace<<MGparm_dev(j);}
         }
         ParmTrace<<SR_parm<<" ";

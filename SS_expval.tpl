@@ -113,19 +113,20 @@ FUNCTION void Get_expected_values();
 
           exp_l_temp=colsum(exp_AL);  //  total size composition
           agetemp=rowsum(exp_AL);  //  total age composition
-          if(do_once==1) echoinput<<y<<" "<<f<<" sampled  size "<<exp_l_temp<<endl<<" sampled  age "<<agetemp<<endl;;
+          if(do_once==1) echoinput<<"yr "<<y<<", seas: "<<s<<", fleet:"<<f<<endl<<
+            " sampled  size "<<exp_l_temp<<endl<<
+            " sampled  age  "<<agetemp<<endl;;
           if(Do_Retain(f)>0)
           {
-             exp_l_temp_ret=colsum(exp_AL_ret);
-             exp_truea_ret=rowsum(exp_AL_ret);
-          if(do_once==1) echoinput<<y<<" "<<f<<" retain size "<<exp_l_temp_ret<<endl<<" retain age "<<exp_truea_ret<<endl;;
+            exp_l_temp_ret=colsum(exp_AL_ret);
+            exp_truea_ret=rowsum(exp_AL_ret);
+            if(do_once==1) echoinput<<" retained size "<<exp_l_temp_ret<<endl<<" retained age "<<exp_truea_ret<<endl;;
           }
           else
           {
             exp_truea_ret=agetemp;  //  covers cases where retention not used, but observations have partition=2
             exp_l_temp_ret=exp_l_temp;
           }
-//          if(docheckup==1) echoinput<<"exp_l: "<<exp_l_temp<<endl<<"exp_l_ret: "<<exp_l_temp_ret<<endl;
 //          end creation of selected A-L
         }
         
@@ -250,7 +251,7 @@ FUNCTION void Get_expected_values();
                                //  note that later the value in seltype(f,3) will specify the link function
               //  should there be an explicit zero-centering of the devs here, or just rely on general tendency for the devs to get zero-centererd?
               
-//              if(y>=selparm_dev_minyr(k) && y<=MGparm_dev_maxyr(k)) 
+//              if(y>=selparm_dev_minyr(k) && y<=parm_dev_maxyr(k)) 
 //              {
 //                vbio=MGparm_dev(k,y);
                 //  can the mean dev for years with surveys be calculated here?

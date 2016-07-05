@@ -59,7 +59,7 @@ FUNCTION void write_summaryoutput()
          <<parm_prior_lambda(k)<<" " <<parm_dev_lambda(k)<<" " <<CrashPen_lambda(k)<<endl;
   report2<<runnumber<<" Like_Value*Emph "<<equ_catch_like*init_equ_lambda(k)<<" "<<recr_like*recrdev_lambda(k)<<" "
          <<Fcast_recr_like<<" "<<parm_like*parm_prior_lambda(k)<<" "<<
-         (sum(MGparm_dev_like)+sum(selparm_dev_like))*parm_dev_lambda(k)<<" "<<CrashPen*CrashPen_lambda(k)<<endl;
+         (sum(parm_dev_like)+sum(selparm_dev_like))*parm_dev_lambda(k)<<" "<<CrashPen*CrashPen_lambda(k)<<endl;
 
   report2 <<runnumber<<" TimeSeries Year Vir Equ "<<years<<" ";
   k=YrMax;
@@ -81,9 +81,9 @@ FUNCTION void write_summaryoutput()
   report2<<endl;
   report2<<runnumber<<" Parm Values ";
   report2<<" "<<MGparm<<" ";
-  if(N_MGparm_dev>0) 
+  if(N_parm_dev>0) 
     {
-      for(j=1;j<=N_MGparm_dev;j++)  report2<<MGparm_dev(j)<<" ";
+      for(j=1;j<=N_parm_dev;j++)  report2<<MGparm_dev(j)<<" ";
     }
   report2<<SR_parm<<" ";
   if(recdev_cycle>0) report2<<recdev_cycle_parm<<" ";
@@ -105,12 +105,12 @@ FUNCTION void write_summaryoutput()
   {NP++; report2<<" "<<ParmLabel(NP);}
   report2<<endl<<runnumber<<" MG_parm "<<MGparm<<endl;
 
-  if(N_MGparm_dev>0)
+  if(N_parm_dev>0)
   {
     report2<<runnumber<<" MG_parm_dev ";
-    for (i=1;i<=N_MGparm_dev;i++)
+    for (i=1;i<=N_parm_dev;i++)
     {
-      for (j=MGparm_dev_minyr(i);j<=MGparm_dev_maxyr(i);j++)
+      for (j=parm_dev_minyr(i);j<=parm_dev_maxyr(i);j++)
       {NP++; report2<<" "<<ParmLabel(NP);}
       report2<<endl<<runnumber<<" MG_parm_dev "<<MGparm_dev(i)<<endl;
     }
@@ -1806,6 +1806,7 @@ FUNCTION void write_nucontrol()
     {NP++;
     timevary_parm_rd[f-1](3)=value(timevary_parm(f));
     report4<<timevary_parm_rd[f-1]<<" # "<<ParmLabel(NP)<<endl;}
+    report4<<"# info on dev vectors created for MGparms are reported with other devs after tag parameter section "<<endl;
   }
   else
   {
@@ -2373,7 +2374,7 @@ FUNCTION void write_bigoutput()
   SS2out <<"Forecast_Recruitment "<<Fcast_recr_like<<" "<<Fcast_recr_lambda<<endl;
   SS2out <<"Parm_priors "<<parm_like*parm_prior_lambda(k)<<" "<<parm_prior_lambda(k)<<endl;
   if(SoftBound>0) SS2out <<"Parm_softbounds "<<SoftBoundPen<<" "<<" NA "<<endl;
-  SS2out <<"Parm_devs "<<(sum(MGparm_dev_like)+sum(selparm_dev_like))*parm_dev_lambda(k)<<" "<<parm_dev_lambda(k)<<endl;
+  SS2out <<"Parm_devs "<<(sum(parm_dev_like)+sum(selparm_dev_like))*parm_dev_lambda(k)<<" "<<parm_dev_lambda(k)<<endl;
   if(F_ballpark_yr>0) SS2out <<"F_Ballpark "<<F_ballpark_lambda(k)*F_ballpark_like<<" "<<F_ballpark_lambda(k)<<"  ##:est&obs: "<<annual_F(F_ballpark_yr,2)<<" "<<F_ballpark<<endl;
   SS2out <<"Crash_Pen "<<CrashPen_lambda(k)*CrashPen<<" "<<CrashPen_lambda(k)<<endl;
 
@@ -2622,16 +2623,16 @@ FUNCTION void write_bigoutput()
     }
   }
 
-  if(N_MGparm_dev>0)
+  if(N_parm_dev>0)
   {
-    for (i=1;i<=N_MGparm_dev;i++)
-    for (j=MGparm_dev_minyr(i);j<=MGparm_dev_maxyr(i);j++)
+    for (i=1;i<=N_parm_dev;i++)
+    for (j=parm_dev_minyr(i);j<=parm_dev_maxyr(i);j++)
     {
       NP++;  SS2out<<NP<<" "<<ParmLabel(NP)<<" "<<MGparm_dev(i,j);
-      if(MGparm_dev_PH(i)>0)
+      if(parm_dev_PH(i)>0)
       {
         active_count++;
-        SS2out<<" "<<active_count<<" "<<MGparm_dev_PH(i)<<" _ _ _ act "<<CoVar(active_count,1);
+        SS2out<<" "<<active_count<<" "<<parm_dev_PH(i)<<" _ _ _ act "<<CoVar(active_count,1);
       }
       else
       {SS2out<<" _ _ _ _ _ NA _ ";}
@@ -2720,15 +2721,15 @@ FUNCTION void write_bigoutput()
     SS2out<<" "<<CoVar(active_count,1)<<endl;
   }
 
-  if(N_MGparm_dev>0)
+  if(N_parm_dev>0)
     {
-      SS2out<<"MGParm_dev_details"<<endl<<"Item Parm_Affected SE  Rho  Like"<<endl;
+      SS2out<<"Parm_dev_details"<<endl<<"Item Parm_Affected SE  Rho  Like"<<endl;
    SS2out<<" need to create code "<<endl;
-      for(i=1;i<=N_MGparm_dev;i++)
+      for(i=1;i<=N_parm_dev;i++)
       {
-//        SS2out<<i<<" "<<ParmLabel(MGparm_dev_rpoint(i))<<" "<<MGparm_dev_stddev(i)<<" "<<MGparm_dev_rho(i)<<" "<<MGparm_dev_like(i)<<endl;
+//        SS2out<<i<<" "<<ParmLabel(parm_dev_rpoint(i))<<" "<<parm_dev_stddev(i)<<" "<<parm_dev_rho(i)<<" "<<parm_dev_like(i)<<endl;
 //        SS2out<<i<<" devs "<<MGparm_dev(i)<<endl;
-//        if(MGparm_dev_type(i)>=3) SS2out<<i<<" rwalk "<<MGparm_dev_rwalk(i)<<endl;
+//        if(parm_dev_type(i)>=3) SS2out<<i<<" rwalk "<<parm_dev_rwalk(i)<<endl;
       }
     }
 

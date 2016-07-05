@@ -194,18 +194,18 @@ FUNCTION void make_timevaryparm()
   //  SS_Label_Info_14.3 #Create MGparm dev randwalks if needed
       if(timevary_setup(8)>0)   //  devs
       {
-//            if(MGparm_dev_type(k)==1)  // multiplicative
+//            if(parm_dev_type(k)==1)  // multiplicative
 //            {mgp_adj(f) *= mfexp(MGparm_dev(k,yz));}
-//            else if(MGparm_dev_type(k)==2)  // additive
+//            else if(parm_dev_type(k)==2)  // additive
 //            {mgp_adj(f) += MGparm_dev(k,yz);}
-//            else if(MGparm_dev_type(k)>=3)  // additive rwalk or mean-reverting rwalk
-//            {mgp_adj(f) += MGparm_dev_rwalk(k,yz);}
+//            else if(parm_dev_type(k)>=3)  // additive rwalk or mean-reverting rwalk
+//            {mgp_adj(f) += parm_dev_rwalk(k,yz);}
   //  SS_Label_Info_7.3.5 #Set up the MGparm stderr and rho parameters for the dev vectors
 
         k=timevary_setup(8);   //  dev used
-        MGparm_dev_stddev(k)=timevary_parm(timevary_parm_cnt);
-        MGparm_dev_rho(k)=timevary_parm(timevary_parm_cnt+1);
-//        echoinput<<k<<" devs:  se and rho "<<MGparm_dev_stddev(k)<<" "<<MGparm_dev_rho(k)<<" link "<<timevary_setup(9)<<endl;
+        parm_dev_stddev(k)=timevary_parm(timevary_parm_cnt);
+        parm_dev_rho(k)=timevary_parm(timevary_parm_cnt+1);
+//        echoinput<<k<<" devs:  se and rho "<<parm_dev_stddev(k)<<" "<<parm_dev_rho(k)<<" link "<<timevary_setup(9)<<endl;
         switch(timevary_setup(9))
         {
           case 1:
@@ -226,24 +226,24 @@ FUNCTION void make_timevaryparm()
           }
           case 3:
           {
-            MGparm_dev_rwalk(k,timevary_setup(10))=MGparm_dev(k,timevary_setup(10));
-            parm_timevary(tvary,timevary_setup(10))+=MGparm_dev_rwalk(k,timevary_setup(10));
+            parm_dev_rwalk(k,timevary_setup(10))=MGparm_dev(k,timevary_setup(10));
+            parm_timevary(tvary,timevary_setup(10))+=parm_dev_rwalk(k,timevary_setup(10));
             for (j=timevary_setup(10)+1;j<=timevary_setup(11);j++)
             {
-              MGparm_dev_rwalk(k,j)=MGparm_dev_rwalk(k,j-1)+MGparm_dev(k,j);
-              parm_timevary(tvary,j)+=MGparm_dev_rwalk(k,j);
+              parm_dev_rwalk(k,j)=parm_dev_rwalk(k,j-1)+MGparm_dev(k,j);
+              parm_timevary(tvary,j)+=parm_dev_rwalk(k,j);
             }
             break;
           }
           case 4:  // mean reverting random walk
           {
-            MGparm_dev_rwalk(k,timevary_setup(10))=MGparm_dev(k,timevary_setup(10));
-            parm_timevary(tvary,timevary_setup(10))+=MGparm_dev_rwalk(k,timevary_setup(10));
+            parm_dev_rwalk(k,timevary_setup(10))=MGparm_dev(k,timevary_setup(10));
+            parm_timevary(tvary,timevary_setup(10))+=parm_dev_rwalk(k,timevary_setup(10));
             for (j=timevary_setup(10)+1;j<=timevary_setup(11);j++)
             {
               //    =(1-rho)*mean + rho*prevval + dev   //  where mean = 0.0
-              MGparm_dev_rwalk(k,j)=MGparm_dev_rho(k)*MGparm_dev_rwalk(k,j-1)+MGparm_dev(k,j);
-              parm_timevary(tvary,j)+=MGparm_dev_rwalk(k,j);
+              parm_dev_rwalk(k,j)=parm_dev_rho(k)*parm_dev_rwalk(k,j-1)+MGparm_dev(k,j);
+              parm_timevary(tvary,j)+=parm_dev_rwalk(k,j);
             }
             break;
           }

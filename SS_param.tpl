@@ -50,8 +50,8 @@ PARAMETER_SECTION
 
   3darray wtlen_seas(0,nseas,1,N_GP,1,8);  //  contains seasonally adjusted wtlen_p
   matrix wtlen_p(1,N_GP,1,8);
-  vector MGparm_dev_stddev(1,N_MGparm_dev)
-  vector MGparm_dev_rho(1,N_MGparm_dev)  // determines the mean regressive characteristic: with 0 = no autoregressive; 1= all autoregressive
+  vector parm_dev_stddev(1,N_parm_dev)
+  vector parm_dev_rho(1,N_parm_dev)  // determines the mean regressive characteristic: with 0 = no autoregressive; 1= all autoregressive
   3darray wt_len(1,nseas,1,N_GP*gender,1,nlength)  //  stores wt at mid-bin
 
 //  following wt_len are defined for 1,N_GP, but only use gp=1 due to complications in vbio, exp_ms and sizefreq calc
@@ -334,8 +334,8 @@ PARAMETER_SECTION
 
   init_bounded_number_vector TG_parm(1,k,TG_parm_LO,TG_parm_HI,TG_parm_PH);
 
-  init_bounded_vector_vector MGparm_dev(1,N_MGparm_dev,MGparm_dev_minyr,MGparm_dev_maxyr,-10,10,MGparm_dev_PH)
-  matrix MGparm_dev_rwalk(1,N_MGparm_dev,MGparm_dev_minyr,MGparm_dev_maxyr);
+  init_bounded_vector_vector MGparm_dev(1,N_parm_dev,parm_dev_minyr,parm_dev_maxyr,-10,10,parm_dev_PH)
+  matrix parm_dev_rwalk(1,N_parm_dev,parm_dev_minyr,parm_dev_maxyr);
 
   init_bounded_number checksum999(998,1000,-999)  //  set value to 999 to check reading of ss.par
   vector timevary_parm(1,timevary_parm_cnt);  //  will map to the MGparms and selparms that are the actual parameters
@@ -394,7 +394,7 @@ PARAMETER_SECTION
   number recr_like
   number Fcast_recr_like
   number parm_like
-  vector MGparm_dev_like(1,N_MGparm_dev)
+  vector parm_dev_like(1,N_parm_dev)
   vector selparm_dev_like(1,N_selparm_dev)
   number CrashPen
   number SoftBoundPen
