@@ -10,7 +10,6 @@ FUNCTION void make_timevaryparm()
     dvariable infl_year;
     dvariable slope;
     dvariable norm_styr;
-    if(do_once==1) echoinput<<" called make_timevaryparm "<<endl;
     //  note:  need to implement the approach that keeps within bounds of base parameter
 
     int timevary_parm_cnt_all;
@@ -18,10 +17,8 @@ FUNCTION void make_timevaryparm()
     
     for (int tvary=1;tvary<=timevary_cnt;tvary++)
     {
-      if(do_once==1) echoinput<<" loop time vary effect #: "<<tvary<<endl;
       ivector timevary_setup(1,12);
       timevary_setup(1,12)=timevary_def[tvary-1](1,12);
-      echoinput<<timevary_setup<<endl<<MGparm<<endl;
       //  what type of parameter is being affected?  get the baseparm and its bounds
       switch(timevary_setup(1))      //  parameter type
       {
@@ -30,14 +27,12 @@ FUNCTION void make_timevaryparm()
           baseparm=MGparm(timevary_setup(2)); //  index of base parm
           baseparm_min=MGparm_LO(timevary_setup(2));
           baseparm_max=MGparm_HI(timevary_setup(2));
-          echoinput<<"base: "<<baseparm<<" "<<baseparm_min<<" "<<baseparm_max<<endl;
-          echoinput<<tvary<<" loop end "<<timevary_def[tvary](3)<<endl;
           for(j=timevary_setup(3);j<timevary_def[tvary](3);j++)
           {
             timevary_parm_cnt_all++;
             timevary_parm(timevary_parm_cnt_all)=MGparm(N_MGparm+j);
-            echoinput<<j<<" "<<timevary_parm_cnt_all<<" "<<timevary_parm(timevary_parm_cnt_all)<<endl;
           }
+          parm_timevary(tvary)=baseparm;  //  fill timeseries with base parameter, just in case
           break;
         }
         case 2:  // selex
@@ -53,13 +48,12 @@ FUNCTION void make_timevaryparm()
           break;
         }
       }
-
+      
+      if(do_once==1) echoinput<<"  time vary effect #: "<<tvary<<"  baseparm: "<<baseparm<<"  setup: "<<timevary_setup<<endl;
+      
       timevary_parm_cnt=timevary_setup(3);  //  first  parameter used to create timevary effect on baseparm
-      echoinput<<" setup again "<<timevary_setup<<endl;
       if(timevary_setup(4)>0)  //  block
       {
-        parm_timevary(tvary)=baseparm;  //  fill timeseries with base parameter, just in case
-        
         z=timevary_setup(4);    // specified block pattern
         g=1;
         temp=baseparm;
@@ -98,19 +92,17 @@ FUNCTION void make_timevaryparm()
             parm_timevary(tvary,y1)=temp;
           }
           g+=2;
-          if(do_once==1) echoinput<<" parm with blocks "<<parm_timevary<<endl;
+          if(do_once==1) echoinput<<" parm with blocks "<<parm_timevary(tvary)<<endl;
         }
 //        timevary_parm_cnt--;    // back out last increment
       }  // end uses blocks
 
       else if(timevary_setup(4)<0)  //  trend
       {
-        echoinput<<" doing trend "<<endl;
         // timevary_parm(timevary_parm_cnt+0) = offset for the trend at endyr; 3 options available below
         // timevary_parm(timevary_parm_cnt+1) = inflection year; 2 options available
         // timevary_parm(timevary_parm_cnt+2) = stddev of normal at inflection year
         //  calc endyr value,
-        if(do_once==1) echoinput<<" doing trend approach:"<<timevary_setup(4)<<endl;
         if(timevary_setup(4)==-1)  // use logistic transform to keep with bounds of the base parameter
         {
           endtrend=log((baseparm_max-baseparm_min+0.0000002)/(baseparm-baseparm_min+0.0000001)-1.)/(-2.);   // transform the base parameter
@@ -131,9 +123,7 @@ FUNCTION void make_timevaryparm()
           infl_year=r_years(styr)+(r_years(endyr)-r_years(styr))*timevary_parm(timevary_parm_cnt+1);
         }
         slope=timevary_parm(timevary_parm_cnt+2);
-        if(do_once==1) echoinput<<" endtrend "<<endtrend<<endl;
-        endtrend+=2.0;
-        if(do_once==1) echoinput<<" infl_year, slope "<<infl_year<<" "<<slope<<endl;
+        if(do_once==1) echoinput<<" trend: infl_year, slope, endvalue "<<infl_year<<" "<<slope<<" "<<endtrend<<endl;
         timevary_parm_cnt+=3;
 
         norm_styr=cumd_norm((r_years(styr) -infl_year)/slope);
@@ -147,12 +137,12 @@ FUNCTION void make_timevaryparm()
           {parm_timevary(tvary,y1)=parm_timevary(tvary,endyr);}
         }
         parm_timevary(tvary,styr-1)=baseparm;
-         if(do_once==1)  echoinput<<" parm with trend "<<parm_timevary(tvary)<<endl;
+        if(do_once==1) echoinput<<" parm with trend "<<parm_timevary(tvary)<<endl;
       }
 
       if(timevary_setup(7)>0)   //  env link, but not density-dependent
       {
-        if(do_once==1) echoinput<<" doing env effect "<<timevary_setup(6,7)<<endl<<timevary_parm(timevary_parm_cnt)<<endl;
+        if(do_once==1) echoinput<<" first envlink parm: "<<timevary_parm(timevary_parm_cnt)<<endl;
         switch(int(timevary_setup(6)))
         {
           case 1:  //  exponential  env link
@@ -188,24 +178,16 @@ FUNCTION void make_timevaryparm()
               break;
             }
         }
-          if(do_once==1) echoinput<<" parm with env "<<parm_timevary<<endl;
+        if(do_once==1) echoinput<<" parm with env "<<parm_timevary(tvary)<<endl;
       }
 
   //  SS_Label_Info_14.3 #Create MGparm dev randwalks if needed
       if(timevary_setup(8)>0)   //  devs
       {
-//            if(parm_dev_type(k)==1)  // multiplicative
-//            {mgp_adj(f) *= mfexp(MGparm_dev(k,yz));}
-//            else if(parm_dev_type(k)==2)  // additive
-//            {mgp_adj(f) += MGparm_dev(k,yz);}
-//            else if(parm_dev_type(k)>=3)  // additive rwalk or mean-reverting rwalk
-//            {mgp_adj(f) += parm_dev_rwalk(k,yz);}
-  //  SS_Label_Info_7.3.5 #Set up the MGparm stderr and rho parameters for the dev vectors
 
         k=timevary_setup(8);   //  dev used
         parm_dev_stddev(k)=timevary_parm(timevary_parm_cnt);
         parm_dev_rho(k)=timevary_parm(timevary_parm_cnt+1);
-//        echoinput<<k<<" devs:  se and rho "<<parm_dev_stddev(k)<<" "<<parm_dev_rho(k)<<" link "<<timevary_setup(9)<<endl;
         switch(timevary_setup(9))
         {
           case 1:
@@ -248,6 +230,7 @@ FUNCTION void make_timevaryparm()
             break;
           }
         }
+        if(do_once==1) echoinput<<"devs "<<MGparm_dev(k)<<endl<<"result "<<parm_timevary(tvary)<<endl;
       }
     }
   }

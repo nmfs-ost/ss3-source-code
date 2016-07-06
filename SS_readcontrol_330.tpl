@@ -1338,7 +1338,7 @@
          {*(ad_comm::global_datafile) >> tempvec(1,7);}
          else
          {
-          tempvec.fill("{0.0001,2.0,0.5,0.5,0,0.5,5}");
+          tempvec.fill("{0.0001,2.0,0.5,0.5,0,0.5,-5}");
           timevary_setup(12)=5; MGparm_1(j,12)=5;  //  set reasonable phase for devs
          }
          timevary_parm_rd.push_back (dvector(tempvec(1,7)));

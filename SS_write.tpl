@@ -2165,7 +2165,7 @@ FUNCTION void write_nucontrol()
         {
           report4<<"   devs: "<<std::setprecision(4)<<std::fixed<<setw(6)<<MGparm_dev(timevary_def[j-1](8));
         }
-        report4<<endl;
+        report4<<std::setprecision(0)<<std::fixed<<endl;
       }
     }
 
