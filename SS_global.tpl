@@ -71,7 +71,7 @@ GLOBALS_SECTION
   std::vector<dvector> Svy_data;
   std::vector<dvector> discdata;
   std::vector<dvector> mnwtdata1;
-    std::vector<dvector> lendata;
+  std::vector<dvector> lendata;
   std::vector<dvector> Age_Data;
   std::vector<dvector> sizeAge_Data;
   std::vector<dvector> Fcast_InputCatch_list;
@@ -316,7 +316,7 @@ FINAL_SECTION
 //  SS_Label_Info_12.4.6 #Call fxn write_Bzero_output()  appended to report.sso
     write_Bzero_output();
     cout<<" finished Bzero and global MSY "<<endl;
-    
+
 //  SS_Label_Info_12.3.1 #Write out body weights to wtatage.ss_new.  Occurs while doing procedure with save_for_report=2
     save_for_report=2;
 //    bodywtout<<1<<"  #_user_must_replace_this_value_with_number_of_lines_with_wtatage_below"<<endl;
@@ -337,7 +337,7 @@ FINAL_SECTION
     bodywtout<<-9999<<" "<<1<<" "<<1<<" "<<1<<" "<<1<<" "<<0<<" "<<Wt_Age_mid(1,1)<<" #terminator "<<endl;
     bodywtout.close();
     cout<<" write wtatage.ss_new "<<endl;
-    
+
     warning<<" N warnings: "<<N_warn<<endl;
     if(parm_adjust_method==3) warning<<"time-vary MGparms not bound checked"<<endl;
     if(parm_adjust_method==3) warning<<"time-vary selparms not bound checked"<<endl;
@@ -359,6 +359,7 @@ FINAL_SECTION
 REPORT_SECTION
   {
     save_gradients(gradients);
+    for (int i = 1; i <= gradients.size(); i++) parm_gradients(i) = gradients(i);
 
 //  SS_Label_Info_13.1 #Write limited output to SS3.rep
   if(Svy_N>0) report<<" CPUE " <<surv_like<<endl;

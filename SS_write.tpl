@@ -2447,7 +2447,7 @@ FUNCTION void write_bigoutput()
   SS2out<<"MG_parms"<<"Using_offset_approach_#:_"<<MGparm_def<<"  (1=none, 2= M, G, CV_G as offset from female_GP1, 3=like SS2 V1.x)"<<endl;
 
 //  SS2out<<endl<<"PARAMETERS"<<endl<<"Num Label Value Active_Cnt Phase Min Max Init Prior PR_type Pr_SD Prior_Like Parm_StDev Status Pr_atMin Pr_atMax"<<endl;
-  SS2out<<endl<<"PARAMETERS"<<endl<<"Num Label Value Active_Cnt  Phase Min Max Init  Status  Parm_StDev PR_type Prior Pr_SD Prior_Like Value_again Value-1.96*SD Value+1.96*SD V_1%  V_10% V_20% V_30% V_40% V_50% V_60% V_70% V_80% V_90% V_99% P_val P_lowCI P_hiCI  P_1%  P_10% P_20% P_30% P_40% P_50% P_60% P_70% P_80% P_90% P_99%"<<endl;
+  SS2out<<endl<<"PARAMETERS"<<endl<<"Num Label Value Active_Cnt  Phase Min Max Init  Status  Parm_StDev Gradient PR_type Prior Pr_SD Prior_Like Value_again Value-1.96*SD Value+1.96*SD V_1%  V_10% V_20% V_30% V_40% V_50% V_60% V_70% V_80% V_90% V_99% P_val P_lowCI P_hiCI  P_1%  P_10% P_20% P_30% P_40% P_50% P_60% P_70% P_80% P_90% P_99%"<<endl;
 
   NP=0;   // count of number of parameters
   active_count=0;
@@ -5287,12 +5287,15 @@ FUNCTION void Report_Parm(const int NParm, const int AC, const int Activ, const 
     dvar_vector parm_val(1,14);
     dvar_vector prior_val(1,14);
     int i;
-    dvariable parmvar;
+    dvariable parmvar, parmgrad;
     parmvar=0.0;
+    parmgrad=0.0;
     SS2out<<NParm<<" "<<ParmLabel(NParm)<<" "<<Pval;
     if(Activ>0)
     {
       parmvar=CoVar(AC,1);
+      parmgrad=parm_gradients(AC);
+
       SS2out<<" "<<AC<<" "<<PH<<" "<<Pmin<<" "<<Pmax<<" "<<RD;
       if (Pval==RD)
       {
@@ -5311,11 +5314,14 @@ FUNCTION void Report_Parm(const int NParm, const int AC, const int Activ, const 
           {SS2out<<" OK ";}
       }
       SS2out<<" "<<parmvar;
+
+      SS2out<<" "<<parmgrad;
     }
     else
     {
-      SS2out<<" _ "<<PH<<" "<<Pmin<<" "<<Pmax<<" "<<RD<<" NA _ ";
+      SS2out<<" _ "<<PH<<" "<<Pmin<<" "<<Pmax<<" "<<RD<<" NA _ _ ";
     }
+
     if(PR_T>=0)
     {
       switch (PR_T)

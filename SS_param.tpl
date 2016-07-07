@@ -435,6 +435,9 @@ PARAMETER_SECTION
   matrix env_data(styr-1,YrMax,-4,N_envvar)
   matrix TG_save(1,N_TG,1,3+TG_endtime)
 
+  // save gradients for all active parameters
+  vector parm_gradients(1,active_count);
+
 !!//  SS_Label_Info_5.2 #Create sdreport vectors
   sdreport_vector SPB_std(1,N_STD_Yr);
   sdreport_vector recr_std(1,N_STD_Yr);
