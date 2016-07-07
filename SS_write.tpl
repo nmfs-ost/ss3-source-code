@@ -2474,10 +2474,10 @@ FUNCTION void write_bigoutput()
       if(active(MGparm_dev))
       {
         active_count++;
-        SS2out<<" "<<active_count<<" "<<MGparm_dev_PH<<" _ _ _ act "<<CoVar(active_count,1);
+        SS2out<<" "<<active_count<<" "<<MGparm_dev_PH<<" _ _ _ act "<<CoVar(active_count,1)<<" "<<parm_gradients(active_count);
       }
       else
-      {SS2out<<" _ _ _ _ _ NA _ ";}
+      {SS2out<<" _ _ _ _ _ NA _ _ ";}
       SS2out<<" dev "<<endl;
     }
   }
@@ -2516,11 +2516,11 @@ FUNCTION void write_bigoutput()
         if( active(recdev_early) )
         {
           active_count++;
-          SS2out<<" "<<active_count<<" _ _ _ _ act "<<CoVar(active_count,1);
+          SS2out<<" "<<active_count<<" _ _ _ _ act "<<CoVar(active_count,1)<<" "<<parm_gradients(active_count);
         }
         else
           {
-            SS2out<<" _ _ _ _ _ NA _ ";
+            SS2out<<" _ _ _ _ _ NA _ _ ";
           }
         SS2out <<" dev "<<endl;
           }
@@ -2533,11 +2533,11 @@ FUNCTION void write_bigoutput()
         if( active(recdev1)||active(recdev2) )
         {
           active_count++;
-          SS2out<<" "<<active_count<<" _ _ _ _ act "<<CoVar(active_count,1);
+          SS2out<<" "<<active_count<<" _ _ _ _ act "<<CoVar(active_count,1)<<" "<<parm_gradients(active_count);
         }
         else
           {
-            SS2out<<" _ _ _ _ _ NA _ ";
+            SS2out<<" _ _ _ _ _ NA _ _ ";
           }
         SS2out <<" dev "<<endl;
           }
@@ -2549,9 +2549,9 @@ FUNCTION void write_bigoutput()
       {
         NP++; SS2out<<NP<<" "<<ParmLabel(NP)<<" "<<Fcast_recruitments(i);
         if(active(Fcast_recruitments))
-        {active_count++;           SS2out<<" "<<active_count<<" _ _ _ _ act "<<CoVar(active_count,1);}
+        {active_count++;           SS2out<<" "<<active_count<<" _ _ _ _ act "<<CoVar(active_count,1)<<" "<<parm_gradients(active_count);}
         else
-        {SS2out<<"  _ _ _ _ _ NA _ ";}
+        {SS2out<<"  _ _ _ _ _ NA _ _ ";}
         SS2out <<" dev "<<endl;
       }
     }
@@ -2562,9 +2562,9 @@ FUNCTION void write_bigoutput()
         {
           NP++; SS2out<<NP<<" "<<ParmLabel(NP)<<" "<<Fcast_impl_error(i);
           if(active(Fcast_impl_error))
-          {active_count++;           SS2out<<" "<<active_count<<" _ _ _ _ act "<<CoVar(active_count,1);}
+          {active_count++;           SS2out<<" "<<active_count<<" _ _ _ _ act "<<CoVar(active_count,1)<<" "<<parm_gradients(active_count);}
           else
-          {SS2out<<"  _ _ _ _ _ NA _ ";}
+          {SS2out<<"  _ _ _ _ _ NA _ _ ";}
         SS2out <<" dev "<<endl;
         }
       }
@@ -2626,9 +2626,9 @@ FUNCTION void write_bigoutput()
       {
         NP++;  SS2out<<NP<<" "<<ParmLabel(NP)<<" "<<selparm_dev(i,j);
         if(active(selparm_dev))
-          {active_count++; SS2out<<" "<<active_count<<" _ _ _ _ act "<<CoVar(active_count,1);}
+          {active_count++; SS2out<<" "<<active_count<<" _ _ _ _ act "<<CoVar(active_count,1)<<" "<<parm_gradients(active_count);}
           else
-          {SS2out<<" _ _ _ _ _ NA _ ";}
+          {SS2out<<" _ _ _ _ _ NA _ _ ";}
         SS2out <<" dev "<<endl;
     }
 
