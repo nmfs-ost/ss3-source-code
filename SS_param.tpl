@@ -437,7 +437,8 @@ PARAMETER_SECTION
   matrix TG_save(1,N_TG,1,3+TG_endtime)
 
   // save gradients for all active parameters
-  vector parm_gradients(1,active_count);
+  !! int parm_grad_active_count = max(1,active_count);     // the dummy parameter is still in there even if no other params are estimated
+  vector parm_gradients(1,parm_grad_active_count);
 
 !!//  SS_Label_Info_5.2 #Create sdreport vectors
   sdreport_vector SPB_std(1,N_STD_Yr);
