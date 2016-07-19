@@ -1473,9 +1473,50 @@ FUNCTION void write_nudata()
   {
     dvector temp_negbin(1,1);
 
+    // changes authored by Gavin Fay in June 2016 in SS 3.24Y
+    TG_recap_gen.initialize();
+    int N_TG_recap_gen=0;
+
+    for(TG=1;TG<=N_TG;TG++)
+    {
+      overdisp=TG_parm(2*N_TG+TG);
+
+      dvector TG_fleet_probs(1,Nfleet);
+      dvector temp_tags(1,Nfleet);
+
+      for (t=0;t<=TG_maxperiods;t++) {
+        if (value(TG_recap_exp(TG,t,0))>0) {
+          temp_negbin.initialize();
+          temp_negbin.fill_randnegbinomial(value(TG_recap_exp(TG,t,0)), value(overdisp), radm);
+          //cout << TG << " " << t << " " << temp_negbin <<  " " << TG_recap_exp(TG,t,0) << " " << value(overdisp) << endl;
+          if (temp_negbin(1)>0) {
+            TG_fleet_probs = value(TG_recap_exp(TG,t)(1,Nfleet))/temp_negbin(1);
+
+            temp_tags = 0.0;
+            temp_mult.fill_multinomial(radm,TG_fleet_probs);
+            for (compindex=1; compindex<=temp_negbin(1); compindex++) // cumulate the multinomial draws by index in the new data
+              {temp_tags(temp_mult(compindex)) += 1.0;}
+            for (f=1;f<=Nfleet;f++) {
+              if (temp_tags(f)>0) {
+                N_TG_recap_gen += 1;
+                TG_recap_gen(N_TG_recap_gen,1) = TG;
+                TG_recap_gen(N_TG_recap_gen,2) = TG_release(TG,3) + int((t+TG_release(TG,4)-1)/nseas);
+                int k = TG_release(TG,4);
+                TG_recap_gen(N_TG_recap_gen,3) = ((t+k-1) % nseas) + 1;
+                TG_recap_gen(N_TG_recap_gen,4) = f;
+                TG_recap_gen(N_TG_recap_gen,5) = temp_tags(f);
+              }
+
+            }
+          }
+        }
+      }
+    }
+
     // info on dimensions of tagging data
     report1<<N_TG<<" # N tag groups"<<endl;
-    report1<<N_TG_recap<<" # N recap events"<<endl;
+    // //report1<<N_TG_recap<<" # N recap events"<<endl;
+    report1<<N_TG_recap_gen<<" # N recap events"<<endl;
     report1<<TG_mixperiod<<" # mixing latency period: N periods to delay before comparing observed to expected recoveries (0 = release period)"<<endl;
     report1<<TG_maxperiods<<" # max periods (seasons) to track recoveries, after which tags enter accumulator"<<endl;
 
@@ -1488,21 +1529,9 @@ FUNCTION void write_nudata()
     report1<<"#_Note: Bootstrap values for tag recaptures are produced only for the same combinations of"<<endl;
     report1<<"#       group, year, area, and fleet that had observed recaptures. "<<endl;
     report1<<"#_TAG  Year Season Fleet Nrecap"<<endl;
-    for(j=1;j<=N_TG_recap;j++)
+    for(j=1;j<=N_TG_recap_gen;j++)
     {
-      // fill in first 4 columns:
-      for(k=1;k<=4;k++) report1<<TG_recap_data(j,k)<<" ";
-      // fill in 5th column with bootstrap values
-      temp_negbin.initialize();
-      TG=TG_recap_data(j,1);
-      overdisp=TG_parm(2*N_TG+TG);
-      t=styr+int((TG_recap_data(j,2)-styr)*nseas+TG_recap_data(j,3)-1) - TG_release(TG,5); // find elapsed time in terms of number of seasons
-      if(t>TG_maxperiods) t=TG_maxperiods;
-      // some robustification of expected recaps might be needed
-      // for cases where the TG_recap_exp = 0
-      temp_negbin.fill_randnegbinomial(value(TG_recap_exp(TG,t,0)), value(overdisp), radm);
-      report1<<temp_negbin<<" #_orig_obs: "<<TG_recap_data(j,5);
-      report1<<" #_exp: "<<value(TG_recap_exp(TG,t,0))<<" #_overdisp: "<<value(overdisp)<<endl;
+      report1<<TG_recap_gen(j)<<endl;
     }
   }
   // end tagging data section #3 (bootstrap data)

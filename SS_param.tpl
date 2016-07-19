@@ -328,6 +328,7 @@ PARAMETER_SECTION
   matrix TG_alive(1,pop,1,gmorph)
   matrix TG_alive_temp(1,pop,1,gmorph)
   3darray TG_recap_exp(1,N_TG2,0,TG_endtime,0,Nfleet)   //  do not need to store POP index because each fleet is in just one area
+  matrix TG_recap_gen(1,100000,1,5)   // changes courtesy of Gavin Fay
   vector TG_like1(1,N_TG2)
   vector TG_like2(1,N_TG2)
   number overdisp     // overdispersion
