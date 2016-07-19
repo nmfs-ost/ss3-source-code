@@ -79,7 +79,7 @@ FUNCTION void get_selectivity()
             {
               if(selparm_1(Ip+j,13)!=0)
               {
-                sp(j)=parm_timevary(selparm_timevary(Ip+j,1),y);
+                sp(j)=parm_timevary(selparm_timevary(Ip+j),y);
               }
               else
               {sp(j)=selparm(Ip+j);}
@@ -157,7 +157,7 @@ FUNCTION void get_selectivity()
             {
               if(selparm_1(Ip+j,13)!=0)
               {
-                sp(j)=parm_timevary(selparm_timevary(Ip+j,1),y);  //  bound constraint needs to have been done in timevaryparm.tpl
+                sp(j)=parm_timevary(selparm_timevary(Ip+j),y);  //  bound constraint needs to have been done in timevaryparm.tpl
               }
               else
               {sp(j)=selparm(Ip+j);}
@@ -1311,7 +1311,7 @@ FUNCTION void Make_FishSelex()
     tz=styr+(y-styr)*nseas+s-1;  // can use y, not yf, because wtage_emp values are read in and can extend into forecast
     for (f=1;f<=Nfleet;f++)
     {
-      if(time_vary_makefishsel(yf,f)>0 || save_for_report>0)
+      if(time_vary_sel(yf,f)>0 || time_vary_sel(yf,f+Nfleet)>0 || save_for_report>0)
       {
         makefishsel_yr = yf;
         fs=f+Nfleet;  //  for the age dimensioning

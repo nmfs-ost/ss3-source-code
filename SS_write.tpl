@@ -1733,7 +1733,7 @@ FUNCTION void write_nucontrol()
   report4<<"# controls for all timevary parameters "<<endl;
   report4<<parm_adjust_method<<
    " #_env/block/dev_adjust_method for all time-vary parms (1=standard; 2=logistic transform keeps in base parm bounds; 3=standard w/ no bound check)"<<endl;
-  if(timevary_cnt>0)  //  corresponds to custom_MGsetup
+  if(timevary_cnt>0)  //  corresponds to autogen_timevary
   {
     report4<<1<<" # timevarying parameter autogenerate (0) or read (1)"<<endl;
   }

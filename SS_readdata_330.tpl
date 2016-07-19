@@ -29,21 +29,23 @@
    read_seas_mo=2;
  END_CALCS
 
-  init_int styr  //start year of the model
- !!echoinput<<styr<<" start year "<<endl;
-
-  init_int endyr // end year of the model
- !!echoinput<<endyr<<" end year "<<endl;
-
-  init_int nseas  //  number of seasons
- !!echoinput<<nseas<<" N seasons "<<endl;
-
-  init_vector seasdur(1,nseas) // season duration; enter in units of months, fractions OK; will be rescaled to sum to 1.0 if total is greater than 11.9
- !!echoinput<<seasdur<<" months/seas (fractions OK) "<<endl;
 
   int N_subseas  //  number of subseasons within season; must be even number to get one to be mid_season
   ivector timing_constants(1,6)
  LOCAL_CALCS
+  *(ad_comm::global_datafile) >> styr;  //start year of the model
+  echoinput<<styr<<" start year "<<endl;
+
+  *(ad_comm::global_datafile) >> endyr; // end year of the model
+  echoinput<<endyr<<" end year "<<endl;
+
+  *(ad_comm::global_datafile) >> nseas;  //  number of seasons
+  echoinput<<nseas<<" N seasons "<<endl;
+ END_CALCS
+  init_vector seasdur(1,nseas);  // season duration; enter in units of months, fractions OK; will be rescaled to sum to 1.0 if total is greater than 11.9
+
+ LOCAL_CALCS
+  echoinput<<seasdur<<" months/seas (fractions OK) "<<endl;
   *(ad_comm::global_datafile) >> N_subseas;
   echoinput<<N_subseas<<" Number of subseasons (even number only; min 2) for calculation of ALK "<<endl;
   mid_subseas=N_subseas/2 + 1;
@@ -57,7 +59,6 @@
 
   int TimeMax
   int TimeMax_Fcast_std
-  int YrMax;
 
   int eq_yr;
   int bio_yr;
