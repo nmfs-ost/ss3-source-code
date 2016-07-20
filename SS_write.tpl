@@ -479,7 +479,7 @@ FUNCTION void write_nudata()
 //  code for multinomial distribution developed by Ian Stewart, Oct 2005
   random_number_generator radm(long(time(&start)));
 
-  dvector temp_mult(1,1000);
+  dvector temp_mult(1,50000);
   dvector temp_probs(1,nlen_bin2);
   int compindex;
   dvector temp_probs2(1,n_abins2);
@@ -1295,7 +1295,7 @@ FUNCTION void write_nudata()
       {
         if(Comp_Err_L(f)==0)  //  multinomial
         {
-           k=1000;  if(nsamp_l(f,i)<k) k=nsamp_l(f,i);
+           k=50000;  if(nsamp_l(f,i)<k) k=nsamp_l(f,i);
            exp_l_temp_dat.initialize();
            temp_probs = value(exp_l(f,i));
            temp_mult.fill_multinomial(radm,temp_probs);  // create multinomial draws with prob = expected values
@@ -1305,7 +1305,7 @@ FUNCTION void write_nudata()
         else  //  Dirichlet
         {
 //  need to replace this with Dirichlet equivalent
-           k=1000;  if(nsamp_l(f,i)<k) k=nsamp_l(f,i);
+           k=50000;  if(nsamp_l(f,i)<k) k=nsamp_l(f,i);
            exp_l_temp_dat.initialize();
            temp_probs = value(exp_l(f,i));
            temp_mult.fill_multinomial(radm,temp_probs);  // create multinomial draws with prob = expected values
@@ -1356,7 +1356,7 @@ FUNCTION void write_nudata()
        {
         if(Comp_Err_A(f)==0) //  multinomial
         {
-          k=1000;  if(nsamp_a(f,i)<k) k=nsamp_a(f,i);  // note that nsamp is adjusted by var_adjust, so var_adjust
+          k=50000;  if(nsamp_a(f,i)<k) k=nsamp_a(f,i);  // note that nsamp is adjusted by var_adjust, so var_adjust
                                                        // should be reset to 1.0 in control files that read the nudata.dat files
           exp_a_temp = 0.0;
           temp_probs2 = value(exp_a(f,i));
@@ -1367,7 +1367,7 @@ FUNCTION void write_nudata()
         else  //  Dirichlet
         {
           //  need to replace this with code for dirichlet
-          k=1000;  if(nsamp_a(f,i)<k) k=nsamp_a(f,i);  // note that nsamp is adjusted by var_adjust, so var_adjust
+          k=50000;  if(nsamp_a(f,i)<k) k=nsamp_a(f,i);  // note that nsamp is adjusted by var_adjust, so var_adjust
                                                        // should be reset to 1.0 in control files that read the nudata.dat files
           exp_a_temp = 0.0;
           temp_probs2 = value(exp_a(f,i));
@@ -1452,7 +1452,7 @@ FUNCTION void write_nudata()
     {
       if(SzFreq_obs_hdr(iobs,3)>0)  // flag for date range in bounds and used
       {
-       j=1000;  if(SzFreq_obs1(iobs,7)<j) j=SzFreq_obs1(iobs,7);
+       j=50000;  if(SzFreq_obs1(iobs,7)<j) j=SzFreq_obs1(iobs,7);
        SzFreq_newdat.initialize();
        temp_probs3(1,SzFreq_Setup2(iobs)) = value(SzFreq_exp(iobs));
        temp_mult.fill_multinomial(radm,temp_probs3(1,SzFreq_Setup2(iobs)));  // create multinomial draws with prob = expected values
@@ -1471,7 +1471,7 @@ FUNCTION void write_nudata()
  report1<<"#"<<endl<<Do_TG<<" # do tags (0/1)"<<endl;
   if(Do_TG>0)
   {
-    dvector temp_negbin(1,1);
+    dvector temp_negbin(1,50000);
 
     // changes authored by Gavin Fay in June 2016 in SS 3.24Y
     TG_recap_gen.initialize();
