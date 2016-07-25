@@ -287,6 +287,7 @@ FUNCTION void get_selectivity()
 
   //  SS_Label_Info_22.3.6 #case 6 non-parametric size selex pattern
           case 6:
+          case 32:
           {
           lastsel=-10.0;  // log(selex) for first bin;
           lastSelPoint=len_bins_m(1);    //  first size
@@ -609,9 +610,11 @@ FUNCTION void get_selectivity()
           }
 
   //  SS_Label_Info_22.3.27 #case 27 size selectivity using cubic spline
+  // #31 size selectivity using cubic spline scaled by average of values at low bin through high bin
  /*  first N parameters are the spline knots; second N parameters are ln(selex) at the knot */
  /*  uses max(raw vector) to achieve scale to 1.0 */
           case 27:
+          case 31:
           {
             int j1;
             int j2;
@@ -917,8 +920,10 @@ FUNCTION void get_selectivity()
             }
 
   //  SS_Label_Info_22.7.17 #age selectivity: each age has parameter as random walk
+  // #30 each age has parameter as random walk scaled by average of values at low age through high age
   //    transformation as selex=exp(parm); some special codes */
               case 17:                  //
+              case 30:
             {
               lastsel=0.0;  //  value is the change in log(selex);  this is the reference value for age 0
               tempvec_a=-999.;
@@ -1074,7 +1079,9 @@ FUNCTION void get_selectivity()
             }
 
   //  SS_Label_Info_22.7.27 #age selectivity: cubic spline
+  // #31 cubic spline scaled by average of values at low age through high age
           case 27:
+          case 31:
           {
             k=seltype(f,4);  // n points to include in cubic spline
             for (i=1;i<=k;i++)

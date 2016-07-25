@@ -555,7 +555,7 @@
   number AFIX_delta;
   number AFIX_plus;
   number Linf_decay;  //  decay factor to calculate mean L at maxage from Linf and the decaying abundance above maxage
-                      //  forced equal to 0.20 in 3.24 (which also assumed linear, not VBK, growth) 
+                      //  forced equal to 0.20 in 3.24 (which also assumed linear, not VBK, growth)
   int first_grow_age;
   !! k=0;
   !! if(Grow_type<=2) {k=3;}  //  AFIX and AFIX2
@@ -2207,7 +2207,7 @@
  END_CALCS
 
 !!//  SS_Label_Info_4.9 #Define Selectivity patterns and N parameters needed per pattern
-  ivector seltype_Nparam(0,35)
+  ivector seltype_Nparam(0,40)
  LOCAL_CALCS
    seltype_Nparam(0)=0;   // selex=1.0 for all sizes
    seltype_Nparam(1)=2;   // logistic; with 95% width specification
@@ -2241,6 +2241,10 @@
    seltype_Nparam(27)=3;   // cubic spline for selex at length, additional parm count is in seltype(f,4)
 //   seltype_Nparam(28)=3;   // cubic spline for selex at age, additional parm count is in seltype(f,4)
    seltype_Nparam(29)=0;   //   undefined
+
+   seltype_Nparam(30)=2+seltype_Nparam(17); // like 17, with 2 additional parameters for scaling (average over bin range)
+   seltype_Nparam(31)=2+seltype_Nparam(27); // like 27, with 2 additional parameters for scaling (average over bin range)
+   seltype_Nparam(32)=2+seltype_Nparam(6);  // like 6, with 2 additional parameters for scaling (average over bin range)
 
  END_CALCS
 
@@ -2291,13 +2295,24 @@
       N_warn++; warning<<" Use of size selectivity not advised when reading empirical wt-at-age "<<endl;
      }
      N_selparmvec(f)=seltype_Nparam(seltype(f,1));   // N Length selex parms
-     if(seltype(f,1)==6) N_selparmvec(f) +=seltype(f,4);  // special setup of N parms
+     if(seltype(f,1)==6 || seltype(f,1)==32) N_selparmvec(f) +=seltype(f,4);  // special setup of N parms
      if(seltype(f,1)==21) N_selparmvec(f) +=2*(seltype(f,4)-1);  // special setup of N parms
-     if(seltype(f,1)==27) N_selparmvec(f) +=2*seltype(f,4);  // special setup of N parms for cubic spline
+     if(seltype(f,1)==27 || seltype(f,1)==31) N_selparmvec(f) +=2*seltype(f,4);  // special setup of N parms for cubic spline
      if(seltype(f,1)>0 && Svy_units(f)<30) {dolen(f)=1;} else {dolen(f)=0;}
 
-     if(seltype(f,1)==27)
+     if(seltype(f,1)==30 || seltype(f,1)==32)
      {
+         ParCount++; ParmLabel+="SizeSel_ScaleBinLo_"+fleetname(f)+"("+NumLbl(f)+")";
+         ParCount++; ParmLabel+="SizeSel_ScaleBinHi_"+fleetname(f)+"("+NumLbl(f)+")";
+     }
+
+     if(seltype(f,1)==27 || seltype(f,1)==31)
+     {
+         if(seltype(f,1)==31)
+         {
+             ParCount++; ParmLabel+="SizeSpline_ScaleBinLo_"+fleetname(f)+"("+NumLbl(f)+")";
+             ParCount++; ParmLabel+="SizeSpline_ScaleBinHi_"+fleetname(f)+"("+NumLbl(f)+")";
+         }
          ParCount++; ParmLabel+="SizeSpline_Code_"+fleetname(f)+"("+NumLbl(f)+")";
          ParCount++; ParmLabel+="SizeSpline_GradLo_"+fleetname(f)+"("+NumLbl(f)+")";
          ParCount++; ParmLabel+="SizeSpline_GradHi_"+fleetname(f)+"("+NumLbl(f)+")";
@@ -2401,7 +2416,7 @@
        }
        N_selparmvec(f)=0;   // Nunber of Age selex parms
      }
-     else if(seltype(f,1)!=17)
+     else if(seltype(f,1)!=17 && seltype(f,1)!=30)
      {
        N_selparmvec(f)=seltype_Nparam(seltype(f,1));   // Nunber of Age selex parms
      }
@@ -2414,9 +2429,20 @@
        N_selparmvec(f)=abs(seltype(f,4))+1;   // so reads value for age 0 through this age
      }
 
-     if(seltype(f,1)==27)
+     if(seltype(f,1)==30 || seltype(f,1)==32)
      {
-       N_selparmvec(f) +=2*seltype(f,4);  // special setup of N parms for cubic spline
+         ParCount++; ParmLabel+="AgeSel_ScaleAgeLo_"+fleetname(f)+"("+NumLbl(f)+")";
+         ParCount++; ParmLabel+="AgeSel_ScaleAgeHi_"+fleetname(f)+"("+NumLbl(f)+")";
+     }
+
+     if(seltype(f,1)==27 || seltype(f,1)==31)
+     {
+       if(seltype(f,1)==31)
+       {
+         ParCount++; ParmLabel+="AgeSpline_ScaleAgeLo_"+fleetname(f)+"("+NumLbl(f)+")";
+         ParCount++; ParmLabel+="AgeSpline_ScaleAgeHi_"+fleetname(f)+"("+NumLbl(f)+")";
+       }
+       N_selparmvec(f)+=2*seltype(f,4);  // special setup of N parms for cubic spline
        ParCount++; ParmLabel+="AgeSpline_Code_"+fleetname(f-Nfleet)+"_"+NumLbl(f-Nfleet);
        ParCount++; ParmLabel+="AgeSpline_GradLo_"+fleetname(f-Nfleet)+"_"+NumLbl(f-Nfleet);
        ParCount++; ParmLabel+="AgeSpline_GradHi_"+fleetname(f-Nfleet)+"_"+NumLbl(f-Nfleet);
@@ -3726,7 +3752,7 @@
     {fs=f;}
     else
     {fs=f-Nfleet;}
-    if(seltype(f,1)==27)  //  reset the cubic spline knots for size or age comp
+    if(seltype(f,1)==27 || seltype(f,1)==31)  //  reset the cubic spline knots for size or age comp
     {
       k=int(selparm_RD(Ip+1));  // setup method
       N_knots=seltype(f,4);  //  number of knots
@@ -4281,7 +4307,7 @@
     dvector tempvec(1,7+N_WTage_maxage);
     for (i=0;i<=N_WTage_rd-1;i++)
     {
-//      for(j=1;j<=7+N_WTage_maxage;j++) 
+//      for(j=1;j<=7+N_WTage_maxage;j++)
 //      {
         tempvec(1,7+N_WTage_maxage)=WTage_in[i](1,7+N_WTage_maxage);
 //      }
