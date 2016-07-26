@@ -340,15 +340,19 @@ FUNCTION void get_selectivity()
             int high_bin = int(value(sp(2)));
             if (low_bin < 1)
             {
-                sp(1) = low_bin = 1;
+                low_bin = 1;
                 N_warn++; warning<<" selex pattern 32; value for low bin is less than 1, so set to 1 "<<endl;
             }
             if (high_bin > nlength)
             {
-                sp(2) = high_bin = nlength;
+                high_bin = nlength;
                 N_warn++; warning<<" selex pattern 32; value for high bin is greater than "<<nlength<<", so set to "<<nlength<<" "<<endl;
             }
-            temp=mean(tempvec_l(low_bin,high_bin);
+            if (high_bin < low_bin) high_bin = low_bin;
+            if (low_bin > high_bin) low_bin = high_bin;
+            sp(1) = low_bin;
+            sp(2) = high_bin;
+            temp=mean(tempvec_l(low_bin,high_bin));
             scaling_offset = 0;     // reset scaling offset
           }
           sel = mfexp(tempvec_l-temp);
@@ -665,15 +669,19 @@ FUNCTION void get_selectivity()
                 int high_bin = int(value(sp(2)));
                 if (low_bin < 1)
                 {
-                    sp(1) = low_bin = 1;
+                    low_bin = 1;
                     N_warn++; warning<<" selex pattern 31; value for low bin is less than 1, so set to 1 "<<endl;
                 }
                 if (high_bin > nlength)
                 {
-                    sp(2)= high_bin = nlength;
+                    high_bin = nlength;
                     N_warn++; warning<<" selex pattern 31; value for high bin is greater than "<<nlength<<", so set to "<<nlength<<" "<<endl;
                 }
-                temp=mean(tempvec_l(low_bin,high_bin);
+                if (high_bin < low_bin) high_bin = low_bin;
+                if (low_bin > high_bin) low_bin = high_bin;
+                sp(1) = low_bin;
+                sp(2) = high_bin;
+                temp=mean(tempvec_l(low_bin,high_bin));
                 scaling_offset = 0;     // reset scaling offset
             }
             tempvec_l-=temp;  // rescale to get max of 0.0
@@ -996,15 +1004,19 @@ FUNCTION void get_selectivity()
                   int high_bin = int(value(sp(2)));
                   if (low_bin < 1)
                   {
-                      sp(1) = low_bin = 1;
+                      low_bin = 1;
                       N_warn++; warning<<" selex pattern 30; value for low bin is less than 1, so set to 1 "<<endl;
                   }
                   if (high_bin > nages)
                   {
-                      sp(2)= high_bin = nages;
+                      high_bin = nages;
                       N_warn++; warning<<" selex pattern 30; value for high bin is greater than "<<nages<<", so set to "<<nages<<" "<<endl;
                   }
-                  temp=mean(tempvec_a(low_bin,high_bin);
+                  if (high_bin < low_bin) high_bin = low_bin;
+                  if (low_bin > high_bin) low_bin = high_bin;
+                  sp(1) = low_bin;
+                  sp(2) = high_bin;
+                  temp=mean(tempvec_a(low_bin,high_bin));
               }
               sel_a(y,fs,1)=mfexp(tempvec_a-temp);
               a=0;
@@ -1171,15 +1183,19 @@ FUNCTION void get_selectivity()
                 int high_bin = int(value(sp(2)));
                 if (low_bin < 1)
                 {
-                    sp(1) = low_bin = 1;
+                    low_bin = 1;
                     N_warn++; warning<<" selex pattern 31; value for low bin is less than 1, so set to 1 "<<endl;
                 }
                 if (high_bin > nages)
                 {
-                    sp(2)= high_bin = nages;
+                    high_bin = nages;
                     N_warn++; warning<<" selex pattern 31; value for high bin is greater than "<<nages<<", so set to "<<nages<<" "<<endl;
                 }
-                temp=mean(tempvec_a(low_bin,high_bin);
+                if (high_bin < low_bin) high_bin = low_bin;
+                if (low_bin > high_bin) low_bin = high_bin;
+                sp(1) = low_bin;
+                sp(2) = high_bin;
+                temp=mean(tempvec_a(low_bin,high_bin));
                 scaling_offset = 0;     // reset scaling offset
             }
             tempvec_a-=temp;  // rescale to get max of 0.0
