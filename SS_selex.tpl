@@ -6,6 +6,7 @@ FUNCTION void get_selectivity()
   int Ip_env;
   int y1;
   int fs;
+  int scaling_offset = 0;
   dvariable t1;
   dvariable t2;
   dvariable t3;
@@ -286,14 +287,16 @@ FUNCTION void get_selectivity()
           }
 
   //  SS_Label_Info_22.3.6 #case 6 non-parametric size selex pattern
-          case 6:
+  // #32 non-parametric size selex scaled by average of values at low bin through high bin
           case 32:
+            scaling_offset = 2;
+          case 6:
           {
           lastsel=-10.0;  // log(selex) for first bin;
           lastSelPoint=len_bins_m(1);    //  first size
-          finalSelPoint=value(sp(2));  // size beyond which selex is constant
-          SelPoint=value(sp(1));   //  first size that will get a parameter.  Value will get incremented by step interval (temp1)
-          z=3;  // parameter counter
+          finalSelPoint=value(sp(2+scaling_offset));  // size beyond which selex is constant
+          SelPoint=value(sp(1+scaling_offset));   //  first size that will get a parameter.  Value will get incremented by step interval (temp1)
+          z=3+scaling_offset;  // parameter counter
           temp1 = (finalSelPoint-SelPoint)/(seltype(f,4)-1.0);  // step interval
           for (j=1;j<=nlength;j++)
           {
@@ -327,7 +330,27 @@ FUNCTION void get_selectivity()
             {tempvec_l(j)=sp(z);}
 
           }
-          temp=max(tempvec_l);
+          if (scaling_offset == 0)
+          {
+            temp=max(tempvec_l);
+          }
+          else
+          {
+            int low_bin  = int(value(sp(1)));
+            int high_bin = int(value(sp(2)));
+            if (low_bin < 1)
+            {
+                sp(1) = low_bin = 1;
+                N_warn++; warning<<" selex pattern 32; value for low bin is less than 1, so set to 1 "<<endl;
+            }
+            if (high_bin > nlength)
+            {
+                sp(2) = high_bin = nlength;
+                N_warn++; warning<<" selex pattern 32; value for high bin is greater than "<<nlength<<", so set to "<<nlength<<" "<<endl;
+            }
+            temp=mean(tempvec_l(low_bin,high_bin);
+            scaling_offset = 0;     // reset scaling offset
+          }
           sel = mfexp(tempvec_l-temp);
           break;
           }
@@ -613,8 +636,9 @@ FUNCTION void get_selectivity()
   // #31 size selectivity using cubic spline scaled by average of values at low bin through high bin
  /*  first N parameters are the spline knots; second N parameters are ln(selex) at the knot */
  /*  uses max(raw vector) to achieve scale to 1.0 */
-          case 27:
           case 31:
+            scaling_offset = 2;
+          case 27:
           {
             int j1;
             int j2;
@@ -623,15 +647,35 @@ FUNCTION void get_selectivity()
             k=seltype(f,4);  // n points to include in cubic spline
             for (i=1;i<=k;i++)
             {
-              splineX(i)=value(sp(i+3)); // "value" required to avoid error, but values should be always fixed anyway
-              splineY(i)=sp(i+3+k);
+              splineX(i)=value(sp(i+3+scaling_offset)); // "value" required to avoid error, but values should be always fixed anyway
+              splineY(i)=sp(i+3+k+scaling_offset);
             }
             z=nlength;
             while(len_bins_m(z)>splineX(k)) {z--;}
             j2=z+1;  //  first size bin beyond last node
-            vcubic_spline_function splinefn=vcubic_spline_function(splineX(1,k),splineY(1,k),sp(2),sp(3));
+            vcubic_spline_function splinefn=vcubic_spline_function(splineX(1,k),splineY(1,k),sp(2+scaling_offset),sp(3+scaling_offset));
             tempvec_l = splinefn(len_bins_m);  // interpolate selectivity at the mid-point of each population size bin
-            temp=max(tempvec_l(1,j2));
+            if (scaling_offset == 0)
+            {
+                temp=max(tempvec_l(1,j2));
+            }
+            else
+            {
+                int low_bin  = int(value(sp(1)));
+                int high_bin = int(value(sp(2)));
+                if (low_bin < 1)
+                {
+                    sp(1) = low_bin = 1;
+                    N_warn++; warning<<" selex pattern 31; value for low bin is less than 1, so set to 1 "<<endl;
+                }
+                if (high_bin > nlength)
+                {
+                    sp(2)= high_bin = nlength;
+                    N_warn++; warning<<" selex pattern 31; value for high bin is greater than "<<nlength<<", so set to "<<nlength<<" "<<endl;
+                }
+                temp=mean(tempvec_l(low_bin,high_bin);
+                scaling_offset = 0;     // reset scaling offset
+            }
             tempvec_l-=temp;  // rescale to get max of 0.0
             tempvec_l(j2+1,nlength) = tempvec_l(j2);  //  set constant above last node
             sel = mfexp(tempvec_l);
@@ -922,8 +966,9 @@ FUNCTION void get_selectivity()
   //  SS_Label_Info_22.7.17 #age selectivity: each age has parameter as random walk
   // #30 each age has parameter as random walk scaled by average of values at low age through high age
   //    transformation as selex=exp(parm); some special codes */
-              case 17:                  //
               case 30:
+                scaling_offset = 2;
+              case 17:                  //
             {
               lastsel=0.0;  //  value is the change in log(selex);  this is the reference value for age 0
               tempvec_a=-999.;
@@ -936,18 +981,39 @@ FUNCTION void get_selectivity()
 
               for (a=1;a<=lastage;a++)
               {
-                if(sp(a+1)>-999.) {lastsel=sp(a+1);}  //  with use of -999, lastsel stays constant until changed, so could create a linear change in ln(selex)
+                //  with use of -999, lastsel stays constant until changed, so could create a linear change in ln(selex)
                                                       // use of (a+1) is because the first element, sp(1), is for age zero
+                if(sp(a+1+scaling_offset)>-999.) {lastsel=sp(a+1+scaling_offset);}
                 tempvec_a(a)=tempvec_a(a-1)+lastsel;   // cumulative log(selex)
               }
-              temp=max(tempvec_a);   //  find max so at least one age will have selex=1.
+              if (scaling_offset == 0)
+              {
+                  temp=max(tempvec_a);   //  find max so at least one age will have selex=1.
+              }
+              else
+              {
+                  int low_bin  = int(value(sp(1)));
+                  int high_bin = int(value(sp(2)));
+                  if (low_bin < 1)
+                  {
+                      sp(1) = low_bin = 1;
+                      N_warn++; warning<<" selex pattern 30; value for low bin is less than 1, so set to 1 "<<endl;
+                  }
+                  if (high_bin > nages)
+                  {
+                      sp(2)= high_bin = nages;
+                      N_warn++; warning<<" selex pattern 30; value for high bin is greater than "<<nages<<", so set to "<<nages<<" "<<endl;
+                  }
+                  temp=mean(tempvec_a(low_bin,high_bin);
+              }
               sel_a(y,fs,1)=mfexp(tempvec_a-temp);
               a=0;
-              while(sp(a+1)==-1000)  //  reset range of young ages to selex=0.0
+              while(sp(a+1+scaling_offset)==-1000)  //  reset range of young ages to selex=0.0
               {
                 sel_a(y,fs,1,a)=0.0;
                 a++;
               }
+              scaling_offset = 0;     // reset scaling offset
               if(lastage<nages)
               {
                 for (a=lastage+1;a<=nages;a++)
@@ -1080,21 +1146,42 @@ FUNCTION void get_selectivity()
 
   //  SS_Label_Info_22.7.27 #age selectivity: cubic spline
   // #31 cubic spline scaled by average of values at low age through high age
-          case 27:
           case 31:
+            scaling_offset = 2;
+          case 27:
           {
             k=seltype(f,4);  // n points to include in cubic spline
             for (i=1;i<=k;i++)
             {
-              splineX(i)=value(sp(i+3)); // "value" required to avoid error, but values should be always fixed anyway
-              splineY(i)=sp(i+3+k);
+              splineX(i)=value(sp(i+3+scaling_offset)); // "value" required to avoid error, but values should be always fixed anyway
+              splineY(i)=sp(i+3+k+scaling_offset);
             }
             z=nages;
             while(r_ages(z)>splineX(k)) {z--;}
             j2=z+1;  //  first age beyond last node
-            vcubic_spline_function splinefn=vcubic_spline_function(splineX(1,k),splineY(1,k),sp(2),sp(3));
+            vcubic_spline_function splinefn=vcubic_spline_function(splineX(1,k),splineY(1,k),sp(2+scaling_offset),sp(3+scaling_offset));
             tempvec_a= splinefn(r_ages);  // interpolate selectivity at each age
-            temp=max(tempvec_a(0,j2));
+            if (scaling_offset == 0)
+            {
+                temp=max(tempvec_a(0,j2));
+            }
+            else
+            {
+                int low_bin  = int(value(sp(1)));
+                int high_bin = int(value(sp(2)));
+                if (low_bin < 1)
+                {
+                    sp(1) = low_bin = 1;
+                    N_warn++; warning<<" selex pattern 31; value for low bin is less than 1, so set to 1 "<<endl;
+                }
+                if (high_bin > nages)
+                {
+                    sp(2)= high_bin = nages;
+                    N_warn++; warning<<" selex pattern 31; value for high bin is greater than "<<nages<<", so set to "<<nages<<" "<<endl;
+                }
+                temp=mean(tempvec_a(low_bin,high_bin);
+                scaling_offset = 0;     // reset scaling offset
+            }
             tempvec_a-=temp;  // rescale to get max of 0.0
             tempvec_a(j2+1,nages) = tempvec_a(j2);  //  set constant above last node
             sel_a(y,fs,1)=mfexp(tempvec_a);
