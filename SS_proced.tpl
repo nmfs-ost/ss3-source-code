@@ -110,6 +110,7 @@ PROCEDURE_SECTION
     }
 
   //  SS_Label_Info_7.3.5 #Set up the selparm stderr and rho parameters for the dev vectors
+  /*
   if(N_selparm_dev>0)
     {
       for(i=1;i<=N_selparm_dev;i++)
@@ -118,7 +119,7 @@ PROCEDURE_SECTION
         selparm_dev_rho(i)=selparm(selparm_dev_rpoint2(i)+1);
       }
     }
-
+  */
 //  SS_Label_Info_7.4 #Do the time series calculations
   if(mceval_counter==0 || (mceval_counter>burn_intvl &&  ((double(mceval_counter)/double(thin_intvl)) - double((mceval_counter/thin_intvl))==0)  )) // check to see if burn in period is over
   {
@@ -345,7 +346,7 @@ PROCEDURE_SECTION
        if(Do_TG>0) cout<<" TG-fleetcomp "<<TG_like1<<endl<<" TG-negbin "<<TG_like2<<endl;
        cout<<" Recr " <<recr_like<<endl;
        cout<<" Parm_Priors " <<parm_like<<endl;
-       cout<<" MGParm_devs " <<parm_dev_like<<" "<<" seldevs: "<<selparm_dev_like<<endl;
+       cout<<" MGParm_devs " <<parm_dev_like<<endl;
        cout<<" SoftBound "<<SoftBoundPen<<endl;
        cout<<" F_ballpark " <<F_ballpark_like<<endl;
        if(F_Method>1) {cout<<"Catch "<<catch_like;} else {cout<<"  crash "<<CrashPen;}
@@ -379,7 +380,7 @@ PROCEDURE_SECTION
         {
           for (j=1;j<=N_parm_dev;j++)
           {
-            if(parm_dev_PH(j)>0) ParmTrace<<MGparm_dev(j)<<" ";
+            if(parm_dev_PH(j)>0) ParmTrace<<parm_dev(j)<<" ";
           }
         }
         for (j=1;j<=SRvec_PH.indexmax();j++)
@@ -420,11 +421,13 @@ PROCEDURE_SECTION
         {
           if(selparm_PH(k)>0) {ParmTrace<<" "<<selparm(k);}
         }
+  /*
         if(selparm_dev_PH>0 && N_selparm_dev>0)
         {
           for (j=1;j<=N_selparm_dev;j++)
           {ParmTrace<<selparm_dev(j)<<" ";}
         }
+  */
         for (k=1;k<=TG_parm_PH.indexmax();k++)
         {
           if(TG_parm_PH(k)>0) {ParmTrace<<" "<<TG_parm(k);}
@@ -439,7 +442,7 @@ PROCEDURE_SECTION
         if(N_parm_dev>0)
         {
           for (j=1;j<=N_parm_dev;j++)
-          {ParmTrace<<MGparm_dev(j);}
+          {ParmTrace<<parm_dev(j);}
         }
         ParmTrace<<SR_parm<<" ";
         if(recdev_cycle>0) ParmTrace<<recdev_cycle_parm;
@@ -451,11 +454,13 @@ PROCEDURE_SECTION
         if(F_Method==2) ParmTrace<<F_rate<<" ";
         if(Q_Npar>0) ParmTrace<<Q_parm<<" ";
         ParmTrace<<selparm<<" ";
+  /*
         if(N_selparm_dev>0)
         {
           for (j=1;j<=N_selparm_dev;j++)
           {ParmTrace<<selparm_dev(j)<<" ";}
         }
+  */
         if(Do_TG>0) ParmTrace<<TG_parm<<" ";
         ParmTrace<<endl;
       }

@@ -29,6 +29,7 @@ FUNCTION void get_selectivity()
   Ip=0;
 
   //  SS_Label_Info_22.1.3 #Set up the selectivity deviation time series
+  /*
   if(N_selparm_dev>0 && y==styr)
   {
     for (k=1;k<=N_selparm_dev;k++)
@@ -44,11 +45,12 @@ FUNCTION void get_selectivity()
       }
     }
   }
+  */
   //  SS_Label_Info_22.2 #Loop all fisheries and surveys twice; first for size selectivity, then for age selectivity
   for (f=1;f<=2*Nfleet;f++)
   {
     fs=f-Nfleet;  //index for saving age selex in the fleet arrays
-
+    echoinput<<"year, fleet: "<<y<<", "<<f<<"  time_vary_sel: "<<time_vary_sel(y,f)<<" "<<N_selparmvec(f)<<endl;
   //  SS_Label_Info_22.2.1 #recalculate selectivity for any fleets or surveys with time-vary flag set for this year
     if(time_vary_sel(y,f)==1 || save_for_report>0)
     {    // recalculate the selex in this year x type
@@ -77,7 +79,7 @@ FUNCTION void get_selectivity()
           {
             for (j=1;j<=N_selparmvec(f);j++)
             {
-              if(selparm_1(Ip+j,13)!=0)
+              if(selparm_timevary(Ip+j)!=0)
               {
                 sp(j)=parm_timevary(selparm_timevary(Ip+j),y);
               }
@@ -97,6 +99,7 @@ FUNCTION void get_selectivity()
   //   	       if(selparm_envuse(f)==99) selparm_envuse(f)=-1;  //  for linking to spawn biomass
   //        	 if(selparm_envuse(f)==98) selparm_envuse(f)=-2;  //  for linking to recruitment
 
+  /*
              if(selparm_env(Ip+j)>0)
              {
                 switch(selparm_envtype(Ip+j))
@@ -138,6 +141,7 @@ FUNCTION void get_selectivity()
                 {sp(j)+=selparm_dev_rwalk(k,y);}
               }
             }
+  */            
             if(parm_adjust_method==1 && (save_for_report>0 || do_once==1))  // so does not check bounds if adjust_method==3
             {
               if(sp(j)<selparm_1(Ip+j,1) || sp(j)>selparm_1(Ip+j,2))
@@ -155,7 +159,7 @@ FUNCTION void get_selectivity()
           {
             for (j=1;j<=N_selparmvec(f);j++)
             {
-              if(selparm_1(Ip+j,13)!=0)
+              if(selparm_timevary(Ip+j)!=0)
               {
                 sp(j)=parm_timevary(selparm_timevary(Ip+j),y);  //  bound constraint needs to have been done in timevaryparm.tpl
               }
@@ -163,6 +167,7 @@ FUNCTION void get_selectivity()
               {sp(j)=selparm(Ip+j);}
 
               doit=0;
+  /*
               if(selparm_env(Ip+j)>0 || selparm_dev_point(Ip+j))
               {
                 doit=1;
@@ -208,6 +213,7 @@ FUNCTION void get_selectivity()
                 }
                 sp(j)=selparm_1(Ip+j,1)+(selparm_1(Ip+j,2)-selparm_1(Ip+j,1))/(1+mfexp(-2.*temp));   // backtransform
               }
+  */
             }  // end parameter loop j
             break;
           }
@@ -773,7 +779,7 @@ FUNCTION void get_selectivity()
           }
           if(docheckup==1&&y==styr)
           {
-            echoinput<<"parms "<<sp(k)<<" "<<sp(k+1)<<" "<<sp(k+3)<<" "<<temp1;
+            echoinput<<"retention parms "<<sp(k)<<" "<<sp(k+1)<<" "<<sp(k+3)<<" "<<temp1;
             if(seltype(f,2)==4)
             {
                 // additional dome-shaped retention parameters
@@ -1213,7 +1219,7 @@ FUNCTION void get_selectivity()
           }
           if(docheckup==1&&y==styr)
           {
-            echoinput<<"parms "<<sp(k)<<" "<<sp(k+1)<<" "<<sp(k+3)<<" "<<temp1;
+            echoinput<<"age_retention parms "<<sp(k)<<" "<<sp(k+1)<<" "<<sp(k+3)<<" "<<temp1;
             if(seltype(f,2)==4)
             {
                 echoinput<<" "<<sp(k+4)<<" "<<sp(k+5)<<" "<<sp(k+6);

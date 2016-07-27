@@ -188,10 +188,10 @@ GLOBALS_SECTION
   void create_timevary(dvector &baseparm_list, ivector &timevary_setup, 
                        ivector &time_vary_byyear, const int &autogen_timevary, const int &targettype,
                        const ivector &block_design_pass, const int &parm_adjust_method, 
-                       const dmatrix &env_data_RD, int &N_parm_dev)
+                       const dvector &env_data_pass, int &N_parm_dev)
   {
 //  where time_vary_byyear is a selected column of a year x type matrix (e.g. time_vary_MG) in read_control
-    echoinput<<"baseparm in create_timevary "<<baseparm_list<<endl<<"setup "<<timevary_setup<<endl;
+    echoinput<<"baseparm: "<<baseparm_list<<endl;
     int j; int g; int y; int a; int f;
     int k;
     int z;
@@ -207,7 +207,7 @@ GLOBALS_SECTION
         Nblocks=0.5*(block_design_pass.size());
 //        if(z>N_Block_Designs) {N_warn++; warning<<"parm: "<<j<<" ERROR, Block > N Blocks "<<z<<" "<<N_Block_Designs<<endl; exit(1);}
         k=int(baseparm_list(14));  //  block method
-        echoinput<<" block pattern: "<<z<<" method "<<k<<endl;
+        echoinput<<"block pattern: "<<z<<" method "<<k<<endl;
 
         g=1;  //  index to list of years in block design; will increment by 2 for begin-end of block
         for (a=1;a<=Nblocks;a++)  //  loop blocks for block pattern z
@@ -273,7 +273,7 @@ GLOBALS_SECTION
       }
       else //  (z<0) so invoke a trend
       {
-        echoinput<<" doing a trend "<<endl;
+        echoinput<<"trend "<<endl;
          if(baseparm_list(13)==-1)
          {
            ParCount++; ParmLabel+=ParmLabel(j)+"_TrendFinal_LogstOffset"+CRLF(1);
@@ -345,20 +345,17 @@ GLOBALS_SECTION
            }
          }
          for(y=styr-1; y<=YrMax; y++) {time_vary_byyear(y)=1;}  //  all years need calculation for trends
-         echoinput<<" finished trend setup in global "<<endl;
       }
     }
 
     if(baseparm_list(8)>0)  //  env effect is used
     {
-      k=int(baseparm_list(8)/100);  //  find the link code
-      timevary_setup(6)=k;  //  link code for env
-      timevary_setup(7)=baseparm_list(8)-k*100;  //  env variable used
+      k=timevary_setup(6);
       if(timevary_setup(7)==99) timevary_setup(7)=-1;  //  for linking to rel_spawn biomass
       if(timevary_setup(7)==98) timevary_setup(7)=-2;  //  for linking to exp(recdev)
       if(timevary_setup(7)==97) timevary_setup(7)=-3;  //  for linking to rel_smrybio
       if(timevary_setup(7)==96) timevary_setup(7)=-4;  //  for linking to rel_smry_num
-      echoinput<<" env for parameter: "<<j<<" link: "<<k<<" env: "<<timevary_setup(7)<<endl;
+      echoinput<<"env link_type: "<<k<<" env_var: "<<timevary_setup(7)<<endl;
       switch (k)
       {
         case 1:  //  multiplicative
@@ -371,7 +368,7 @@ GLOBALS_SECTION
            else
            {tempvec.fill("{-2.,2.0,0.05,0.0,0,0.5,4}");}
            timevary_parm_rd.push_back (tempvec(1,7));
-           if(parm_adjust_method==2) {N_warn++; cout<<" EXIT - see warning "<<endl; warning<<"multiplicative env effect on MGparm: "<<f
+           if(parm_adjust_method==2) {N_warn++; cout<<" EXIT - see warning "<<endl; warning<<"multiplicative env effect on MGparm: "<<j
            <<" not allowed because parm_adjust_method==2; STOP"<<endl; exit(1);}
            break;
          }
@@ -389,7 +386,7 @@ GLOBALS_SECTION
          }
         case 4:  //  logistic with offset
          {
-           if(parm_adjust_method==2) {N_warn++; cout<<" EXIT - see warning "<<endl; warning<<"multiplicative env effect on MGparm: "<<f
+           if(parm_adjust_method==2) {N_warn++; cout<<" EXIT - see warning "<<endl; warning<<"multiplicative env effect on MGparm: "<<j
            <<" not allowed because parm_adjust_method==2; STOP"<<endl; exit(1);}
            ParCount++; ParmLabel+=ParmLabel(j)+"_ENV_offset";
            timevary_parm_cnt++;
@@ -409,21 +406,19 @@ GLOBALS_SECTION
            break;
          }
       }
-
       for (y=styr-1;y<=YrMax-1;y++)
       {
        if(timevary_setup(7)>0 )
-         {
-          if(env_data_RD(y,timevary_setup(7))!=0.0) {time_vary_byyear(y)=1; time_vary_byyear(y+1)=1; }
-         }
+       {
+         if(env_data_pass(y)!=0.0) {time_vary_byyear(y)=1; time_vary_byyear(y+1)=1; }
+       }
        else if (timevary_setup(7)<0 )  //  density-dependence being used
-         {time_vary_byyear(y)=1; }
+       {time_vary_byyear(y)=1; }
       }
     }
 
     if(baseparm_list(9)>0)  //  devs are used
     {
-     echoinput<<j<<" this parameter uses devs "<<endl;
       N_parm_dev++;  //  count of dev vectors that are used
       timevary_setup(8)=N_parm_dev;  //    specifies which dev vector will be used by a parameter
       timevary_setup(9)=baseparm_list(9);  //   code for dev link type
@@ -471,9 +466,9 @@ GLOBALS_SECTION
       else
       {tempvec2.fill("{-0.99,0.99,0.0,0.0,0,0.5,-6}");}
       timevary_parm_rd.push_back (dvector(tempvec2(1,7)));
-      echoinput<<" parameter: "<<j<<"uses dev vec: "<<timevary_setup(8)<<" with link: "<<timevary_setup(9)<<" min, max year "<<timevary_setup(10,11)<<endl;
-     
+      echoinput<<"dev vec: "<<timevary_setup(8)<<" with link: "<<timevary_setup(9)<<" min, max year "<<timevary_setup(10,11)<<endl;
     }
+    echoinput<<"timevary_setup"<<timevary_setup<<endl;
     return;
   }
 //  }  //  end GLOBALS_SECTION

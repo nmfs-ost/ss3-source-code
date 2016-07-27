@@ -304,10 +304,11 @@ PARAMETER_SECTION
 !!//  SS_Label_Info_5.1.5 #Selectivity-related parameters
   init_bounded_number_vector selparm(1,N_selparm2,selparm_LO,selparm_HI,selparm_PH)
 
-  init_bounded_matrix selparm_dev(1,N_selparm_dev,selparm_dev_minyr,selparm_dev_maxyr,-10,10,selparm_dev_PH)
-  matrix selparm_dev_rwalk(1,N_selparm_dev,selparm_dev_minyr,selparm_dev_maxyr)
-  vector selparm_dev_stddev(1,N_selparm_dev)
-  vector selparm_dev_rho(1,N_selparm_dev)  // determines the mean regressive characteristic: with 0 = no autoregressive; 1= all autoregressive
+//  init_bounded_matrix selparm_dev(1,N_selparm_dev,selparm_dev_minyr,selparm_dev_maxyr,-10,10,selparm_dev_PH)
+//  matrix selparm_dev_rwalk(1,N_selparm_dev,selparm_dev_minyr,selparm_dev_maxyr)
+//  vector selparm_dev_stddev(1,N_selparm_dev)
+//  vector selparm_dev_rho(1,N_selparm_dev)  // determines the mean regressive characteristic: with 0 = no autoregressive; 1= all autoregressive
+
   4darray sel_l(styr-3,YrMax,1,Nfleet,1,gender,1,nlength)
   4darray sel_l_r(styr-3,YrMax,1,Nfleet,1,gender,1,nlength)   //  selex x retained
   4darray discmort2(styr-3,YrMax,1,Nfleet,1,gender,1,nlength)
@@ -334,7 +335,7 @@ PARAMETER_SECTION
 
   init_bounded_number_vector TG_parm(1,k,TG_parm_LO,TG_parm_HI,TG_parm_PH);
 
-  init_bounded_vector_vector MGparm_dev(1,N_parm_dev,parm_dev_minyr,parm_dev_maxyr,-10,10,parm_dev_PH)
+  init_bounded_vector_vector parm_dev(1,N_parm_dev,parm_dev_minyr,parm_dev_maxyr,-10,10,parm_dev_PH)
   matrix parm_dev_rwalk(1,N_parm_dev,parm_dev_minyr,parm_dev_maxyr);
 
   init_bounded_number checksum999(998,1000,-999)  //  set value to 999 to check reading of ss.par
@@ -395,7 +396,7 @@ PARAMETER_SECTION
   number Fcast_recr_like
   number parm_like
   vector parm_dev_like(1,N_parm_dev)
-  vector selparm_dev_like(1,N_selparm_dev)
+//  vector selparm_dev_like(1,N_selparm_dev)
   number CrashPen
   number SoftBoundPen
   number Equ_penalty

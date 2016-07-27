@@ -253,7 +253,7 @@ FUNCTION void Get_expected_values();
               
 //              if(y>=selparm_dev_minyr(k) && y<=parm_dev_maxyr(k)) 
 //              {
-//                vbio=MGparm_dev(k,y);
+//                vbio=parm_dev(k,y);
                 //  can the mean dev for years with surveys be calculated here?
 //              }
 //              else
