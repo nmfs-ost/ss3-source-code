@@ -2300,7 +2300,7 @@
      if(seltype(f,1)==27 || seltype(f,1)==31) N_selparmvec(f) +=2*seltype(f,4);  // special setup of N parms for cubic spline
      if(seltype(f,1)>0 && Svy_units(f)<30) {dolen(f)=1;} else {dolen(f)=0;}
 
-     if(seltype(f,1)==30 || seltype(f,1)==32)
+     if(seltype(f,1)==32)
      {
          ParCount++; ParmLabel+="SizeSel_ScaleBinLo_"+fleetname(f)+"("+NumLbl(f)+")";
          ParCount++; ParmLabel+="SizeSel_ScaleBinHi_"+fleetname(f)+"("+NumLbl(f)+")";
@@ -2332,6 +2332,9 @@
          ParCount++; ParmLabel+="SizeSel_P"+NumLbl(j)+"_"+fleetname(f)+"("+NumLbl(f)+")";
        }
      }
+
+     // account for the low and high bin parameters
+     if(seltype(f,1) == 31 || seltype(f,1) == 32) N_selparmvec(f)+=2;
 
      if(Svy_units(f)==34)  //  special code for depletion, so adjust phases and lambdas
       {
@@ -2429,18 +2432,18 @@
        N_selparmvec(f)=abs(seltype(f,4))+1;   // so reads value for age 0 through this age
      }
 
-     if(seltype(f,1)==30 || seltype(f,1)==32)
+     if(seltype(f,1)==30)
      {
-         ParCount++; ParmLabel+="AgeSel_ScaleAgeLo_"+fleetname(f)+"("+NumLbl(f)+")";
-         ParCount++; ParmLabel+="AgeSel_ScaleAgeHi_"+fleetname(f)+"("+NumLbl(f)+")";
+         ParCount++; ParmLabel+="AgeSel_ScaleAgeLo_"+fleetname(f-Nfleet)+"("+NumLbl(f-Nfleet)+")";
+         ParCount++; ParmLabel+="AgeSel_ScaleAgeHi_"+fleetname(f-Nfleet)+"("+NumLbl(f-Nfleet)+")";
      }
 
      if(seltype(f,1)==27 || seltype(f,1)==31)
      {
        if(seltype(f,1)==31)
        {
-         ParCount++; ParmLabel+="AgeSpline_ScaleAgeLo_"+fleetname(f)+"("+NumLbl(f)+")";
-         ParCount++; ParmLabel+="AgeSpline_ScaleAgeHi_"+fleetname(f)+"("+NumLbl(f)+")";
+         ParCount++; ParmLabel+="AgeSpline_ScaleAgeLo_"+fleetname(f-Nfleet)+"("+NumLbl(f-Nfleet)+")";
+         ParCount++; ParmLabel+="AgeSpline_ScaleAgeHi_"+fleetname(f-Nfleet)+"("+NumLbl(f-Nfleet)+")";
        }
        N_selparmvec(f)+=2*seltype(f,4);  // special setup of N parms for cubic spline
        ParCount++; ParmLabel+="AgeSpline_Code_"+fleetname(f-Nfleet)+"_"+NumLbl(f-Nfleet);
@@ -2462,6 +2465,9 @@
          ParCount++; ParmLabel+="AgeSel_P"+NumLbl(j)+"_"+fleetname(f-Nfleet)+"("+NumLbl(f-Nfleet)+")";
        }
      }
+
+     // account for the low and high bin parameters
+     if(seltype(f,1) == 30 || seltype(f,1) == 31) N_selparmvec(f)+=2;
 
 //  age-specific retention function
      if(seltype(f,2)>=1)
