@@ -1070,7 +1070,6 @@
   ivector MGparm_envtype(1,N_MGparm)  // >0  =multiplicative; <0 = additive; -999 = density-dependent
   ivector mgp_type(1,N_MGparm)  //  contains category to parameter (1=natmort; 2=growth; 3=wtlen & fec; 4=recr_dist; 5=movement)
 
-  imatrix MGparm_timevary(1,N_MGparm,1,3)  //  holds index of timevary used by this base parameter; 1 for blktrend, 2 for env, 3 for dev
 
   int timevary_cnt
   int timevary_parm_cnt;
@@ -1079,6 +1078,11 @@
   int timevary_parm_cnt_Q;
   int timevary_parm_cnt_SRR;
   int timevary_parm_cnt_tag;
+  int N_parm_dev     //  number of  all parms that use annual deviations
+  int timevary_parm_start_MG;
+
+  ivector MGparm_timevary(1,N_MGparm)  //  holds index in timevary_def used by this base parameter
+  
   int timevary_Nread
   int N_MGparm_blk                            // number of MGparms that use blocks
   int customblocksetup_MG  //  0=read one setup and apply to all; 1=read each
@@ -1173,7 +1177,7 @@
      else
      {
        timevary_cnt++;
-       MGparm_timevary(j,1)=timevary_cnt;  //  base parameter will use this timevary
+       MGparm_timevary(j)=timevary_cnt;  //  base parameter will use this timevary
        itempvec(1)=1; //  indicates a MG parm
        itempvec(2)=j; //  index of base parm
        itempvec(3)=timevary_parm_cnt+1;  //  first parameter
@@ -2728,7 +2732,8 @@
   }
  END_CALCS
 
-  imatrix time_vary_sel(styr-3,YrMax,1,2*Nfleet)
+  ivector selparm_timevary(1,N_selparm)  //  holds index of timevary used by this base parameter
+  imatrix time_vary_sel(styr-3,YrMax+1,1,2*Nfleet)
   imatrix time_vary_makefishsel(styr-3,YrMax,1,Nfleet)
   int makefishsel_yr
 !!//  SS_Label_Info_4.9.4 #Create and label environmental linkages for selectivity parameters
@@ -2738,6 +2743,7 @@
   ivector selparm_envuse(1,N_selparm)   // contains the environment data number
   ivector selparm_envtype(1,N_selparm)  // 1=multiplicative; 2= additive
   imatrix Block_Defs_Sel(1,N_selparm,styr,YrMax)
+  int timevary_parm_start_sel
 
  LOCAL_CALCS
   N_selparm_env=0;
@@ -2788,7 +2794,6 @@
  END_CALCS
 
 !!//  SS_Label_Info_4.9.5 #Create and label block patterns for selectivity parameters
-   imatrix selparm_timevary(1,N_selparm,1,3)  //  holds index of timevary used by this base parameter
   int N_selparm_blk                            // number of selparms that use blocks
   int customblocksetup  //  0=read one setup and apply to all; 1=read each
   int N_selparm_trend     //   number of selex parameters using trend
@@ -2809,7 +2814,7 @@
      else
      {
        timevary_cnt++;
-       selparm_timevary(j,1)=timevary_cnt;  //  base parameter will use this timevary
+       selparm_timevary(j)=timevary_cnt;  //  base parameter will use this timevary
        itempvec(1)=2; //  indicates a sel parm
        itempvec(2)=j; //  index of base parm
        itempvec(3)=timevary_parm_cnt+1;  //  first parameter
@@ -4115,6 +4120,60 @@
       Fcast_recr_PH2=max_phase+1;
     }
   }
+ END_CALCS
+   ivector parm_dev_minyr(1,N_parm_dev);
+   ivector parm_dev_maxyr(1,N_parm_dev);
+   ivector parm_dev_PH(1,N_parm_dev);
+
+ LOCAL_CALCS
+   if(timevary_cnt>0)
+   {
+     for (j=1;j<=timevary_cnt;j++)  //  loop set up devs
+     {
+       ivector timevary_setup(1,13);
+       timevary_setup(1,13)=timevary_def[j](1,13);
+       if(timevary_setup(8)>0)
+       {
+         k=timevary_setup(8);  //  dev vector used
+         parm_dev_minyr(k)=timevary_setup(10);  //  used for dimensioning the dev vectors in SS_param
+         parm_dev_maxyr(k)=timevary_setup(11);
+         parm_dev_PH(k)=timevary_setup(12);
+         if(depletion_fleet>0 && parm_dev_PH(k)>0) parm_dev_PH(k)++;//  add 1 to phase if using depletion fleet
+         if(parm_dev_PH(k)>Turn_off_phase) parm_dev_PH(k) =-1;
+         if(parm_dev_PH(k)>max_phase) max_phase=parm_dev_PH(k);
+         echoinput<<" setup dev "<<k<<" vector "<<timevary_setup<<" phase "<<parm_dev_PH(k)<<endl;
+         if(timevary_setup(1)==1) //  MGparm
+          {
+            f=0+timevary_setup(2);  //  index of base parameter
+          }
+          else
+          {
+            //  need to implement for other types
+          }
+         for(y=parm_dev_minyr(k);y<=parm_dev_maxyr(k);y++)
+         {
+           sprintf(onenum, "%d", y);
+           ParCount++;
+           if(timevary_setup(9)==1)
+           {ParmLabel+=ParmLabel(f)+"_DEVmult_"+onenum+CRLF(1);}
+           else if(timevary_setup(9)==2)
+           {ParmLabel+=ParmLabel(f)+"_DEVadd_"+onenum+CRLF(1);}
+           else if(timevary_setup(9)==3)
+           {ParmLabel+=ParmLabel(f)+"_DEVrwalk_"+onenum+CRLF(1);}
+           else if(timevary_setup(9)==4)
+           {ParmLabel+=ParmLabel(f)+"_DEV_MR_rwalk_"+onenum+CRLF(1);}
+           else
+           {N_warn++; cout<<" EXIT - see warning "<<endl; warning<<" illegal MGparmdevtype for parm "<<f<<endl; exit(1);}
+            if(parm_dev_PH(k)>=0)
+            {
+              active_count++; active_parm(active_count)=ParCount;
+            }
+         }
+       }
+     }
+   }
+  
+  echoinput<<ParmLabel<<endl; 
 
   echoinput<<"Active parameters: "<<active_count<<endl<<"Turn_off_phase "<<Turn_off_phase<<endl<<" max_phase "<<max_phase<<endl;
   if(Turn_off_phase<=0)
