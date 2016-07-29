@@ -3,7 +3,7 @@
 FUNCTION void evaluate_the_objective_function()
   {
   surv_like.initialize();   Q_dev_like.initialize(); disc_like.initialize(); length_like.initialize(); age_like.initialize();
-  sizeage_like.initialize(); parm_like.initialize(); MGparm_dev_like.initialize(); selparm_dev_like.initialize(); Svy_log_q.initialize();
+  sizeage_like.initialize(); parm_like.initialize(); parm_dev_like.initialize(); Svy_log_q.initialize();
   mnwt_like.initialize(); equ_catch_like.initialize(); recr_like.initialize(); Fcast_recr_like.initialize();
   catch_like.initialize(); Morphcomp_like.initialize(); TG_like1.initialize(); TG_like2.initialize();
   length_like_tot.initialize(); age_like_tot.initialize();
@@ -718,13 +718,15 @@ FUNCTION void evaluate_the_objective_function()
       parm_like+=10000.*temp*temp;  //  similar to ADMB's approach to getting zero-centered dev_vectors
     }
   //  SS_Label_Info_25.15 #logL for parameter process errors (devs)
-    if(MGparm_dev_PH>0 && parm_dev_lambda(k_phase)>0.0 )
     {
-      for(i=1;i<=N_MGparm_dev;i++)
+      for(i=1;i<=N_parm_dev;i++)
       {
-        for(j=MGparm_dev_minyr(i);j<=MGparm_dev_maxyr(i);j++)
-        {MGparm_dev_like(i) += 0.5*square( MGparm_dev(i,j) / MGparm_dev_stddev(i) );}
-        MGparm_dev_like(i) += sd_offset*float(MGparm_dev_maxyr(i)-MGparm_dev_minyr(i)+1.)*log(MGparm_dev_stddev(i));
+        if(parm_dev_PH(i)>0 && parm_dev_lambda(k_phase)>0.0 )
+        {
+        for(j=parm_dev_minyr(i);j<=parm_dev_maxyr(i);j++)
+        {parm_dev_like(i) += 0.5*square( parm_dev(i,j) / parm_dev_stddev(i) );}
+        parm_dev_like(i) += sd_offset*float(parm_dev_maxyr(i)-parm_dev_minyr(i)+1.)*log(parm_dev_stddev(i));
+        }
       }
     }
 
@@ -735,6 +737,7 @@ FUNCTION void evaluate_the_objective_function()
                                         //  do not include for randwalk (Qsetup==4)
       }
 
+  /*
     if(selparm_dev_PH>0 && parm_dev_lambda(k_phase)>0.0 )
     {
      for (i=1;i<=N_selparm_dev;i++)
@@ -744,6 +747,7 @@ FUNCTION void evaluate_the_objective_function()
       selparm_dev_like(i) += sd_offset*float(selparm_dev_maxyr(i)-selparm_dev_minyr(i)+1.)*log(selparm_dev_stddev(i));
      }
     }
+   */
 
   //  SS_Label_Info_25.16 #Penalty for F_ballpark
     if(F_ballpark_yr>=styr)
@@ -795,7 +799,7 @@ FUNCTION void evaluate_the_objective_function()
 //   cout<<" obj_fun recr "<<obj_fun<<endl;
    obj_fun += parm_like*parm_prior_lambda(k_phase);
 //   cout<<" obj_fun parm "<<obj_fun<<endl;
-   obj_fun += (sum(MGparm_dev_like)+sum(selparm_dev_like))*parm_dev_lambda(k_phase);
+   obj_fun += (sum(parm_dev_like))*parm_dev_lambda(k_phase);
 //   cout<<" obj_fun parmdev "<<obj_fun<<endl;
    obj_fun += F_ballpark_like * F_ballpark_lambda(k_phase);
 //   cout<<" obj_fun Fballpark "<<obj_fun<<endl;
@@ -1180,12 +1184,12 @@ FUNCTION void get_posteriors()
   {
     if(active(MGparm(j))) posts<<MGparm(j)<<" ";
   }
-  if(N_MGparm_dev>0)
+  if(N_parm_dev>0)
   {
-    for (i=1;i<=N_MGparm_dev;i++)
-    for (j=MGparm_dev_minyr(i);j<=MGparm_dev_maxyr(i);j++)
+    for (i=1;i<=N_parm_dev;i++)
+    for (j=parm_dev_minyr(i);j<=parm_dev_maxyr(i);j++)
     {
-      if(active(MGparm_dev)) posts<<MGparm_dev(i,j)<<" ";
+      if(parm_dev_PH(i)>0) posts<<parm_dev(i,j)<<" ";
     }
   }
   for (i=1;i<=N_SRparm2;i++)
@@ -1246,11 +1250,13 @@ FUNCTION void get_posteriors()
   {
     if(active(selparm(j))) posts<<selparm(j)<<" ";
   }
+  /*
   for (i=1;i<=N_selparm_dev;i++)
   for (j=selparm_dev_minyr(i);j<=selparm_dev_maxyr(i);j++)
   {
     if(active(selparm_dev)) posts<<selparm_dev(i,j)<<" ";
   }
+  */
   if(Do_TG>0)
   {
     k=3*N_TG+2*Nfleet;

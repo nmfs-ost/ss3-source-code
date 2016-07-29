@@ -991,7 +991,7 @@ Date:   Mon Dec 30 15:12:33 2013 -0800
     mgparm_dev_type=4
     //    =(1-rho)*mean + rho*prevval + dev   //  where mean = 0.0
     
-    MGparm_dev_rwalk(k,j)=MGparm_dev_rho(k)*MGparm_dev_rwalk(k,j-1)+MGparm_dev(k,j);
+    MGparm_dev_rwalk(k,j)=MGparm_dev_rho(k)*MGparm_dev_rwalk(k,j-1)+parm_dev(k,j);
     For each dev vector created, read the stdev and rho as short parameter
     lines just before reading mgparm_dev_phase
     0 2 1 0 -1 0 -5 # L_at_Amin_Fem_GP_1_dev_se
