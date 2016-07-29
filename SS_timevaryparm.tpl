@@ -10,133 +10,232 @@ FUNCTION void make_timevaryparm()
     dvariable infl_year;
     dvariable slope;
     dvariable norm_styr;
-
     //  note:  need to implement the approach that keeps within bounds of base parameter
 
-    int trnd;
-    if(timevary_parm_cnt_MG>0)
-      {
-        j=N_MGparm+N_MGparm_env;
-        for(f=1;f<=timevary_parm_cnt_MG;f++)
-        {
-          j++; timevary_parm(f)=MGparm(j);
-          // echoinput<<" map MGparm for blksel "<<timevary_parm(f)<<endl;
-        }
-      }
-    if(timevary_parm_cnt_sel>0)
-      {
-        j=N_selparm+N_selparm_env;
-        for(f=timevary_parm_cnt_MG+1;f<=timevary_parm_cnt;f++)
-        {
-          j++; timevary_parm(f)=selparm(j);
-          // echoinput<<" map selparm for blksel "<<timevary_parm(f)<<endl;
-        }
-      }
-    for (trnd=1;trnd<=timevary_cnt;trnd++)
+    int timevary_parm_cnt_all;
+    timevary_parm_cnt_all=0;
+      echoinput<<"number timevary: "<<timevary_cnt<<endl;
+
+   for (int tvary=1;tvary<=timevary_cnt;tvary++)
     {
-      ivector itempvec(1,5);
-      itempvec(1,5)=timevary_parm1[trnd-1];
+      echoinput<<"process timevary: "<<tvary<<endl;
+      ivector timevary_setup(1,13);
+      timevary_setup(1,13)=timevary_def[tvary](1,13);
+      echoinput<<timevary_setup<<endl;
       //  what type of parameter is being affected?  get the baseparm and its bounds
-      switch(itempvec(1))      //  parameter type
+      switch(timevary_setup(1))      //  parameter type
       {
         case 1:  // MG
         {
-          baseparm=MGparm(itempvec(2)); //  index of base parm
-          baseparm_min=MGparm_LO(itempvec(2));
-          baseparm_max=MGparm_HI(itempvec(2));
+          baseparm=MGparm(timevary_setup(2)); //  index of base parm
+          baseparm_min=MGparm_LO(timevary_setup(2));
+          baseparm_max=MGparm_HI(timevary_setup(2));
+          for(j=timevary_setup(3);j<timevary_def[tvary+1](3);j++)
+          {
+            timevary_parm_cnt_all++;
+            timevary_parm(timevary_parm_cnt_all)=MGparm(N_MGparm+j);
+          }
+          parm_timevary(tvary)=baseparm;  //  fill timeseries with base parameter, just in case
           break;
         }
-        case 2:  // selex
+        case 5:  // selex
         {
-          baseparm=selparm(itempvec(2)); //  index of base parm
-          baseparm_min=selparm_LO(itempvec(2));
-          baseparm_max=selparm_HI(itempvec(2));
+          echoinput<<"setup base selparm "<<timevary_setup(2)<<endl;
+          baseparm=selparm(timevary_setup(2)); //  index of base parm
+          baseparm_min=selparm_LO(timevary_setup(2));
+          baseparm_max=selparm_HI(timevary_setup(2));
+          for(j=timevary_setup(3);j<timevary_def[tvary+1](3);j++)
+          {
+            timevary_parm_cnt_all++;
+            timevary_parm(timevary_parm_cnt_all)=selparm(N_selparm+j-timevary_parm_start_sel);
+          }
+          parm_timevary(tvary)=baseparm;  //  fill timeseries with base parameter, just in case
           break;
         }
       }
-
-      timevary_parm_cnt=itempvec(3);  //  first timevary parameter
-
-      if(itempvec(4)>0)  //  block
+      
+      if(do_once==1) echoinput<<"  time vary effect #: "<<tvary<<"  baseparm: "<<baseparm<<endl;
+      
+      timevary_parm_cnt=timevary_setup(3);  //  first  parameter used to create timevary effect on baseparm
+      if(timevary_setup(4)>0)  //  block
       {
-        parm_timevary(trnd)=baseparm;  //  fill timeseries with base parameter
-        z=itempvec(4);    // specified block pattern
+        z=timevary_setup(4);    // specified block pattern
         g=1;
         temp=baseparm;
         for (a=1;a<=Nblk(z);a++)
         {
-          switch(itempvec(5))
+          switch(timevary_setup(5))
           {
             case 0:
             {
               temp=baseparm * mfexp(timevary_parm(timevary_parm_cnt));
+              timevary_parm_cnt++;
               break;
             }
             case 1:
             {
               temp=baseparm + mfexp(timevary_parm(timevary_parm_cnt));
+              timevary_parm_cnt++;
               break;
             }
             case 2:
             {
-              temp=timevary_parm(timevary_parm_cnt);  //  direct assingment of block value
+              temp=timevary_parm(timevary_parm_cnt);  //  direct assignment of block value
+              timevary_parm_cnt++;
               break;
             }
             case 3:
             {
               temp+=timevary_parm(timevary_parm_cnt);  //  block as offset from previous block
+              timevary_parm_cnt++;
               break;
             }
           }
 
           for (int y1=Block_Design(z,g);y1<=Block_Design(z,g+1);y1++)  // loop years for this block
           {
-            parm_timevary(trnd,y1)=temp;
+            parm_timevary(tvary,y1)=temp;
           }
           g+=2;
-          timevary_parm_cnt++;
+          if(do_once==1) echoinput<<" parm with blocks "<<parm_timevary(tvary)<<endl;
         }
-        timevary_parm_cnt--;    // back out last increment
+//        timevary_parm_cnt--;    // back out last increment
       }  // end uses blocks
 
-      else if(itempvec(4)<0)  //  trend
+      else if(timevary_setup(4)<0)  //  trend
       {
         // timevary_parm(timevary_parm_cnt+0) = offset for the trend at endyr; 3 options available below
         // timevary_parm(timevary_parm_cnt+1) = inflection year; 2 options available
         // timevary_parm(timevary_parm_cnt+2) = stddev of normal at inflection year
         //  calc endyr value,
-        if(itempvec(4)==-1)  // use logistic transform to keep with bounds of the base parameter
+        if(timevary_setup(4)==-1)  // use logistic transform to keep with bounds of the base parameter
         {
           endtrend=log((baseparm_max-baseparm_min+0.0000002)/(baseparm-baseparm_min+0.0000001)-1.)/(-2.);   // transform the base parameter
           endtrend+=timevary_parm(timevary_parm_cnt);     //  add the offset  Note that offset value is in the transform space
           endtrend=baseparm_min+(baseparm_max-baseparm_min)/(1.+mfexp(-2.*endtrend));   // backtransform
-        }
-        else if(itempvec(4)==-2) // set ending value directly
+          infl_year=log(0.5)/(-2.);   // transform the base parameter
+          infl_year+=timevary_parm(timevary_parm_cnt+1);     //  add the offset  Note that offset value is in the transform space
+          infl_year=r_years(styr)+(r_years(endyr)-r_years(styr))/(1.+mfexp(-2.*infl_year));   // backtransform
+         }
+        else if(timevary_setup(4)==-2) // set ending value directly
         {
           endtrend=timevary_parm(timevary_parm_cnt);
+          infl_year=timevary_parm(timevary_parm_cnt+1);
         }
-        else if(itempvec(4)==-3) // use parm as fraction of way between bounds
+        else if(timevary_setup(4)==-3) // use parm as fraction of way between bounds
         {
           endtrend=baseparm_min+(baseparm_max-baseparm_min)*timevary_parm(timevary_parm_cnt);
+          infl_year=r_years(styr)+(r_years(endyr)-r_years(styr))*timevary_parm(timevary_parm_cnt+1);
         }
+        slope=timevary_parm(timevary_parm_cnt+2);
+        if(do_once==1) echoinput<<" trend: infl_year, slope, endvalue "<<infl_year<<" "<<slope<<" "<<endtrend<<endl;
+        timevary_parm_cnt+=3;
 
-        if(itempvec(5)==0)  // switch for direct estimation of inflection year, or as frac of timeseries
-          // previousyly used the upper bound on this parameter as the switch
-        {infl_year=r_years(styr)+timevary_parm(timevary_parm_cnt+1)*(r_years(endyr)-r_years(styr));}  // infl year
-        else
-        {infl_year=timevary_parm(timevary_parm_cnt+1);}
-        norm_styr=cumd_norm((r_years(styr) -infl_year)/timevary_parm(timevary_parm_cnt+2));
-        slope=(endtrend-baseparm) /
-              (cumd_norm((r_years(endyr)-infl_year)/timevary_parm(timevary_parm_cnt+2))-
-                norm_styr);   //  delta in cum_norm between styr and endyr
+        norm_styr=cumd_norm((r_years(styr) -infl_year)/slope);
+        temp=(endtrend-baseparm) / (cumd_norm((r_years(endyr)-infl_year)/slope)-norm_styr);   //  delta in cum_norm between styr and endyr
+        
         for (int y1=styr;y1<=YrMax;y1++)
         {
           if(y1<=endyr)
-          {parm_timevary(trnd,y1)=baseparm + slope * (cumd_norm((r_years(y1)-infl_year)/timevary_parm(timevary_parm_cnt+2) )-norm_styr);}
+          {parm_timevary(tvary,y1)=baseparm + temp * (cumd_norm((r_years(y1)-infl_year)/slope )-norm_styr);}
           else
-          {parm_timevary(trnd,y1)=parm_timevary(trnd,endyr);}
+          {parm_timevary(tvary,y1)=parm_timevary(tvary,endyr);}
         }
-        parm_timevary(trnd,styr-1)=baseparm;
+        parm_timevary(tvary,styr-1)=baseparm;
+        if(do_once==1) echoinput<<" parm with trend "<<parm_timevary(tvary)<<endl;
+      }
+
+      if(timevary_setup(7)>0)   //  env link, but not density-dependent
+      {
+        if(do_once==1) echoinput<<" first envlink parm: "<<timevary_parm(timevary_parm_cnt)<<endl;
+        switch(int(timevary_setup(6)))
+        {
+          case 1:  //  exponential  env link
+            {
+              for (int y1=styr-1;y1<=YrMax;y1++)
+              {
+                parm_timevary(tvary,y1)*=mfexp(timevary_parm(timevary_parm_cnt)*(env_data(y1,timevary_setup(7))));
+              }
+              timevary_parm_cnt++;
+              break;
+            }
+          case 2:  //  linear  env link
+            {
+              for (int y1=styr-1;y1<=YrMax;y1++)
+              {
+                parm_timevary(tvary,y1)+=timevary_parm(timevary_parm_cnt)*env_data(y1,timevary_setup(7));
+              }
+              timevary_parm_cnt++;
+              break;
+            }
+          case 3:
+          	{
+          		//  not implemented
+          	}
+          case 4:  //  logistic MGparm env link
+            {
+            	// first parm is offset ; second is slope
+              for (int y1=styr;y1<=YrMax;y1++)
+              {
+                parm_timevary(tvary,y1)=2.00000/(1.00000 + mfexp(-timevary_parm(timevary_parm_cnt+1)*(env_data(yz,timevary_setup(7))-timevary_parm(timevary_parm_cnt))));
+              }
+              timevary_parm_cnt+=2;
+              break;
+            }
+        }
+        if(do_once==1) echoinput<<" parm with env "<<parm_timevary(tvary)<<endl;
+      }
+      if(do_once==1) echoinput<<"check for devs "<<timevary_setup(8)<<endl;
+  //  SS_Label_Info_14.3 #Create MGparm dev randwalks if needed
+      if(timevary_setup(8)>0)   //  devs
+      {
+        k=timevary_setup(8);   //  dev used
+        if(do_once==1) echoinput<<"set up dev"<<k<<endl;
+        parm_dev_stddev(k)=timevary_parm(timevary_parm_cnt);
+        parm_dev_rho(k)=timevary_parm(timevary_parm_cnt+1);
+        switch(timevary_setup(9))
+        {
+          case 1:
+          {
+            for (j=timevary_setup(10);j<=timevary_setup(11);j++)
+            {
+              parm_timevary(tvary,j)*=mfexp(parm_dev(k,j));
+            }
+            break;
+          }
+          case 2:
+          {
+            for (j=timevary_setup(10);j<=timevary_setup(11);j++)
+            {
+              parm_timevary(tvary,j)+=parm_dev(k,j);
+            }
+            break;
+          }
+          case 3:
+          {
+            parm_dev_rwalk(k,timevary_setup(10))=parm_dev(k,timevary_setup(10));
+            parm_timevary(tvary,timevary_setup(10))+=parm_dev_rwalk(k,timevary_setup(10));
+            for (j=timevary_setup(10)+1;j<=timevary_setup(11);j++)
+            {
+              parm_dev_rwalk(k,j)=parm_dev_rwalk(k,j-1)+parm_dev(k,j);
+              parm_timevary(tvary,j)+=parm_dev_rwalk(k,j);
+            }
+            break;
+          }
+          case 4:  // mean reverting random walk
+          {
+            parm_dev_rwalk(k,timevary_setup(10))=parm_dev(k,timevary_setup(10));
+            parm_timevary(tvary,timevary_setup(10))+=parm_dev_rwalk(k,timevary_setup(10));
+            for (j=timevary_setup(10)+1;j<=timevary_setup(11);j++)
+            {
+              //    =(1-rho)*mean + rho*prevval + dev   //  where mean = 0.0
+              parm_dev_rwalk(k,j)=parm_dev_rho(k)*parm_dev_rwalk(k,j-1)+parm_dev(k,j);
+              parm_timevary(tvary,j)+=parm_dev_rwalk(k,j);
+            }
+            break;
+          }
+        }
+        if(do_once==1) echoinput<<"devs "<<parm_dev(k)<<endl<<"result "<<parm_timevary(tvary)<<endl;
       }
     }
   }

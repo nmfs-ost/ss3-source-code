@@ -63,6 +63,13 @@ GLOBALS_SECTION
   adstring_array Data_Comments;
   adstring_array Control_Comments;
   adstring_array Forecast_Comments;
+  adstring_array NumLbl;
+  adstring_array GenderLbl;   // gender label
+  adstring_array CRLF;   // blank to terminate lines
+  
+//  declare some entities that need global access 
+  int ParCount; int timevary_parm_cnt; int N_warn;
+  int styr; int endyr; int YrMax; int nseas; int Ncycle;
 
 //  SS_Label_Info_10.3  #start random number generator with seed based on time
   random_number_generator radm(long(time(&start)));
@@ -81,7 +88,7 @@ GLOBALS_SECTION
   std::vector<dvector> var_adjust_data;
   std::vector<dvector> lambda_change_data;
   std::vector<dvector> timevary_parm_rd;
-  std::vector<ivector> timevary_parm1;
+  std::vector<ivector> timevary_def;
 
 //  example function in GLOBALS to do the timing setup in the data section
   void get_data_timing(const dvector& to_process, const ivector& timing_constants, ivector i_result, dvector r_result, const dvector& seasdur, const dvector& subseasdur_delta, const dvector& azero_seas, const dvector& surveytime)
@@ -177,6 +184,293 @@ GLOBALS_SECTION
     return N_records;
   }
 
+//  global function to create timevary parameters
+  void create_timevary(dvector &baseparm_list, ivector &timevary_setup, 
+                       ivector &time_vary_byyear, const int &autogen_timevary, const int &targettype,
+                       const ivector &block_design_pass, const int &parm_adjust_method, 
+                       const dvector &env_data_pass, int &N_parm_dev)
+  {
+//  where time_vary_byyear is a selected column of a year x type matrix (e.g. time_vary_MG) in read_control
+    echoinput<<"baseparm: "<<baseparm_list<<endl;
+    int j; int g; int y; int a; int f;
+    int k;
+    int z;
+    int Nblocks;
+    j=timevary_setup(13);  //  index of base in all parameters to get correct baseparm label
+    if(baseparm_list(13)!=0)    //  blocks or trends
+    {
+      z=baseparm_list(13);    // specified block or trend definition
+      timevary_setup(4)=z; //  block or trend type
+      timevary_setup(5)=baseparm_list(14); //  block pattern
+      if (z>0)  //  blocks with z as the block pattern
+      {
+        Nblocks=0.5*(block_design_pass.size());
+//        if(z>N_Block_Designs) {N_warn++; warning<<"parm: "<<j<<" ERROR, Block > N Blocks "<<z<<" "<<N_Block_Designs<<endl; exit(1);}
+        k=int(baseparm_list(14));  //  block method
+        echoinput<<"block pattern: "<<z<<" method "<<k<<endl;
+
+        g=1;  //  index to list of years in block design; will increment by 2 for begin-end of block
+        for (a=1;a<=Nblocks;a++)  //  loop blocks for block pattern z
+        {
+         timevary_parm_cnt++;
+         ParCount++;
+         
+         y=block_design_pass(g);
+         time_vary_byyear(y)=1;
+         sprintf(onenum, "%d", y);
+
+         switch(k)
+         {
+           case 0:
+           {ParmLabel+=ParmLabel(j)+"_BLK"+NumLbl(z)+"mult_"+onenum+CRLF(1);  
+            dvector tempvec(1,7);  //  temporary vector for a time-vary parameter  LO HI INIT PRIOR PR_type SD PHASE 
+            if(autogen_timevary==1)
+            {*(ad_comm::global_datafile) >> tempvec(1,7);}
+            else
+            {tempvec.fill("{0.1,10.,1.,1.,0,0.5,4}");}
+            timevary_parm_rd.push_back (tempvec);
+            break;}
+           case 1:
+           {ParmLabel+=ParmLabel(j)+"_BLK"+NumLbl(z)+"add_"+onenum+CRLF(1);  
+            dvector tempvec(1,7);  //  temporary vector for a time-vary parameter  LO HI INIT PRIOR PR_type SD PHASE 
+            if(autogen_timevary==1)
+            {*(ad_comm::global_datafile) >> tempvec(1,7);}
+            else
+            {tempvec.fill("{-2.0,2.0,0.,0.,0,0.5,4}");}
+            timevary_parm_rd.push_back (tempvec);
+             break;}
+           case 2:
+           {ParmLabel+=ParmLabel(j)+"_BLK"+NumLbl(z)+"repl_"+onenum+CRLF(1);
+            dvector tempvec(1,7);  //  temporary vector for a time-vary parameter  LO HI INIT PRIOR PR_type SD PHASE 
+            if(autogen_timevary==1)
+            {*(ad_comm::global_datafile) >> tempvec(1,7);}
+            else
+            {for(a=1;a<=7;a++) tempvec(a)=baseparm_list(a);}
+            timevary_parm_rd.push_back (tempvec);
+             break;}
+           case 3:
+           {ParmLabel+=ParmLabel(j)+"_BLK"+NumLbl(z)+"delta_"+onenum+CRLF(1);
+            dvector tempvec(1,7);  //  temporary vector for a time-vary parameter  LO HI INIT PRIOR PR_type SD PHASE 
+            if(autogen_timevary==1)
+            {*(ad_comm::global_datafile) >> tempvec(1,7);}
+            else
+            {tempvec.fill("{-2.0,2.0,0.,0.,0,0.5,4}");}
+            timevary_parm_rd.push_back (tempvec);
+             break;}
+         }
+         y=block_design_pass(g+1)+1;  // first year after block
+         if(y>endyr+1) y=endyr+1;  //  should change this to YrMax
+         time_vary_byyear(y)=1;
+         if(targettype==7 && timevary_setup(1)==1)  //  so doing catch_mult which needs annual values calculated for each year of the block
+         {
+           for(k=block_design_pass(g);k<=y;k++)  //  where y has end year of block + 1
+           {
+             time_vary_byyear(k)=1;
+           }
+         }
+         g+=2;
+        }
+      }
+      else //  (z<0) so invoke a trend
+      {
+        echoinput<<"trend "<<endl;
+         if(baseparm_list(13)==-1)
+         {
+           ParCount++; ParmLabel+=ParmLabel(j)+"_TrendFinal_LogstOffset"+CRLF(1);
+           ParCount++; ParmLabel+=ParmLabel(j)+"_TrendInfl_LogstOffset"+CRLF(1);
+           ParCount++; ParmLabel+=ParmLabel(j)+"_TrendWidth_yrs_"+CRLF(1);
+           for(k=1;k<=3;k++)  //  for the 3 trend parameters
+           {
+            timevary_parm_cnt++;
+            dvector tempvec(1,7);  //  temporary vector for a time-vary parameter  LO HI INIT PRIOR PR_type SD PHASE 
+            if(autogen_timevary==1)
+            {*(ad_comm::global_datafile) >> tempvec(1,7);}
+            else
+            {
+             if(k==1) {tempvec.fill("{-4.0,4.0,0.,0.,0,0.5,4}");}
+             if(k==2) {tempvec.fill("{-4.0,4.0,0.,0.,0,0.5,4}");}
+             if(k==3) {tempvec.fill("{1.0,20.0,3.,3.,0,3.,4}");}
+            }
+            timevary_parm_rd.push_back (tempvec);
+           }
+         }
+         else if(baseparm_list(13)==-2)
+         {
+           ParCount++; ParmLabel+=ParmLabel(j)+"_TrendFinal_direct_"+CRLF(1);
+           ParCount++; ParmLabel+=ParmLabel(j)+"_TrendInfl_yr_"+CRLF(1);
+           ParCount++; ParmLabel+=ParmLabel(j)+"_TrendWidth_yr_"+CRLF(1);
+           for(k=1;k<=3;k++)  //  for the 3 trend parameters
+           {
+            timevary_parm_cnt++;
+            dvector tempvec(1,7);  //  temporary vector for a time-vary parameter  LO HI INIT PRIOR PR_type SD PHASE 
+            if(autogen_timevary==1)
+            {*(ad_comm::global_datafile) >> tempvec(1,7);}
+            else
+            {
+             if(k==1) {for(a=1;a<=7;a++) tempvec(a)=baseparm_list(a);}
+             if(k==2) {tempvec.fill("{-2.0,2.0,0.,0.,0,0.5,4}");
+             tempvec(1)=styr; tempvec(2)=endyr; tempvec(3)= (styr+endyr)*0.5; tempvec(4)=tempvec(3);}
+             if(k==3) {tempvec.fill("{1.0,20.0,3.,3.,0,3.,4}");}
+            }
+            timevary_parm_rd.push_back (tempvec);
+           }
+         }
+         else if(baseparm_list(13)==-3)
+         {
+           ParCount++; ParmLabel+=ParmLabel(j)+"_TrendFinal_frac_"+CRLF(1);
+           ParCount++; ParmLabel+=ParmLabel(j)+"_TrendInfl_frac_"+CRLF(1);
+           ParCount++; ParmLabel+=ParmLabel(j)+"_TrendWidth_yr_"+CRLF(1);
+           for(k=1;k<=3;k++)  //  for the 3 trend parameters
+           {
+            timevary_parm_cnt++;
+            dvector tempvec(1,7);  //  temporary vector for a time-vary parameter  LO HI INIT PRIOR PR_type SD PHASE 
+            if(autogen_timevary==1)
+            {*(ad_comm::global_datafile) >> tempvec(1,7);}
+            else
+            {
+             if(k==1) {tempvec.fill("{0.0001,0.999,0.,0.,0,0.5,4}");
+              tempvec(3)=(baseparm_list(3)-baseparm_list(1))/(baseparm_list(2)-baseparm_list(1)); tempvec(4)=tempvec(3);}
+             if(k==2) {tempvec.fill("{0.0001,0.999,0.5,0.5,0,0.5,4}");}
+             if(k==3) {tempvec.fill("{1.0,20.0,3.,3.,0,3.,4}");}
+            }
+            timevary_parm_rd.push_back (tempvec);
+           }
+         }
+         else
+         {
+           for (int icycle=1;icycle<=Ncycle;icycle++)
+           {
+             ParCount++; ParmLabel+=ParmLabel(j)+"_Cycle_"+NumLbl(icycle)+CRLF(1);
+             timevary_parm_cnt+=1;  //  count the cycle parameters
+           }
+         }
+         for(y=styr-1; y<=YrMax; y++) {time_vary_byyear(y)=1;}  //  all years need calculation for trends
+      }
+    }
+
+    if(baseparm_list(8)>0)  //  env effect is used
+    {
+      k=timevary_setup(6);
+      if(timevary_setup(7)==99) timevary_setup(7)=-1;  //  for linking to rel_spawn biomass
+      if(timevary_setup(7)==98) timevary_setup(7)=-2;  //  for linking to exp(recdev)
+      if(timevary_setup(7)==97) timevary_setup(7)=-3;  //  for linking to rel_smrybio
+      if(timevary_setup(7)==96) timevary_setup(7)=-4;  //  for linking to rel_smry_num
+      echoinput<<"env link_type: "<<k<<" env_var: "<<timevary_setup(7)<<endl;
+      switch (k)
+      {
+        case 1:  //  multiplicative
+         {
+           ParCount++; ParmLabel+=ParmLabel(j)+"_ENV_mult";
+           timevary_parm_cnt++;
+           dvector tempvec(1,7); 
+           if(autogen_timevary==1)
+           {*(ad_comm::global_datafile) >> tempvec(1,7);}
+           else
+           {tempvec.fill("{-2.,2.0,0.05,0.0,0,0.5,4}");}
+           timevary_parm_rd.push_back (tempvec(1,7));
+           if(parm_adjust_method==2) {N_warn++; cout<<" EXIT - see warning "<<endl; warning<<"multiplicative env effect on MGparm: "<<j
+           <<" not allowed because parm_adjust_method==2; STOP"<<endl; exit(1);}
+           break;
+         }
+        case 2:  //  additive
+         {
+           ParCount++; ParmLabel+=ParmLabel(j)+"_ENV_add";
+           timevary_parm_cnt++;
+           dvector tempvec(1,7); 
+           if(autogen_timevary==1)
+           {*(ad_comm::global_datafile) >> tempvec(1,7);}
+           else
+           {tempvec.fill("{-0.9,0.9,0.5,0.0,0,0.5,3}");}
+           timevary_parm_rd.push_back (tempvec(1,7));
+           break;
+         }
+        case 4:  //  logistic with offset
+         {
+           if(parm_adjust_method==2) {N_warn++; cout<<" EXIT - see warning "<<endl; warning<<"multiplicative env effect on MGparm: "<<j
+           <<" not allowed because parm_adjust_method==2; STOP"<<endl; exit(1);}
+           ParCount++; ParmLabel+=ParmLabel(j)+"_ENV_offset";
+           timevary_parm_cnt++;
+           dvector tempvec(1,7); 
+           if(autogen_timevary==1)
+           {*(ad_comm::global_datafile) >> tempvec(1,7);}
+           else
+           {tempvec.fill("{-0.9,0.9,0.0,0.0,0,0.5,4}");}
+           timevary_parm_rd.push_back (tempvec(1,7));
+           ParCount++; ParmLabel+=ParmLabel(j)+"_ENV_lgst_slope";
+           timevary_parm_cnt++;
+           if(autogen_timevary==1)
+           {*(ad_comm::global_datafile) >> tempvec(1,7);}
+           else
+           {tempvec.fill("{-0.9,0.9,0.0,0.0,0,0.5,4}");}
+           timevary_parm_rd.push_back (tempvec(1,7));
+           break;
+         }
+      }
+      for (y=styr-1;y<=YrMax-1;y++)
+      {
+       if(timevary_setup(7)>0 )
+       {
+         if(env_data_pass(y)!=0.0) {time_vary_byyear(y)=1; time_vary_byyear(y+1)=1; }
+       }
+       else if (timevary_setup(7)<0 )  //  density-dependence being used
+       {time_vary_byyear(y)=1; }
+      }
+    }
+
+    if(baseparm_list(9)>0)  //  devs are used
+    {
+      N_parm_dev++;  //  count of dev vectors that are used
+      timevary_setup(8)=N_parm_dev;  //    specifies which dev vector will be used by a parameter
+      timevary_setup(9)=baseparm_list(9);  //   code for dev link type
+      y=baseparm_list(10);
+      if(y<styr)
+      {
+        N_warn++; warning<<" reset MGparm_dev start year to styr for MGparm: "<<j<<" "<<y<<endl;
+        y=styr;
+      }
+      timevary_setup(10)=y;
+
+      y=baseparm_list(11);
+      if(y>YrMax)
+      {
+        N_warn++; warning<<" reset MGparm_dev end year to YrMax for MGparm: "<<j<<" "<<y<<endl;
+        y=endyr;
+      }
+      timevary_setup(11)=y;
+      for (y=timevary_setup(10);y<=timevary_setup(11)+1;y++)
+      {
+       time_vary_byyear(y)=1;
+      }
+
+      timevary_setup(12)=baseparm_list(12); //  dev phase
+      ParCount++;
+      ParmLabel+=ParmLabel(j)+"_dev_se"+CRLF(1);
+      timevary_parm_cnt++;
+      dvector tempvec(1,7); 
+      if(autogen_timevary==1)
+      {*(ad_comm::global_datafile) >> tempvec(1,7);}
+      else
+      {
+       tempvec.fill("{0.0001,2.0,0.5,0.5,0,0.5,-5}");
+       timevary_setup(12)=5;  //  set reasonable phase for devs
+       baseparm_list(12)=5;
+      }
+      timevary_parm_rd.push_back (dvector(tempvec(1,7)));
+
+      ParCount++;
+      ParmLabel+=ParmLabel(j)+"_dev_autocorr"+CRLF(1);
+      timevary_parm_cnt++;
+      dvector tempvec2(1,7);
+      if(autogen_timevary==1)
+      {*(ad_comm::global_datafile) >> tempvec2(1,7);}
+      else
+      {tempvec2.fill("{-0.99,0.99,0.0,0.0,0,0.5,-6}");}
+      timevary_parm_rd.push_back (dvector(tempvec2(1,7)));
+      echoinput<<"dev vec: "<<timevary_setup(8)<<" with link: "<<timevary_setup(9)<<" min, max year "<<timevary_setup(10,11)<<endl;
+    }
+    echoinput<<"timevary_setup"<<timevary_setup<<endl;
+    return;
+  }
 //  }  //  end GLOBALS_SECTION
 
 //  SS_Label_Section_11. #BETWEEN_PHASES_SECTION

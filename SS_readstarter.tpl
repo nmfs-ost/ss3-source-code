@@ -49,7 +49,7 @@
   int loop
   int TG_t;  // time counter (in seasons) for tag groups
   int Fcast_catch_start
-  int ParCount;
+//  int ParCount;
   int retParCount;
   int N_SC;  // counter for starter comments
   int N_DC;
@@ -61,7 +61,6 @@
   int frac_female_pointer;
 
   int icycle
-  int Ncycle
   int No_Report  //  flag to skip output reports after MCMC and MCeval
   number mcmcFlag
   number temp;
@@ -73,9 +72,9 @@
 
  LOCAL_CALCS
   //  SS_Label_Info_1.1.2  #Create elements of parameter labels
-  adstring_array NumLbl;
-  adstring_array GenderLbl;   // gender label
-  adstring_array CRLF;   // blank to terminate lines
+//  adstring_array NumLbl;
+//  adstring_array GenderLbl;   // gender label
+//  adstring_array CRLF;   // blank to terminate lines
 
   CRLF+="";
   GenderLbl+="Fem";

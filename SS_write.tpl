@@ -59,7 +59,7 @@ FUNCTION void write_summaryoutput()
          <<parm_prior_lambda(k)<<" " <<parm_dev_lambda(k)<<" " <<CrashPen_lambda(k)<<endl;
   report2<<runnumber<<" Like_Value*Emph "<<equ_catch_like*init_equ_lambda(k)<<" "<<recr_like*recrdev_lambda(k)<<" "
          <<Fcast_recr_like<<" "<<parm_like*parm_prior_lambda(k)<<" "<<
-         (sum(MGparm_dev_like)+sum(selparm_dev_like))*parm_dev_lambda(k)<<" "<<CrashPen*CrashPen_lambda(k)<<endl;
+         sum(parm_dev_like)*parm_dev_lambda(k)<<" "<<CrashPen*CrashPen_lambda(k)<<endl;
 
   report2 <<runnumber<<" TimeSeries Year Vir Equ "<<years<<" ";
   k=YrMax;
@@ -81,7 +81,10 @@ FUNCTION void write_summaryoutput()
   report2<<endl;
   report2<<runnumber<<" Parm Values ";
   report2<<" "<<MGparm<<" ";
-  if(N_MGparm_dev>0) report2<<MGparm_dev<<" ";
+  if(N_parm_dev>0) 
+    {
+      for(j=1;j<=N_parm_dev;j++)  report2<<parm_dev(j)<<" ";
+    }
   report2<<SR_parm<<" ";
   if(recdev_cycle>0) report2<<recdev_cycle_parm<<" ";
   if(recdev_do_early>0) report2<<recdev_early<<" ";
@@ -92,7 +95,7 @@ FUNCTION void write_summaryoutput()
   if(F_Method==2) report2<<" "<<F_rate;
   if(Q_Npar>0) report2<<Q_parm<<" ";
   if(N_selparm2>0) report2<<selparm<<" ";
-  if(N_selparm_dev>0) report2<<selparm_dev<<" ";
+//  if(N_selparm_dev>0) report2<<selparm_dev<<" ";
   if(Do_TG>0) report2<<TG_parm<<" ";
   report2<<endl;
 
@@ -102,13 +105,15 @@ FUNCTION void write_summaryoutput()
   {NP++; report2<<" "<<ParmLabel(NP);}
   report2<<endl<<runnumber<<" MG_parm "<<MGparm<<endl;
 
-  if(N_MGparm_dev>0)
+  if(N_parm_dev>0)
   {
     report2<<runnumber<<" MG_parm_dev ";
-    for (i=1;i<=N_MGparm_dev;i++)
-    for (j=MGparm_dev_minyr(i);j<=MGparm_dev_maxyr(i);j++)
-    {NP++; report2<<" "<<ParmLabel(NP);}
-    report2<<endl<<runnumber<<" MG_parm_dev "<<MGparm_dev<<endl;
+    for (i=1;i<=N_parm_dev;i++)
+    {
+      for (j=parm_dev_minyr(i);j<=parm_dev_maxyr(i);j++)
+      {NP++; report2<<" "<<ParmLabel(NP);}
+      report2<<endl<<runnumber<<" MG_parm_dev "<<parm_dev(i)<<endl;
+    }
   }
 
     report2<<runnumber<<" SR_parm ";
@@ -181,22 +186,12 @@ FUNCTION void write_summaryoutput()
       report2<<endl<<runnumber<<" Sel_parm "<<selparm<<endl;
     }
 
-    if(N_selparm_dev>0)
-    {
-      report2<<runnumber<<" Sel_parm_dev ";
-      for (i=1;i<=N_selparm_dev;i++)
-      for (j=selparm_dev_minyr(i);j<=selparm_dev_maxyr(i);j++)
-      {NP++; report2<<" "<<ParmLabel(NP);}
-      report2<<endl<<runnumber<<" Sel_parm_dev "<<selparm_dev<<endl;
-    }
-
     if(Do_TG>0)
     {
       report2<<runnumber<<" Tag_parm ";
       for (f=1;f<=3*N_TG+2*Nfleet;f++) {NP++; report2<<" "<<ParmLabel(NP);}
       report2<<endl<<runnumber<<" Tag_parm "<<TG_parm<<endl;
     }
-
 
     if(Do_CumReport==2)
     {
@@ -1754,9 +1749,20 @@ FUNCTION void write_nucontrol()
   else
   {report4<<"#_Cond "<<0<<" #_blocks_per_pattern "<<endl<<"# begin and end years of blocks"<<endl;}
   report4<<"#"<<endl;
+  report4<<"# controls for all timevary parameters "<<endl;
+  report4<<parm_adjust_method<<
+   " #_env/block/dev_adjust_method for all time-vary parms (1=standard; 2=logistic transform keeps in base parm bounds; 3=standard w/ no bound check)"<<endl;
+  if(timevary_cnt>0)  //  corresponds to autogen_timevary
+  {
+    report4<<1<<" # timevarying parameter autogenerate (0) or read (1)"<<endl;
+  }
+  else
+  {
+    report4<<0<<" # timevarying parameter autogenerate (0) or read (1)"<<endl;
+  }
 
-  // report4<<fracfemale<<" #_fracfemale "<<endl;
-  report4<<natM_type<<" #_natM_type:_0=1Parm; 1=N_breakpoints;_2=Lorenzen;_3=agespecific;_4=agespec_withseasinterpolate"<<endl;
+  report4<<"#"<<endl<<"# setup for M, growth, maturity, fecundity, recruitment distibution, movement "<<endl;
+  report4<<"#"<<endl<<natM_type<<" #_natM_type:_0=1Parm; 1=N_breakpoints;_2=Lorenzen;_3=agespecific;_4=agespec_withseasinterpolate"<<endl;
     if(natM_type==1)
     {report4<<N_natMparms<<" #_N_breakpoints"<<endl<<NatM_break<<" # age(real) at M breakpoints"<<endl;}
     else if(natM_type==2)
@@ -1792,11 +1798,9 @@ FUNCTION void write_nucontrol()
     report4<<Hermaphro_Option<<" #_hermaphroditism option:  0=none; 1=female-to-male age-specific fxn; -1=male-to-female age-specific fxn"<<endl;
     if (Hermaphro_Option!=0) report4<<Hermaphro_seas<<" # Hermaphro_season "<<endl<<Hermaphro_maleSPB<<" # Hermaphro_maleSPB "<<endl;
     report4<<MGparm_def<<" #_parameter_offset_approach (1=none, 2= M, G, CV_G as offset from female-GP1, 3=like SS2 V1.x)"<<endl;
-    report4<<parm_adjust_method<<
-    " #_env/block/dev_adjust_method for all time-vary  parms (1=standard; 2=logistic transform keeps in base parm bounds; 3=standard w/ no bound check)"<<endl;
   report4<<"#"<<endl;
   report4<<"#_growth_parms"<<endl;
-  report4<<"#_LO HI INIT PRIOR PR_type SD PHASE env-var use_dev dev_minyr dev_maxyr dev_stddev Block Block_Fxn"<<endl;
+  report4<<"#_LO HI INIT PRIOR PR_type SD PHASE env_var&link dev_link dev_minyr dev_maxyr dev_phase Block Block_Fxn"<<endl;
   NP=0;
   for (f=1;f<=N_MGparm;f++)
   {
@@ -1814,34 +1818,18 @@ FUNCTION void write_nucontrol()
   }
   report4<<"#"<<endl;
   j=N_MGparm;
-  if(N_MGparm_env>0)
-  {
-    report4<<1<<" #_custom_MG-env_setup (0/1)"<<endl;
-    for (f=1;f<=N_MGparm_env;f++)
-    {j++; NP++; if(customMGenvsetup==0) {k=1;} else {k=f;}  // use read value of custom here
-    MGparm_env_1(k,3)=value(MGparm(j)); report4<<MGparm_env_1(k)<<" # "<<ParmLabel(NP)<<endl;}
-   }
-  else
-  {
-    report4<<"#_Cond 0  #custom_MG-env_setup (0/1)"<<endl;
-    report4<<"#_Cond -2 2 0 0 -1 99 -2 #_placeholder when no MG-environ parameters"<<endl;
-  }
-  report4<<"#"<<endl;
   if(timevary_parm_cnt_MG>0)
   {
-    report4<<1<<" #_custom_MG_blocktrend_setup (0/1)"<<endl;
-    report4<<"#_LO HI INIT PRIOR PR_type SD PHASE"<<endl;
-
+    report4<<"# timevary MG parameters "<<endl<<"#_LO HI INIT PRIOR PR_type SD PHASE"<<endl;
     for (f=1;f<=timevary_parm_cnt_MG;f++)
     {NP++;
-    timevary_parm_rd[f-1](3)=value(timevary_parm(f));
-    report4<<timevary_parm_rd[f-1]<<" # "<<ParmLabel(NP)<<endl;}
+    timevary_parm_rd[f](3)=value(timevary_parm(f));
+    report4<<timevary_parm_rd[f]<<" # "<<ParmLabel(NP)<<endl;}
+    report4<<"# info on dev vectors created for MGparms are reported with other devs after tag parameter section "<<endl;
   }
   else
   {
-    report4<<"#_Cond 0  #custom_MG_blocktrend_setup (0/1)"<<endl;
-    report4<<"#_LO HI INIT PRIOR PR_type SD PHASE"<<endl;
-    report4<<"#_Cond -2 2 0 0 -1 99 -2 #_placeholder when no MG-block or trend parameters"<<endl;
+    report4<<"#_no timevary MG parameters"<<endl;
   }
 
   report4<<"#"<<endl;
@@ -1858,31 +1846,6 @@ FUNCTION void write_nucontrol()
   else
   {
     report4<<"#_Cond -2 2 0 0 -1 99 -2 #_placeholder when no seasonal MG parameters"<<endl;
-  }
-  report4<<"#"<<endl;
-  if(N_MGparm_dev>0)
-  {
-    report4<<"# standard error parameters for MG devs"<<endl;
-    k=0;
-   for(i=1;i<=N_MGparm_dev;i++)
-   {
-      NP++; j++;  k++; MGparm_dev_se_rd(k,3)=value(MGparm(j));
-      report4<<MGparm_dev_se_rd(k)<<" # "<<ParmLabel(NP)<<endl;
-      NP++; j++;  k++; MGparm_dev_se_rd(k,3)=value(MGparm(j));
-      report4<<MGparm_dev_se_rd(k)<<" # "<<ParmLabel(NP)<<" # "<<endl;
-   }
-   for(i=1;i<=N_MGparm_dev;i++)
-   {
-      for(j=MGparm_dev_minyr(i);j<=MGparm_dev_maxyr(i);j++)
-      {
-        NP++; report4<<" # "<<i<<" "<<j<<" "<<MGparm_dev(i,j)<<" # "<<ParmLabel(NP)<<endl;
-      }
-   }
-   report4<<"#"<<endl<<MGparm_dev_PH<<" #_MGparm_Dev_Phase"<<endl;
-  }
-  else
-  {
-    report4<<"#_Cond -4 #_MGparm_Dev_Phase"<<endl;
   }
 
   report4<<"#"<<endl;
@@ -2093,7 +2056,7 @@ FUNCTION void write_nucontrol()
    for (f=1;f<=Nfleet;f++) report4<<seltype(f+Nfleet)<<" # "<<f<<" "<<fleetname(f)<<endl;
    report4<<"#"<<endl;
 
-   report4<<"#_LO HI INIT PRIOR PR_type SD PHASE env-var use_dev dev_minyr dev_maxyr dev_stddev Block Block_Fxn"<<endl;
+   report4<<"#_      LO        HI      INIT     PRIOR   PR_type        SD   PHASE env-var use_dev dv_mnyr dv_mxyr dv_stdv   Block Blk_Fxn  #  parm_name"<<endl;
 
    // set back to default configuration for output
    report4.precision(6); report4.unsetf(std::ios_base::fixed); report4.unsetf(std::ios_base::floatfield);
@@ -2103,9 +2066,32 @@ FUNCTION void write_nucontrol()
       for (f=1;f<=N_selparm;f++)
       {
         NP++;
-        selparm_1(f,3)=value(selparm(f));
-        report4<<selparm_1(f)<<" # "<<ParmLabel(NP)<<endl;
+        selparm_1(f)(3)=value(selparm(f));
+        for(j=1;j<=6;j++) report4<<std::setprecision(4)<<std::fixed<<setw(10)<<selparm_1(f,j);
+        report4.precision(6); report4.unsetf(std::ios_base::fixed); report4.unsetf(std::ios_base::floatfield);
+        for(j=7;j<=14;j++) report4<<setw(8)<<selparm_1(f,j);
+        report4<<"  #  "<<ParmLabel(NP)<<endl;
       }
+  if(timevary_parm_cnt_sel>timevary_parm_start_sel)
+  {
+    report4<<"# timevary selex parameters "<<endl;
+    report4<<"#_      LO        HI      INIT     PRIOR   PR_type        SD   PHASE"<<endl;
+    for (f=timevary_parm_start_sel+1;f<=timevary_parm_cnt_sel;f++)
+    {
+      NP++;
+        timevary_parm_rd[f](3)=value(timevary_parm(f));
+        for(j=1;j<=6;j++) report4<<std::setprecision(4)<<std::fixed<<setw(10)<<timevary_parm_rd[f](j);
+        report4.precision(6); report4.unsetf(std::ios_base::fixed); report4.unsetf(std::ios_base::floatfield);
+      report4<<"      "<<timevary_parm_rd[f](7)<<"  # "<<ParmLabel(NP)<<endl;
+    }
+    report4<<"# info on dev vectors created for selex parms are reported with other devs after tag parameter section "<<endl;
+  }
+  else
+  {
+    report4<<"#_no timevary selex parameters"<<endl;
+  }
+
+
   }
 //  else
 //  {
@@ -2132,64 +2118,6 @@ FUNCTION void write_nucontrol()
 
   j=N_selparm;
 
-   if(N_selparm_env>0)
-   {
-     report4<<1<<" #_custom_sel-env_setup (0/1) "<<endl;
-     for (f=1;f<=N_selparm_env;f++)
-     {
-       j++;  NP++;
-       if(custom_selenv_setup==0) {k=1;} else {k=f;}  // use read value of custom here
-       selparm_env_1(k,3)=value(selparm(j)); report4<<selparm_env_1(k)<<" # "<<ParmLabel(NP)<<endl;
-     }
-   }
-  else
-  {
-    report4<<"#_Cond 0 #_custom_sel-env_setup (0/1) "<<endl;
-    report4<<"#_Cond -2 2 0 0 -1 99 -2 #_placeholder when no enviro fxns"<<endl;
-  }
-
-   if(timevary_parm_cnt_sel>0)
-   {
-     report4<<"1 #_custom_setup_for_sel_blocks&trends (0/1) "<<endl;
-     for (f=timevary_parm_cnt_MG+1;f<=timevary_parm_cnt;f++)
-     {
-       NP++;
-       if(customblocksetup==0) {k=1;} else {k=f;}  // use read value of custom here
-       timevary_parm_rd[f-1](3)=value(timevary_parm(f));
-       report4<<timevary_parm_rd[f-1]<<" # "<<ParmLabel(NP)<<endl;
-     }
-   }
-  else
-  {
-     report4<<"#0 #_custom_setup_for_sel_blocks&trends (0/1) "<<endl;
-    report4<<"#_Cond -2 2 0 0 -1 99 -2 #_placeholder when no block usage"<<endl;
-  }
-
-  if(N_selparm_dev>0)
-  {
-    report4<<"# standard error parameters for selparm devs"<<endl;
-    k=0;
-    for(i=1;i<=N_selparm_dev;i++)
-    {
-      NP++; j++;  k++; selparm_dev_se_rd(k,3)=value(selparm(j));
-      report4<<selparm_dev_se_rd(k)<<" # "<<ParmLabel(NP)<<endl;
-      NP++; j++;  k++; selparm_dev_se_rd(k,3)=value(selparm(j));
-      report4<<selparm_dev_se_rd(k)<<" # "<<ParmLabel(NP)<<" # "<<endl;
-    }
-
-    for (i=1;i<=N_selparm_dev;i++)
-    for (j=selparm_dev_minyr(i);j<=selparm_dev_maxyr(i);j++)
-    {
-      NP++; report4<<"# "<<selparm_dev(i,j)<<" # "<<ParmLabel(NP)<<endl;
-    }
-    report4<<selparm_dev_PH<<" #_selparmdev-phase"<<endl;
-  }
-  else
-  {
-    report4<<"#_Cond -4 # placeholder for selparm_Dev_Phase"<<endl;
-  }
-
-
   report4<<"#"<<endl<<"# Tag loss and Tag reporting parameters go next"<<endl;
   if(Do_TG>0)
   {
@@ -2205,8 +2133,31 @@ FUNCTION void write_nucontrol()
     report4<<"0  # TG_custom:  0=no read; 1=read if tags exist"<<endl
     <<"#_Cond -6 6 1 1 2 0.01 -4 0 0 0 0 0 0 0  #_placeholder if no parameters"<<endl;;
   }
+  report4<<"#"<<endl;
+  if(timevary_cnt==0)
+    {report4<<"# no timevary parameters"<<endl<<"#"<<endl;}
+    else
+    {
+      report4<<"# deviation vectors for timevary parameters"<<endl
+      <<"#  base   base first block   block  env  env   dev   dev   dev   dev   dev"<<endl
+      <<"#  type  index  parm trend pattern link  var  vectr link _mnyr  mxyr phase  dev_vector"<<endl;
+      
+      for(j=1;j<=timevary_cnt;j++)
+      {
+//        report4.precision(6);
+//        report4.unsetf(std::ios_base::fixed);
+//        report4.unsetf(std::ios_base::floatfield);
+        report4<<setw(2)<<"# ";
+        report4<<std::setprecision(0)<<std::fixed<<setw(5)<<timevary_def[j](1,12);
+        if(timevary_def[j](8)>0)  //  now show devs
+        {
+          report4<<std::setprecision(4)<<std::fixed<<setw(6)<<parm_dev(timevary_def[j](8));
+        }
+        report4<<std::setprecision(0)<<std::fixed<<setw(6)<<endl;
+      }
+    }
 
-  report4<<"#"<<endl<<"# Input variance adjustments; factors: "<<endl;
+  report4<<setw(2)<<"#"<<endl<<"# Input variance adjustments factors: "<<endl;
   report4<<" #_1=add_to_survey_CV"<<endl;
   report4<<" #_2=add_to_discard_stddev"<<endl;
   report4<<" #_3=add_to_bodywt_CV"<<endl;
@@ -2411,7 +2362,7 @@ FUNCTION void write_bigoutput()
   SS2out <<"Forecast_Recruitment "<<Fcast_recr_like<<" "<<Fcast_recr_lambda<<endl;
   SS2out <<"Parm_priors "<<parm_like*parm_prior_lambda(k)<<" "<<parm_prior_lambda(k)<<endl;
   if(SoftBound>0) SS2out <<"Parm_softbounds "<<SoftBoundPen<<" "<<" NA "<<endl;
-  SS2out <<"Parm_devs "<<(sum(MGparm_dev_like)+sum(selparm_dev_like))*parm_dev_lambda(k)<<" "<<parm_dev_lambda(k)<<endl;
+  SS2out <<"Parm_devs "<<(sum(parm_dev_like))*parm_dev_lambda(k)<<" "<<parm_dev_lambda(k)<<endl;
   if(F_ballpark_yr>0) SS2out <<"F_Ballpark "<<F_ballpark_lambda(k)*F_ballpark_like<<" "<<F_ballpark_lambda(k)<<"  ##:est&obs: "<<annual_F(F_ballpark_yr,2)<<" "<<F_ballpark<<endl;
   SS2out <<"Crash_Pen "<<CrashPen_lambda(k)*CrashPen<<" "<<CrashPen_lambda(k)<<endl;
 
@@ -2494,22 +2445,6 @@ FUNCTION void write_bigoutput()
     Report_Parm(NP, active_count, Activ, MGparm(j), MGparm_LO(j), MGparm_HI(j), MGparm_RD(j), MGparm_PR(j), MGparm_PRtype(j), MGparm_CV(j), MGparm_PH(j), MGparm_Like(j));
   }
 
-  if(N_MGparm_dev>0)
-  {
-    for (i=1;i<=N_MGparm_dev;i++)
-    for (j=MGparm_dev_minyr(i);j<=MGparm_dev_maxyr(i);j++)
-    {
-      NP++;  SS2out<<NP<<" "<<ParmLabel(NP)<<" "<<MGparm_dev(i,j);
-      if(active(MGparm_dev))
-      {
-        active_count++;
-        SS2out<<" "<<active_count<<" "<<MGparm_dev_PH<<" _ _ _ act "<<CoVar(active_count,1)<<" "<<parm_gradients(active_count);
-      }
-      else
-      {SS2out<<" _ _ _ _ _ NA _ _ ";}
-      SS2out<<" dev "<<endl;
-    }
-  }
 
   for (j=1;j<=N_SRparm2;j++)
   {
@@ -2650,16 +2585,6 @@ FUNCTION void write_bigoutput()
     Report_Parm(NP, active_count, Activ, selparm(j), selparm_LO(j), selparm_HI(j), selparm_RD(j), selparm_PR(j), selparm_PRtype(j), selparm_CV(j), selparm_PH(j), selparm_Like(j));
   }
 
-    for (i=1;i<=N_selparm_dev;i++)
-    for (j=selparm_dev_minyr(i);j<=selparm_dev_maxyr(i);j++)
-      {
-        NP++;  SS2out<<NP<<" "<<ParmLabel(NP)<<" "<<selparm_dev(i,j);
-        if(active(selparm_dev))
-          {active_count++; SS2out<<" "<<active_count<<" _ _ _ _ act "<<CoVar(active_count,1)<<" "<<parm_gradients(active_count);}
-          else
-          {SS2out<<" _ _ _ _ _ NA _ _ ";}
-        SS2out <<" dev "<<endl;
-    }
 
   if(Do_TG>0)
   {
@@ -2676,6 +2601,24 @@ FUNCTION void write_bigoutput()
       Report_Parm(NP, active_count, Activ, TG_parm(j), TG_parm_LO(j), TG_parm_HI(j), TG_parm2(j,3), TG_parm2(j,4), TG_parm2(j,5), TG_parm2(j,6), TG_parm_PH(j), TG_parm_Like(j));
     }
   }
+
+  if(N_parm_dev>0)
+  {
+    for (i=1;i<=N_parm_dev;i++)
+    for (j=parm_dev_minyr(i);j<=parm_dev_maxyr(i);j++)
+    {
+      NP++;  SS2out<<NP<<" "<<ParmLabel(NP)<<" "<<parm_dev(i,j);
+      if(parm_dev_PH(i)>0)
+      {
+        active_count++;
+        SS2out<<" "<<active_count<<" "<<parm_dev_PH(i)<<" _ _ _ act "<<CoVar(active_count,1);
+      }
+      else
+      {SS2out<<" _ _ _ _ _ NA _ ";}
+      SS2out<<" dev "<<endl;
+    }
+  }
+
 
   SS2out<<endl<<"Number_of_active_parameters_on_or_near_bounds: "<<Nparm_on_bound<<endl;
   SS2out<<"Active_count "<<active_count<<endl<<endl;
@@ -2756,42 +2699,16 @@ FUNCTION void write_bigoutput()
     SS2out<<" "<<ParmLabel(NP)<<" "<<Extra_Std(j);
     SS2out<<" "<<CoVar(active_count,1)<<endl;
   }
- /*
-    SS2out<<endl<<"MGParm_Block_Assignments"<<endl;
-    if(N_MGparm_blk>0)
-    {
-      SS2out<<"Base_parm# ";
-      for (y=styr;y<=endyr;y++)
-      {SS2out<<" "<<y;}
-      SS2out<<endl;
-      for (j=1;j<=N_MGparm;j++)
-      {
-        if(MGparm_1(j,13)>0) SS2out<<j<<" "<<Block_Defs_MG(j)<<endl;
-      }
-    }
 
-    SS2out<<endl<<"Selex_Block_Assignments"<<endl;
-    if(N_selparm_blk>0)
+  if(N_parm_dev>0)
     {
-      SS2out<<"Base_parm# ";
-      for (y=styr;y<=endyr;y++) {SS2out<<" "<<y;}
-      SS2out<<endl;
-      for (j=1;j<=N_selparm;j++)
+      SS2out<<"Parm_dev_details"<<endl<<"Item Parm_Affected SE  Rho  Like"<<endl;
+   SS2out<<" need to create code "<<endl;
+      for(i=1;i<=N_parm_dev;i++)
       {
-        if(selparm_1(j,13)>0)
-        SS2out<<j<<" "<<Block_Defs_Sel(j)<<endl;
-      }
-    }
- */
-
-  if(N_MGparm_dev>0)
-    {
-      SS2out<<"MGParm_dev_details"<<endl<<"Item Parm_Affected SE  Rho  Like"<<endl;
-      for(i=1;i<=N_MGparm_dev;i++)
-      {
-        SS2out<<i<<" "<<ParmLabel(MGparm_dev_rpoint(i))<<" "<<MGparm_dev_stddev(i)<<" "<<MGparm_dev_rho(i)<<" "<<MGparm_dev_like(i)<<endl;
-        SS2out<<i<<" devs "<<MGparm_dev(i)<<endl;
-        if(MGparm_dev_type(i)>=3) SS2out<<i<<" rwalk "<<MGparm_dev_rwalk(i)<<endl;
+//        SS2out<<i<<" "<<ParmLabel(parm_dev_rpoint(i))<<" "<<parm_dev_stddev(i)<<" "<<parm_dev_rho(i)<<" "<<parm_dev_like(i)<<endl;
+//        SS2out<<i<<" devs "<<parm_dev(i)<<endl;
+//        if(parm_dev_type(i)>=3) SS2out<<i<<" rwalk "<<parm_dev_rwalk(i)<<endl;
       }
     }
 

@@ -29,27 +29,12 @@ FUNCTION void get_selectivity()
 
   Ip=0;
 
-  //  SS_Label_Info_22.1.3 #Set up the selectivity deviation time series
-  if(N_selparm_dev>0 && y==styr)
-  {
-    for (k=1;k<=N_selparm_dev;k++)
-    {
-      if(selparm_dev_type(k)==3)
-      {
-        selparm_dev_rwalk(k,selparm_dev_minyr(k))=selparm_dev(k,selparm_dev_minyr(k));
-        j=selparm_dev_minyr(k);
-        for (j=selparm_dev_minyr(k)+1;j<=selparm_dev_maxyr(k);j++)
-        {
-          selparm_dev_rwalk(k,j)=selparm_dev_rwalk(k,j-1)+selparm_dev(k,j);
-        }
-      }
-    }
-  }
+
   //  SS_Label_Info_22.2 #Loop all fisheries and surveys twice; first for size selectivity, then for age selectivity
   for (f=1;f<=2*Nfleet;f++)
   {
     fs=f-Nfleet;  //index for saving age selex in the fleet arrays
-
+    echoinput<<"year, fleet: "<<y<<", "<<f<<"  time_vary_sel: "<<time_vary_sel(y,f)<<" "<<N_selparmvec(f)<<endl;
   //  SS_Label_Info_22.2.1 #recalculate selectivity for any fleets or surveys with time-vary flag set for this year
     if(time_vary_sel(y,f)==1 || save_for_report>0)
     {    // recalculate the selex in this year x type
@@ -78,9 +63,9 @@ FUNCTION void get_selectivity()
           {
             for (j=1;j<=N_selparmvec(f);j++)
             {
-              if(selparm_1(Ip+j,13)!=0)
+              if(selparm_timevary(Ip+j)!=0)
               {
-                sp(j)=parm_timevary(selparm_timevary(Ip+j,1),y);
+                sp(j)=parm_timevary(selparm_timevary(Ip+j),y);
               }
               else
               {sp(j)=selparm(Ip+j);}
@@ -97,48 +82,6 @@ FUNCTION void get_selectivity()
   // 	         selparm_envuse(f)=selparm_1(f,8)-k*100;
   //   	       if(selparm_envuse(f)==99) selparm_envuse(f)=-1;  //  for linking to spawn biomass
   //        	 if(selparm_envuse(f)==98) selparm_envuse(f)=-2;  //  for linking to recruitment
-
-             if(selparm_env(Ip+j)>0)
-             {
-                switch(selparm_envtype(Ip+j))
-                {
-                  case 1:  //  exponential selparm env link
-                    {
-                      sp(j)*=mfexp(selparm(selparm_env(Ip+j))*(env_data(y,selparm_envuse(Ip+j))));
-                      break;
-                    }
-                  case 2:  //  linear selparm env link
-                    {
-                      sp(j)+=selparm(selparm_env(Ip+j))*env_data(y,selparm_envuse(Ip+j));
-                      break;
-                    }
-                  case 3:
-                  	{
-                  		//  not implemented
-                  		break;
-                  	}
-                  case 4:  //  logistic selparm env link
-                    {
-                    	// first parm is offset ; second is slope
-                      sp(j)*=2.00000/(1.00000 + mfexp(-selparm(selparm_env(Ip+j)+1)*(env_data(y,selparm_envuse(Ip+j))-selparm(selparm_env(Ip+j)))));
-                      break;
-                    }
-                }
-             }
-
-            k=selparm_dev_point(Ip+j);     // if dev then modify sp
-            if(k>0)
-            {
-              if(y>=selparm_dev_minyr(k) && y<=selparm_dev_maxyr(k))
-              {
-                if(selparm_dev_type(k)==1)
-                {sp(j) *= mfexp(selparm_dev(k,y));}
-                else if(selparm_dev_type(k)==2)
-                {sp(j) += selparm_dev(k,y);}
-                else if(selparm_dev_type(k)==3)
-                {sp(j)+=selparm_dev_rwalk(k,y);}
-              }
-            }
             if(parm_adjust_method==1 && (save_for_report>0 || do_once==1))  // so does not check bounds if adjust_method==3
             {
               if(sp(j)<selparm_1(Ip+j,1) || sp(j)>selparm_1(Ip+j,2))
@@ -156,59 +99,13 @@ FUNCTION void get_selectivity()
           {
             for (j=1;j<=N_selparmvec(f);j++)
             {
-              if(selparm_1(Ip+j,13)!=0)
+              if(selparm_timevary(Ip+j)!=0)
               {
-                sp(j)=parm_timevary(selparm_timevary(Ip+j,1),y);  //  bound constraint needs to have been done in timevaryparm.tpl
+                sp(j)=parm_timevary(selparm_timevary(Ip+j),y);  //  bound constraint needs to have been done in timevaryparm.tpl
               }
               else
               {sp(j)=selparm(Ip+j);}
 
-              doit=0;
-              if(selparm_env(Ip+j)>0 || selparm_dev_point(Ip+j))
-              {
-                doit=1;
-                temp=log((selparm_1(Ip+j,2)-selparm_1(Ip+j,1)+0.0000002)/(sp(j)-selparm_1(Ip+j,1)+0.0000001)-1.)/(-2.);   // transform the parameter
-                if(selparm_env(Ip+j)>0)
-                {
-                  switch(selparm_envtype(Ip+j))
-                  {
-                    case 2:  //  linear selparm env link
-                      {
-                        temp += selparm(selparm_env(Ip+j))*env_data(y,selparm_envuse(Ip+j));
-        //                sp(j)+= selparm(selparm_env(Ip+j))*env_data(y,selparm_envuse(Ip+j));
-                        break;
-                      }
-                    case 1:  //  exponential selparm env link
-                      {
-                        //  NOT ALLOWED  sp(j)*=mfexp(selparm(selparm_env(Ip+j))*(env_data(y,selparm_envuse(Ip+j))));
-                        break;
-                      }
-                    case 3:
-                    	{
-                    		//  not implemented
-                    		break;
-                    	}
-                    case 4:  //  logistic selparm env link
-                      {
-                      	// first parm is offset ; second is slope
-                        //  NOT ALLOWED sp(j)*=2.00000/(1.00000 + mfexp(-selparm(selparm_env(Ip+j)+1)*(env_data(y,selparm_envuse(Ip+j))-selparm(selparm_env(Ip+j)))));
-                        break;
-                      }
-                  }
-                }
-                k=selparm_dev_point(Ip+j); //  Annual deviations;  use kth dev series
-                if(k>0)
-                {
-                if(y>=selparm_dev_minyr(k) && y<=selparm_dev_maxyr(k))
-                  {
-                    if(selparm_dev_type(k)==2)
-                    {temp += selparm_dev(k,y);}
-                    else if(selparm_dev_type(k)==3)
-                    {temp += selparm_dev_rwalk(k,y);}
-                  }
-                }
-                sp(j)=selparm_1(Ip+j,1)+(selparm_1(Ip+j,2)-selparm_1(Ip+j,1))/(1+mfexp(-2.*temp));   // backtransform
-              }
             }  // end parameter loop j
             break;
           }
@@ -828,7 +725,7 @@ FUNCTION void get_selectivity()
           }
           if(docheckup==1&&y==styr)
           {
-            echoinput<<"parms "<<sp(k)<<" "<<sp(k+1)<<" "<<sp(k+3)<<" "<<temp1;
+            echoinput<<"retention parms "<<sp(k)<<" "<<sp(k+1)<<" "<<sp(k+3)<<" "<<temp1;
             if(seltype(f,2)==4)
             {
                 // additional dome-shaped retention parameters
@@ -1323,7 +1220,7 @@ FUNCTION void get_selectivity()
           }
           if(docheckup==1&&y==styr)
           {
-            echoinput<<"parms "<<sp(k)<<" "<<sp(k+1)<<" "<<sp(k+3)<<" "<<temp1;
+            echoinput<<"age_retention parms "<<sp(k)<<" "<<sp(k+1)<<" "<<sp(k+3)<<" "<<temp1;
             if(seltype(f,2)==4)
             {
                 echoinput<<" "<<sp(k+4)<<" "<<sp(k+5)<<" "<<sp(k+6);
@@ -1421,7 +1318,7 @@ FUNCTION void Make_FishSelex()
     tz=styr+(y-styr)*nseas+s-1;  // can use y, not yf, because wtage_emp values are read in and can extend into forecast
     for (f=1;f<=Nfleet;f++)
     {
-      if(time_vary_makefishsel(yf,f)>0 || save_for_report>0)
+      if(time_vary_sel(yf,f)>0 || time_vary_sel(yf,f+Nfleet)>0 || save_for_report>0)
       {
         makefishsel_yr = yf;
         fs=f+Nfleet;  //  for the age dimensioning

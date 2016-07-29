@@ -499,8 +499,14 @@
     }
   }
  END_CALCS
+
+   init_int parm_adjust_method   //  1=do V1.xx approach to adjustment by env, block or dev; 2=use new logistic approach
+   !! echoinput<<parm_adjust_method<<"  timevarying parameter constraint method"<<endl;
+   init_int autogen_timevary;  //  0 means to autogenerate all time-vary parameters; 1 means to read
+   !! echoinput<<autogen_timevary<<"  timevarying parameter autogenerate (0) or read (1)"<<endl;
+
 !!//  SS_Label_Info_4.5 #Read setup and parameters for natmort, growth, biology, recruitment distribution, and migration
-// read setup for natmort parameters:  LO, HI, INIT, PRIOR, PR_type, CV, PHASE, use_env, use_dev, dev_minyr, dev_maxyr, dev_stddev, Block, Block_type
+// read setup for natmort parameters:  LO, HI, INIT, PRIOR, PR_type, CV, PHASE, use_env, use_dev, dev_minyr, dev_maxyr, dev_phase, Block, Block_type
   int N_MGparm
   int N_natMparms
   int N_growparms
@@ -771,18 +777,13 @@
 
    init_int MGparm_def       //  offset approach (1=none, 2= M, G, CV_G as offset from female-GP1, 3=like SS2 V1.x)
    !! echoinput<<MGparm_def<<"  MGparm_def"<<endl;
-   init_int parm_adjust_method   //  1=do V1.xx approach to adjustment by env, block or dev; 2=use new logistic approach
-   !! echoinput<<parm_adjust_method<<"  parm_adjust_method"<<endl;
 
-  imatrix time_vary_MG(styr-3,YrMax+1,0,7)  // goes to yrmax+1 to allow referencing in forecast, but only endyr+1 is checked
-                                            // stores years to calc non-constant MG parms (1=natmort; 2=growth; 3=wtlen & fec; 4=recr_dist; 5=movement; 6=ageerrorkey)
-  ivector MG_active(0,7)  // 0=all, 1=M, 2=growth 3=wtlen, 4=recr_dist, 5=migration, 6=ageerror, 7=catchmult
   int do_once;
   int doit;
   vector femfrac(1,N_GP*gender)
 
   int MGP_CGD
-  int CGD;  //  switch for cohort growth dev
+  int CGD_onoff;  //  switch for cohort growth dev
 
  LOCAL_CALCS
     if(parm_adjust_method<1 || parm_adjust_method>3)
@@ -962,7 +963,6 @@
        ParCount++; ParmLabel+="AgeKeyParm"+NumLbl(k);
     }
   }
-  N_MGparm=ParCount;
 
   catch_mult_pointer=-1;
   j=sum(need_catch_mult);  //  number of fleets needing a catch multiplier parameter
@@ -974,7 +974,6 @@
       ParCount++; ParmLabel+="Catch_Mult:_"+NumLbl(j)+"_"+fleetname(j);
     }
   }
-  N_MGparm=ParCount;
 
   frac_female_pointer=ParCount+1;
   for(gp=1;gp<=N_GP;gp++)
@@ -988,11 +987,9 @@
   init_matrix MGparm_1(1,N_MGparm,1,14)   // matrix with natmort and growth parms controls
   ivector MGparm_offset(1,N_MGparm)
 
-  matrix MGparm_2(1,N_MGparm,1,14)
-
  LOCAL_CALCS
-  echoinput<<" Biology parameter setup"<<endl;
-  for (i=1;i<=N_MGparm;i++)  //  show MGparm setup as read
+  echoinput<<" Biology base parameter setup"<<endl;
+  for (i=1;i<=N_MGparm;i++)
   echoinput<<i<<" "<<MGparm_1(i)<<" "<<ParmLabel(ParCount-N_MGparm+i)<<endl;
 
 //  find MGparms for which the male parameter value is set equal to the female value
@@ -1011,20 +1008,10 @@
         }
     }
   }
-  echoinput<<"Now read env, block/trend and dev adjustments to MGparms "<<endl;
  END_CALCS
 
-!!//  SS_Label_Info_4.5.4 #Set up environmental linkage for MG parms
-  int N_MGparm_env                            //  number of MGparms that use env linkage
-  int customMGenvsetup  //  0=read one setup (if necessary) and apply to all; 1=read each
-  ivector MGparm_env(1,N_MGparm)   // contains the parameter number of the envlink for a
-  ivector MGparm_envuse(1,N_MGparm)   // contains the environment data number
-  ivector MGparm_envtype(1,N_MGparm)  // 1=multiplicative (input val 100-199); 2= additive (200-299); 3=logistic
   ivector mgp_type(1,N_MGparm)  //  contains category to parameter (1=natmort; 2=growth; 3=wtlen & fec; 4=recr_dist; 5=movement)
-
  LOCAL_CALCS
-   time_vary_MG.initialize();    // stores years to calc non-constant MG parms (1=natmort; 2=growth; 3=wtlen & fec; 4=recr_dist; 5=movement)
-   CGD=0;
    gp=0;
    for(gg=1;gg<=gender;gg++)
    for(GPat=1;GPat<=N_GP;GPat++)
@@ -1046,208 +1033,142 @@
    if(catch_mult_pointer>0) mgp_type(catch_mult_pointer,N_MGparm)=7;
    for(f=frac_female_pointer; f<=frac_female_pointer+N_GP-1;f++) mgp_type(f)=3;
    echoinput<<"mgparm_type for each parm: 1=M; 2=growth; 3=wtlen,mat,fec,hermo,sexratio; 4=recr; 5=migr; 6=ageerror; 7=catchmult "<<endl<<mgp_type<<endl;
-
-   MGparm_env.initialize();   //  will store the index of environ fxns here
-   MGparm_envtype.initialize();
-   N_MGparm_env=0;
-   for (f=1;f<=N_MGparm;f++)  //  loop mgparm and find those with env and create Label
-   {
-    if(MGparm_1(f,8)>0)
-    {
-     N_MGparm_env ++;
-     MGparm_env(f)=N_MGparm+N_MGparm_env;  //  store starting parameter value for this linkage
-     k=int(MGparm_1(f,8)/100);  //  find the link code
-     MGparm_envtype(f)=k;
-     MGparm_envuse(f)=MGparm_1(f,8)-k*100;
-     if(MGparm_envuse(f)==99) MGparm_envuse(f)=-1;  //  for linking to rel_spawn biomass
-     if(MGparm_envuse(f)==98) MGparm_envuse(f)=-2;  //  for linking to exp(recdev)
-     if(MGparm_envuse(f)==97) MGparm_envuse(f)=-3;  //  for linking to rel_smrybio
-     if(MGparm_envuse(f)==96) MGparm_envuse(f)=-4;  //  for linking to rel_smry_num
-     switch (k)
-     {
-       case 1:  //  multiplicative
-        {
-          ParCount++; ParmLabel+=ParmLabel(f)+"_ENV_mult";
-          if(parm_adjust_method==2) {N_warn++; cout<<" EXIT - see warning "<<endl; warning<<"multiplicative env effect on MGparm: "<<f
-          <<" not allowed because parm_adjust_method==2; STOP"<<endl; exit(1);}
-          break;
-        }
-       case 2:  //  additive
-        {
-          ParCount++; ParmLabel+=ParmLabel(f)+"_ENV_add";
-          break;
-        }
-       case 4:  //  logistic with offset
-        {
-          if(parm_adjust_method==2) {N_warn++; cout<<" EXIT - see warning "<<endl; warning<<"multiplicative env effect on MGparm: "<<f
-          <<" not allowed because parm_adjust_method==2; STOP"<<endl; exit(1);}
-          ParCount++; ParmLabel+=ParmLabel(f)+"_ENV_offset";
-          ParCount++; ParmLabel+=ParmLabel(f)+"_ENV_lgst_slope";
-          N_MGparm_env ++;  //  for the second parameter
-          break;
-        }
-     }
-
-     if(f==MGP_CGD) CGD=1;    // cohort growth dev is a fxn of environ, so turn on CGD calculation
-     for (y=styr;y<=endyr;y++)
-     {
-      if(MGparm_envuse(f)>0 )
-        {if(env_data_RD(y,MGparm_envuse(f))!=0.0) {time_vary_MG(y,mgp_type(f))=1; time_vary_MG(y+1,mgp_type(f))=1; }
-        }
-      else if (MGparm_envuse(f)<0 )  //  density-dependence being used
-        {time_vary_MG(y,mgp_type(f))=1; time_vary_MG(y+1,mgp_type(f))=1; }
-      //       non-zero data were read    or fxn uses biomass or recruitment
-     }
-    }
-   }
-  if(N_MGparm_env>0)
-  {
-    *(ad_comm::global_datafile) >> customMGenvsetup;
-    if(customMGenvsetup==0) {k1=1;} else {k1=N_MGparm_env;}
-   echoinput<<customMGenvsetup<<" customMGenvsetup"<<endl;
-  }
-  else
-  {customMGenvsetup=0; k1=0;
-   echoinput<<" no mgparm env links, so don't read customMGenvsetup"<<endl;
-    }
  END_CALCS
-  init_matrix MGparm_env_1(1,k1,1,7)
-  !!if(N_MGparm_env>0) echoinput<<" MGparm-env setup "<<endl<<MGparm_env_1<<endl;
 
-  imatrix MGparm_timevary(1,N_MGparm,1,3)  //  holds index of timevary used by this base parameter; 1 for blktrend, 2 for env, 3 for dev
-                                          //  fields 4 and 5 map fields 13 and 14 from base parameter
-  int timevary_cnt
-  int timevary_parm_cnt;
+!!// SS_Label_Info_4... //  quantities used to track all time-varying parameters
+  int timevary_cnt   //  cumulative count of timevarying parameters across MG, SRR, Q, Selex, Tag
+                     //  it counts the number of times timevary_setup(1,13) is created
+                     //  by the function  "create_timevary"
+                     //  and is pushed to the vector_vector  timevary_def
+  int N_parm_dev     //  number of  all parms that use annual deviations
+
+!!//  SS_Label_Info_4.5.4 #Set up time-varying parameters for MG parms
   int timevary_parm_cnt_MG;
-  int timevary_parm_cnt_sel;
-  int timevary_Nread
-  int N_MGparm_blk                            // number of MGparms that use blocks
-  int N_MGparm_trend
-  int N_MGparm_trend2     //   number of parameters needed to define trends and cycles
-  int customblocksetup_MG  //  0=read one setup and apply to all; 1=read each
+  int timevary_parm_start_MG;
+
+  ivector MGparm_timevary(1,N_MGparm)  //  holds index in timevary_def used by this base parameter
+  imatrix time_vary_MG(styr-3,YrMax+1,0,7)  // goes to yrmax+1 to allow referencing in forecast, but only endyr+1 is checked
+                                            // stores years to calc non-constant MG parms (1=natmort; 2=growth; 3=wtlen & fec; 4=recr_dist; 5=movement; 6=ageerrorkey)
+  ivector time_vary_pass(styr-3,YrMax+1)    //  extracted column
+  ivector MG_active(0,7)  // 0=all, 1=M, 2=growth 3=wtlen, 4=recr_dist, 5=migration, 6=ageerror, 7=catchmult
+  vector env_data_pass(styr-1,YrMax)
+ 
  LOCAL_CALCS
    timevary_cnt=0;
+   N_parm_dev=0;
    timevary_parm_cnt=0;
+
+//  push once so 0'th row is not used
+   ivector timevary_setup(1,13);
+   timevary_setup.initialize();
+   timevary_def.push_back (timevary_setup(1,13));
+   dvector tempvec(1,7);  //  temporary vector for a time-vary parameter  LO HI INIT PRIOR PR_type SD PHASE 
+   timevary_parm_rd.push_back (tempvec);
+   
+   echoinput<<"Now read env, block/trend, and dev adjustments to MGparms "<<endl;
+   time_vary_MG.initialize();    // stores years to calc non-constant MG parms (1=natmort; 2=growth; 3=wtlen & fec; 4=recr_dist; 5=movement)
+   MG_active.initialize();
+   CGD_onoff=0;
+
+   timevary_parm_start_MG=0;
+   timevary_parm_cnt_MG=0;
    MGparm_timevary.initialize();
-   N_MGparm_trend=0;
-   N_MGparm_trend2=0;
-   N_MGparm_blk=0;
+   ivector block_design_null(1,1);
+   block_design_null.initialize();
+
    for (j=1;j<=N_MGparm;j++)
    {
-     ivector itempvec(1,5);
-     z=MGparm_1(j,13);    // specified block or trend definition
-     if(z==0)    //  no blocks or trends
-     {timevary_Nread=0;}
+     k=mgp_type(j);
+     time_vary_pass=column(time_vary_MG,k);  // year vector for this type of MGparm
+
+     if(MGparm_1(j,13)==0 && MGparm_1(j,8)==0 && MGparm_1(j,9)==0)
+     {
+      //  no time-vary parameter effects
+     }
      else
      {
-       timevary_cnt++;
-       MGparm_timevary(j,1)=timevary_cnt;  //  base parameter will use this timevary
-       itempvec(1)=1; //  indicates a MG parm
-       itempvec(2)=j; //  index of base parm
-       itempvec(3)=timevary_parm_cnt+1;  //  first parameter
-       itempvec(4)=z; //  block or trend type
-       itempvec(5)=MGparm_1(j,14); //  block pattern or trend inflection type
-       if (z>0)  //  blocks with z as the block pattern
-       {
-         if(z>N_Block_Designs) {N_warn++; warning<<"parm: "<<j<<" ERROR, Block > N Blocks "<<z<<" "<<N_Block_Designs<<endl; exit(1);}
+       ivector timevary_setup(1,13);  //  temporary vector for time_vary specs
+       timevary_setup.initialize();
+//  1=baseparm type; 2=baseparm index; 3=first timevary parm
+//  4=block or trend type; 5=block pattern; 6= env link type; 7=env variable;
+//  8=dev vector used; 9=dev link type; 10=dev min year; 11=dev maxyear; 12=dev phase; 13=all parm index of baseparm
+       timevary_parm_start_MG=1;  //  at least one MG parm is time varying
+       echoinput<<endl<<" timevary for MG parameter: "<<j<<endl;
+       timevary_cnt++;  //  count parameters with time-vary effect
+       MGparm_timevary(j)=timevary_cnt;  //  base parameter will use this timevary specification
+       timevary_setup(1)=1; //  indicates a MG parm
+       timevary_setup(2)=j; //  index of base parm within that type of parameter
+       timevary_setup(13)=j;  //  index of base parm relative to ParCount which is continuous across all types of parameters
+       timevary_setup(3)=timevary_parm_cnt+1;  //  first parameter within total list of all timevary parms
+       z=MGparm_1(j,13);    // specified block or trend definition
 
-         timevary_Nread=Nblk(z);  //  N parameters
-         g=1;  //  index to list in block design
-         for (a=1;a<=Nblk(z);a++)
-         {
-          N_MGparm_blk++;
-          timevary_parm_cnt++;
-          y=Block_Design(z,g);
-          time_vary_MG(y,mgp_type(j))=1;
-          sprintf(onenum, "%d", y);
-          ParCount++;
-
-          k=int(MGparm_1(j,14));
-          switch(k)
-          {
-            case 0:
-            {ParmLabel+=ParmLabel(j)+"_BLK"+NumLbl(z)+"mult_"+onenum+CRLF(1);  break;}
-            case 1:
-            {ParmLabel+=ParmLabel(j)+"_BLK"+NumLbl(z)+"add_"+onenum+CRLF(1);  break;}
-            case 2:
-            {ParmLabel+=ParmLabel(j)+"_BLK"+NumLbl(z)+"repl_"+onenum+CRLF(1);  break;}
-            case 3:
-            {ParmLabel+=ParmLabel(j)+"_BLK"+NumLbl(z)+"delta_"+onenum+CRLF(1);  break;}
-          }
-          y=Block_Design(z,g+1)+1;  // first year after block
-          if(y>endyr+1) y=endyr+1;
-          time_vary_MG(y,mgp_type(j))=1;
-          if(mgp_type(j)==7)  //  so doing catch_mult which needs annual values calculated for each year of the block
-          {
-            for(k=Block_Design(z,g);k<=y;k++)
-            {
-              time_vary_MG(k,7)=1;
-            }
-          }
-          g+=2;
-         }
-         if(j==MGP_CGD) CGD=1;
-       }
-       else //  (z<0) so invoke a trend
+       k=int(MGparm_1(j,8)/100);  //  find the env link code
+       timevary_setup(6)=k;  //  link code for env
+       timevary_setup(7)=int(MGparm_1(j,8))-k*100;  //  env variable used
+       if(timevary_setup(7)>0)
        {
-         timevary_Nread=3;
-         N_MGparm_trend++;
-          if(MGparm_1(j,13)==-1)
-          {
-            ParCount++; ParmLabel+=ParmLabel(j)+"_TrendFinal_Offset"+CRLF(1);
-            ParCount++; ParmLabel+=ParmLabel(j)+"_TrendInfl_"+CRLF(1);
-            ParCount++; ParmLabel+=ParmLabel(j)+"_TrendWidth_"+CRLF(1);
-            timevary_parm_cnt+=timevary_Nread;  //  for the 3 trend parameters
-            N_MGparm_trend2+=timevary_Nread;
-          }
-          else if(MGparm_1(j,13)==-2)
-          {
-            ParCount++; ParmLabel+=ParmLabel(j)+"_TrendFinal_"+CRLF(1);
-            ParCount++; ParmLabel+=ParmLabel(j)+"_TrendInfl_"+CRLF(1);
-            ParCount++; ParmLabel+=ParmLabel(j)+"_TrendWidth_"+CRLF(1);
-            timevary_parm_cnt+=timevary_Nread;  //  for the 3 trend parameters
-            N_MGparm_trend2+=timevary_Nread;
-          }
-          else
-          {
-            timevary_Nread=Ncycle;
-            for (icycle=1;icycle<=Ncycle;icycle++)
-            {
-              ParCount++; ParmLabel+=ParmLabel(j)+"_Cycle_"+NumLbl(icycle)+CRLF(1);
-              timevary_parm_cnt+=1;  //  count the cycle parameters
-            }
-          }
+         k=timevary_setup(7);
+         for(y=styr-1;y<=YrMax;y++) env_data_pass(y)=env_data_RD(y,k);
+       } 
+       else
+       {k=0; env_data_pass.initialize();}
+
+       if(z>0)  //  doing blocks
+       {
+         create_timevary(MGparm_1(j),timevary_setup, time_vary_pass, autogen_timevary, mgp_type(j), Block_Design(z), parm_adjust_method, env_data_pass, N_parm_dev);
        }
-       timevary_parm1.push_back (itempvec(1,5));
+       else
+       {
+         create_timevary(MGparm_1(j),timevary_setup, time_vary_pass, autogen_timevary, mgp_type(j), block_design_null, parm_adjust_method, env_data_pass, N_parm_dev);
+       }
+  /*
+   where:
+   MGparm_1(j):           vector with the base parameter which has some type of timevary characteristic
+   timevary_setup:        vector which contains specs of all types of timevary  for this base parameter
+                          will be pushed to timevary_def cumulative across all types of base parameters
+   time_vary_pass:        vector containing column(time_vary_MG,mgp_type(j)), will be modified in create_timevary
+   autogen_timevary:      switch to autogenerate or not
+   mgp_type(j):           integer with type of MGparm being worked on; analogous to 2*fleet in the selectivity section
+   block_design(z):       block design, if any, being used
+   parm_adjust_method:    switch to determine if adjusted parameter will stay in bounds; used to create warnings in create_timevary
+   env_data_RD:           matrix containing entire set of environmental data as read
+   N_parm_dev:            integer that is incremented in create_timevary as dev vectors are created; cumulative across all types of parameters
+  */  
+       timevary_def.push_back (timevary_setup(1,13));
+       for(y=styr-3;y<=YrMax+1;y++) {time_vary_MG(y,mgp_type(j))=time_vary_pass(y);}  // year vector for this category og MGparm
+       if(j==MGP_CGD) CGD_onoff=1;
      }
-   }
+   } 
+   
    timevary_parm_cnt_MG=timevary_parm_cnt;
-   echoinput<<" N_timevary "<<timevary_cnt<<"  using "<<timevary_parm_cnt_MG<<" parameters "<<endl;
-   if(timevary_cnt>0)
-   {
-     *(ad_comm::global_datafile) >> customblocksetup_MG;
-     echoinput<<customblocksetup_MG<<" customblocksetup_MG"<<endl;
-     if(customblocksetup_MG==0)
-     {
-         dvector tempvec(1,7);
-         *(ad_comm::global_datafile) >> tempvec(1,7);
-         for(k=1;k<=timevary_parm_cnt;k++)
-         {
-           timevary_parm_rd.push_back (tempvec);
-         }
-     }
-     else
-     {
-       for(k=1;k<=timevary_parm_cnt;k++)
-       {
-         dvector tempvec(1,7);
-         *(ad_comm::global_datafile) >> tempvec(1,7);
-         timevary_parm_rd.push_back (tempvec);
-     }
-     }
-     for(j=0;j<=timevary_parm_cnt-1;j++)
-     {echoinput<<timevary_parm_rd[j]<<endl;}
-   }
+
+  //  SS_Label_Info_4.5.9 #Set up random deviations for MG parms
+  //  NOTE:  the parms for the se of the devs are part of the MGparm2 list above, not the dev list below
+
+  //  SS_Label_Info_4.5.95 #Populate time_bio_category array defining when biology changes
+     k=YrMax+1;
+    for (y=styr+1;y<=YrMax;y++)
+    {
+      if(time_vary_MG(y,2)>0 && y<k)  k=y;
+    }
+    if(k<YrMax+1)
+    {
+      for (y=k;y<=YrMax+1;y++)
+      {
+        time_vary_MG(y,2)=1;
+      }
+    }
+    for (y=styr-1;y<=YrMax;y++)
+    {
+      for (f=1;f<=7;f++)
+      {
+        if(time_vary_MG(y,f)>0)
+        {
+          MG_active(f)=1;
+          time_vary_MG(y,0)=1;  // tracks active status for all MG types
+        }
+      }
+    }
  END_CALCS
 
 !!//  SS_Label_Info_4.5.7 #Set up seasonal effects for MG parms
@@ -1275,7 +1196,7 @@
     {
       if(MGparm_seas_effects(j)>0)
       {
-        MGparm_seas_effects(j)=N_MGparm+N_MGparm_env+N_MGparm_seas;  // store base parameter count
+        MGparm_seas_effects(j)=N_MGparm+N_MGparm_seas;  // store base parameter count
         for (s=1;s<=nseas;s++)
         {
           N_MGparm_seas++; ParCount++; ParmLabel+=MGseasLbl(j)+"_seas_"+NumLbl(s);
@@ -1287,48 +1208,9 @@
   init_matrix MGparm_seas_1(1,N_MGparm_seas,1,7)  // read matrix that defines the seasonal parms
   !!if(N_MGparm_seas>0) echoinput<<" MGparm_seas"<<endl<<MGparm_seas_1<<endl;
 
-!!//  SS_Label_Info_4.5.8 #Set up MG dev standard errors
-  int N_MGparm_dev                            //  number of MGparms that use annual deviations
- LOCAL_CALCS
-    N_MGparm_dev=0;
-    for(j=1;j<=N_MGparm;j++)  //  loop mgparm and set labels for dev setups
-    {
-    if(MGparm_1(j,9)>0)
-      {
-        N_MGparm_dev++;
-//  these are not parameters in 3.24  need to create anyway
-        ParCount++;
-        ParmLabel+=ParmLabel(j)+"_dev_se"+CRLF(1);
-        ParCount++;
-        ParmLabel+=ParmLabel(j)+"_dev_rho"+CRLF(1);
-      }
-    }
-    echoinput<<"# Number of MGparms with devs: "<<N_MGparm_dev<<endl;
- END_CALCS
-
-  matrix MGparm_dev_se_rd(1,2*N_MGparm_dev,1,7)  // create matrix that defines the parms for stderr and rho of devs but do not read in 3.24
-  ivector MGparm_dev_minyr(1,N_MGparm_dev)
-  ivector MGparm_dev_maxyr(1,N_MGparm_dev)
-  ivector MGparm_dev_type(1,N_MGparm_dev)  // contains type of dev:  1 for multiplicative, 2 for additive, 3 for additive randwalk, 4=mean reverting additive rwalk
-  ivector MGparm_dev_point(1,N_MGparm)  //  specifies which dev vector will be used by a parameter
-  ivector MGparm_dev_rpoint(1,N_MGparm_dev)  //  reverse point from dev list back to parameter list to get the affected parameter index
-                                             //  e.g.  specifies which parm (f) is affected by the j'th dev vector; only used in ss2out.
-  ivector MGparm_dev_rpoint2(1,N_MGparm_dev)  //  reverse point from dev list back to parameter list to get the parameter index for the se parameter
-                                              //  e.g. points to the parm index that holds the f'th dev's se and rho
-  int MGparm_dev_PH
- LOCAL_CALCS
-  MGparm_dev_minyr.initialize();
-  MGparm_dev_maxyr.initialize();
-  MGparm_dev_type.initialize();
-  MGparm_dev_point.initialize();
-  MGparm_dev_rpoint.initialize();
-  MGparm_dev_rpoint2.initialize();
- END_CALCS
-
-!!//  SS_Label_Info_4.5.9 #Create vectors (e.g. MGparm_PH) to be used to define the actual estimated parameter array
-
+  !!//  SS_Label_Info_4.5.9 #Create vectors (e.g. MGparm_PH) to be used to define the actual estimated parameter array
   int N_MGparm2
-  !! N_MGparm2=N_MGparm+N_MGparm_env+timevary_parm_cnt_MG+N_MGparm_seas+2*N_MGparm_dev;
+  !! N_MGparm2=N_MGparm+timevary_parm_cnt_MG;
   vector MGparm_LO(1,N_MGparm2)
   vector MGparm_HI(1,N_MGparm2)
   vector MGparm_RD(1,N_MGparm2)
@@ -1338,7 +1220,6 @@
   ivector MGparm_PH(1,N_MGparm2)
 
  LOCAL_CALCS
-   MG_active=0;   // initializes
    for (f=1;f<=N_MGparm;f++)  //  loop mgparm and map setup to _LO , _HI etc.
    {
     MGparm_LO(f)=MGparm_1(f,1);
@@ -1354,35 +1235,17 @@
    if(natM_type==2 && MG_active(2)>0) MG_active(1)=1;  // lorenzen M depends on growth
 
    j=N_MGparm;
-   if(N_MGparm_env>0)
-   {
-    for (f=1;f<=N_MGparm_env;f++)
-    {
-     j++;
-     if(customMGenvsetup==0) {k=1;}
-     else {k=f;}
-
-    MGparm_LO(j)=MGparm_env_1(k,1);
-     MGparm_HI(j)=MGparm_env_1(k,2);
-     MGparm_RD(j)=MGparm_env_1(k,3);
-     MGparm_PR(j)=MGparm_env_1(k,4);
-     MGparm_PRtype(j)=MGparm_env_1(k,5);
-     MGparm_CV(j)=MGparm_env_1(k,6);
-     MGparm_PH(j)=MGparm_env_1(k,7);
-    }
-   }
-
    if(timevary_parm_cnt_MG>0)
-   for (f=1;f<=timevary_parm_cnt_MG;f++)
+   for (f=timevary_parm_start_MG;f<=timevary_parm_cnt_MG;f++)
    {
     j++;
-    MGparm_LO(j)=timevary_parm_rd[f-1](1);
-    MGparm_HI(j)=timevary_parm_rd[f-1](2);
-    MGparm_RD(j)=timevary_parm_rd[f-1](3);
-    MGparm_PR(j)=timevary_parm_rd[f-1](4);
-    MGparm_PRtype(j)=timevary_parm_rd[f-1](5);
-    MGparm_CV(j)=timevary_parm_rd[f-1](6);
-    MGparm_PH(j)=timevary_parm_rd[f-1](7);
+    MGparm_LO(j)=timevary_parm_rd[f](1);
+    MGparm_HI(j)=timevary_parm_rd[f](2);
+    MGparm_RD(j)=timevary_parm_rd[f](3);
+    MGparm_PR(j)=timevary_parm_rd[f](4);
+    MGparm_PRtype(j)=timevary_parm_rd[f](5);
+    MGparm_CV(j)=timevary_parm_rd[f](6);
+    MGparm_PH(j)=timevary_parm_rd[f](7);
    }
 
    if(N_MGparm_seas>0)
@@ -1397,143 +1260,13 @@
     MGparm_CV(j)=MGparm_seas_1(f,6);
     MGparm_PH(j)=MGparm_seas_1(f,7);
    }
-
-  //  SS_Label_Info_4.5.9 #Set up random deviations for MG parms
-  //  NOTE:  the parms for the se of the devs are part of the MGparm2 list above, not the dev list below
-   int N_MGparm_dev_tot;
-   N_MGparm_dev_tot=0;
-   if(N_MGparm_dev>0)
-   {
-     s=0;
-     k=0;
-     for (f=1;f<=N_MGparm;f++)  //  loop mgparm read dev var and rho
-     {
-       if(MGparm_1(f,9)>=1)
-       {
-         s++;
-         if(parm_adjust_method==2 && MGparm_1(f,9)==1)
-         {N_warn++; warning<<" cannot use parm_adjust_method==2 and multiplicative devs for parameter "<<f<<endl;}
-         MGparm_dev_type(s)=MGparm_1(f,9);  //  1 for multiplicative, 2 for additive, 3 for additive randwalk, 4=mean-reverting rwalk
-         MGparm_dev_point(f)=s;  //  specifies which dev vector is used by the f'th MGparm
-         MGparm_dev_rpoint(s)=f;  //  specifies which parm (f) is affected by the j'th dev vector
-
-         {
-           k++;
-           *(ad_comm::global_datafile) >> MGparm_dev_se_rd(k)(1,7);
-           k++;
-           *(ad_comm::global_datafile) >> MGparm_dev_se_rd(k)(1,7);
-
-         }
-
-         y=MGparm_1(f,10);
-         if(y<styr)
-         {
-           N_warn++; warning<<" reset MGparm_dev start year to styr for MGparm: "<<f<<" "<<y<<endl;
-           y=styr;
-         }
-         MGparm_dev_minyr(s)=y;
-
-         y=MGparm_1(f,11);
-         if(y>endyr)
-         {
-           N_warn++; warning<<" reset MGparm_dev end year to endyr for MGparm: "<<f<<" "<<y<<endl;
-           y=endyr;
-         }
-         MGparm_dev_maxyr(s)=y;
-       }
-     }
-     k=0;
-     for (f=1;f<=N_MGparm_dev;f++)
-     {
-      j++;
-      k++;
-      MGparm_LO(j)=MGparm_dev_se_rd(k,1);
-      MGparm_HI(j)=MGparm_dev_se_rd(k,2);
-      MGparm_RD(j)=MGparm_dev_se_rd(k,3);
-      MGparm_PR(j)=0.0;
-      MGparm_PRtype(j)=-1.;
-      MGparm_CV(j)=999;
-      MGparm_PH(j)=-1;
-      MGparm_dev_rpoint2(f)=j;  //  specifies which parm holds the f'th dev's se
-      j++;
-      k++;
-      MGparm_LO(j)=MGparm_dev_se_rd(k,1);
-      MGparm_HI(j)=MGparm_dev_se_rd(k,2);
-      MGparm_RD(j)=MGparm_dev_se_rd(k,3);
-      MGparm_PR(j)=0.0;
-      MGparm_PRtype(j)=-1.;
-      MGparm_CV(j)=999;
-      MGparm_PH(j)=-1;
-     }
-     echoinput<<"MGparm_dev_setup "<<endl<<MGparm_dev_se_rd<<endl;
-
-       j=0;
-       for (f=1;f<=N_MGparm;f++)  //  loop mgparm and set parameters for devs
-       {
-         if(MGparm_1(f,9)>0)
-         {
-             j++;
-             for(y=MGparm_dev_minyr(j);y<=MGparm_dev_maxyr(j);y++)
-             {
-               MG_active(mgp_type(f))=1;
-               time_vary_MG(y,mgp_type(f))=1;
-               if(y<=endyr) time_vary_MG(y+1,mgp_type(f))=1;   // so will recalculate to null value, even for endyr+1
-               sprintf(onenum, "%d", y);
-               N_MGparm_dev_tot++;
-               ParCount++;
-               if(MGparm_dev_type(j)==1)
-               {ParmLabel+=ParmLabel(f)+"_DEVmult_"+onenum+CRLF(1);}
-               else if(MGparm_dev_type(j)==2)
-               {ParmLabel+=ParmLabel(f)+"_DEVadd_"+onenum+CRLF(1);}
-               else if(MGparm_dev_type(j)==3)
-               {ParmLabel+=ParmLabel(f)+"_DEVrwalk_"+onenum+CRLF(1);}
-               else if(MGparm_dev_type(j)==4)
-               {ParmLabel+=ParmLabel(f)+"_DEV_MR_rwalk_"+onenum+CRLF(1);}
-               else
-               {N_warn++; cout<<" EXIT - see warning "<<endl; warning<<" illegal MGparmdevtype for parm "<<f<<endl; exit(1);}
-             }
-
-             if(f==MGP_CGD) CGD=1;
-         }
-       }
-       *(ad_comm::global_datafile) >> MGparm_dev_PH;
-       echoinput<<MGparm_dev_PH<<" MGparm_dev_PH"<<endl;
-   }
-   else
-   {
-    MGparm_dev_PH=-6;
-    echoinput<<" don't read MGparm_dev_PH"<<endl;
-   }
-
-  //  SS_Label_Info_4.5.95 #Populate time_bio_category array defining when biology changes
-     k=YrMax+1;
-    for (y=styr+1;y<=YrMax;y++)
-    {
-      if(time_vary_MG(y,2)>0 && y<k)  k=y;
-    }
-    if(k<YrMax+1)
-    {
-      for (y=k;y<=YrMax+1;y++)
-      {
-        time_vary_MG(y,2)=1;
-      }
-    }
-    for (y=styr;y<=YrMax;y++)
-    {
-      for (f=1;f<=7;f++)
-      {
-        if(time_vary_MG(y,f)>0)
-        {
-          MG_active(f)=1;
-          time_vary_MG(y,0)=1;  // tracks active status for all MG types
-        }
-      }
-    }
-    MG_active(0)=sum(MG_active(1,7));
+   MG_active(0)=sum(MG_active(1,7));
+   echoinput<<"MG_active "<<MG_active<<endl;
+   echoinput<<"timevary_MG "<<endl<<time_vary_MG<<endl;
  END_CALCS
-
-!!//  SS_Label_Info_4.6 #Read setup for Spawner-Recruitment parameters
-//  SPAWN-RECR: read setup for SR parameters:  LO, HI, INIT, PRIOR, PRtype, CV, PHASE
+ 
+  !!//  SS_Label_Info_4.6 #Read setup for Spawner-Recruitment parameters
+  //  SPAWN-RECR: read setup for SR parameters:  LO, HI, INIT, PRIOR, PRtype, CV, PHASE
   init_int SR_fxn
   ivector N_SRparm(1,10)
   !!N_SRparm.fill("{0,2,2,2,3,2,3,3,0,0}");
@@ -2552,267 +2285,139 @@
 
 !!//  SS_Label_Info_4.9.3 #Read selex parameters
   init_matrix selparm_1(1,N_selparm,1,14)
+  ivector selparm_fleet(1,N_selparm) // holds the fleet ID for each selparm  
+                                  //  equivalent to the mgp_type() for MGparms
+
  LOCAL_CALCS
-  echoinput<<" selex base parameters "<<endl;
+  echoinput<<" selex and composition base parameters "<<endl;
   for (g=1;g<=N_selparm;g++)
   {
     echoinput<<g<<" ## "<<selparm_1(g)<<" ## "<<ParmLabel(ParCount-N_selparm+g)<<endl;
   }
+
+  //  now identify the fleet associated with each parameter
+  j=0;
+  for(f=1;f<=2*Nfleet;f++)
+  {
+    if(N_selparmvec(f)>0)
+    {
+      for(g=1;g<=N_selparmvec(f);g++)
+      {
+        j++; selparm_fleet(j)=f;
+      } 
+    }
+  }
+  if(Comp_Err_ParmCount>0)
+  {
+    for(g=1;g<=Comp_Err_ParmCount;g++)
+    {
+      j++; selparm_fleet(j)=0;
+    } 
+  }
  END_CALCS
 
-  imatrix time_vary_sel(styr-3,YrMax,1,2*Nfleet)
-  imatrix time_vary_makefishsel(styr-3,YrMax,1,Nfleet)
+  int timevary_parm_cnt_sel;
+  int timevary_parm_start_sel;
+  ivector selparm_timevary(1,N_selparm)  //  holds index of timevary used by this base parameter
+  imatrix time_vary_sel(styr-3,YrMax+1,1,2*Nfleet)
+
   int makefishsel_yr
 !!//  SS_Label_Info_4.9.4 #Create and label environmental linkages for selectivity parameters
-  int N_selparm_env                            // number of selparms that use env linkage
-  int custom_selenv_setup  //  0=read one setup and apply to all; 1=read each
-  ivector selparm_env(1,N_selparm)             //  pointer to parameter with env link for each selparm
-  ivector selparm_envuse(1,N_selparm)   // contains the environment data number
-  ivector selparm_envtype(1,N_selparm)  // 1=multiplicative; 2= additive
-  imatrix Block_Defs_Sel(1,N_selparm,styr,YrMax)
+//  int N_selparm_env                            // number of selparms that use env linkage
+//  int custom_selenv_setup  //  0=read one setup and apply to all; 1=read each
+//  ivector selparm_env(1,N_selparm)             //  pointer to parameter with env link for each selparm
+//  ivector selparm_envuse(1,N_selparm)   // contains the environment data number
+//  ivector selparm_envtype(1,N_selparm)  // 1=multiplicative; 2= additive
+//  imatrix Block_Defs_Sel(1,N_selparm,styr,YrMax)
 
  LOCAL_CALCS
-  N_selparm_env=0;
-  selparm_env.initialize();
-  selparm_envtype.initialize();
-  selparm_envuse.initialize();
+//  N_selparm_env=0;
+//  selparm_env.initialize();
+//  selparm_envtype.initialize();
+//  selparm_envuse.initialize();
+//  Block_Defs_Sel.initialize();
+  timevary_parm_start_sel=timevary_parm_cnt;
+  timevary_parm_cnt_sel=0;
   time_vary_sel.initialize();
-  time_vary_makefishsel.initialize();
-  Block_Defs_Sel.initialize();
+  selparm_timevary.initialize();
 
   for (j=1;j<=N_selparm;j++)
   {
-    if(selparm_1(j,8)>0)
-    {
-      selparm_env(j)=N_selparm+N_selparm_env+1;  //   first parameter for this link
-      k=int(selparm_1(j,8)/100);  //  find the link code
-      selparm_envtype(j)=k;
-      selparm_envuse(j)=selparm_1(j,8)-k*100;
-      if(selparm_envuse(j)==99) selparm_envuse(j)=-1;  //  for linking to rel_spawn biomass
-      if(selparm_envuse(j)==98) selparm_envuse(j)=-2;  //  for linking to exp(recdev)
-      if(selparm_envuse(j)==97) selparm_envuse(j)=-3;  //  for linking to rel_smrybio
-      if(selparm_envuse(j)==96) selparm_envuse(j)=-4;  //  for linking to rel_smry_num
-     switch (k)
+     k=selparm_fleet(j);
+     time_vary_pass=column(time_vary_sel,k);  // year vector for this category of MGparm
+     if(selparm_1(j,13)==0 && selparm_1(j,8)==0 && selparm_1(j,9)==0)
      {
-       case 1:  //  multiplicative
-        {
-          N_selparm_env ++; ParCount++; ParmLabel+=ParmLabel(j+firstselparm)+"_ENV_mult";
-          if(parm_adjust_method==2) {N_warn++; cout<<" EXIT - see warning "<<endl; warning<<"multiplicative env effect on selparm: "<<j+firstselparm
-          <<" not allowed because parm_adjust_method==2; STOP"<<endl; exit(1);}
-          break;
-        }
-       case 2:  //  additive
-        {
-          N_selparm_env ++; ParCount++; ParmLabel+=ParmLabel(j+firstselparm)+"_ENV_add";
-          break;
-        }
-       case 4:  //  logistic with offset
-        {
-          if(parm_adjust_method==2) {N_warn++; cout<<" EXIT - see warning "<<endl; warning<<"multiplicative env effect on selparm: "<<j+firstselparm
-          <<" not allowed because parm_adjust_method==2; STOP"<<endl; exit(1);}
-          N_selparm_env ++; ParCount++; ParmLabel+=ParmLabel(j+firstselparm)+"_ENV_offset";
-          N_selparm_env ++; ParCount++; ParmLabel+=ParmLabel(j+firstselparm)+"_ENV_lgst_slope";
-          break;
-        }
+      //  no time-vary parameter effects
      }
-
-    }
-  }
-
-  if(N_selparm_env>0)
-  {
-    *(ad_comm::global_datafile) >> custom_selenv_setup;
-    if(custom_selenv_setup==0) {k1=1;} else {k1=N_selparm_env;}
-    echoinput<<custom_selenv_setup<<" custom_selenv_setup for "<<k1<<" "<<" link parameters"<<endl;
-  }
-  else
-  {custom_selenv_setup=0; k1=0;
-    echoinput<<" no envlinks; so don't read custom_selenv_setup"<<endl;
-    }
- END_CALCS
-
-  init_matrix selparm_env_1(1,k1,1,7)  // read matrix that sets up the env linkage parms
- LOCAL_CALCS
-  if(k1>0)
-    {echoinput<<" selex-env parameters "<<endl;
-      for (g=1;g<=k1;g++)
-      {
-        echoinput<<g<<" ## "<<selparm_env_1(g)<<" ## "<<ParmLabel(ParCount-k1+g)<<endl;
-      }
-    }
- END_CALCS
-
-   imatrix selparm_timevary(1,N_selparm,1,3)  //  holds index of timevary used by this base parameter
-  int customblocksetup  //  0=read one setup and apply to all; 1=read each
-  int N_selparm_blk                            // number of selparms that use blocks
-  int N_selparm_trend     //   number of selex parameters using trend
-
- LOCAL_CALCS
-   {
-    selparm_timevary.initialize();
-   N_selparm_blk=0;  // counter for assigned parms
-   N_selparm_trend=0;
-
-   for (j=1;j<=N_selparm;j++)
-   {
-     ivector itempvec(1,5);
-     j1=firstselparm+j;
-     z=selparm_1(j,13);    // specified block or trend definition
-     if(z==0)    //  no blocks or trends
-     {timevary_Nread=0;}
-     else
+     else if (k==0)
      {
-       timevary_cnt++;
-       selparm_timevary(j,1)=timevary_cnt;  //  base parameter will use this timevary
-       itempvec(1)=2; //  indicates a sel parm
-       itempvec(2)=j; //  index of base parm
-       itempvec(3)=timevary_parm_cnt+1;  //  first parameter
-       itempvec(4)=z; //  block or trend type
-       itempvec(5)=selparm_1(j,14); //  block pattern or trend inflection type
-       if (z>0)  //  blocks with z as the block pattern
+       N_warn++; warning<<"Comp_err parameters cannot have timevary effects "<<endl;
+     }
+     else  //  set up a timevary parameter defintion
+     {
+       ivector timevary_setup(1,13);  //  temporary vector for time_vary specs
+       timevary_setup.initialize();
+//  1=baseparm type; 2=baseparm index; 3=first timevary parm
+//  4=block or trend type; 5=block pattern; 6= env link type; 7=env variable;
+//  8=dev vector used; 9=dev link type; 10=dev min year; 11=dev maxyear; 12=dev phase; 13=all parm index of baseparm
+       echoinput<<endl<<" timevary for sel parameter: "<<j<<endl;
+       timevary_cnt++;  //  count parameters with time-vary effect
+       selparm_timevary(j)=timevary_cnt;  //  base parameter will use this timevary specification
+       timevary_setup(1)=5; //  indicates a sel parm
+       timevary_setup(2)=j; //  index of base parm within that type of parameter
+       timevary_setup(13)=ParCount-N_selparm+j;  //  index of base parm relative to ParCount which is continuous across all types of parameters
+       timevary_setup(3)=timevary_parm_cnt+1;  //  first TV parameter within total list of all timevary parms
+       z=selparm_1(j,13);    // specified block or trend definition
+
+       k=int(selparm_1(j,8)/100);  //  find the env link code
+       timevary_setup(6)=k;  //  link code for env
+       timevary_setup(7)=int(selparm_1(j,8))-k*100;  //  env variable used
+       if(timevary_setup(7)>0)
        {
-         if(z>N_Block_Designs) {N_warn++; warning<<" ERROR, Block > N Blocks "<<z<<" "<<N_Block_Designs<<endl; exit(1);}
-         g=1;  //  index to list in block design
-         timevary_Nread=Nblk(z);
-         for (a=1;a<=Nblk(z);a++)
-         {
-          timevary_parm_cnt++;
-          N_selparm_blk++;
-          y=Block_Design(z,g);
-          sprintf(onenum, "%d", y);
-          ParCount++;
-          k=int(selparm_1(j,14));
-          switch(k)
-          {
-            case 0:
-            {ParmLabel+=ParmLabel(j1)+"_BLK"+NumLbl(z)+"mult_"+onenum+CRLF(1);  break;}
-            case 1:
-            {ParmLabel+=ParmLabel(j1)+"_BLK"+NumLbl(z)+"add_"+onenum+CRLF(1);  break;}
-            case 2:
-            {ParmLabel+=ParmLabel(j1)+"_BLK"+NumLbl(z)+"repl_"+onenum+CRLF(1);  break;}
-            case 3:
-            {ParmLabel+=ParmLabel(j1)+"_BLK"+NumLbl(z)+"delta_"+onenum+CRLF(1);  break;}
-          }
-          y=Block_Design(z,g+1)+1;  // first year after block
-          if(y>endyr+1) y=endyr+1;  //  need to revise to deal with interaction of retrospective and blocks
-          for (y=Block_Design(z,g);y<=Block_Design(z,g+1);y++)  // loop years for this block
-          {
-           if(y<=endyr) Block_Defs_Sel(j,y)=N_selparm+N_selparm_env+N_selparm_blk;
-          }
-          g+=2;
-         }
+         k=timevary_setup(7);
+         for(y=styr-1;y<=YrMax;y++) env_data_pass(y)=env_data_RD(y,k);
+       } 
+       else
+       {k=0; env_data_pass.initialize();}
+
+       if(z>0)  //  doing blocks
+       {
+         create_timevary(selparm_1(j),timevary_setup, time_vary_pass, autogen_timevary, mgp_type(j), Block_Design(z), parm_adjust_method, env_data_pass, N_parm_dev);
        }
-       else //  (z<0) so invoke a trend
+       else
        {
-         timevary_Nread=3;
-         N_selparm_trend++;
-          if(selparm_1(j,13)==-1)
-          {
-            ParCount++; ParmLabel+=ParmLabel(j1)+"_TrendFinal_Offset"+CRLF(1);
-            ParCount++; ParmLabel+=ParmLabel(j1)+"_TrendInfl_"+CRLF(1);
-            ParCount++; ParmLabel+=ParmLabel(j1)+"_TrendWidth_"+CRLF(1);
-            timevary_parm_cnt+=timevary_Nread;  //  for the 3 trend parameters
-          }
-          else if(selparm_1(j,13)==-2)
-          {
-            ParCount++; ParmLabel+=ParmLabel(j1)+"_TrendFinal_"+CRLF(1);
-            ParCount++; ParmLabel+=ParmLabel(j1)+"_TrendInfl_"+CRLF(1);
-            ParCount++; ParmLabel+=ParmLabel(j1)+"_TrendWidth_"+CRLF(1);
-            timevary_parm_cnt+=timevary_Nread;  //  for the 3 trend parameters
-          }
-          else
-          {
-            timevary_Nread=Ncycle;
-            timevary_parm_cnt+=Ncycle;
-            for (icycle=1;icycle<=Ncycle;icycle++)
-            {
-              ParCount++; ParmLabel+=ParmLabel(j1)+"_Cycle_"+NumLbl(icycle)+CRLF(1);
-            }
-          }
+         create_timevary(selparm_1(j),timevary_setup, time_vary_pass, autogen_timevary, mgp_type(j), block_design_null, parm_adjust_method, env_data_pass, N_parm_dev);
        }
-
-       timevary_parm1.push_back (itempvec(1,5));
+  /*
+   where:
+   selparm_1(j):           vector with the base parameter which has some type of timevary characteristic
+   timevary_setup:        vector which contains specs of all types of timevary  for this base parameter
+                          will be pushed to timevary_def cumulative across all types of base parameters
+   time_vary_pass:        vector containing column(time_vary_MG,mgp_type(j)), will be modified in create_timevary
+   autogen_timevary:      switch to autogenerate or not
+   selparm_fleet(j):           integer with type of MGparm being worked on; analogous to 2*fleet in the selectivity section
+   block_design(z):       block design, if any, being used
+   parm_adjust_method:    switch to determine if adjusted parameter will stay in bounds; used to create warnings in create_timevary
+   env_data_RD:           matrix containing entire set of environmental data as read
+   N_parm_dev:            integer that is incremented in create_timevary as dev vectors are created; cumulative across all types of parameters
+  */  
+       timevary_def.push_back (timevary_setup(1,13));
+       for(y=styr-3;y<=YrMax+1;y++) {time_vary_sel(y,selparm_fleet(j))=time_vary_pass(y);}  // year vector for this category og MGparm
      }
-   }
-   timevary_parm_cnt_sel=timevary_parm_cnt-timevary_parm_cnt_MG;
-   echoinput<<"timevaryparmcount "<<timevary_parm_cnt_MG<<" "<<timevary_parm_cnt_sel<<" "<<timevary_parm_cnt<<endl;
-   if(timevary_parm_cnt_sel>0)
-   {
-     *(ad_comm::global_datafile) >> customblocksetup;
-     echoinput<<customblocksetup<<" customblocksetup"<<endl;
-     if(customblocksetup==0)
-     {
-         dvector tempvec(1,7);
-         *(ad_comm::global_datafile) >> tempvec(1,7);
-         for(k=timevary_parm_cnt_MG+1;k<=timevary_parm_cnt;k++)
-         {
-           echoinput<<k<< " keep tempvec "<<tempvec;
-           timevary_parm_rd.push_back (tempvec);
-           echoinput<<" pushed "<<endl;
-         }
-     }
-     else
-     {
-       for(k=timevary_parm_cnt_MG+1;k<=timevary_parm_cnt;k++)
-       {
-         dvector tempvec(1,7);
-         *(ad_comm::global_datafile) >> tempvec(1,7);
-         echoinput<<k<< " read tempvec "<<tempvec;
-         timevary_parm_rd.push_back (tempvec);
-         echoinput<<" pushed "<<endl;
-     }
-     }
-     for(j=timevary_parm_cnt_MG;j<=timevary_parm_cnt-1;j++)
-     {echoinput<<timevary_parm_rd[j]<<endl;}
-   }
-   }
- END_CALCS
-
-!!//  SS_Label_Info_4.9.5 #Create and label block patterns for selectivity parameters
-
-  matrix selparm_blk_1(1,timevary_cnt,1,7);  // double check this matrix that defines the block parms and trend parms
-
-!!//  SS_Label_Info_4.9.7 #Create and label selectivity parameter annual devs
-  int N_selparm_dev   // number of selparms that use random deviations
-  int N_selparm_dev_tot   // number of selparms that use random deviations
- LOCAL_CALCS
-  N_selparm_dev=0;
-  N_selparm_dev_tot=0;
-  for (j=1;j<=N_selparm;j++)
-  {
-    if(selparm_1(j,9)>0)
-    {
-      N_selparm_dev++;
-//  these are not parameters in 3.24  need to create anyway
-      ParCount++;
-      ParmLabel+=ParmLabel(j+firstselparm)+"_dev_se"+CRLF(1);
-      ParCount++;
-      ParmLabel+=ParmLabel(j+firstselparm)+"_dev_rho"+CRLF(1);
-    }
   }
- END_CALCS
-
-  matrix selparm_dev_se_rd(1,2*N_selparm_dev,1,7)  // create matrix that defines the parms for stderr and rho of devs but do not read in 3.24
-  ivector selparm_dev_minyr(1,N_selparm_dev)
-  ivector selparm_dev_maxyr(1,N_selparm_dev)
-  ivector selparm_dev_type(1,N_selparm_dev)  // contains type of dev:  1 for multiplicative, 2 for additive, 3 for additive randwalk, 4=mean reverting additive rwalk
-  ivector selparm_dev_point(1,N_selparm)  //  specifies which dev vector will be used by a parameter
-  ivector selparm_dev_rpoint(1,N_selparm_dev)  //  reverse point from dev list back to parameter list to get the affected parameter index
-                                             //  e.g.  specifies which parm (f) is affected by the j'th dev vector; only used in ss2out.
-  ivector selparm_dev_rpoint2(1,N_selparm_dev)  //  reverse point from dev list back to parameter list to get the parameter index for the se parameter
-                                              //  e.g. points to the parm index that holds the f'th dev's se and rho
-  int selparm_dev_PH
- LOCAL_CALCS
-  selparm_dev_minyr.initialize();
-  selparm_dev_maxyr.initialize();
-  selparm_dev_type.initialize();
-  selparm_dev_point.initialize();
-  selparm_dev_rpoint.initialize();
-  selparm_dev_rpoint2.initialize();
+   timevary_setup.initialize();
+   timevary_setup(3)=timevary_parm_cnt+1;  //  one past last one used
+   timevary_def.push_back (timevary_setup(1,13));
+   
+   timevary_parm_cnt_sel=timevary_parm_cnt;  //  last timevary_selparm
+   N_selparm2=N_selparm+timevary_parm_cnt_sel-timevary_parm_start_sel;
+   echoinput<<"N_selparm "<<N_selparm<<" "<<N_selparm2<<" "<<timevary_parm_start_sel<<" "<<timevary_parm_cnt_sel<<endl;
+   for(y=0;y<=timevary_parm_cnt;y++)
+   {
+    echoinput<<y<<" parm "<<timevary_parm_rd[y](1,7)<<endl;}
  END_CALCS
 
 !!//  SS_Label_Info_4.9.9 #Create arrays for the total set of selex parameters
-    !!N_selparm2=N_selparm+N_selparm_env+timevary_parm_cnt_sel+2*N_selparm_dev;
   vector selparm_LO(1,N_selparm2)
   vector selparm_HI(1,N_selparm2)
   vector selparm_RD(1,N_selparm2)
@@ -2823,7 +2428,6 @@
 
  LOCAL_CALCS
 //  SS_Label_Info_4.9.12 #Create vectors, e.g. selparm_PH(), that will be used to create actual array of estimted parameters
-  {
    for (f=1;f<=N_selparm;f++)
    {
     selparm_LO(f)=selparm_1(f,1);
@@ -2835,133 +2439,18 @@
     selparm_PH(f)=selparm_1(f,7);
    }
    j=N_selparm;
-   if(N_selparm_env>0)
-   for (f=1;f<=N_selparm_env;f++)
+   if(timevary_parm_cnt_sel>timevary_parm_start_sel)
+   for (f=timevary_parm_start_sel+1;f<=timevary_parm_cnt_sel;f++)
    {
     j++;
-    if(custom_selenv_setup==0) k=1;
-    else k=f;
-    selparm_LO(j)=selparm_env_1(k,1);
-    selparm_HI(j)=selparm_env_1(k,2);
-    selparm_RD(j)=selparm_env_1(k,3);
-    selparm_PR(j)=selparm_env_1(k,4);
-    selparm_PRtype(j)=selparm_env_1(k,5);
-    selparm_CV(j)=selparm_env_1(k,6);
-    selparm_PH(j)=selparm_env_1(k,7);
-   }
-
-   if(timevary_parm_cnt_sel>0)
-   for (f=timevary_parm_cnt_MG+1;f<=timevary_parm_cnt;f++)
-   {
-    j++;
-    selparm_LO(j)=timevary_parm_rd[f-1](1);
-    selparm_HI(j)=timevary_parm_rd[f-1](2);
-    selparm_RD(j)=timevary_parm_rd[f-1](3);
-    selparm_PR(j)=timevary_parm_rd[f-1](4);
-    selparm_PRtype(j)=timevary_parm_rd[f-1](5);
-    selparm_CV(j)=timevary_parm_rd[f-1](6);
-    selparm_PH(j)=timevary_parm_rd[f-1](7);
-   }
-  }
-   N_selparm_dev_tot=0;
-   if(N_selparm_dev>0)
-   {
-     s=0;
-     k=0;
-     for (f=1;f<=N_selparm;f++)
-     {
-       if(selparm_1(f,9)>=1)
-       {
-         s++;
-         if(parm_adjust_method==2 && selparm_1(f,9)==1)
-         {N_warn++; warning<<" cannot use parm_adjust_method==2 and multiplicative devs for parameter "<<f<<endl;}
-         selparm_dev_type(s)=selparm_1(f,9);  //  1 for multiplicative, 2 for additive, 3 for additive randwalk, 4=mean-reverting rwalk
-         selparm_dev_point(f)=s;  //  specifies which dev vector is used by the f'th selparm
-         selparm_dev_rpoint(s)=f;  //  specifies which parm (f) is affected by the j'th dev vector
-
-         {
-           k++;
-           *(ad_comm::global_datafile) >> selparm_dev_se_rd(k)(1,7);
-           k++;
-           *(ad_comm::global_datafile) >> selparm_dev_se_rd(k)(1,7);
-         }
-
-         y=selparm_1(f,10);
-         if(y<styr)
-         {
-           N_warn++; warning<<" reset selparm_dev start year to styr for selparm: "<<f<<" "<<y<<endl;
-           y=styr;
-         }
-         selparm_dev_minyr(s)=y;
-
-         y=selparm_1(f,11);
-         if(y>endyr)
-         {
-           N_warn++; warning<<" reset selparm_dev end year to endyr for selparm: "<<f<<" "<<y<<endl;
-           y=endyr;
-         }
-         selparm_dev_maxyr(s)=y;
-       }
-     }
-     k=0;
-     for (f=1;f<=N_selparm_dev;f++)
-     {
-      j++;
-      k++;
-      selparm_LO(j)=selparm_dev_se_rd(k,1);
-      selparm_HI(j)=selparm_dev_se_rd(k,2);
-      selparm_RD(j)=selparm_dev_se_rd(k,3);
-      selparm_PR(j)=0.0;
-      selparm_PRtype(j)=-1.;
-      selparm_CV(j)=999;
-      selparm_PH(j)=-1;
-      selparm_dev_rpoint2(f)=j;  //  specifies which parm holds the f'th dev's se
-      j++;
-      k++;
-      selparm_LO(j)=selparm_dev_se_rd(k,1);
-      selparm_HI(j)=selparm_dev_se_rd(k,2);
-      selparm_RD(j)=selparm_dev_se_rd(k,3);
-      selparm_PR(j)=0.0;
-      selparm_PRtype(j)=-1.;
-      selparm_CV(j)=999;
-      selparm_PH(j)=-1;
-     }
-     echoinput<<"selparm_dev_se_rd "<<selparm_dev_se_rd<<endl;
-//   }
-
-       j=0;
-       for (f=1;f<=N_selparm;f++)
-       {
-         if(selparm_1(f,9)>0)
-         {
-            j++;
-            for(y=selparm_dev_minyr(j);y<=selparm_dev_maxyr(j);y++)
-            {
-              N_selparm_dev_tot++;
-              sprintf(onenum, "%d", y);
-              ParCount++;
-               if(selparm_dev_type(j)==1)
-               {ParmLabel+=ParmLabel(f+firstselparm)+"_DEVmult_"+onenum+CRLF(1);}
-               else if(selparm_dev_type(j)==2)
-               {ParmLabel+=ParmLabel(f+firstselparm)+"_DEVadd_"+onenum+CRLF(1);}
-               else if(selparm_dev_type(j)==3)
-               {ParmLabel+=ParmLabel(f+firstselparm)+"_DEVrwalk_"+onenum+CRLF(1);}
-               else if(selparm_dev_type(j)==4)
-               {ParmLabel+=ParmLabel(f+firstselparm)+"_DEV_MR_rwalk_"+onenum+CRLF(1);}
-              else
-              {N_warn++; cout<<" EXIT - see warning "<<endl; warning<<" illegal selparmdevtype for parm "<<j<<endl; exit(1);}
-            }
-         }
-       }
-//  if(N_selparm_dev==0)
-//  {
-    *(ad_comm::global_datafile) >> selparm_dev_PH;
-    echoinput<<selparm_dev_PH<<" selparm_dev_PH"<<endl;
-   }
-   else
-   {
-     selparm_dev_PH=-6;
-     echoinput<<" No selparm devs selected, so don't read selparm_dev_PH"<<endl;
+    echoinput<<"selparmbounds "<<f<<" "<<j<<endl;
+    selparm_LO(j)=timevary_parm_rd[f](1);
+    selparm_HI(j)=timevary_parm_rd[f](2);
+    selparm_RD(j)=timevary_parm_rd[f](3);
+    selparm_PR(j)=timevary_parm_rd[f](4);
+    selparm_PRtype(j)=timevary_parm_rd[f](5);
+    selparm_CV(j)=timevary_parm_rd[f](6);
+    selparm_PH(j)=timevary_parm_rd[f](7);
    }
 
 //  SS_Label_Info_4.9.10 #Special bound checking for size selex parameters
@@ -2985,13 +2474,10 @@
 // end special bound checking
 
 //  SS_Label_Info_4.9.11  #Create time/fleet array indicating when changes in selex occcur
+  time_vary_sel(styr-3)=1;
   time_vary_sel(styr)=1;
-//  if(Do_Forecast>0) time_vary_sel(endyr+1)=1;
   time_vary_sel(endyr+1)=1;
-  time_vary_makefishsel(styr)=1;
-  time_vary_makefishsel(styr-3)=1;
-//  if(Do_Forecast>0) time_vary_makefishsel(endyr+1)=1;
-  time_vary_makefishsel(endyr+1)=1;
+
   for (y=styr+1;y<=endyr;y++)
   {
     z=0;  // parameter counter within this section
@@ -3002,57 +2488,22 @@
         if(f<=Nfleet) {time_vary_sel(y,f)=time_vary_sel(y,seltype(f,4));} else {time_vary_sel(y,f)=time_vary_sel(y,seltype(f,4)+Nfleet);}
         z+=seltype_Nparam(seltype(f,1));
       }
-      else
-      {
-        if(seltype_Nparam(seltype(f,1))>0 || (seltype(f,2)==1) || (seltype(f,2)==2))      // type has parms, so look for adjustments
-        {
-          for (j=1;j<=N_selparmvec(f);j++)
-          {
-            z++;
-            if(selparm_envuse(z)>0)          // env linkage
-            {
-             if((env_data_RD(y,selparm_envuse(z))!=env_data_RD(y-1,selparm_envuse(z)))) time_vary_sel(y,f)=1;
-            }
-            else if (selparm_envuse(z)<0) // density-dependent link
-            {time_vary_sel(y,f)=1;}
-            if(selparm_1(z,9)>=1)  // dev vector
-            {
-              s=selparm_1(z,11)+1;
-              if(s>endyr) s=endyr;
-              if(y>=selparm_1(z,10) && y<=s) time_vary_sel(y,f)=1;
-            }
-
-            if(selparm_1(z,13)>0) //   blocks
-            {
-              if(Block_Defs_Sel(z,y)!=Block_Defs_Sel(z,y-1) ) time_vary_sel(y,f)=1;
-            }
-
-            if(selparm_1(z,13)<0) //   trend
-            {
-              time_vary_sel(y,f)=1;
-            }
-          }
-        }
-      }
       if(f<=Nfleet && seltype(f,2)<0)  //  retention is being mirrored
       {
         k=-seltype(f,2);
         if(time_vary_sel(y,k)>0) time_vary_sel(y,f)=1;
       }
+      if(f<=Nfleet)
+      {
+//  CHECK:  why is below needed for WTage_rd>0
+        if(time_vary_MG(y,2)>0 || time_vary_MG(y,3)>0 || WTage_rd>0)
+        {
+          time_vary_sel(y,f)=1;
+        }
+      }
     }  // end type
 
-//    time_vary_makefishsel(y)(1,Nfleet)=time_vary_sel(y)(1,Nfleet);  //  error, this will only do size selex
-    for (f=1;f<=Nfleet;f++)
-    {
-      if(time_vary_sel(y,f)>0 || time_vary_sel(y,f+Nfleet)>0) time_vary_makefishsel(y,f)=1;
-    }
-
-    if(time_vary_MG(y,2)>0 || time_vary_MG(y,3)>0 || WTage_rd>0)
-    {
-      time_vary_makefishsel(y)=1;
-    }
   } // end years
-
 
  END_CALCS
 
@@ -3599,18 +3050,6 @@
     }
   }
 
-  if(depletion_fleet>0 && MGparm_dev_PH>0) MGparm_dev_PH++;  //  add 1 to phase if using depletion fleet
-  if(MGparm_dev_PH>Turn_off_phase) MGparm_dev_PH =-1;
-  if(MGparm_dev_PH>max_phase) max_phase=MGparm_dev_PH;
-  for (k=1;k<=N_MGparm_dev_tot;k++)
-  {
-    ParCount++;
-    if(MGparm_dev_PH>=0)
-    {
-    active_count++; active_parm(active_count)=ParCount;
-    }
-  }
-
   for (j=1;j<=SRvec_PH.indexmax();j++)
   {
     ParCount++;
@@ -3918,18 +3357,6 @@
     }
    }
 
-   if(depletion_fleet>0 && selparm_dev_PH>0) selparm_dev_PH++;
-   if(selparm_dev_PH > Turn_off_phase) selparm_dev_PH =-1;
-   if(selparm_dev_PH > max_phase) max_phase=selparm_dev_PH;
-  for (k=1;k<=N_selparm_dev_tot;k++)
-  {
-    ParCount++;
-    if(selparm_dev_PH>=0)
-    {
-    active_count++; active_parm(active_count)=ParCount;
-    }
-  }
-
   if(Do_TG>0)
   {
     for (k=1;k<=3*N_TG+2*Nfleet;k++)
@@ -3952,8 +3379,64 @@
       Fcast_recr_PH2=max_phase+1;
     }
   }
+ END_CALCS
+ 
+   ivector parm_dev_minyr(1,N_parm_dev);
+   ivector parm_dev_maxyr(1,N_parm_dev);
+   ivector parm_dev_PH(1,N_parm_dev);
+
+ LOCAL_CALCS
+   if(timevary_cnt>0)
+   {
+     for (j=1;j<=timevary_cnt;j++)  //  loop set up devs
+     {
+       ivector timevary_setup(1,13);
+       timevary_setup(1,13)=timevary_def[j](1,13);
+       if(timevary_setup(8)>0)
+       {
+         k=timevary_setup(8);  //  dev vector used
+         parm_dev_minyr(k)=timevary_setup(10);  //  used for dimensioning the dev vectors in SS_param
+         parm_dev_maxyr(k)=timevary_setup(11);
+         parm_dev_PH(k)=timevary_setup(12);
+         if(depletion_fleet>0 && parm_dev_PH(k)>0) parm_dev_PH(k)++;//  add 1 to phase if using depletion fleet
+         if(parm_dev_PH(k)>Turn_off_phase) parm_dev_PH(k) =-1;
+         if(parm_dev_PH(k)>max_phase) max_phase=parm_dev_PH(k);
+         echoinput<<" setup dev "<<k<<" vector "<<timevary_setup<<" phase "<<parm_dev_PH(k)<<endl;
+         if(timevary_setup(1)==1) //  MGparm
+          {
+            f=0+timevary_setup(2);  //  index of base parameter
+          }
+          else
+          {
+            //  need to implement for other types
+          }
+         for(y=parm_dev_minyr(k);y<=parm_dev_maxyr(k);y++)
+         {
+           sprintf(onenum, "%d", y);
+           ParCount++;
+           if(timevary_setup(9)==1)
+           {ParmLabel+=ParmLabel(f)+"_DEVmult_"+onenum+CRLF(1);}
+           else if(timevary_setup(9)==2)
+           {ParmLabel+=ParmLabel(f)+"_DEVadd_"+onenum+CRLF(1);}
+           else if(timevary_setup(9)==3)
+           {ParmLabel+=ParmLabel(f)+"_DEVrwalk_"+onenum+CRLF(1);}
+           else if(timevary_setup(9)==4)
+           {ParmLabel+=ParmLabel(f)+"_DEV_MR_rwalk_"+onenum+CRLF(1);}
+           else
+           {N_warn++; cout<<" EXIT - see warning "<<endl; warning<<" illegal MGparmdevtype for parm "<<f<<endl; exit(1);}
+            if(parm_dev_PH(k)>=0)
+            {
+              active_count++; active_parm(active_count)=ParCount;
+            }
+         }
+       }
+     }
+   }
+  
+  echoinput<<ParmLabel<<endl; 
 
   echoinput<<"Active parameters: "<<active_count<<endl<<"Turn_off_phase "<<Turn_off_phase<<endl<<" max_phase "<<max_phase<<endl;
+
   if(Turn_off_phase<=0)
   {func_eval(1)=1;}
   else
