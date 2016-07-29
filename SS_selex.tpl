@@ -287,8 +287,8 @@ FUNCTION void get_selectivity()
           }
 
   //  SS_Label_Info_22.3.6 #case 6 non-parametric size selex pattern
-  // #33 non-parametric size selex scaled by average of values at low bin through high bin
-          case 33:
+  // #43 non-parametric size selex scaled by average of values at low bin through high bin
+          case 43:
             scaling_offset = 2;
           case 6:
           {
@@ -341,12 +341,12 @@ FUNCTION void get_selectivity()
             if (low_bin < 1)
             {
                 low_bin = 1;
-                N_warn++; warning<<" selex pattern 33; value for low bin is less than 1, so set to 1 "<<endl;
+                N_warn++; warning<<" selex pattern 43; value for low bin is less than 1, so set to 1 "<<endl;
             }
             if (high_bin > nlength)
             {
                 high_bin = nlength;
-                N_warn++; warning<<" selex pattern 33; value for high bin is greater than "<<nlength<<", so set to "<<nlength<<" "<<endl;
+                N_warn++; warning<<" selex pattern 43; value for high bin is greater than "<<nlength<<", so set to "<<nlength<<" "<<endl;
             }
             if (high_bin < low_bin) high_bin = low_bin;
             if (low_bin > high_bin) low_bin = high_bin;
@@ -637,10 +637,10 @@ FUNCTION void get_selectivity()
           }
 
   //  SS_Label_Info_22.3.27 #case 27 size selectivity using cubic spline
-  // #32 size selectivity using cubic spline scaled by average of values at low bin through high bin
+  // #42 size selectivity using cubic spline scaled by average of values at low bin through high bin
  /*  first N parameters are the spline knots; second N parameters are ln(selex) at the knot */
  /*  uses max(raw vector) to achieve scale to 1.0 */
-          case 32:
+          case 42:
             scaling_offset = 2;
           case 27:
           {
@@ -670,12 +670,12 @@ FUNCTION void get_selectivity()
                 if (low_bin < 1)
                 {
                     low_bin = 1;
-                    N_warn++; warning<<" selex pattern 32; value for low bin is less than 1, so set to 1 "<<endl;
+                    N_warn++; warning<<" selex pattern 42; value for low bin is less than 1, so set to 1 "<<endl;
                 }
                 if (high_bin > nlength)
                 {
                     high_bin = nlength;
-                    N_warn++; warning<<" selex pattern 32; value for high bin is greater than "<<nlength<<", so set to "<<nlength<<" "<<endl;
+                    N_warn++; warning<<" selex pattern 42; value for high bin is greater than "<<nlength<<", so set to "<<nlength<<" "<<endl;
                 }
                 if (high_bin < low_bin) high_bin = low_bin;
                 if (low_bin > high_bin) low_bin = high_bin;
@@ -972,9 +972,9 @@ FUNCTION void get_selectivity()
             }
 
   //  SS_Label_Info_22.7.17 #age selectivity: each age has parameter as random walk
-  // #31 each age has parameter as random walk scaled by average of values at low age through high age
+  // #41 each age has parameter as random walk scaled by average of values at low age through high age
   //    transformation as selex=exp(parm); some special codes */
-              case 31:
+              case 41:
                 scaling_offset = 2;
               case 17:                  //
             {
@@ -1005,12 +1005,12 @@ FUNCTION void get_selectivity()
                   if (low_bin < 1)
                   {
                       low_bin = 1;
-                      N_warn++; warning<<" selex pattern 31; value for low bin is less than 1, so set to 1 "<<endl;
+                      N_warn++; warning<<" selex pattern 41; value for low bin is less than 1, so set to 1 "<<endl;
                   }
                   if (high_bin > nages)
                   {
                       high_bin = nages;
-                      N_warn++; warning<<" selex pattern 31; value for high bin is greater than "<<nages<<", so set to "<<nages<<" "<<endl;
+                      N_warn++; warning<<" selex pattern 41; value for high bin is greater than "<<nages<<", so set to "<<nages<<" "<<endl;
                   }
                   if (high_bin < low_bin) high_bin = low_bin;
                   if (low_bin > high_bin) low_bin = high_bin;
@@ -1157,8 +1157,8 @@ FUNCTION void get_selectivity()
             }
 
   //  SS_Label_Info_22.7.27 #age selectivity: cubic spline
-  // #32 cubic spline scaled by average of values at low age through high age
-          case 32:
+  // #42 cubic spline scaled by average of values at low age through high age
+          case 42:
             scaling_offset = 2;
           case 27:
           {
@@ -1184,12 +1184,12 @@ FUNCTION void get_selectivity()
                 if (low_bin < 1)
                 {
                     low_bin = 1;
-                    N_warn++; warning<<" selex pattern 32; value for low bin is less than 1, so set to 1 "<<endl;
+                    N_warn++; warning<<" selex pattern 42; value for low bin is less than 1, so set to 1 "<<endl;
                 }
                 if (high_bin > nages)
                 {
                     high_bin = nages;
-                    N_warn++; warning<<" selex pattern 32; value for high bin is greater than "<<nages<<", so set to "<<nages<<" "<<endl;
+                    N_warn++; warning<<" selex pattern 42; value for high bin is greater than "<<nages<<", so set to "<<nages<<" "<<endl;
                 }
                 if (high_bin < low_bin) high_bin = low_bin;
                 if (low_bin > high_bin) low_bin = high_bin;
