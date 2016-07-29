@@ -1,4 +1,4 @@
-//********************************************************************
+
  /*  SS_Label_FUNCTION 36 write_summaryoutput */
 FUNCTION void write_summaryoutput()
   {
@@ -81,7 +81,7 @@ FUNCTION void write_summaryoutput()
   report2<<endl;
   report2<<runnumber<<" Parm Values ";
   report2<<" "<<MGparm<<" ";
-  if(N_parm_dev>0) 
+  if(N_parm_dev>0)
     {
       for(j=1;j<=N_parm_dev;j++)  report2<<parm_dev(j)<<" ";
     }
@@ -2067,7 +2067,7 @@ FUNCTION void write_nucontrol()
       {
         NP++;
         selparm_1(f)(3)=value(selparm(f));
-        for(j=1;j<=6;j++) report4<<std::setprecision(4)<<std::fixed<<setw(10)<<selparm_1(f,j);
+        for(j=1;j<=6;j++) report4<<std::setprecision(4)<<std::fixed<<setw(11)<<selparm_1(f,j);
         report4.precision(6); report4.unsetf(std::ios_base::fixed); report4.unsetf(std::ios_base::floatfield);
         for(j=7;j<=14;j++) report4<<setw(8)<<selparm_1(f,j);
         report4<<"  #  "<<ParmLabel(NP)<<endl;
@@ -2080,7 +2080,7 @@ FUNCTION void write_nucontrol()
     {
       NP++;
         timevary_parm_rd[f](3)=value(timevary_parm(f));
-        for(j=1;j<=6;j++) report4<<std::setprecision(4)<<std::fixed<<setw(10)<<timevary_parm_rd[f](j);
+        for(j=1;j<=6;j++) report4<<std::setprecision(4)<<std::fixed<<setw(11)<<timevary_parm_rd[f](j);
         report4.precision(6); report4.unsetf(std::ios_base::fixed); report4.unsetf(std::ios_base::floatfield);
       report4<<"      "<<timevary_parm_rd[f](7)<<"  # "<<ParmLabel(NP)<<endl;
     }
@@ -2141,7 +2141,7 @@ FUNCTION void write_nucontrol()
       report4<<"# deviation vectors for timevary parameters"<<endl
       <<"#  base   base first block   block  env  env   dev   dev   dev   dev   dev"<<endl
       <<"#  type  index  parm trend pattern link  var  vectr link _mnyr  mxyr phase  dev_vector"<<endl;
-      
+
       for(j=1;j<=timevary_cnt;j++)
       {
 //        report4.precision(6);
