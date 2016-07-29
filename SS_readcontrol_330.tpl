@@ -1052,7 +1052,7 @@
   ivector time_vary_pass(styr-3,YrMax+1)    //  extracted column
   ivector MG_active(0,7)  // 0=all, 1=M, 2=growth 3=wtlen, 4=recr_dist, 5=migration, 6=ageerror, 7=catchmult
   vector env_data_pass(styr-1,YrMax)
- 
+
  LOCAL_CALCS
    timevary_cnt=0;
    N_parm_dev=0;
@@ -1062,9 +1062,9 @@
    ivector timevary_setup(1,13);
    timevary_setup.initialize();
    timevary_def.push_back (timevary_setup(1,13));
-   dvector tempvec(1,7);  //  temporary vector for a time-vary parameter  LO HI INIT PRIOR PR_type SD PHASE 
+   dvector tempvec(1,7);  //  temporary vector for a time-vary parameter  LO HI INIT PRIOR PR_type SD PHASE
    timevary_parm_rd.push_back (tempvec);
-   
+
    echoinput<<"Now read env, block/trend, and dev adjustments to MGparms "<<endl;
    time_vary_MG.initialize();    // stores years to calc non-constant MG parms (1=natmort; 2=growth; 3=wtlen & fec; 4=recr_dist; 5=movement)
    MG_active.initialize();
@@ -1109,7 +1109,7 @@
        {
          k=timevary_setup(7);
          for(y=styr-1;y<=YrMax;y++) env_data_pass(y)=env_data_RD(y,k);
-       } 
+       }
        else
        {k=0; env_data_pass.initialize();}
 
@@ -1133,13 +1133,13 @@
    parm_adjust_method:    switch to determine if adjusted parameter will stay in bounds; used to create warnings in create_timevary
    env_data_RD:           matrix containing entire set of environmental data as read
    N_parm_dev:            integer that is incremented in create_timevary as dev vectors are created; cumulative across all types of parameters
-  */  
+  */
        timevary_def.push_back (timevary_setup(1,13));
        for(y=styr-3;y<=YrMax+1;y++) {time_vary_MG(y,mgp_type(j))=time_vary_pass(y);}  // year vector for this category og MGparm
        if(j==MGP_CGD) CGD_onoff=1;
      }
-   } 
-   
+   }
+
    timevary_parm_cnt_MG=timevary_parm_cnt;
 
   //  SS_Label_Info_4.5.9 #Set up random deviations for MG parms
@@ -1264,7 +1264,7 @@
    echoinput<<"MG_active "<<MG_active<<endl;
    echoinput<<"timevary_MG "<<endl<<time_vary_MG<<endl;
  END_CALCS
- 
+
   !!//  SS_Label_Info_4.6 #Read setup for Spawner-Recruitment parameters
   //  SPAWN-RECR: read setup for SR parameters:  LO, HI, INIT, PRIOR, PRtype, CV, PHASE
   init_int SR_fxn
@@ -1940,7 +1940,7 @@
  END_CALCS
 
 !!//  SS_Label_Info_4.9 #Define Selectivity patterns and N parameters needed per pattern
-  ivector seltype_Nparam(0,40)
+  ivector seltype_Nparam(0,50)
  LOCAL_CALCS
    seltype_Nparam(0)=0;   // selex=1.0 for all sizes
    seltype_Nparam(1)=2;   // logistic; with 95% width specification
@@ -2285,7 +2285,7 @@
 
 !!//  SS_Label_Info_4.9.3 #Read selex parameters
   init_matrix selparm_1(1,N_selparm,1,14)
-  ivector selparm_fleet(1,N_selparm) // holds the fleet ID for each selparm  
+  ivector selparm_fleet(1,N_selparm) // holds the fleet ID for each selparm
                                   //  equivalent to the mgp_type() for MGparms
 
  LOCAL_CALCS
@@ -2304,7 +2304,7 @@
       for(g=1;g<=N_selparmvec(f);g++)
       {
         j++; selparm_fleet(j)=f;
-      } 
+      }
     }
   }
   if(Comp_Err_ParmCount>0)
@@ -2312,7 +2312,7 @@
     for(g=1;g<=Comp_Err_ParmCount;g++)
     {
       j++; selparm_fleet(j)=0;
-    } 
+    }
   }
  END_CALCS
 
@@ -2376,7 +2376,7 @@
        {
          k=timevary_setup(7);
          for(y=styr-1;y<=YrMax;y++) env_data_pass(y)=env_data_RD(y,k);
-       } 
+       }
        else
        {k=0; env_data_pass.initialize();}
 
@@ -2400,7 +2400,7 @@
    parm_adjust_method:    switch to determine if adjusted parameter will stay in bounds; used to create warnings in create_timevary
    env_data_RD:           matrix containing entire set of environmental data as read
    N_parm_dev:            integer that is incremented in create_timevary as dev vectors are created; cumulative across all types of parameters
-  */  
+  */
        timevary_def.push_back (timevary_setup(1,13));
        for(y=styr-3;y<=YrMax+1;y++) {time_vary_sel(y,selparm_fleet(j))=time_vary_pass(y);}  // year vector for this category og MGparm
      }
@@ -2408,7 +2408,7 @@
    timevary_setup.initialize();
    timevary_setup(3)=timevary_parm_cnt+1;  //  one past last one used
    timevary_def.push_back (timevary_setup(1,13));
-   
+
    timevary_parm_cnt_sel=timevary_parm_cnt;  //  last timevary_selparm
    N_selparm2=N_selparm+timevary_parm_cnt_sel-timevary_parm_start_sel;
    echoinput<<"N_selparm "<<N_selparm<<" "<<N_selparm2<<" "<<timevary_parm_start_sel<<" "<<timevary_parm_cnt_sel<<endl;
@@ -3382,7 +3382,7 @@
     }
   }
  END_CALCS
- 
+
    ivector parm_dev_minyr(1,N_parm_dev);
    ivector parm_dev_maxyr(1,N_parm_dev);
    ivector parm_dev_PH(1,N_parm_dev);
@@ -3434,8 +3434,8 @@
        }
      }
    }
-  
-  echoinput<<ParmLabel<<endl; 
+
+  echoinput<<ParmLabel<<endl;
 
   echoinput<<"Active parameters: "<<active_count<<endl<<"Turn_off_phase "<<Turn_off_phase<<endl<<" max_phase "<<max_phase<<endl;
 
