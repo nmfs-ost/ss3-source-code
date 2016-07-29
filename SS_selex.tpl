@@ -899,10 +899,10 @@ FUNCTION void get_selectivity()
               {
                   int low_bin  = int(value(sp(1)));
                   int high_bin = int(value(sp(2)));
-                  if (low_bin < 1)
+                  if (low_bin < 0)
                   {
-                      low_bin = 1;
-                      N_warn++; warning<<" selex pattern 41; value for low bin is less than 1, so set to 1 "<<endl;
+                      low_bin = 0;
+                      N_warn++; warning<<" selex pattern 41; value for low bin is less than 0, so set to 0 "<<endl;
                   }
                   if (high_bin > nages)
                   {
@@ -1078,10 +1078,10 @@ FUNCTION void get_selectivity()
             {
                 int low_bin  = int(value(sp(1)));
                 int high_bin = int(value(sp(2)));
-                if (low_bin < 1)
+                if (low_bin < 0)
                 {
-                    low_bin = 1;
-                    N_warn++; warning<<" selex pattern 42; value for low bin is less than 1, so set to 1 "<<endl;
+                    low_bin = 0;
+                    N_warn++; warning<<" selex pattern 42; value for low bin is less than 0, so set to 0 "<<endl;
                 }
                 if (high_bin > nages)
                 {
