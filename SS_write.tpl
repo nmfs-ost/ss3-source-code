@@ -186,24 +186,12 @@ FUNCTION void write_summaryoutput()
       report2<<endl<<runnumber<<" Sel_parm "<<selparm<<endl;
     }
 
-  /*
-    if(N_selparm_dev>0)
-    {
-      report2<<runnumber<<" Sel_parm_dev ";
-      for (i=1;i<=N_selparm_dev;i++)
-      for (j=selparm_dev_minyr(i);j<=selparm_dev_maxyr(i);j++)
-      {NP++; report2<<" "<<ParmLabel(NP);}
-      report2<<endl<<runnumber<<" Sel_parm_dev "<<selparm_dev<<endl;
-    }
-   */
-
     if(Do_TG>0)
     {
       report2<<runnumber<<" Tag_parm ";
       for (f=1;f<=3*N_TG+2*Nfleet;f++) {NP++; report2<<" "<<ParmLabel(NP);}
       report2<<endl<<runnumber<<" Tag_parm "<<TG_parm<<endl;
     }
-
 
     if(Do_CumReport==2)
     {
@@ -2100,69 +2088,6 @@ FUNCTION void write_nucontrol()
 //  }
 
   j=N_selparm;
-  /*
-   if(N_selparm_env>0)
-   {
-     report4<<1<<" #_custom_sel-env_setup (0/1) "<<endl;
-     for (f=1;f<=N_selparm_env;f++)
-     {
-       j++;  NP++;
-       if(custom_selenv_setup==0) {k=1;} else {k=f;}  // use read value of custom here
-       selparm_env_1(k,3)=value(selparm(j)); report4<<selparm_env_1(k)<<" # "<<ParmLabel(NP)<<endl;
-     }
-   }
-  else
-  {
-    report4<<"#_Cond 0 #_custom_sel-env_setup (0/1) "<<endl;
-    report4<<"#_Cond -2 2 0 0 -1 99 -2 #_placeholder when no enviro fxns"<<endl;
-  }
-  */
-
-  /*
-   if(timevary_parm_cnt_sel>0)
-   {
-     report4<<"1 #_custom_setup_for_sel_blocks&trends (0/1) "<<endl;
-     for (f=timevary_parm_cnt_MG+1;f<=timevary_parm_cnt;f++)
-     {
-       NP++;
-       if(customblocksetup==0) {k=1;} else {k=f;}  // use read value of custom here
-       timevary_parm_rd[f-1](3)=value(timevary_parm(f));
-       report4<<timevary_parm_rd[f-1]<<" # "<<ParmLabel(NP)<<endl;
-     }
-   }
-  else
-  {
-     report4<<"#0 #_custom_setup_for_sel_blocks&trends (0/1) "<<endl;
-    report4<<"#_Cond -2 2 0 0 -1 99 -2 #_placeholder when no block usage"<<endl;
-  }
-  */
-  
-  /*
-  if(N_selparm_dev>0)
-  {
-    report4<<"# standard error parameters for selparm devs"<<endl;
-    k=0;
-    for(i=1;i<=N_selparm_dev;i++)
-    {
-      NP++; j++;  k++; selparm_dev_se_rd(k,3)=value(selparm(j));
-      report4<<selparm_dev_se_rd(k)<<" # "<<ParmLabel(NP)<<endl;
-      NP++; j++;  k++; selparm_dev_se_rd(k,3)=value(selparm(j));
-      report4<<selparm_dev_se_rd(k)<<" # "<<ParmLabel(NP)<<" # "<<endl;
-    }
-
-    for (i=1;i<=N_selparm_dev;i++)
-    for (j=selparm_dev_minyr(i);j<=selparm_dev_maxyr(i);j++)
-    {
-      NP++; report4<<"# "<<selparm_dev(i,j)<<" # "<<ParmLabel(NP)<<endl;
-    }
-    report4<<selparm_dev_PH<<" #_selparmdev-phase"<<endl;
-  }
-  else
-  {
-    report4<<"#_Cond -4 # placeholder for selparm_Dev_Phase"<<endl;
-  }
-  */
-
 
   report4<<"#"<<endl<<"# Tag loss and Tag reporting parameters go next"<<endl;
   if(Do_TG>0)
@@ -2629,19 +2554,6 @@ FUNCTION void write_bigoutput()
     }
     Report_Parm(NP, active_count, Activ, selparm(j), selparm_LO(j), selparm_HI(j), selparm_RD(j), selparm_PR(j), selparm_PRtype(j), selparm_CV(j), selparm_PH(j), selparm_Like(j));
   }
-
-  /*
-    for (i=1;i<=N_selparm_dev;i++)
-    for (j=selparm_dev_minyr(i);j<=selparm_dev_maxyr(i);j++)
-      {
-        NP++;  SS2out<<NP<<" "<<ParmLabel(NP)<<" "<<selparm_dev(i,j);
-        if(active(selparm_dev))
-          {active_count++; SS2out<<" "<<active_count<<" _ _ _ _ act "<<CoVar(active_count,1);}
-          else
-          {SS2out<<" _ _ _ _ _ NA _ ";}
-        SS2out <<" dev "<<endl;
-    }
-  */
 
   if(Do_TG>0)
   {

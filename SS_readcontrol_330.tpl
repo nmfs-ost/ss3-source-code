@@ -2445,7 +2445,7 @@
   time_vary_sel(styr-3)=1;
   time_vary_sel(styr)=1;
   time_vary_sel(endyr+1)=1;
-  /*
+
   for (y=styr+1;y<=endyr;y++)
   {
     z=0;  // parameter counter within this section
@@ -2456,57 +2456,23 @@
         if(f<=Nfleet) {time_vary_sel(y,f)=time_vary_sel(y,seltype(f,4));} else {time_vary_sel(y,f)=time_vary_sel(y,seltype(f,4)+Nfleet);}
         z+=seltype_Nparam(seltype(f,1));
       }
-      else
-      {
-        if(seltype_Nparam(seltype(f,1))>0 || (seltype(f,2)==1) || (seltype(f,2)==2))      // type has parms, so look for adjustments
-        {
-          for (j=1;j<=N_selparmvec(f);j++)
-          {
-            z++;
-            if(selparm_envuse(z)>0)          // env linkage
-            {
-             if((env_data_RD(y,selparm_envuse(z))!=env_data_RD(y-1,selparm_envuse(z)))) time_vary_sel(y,f)=1;
-            }
-            else if (selparm_envuse(z)<0) // density-dependent link
-            {time_vary_sel(y,f)=1;}
-            if(selparm_1(z,9)>=1)  // dev vector
-            {
-              s=selparm_1(z,11)+1;
-              if(s>endyr) s=endyr;
-              if(y>=selparm_1(z,10) && y<=s) time_vary_sel(y,f)=1;
-            }
-
-            if(selparm_1(z,13)>0) //   blocks
-            {
-              if(Block_Defs_Sel(z,y)!=Block_Defs_Sel(z,y-1) ) time_vary_sel(y,f)=1;
-            }
-
-            if(selparm_1(z,13)<0) //   trend
-            {
-              time_vary_sel(y,f)=1;
-            }
-          }
-        }
-      }
       if(f<=Nfleet && seltype(f,2)<0)  //  retention is being mirrored
       {
         k=-seltype(f,2);
         if(time_vary_sel(y,k)>0) time_vary_sel(y,f)=1;
       }
+      if(f<=Nfleet)
+      {
+//  CHECK:  why is below needed for WTage_rd>0
+        if(time_vary_MG(y,2)>0 || time_vary_MG(y,3)>0 || WTage_rd>0)
+        {
+          time_vary_sel(y,f)=1;
+        }
+      }
     }  // end type
 
-//    time_vary_makefishsel(y)(1,Nfleet)=time_vary_sel(y)(1,Nfleet);  //  error, this will only do size selex
-    for (f=1;f<=Nfleet;f++)
-    {
-//  CHECK:  why is below needed for WTage_rd>0
-      if(time_vary_MG(y,2)>0 || time_vary_MG(y,3)>0 || WTage_rd>0)
-      {
-        time_vary_sel(y,f)=1;
-      }
-    }
-
   } // end years
-  */
+
  END_CALCS
 
 !!//  SS_Label_Info_4.10 #Read tag recapture parameter setup
@@ -3358,20 +3324,6 @@
       active_count++; active_parm(active_count)=ParCount;
     }
    }
-
-  /*
-   if(depletion_fleet>0 && selparm_dev_PH>0) selparm_dev_PH++;
-   if(selparm_dev_PH > Turn_off_phase) selparm_dev_PH =-1;
-   if(selparm_dev_PH > max_phase) max_phase=selparm_dev_PH;
-  for (k=1;k<=N_selparm_dev_tot;k++)
-  {
-    ParCount++;
-    if(selparm_dev_PH>=0)
-    {
-    active_count++; active_parm(active_count)=ParCount;
-    }
-  }
-  */
 
   if(Do_TG>0)
   {
