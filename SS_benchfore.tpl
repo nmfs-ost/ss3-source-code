@@ -824,7 +824,7 @@ FUNCTION void Get_Forecast()
       t_base=styr+(y-styr)*nseas-1;
      	env_data(y,-1)=SPB_current/SPB_yr(styr-1);  //  store most recent value for density-dependent effects, NOTE - off by a year if recalc'ed at beginning of season 1
       env_data(y,-2)=mfexp(recdev(y));  //  store for density-dependent effects
-        if(time_vary_MG(y,2)>0 || time_vary_MG(y,3)>0 || save_for_report==1 || WTage_rd>0)
+        if(timevary_MG(y,2)>0 || timevary_MG(y,3)>0 || save_for_report==1 || WTage_rd>0)
         {
           s=1;
           subseas=1;  //  begin season  note that ALK_idx re-calculated inside get_growth3
@@ -868,7 +868,7 @@ FUNCTION void Get_Forecast()
 
 //  do biology for this year
       yz=endyr+1;  //  biology year for parameters
-      if(time_vary_MG(endyr+1,2)>0 || save_for_report>0)  //  so uses endyr+1 timevary setting for duration of forecast
+      if(timevary_MG(endyr+1,2)>0 || save_for_report>0)  //  so uses endyr+1 timevary setting for duration of forecast
       {
         get_MGsetup();
         ALK_subseas_update=1;  //  vector to indicate if ALK needs recalculating
@@ -877,15 +877,15 @@ FUNCTION void Get_Forecast()
         else
         {get_growth2_Richards();}
       }
-      if(time_vary_MG(endyr+1,1)>0) get_natmort();
-      if(time_vary_MG(endyr+1,3)>0) get_wtlen();
-      if(time_vary_MG(endyr+1,4)>0) get_recr_distribution();
-      if(time_vary_MG(endyr+1,5)>0) get_migration();
-      if(time_vary_MG(endyr+1,7)>0)  get_catch_mult(y, catch_mult_pointer);
+      if(timevary_MG(endyr+1,1)>0) get_natmort();
+      if(timevary_MG(endyr+1,3)>0) get_wtlen();
+      if(timevary_MG(endyr+1,4)>0) get_recr_distribution();
+      if(timevary_MG(endyr+1,5)>0) get_migration();
+      if(timevary_MG(endyr+1,7)>0)  get_catch_mult(y, catch_mult_pointer);
 
       if(save_for_report>0 && Fcast_Loop1==Fcast_Loop_Control(1))
       {
-        if(time_vary_MG(endyr+1,1)>0 || time_vary_MG(endyr+1,2)>0 || time_vary_MG(endyr+1,3)>0)
+        if(timevary_MG(endyr+1,1)>0 || timevary_MG(endyr+1,2)>0 || timevary_MG(endyr+1,3)>0)
         {
           get_saveGparm();
         }
@@ -920,7 +920,7 @@ FUNCTION void Get_Forecast()
 
           if(ABC_Loop==ABC_Loop_start)  // do seasonal ALK and fishery selex
           {
-            if(time_vary_MG(endyr+1,2)>0 || time_vary_MG(endyr+1,3)>0 || WTage_rd>0)
+            if(timevary_MG(endyr+1,2)>0 || timevary_MG(endyr+1,3)>0 || WTage_rd>0)
             {
               subseas=1;  //   for begin of season   ALK_idx calculated within Make_AgeLength_Key
               ALK_idx=(s-1)*N_subseas+subseas;

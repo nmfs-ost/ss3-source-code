@@ -419,7 +419,7 @@ FUNCTION void Get_expected_values();
                   SzFreqMethod_seas=nseas*(SzFreqMethod-1)+s;     // index that combines sizefreqmethod and season and used in SzFreqTrans
                   if(SzFreq_obs_hdr(iobs,9)>0)  // first occurrence of this method at this time is with fleet = f
                   {
-                    if(do_once==1 || (MG_active(3)>0 && (time_vary_MG(y,3)>0 )))  // calc  matrix because wtlen parameters have changed
+                    if(do_once==1 || (MG_active(3)>0 && (timevary_MG(y,3)>0 )))  // calc  matrix because wtlen parameters have changed
                     {
                       for (gg=1;gg<=gender;gg++)
                       {

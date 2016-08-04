@@ -396,7 +396,7 @@ PARAMETER_SECTION
   number recr_like
   number Fcast_recr_like
   number parm_like
-  vector parm_dev_like(1,N_parm_dev)
+  matrix parm_dev_like(1,N_parm_dev,1,2)
 //  vector selparm_dev_like(1,N_selparm_dev)
   number CrashPen
   number SoftBoundPen

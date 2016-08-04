@@ -14,14 +14,13 @@ FUNCTION void make_timevaryparm()
 
     int timevary_parm_cnt_all;
     timevary_parm_cnt_all=0;
-      echoinput<<"number timevary: "<<timevary_cnt<<endl;
+      if(do_once==1) echoinput<<"number timevary: "<<timevary_cnt<<endl;
 
    for (int tvary=1;tvary<=timevary_cnt;tvary++)
     {
-      echoinput<<"process timevary: "<<tvary<<endl;
       ivector timevary_setup(1,13);
       timevary_setup(1,13)=timevary_def[tvary](1,13);
-      echoinput<<timevary_setup<<endl;
+      if(do_once==1) echoinput<<tvary<<"  setup:  "<<timevary_setup<<endl;
       //  what type of parameter is being affected?  get the baseparm and its bounds
       switch(timevary_setup(1))      //  parameter type
       {
@@ -40,22 +39,20 @@ FUNCTION void make_timevaryparm()
         }
         case 5:  // selex
         {
-          echoinput<<"setup base selparm "<<timevary_setup(2)<<endl;
           baseparm=selparm(timevary_setup(2)); //  index of base parm
           baseparm_min=selparm_LO(timevary_setup(2));
           baseparm_max=selparm_HI(timevary_setup(2));
+          if(do_once==1) echoinput<<"base selparm "<<baseparm<<endl;
           for(j=timevary_setup(3);j<timevary_def[tvary+1](3);j++)
           {
             timevary_parm_cnt_all++;
-            timevary_parm(timevary_parm_cnt_all)=selparm(N_selparm+j-timevary_parm_start_sel);
+            timevary_parm(timevary_parm_cnt_all)=selparm(N_selparm+j-timevary_parm_start_sel+1);
           }
           parm_timevary(tvary)=baseparm;  //  fill timeseries with base parameter, just in case
           break;
         }
       }
-      
-      if(do_once==1) echoinput<<"  time vary effect #: "<<tvary<<"  baseparm: "<<baseparm<<endl;
-      
+   
       timevary_parm_cnt=timevary_setup(3);  //  first  parameter used to create timevary effect on baseparm
       if(timevary_setup(4)>0)  //  block
       {
@@ -97,7 +94,6 @@ FUNCTION void make_timevaryparm()
             parm_timevary(tvary,y1)=temp;
           }
           g+=2;
-          if(do_once==1) echoinput<<" parm with blocks "<<parm_timevary(tvary)<<endl;
         }
 //        timevary_parm_cnt--;    // back out last increment
       }  // end uses blocks
@@ -128,7 +124,6 @@ FUNCTION void make_timevaryparm()
           infl_year=r_years(styr)+(r_years(endyr)-r_years(styr))*timevary_parm(timevary_parm_cnt+1);
         }
         slope=timevary_parm(timevary_parm_cnt+2);
-        if(do_once==1) echoinput<<" trend: infl_year, slope, endvalue "<<infl_year<<" "<<slope<<" "<<endtrend<<endl;
         timevary_parm_cnt+=3;
 
         norm_styr=cumd_norm((r_years(styr) -infl_year)/slope);
@@ -142,12 +137,10 @@ FUNCTION void make_timevaryparm()
           {parm_timevary(tvary,y1)=parm_timevary(tvary,endyr);}
         }
         parm_timevary(tvary,styr-1)=baseparm;
-        if(do_once==1) echoinput<<" parm with trend "<<parm_timevary(tvary)<<endl;
       }
 
       if(timevary_setup(7)>0)   //  env link, but not density-dependent
       {
-        if(do_once==1) echoinput<<" first envlink parm: "<<timevary_parm(timevary_parm_cnt)<<endl;
         switch(int(timevary_setup(6)))
         {
           case 1:  //  exponential  env link
@@ -183,14 +176,11 @@ FUNCTION void make_timevaryparm()
               break;
             }
         }
-        if(do_once==1) echoinput<<" parm with env "<<parm_timevary(tvary)<<endl;
       }
-      if(do_once==1) echoinput<<"check for devs "<<timevary_setup(8)<<endl;
   //  SS_Label_Info_14.3 #Create MGparm dev randwalks if needed
       if(timevary_setup(8)>0)   //  devs
       {
         k=timevary_setup(8);   //  dev used
-        if(do_once==1) echoinput<<"set up dev"<<k<<endl;
         parm_dev_stddev(k)=timevary_parm(timevary_parm_cnt);
         parm_dev_rho(k)=timevary_parm(timevary_parm_cnt+1);
         switch(timevary_setup(9))
@@ -235,7 +225,7 @@ FUNCTION void make_timevaryparm()
             break;
           }
         }
-        if(do_once==1) echoinput<<"devs "<<parm_dev(k)<<endl<<"result "<<parm_timevary(tvary)<<endl;
       }
+      if(do_once==1) echoinput<<"result: "<<parm_timevary(tvary)<<endl;
     }
   }

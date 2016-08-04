@@ -1854,7 +1854,7 @@ FUNCTION void write_nucontrol()
    for (f=1;f<=N_SRparm2;f++)
    { NP++;
      SR_parm_1(f,3)=value(SR_parm(f));
-      for(j=1;j<=6;j++) report4<<std::setprecision(4)<<std::fixed<<setw(10)<<SR_parm_1(f,j);
+      for(j=1;j<=6;j++) report4<<std::setprecision(4)<<std::fixed<<setw(11)<<SR_parm_1(f,j);
       report4.precision(6); report4.unsetf(std::ios_base::fixed); report4.unsetf(std::ios_base::floatfield);
       for(j=7;j<=14;j++) report4<<setw(8)<<SR_parm_1(f,j);
       report4<<" # "<<ParmLabel(NP)<<endl;
@@ -2038,7 +2038,7 @@ FUNCTION void write_nucontrol()
     {
       NP++;
       Q_parm_1(f,3)=value(Q_parm(f));
-      for(j=1;j<=6;j++) report4<<std::setprecision(4)<<std::fixed<<setw(10)<<Q_parm_1(f,j);
+      for(j=1;j<=6;j++) report4<<std::setprecision(4)<<std::fixed<<setw(11)<<Q_parm_1(f,j);
       report4.precision(6); report4.unsetf(std::ios_base::fixed); report4.unsetf(std::ios_base::floatfield);
       for(j=7;j<=14;j++) report4<<setw(8)<<Q_parm_1(f,j);
       report4<<"  #  "<<ParmLabel(NP)<<endl;
@@ -2067,7 +2067,7 @@ FUNCTION void write_nucontrol()
       {
         NP++;
         selparm_1(f)(3)=value(selparm(f));
-        for(j=1;j<=6;j++) report4<<std::setprecision(4)<<std::fixed<<setw(10)<<selparm_1(f,j);
+        for(j=1;j<=6;j++) report4<<std::setprecision(4)<<std::fixed<<setw(11)<<selparm_1(f,j);
         report4.precision(6); report4.unsetf(std::ios_base::fixed); report4.unsetf(std::ios_base::floatfield);
         for(j=7;j<=14;j++) report4<<setw(8)<<selparm_1(f,j);
         report4<<"  #  "<<ParmLabel(NP)<<endl;
@@ -2080,7 +2080,7 @@ FUNCTION void write_nucontrol()
     {
       NP++;
         timevary_parm_rd[f](3)=value(timevary_parm(f));
-        for(j=1;j<=6;j++) report4<<std::setprecision(4)<<std::fixed<<setw(10)<<timevary_parm_rd[f](j);
+        for(j=1;j<=6;j++) report4<<std::setprecision(4)<<std::fixed<<setw(11)<<timevary_parm_rd[f](j);
         report4.precision(6); report4.unsetf(std::ios_base::fixed); report4.unsetf(std::ios_base::floatfield);
       report4<<"      "<<timevary_parm_rd[f](7)<<"  # "<<ParmLabel(NP)<<endl;
     }
@@ -2376,7 +2376,17 @@ FUNCTION void write_bigoutput()
   if(Nobs_l_tot>0) SS2out<<"Length_lambda: _ "<<column(length_lambda,k)<<endl<<"Length_like: "<<length_like_tot*column(length_lambda,k)<<" "<<length_like_tot<<endl;
   if(Nobs_a_tot>0) SS2out<<"Age_lambda: _ "<<column(age_lambda,k)<<endl<<"Age_like: "<<age_like_tot*column(age_lambda,k)<<" "<<age_like_tot<<endl;
   if(nobs_ms_tot>0) SS2out<<"Sizeatage_lambda: _ "<<column(sizeage_lambda,k)<<endl<<"sizeatage_like: "<<sizeage_like*column(sizeage_lambda,k)<<" "<<sizeage_like<<endl;
-
+  
+  if(N_parm_dev)
+  {
+    SS2out<<"Parm_devs_detail"<<endl<<"Index  Phase  MinYear  MaxYear  stddev  Rho  Like_devs Like_se  rmse"<<endl;
+    for(i=1;i<=N_parm_dev;i++)
+    {
+      SS2out<<i<<" "<<parm_dev_PH(i)<<" "<<parm_dev_minyr(i)<<" "<<parm_dev_maxyr(i)<<" "<<parm_dev_stddev(i)<<" "<<
+      parm_dev_rho(i)<<" "<<parm_dev_like(i)<<" "<<
+      sqrt(sumsq(parm_dev(i)+1.0e-9)/float(parm_dev_maxyr(i)-parm_dev_minyr(i)+1.))<<endl;
+    }
+  }
   if(SzFreq_Nmeth>0)
   {
     for (j=1;j<=SzFreq_Nmeth;j++)
@@ -3814,7 +3824,7 @@ FUNCTION void write_bigoutput()
     if(f<=Nfleet) {k=styr-3; j=endyr+1;} else {k=styr; j=endyr;}
     for (y=k;y<=j;y++)
     for (gg=1;gg<=gender;gg++)
-    if(y==styr-3 || y==endyr || (y>=styr && (time_vary_sel(y,f)>0 || time_vary_sel(y+1,f)>0)))
+    if(y==styr-3 || y==endyr || (y>=styr && (timevary_sel(y,f)>0 || timevary_sel(y+1,f)>0)))
     {
       SS2out<<"Lsel "<<f<<" "<<y<<" "<<gg<<" "<<y<<"_"<<f<<"_Lsel";
       for (z=1;z<=nlength;z++) {SS2out<<" "<<sel_l(y,f,gg,z);}
@@ -3826,7 +3836,7 @@ FUNCTION void write_bigoutput()
   if(fleet_type(f)<=2)
   for (y=styr-3;y<=endyr+1;y++)
   for (gg=1;gg<=gender;gg++)
-  if(y==styr-3 || y==endyr || (y>=styr && (time_vary_sel(y,f)>0 || time_vary_sel(y+1,f)>0)))
+  if(y==styr-3 || y==endyr || (y>=styr && (timevary_sel(y,f)>0 || timevary_sel(y+1,f)>0)))
   {
     if(y>=styr && y<=endyr)
     {
@@ -3863,7 +3873,7 @@ FUNCTION void write_bigoutput()
     if(f<=Nfleet) {k=styr-3; j=endyr+1;} else {k=styr; j=endyr;}
     for (y=k;y<=j;y++)
     for (gg=1;gg<=gender;gg++)
-    if(y==styr-3 || y==endyr || (y>=styr && (time_vary_sel(y,f+Nfleet)>0 || time_vary_sel(y+1,f+Nfleet)>0)))
+    if(y==styr-3 || y==endyr || (y>=styr && (timevary_sel(y,f+Nfleet)>0 || timevary_sel(y+1,f+Nfleet)>0)))
     {
       SS2out<<"Asel "<<f<<" "<<y<<" 1 "<<gg<<" 1 "<<y<<"_"<<f<<"Asel";
       for (a=0;a<=nages;a++) {SS2out<<" "<<sel_a(y,f,gg,a);}
@@ -4136,7 +4146,7 @@ FUNCTION void write_bigoutput()
     dvariable Herma_Cum;
 
 //    restore_AgeLength_Key to endyr, otherwise it will have ALK from end of forecast
-      if(time_vary_MG(endyr,2)>0 || time_vary_MG(endyr,3)>0 || WTage_rd>0)
+      if(timevary_MG(endyr,2)>0 || timevary_MG(endyr,3)>0 || WTage_rd>0)
       {
         y=endyr;
         t_base=styr+(y-styr)*nseas-1;
@@ -4244,7 +4254,7 @@ FUNCTION void write_bigoutput()
     for (y=styr-3;y<=YrMax;y++)
     {
       yz=y;   if(yz>endyr+2) yz=endyr+2;
-    if(y==styr-3 || y==styr || time_vary_MG(yz,2)>0 || time_vary_MG(yz,3)>0 || WTage_rd>0)  // if growth or wtlen parms have changed
+    if(y==styr-3 || y==styr || timevary_MG(yz,2)>0 || timevary_MG(yz,3)>0 || WTage_rd>0)  // if growth or wtlen parms have changed
     for (s=1;s<=nseas;s++)
      {
       t = styr+(y-styr)*nseas+s-1;
@@ -4265,7 +4275,7 @@ FUNCTION void write_bigoutput()
       for (y=styr-3;y<=YrMax;y++)
       {
         yz=y;   if(yz>endyr+2) yz=endyr+2;
-        if(y==styr-3 || y==styr ||  time_vary_MG(yz,2)>0)
+        if(y==styr-3 || y==styr ||  timevary_MG(yz,2)>0)
         {
           for (s=1;s<=nseas;s++)
           {
@@ -4286,7 +4296,7 @@ FUNCTION void write_bigoutput()
       for (y=styr;y<=YrMax;y++)
       {
         yz=y;   if(yz>endyr+2) yz=endyr+2;
-        if(y<=styr || time_vary_MG(yz,2)>0 || N_platoon>1)
+        if(y<=styr || timevary_MG(yz,2)>0 || N_platoon>1)
         {
           t = styr+(y-styr)*nseas+s-1;
           SS2out<<i<<" "<<y<<" "<<s<<" "<<0;
@@ -4825,7 +4835,7 @@ FUNCTION void write_bigoutput()
   for (f=1;f<=Nfleet;f++)
   for (y=styr-3;y<=endyr;y++)
   {
-   if(y==styr-3 || y==endyr || (time_vary_sel(y,f)>0 || time_vary_sel(y+1,f)>0))
+   if(y==styr-3 || y==endyr || (timevary_sel(y,f)>0 || timevary_sel(y+1,f)>0))
    {
     for (gg=1;gg<=gender;gg++)
     {
@@ -4844,7 +4854,7 @@ FUNCTION void write_bigoutput()
      }
     }
    }
-   if(time_vary_sel(y,f+Nfleet)>0)
+   if(timevary_sel(y,f+Nfleet)>0)
    {
     for (gg=1;gg<=gender;gg++)
     for (a=0;a<=nages;a++) {SS2out<<f<<" "<<y<<" A "<<gg<<" "<<a<<" "<<sel_a(y,f,gg,a)<<endl;}

@@ -299,7 +299,7 @@ FUNCTION void get_time_series()
         	}
         t=t_base+1;  // first season
         s=1;
-        if(time_vary_MG(y,2)>0 || time_vary_MG(y,3)>0 || save_for_report==1 || WTage_rd>0)
+        if(timevary_MG(y,2)>0 || timevary_MG(y,3)>0 || save_for_report==1 || WTage_rd>0)
         {
           subseas=1;  //  begin season  note that ALK_idx re-calculated inside get_growth3
           ALK_idx=(s-1)*N_subseas+subseas;  //  redundant with calc inside get_growth3 ????
@@ -326,8 +326,8 @@ FUNCTION void get_time_series()
     if(y>styr)
     {
   //  SS_Label_Info_24.1.1 #Update the time varying biology factors if necessary
-      if(time_vary_MG(y,0)>0 || save_for_report>0) get_MGsetup();
-      if(time_vary_MG(y,2)>0)
+      if(timevary_MG(y,0)>0 || save_for_report>0) get_MGsetup();
+      if(timevary_MG(y,2)>0)
         {
           ALK_subseas_update=1;  // indicate that all ALKs will need re-estimation
           if(Grow_type!=2)
@@ -335,18 +335,18 @@ FUNCTION void get_time_series()
           else
           {get_growth2_Richards();}
         }
-      if(time_vary_MG(y,1)>0) get_natmort();
-      if(time_vary_MG(y,3)>0) get_wtlen();
-      if(time_vary_MG(y,4)>0) get_recr_distribution();
-      if(time_vary_MG(y,5)>0) get_migration();
-      if(time_vary_MG(y,7)>0)
+      if(timevary_MG(y,1)>0) get_natmort();
+      if(timevary_MG(y,3)>0) get_wtlen();
+      if(timevary_MG(y,4)>0) get_recr_distribution();
+      if(timevary_MG(y,5)>0) get_migration();
+      if(timevary_MG(y,7)>0)
       {
         get_catch_mult(y, catch_mult_pointer);
       }
 
       if(save_for_report>0)
       {
-        if(time_vary_MG(y,1)>0 || time_vary_MG(y,2)>0 || time_vary_MG(y,3)>0)
+        if(timevary_MG(y,1)>0 || timevary_MG(y,2)>0 || timevary_MG(y,3)>0)
         {
           get_saveGparm();
         }
@@ -371,7 +371,7 @@ FUNCTION void get_time_series()
         }
       }
 
-      if(time_vary_MG(y,2)>0 || time_vary_MG(y,3)>0 || save_for_report==1 || WTage_rd>0)
+      if(timevary_MG(y,2)>0 || timevary_MG(y,3)>0 || save_for_report==1 || WTage_rd>0)
       {
         subseas=1;  //  begin season  note that ALK_idx re-calculated inside get_growth3
         ALK_idx=(s-1)*N_subseas+subseas;  //  redundant with calc inside get_growth3 ????

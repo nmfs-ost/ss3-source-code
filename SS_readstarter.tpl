@@ -227,7 +227,7 @@
  LOCAL_CALCS
   if(k>0)
     {
-      echoinput<<F_reporting_ages<<"  F_reporting_ages_R"<<endl;
+      echoinput<<F_reporting_ages_R<<"  F_reporting_ages_R"<<endl;
       echoinput<<"Will be checked against maxage later "<<endl;
     }
  END_CALCS
@@ -236,11 +236,12 @@
   !!echoinput<<F_std_basis<<"  F_std_basis"<<endl;
   !!echoinput<<"For Kobe plot, set depletion_basis=2; depletion_level=1.0; F_reporting=your choose; F_std_basis=2"<<endl;
   init_number finish_starter
-  init_number finish_starter2
+  number finish_starter2
   number ALK_tolerance
 
  LOCAL_CALCS
    ALK_tolerance=0.0;
+   echoinput<<finish_starter<<endl;
    if(finish_starter==999.)
     {echoinput<<"Read files in 3.24 format"<<endl;}
     else
@@ -257,7 +258,7 @@
          cout<<"Error: ALK_tolerance must be between 0.0 and 0.1: "<<ALK_tolerance<<endl; exit(1);
      }
 
-     // *(ad_comm::global_datafile) >> finish_starter;
+     *(ad_comm::global_datafile) >> finish_starter2;
      if (finish_starter2 != 3.30)
      {
         echoinput<<"Error: the last line of starter.ss should be '3.30'"<<endl;

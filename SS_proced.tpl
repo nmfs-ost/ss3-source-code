@@ -346,7 +346,7 @@ PROCEDURE_SECTION
        if(Do_TG>0) cout<<" TG-fleetcomp "<<TG_like1<<endl<<" TG-negbin "<<TG_like2<<endl;
        cout<<" Recr " <<recr_like<<endl;
        cout<<" Parm_Priors " <<parm_like<<endl;
-       cout<<" MGParm_devs " <<parm_dev_like<<endl;
+       cout<<" Parm_devs " <<parm_dev_like<<endl;
        cout<<" SoftBound "<<SoftBoundPen<<endl;
        cout<<" F_ballpark " <<F_ballpark_like<<endl;
        if(F_Method>1) {cout<<"Catch "<<catch_like;} else {cout<<"  crash "<<CrashPen;}

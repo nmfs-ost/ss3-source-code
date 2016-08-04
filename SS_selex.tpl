@@ -34,9 +34,8 @@ FUNCTION void get_selectivity()
   for (f=1;f<=2*Nfleet;f++)
   {
     fs=f-Nfleet;  //index for saving age selex in the fleet arrays
-    echoinput<<"year, fleet: "<<y<<", "<<f<<"  time_vary_sel: "<<time_vary_sel(y,f)<<" "<<N_selparmvec(f)<<endl;
   //  SS_Label_Info_22.2.1 #recalculate selectivity for any fleets or surveys with time-vary flag set for this year
-    if(time_vary_sel(y,f)==1 || save_for_report>0)
+    if(timevary_sel(y,f)==1 || save_for_report>0)
     {    // recalculate the selex in this year x type
       if(N_selparmvec(f)>0)      // type has parms, so look for adjustments
       {
@@ -1318,7 +1317,7 @@ FUNCTION void Make_FishSelex()
     tz=styr+(y-styr)*nseas+s-1;  // can use y, not yf, because wtage_emp values are read in and can extend into forecast
     for (f=1;f<=Nfleet;f++)
     {
-      if(time_vary_sel(yf,f)>0 || time_vary_sel(yf,f+Nfleet)>0 || save_for_report>0)
+      if(timevary_sel(yf,f)>0 || timevary_sel(yf,f+Nfleet)>0 || save_for_report>0)
       {
         makefishsel_yr = yf;
         fs=f+Nfleet;  //  for the age dimensioning

@@ -217,7 +217,7 @@ FUNCTION void get_growth2()
       {
         Cohort_Lmin(gp)=Lmin(gp);   //  sets for all years and ages
       }
-      else if(time_vary_MG(y,2)>0)  //  using time-vary growth
+      else if(timevary_MG(y,2)>0)  //  using time-vary growth
       {
         k=min(nages,(YrMax-y));
         for (a=0;a<=k;a++) {Cohort_Lmin(gp,y+a,a)=Lmin(gp);}  //  sets for future years so cohort remembers its size at birth; with Lmin(gp) being size at birth this year
@@ -313,7 +313,7 @@ FUNCTION void get_growth2()
               else if(lin_grow(g,ALK_idx,a)==-2.0)  //  so doing growth curve
               {
                 t2=Ave_Size(t,1,g,a)-L_inf(gp);  //  remaining growth potential from first subseas
-                if(time_vary_MG(y,2)>0 && t2>-1.)
+                if(timevary_MG(y,2)>0 && t2>-1.)
                 {
                   join1=1.0/(1.0+mfexp(-(50.*t2/(1.0+fabs(t2)))));  //  note the logit transform is not perfect, so growth near Linf will not be exactly same as with native growth function
                   t2*=(1.-join1);  // trap to prevent decrease in size-at-age
@@ -350,7 +350,7 @@ FUNCTION void get_growth2()
 //  SS_Label_Info_16.2.4.3  #propagate Ave_Size from early years forward until first year that has time-vary growth
           k=y+1;
           j=yz+1;
-          while(time_vary_MG(j,2)==0 && k<=YrMax)
+          while(timevary_MG(j,2)==0 && k<=YrMax)
           {
             for (s=1;s<=nseas;s++)
             {
@@ -426,7 +426,7 @@ FUNCTION void get_growth2_Richards()
       {
         Cohort_Lmin(gp)=LminR;   //  sets for all years and ages
       }
-      else if(time_vary_MG(y,2)>0)  //  using time-vary growth
+      else if(timevary_MG(y,2)>0)  //  using time-vary growth
       {
         k=min(nages,(YrMax-y));
         for (a=0;a<=k;a++) {Cohort_Lmin(gp,y+a,a)=LminR;}  //  sets for future years so cohort remembers its size at birth; with Lmin(gp) being size at birth this year
@@ -531,7 +531,7 @@ FUNCTION void get_growth2_Richards()
               {
                 temp=pow(Ave_Size(t,1,g,a),Richards(gp));
                 t2=temp-LinfR;  //  remaining growth potential
-                if(time_vary_MG(y,2)>0 && t2>-1.)
+                if(timevary_MG(y,2)>0 && t2>-1.)
                 {
                   join1=1.0/(1.0+mfexp(-(50.*t2/(1.0+fabs(t2)))));  //  note the logit transform is not perfect, so growth near Linf will not be exactly same as with native growth function
                   t2*=(1.-join1);  // trap to prevent decrease in size-at-age
@@ -554,7 +554,7 @@ FUNCTION void get_growth2_Richards()
 //  SS_Label_Info_16.2.4.3  #propagate Ave_Size from early years forward until first year that has time-vary growth
           k=y+1;
           j=yz+1;
-          while(time_vary_MG(j,2)==0 && k<=YrMax)
+          while(timevary_MG(j,2)==0 && k<=YrMax)
           {
             for (s=1;s<=nseas;s++)
             {
@@ -616,7 +616,7 @@ FUNCTION void get_growth3(const int s, const int subseas)
             else if(lin_grow(g,ALK_idx,a)==-2.0)  //  so doing growth curve
             {
               t2=Ave_Size(t,1,g,a)-L_inf(gp);  //  remaining growth potential from first subseas
-              if(time_vary_MG(y,2)>0 && t2>-1.)
+              if(timevary_MG(y,2)>0 && t2>-1.)
               {
                 join1=1.0/(1.0+mfexp(-(50.*t2/(1.0+fabs(t2)))));  //  note the logit transform is not perfect, so growth near Linf will not be exactly same as with native growth function
                 t2*=(1.-join1);  // trap to prevent decrease in size-at-age
@@ -638,7 +638,7 @@ FUNCTION void get_growth3(const int s, const int subseas)
             {
               temp=pow(Ave_Size(t,1,g,a),Richards(gp));
               t2=temp-LinfR;  //  remaining growth potential
-              if(time_vary_MG(y,2)>0 && t2>-1.)
+              if(timevary_MG(y,2)>0 && t2>-1.)
               {
                 join1=1.0/(1.0+mfexp(-(50.*t2/(1.0+fabs(t2)))));  //  note the logit transform is not perfect, so growth near Linf will not be exactly same as with native growth function
                 t2*=(1.-join1);  // trap to prevent decrease in size-at-age
@@ -1256,7 +1256,7 @@ FUNCTION void get_migration()
   if(yz<endyr)
   {
     k=yz+1;
-    while(time_vary_MG(k,5)==0 && k<=endyr)
+    while(timevary_MG(k,5)==0 && k<=endyr)
     {
       migrrate(k)=migrrate(k-1);  k++;
     }

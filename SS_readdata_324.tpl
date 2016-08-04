@@ -26,13 +26,13 @@
   int read_seas_mo    //  1=read integer season; 2=read real months
  LOCAL_CALCS
    read_seas_mo=1;
+  *(ad_comm::global_datafile) >> styr;  //start year of the model
+  echoinput<<styr<<" start year "<<endl;
+
+  *(ad_comm::global_datafile) >> endyr; // end year of the model
+  echoinput<<endyr<<" end year "<<endl;
+
  END_CALCS
-
-  init_int styr  //start year of the model
- !!echoinput<<styr<<" start year "<<endl;
-
-  init_int endyr // end year of the model
- !!echoinput<<endyr<<" end year "<<endl;
 
   init_int nseas  //  number of seasons
  !!echoinput<<nseas<<" N seasons "<<endl;
@@ -49,7 +49,6 @@
 
   int TimeMax
   int TimeMax_Fcast_std
-  int YrMax;
 
   int eq_yr;
   int bio_yr;

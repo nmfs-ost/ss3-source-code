@@ -724,8 +724,8 @@ FUNCTION void evaluate_the_objective_function()
         if(parm_dev_PH(i)>0 && parm_dev_lambda(k_phase)>0.0 )
         {
         for(j=parm_dev_minyr(i);j<=parm_dev_maxyr(i);j++)
-        {parm_dev_like(i) += 0.5*square( parm_dev(i,j) / parm_dev_stddev(i) );}
-        parm_dev_like(i) += sd_offset*float(parm_dev_maxyr(i)-parm_dev_minyr(i)+1.)*log(parm_dev_stddev(i));
+        {parm_dev_like(i,1) += 0.5*square( parm_dev(i,j) / parm_dev_stddev(i) );}
+        parm_dev_like(i,2) += sd_offset*float(parm_dev_maxyr(i)-parm_dev_minyr(i)+1.)*log(parm_dev_stddev(i));
         }
       }
     }

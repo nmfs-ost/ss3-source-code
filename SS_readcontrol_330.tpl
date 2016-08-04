@@ -1047,9 +1047,9 @@
   int timevary_parm_start_MG;
 
   ivector MGparm_timevary(1,N_MGparm)  //  holds index in timevary_def used by this base parameter
-  imatrix time_vary_MG(styr-3,YrMax+1,0,7)  // goes to yrmax+1 to allow referencing in forecast, but only endyr+1 is checked
+  imatrix timevary_MG(styr-3,YrMax+1,0,7)  // goes to yrmax+1 to allow referencing in forecast, but only endyr+1 is checked
                                             // stores years to calc non-constant MG parms (1=natmort; 2=growth; 3=wtlen & fec; 4=recr_dist; 5=movement; 6=ageerrorkey)
-  ivector time_vary_pass(styr-3,YrMax+1)    //  extracted column
+  ivector timevary_pass(styr-3,YrMax+1)    //  extracted column
   ivector MG_active(0,7)  // 0=all, 1=M, 2=growth 3=wtlen, 4=recr_dist, 5=migration, 6=ageerror, 7=catchmult
   vector env_data_pass(styr-1,YrMax)
  
@@ -1066,7 +1066,7 @@
    timevary_parm_rd.push_back (tempvec);
    
    echoinput<<"Now read env, block/trend, and dev adjustments to MGparms "<<endl;
-   time_vary_MG.initialize();    // stores years to calc non-constant MG parms (1=natmort; 2=growth; 3=wtlen & fec; 4=recr_dist; 5=movement)
+   timevary_MG.initialize();    // stores years to calc non-constant MG parms (1=natmort; 2=growth; 3=wtlen & fec; 4=recr_dist; 5=movement)
    MG_active.initialize();
    CGD_onoff=0;
 
@@ -1079,7 +1079,7 @@
    for (j=1;j<=N_MGparm;j++)
    {
      k=mgp_type(j);
-     time_vary_pass=column(time_vary_MG,k);  // year vector for this type of MGparm
+     timevary_pass=column(timevary_MG,k);  // year vector for this type of MGparm
 
      if(MGparm_1(j,13)==0 && MGparm_1(j,8)==0 && MGparm_1(j,9)==0)
      {
@@ -1087,7 +1087,7 @@
      }
      else
      {
-       ivector timevary_setup(1,13);  //  temporary vector for time_vary specs
+       ivector timevary_setup(1,13);  //  temporary vector for timevary specs
        timevary_setup.initialize();
 //  1=baseparm type; 2=baseparm index; 3=first timevary parm
 //  4=block or trend type; 5=block pattern; 6= env link type; 7=env variable;
@@ -1115,18 +1115,18 @@
 
        if(z>0)  //  doing blocks
        {
-         create_timevary(MGparm_1(j),timevary_setup, time_vary_pass, autogen_timevary, mgp_type(j), Block_Design(z), parm_adjust_method, env_data_pass, N_parm_dev);
+         create_timevary(MGparm_1(j),timevary_setup, timevary_pass, autogen_timevary, mgp_type(j), Block_Design(z), parm_adjust_method, env_data_pass, N_parm_dev);
        }
        else
        {
-         create_timevary(MGparm_1(j),timevary_setup, time_vary_pass, autogen_timevary, mgp_type(j), block_design_null, parm_adjust_method, env_data_pass, N_parm_dev);
+         create_timevary(MGparm_1(j),timevary_setup, timevary_pass, autogen_timevary, mgp_type(j), block_design_null, parm_adjust_method, env_data_pass, N_parm_dev);
        }
   /*
    where:
    MGparm_1(j):           vector with the base parameter which has some type of timevary characteristic
    timevary_setup:        vector which contains specs of all types of timevary  for this base parameter
                           will be pushed to timevary_def cumulative across all types of base parameters
-   time_vary_pass:        vector containing column(time_vary_MG,mgp_type(j)), will be modified in create_timevary
+   timevary_pass:        vector containing column(timevary_MG,mgp_type(j)), will be modified in create_timevary
    autogen_timevary:      switch to autogenerate or not
    mgp_type(j):           integer with type of MGparm being worked on; analogous to 2*fleet in the selectivity section
    block_design(z):       block design, if any, being used
@@ -1135,7 +1135,7 @@
    N_parm_dev:            integer that is incremented in create_timevary as dev vectors are created; cumulative across all types of parameters
   */  
        timevary_def.push_back (timevary_setup(1,13));
-       for(y=styr-3;y<=YrMax+1;y++) {time_vary_MG(y,mgp_type(j))=time_vary_pass(y);}  // year vector for this category og MGparm
+       for(y=styr-3;y<=YrMax+1;y++) {timevary_MG(y,mgp_type(j))=timevary_pass(y);}  // year vector for this category og MGparm
        if(j==MGP_CGD) CGD_onoff=1;
      }
    } 
@@ -1149,23 +1149,23 @@
      k=YrMax+1;
     for (y=styr+1;y<=YrMax;y++)
     {
-      if(time_vary_MG(y,2)>0 && y<k)  k=y;
+      if(timevary_MG(y,2)>0 && y<k)  k=y;
     }
     if(k<YrMax+1)
     {
       for (y=k;y<=YrMax+1;y++)
       {
-        time_vary_MG(y,2)=1;
+        timevary_MG(y,2)=1;
       }
     }
     for (y=styr-1;y<=YrMax;y++)
     {
       for (f=1;f<=7;f++)
       {
-        if(time_vary_MG(y,f)>0)
+        if(timevary_MG(y,f)>0)
         {
           MG_active(f)=1;
-          time_vary_MG(y,0)=1;  // tracks active status for all MG types
+          timevary_MG(y,0)=1;  // tracks active status for all MG types
         }
       }
     }
@@ -1196,7 +1196,7 @@
     {
       if(MGparm_seas_effects(j)>0)
       {
-        MGparm_seas_effects(j)=N_MGparm+N_MGparm_seas;  // store base parameter count
+        MGparm_seas_effects(j)=N_MGparm+timevary_parm_cnt_MG+N_MGparm_seas;  // store base parameter count
         for (s=1;s<=nseas;s++)
         {
           N_MGparm_seas++; ParCount++; ParmLabel+=MGseasLbl(j)+"_seas_"+NumLbl(s);
@@ -1210,7 +1210,7 @@
 
   !!//  SS_Label_Info_4.5.9 #Create vectors (e.g. MGparm_PH) to be used to define the actual estimated parameter array
   int N_MGparm2
-  !! N_MGparm2=N_MGparm+timevary_parm_cnt_MG;
+  !! N_MGparm2=N_MGparm+timevary_parm_cnt_MG+N_MGparm_seas;
   vector MGparm_LO(1,N_MGparm2)
   vector MGparm_HI(1,N_MGparm2)
   vector MGparm_RD(1,N_MGparm2)
@@ -1262,7 +1262,7 @@
    }
    MG_active(0)=sum(MG_active(1,7));
    echoinput<<"MG_active "<<MG_active<<endl;
-   echoinput<<"timevary_MG "<<endl<<time_vary_MG<<endl;
+   echoinput<<"timevary_MG "<<endl<<timevary_MG<<endl;
  END_CALCS
  
   !!//  SS_Label_Info_4.6 #Read setup for Spawner-Recruitment parameters
@@ -2319,7 +2319,7 @@
   int timevary_parm_cnt_sel;
   int timevary_parm_start_sel;
   ivector selparm_timevary(1,N_selparm)  //  holds index of timevary used by this base parameter
-  imatrix time_vary_sel(styr-3,YrMax+1,1,2*Nfleet)
+  imatrix timevary_sel(styr-3,YrMax+1,1,2*Nfleet)
 
   int makefishsel_yr
 !!//  SS_Label_Info_4.9.4 #Create and label environmental linkages for selectivity parameters
@@ -2338,13 +2338,13 @@
 //  Block_Defs_Sel.initialize();
   timevary_parm_start_sel=timevary_parm_cnt;
   timevary_parm_cnt_sel=0;
-  time_vary_sel.initialize();
+  timevary_sel.initialize();
   selparm_timevary.initialize();
 
   for (j=1;j<=N_selparm;j++)
   {
      k=selparm_fleet(j);
-     time_vary_pass=column(time_vary_sel,k);  // year vector for this category of MGparm
+     timevary_pass=column(timevary_sel,k);  // year vector for this category of MGparm
      if(selparm_1(j,13)==0 && selparm_1(j,8)==0 && selparm_1(j,9)==0)
      {
       //  no time-vary parameter effects
@@ -2355,7 +2355,7 @@
      }
      else  //  set up a timevary parameter defintion
      {
-       ivector timevary_setup(1,13);  //  temporary vector for time_vary specs
+       ivector timevary_setup(1,13);  //  temporary vector for timevary specs
        timevary_setup.initialize();
 //  1=baseparm type; 2=baseparm index; 3=first timevary parm
 //  4=block or trend type; 5=block pattern; 6= env link type; 7=env variable;
@@ -2365,7 +2365,7 @@
        selparm_timevary(j)=timevary_cnt;  //  base parameter will use this timevary specification
        timevary_setup(1)=5; //  indicates a sel parm
        timevary_setup(2)=j; //  index of base parm within that type of parameter
-       timevary_setup(13)=ParCount-N_selparm+j;  //  index of base parm relative to ParCount which is continuous across all types of parameters
+       timevary_setup(13)=firstselparm+j;  //  index of base parm relative to ParCount which is continuous across all types of parameters
        timevary_setup(3)=timevary_parm_cnt+1;  //  first TV parameter within total list of all timevary parms
        z=selparm_1(j,13);    // specified block or trend definition
 
@@ -2379,21 +2379,20 @@
        } 
        else
        {k=0; env_data_pass.initialize();}
-
        if(z>0)  //  doing blocks
        {
-         create_timevary(selparm_1(j),timevary_setup, time_vary_pass, autogen_timevary, mgp_type(j), Block_Design(z), parm_adjust_method, env_data_pass, N_parm_dev);
+         create_timevary(selparm_1(j),timevary_setup, timevary_pass, autogen_timevary, selparm_fleet(j), Block_Design(z), parm_adjust_method, env_data_pass, N_parm_dev);
        }
        else
        {
-         create_timevary(selparm_1(j),timevary_setup, time_vary_pass, autogen_timevary, mgp_type(j), block_design_null, parm_adjust_method, env_data_pass, N_parm_dev);
+         create_timevary(selparm_1(j),timevary_setup, timevary_pass, autogen_timevary, selparm_fleet(j), block_design_null, parm_adjust_method, env_data_pass, N_parm_dev);
        }
   /*
    where:
    selparm_1(j):           vector with the base parameter which has some type of timevary characteristic
    timevary_setup:        vector which contains specs of all types of timevary  for this base parameter
                           will be pushed to timevary_def cumulative across all types of base parameters
-   time_vary_pass:        vector containing column(time_vary_MG,mgp_type(j)), will be modified in create_timevary
+   timevary_pass:        vector containing column(timevary_MG,mgp_type(j)), will be modified in create_timevary
    autogen_timevary:      switch to autogenerate or not
    selparm_fleet(j):           integer with type of MGparm being worked on; analogous to 2*fleet in the selectivity section
    block_design(z):       block design, if any, being used
@@ -2402,7 +2401,7 @@
    N_parm_dev:            integer that is incremented in create_timevary as dev vectors are created; cumulative across all types of parameters
   */  
        timevary_def.push_back (timevary_setup(1,13));
-       for(y=styr-3;y<=YrMax+1;y++) {time_vary_sel(y,selparm_fleet(j))=time_vary_pass(y);}  // year vector for this category og MGparm
+       for(y=styr-3;y<=YrMax+1;y++) {timevary_sel(y,selparm_fleet(j))=timevary_pass(y);}  // year vector for this category og MGparm
      }
   }
    timevary_setup.initialize();
@@ -2474,9 +2473,9 @@
 // end special bound checking
 
 //  SS_Label_Info_4.9.11  #Create time/fleet array indicating when changes in selex occcur
-  time_vary_sel(styr-3)=1;
-  time_vary_sel(styr)=1;
-  time_vary_sel(endyr+1)=1;
+  timevary_sel(styr-3)=1;
+  timevary_sel(styr)=1;
+  timevary_sel(endyr+1)=1;
 
   for (y=styr+1;y<=endyr;y++)
   {
@@ -2485,20 +2484,20 @@
     {
       if(seltype(f,1)==5 || seltype(f,1)==15)   // mirror
       {
-        if(f<=Nfleet) {time_vary_sel(y,f)=time_vary_sel(y,seltype(f,4));} else {time_vary_sel(y,f)=time_vary_sel(y,seltype(f,4)+Nfleet);}
+        if(f<=Nfleet) {timevary_sel(y,f)=timevary_sel(y,seltype(f,4));} else {timevary_sel(y,f)=timevary_sel(y,seltype(f,4)+Nfleet);}
         z+=seltype_Nparam(seltype(f,1));
       }
       if(f<=Nfleet && seltype(f,2)<0)  //  retention is being mirrored
       {
         k=-seltype(f,2);
-        if(time_vary_sel(y,k)>0) time_vary_sel(y,f)=1;
+        if(timevary_sel(y,k)>0) timevary_sel(y,f)=1;
       }
       if(f<=Nfleet)
       {
 //  CHECK:  why is below needed for WTage_rd>0
-        if(time_vary_MG(y,2)>0 || time_vary_MG(y,3)>0 || WTage_rd>0)
+        if(timevary_MG(y,2)>0 || timevary_MG(y,3)>0 || WTage_rd>0)
         {
-          time_vary_sel(y,f)=1;
+          timevary_sel(y,f)=1;
         }
       }
     }  // end type
@@ -2617,9 +2616,52 @@
   }
  END_CALCS
 
+   ivector parm_dev_minyr(1,N_parm_dev);
+   ivector parm_dev_maxyr(1,N_parm_dev);
+   ivector parm_dev_PH(1,N_parm_dev);
+   int Do_Var_adjust
 
-  int Do_Var_adjust
  LOCAL_CALCS
+   if(timevary_cnt>0)
+   {
+     for (j=1;j<=timevary_cnt;j++)  //  loop set up devs
+     {
+       ivector timevary_setup(1,13);
+       timevary_setup(1,13)=timevary_def[j](1,13);
+       if(timevary_setup(8)>0)
+       {
+         k=timevary_setup(8);  //  dev vector used
+         parm_dev_minyr(k)=timevary_setup(10);  //  used for dimensioning the dev vectors in SS_param
+         parm_dev_maxyr(k)=timevary_setup(11);
+         parm_dev_PH(k)=timevary_setup(12);
+         if(depletion_fleet>0 && parm_dev_PH(k)>0) parm_dev_PH(k)++;//  add 1 to phase if using depletion fleet
+         if(parm_dev_PH(k)>Turn_off_phase) parm_dev_PH(k) =-1;
+         if(parm_dev_PH(k)>max_phase) max_phase=parm_dev_PH(k);
+         echoinput<<" setup dev "<<k<<" vector "<<timevary_setup<<" phase "<<parm_dev_PH(k)<<endl;
+         f=timevary_setup(13);  //  index of base parameter
+         for(y=parm_dev_minyr(k);y<=parm_dev_maxyr(k);y++)
+         {
+           sprintf(onenum, "%d", y);
+           ParCount++;
+           if(timevary_setup(9)==1)
+           {ParmLabel+=ParmLabel(f)+"_DEVmult_"+onenum+CRLF(1);}
+           else if(timevary_setup(9)==2)
+           {ParmLabel+=ParmLabel(f)+"_DEVadd_"+onenum+CRLF(1);}
+           else if(timevary_setup(9)==3)
+           {ParmLabel+=ParmLabel(f)+"_DEVrwalk_"+onenum+CRLF(1);}
+           else if(timevary_setup(9)==4)
+           {ParmLabel+=ParmLabel(f)+"_DEV_MR_rwalk_"+onenum+CRLF(1);}
+           else
+           {N_warn++; cout<<" EXIT - see warning "<<endl; warning<<" illegal MGparmdevtype for parm "<<f<<endl; exit(1);}
+         }
+       }
+     }
+   }
+
+   timevary_setup.initialize();
+   timevary_setup(3)=timevary_parm_cnt+1;  //  one past last one used
+   timevary_def.push_back (timevary_setup(1,13));
+  
     echoinput<<" read var_adjust list until -9999"<<endl;
     ender=0;
     do
@@ -3018,11 +3060,10 @@
   Fcast_catch_start=N_STD_Mgmt_Quant;
   if(max(Do_Retain)>0) {j=1;} else {j=0;}
   if(Do_Forecast>0) {N_STD_Mgmt_Quant+=N_Fcast_Yrs*(1+j)+N_Fcast_Yrs;}
-  k=ParCount+2*N_STD_Yr+N_STD_Yr_Dep+N_STD_Yr_Ofish+N_STD_Yr_F+N_STD_Mgmt_Quant+gender*Selex_Std_Cnt+gender*Growth_Std_Cnt;
+  k=ParCount+2*N_STD_Yr+N_STD_Yr_Dep+N_STD_Yr_Ofish+N_STD_Yr_F+N_STD_Mgmt_Quant+gender*Selex_Std_Cnt+gender*Growth_Std_Cnt+gender*NatAge_Std_Cnt;
   echoinput<<"N parameters: "<<ParCount<<endl<<"Parameters plus derived quant: "<<k<<endl;
  END_CALCS
   ivector active_parm(1,k)  //  pointer from active list to the element of the full parameter list to get label later
-
 
 //***********************************************
 !!//  SS_Label_Info_4.14.1 #Adjust the phases to negative if beyond turn_off_phase and find resultant max_phase
@@ -3372,6 +3413,21 @@
     }
   }
 
+  if(N_parm_dev>0)
+  {
+    for(k=1;k<=N_parm_dev;k++)
+    {
+      for(y=parm_dev_minyr(k);y<=parm_dev_maxyr(k);y++)
+      {
+        ParCount++;
+        if(parm_dev_PH(k)>=0)
+        {
+         active_count++; active_parm(active_count)=ParCount;
+        }
+      }
+    }
+  }
+
   if(Do_Forecast>0 && Turn_off_phase>0)
   {
     if(Fcast_recr_PH==0)  // read value for forecast_PH.  This code is repeats earlier code in case other parameters have changed maxphase
@@ -3379,63 +3435,10 @@
       Fcast_recr_PH2=max_phase+1;
     }
   }
- END_CALCS
- 
-   ivector parm_dev_minyr(1,N_parm_dev);
-   ivector parm_dev_maxyr(1,N_parm_dev);
-   ivector parm_dev_PH(1,N_parm_dev);
 
- LOCAL_CALCS
-   if(timevary_cnt>0)
-   {
-     for (j=1;j<=timevary_cnt;j++)  //  loop set up devs
-     {
-       ivector timevary_setup(1,13);
-       timevary_setup(1,13)=timevary_def[j](1,13);
-       if(timevary_setup(8)>0)
-       {
-         k=timevary_setup(8);  //  dev vector used
-         parm_dev_minyr(k)=timevary_setup(10);  //  used for dimensioning the dev vectors in SS_param
-         parm_dev_maxyr(k)=timevary_setup(11);
-         parm_dev_PH(k)=timevary_setup(12);
-         if(depletion_fleet>0 && parm_dev_PH(k)>0) parm_dev_PH(k)++;//  add 1 to phase if using depletion fleet
-         if(parm_dev_PH(k)>Turn_off_phase) parm_dev_PH(k) =-1;
-         if(parm_dev_PH(k)>max_phase) max_phase=parm_dev_PH(k);
-         echoinput<<" setup dev "<<k<<" vector "<<timevary_setup<<" phase "<<parm_dev_PH(k)<<endl;
-         if(timevary_setup(1)==1) //  MGparm
-          {
-            f=0+timevary_setup(2);  //  index of base parameter
-          }
-          else
-          {
-            //  need to implement for other types
-          }
-         for(y=parm_dev_minyr(k);y<=parm_dev_maxyr(k);y++)
-         {
-           sprintf(onenum, "%d", y);
-           ParCount++;
-           if(timevary_setup(9)==1)
-           {ParmLabel+=ParmLabel(f)+"_DEVmult_"+onenum+CRLF(1);}
-           else if(timevary_setup(9)==2)
-           {ParmLabel+=ParmLabel(f)+"_DEVadd_"+onenum+CRLF(1);}
-           else if(timevary_setup(9)==3)
-           {ParmLabel+=ParmLabel(f)+"_DEVrwalk_"+onenum+CRLF(1);}
-           else if(timevary_setup(9)==4)
-           {ParmLabel+=ParmLabel(f)+"_DEV_MR_rwalk_"+onenum+CRLF(1);}
-           else
-           {N_warn++; cout<<" EXIT - see warning "<<endl; warning<<" illegal MGparmdevtype for parm "<<f<<endl; exit(1);}
-            if(parm_dev_PH(k)>=0)
-            {
-              active_count++; active_parm(active_count)=ParCount;
-            }
-         }
-       }
-     }
-   }
-  
   echoinput<<ParmLabel<<endl; 
-
-  echoinput<<"Active parameters: "<<active_count<<endl<<"Turn_off_phase "<<Turn_off_phase<<endl<<" max_phase "<<max_phase<<endl;
+  echoinput<<"ParCount "<<ParCount<<"   Active parameters: "<<active_count<<endl<<"Turn_off_phase "<<Turn_off_phase<<endl<<" max_phase "<<max_phase<<endl;
+  echoinput<<active_parm.indexmax()<<endl;
 
   if(Turn_off_phase<=0)
   {func_eval(1)=1;}
@@ -3449,6 +3452,7 @@
     j=ParCount;
     active_parms=active_count;
     CoVar_Count=active_count;
+  echoinput<<"parm "<<j<<" covar "<<CoVar_Count<<endl;
   onenum="    ";
   for (y=styr-2;y<=YrMax;y++)
   {
@@ -3468,6 +3472,7 @@
     }
   }
 
+  echoinput<<"parm "<<j<<" covar "<<CoVar_Count<<endl;
   for (y=styr-2;y<=YrMax;y++)
   {
     if(STD_Yr_Reverse(y)>0)
@@ -3488,6 +3493,7 @@
   }
   }
 
+  echoinput<<"parm "<<j<<" covar "<<CoVar_Count<<endl;
   for (y=styr;y<=YrMax;y++)
   {
     if(STD_Yr_Reverse_Ofish(y)>0)
@@ -3500,6 +3506,7 @@
   }
 
   //F_std
+  echoinput<<"parm "<<j<<" covar "<<CoVar_Count<<endl;
   for (y=styr;y<=YrMax;y++)
   {
     if(STD_Yr_Reverse_F(y)>0)
@@ -3511,6 +3518,7 @@
     }
   }
 
+  echoinput<<"parm "<<j<<" covar "<<CoVar_Count<<endl;
   for (y=styr;y<=YrMax;y++)
   {
     if(STD_Yr_Reverse_Dep(y)>0)
@@ -3521,7 +3529,7 @@
     ParmLabel+="Bratio_"+onenum+CRLF(1);
     }
   }
-
+  echoinput<<"parm "<<j<<" covar "<<CoVar_Count<<endl;
 //  create labels for Mgmt_Quant
   if(Do_Benchmark>0)
     {
@@ -3547,6 +3555,7 @@
       ParmLabel+="Bzero_again"+CRLF(1); CoVar_Count++; j++; active_parm(CoVar_Count)=j;
     }
 
+  echoinput<<"parm "<<j<<" covar "<<CoVar_Count<<endl;
     if(Do_Forecast>0)
     {
       for (y=endyr+1;y<=YrMax;y++)
@@ -3573,6 +3582,7 @@
     }
 
 // do labels for Selex_Std
+  echoinput<<"parm "<<j<<" covar "<<CoVar_Count<<endl;
     if(Do_Selex_Std>0)
     {
       for (g=1;g<=gender;g++)
@@ -3597,6 +3607,8 @@
         }
       }
     }
+
+  echoinput<<"parm "<<j<<" covar "<<CoVar_Count<<endl;
     if(Do_Growth_Std>0)
     {
       for (g=1;g<=gender;g++)
@@ -3606,6 +3618,7 @@
         ParmLabel+="Grow_std_"+NumLbl(Do_Growth_Std)+"_"+GenderLbl(g)+"_A_"+NumLbl(age_vector(Growth_Std_Pick(i)))+CRLF(1);
       }
     }
+  echoinput<<"parm after growthstd"<<j<<" covar "<<CoVar_Count<<endl;
     if(Do_NatAge_Std!=0)
     {
       for (g=1;g<=gender;g++)
@@ -3618,11 +3631,13 @@
         {ParmLabel+="NatAge_std_All_"+GenderLbl(g)+"_A_"+NumLbl(age_vector(NatAge_Std_Pick(i)))+CRLF(1);}
       }
     }
+  echoinput<<"parm after natage"<<j<<" covar "<<CoVar_Count<<endl;
     if(Do_Selex_Std==0 && Do_Growth_Std==0 && Do_NatAge_Std==0)
     {
       CoVar_Count++; j++; active_parm(CoVar_Count)=j;
       ParmLabel+="Bzero_again"+CRLF(1);
     }
+  echoinput<<"parm after Bzero bump"<<j<<" covar "<<CoVar_Count<<endl;
 
    sprintf(onenum, "%d", int(100*depletion_level));
    switch(depletion_basis)
