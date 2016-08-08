@@ -3437,70 +3437,14 @@
       Fcast_recr_PH2=max_phase+1;
     }
   }
-<<<<<<< HEAD
 
   echoinput<<ParmLabel<<endl; 
   echoinput<<"ParCount "<<ParCount<<"   Active parameters: "<<active_count<<endl<<"Turn_off_phase "<<Turn_off_phase<<endl<<" max_phase "<<max_phase<<endl;
   echoinput<<active_parm.indexmax()<<endl;
-=======
- END_CALCS
 
-   ivector parm_dev_minyr(1,N_parm_dev);
-   ivector parm_dev_maxyr(1,N_parm_dev);
-   ivector parm_dev_PH(1,N_parm_dev);
 
- LOCAL_CALCS
-   if(timevary_cnt>0)
-   {
-     for (j=1;j<=timevary_cnt;j++)  //  loop set up devs
-     {
-       ivector timevary_setup(1,13);
-       timevary_setup(1,13)=timevary_def[j](1,13);
-       if(timevary_setup(8)>0)
-       {
-         k=timevary_setup(8);  //  dev vector used
-         parm_dev_minyr(k)=timevary_setup(10);  //  used for dimensioning the dev vectors in SS_param
-         parm_dev_maxyr(k)=timevary_setup(11);
-         parm_dev_PH(k)=timevary_setup(12);
-         if(depletion_fleet>0 && parm_dev_PH(k)>0) parm_dev_PH(k)++;//  add 1 to phase if using depletion fleet
-         if(parm_dev_PH(k)>Turn_off_phase) parm_dev_PH(k) =-1;
-         if(parm_dev_PH(k)>max_phase) max_phase=parm_dev_PH(k);
-         echoinput<<" setup dev "<<k<<" vector "<<timevary_setup<<" phase "<<parm_dev_PH(k)<<endl;
-         if(timevary_setup(1)==1) //  MGparm
-          {
-            f=0+timevary_setup(2);  //  index of base parameter
-          }
-          else
-          {
-            //  need to implement for other types
-          }
-         for(y=parm_dev_minyr(k);y<=parm_dev_maxyr(k);y++)
-         {
-           sprintf(onenum, "%d", y);
-           ParCount++;
-           if(timevary_setup(9)==1)
-           {ParmLabel+=ParmLabel(f)+"_DEVmult_"+onenum+CRLF(1);}
-           else if(timevary_setup(9)==2)
-           {ParmLabel+=ParmLabel(f)+"_DEVadd_"+onenum+CRLF(1);}
-           else if(timevary_setup(9)==3)
-           {ParmLabel+=ParmLabel(f)+"_DEVrwalk_"+onenum+CRLF(1);}
-           else if(timevary_setup(9)==4)
-           {ParmLabel+=ParmLabel(f)+"_DEV_MR_rwalk_"+onenum+CRLF(1);}
-           else
-           {N_warn++; cout<<" EXIT - see warning "<<endl; warning<<" illegal MGparmdevtype for parm "<<f<<endl; exit(1);}
-            if(parm_dev_PH(k)>=0)
-            {
-              active_count++; active_parm(active_count)=ParCount;
-            }
-         }
-       }
-     }
-   }
 
-  echoinput<<ParmLabel<<endl;
 
-  echoinput<<"Active parameters: "<<active_count<<endl<<"Turn_off_phase "<<Turn_off_phase<<endl<<" max_phase "<<max_phase<<endl;
->>>>>>> a208ea7adf22481623bf9924a79764ade21f9300
 
   if(Turn_off_phase<=0)
   {func_eval(1)=1;}
