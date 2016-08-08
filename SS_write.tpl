@@ -1,4 +1,4 @@
-//********************************************************************
+
  /*  SS_Label_FUNCTION 36 write_summaryoutput */
 FUNCTION void write_summaryoutput()
   {
@@ -81,7 +81,7 @@ FUNCTION void write_summaryoutput()
   report2<<endl;
   report2<<runnumber<<" Parm Values ";
   report2<<" "<<MGparm<<" ";
-  if(N_parm_dev>0) 
+  if(N_parm_dev>0)
     {
       for(j=1;j<=N_parm_dev;j++)  report2<<parm_dev(j)<<" ";
     }
@@ -2141,7 +2141,7 @@ FUNCTION void write_nucontrol()
       report4<<"# deviation vectors for timevary parameters"<<endl
       <<"#  base   base first block   block  env  env   dev   dev   dev   dev   dev"<<endl
       <<"#  type  index  parm trend pattern link  var  vectr link _mnyr  mxyr phase  dev_vector"<<endl;
-      
+
       for(j=1;j<=timevary_cnt;j++)
       {
 //        report4.precision(6);

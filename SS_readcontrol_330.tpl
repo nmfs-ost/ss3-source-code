@@ -1052,7 +1052,7 @@
   ivector timevary_pass(styr-3,YrMax+1)    //  extracted column
   ivector MG_active(0,7)  // 0=all, 1=M, 2=growth 3=wtlen, 4=recr_dist, 5=migration, 6=ageerror, 7=catchmult
   vector env_data_pass(styr-1,YrMax)
- 
+
  LOCAL_CALCS
    timevary_cnt=0;
    N_parm_dev=0;
@@ -1062,9 +1062,9 @@
    ivector timevary_setup(1,13);
    timevary_setup.initialize();
    timevary_def.push_back (timevary_setup(1,13));
-   dvector tempvec(1,7);  //  temporary vector for a time-vary parameter  LO HI INIT PRIOR PR_type SD PHASE 
+   dvector tempvec(1,7);  //  temporary vector for a time-vary parameter  LO HI INIT PRIOR PR_type SD PHASE
    timevary_parm_rd.push_back (tempvec);
-   
+
    echoinput<<"Now read env, block/trend, and dev adjustments to MGparms "<<endl;
    timevary_MG.initialize();    // stores years to calc non-constant MG parms (1=natmort; 2=growth; 3=wtlen & fec; 4=recr_dist; 5=movement)
    MG_active.initialize();
@@ -1109,7 +1109,7 @@
        {
          k=timevary_setup(7);
          for(y=styr-1;y<=YrMax;y++) env_data_pass(y)=env_data_RD(y,k);
-       } 
+       }
        else
        {k=0; env_data_pass.initialize();}
 
@@ -1133,13 +1133,13 @@
    parm_adjust_method:    switch to determine if adjusted parameter will stay in bounds; used to create warnings in create_timevary
    env_data_RD:           matrix containing entire set of environmental data as read
    N_parm_dev:            integer that is incremented in create_timevary as dev vectors are created; cumulative across all types of parameters
-  */  
+  */
        timevary_def.push_back (timevary_setup(1,13));
        for(y=styr-3;y<=YrMax+1;y++) {timevary_MG(y,mgp_type(j))=timevary_pass(y);}  // year vector for this category og MGparm
        if(j==MGP_CGD) CGD_onoff=1;
      }
-   } 
-   
+   }
+
    timevary_parm_cnt_MG=timevary_parm_cnt;
 
   //  SS_Label_Info_4.5.9 #Set up random deviations for MG parms
@@ -1264,7 +1264,7 @@
    echoinput<<"MG_active "<<MG_active<<endl;
    echoinput<<"timevary_MG "<<endl<<timevary_MG<<endl;
  END_CALCS
- 
+
   !!//  SS_Label_Info_4.6 #Read setup for Spawner-Recruitment parameters
   //  SPAWN-RECR: read setup for SR parameters:  LO, HI, INIT, PRIOR, PRtype, CV, PHASE
   init_int SR_fxn
@@ -1940,7 +1940,7 @@
  END_CALCS
 
 !!//  SS_Label_Info_4.9 #Define Selectivity patterns and N parameters needed per pattern
-  ivector seltype_Nparam(0,40)
+  ivector seltype_Nparam(0,50)
  LOCAL_CALCS
    seltype_Nparam(0)=0;   // selex=1.0 for all sizes
    seltype_Nparam(1)=2;   // logistic; with 95% width specification
@@ -1975,9 +1975,9 @@
 //   seltype_Nparam(28)=3;   // cubic spline for selex at age, additional parm count is in seltype(f,4)
    seltype_Nparam(29)=0;   //   undefined
 
-   seltype_Nparam(31)=2+seltype_Nparam(17); // like 17, with 2 additional parameters for scaling (average over bin range)
-   seltype_Nparam(32)=2+seltype_Nparam(27); // like 27, with 2 additional parameters for scaling (average over bin range)
-   seltype_Nparam(33)=2+seltype_Nparam(6);  // like 6, with 2 additional parameters for scaling (average over bin range)
+   seltype_Nparam(41)=2+seltype_Nparam(17); // like 17, with 2 additional parameters for scaling (average over bin range)
+   seltype_Nparam(42)=2+seltype_Nparam(27); // like 27, with 2 additional parameters for scaling (average over bin range)
+   seltype_Nparam(43)=2+seltype_Nparam(6);  // like 6, with 2 additional parameters for scaling (average over bin range)
 
  END_CALCS
 
@@ -2028,20 +2028,20 @@
       N_warn++; warning<<" Use of size selectivity not advised when reading empirical wt-at-age "<<endl;
      }
      N_selparmvec(f)=seltype_Nparam(seltype(f,1));   // N Length selex parms
-     if(seltype(f,1)==6 || seltype(f,1)==33) N_selparmvec(f) +=seltype(f,4);  // special setup of N parms
+     if(seltype(f,1)==6 || seltype(f,1)==43) N_selparmvec(f) +=seltype(f,4);  // special setup of N parms
      if(seltype(f,1)==21) N_selparmvec(f) +=2*(seltype(f,4)-1);  // special setup of N parms
-     if(seltype(f,1)==27 || seltype(f,1)==32) N_selparmvec(f) +=2*seltype(f,4);  // special setup of N parms for cubic spline
+     if(seltype(f,1)==27 || seltype(f,1)==42) N_selparmvec(f) +=2*seltype(f,4);  // special setup of N parms for cubic spline
      if(seltype(f,1)>0 && Svy_units(f)<30) {dolen(f)=1;} else {dolen(f)=0;}
 
-     if(seltype(f,1)==33)
+     if(seltype(f,1)==43)
      {
          ParCount++; ParmLabel+="SizeSel_ScaleBinLo_"+fleetname(f)+"("+NumLbl(f)+")";
          ParCount++; ParmLabel+="SizeSel_ScaleBinHi_"+fleetname(f)+"("+NumLbl(f)+")";
      }
 
-     if(seltype(f,1)==27 || seltype(f,1)==32)
+     if(seltype(f,1)==27 || seltype(f,1)==42)
      {
-         if(seltype(f,1)==32)
+         if(seltype(f,1)==42)
          {
              ParCount++; ParmLabel+="SizeSpline_ScaleBinLo_"+fleetname(f)+"("+NumLbl(f)+")";
              ParCount++; ParmLabel+="SizeSpline_ScaleBinHi_"+fleetname(f)+"("+NumLbl(f)+")";
@@ -2067,7 +2067,7 @@
      }
 
      // account for the low and high bin parameters
-     if(seltype(f,1) == 32 || seltype(f,1) == 33) N_selparmvec(f)+=2;
+     if(seltype(f,1) == 42 || seltype(f,1) == 43) N_selparmvec(f)+=2;
 
      if(Svy_units(f)==34)  //  special code for depletion, so adjust phases and lambdas
       {
@@ -2152,7 +2152,7 @@
        }
        N_selparmvec(f)=0;   // Nunber of Age selex parms
      }
-     else if(seltype(f,1)!=17 && seltype(f,1)!=31)
+     else if(seltype(f,1)!=17 && seltype(f,1)!=41)
      {
        N_selparmvec(f)=seltype_Nparam(seltype(f,1));   // Nunber of Age selex parms
      }
@@ -2165,15 +2165,15 @@
        N_selparmvec(f)=abs(seltype(f,4))+1;   // so reads value for age 0 through this age
      }
 
-     if(seltype(f,1)==31)
+     if(seltype(f,1)==41)
      {
          ParCount++; ParmLabel+="AgeSel_ScaleAgeLo_"+fleetname(f-Nfleet)+"("+NumLbl(f-Nfleet)+")";
          ParCount++; ParmLabel+="AgeSel_ScaleAgeHi_"+fleetname(f-Nfleet)+"("+NumLbl(f-Nfleet)+")";
      }
 
-     if(seltype(f,1)==27 || seltype(f,1)==32)
+     if(seltype(f,1)==27 || seltype(f,1)==42)
      {
-       if(seltype(f,1)==32)
+       if(seltype(f,1)==42)
        {
          ParCount++; ParmLabel+="AgeSpline_ScaleAgeLo_"+fleetname(f-Nfleet)+"("+NumLbl(f-Nfleet)+")";
          ParCount++; ParmLabel+="AgeSpline_ScaleAgeHi_"+fleetname(f-Nfleet)+"("+NumLbl(f-Nfleet)+")";
@@ -2200,7 +2200,7 @@
      }
 
      // account for the low and high bin parameters
-     if(seltype(f,1) == 31 || seltype(f,1) == 32) N_selparmvec(f)+=2;
+     if(seltype(f,1) == 41 || seltype(f,1) == 42) N_selparmvec(f)+=2;
 
 //  age-specific retention function
      if(seltype(f,2)>=1)
@@ -2285,7 +2285,7 @@
 
 !!//  SS_Label_Info_4.9.3 #Read selex parameters
   init_matrix selparm_1(1,N_selparm,1,14)
-  ivector selparm_fleet(1,N_selparm) // holds the fleet ID for each selparm  
+  ivector selparm_fleet(1,N_selparm) // holds the fleet ID for each selparm
                                   //  equivalent to the mgp_type() for MGparms
 
  LOCAL_CALCS
@@ -2304,7 +2304,7 @@
       for(g=1;g<=N_selparmvec(f);g++)
       {
         j++; selparm_fleet(j)=f;
-      } 
+      }
     }
   }
   if(Comp_Err_ParmCount>0)
@@ -2312,7 +2312,7 @@
     for(g=1;g<=Comp_Err_ParmCount;g++)
     {
       j++; selparm_fleet(j)=0;
-    } 
+    }
   }
  END_CALCS
 
@@ -2376,7 +2376,7 @@
        {
          k=timevary_setup(7);
          for(y=styr-1;y<=YrMax;y++) env_data_pass(y)=env_data_RD(y,k);
-       } 
+       }
        else
        {k=0; env_data_pass.initialize();}
        if(z>0)  //  doing blocks
@@ -2399,7 +2399,7 @@
    parm_adjust_method:    switch to determine if adjusted parameter will stay in bounds; used to create warnings in create_timevary
    env_data_RD:           matrix containing entire set of environmental data as read
    N_parm_dev:            integer that is incremented in create_timevary as dev vectors are created; cumulative across all types of parameters
-  */  
+  */
        timevary_def.push_back (timevary_setup(1,13));
        for(y=styr-3;y<=YrMax+1;y++) {timevary_sel(y,selparm_fleet(j))=timevary_pass(y);}  // year vector for this category og MGparm
      }
@@ -2407,7 +2407,7 @@
    timevary_setup.initialize();
    timevary_setup(3)=timevary_parm_cnt+1;  //  one past last one used
    timevary_def.push_back (timevary_setup(1,13));
-   
+
    timevary_parm_cnt_sel=timevary_parm_cnt;  //  last timevary_selparm
    N_selparm2=N_selparm+timevary_parm_cnt_sel-timevary_parm_start_sel;
    echoinput<<"N_selparm "<<N_selparm<<" "<<N_selparm2<<" "<<timevary_parm_start_sel<<" "<<timevary_parm_cnt_sel<<endl;
@@ -3238,8 +3238,10 @@
     {fs=f;}
     else
     {fs=f-Nfleet;}
-    if(seltype(f,1)==27 || seltype(f,1)==31)  //  reset the cubic spline knots for size or age comp
+    if(seltype(f,1)==27 || seltype(f,1)==42)  //  reset the cubic spline knots for size or age comp
     {
+      // TODO - may need adjustments below for selex pattern 42
+
       k=int(selparm_RD(Ip+1));  // setup method
       N_knots=seltype(f,4);  //  number of knots
 
@@ -3435,10 +3437,70 @@
       Fcast_recr_PH2=max_phase+1;
     }
   }
+<<<<<<< HEAD
 
   echoinput<<ParmLabel<<endl; 
   echoinput<<"ParCount "<<ParCount<<"   Active parameters: "<<active_count<<endl<<"Turn_off_phase "<<Turn_off_phase<<endl<<" max_phase "<<max_phase<<endl;
   echoinput<<active_parm.indexmax()<<endl;
+=======
+ END_CALCS
+
+   ivector parm_dev_minyr(1,N_parm_dev);
+   ivector parm_dev_maxyr(1,N_parm_dev);
+   ivector parm_dev_PH(1,N_parm_dev);
+
+ LOCAL_CALCS
+   if(timevary_cnt>0)
+   {
+     for (j=1;j<=timevary_cnt;j++)  //  loop set up devs
+     {
+       ivector timevary_setup(1,13);
+       timevary_setup(1,13)=timevary_def[j](1,13);
+       if(timevary_setup(8)>0)
+       {
+         k=timevary_setup(8);  //  dev vector used
+         parm_dev_minyr(k)=timevary_setup(10);  //  used for dimensioning the dev vectors in SS_param
+         parm_dev_maxyr(k)=timevary_setup(11);
+         parm_dev_PH(k)=timevary_setup(12);
+         if(depletion_fleet>0 && parm_dev_PH(k)>0) parm_dev_PH(k)++;//  add 1 to phase if using depletion fleet
+         if(parm_dev_PH(k)>Turn_off_phase) parm_dev_PH(k) =-1;
+         if(parm_dev_PH(k)>max_phase) max_phase=parm_dev_PH(k);
+         echoinput<<" setup dev "<<k<<" vector "<<timevary_setup<<" phase "<<parm_dev_PH(k)<<endl;
+         if(timevary_setup(1)==1) //  MGparm
+          {
+            f=0+timevary_setup(2);  //  index of base parameter
+          }
+          else
+          {
+            //  need to implement for other types
+          }
+         for(y=parm_dev_minyr(k);y<=parm_dev_maxyr(k);y++)
+         {
+           sprintf(onenum, "%d", y);
+           ParCount++;
+           if(timevary_setup(9)==1)
+           {ParmLabel+=ParmLabel(f)+"_DEVmult_"+onenum+CRLF(1);}
+           else if(timevary_setup(9)==2)
+           {ParmLabel+=ParmLabel(f)+"_DEVadd_"+onenum+CRLF(1);}
+           else if(timevary_setup(9)==3)
+           {ParmLabel+=ParmLabel(f)+"_DEVrwalk_"+onenum+CRLF(1);}
+           else if(timevary_setup(9)==4)
+           {ParmLabel+=ParmLabel(f)+"_DEV_MR_rwalk_"+onenum+CRLF(1);}
+           else
+           {N_warn++; cout<<" EXIT - see warning "<<endl; warning<<" illegal MGparmdevtype for parm "<<f<<endl; exit(1);}
+            if(parm_dev_PH(k)>=0)
+            {
+              active_count++; active_parm(active_count)=ParCount;
+            }
+         }
+       }
+     }
+   }
+
+  echoinput<<ParmLabel<<endl;
+
+  echoinput<<"Active parameters: "<<active_count<<endl<<"Turn_off_phase "<<Turn_off_phase<<endl<<" max_phase "<<max_phase<<endl;
+>>>>>>> a208ea7adf22481623bf9924a79764ade21f9300
 
   if(Turn_off_phase<=0)
   {func_eval(1)=1;}
