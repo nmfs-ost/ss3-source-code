@@ -21,7 +21,6 @@ FUNCTION void get_MGsetup()
         if(MGparm_timevary(f)>0)   // has timevary
         {
           mgp_adj(f)=parm_timevary(MGparm_timevary(f),yz);
-          echoinput<<" adjusted parm in biofxn "<<f<<" "<<mgp_adj(f)<<endl;
         }
 
   //  SS_Label_Info_14.4.1.4 #Do bound check if parm_adjust_method=1

@@ -2076,7 +2076,7 @@ FUNCTION void write_nucontrol()
   {
     report4<<"# timevary selex parameters "<<endl;
     report4<<"#_      LO        HI      INIT     PRIOR   PR_type        SD   PHASE"<<endl;
-    for (f=timevary_parm_start_sel+1;f<=timevary_parm_cnt_sel;f++)
+    for (f=timevary_parm_start_sel;f<=timevary_parm_cnt_sel;f++)
     {
       NP++;
         timevary_parm_rd[f](3)=value(timevary_parm(f));

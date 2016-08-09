@@ -367,7 +367,7 @@ GLOBALS_SECTION
            if(autogen_timevary==1)
            {*(ad_comm::global_datafile) >> tempvec(1,7);}
            else
-           {tempvec.fill("{-2.,2.0,0.05,0.0,0,0.5,4}");}
+           {tempvec.fill("{-10.,10.0,1.0,1.0,0,0.5,4}");}
            timevary_parm_rd.push_back (tempvec(1,7));
            if(parm_adjust_method==2) {N_warn++; cout<<" EXIT - see warning "<<endl; warning<<"multiplicative env effect on MGparm: "<<j
            <<" not allowed because parm_adjust_method==2; STOP"<<endl; exit(1);}
@@ -382,7 +382,7 @@ GLOBALS_SECTION
            if(autogen_timevary==1)
            {*(ad_comm::global_datafile) >> tempvec(1,7);}
            else
-           {tempvec.fill("{-0.9,0.9,0.5,0.0,0,0.5,3}");}
+           {tempvec.fill("{-10.,10.0,1.0,1.0,0,0.5,4}");}
            timevary_parm_rd.push_back (tempvec(1,7));
            break;
          }
@@ -444,17 +444,21 @@ GLOBALS_SECTION
        timevary_byyear(y)=1;
       }
 
-      timevary_setup(12)=baseparm_list(12); //  dev phase
       ParCount++;
       ParmLabel+=ParmLabel(j)+"_dev_se"+CRLF(1);
       timevary_parm_cnt++;
       dvector tempvec(1,7); 
       if(autogen_timevary==1)
-      {*(ad_comm::global_datafile) >> tempvec(1,7);}
+      {
+        *(ad_comm::global_datafile) >> tempvec(1,7);
+        timevary_setup(12)=baseparm_list(12); //  dev phase
+      }
       else
       {
        tempvec.fill("{0.0001,2.0,0.5,0.5,0,0.5,-5}");
-       timevary_setup(12)=5;  //  set reasonable phase for devs
+       tempvec(3)=baseparm_list(12);  //  set init
+       tempvec(4)=baseparm_list(12);  //  set prior
+       timevary_setup(12)=5;  //  set reasonable phase for devs;
        baseparm_list(12)=5;
       }
       timevary_parm_rd.push_back (dvector(tempvec(1,7)));

@@ -2336,7 +2336,7 @@
 //  selparm_envtype.initialize();
 //  selparm_envuse.initialize();
 //  Block_Defs_Sel.initialize();
-  timevary_parm_start_sel=timevary_parm_cnt;
+  timevary_parm_start_sel=0;
   timevary_parm_cnt_sel=0;
   timevary_sel.initialize();
   selparm_timevary.initialize();
@@ -2360,6 +2360,7 @@
 //  1=baseparm type; 2=baseparm index; 3=first timevary parm
 //  4=block or trend type; 5=block pattern; 6= env link type; 7=env variable;
 //  8=dev vector used; 9=dev link type; 10=dev min year; 11=dev maxyear; 12=dev phase; 13=all parm index of baseparm
+       if(timevary_parm_start_sel==0) timevary_parm_start_sel=timevary_parm_cnt+1;
        echoinput<<endl<<" timevary for sel parameter: "<<j<<endl;
        timevary_cnt++;  //  count parameters with time-vary effect
        selparm_timevary(j)=timevary_cnt;  //  base parameter will use this timevary specification
@@ -2409,7 +2410,7 @@
    timevary_def.push_back (timevary_setup(1,13));
 
    timevary_parm_cnt_sel=timevary_parm_cnt;  //  last timevary_selparm
-   N_selparm2=N_selparm+timevary_parm_cnt_sel-timevary_parm_start_sel;
+   N_selparm2=N_selparm+timevary_parm_cnt_sel+1-timevary_parm_start_sel;
    echoinput<<"N_selparm "<<N_selparm<<" "<<N_selparm2<<" "<<timevary_parm_start_sel<<" "<<timevary_parm_cnt_sel<<endl;
    for(y=0;y<=timevary_parm_cnt;y++)
    {
@@ -2439,7 +2440,7 @@
    }
    j=N_selparm;
    if(timevary_parm_cnt_sel>timevary_parm_start_sel)
-   for (f=timevary_parm_start_sel+1;f<=timevary_parm_cnt_sel;f++)
+   for (f=timevary_parm_start_sel;f<=timevary_parm_cnt_sel;f++)
    {
     j++;
     echoinput<<"selparmbounds "<<f<<" "<<j<<endl;

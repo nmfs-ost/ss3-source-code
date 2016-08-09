@@ -1068,6 +1068,8 @@
   int customMGenvsetup  //  0=read one setup and apply to all; 1=read each
 
  LOCAL_CALCS
+   customMGenvsetup=0;
+   customblocksetup_MG=0;
    CGD_onoff=0;
    gp=0;
    for(gg=1;gg<=gender;gg++)
@@ -2729,6 +2731,8 @@
   imatrix Block_Defs_Sel(1,N_selparm,styr,YrMax)
 
  LOCAL_CALCS
+  custom_selenv_setup=0;
+  customblocksetup=0;
   timevary_makefishsel.initialize();
   Block_Defs_Sel.initialize();
 
@@ -2994,6 +2998,7 @@
   */   
        if(timevary_setup(8)!=0) timevary_setup(12)=selparm_dev_PH;
        timevary_def.push_back (timevary_setup(1,13));
+       for(y=styr-3;y<=YrMax+1;y++) {timevary_sel(y,selparm_fleet(j))=timevary_pass(y);}  // year vector for this category og MGparm
      }
    } 
    
@@ -3050,7 +3055,6 @@
 // end special bound checking
 
 //  SS_Label_Info_4.9.11  #Create time/fleet array indicating when changes in selex occcur
-  timevary_sel.initialize();
   timevary_makefishsel.initialize();
   timevary_sel(styr)=1;
 //  if(Do_Forecast>0) timevary_sel(endyr+1)=1;
@@ -3238,13 +3242,69 @@
    ivector parm_dev_PH(1,N_parm_dev);
 
  LOCAL_CALCS
+
+//  1=baseparm type; 2=baseparm index; 3=first timevary parm
+//  4=block or trend type; 5=block pattern; 6= env link type; 7=env variable;
+//  8=dev vector used; 9=dev link type; 10=dev min year; 11=dev maxyear; 12=dev phase; 13=all parm index of baseparm
    if(timevary_cnt>0)
    {
+     int tvparm; int MGblkcnt; int MGenvcnt; int selblkcnt; int selenvcnt;
+     tvparm=0; MGblkcnt=0; MGenvcnt=0; selblkcnt=0; selenvcnt=0;
      for (j=1;j<=timevary_cnt;j++)  //  loop set up devs
      {
        ivector timevary_setup(1,13);
        timevary_setup(1,13)=timevary_def[j](1,13);
-       if(timevary_setup(8)>0)
+       if(timevary_setup(5)>0)  //  move block info from 3.24 inputs
+       {
+         if(timevary_setup(1)==1 && customblocksetup_MG==1)   //  MG
+         {
+           for(k=timevary_setup(3);k<=timevary_def[j+1](3)-1;k++)
+           {
+             tvparm++;
+             MGblkcnt++;
+             echoinput<<"MGblock in 324 "<<MGparm_blk_1(MGblkcnt)<<endl;
+             echoinput<<"MGblock in 330 "<<timevary_parm_rd[tvparm]<<endl;
+             timevary_parm_rd[tvparm](1,7)=MGparm_blk_1(MGblkcnt)(1,7);
+           }
+         }
+         else if(timevary_setup(1)==5 && customblocksetup)  // selex
+         {
+           for(k=timevary_setup(3);k<=timevary_def[j+1](3)-1;k++)
+           {
+             tvparm++;
+             selblkcnt++;
+             echoinput<<"selblock in 324 "<<selparm_blk_1(selblkcnt)<<endl;
+             echoinput<<"selblock in 330 "<<timevary_parm_rd[tvparm]<<endl;
+             timevary_parm_rd[tvparm](1,7)=selparm_blk_1(selblkcnt)(1,7);
+           }
+         }
+       }
+       if (timevary_setup(6)>0)  //  move env from 3.24 inputs
+       {
+         if(timevary_setup(1)==1 && customMGenvsetup==1)   //  MG
+         {
+           for(k=timevary_setup(3);k<=timevary_def[j+1](3)-1;k++)
+           {
+             tvparm++;
+             MGenvcnt++;
+             echoinput<<"MGenv in 324 "<<MGparm_env_1(MGenvcnt)<<endl;
+             echoinput<<"MGenv in 330 "<<timevary_parm_rd[tvparm]<<endl;
+             timevary_parm_rd[tvparm](1,7)=MGparm_env_1(MGenvcnt)(1,7);
+           }
+         }
+         else if(timevary_setup(1)==5 && custom_selenv_setup)  // selex
+         {
+           for(k=timevary_setup(3);k<=timevary_def[j+1](3)-1;k++)
+           {
+             tvparm++;
+             selenvcnt++;
+             echoinput<<"selenv in 324 "<<selparm_env_1(selenvcnt)<<endl;
+             echoinput<<"selenv in 330 "<<timevary_parm_rd[tvparm]<<endl;
+             timevary_parm_rd[tvparm](1,7)=selparm_env_1(selenvcnt)(1,7);
+           }
+         }
+       }
+       if(timevary_setup(8)>0)  //  create dev approach and then move from 3.24 inputs
        {
          k=timevary_setup(8);  //  dev vector used
          parm_dev_minyr(k)=timevary_setup(10);  //  used for dimensioning the dev vectors in SS_param
@@ -3253,9 +3313,13 @@
          if(depletion_fleet>0 && parm_dev_PH(k)>0) parm_dev_PH(k)++;//  add 1 to phase if using depletion fleet
          if(parm_dev_PH(k)>Turn_off_phase) parm_dev_PH(k) =-1;
          if(parm_dev_PH(k)>max_phase) max_phase=parm_dev_PH(k);
-         echoinput<<" setup dev "<<k<<" vector "<<timevary_setup<<" phase "<<parm_dev_PH(k)<<endl;
+         echoinput<<" dev "<<k<<" setup "<<timevary_setup<<endl;
+         echoinput<<" adjusted dev phase "<<parm_dev_PH(k)<<endl;
+         tvparm++;
+         echoinput<<"dev_se_parm in 330 "<<timevary_parm_rd[tvparm]<<endl;
+         tvparm++;
+         echoinput<<"dev_rho_parm in 330 "<<timevary_parm_rd[tvparm]<<endl;
          f=timevary_setup(13); echoinput<<" index of base parm for dev "<<f<<endl; //  index of base parameter
-
          for(y=parm_dev_minyr(k);y<=parm_dev_maxyr(k);y++)
          {
            sprintf(onenum, "%d", y);

@@ -39,6 +39,7 @@ FUNCTION void make_timevaryparm()
         }
         case 5:  // selex
         {
+          echoinput<<"selparm "<<selparm<<endl;
           baseparm=selparm(timevary_setup(2)); //  index of base parm
           baseparm_min=selparm_LO(timevary_setup(2));
           baseparm_max=selparm_HI(timevary_setup(2));
@@ -46,7 +47,11 @@ FUNCTION void make_timevaryparm()
           for(j=timevary_setup(3);j<timevary_def[tvary+1](3);j++)
           {
             timevary_parm_cnt_all++;
+            echoinput<<j<<" "<<timevary_parm_cnt_all<<N_selparm+j-timevary_parm_start_sel+1<<endl;
             timevary_parm(timevary_parm_cnt_all)=selparm(N_selparm+j-timevary_parm_start_sel+1);
+            echoinput<<" result: ";
+            echoinput<<timevary_parm(timevary_parm_cnt_all)<<endl;
+            
           }
           parm_timevary(tvary)=baseparm;  //  fill timeseries with base parameter, just in case
           break;
@@ -177,7 +182,7 @@ FUNCTION void make_timevaryparm()
             }
         }
       }
-  //  SS_Label_Info_14.3 #Create MGparm dev randwalks if needed
+  //  SS_Label_Info_14.3 #Create parm dev randwalks if needed
       if(timevary_setup(8)>0)   //  devs
       {
         k=timevary_setup(8);   //  dev used
