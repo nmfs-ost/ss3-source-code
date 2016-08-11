@@ -3335,7 +3335,7 @@
     }
   }
 
-  for (f=1;f<=Q_Npar;f++)
+  for (f=1;f<=Q_Npar2;f++)
   {
     ParCount++;
     if(Q_parm_PH(f)==-9999) {Q_parm_1(f,3)=prof_var(prof_var_cnt); prof_var_cnt++;}

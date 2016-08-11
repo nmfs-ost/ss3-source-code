@@ -2176,7 +2176,7 @@ FUNCTION void write_nucontrol()
       }
     }
 
-  report4<<setw(2)<<"#"<<endl<<"# Input variance adjustments factors: "<<endl;
+  report4<<"#"<<endl<<"# Input variance adjustments factors: "<<endl;
   report4<<" #_1=add_to_survey_CV"<<endl;
   report4<<" #_2=add_to_discard_stddev"<<endl;
   report4<<" #_3=add_to_bodywt_CV"<<endl;
@@ -2186,9 +2186,9 @@ FUNCTION void write_nucontrol()
   report4<<" #_7=mult_by_generalized_sizecomp"<<endl;
   report4<<"#_Factor  Fleet  Value"<<endl;
   {
-    if (var_adjust_data.size() > 0) for(f=1;f<=Do_Var_adjust;f++) report4<<var_adjust_data[f-1]<<endl;
+    if (var_adjust_data.size() > 0) for(f=1;f<=Do_Var_adjust;f++) report4<<std::setprecision(0)<<setw(6)<<var_adjust_data[f-1](1,2)<<" "<<std::setprecision(4)<<setw(9)<<var_adjust_data[f-1](3)<<endl;
   }
-  report4<<" -9999 1 0  # terminator"<<endl;
+  report4<<" -9999   1    0  # terminator"<<endl;
 
   report4<<"#"<<endl<<max_lambda_phase<<" #_maxlambdaphase"<<endl;
   report4<<sd_offset<<" #_sd_offset"<<endl;
