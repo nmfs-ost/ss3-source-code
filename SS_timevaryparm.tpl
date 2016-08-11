@@ -37,6 +37,24 @@ FUNCTION void make_timevaryparm()
           parm_timevary(tvary)=baseparm;  //  fill timeseries with base parameter, just in case
           break;
         }
+        case 3:  // Q
+        {
+          echoinput<<"Qparms "<<Q_parm<<endl;
+          baseparm=Q_parm(timevary_setup(2)); //  index of base parm
+          baseparm_min=Q_parm_LO(timevary_setup(2));
+          baseparm_max=Q_parm_HI(timevary_setup(2));
+          if(do_once==1) echoinput<<"base Qparm "<<baseparm<<endl;
+          for(j=timevary_setup(3);j<timevary_def[tvary+1](3);j++)
+          {
+            timevary_parm_cnt_all++;
+            echoinput<<j<<" "<<timevary_parm_cnt_all<<" "<<Q_Npar+j-timevary_parm_start_Q+1<<endl;
+            timevary_parm(timevary_parm_cnt_all)=Q_parm(Q_Npar+j-timevary_parm_start_Q+1);
+            echoinput<<" timevary_parm: ";
+            echoinput<<timevary_parm(timevary_parm_cnt_all)<<endl;
+          }
+          parm_timevary(tvary)=baseparm;  //  fill timeseries with base parameter, just in case
+          break;
+        }
         case 5:  // selex
         {
           echoinput<<"selparm "<<selparm<<endl;
@@ -51,13 +69,13 @@ FUNCTION void make_timevaryparm()
             timevary_parm(timevary_parm_cnt_all)=selparm(N_selparm+j-timevary_parm_start_sel+1);
             echoinput<<" result: ";
             echoinput<<timevary_parm(timevary_parm_cnt_all)<<endl;
-            
+
           }
           parm_timevary(tvary)=baseparm;  //  fill timeseries with base parameter, just in case
           break;
         }
       }
-   
+
       timevary_parm_cnt=timevary_setup(3);  //  first  parameter used to create timevary effect on baseparm
       if(timevary_setup(4)>0)  //  block
       {
@@ -133,7 +151,7 @@ FUNCTION void make_timevaryparm()
 
         norm_styr=cumd_norm((r_years(styr) -infl_year)/slope);
         temp=(endtrend-baseparm) / (cumd_norm((r_years(endyr)-infl_year)/slope)-norm_styr);   //  delta in cum_norm between styr and endyr
-        
+
         for (int y1=styr;y1<=YrMax;y1++)
         {
           if(y1<=endyr)

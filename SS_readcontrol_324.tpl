@@ -573,7 +573,7 @@
   number AFIX_delta;
   number AFIX_plus;
   number Linf_decay;  //  decay factor to calculate mean L at maxage from Linf and the decaying abundance above maxage
-                      //  forced equal to 0.20 in 3.24 (which also assumed linear, not VBK, growth) 
+                      //  forced equal to 0.20 in 3.24 (which also assumed linear, not VBK, growth)
   int first_grow_age;
   !! k=0;
   !! if(Grow_type<=2) {k=2;}  //  AFIX and AFIX2
@@ -1102,7 +1102,7 @@
    {
     if(MGparm_1(f,8)!=0)
     {
-     N_MGparm_env ++;  
+     N_MGparm_env ++;
      if(f==MGP_CGD) CGD_onoff=1;    // cohort growth dev is a fxn of environ, so turn on CGD calculation
   /*
      MGparm_env(f)=N_MGparm+N_MGparm_env;
@@ -1287,7 +1287,7 @@
       {
         for (s=1;s<=nseas;s++)
         {
-          N_MGparm_seas++; 
+          N_MGparm_seas++;
 //          wait to label after getting all the timevary parameters created
 //          ParCount++; ParmLabel+=MGseasLbl(j)+"_seas_"+NumLbl(s);
         }
@@ -1344,7 +1344,7 @@
   ivector MG_active(0,7)  // 0=all, 1=M, 2=growth 3=wtlen, 4=recr_dist, 5=migration, 6=ageerror, 7=catchmult
   ivector MGparm_timevary(1,N_MGparm)  //  holds index in timevary_def used by this base parameter
   imatrix timevary_MG(styr-3,YrMax+1,0,7)  // goes to yrmax+1 to allow referencing in forecast, but only endyr+1 is checked
- 
+
  LOCAL_CALCS
    timevary_cnt=0;
    N_parm_dev=0;
@@ -1354,9 +1354,9 @@
    ivector timevary_setup(1,13);
    timevary_setup.initialize();
    timevary_def.push_back (timevary_setup(1,13));
-   dvector tempvec(1,7);  //  temporary vector for a time-vary parameter  LO HI INIT PRIOR PR_type SD PHASE 
+   dvector tempvec(1,7);  //  temporary vector for a time-vary parameter  LO HI INIT PRIOR PR_type SD PHASE
    timevary_parm_rd.push_back (tempvec);
-   
+
    echoinput<<"Now read env, block/trend, and dev adjustments to MGparms "<<endl;
    timevary_MG.initialize();    // stores years to calc non-constant MG parms (1=natmort; 2=growth; 3=wtlen & fec; 4=recr_dist; 5=movement)
    MG_active.initialize();
@@ -1398,15 +1398,21 @@
       {
         timevary_setup(6)=1; timevary_setup(7)=MGparm_1(j,8);
       }
-       else if(MGparm_1(j,8)==-999)
+      else if(MGparm_1(j,8)==-999)
        {timevary_setup(6)=3;  timevary_setup(7)=-1;}
-       else
+      else
        {timevary_setup(6)=2; timevary_setup(7)=-MGparm_1(j,8);}
+
+       if(MGparm_1(j,8)!=0)
+        {
+          MGparm_1(j,8)=100.*timevary_setup(6)+timevary_setup(7);
+          echoinput<<" convert env to 330 format "<<MGparm_1(j,8)<<endl;
+        }
        if(timevary_setup(7)>0)
        {
          k=timevary_setup(7);
          for(y=styr-1;y<=YrMax;y++) env_data_pass(y)=env_data_RD(y,k);
-       } 
+       }
        else
        {k=0; env_data_pass.initialize();}
        if(z>0)  //  doing blocks
@@ -1429,14 +1435,14 @@
    parm_adjust_method:    switch to determine if adjusted parameter will stay in bounds; used to create warnings in create_timevary
    env_data_RD:           matrix containing entire set of environmental data as read
    N_parm_dev:            integer that is incremented in create_timevary as dev vectors are created; cumulative across all types of parameters
-  */  
+  */
        if(timevary_setup(8)!=0) timevary_setup(12)=MGparm_dev_PH;
        timevary_def.push_back (timevary_setup(1,13));
        for(y=styr-3;y<=YrMax+1;y++) {timevary_MG(y,mgp_type(j))=timevary_pass(y);}  // year vector for this category og MGparm
        if(j==MGP_CGD) CGD_onoff=1;
      }
-   } 
-   
+   }
+
    timevary_parm_cnt_MG=timevary_parm_cnt;
    echoinput<<" timevary_parm_cnt "<<timevary_parm_cnt<<endl;
 
@@ -2089,23 +2095,14 @@
 //  SS_Label_Info_4.8 #Read catchability (Q) setup
  END_CALCS
 
-  imatrix Q_setup_324(1,Nfleet,1,5)  // do power, env-var,  extra sd, devtype(<0=mirror, 0=float_nobiasadj 1=float_biasadj, 2=parm_nobiasadj, 3=rand, 4=randwalk); num/bio/F, err_type(0=lognormal, >=1 is T-dist-lognormal)
-                                        // change to matrix because devstd has real, not integer, values
-  imatrix Q_setup_parms_324(1,Nfleet,1,5)
-  imatrix Q_setup(1,Nfleet,1,5)
-  imatrix Q_setup_parms(1,Nfleet,1,5)  //  index of first parameter for:  1=base q with link;  2=extrastd; 3=env; 4=block/trend; 5=dev;
-  int parm330_cnt
-  int Q_Npar2
-  int Q_Npar
-  int ask_detail
-  int Q_parm_detail
+  imatrix Q_setup_324(1,Nfleet,1,4)  // do power
+                                     // env-var 
+                                     // extra sd
+                                     // Qtype(<0=mirror, 0=float_nobiasadj 1=float_biasadj, 2=parm_nobiasadj, 3=rand, 4=randwalk)
+  imatrix Q_setup_parms_324(1,Nfleet,1,4)
 
- LOCAL_CALCS
-  Q_setup_324.initialize();
-  Q_setup.initialize();
-  Q_setup_parms_324.initialize();
-  Q_setup_parms.initialize();
-  parm330_cnt=0;
+//  arrays for 330 format
+  imatrix Q_setup(1,Nfleet,1,5)
 //Q_setup for 3.30
 // 1:  link type
 // 2:  extra input for link, i.e. mirror fleet
@@ -2118,82 +2115,74 @@
 //  2  mirror simple q, 1 mirrored parameter
 //  3  q and power, 2 parm
 
-  for(f=1;f<=Nfleet;f++)
-  {
-  	*(ad_comm::global_datafile) >> Q_setup_324(f)(1,4);
-     if(Svy_N_fleet(f)>0)
-     	{
-    	parm330_cnt++;
-      Q_setup(f,1)=1;  //  set default link function to be q as a simple multiplier
-      if(Q_setup_324(f,4)<0)   //  mirror
-    	{
-        Q_setup(f,1)=2;  //  set  link function to mirror
-    		Q_setup(f,2)=abs(Q_setup_324(f,4));
-    	}
-      if(Q_setup_324(f,1)>0)  //  old do_power option
-    	{
-      	parm330_cnt++;
-        Q_setup(f,1)=3;  //  set  link function to be same as 3.24 power
-    	}
+  int parm330_cnt
+  int Q_Npar2
+  int Q_Npar
+  int ask_detail
+  int Q_parm_detail
 
-      if(Q_setup_324(f,2)>0)   //  env link
-      	{
-        	parm330_cnt++;
-      		//  this will be flagged later in the long parameter line for the base Q
-            Q_setup(f,2)=1;
-      	}
+  imatrix Q_setup_parms(1,Nfleet,1,5)  //  
+//  index of first parameter for:  1=base q with link;  2=extrastd; 3=env; 4=block/trend; 5=dev;
 
-      if(Q_setup_324(f,3)>0)
-      	{
-        	parm330_cnt++;
-      		Q_setup(f,3)=1;  // do extra sd
-      	}
+ LOCAL_CALCS
+  Q_setup_324.initialize();
+  Q_setup_parms_324.initialize();
+  Q_setup.initialize();
+  Q_setup_parms.initialize();
 
-      if(Q_setup_324(f,4)==0 || Q_setup_324(f,4)==1 || Q_setup_324(f,4)==5 ) Q_setup(f,5)=1;   //  float Q
-      if(Q_setup_324(f,4)==0 || Q_setup_324(f,4)==2) {Q_setup(f,4)=0;} else {Q_setup(f,4)=1;}  //  biasadj or not
-      if(Q_setup_324(f,4)==3 || Q_setup_324(f,4)==4)
-    	{
-    		N_warn++; warning<<" the Q devs or randwalk for fleet "<<f<<" cannot be converted to 3.30; recreate this option in 3.30 parameter line"<<endl;
-    	}
-    }
-  }
+ 	*(ad_comm::global_datafile) >> Q_setup_324;
+  echoinput<<" Q setup from 324 "<<endl<<Q_setup_324<<endl;
 
-  echoinput<<" Q setup "<<endl<<Q_setup_324<<endl;
-  echoinput<<"Note that the Q parameter has units of ln(q)"<<endl;
-  Q_Npar=0;
+  Q_Npar=0;  //  counter for parameters in 3.24 format
+  parm330_cnt=0;
   ask_detail=0;
-//  SS_Label_Info_4.8.1 #Create index to the catchability parameters and create parameter names
+  
+//  SS_Label_Info_4.8.1 #Create index to the catchability parameters
   for (f=1;f<=Nfleet;f++)
   {
-   if(Q_setup_324(f,1)>0)
+    Q_setup(f,1)=1;  //  set default Q function to be q as a simple multiplier
+    if(Q_setup_324(f,1)>0)  //  power
     {
       Q_Npar++; Q_setup_parms_324(f,1)=Q_Npar;
-//      ParCount++;
-//      {ParmLabel+="Q_power_"+fleetname(f)+"("+NumLbl(f)+")";}
-//      if(Q_setup_324(f,4)<2) {N_warn++; warning<<" must create base Q parm to use Q_power for fleet: "<<f<<endl;}
+     	parm330_cnt++;  Q_setup(f,1)=3;  //  set  link function to be same as 3.24 power
     }
   }
 
   for (f=1;f<=Nfleet;f++)
   {
-    Q_setup_parms_324(f,2)=0;
-    if(Q_setup_324(f,2)!=0)
-      {
-        Q_Npar++; Q_setup_parms_324(f,2)=Q_Npar;
-//        ParCount++; ParmLabel+="Q_envlink_"+fleetname(f)+"("+NumLbl(f)+")";
-//        if(Q_setup_324(f,4)<2) {N_warn++; warning<<" must create base Q parm to use Q_envlink for fleet: "<<f<<endl;}
-       }
+    if(Q_setup_324(f,2)!=0)  //  env link
+    {
+      Q_Npar++; Q_setup_parms_324(f,2)=Q_Npar;
+      Q_setup(f,2)=1;  //  this may not be needed
+    }
   }
+  
   for (f=1;f<=Nfleet;f++)
   {
-    Q_setup_parms_324(f,3)=0;
-    if(Q_setup_324(f,3)>0)
+    if(Q_setup_324(f,3)>0)  //  extra se
     {
       Q_Npar++; Q_setup_parms_324(f,3)=Q_Npar;
-//      ParCount++; ParmLabel+="Q_extraSD_"+fleetname(f)+"("+NumLbl(f)+")";
+     	parm330_cnt++;
+   		Q_setup(f,3)=1;  // do extra sd
     }
   }
 
+  for (f=1;f<=Nfleet;f++)
+  {
+    if(Svy_N_fleet(f)>0 || Q_setup_324(f,4)>=2)  //  add base Q parameter
+    {
+    	parm330_cnt++;  //  counter for base Q parameter needed in 330 format
+    }
+    if(Q_setup_324(f,4)<0)   //  mirror
+  	{
+      Q_setup(f,1)=2;  //  set  link function to mirror
+  		Q_setup(f,2)=abs(Q_setup_324(f,4));
+  	}
+    if(Q_setup_324(f,4)==0 || Q_setup_324(f,4)==1 || Q_setup_324(f,4)==5 ) Q_setup(f,5)=1;   //  float Q
+    if(Q_setup_324(f,4)==0 || Q_setup_324(f,4)==2) {Q_setup(f,4)=0;} else {Q_setup(f,4)=1;}  //  biasadj or not
+  }
+
+//  now prepare to read the catchability deviation parameters in 3.24 format
 //  SS_Label_Info_4.8.2 #Create Q parm and time-varying catchability as needed
   Q_Npar2=Q_Npar;
   for (f=1;f<=Nfleet;f++)
@@ -2201,53 +2190,23 @@
     if(Q_setup_324(f,4)>=2)
     {
       Q_Npar++; Q_Npar2++; Q_setup_parms_324(f,4)=Q_Npar;
-//      ParCount++;
-      if(Svy_errtype(f)==-1)
-      {
-//        ParmLabel+="Q_base_"+fleetname(f)+"("+NumLbl(f)+")";
-      }
-      else
-      {
-//        ParmLabel+="LnQ_base_"+fleetname(f)+"("+NumLbl(f)+")";
-      }
       if(Q_setup_324(f,4)==3)
       {
         ask_detail=1;
         Q_Npar2++;
         Q_Npar+=Svy_N_fleet(f);
-        for (j=1;j<=Svy_N_fleet(f);j++)
-        {
-          y=Show_Time(Svy_time_t(f,j),1);
-          s=Show_Time(Svy_time_t(f,j),2);
-//          ParCount++;
-          sprintf(onenum, "%d", y);
-          onenum+=CRLF(1);
-//          ParmLabel+="Q_dev_"+onenum+"_"+fleetname(f)+"("+NumLbl(f)+")";
-        }
       }
       if(Q_setup_324(f,4)==4)
       {
         ask_detail=1;
         Q_Npar2++;
         Q_Npar+=Svy_N_fleet(f)-1;
-        for (j=2;j<=Svy_N_fleet(f);j++)
-        {
-          y=Show_Time(Svy_time_t(f,j),1);
-          s=Show_Time(Svy_time_t(f,j),2);
-//          ParCount++;
-//          _itoa(y,onenum,10);
-          sprintf(onenum, "%d", y);
-          onenum+=CRLF(1);
-//          ParmLabel+="Q_walk_"+onenum+"_"+fleetname(f)+"("+NumLbl(f)+")";
-        }
       }
     }
     else if(Svy_errtype(f)==-1)
     {N_warn++; cout<<" EXIT - see warning "<<endl; warning<<" Error, cannot use scaling approach to Q if error type is normal "<<endl; exit(1);}
-  }
 
-  for (f=1;f<=Nfleet;f++)
-  {
+//  error checking
     if(Svy_units(f)==2)  // effort deviations
     {
       if(Svy_errtype(f)>=0)  //  lognormal
@@ -2261,9 +2220,10 @@
         warning<<" Do not use Density-dependence for effort deviations (fleet "<<f<<"); "<<endl;
       }
     }
+
   }
 
-  if(ask_detail>0)
+  if(ask_detail>0)  //  using deviations
   {
     *(ad_comm::global_datafile) >> Q_parm_detail;
     echoinput<<Q_parm_detail<<" Q_parm detail for time-varying parameters "<<endl;
@@ -2274,35 +2234,41 @@
     echoinput<<" # No time-varying Q parms, so no q_parm_detail input needed "<<endl;
   }
   if(Q_parm_detail==1) {j=Q_Npar;} else {j=Q_Npar2;}
+  Q_Npar=parm330_cnt;  //  reuse this as the number of base Q parms
  END_CALCS
 
-//  SS_Label_Info_4.8.3 #Read catchability parameters as necessary
+//  SS_Label_Info_4.8.3 #Read catchability parameters if 3.24 format
   init_matrix Q_parm_2(1,j,1,7)
-  matrix Q_parm_1(1,parm330_cnt,1,14)
+
+  matrix Q_parm_1(1,parm330_cnt,1,14)  //  Q parameters in 3.30 format
+  int firstQparm;
 
  LOCAL_CALCS
-//  convert to 3.30 format where parameters are in fleet order, not fleet within parameter type
-  parm330_cnt=0;  //  restart the index
-  Q_parm_1.initialize();
   echoinput<<" Catchability parameters in 3.24"<<endl<<Q_parm_2<<endl;
+
+// Now  convert to 3.30 format where parameters are in fleet order, not fleet within parameter type
+  parm330_cnt=0;  //  restart the index
+  firstQparm=ParCount;  //  base index before adding Q parms
+  Q_parm_1.initialize();
+
   for (f=1;f<=Nfleet;f++)
   if(Svy_N_fleet(f)>0)
   {
-//  do base Q
+//  do base Q and any needed parms for links (like Qpower)
   	parm330_cnt++;
   	ParCount++;
     Q_setup_parms(f,1)=parm330_cnt;  //  first parameter index for this fleet that has obs so needs a Q
   	if(Q_setup_324(f,4)>=2)  //  so a base Q exists in 3.24
     {
-    	Q_parm_1(Q_setup_parms(f,1))(1,7)=Q_parm_2(Q_setup_parms_324(f,4))(1,7);
+    	Q_parm_1(parm330_cnt)(1,7)=Q_parm_2(Q_setup_parms_324(f,4))(1,7);
     }
     else
     {
-    	Q_parm_1(Q_setup_parms(f,1)).fill("{-15,15,0,0,-1,1,-1, 0, 0, 0, 0, 0, 0, 0}");
+    	Q_parm_1(parm330_cnt).fill("{-15, 15, 0, 0,-1, 1, 1, 0, 0, 0, 0, 0, 0, 0}");
     }
     if(Q_setup(f,1)<0)  //  mirror
     {
-    	Q_parm_1(Q_setup_parms(f,1)).fill("{-15,15,0,0,-1,1,-1, 0, 0, 0, 0, 0, 0, 0}");
+    	Q_parm_1(parm330_cnt).fill("{-15,15,0,0,-1,1,-1, 0, 0, 0, 0, 0, 0, 0}");
       // because Q is a vector for each time series of observations, the mirror is to the first observation's Q
       // so time-varying property cannot be mirrored
       //  need to trap for this when reading
@@ -2316,72 +2282,175 @@
     {
       ParmLabel+="LnQ_base_"+fleetname(f)+"("+NumLbl(f)+")";
     }
-    if(Q_setup_324(f,1)>0)  //  do_power  provided for compatibility, but will be replaced by link function
+
+  	if(Q_setup_324(f,2)>0) Q_parm_1(parm330_cnt,8) = Q_setup_324(f,2);  //  envlink transfer from 3.24
+     //  needed timevary parameters will be created later
+
+  	if(Q_setup_324(f,4)==3 || Q_setup_324(f,4)==4) //  deviations will be used
+  	  {
+  	     Q_parm_1(parm330_cnt,9) =1;  //  dev link
+  	     Q_parm_1(parm330_cnt,10)=Svy_styr(f); //  dev min year
+  	     Q_parm_1(parm330_cnt,11)=Svy_endyr(f); //  dev maxyear
+  	     Q_parm_1(parm330_cnt,12)=Q_parm_2(Q_setup_parms_324(f,4)+1)(6);//  dev se from 3.24, will get overwritten with the phase later
+  	  }
+
+    if(Q_setup_324(f,1)>0)  //  do_power  provided for compatibility, but will be replaced by density-dependent link function
     {
      	parm330_cnt++;
   	  ParCount++;
       ParmLabel+="Q_power_"+fleetname(f)+"("+NumLbl(f)+")";
-    	Q_parm_1(Q_setup_parms(f,1)+1)(1,7)=Q_parm_2(Q_setup_parms_324(f,1))(1,7);
+    	Q_parm_1(parm330_cnt)(1,7)=Q_parm_2(Q_setup_parms_324(f,1))(1,7);
     }
-  }
+
 //  do extra sd
-  for(f=1;f<=Nfleet;f++)
-  if(Svy_N_fleet(f)>0)
-  {
   	if(Q_setup_324(f,3)>0)  //  so extra sd  exists in 3.24
     {
     	parm330_cnt++;
       ParCount++;
       Q_setup_parms(f,2)=parm330_cnt;
-    	Q_parm_1(Q_setup_parms(f,2))(1,7)=Q_parm_2(Q_setup_parms_324(f,3))(1,7);
+    	Q_parm_1(parm330_cnt)(1,7)=Q_parm_2(Q_setup_parms_324(f,3))(1,7);
       ParmLabel+="Q_extraSD_"+fleetname(f)+"("+NumLbl(f)+")";
     }
   }
-//  do envlink
+  echoinput<<parm330_cnt<<endl<<"base q parms in 3.30 format "<<endl<<Q_parm_1<<endl<<"done"<<endl;
+ 	Q_Npar=parm330_cnt;
+ END_CALCS
+
+//  SS_Label_Info_4.5.4 #Set up time-varying parameters for each fleet's base Q parm in 330 format
+//  other Q link, extrastd, etc. parameters cannot be time-varying
+  int timevary_parm_cnt_Q;
+  int timevary_parm_start_Q;
+  ivector Qparm_timevary(1,parm330_cnt)  //  holds index in timevary_def used by each base parameter
+                                         //  dimensioned to hold the extra_sd parms, but these cannot be time-varying
+  imatrix timevary_Qparm(styr-3,YrMax+1,0,Nfleet)  // goes to yrmax+1 to allow referencing in forecast, but only endyr+1 is checked
+                                                     // stores years to calc non-constant sel parms by fleet
+ LOCAL_CALCS
+  Qparm_timevary.initialize();
+  timevary_Qparm.initialize();
+  timevary_parm_start_Q=0;
+  timevary_parm_cnt_Q=0;
+
   for(f=1;f<=Nfleet;f++)
   if(Svy_N_fleet(f)>0)
   {
-  	if(Q_setup_324(f,2)!=0)  //  so envlink exists in 3.24
+    if(Q_setup_324(f,2)!=0 || Q_setup_324(f,1)>0 ||  Q_setup_324(f,4)==3 || Q_setup_324(f,4)==4)  //  some kind of time-vary
     {
-    	parm330_cnt++;
-      ParCount++;
-      Q_setup_parms(f,3)=parm330_cnt;
-    	Q_parm_1(Q_setup_parms(f,3))(1,7)=Q_parm_2(Q_setup_parms_324(f,2))(1,7);
-    	Q_parm_1(Q_setup_parms(f,3),8)=Q_setup_324(f,2);  //  put env info into the  new long parameter line
-      ParmLabel+="Q_envlink_"+fleetname(f)+"("+NumLbl(f)+")";
-    }
-  }
-    //   in 3.30, the block/trend parameters will go here
-//      Q_setup_parms(j,3)=parm330_cnt;
-    //  in 3.30, the dev parameters will go here
-//      Q_setup_parms(j,4)=parm330_cnt;
+       ivector timevary_setup(1,13);  //  temporary vector for timevary specs
+       timevary_setup.initialize();
+//  1=baseparm type; 2=baseparm index; 3=first timevary parm
+//  4=block or trend type; 5=block pattern; 6= env link type; 7=env variable;
+//  8=dev vector used; 9=dev link type; 10=dev min year; 11=dev maxyear; 12=dev phase; 13=all parm index of baseparm
+       if(timevary_parm_start_Q==0) timevary_parm_start_Q=timevary_parm_cnt+1;
+       echoinput<<endl<<" timevary Q for fleet: "<<f<<endl;
+       timevary_cnt++;  //  count parameters with time-vary effect
+       Qparm_timevary(Q_setup_parms(f,1))=timevary_cnt;  //  base Q parameter will use this timevary specification
+       timevary_setup(1)=3; //  indicates a Q parm
+       parm330_cnt=Q_setup_parms(f,1);
+       timevary_setup(2)=parm330_cnt; //  index of base parm within that type of parameter
+       timevary_setup(13)=firstQparm+parm330_cnt;  //  index of base parm relative to ParCount which is continuous across all types of parameters
+       timevary_setup(3)=timevary_parm_cnt+1;  //  first parameter within total list of all timevary parms
+       timevary_pass=column(timevary_Qparm,f);  // year vector for this fleet
+//  set up env link info
+//   where abs(selparm1(j,8) is the environmental variable used;  store this in timevary_setup(7)
+//   and the sign indicates the link;  store this in timevary_setup(6)
+      if(Q_parm_1(parm330_cnt,8)>0)  //  multiplicative link
+      {
+        timevary_setup(6)=1; timevary_setup(7)=Q_parm_1(parm330_cnt,8);
+      }
+      else if(Q_parm_1(parm330_cnt,8)==-999)  //  density-dependence
+      {timevary_setup(6)=3;  timevary_setup(7)=-1;}
+       else            //  additive link
+       {timevary_setup(6)=2; timevary_setup(7)=-Q_parm_1(parm330_cnt,8);}
 
+       if(Q_parm_1(parm330_cnt,8)!=0)
+        {
+          Q_parm_1(parm330_cnt,8)=100.*timevary_setup(6)+timevary_setup(7);
+          echoinput<<" convert env to 330 format "<<Q_parm_1(parm330_cnt,8)<<endl;
+        }
 
-  for(i=1;i<=parm330_cnt;i++)
-  {
-  	echoinput<<i<<" "<<ParCount-parm330_cnt+i<<" "<<ParmLabel(ParCount-parm330_cnt+i)<<" "<<Q_parm_1(i)<<endl;
+       if(timevary_setup(7)>0)
+       {
+         k=timevary_setup(7);
+         for(y=styr-1;y<=YrMax;y++) env_data_pass(y)=env_data_RD(y,k);
+       }
+       else
+       {k=0; env_data_pass.initialize();}
+       z=0;   //  no blocks in 3.24
+       if(z>0)  //  doing blocks
+       {
+         create_timevary(Q_parm_1(parm330_cnt),timevary_setup, timevary_pass, autogen_timevary, f, Block_Design(z), parm_adjust_method, env_data_pass, N_parm_dev);
+       }
+       else
+       {
+         create_timevary(Q_parm_1(parm330_cnt),timevary_setup, timevary_pass, autogen_timevary, f, block_design_null, parm_adjust_method, env_data_pass, N_parm_dev);
+       }
+  /*
+   where:
+   Q_parm_1(j):           vector with the base parameter which has some type of timevary characteristic
+   timevary_setup:        vector which contains specs of all types of timevary  for this base parameter
+                          will be pushed to timevary_def cumulative across all types of base parameters
+   timevary_pass:        vector containing column(timevary_MG,mgp_type(j)), will be modified in create_timevary
+   autogen_timevary:      switch to autogenerate or not
+   f:           integer with type of MGparm being worked on; analogous to 2*fleet in the selectivity section
+   block_design(z):       block design, if any, being used
+   parm_adjust_method:    switch to determine if adjusted parameter will stay in bounds; used to create warnings in create_timevary
+   env_data_RD:           matrix containing entire set of environmental data as read
+   N_parm_dev:            integer that is incremented in create_timevary as dev vectors are created; cumulative across all types of parameters
+  */
+       if(timevary_setup(8)!=0) timevary_setup(12)=5;
+       timevary_def.push_back (timevary_setup(1,13));
+       for(y=styr-3;y<=YrMax+1;y++) {timevary_Qparm(y,f)=timevary_pass(y);}  // year vector for this category og MGparm
+     }
   }
-  echoinput<<"q setup "<<endl<<Q_setup<<endl;
-  echoinput<<"q setup parms "<<endl<<Q_setup_parms<<endl;
+
+   timevary_parm_cnt_Q=timevary_parm_cnt;
+   echoinput<<" timevary_parm_cnt start and end "<<timevary_parm_start_Q<<" "<<timevary_parm_cnt_Q<<endl;
+   echoinput<<"link to timevary parms:  "<<Qparm_timevary<<endl;
+   Q_Npar2=Q_Npar+timevary_parm_cnt_Q-timevary_parm_start_Q+1;
+   echoinput<<"Q_Npar and Q_Npar2:  "<<Q_Npar<<" "<<Q_Npar2<<endl;
  END_CALCS
 
-  vector Q_parm_LO(1,parm330_cnt)
-  vector Q_parm_HI(1,parm330_cnt)
-  ivector Q_parm_PH(1,parm330_cnt)
+  vector Q_parm_LO(1,Q_Npar2)
+  vector Q_parm_HI(1,Q_Npar2)
+  vector Q_parm_RD(1,Q_Npar2)
+  vector Q_parm_PR(1,Q_Npar2)
+  ivector Q_parm_PRtype(1,Q_Npar2)
+  vector Q_parm_CV(1,Q_Npar2)
+  ivector Q_parm_PH(1,Q_Npar2)
 
  LOCAL_CALCS
-  if(parm330_cnt==0)
+  if(Q_Npar2==0)
   {Q_parm_LO=-1.; Q_parm_HI=1.; Q_parm_PH=-4;}
   else
  	{
- 		for(i=1;i<=parm330_cnt;i++)
+ 		for(i=1;i<=Q_Npar;i++)
  		{
       Q_parm_LO(i)=Q_parm_1(i,1);
       Q_parm_HI(i)=Q_parm_1(i,2);
+      Q_parm_RD(i)=Q_parm_1(i,3);
+      Q_parm_PR(i)=Q_parm_1(i,4);
+      Q_parm_PRtype(i)=Q_parm_1(i,5);
+      Q_parm_CV(i)=Q_parm_1(i,6);
       Q_parm_PH(i)=Q_parm_1(i,7);
     }
+    if(timevary_parm_start_Q>0)
+    {
+      j=Q_Npar;
+    for (f=timevary_parm_start_Q;f<=timevary_parm_cnt_Q;f++)
+     {
+      j++;
+      echoinput<<f<<" "<<j<<" "<<timevary_parm_rd[f]<<endl;
+      Q_parm_LO(j)=timevary_parm_rd[f](1);
+      Q_parm_HI(j)=timevary_parm_rd[f](2);
+      Q_parm_RD(j)=timevary_parm_rd[f](3);
+      Q_parm_PR(j)=timevary_parm_rd[f](4);
+      Q_parm_PRtype(j)=timevary_parm_rd[f](5);
+      Q_parm_CV(j)=timevary_parm_rd[f](6);
+      Q_parm_PH(j)=timevary_parm_rd[f](7);
+     }
+ 	  }
  	}
- 	Q_Npar=parm330_cnt;
+ 	echoinput<<"Q_parm_RD: "<<Q_parm_RD<<endl;
  END_CALCS
 
 !!//  SS_Label_Info_4.9 #Define Selectivity patterns and N parameters needed per pattern
@@ -2694,7 +2763,7 @@
 
 !!//  SS_Label_Info_4.9.3 #Read selex parameters
   init_matrix selparm_1(1,N_selparm,1,14)
-  ivector selparm_fleet(1,N_selparm) // holds the fleet ID for each selparm  
+  ivector selparm_fleet(1,N_selparm) // holds the fleet ID for each selparm
                                   //  equivalent to the mgp_type() for MGparms
  LOCAL_CALCS
   echoinput<<" selex base parameters "<<endl;
@@ -2711,7 +2780,7 @@
       for(g=1;g<=N_selparmvec(f);g++)
       {
         j++; selparm_fleet(j)=f;
-      } 
+      }
     }
   }
  END_CALCS
@@ -2741,7 +2810,7 @@
   {
     if(selparm_1(j,8)!=0)
     {
-      N_selparm_env++; 
+      N_selparm_env++;
   /*
       selparm_env(j)=N_selparm+N_selparm_env;
       if(selparm_1(j,8)>0)
@@ -2922,14 +2991,14 @@
   vector selparm_CV(1,N_selparm2)
   ivector selparm_PH(1,N_selparm2)
 
-!!//  SS_Label_Info_4.5.4 #Set up time-varying parameters for MG parms
+!!//  SS_Label_Info_4.5.4 #Set up time-varying parameters for sel parms
   int timevary_parm_cnt_sel;
   int timevary_parm_start_sel;
   ivector selparm_timevary(1,N_selparm)  //  holds index in timevary_def used by this base parameter
-  imatrix timevary_sel(styr-3,YrMax+1,0,7)  // goes to yrmax+1 to allow referencing in forecast, but only endyr+1 is checked
- 
+  imatrix timevary_sel(styr-3,YrMax+1,0,2*Nfleet)  // goes to yrmax+1 to allow referencing in forecast, but only endyr+1 is checked
+
  LOCAL_CALCS
-   timevary_sel.initialize();    // stores years to calc non-constant MG parms (1=natmort; 2=growth; 3=wtlen & fec; 4=recr_dist; 5=movement)
+   timevary_sel.initialize();    // stores years to calc non-constant sel parms by fleet
    timevary_parm_start_sel=0;
    timevary_parm_cnt_sel=0;
    selparm_timevary.initialize();
@@ -2960,19 +3029,29 @@
        timevary_setup(3)=timevary_parm_cnt+1;  //  first parameter within total list of all timevary parms
        z=selparm_1(j,13);    // specified block or trend definition
 
-      if(selparm_1(j,8)>0)
+//  set up env link info
+//   where abs(selparm1(j,8) is the environmental variable used;  store this in timevary_setup(7)
+//   and the sign indicates the link;  store this in timevary_setup(6)
+      if(selparm_1(j,8)>0)  //  multiplicative link
       {
         timevary_setup(6)=1; timevary_setup(7)=selparm_1(j,8);
       }
-       else if(selparm_1(j,8)==-999)
-       {timevary_setup(6)=3;  timevary_setup(7)=-1;}
-       else
+      else if(selparm_1(j,8)==-999)  //  density-dependence
+      {timevary_setup(6)=3;  timevary_setup(7)=-1;}
+       else            //  additive link
        {timevary_setup(6)=2; timevary_setup(7)=-selparm_1(j,8);}
+
+       if(selparm_1(j,8)!=0)
+        {
+          selparm_1(j,8)=100.*timevary_setup(6)+timevary_setup(7);
+          echoinput<<" convert env to 330 format "<<selparm_1(j,8)<<endl;
+        }
+
        if(timevary_setup(7)>0)
        {
          k=timevary_setup(7);
          for(y=styr-1;y<=YrMax;y++) env_data_pass(y)=env_data_RD(y,k);
-       } 
+       }
        else
        {k=0; env_data_pass.initialize();}
        if(z>0)  //  doing blocks
@@ -2995,13 +3074,13 @@
    parm_adjust_method:    switch to determine if adjusted parameter will stay in bounds; used to create warnings in create_timevary
    env_data_RD:           matrix containing entire set of environmental data as read
    N_parm_dev:            integer that is incremented in create_timevary as dev vectors are created; cumulative across all types of parameters
-  */   
+  */
        if(timevary_setup(8)!=0) timevary_setup(12)=selparm_dev_PH;
        timevary_def.push_back (timevary_setup(1,13));
        for(y=styr-3;y<=YrMax+1;y++) {timevary_sel(y,selparm_fleet(j))=timevary_pass(y);}  // year vector for this category og MGparm
      }
-   } 
-   
+   }
+
    timevary_parm_cnt_sel=timevary_parm_cnt;
    echoinput<<" timevary_parm_cnt start and end "<<timevary_parm_start_sel<<" "<<timevary_parm_cnt_sel<<endl;
 
@@ -3340,10 +3419,10 @@
    ivector timevary_setup(1,13);
    timevary_setup.initialize();
    timevary_setup(3)=timevary_parm_cnt+1;  //  one past last one used
-   timevary_def.push_back (timevary_setup(1,13));   
+   timevary_def.push_back (timevary_setup(1,13));
    }
  END_CALCS
-  
+
 !!//  SS_Label_Info_4.11 #Read variance adjustment and various variance related inputs
   init_int Do_Var_adjust
   init_matrix var_adjust1(1,6*Do_Var_adjust,1,Nfleet)
@@ -3895,7 +3974,7 @@
     }
   }
 
-  for (f=1;f<=Q_Npar;f++)
+  for (f=1;f<=Q_Npar2;f++)
   {
     ParCount++;
     if(Q_parm_PH(f)==-9999) {Q_parm_1(f,3)=prof_var(prof_var_cnt); prof_var_cnt++;}

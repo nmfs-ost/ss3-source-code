@@ -486,6 +486,9 @@
   imatrix Svy_super_start(1,Nfleet,1,Svy_super_N)  //  where Svy_super_N is a vector
   imatrix Svy_super_end(1,Nfleet,1,Svy_super_N)
   matrix Svy_super_weight(1,Nfleet,1,Svy_N_fleet)
+  ivector Svy_styr(1,Nfleet)
+  ivector Svy_endyr(1,Nfleet)
+  imatrix Svy_yr(1,Nfleet,1,Svy_N_fleet)
   number  real_month
   vector timing_input(1,3)
   vector timing_r_result(1,4)
@@ -495,15 +498,19 @@
 //  SS_Label_Info_2.3.1  #Process survey observations, move info into working arrays,create super-periods as needed
   Svy_super_N.initialize();
   Svy_N_fleet.initialize();
+    Svy_styr.initialize();
+    Svy_endyr.initialize();
+    Svy_yr.initialize();
   in_superperiod=0;
   if(Svy_N>0)
   {
     for (i=0;i<=Svy_N_rd-1;i++)  // loop all, including those out of yr range
     {
       y= Svy_data[i](1);
+      f=abs( Svy_data[i](3));
+
       if(y>=styr && y<=endyr)
       {
-        f=abs( Svy_data[i](3));
         timing_input(1,3)=Svy_data[i](1,3);  //  function will return: data_timing, ALK_time, real_month, use_midseas
 //  call a global function to calculate data timing and create various indexes
         get_data_timing(timing_input, timing_constants, timing_i_result, timing_r_result, seasdur, subseasdur_delta, azero_seas, surveytime);
@@ -519,6 +526,10 @@
         Svy_se_rd(f,j)= Svy_data[i](5);   // later adjust with varadjust, copy to se_cr_use, then adjust with extra se parameter
         if( Svy_data[i](3)<0) {Svy_use(f,j)=-1;} else {Svy_use(f,j)=1;}
         Svy_obs(f,j)= Svy_data[i](4);
+
+          Svy_yr(f,j)=y;
+          if(Svy_styr(f)==0 || (y>=styr && y<Svy_styr(f)) )  Svy_styr(f)=y;  //  for dimensioning survey q devs
+          if(Svy_endyr(f)==0 || (y<=endyr && y>Svy_endyr(f)) )  Svy_endyr(f)=y;  //  for dimensioning survey q devs
 
 //  some all fleet indexes
         if(data_time(ALK_time,f,1)<0.0)  //  so first occurrence of data at ALK_time,f

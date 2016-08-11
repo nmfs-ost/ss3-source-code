@@ -34,8 +34,9 @@ FUNCTION void evaluate_the_objective_function()
         if(Svy_N_fleet(f)>0)
         {
           Svy_se_use(f) = Svy_se_rd(f);
+          echoinput<<"q setup "<<Q_setup(f)<<endl;
           if(Q_setup(f,3)>0) Svy_se_use(f)+=Q_parm(Q_setup_parms(f,2));  // add extra stderr
-
+          echoinput<<"svyse after add "<<Svy_se_use(f)<<endl;
   // SS_Label_Info_25.1.1 #combine for super-periods
           for (j=1;j<=Svy_super_N(f);j++)
           {
@@ -73,65 +74,17 @@ FUNCTION void evaluate_the_objective_function()
 
           else                                               //  Q from parameter
           {
-            Svy_log_q(f) = Q_parm(Q_setup_parms(f,1));   // base Q
-
-
-            if(Q_setup(f,1) == 1)
+            if(Qparm_timevary(Q_setup_parms(f,1))==0) //  not time-varying
             {
-                // environmental effect on Q
-                if (Q_setup(f,2)==1)    // environ effect on log(q)  multiplicative
-                {
-                  for (i=1;i<=Svy_N_fleet(f);i++)
-                  {Svy_log_q(f,i) += Q_parm(Q_setup_parms(f,3)) * env_data(Show_Time(Svy_time_t(f,i),1),Q_parm_1(Q_setup_parms(f,3),8));}  // note that this environ effect is after the dev effect!
-                }
-                else if(Q_setup(f,2)==-1)    // environ effect on log(q)  additive
-                {
-                  for (i=1;i<=Svy_N_fleet(f);i++)
-                  {Svy_log_q(f,i) += Q_parm(Q_setup_parms(f,3)) + env_data(Show_Time(Svy_time_t(f,i),1),Q_parm_1(Q_setup_parms(f,3),8));}
-                }
-
-                // trend or block effect on Q
-                else if (Q_setup(f,2)==2)
-                {
-                    // TODO
-                }
-
-                // random deviations
-                else if (Q_setup(f,2)==3)
-                {
-                    // TODO
-                }
-
-                // seasonal or cyclic effect on Q
+              Svy_log_q(f)=Q_parm(Q_setup_parms(f,1));  //  set to base parameter value
             }
-
-// random deviations or random walk
- /*
-            if(Q_setup(f,4)==3 || Q_setup(f,4)==4 )
+            else
             {
-              temp=0.0; temp2=0.0; temp1=0.;
-              if(Q_setup(f,4)==3)  // random devs
+              for(j=1;j<=Svy_N_fleet(f);j++)
               {
-                for (i=1;i<=Svy_N_fleet(f);i++)
-                {
-                  j=Q_setup_parms(f,4)+i;
-                  Svy_log_q(f,i)+=Q_parm(j);
-                  temp+=Q_parm(j); temp2+=square(Q_parm(j)); temp1+=1.;
-                }
+                Svy_log_q(f,i)=parm_timevary(Qparm_timevary(Q_setup_parms(f,1)),y);
               }
-              else if(Q_setup(f,4)==4)   // random walk
-              {
-                for (i=2;i<=Svy_N_fleet(f);i++)
-                {
-                  j=Q_setup_parms(f,4)+i-1;
-                  Svy_log_q(f,i)=Svy_log_q(f,i-1)+Q_parm(j);
-                  temp+=Q_parm(j); temp2+=square(Q_parm(j)); temp1+=1.;
-                }
-              }
-              Q_dev_like(f,1)=square(1.+square(temp))-1.;  // not used for randwalk
-              if(temp1>0.0) Q_dev_like(f,2)=sqrt((temp2+0.0000001)/temp1);  // this is calculated but not used because redundant with the prior penalty
             }
- */
           }
 
   // SS_Label_Info_25.1.3 #log or not
@@ -667,10 +620,10 @@ FUNCTION void evaluate_the_objective_function()
         parm_like+=init_F_Like(i);
         }
 
-      for (i=1;i<=Q_Npar;i++)
-      if(Q_parm_1(i,5)>-1 && (active(Q_parm(i))|| Do_all_priors>0))
+      for (i=1;i<=Q_Npar2;i++)
+      if(Q_parm_PRtype(i)>-1 && (active(Q_parm(i))|| Do_all_priors>0))
         {
-        Q_parm_Like(i)=Get_Prior(Q_parm_1(i,5), Q_parm_1(i,1), Q_parm_1(i,2), Q_parm_1(i,4), Q_parm_1(i,6), Q_parm(i));
+        Q_parm_Like(i)=Get_Prior(Q_parm_PRtype(i), Q_parm_LO(i), Q_parm_HI(i), Q_parm_PR(i), Q_parm_CV(i), Q_parm(i));
         parm_like+=Q_parm_Like(i);
         }
 

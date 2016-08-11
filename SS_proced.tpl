@@ -413,7 +413,7 @@ PROCEDURE_SECTION
             if(Fparm_PH(k)>0) {ParmTrace<<" "<<F_rate(k);}
           }
         }
-        for (f=1;f<=Q_Npar;f++)
+        for (f=1;f<=Q_Npar2;f++)
         {
           if(Q_parm_PH(f)>0) {ParmTrace<<" "<<Q_parm(f);}
         }

@@ -93,7 +93,7 @@ FUNCTION void write_summaryoutput()
   if(Do_Forecast>0) report2<<Fcast_recruitments<<" "<<Fcast_impl_error<<" ";
   if(N_init_F>0) report2<<init_F<<" ";
   if(F_Method==2) report2<<" "<<F_rate;
-  if(Q_Npar>0) report2<<Q_parm<<" ";
+  if(Q_Npar2>0) report2<<Q_parm<<" ";
   if(N_selparm2>0) report2<<selparm<<" ";
 //  if(N_selparm_dev>0) report2<<selparm_dev<<" ";
   if(Do_TG>0) report2<<TG_parm<<" ";
@@ -170,12 +170,12 @@ FUNCTION void write_summaryoutput()
       report2<<endl;
     }
 
-    if(Q_Npar>0)
+    if(Q_Npar2>0)
     {
       report2<<runnumber<<" Q_parm ";
-      for (i=1;i<=Q_Npar;i++) {NP++; report2<<" "<<ParmLabel(NP);}
+      for (i=1;i<=Q_Npar2;i++) {NP++; report2<<" "<<ParmLabel(NP);}
       report2<<endl<<runnumber<<" Q_parm ";
-      for (i=1;i<=Q_Npar;i++) report2<<" "<<Q_parm(i);
+      for (i=1;i<=Q_Npar2;i++) report2<<" "<<Q_parm(i);
       report2<<endl;
     }
 
@@ -2038,12 +2038,31 @@ FUNCTION void write_nucontrol()
     {
       NP++;
       Q_parm_1(f,3)=value(Q_parm(f));
-      for(j=1;j<=6;j++) report4<<std::setprecision(4)<<std::fixed<<setw(11)<<Q_parm_1(f,j);
+      for(j=1;j<=6;j++) report4<<std::fixed<<setw(11)<<Q_parm_1(f,j);
       report4.precision(6); report4.unsetf(std::ios_base::fixed); report4.unsetf(std::ios_base::floatfield);
       for(j=7;j<=14;j++) report4<<setw(8)<<Q_parm_1(f,j);
       report4<<"  #  "<<ParmLabel(NP)<<endl;
     }
      report4.precision(6); report4.unsetf(std::ios_base::fixed); report4.unsetf(std::ios_base::floatfield);
+
+      if(timevary_parm_cnt_Q>timevary_parm_start_Q)
+      {
+        report4<<"# timevary Q parameters "<<endl;
+        report4<<"#_      LO        HI      INIT     PRIOR   PR_type        SD   PHASE"<<endl;
+        for (f=timevary_parm_start_Q;f<=timevary_parm_cnt_Q;f++)
+        {
+          NP++;
+            timevary_parm_rd[f](3)=value(timevary_parm(f));
+            for(j=1;j<=6;j++) report4<<std::setprecision(4)<<std::fixed<<setw(11)<<timevary_parm_rd[f](j);
+            report4.precision(6); report4.unsetf(std::ios_base::fixed); report4.unsetf(std::ios_base::floatfield);
+          report4<<"      "<<timevary_parm_rd[f](7)<<"  # "<<ParmLabel(NP)<<endl;
+        }
+        report4<<"# info on dev vectors created for Q parms are reported with other devs after tag parameter section "<<endl;
+      }
+      else
+      {
+        report4<<"#_no timevary Q parameters"<<endl;
+      }
    }
    report4<<"#"<<endl;
    report4<<"#_size_selex_types"<<endl;
@@ -2571,7 +2590,7 @@ FUNCTION void write_bigoutput()
       }
     }
 
-  for (j=1;j<=Q_Npar;j++)
+  for (j=1;j<=Q_Npar2;j++)
   {
     NP++;
     Activ=0;
@@ -2580,7 +2599,7 @@ FUNCTION void write_bigoutput()
       active_count++;
       Activ=1;
     }
-    Report_Parm(NP, active_count, Activ, Q_parm(j), Q_parm_1(j,1), Q_parm_1(j,2), Q_parm_1(j,3), Q_parm_1(j,4), Q_parm_1(j,5), Q_parm_1(j,6), Q_parm_1(j,7), Q_parm_Like(j));
+    Report_Parm(NP, active_count, Activ, Q_parm(j), Q_parm_LO(j), Q_parm_HI(j), Q_parm_RD(j), Q_parm_PR(j), Q_parm_PRtype(j), Q_parm_CV(j), Q_parm_PH(j), Q_parm_Like(j));
   }
 
   for (j=1;j<=N_selparm2;j++)

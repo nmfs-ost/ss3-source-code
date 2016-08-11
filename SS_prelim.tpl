@@ -353,7 +353,7 @@ PRELIMINARY_CALCS_SECTION
 
     for (i=1;i<=N_SRparm2;i++)
     {SR_parm(i)=SR_parm_1(i,3);}
-    echoinput<< " SRR_parms OK "<<endl;
+    echoinput<< " SRR_parms OK "<<SR_parm<<endl;
 
     if(recdev_cycle>0)
     {
@@ -404,9 +404,9 @@ PRELIMINARY_CALCS_SECTION
     echoinput<< " rec_devs OK "<<endl;
 
 // **************************************************
-    for (i=1;i<=Q_Npar;i++)
-    {Q_parm(i) = Q_parm_1(i,3);}    //  set vector of initial index Q parms
-    if(Q_Npar>0) echoinput<< " Q_parms OK "<<endl;
+    for (i=1;i<=Q_Npar2;i++)
+    {Q_parm(i) = Q_parm_RD(i);}    //  set vector of initial index Q parms
+    if(Q_Npar>0) echoinput<< " Q_parms OK "<<Q_parm<<endl;
 
     for (i=1;i<=N_init_F;i++)
     init_F(i) = init_F_RD(i);    //  set vector of initial parms
@@ -468,9 +468,9 @@ PRELIMINARY_CALCS_SECTION
     echoinput<< " MG_parms OK "<<endl;
 
     for (i=1;i<=N_SRparm2;i++)
-    if(SR_parm_1(i,7)>0)
-    {SR_parm(i) = Check_Parm(SR_parm_1(i,1),SR_parm_1(i,2), jitter, SR_parm(i));}
-    echoinput<< " SRR_parms OK "<<endl;
+    if(SRvec_PH(i)>0)
+    {SR_parm(i) = Check_Parm(SRvec_LO(i),SRvec_HI(i), jitter, SR_parm(i));}
+    echoinput<< " SRR_parms OK "<<SR_parm<<endl;
 
     if(recdev_do_early>0 && recdev_early_PH>0)
     {
@@ -496,12 +496,13 @@ PRELIMINARY_CALCS_SECTION
     }
     echoinput<< " rec_devs OK "<<endl;
 
-    if(Q_Npar>0)
+    if(Q_Npar2>0)
     {
-      for (i=1;i<=Q_Npar;i++)
-      if(Q_parm_1(i,7)>0)
-      {Q_parm(i) = Check_Parm(Q_parm_1(i,1),Q_parm_1(i,2), jitter, Q_parm(i));}
-      echoinput<< " Q_parms OK "<<endl;
+      echoinput<<Q_parm_PH<<endl<<Q_parm<<endl;
+      for (i=1;i<=Q_Npar2;i++)
+      if(Q_parm_PH(i)>0)
+      {Q_parm(i) = Check_Parm(Q_parm_LO(i),Q_parm_HI(i), jitter, Q_parm(i));}
+      echoinput<< " Q_parms OK "<<Q_parm<<endl;
     }
 
     for (i=1;i<=N_init_F;i++)

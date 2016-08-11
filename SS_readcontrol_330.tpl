@@ -1808,6 +1808,7 @@
 // 5:  0/1 to float
 
 //  read setup and get the parameter count
+  firstQparm=ParCount;  //  base index before adding Q parms
   Q_setup.initialize();
   Q_setup_parms.initialize();
   Q_Npar=0;
@@ -1870,7 +1871,7 @@
   }
   }
 
-//  get extrastd parameter count
+//  get extra_std parameter count
   for(f=1;f<=Nfleet;f++)
   {
     if(Q_setup(f,3)>0)
@@ -1881,6 +1882,7 @@
     }
   }
 
+  /*
 //  get env parameter count
   for(f=1;f<=Nfleet;f++)
   {
@@ -1913,6 +1915,7 @@
       ParmLabel+="Q_dev_"+fleetname(f)+"("+NumLbl(f)+")";
     }
   }
+  */
 
   echoinput<<"q setup "<<endl<<Q_setup<<endl;
   echoinput<<"q setup parms "<<endl<<Q_setup_parms<<endl;
@@ -1920,23 +1923,138 @@
  END_CALCS
 
   init_matrix Q_parm_1(1,Q_Npar,1,14)
-  vector Q_parm_LO(1,Q_Npar)
-  vector Q_parm_HI(1,Q_Npar)
-  ivector Q_parm_PH(1,Q_Npar)
+  int firstQparm;
+  int timevary_parm_cnt_Q;
+  int timevary_parm_start_Q;
+  ivector Qparm_timevary(1,Q_Npar)  //  holds index in timevary_def used by each base parameter
+                                         //  dimensioned to hold the extra_sd parms, but these cannot be time-varying
+  imatrix timevary_Qparm(styr-3,YrMax+1,0,Nfleet)  // goes to yrmax+1 to allow referencing in forecast, but only endyr+1 is checked
+                                                     // stores years to calc non-constant sel parms by fleet
 
  LOCAL_CALCS
-   if(Q_Npar>0)
+//  now create time_vary parameters
+  parm330_cnt=0;  //  restart the index
+  Qparm_timevary.initialize();
+  timevary_Qparm.initialize();
+  timevary_parm_start_Q=0;
+  timevary_parm_cnt_Q=0;
+
+  for(f=1;f<=Nfleet;f++)
+  if(Svy_N_fleet(f)>0)
+  {
+     j=Q_setup_parms(f,1);
+     echoinput<<"fleet "<<f<<" base index "<<j<<endl;
+     if(Q_parm_1(j,13)==0 && Q_parm_1(j,8)==0 && Q_parm_1(j,9)==0)
      {
-     for (f=1;f<=Q_Npar;f++)
-       {
-       echoinput<<f<<" "<<ParCount-Q_Npar+f<<" "<<ParmLabel(ParCount-Q_Npar+f)<<" "<<Q_parm_1(f)<<endl;
-       Q_parm_LO(f)=Q_parm_1(f,1);
-       Q_parm_HI(f)=Q_parm_1(f,2);
-       Q_parm_PH(f)=Q_parm_1(f,7);
-       }
+      //  no time-vary parameter effects
      }
-   else
-     {Q_parm_LO=-1.; Q_parm_HI=1.; Q_parm_PH=-4;}
+     else  //  set up a timevary parameter definition
+    {
+       ivector timevary_setup(1,13);  //  temporary vector for timevary specs
+       timevary_setup.initialize();
+//  1=baseparm type; 2=baseparm index; 3=first timevary parm
+//  4=block or trend type; 5=block pattern; 6= env link type; 7=env variable;
+//  8=dev vector used; 9=dev link type; 10=dev min year; 11=dev maxyear; 12=dev phase; 13=all parm index of baseparm
+       if(timevary_parm_start_Q==0) timevary_parm_start_Q=timevary_parm_cnt+1;
+       echoinput<<endl<<" timevary Q for fleet: "<<f<<endl;
+       timevary_cnt++;  //  count parameters with time-vary effect
+       Qparm_timevary(j)=timevary_cnt;  //  base Q parameter will use this timevary specification
+       timevary_setup(1)=3; //  indicates a Q parm
+       timevary_setup(2)=j; //  index of base parm within that type of parameter
+       timevary_setup(13)=firstQparm+j;  //  index of base parm relative to ParCount which is continuous across all types of parameters
+       timevary_setup(3)=timevary_parm_cnt+1;  //  first parameter within total list of all timevary parms
+       timevary_pass=column(timevary_Qparm,f);  // year vector for this fleet
+//  set up env link info
+//   where abs(selparm1(j,8) is the environmental variable used;  store this in timevary_setup(7)
+//   and the sign indicates the link;  store this in timevary_setup(6)
+      echoinput<<" check for env "<<Q_parm_1(j,8)<<endl;
+       k=int(Q_parm_1(j,8)/100);  //  find the env link code
+       timevary_setup(6)=k;  //  link code for env
+       timevary_setup(7)=int(Q_parm_1(j,8))-k*100;  //  env variable used
+       if(timevary_setup(7)>0)
+       {
+         k=timevary_setup(7);
+         for(y=styr-1;y<=YrMax;y++) env_data_pass(y)=env_data_RD(y,k);
+       }
+       else
+       {k=0; env_data_pass.initialize();}
+
+       if(Q_parm_1(j,13)>0)  //  doing blocks
+       {
+         create_timevary(Q_parm_1(j),timevary_setup, timevary_pass, autogen_timevary, f, Block_Design(Q_parm_1(j,13)), parm_adjust_method, env_data_pass, N_parm_dev);
+       }
+       else
+       {
+         create_timevary(Q_parm_1(j),timevary_setup, timevary_pass, autogen_timevary, f, block_design_null, parm_adjust_method, env_data_pass, N_parm_dev);
+       }
+  /*
+   where:
+   Q_parm_1(j):           vector with the base parameter which has some type of timevary characteristic
+   timevary_setup:        vector which contains specs of all types of timevary  for this base parameter
+                          will be pushed to timevary_def cumulative across all types of base parameters
+   timevary_pass:        vector containing column(timevary_MG,mgp_type(j)), will be modified in create_timevary
+   autogen_timevary:      switch to autogenerate or not
+   f:           integer with type of MGparm being worked on; analogous to 2*fleet in the selectivity section
+   block_design(z):       block design, if any, being used
+   parm_adjust_method:    switch to determine if adjusted parameter will stay in bounds; used to create warnings in create_timevary
+   env_data_RD:           matrix containing entire set of environmental data as read
+   N_parm_dev:            integer that is incremented in create_timevary as dev vectors are created; cumulative across all types of parameters
+  */
+       if(timevary_setup(8)!=0) timevary_setup(12)=5;
+       timevary_def.push_back (timevary_setup(1,13));
+       for(y=styr-3;y<=YrMax+1;y++) {timevary_Qparm(y,f)=timevary_pass(y);}  // year vector for this category og MGparm
+     }
+  }
+
+   timevary_parm_cnt_Q=timevary_parm_cnt;
+   echoinput<<" timevary_parm_cnt start and end "<<timevary_parm_start_Q<<" "<<timevary_parm_cnt_Q<<endl;
+   echoinput<<"link to timevary parms:  "<<Qparm_timevary<<endl;
+   Q_Npar2=Q_Npar+timevary_parm_cnt_Q-timevary_parm_start_Q+1;
+   echoinput<<"Q_Npar and Q_Npar2:  "<<Q_Npar<<" "<<Q_Npar2<<endl;
+
+ END_CALCS
+
+  vector Q_parm_LO(1,Q_Npar2)
+  vector Q_parm_HI(1,Q_Npar2)
+  vector Q_parm_RD(1,Q_Npar2)
+  vector Q_parm_PR(1,Q_Npar2)
+  ivector Q_parm_PRtype(1,Q_Npar2)
+  vector Q_parm_CV(1,Q_Npar2)
+  ivector Q_parm_PH(1,Q_Npar2)
+
+ LOCAL_CALCS
+  if(Q_Npar2==0)
+  {Q_parm_LO=-1.; Q_parm_HI=1.; Q_parm_PH=-4;}
+  else
+ 	{
+ 		for(i=1;i<=Q_Npar;i++)
+ 		{
+      Q_parm_LO(i)=Q_parm_1(i,1);
+      Q_parm_HI(i)=Q_parm_1(i,2);
+      Q_parm_RD(i)=Q_parm_1(i,3);
+      Q_parm_PR(i)=Q_parm_1(i,4);
+      Q_parm_PRtype(i)=Q_parm_1(i,5);
+      Q_parm_CV(i)=Q_parm_1(i,6);
+      Q_parm_PH(i)=Q_parm_1(i,7);
+    }
+    if(timevary_parm_start_Q>0)
+    {
+      j=Q_Npar;
+    for (f=timevary_parm_start_Q;f<=timevary_parm_cnt_Q;f++)
+     {
+      j++;
+      echoinput<<f<<" "<<j<<" "<<timevary_parm_rd[f]<<endl;
+      Q_parm_LO(j)=timevary_parm_rd[f](1);
+      Q_parm_HI(j)=timevary_parm_rd[f](2);
+      Q_parm_RD(j)=timevary_parm_rd[f](3);
+      Q_parm_PR(j)=timevary_parm_rd[f](4);
+      Q_parm_PRtype(j)=timevary_parm_rd[f](5);
+      Q_parm_CV(j)=timevary_parm_rd[f](6);
+      Q_parm_PH(j)=timevary_parm_rd[f](7);
+     }
+ 	  }
+ 	}
+ 	echoinput<<"Q_parm_RD: "<<Q_parm_RD<<endl;
  END_CALCS
 
 !!//  SS_Label_Info_4.9 #Define Selectivity patterns and N parameters needed per pattern

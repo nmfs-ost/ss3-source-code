@@ -479,23 +479,33 @@
   imatrix Svy_super_start(1,Nfleet,1,Svy_super_N)  //  where Svy_super_N is a vector
   imatrix Svy_super_end(1,Nfleet,1,Svy_super_N)
   matrix Svy_super_weight(1,Nfleet,1,Svy_N_fleet)
+  ivector Svy_styr(1,Nfleet)
+  ivector Svy_endyr(1,Nfleet)
+  imatrix Svy_yr(1,Nfleet,1,Svy_N_fleet)
   number  real_month
 
  LOCAL_CALCS
 //  SS_Label_Info_2.3.1  #Process survey observations, move info into working arrays,create super-periods as needed
     Svy_super_N.initialize();
     Svy_N_fleet.initialize();
+    Svy_styr.initialize();
+    Svy_endyr.initialize();
+    Svy_yr.initialize();
     in_superperiod=0;
     if(Svy_N>0)  /* SS_Logic proceed if any survey data in yr range */
     {
       for (i=1;i<=Svy_N_rd;i++)  // loop all, including those out of yr range
       {
         y=Svy_data(i,1);
+        f=abs(Svy_data(i,3));
+
         if(y>=styr && y<=endyr)
         {
-          f=abs(Svy_data(i,3));
           Svy_N_fleet(f)++;  //  count obs by fleet
           j=Svy_N_fleet(f);
+          Svy_yr(f,j)=y;
+          if(Svy_styr(f)==0 || (y>=styr && y<Svy_styr(f)) )  Svy_styr(f)=y;  //  for dimensioning survey q devs
+          if(Svy_endyr(f)==0 || (y<=endyr && y>Svy_endyr(f)) )  Svy_endyr(f)=y;  //  for dimensioning survey q devs
 
           {  //  start have_data index and timing processing
             temp=abs(Svy_data(i,2));  //  read value that could be season or month; abs ()because neg value indicates super period
@@ -588,7 +598,7 @@
 
       echoinput<<" processed survey data "<<endl;
       for (f=1;f<=Nfleet;f++)
-      {echoinput<<f<<" "<<fleetname(f)<<" "<<Svy_obs(f)<<endl;}
+      {echoinput<<f<<" "<<fleetname(f)<<" styr "<<Svy_styr(f)<<"  endyear "<<Svy_endyr(f)<<"  obs: "<<Svy_obs(f)<<endl;}
     }
     echoinput<<"Successful read of index data; N= "<<Svy_N<< endl;
     echoinput<<"Number of survey superperiods by fleet: "<<Svy_super_N<<endl;

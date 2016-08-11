@@ -278,7 +278,7 @@ PARAMETER_SECTION
 //  !!y=k1+N_Fcast_Yrs*nseas-1;
 
 !!//  SS_Label_Info_5.1.4 #Create Q_parm and associated arrays
-  init_bounded_number_vector Q_parm(1,Q_Npar,Q_parm_LO,Q_parm_HI,Q_parm_PH)
+  init_bounded_number_vector Q_parm(1,Q_Npar2,Q_parm_LO,Q_parm_HI,Q_parm_PH)
 
   matrix Svy_log_q(1,Nfleet,1,Svy_N_fleet);
   matrix Svy_q(1,Nfleet,1,Svy_N_fleet);
@@ -453,7 +453,7 @@ PARAMETER_SECTION
 !!//  SS_Label_Info_5.3 #Create log-Likelihood vectors
   vector MGparm_Like(1,N_MGparm2)
   vector init_F_Like(1,Nfleet)
-  vector Q_parm_Like(1,Q_Npar)
+  vector Q_parm_Like(1,Q_Npar2)
   vector selparm_Like(1,N_selparm2)
   vector SR_parm_Like(1,N_SRparm2)
   vector recdev_cycle_Like(1,recdev_cycle)
