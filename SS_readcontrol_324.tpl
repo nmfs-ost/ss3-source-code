@@ -2096,7 +2096,7 @@
  END_CALCS
 
   imatrix Q_setup_324(1,Nfleet,1,4)  // do power
-                                     // env-var 
+                                     // env-var
                                      // extra sd
                                      // Qtype(<0=mirror, 0=float_nobiasadj 1=float_biasadj, 2=parm_nobiasadj, 3=rand, 4=randwalk)
   imatrix Q_setup_parms_324(1,Nfleet,1,4)
@@ -2121,7 +2121,7 @@
   int ask_detail
   int Q_parm_detail
 
-  imatrix Q_setup_parms(1,Nfleet,1,5)  //  
+  imatrix Q_setup_parms(1,Nfleet,1,5)  //
 //  index of first parameter for:  1=base q with link;  2=extrastd; 3=env; 4=block/trend; 5=dev;
 
  LOCAL_CALCS
@@ -2136,7 +2136,7 @@
   Q_Npar=0;  //  counter for parameters in 3.24 format
   parm330_cnt=0;
   ask_detail=0;
-  
+
 //  SS_Label_Info_4.8.1 #Create index to the catchability parameters
   for (f=1;f<=Nfleet;f++)
   {
@@ -2156,7 +2156,7 @@
       Q_setup(f,2)=1;  //  this may not be needed
     }
   }
-  
+
   for (f=1;f<=Nfleet;f++)
   {
     if(Q_setup_324(f,3)>0)  //  extra se
@@ -2406,7 +2406,11 @@
    timevary_parm_cnt_Q=timevary_parm_cnt;
    echoinput<<" timevary_parm_cnt start and end "<<timevary_parm_start_Q<<" "<<timevary_parm_cnt_Q<<endl;
    echoinput<<"link to timevary parms:  "<<Qparm_timevary<<endl;
-   Q_Npar2=Q_Npar+timevary_parm_cnt_Q-timevary_parm_start_Q+1;
+   Q_Npar2 = Q_Npar;
+   if(timevary_parm_cnt_Q>0)
+   {
+       Q_Npar2+=(timevary_parm_cnt_Q-timevary_parm_start_Q+1);
+   }
    echoinput<<"Q_Npar and Q_Npar2:  "<<Q_Npar<<" "<<Q_Npar2<<endl;
  END_CALCS
 
