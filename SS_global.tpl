@@ -207,14 +207,14 @@ GLOBALS_SECTION
         Nblocks=0.5*(block_design_pass.size());
 //        if(z>N_Block_Designs) {N_warn++; warning<<"parm: "<<j<<" ERROR, Block > N Blocks "<<z<<" "<<N_Block_Designs<<endl; exit(1);}
         k=int(baseparm_list(14));  //  block method
-        echoinput<<"block pattern: "<<z<<" method "<<k<<endl;
+        echoinput<<"block pattern: "<<z<<" method "<<k<<" Nblocks: "<<Nblocks<<endl;
 
         g=1;  //  index to list of years in block design; will increment by 2 for begin-end of block
         for (a=1;a<=Nblocks;a++)  //  loop blocks for block pattern z
         {
          timevary_parm_cnt++;
          ParCount++;
-         
+         echoinput<<" create parm for block "<<a<<endl;
          y=block_design_pass(g);
          timevary_byyear(y)=1;
          sprintf(onenum, "%d", y);
@@ -245,7 +245,7 @@ GLOBALS_SECTION
             if(autogen_timevary==1)
             {*(ad_comm::global_datafile) >> tempvec(1,7);}
             else
-            {for(a=1;a<=7;a++) tempvec(a)=baseparm_list(a);}
+            {for(int s=1;s<=7;s++) tempvec(s)=baseparm_list(s);}
             timevary_parm_rd.push_back (tempvec);
              break;}
            case 3:
