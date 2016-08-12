@@ -2419,7 +2419,11 @@
    timevary_parm_cnt_Q=timevary_parm_cnt;
    echoinput<<" timevary_parm_cnt start and end "<<timevary_parm_start_Q<<" "<<timevary_parm_cnt_Q<<endl;
    echoinput<<"link to timevary parms:  "<<Qparm_timevary<<endl;
-   Q_Npar2=Q_Npar+timevary_parm_cnt_Q-timevary_parm_start_Q+1;
+   Q_Npar2 = Q_Npar;
+   if(timevary_parm_cnt_Q>0)
+   {
+       Q_Npar2+=(timevary_parm_cnt_Q-timevary_parm_start_Q+1);
+   }
    echoinput<<"Q_Npar and Q_Npar2:  "<<Q_Npar<<" "<<Q_Npar2<<endl;
  END_CALCS
 

@@ -2009,7 +2009,11 @@
    timevary_parm_cnt_Q=timevary_parm_cnt;
    echoinput<<" timevary_parm_cnt start and end "<<timevary_parm_start_Q<<" "<<timevary_parm_cnt_Q<<endl;
    echoinput<<"link to timevary parms:  "<<Qparm_timevary<<endl;
-   Q_Npar2=Q_Npar+timevary_parm_cnt_Q-timevary_parm_start_Q+1;
+   Q_Npar2 = Q_Npar;
+   if(timevary_parm_cnt_Q>0)
+   {
+     Q_Npar2+=(timevary_parm_cnt_Q-timevary_parm_start_Q+1);
+   }
    echoinput<<"Q_Npar and Q_Npar2:  "<<Q_Npar<<" "<<Q_Npar2<<endl;
 
  END_CALCS
@@ -2780,7 +2784,7 @@
    timevary_setup.initialize();
    timevary_setup(3)=timevary_parm_cnt+1;  //  one past last one used
    timevary_def.push_back (timevary_setup(1,13));
-  
+
     echoinput<<" read var_adjust list until -9999"<<endl;
     ender=0;
     do
@@ -3557,7 +3561,7 @@
     }
   }
 
-  echoinput<<ParmLabel<<endl; 
+  echoinput<<ParmLabel<<endl;
   echoinput<<"ParCount "<<ParCount<<"   Active parameters: "<<active_count<<endl<<"Turn_off_phase "<<Turn_off_phase<<endl<<" max_phase "<<max_phase<<endl;
   echoinput<<active_parm.indexmax()<<endl;
 
