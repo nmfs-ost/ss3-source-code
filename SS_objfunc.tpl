@@ -34,7 +34,7 @@ FUNCTION void evaluate_the_objective_function()
         if(Svy_N_fleet(f)>0)
         {
           Svy_se_use(f) = Svy_se_rd(f);
-          echoinput<<"q setup "<<Q_setup(f)<<endl;
+          echoinput<<"fleet "<<f<<"  q setup "<<Q_setup(f)<<"  setup_parms "<<Q_setup_parms(f)<<endl;
           if(Q_setup(f,3)>0) Svy_se_use(f)+=Q_parm(Q_setup_parms(f,2));  // add extra stderr
           echoinput<<"svyse after add "<<Svy_se_use(f)<<endl;
   // SS_Label_Info_25.1.1 #combine for super-periods
@@ -49,6 +49,7 @@ FUNCTION void evaluate_the_objective_function()
   // SS_Label_Info_25.1.2 #apply catchability, Q
           if(Q_setup(f,5)>0 )  //  do float Q
           {                                       //  NOTE:  cannot use float option if error type is normal
+            echoinput<<"do float Q"<<endl;
             temp=0.; temp1=0.; temp2=0.;
             for (i=1;i<=Svy_N_fleet(f);i++)
             {
@@ -74,16 +75,22 @@ FUNCTION void evaluate_the_objective_function()
 
           else                                               //  Q from parameter
           {
+            echoinput<<" q from parms"<<Q_setup_parms(f,1)<<" "<<Qparm_timevary(Q_setup_parms(f,1))<<endl;
             if(Qparm_timevary(Q_setup_parms(f,1))==0) //  not time-varying
             {
               Svy_log_q(f)=Q_parm(Q_setup_parms(f,1));  //  set to base parameter value
+              echoinput<<" not timevary "<<Svy_log_q(f)<<endl;
             }
             else
             {
               for(j=1;j<=Svy_N_fleet(f);j++)
               {
-                Svy_log_q(f,i)=parm_timevary(Qparm_timevary(Q_setup_parms(f,1)),y);
+                y=Svy_yr(f,j);
+                echoinput<<" obs "<<j<<" yr  "<<y;
+                Svy_log_q(f,j)=parm_timevary(Qparm_timevary(Q_setup_parms(f,1)),y);
+                echoinput<<Svy_log_q(f,j);
               }
+              echoinput<<"  timevary Q"<<Svy_log_q(f)<<endl;
             }
           }
 
@@ -128,6 +135,7 @@ FUNCTION void evaluate_the_objective_function()
           }
 
         }    // end having obs for this survey
+        echoinput<<" finish Q anf obj_fun for fleet "<<f<<endl;
       }
        if(do_once==1) cout<<" did survey obj_fun "<<surv_like<<endl;
     }

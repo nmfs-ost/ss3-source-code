@@ -1344,12 +1344,17 @@
   ivector MG_active(0,7)  // 0=all, 1=M, 2=growth 3=wtlen, 4=recr_dist, 5=migration, 6=ageerror, 7=catchmult
   ivector MGparm_timevary(1,N_MGparm)  //  holds index in timevary_def used by this base parameter
   imatrix timevary_MG(styr-3,YrMax+1,0,7)  // goes to yrmax+1 to allow referencing in forecast, but only endyr+1 is checked
+  int tvparm;
+  int MGenvcnt;
+  int MGblkcnt;
 
  LOCAL_CALCS
    timevary_cnt=0;
    N_parm_dev=0;
    timevary_parm_cnt=0;
-
+   MGenvcnt=0;
+   MGblkcnt=0;
+   
 //  push once so 0'th row is not used
    ivector timevary_setup(1,13);
    timevary_setup.initialize();
@@ -1436,6 +1441,45 @@
    env_data_RD:           matrix containing entire set of environmental data as read
    N_parm_dev:            integer that is incremented in create_timevary as dev vectors are created; cumulative across all types of parameters
   */
+
+       tvparm=timevary_setup(3)-1;  //  index of first timevay parameter used here
+       if(timevary_setup(5)>0 && customblocksetup_MG==1)  //  move block info from 3.24 inputs
+       {
+          echoinput<<" copy MGblock info from 3.24 "<<endl;
+          z=MGparm_1(j,13);    // specified block or trend definition
+          if (z>0)  //  blocks with z as the block pattern
+          {
+            for (a=1;a<=Nblk(z);a++)  //  loop blocks for block pattern z
+            {
+              tvparm++;
+              MGblkcnt++;
+              echoinput<<"move MG blk info from 3.24 index "<<MGblkcnt<<"  to 3.30 index  "<<tvparm<<endl;
+              timevary_parm_rd[tvparm](1,7)=MGparm_blk_1(MGblkcnt)(1,7);
+              echoinput<<timevary_parm_rd[tvparm]<<endl;
+            }
+          }
+          else //  (z<0) so invoke a trend
+          {
+            for (a=1;a<=3;a++)  //  loop blocks for block pattern z
+            {
+              tvparm++;
+              MGblkcnt++;
+              echoinput<<"move MG trend info from 3.24 index "<<MGblkcnt<<"  to 3.30 index  "<<tvparm<<endl;
+              timevary_parm_rd[tvparm](1,7)=MGparm_blk_1(MGblkcnt)(1,7);
+              echoinput<<timevary_parm_rd[tvparm]<<endl;
+            }
+          }
+       }
+
+       if(customMGenvsetup==1) 
+       {
+         tvparm++;
+         MGenvcnt++;
+         echoinput<<"move MG env  info from 3.24 index "<<MGenvcnt<<"  to 3.30 index  "<<tvparm<<endl;
+         timevary_parm_rd[tvparm](1,7)=MGparm_env_1(MGenvcnt)(1,7);
+         echoinput<<timevary_parm_rd[tvparm]<<endl;
+       }
+       
        if(timevary_setup(8)!=0) timevary_setup(12)=MGparm_dev_PH;
        timevary_def.push_back (timevary_setup(1,13));
        for(y=styr-3;y<=YrMax+1;y++) {timevary_MG(y,mgp_type(j))=timevary_pass(y);}  // year vector for this category og MGparm
@@ -2153,7 +2197,7 @@
     if(Q_setup_324(f,2)!=0)  //  env link
     {
       Q_Npar++; Q_setup_parms_324(f,2)=Q_Npar;
-      Q_setup(f,2)=1;  //  this may not be needed
+      Q_setup(f,2)=1;
     }
   }
 
@@ -3019,6 +3063,10 @@
    timevary_parm_start_sel=0;
    timevary_parm_cnt_sel=0;
    selparm_timevary.initialize();
+   int selblkcnt;
+   int selenvcnt;
+   selblkcnt=0;
+   selenvcnt=0;
 
    for (j=1;j<=N_selparm;j++)
    {
@@ -3031,20 +3079,19 @@
      }
      else
      {
+       echoinput<<endl<<" create timevary for sel parameter: "<<j<<endl;
        ivector timevary_setup(1,13);  //  temporary vector for timevary specs
        timevary_setup.initialize();
 //  1=baseparm type; 2=baseparm index; 3=first timevary parm
 //  4=block or trend type; 5=block pattern; 6= env link type; 7=env variable;
 //  8=dev vector used; 9=dev link type; 10=dev min year; 11=dev maxyear; 12=dev phase; 13=all parm index of baseparm
        if(timevary_parm_start_sel==0) timevary_parm_start_sel=timevary_parm_cnt+1;
-       echoinput<<endl<<" timevary for sel parameter: "<<j<<endl;
        timevary_cnt++;  //  count parameters with time-vary effect
        selparm_timevary(j)=timevary_cnt;  //  base parameter will use this timevary specification
        timevary_setup(1)=5; //  indicates a sel parm
        timevary_setup(2)=j; //  index of base parm within that type of parameter
        timevary_setup(13)=firstselparm+j;  //  index of base parm relative to ParCount which is continuous across all types of parameters
        timevary_setup(3)=timevary_parm_cnt+1;  //  first parameter within total list of all timevary parms
-       z=selparm_1(j,13);    // specified block or trend definition
 
 //  set up env link info
 //   where abs(selparm1(j,8) is the environmental variable used;  store this in timevary_setup(7)
@@ -3062,20 +3109,16 @@
         {
           selparm_1(j,8)=100.*timevary_setup(6)+timevary_setup(7);
           echoinput<<" convert env to 330 format "<<selparm_1(j,8)<<endl;
-        }
-
-       if(timevary_setup(7)>0)
-       {
          k=timevary_setup(7);
          for(y=styr-1;y<=YrMax;y++) env_data_pass(y)=env_data_RD(y,k);
-       }
+        }
        else
-       {k=0; env_data_pass.initialize();}
+       {env_data_pass.initialize();}
+
+       z=selparm_1(j,13);    // specified block or trend definition
        if(z>0)  //  doing blocks
        {
          create_timevary(selparm_1(j),timevary_setup, timevary_pass, autogen_timevary, selparm_fleet(j), Block_Design(z), parm_adjust_method, env_data_pass, N_parm_dev);
-         echoinput<<"block design "<<Block_Design(z)<<endl;
-         echoinput<<"updated timevaryparm cnt "<<timevary_parm_cnt<<endl;
        }
        else
        {
@@ -3094,6 +3137,44 @@
    env_data_RD:           matrix containing entire set of environmental data as read
    N_parm_dev:            integer that is incremented in create_timevary as dev vectors are created; cumulative across all types of parameters
   */
+       tvparm=timevary_setup(3)-1;  //  index of first timevay parameter used here
+       if(timevary_setup(5)>0 && customblocksetup==1)  //  move block info from 3.24 inputs
+       {
+          echoinput<<" copy selblock info from 3.24 "<<endl;
+          z=selparm_1(j,13);    // specified block or trend definition
+          if (z>0)  //  blocks with z as the block pattern
+          {
+            for (a=1;a<=Nblk(z);a++)  //  loop blocks for block pattern z
+            {
+              tvparm++;
+              selblkcnt++;
+              echoinput<<"move sel blk info from 3.24 index "<<selblkcnt<<"  to 3.30 index  "<<tvparm<<endl;
+              timevary_parm_rd[tvparm](1,7)=selparm_blk_1(selblkcnt)(1,7);
+              echoinput<<timevary_parm_rd[tvparm]<<endl;
+            }
+          }
+          else //  (z<0) so invoke a trend
+          {
+            for (a=1;a<=3;a++)  //  loop blocks for block pattern z
+            {
+              tvparm++;
+              selblkcnt++;
+              echoinput<<"move sel trend info from 3.24 index "<<selblkcnt<<"  to 3.30 index  "<<tvparm<<endl;
+              timevary_parm_rd[tvparm](1,7)=selparm_blk_1(selblkcnt)(1,7);
+              echoinput<<timevary_parm_rd[tvparm]<<endl;
+            }
+          }
+       }
+
+       if(custom_selenv_setup==1)  // selex
+       {
+         tvparm++;
+         selenvcnt++;
+         echoinput<<"move sel env  info from 3.24 index "<<selenvcnt<<"  to 3.30 index  "<<tvparm<<endl;
+         timevary_parm_rd[tvparm](1,7)=selparm_env_1(selenvcnt)(1,7);
+         echoinput<<timevary_parm_rd[tvparm]<<endl;
+       }
+
        if(timevary_setup(8)!=0) timevary_setup(12)=selparm_dev_PH;
        timevary_def.push_back (timevary_setup(1,13));
        for(y=styr-3;y<=YrMax+1;y++) {timevary_sel(y,selparm_fleet(j))=timevary_pass(y);}  // year vector for this category og selparm
@@ -3102,6 +3183,9 @@
 
    timevary_parm_cnt_sel=timevary_parm_cnt;
    echoinput<<" timevary_selparm_cnt start "<<timevary_parm_start_sel<<" and end "<<timevary_parm_cnt_sel<<endl;
+   timevary_setup.initialize();
+   timevary_setup(3)=timevary_parm_cnt+1;
+   timevary_def.push_back (timevary_setup(1,13));  //  one past last one used
 
 //  SS_Label_Info_4.9.12 #Create vectors, e.g. selparm_PH(), that will be used to create actual array of estimted parameters
   {
@@ -3227,7 +3311,7 @@
 // if Tags are used, the read parameters for initial tag loss, chronic tag loss, andd
 // fleet-specific tag reporting.  Of these, only reporting rate will be allowed to be time-varying
   init_int TG_custom;  // 1=read; 0=create default parameters
-  !! echoinput<<TG_custom<<" TG_custom (need to read even if no tag data )"<<endl;
+  !! echoinput<<endl<<"*******************"<<endl<<TG_custom<<" TG_custom (need to read even if no tag data )"<<endl;
   !! k=TG_custom*Do_TG*(3*N_TG+2*Nfleet);
   init_matrix TG_parm1(1,k,1,14);  // read initial values
   !! if(k>0) echoinput<<" Tag parameters as read "<<endl<<TG_parm1<<endl;
@@ -3345,123 +3429,12 @@
 //  8=dev vector used; 9=dev link type; 10=dev min year; 11=dev maxyear; 12=dev phase; 13=all parm index of baseparm
    if(timevary_cnt>0)
    {
-     int tvparm; int MGblkcnt; int MGenvcnt; int selblkcnt; int selenvcnt; int Qblkcnt; int Qenvcnt;
-     tvparm=0; MGblkcnt=0; MGenvcnt=0; selblkcnt=0; selenvcnt=0; Qblkcnt=0; Qenvcnt=0;
-     echoinput<<" size of time_vary_parm_rd:  "<<timevary_parm_rd.size();
+     echoinput<<endl<<"final processing of timevary setup to create dev vectors as needed "<<endl;
      for (j=1;j<=timevary_cnt;j++)  //  loop set up timevary
      {
-       echoinput<<endl<<"final processing of timevary setup #: "<<j<<"    tvparm_cnt starts at: "<<tvparm<<endl;
        ivector timevary_setup(1,13);
        timevary_setup(1,13)=timevary_def[j](1,13);
        echoinput<<"setup: "<<timevary_setup<<endl;
-       if(timevary_setup(5)>0)  //  move block info from 3.24 inputs
-       {
-         switch (timevary_setup(1))
-         {
-           case 1:   //  MG
-           {
-             if(customblocksetup_MG==1)
-             {
-               for(k=timevary_setup(3);k<=timevary_def[j+1](3)-1;k++)
-               {
-                 tvparm++;
-                 MGblkcnt++;
-                 echoinput<<"MGblock in 324 "<<MGparm_blk_1(MGblkcnt)<<endl;
-                 echoinput<<"MGblock in 330 "<<timevary_parm_rd[tvparm]<<endl;
-                 timevary_parm_rd[tvparm](1,7)=MGparm_blk_1(MGblkcnt)(1,7);
-               }
-             }
-             break;
-           }
-            case 2:
-           {
-
-             break;
-           }
-            case 3:
-           {
-
-             break;
-           }
-            case 4:
-           {
-
-             break;
-           }
-            case 5:
-           {
-             if(customblocksetup==1)  // selex
-             {
-              echoinput<<" copy selblock info "<<timevary_setup(3)<<endl;
-               for(k=timevary_setup(3);k<=timevary_def[j+1](3)-1;k++)
-               {
-                 tvparm++;
-                 selblkcnt++;
-                 echoinput<<selblkcnt<<" "<<tvparm<<endl;
-                 echoinput<<"selblock in 324 "<<selparm_blk_1(selblkcnt)<<endl;
-                 echoinput<<"selblock in 330 "<<timevary_parm_rd[tvparm]<<endl;
-                 timevary_parm_rd[tvparm](1,7)=selparm_blk_1(selblkcnt)(1,7);
-                 echoinput<<"selblock in 330 "<<timevary_parm_rd[tvparm]<<endl;
-               }
-             }
-          }
-           break;
-         }
-       }
-
-       if (timevary_setup(6)>0)  //  move env from 3.24 inputs
-       {
-         switch (timevary_setup(1))
-         {
-           case 1:   //  MG
-           {
-             if(customMGenvsetup==1)
-             {
-               for(k=timevary_setup(3);k<=timevary_def[j+1](3)-1;k++)
-               {
-                 tvparm++;
-                 MGenvcnt++;
-                 echoinput<<"MGenv in 324 "<<MGparm_env_1(MGenvcnt)<<endl;
-                 echoinput<<"MGenv in 330 "<<timevary_parm_rd[tvparm]<<endl;
-                 timevary_parm_rd[tvparm](1,7)=MGparm_env_1(MGenvcnt)(1,7);
-               }
-             }
-             break;
-           }
-            case 2:
-           {
-             break;
-           }
-            case 3:
-           {
-             for(k=timevary_setup(3);k<=timevary_def[j+1](3)-1;k++)
-             {
-               tvparm++;
-               echoinput<<"Qenv in 330 "<<timevary_parm_rd[tvparm]<<endl;
-             }
-             break;
-           }
-            case 4:
-           {
-             break;
-           }
-            case 5:
-           {
-             if(custom_selenv_setup==1)  // selex
-             {
-               for(k=timevary_setup(3);k<=timevary_def[j+1](3)-1;k++)
-               {
-                 tvparm++;
-                 selenvcnt++;
-                 echoinput<<"selenv in 324 "<<selparm_env_1(selenvcnt)<<endl;
-                 echoinput<<"selenv in 330 "<<timevary_parm_rd[tvparm]<<endl;
-                 timevary_parm_rd[tvparm](1,7)=selparm_env_1(selenvcnt)(1,7);
-               }
-             }
-          }
-           break;
-         }
-       }
 
        if(timevary_setup(8)>0)  //  create dev approach and then move from 3.24 inputs
        {
@@ -3472,12 +3445,6 @@
          if(depletion_fleet>0 && parm_dev_PH(k)>0) parm_dev_PH(k)++;//  add 1 to phase if using depletion fleet
          if(parm_dev_PH(k)>Turn_off_phase) parm_dev_PH(k) =-1;
          if(parm_dev_PH(k)>max_phase) max_phase=parm_dev_PH(k);
-         echoinput<<" dev vector: "<<k<<endl;
-         echoinput<<" adjusted dev phase "<<parm_dev_PH(k)<<endl;
-         tvparm++;
-         echoinput<<"dev_se_parm in 330 "<<timevary_parm_rd[tvparm]<<endl;
-         tvparm++;
-         echoinput<<"dev_rho_parm in 330 "<<timevary_parm_rd[tvparm]<<endl;
          f=timevary_setup(13);
          echoinput<<" index of base parm for dev "<<f<<" "<<ParmLabel(f)<<" create devlink: "<<timevary_setup(9)<<endl; //  index of base parameter
          echoinput<<" use dev vector "<<k<<" with min-max yr "<<parm_dev_minyr(k)<<" "<<parm_dev_maxyr(k)<<endl;
@@ -3499,10 +3466,6 @@
          echoinput<<"made dev labels OK "<<endl;
        }
      }
-   ivector timevary_setup(1,13);
-   timevary_setup.initialize();
-   timevary_setup(3)=timevary_parm_cnt+1;  //  one past last one used
-   timevary_def.push_back (timevary_setup(1,13));
    }
  END_CALCS
 
