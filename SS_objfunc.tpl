@@ -982,7 +982,7 @@ FUNCTION dvariable Check_Parm(const double& Pmin, const double& Pmax, const doub
  /*  SS_Label_FUNCTION 29 Get_Prior */
 FUNCTION dvariable Get_Prior(const int T, const double& Pmin, const double& Pmax, const double& Pr, const double& Psd, const prevariable& Pval)
   {
-    dvariable Prior_Like;
+    dvariable Prior_Like=0.;
     dvariable mu;
     dvariable tau;
     dvariable Pconst=0.0001;
