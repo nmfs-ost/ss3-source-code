@@ -1094,7 +1094,6 @@
    echoinput<<"mgparm_type for each parm: 1=M; 2=growth; 3=wtlen,mat,fec,hermo,sexratio; 4=recr; 5=migr; 6=ageerror; 7=catchmult "<<endl<<mgp_type<<endl;
    echoinput<<"Now read env, block/trend, seasonal, and dev adjustments to MGparms "<<endl;
 
-   timevary_MG.initialize();    // stores years to calc non-constant MG parms (1=natmort; 2=growth; 3=wtlen & fec; 4=recr_dist; 5=movement)
 //   MGparm_env.initialize();   //  will store the index of environ fxns here
 //   MGparm_envtype.initialize();
    N_MGparm_env=0;
@@ -1323,6 +1322,8 @@
     {
       *(ad_comm::global_datafile) >> MGparm_dev_PH;
       echoinput<<MGparm_dev_PH<<" MGparm_dev_PH"<<endl;
+      if(MGparm_dev_PH==0) MGparm_dev_PH=6;
+      if(MGparm_dev_PH<0) MGparm_dev_PH=0;
     }
 
  END_CALCS
@@ -1482,7 +1483,7 @@
        
        if(timevary_setup(8)!=0) timevary_setup(12)=MGparm_dev_PH;
        timevary_def.push_back (timevary_setup(1,13));
-       for(y=styr-3;y<=YrMax+1;y++) {timevary_MG(y,mgp_type(j))=timevary_pass(y);}  // year vector for this category og MGparm
+       for(y=styr-3;y<=YrMax+1;y++) {timevary_MG(y,mgp_type(j))=timevary_pass(y);}  // year vector for this category of MGparm
        if(j==MGP_CGD) CGD_onoff=1;
      }
    }
@@ -1490,30 +1491,6 @@
    timevary_parm_cnt_MG=timevary_parm_cnt;
    echoinput<<" timevary_parm_cnt "<<timevary_parm_cnt<<endl;
 
-  //  SS_Label_Info_4.5.95 #Populate time_bio_category array defining when biology changes
-     k=YrMax+1;
-    for (y=styr+1;y<=YrMax;y++)
-    {
-      if(timevary_MG(y,2)>0 && y<k)  k=y;
-    }
-    if(k<YrMax+1)
-    {
-      for (y=k;y<=YrMax+1;y++)
-      {
-        timevary_MG(y,2)=1;
-      }
-    }
-    for (y=styr-1;y<=YrMax;y++)
-    {
-      for (f=1;f<=7;f++)
-      {
-        if(timevary_MG(y,f)>0)
-        {
-          MG_active(f)=1;
-          timevary_MG(y,0)=1;  // tracks active status for all MG types
-        }
-      }
-    }
 
   {
 
@@ -1563,14 +1540,47 @@
     MGparm_HI(f)=MGparm_1(f,2);
     MGparm_RD(f)=MGparm_1(f,3);
     MGparm_PR(f)=MGparm_1(f,4);
-    MGparm_PRtype(f)=MGparm_1(f,5);
-    MGparm_CV(f)=MGparm_1(f,6);
+
+    temp=MGparm_1(f,5);  //  will be reversed with _CV in 3.30
+    if(temp==0) {temp=6;}  //  recode for normal distribution
+    if(temp<0) {temp=0;}  
+    MGparm_1(f,5)=MGparm_1(f,6);
+    MGparm_1(f,6)=temp;
+    MGparm_PRtype(f)=temp;
+    MGparm_CV(f)=MGparm_1(f,5);
     MGparm_PH(f)=MGparm_1(f,7);
     if(MGparm_PH(f)>0)
     {MG_active(mgp_type(f))=1;}
    }
    if(natM_type==2 && MG_active(2)>0) MG_active(1)=1;  // lorenzen M depends on growth
 
+  //  SS_Label_Info_4.5.95 #Populate time_bio_category array defining when biology changes
+     k=YrMax+1;
+    timevary_MG(styr)(1,7)=MG_active(1,7);
+    for (y=styr+1;y<=YrMax;y++)
+    {
+      if(timevary_MG(y,2)>0 && y<k)  k=y;
+    }
+    if(k<YrMax+1)
+    {
+      for (y=k;y<=YrMax+1;y++)
+      {
+        timevary_MG(y,2)=1;
+      }
+    }
+    for (y=styr-1;y<=YrMax;y++)
+    {
+      for (f=1;f<=7;f++)
+      {
+        if(timevary_MG(y,f)>0)
+        {
+          MG_active(f)=1;
+          timevary_MG(y,0)=1;  // tracks active status for all MG types
+        }
+      }
+    }
+    MG_active(0)=sum(MG_active(1,7));
+    echoinput<<"MG_active "<<MG_active<<endl<<"timevary_MG"<<endl<<timevary_MG<<endl;
    j=N_MGparm;
 
    if(timevary_parm_cnt_MG>0)
@@ -1581,8 +1591,8 @@
     MGparm_HI(j)=timevary_parm_rd[f](2);
     MGparm_RD(j)=timevary_parm_rd[f](3);
     MGparm_PR(j)=timevary_parm_rd[f](4);
-    MGparm_PRtype(j)=timevary_parm_rd[f](5);
-    MGparm_CV(j)=timevary_parm_rd[f](6);
+    MGparm_PRtype(j)=timevary_parm_rd[f](6);
+    MGparm_CV(j)=timevary_parm_rd[f](5);
     MGparm_PH(j)=timevary_parm_rd[f](7);
    }
 
@@ -1594,6 +1604,11 @@
     MGparm_HI(j)=MGparm_seas_1(f,2);
     MGparm_RD(j)=MGparm_seas_1(f,3);
     MGparm_PR(j)=MGparm_seas_1(f,4);
+    temp=MGparm_seas_1(f,5);
+    if(temp==0) temp=6.;
+    if(temp<0) temp=0;
+    MGparm_seas_1(f,5)=MGparm_seas_1(f,6);
+    MGparm_seas_1(f,6)=temp;
     MGparm_PRtype(j)=MGparm_seas_1(f,5);
     MGparm_CV(j)=MGparm_seas_1(f,6);
     MGparm_PH(j)=MGparm_seas_1(f,7);
@@ -1650,6 +1665,11 @@
    SRvec_LO(f)=SR_parm_1(f,1);
    SRvec_HI(f)=SR_parm_1(f,2);
    SRvec_PH(f)=int(SR_parm_1(f,7));
+   temp=SR_parm_1(f,5);  //  PR_type in 3.24
+   if(temp==0) temp=6;
+   if(temp<0) temp=0;
+   SR_parm_1(f,5)=SR_parm_1(f,6);  //  move CV
+   SR_parm_1(f,6)=temp;
   }
   /*
    if(SR_env_link>N_envvar)
@@ -1726,13 +1746,12 @@
   !!echoinput<<recdev_end<<" recdev_end"<<endl;
   init_int recdev_PH_rd;
   !!echoinput<<recdev_PH_rd<<" recdev_PH"<<endl;
-  int recdev_PH;
-  !! recdev_PH=recdev_PH_rd;
   init_int recdev_adv
   !!echoinput<<recdev_adv<<" recdev_adv"<<endl;
 
   init_vector recdev_options_rd(1,13*recdev_adv)
   vector recdev_options(1,13)
+  int recdev_PH;
   int recdev_early_start_rd
   int recdev_early_start
   int recdev_early_end
@@ -1754,6 +1773,7 @@
  LOCAL_CALCS
 //  SS_Label_Info_4.6.2 #Setup advanced recruitment options
   recdev_doit=0;
+  recdev_PH=recdev_PH_rd;
   if(recdev_adv>0)
   {
     recdev_options(1,13)=recdev_options_rd(1,13);
@@ -1776,7 +1796,7 @@
   {
     recdev_early_start_rd=0;   // 0 means no early
     recdev_early_end=-1;
-    recdev_early_PH_rd=-4;
+    recdev_early_PH_rd=0;
     recdev_options(2)=recdev_early_PH_rd;
     Fcast_recr_PH_rd=0;  // so will be reset to maxphase+1
     recdev_options(3)=Fcast_recr_PH_rd;
@@ -2043,7 +2063,16 @@
    init_F_HI=column(init_F_parm_1,2);
    init_F_RD=column(init_F_parm_1,3);
    init_F_PR=column(init_F_parm_1,4);
-   init_F_PRtype=column(init_F_parm_1,5);
+   for(f=1;f<=N_init_F;f++)
+   {
+     temp=init_F_parm_1(f,5);
+     if(temp==0) {temp=6;}  //  recode for normal distribution
+     if(temp<0)  {temp=0;}
+     init_F_parm_1(f,5)=init_F_parm_1(f,6);
+     init_F_parm_1(f,6)=temp;
+     init_F_PRtype(f)=temp;
+   }
+
    init_F_CV=column(init_F_parm_1,6);
    init_F_PH=ivector(column(init_F_parm_1,7));
 
@@ -2490,7 +2519,13 @@
       Q_parm_HI(i)=Q_parm_1(i,2);
       Q_parm_RD(i)=Q_parm_1(i,3);
       Q_parm_PR(i)=Q_parm_1(i,4);
-      Q_parm_PRtype(i)=Q_parm_1(i,5);
+
+      temp=Q_parm_1(i,5);
+      if(temp==0) {temp=6;}  //  recode for normal distribution
+      if(temp<0)  {temp=0;}
+      Q_parm_1(i,5)=Q_parm_1(i,6);
+      Q_parm_1(i,6)=temp;
+      Q_parm_PRtype(i)=temp;
       Q_parm_CV(i)=Q_parm_1(i,6);
       Q_parm_PH(i)=Q_parm_1(i,7);
     }
@@ -2506,6 +2541,8 @@
       Q_parm_RD(j)=timevary_parm_rd[f](3);
       Q_parm_PR(j)=timevary_parm_rd[f](4);
       Q_parm_PRtype(j)=timevary_parm_rd[f](5);
+      if(Q_parm_PRtype(j)==0)  Q_parm_PRtype(j)=6;
+      if(Q_parm_PRtype(j)<0)  Q_parm_PRtype(j)=0;
       Q_parm_CV(j)=timevary_parm_rd[f](6);
       Q_parm_PH(j)=timevary_parm_rd[f](7);
      }
@@ -3195,8 +3232,13 @@
     selparm_HI(f)=selparm_1(f,2);
     selparm_RD(f)=selparm_1(f,3);
     selparm_PR(f)=selparm_1(f,4);
-    selparm_PRtype(f)=selparm_1(f,5);
-    selparm_CV(f)=selparm_1(f,6);
+    temp=selparm_1(f,5);
+    if(temp==0) temp=6.;
+    if(temp<0) temp=0;
+    selparm_1(f,5)=selparm_1(f,6);
+    selparm_1(f,6)=temp;
+    selparm_CV(f)=selparm_1(f,5);
+    selparm_PRtype(f)=selparm_1(f,6);
     selparm_PH(f)=selparm_1(f,7);
    }
    j=N_selparm;
@@ -3209,8 +3251,13 @@
     selparm_HI(j)=timevary_parm_rd[f](2);
     selparm_RD(j)=timevary_parm_rd[f](3);
     selparm_PR(j)=timevary_parm_rd[f](4);
-    selparm_PRtype(j)=timevary_parm_rd[f](5);
-    selparm_CV(j)=timevary_parm_rd[f](6);
+    temp=timevary_parm_rd[f](5);
+    if(temp==0) temp=6.;
+    if(temp<0) temp=0;
+    timevary_parm_rd[f](5)=timevary_parm_rd[f](6);
+    timevary_parm_rd[f](6)=temp;
+    selparm_PRtype(j)=timevary_parm_rd[f](6);
+    selparm_CV(j)=timevary_parm_rd[f](5);
     selparm_PH(j)=timevary_parm_rd[f](7);
    }
   }
@@ -3327,6 +3374,14 @@
     if(TG_custom==1)
     {
       TG_parm2=TG_parm1;  // assign to the read values
+      for(j=1;j<=k;j++)
+      {
+        temp=TG_parm2(j,5);
+        if(temp==0) temp=6;
+        if(temp<0) temp=0;
+        TG_parm2(j,5)=TG_parm2(j,6);
+        TG_parm2(j,6)=temp;
+      }
     }
     else
     {
@@ -3368,7 +3423,7 @@
         TG_parm2(k,2)=0.;
         TG_parm2(k,3)=0.;
         TG_parm2(k,4)=0.;    // prior of zero
-        TG_parm2(k,5)=0.;  // default prior is squared dev
+        TG_parm2(k,5)=6.;  // default prior is normal  squared dev
         TG_parm2(k,6)=2.;  // sd dev of prior
         TG_parm2(k,7)=-4.;
       }
@@ -3405,7 +3460,10 @@
     TG_parm_LO=column(TG_parm2,1);
     TG_parm_HI=column(TG_parm2,2);
     k=3*N_TG+2*Nfleet;
-    for (j=1;j<=k;j++) TG_parm_PH(j)=TG_parm2(j,7);  // write it out due to no typecast available
+    for (j=1;j<=k;j++) 
+    {
+      TG_parm_PH(j)=TG_parm2(j,7);  // write it out due to no typecast available
+    }
     echoinput<<" Processed/generated Tag parameters "<<endl<<TG_parm2<<endl;
 
   }
@@ -3916,6 +3974,11 @@
       ParCount++;
       recdev_cycle_LO(y)=recdev_cycle_parm_RD(y,1);
       recdev_cycle_HI(y)=recdev_cycle_parm_RD(y,2);
+      temp=recdev_cycle_parm_RD(y,5);  //  PRtype in 3.24
+      if(temp==0) temp=6;
+      if(temp<0) temp=0;
+      recdev_cycle_parm_RD(y,5)=recdev_cycle_parm_RD(y,6);
+      recdev_cycle_parm_RD(y,6)=temp;
       recdev_cycle_PH(y)=recdev_cycle_parm_RD(y,7);
       if(depletion_fleet>0 && recdev_cycle_PH(y)>0) recdev_cycle_PH(y)++;  //  add 1 to phase if using depletion fleet
       if(recdev_cycle_PH(y) > Turn_off_phase) recdev_cycle_PH(y) =-1;
@@ -4107,7 +4170,7 @@
             selparm_LO(z)=age_bins(1);
             selparm_HI(z)=age_bins(n_abins);
             selparm_PR(z)=0.;
-            selparm_PRtype(z)=-1;
+            selparm_PRtype(z)=0;
             selparm_CV(z)=0.;
             selparm_PH(z)=-99;
           }
@@ -4130,19 +4193,19 @@
             selparm_LO(a)=-9.;
             selparm_HI(a)=7.;
             selparm_PR(a)=0.;
-            selparm_PRtype(a)=1;
+            selparm_PRtype(a)=1;  //  symmetric beta
             selparm_CV(a)=0.001;
             selparm_PH(a)=2;
           }
           selparm_PH(Ip+p)=-99;
-          selparm_PRtype(Ip+p)=-1;
+          selparm_PRtype(Ip+p)=0;
           selparm_CV(Ip+p)=0.;
 
           p=Ip+1;
           selparm_LO(p)=0.;
           selparm_HI(p)=2.;
           selparm_PR(p)=0.;
-          selparm_PRtype(p)=-1;
+          selparm_PRtype(p)=0;
           selparm_CV(p)=0.;
           selparm_PH(p)=-99;
           p++;
@@ -4160,7 +4223,7 @@
           {
           selparm_RD(p)=-0.001;  // small negative gradient at top
           selparm_PR(p)=0.;
-          selparm_PRtype(p)=1;
+          selparm_PRtype(p)=1;  // SYMMETRIC BETA
           selparm_CV(p)=0.001;
           selparm_PH(p)=3;
           }
@@ -4168,7 +4231,7 @@
           {
           selparm_RD(p)=0.00;
           selparm_PR(p)=0.;
-          selparm_PRtype(p)=-1;
+          selparm_PRtype(p)=0;
           selparm_CV(p)=0.;
           selparm_PH(p)=-99;
           }

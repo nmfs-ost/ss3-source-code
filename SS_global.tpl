@@ -227,7 +227,7 @@ GLOBALS_SECTION
             if(autogen_timevary==1)
             {*(ad_comm::global_datafile) >> tempvec(1,7);}
             else
-            {tempvec.fill("{0.1,10.,1.,1.,0,0.5,4}");}
+            {tempvec.fill("{0.1,10.,1.,1.,0.5,6,4}");}
             timevary_parm_rd.push_back (tempvec);
             break;}
            case 1:
@@ -236,7 +236,7 @@ GLOBALS_SECTION
             if(autogen_timevary==1)
             {*(ad_comm::global_datafile) >> tempvec(1,7);}
             else
-            {tempvec.fill("{-2.0,2.0,0.,0.,0,0.5,4}");}
+            {tempvec.fill("{-2.0,2.0,0.,0.,0.5,6,4}");}
             timevary_parm_rd.push_back (tempvec);
              break;}
            case 2:
@@ -254,7 +254,7 @@ GLOBALS_SECTION
             if(autogen_timevary==1)
             {*(ad_comm::global_datafile) >> tempvec(1,7);}
             else
-            {tempvec.fill("{-2.0,2.0,0.,0.,0,0.5,4}");}
+            {tempvec.fill("{-2.0,2.0,0.,0.,0.5,6,4}");}
             timevary_parm_rd.push_back (tempvec);
              break;}
          }
@@ -287,9 +287,9 @@ GLOBALS_SECTION
             {*(ad_comm::global_datafile) >> tempvec(1,7);}
             else
             {
-             if(k==1) {tempvec.fill("{-4.0,4.0,0.,0.,0,0.5,4}");}
-             if(k==2) {tempvec.fill("{-4.0,4.0,0.,0.,0,0.5,4}");}
-             if(k==3) {tempvec.fill("{1.0,20.0,3.,3.,0,3.,4}");}
+             if(k==1) {tempvec.fill("{-4.0,4.0,0.,0.,0.5,6,4}");}
+             if(k==2) {tempvec.fill("{-4.0,4.0,0.,0.,0.5,6,4}");}
+             if(k==3) {tempvec.fill("{1.0,20.0,3.,3.,3.0,6,4}");}
             }
             timevary_parm_rd.push_back (tempvec);
            }
@@ -308,9 +308,9 @@ GLOBALS_SECTION
             else
             {
              if(k==1) {for(a=1;a<=7;a++) tempvec(a)=baseparm_list(a);}
-             if(k==2) {tempvec.fill("{-2.0,2.0,0.,0.,0,0.5,4}");
+             if(k==2) {tempvec.fill("{-2.0,2.0,0.,0.,0.5,6,4}");
              tempvec(1)=styr; tempvec(2)=endyr; tempvec(3)= (styr+endyr)*0.5; tempvec(4)=tempvec(3);}
-             if(k==3) {tempvec.fill("{1.0,20.0,3.,3.,0,3.,4}");}
+             if(k==3) {tempvec.fill("{1.0,20.0,3.,3.,3.0,6,4}");}
             }
             timevary_parm_rd.push_back (tempvec);
            }
@@ -328,10 +328,10 @@ GLOBALS_SECTION
             {*(ad_comm::global_datafile) >> tempvec(1,7);}
             else
             {
-             if(k==1) {tempvec.fill("{0.0001,0.999,0.,0.,0,0.5,4}");
+             if(k==1) {tempvec.fill("{0.0001,0.999,0.,0.,0.5,6,4}");
               tempvec(3)=(baseparm_list(3)-baseparm_list(1))/(baseparm_list(2)-baseparm_list(1)); tempvec(4)=tempvec(3);}
-             if(k==2) {tempvec.fill("{0.0001,0.999,0.5,0.5,0,0.5,4}");}
-             if(k==3) {tempvec.fill("{1.0,20.0,3.,3.,0,3.,4}");}
+             if(k==2) {tempvec.fill("{0.0001,0.999,0.5,0.5,0.5,6,4}");}
+             if(k==3) {tempvec.fill("{1.0,20.0,3.,3.,3.,6,4}");}
             }
             timevary_parm_rd.push_back (tempvec);
            }
@@ -367,8 +367,7 @@ GLOBALS_SECTION
            if(autogen_timevary==1)
            {*(ad_comm::global_datafile) >> tempvec(1,7);}
            else
-           {tempvec.fill("{-10.,10.0,1.0,1.0,0,0.5,4}");}
-     echoinput<<tempvec<<endl;
+           {tempvec.fill("{-10.,10.0,1.0,1.0,0.5,6,4}");}
            timevary_parm_rd.push_back (tempvec(1,7));
            if(parm_adjust_method==2) {N_warn++; cout<<" EXIT - see warning "<<endl; warning<<"multiplicative env effect on MGparm: "<<j
            <<" not allowed because parm_adjust_method==2; STOP"<<endl; exit(1);}
@@ -383,7 +382,7 @@ GLOBALS_SECTION
            if(autogen_timevary==1)
            {*(ad_comm::global_datafile) >> tempvec(1,7);}
            else
-           {tempvec.fill("{-10.,10.0,1.0,1.0,0,0.5,4}");}
+           {tempvec.fill("{-10.,10.0,1.0,1.0,0.5,6,4}");}
            timevary_parm_rd.push_back (tempvec(1,7));
            break;
          }
@@ -397,14 +396,14 @@ GLOBALS_SECTION
            if(autogen_timevary==1)
            {*(ad_comm::global_datafile) >> tempvec(1,7);}
            else
-           {tempvec.fill("{-0.9,0.9,0.0,0.0,0,0.5,4}");}
+           {tempvec.fill("{-0.9,0.9,0.0,0.0,0.5,6,4}");}
            timevary_parm_rd.push_back (tempvec(1,7));
            ParCount++; ParmLabel+=ParmLabel(j)+"_ENV_lgst_slope";
            timevary_parm_cnt++;
            if(autogen_timevary==1)
            {*(ad_comm::global_datafile) >> tempvec(1,7);}
            else
-           {tempvec.fill("{-0.9,0.9,0.0,0.0,0,0.5,4}");}
+           {tempvec.fill("{-0.9,0.9,0.0,0.0,0.5,6,4}");}
            timevary_parm_rd.push_back (tempvec(1,7));
            break;
          }
@@ -456,7 +455,7 @@ GLOBALS_SECTION
       }
       else
       {
-       tempvec.fill("{0.0001,2.0,0.5,0.5,0,0.5,-5}");
+       tempvec.fill("{0.0001,2.0,0.5,0.5,0.5,6,-5}");
        tempvec(3)=baseparm_list(12);  //  set init
        tempvec(4)=baseparm_list(12);  //  set prior
        timevary_setup(12)=-5;  //  set reasonable phase for devs;
@@ -471,7 +470,7 @@ GLOBALS_SECTION
       if(autogen_timevary==1)
       {*(ad_comm::global_datafile) >> tempvec2(1,7);}
       else
-      {tempvec2.fill("{-0.99,0.99,0.0,0.0,0,0.5,-6}");}
+      {tempvec2.fill("{-0.99,0.99,0.0,0.0,0.5,6,-6}");}
       timevary_parm_rd.push_back (dvector(tempvec2(1,7)));
       echoinput<<"dev vec: "<<timevary_setup(8)<<" with link: "<<timevary_setup(9)<<" min, max year "<<timevary_setup(10,11)<<endl;
     }

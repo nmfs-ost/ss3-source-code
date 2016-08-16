@@ -1226,8 +1226,8 @@
     MGparm_HI(f)=MGparm_1(f,2);
     MGparm_RD(f)=MGparm_1(f,3);
     MGparm_PR(f)=MGparm_1(f,4);
-    MGparm_PRtype(f)=MGparm_1(f,5);
-    MGparm_CV(f)=MGparm_1(f,6);
+    MGparm_PRtype(f)=MGparm_1(f,6);
+    MGparm_CV(f)=MGparm_1(f,5);
     MGparm_PH(f)=MGparm_1(f,7);
     if(MGparm_PH(f)>0)
     {MG_active(mgp_type(f))=1;}
@@ -1243,8 +1243,8 @@
     MGparm_HI(j)=timevary_parm_rd[f](2);
     MGparm_RD(j)=timevary_parm_rd[f](3);
     MGparm_PR(j)=timevary_parm_rd[f](4);
-    MGparm_PRtype(j)=timevary_parm_rd[f](5);
-    MGparm_CV(j)=timevary_parm_rd[f](6);
+    MGparm_PRtype(j)=timevary_parm_rd[f](6);
+    MGparm_CV(j)=timevary_parm_rd[f](5);
     MGparm_PH(j)=timevary_parm_rd[f](7);
    }
 
@@ -1256,8 +1256,8 @@
     MGparm_HI(j)=MGparm_seas_1(f,2);
     MGparm_RD(j)=MGparm_seas_1(f,3);
     MGparm_PR(j)=MGparm_seas_1(f,4);
-    MGparm_PRtype(j)=MGparm_seas_1(f,5);
-    MGparm_CV(j)=MGparm_seas_1(f,6);
+    MGparm_CV(j)=MGparm_seas_1(f,5);
+    MGparm_PRtype(j)=MGparm_seas_1(f,6);
     MGparm_PH(j)=MGparm_seas_1(f,7);
    }
    MG_active(0)=sum(MG_active(1,7));
@@ -1690,8 +1690,8 @@
    init_F_HI=column(init_F_parm_1,2);
    init_F_RD=column(init_F_parm_1,3);
    init_F_PR=column(init_F_parm_1,4);
-   init_F_PRtype=column(init_F_parm_1,5);
-   init_F_CV=column(init_F_parm_1,6);
+   init_F_CV=column(init_F_parm_1,5);
+   init_F_PRtype=column(init_F_parm_1,6);
    init_F_PH=ivector(column(init_F_parm_1,7));
 
    k=nseas;
@@ -2037,8 +2037,8 @@
       Q_parm_HI(i)=Q_parm_1(i,2);
       Q_parm_RD(i)=Q_parm_1(i,3);
       Q_parm_PR(i)=Q_parm_1(i,4);
-      Q_parm_PRtype(i)=Q_parm_1(i,5);
-      Q_parm_CV(i)=Q_parm_1(i,6);
+      Q_parm_CV(i)=Q_parm_1(i,5);
+      Q_parm_PRtype(i)=Q_parm_1(i,6);
       Q_parm_PH(i)=Q_parm_1(i,7);
     }
     if(timevary_parm_start_Q>0)
@@ -2052,8 +2052,8 @@
       Q_parm_HI(j)=timevary_parm_rd[f](2);
       Q_parm_RD(j)=timevary_parm_rd[f](3);
       Q_parm_PR(j)=timevary_parm_rd[f](4);
-      Q_parm_PRtype(j)=timevary_parm_rd[f](5);
-      Q_parm_CV(j)=timevary_parm_rd[f](6);
+      Q_parm_PRtype(j)=timevary_parm_rd[f](6);
+      Q_parm_CV(j)=timevary_parm_rd[f](5);
       Q_parm_PH(j)=timevary_parm_rd[f](7);
      }
  	  }
@@ -2556,8 +2556,8 @@
     selparm_HI(f)=selparm_1(f,2);
     selparm_RD(f)=selparm_1(f,3);
     selparm_PR(f)=selparm_1(f,4);
-    selparm_PRtype(f)=selparm_1(f,5);
-    selparm_CV(f)=selparm_1(f,6);
+    selparm_PRtype(f)=selparm_1(f,6);
+    selparm_CV(f)=selparm_1(f,5);
     selparm_PH(f)=selparm_1(f,7);
    }
    j=N_selparm;
@@ -2570,8 +2570,8 @@
     selparm_HI(j)=timevary_parm_rd[f](2);
     selparm_RD(j)=timevary_parm_rd[f](3);
     selparm_PR(j)=timevary_parm_rd[f](4);
-    selparm_PRtype(j)=timevary_parm_rd[f](5);
-    selparm_CV(j)=timevary_parm_rd[f](6);
+    selparm_PRtype(j)=timevary_parm_rd[f](6);
+    selparm_CV(j)=timevary_parm_rd[f](5);
     selparm_PH(j)=timevary_parm_rd[f](7);
    }
 
@@ -2660,8 +2660,8 @@
         TG_parm2(j,2)=10;   // max
         TG_parm2(j,3)=-9.;   // init
         TG_parm2(j,4)=-9.;   // prior
-        TG_parm2(j,5)=1.;   // default prior type is symmetric beta
-        TG_parm2(j,6)=0.001;  //  prior is quite diffuse
+        TG_parm2(j,5)=0.001;  //  prior is quite diffuse
+        TG_parm2(j,6)=1.;   // default prior type is symmetric beta
         TG_parm2(j,7)=-4;  // phase
       }
       for (j=1;j<=N_TG;j++)
@@ -2674,8 +2674,8 @@
         TG_parm2(j+2*N_TG,2)=10;   // max
         TG_parm2(j+2*N_TG,3)=2.;   // init
         TG_parm2(j+2*N_TG,4)=2.;   // prior
-        TG_parm2(j+2*N_TG,5)=1.;   // default prior type is symmetric beta
-        TG_parm2(j+2*N_TG,6)=0.001;  //  prior is quite diffuse
+        TG_parm2(j+2*N_TG,5)=0.001;  //  prior is quite diffuse
+        TG_parm2(j+2*N_TG,6)=1.;   // default prior type is symmetric beta
         TG_parm2(j+2*N_TG,7)=-4;  // phase
       }
       for (j=1;j<=Nfleet;j++)
@@ -2690,8 +2690,8 @@
         TG_parm2(k,2)=0.;
         TG_parm2(k,3)=0.;
         TG_parm2(k,4)=0.;    // prior of zero
-        TG_parm2(k,5)=0.;  // default prior is squared dev
-        TG_parm2(k,6)=2.;  // sd dev of prior
+        TG_parm2(k,5)=2.;  // sd dev of prior
+        TG_parm2(k,6)=6.;  // default prior type is squared dev
         TG_parm2(k,7)=-4.;
       }
     }
@@ -3451,19 +3451,19 @@
             selparm_LO(a)=-9.;
             selparm_HI(a)=7.;
             selparm_PR(a)=0.;
-            selparm_PRtype(a)=1;
+            selparm_PRtype(a)=6;
             selparm_CV(a)=0.001;
             selparm_PH(a)=2;
           }
           selparm_PH(Ip+p)=-99;
-          selparm_PRtype(Ip+p)=-1;
+          selparm_PRtype(Ip+p)=0;
           selparm_CV(Ip+p)=0.;
 
           p=Ip+1;
           selparm_LO(p)=0.;
           selparm_HI(p)=2.;
           selparm_PR(p)=0.;
-          selparm_PRtype(p)=-1;
+          selparm_PRtype(p)=0;
           selparm_CV(p)=0.;
           selparm_PH(p)=-99;
           p++;
@@ -3481,7 +3481,7 @@
           {
           selparm_RD(p)=-0.001;  // small negative gradient at top
           selparm_PR(p)=0.;
-          selparm_PRtype(p)=1;
+          selparm_PRtype(p)=6;
           selparm_CV(p)=0.001;
           selparm_PH(p)=3;
           }
@@ -3489,7 +3489,7 @@
           {
           selparm_RD(p)=0.00;
           selparm_PR(p)=0.;
-          selparm_PRtype(p)=-1;
+          selparm_PRtype(p)=0;
           selparm_CV(p)=0.;
           selparm_PH(p)=-99;
           }
@@ -3500,8 +3500,8 @@
             selparm_1(z,2)=selparm_HI(z);
             selparm_1(z,3)=selparm_RD(z);
             selparm_1(z,4)=selparm_PR(z);
-            selparm_1(z,5)=selparm_PRtype(z);
-            selparm_1(z,6)=selparm_CV(z);
+            selparm_1(z,6)=selparm_PRtype(z);
+            selparm_1(z,5)=selparm_CV(z);
             selparm_1(z,7)=selparm_PH(z);
           }
         }

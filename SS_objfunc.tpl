@@ -615,28 +615,28 @@ FUNCTION void evaluate_the_objective_function()
     if(parm_prior_lambda(k_phase)>0.0 || Do_all_priors>0)
     {
       for (i=1;i<=N_MGparm2;i++)
-      if(MGparm_PRtype(i)>-1 && (active(MGparm(i))|| Do_all_priors>0))
+      if(MGparm_PRtype(i)>0 && (active(MGparm(i))|| Do_all_priors>0))
         {
         MGparm_Like(i)=Get_Prior(MGparm_PRtype(i), MGparm_LO(i), MGparm_HI(i), MGparm_PR(i), MGparm_CV(i), MGparm(i));
         parm_like+=MGparm_Like(i);
         }
 
       for (i=1;i<=N_init_F;i++)
-      if(init_F_PRtype(i)>-1 && (active(init_F(i))|| Do_all_priors>0))
+      if(init_F_PRtype(i)>0 && (active(init_F(i))|| Do_all_priors>0))
         {
         init_F_Like(i)=Get_Prior(init_F_PRtype(i), init_F_LO(i), init_F_HI(i), init_F_PR(i), init_F_CV(i), init_F(i));
         parm_like+=init_F_Like(i);
         }
 
       for (i=1;i<=Q_Npar2;i++)
-      if(Q_parm_PRtype(i)>-1 && (active(Q_parm(i))|| Do_all_priors>0))
+      if(Q_parm_PRtype(i)>0 && (active(Q_parm(i))|| Do_all_priors>0))
         {
         Q_parm_Like(i)=Get_Prior(Q_parm_PRtype(i), Q_parm_LO(i), Q_parm_HI(i), Q_parm_PR(i), Q_parm_CV(i), Q_parm(i));
         parm_like+=Q_parm_Like(i);
         }
 
       for (i=1;i<=N_selparm2;i++)
-      if(selparm_PRtype(i)>-1 && (active(selparm(i))|| Do_all_priors>0))
+      if(selparm_PRtype(i)>0 && (active(selparm(i))|| Do_all_priors>0))
         {
         selparm_Like(i)=Get_Prior(selparm_PRtype(i), selparm_LO(i), selparm_HI(i), selparm_PR(i), selparm_CV(i), selparm(i));
         parm_like+=selparm_Like(i);
@@ -646,7 +646,7 @@ FUNCTION void evaluate_the_objective_function()
     {
       k=3*N_TG+2*Nfleet;
       for (i=1;i<=k;i++)
-      if(TG_parm2(i,5)>-1 && (active(TG_parm(i))|| Do_all_priors>0))
+      if(TG_parm2(i,5)>0 && (active(TG_parm(i))|| Do_all_priors>0))
       {
         TG_parm_Like(i)=Get_Prior(TG_parm2(i,5), TG_parm_LO(i), TG_parm_HI(i), TG_parm2(i,4), TG_parm2(i,6), TG_parm(i));
         parm_like+=TG_parm_Like(i);
@@ -654,7 +654,7 @@ FUNCTION void evaluate_the_objective_function()
     }
 
     for (i=1;i<=N_SRparm2;i++)
-      if(SR_parm_1(i,5)>-1 && (active(SR_parm(i))|| Do_all_priors>0))
+      if(SR_parm_1(i,5)>0 && (active(SR_parm(i))|| Do_all_priors>0))
         {
         SR_parm_Like(i)=Get_Prior(SR_parm_1(i,5), SR_parm_1(i,1), SR_parm_1(i,2), SR_parm_1(i,4), SR_parm_1(i,6), SR_parm(i));
         parm_like+=SR_parm_Like(i);
@@ -667,7 +667,7 @@ FUNCTION void evaluate_the_objective_function()
       temp=0.0; temp1=0.0;
       for (i=1;i<=recdev_cycle;i++)
       {
-        if(recdev_cycle_parm_RD(i,5)>-1 && (active(recdev_cycle_parm(i))|| Do_all_priors>0))
+        if(recdev_cycle_parm_RD(i,5)>0 && (active(recdev_cycle_parm(i))|| Do_all_priors>0))
         {
           recdev_cycle_Like(i)=Get_Prior(recdev_cycle_parm_RD(i,5), recdev_cycle_parm_RD(i,1), recdev_cycle_parm_RD(i,2), recdev_cycle_parm_RD(i,4), recdev_cycle_parm_RD(i,6), recdev_cycle_parm(i));
           parm_like+=recdev_cycle_Like(i);
@@ -990,12 +990,12 @@ FUNCTION dvariable Get_Prior(const int T, const double& Pmin, const double& Pmax
     dvariable Aprior;
     switch (T)
     {
-      case -1:  // none
+      case 0:  // none
       {
         Prior_Like = 0.;
         break;
       }
-      case 0: // normal
+      case 6: // normal
       {
         Prior_Like = 0.5*square((Pval-Pr)/Psd);
         break;

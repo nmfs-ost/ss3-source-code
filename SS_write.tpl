@@ -1800,7 +1800,7 @@ FUNCTION void write_nucontrol()
     report4<<MGparm_def<<" #_parameter_offset_approach (1=none, 2= M, G, CV_G as offset from female-GP1, 3=like SS2 V1.x)"<<endl;
   report4<<"#"<<endl;
   report4<<"#_growth_parms"<<endl;
-  report4<<"#_LO HI INIT PRIOR PR_type SD PHASE env_var&link dev_link dev_minyr dev_maxyr dev_phase Block Block_Fxn"<<endl;
+  report4<<"#_LO HI INIT PRIOR PR_SD PR_type PHASE env_var&link dev_link dev_minyr dev_maxyr dev_PH Block Block_Fxn"<<endl;
   NP=0;
   for (f=1;f<=N_MGparm;f++)
   {
@@ -1813,14 +1813,14 @@ FUNCTION void write_nucontrol()
     // placeholders to change fracfemale (3.24) to MGparm (3.30)
     for (gp=1;gp<=N_GP;gp++)
     {
-        report4 << "0.000001 0.999999 " << femfrac(gp) << " 0.5 -1 0.5 -99 0 0 0 0 0 0 0 " << "# FracFemale_GP_" << gp << endl;
+        report4 << "0.000001 0.999999 " << femfrac(gp) << " 0.5  0.5 0 -99 0 0 0 0 0 0 0 " << "# FracFemale_GP_" << gp << endl;
     }
   }
   report4<<"#"<<endl;
   j=N_MGparm;
   if(timevary_parm_cnt_MG>0)
   {
-    report4<<"# timevary MG parameters "<<endl<<"#_LO HI INIT PRIOR PR_type SD PHASE"<<endl;
+    report4<<"# timevary MG parameters "<<endl<<"#_LO HI INIT PRIOR PR_SD PR_type  PHASE"<<endl;
     for (f=1;f<=timevary_parm_cnt_MG;f++)
     {NP++;
     timevary_parm_rd[f](3)=value(timevary_parm(f));
@@ -1834,7 +1834,7 @@ FUNCTION void write_nucontrol()
 
   report4<<"#"<<endl;
   report4<<"#_seasonal_effects_on_biology_parms"<<endl<<MGparm_seas_effects<<" #_femwtlen1,femwtlen2,mat1,mat2,fec1,fec2,Malewtlen1,malewtlen2,L1,K"<<endl;
-  report4<<"#_LO HI INIT PRIOR PR_type SD PHASE"<<endl;
+  report4<<"#_LO HI INIT PRIOR PR_SD PR_type PHASE"<<endl;
   if(MGparm_doseas>0)
   {
     for (f=1;f<=N_MGparm_seas;f++)
@@ -1850,7 +1850,7 @@ FUNCTION void write_nucontrol()
 
   report4<<"#"<<endl;
    report4<<"#_Spawner-Recruitment"<<endl<<SR_fxn<<" #_SR_function: 2=Ricker; 3=std_B-H; 4=SCAA; 5=Hockey; 6=B-H_flattop; 7=survival_3Parm; 8=Shepard_3Parm"<<endl;
-   report4<<"#_      LO        HI      INIT     PRIOR   PR_type        SD   PHASE env-var use_dev dv_mnyr dv_mxyr dv_stdv   Block Blk_Fxn  #  parm_name"<<endl;
+   report4<<"#_      LO        HI      INIT     PRIOR   PR_SD   PR_type        PHASE env-var use_dev dev_mnyr dev_mxyr dev_PH   Block Blk_Fxn  #  parm_name"<<endl;
    for (f=1;f<=N_SRparm2;f++)
    { NP++;
      SR_parm_1(f,3)=value(SR_parm(f));
@@ -1970,7 +1970,7 @@ FUNCTION void write_nucontrol()
 
    report4<<"#"<<endl;
    report4<<"#_initial_F_parms; count = "<<N_init_F2<<endl;
-   report4<<"#_LO HI INIT PRIOR PR_type SD PHASE"<<endl;
+   report4<<"#_LO HI INIT PRIOR PR_SD  PR_type  PHASE"<<endl;
    if(finish_starter==999)
    {
      for (f=1;f<=Nfleet1;f++)
@@ -2033,7 +2033,7 @@ FUNCTION void write_nucontrol()
    report4<<"#_Q_parms(if_any);Qunits_are_ln(q)"<<endl;
    if(Q_Npar>0)
    {
-   report4<<"#_      LO        HI      INIT     PRIOR   PR_type        SD   PHASE env-var use_dev dv_mnyr dv_mxyr dv_stdv   Block Blk_Fxn  #  parm_name"<<endl;
+   report4<<"#_      LO        HI      INIT     PRIOR   PR_SD  PR_type      PHASE env-var use_dev dev_mnyr dev_mxyr dev_PH   Block Blk_Fxn  #  parm_name"<<endl;
     for (f=1;f<=Q_Npar;f++)
     {
       NP++;
@@ -2048,7 +2048,7 @@ FUNCTION void write_nucontrol()
       if(timevary_parm_cnt_Q>timevary_parm_start_Q)
       {
         report4<<"# timevary Q parameters "<<endl;
-        report4<<"#_      LO        HI      INIT     PRIOR   PR_type        SD   PHASE"<<endl;
+        report4<<"#_      LO        HI      INIT     PRIOR   PR_SD  PR_type      PHASE"<<endl;
         for (f=timevary_parm_start_Q;f<=timevary_parm_cnt_Q;f++)
         {
           NP++;
@@ -2075,7 +2075,7 @@ FUNCTION void write_nucontrol()
    for (f=1;f<=Nfleet;f++) report4<<seltype(f+Nfleet)<<" # "<<f<<" "<<fleetname(f)<<endl;
    report4<<"#"<<endl;
 
-   report4<<"#_      LO        HI      INIT     PRIOR   PR_type        SD   PHASE env-var use_dev dv_mnyr dv_mxyr dv_stdv   Block Blk_Fxn  #  parm_name"<<endl;
+   report4<<"#_      LO        HI      INIT     PRIOR      PR_SD    PR_type  PHASE env-var use_dev dev_mnyr dev_mxyr dev_PH   Block Blk_Fxn  #  parm_name"<<endl;
 
    // set back to default configuration for output
    report4.precision(6); report4.unsetf(std::ios_base::fixed); report4.unsetf(std::ios_base::floatfield);
@@ -2094,8 +2094,8 @@ FUNCTION void write_nucontrol()
   if(timevary_parm_cnt_sel>timevary_parm_start_sel)
   {
     report4<<"# timevary selex parameters "<<endl;
-    report4<<"#_      LO        HI      INIT     PRIOR   PR_type        SD   PHASE"<<endl;
-    for (f=timevary_parm_start_sel;f<=timevary_parm_cnt_sel;f++)
+    report4<<"#_      LO        HI      INIT     PRIOR   PR_SD  PR_type       PHASE"<<endl;
+    for (f=timevary_parm_start_sel;f<=timevary_parm_cnt_sel;f++) 
     {
       NP++;
         timevary_parm_rd[f](3)=value(timevary_parm(f));
@@ -2471,7 +2471,7 @@ FUNCTION void write_bigoutput()
       active_count++;
       Activ=1;
     }
-    Report_Parm(NP, active_count, Activ, MGparm(j), MGparm_LO(j), MGparm_HI(j), MGparm_RD(j), MGparm_PR(j), MGparm_PRtype(j), MGparm_CV(j), MGparm_PH(j), MGparm_Like(j));
+    Report_Parm(NP, active_count, Activ, MGparm(j), MGparm_LO(j), MGparm_HI(j), MGparm_RD(j), MGparm_PR(j), MGparm_CV(j), MGparm_PRtype(j), MGparm_PH(j), MGparm_Like(j));
   }
 
 
@@ -2571,7 +2571,7 @@ FUNCTION void write_bigoutput()
       active_count++;
       Activ=1;
     }
-    Report_Parm(NP, active_count, Activ, init_F(j), init_F_LO(j), init_F_HI(j), init_F_RD(j), init_F_PR(j), init_F_PRtype(j), init_F_CV(j), init_F_PH(j), init_F_Like(j));
+    Report_Parm(NP, active_count, Activ, init_F(j), init_F_LO(j), init_F_HI(j), init_F_RD(j), init_F_PR(j), init_F_CV(j),  init_F_PRtype(j),init_F_PH(j), init_F_Like(j));
   }
 
     if(F_Method==2)
@@ -2599,7 +2599,7 @@ FUNCTION void write_bigoutput()
       active_count++;
       Activ=1;
     }
-    Report_Parm(NP, active_count, Activ, Q_parm(j), Q_parm_LO(j), Q_parm_HI(j), Q_parm_RD(j), Q_parm_PR(j), Q_parm_PRtype(j), Q_parm_CV(j), Q_parm_PH(j), Q_parm_Like(j));
+    Report_Parm(NP, active_count, Activ, Q_parm(j), Q_parm_LO(j), Q_parm_HI(j), Q_parm_RD(j), Q_parm_PR(j), Q_parm_CV(j),  Q_parm_PRtype(j), Q_parm_PH(j), Q_parm_Like(j));
   }
 
   for (j=1;j<=N_selparm2;j++)
@@ -2611,7 +2611,7 @@ FUNCTION void write_bigoutput()
       active_count++;
       Activ=1;
     }
-    Report_Parm(NP, active_count, Activ, selparm(j), selparm_LO(j), selparm_HI(j), selparm_RD(j), selparm_PR(j), selparm_PRtype(j), selparm_CV(j), selparm_PH(j), selparm_Like(j));
+    Report_Parm(NP, active_count, Activ, selparm(j), selparm_LO(j), selparm_HI(j), selparm_RD(j), selparm_PR(j), selparm_CV(j), selparm_PRtype(j), selparm_PH(j), selparm_Like(j));
   }
 
 
@@ -5257,7 +5257,7 @@ FUNCTION void write_Bzero_output()
 
 //********************************************************************
  /*  SS_Label_FUNCTION 28 Report_Parm */
-FUNCTION void Report_Parm(const int NParm, const int AC, const int Activ, const prevariable& Pval, const double& Pmin, const double& Pmax, const double& RD, const double& PR, const int PR_T, const double& CV, const int PH, const prevariable& Like)
+FUNCTION void Report_Parm(const int NParm, const int AC, const int Activ, const prevariable& Pval, const double& Pmin, const double& Pmax, const double& RD, const double& PR, const double& CV, const int PR_T, const int PH, const prevariable& Like)
   {
     dvar_vector parm_val(1,14);
     dvar_vector prior_val(1,14);
@@ -5297,11 +5297,11 @@ FUNCTION void Report_Parm(const int NParm, const int AC, const int Activ, const 
       SS2out<<" _ "<<PH<<" "<<Pmin<<" "<<Pmax<<" "<<RD<<" NA _ _ ";
     }
 
-    if(PR_T>=0)
+    if(PR_T>0)
     {
       switch (PR_T)
       {
-        case 0:
+        case 6:
         {SS2out<<" Normal "; break;}
         case 1:
         {SS2out<<" Sym_Beta "; break;}
