@@ -4284,7 +4284,7 @@ FUNCTION void write_bigoutput()
   }
   }
 
-  SS2out <<endl<< "MEAN_SIZE_TIMESERIES" << endl;           // SS_Label_450
+  SS2out <<endl<< "MEAN_LENGTH_TIMESERIES" << endl;           // SS_Label_450
   SS2out <<"Morph Yr Seas SubSeas"<<age_vector<<endl;
   if(reportdetail>0)
   {
@@ -4294,7 +4294,7 @@ FUNCTION void write_bigoutput()
       for (y=styr-3;y<=YrMax;y++)
       {
         yz=y;   if(yz>endyr+2) yz=endyr+2;
-        if(y==styr-3 || y==styr ||  timevary_MG(yz,2)>0)
+//        if(y==styr-3 || y==styr ||  timevary_MG(yz,2)>0)
         {
           for (s=1;s<=nseas;s++)
           {

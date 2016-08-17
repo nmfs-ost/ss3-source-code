@@ -20,7 +20,10 @@ FUNCTION void get_initial_conditions()
 //  that are then copied over to replace the base parameter for MG, SRR, Q, Selex, or Tag as needed
   make_timevaryparm();  //  this fills array parm_timevary for all years
 
-  if(MG_active(0)>0 || save_for_report>0) get_MGsetup();
+  if(MG_active(0)>0 || save_for_report>0) 
+    {
+      get_MGsetup();
+    }
   if(do_once==1) cout<<" MG setup OK "<<endl;
   if(MG_active(2)>0) get_growth1();   // seasonal effects and CV
   if(do_once==1) cout<<" growth OK"<<endl;

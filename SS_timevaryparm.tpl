@@ -14,13 +14,13 @@ FUNCTION void make_timevaryparm()
 
     int timevary_parm_cnt_all;
     timevary_parm_cnt_all=0;
-      if(do_once==1) echoinput<<"number timevary: "<<timevary_cnt<<endl;
+      if(do_once==1) echoinput<<endl<<"**********************"<<endl<<"number of parameters with timevary:  "<<timevary_cnt<<endl;
 
    for (int tvary=1;tvary<=timevary_cnt;tvary++)
     {
       ivector timevary_setup(1,13);
       timevary_setup(1,13)=timevary_def[tvary](1,13);
-      if(do_once==1) echoinput<<tvary<<"  setup:  "<<timevary_setup<<endl;
+      if(do_once==1) echoinput<<"timevary #: "<<tvary<<endl<<"setup:  "<<timevary_setup<<endl;
       //  what type of parameter is being affected?  get the baseparm and its bounds
       switch(timevary_setup(1))      //  parameter type
       {
@@ -29,17 +29,18 @@ FUNCTION void make_timevaryparm()
           baseparm=MGparm(timevary_setup(2)); //  index of base parm
           baseparm_min=MGparm_LO(timevary_setup(2));
           baseparm_max=MGparm_HI(timevary_setup(2));
+          if(do_once==1) echoinput<<"base MGparm "<<baseparm<<endl;
           for(j=timevary_setup(3);j<timevary_def[tvary+1](3);j++)
           {
             timevary_parm_cnt_all++;
             timevary_parm(timevary_parm_cnt_all)=MGparm(N_MGparm+j);
+            if(do_once==1) echoinput<<j<<" timevary_parm: "<<timevary_parm(timevary_parm_cnt_all)<<endl;
           }
           parm_timevary(tvary)=baseparm;  //  fill timeseries with base parameter, just in case
           break;
         }
         case 3:  // Q
         {
-          echoinput<<"Qparms "<<Q_parm<<endl;
           baseparm=Q_parm(timevary_setup(2)); //  index of base parm
           baseparm_min=Q_parm_LO(timevary_setup(2));
           baseparm_max=Q_parm_HI(timevary_setup(2));
@@ -47,17 +48,14 @@ FUNCTION void make_timevaryparm()
           for(j=timevary_setup(3);j<timevary_def[tvary+1](3);j++)
           {
             timevary_parm_cnt_all++;
-            echoinput<<j<<" "<<timevary_parm_cnt_all<<" "<<Q_Npar+j-timevary_parm_start_Q+1<<endl;
             timevary_parm(timevary_parm_cnt_all)=Q_parm(Q_Npar+j-timevary_parm_start_Q+1);
-            echoinput<<" timevary_parm: ";
-            echoinput<<timevary_parm(timevary_parm_cnt_all)<<endl;
+            if(do_once==1) echoinput<<j<<" timevary_parm: "<<timevary_parm(timevary_parm_cnt_all)<<endl;
           }
           parm_timevary(tvary)=baseparm;  //  fill timeseries with base parameter, just in case
           break;
         }
         case 5:  // selex
         {
-          echoinput<<"selparm "<<selparm<<endl;
           baseparm=selparm(timevary_setup(2)); //  index of base parm
           baseparm_min=selparm_LO(timevary_setup(2));
           baseparm_max=selparm_HI(timevary_setup(2));
@@ -65,11 +63,8 @@ FUNCTION void make_timevaryparm()
           for(j=timevary_setup(3);j<timevary_def[tvary+1](3);j++)
           {
             timevary_parm_cnt_all++;
-            echoinput<<j<<" "<<timevary_parm_cnt_all<<N_selparm+j-timevary_parm_start_sel+1<<endl;
             timevary_parm(timevary_parm_cnt_all)=selparm(N_selparm+j-timevary_parm_start_sel+1);
-            echoinput<<" result: ";
-            echoinput<<timevary_parm(timevary_parm_cnt_all)<<endl;
-
+            if(do_once==1) echoinput<<j<<" timevary_parm: "<<timevary_parm(timevary_parm_cnt_all)<<endl;
           }
           parm_timevary(tvary)=baseparm;  //  fill timeseries with base parameter, just in case
           break;
@@ -79,6 +74,7 @@ FUNCTION void make_timevaryparm()
       timevary_parm_cnt=timevary_setup(3);  //  first  parameter used to create timevary effect on baseparm
       if(timevary_setup(4)>0)  //  block
       {
+        if(do_once==1) echoinput<<"block pattern "<<z<<endl;
         z=timevary_setup(4);    // specified block pattern
         g=1;
         temp=baseparm;
@@ -127,6 +123,7 @@ FUNCTION void make_timevaryparm()
         // timevary_parm(timevary_parm_cnt+1) = inflection year; 2 options available
         // timevary_parm(timevary_parm_cnt+2) = stddev of normal at inflection year
         //  calc endyr value,
+        if(do_once==1) echoinput<<"logistic trend over time "<<endl;
         if(timevary_setup(4)==-1)  // use logistic transform to keep with bounds of the base parameter
         {
           endtrend=log((baseparm_max-baseparm_min+0.0000002)/(baseparm-baseparm_min+0.0000001)-1.)/(-2.);   // transform the base parameter
@@ -164,6 +161,7 @@ FUNCTION void make_timevaryparm()
 
       if(timevary_setup(7)>0)   //  env link, but not density-dependent
       {
+        if(do_once==1) echoinput<<"env_link to env_variable: "<<timevary_setup(7)<<"  using link_type "<<timevary_setup(6)<<endl;
         switch(int(timevary_setup(6)))
         {
           case 1:  //  exponential  env link
@@ -204,6 +202,7 @@ FUNCTION void make_timevaryparm()
       if(timevary_setup(8)>0)   //  devs
       {
         k=timevary_setup(8);   //  dev used
+        if(do_once==1) echoinput<<"dev vector #: "<<k<<endl;
         parm_dev_stddev(k)=timevary_parm(timevary_parm_cnt);
         parm_dev_rho(k)=timevary_parm(timevary_parm_cnt+1);
         switch(timevary_setup(9))
@@ -249,6 +248,6 @@ FUNCTION void make_timevaryparm()
           }
         }
       }
-      if(do_once==1) echoinput<<"result: "<<parm_timevary(tvary)<<endl;
+      if(do_once==1) echoinput<<"result by year: "<<parm_timevary(tvary)<<endl;
     }
   }

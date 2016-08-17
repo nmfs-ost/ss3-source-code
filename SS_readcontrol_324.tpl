@@ -587,7 +587,7 @@
   k1=0;
   AFIX=0.;
   AFIX2=999.;  // this value invokes setting Linf equal to the L2 parameter
-  Linf_decay=0.20;  //  initialize to match 3.24
+  Linf_decay=-999.;  //  will do 0.2 to match 3.24
   if(Grow_type==1)
   {
     N_growparms=5;

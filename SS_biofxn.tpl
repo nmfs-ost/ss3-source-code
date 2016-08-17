@@ -266,18 +266,35 @@ FUNCTION void get_growth2()
 
 //  SS_Label_Info_16.2.4.1.4  #calc approximation to mean size at maxage to account for growth after reaching the maxage (accumulator age)
             current_size=Ave_Size(styr,1,g,nages);
-            temp1=1.0;
-            temp4=1.0;
-            temp=current_size;
-//            temp2=mfexp(-0.20);  //  cannot use natM or Z because growth is calculated first; 3.24 forced 0.20
-            temp2=mfexp(-Linf_decay);  //  cannot use natM or Z because growth is calculated first
-            if(do_once==1&&g==1) echoinput<<" L_inf "<<L_inf(gp)<<" size@exactly maxage "<<current_size<<endl;
-            for (a=nages+1;a<=3*nages;a++)
+            if(Linf_decay!=-999.)
             {
-              temp4*=temp2;  //  decay numbers at age by exp(-0.xxx)
-              current_size+=(L_inf(gp)-current_size)* (1.0-mfexp(VBK(gp,0)*VBK_seas(0)));
-              temp+=temp4*current_size;
-              temp1+=temp4;   //  accumulate numbers to create denominator for mean size calculation
+              temp1=1.0;
+              temp4=1.0;
+              temp=current_size;
+              temp2=mfexp(-Linf_decay);  //  cannot use natM or Z because growth is calculated first
+              if(do_once==1&&g==1) echoinput<<" L_inf "<<L_inf(gp)<<" size@exactly maxage "<<current_size<<endl;
+              for (a=nages+1;a<=3*nages;a++)
+              {
+                temp4*=temp2;  //  decay numbers at age by exp(-0.xxx)
+                current_size+=(L_inf(gp)-current_size)* (1.0-mfexp(VBK(gp,0)*VBK_seas(0)));
+                temp+=temp4*current_size;
+                temp1+=temp4;   //  accumulate numbers to create denominator for mean size calculation
+              }
+            }
+            else  //  decay rate has been read
+            {
+              temp=0.0;
+              temp1=0.0;
+              temp2=mfexp(-0.2);  //  cannot use natM or Z because growth is calculated first
+              temp3=L_inf(gp)-current_size;  // delta between linf and the size at nages
+              //  frac_ages = age/nages, so is fraction of a lifetime
+              temp4=1.0;
+              for (a=0;a<=nages;a++)
+              {
+                temp+=temp4*(current_size+frac_ages(a)*temp3);  // so grows linearly from size at nages to size at nages+nages
+                temp1+=temp4;   //  accumulate numbers to create denominator for mean size calculation
+                temp4*=temp2;  //  decay numbers at age by exp(-0.2)
+              }
             }
             Ave_Size(styr,1,g,nages)=temp/temp1;  //  this is weighted mean size at nages
             if(do_once==1&&g==1) echoinput<<" adjusted size at maxage "<<Ave_Size(styr,1,g,nages)<<
@@ -326,6 +343,7 @@ FUNCTION void get_growth2()
             }  // done ageloop
 
 //  SS_Label_Info_16.2.4.2.1.2  #after age loop, if(s=nseas) get weighted average for size_at_maxage from carryover fish and fish newly moving into this age
+//  this code needs to execute every year, so need to move to ss_popdyn.  Positioned here, it is only updated in years in which growth changes
             if(s==nseas)
             {
               if(y>styr)
@@ -381,6 +399,7 @@ FUNCTION void get_growth2_Richards()
     dvariable LmaxR;
     dvariable LinfR;
     dvariable inv_Richards;
+    dvariable current_size;
     dvariable VBK_temp;  //  constant across ages with Richards
     dvariable VBK_temp2;  //  with VBKseas(s) multiplied
     int k2;
@@ -472,8 +491,10 @@ FUNCTION void get_growth2_Richards()
             if(do_once==1) echoinput<<y<<" seas: "<<s<<" growth gp,g: "<<gp<<" "<<g<<" settle_age "<<Settle_age(settle)<<" Lmin: "<<Lmin(gp)<<" Linf: "<<L_inf(gp)<<" K(nages): "<<-VBK(gp,nages)<<endl;
 
             VBK_temp2=VBK_temp*VBK_seas(0);
-            temp=LinfR + (LminR-LinfR)*mfexp(VBK_temp2*(real_age(g,1,0)-AFIX));
-            Ave_Size(styr,1,g,0) = pow(temp,inv_Richards);
+//            temp=LinfR + (LminR-LinfR)*mfexp(VBK_temp2*(real_age(g,1,0)-AFIX));
+//            if(temp<0.)  warning<<" neg size at age 0 "<<temp;
+//            Ave_Size(styr,1,g,0) = pow(temp,inv_Richards);
+            Ave_Size(styr,1,g,0) = Lmin(gp);
             first_grow_age=0;
             for (a=1;a<=nages+Settle_age(settle);a++)
             {
@@ -484,20 +505,40 @@ FUNCTION void get_growth2_Richards()
             if(do_once==1&&g==1) echoinput<<" avesize_in_styr_w/o_linear_section "<<Ave_Size(styr,1,g)<<endl;
 
 //  SS_Label_Info_16.2.4.1.4  #calc approximation to mean size at maxage to account for growth after reaching the maxage (accumulator age)
-            temp=0.0;
-            temp1=0.0;
-            temp2=mfexp(-0.2);  //  cannot use natM or Z because growth is calculated first
-            temp3=L_inf(gp)-Ave_Size(styr,1,g,nages);  // delta between linf and the size at nages
-            //  frac_ages = age/nages, so is fraction of a lifetime
-            temp4=1.0;
-            for (a=0;a<=nages;a++)
+            current_size=Ave_Size(styr,1,g,nages);
+            if(Linf_decay!=-999.)
             {
-              temp+=temp4*(Ave_Size(styr,1,g,nages)+frac_ages(a)*temp3);  // so grows linearly from size at nages to size at nages+nages
-              temp1+=temp4;   //  accumulate numbers to create denominator for mean size calculation
-              temp4*=temp2;  //  decay numbers at age by exp(-0.2)
+              temp1=1.0;
+              temp4=1.0;
+              temp=current_size;
+              temp2=mfexp(-Linf_decay);  //  cannot use natM or Z because growth is calculated first
+              if(do_once==1&&g==1) echoinput<<" L_inf "<<L_inf(gp)<<" size@exactly maxage "<<current_size<<endl;
+              for (a=nages+1;a<=3*nages;a++)
+              {
+                temp4*=temp2;  //  decay numbers at age by exp(-0.xxx)
+                current_size+=(L_inf(gp)-current_size)* (1.0-mfexp(VBK(gp,0)*VBK_seas(0)));
+                temp+=temp4*current_size;
+                temp1+=temp4;   //  accumulate numbers to create denominator for mean size calculation
+              }
+            }
+            else  //  decay rate has been read
+            {
+              temp=0.0;
+              temp1=0.0;
+              temp2=mfexp(-0.2);  //  cannot use natM or Z because growth is calculated first
+              temp3=L_inf(gp)-current_size;  // delta between linf and the size at nages
+              //  frac_ages = age/nages, so is fraction of a lifetime
+              temp4=1.0;
+              for (a=0;a<=nages;a++)
+              {
+                temp+=temp4*(current_size+frac_ages(a)*temp3);  // so grows linearly from size at nages to size at nages+nages
+                temp1+=temp4;   //  accumulate numbers to create denominator for mean size calculation
+                temp4*=temp2;  //  decay numbers at age by exp(-0.2)
+              }
             }
             Ave_Size(styr,1,g,nages)=temp/temp1;  //  this is weighted mean size at nages
-            if(do_once==1&&g==1) echoinput<<" adjusted size at maxage "<<Ave_Size(styr,1,g,nages)<<endl;
+            if(do_once==1&&g==1) echoinput<<" adjusted size at maxage "<<Ave_Size(styr,1,g,nages)<<
+              "  using decay of: "<<Linf_decay<<endl;
           }  //  end initial year calcs
 
 //  SS_Label_Info_16.2.4.2  #loop seasons for growth calculation
@@ -521,16 +562,11 @@ FUNCTION void get_growth2_Richards()
             {
               if(a<nages) {k2=a+add_age;} else {k2=a;}  // where add_age =1 if s=nseas, else 0  (k2 assignment could be in a matrix so not recalculated
 // NOTE:  there is no seasonal interpolation, or real age adjustment for age-specific K.  Maybe someday....
-              if(lin_grow(g,ALK_idx,a)==-1.0)  // first time point beyond AFIX;  lin_grow will stay at -1 for all remaining subseas of this season
-              {
-                temp=Cohort_Lmin(gp,y,a) + (Cohort_Lmin(gp,y,a)-LinfR)*(mfexp(VBK_temp2*(real_age(g,ALK_idx2,k2)-AFIX))-1.0)*Cohort_Growth(y,a);
-                Ave_Size(t+1,1,g,k2) = pow(temp,inv_Richards);
-              }
-              else if(lin_grow(g,ALK_idx,a)==-2.0)
+              if(lin_grow(g,ALK_idx,a)==-2.0)
               {
                 temp=pow(Ave_Size(t,1,g,a),Richards(gp));
                 t2=temp-LinfR;  //  remaining growth potential
-                if(timevary_MG(y,2)>0 && t2>-1.)
+//                if(timevary_MG(y,2)>0 && t2>-1.)
                 {
                   join1=1.0/(1.0+mfexp(-(50.*t2/(1.0+fabs(t2)))));  //  note the logit transform is not perfect, so growth near Linf will not be exactly same as with native growth function
                   t2*=(1.-join1);  // trap to prevent decrease in size-at-age
@@ -538,6 +574,16 @@ FUNCTION void get_growth2_Richards()
                 if((a<nages || s<nseas)) Ave_Size(t+1,1,g,k2) =
                   pow((temp+(mfexp(VBK_temp2*seasdur(s))-1.0)*(t2)*Cohort_Growth(y,a)),inv_Richards);
               }
+              else if(lin_grow(g,ALK_idx,a)==-1.0)  // first time point beyond AFIX;  lin_grow will stay at -1 for all remaining subseas of this season
+              {
+                temp=Cohort_Lmin(gp,y,a) + (Cohort_Lmin(gp,y,a)-LinfR)*(mfexp(VBK_temp2*(real_age(g,ALK_idx2,k2)-AFIX))-1.0)*Cohort_Growth(y,a);
+                Ave_Size(t+1,1,g,k2) = pow(temp,inv_Richards);
+              }
+              else  // in linear phase for subseas
+              {
+                Ave_Size(t,1,g,a) = len_bins(1)+lin_grow(g,ALK_idx,a)*(Cohort_Lmin(gp,y,a)-len_bins(1));
+              }
+              
             }  // done ageloop
 
 //  SS_Label_Info_16.2.4.2.1.2  #after age loop, if(s=nseas) get weighted average for size_at_maxage from carryover fish and fish newly moving into this age
@@ -547,7 +593,8 @@ FUNCTION void get_growth2_Richards()
               Ave_Size(t+1,1,g,nages)=temp;
             }
 
-            if(docheckup==1) echoinput<<y<<" seas: "<<s<<" sex: "<<sx(g)<<" gp: "<<gp<<" settle: "<<settle_g(g)<<" Lmin: "<<Lmin(gp)<<" Linf: "<<L_inf(gp)<<" VBK: "<<VBK(gp,nages)<<endl
+            if(docheckup==1) 
+              echoinput<<y<<" seas: "<<s<<" sex: "<<sx(g)<<" gp: "<<gp<<" settle: "<<settle_g(g)<<" Lmin: "<<Lmin(gp)<<" Linf: "<<L_inf(gp)<<" VBK: "<<VBK(gp,nages)<<endl
             <<" size@t+1   "<<Ave_Size(t+1,1,g)(0,min(6,nages))<<" "<<Ave_Size(t+1,1,g,nages)<<endl;
           }  // end of season
 //  SS_Label_Info_16.2.4.3  #propagate Ave_Size from early years forward until first year that has time-vary growth
@@ -631,13 +678,14 @@ FUNCTION void get_growth3(const int s, const int subseas)
             {
               temp=Cohort_Lmin(gp,y,a) + (Cohort_Lmin(gp,y,a)-LinfR)*
               (mfexp(VBK(gp,nages)*(real_age(g,ALK_idx,a)-AFIX)*VBK_seas(s))-1.0)*Cohort_Growth(y,a);
+                if(temp<=0.0)  echoinput<<a<<" negative size at first beyond in growth3  "<<temp<<endl;
               Ave_Size(t,subseas,g,a) = pow(temp,inv_Richards);
             }
             else if(lin_grow(g,ALK_idx,a)==-2.0)  //  so doing growth curve
             {
               temp=pow(Ave_Size(t,1,g,a),Richards(gp));
               t2=temp-LinfR;  //  remaining growth potential
-              if(timevary_MG(y,2)>0 && t2>-1.)
+//              if(timevary_MG(y,2)>0 && t2>-1.)
               {
                 join1=1.0/(1.0+mfexp(-(50.*t2/(1.0+fabs(t2)))));  //  note the logit transform is not perfect, so growth near Linf will not be exactly same as with native growth function
                 t2*=(1.-join1);  // trap to prevent decrease in size-at-age

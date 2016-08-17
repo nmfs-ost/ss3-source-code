@@ -349,11 +349,11 @@ PRELIMINARY_CALCS_SECTION
     echoinput<< " set parms to init values in CTL file "<<endl;
     for (i=1;i<=N_MGparm2;i++)
     {MGparm(i) = MGparm_RD(i);}  //  set vector of initial natmort and growth parms
-    echoinput<< " MGparms OK "<<MGparm<<endl;
+    echoinput<< " MGparms read from ctl "<<MGparm<<endl;
 
     for (i=1;i<=N_SRparm2;i++)
     {SR_parm(i)=SR_parm_1(i,3);}
-    echoinput<< " SRR_parms OK "<<SR_parm<<endl;
+    echoinput<< " SRR_parms read from ctl "<<SR_parm<<endl;
 
     if(recdev_cycle>0)
     {
@@ -401,16 +401,18 @@ PRELIMINARY_CALCS_SECTION
         }
       }
     }
-    echoinput<< " rec_devs OK "<<endl;
+    echoinput<< " rec_devs read from ctl ";
+    if(do_recdev==1) echoinput<<recdev1<<endl;
+    if(do_recdev==2) echoinput<<recdev2<<endl;
 
 // **************************************************
     for (i=1;i<=Q_Npar2;i++)
     {Q_parm(i) = Q_parm_RD(i);}    //  set vector of initial index Q parms
-    if(Q_Npar>0) echoinput<< " Q_parms OK "<<Q_parm<<endl;
+    if(Q_Npar>0) echoinput<< " Q_parms read from ctl "<<Q_parm<<endl;
 
     for (i=1;i<=N_init_F;i++)
     init_F(i) = init_F_RD(i);    //  set vector of initial parms
-    echoinput<< " initF_parms OK "<<endl;
+    echoinput<< " initF_parms read from ctl "<<init_F<<endl;
 
     if(F_Method==2)
     {
@@ -444,7 +446,7 @@ PRELIMINARY_CALCS_SECTION
 
     for (i=1;i<=N_selparm2;i++)
     selparm(i) = selparm_RD(i);    //  set vector of initial selex parms
-    echoinput<< " selex_parms OK "<<endl;
+    echoinput<< " selex_parms read from ctl "<<selparm<<endl;
 
     if(Do_TG>0)
     {
@@ -453,24 +455,21 @@ PRELIMINARY_CALCS_SECTION
       {
         TG_parm(i)=TG_parm2(i,3);
       }
-          echoinput<< " Tag_parms OK "<<endl;
+          echoinput<< " Tag_parms read from ctl "<<TG_parm<<endl;
     }
   }
 
-  cout<<" have unallocated vectors happened yet ?"<<endl;
-
-
 //  SS_Label_Info_6.5 #Check parameter bounds and do jitter
-    echoinput<< " now check bounds and do jitter if requested "<<endl;
+    echoinput<<endl<<" now check bounds and do jitter if requested "<<endl;
     for (i=1;i<=N_MGparm2;i++)
     if(MGparm_PH(i)>0)
     {MGparm(i)=Check_Parm(MGparm_LO(i),MGparm_HI(i), jitter, MGparm(i));}
-    echoinput<< " MG_parms OK "<<endl;
+    echoinput<< " MG_parms after check "<<MGparm<<endl;
 
     for (i=1;i<=N_SRparm2;i++)
     if(SRvec_PH(i)>0)
     {SR_parm(i) = Check_Parm(SRvec_LO(i),SRvec_HI(i), jitter, SR_parm(i));}
-    echoinput<< " SRR_parms OK "<<SR_parm<<endl;
+    echoinput<< " SRR_parms after check "<<SR_parm<<endl;
 
     if(recdev_do_early>0 && recdev_early_PH>0)
     {
@@ -494,28 +493,29 @@ PRELIMINARY_CALCS_SECTION
 //        recdev2 -=sum(recdev2)/(recdev_end-recdev_start+1);
       }
     }
-    echoinput<< " rec_devs OK "<<endl;
+    echoinput<< " rec_devs after check ";
+    if(do_recdev==1) echoinput<<recdev1<<endl;
+    if(do_recdev==2) echoinput<<recdev2<<endl;
 
     if(Q_Npar2>0)
     {
-      echoinput<<Q_parm_PH<<endl<<Q_parm<<endl;
       for (i=1;i<=Q_Npar2;i++)
       if(Q_parm_PH(i)>0)
       {Q_parm(i) = Check_Parm(Q_parm_LO(i),Q_parm_HI(i), jitter, Q_parm(i));}
-      echoinput<< " Q_parms OK "<<Q_parm<<endl;
+      echoinput<< " Q_parms after check "<<Q_parm<<endl;
     }
 
     for (i=1;i<=N_init_F;i++)
       {
       if(init_F_PH(i)>0)
         {init_F(i) = Check_Parm(init_F_LO(i),init_F_HI(i), jitter, init_F(i));}
-        echoinput<< " initF_parms OK "<<endl;
+        echoinput<< " initF_parms after check "<<init_F<<endl;
       }
 
     for (i=1;i<=N_selparm2;i++)
     if(selparm_PH(i)>0)
     {selparm(i)=Check_Parm(selparm_LO(i),selparm_HI(i), jitter, selparm(i));}
-    echoinput<< " selex_parms OK "<<endl;
+    echoinput<< " selex_parms after check  "<<selparm<<endl;
     if(Do_TG>0)
     {
       k=Do_TG*(3*N_TG+2*Nfleet);
@@ -524,7 +524,7 @@ PRELIMINARY_CALCS_SECTION
       if(TG_parm_PH(i)>0)
         {TG_parm(i)=Check_Parm(TG_parm_LO(i),TG_parm_HI(i), jitter, TG_parm(i));}
       }
-      echoinput<< " Tag_parms OK "<<endl;
+      echoinput<< " Tag_parms after check  "<<TG_parm<<endl;
     }
 //  end bound check and jitter
 
