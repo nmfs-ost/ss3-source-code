@@ -665,8 +665,11 @@ FUNCTION void evaluate_the_objective_function()
       temp-=temp1;
       parm_like+=10000.*temp*temp;  //  similar to ADMB's approach to getting zero-centered dev_vectors
     }
+
   //  SS_Label_Info_25.15 #logL for parameter process errors (devs)
     {
+  /*
+  //  code from 3.24
       for(i=1;i<=N_parm_dev;i++)
       {
         if(parm_dev_PH(i)>0 && parm_dev_lambda(k_phase)>0.0 )
@@ -676,7 +679,50 @@ FUNCTION void evaluate_the_objective_function()
         parm_dev_like(i,2) += sd_offset*float(parm_dev_maxyr(i)-parm_dev_minyr(i)+1.)*log(parm_dev_stddev(i));
         }
       }
+  */
+    
+  //  new code to match mean-reverting random walk approach used for recdevs
+      for(i=1;i<=N_parm_dev;i++)
+      {
+        if(parm_dev_PH(i)>0 && parm_dev_lambda(k_phase)>0.0 )
+        {
+        dvariable temp;
+//        temp=1.00 / (2.000*(1.0-parm_dev_rho(i)*parm_dev_rho(i))*square(parm_dev_stddev(i)));
+        temp=1.00 / (2.000*(1.0-parm_dev_rho(i)*parm_dev_rho(i))*square(1.00));
+        
+        parm_dev_like(i,1) += square( parm_dev(i,parm_dev_minyr(i)));  //  first year
+        for(j=parm_dev_minyr(i)+1;j<=parm_dev_maxyr(i);j++)
+        {parm_dev_like(i,1) += square( parm_dev(i,j)-parm_dev_rho(i)*parm_dev(i,j-1) );}
+        parm_dev_like(i,1) *=temp;
+        parm_dev_like(i,2) += float(parm_dev_maxyr(i)-parm_dev_minyr(i)+1.)*log(parm_dev_stddev(i));
+        //  include parm_dev_like(i,2) in the total, or not, using sd_offset
+        }
+      }
     }
+
+  /*
+    {
+      recr_like = sd_offset_rec*log(sigmaR);
+      // where sd_offset_rec takes account for the number of recruitment years fully estimated
+      // this is calculated as the sum of the biasadj vector
+      if(SR_autocorr==0)
+      {
+      recr_like += norm2(recdev(recdev_first,recdev_end))/two_sigmaRsq;
+      }
+      else
+      {
+        rho=SR_parm(N_SRparm2);
+        recr_like += square(recdev(recdev_first))/two_sigmaRsq;
+        for (y=recdev_first+1;y<=recdev_end;y++)
+        {
+          recr_like += square(recdev(y)-rho*recdev(y-1)) / ((1.0-rho*rho)*two_sigmaRsq);
+        }
+      }
+      recr_like += 0.5 * square( log(R1/R1_exp) / (sigmaR/ave_age) );
+      if(do_once==1) cout<<" did recruitdev obj_fun "<<recr_like<<endl;
+    }
+  */
+
 
     for (f=1;f<=Nfleet;f++)
       if(Q_setup(f,4)==3)

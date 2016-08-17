@@ -211,7 +211,7 @@ FUNCTION void make_timevaryparm()
           {
             for (j=timevary_setup(10);j<=timevary_setup(11);j++)
             {
-              parm_timevary(tvary,j)*=mfexp(parm_dev(k,j));
+              parm_timevary(tvary,j)*=mfexp(parm_dev(k,j)*parm_dev_stddev(k));
             }
             break;
           }
@@ -219,29 +219,29 @@ FUNCTION void make_timevaryparm()
           {
             for (j=timevary_setup(10);j<=timevary_setup(11);j++)
             {
-              parm_timevary(tvary,j)+=parm_dev(k,j);
+              parm_timevary(tvary,j)+=parm_dev(k,j)*parm_dev_stddev(k);
             }
             break;
           }
           case 3:
           {
-            parm_dev_rwalk(k,timevary_setup(10))=parm_dev(k,timevary_setup(10));
+            parm_dev_rwalk(k,timevary_setup(10))=parm_dev(k,timevary_setup(10))*parm_dev_stddev(k);
             parm_timevary(tvary,timevary_setup(10))+=parm_dev_rwalk(k,timevary_setup(10));
             for (j=timevary_setup(10)+1;j<=timevary_setup(11);j++)
             {
-              parm_dev_rwalk(k,j)=parm_dev_rwalk(k,j-1)+parm_dev(k,j);
+              parm_dev_rwalk(k,j)=parm_dev_rwalk(k,j-1)+parm_dev(k,j)*parm_dev_stddev(k);
               parm_timevary(tvary,j)+=parm_dev_rwalk(k,j);
             }
             break;
           }
           case 4:  // mean reverting random walk
           {
-            parm_dev_rwalk(k,timevary_setup(10))=parm_dev(k,timevary_setup(10));
+            parm_dev_rwalk(k,timevary_setup(10))=parm_dev(k,timevary_setup(10))*parm_dev_stddev(k);
             parm_timevary(tvary,timevary_setup(10))+=parm_dev_rwalk(k,timevary_setup(10));
             for (j=timevary_setup(10)+1;j<=timevary_setup(11);j++)
             {
               //    =(1-rho)*mean + rho*prevval + dev   //  where mean = 0.0
-              parm_dev_rwalk(k,j)=parm_dev_rho(k)*parm_dev_rwalk(k,j-1)+parm_dev(k,j);
+              parm_dev_rwalk(k,j)=parm_dev_rho(k)*parm_dev_rwalk(k,j-1)+parm_dev(k,j)*parm_dev_stddev(k);
               parm_timevary(tvary,j)+=parm_dev_rwalk(k,j);
             }
             break;
