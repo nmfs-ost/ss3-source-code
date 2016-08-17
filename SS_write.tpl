@@ -774,9 +774,24 @@ FUNCTION void write_nudata()
   }
   // end tagging data section #1 (observed data)
 
-    report1<<"#"<<endl<<0<<" # no morphcomp data "<<endl;
-    report1<<"#"<<endl<<"999" << endl << endl;
-
+    report1<<"#"<<endl<<Do_Morphcomp<<" #    morphcomp data(0/1) "<<endl;
+    if(Do_Morphcomp>0)
+    {
+      report1<<mc_temp<<"  #  Nobs, Nmorphs, mincomp"<<endl;
+      report1<<"# yr, seas, type, partition, Nsamp, datavector_by_Nmorphs"<<endl;
+      report1<<Morphcomp_obs<<endl;
+    }
+    else
+    {
+      report1<<"#  Nobs, Nmorphs, mincomp"<<endl;
+      report1<<"#  yr, seas, type, partition, Nsamp, datavector_by_Nmorphs"<<endl;
+    }
+    
+   report1<<"#"<<endl<<Do_SelexData<<"  #  Do dataread for selectivity priors(0/1)"<<endl;
+   report1<<"# Yr, Seas, Fleet,  Age/Size,  Bin,  selex_prior,  prior_sd"<<endl;
+   report1<<"# feature not yet implemented"<<endl;
+   
+   report1<<"#"<<endl<<"999" << endl << endl;
   }
 
   else if(Nudat==2)  // report expected value with no added error
@@ -1099,7 +1114,24 @@ FUNCTION void write_nudata()
   }
   // end tagging data section #2 (expected values)
 
-    report1<<"#"<<endl<<0<<" # no morphcomp data "<<endl;
+    report1<<"#"<<endl<<Do_Morphcomp<<" #    morphcomp data(0/1) "<<endl;
+    if(Do_Morphcomp>0)
+    {
+      report1<<"# note that raw data, not bootstrap are reported here "<<endl;
+      report1<<mc_temp<<"  #  Nobs, Nmorphs, mincomp"<<endl;
+      report1<<"# yr, seas, type, partition, Nsamp, datavector_by_Nmorphs"<<endl;
+      report1<<Morphcomp_obs<<endl;
+    }
+    else
+    {
+      report1<<"#  Nobs, Nmorphs, mincomp"<<endl;
+      report1<<"#  yr, seas, type, partition, Nsamp, datavector_by_Nmorphs"<<endl;
+    }
+    
+   report1<<"#"<<endl<<Do_SelexData<<"  #  Do dataread for selectivity priors(0/1)"<<endl;
+   report1<<"# Yr, Seas, Fleet,  Age/Size,  Bin,  selex_prior,  prior_sd"<<endl;
+   report1<<"# feature not yet implemented"<<endl;
+
     report1<<"#"<< endl << "999" << endl << endl;
 
   }
@@ -1530,7 +1562,25 @@ FUNCTION void write_nudata()
     }
   }
   // end tagging data section #3 (bootstrap data)
-    report1<<"#"<<endl<<0<<" # no morphcomp data "<<endl;
+
+    report1<<"#"<<endl<<Do_Morphcomp<<" #    morphcomp data(0/1) "<<endl;
+    if(Do_Morphcomp>0)
+    {
+      report1<<"# note that raw data, not bootstrap are reported here "<<endl;
+      report1<<mc_temp<<"  #  Nobs, Nmorphs, mincomp"<<endl;
+      report1<<"#  yr, seas, type, partition, Nsamp, datavector_by_Nmorphs"<<endl;
+      report1<<Morphcomp_obs<<endl;
+    }
+    else
+    {
+      report1<<"#  Nobs, Nmorphs, mincomp"<<endl;
+      report1<<"#  yr, seas, type, partition, Nsamp, datavector_by_Nmorphs"<<endl;
+    }
+
+   report1<<"#"<<endl<<Do_SelexData<<"  #  Do dataread for selectivity priors(0/1)"<<endl;
+   report1<<" # Yr, Seas, Fleet,  Age/Size,  Bin,  selex_prior,  prior_sd"<<endl;
+   report1<<" # feature not yet implemented"<<endl;
+
     report1<<"#"<<endl << "999" << endl << endl;
   }
   }

@@ -2676,6 +2676,9 @@
   }
  END_CALCS
 
+  int Do_SelexData;
+!!  Do_SelexData=0;
+
 !!//  SS_Label_Info_2.14 #End of datafile indicator
   init_int fid
   !! if(fid!=999) {cout<<" final data value in error "<<fid<<endl; exit(1);}

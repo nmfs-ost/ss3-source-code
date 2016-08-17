@@ -2725,6 +2725,14 @@
   }
  END_CALCS
 
+  int Do_SelexData;
+ LOCAL_CALCS
+  *(ad_comm::global_datafile) >> Do_SelexData;
+   echoinput<<"Do dataread for selectivity priors(0/1):  "<<Do_SelexData<<endl;
+   echoinput<<"Yr  Seas Fleet  Age/Size  Bin  selex_prior  prior_sd"<<endl;
+   echoinput<<"feature not yet implemented"<<endl;
+ END_CALCS
+
 !!//  SS_Label_Info_2.14 #End of datafile indicator
   init_int fid
   !! if(fid!=999) {cout<<" final data value in error "<<fid<<endl; exit(1);}
