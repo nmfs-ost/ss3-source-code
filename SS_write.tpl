@@ -1850,7 +1850,7 @@ FUNCTION void write_nucontrol()
     report4<<MGparm_def<<" #_parameter_offset_approach (1=none, 2= M, G, CV_G as offset from female-GP1, 3=like SS2 V1.x)"<<endl;
   report4<<"#"<<endl;
   report4<<"#_growth_parms"<<endl;
-  report4<<"#_LO HI INIT PRIOR PR_SD PR_type PHASE env_var&link dev_link dev_minyr dev_maxyr dev_PH Block Block_Fxn"<<endl;
+  report4<<"#_ LO HI INIT PRIOR PR_SD PR_type PHASE env_var&link dev_link dev_minyr dev_maxyr dev_PH Block Block_Fxn"<<endl;
   NP=0;
   for (f=1;f<=N_MGparm;f++)
   {
@@ -1863,14 +1863,14 @@ FUNCTION void write_nucontrol()
     // placeholders to change fracfemale (3.24) to MGparm (3.30)
     for (gp=1;gp<=N_GP;gp++)
     {
-        report4 << "0.000001 0.999999 " << femfrac(gp) << " 0.5  0.5 0 -99 0 0 0 0 0 0 0 " << "# FracFemale_GP_" << gp << endl;
+        report4 << " 0.000001 0.999999 " << femfrac(gp) << " 0.5  0.5 0 -99 0 0 0 0 0 0 0 " << "# FracFemale_GP_" << gp << endl;
     }
   }
   report4<<"#"<<endl;
   j=N_MGparm;
   if(timevary_parm_cnt_MG>0)
   {
-    report4<<"# timevary MG parameters "<<endl<<"#_LO HI INIT PRIOR PR_SD PR_type  PHASE"<<endl;
+    report4<<"# timevary MG parameters "<<endl<<"#_ LO HI INIT PRIOR PR_SD PR_type  PHASE"<<endl;
     for (f=1;f<=timevary_parm_cnt_MG;f++)
     {NP++;
     timevary_parm_rd[f](3)=value(timevary_parm(f));
@@ -1884,7 +1884,7 @@ FUNCTION void write_nucontrol()
 
   report4<<"#"<<endl;
   report4<<"#_seasonal_effects_on_biology_parms"<<endl<<MGparm_seas_effects<<" #_femwtlen1,femwtlen2,mat1,mat2,fec1,fec2,Malewtlen1,malewtlen2,L1,K"<<endl;
-  report4<<"#_LO HI INIT PRIOR PR_SD PR_type PHASE"<<endl;
+  report4<<"#_ LO HI INIT PRIOR PR_SD PR_type PHASE"<<endl;
   if(MGparm_doseas>0)
   {
     for (f=1;f<=N_MGparm_seas;f++)
@@ -2020,7 +2020,7 @@ FUNCTION void write_nucontrol()
 
    report4<<"#"<<endl;
    report4<<"#_initial_F_parms; count = "<<N_init_F2<<endl;
-   report4<<"#_LO HI INIT PRIOR PR_SD  PR_type  PHASE"<<endl;
+   report4<<"#_ LO HI INIT PRIOR PR_SD  PR_type  PHASE"<<endl;
    if(finish_starter==999)
    {
      for (f=1;f<=Nfleet1;f++)
@@ -2448,11 +2448,12 @@ FUNCTION void write_bigoutput()
   
   if(N_parm_dev)
   {
-    SS2out<<"Parm_devs_detail"<<endl<<"Index  Phase  MinYear  MaxYear  stddev  Rho  Like_devs Like_se  rmse"<<endl;
+    SS2out<<"Parm_devs_detail"<<endl<<"Index  Phase  MinYear  MaxYear  stddev  Rho  Like_devs  Like_se  mean  rmse"<<endl;
     for(i=1;i<=N_parm_dev;i++)
     {
       SS2out<<i<<" "<<parm_dev_PH(i)<<" "<<parm_dev_minyr(i)<<" "<<parm_dev_maxyr(i)<<" "<<parm_dev_stddev(i)<<" "<<
       parm_dev_rho(i)<<" "<<parm_dev_like(i)<<" "<<
+      sum(parm_dev(i))/float(parm_dev_maxyr(i)-parm_dev_minyr(i)+1.)<<" "<<
       sqrt(sumsq(parm_dev(i)+1.0e-9)/float(parm_dev_maxyr(i)-parm_dev_minyr(i)+1.))<<endl;
     }
   }

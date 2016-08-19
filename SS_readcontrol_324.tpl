@@ -1456,6 +1456,9 @@
               MGblkcnt++;
               echoinput<<"move MG blk info from 3.24 index "<<MGblkcnt<<"  to 3.30 index  "<<tvparm<<endl;
               timevary_parm_rd[tvparm](1,7)=MGparm_blk_1(MGblkcnt)(1,7);
+              temp=timevary_parm_rd[tvparm](5);
+              timevary_parm_rd[tvparm](5)=timevary_parm_rd[tvparm](6);
+              timevary_parm_rd[tvparm](6)=temp;
               echoinput<<timevary_parm_rd[tvparm]<<endl;
             }
           }
@@ -1467,6 +1470,9 @@
               MGblkcnt++;
               echoinput<<"move MG trend info from 3.24 index "<<MGblkcnt<<"  to 3.30 index  "<<tvparm<<endl;
               timevary_parm_rd[tvparm](1,7)=MGparm_blk_1(MGblkcnt)(1,7);
+              temp=timevary_parm_rd[tvparm](5);
+              timevary_parm_rd[tvparm](5)=timevary_parm_rd[tvparm](6);
+              timevary_parm_rd[tvparm](6)=temp;
               echoinput<<timevary_parm_rd[tvparm]<<endl;
             }
           }
@@ -1478,7 +1484,10 @@
          MGenvcnt++;
          echoinput<<"move MG env  info from 3.24 index "<<MGenvcnt<<"  to 3.30 index  "<<tvparm<<endl;
          timevary_parm_rd[tvparm](1,7)=MGparm_env_1(MGenvcnt)(1,7);
-         echoinput<<timevary_parm_rd[tvparm]<<endl;
+              temp=timevary_parm_rd[tvparm](5);
+              timevary_parm_rd[tvparm](5)=timevary_parm_rd[tvparm](6);
+              timevary_parm_rd[tvparm](6)=temp;
+              echoinput<<timevary_parm_rd[tvparm]<<endl;
        }
        
        if(timevary_setup(8)!=0) timevary_setup(12)=MGparm_dev_PH;
@@ -1491,9 +1500,7 @@
    timevary_parm_cnt_MG=timevary_parm_cnt;
    echoinput<<" timevary_parm_cnt "<<timevary_parm_cnt<<endl;
 
-
   {
-
   adstring_array MGseasLbl;
   MGseasLbl+="F-WL1"+CRLF(1);
   MGseasLbl+="F-WL2"+CRLF(1);
@@ -1591,8 +1598,8 @@
     MGparm_HI(j)=timevary_parm_rd[f](2);
     MGparm_RD(j)=timevary_parm_rd[f](3);
     MGparm_PR(j)=timevary_parm_rd[f](4);
-    MGparm_PRtype(j)=timevary_parm_rd[f](6);
     MGparm_CV(j)=timevary_parm_rd[f](5);
+    MGparm_PRtype(j)=timevary_parm_rd[f](6);
     MGparm_PH(j)=timevary_parm_rd[f](7);
    }
 
@@ -3187,6 +3194,9 @@
               selblkcnt++;
               echoinput<<"move sel blk info from 3.24 index "<<selblkcnt<<"  to 3.30 index  "<<tvparm<<endl;
               timevary_parm_rd[tvparm](1,7)=selparm_blk_1(selblkcnt)(1,7);
+              temp=timevary_parm_rd[tvparm](5);
+              timevary_parm_rd[tvparm](5)=timevary_parm_rd[tvparm](6);
+              timevary_parm_rd[tvparm](6)=temp;
               echoinput<<timevary_parm_rd[tvparm]<<endl;
             }
           }
@@ -3198,6 +3208,9 @@
               selblkcnt++;
               echoinput<<"move sel trend info from 3.24 index "<<selblkcnt<<"  to 3.30 index  "<<tvparm<<endl;
               timevary_parm_rd[tvparm](1,7)=selparm_blk_1(selblkcnt)(1,7);
+              temp=timevary_parm_rd[tvparm](5);
+              timevary_parm_rd[tvparm](5)=timevary_parm_rd[tvparm](6);
+              timevary_parm_rd[tvparm](6)=temp;
               echoinput<<timevary_parm_rd[tvparm]<<endl;
             }
           }
@@ -3209,6 +3222,9 @@
          selenvcnt++;
          echoinput<<"move sel env  info from 3.24 index "<<selenvcnt<<"  to 3.30 index  "<<tvparm<<endl;
          timevary_parm_rd[tvparm](1,7)=selparm_env_1(selenvcnt)(1,7);
+         temp=timevary_parm_rd[tvparm](5);
+         timevary_parm_rd[tvparm](5)=timevary_parm_rd[tvparm](6);
+         timevary_parm_rd[tvparm](6)=temp;
          echoinput<<timevary_parm_rd[tvparm]<<endl;
        }
 
@@ -3251,10 +3267,9 @@
     selparm_HI(j)=timevary_parm_rd[f](2);
     selparm_RD(j)=timevary_parm_rd[f](3);
     selparm_PR(j)=timevary_parm_rd[f](4);
-    temp=timevary_parm_rd[f](5);
+    temp=timevary_parm_rd[f](6);
     if(temp==0) temp=6.;
     if(temp<0) temp=0;
-    timevary_parm_rd[f](5)=timevary_parm_rd[f](6);
     timevary_parm_rd[f](6)=temp;
     selparm_PRtype(j)=timevary_parm_rd[f](6);
     selparm_CV(j)=timevary_parm_rd[f](5);

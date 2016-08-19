@@ -1226,8 +1226,8 @@
     MGparm_HI(f)=MGparm_1(f,2);
     MGparm_RD(f)=MGparm_1(f,3);
     MGparm_PR(f)=MGparm_1(f,4);
-    MGparm_PRtype(f)=MGparm_1(f,6);
     MGparm_CV(f)=MGparm_1(f,5);
+    MGparm_PRtype(f)=MGparm_1(f,6);
     MGparm_PH(f)=MGparm_1(f,7);
     if(MGparm_PH(f)>0)
     {MG_active(mgp_type(f))=1;}
@@ -1243,8 +1243,8 @@
     MGparm_HI(j)=timevary_parm_rd[f](2);
     MGparm_RD(j)=timevary_parm_rd[f](3);
     MGparm_PR(j)=timevary_parm_rd[f](4);
-    MGparm_PRtype(j)=timevary_parm_rd[f](6);
     MGparm_CV(j)=timevary_parm_rd[f](5);
+    MGparm_PRtype(j)=timevary_parm_rd[f](6);
     MGparm_PH(j)=timevary_parm_rd[f](7);
    }
 

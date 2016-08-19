@@ -90,7 +90,7 @@ FUNCTION void make_timevaryparm()
             }
             case 1:
             {
-              temp=baseparm + mfexp(timevary_parm(timevary_parm_cnt));
+              temp=baseparm + timevary_parm(timevary_parm_cnt);
               timevary_parm_cnt++;
               break;
             }
