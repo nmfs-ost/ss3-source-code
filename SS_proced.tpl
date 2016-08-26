@@ -135,6 +135,7 @@ PROCEDURE_SECTION
       if(do_once==1) cout<<" OK with time series "<<endl;
 
 //  SS_Label_Info_7.4.3 #Call fxn evaluate_the_objective_function()
+
     evaluate_the_objective_function();
 
     if(do_once==1) 

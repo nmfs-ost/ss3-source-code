@@ -207,9 +207,9 @@ FUNCTION void write_summaryoutput()
        }
        report2 <<endl<<runnumber<<" Index:"<<f<<" OBS "<<Svy_obs(f)<<endl;
        if(Svy_errtype(f)>=0)  // lognormal or lognormal T_dist
-       {report2 <<runnumber<<" Index:"<<f<<" EXP "<<elem_prod(mfexp(Svy_log_q(f)),mfexp(Svy_est(f)))<<endl;}
+       {report2 <<runnumber<<" Index:"<<f<<" EXP "<<mfexp(Svy_est(f))<<endl;}
        else  // normal error
-       {report2 <<runnumber<<" Index:"<<f<<" EXP "<<elem_prod(Svy_q(f),Svy_est(f))<<endl;}
+       {report2 <<runnumber<<" Index:"<<f<<" EXP "<<Svy_est(f)<<endl;}
       }
 
       data_type=4;
@@ -849,11 +849,11 @@ FUNCTION void write_nudata()
       {
         if(Svy_errtype(f)>=0)  // lognormal
         {
-          report1 << mfexp(Svy_est(f,i)+Svy_log_q(f,i));
+          report1 << mfexp(Svy_est(f,i));
         }
         else if(Svy_errtype(f)==-1)  // normal
         {
-          report1<<Svy_est(f,i)*Svy_q(f,i);
+          report1<<Svy_est(f,i);
         }
       }
       else
@@ -1196,16 +1196,16 @@ FUNCTION void write_nudata()
     {
       if(Svy_errtype(f)==-1)  // normal error
       {
-        report1<<Svy_est(f,i)*Svy_q(f,i)+randn(radm)*Svy_se_use(f,i);    //  uses Svy_se_use, not Svy_se_rd to include both effect of input var_adjust and extra_sd
+        report1<<Svy_est(f,i)+randn(radm)*Svy_se_use(f,i);    //  uses Svy_se_use, not Svy_se_rd to include both effect of input var_adjust and extra_sd
       }
       if(Svy_errtype(f)==0)  // lognormal
       {
-         report1 << mfexp(Svy_est(f,i)+Svy_log_q(f,i)+ randn(radm)*Svy_se_use(f,i) );    //  uses Svy_se_use, not Svy_se_rd to include both effect of input var_adjust and extra_sd
+         report1 << mfexp(Svy_est(f,i)+ randn(radm)*Svy_se_use(f,i) );    //  uses Svy_se_use, not Svy_se_rd to include both effect of input var_adjust and extra_sd
       }
       else if(Svy_errtype(f)>0)   // lognormal T_dist
       {
         temp = sqrt( (Svy_errtype(f)+1.)/Svy_errtype(f));  // where df=Svy_errtype(f)
-        report1 << mfexp(Svy_est(f,i)+Svy_log_q(f,i)+ randn(radm)*Svy_se_use(f,i)*temp );    //  adjusts the sd by the df sample size
+        report1 << mfexp(Svy_est(f,i)+ randn(radm)*Svy_se_use(f,i)*temp );    //  adjusts the sd by the df sample size
       }
     }
     else
@@ -3342,20 +3342,20 @@ FUNCTION void write_bigoutput()
           SS2out<<f<<" "<<fleetname(f)<<" "<<Show_Time(t)<<" "<<data_time(ALK_time,f,3)<<" "<<Svy_selec_abund(f,i)<<" "<<Svy_obs(f,i)<<" ";
           if(Svy_errtype(f)>=0)  // lognormal
           {
-            temp = Svy_est(f,i)+Svy_log_q(f,i);
-            SS2out<<mfexp(temp)<<" "<<mfexp(Svy_log_q(f,i))<<" "<<mfexp(temp)/Svy_selec_abund(f,i)<<" "<<Svy_se_use(f,i);
+            temp = mfexp(Svy_est(f,i));
+            SS2out<<temp<<" "<<Svy_q(f,i)<<" "<<temp/Svy_selec_abund(f,i)<<" "<<Svy_se_use(f,i);
             if(Svy_use(f,i) > 0)
             {
               SS2out<<" "<<Svy_obs_log(f,i)-temp<<" ";
               if(Svy_errtype(f)==0)
               {
-                SS2out<<0.5*square( ( Svy_obs_log(f,i)-temp ) / Svy_se_use(f,i))<<" "
-                <<0.5*square( ( Svy_obs_log(f,i)-temp ) / Svy_se_use(f,i))+log(Svy_se_use(f,i));
+                SS2out<<0.5*square( ( Svy_obs_log(f,i)-Svy_est(f,i) ) / Svy_se_use(f,i))<<" "
+                <<0.5*square( ( Svy_obs_log(f,i)-Svy_est(f,i) ) / Svy_se_use(f,i))+log(Svy_se_use(f,i));
               }
               else  // student's T
               {
-                SS2out<<((Svy_errtype(f)+1.)/2.)*log((1.+square((Svy_obs_log(f,i)-temp ))/(Svy_errtype(f)*square(Svy_se_use(f,i))) ))<<" "
-                <<((Svy_errtype(f)+1.)/2.)*log((1.+square((Svy_obs_log(f,i)-temp ))/(Svy_errtype(f)*square(Svy_se_use(f,i))) ))+log(Svy_se_use(f,i));
+                SS2out<<((Svy_errtype(f)+1.)/2.)*log((1.+square((Svy_obs_log(f,i)-Svy_est(f,i) ))/(Svy_errtype(f)*square(Svy_se_use(f,i))) ))<<" "
+                <<((Svy_errtype(f)+1.)/2.)*log((1.+square((Svy_obs_log(f,i)-Svy_est(f,i) ))/(Svy_errtype(f)*square(Svy_se_use(f,i))) ))+log(Svy_se_use(f,i));
               }
               rmse(f)+=value(square(Svy_obs_log(f,i)-temp)); n_rmse(f)+=1.;
               mean_CV(f)+=Svy_se_rd(f,i); mean_CV2(f)+=value(Svy_se_use(f,i));

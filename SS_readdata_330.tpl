@@ -408,7 +408,7 @@
   int Svy_N_rd
   int Svy_N
   init_imatrix Svy_units_rd(1,Nfleet,1,3)
-  ivector Svy_units(1,Nfleet)   //0=num; 1=bio; 2=F; >=30 for special patterns
+  ivector Svy_units(1,Nfleet)   //0=num; 1=bio; 2=F; >=30 for spec\ial patterns
   ivector Svy_errtype(1,Nfleet)  // -1=normal / 0=lognormal / >0=T
 
  LOCAL_CALCS

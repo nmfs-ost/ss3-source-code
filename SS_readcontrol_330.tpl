@@ -1802,7 +1802,7 @@
 
 //Q_setup for 3.30
 // 1:  link type
-// 2:  extra input for link, i.e. mirror fleet
+// 2:  extra input for link, i.e. mirror fleet or dev_vector index associated with survey
 // 3:  0/1 to select extra sd parameter
 // 4:  0/1 for biasadj or not
 // 5:  0/1 to float
@@ -1843,6 +1843,11 @@
       else
       {
         ParmLabel+="LnQ_base_"+fleetname(f)+"("+NumLbl(f)+")";
+      }
+      if(Svy_units(f)==35)
+      {
+        echoinput<<"fleet: "<<f<<"  is a survey of dev vector:  "<<Q_setup(f,2)<<endl;
+        if(Q_setup(f,2)==0)  {N_warn++; warning<<"fatal Qsetup error:  must enter index of dev_vector surveyed by fleet:  "<<f<<endl;  exit(1);}
       }
    	  switch (Q_setup(f,1))
       {
@@ -1944,6 +1949,10 @@
   {
      j=Q_setup_parms(f,1);
      echoinput<<"fleet "<<f<<" base index "<<j<<endl;
+     if(Q_setup(f,5)==1)  //  float
+      {
+        if(Q_parm_1(j,7)>=0)  {N_warn++;  warning<<"fleet: "<<f<<"   Q cannot be active if it is set to float"<<endl;  Q_parm_1(j,7)=-1; }
+      }
      if(Q_parm_1(j,13)==0 && Q_parm_1(j,8)==0 && Q_parm_1(j,9)==0)
      {
       //  no time-vary parameter effects

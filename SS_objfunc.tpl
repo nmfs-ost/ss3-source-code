@@ -3,7 +3,7 @@
 FUNCTION void evaluate_the_objective_function()
   {
   surv_like.initialize();   Q_dev_like.initialize(); disc_like.initialize(); length_like.initialize(); age_like.initialize();
-  sizeage_like.initialize(); parm_like.initialize(); parm_dev_like.initialize(); Svy_log_q.initialize();
+  sizeage_like.initialize(); parm_like.initialize(); parm_dev_like.initialize();
   mnwt_like.initialize(); equ_catch_like.initialize(); recr_like.initialize(); Fcast_recr_like.initialize();
   catch_like.initialize(); Morphcomp_like.initialize(); TG_like1.initialize(); TG_like2.initialize();
   length_like_tot.initialize(); age_like_tot.initialize();
@@ -59,18 +59,36 @@ FUNCTION void evaluate_the_objective_function()
             }
 
             if(Q_setup(f,4)==0)                               // mean q, with nobiasadjustment
-            {Svy_log_q(f) = temp2/temp;}
+            {
+              Svy_log_q(f) +=temp2/temp;
+              Svy_est(f) += temp2/temp;
+            }
             else                  // for value = 1 or 5       // mean q with variance bias adjustment
-            {Svy_log_q(f) = (temp2 + temp1*0.5)/temp;}
+            {
+              Svy_log_q(f) += (temp2 + temp1*0.5)/temp;
+              Svy_est(f) += (temp2 + temp1*0.5)/temp;
+            }
             Q_parm(Q_setup_parms(f,1))=Svy_log_q(f,1);    // base Q  So this sets parameter equal to the scaling coefficient and can then have a prior
 
+            if(Svy_errtype(f)==-1)  // normal
+            {
+              Svy_q(f) = Svy_log_q(f);        //  q already in  arithmetic space
+            }
+            else
+            {
+              Svy_q(f) = mfexp(Svy_log_q(f));        // get q in arithmetic space
+            }
           }
+  /*
           else if(Q_setup(f,1)==2)        // mirror Q from lower numbered survey
                                            // because Q is a vector for each observation, the mirror is to the first observation's Q
                                            // so time-varying property cannot be mirrored
           {Svy_log_q(f) = Svy_log_q(Q_setup(f,2),1);}
 
-          else                                               //  Q from parameter
+          else   //  Q from parameter
+                 //   add code here for more link options
+                 //  NOTE:  if Q_setup(f,1)==3  then the power function is used in SS_expval to adjust svy_exp by that function
+                 //  probably better to move this Q parameter code to right after the call to SS_timevaryparm  and to keep only the Q float code here
           {
             if(Qparm_timevary(Q_setup_parms(f,1))==0) //  not time-varying
             {
@@ -87,14 +105,7 @@ FUNCTION void evaluate_the_objective_function()
           }
 
   // SS_Label_Info_25.1.3 #log or not
-          if(Svy_errtype(f)==-1)  // normal
-            {
-              Svy_q(f) = Svy_log_q(f);        //  q already in  arithmetic space
-            }
-            else
-            {
-              Svy_q(f) = mfexp(Svy_log_q(f));        // get q in arithmetic space
-            }
+   */
 
   // SS_Label_Info_25.1.4 #calc the logL
           if(Svy_errtype(f)==0)  // lognormal
@@ -102,7 +113,7 @@ FUNCTION void evaluate_the_objective_function()
             for (i=1;i<=Svy_N_fleet(f);i++)
             if(Svy_use(f,i)>0)
             {
-              surv_like(f) +=0.5*square( ( Svy_obs_log(f,i)-Svy_est(f,i)-Svy_log_q(f,i) ) / Svy_se_use(f,i)) + sd_offset*log(Svy_se_use(f,i));
+              surv_like(f) +=0.5*square( ( Svy_obs_log(f,i)-Svy_est(f,i)) / Svy_se_use(f,i)) + sd_offset*log(Svy_se_use(f,i));
 //            should add a term for 0.5*s^2 for bias adjustment so that parameter approach will be same as the  biasadjusted scaling approach
             }
           }
@@ -112,7 +123,7 @@ FUNCTION void evaluate_the_objective_function()
             for (i=1;i<=Svy_N_fleet(f);i++)
             if(Svy_use(f,i)>0)
             {
-              surv_like(f) +=((df+1.)/2.)*log((1.+square((Svy_obs_log(f,i)-Svy_est(f,i)-Svy_log_q(f,i) ))/(df*square(Svy_se_use(f,i))) )) + sd_offset*log(Svy_se_use(f,i));
+              surv_like(f) +=((df+1.)/2.)*log((1.+square((Svy_obs_log(f,i)-Svy_est(f,i) ))/(df*square(Svy_se_use(f,i))) )) + sd_offset*log(Svy_se_use(f,i));
             }
           }
           else if(Svy_errtype(f)==-1)  // normal
@@ -121,7 +132,7 @@ FUNCTION void evaluate_the_objective_function()
             {
               if(Svy_use(f,i)>0)
               {
-                surv_like(f) +=0.5*square( ( Svy_obs(f,i)-Svy_est(f,i)*Svy_q(f,i) ) / Svy_se_use(f,i)) + sd_offset*log(Svy_se_use(f,i));
+                surv_like(f) +=0.5*square( ( Svy_obs(f,i)-Svy_est(f,i) ) / Svy_se_use(f,i)) + sd_offset*log(Svy_se_use(f,i));
               }
             }
           }

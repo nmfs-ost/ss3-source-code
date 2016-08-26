@@ -6,7 +6,7 @@ FUNCTION void get_initial_conditions()
   catch_fleet.initialize();
   annual_catch.initialize();
   annual_F.initialize();
-  
+
   if(SzFreq_Nmeth>0) SzFreq_exp.initialize();
 
   //  SS_Label_Info_23.1 #call biology and selectivity functions for the initial year
@@ -20,7 +20,7 @@ FUNCTION void get_initial_conditions()
 //  that are then copied over to replace the base parameter for MG, SRR, Q, Selex, or Tag as needed
   make_timevaryparm();  //  this fills array parm_timevary for all years
 
-  if(MG_active(0)>0 || save_for_report>0) 
+  if(MG_active(0)>0 || save_for_report>0)
     {
       get_MGsetup();
     }
@@ -269,7 +269,7 @@ FUNCTION void get_initial_conditions()
      }
    }
    SPB_pop_gp(styr)=SPB_pop_gp(styr-1);  //  placeholder in case not calculated early in styr
-   
+
    //  note:  the above keeps SPB_pop_gp(styr) = SPB_equil.  It does not adjust for initial agecomp, but probably should
   }  //  end initial_conditions
 
@@ -300,10 +300,10 @@ FUNCTION void get_time_series()
 //    if( )
     	{
     		env_data(y,-1)=SPB_current/SPB_yr(styr-1);  //  store most recent value for density-dependent effects, NOTE - off by a year if recalc'ed at beginning of season 1
-        if(recdev_doit(y)>0) 
+        if(recdev_doit(y)>0)
         	{env_data(y,-2)=mfexp(recdev(y));} //  store so can do density-dependence
         	else
-        	{  //  should be 0.0 
+        	{  //  should be 0.0
         	}
         t=t_base+1;  // first season
         s=1;
@@ -481,7 +481,7 @@ FUNCTION void get_time_series()
             for (p=1;p<=pop;p++)
             {
               if(y==styr) natage(t+Settle_seas_offset(settle),p,g,Settle_age(settle))=0.0;  //  to negate the additive code
-              natage(t+Settle_seas_offset(settle),p,g,Settle_age(settle)) += 
+              natage(t+Settle_seas_offset(settle),p,g,Settle_age(settle)) +=
                Recruits*recr_dist(GP(g),settle,p)*platoon_distr(GP2(g))*
                mfexp(natM(s,GP3(g),Settle_age(settle))*Settle_timing_seas(settle));
                //  the adjustment for mortality increases recruit value for elapsed time since begin of season because M will then be applied from beginning of season
@@ -881,7 +881,7 @@ FUNCTION void get_time_series()
  */
           {
             j=Settle_age(settle);
-            if(s<nseas && Settle_seas(settle)<=s) 
+            if(s<nseas && Settle_seas(settle)<=s)
               {
                 natage(t+1,p,g,j) = natage(t,p,g,j)*mfexp(-Z_rate(t,p,g,j)*seasdur(s));  // advance new recruits within year
               }

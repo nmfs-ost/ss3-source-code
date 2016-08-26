@@ -1355,7 +1355,7 @@
    timevary_parm_cnt=0;
    MGenvcnt=0;
    MGblkcnt=0;
-   
+
 //  push once so 0'th row is not used
    ivector timevary_setup(1,13);
    timevary_setup.initialize();
@@ -1478,7 +1478,7 @@
           }
        }
 
-       if(customMGenvsetup==1) 
+       if(customMGenvsetup==1)
        {
          tvparm++;
          MGenvcnt++;
@@ -1489,7 +1489,7 @@
               timevary_parm_rd[tvparm](6)=temp;
               echoinput<<timevary_parm_rd[tvparm]<<endl;
        }
-       
+
        if(timevary_setup(8)!=0) timevary_setup(12)=MGparm_dev_PH;
        timevary_def.push_back (timevary_setup(1,13));
        for(y=styr-3;y<=YrMax+1;y++) {timevary_MG(y,mgp_type(j))=timevary_pass(y);}  // year vector for this category of MGparm
@@ -1550,7 +1550,7 @@
 
     temp=MGparm_1(f,5);  //  will be reversed with _CV in 3.30
     if(temp==0) {temp=6;}  //  recode for normal distribution
-    if(temp<0) {temp=0;}  
+    if(temp<0) {temp=0;}
     MGparm_1(f,5)=MGparm_1(f,6);
     MGparm_1(f,6)=temp;
     MGparm_PRtype(f)=temp;
@@ -2354,6 +2354,8 @@
       // so time-varying property cannot be mirrored
       //  need to trap for this when reading
     }
+    if(Q_setup(f,5)==1)  //  flaot Q_setup, so cannot be active
+      {Q_parm_1(parm330_cnt,7)=-1;}
 
     if(Svy_errtype(f)==-1)
     {
@@ -3475,7 +3477,7 @@
     TG_parm_LO=column(TG_parm2,1);
     TG_parm_HI=column(TG_parm2,2);
     k=3*N_TG+2*Nfleet;
-    for (j=1;j<=k;j++) 
+    for (j=1;j<=k;j++)
     {
       TG_parm_PH(j)=TG_parm2(j,7);  // write it out due to no typecast available
     }

@@ -101,7 +101,7 @@ FUNCTION void Get_expected_values();
                 }
               }
             }
-            
+
             if(Do_Morphcomp)
             {
               if(Morphcomp_havedata(f,t,0)>0)
@@ -129,7 +129,7 @@ FUNCTION void Get_expected_values();
           }
 //          end creation of selected A-L
         }
-        
+
         if(sum(exp_l_temp)<1.0e-8)
           {
             if(do_once==1) {N_warn++; warning<<"warn just once for:  Observation exists, but nil selected fish for year, seas, fleet "<<y<<" "<<s<<" "<<f<<endl;}
@@ -144,149 +144,182 @@ FUNCTION void Get_expected_values();
             {
    /* SS_Label_46.1 expected abundance index */
   // NOTE that the Q scaler is factored in later on
-         j=have_data(ALK_time,f,data_type,0);  //  number of observations for this time,f,type
-         if(j>0)
-         {
-           j=have_data(ALK_time,f,data_type,1);  //  for now, only one observations is allowed for surveys
-           switch(Svy_units(f))
-           {
-             case 1:  //  biomass
-             {
-             if(WTage_rd==1)  //  using empirical wt-at-age;  note that this cannot use GP specific bodyweights
-             {
-               vbio=0.0;
-               if(Do_Retain(f)==0)  //  all retained
-               {
-                for (a=0;a<=nages;a++) vbio+=WTage_emp(y,1,f,a)*agetemp(a);
-                if(gender==2)
+              j=have_data(ALK_time,f,data_type,0);  //  number of observations for this time,f,type
+              if(j>0)
+              {
+                j=have_data(ALK_time,f,data_type,1);  //  for now, only one observations is allowed for surveys
+                switch(Svy_units(f))
                 {
-                 for (a=0;a<=nages;a++) vbio+=WTage_emp(y,2,f,a)*agetemp(a+nages+1);
-                }
-               }
-               else
-               {
-                for (a=0;a<=nages;a++) vbio+=WTage_emp(y,1,f,a)*exp_truea_ret(a);
-                if(gender==2)
-                {
-                 for (a=0;a<=nages;a++) vbio+=WTage_emp(y,2,f,a)*exp_truea_ret(a+nages+1);
-                }
-               }
-             }
-             else
-             {
-              if(Do_Retain(f)==0)
-              {
-                vbio=exp_l_temp*wt_len2(s,1);// biomass  TEMPORARY CODE.  Using gp=1 wt at length
-              }
-              else
-              {
-                vbio=exp_l_temp_ret*wt_len2(s,1);
-              }
-              }   
-             break;
-             }
-             case 0:  //  numbers
-             {
-              if(Do_Retain(f)==0)
-              {
-                vbio=sum(exp_l_temp);
-              }
-              else
-              {
-                vbio=sum(exp_l_temp_ret);
-              }
-              break;
-             }
-             case 2:   //  F rate
-             {
-              vbio=Hrate(f,t);
-              break;
-             }
-             case 30:  // spawning biomass  #30
-             {
-               if(pop==1 || fleet_area(f)==0)
-               {
-                 vbio=SPB_current;
-                }
-                else
-                {
-                  vbio=sum(SPB_pop_gp(y,fleet_area(f)));
-                }
-               break;
-             }
-             case 31:  // recruitment deviation  #31
-             {
-              if(y>=recdev_start && y<=recdev_end) 
-              {vbio=mfexp(recdev(y));}
-              else
-              {vbio=1.0;}
-              break;
-             }
-             case 32:  // recruitment without density-dependence (for pre-recruit survey) #32
-             {
-              if(y>=recdev_start && y<=recdev_end) 
-              {vbio=SPB_current*mfexp(recdev(y));}
-              else
-              {vbio=SPB_current;}
-              break;
-             }
-             case 33:  // recruitment  #33
-             {vbio=Recruits; break;}
+                  case 1:  //  biomass
+                  {
+                    if(WTage_rd==1)  //  using empirical wt-at-age;  note that this cannot use GP specific bodyweights
+                    {
+                      vbio=0.0;
+                      if(Do_Retain(f)==0)  //  all retained
+                      {
+                       for (a=0;a<=nages;a++) vbio+=WTage_emp(y,1,f,a)*agetemp(a);
+                       if(gender==2)
+                       {
+                        for (a=0;a<=nages;a++) vbio+=WTage_emp(y,2,f,a)*agetemp(a+nages+1);
+                       }
+                      }
+                      else
+                      {
+                       for (a=0;a<=nages;a++) vbio+=WTage_emp(y,1,f,a)*exp_truea_ret(a);
+                       if(gender==2)
+                       {
+                        for (a=0;a<=nages;a++) vbio+=WTage_emp(y,2,f,a)*exp_truea_ret(a+nages+1);
+                       }
+                      }
+                    }
+                    else
+                    {
+                     if(Do_Retain(f)==0)
+                     {
+                       vbio=exp_l_temp*wt_len2(s,1);// biomass  TEMPORARY CODE.  Using gp=1 wt at length
+                     }
+                     else
+                     {
+                       vbio=exp_l_temp_ret*wt_len2(s,1);
+                     }
+                    }
+                    break;
+                  }
+                  case 0:  //  numbers
+                  {
+                    if(Do_Retain(f)==0)
+                    {
+                      vbio=sum(exp_l_temp);
+                    }
+                    else
+                    {
+                      vbio=sum(exp_l_temp_ret);
+                    }
+                    break;
+                  }
+                  case 2:   //  F rate
+                  {
+                   vbio=Hrate(f,t);
+                   break;
+                  }
+                  case 30:  // spawning biomass  #30
+                  {
+                    if(pop==1 || fleet_area(f)==0)
+                    {
+                      vbio=SPB_current;
+                     }
+                     else
+                     {
+                       vbio=sum(SPB_pop_gp(y,fleet_area(f)));
+                     }
+                    break;
+                  }
+                  case 31:  // recruitment deviation  #31
+                  {
+                   if(y>=recdev_start && y<=recdev_end)
+                   {vbio=mfexp(recdev(y));}
+                   else
+                   {vbio=1.0;}
+                   break;
+                  }
+                  case 32:  // recruitment without density-dependence (for pre-recruit survey) #32
+                  {
+                   if(y>=recdev_start && y<=recdev_end)
+                   {vbio=SPB_current*mfexp(recdev(y));}
+                   else
+                   {vbio=SPB_current;}
+                   break;
+                  }
+                  case 33:  // recruitment  #33
+                  {vbio=Recruits; break;}
 
-             case 34:  // spawning biomass depletion
-             {
-               if(pop==1 || fleet_area(f)==0)
-               {
-                 vbio=(SPB_current+1.0e-06)/(SPB_virgin+1.0e-06);
-                }
-                else
-                {
-                  vbio=(sum(SPB_pop_gp(y,fleet_area(f)))+1.0e-06)/(SPB_virgin+1.0e-06);
-                }
-               break;
-             }
-           case 35:  // MGparm deviation  #35
-           {
-              k=seltype(f,4);  //  specify which parameter's time-vary vector will be compared to this survey
-                               //  note that later the value in seltype(f,3) will specify the link function
-              //  should there be an explicit zero-centering of the devs here, or just rely on general tendency for the devs to get zero-centererd?
-              
-//              if(y>=selparm_dev_minyr(k) && y<=parm_dev_maxyr(k)) 
-//              {
-//                vbio=parm_dev(k,y);
-                //  can the mean dev for years with surveys be calculated here?
-//              }
-//              else
-              {vbio=0.0;}
-              break;
-           }
-           case 36:  //  selparm deviation  #36
-            {
-              //  need code here
-              break;
-            }
-           case 37:  //  Q deviation  #37
-            {
-              //  need code here
-              break;
-            }
-           }
-           Svy_selec_abund(f,j)=value(vbio);
-// SS_Label_Info_46.1.1 #note order of operations,  vbio raised to a power, then constant is added, then later multiplied by Q.  Needs work   
-           if(Q_setup(f,1)==3) 
-            {
-              vbio=pow(vbio,1.0+Q_parm(Q_setup_parms(f,1)+1));  //  raise vbio to a power
-            }
+                  case 34:  // spawning biomass depletion
+                  {
+                    if(pop==1 || fleet_area(f)==0)
+                    {
+                      vbio=(SPB_current+1.0e-06)/(SPB_virgin+1.0e-06);
+                     }
+                     else
+                     {
+                       vbio=(sum(SPB_pop_gp(y,fleet_area(f)))+1.0e-06)/(SPB_virgin+1.0e-06);
+                     }
+                    break;
+                  }
+                  case 35:  // parm deviation  #35
+                  {
+                     k=Q_setup(f,2);  //  specify which parameter's time-vary vector will be compared to this survey
 
-           if(Svy_errtype(f)>=0)  //  lognormal
-           {Svy_est(f,j)=log(vbio+0.000001);}
-           else
-           {Svy_est(f,j)=vbio;}
-           //  Note:  Svy_est() is multiplied by Q in the likelihood section
-         }
-         break;
+                     if(y>=parm_dev_minyr(k) && y<=parm_dev_maxyr(k))
+                     {
+                       vbio=parm_dev(k,y);
+                     //  can the mean dev for years with surveys be calculated here?
+                     }
+                     else
+                     {vbio=0.0;}
+                     break;
+                  }
+                }
+                Svy_selec_abund(f,j)=value(vbio);
+
+     //  get catchability
+               if(Q_setup(f,1)==2)        // mirror Q from lower numbered survey
+               {
+                 Svy_log_q(f,j) = Svy_log_q(Q_setup(f,2),1);
+               }
+
+               else   //  Q from parameter
+               {
+                 if(Qparm_timevary(Q_setup_parms(f,1))==0) //  not time-varying
+                 {
+                   Svy_log_q(f,j)=Q_parm(Q_setup_parms(f,1));  //  set to base parameter value
+                 }
+                 else
+                 {
+                   y=Svy_yr(f,j);
+                   Svy_log_q(f,j)=parm_timevary(Qparm_timevary(Q_setup_parms(f,1)),y);
+                 }
+               }
+
+     // SS_Label_Info_25.1.3 #log or not
+               if(Svy_errtype(f)==-1)  // normal
+               {
+                 Svy_q(f) = Svy_log_q(f);        //  q already in  arithmetic space
+               }
+               else  //  lognormal, or t-distribution in lognormal
+               {
+                 Svy_q(f) = mfexp(Svy_log_q(f));        // get q in arithmetic space
+               }
+
+     // SS_Label_Info_46.1.1 #note order of operations,  vbio raised to a power, then constant is added, then later multiplied by Q.  Needs work
+               switch (Q_setup(f,1))
+               {
+                 case 2:
+                 {
+                   //  no break, so do same as case 1
+                 }
+                 case 1:
+                 {
+                   if(Svy_errtype(f)>=0)  //  lognormal or T-distribution
+                   {Svy_est(f,j)=log(vbio+0.000001)+Svy_log_q(f,j);}
+                   else
+                   {Svy_est(f,j)=vbio*Svy_q(f,j);}
+                   break;
+                 }
+                 case 3:  //  link is power function
+                 {
+                   vbio=pow(vbio,1.0+Q_parm(Q_setup_parms(f,1)+1));  //  raise vbio to a power
+                   if(Svy_errtype(f)>=0)  //  lognormal or T-distribution
+                   {Svy_est(f,j)=log(vbio+0.000001)+Svy_log_q(f,j);}
+                   else
+                   {Svy_est(f,j)=vbio*Svy_q(f,j);}
+                   break;
+                 }
+               }
+                //  Note:  Svy_est() is multiplied by Q in the likelihood section
+              }
+              break;
             }  //  end survey index
-  
+
             case(2):  //  DISCARD_OUTPUT
    /* SS_Label_46.2 expected discard amount */
             {
@@ -319,7 +352,7 @@ FUNCTION void Get_expected_values();
             }
             break;
             }  //  end discard
-  
+
             case(3):  // mean body weight
    /* SS_Label_46.3 expected mean body weight */
             {
@@ -340,10 +373,10 @@ FUNCTION void Get_expected_values();
             else if(j<0)
             {exp_mnwt(-j) = (exp_l_temp_ret*len_bins_m2) / sum(exp_l_temp_ret);}
             }
-            
+
             break;
             }
-  
+
             case(4):  //  length composition
    /* SS_Label_46.4  length composition */
             {
@@ -370,7 +403,7 @@ FUNCTION void Get_expected_values();
             }
            break;
             }  // end  length composition
-  
+
             case(5):  //  age composition
    /* SS_Label_46.5  age composition */
             {
@@ -396,14 +429,14 @@ FUNCTION void Get_expected_values();
               exp_a(f,i) = age_age(k) * age_exp;
               //  add code here to store exp_a_true(f,i)=age_exp
               //  then in data generation the sample can be from true age before ageing error is applied
-    
+
               if(docheckup==1) echoinput<<" real age "<<age_exp<<endl<<" obs "<<obs_a(f,i)<<endl<<" exp with ageerr "<<exp_a(f,i)<<endl;
-    
+
              }  // end agecomp loop within fleet/time
             }
              break;
             }  // end age composition
-  
+
             case(6):  //  weight composition (generalized size composition)
    /* SS_Label_46.6  weight composition (generalized size composition) */
             {
@@ -429,17 +462,17 @@ FUNCTION void Get_expected_values();
                         {z1=nlength1; z2=nlength2; ibin=0; ibinsave=SzFreq_Nbins(SzFreqMethod);}   // male
                         topbin=0.;
                         botbin=0.;
-        
-        //  NOTE:  wt_len_low is  calculated separately for each growth pattern (GPat)  
+
+        //  NOTE:  wt_len_low is  calculated separately for each growth pattern (GPat)
         //  but the code below still just uses GPat=1 for calculation of the sizefreq transition matrix
-        
+
                         switch(SzFreq_units(SzFreqMethod))    // biomass vs. numbers are accumulated in the bins
                         {
                           case(1):  // units are biomass, so accumulate body weight into the bins;  Assume that bin demarcations are also in biomass
                           {
                             if(SzFreq_Omit_Small(SzFreqMethod)==1)
                             {
-                              while(wt_len_low(s,1,z1+1)<SzFreq_bins(SzFreqMethod,1) && z1<z2) 
+                              while(wt_len_low(s,1,z1+1)<SzFreq_bins(SzFreqMethod,1) && z1<z2)
                               {z1++;}
                             }      // ignore tiny fish
                             if(z1+1>=z2)
@@ -449,7 +482,7 @@ FUNCTION void Get_expected_values();
                               SzFreq_bins(SzFreqMethod,1)<<" for SzFreqMethod "<<SzFreqMethod<<endl;
                               exit(1);
                             }
-        
+
                             if( wt_len_low(s,1,nlength2) < SzFreq_bins(SzFreqMethod,SzFreq_Nbins(SzFreqMethod)))
                             {
                               N_warn++; cout<<" EXIT - see warning "<<endl;
@@ -458,7 +491,7 @@ FUNCTION void Get_expected_values();
                               " for SzFreqMethod "<<SzFreqMethod<<endl;
                               exit(1);
                             }
-          
+
                             for (z=z1;z<=z2;z++)
                             {
                               if(ibin==SzFreq_Nbins(SzFreqMethod))
@@ -503,14 +536,14 @@ FUNCTION void Get_expected_values();
                           }  //  end of units in biomass
                           // NOTE: even though  the transition matrix is currently in units of biomass distribution, there is no need to
                           // normalize to sum to 1.0 here because the normalization will occur after it gets used to create SzFreq_exp
-          
+
                           case(2):   // units are numbers
                           {
                             if(SzFreq_scale(SzFreqMethod)<=2)   //  bin demarcations are in weight units (1=kg, 2=lbs), so uses wt_len to compare to bins
                             {
                               if(SzFreq_Omit_Small(SzFreqMethod)==1)
                               {
-                                while(wt_len_low(s,1,z1+1)<SzFreq_bins(SzFreqMethod,1) && z1<z2) 
+                                while(wt_len_low(s,1,z1+1)<SzFreq_bins(SzFreqMethod,1) && z1<z2)
                                 {z1++;}
                               }      // ignore tiny fish
                               if(z1+1>=z2)
@@ -528,7 +561,7 @@ FUNCTION void Get_expected_values();
                                 " for SzFreqMethod "<<SzFreqMethod<<endl;
                                 exit(1);
                               }
-          
+
                               for (z=z1;z<=z2;z++)
                               {
                                 if(ibin==SzFreq_Nbins(SzFreqMethod))
@@ -556,7 +589,7 @@ FUNCTION void Get_expected_values();
                                 }
                               }
                             }
-          
+
                             else       //  bin demarcations are in length unit (3=cm, 4=inch) so uses population len_bins to compare to data bins
                             {
                               if(SzFreq_Omit_Small(SzFreqMethod)==1)
@@ -687,7 +720,7 @@ FUNCTION void Get_expected_values();
             }    //  end use of generalized size freq data
             break;
             }  //  end generalized size composition
-  
+
             case(7):  //  mean size-at-age
    /* SS_Label_46.7  mean size at age */
             {
@@ -701,7 +734,7 @@ FUNCTION void Get_expected_values();
              {
                if(mkt_ms(f,i)==0)  //  total catch
                {
-                 exp_a_temp = age_age(k) * agetemp;             //  numbers at binned age 
+                 exp_a_temp = age_age(k) * agetemp;             //  numbers at binned age
                  exp_ms(f,i) = age_age(k) * (exp_AL * len_bins_m2);  // numbers * length
                  exp_ms_sq(f,i) = age_age(k) * (exp_AL * len_bins_sq);  // numbers * length^2
                }
@@ -757,7 +790,7 @@ FUNCTION void Get_expected_values();
          }   // endl size-at-age
            break;
             }  //  end mean size-at-age
-  
+
           }  // end switch(data_type)
         }  //  end loop for types of data
       }
