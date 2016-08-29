@@ -786,11 +786,11 @@ FUNCTION void write_nudata()
       report1<<"#  Nobs, Nmorphs, mincomp"<<endl;
       report1<<"#  yr, seas, type, partition, Nsamp, datavector_by_Nmorphs"<<endl;
     }
-    
+
    report1<<"#"<<endl<<Do_SelexData<<"  #  Do dataread for selectivity priors(0/1)"<<endl;
    report1<<"# Yr, Seas, Fleet,  Age/Size,  Bin,  selex_prior,  prior_sd"<<endl;
    report1<<"# feature not yet implemented"<<endl;
-   
+
    report1<<"#"<<endl<<"999" << endl << endl;
   }
 
@@ -1127,7 +1127,7 @@ FUNCTION void write_nudata()
       report1<<"#  Nobs, Nmorphs, mincomp"<<endl;
       report1<<"#  yr, seas, type, partition, Nsamp, datavector_by_Nmorphs"<<endl;
     }
-    
+
    report1<<"#"<<endl<<Do_SelexData<<"  #  Do dataread for selectivity priors(0/1)"<<endl;
    report1<<"# Yr, Seas, Fleet,  Age/Size,  Bin,  selex_prior,  prior_sd"<<endl;
    report1<<"# feature not yet implemented"<<endl;
@@ -2145,7 +2145,7 @@ FUNCTION void write_nucontrol()
   {
     report4<<"# timevary selex parameters "<<endl;
     report4<<"#_      LO        HI      INIT     PRIOR   PR_SD  PR_type       PHASE"<<endl;
-    for (f=timevary_parm_start_sel;f<=timevary_parm_cnt_sel;f++) 
+    for (f=timevary_parm_start_sel;f<=timevary_parm_cnt_sel;f++)
     {
       NP++;
         timevary_parm_rd[f](3)=value(timevary_parm(f));
@@ -2445,7 +2445,7 @@ FUNCTION void write_bigoutput()
   if(Nobs_l_tot>0) SS2out<<"Length_lambda: _ "<<column(length_lambda,k)<<endl<<"Length_like: "<<length_like_tot*column(length_lambda,k)<<" "<<length_like_tot<<endl;
   if(Nobs_a_tot>0) SS2out<<"Age_lambda: _ "<<column(age_lambda,k)<<endl<<"Age_like: "<<age_like_tot*column(age_lambda,k)<<" "<<age_like_tot<<endl;
   if(nobs_ms_tot>0) SS2out<<"Sizeatage_lambda: _ "<<column(sizeage_lambda,k)<<endl<<"sizeatage_like: "<<sizeage_like*column(sizeage_lambda,k)<<" "<<sizeage_like<<endl;
-  
+
   if(N_parm_dev)
   {
     SS2out<<"Parm_devs_detail"<<endl<<"Index  Phase  MinYear  MaxYear  stddev  Rho  Like_devs  Like_se  mean  rmse"<<endl;
@@ -4335,7 +4335,7 @@ FUNCTION void write_bigoutput()
   }
   }
 
-  SS2out <<endl<< "MEAN_LENGTH_TIMESERIES" << endl;           // SS_Label_450
+  SS2out <<endl<< "MEAN_SIZE_TIMESERIES" << endl;           // SS_Label_450
   SS2out <<"Morph Yr Seas SubSeas"<<age_vector<<endl;
   if(reportdetail>0)
   {
