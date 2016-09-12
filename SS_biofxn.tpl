@@ -696,6 +696,7 @@ FUNCTION void get_growth3(const int s, const int subseas)
           }
         }  // done ageloop
 
+  /*   //  move code to make_ALK
 //  SS_Label_Info_16.5.2  #do calculations related to std.dev. of size-at-age
 //  SS_Label_Info_16.5.3 #if (y=styr), calc CV_G(gp,s,a) by interpolation on age or LAA
 //  doing this just at y=styr prevents the CV from changing as time-vary growth updates over time
@@ -742,6 +743,8 @@ FUNCTION void get_growth3(const int s, const int subseas)
           if(CV_depvar_b==0) echoinput<<"CV   "<<CV_G(gp,ALK_idx)(0,min(6,nages))<<" @nages "<<CV_G(gp,ALK_idx,nages)<<endl;
           echoinput<<"sd   "<<Sd_Size_within(ALK_idx,g)(0,min(6,nages))<<" @nages "<<Sd_Size_within(ALK_idx,g,nages)<<endl;
         }
+  */  //  end code moved to make_ALK
+
       }  //  end need this platoon
     }  //  done platoon
   }  //  end  calc size-at-age at a particular subseason

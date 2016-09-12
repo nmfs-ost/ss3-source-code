@@ -29,6 +29,55 @@ FUNCTION void Make_AgeLength_Key(const int s, const int subseas)
         gstart+=N_platoon;
         if(recr_dist_pattern(GPat,settle,0)>0)
         {
+          
+//  update the sd_within and sb_between here.  Used to be in growth2 function
+//  SS_Label_Info_16.5.2  #do calculations related to std.dev. of size-at-age
+//  SS_Label_Info_16.5.3 #if (y=styr), calc CV_G(gp,s,a) by interpolation on age or LAA
+//  doing this just at y=styr prevents the CV from changing as time-vary growth updates over time
+        g=gstart;
+        if(CV_const(gp)>0 && y==styr)
+        {
+          for (a=0;a<=nages;a++)
+          {
+            if(real_age(g,ALK_idx,a)<AFIX)
+            {CV_G(gp,ALK_idx,a)=CVLmin(gp);}
+            else if(real_age(g,ALK_idx,a)>=AFIX2_forCV)
+            {CV_G(gp,ALK_idx,a)=CVLmax(gp);}
+            else if(CV_depvar_a==0)
+            {CV_G(gp,ALK_idx,a)=CVLmin(gp) + (Ave_Size(t,subseas,g,a)-Lmin(gp))*CV_delta(gp);}
+            else
+            {CV_G(gp,ALK_idx,a)=CVLmin(gp) + (real_age(g,ALK_idx,a)-AFIX)*CV_delta(gp);}
+          }   // end age loop
+        }
+        else
+        {
+          //  already set constant to CVLmi
+        }
+//  SS_Label_Info_16.5.4  #calc stddev of size-at-age from CV_G(gp,s,a) and Ave_Size(t,g,a)
+        if(CV_depvar_b==0)
+        {
+          Sd_Size_within(ALK_idx,g)=SD_add_to_LAA+elem_prod(CV_G(gp,ALK_idx),Ave_Size(t,subseas,g));
+        }
+        else
+        {
+          Sd_Size_within(ALK_idx,g)=SD_add_to_LAA+CV_G(gp,ALK_idx);
+        }
+//  SS_Label_Info_16.3.5  #if platoons being used, calc the stddev between platoons
+        if(N_platoon>1)
+        {
+          Sd_Size_between(ALK_idx,g)=Sd_Size_within(ALK_idx,g)*sd_between_platoon;
+          Sd_Size_within(ALK_idx,g)*=sd_within_platoon;
+        }
+
+        if(docheckup==1)
+        {
+          echoinput<<"with lingrow; subseas: "<<subseas<<" sex: "<<sx(g)<<" gp: "<<GP4(g)<<" g: "<<g<<endl;
+          echoinput<<"size "<<Ave_Size(t,subseas,g)(0,min(6,nages))<<" @nages "<<Ave_Size(t,subseas,g,nages)<<endl;
+          if(CV_depvar_b==0) echoinput<<"CV   "<<CV_G(gp,ALK_idx)(0,min(6,nages))<<" @nages "<<CV_G(gp,ALK_idx,nages)<<endl;
+          echoinput<<"sd   "<<Sd_Size_within(ALK_idx,g)(0,min(6,nages))<<" @nages "<<Sd_Size_within(ALK_idx,g,nages)<<endl;
+        }
+//  end sd_within updating          
+
           for (gp2=1;gp2<=N_platoon;gp2++)      // loop the platoons
           {
             g=gstart+ishadow(gp2);
