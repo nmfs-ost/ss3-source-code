@@ -1866,6 +1866,12 @@
           break;
         }
       }
+    if(Q_setup(f,3)>0)
+    {
+       Q_Npar++;  ParCount++;
+       Q_setup_parms(f,2)=Q_Npar;
+      ParmLabel+="Q_extraSD_"+fleetname(f)+"("+NumLbl(f)+")";
+    }
   }
   else
   {
@@ -1877,6 +1883,7 @@
   }
 
 //  get extra_std parameter count
+  /*
   for(f=1;f<=Nfleet;f++)
   {
     if(Q_setup(f,3)>0)
@@ -1886,6 +1893,7 @@
       ParmLabel+="Q_extraSD_"+fleetname(f)+"("+NumLbl(f)+")";
     }
   }
+    */
 
   /*
 //  get env parameter count

@@ -410,11 +410,14 @@ PRELIMINARY_CALCS_SECTION
     {Q_parm(i) = Q_parm_RD(i);}    //  set vector of initial index Q parms
     if(Q_Npar>0) echoinput<< " Q_parms read from ctl "<<Q_parm<<endl;
 
-    for (i=1;i<=N_init_F;i++)
-    init_F(i) = init_F_RD(i);    //  set vector of initial parms
-    echoinput<< " initF_parms read from ctl "<<init_F<<endl;
+    if(N_init_F>0)
+    {
+      for (i=1;i<=N_init_F;i++)
+      init_F(i) = init_F_RD(i);    //  set vector of initial parms
+      echoinput<< " initF_parms read from ctl "<<init_F<<endl;
+    }
 
-    if(F_Method==2)
+    if (F_Method==2)
     {
       if(readparfile==0)
       {

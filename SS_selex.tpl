@@ -1321,7 +1321,7 @@ FUNCTION void Make_FishSelex()
       {
         makefishsel_yr = yf;
         fs=f+Nfleet;  //  for the age dimensioning
-        if (WTage_rd==1 || seltype(f,1)==0)  //  empirical wt-at-age; no size-based calculations
+        if (WTage_rd==1 || (seltype(f,1)==0 && seltype(f,2)==0) )  //  empirical wt-at-age; no size-based calculations
         {
           if(WTage_rd==1)
           {
@@ -1334,7 +1334,8 @@ FUNCTION void Make_FishSelex()
             fish_body_wt(tz,g,f)=Wt_Age_mid(s,g);
           }
           sel_al_3(s,g,f)=sel_a(yf,f,gg);  //  selected numbers
-          switch(seltype(fs,2))  //  retention function
+
+          switch(seltype(fs,2))  //  age-retention function
           {
             case 0:
             {

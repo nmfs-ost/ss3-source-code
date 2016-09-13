@@ -605,8 +605,9 @@ FUNCTION void write_nudata()
    {
    for (i=1;i<=nobs_mnwt;i++)
     {
+     f=abs(mnwtdata(3,i));
      report1 << Show_Time(mnwtdata(1,i),1)<<" "<<mnwtdata(2,i)<<" "<<mnwtdata(3,i)<<" "<<mnwtdata(4,i)<<" "<<
-     mnwtdata(5,i)<<" "<<mnwtdata(6,i)<<" #_ "<<fleetname(mnwtdata(3,i))<< endl;
+     mnwtdata(5,i)<<" "<<mnwtdata(6,i)-var_adjust(3,f)<<" #_ "<<fleetname(mnwtdata(3,i))<< endl;
     }
    }
   if(do_meanbodywt==0) report1<<"# ";
@@ -903,9 +904,9 @@ FUNCTION void write_nudata()
    {
    for (i=1;i<=nobs_mnwt;i++)
     {
-
+     f=abs(mnwtdata(3,i));
      report1 << Show_Time(mnwtdata(1,i),1)<<" "<<mnwtdata(2,i)<<" "<<mnwtdata(3,i)<<" "<<mnwtdata(4,i)<<" "<<
-     exp_mnwt(i)<<" "<<mnwtdata(6,i)<<" #_orig_obs: "<<mnwtdata(5,i)<<"  #_ "<<fleetname(mnwtdata(3,i))<<endl;
+     exp_mnwt(i)<<" "<<mnwtdata(6,i)-var_adjust(3,f)<<" #_orig_obs: "<<mnwtdata(5,i)<<"  #_ "<<fleetname(mnwtdata(3,i))<<endl;
     }
    }
   if(do_meanbodywt==0) report1<<"# ";
@@ -1271,8 +1272,9 @@ FUNCTION void write_nudata()
       {
         temp=mnwtdata(5,i);
       }
+      f=abs(mnwtdata(3,i));
       report1 << Show_Time(mnwtdata(1,i),1)<<" "<<mnwtdata(2,i)<<" "<<mnwtdata(3,i)<<" "<<mnwtdata(4,i)<<" "<<
-      temp<<" "<<mnwtdata(6,i)<<" #_orig_obs: "<<mnwtdata(5,i)<<"  #_ "<<fleetname(mnwtdata(3,i))<<endl;    }
+      temp<<" "<<mnwtdata(6,i)-var_adjust(3,f)<<" #_orig_obs: "<<mnwtdata(5,i)<<"  #_ "<<fleetname(mnwtdata(3,i))<<endl;    }
   }
   if(do_meanbodywt==0) report1<<"# ";
   report1<<" -9999 0 0 0 0 0 # terminator for mean body size data "<<endl;
@@ -3441,22 +3443,17 @@ FUNCTION void write_bigoutput()
   if(nobs_disc>0)
   for (f=1;f<=Nfleet;f++)
   if(fleet_type(f)<=2)
-  for (y=styr;y<=endyr;y++)
-  for (s=1;s<=nseas;s++)
-  for(subseas=1;subseas<=N_subseas;subseas++)
   {
-    t = styr+(y-styr)*nseas+s-1;
-    ALK_time=(y-styr)*nseas*N_subseas+(s-1)*N_subseas+subseas;
-    if(catchunits(f)==1)
-    {gg=3;}  //  biomass
-    else
-    {gg=6;}  //  numbers
-    if(have_data(ALK_time,f,data_type,0)>0)
-      {
-       for(i=1;i<=have_data(ALK_time,f,data_type,0);i++)
-       {
-      temp = float(y)+0.01*int(100.*(azero_seas(s)+seasdur_half(s)));
-      SS2out<<f<<" "<<fleetname(f)<<" "<<y<<" "<<s<<" "<<temp<<" "<<obs_disc(f,i)<<" "
+    for (i=1;i<=disc_N_fleet(f);i++)
+    {
+      t = disc_time_t(f,i);
+      y=Show_Time(t,1);
+      ALK_time=disc_time_ALK(f,i);
+      if(catchunits(f)==1)
+      {gg=3;}  //  biomass
+      else
+      {gg=6;}  //  numbers
+      SS2out<<f<<" "<<fleetname(f)<<" "<<Show_Time(t)<<" "<<data_time(ALK_time,f,3)<<" "<<obs_disc(f,i)<<" "
       <<exp_disc(f,i)<<" "<<" "<<cv_disc(f,i)<<" "<<sd_disc(f,i);
 
       if(yr_disc_use(f,i)>=0.0)
@@ -3497,7 +3494,6 @@ FUNCTION void write_bigoutput()
       SS2out<<" "<<catch_ret_obs(f,t)<<" "<<catch_fleet(t,f,gg)<<" "<<catch_mult(y,f)<<" "<<catch_mult(y,f)*catch_fleet(t,f,gg)<<" "<<Hrate(f,t);
       SS2out<<endl;
     }
-  }
   }
 
   SS2out <<endl<< "MEAN_BODY_WT_OUTPUT"<<endl;
