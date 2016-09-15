@@ -2509,7 +2509,7 @@ FUNCTION void write_bigoutput()
   SS2out<<"MG_parms"<<"Using_offset_approach_#:_"<<MGparm_def<<"  (1=none, 2= M, G, CV_G as offset from female_GP1, 3=like SS2 V1.x)"<<endl;
 
 //  SS2out<<endl<<"PARAMETERS"<<endl<<"Num Label Value Active_Cnt Phase Min Max Init Prior PR_type Pr_SD Prior_Like Parm_StDev Status Pr_atMin Pr_atMax"<<endl;
-  SS2out<<endl<<"PARAMETERS"<<endl<<"Num Label Value Active_Cnt  Phase Min Max Init  Status  Parm_StDev Gradient PR_type Prior Pr_SD Prior_Like Value_again Value-1.96*SD Value+1.96*SD V_1%  V_10% V_20% V_30% V_40% V_50% V_60% V_70% V_80% V_90% V_99% P_val P_lowCI P_hiCI  P_1%  P_10% P_20% P_30% P_40% P_50% P_60% P_70% P_80% P_90% P_99%"<<endl;
+  SS2out<<endl<<"PARAMETERS"<<endl<<"Num Label Value Active_Cnt  Phase Min Max Init  Used  Status  Parm_StDev Gradient PR_type Prior Pr_SD Prior_Like Value_again Value-1.96*SD Value+1.96*SD V_1%  V_10% V_20% V_30% V_40% V_50% V_60% V_70% V_80% V_90% V_99% P_val P_lowCI P_hiCI  P_1%  P_10% P_20% P_30% P_40% P_50% P_60% P_70% P_80% P_90% P_99%"<<endl;
 
   NP=0;   // count of number of parameters
   active_count=0;
@@ -2524,7 +2524,7 @@ FUNCTION void write_bigoutput()
       active_count++;
       Activ=1;
     }
-    Report_Parm(NP, active_count, Activ, MGparm(j), MGparm_LO(j), MGparm_HI(j), MGparm_RD(j), MGparm_PR(j), MGparm_CV(j), MGparm_PRtype(j), MGparm_PH(j), MGparm_Like(j));
+    Report_Parm(NP, active_count, Activ, MGparm(j), MGparm_LO(j), MGparm_HI(j), MGparm_RD(j), MGparm_use(j), MGparm_PR(j), MGparm_CV(j), MGparm_PRtype(j), MGparm_PH(j), MGparm_Like(j));
   }
 
 
@@ -2537,7 +2537,7 @@ FUNCTION void write_bigoutput()
       active_count++;
       Activ=1;
     }
-    Report_Parm(NP, active_count, Activ, SR_parm(j), SR_parm_1(j,1), SR_parm_1(j,2), SR_parm_1(j,3), SR_parm_1(j,4), SR_parm_1(j,5), SR_parm_1(j,6), SR_parm_1(j,7), SR_parm_Like(j));
+    Report_Parm(NP, active_count, Activ, SR_parm(j), SR_parm_1(j,1), SR_parm_1(j,2), SR_parm_1(j,3), SR_parm_use(j), SR_parm_1(j,4), SR_parm_1(j,5), SR_parm_1(j,6), SR_parm_1(j,7), SR_parm_Like(j));
   }
 
   if(recdev_cycle>0)
@@ -2551,7 +2551,7 @@ FUNCTION void write_bigoutput()
         active_count++;
         Activ=1;
       }
-      Report_Parm(NP, active_count, Activ, recdev_cycle_parm(j), recdev_cycle_parm_RD(j,1), recdev_cycle_parm_RD(j,2), recdev_cycle_parm_RD(j,3), recdev_cycle_parm_RD(j,4), recdev_cycle_parm_RD(j,5), recdev_cycle_parm_RD(j,6), recdev_cycle_parm_RD(j,7), recdev_cycle_Like(j));
+      Report_Parm(NP, active_count, Activ, recdev_cycle_parm(j), recdev_cycle_parm_RD(j,1), recdev_cycle_parm_RD(j,2), recdev_cycle_parm_RD(j,3), recdev_cycle_use(j), recdev_cycle_parm_RD(j,4), recdev_cycle_parm_RD(j,5), recdev_cycle_parm_RD(j,6), recdev_cycle_parm_RD(j,7), recdev_cycle_Like(j));
     }
   }
 
@@ -2562,11 +2562,11 @@ FUNCTION void write_bigoutput()
         if( active(recdev_early) )
         {
           active_count++;
-          SS2out<<" "<<active_count<<" _ _ _ _ act "<<CoVar(active_count,1)<<" "<<parm_gradients(active_count);
+          SS2out<<" "<<active_count<<" "<<recdev_early_PH<<" "<<recdev_LO<<" "<<recdev_HI<<" "<<recdev_RD(i)<<" "<<recdev_use(i)<<" act "<<CoVar(active_count,1)<<" "<<parm_gradients(active_count);
         }
         else
           {
-            SS2out<<" _ _ _ _ _ NA _ _ ";
+            SS2out<<" _ _ _ _ _ _ NA _ _ ";
           }
         SS2out <<" dev "<<endl;
           }
@@ -2579,11 +2579,11 @@ FUNCTION void write_bigoutput()
         if( active(recdev1)||active(recdev2) )
         {
           active_count++;
-          SS2out<<" "<<active_count<<" _ _ _ _ act "<<CoVar(active_count,1)<<" "<<parm_gradients(active_count);
+          SS2out<<" "<<active_count<<" "<<recdev_PH<<" "<<recdev_LO<<" "<<recdev_HI<<" "<<recdev_RD(i)<<" "<<recdev_use(i)<<" act "<<CoVar(active_count,1)<<" "<<parm_gradients(active_count);
         }
         else
           {
-            SS2out<<" _ _ _ _ _ NA _ _ ";
+            SS2out<<" _ _ _ _ _ _ NA _ _ ";
           }
         SS2out <<" dev "<<endl;
           }
@@ -2595,9 +2595,11 @@ FUNCTION void write_bigoutput()
       {
         NP++; SS2out<<NP<<" "<<ParmLabel(NP)<<" "<<Fcast_recruitments(i);
         if(active(Fcast_recruitments))
-        {active_count++;           SS2out<<" "<<active_count<<" _ _ _ _ act "<<CoVar(active_count,1)<<" "<<parm_gradients(active_count);}
+        {active_count++;
+          SS2out<<" "<<active_count<<" "<<Fcast_recr_PH2<<" "<<recdev_LO<<" "<<recdev_HI<<" "<<recdev_RD(i)<<" "<<recdev_use(i)<<" act "<<CoVar(active_count,1)<<" "<<parm_gradients(active_count);
+        }
         else
-        {SS2out<<"  _ _ _ _ _ NA _ _ ";}
+        {SS2out<<"  _ _ _ _ _ _ NA _ _ ";}
         SS2out <<" dev "<<endl;
       }
     }
@@ -2608,9 +2610,9 @@ FUNCTION void write_bigoutput()
         {
           NP++; SS2out<<NP<<" "<<ParmLabel(NP)<<" "<<Fcast_impl_error(i);
           if(active(Fcast_impl_error))
-          {active_count++;           SS2out<<" "<<active_count<<" _ _ _ _ act "<<CoVar(active_count,1)<<" "<<parm_gradients(active_count);}
+          {active_count++; SS2out<<" "<<active_count<<" "<<Fcast_recr_PH2<<" -1 1 _ _ act "<<CoVar(active_count,1)<<" "<<parm_gradients(active_count);}
           else
-          {SS2out<<"  _ _ _ _ _ NA _ _ ";}
+          {SS2out<<"  _ _ _ _ _ _ NA _ _ ";}
         SS2out <<" dev "<<endl;
         }
       }
@@ -2624,7 +2626,7 @@ FUNCTION void write_bigoutput()
       active_count++;
       Activ=1;
     }
-    Report_Parm(NP, active_count, Activ, init_F(j), init_F_LO(j), init_F_HI(j), init_F_RD(j), init_F_PR(j), init_F_CV(j),  init_F_PRtype(j),init_F_PH(j), init_F_Like(j));
+    Report_Parm(NP, active_count, Activ, init_F(j), init_F_LO(j), init_F_HI(j), init_F_RD(j), init_F_use(j), init_F_PR(j), init_F_CV(j),  init_F_PRtype(j),init_F_PH(j), init_F_Like(j));
   }
 
     if(F_Method==2)
@@ -2635,10 +2637,10 @@ FUNCTION void write_bigoutput()
         if(active(F_rate(i)))
         {
           active_count++;
-          SS2out<<" "<<active_count<<" "<<Fparm_PH(i)<<" 0.0  8.0  _ act "<<CoVar(active_count,1);
+          SS2out<<" "<<active_count<<" "<<Fparm_PH(i)<<" 0.0  8.0  _ "<<Fparm_use(i)<<" act "<<CoVar(active_count,1);
         }
         else
-        {SS2out<<" _ _ _ _ _ NA _ ";}
+        {SS2out<<" _ _ _ _ _ _ NA _ ";}
         SS2out <<" F "<<endl;
       }
     }
@@ -2652,7 +2654,7 @@ FUNCTION void write_bigoutput()
       active_count++;
       Activ=1;
     }
-    Report_Parm(NP, active_count, Activ, Q_parm(j), Q_parm_LO(j), Q_parm_HI(j), Q_parm_RD(j), Q_parm_PR(j), Q_parm_CV(j),  Q_parm_PRtype(j), Q_parm_PH(j), Q_parm_Like(j));
+    Report_Parm(NP, active_count, Activ, Q_parm(j), Q_parm_LO(j), Q_parm_HI(j), Q_parm_RD(j), Q_parm_use(j), Q_parm_PR(j), Q_parm_CV(j),  Q_parm_PRtype(j), Q_parm_PH(j), Q_parm_Like(j));
   }
 
   for (j=1;j<=N_selparm2;j++)
@@ -2664,7 +2666,7 @@ FUNCTION void write_bigoutput()
       active_count++;
       Activ=1;
     }
-    Report_Parm(NP, active_count, Activ, selparm(j), selparm_LO(j), selparm_HI(j), selparm_RD(j), selparm_PR(j), selparm_CV(j), selparm_PRtype(j), selparm_PH(j), selparm_Like(j));
+    Report_Parm(NP, active_count, Activ, selparm(j), selparm_LO(j), selparm_HI(j), selparm_RD(j), selparm_use(j), selparm_PR(j), selparm_CV(j), selparm_PRtype(j), selparm_PH(j), selparm_Like(j));
   }
 
 
@@ -2680,7 +2682,7 @@ FUNCTION void write_bigoutput()
         active_count++;
         Activ=1;
       }
-      Report_Parm(NP, active_count, Activ, TG_parm(j), TG_parm_LO(j), TG_parm_HI(j), TG_parm2(j,3), TG_parm2(j,4), TG_parm2(j,5), TG_parm2(j,6), TG_parm_PH(j), TG_parm_Like(j));
+      Report_Parm(NP, active_count, Activ, TG_parm(j), TG_parm_LO(j), TG_parm_HI(j), TG_parm2(j,3), TG_parm_use(j), TG_parm2(j,4), TG_parm2(j,5), TG_parm2(j,6), TG_parm_PH(j), TG_parm_Like(j));
     }
   }
 
@@ -2693,10 +2695,10 @@ FUNCTION void write_bigoutput()
       if(parm_dev_PH(i)>0)
       {
         active_count++;
-        SS2out<<" "<<active_count<<" "<<parm_dev_PH(i)<<" _ _ _ act "<<CoVar(active_count,1);
+        SS2out<<" "<<active_count<<" "<<parm_dev_PH(i)<<" -10 10 "<<parm_dev_RD(i,j)<<" "<<parm_dev_use(i,j)<<" act "<<CoVar(active_count,1)<<" "<<parm_gradients(active_count);
       }
       else
-      {SS2out<<" _ _ _ _ _ NA _ ";}
+      {SS2out<<" _ _ _ _ _ _ NA _ ";}
       SS2out<<" dev "<<endl;
     }
   }
@@ -5304,7 +5306,7 @@ FUNCTION void write_Bzero_output()
 
 //********************************************************************
  /*  SS_Label_FUNCTION 28 Report_Parm */
-FUNCTION void Report_Parm(const int NParm, const int AC, const int Activ, const prevariable& Pval, const double& Pmin, const double& Pmax, const double& RD, const double& PR, const double& CV, const int PR_T, const int PH, const prevariable& Like)
+FUNCTION void Report_Parm(const int NParm, const int AC, const int Activ, const prevariable& Pval, const double& Pmin, const double& Pmax, const double& RD, const double& Jitter, const double& PR, const double& CV, const int PR_T, const int PH, const prevariable& Like)
   {
     dvar_vector parm_val(1,14);
     dvar_vector prior_val(1,14);
@@ -5318,7 +5320,7 @@ FUNCTION void Report_Parm(const int NParm, const int AC, const int Activ, const 
       parmvar=CoVar(AC,1);
       parmgrad=parm_gradients(AC);
 
-      SS2out<<" "<<AC<<" "<<PH<<" "<<Pmin<<" "<<Pmax<<" "<<RD;
+      SS2out<<" "<<AC<<" "<<PH<<" "<<Pmin<<" "<<Pmax<<" "<<RD<<" "<<Jitter;
       if (Pval==RD)
       {
         SS2out<<" NO_MOVE ";
@@ -5341,7 +5343,7 @@ FUNCTION void Report_Parm(const int NParm, const int AC, const int Activ, const 
     }
     else
     {
-      SS2out<<" _ "<<PH<<" "<<Pmin<<" "<<Pmax<<" "<<RD<<" NA _ _ ";
+      SS2out<<" _ "<<PH<<" "<<Pmin<<" "<<Pmax<<" "<<RD<<" "<<Jitter<<" NA _ _ ";
     }
 
     if(PR_T>0)

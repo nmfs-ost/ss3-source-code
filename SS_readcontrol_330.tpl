@@ -3582,10 +3582,6 @@
   echoinput<<"ParCount "<<ParCount<<"   Active parameters: "<<active_count<<endl<<"Turn_off_phase "<<Turn_off_phase<<endl<<" max_phase "<<max_phase<<endl;
   echoinput<<active_parm.indexmax()<<endl;
 
-
-
-
-
   if(Turn_off_phase<=0)
   {func_eval(1)=1;}
   else
@@ -3901,6 +3897,22 @@
   }
   echoinput<<"Active parameters plus derived quantities:  "<<CoVar_Count<<endl;
  END_CALCS
+
+//  containers for parameter values after jitter
+    vector MGparm_use(1,N_MGparm2)
+    vector SR_parm_use(1,N_SRparm2);
+    vector recdev_cycle_use(1,recdev_cycle);
+    vector recdev_use(recdev_first,YrMax);
+    vector recdev_RD(recdev_first,YrMax);
+    vector impl_error_use(endyr+1,YrMax);
+    vector Q_parm_use(1,Q_Npar2);
+    vector init_F_use(1,N_init_F);
+    vector Fparm_use(1,N_Fparm);
+    vector selparm_use(1,N_selparm2);
+   !!k=Do_TG*(3*N_TG+2*Nfleet);
+    vector TG_parm_use(1,k);
+    matrix parm_dev_RD(1,N_parm_dev,parm_dev_minyr,parm_dev_maxyr);
+    matrix parm_dev_use(1,N_parm_dev,parm_dev_minyr,parm_dev_maxyr);
 
   !!k=gmorph*(YrMax-styr+1);
 !!//  SS_Label_Info_4.14.4 #Create matrix CoVar and set it to receive the covariance output
