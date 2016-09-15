@@ -480,19 +480,24 @@ PRELIMINARY_CALCS_SECTION
     {
       for (j=1;j<=recdev_cycle;j++)
       if(recdev_cycle_PH(j)>0)
-      {recdev_cycle_parm(i) = Check_Parm(recdev_cycle_LO(i),recdev_cycle_HI(i), jitter, recdev_cycle_parm(i));}
+      {recdev_cycle_parm(j) = Check_Parm(recdev_cycle_LO(j),recdev_cycle_HI(j), jitter, recdev_cycle_parm(j));}
       echoinput<< " recdev_cycle after check "<<recdev_cycle_parm<<endl;
       recdev_cycle_use=value(recdev_cycle_parm);
     }
 
-    recdev_RD(recdev_early_start,recdev_early_end)=value(recdev_early(recdev_early_start,recdev_early_end));
-    if(recdev_do_early>0 && recdev_early_PH>0)
+    if(recdev_do_early>0)
     {
-    for (y=recdev_early_start;y<=recdev_early_end;y++)
-      {recdev_early(y) = Check_Parm(recdev_LO, recdev_HI, jitter, recdev_early(y));}
+        recdev_RD(recdev_early_start,recdev_early_end)=value(recdev_early(recdev_early_start,recdev_early_end));
+
+        if(recdev_early_PH>0)
+        {
+            for (y=recdev_early_start;y<=recdev_early_end;y++)
+                {recdev_early(y) = Check_Parm(recdev_LO, recdev_HI, jitter, recdev_early(y));}
 //      recdev_early -=sum(recdev_early)/(recdev_early_end-recdev_early_start+1);
+        }
+
+        recdev_use(recdev_early_start,recdev_early_end)=value(recdev_early(recdev_early_start,recdev_early_end));
     }
-    recdev_use(recdev_early_start,recdev_early_end)=value(recdev_early(recdev_early_start,recdev_early_end));
 
     if(recdev_PH>0 && do_recdev>0)
     {
@@ -513,7 +518,7 @@ PRELIMINARY_CALCS_SECTION
         recdev_use(recdev_start,recdev_end)=value(recdev2(recdev_start,recdev_end));
       }
     }
-    
+
     if(Do_Forecast>0)
       {
         recdev_RD(recdev_end+1,YrMax)=value(Fcast_recruitments(recdev_end+1,YrMax));
