@@ -91,11 +91,14 @@ FUNCTION void get_growth1()
       for(gp=1;gp<=N_GP;gp++)
       for (j=1;j<=8;j++)
       {
+        echoinput<<j<<"  wt_len seas "<<MGparm_seas_effects(j)<<endl;
         if(MGparm_seas_effects(j)>0)
         {
           wtlen_seas(0,gp,j)=0.0;
           for (s=1;s<=nseas;s++)
           {
+            echoinput<<" seas "<<s<<endl;
+            echoinput<<"parm "<<MGparm(MGparm_seas_effects(j)+s)<<endl;
             wtlen_seas(s,gp,j)=mfexp(MGparm(MGparm_seas_effects(j)+s));
             wtlen_seas(0,gp,j)+=wtlen_seas(s,gp,j)*seasdur(s);  //  this seems not to be used
           }

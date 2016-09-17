@@ -1176,7 +1176,6 @@
   int MGparm_doseas
   int N_MGparm_seas                            // number of MGparms that use seasonal effects
  LOCAL_CALCS
-   echoinput<<MGparm_seas_effects<<" MGparm_seas_effects"<<endl;
   adstring_array MGseasLbl;
   MGseasLbl+="F-WL1"+CRLF(1);
   MGseasLbl+="F-WL2"+CRLF(1);
@@ -1203,6 +1202,7 @@
         }
       }
     }
+   echoinput<<MGparm_seas_effects<<" MGparm_seas_effects"<<endl;
   }
  END_CALCS
   init_matrix MGparm_seas_1(1,N_MGparm_seas,1,7)  // read matrix that defines the seasonal parms

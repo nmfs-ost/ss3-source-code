@@ -174,6 +174,7 @@
         for (settle=1;settle<=N_settle_assignments;settle++)
         {
           real_month=1.0 + azero_seas(settlement_pattern_rd(settle,2))*12.;  //  converts birthseason to month
+          settlement_pattern_rd(settle,2)=real_month;
           if(N_settle_timings==0)
           {
             N_settle_timings++;
@@ -1274,7 +1275,6 @@
   int N_MGparm_seas                            // number of MGparms that use seasonal effects
  LOCAL_CALCS
   {
-   echoinput<<MGparm_seas_effects<<" MGparm_seas_effects"<<endl;
 
   MGparm_doseas=sum(MGparm_seas_effects);
   N_MGparm_seas=0;  // counter for assigned parms
@@ -1513,15 +1513,17 @@
   MGseasLbl+="L1"+CRLF(1);
   MGseasLbl+="VBK"+CRLF(1);
   MGparm_doseas=sum(MGparm_seas_effects);
+  N_MGparm_seas=0;  // counter for assigned parms
   if(MGparm_doseas>0)
   {
     for (j=1;j<=10;j++)
     {
       if(MGparm_seas_effects(j)>0)
       {
+        MGparm_seas_effects(j)=N_MGparm+timevary_parm_cnt_MG+N_MGparm_seas;  // store base parameter count
         for (s=1;s<=nseas;s++)
         {
-        MGparm_seas_effects(j)=N_MGparm+timevary_parm_cnt_MG+N_MGparm_seas;  // store base parameter count
+          N_MGparm_seas++; 
           ParCount++; ParmLabel+=MGseasLbl(j)+"_seas_"+NumLbl(s);
         }
       }
