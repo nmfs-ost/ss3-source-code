@@ -1317,7 +1317,7 @@ FUNCTION void Make_FishSelex()
     tz=styr+(y-styr)*nseas+s-1;  // can use y, not yf, because wtage_emp values are read in and can extend into forecast
     for (f=1;f<=Nfleet;f++)
     {
-      if(timevary_sel(yf,f)>0 || timevary_sel(yf,f+Nfleet)>0 || save_for_report>0)
+      if(timevary_sel(yf,f)>0 || timevary_sel(yf,f+Nfleet)>0 || WTage_rd==1 || save_for_report>0)
       {
         makefishsel_yr = yf;
         fs=f+Nfleet;  //  for the age dimensioning

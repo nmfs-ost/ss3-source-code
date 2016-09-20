@@ -34,11 +34,9 @@ FUNCTION void evaluate_the_objective_function()
         if(Svy_N_fleet(f)>0)
         {
           Svy_se_use(f) = Svy_se_rd(f);
-          echoinput<<f<<" Svy_se_rd: "<<Svy_se_use(f)<<endl;
           if(Q_setup(f,3)>0)
             {
               Svy_se_use(f)+=Q_parm(Q_setup_parms(f,2));  // add extra stderr
-              echoinput<<"add: "<<Q_parm(Q_setup_parms(f,2))<<endl;
             } 
   // SS_Label_Info_25.1.1 #combine for super-periods
           for (j=1;j<=Svy_super_N(f);j++)
@@ -804,6 +802,7 @@ FUNCTION void evaluate_the_objective_function()
    obj_fun += equ_catch_like*init_equ_lambda(k_phase);
 //   cout<<" obj_fun equ_cat "<<obj_fun<<endl;
    obj_fun += column(catch_lambda,k_phase)*catch_like;
+//            catch_like(f) += 0.5*square( (log(1.1*catch_ret_obs(f,t)) -log(catch_fleet(t,f,i)*catch_mult(y,f)+0.1*catch_ret_obs(f,t))) / catch_se(t,f));
 //   cout<<" obj_fun catch "<<obj_fun<<catch_like<<endl;
    obj_fun += recr_like*recrdev_lambda(k_phase);
 //   cout<<" obj_fun recr "<<obj_fun<<endl;

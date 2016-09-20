@@ -2541,7 +2541,7 @@
    N_parm_dev:            integer that is incremented in create_timevary as dev vectors are created; cumulative across all types of parameters
   */
        timevary_def.push_back (timevary_setup(1,13));
-       for(y=styr-3;y<=YrMax+1;y++) {timevary_sel(y,selparm_fleet(j))=timevary_pass(y);}  // year vector for this category og MGparm
+       for(y=styr-3;y<=YrMax+1;y++) {timevary_sel(y,selparm_fleet(j))=timevary_pass(y);}  // year vector for this category
      }
   }
    timevary_setup.initialize();
@@ -2549,7 +2549,10 @@
    timevary_def.push_back (timevary_setup(1,13));
 
    timevary_parm_cnt_sel=timevary_parm_cnt;  //  last timevary_selparm
-   N_selparm2=N_selparm+timevary_parm_cnt_sel+1-timevary_parm_start_sel;
+   if(timevary_parm_start_sel==0)
+    {N_selparm2=N_selparm;}
+    else
+    {N_selparm2=N_selparm+timevary_parm_cnt_sel-timevary_parm_start_sel+1;}
    echoinput<<"N_selparm "<<N_selparm<<" "<<N_selparm2<<" "<<timevary_parm_start_sel<<" "<<timevary_parm_cnt_sel<<endl;
    for(y=0;y<=timevary_parm_cnt;y++)
    {
@@ -2578,6 +2581,7 @@
     selparm_PH(f)=selparm_1(f,7);
    }
    j=N_selparm;
+   echoinput<<N_selparm<<" "<<timevary_parm_start_sel<<" "<<timevary_parm_cnt_sel<<endl;
    if(timevary_parm_cnt_sel>timevary_parm_start_sel)
    for (f=timevary_parm_start_sel;f<=timevary_parm_cnt_sel;f++)
    {
