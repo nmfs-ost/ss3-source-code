@@ -2,29 +2,15 @@
  /*  SS_Label_Function_14 #Get_MGsetup:  apply time-varying factors this year to the MG parameters to create mgp_adj vector */
 FUNCTION void get_MGsetup()
   {
-  mgp_adj=MGparm;
-  int y1;
+    mgp_adj=MGparm;  //  set all to base parm value
+    int y1;
 
-  //  SS_Label_Info_14.4 #Switch(parm_adjust_method)
-  switch(parm_adjust_method)
-  {
-    case 3:
+    for (f=1;f<=N_MGparm;f++)
     {
-      //  no break statement, so will execute case 1 code
-    }
-  //  SS_Label_Info_14.4.1 #Standard parm_adjust_method (1 or 3), loop MGparms
-    case 1:
-    {
-      for (f=1;f<=N_MGparm;f++)
+      if(MGparm_timevary(f)>0)   // not  timevary
       {
-
-        if(MGparm_timevary(f)>0)   // has timevary
-        {
-          mgp_adj(f)=parm_timevary(MGparm_timevary(f),yz);
-        }
-
-  //  SS_Label_Info_14.4.1.4 #Do bound check if parm_adjust_method=1
-        if(parm_adjust_method==1 && (save_for_report==1 || do_once==1))  // so does not check bounds if parm_adjust_method==3
+        mgp_adj(f)=parm_timevary(MGparm_timevary(f),yz);
+        if(parm_adjust_method==1 && (save_for_report>0 || do_once==1))
         {
           if(mgp_adj(f)<MGparm_1(f,1) || mgp_adj(f)>MGparm_1(f,2))
           {
@@ -33,37 +19,17 @@ FUNCTION void get_MGsetup()
             MGparm_1(f,1)<<" "<<MGparm_1(f,2)<<" "<<MGparm(f)<<" "<<mgp_adj(f)<<" "<<ParmLabel(f)<<endl;
           }
         }
-      }  // end parameter loop (f)
-      break;
-    }
-
-  //  SS_Label_Info_14.4.2 #Constrained parm_adjust_method (2), loop MGparms
-    case 2:
-    {
-      for (f=1;f<=N_MGparm;f++)
-      {
-        j=0;
-
-        if(MGparm_1(f,13)!=0)   // blocks or trends
-        {
-          mgp_adj(f)=parm_timevary(MGparm_timevary(f),yz);
-        }
-        temp=log((MGparm_HI(f)-MGparm_LO(f)+0.0000002)/(mgp_adj(f)-MGparm_LO(f)+0.0000001)-1.)/(-2.);   // transform the parameter
-
-        if(j==1) mgp_adj(f)=MGparm_LO(f)+(MGparm_HI(f)-MGparm_LO(f))/(1.+mfexp(-2.*temp));   // backtransform
-      }  // end parameter loop (f)
-      break;
-    }  // end case 2
-  }   // end switch method
+      }
+    }  // end parm loop
 
   //  SS_Label_Info_14.5 #if MGparm method =1 (no offsets), then do direct assignment if parm value is 0.0. (only for natMort and growth parms)
-  if(MGparm_def==1)
-  {
-    for (j=1;j<=N_MGparm;j++)
+    if(MGparm_def==1)
     {
-      if(MGparm_offset(j)>0) mgp_adj(j) = mgp_adj(MGparm_offset(j));
+      for (j=1;j<=N_MGparm;j++)
+      {
+        if(MGparm_offset(j)>0) mgp_adj(j) = mgp_adj(MGparm_offset(j));
+      }
     }
-  }
   if(save_for_report>0) mgp_save(yz)=value(mgp_adj);
   }
 

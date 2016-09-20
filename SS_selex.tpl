@@ -29,7 +29,6 @@ FUNCTION void get_selectivity()
 
   Ip=0;
 
-
   //  SS_Label_Info_22.2 #Loop all fisheries and surveys twice; first for size selectivity, then for age selectivity
   for (f=1;f<=2*Nfleet;f++)
   {
@@ -39,80 +38,28 @@ FUNCTION void get_selectivity()
     {    // recalculate the selex in this year x type
       if(N_selparmvec(f)>0)      // type has parms, so look for adjustments
       {
-        switch(parm_adjust_method)
+        for (j=1;j<=N_selparmvec(f);j++)
         {
-          default:
+          if(selparm_timevary(Ip+j)==0)
+            {sp(j)=selparm(Ip+j);}
+          else  //  time-varying
           {
-            break;
-          }
-          case 0:
-          {
-            for (j=1;j<=N_selparmvec(f);j++)
-            {
-              sp(j)=selparm(Ip+j);
-              }
-            break;
-          }
-          case 3:
-          {
-            // no break, so will do the case 1 code
-          }
-  //  SS_Label_Info_22.2.2 #Apply time-varying changes to selparm without constraining to the min-max on the base parameter
-          case(1):
-          {
-            for (j=1;j<=N_selparmvec(f);j++)
-            {
-              if(selparm_timevary(Ip+j)!=0)
-              {
-                sp(j)=parm_timevary(selparm_timevary(Ip+j),y);
-              }
-              else
-              {sp(j)=selparm(Ip+j);}
-
-  //  SS_Label_Info_14.4.1.2 #Adjust for env linkage
-  // where:  selparm_env is zero if no link else contains the parameter # of the first link parameter
-  //         selparm_envtype identifies the form of the linkage, some of which take more than one link parameeter
-  //         selparm_envuse identifies the ID of the environmental time series being linked to
-  //         env_data is a dvar_matrix populated with the read env data for columns 1-N_envvariables
-  //         and populated with summary biamass for column -1 to allow for density-dependence
-  //         the integer values of selparm_envtype are created when parsing the input:
-  //           k=int(selparm_1(f,8)/100);  //  find the link code
-  // 	         selparm_envtype(f)=k;
-  // 	         selparm_envuse(f)=selparm_1(f,8)-k*100;
-  //   	       if(selparm_envuse(f)==99) selparm_envuse(f)=-1;  //  for linking to spawn biomass
-  //        	 if(selparm_envuse(f)==98) selparm_envuse(f)=-2;  //  for linking to recruitment
-            if(parm_adjust_method==1 && (save_for_report>0 || do_once==1))  // so does not check bounds if adjust_method==3
+            sp(j)=parm_timevary(selparm_timevary(Ip+j),y);
+            if(parm_adjust_method==1 && (save_for_report>0 || do_once==1))
             {
               if(sp(j)<selparm_1(Ip+j,1) || sp(j)>selparm_1(Ip+j,2))
               {
                 N_warn++;
-                warning<<" adjusted selparm out of bounds (Parm#, yr, min, max, base, value) "<<
+                warning<<" adjusted selparm out of base parm bounds (Parm#, yr, min, max, base, value) "<<
                 Ip+j<<" "<<y<<" "<<selparm_1(Ip+j,1)<<" "<<selparm_1(Ip+j,2)<<" "<<selparm(Ip+j)<<" "<<sp(j)<<endl;
               }
             }
-            }  // end j parm loop
-            break;
           }
-  //  SS_Label_Info_22.2.3 #Apply time-varying changes to selparm with constraining to the min-max on the base parameter
-          case(2):
-          {
-            for (j=1;j<=N_selparmvec(f);j++)
-            {
-              if(selparm_timevary(Ip+j)!=0)
-              {
-                sp(j)=parm_timevary(selparm_timevary(Ip+j),y);  //  bound constraint needs to have been done in timevaryparm.tpl
-              }
-              else
-              {sp(j)=selparm(Ip+j);}
-
-            }  // end parameter loop j
-            break;
-          }
-        }
+        }  // end j parm loop
         if(docheckup==1) echoinput<<" selex parms for fleet: "<<f<<" "<<endl<<sp(1,N_selparmvec(f))<<endl;
         if(save_for_report>0 || do_once==1)
         {for (j=1;j<=N_selparmvec(f);j++) save_sp_len(y,f,j)=sp(j);}
-      }  // end adjustment of parms
+      }
 
       if(f<=Nfleet)  // do size selectivity, retention, discard mort
       {

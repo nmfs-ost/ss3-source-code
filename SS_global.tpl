@@ -369,8 +369,6 @@ GLOBALS_SECTION
            else
            {tempvec.fill("{-10.,10.0,1.0,1.0,0.5,6,4}");}
            timevary_parm_rd.push_back (tempvec(1,7));
-           if(parm_adjust_method==2) {N_warn++; cout<<" EXIT - see warning "<<endl; warning<<"multiplicative env effect on MGparm: "<<j
-           <<" not allowed because parm_adjust_method==2; STOP"<<endl; exit(1);}
            break;
          }
         case 2:  //  additive
@@ -388,8 +386,6 @@ GLOBALS_SECTION
          }
         case 4:  //  logistic with offset
          {
-           if(parm_adjust_method==2) {N_warn++; cout<<" EXIT - see warning "<<endl; warning<<"multiplicative env effect on MGparm: "<<j
-           <<" not allowed because parm_adjust_method==2; STOP"<<endl; exit(1);}
            ParCount++; ParmLabel+=ParmLabel(j)+"_ENV_offset";
            timevary_parm_cnt++;
            dvector tempvec(1,7); 

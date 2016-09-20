@@ -799,10 +799,11 @@
 
  LOCAL_CALCS
   autogen_timevary=0;
-    if(parm_adjust_method<1 || parm_adjust_method>3)
+    if(parm_adjust_method!=1 || parm_adjust_method!=3)
     {
-      N_warn++; cout<<" EXIT - see warning "<<endl;
-      warning<<" illegal parm_adjust_method; must be 1 or 2 or 3 "<<endl;  exit(1);
+      N_warn++; 
+      warning<<" Only parm_adjust_method 1 and 3 implemented in SS3.30; resetting value to 1 "<<endl;
+      parm_adjust_method=1;
     }
   femfrac(1,N_GP)=fracfemale;
   if(gender==2) femfrac(N_GP+1,N_GP+N_GP)=1.-fracfemale;

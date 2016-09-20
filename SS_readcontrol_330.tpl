@@ -500,7 +500,7 @@
   }
  END_CALCS
 
-   init_int parm_adjust_method   //  1=do V1.xx approach to adjustment by env, block or dev; 2=use new logistic approach
+   init_int parm_adjust_method 
    !! echoinput<<parm_adjust_method<<"  timevarying parameter constraint method"<<endl;
    init_int autogen_timevary;  //  0 means to autogenerate all time-vary parameters; 1 means to read
    !! echoinput<<autogen_timevary<<"  timevarying parameter autogenerate (0) or read (1)"<<endl;

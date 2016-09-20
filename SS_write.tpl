@@ -1802,15 +1802,14 @@ FUNCTION void write_nucontrol()
   {report4<<"#_Cond "<<0<<" #_blocks_per_pattern "<<endl<<"# begin and end years of blocks"<<endl;}
   report4<<"#"<<endl;
   report4<<"# controls for all timevary parameters "<<endl;
-  report4<<parm_adjust_method<<
-   " #_env/block/dev_adjust_method for all time-vary parms (1=standard; 2=logistic transform keeps in base parm bounds; 3=standard w/ no bound check)"<<endl;
-  if(timevary_cnt>0)  //  corresponds to autogen_timevary
+  report4<<parm_adjust_method<<" #_env/block/dev_adjust_method for all time-vary parms (1=warn relative to base parm bounds; 3=no bound check)"<<endl;
+  if(timevary_cnt>0)
   {
-    report4<<1<<" # timevarying parameter autogenerate (0) or read (1)"<<endl;
+    report4<<"1 ## 0 means to autogenerate time-varying parameters; 1 means to read each time-varying parameter line"<<endl;
   }
   else
   {
-    report4<<0<<" # timevarying parameter autogenerate (0) or read (1)"<<endl;
+    report4<<"0 ## 0 means to autogenerate time-varying parameters; 1 means to read each time-varying parameter line"<<endl;
   }
 
   report4<<"#"<<endl<<"# setup for M, growth, maturity, fecundity, recruitment distibution, movement "<<endl;
