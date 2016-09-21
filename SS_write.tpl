@@ -1764,6 +1764,7 @@ FUNCTION void write_nucontrol()
   if(N_CC>0) report4<<Control_Comments<<endl;
   report4 << "#_data_and_control_files: "<<datfilename<<" // "<<ctlfilename<<endl;
   report4<<"#_"<<version_info<<endl<<"#_"<<version_info2<<endl;
+  report4<<WTage_rd<<"  # 0 means do not read wtatage.ss; 1 means read and use wtatage.ss and also read and use growth parameters"<<endl;
   report4 << N_GP << "  #_N_Growth_Patterns"<<endl;
   report4 << N_platoon << " #_N_platoons_Within_GrowthPattern "<<endl;
   if(N_platoon==1) report4<<"#_Cond ";
@@ -1827,12 +1828,13 @@ FUNCTION void write_nucontrol()
     if(Grow_type<=3)
     {report4<<AFIX<<" #_Growth_Age_for_L1"<<endl<<
       AFIX2<<" #_Growth_Age_for_L2 (999 to use as Linf)"<<endl<<
-      Linf_decay<<" #_exponential decay for growth above maxage (fixed at 0.2 in 3.24; should approx initial Z)"<<endl;
-      }
-    else
-    {report4<<" #_No Growth_Age_for_L1 and L2"<<endl;}
-    if(Grow_type==3)
+      Linf_decay<<" #_exponential decay for growth above maxage (fixed at 0.2 in 3.24; value should approx initial Z; -999 replicates 3.24)"<<endl;
+      report4<<"0  #_placeholder for future growth feature"<<endl;
+      if(Grow_type==3)
       {report4<<Age_K_count<<" # number of K multipliers to read"<<endl<<Age_K_points<<" # ages for K multiplier"<<endl;}
+    }
+    else
+    {report4<<" #_growth type 4 is not implemented"<<endl;}
 
     report4<<SD_add_to_LAA<<" #_SD_add_to_LAA (set to 0.1 for SS2 V1.x compatibility)"<<endl;   // constant added to SD length-at-age (set to 0.1 for compatibility with SS2 V1.x
     report4<<CV_depvar<<" #_CV_Growth_Pattern:  0 CV=f(LAA); 1 CV=F(A); 2 SD=F(LAA); 3 SD=F(A); 4 logSD=F(A)"<<endl;

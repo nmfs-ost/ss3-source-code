@@ -26,6 +26,8 @@
  END_CALCS
 
 !!//  SS_Label_Info_4.2 #Read info for growth patterns, gender, settlement events, platoons
+  init_int WTage_rd  // 0 means do not read wtatage.ss; 1 means read and use wtatage.ss and also read and use growth parameters
+                     //  future option 2 will suppress reading and use of growth
   init_int N_GP  // number of growth patterns (morphs)
   !!echoinput<<N_GP<<" N growth patterns "<<endl;
   init_int N_platoon  //  number of platoons  1, 3, 5 are best values to use
@@ -564,8 +566,8 @@
                       //  forced equal to 0.20 in 3.24 (which also assumed linear, not VBK, growth)
   int first_grow_age;
   !! k=0;
-  !! if(Grow_type<=2) {k=3;}  //  AFIX and AFIX2
-  !! if (Grow_type==3) {k=4;}  //  min and max age for age-specific K
+  !! if(Grow_type<=2) {k=4;}  //  AFIX and AFIX2
+  !! if (Grow_type==3) {k=5;}  //  min and max age for age-specific K
   init_vector tempvec5(1,k)
   int Age_K_count;
 
@@ -582,6 +584,7 @@
     AFIX=tempvec5(1);
     AFIX2=tempvec5(2);
     Linf_decay=tempvec5(3);
+    //  tempvec(4) is a placeholder
   }
   else if(Grow_type==2)
   {
@@ -589,13 +592,15 @@
     AFIX=tempvec5(1);
     AFIX2=tempvec5(2);
     Linf_decay=tempvec5(3);
+    //  tempvec(4) is a placeholder
   }
   else if(Grow_type==3)
   {
     AFIX=tempvec5(1);
     AFIX2=tempvec5(2);
     Linf_decay=tempvec5(3);
-    Age_K_count=tempvec5(4);
+    //  tempvec(4) is a placeholder
+    Age_K_count=tempvec5(5);
     N_growparms=5+Age_K_count;;
   }
   else if(Grow_type==4)
@@ -710,12 +715,8 @@
 
 !!//  SS_Label_Info_4.5.2 #Process biology
    init_int Maturity_Option       // 1=length logistic; 2=age logistic; 3=read age-maturity
-                                  // 4= read age-fecundity by growth_pattern 5=read all from separate wtatage.ss file
-                                  //  6=read length-maturity
- int WTage_rd
-
+                                  //  6=read length-maturi
  LOCAL_CALCS
-  WTage_rd=0;
   echoinput<<Maturity_Option<<"  Maturity_Option"<<endl;
   if(Maturity_Option==3 || Maturity_Option==4)
     {k1=N_GP;}
@@ -729,7 +730,11 @@
   if(Maturity_Option==5)
   {
     echoinput<<" fecundity and weight at age to be read from file:  wtatage.ss"<<endl;
-    WTage_rd=1;
+    if(WTage_rd==0)
+      {
+        N_warn++; warning<<"Exiting.  Must set WTage_rd to 1 to use Maturity_Option 5"<<endl;
+        exit(1);
+      }
   }
  END_CALCS
   init_matrix Age_Maturity(1,k1,0,nages) // for maturity option 3 or 4
