@@ -1602,7 +1602,7 @@ FUNCTION void write_nucontrol()
   NuStart<<datfilename<<endl<<ctlfilename<<endl;
   NuStart<<readparfile<<" # 0=use init values in control file; 1=use ss.par"<<endl;
   NuStart<<rundetail<<" # run display detail (0,1,2)"<<endl;
-  NuStart<<reportdetail<<" # detailed age-structured reports in REPORT.SSO (0,1) "<<endl;
+  NuStart<<reportdetail<<" # detailed age-structured reports in REPORT.SSO (0,1,2) "<<endl;
   NuStart<<docheckup<<" # write detailed checkup.sso file (0,1) "<<endl;
   NuStart<<Do_ParmTrace<<" # write parm values to ParmTrace.sso (0=no,1=good,active; 2=good,all; 3=every_iter,all_parms; 4=every,active)"<<endl;
   NuStart<<Do_CumReport<<" # write to cumreport.sso (0=no,1=like&timeseries; 2=add survey fits)"<<endl;
@@ -1630,6 +1630,7 @@ FUNCTION void write_nucontrol()
   else
   {NuStart<<"#COND 10 15 #_min and max age over which average F will be calculated with F_reporting=4"<<endl;}
   NuStart<<F_std_basis<<" # F_std_basis: 0=raw_F_report; 1=F/Fspr; 2=F/Fmsy ; 3=F/Fbtgt"<<endl;
+  NuStart<<mcmc_output_format<<" # MCMC output format (0=default;1=enhanced;2=full;3=make output subdir for each MCMC vector)"<<endl;
   NuStart<<ALK_tolerance<<" # ALK tolerance (example 0.0001)"<<endl;
   NuStart<<"3.30 # check value for end of file and for version control"<<endl;
   NuStart.close();

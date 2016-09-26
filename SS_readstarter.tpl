@@ -237,9 +237,11 @@
   !!echoinput<<"For Kobe plot, set depletion_basis=2; depletion_level=1.0; F_reporting=your choose; F_std_basis=2"<<endl;
   init_number finish_starter
   number finish_starter2
+  int mcmc_output_format
   number ALK_tolerance
 
  LOCAL_CALCS
+   mcmc_output_format = 0;
    ALK_tolerance=0.0;
    echoinput<<finish_starter<<endl;
    if(finish_starter==999.)
@@ -248,7 +250,13 @@
    // if(finish_starter==3.30)
    {
      echoinput<<"Read files in 3.30 format"<<endl;
+
+     echoinput<<"Now read MCMC output format"<<endl;
+     mcmc_output_format = int(finish_starter);
+     echoinput<<"MCMC output format:  "<<mcmc_output_format<<endl;
+
      echoinput<<"Now read ALK tolerance (suggest 0.0001)"<<endl;
+     *(ad_comm::global_datafile) >> finish_starter;
      ALK_tolerance = finish_starter;
      echoinput<<"ALK tolerance:  "<<ALK_tolerance<<endl;
      // enforce valid range of ALK_tolerance
