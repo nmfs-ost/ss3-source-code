@@ -135,6 +135,7 @@
   !!echoinput<<rundetail<<"  rundetail"<<endl;
   init_int reportdetail
  LOCAL_CALCS
+  if (reportdetail < 0 || reportdetail > 2) reportdetail = 0;
   echoinput<<reportdetail<<"  reportdetail"<<endl;
  END_CALCS
 
