@@ -1630,7 +1630,7 @@ FUNCTION void write_nucontrol()
   else
   {NuStart<<"#COND 10 15 #_min and max age over which average F will be calculated with F_reporting=4"<<endl;}
   NuStart<<F_std_basis<<" # F_std_basis: 0=raw_F_report; 1=F/Fspr; 2=F/Fmsy ; 3=F/Fbtgt"<<endl;
-  NuStart<<mcmc_output_detail<<" # MCMC output detail (0=default;1=enhanced;2=full;3=make output subdir for each MCMC vector)"<<endl;
+  NuStart<<mcmc_output_detail<<" # MCMC output detail (0=default; 1=enhanced; 2=full; 3=make output subdir for each MCMC vector)"<<endl;
   NuStart<<ALK_tolerance<<" # ALK tolerance (example 0.0001)"<<endl;
   NuStart<<"3.30 # check value for end of file and for version control"<<endl;
   NuStart.close();
@@ -2391,14 +2391,26 @@ FUNCTION void write_bigoutput()
   SS2out<<"X AGE_SELEX"<<endl;
   SS2out<<"X ENVIRONMENTAL_DATA"<<endl;
   SS2out<<"X TAG_Recapture"<<endl;
-  SS2out<<"X NUMBERS_AT_AGE"<<endl;
-  SS2out<<"X NUMBERS_AT_LENGTH"<<endl;
-  SS2out<<"X CATCH_AT_AGE"<<endl;
+  SS2out<<"X NUMBERS_AT_AGE";
+  if (reportdetail == 2) SS2out<<" ---";    // indicate not included
+  SS2out<<endl;
+  SS2out<<"X NUMBERS_AT_LENGTH";
+  if (reportdetail == 2) SS2out<<" ---";    // indicate not included
+  SS2out<<endl;
+  SS2out<<"X CATCH_AT_AGE";
+  if (reportdetail == 2) SS2out<<" ---";    // indicate not included
+  SS2out<<endl;
   SS2out<<"X BIOLOGY"<<endl;
   SS2out<<"X SPR/YPR_PROFILE"<<endl;
-  SS2out<<"X ACTUAL_SELECTIVITY_MSY"<<endl;
-  SS2out<<"X KNIFE_AGE_SELECTIVITY_MSY"<<endl;
-  SS2out<<"X SLOT_AGE_SELECTIVITY_MSY"<<endl;
+  SS2out<<"X ACTUAL_SELECTIVITY_MSY";
+  if (reportdetail == 2) SS2out<<" ---";    // indicate not included
+  SS2out<<endl;
+  SS2out<<"X KNIFE_AGE_SELECTIVITY_MSY";
+  if (reportdetail == 2) SS2out<<" ---";    // indicate not included
+  SS2out<<endl;
+  SS2out<<"X SLOT_AGE_SELECTIVITY_MSY";
+  if (reportdetail == 2) SS2out<<" ---";    // indicate not included
+  SS2out<<endl;
   SS2out<<"X Dynamic_Bzero "<<endl;
 
   SS2out<<endl<<"DEFINITIONS"<<endl;
@@ -2508,7 +2520,7 @@ FUNCTION void write_bigoutput()
   SS2out << "effN_mult_Len_at_age "<<var_adjust(6)<<endl;
   SS2out << "effN_mult_generalized_sizecomp "<<var_adjust(7)<<endl;
 
-  SS2out<<"MG_parms"<<"Using_offset_approach_#:_"<<MGparm_def<<"  (1=none, 2= M, G, CV_G as offset from female_GP1, 3=like SS2 V1.x)"<<endl;
+  SS2out<<"MG_parms_Using_offset_approach_#:_"<<MGparm_def<<"  (1=none, 2= M, G, CV_G as offset from female_GP1, 3=like SS2 V1.x)"<<endl;
 
 //  SS2out<<endl<<"PARAMETERS"<<endl<<"Num Label Value Active_Cnt Phase Min Max Init Prior PR_type Pr_SD Prior_Like Parm_StDev Status Pr_atMin Pr_atMax"<<endl;
   SS2out<<endl<<"PARAMETERS"<<endl<<"Num Label Value Active_Cnt  Phase Min Max Init  Used  Status  Parm_StDev Gradient PR_type Prior Pr_SD Prior_Like Value_again Value-1.96*SD Value+1.96*SD V_1%  V_10% V_20% V_30% V_40% V_50% V_60% V_70% V_80% V_90% V_99% P_val P_lowCI P_hiCI  P_1%  P_10% P_20% P_30% P_40% P_50% P_60% P_70% P_80% P_90% P_99%"<<endl;
@@ -2705,9 +2717,9 @@ FUNCTION void write_bigoutput()
     }
   }
 
-
   SS2out<<endl<<"Number_of_active_parameters_on_or_near_bounds: "<<Nparm_on_bound<<endl;
   SS2out<<"Active_count "<<active_count<<endl<<endl;
+
   SS2out<<endl<<"DERIVED_QUANTITIES"<<endl;
   SS2out<<"SPR_ratio_basis: "<<SPR_report_label<<endl;
   SS2out<<"F_std_basis: "<<F_report_label<<endl;
@@ -2884,7 +2896,7 @@ FUNCTION void write_bigoutput()
      }
    }
 
-   SS2out<<"#"<<endl<<"MOVEMENT in endyear"<<endl<<" Seas GP Source_area Dest_area minage maxage "<<age_vector<<endl;
+   SS2out<<endl<<"MOVEMENT in endyear"<<endl<<" Seas GP Source_area Dest_area minage maxage "<<age_vector<<endl;
    for (k=1;k<=do_migr2;k++)
    {
      SS2out<<move_def2(k)<<" "<<migrrate(endyr,k)<<endl;
@@ -3418,7 +3430,7 @@ FUNCTION void write_bigoutput()
   }
     SS2out<<"rmse_Qdev_not_in_logL"<<endl<<"penalty_mean_Qdev_not_in_logL_in_randwalk_approach"<<endl;
 
-  SS2out <<"#"<<endl<< "INDEX_3"<<endl<<"Fleet  Q_parm_assignments"<<endl;
+  SS2out <<endl<< "INDEX_3"<<endl<<"Fleet  Q_parm_assignments"<<endl;
   for (f=1;f<=Nfleet;f++)
     {SS2out<<f<<" "<<Q_setup_parms(f,1)<<" _ "<<Q_setup_parms(f,2)<<" _ "<<Q_setup_parms(f)(3,4)<<" "<<fleetname(f)<<endl;}
 
@@ -3854,7 +3866,7 @@ FUNCTION void write_bigoutput()
     else
     {SS2out<<"#_none"<<endl;}
 
-  SS2out <<"# "<<endl<<"OVERALL_COMPS"<<endl;
+  SS2out <<endl<<"OVERALL_COMPS"<<endl;
   SS2out<<"Fleet N_obs len_bins "<<len_bins_dat<<endl;
   for (f=1;f<=Nfleet;f++)
   {
@@ -3881,7 +3893,7 @@ FUNCTION void write_bigoutput()
   else
   {SS2out<<"No_age_bins_defined"<<endl;}
 
-  SS2out <<"# "<<endl<<"LEN_SELEX"<<endl;
+  SS2out <<endl<<"LEN_SELEX"<<endl;
   SS2out << "Lsel_is_length_selectivity" << endl;     // SS_Label_370
   SS2out << "RET_is_retention" << endl;            // SS_Label_390
   SS2out << "MORT_is_discard_mortality" << endl;            // SS_Label_390
@@ -4000,12 +4012,13 @@ FUNCTION void write_bigoutput()
     SS2out<<endl;
    }
 
-  SS2out<<endl<<"TAG_Recapture"<<endl;
-  SS2out<<TG_mixperiod<<" First period to use recaptures in likelihood"<<endl;
-  SS2out<<TG_maxperiods<<" Accumulation period"<<endl;
-  if(Do_TG>0)
+ if(Do_TG>0)
   {
-    SS2out<<" Tag_release_info"<<endl;
+     SS2out<<endl<<"TAG_Recapture"<<endl;
+     SS2out<<TG_mixperiod<<" First period to use recaptures in likelihood"<<endl;
+     SS2out<<TG_maxperiods<<" Accumulation period"<<endl;
+
+     SS2out<<" Tag_release_info"<<endl;
     SS2out<<"TAG Area Yr Seas Time Gender Age Nrelease Init_Loss Chron_Loss"<<endl;;
     for (TG=1;TG<=N_TG;TG++)
     {
@@ -5094,7 +5107,7 @@ FUNCTION void write_bigoutput()
 
 // ******************************************************
 //  GLOBAL_MSY with knife-edge age selection, then slot-age selection
-  if(Do_Benchmark>0 && wrote_bigreport==1)
+  if(Do_Benchmark>0 && wrote_bigreport==1 && reportdetail != 2)
   {
     y=styr-3;  //  stores the averaged
     yz=y;
