@@ -611,8 +611,11 @@ FINAL_SECTION
     cout<<" finished nucontrol report "<<endl;
 
 //  SS_Label_Info_12.4.6 #Call fxn write_Bzero_output()  appended to report.sso
-    write_Bzero_output();
-    cout<<" finished Bzero and global MSY "<<endl;
+    if (reportdetail != 2)
+    {
+        write_Bzero_output();
+        cout<<" finished Bzero and global MSY "<<endl;
+    }
 
 //  SS_Label_Info_12.3.1 #Write out body weights to wtatage.ss_new.  Occurs while doing procedure with save_for_report=2
     save_for_report=2;
