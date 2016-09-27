@@ -2798,7 +2798,7 @@ FUNCTION void write_bigoutput()
       }
     }
 
-   if(reportdetail>0) {k1=endyr;} else {k1=styr;}
+   if(reportdetail == 1) {k1=endyr;} else {k1=styr;}
    SS2out<<endl<<"MGparm_By_Year_after_adjustments"<<endl<<"Year ";
    for (i=1;i<=N_MGparm;i++) SS2out<<" "<<ParmLabel(i);
    SS2out<<endl;
@@ -3951,7 +3951,7 @@ FUNCTION void write_bigoutput()
     }
   }
 
-  if(reportdetail>0)
+  if(reportdetail == 1)
   {
     if(Do_Forecast>0)
     {k=endyr+1;}
@@ -4036,7 +4036,7 @@ FUNCTION void write_bigoutput()
 
 
 // ************************                     SS_Label_400
-  if(reportdetail>0)
+  if(reportdetail == 1)
   {
     SS2out << endl << "NUMBERS_AT_AGE" << endl;       // SS_Label_410
     SS2out << "Area Bio_Pattern Gender Settlement Platoon Morph Yr Seas Time Beg/Mid Era"<<age_vector <<endl;
@@ -4315,7 +4315,7 @@ FUNCTION void write_bigoutput()
   if(WTage_rd>0) SS2out<<" as read from wtatage.ss";
   SS2out<<" #NOTE_yr=_"<<styr-3<<"_stores_values_for_benchmark"<<endl;
   SS2out <<"Morph Yr Seas"<<age_vector<<endl;
-  if(reportdetail>0)
+  if(reportdetail == 1)
   {
 
     for (g=1;g<=gmorph;g++)
@@ -4337,7 +4337,7 @@ FUNCTION void write_bigoutput()
 
   SS2out <<endl<< "MEAN_SIZE_TIMESERIES" << endl;           // SS_Label_450
   SS2out <<"Morph Yr Seas SubSeas"<<age_vector<<endl;
-  if(reportdetail>0)
+  if(reportdetail == 1)
   {
     for (g=1;g<=gmorph;g++)
     if(use_morph(g)>0)
@@ -4393,7 +4393,7 @@ FUNCTION void write_bigoutput()
     }  // end gender loop
   }  //   end do report detail
 
-  if(reportdetail>0)
+  if(reportdetail == 1)
   {
   SS2out <<endl<< "AGE_LENGTH_KEY"<<" #sub_season";
   if(Grow_logN==1) SS2out<<" #Lognormal ";
@@ -4424,7 +4424,7 @@ FUNCTION void write_bigoutput()
        }
       }
 
-  if(reportdetail>0)
+  if(reportdetail == 1)
   {
     SS2out <<endl<< "AGE_AGE_KEY"<<endl;              // SS_Label_470
     if(N_ageerr>0)
@@ -4896,7 +4896,7 @@ FUNCTION void write_bigoutput()
   SS2out <<endl<< "SELEX_database" << endl;
   SS2out<<"Fleet Yr Kind Gender Bin Selex"<<endl;
 
-  if(reportdetail<=0)
+  if(reportdetail != 1)
   {
     SS2out<<"1 1990 L 1 30 .5"<<endl;
   }
