@@ -2896,7 +2896,7 @@ FUNCTION void write_bigoutput()
      }
    }
 
-   SS2out<<endl<<"MOVEMENT in endyear"<<endl<<" Seas GP Source_area Dest_area minage maxage "<<age_vector<<endl;
+   SS2out<<"#"<<endl<<"MOVEMENT in endyear"<<endl<<" Seas GP Source_area Dest_area minage maxage "<<age_vector<<endl;
    for (k=1;k<=do_migr2;k++)
    {
      SS2out<<move_def2(k)<<" "<<migrrate(endyr,k)<<endl;
@@ -3430,7 +3430,7 @@ FUNCTION void write_bigoutput()
   }
     SS2out<<"rmse_Qdev_not_in_logL"<<endl<<"penalty_mean_Qdev_not_in_logL_in_randwalk_approach"<<endl;
 
-  SS2out <<endl<< "INDEX_3"<<endl<<"Fleet  Q_parm_assignments"<<endl;
+  SS2out <<"#"<<endl<< "INDEX_3"<<endl<<"Fleet  Q_parm_assignments"<<endl;
   for (f=1;f<=Nfleet;f++)
     {SS2out<<f<<" "<<Q_setup_parms(f,1)<<" _ "<<Q_setup_parms(f,2)<<" _ "<<Q_setup_parms(f)(3,4)<<" "<<fleetname(f)<<endl;}
 
@@ -3866,7 +3866,7 @@ FUNCTION void write_bigoutput()
     else
     {SS2out<<"#_none"<<endl;}
 
-  SS2out <<endl<<"OVERALL_COMPS"<<endl;
+  SS2out<<"#"<<endl<<"OVERALL_COMPS"<<endl;
   SS2out<<"Fleet N_obs len_bins "<<len_bins_dat<<endl;
   for (f=1;f<=Nfleet;f++)
   {
@@ -3893,7 +3893,7 @@ FUNCTION void write_bigoutput()
   else
   {SS2out<<"No_age_bins_defined"<<endl;}
 
-  SS2out <<endl<<"LEN_SELEX"<<endl;
+  SS2out <<"#"<<endl<<"LEN_SELEX"<<endl;
   SS2out << "Lsel_is_length_selectivity" << endl;     // SS_Label_370
   SS2out << "RET_is_retention" << endl;            // SS_Label_390
   SS2out << "MORT_is_discard_mortality" << endl;            // SS_Label_390
