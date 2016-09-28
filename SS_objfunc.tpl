@@ -1261,8 +1261,8 @@ FUNCTION void get_posteriors()
         iter_labels   << " | Parm_devs";
         lambda_labels << " | " << parm_dev_lambda(max_lambda_phase);
 
-        post_obj_func << lambda_labels << endl;
-        post_obj_func << iter_labels << endl;
+        post_obj_func << iter_labels.str() << endl;
+        post_obj_func << lambda_labels.str() << endl;
     }
   };  //  end writing headers for mceval_counter==1
 
