@@ -1413,7 +1413,25 @@ FUNCTION void get_posteriors()
   // output objective function components
   if (mcmc_output_detail > 0)
   {
-      post_obj_func<<mceval_counter<<" "<<obj_fun<<" ";
+      post_obj_func<<mceval_counter<<" | "<<obj_fun;
+
+      if(F_Method>1) post_obj_func << " | " << catch_like;
+      post_obj_func << " | " << equ_catch_like;
+      if(Svy_N>0) post_obj_func << " | " << surv_like;
+      if(nobs_disc>0) post_obj_func << " | " << disc_like;
+      if(nobs_mnwt>0) post_obj_func << " | " << mnwt_like;
+      if(Nobs_l_tot>0) post_obj_func << " | " << length_like_tot;
+      if(Nobs_a_tot>0) post_obj_func << " | " << age_like_tot;
+      if(nobs_ms_tot>0) post_obj_func << " | " << sizeage_like;
+      if(SzFreq_Nmeth>0) post_obj_func << " | " << SzFreq_like;
+      if(Do_Morphcomp>0) post_obj_func << " | " << Morphcomp_like;
+      if(Do_TG>0) post_obj_func << " | " << TG_like1 << " | " << TG_like2;
+      post_obj_func << " | " << recr_like;
+      post_obj_func << " | " << Fcast_recr_like;
+      post_obj_func << " | " << parm_like;
+      post_obj_func << " | " << (sum(parm_dev_like));
+
+      post_obj_func<<endl;
   }
 
   }  //  end get_posteriors
