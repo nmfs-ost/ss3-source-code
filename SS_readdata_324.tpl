@@ -2901,12 +2901,12 @@
   Fcast_Flevel=0;
   Fcast_yr=0;
   Fcast_RelF_Basis=1;
-  Fcast_Sel_yr1=endyr;
-  Fcast_Sel_yr2=endyr;
-  Fcast_RelF_yr1=endyr;
-  Fcast_RelF_yr2=endyr;
-  Fcast_Rec_yr1=styr;
-  Fcast_Rec_yr2=endyr;
+  Fcast_yr(1)=Fcast_Sel_yr1=endyr;
+  Fcast_yr(2)=Fcast_Sel_yr2=endyr;
+  Fcast_yr(3)=Fcast_RelF_yr1=endyr;
+  Fcast_yr(4)=Fcast_RelF_yr2=endyr;
+  Fcast_yr(5)=Fcast_Rec_yr1=styr;
+  Fcast_yr(6)=Fcast_Rec_yr2=endyr;
   HarvestPolicy=2;
   H4010_top=0.4;
   H4010_bot=0.01;
