@@ -37,7 +37,7 @@ FUNCTION void evaluate_the_objective_function()
           if(Q_setup(f,3)>0)
             {
               Svy_se_use(f)+=Q_parm(Q_setup_parms(f,2));  // add extra stderr
-            } 
+            }
   // SS_Label_Info_25.1.1 #combine for super-periods
           for (j=1;j<=Svy_super_N(f);j++)
           {
@@ -694,7 +694,7 @@ FUNCTION void evaluate_the_objective_function()
         }
       }
   */
-    
+
   //  new code to match mean-reverting random walk approach used for recdevs
       for(i=1;i<=N_parm_dev;i++)
       {
@@ -703,7 +703,7 @@ FUNCTION void evaluate_the_objective_function()
         dvariable temp;
 //        temp=1.00 / (2.000*(1.0-parm_dev_rho(i)*parm_dev_rho(i))*square(parm_dev_stddev(i)));
         temp=1.00 / (2.000*(1.0-parm_dev_rho(i)*parm_dev_rho(i))*square(1.00));
-        
+
         parm_dev_like(i,1) += square( parm_dev(i,parm_dev_minyr(i)));  //  first year
         for(j=parm_dev_minyr(i)+1;j<=parm_dev_maxyr(i);j++)
         {parm_dev_like(i,1) += square( parm_dev(i,j)-parm_dev_rho(i)*parm_dev(i,j-1) );}
@@ -1109,10 +1109,12 @@ FUNCTION void get_posteriors()
     // delete any old mcmc output files
     // will generate a warning if no files exist
     // but will play through just fine
+    // NOTE:  "del" works on Windows only; use "rm" on other operating systems
     system("del rebuild.sso");
     system("del posteriors.sso");
     system("del derived_posteriors.sso");
     system("del posterior_vectors.sso");
+    system("del posterior_obj_func.sso");
     if(rundetail>0) cout<<" did system commands "<<endl;
   };
   // define the mcmc output files;
@@ -1120,6 +1122,7 @@ FUNCTION void get_posteriors()
   ofstream posts("posteriors.sso",ios::app);
   ofstream der_posts("derived_posteriors.sso",ios::app);
   ofstream post_vecs("posterior_vectors.sso",ios::app);
+  ofstream post_obj_func("posterior_obj_func.sso",ios::app);
 
   if(mceval_header==0)    // first pass through the mceval phase
   {
@@ -1183,6 +1186,84 @@ FUNCTION void get_posteriors()
     }
     post_vecs<<endl;
 
+    if (mcmc_output_detail > 0)
+    {
+        std::stringstream iter_labels;
+        std::stringstream lambda_labels;
+
+        iter_labels   << "Iter | Objective_function";
+        lambda_labels << "---- | Lambdas";
+
+        if(F_Method>1)
+        {
+            iter_labels   << " | Catch";
+            lambda_labels << " | " << column(catch_lambda,max_lambda_phase);
+        }
+
+        iter_labels   << " | Equil_catch";
+        lambda_labels << " | " << init_equ_lambda(max_lambda_phase);
+
+        if(Svy_N>0)
+        {
+            iter_labels   << " | Survey";
+            lambda_labels << " | " << column(surv_lambda,max_lambda_phase);
+        }
+        if(nobs_disc>0)
+        {
+            iter_labels   << " | Discard";
+            lambda_labels << " | " << column(disc_lambda,max_lambda_phase);
+        }
+        if(nobs_mnwt>0)
+        {
+            iter_labels   << " | Mean_body_wt";
+            lambda_labels << " | " << column(mnwt_lambda,max_lambda_phase);
+        }
+        if(Nobs_l_tot>0)
+        {
+            iter_labels   << " | Length_comp";
+            lambda_labels << " | " << column(length_lambda,max_lambda_phase);
+        }
+        if(Nobs_a_tot>0)
+        {
+            iter_labels   << " | Age_comp";
+            lambda_labels << " | " << column(age_lambda,max_lambda_phase);
+        }
+        if(nobs_ms_tot>0)
+        {
+            iter_labels   << " | Size_at_age";
+            lambda_labels << " | " << column(sizeage_lambda,max_lambda_phase);
+        }
+        if(SzFreq_Nmeth>0)
+        {
+            iter_labels   << " | SizeFreq";
+            lambda_labels << " | " << column(SzFreq_lambda,max_lambda_phase);
+        }
+        if(Do_Morphcomp>0)
+        {
+            iter_labels   << " | Morphcomp";
+            lambda_labels << " | " << Morphcomp_lambda(max_lambda_phase);
+        }
+        if(Do_TG>0)
+        {
+            iter_labels   << " | Tag_comp | Tag_negbin";
+            lambda_labels << " | " << column(TG_lambda1,max_lambda_phase) << " | " << column(TG_lambda2,max_lambda_phase);
+        }
+
+        iter_labels   << " | Recruitment";
+        lambda_labels << " | " << recrdev_lambda(max_lambda_phase);
+
+        iter_labels   << " | Forecast_Recruitment";
+        lambda_labels << " | " << Fcast_recr_lambda;
+
+        iter_labels   << " | Parm_priors";
+        lambda_labels << " | " << parm_prior_lambda(max_lambda_phase);
+
+        iter_labels   << " | Parm_devs";
+        lambda_labels << " | " << parm_dev_lambda(max_lambda_phase);
+
+        post_obj_func << lambda_labels << endl;
+        post_obj_func << iter_labels << endl;
+    }
   };  //  end writing headers for mceval_counter==1
 
 
@@ -1328,5 +1409,12 @@ FUNCTION void get_posteriors()
   }
   post_vecs<<runnumber<<" "<<mceval_counter<<" "<<obj_fun<<" F/Fmsy "<<F_std<<endl;
   post_vecs<<runnumber<<" "<<mceval_counter<<" "<<obj_fun<<" B/Bmsy "<<depletion<<endl;
+
+  // output objective function components
+  if (mcmc_output_detail > 0)
+  {
+      post_obj_func<<mceval_counter<<" "<<obj_fun<<" ";
+  }
+
   }  //  end get_posteriors
 
