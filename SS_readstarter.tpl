@@ -238,6 +238,7 @@
   !!echoinput<<"For Kobe plot, set depletion_basis=2; depletion_level=1.0; F_reporting=your choose; F_std_basis=2"<<endl;
   init_number finish_starter
   number finish_starter2
+  number finish_starter3
   int mcmc_output_detail
   number ALK_tolerance
 
@@ -258,8 +259,8 @@
      echoinput<<"MCMC output detail:  "<<mcmc_output_detail<<endl;
 
      echoinput<<"Now read ALK tolerance (suggest 0.0001)"<<endl;
-     *(ad_comm::global_datafile) >> finish_starter;
-     ALK_tolerance = finish_starter;
+     *(ad_comm::global_datafile) >> finish_starter2;
+     ALK_tolerance = finish_starter2;
      echoinput<<"ALK tolerance:  "<<ALK_tolerance<<endl;
      // enforce valid range of ALK_tolerance
      if (ALK_tolerance < 0.0 || ALK_tolerance > 0.1)
@@ -268,11 +269,11 @@
          cout<<"Error: ALK_tolerance must be between 0.0 and 0.1: "<<ALK_tolerance<<endl; exit(1);
      }
 
-     *(ad_comm::global_datafile) >> finish_starter2;
-     if (finish_starter2 != 3.30)
+     *(ad_comm::global_datafile) >> finish_starter3;
+     if (finish_starter3 != 3.30)
      {
         echoinput<<"Error: the last line of starter.ss should be '3.30'"<<endl;
-        cout<<"CRITICAL error reading finish_starter in starter.ss: "<<finish_starter2<<endl; exit(1);
+        cout<<"CRITICAL error reading finish_starter in starter.ss: "<<finish_starter3<<endl; exit(1);
      }
    }
    echoinput<<"  finish reading starter.ss"<<endl<<endl;
