@@ -1645,14 +1645,14 @@ FUNCTION void write_nucontrol()
   NuFore<<SPR_target<<" # SPR target (e.g. 0.40)"<<endl;
   NuFore<<BTGT_target<<" # Biomass target (e.g. 0.40)"<<endl;
   NuFore<<"#_Bmark_years: beg_bio, end_bio, beg_selex, end_selex, beg_relF, end_relF, beg_recruits, end_recruits (enter actual year, or values of 0 or -integer to be rel. endyr)"<<endl<<Bmark_Yr_rd;
-  if (frac_female_pointer == -1) NuFore<<" "<<styr<<" "<<endyr;     // placeholders for 3.24
+  if (frac_female_pointer == -1) NuFore<<" "<<-999<<" "<<0;     // placeholders for 3.24
   NuFore<<endl;
   NuFore<<"# "<<Bmark_Yr<<" # after processing "<<endl;
   NuFore<<Bmark_RelF_Basis<<" #Bmark_relF_Basis: 1 = use year range; 2 = set relF same as forecast below"<<endl;
   NuFore<<"#"<<endl<<Do_Forecast<<" # Forecast: 0=none; 1=F(SPR); 2=F(MSY) 3=F(Btgt); 4=Ave F (uses first-last relF yrs); 5=input annual F scalar"<<endl;
   NuFore<<N_Fcast_Yrs<<" # N forecast years "<<endl;
   NuFore<<Fcast_Flevel<<" # F scalar (only used for Do_Forecast==5)"<<endl;
-  NuFore<<"#_Fcast_years:  beg_selex, end_selex, beg_relF, end_relF, beg_recruits, end_recruits  (enter actual year, or values of 0 or -integer to be rel. endyr)"<<endl<<Fcast_Input(3,6)<<" "<<styr<<" "<<endyr<<endl;
+  NuFore<<"#_Fcast_years:  beg_selex, end_selex, beg_relF, end_relF, beg_recruits, end_recruits  (enter actual year, or values of 0 or -integer to be rel. endyr)"<<endl<<Fcast_Input(3,6)<<" "<<-999<<" "<<0<<endl;
   NuFore<<"# "<<Fcast_yr<<" # after processing "<<endl;
   NuFore<<HarvestPolicy<<" # Control rule method (1=catch=f(SSB) west coast; 2=F=f(SSB) ) "<<endl;
   NuFore<<H4010_top<<" # Control rule Biomass level for constant F (as frac of Bzero, e.g. 0.40); (Must be > the no F level below) "<<endl;
