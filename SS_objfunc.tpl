@@ -1258,8 +1258,23 @@ FUNCTION void get_posteriors()
         iter_labels   << " | Parm_priors";
         lambda_labels << " | " << parm_prior_lambda(max_lambda_phase);
 
+        if(SoftBound>0)
+        {
+            iter_labels   << " | Parm_softbounds";
+            lambda_labels << " | NA";
+        }
+
         iter_labels   << " | Parm_devs";
         lambda_labels << " | " << parm_dev_lambda(max_lambda_phase);
+
+        if(F_ballpark_yr>0)
+        {
+            iter_labels   << " | F_Ballpark";
+            lambda_labels << " | " << F_ballpark_lambda(max_lambda_phase);
+        }
+
+        iter_labels   << " | Crash_Pen ";
+        lambda_labels << " | " << CrashPen_lambda(max_lambda_phase);
 
         post_obj_func << iter_labels.str() << endl;
         post_obj_func << lambda_labels.str() << endl;
@@ -1429,7 +1444,10 @@ FUNCTION void get_posteriors()
       post_obj_func << " | " << recr_like;
       post_obj_func << " | " << Fcast_recr_like;
       post_obj_func << " | " << parm_like;
+      if(SoftBound>0) post_obj_func << " | " << SoftBoundPen;
       post_obj_func << " | " << (sum(parm_dev_like));
+      if(F_ballpark_yr>0) post_obj_func << " | " << F_ballpark_like;
+      post_obj_func << " | " << CrashPen;
 
       post_obj_func<<endl;
   }

@@ -1630,7 +1630,7 @@ FUNCTION void write_nucontrol()
   else
   {NuStart<<"#COND 10 15 #_min and max age over which average F will be calculated with F_reporting=4"<<endl;}
   NuStart<<F_std_basis<<" # F_std_basis: 0=raw_F_report; 1=F/Fspr; 2=F/Fmsy ; 3=F/Fbtgt"<<endl;
-  NuStart<<mcmc_output_detail<<" # MCMC output detail (0=default; 1=enhanced; 2=full; 3=make output subdir for each MCMC vector)"<<endl;
+  NuStart<<mcmc_output_detail<<" # MCMC output detail (0=default; 1=obj func components; 2=expanded; 3=make output subdir for each MCMC vector)"<<endl;
   NuStart<<ALK_tolerance<<" # ALK tolerance (example 0.0001)"<<endl;
   NuStart<<"3.30 # check value for end of file and for version control"<<endl;
   NuStart.close();
