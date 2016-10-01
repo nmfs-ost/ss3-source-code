@@ -1004,8 +1004,13 @@ FUNCTION void Process_STDquant()
  /*  SS_Label_FUNCTION 27 Check_Parm */
 FUNCTION dvariable Check_Parm(const double& Pmin, const double& Pmax, const double& jitter, const prevariable& Pval)
   {
+    const dvariable zmin = inv_cumd_norm(0.001);    // z value for Pmin
+    const dvariable zmax = inv_cumd_norm(0.999);    // z value for Pmax
+    const dvariable Pmean = (Pmin + Pmax) / 2.0;
     dvariable NewVal;
-    dvariable temp;
+    // dvariable temp;
+    dvariable Psigma, zval, kval, kjitter, zjitter;
+
     NewVal=Pval;
     if(Pmin>Pmax)
     {N_warn++; cout<<" EXIT - see warning "<<endl; warning<<" parameter min > parameter max "<<Pmin<<" > "<<Pmax<<endl; cout<<" fatal error, see warning"<<endl; exit(1);}
@@ -1017,9 +1022,36 @@ FUNCTION dvariable Check_Parm(const double& Pmin, const double& Pmax, const doub
     {N_warn++; warning<<" parameter init value is greater than parameter max "<<Pval<<" > "<<Pmax<<endl; NewVal=Pmax;}
     if(jitter>0.0)
     {
-      temp=log((Pmax-Pmin+0.0000002)/(NewVal-Pmin+0.0000001)-1.)/(-2.);   // transform the parameter
-      temp += randn(radm) * jitter;
-      NewVal=Pmin+(Pmax-Pmin)/(1.+mfexp(-2.*temp));
+      // temp=log((Pmax-Pmin+0.0000002)/(NewVal-Pmin+0.0000001)-1.)/(-2.);   // transform the parameter
+      // temp += randn(radm) * jitter;
+      // NewVal=Pmin+(Pmax-Pmin)/(1.+mfexp(-2.*temp));
+
+      // generate jitter value from cumulative normal given Pmin and Pmax
+      Psigma = (Pmax - Pmean) / zmax;   // Psigma should also be equal to (Pmin - Pmean) / zmin;
+      if (Psigma < 0.00001)    // how small a sigma is too small?
+      {
+          N_warn++;
+          cout<<" EXIT - see warning "<<endl;
+          warning<<" in Check_Parm jitter:  Psigma < 0.00001 "<<Psigma<<endl;
+          cout<<" fatal error, see warning"<<endl; exit(1);
+      }
+      zval = (Pval - Pmean) / Psigma;
+      kval = cumd_norm(zval);
+      kjitter = kval + (jitter * ((2.0 * randu(radm)) - 1.0));  // kjitter is between kval - jitter and kval + jitter
+      if (kjitter < 0.001)
+      {
+          zjitter = zmin;
+      }
+      else if (kjitter > 0.999)
+      {
+          zjitter = zmax;
+      }
+      else
+      {
+          zjitter = inv_cumd_norm(kjitter);
+      }
+      NewVal = (Psigma * zjitter) + Pmean;
+
       if(Pmin==-99 || Pmax==99)
       {N_warn++; warning<<" use of jitter not advised unless parameter min & max are in reasonable parameter range "<<Pmin<<" "<<Pmax<<endl;}
     }
