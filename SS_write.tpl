@@ -1905,15 +1905,15 @@ FUNCTION void write_nucontrol()
   report4<<"#"<<endl;
    report4<<"#_Spawner-Recruitment"<<endl<<SR_fxn<<" #_SR_function: 2=Ricker; 3=std_B-H; 4=SCAA; 5=Hockey; 6=B-H_flattop; 7=survival_3Parm; 8=Shepard_3Parm"<<endl;
    report4<<"#_      LO        HI      INIT     PRIOR   PR_SD   PR_type        PHASE env-var use_dev dev_mnyr dev_mxyr dev_PH   Block Blk_Fxn  #  parm_name"<<endl;
+   report4.unsetf(std::ios_base::fixed); report4.unsetf(std::ios_base::floatfield);
    for (f=1;f<=N_SRparm2;f++)
    { NP++;
      SR_parm_1(f,3)=value(SR_parm(f));
-      for(j=1;j<=6;j++) report4<<std::setprecision(4)<<std::fixed<<setw(11)<<SR_parm_1(f,j);
-      report4.precision(6); report4.unsetf(std::ios_base::fixed); report4.unsetf(std::ios_base::floatfield);
+      for(j=1;j<=6;j++) report4<<setw(11)<<SR_parm_1(f,j);
       for(j=7;j<=14;j++) report4<<setw(8)<<SR_parm_1(f,j);
       report4<<" # "<<ParmLabel(NP)<<endl;
    }
-   report4.precision(6); report4.unsetf(std::ios_base::fixed); report4.unsetf(std::ios_base::floatfield);
+   report4.unsetf(std::ios_base::fixed); report4.unsetf(std::ios_base::floatfield);
    report4<<"#Next are short parm lines, if requested, for env effects on R0, steepness, and annual dev"<<endl;
    report4<<"#Then short parm lines, if requested, for block/trend effects on R0, steepness, and annual dev"<<endl;
 
@@ -2088,16 +2088,16 @@ FUNCTION void write_nucontrol()
    if(Q_Npar>0)
    {
    report4<<"#_      LO        HI      INIT     PRIOR   PR_SD  PR_type      PHASE env-var use_dev dev_mnyr dev_mxyr dev_PH   Block Blk_Fxn  #  parm_name"<<endl;
+   report4.unsetf(std::ios_base::fixed); report4.unsetf(std::ios_base::floatfield);
     for (f=1;f<=Q_Npar;f++)
     {
       NP++;
       Q_parm_1(f,3)=value(Q_parm(f));
-      for(j=1;j<=6;j++) report4<<std::fixed<<setw(11)<<Q_parm_1(f,j);
-      report4.precision(6); report4.unsetf(std::ios_base::fixed); report4.unsetf(std::ios_base::floatfield);
+      for(j=1;j<=6;j++) report4<<setw(11)<<Q_parm_1(f,j);
       for(j=7;j<=14;j++) report4<<setw(8)<<Q_parm_1(f,j);
       report4<<"  #  "<<ParmLabel(NP)<<endl;
     }
-     report4.precision(6); report4.unsetf(std::ios_base::fixed); report4.unsetf(std::ios_base::floatfield);
+    report4.unsetf(std::ios_base::fixed); report4.unsetf(std::ios_base::floatfield);
 
       if(timevary_parm_cnt_Q>timevary_parm_start_Q)
       {
@@ -2107,8 +2107,7 @@ FUNCTION void write_nucontrol()
         {
           NP++;
             timevary_parm_rd[f](3)=value(timevary_parm(f));
-            for(j=1;j<=6;j++) report4<<std::setprecision(4)<<std::fixed<<setw(11)<<timevary_parm_rd[f](j);
-            report4.precision(6); report4.unsetf(std::ios_base::fixed); report4.unsetf(std::ios_base::floatfield);
+            for(j=1;j<=6;j++) report4<<setw(11)<<timevary_parm_rd[f](j);
           report4<<"      "<<timevary_parm_rd[f](7)<<"  # "<<ParmLabel(NP)<<endl;
         }
         report4<<"# info on dev vectors created for Q parms are reported with other devs after tag parameter section "<<endl;
@@ -2117,6 +2116,7 @@ FUNCTION void write_nucontrol()
       {
         report4<<"#_no timevary Q parameters"<<endl;
       }
+      report4.unsetf(std::ios_base::fixed); report4.unsetf(std::ios_base::floatfield);
    }
    report4<<"#"<<endl;
    report4<<"#_size_selex_types"<<endl;
@@ -2132,7 +2132,7 @@ FUNCTION void write_nucontrol()
    report4<<"#_      LO        HI      INIT     PRIOR      PR_SD    PR_type  PHASE env-var use_dev dev_mnyr dev_mxyr dev_PH   Block Blk_Fxn  #  parm_name"<<endl;
 
    // set back to default configuration for output
-   report4.precision(6); report4.unsetf(std::ios_base::fixed); report4.unsetf(std::ios_base::floatfield);
+   report4.unsetf(std::ios_base::fixed); report4.unsetf(std::ios_base::floatfield);
 
 //  if(seltype(f,2)==4)
   {
@@ -2140,8 +2140,7 @@ FUNCTION void write_nucontrol()
       {
         NP++;
         selparm_1(f)(3)=value(selparm(f));
-        for(j=1;j<=6;j++) report4<<std::setprecision(4)<<std::fixed<<setw(11)<<selparm_1(f,j);
-        report4.precision(6); report4.unsetf(std::ios_base::fixed); report4.unsetf(std::ios_base::floatfield);
+        for(j=1;j<=6;j++) report4<<setw(11)<<selparm_1(f,j);
         for(j=7;j<=14;j++) report4<<setw(8)<<selparm_1(f,j);
         report4<<"  #  "<<ParmLabel(NP)<<endl;
       }
@@ -2153,8 +2152,7 @@ FUNCTION void write_nucontrol()
     {
       NP++;
         timevary_parm_rd[f](3)=value(timevary_parm(f));
-        for(j=1;j<=6;j++) report4<<std::setprecision(4)<<std::fixed<<setw(11)<<timevary_parm_rd[f](j);
-        report4.precision(6); report4.unsetf(std::ios_base::fixed); report4.unsetf(std::ios_base::floatfield);
+        for(j=1;j<=6;j++) report4<<setw(11)<<timevary_parm_rd[f](j);
       report4<<"      "<<timevary_parm_rd[f](7)<<"  # "<<ParmLabel(NP)<<endl;
     }
     report4<<"# info on dev vectors created for selex parms are reported with other devs after tag parameter section "<<endl;
@@ -2163,6 +2161,7 @@ FUNCTION void write_nucontrol()
   {
     report4<<"#_no timevary selex parameters"<<endl;
   }
+  report4.unsetf(std::ios_base::fixed); report4.unsetf(std::ios_base::floatfield);
 
 
   }
@@ -2221,12 +2220,12 @@ FUNCTION void write_nucontrol()
 //        report4.unsetf(std::ios_base::fixed);
 //        report4.unsetf(std::ios_base::floatfield);
         report4<<setw(2)<<"# ";
-        report4<<std::setprecision(0)<<std::fixed<<setw(5)<<timevary_def[j](1,12);
+        report4<<setw(5)<<timevary_def[j](1,12);
         if(timevary_def[j](8)>0)  //  now show devs
         {
-          report4<<std::setprecision(4)<<std::fixed<<setw(6)<<parm_dev(timevary_def[j](8));
+          report4<<setw(6)<<parm_dev(timevary_def[j](8));
         }
-        report4<<std::setprecision(0)<<std::fixed<<setw(6)<<endl;
+        report4<<setw(6)<<endl;
       }
     }
 
@@ -2240,7 +2239,7 @@ FUNCTION void write_nucontrol()
   report4<<" #_7=mult_by_generalized_sizecomp"<<endl;
   report4<<"#_Factor  Fleet  Value"<<endl;
   {
-    if (var_adjust_data.size() > 0) for(f=1;f<=Do_Var_adjust;f++) report4<<std::setprecision(0)<<setw(6)<<var_adjust_data[f-1](1,2)<<" "<<std::setprecision(4)<<setw(9)<<var_adjust_data[f-1](3)<<endl;
+    if (var_adjust_data.size() > 0) for(f=1;f<=Do_Var_adjust;f++) report4<<setw(6)<<var_adjust_data[f-1](1,2)<<" "<<setw(9)<<var_adjust_data[f-1](3)<<endl;
   }
   report4<<" -9999   1    0  # terminator"<<endl;
 
