@@ -492,8 +492,8 @@
       {
         a+=2;
         if(Block_Design(j,a+1)<Block_Design(j,a)) {N_warn++; cout<<" EXIT - see warning "<<endl; warning<<"Block:"<<j<<" "<<k<<" ends before it starts; fatal error"<<endl; exit(1);}
-        if(Block_Design(j,a)<styr) {N_warn++; warning<<"Block:"<<j<<" "<<k<<" starts before styr; resetting"<<endl; Block_Design(j,a)=styr;}
-        if(Block_Design(j,a+1)<styr) {N_warn++; cout<<" EXIT - see warning "<<endl; warning<<"Block:"<<j<<" "<<k<<" ends before styr; fatal error"<<endl; exit(1);}
+        if(Block_Design(j,a)<styr-1) {N_warn++; warning<<"Block:"<<j<<" "<<k<<" starts before styr; resetting"<<endl; Block_Design(j,a)=styr;}
+        if(Block_Design(j,a+1)<styr-1) {N_warn++; cout<<" EXIT - see warning "<<endl; warning<<"Block:"<<j<<" "<<k<<" ends before styr; fatal error"<<endl; exit(1);}
         if(Block_Design(j,a)>retro_yr+1) {N_warn++; cout<<" EXIT - see warning "<<endl; warning<<"Block:"<<j<<" "<<k<<" starts after retroyr+1; fatal error"<<endl; exit(1);}
         if(Block_Design(j,a+1)>retro_yr+1) {N_warn++; warning<<"Block:"<<j<<" "<<k<<" ends after retroyr+1; resetting"<<endl; Block_Design(j,a+1)=retro_yr+1;}
 
@@ -1273,11 +1273,16 @@
   !!//  SS_Label_Info_4.6 #Read setup for Spawner-Recruitment parameters
   //  SPAWN-RECR: read setup for SR parameters:  LO, HI, INIT, PRIOR, PRtype, CV, PHASE
   init_int SR_fxn
+  !!echoinput<<SR_fxn<<" #_SR_function: 1=null; 2=Ricker; 3=std_B-H; 4=SCAA; 5=Hockey; 6=B-H_flattop; 7=Survival_3Parm; 8=Shepard "<<endl;
+  init_int init_equ_steepness;
+  !!echoinput<<init_equ_steepness<<"  # 0/1 to use steepness in initial equ recruitment calculation"<<endl;
+  init_int sigmaR_dendep;
+  !! echoinput<<sigmaR_dendep<<"  #  future feature:  0/1 to make realized sigmaR a function of SR curvature"<<endl;
   ivector N_SRparm(1,10)
   !!N_SRparm.fill("{0,2,2,2,3,2,3,3,0,0}");
   int N_SRparm2
-  !!echoinput<<SR_fxn<<" #_SR_function: 1=null; 2=Ricker; 3=std_B-H; 4=SCAA; 5=Hockey; 6=B-H_flattop; 7=Survival_3Parm; 8=Shepard "<<endl;
-  !!N_SRparm2=N_SRparm(SR_fxn)+4;
+  int N_SRparm3  //  with timevary links included
+  !!N_SRparm2=N_SRparm(SR_fxn)+3;
   init_matrix SR_parm_1(1,N_SRparm2,1,14)
   !!echoinput<<" SR parms "<<endl<<SR_parm_1<<endl;
    int SR_env_link
@@ -1287,26 +1292,21 @@
   int SR_env_target
   int SR_autocorr;  // will be calculated later
 
-  vector SRvec_LO(1,N_SRparm2)
-  vector SRvec_HI(1,N_SRparm2)
-  ivector SRvec_PH(1,N_SRparm2)
+  int timevary_parm_start_SR;
+  int firstSRparm;
+  int timevary_parm_cnt_SR;
+  ivector timevary_SRparm(styr-3,YrMax+1);
+  ivector SR_parm_timevary(1,N_SRparm2);
 
  LOCAL_CALCS
 //  SS_Label_Info_4.6.1 #Create S-R parameter labels
-   SRvec_LO=column(SR_parm_1,1);
-   SRvec_HI=column(SR_parm_1,2);
-   SRvec_PH=ivector(column(SR_parm_1,7));
+   firstSRparm=ParCount;
+   timevary_parm_cnt_SR=0;
+   timevary_parm_start_SR=0;
+   timevary_SRparm.initialize();
+   SR_parm_timevary.initialize();
    SR_env_link=0;
-   if(SR_env_link>N_envvar)
-   {
-     N_warn++;
-     warning<<" ERROR:  SR_env_link ( "<<SR_env_link<<" ) was set greater than the highest numbered environmental index ( "<<N_envvar<<" )"<<endl;
-     cout<<" EXIT - see warning "<<endl; exit(1);
-   }
-   SR_env_target=SR_env_target_RD;
-   if(SR_env_link==0) SR_env_target=0;
-   if(SR_env_link==0 && SR_env_target_RD>0)
-   {N_warn++; warning<<" WARNING:  SR_env_target was set, but no SR_env_link selected, SR_env_target set to 0"<<endl;}
+   SR_env_target=0;
 //#_SR_function: 1=null; 2=Ricker; 3=std_B-H; 4=SCAA; 5=Hockey; 6=B-H_flattop; 7=Survival_3Parm "<<endl;
   ParmLabel+="SR_LN(R0)";
   switch(SR_fxn)
@@ -1356,10 +1356,127 @@
     }
   }
   ParmLabel+="SR_sigmaR";
-  ParmLabel+="SR_notused";
-  ParmLabel+="SR_R1_offset";
+  ParmLabel+="SR_regime";
   ParmLabel+="SR_autocorr";
   ParCount+=N_SRparm2;
+
+  if(SR_parm_1(N_SRparm2,3)!=0.0 || SR_parm_1(N_SRparm2,7)>0)
+    {SR_autocorr=1;}
+  else
+    {SR_autocorr=0;}
+  // flag for recruitment autocorrelation
+  echoinput<<" Do recruitment_autocorr: "<<SR_autocorr<<endl;
+
+   for (j=1;j<=N_SRparm(SR_fxn)+2;j++)
+   if(j!=N_SRparm(SR_fxn)+1)  //  because sigmaR and autocorr cannot be time-varying
+   {
+     if(SR_parm_1(j,13)==0 && SR_parm_1(j,8)==0 && SR_parm_1(j,9)==0)
+     {
+      //  no time-vary parameter effects
+     }
+     else  //  set up a timevary parameter definition
+     {
+       ivector timevary_setup(1,13);  //  temporary vector for timevary specs
+       timevary_setup.initialize();
+//  1=baseparm type; 2=baseparm index; 3=first timevary parm
+//  4=block or trend type; 5=block pattern; 6= env link type; 7=env variable;
+//  8=dev vector used; 9=dev link type; 10=dev min year; 11=dev maxyear; 12=dev phase; 13=all parm index of baseparm
+       if(timevary_parm_start_SR==0) timevary_parm_start_SR=timevary_parm_cnt+1;
+       echoinput<<" timevary for SR parm: "<<j<<endl;
+       timevary_cnt++;  //  count parameters with time-vary effect
+       SR_parm_timevary(j)=timevary_cnt;  //  base SR parameter will use this timevary specification
+       timevary_setup(1)=2; //  indicates a SR parm
+       timevary_setup(2)=j; //  index of base parm within that type of parameter
+       timevary_setup(13)=firstSRparm+j;  //  index of base parm relative to ParCount which is continuous across all types of parameters
+       timevary_setup(3)=timevary_parm_cnt+1;  //  first parameter within total list of all timevary parms
+       timevary_pass=1;  // placeholder; not used for SR parms
+//  set up env link info
+//   where abs(selparm1(j,8) is the environmental variable used;  store this in timevary_setup(7)
+//   and the sign indicates the link;  store this in timevary_setup(6)
+       echoinput<<" check for env "<<SR_parm_1(j,8)<<endl;
+       k=int(SR_parm_1(j,8)/100);  //  find the env link code
+       timevary_setup(6)=k;  //  link code for env
+       timevary_setup(7)=int(SR_parm_1(j,8))-k*100;  //  env variable used
+       if(timevary_setup(7)>0)
+       {
+         k=timevary_setup(7);
+         for(y=styr-1;y<=YrMax;y++) env_data_pass(y)=env_data_RD(y,k);
+       }
+       else
+       {k=0; env_data_pass.initialize();}
+
+       if(SR_parm_1(j,13)>0)  //  doing blocks
+       {
+         create_timevary(SR_parm_1(j),timevary_setup, timevary_pass, autogen_timevary, f, Block_Design(SR_parm_1(j,13)), parm_adjust_method, env_data_pass, N_parm_dev);
+       }
+       else
+       {
+         create_timevary(SR_parm_1(j),timevary_setup, timevary_pass, autogen_timevary, f, block_design_null, parm_adjust_method, env_data_pass, N_parm_dev);
+       }
+  /*
+   where:
+   SR_parm_1(j):           vector with the base parameter which has some type of timevary characteristic
+   timevary_setup:        vector which contains specs of all types of timevary  for this base parameter
+                          will be pushed to timevary_def cumulative across all types of base parameters
+   timevary_pass:        vector containing column(timevary_MG,mgp_type(j)), will be modified in create_timevary
+   autogen_timevary:      switch to autogenerate or not
+   block_design(z):       block design, if any, being used
+   parm_adjust_method:    switch to determine if adjusted parameter will stay in bounds; used to create warnings in create_timevary
+   env_data_RD:           matrix containing entire set of environmental data as read
+   N_parm_dev:            integer that is incremented in create_timevary as dev vectors are created; cumulative across all types of parameters
+  */
+       if(timevary_setup(8)!=0) timevary_setup(12)=5;
+       timevary_def.push_back (timevary_setup(1,13));
+       for(y=styr-3;y<=YrMax+1;y++) {timevary_SRparm(y)=timevary_pass(y);}  // year vector for this category og MGparm
+     }
+   }
+   timevary_parm_cnt_SR=timevary_parm_cnt;
+   echoinput<<" SR timevary_parm_cnt start and end "<<timevary_parm_start_SR<<" "<<timevary_parm_cnt_SR<<endl;
+   echoinput<<"link to timevary parms:  "<<SR_parm_timevary<<endl;
+   N_SRparm3=N_SRparm2;
+   if(timevary_parm_cnt_SR>0)
+   {
+     N_SRparm3+=(timevary_parm_cnt_SR-timevary_parm_start_SR+1);
+   }
+   echoinput<<"SR_Npar and N_SRparm2 and N_SRparm3:  "<<N_SRparm(SR_fxn)<<" "<<N_SRparm2<<" "<<N_SRparm3<<endl;
+ END_CALCS
+
+  vector SR_parm_LO(1,N_SRparm3)
+  vector SR_parm_HI(1,N_SRparm3)
+  vector SR_parm_RD(1,N_SRparm3)
+  vector SR_parm_PR(1,N_SRparm3)
+  ivector SR_parm_PRtype(1,N_SRparm3)
+  vector SR_parm_CV(1,N_SRparm3)
+  ivector SR_parm_PH(1,N_SRparm3)
+
+ LOCAL_CALCS
+ 		for(i=1;i<=N_SRparm2;i++)
+ 		{
+      SR_parm_LO(i)=SR_parm_1(i,1);
+      SR_parm_HI(i)=SR_parm_1(i,2);
+      SR_parm_RD(i)=SR_parm_1(i,3);
+      SR_parm_PR(i)=SR_parm_1(i,4);
+      SR_parm_CV(i)=SR_parm_1(i,5);
+      SR_parm_PRtype(i)=SR_parm_1(i,6);
+      SR_parm_PH(i)=SR_parm_1(i,7);
+    }
+    if(timevary_parm_start_SR>0)
+    {
+      j=N_SRparm2;
+    for (f=timevary_parm_start_SR;f<=timevary_parm_cnt_SR;f++)
+     {
+      j++;
+      echoinput<<f<<" "<<j<<" "<<timevary_parm_rd[f]<<endl;
+      SR_parm_LO(j)=timevary_parm_rd[f](1);
+      SR_parm_HI(j)=timevary_parm_rd[f](2);
+      SR_parm_RD(j)=timevary_parm_rd[f](3);
+      SR_parm_PR(j)=timevary_parm_rd[f](4);
+      SR_parm_PRtype(j)=timevary_parm_rd[f](6);
+      SR_parm_CV(j)=timevary_parm_rd[f](5);
+      SR_parm_PH(j)=timevary_parm_rd[f](7);
+     }
+ 	  }
+ 	echoinput<<"SR_parm_RD: "<<SR_parm_RD<<endl;
  END_CALCS
 
   init_int do_recdev  //  0=none; 1=devvector; 2=simple deviations
@@ -1971,7 +2088,7 @@
       //  no time-vary parameter effects
      }
      else  //  set up a timevary parameter definition
-    {
+     {
        ivector timevary_setup(1,13);  //  temporary vector for timevary specs
        timevary_setup.initialize();
 //  1=baseparm type; 2=baseparm index; 3=first timevary parm
@@ -2028,9 +2145,8 @@
      }
   }
 
-   timevary_parm_cnt_Q=timevary_parm_cnt;
-   echoinput<<" timevary_parm_cnt start and end "<<timevary_parm_start_Q<<" "<<timevary_parm_cnt_Q<<endl;
-   echoinput<<"link to timevary parms:  "<<Qparm_timevary<<endl;
+   echoinput<<" Q  timevary_parm_cnt start and end "<<timevary_parm_start_Q<<" "<<timevary_parm_cnt_Q<<endl;
+   echoinput<<"Q  uses timevary parms:  "<<Qparm_timevary<<endl;
    Q_Npar2 = Q_Npar;
    if(timevary_parm_cnt_Q>0)
    {
@@ -2553,15 +2669,25 @@
    timevary_setup(3)=timevary_parm_cnt+1;  //  one past last one used
    timevary_def.push_back (timevary_setup(1,13));
 
-   timevary_parm_cnt_sel=timevary_parm_cnt;  //  last timevary_selparm
-   if(timevary_parm_start_sel==0)
-    {N_selparm2=N_selparm;}
-    else
+   if(timevary_parm_cnt_Q>0)
+   {
+     Q_Npar2+=(timevary_parm_cnt_Q-timevary_parm_start_Q+1);
+   }
+
+
+//   timevary_parm_cnt_sel=timevary_parm_cnt;  //  last timevary_selparm
+   N_selparm2=N_selparm;
+   if(timevary_parm_start_sel>0)
     {N_selparm2=N_selparm+timevary_parm_cnt_sel-timevary_parm_start_sel+1;}
    echoinput<<"N_selparm "<<N_selparm<<" "<<N_selparm2<<" "<<timevary_parm_start_sel<<" "<<timevary_parm_cnt_sel<<endl;
-   for(y=0;y<=timevary_parm_cnt;y++)
+
+   if(timevary_parm_cnt>0)
    {
-    echoinput<<y<<" parm "<<timevary_parm_rd[y](1,7)<<endl;}
+     echoinput<<"list all parms used for tiemvary implementation"<<endl;
+     for(y=1;y<=timevary_parm_cnt;y++)
+     {
+     echoinput<<y<<" parm "<<timevary_parm_rd[y](1,7)<<endl;}
+    }
  END_CALCS
 
 !!//  SS_Label_Info_4.9.9 #Create arrays for the total set of selex parameters
@@ -2586,20 +2712,22 @@
     selparm_PH(f)=selparm_1(f,7);
    }
    j=N_selparm;
-   echoinput<<N_selparm<<" "<<timevary_parm_start_sel<<" "<<timevary_parm_cnt_sel<<endl;
    if(timevary_parm_cnt_sel>timevary_parm_start_sel)
-   for (f=timevary_parm_start_sel;f<=timevary_parm_cnt_sel;f++)
    {
-    j++;
-    echoinput<<"selparmbounds "<<f<<" "<<j<<endl;
-    selparm_LO(j)=timevary_parm_rd[f](1);
-    selparm_HI(j)=timevary_parm_rd[f](2);
-    selparm_RD(j)=timevary_parm_rd[f](3);
-    selparm_PR(j)=timevary_parm_rd[f](4);
-    selparm_PRtype(j)=timevary_parm_rd[f](6);
-    selparm_CV(j)=timevary_parm_rd[f](5);
-    selparm_PH(j)=timevary_parm_rd[f](7);
-   }
+     echoinput<<"finish setup for timevary sel parms "<<N_selparm<<" "<<timevary_parm_start_sel<<" "<<timevary_parm_cnt_sel<<endl;
+     for (f=timevary_parm_start_sel;f<=timevary_parm_cnt_sel;f++)
+     {
+      j++;
+      echoinput<<"selparmbounds "<<f<<" "<<j<<endl;
+      selparm_LO(j)=timevary_parm_rd[f](1);
+      selparm_HI(j)=timevary_parm_rd[f](2);
+      selparm_RD(j)=timevary_parm_rd[f](3);
+      selparm_PR(j)=timevary_parm_rd[f](4);
+      selparm_PRtype(j)=timevary_parm_rd[f](6);
+      selparm_CV(j)=timevary_parm_rd[f](5);
+      selparm_PH(j)=timevary_parm_rd[f](7);
+     }
+    }
 
 //  SS_Label_Info_4.9.10 #Special bound checking for size selex parameters
     z=0;  // parameter counter within this section
@@ -3240,15 +3368,15 @@
     }
   }
 
-  for (j=1;j<=SRvec_PH.indexmax();j++)
+  for (j=1;j<=SR_parm_PH.indexmax();j++)
   {
     ParCount++;
-    if(SRvec_PH(j)==-9999) {SR_parm_1(j,3)=prof_var(prof_var_cnt); prof_var_cnt+=1;}
-    if(depletion_fleet>0 && SRvec_PH(j)>0) SRvec_PH(j)++;  //  add 1 to phase if using depletion fleet
-    if(depletion_fleet>0 && j==1) SRvec_PH(1)=1;  //
-    if(SRvec_PH(j) > Turn_off_phase) SRvec_PH(j) =-1;
-    if(SRvec_PH(j) > max_phase) max_phase=SRvec_PH(j);
-    if(SRvec_PH(j)>=0)
+    if(SR_parm_PH(j)==-9999) {SR_parm_1(j,3)=prof_var(prof_var_cnt); prof_var_cnt+=1;}
+    if(depletion_fleet>0 && SR_parm_PH(j)>0) SR_parm_PH(j)++;  //  add 1 to phase if using depletion fleet
+    if(depletion_fleet>0 && j==1) SR_parm_PH(1)=1;  //
+    if(SR_parm_PH(j) > Turn_off_phase) SR_parm_PH(j) =-1;
+    if(SR_parm_PH(j) > max_phase) max_phase=SR_parm_PH(j);
+    if(SR_parm_PH(j)>=0)
     {
       active_count++; active_parm(active_count)=ParCount;
     }
@@ -3909,7 +4037,7 @@
 
 //  containers for parameter values after jitter
     vector MGparm_use(1,N_MGparm2)
-    vector SR_parm_use(1,N_SRparm2);
+    vector SR_parm_use(1,N_SRparm3);
     vector recdev_cycle_use(1,recdev_cycle);
     vector recdev_use(recdev_first,YrMax);
     vector recdev_RD(recdev_first,YrMax);

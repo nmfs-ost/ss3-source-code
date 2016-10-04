@@ -385,9 +385,9 @@ PROCEDURE_SECTION
             if(parm_dev_PH(j)>0) ParmTrace<<parm_dev(j)<<" ";
           }
         }
-        for (j=1;j<=SRvec_PH.indexmax();j++)
+        for (j=1;j<=SR_parm_PH.indexmax();j++)
         {
-          if(SRvec_PH(j)>=0) {ParmTrace<<" "<<SR_parm(j);}
+          if(SR_parm_PH(j)>=0) {ParmTrace<<" "<<SR_parm(j);}
         }
         if(recdev_cycle>0)
         {

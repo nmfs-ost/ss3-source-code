@@ -117,7 +117,7 @@ FUNCTION void write_summaryoutput()
   }
 
     report2<<runnumber<<" SR_parm ";
-    for (i=1;i<=N_SRparm2+recdev_cycle;i++)
+    for (i=1;i<=N_SRparm3+recdev_cycle;i++)
     {NP++; report2<<" "<<ParmLabel(NP);}
     report2<<endl<<runnumber<<" SR_parm "<<SR_parm<<" ";
     if(recdev_cycle>0) report2<<recdev_cycle_parm;
@@ -1643,7 +1643,7 @@ FUNCTION void write_nucontrol()
   NuFore<<Do_MSY<<" # MSY: 1= set to F(SPR); 2=calc F(MSY); 3=set to F(Btgt); 4=set to F(endyr) "<<endl;
   NuFore<<SPR_target<<" # SPR target (e.g. 0.40)"<<endl;
   NuFore<<BTGT_target<<" # Biomass target (e.g. 0.40)"<<endl;
-  NuFore<<"#_Bmark_years: beg_bio, end_bio, beg_selex, end_selex, beg_relF, end_relF, beg_recruits, end_recruits (enter actual year, or values of 0 or -integer to be rel. endyr)"<<endl<<Bmark_Yr_rd;
+  NuFore<<"#_Bmark_years: beg_bio, end_bio, beg_selex, end_selex, beg_relF, end_relF, beg_recr_dist, end_recr_dist, beg_SRparm, end_SRparm (enter actual year, or values of 0 or -integer to be rel. endyr)"<<endl<<Bmark_Yr_rd;
   if (frac_female_pointer == -1) NuFore<<" "<<styr<<" "<<endyr;     // placeholders for 3.24
   NuFore<<endl;
   NuFore<<"# "<<Bmark_Yr<<" # after processing "<<endl;
@@ -1903,6 +1903,8 @@ FUNCTION void write_nucontrol()
 
   report4<<"#"<<endl;
    report4<<"#_Spawner-Recruitment"<<endl<<SR_fxn<<" #_SR_function: 2=Ricker; 3=std_B-H; 4=SCAA; 5=Hockey; 6=B-H_flattop; 7=survival_3Parm; 8=Shepard_3Parm"<<endl;
+   report4<<init_equ_steepness<<"  # 0/1 to use steepness in initial equ recruitment calculation"<<endl;
+   report4<<sigmaR_dendep<<"  #  future feature:  0/1 to make realized sigmaR a function of SR curvature"<<endl;
    report4<<"#_      LO        HI      INIT     PRIOR   PR_SD   PR_type        PHASE env-var use_dev dev_mnyr dev_mxyr dev_PH   Block Blk_Fxn  #  parm_name"<<endl;
    for (f=1;f<=N_SRparm2;f++)
    { NP++;
@@ -1913,11 +1915,19 @@ FUNCTION void write_nucontrol()
       report4<<" # "<<ParmLabel(NP)<<endl;
    }
    report4.precision(6); report4.unsetf(std::ios_base::fixed); report4.unsetf(std::ios_base::floatfield);
-   report4<<"#Next are short parm lines, if requested, for env effects on R0, steepness, and annual dev"<<endl;
-   report4<<"#Then short parm lines, if requested, for block/trend effects on R0, steepness, and annual dev"<<endl;
-
-//   report4<<SR_env_link<<" #_SR_env_link"<<endl;
-//   report4<<SR_env_target_RD<<" #_SR_env_target_0=none;1=devs;_2=R0;_3=steepness"<<endl;
+   if(N_SRparm3>N_SRparm2)
+    {
+       report4<<"#Next are short parm lines for timevary "<<endl;
+       for (f=timevary_parm_start_SR;f<=timevary_parm_cnt_SR;f++)
+       { 
+          NP++;
+          timevary_parm_rd[f](3)=value(timevary_parm(f));
+          report4<<timevary_parm_rd[f]<<" # "<<ParmLabel(NP)<<endl;
+       }
+       report4.precision(6); report4.unsetf(std::ios_base::fixed); report4.unsetf(std::ios_base::floatfield);
+    }
+    
+    
    report4<<do_recdev<<" #do_recdev:  0=none; 1=devvector; 2=simple deviations"<<endl;
    report4<<recdev_start<<" # first year of main recr_devs; early devs can preceed this era"<<endl;
    report4<<recdev_end<<" # last year of main recr_devs; forecast devs start in following year"<<endl;
@@ -3264,6 +3274,8 @@ FUNCTION void write_bigoutput()
   if(SR_fxn==8) SS2out<<Shepard_c<<" Shepard_c "<<Hupper<<" steepness_limit "<<temp<<" Adjusted_steepness";
   SS2out<<endl;
   SS2out<<sigmaR<<" sigmaR"<<endl;
+  SS2out<<init_equ_steepness<<"  # 0/1 to use steepness in initial equ recruitment calculation"<<endl;
+  /*
   SS2out<<SR_parm(N_SRparm2-2)<<" env_link_";
   if(SR_env_link>0)
     {
@@ -3275,6 +3287,7 @@ FUNCTION void write_bigoutput()
     else if(SR_env_target==3)
       {SS2out<<"_Steepness";}
     }
+  */
   SS2out<<endl<<SR_parm(N_SRparm2-1)<<" init_eq "<<mfexp(SR_parm(1)+SR_parm(N_SRparm2-1))<<endl<<
   recdev_start<<" "<<recdev_end<<" main_recdev:start_end"<<endl<<
   recdev_adj(1)<<" "<<recdev_adj(2,5)<<" breakpoints_for_bias_adjustment_ramp "<<endl;
@@ -3292,7 +3305,7 @@ FUNCTION void write_bigoutput()
    else
    {SS2out<<endl;}
 
-  SS2out<<"year spawn_bio exp_recr with_env adjusted pred_recr dev biasadj era mature_bio mature_num"<<endl;
+  SS2out<<"year spawn_bio exp_recr with_regime bias_adjusted pred_recr dev biasadjuster era mature_bio mature_num"<<endl;
   SS2out<<"S/Rcurve "<<SPB_virgin<<" "<<Recr_virgin<<endl;
   y=styr-2;
   SS2out<<"Virg "<<SPB_yr(y)<<" "<<exp_rec(y)<<" - "<<0.0<<" Virg "<<SPB_B_yr(y)<<" "<<SPB_N_yr(y)<<endl;

@@ -2725,7 +2725,7 @@
   init_number BTGT_target
   !!echoinput<<BTGT_target<<" BTGT_target "<<endl;
 
-  ivector Bmark_Yr(1,8)
+  ivector Bmark_Yr(1,10)
   ivector Bmark_t(1,2)  //  for range of time values for averaging body size
   init_ivector Bmark_Yr_rd(1,6)
   init_int Bmark_RelF_Basis
@@ -2745,8 +2745,12 @@
     }
   }
   // default for transition to 3.30
+  //  for distribution of recruits among areas&morphs
   Bmark_Yr(7) = styr;
   Bmark_Yr(8) = endyr;
+  //  for SRparms
+  Bmark_Yr(9) = styr;
+  Bmark_Yr(10) = endyr;
 
   Bmark_t(1)=styr+(Bmark_Yr(1)-styr)*nseas;
   Bmark_t(2)=styr+(Bmark_Yr(2)-styr)*nseas;

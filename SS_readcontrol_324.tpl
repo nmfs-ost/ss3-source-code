@@ -484,21 +484,29 @@
   int k3
   init_int N_Block_Designs                      // read N block designs
   !!echoinput<<N_Block_Designs<<" N_Block_Designs"<<endl;
-  init_ivector Nblk(1,N_Block_Designs)    // N blocks in each design
+  !!echoinput<<"will add one block for year=initial equil yr to replace the R1 offset "<<endl;
+  ivector Nblk(1,N_Block_Designs+1)    // N blocks in each design
+  ivector Nblk2(1,N_Block_Designs+1)   //  vector to create ragged array of dimensions for block matrix
  LOCAL_CALCS
-  if(N_Block_Designs>0) echoinput<<Nblk<<" N_Blocks_per design"<<endl;
-  k1=N_Block_Designs;
-  if(k1==0) k1=1;
+  if(N_Block_Designs>0) 
+    {
+      for(i=1;i<=N_Block_Designs;i++)  {*(ad_comm::global_datafile) >> Nblk(i);}
+      Nblk(N_Block_Designs+1)=1;  //  for the initial equil year
+      echoinput<<Nblk<<" N_Blocks_per design"<<endl;
+    }
+    N_Block_Designs=N_Block_Designs+1;
+    Nblk2=Nblk + Nblk;
  END_CALCS
 
-  ivector Nblk2(1,k1)   //  vector to create ragged array of dimensions for block matrix
- LOCAL_CALCS
-  Nblk2=2;
-  if(N_Block_Designs>0) Nblk2=Nblk + Nblk;
- END_CALCS
-  init_imatrix Block_Design(1,N_Block_Designs,1,Nblk2)  // read the ending year for each block
+  imatrix Block_Design(1,N_Block_Designs,1,Nblk2)  // read the begin-end year for each block
 
  LOCAL_CALCS
+  for(i=1;i<=N_Block_Designs-1;i++)  
+  for(j=1;j<=Nblk2(i);j++)
+  {*(ad_comm::global_datafile) >> Block_Design(i,j);}
+  Block_Design(N_Block_Designs,1)=styr-1;
+  Block_Design(N_Block_Designs,2)=styr-1;
+
   if(N_Block_Designs>0)
   {
     echoinput<<" read block info "<<endl<<Block_Design<<endl;
@@ -509,8 +517,8 @@
       {
         a+=2;
         if(Block_Design(j,a+1)<Block_Design(j,a)) {N_warn++; cout<<" EXIT - see warning "<<endl; warning<<"Block:"<<j<<" "<<k<<" ends before it starts; fatal error"<<endl; exit(1);}
-        if(Block_Design(j,a)<styr) {N_warn++; warning<<"Block:"<<j<<" "<<k<<" starts before styr; resetting"<<endl; Block_Design(j,a)=styr;}
-        if(Block_Design(j,a+1)<styr) {N_warn++; cout<<" EXIT - see warning "<<endl; warning<<"Block:"<<j<<" "<<k<<" ends before styr; fatal error"<<endl; exit(1);}
+        if(Block_Design(j,a)<styr-1) {N_warn++; warning<<"Block:"<<j<<" "<<k<<" starts before styr; resetting"<<endl; Block_Design(j,a)=styr;}
+        if(Block_Design(j,a+1)<styr-1) {N_warn++; cout<<" EXIT - see warning "<<endl; warning<<"Block:"<<j<<" "<<k<<" ends before styr; fatal error"<<endl; exit(1);}
         if(Block_Design(j,a)>retro_yr+1) {N_warn++; cout<<" EXIT - see warning "<<endl; warning<<"Block:"<<j<<" "<<k<<" starts after retroyr+1; fatal error"<<endl; exit(1);}
         if(Block_Design(j,a+1)>retro_yr+1) {N_warn++; warning<<"Block:"<<j<<" "<<k<<" ends after retroyr+1; resetting"<<endl; Block_Design(j,a+1)=retro_yr+1;}
 
@@ -1632,20 +1640,41 @@
   ivector N_SRparm(1,10)
   !!N_SRparm.fill("{0,2,2,2,3,2,3,3,0,0}");
   int N_SRparm2
+  int N_SRparm3
+  int init_equ_steepness
+  int sigmaR_dendep  //    future feature:  0/1 to make realized sigmaR a function of SR curvature"<<endl;
   !!echoinput<<SR_fxn<<" #_SR_function: 1=null; 2=Ricker; 3=std_B-H; 4=SCAA; 5=Hockey; 6=B-H_flattop; 7=Survival_3Parm; 8=Shepard "<<endl;
-  !!N_SRparm2=N_SRparm(SR_fxn)+4;
+  !!N_SRparm2=N_SRparm(SR_fxn)+3;
+  
   matrix SR_parm_1(1,N_SRparm2,1,14)
  LOCAL_CALCS
+   N_SRparm3=N_SRparm2;
    SR_parm_1.initialize();
-   for(f=1;f<=N_SRparm2;f++)
+   for(f=1;f<=N_SRparm(SR_fxn);f++)
    {
      *(ad_comm::global_datafile) >> SR_parm_1(f)(1,7);
    }
-//  SR_parm_1(N_SRparm(SR_fxn)+2)=SR_parm_1(N_SRparm(SR_fxn)+3);  //  overwrite envlink with R1_offset (now dev multiplier)
-//  SR_parm_1(N_SRparm(SR_fxn)+3)=SR_parm_1(N_SRparm(SR_fxn)+4);  //  overwrite old r1_offset with autocorr
-//  SR_parm_1(N_SRparm(SR_fxn)+4)=0;  //  null unused line
-//  N_SRparm2-=1;
+   f=N_SRparm(SR_fxn)+1;  *(ad_comm::global_datafile) >> SR_parm_1(f)(1,7);  //  read sigmaR
+   f++;                   *(ad_comm::global_datafile) >> SR_parm_1(f)(1,7);  //  read sr_envlink
+         *(ad_comm::global_datafile) >> SR_parm_1(f)(1,7);  //  read sr_r1offset and overwrite envlink
+   f++;                   *(ad_comm::global_datafile) >> SR_parm_1(f)(1,7);  //  read autocorr
   echoinput<<" SR parms "<<endl<<SR_parm_1<<endl;
+
+  if(SR_parm_1(N_SRparm2-1,5)==-999)  //  using the PR_type as a flag for applying steepness in the initial equilibrium calc
+    {init_equ_steepness=1;}
+    else
+    {init_equ_steepness=0;}
+    
+  if(SR_parm_1(N_SRparm2-1,7)>=0 || SR_parm_1(N_SRparm2-1,3)!=0.0)
+    {
+      N_warn++;warning<<"The R1_offset parameter is now the regime parameter and it must not be estimated and should have value of 0.0"<<endl<<
+      "Instead, time-varying offsets to the regime parameter can be estimated; and a block for doing this has been created"<<endl;
+      SR_parm_1(N_SRparm2-1,7)=-1;
+      SR_parm_1(N_SRparm2-1,3)=0.0;
+      SR_parm_1(N_SRparm2-1,13)=N_Block_Designs;
+      SR_parm_1(N_SRparm2-1,14)=1;
+    }
+
  END_CALCS
 
   init_int SR_env_link
@@ -1655,7 +1684,20 @@
   int SR_env_target
   int SR_autocorr;  // will be calculated later
 
+  int timevary_parm_start_SR;
+  int firstSRparm;
+  int timevary_parm_cnt_SR;
+  ivector timevary_SRparm(styr-3,YrMax+1);
+  ivector SR_parm_timevary(1,N_SRparm2);
+
  LOCAL_CALCS
+//  SS_Label_Info_4.6.1 #Create S-R parameter labels
+   firstSRparm=ParCount;
+   timevary_parm_cnt_SR=0;
+   timevary_parm_start_SR=0;
+   timevary_SRparm.initialize();
+   SR_parm_timevary.initialize();
+
 //  adjust for revision to envlink approach
   if(SR_env_link>0)
     {
@@ -1664,22 +1706,31 @@
       SR_env_link=0;
     }
  END_CALCS
-  vector SRvec_LO(1,N_SRparm2)
-  vector SRvec_HI(1,N_SRparm2)
-  ivector SRvec_PH(1,N_SRparm2)
+  vector SR_parm_LO(1,N_SRparm3)
+  vector SR_parm_HI(1,N_SRparm3)
+  vector SR_parm_RD(1,N_SRparm3)
+  vector SR_parm_PR(1,N_SRparm3)
+  ivector SR_parm_PRtype(1,N_SRparm3)
+  vector SR_parm_CV(1,N_SRparm3)
+  ivector SR_parm_PH(1,N_SRparm3)
 
  LOCAL_CALCS
 //  SS_Label_Info_4.6.1 #Create S-R parameter labels
   for(f=1;f<=N_SRparm2;f++)
   {
-   SRvec_LO(f)=SR_parm_1(f,1);
-   SRvec_HI(f)=SR_parm_1(f,2);
-   SRvec_PH(f)=int(SR_parm_1(f,7));
+   SR_parm_LO(f)=SR_parm_1(f,1);
+   SR_parm_HI(f)=SR_parm_1(f,2);
+   SR_parm_PH(f)=int(SR_parm_1(f,7));
+   SR_parm_RD(f)=SR_parm_1(f,3);
+   SR_parm_PR(f)=SR_parm_1(f,4);
+   
    temp=SR_parm_1(f,5);  //  PR_type in 3.24
    if(temp==0) temp=6;
    if(temp<0) temp=0;
    SR_parm_1(f,5)=SR_parm_1(f,6);  //  move CV
    SR_parm_1(f,6)=temp;
+   SR_parm_CV(f)=SR_parm_1(f,5);
+   SR_parm_PRtype(f)=SR_parm_1(f,6);
   }
   /*
    if(SR_env_link>N_envvar)
@@ -1742,8 +1793,7 @@
     }
   }
   ParmLabel+="SR_sigmaR";
-  ParmLabel+="SR_nullparm";
-  ParmLabel+="SR_R1_offset";
+  ParmLabel+="SR_regime";
   ParmLabel+="SR_autocorr";
   ParCount+=N_SRparm2;
  END_CALCS
@@ -3973,15 +4023,15 @@
     }
   }
 
-  for (j=1;j<=SRvec_PH.indexmax();j++)
+  for (j=1;j<=SR_parm_PH.indexmax();j++)
   {
     ParCount++;
-    if(SRvec_PH(j)==-9999) {SR_parm_1(j,3)=prof_var(prof_var_cnt); prof_var_cnt+=1;}
-    if(depletion_fleet>0 && SRvec_PH(j)>0) SRvec_PH(j)++;  //  add 1 to phase if using depletion fleet
-    if(depletion_fleet>0 && j==1) SRvec_PH(1)=1;  //
-    if(SRvec_PH(j) > Turn_off_phase) SRvec_PH(j) =-1;
-    if(SRvec_PH(j) > max_phase) max_phase=SRvec_PH(j);
-    if(SRvec_PH(j)>=0)
+    if(SR_parm_PH(j)==-9999) {SR_parm_1(j,3)=prof_var(prof_var_cnt); prof_var_cnt+=1;}
+    if(depletion_fleet>0 && SR_parm_PH(j)>0) SR_parm_PH(j)++;  //  add 1 to phase if using depletion fleet
+    if(depletion_fleet>0 && j==1) SR_parm_PH(1)=1;  //
+    if(SR_parm_PH(j) > Turn_off_phase) SR_parm_PH(j) =-1;
+    if(SR_parm_PH(j) > max_phase) max_phase=SR_parm_PH(j);
+    if(SR_parm_PH(j)>=0)
     {
       active_count++; active_parm(active_count)=ParCount;
     }

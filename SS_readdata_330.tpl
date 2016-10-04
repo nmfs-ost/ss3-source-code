@@ -2779,13 +2779,13 @@
   init_number BTGT_target
   !!echoinput<<BTGT_target<<" BTGT_target "<<endl;
 
-  ivector Bmark_Yr(1,8)
+  ivector Bmark_Yr(1,10)
   ivector Bmark_t(1,2)  //  for range of time values for averaging body size
-  init_ivector Bmark_Yr_rd(1,8)
+  init_ivector Bmark_Yr_rd(1,10)
   init_int Bmark_RelF_Basis
  LOCAL_CALCS
-  echoinput<<Bmark_Yr_rd<<" Benchmark years as read:  beg-end bio; beg-end selex; beg-end relF; beg-end recruits"<<endl;
-  for (i=1;i<=8;i++)  //  beg-end bio; beg-end selex; beg-end relF
+  echoinput<<Bmark_Yr_rd<<" Benchmark years as read:  beg-end bio; beg-end selex; beg-end relF; beg-end recr_dist; beg-end SRparm"<<endl;
+  for (i=1;i<=10;i++)  //  beg-end bio; beg-end selex; beg-end relF
   {
     if(Bmark_Yr_rd(i)==-999)
     {Bmark_Yr(i)=styr;}

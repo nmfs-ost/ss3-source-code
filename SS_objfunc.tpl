@@ -654,14 +654,12 @@ FUNCTION void evaluate_the_objective_function()
       }
     }
 
-    for (i=1;i<=N_SRparm2;i++)
-      if(SR_parm_1(i,5)>0 && (active(SR_parm(i))|| Do_all_priors>0))
+    for (i=1;i<=N_SRparm3;i++)
+      if(SR_parm_PRtype(i)>0 && (active(SR_parm(i))|| Do_all_priors>0))
         {
-        SR_parm_Like(i)=Get_Prior(SR_parm_1(i,5), SR_parm_1(i,1), SR_parm_1(i,2), SR_parm_1(i,4), SR_parm_1(i,6), SR_parm(i));
+        SR_parm_Like(i)=Get_Prior(SR_parm_PRtype(i), SR_parm_LO(i), SR_parm_HI(i), SR_parm_PR(i), SR_parm_CV(i), SR_parm(i));
         parm_like+=SR_parm_Like(i);
         }
-    }
-
   //  SS_Label_Info_25.14 #logL for recdev_cycle
     if(recdev_cycle>0)
     {
@@ -679,21 +677,9 @@ FUNCTION void evaluate_the_objective_function()
       temp-=temp1;
       parm_like+=10000.*temp*temp;  //  similar to ADMB's approach to getting zero-centered dev_vectors
     }
-
+    }
   //  SS_Label_Info_25.15 #logL for parameter process errors (devs)
     {
-  /*
-  //  code from 3.24
-      for(i=1;i<=N_parm_dev;i++)
-      {
-        if(parm_dev_PH(i)>0 && parm_dev_lambda(k_phase)>0.0 )
-        {
-        for(j=parm_dev_minyr(i);j<=parm_dev_maxyr(i);j++)
-        {parm_dev_like(i,1) += 0.5*square( parm_dev(i,j) / parm_dev_stddev(i) );}
-        parm_dev_like(i,2) += sd_offset*float(parm_dev_maxyr(i)-parm_dev_minyr(i)+1.)*log(parm_dev_stddev(i));
-        }
-      }
-  */
     
   //  new code to match mean-reverting random walk approach used for recdevs
       for(i=1;i<=N_parm_dev;i++)
@@ -1201,7 +1187,7 @@ FUNCTION void get_posteriors()
       if(parm_dev_PH(i)>0) posts<<parm_dev(i,j)<<" ";
     }
   }
-  for (i=1;i<=N_SRparm2;i++)
+  for (i=1;i<=N_SRparm3;i++)
   {
     if(active(SR_parm(i))) posts<<SR_parm(i)<<" ";
   }

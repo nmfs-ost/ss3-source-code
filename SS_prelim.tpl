@@ -351,8 +351,8 @@ PRELIMINARY_CALCS_SECTION
     {MGparm(i) = MGparm_RD(i);}  //  set vector of initial natmort and growth parms
     echoinput<< " MGparms read from ctl "<<MGparm<<endl;
 
-    for (i=1;i<=N_SRparm2;i++)
-    {SR_parm(i)=SR_parm_1(i,3);}
+    for (i=1;i<=N_SRparm3;i++)
+    {SR_parm(i)=SR_parm_RD(i);}
     echoinput<< " SRR_parms read from ctl "<<SR_parm<<endl;
 
     if(recdev_cycle>0)
@@ -470,12 +470,13 @@ PRELIMINARY_CALCS_SECTION
     echoinput<< " MG_parms after check "<<MGparm<<endl;
     MGparm_use=value(MGparm);
 
-    for (i=1;i<=N_SRparm2;i++)
-    if(SRvec_PH(i)>0)
-    {SR_parm(i) = Check_Parm(SRvec_LO(i),SRvec_HI(i), jitter, SR_parm(i));}
+    for (i=1;i<=N_SRparm3;i++)
+    if(SR_parm_PH(i)>0)
+    {SR_parm(i) = Check_Parm(SR_parm_LO(i),SR_parm_HI(i), jitter, SR_parm(i));}
     echoinput<< " SRR_parms after check "<<SR_parm<<endl;
     SR_parm_use=value(SR_parm);
 
+    recdev_use.initialize();
     if(recdev_cycle>0)
     {
       for (j=1;j<=recdev_cycle;j++)

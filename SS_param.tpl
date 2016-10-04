@@ -93,21 +93,20 @@ PARAMETER_SECTION
   3darray migrrate(styr-3,YrMax,1,do_migr2,0,nages)
   3darray recr_dist(1,N_GP*gender,1,N_settle_timings,1,pop);
 !!//  SS_Label_Info_5.1.2 #Create SR_parm vector, recruitment vectors
-  init_bounded_number_vector SR_parm(1,N_SRparm2,SRvec_LO,SRvec_HI,SRvec_PH)
+  init_bounded_number_vector SR_parm(1,N_SRparm3,SR_parm_LO,SR_parm_HI,SR_parm_PH)
+  matrix SR_parm_byyr(styr-3,YrMax,1,N_SRparm2+1)  //  R0, steepness, parm3, sigmar, rec_dev_offset, R1, rho, SPB   Time_vary implementation of spawner-recruitment
+  vector SR_parm_virg(1,N_SRparm2+1)
+  vector SR_parm_work(1,N_SRparm2+1)
   number two_sigmaRsq;
   number half_sigmaRsq;
-  number sigmaR
+  number sigmaR;
+  number SPR_virgin;
+  number regime_change;
   number rho;
   number dirichlet_Parm;
  LOCAL_CALCS
   Ave_Size.initialize();
-//  if(SR_parm(N_SRparm2)!=0.0 || SRvec_PH(N_SRparm2)>0) {SR_autocorr=1;} else {SR_autocorr=0;}  // flag for recruitment autocorrelation
-  if(SR_parm_1(N_SRparm2,3)!=0.0 || SR_parm_1(N_SRparm2,7)>0)
-    {SR_autocorr=1;}
-  else
-    {SR_autocorr=0;}
-  // flag for recruitment autocorrelation
-  echoinput<<" Do recruitment_autocorr: "<<SR_autocorr<<endl;
+//  if(SR_parm(N_SRparm2)!=0.0 || SR_parm_PH(N_SRparm2)>0) {SR_autocorr=1;} else {SR_autocorr=0;}  // flag for recruitment autocorrelation
   if(do_recdev==1)
   {k=recdev_start; j=recdev_end; s=1; p=-1;}
   else if(do_recdev==2)
@@ -455,7 +454,7 @@ PARAMETER_SECTION
   vector init_F_Like(1,Nfleet)
   vector Q_parm_Like(1,Q_Npar2)
   vector selparm_Like(1,N_selparm2)
-  vector SR_parm_Like(1,N_SRparm2)
+  vector SR_parm_Like(1,N_SRparm3)
   vector recdev_cycle_Like(1,recdev_cycle)
   !! k=Do_TG*(3*N_TG+2*Nfleet);
   vector TG_parm_Like(1,k);

@@ -41,6 +41,7 @@ FUNCTION void get_initial_conditions()
   if(MG_active(3)>0) get_wtlen();
   if(MG_active(4)>0) get_recr_distribution();
   if(MG_active(5)>0) get_migration();
+  if(do_once==1) cout<<" migr OK"<<endl;
   if(MG_active(7)>0)
   {
     get_catch_mult(y, catch_mult_pointer);
@@ -49,7 +50,6 @@ FUNCTION void get_initial_conditions()
       catch_mult(j)=catch_mult(y);
     }
   }
-  if(do_once==1) cout<<" migr OK"<<endl;
   if(Use_AgeKeyZero>0)
   {
     if(MG_active(6)>0) get_age_age(Use_AgeKeyZero,AgeKey_StartAge,AgeKey_Linear1,AgeKey_Linear2); //  call function to get the age_age key
@@ -125,6 +125,7 @@ FUNCTION void get_initial_conditions()
 
     Do_Equil_Calc();                      //  call function to do equilibrium calculation
     SPB_virgin=SPB_equil;
+    SPR_virgin=SPB_equil/Recr_virgin;  //  spawners per recruit
     Mgmt_quant(1)=SPB_equil;
     if(Do_Benchmark>0)
     {
@@ -136,11 +137,27 @@ FUNCTION void get_initial_conditions()
     SPB_pop_gp(eq_yr)=SPB_equil_pop_gp;   // dimensions of pop x N_GP
     if(Hermaphro_Option!=0) MaleSPB(eq_yr)=MaleSPB_equil_pop_gp;
     SPB_yr(eq_yr)=SPB_equil;
+    for(int i=1;i<=N_SRparm2;i++) {SR_parm_byyr(eq_yr,i)=SR_parm(i);  SR_parm_virg(i)=SR_parm(i);  SR_parm_work(i)=SR_parm(i);}
+    SR_parm_byyr(eq_yr,N_SRparm2+1)=SPB_equil;
+    SR_parm_virg(N_SRparm2+1)=SPB_equil;
+    SR_parm_work(N_SRparm2+1)=SPB_equil;
     t=styr-2*nseas-1;
     for (p=1;p<=pop;p++)
     for (g=1;g<=gmorph;g++)
     for (s=1;s<=nseas;s++)
-    {natage(t+s,p,g)(0,nages)=equ_numbers(s,p,g)(0,nages);}
+    {
+      natage(t+s,p,g)(0,nages)=equ_numbers(s,p,g)(0,nages);
+    }
+    if(save_for_report>0)
+    {
+      s==spawn_seas;
+      for (p=1;p<=pop;p++)
+      for (g=1;g<=gmorph;g++)
+      {
+        if(sx(g)==1 && use_morph(g)>0) SPB_B_yr(eq_yr) += make_mature_bio(GP4(g))*natage(t+s,p,g);
+        if(sx(g)==1 && use_morph(g)>0) SPB_N_yr(eq_yr) += make_mature_numbers(GP4(g))*natage(t+s,p,g);
+      }
+    }
   }
   else  //  area-specific spawn-recruitment
   {
@@ -152,6 +169,19 @@ FUNCTION void get_initial_conditions()
    eq_yr=styr-1;
    bio_yr=styr;
    if(fishery_on_off==1) {Fishon=1;} else {Fishon=0;}
+    
+   for(f=1;f<=N_SRparm2;f++)
+   {
+      if(SR_parm_timevary(f)==0)
+      {
+          //  no change to SR_parm_work
+      }
+      else
+      {
+        SR_parm_work(f)=parm_timevary(SR_parm_timevary(f),eq_yr);
+      }
+   }
+
    for (s=1;s<=nseas;s++)
    {
      t=styr-nseas-1+s;
@@ -161,46 +191,49 @@ FUNCTION void get_initial_conditions()
      }
    }
 
-  //  SS_Label_Info_23.5.1  #Apply adjustments to the recruitment level
-//  SPAWN-RECR:   adjust recruitment for the initial equilibrium
-  if(SR_parm_1(N_SRparm2-1,5)>-999)  //  using the PR_type as a flag
-  {
-  //  SS_Label_Info_23.5.1.1  #Adjustments do not include spawner-recruitment function
-   R1_exp=Recr_virgin;
-   exp_rec(eq_yr,1)=R1_exp;
-   if(SR_env_target==2) {R1_exp*=mfexp(SR_parm(N_SRparm2-2)* env_data(styr-1,SR_env_link));}
-   exp_rec(eq_yr,2)=R1_exp;
-   exp_rec(eq_yr,3)=R1_exp;
-   R1 = R1_exp*mfexp(SR_parm(N_SRparm2-1));
-   exp_rec(eq_yr,4)=R1;
+//  for the initial equilibrium, R0 and steepness will remain same as for virgin, but a regime shift is allowed
+  exp_rec(eq_yr,1)=Recr_virgin;
+  R1_exp=Recr_virgin;
 
-   equ_Recr=R1;
+//  SS_Label_Info_23.5.1  #Apply adjustments to the recruitment level
+//  SPAWN-RECR:   adjust recruitment for the initial equilibrium
+  regime_change=1.0;
+  if(SR_parm_timevary(N_SRparm2-1)>0)  //  timevary regime exists
+  {
+    regime_change=mfexp(SR_parm_work(N_SRparm2-1));
+  }  
+    
+  if(init_equ_steepness==0) // Adjustments do not include spawner-recruitment steepness
+  {
+   R1=Recr_virgin*regime_change;
+   exp_rec(eq_yr,2)=R1;
+   exp_rec(eq_yr,3)=R1;
+   exp_rec(eq_yr,4)=R1;
+   equ_Recr=R1;  //  equ_Recr is used inside of Do_Equil_Calc
    Do_Equil_Calc();
    CrashPen += Equ_penalty;
   }
   else
   {
-    //  SS_Label_Info_23.5.1.2  #Adjustments do include spawner-recruitment function
+    //  SS_Label_Info_23.5.1.2  #Adjustments  include spawner-recruitment function
     //  do initial equilibrium with R1 based on offset from spawner-recruitment curve, using same approach as the benchmark calculations
     //  first get SPR for this init_F
 //  SPAWN-RECR:   calc initial equilibrium pop, SPB, Recruitment
     equ_Recr=Recr_virgin;
     Do_Equil_Calc();
     CrashPen += Equ_penalty;
-
     SPR_temp=SPB_equil/equ_Recr;  //  spawners per recruit at initial F
-  //  next the rquilibrium SSB and recruitment from SPR_temp
+  //  get equilibrium SSB and recruitment from SPR_temp, Recr_virgin and virgin steepness
     Equ_SpawnRecr_Result = Equil_Spawn_Recr_Fxn(SR_parm(2), SR_parm(3), SPB_virgin, Recr_virgin, SPR_temp);  //  returns 2 element vector containing equilibrium biomass and recruitment at this SPR
 
     R1_exp=Equ_SpawnRecr_Result(2);     //  set the expected recruitment equal to this equilibrium
     exp_rec(eq_yr,1)=R1_exp;
-    if(SR_env_target==2) {R1_exp*=mfexp(SR_parm(N_SRparm2-2)* env_data(eq_yr,SR_env_link));}  //  adjust for environment
-    exp_rec(eq_yr,2)=R1_exp;
-    exp_rec(eq_yr,3)=R1_exp;
 
-    equ_Recr = R1_exp*mfexp(SR_parm(N_SRparm2-1));  // apply R1 offset
-    R1=equ_Recr;
+    equ_Recr=R1_exp*regime_change;
+    exp_rec(eq_yr,2)=equ_Recr;
+    exp_rec(eq_yr,3)=equ_Recr;
     exp_rec(eq_yr,4)=equ_Recr;
+    R1=equ_Recr;
 
     Do_Equil_Calc();  // calculated SPB_equil
     CrashPen += Equ_penalty;
@@ -253,6 +286,17 @@ FUNCTION void get_initial_conditions()
        natage(a,p,g)(0,nages)=equ_numbers(s,p,g)(0,nages);
      }
    }
+    if(save_for_report>0)
+    {
+      t=styr-nseas-1;
+      s==spawn_seas;
+      for (p=1;p<=pop;p++)
+      for (g=1;g<=gmorph;g++)
+      {
+        if(sx(g)==1 && use_morph(g)>0) SPB_B_yr(eq_yr) += make_mature_bio(GP4(g))*natage(t+s,p,g);
+        if(sx(g)==1 && use_morph(g)>0) SPB_N_yr(eq_yr) += make_mature_numbers(GP4(g))*natage(t+s,p,g);
+      }
+    }
 
    if(docheckup==1) echoinput<<" init age comp for styr "<<styr<<endl<<natage(styr)<<endl<<endl;
 
@@ -280,6 +324,8 @@ FUNCTION void get_time_series()
   dvariable crashtemp; dvariable crashtemp1;
   dvariable interim_tot_catch;
   dvariable Z_adjuster;
+  dvariable R0_use;
+  dvariable SPB_use;
   if(Do_Morphcomp) Morphcomp_exp.initialize();
 
   //  SS_Label_Info_24.0 #Retrieve spawning biomass and recruitment from the initial equilibrium
@@ -297,7 +343,19 @@ FUNCTION void get_time_series()
     if(STD_Yr_Reverse_F(y)>0) F_std(STD_Yr_Reverse_F(y))=0.0;
     t_base=styr+(y-styr)*nseas-1;
 
-//    if( )
+
+   for(f=1;f<=N_SRparm2;f++)
+   {
+      if(SR_parm_timevary(f)==0)
+      {
+          //  no change to SR_parm_work
+      }
+      else
+      {
+        SR_parm_work(f)=parm_timevary(SR_parm_timevary(f),y);
+      }
+   }
+
     	{
     		env_data(y,-1)=SPB_current/SPB_yr(styr-1);  //  store most recent value for density-dependent effects, NOTE - off by a year if recalc'ed at beginning of season 1
         if(recdev_doit(y)>0)
@@ -464,7 +522,21 @@ FUNCTION void get_time_series()
 
   //  SS_Label_Info_24.2.3 #Get the total recruitment produced by this spawning biomass
 //  SPAWN-RECR:   calc recruitment in time series; need to make this area-specific
-        Recruits=Spawn_Recr(SPB_virgin,Recr_virgin,SPB_current);  // calls to function Spawn_Recr
+      if(SR_parm_timevary(1)==0)  //  R0 is not time-varying
+      {R0_use=Recr_virgin; SPB_use=SPB_virgin;}
+      else
+      {
+        R0_use=mfexp(SR_parm_work(1));
+        equ_Recr=R0_use;
+        Fishon=0;
+        eq_yr=y;
+        bio_yr=y;
+        Do_Equil_Calc();                      //  call function to do equilibrium calculation
+        if(fishery_on_off==1) {Fishon=1;} else {Fishon=0;}
+        SPB_use=SPB_equil;
+      }
+
+        Recruits=Spawn_Recr(SPB_use,R0_use,SPB_current);  // calls to function Spawn_Recr
 // distribute Recruitment of age 0 fish among the current and future settlements; and among areas and morphs
             //  use t offset for each birth event:  Settlement_offset(settle)
             //  so the total number of Recruits will be relative to their numbers at the time of the set of settlement_events.
@@ -821,8 +893,23 @@ FUNCTION void get_time_series()
           }
         }
   //  SS_Label_Info_24.3.4.1 #Get recruitment from this spawning biomass
-//  SPAWN-RECR:   calc recruitment in time series; need to make this area-specififc
-        Recruits=Spawn_Recr(SPB_virgin,Recr_virgin,SPB_current);  // calls to function Spawn_Recr
+//  SPAWN-RECR:   calc recruitment in time series; need to make this area-specific
+      if(SR_parm_timevary(1)==0)  //  R0 is not time-varying
+      {R0_use=Recr_virgin; SPB_use=SPB_virgin;}
+      else
+      {
+        R0_use=mfexp(SR_parm_work(1));
+        equ_Recr=R0_use;
+        Fishon=0;
+        eq_yr=y;
+        bio_yr=y;
+        Do_Equil_Calc();                      //  call function to do equilibrium calculation
+        if(fishery_on_off==1) {Fishon=1;} else {Fishon=0;}
+        SPB_use=SPB_equil;
+      }
+
+        Recruits=Spawn_Recr(SPB_use,R0_use,SPB_current);  // calls to function Spawn_Recr
+
 // distribute Recruitment of age 0 fish among the current and future settlements; and among areas and morphs
 //  note that because SPB_current is calculated at end of season to take into account Z,
 //  this means that recruitment cannot occur until a subsequent season
@@ -1223,6 +1310,8 @@ FUNCTION void Do_Equil_Calc()
   int t_base;
   int bio_t_base;
   int bio_t;
+  int t;
+  int s;
   dvariable N_mid;
   dvariable N_beg;
   dvariable Fishery_Survival;

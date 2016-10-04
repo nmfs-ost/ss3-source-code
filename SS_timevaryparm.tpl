@@ -39,6 +39,21 @@ FUNCTION void make_timevaryparm()
           parm_timevary(tvary)=baseparm;  //  fill timeseries with base parameter, just in case
           break;
         }
+        case 2:  // SR
+        {
+          baseparm=SR_parm(timevary_setup(2)); //  index of base parm
+          baseparm_min=SR_parm_LO(timevary_setup(2));
+          baseparm_max=SR_parm_HI(timevary_setup(2));
+          if(do_once==1) echoinput<<"base SR_parm "<<baseparm<<endl;
+          for(j=timevary_setup(3);j<timevary_def[tvary+1](3);j++)
+          {
+            timevary_parm_cnt_all++;
+            timevary_parm(timevary_parm_cnt_all)=SR_parm(N_SRparm(SR_fxn)+3+j-timevary_parm_start_SR+1);
+            if(do_once==1) echoinput<<j<<" timevary_parm: "<<timevary_parm(timevary_parm_cnt_all)<<endl;
+          }
+          parm_timevary(tvary)=baseparm;  //  fill timeseries with base parameter, just in case
+          break;
+        }
         case 3:  // Q
         {
           baseparm=Q_parm(timevary_setup(2)); //  index of base parm

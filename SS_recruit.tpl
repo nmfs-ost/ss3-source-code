@@ -1,12 +1,11 @@
 //********************************************************************
  /*  SS_Label_FUNCTION 43 Spawner-recruitment function */
 //  SPAWN-RECR:   function: to calc R from S
-FUNCTION dvariable Spawn_Recr(const prevariable& SPB_virgin, const prevariable& Recr_virgin, const prevariable& SPB_current)
+FUNCTION dvariable Spawn_Recr(const prevariable& SPB_virgin_adj, const prevariable& Recr_virgin_adj, const prevariable& SPB_current)
   {
     dvariable NewRecruits;
     dvariable SPB_BH1;
-    dvariable Recr_virgin_adj;
-    dvariable SPB_virgin_adj;
+    dvariable recdev_offset;
     dvariable steepness;
     dvariable Shepard_c;
     dvariable Shepard_c2;
@@ -20,9 +19,13 @@ FUNCTION dvariable Spawn_Recr(const prevariable& SPB_virgin, const prevariable& 
 
 //  SS_Label_43.1  add 0.1 to input spawning biomass value to make calculation more rebust
     SPB_curr_adj = SPB_current + 0.100;   // robust
-    Recr_virgin_adj=Recr_virgin;
-    SPB_virgin_adj=SPB_virgin;
 
+
+    steepness=SR_parm_work(2);
+    regime_change=SR_parm_work(N_SRparm2-1);
+
+
+  /*
 //  SS_Label_43.2  adjust for environmental effects on S-R parameters: Rzero or steepness
     if(SR_env_target==2)
     {
@@ -32,18 +35,19 @@ FUNCTION dvariable Spawn_Recr(const prevariable& SPB_virgin, const prevariable& 
 
     if(SR_env_target==3)
     {
-      temp=log((SRvec_HI(2)-SRvec_LO(2)+0.0000002)/(SR_parm(2)-SRvec_LO(2)+0.0000001)-1.)/(-2.);
+      temp=log((SR_parm_HI(2)-SR_parm_LO(2)+0.0000002)/(SR_parm(2)-SR_parm_LO(2)+0.0000001)-1.)/(-2.);
       temp+=SR_parm(N_SRparm2-2)* env_data(y,SR_env_link);
-      steepness=SRvec_LO(2)+(SRvec_HI(2)-SRvec_LO(2))/(1.+mfexp(-2.*temp));
+      steepness=SR_parm_LO(2)+(SR_parm_HI(2)-SR_parm_LO(2))/(1.+mfexp(-2.*temp));
     }
     else
     {
       steepness=SR_parm(2);
     }
-    
+  */
+  
     if(SR_fxn==8)
     {
-      Shepard_c=SR_parm(3);
+      Shepard_c=SR_parm_work(3);
       Shepard_c2=pow(0.2,Shepard_c);
       Hupper=1.0/(5.0*Shepard_c2);
       steep2=0.2+(steepness-0.2)/(0.8)*(Hupper-0.2);
@@ -85,7 +89,7 @@ FUNCTION dvariable Spawn_Recr(const prevariable& SPB_virgin, const prevariable& 
       case 5:  // hockey stick  where "steepness" is now the fraction of B0 below which recruitment declines linearly
                //  the 3rd parameter allows for a minimum recruitment level
       {
-        temp=SR_parm(3)*Recr_virgin_adj + SPB_curr_adj/(steepness*SPB_virgin_adj)*(Recr_virgin_adj-SR_parm(3)*Recr_virgin_adj);  //  linear decrease below steepness*SPB_virgin_adj
+        temp=SR_parm_work(3)*Recr_virgin_adj + SPB_curr_adj/(steepness*SPB_virgin_adj)*(Recr_virgin_adj-SR_parm_work(3)*Recr_virgin_adj);  //  linear decrease below steepness*SPB_virgin_adj
         NewRecruits=Join_Fxn(0.0*SPB_virgin_adj,SPB_virgin_adj,steepness*SPB_virgin_adj, SPB_curr_adj, temp, Recr_virgin_adj);
         break;
       }
@@ -106,12 +110,12 @@ FUNCTION dvariable Spawn_Recr(const prevariable& SPB_virgin, const prevariable& 
         // Pups_0=SPB_virgin_adj;  //  total population fecundity is the number of pups produced
         // Sfrac=SR_parm(2);
         SRZ_0=log(1.0/(SPB_virgin_adj/Recr_virgin_adj));
-        SRZ_max=SRZ_0+SR_parm(2)*(0.0-SRZ_0);
-        SRZ_surv=mfexp((1.-pow((SPB_curr_adj/SPB_virgin_adj),SR_parm(3)) )*(SRZ_max-SRZ_0)+SRZ_0);  //  survival
+        SRZ_max=SRZ_0+SR_parm_work(2)*(0.0-SRZ_0);
+        SRZ_surv=mfexp((1.-pow((SPB_curr_adj/SPB_virgin_adj),SR_parm_work(3)) )*(SRZ_max-SRZ_0)+SRZ_0);  //  survival
         NewRecruits=SPB_curr_adj*SRZ_surv;
         exp_rec(y,1)=NewRecruits;   // expected arithmetic mean recruitment
 //  SS_Label_43.3.7.1  Do variation in recruitment by adjusting survival
-        if(SR_env_target==1) SRZ_surv*=mfexp(SR_parm(N_SRparm2-2)* env_data(y,SR_env_link));   // environ effect on survival
+//        if(SR_env_target==1) SRZ_surv*=mfexp(SR_parm(N_SRparm2-2)* env_data(y,SR_env_link));   // environ effect on survival
         if(recdev_cycle>0)
         {
           gg=y - (styr+(int((y-styr)/recdev_cycle))*recdev_cycle)+1;
@@ -150,12 +154,14 @@ FUNCTION dvariable Spawn_Recr(const prevariable& SPB_virgin, const prevariable& 
 //  SS_Label_43.4  For non-survival based SRR, get recruitment deviations by adjusting recruitment itself
       exp_rec(y,1)=NewRecruits;   // expected arithmetic mean recruitment
 
-      if(SR_env_target==1) NewRecruits*=mfexp(SR_parm(N_SRparm2-2)* env_data(y,SR_env_link));   // environ effect on annual recruitment
+//      if(SR_env_target==1) NewRecruits*=mfexp(SR_parm(N_SRparm2-2)* env_data(y,SR_env_link));   // environ effect on annual recruitment
       if(recdev_cycle>0)
       {
         gg=y - (styr+(int((y-styr)/recdev_cycle))*recdev_cycle)+1;
         NewRecruits*=mfexp(recdev_cycle_parm(gg));
       }
+      
+      NewRecruits*=mfexp(regime_change);  //  adjust for regime
       exp_rec(y,2)=NewRecruits;
       if(SR_fxn!=4) NewRecruits*=mfexp(-biasadj(y)*half_sigmaRsq);     // bias adjustment
       exp_rec(y,3)=NewRecruits;
@@ -249,7 +255,7 @@ FUNCTION dvar_vector Equil_Spawn_Recr_Fxn(const prevariable &steepness, const pr
         SRZ_0=log(1.0/(SPB_virgin/Recr_virgin));
         SRZ_max=SRZ_0+steepness*(0.0-SRZ_0);
         B_equil = SPB_virgin * (1. - (log(1./SPR_temp) - SRZ_0)/pow((SRZ_max - SRZ_0),(1./SRparm3) ));
-        SRZ_surv=mfexp((1.-pow((B_equil/SPB_virgin),SR_parm(3)) )*(SRZ_max-SRZ_0)+SRZ_0);  //  survival
+        SRZ_surv=mfexp((1.-pow((B_equil/SPB_virgin),SR_parm_work(3)) )*(SRZ_max-SRZ_0)+SRZ_0);  //  survival
         R_equil=B_equil*SRZ_surv;
         break;
       }
