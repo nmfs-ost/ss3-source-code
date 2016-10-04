@@ -503,7 +503,7 @@ FUNCTION void write_nudata()
   report1 << nseas <<" #_nseas"<< endl;
   report1 << 12.*seasdur<<" #_months/season"<< endl;
   report1 << N_subseas<<" #_N_subseasons(even number, minimum is 2)"<<endl;
-  report1 << spawn_seas <<" #_spawn_seas"<< endl;
+  report1 << spawn_month <<" #_spawn_month"<< endl;
   report1 << gender<<" #_Ngenders"<< endl;
   report1 << nages<<" #_Nages=accumulator age"<< endl;
   report1 << pop<<" #_N_areas"<<endl;
