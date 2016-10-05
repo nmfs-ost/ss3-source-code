@@ -1085,6 +1085,7 @@ FUNCTION void Get_Forecast()
                 {
                   Save_PopLen(t,p,g)+=value(natage(t,p,g,a))*value(ALK(ALK_idx,g,a));
                   Save_PopWt(t,p,g)+= value(natage(t,p,g,a))*value(elem_prod(ALK(ALK_idx,g,a),wt_len(s,GP(g))));
+                  Save_PopBio(t,p,g,a)=value(natage(t,p,g,a))*value(Wt_Age_beg(s,g,a));
                 } // close age loop
               }
             }
@@ -1232,6 +1233,7 @@ FUNCTION void Get_Forecast()
                     Save_PopLen(t,j,g)+=value(0.5*(Nmid(g,a)+Nsurv(g,a)))*value(ALK(ALK_idx,g,a));
                     Save_PopWt(t,j,g)+= value(0.5*(Nmid(g,a)+Nsurv(g,a)))*value(elem_prod(ALK(ALK_idx,g,a),wt_len(s,GP(g))));
                     Save_PopAge(t,j,g,a)=value(0.5*(Nmid(g,a)+Nsurv(g,a)));
+                    Save_PopBio(t,j,g,a)==value(0.5*(Nmid(g,a)+Nsurv(g,a)))*value(Wt_Age_beg(s,g,a));
                   } // close age loop
                 }
               }
@@ -1366,6 +1368,7 @@ FUNCTION void Get_Forecast()
                     Save_PopLen(t,j,g)+=value(natage(t,p,g,a)*mfexp(-Z_rate(t,p,g,a)*0.5*seasdur(s)))*value(ALK(ALK_idx,g,a));
                     Save_PopWt(t,j,g)+= value(natage(t,p,g,a)*mfexp(-Z_rate(t,p,g,a)*0.5*seasdur(s)))*value(elem_prod(ALK(ALK_idx,g,a),wt_len(s,GP(g))));
                     Save_PopAge(t,j,g,a)=value(natage(t,p,g,a)*mfexp(-Z_rate(t,p,g,a)*0.5*seasdur(s)));
+                    Save_PopBio(t,j,g,a)=value(natage(t,p,g,a)*mfexp(-Z_rate(t,p,g,a)*0.5*seasdur(s)))*value(Wt_Age_mid(s,g,a));
                   } // close age loop
                 }
               }  // end morph loop

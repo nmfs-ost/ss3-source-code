@@ -142,20 +142,25 @@ FUNCTION void get_initial_conditions()
     SR_parm_virg(N_SRparm2+1)=SPB_equil;
     SR_parm_work(N_SRparm2+1)=SPB_equil;
     t=styr-2*nseas-1;
+    for (s=1;s<=nseas;s++)
     for (p=1;p<=pop;p++)
     for (g=1;g<=gmorph;g++)
-    for (s=1;s<=nseas;s++)
     {
       natage(t+s,p,g)(0,nages)=equ_numbers(s,p,g)(0,nages);
     }
     if(save_for_report>0)
     {
-      s=spawn_seas;
+      for (s=1;s<=nseas;s++)
       for (p=1;p<=pop;p++)
       for (g=1;g<=gmorph;g++)
+      if(use_morph(g)>0)
       {
-        if(sx(g)==1 && use_morph(g)>0) SPB_B_yr(eq_yr) += make_mature_bio(GP4(g))*natage(t+s,p,g);
-        if(sx(g)==1 && use_morph(g)>0) SPB_N_yr(eq_yr) += make_mature_numbers(GP4(g))*natage(t+s,p,g);
+        if(s==spawn_seas && sx(g)==1)
+        {
+           SPB_B_yr(eq_yr) += make_mature_bio(GP4(g))*natage(t+s,p,g);
+           SPB_N_yr(eq_yr) += make_mature_numbers(GP4(g))*natage(t+s,p,g);
+        }
+        Save_PopBio(t+s,p,g)=elem_prod(natage(t+s,p,g),Wt_Age_beg(s,g));
       }
     }
   }
@@ -289,14 +294,20 @@ FUNCTION void get_initial_conditions()
     if(save_for_report>0)
     {
       t=styr-nseas-1;
-      s=spawn_seas;
+      for (s=1;s<=nseas;s++)
       for (p=1;p<=pop;p++)
       for (g=1;g<=gmorph;g++)
+      if(use_morph(g)>0)
       {
-        if(sx(g)==1 && use_morph(g)>0) SPB_B_yr(eq_yr) += make_mature_bio(GP4(g))*natage(t+s,p,g);
-        if(sx(g)==1 && use_morph(g)>0) SPB_N_yr(eq_yr) += make_mature_numbers(GP4(g))*natage(t+s,p,g);
+        if(s==spawn_seas && sx(g)==1)
+        {
+           SPB_B_yr(eq_yr) += make_mature_bio(GP4(g))*natage(t+s,p,g);
+           SPB_N_yr(eq_yr) += make_mature_numbers(GP4(g))*natage(t+s,p,g);
+        }
+        Save_PopBio(t+s,p,g)=elem_prod(natage(t+s,p,g),Wt_Age_beg(s,g));
       }
     }
+
 
    if(docheckup==1) echoinput<<" init age comp for styr "<<styr<<endl<<natage(styr)<<endl<<endl;
 
@@ -586,11 +597,14 @@ FUNCTION void get_time_series()
             Save_PopWt(t,p+pop,g)=0.0;  // later put midseason here
             Save_PopAge(t,p,g)=0.0;
             Save_PopAge(t,p+pop,g)=0.0;  // later put midseason here
+            Save_PopBio(t,p,g)=0.0;
+            Save_PopBio(t,p+pop,g)=0.0;  // later put midseason here
             for (a=0;a<=nages;a++)
             {
               Save_PopLen(t,p,g)+=value(natage(t,p,g,a))*value(ALK(s,g,a));
               Save_PopWt(t,p,g)+=value(natage(t,p,g,a))*value(elem_prod(ALK(s,g,a),wt_len(s,GP(g))));
               Save_PopAge(t,p,g,a)=value(natage(t,p,g,a));
+              Save_PopBio(t,p,g,a)=value(natage(t,p,g,a))*value(Wt_Age_beg(s,g,a));
             } // close age loop
           }
         }
@@ -985,6 +999,7 @@ FUNCTION void get_time_series()
                   Save_PopLen(t,j,g)+=value(natage(t,p,g,a)*mfexp(-Z_rate(t,p,g,a)*0.5*seasdur(s)))*value(ALK(ALK_idx,g,a));
                   Save_PopWt(t,j,g)+= value(natage(t,p,g,a)*mfexp(-Z_rate(t,p,g,a)*0.5*seasdur(s)))*value(elem_prod(ALK(ALK_idx,g,a),wt_len(s,GP(g))));
                   Save_PopAge(t,j,g,a)=value(natage(t,p,g,a)*mfexp(-Z_rate(t,p,g,a)*0.5*seasdur(s)));
+                  Save_PopBio(t,j,g,a)=value(natage(t,p,g,a)*mfexp(-Z_rate(t,p,g,a)*0.5*seasdur(s)))*value(Wt_Age_mid(s,g,a));
                 } // close age loop
               }
           }

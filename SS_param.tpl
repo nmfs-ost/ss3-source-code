@@ -170,6 +170,7 @@ PARAMETER_SECTION
   4darray Save_PopLen(styr-3*nseas,TimeMax_Fcast_std+1,1,2*pop,1,gmorph,1,nlength)
   4darray Save_PopWt(styr-3*nseas,TimeMax_Fcast_std+1,1,2*pop,1,gmorph,1,nlength)
   4darray Save_PopAge(styr-3*nseas,TimeMax_Fcast_std+1,1,2*pop,1,gmorph,0,nages)
+  4darray Save_PopBio(styr-3*nseas,TimeMax_Fcast_std+1,1,2*pop,1,gmorph,0,nages)
 
   number ave_age    //  average age of fish in unfished population; used to weight R1
 
