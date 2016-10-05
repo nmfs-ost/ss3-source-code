@@ -58,6 +58,7 @@ GLOBALS_SECTION
   adstring anystring2;
   adstring version_info;
   adstring version_info2;
+  adstring version_info3;
   adstring version_info_short;
   adstring_array Starter_Comments;
   adstring_array Data_Comments;
@@ -66,8 +67,8 @@ GLOBALS_SECTION
   adstring_array NumLbl;
   adstring_array GenderLbl;   // gender label
   adstring_array CRLF;   // blank to terminate lines
-  
-//  declare some entities that need global access 
+
+//  declare some entities that need global access
   int ParCount; int timevary_parm_cnt; int N_warn;
   int styr; int endyr; int YrMax; int nseas; int Ncycle;
 
@@ -185,9 +186,9 @@ GLOBALS_SECTION
   }
 
 //  global function to create timevary parameters
-  void create_timevary(dvector &baseparm_list, ivector &timevary_setup, 
+  void create_timevary(dvector &baseparm_list, ivector &timevary_setup,
                        ivector &timevary_byyear, const int &autogen_timevary, const int &targettype,
-                       const ivector &block_design_pass, const int &parm_adjust_method, 
+                       const ivector &block_design_pass, const int &parm_adjust_method,
                        const dvector &env_data_pass, int &N_parm_dev)
   {
 //  where timevary_byyear is a selected column of a year x type matrix (e.g. timevary_MG) in read_control
@@ -222,8 +223,8 @@ GLOBALS_SECTION
          switch(k)
          {
            case 0:
-           {ParmLabel+=ParmLabel(j)+"_BLK"+NumLbl(z)+"mult_"+onenum+CRLF(1);  
-            dvector tempvec(1,7);  //  temporary vector for a time-vary parameter  LO HI INIT PRIOR PR_type SD PHASE 
+           {ParmLabel+=ParmLabel(j)+"_BLK"+NumLbl(z)+"mult_"+onenum+CRLF(1);
+            dvector tempvec(1,7);  //  temporary vector for a time-vary parameter  LO HI INIT PRIOR PR_type SD PHASE
             if(autogen_timevary==1)
             {*(ad_comm::global_datafile) >> tempvec(1,7);}
             else
@@ -231,8 +232,8 @@ GLOBALS_SECTION
             timevary_parm_rd.push_back (tempvec);
             break;}
            case 1:
-           {ParmLabel+=ParmLabel(j)+"_BLK"+NumLbl(z)+"add_"+onenum+CRLF(1);  
-            dvector tempvec(1,7);  //  temporary vector for a time-vary parameter  LO HI INIT PRIOR PR_type SD PHASE 
+           {ParmLabel+=ParmLabel(j)+"_BLK"+NumLbl(z)+"add_"+onenum+CRLF(1);
+            dvector tempvec(1,7);  //  temporary vector for a time-vary parameter  LO HI INIT PRIOR PR_type SD PHASE
             if(autogen_timevary==1)
             {*(ad_comm::global_datafile) >> tempvec(1,7);}
             else
@@ -241,7 +242,7 @@ GLOBALS_SECTION
              break;}
            case 2:
            {ParmLabel+=ParmLabel(j)+"_BLK"+NumLbl(z)+"repl_"+onenum+CRLF(1);
-            dvector tempvec(1,7);  //  temporary vector for a time-vary parameter  LO HI INIT PRIOR PR_type SD PHASE 
+            dvector tempvec(1,7);  //  temporary vector for a time-vary parameter  LO HI INIT PRIOR PR_type SD PHASE
             if(autogen_timevary==1)
             {*(ad_comm::global_datafile) >> tempvec(1,7);}
             else
@@ -250,7 +251,7 @@ GLOBALS_SECTION
              break;}
            case 3:
            {ParmLabel+=ParmLabel(j)+"_BLK"+NumLbl(z)+"delta_"+onenum+CRLF(1);
-            dvector tempvec(1,7);  //  temporary vector for a time-vary parameter  LO HI INIT PRIOR PR_type SD PHASE 
+            dvector tempvec(1,7);  //  temporary vector for a time-vary parameter  LO HI INIT PRIOR PR_type SD PHASE
             if(autogen_timevary==1)
             {*(ad_comm::global_datafile) >> tempvec(1,7);}
             else
@@ -282,7 +283,7 @@ GLOBALS_SECTION
            for(k=1;k<=3;k++)  //  for the 3 trend parameters
            {
             timevary_parm_cnt++;
-            dvector tempvec(1,7);  //  temporary vector for a time-vary parameter  LO HI INIT PRIOR PR_type SD PHASE 
+            dvector tempvec(1,7);  //  temporary vector for a time-vary parameter  LO HI INIT PRIOR PR_type SD PHASE
             if(autogen_timevary==1)
             {*(ad_comm::global_datafile) >> tempvec(1,7);}
             else
@@ -302,7 +303,7 @@ GLOBALS_SECTION
            for(k=1;k<=3;k++)  //  for the 3 trend parameters
            {
             timevary_parm_cnt++;
-            dvector tempvec(1,7);  //  temporary vector for a time-vary parameter  LO HI INIT PRIOR PR_type SD PHASE 
+            dvector tempvec(1,7);  //  temporary vector for a time-vary parameter  LO HI INIT PRIOR PR_type SD PHASE
             if(autogen_timevary==1)
             {*(ad_comm::global_datafile) >> tempvec(1,7);}
             else
@@ -323,7 +324,7 @@ GLOBALS_SECTION
            for(k=1;k<=3;k++)  //  for the 3 trend parameters
            {
             timevary_parm_cnt++;
-            dvector tempvec(1,7);  //  temporary vector for a time-vary parameter  LO HI INIT PRIOR PR_type SD PHASE 
+            dvector tempvec(1,7);  //  temporary vector for a time-vary parameter  LO HI INIT PRIOR PR_type SD PHASE
             if(autogen_timevary==1)
             {*(ad_comm::global_datafile) >> tempvec(1,7);}
             else
@@ -363,7 +364,7 @@ GLOBALS_SECTION
           echoinput<<" do env mult for parm: "<<j<<" "<<ParmLabel(j)<<endl;
            ParCount++; ParmLabel+=ParmLabel(j)+"_ENV_mult";
            timevary_parm_cnt++;
-           dvector tempvec(1,7); 
+           dvector tempvec(1,7);
            if(autogen_timevary==1)
            {*(ad_comm::global_datafile) >> tempvec(1,7);}
            else
@@ -376,7 +377,7 @@ GLOBALS_SECTION
           echoinput<<" do env additive "<<endl;
            ParCount++; ParmLabel+=ParmLabel(j)+"_ENV_add";
            timevary_parm_cnt++;
-           dvector tempvec(1,7); 
+           dvector tempvec(1,7);
            if(autogen_timevary==1)
            {*(ad_comm::global_datafile) >> tempvec(1,7);}
            else
@@ -388,7 +389,7 @@ GLOBALS_SECTION
          {
            ParCount++; ParmLabel+=ParmLabel(j)+"_ENV_offset";
            timevary_parm_cnt++;
-           dvector tempvec(1,7); 
+           dvector tempvec(1,7);
            if(autogen_timevary==1)
            {*(ad_comm::global_datafile) >> tempvec(1,7);}
            else
@@ -414,7 +415,7 @@ GLOBALS_SECTION
        {timevary_byyear(y)=1; }
       }
     }
-    
+
     if(baseparm_list(9)>0)  //  devs are used
     {
       N_parm_dev++;  //  count of dev vectors that are used
@@ -443,7 +444,7 @@ GLOBALS_SECTION
       ParCount++;
       ParmLabel+=ParmLabel(j)+"_dev_se"+CRLF(1);
       timevary_parm_cnt++;
-      dvector tempvec(1,7); 
+      dvector tempvec(1,7);
       if(autogen_timevary==1)
       {
         *(ad_comm::global_datafile) >> tempvec(1,7);
@@ -610,8 +611,11 @@ FINAL_SECTION
     cout<<" finished nucontrol report "<<endl;
 
 //  SS_Label_Info_12.4.6 #Call fxn write_Bzero_output()  appended to report.sso
-    write_Bzero_output();
-    cout<<" finished Bzero and global MSY "<<endl;
+    if (reportdetail != 2)
+    {
+        write_Bzero_output();
+        cout<<" finished Bzero and global MSY "<<endl;
+    }
 
 //  SS_Label_Info_12.3.1 #Write out body weights to wtatage.ss_new.  Occurs while doing procedure with save_for_report=2
     save_for_report=2;

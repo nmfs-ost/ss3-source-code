@@ -484,7 +484,7 @@ FUNCTION void write_nudata()
   cout << " N_nudata: " << N_nudata << endl;
   ofstream report1("data.ss_new");
   report1<<version_info_short<<endl;
-  report1<<"#_"<<version_info<<endl<<"#_"<<version_info2<<endl<<"#_Start_time: "<<ctime(&start);
+  report1<<"#_"<<version_info<<endl<<"#_"<<version_info2<<endl<<"#_"<<version_info3<<endl<<"#_Start_time: "<<ctime(&start);
   report1  << "#_Number_of_datafiles: " << N_nudata << endl;
   for (Nudat=1;Nudat<=N_nudata;Nudat++)
   {
@@ -503,7 +503,7 @@ FUNCTION void write_nudata()
   report1 << nseas <<" #_nseas"<< endl;
   report1 << 12.*seasdur<<" #_months/season"<< endl;
   report1 << N_subseas<<" #_N_subseasons(even number, minimum is 2)"<<endl;
-  report1 << spawn_seas <<" #_spawn_seas"<< endl;
+  report1 << spawn_month <<" #_spawn_month"<< endl;
   report1 << gender<<" #_Ngenders"<< endl;
   report1 << nages<<" #_Nages=accumulator age"<< endl;
   report1 << pop<<" #_N_areas"<<endl;
@@ -1602,7 +1602,7 @@ FUNCTION void write_nucontrol()
   NuStart<<datfilename<<endl<<ctlfilename<<endl;
   NuStart<<readparfile<<" # 0=use init values in control file; 1=use ss.par"<<endl;
   NuStart<<rundetail<<" # run display detail (0,1,2)"<<endl;
-  NuStart<<reportdetail<<" # detailed age-structured reports in REPORT.SSO (0,1) "<<endl;
+  NuStart<<reportdetail<<" # detailed age-structured reports in REPORT.SSO (0,1,2) "<<endl;
   NuStart<<docheckup<<" # write detailed checkup.sso file (0,1) "<<endl;
   NuStart<<Do_ParmTrace<<" # write parm values to ParmTrace.sso (0=no,1=good,active; 2=good,all; 3=every_iter,all_parms; 4=every,active)"<<endl;
   NuStart<<Do_CumReport<<" # write to cumreport.sso (0=no,1=like&timeseries; 2=add survey fits)"<<endl;
@@ -1630,6 +1630,7 @@ FUNCTION void write_nucontrol()
   else
   {NuStart<<"#COND 10 15 #_min and max age over which average F will be calculated with F_reporting=4"<<endl;}
   NuStart<<F_std_basis<<" # F_std_basis: 0=raw_F_report; 1=F/Fspr; 2=F/Fmsy ; 3=F/Fbtgt"<<endl;
+  NuStart<<mcmc_output_detail<<" # MCMC output detail (0=default; 1=obj func components; 2=expanded; 3=make output subdir for each MCMC vector)"<<endl;
   NuStart<<ALK_tolerance<<" # ALK tolerance (example 0.0001)"<<endl;
   NuStart<<"3.30 # check value for end of file and for version control"<<endl;
   NuStart.close();
@@ -1651,7 +1652,7 @@ FUNCTION void write_nucontrol()
   NuFore<<"#"<<endl<<Do_Forecast<<" # Forecast: 0=none; 1=F(SPR); 2=F(MSY) 3=F(Btgt); 4=Ave F (uses first-last relF yrs); 5=input annual F scalar"<<endl;
   NuFore<<N_Fcast_Yrs<<" # N forecast years "<<endl;
   NuFore<<Fcast_Flevel<<" # F scalar (only used for Do_Forecast==5)"<<endl;
-  NuFore<<"#_Fcast_years:  beg_selex, end_selex, beg_relF, end_relF, beg_recruits, end_recruits  (enter actual year, or values of 0 or -integer to be rel. endyr)"<<endl<<Fcast_Input(3,6)<<" "<<styr<<" "<<endyr<<endl;
+  NuFore<<"#_Fcast_years:  beg_selex, end_selex, beg_relF, end_relF, beg_recruits, end_recruits  (enter actual year, or values of 0 or -integer to be rel. endyr)"<<endl<<Fcast_Input(3,6)<<" "<<-999<<" "<<0<<endl;
   NuFore<<"# "<<Fcast_yr<<" # after processing "<<endl;
   NuFore<<HarvestPolicy<<" # Control rule method (1=catch=f(SSB) west coast; 2=F=f(SSB) ) "<<endl;
   NuFore<<H4010_top<<" # Control rule Biomass level for constant F (as frac of Bzero, e.g. 0.40); (Must be > the no F level below) "<<endl;
@@ -1763,7 +1764,7 @@ FUNCTION void write_nucontrol()
   report4<<version_info_short<<endl;
   if(N_CC>0) report4<<Control_Comments<<endl;
   report4 << "#_data_and_control_files: "<<datfilename<<" // "<<ctlfilename<<endl;
-  report4<<"#_"<<version_info<<endl<<"#_"<<version_info2<<endl;
+  report4<<"#_"<<version_info<<endl<<"#_"<<version_info2<<endl<<"#_"<<version_info3<<endl;
   report4<<WTage_rd<<"  # 0 means do not read wtatage.ss; 1 means read and use wtatage.ss and also read and use growth parameters"<<endl;
   report4 << N_GP << "  #_N_Growth_Patterns"<<endl;
   report4 << N_platoon << " #_N_platoons_Within_GrowthPattern "<<endl;
@@ -1906,15 +1907,15 @@ FUNCTION void write_nucontrol()
    report4<<init_equ_steepness<<"  # 0/1 to use steepness in initial equ recruitment calculation"<<endl;
    report4<<sigmaR_dendep<<"  #  future feature:  0/1 to make realized sigmaR a function of SR curvature"<<endl;
    report4<<"#_      LO        HI      INIT     PRIOR   PR_SD   PR_type        PHASE env-var use_dev dev_mnyr dev_mxyr dev_PH   Block Blk_Fxn  #  parm_name"<<endl;
+   report4.unsetf(std::ios_base::fixed); report4.unsetf(std::ios_base::floatfield);
    for (f=1;f<=N_SRparm2;f++)
    { NP++;
      SR_parm_1(f,3)=value(SR_parm(f));
-      for(j=1;j<=6;j++) report4<<std::setprecision(4)<<std::fixed<<setw(11)<<SR_parm_1(f,j);
-      report4.precision(6); report4.unsetf(std::ios_base::fixed); report4.unsetf(std::ios_base::floatfield);
+      for(j=1;j<=6;j++) report4<<setw(11)<<SR_parm_1(f,j);
       for(j=7;j<=14;j++) report4<<setw(8)<<SR_parm_1(f,j);
       report4<<" # "<<ParmLabel(NP)<<endl;
    }
-   report4.precision(6); report4.unsetf(std::ios_base::fixed); report4.unsetf(std::ios_base::floatfield);
+   report4.unsetf(std::ios_base::fixed); report4.unsetf(std::ios_base::floatfield);
    if(N_SRparm3>N_SRparm2)
     {
        report4<<"#Next are short parm lines for timevary "<<endl;
@@ -1926,7 +1927,6 @@ FUNCTION void write_nucontrol()
        }
        report4.precision(6); report4.unsetf(std::ios_base::fixed); report4.unsetf(std::ios_base::floatfield);
     }
-    
     
    report4<<do_recdev<<" #do_recdev:  0=none; 1=devvector; 2=simple deviations"<<endl;
    report4<<recdev_start<<" # first year of main recr_devs; early devs can preceed this era"<<endl;
@@ -2097,16 +2097,16 @@ FUNCTION void write_nucontrol()
    if(Q_Npar>0)
    {
    report4<<"#_      LO        HI      INIT     PRIOR   PR_SD  PR_type      PHASE env-var use_dev dev_mnyr dev_mxyr dev_PH   Block Blk_Fxn  #  parm_name"<<endl;
+   report4.unsetf(std::ios_base::fixed); report4.unsetf(std::ios_base::floatfield);
     for (f=1;f<=Q_Npar;f++)
     {
       NP++;
       Q_parm_1(f,3)=value(Q_parm(f));
-      for(j=1;j<=6;j++) report4<<std::fixed<<setw(11)<<Q_parm_1(f,j);
-      report4.precision(6); report4.unsetf(std::ios_base::fixed); report4.unsetf(std::ios_base::floatfield);
+      for(j=1;j<=6;j++) report4<<setw(11)<<Q_parm_1(f,j);
       for(j=7;j<=14;j++) report4<<setw(8)<<Q_parm_1(f,j);
       report4<<"  #  "<<ParmLabel(NP)<<endl;
     }
-     report4.precision(6); report4.unsetf(std::ios_base::fixed); report4.unsetf(std::ios_base::floatfield);
+    report4.unsetf(std::ios_base::fixed); report4.unsetf(std::ios_base::floatfield);
 
       if(timevary_parm_cnt_Q>timevary_parm_start_Q)
       {
@@ -2116,8 +2116,7 @@ FUNCTION void write_nucontrol()
         {
           NP++;
             timevary_parm_rd[f](3)=value(timevary_parm(f));
-            for(j=1;j<=6;j++) report4<<std::setprecision(4)<<std::fixed<<setw(11)<<timevary_parm_rd[f](j);
-            report4.precision(6); report4.unsetf(std::ios_base::fixed); report4.unsetf(std::ios_base::floatfield);
+            for(j=1;j<=6;j++) report4<<setw(11)<<timevary_parm_rd[f](j);
           report4<<"      "<<timevary_parm_rd[f](7)<<"  # "<<ParmLabel(NP)<<endl;
         }
         report4<<"# info on dev vectors created for Q parms are reported with other devs after tag parameter section "<<endl;
@@ -2126,6 +2125,7 @@ FUNCTION void write_nucontrol()
       {
         report4<<"#_no timevary Q parameters"<<endl;
       }
+      report4.unsetf(std::ios_base::fixed); report4.unsetf(std::ios_base::floatfield);
    }
    report4<<"#"<<endl;
    report4<<"#_size_selex_types"<<endl;
@@ -2141,7 +2141,7 @@ FUNCTION void write_nucontrol()
    report4<<"#_      LO        HI      INIT     PRIOR      PR_SD    PR_type  PHASE env-var use_dev dev_mnyr dev_mxyr dev_PH   Block Blk_Fxn  #  parm_name"<<endl;
 
    // set back to default configuration for output
-   report4.precision(6); report4.unsetf(std::ios_base::fixed); report4.unsetf(std::ios_base::floatfield);
+   report4.unsetf(std::ios_base::fixed); report4.unsetf(std::ios_base::floatfield);
 
 //  if(seltype(f,2)==4)
   {
@@ -2149,8 +2149,7 @@ FUNCTION void write_nucontrol()
       {
         NP++;
         selparm_1(f)(3)=value(selparm(f));
-        for(j=1;j<=6;j++) report4<<std::setprecision(4)<<std::fixed<<setw(11)<<selparm_1(f,j);
-        report4.precision(6); report4.unsetf(std::ios_base::fixed); report4.unsetf(std::ios_base::floatfield);
+        for(j=1;j<=6;j++) report4<<setw(11)<<selparm_1(f,j);
         for(j=7;j<=14;j++) report4<<setw(8)<<selparm_1(f,j);
         report4<<"  #  "<<ParmLabel(NP)<<endl;
       }
@@ -2162,8 +2161,7 @@ FUNCTION void write_nucontrol()
     {
       NP++;
         timevary_parm_rd[f](3)=value(timevary_parm(f));
-        for(j=1;j<=6;j++) report4<<std::setprecision(4)<<std::fixed<<setw(11)<<timevary_parm_rd[f](j);
-        report4.precision(6); report4.unsetf(std::ios_base::fixed); report4.unsetf(std::ios_base::floatfield);
+        for(j=1;j<=6;j++) report4<<setw(11)<<timevary_parm_rd[f](j);
       report4<<"      "<<timevary_parm_rd[f](7)<<"  # "<<ParmLabel(NP)<<endl;
     }
     report4<<"# info on dev vectors created for selex parms are reported with other devs after tag parameter section "<<endl;
@@ -2172,6 +2170,7 @@ FUNCTION void write_nucontrol()
   {
     report4<<"#_no timevary selex parameters"<<endl;
   }
+  report4.unsetf(std::ios_base::fixed); report4.unsetf(std::ios_base::floatfield);
 
 
   }
@@ -2230,12 +2229,12 @@ FUNCTION void write_nucontrol()
 //        report4.unsetf(std::ios_base::fixed);
 //        report4.unsetf(std::ios_base::floatfield);
         report4<<setw(2)<<"# ";
-        report4<<std::setprecision(0)<<std::fixed<<setw(5)<<timevary_def[j](1,12);
+        report4<<setw(5)<<timevary_def[j](1,12);
         if(timevary_def[j](8)>0)  //  now show devs
         {
-          report4<<std::setprecision(4)<<std::fixed<<setw(6)<<parm_dev(timevary_def[j](8));
+          report4<<setw(6)<<parm_dev(timevary_def[j](8));
         }
-        report4<<std::setprecision(0)<<std::fixed<<setw(6)<<endl;
+        report4<<setw(6)<<endl;
       }
     }
 
@@ -2249,7 +2248,7 @@ FUNCTION void write_nucontrol()
   report4<<" #_7=mult_by_generalized_sizecomp"<<endl;
   report4<<"#_Factor  Fleet  Value"<<endl;
   {
-    if (var_adjust_data.size() > 0) for(f=1;f<=Do_Var_adjust;f++) report4<<std::setprecision(0)<<setw(6)<<var_adjust_data[f-1](1,2)<<" "<<std::setprecision(4)<<setw(9)<<var_adjust_data[f-1](3)<<endl;
+    if (var_adjust_data.size() > 0) for(f=1;f<=Do_Var_adjust;f++) report4<<setw(6)<<var_adjust_data[f-1](1,2)<<" "<<setw(9)<<var_adjust_data[f-1](3)<<endl;
   }
   report4<<" -9999   1    0  # terminator"<<endl;
 
@@ -2317,7 +2316,7 @@ FUNCTION void write_bigoutput()
   k=current_phase();
   if(k>max_lambda_phase) k=max_lambda_phase;
   SS2out<<version_info_short<<endl;
-  SS2out<<version_info<<endl<<version_info2<<endl<<endl;
+  SS2out<<version_info<<endl<<version_info2<<endl<<version_info3<<endl<<endl;
   time(&finish);
   SS_compout<<version_info_short<<endl;
   SS_compout<<version_info<<endl<<"StartTime: "<<ctime(&start);
@@ -2400,14 +2399,26 @@ FUNCTION void write_bigoutput()
   SS2out<<"X AGE_SELEX"<<endl;
   SS2out<<"X ENVIRONMENTAL_DATA"<<endl;
   SS2out<<"X TAG_Recapture"<<endl;
-  SS2out<<"X NUMBERS_AT_AGE"<<endl;
-  SS2out<<"X NUMBERS_AT_LENGTH"<<endl;
-  SS2out<<"X CATCH_AT_AGE"<<endl;
+  SS2out<<"X NUMBERS_AT_AGE";
+  if (reportdetail == 2) SS2out<<" ---";    // indicate not included
+  SS2out<<endl;
+  SS2out<<"X NUMBERS_AT_LENGTH";
+  if (reportdetail == 2) SS2out<<" ---";    // indicate not included
+  SS2out<<endl;
+  SS2out<<"X CATCH_AT_AGE";
+  if (reportdetail == 2) SS2out<<" ---";    // indicate not included
+  SS2out<<endl;
   SS2out<<"X BIOLOGY"<<endl;
   SS2out<<"X SPR/YPR_PROFILE"<<endl;
-  SS2out<<"X ACTUAL_SELECTIVITY_MSY"<<endl;
-  SS2out<<"X KNIFE_AGE_SELECTIVITY_MSY"<<endl;
-  SS2out<<"X SLOT_AGE_SELECTIVITY_MSY"<<endl;
+  SS2out<<"X ACTUAL_SELECTIVITY_MSY";
+  if (reportdetail == 2) SS2out<<" ---";    // indicate not included
+  SS2out<<endl;
+  SS2out<<"X KNIFE_AGE_SELECTIVITY_MSY";
+  if (reportdetail == 2) SS2out<<" ---";    // indicate not included
+  SS2out<<endl;
+  SS2out<<"X SLOT_AGE_SELECTIVITY_MSY";
+  if (reportdetail == 2) SS2out<<" ---";    // indicate not included
+  SS2out<<endl;
   SS2out<<"X Dynamic_Bzero "<<endl;
 
   SS2out<<endl<<"DEFINITIONS"<<endl;
@@ -2517,7 +2528,7 @@ FUNCTION void write_bigoutput()
   SS2out << "effN_mult_Len_at_age "<<var_adjust(6)<<endl;
   SS2out << "effN_mult_generalized_sizecomp "<<var_adjust(7)<<endl;
 
-  SS2out<<"MG_parms"<<"Using_offset_approach_#:_"<<MGparm_def<<"  (1=none, 2= M, G, CV_G as offset from female_GP1, 3=like SS2 V1.x)"<<endl;
+  SS2out<<"MG_parms_Using_offset_approach_#:_"<<MGparm_def<<"  (1=none, 2= M, G, CV_G as offset from female_GP1, 3=like SS2 V1.x)"<<endl;
 
 //  SS2out<<endl<<"PARAMETERS"<<endl<<"Num Label Value Active_Cnt Phase Min Max Init Prior PR_type Pr_SD Prior_Like Parm_StDev Status Pr_atMin Pr_atMax"<<endl;
   SS2out<<endl<<"PARAMETERS"<<endl<<"Num Label Value Active_Cnt  Phase Min Max Init  Used  Status  Parm_StDev Gradient PR_type Prior Pr_SD Prior_Like Value_again Value-1.96*SD Value+1.96*SD V_1%  V_10% V_20% V_30% V_40% V_50% V_60% V_70% V_80% V_90% V_99% P_val P_lowCI P_hiCI  P_1%  P_10% P_20% P_30% P_40% P_50% P_60% P_70% P_80% P_90% P_99%"<<endl;
@@ -2714,9 +2725,9 @@ FUNCTION void write_bigoutput()
     }
   }
 
-
   SS2out<<endl<<"Number_of_active_parameters_on_or_near_bounds: "<<Nparm_on_bound<<endl;
   SS2out<<"Active_count "<<active_count<<endl<<endl;
+
   SS2out<<endl<<"DERIVED_QUANTITIES"<<endl;
   SS2out<<"SPR_ratio_basis: "<<SPR_report_label<<endl;
   SS2out<<"F_std_basis: "<<F_report_label<<endl;
@@ -2807,7 +2818,7 @@ FUNCTION void write_bigoutput()
       }
     }
 
-   if(reportdetail>0) {k1=endyr;} else {k1=styr;}
+   if(reportdetail == 1) {k1=endyr;} else {k1=styr;}
    SS2out<<endl<<"MGparm_By_Year_after_adjustments"<<endl<<"Year ";
    for (i=1;i<=N_MGparm;i++) SS2out<<" "<<ParmLabel(i);
    SS2out<<endl;
@@ -3866,7 +3877,7 @@ FUNCTION void write_bigoutput()
     else
     {SS2out<<"#_none"<<endl;}
 
-  SS2out <<"# "<<endl<<"OVERALL_COMPS"<<endl;
+  SS2out<<"#"<<endl<<"OVERALL_COMPS"<<endl;
   SS2out<<"Fleet N_obs len_bins "<<len_bins_dat<<endl;
   for (f=1;f<=Nfleet;f++)
   {
@@ -3893,7 +3904,7 @@ FUNCTION void write_bigoutput()
   else
   {SS2out<<"No_age_bins_defined"<<endl;}
 
-  SS2out <<"# "<<endl<<"LEN_SELEX"<<endl;
+  SS2out <<"#"<<endl<<"LEN_SELEX"<<endl;
   SS2out << "Lsel_is_length_selectivity" << endl;     // SS_Label_370
   SS2out << "RET_is_retention" << endl;            // SS_Label_390
   SS2out << "MORT_is_discard_mortality" << endl;            // SS_Label_390
@@ -3963,7 +3974,7 @@ FUNCTION void write_bigoutput()
     }
   }
 
-  if(reportdetail>0)
+  if(reportdetail == 1)
   {
     if(Do_Forecast>0)
     {k=endyr+1;}
@@ -4012,12 +4023,13 @@ FUNCTION void write_bigoutput()
     SS2out<<endl;
    }
 
-  SS2out<<endl<<"TAG_Recapture"<<endl;
-  SS2out<<TG_mixperiod<<" First period to use recaptures in likelihood"<<endl;
-  SS2out<<TG_maxperiods<<" Accumulation period"<<endl;
-  if(Do_TG>0)
+ if(Do_TG>0)
   {
-    SS2out<<" Tag_release_info"<<endl;
+     SS2out<<endl<<"TAG_Recapture"<<endl;
+     SS2out<<TG_mixperiod<<" First period to use recaptures in likelihood"<<endl;
+     SS2out<<TG_maxperiods<<" Accumulation period"<<endl;
+
+     SS2out<<" Tag_release_info"<<endl;
     SS2out<<"TAG Area Yr Seas Time Gender Age Nrelease Init_Loss Chron_Loss"<<endl;;
     for (TG=1;TG<=N_TG;TG++)
     {
@@ -4048,7 +4060,7 @@ FUNCTION void write_bigoutput()
 
 
 // ************************                     SS_Label_400
-  if(reportdetail>0)
+  if(reportdetail == 1)
   {
     SS2out << endl << "NUMBERS_AT_AGE" << endl;       // SS_Label_410
     SS2out << "Area Bio_Pattern Gender Settlement Platoon Morph Yr Seas Time Beg/Mid Era"<<age_vector <<endl;
@@ -4327,7 +4339,7 @@ FUNCTION void write_bigoutput()
   if(WTage_rd>0) SS2out<<" as read from wtatage.ss";
   SS2out<<" #NOTE_yr=_"<<styr-3<<"_stores_values_for_benchmark"<<endl;
   SS2out <<"Morph Yr Seas"<<age_vector<<endl;
-  if(reportdetail>0)
+  if(reportdetail == 1)
   {
 
     for (g=1;g<=gmorph;g++)
@@ -4349,7 +4361,7 @@ FUNCTION void write_bigoutput()
 
   SS2out <<endl<< "MEAN_SIZE_TIMESERIES" << endl;           // SS_Label_450
   SS2out <<"Morph Yr Seas SubSeas"<<age_vector<<endl;
-  if(reportdetail>0)
+  if(reportdetail == 1)
   {
     for (g=1;g<=gmorph;g++)
     if(use_morph(g)>0)
@@ -4405,7 +4417,7 @@ FUNCTION void write_bigoutput()
     }  // end gender loop
   }  //   end do report detail
 
-  if(reportdetail>0)
+  if(reportdetail == 1)
   {
   SS2out <<endl<< "AGE_LENGTH_KEY"<<" #sub_season";
   if(Grow_logN==1) SS2out<<" #Lognormal ";
@@ -4436,7 +4448,7 @@ FUNCTION void write_bigoutput()
        }
       }
 
-  if(reportdetail>0)
+  if(reportdetail == 1)
   {
     SS2out <<endl<< "AGE_AGE_KEY"<<endl;              // SS_Label_470
     if(N_ageerr>0)
@@ -4908,7 +4920,7 @@ FUNCTION void write_bigoutput()
   SS2out <<endl<< "SELEX_database" << endl;
   SS2out<<"Fleet Yr Kind Gender Bin Selex"<<endl;
 
-  if(reportdetail<=0)
+  if(reportdetail != 1)
   {
     SS2out<<"1 1990 L 1 30 .5"<<endl;
   }
@@ -5106,7 +5118,7 @@ FUNCTION void write_bigoutput()
 
 // ******************************************************
 //  GLOBAL_MSY with knife-edge age selection, then slot-age selection
-  if(Do_Benchmark>0 && wrote_bigreport==1)
+  if(Do_Benchmark>0 && wrote_bigreport==1 && reportdetail != 2)
   {
     y=styr-3;  //  stores the averaged
     yz=y;

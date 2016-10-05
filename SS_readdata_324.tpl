@@ -2731,6 +2731,7 @@
   init_int Bmark_RelF_Basis
  LOCAL_CALCS
   echoinput<<Bmark_Yr_rd<<" Benchmark years as read:  beg-end bio; beg-end selex; beg-end relF"<<endl;
+
   for (i=1;i<=6;i++)  //  beg-end bio; beg-end selex; beg-end relF
   {
     if(Bmark_Yr_rd(i)==-999)
@@ -2744,6 +2745,7 @@
       N_warn++;Bmark_Yr(i)=styr;warning<<"benchmark year less than styr; reset to equal styr"<<endl;
     }
   }
+
   // default for transition to 3.30
   //  for distribution of recruits among areas&morphs
   Bmark_Yr(7) = styr;
@@ -2831,11 +2833,11 @@
   k++; Fcast_yr(4)=int(Fcast_Input(k));
 
   // default values for 3.30
-  Fcast_yr(5) = styr;
-  Fcast_yr(6) = endyr;
+  Fcast_yr(5) = -999;
+  Fcast_yr(6) = 0;
 
   echoinput<<Fcast_yr<<" Begin-end yrs for average selex; begin-end yrs for allocation"<<endl;
-  for (i=1;i<=4;i++)
+  for (i=1;i<=6;i++)
   {
     if(Fcast_yr(i)==-999)
     {Fcast_yr(i)=styr;}
@@ -2900,20 +2902,20 @@
   N_Fcast_Yrs=1;
   YrMax=endyr+1;
   TimeMax_Fcast_std = styr+(YrMax-styr)*nseas+nseas-1;
-  Fcast_Flevel=1.;
+  Fcast_Flevel=0;
   Fcast_yr=0;
   Fcast_RelF_Basis=1;
-  Fcast_Sel_yr1=endyr;
-  Fcast_Sel_yr2=endyr;
-  Fcast_RelF_yr1=endyr;
-  Fcast_RelF_yr2=endyr;
-  Fcast_Rec_yr1=styr;
-  Fcast_Rec_yr2=endyr;
-  HarvestPolicy=1;
-  H4010_top=0.001;
-  H4010_bot=0.0001;
+  Fcast_yr(1)=Fcast_Sel_yr1=endyr;
+  Fcast_yr(2)=Fcast_Sel_yr2=endyr;
+  Fcast_yr(3)=Fcast_RelF_yr1=endyr;
+  Fcast_yr(4)=Fcast_RelF_yr2=endyr;
+  Fcast_yr(5)=Fcast_Rec_yr1=styr;
+  Fcast_yr(6)=Fcast_Rec_yr2=endyr;
+  HarvestPolicy=2;
+  H4010_top=0.4;
+  H4010_bot=0.01;
   H4010_scale=1.0;
-  Fcast_Loop_Control.fill("{1,1,0,0,0}");
+  Fcast_Loop_Control.fill("{3,3,0,0,0}");
   Fcast_Cap_FirstYear=endyr+1;
   Impl_Error_Std=0.0;
   Do_Impl_Error=0;

@@ -37,7 +37,7 @@ FUNCTION void evaluate_the_objective_function()
           if(Q_setup(f,3)>0)
             {
               Svy_se_use(f)+=Q_parm(Q_setup_parms(f,2));  // add extra stderr
-            } 
+            }
   // SS_Label_Info_25.1.1 #combine for super-periods
           for (j=1;j<=Svy_super_N(f);j++)
           {
@@ -680,7 +680,7 @@ FUNCTION void evaluate_the_objective_function()
     }
   //  SS_Label_Info_25.15 #logL for parameter process errors (devs)
     {
-    
+
   //  new code to match mean-reverting random walk approach used for recdevs
       for(i=1;i<=N_parm_dev;i++)
       {
@@ -689,7 +689,7 @@ FUNCTION void evaluate_the_objective_function()
         dvariable temp;
 //        temp=1.00 / (2.000*(1.0-parm_dev_rho(i)*parm_dev_rho(i))*square(parm_dev_stddev(i)));
         temp=1.00 / (2.000*(1.0-parm_dev_rho(i)*parm_dev_rho(i))*square(1.00));
-        
+
         parm_dev_like(i,1) += square( parm_dev(i,parm_dev_minyr(i)));  //  first year
         for(j=parm_dev_minyr(i)+1;j<=parm_dev_maxyr(i);j++)
         {parm_dev_like(i,1) += square( parm_dev(i,j)-parm_dev_rho(i)*parm_dev(i,j-1) );}
@@ -990,8 +990,13 @@ FUNCTION void Process_STDquant()
  /*  SS_Label_FUNCTION 27 Check_Parm */
 FUNCTION dvariable Check_Parm(const double& Pmin, const double& Pmax, const double& jitter, const prevariable& Pval)
   {
+    const dvariable zmin = inv_cumd_norm(0.001);    // z value for Pmin
+    const dvariable zmax = inv_cumd_norm(0.999);    // z value for Pmax
+    const dvariable Pmean = (Pmin + Pmax) / 2.0;
     dvariable NewVal;
-    dvariable temp;
+    // dvariable temp;
+    dvariable Psigma, zval, kval, kjitter, zjitter;
+
     NewVal=Pval;
     if(Pmin>Pmax)
     {N_warn++; cout<<" EXIT - see warning "<<endl; warning<<" parameter min > parameter max "<<Pmin<<" > "<<Pmax<<endl; cout<<" fatal error, see warning"<<endl; exit(1);}
@@ -1003,9 +1008,36 @@ FUNCTION dvariable Check_Parm(const double& Pmin, const double& Pmax, const doub
     {N_warn++; warning<<" parameter init value is greater than parameter max "<<Pval<<" > "<<Pmax<<endl; NewVal=Pmax;}
     if(jitter>0.0)
     {
-      temp=log((Pmax-Pmin+0.0000002)/(NewVal-Pmin+0.0000001)-1.)/(-2.);   // transform the parameter
-      temp += randn(radm) * jitter;
-      NewVal=Pmin+(Pmax-Pmin)/(1.+mfexp(-2.*temp));
+      // temp=log((Pmax-Pmin+0.0000002)/(NewVal-Pmin+0.0000001)-1.)/(-2.);   // transform the parameter
+      // temp += randn(radm) * jitter;
+      // NewVal=Pmin+(Pmax-Pmin)/(1.+mfexp(-2.*temp));
+
+      // generate jitter value from cumulative normal given Pmin and Pmax
+      Psigma = (Pmax - Pmean) / zmax;   // Psigma should also be equal to (Pmin - Pmean) / zmin;
+      if (Psigma < 0.00001)    // how small a sigma is too small?
+      {
+          N_warn++;
+          cout<<" EXIT - see warning "<<endl;
+          warning<<" in Check_Parm jitter:  Psigma < 0.00001 "<<Psigma<<endl;
+          cout<<" fatal error, see warning"<<endl; exit(1);
+      }
+      zval = (Pval - Pmean) / Psigma;
+      kval = cumd_norm(zval);
+      kjitter = kval + (jitter * ((2.0 * randu(radm)) - 1.0));  // kjitter is between kval - jitter and kval + jitter
+      if (kjitter < 0.001)
+      {
+          zjitter = zmin;
+      }
+      else if (kjitter > 0.999)
+      {
+          zjitter = zmax;
+      }
+      else
+      {
+          zjitter = inv_cumd_norm(kjitter);
+      }
+      NewVal = (Psigma * zjitter) + Pmean;
+
       if(Pmin==-99 || Pmax==99)
       {N_warn++; warning<<" use of jitter not advised unless parameter min & max are in reasonable parameter range "<<Pmin<<" "<<Pmax<<endl;}
     }
@@ -1095,10 +1127,12 @@ FUNCTION void get_posteriors()
     // delete any old mcmc output files
     // will generate a warning if no files exist
     // but will play through just fine
+    // NOTE:  "del" works on Windows only; use "rm" on other operating systems
     system("del rebuild.sso");
     system("del posteriors.sso");
     system("del derived_posteriors.sso");
     system("del posterior_vectors.sso");
+    system("del posterior_obj_func.sso");
     if(rundetail>0) cout<<" did system commands "<<endl;
   };
   // define the mcmc output files;
@@ -1106,6 +1140,7 @@ FUNCTION void get_posteriors()
   ofstream posts("posteriors.sso",ios::app);
   ofstream der_posts("derived_posteriors.sso",ios::app);
   ofstream post_vecs("posterior_vectors.sso",ios::app);
+  ofstream post_obj_func("posterior_obj_func.sso",ios::app);
 
   if(mceval_header==0)    // first pass through the mceval phase
   {
@@ -1169,6 +1204,99 @@ FUNCTION void get_posteriors()
     }
     post_vecs<<endl;
 
+    if (mcmc_output_detail > 0)
+    {
+        std::stringstream iter_labels;
+        std::stringstream lambda_labels;
+
+        iter_labels   << "Iter | Objective_function";
+        lambda_labels << "---- | Lambdas";
+
+        if(F_Method>1)
+        {
+            iter_labels   << " | Catch";
+            lambda_labels << " | " << column(catch_lambda,max_lambda_phase);
+        }
+
+        iter_labels   << " | Equil_catch";
+        lambda_labels << " | " << init_equ_lambda(max_lambda_phase);
+
+        if(Svy_N>0)
+        {
+            iter_labels   << " | Survey";
+            lambda_labels << " | " << column(surv_lambda,max_lambda_phase);
+        }
+        if(nobs_disc>0)
+        {
+            iter_labels   << " | Discard";
+            lambda_labels << " | " << column(disc_lambda,max_lambda_phase);
+        }
+        if(nobs_mnwt>0)
+        {
+            iter_labels   << " | Mean_body_wt";
+            lambda_labels << " | " << column(mnwt_lambda,max_lambda_phase);
+        }
+        if(Nobs_l_tot>0)
+        {
+            iter_labels   << " | Length_comp";
+            lambda_labels << " | " << column(length_lambda,max_lambda_phase);
+        }
+        if(Nobs_a_tot>0)
+        {
+            iter_labels   << " | Age_comp";
+            lambda_labels << " | " << column(age_lambda,max_lambda_phase);
+        }
+        if(nobs_ms_tot>0)
+        {
+            iter_labels   << " | Size_at_age";
+            lambda_labels << " | " << column(sizeage_lambda,max_lambda_phase);
+        }
+        if(SzFreq_Nmeth>0)
+        {
+            iter_labels   << " | SizeFreq";
+            lambda_labels << " | " << column(SzFreq_lambda,max_lambda_phase);
+        }
+        if(Do_Morphcomp>0)
+        {
+            iter_labels   << " | Morphcomp";
+            lambda_labels << " | " << Morphcomp_lambda(max_lambda_phase);
+        }
+        if(Do_TG>0)
+        {
+            iter_labels   << " | Tag_comp | Tag_negbin";
+            lambda_labels << " | " << column(TG_lambda1,max_lambda_phase) << " | " << column(TG_lambda2,max_lambda_phase);
+        }
+
+        iter_labels   << " | Recruitment";
+        lambda_labels << " | " << recrdev_lambda(max_lambda_phase);
+
+        iter_labels   << " | Forecast_Recruitment";
+        lambda_labels << " | " << Fcast_recr_lambda;
+
+        iter_labels   << " | Parm_priors";
+        lambda_labels << " | " << parm_prior_lambda(max_lambda_phase);
+
+        if(SoftBound>0)
+        {
+            iter_labels   << " | Parm_softbounds";
+            lambda_labels << " | NA";
+        }
+
+        iter_labels   << " | Parm_devs";
+        lambda_labels << " | " << parm_dev_lambda(max_lambda_phase);
+
+        if(F_ballpark_yr>0)
+        {
+            iter_labels   << " | F_Ballpark";
+            lambda_labels << " | " << F_ballpark_lambda(max_lambda_phase);
+        }
+
+        iter_labels   << " | Crash_Pen ";
+        lambda_labels << " | " << CrashPen_lambda(max_lambda_phase);
+
+        post_obj_func << iter_labels.str() << endl;
+        post_obj_func << lambda_labels.str() << endl;
+    }
   };  //  end writing headers for mceval_counter==1
 
 
@@ -1314,5 +1442,33 @@ FUNCTION void get_posteriors()
   }
   post_vecs<<runnumber<<" "<<mceval_counter<<" "<<obj_fun<<" F/Fmsy "<<F_std<<endl;
   post_vecs<<runnumber<<" "<<mceval_counter<<" "<<obj_fun<<" B/Bmsy "<<depletion<<endl;
+
+  // output objective function components
+  if (mcmc_output_detail > 0)
+  {
+      post_obj_func<<mceval_counter<<" | "<<obj_fun;
+
+      if(F_Method>1) post_obj_func << " | " << catch_like;
+      post_obj_func << " | " << equ_catch_like;
+      if(Svy_N>0) post_obj_func << " | " << surv_like;
+      if(nobs_disc>0) post_obj_func << " | " << disc_like;
+      if(nobs_mnwt>0) post_obj_func << " | " << mnwt_like;
+      if(Nobs_l_tot>0) post_obj_func << " | " << length_like_tot;
+      if(Nobs_a_tot>0) post_obj_func << " | " << age_like_tot;
+      if(nobs_ms_tot>0) post_obj_func << " | " << sizeage_like;
+      if(SzFreq_Nmeth>0) post_obj_func << " | " << SzFreq_like;
+      if(Do_Morphcomp>0) post_obj_func << " | " << Morphcomp_like;
+      if(Do_TG>0) post_obj_func << " | " << TG_like1 << " | " << TG_like2;
+      post_obj_func << " | " << recr_like;
+      post_obj_func << " | " << Fcast_recr_like;
+      post_obj_func << " | " << parm_like;
+      if(SoftBound>0) post_obj_func << " | " << SoftBoundPen;
+      post_obj_func << " | " << (sum(parm_dev_like));
+      if(F_ballpark_yr>0) post_obj_func << " | " << F_ballpark_like;
+      post_obj_func << " | " << CrashPen;
+
+      post_obj_func<<endl;
+  }
+
   }  //  end get_posteriors
 
