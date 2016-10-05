@@ -1233,7 +1233,7 @@ FUNCTION void Get_Forecast()
                     Save_PopLen(t,j,g)+=value(0.5*(Nmid(g,a)+Nsurv(g,a)))*value(ALK(ALK_idx,g,a));
                     Save_PopWt(t,j,g)+= value(0.5*(Nmid(g,a)+Nsurv(g,a)))*value(elem_prod(ALK(ALK_idx,g,a),wt_len(s,GP(g))));
                     Save_PopAge(t,j,g,a)=value(0.5*(Nmid(g,a)+Nsurv(g,a)));
-                    Save_PopBio(t,j,g,a)==value(0.5*(Nmid(g,a)+Nsurv(g,a)))*value(Wt_Age_beg(s,g,a));
+                    Save_PopBio(t,j,g,a)=value(0.5*(Nmid(g,a)+Nsurv(g,a)))*value(Wt_Age_beg(s,g,a));
                   } // close age loop
                 }
               }
