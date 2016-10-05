@@ -488,20 +488,23 @@
   ivector Nblk(1,N_Block_Designs+1)    // N blocks in each design
   ivector Nblk2(1,N_Block_Designs+1)   //  vector to create ragged array of dimensions for block matrix
  LOCAL_CALCS
-  if(N_Block_Designs>0) 
+  if(N_Block_Designs>0)
     {
       for(i=1;i<=N_Block_Designs;i++)  {*(ad_comm::global_datafile) >> Nblk(i);}
-      Nblk(N_Block_Designs+1)=1;  //  for the initial equil year
       echoinput<<Nblk<<" N_Blocks_per design"<<endl;
     }
+
+    // for the initial equil year
     N_Block_Designs=N_Block_Designs+1;
+    Nblk(N_Block_Designs)=1;
+
     Nblk2=Nblk + Nblk;
  END_CALCS
 
   imatrix Block_Design(1,N_Block_Designs,1,Nblk2)  // read the begin-end year for each block
 
  LOCAL_CALCS
-  for(i=1;i<=N_Block_Designs-1;i++)  
+  for(i=1;i<=N_Block_Designs-1;i++)
   for(j=1;j<=Nblk2(i);j++)
   {*(ad_comm::global_datafile) >> Block_Design(i,j);}
   Block_Design(N_Block_Designs,1)=styr-1;
@@ -809,7 +812,7 @@
   autogen_timevary=0;
     if(parm_adjust_method!=1 || parm_adjust_method!=3)
     {
-      N_warn++; 
+      N_warn++;
       warning<<" Only parm_adjust_method 1 and 3 implemented in SS3.30; resetting value to 1 "<<endl;
       parm_adjust_method=1;
     }
@@ -1532,7 +1535,7 @@
         MGparm_seas_effects(j)=N_MGparm+timevary_parm_cnt_MG+N_MGparm_seas;  // store base parameter count
         for (s=1;s<=nseas;s++)
         {
-          N_MGparm_seas++; 
+          N_MGparm_seas++;
           ParCount++; ParmLabel+=MGseasLbl(j)+"_seas_"+NumLbl(s);
         }
       }
@@ -1645,7 +1648,7 @@
   int sigmaR_dendep  //    future feature:  0/1 to make realized sigmaR a function of SR curvature"<<endl;
   !!echoinput<<SR_fxn<<" #_SR_function: 1=null; 2=Ricker; 3=std_B-H; 4=SCAA; 5=Hockey; 6=B-H_flattop; 7=Survival_3Parm; 8=Shepard "<<endl;
   !!N_SRparm2=N_SRparm(SR_fxn)+3;
-  
+
   matrix SR_parm_1(1,N_SRparm2,1,14)
  LOCAL_CALCS
    N_SRparm3=N_SRparm2;
@@ -1664,7 +1667,7 @@
     {init_equ_steepness=1;}
     else
     {init_equ_steepness=0;}
-    
+
   if(SR_parm_1(N_SRparm2-1,7)>=0 || SR_parm_1(N_SRparm2-1,3)!=0.0)
     {
       N_warn++;warning<<"The R1_offset parameter is now the regime parameter and it must not be estimated and should have value of 0.0"<<endl<<
@@ -1723,7 +1726,7 @@
    SR_parm_PH(f)=int(SR_parm_1(f,7));
    SR_parm_RD(f)=SR_parm_1(f,3);
    SR_parm_PR(f)=SR_parm_1(f,4);
-   
+
    temp=SR_parm_1(f,5);  //  PR_type in 3.24
    if(temp==0) temp=6;
    if(temp<0) temp=0;
