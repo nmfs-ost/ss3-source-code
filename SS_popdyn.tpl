@@ -150,7 +150,7 @@ FUNCTION void get_initial_conditions()
     }
     if(save_for_report>0)
     {
-      s==spawn_seas;
+      s=spawn_seas;
       for (p=1;p<=pop;p++)
       for (g=1;g<=gmorph;g++)
       {
@@ -169,7 +169,7 @@ FUNCTION void get_initial_conditions()
    eq_yr=styr-1;
    bio_yr=styr;
    if(fishery_on_off==1) {Fishon=1;} else {Fishon=0;}
-    
+
    for(f=1;f<=N_SRparm2;f++)
    {
       if(SR_parm_timevary(f)==0)
@@ -201,8 +201,8 @@ FUNCTION void get_initial_conditions()
   if(SR_parm_timevary(N_SRparm2-1)>0)  //  timevary regime exists
   {
     regime_change=mfexp(SR_parm_work(N_SRparm2-1));
-  }  
-    
+  }
+
   if(init_equ_steepness==0) // Adjustments do not include spawner-recruitment steepness
   {
    R1=Recr_virgin*regime_change;
@@ -289,7 +289,7 @@ FUNCTION void get_initial_conditions()
     if(save_for_report>0)
     {
       t=styr-nseas-1;
-      s==spawn_seas;
+      s=spawn_seas;
       for (p=1;p<=pop;p++)
       for (g=1;g<=gmorph;g++)
       {
