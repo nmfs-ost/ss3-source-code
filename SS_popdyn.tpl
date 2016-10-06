@@ -568,6 +568,9 @@ FUNCTION void get_time_series()
                Recruits*recr_dist(GP(g),settle,p)*platoon_distr(GP2(g))*
                mfexp(natM(s,GP3(g),Settle_age(settle))*Settle_timing_seas(settle));
                //  the adjustment for mortality increases recruit value for elapsed time since begin of season because M will then be applied from beginning of season
+               if(docheckup==1) echoinput<<y<<" Recruits, dist, surv, result"<<Recruits<<" "<<recr_dist(GP(g),settle,p)<<" "<<mfexp(natM(s,GP3(g),Settle_age(settle))*Settle_timing_seas(settle))<<" "<<natage(t+Settle_seas_offset(settle),p,g,Settle_age(settle))<<endl;
+          if(docheckup==1) echoinput<<p<<" "<<g<<" "<<GP3(g)<<" area & morph "<<endl<<"N-at-age after recruits "<<natage(t,p,g)(0,min(6,nages))<<endl
+           <<"survival "<<surv1(s,GP3(g))(0,min(6,nages))<<endl;
             }
           }
       }
