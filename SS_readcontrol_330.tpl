@@ -1120,11 +1120,11 @@
 
        if(z>0)  //  doing blocks
        {
-         create_timevary(MGparm_1(j),timevary_setup, timevary_pass, autogen_timevary, mgp_type(j), Block_Design(z), parm_adjust_method, env_data_pass, N_parm_dev);
+         create_timevary(MGparm_1(j),timevary_setup, timevary_pass, autogen_timevary, mgp_type(j), Block_Design(z), parm_adjust_method, env_data_pass, N_parm_dev,finish_starter);
        }
        else
        {
-         create_timevary(MGparm_1(j),timevary_setup, timevary_pass, autogen_timevary, mgp_type(j), block_design_null, parm_adjust_method, env_data_pass, N_parm_dev);
+         create_timevary(MGparm_1(j),timevary_setup, timevary_pass, autogen_timevary, mgp_type(j), block_design_null, parm_adjust_method, env_data_pass, N_parm_dev,finish_starter);
        }
   /*
    where:
@@ -1407,11 +1407,11 @@
 
        if(SR_parm_1(j,13)>0)  //  doing blocks
        {
-         create_timevary(SR_parm_1(j),timevary_setup, timevary_pass, autogen_timevary, f, Block_Design(SR_parm_1(j,13)), parm_adjust_method, env_data_pass, N_parm_dev);
+         create_timevary(SR_parm_1(j),timevary_setup, timevary_pass, autogen_timevary, f, Block_Design(SR_parm_1(j,13)), parm_adjust_method, env_data_pass, N_parm_dev,finish_starter);
        }
        else
        {
-         create_timevary(SR_parm_1(j),timevary_setup, timevary_pass, autogen_timevary, f, block_design_null, parm_adjust_method, env_data_pass, N_parm_dev);
+         create_timevary(SR_parm_1(j),timevary_setup, timevary_pass, autogen_timevary, f, block_design_null, parm_adjust_method, env_data_pass, N_parm_dev,finish_starter);
        }
   /*
    where:
@@ -1425,7 +1425,6 @@
    env_data_RD:           matrix containing entire set of environmental data as read
    N_parm_dev:            integer that is incremented in create_timevary as dev vectors are created; cumulative across all types of parameters
   */
-       if(timevary_setup(8)!=0) timevary_setup(12)=5;
        timevary_def.push_back (timevary_setup(1,13));
        for(y=styr-3;y<=YrMax+1;y++) {timevary_SRparm(y)=timevary_pass(y);}  // year vector for this category og MGparm
      }
@@ -2120,11 +2119,11 @@
 
        if(Q_parm_1(j,13)>0)  //  doing blocks
        {
-         create_timevary(Q_parm_1(j),timevary_setup, timevary_pass, autogen_timevary, f, Block_Design(Q_parm_1(j,13)), parm_adjust_method, env_data_pass, N_parm_dev);
+         create_timevary(Q_parm_1(j),timevary_setup, timevary_pass, autogen_timevary, f, Block_Design(Q_parm_1(j,13)), parm_adjust_method, env_data_pass, N_parm_dev,finish_starter);
        }
        else
        {
-         create_timevary(Q_parm_1(j),timevary_setup, timevary_pass, autogen_timevary, f, block_design_null, parm_adjust_method, env_data_pass, N_parm_dev);
+         create_timevary(Q_parm_1(j),timevary_setup, timevary_pass, autogen_timevary, f, block_design_null, parm_adjust_method, env_data_pass, N_parm_dev,finish_starter);
        }
   /*
    where:
@@ -2139,18 +2138,19 @@
    env_data_RD:           matrix containing entire set of environmental data as read
    N_parm_dev:            integer that is incremented in create_timevary as dev vectors are created; cumulative across all types of parameters
   */
-       if(timevary_setup(8)!=0) timevary_setup(12)=5;
+
        timevary_def.push_back (timevary_setup(1,13));
        for(y=styr-3;y<=YrMax+1;y++) {timevary_Qparm(y,f)=timevary_pass(y);}  // year vector for this category og MGparm
      }
   }
 
-   echoinput<<" Q  timevary_parm_cnt start and end "<<timevary_parm_start_Q<<" "<<timevary_parm_cnt_Q<<endl;
-   echoinput<<"Q  uses timevary parms:  "<<Qparm_timevary<<endl;
    Q_Npar2 = Q_Npar;
-   if(timevary_parm_cnt_Q>0)
+   timevary_parm_cnt_Q=timevary_parm_cnt;
+   if(timevary_parm_start_Q>0)
    {
      Q_Npar2+=(timevary_parm_cnt_Q-timevary_parm_start_Q+1);
+     echoinput<<"Q  uses timevary parms:  "<<Qparm_timevary<<endl;
+     echoinput<<" Q  timevary_parm_cnt start and end "<<timevary_parm_start_Q<<" "<<timevary_parm_cnt_Q<<endl;
    }
    echoinput<<"Q_Npar and Q_Npar2:  "<<Q_Npar<<" "<<Q_Npar2<<endl;
 
@@ -2642,11 +2642,11 @@
        {k=0; env_data_pass.initialize();}
        if(z>0)  //  doing blocks
        {
-         create_timevary(selparm_1(j),timevary_setup, timevary_pass, autogen_timevary, selparm_fleet(j), Block_Design(z), parm_adjust_method, env_data_pass, N_parm_dev);
+         create_timevary(selparm_1(j),timevary_setup, timevary_pass, autogen_timevary, selparm_fleet(j), Block_Design(z), parm_adjust_method, env_data_pass, N_parm_dev,finish_starter);
        }
        else
        {
-         create_timevary(selparm_1(j),timevary_setup, timevary_pass, autogen_timevary, selparm_fleet(j), block_design_null, parm_adjust_method, env_data_pass, N_parm_dev);
+         create_timevary(selparm_1(j),timevary_setup, timevary_pass, autogen_timevary, selparm_fleet(j), block_design_null, parm_adjust_method, env_data_pass, N_parm_dev,finish_starter);
        }
   /*
    where:
@@ -2669,13 +2669,7 @@
    timevary_setup(3)=timevary_parm_cnt+1;  //  one past last one used
    timevary_def.push_back (timevary_setup(1,13));
 
-   if(timevary_parm_cnt_Q>0)
-   {
-     Q_Npar2+=(timevary_parm_cnt_Q-timevary_parm_start_Q+1);
-   }
-
-
-//   timevary_parm_cnt_sel=timevary_parm_cnt;  //  last timevary_selparm
+   timevary_parm_cnt_sel=timevary_parm_cnt;  //  last timevary_selparm
    N_selparm2=N_selparm;
    if(timevary_parm_start_sel>0)
     {N_selparm2=N_selparm+timevary_parm_cnt_sel-timevary_parm_start_sel+1;}
@@ -3492,6 +3486,7 @@
       }
     }
   }
+
 
   for (f=1;f<=Q_Npar2;f++)
   {

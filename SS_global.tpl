@@ -189,7 +189,7 @@ GLOBALS_SECTION
   void create_timevary(dvector &baseparm_list, ivector &timevary_setup,
                        ivector &timevary_byyear, const int &autogen_timevary, const int &targettype,
                        const ivector &block_design_pass, const int &parm_adjust_method,
-                       const dvector &env_data_pass, int &N_parm_dev)
+                       const dvector &env_data_pass, int &N_parm_dev, const double& finish_starter)
   {
 //  where timevary_byyear is a selected column of a year x type matrix (e.g. timevary_MG) in read_control
     echoinput<<"baseparm: "<<baseparm_list<<endl;
@@ -228,7 +228,12 @@ GLOBALS_SECTION
             if(autogen_timevary==1)
             {*(ad_comm::global_datafile) >> tempvec(1,7);}
             else
-            {tempvec.fill("{0.1,10.,1.,1.,0.5,6,4}");}
+            {
+              tempvec.fill("{0,0,0.,0.,0,6,4}");
+              tempvec(1)=log(baseparm_list(1)/baseparm_list(3));  //  max negative change
+              tempvec(2)=log(baseparm_list(2)/baseparm_list(3));   //  max positive change
+              tempvec(5)=0.5*min(abs(tempvec(1)),tempvec(2));   //  sd of normal prior
+            }
             timevary_parm_rd.push_back (tempvec);
             break;}
            case 1:
@@ -237,7 +242,12 @@ GLOBALS_SECTION
             if(autogen_timevary==1)
             {*(ad_comm::global_datafile) >> tempvec(1,7);}
             else
-            {tempvec.fill("{-2.0,2.0,0.,0.,0.5,6,4}");}
+            {
+              tempvec.fill("{0,0,0.,0.,0,6,4}");
+              tempvec(1)=baseparm_list(1)-baseparm_list(3);  //  max negative change
+              tempvec(2)=baseparm_list(2)-baseparm_list(3);   //  max positive change
+              tempvec(5)=0.5*min(abs(tempvec(1)),tempvec(2));   //  sd of normal prior
+            }
             timevary_parm_rd.push_back (tempvec);
              break;}
            case 2:
@@ -246,7 +256,16 @@ GLOBALS_SECTION
             if(autogen_timevary==1)
             {*(ad_comm::global_datafile) >> tempvec(1,7);}
             else
-            {for(int s=1;s<=7;s++) tempvec(s)=baseparm_list(s);}
+            {
+              for(int s=1;s<=7;s++) tempvec(s)=baseparm_list(s);
+              if(finish_starter==999) 
+              {
+                double temp;
+                temp=tempvec(5);
+                tempvec(5)=tempvec(6);
+                tempvec(6)=temp;
+              }
+            }
             timevary_parm_rd.push_back (tempvec);
              break;}
            case 3:
@@ -255,7 +274,12 @@ GLOBALS_SECTION
             if(autogen_timevary==1)
             {*(ad_comm::global_datafile) >> tempvec(1,7);}
             else
-            {tempvec.fill("{-2.0,2.0,0.,0.,0.5,6,4}");}
+            {
+              tempvec.fill("{0,0,0.,0.,0,6,4}");
+              tempvec(1)=baseparm_list(1)-baseparm_list(3);  //  max negative change
+              tempvec(2)=baseparm_list(2)-baseparm_list(3);   //  max positive change
+              tempvec(5)=0.5*min(abs(tempvec(1)),tempvec(2));   //  sd of normal prior
+            }
             timevary_parm_rd.push_back (tempvec);
              break;}
          }

@@ -2745,7 +2745,7 @@
       N_warn++;Bmark_Yr(i)=styr;warning<<"benchmark year less than styr; reset to equal styr"<<endl;
     }
   }
-
+  
   // default for transition to 3.30
   //  for distribution of recruits among areas&morphs
   Bmark_Yr(7) = styr;

@@ -1644,10 +1644,7 @@ FUNCTION void write_nucontrol()
   NuFore<<Do_MSY<<" # MSY: 1= set to F(SPR); 2=calc F(MSY); 3=set to F(Btgt); 4=set to F(endyr) "<<endl;
   NuFore<<SPR_target<<" # SPR target (e.g. 0.40)"<<endl;
   NuFore<<BTGT_target<<" # Biomass target (e.g. 0.40)"<<endl;
-  NuFore<<"#_Bmark_years: beg_bio, end_bio, beg_selex, end_selex, beg_relF, end_relF, beg_recr_dist, end_recr_dist, beg_SRparm, end_SRparm (enter actual year, or values of 0 or -integer to be rel. endyr)"<<endl<<Bmark_Yr_rd;
-  if (frac_female_pointer == -1) NuFore<<" "<<styr<<" "<<endyr;     // placeholders for 3.24
-  NuFore<<endl;
-  NuFore<<"# "<<Bmark_Yr<<" # after processing "<<endl;
+  NuFore<<"#_Bmark_years: beg_bio, end_bio, beg_selex, end_selex, beg_relF, end_relF, beg_recr_dist, end_recr_dist, beg_SRparm, end_SRparm (enter actual year, or values of 0 or -integer to be rel. endyr)"<<endl<<Bmark_Yr<<endl;
   NuFore<<Bmark_RelF_Basis<<" #Bmark_relF_Basis: 1 = use year range; 2 = set relF same as forecast below"<<endl;
   NuFore<<"#"<<endl<<Do_Forecast<<" # Forecast: 0=none; 1=F(SPR); 2=F(MSY) 3=F(Btgt); 4=Ave F (uses first-last relF yrs); 5=input annual F scalar"<<endl;
   NuFore<<N_Fcast_Yrs<<" # N forecast years "<<endl;
@@ -5412,7 +5409,6 @@ FUNCTION void Report_Parm(const int NParm, const int AC, const int Activ, const 
     {
       SS2out<<" _ "<<PH<<" "<<Pmin<<" "<<Pmax<<" "<<RD<<" "<<Jitter<<" NA _ _ ";
     }
-
     if(PR_T>0)
     {
       switch (PR_T)

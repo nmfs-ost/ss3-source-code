@@ -645,6 +645,8 @@ FUNCTION void Get_Forecast()
   dvariable OFL_catch;
   dvariable Fcast_Crash;
   dvariable totcatch;
+  dvariable R0_use;
+  dvariable SPB_use;
   dvar_matrix catage_w(1,gmorph,0,nages);
   dvar_vector tempcatch(1,Nfleet);
   dvar_vector ABC_buffer(endyr+1,YrMax);
@@ -819,6 +821,8 @@ FUNCTION void Get_Forecast()
     //  would be better to back up to last mainrecrdev and start with begin of forecast
     SPB_current=SPB_yr(endyr);
     Recruits=exp_rec(endyr,4);
+    //  need to distribute these recruits forward into endyr+1
+    
     for (y=endyr+1;y<=YrMax;y++)
     {
       t_base=styr+(y-styr)*nseas-1;
@@ -998,7 +1002,22 @@ FUNCTION void Get_Forecast()
               }
             }
 //  SPAWN-RECR:   get recruitment in forecast;  needs to be area-specific
-            Recruits=Spawn_Recr(SPB_virgin,Recr_virgin,SPB_current);    //  recruitment with deviations
+      if(SR_parm_timevary(1)==0)  //  R0 is not time-varying
+      {R0_use=Recr_virgin; SPB_use=SPB_virgin;}
+      else
+      {
+        R0_use=mfexp(SR_parm_work(1));
+        equ_Recr=R0_use;
+        Fishon=0;
+        eq_yr=y;
+        bio_yr=y;
+        Do_Equil_Calc();                      //  call function to do equilibrium calculation
+        if(fishery_on_off==1) {Fishon=1;} else {Fishon=0;}
+        SPB_use=SPB_equil;
+      }
+
+        Recruits=Spawn_Recr(SPB_use,R0_use,SPB_current);  // calls to function Spawn_Recr
+
             if(Fcast_Loop1<Fcast_Loop_Control(2))    //  use expected recruitment  this should include environ effect - CHECK THIS
             {
               Recruits=exp_rec(y,2);
@@ -1412,7 +1431,21 @@ FUNCTION void Get_Forecast()
         }
   //  SS_Label_Info_24.3.4.1 #Get recruitment from this spawning biomass
 //  SPAWN-RECR:   calc recruitment in time series; need to make this area-specififc
-        Recruits=Spawn_Recr(SPB_virgin,Recr_virgin,SPB_current);  // calls to function Spawn_Recr
+      if(SR_parm_timevary(1)==0)  //  R0 is not time-varying
+      {R0_use=Recr_virgin; SPB_use=SPB_virgin;}
+      else
+      {
+        R0_use=mfexp(SR_parm_work(1));
+        equ_Recr=R0_use;
+        Fishon=0;
+        eq_yr=y;
+        bio_yr=y;
+        Do_Equil_Calc();                      //  call function to do equilibrium calculation
+        if(fishery_on_off==1) {Fishon=1;} else {Fishon=0;}
+        SPB_use=SPB_equil;
+      }
+
+        Recruits=Spawn_Recr(SPB_use,R0_use,SPB_current);  // calls to function Spawn_Recr
 // distribute Recruitment of age 0 fish among the current and future settlements; and among areas and morphs
 //  note that because SPB_current is calculated at end of season to take into account Z,
 //  this means that recruitment cannot occur until a subsequent season

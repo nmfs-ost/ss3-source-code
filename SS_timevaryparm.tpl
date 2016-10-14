@@ -60,9 +60,12 @@ FUNCTION void make_timevaryparm()
           baseparm_min=Q_parm_LO(timevary_setup(2));
           baseparm_max=Q_parm_HI(timevary_setup(2));
           if(do_once==1) echoinput<<"base Qparm "<<baseparm<<endl;
+            echoinput<<Q_parm<<endl;
+            echoinput<<timevary_parm_start_Q<<endl;
           for(j=timevary_setup(3);j<timevary_def[tvary+1](3);j++)
           {
             timevary_parm_cnt_all++;
+            echoinput<<j<<" "<<timevary_parm_cnt_all<<" "<<Q_Npar+j-timevary_parm_start_Q+1<<endl;
             timevary_parm(timevary_parm_cnt_all)=Q_parm(Q_Npar+j-timevary_parm_start_Q+1);
             if(do_once==1) echoinput<<j<<" timevary_parm: "<<timevary_parm(timevary_parm_cnt_all)<<endl;
           }
