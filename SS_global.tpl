@@ -232,7 +232,7 @@ GLOBALS_SECTION
               tempvec.fill("{0,0,0.,0.,0,6,4}");
               tempvec(1)=log(baseparm_list(1)/baseparm_list(3));  //  max negative change
               tempvec(2)=log(baseparm_list(2)/baseparm_list(3));   //  max positive change
-              tempvec(5)=0.5*min(abs(tempvec(1)),tempvec(2));   //  sd of normal prior
+              tempvec(5)=0.5*fmin(abs(tempvec(1)),tempvec(2));   //  sd of normal prior
             }
             timevary_parm_rd.push_back (tempvec);
             break;}
@@ -246,7 +246,7 @@ GLOBALS_SECTION
               tempvec.fill("{0,0,0.,0.,0,6,4}");
               tempvec(1)=baseparm_list(1)-baseparm_list(3);  //  max negative change
               tempvec(2)=baseparm_list(2)-baseparm_list(3);   //  max positive change
-              tempvec(5)=0.5*min(abs(tempvec(1)),tempvec(2));   //  sd of normal prior
+              tempvec(5)=0.5*fmin(abs(tempvec(1)),tempvec(2));   //  sd of normal prior
             }
             timevary_parm_rd.push_back (tempvec);
              break;}
@@ -258,7 +258,7 @@ GLOBALS_SECTION
             else
             {
               for(int s=1;s<=7;s++) tempvec(s)=baseparm_list(s);
-              if(finish_starter==999) 
+              if(finish_starter==999)
               {
                 double temp;
                 temp=tempvec(5);
@@ -278,7 +278,7 @@ GLOBALS_SECTION
               tempvec.fill("{0,0,0.,0.,0,6,4}");
               tempvec(1)=baseparm_list(1)-baseparm_list(3);  //  max negative change
               tempvec(2)=baseparm_list(2)-baseparm_list(3);   //  max positive change
-              tempvec(5)=0.5*min(abs(tempvec(1)),tempvec(2));   //  sd of normal prior
+              tempvec(5)=0.5*fmin(abs(tempvec(1)),tempvec(2));   //  sd of normal prior
             }
             timevary_parm_rd.push_back (tempvec);
              break;}
