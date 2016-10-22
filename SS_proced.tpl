@@ -4,7 +4,7 @@ PROCEDURE_SECTION
   {
   Mgmt_quant.initialize();
   Extra_Std.initialize();
-  CrashPen.initialize(); 
+  CrashPen.initialize();
   niter++;
   if(mceval_phase() ) mceval_counter ++;   // increment the counter
   if(initial_params::mc_phase==1) mcmc_counter++;
@@ -138,7 +138,7 @@ PROCEDURE_SECTION
 
     evaluate_the_objective_function();
 
-    if(do_once==1) 
+    if(do_once==1)
     {
       cout<<" OK with obj_func "<<obj_fun<<endl;
       do_once=0;
@@ -243,14 +243,20 @@ PROCEDURE_SECTION
           }
         }
 
-        if(do_migration>0)
+        if(pop>0)
         {
-          for (j=1;j<=do_migr2;j++)
+          if(do_migration>0)
           {
-            tempvec_a.initialize();
-            for (y=Bmark_Yr(1);y<=Bmark_Yr(2);y++){tempvec_a+=migrrate(y,j);}
-            migrrate(styr-3,j)=tempvec_a/temp;
+            temp=float(Bmark_Yr(8)-Bmark_Yr(7)+1.);  //  get denominator
+            for (j=1;j<=do_migr2;j++)
+            {
+              tempvec_a.initialize();
+              for (y=Bmark_Yr(7);y<=Bmark_Yr(8);y++){tempvec_a+=migrrate(y,j);}
+              migrrate(styr-3,j)=tempvec_a/temp;
+            }
           }
+// recr_dist_bmark is accumulated while doing the time_series
+// then it's mean is calculated in Get_Benchmarks and assigned to recr_dist
         }
 
     //  calc average selectivity to use in equil; store in styr-1

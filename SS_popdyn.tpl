@@ -14,6 +14,7 @@ FUNCTION void get_initial_conditions()
   y=styr;
   yz=styr;
   t_base=styr-1;
+  recr_dist_Bmark.initialize();
 
 //  Create time varying parameters
 //  following call is to routine that does this for all timevary parameters
@@ -40,6 +41,17 @@ FUNCTION void get_initial_conditions()
   if(do_once==1) cout<<" natmort OK"<<endl;
   if(MG_active(3)>0) get_wtlen();
   if(MG_active(4)>0) get_recr_distribution();
+  if(y>=Bmark_Yr(7)&&y<=Bmark_Yr(8))
+  {
+    for (gp=1;gp<=N_GP;gp++)
+    for (p=1;p<=pop;p++)
+    for (settle=1;settle<=N_settle_timings;settle++)
+    if(recr_dist_pattern(gp,settle,p)>0)
+    {
+      recr_dist_Bmark(gp,settle,p)+=recr_dist(gp,settle,p);
+      if(gender==2) recr_dist_Bmark(gp+N_GP,settle,p)+=recr_dist(gp+N_GP,settle,p);
+    }
+  }
   if(MG_active(5)>0) get_migration();
   if(do_once==1) cout<<" migr OK"<<endl;
   if(MG_active(7)>0)
@@ -415,6 +427,17 @@ FUNCTION void get_time_series()
       if(timevary_MG(y,1)>0) get_natmort();
       if(timevary_MG(y,3)>0) get_wtlen();
       if(timevary_MG(y,4)>0) get_recr_distribution();
+      if(y>=Bmark_Yr(7)&&y<=Bmark_Yr(8))
+      {
+        for (gp=1;gp<=N_GP;gp++)
+        for (p=1;p<=pop;p++)
+        for (settle=1;settle<=N_settle_timings;settle++)
+        if(recr_dist_pattern(gp,settle,p)>0)
+        {
+          recr_dist_Bmark(gp,settle,p)+=recr_dist(gp,settle,p);
+          if(gender==2) recr_dist_Bmark(gp+N_GP,settle,p)+=recr_dist(gp+N_GP,settle,p);
+        }
+      }
       if(timevary_MG(y,5)>0) get_migration();
       if(timevary_MG(y,7)>0)
       {

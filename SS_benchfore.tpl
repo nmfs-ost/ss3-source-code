@@ -92,10 +92,8 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
 //  the spawner-recruitment function has Bzero based on virgin biology, not benchmark biology
 //  need to deal with possibility that with time-varying biology, the SPB_virgin calculated from virgin conditions will differ from the SPB_virgin used for benchmark conditions
 
-    //  NEED Replacement code to calc average recr_dist from the natage
-//    get_MGsetup();    // in case recr_dist parameters have changed
-//    get_recr_distribution();
-
+    recr_dist=recr_dist_Bmark/(Bmark_Yr(8)-Bmark_Yr(7)+1);
+    
 // find Fspr             SS_Label_710
     if(show_MSY==1)
     {
