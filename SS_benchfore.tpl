@@ -773,6 +773,7 @@ FUNCTION void Get_Forecast()
     if(HarvestPolicy==1) {report5<<" adjust_catch_below_Inflection(west_coast)"<<endl;} else {report5<<" adjust_F_below_Inflection"<<endl;}
     report5<<"#"<<endl;
   }
+  
   int jloop;
   if(fishery_on_off==1)
   {jloop=Fcast_Loop_Control(1);}
@@ -820,6 +821,10 @@ FUNCTION void Get_Forecast()
     SPB_current=SPB_yr(endyr);
     Recruits=exp_rec(endyr,4);
     //  need to distribute these recruits forward into endyr+1
+
+//  refresh quantities that might have changed in benchmark.
+//  some of these might be change within forecast also
+    recr_dist=recr_dist_endyr;
     
     for (y=endyr+1;y<=YrMax;y++)
     {

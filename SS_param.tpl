@@ -93,6 +93,7 @@ PARAMETER_SECTION
   3darray migrrate(styr-3,YrMax,1,do_migr2,0,nages)
   3darray recr_dist(1,N_GP*gender,1,N_settle_timings,1,pop);
   3darray recr_dist_Bmark(1,N_GP*gender,1,N_settle_timings,1,pop);
+  3darray recr_dist_endyr(1,N_GP*gender,1,N_settle_timings,1,pop);
 !!//  SS_Label_Info_5.1.2 #Create SR_parm vector, recruitment vectors
   init_bounded_number_vector SR_parm(1,N_SRparm3,SR_parm_LO,SR_parm_HI,SR_parm_PH)
   matrix SR_parm_byyr(styr-3,YrMax,1,N_SRparm2+1)  //  R0, steepness, parm3, sigmar, rec_dev_offset, R1, rho, SPB   Time_vary implementation of spawner-recruitment

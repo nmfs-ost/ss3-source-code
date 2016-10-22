@@ -1198,6 +1198,10 @@ FUNCTION void get_time_series()
       }
     }
   } //close year loop
+  
+//  Save end year quantities to refresh for forecast after benchmark is called
+  recr_dist_endyr=recr_dist;
+  
   //  SS_Label_Info_24.14 #End loop of years
 
   if(Do_TG>0)
