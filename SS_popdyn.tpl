@@ -15,6 +15,9 @@ FUNCTION void get_initial_conditions()
   yz=styr;
   t_base=styr-1;
   recr_dist_Bmark.initialize();
+  natM_Bmark.initialize();
+  surv1_Bmark.initialize();
+  surv2_Bmark.initialize();
 
 //  Create time varying parameters
 //  following call is to routine that does this for all timevary parameters
@@ -39,6 +42,17 @@ FUNCTION void get_initial_conditions()
   if(do_once==1) cout<<" growth OK"<<endl;
   if(MG_active(1)>0) get_natmort();
   if(do_once==1) cout<<" natmort OK"<<endl;
+  if(y>=Bmark_Yr(1)&&y<=Bmark_Yr(2))
+  {
+    for (s=1;s<=nseas;s++)
+    for (gp=1;gp<=N_GP*gender*N_settle_timings;gp++)
+    {
+      natM_Bmark(s,gp)+=natM(s,gp);   //  need nseas to capture differences due to settlement
+      surv1_Bmark(s,gp)+=surv1(s,gp);   //  need nseas to capture differences due to settlement
+      surv2_Bmark(s,gp)+=surv2(s,gp);   //  need nseas to capture differences due to settlement
+    }
+  }
+
   if(MG_active(3)>0) get_wtlen();
   if(MG_active(4)>0) get_recr_distribution();
   if(y>=Bmark_Yr(7)&&y<=Bmark_Yr(8))
@@ -52,6 +66,7 @@ FUNCTION void get_initial_conditions()
       if(gender==2) recr_dist_Bmark(gp+N_GP,settle,p)+=recr_dist(gp+N_GP,settle,p);
     }
   }
+
   if(MG_active(5)>0) get_migration();
   if(do_once==1) cout<<" migr OK"<<endl;
   if(MG_active(7)>0)
@@ -425,6 +440,16 @@ FUNCTION void get_time_series()
           {get_growth2_Richards();}
         }
       if(timevary_MG(y,1)>0) get_natmort();
+      if(y>=Bmark_Yr(1)&&y<=Bmark_Yr(2))
+      {
+        for (s=1;s<=nseas;s++)
+        for (gp=1;gp<=N_GP*gender*N_settle_timings;gp++)
+        {
+          natM_Bmark(s,gp)+=natM(s,gp);
+          surv1_Bmark(s,gp)+=surv1(s,gp);
+          surv2_Bmark(s,gp)+=surv2(s,gp);
+        }
+      }
       if(timevary_MG(y,3)>0) get_wtlen();
       if(timevary_MG(y,4)>0) get_recr_distribution();
       if(y>=Bmark_Yr(7)&&y<=Bmark_Yr(8))
@@ -1201,6 +1226,7 @@ FUNCTION void get_time_series()
   
 //  Save end year quantities to refresh for forecast after benchmark is called
   recr_dist_endyr=recr_dist;
+  natM_endyr=natM;
   
   //  SS_Label_Info_24.14 #End loop of years
 

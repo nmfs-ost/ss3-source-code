@@ -2853,6 +2853,24 @@ FUNCTION void write_bigoutput()
       SS2out<<settle<<" "<<settle_time<<" "<<gp<<" "<<p<<" "<<Settle_month(settle_time)<<" "<<Settle_seas(settle_time)<<" "<<
       Settle_age(settle_time)<<" "<<Settle_timing_seas(settle_time)<<" "<<recr_dist(gp,settle_time,p)<<endl;
    }
+   SS2out<<endl<<"RECRUITMENT_DIST_Bmark"<<endl<<"Settle# settle_timing# G_pattern Area Settle_Month Seas Age Time_w/in_seas Frac/sex"<<endl;
+   for (settle=1;settle<=N_settle_assignments;settle++)
+   {
+      gp=settlement_pattern_rd(settle,1); //  growth patterns
+      p=settlement_pattern_rd(settle,3);  //  settlement area
+      settle_time=settle_assignments_timing(settle);
+      SS2out<<settle<<" "<<settle_time<<" "<<gp<<" "<<p<<" "<<Settle_month(settle_time)<<" "<<Settle_seas(settle_time)<<" "<<
+      Settle_age(settle_time)<<" "<<Settle_timing_seas(settle_time)<<" "<<recr_dist_Bmark(gp,settle_time,p)/(Bmark_Yr(8)-Bmark_Yr(7)+1)<<endl;
+   }
+   SS2out<<endl<<"RECRUITMENT_DIST_endyr"<<endl<<"Settle# settle_timing# G_pattern Area Settle_Month Seas Age Time_w/in_seas Frac/sex"<<endl;
+   for (settle=1;settle<=N_settle_assignments;settle++)
+   {
+      gp=settlement_pattern_rd(settle,1); //  growth patterns
+      p=settlement_pattern_rd(settle,3);  //  settlement area
+      settle_time=settle_assignments_timing(settle);
+      SS2out<<settle<<" "<<settle_time<<" "<<gp<<" "<<p<<" "<<Settle_month(settle_time)<<" "<<Settle_seas(settle_time)<<" "<<
+      Settle_age(settle_time)<<" "<<Settle_timing_seas(settle_time)<<" "<<recr_dist_endyr(gp,settle_time,p)<<endl;
+   }
 
    SS2out<<endl<<"MORPH_INDEXING"<<endl;
    SS2out<<"Index GP Sex Bseas Platoon Platoon_Dist Sex*GP Sex*GP*Settle BirthAge_Rel_Jan1"<<endl;
@@ -4249,6 +4267,28 @@ FUNCTION void write_bigoutput()
         g++;
         if(use_morph(g)>0)
         {for (s=1;s<=nseas;s++) SS2out<<gp<<" "<<gg<<" "<<settle<<" "<<s<<" "<<natM(s,g)<<endl;}
+      }
+
+    SS2out<<endl<<"Natural_Mortality_Bmark"<<endl<<"Bio_Pattern Gender Settlement Seas "<<age_vector<<endl;
+      g=0;
+      for (gg=1;gg<=gender;gg++)
+      for (gp=1;gp<=N_GP;gp++)
+      for (settle=1;settle<=N_settle_timings;settle++)
+      {
+        g++;
+        if(use_morph(g)>0)
+        {for (s=1;s<=nseas;s++) SS2out<<gp<<" "<<gg<<" "<<settle<<" "<<s<<" "<<natM_Bmark(s,g)/(Bmark_Yr(2)-Bmark_Yr(1)+1)<<endl;}
+      }
+
+    SS2out<<endl<<"Natural_Mortality_endyr"<<endl<<"Bio_Pattern Gender Settlement Seas "<<age_vector<<endl;
+      g=0;
+      for (gg=1;gg<=gender;gg++)
+      for (gp=1;gp<=N_GP;gp++)
+      for (settle=1;settle<=N_settle_timings;settle++)
+      {
+        g++;
+        if(use_morph(g)>0)
+        {for (s=1;s<=nseas;s++) SS2out<<gp<<" "<<gg<<" "<<settle<<" "<<s<<" "<<natM_endyr(s,g)<<endl;}
       }
 
     if(Grow_type==3)  //  age-specific K

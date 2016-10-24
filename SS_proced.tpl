@@ -234,12 +234,14 @@ PROCEDURE_SECTION
             for (t=Bmark_t(1);t<=Bmark_t(2);t+=nseas) {tempvec_a+=Save_Wt_Age(t+s,g);}
             Save_Wt_Age(styr-3*nseas+s,g)=tempvec_a/temp;
 
-            for (f=0;f<=Nfleet;f++)
+            for (f=0;f<=Nfleet;f++)  //  goes to Nfleet because this contains fecundity as well as asel2(f)
             {
               tempvec_a.initialize();
               for (t=Bmark_t(1);t<=Bmark_t(2);t+=nseas) {tempvec_a+=save_sel_fec(t+s,g,f);}
               save_sel_fec(styr-3*nseas+s,g,f)=tempvec_a/temp;
             }
+// natmort_bmark is accumulated while doing the time_series
+// then it's mean is calculated in Get_Benchmarks and assigned back to natmort
           }
         }
 

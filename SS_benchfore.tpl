@@ -93,6 +93,10 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
 //  need to deal with possibility that with time-varying biology, the SPB_virgin calculated from virgin conditions will differ from the SPB_virgin used for benchmark conditions
 
     recr_dist=recr_dist_Bmark/(Bmark_Yr(8)-Bmark_Yr(7)+1);
+
+    natM=natM_Bmark/(Bmark_Yr(2)-Bmark_Yr(1)+1);
+    surv1=surv1_Bmark/(Bmark_Yr(2)-Bmark_Yr(1)+1);
+    surv2=surv2_Bmark/(Bmark_Yr(2)-Bmark_Yr(1)+1);
     
 // find Fspr             SS_Label_710
     if(show_MSY==1)
@@ -825,7 +829,10 @@ FUNCTION void Get_Forecast()
 //  refresh quantities that might have changed in benchmark.
 //  some of these might be change within forecast also
     recr_dist=recr_dist_endyr;
-    
+    natM=natM_endyr;
+    surv1=surv1_endyr;
+    surv2=surv2_endyr;
+        
     for (y=endyr+1;y<=YrMax;y++)
     {
       t_base=styr+(y-styr)*nseas-1;
