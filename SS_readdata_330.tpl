@@ -2987,6 +2987,11 @@
 
 
  LOCAL_CALCS
+  Fcast_MaxFleetCatch.initialize();
+  Fcast_MaxAreaCatch.initialize();
+  Allocation_Fleet_Assignments.initialize();
+  Fcast_Catch_Allocation.initialize();
+  
   if(Do_Forecast>0)
   {
     if(Fcast_RelF_Basis==2)

@@ -5097,7 +5097,7 @@ FUNCTION void write_bigoutput()
 
     equ_Recr=1.0;
     Fishon=0;
-    Do_Equil_Calc();
+    Do_Equil_Calc(equ_Recr);
     SPR_unf=SPB_equil;
         for (int SPRloop1=0; SPRloop1<=2; SPRloop1++)
         {
@@ -5114,7 +5114,7 @@ FUNCTION void write_bigoutput()
               Hrate(f,t)=Fmult2*Bmark_RelF_Use(s,f);
             }
             Fishon=1;
-            Do_Equil_Calc();
+            Do_Equil_Calc(equ_Recr);
 //  SPAWN-RECR:   calc equil spawn-recr in the SPR loop
             SPR_temp=SPB_equil;
             Equ_SpawnRecr_Result = Equil_Spawn_Recr_Fxn(SR_parm(2), SR_parm(3), SPB_virgin, Recr_virgin, SPR_temp);  //  returns 2 element vector containing equilibrium biomass and recruitment at this SPR
@@ -5170,7 +5170,7 @@ FUNCTION void write_bigoutput()
           }
           SPRloop+=1;
           Fishon=1;
-          Do_Equil_Calc();
+          Do_Equil_Calc(equ_Recr);
           SPR_temp=SPB_equil;
           Equ_SpawnRecr_Result = Equil_Spawn_Recr_Fxn(SR_parm(2), SR_parm(3), SPB_virgin, Recr_virgin, SPR_temp);  //  returns 2 element vector containing equilibrium biomass and recruitment at this SPR
           Btgt_prof=Equ_SpawnRecr_Result(1);

@@ -598,7 +598,7 @@ FINAL_SECTION
     if(Do_Benchmark>0)
     {
       if(did_MSY==0) Get_Benchmarks(show_MSY);
-      cout<<" finished benchmark"<<endl;
+      cout<<" finished benchmark for reporting"<<endl;
     }
     else
     {Mgmt_quant(1)=SPB_virgin;}
@@ -606,12 +606,12 @@ FINAL_SECTION
     {
       report5<<"THIS FORECAST FOR PURPOSES OF GETTING DISPLAY QUANTITIES"<<endl;
       Get_Forecast();
-      cout<<" finished forecast "<<endl;
+      cout<<" finished forecast for reporting"<<endl;
     }
 
 //  SS_Label_Info_12.3.4  #call fxn STDquant()
      Process_STDquant();
-     cout<<" finished STD quantities "<<endl;
+     cout<<" finished STD quantities for reporting"<<endl;
 
 //  SS_Label_Info_12.4 #Do Outputs
 //  SS_Label_Info_12.4.1 #Call fxn write_bigoutput()

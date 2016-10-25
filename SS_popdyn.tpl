@@ -139,6 +139,7 @@ FUNCTION void get_initial_conditions()
   bio_yr=styr;
   Fishon=0;
   virg_fec = fec;
+  for(int i=1;i<=N_SRparm2;i++) {SR_parm_byyr(eq_yr,i)=SR_parm(i);  SR_parm_virg(i)=SR_parm(i);  SR_parm_work(i)=SR_parm(i);}
 
 //  SPAWN-RECR:   get expected recruitment globally or by area
   if(recr_dist_area==1 || pop==1)  //  do global spawn_recruitment calculations
@@ -149,8 +150,7 @@ FUNCTION void get_initial_conditions()
     exp_rec(eq_yr,2)=Recr_virgin;
     exp_rec(eq_yr,3)=Recr_virgin;
     exp_rec(eq_yr,4)=Recr_virgin;
-
-    Do_Equil_Calc();                      //  call function to do equilibrium calculation
+    Do_Equil_Calc(equ_Recr);                      //  call function to do equilibrium calculation
     SPB_virgin=SPB_equil;
     SPR_virgin=SPB_equil/Recr_virgin;  //  spawners per recruit
     Mgmt_quant(1)=SPB_equil;
@@ -164,7 +164,6 @@ FUNCTION void get_initial_conditions()
     SPB_pop_gp(eq_yr)=SPB_equil_pop_gp;   // dimensions of pop x N_GP
     if(Hermaphro_Option!=0) MaleSPB(eq_yr)=MaleSPB_equil_pop_gp;
     SPB_yr(eq_yr)=SPB_equil;
-    for(int i=1;i<=N_SRparm2;i++) {SR_parm_byyr(eq_yr,i)=SR_parm(i);  SR_parm_virg(i)=SR_parm(i);  SR_parm_work(i)=SR_parm(i);}
     SR_parm_byyr(eq_yr,N_SRparm2+1)=SPB_equil;
     SR_parm_virg(N_SRparm2+1)=SPB_equil;
     SR_parm_work(N_SRparm2+1)=SPB_equil;
@@ -212,6 +211,7 @@ FUNCTION void get_initial_conditions()
       {
         SR_parm_work(f)=parm_timevary(SR_parm_timevary(f),eq_yr);
       }
+      SR_parm_byyr(eq_yr,f)=SR_parm_work(f);
    }
 
    for (s=1;s<=nseas;s++)
@@ -242,7 +242,7 @@ FUNCTION void get_initial_conditions()
    exp_rec(eq_yr,3)=R1;
    exp_rec(eq_yr,4)=R1;
    equ_Recr=R1;  //  equ_Recr is used inside of Do_Equil_Calc
-   Do_Equil_Calc();
+   Do_Equil_Calc(equ_Recr);
    CrashPen += Equ_penalty;
   }
   else
@@ -252,7 +252,7 @@ FUNCTION void get_initial_conditions()
     //  first get SPR for this init_F
 //  SPAWN-RECR:   calc initial equilibrium pop, SPB, Recruitment
     equ_Recr=Recr_virgin;
-    Do_Equil_Calc();
+    Do_Equil_Calc(equ_Recr);
     CrashPen += Equ_penalty;
     SPR_temp=SPB_equil/equ_Recr;  //  spawners per recruit at initial F
   //  get equilibrium SSB and recruitment from SPR_temp, Recr_virgin and virgin steepness
@@ -267,13 +267,15 @@ FUNCTION void get_initial_conditions()
     exp_rec(eq_yr,4)=equ_Recr;
     R1=equ_Recr;
 
-    Do_Equil_Calc();  // calculated SPB_equil
+    Do_Equil_Calc(equ_Recr);  // calculated SPB_equil
     CrashPen += Equ_penalty;
   }
 
    SPB_pop_gp(eq_yr)=SPB_equil_pop_gp;   // dimensions of pop x N_GP
    if(Hermaphro_Option!=0) MaleSPB(eq_yr)=MaleSPB_equil_pop_gp;
    SPB_yr(eq_yr)=SPB_equil;
+    SR_parm_byyr(eq_yr,N_SRparm2+1)=SPB_equil;
+    SR_parm_work(N_SRparm2+1)=SPB_equil;
    SPB_yr(styr)=SPB_equil;
    env_data(styr-1,-1)=SPB_equil;
    env_data(styr-1,-2)=1.0;
@@ -392,6 +394,7 @@ FUNCTION void get_time_series()
       {
         SR_parm_work(f)=parm_timevary(SR_parm_timevary(f),y);
       }
+      SR_parm_byyr(eq_yr,f)=SR_parm_work(f);
    }
 
     	{
@@ -590,7 +593,7 @@ FUNCTION void get_time_series()
         Fishon=0;
         eq_yr=y;
         bio_yr=y;
-        Do_Equil_Calc();                      //  call function to do equilibrium calculation
+        Do_Equil_Calc(equ_Recr);                      //  call function to do equilibrium calculation
         if(fishery_on_off==1) {Fishon=1;} else {Fishon=0;}
         SPB_use=SPB_equil;
       }
@@ -968,7 +971,7 @@ FUNCTION void get_time_series()
         Fishon=0;
         eq_yr=y;
         bio_yr=y;
-        Do_Equil_Calc();                      //  call function to do equilibrium calculation
+        Do_Equil_Calc(equ_Recr);                      //  call function to do equilibrium calculation
         if(fishery_on_off==1) {Fishon=1;} else {Fishon=0;}
         SPB_use=SPB_equil;
       }
@@ -1202,12 +1205,12 @@ FUNCTION void get_time_series()
       eq_yr=y; equ_Recr=Recr_virgin; bio_yr=y;
       dvariable SPR_unf;
       Fishon=0;
-      Do_Equil_Calc();                      //  call function to do equilibrium calculation with current year's biology
+      Do_Equil_Calc(equ_Recr);                      //  call function to do equilibrium calculation with current year's biology
       SPR_unf=SPB_equil;
       Smry_Table(y,11)=SPR_unf;
       Smry_Table(y,13)=GenTime;
       Fishon=1;
-      Do_Equil_Calc();                      //  call function to do equilibrium calculation with current year's biology and F
+      Do_Equil_Calc(equ_Recr);                      //  call function to do equilibrium calculation with current year's biology and F
       if(STD_Yr_Reverse_Ofish(y)>0)
       {
         SPR_std(STD_Yr_Reverse_Ofish(y))=SPB_equil/SPR_unf;
@@ -1376,7 +1379,7 @@ FUNCTION void get_time_series()
 
 //********************************************************************
  /*  SS_Label_FUNCTION 30 Do_Equil_Calc */
-FUNCTION void Do_Equil_Calc()
+FUNCTION void Do_Equil_Calc(const prevariable& equ_Recr)
   {
   int t_base;
   int bio_t_base;
@@ -1407,6 +1410,7 @@ FUNCTION void Do_Equil_Calc()
    smrybio=0.0;
    smryage=0.0;
    smrynum=0.0;
+   
 // first seed the recruits; seems redundant
       for (g=1;g<=gmorph;g++)
       {

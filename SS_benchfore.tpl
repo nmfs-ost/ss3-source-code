@@ -114,7 +114,7 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
     equ_Recr=1.0;
 
     Fishon=0;
-    Do_Equil_Calc();
+    Do_Equil_Calc(equ_Recr);
     SPR_unf=SPB_equil;  //  this corresponds to the biology for benchmark average years, not the virgin SPB_virgin
     Vbio1_unfished=smrybio;       // gets value from equil_calc
           if(show_MSY==1)
@@ -148,7 +148,7 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
             {t=bio_t_base+s; Hrate(f,t)=Fmult*Bmark_RelF_Use(s,f);}
 
           Fishon=1;
-          Do_Equil_Calc();
+          Do_Equil_Calc(equ_Recr);
           yld1(ii)=SPB_equil/SPR_unf;
         }
         SPR_actual=yld1(1);
@@ -255,7 +255,7 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
         {
           t=bio_t_base+s; Hrate(f,t)=Fmult*Bmark_RelF_Use(s,f);
         }
-        Do_Equil_Calc();
+        Do_Equil_Calc(equ_Recr);
         SPR_Btgt = SPB_equil/SPR_unf;   //  here for SPR it uses benchmark's SPB_virgin for consistency
 //  SPAWN-RECR:   calc equil spawn-recr for Btarget calcs;  need to make area-specific
         SPR_temp=SPB_equil;
@@ -390,7 +390,7 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
           for (s=1;s<=nseas;s++)
             {t=bio_t_base+s; Hrate(f,t)=Fmult*Bmark_RelF_Use(s,f);}
 
-          Do_Equil_Calc();
+          Do_Equil_Calc(equ_Recr);
 //  SPAWN-RECR:   calc spawn-recr for MSY calcs;  need to make area-specific
           MSY_SPR = SPB_equil/SPR_unf;
           SPR_temp=SPB_equil;
@@ -488,7 +488,7 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
     }
 
      Fishon=0;
-     Do_Equil_Calc();
+     Do_Equil_Calc(equ_Recr);
     report5<<"Equil_N_at_age_M_only_Recr_MSY"<<endl<<"Seas Area GP Sex subM"<<age_vector<<endl;
      for (s=1;s<=nseas;s++)
      for (p=1;p<=pop;p++)
@@ -1021,7 +1021,7 @@ FUNCTION void Get_Forecast()
         Fishon=0;
         eq_yr=y;
         bio_yr=y;
-        Do_Equil_Calc();                      //  call function to do equilibrium calculation
+        Do_Equil_Calc(equ_Recr);                      //  call function to do equilibrium calculation
         if(fishery_on_off==1) {Fishon=1;} else {Fishon=0;}
         SPB_use=SPB_equil;
       }
@@ -1450,7 +1450,7 @@ FUNCTION void Get_Forecast()
         Fishon=0;
         eq_yr=y;
         bio_yr=y;
-        Do_Equil_Calc();                      //  call function to do equilibrium calculation
+        Do_Equil_Calc(equ_Recr);                      //  call function to do equilibrium calculation
         if(fishery_on_off==1) {Fishon=1;} else {Fishon=0;}
         SPB_use=SPB_equil;
       }
@@ -1770,13 +1770,13 @@ FUNCTION void Get_Forecast()
       {
         eq_yr=y; equ_Recr=Recr_virgin; bio_yr=endyr;
         Fishon=0;
-        Do_Equil_Calc();                      //  call function to do equilibrium calculation
+        Do_Equil_Calc(equ_Recr);                      //  call function to do equilibrium calculation
 
         SPR_unf=SPB_equil;
         Smry_Table(y,11)=SPR_unf;
         Smry_Table(y,13)=GenTime;
         Fishon=1;
-        Do_Equil_Calc();                      //  call function to do equilibrium calculation
+        Do_Equil_Calc(equ_Recr);                      //  call function to do equilibrium calculation
         SPR_trial=SPB_equil;
         if(STD_Yr_Reverse_Ofish(y)>0) SPR_std(STD_Yr_Reverse_Ofish(y))=SPR_trial/SPR_unf;
         Smry_Table(y,9)=totbio;

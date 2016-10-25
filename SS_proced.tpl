@@ -259,6 +259,9 @@ PROCEDURE_SECTION
           }
 // recr_dist_bmark is accumulated while doing the time_series
 // then it's mean is calculated in Get_Benchmarks and assigned to recr_dist
+
+//  same for natmort and survival (surv1 and surv2)
+
         }
 
     //  calc average selectivity to use in equil; store in styr-1
@@ -315,7 +318,6 @@ PROCEDURE_SECTION
 //  SS_Label_Info_7.6 #If sdphase or mcevalphase, do benchmarks and forecast and derived quantities
     if( (sd_phase() || mceval_phase()) && (initial_params::mc_phase==0))
     {
-       cout<<" in sd_phase "<<endl;
 //  SS_Label_Info_7.6.1 #Call fxn Get_Benchmarks()
       if(mceval_phase()==0) {show_MSY=1;}
       if(Do_Benchmark>0)
