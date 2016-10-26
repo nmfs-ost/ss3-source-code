@@ -169,6 +169,10 @@ PROCEDURE_SECTION
           tempvec_a.initialize();
           for (y=Fcast_Sel_yr1;y<=Fcast_Sel_yr2;y++) {tempvec_a+=sel_a(y,f,gg);}
           sel_a(endyr+1,f,gg)=tempvec_a/temp;
+
+          tempvec_a.initialize();
+          for (y=Fcast_Sel_yr1;y<=Fcast_Sel_yr2;y++) {tempvec_a+=discmort2_a(y,f,gg);}
+          discmort2_a(endyr+1,f,gg)=tempvec_a/temp;
         }
 
 //  SS_Label_Info_7.5.2 #Set-up relative F among fleets and seasons for forecast
@@ -258,7 +262,8 @@ PROCEDURE_SECTION
             }
           }
 // recr_dist_bmark is accumulated while doing the time_series
-// then it's mean is calculated in Get_Benchmarks and assigned to recr_dist
+// then its mean is calculated in Get_Benchmarks and assigned to recr_dist
+//  the SR_parm_bench is calculated from Bmark_yrs 9-10 in benchmark code using values stored in SR_parm_byyr
 
 //  same for natmort and survival (surv1 and surv2)
 
@@ -284,6 +289,11 @@ PROCEDURE_SECTION
           tempvec_a.initialize();
           for (y=Bmark_Yr(3);y<=Bmark_Yr(4);y++) {tempvec_a+=sel_a(y,f,gg);}
           sel_a(styr-3,f,gg)=tempvec_a/temp;
+
+          tempvec_a.initialize();
+          for (y=Bmark_Yr(3);y<=Bmark_Yr(4);y++) {tempvec_a+=discmort2_a(y,f,gg);}
+          discmort2_a(styr-3,f,gg)=tempvec_a/temp;
+
         }
 
     //  set-up relative F among fleets and seasons

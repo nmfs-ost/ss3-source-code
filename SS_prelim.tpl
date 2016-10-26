@@ -622,7 +622,7 @@ PRELIMINARY_CALCS_SECTION
     migrrate.initialize();
     depletion.initialize();
     natage.initialize();
-    sel_l.initialize(); sel_a.initialize(); retain.initialize();  discmort.initialize(); discmort2.initialize();
+    sel_l.initialize(); sel_a.initialize(); retain.initialize();  discmort.initialize(); discmort2.initialize(); discmort2_a.initialize();
 
     for (f=1;f<=Nfleet;f++)
     for (y=styr;y<=endyr+1;y++)
@@ -632,6 +632,7 @@ PRELIMINARY_CALCS_SECTION
       if(y<=endyr+1)
       {
         discmort(y,f)=1.0;
+        discmort_a(y,f)=1.0;
         retain(y,f)=1.0;
       }
     }

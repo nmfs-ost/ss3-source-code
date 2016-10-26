@@ -1429,13 +1429,13 @@
        for(y=styr-3;y<=YrMax+1;y++) {timevary_SRparm(y)=timevary_pass(y);}  // year vector for this category og MGparm
      }
    }
-   timevary_parm_cnt_SR=timevary_parm_cnt;
-   echoinput<<" SR timevary_parm_cnt start and end "<<timevary_parm_start_SR<<" "<<timevary_parm_cnt_SR<<endl;
-   echoinput<<"link to timevary parms:  "<<SR_parm_timevary<<endl;
    N_SRparm3=N_SRparm2;
-   if(timevary_parm_cnt_SR>0)
+   if(timevary_parm_start_SR>0)
    {
+     timevary_parm_cnt_SR=timevary_parm_cnt;
      N_SRparm3+=(timevary_parm_cnt_SR-timevary_parm_start_SR+1);
+     echoinput<<" SR timevary_parm_cnt start and end "<<timevary_parm_start_SR<<" "<<timevary_parm_cnt_SR<<endl;
+     echoinput<<"link to timevary parms:  "<<SR_parm_timevary<<endl;
    }
    echoinput<<"SR_Npar and N_SRparm2 and N_SRparm3:  "<<N_SRparm(SR_fxn)<<" "<<N_SRparm2<<" "<<N_SRparm3<<endl;
  END_CALCS
@@ -2145,9 +2145,9 @@
   }
 
    Q_Npar2 = Q_Npar;
-   timevary_parm_cnt_Q=timevary_parm_cnt;
    if(timevary_parm_start_Q>0)
    {
+     timevary_parm_cnt_Q=timevary_parm_cnt;
      Q_Npar2+=(timevary_parm_cnt_Q-timevary_parm_start_Q+1);
      echoinput<<"Q  uses timevary parms:  "<<Qparm_timevary<<endl;
      echoinput<<" Q  timevary_parm_cnt start and end "<<timevary_parm_start_Q<<" "<<timevary_parm_cnt_Q<<endl;
@@ -2669,10 +2669,11 @@
    timevary_setup(3)=timevary_parm_cnt+1;  //  one past last one used
    timevary_def.push_back (timevary_setup(1,13));
 
-   timevary_parm_cnt_sel=timevary_parm_cnt;  //  last timevary_selparm
    N_selparm2=N_selparm;
    if(timevary_parm_start_sel>0)
-    {N_selparm2=N_selparm+timevary_parm_cnt_sel-timevary_parm_start_sel+1;}
+    {
+      timevary_parm_cnt_sel=timevary_parm_cnt;  //  last timevary_selparm
+      N_selparm2=N_selparm+timevary_parm_cnt_sel-timevary_parm_start_sel+1;}
    echoinput<<"N_selparm "<<N_selparm<<" "<<N_selparm2<<" "<<timevary_parm_start_sel<<" "<<timevary_parm_cnt_sel<<endl;
 
    if(timevary_parm_cnt>0)

@@ -22,7 +22,7 @@ FUNCTION dvariable Spawn_Recr(const prevariable& SPB_virgin_adj, const prevariab
 
 
     steepness=SR_parm_work(2);
-    regime_change=SR_parm_work(N_SRparm2-1);
+    regime_change=SR_parm_work(N_SRparm2-1);  //  this is a persistent deviation off the S/R curve
 
 
   /*
@@ -55,7 +55,7 @@ FUNCTION dvariable Spawn_Recr(const prevariable& SPB_virgin_adj, const prevariab
     else if(SR_fxn==6 || SR_fxn==3)
     {
       alpha = 4.0 * steepness*Recr_virgin / (5.*steepness-1.);
-      beta = (SPB_virgin*(1.-steepness)) / (5.*steepness-1.);
+      beta = (SPB_virgin_adj*(1.-steepness)) / (5.*steepness-1.);
     }
     
 //  SS_Label_43.3  calculate expected recruitment from the input spawning biomass and the SR curve

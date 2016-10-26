@@ -151,6 +151,8 @@ PARAMETER_SECTION
   number SPB_vir_LH
   number Recr_virgin
   number SPB_virgin
+  number SPB_Bmark
+  number Recr_Bmark
   number SPR_unf
   number SPR_trial
 //  vector S1(0,1);

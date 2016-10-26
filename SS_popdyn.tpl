@@ -593,7 +593,7 @@ FUNCTION void get_time_series()
         Fishon=0;
         eq_yr=y;
         bio_yr=y;
-        Do_Equil_Calc(equ_Recr);                      //  call function to do equilibrium calculation
+        Do_Equil_Calc(R0_use);                      //  call function to do equilibrium calculation
         if(fishery_on_off==1) {Fishon=1;} else {Fishon=0;}
         SPB_use=SPB_equil;
       }
@@ -971,7 +971,7 @@ FUNCTION void get_time_series()
         Fishon=0;
         eq_yr=y;
         bio_yr=y;
-        Do_Equil_Calc(equ_Recr);                      //  call function to do equilibrium calculation
+        Do_Equil_Calc(R0_use);                      //  call function to do equilibrium calculation
         if(fishery_on_off==1) {Fishon=1;} else {Fishon=0;}
         SPB_use=SPB_equil;
       }
