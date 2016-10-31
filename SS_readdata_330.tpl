@@ -982,7 +982,7 @@
   else
   {
     nlen_bin=2;
-    nlen_bin2=2;
+    nlen_bin2=2*gender;
   }
  END_CALCS
   vector len_bins_dat(1,nlen_bin) // length bin lower boundaries
