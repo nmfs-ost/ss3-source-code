@@ -800,7 +800,7 @@
    !! echoinput<<MGparm_def<<"  MGparm_def"<<endl;
    init_int parm_adjust_method   //  1=do V1.xx approach to adjustment by env, block or dev; 2=use new logistic approach
    !! echoinput<<parm_adjust_method<<"  timevarying parameter constraint method"<<endl;
-   int autogen_timevary;  //  0 means to autogenerate all time-vary parameters; 1 means to read
+   ivector autogen_timevary(1,5);  //  0 means to autogenerate all time-vary parameters; 1 means to read
   int do_once;
   int doit;
   vector femfrac(1,N_GP*gender)
@@ -1435,11 +1435,11 @@
        {k=0; env_data_pass.initialize();}
        if(z>0)  //  doing blocks
        {
-         create_timevary(MGparm_1(j),timevary_setup, timevary_pass, autogen_timevary, mgp_type(j), Block_Design(z), parm_adjust_method, env_data_pass, N_parm_dev, finish_starter);
+         create_timevary(MGparm_1(j),timevary_setup, timevary_pass, autogen_timevary(timevary_setup(1)), mgp_type(j), Block_Design(z), parm_adjust_method, env_data_pass, N_parm_dev, finish_starter);
        }
        else
        {
-         create_timevary(MGparm_1(j),timevary_setup, timevary_pass, autogen_timevary, mgp_type(j), block_design_null, parm_adjust_method, env_data_pass, N_parm_dev, finish_starter);
+         create_timevary(MGparm_1(j),timevary_setup, timevary_pass, autogen_timevary(timevary_setup(1)), mgp_type(j), block_design_null, parm_adjust_method, env_data_pass, N_parm_dev, finish_starter);
        }
   /*
    where:
@@ -2529,11 +2529,11 @@
        z=0;   //  no blocks in 3.24
        if(z>0)  //  doing blocks
        {
-         create_timevary(Q_parm_1(parm330_cnt),timevary_setup, timevary_pass, autogen_timevary, f, Block_Design(z), parm_adjust_method, env_data_pass, N_parm_dev, finish_starter);
+         create_timevary(Q_parm_1(parm330_cnt),timevary_setup, timevary_pass, autogen_timevary(timevary_setup(1)), f, Block_Design(z), parm_adjust_method, env_data_pass, N_parm_dev, finish_starter);
        }
        else
        {
-         create_timevary(Q_parm_1(parm330_cnt),timevary_setup, timevary_pass, autogen_timevary, f, block_design_null, parm_adjust_method, env_data_pass, N_parm_dev, finish_starter);
+         create_timevary(Q_parm_1(parm330_cnt),timevary_setup, timevary_pass, autogen_timevary(timevary_setup(1)), f, block_design_null, parm_adjust_method, env_data_pass, N_parm_dev, finish_starter);
        }
   /*
    where:
@@ -3220,11 +3220,11 @@
        z=selparm_1(j,13);    // specified block or trend definition
        if(z>0)  //  doing blocks
        {
-         create_timevary(selparm_1(j),timevary_setup, timevary_pass, autogen_timevary, selparm_fleet(j), Block_Design(z), parm_adjust_method, env_data_pass, N_parm_dev,finish_starter);
+         create_timevary(selparm_1(j),timevary_setup, timevary_pass, autogen_timevary(timevary_setup(1)), selparm_fleet(j), Block_Design(z), parm_adjust_method, env_data_pass, N_parm_dev,finish_starter);
        }
        else
        {
-         create_timevary(selparm_1(j),timevary_setup, timevary_pass, autogen_timevary, selparm_fleet(j), block_design_null, parm_adjust_method, env_data_pass, N_parm_dev,finish_starter);
+         create_timevary(selparm_1(j),timevary_setup, timevary_pass, autogen_timevary(timevary_setup(1)), selparm_fleet(j), block_design_null, parm_adjust_method, env_data_pass, N_parm_dev,finish_starter);
        }
   /*
    where:

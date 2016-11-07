@@ -1804,12 +1804,14 @@ FUNCTION void write_nucontrol()
   report4<<parm_adjust_method<<" #_env/block/dev_adjust_method for all time-vary parms (1=warn relative to base parm bounds; 3=no bound check)"<<endl;
   if(timevary_cnt>0)
   {
-    report4<<"1 ## 0 means to autogenerate time-varying parameters; 1 means to read each time-varying parameter line"<<endl;
+    report4<<"1 1 1 1 1 # autogen"<<endl;
   }
   else
   {
-    report4<<"0 ## 0 means to autogenerate time-varying parameters; 1 means to read each time-varying parameter line"<<endl;
+    report4<<"0 0 0 0 0 # autogen"<<endl;
   }
+  report4<<"# where: 0 = autogen all time-varying parms; 1 = read each time-varying parm line; 2 = read then autogen if min=-12345"<<endl;
+  report4<<"# 1st element for biology, 2nd for SR, 3rd for Q, 5th for selex, 4th reserved"<<endl;
 
   report4<<"#"<<endl<<"# setup for M, growth, maturity, fecundity, recruitment distibution, movement "<<endl;
   report4<<"#"<<endl<<natM_type<<" #_natM_type:_0=1Parm; 1=N_breakpoints;_2=Lorenzen;_3=agespecific;_4=agespec_withseasinterpolate"<<endl;
