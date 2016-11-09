@@ -228,7 +228,7 @@ GLOBALS_SECTION
             tempvec.initialize();
             if(autogen_timevary>=1)  //  read
             {*(ad_comm::global_datafile) >> tempvec(1,7);}
-            if(autogen_timevary==0 || autogen_timevary==2 || (autogen_timevary==3 && tempvec(1)=-12345))  //  create or overwrite
+            if(autogen_timevary==0 || autogen_timevary==2 || (autogen_timevary==3 && tempvec(1)==-12345))  //  create or overwrite
             {
               tempvec.fill("{0,0,0.,0.,0,6,4}");
               tempvec(1)=log(baseparm_list(1)/baseparm_list(3));  //  max negative change
@@ -243,7 +243,7 @@ GLOBALS_SECTION
             tempvec.initialize();
             if(autogen_timevary>=1)  //  read
             {*(ad_comm::global_datafile) >> tempvec(1,7);}
-            if(autogen_timevary==0 || autogen_timevary==2 || (autogen_timevary==3 && tempvec(1)=-12345))  //  create or overwrite
+            if(autogen_timevary==0 || autogen_timevary==2 || (autogen_timevary==3 && tempvec(1)==-12345))  //  create or overwrite
             {
               tempvec.fill("{0,0,0.,0.,0,6,4}");
               tempvec(1)=baseparm_list(1)-baseparm_list(3);  //  max negative change
@@ -258,7 +258,7 @@ GLOBALS_SECTION
             tempvec.initialize();
             if(autogen_timevary>=1)  //  read
             {*(ad_comm::global_datafile) >> tempvec(1,7);}
-            if(autogen_timevary==0 || autogen_timevary==2 || (autogen_timevary==3 && tempvec(1)=-12345))  //  create or overwrite
+            if(autogen_timevary==0 || autogen_timevary==2 || (autogen_timevary==3 && tempvec(1)==-12345))  //  create or overwrite
             {
               for(int s=1;s<=7;s++) tempvec(s)=baseparm_list(s);
               if(finish_starter==999)
@@ -277,7 +277,7 @@ GLOBALS_SECTION
             tempvec.initialize();
             if(autogen_timevary>=1)  //  read
             {*(ad_comm::global_datafile) >> tempvec(1,7);}
-            if(autogen_timevary==0 || autogen_timevary==2 || (autogen_timevary==3 && tempvec(1)=-12345))  //  create or overwrite
+            if(autogen_timevary==0 || autogen_timevary==2 || (autogen_timevary==3 && tempvec(1)==-12345))  //  create or overwrite
             {
               tempvec.fill("{0,0,0.,0.,0,6,4}");
               tempvec(1)=baseparm_list(1)-baseparm_list(3);  //  max negative change
@@ -315,7 +315,7 @@ GLOBALS_SECTION
             tempvec.initialize();
             if(autogen_timevary>=1)  //  read
             {*(ad_comm::global_datafile) >> tempvec(1,7);}
-            if(autogen_timevary==0 || autogen_timevary==2 || (autogen_timevary==3 && tempvec(1)=-12345))  //  create or overwrite
+            if(autogen_timevary==0 || autogen_timevary==2 || (autogen_timevary==3 && tempvec(1)==-12345))  //  create or overwrite
             {
              if(k==1) {tempvec.fill("{-4.0,4.0,0.,0.,0.5,6,4}");}
              if(k==2) {tempvec.fill("{-4.0,4.0,0.,0.,0.5,6,4}");}
@@ -336,7 +336,7 @@ GLOBALS_SECTION
             tempvec.initialize();
             if(autogen_timevary>=1)  //  read
             {*(ad_comm::global_datafile) >> tempvec(1,7);}
-            if(autogen_timevary==0 || autogen_timevary==2 || (autogen_timevary==3 && tempvec(1)=-12345))  //  create or overwrite
+            if(autogen_timevary==0 || autogen_timevary==2 || (autogen_timevary==3 && tempvec(1)==-12345))  //  create or overwrite
             {
              if(k==1) {for(a=1;a<=7;a++) tempvec(a)=baseparm_list(a);}
              if(k==2) {tempvec.fill("{-2.0,2.0,0.,0.,0.5,6,4}");
@@ -358,7 +358,7 @@ GLOBALS_SECTION
             tempvec.initialize();
             if(autogen_timevary>=1)  //  read
             {*(ad_comm::global_datafile) >> tempvec(1,7);}
-            if(autogen_timevary==0 || autogen_timevary==2 || (autogen_timevary==3 && tempvec(1)=-12345))  //  create or overwrite
+            if(autogen_timevary==0 || autogen_timevary==2 || (autogen_timevary==3 && tempvec(1)==-12345))  //  create or overwrite
             {
              if(k==1) {tempvec.fill("{0.0001,0.999,0.,0.,0.5,6,4}");
               tempvec(3)=(baseparm_list(3)-baseparm_list(1))/(baseparm_list(2)-baseparm_list(1)); tempvec(4)=tempvec(3);}
@@ -399,7 +399,7 @@ GLOBALS_SECTION
             tempvec.initialize();
             if(autogen_timevary>=1)  //  read
            {*(ad_comm::global_datafile) >> tempvec(1,7);}
-            if(autogen_timevary==0 || autogen_timevary==2 || (autogen_timevary==3 && tempvec(1)=-12345))  //  create or overwrite
+            if(autogen_timevary==0 || autogen_timevary==2 || (autogen_timevary==3 && tempvec(1)==-12345))  //  create or overwrite
            {tempvec.fill("{-10.,10.0,1.0,1.0,0.5,6,4}");}
            timevary_parm_rd.push_back (tempvec(1,7));
            break;
@@ -413,7 +413,7 @@ GLOBALS_SECTION
             tempvec.initialize();
             if(autogen_timevary>=1)  //  read
            {*(ad_comm::global_datafile) >> tempvec(1,7);}
-            if(autogen_timevary==0 || autogen_timevary==2 || (autogen_timevary==3 && tempvec(1)=-12345))  //  create or overwrite
+            if(autogen_timevary==0 || autogen_timevary==2 || (autogen_timevary==3 && tempvec(1)==-12345))  //  create or overwrite
            {tempvec.fill("{-10.,10.0,1.0,1.0,0.5,6,4}");}
            timevary_parm_rd.push_back (tempvec(1,7));
            break;
@@ -426,7 +426,7 @@ GLOBALS_SECTION
             tempvec.initialize();
             if(autogen_timevary>=1)  //  read
            {*(ad_comm::global_datafile) >> tempvec(1,7);}
-            if(autogen_timevary==0 || autogen_timevary==2 || (autogen_timevary==3 && tempvec(1)=-12345))  //  create or overwrite
+            if(autogen_timevary==0 || autogen_timevary==2 || (autogen_timevary==3 && tempvec(1)==-12345))  //  create or overwrite
            {tempvec.fill("{-0.9,0.9,0.0,0.0,0.5,6,4}");}
            timevary_parm_rd.push_back (tempvec(1,7));
            ParCount++; ParmLabel+=ParmLabel(j)+"_ENV_lgst_slope";
@@ -434,7 +434,7 @@ GLOBALS_SECTION
             tempvec.initialize();
             if(autogen_timevary>=1)  //  read
            {*(ad_comm::global_datafile) >> tempvec(1,7);}
-            if(autogen_timevary==0 || autogen_timevary==2 || (autogen_timevary==3 && tempvec(1)=-12345))  //  create or overwrite
+            if(autogen_timevary==0 || autogen_timevary==2 || (autogen_timevary==3 && tempvec(1)==-12345))  //  create or overwrite
            {tempvec.fill("{-0.9,0.9,0.0,0.0,0.5,6,4}");}
            timevary_parm_rd.push_back (tempvec(1,7));
            break;
@@ -486,7 +486,7 @@ GLOBALS_SECTION
         *(ad_comm::global_datafile) >> tempvec(1,7);
         timevary_setup(12)=baseparm_list(12); //  dev phase
       }
-            if(autogen_timevary==0 || autogen_timevary==2 || (autogen_timevary==3 && tempvec(1)=-12345))  //  create or overwrite
+            if(autogen_timevary==0 || autogen_timevary==2 || (autogen_timevary==3 && tempvec(1)==-12345))  //  create or overwrite
       {
        tempvec.fill("{0.0001,2.0,0.5,0.5,0.5,6,-5}");
        tempvec(3)=baseparm_list(12);  //  set init
@@ -503,7 +503,7 @@ GLOBALS_SECTION
             tempvec2.initialize();
             if(autogen_timevary>=1)  //  read
       {*(ad_comm::global_datafile) >> tempvec2(1,7);}
-            if(autogen_timevary==0 || autogen_timevary==2 || (autogen_timevary==3 && tempvec(1)=-12345))  //  create or overwrite
+            if(autogen_timevary==0 || autogen_timevary==2 || (autogen_timevary==3 && tempvec(1)==-12345))  //  create or overwrite
       {tempvec2.fill("{-0.99,0.99,0.0,0.0,0.5,6,-6}");}
       timevary_parm_rd.push_back (dvector(tempvec2(1,7)));
       echoinput<<"dev vec: "<<timevary_setup(8)<<" with link: "<<timevary_setup(9)<<" min, max year "<<timevary_setup(10,11)<<endl;
