@@ -1230,6 +1230,8 @@ FUNCTION void get_time_series()
 //  Save end year quantities to refresh for forecast after benchmark is called
   recr_dist_endyr=recr_dist;
   natM_endyr=natM;
+  surv1_endyr=surv1;
+  surv2_endyr=surv2;
   
   //  SS_Label_Info_24.14 #End loop of years
 

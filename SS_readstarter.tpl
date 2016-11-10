@@ -289,8 +289,8 @@
   !!  neglog19 = -log(19.);
 
   number NilNumbers           //  used as the minimum for posfun and similar checks
-//  !! NilNumbers = 0.0000001;
-  !! NilNumbers = 0.000;
+  !! NilNumbers = 0.0000001;
+// !!   NilNumbers = 0.000;
 
 !!//  SS_Label_Info_1.2.1 #Set up a dummy datum for use when max phase = 0
   number dummy_datum
