@@ -716,7 +716,7 @@
 
 !!//  SS_Label_Info_4.5.2 #Process biology
    init_int Maturity_Option       // 1=length logistic; 2=age logistic; 3=read age-maturity
-                                  //  6=read length-maturi
+                                  //  4=read age-fecundity;  6=read length-maturity
  LOCAL_CALCS
   echoinput<<Maturity_Option<<"  Maturity_Option"<<endl;
   if(Maturity_Option==3 || Maturity_Option==4)

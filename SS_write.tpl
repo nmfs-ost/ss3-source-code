@@ -1838,13 +1838,15 @@ FUNCTION void write_nucontrol()
 
     report4<<SD_add_to_LAA<<" #_SD_add_to_LAA (set to 0.1 for SS2 V1.x compatibility)"<<endl;   // constant added to SD length-at-age (set to 0.1 for compatibility with SS2 V1.x
     report4<<CV_depvar<<" #_CV_Growth_Pattern:  0 CV=f(LAA); 1 CV=F(A); 2 SD=F(LAA); 3 SD=F(A); 4 logSD=F(A)"<<endl;
-    report4<<Maturity_Option<<" #_maturity_option:  1=length logistic; 2=age logistic; 3=read age-maturity matrix by growth_pattern; 4=read age-fecundity; 5=read fec and wt from wtatage.ss"<<endl;
+    report4<<Maturity_Option<<" #_maturity_option:  1=length logistic; 2=age logistic; 3=read age-maturity matrix by growth_pattern; 4=read age-fecundity; 5=disabled; 6=read length-maturity"<<endl;
     if(Maturity_Option==3)
     {report4<<"#_Age_Maturity by growth pattern"<<endl<<Age_Maturity<<endl;}
     else if(Maturity_Option==4)
     {report4<<"#_Age_Fecundity by growth pattern"<<endl<<Age_Maturity<<endl;}
-    else
-    {report4<<"#_placeholder for empirical age-maturity by growth pattern"<<endl;}
+    else if(Maturity_Option==5)
+    {report4<<"#_Age_Fecundity by growth pattern from wt-at-age.ss now invoked by read bodywt flag"<<endl;}
+    else if(Maturity_Option==6)
+    {report4<<"#_Length_Maturity by growth pattern"<<endl<<Length_Maturity<<endl;}
     report4<<First_Mature_Age<<" #_First_Mature_Age"<<endl;
 
     report4<<Fecund_Option<<" #_fecundity option:(1)eggs=Wt*(a+b*Wt);(2)eggs=a*L^b;(3)eggs=a*Wt^b; (4)eggs=a+b*L; (5)eggs=a+b*W"<<endl;
