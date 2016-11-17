@@ -2554,13 +2554,13 @@
      }
   }
 
-   timevary_parm_cnt_Q=timevary_parm_cnt;
-   echoinput<<" timevary_parm_cnt start and end "<<timevary_parm_start_Q<<" "<<timevary_parm_cnt_Q<<endl;
-   echoinput<<"link to timevary parms:  "<<Qparm_timevary<<endl;
    Q_Npar2 = Q_Npar;
-   if(timevary_parm_cnt_Q>0)
+   if(timevary_parm_start_Q>0)
    {
-       Q_Npar2+=(timevary_parm_cnt_Q-timevary_parm_start_Q+1);
+     timevary_parm_cnt_Q=timevary_parm_cnt;
+     Q_Npar2+=(timevary_parm_cnt_Q-timevary_parm_start_Q+1);
+     echoinput<<"Q  uses timevary parms:  "<<Qparm_timevary<<endl;
+     echoinput<<" Q  timevary_parm_cnt start and end "<<timevary_parm_start_Q<<" "<<timevary_parm_cnt_Q<<endl;
    }
    echoinput<<"Q_Npar and Q_Npar2:  "<<Q_Npar<<" "<<Q_Npar2<<endl;
  END_CALCS
@@ -2613,7 +2613,7 @@
      }
  	  }
  	}
- 	echoinput<<"initial values for all Q_parm: "<<Q_parm_RD<<endl;
+ 	echoinput<<"initial values for all Q_parm: "<<Q_parm_RD<<endl<<"phase: "<<Q_parm_PH<<endl;;
  END_CALCS
 
 !!//  SS_Label_Info_4.9 #Define Selectivity patterns and N parameters needed per pattern
