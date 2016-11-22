@@ -2668,7 +2668,7 @@
   int N_selparm2                 // N selparms plus env links and blocks
   ivector N_selparmvec(1,2*Nfleet)  //  N selparms by type, including extra parms for male selex, retention, etc.
   ivector Maleselparm(1,2*Nfleet)
-  ivector RetainParm(1,Nfleet)
+  ivector RetainParm(1,2*Nfleet)
   ivector dolen(1,Nfleet)
   int blkparm
   int firstselparm
@@ -2748,10 +2748,11 @@
        {RetainParm(f)=0;}  //  no parameters needed
        else
        {
-       RetainParm(f)=N_selparmvec(f)+1;
+//         RetainParm(f1)=N_selparmvec(f)+1;
 //       N_selparmvec(f) +=4*seltype(f,2);          // N retention parms first 4 for retention; next 4 for mortality
        for (j=1;j<=N_ret_parm(seltype(f,2));j++)
        {
+         if(j==1) RetainParm(f)=ParCount-firstselparm+1;
          ParCount++; N_selparmvec(f)++; ParmLabel+="Retain_P"+NumLbl(j)+"_"+fleetname(f)+"("+NumLbl(f)+")";
        }
        // location of where to insert placeholder params
@@ -2870,10 +2871,9 @@
        {RetainParm(f1)=0;}  //  no parameters needed
        else
        {
-         RetainParm(f1)=N_selparmvec(f)+1;
-//         N_selparmvec(f) +=4*seltype(f,2);          // N retention parms first 4 for retention; next 4 for mortality
          for (j=1;j<=N_ret_parm(seltype(f,2));j++)
          {
+           if(j==1) RetainParm(f)=ParCount-firstselparm+1;
            ParCount++; N_selparmvec(f)++; ParmLabel+="Retain_age_P"+NumLbl(j)+"_"+fleetname(f1)+"("+NumLbl(f1)+")";
          }
          if(seltype(f,2)==2 || seltype(f,2)==4)
@@ -2946,6 +2946,44 @@
       }
     }
   }
+  
+//  check on conversion of retention parameter
+  for(f=1;f<=2*Nfleet;f++)
+  {
+    if(RetainParm(f)>0)
+    {
+      k=RetainParm(f)+2;
+      if(selparm_1(k,1) >=0.0)
+        {
+          N_warn++; warning<<"convert asymptotic retention to 1/(1+e(-x)) format"<<endl;
+          warning<<"old min, max, init, prior: "<<selparm_1(k)(1,4)<<endl;
+          selparm_1(k,1)=-10.;
+          selparm_1(k,2)=10.;
+          if(selparm_1(k,3)>0.)
+          {
+            if(selparm_1(k,3)<1.0)
+            {selparm_1(k,3)=-log(1.0/selparm_1(k,3)-1.0);}
+            else
+            {selparm_1(k,3)=999.;}  //  hardwire to force to be 1.0
+          }
+          else
+          {selparm_1(k,3)=-999.;}  //  hardwire to force to 0.0
+
+          if(selparm_1(k,4)>0.)
+          {
+            if(selparm_1(k,4)<1.0)
+            {selparm_1(k,4)=-log(1.0/selparm_1(k,4)-1.0);}
+            else
+            {selparm_1(k,4)=999.;}  //  hardwire to force to be 1.0
+          }
+          else
+          {selparm_1(k,4)=-999.;}  //  hardwire to force to 0.0
+          warning<<"new min, max, init, prior: "<<selparm_1(k)(1,4)<<endl;
+          warning<<"if timevarying, you will need to do conversion manually"<<endl;
+        }
+    }
+  }
+  echoinput<<"end conversion of retention "<<endl;
  END_CALCS
 
   imatrix timevary_makefishsel(styr-3,YrMax,1,Nfleet)

@@ -231,6 +231,9 @@ GLOBALS_SECTION
             if(autogen_timevary==0 || autogen_timevary==2 || (autogen_timevary==3 && tempvec(1)==-12345))  //  create or overwrite
             {
               tempvec.fill("{0,0,0.,0.,0,6,4}");
+              if(baseparm_list(1)<=0.0) 
+              {N_warn++; warning<<" cannot use multiplicative blocks for parameter with a negative lower bound;  exit "<<endl<<
+            baseparm_list(1)<<" "<<baseparm_list(2)<<" "<<baseparm_list(3)<<endl;  cout<<"exit, see warning"<<endl; exit(1);}
               tempvec(1)=log(baseparm_list(1)/baseparm_list(3));  //  max negative change
               tempvec(2)=log(baseparm_list(2)/baseparm_list(3));   //  max positive change
               tempvec(5)=0.5*fmin(abs(tempvec(1)),tempvec(2));   //  sd of normal prior

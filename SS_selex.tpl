@@ -661,8 +661,14 @@ FUNCTION void get_selectivity()
         else
         {
           k=RetainParm(f);
-          temp=1.-sp(k+2);
-          temp1=1.-posfun(temp,0.0,CrashPen);
+          if(sp(k+2)==-999.)
+            {temp1=0.0;}
+          else if (sp(k+2)==999.)
+            {temp1=1.0;}
+          else
+            {temp1=1.0/(1.0+mfexp(-sp(k+2)));}
+//          temp=1.-sp(k+2);
+//          temp1=1.-posfun(temp,0.0,CrashPen);
           retain(y,f)=temp1/(1.+mfexp(-(len_bins_m2-(sp(k)+male_offset*sp(k+3)))/sp(k+1)));  // males are at end of vector, so automatically get done
           if(seltype(f,2)==4)
           {
@@ -1147,8 +1153,16 @@ FUNCTION void get_selectivity()
         else
         {
           k=RetainParm(fs);
-          temp=1.-sp(k+2);
-          temp1=1.-posfun(temp,0.0,CrashPen);
+          if(sp(k+2)==-999.)
+            {temp1=0.0;}
+          else if (sp(k+2)==999.)
+            {temp1=1.0;}
+          else
+            {temp1=1.0/(1.0+mfexp(-sp(k+2)));}
+
+//          temp=1.-sp(k+2);
+//          temp1=1.-posfun(temp,0.0,CrashPen);
+
           retain_a(y,fs,1)=temp1/(1.+mfexp(-(r_ages-(sp(k)))/sp(k+1)));
           if(seltype(f,2)==4)
           {
