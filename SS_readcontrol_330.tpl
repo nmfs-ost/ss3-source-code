@@ -2260,6 +2260,7 @@
 
  LOCAL_CALCS
   echoinput<<" selex types "<<endl<<seltype<<endl;
+  RetainParm.initialize();
 
 //  define number of parameters for each retention type
   N_ret_parm(0)= 0;
@@ -4138,7 +4139,7 @@
         for (s=0;s<=nseas-1;s++)
         {
           junkvec2.initialize();
-          for (t=Bmark_t(1);t<=Bmark_t(2);t+=nseas) {junkvec2+=WTage_emp(t,GP3(g),f);}
+          for (t=Bmark_t(1);t<=Bmark_t(2);t+=nseas) {junkvec2+=WTage_emp(t+s,GP3(g),f);}
           WTage_emp(styr-3*nseas+s,GP3(g),f)=junkvec2/temp;
         }
       }

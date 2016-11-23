@@ -1,4 +1,4 @@
-cd "C:\Users\richard.methot\Documents\SS_model\Test_Model"
+cd "C:\Users\richard.methot\Documents\SS_model\SS_330_exe"
 del ss_fast.exe
 
 cd "C:\Users\richard.methot\Documents\SS_model\Compile"
@@ -18,7 +18,7 @@ call "C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\vcvarsall.bat" x86_
 cl /c /nologo /EHsc /DOPT_LIB /I. /I"c:\ADMB\include" /I"c:\ADMB\contrib\include" /Foss3_3.obj  ss3_3.cpp 
 cl /Fess_fast.exe ss3_3.obj  "c:\ADMB\lib\admb-contribo.lib" "c:\ADMB\lib\admb.lib" /link
 
-copy SS3_3.* "C:\Users\richard.methot\Documents\SS_model\Test_Model"
-copy ss_fast.exe "C:\Users\richard.methot\Documents\SS_model\Test_Model"
-cd "C:\Users\richard.methot\Documents\SS_model\Test_Model"
+copy SS3_3.* "C:\Users\richard.methot\Documents\SS_model\SS_330_exe"
+copy ss_fast.exe "C:\Users\richard.methot\Documents\SS_model\SS_330_exe"
+cd "C:\Users\richard.methot\Documents\SS_model\SS_330_exe"
 dir *.exe

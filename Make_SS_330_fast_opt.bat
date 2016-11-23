@@ -1,4 +1,4 @@
-cd "C:\Users\richard.methot\Documents\SS_model\Test_Model"
+cd "C:\Users\richard.methot\Documents\SS_model\SS_330_exe"
 del ss_opt.exe
 
 cd "C:\Users\richard.methot\Documents\SS_model\Compile"
@@ -19,9 +19,9 @@ REM  For optimize  add /O2
 cl /c /nologo /EHsc /DOPT_LIB /O2 /I. /I"c:\ADMB\include" /I"c:\ADMB\contrib\include" /Foss3_3.obj  ss3_3.cpp 
 cl /Fess_opt.exe ss3_3.obj "c:\ADMB\lib\admb-contribo.lib" "c:\ADMB\lib\admbo.lib" /link
 
-copy SS3_3.* "C:\Users\richard.methot\Documents\SS_model\Test_Model"
-copy ss_opt.exe "C:\Users\richard.methot\Documents\SS_model\Test_Model"
-cd "C:\Users\richard.methot\Documents\SS_model\Test_Model"
+copy SS3_3.* "C:\Users\richard.methot\Documents\SS_model\SS_330_exe"
+copy ss_opt.exe "C:\Users\richard.methot\Documents\SS_model\SS_330_exe"
+cd "C:\Users\richard.methot\Documents\SS_model\SS_330_exe"
 dir *.exe
 
 

@@ -2678,6 +2678,7 @@
 
  LOCAL_CALCS
 //  define number of parameters for each retention type
+  RetainParm.initialize();
   N_ret_parm(0)= 0;
   N_ret_parm(1)= 4; // for asymptotic retention
   N_ret_parm(2)= 4; // for asymptotic retention and 4 param discard mort
@@ -2946,7 +2947,7 @@
       }
     }
   }
-  
+  echoinput<<RetainParm<<endl;
 //  check on conversion of retention parameter
   for(f=1;f<=2*Nfleet;f++)
   {
@@ -4825,7 +4826,7 @@
         for (s=0;s<=nseas-1;s++)
         {
           junkvec2.initialize();
-          for (t=Bmark_t(1);t<=Bmark_t(2);t+=nseas) {junkvec2+=WTage_emp(t,GP3(g),f);}
+          for (t=Bmark_t(1);t<=Bmark_t(2);t+=nseas) {junkvec2+=WTage_emp(t+s,GP3(g),f);}
           WTage_emp(styr-3*nseas+s,GP3(g),f)=junkvec2/temp;
         }
       }

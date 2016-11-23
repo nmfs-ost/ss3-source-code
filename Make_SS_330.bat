@@ -1,4 +1,4 @@
-cd "C:\Users\richard.methot\Documents\SS_model\Test_Model"
+cd "C:\Users\richard.methot\Documents\SS_model\SS_330_exe"
 del ss.exe
 
 cd "C:\Users\richard.methot\Documents\SS_model\Compile"
@@ -19,7 +19,7 @@ cl /c /nologo /EHsc /I. /I"c:\ADMB\include" /I"c:\ADMB\contrib\include" /Foss3_3
 REM cl /Fess.exe ss3_3.obj "c:\ADMB\lib\admb-contrib.lib" /link
 cl /Fess.exe ss3_3.obj "c:\ADMB\lib\admb-contrib.lib" "c:\ADMB\lib\admb.lib" /link
 
-copy SS3_3.* "C:\Users\richard.methot\Documents\SS_model\Test_Model"
-copy ss.exe "C:\Users\richard.methot\Documents\SS_model\Test_Model"
-cd "C:\Users\richard.methot\Documents\SS_model\Test_Model"
+copy SS3_3.* "C:\Users\richard.methot\Documents\SS_model\SS_330_exe"
+copy ss.exe "C:\Users\richard.methot\Documents\SS_model\SS_330_exe"
+cd "C:\Users\richard.methot\Documents\SS_model\SS_330_exe"
 dir *.exe
