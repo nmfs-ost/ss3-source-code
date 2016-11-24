@@ -241,7 +241,7 @@
         <<Settle_age(settle_time)<<" are you sure? "<<endl;
       }
       Settle_seas(settle_time)=k;
-      Settle_seas_offset(settle_time)=Settle_seas(settle_time)-spawn_seas+Settle_age(settle_time)*nseas;  //  number of seasons between spawning and the season in which settlement occurs
+      Settle_seas_offset(settle_time)=Settle_seas(settle_time)-spawn_seas+j*nseas;  //  number of seasons between spawning and the season in which settlement occurs
       Settle_timing_seas(settle_time)-=temp;  //  timing from beginning of this season; needed for mortality calculation
       echoinput<<settle_time<<" / "<<Settle_month(settle_time);
       echoinput<<"  /  "<<Settle_seas(settle_time)<<" / "<<Settle_seas_offset(settle_time)<<" / "

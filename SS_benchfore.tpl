@@ -112,6 +112,7 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
       }
     }
     if(show_MSY==1) report5<<"SR_parm for benchmark: "<<SR_parm_work<<endl<<"for years: "<<Bmark_Yr(9)<<" "<<Bmark_Yr(10)<<endl;
+    if(show_MSY==1) report5<<"Repro_output_by_age: "<<fec(1)<<endl;
     Fishon=0;
     Recr_Bmark=mfexp(SR_parm_work(1));
     Do_Equil_Calc(Recr_Bmark);

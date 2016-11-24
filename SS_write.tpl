@@ -2557,7 +2557,7 @@ FUNCTION void write_bigoutput()
   }
 
 
-  for (j=1;j<=N_SRparm2;j++)
+  for (j=1;j<=N_SRparm3;j++)
   {
     NP++;
     Activ=0;
@@ -2566,7 +2566,7 @@ FUNCTION void write_bigoutput()
       active_count++;
       Activ=1;
     }
-    Report_Parm(NP, active_count, Activ, SR_parm(j), SR_parm_1(j,1), SR_parm_1(j,2), SR_parm_1(j,3), SR_parm_use(j), SR_parm_1(j,4), SR_parm_1(j,5), SR_parm_1(j,6), SR_parm_1(j,7), SR_parm_Like(j));
+    Report_Parm(NP, active_count, Activ, SR_parm(j), SR_parm_LO(j), SR_parm_HI(j), SR_parm_RD(j), SR_parm_use(j), SR_parm_PR(j), SR_parm_CV(j), SR_parm_PRtype(j), SR_parm_PH(j), SR_parm_Like(j));
   }
 
   if(recdev_cycle>0)

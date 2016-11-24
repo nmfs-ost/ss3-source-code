@@ -1195,6 +1195,18 @@ FUNCTION void get_time_series()
           }
         }  //  end s==nseas
       }
+        if(save_for_report==2) 
+        {
+          for(g=1;g<=gmorph;g++)
+          {
+            if(ishadow(GP2(g))==0)
+              {
+          if(s==spawn_seas) bodywtout<<y<<" "<<s<<" "<<sx(g)<<" "<<GP4(g)<<" "<<Bseas(g)<<" "<<-2<<" "<<fec(g)<<" #fecundity "<<endl;
+          bodywtout<<y<<" "<<s<<" "<<gg<<" "<<GP4(g)<<" "<<Bseas(g)<<" "<<0<<" "<<Wt_Age_beg(s,g)<<" #popwt_beg "<<endl;
+          bodywtout<<y<<" "<<s<<" "<<gg<<" "<<GP4(g)<<" "<<Bseas(g)<<" "<<-1<<" "<<Wt_Age_mid(s,g)<<" #popwt_mid "<<endl;
+              }
+          }
+        }
     } //close season loop
   //  SS_Label_Info_24.12 #End loop of seasons
 
