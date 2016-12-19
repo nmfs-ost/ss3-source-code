@@ -1907,13 +1907,13 @@ FUNCTION void write_nucontrol()
    report4<<"#_Spawner-Recruitment"<<endl<<SR_fxn<<" #_SR_function: 2=Ricker; 3=std_B-H; 4=SCAA; 5=Hockey; 6=B-H_flattop; 7=survival_3Parm; 8=Shepard_3Parm"<<endl;
    report4<<init_equ_steepness<<"  # 0/1 to use steepness in initial equ recruitment calculation"<<endl;
    report4<<sigmaR_dendep<<"  #  future feature:  0/1 to make realized sigmaR a function of SR curvature"<<endl;
-   report4<<"#_         LO           HI         INIT        PRIOR        PR_SD      PR_type     PHASE   env-var   use_dev  dev_mnyr  dev_mxyr    dev_PH     Block   Blk_Fxn #  parm_name"<<endl;
+   report4<<"#_          LO            HI          INIT         PRIOR         PR_SD       PR_type      PHASE    env-var    use_dev   dev_mnyr   dev_mxyr     dev_PH      Block    Blk_Fxn #  parm_name"<<endl;
    report4.unsetf(std::ios_base::fixed); report4.unsetf(std::ios_base::floatfield);
    for (f=1;f<=N_SRparm2;f++)
    { NP++;
      SR_parm_1(f,3)=value(SR_parm(f));
-      for(j=1;j<=6;j++) report4<<setw(13)<<SR_parm_1(f,j);
-      for(j=7;j<=14;j++) report4<<setw(10)<<SR_parm_1(f,j);
+      for(j=1;j<=6;j++) report4<<setw(14)<<SR_parm_1(f,j);
+      for(j=7;j<=14;j++) report4<<setw(11)<<SR_parm_1(f,j);
       report4<<" # "<<ParmLabel(NP)<<endl;
    }
    report4.unsetf(std::ios_base::fixed); report4.unsetf(std::ios_base::floatfield);
@@ -2082,13 +2082,13 @@ FUNCTION void write_nucontrol()
 //  1  simple q, 1 parm
 //  2  mirror simple q, 1 mirrored parameter
 //  3  q and power, 2 parm   " # Q_type options:  <0=mirror, 0=float_nobiasadj, 1=float_biasadj, 2=parm_nobiasadj, 3=parm_w_random_dev, 4=parm_w_randwalk, 5=mean_unbiased_float_assign_to_parm"<<endl;
-   report4<<"#_    fleet       link  link_info   extra_se    biasadj      float  #  fleetname"<<endl;
+   report4<<"#_   fleet      link link_info  extra_se   biasadj     float  #  fleetname"<<endl;
    for (f=1;f<=Nfleet;f++)
    {
      if(Svy_N_fleet(f)>0)
      	{
-     		report4<<" "<<setw(10)<<f;
-     	  for(j=1;j<=5;j++) report4<<setw(11)<<Q_setup(f,j);
+     		report4<<" "<<setw(9)<<f;
+     	  for(j=1;j<=5;j++) report4<<setw(10)<<Q_setup(f,j);
      	  report4<<"  #  "<<fleetname(f)<<endl;
       }
    }
@@ -2097,14 +2097,14 @@ FUNCTION void write_nucontrol()
    report4<<"#_Q_parms(if_any);Qunits_are_ln(q)"<<endl;
    if(Q_Npar>0)
    {
-   report4<<"#_         LO           HI         INIT        PRIOR        PR_SD      PR_type     PHASE   env-var   use_dev  dev_mnyr  dev_mxyr    dev_PH     Block   Blk_Fxn  #  parm_name"<<endl;
+   report4<<"#_          LO            HI          INIT         PRIOR         PR_SD       PR_type      PHASE    env-var    use_dev   dev_mnyr   dev_mxyr     dev_PH      Block    Blk_Fxn  #  parm_name"<<endl;
    report4.unsetf(std::ios_base::fixed); report4.unsetf(std::ios_base::floatfield);
     for (f=1;f<=Q_Npar;f++)
     {
       NP++;
       Q_parm_1(f,3)=value(Q_parm(f));
-      for(j=1;j<=6;j++) report4<<setw(13)<<Q_parm_1(f,j);
-      for(j=7;j<=14;j++) report4<<setw(10)<<Q_parm_1(f,j);
+      for(j=1;j<=6;j++) report4<<setw(14)<<Q_parm_1(f,j);
+      for(j=7;j<=14;j++) report4<<setw(11)<<Q_parm_1(f,j);
       report4<<"  #  "<<ParmLabel(NP)<<endl;
     }
     report4.unsetf(std::ios_base::fixed); report4.unsetf(std::ios_base::floatfield);
@@ -2112,12 +2112,12 @@ FUNCTION void write_nucontrol()
       if(timevary_parm_cnt_Q>timevary_parm_start_Q)
       {
         report4<<"# timevary Q parameters "<<endl;
-        report4<<"#_         LO           HI         INIT        PRIOR        PR_SD      PR_type    PHASE  #  parm_name"<<endl;
+        report4<<"#_          LO            HI          INIT         PRIOR         PR_SD       PR_type     PHASE  #  parm_name"<<endl;
         for (f=timevary_parm_start_Q;f<=timevary_parm_cnt_Q;f++)
         {
           NP++;
             timevary_parm_rd[f](3)=value(timevary_parm(f));
-            for(j=1;j<=6;j++) report4<<setw(13)<<timevary_parm_rd[f](j);
+            for(j=1;j<=6;j++) report4<<setw(14)<<timevary_parm_rd[f](j);
           report4<<"      "<<timevary_parm_rd[f](7)<<"  # "<<ParmLabel(NP)<<endl;
         }
         report4<<"# info on dev vectors created for Q parms are reported with other devs after tag parameter section "<<endl;
@@ -2139,7 +2139,7 @@ FUNCTION void write_nucontrol()
    for (f=1;f<=Nfleet;f++) report4<<seltype(f+Nfleet)<<" # "<<f<<" "<<fleetname(f)<<endl;
    report4<<"#"<<endl;
 
-   report4<<"#_         LO           HI         INIT        PRIOR        PR_SD      PR_type     PHASE   env-var   use_dev  dev_mnyr  dev_mxyr    dev_PH     Block   Blk_Fxn  #  parm_name"<<endl;
+   report4<<"#_          LO            HI          INIT         PRIOR         PR_SD       PR_type      PHASE    env-var    use_dev   dev_mnyr   dev_mxyr     dev_PH      Block    Blk_Fxn  #  parm_name"<<endl;
 
    // set back to default configuration for output
    report4.unsetf(std::ios_base::fixed); report4.unsetf(std::ios_base::floatfield);
@@ -2150,19 +2150,19 @@ FUNCTION void write_nucontrol()
       {
         NP++;
         selparm_1(f)(3)=value(selparm(f));
-        for(j=1;j<=6;j++) report4<<setw(13)<<selparm_1(f,j);
-        for(j=7;j<=14;j++) report4<<setw(10)<<selparm_1(f,j);
+        for(j=1;j<=6;j++) report4<<setw(14)<<selparm_1(f,j);
+        for(j=7;j<=14;j++) report4<<setw(11)<<selparm_1(f,j);
         report4<<"  #  "<<ParmLabel(NP)<<endl;
       }
   if(timevary_parm_cnt_sel>timevary_parm_start_sel)
   {
     report4<<"# timevary selex parameters "<<endl;
-    report4<<"#_         LO           HI         INIT        PRIOR        PR_SD      PR_type   PHASE  #  parm_name"<<endl;
+    report4<<"#_          LO            HI          INIT         PRIOR         PR_SD       PR_type    PHASE  #  parm_name"<<endl;
     for (f=timevary_parm_start_sel;f<=timevary_parm_cnt_sel;f++)
     {
       NP++;
         timevary_parm_rd[f](3)=value(timevary_parm(f));
-        for(j=1;j<=6;j++) report4<<setw(13)<<timevary_parm_rd[f](j);
+        for(j=1;j<=6;j++) report4<<setw(14)<<timevary_parm_rd[f](j);
       report4<<"      "<<timevary_parm_rd[f](7)<<"  # "<<ParmLabel(NP)<<endl;
     }
     report4<<"# info on dev vectors created for selex parms are reported with other devs after tag parameter section "<<endl;
