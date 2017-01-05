@@ -2480,7 +2480,8 @@
   for(f=1;f<=Nfleet;f++)
   if(Svy_N_fleet(f)>0)
   {
-    if(Q_setup_324(f,2)!=0 || Q_setup_324(f,1)>0 ||  Q_setup_324(f,4)==3 || Q_setup_324(f,4)==4)  //  some kind of time-vary
+    // if(Q_setup_324(f,2)!=0 || Q_setup_324(f,1)>0 ||  Q_setup_324(f,4)==3 || Q_setup_324(f,4)==4)  //  some kind of time-vary
+    if(Q_setup_324(f,2)!=0 || Q_setup_324(f,4)==3 || Q_setup_324(f,4)==4)  //  some kind of time-vary
     {
        ivector timevary_setup(1,13);  //  temporary vector for timevary specs
        timevary_setup.initialize();
@@ -3331,8 +3332,11 @@
      }
    }
 
-   timevary_parm_cnt_sel=timevary_parm_cnt;
-   echoinput<<" timevary_selparm_cnt start "<<timevary_parm_start_sel<<" and end "<<timevary_parm_cnt_sel<<endl;
+   if (timevary_parm_start_sel > 0)
+   {
+     timevary_parm_cnt_sel=timevary_parm_cnt;
+     echoinput<<" timevary_selparm_cnt start "<<timevary_parm_start_sel<<" and end "<<timevary_parm_cnt_sel<<endl;
+   }
    timevary_setup.initialize();
    timevary_setup(3)=timevary_parm_cnt+1;
    timevary_def.push_back (timevary_setup(1,13));  //  one past last one used
