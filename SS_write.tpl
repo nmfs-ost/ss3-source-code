@@ -2154,7 +2154,7 @@ FUNCTION void write_nucontrol()
         for(j=7;j<=14;j++) report4<<setw(11)<<selparm_1(f,j);
         report4<<"  #  "<<ParmLabel(NP)<<endl;
       }
-  if(timevary_parm_cnt_sel>timevary_parm_start_sel)
+  if(timevary_parm_start_sel > 0)
   {
     report4<<"# timevary selex parameters "<<endl;
     report4<<"#_          LO            HI          INIT         PRIOR         PR_SD       PR_type    PHASE  #  parm_name"<<endl;
