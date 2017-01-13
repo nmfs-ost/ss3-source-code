@@ -502,7 +502,7 @@
   }
  END_CALCS
 
-   init_int parm_adjust_method 
+   init_int parm_adjust_method
    !! echoinput<<parm_adjust_method<<"  timevarying parameter constraint method"<<endl;
    init_ivector autogen_timevary(1,5);  //  0 means to autogenerate time-vary parameters; 1 means to read
                                        //  first element for biology, 2nd for SRR; 3rd for Q; 4th for tag; 5th for selex
@@ -2709,7 +2709,7 @@
     selparm_PH(f)=selparm_1(f,7);
    }
    j=N_selparm;
-   if(timevary_parm_cnt_sel>timevary_parm_start_sel)
+   if(timevary_parm_start_sel>0)
    {
      echoinput<<"finish setup for timevary sel parms "<<N_selparm<<" "<<timevary_parm_start_sel<<" "<<timevary_parm_cnt_sel<<endl;
      for (f=timevary_parm_start_sel;f<=timevary_parm_cnt_sel;f++)
