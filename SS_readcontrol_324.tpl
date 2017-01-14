@@ -2930,6 +2930,9 @@
   init_matrix selparm_1(1,N_selparm,1,14)
   ivector selparm_fleet(1,N_selparm) // holds the fleet ID for each selparm
                                   //  equivalent to the mgp_type() for MGparms
+  number new_upper_bound;
+  number new_lower_bound;
+
  LOCAL_CALCS
   echoinput<<" selex base parameters "<<endl;
   for (g=1;g<=N_selparm;g++)
@@ -2959,9 +2962,20 @@
         {
           N_warn++; warning<<"convert asymptotic retention to 1/(1+e(-x)) format"<<endl;
           warning<<"old min, max, init, prior: "<<selparm_1(k)(1,4)<<endl;
-          selparm_1(k,1)=-10.;
-          selparm_1(k,2)=10.;
-          if(selparm_1(k,3)>0.)
+
+          new_lower_bound=-10.;
+          new_upper_bound=10.;
+
+          // check initial value against lower and upper bounds first
+          if (selparm_1(k,3) <= selparm_1(k,1))
+          {
+            selparm_1(k,3) = new_lower_bound;
+          }
+          else if (selparm_1(k,3) >= selparm_1(k,2))
+          {
+            selparm_1(k,3) = new_upper_bound;
+          }
+          else if(selparm_1(k,3)>0.)
           {
             if(selparm_1(k,3)<1.0)
             {selparm_1(k,3)=-log(1.0/selparm_1(k,3)-1.0);}
@@ -2971,7 +2985,16 @@
           else
           {selparm_1(k,3)=-999.;}  //  hardwire to force to 0.0
 
-          if(selparm_1(k,4)>0.)
+          // check prior value against lower and upper bounds first
+          if (selparm_1(k,4) <= selparm_1(k,1))
+          {
+            selparm_1(k,4) = new_lower_bound;
+          }
+          else if (selparm_1(k,4) >= selparm_1(k,2))
+          {
+            selparm_1(k,4) = new_upper_bound;
+          }
+          else if(selparm_1(k,4)>0.)
           {
             if(selparm_1(k,4)<1.0)
             {selparm_1(k,4)=-log(1.0/selparm_1(k,4)-1.0);}
@@ -2980,6 +3003,10 @@
           }
           else
           {selparm_1(k,4)=-999.;}  //  hardwire to force to 0.0
+
+          selparm_1(k,1)=new_lower_bound;
+          selparm_1(k,2)=new_upper_bound;
+
           warning<<"new min, max, init, prior: "<<selparm_1(k)(1,4)<<endl;
           warning<<"if timevarying, you will need to do conversion manually"<<endl;
         }
