@@ -961,8 +961,8 @@
     echoinput<<"#_addtocomp:  after accumulation of tails; this value added to all bins"<<endl;
     echoinput<<"#_males and females treated as combined gender below this bin number "<<endl;
     echoinput<<"#_compressbins: accumulate upper tail by this number of bins; acts simultaneous with mintailcomp; set=0 for no forced accumulation"<<endl;
-    echoinput<<"#_Comp_Error:  0=multinomial, 1=dirichlet"<<endl;
-    echoinput<<"#_Comp_ERR-2:  index of parameter to use"<<endl;
+    echoinput<<"#_Comp_Error:  0=multinomial, 1=Dirichlet"<<endl;
+    echoinput<<"#_Comp_ERR-2:  index of Dirichlet parameter to use"<<endl;
     for (f=1;f<=Nfleet;f++)
     {
     *(ad_comm::global_datafile) >> min_tail_L(f);
@@ -2991,7 +2991,7 @@
   Fcast_MaxAreaCatch.initialize();
   Allocation_Fleet_Assignments.initialize();
   Fcast_Catch_Allocation.initialize();
-  
+
   if(Do_Forecast>0)
   {
     if(Fcast_RelF_Basis==2)

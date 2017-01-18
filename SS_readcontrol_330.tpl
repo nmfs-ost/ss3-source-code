@@ -5,7 +5,7 @@
 // /*  SS_Label_Flow  begin reading from control file */
   ad_comm::change_datafile_name(ctlfilename);
   echoinput<<endl<<" Begin reading control file "<<endl;
-  cout<<" reading from control  file"<<endl;
+  cout<<" reading from control file"<<endl;
   ifstream Control_Stream(ctlfilename);   //  even if the global_datafile name is used, there still is a different logical device created
 
 //  SS_Label_Info_4.1 #Read and store comments at top of control file
@@ -2571,10 +2571,21 @@
   }
   if(Comp_Err_ParmCount>0)
   {
-    for(g=1;g<=Comp_Err_ParmCount;g++)
-    {
-      j++; selparm_fleet(j)=0;
-    }
+   for (f = 1; f <= Nfleet; f++)
+   {
+      // if Dirichlet was indicated, set fleet for this parameter
+      if (Comp_Err_L(f) == 1 && Comp_Err_L2(f) > 0)
+      {
+        j = Comp_Err_Parm_Start + Comp_Err_L2(f);
+        selparm_fleet(j)=f;
+      }
+
+      if (Comp_Err_A(f) == 1 && Comp_Err_A2(f) > 0)
+      {
+        j = Comp_Err_Parm_Start + Comp_Err_A2(f);
+        selparm_fleet(j)=f;
+      }
+   }
   }
  END_CALCS
 
