@@ -2109,7 +2109,7 @@ FUNCTION void write_nucontrol()
     }
     report4.unsetf(std::ios_base::fixed); report4.unsetf(std::ios_base::floatfield);
 
-      if(timevary_parm_cnt_Q>timevary_parm_start_Q)
+      if(timevary_parm_start_Q>0)
       {
         report4<<"# timevary Q parameters "<<endl;
         report4<<"#_          LO            HI          INIT         PRIOR         PR_SD       PR_type     PHASE  #  parm_name"<<endl;
