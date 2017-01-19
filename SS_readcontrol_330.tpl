@@ -285,6 +285,10 @@
   ivector settle_g(1,gmorph)   //  settlement pattern for each platoon
 
  LOCAL_CALCS
+
+  ALK_range_g_lo=1;
+  ALK_range_g_hi=nlength;
+  
   use_morph.initialize();
   TG_use_morph.initialize();
    for (gp=1;gp<=N_GP*gender;gp++)
