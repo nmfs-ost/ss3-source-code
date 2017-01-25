@@ -202,12 +202,14 @@ PROCEDURE_SECTION
         else  // Fcast_RelF_Basis==2 so set to values that were read
         {
           temp=0.0;
-          for (f=1;f<=Nfleet;f++)
+          for (f=1;f<=Nfleet1;f++)
           for (s=1;s<=nseas;s++)
           {
             temp+=Fcast_RelF_Input(s,f);
+            Fcast_RelF_Use(s,f) = Fcast_RelF_Input(s,f);
           }
-          Fcast_RelF_Use=Fcast_RelF_Input/temp;
+          // Fcast_RelF_Use=Fcast_RelF_Input/temp;
+          Fcast_RelF_Use /= temp;
           Fcurr_Fmult=temp;
         }
       }  //  end being in a phase for these calcs
