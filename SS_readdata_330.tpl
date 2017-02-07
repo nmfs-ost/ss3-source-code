@@ -509,7 +509,7 @@
       y= Svy_data[i](1);
       f=abs( Svy_data[i](3));
 
-      if(y>=styr && y<=endyr)
+      if(y>=styr && y<=retro_yr)
       {
         timing_input(1,3)=Svy_data[i](1,3);  //  function will return: data_timing, ALK_time, real_month, use_midseas
 //  call a global function to calculate data timing and create various indexes
