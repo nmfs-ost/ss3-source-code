@@ -3832,7 +3832,7 @@ FUNCTION void write_bigoutput()
       else
       {SS2out<<" _ "<<endl;}
       }
-   SS2out<<endl<<"Age_Comp_Fit_Summary"<<endl<<
+   SS2out<<endl<<"Age_Comp_Fit_Summary"<<endl;
    SS2out<<endl<<"Fleet N Npos mean_effN mean(inputN*Adj) HarMean(effN) Mean(effN/inputN) MeaneffN/MeaninputN Var_Adj"<<endl;
    for(f=1;f<=Nfleet;f++)
    {
@@ -3891,7 +3891,7 @@ FUNCTION void write_bigoutput()
           SS2out<<f<<" "<<y<<" "<<s<<" "<<k<<" "<<gg<<" "<<p<<" "<<SzFreq_sampleN(iobs)<<" "<<SzFreq_effN(iobs)<<" "<<SzFreq_eachlike(iobs)<<endl;
         }
       }
-      SS2out<<endl<<"Size_Comp_Fit_Summary"<<endl<<
+      SS2out<<endl<<"Size_Comp_Fit_Summary"<<endl;
       SS2out<<endl<<"Fleet N Npos mean_effN mean(inputN*Adj) HarMean(effN) Mean(effN/inputN) MeaneffN/MeaninputN Var_Adj"<<endl;
       for (f=1;f<=Nfleet;f++)
       {
