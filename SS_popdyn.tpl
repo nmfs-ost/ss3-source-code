@@ -923,7 +923,7 @@ FUNCTION void get_time_series()
           if(use_morph(g)>0)
           {Z_rate(t,p,g)=natM(s,GP3(g));}
         }
-   } //close area loop
+      } //close area loop
 
   //  SS_Label_Info_24.3.4 #Compute spawning biomass if occurs after start of current season
 //  SPAWN-RECR:   calc spawn biomass in time series if after beginning of the season
@@ -1000,74 +1000,49 @@ FUNCTION void get_time_series()
       }
 
   //  SS_Label_Info_24.6 #Survival to next season
-  for (p=1;p<=pop;p++)
-  {
-        if(s==nseas) {k=1;} else {k=0;}   //      advance age or not
-        for (g=1;g<=gmorph;g++)
-        if(use_morph(g)>0)
-        {
-            settle=settle_g(g);
+      for (p=1;p<=pop;p++)
+      {
+            if(s==nseas) {k=1;} else {k=0;}   //      advance age or not
+            for (g=1;g<=gmorph;g++)
+            if(use_morph(g)>0)
+            {
+                settle=settle_g(g);
 
- /*
-          if(F_Method==1)  // pope's
-          {
-              if(s<nseas) natage(t+1,p,g,0) = natage(t,p,g,0)*surv2(s,GP3(g),0) -catage_tot(g,0)*surv1(s,GP3(g),0);  // advance age zero within year
-
-              for (a=0;a<nages;a++)
               {
-                natage(t+1,p,g,a) = natage(t,p,g,a-k)*surv2(s,GP3(g),a-k) -catage_tot(g,a-k)*surv1(s,GP3(g),a-k);
-//                Z_rate(t,p,g,a)=-log(natage(t+1,p,g,a)/natage(t,p,g,a-k))/seasdur(s);
+                j=Settle_age(settle);
+                if(s<nseas && Settle_seas(settle)<=s)
+                  {
+                    natage(t+1,p,g,j) = natage(t,p,g,j)*mfexp(-Z_rate(t,p,g,j)*seasdur(s));  // advance new recruits within year
+                  }
+                for (a=j+1;a<nages;a++) {
+                  natage(t+1,p,g,a) = natage(t,p,g,a-k)*mfexp(-Z_rate(t,p,g,a-k)*seasdur(s));
+                  }
+                natage(t+1,p,g,nages) = natage(t,p,g,nages)*mfexp(-Z_rate(t,p,g,nages)*seasdur(s));   // plus group
+                if(s==nseas) natage(t+1,p,g,nages) += natage(t,p,g,nages-1)*mfexp(-Z_rate(t,p,g,nages-1)*seasdur(s));
+                  if(save_for_report==1)
+                  {
+                    j=p+pop;
+                    for (a=0;a<=nages;a++)
+                    {
+                      Save_PopLen(t,j,g)+=value(natage(t,p,g,a)*mfexp(-Z_rate(t,p,g,a)*0.5*seasdur(s)))*value(ALK(ALK_idx,g,a));
+                      Save_PopWt(t,j,g)+= value(natage(t,p,g,a)*mfexp(-Z_rate(t,p,g,a)*0.5*seasdur(s)))*value(elem_prod(ALK(ALK_idx,g,a),wt_len(s,GP(g))));
+                      Save_PopAge(t,j,g,a)=value(natage(t,p,g,a)*mfexp(-Z_rate(t,p,g,a)*0.5*seasdur(s)));
+                      Save_PopBio(t,j,g,a)=value(natage(t,p,g,a)*mfexp(-Z_rate(t,p,g,a)*0.5*seasdur(s)))*value(Wt_Age_mid(s,g,a));
+                    } // close age loop
+                  }
               }
-              natage(t+1,p,g,nages) = natage(t,p,g,nages)*surv2(s,GP3(g),nages) - catage_tot(g,nages)*surv1(s,GP3(g),nages);   // plus group
-//              Z_rate(t,p,g,nages)=-log( natage(t+1,p,g,nages)/natage(t,p,g,nages))/seasdur(s);
-              if(s==nseas) natage(t+1,p,g,nages) += natage(t,p,g,nages-1)*surv2(s,GP3(g),nages-1) - catage_tot(g,nages-1)*surv1(s,GP3(g),nages-1);
-              if(save_for_report==1)
+              if(docheckup==1)
               {
-                j=p+pop;
-                for (a=0;a<=nages;a++)
-                {
-                  Save_PopLen(t,j,g)+=value(Nmid(g,a)-0.5*catage_tot(g,a))*value(ALK(ALK_idx,g,a));
-                  Save_PopWt(t,j,g)+= value(Nmid(g,a)-0.5*catage_tot(g,a))*value(elem_prod(ALK(ALK_idx,g,a),wt_len(s,sx(g))));
-                  Save_PopAge(t,j,g,a)=value(Nmid(g,a)-0.5*catage_tot(g,a));
-                } // close age loop
+                echoinput<<g<<" natM:   "<<natM(s,GP3(g))(0,min(6,nages))<<endl;
+                echoinput<<g<<" Z:      "<<Z_rate(t,p,g)(0,min(6,nages))<<endl;
+                echoinput<<g<<" N_surv: "<<natage(t+1,p,g)(0,min(6,nages))<<endl;
               }
-          }
-          else   // continuous F
- */
-          {
-            j=Settle_age(settle);
-            if(s<nseas && Settle_seas(settle)<=s)
-              {
-                natage(t+1,p,g,j) = natage(t,p,g,j)*mfexp(-Z_rate(t,p,g,j)*seasdur(s));  // advance new recruits within year
-              }
-            for (a=j+1;a<nages;a++) {
-              natage(t+1,p,g,a) = natage(t,p,g,a-k)*mfexp(-Z_rate(t,p,g,a-k)*seasdur(s));
-              }
-            natage(t+1,p,g,nages) = natage(t,p,g,nages)*mfexp(-Z_rate(t,p,g,nages)*seasdur(s));   // plus group
-            if(s==nseas) natage(t+1,p,g,nages) += natage(t,p,g,nages-1)*mfexp(-Z_rate(t,p,g,nages-1)*seasdur(s));
-              if(save_for_report==1)
-              {
-                j=p+pop;
-                for (a=0;a<=nages;a++)
-                {
-                  Save_PopLen(t,j,g)+=value(natage(t,p,g,a)*mfexp(-Z_rate(t,p,g,a)*0.5*seasdur(s)))*value(ALK(ALK_idx,g,a));
-                  Save_PopWt(t,j,g)+= value(natage(t,p,g,a)*mfexp(-Z_rate(t,p,g,a)*0.5*seasdur(s)))*value(elem_prod(ALK(ALK_idx,g,a),wt_len(s,GP(g))));
-                  Save_PopAge(t,j,g,a)=value(natage(t,p,g,a)*mfexp(-Z_rate(t,p,g,a)*0.5*seasdur(s)));
-                  Save_PopBio(t,j,g,a)=value(natage(t,p,g,a)*mfexp(-Z_rate(t,p,g,a)*0.5*seasdur(s)))*value(Wt_Age_mid(s,g,a));
-                } // close age loop
-              }
-          }
-          if(docheckup==1)
-          {
-            echoinput<<g<<" natM:   "<<natM(s,GP3(g))(0,min(6,nages))<<endl;
-            echoinput<<g<<" Z:      "<<Z_rate(t,p,g)(0,min(6,nages))<<endl;
-            echoinput<<g<<" N_surv: "<<natage(t+1,p,g)(0,min(6,nages))<<endl;
-          }
-        } // close gmorph loop
-  }
+            } // close gmorph loop
+      }
 
   //  SS_Label_Info_24.7  #call to Get_expected_values
     Get_expected_values();
+
   //  SS_Label_Info_24.8  #hermaphroditism
       if(Hermaphro_Option!=0)
       {

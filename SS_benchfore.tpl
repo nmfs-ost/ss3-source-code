@@ -1402,6 +1402,7 @@ FUNCTION void Get_Forecast()
 
               }  // close fishery
 
+//  calculate survival within area within season
               for (g=1;g<=gmorph;g++)
               if(use_morph(g)>0)
               {
@@ -1423,107 +1424,8 @@ FUNCTION void Get_Forecast()
               }  // end morph loop
             }  // end continuous F
 
-
-  //  SS_Label_Info_24.3.4 #Compute spawning biomass if occurs after start of current season
-//  SPAWN-RECR:   calc spawn biomass in time series if after beginning of the season
-      if(s==spawn_seas && spawn_time_seas>=0.0001)    //  compute spawning biomass
-      {
-        SPB_pop_gp(y).initialize();
-        for (p=1;p<=pop;p++)
-        {
-          for (g=1;g<=gmorph;g++)
-          if(sx(g)==1 && use_morph(g)>0)     //  female
-          {
-            SPB_pop_gp(y,p,GP4(g)) += fec(g)*elem_prod(natage(t,p,g),mfexp(-Z_rate(t,p,g)*spawn_time_seas));   // accumulates SSB by area and by growthpattern
-            SPB_B_yr(y) += make_mature_bio(GP4(g))*elem_prod(natage(t,p,g),mfexp(-Z_rate(t,p,g)*spawn_time_seas));
-            SPB_N_yr(y) += make_mature_numbers(GP4(g))*elem_prod(natage(t,p,g),mfexp(-Z_rate(t,p,g)*spawn_time_seas));
-          }
-        }
-        SPB_current=sum(SPB_pop_gp(y));
-        SPB_yr(y)=SPB_current;
-
-        if(Hermaphro_Option!=0)  // get male biomass
-        {
-          MaleSPB(y).initialize();
-          for (p=1;p<=pop;p++)
-          {
-            for (g=1;g<=gmorph;g++)
-            if(sx(g)==2 && use_morph(g)>0)     //  male; all assumed to be mature
-            {
-              MaleSPB(y,p,GP4(g)) += Save_Wt_Age(t,g)*elem_prod(natage(t,p,g),mfexp(-Z_rate(t,p,g)*spawn_time_seas));   // accumulates SSB by area and by growthpattern
-            }
-          }
-          if(Hermaphro_maleSPB==1) // add MaleSPB to female SSB
-          {
-            SPB_current+=sum(MaleSPB(y));
-            SPB_yr(y)=SPB_current;
-          }
-        }
-  //  SS_Label_Info_24.3.4.1 #Get recruitment from this spawning biomass
-//  SPAWN-RECR:   calc recruitment in time series; need to make this area-specififc
-      if(SR_parm_timevary(1)==0)  //  R0 is not time-varying
-      {R0_use=Recr_virgin; SPB_use=SPB_virgin;}
-      else
-      {
-        R0_use=mfexp(SR_parm_work(1));
-        equ_Recr=R0_use;
-        Fishon=0;
-        eq_yr=y;
-        bio_yr=y;
-        Do_Equil_Calc(equ_Recr);                      //  call function to do equilibrium calculation
-        if(fishery_on_off==1) {Fishon=1;} else {Fishon=0;}
-        SPB_use=SPB_equil;
-      }
-
-        Recruits=Spawn_Recr(SPB_use,R0_use,SPB_current);  // calls to function Spawn_Recr
-// distribute Recruitment of age 0 fish among the current and future settlements; and among areas and morphs
-//  note that because SPB_current is calculated at end of season to take into account Z,
-//  this means that recruitment cannot occur until a subsequent season
-//  SPAWN-RECR:   distribute recruits among areas, settlements, morphs
-          for (g=1;g<=gmorph;g++)
-          if(use_morph(g)>0)
-          {
-            settle=settle_g(g);
-            for (p=1;p<=pop;p++)
-            {
-              if(y==styr) natage(t+Settle_seas_offset(settle),p,g,Settle_age(settle))=0.0;  //  to negate the additive code
-
-              natage(t+Settle_seas_offset(settle),p,g,Settle_age(settle)) += Recruits*recr_dist(GP(g),settle,p)*platoon_distr(GP2(g))*
-               mfexp(natM(s,GP3(g),Settle_age(settle))*Settle_timing_seas(settle));
-            }
-          }
-      }
-
 //  SS_Label_106  call to Get_expected_values
 //            Get_expected_values();
-
-            if(Hermaphro_Option!=0)  //hermaphroditism
-            {
-              if(Hermaphro_seas==-1 || Hermaphro_seas==s)
-              {
-                k=gmorph/2;
-                for (g=1;g<=k;g++)  //  loop females
-                if(use_morph(g)>0)
-                {
-                  if(Hermaphro_Option==1)
-                  {
-                    for (a=1;a<nages;a++)
-                    {
-                      natage(t+1,p,g+k,a) += natage(t+1,p,g,a)*Hermaphro_val(GP4(g),a-1); // increment males with females
-                      natage(t+1,p,g,a) *= (1.-Hermaphro_val(GP4(g),a-1)); // decrement females
-                    }
-                  } else
-                  if(Hermaphro_Option==-1)
-                  {
-                    for (a=1;a<nages;a++)
-                    {
-                      natage(t+1,p,g,a) += natage(t+1,p,g+k,a)*Hermaphro_val(GP4(g+k),a-1); // increment females with males
-                      natage(t+1,p,g+k,a) *= (1.-Hermaphro_val(GP4(g+k),a-1)); // decrement males
-                    }
-                  }
-                }
-              }
-            }
 
            if(show_MSY==1)
            {
@@ -1568,6 +1470,104 @@ FUNCTION void Get_Forecast()
              Smry_Table(y,3)+=smrynum;   //sums to accumulate across platoons and settlements
            }
           }  //  end loop of areas
+
+  //  SS_Label_Info_24.3.4 #Compute spawning biomass if occurs after start of current season
+//  SPAWN-RECR:   calc spawn biomass in time series if after beginning of the season
+          if(s==spawn_seas && spawn_time_seas>=0.0001)    //  compute spawning biomass
+          {
+            SPB_pop_gp(y).initialize();
+            for (p=1;p<=pop;p++)
+            {
+              for (g=1;g<=gmorph;g++)
+              if(sx(g)==1 && use_morph(g)>0)     //  female
+              {
+                SPB_pop_gp(y,p,GP4(g)) += fec(g)*elem_prod(natage(t,p,g),mfexp(-Z_rate(t,p,g)*spawn_time_seas));   // accumulates SSB by area and by growthpattern
+                SPB_B_yr(y) += make_mature_bio(GP4(g))*elem_prod(natage(t,p,g),mfexp(-Z_rate(t,p,g)*spawn_time_seas));
+                SPB_N_yr(y) += make_mature_numbers(GP4(g))*elem_prod(natage(t,p,g),mfexp(-Z_rate(t,p,g)*spawn_time_seas));
+              }
+            }
+            SPB_current=sum(SPB_pop_gp(y));
+            SPB_yr(y)=SPB_current;
+
+            if(Hermaphro_Option!=0)  // get male biomass
+            {
+              MaleSPB(y).initialize();
+              for (p=1;p<=pop;p++)
+              {
+                for (g=1;g<=gmorph;g++)
+                if(sx(g)==2 && use_morph(g)>0)     //  male; all assumed to be mature
+                {
+                  MaleSPB(y,p,GP4(g)) += Save_Wt_Age(t,g)*elem_prod(natage(t,p,g),mfexp(-Z_rate(t,p,g)*spawn_time_seas));   // accumulates SSB by area and by growthpattern
+                }
+              }
+              if(Hermaphro_maleSPB==1) // add MaleSPB to female SSB
+              {
+                SPB_current+=sum(MaleSPB(y));
+                SPB_yr(y)=SPB_current;
+              }
+            }
+      //  SS_Label_Info_24.3.4.1 #Get recruitment from this spawning biomass
+    //  SPAWN-RECR:   calc recruitment in time series; need to make this area-specififc
+          if(SR_parm_timevary(1)==0)  //  R0 is not time-varying
+          {R0_use=Recr_virgin; SPB_use=SPB_virgin;}
+          else
+          {
+            R0_use=mfexp(SR_parm_work(1));
+            equ_Recr=R0_use;
+            Fishon=0;
+            eq_yr=y;
+            bio_yr=y;
+            Do_Equil_Calc(equ_Recr);                      //  call function to do equilibrium calculation
+            if(fishery_on_off==1) {Fishon=1;} else {Fishon=0;}
+            SPB_use=SPB_equil;
+          }
+
+            Recruits=Spawn_Recr(SPB_use,R0_use,SPB_current);  // calls to function Spawn_Recr
+    // distribute Recruitment of age 0 fish among the current and future settlements; and among areas and morphs
+    //  note that because SPB_current is calculated at end of season to take into account Z,
+    //  this means that recruitment cannot occur until a subsequent season
+    //  SPAWN-RECR:   distribute recruits among areas, settlements, morphs
+              for (g=1;g<=gmorph;g++)
+              if(use_morph(g)>0)
+              {
+                settle=settle_g(g);
+                for (p=1;p<=pop;p++)
+                {
+                  if(y==styr) natage(t+Settle_seas_offset(settle),p,g,Settle_age(settle))=0.0;  //  to negate the additive code
+
+                  natage(t+Settle_seas_offset(settle),p,g,Settle_age(settle)) += Recruits*recr_dist(GP(g),settle,p)*platoon_distr(GP2(g))*
+                   mfexp(natM(s,GP3(g),Settle_age(settle))*Settle_timing_seas(settle));
+                }
+              }
+          }
+
+          if(Hermaphro_Option!=0)  //hermaphroditism
+          {
+            if(Hermaphro_seas==-1 || Hermaphro_seas==s)
+            {
+              k=gmorph/2;
+              for (g=1;g<=k;g++)  //  loop females
+              if(use_morph(g)>0)
+              {
+                if(Hermaphro_Option==1)
+                {
+                  for (a=1;a<nages;a++)
+                  {
+                    natage(t+1,p,g+k,a) += natage(t+1,p,g,a)*Hermaphro_val(GP4(g),a-1); // increment males with females
+                    natage(t+1,p,g,a) *= (1.-Hermaphro_val(GP4(g),a-1)); // decrement females
+                  }
+                } else
+                if(Hermaphro_Option==-1)
+                {
+                  for (a=1;a<nages;a++)
+                  {
+                    natage(t+1,p,g,a) += natage(t+1,p,g+k,a)*Hermaphro_val(GP4(g+k),a-1); // increment females with males
+                    natage(t+1,p,g+k,a) *= (1.-Hermaphro_val(GP4(g+k),a-1)); // decrement males
+                  }
+                }
+              }
+            }
+          }
 
           if(do_migration>0)  // movement between areas in forecast
           {
