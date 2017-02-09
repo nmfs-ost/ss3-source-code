@@ -4092,7 +4092,7 @@ FUNCTION void write_bigoutput()
   if(reportdetail == 1)
   {
     SS2out << endl << "NUMBERS_AT_AGE" << endl;       // SS_Label_410
-    SS2out << "Area Bio_Pattern Gender Settlement Platoon Morph Yr Seas Time Beg/Mid Era"<<age_vector <<endl;
+    SS2out << "Area Bio_Pattern Gender BirthSeason Settlement Platoon Morph Yr Seas Time Beg/Mid Era"<<age_vector <<endl;
     for (p=1;p<=pop;p++)
     for (g=1;g<=gmorph;g++)
     if(use_morph(g)>0)
@@ -4102,7 +4102,7 @@ FUNCTION void write_bigoutput()
        {
        t = styr+(y-styr)*nseas+s-1;
        temp=double(y)+azero_seas(s);
-       SS2out <<p<<" "<<GP4(g)<<" "<<sx(g)<<" "<<Bseas(g)<<" "<<GP2(g)<<" "<<g<<" "<<y<<" "<<s<<" "<<temp<<" B";
+       SS2out <<p<<" "<<GP4(g)<<" "<<sx(g)<<" "<<Bseas(g)<<" "<<settle_g(g)<<" "<<GP2(g)<<" "<<g<<" "<<y<<" "<<s<<" "<<temp<<" B";
        if(y==styr-2)
          {SS2out<<" VIRG ";}
        else if (y==styr-1)
@@ -4113,7 +4113,7 @@ FUNCTION void write_bigoutput()
          {SS2out<<" FORE ";}
        SS2out<<natage(t,p,g)<<endl;
        temp=double(y)+azero_seas(s)+seasdur_half(s);
-       SS2out <<p<<" "<<GP4(g)<<" "<<sx(g)<<" "<<Bseas(g)<<" "<<GP2(g)<<" "<<g<<" "<<y<<" "<<s<<" "<<temp<<" M";
+       SS2out <<p<<" "<<GP4(g)<<" "<<sx(g)<<" "<<Bseas(g)<<" "<<settle_g(g)<<" "<<GP2(g)<<" "<<g<<" "<<y<<" "<<s<<" "<<temp<<" M";
        if(y==styr-2)
          {SS2out<<" VIRG ";}
        else if (y==styr-1)
@@ -4127,7 +4127,7 @@ FUNCTION void write_bigoutput()
       }
 
     SS2out << endl << "BIOMASS_AT_AGE" << endl;       // SS_Label_410
-    SS2out << "Area Bio_Pattern Gender Settlement Platoon Morph Yr Seas Time Beg/Mid Era"<<age_vector <<endl;
+    SS2out << "Area Bio_Pattern Gender BirthSeason Settlement Platoon Morph Yr Seas Time Beg/Mid Era"<<age_vector <<endl;
     for (p=1;p<=pop;p++)
     for (g=1;g<=gmorph;g++)
     if(use_morph(g)>0)
@@ -4137,7 +4137,7 @@ FUNCTION void write_bigoutput()
        {
        t = styr+(y-styr)*nseas+s-1;
        temp=double(y)+azero_seas(s);
-       SS2out <<p<<" "<<GP4(g)<<" "<<sx(g)<<" "<<Bseas(g)<<" "<<GP2(g)<<" "<<g<<" "<<y<<" "<<s<<" "<<temp<<" B";
+       SS2out <<p<<" "<<GP4(g)<<" "<<sx(g)<<" "<<Bseas(g)<<" "<<settle_g(g)<<" "<<GP2(g)<<" "<<g<<" "<<y<<" "<<s<<" "<<temp<<" B";
        if(y==styr-2)
          {SS2out<<" VIRG ";}
        else if (y==styr-1)
@@ -4148,7 +4148,7 @@ FUNCTION void write_bigoutput()
          {SS2out<<" FORE ";}
        SS2out<<Save_PopBio(t,p,g)<<endl;
        temp=double(y)+azero_seas(s)+seasdur_half(s);
-       SS2out <<p<<" "<<GP4(g)<<" "<<sx(g)<<" "<<Bseas(g)<<" "<<GP2(g)<<" "<<g<<" "<<y<<" "<<s<<" "<<temp<<" M";
+       SS2out <<p<<" "<<GP4(g)<<" "<<sx(g)<<" "<<Bseas(g)<<" "<<settle_g(g)<<" "<<GP2(g)<<" "<<g<<" "<<y<<" "<<s<<" "<<temp<<" M";
        if(y==styr-2)
          {SS2out<<" VIRG ";}
        else if (y==styr-1)
@@ -4162,7 +4162,7 @@ FUNCTION void write_bigoutput()
       }
 
     SS2out << endl << "NUMBERS_AT_LENGTH" << endl;
-    SS2out << "Area Bio_Pattern Gender Settlement Platoon Morph Yr Seas Time Beg/Mid Era "<<len_bins <<endl;
+    SS2out << "Area Bio_Pattern Gender BirthSeason Settlement Platoon Morph Yr Seas Time Beg/Mid Era "<<len_bins <<endl;
     for (p=1;p<=pop;p++)
     for (g=1;g<=gmorph;g++)
     if(use_morph(g)>0)
@@ -4172,7 +4172,7 @@ FUNCTION void write_bigoutput()
        {
        t = styr+(y-styr)*nseas+s-1;
        temp=double(y)+azero_seas(s);
-       SS2out <<p<<" "<<GP4(g)<<" "<<sx(g)<<" "<<Bseas(g)<<" "<<GP2(g)<<" "<<g<<" "<<y<<" "<<s<<" "<<temp<<" B ";
+       SS2out <<p<<" "<<GP4(g)<<" "<<sx(g)<<" "<<Bseas(g)<<" "<<settle_g(g)<<" "<<GP2(g)<<" "<<g<<" "<<y<<" "<<s<<" "<<temp<<" B ";
        if(y==styr-2)
          {SS2out<<" VIRG ";}
        else if (y==styr-1)
@@ -4183,7 +4183,7 @@ FUNCTION void write_bigoutput()
          {SS2out<<" FORE ";}
        SS2out<< Save_PopLen(t,p,g) << endl;
        temp=double(y)+azero_seas(s)+seasdur_half(s);
-       SS2out <<p<<" "<<GP4(g)<<" "<<sx(g)<<" "<<Bseas(g)<<" "<<GP2(g)<<" "<<g<<" "<<y<<" "<<s<<" "<<temp<<" M ";
+       SS2out <<p<<" "<<GP4(g)<<" "<<sx(g)<<" "<<Bseas(g)<<" "<<settle_g(g)<<" "<<GP2(g)<<" "<<g<<" "<<y<<" "<<s<<" "<<temp<<" M ";
        if(y==styr-2)
          {SS2out<<" VIRG ";}
        else if (y==styr-1)
@@ -4197,7 +4197,7 @@ FUNCTION void write_bigoutput()
       }
 
     SS2out << endl << "BIOMASS_AT_LENGTH" << endl;
-    SS2out << "Area Bio_Pattern Gender Settlement Platoon Morph Yr Seas Time Beg/Mid Era "<<len_bins <<endl;
+    SS2out << "Area Bio_Pattern Gender BirthSeason Settlement Platoon Morph Yr Seas Time Beg/Mid Era "<<len_bins <<endl;
     for (p=1;p<=pop;p++)
     for (g=1;g<=gmorph;g++)
     if(use_morph(g)>0)
@@ -4207,7 +4207,7 @@ FUNCTION void write_bigoutput()
        {
        t = styr+(y-styr)*nseas+s-1;
        temp=double(y)+azero_seas(s);
-       SS2out <<p<<" "<<GP4(g)<<" "<<sx(g)<<" "<<Bseas(g)<<" "<<GP2(g)<<" "<<g<<" "<<y<<" "<<s<<" "<<temp<<" B ";
+       SS2out <<p<<" "<<GP4(g)<<" "<<sx(g)<<" "<<Bseas(g)<<" "<<settle_g(g)<<" "<<GP2(g)<<" "<<g<<" "<<y<<" "<<s<<" "<<temp<<" B ";
        if(y==styr-2)
          {SS2out<<" VIRG ";}
        else if (y==styr-1)
@@ -4218,7 +4218,7 @@ FUNCTION void write_bigoutput()
          {SS2out<<" FORE ";}
        SS2out<< Save_PopWt(t,p,g) << endl;
        temp=double(y)+azero_seas(s)+seasdur_half(s);
-       SS2out <<p<<" "<<GP4(g)<<" "<<sx(g)<<" "<<Bseas(g)<<" "<<GP2(g)<<" "<<g<<" "<<y<<" "<<s<<" "<<temp<<" M ";
+       SS2out <<p<<" "<<GP4(g)<<" "<<sx(g)<<" "<<Bseas(g)<<" "<<settle_g(g)<<" "<<GP2(g)<<" "<<g<<" "<<y<<" "<<s<<" "<<temp<<" M ";
        if(y==styr-2)
          {SS2out<<" VIRG ";}
        else if (y==styr-1)
