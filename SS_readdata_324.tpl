@@ -110,7 +110,7 @@
       spawn_seas=1;  // earlist possible spawn_seas;
       spawn_subseas=1;  //  earliest possible subseas in spawn_seas
       temp=azero_seas(spawn_seas)+subseasdur_delta(spawn_seas);  //  starting value
-      while(temp<=temp1)
+      while(temp<=temp1+1.0e-9)
       {
         if(spawn_subseas==N_subseas)
           {spawn_seas++; spawn_subseas=1;}
@@ -526,7 +526,7 @@
               s=1;  // earlist possible seas;
               subseas=1;  //  earliest possible subseas in seas
               temp=subseasdur_delta(s);  //  starting value
-              while(temp<=temp1)
+              while(temp<=temp1+1.0e-9)
               {
                 if(subseas==N_subseas)
                 {s++; subseas=1;}
@@ -725,7 +725,7 @@
               s=1;  // earlist possible seas;
               subseas=1;  //  earliest possible subseas in seas
               temp=subseasdur_delta(s);  //  starting value
-              while(temp<=temp1)
+              while(temp<=temp1+1.0e-9)
               {
                 if(subseas==N_subseas)
                 {s++; subseas=1;}
@@ -867,7 +867,7 @@
               s=1;  // earlist possible seas;
               subseas=1;  //  earliest possible subseas in seas
               temp=subseasdur_delta(s);  //  starting value
-              while(temp<=temp1)
+              while(temp<=temp1+1.0e-9)
               {
                 if(subseas==N_subseas)
                 {s++; subseas=1;}
@@ -1277,7 +1277,7 @@
               s=1;  // earlist possible seas;
               subseas=1;  //  earliest possible subseas in seas
               temp=subseasdur_delta(s);  //  starting value
-              while(temp<=temp1)
+              while(temp<=temp1+1.0e-9)
               {
                 if(subseas==N_subseas)
                 {s++; subseas=1;}
@@ -1724,7 +1724,7 @@
               s=1;  // earlist possible seas;
               subseas=1;  //  earliest possible subseas in seas
               temp=subseasdur_delta(s);  //  starting value
-              while(temp<=temp1)
+              while(temp<=temp1+1.0e-9)
               {
                 if(subseas==N_subseas)
                 {s++; subseas=1;}
@@ -2108,7 +2108,7 @@
               s=1;  // earlist possible seas;
               subseas=1;  //  earliest possible subseas in seas
               temp=subseasdur_delta(s);  //  starting value
-              while(temp<=temp1)
+              while(temp<=temp1+1.0e-9)
               {
                 if(subseas==N_subseas)
                 {s++; subseas=1;}
@@ -2413,7 +2413,7 @@
           s=1;  // earlist possible seas;
           subseas=1;  //  earliest possible subseas in seas
           temp=subseasdur_delta(s);  //  starting value
-          while(temp<=temp1)
+          while(temp<=temp1+1.0e-9)
           {
             if(subseas==N_subseas)
             {s++; subseas=1;}

@@ -296,6 +296,7 @@
 
   vector azero_G(1,gmorph);  //  time since Jan 1 at beginning of settlement in which "g" was born
   3darray real_age(1,gmorph,1,nseas*N_subseas,0,nages);  // real age since settlement
+  3darray keep_age(1,gmorph,1,nseas*N_subseas,0,nages);  // set to 0.0 if real_age<0.  this allows omitting virtual young fish to be excluded from expected values
   3darray calen_age(1,gmorph,1,nseas*N_subseas,0,nages);  // real age since Jan 1 of birth year
 
   3darray lin_grow(1,gmorph,1,nseas*N_subseas,0,nages)  //  during linear phase has fraction of Size at Afix
@@ -308,6 +309,9 @@
 
   use_morph.initialize();
   TG_use_morph.initialize();
+  keep_age.initialize();
+  keep_age=1.0;
+
    for (gp=1;gp<=N_GP*gender;gp++)
    {
       g_Start(gp)=(gp-1)*N_settle_timings*N_platoon+int(N_platoon/2)+1-N_platoon;  // find the mid-morph being processed
@@ -366,7 +370,7 @@
      {
        a=0;
        while(real_age(g,ALK_idx,a)<0.0)
-       {real_age(g,ALK_idx,a)=0.0; a++;}
+       {keep_age(g,ALK_idx,a)=0.0; real_age(g,ALK_idx,a)=0.0; a++;}
      }
      a=0;
      echoinput<<g<<" "<<s<<" "<<subseas<<" "<<ALK_idx<<" real_age: "<<real_age(g,ALK_idx)<<endl;

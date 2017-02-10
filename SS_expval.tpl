@@ -45,6 +45,8 @@ FUNCTION void Get_expected_values();
             else  //  explicit timing
             {tempvec_a=elem_prod(natage(t,p,g),elem_prod(mfexp(-Z_rate(t,p,g)*timing),sel_a(y,f,gg)));}
 
+            tempvec_a=elem_prod(tempvec_a,keep_age(g,ALK_idx));
+            
             int retflag;
             retflag=0;
             if(Do_Retain(f)==0)

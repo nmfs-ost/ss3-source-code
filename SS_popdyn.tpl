@@ -607,6 +607,8 @@ FUNCTION void get_time_series()
             //  use NatM to calculate the virtual numbers that would have existed at the beginning of the season of the settlement
             //  need to use natM(t) because natM(t+offset) is not yet known
             //  also need to store the integer age at settlement
+            //  NOTE: the settlement shows up at the beginning of the season in which the settlement occurs, so it can be fished and sampled even before its settlement time
+            //  this is a shortcoming that might be dealt with in future.  For now, users will need to create finer season structure
   //  SS_Label_Info_24.2.4 #Distribute Recruitment of age 0 fish among the pops and gmorphs
           for (g=1;g<=gmorph;g++)
           if(use_morph(g)>0)

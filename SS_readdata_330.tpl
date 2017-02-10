@@ -120,7 +120,7 @@
       spawn_seas=1;  // earlist possible spawn_seas;
       spawn_subseas=1;  //  earliest possible subseas in spawn_seas
       temp=azero_seas(spawn_seas)+subseasdur_delta(spawn_seas);  //  starting value
-      while(temp<=temp1)
+      while(temp<=temp1+1.0e-9)
       {
         if(spawn_subseas==N_subseas)
           {spawn_seas++; spawn_subseas=1;}
@@ -536,6 +536,7 @@
           {data_time(ALK_time,f)(1,3)=timing_r_result(1,3);}  // real_month,fraction of season, year.fraction
         else if (timing_r_result(1) !=  data_time(ALK_time,f,1))
           {N_warn++; warning<<"SURVEY: data_month already set for y,s,f: "<<y<<" "<<s<<" "<<f<<" to real month: "<< data_time(ALK_time,f,1)<<"  but read value is: "<<real_month<<endl;}
+
         have_data(ALK_time,0,0,0)=1;
         have_data(ALK_time,f,0,0)=1;  //  so have data of some type in this subseas, for this fleet
         have_data(ALK_time,f,data_type,0)++;  //  count the number of observations in this subseas
@@ -702,7 +703,7 @@
               s=1;  // earlist possible seas;
               subseas=1;  //  earliest possible subseas in seas
               temp=subseasdur_delta(s);  //  starting value
-              while(temp<=temp1)
+              while(temp<=temp1+1.0e-9)
               {
                 if(subseas==N_subseas)
                 {s++; subseas=1;}
@@ -848,7 +849,7 @@
               s=1;  // earlist possible seas;
               subseas=1;  //  earliest possible subseas in seas
               temp=subseasdur_delta(s);  //  starting value
-              while(temp<=temp1)
+              while(temp<=temp1+1.0e-9)
               {
                 if(subseas==N_subseas)
                 {s++; subseas=1;}
@@ -1295,7 +1296,7 @@
               s=1;  // earlist possible seas;
               subseas=1;  //  earliest possible subseas in seas
               temp=subseasdur_delta(s);  //  starting value
-              while(temp<=temp1)
+              while(temp<=temp1+1.0e-9)
               {
                 if(subseas==N_subseas)
                 {s++; subseas=1;}
@@ -1312,7 +1313,9 @@
             }
 
             t=styr+(y-styr)*nseas+s-1;
-            ALK_time=(y-styr)*nseas*N_subseas+(s-1)*N_subseas+subseas;
+            ALK_time=(y-styr)*nseas*N_subseas+(s-1)*N_subseas+subseas; 
+
+//    i_result(5)=(y-timing_constants(5))*timing_constants(2)*timing_constants(3)+(s-1)*timing_constants(3)+subseas;  //  ALK_time
 
             Len_time_t(f,j)=t;     // sequential time = year+season
             Len_time_ALK(f,j)=ALK_time;
@@ -1322,6 +1325,7 @@
               data_time(ALK_time,f,2)=data_timing;  //  fraction of season
               data_time(ALK_time,f,3)=float(y)+(real_month-1.)/12.;  //  fraction of year
             }
+            
             else if (real_month!=  data_time(ALK_time,f,1))
             {
               N_warn++;
@@ -1756,7 +1760,7 @@
               s=1;  // earlist possible seas;
               subseas=1;  //  earliest possible subseas in seas
               temp=subseasdur_delta(s);  //  starting value
-              while(temp<=temp1)
+              while(temp<=temp1+1.0e-9)
               {
                 if(subseas==N_subseas)
                 {s++; subseas=1;}
@@ -2151,7 +2155,7 @@
               s=1;  // earlist possible seas;
               subseas=1;  //  earliest possible subseas in seas
               temp=subseasdur_delta(s);  //  starting value
-              while(temp<=temp1)
+              while(temp<=temp1+1.0e-9)
               {
                 if(subseas==N_subseas)
                 {s++; subseas=1;}
@@ -2461,7 +2465,7 @@
           s=1;  // earlist possible seas;
           subseas=1;  //  earliest possible subseas in seas
           temp=subseasdur_delta(s);  //  starting value
-          while(temp<=temp1)
+          while(temp<=temp1+1.0e-9)
           {
             if(subseas==N_subseas)
             {s++; subseas=1;}

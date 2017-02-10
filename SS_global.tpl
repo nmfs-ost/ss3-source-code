@@ -137,12 +137,11 @@ GLOBALS_SECTION
         {
           i_result(6)=0.;
         }
-
       temp1=(month-1.0)/12.;  //  month as fraction of year
       s=1;  // earlist possible seas;
       subseas=1;  //  earliest possible subseas in seas
       temp=subseasdur_delta(s);  //  starting value
-      while(temp<=temp1)
+      while(temp<=temp1+1.0e-9)
       {
         if(subseas==timing_constants(3))
         {s++; subseas=1;}
