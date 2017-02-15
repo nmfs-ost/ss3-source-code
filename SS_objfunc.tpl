@@ -33,7 +33,7 @@ FUNCTION void evaluate_the_objective_function()
       {
         if(Svy_N_fleet(f)>0)
         {
-          Svy_se_use(f) = Svy_se_rd(f);
+          Svy_se_use(f) = Svy_se(f);
           if(Q_setup(f,3)>0)
             {
               Svy_se_use(f)+=Q_parm(Q_setup_parms(f,2));  // add extra stderr

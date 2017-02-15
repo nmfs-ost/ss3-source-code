@@ -480,6 +480,7 @@
   matrix  Svy_obs(1,Nfleet,1,Svy_N_fleet)
   matrix  Svy_obs_log(1,Nfleet,1,Svy_N_fleet)
   matrix  Svy_se_rd(1,Nfleet,1,Svy_N_fleet)
+  matrix  Svy_se(1,Nfleet,1,Svy_N_fleet)
   matrix  Svy_selec_abund(1,Nfleet,1,Svy_N_fleet);        // Vulnerable biomass
 // arrays for Super-years
   imatrix Svy_super(1,Nfleet,1,Svy_N_fleet)  //  indicator used to display start/stop in reports
@@ -1313,7 +1314,7 @@
             }
 
             t=styr+(y-styr)*nseas+s-1;
-            ALK_time=(y-styr)*nseas*N_subseas+(s-1)*N_subseas+subseas; 
+            ALK_time=(y-styr)*nseas*N_subseas+(s-1)*N_subseas+subseas;
 
 //    i_result(5)=(y-timing_constants(5))*timing_constants(2)*timing_constants(3)+(s-1)*timing_constants(3)+subseas;  //  ALK_time
 
@@ -1325,7 +1326,7 @@
               data_time(ALK_time,f,2)=data_timing;  //  fraction of season
               data_time(ALK_time,f,3)=float(y)+(real_month-1.)/12.;  //  fraction of year
             }
-            
+
             else if (real_month!=  data_time(ALK_time,f,1))
             {
               N_warn++;

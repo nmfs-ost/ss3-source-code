@@ -473,6 +473,7 @@
   matrix  Svy_obs(1,Nfleet,1,Svy_N_fleet)
   matrix  Svy_obs_log(1,Nfleet,1,Svy_N_fleet)
   matrix  Svy_se_rd(1,Nfleet,1,Svy_N_fleet)
+  matrix  Svy_se(1,Nfleet,1,Svy_N_fleet)
   matrix  Svy_selec_abund(1,Nfleet,1,Svy_N_fleet);        // Vulnerable biomass
 // arrays for Super-years
   imatrix Svy_super(1,Nfleet,1,Svy_N_fleet)  //  indicator used to display start/stop in reports

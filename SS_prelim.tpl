@@ -29,6 +29,8 @@ PRELIMINARY_CALCS_SECTION
   {
     for (i=1; i<=Svy_N_fleet(f); i++)
     {
+      Svy_se(f,i) = Svy_se_rd(f,i); // don't overwrite the input values
+
       if(Svy_use(f,i)>0)
       {
         if(Svy_errtype(f)>=0)  // lognormal or lognormal T_dist
@@ -36,13 +38,13 @@ PRELIMINARY_CALCS_SECTION
           if(Svy_obs(f,i)<=0.0)
           {N_warn++; cout<<" EXIT - see warning "<<endl; warning<<"Survey obs must be positive for lognormal error"<<endl; exit(1);}
           Svy_obs_log(f,i)=log(Svy_obs(f,i));
-          Svy_se_rd(f,i)+=var_adjust(1,f);
-          if(Svy_se_rd(f,i)<=0.0) Svy_se_rd(f,i)=0.001;
+          Svy_se(f,i)+=var_adjust(1,f);
+          if(Svy_se(f,i)<=0.0) Svy_se(f,i)=0.001;
         }
         else  // normal distribution
         {
-          Svy_se_rd(f,i)+=var_adjust(1,f);
-          if(Svy_se_rd(f,i)<=0.0) Svy_se_rd(f,i)=0.001;
+          Svy_se(f,i)+=var_adjust(1,f);
+          if(Svy_se(f,i)<=0.0) Svy_se(f,i)=0.001;
         }
       }
     }
@@ -116,7 +118,7 @@ PRELIMINARY_CALCS_SECTION
         for (i=Svy_super_start(f,j);i<=Svy_super_end(f,j);i++)  //  loop obs of this super period
         {
           if(Svy_use(f,i)<0)  //  so one of the obs to be combined
-          {temp+=Svy_se_rd(f,i);}  //  add in its weight relative to 1.0 for the observation with real info
+          {temp+=Svy_se(f,i);}  //  add in its weight relative to 1.0 for the observation with real info
           else
           {k++;}
         }
@@ -124,10 +126,10 @@ PRELIMINARY_CALCS_SECTION
         for (i=Svy_super_start(f,j);i<=Svy_super_end(f,j);i++)
         {
           if(Svy_use(f,i)<0)  //  so one of the obs to be combined
-          {Svy_super_weight(f,i)=Svy_se_rd(f,i)/value(temp);}
+          {Svy_super_weight(f,i)=Svy_se(f,i)/value(temp);}
           else
           {Svy_super_weight(f,i)=1.0/value(temp);}
-          echoinput<<f<<" "<<j<<" "<<i<<" "<<Svy_use(f,i)<<" "<<Svy_se_rd(f,i)<<" "<<Svy_super_weight(f,i)<<endl;
+          echoinput<<f<<" "<<j<<" "<<i<<" "<<Svy_use(f,i)<<" "<<Svy_se(f,i)<<" "<<Svy_super_weight(f,i)<<endl;
         }
       }
     }
