@@ -202,7 +202,7 @@ FUNCTION void evaluate_the_objective_function()
         }
         else
         {
-            N_warn++; cout<<" EXIT - see warning "<<endl; warning<<" discard error type for fleet "<<f<<" = "<<disc_errtype(f)<<" should be -3, -2, -1, 0, or >=1"<<endl; cout<<" fatal error, see warning"<<endl; exit(1);}
+            N_warn++; cout<<" EXIT - see warning "<<endl; warning<<" discard error type for fleet "<<f<<" = "<<disc_errtype(f)<<" should be -3, -2, -1, 0, or >=1"<<endl; cout<<" fatal error, see warning"<<endl; exit(1);
         }
       }
     }
