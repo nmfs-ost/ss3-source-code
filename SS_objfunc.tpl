@@ -184,13 +184,25 @@ FUNCTION void evaluate_the_objective_function()
             disc_like(f) +=0.5*square( (obs_disc(f,i)-exp_disc(f,i)) / sd_disc(f,i)) + sd_offset*log(sd_disc(f,i));
           }
         }
-        else  // lognormal  where input cv_disc must contain se in log space
+        else if (disc_errtype(f)==-2)  // lognormal  where input cv_disc must contain se in log space
         {
           for (i=1;i<=disc_N_fleet(f);i++)
           if(yr_disc_use(f,i)>=0.0)
           {
             disc_like(f) +=0.5*square( log(obs_disc(f,i)/exp_disc(f,i)) / sd_disc(f,i)) + sd_offset*log(sd_disc(f,i));
           }
+        }
+        else if (disc_errtype(f)==-3)  // trunc normal error, with input CV
+        {
+          for (i=1;i<=disc_N_fleet(f);i++)
+          if(yr_disc_use(f,i)>=0.0)
+          {
+            disc_like(f) +=0.5*square( (obs_disc(f,i)-exp_disc(f,i) ) / sd_disc(f,i)) - log(cumd_norm( (1 - exp_disc(f,i)) / sd_disc(f,i) ) - cumd_norm( (0 - exp_disc(f,i)) / sd_disc(f,i) ));
+          }
+        }
+        else
+        {
+            N_warn++; cout<<" EXIT - see warning "<<endl; warning<<" discard error type for fleet "<<f<<" = "<<disc_errtype(f)<<" should be -3, -2, -1, 0, or >=1"<<endl; cout<<" fatal error, see warning"<<endl; exit(1);}
         }
       }
     }

@@ -60,10 +60,16 @@ PRELIMINARY_CALCS_SECTION
       if(yr_disc_use(f,i)>=0.)
       {
         if(cv_disc(f,i)<=0.0) cv_disc(f,i)=0.001;
-        if(disc_errtype(f)>=0)
-        {sd_disc(f,i)=cv_disc(f,i)*obs_disc(f,i);}
+        if(disc_errtype(f)>=0 || disc_errtype(f)==-3)
+        {
+          // input is CV
+          sd_disc(f,i)=cv_disc(f,i)*obs_disc(f,i);
+        }
         else
-        {sd_disc(f,i)=cv_disc(f,i);}
+        {
+          // input is SD
+          sd_disc(f,i)=cv_disc(f,i);
+        }
 
         sd_disc(f,i)+=var_adjust(2,f);   // note that adjustment is to the sd, not the CV
         if(sd_disc(f,i)<0.001) sd_disc(f,i)=0.001;

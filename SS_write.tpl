@@ -574,7 +574,7 @@ FUNCTION void write_nudata()
 
   report1<<"#"<<endl<<Ndisc_fleets<<" #_N_fleets_with_discard"<<endl;
   report1<<"#_discard_units (1=same_as_catchunits(bio/num); 2=fraction; 3=numbers)"<< endl;
-  report1<<"#_discard_errtype:  >0 for DF of T-dist(read CV below); 0 for normal with CV; -1 for normal with se; -2 for lognormal"<<endl;
+  report1<<"#_discard_errtype:  >0 for DF of T-dist(read CV below); 0 for normal with CV; -1 for normal with se; -2 for lognormal; -3 for trunc normal with CV"<<endl;
   report1<<"# note, only have units and errtype for fleets with discard "<<endl;
   report1<<"#_Fleet units errtype"<<endl;
   if(Ndisc_fleets>0)
@@ -867,7 +867,7 @@ FUNCTION void write_nudata()
 
   report1<<"#"<<endl<<Ndisc_fleets<<" #_N_fleets_with_discard"<<endl;
   report1<<"#_discard_units (1=same_as_catchunits(bio/num); 2=fraction; 3=numbers)"<< endl;
-  report1<<"#_discard_errtype:  >0 for DF of T-dist(read CV below); 0 for normal with CV; -1 for normal with se; -2 for lognormal"<<endl;
+  report1<<"#_discard_errtype:  >0 for DF of T-dist(read CV below); 0 for normal with CV; -1 for normal with se; -2 for lognormal; -3 for trunc normal with CV"<<endl;
   report1<<"# note, only have units and errtype for fleets with discard "<<endl;
   report1<<"#_Fleet units errtype"<<endl;
   if(Ndisc_fleets>0)
@@ -1219,7 +1219,7 @@ FUNCTION void write_nudata()
 
   report1<<"#"<<endl<<Ndisc_fleets<<" #_N_fleets_with_discard"<<endl;
   report1<<"#_discard_units (1=same_as_catchunits(bio/num); 2=fraction; 3=numbers)"<< endl;
-  report1<<"#_discard_errtype:  >0 for DF of T-dist(read CV below); 0 for normal with CV; -1 for normal with se; -2 for lognormal"<<endl;
+  report1<<"#_discard_errtype:  >0 for DF of T-dist(read CV below); 0 for normal with CV; -1 for normal with se; -2 for lognormal; -3 for trunc normal with CV"<<endl;
   report1<<"# note, only have units and errtype for fleets with discard "<<endl;
   report1<<"#_Fleet units errtype"<<endl;
   if(Ndisc_fleets>0)
@@ -1242,6 +1242,8 @@ FUNCTION void write_nudata()
         {temp=exp_disc(f,i) + randn(radm)*sd_disc(f,i); if(temp<0.001) temp=0.001; }
         else if(disc_errtype(f)==-2)
         {temp=exp_disc(f,i) * mfexp(randn(radm)*sd_disc(f,i));}
+        else if(disc_errtype(f)==-3)
+        {temp=exp_disc(f,i) + randn(radm)*(sd_disc(f,i) / sqrt(cumd_norm( (1 - exp_disc(f,i)) / sd_disc(f,i) ) - cumd_norm( (0 - exp_disc(f,i)) / sd_disc(f,i) ))); if(temp<0.001) temp=0.001; }
       }
       else
       {temp=obs_disc(f,i);}
@@ -3482,6 +3484,7 @@ FUNCTION void write_bigoutput()
   SS2out << "0:  log(L)_based_on_normal_with_Std_in_as_CV"<< endl;
   SS2out << "-1:  log(L)_based_on_normal_with_Std_in_as_stddev"<< endl;
   SS2out << "-2:  log(L)_based_on_lognormal_with_Std_in_as_stddev_in_logspace"<< endl;
+  SS2out << "-3:  log(L)_based_on_trunc_normal_with_Std_in_as_CV"<< endl;
 
   SS2out<<"#_Fleet units errtype"<<endl;
   if(Ndisc_fleets>0)
@@ -3527,10 +3530,15 @@ FUNCTION void write_bigoutput()
           temp=0.5*square( (obs_disc(f,i)-exp_disc(f,i)) / sd_disc(f,i));
           SS2out<<" "<<obs_disc(f,i)-exp_disc(f,i)<<" "<<temp<<" "<<temp + sd_offset*log(sd_disc(f,i));
         }
-        else  // lognormal  where input cv_disc must contain se in log space
+        else if (disc_errtype(f)==-2)  // lognormal  where input cv_disc must contain se in log space
         {
           temp=0.5*square( log(obs_disc(f,i)/exp_disc(f,i)) / sd_disc(f,i));
           SS2out<<" "<<log(obs_disc(f,i)/exp_disc(f,i))<<" "<<temp<<" "<<temp + sd_offset*log(sd_disc(f,i));
+        }
+        else if (disc_errtype(f)==-3)  // trunc normal error, with input CV
+        {
+          temp=0.5*square( (obs_disc(f,i)-exp_disc(f,i) ) / sd_disc(f,i)) - log(cumd_norm( (1 - exp_disc(f,i)) / sd_disc(f,i) ) - cumd_norm( (0 - exp_disc(f,i)) / sd_disc(f,i) ));
+          SS2out<<" "<<obs_disc(f,i)-exp_disc(f,i)<<" "<<temp<<" "<<temp + sd_offset*log(sd_disc(f,i));
         }
       }
       else

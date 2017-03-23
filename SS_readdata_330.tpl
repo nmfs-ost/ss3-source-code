@@ -605,7 +605,7 @@
   if(Ndisc_fleets>0)
   {
     echoinput<<"#_discard_units (1=same_as_catchunits(bio/num);2=fraction; 3=numbers)"<<endl;
-    echoinput<<"#_discard_error:  >0 for DF of T-dist(read CV below); 0 for normal with CV; -1 for normal with se; -2 for lognormal"<<endl;
+    echoinput<<"#_discard_error:  >0 for DF of T-dist(read CV below); 0 for normal with CV; -1 for normal with se; -2 for lognormal; -3 for trunc normal with CV"<<endl;
     echoinput<<"#Fleet Units Err_Type"<<endl;
     echoinput<<disc_units_rd<<endl;
     for (j=1;j<=Ndisc_fleets;j++)
