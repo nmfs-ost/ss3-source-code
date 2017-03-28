@@ -411,12 +411,14 @@ FUNCTION void get_growth2_Richards()
       LminR=pow(Lmin(gp),Richards(gp));
       if(y==styr)
       {
-        Cohort_Lmin(gp)=LminR;   //  sets for all years and ages
+//        Cohort_Lmin(gp)=LminR;   //  sets for all years and ages
+        Cohort_Lmin(gp)=Lmin(gp);   //  sets for all years and ages
       }
       else if(timevary_MG(y,2)>0)  //  using time-vary growth
       {
         k=min(nages,(YrMax-y));
-        for (a=0;a<=k;a++) {Cohort_Lmin(gp,y+a,a)=LminR;}  //  sets for future years so cohort remembers its size at birth; with Lmin(gp) being size at birth this year
+//        for (a=0;a<=k;a++) {Cohort_Lmin(gp,y+a,a)=LminR;}  //  sets for future years so cohort remembers its size at birth; with Lmin(gp) being size at birth this year
+        for (a=0;a<=k;a++) {Cohort_Lmin(gp,y+a,a)=Lmin(gp);}  //  sets for future years so cohort remembers its size at birth; with Lmin(gp) being size at birth this year
       }
 
       inv_Richards=1.0/Richards(gp);
@@ -471,7 +473,6 @@ FUNCTION void get_growth2_Richards()
               temp=LinfR + (LminR-LinfR)*mfexp(VBK_temp2*(real_age(g,1,a1)-AFIX));
               Ave_Size(styr,1,g,a1) = pow(temp,inv_Richards);
             }  // done ageloop
-            if(do_once==1&&g==1) echoinput<<" avesize_in_styr_w/o_linear_section "<<Ave_Size(styr,1,g)<<endl;
 
 //  SS_Label_Info_16.2.4.1.4  #calc approximation to mean size at maxage to account for growth after reaching the maxage (accumulator age)
             current_size=Ave_Size(styr,1,g,nages);
@@ -545,7 +546,8 @@ FUNCTION void get_growth2_Richards()
               }
               else if(lin_grow(g,ALK_idx,a)==-1.0)  // first time point beyond AFIX;  lin_grow will stay at -1 for all remaining subseas of this season
               {
-                temp=Cohort_Lmin(gp,y,a) + (Cohort_Lmin(gp,y,a)-LinfR)*(mfexp(VBK_temp2*(real_age(g,ALK_idx2,k2)-AFIX))-1.0)*Cohort_Growth(y,a);
+//                temp=Cohort_Lmin(gp,y,a) + (Cohort_Lmin(gp,y,a)-LinfR)*(mfexp(VBK_temp2*(real_age(g,ALK_idx2,k2)-AFIX))-1.0)*Cohort_Growth(y,a);
+                temp=LminR + (LminR-LinfR)*(mfexp(VBK_temp2*(real_age(g,ALK_idx2,k2)-AFIX))-1.0)*Cohort_Growth(y,a);
                 Ave_Size(t+1,1,g,k2) = pow(temp,inv_Richards);
               }
               else  // in linear phase for subseas
@@ -599,6 +601,7 @@ FUNCTION void get_growth3(const int s, const int subseas)
     int k2;
     int add_age;
     dvariable LinfR;
+    dvariable LminR;
     dvariable inv_Richards;
 
     ALK_idx=(s-1)*N_subseas+subseas;  //  note that this changes a global value
@@ -610,6 +613,7 @@ FUNCTION void get_growth3(const int s, const int subseas)
         if(Grow_type==2)
         {
           LinfR=pow(L_inf(gp),Richards(gp));
+          LminR=pow(Lmin(gp),Richards(gp));
           inv_Richards=1.0/Richards(gp);
         }
         for (a=0;a<=nages;a++)
@@ -645,7 +649,8 @@ FUNCTION void get_growth3(const int s, const int subseas)
             //  and Cohort_Lmin has already had the power function applied
             if(lin_grow(g,ALK_idx,a)==-1.0)  // first time point beyond AFIX;  lin_grow will stay at -1 for all remaining subseas of this season
             {
-              temp=Cohort_Lmin(gp,y,a) + (Cohort_Lmin(gp,y,a)-LinfR)*
+//              temp=Cohort_Lmin(gp,y,a) + (Cohort_Lmin(gp,y,a)-LinfR)*
+              temp=LminR + (LminR-LinfR)*
               (mfexp(VBK(gp,nages)*(real_age(g,ALK_idx,a)-AFIX)*VBK_seas(s))-1.0)*Cohort_Growth(y,a);
                 if(temp<=0.0)  echoinput<<a<<" negative size at first beyond in growth3  "<<temp<<endl;
               Ave_Size(t,subseas,g,a) = pow(temp,inv_Richards);
@@ -664,55 +669,6 @@ FUNCTION void get_growth3(const int s, const int subseas)
             }
           }
         }  // done ageloop
-
-  /*   //  move code to make_ALK
-//  SS_Label_Info_16.5.2  #do calculations related to std.dev. of size-at-age
-//  SS_Label_Info_16.5.3 #if (y=styr), calc CV_G(gp,s,a) by interpolation on age or LAA
-//  doing this just at y=styr prevents the CV from changing as time-vary growth updates over time
-        if(CV_const(gp)>0 && y==styr)
-        {
-          for (a=0;a<=nages;a++)
-          {
-            if(real_age(g,ALK_idx,a)<AFIX)
-            {CV_G(gp,ALK_idx,a)=CVLmin(gp);}
-            else if(real_age(g,ALK_idx,a)>=AFIX2_forCV)
-            {CV_G(gp,ALK_idx,a)=CVLmax(gp);}
-            else if(CV_depvar_a==0)
-            {CV_G(gp,ALK_idx,a)=CVLmin(gp) + (Ave_Size(t,subseas,g,a)-Lmin(gp))*CV_delta(gp);}
-            else
-            {CV_G(gp,ALK_idx,a)=CVLmin(gp) + (real_age(g,ALK_idx,a)-AFIX)*CV_delta(gp);}
-          }   // end age loop
-        }
-        else
-        {
-          //  already set constant to CVLmi
-        }
-
-//  SS_Label_Info_16.5.4  #calc stddev of size-at-age from CV_G(gp,s,a) and Ave_Size(t,g,a)
-        if(CV_depvar_b==0)
-        {
-          Sd_Size_within(ALK_idx,g)=SD_add_to_LAA+elem_prod(CV_G(gp,ALK_idx),Ave_Size(t,subseas,g));
-        }
-        else
-        {
-          Sd_Size_within(ALK_idx,g)=SD_add_to_LAA+CV_G(gp,ALK_idx);
-        }
-
-//  SS_Label_Info_16.3.5  #if platoons being used, calc the stddev between platoons
-        if(N_platoon>1)
-        {
-          Sd_Size_between(ALK_idx,g)=Sd_Size_within(ALK_idx,g)*sd_between_platoon;
-          Sd_Size_within(ALK_idx,g)*=sd_within_platoon;
-        }
-
-        if(docheckup==1)
-        {
-          echoinput<<"with lingrow; subseas: "<<subseas<<" sex: "<<sx(g)<<" gp: "<<GP4(g)<<" g: "<<g<<endl;
-          echoinput<<"size "<<Ave_Size(t,subseas,g)(0,min(6,nages))<<" @nages "<<Ave_Size(t,subseas,g,nages)<<endl;
-          if(CV_depvar_b==0) echoinput<<"CV   "<<CV_G(gp,ALK_idx)(0,min(6,nages))<<" @nages "<<CV_G(gp,ALK_idx,nages)<<endl;
-          echoinput<<"sd   "<<Sd_Size_within(ALK_idx,g)(0,min(6,nages))<<" @nages "<<Sd_Size_within(ALK_idx,g,nages)<<endl;
-        }
-  */  //  end code moved to make_ALK
 
       }  //  end need this platoon
     }  //  done platoon
