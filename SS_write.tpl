@@ -2673,7 +2673,7 @@ FUNCTION void write_bigoutput()
           SS2out<<" "<<active_count<<" "<<Fparm_PH(i)<<" 0.0  8.0  _ "<<Fparm_use(i)<<" act "<<CoVar(active_count,1);
         }
         else
-        {SS2out<<" _ _ _ _ _ _ NA _ ";}
+        {SS2out<<" _ _ _ _ _ _ NA _ _ ";}
         SS2out <<" F "<<endl;
       }
     }
@@ -2731,7 +2731,7 @@ FUNCTION void write_bigoutput()
         SS2out<<" "<<active_count<<" "<<parm_dev_PH(i)<<" -10 10 "<<parm_dev_RD(i,j)<<" "<<parm_dev_use(i,j)<<" act "<<CoVar(active_count,1)<<" "<<parm_gradients(active_count);
       }
       else
-      {SS2out<<" _ _ _ _ _ _ NA _ ";}
+      {SS2out<<" _ _ _ _ _ _ NA _ _ ";}
       SS2out<<" dev "<<endl;
     }
   }
