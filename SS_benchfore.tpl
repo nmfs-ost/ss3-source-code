@@ -48,24 +48,26 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
         t = styr-3*nseas+s-1;
 
         subseas=1;  //   for begin of season   ALK_idx calculated within Make_AgeLength_Key
-        ALK_idx=(s-1)*N_subseas+subseas;
         Make_AgeLength_Key(s, subseas);  //  begin season
 
         subseas=mid_subseas;
-        ALK_idx=(s-1)*N_subseas+subseas;
         Make_AgeLength_Key(s, subseas);
 
   //  SPAWN-RECR:   call make_fecundity for benchmarks
         if(s==spawn_seas)
         {
-          subseas=spawn_subseas;
-          ALK_idx=(s-1)*N_subseas+subseas;
           if(spawn_subseas!=1 && spawn_subseas!=mid_subseas)
           {
+            subseas=spawn_subseas;
             Make_AgeLength_Key(s, subseas);  //  spawn subseas
           }
           Make_Fecundity();
         }
+
+        for(g=1;g<=gmorph;g++)
+        {
+          Wt_Age_beg(s,g)=Save_Wt_Age(styr-3*nseas+s-1,g);
+        }        
       }
 
 //  following uses the values of sel_l, sel_a, etc. stored in yr=styr-3
@@ -939,30 +941,17 @@ FUNCTION void Get_Forecast()
         for (s=1;s<=nseas;s++)
         {
           t = t_base+s;
-          if(WTage_rd>0)
-          {
-            for (g=1;g<=gmorph;g++)
-            if(use_morph(g)>0)
-            {
-            Wt_Age_beg(s,g)=WTage_emp(t,GP3(g),0);
-            Wt_Age_mid(s,g)=WTage_emp(t,GP3(g),-1);
-            }
-          }
-          Save_Wt_Age(t)=Wt_Age_beg(s);
-
           bio_t=styr+(endyr-styr)*nseas+s-1;
 
           if(ABC_Loop==ABC_Loop_start)  // do seasonal ALK and fishery selex
           {
-            if(timevary_MG(endyr+1,2)>0 || timevary_MG(endyr+1,3)>0 || WTage_rd>0)
+            if(timevary_MG(endyr+1,2)>0 || save_for_report==1)
             {
               subseas=1;  //   for begin of season   ALK_idx calculated within Make_AgeLength_Key
-              ALK_idx=(s-1)*N_subseas+subseas;
               get_growth3(s, subseas);
               Make_AgeLength_Key(s, subseas);  //  begin season
 
               subseas=mid_subseas;
-              ALK_idx=(s-1)*N_subseas+subseas;
               get_growth3(s, subseas);
               Make_AgeLength_Key(s, subseas);  //  for middle of season (begin of 3rd quarter)
 
@@ -970,20 +959,39 @@ FUNCTION void Get_Forecast()
               if(s==spawn_seas)
               {
                 subseas=spawn_subseas;
-                ALK_idx=(s-1)*N_subseas+subseas;
                 if(spawn_subseas!=1 && spawn_subseas!=mid_subseas)
                 {
                   get_growth3(s, subseas);
                   Make_AgeLength_Key(s, subseas);  //  spawn subseas
                 }
-                Make_Fecundity();
               }
             }
-            else
+
+            if(WTage_rd>0)
             {
-              Ave_Size(t)=Ave_Size(t-nseas);
-              Save_Wt_Age(t)=Wt_Age_beg(s);
+              for (g=1;g<=gmorph;g++)
+              if(use_morph(g)>0)
+              {
+                Wt_Age_beg(s,g)=WTage_emp(t,GP3(g),0);
+                Wt_Age_mid(s,g)=WTage_emp(t,GP3(g),-1);
+                if(s==spawn_seas) fec(g)=WTage_emp(t,GP3(g),-2);
+              }
             }
+            else if(timevary_MG(endyr+1,2)>0 || timevary_MG(endyr+1,3)>0 || save_for_report==1)
+            {
+               Make_Fecundity();
+               for (g=1;g<=gmorph;g++)
+               if(use_morph(g)>0)
+               {
+                 subseas=1;
+                 ALK_idx=(s-1)*N_subseas+subseas;
+                 Wt_Age_beg(s,g)=(ALK(ALK_idx,g)*wt_len(s,GP(g)));  // wt-at-age at beginning of period
+                 subseas=mid_subseas;
+                 ALK_idx=(s-1)*N_subseas+subseas;
+                 Wt_Age_mid(s,g)=ALK(ALK_idx,g)*wt_len(s,GP(g));  // use for fisheries with no size selectivity
+              }
+            }
+            Save_Wt_Age(t)=Wt_Age_beg(s);
 
             for (g=1;g<=gmorph;g++)
             if(use_morph(g)>0)

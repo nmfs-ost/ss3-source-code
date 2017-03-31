@@ -4442,11 +4442,10 @@ FUNCTION void write_bigoutput()
     for (y=styr-3;y<=YrMax;y++)
     {
       yz=y;   if(yz>endyr+2) yz=endyr+2;
-    if(y==styr-3 || y==styr || timevary_MG(yz,2)>0 || timevary_MG(yz,3)>0 || WTage_rd>0)  // if growth or wtlen parms have changed
+//    if(y==styr-3 || y==styr || timevary_MG(yz,2)>0 || timevary_MG(yz,3)>0 || WTage_rd>0)  // if growth or wtlen parms have changed
     for (s=1;s<=nseas;s++)
      {
       t = styr+(y-styr)*nseas+s-1;
-//       SS2out<<g<<" "<<GP4(g)<<" "<<sx(g)<<" "<<Bseas(g)<<" "<<GP2(g)<<" "<<y<<" "<<s<<" "<<Save_Wt_Age(t,g)<<endl;
        SS2out<<g<<" "<<y<<" "<<s<<" "<<Save_Wt_Age(t,g)<<endl;
      }
     }

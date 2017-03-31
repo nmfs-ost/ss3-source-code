@@ -958,7 +958,7 @@ FUNCTION void get_wtlen()
     {
       for(f=7;f<=8;f++) {wtlen_p(GPat,f)=mgp_adj(MGparm_point(gg,GPat)+N_M_Grow_parms+(f-6)-1);}
     }
-    echoinput<<"get wtlen parms sex: "<<gg<<" Gpat: "<<GPat<<" sex*Gpat: "<<gp<<" "<<wtlen_p(GPat)<<endl;
+//    if(do_once==1) echoinput<<"get wtlen parms sex: "<<gg<<" Gpat: "<<GPat<<" sex*Gpat: "<<gp<<" "<<wtlen_p(GPat)<<endl;
 
     for (s=1;s<=nseas;s++)
     {
@@ -1006,7 +1006,7 @@ FUNCTION void get_wtlen()
         wt_len2_sq(s,GPat)=elem_prod(wt_len2(s,GPat),wt_len2(s,GPat));
         wt_len_fd(s,GPat)=first_difference(wt_len_low(s,GPat));
         if(gender==2) wt_len_fd(s,GPat,nlength)=wt_len_fd(s,GPat,nlength-1);
-          echoinput<<"wtlen2 "<<endl<<wt_len2<<endl<<"wtlen2^2 "<<wt_len2_sq<<endl<<"wtlen2:firstdiff "<<wt_len_fd<<endl;
+          if(do_once==1) echoinput<<"wtlen2 "<<endl<<wt_len2<<endl<<"wtlen2^2 "<<wt_len2_sq<<endl<<"wtlen2:firstdiff "<<wt_len_fd<<endl;
       }
   //  SS_Label_Info_19.2.4  #calculate maturity and fecundity if seas = spawn_seas
   //  these calculations are done in spawn_seas, but are not affected by spawn_time within that season
@@ -1015,7 +1015,7 @@ FUNCTION void get_wtlen()
 
       if(s==spawn_seas && gg==1)  // get biology of maturity and fecundity
       {
-         echoinput<<"process maturity fecundity using option: "<<Maturity_Option<<endl;
+         if(do_once==1) echoinput<<"process maturity fecundity using option: "<<Maturity_Option<<endl;
           switch(Maturity_Option)
           {
             case 1:  //  Maturity_Option=1  length logistic
@@ -1047,8 +1047,8 @@ FUNCTION void get_wtlen()
               break;
             }
           }
-           echoinput<<"gp: "<<GPat<<" matlen: "<<mat_len(gp)<<endl;
-           echoinput<<"gp: "<<GPat<<" matage: "<<mat_age(gp)<<endl;
+           if(do_once==1) echoinput<<"gp: "<<GPat<<" matlen: "<<mat_len(gp)<<endl;
+           if(do_once==1) echoinput<<"gp: "<<GPat<<" matage: "<<mat_age(gp)<<endl;
           if(First_Mature_Age>0)
           {mat_age(gp)(0,First_Mature_Age-1)=0.;}
 
@@ -1303,7 +1303,7 @@ FUNCTION void Make_Fecundity()
 //  SPAWN-RECR:   here is the make_Fecundity function
     ALK_idx=(spawn_seas-1)*N_subseas+spawn_subseas;
     for (g=1;g<=gmorph;g++)
-    if(sx(g)==1)
+    if(sx(g)==1 && use_morph(g)>0)
     {
       GPat=GP4(g);
       gg=sx(g);

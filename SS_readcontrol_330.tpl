@@ -1038,7 +1038,8 @@
      mgp_type(Ip,Ip+N_growparms-1)=2;  // growth parms
      Ip=Ip+N_growparms;
      mgp_type(Ip,Ip+1)=3;   // wtlen
-     if(gg==1) {mgp_type(Ip+2,Ip+5)=3;}  // maturity and fecundity
+     Ip+=2;
+     if(gg==1) {mgp_type(Ip,Ip+3)=3;  Ip+=4;}  // maturity and fecundity
    }
    if(Hermaphro_Option!=0) {mgp_type(MGparm_Hermaphro,MGparm_Hermaphro+2)=3;}  //   herma parameters done with wtlen and fecundity
    mgp_type(Ip,MGP_CGD-1)=4;   // recruit apportionments

@@ -103,6 +103,8 @@ FUNCTION void Make_AgeLength_Key(const int s, const int subseas)
             {
               ALK(ALK_idx,g)=calc_ALK_log(log_len_bins,use_Ave_Size_W,use_SD_Size);
             }
+
+ /*
             if(subseas==1)
             {
               if(WTage_rd==0)
@@ -113,6 +115,7 @@ FUNCTION void Make_AgeLength_Key(const int s, const int subseas)
               if(WTage_rd==0)
               {Wt_Age_mid(s,g)=ALK(ALK_idx,g)*wt_len(s,GP(g));}  // use for fisheries with no size selectivity
             }
+ */            
           }  // end platoon loop
         }
       }   // end settle loop
