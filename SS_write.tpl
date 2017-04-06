@@ -2740,7 +2740,7 @@ FUNCTION void write_bigoutput()
   SS2out<<"Active_count "<<active_count<<endl<<endl;
 
   SS2out<<endl<<"DERIVED_QUANTITIES"<<endl;
-  SS2out<<"SPR_ratio_basis: "<<SPR_report_label<<endl;
+  SS2out<<"SPR_report_basis: "<<SPR_report_label<<endl;
   SS2out<<"F_report_basis: "<<F_report_label<<endl;
   SS2out<<"B_ratio_denominator: "<<depletion_basis_label<<endl;
 
@@ -3135,11 +3135,11 @@ FUNCTION void write_bigoutput()
 
     // start SPR time series                                  SS_Label_0322
    SS2out<<endl<<"SPR_series_uses_R0= "<<Recr_virgin<<endl<<"###note_Y/R_unit_is_Dead_Biomass"<<endl;
-   SS2out<<"Depletion_method: "<<depletion_basis<<" # "<<depletion_basis_label<<endl;
-   SS2out<<"F_report_method: "<<F_reporting<<" # "<<F_report_label<<endl;
-   SS2out<<"SPR_std_method: "<<SPR_reporting<<" # "<<SPR_report_label<<endl;
+   SS2out<<"Depletion_basis: "<<depletion_basis<<" # "<<depletion_basis_label<<endl;
+   SS2out<<"F_report_basis: "<<F_reporting<<" # "<<F_report_label<<endl;
+   SS2out<<"SPR_report_basis: "<<SPR_reporting<<" # "<<SPR_report_label<<endl;
    // note  GENTIME is mean age of spawners weighted by fec(a)
-   SS2out<<"Year Bio_all Bio_Smry SPBzero SPBfished SPBfished/R SPR SPR_std Y/R GenTime Deplete F_report"<<
+   SS2out<<"Year Bio_all Bio_Smry SPBzero SPBfished SPBfished/R SPR SPR_report Y/R GenTime Deplete F_report"<<
    " Actual: Bio_all Bio_Smry Num_Smry MnAge_Smry Enc_Catch Dead_Catch Retain_Catch MnAge_Catch SPB Recruits Tot_Exploit"<<
    " More_F(by_Morph): ";
    for (g=1;g<=gmorph;g++) {SS2out<<" aveF_"<<g;}
@@ -3205,7 +3205,7 @@ FUNCTION void write_bigoutput()
 
   SIS_table<<"Category Year Abundance Abundance Recruitment Spawners Catch Catch Catch Catch Catch Catch Fmort Fmort Fmort Fmort Fmort"<<endl;
   SIS_table<<"Primary _ N Y Y Y N Y N N N N N N N Y Y"<<endl;
-  SIS_table<<"Type _ Biomass Biomass Age Female_Mature Sel_Bio Kill_Bio Retain_Bio Sel_Numbers Kill_Numbers Retain_Numbers Exploitation SPR_std F_report Sum_Fleet_Apical_Fs F=Z-M"<<endl;
+  SIS_table<<"Type _ Biomass Biomass Age Female_Mature Sel_Bio Kill_Bio Retain_Bio Sel_Numbers Kill_Numbers Retain_Numbers Exploitation SPR_report F_report Sum_Fleet_Apical_Fs F=Z-M"<<endl;
   SIS_table<<"Source _ Model Model Model Model Model Model Model Model Model Model Model Model Model Model Model"<<endl;
   SIS_table<<"Basis _ Biomass Biomass Numbers Eggs Biomass Biomass Biomass Numbers Numbers Numbers Dead_Catch_Bio/Summary_Bio "<<SPR_report_label<<" "<<F_report_label<<"  Sum_Fleet_Apical_Fs F=Z-M"<<endl;
   SIS_table<<"Range _ All Age_"<<Smry_Age<<"+ Age_0 Mature Exploitable_all Exploitable_dead Exploitable_retained  Exploitable_all Exploitable_dead Exploitable_retained ";
