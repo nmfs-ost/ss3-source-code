@@ -61,6 +61,7 @@ FUNCTION void Get_expected_values();
                     exp_AL(a+A2,L1-1+z)+=temp*ALK(ALK_idx,g,a,z)*sel_l(y,f,gg,z);;  //  note that A2 and L1 depend on what sex g is
                   }
                 }
+                exp_AL_ret=exp_AL;
               }
               else
               {
@@ -429,10 +430,11 @@ FUNCTION void Get_expected_values();
                 if(mkt_a(f,i)==2) age_exp = exp_AL_ret * Lbin_filter(f,i);    // retained only
               }
               exp_a(f,i) = age_age(k) * age_exp;
+              if(docheckup==1) echoinput<<"Lbin "<<Lbin_filter(f,i)<<endl<<" obs "<<obs_a(f,i)<<endl<<"expected "<<age_exp<<endl<<"exp with ageerr "<<exp_a(f,i)<<endl;
               //  add code here to store exp_a_true(f,i)=age_exp
               //  then in data generation the sample can be from true age before ageing error is applied
 
-              if(docheckup==1) echoinput<<" real age "<<age_exp<<endl<<" obs "<<obs_a(f,i)<<endl<<" exp with ageerr "<<exp_a(f,i)<<endl;
+//              if(docheckup==1) echoinput<<" real age "<<age_exp<<endl<<"Lbin "<<Lbin_filter(f,i)<<endl<<" obs "<<obs_a(f,i)<<endl<<" exp with ageerr "<<exp_a(f,i)<<endl;
 
              }  // end agecomp loop within fleet/time
             }

@@ -114,10 +114,10 @@ FUNCTION void get_initial_conditions()
         if(s==spawn_seas) fec(g)=WTage_emp(t,GP3(g),-2);
       }
     }
-    else if(MG_active(2)>0 || MG_active(3)>0 || save_for_report>0)
+    else if(MG_active(2)>0 || MG_active(3)>0 || save_for_report>0 || do_once==1)
     {
        Make_Fecundity();
-       if(do_once==1) echoinput<<"Save_fec in initial year: "<<t<<" %% "<<save_sel_fec(t,1,0)<<endl;
+//       if(do_once==1) echoinput<<"Save_fec in initial year: "<<t<<" %% "<<save_sel_fec(t,1,0)<<endl;
        for (g=1;g<=gmorph;g++)
        if(use_morph(g)>0)
        {
@@ -131,7 +131,7 @@ FUNCTION void get_initial_conditions()
     }
     
     Save_Wt_Age(t)=Wt_Age_beg(s);
-    if(do_once==1) echoinput<<"Save_Wt_Age in initial year: "<<t<<" %% "<<Save_Wt_Age(t)<<endl;
+//    if(do_once==1) echoinput<<"Save_Wt_Age in initial year: "<<t<<" %% "<<Save_Wt_Age(t)<<endl;
 
     for (g=1;g<=gmorph;g++)
     if(use_morph(g)>0)
@@ -531,10 +531,10 @@ FUNCTION void get_time_series()
           if(s==spawn_seas) fec(g)=WTage_emp(t,GP3(g),-2);
         }
       }
-      else if(timevary_MG(y,2)>0 || timevary_MG(y,3)>0 || save_for_report==1)
+      else if(timevary_MG(y,2)>0 || timevary_MG(y,3)>0 || save_for_report==1 || do_once==1)
       {
          Make_Fecundity();
-         if(do_once==1) echoinput<<"Save_fec in "<<t<<" %% "<<save_sel_fec(t,1,0)<<endl;
+//         if(do_once==1) echoinput<<"Save_fec in "<<t<<" %% "<<save_sel_fec(t,1,0)<<endl;
          for (g=1;g<=gmorph;g++)
          if(use_morph(g)>0)
          {
@@ -548,7 +548,7 @@ FUNCTION void get_time_series()
       }
       
       Save_Wt_Age(t)=Wt_Age_beg(s);
-      if(do_once==1) echoinput<<"Save_Wt_Age in "<<t<<" %% "<<Save_Wt_Age(t)<<endl;
+//      if(do_once==1) echoinput<<"Save_Wt_Age in "<<t<<" %% "<<Save_Wt_Age(t)<<endl;
 
       if(y>styr)    // because styr is done as part of initial conditions
       {
