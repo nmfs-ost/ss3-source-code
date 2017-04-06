@@ -2481,7 +2481,7 @@ FUNCTION void write_bigoutput()
   if(Nobs_a_tot>0) SS2out<<"Age_lambda: _ "<<column(age_lambda,k)<<endl<<"Age_like: "<<age_like_tot*column(age_lambda,k)<<" "<<age_like_tot<<endl;
   if(nobs_ms_tot>0) SS2out<<"Sizeatage_lambda: _ "<<column(sizeage_lambda,k)<<endl<<"sizeatage_like: "<<sizeage_like*column(sizeage_lambda,k)<<" "<<sizeage_like<<endl;
 
-  if(N_parm_dev)
+  if(N_parm_dev>0)
   {
     SS2out<<"Parm_devs_detail"<<endl<<"Index  Phase  MinYear  MaxYear  stddev  Rho  Like_devs  Like_se  mean  rmse"<<endl;
     for(i=1;i<=N_parm_dev;i++)
@@ -2816,18 +2816,6 @@ FUNCTION void write_bigoutput()
     SS2out<<" "<<ParmLabel(NP)<<" "<<Extra_Std(j);
     SS2out<<" "<<CoVar(active_count,1)<<endl;
   }
-
-  if(N_parm_dev>0)
-    {
-      SS2out<<"Parm_dev_details"<<endl<<"Item Parm_Affected SE  Rho  Like"<<endl;
-   SS2out<<" need to create code "<<endl;
-      for(i=1;i<=N_parm_dev;i++)
-      {
-//        SS2out<<i<<" "<<ParmLabel(parm_dev_rpoint(i))<<" "<<parm_dev_stddev(i)<<" "<<parm_dev_rho(i)<<" "<<parm_dev_like(i)<<endl;
-//        SS2out<<i<<" devs "<<parm_dev(i)<<endl;
-//        if(parm_dev_type(i)>=3) SS2out<<i<<" rwalk "<<parm_dev_rwalk(i)<<endl;
-      }
-    }
 
    if(reportdetail == 1) {k1=endyr;} else {k1=styr;}
    SS2out<<endl<<"MGparm_By_Year_after_adjustments"<<endl<<"Year ";
