@@ -1631,7 +1631,7 @@ FUNCTION void write_nucontrol()
   {NuStart<<F_reporting_ages<<" #_min and max age over which average F will be calculated"<<endl;}
   else
   {NuStart<<"#COND 10 15 #_min and max age over which average F will be calculated with F_reporting=4"<<endl;}
-  NuStart<<F_std_basis<<" # F_std_basis: 0=raw_F_report; 1=F/Fspr; 2=F/Fmsy ; 3=F/Fbtgt"<<endl;
+  NuStart<<F_std_basis<<" # F_report_basis: 0=raw_F_report; 1=F/Fspr; 2=F/Fmsy ; 3=F/Fbtgt"<<endl;
   NuStart<<mcmc_output_detail<<" # MCMC output detail (0=default; 1=obj func components; 2=expanded; 3=make output subdir for each MCMC vector)"<<endl;
   NuStart<<ALK_tolerance<<" # ALK tolerance (example 0.0001)"<<endl;
   NuStart<<"3.30 # check value for end of file and for version control"<<endl;
@@ -2741,7 +2741,7 @@ FUNCTION void write_bigoutput()
 
   SS2out<<endl<<"DERIVED_QUANTITIES"<<endl;
   SS2out<<"SPR_ratio_basis: "<<SPR_report_label<<endl;
-  SS2out<<"F_std_basis: "<<F_report_label<<endl;
+  SS2out<<"F_report_basis: "<<F_report_label<<endl;
   SS2out<<"B_ratio_denominator: "<<depletion_basis_label<<endl;
 
   SS2out<<" LABEL Value  StdDev (Val-1.0)/Stddev  CumNorm"<<endl;
@@ -2928,8 +2928,8 @@ FUNCTION void write_bigoutput()
    }
 
    SS2out<<endl<<"EXPLOITATION"<<endl<<"F_Method: "<<F_Method;
-   if(F_Method==1) {SS2out<<"  Pope's_approx ";} else {SS2out<<"  Continuous_F;_(NOTE:_F_std_adjusts_for_seasdur_but_each_fleet_F_is_annual)";}
-   SS2out<<endl<<"F_std_units: "<<F_reporting<<F_report_label<<endl<<"_ _ _ ";
+   if(F_Method==1) {SS2out<<"  Pope's_approx ";} else {SS2out<<"  Continuous_F;_(NOTE:_F_report_adjusts_for_seasdur_but_each_fleet_F_is_annual)";}
+   SS2out<<endl<<"F_report_units: "<<F_reporting<<F_report_label<<endl<<"_ _ _ ";
    for (f=1;f<=Nfleet;f++)
    if(fleet_type(f)<=2)
    {if(catchunits(f)==1) {SS2out<<" Bio ";} else {SS2out<<" Num ";}}
@@ -2937,7 +2937,7 @@ FUNCTION void write_bigoutput()
    for (f=1;f<=Nfleet;f++)
    if(fleet_type(f)<=2)
    {SS2out<<" "<<f;}
-   SS2out<<endl<<"Yr Seas F_std";
+   SS2out<<endl<<"Yr Seas F_report";
    for (f=1;f<=Nfleet;f++)
    if(fleet_type(f)<=2)
    {SS2out<<" "<<fleetname(f);}
@@ -3136,10 +3136,10 @@ FUNCTION void write_bigoutput()
     // start SPR time series                                  SS_Label_0322
    SS2out<<endl<<"SPR_series_uses_R0= "<<Recr_virgin<<endl<<"###note_Y/R_unit_is_Dead_Biomass"<<endl;
    SS2out<<"Depletion_method: "<<depletion_basis<<" # "<<depletion_basis_label<<endl;
-   SS2out<<"F_std_method: "<<F_reporting<<" # "<<F_report_label<<endl;
+   SS2out<<"F_report_method: "<<F_reporting<<" # "<<F_report_label<<endl;
    SS2out<<"SPR_std_method: "<<SPR_reporting<<" # "<<SPR_report_label<<endl;
    // note  GENTIME is mean age of spawners weighted by fec(a)
-   SS2out<<"Year Bio_all Bio_Smry SPBzero SPBfished SPBfished/R SPR SPR_std Y/R GenTime Deplete F_std"<<
+   SS2out<<"Year Bio_all Bio_Smry SPBzero SPBfished SPBfished/R SPR SPR_std Y/R GenTime Deplete F_report"<<
    " Actual: Bio_all Bio_Smry Num_Smry MnAge_Smry Enc_Catch Dead_Catch Retain_Catch MnAge_Catch SPB Recruits Tot_Exploit"<<
    " More_F(by_Morph): ";
    for (g=1;g<=gmorph;g++) {SS2out<<" aveF_"<<g;}
@@ -3205,7 +3205,7 @@ FUNCTION void write_bigoutput()
 
   SIS_table<<"Category Year Abundance Abundance Recruitment Spawners Catch Catch Catch Catch Catch Catch Fmort Fmort Fmort Fmort Fmort"<<endl;
   SIS_table<<"Primary _ N Y Y Y N Y N N N N N N N Y Y"<<endl;
-  SIS_table<<"Type _ Biomass Biomass Age Female_Mature Sel_Bio Kill_Bio Retain_Bio Sel_Numbers Kill_Numbers Retain_Numbers Exploitation SPR_std F_std Sum_Fleet_Apical_Fs F=Z-M"<<endl;
+  SIS_table<<"Type _ Biomass Biomass Age Female_Mature Sel_Bio Kill_Bio Retain_Bio Sel_Numbers Kill_Numbers Retain_Numbers Exploitation SPR_std F_report Sum_Fleet_Apical_Fs F=Z-M"<<endl;
   SIS_table<<"Source _ Model Model Model Model Model Model Model Model Model Model Model Model Model Model Model"<<endl;
   SIS_table<<"Basis _ Biomass Biomass Numbers Eggs Biomass Biomass Biomass Numbers Numbers Numbers Dead_Catch_Bio/Summary_Bio "<<SPR_report_label<<" "<<F_report_label<<"  Sum_Fleet_Apical_Fs F=Z-M"<<endl;
   SIS_table<<"Range _ All Age_"<<Smry_Age<<"+ Age_0 Mature Exploitable_all Exploitable_dead Exploitable_retained  Exploitable_all Exploitable_dead Exploitable_retained ";
@@ -3229,7 +3229,7 @@ FUNCTION void write_bigoutput()
   SS2out<<endl<<"NOTE:_GENTIME_is_fecundity_weighted_mean_age"<<endl<<"NOTE:_MnAgeSmry_is_numbers_weighted_meanage_at_and_above_smryage(not_accounting_for_settlement_offsets)"<<endl;
 
   SS2out<<endl<<"Kobe_Plot"<<endl;
-  if(F_std_basis!=2) SS2out<<"F_std_basis_is_not_=2;_so_info_below_is_not_F/Fmsy"<<endl;
+  if(F_std_basis!=2) SS2out<<"F_report_basis_is_not_=2;_so_info_below_is_not_F/Fmsy"<<endl;
   SS2out<<"MSY_basis:_";
   switch(Do_MSY)
     {
@@ -5054,7 +5054,7 @@ FUNCTION void write_bigoutput()
 
   if(Do_Benchmark>0 && wrote_bigreport==1)
   {
-        SS2out<<endl<<"SPR/YPR_Profile "<<endl<<"SPRloop Iter Fmult F_std SPR YPR YPR*Recr SSB Recruits SSB/Bzero Tot_Catch ";
+        SS2out<<endl<<"SPR/YPR_Profile "<<endl<<"SPRloop Iter Fmult F_report SPR YPR YPR*Recr SSB Recruits SSB/Bzero Tot_Catch ";
         for (f=1;f<=Nfleet;f++) {if(fleet_type(f)<=2) SS2out<<" "<<fleetname(f)<<"("<<f<<")";}
         for (p=1;p<=pop;p++)
         for (gp=1;gp<=N_GP;gp++)
