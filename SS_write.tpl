@@ -6,7 +6,7 @@ FUNCTION void write_summaryoutput()
   cout<<"in summary report "<<endl;
   time(&finish);
   elapsed_time = difftime(finish,start);
-  report2<<runnumber<<" -logL: "<<obj_fun<<" Spbio(Vir_Start_End): "<<SPB_yr(styr-2)<<" "<<SPB_yr(styr)<<" "<<SPB_yr(endyr)<<endl;
+  report2<<runnumber<<" -logL: "<<obj_fun<<" SSB(Vir_Start_End): "<<SPB_yr(styr-2)<<" "<<SPB_yr(styr)<<" "<<SPB_yr(endyr)<<endl;
   report2<<runnumber<<" Files: "<<datfilename<<" "<<ctlfilename;
   if(readparfile>=1) report2<<" Start_from_SS3.PAR";
   report2<<endl<<runnumber<<" N_iter: "<<niter<<" runtime(sec): "<<elapsed_time<<" starttime: "<<ctime(&start);
@@ -66,7 +66,7 @@ FUNCTION void write_summaryoutput()
   if(k==endyr) k=endyr+1;
   for (y=endyr+1;y<=k;y++) {report2<<y<<"F ";}
   report2 <<endl;
-  report2 <<runnumber<<" Timeseries Spbio "<<column(Smry_Table,7)<<endl;
+  report2 <<runnumber<<" Timeseries SpawnBio "<<column(Smry_Table,7)<<endl;
   report2 <<runnumber<<" Timeseries Recruit "<<column(Smry_Table,8)<<endl;
   report2 <<runnumber<<" Timeseries TotBio "<<column(Smry_Table,1)<<endl;
   report2 <<runnumber<<" Timeseries SmryBio-"<<Smry_Age<<" "<<column(Smry_Table,2)<<endl;
@@ -404,7 +404,7 @@ FUNCTION void write_rebuilder_output()
       rebuild_dat<<exp_rec(styr-2,4)<<" ";
       for(y=styr;y<=k;y++) {rebuild_dat<<exp_rec(y,4)<<" ";}
       rebuild_dat<<" #recruits; first value is R0 (virgin)"<< endl;
-      rebuild_dat<<SPB_yr(styr-2)<<" "<<SPB_yr(styr,k) <<" #spbio; first value is SPB_virgin (virgin)"<< endl;
+      rebuild_dat<<SPB_yr(styr-2)<<" "<<SPB_yr(styr,k) <<" #spbio; first value is SSB_virgin (virgin)"<< endl;
       rebuild_dat<<1<<" ";
       for (y=styr;y<=k;y++) rebuild_dat<<0<<" ";
       rebuild_dat<<" # in Bzero"<<endl;
@@ -1853,7 +1853,7 @@ FUNCTION void write_nucontrol()
 
     report4<<Fecund_Option<<" #_fecundity option:(1)eggs=Wt*(a+b*Wt);(2)eggs=a*L^b;(3)eggs=a*Wt^b; (4)eggs=a+b*L; (5)eggs=a+b*W"<<endl;
     report4<<Hermaphro_Option<<" #_hermaphroditism option:  0=none; 1=female-to-male age-specific fxn; -1=male-to-female age-specific fxn"<<endl;
-    if (Hermaphro_Option!=0) report4<<Hermaphro_seas<<" # Hermaphro_season "<<endl<<Hermaphro_maleSPB<<" # Hermaphro_maleSPB "<<endl;
+    if (Hermaphro_Option!=0) report4<<Hermaphro_seas<<" # Hermaphro_season "<<endl<<Hermaphro_maleSPB<<" # Hermaphro_maleSSB "<<endl;
     report4<<MGparm_def<<" #_parameter_offset_approach (1=none, 2= M, G, CV_G as offset from female-GP1, 3=like SS2 V1.x)"<<endl;
   report4<<"#"<<endl;
   report4<<"#_growth_parms"<<endl;
@@ -3013,10 +3013,10 @@ FUNCTION void write_bigoutput()
    SS2out<<endl<<"TIME_SERIES    BioSmry_age:_"<<Smry_Age;   // SS_Label_320
    if(F_Method==1) {SS2out<<"  Pope's_approx"<<endl;} else {SS2out<<"  Continuous_F"<<endl;}
   SS2out<<"Area Yr Era Seas Bio_all Bio_smry SpawnBio Recruit_0 ";
-  for (gp=1;gp<=N_GP;gp++) SS2out<<" Spbio_GP:"<<gp;
+  for (gp=1;gp<=N_GP;gp++) SS2out<<" SpawnBio_GP:"<<gp;
   if(Hermaphro_Option!=0)
   {
-    for (gp=1;gp<=N_GP;gp++) SS2out<<" MaleSpbio_GP:"<<gp;
+    for (gp=1;gp<=N_GP;gp++) SS2out<<" MaleSpawnBio_GP:"<<gp;
   }
   for (gg=1;gg<=gender;gg++)
   for (gp=1;gp<=N_GP;gp++)
@@ -3035,7 +3035,7 @@ FUNCTION void write_bigoutput()
      if(F_Method==1) {SS2out<<" Hrate:_"<<f;} else {SS2out<<" F:_"<<f;}
   }
 
-  SS2out<<" SPB_vir_LH"<<endl;
+  SS2out<<" SSB_vir_LH"<<endl;
 
   for (p=1;p<=pop;p++)
   {
@@ -3139,8 +3139,8 @@ FUNCTION void write_bigoutput()
    SS2out<<"F_report_basis: "<<F_reporting<<" # "<<F_report_label<<endl;
    SS2out<<"SPR_report_basis: "<<SPR_reporting<<" # "<<SPR_report_label<<endl;
    // note  GENTIME is mean age of spawners weighted by fec(a)
-   SS2out<<"Year Bio_all Bio_Smry SPBzero SPBfished SPBfished/R SPR SPR_report Y/R GenTime Deplete F_report"<<
-   " Actual: Bio_all Bio_Smry Num_Smry MnAge_Smry Enc_Catch Dead_Catch Retain_Catch MnAge_Catch SPB Recruits Tot_Exploit"<<
+   SS2out<<"Year Bio_all Bio_Smry SSBzero SSBfished SSBfished/R SPR SPR_report Y/R GenTime Deplete F_report"<<
+   " Actual: Bio_all Bio_Smry Num_Smry MnAge_Smry Enc_Catch Dead_Catch Retain_Catch MnAge_Catch SSB Recruits Tot_Exploit"<<
    " More_F(by_Morph): ";
    for (g=1;g<=gmorph;g++) {SS2out<<" aveF_"<<g;}
    for (g=1;g<=gmorph;g++) {SS2out<<" maxF_"<<g;}
@@ -3333,7 +3333,7 @@ FUNCTION void write_bigoutput()
    else
    {SS2out<<endl;}
 
-  SS2out<<"year spawn_bio exp_recr with_regime bias_adjusted pred_recr dev biasadjuster era mature_bio mature_num"<<endl;
+  SS2out<<"year SpawnBio exp_recr with_regime bias_adjusted pred_recr dev biasadjuster era mature_bio mature_num"<<endl;
   SS2out<<"S/Rcurve "<<SPB_virgin<<" "<<Recr_virgin<<endl;
   y=styr-2;
   SS2out<<"Virg "<<SPB_yr(y)<<" "<<exp_rec(y)<<" - "<<0.0<<" Virg "<<SPB_B_yr(y)<<" "<<SPB_N_yr(y)<<endl;
@@ -4039,7 +4039,7 @@ FUNCTION void write_bigoutput()
    if(N_envvar>0)
    {
    SS2out << endl<<"ENVIRONMENTAL_DATA Begins_in_startyr-1"<<endl;         // SS_Label_397
-   SS2out<<"Year rel_smrynum rel_smrybio exp(decdev) rel_SPB null "; for (i=1;i<=N_envvar;i++) SS2out<<" env:_"<<i;
+   SS2out<<"Year rel_smrynum rel_smrybio exp(decdev) rel_SSB null "; for (i=1;i<=N_envvar;i++) SS2out<<" env:_"<<i;
    SS2out<<endl;
     for (y=styr-1;y<=YrMax;y++)
     {
