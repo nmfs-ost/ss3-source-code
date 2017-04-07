@@ -3333,7 +3333,7 @@ FUNCTION void write_bigoutput()
    else
    {SS2out<<endl;}
 
-  SS2out<<"year SpawnBio exp_recr with_regime bias_adjusted pred_recr dev biasadjuster era mature_bio mature_num"<<endl;
+  SS2out<<"Yr SpawnBio exp_recr with_regime bias_adjusted pred_recr dev biasadjuster era mature_bio mature_num"<<endl;
   SS2out<<"S/Rcurve "<<SPB_virgin<<" "<<Recr_virgin<<endl;
   y=styr-2;
   SS2out<<"Virg "<<SPB_yr(y)<<" "<<exp_rec(y)<<" - "<<0.0<<" Virg "<<SPB_B_yr(y)<<" "<<SPB_N_yr(y)<<endl;
@@ -3936,7 +3936,7 @@ FUNCTION void write_bigoutput()
   SS2out << "KEEP_is_sel*retain" << endl;     // SS_Label_370
   SS2out << "DEAD_is_sel*(retain+(1-retain)*discmort)";     // SS_Label_370
   SS2out<<"; Year_styr-3_("<<styr-3<<")_stores_average_used_for_benchmark"<<endl;
-  SS2out<<"Factor Fleet year sex label "<<len_bins_m<<endl;
+  SS2out<<"Factor Fleet Yr Sex Label "<<len_bins_m<<endl;
   for (f=1;f<=Nfleet;f++)
   {
     if(f<=Nfleet) {k=styr-3; j=endyr+1;} else {k=styr; j=endyr;}
@@ -3983,7 +3983,7 @@ FUNCTION void write_bigoutput()
   SS2out<<"COMBINED_ALK*selL*selA*wtlen*ret*discmort_in_makefishsel_yr: "<<makefishsel_yr<<" With_MeanSel_From: "<<Fcast_Sel_yr1<<" - "<<Fcast_Sel_yr2;     // SS_Label_380
   SS2out<<"; Year_styr-3_("<<styr-3<<")_stores_average_used_for_benchmark"<<endl;
 
-  SS2out<<"factor fleet year seas sex morph label ";
+  SS2out<<"Factor Fleet Yr Seas Sex Morph Label ";
   for (a=0;a<=nages;a++) {SS2out<<" "<<a;}
   SS2out<<endl;
   for (f=1;f<=Nfleet;f++)
