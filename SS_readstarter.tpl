@@ -247,7 +247,16 @@
    ALK_tolerance=0.0;
    echoinput<<finish_starter<<endl;
    if(finish_starter==999.)
-    {echoinput<<"Read files in 3.24 format"<<endl;}
+    {
+      echoinput<<"Read files in 3.24 format"<<endl;
+
+      if (readparfile > 0)
+      {
+        echoinput<<"ss_trans does not read the PAR file; readparfile set to 0"<<endl;
+        cout<<"Error: ss_trans does not read the PAR file; readparfile set to 0"<<endl;
+        readparfile = 0;
+      }
+    }
     else
    // if(finish_starter==3.30)
    {
