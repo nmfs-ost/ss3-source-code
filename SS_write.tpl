@@ -3134,12 +3134,12 @@ FUNCTION void write_bigoutput()
   }
 
     // start SPR time series                                  SS_Label_0322
-   SS2out<<endl<<"SPR_series_uses_R0= "<<Recr_virgin<<endl<<"###note_Y/R_unit_is_Dead_Biomass"<<endl;
+   SS2out<<endl<<"SPR_series_uses_R0= "<<Recr_virgin<<endl<<"###note_YPR_unit_is_Dead_Biomass"<<endl;
    SS2out<<"Depletion_basis: "<<depletion_basis<<" # "<<depletion_basis_label<<endl;
    SS2out<<"F_report_basis: "<<F_reporting<<" # "<<F_report_label<<endl;
    SS2out<<"SPR_report_basis: "<<SPR_reporting<<" # "<<SPR_report_label<<endl;
    // note  GENTIME is mean age of spawners weighted by fec(a)
-   SS2out<<"Year Bio_all Bio_Smry SSBzero SSBfished SSBfished/R SPR SPR_report Y/R GenTime Deplete F_report"<<
+   SS2out<<"Year Bio_all Bio_Smry SSBzero SSBfished SSBfished/R SPR SPR_report YPR GenTime Deplete F_report"<<
    " Actual: Bio_all Bio_Smry Num_Smry MnAge_Smry Enc_Catch Dead_Catch Retain_Catch MnAge_Catch SSB Recruits Tot_Exploit"<<
    " More_F(by_Morph): ";
    for (g=1;g<=gmorph;g++) {SS2out<<" aveF_"<<g;}
@@ -3375,7 +3375,7 @@ FUNCTION void write_bigoutput()
 
   SS2out <<endl<< "INDEX_2" << endl;
   rmse = 0.0;  n_rmse = 0.0; mean_CV=0.0; mean_CV2=0.0;
-  SS2out<<"Fleet Name Yr Seas Yr.frac Vuln_bio Obs Exp Calc_Q Eff_Q SE Dev Like Like+log(s) Supr_Per Use"<<endl;
+  SS2out<<"Fleet Name Yr Seas Yr.frac Vuln_bio Obs Exp Calc_Q Eff_Q SE Dev Like Like+log(s) SuprPer Use"<<endl;
   if(Svy_N>0)
   {
     for (f=1;f<=Nfleet;f++)
@@ -3429,11 +3429,11 @@ FUNCTION void write_bigoutput()
             }
           }
           if(Svy_super(f,i)<0 &&in_superperiod==0)
-          {in_superperiod=1; SS2out<<" beg_supr_per ";}
+          {in_superperiod=1; SS2out<<" beg_SuprPer ";}
           else if(Svy_super(f,i)<0 &&in_superperiod==1)
-          {in_superperiod=0; SS2out<<" end_supr_per ";}
+          {in_superperiod=0; SS2out<<" end_SuprPer ";}
           else if(in_superperiod==1)
-          {SS2out<<" in_suprper ";}
+          {SS2out<<" in_SuprPer ";}
           else{SS2out<<" _ ";}
           SS2out<<Svy_use(f,i);
           SS2out<<endl;
@@ -3444,7 +3444,7 @@ FUNCTION void write_bigoutput()
 
   SS2out <<endl<< "INDEX_1" << endl;
   SS2out <<"Fleet Link Link+ ExtraStd BiasAdj Float   Q Num=0/Bio=1 Err_type"<<
-    " N Npos r.m.s.e. mean_input_SE Input+VarAdj Input+VarAdj+extra VarAdj New_VarAdj penalty_mean_Qdev rmse_Qdev fleetname"<<endl;
+    " N Npos RMSE mean_input_SE Input+VarAdj Input+VarAdj+extra VarAdj New_VarAdj penalty_mean_Qdev rmse_Qdev fleetname"<<endl;
   for (f=1;f<=Nfleet;f++)
     {
     	if(Svy_N_fleet(f)>0)
@@ -3456,7 +3456,7 @@ FUNCTION void write_bigoutput()
       <<" "<<Q_dev_like(f,1)<<" "<<Q_dev_like(f,2)<<" "<<fleetname(f)<<endl;
     }
   }
-    SS2out<<"rmse_Qdev_not_in_logL"<<endl<<"penalty_mean_Qdev_not_in_logL_in_randwalk_approach"<<endl;
+    SS2out<<"RMSE_Qdev_not_in_logL"<<endl<<"penalty_mean_Qdev_not_in_logL_in_randwalk_approach"<<endl;
 
   SS2out <<"#"<<endl<< "INDEX_3"<<endl<<"Fleet  Q_parm_assignments"<<endl;
   for (f=1;f<=Nfleet;f++)
@@ -3534,11 +3534,11 @@ FUNCTION void write_bigoutput()
         SS2out<<"  _  _  _  ";
       }
       if(yr_disc_super(f,i)<0 &&in_superperiod==0)
-      {in_superperiod=1; SS2out<<" beg_suprper ";}
+      {in_superperiod=1; SS2out<<" beg_SuprPer ";}
       else if(yr_disc_super(f,i)<0 &&in_superperiod==1)
-      {in_superperiod=0; SS2out<<" end_suprper ";}
+      {in_superperiod=0; SS2out<<" end_SuprPer ";}
       else if(in_superperiod==1)
-      {SS2out<<" in_suprper ";}
+      {SS2out<<" in_SuprPer ";}
       else{SS2out<<" _ ";}
       SS2out<<yr_disc_use(f,i);
       SS2out<<" "<<catch_ret_obs(f,t)<<" "<<catch_fleet(t,f,gg)<<" "<<catch_mult(y,f)<<" "<<catch_mult(y,f)*catch_fleet(t,f,gg)<<" "<<Hrate(f,t);
