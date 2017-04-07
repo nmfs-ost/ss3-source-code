@@ -1068,7 +1068,7 @@ FUNCTION void write_nudata()
     report1<<SzFreq_nobs<<" #Sizefreq N obs per method"<<endl;
     report1<<"#_Sizefreq bins "<<endl;
     for (i=1;i<=SzFreq_Nmeth;i++) {report1<<SzFreq_Omit_Small(i)*SzFreq_bins1(i,1)<<SzFreq_bins1(i)(2,SzFreq_Nbins(i))<<endl;}
-    report1<<"#_method yr month fleet gender partition SampleSize <data> "<<endl;
+    report1<<"#_method yr month fleet sex partition SampleSize <data> "<<endl;
     for (iobs=1;iobs<=SzFreq_totobs;iobs++)
     {
       if(SzFreq_obs_hdr(iobs,3)>0)  // flag for date range in bounds
@@ -1094,7 +1094,7 @@ FUNCTION void write_nudata()
 
     // tag releases
     report1<<"# Release data for each tag group.  Tags are considered to be released at the beginning of a season (period)"<<endl;
-    report1<<"#<TG> area yr season <tfill> gender age Nrelease  (note that the TG and tfill values are placeholders and are replaced by program generated values)"<<endl;
+    report1<<"#<TG> area yr season <tfill> sex age Nrelease  (note that the TG and tfill values are placeholders and are replaced by program generated values)"<<endl;
     report1<<TG_release<<endl;
 
     // tag recaptures
@@ -1304,7 +1304,7 @@ FUNCTION void write_nudata()
   {
   report1<<"#_mintailcomp: upper and lower distribution for females and males separately are accumulated until exceeding this level."<<endl;
   report1<<"#_addtocomp:  after accumulation of tails; this value added to all bins"<<endl;
-  report1<<"#_males and females treated as combined gender below this bin number "<<endl;
+  report1<<"#_males and females treated as combined sex below this bin number "<<endl;
   report1<<"#_compressbins: accumulate upper tail by this number of bins; acts simultaneous with mintailcomp; set=0 for no forced accumulation"<<endl;
   report1<<"#_Comp_Error:  0=multinomial, 1=dirichlet"<<endl;
   report1<<"#_Comp_Error2:  parm number  for dirichlet"<<endl;
@@ -1364,7 +1364,7 @@ FUNCTION void write_nudata()
 
   report1<<"#_mintailcomp: upper and lower distribution for females and males separately are accumulated until exceeding this level."<<endl;
   report1<<"#_addtocomp:  after accumulation of tails; this value added to all bins"<<endl;
-  report1<<"#_males and females treated as combined gender below this bin number "<<endl;
+  report1<<"#_males and females treated as combined sex below this bin number "<<endl;
   report1<<"#_compressbins: accumulate upper tail by this number of bins; acts simultaneous with mintailcomp; set=0 for no forced accumulation"<<endl;
   report1<<"#_Comp_Error:  0=multinomial, 1=dirichlet"<<endl;
   report1<<"#_Comp_Error2:  parm number  for dirichlet"<<endl;
@@ -1475,7 +1475,7 @@ FUNCTION void write_nudata()
     report1<<SzFreq_nobs<<" #Sizefreq N obs per method"<<endl;
     report1<<"#_Sizefreq bins "<<endl;
     for (i=1;i<=SzFreq_Nmeth;i++) {report1<<SzFreq_Omit_Small(i)*SzFreq_bins1(i,1)<<SzFreq_bins1(i)(2,SzFreq_Nbins(i))<<endl;}
-    report1<<"#_method year month fleet gender partition SampleSize <data> "<<endl;
+    report1<<"#_method year month fleet sex partition SampleSize <data> "<<endl;
     j=2*max(SzFreq_Nbins);
     dvector temp_probs3(1,j);
     dvector SzFreq_newdat(1,j);
@@ -1553,7 +1553,7 @@ FUNCTION void write_nudata()
 
     // tag releases
     report1<<"# Release data for each tag group.  Tags are considered to be released at the beginning of a season (period)"<<endl;
-    report1<<"#<TG> area yr season <tfill> gender age Nrelease  (note that the TG and tfill values are placeholders and are replaced by program generated values)"<<endl;
+    report1<<"#<TG> area yr season <tfill> sex age Nrelease  (note that the TG and tfill values are placeholders and are replaced by program generated values)"<<endl;
     report1<<TG_release<<endl;
 
     // tag recaptures
@@ -1822,7 +1822,7 @@ FUNCTION void write_nucontrol()
     else if(natM_type==2)
     {report4<<natM_amin<<" #_reference age for Lorenzen M; read 1P per morph"<<endl;}
     else if(natM_type>=3)
-    {report4<<" #_Age_natmort_by gender x growthpattern"<<endl<<Age_NatMort<<endl;}
+    {report4<<" #_Age_natmort_by sex x growthpattern"<<endl<<Age_NatMort<<endl;}
     else
     {report4<<"  #_no additional input for selected M option; read 1P per morph"<<endl;}
 
@@ -3936,7 +3936,7 @@ FUNCTION void write_bigoutput()
   SS2out << "KEEP_is_sel*retain" << endl;     // SS_Label_370
   SS2out << "DEAD_is_sel*(retain+(1-retain)*discmort)";     // SS_Label_370
   SS2out<<"; Year_styr-3_("<<styr-3<<")_stores_average_used_for_benchmark"<<endl;
-  SS2out<<"Factor Fleet year gender label "<<len_bins_m<<endl;
+  SS2out<<"Factor Fleet year sex label "<<len_bins_m<<endl;
   for (f=1;f<=Nfleet;f++)
   {
     if(f<=Nfleet) {k=styr-3; j=endyr+1;} else {k=styr; j=endyr;}
@@ -3983,7 +3983,7 @@ FUNCTION void write_bigoutput()
   SS2out<<"COMBINED_ALK*selL*selA*wtlen*ret*discmort_in_makefishsel_yr: "<<makefishsel_yr<<" With_MeanSel_From: "<<Fcast_Sel_yr1<<" - "<<Fcast_Sel_yr2;     // SS_Label_380
   SS2out<<"; Year_styr-3_("<<styr-3<<")_stores_average_used_for_benchmark"<<endl;
 
-  SS2out<<"factor fleet year seas gender morph label ";
+  SS2out<<"factor fleet year seas sex morph label ";
   for (a=0;a<=nages;a++) {SS2out<<" "<<a;}
   SS2out<<endl;
   for (f=1;f<=Nfleet;f++)
@@ -4466,7 +4466,7 @@ FUNCTION void write_bigoutput()
     s=1;
     for (i=1;i<=gender;i++)
     {
-      SS2out<<endl<<"mean_size_Jan_1_for_gender: "<<i<<" NOTE:_combines_all_settlements_areas_GP_and_platoons"<<endl;
+      SS2out<<endl<<"mean_size_Jan_1_for_sex: "<<i<<" NOTE:_combines_all_settlements_areas_GP_and_platoons"<<endl;
       SS2out <<"Sex Yr Seas Beg "<<age_vector<<endl;
       for (y=styr;y<=YrMax;y++)
       {
@@ -4589,7 +4589,7 @@ FUNCTION void write_bigoutput()
   SS_compout<<"Column_Super?_indicates_super-periods;_column_used_indicates_inclusion_in_logL"<<endl;
 
   SS_compout <<endl<< "Composition_Database" << endl;           // SS_Label_480
-  SS_compout<<"Yr Seas Yr.frac Fleet Rep Pick_gender Kind Part Ageerr Sex Lbin_lo Lbin_hi Bin Obs Exp Pearson N effN Like Cum_obs Cum_exp SuprPer Used?"<<endl;
+  SS_compout<<"Yr Seas Yr.frac Fleet Rep Pick_sex Kind Part Ageerr Sex Lbin_lo Lbin_hi Bin Obs Exp Pearson N effN Like Cum_obs Cum_exp SuprPer Used?"<<endl;
   int lasttime;
   int lastfleet;
   int repli;
@@ -5366,7 +5366,7 @@ FUNCTION void write_Bzero_output()
 
     SS2out << endl << "Z_AT_AGE_Annual";
     if(fishery_on_off==0) {SS2out<<"_1 No_fishery_for_Z=M_and_dynamic_Bzero";} else {SS2out<<"_2 With_fishery";}
-    if(Hermaphro_Option!=0) SS2out<<"_hermaphrodites_combined_gender_output";
+    if(Hermaphro_Option!=0) SS2out<<"_hermaphrodites_combined_sex_output";
     SS2out << endl;
     SS2out << "Bio_Pattern Sex Yr "<<age_vector <<endl;
     if(Hermaphro_Option!=0)
