@@ -1224,6 +1224,7 @@
   matrix  nsamp_l_read(1,Nfleet,1,Nobs_l)
   imatrix  gen_l(1,Nfleet,1,Nobs_l)
   imatrix  mkt_l(1,Nfleet,1,Nobs_l)
+  3darray header_l_rd(1,Nfleet,1,Nobs_l,0,3)
   3darray header_l(1,Nfleet,1,Nobs_l,0,3)
   3darray tails_l(1,Nfleet,1,Nobs_l,1,4)   // min-max bin for females; min-max bin for males
   ivector tails_w(1,4)
@@ -1468,6 +1469,8 @@
         }
       }
     }
+
+    header_l_rd = header_l;
   }
 
      echoinput<<"Overall_Compositions"<<endl<<"Fleet len_bins "<<len_bins_dat<<endl;
