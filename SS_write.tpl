@@ -2542,7 +2542,7 @@ FUNCTION void write_bigoutput()
   SS2out<<"MG_parms_Using_offset_approach_#:_"<<MGparm_def<<"  (1=none, 2= M, G, CV_G as offset from female_GP1, 3=like SS2 V1.x)"<<endl;
 
 //  SS2out<<endl<<"PARAMETERS"<<endl<<"Num Label Value Active_Cnt Phase Min Max Init Prior PR_type Pr_SD Prior_Like Parm_StDev Status Pr_atMin Pr_atMax"<<endl;
-  SS2out<<endl<<"PARAMETERS"<<endl<<"Num Label Value Active_Cnt  Phase Min Max Init  Used  Status  Parm_StDev Gradient PR_type Prior Pr_SD Prior_Like Value_again Value-1.96*SD Value+1.96*SD V_1%  V_10% V_20% V_30% V_40% V_50% V_60% V_70% V_80% V_90% V_99% P_val P_lowCI P_hiCI  P_1%  P_10% P_20% P_30% P_40% P_50% P_60% P_70% P_80% P_90% P_99%"<<endl;
+  SS2out<<endl<<"PARAMETERS"<<endl<<"Num Label Value Active_Cnt  Phase Min Max Init  Used  Status  Parm_StDev Gradient Pr_type Prior Pr_SD Pr_Like Value_again Value-1.96*SD Value+1.96*SD V_1%  V_10% V_20% V_30% V_40% V_50% V_60% V_70% V_80% V_90% V_99% P_val P_lowCI P_hiCI  P_1%  P_10% P_20% P_30% P_40% P_50% P_60% P_70% P_80% P_90% P_99%"<<endl;
 
   NP=0;   // count of number of parameters
   active_count=0;
@@ -2869,7 +2869,7 @@ FUNCTION void write_bigoutput()
    }
 
    SS2out<<endl<<"MORPH_INDEXING"<<endl;
-   SS2out<<"Index GP Sex Bseas Platoon Platoon_Dist Sex*GP Sex*GP*Settle BirthAge_Rel_Jan1"<<endl;
+   SS2out<<"Index GP Sex BirthSeason Platoon Platoon_Dist Sex*GP Sex*GP*Settle BirthAge_Rel_Jan1"<<endl;
    for (g=1; g<=gmorph; g++)
    {
      SS2out<<g<<" "<<GP4(g)<<" "<<sx(g)<<" "<<Bseas(g)<<" "<<GP2(g)<<" "<<platoon_distr(GP2(g))<<" "<<GP(g)<<" "<<GP3(g)<<" "<<azero_G(g)<<endl;
