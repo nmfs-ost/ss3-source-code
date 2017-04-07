@@ -498,15 +498,15 @@ FUNCTION void write_nudata()
   else
   {report1 << "#_bootstrap file: " << Nudat-2 << endl;}
   report1<<version_info_short<<endl;
-  report1 << styr << " #_styr"<<endl;
-  report1 << endyr <<" #_endyr"<< endl;
-  report1 << nseas <<" #_nseas"<< endl;
+  report1 << styr << " #_StartYr"<<endl;
+  report1 << endyr <<" #_EndYr"<< endl;
+  report1 << nseas <<" #_Nseas"<< endl;
   report1 << 12.*seasdur<<" #_months/season"<< endl;
-  report1 << N_subseas<<" #_N_subseasons(even number, minimum is 2)"<<endl;
+  report1 << N_subseas<<" #_Nsubseasons (even number, minimum is 2)"<<endl;
   report1 << spawn_month <<" #_spawn_month"<< endl;
   report1 << gender<<" #_Ngenders"<< endl;
   report1 << nages<<" #_Nages=accumulator age"<< endl;
-  report1 << pop<<" #_N_areas"<<endl;
+  report1 << pop<<" #_Nareas"<<endl;
   report1 << Nfleet<<" #_Nfleets (including surveys)"<< endl;
   report1<<"#_fleet_type: 1=catch fleet; 2=bycatch only fleet; 3=survey; 4=ignore "<<endl;
   report1<<"#_survey_timing: -1=for use of catch-at-age to override the month value associated with a datum "<<endl;
@@ -1778,7 +1778,7 @@ FUNCTION void write_nucontrol()
              recr_dist_inx<< " # year_x_area_x_settlement_event interaction requested (only for recr_dist_method=1)"<<endl<<
              "#GPat month  area age (for each settlement assignment)"<<endl<<settlement_pattern_rd<<endl<<"#"<<endl;
   if(pop==1)
-  {report4<<"#_Cond 0 # N_movement_definitions goes here if N_areas > 1"<<endl
+  {report4<<"#_Cond 0 # N_movement_definitions goes here if Nareas > 1"<<endl
     <<"#_Cond 1.0 # first age that moves (real age at begin of season, not integer) also cond on do_migration>0"<<endl
     <<"#_Cond 1 1 1 2 4 10 # example move definition for seas=1, morph=1, source=1 dest=2, age1=4, age2=10"<<endl;}
   else
