@@ -341,7 +341,7 @@ FUNCTION void Get_expected_values();
             if(j>0)
             {
               j=have_data(ALK_time,f,data_type,1);  //  only getting first observation for now
-              if(catch_ret_obs(f,t)>0.0)
+              if(catch_ret_obs(f,t)>0.0 || y>endyr)
               {
                 if(disc_units(f)==3)  // numbers regardless of catchunits for retained catch
                 {

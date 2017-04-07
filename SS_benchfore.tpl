@@ -1433,7 +1433,7 @@ FUNCTION void Get_Forecast()
             }  // end continuous F
 
 //  SS_Label_106  call to Get_expected_values
-//            Get_expected_values();
+            Get_expected_values();
 
            if(show_MSY==1)
            {

@@ -607,7 +607,7 @@ FUNCTION void write_nudata()
     {
      f=abs(mnwtdata(3,i));
      report1 << Show_Time(mnwtdata(1,i),1)<<" "<<mnwtdata(2,i)<<" "<<mnwtdata(3,i)<<" "<<mnwtdata(4,i)<<" "<<
-     mnwtdata(5,i)<<" "<<mnwtdata(6,i)-var_adjust(3,f)<<" #_ "<<fleetname(mnwtdata(3,i))<< endl;
+     mnwtdata(5,i)<<" "<<mnwtdata(6,i)-var_adjust(3,f)<<" #_ "<<fleetname(f)<<endl;
     }
    }
   if(do_meanbodywt==0) report1<<"# ";
@@ -906,7 +906,7 @@ FUNCTION void write_nudata()
     {
      f=abs(mnwtdata(3,i));
      report1 << Show_Time(mnwtdata(1,i),1)<<" "<<mnwtdata(2,i)<<" "<<mnwtdata(3,i)<<" "<<mnwtdata(4,i)<<" "<<
-     exp_mnwt(i)<<" "<<mnwtdata(6,i)-var_adjust(3,f)<<" #_orig_obs: "<<mnwtdata(5,i)<<"  #_ "<<fleetname(mnwtdata(3,i))<<endl;
+     exp_mnwt(i)<<" "<<mnwtdata(6,i)-var_adjust(3,f)<<" #_orig_obs: "<<mnwtdata(5,i)<<"  #_ "<<fleetname(f)<<endl;
     }
    }
   if(do_meanbodywt==0) report1<<"# ";
@@ -953,14 +953,14 @@ FUNCTION void write_nudata()
     {
      for (i=1;i<=Nobs_l(f);i++)
      {
-      if(header_l(f,i,3)) // do only if this was a real observation
+      if(header_l(f,i,3)>0) // do only if this was a real observation
       {
        k=1000;  if(nsamp_l(f,i)<k) k=nsamp_l(f,i);
        exp_l_temp_dat = nsamp_l(f,i)*value(exp_l(f,i)/sum(exp_l(f,i)));
       }
       else
       {exp_l_temp_dat = obs_l(f,i);}
-     report1 << header_l(f,i)(1,3)<<" "<<gen_l(f,i)<<" "<<mkt_l(f,i)<<" "<<nsamp_l(f,i)<<" "<<exp_l_temp_dat<<endl;
+     report1 << header_l_rd(f,i)(1,3)<<" "<<gen_l(f,i)<<" "<<mkt_l(f,i)<<" "<<nsamp_l(f,i)<<" "<<exp_l_temp_dat<<endl;
     }}}
     report1<<-9999.<<" ";
     for(j=2;j<=6+nlen_bin2;j++) report1<<"0 ";
@@ -1276,7 +1276,7 @@ FUNCTION void write_nudata()
       }
       f=abs(mnwtdata(3,i));
       report1 << Show_Time(mnwtdata(1,i),1)<<" "<<mnwtdata(2,i)<<" "<<mnwtdata(3,i)<<" "<<mnwtdata(4,i)<<" "<<
-      temp<<" "<<mnwtdata(6,i)-var_adjust(3,f)<<" #_orig_obs: "<<mnwtdata(5,i)<<"  #_ "<<fleetname(mnwtdata(3,i))<<endl;    }
+      temp<<" "<<mnwtdata(6,i)-var_adjust(3,f)<<" #_orig_obs: "<<mnwtdata(5,i)<<"  #_ "<<fleetname(f)<<endl;    }
   }
   if(do_meanbodywt==0) report1<<"# ";
   report1<<" -9999 0 0 0 0 0 # terminator for mean body size data "<<endl;
@@ -1346,7 +1346,7 @@ FUNCTION void write_nudata()
       }
       else
       {exp_l_temp_dat = obs_l(f,i);}
-     report1 << header_l(f,i)(1,3)<<" "<<gen_l(f,i)<<" "<<mkt_l(f,i)<<" "<<nsamp_l(f,i)<<" "<<exp_l_temp_dat<<endl;
+     report1 << header_l_rd(f,i)(1,3)<<" "<<gen_l(f,i)<<" "<<mkt_l(f,i)<<" "<<nsamp_l(f,i)<<" "<<exp_l_temp_dat<<endl;
     }}}
     report1<<-9999.<<" ";
     for(j=2;j<=6+nlen_bin2;j++) report1<<"0 ";
@@ -1803,7 +1803,7 @@ FUNCTION void write_nucontrol()
   {report4<<"#_Cond "<<0<<" #_blocks_per_pattern "<<endl<<"# begin and end years of blocks"<<endl;}
   report4<<"#"<<endl;
   report4<<"# controls for all timevary parameters "<<endl;
-  report4<<parm_adjust_method<<" #_env/block/dev_adjust_method for all time-vary parms (1=warn relative to base parm bounds; 3=no bound check)"<<endl;
+  report4<<parm_adjust_method<<" #_env/block/dev_adjust_method for all time-vary parms (1=warn relative to base parm bounds; 3=no bound check)"<<endl<<"#  autogen"<<endl;
   if(timevary_cnt>0)
   {
     report4<<"1 1 1 1 1 # autogen"<<endl;
@@ -2056,7 +2056,7 @@ FUNCTION void write_nucontrol()
      }
    }
 
-    report4<<"#"<<endl<<"# F rates by fleet"<<endl;
+    report4<<"#"<<YrMax<<" "<<TimeMax+nseas<<endl<<"# F rates by fleet"<<endl;
     report4<<"# Yr: ";
     for(y=styr;y<=YrMax;y++)
     for(s=1;s<=nseas;s++)
@@ -2066,10 +2066,11 @@ FUNCTION void write_nucontrol()
     for(s=1;s<=nseas;s++)
     {report4<<" "<<s;}
     report4<<endl;
+    j = styr+(YrMax-styr)*nseas+nseas-1;
     for (f=1;f<=Nfleet;f++)
     if(fleet_type(f)<=2)
     {
-      report4<<"# "<<fleetname(f)<<Hrate(f)(styr,TimeMax+nseas)<<endl;
+      report4<<"# "<<fleetname(f)<<Hrate(f)(styr,j)<<endl;
     }
    NP+=N_Fparm;
    report4<<"#"<<endl;
@@ -3542,7 +3543,7 @@ FUNCTION void write_bigoutput()
       else{SS2out<<" _ ";}
       SS2out<<yr_disc_use(f,i);
       SS2out<<" "<<catch_ret_obs(f,t)<<" "<<catch_fleet(t,f,gg)<<" "<<catch_mult(y,f)<<" "<<catch_mult(y,f)*catch_fleet(t,f,gg)<<" "<<Hrate(f,t);
-      SS2out<<endl;
+      SS2out<<endl<<catch_fleet(t,f)<<endl;
     }
   }
 

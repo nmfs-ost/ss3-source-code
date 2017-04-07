@@ -501,8 +501,10 @@
   imatrix Svy_yr(1,Nfleet,1,Svy_N_fleet)
   number  real_month
   vector timing_input(1,3)
-  vector timing_r_result(1,4)
+  vector timing_r_result(1,3)
   ivector timing_i_result(1,6)
+    // r_result(1,3) will contain: real_month, data_timing_seas, data_timing_yr,
+    // i_result(1,6) will contain y, t, s, f, ALK_time, use_midseas
 
  LOCAL_CALCS
 //  SS_Label_Info_2.3.1  #Process survey observations, move info into working arrays,create super-periods as needed
@@ -694,7 +696,7 @@
          get_data_timing(timing_input, timing_constants, timing_i_result, timing_r_result, seasdur, subseasdur_delta, azero_seas, surveytime);
 
          f=abs( discdata[i](3));
-        if(y>retro_yr) discdata[i](3)=-f;
+         if(y>retro_yr) discdata[i](3)=-f;
          disc_N_fleet(f)++;
          j=disc_N_fleet(f);  //  index number for data that are in date range
          t=timing_i_result(2);
@@ -705,7 +707,7 @@
          if(data_time(ALK_time,f,1)<0.0)  //  so first occurrence of data at ALK_time,f
          {data_time(ALK_time,f)(1,3)=timing_r_result(1,3);}  // real_month,fraction of season, year.fraction
          else if (timing_r_result(1) !=  data_time(ALK_time,f,1))
-         {N_warn++; warning<<"DISCARD: data_month already set for y,s,f: "<<y<<" "<<s<<" "<<f<<" to real month: "<< data_time(ALK_time,f,1)<<"  but read value is: "<<real_month<<endl;}
+         {N_warn++; warning<<"DISCARD: data_month already set for y,s,f: "<<y<<" "<<s<<" "<<f<<" to real month: "<< data_time(ALK_time,f,1)<<"  but read value is: "<<timing_r_result(1)<<endl;}
 
          have_data(ALK_time,0,0,0)=1;
          have_data(ALK_time,f,0,0)=1;  //  so have data of some type
@@ -769,7 +771,7 @@
      echoinput<<tempvec<<endl;
      if(tempvec(1)==-9999.) ender=1;
      mnwtdata1.push_back (tempvec(1,6));
-     if(tempvec(1)>=styr && tempvec(1)<=retro_yr) nobs_mnwt++;
+     if(tempvec(1)>=styr) nobs_mnwt++;
     } while (ender==0);
     nobs_mnwt_rd=mnwtdata1.size()-1;
     echoinput<<nobs_mnwt_rd<<" nobs for mean body size"<<endl;
@@ -784,80 +786,38 @@
   mnwtdata.initialize();
   j=0;
   data_type=3;
-  if(nobs_mnwt>0)  //  number in date range
+  if(nobs_mnwt>0)
   for (i=0;i<=nobs_mnwt_rd-1;i++)  //   loop all obs
   {
     y=mnwtdata1[i](1);
-    if(y>=styr && y<=retro_yr)
+    if(y>=styr)
     {
+      if(mnwtdata1[i](2)<0.0) {N_warn++; warning<<"negative season not allowed for mnwtdata because superperiods not implemented "<<endl;}
+      timing_input(1,3)=mnwtdata1[i](1,3);
+      get_data_timing(timing_input, timing_constants, timing_i_result, timing_r_result, seasdur, subseasdur_delta, azero_seas, surveytime);
       j++;
       f=abs(mnwtdata1[i](3));
+      if(y>retro_yr) mnwtdata1[i](3)=-f;
+      t=timing_i_result(2);
+      ALK_time=timing_i_result(5);
 
-      {  //  start have_data index and timing processing
-        if(mnwtdata1[i](2)<0.0) {N_warn++; warning<<"negative season not allowed for mnwtdata because superperiods not implemented "<<endl;}
-      temp=abs(mnwtdata1[i](2));  //  read value that could be season or month; abs ()because neg value indicates super period
-            if(read_seas_mo==1)  // reading season
-            {
-              s=int(temp);
-              subseas=mid_subseas;
-              if(surveytime(f)>=0.)
-              {data_timing=surveytime(f);}  //  fraction of season
-              else
-              {data_timing=0.5;}
-              real_month=1.0 + azero_seas(s)*12. + 12.*data_timing*seasdur(s);
-            }
-            else  //  reading month.fraction
-            {
-              real_month=temp;
-              temp1=(temp-1.0)/12.;  //  month as fraction of year
-              s=1;  // earlist possible seas;
-              subseas=1;  //  earliest possible subseas in seas
-              temp=subseasdur_delta(s);  //  starting value
-              while(temp<=temp1+1.0e-9)
-              {
-                if(subseas==N_subseas)
-                {s++; subseas=1;}
-                else
-                {subseas++;}
-                temp+=subseasdur_delta(s);
-              }
-              data_timing=(temp1-azero_seas(s))/seasdur(s);  //  remainder converted to fraction of season (but is multiplied by seasdur as it is used, so perhaps change this)
-              if(surveytime(f)==-1.)  //  so ignoring month info
-              {
-                subseas=mid_subseas;
-                data_timing=0.5;
-              }
-            }
-
-            t=styr+(y-styr)*nseas+s-1;
-            ALK_time=(y-styr)*nseas*N_subseas+(s-1)*N_subseas+subseas;
-
-            if(data_time(ALK_time,f,1)<0.0)
-            {
-              data_time(ALK_time,f,1)=real_month;
-              data_time(ALK_time,f,2)=data_timing;  //  fraction of season
-              data_time(ALK_time,f,3)=float(y)+(real_month-1.)/12.;  //  fraction of year
-            }
-            else if (real_month!=  data_time(ALK_time,f,1))
-            {
-              N_warn++;
-              warning<<"MEAN_WEIGHT: data_month already set for y,s,f: "<<y<<" "<<s<<" "<<f<<" to real month: "<< data_time(ALK_time,f,1)<<"  but read value is: "<<real_month<<endl;
-            }
+      if(data_time(ALK_time,f,1)<0.0)  //  so first occurrence of data at ALK_time,f
+      {data_time(ALK_time,f)(1,3)=timing_r_result(1,3);}  // real_month,fraction of season, year.fraction
+      else if (timing_r_result(1) !=  data_time(ALK_time,f,1))
+      {
+        N_warn++;
+        warning<<"MEAN_WEIGHT: data_month already set for y,s,f: "<<y<<" "<<s<<" "<<f<<" to real month: "<< data_time(ALK_time,f,1)<<"  but read value is: "<<timing_r_result(1)<<endl;
+      }
       have_data(ALK_time,0,0,0)=1;
       have_data(ALK_time,f,0,0)=1;  //  so have data of some type
       have_data(ALK_time,f,data_type,0)++;  //  count the number of observations in this subseas
       p=have_data(ALK_time,f,data_type,0);
       have_data(ALK_time,f,data_type,p)=j;  //  store data index for the p'th observation in this subseas
-      }  //  end have_data index and timing processing
 
-      if(s<1) {N_warn++; cout<<" EXIT - see warning "<<endl; warning<<" Critical error, season for meanwt obs "<<i<<" is <0; superper is not implemented for meanwt"<<endl; exit(1);}
-      if(s>nseas) {N_warn++; cout<<" EXIT - see warning "<<endl; warning<<" Critical error, season for meanwt obs "<<i<<" is > nseas"<<endl; exit(1);}
       z=mnwtdata1[i](4);  // z is partition (0, 1, 2)
       yr_mnwt2(f,t,z)=j;  //  seems redundant with have_data, but this stores the partition info, so allows both disard and retained obs in same f,t
 
-      mnwtdata(1,j)=y;  //  check this; it used to be set equal to "t"
-      mnwtdata(2,j)=real_month;
-      for (k=3;k<=6;k++) mnwtdata(k,j)=mnwtdata1[i](k);
+      for (k=1;k<=6;k++) mnwtdata(k,j)=mnwtdata1[i](k);
     }
   }
   echoinput<<"Successful pre-processing of mean-bodysize data"<<endl;
@@ -1167,7 +1127,7 @@
     for (i=0;i<=nobsl_rd-1;i++)
     {
       y= lendata[i](1);
-      if(y>=styr && y<=retro_yr)
+      if(y>=styr)
       {
       f=abs( lendata[i](3));
       if( lendata[i](6)<0) {N_warn++; cout<<"error in length data "<<endl; warning<<"Error: negative sample size no longer valid as indicator of skip data or superperiods "<<endl; exit(1);}
@@ -1206,6 +1166,7 @@
   matrix  nsamp_l_read(1,Nfleet,1,Nobs_l)
   imatrix  gen_l(1,Nfleet,1,Nobs_l)
   imatrix  mkt_l(1,Nfleet,1,Nobs_l)
+  3darray header_l_rd(1,Nfleet,1,Nobs_l,0,3)
   3darray header_l(1,Nfleet,1,Nobs_l,0,3)
   3darray tails_l(1,Nfleet,1,Nobs_l,1,4)   // min-max bin for females; min-max bin for males
   ivector tails_w(1,4)
@@ -1233,74 +1194,33 @@
     for (i=0;i<=nobsl_rd-1;i++)   //  loop all observations to find those for this fleet/time
     {
       y= lendata[i](1);
-      if(y>=styr && y<=retro_yr)
+      if(y>=styr)
       {
         f=abs( lendata[i](3));
         if(f==floop)
         {
+          timing_input(1,3)=lendata[i](1,3);
+          get_data_timing(timing_input, timing_constants, timing_i_result, timing_r_result, seasdur, subseasdur_delta, azero_seas, surveytime);
+
           Nobs_l(f)++;
           j=Nobs_l(f);
+          f=abs( lendata[i](3));
+          t=timing_i_result(2);
+          s=timing_i_result(3);
+          ALK_time=timing_i_result(5);
 
-          {  //  start have_data index and timing processing
-          temp=abs( lendata[i](2));  //  read value that could be season or month; abs ()because neg value indicates super period
-            if(read_seas_mo==1)  // reading season
-            {
-              s=int(temp);
-              subseas=mid_subseas;
-              if(surveytime(f)>=0.)
-              {data_timing=surveytime(f);}  //  fraction of season
-              else
-              {data_timing=0.5;}
-              real_month=1.0 + azero_seas(s)*12. + 12.*data_timing*seasdur(s);
-            }
-            else  //  reading month.fraction
-            {
-              real_month=temp;
-              temp1=(temp-1.0)/12.;  //  month as fraction of year
-              s=1;  // earlist possible seas;
-              subseas=1;  //  earliest possible subseas in seas
-              temp=subseasdur_delta(s);  //  starting value
-              while(temp<=temp1+1.0e-9)
-              {
-                if(subseas==N_subseas)
-                {s++; subseas=1;}
-                else
-                {subseas++;}
-                temp+=subseasdur_delta(s);
-              }
-              data_timing=(temp1-azero_seas(s))/seasdur(s);  //  remainder converted to fraction of season (but is multiplied by seasdur as it is used, so perhaps change this)
-              if(surveytime(f)==-1.)  //  so ignoring month info
-              {
-                subseas=mid_subseas;
-                data_timing=0.5;
-              }
-            }
+          Len_time_t(f,j)=t;     // sequential time = year+season
+          Len_time_ALK(f,j)=ALK_time;
+          if(data_time(ALK_time,f,1)<0.0)  //  so first occurrence of data at ALK_time,f
+          {data_time(ALK_time,f)(1,3)=timing_r_result(1,3);}  // real_month,fraction of season, year.fraction
+          else if (timing_r_result(1) !=  data_time(ALK_time,f,1))
+          {N_warn++; warning<<"LENGTH: data_month already set for y,s,f: "<<y<<" "<<s<<" "<<f<<" to real month: "<< data_time(ALK_time,f,1)<<"  but read value is: "<<timing_r_result(1)<<endl;}
 
-            t=styr+(y-styr)*nseas+s-1;
-            ALK_time=(y-styr)*nseas*N_subseas+(s-1)*N_subseas+subseas;
-
-//    i_result(5)=(y-timing_constants(5))*timing_constants(2)*timing_constants(3)+(s-1)*timing_constants(3)+subseas;  //  ALK_time
-
-            Len_time_t(f,j)=t;     // sequential time = year+season
-            Len_time_ALK(f,j)=ALK_time;
-            if(data_time(ALK_time,f,1)<0.0)
-            {
-              data_time(ALK_time,f,1)=real_month;
-              data_time(ALK_time,f,2)=data_timing;  //  fraction of season
-              data_time(ALK_time,f,3)=float(y)+(real_month-1.)/12.;  //  fraction of year
-            }
-
-            else if (real_month!=  data_time(ALK_time,f,1))
-            {
-              N_warn++;
-              warning<<"LENGTH: data_month already set for y,s,f: "<<y<<" "<<s<<" "<<f<<" to real month: "<< data_time(ALK_time,f,1)<<"  but read value is: "<<real_month<<endl;
-            }
             have_data(ALK_time,0,0,0)=1;
             have_data(ALK_time,f,0,0)=1;  //  so have data of some type
             have_data(ALK_time,f,data_type,0)++;  //  count the number of observations in this subseas
             p=have_data(ALK_time,f,data_type,0);
             have_data(ALK_time,f,data_type,p)=j;  //  store data index for the p'th observation in this subseas
-          }  //  end have_data index and timing processing
 
           if(s>nseas)
            {N_warn++; cout<<" EXIT - see warning "<<endl; warning<<" Critical error, season for length obs "<<i<<" is > nseas"<<endl; exit(1);}
@@ -1310,21 +1230,22 @@
           header_l(f,j,1) = y;
           if( lendata[i](2)<0)
           {
-            header_l(f,j,2) = -real_month;  // month with sign to indicate super period
+            header_l(f,j,2) = -timing_r_result(1);  // month with sign to indicate super period
           }
           else
           {
-            header_l(f,j,2) = real_month;  // month
+            header_l(f,j,2) = timing_r_result(1);  // month
           }
 
-          header_l(f,j,3) =  lendata[i](3);   // fleet with sign
+          header_l_rd(f,j)(1,3) =  lendata[i](1,3);   // fleet with sign
+          header_l(f,j,3)=f;
+          if(y>retro_yr) header_l(f,j,3)=-f;
           //  note that following storage is redundant with Show_Time(t,3) calculated later
           header_l(f,j,0) = float(y)+0.01*int(100.*(azero_seas(s)+seasdur_half(s)));  //
           gen_l(f,j)= lendata[i](4);         // gender 0=combined, 1=female, 2=male, 3=both
           mkt_l(f,j)= lendata[i](5);         // partition: 0=all, 1=discard, 2=retained
           nsamp_l_read(f,j)= lendata[i](6);  // assigned sample size for observation
           nsamp_l(f,j)=nsamp_l_read(f,j);
-
   //  SS_Label_Info_2.7.6 #Create super-periods for length compositions
           if( lendata[i](2)<0)  // start/stop a super-period  ALL observations must be continguous in the file
           {
