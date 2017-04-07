@@ -38,10 +38,21 @@ FUNCTION void Get_expected_values();
             else
             { L1=1; L2=nlength; A2=0;}
 
+ /*
             if(F_Method==1 && surveytime(f)<0.0) //  Pope's approximation
             {tempvec_a=elem_prod(Nmid(g),sel_a(y,f,gg));}  //  CHECK   Nmid may not exist correctly unless still within the area loop
             else if(surveytime(f)<0.0) // mimic fishery catch, but without Hrate so gets available numbers
             {tempvec_a=elem_prod(natage(t,p,g),elem_prod(Zrate2(p,g),sel_a(y,f,gg)));}
+            else  //  explicit timing
+            {tempvec_a=elem_prod(natage(t,p,g),elem_prod(mfexp(-Z_rate(t,p,g)*timing),sel_a(y,f,gg)));}
+ */
+            if(timing<0.0)
+            {
+              if(F_Method==1) //  Pope's approximation
+              {tempvec_a=elem_prod(Nmid(g),sel_a(y,f,gg));}  //  CHECK   Nmid may not exist correctly unless still within the area loop
+              else // mimic fishery catch, but without Hrate so gets available numbers
+              {tempvec_a=elem_prod(natage(t,p,g),elem_prod(Zrate2(p,g),sel_a(y,f,gg)));}
+            }
             else  //  explicit timing
             {tempvec_a=elem_prod(natage(t,p,g),elem_prod(mfexp(-Z_rate(t,p,g)*timing),sel_a(y,f,gg)));}
 

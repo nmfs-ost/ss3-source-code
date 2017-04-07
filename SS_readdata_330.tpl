@@ -78,7 +78,7 @@
     {seasdur /=12.;}
   seasdur_half = seasdur*0.5;   // half a season
   subseasdur_delta=seasdur/double(N_subseas);
-  TimeMax = styr+(endyr-styr)*nseas+nseas-1;
+  TimeMax = styr+(endyr+20-styr)*nseas+nseas-1;
   retro_yr=endyr+retro_yr;
 
   azero_seas(1)=0.;
@@ -193,8 +193,17 @@
       if(fleet_type(f)==2) N_bycatch++;
       if(fleet_type(f)<=2) N_catchfleets++;
       surveytime(f) = fleet_setup(f,2);
-      if(surveytime(f)!=-1. && surveytime(f)!=0.5)
-        {warning<<"fleet: "<<f<<" surveytime="<<surveytime(f)<<" will not be used in V3.30; must set for each datum"<<endl;}
+      if(fleet_type(f)<=2)
+        {
+          if(surveytime(f)!=-1.)
+          {warning<<"fleet: "<<f<<" surveytime="<<surveytime(f)<<" reset to -1 for fishing fleet; can override by month>1000"<<endl;
+            surveytime(f)=-1;}
+        }
+        else if (fleet_type(f)==3)
+          {if(surveytime(f)==-1.) 
+          {warning<<"fleet: "<<f<<" surveytime="<<surveytime(f)<<" reset to null for survey fleet; will be overridden by month"<<endl;
+            surveytime(f)=0.5;}
+          }
       fleet_area(f) = int(fleet_setup(f,3));
       catchunits(f) = int(fleet_setup(f,4));
       need_catch_mult(f) = int(fleet_setup(f,5));
@@ -449,7 +458,7 @@
     {
       echoinput<<Svy_data[i]<<endl;
       y= Svy_data[i](1);
-      if(y>=styr && y<=retro_yr)
+      if(y>=styr)
       {
         f=abs( Svy_data[i](3));  //  negative f turns off observation
         Svy_N_fleet(f)++;
@@ -508,26 +517,26 @@
     for (i=0;i<=Svy_N_rd-1;i++)  // loop all, including those out of yr range
     {
       y= Svy_data[i](1);
-      f=abs( Svy_data[i](3));
-
-      if(y>=styr && y<=retro_yr)
+      if(y>=styr)
       {
-        timing_input(1,3)=Svy_data[i](1,3);  //  function will return: data_timing, ALK_time, real_month, use_midseas
 //  call a global function to calculate data timing and create various indexes
+//  function will return: data_timing, ALK_time, real_month, use_midseas
+        timing_input(1,3)=Svy_data[i](1,3);
         get_data_timing(timing_input, timing_constants, timing_i_result, timing_r_result, seasdur, subseasdur_delta, azero_seas, surveytime);
 
+        f=abs( Svy_data[i](3));
+        if(y>retro_yr) Svy_data[i](3)=-f;
+        Svy_N_fleet(f)++;  //  count obs by fleet
+        j=Svy_N_fleet(f);  //  index of observation as stored in working array
         t=timing_i_result(2);
         ALK_time=timing_i_result(5);
 
-        Svy_N_fleet(f)++;  //  count obs by fleet
-        j=Svy_N_fleet(f);  //  index of observation as stored in working array
 //  some fleet specific indexes and working versions of the data and se
         Svy_time_t(f,j)=t;
         Svy_ALK_time(f,j)=ALK_time;  //  continuous subseas counter in which jth obs from fleet f occurs
         Svy_se_rd(f,j)= Svy_data[i](5);   // later adjust with varadjust, copy to se_cr_use, then adjust with extra se parameter
         if( Svy_data[i](3)<0) {Svy_use(f,j)=-1;} else {Svy_use(f,j)=1;}
         Svy_obs(f,j)= Svy_data[i](4);
-
           Svy_yr(f,j)=y;
           if(Svy_styr(f)==0 || (y>=styr && y<Svy_styr(f)) )  Svy_styr(f)=y;  //  for dimensioning survey q devs
           if(Svy_endyr(f)==0 || (y<=endyr && y>Svy_endyr(f)) )  Svy_endyr(f)=y;  //  for dimensioning survey q devs
@@ -616,45 +625,45 @@
       disc_errtype_r(f)=float(disc_errtype(f));
     }
 
-  ender=0;
-  do {
-    dvector tempvec(1,5);
-      *(ad_comm::global_datafile) >> tempvec(1,5);
-        if(tempvec(1)==-9999.) ender=1;
-    discdata.push_back (tempvec(1,5));
-  } while (ender==0);
-  disc_N_read=discdata.size()-1;
-  echoinput<<disc_N_read<<" N discard obs "<<endl;
+    ender=0;
+    do {
+      dvector tempvec(1,5);
+        *(ad_comm::global_datafile) >> tempvec(1,5);
+          if(tempvec(1)==-9999.) ender=1;
+      discdata.push_back (tempvec(1,5));
+    } while (ender==0);
+    disc_N_read=discdata.size()-1;
+    echoinput<<disc_N_read<<" N discard obs "<<endl;
 
-  if(disc_N_read>0)
-  {
-    for (i=0;i<=disc_N_read-1;i++)  // get count of observations in date range
+    if(disc_N_read>0)
     {
-      echoinput<<discdata[i]<<endl;
-      y= discdata[i](1);
-      if(y>=styr && y<=retro_yr)
+      for (i=0;i<=disc_N_read-1;i++)  // get count of observations in date range
       {
-        f=abs( discdata[i](3));
-        disc_N_fleet(f)++;
-        if( discdata[i](5)<0) {N_warn++; cout<<"EXIT - see warning"<<endl; warning<<"Cannot use negative se as indicator of superperiod in discard data"<<endl;}
-        if( discdata[i](2)<0) N_suprper_disc(f)++;  // count the super-periods if seas<0 or se<0
+        echoinput<<discdata[i]<<endl;
+        y= discdata[i](1);
+        if(y>=styr)
+        {
+          f=abs( discdata[i](3));
+          disc_N_fleet(f)++;
+          if( discdata[i](5)<0) {N_warn++; cout<<"EXIT - see warning"<<endl; warning<<"Cannot use negative se as indicator of superperiod in discard data"<<endl;}
+          if( discdata[i](2)<0) N_suprper_disc(f)++;  // count the super-periods if seas<0 or se<0
+        }
+      }
+      nobs_disc=sum(disc_N_fleet);  // sum of obs in the date range
+      for (f=1;f<=Nfleet;f++)
+      if(N_suprper_disc(f)>0)
+      {
+        j=N_suprper_disc(f)/2;  // because we counted the begin and end
+        if(2*j!=N_suprper_disc(f))
+        {
+          N_warn++; cout<<"EXIT - see warning"<<endl; warning<<"unequal number of starts and ends of discard superperiods "<<endl; exit(1);
+        }
+        else
+        {
+          N_suprper_disc(f)=j;
+        }
       }
     }
-    nobs_disc=sum(disc_N_fleet);  // sum of obs in the date range
-    for (f=1;f<=Nfleet;f++)
-    if(N_suprper_disc(f)>0)
-    {
-      j=N_suprper_disc(f)/2;  // because we counted the begin and end
-      if(2*j!=N_suprper_disc(f))
-      {
-        N_warn++; cout<<"EXIT - see warning"<<endl; warning<<"unequal number of starts and ends of discard superperiods "<<endl; exit(1);
-      }
-      else
-      {
-        N_suprper_disc(f)=j;
-      }
-    }
-  }
   }
  END_CALCS
 
@@ -679,76 +688,30 @@
       for (i=0;i<=disc_N_read-1;i++)
       {
         y= discdata[i](1);
-        if(y>=styr && y<=endyr)
+        if(y>=styr)
         {
+         timing_input(1,3)=discdata[i](1,3);
+         get_data_timing(timing_input, timing_constants, timing_i_result, timing_r_result, seasdur, subseasdur_delta, azero_seas, surveytime);
+
          f=abs( discdata[i](3));
+        if(y>retro_yr) discdata[i](3)=-f;
          disc_N_fleet(f)++;
          j=disc_N_fleet(f);  //  index number for data that are in date range
+         t=timing_i_result(2);
+         ALK_time=timing_i_result(5);
+         disc_time_t(f,j)=t;
+         disc_time_ALK(f,j)=ALK_time;  //  subseas that this observation is in
 
-          {  //  start have_data index and timing processing
-          temp=abs( discdata[i](2));  //  read value that could be season or month; abs ()because neg value indicates super period
-            if(read_seas_mo==1)  // reading season
-            {
-              s=int(temp);
-              subseas=mid_subseas;
-              if(surveytime(f)>=0.)
-              {data_timing=surveytime(f);}  //  fraction of season
-              else
-              {data_timing=0.5;}
-              real_month=1.0 + azero_seas(s)*12. + 12.*data_timing*seasdur(s);
-            }
-            else  //  reading month.fraction
-            {
-              real_month=temp;
-              temp1=(temp-1.0)/12.;  //  month as fraction of year
-              s=1;  // earlist possible seas;
-              subseas=1;  //  earliest possible subseas in seas
-              temp=subseasdur_delta(s);  //  starting value
-              while(temp<=temp1+1.0e-9)
-              {
-                if(subseas==N_subseas)
-                {s++; subseas=1;}
-                else
-                {subseas++;}
-                temp+=subseasdur_delta(s);
-              }
-              data_timing=(temp1-azero_seas(s))/seasdur(s);  //  remainder converted to fraction of season (but is multiplied by seasdur as it is used, so perhaps change this)
-              if(surveytime(f)==-1.)  //  so ignoring month info
-              {
-                subseas=mid_subseas;
-                data_timing=0.5;
-              }
-            }
+         if(data_time(ALK_time,f,1)<0.0)  //  so first occurrence of data at ALK_time,f
+         {data_time(ALK_time,f)(1,3)=timing_r_result(1,3);}  // real_month,fraction of season, year.fraction
+         else if (timing_r_result(1) !=  data_time(ALK_time,f,1))
+         {N_warn++; warning<<"DISCARD: data_month already set for y,s,f: "<<y<<" "<<s<<" "<<f<<" to real month: "<< data_time(ALK_time,f,1)<<"  but read value is: "<<real_month<<endl;}
 
-            t=styr+(y-styr)*nseas+s-1;
-            ALK_time=(y-styr)*nseas*N_subseas+(s-1)*N_subseas+subseas;
-
-          disc_time_t(f,j)=t;
-
-          if(surveytime(f)==-1.)  //  so ignoring month info
-          {
-              subseas=mid_subseas;
-              data_timing=0.5;
-          }
-          ALK_time=(y-styr)*nseas*N_subseas+(s-1)*N_subseas+subseas;
-          disc_time_ALK(f,j)=ALK_time;  //  subseas that this observation is in
-            if(data_time(ALK_time,f,1)<0.0)
-            {
-              data_time(ALK_time,f,1)=real_month;
-              data_time(ALK_time,f,2)=data_timing;  //  fraction of season
-              data_time(ALK_time,f,3)=float(y)+(real_month-1.)/12.;  //  year.fraction
-            }
-            else if (real_month!=  data_time(ALK_time,f,1))
-            {
-              N_warn++;
-              warning<<"DISCARD: data_month already set for y,s,f: "<<y<<" "<<s<<" "<<f<<" to real month: "<< data_time(ALK_time,f,1)<<"  but read value is: "<<real_month<<endl;
-            }
-            have_data(ALK_time,0,0,0)=1;
-            have_data(ALK_time,f,0,0)=1;  //  so have data of some type
-            have_data(ALK_time,f,data_type,0)++;  //  count the number of observations in this subseas
-            p=have_data(ALK_time,f,data_type,0);
-            have_data(ALK_time,f,data_type,p)=j;  //  store data index for the p'th observation in this subseas
-          }  //  end have_data index and timing processing
+         have_data(ALK_time,0,0,0)=1;
+         have_data(ALK_time,f,0,0)=1;  //  so have data of some type
+         have_data(ALK_time,f,data_type,0)++;  //  count the number of observations in this subseas
+         p=have_data(ALK_time,f,data_type,0);
+         have_data(ALK_time,f,data_type,p)=j;  //  store data index for the p'th observation in this subseas
 
          cv_disc(f,j)= discdata[i](5);
          obs_disc(f,j)=fabs( discdata[i](4));

@@ -120,7 +120,7 @@ GLOBALS_SECTION
         i_result(6)=0;
       }
       else
-      {  //  use midseason and Nmid abundance
+      {  //  for fishing fleets;  use midseason and fishery catch
         data_timing_seas=0.5;
         i_result(6)=1;
       }
@@ -128,15 +128,22 @@ GLOBALS_SECTION
     }
     else  //  reading month.fraction
     {
-      if(month>999)
-        {  // this observation uses mean abundance during the season
-          month-=1000;
-          i_result(6)=1.;
+      if(surveytime(f)<0)  //  so a fishing fleet
+      {
+        if(month>999)
+        {  // override to allow a fishing fleet to have explicit timing
+          month-=1000.;
+          i_result(6)=0;
         }
         else
         {
-          i_result(6)=0.;
+          i_result(6)=1;
         }
+      }
+      else
+      {
+        i_result(6)=0;  //  explicit timing for all survey fleet obs
+      }
       temp1=(month-1.0)/12.;  //  month as fraction of year
       s=1;  // earlist possible seas;
       subseas=1;  //  earliest possible subseas in seas
