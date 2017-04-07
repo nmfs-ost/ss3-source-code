@@ -3790,7 +3790,7 @@ FUNCTION void write_bigoutput()
    }
 
   SS2out <<endl<< "FIT_AGE_COMPS" << endl;
-  SS2out<<"Fleet Yr Month Seas Yr.frac Sex Mkt Ageerr Lbin_lo Lbin_hi Nsamp effN Like 5% Mean 95% SuprPer Use"<<endl;
+  SS2out<<"Fleet Yr Month Seas Yr.frac Sex Mkt Ageerr Lbin_lo Lbin_hi Nsamp effN Like SuprPer Use"<<endl;
   rmse = 0.0;  n_rmse = 0.0; mean_CV=0.0;  Hrmse=0.0; Rrmse=0.0;
    if(Nobs_a_tot>0)
    for(f=1;f<=Nfleet;f++)
