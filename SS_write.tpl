@@ -712,17 +712,11 @@ FUNCTION void write_nudata()
   report1<<"# ageerr codes:  positive means mean length-at-age; negative means mean bodywt_at_age"<<endl;
   report1<<"#_yr month fleet sex part ageerr ignore datavector(female-male)"<<endl;
   report1<<"#                                          samplesize(female-male)"<<endl;
-   for (f=1;f<=Nfleet;f++)
-   {
-    if(Nobs_ms(f)>0)
-    {
-     for (i=1;i<=Nobs_ms(f);i++)
+  if(nobs_ms_rd>0)
+  for (i=0;i<=nobs_ms_rd-1;i++)
      {
-       report1 << header_ms(f,i)(1,7)<<obs_ms(f,i)(1,n_abins2)<<endl;
-       report1<<"        "<<elem_prod(obs_ms_n(f,i),obs_ms_n(f,i)) << endl;
+       report1<<sizeAge_Data[i]<<endl;
      }
-    }
-   }
     report1<<"-9999 ";
     for (j=1;j<=6+n_abins2;j++) report1<<" 0";
     report1<<endl;
@@ -1004,7 +998,7 @@ FUNCTION void write_nudata()
      }
      else
      {exp_a_temp = obs_a(f,i);}
-    report1 << header_a(f,i)(1,8)<<" "<<nsamp_a(f,i)<<" "<<exp_a_temp<<endl;
+    report1 << header_a(f,i)(1)<<" "<<header_a_rd(f,i)(2,3)<<" "<<header_a(f,i)(4,8)<<" "<<nsamp_a(f,i)<<" "<<exp_a_temp<<endl;
     }
     }
    }
@@ -1027,7 +1021,7 @@ FUNCTION void write_nudata()
     {
      for (i=1;i<=Nobs_ms(f);i++)
      {
-       report1 << header_ms(f,i)(1,7);
+       report1 << header_ms(f,i)(1)<<" "<<header_ms_rd(f,i)(2,3)<<" "<<header_ms(f,i)(4,7);
        for (a=1;a<=n_abins2;a++)
        {
          report1 << " " ;
@@ -1410,7 +1404,7 @@ FUNCTION void write_nudata()
        }
        else
        {exp_a_temp = obs_a(f,i);}
-       report1 << header_a(f,i)(1,8)<<" "<<nsamp_a(f,i)<<" "<<exp_a_temp<<endl;
+       report1 << header_a(f,i)(1)<<" "<<header_a_rd(f,i)(2,3)<<" "<<header_a(f,i)(4,8)<<" "<<nsamp_a(f,i)<<" "<<exp_a_temp<<endl;
       }
     }
   }
@@ -1434,7 +1428,7 @@ FUNCTION void write_nudata()
      {
        for (i=1;i<=Nobs_ms(f);i++)
        {
-         report1 << header_ms(f,i)(1,7);
+       report1 << header_ms(f,i)(1)<<" "<<header_ms_rd(f,i)(2,3)<<" "<<header_ms(f,i)(4,7);
          for (a=1;a<=n_abins2;a++)
          {
           report1<< " " ;
@@ -4841,7 +4835,7 @@ FUNCTION void write_bigoutput()
       {in_superperiod++; anystring="Sup";}
       else
       {anystring="_";}
-      if(use_ms(f,i)<0)
+      if(header_ms(f,i,3)<0)
       {anystring+=" skip";}
       else
       {anystring+=" _";}
@@ -4856,7 +4850,7 @@ FUNCTION void write_bigoutput()
         SS_compout<<Show_Time(t,1)<<" "<<Show_Time(t,2)<<" "<<data_time(ALK_time,f,3)<<" "<<f<<" "<<repli<<" "<<gen_ms(f,i)<<anystring2<<mkt_ms(f,i)<<" "<<
          ageerr_type_ms(f,i)<<" "<<s_off<<" "<<exp_ms_sq(f,i,z)<<" "<<nlen_bin<<" "<<age_bins(z)<<" "<<
          obs_ms(f,i,z)<<" "<<exp_ms(f,i,z)<<" ";
-        if(obs_ms(f,i,z)>0. && t1>0. && use_ms(f,i)>0)
+        if(obs_ms(f,i,z)>0. && t1>0. && header_ms(f,i,3)>0)
         {
           SS_compout<<(obs_ms(f,i,z) -exp_ms(f,i,z)) / (exp_ms_sq(f,i,z)/obs_ms_n(f,i,z))<<" ";  // Pearson
           SS_compout<<t1<<" ";  // sample size

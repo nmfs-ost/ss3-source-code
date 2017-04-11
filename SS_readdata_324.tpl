@@ -2064,7 +2064,6 @@
   imatrix  ageerr_type_ms(1,Nfleet,1,Nobs_ms)
   imatrix  gen_ms(1,Nfleet,1,Nobs_ms)
   imatrix  mkt_ms(1,Nfleet,1,Nobs_ms)
-  imatrix  use_ms(1,Nfleet,1,Nobs_ms)
   3darray header_ms(1,Nfleet,1,Nobs_ms,0,7)
   matrix suprper_ms_sampwt(1,Nfleet,1,Nobs_ms)
   imatrix suprper_ms1(1,Nfleet,1,N_suprper_ms)
@@ -2166,6 +2165,7 @@
             header_ms(f,j,2) = real_month;  //month
           }
           header_ms(f,j,3) = sizeAge_Data[i](3);   // fleet
+          if(sizeAge_Data[i](3)<0) header_ms(f,j,3)=-f;
           //  note that following storage is redundant with Show_Time(t,3) calculated later
           header_ms(f,j,0) = float(y)+0.01*int(100.*(azero_seas(s)+seasdur_half(s)));  //
 
@@ -2177,7 +2177,6 @@
               warning<<" in meansize, ageerror type must be <= "<<N_ageerr<<endl; exit(1);
            }
            ageerr_type_ms(f,j)=sizeAge_Data[i](6);
-           if(sizeAge_Data[i](3)>0) {use_ms(f,j)=1;} else {use_ms(f,j)=-1;}
 
   //  SS_Label_Info_2.9.1 #Create super-periods for meansize data
            if(sizeAge_Data[i](2)<0)  // start/stop a super-period  ALL observations must be continguous in the file

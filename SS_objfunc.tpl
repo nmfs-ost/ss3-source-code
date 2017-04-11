@@ -451,7 +451,7 @@ FUNCTION void evaluate_the_objective_function()
          }
 
          for (i=1;i<=Nobs_ms(f);i++)
-         if(use_ms(f,i)>0)
+         if(header_ms(f,i,3)>0)
          {
            for (b=1;b<=n_abins2;b++)
            {
