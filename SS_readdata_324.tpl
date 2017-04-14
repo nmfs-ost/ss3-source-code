@@ -408,8 +408,12 @@
   init_imatrix Svy_units_rd(1,Nfleet,1,k)
   ivector Svy_units(1,j)   //0=num/1=bio/2=F
   ivector Svy_errtype(1,j)  // -1=normal / 0=lognormal / >0=T
+  ivector Svy_sdreport(1,j) // 0=no sdreport; 1=enable sdreport
 
  LOCAL_CALCS
+
+  Svy_sdreport = 0;   // default for 3.24
+
   if(k>0)
   {
     echoinput<<"Units:  0=numbers; 1=biomass; 2=F"<<endl;

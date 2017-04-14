@@ -199,7 +199,7 @@
           {warning<<"fleet: "<<f<<" surveytime read for fishing fleet as: "<<surveytime(f)<<" normally is -1 for fishing fleet; can override by month>1000"<<endl;}
         }
         else if (fleet_type(f)==3)
-          {if(surveytime(f)==-1.) 
+          {if(surveytime(f)==-1.)
           {warning<<"fleet: "<<f<<" surveytime read for survey fleet as: "<<surveytime(f)<<" reset to 0.5 for survey fleet; will be overridden by month"<<endl;
             surveytime(f)=0.5;}
           }
@@ -415,18 +415,21 @@
   !!echoinput<<"#_  now read fleet #, svyunits, svyerrtype for each fleet "<<endl;
   int Svy_N_rd
   int Svy_N
-  init_imatrix Svy_units_rd(1,Nfleet,1,3)
+  init_imatrix Svy_units_rd(1,Nfleet,1,4)
   ivector Svy_units(1,Nfleet)   //0=num; 1=bio; 2=F; >=30 for spec\ial patterns
   ivector Svy_errtype(1,Nfleet)  // -1=normal / 0=lognormal / >0=T
+  ivector Svy_sdreport(1,Nfleet)  // 0=no sdreport; 1=enable sdreport
 
  LOCAL_CALCS
   data_type=1;  //  for surveys
   echoinput<<"Units:  0=numbers; 1=biomass; 2=F; >=30 for special patterns"<<endl;
   echoinput<<"Errtype:  -1=normal; 0=lognormal; >0=T"<<endl;
-  echoinput<<"Fleet Units Err_Type"<<endl;
+  echoinput<<"SD_Report: 0=no sdreport; 1=enable sdreport"<<endl;
+  echoinput<<"Fleet Units Err_Type SD_Report"<<endl;
   echoinput<<Svy_units_rd<<endl;
   Svy_units=column(Svy_units_rd,2);
   Svy_errtype=column(Svy_units_rd,3);
+  Svy_sdreport=column(Svy_units_rd,4);
 
   ender=0;
   do {
@@ -480,6 +483,15 @@
       }
     }
   }
+
+  // check if there are observations for the index before enabling sdreport
+  for (f = 1; f <= Nfleet; ++f)
+  {
+    if (Svy_N_fleet(f) == 0) Svy_sdreport(f) = 0;
+  }
+
+  int Svy_N_sdreport = sum(Svy_sdreport);
+
  END_CALCS
 
   imatrix Svy_time_t(1,Nfleet,1,Svy_N_fleet)  //  stores the continuous season index (t) for each obs
@@ -588,6 +600,14 @@
   echoinput<<"Successful read of index data; N= "<<Svy_N<< endl;
   echoinput<<"Number of survey superperiods by fleet: "<<Svy_super_N<<endl;
  END_CALCS
+
+  ivector Svy_sdreport_idx(1,Svy_N_sdreport)
+
+  !! if (Svy_N_sdreport > 0)
+  !! {
+        // set up sdreport_matrix (ragged matrix allowed?) for survey indices
+        // sdreport_matrix(1,Svy_N_sdreport,vector of start and end years for each enabled fleet)
+  !! }
 
    init_int Ndisc_fleets
    int nobs_disc  //  number of discard records kept in active array
