@@ -818,7 +818,7 @@
 
  LOCAL_CALCS
   autogen_timevary=0;
-    if(parm_adjust_method!=1 || parm_adjust_method!=3)
+    if(parm_adjust_method==2)
     {
       N_warn++;
       warning<<" Only parm_adjust_method 1 and 3 implemented in SS3.30; resetting value to 1 "<<endl;

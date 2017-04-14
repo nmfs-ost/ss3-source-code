@@ -518,6 +518,8 @@
     for (i=0;i<=Svy_N_rd-1;i++)  // loop all, including those out of yr range
     {
       y= Svy_data[i](1);
+      if(y>endyr+20)
+      {N_warn++;warning<<"forecast observations cannot be beyond endyr+20; SS will exit"<<endl; exit(1);}
       if(y>=styr)
       {
 //  call a global function to calculate data timing and create various indexes
@@ -689,6 +691,8 @@
       for (i=0;i<=disc_N_read-1;i++)
       {
         y= discdata[i](1);
+        if(y>endyr+20)
+        {N_warn++;warning<<"forecast observations cannot be beyond endyr+20; SS will exit"<<endl; exit(1);}
         if(y>=styr)
         {
          timing_input(1,3)=discdata[i](1,3);
@@ -789,6 +793,8 @@
   for (i=0;i<=nobs_mnwt_rd-1;i++)  //   loop all obs
   {
     y=mnwtdata1[i](1);
+      if(y>endyr+20)
+      {N_warn++;warning<<"forecast observations cannot be beyond endyr+20; SS will exit"<<endl; exit(1);}
     if(y>=styr)
     {
       if(mnwtdata1[i](2)<0.0) {N_warn++; warning<<"negative season not allowed for mnwtdata because superperiods not implemented "<<endl;}
@@ -1193,6 +1199,8 @@
     for (i=0;i<=nobsl_rd-1;i++)   //  loop all observations to find those for this fleet/time
     {
       y= lendata[i](1);
+      if(y>endyr+20)
+      {N_warn++;warning<<"forecast observations cannot be beyond endyr+20; SS will exit"<<endl; exit(1);}
       if(y>=styr)
       {
         f=abs( lendata[i](3));
@@ -1618,6 +1626,8 @@
      for (i=0;i<=nobsa_rd-1;i++)
      {
        y=Age_Data[i](1);
+       if(y>endyr+20)
+       {N_warn++;warning<<"forecast observations cannot be beyond endyr+20; SS will exit"<<endl; exit(1);}
        if(y>=styr)
        {
          f=abs(Age_Data[i](3));
@@ -1972,6 +1982,8 @@
      for (i=0;i<=nobs_ms_rd-1;i++)
      {
        y=sizeAge_Data[i](1);
+       if(y>endyr+20)
+       {N_warn++;warning<<"forecast observations cannot be beyond endyr+20; SS will exit"<<endl; exit(1);}
        if(y>=styr)
        {
          f=abs(sizeAge_Data[i](3));
@@ -2247,6 +2259,8 @@
         SzFreq_obs(iobs)+=SzFreq_mincomp(k);
         SzFreq_obs(iobs)/=sum(SzFreq_obs(iobs));
         y=SzFreq_obs_hdr(iobs,1);
+        if(y>endyr+20)
+        {N_warn++;warning<<"forecast observations cannot be beyond endyr+20; SS will exit"<<endl; exit(1);}
 
         timing_input(1,3)=SzFreq_obs_hdr(iobs)(1,3);
         get_data_timing(timing_input, timing_constants, timing_i_result, timing_r_result, seasdur, subseasdur_delta, azero_seas, surveytime);
