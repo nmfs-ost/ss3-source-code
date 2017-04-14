@@ -91,7 +91,7 @@ GLOBALS_SECTION
   std::vector<dvector> timevary_parm_rd;
   std::vector<ivector> timevary_def;
 
-//  example function in GLOBALS to do the timing setup in the data section
+//  function in GLOBALS to do the timing setup in the data section
   void get_data_timing(const dvector& to_process, const ivector& timing_constants, ivector i_result, dvector r_result, const dvector& seasdur, const dvector& subseasdur_delta, const dvector& azero_seas, const dvector& surveytime)
   {
 
@@ -117,12 +117,12 @@ GLOBALS_SECTION
       if(surveytime(f)>=0.)
       {  //  fraction of season
         data_timing_seas=surveytime(f);
-        i_result(6)=0;
+        i_result(6)=1;
       }
       else
       {  //  for fishing fleets;  use midseason and fishery catch
         data_timing_seas=0.5;
-        i_result(6)=1;
+        i_result(6)=-1;  //  flag to use season-long fishery catch as the sample
       }
       month=1.0 + azero_seas(s)*12. + 12.*data_timing_seas*seasdur(s);
     }
@@ -133,16 +133,16 @@ GLOBALS_SECTION
         if(month>999)
         {  // override to allow a fishing fleet to have explicit timing
           month-=1000.;
-          i_result(6)=0;
+          i_result(6)=1;
         }
         else
         {
-          i_result(6)=1;
+          i_result(6)=-1;  //  flag to use season-long fishery catch as the sample
         }
       }
       else
       {
-        i_result(6)=0;  //  explicit timing for all survey fleet obs
+        i_result(6)=1;  //  explicit timing for all survey fleet obs
       }
       temp1=(month-1.0)/12.;  //  month as fraction of year
       s=1;  // earlist possible seas;
@@ -168,7 +168,7 @@ GLOBALS_SECTION
     i_result(5)=(y-timing_constants(5))*timing_constants(2)*timing_constants(3)+(s-1)*timing_constants(3)+subseas;  //  ALK_time
 
     r_result(1)=month;
-    r_result(2)=data_timing_seas;
+    r_result(2)=data_timing_seas*i_result(6);
     r_result(3)=float(y)+(month-1.)/12.;  //  year.fraction
 
     return;

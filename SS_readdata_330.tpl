@@ -196,12 +196,11 @@
       if(fleet_type(f)<=2)
         {
           if(surveytime(f)!=-1.)
-          {warning<<"fleet: "<<f<<" surveytime="<<surveytime(f)<<" reset to -1 for fishing fleet; can override by month>1000"<<endl;
-            surveytime(f)=-1;}
+          {warning<<"fleet: "<<f<<" surveytime read for fishing fleet as: "<<surveytime(f)<<" normally is -1 for fishing fleet; can override by month>1000"<<endl;}
         }
         else if (fleet_type(f)==3)
           {if(surveytime(f)==-1.) 
-          {warning<<"fleet: "<<f<<" surveytime="<<surveytime(f)<<" reset to null for survey fleet; will be overridden by month"<<endl;
+          {warning<<"fleet: "<<f<<" surveytime read for survey fleet as: "<<surveytime(f)<<" reset to 0.5 for survey fleet; will be overridden by month"<<endl;
             surveytime(f)=0.5;}
           }
       fleet_area(f) = int(fleet_setup(f,3));
@@ -2248,47 +2247,19 @@
         SzFreq_obs(iobs)+=SzFreq_mincomp(k);
         SzFreq_obs(iobs)/=sum(SzFreq_obs(iobs));
         y=SzFreq_obs_hdr(iobs,1);
-        temp=abs(SzFreq_obs_hdr(iobs,2));
-        if(read_seas_mo==1)  // reading season
-        {
-              s=int(temp);
-              if(s>nseas)
-              {N_warn++; cout<<" EXIT - see warning "<<endl; warning<<" Critical error, season for general sizecomp  method, obs "<<k<<" "<<j<<" is > nseas"<<endl; exit(1);}
-              subseas=mid_subseas;
-              if(surveytime(f)>=0.)
-              {data_timing=surveytime(f);}  //  fraction of season
-              else
-              {data_timing=0.5;}
-              real_month=1.0 + azero_seas(s)*12. + 12.*data_timing*seasdur(s);
-        }
-        else  //  reading month.fraction
-        {
-          real_month=temp;
-          temp1=(temp-1.0)/12.;  //  month as fraction of year
-          s=1;  // earlist possible seas;
-          subseas=1;  //  earliest possible subseas in seas
-          temp=subseasdur_delta(s);  //  starting value
-          while(temp<=temp1+1.0e-9)
-          {
-            if(subseas==N_subseas)
-            {s++; subseas=1;}
-            else
-            {subseas++;}
-            temp+=subseasdur_delta(s);
-          }
-          data_timing=(temp1-azero_seas(s))/seasdur(s);  //  remainder converted to fraction of season (but is multiplied by seasdur as it is used, so perhaps change this)
-          if(surveytime(f)==-1.)  //  so ignoring month info
-          {
-            subseas=mid_subseas;
-            data_timing=0.5;
-          }
-        }
+
+        timing_input(1,3)=SzFreq_obs_hdr(iobs)(1,3);
+        get_data_timing(timing_input, timing_constants, timing_i_result, timing_r_result, seasdur, subseasdur_delta, azero_seas, surveytime);
+
+        f=abs(SzFreq_obs_hdr(iobs,3));
+        if(y>retro_yr) SzFreq_obs_hdr(iobs,3)=-f;
+        t=timing_i_result(2);
+        ALK_time=timing_i_result(5);
+        real_month=timing_r_result(1);
 
         SzFreq_obs_hdr(iobs,2)=SzFreq_obs_hdr(iobs,2)/abs(SzFreq_obs_hdr(iobs,2))*real_month;
         SzFreq_obs1(iobs,3)=real_month;
 
-        t=styr+(y-styr)*nseas+s-1;
-        ALK_time=(y-styr)*nseas*N_subseas+(s-1)*N_subseas+subseas;
         SzFreq_time_t(iobs)=t;
         SzFreq_time_ALK(iobs)=ALK_time;
         if(gender==1) {SzFreq_obs_hdr(iobs,4)=0;}
@@ -2299,10 +2270,10 @@
   //      SzFreq_obs_hdr(iobs,5);  // partition
         SzFreq_obs_hdr(iobs,6)=k;
         if(k!=SzFreq_obs1(iobs,1)) {N_warn++; warning<<" sizefreq ID # doesn't match "<<endl; } // save method code for later use
-        if(y>=styr && y<=retro_yr)
+        if(y>=styr)
         {
           SzFreq_LikeComponent(f,k)=1;    // indicates that this combination is being used
-          if(SzFreq_HaveObs2(k,ALK_time)==0)  //  transition matirx needs calculation
+          if(SzFreq_HaveObs2(k,ALK_time)==0)  //  transition matrix needs calculation
             {
             	SzFreq_HaveObs2(k,ALK_time)=1;  // flad showing condition met
             	SzFreq_obs_hdr(iobs,9)=1;  //  flag that will be ehecked in ss_expval

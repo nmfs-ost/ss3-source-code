@@ -46,16 +46,18 @@ FUNCTION void Get_expected_values();
             else  //  explicit timing
             {tempvec_a=elem_prod(natage(t,p,g),elem_prod(mfexp(-Z_rate(t,p,g)*timing),sel_a(y,f,gg)));}
  */
-            if(timing<0.0)
+            if(timing>=0.0) 
+            {tempvec_a=elem_prod(natage(t,p,g),elem_prod(mfexp(-Z_rate(t,p,g)*timing),sel_a(y,f,gg)));}  //  explicit timing
+            else
             {
-              if(F_Method==1) //  Pope's approximation
-              {tempvec_a=elem_prod(Nmid(g),sel_a(y,f,gg));}  //  CHECK   Nmid may not exist correctly unless still within the area loop
-              else // mimic fishery catch, but without Hrate so gets available numbers
+              if(F_Method>1) // mimic fishery catch,  so gets mean available numbers
               {tempvec_a=elem_prod(natage(t,p,g),elem_prod(Zrate2(p,g),sel_a(y,f,gg)));}
+              else    //  Pope's approximation
+              {
+                Nmid(g) = elem_prod(natage(t,p,g),surv1(s,GP3(g)));      //   numbers-at-age(g,a) surviving to middle of time period
+                tempvec_a=elem_prod(Nmid(g),sel_a(y,f,gg));
+              }
             }
-            else  //  explicit timing
-            {tempvec_a=elem_prod(natage(t,p,g),elem_prod(mfexp(-Z_rate(t,p,g)*timing),sel_a(y,f,gg)));}
-
             tempvec_a=elem_prod(tempvec_a,keep_age(g,ALK_idx));
             
             int retflag;
