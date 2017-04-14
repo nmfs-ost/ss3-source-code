@@ -1333,6 +1333,7 @@
             header_l(f,j,2) = real_month;  // month
           }
 
+          header_l_rd(f,j)(1,3) =  lendata[i](1,3);   // values as in input file
           header_l(f,j,3) = lendata[i](3);   // fleet with sign
           //  note that following storage is redundant with Show_Time(t,3) calculated later
           header_l(f,j,0) = float(y)+0.01*int(100.*(azero_seas(s)+seasdur_half(s)));  //
@@ -1469,8 +1470,6 @@
         }
       }
     }
-
-    header_l_rd = header_l;
   }
 
      echoinput<<"Overall_Compositions"<<endl<<"Fleet len_bins "<<len_bins_dat<<endl;
@@ -1677,6 +1676,7 @@
   imatrix  Lbin_hi(1,Nfleet,1,Nobs_a)
   3darray tails_a(1,Nfleet,1,Nobs_a,1,4)   // min-max bin for females; min-max bin for males
   3darray header_a(1,Nfleet,1,Nobs_a,0,9)
+  3darray header_a_rd(1,Nfleet,1,Nobs_a,2,3)
 
 // arrays for Super-years
   matrix  suprper_a_sampwt(1,Nfleet,1,Nobs_a)  //  will contain calculated weights for obs within super periods
@@ -1775,6 +1775,7 @@
           if(Age_Data[i](6)<0.0)
             {N_warn++; warning<<"negative values not allowed for age comp sample size, use -fleet to omit from -logL"<<endl;}
           header_a(f,j)(1,9)=Age_Data[i](1,9);
+          header_a_rd(f,j)(2,3)=Age_Data[i](2,3);
           header_a(f,j,1) = y;
           if(Age_Data[i](2)<0)
           {
@@ -2068,6 +2069,7 @@
   imatrix  gen_ms(1,Nfleet,1,Nobs_ms)
   imatrix  mkt_ms(1,Nfleet,1,Nobs_ms)
   3darray header_ms(1,Nfleet,1,Nobs_ms,0,7)
+  3darray header_ms_rd(1,Nfleet,1,Nobs_ms,2,3)
   matrix suprper_ms_sampwt(1,Nfleet,1,Nobs_ms)
   imatrix suprper_ms1(1,Nfleet,1,N_suprper_ms)
   imatrix suprper_ms2(1,Nfleet,1,N_suprper_ms)
@@ -2158,6 +2160,7 @@
             {N_warn++; warning<<"negative values not allowed for size-at-age sample size, use -fleet to omit from -logL"<<endl;}
 
            header_ms(f,j)(1,7)=sizeAge_Data(i)(1,7);
+          header_ms_rd(f,j)(2,3)=sizeAge_Data[i](2,3);
           header_ms(f,j,1) = y;
           if(sizeAge_Data[i](2)<0)
           {

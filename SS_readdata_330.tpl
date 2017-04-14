@@ -1236,7 +1236,7 @@
             header_l(f,j,2) = timing_r_result(1);  // month
           }
 
-          header_l_rd(f,j)(1,3) =  lendata[i](1,3);   // fleet with sign
+          header_l_rd(f,j)(1,3) =  lendata[i](1,3);   // values as in input file
           header_l(f,j,3)=lendata[i](3);
           if(y>retro_yr) header_l(f,j,3)=-f;
           //  note that following storage is redundant with Show_Time(t,3) calculated later
