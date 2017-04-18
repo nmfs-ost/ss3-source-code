@@ -2672,7 +2672,8 @@
 
 !!//  SS_Label_Info_4.9.1 #Read selectivity definitions
 //  do 2*Nfleet to create options for size-selex (first), then age-selex
-  init_imatrix seltype(1,2*Nfleet,1,4)    // read selex type for each fleet/survey, Do_retention, Do_male
+  init_imatrix seltype_rd(1,2*Nfleet,1,4)    // read selex type for each fleet/survey, Do_retention, Do_male
+  imatrix seltype(1,2*Nfleet,1,6)
   !! echoinput<<endl<<"*******************"<<endl<<" selex types "<<endl<<seltype<<endl;
   int N_selparm   // figure out the Total number of selex parameters
   int N_selparm2                 // N selparms plus env links and blocks
@@ -2689,6 +2690,9 @@
  LOCAL_CALCS
 //  define number of parameters for each retention type
   RetainParm.initialize();
+  seltype.initialize();
+  for(f=1;f<=2*Nfleet;f++)
+  {seltype(f)(1,4)=seltype_rd(f)(1,4);}
   N_ret_parm(0)= 0;
   N_ret_parm(1)= 4; // for asymptotic retention
   N_ret_parm(2)= 4; // for asymptotic retention and 4 param discard mort
