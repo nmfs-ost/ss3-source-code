@@ -2129,7 +2129,7 @@ FUNCTION void write_nucontrol()
    report4<<"#"<<endl;
    report4<<"#_size_selex_types"<<endl;
    report4<<"#discard_options:_0=none;_1=define_retention;_2=retention&mortality;_3=all_discarded_dead"<<endl;
-   report4<<"#_Pattern Discard Male Special"<<endl;
+   report4<<"#_Pattern Discard Male Special 2D_AR1  Future_Use"<<endl;
    for (f=1;f<=Nfleet;f++) report4<<seltype(f)<<" # "<<f<<" "<<fleetname(f)<<endl;
    report4<<"#"<<endl;
    report4<<"#_age_selex_types"<<endl;

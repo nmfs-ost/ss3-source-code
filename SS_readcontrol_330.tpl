@@ -2254,7 +2254,7 @@
 
 !!//  SS_Label_Info_4.9.1 #Read selectivity definitions
 //  do 2*Nfleet to create options for size-selex (first), then age-selex
-  init_imatrix seltype(1,2*Nfleet,1,4)    // read selex type for each fleet/survey, Do_retention, Do_male
+  init_imatrix seltype(1,2*Nfleet,1,6)    // read selex type for each fleet/survey, retention option, male_offset_option, special
 
   int N_selparm   // figure out the Total number of selex parameters
   int N_selparm2                 // N selparms plus env links and blocks
@@ -2603,7 +2603,9 @@
   int timevary_parm_start_sel;
   ivector selparm_timevary(1,N_selparm)  //  holds index of timevary used by this base parameter
   imatrix timevary_sel(styr-3,YrMax+1,1,2*Nfleet)
-
+  ivector TwoD_AR_parms(1,2*Nfleet)
+  int TwoD_AR_startparm
+  
   int makefishsel_yr
 !!//  SS_Label_Info_4.9.4 #Create and label environmental linkages for selectivity parameters
 //  int N_selparm_env                            // number of selparms that use env linkage
@@ -2627,7 +2629,7 @@
   for (j=1;j<=N_selparm;j++)
   {
      k=selparm_fleet(j);
-     timevary_pass=column(timevary_sel,k);  // year vector for this category of MGparm
+     timevary_pass=column(timevary_sel,k);  // year vector for this category of selparm
      if(selparm_1(j,13)==0 && selparm_1(j,8)==0 && selparm_1(j,9)==0)
      {
       //  no time-vary parameter effects
@@ -2688,6 +2690,7 @@
        for(y=styr-3;y<=YrMax+1;y++) {timevary_sel(y,selparm_fleet(j))=timevary_pass(y);}  // year vector for this category
      }
   }
+
    timevary_setup.initialize();
    timevary_setup(3)=timevary_parm_cnt+1;  //  one past last one used
    timevary_def.push_back (timevary_setup(1,13));
@@ -2701,11 +2704,53 @@
 
    if(timevary_parm_cnt>0)
    {
-     echoinput<<"list all parms used for tiemvary implementation"<<endl;
+     echoinput<<"list all parms used for timevary implementation"<<endl;
      for(y=1;y<=timevary_parm_cnt;y++)
      {
      echoinput<<y<<" parm "<<timevary_parm_rd[y](1,7)<<endl;}
+   }
+
+//  Input in first parameter line several setup factors:  rho_y, rho_a, ymin, ymax, amin, amax, use_rho, sigma_amax, null9, null10, null11, null12, null13,null14
+//  then one to several parameter lines containing age-specific sigma for ages amin to sigma_amax
+//  note that parm_dev_minyr and parm_dev_maxyr need to map onto the matrix defined by  ymin, ymax, amin, amax,
+  TwoD_AR_startparm=ParCount;
+  for(f=1;f<=2*Nfleet;f++)  //  setup 2D_AR1 selectivity deviations
+  {
+    if(f<=Nfleet)
+    {f1=f; anystring="LEN";}
+    else
+    {f1=f-Nfleet;anystring="AGE";}
+    if(seltype(f,5)>0)
+    {
+      N_parm_dev++;
+       ivector tempvec(1,7);  //  ymin, ymax, amin, amax, sigma_amax, use_rho, age/len
+       tempvec.initialize();
+       *(ad_comm::global_datafile) >> tempvec(1,7);
+       timevary_def.push_back (tempvec);
+       int sigma_amax = tempvec(5);
+       int use_rho = tempvec(6);
+       int amin = tempvec(3);
+//       ParCount++; TwoD_AR_parms(f)++; ParmLabel+=anystring+"_2D_AR_setup_"+fleetname(f1)+"("+NumLbl(f1)+")";
+       for(j=amin;j<=sigma_amax;j++)
+       {
+         dvector tempvec(1,7);  //  Lo, Hi, init, prior, prior_sd, prior_type, phase;
+         tempvec.initialize();
+         *(ad_comm::global_datafile) >> tempvec(1,7);
+         timevary_parm_rd.push_back (tempvec);
+         ParCount++; TwoD_AR_parms(f)++; ParmLabel+=anystring+"_sigmasel_"+fleetname(f1)+"("+NumLbl(f1)+")"+"_age_"+"("+NumLbl(j)+")";
+       }
+       if(use_rho==2)
+       {
+         dvector tempvec(1,7);  //  Lo, Hi, init, prior, prior_sd, prior_type, phase;
+         tempvec.initialize();
+         *(ad_comm::global_datafile) >> tempvec(1,7);
+         timevary_parm_rd.push_back (tempvec);
+         ParCount++; TwoD_AR_parms(f)++; ParmLabel+=anystring+"_rho_yr_"+fleetname(f1)+"("+NumLbl(f1)+")";
+         ParCount++; TwoD_AR_parms(f)++; ParmLabel+=anystring+"_rho_age_"+fleetname(f1)+"("+NumLbl(f1)+")";
+       }
     }
+  }
+
  END_CALCS
 
 !!//  SS_Label_Info_4.9.9 #Create arrays for the total set of selex parameters
@@ -2745,7 +2790,7 @@
       selparm_CV(j)=timevary_parm_rd[f](5);
       selparm_PH(j)=timevary_parm_rd[f](7);
      }
-    }
+   }
 
 //  SS_Label_Info_4.9.10 #Special bound checking for size selex parameters
     z=0;  // parameter counter within this section
@@ -2952,6 +2997,21 @@
        }
      }
    }
+
+//  now add dev vectors for the 2D_AR1
+     for (f=1;f<=2*Nfleet;f++)  //  loop set up devs
+     if(seltype(f,5)>0)  //  so using 2D_AR1
+     {
+       j=TwoD_AR_parms(f);
+       ivector timevary_setup(1,7);
+       timevary_setup(1,7)=timevary_def[j](1,7);
+       echoinput<<" 2dar setup "<<timevary_setup<<endl;
+       exit(1);
+//         k=timevary_setup(8);  //  dev vector used
+//         parm_dev_minyr(k)=timevary_setup(10);  //  used for dimensioning the dev vectors in SS_param
+//         parm_dev_maxyr(k)=timevary_setup(11);
+//         parm_dev_PH(k)=timevary_setup(12); 
+     } 
 
    timevary_setup.initialize();
    timevary_setup(3)=timevary_parm_cnt+1;  //  one past last one used
