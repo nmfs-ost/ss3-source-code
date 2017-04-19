@@ -400,13 +400,6 @@ PROCEDURE_SECTION
         {
           if(MGparm_PH(j)>=0) {ParmTrace<<" "<<MGparm(j);}
         }
-        if(N_parm_dev>0)
-        {
-          for (j=1;j<=N_parm_dev;j++)
-          {
-            if(parm_dev_PH(j)>0) ParmTrace<<parm_dev(j)<<" ";
-          }
-        }
         for (j=1;j<=SR_parm_PH.indexmax();j++)
         {
           if(SR_parm_PH(j)>=0) {ParmTrace<<" "<<SR_parm(j);}
@@ -456,6 +449,13 @@ PROCEDURE_SECTION
         {
           if(TG_parm_PH(k)>0) {ParmTrace<<" "<<TG_parm(k);}
         }
+        if(N_parm_dev>0)
+        {
+          for (j=1;j<=N_parm_dev;j++)
+          {
+            if(parm_dev_PH(j)>0) ParmTrace<<parm_dev(j)<<" ";
+          }
+        }
         ParmTrace<<endl;
       }
       else if((Do_ParmTrace==2 && obj_fun<=last_objfun) || Do_ParmTrace==3)
@@ -463,11 +463,6 @@ PROCEDURE_SECTION
         ParmTrace<<current_phase()<<" "<<niter<<" "<<obj_fun<<" "<<obj_fun-last_objfun
         <<" "<<value(SPB_yr(styr))<<" "<<value(SPB_yr(endyr))<<" "<<biasadj(styr)<<" "<<max(biasadj)<<" "<<biasadj(endyr);
         ParmTrace<<" "<<MGparm<<" ";
-        if(N_parm_dev>0)
-        {
-          for (j=1;j<=N_parm_dev;j++)
-          {ParmTrace<<parm_dev(j);}
-        }
         ParmTrace<<SR_parm<<" ";
         if(recdev_cycle>0) ParmTrace<<recdev_cycle_parm;
         if(recdev_do_early>0) ParmTrace<<recdev_early<<" ";
@@ -478,14 +473,12 @@ PROCEDURE_SECTION
         if(F_Method==2) ParmTrace<<F_rate<<" ";
         if(Q_Npar>0) ParmTrace<<Q_parm<<" ";
         ParmTrace<<selparm<<" ";
-  /*
-        if(N_selparm_dev>0)
-        {
-          for (j=1;j<=N_selparm_dev;j++)
-          {ParmTrace<<selparm_dev(j)<<" ";}
-        }
-  */
         if(Do_TG>0) ParmTrace<<TG_parm<<" ";
+        if(N_parm_dev>0)
+        {
+          for (j=1;j<=N_parm_dev;j++)
+          {ParmTrace<<parm_dev(j);}
+        }
         ParmTrace<<endl;
       }
       if(obj_fun<=last_objfun) last_objfun=obj_fun;

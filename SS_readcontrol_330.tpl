@@ -3006,7 +3006,6 @@
        ivector timevary_setup(1,7);
        timevary_setup(1,7)=timevary_def[j](1,7);
        echoinput<<" 2dar setup "<<timevary_setup<<endl;
-       exit(1);
 //         k=timevary_setup(8);  //  dev vector used
 //         parm_dev_minyr(k)=timevary_setup(10);  //  used for dimensioning the dev vectors in SS_param
 //         parm_dev_maxyr(k)=timevary_setup(11);

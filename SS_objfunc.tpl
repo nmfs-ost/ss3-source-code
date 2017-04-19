@@ -1319,14 +1319,6 @@ FUNCTION void get_posteriors()
   {
     if(active(MGparm(j))) posts<<MGparm(j)<<" ";
   }
-  if(N_parm_dev>0)
-  {
-    for (i=1;i<=N_parm_dev;i++)
-    for (j=parm_dev_minyr(i);j<=parm_dev_maxyr(i);j++)
-    {
-      if(parm_dev_PH(i)>0) posts<<parm_dev(i,j)<<" ";
-    }
-  }
   for (i=1;i<=N_SRparm3;i++)
   {
     if(active(SR_parm(i))) posts<<SR_parm(i)<<" ";
@@ -1338,7 +1330,6 @@ FUNCTION void get_posteriors()
     {
       if(active(recdev_cycle_parm(i))) posts<<recdev_cycle_parm(i)<<" ";
     }
-
   }
   if(recdev_do_early>0)
   {
@@ -1364,7 +1355,6 @@ FUNCTION void get_posteriors()
     {
       if(active(Fcast_impl_error)) posts<<Fcast_impl_error(i)<<" ";
     }
-
   }
   for (i=1;i<=N_init_F;i++)
   {
@@ -1385,19 +1375,20 @@ FUNCTION void get_posteriors()
   {
     if(active(selparm(j))) posts<<selparm(j)<<" ";
   }
-  /*
-  for (i=1;i<=N_selparm_dev;i++)
-  for (j=selparm_dev_minyr(i);j<=selparm_dev_maxyr(i);j++)
-  {
-    if(active(selparm_dev)) posts<<selparm_dev(i,j)<<" ";
-  }
-  */
   if(Do_TG>0)
   {
     k=3*N_TG+2*Nfleet;
     for (j=1;j<=k;j++)
     {
       if(active(TG_parm(j))) posts<<TG_parm(j)<<" ";
+    }
+  }
+  if(N_parm_dev>0)
+  {
+    for (i=1;i<=N_parm_dev;i++)
+    for (j=parm_dev_minyr(i);j<=parm_dev_maxyr(i);j++)
+    {
+      if(parm_dev_PH(i)>0) posts<<parm_dev(i,j)<<" ";
     }
   }
   posts << endl;

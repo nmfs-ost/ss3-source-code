@@ -498,8 +498,11 @@ GLOBALS_SECTION
             if(autogen_timevary==0 || autogen_timevary==2 || (autogen_timevary==3 && tempvec(1)==-12345))  //  create or overwrite
       {
        tempvec.fill("{0.0001,2.0,0.5,0.5,0.5,6,-5}");
-       tempvec(3)=baseparm_list(12);  //  set init
-       tempvec(4)=baseparm_list(12);  //  set prior
+       if(finish_starter==999)
+       {
+         tempvec(3)=baseparm_list(12);  //  set init to value on the 3.24 format base parameter line
+         tempvec(4)=baseparm_list(12);  //  set prior
+       }
        timevary_setup(12)=-5;  //  set reasonable phase for devs;
        baseparm_list(12)=-5;
       }
