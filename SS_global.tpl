@@ -90,6 +90,7 @@ GLOBALS_SECTION
   std::vector<dvector> lambda_change_data;
   std::vector<dvector> timevary_parm_rd;
   std::vector<ivector> timevary_def;
+  std::vector<ivector> TwoD_AR_def;
 
 //  function in GLOBALS to do the timing setup in the data section
   void get_data_timing(const dvector& to_process, const ivector& timing_constants, ivector i_result, dvector r_result, const dvector& seasdur, const dvector& subseasdur_delta, const dvector& azero_seas, const dvector& surveytime)

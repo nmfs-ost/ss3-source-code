@@ -2129,11 +2129,11 @@ FUNCTION void write_nucontrol()
    report4<<"#"<<endl;
    report4<<"#_size_selex_types"<<endl;
    report4<<"#discard_options:_0=none;_1=define_retention;_2=retention&mortality;_3=all_discarded_dead"<<endl;
-   report4<<"#_Pattern Discard Male Special 2D_AR1  Future_Use"<<endl;
+   report4<<"#_Pattern Discard Male Special"<<endl;
    for (f=1;f<=Nfleet;f++) report4<<seltype(f)<<" # "<<f<<" "<<fleetname(f)<<endl;
    report4<<"#"<<endl;
    report4<<"#_age_selex_types"<<endl;
-   report4<<"#_Pattern Discard Male Special 2D_AR1  Future_Use"<<endl;
+   report4<<"#_Pattern Discard Male Special"<<endl;
    for (f=1;f<=Nfleet;f++) report4<<seltype(f+Nfleet)<<" # "<<f<<" "<<fleetname(f)<<endl;
    report4<<"#"<<endl;
 
@@ -2156,11 +2156,12 @@ FUNCTION void write_nucontrol()
   {
     report4<<"# timevary selex parameters "<<endl;
     report4<<"#_          LO            HI          INIT         PRIOR         PR_SD       PR_type    PHASE  #  parm_name"<<endl;
-    for (f=timevary_parm_start_sel;f<=timevary_parm_cnt_sel;f++)
+//    for (f=timevary_parm_start_sel;f<=timevary_parm_cnt_sel;f++)
+    for (int f1=N_selparm+1;f1<=N_selparm3;f1++)
     {
-      NP++;
-        timevary_parm_rd[f](3)=value(timevary_parm(f));
-        for(j=1;j<=6;j++) report4<<setw(14)<<timevary_parm_rd[f](j);
+      NP++;  f=f1-N_selparm;
+      timevary_parm_rd[f](3)=value(timevary_parm(f));
+      for(j=1;j<=6;j++) report4<<setw(14)<<timevary_parm_rd[f](j);
       report4<<"      "<<timevary_parm_rd[f](7)<<"  # "<<ParmLabel(NP)<<endl;
     }
     report4<<"# info on dev vectors created for selex parms are reported with other devs after tag parameter section "<<endl;
@@ -2169,6 +2170,46 @@ FUNCTION void write_nucontrol()
   {
     report4<<"#_no timevary selex parameters"<<endl;
   }
+
+  report4<<"#"<<endl<<TwoD_AR_do<<"   #  use 2D_AR1 selectivity(0/1)"<<endl;
+  if(TwoD_AR_do>0)
+  {
+    k=N_selparm3-N_selparm;  //  starting point in timevary_parm_rd
+    report4<<"#_specifications for 2D_AR1 and associated parameters"<<endl;
+    report4<<"#_specs:  fleet, ymin, ymax, amin, amax, sigma_amax, use_rho, len1/age2, devphase"<<endl;
+    for(j=1; j<=TwoD_AR_cnt; j++)
+    {
+       ivector tempvec(1,9);  //  fleet, ymin, ymax, amin, amax, sigma_amax, use_rho, len1/age2, devphase
+       tempvec(1,9)=TwoD_AR_def[j](1,9);
+       report4<<tempvec<<"  #  2d_AR specs for fleet: "<<fleetname(tempvec(1))<<endl;
+       int sigma_amax = tempvec(6);
+       int use_rho = tempvec(7);
+       int amin = tempvec(4);
+       for(a=amin;a<=sigma_amax;a++)
+       {
+         dvector dtempvec(1,7);  //  Lo, Hi, init, prior, prior_sd, prior_type, phase;
+         k++;
+         dtempvec=timevary_parm_rd[k](1,7);
+         report4<<dtempvec<<"  # sigma_sel for fleet, age/size:  "<<tempvec(1)<<" "<<a<<endl;
+       }
+       if(use_rho==1)
+       {
+         dvector dtempvec(1,7);  //  Lo, Hi, init, prior, prior_sd, prior_type, phase;
+         k++;
+         dtempvec=timevary_parm_rd[k](1,7);
+         report4<<dtempvec<<"  # rho_year for fleet:  "<<tempvec(1)<<endl;
+         k++;
+         dtempvec=timevary_parm_rd[k](1,7);
+         report4<<dtempvec<<"  # rho_age for fleet:  "<<tempvec(1)<<endl;
+       }
+    }
+    report4<<"-9999  0 0 0 0 0 0 0 0  # terminator"<<endl;
+  }
+  else
+  {
+    report4<<"#_no 2D_AR1 selex offset used"<<endl;
+  }
+
   report4.unsetf(std::ios_base::fixed); report4.unsetf(std::ios_base::floatfield);
 
 

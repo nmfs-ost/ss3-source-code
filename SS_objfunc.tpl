@@ -607,7 +607,6 @@ FUNCTION void evaluate_the_objective_function()
       {Fcast_recr_like=0.0;}
       Fcast_recr_like += (norm2(Fcast_recruitments(endyr+1,YrMax)))/two_sigmaRsq;  // ss3
       if(Do_Impl_Error>0) Fcast_recr_like+=(norm2(Fcast_impl_error(endyr+1,YrMax)))/(2.0*Impl_Error_Std*Impl_Error_Std);  // implementation error
-    }
 //      Fcast_recr_like += (norm2(Fcast_recruitments(endyr+1,YrMax)))/two_sigmaRsq;  // ss3
       if(SR_autocorr==0)
       {
@@ -619,6 +618,7 @@ FUNCTION void evaluate_the_objective_function()
         for(y=recdev_end+2;y<=YrMax;y++)
         {Fcast_recr_like += square(Fcast_recruitments(y)-rho*Fcast_recruitments(y-1)) / ((1.0-rho*rho)*two_sigmaRsq);}
       }
+    }
 
   //  SS_Label_Info_25.13 #Penalty for the parameter priors
     dvariable mu; dvariable tau; dvariable Aprior; dvariable Bprior;
@@ -654,7 +654,6 @@ FUNCTION void evaluate_the_objective_function()
         selparm_Like(i)=Get_Prior(selparm_PRtype(i), selparm_LO(i), selparm_HI(i), selparm_PR(i), selparm_CV(i), selparm(i));
         parm_like+=selparm_Like(i);
         }
-
     if(Do_TG>0)
     {
       k=3*N_TG+2*Nfleet;
@@ -696,7 +695,7 @@ FUNCTION void evaluate_the_objective_function()
   //  new code to match mean-reverting random walk approach used for recdevs
       for(i=1;i<=N_parm_dev;i++)
       {
-        if(parm_dev_PH(i)>0 && parm_dev_lambda(k_phase)>0.0 )
+        if(parm_dev_PH(i)>0 && parm_dev_lambda(k_phase)>0.0 && parm_dev_type(i)==1)
         {
         dvariable temp;
 //        temp=1.00 / (2.000*(1.0-parm_dev_rho(i)*parm_dev_rho(i))*square(parm_dev_stddev(i)));

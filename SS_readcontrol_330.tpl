@@ -2257,7 +2257,8 @@
   init_imatrix seltype(1,2*Nfleet,1,6)    // read selex type for each fleet/survey, retention option, male_offset_option, special
 
   int N_selparm   // figure out the Total number of selex parameters
-  int N_selparm2                 // N selparms plus env links and blocks
+  int N_selparm3                 // N selparms plus timevary parms
+  int N_selparm2                 // N selparms plus timevary parms and 2D_AR1 parms
   ivector N_selparmvec(1,2*Nfleet)  //  N selparms by type, including extra parms for male selex, retention, etc.
   ivector Maleselparm(1,2*Nfleet)
   ivector RetainParm(1,Nfleet)
@@ -2604,23 +2605,11 @@
   ivector selparm_timevary(1,N_selparm)  //  holds index of timevary used by this base parameter
   imatrix timevary_sel(styr-3,YrMax+1,1,2*Nfleet)
   ivector TwoD_AR_parms(1,2*Nfleet)
-  int TwoD_AR_startparm
-  
+  int TwoD_AR_do;
+  int TwoD_AR_cnt
   int makefishsel_yr
-!!//  SS_Label_Info_4.9.4 #Create and label environmental linkages for selectivity parameters
-//  int N_selparm_env                            // number of selparms that use env linkage
-//  int custom_selenv_setup  //  0=read one setup and apply to all; 1=read each
-//  ivector selparm_env(1,N_selparm)             //  pointer to parameter with env link for each selparm
-//  ivector selparm_envuse(1,N_selparm)   // contains the environment data number
-//  ivector selparm_envtype(1,N_selparm)  // 1=multiplicative; 2= additive
-//  imatrix Block_Defs_Sel(1,N_selparm,styr,YrMax)
 
  LOCAL_CALCS
-//  N_selparm_env=0;
-//  selparm_env.initialize();
-//  selparm_envtype.initialize();
-//  selparm_envuse.initialize();
-//  Block_Defs_Sel.initialize();
   timevary_parm_start_sel=0;
   timevary_parm_cnt_sel=0;
   timevary_sel.initialize();
@@ -2695,12 +2684,86 @@
    timevary_setup(3)=timevary_parm_cnt+1;  //  one past last one used
    timevary_def.push_back (timevary_setup(1,13));
 
-   N_selparm2=N_selparm;
+   N_selparm3=N_selparm;
    if(timevary_parm_start_sel>0)
     {
       timevary_parm_cnt_sel=timevary_parm_cnt;  //  last timevary_selparm
-      N_selparm2=N_selparm+timevary_parm_cnt_sel-timevary_parm_start_sel+1;}
+      N_selparm3=N_selparm+timevary_parm_cnt_sel-timevary_parm_start_sel+1;}
    echoinput<<"N_selparm "<<N_selparm<<" "<<N_selparm2<<" "<<timevary_parm_start_sel<<" "<<timevary_parm_cnt_sel<<endl;
+   N_selparm2=N_selparm3;  //  for distinguishing the 2D_AR parms
+//  now add parameters for the 2D_AR1 approach
+//  Input in first parameter line several setup factors:  rho_y, rho_a, ymin, ymax, amin, amax, use_rho, sigma_amax, null9, null10, null11, null12, null13,null14
+//  then one to several parameter lines containing age-specific sigma for ages amin to sigma_amax
+//  note that parm_dev_minyr and parm_dev_maxyr need to map onto the matrix defined by  ymin, ymax, amin, amax,
+  TwoD_AR_cnt=0;
+  *(ad_comm::global_datafile) >> TwoD_AR_do;
+  
+  if(TwoD_AR_do>0)
+  {
+  ivector tempvec(1,13);  //  fleet, ymin, ymax, amin, amax, sigma_amax, use_rho, age/len
+  tempvec.initialize();
+  TwoD_AR_def.push_back (tempvec);  //  bypass that pesky zeroth row
+  echoinput<<"read specification for first 2D_AR1:  fleet, ymin, ymax, amin, amax, sigma_amax, use_rho, len1/age2"<<endl;
+
+  ender=0;
+  do
+  {
+    ivector tempvec(1,12);
+    //  1-fleet, 2-ymin, 3-ymax, 4-amin, 5-amax, 6-sigma_amax, 7-use_rho, 8-age/len, 9-dev_phase
+    //  10-mindimension, 11=maxdim, 12-N_parm_dev
+    tempvec.initialize();
+    *(ad_comm::global_datafile) >> tempvec(1,9);
+    echoinput<<tempvec(1,9)<<endl;
+    if(tempvec(1)<0) 
+      {ender=1;}
+      else
+      {
+      N_parm_dev++;
+      TwoD_AR_cnt++;
+      if(tempvec(8)==1)
+      {anystring="LEN";}
+      else
+      {anystring="AGE";}
+       int sigma_amax = tempvec(6);
+       int use_rho = tempvec(7);
+       int amin = tempvec(4);
+       f=tempvec(1);
+       tempvec(12)=N_parm_dev;
+       tempvec(10)=1;  //  used for dimensioning the dev vectors in SS_param   parm_dev_minyr(k)
+       tempvec(11)=(tempvec(3)-tempvec(2)+1)*(tempvec(5)-amin+1);   //parm_dev_maxyr(k)
+       TwoD_AR_def.push_back (tempvec);
+       for(j=amin;j<=sigma_amax;j++)
+       {
+         dvector dtempvec(1,7);  //  Lo, Hi, init, prior, prior_sd, prior_type, phase;
+         dtempvec.initialize();
+         *(ad_comm::global_datafile) >> dtempvec(1,7);
+         timevary_parm_rd.push_back (dtempvec);
+         echoinput<<" sigmasel for age: "<<j<<" "<<dtempvec(3)<<endl;
+         ParCount++; timevary_parm_cnt++; timevary_parm_cnt_sel++; N_selparm2++; TwoD_AR_parms(f)++; ParmLabel+="_sigmasel_"+fleetname(f)+"("+NumLbl(f)+")_"+anystring+"("+NumLbl(j)+")";
+       }
+       if(use_rho==1)
+       {
+         {
+         dvector dtempvec(1,7);  //  Lo, Hi, init, prior, prior_sd, prior_type, phase;
+         dtempvec.initialize();
+         *(ad_comm::global_datafile) >> dtempvec(1,7);
+         timevary_parm_rd.push_back (dtempvec);
+         echoinput<<" rho year: "<<dtempvec(3)<<endl;
+         ParCount++; timevary_parm_cnt++; timevary_parm_cnt_sel++; N_selparm2++; TwoD_AR_parms(f)++; ParmLabel+=anystring+"_rho_yr_"+fleetname(f)+"("+NumLbl(f)+")";
+         }
+         {
+         dvector dtempvec(1,7);  //  Lo, Hi, init, prior, prior_sd, prior_type, phase;
+         dtempvec.initialize();
+         *(ad_comm::global_datafile) >> dtempvec(1,7);
+         timevary_parm_rd.push_back (dtempvec);
+         echoinput<<" rho age: "<<dtempvec(3)<<endl;
+         ParCount++; timevary_parm_cnt++; timevary_parm_cnt_sel++; N_selparm2++; TwoD_AR_parms(f)++; ParmLabel+=anystring+"_rho_age_"+fleetname(f)+"("+NumLbl(f)+")";
+        }
+       }
+      }
+  } while(ender==0);
+    
+  }
 
    if(timevary_parm_cnt>0)
    {
@@ -2709,48 +2772,6 @@
      {
      echoinput<<y<<" parm "<<timevary_parm_rd[y](1,7)<<endl;}
    }
-
-//  Input in first parameter line several setup factors:  rho_y, rho_a, ymin, ymax, amin, amax, use_rho, sigma_amax, null9, null10, null11, null12, null13,null14
-//  then one to several parameter lines containing age-specific sigma for ages amin to sigma_amax
-//  note that parm_dev_minyr and parm_dev_maxyr need to map onto the matrix defined by  ymin, ymax, amin, amax,
-  TwoD_AR_startparm=ParCount;
-  for(f=1;f<=2*Nfleet;f++)  //  setup 2D_AR1 selectivity deviations
-  {
-    if(f<=Nfleet)
-    {f1=f; anystring="LEN";}
-    else
-    {f1=f-Nfleet;anystring="AGE";}
-    if(seltype(f,5)>0)
-    {
-      N_parm_dev++;
-       ivector tempvec(1,7);  //  ymin, ymax, amin, amax, sigma_amax, use_rho, age/len
-       tempvec.initialize();
-       *(ad_comm::global_datafile) >> tempvec(1,7);
-       timevary_def.push_back (tempvec);
-       int sigma_amax = tempvec(5);
-       int use_rho = tempvec(6);
-       int amin = tempvec(3);
-//       ParCount++; TwoD_AR_parms(f)++; ParmLabel+=anystring+"_2D_AR_setup_"+fleetname(f1)+"("+NumLbl(f1)+")";
-       for(j=amin;j<=sigma_amax;j++)
-       {
-         dvector tempvec(1,7);  //  Lo, Hi, init, prior, prior_sd, prior_type, phase;
-         tempvec.initialize();
-         *(ad_comm::global_datafile) >> tempvec(1,7);
-         timevary_parm_rd.push_back (tempvec);
-         ParCount++; TwoD_AR_parms(f)++; ParmLabel+=anystring+"_sigmasel_"+fleetname(f1)+"("+NumLbl(f1)+")"+"_age_"+"("+NumLbl(j)+")";
-       }
-       if(use_rho==2)
-       {
-         dvector tempvec(1,7);  //  Lo, Hi, init, prior, prior_sd, prior_type, phase;
-         tempvec.initialize();
-         *(ad_comm::global_datafile) >> tempvec(1,7);
-         timevary_parm_rd.push_back (tempvec);
-         ParCount++; TwoD_AR_parms(f)++; ParmLabel+=anystring+"_rho_yr_"+fleetname(f1)+"("+NumLbl(f1)+")";
-         ParCount++; TwoD_AR_parms(f)++; ParmLabel+=anystring+"_rho_age_"+fleetname(f1)+"("+NumLbl(f1)+")";
-       }
-    }
-  }
-
  END_CALCS
 
 !!//  SS_Label_Info_4.9.9 #Create arrays for the total set of selex parameters
@@ -2777,11 +2798,10 @@
    j=N_selparm;
    if(timevary_parm_start_sel>0)
    {
-     echoinput<<"finish setup for timevary sel parms "<<N_selparm<<" "<<timevary_parm_start_sel<<" "<<timevary_parm_cnt_sel<<endl;
+     echoinput<<"N base selparms: "<<N_selparm<<"   N total selparms: "<<N_selparm2<<endl;
      for (f=timevary_parm_start_sel;f<=timevary_parm_cnt_sel;f++)
      {
       j++;
-      echoinput<<"selparmbounds "<<f<<" "<<j<<endl;
       selparm_LO(j)=timevary_parm_rd[f](1);
       selparm_HI(j)=timevary_parm_rd[f](2);
       selparm_RD(j)=timevary_parm_rd[f](3);
@@ -2959,12 +2979,13 @@
    ivector parm_dev_minyr(1,N_parm_dev);
    ivector parm_dev_maxyr(1,N_parm_dev);
    ivector parm_dev_PH(1,N_parm_dev);
+   ivector parm_dev_type(1,N_parm_dev);  //  distinguigh parameter dev vectors from 2DAR devs
    int Do_Var_adjust
 
  LOCAL_CALCS
    if(timevary_cnt>0)
    {
-     for (j=1;j<=timevary_cnt;j++)  //  loop set up devs
+     for (j=1;j<=timevary_cnt;j++)  //  loop all timevary to set up devs; note that 2D_AR1 is counted in N_parm_dev, but not in timevary_cnt
      {
        ivector timevary_setup(1,13);
        timevary_setup(1,13)=timevary_def[j](1,13);
@@ -2974,10 +2995,11 @@
          parm_dev_minyr(k)=timevary_setup(10);  //  used for dimensioning the dev vectors in SS_param
          parm_dev_maxyr(k)=timevary_setup(11);
          parm_dev_PH(k)=timevary_setup(12);
+         parm_dev_type(k)=1;
          if(depletion_fleet>0 && parm_dev_PH(k)>0) parm_dev_PH(k)++;//  add 1 to phase if using depletion fleet
          if(parm_dev_PH(k)>Turn_off_phase) parm_dev_PH(k) =-1;
          if(parm_dev_PH(k)>max_phase) max_phase=parm_dev_PH(k);
-         echoinput<<" setup dev "<<k<<" vector "<<timevary_setup<<" phase "<<parm_dev_PH(k)<<endl;
+         echoinput<<" dev vector #:  "<<k<<" setup: "<<timevary_setup<<" phase: "<<parm_dev_PH(k)<<endl;
          f=timevary_setup(13);  //  index of base parameter
          for(y=parm_dev_minyr(k);y<=parm_dev_maxyr(k);y++)
          {
@@ -2999,22 +3021,27 @@
    }
 
 //  now add dev vectors for the 2D_AR1
-     for (f=1;f<=2*Nfleet;f++)  //  loop set up devs
-     if(seltype(f,5)>0)  //  so using 2D_AR1
+     for (f=1;f<=TwoD_AR_cnt;f++) 
      {
-       j=TwoD_AR_parms(f);
-       ivector timevary_setup(1,7);
-       timevary_setup(1,7)=timevary_def[j](1,7);
-       echoinput<<" 2dar setup "<<timevary_setup<<endl;
-//         k=timevary_setup(8);  //  dev vector used
-//         parm_dev_minyr(k)=timevary_setup(10);  //  used for dimensioning the dev vectors in SS_param
-//         parm_dev_maxyr(k)=timevary_setup(11);
-//         parm_dev_PH(k)=timevary_setup(12); 
+       ivector timevary_setup(1,12);
+    //  1-fleet, 2-ymin, 3-ymax, 4-amin, 5-amax, 6-sigma_amax, 7-use_rho, 8-age/len, 9-dev_phase
+    //  10-mindimension, 11=maxdim, 12-N_parm_dev
+       timevary_setup(1,12)=TwoD_AR_def[f](1,12);
+       echoinput<<f<<" "<<j<<" 2D_AR1 setup "<<timevary_setup<<endl;
+         k=timevary_setup(12);  //  dev vector used
+         parm_dev_minyr(k)=timevary_setup(10);  //  used for dimensioning the dev vectors in SS_param
+         parm_dev_maxyr(k)=timevary_setup(11);
+         parm_dev_PH(k)=timevary_setup(9);
+         parm_dev_type(k)=2;
+         for(y=timevary_setup(2);y<=timevary_setup(3);y++)
+         for(a=timevary_setup(4);a<=timevary_setup(5);a++)
+         {
+           sprintf(onenum, "%d", y);
+           sprintf(anystring, "%d", a);
+           ParCount++;
+           ParmLabel+=fleetname(timevary_setup(1))+"_ARDEV_y"+onenum+"_a"+anystring+CRLF(1);
+         }
      } 
-
-   timevary_setup.initialize();
-   timevary_setup(3)=timevary_parm_cnt+1;  //  one past last one used
-   timevary_def.push_back (timevary_setup(1,13));
 
     echoinput<<" read var_adjust list until -9999"<<endl;
     ender=0;

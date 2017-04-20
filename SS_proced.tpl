@@ -109,17 +109,6 @@ PROCEDURE_SECTION
       F_Method_use=F_Method;
     }
 
-  //  SS_Label_Info_7.3.5 #Set up the selparm stderr and rho parameters for the dev vectors
-  /*
-  if(N_selparm_dev>0)
-    {
-      for(i=1;i<=N_selparm_dev;i++)
-      {
-        selparm_dev_stddev(i)=selparm(selparm_dev_rpoint2(i));
-        selparm_dev_rho(i)=selparm(selparm_dev_rpoint2(i)+1);
-      }
-    }
-  */
 //  SS_Label_Info_7.4 #Do the time series calculations
   if(mceval_counter==0 || (mceval_counter>burn_intvl &&  ((double(mceval_counter)/double(thin_intvl)) - double((mceval_counter/thin_intvl))==0)  )) // check to see if burn in period is over
   {
@@ -438,13 +427,6 @@ PROCEDURE_SECTION
         {
           if(selparm_PH(k)>0) {ParmTrace<<" "<<selparm(k);}
         }
-  /*
-        if(selparm_dev_PH>0 && N_selparm_dev>0)
-        {
-          for (j=1;j<=N_selparm_dev;j++)
-          {ParmTrace<<selparm_dev(j)<<" ";}
-        }
-  */
         for (k=1;k<=TG_parm_PH.indexmax();k++)
         {
           if(TG_parm_PH(k)>0) {ParmTrace<<" "<<TG_parm(k);}
