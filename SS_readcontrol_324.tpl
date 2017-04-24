@@ -2677,6 +2677,7 @@
   !! echoinput<<endl<<"*******************"<<endl<<" selex types "<<endl<<seltype<<endl;
   int N_selparm   // figure out the Total number of selex parameters
   int N_selparm2                 // N selparms plus env links and blocks
+  int N_selparm3                 // need for 2D_AR
   ivector N_selparmvec(1,2*Nfleet)  //  N selparms by type, including extra parms for male selex, retention, etc.
   ivector Maleselparm(1,2*Nfleet)
   ivector RetainParm(1,2*Nfleet)
@@ -3222,6 +3223,7 @@
      echoinput<<temp<<" dummy read of parm_adjust_method"<<endl;
   }
   N_selparm2=N_selparm+N_selparm_env+N_selparm_blk+2*N_selparm_dev;
+  N_selparm3=N_selparm2;
   echoinput<<"N selparm "<<N_selparm<<" "<<N_selparm2<<endl;
  END_CALCS
 
@@ -3239,12 +3241,16 @@
   int timevary_parm_start_sel;
   ivector selparm_timevary(1,N_selparm)  //  holds index in timevary_def used by this base parameter
   imatrix timevary_sel(styr-3,YrMax+1,0,2*Nfleet)  // goes to yrmax+1 to allow referencing in forecast, but only endyr+1 is checked
+  int TwoD_AR_do;
+  int TwoD_AR_cnt
+  ivector TwoD_AR_use(1,2*Nfleet);
 
  LOCAL_CALCS
    timevary_sel.initialize();    // stores years to calc non-constant sel parms by fleet
    timevary_parm_start_sel=0;
    timevary_parm_cnt_sel=0;
    selparm_timevary.initialize();
+   TwoD_AR_use.initialize();
    int selblkcnt;
    int selenvcnt;
    selblkcnt=0;
@@ -3635,9 +3641,13 @@
    ivector parm_dev_minyr(1,N_parm_dev);
    ivector parm_dev_maxyr(1,N_parm_dev);
    ivector parm_dev_PH(1,N_parm_dev);
+   ivector parm_dev_type(1,N_parm_dev);  //  distinguish parameter dev vectors from 2DAR devs
+   ivector TwoD_AR_ymin(1,1)
+   ivector TwoD_AR_ymax(1,1)
+   ivector TwoD_AR_amin(1,1)
+   ivector TwoD_AR_amax(1,1)
 
  LOCAL_CALCS
-
 //  1=baseparm type; 2=baseparm index; 3=first timevary parm
 //  4=block or trend type; 5=block pattern; 6= env link type; 7=env variable;
 //  8=dev vector used; 9=dev link type; 10=dev min year; 11=dev maxyear; 12=dev phase; 13=all parm index of baseparm
@@ -3656,6 +3666,7 @@
          parm_dev_minyr(k)=timevary_setup(10);  //  used for dimensioning the dev vectors in SS_param
          parm_dev_maxyr(k)=timevary_setup(11);
          parm_dev_PH(k)=timevary_setup(12);
+         parm_dev_type(k)=1;
          if(depletion_fleet>0 && parm_dev_PH(k)>0) parm_dev_PH(k)++;//  add 1 to phase if using depletion fleet
          if(parm_dev_PH(k)>Turn_off_phase) parm_dev_PH(k) =-1;
          if(parm_dev_PH(k)>max_phase) max_phase=parm_dev_PH(k);

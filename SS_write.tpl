@@ -714,15 +714,27 @@ FUNCTION void write_nudata()
   report1<<"#_yr month fleet sex part ageerr ignore datavector(female-male)"<<endl;
   report1<<"#                                          samplesize(female-male)"<<endl;
   if(nobs_ms_rd>0)
-  for (i=0;i<=nobs_ms_rd-1;i++)
-     {
-       report1<<sizeAge_Data[i]<<endl;
-     }
+  {
+    if(finish_starter==999)
+    {
+      for (i=1;i<=nobs_ms_rd;i++)
+      {
+        report1<<sizeAge_Data[i]<<endl;
+      }  
+    }
+    else
+    {
+      for (i=0;i<=nobs_ms_rd-1;i++)
+      {
+        report1<<sizeAge_Data[i]<<endl;
+      }  
+    }
     report1<<"-9999 ";
     for (j=1;j<=6+n_abins2;j++) report1<<" 0";
     report1<<endl;
     for (j=1;j<=n_abins2;j++) report1<<" 0";
     report1<<endl;
+  }
   }
     report1<<"#"<<endl << N_envvar<<" #_N_environ_variables"<<endl;
     report1<<"#Yr Variable Value"<<endl;

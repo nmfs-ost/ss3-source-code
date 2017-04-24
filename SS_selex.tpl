@@ -610,8 +610,26 @@ FUNCTION void get_selectivity()
            sel_l(y,f,2)=sel;
          }
         }  // end doing males
+        if(docheckup==1) echoinput<<gg<<"  sel-len"<<sel_l(y,f,gg)<<endl;
+
+//  apply 2D_AR adjustment to sex-specific length selectivity
+        if(TwoD_AR_use(f)>0)
+        {
+          j=TwoD_AR_use(f);
+          if(y>=TwoD_AR_ymin(j) && y<=TwoD_AR_ymax(j) && TwoD_AR_def[j](8)==1)  //  in year range and effect is on length (not age)
+          {
+            z=TwoD_AR_def[j](12);  //  dev vector used
+            k=(y-TwoD_AR_ymin(j))*(TwoD_AR_amax(j)-TwoD_AR_amin(j)+1);
+            for(a=TwoD_AR_amin(j);a<=TwoD_AR_amax(j);a++)
+            {
+              k++; 
+              sel_l(y,f,gg,a)=sel_l(y,f,gg,a)*mfexp(parm_dev(z,k));
+            }
+          }
+          if(docheckup==1) echoinput<<"after 2D_AR"<<sel_l(y,f,gg)<<endl;
+        }
       }  // end loop of genders
-      if(docheckup==1) echoinput<<"sel-len "<<sel_l(y,f)<<endl;
+        
 
   //  SS_Label_Info_22.5.1 #Calculate discmort
   // discmort is the size-specific fraction of discarded fish that die
@@ -1113,7 +1131,25 @@ FUNCTION void get_selectivity()
             {sel_a(y,fs,2)=sel_a(y,fs,1);}   // set males = females
             if(docheckup==1) echoinput<<" sel-age "<<sel_a(y,fs)<<endl;
           }
+//  apply 2D_AR adjustment to sex-specific age selectivity
+          if(TwoD_AR_use(f)>0)
+          {
+            j=TwoD_AR_use(f);
+            if(y>=TwoD_AR_ymin(j) && y<=TwoD_AR_ymax(j) && TwoD_AR_def[j](8)==2)  //  in year range and effect is on age (not length)
+            {
+              z=TwoD_AR_def[j](12);  //  dev vector used
+              k=(y-TwoD_AR_ymin(j))*(TwoD_AR_amax(j)-TwoD_AR_amin(j)+1);
+              for(a=TwoD_AR_amin(j);a<=TwoD_AR_amax(j);a++)
+              {
+                k++; 
+//                sel_a(y,fs,gg,a)=sel_a(y,fs,gg,a)*mfexp(parm_dev(z,k));
+                sel_a(y,fs,gg,a)*=mfexp(parm_dev(z,k));
+              }
+            }
+            if(docheckup==1) echoinput<<"age selex after 2D_AR"<<sel_a(y,fs,gg)<<endl;
+          }
         }  //  end gender loop
+
         {  //  calculation of age retention and discard mortality here
   //  SS_Label_Info_22.5.1 #Calculate age-specific retention and discmort
   // discmort_a is the fraction of discarded fish that die
@@ -1245,7 +1281,7 @@ FUNCTION void get_selectivity()
 
     Ip+=N_selparmvec(f);
 
-   }  //  end fleet loop for selectivity
+  }  //  end fleet loop for selectivity
   }  //  end selectivity FUNCTION
 
 FUNCTION void Make_FishSelex()

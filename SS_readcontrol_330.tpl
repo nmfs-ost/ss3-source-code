@@ -2604,17 +2604,18 @@
   int timevary_parm_start_sel;
   ivector selparm_timevary(1,N_selparm)  //  holds index of timevary used by this base parameter
   imatrix timevary_sel(styr-3,YrMax+1,1,2*Nfleet)
-  ivector TwoD_AR_parms(1,2*Nfleet)
   int TwoD_AR_do;
   int TwoD_AR_cnt
   int makefishsel_yr
+  ivector TwoD_AR_use(1,2*Nfleet);
 
  LOCAL_CALCS
   timevary_parm_start_sel=0;
   timevary_parm_cnt_sel=0;
   timevary_sel.initialize();
   selparm_timevary.initialize();
-
+  TwoD_AR_use.initialize();
+  
   for (j=1;j<=N_selparm;j++)
   {
      k=selparm_fleet(j);
@@ -2691,6 +2692,8 @@
       N_selparm3=N_selparm+timevary_parm_cnt_sel-timevary_parm_start_sel+1;}
    echoinput<<"N_selparm "<<N_selparm<<" "<<N_selparm2<<" "<<timevary_parm_start_sel<<" "<<timevary_parm_cnt_sel<<endl;
    N_selparm2=N_selparm3;  //  for distinguishing the 2D_AR parms
+
+
 //  now add parameters for the 2D_AR1 approach
 //  Input in first parameter line several setup factors:  rho_y, rho_a, ymin, ymax, amin, amax, use_rho, sigma_amax, null9, null10, null11, null12, null13,null14
 //  then one to several parameter lines containing age-specific sigma for ages amin to sigma_amax
@@ -2700,68 +2703,74 @@
   
   if(TwoD_AR_do>0)
   {
-  ivector tempvec(1,13);  //  fleet, ymin, ymax, amin, amax, sigma_amax, use_rho, age/len
-  tempvec.initialize();
-  TwoD_AR_def.push_back (tempvec);  //  bypass that pesky zeroth row
-  echoinput<<"read specification for first 2D_AR1:  fleet, ymin, ymax, amin, amax, sigma_amax, use_rho, len1/age2"<<endl;
-
-  ender=0;
-  do
-  {
-    ivector tempvec(1,12);
-    //  1-fleet, 2-ymin, 3-ymax, 4-amin, 5-amax, 6-sigma_amax, 7-use_rho, 8-age/len, 9-dev_phase
-    //  10-mindimension, 11=maxdim, 12-N_parm_dev
+    ivector tempvec(1,13);  //  fleet, ymin, ymax, amin, amax, sigma_amax, use_rho, age/len
     tempvec.initialize();
-    *(ad_comm::global_datafile) >> tempvec(1,9);
-    echoinput<<tempvec(1,9)<<endl;
-    if(tempvec(1)<0) 
-      {ender=1;}
-      else
-      {
-      N_parm_dev++;
-      TwoD_AR_cnt++;
-      if(tempvec(8)==1)
-      {anystring="LEN";}
-      else
-      {anystring="AGE";}
-       int sigma_amax = tempvec(6);
-       int use_rho = tempvec(7);
-       int amin = tempvec(4);
-       f=tempvec(1);
-       tempvec(12)=N_parm_dev;
-       tempvec(10)=1;  //  used for dimensioning the dev vectors in SS_param   parm_dev_minyr(k)
-       tempvec(11)=(tempvec(3)-tempvec(2)+1)*(tempvec(5)-amin+1);   //parm_dev_maxyr(k)
-       TwoD_AR_def.push_back (tempvec);
-       for(j=amin;j<=sigma_amax;j++)
-       {
-         dvector dtempvec(1,7);  //  Lo, Hi, init, prior, prior_sd, prior_type, phase;
-         dtempvec.initialize();
-         *(ad_comm::global_datafile) >> dtempvec(1,7);
-         timevary_parm_rd.push_back (dtempvec);
-         echoinput<<" sigmasel for age: "<<j<<" "<<dtempvec(3)<<endl;
-         ParCount++; timevary_parm_cnt++; timevary_parm_cnt_sel++; N_selparm2++; TwoD_AR_parms(f)++; ParmLabel+="_sigmasel_"+fleetname(f)+"("+NumLbl(f)+")_"+anystring+"("+NumLbl(j)+")";
-       }
-       if(use_rho==1)
-       {
+    TwoD_AR_def.push_back (tempvec);  //  bypass that pesky zeroth row
+    echoinput<<"read specification for first 2D_AR1:  fleet, ymin, ymax, amin, amax, sigma_amax, use_rho, len1/age2"<<endl;
+
+    ender=0;
+    do
+    {
+      ivector tempvec(1,12);
+      //  1-fleet, 2-ymin, 3-ymax, 4-amin, 5-amax, 6-sigma_amax, 7-use_rho, 8-age/len, 9-dev_phase
+      //  10-mindimension, 11=maxdim, 12-N_parm_dev
+      tempvec.initialize();
+      *(ad_comm::global_datafile) >> tempvec(1,9);
+      echoinput<<tempvec(1,9)<<endl;
+      f=tempvec(1);
+      if(f<0) 
+        {ender=1;}
+        else
+        {
+        N_parm_dev++;
+        TwoD_AR_cnt++;
+        if(tempvec(8)==1)
+        {anystring="LEN"; fs=f; TwoD_AR_use(fs)=TwoD_AR_cnt;}
+        else
+        {anystring="AGE"; fs=f+Nfleet; TwoD_AR_use(fs)=TwoD_AR_cnt;}
+         int sigma_amax = tempvec(6);
+         int use_rho = tempvec(7);
+         int amin = tempvec(4);
+         if(sigma_amax<amin || sigma_amax>tempvec(5))
+          {N_warn++; warning<<"fatal error:  sigmasel_amax must be >=amin and <=amax: "<<amin<<" "<<sigma_amax<<" "<<tempvec(5)<<endl; exit(1);}
+         tempvec(12)=N_parm_dev;
+         tempvec(10)=1;  //  used for dimensioning the dev vectors in SS_param   parm_dev_minyr(k)
+         tempvec(11)=(tempvec(3)-tempvec(2)+1)*(tempvec(5)-amin+1);   //parm_dev_maxyr(k)
+         z=f;
+         if(tempvec(8)==2) z=f+Nfleet;
+         for(y=tempvec(2);y<=tempvec(3)+1;y++)
+         {timevary_sel(y,z)=1;}
+         TwoD_AR_def.push_back (tempvec);
+         for(j=amin;j<=sigma_amax;j++)
          {
-         dvector dtempvec(1,7);  //  Lo, Hi, init, prior, prior_sd, prior_type, phase;
-         dtempvec.initialize();
-         *(ad_comm::global_datafile) >> dtempvec(1,7);
-         timevary_parm_rd.push_back (dtempvec);
-         echoinput<<" rho year: "<<dtempvec(3)<<endl;
-         ParCount++; timevary_parm_cnt++; timevary_parm_cnt_sel++; N_selparm2++; TwoD_AR_parms(f)++; ParmLabel+=anystring+"_rho_yr_"+fleetname(f)+"("+NumLbl(f)+")";
+           dvector dtempvec(1,7);  //  Lo, Hi, init, prior, prior_sd, prior_type, phase;
+           dtempvec.initialize();
+           *(ad_comm::global_datafile) >> dtempvec(1,7);
+           timevary_parm_rd.push_back (dtempvec);
+           echoinput<<" sigmasel for age: "<<j<<" "<<dtempvec(3)<<endl;
+           ParCount++; timevary_parm_cnt++; timevary_parm_cnt_sel++; N_selparm2++; ParmLabel+="_sigmasel_"+fleetname(f)+"("+NumLbl(f)+")_"+anystring+"("+NumLbl(j)+")";
          }
+         if(use_rho==1)
          {
-         dvector dtempvec(1,7);  //  Lo, Hi, init, prior, prior_sd, prior_type, phase;
-         dtempvec.initialize();
-         *(ad_comm::global_datafile) >> dtempvec(1,7);
-         timevary_parm_rd.push_back (dtempvec);
-         echoinput<<" rho age: "<<dtempvec(3)<<endl;
-         ParCount++; timevary_parm_cnt++; timevary_parm_cnt_sel++; N_selparm2++; TwoD_AR_parms(f)++; ParmLabel+=anystring+"_rho_age_"+fleetname(f)+"("+NumLbl(f)+")";
+           {
+           dvector dtempvec(1,7);  //  Lo, Hi, init, prior, prior_sd, prior_type, phase;
+           dtempvec.initialize();
+           *(ad_comm::global_datafile) >> dtempvec(1,7);
+           timevary_parm_rd.push_back (dtempvec);
+           echoinput<<" rho year: "<<dtempvec(3)<<endl;
+           ParCount++; timevary_parm_cnt++; timevary_parm_cnt_sel++; N_selparm2++; ParmLabel+=anystring+"_rho_yr_"+fleetname(f)+"("+NumLbl(f)+")";
+           }
+           {
+           dvector dtempvec(1,7);  //  Lo, Hi, init, prior, prior_sd, prior_type, phase;
+           dtempvec.initialize();
+           *(ad_comm::global_datafile) >> dtempvec(1,7);
+           timevary_parm_rd.push_back (dtempvec);
+           echoinput<<" rho age: "<<dtempvec(3)<<endl;
+           ParCount++; timevary_parm_cnt++; timevary_parm_cnt_sel++; N_selparm2++; ParmLabel+=anystring+"_rho_age_"+fleetname(f)+"("+NumLbl(f)+")";
+          }
+         }
         }
-       }
-      }
-  } while(ender==0);
+    } while(ender==0);
     
   }
 
@@ -2773,7 +2782,7 @@
      echoinput<<y<<" parm "<<timevary_parm_rd[y](1,7)<<endl;}
    }
  END_CALCS
-
+  
 !!//  SS_Label_Info_4.9.9 #Create arrays for the total set of selex parameters
   vector selparm_LO(1,N_selparm2)
   vector selparm_HI(1,N_selparm2)
@@ -2979,8 +2988,14 @@
    ivector parm_dev_minyr(1,N_parm_dev);
    ivector parm_dev_maxyr(1,N_parm_dev);
    ivector parm_dev_PH(1,N_parm_dev);
-   ivector parm_dev_type(1,N_parm_dev);  //  distinguigh parameter dev vectors from 2DAR devs
    int Do_Var_adjust
+
+   ivector parm_dev_type(1,N_parm_dev);  //  distinguish parameter dev vectors from 2DAR devs
+   ivector TwoD_AR_ymin(1,TwoD_AR_cnt)
+   ivector TwoD_AR_ymax(1,TwoD_AR_cnt)
+   ivector TwoD_AR_amin(1,TwoD_AR_cnt)
+   ivector TwoD_AR_amax(1,TwoD_AR_cnt)
+
 
  LOCAL_CALCS
    if(timevary_cnt>0)
@@ -3033,6 +3048,10 @@
          parm_dev_maxyr(k)=timevary_setup(11);
          parm_dev_PH(k)=timevary_setup(9);
          parm_dev_type(k)=2;
+         TwoD_AR_ymin(f)=timevary_setup(2);
+         TwoD_AR_ymax(f)=timevary_setup(3);
+         TwoD_AR_amin(f)=timevary_setup(4);
+         TwoD_AR_amax(f)=timevary_setup(5);
          for(y=timevary_setup(2);y<=timevary_setup(3);y++)
          for(a=timevary_setup(4);a<=timevary_setup(5);a++)
          {

@@ -14,7 +14,7 @@ FUNCTION void make_timevaryparm()
 
     int timevary_parm_cnt_all;
     timevary_parm_cnt_all=0;
-      if(do_once==1) echoinput<<endl<<"**********************"<<endl<<"number of parameters with timevary:  "<<timevary_cnt<<endl;
+    if(do_once==1) echoinput<<endl<<"**********************"<<endl<<"number of parameters with timevary:  "<<timevary_cnt<<endl;
 
    for (int tvary=1;tvary<=timevary_cnt;tvary++)
     {
