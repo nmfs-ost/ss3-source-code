@@ -4417,7 +4417,7 @@ FUNCTION void write_bigoutput()
   }
 
    SS2out<<endl;
-   SS2out<<"Seas Morph Bio_Pattern Sex Settlement Platoon int_Age Real_Age Age_Beg Age_Mid M Len_Beg Len_Mid SD_Beg SD_Mid Wt_Beg Wt_Mid Len_Mat Age_Mat Mat*Fecund";
+   SS2out<<"Seas Morph Bio_Pattern Sex Settlement Platoon int_Age Real_Age Age_Beg Age_Mid M Len_Beg Len_Mid SD_Beg SD_Mid Wt_Beg Wt_Mid Len_Mat Age_Mat Mat*Fecund Mat_F_wtatage Mat_F_Natage";
    if(Hermaphro_Option!=0) SS2out<<" Herma_Trans Herma_Cum ";
    for (f=1;f<=Nfleet;f++) SS2out<<" Len:_"<<f<<" SelWt:_"<<f<<" RetWt:_"<<f;
    SS2out<<endl;
