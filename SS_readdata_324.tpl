@@ -275,6 +275,7 @@
   number data_timing
   4darray have_data(1,ALK_time_max,0,Nfleet,0,9,0,150);  //  this can be a i4array in ADMB 11
 //    4iarray have_data(1,ALK_time_max,0,Nfleet,0,9,0,60);  //  this can be a i4array in ADMB 11
+  imatrix have_data_yr(styr,endyr+20,0,Nfleet)
 
 //  have_data stores the data index of each datum occurring at time ALK_time, for fleet f of observation type k.  Up to 150 data are allowed due to CAAL data
 //  have_data(ALK_idx,0,0,0) is overall indicator that some datum requires ALK update in this ALK_time

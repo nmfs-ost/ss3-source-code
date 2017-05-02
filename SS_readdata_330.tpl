@@ -269,6 +269,7 @@
   number data_timing
   4darray have_data(1,ALK_time_max,0,Nfleet,0,9,0,150);  //  this can be a i4array in ADMB 11
 //    4iarray have_data(1,ALK_time_max,0,Nfleet,0,9,0,60);  //  this can be a i4array in ADMB 11
+  imatrix have_data_yr(styr,endyr+20,0,Nfleet)
 
 //  have_data stores the data index of each datum occurring at time ALK_time, for fleet f of observation type k.  Up to 150 data are allowed due to CAAL data
 //  have_data(ALK_idx,0,0,0) is overall indicator that some datum requires ALK update in this ALK_time
@@ -289,6 +290,7 @@
   matrix obs_equ_catch(1,nseas,1,Nfleet)    //  initial, equilibrium catch.  now seasonal
  LOCAL_CALCS
    have_data.initialize();
+   have_data_yr.initialize();
    obs_equ_catch.initialize();
 
    for(y=1;y<=ALK_time_max;y++)
@@ -567,7 +569,7 @@
         have_data(ALK_time,f,data_type,0)++;  //  count the number of observations in this subseas
         p=have_data(ALK_time,f,data_type,0);  //  current number of observations
         have_data(ALK_time,f,data_type,p)=j;  //  store data index for the p'th observation in this subseas
-
+        have_data_yr(y,f)=1;  have_data_yr(y,0)=1;  //  survey or comp data exist this year
         //  create super_year indexes
         if( Svy_data[i](2)<0) // start or stop a super-period;  ALL observations must be continguous in the file
         {
@@ -1248,6 +1250,7 @@
             have_data(ALK_time,f,data_type,0)++;  //  count the number of observations in this subseas
             p=have_data(ALK_time,f,data_type,0);
             have_data(ALK_time,f,data_type,p)=j;  //  store data index for the p'th observation in this subseas
+            have_data_yr(y,f)=1;  have_data_yr(y,0)=1;  //  survey or comp data exist this year
 
           if(s>nseas)
            {N_warn++; cout<<" EXIT - see warning "<<endl; warning<<" Critical error, season for length obs "<<i<<" is > nseas"<<endl; exit(1);}
@@ -1673,6 +1676,7 @@
             have_data(ALK_time,f,data_type,0)++;  //  count the number of observations in this subseas
             p=have_data(ALK_time,f,data_type,0);
             have_data(ALK_time,f,data_type,p)=j;  //  store data index for the p'th observation in this subseas
+            have_data_yr(y,f)=1;  have_data_yr(y,0)=1;  //  survey or comp data exist this year
 
           if(s>nseas)
            {N_warn++; cout<<" EXIT - see warning "<<endl; warning<<" Critical error, season for age obs "<<i<<" is > nseas"<<endl; exit(1);}
@@ -2318,6 +2322,7 @@
           have_data(ALK_time,f,data_type,0)++;  //  count the number of observations in this subseas
           p=have_data(ALK_time,f,data_type,0);
           have_data(ALK_time,f,data_type,p)=iobs;  //  store data index for the p'th observation in this subseas
+          have_data_yr(y,f)=1;  have_data_yr(y,0)=1;  //  survey or comp data exist this year
 
           if(SzFreq_obs_hdr(iobs,7)<0) SzFreq_obs_hdr(iobs,3)=-abs(SzFreq_obs_hdr(iobs,3));  //  old method for excluding from logL
         }

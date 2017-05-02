@@ -2673,7 +2673,7 @@
 !!//  SS_Label_Info_4.9.1 #Read selectivity definitions
 //  do 2*Nfleet to create options for size-selex (first), then age-selex
   init_imatrix seltype_rd(1,2*Nfleet,1,4)    // read selex type for each fleet/survey, Do_retention, Do_male
-  imatrix seltype(1,2*Nfleet,1,6)
+  imatrix seltype(1,2*Nfleet,1,4)
   !! echoinput<<endl<<"*******************"<<endl<<" selex types "<<endl<<seltype<<endl;
   int N_selparm   // figure out the Total number of selex parameters
   int N_selparm2                 // N selparms plus env links and blocks
@@ -3642,12 +3642,22 @@
    ivector parm_dev_maxyr(1,N_parm_dev);
    ivector parm_dev_PH(1,N_parm_dev);
    ivector parm_dev_type(1,N_parm_dev);  //  distinguish parameter dev vectors from 2DAR devs
+   ivector parm_dev_info(1,N_parm_dev);  //  pointer from list of devvectorsto 2DAR list
    ivector TwoD_AR_ymin(1,1)
    ivector TwoD_AR_ymax(1,1)
    ivector TwoD_AR_amin(1,1)
    ivector TwoD_AR_amax(1,1)
+   ivector TwoD_AR_degfree(1,TwoD_AR_cnt)  //  N years with observations * nages in the 2D_AR range
+   ivector TwoD_AR_cor_dim(1,1)
 
  LOCAL_CALCS
+
+   TwoD_AR_ymin.initialize();
+   TwoD_AR_ymax.initialize();
+   TwoD_AR_amin.initialize();
+   TwoD_AR_amax.initialize();
+   TwoD_AR_cor_dim.initialize();
+   TwoD_AR_degfree.initialize();
 //  1=baseparm type; 2=baseparm index; 3=first timevary parm
 //  4=block or trend type; 5=block pattern; 6= env link type; 7=env variable;
 //  8=dev vector used; 9=dev link type; 10=dev min year; 11=dev maxyear; 12=dev phase; 13=all parm index of baseparm

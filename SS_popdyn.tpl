@@ -30,7 +30,7 @@ FUNCTION void get_initial_conditions()
     }
   if(do_once==1) cout<<" MG setup OK "<<endl;
   if(MG_active(2)>0) get_growth1();   // seasonal effects and CV
-  if(do_once==1) cout<<" growth OK"<<endl;
+  if(do_once==1) cout<<" growth1 OK"<<endl;
   if(MG_active(2)>0 || save_for_report>0)
   {
     ALK_subseas_update=1;  //  to indicate that all ALKs need calculation
@@ -38,8 +38,15 @@ FUNCTION void get_initial_conditions()
     {get_growth2();}
     else
     {get_growth2_Richards();}
+    for (s=1;s<=nseas;s++)
+    {
+      for(subseas=1;subseas<=N_subseas;subseas++)  //  do all subseasons in first year
+      {
+        get_growth3(s, subseas);  //  in case needed for Lorenzen M
+      }
+    }
   }
-  if(do_once==1) cout<<" growth OK"<<endl;
+
   if(MG_active(1)>0) get_natmort();
   if(do_once==1) cout<<" natmort OK"<<endl;
   if(y>=Bmark_Yr(1)&&y<=Bmark_Yr(2))

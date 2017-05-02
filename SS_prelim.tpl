@@ -608,9 +608,51 @@ PRELIMINARY_CALCS_SECTION
     echoinput<< " parm_devs after check  "<<parm_dev_use<<endl;
   }
 
-
 //  end bound check and jitter
 
+//  create correlation matrix for 2D_AR approaches
+    //  TwoD_AR_def:  1-fleet, 2-ymin, 3-ymax, 4-amin, 5-amax, 6-sigma_amax, 7-use_rho, 8-age/len, 9-dev_phase
+    //  10-mindimension, 11=maxdim, 12-N_parm_dev, 13-selparm_location
+  cor.initialize();
+  det_cor=1.0;
+  inv_cor.initialize();
+ 
+  if (TwoD_AR_cnt>0)
+  for(f=1;f<=TwoD_AR_cnt;f++)
+  {
+    double rho_a;
+    double rho_y;
+    //  location in selparm of rho 
+    if(TwoD_AR_def[f](7)==0)  
+    {
+      echoinput<<"fleet: "<<f<<" no 2D_AR rho "<<endl;
+    } 
+    else
+    {
+      j=TwoD_AR_def[f](13)+TwoD_AR_def[f](6)-TwoD_AR_def[f](4)+1;  //  first sigmalocation + other sigmasels, then the rho's
+      rho_y=value(selparm(j));
+      rho_a=value(selparm(j+1));
+      echoinput<<"fleet: "<<f<<" 2D_AR rho in prelim for time and age/size "<<rho_y<<" "<<rho_a<<endl;
+      for (int i = TwoD_AR_ymin(f); i <= TwoD_AR_ymax(f); i++)
+      {
+        for (int j = TwoD_AR_amin(f); j <= TwoD_AR_amax(f); j++)
+        {
+          for (int m = TwoD_AR_ymin(f); m <= TwoD_AR_ymax(f); m++)
+          {
+          for (int n = TwoD_AR_amin(f); n <= TwoD_AR_amax(f); n++)
+            {
+              cor(f, (TwoD_AR_amax(f)-TwoD_AR_amin(f)+1)*(i-TwoD_AR_ymin(f))+j-TwoD_AR_amin(f)+1, 
+                     (TwoD_AR_amax(f)-TwoD_AR_amin(f)+1)*(m-TwoD_AR_ymin(f))+n-TwoD_AR_amin(f)+1)
+              = pow(rho_a,abs(j-n)) * pow(rho_y,abs(i-m));
+            }
+          }
+        }
+      }
+      inv_cor(f)=inv(cor(f));
+      det_cor(f)=det(cor(f));
+      echoinput<<"determinant for 2D_AR cor: "<<f<<"  is: "<<det_cor(f)<<endl;
+    }
+  }
 //  SS_Label_Info_6.6 #Copy the environmental data as read into the dmatrix environmental data array
 //  this will allow dynamic derived quantities like biomass and recruitment to be mapped into this same dmatrix
     env_data.initialize();
@@ -682,6 +724,15 @@ PRELIMINARY_CALCS_SECTION
     <<"; is within 5% of the largest size bin: "<<len_bins(nlength)<<"; Add more bins"<<endl;}
 
 //  SS_Label_Info_6.8.4 #Call fxn get_natmort()
+    for (s=1;s<=nseas;s++)  //  get growth here in case needed for Lorenzen
+    {
+      t = styr+s-1;
+      for(subseas=1;subseas<=N_subseas;subseas++)
+      {
+        ALK_idx=(s-1)*N_subseas+subseas;
+        get_growth3(s, subseas);  //  this will calculate the cv of growth for all subseasons of first year
+      } 
+    }
     echoinput<<"ready to do natmort "<<endl;
     get_natmort();
     natM = value(natM);
@@ -700,7 +751,6 @@ PRELIMINARY_CALCS_SECTION
 
     for (s=1;s<=nseas;s++)
     {
-    	echoinput<<" prelim:  growth3 for seas: "<<s<<endl;
       t = styr+s-1;
       for(subseas=1;subseas<=N_subseas;subseas++)
       {
@@ -708,7 +758,6 @@ PRELIMINARY_CALCS_SECTION
         get_growth3(s, subseas);  //  this will calculate the cv of growth for all subseasons of first year
         Make_AgeLength_Key(s,subseas);   //  ALK_idx calculated within Make_AgeLength_Key
         ALK(ALK_idx) = value(ALK(ALK_idx));
-        echoinput<<" ok  subseas "<<subseas<<endl;
       }
 //  SPAWN-RECR:   calc fecundity in preliminary_calcs
       if(s==spawn_seas)

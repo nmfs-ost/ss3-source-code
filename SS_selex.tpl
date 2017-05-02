@@ -616,17 +616,30 @@ FUNCTION void get_selectivity()
         if(TwoD_AR_use(f)>0)
         {
           j=TwoD_AR_use(f);
-          if(y>=TwoD_AR_ymin(j) && y<=TwoD_AR_ymax(j) && TwoD_AR_def[j](8)==1)  //  in year range and effect is on length (not age)
-          {
-            z=TwoD_AR_def[j](12);  //  dev vector used
-            k=(y-TwoD_AR_ymin(j))*(TwoD_AR_amax(j)-TwoD_AR_amin(j)+1);
-            for(a=TwoD_AR_amin(j);a<=TwoD_AR_amax(j);a++)
+            if(y>=TwoD_AR_ymin(j) && y<=TwoD_AR_ymax(j) && TwoD_AR_def[j](8)==1)  //  in year range and effect is on length
             {
-              k++; 
-              sel_l(y,f,gg,a)=sel_l(y,f,gg,a)*mfexp(parm_dev(z,k));
+              z=TwoD_AR_def[j](12);  //  dev vector used
+              k=(y-TwoD_AR_ymin(j))*(TwoD_AR_amax(j)-TwoD_AR_amin(j)+1);
+              a1=TwoD_AR_def[j](13)-1;  //  parameter number-1  for sigmasel
+              for(a=TwoD_AR_amin(j);a<=TwoD_AR_def[j](6);a++)  //  age-varying sigmasel
+              {
+                a1++;
+                dvariable sigmasel=selparm(a1);
+                k++; 
+                sel_l(y,f,gg,a)*=mfexp(sigmasel*parm_dev(z,k));
+              }
+              if(TwoD_AR_def[j](6)<TwoD_AR_amax(j))
+              {
+                dvariable sigmasel=selparm(a1);
+                for(a=TwoD_AR_def[j](6)+1; a<=TwoD_AR_amax(j);a++)  //  age-varying sigmasel
+                {
+                  dvariable sigmasel=selparm(a1);
+                  k++; 
+                  sel_l(y,f,gg,a)*=mfexp(sigmasel*parm_dev(z,k));
+                }
+              }
+              if(docheckup==1) echoinput<<"len selex after 2D_AR"<<sel_l(y,f,gg)<<endl;
             }
-          }
-          if(docheckup==1) echoinput<<"after 2D_AR"<<sel_l(y,f,gg)<<endl;
         }
       }  // end loop of genders
         
@@ -1139,14 +1152,26 @@ FUNCTION void get_selectivity()
             {
               z=TwoD_AR_def[j](12);  //  dev vector used
               k=(y-TwoD_AR_ymin(j))*(TwoD_AR_amax(j)-TwoD_AR_amin(j)+1);
-              for(a=TwoD_AR_amin(j);a<=TwoD_AR_amax(j);a++)
+              a1=TwoD_AR_def[j](13)-1;  //  parameter number-1  for sigmasel
+              for(a=TwoD_AR_amin(j);a<=TwoD_AR_def[j](6);a++)  //  age-varying sigmasel
               {
+                a1++;
+                dvariable sigmasel=selparm(a1);
                 k++; 
-//                sel_a(y,fs,gg,a)=sel_a(y,fs,gg,a)*mfexp(parm_dev(z,k));
-                sel_a(y,fs,gg,a)*=mfexp(parm_dev(z,k));
+                sel_a(y,fs,gg,a)*=mfexp(sigmasel*parm_dev(z,k));
               }
+              if(TwoD_AR_def[j](6)<TwoD_AR_amax(j))
+              {
+                dvariable sigmasel=selparm(a1);
+                for(a=TwoD_AR_def[j](6)+1; a<=TwoD_AR_amax(j);a++)  //  age-varying sigmasel
+                {
+                  dvariable sigmasel=selparm(a1);
+                  k++; 
+                  sel_a(y,fs,gg,a)*=mfexp(sigmasel*parm_dev(z,k));
+                }
+              }
+              if(docheckup==1) echoinput<<"age selex after 2D_AR"<<sel_a(y,fs,gg)<<endl;
             }
-            if(docheckup==1) echoinput<<"age selex after 2D_AR"<<sel_a(y,fs,gg)<<endl;
           }
         }  //  end gender loop
 

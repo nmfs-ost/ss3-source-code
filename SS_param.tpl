@@ -330,6 +330,9 @@ PARAMETER_SECTION
   4darray discmort2_a(styr-3,YrMax,1,Nfleet,1,gender,0,nages)
   4darray sel_a_r(styr-3,YrMax,1,Nfleet,1,gender,0,nages)
 
+  3darray cor(1,TwoD_AR_cnt,1,TwoD_AR_cor_dim,1,TwoD_AR_cor_dim)
+  3darray inv_cor(1,TwoD_AR_cnt,1,TwoD_AR_cor_dim,1,TwoD_AR_cor_dim)
+  vector det_cor(1,TwoD_AR_cnt);
 
 !!//  SS_Label_Info_5.1.6 #Create tag parameters and associated arrays
   matrix TG_alive(1,pop,1,gmorph)

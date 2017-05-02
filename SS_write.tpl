@@ -2183,7 +2183,7 @@ FUNCTION void write_nucontrol()
     report4<<"#_no timevary selex parameters"<<endl;
   }
 
-  report4<<"#"<<endl<<TwoD_AR_do<<"   #  use 2D_AR1 selectivity(0/1)"<<endl;
+  report4<<"#"<<endl<<TwoD_AR_do<<"   #  use 2D_AR1 selectivity(0/1):  experimental feature"<<endl;
   if(TwoD_AR_do>0)
   {
     k=N_selparm3-N_selparm;  //  starting point in timevary_parm_rd
@@ -3591,7 +3591,7 @@ FUNCTION void write_bigoutput()
       else{SS2out<<" _ ";}
       SS2out<<yr_disc_use(f,i);
       SS2out<<" "<<catch_ret_obs(f,t)<<" "<<catch_fleet(t,f,gg)<<" "<<catch_mult(y,f)<<" "<<catch_mult(y,f)*catch_fleet(t,f,gg)<<" "<<Hrate(f,t);
-      SS2out<<endl<<catch_fleet(t,f)<<endl;
+      SS2out<<endl;
     }
   }
 

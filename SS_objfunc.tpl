@@ -695,45 +695,47 @@ FUNCTION void evaluate_the_objective_function()
   //  new code to match mean-reverting random walk approach used for recdevs
       for(i=1;i<=N_parm_dev;i++)
       {
-        if(parm_dev_PH(i)>0 && parm_dev_lambda(k_phase)>0.0 && parm_dev_type(i)==1)
+        if(parm_dev_PH(i)>0 && parm_dev_lambda(k_phase)>0.0)
         {
-        dvariable temp;
+          if(parm_dev_type(i)==1)  //  parameter dev
+          {
+            dvariable temp;
 //        temp=1.00 / (2.000*(1.0-parm_dev_rho(i)*parm_dev_rho(i))*square(parm_dev_stddev(i)));
-        temp=1.00 / (2.000*(1.0-parm_dev_rho(i)*parm_dev_rho(i))*square(1.00));
+            temp=1.00 / (2.000*(1.0-parm_dev_rho(i)*parm_dev_rho(i))*square(1.00));
 
-        parm_dev_like(i,1) += square( parm_dev(i,parm_dev_minyr(i)));  //  first year
-        for(j=parm_dev_minyr(i)+1;j<=parm_dev_maxyr(i);j++)
-        {parm_dev_like(i,1) += square( parm_dev(i,j)-parm_dev_rho(i)*parm_dev(i,j-1) );}
-        parm_dev_like(i,1) *=temp;
-        parm_dev_like(i,2) += float(parm_dev_maxyr(i)-parm_dev_minyr(i)+1.)*log(parm_dev_stddev(i));
-        //  include parm_dev_like(i,2) in the total, or not, using sd_offset
+            parm_dev_like(i,1) += square( parm_dev(i,parm_dev_minyr(i)));  //  first year
+            for(j=parm_dev_minyr(i)+1;j<=parm_dev_maxyr(i);j++)
+            {parm_dev_like(i,1) += square( parm_dev(i,j)-parm_dev_rho(i)*parm_dev(i,j-1) );}
+            parm_dev_like(i,1) *=temp;
+            parm_dev_like(i,2) += float(parm_dev_maxyr(i)-parm_dev_minyr(i)+1.)*log(parm_dev_stddev(i));
+            //  include parm_dev_like(i,2) in the total, or not, using sd_offset
+          }
+          else  //  2D_AR devs
+          {
+            f=parm_dev_info(i);  //  pointer from list of devvectors to 2DAR list
+            dvariable sigmasel=selparm(TwoD_AR_def[f](13));
+//            echoinput<<" sigmasel "<<sigmasel<<endl;
+            parm_dev_like(i,1)-=-0.5*log(det_cor(f));
+            if(TwoD_AR_def[f](6)==TwoD_AR_def[f](4))  //  only one sigmasel by age
+            {
+//  nll -= - 0.5*log(det(cor)) - 0.5*nages*nyears*log(2.0*PI ) - 0.5*S_hat_vec*inv(cor)*S_hat_vec/pow(sigmaS,2) - 0.5*2*nages*nyears*log(sigmaS);
+               if(TwoD_AR_def[f](7)==0)  // do not use rho
+               {
+                 parm_dev_like(i,1)-=  - 0.5*TwoD_AR_degfree(f)*log(2.0*PI ) - 0.5*sumsq(parm_dev(i))/pow(sigmasel,2) - TwoD_AR_degfree(f)*log(sigmasel);
+               }
+               else
+               {
+                 parm_dev_like(i,1)-=  - 0.5*TwoD_AR_degfree(f)*log(2.0*PI ) - 0.5*parm_dev(i)*inv_cor(f)*parm_dev(i)/pow(sigmasel,2) - TwoD_AR_degfree(f)*log(sigmasel);
+               }
+            }
+            else  //  some age-specific sigmasel
+            {
+//  nll -= - 0.5*log(det(cor)) - 0.5*nages*nyears*log(2.0*PI ) - 0.5*S_hat_vec*inv(cor)*S_hat_vec/pow(sigmaS,2) - 0.5*2*nages*nyears*log(sigmaS);
+            }
+          }
         }
       }
     }
-
-  /*
-    {
-      recr_like = sd_offset_rec*log(sigmaR);
-      // where sd_offset_rec takes account for the number of recruitment years fully estimated
-      // this is calculated as the sum of the biasadj vector
-      if(SR_autocorr==0)
-      {
-      recr_like += norm2(recdev(recdev_first,recdev_end))/two_sigmaRsq;
-      }
-      else
-      {
-        rho=SR_parm(N_SRparm2);
-        recr_like += square(recdev(recdev_first))/two_sigmaRsq;
-        for (y=recdev_first+1;y<=recdev_end;y++)
-        {
-          recr_like += square(recdev(y)-rho*recdev(y-1)) / ((1.0-rho*rho)*two_sigmaRsq);
-        }
-      }
-      recr_like += 0.5 * square( log(R1/R1_exp) / (sigmaR/ave_age) );
-      if(do_once==1) cout<<" did recruitdev obj_fun "<<recr_like<<endl;
-    }
-  */
-
 
     for (f=1;f<=Nfleet;f++)
       if(Q_setup(f,4)==3)
@@ -741,18 +743,6 @@ FUNCTION void evaluate_the_objective_function()
 //      parm_dev_like += Q_dev_like(f,1); // mean component for dev approach (var component is already in the parm priors)
                                         //  do not include for randwalk (Qsetup==4)
       }
-
-  /*
-    if(selparm_dev_PH>0 && parm_dev_lambda(k_phase)>0.0 )
-    {
-     for (i=1;i<=N_selparm_dev;i++)
-     {
-     for (j=selparm_dev_minyr(i);j<=selparm_dev_maxyr(i);j++)
-     {selparm_dev_like += 0.5*square( selparm_dev(i,j) / selparm_dev_stddev(i) );}
-      selparm_dev_like(i) += sd_offset*float(selparm_dev_maxyr(i)-selparm_dev_minyr(i)+1.)*log(selparm_dev_stddev(i));
-     }
-    }
-   */
 
   //  SS_Label_Info_25.16 #Penalty for F_ballpark
     if(F_ballpark_yr>=styr)
