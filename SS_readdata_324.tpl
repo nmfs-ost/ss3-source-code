@@ -410,10 +410,13 @@
   ivector Svy_units(1,j)   //0=num/1=bio/2=F
   ivector Svy_errtype(1,j)  // -1=normal / 0=lognormal / >0=T
   ivector Svy_sdreport(1,j) // 0=no sdreport; 1=enable sdreport
+  int Svy_N_sdreport
 
  LOCAL_CALCS
 
-  Svy_sdreport = 0;   // default for 3.24
+  // defaults for 3.24
+  Svy_sdreport   = 0;
+  Svy_N_sdreport = 0;
 
   if(k>0)
   {

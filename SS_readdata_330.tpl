@@ -421,6 +421,7 @@
   ivector Svy_units(1,Nfleet)   //0=num; 1=bio; 2=F; >=30 for spec\ial patterns
   ivector Svy_errtype(1,Nfleet)  // -1=normal / 0=lognormal / >0=T
   ivector Svy_sdreport(1,Nfleet)  // 0=no sdreport; 1=enable sdreport
+  int Svy_N_sdreport
 
  LOCAL_CALCS
   data_type=1;  //  for surveys
@@ -491,8 +492,6 @@
   {
     if (Svy_N_fleet(f) == 0) Svy_sdreport(f) = 0;
   }
-
-  int Svy_N_sdreport = sum(Svy_sdreport);
 
  END_CALCS
 
@@ -601,15 +600,22 @@
   }
   echoinput<<"Successful read of index data; N= "<<Svy_N<< endl;
   echoinput<<"Number of survey superperiods by fleet: "<<Svy_super_N<<endl;
+
+  // why don't these work?
+  // Svy_N_sdreport = sum(elem_prod(Svy_sdreport, Svy_N_fleet);
+  // Svy_N_sdreport = sum(Svy_sdreport * Svy_N_fleet);
+  Svy_N_sdreport = 0;
+  for (f = 1; f <= Nfleet; ++f)
+  {
+    if (Svy_sdreport(f) > 0)
+    {
+      Svy_N_sdreport += Svy_N_fleet(f);
+    }
+  }
+  if (Svy_N_sdreport < 0) Svy_N_sdreport = 0;
+  echoinput<<"Number of sdreport index values: "<<Svy_N_sdreport<<endl;
+
  END_CALCS
-
-  ivector Svy_sdreport_idx(1,Svy_N_sdreport)
-
-  !! if (Svy_N_sdreport > 0)
-  !! {
-        // set up sdreport_matrix (ragged matrix allowed?) for survey indices
-        // sdreport_matrix(1,Svy_N_sdreport,vector of start and end years for each enabled fleet)
-  !! }
 
    init_int Ndisc_fleets
    int nobs_disc  //  number of discard records kept in active array

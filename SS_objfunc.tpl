@@ -983,6 +983,23 @@ FUNCTION void Process_STDquant()
     {
       Extra_Std(1)=SPB_virgin;
     }
+
+    if(Svy_N>0)
+    {
+      int Svy_sdreport_counter = 1;
+      for (f=1;f<=Nfleet;f++)
+      {
+        if (Svy_sdreport(f) > 0)
+        {
+          for (i=1;i<=Svy_N_fleet(f);i++)
+          {
+            Svy_sdreport_est(Svy_sdreport_counter) = Svy_est(f,i);
+            ++Svy_sdreport_counter;
+          }
+        }
+      }
+    }
+
   }
 
 //********************************************************************

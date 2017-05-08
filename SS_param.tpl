@@ -463,6 +463,8 @@ PARAMETER_SECTION
   sdreport_vector Mgmt_quant(1,N_STD_Mgmt_Quant)
   sdreport_vector Extra_Std(1,Extra_Std_N)
 
+  sdreport_vector Svy_sdreport_est(1,Svy_N_sdreport)
+
 !!//  SS_Label_Info_5.3 #Create log-Likelihood vectors
   vector MGparm_Like(1,N_MGparm2)
   vector init_F_Like(1,Nfleet)
