@@ -2866,7 +2866,7 @@ FUNCTION void write_bigoutput()
     SS2out<<" "<<CoVar(active_count,1)<<endl;
   }
 
-   if(reportdetail == 1) {k1=endyr;} else {k1=styr;}
+   if(reportdetail == 1) {k1=YrMax;} else {k1=styr;}
    SS2out<<endl<<"MGparm_By_Year_after_adjustments"<<endl<<"Yr ";
    for (i=1;i<=N_MGparm;i++) SS2out<<" "<<ParmLabel(i);
    SS2out<<endl;

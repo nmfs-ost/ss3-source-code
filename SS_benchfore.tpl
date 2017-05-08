@@ -220,6 +220,7 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
         for (g=1;g<=6;g++) {report5<<" "<<equ_catch_fleet(g,s,f);}
         report5<<endl;
       }
+
     }
 
 //  SPAWN-RECR:   calc equil spawn-recr in YPR; need to make this area-specific
