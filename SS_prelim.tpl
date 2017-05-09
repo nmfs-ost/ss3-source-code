@@ -607,50 +607,51 @@ PRELIMINARY_CALCS_SECTION
     {parm_dev_use(i,j)=value(parm_dev(i,j));}
     echoinput<< " parm_devs after check  "<<parm_dev_use<<endl;
   }
-
 //  end bound check and jitter
 
+  if (TwoD_AR_cnt>0)
+  {
 //  create correlation matrix for 2D_AR approaches
     //  TwoD_AR_def:  1-fleet, 2-ymin, 3-ymax, 4-amin, 5-amax, 6-sigma_amax, 7-use_rho, 8-age/len, 9-dev_phase
     //  10-mindimension, 11=maxdim, 12-N_parm_dev, 13-selparm_location
-  cor.initialize();
-  det_cor=1.0;
-  inv_cor.initialize();
- 
-  if (TwoD_AR_cnt>0)
-  for(f=1;f<=TwoD_AR_cnt;f++)
-  {
-    double rho_a;
-    double rho_y;
-    //  location in selparm of rho 
-    if(TwoD_AR_def[f](7)==0)  
+    cor.initialize();
+    det_cor=1.0;
+    inv_cor.initialize();
+
+    for(f=1;f<=TwoD_AR_cnt;f++)
     {
-      echoinput<<"fleet: "<<f<<" no 2D_AR rho "<<endl;
-    } 
-    else
-    {
-      j=TwoD_AR_def[f](13)+TwoD_AR_def[f](6)-TwoD_AR_def[f](4)+1;  //  first sigmalocation + other sigmasels, then the rho's
-      rho_y=value(selparm(j));
-      rho_a=value(selparm(j+1));
-      echoinput<<"fleet: "<<f<<" 2D_AR rho in prelim for time and age/size "<<rho_y<<" "<<rho_a<<endl;
-      for (int i = TwoD_AR_ymin(f); i <= TwoD_AR_ymax(f); i++)
+      double rho_a;
+      double rho_y;
+      //  location in selparm of rho 
+      if(TwoD_AR_def[f](7)==0)  
       {
-        for (int j = TwoD_AR_amin(f); j <= TwoD_AR_amax(f); j++)
+        echoinput<<"fleet: "<<f<<" no 2D_AR rho "<<endl;
+      } 
+      else
+      {
+        j=TwoD_AR_def[f](13)+TwoD_AR_def[f](6)-TwoD_AR_def[f](4)+1;  //  first sigmalocation + other sigmasels, then the rho's
+        rho_y=value(selparm(j));
+        rho_a=value(selparm(j+1));
+        echoinput<<"fleet: "<<f<<" 2D_AR rho in prelim for time and age/size "<<rho_y<<" "<<rho_a<<endl;
+        for (int i = TwoD_AR_ymin(f); i <= TwoD_AR_ymax(f); i++)
         {
-          for (int m = TwoD_AR_ymin(f); m <= TwoD_AR_ymax(f); m++)
+          for (int j = TwoD_AR_amin(f); j <= TwoD_AR_amax(f); j++)
           {
-          for (int n = TwoD_AR_amin(f); n <= TwoD_AR_amax(f); n++)
+            for (int m = TwoD_AR_ymin(f); m <= TwoD_AR_ymax(f); m++)
             {
-              cor(f, (TwoD_AR_amax(f)-TwoD_AR_amin(f)+1)*(i-TwoD_AR_ymin(f))+j-TwoD_AR_amin(f)+1, 
-                     (TwoD_AR_amax(f)-TwoD_AR_amin(f)+1)*(m-TwoD_AR_ymin(f))+n-TwoD_AR_amin(f)+1)
-              = pow(rho_a,abs(j-n)) * pow(rho_y,abs(i-m));
+            for (int n = TwoD_AR_amin(f); n <= TwoD_AR_amax(f); n++)
+              {
+                cor(f, (TwoD_AR_amax(f)-TwoD_AR_amin(f)+1)*(i-TwoD_AR_ymin(f))+j-TwoD_AR_amin(f)+1, 
+                       (TwoD_AR_amax(f)-TwoD_AR_amin(f)+1)*(m-TwoD_AR_ymin(f))+n-TwoD_AR_amin(f)+1)
+                = pow(rho_a,abs(j-n)) * pow(rho_y,abs(i-m));
+              }
             }
           }
         }
+        inv_cor(f)=inv(cor(f));
+        det_cor(f)=det(cor(f));
+        echoinput<<"determinant for 2D_AR cor: "<<f<<"  is: "<<det_cor(f)<<endl;
       }
-      inv_cor(f)=inv(cor(f));
-      det_cor(f)=det(cor(f));
-      echoinput<<"determinant for 2D_AR cor: "<<f<<"  is: "<<det_cor(f)<<endl;
     }
   }
 //  SS_Label_Info_6.6 #Copy the environmental data as read into the dmatrix environmental data array
@@ -690,6 +691,7 @@ PRELIMINARY_CALCS_SECTION
     Richards=1.0;
 
 //  SS_Label_Info_6.8 #Go thru biological calculations once, with do_once flag=1 to produce extra output to echoinput.sso
+    cout<< " ready to evaluate once in prelim"<<endl;
     echoinput<< " ready to evaluate once "<<endl;
     ALK_subseas_update=1;  //  vector to indicate if ALK needs recalculating
     do_once=1;

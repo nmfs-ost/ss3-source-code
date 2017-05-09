@@ -2584,11 +2584,11 @@
     }
   }
  END_CALCS
-
+  !!echoinput<<"read Do_Benchmark(0/1), then MSY basis(1=F_SPR,2=F_Btarget,3=calcMSY,4=mult*F_endyr)"<<endl;
   init_int Do_Benchmark  // 0=skip; do Fspr, Fbtgt, Fmsy
-  !!echoinput<<Do_Benchmark<<" Do_Benchmark "<<endl;
+  !!echoinput<<Do_Benchmark<<" echoed Do_Benchmark "<<endl;
   init_int Do_MSY   //  1= set to F(SPR); 2=calc F(MSY); 3=set to F(Btgt); 4=set to F(endyr)
-  !!echoinput<<Do_MSY<<" Do_MSY "<<endl;
+  !!echoinput<<Do_MSY<<" echoed MSY basis"<<endl;
 
   int did_MSY;
   int show_MSY;
@@ -2597,17 +2597,18 @@
   !! did_MSY=0;
   !! wrote_bigreport=0;
 
+  !!echoinput<<"next read SPR target and Biomass target as fractions"<<endl;
   init_number SPR_target
-  !!echoinput<<SPR_target<<" SPR_target "<<endl;
+  !!echoinput<<SPR_target<<" echoed SPR_target "<<endl;
   init_number BTGT_target
-  !!echoinput<<BTGT_target<<" BTGT_target "<<endl;
-
+  !!echoinput<<BTGT_target<<" echoed B_target "<<endl;
+  !!echoinput<<"next read 10 Benchmark years for:  beg-end bio; beg-end selex; beg-end relF; beg-end recr_dist; beg-end SRparm"<<endl;
+  !!echoinput<<"codes: -999 means start year; >0 is an actual year; <=0 is relative to endyr"<<endl;
   ivector Bmark_Yr(1,10)
   ivector Bmark_t(1,2)  //  for range of time values for averaging body size
   init_ivector Bmark_Yr_rd(1,10)
-  init_int Bmark_RelF_Basis
  LOCAL_CALCS
-  echoinput<<Bmark_Yr_rd<<" Benchmark years as read:  beg-end bio; beg-end selex; beg-end relF; beg-end recr_dist; beg-end SRparm"<<endl;
+  echoinput<<Bmark_Yr_rd<<" echoed Benchmark years"<<endl;
   for (i=1;i<=10;i++)  //  beg-end bio; beg-end selex; beg-end relF
   {
     if(Bmark_Yr_rd(i)==-999)
@@ -2624,17 +2625,22 @@
   Bmark_t(1)=styr+(Bmark_Yr(1)-styr)*nseas;
   Bmark_t(2)=styr+(Bmark_Yr(2)-styr)*nseas;
 
-  echoinput<<Bmark_Yr<<" Benchmark years as processed:  beg-end bio; beg-end selex; beg-end relF; beg-end recruits"<<endl;
-  echoinput<<Bmark_RelF_Basis<<"  1=use range of years for relF; 2 = set same as forecast relF below"<<endl;
+  echoinput<<Bmark_Yr<<" Benchmark years as processed"<<endl;
+  echoinput<<"next read:  1=use range of years for relF; 2 = set same as forecast relF below"<<endl;
  END_CALCS
+  init_int Bmark_RelF_Basis
+  !!echoinput<<Bmark_RelF_Basis<<"  echoed Bmark_RelF_Basis"<<endl;
 
-  init_int Do_Forecast   //  0=none; 1=F(SPR); 2=F(MSY) 3=F(Btgt); 4=Ave F (enter yrs); 5=read Fmult
-  !!echoinput<<Do_Forecast<<" Do_Forecast "<<endl;
+  !!echoinput<<endl<<"next read forecast basis: 0=none; 1=F(SPR); 2=F(MSY) 3=F(Btgt); 4=Ave F (enter yrs); 5=read Fmult"<<endl;
+
+  init_int Do_Forecast
+  !!echoinput<<Do_Forecast<<" echoed Forecast basis"<<endl;
 
   vector Fcast_Input(1,24);
 
   int N_Fcast_Yrs
-  ivector Fcast_yr(1,6)  // yr range for selex, then yr range foreither allocation or for average F
+  ivector Fcast_yr(1,6)  // yr range for selex, then yr range for either allocation or for average F
+  ivector Fcast_yr_rd(1,6)
   int Fcast_Sel_yr1
   int Fcast_Sel_yr2
   int Fcast_RelF_yr1
@@ -2661,44 +2667,51 @@
   int Fcast_Do_Fleet_Cap;
   int Fcast_Do_Area_Cap;
   int Fcast_Cap_FirstYear;
-
-//  matrix Fcast_RelF(1,nseas,1,Nfleet)
+  vector Fcast_MaxFleetCatch(1,Nfleet)
+  vector Fcast_MaxAreaCatch(1,pop)
+  ivector Allocation_Fleet_Assignments(1,Nfleet)
+  matrix Fcast_RelF_Input(1,nseas,1,Nfleet1)
 
  LOCAL_CALCS
-  if(Do_Forecast==0)
-  {
-    k=0;
-    echoinput<<"No forecast selected, so rest of forecast file will not be read and can be omitted"<<endl;
-    echoinput<<"No forecast selected, default forecast of 1 yr created"<<endl;
-    if(Bmark_RelF_Basis==2) {N_warn++; cout<<" EXIT - see warning "<<endl; warning<<"Fatal stop:  no forecast, but bmark set to use fcast"<<endl;  exit(1);}
-  }
-  else
-  {
-    k=24;
-    echoinput<<"Forecast selected; next 24 input values will be read as a block then parsed and procesed "<<endl;
-  }
- END_CALCS
-  init_vector Fcast_Input_rd(1,k)
+  Fcast_MaxFleetCatch.initialize();
+  Fcast_MaxAreaCatch.initialize();
+  Allocation_Fleet_Assignments.initialize();
+  Fcast_Catch_Allocation.initialize();
 
+
+ END_CALCS
+//  init_vector Fcast_Input_rd(1,k)
+  
  LOCAL_CALCS
   if(Do_Forecast>0)
   {
-    Fcast_Input(1,k)=Fcast_Input_rd(1,k);
-  k=0;
-  k++; N_Fcast_Yrs=int(Fcast_Input(k));
-  echoinput<<N_Fcast_Yrs<<" N_Fcast_Yrs "<<endl;
+//    Fcast_Input(1,k)=Fcast_Input_rd(1,k);
+//  k=0;
+//  k++;
+  echoinput<<endl<<"#next read N forecast years"<<endl;
+  *(ad_comm::global_datafile) >> N_Fcast_Yrs;
+  echoinput<<N_Fcast_Yrs<<" #echoed N_Fcast_Yrs "<<endl;
   if(Do_Forecast>0&&N_Fcast_Yrs<=0) {N_warn++; cout<<"Critical error in forecast input, see warning"<<endl; warning<<"ERROR: cannot do a forecast of zero years: "<<N_Fcast_Yrs<<endl; exit(1);}
   YrMax=endyr+N_Fcast_Yrs;
   TimeMax_Fcast_std = styr+(YrMax-styr)*nseas+nseas-1;
-  k++; Fcast_Flevel=Fcast_Input(k);
-  echoinput<<Fcast_Flevel<<" Fmult value used only if Do_Forecast==5"<<endl;
-  k++; Fcast_yr(1)=int(Fcast_Input(k));
-  k++; Fcast_yr(2)=int(Fcast_Input(k));
-  k++; Fcast_yr(3)=int(Fcast_Input(k));
-  k++; Fcast_yr(4)=int(Fcast_Input(k));
-  k++; Fcast_yr(5)=int(Fcast_Input(k));
-  k++; Fcast_yr(6)=int(Fcast_Input(k));
-  echoinput<<Fcast_yr<<" Begin-end yrs for average selex; begin-end yrs for allocation"<<endl;
+  
+  echoinput<<endl<<"# next read Fmult value to be used only if Forecast basis==5"<<endl;
+//  k++; Fcast_Flevel=Fcast_Input(k);
+  *(ad_comm::global_datafile) >> Fcast_Flevel;
+  echoinput<<Fcast_Flevel<<" # echoed Fmult value"<<endl;
+
+  echoinput<<endl<<"# next enter Fcast_years:  beg_selex, end_selex, beg_relF, end_relF, beg_recruits, end_recruits"<<endl<<
+    "# enter actual year, or values of 0 or -integer to be relative to endyr)"<<endl;
+  *(ad_comm::global_datafile) >> Fcast_yr_rd(1,6);
+//  k++; Fcast_yr(1)=int(Fcast_Input(k));
+//  k++; Fcast_yr(2)=int(Fcast_Input(k));
+//  k++; Fcast_yr(3)=int(Fcast_Input(k));
+//  k++; Fcast_yr(4)=int(Fcast_Input(k));
+//  k++; Fcast_yr(5)=int(Fcast_Input(k));
+//  k++; Fcast_yr(6)=int(Fcast_Input(k));
+
+  echoinput<<Fcast_yr_rd<<" # echoed Fcast years as read"<<endl;
+  Fcast_yr=Fcast_yr_rd;
   for (i=1;i<=6;i++)
   {
     if(Fcast_yr(i)==-999)
@@ -2714,53 +2727,84 @@
   Fcast_RelF_yr2=Fcast_yr(4);
   Fcast_Rec_yr1=Fcast_yr(5);
   Fcast_Rec_yr2=Fcast_yr(6);
-  echoinput<<Fcast_yr<<"  After Transformation:  begin-end yrs for average selex; begin-end yrs for rel F; begin-end yrs for recruits"<<endl;
+  echoinput<<Fcast_yr<<"  # After Transformation"<<endl;
 
-  k++; HarvestPolicy=int(Fcast_Input(k));
-  k++; H4010_top=Fcast_Input(k);
-  k++; H4010_bot=Fcast_Input(k);
-  k++; H4010_scale=Fcast_Input(k);
-  echoinput<<HarvestPolicy<<"  HarvestPolicy "<<endl<<
-  H4010_top<<"  H4010_top "<<endl<<
-  H4010_bot<<"  H4010_bot "<<endl<<
-  H4010_scale<<"  H4010_scale "<<endl;
-  if(H4010_top<=H4010_bot) {N_warn++; cout<<" EXIT - see warning "<<endl; warning<<" control rule top: "<<H4010_top<<" must be > control rule bottom "<<H4010_bot<<endl; exit(1);}
-  if(H4010_scale>1.0) {N_warn++; warning<<" Sure you want harvest policy scalar > 1.0? "<<H4010_scale<<endl;}
+  echoinput<<endl<<"next read 4 values for:  control rule shape(1 or 2), inflection (like 0.40), cutoff(like 0.10), scale(like 0.75)"<<endl;
+  *(ad_comm::global_datafile) >> HarvestPolicy;
+  echoinput<<HarvestPolicy<<"  # echoed HarvestPolicy "<<endl;
+  *(ad_comm::global_datafile) >> H4010_top;
+  echoinput<<H4010_top<<"   # echoed harvest policy inflection "<<endl;
+  *(ad_comm::global_datafile) >> H4010_bot;
+  echoinput<<H4010_bot<<"   # echoed harvest policy cutoff "<<endl;
+  *(ad_comm::global_datafile) >> H4010_scale;
+  echoinput<<H4010_scale<<"   # echoed harvest policy scalar "<<endl;
+  if(H4010_top<=H4010_bot) {N_warn++; cout<<" EXIT - see warning "<<endl; warning<<" control rule inflection: "<<H4010_top<<" must be > control rule bottom "<<H4010_bot<<endl; exit(1);}
+  if(H4010_scale>1.0) {N_warn++; warning<<" Sure you want control rule scalar > 1.0? "<<H4010_scale<<endl;}
 
-  k++; Fcast_Loop_Control(1)=Fcast_Input(k);
-  k++; Fcast_Loop_Control(2)=Fcast_Input(k);
-  k++; Fcast_Loop_Control(3)=Fcast_Input(k);
-  k++; Fcast_Loop_Control(4)=Fcast_Input(k);
-  k++; Fcast_Loop_Control(5)=Fcast_Input(k);
-  k++; Fcast_Cap_FirstYear=Fcast_Input(k);
-  echoinput<<Fcast_Loop_Control(1)<<" N forecast loops (1-3) (recommend 3)"<<endl;
-  echoinput<<Fcast_Loop_Control(2)<<" First forecast loop with stochastic recruitment (recommend 3)"<<endl;
-  echoinput<<Fcast_Loop_Control(3)<<" Forecast loop control #3 (reserved for future use) "<<endl;
-  echoinput<<Fcast_Loop_Control(4)<<" Forecast loop control #4 (reserved for future use) "<<endl;
-  echoinput<<Fcast_Loop_Control(5)<<" Forecast loop control #5 (reserved for future use) "<<endl;
-  echoinput<<Fcast_Cap_FirstYear<<"  Fcast_Cap_FirstYear for caps and allocations (should be after any fixed inputs) "<<endl;
+  echoinput<<endl<<"# next enter 2 values that control looping through the forecast (see manual), then 3 placeholder values"<<endl;
+  echoinput<<"# first does F_msy or proxy; 2nd applies control rule; 3rd applies caps and allocations"<<endl;
+  *(ad_comm::global_datafile) >> Fcast_Loop_Control(1,5);
+  echoinput<<Fcast_Loop_Control(1)<<" #echoed N forecast loops (1-3) (recommend 3)"<<endl;
+  echoinput<<Fcast_Loop_Control(2)<<" #echoed First forecast loop with stochastic recruitment (recommend 3)"<<endl;
+  echoinput<<Fcast_Loop_Control(3)<<" #echoed Forecast loop control #3 (reserved for future use) "<<endl;
+  echoinput<<Fcast_Loop_Control(4)<<" #echoed Forecast loop control #4 (reserved for future use) "<<endl;
+  echoinput<<Fcast_Loop_Control(5)<<" #echoed Forecast loop control #5 (reserved for future use) "<<endl;
 
-  k++; Impl_Error_Std=Fcast_Input(k);
-  echoinput<<Impl_Error_Std<<"  Impl_Error_Std "<<endl;
+  echoinput<<endl<<"#next enter year in which Fcast loop 3 caps and allocations begin to be applied"<<endl;
+  *(ad_comm::global_datafile) >> Fcast_Cap_FirstYear;
+  echoinput<<Fcast_Cap_FirstYear<<" # echoed value"<<endl;
+
+  echoinput<<endl<<"#next enter 0, or stddev of implementation error"<<endl;
+  *(ad_comm::global_datafile) >> Impl_Error_Std;
+  echoinput<<Impl_Error_Std<<" # echoed value"<<endl;
   if(Impl_Error_Std>0.0) Do_Impl_Error=1;
 
-  k++; Do_Rebuilder=int(Fcast_Input(k));
-  k++; Rebuild_Ydecl=int(Fcast_Input(k));
-  k++; Rebuild_Yinit=int(Fcast_Input(k));
-  echoinput<<
-  Do_Rebuilder<<"  Do_Rebuilder "<<endl<<
-  Rebuild_Ydecl<<"  Rebuild_Ydecl "<<endl<<
-  Rebuild_Yinit<<"  Rebuild_Yinit "<<endl;
+  echoinput<<endl<<"#next select rebuilding program output (0/1)"<<endl;
+  *(ad_comm::global_datafile) >> Do_Rebuilder;
+  echoinput<<Do_Rebuilder<<" # echoed value"<<endl;
 
-  k++; Fcast_RelF_Basis=int(Fcast_Input(k));
-  echoinput<<Fcast_RelF_Basis<<" fleet relative F (1=use_year_range/2=read_seas_x_fleet) "<<endl;
+  echoinput<<endl<<"#next select rebuilding program:  year declared overfished"<<endl;
+  *(ad_comm::global_datafile) >> Rebuild_Ydecl;
+  echoinput<<Rebuild_Ydecl<<" # echoed value"<<endl;
 
-  k++; Fcast_Catch_Basis=Fcast_Input(k);
-    echoinput<<Fcast_Catch_Basis<<"  Fcast_Catch_Basis for caps and allocations "<<endl;
-    echoinput<<"2=dead catch bio, 3=retained catch bio, 5= dead catch numbers 6=retained catch numbers;   Same for all fleets"<<endl;
+  echoinput<<endl<<"#next select rebuilding program:  year rebuilding plan started"<<endl;
+  *(ad_comm::global_datafile) >> Rebuild_Yinit;
+  echoinput<<Rebuild_Yinit<<" # echoed value"<<endl;
+
+  echoinput<<endl<<"#next select fleet relative F:  1=use first-last alloc year read above; 2=read seas(row) x fleet(col) below"<<endl;
+  echoinput<<"# Note that fleet allocation is used directly as average F if Do_Forecast=4 "<<endl;
+  *(ad_comm::global_datafile) >> Fcast_RelF_Basis;
+  echoinput<<Fcast_RelF_Basis<<" # echoed value"<<endl;
+  if(Do_Forecast==4 && Fcast_RelF_Basis==2)
+  {
+    N_warn++; warning<<"Cannot specify forecast fleet relative F because Do_Forecast==4 specifies relative F directly as F;"<<endl;
+    echoinput<<"Cannot specify forecast fleet relative F because Do_Forecast==4 specifies relative F directly as F;"<<endl;
+    echoinput<<"exit:  need to align choice of forecast basis and forecast relative F basis"<<endl;
+    exit(1);
+  }
+
+  echoinput<<endl<<"#next read Catch Basis for caps and allocations;  Same for all fleets"<<endl;
+  echoinput<<"2=dead catch bio, 3=retained catch bio, 5= dead catch numbers 6=retained catch numbers"<<endl;
+  *(ad_comm::global_datafile) >> Fcast_Catch_Basis;
+  echoinput<<Fcast_Catch_Basis<<" # echoed value"<<endl;
+  if(Fcast_Catch_Basis<2 || Fcast_Catch_Basis>6)
+    {N_warn++; warning<<"illegal value for Fcast_Catch_Basis"<<endl; echoinput<<"exit:  illegal value for Fcast_Catch_Basis"<<endl; exit(1);}
+
+  if(Fcast_RelF_Basis==2)
+  {
+    echoinput<<endl<<"Fcast_RelF_Basis==2, so now read seas(row) x fleet (column) array of relative F; will be re-scaled to sum to 1.0"<<endl;
+    for(s=1;s<=nseas;s++) *(ad_comm::global_datafile) >> Fcast_RelF_Input(s)(1,Nfleet);
+    echoinput<<" fleet relative F by season and fleet as read"<<endl<<Fcast_RelF_Input<<endl;
   }
   else
+  {Fcast_RelF_Input.initialize();}
+
+  }
+
+  else  //  set forecast defaults
   {
+    echoinput<<"No forecast selected, so rest of forecast file will not be read and can be omitted"<<endl;
+    if(Bmark_RelF_Basis==2) {N_warn++; cout<<" EXIT - see warning "<<endl; warning<<"Fatal stop:  no forecast, but bmark set to use fcast"<<endl;  exit(1);}
   N_Fcast_Yrs=1;
   YrMax=endyr+1;
   TimeMax_Fcast_std = styr+(YrMax-styr)*nseas+nseas-1;
@@ -2788,46 +2832,15 @@
   Fcast_Catch_Basis=2;
   }  //  end of defaults for do_forecast = 0
 
-  if(Fcast_RelF_Basis==2)
-  {
-    if(Do_Forecast==4)
-    {
-      N_warn++; warning<<"Cannot specify forecast fleet relative F because Do_Forecast==4 specifies relative F directly as F;"<<endl;
-      Fcast_RelF_Basis=1;
-    }
-    z=nseas;
-    echoinput<<"Fcast_RelF_Basis==2, so now read seas(row) x fleet (column) array of relative F; will be re-scaled to sum to 1.0"<<endl;
-  }
-  else
-  {z=0;}
  END_CALCS
 
-  init_matrix Fcast_RelF_Input(1,z,1,Nfleet1)
-  vector Fcast_MaxFleetCatch(1,Nfleet)
-  vector Fcast_MaxAreaCatch(1,pop)
-  ivector Allocation_Fleet_Assignments(1,Nfleet)
   matrix Fcast_Catch_Allocation(1,N_Fcast_Yrs,1,Nfleet);  //   dimension to Nfleet but use only to N alloc groups
 
-
  LOCAL_CALCS
-  Fcast_MaxFleetCatch.initialize();
-  Fcast_MaxAreaCatch.initialize();
-  Allocation_Fleet_Assignments.initialize();
-  Fcast_Catch_Allocation.initialize();
-
   if(Do_Forecast>0)
   {
-    if(Fcast_RelF_Basis==2)
-    {
-      echoinput<<" fleet relative F by season and fleet as read"<<endl<<Fcast_RelF_Input<<endl;
-      // later set Fcast_RelF_Use=Fcast_RelF_Input;
-    }
-    else
-    {
-      echoinput<<" do not read relative F by season and fleet "<<endl;
-    }
 
-    echoinput<<"Read list of fleet ID and max annual catch;  end with fleet=-9999"<<endl;
+    echoinput<<endl<<"# next read list of fleet ID and max annual catch;  end with fleet=-9999"<<endl;
     for(f=1;f<=Nfleet;f++) Fcast_MaxFleetCatch(f)=-1;
     Fcast_Do_Fleet_Cap=0;
     ender=0;
@@ -2840,13 +2853,16 @@
       else
       {
         f=int(tempvec(1));
-        Fcast_MaxFleetCatch(f)=tempvec(2);
+        if(fleet_type(f)<=2)
+        {Fcast_MaxFleetCatch(f)=tempvec(2);}
+        else
+        {echoinput<<"exit for fleet "<<f<<"  ;  cannot only set max catch for retained or discard catch fleets"<<endl; exit(1);}
         Fcast_Do_Fleet_Cap=1;
       }
     } while (ender==0);
     echoinput<<" Processed Max totalcatch by fleet "<<endl<<Fcast_MaxFleetCatch<<endl;
 
-    echoinput<<"Read list of area ID and max annual catch;  end with area=-9999"<<endl;
+    echoinput<<endl<<"Read list of area ID and max annual catch;  end with area=-9999"<<endl;
     for(p=1;p<=pop;p++) Fcast_MaxAreaCatch(p)=-1;
     Fcast_Do_Area_Cap=0;
     ender=0;
@@ -2865,7 +2881,7 @@
     } while (ender==0);
     echoinput<<" processed Max totalcatch by area "<<endl<<Fcast_MaxAreaCatch<<endl;
 
-    echoinput<<"Read list of fleet ID and assignment to allocation group;  end with fleet ID=-9999"<<endl;
+    echoinput<<endl<<"Read list of fleet ID and assignment to allocation group;  end with fleet ID=-9999"<<endl;
     echoinput<<"fishing fleets not assigned to allocation group are processed normally"<<endl;
     Allocation_Fleet_Assignments.initialize();
     Fcast_Catch_Allocation_Groups=0;
@@ -2879,7 +2895,10 @@
       else
       {
         f=int(tempvec(1));
-        Allocation_Fleet_Assignments(f)=tempvec(2);
+        if(fleet_type(f)==1)
+        {Allocation_Fleet_Assignments(f)=tempvec(2);}
+        else
+        {echoinput<<"exit for fleet "<<f<<"  ;  cannot only put retained catch fleets in allocation groups"<<endl; exit(1);}
       }
     } while (ender==0);
 
@@ -2889,6 +2908,7 @@
     Fcast_Catch_Allocation.initialize();
     if(Fcast_Catch_Allocation_Groups>0)
     {
+      echoinput<<"# now read fraction of catch for each identified allocation group "<<endl;
       ender=0;
       k=Fcast_Catch_Allocation_Groups+1;
       do {
@@ -2896,24 +2916,23 @@
         *(ad_comm::global_datafile) >> tempvec(1,k);
         if(tempvec(1)==-9999.) ender=1;
         Fcast_Catch_Allocation_list.push_back (tempvec(1,k));
+        echoinput<<" allocation assignment: "<<tempvec(1,k)<<endl;
       } while (ender==0);
       j=Fcast_Catch_Allocation_list.size()-1;
-
-        echoinput<<" read group allocation fractions "<<endl;
         for(k=0;k<=j-1;k++)
         {
-          echoinput<<Fcast_Catch_Allocation_list[k]<<endl;
           for(y=Fcast_Catch_Allocation_list[k](1)-endyr;y<=N_Fcast_Yrs;y++)
           {
             for(a=1;a<=Fcast_Catch_Allocation_Groups;a++)
             {
               Fcast_Catch_Allocation(y,a)=Fcast_Catch_Allocation_list[k](a+1);
+              echoinput<<y<<" "<<a<<" "<<Fcast_Catch_Allocation(y,a)<<" # processed allocation "<<endl;
             }
           }
         }
         echoinput<<"processed allocation groups by year"<<endl;
         for(y=1;y<=N_Fcast_Yrs;y++)
-        echoinput<<y+endyr<<" "<<Fcast_Catch_Allocation(1,Fcast_Catch_Allocation_Groups)<<endl;
+        echoinput<<y+endyr<<" "<<Fcast_Catch_Allocation(y)<<endl;
     }
 
     *(ad_comm::global_datafile) >> Fcast_InputCatch_Basis;

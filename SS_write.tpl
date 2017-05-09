@@ -1658,8 +1658,7 @@ FUNCTION void write_nucontrol()
   NuFore<<"#"<<endl<<Do_Forecast<<" # Forecast: 0=none; 1=F(SPR); 2=F(MSY) 3=F(Btgt); 4=Ave F (uses first-last relF yrs); 5=input annual F scalar"<<endl;
   NuFore<<N_Fcast_Yrs<<" # N forecast years "<<endl;
   NuFore<<Fcast_Flevel<<" # F scalar (only used for Do_Forecast==5)"<<endl;
-  NuFore<<"#_Fcast_years:  beg_selex, end_selex, beg_relF, end_relF, beg_recruits, end_recruits  (enter actual year, or values of 0 or -integer to be rel. endyr)"<<endl<<Fcast_Input(3,6)<<" "<<-999<<" "<<0<<endl;
-  NuFore<<"# "<<Fcast_yr<<" # after processing "<<endl;
+  NuFore<<"#_Fcast_years:  beg_selex, end_selex, beg_relF, end_relF, beg_recruits, end_recruits  (enter actual year, or values of 0 or -integer to be rel. endyr)"<<endl<<Fcast_yr_rd<<endl;
   NuFore<<HarvestPolicy<<" # Control rule method (1=catch=f(SSB) west coast; 2=F=f(SSB) ) "<<endl;
   NuFore<<H4010_top<<" # Control rule Biomass level for constant F (as frac of Bzero, e.g. 0.40); (Must be > the no F level below) "<<endl;
   NuFore<<H4010_bot<<" # Control rule Biomass level for no F (as frac of Bzero, e.g. 0.10) "<<endl;
@@ -1740,7 +1739,7 @@ FUNCTION void write_nucontrol()
       else
       {
         j=Fcast_Catch_Allocation_list.size()-1;
-        for(k=0;k<=j;k++)  NuFore<<Fcast_Catch_Allocation_list[k]<<endl;
+        for(k=0;k<=j-1;k++)  NuFore<<Fcast_Catch_Allocation_list[k]<<endl;
       }
       NuFore<<" -9999 ";
       for (j=1;j<=Fcast_Catch_Allocation_Groups;j++) {NuFore<<" 1 ";}
