@@ -191,6 +191,8 @@ FUNCTION void get_initial_conditions()
     }
     if(save_for_report>0)
     {
+      SPB_B_yr(eq_yr).initialize();
+      SPB_N_yr(eq_yr).initialize();
       for (s=1;s<=nseas;s++)
       for (p=1;p<=pop;p++)
       for (g=1;g<=gmorph;g++)
@@ -338,6 +340,8 @@ FUNCTION void get_initial_conditions()
     if(save_for_report>0)
     {
       t=styr-nseas-1;
+      SPB_B_yr(eq_yr).initialize();
+      SPB_N_yr(eq_yr).initialize();
       for (s=1;s<=nseas;s++)
       for (p=1;p<=pop;p++)
       for (g=1;g<=gmorph;g++)
@@ -584,6 +588,8 @@ FUNCTION void get_time_series()
       if(s==spawn_seas && spawn_time_seas<0.0001)    //  compute spawning biomass if spawning at beginning of season so recruits could occur later this season
       {
         SPB_pop_gp(y).initialize();
+        SPB_B_yr(y).initialize();
+        SPB_N_yr(y).initialize();
         for (p=1;p<=pop;p++)
         {
           for (g=1;g<=gmorph;g++)
@@ -964,6 +970,8 @@ FUNCTION void get_time_series()
       if(s==spawn_seas && spawn_time_seas>=0.0001)    //  compute spawning biomass
       {
         SPB_pop_gp(y).initialize();
+        SPB_B_yr(y).initialize();
+        SPB_N_yr(y).initialize();
         for (p=1;p<=pop;p++)
         {
           for (g=1;g<=gmorph;g++)

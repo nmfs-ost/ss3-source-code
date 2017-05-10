@@ -1007,6 +1007,8 @@ FUNCTION void Get_Forecast()
           if(s==spawn_seas && spawn_time_seas<0.0001)    //  get spawnbio in a forecast year
           {
             SPB_pop_gp(y).initialize();
+            SPB_B_yr(y).initialize();
+            SPB_N_yr(y).initialize();
             for (p=1;p<=pop;p++)
             {
               for (g=1;g<=gmorph;g++)
@@ -1485,6 +1487,8 @@ FUNCTION void Get_Forecast()
           if(s==spawn_seas && spawn_time_seas>=0.0001)    //  compute spawning biomass
           {
             SPB_pop_gp(y).initialize();
+            SPB_B_yr(y).initialize();
+            SPB_N_yr(y).initialize();
             for (p=1;p<=pop;p++)
             {
               for (g=1;g<=gmorph;g++)
