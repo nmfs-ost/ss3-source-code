@@ -2782,6 +2782,7 @@
 
   int N_Fcast_Yrs
   ivector Fcast_yr(1,6)  // yr range for selex, then yr range foreither allocation or for average F
+  ivector Fcast_yr_rd(1,6)
   int Fcast_Sel_yr1
   int Fcast_Sel_yr2
   int Fcast_RelF_yr1
@@ -2819,6 +2820,7 @@
     echoinput<<"No forecast selected, default forecast of 1 yr created"<<endl;
     if(Bmark_RelF_Basis==2) {N_warn++; cout<<" EXIT - see warning "<<endl; warning<<"Fatal stop:  no forecast, but bmark set to use fcast"<<endl;  exit(1);}
     Fcast_yr.initialize();
+    Fcast_yr_rd.initialize();
     Fcast_Loop_Control.initialize();
   }
   else
@@ -2849,6 +2851,8 @@
   // default values for 3.30
   Fcast_yr(5) = -999;
   Fcast_yr(6) = 0;
+
+  Fcast_yr_rd = Fcast_yr;
 
   echoinput<<Fcast_yr<<" Begin-end yrs for average selex; begin-end yrs for allocation"<<endl;
   for (i=1;i<=6;i++)
@@ -2925,6 +2929,7 @@
   Fcast_yr(4)=Fcast_RelF_yr2=endyr;
   Fcast_yr(5)=Fcast_Rec_yr1=styr;
   Fcast_yr(6)=Fcast_Rec_yr2=endyr;
+  Fcast_yr_rd = Fcast_yr;
   HarvestPolicy=2;
   H4010_top=0.4;
   H4010_bot=0.01;
