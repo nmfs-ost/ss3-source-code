@@ -720,14 +720,14 @@ FUNCTION void write_nudata()
       for (i=1;i<=nobs_ms_rd;i++)
       {
         report1<<sizeAge_Data[i]<<endl;
-      }  
+      }
     }
     else
     {
       for (i=0;i<=nobs_ms_rd-1;i++)
       {
         report1<<sizeAge_Data[i]<<endl;
-      }  
+      }
     }
     report1<<"-9999 ";
     for (j=1;j<=6+n_abins2;j++) report1<<" 0";
@@ -2792,7 +2792,7 @@ FUNCTION void write_bigoutput()
   SS2out<<"F_report_basis: "<<F_report_label<<endl;
   SS2out<<"B_ratio_denominator: "<<depletion_basis_label<<endl;
 
-  SS2out<<" LABEL Value  StdDev (Val-1.0)/Stddev  CumNorm"<<endl;
+  SS2out<<" Label Value  StdDev (Val-1.0)/Stddev  CumNorm"<<endl;
   for (j=1;j<=N_STD_Yr;j++)
   {
     NP++;  SS2out<<" "<<ParmLabel(NP)<<" "<<SPB_std(j);
