@@ -2026,6 +2026,7 @@
            f=abs(sizeAge_Data[i](3));
            t=timing_i_result(2);
            s=timing_i_result(3);
+           real_month=timing_r_result(1);
            ALK_time=timing_i_result(5);
            msz_time_t(f,j)=t;
             msz_time_ALK(f,j)=ALK_time;

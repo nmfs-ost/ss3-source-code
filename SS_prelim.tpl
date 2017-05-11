@@ -472,16 +472,14 @@ PRELIMINARY_CALCS_SECTION
   }
 
 //  SS_Label_Info_6.5 #Check parameter bounds and do jitter
-    echoinput<<endl<<" now check bounds and do jitter if requested "<<endl;
+    echoinput<<endl<<" now check MGparm bounds and priors and do jitter if requested "<<endl;
     for (i=1;i<=N_MGparm2;i++)
-    if(MGparm_PH(i)>0)
-    {MGparm(i)=Check_Parm(MGparm_LO(i),MGparm_HI(i), jitter, MGparm(i));}
+    {MGparm(i)=Check_Parm(MGparm_PH(i), MGparm_LO(i),MGparm_HI(i), MGparm_PRtype(i), MGparm_PR(i), MGparm_CV(i), jitter, MGparm(i));}
     echoinput<< " MG_parms after check "<<MGparm<<endl;
     MGparm_use=value(MGparm);
 
     for (i=1;i<=N_SRparm3;i++)
-    if(SR_parm_PH(i)>0)
-    {SR_parm(i) = Check_Parm(SR_parm_LO(i),SR_parm_HI(i), jitter, SR_parm(i));}
+    {SR_parm(i) = Check_Parm(SR_parm_PH(i),SR_parm_LO(i),SR_parm_HI(i), SR_parm_PRtype(i), SR_parm_PR(i), SR_parm_CV(i),  jitter, SR_parm(i));}
     echoinput<< " SRR_parms after check "<<SR_parm<<endl;
     SR_parm_use=value(SR_parm);
 
@@ -489,8 +487,7 @@ PRELIMINARY_CALCS_SECTION
     if(recdev_cycle>0)
     {
       for (j=1;j<=recdev_cycle;j++)
-      if(recdev_cycle_PH(j)>0)
-      {recdev_cycle_parm(j) = Check_Parm(recdev_cycle_LO(j),recdev_cycle_HI(j), jitter, recdev_cycle_parm(j));}
+      {recdev_cycle_parm(j) = Check_Parm(recdev_cycle_PH(j),recdev_cycle_LO(j),recdev_cycle_HI(j), recdev_cycle_parm_RD(i,6), recdev_cycle_parm_RD(i,4), recdev_cycle_parm_RD(i,5), jitter, recdev_cycle_parm(j));}
       echoinput<< " recdev_cycle after check "<<recdev_cycle_parm<<endl;
       recdev_cycle_use=value(recdev_cycle_parm);
     }
@@ -499,12 +496,9 @@ PRELIMINARY_CALCS_SECTION
     {
         recdev_RD(recdev_early_start,recdev_early_end)=value(recdev_early(recdev_early_start,recdev_early_end));
 
-        if(recdev_early_PH>0)
-        {
-            for (y=recdev_early_start;y<=recdev_early_end;y++)
-                {recdev_early(y) = Check_Parm(recdev_LO, recdev_HI, jitter, recdev_early(y));}
+        for (y=recdev_early_start;y<=recdev_early_end;y++)
+         {recdev_early(y) = Check_Parm(recdev_early_PH, recdev_LO, recdev_HI, 0, 0., 1., jitter, recdev_early(y));}
 //      recdev_early -=sum(recdev_early)/(recdev_early_end-recdev_early_start+1);
-        }
 
         recdev_use(recdev_early_start,recdev_early_end)=value(recdev_early(recdev_early_start,recdev_early_end));
     }
@@ -515,7 +509,7 @@ PRELIMINARY_CALCS_SECTION
       {
         recdev_RD(recdev_start,recdev_end)=value(recdev1(recdev_start,recdev_end));
         for (i=recdev_start;i<=recdev_end;i++)
-        {recdev1(i) = Check_Parm(recdev_LO, recdev_HI, jitter, recdev1(i));}
+        {recdev1(i) = Check_Parm(recdev_PH, recdev_LO, recdev_HI, 0, 0., 1., jitter, recdev1(i));}
         recdev1 -=sum(recdev1)/(recdev_end-recdev_start+1);
         recdev_use(recdev_start,recdev_end)=value(recdev1(recdev_start,recdev_end));
       }
@@ -523,7 +517,7 @@ PRELIMINARY_CALCS_SECTION
       {
         recdev_RD(recdev_start,recdev_end)=value(recdev2(recdev_start,recdev_end));
         for (i=recdev_start;i<=recdev_end;i++)
-        {recdev2(i) = Check_Parm(recdev_LO, recdev_HI, jitter, recdev2(i));}
+        {recdev2(i) = Check_Parm(recdev_PH, recdev_LO, recdev_HI, 0, 0., 1., jitter, recdev2(i));}
 //        recdev2 -=sum(recdev2)/(recdev_end-recdev_start+1);
         recdev_use(recdev_start,recdev_end)=value(recdev2(recdev_start,recdev_end));
       }
@@ -541,8 +535,7 @@ PRELIMINARY_CALCS_SECTION
     if(Q_Npar2>0)
     {
       for (i=1;i<=Q_Npar2;i++)
-      if(Q_parm_PH(i)>0)
-      {Q_parm(i) = Check_Parm(Q_parm_LO(i),Q_parm_HI(i), jitter, Q_parm(i));}
+      {Q_parm(i) = Check_Parm(Q_parm_PH(i), Q_parm_LO(i),Q_parm_HI(i), Q_parm_PRtype(i), Q_parm_PR(i), Q_parm_CV(i), jitter, Q_parm(i));}
       echoinput<< " Q_parms after check "<<Q_parm<<endl;
       Q_parm_use=value(Q_parm);
     }
@@ -551,8 +544,7 @@ PRELIMINARY_CALCS_SECTION
     {
       for (i=1;i<=N_init_F;i++)
       {
-        if(init_F_PH(i)>0)
-        {init_F(i) = Check_Parm(init_F_LO(i),init_F_HI(i), jitter, init_F(i));}
+        {init_F(i) = Check_Parm(init_F_PH(i), init_F_LO(i),init_F_HI(i), init_F_PRtype(i), init_F_PR(i), init_F_CV(i), jitter, init_F(i));}
         echoinput<< " initF_parms after check "<<init_F<<endl;
       }
       init_F_use=value(init_F);
@@ -562,8 +554,7 @@ PRELIMINARY_CALCS_SECTION
     {
       for (i=1;i<=N_Fparm;i++)
       {
-        if(Fparm_PH(i)>0)
-        {F_rate(i) = Check_Parm(0.,Fparm_max(i), jitter, F_rate(i));}
+        {F_rate(i) = Check_Parm(Fparm_PH(i), 0.,Fparm_max(i), 0, 0.05, 1., jitter, F_rate(i));}
       }
       echoinput<< " F_parms after check "<<F_rate<<endl;
       Fparm_use=value(F_rate);
@@ -572,8 +563,7 @@ PRELIMINARY_CALCS_SECTION
     if(N_selparm2>0)
     {
     for (i=1;i<=N_selparm2;i++)
-    if(selparm_PH(i)>0)
-    {selparm(i)=Check_Parm(selparm_LO(i),selparm_HI(i), jitter, selparm(i));}
+    {selparm(i)=Check_Parm(selparm_PH(i),selparm_LO(i),selparm_HI(i), selparm_PRtype(i), selparm_PR(i), selparm_CV(i), jitter, selparm(i));}
     echoinput<< " selex_parms after check  "<<selparm<<endl;
     selparm_use=value(selparm);
     }
@@ -583,8 +573,7 @@ PRELIMINARY_CALCS_SECTION
       k=Do_TG*(3*N_TG+2*Nfleet);
       for (i=1;i<=k;i++)
       {
-      if(TG_parm_PH(i)>0)
-        {TG_parm(i)=Check_Parm(TG_parm_LO(i),TG_parm_HI(i), jitter, TG_parm(i));}
+        {TG_parm(i)=Check_Parm(TG_parm_PH(i),TG_parm_LO(i),TG_parm_HI(i), TG_parm2(i,6), TG_parm2(i,4), TG_parm2(i,5), jitter, TG_parm(i));}
       }
       echoinput<< " Tag_parms after check  "<<TG_parm<<endl;
       TG_parm_use=value(TG_parm);
@@ -600,7 +589,7 @@ PRELIMINARY_CALCS_SECTION
     if(parm_dev_PH(i)>0)
     for (j=parm_dev_minyr(i);j<=parm_dev_maxyr(i);j++)
     {
-       parm_dev(i,j)=Check_Parm(-3,3, jitter, parm_dev(i,j));
+       parm_dev(i,j)=Check_Parm(parm_dev_PH(i), -5,5, 0, 0., 1., jitter, parm_dev(i,j));
     }
     for (i=1;i<=N_parm_dev;i++)
     for (j=parm_dev_minyr(i);j<=parm_dev_maxyr(i);j++)

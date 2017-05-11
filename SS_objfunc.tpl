@@ -658,7 +658,7 @@ FUNCTION void evaluate_the_objective_function()
       for (i=1;i<=k;i++)
       if(TG_parm2(i,5)>0 && (active(TG_parm(i))|| Do_all_priors>0))
       {
-        TG_parm_Like(i)=Get_Prior(TG_parm2(i,5), TG_parm_LO(i), TG_parm_HI(i), TG_parm2(i,4), TG_parm2(i,6), TG_parm(i));
+        TG_parm_Like(i)=Get_Prior(TG_parm2(i,6), TG_parm_LO(i), TG_parm_HI(i), TG_parm2(i,4), TG_parm2(i,5), TG_parm(i));
         parm_like+=TG_parm_Like(i);
       }
     }
@@ -677,7 +677,7 @@ FUNCTION void evaluate_the_objective_function()
       {
         if(recdev_cycle_parm_RD(i,5)>0 && (active(recdev_cycle_parm(i))|| Do_all_priors>0))
         {
-          recdev_cycle_Like(i)=Get_Prior(recdev_cycle_parm_RD(i,5), recdev_cycle_parm_RD(i,1), recdev_cycle_parm_RD(i,2), recdev_cycle_parm_RD(i,4), recdev_cycle_parm_RD(i,6), recdev_cycle_parm(i));
+          recdev_cycle_Like(i)=Get_Prior(recdev_cycle_parm_RD(i,6), recdev_cycle_parm_RD(i,1), recdev_cycle_parm_RD(i,2), recdev_cycle_parm_RD(i,4), recdev_cycle_parm_RD(i,5), recdev_cycle_parm(i));
           parm_like+=recdev_cycle_Like(i);
           temp+=mfexp(recdev_cycle_parm(i));
           temp1+=1.0;
@@ -1004,7 +1004,7 @@ FUNCTION void Process_STDquant()
 
 //********************************************************************
  /*  SS_Label_FUNCTION 27 Check_Parm */
-FUNCTION dvariable Check_Parm(const double& Pmin, const double& Pmax, const double& jitter, const prevariable& Pval)
+FUNCTION dvariable Check_Parm(const int& PrPH, const double& Pmin, const double& Pmax, const int& Prtype, const double& Pr, const double& Psd, const double& jitter, const prevariable& Pval)
   {
     const dvariable zmin = inv_cumd_norm(0.001);    // z value for Pmin
     const dvariable zmax = inv_cumd_norm(0.999);    // z value for Pmax
@@ -1016,13 +1016,13 @@ FUNCTION dvariable Check_Parm(const double& Pmin, const double& Pmax, const doub
     NewVal=Pval;
     if(Pmin>Pmax)
     {N_warn++; cout<<" EXIT - see warning "<<endl; warning<<" parameter min > parameter max "<<Pmin<<" > "<<Pmax<<endl; cout<<" fatal error, see warning"<<endl; exit(1);}
-    if(Pmin==Pmax)
-    {N_warn++; warning<<" parameter min is same as parameter max, error condition for beta prior "<<Pmin<<" = "<<Pmax<<endl; NewVal=Pmin;}
-    if(Pval<Pmin)
+    if(Pmin==Pmax && PrPH>=0)
+    {N_warn++; warning<<" parameter min is same as parameter max"<<Pmin<<" = "<<Pmax<<endl;}
+    if(Pval<Pmin && PrPH>=0)
     {N_warn++; warning<<" parameter init value is less than parameter min "<<Pval<<" < "<<Pmin<<endl; NewVal=Pmin;}
-    if(Pval>Pmax)
+    if(Pval>Pmax && PrPH>=0)
     {N_warn++; warning<<" parameter init value is greater than parameter max "<<Pval<<" > "<<Pmax<<endl; NewVal=Pmax;}
-    if(jitter>0.0)
+    if(jitter>0.0 && PrPH>=0)
     {
       // temp=log((Pmax-Pmin+0.0000002)/(NewVal-Pmin+0.0000001)-1.)/(-2.);   // transform the parameter
       // temp += randn(radm) * jitter;
@@ -1057,6 +1057,12 @@ FUNCTION dvariable Check_Parm(const double& Pmin, const double& Pmax, const doub
       if(Pmin==-99 || Pmax==99)
       {N_warn++; warning<<" use of jitter not advised unless parameter min & max are in reasonable parameter range "<<Pmin<<" "<<Pmax<<endl;}
     }
+    //  now check prior
+    if(Prtype>0)
+    {
+      if(Psd<=0.0) {N_warn++; cout<<"fatal error in prior check, see warning"<<endl; warning<<"FATAL:  A prior is selected but prior sd is zero. Prtype: "<<Prtype<<" Prior: "<<Pr<<" Pr_sd: "<<Psd<<endl; exit(1);}
+    }
+
     return NewVal;
   }
 

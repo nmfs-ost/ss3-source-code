@@ -2601,7 +2601,7 @@
       Q_parm_1(i,5)=Q_parm_1(i,6);
       Q_parm_1(i,6)=temp;
       Q_parm_PRtype(i)=temp;
-      Q_parm_CV(i)=Q_parm_1(i,6);
+      Q_parm_CV(i)=Q_parm_1(i,5);
       Q_parm_PH(i)=Q_parm_1(i,7);
     }
     if(timevary_parm_start_Q>0)

@@ -2139,6 +2139,7 @@
 
             t=styr+(y-styr)*nseas+s-1;
             ALK_time=(y-styr)*nseas*N_subseas+(s-1)*N_subseas+subseas;
+            sizeAge_Data[i](2)=sizeAge_Data[i](2)/abs(sizeAge_Data[i](2))*real_month;
 
            msz_time_t(f,j)=t;
 
