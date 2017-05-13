@@ -97,7 +97,7 @@
   int recr_dist_inx
  LOCAL_CALCS
     *(ad_comm::global_datafile) >> recr_dist_method;
-    echoinput<<recr_dist_method<<"  // Recruitment distribution method; where: 1=like 3.24; 2=main effects for GP, Settle timing, Area; 3=each Settle entity; 4=none when N_GP*Nsettle*pop==1"<<endl;
+    echoinput<<recr_dist_method<<"  // Recruitment distribution method; where: 1=like 3.24; 2=main effects for GP, Settle timing, Area; FUTURE: 3=each Settle entity; 4=none when N_GP*Nsettle*pop==1"<<endl;
     *(ad_comm::global_datafile) >> recr_dist_area;
     echoinput<<recr_dist_area<<"  // recr_dist_area: 1 means global SRR; 2 means area-specific SRR"<<endl;
   recr_dist_area=1;  //hardwire for testing
@@ -180,7 +180,9 @@
           settle_assignments_timing(settle)=N_settle_timings;
         }
       }
-    echoinput<<"N settle timings: "<<N_settle_timings<<endl<<" settle_month: "<<settle_timings_tempvec(1,N_settle_timings)<<endl;
+    echoinput<<"N settle timings: "<<N_settle_timings<<endl<<" unique_settle_times: "<<settle_timings_tempvec(1,N_settle_timings)<<endl;
+    echoinput<<"settle events use these settle_times: "<<settle_assignments_timing<<endl;
+    if(N_settle_timings>nseas) {N_warn++; warning<<"SS currently not ready to have N settle timings > nseas; please simplify model for now "<<endl;}
 
 //  SS_Label_Info_4.2.3 #Set-up arrays and indexing for growth patterns, gender, settlements, platoons
  END_CALCS
@@ -200,7 +202,7 @@
   Settle_seas.initialize();
   recr_dist_pattern.initialize();
 
-  echoinput<<"Calculated assignments in which settlement occurs "<<endl<<"Settle_event / GPat / Area / Settle_time / Month / seas / seas_from_spawn / time_from_seas_start / age_at_settle"<<endl;
+  echoinput<<"Calculated assignments in which settlement occurs "<<endl<<"Settle_event / Month / Seas / Seas_from_spawn / time_from_seas_start / age_at_settle"<<endl;
   if(N_settle_assignments>0)
   {
     for (settle=1;settle<=N_settle_assignments;settle++)
@@ -211,7 +213,8 @@
       Settle_age(settle_time)=settlement_pattern_rd(settle,4);  //  settlement age as read
       recr_dist_pattern(gp,settle_time,p)=1;  //  indicates that settlement will occur here
       recr_dist_pattern(gp,settle_time,0)=1;  //  for growth updating
-      Settle_month(settle_time)=settle_timings_tempvec(settle);
+      Settle_month(settle_time)=settle_timings_tempvec(settle_time);
+//      Settle_month(settle_time)=settle_timings_tempvec(settle);
     }
     j=0;  //  temp value for calculated settlement age
     for (settle_time=1;settle_time<=N_settle_timings;settle_time++)
@@ -226,6 +229,7 @@
       }
       temp=azero_seas(k); //  annual elapsed time fraction at begin of this season
       Settle_timing_seas(settle_time)=(Settle_month(settle_time)-1.0)/12.;  //  fraction of year at settlement month
+      
       while((temp+seasdur(k))<=Settle_timing_seas(settle_time))
       {
         temp+=seasdur(k);

@@ -909,7 +909,6 @@ FUNCTION void get_recr_distribution()
         if(gender==2) femfrac(N_GP+gp) = 1.0 - femfrac(gp);
       }
   }
-
 //  SS_Label_Info_18.2  #loop gp * settlements * area and multiply together the recr_dist_parm values
   for (gp=1;gp<=N_GP;gp++)
   for (p=1;p<=pop;p++)

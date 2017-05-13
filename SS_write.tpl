@@ -3103,6 +3103,7 @@ FUNCTION void write_bigoutput()
     if(use_morph(g)>0)
     {
      if(s==Bseas(g)) Recr(p,y)+=natage(t,p,g,0);
+      SS2out<<s<<" "<<g<<" "<<Bseas(g)<<" recruits "<<Recr(p,y)<<endl;
      gg=sx(g);
      temp=natage(t,p,g)(Smry_Age,nages)*Save_Wt_Age(bio_t,g)(Smry_Age,nages);
      Bio_Comp(GP(g))+=value(temp);   //sums to accumulate across platoons and settlements
@@ -3364,7 +3365,7 @@ FUNCTION void write_bigoutput()
       {SS2out<<"_Steepness";}
     }
   */
-  SS2out<<endl<<SR_parm(N_SRparm2-1)<<" init_eq "<<mfexp(SR_parm(1)+SR_parm(N_SRparm2-1))<<endl<<
+  SS2out<<SR_parm(N_SRparm2-1)<<" init_eq "<<mfexp(SR_parm(1)+SR_parm(N_SRparm2-1))<<endl<<
   recdev_start<<" "<<recdev_end<<" main_recdev:start_end"<<endl<<
   recdev_adj(1)<<" "<<recdev_adj(2,5)<<" breakpoints_for_bias_adjustment_ramp "<<endl;
 
