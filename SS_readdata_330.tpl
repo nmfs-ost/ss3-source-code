@@ -344,7 +344,7 @@
       if(k==0) echoinput<<"first catch record: "<<tempvec(1,5)<<endl;
       if(k==(N_ReadCatch-1)) echoinput<<"last catch record: "<<tempvec(1,5)<<endl;
 
-    if(y>=styr-1 && y<=endyr)  //  observation is in date range
+    if(y>=styr-1 && y<=endyr && (g==-999 || g>=styr))  //  observation is in date range
     {
       if(s>nseas) s=nseas;   // allows for collapsing multiple season catch data down into fewer seasons
                                //  typically to collapse to annual because accumulation will all be in the index "nseas"
