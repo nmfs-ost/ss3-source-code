@@ -67,7 +67,7 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
         for(g=1;g<=gmorph;g++)
         {
           Wt_Age_beg(s,g)=Save_Wt_Age(styr-3*nseas+s-1,g);
-        }        
+        }
       }
 
 //  following uses the values of sel_l, sel_a, etc. stored in yr=styr-3
@@ -100,8 +100,8 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
     natM=natM_Bmark/(Bmark_Yr(2)-Bmark_Yr(1)+1);
     surv1=surv1_Bmark/(Bmark_Yr(2)-Bmark_Yr(1)+1);
     surv2=surv2_Bmark/(Bmark_Yr(2)-Bmark_Yr(1)+1);
-    
-    for(j=1;j<=N_SRparm2;j++)        
+
+    for(j=1;j<=N_SRparm2;j++)
     {
       if(SR_parm_timevary(j)==0)
       {SR_parm_work(j)=SR_parm(j);}
@@ -119,7 +119,7 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
     Recr_Bmark=mfexp(SR_parm_work(1));
     Do_Equil_Calc(Recr_Bmark);
     SPB_Bmark=SPB_equil;
-    
+
 // find Fspr             SS_Label_710
     if(show_MSY==1)
     {
@@ -800,7 +800,7 @@ FUNCTION void Get_Forecast()
     if(HarvestPolicy==1) {report5<<" adjust_catch_below_Inflection(west_coast)"<<endl;} else {report5<<" adjust_F_below_Inflection"<<endl;}
     report5<<"#"<<endl;
   }
-  
+
   int jloop;
   if(fishery_on_off==1)
   {jloop=Fcast_Loop_Control(1);}
@@ -855,7 +855,7 @@ FUNCTION void Get_Forecast()
     natM=natM_endyr;
     surv1=surv1_endyr;
     surv2=surv2_endyr;
-        
+
     for (y=endyr+1;y<=YrMax;y++)
     {
       t_base=styr+(y-styr)*nseas-1;
@@ -1276,6 +1276,7 @@ FUNCTION void Get_Forecast()
               for (g=1;g<=gmorph;g++)
               if(use_morph(g)>0)
               {
+                settle=settle_g(g);  //  get settlement event
                 j=Settle_age(settle);
                 if(s<nseas && Settle_seas(settle)<=s) natage(t+1,p,g,j) = Nsurv(g,j)*surv1(s,GP3(g),j);  // advance age zero within year
                 for (a=j+1;a<nages;a++)
