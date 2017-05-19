@@ -3106,7 +3106,6 @@ FUNCTION void write_bigoutput()
     if(use_morph(g)>0)
     {
      if(s==Bseas(g)) Recr(p,y)+=natage(t,p,g,0);
-      SS2out<<s<<" "<<g<<" "<<Bseas(g)<<" recruits "<<Recr(p,y)<<endl;
      gg=sx(g);
      temp=natage(t,p,g)(Smry_Age,nages)*Save_Wt_Age(bio_t,g)(Smry_Age,nages);
      Bio_Comp(GP(g))+=value(temp);   //sums to accumulate across platoons and settlements
