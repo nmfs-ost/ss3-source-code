@@ -1611,7 +1611,7 @@ FUNCTION void write_nucontrol()
   NuStart<<datfilename<<endl<<ctlfilename<<endl;
   NuStart<<readparfile<<" # 0=use init values in control file; 1=use ss.par"<<endl;
   NuStart<<rundetail<<" # run display detail (0,1,2)"<<endl;
-  NuStart<<reportdetail<<" # detailed age-structured reports in REPORT.SSO (0,1,2) "<<endl;
+  NuStart<<reportdetail<<" # detailed age-structured reports in REPORT.SSO (0=low,1=high,2=low for data-limited) "<<endl;
   NuStart<<docheckup<<" # write detailed checkup.sso file (0,1) "<<endl;
   NuStart<<Do_ParmTrace<<" # write parm values to ParmTrace.sso (0=no,1=good,active; 2=good,all; 3=every_iter,all_parms; 4=every,active)"<<endl;
   NuStart<<Do_CumReport<<" # write to cumreport.sso (0=no,1=like&timeseries; 2=add survey fits)"<<endl;
@@ -3314,6 +3314,7 @@ FUNCTION void write_bigoutput()
   dvector n_rmse(1,k);
   dvector mean_CV(1,k);
   dvector mean_CV2(1,k);
+  dvector mean_CV3(1,k);
 //                                                            SS_Label_330
   rmse = 0.0;  n_rmse = 0.0;
 
@@ -3425,7 +3426,7 @@ FUNCTION void write_bigoutput()
 //                                             SS_Label_340
 
   SS2out <<endl<< "INDEX_2" << endl;
-  rmse = 0.0;  n_rmse = 0.0; mean_CV=0.0; mean_CV2=0.0;
+  rmse = 0.0;  n_rmse = 0.0; mean_CV=0.0; mean_CV2=0.0; mean_CV3=0.0;
   SS2out<<"Fleet Name Yr Seas Yr.frac Vuln_bio Obs Exp Calc_Q Eff_Q SE Dev Like Like+log(s) SuprPer Use"<<endl;
   if(Svy_N>0)
   {
@@ -3454,8 +3455,8 @@ FUNCTION void write_bigoutput()
                 SS2out<<((Svy_errtype(f)+1.)/2.)*log((1.+square((Svy_obs_log(f,i)-Svy_est(f,i) ))/(Svy_errtype(f)*square(Svy_se_use(f,i))) ))<<" "
                 <<((Svy_errtype(f)+1.)/2.)*log((1.+square((Svy_obs_log(f,i)-Svy_est(f,i) ))/(Svy_errtype(f)*square(Svy_se_use(f,i))) ))+log(Svy_se_use(f,i));
               }
-              rmse(f)+=value(square(Svy_obs_log(f,i)-temp)); n_rmse(f)+=1.;
-              mean_CV(f)+=Svy_se_rd(f,i); mean_CV2(f)+=value(Svy_se_use(f,i));
+              rmse(f)+=value(square(Svy_obs_log(f,i)-Svy_est(f,i))); n_rmse(f)+=1.;
+              mean_CV(f)+=Svy_se_rd(f,i); mean_CV3(f)+=Svy_se(f,i); mean_CV2(f)+=value(Svy_se_use(f,i));
             }
             else
             {
@@ -3472,7 +3473,7 @@ FUNCTION void write_bigoutput()
               SS2out<<0.5*square( ( Svy_obs(f,i)-temp ) / Svy_se_use(f,i))<<" "
               <<0.5*square( ( Svy_obs(f,i)-temp ) / Svy_se_use(f,i))+log(Svy_se_use(f,i));
               rmse(f)+=value(square(Svy_obs(f,i)-temp)); n_rmse(f)+=1.;
-              mean_CV(f)+=Svy_se_rd(f,i); mean_CV2(f)+=value(Svy_se_use(f,i));
+              mean_CV(f)+=Svy_se_rd(f,i); mean_CV3(f)+=Svy_se(f,i); mean_CV2(f)+=value(Svy_se_use(f,i));
             }
             else
             {
@@ -3489,7 +3490,7 @@ FUNCTION void write_bigoutput()
           SS2out<<Svy_use(f,i);
           SS2out<<endl;
       }
-      if(n_rmse(f)>0) {rmse(f) = sqrt((rmse(f)+1.0e-9)/n_rmse(f)); mean_CV(f) /= n_rmse(f); mean_CV2(f) /= n_rmse(f);}
+      if(n_rmse(f)>0) {rmse(f) = sqrt((rmse(f)+1.0e-9)/n_rmse(f)); mean_CV(f) /= n_rmse(f); mean_CV3(f) /= n_rmse(f); mean_CV2(f) /= n_rmse(f);}
     }
   }
 
@@ -3502,7 +3503,7 @@ FUNCTION void write_bigoutput()
     		{
         SS2out<<f<<" "<<Q_setup(f)<<" "<<Svy_q(f,1)<<" "<<Svy_units(f)<<" "<<Svy_errtype(f)
       <<" "<<Svy_N_fleet(f)<<" "<<n_rmse(f)<<" "<<rmse(f)
-      <<" "<<mean_CV(f)-var_adjust(1,f)<<" "<<mean_CV(f)<<" "<<mean_CV2(f)<<" "<<var_adjust(1,f)
+      <<" "<<mean_CV(f)<<" "<<mean_CV3(f)<<" "<<mean_CV2(f)<<" "<<var_adjust(1,f)
       <<" "<<var_adjust(1,f)+rmse(f)-mean_CV(f)
       <<" "<<Q_dev_like(f,1)<<" "<<Q_dev_like(f,2)<<" "<<fleetname(f)<<endl;
     }
@@ -4136,10 +4137,10 @@ FUNCTION void write_bigoutput()
 
 
 // ************************                     SS_Label_400
-  if(reportdetail == 1)
-  {
     SS2out << endl << "NUMBERS_AT_AGE" << endl;       // SS_Label_410
     SS2out << "Area Bio_Pattern Sex BirthSeason Settlement Platoon Morph Yr Seas Time Beg/Mid Era"<<age_vector <<endl;
+  if(reportdetail == 1)
+  {
     for (p=1;p<=pop;p++)
     for (g=1;g<=gmorph;g++)
     if(use_morph(g)>0)
@@ -4549,9 +4550,9 @@ FUNCTION void write_bigoutput()
     }  // end gender loop
   }  //   end do report detail
 
+  SS2out <<endl<< "AGE_LENGTH_KEY"<<" #sub_season";
   if(reportdetail == 1)
   {
-  SS2out <<endl<< "AGE_LENGTH_KEY"<<" #sub_season";
   if(Grow_logN==1) SS2out<<" #Lognormal ";
   SS2out<<endl;               // SS_Label_460
   SS2out<<" sdratio "<<sd_ratio<<endl;
@@ -4578,11 +4579,11 @@ FUNCTION void write_bigoutput()
       SS2out<<"mean " << Ave_Size(t,subseas,g) << endl;
       SS2out<<"sdsize " << Sd_Size_within(ALK_idx,g) << endl;
        }
-      }
+  }
 
+    SS2out <<endl<< "AGE_AGE_KEY"<<endl;              // SS_Label_470
   if(reportdetail == 1)
   {
-    SS2out <<endl<< "AGE_AGE_KEY"<<endl;              // SS_Label_470
     if(N_ageerr>0)
     {
       for (k=1;k<=N_ageerr;k++)
