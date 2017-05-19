@@ -910,27 +910,68 @@ FUNCTION void get_recr_distribution()
       }
   }
 //  SS_Label_Info_18.2  #loop gp * settlements * area and multiply together the recr_dist_parm values
-  for (gp=1;gp<=N_GP;gp++)
-  for (p=1;p<=pop;p++)
-  for (settle=1;settle<=N_settle_timings;settle++)
-  if(recr_dist_pattern(gp,settle,p)>0)
+  if(recr_dist_method==2)
   {
-    recr_dist(gp,settle,p)=femfrac(gp)*recr_dist_parm(gp)*recr_dist_parm(N_GP+p)*recr_dist_parm(N_GP+pop+settle);
-    if(gender==2) recr_dist(gp+N_GP,settle,p)=femfrac(gp+N_GP)*recr_dist_parm(gp)*recr_dist_parm(N_GP+p)*recr_dist_parm(N_GP+pop+settle);  //males
-  }
-//  SS_Label_Info_18.3  #if recr_dist_interaction is chosen, then multiply these in also
-  if(recr_dist_inx==1)
-  {
-    f=N_GP+nseas+pop;
     for (gp=1;gp<=N_GP;gp++)
     for (p=1;p<=pop;p++)
     for (settle=1;settle<=N_settle_timings;settle++)
+    if(recr_dist_pattern(gp,settle,p)>0)
     {
-      f++;
-      if(recr_dist_pattern(gp,settle,p)>0)
+      recr_dist(gp,settle,p)=femfrac(gp)*recr_dist_parm(gp)*recr_dist_parm(N_GP+p)*recr_dist_parm(N_GP+pop+settle);
+      if(gender==2) recr_dist(gp+N_GP,settle,p)=femfrac(gp+N_GP)*recr_dist_parm(gp)*recr_dist_parm(N_GP+p)*recr_dist_parm(N_GP+pop+settle);  //males
+    }
+  //  SS_Label_Info_18.3  #if recr_dist_interaction is chosen, then multiply these in also
+    if(recr_dist_inx==1)
+    {
+      f=N_GP+pop+N_settle_timings;
+      for (gp=1;gp<=N_GP;gp++)
+      for (p=1;p<=pop;p++)
+      for (settle=1;settle<=N_settle_timings;settle++)
       {
-        recr_dist(gp,settle,p)*=recr_dist_parm(f);
-        if(gender==2) recr_dist(gp+N_GP,settle,p)*=recr_dist_parm(f);
+        f++;
+        if(recr_dist_pattern(gp,settle,p)>0)
+        {
+          recr_dist(gp,settle,p)*=recr_dist_parm(f);
+          if(gender==2) recr_dist(gp+N_GP,settle,p)*=recr_dist_parm(f);
+        }
+      }
+    }
+  }
+  else if(recr_dist_method==3)
+  {
+    for (settle=1;settle<=N_settle_assignments;settle++)
+    {
+      gp=settlement_pattern_rd(settle,1);
+      settle_time=settle_assignments_timing(settle);
+      p=settlement_pattern_rd(settle,3);
+      recr_dist(gp,settle_time,p)=femfrac(gp)*recr_dist_parm(settle);
+      if(gender==2) recr_dist(gp+N_GP,settle_time,p)=femfrac(gp+N_GP)*recr_dist_parm(settle);  //males
+    }
+  }
+  else if(recr_dist_method==1)  //  only used for sstrans
+  {
+    for (gp=1;gp<=N_GP;gp++)
+    for (p=1;p<=pop;p++)
+    for (s=1;s<=nseas;s++)
+    if(recr_dist_pattern(gp,s,p)>0)
+    {
+      recr_dist(gp,s,p)=femfrac(gp)*recr_dist_parm(gp)*recr_dist_parm(N_GP+p)*recr_dist_parm(N_GP+pop+s);
+      if(gender==2) recr_dist(gp+N_GP,s,p)=femfrac(gp+N_GP)*recr_dist_parm(gp)*recr_dist_parm(N_GP+p)*recr_dist_parm(N_GP+pop+s);  //males
+    }
+  //  SS_Label_Info_18.3  #if recr_dist_interaction is chosen, then multiply these in also
+    if(recr_dist_inx==1)
+    {
+      f=N_GP+nseas+pop;
+      for (gp=1;gp<=N_GP;gp++)
+      for (p=1;p<=pop;p++)
+      for (s=1;s<=nseas;s++)
+      {
+        f++;
+        if(recr_dist_pattern(gp,s,p)>0)
+        {
+          recr_dist(gp,s,p)*=recr_dist_parm(f);
+          if(gender==2) recr_dist(gp+N_GP,s,p)*=recr_dist_parm(f);
+        }
       }
     }
   }

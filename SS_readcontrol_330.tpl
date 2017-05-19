@@ -97,7 +97,9 @@
   int recr_dist_inx
  LOCAL_CALCS
     *(ad_comm::global_datafile) >> recr_dist_method;
-    echoinput<<recr_dist_method<<"  // Recruitment distribution method; where: 1=like 3.24; 2=main effects for GP, Settle timing, Area; FUTURE: 3=each Settle entity; 4=none when N_GP*Nsettle*pop==1"<<endl;
+    echoinput<<recr_dist_method<<"  // Recruitment distribution method; where: 1=like 3.24; 2=main effects for GP, Settle timing, Area; 3=each Settle entity; 4=none when N_GP*Nsettle*pop==1"<<endl;
+    if(recr_dist_method==1) 
+      {N_warn++; warning<<"fatal error:  recr_dist_method cannot be 1 in SS3.30 "<<endl; cout<<"see warning for input error"<<endl; exit(1);}
     *(ad_comm::global_datafile) >> recr_dist_area;
     echoinput<<recr_dist_area<<"  // recr_dist_area: 1 means global SRR; 2 means area-specific SRR"<<endl;
   recr_dist_area=1;  //hardwire for testing
@@ -160,30 +162,36 @@
           {
             N_settle_timings++;
             settle_timings_tempvec(N_settle_timings)=real_month;
+            settle_assignments_timing(settle)=N_settle_timings;
           }
           else
           {
             k=0;
             for(j=1;j<=N_settle_timings;j++)
             {
-              if(settle_timings_tempvec(j)!=real_month)
+              if(settle_timings_tempvec(j)==real_month)  // found matching settle_time
               {
+                settle_assignments_timing(settle)=j;
                 k=1;
               }
             }
-            if(k==1)
+            if(k==0)
             {
               N_settle_timings++;
               settle_timings_tempvec(N_settle_timings)=real_month;
+              settle_assignments_timing(settle)=N_settle_timings;
             }
           }
-          settle_assignments_timing(settle)=N_settle_timings;
         }
       }
     echoinput<<"N settle timings: "<<N_settle_timings<<endl<<" unique_settle_times: "<<settle_timings_tempvec(1,N_settle_timings)<<endl;
     echoinput<<"settle events use these settle_times: "<<settle_assignments_timing<<endl;
-    if(N_settle_timings>nseas) {N_warn++; warning<<"SS currently not ready to have N settle timings > nseas; please simplify model for now "<<endl;}
 
+    if(recr_dist_method==2)
+      {echoinput<<" Need to read N_GP * Narea * N_settletimings="<<N_GP*pop*N_settle_timings<<"  recruitment distribution parameters "<<endl;}
+    else if(recr_dist_method==3)
+      {echoinput<<" Need to read N_settle_assignments="<<N_settle_assignments<<"  recruitment distribution parameters "<<endl;}
+      
 //  SS_Label_Info_4.2.3 #Set-up arrays and indexing for growth patterns, gender, settlements, platoons
  END_CALCS
    int g3i;
@@ -937,21 +945,25 @@
     {
       for (k=1;k<=N_GP;k++) {ParCount++; ParmLabel+="RecrDist_GP_"+NumLbl(k);}
       for (k=1;k<=pop;k++)  {ParCount++; ParmLabel+="RecrDist_Area_"+NumLbl(k);}
-      for (k=1;k<=N_settle_assignments;k++){ParCount++; ParmLabel+="RecrDist_settle_"+NumLbl(k);}
+      for (k=1;k<=N_settle_timings;k++){ParCount++; ParmLabel+="RecrDist_month_"+NumLbl(Settle_month(k));}
 
       if(recr_dist_inx==1) // add for the morph assignments within each area
       {
         for (gp=1;gp<=N_GP;gp++)
         for (p=1;p<=pop;p++)
-        for (s=1;s<=N_settle_assignments;s++)
-        {ParCount++; ParmLabel+="RecrDist_interaction_GP_"+NumLbl(gp)+"_area_"+NumLbl(p)+"_settle_"+NumLbl(s);}
+        for (s=1;s<=N_settle_timings;s++)
+        {ParCount++; ParmLabel+="RecrDist_interaction_GP_"+NumLbl(gp)+"_area_"+NumLbl(p)+"_month_"+NumLbl(Settle_month(s));}
       }
       break;
     }
     case 3:  //  new method with parm for each settlement
     {
       for (s=1;s<=N_settle_assignments;s++)
-      {ParCount++; ParmLabel+="RecrDist_settle_"+NumLbl(s);}
+      {ParCount++;
+        gp=settlement_pattern_rd(s,1); //  growth patterns
+        p=settlement_pattern_rd(s,3);  //  settlement area
+        settle_time=settle_assignments_timing(s);
+        ParmLabel+="RecrDist_GP_"+NumLbl(gp)+"_area_"+NumLbl(p)+"_month_"+NumLbl(Settle_month(settle_time));}
       break;
     }
     case 4:   //  no distribution of recruitments
@@ -1007,6 +1019,15 @@
   ivector MGparm_offset(1,N_MGparm)
 
  LOCAL_CALCS
+  //set base parm for cohort growth dev to permissable values
+  MGparm_1(MGP_CGD,1)=1.;  //min
+  MGparm_1(MGP_CGD,2)=1.;  //max
+  MGparm_1(MGP_CGD,3)=1.;  //init
+  MGparm_1(MGP_CGD,4)=1.;  //prior
+  MGparm_1(MGP_CGD,5)=1.;  //  prior_sd
+  MGparm_1(MGP_CGD,6)=0.;  //  prior type
+  MGparm_1(MGP_CGD,7)=-1.;  // phase
+  
   echoinput<<" Biology base parameter setup"<<endl;
   for (i=1;i<=N_MGparm;i++)
   echoinput<<i<<" "<<MGparm_1(i)<<" "<<ParmLabel(ParCount-N_MGparm+i)<<endl;

@@ -1004,7 +1004,7 @@ FUNCTION void Process_STDquant()
 
 //********************************************************************
  /*  SS_Label_FUNCTION 27 Check_Parm */
-FUNCTION dvariable Check_Parm(const int& PrPH, const double& Pmin, const double& Pmax, const int& Prtype, const double& Pr, const double& Psd, const double& jitter, const prevariable& Pval)
+FUNCTION dvariable Check_Parm(const int iparm, const int& PrPH, const double& Pmin, const double& Pmax, const int& Prtype, const double& Pr, const double& Psd, const double& jitter, const prevariable& Pval)
   {
     const dvariable zmin = inv_cumd_norm(0.001);    // z value for Pmin
     const dvariable zmax = inv_cumd_norm(0.999);    // z value for Pmax
@@ -1015,13 +1015,13 @@ FUNCTION dvariable Check_Parm(const int& PrPH, const double& Pmin, const double&
 
     NewVal=Pval;
     if(Pmin>Pmax)
-    {N_warn++; cout<<" EXIT - see warning "<<endl; warning<<" parameter min > parameter max "<<Pmin<<" > "<<Pmax<<endl; cout<<" fatal error, see warning"<<endl; exit(1);}
+    {N_warn++; cout<<" EXIT - see warning "<<endl; warning<<" parameter min > parameter max "<<Pmin<<" > "<<Pmax<<" for parm: "<<iparm<<endl; cout<<" fatal error, see warning"<<endl; exit(1);}
     if(Pmin==Pmax && PrPH>=0)
-    {N_warn++; warning<<" parameter min is same as parameter max"<<Pmin<<" = "<<Pmax<<endl;}
+    {N_warn++; warning<<" parameter min is same as parameter max"<<Pmin<<" = "<<Pmax<<" for parm: "<<iparm<<endl;}
     if(Pval<Pmin && PrPH>=0)
-    {N_warn++; warning<<" parameter init value is less than parameter min "<<Pval<<" < "<<Pmin<<endl; NewVal=Pmin;}
+    {N_warn++; warning<<" parameter init value is less than parameter min "<<Pval<<" < "<<Pmin<<" for parm: "<<iparm<<endl; NewVal=Pmin;}
     if(Pval>Pmax && PrPH>=0)
-    {N_warn++; warning<<" parameter init value is greater than parameter max "<<Pval<<" > "<<Pmax<<endl; NewVal=Pmax;}
+    {N_warn++; warning<<" parameter init value is greater than parameter max "<<Pval<<" > "<<Pmax<<" for parm: "<<iparm<<endl; NewVal=Pmax;}
     if(jitter>0.0 && PrPH>=0)
     {
       // temp=log((Pmax-Pmin+0.0000002)/(NewVal-Pmin+0.0000001)-1.)/(-2.);   // transform the parameter
@@ -1060,7 +1060,7 @@ FUNCTION dvariable Check_Parm(const int& PrPH, const double& Pmin, const double&
     //  now check prior
     if(Prtype>0)
     {
-      if(Psd<=0.0) {N_warn++; cout<<"fatal error in prior check, see warning"<<endl; warning<<"FATAL:  A prior is selected but prior sd is zero. Prtype: "<<Prtype<<" Prior: "<<Pr<<" Pr_sd: "<<Psd<<endl; exit(1);}
+      if(Psd<=0.0) {N_warn++; cout<<"fatal error in prior check, see warning"<<endl; warning<<"FATAL:  A prior is selected but prior sd is zero. Prtype: "<<Prtype<<" Prior: "<<Pr<<" Pr_sd: "<<Psd<<" for parm: "<<iparm<<endl; exit(1);}
     }
 
     return NewVal;
