@@ -1781,11 +1781,11 @@ FUNCTION void write_nucontrol()
   if(finish_starter==999)
     {report4<<2<<" # recr_dist_method for parameters:  2=main effects for GP, Settle timing, Area; 3=each Settle entity; 4=none when N_GP*Nsettle*pop==1"<<endl;}
     else
-    {report4<<recr_dist_method<<" # recr_dist_method for parameters:  2=main effects for GP, Settle timing, Area; 3=each Settle entity; 4=none when N_GP*Nsettle*pop==1"<<endl;}
-  report4<<recr_dist_area<<" # Recruitment: 1=global; 2=by area (future option)"<<endl;
-  report4<<N_settle_assignments<<" #  number of recruitment settlement assignments "<<endl<<
-             recr_dist_inx<< " # year_x_area_x_settlement_event interaction requested (only for recr_dist_method=1)"<<endl<<
-             "#GPat month  area age (for each settlement assignment)"<<endl<<settlement_pattern_rd<<endl<<"#"<<endl;
+    {report4<<recr_dist_method<<" # recr_dist_method for parameters:  2=main effects for GP, Area, Settle timing; 3=each Settle entity"<<endl;}
+  report4<<recr_dist_area<<" # not yet implemented; Future usage: Spawner-Recruitment: 1=global; 2=by area"<<endl;
+  report4<<N_settle_assignments<<" #  number of recruitment settlement assignments "<<endl;
+  report4<<0<< " # unused option"<<endl;
+  report4<<"#GPattern month  area  age (for each settlement assignment)"<<endl<<settlement_pattern_rd<<endl<<"#"<<endl;
   if(pop==1)
   {report4<<"#_Cond 0 # N_movement_definitions goes here if Nareas > 1"<<endl
     <<"#_Cond 1.0 # first age that moves (real age at begin of season, not integer) also cond on do_migration>0"<<endl

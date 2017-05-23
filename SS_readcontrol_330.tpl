@@ -97,11 +97,11 @@
   int recr_dist_inx
  LOCAL_CALCS
     *(ad_comm::global_datafile) >> recr_dist_method;
-    echoinput<<recr_dist_method<<"  // Recruitment distribution method; where: 1=like 3.24; 2=main effects for GP, Settle timing, Area; 3=each Settle entity; 4=none when N_GP*Nsettle*pop==1"<<endl;
+    echoinput<<recr_dist_method<<"  # Recruitment distribution method; where: 2=parms for main effects for GP, Area, Settle timing; 3=one parm for each Settle event"<<endl;
     if(recr_dist_method==1) 
       {N_warn++; warning<<"fatal error:  recr_dist_method cannot be 1 in SS3.30 "<<endl; cout<<"see warning for input error"<<endl; exit(1);}
     *(ad_comm::global_datafile) >> recr_dist_area;
-    echoinput<<recr_dist_area<<"  // recr_dist_area: 1 means global SRR; 2 means area-specific SRR"<<endl;
+    echoinput<<recr_dist_area<<"  # future option for recr_dist_area: 1 is hardwired to do global SRR; 2 in future will do area-specific SRR"<<endl;
   recr_dist_area=1;  //hardwire for testing
   N_settle_assignments_rd=0;
   N_settle_assignments=1;  // default
@@ -127,13 +127,9 @@
         *(ad_comm::global_datafile) >> recr_dist_inx;
         break;
       }
-    case 4:
-      {
-        break;
-      }
   }
-  echoinput<<N_settle_assignments<<" Number of GP/area/settle_timing events to read (>=0) "<<endl;
-  echoinput<<recr_dist_inx<<" read interaction parameters for GP x area X timing (0/1)"<<endl;
+  echoinput<<N_settle_assignments<<" Number of settlement events: GP/area/month to read (>=0) "<<endl;
+  echoinput<<recr_dist_inx<<"  # unused option "<<endl;
  END_CALCS
 
   int birthseas;  //  is this still needed??
@@ -926,34 +922,11 @@
   recr_dist_parms = ParCount+1;  // pointer to first recruitment distribution  parameter
   switch (recr_dist_method)
   {
-    case 1:  //  like 3.24 method
-    {
-      for (k=1;k<=N_GP;k++) {ParCount++; ParmLabel+="RecrDist_GP_"+NumLbl(k);}
-      for (k=1;k<=pop;k++)  {ParCount++; ParmLabel+="RecrDist_Area_"+NumLbl(k);}
-      for (k=1;k<=nseas;k++){ParCount++; ParmLabel+="RecrDist_Bseas_"+NumLbl(k);}
-
-      if(recr_dist_inx==1) // add for the morph assignments within each area
-      {
-        for (gp=1;gp<=N_GP;gp++)
-        for (p=1;p<=pop;p++)
-        for (s=1;s<=nseas;s++)
-        {ParCount++; ParmLabel+="RecrDist_interaction_GP_"+NumLbl(gp)+"_area_"+NumLbl(p)+"_settle_"+NumLbl(s);}
-      }
-      break;
-    }
     case 2:  //  new method with main effects only
     {
       for (k=1;k<=N_GP;k++) {ParCount++; ParmLabel+="RecrDist_GP_"+NumLbl(k);}
       for (k=1;k<=pop;k++)  {ParCount++; ParmLabel+="RecrDist_Area_"+NumLbl(k);}
       for (k=1;k<=N_settle_timings;k++){ParCount++; ParmLabel+="RecrDist_month_"+NumLbl(Settle_month(k));}
-
-      if(recr_dist_inx==1) // add for the morph assignments within each area
-      {
-        for (gp=1;gp<=N_GP;gp++)
-        for (p=1;p<=pop;p++)
-        for (s=1;s<=N_settle_timings;s++)
-        {ParCount++; ParmLabel+="RecrDist_interaction_GP_"+NumLbl(gp)+"_area_"+NumLbl(p)+"_month_"+NumLbl(Settle_month(s));}
-      }
       break;
     }
     case 3:  //  new method with parm for each settlement

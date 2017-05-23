@@ -102,47 +102,25 @@
   N_settle_assignments_rd=0;
   N_settle_assignments=1;  // default
 
-  switch (recr_dist_method)
+  if(N_GP*pop*nseas>1)
   {
-    case 1:
-      {
-        if(N_GP*pop*nseas>1)
-          {
-            *(ad_comm::global_datafile) >> N_settle_assignments_rd;
-            *(ad_comm::global_datafile) >> recr_dist_inx;
-            N_settle_assignments=N_settle_assignments_rd;
-          }
-        else
-          {
-            //  N_settle_assignments_rd=0; N_settle_assignments=1; //  all will go to 1, 1, 1
-            recr_dist_inx=0;
-          }
-        break;
-      }
-    case 2:
-      {
-        *(ad_comm::global_datafile) >> N_settle_assignments;
-        *(ad_comm::global_datafile) >> recr_dist_inx;
-        break;
-      }
-    case 3:
-      {
-        *(ad_comm::global_datafile) >> N_settle_assignments;
-        *(ad_comm::global_datafile) >> recr_dist_inx;
-        break;
-      }
-    case 4:
-      {
-        break;
-      }
+    *(ad_comm::global_datafile) >> N_settle_assignments_rd;
+    *(ad_comm::global_datafile) >> recr_dist_inx;
+    N_settle_assignments=N_settle_assignments_rd;
   }
+  else
+  {
+     recr_dist_inx=0;
+  }
+
   echoinput<<N_settle_assignments<<" Number of GP/area/settle_timing events to read (>=0) "<<endl;
   echoinput<<recr_dist_inx<<" read interaction parameters for GP x area X timing (0/1)"<<endl;
+  if(recr_dist_inx>0) {N_warn++; warning<<" recruitment distribution interaction approach not implemented in SS3.30; use option 3 instead in 3.30"<<endl;}
  END_CALCS
 
   int birthseas;  //  is this still needed??
 
-  matrix settlement_pattern_rd(1,N_settle_assignments,1,4);   //  for each settlement event:  GPat, Month, area, age
+  matrix settlement_pattern_rd(1,N_settle_assignments,1,4);   //  for each settlement event:  GPat, birthseason, area, age
   ivector settle_assignments_timing(1,N_settle_assignments);  //  stores the settle_timing index for each assignment
   vector settle_timings_tempvec(1,N_settle_assignments)  //  temporary storage for real_month of each settlement_timing
                                                         //  dimensioned by assignments, but only uses N_settle_timings of these
@@ -179,6 +157,7 @@
           {
             N_settle_timings++;
             settle_timings_tempvec(N_settle_timings)=real_month;
+            settle_assignments_timing(settle)=N_settle_timings;
           }
           else
           {
@@ -187,16 +166,17 @@
             {
               if(settle_timings_tempvec(j)!=real_month)
               {
+                settle_assignments_timing(settle)=j;
                 k=1;
               }
             }
-            if(k==1)
+            if(k==0)
             {
               N_settle_timings++;
               settle_timings_tempvec(N_settle_timings)=real_month;
+              settle_assignments_timing(settle)=N_settle_timings;
             }
           }
-          settle_assignments_timing(settle)=N_settle_timings;
         }
       }
     echoinput<<"N settle timings: "<<N_settle_timings<<endl<<" settle_month: "<<settle_timings_tempvec(1,N_settle_timings)<<endl;
@@ -212,7 +192,7 @@
   vector  Settle_month(1,N_settle_timings)  //  month (real)in which settlement occurs
   ivector Settle_age(1,N_settle_timings)  //  calculated age at which settlement occurs, with age 0 being the year in which spawning occurs
   3darray recr_dist_pattern(1,N_GP,1,N_settle_timings,0,pop);  //  has flag to indicate each settlement events
-
+//  NOTE:  in 3.24, recr_dis is by birthseason, so this is dimensioned by nseas; in 3.30, it is dimensioned by number of settle_timings
  LOCAL_CALCS
   Settle_seas_offset.initialize();
   Settle_timing_seas.initialize();
@@ -815,7 +795,8 @@
 
   int MGP_CGD
   int CGD_onoff;  //  switch for cohort growth dev
-
+  int ParCount2
+  
  LOCAL_CALCS
   autogen_timevary=0;
     if(parm_adjust_method==2)
@@ -930,52 +911,34 @@
      ParCount+=3;
   }
   recr_dist_parms = ParCount+1;  // pointer to first recruitment distribution  parameter
-  switch (recr_dist_method)
+  ParCount2=ParCount;
+  for (k=1;k<=N_GP;k++) {ParCount++; ParCount2++; ParmLabel+="RecrDist_GP_"+NumLbl(k);}
+  for (k=1;k<=pop;k++)  {ParCount++; ParCount2++; ParmLabel+="RecrDist_Area_"+NumLbl(k);}
+  for (k=1;k<=nseas;k++)
   {
-    case 1:  //  like 3.24 method
+    ParCount++;
+    if(k<=N_settle_timings) 
     {
-      for (k=1;k<=N_GP;k++) {ParCount++; ParmLabel+="RecrDist_GP_"+NumLbl(k);}
-      for (k=1;k<=pop;k++)  {ParCount++; ParmLabel+="RecrDist_Area_"+NumLbl(k);}
-      for (k=1;k<=nseas;k++){ParCount++; ParmLabel+="RecrDist_Bseas_"+NumLbl(k);}
-
-      if(recr_dist_inx==1) // add for the morph assignments within each area
-      {
-        for (gp=1;gp<=N_GP;gp++)
-        for (p=1;p<=pop;p++)
-        for (s=1;s<=nseas;s++)
-        {ParCount++; ParmLabel+="RecrDist_interaction_GP_"+NumLbl(gp)+"_area_"+NumLbl(p)+"_settle_"+NumLbl(s);}
-      }
-      break;
-    }
-    case 2:  //  new method with main effects only
-    {
-      for (k=1;k<=N_GP;k++) {ParCount++; ParmLabel+="RecrDist_GP_"+NumLbl(k);}
-      for (k=1;k<=pop;k++)  {ParCount++; ParmLabel+="RecrDist_Area_"+NumLbl(k);}
-      for (k=1;k<=N_settle_assignments;k++){ParCount++; ParmLabel+="RecrDist_settle_"+NumLbl(k);}
-
-      if(recr_dist_inx==1) // add for the morph assignments within each area
-      {
-        for (gp=1;gp<=N_GP;gp++)
-        for (p=1;p<=pop;p++)
-        for (s=1;s<=N_settle_assignments;s++)
-        {ParCount++; ParmLabel+="RecrDist_interaction_GP_"+NumLbl(gp)+"_area_"+NumLbl(p)+"_settle_"+NumLbl(s);}
-      }
-      break;
-    }
-    case 3:  //  new method with parm for each settlement
-    {
-      for (s=1;s<=N_settle_assignments;s++)
-      {ParCount++; ParmLabel+="RecrDist_settle_"+NumLbl(s);}
-      break;
-    }
-    case 4:   //  no distribution of recruitments
-    {
-      break;
+      ParCount2++; ParmLabel+="RecrDist_timing_"+NumLbl(k);
     }
   }
 
-  MGP_CGD=ParCount+1;  // pointer to cohort growth deviation base parameter
-  ParCount++;
+  if(recr_dist_inx==1) // add for the morph assignments within each area
+  {
+    for (gp=1;gp<=N_GP;gp++)
+    for (p=1;p<=pop;p++)
+    for (s=1;s<=nseas;s++)
+    {
+      ParCount++; 
+      if(k<=N_settle_timings)
+      { 
+        ParCount2++; ParmLabel+="RecrDist_interaction_GP_"+NumLbl(gp)+"_area_"+NumLbl(p)+"_settle_"+NumLbl(s);
+      }
+    }
+  }
+
+  MGP_CGD=ParCount2+1;  // pointer to cohort growth deviation base parameter
+  ParCount++; ParCount2++;
   ParmLabel+="CohortGrowDev";
 
   if(do_migration>0)
@@ -983,20 +946,19 @@
    for (k=1;k<=do_migration;k++)
      {
      s=move_def(k,1); gp=move_def(k,2); p=move_def(k,3); p2=move_def(k,4);
-     ParCount++; ParmLabel+="MoveParm_A_seas_"+NumLbl(s)+"_GP_"+NumLbl(gp)+"from_"+NumLbl(p)+"to_"+NumLbl(p2);
-     ParCount++; ParmLabel+="MoveParm_B_seas_"+NumLbl(s)+"_GP_"+NumLbl(gp)+"from_"+NumLbl(p)+"to_"+NumLbl(p2);
+     ParCount++; ParCount2++; ParmLabel+="MoveParm_A_seas_"+NumLbl(s)+"_GP_"+NumLbl(gp)+"from_"+NumLbl(p)+"to_"+NumLbl(p2);
+     ParCount++; ParCount2++; ParmLabel+="MoveParm_B_seas_"+NumLbl(s)+"_GP_"+NumLbl(gp)+"from_"+NumLbl(p)+"to_"+NumLbl(p2);
     }
   }
 
   if(Use_AgeKeyZero>0)
   {
-    AgeKeyParm=ParCount+1;
+    AgeKeyParm=ParCount2+1;
     for (k=1;k<=7;k++)
     {
-       ParCount++; ParmLabel+="AgeKeyParm"+NumLbl(k);
+       ParCount++; ParCount2++; ParmLabel+="AgeKeyParm"+NumLbl(k);
     }
   }
-  N_MGparm=ParCount;
 
   catch_mult_pointer=-1;
   j=sum(need_catch_mult);  //  number of fleets needing a catch multiplier parameter
@@ -1005,10 +967,10 @@
   {
     if(need_catch_mult(j)==1)
     {
-      ParCount++; ParmLabel+="Catch_Mult:_"+NumLbl(j)+"_"+fleetname(j);
+      ParCount++; ParCount2++; ParmLabel+="Catch_Mult:_"+NumLbl(j)+"_"+fleetname(j);
     }
   }
-  N_MGparm=ParCount;
+  N_MGparm=ParCount2;
 
   frac_female_pointer=-1;   // indicates 3.24 version
   // for(gp=1;gp<=N_GP;gp++)
@@ -1018,13 +980,65 @@
   // N_MGparm=ParCount;
 
  END_CALCS
-    ivector mgp_type(1,N_MGparm)  //  contains category to parameter (1=natmort; 2=growth; 3=wtlen & fec; 4=recr_dist; 5=movement)
 
-  init_matrix MGparm_1(1,N_MGparm,1,14)   // matrix with natmort and growth parms controls
+  init_matrix MGparm_rd(1,ParCount,1,14)   // matrix with natmort and growth parms controls
   ivector MGparm_offset(1,N_MGparm)
+  ivector mgp_type(1,N_MGparm)  //  contains category to parameter (1=natmort; 2=growth; 3=wtlen & fec; 4=recr_dist; 5=movement)
+  matrix MGparm_1(1,N_MGparm,1,14)  // reduced size matrix after switch from bseas to N_settlement_timings
+  matrix MGparm_2(1,N_MGparm,1,14)  //  re-ordered matrix in 3.30 parm order
 
-  matrix MGparm_2(1,N_MGparm,1,14)
  LOCAL_CALCS
+//  remove the bseas lines
+  for(ParCount=1;ParCount<=recr_dist_parms-1;ParCount++)
+  {MGparm_1(ParCount)=MGparm_rd(ParCount);}
+  ParCount2=recr_dist_parms-1;  ParCount=recr_dist_parms-1;
+  for (k=1;k<=N_GP;k++) {ParCount++; ParCount2++; MGparm_1(ParCount2)=MGparm_rd(ParCount);}
+  for (k=1;k<=pop;k++)  {ParCount++; ParCount2++; MGparm_1(ParCount2)=MGparm_rd(ParCount);}
+  for (k=1;k<=nseas;k++)
+  {
+    ParCount++;
+    if(k<=N_settle_timings) 
+    {
+       ParCount2++; MGparm_1(ParCount2)=MGparm_rd(ParCount);
+    }
+  }
+
+  if(recr_dist_inx==1) // add for the morph assignments within each area
+  {
+    for (gp=1;gp<=N_GP;gp++)
+    for (p=1;p<=pop;p++)
+    for (s=1;s<=nseas;s++)
+    {
+      ParCount++; 
+      if(k<=N_settle_timings)
+      { 
+         ParCount2++; MGparm_1(ParCount2)=MGparm_rd(ParCount);
+      }
+    }
+  }
+
+//  MGP_CGD=ParCount2+1;  // pointer to cohort growth deviation base parameter
+  ParCount++; ParCount2++;
+
+  if(do_migration>0)
+  {
+   for (k=1;k<=do_migration;k++)
+     {
+     ParCount++;  ParCount2++; MGparm_1(ParCount2)=MGparm_rd(ParCount);
+     ParCount++;  ParCount2++; MGparm_1(ParCount2)=MGparm_rd(ParCount);
+    }
+  }
+
+  if(Use_AgeKeyZero>0)
+  {
+//    AgeKeyParm=ParCount2+1;
+    for (k=1;k<=7;k++)
+    {
+       ParCount++;  ParCount2++; MGparm_1(ParCount2)=MGparm_rd(ParCount);
+    }
+  }
+  ParCount=ParCount2;
+
   {
   //set base parm for cohort growth dev to permissable values
   MGparm_1(MGP_CGD,1)=1.;  //min
@@ -1063,7 +1077,6 @@
       }
     }
 
-  echoinput<<MGparm_2<<endl;
   MGparm_1=MGparm_2;
   }
  END_CALCS
@@ -1071,7 +1084,9 @@
  LOCAL_CALCS
   echoinput<<" Biology parameter setup"<<endl;
   for (i=1;i<=N_MGparm;i++)
-  echoinput<<i<<" "<<MGparm_1(i)<<" "<<ParmLabel(ParCount-N_MGparm+i)<<endl;
+  {
+    echoinput<<i<<" # "<<MGparm_1(i)<<" "<<ParmLabel(i)<<endl;
+  }
 
 //  find MGparms for which the male parameter value is set equal to the female value
 //  only applies for MGparm_def==1 which is direct estimation (no offsets)
@@ -1134,33 +1149,6 @@
     {
      N_MGparm_env ++;
      if(f==MGP_CGD) CGD_onoff=1;    // cohort growth dev is a fxn of environ, so turn on CGD calculation
-  /*
-     MGparm_env(f)=N_MGparm+N_MGparm_env;
-     if(MGparm_1(f,8)>0)
-     {
-       ParCount++; ParmLabel+=ParmLabel(f)+"_ENV_mult"; MGparm_envtype(f)=1; MGparm_envuse(f)=MGparm_1(f,8);
-       if(parm_adjust_method==2) {N_warn++; cout<<" EXIT - see warning "<<endl; warning<<"multiplicative env effect on MGparm: "<<f
-        <<" not allowed because parm_adjust_method==2; STOP"<<endl; exit(1);}
-       MGparm_1(f,8)+=100;  //  convert to 3.30 format
-     }
-     else if(MGparm_1(f,8)==-999)
-     {
-     	  cout<<" EXIT - see warning "<<endl; warning<<"density-dependent env effect on MGparm: "<<f
-      <<" not implemented; STOP"<<endl; exit(1);
-//        ParCount++; ParmLabel+=ParmLabel(f)+"_ENV_densdep"; MGparm_envtype(f)=3;  MGparm_envuse(f)=-1;}
-     }
-     else if (MGparm_1(f,8)<0)
-     {
-      ParCount++; ParmLabel+=ParmLabel(f)+"_ENV_add"; MGparm_envtype(f)=2; MGparm_envuse(f)=-MGparm_1(f,8);
-     	MGparm_1(f,8) = 200+abs(MGparm_1(f,8));
-     }
-
-     for (y=styr;y<=endyr;y++)
-     {
-      if(env_data_RD(y,MGparm_envuse(f))!=0.0 || MGparm_envtype(f)==3) {timevary_MG(y,mgp_type(f))=1; timevary_MG(y+1,mgp_type(f))=1; }
-      //       non-zero data were read    or fxn uses biomass or recruitment
-     }
-  */
     }
    }
   if(N_MGparm_env>0)
@@ -1202,42 +1190,6 @@
          if(z>N_Block_Designs) {N_warn++; warning<<"parm: "<<j<<" ERROR, Block > N Blocks "<<z<<" "<<N_Block_Designs<<endl; exit(1);}
 
          N_MGparm_blk+=Nblk(z);  //  N parameters
-  /*
-         g=1;  //  index to list in block design
-         for (a=1;a<=Nblk(z);a++)
-         {
-          N_MGparm_blk++;
-          timevary_parm_cnt++;
-          y=Block_Design(z,g);
-          timevary_MG(y,mgp_type(j))=1;
-          sprintf(onenum, "%d", y);
-          ParCount++;
-
-          k=int(MGparm_1(j,14));
-          switch(k)
-          {
-            case 0:
-            {ParmLabel+=ParmLabel(j)+"_BLK"+NumLbl(z)+"mult_"+onenum+CRLF(1);  break;}
-            case 1:
-            {ParmLabel+=ParmLabel(j)+"_BLK"+NumLbl(z)+"add_"+onenum+CRLF(1);  break;}
-            case 2:
-            {ParmLabel+=ParmLabel(j)+"_BLK"+NumLbl(z)+"repl_"+onenum+CRLF(1);  break;}
-            case 3:
-            {ParmLabel+=ParmLabel(j)+"_BLK"+NumLbl(z)+"delta_"+onenum+CRLF(1);  break;}
-          }
-          y=Block_Design(z,g+1)+1;  // first year after block
-          if(y>endyr+1) y=endyr+1;
-          timevary_MG(y,mgp_type(j))=1;
-          if(mgp_type(j)==7)  //  so doing catch_mult which needs annual values calculated for each year of the block
-          {
-            for(k=Block_Design(z,g);k<=y;k++)
-            {
-              timevary_MG(k,7)=1;
-            }
-          }
-          g+=2;
-         }
-  */
          if(j==MGP_CGD) CGD_onoff=1;
        }
        else if (z<0)  //  (z<0) so invoke a trend
@@ -1250,32 +1202,6 @@
             {
               N_MGparm_blk+=Ncycle;
             }
-  /*
-         timevary_Nread=3;
-          if(MGparm_1(j,13)==-1)
-          {
-            ParCount++; ParmLabel+=ParmLabel(j)+"_TrendFinal_Offset"+CRLF(1);
-            ParCount++; ParmLabel+=ParmLabel(j)+"_TrendInfl_"+CRLF(1);
-            ParCount++; ParmLabel+=ParmLabel(j)+"_TrendWidth_"+CRLF(1);
-            timevary_parm_cnt+=timevary_Nread;  //  for the 3 trend parameters
-          }
-          else if(MGparm_1(j,13)==-2)
-          {
-            ParCount++; ParmLabel+=ParmLabel(j)+"_TrendFinal_"+CRLF(1);
-            ParCount++; ParmLabel+=ParmLabel(j)+"_TrendInfl_"+CRLF(1);
-            ParCount++; ParmLabel+=ParmLabel(j)+"_TrendWidth_"+CRLF(1);
-            timevary_parm_cnt+=timevary_Nread;  //  for the 3 trend parameters
-          }
-          else
-          {
-//            timevary_Nread=Ncycle;
-            for (icycle=1;icycle<=Ncycle;icycle++)
-            {
-//              ParCount++; ParmLabel+=ParmLabel(j)+"_Cycle_"+NumLbl(icycle)+CRLF(1);
-              timevary_parm_cnt+=1;  //  count the cycle parameters
-            }
-          }
-  */
        }
 //       timevary_def.push_back (itempvec(1,5));
      }
@@ -1689,7 +1615,8 @@
   if(SR_parm_1(N_SRparm2-1,7)>=0 || SR_parm_1(N_SRparm2-1,3)!=0.0)
     {
       N_warn++;warning<<"The R1_offset parameter is now the regime parameter and it must not be estimated and should have value of 0.0"<<endl<<
-      "Instead, time-varying offsets to the regime parameter can be estimated; and a block for doing this has been created"<<endl;
+      "Instead, time-varying offsets to the regime parameter can be estimated; and a block for doing this has been created"<<endl<<
+      "you will need to manually create the parameter line for that block or turn autogen value to 0 for SR_parms";
       SR_parm_1(N_SRparm2-1,7)=-1;
       SR_parm_1(N_SRparm2-1,3)=0.0;
       SR_parm_1(N_SRparm2-1,13)=N_Block_Designs;
@@ -1924,7 +1851,7 @@
       ParmLabel+="RecrDev_Cycle_"+onenum+CRLF(1);
     }
   }
-
+  echoinput<<" ParCount after recdev_cycle  "<<ParCount<<endl;
 //  SS_Label_Info_4.6.4 #Setup recruitment deviations and create parm labels for each year
   if(recdev_end>retro_yr) recdev_end=retro_yr;
   if(recdev_start<(styr-nages)) {recdev_start=styr-nages; N_warn++; warning<<" adjusting recdev_start to: "<<recdev_start<<endl;}
@@ -2404,6 +2331,7 @@
 // Now  convert to 3.30 format where parameters are in fleet order, not fleet within parameter type
   parm330_cnt=0;  //  restart the index
   firstQparm=ParCount;  //  base index before adding Q parms
+  echoinput<<" firstQparm: "<<firstQparm<<endl;
   Q_parm_1.initialize();
   echoinput<<endl<<"transfer Q setup from 324 to 330 and create base Q parms"<<endl;
   for (f=1;f<=Nfleet;f++)
@@ -2428,7 +2356,7 @@
       // so time-varying property cannot be mirrored
       //  need to trap for this when reading
     }
-    if(Q_setup(f,5)==1)  //  flaot Q_setup, so cannot be active
+    if(Q_setup(f,5)==1)  //  float Q_setup, so cannot be active
       {Q_parm_1(parm330_cnt,7)=-1;}
 
     if(Svy_errtype(f)==-1)
@@ -2439,6 +2367,7 @@
     {
       ParmLabel+="LnQ_base_"+fleetname(f)+"("+NumLbl(f)+")";
     }
+    echoinput<<f<<" "<<parm330_cnt<<" "<<ParCount<<" "<<ParmLabel.indexmax()<<endl;
     echoinput<<"base parameter for fleet "<<f<<" Qparmcount: "<<parm330_cnt<<" "<<ParmLabel(ParCount)<<endl;
   	if( Q_setup_324(f,2)>0)
   	{

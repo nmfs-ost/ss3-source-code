@@ -950,13 +950,17 @@ FUNCTION void get_recr_distribution()
   }
   else if(recr_dist_method==1)  //  only used for sstrans
   {
+    echoinput<<"recrdist pattern: "<<recr_dist_pattern<<endl;
     for (gp=1;gp<=N_GP;gp++)
     for (p=1;p<=pop;p++)
-    for (s=1;s<=nseas;s++)
+    for (s=1;s<=N_settle_timings;s++)
+    {
+      echoinput<<gp<<" "<<p<<" "<<s<<endl;
     if(recr_dist_pattern(gp,s,p)>0)
     {
       recr_dist(gp,s,p)=femfrac(gp)*recr_dist_parm(gp)*recr_dist_parm(N_GP+p)*recr_dist_parm(N_GP+pop+s);
       if(gender==2) recr_dist(gp+N_GP,s,p)=femfrac(gp+N_GP)*recr_dist_parm(gp)*recr_dist_parm(N_GP+p)*recr_dist_parm(N_GP+pop+s);  //males
+    }
     }
   //  SS_Label_Info_18.3  #if recr_dist_interaction is chosen, then multiply these in also
     if(recr_dist_inx==1)
@@ -964,7 +968,7 @@ FUNCTION void get_recr_distribution()
       f=N_GP+nseas+pop;
       for (gp=1;gp<=N_GP;gp++)
       for (p=1;p<=pop;p++)
-      for (s=1;s<=nseas;s++)
+      for (s=1;s<=N_settle_timings;s++)
       {
         f++;
         if(recr_dist_pattern(gp,s,p)>0)
@@ -974,6 +978,7 @@ FUNCTION void get_recr_distribution()
         }
       }
     }
+    echoinput<<"recrdist : "<<recr_dist<<endl;
   }
 //  SS_Label_Info_18.4  #scale the recr_dist matrix to sum to 1.0
   recr_dist/=sum(recr_dist);
