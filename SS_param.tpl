@@ -344,7 +344,7 @@ PARAMETER_SECTION
   number overdisp     // overdispersion
 
  LOCAL_CALCS
-  k=Do_TG*(3*N_TG+2*Nfleet);
+  k=Do_TG*(3*N_TG+2*Nfleet1);
  END_CALCS
 
   init_bounded_number_vector TG_parm(1,k,TG_parm_LO,TG_parm_HI,TG_parm_PH);
@@ -472,7 +472,7 @@ PARAMETER_SECTION
   vector selparm_Like(1,N_selparm2)
   vector SR_parm_Like(1,N_SRparm3)
   vector recdev_cycle_Like(1,recdev_cycle)
-  !! k=Do_TG*(3*N_TG+2*Nfleet);
+  !! k=Do_TG*(3*N_TG+2*Nfleet1);
   vector TG_parm_Like(1,k);
 
 !!//  SS_Label_Info_5.4  #Define objective function

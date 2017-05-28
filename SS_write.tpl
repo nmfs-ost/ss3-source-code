@@ -189,7 +189,7 @@ FUNCTION void write_summaryoutput()
     if(Do_TG>0)
     {
       report2<<runnumber<<" Tag_parm ";
-      for (f=1;f<=3*N_TG+2*Nfleet;f++) {NP++; report2<<" "<<ParmLabel(NP);}
+      for (f=1;f<=3*N_TG+2*Nfleet1;f++) {NP++; report2<<" "<<ParmLabel(NP);}
       report2<<endl<<runnumber<<" Tag_parm "<<TG_parm<<endl;
     }
 
@@ -2257,7 +2257,7 @@ FUNCTION void write_nucontrol()
   if(Do_TG>0)
   {
     report4<<1<<" # TG_custom:  0=no read; 1=read"<<endl;
-    for (f=1;f<=3*N_TG+2*Nfleet;f++)
+    for (f=1;f<=3*N_TG+2*Nfleet1;f++)
     {
       NP++;
       report4<<TG_parm2(f)<<" # "<<ParmLabel(NP)<<endl;
@@ -2756,7 +2756,7 @@ FUNCTION void write_bigoutput()
 
   if(Do_TG>0)
   {
-     k=3*N_TG+2*Nfleet;
+     k=3*N_TG+2*Nfleet1;
     for (j=1;j<=k;j++)
     {
       NP++;

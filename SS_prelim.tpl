@@ -462,7 +462,7 @@ PRELIMINARY_CALCS_SECTION
 
     if(Do_TG>0)
     {
-      k=Do_TG*(3*N_TG+2*Nfleet);
+      k=Do_TG*(3*N_TG+2*Nfleet1);
       for (i=1;i<=k;i++)
       {
         TG_parm(i)=TG_parm2(i,3);
@@ -578,7 +578,7 @@ PRELIMINARY_CALCS_SECTION
     if(Do_TG>0)
     {
       echoinput<<endl<<" now check TAG parm bounds and priors and do jitter if requested "<<endl;
-      k=Do_TG*(3*N_TG+2*Nfleet);
+      k=Do_TG*(3*N_TG+2*Nfleet1);
       for (i=1;i<=k;i++)
       {
         {TG_parm(i)=Check_Parm(i,TG_parm_PH(i),TG_parm_LO(i),TG_parm_HI(i), TG_parm2(i,6), TG_parm2(i,4), TG_parm2(i,5), jitter, TG_parm(i));}
@@ -620,11 +620,11 @@ PRELIMINARY_CALCS_SECTION
     {
       double rho_a;
       double rho_y;
-      //  location in selparm of rho 
-      if(TwoD_AR_def[f](7)==0)  
+      //  location in selparm of rho
+      if(TwoD_AR_def[f](7)==0)
       {
         echoinput<<"fleet: "<<f<<" no 2D_AR rho "<<endl;
-      } 
+      }
       else
       {
         j=TwoD_AR_def[f](13)+TwoD_AR_def[f](6)-TwoD_AR_def[f](4)+1;  //  first sigmalocation + other sigmasels, then the rho's
@@ -639,7 +639,7 @@ PRELIMINARY_CALCS_SECTION
             {
             for (int n = TwoD_AR_amin(f); n <= TwoD_AR_amax(f); n++)
               {
-                cor(f, (TwoD_AR_amax(f)-TwoD_AR_amin(f)+1)*(i-TwoD_AR_ymin(f))+j-TwoD_AR_amin(f)+1, 
+                cor(f, (TwoD_AR_amax(f)-TwoD_AR_amin(f)+1)*(i-TwoD_AR_ymin(f))+j-TwoD_AR_amin(f)+1,
                        (TwoD_AR_amax(f)-TwoD_AR_amin(f)+1)*(m-TwoD_AR_ymin(f))+n-TwoD_AR_amin(f)+1)
                 = pow(rho_a,abs(j-n)) * pow(rho_y,abs(i-m));
               }
@@ -731,7 +731,7 @@ PRELIMINARY_CALCS_SECTION
       {
         ALK_idx=(s-1)*N_subseas+subseas;
         get_growth3(s, subseas);  //  this will calculate the cv of growth for all subseasons of first year
-      } 
+      }
     }
     echoinput<<"ready to do natmort "<<endl;
     get_natmort();

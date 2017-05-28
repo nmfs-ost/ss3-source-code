@@ -796,7 +796,7 @@
   int MGP_CGD
   int CGD_onoff;  //  switch for cohort growth dev
   int ParCount2
-  
+
  LOCAL_CALCS
   autogen_timevary=0;
     if(parm_adjust_method==2)
@@ -917,7 +917,7 @@
   for (k=1;k<=nseas;k++)
   {
     ParCount++;
-    if(k<=N_settle_timings) 
+    if(k<=N_settle_timings)
     {
       ParCount2++; ParmLabel+="RecrDist_timing_"+NumLbl(k);
     }
@@ -929,9 +929,9 @@
     for (p=1;p<=pop;p++)
     for (s=1;s<=nseas;s++)
     {
-      ParCount++; 
+      ParCount++;
       if(k<=N_settle_timings)
-      { 
+      {
         ParCount2++; ParmLabel+="RecrDist_interaction_GP_"+NumLbl(gp)+"_area_"+NumLbl(p)+"_settle_"+NumLbl(s);
       }
     }
@@ -997,7 +997,7 @@
   for (k=1;k<=nseas;k++)
   {
     ParCount++;
-    if(k<=N_settle_timings) 
+    if(k<=N_settle_timings)
     {
        ParCount2++; MGparm_1(ParCount2)=MGparm_rd(ParCount);
     }
@@ -1009,9 +1009,9 @@
     for (p=1;p<=pop;p++)
     for (s=1;s<=nseas;s++)
     {
-      ParCount++; 
+      ParCount++;
       if(k<=N_settle_timings)
-      { 
+      {
          ParCount2++; MGparm_1(ParCount2)=MGparm_rd(ParCount);
       }
     }
@@ -3458,10 +3458,10 @@
 // fleet-specific tag reporting.  Of these, only reporting rate will be allowed to be time-varying
   init_int TG_custom;  // 1=read; 0=create default parameters
   !! echoinput<<endl<<"*******************"<<endl<<TG_custom<<" TG_custom (need to read even if no tag data )"<<endl;
-  !! k=TG_custom*Do_TG*(3*N_TG+2*Nfleet);
+  !! k=TG_custom*Do_TG*(3*N_TG+2*Nfleet1);
   init_matrix TG_parm1(1,k,1,14);  // read initial values
   !! if(k>0) echoinput<<" Tag parameters as read "<<endl<<TG_parm1<<endl;
-  !! k=Do_TG*(3*N_TG+2*Nfleet);
+  !! k=Do_TG*(3*N_TG+2*Nfleet1);
   matrix TG_parm2(1,k,1,14);
   !!if(Do_TG>0) {k1=k;} else {k1=1;}
   vector TG_parm_LO(1,k1);
@@ -3510,14 +3510,14 @@
         TG_parm2(j+2*N_TG,6)=0.001;  //  prior is quite diffuse
         TG_parm2(j+2*N_TG,7)=-4;  // phase
       }
-      for (j=1;j<=Nfleet;j++)
+      for (j=1;j<=Nfleet1;j++)
       {
         TG_parm2(j+3*N_TG)=TG_parm2(1);  // set tag reporting equal to near 1.0, as is the tag retention parameters
       }
       // set tag reporting decay to nil decay rate
-      for (j=1;j<=Nfleet;j++)
+      for (j=1;j<=Nfleet1;j++)
       {
-        k=j+3*N_TG+Nfleet;
+        k=j+3*N_TG+Nfleet1;
         TG_parm2(k,1)=-4.;
         TG_parm2(k,2)=0.;
         TG_parm2(k,3)=0.;
@@ -3545,12 +3545,12 @@
        sprintf(onenum, "%d", j);
        ParCount++; ParmLabel+="TG_overdispersion_"+onenum+CRLF(1);
       }
-       for (j=1;j<=Nfleet;j++)
+       for (j=1;j<=Nfleet1;j++)
       {
        sprintf(onenum, "%d", j);
        ParCount++; ParmLabel+="TG_report_fleet:_"+onenum+CRLF(1);
       }
-       for (j=1;j<=Nfleet;j++)
+       for (j=1;j<=Nfleet1;j++)
       {
        sprintf(onenum, "%d", j);
        ParCount++; ParmLabel+="TG_rpt_decay_fleet:_"+onenum+CRLF(1);
@@ -3558,7 +3558,7 @@
 
     TG_parm_LO=column(TG_parm2,1);
     TG_parm_HI=column(TG_parm2,2);
-    k=3*N_TG+2*Nfleet;
+    k=3*N_TG+2*Nfleet1;
     for (j=1;j<=k;j++)
     {
       TG_parm_PH(j)=TG_parm2(j,7);  // write it out due to no typecast available
@@ -4381,7 +4381,7 @@
 
   if(Do_TG>0)
   {
-    for (k=1;k<=3*N_TG+2*Nfleet;k++)
+    for (k=1;k<=3*N_TG+2*Nfleet1;k++)
     {
       ParCount++;
       if(depletion_fleet>0 && TG_parm_PH(k)>0) TG_parm_PH(k)++;
@@ -4735,7 +4735,7 @@
     vector init_F_use(1,N_init_F);
     vector Fparm_use(1,N_Fparm);
     vector selparm_use(1,N_selparm2);
-   !!k=Do_TG*(3*N_TG+2*Nfleet);
+   !!k=Do_TG*(3*N_TG+2*Nfleet1);
     vector TG_parm_use(1,k);
     matrix parm_dev_RD(1,N_parm_dev,parm_dev_minyr,parm_dev_maxyr);
     matrix parm_dev_use(1,N_parm_dev,parm_dev_minyr,parm_dev_maxyr);
