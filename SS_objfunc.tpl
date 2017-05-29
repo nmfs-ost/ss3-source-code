@@ -654,7 +654,7 @@ FUNCTION void evaluate_the_objective_function()
         }
     if(Do_TG>0)
     {
-      k=3*N_TG+2*Nfleet;
+      k=3*N_TG+2*Nfleet1;
       for (i=1;i<=k;i++)
       if(TG_parm2(i,5)>0 && (active(TG_parm(i))|| Do_all_priors>0))
       {
@@ -1391,7 +1391,7 @@ FUNCTION void get_posteriors()
   }
   if(Do_TG>0)
   {
-    k=3*N_TG+2*Nfleet;
+    k=3*N_TG+2*Nfleet1;
     for (j=1;j<=k;j++)
     {
       if(active(TG_parm(j))) posts<<TG_parm(j)<<" ";

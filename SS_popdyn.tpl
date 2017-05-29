@@ -136,7 +136,7 @@ FUNCTION void get_initial_conditions()
          Wt_Age_mid(s,g)=ALK(ALK_idx,g)*wt_len(s,GP(g));  // use for fisheries with no size selectivity
       }
     }
-    
+
     Save_Wt_Age(t)=Wt_Age_beg(s);
 //    if(do_once==1) echoinput<<"Save_Wt_Age in initial year: "<<t<<" %% "<<Save_Wt_Age(t)<<endl;
 
@@ -531,7 +531,7 @@ FUNCTION void get_time_series()
           }
         }
       }
-      
+
       if(WTage_rd>0)
       {
         for (g=1;g<=gmorph;g++)
@@ -557,7 +557,7 @@ FUNCTION void get_time_series()
            Wt_Age_mid(s,g)=ALK(ALK_idx,g)*wt_len(s,GP(g));  // use for fisheries with no size selectivity
         }
       }
-      
+
       Save_Wt_Age(t)=Wt_Age_beg(s);
 //      if(do_once==1) echoinput<<"Save_Wt_Age in "<<t<<" %% "<<Save_Wt_Age(t)<<endl;
 
@@ -1212,7 +1212,7 @@ FUNCTION void get_time_series()
           }
         }  //  end s==nseas
       }
-        if(save_for_report==2) 
+        if(save_for_report==2)
         {
           for(g=1;g<=gmorph;g++)
           {
@@ -1255,13 +1255,13 @@ FUNCTION void get_time_series()
       }
     }
   } //close year loop
-  
+
 //  Save end year quantities to refresh for forecast after benchmark is called
   recr_dist_endyr=recr_dist;
   natM_endyr=natM;
   surv1_endyr=surv1;
   surv2_endyr=surv2;
-  
+
   //  SS_Label_Info_24.14 #End loop of years
 
   if(Do_TG>0)
@@ -1292,11 +1292,11 @@ FUNCTION void get_time_series()
       }
       TG_init_loss = mfexp(TG_parm(TG))/(1.+mfexp(TG_parm(TG)));
       TG_chron_loss = mfexp(TG_parm(TG+N_TG))/(1.+mfexp(TG_parm(TG+N_TG)));
-      for (f=1;f<=Nfleet;f++)
+      for (f=1;f<=Nfleet1;f++)
       {
         k=3*N_TG+f;
         TG_report(f) = mfexp(TG_parm(k))/(1.0+mfexp(TG_parm(k)));
-        TG_rep_decay(f) = TG_parm(k+Nfleet);
+        TG_rep_decay(f) = TG_parm(k+Nfleet1);
       }
       TG_alive /= sum(TG_alive);     // proportions across morphs at age a1 in release area p at time of release t
       TG_alive *= TG_release(TG,8);   //  number released as distributed across morphs
@@ -1441,7 +1441,7 @@ FUNCTION void Do_Equil_Calc(const prevariable& equ_Recr)
    smrybio=0.0;
    smryage=0.0;
    smrynum=0.0;
-   
+
 // first seed the recruits; seems redundant
       for (g=1;g<=gmorph;g++)
       {

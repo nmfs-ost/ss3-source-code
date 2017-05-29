@@ -98,7 +98,7 @@
  LOCAL_CALCS
     *(ad_comm::global_datafile) >> recr_dist_method;
     echoinput<<recr_dist_method<<"  # Recruitment distribution method; where: 2=parms for main effects for GP, Area, Settle timing; 3=one parm for each Settle event"<<endl;
-    if(recr_dist_method==1) 
+    if(recr_dist_method==1)
       {N_warn++; warning<<"fatal error:  recr_dist_method cannot be 1 in SS3.30 "<<endl; cout<<"see warning for input error"<<endl; exit(1);}
     *(ad_comm::global_datafile) >> recr_dist_area;
     echoinput<<recr_dist_area<<"  # future option for recr_dist_area: 1 is hardwired to do global SRR; 2 in future will do area-specific SRR"<<endl;
@@ -187,7 +187,7 @@
       {echoinput<<" Need to read N_GP * Narea * N_settletimings="<<N_GP*pop*N_settle_timings<<"  recruitment distribution parameters "<<endl;}
     else if(recr_dist_method==3)
       {echoinput<<" Need to read N_settle_assignments="<<N_settle_assignments<<"  recruitment distribution parameters "<<endl;}
-      
+
 //  SS_Label_Info_4.2.3 #Set-up arrays and indexing for growth patterns, gender, settlements, platoons
  END_CALCS
    int g3i;
@@ -233,7 +233,7 @@
       }
       temp=azero_seas(k); //  annual elapsed time fraction at begin of this season
       Settle_timing_seas(settle_time)=(Settle_month(settle_time)-1.0)/12.;  //  fraction of year at settlement month
-      
+
       while((temp+seasdur(k))<=Settle_timing_seas(settle_time))
       {
         temp+=seasdur(k);
@@ -297,12 +297,12 @@
 
   ALK_range_g_lo=1;
   ALK_range_g_hi=nlength;
-  
+
   use_morph.initialize();
   TG_use_morph.initialize();
   keep_age.initialize();
   keep_age=1.0;
-  
+
    for (gp=1;gp<=N_GP*gender;gp++)
    {
       g_Start(gp)=(gp-1)*N_settle_timings*N_platoon+int(N_platoon/2)+1-N_platoon;  // find the mid-morph being processed
@@ -1000,7 +1000,7 @@
   MGparm_1(MGP_CGD,5)=1.;  //  prior_sd
   MGparm_1(MGP_CGD,6)=0.;  //  prior type
   MGparm_1(MGP_CGD,7)=-1.;  // phase
-  
+
   echoinput<<" Biology base parameter setup"<<endl;
   for (i=1;i<=N_MGparm;i++)
   echoinput<<i<<" "<<MGparm_1(i)<<" "<<ParmLabel(ParCount-N_MGparm+i)<<endl;
@@ -2619,7 +2619,7 @@
   timevary_sel.initialize();
   selparm_timevary.initialize();
   TwoD_AR_use.initialize();
-  
+
   for (j=1;j<=N_selparm;j++)
   {
      k=selparm_fleet(j);
@@ -2706,6 +2706,7 @@
   *(ad_comm::global_datafile) >> TwoD_AR_do;
   echoinput<<TwoD_AR_do<<"  #_ 0/1 to request experimental 2D_AR selectivity smoother options  "<<endl;
   
+
   if(TwoD_AR_do>0)
   {
     N_warn++; warning<<"You have selected the experimental 2D_AR selectivity smoother option"<<endl;
@@ -2724,7 +2725,7 @@
       *(ad_comm::global_datafile) >> tempvec(1,9);
       echoinput<<tempvec(1,9)<<endl;
       f=tempvec(1);
-      if(f<0) 
+      if(f<0)
         {ender=1;}
         else
         {
@@ -2791,7 +2792,7 @@
      echoinput<<y<<" parm "<<timevary_parm_rd[y](1,7)<<endl;}
    }
  END_CALCS
-  
+
 !!//  SS_Label_Info_4.9.9 #Create arrays for the total set of selex parameters
   vector selparm_LO(1,N_selparm2)
   vector selparm_HI(1,N_selparm2)
@@ -2888,10 +2889,10 @@
 // fleet-specific tag reporting.  Of these, only reporting rate will be allowed to be time-varying
   init_int TG_custom;  // 1=read; 0=create default parameters
   !! echoinput<<TG_custom<<" TG_custom (need to read even if no tag data )"<<endl;
-  !! k=TG_custom*Do_TG*(3*N_TG+2*Nfleet);
+  !! k=TG_custom*Do_TG*(3*N_TG+2*Nfleet1);
   init_matrix TG_parm1(1,k,1,14);  // read initial values
   !! if(k>0) echoinput<<" Tag parameters as read "<<endl<<TG_parm1<<endl;
-  !! k=Do_TG*(3*N_TG+2*Nfleet);
+  !! k=Do_TG*(3*N_TG+2*Nfleet1);
   matrix TG_parm2(1,k,1,14);
   !!if(Do_TG>0) {k1=k;} else {k1=1;}
   vector TG_parm_LO(1,k1);
@@ -2932,14 +2933,14 @@
         TG_parm2(j+2*N_TG,6)=1.;   // default prior type is symmetric beta
         TG_parm2(j+2*N_TG,7)=-4;  // phase
       }
-      for (j=1;j<=Nfleet;j++)
+      for (j=1;j<=Nfleet1;j++)
       {
         TG_parm2(j+3*N_TG)=TG_parm2(1);  // set tag reporting equal to near 1.0, as is the tag retention parameters
       }
       // set tag reporting decay to nil decay rate
-      for (j=1;j<=Nfleet;j++)
+      for (j=1;j<=Nfleet1;j++)
       {
-        k=j+3*N_TG+Nfleet;
+        k=j+3*N_TG+Nfleet1;
         TG_parm2(k,1)=-4.;
         TG_parm2(k,2)=0.;
         TG_parm2(k,3)=0.;
@@ -2980,7 +2981,7 @@
 
     TG_parm_LO=column(TG_parm2,1);
     TG_parm_HI=column(TG_parm2,2);
-    k=3*N_TG+2*Nfleet;
+    k=3*N_TG+2*Nfleet1;
     for (j=1;j<=k;j++) TG_parm_PH(j)=TG_parm2(j,7);  // write it out due to no typecast available
     echoinput<<" Processed/generated Tag parameters "<<endl<<TG_parm2<<endl;
 
@@ -3047,7 +3048,7 @@
 
 //  now add dev vectors for the 2D_AR1
      TwoD_AR_degfree.initialize();
-     for (f=1;f<=TwoD_AR_cnt;f++) 
+     for (f=1;f<=TwoD_AR_cnt;f++)
      {
        ivector timevary_setup(1,13);
     //  1-fleet, 2-ymin, 3-ymax, 4-amin, 5-amax, 6-sigma_amax, 7-use_rho, 8-age/len, 9-dev_phase
@@ -3079,7 +3080,7 @@
          echoinput<<" total years, and with data  "<<timevary_setup(3)-timevary_setup(2)+1<<" "<<TwoD_AR_degfree(f)<<"  times nages: ";
          TwoD_AR_degfree(f)*=(TwoD_AR_amax(f)-TwoD_AR_amin(f)+1);
          echoinput<<TwoD_AR_degfree(f)<<endl;
-     } 
+     }
 
     echoinput<<" read var_adjust list until -9999"<<endl;
     ender=0;
@@ -3822,7 +3823,7 @@
 
   if(Do_TG>0)
   {
-    for (k=1;k<=3*N_TG+2*Nfleet;k++)
+    for (k=1;k<=3*N_TG+2*Nfleet1;k++)
     {
       ParCount++;
       if(depletion_fleet>0 && TG_parm_PH(k)>0) TG_parm_PH(k)++;
@@ -4188,7 +4189,7 @@
     vector init_F_use(1,N_init_F);
     vector Fparm_use(1,N_Fparm);
     vector selparm_use(1,N_selparm2);
-   !!k=Do_TG*(3*N_TG+2*Nfleet);
+   !!k=Do_TG*(3*N_TG+2*Nfleet1);
     vector TG_parm_use(1,k);
     matrix parm_dev_RD(1,N_parm_dev,parm_dev_minyr,parm_dev_maxyr);
     matrix parm_dev_use(1,N_parm_dev,parm_dev_minyr,parm_dev_maxyr);
