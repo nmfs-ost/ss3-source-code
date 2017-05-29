@@ -2166,14 +2166,14 @@ FUNCTION void write_nucontrol()
         for(j=7;j<=14;j++) report4<<setw(11)<<selparm_1(f,j);
         report4<<"  #  "<<ParmLabel(NP)<<endl;
       }
-  if(timevary_parm_start_sel > 0)
+  if(N_selparm3 > N_selparm)
   {
     report4<<"# timevary selex parameters "<<endl;
     report4<<"#_          LO            HI          INIT         PRIOR         PR_SD       PR_type    PHASE  #  parm_name"<<endl;
 //    for (f=timevary_parm_start_sel;f<=timevary_parm_cnt_sel;f++)
-    for (int f1=N_selparm+1;f1<=N_selparm3;f1++)
+    for (int f=timevary_parm_start_sel;f<=timevary_parm_start_sel+N_selparm3-N_selparm-1;f++)
     {
-      NP++;  f=f1-N_selparm;
+      NP++;
       timevary_parm_rd[f](3)=value(timevary_parm(f));
       for(j=1;j<=6;j++) report4<<setw(14)<<timevary_parm_rd[f](j);
       report4<<"      "<<timevary_parm_rd[f](7)<<"  # "<<ParmLabel(NP)<<endl;
@@ -2188,7 +2188,7 @@ FUNCTION void write_nucontrol()
   report4<<"#"<<endl<<TwoD_AR_do<<"   #  use 2D_AR1 selectivity(0/1):  experimental feature"<<endl;
   if(TwoD_AR_do>0)
   {
-    k=N_selparm3-N_selparm;  //  starting point in timevary_parm_rd
+    k=timevary_parm_start_sel+N_selparm3-N_selparm-1;  //  starting point in timevary_parm_rd
     report4<<"#_specifications for 2D_AR1 and associated parameters"<<endl;
     report4<<"#_specs:  fleet, ymin, ymax, amin, amax, sigma_amax, use_rho, len1/age2, devphase"<<endl;
     for(j=1; j<=TwoD_AR_cnt; j++)

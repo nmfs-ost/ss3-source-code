@@ -2691,20 +2691,20 @@
 
    N_selparm3=N_selparm;
    if(timevary_parm_start_sel>0)
-    {
-      timevary_parm_cnt_sel=timevary_parm_cnt;  //  last timevary_selparm
-      N_selparm3=N_selparm+timevary_parm_cnt_sel-timevary_parm_start_sel+1;}
-   echoinput<<"N_selparm "<<N_selparm<<" "<<N_selparm2<<" "<<timevary_parm_start_sel<<" "<<timevary_parm_cnt_sel<<endl;
+   {
+     timevary_parm_cnt_sel=timevary_parm_cnt;  //  last timevary_selparm
+     N_selparm3=N_selparm+timevary_parm_cnt_sel-timevary_parm_start_sel+1;
+   }
    N_selparm2=N_selparm3;  //  for distinguishing the 2D_AR parms
-
 
 //  now add parameters for the 2D_AR1 approach
 //  Input in first parameter line several setup factors:  rho_y, rho_a, ymin, ymax, amin, amax, use_rho, sigma_amax, null9, null10, null11, null12, null13,null14
 //  then one to several parameter lines containing age-specific sigma for ages amin to sigma_amax
 //  note that parm_dev_minyr and parm_dev_maxyr need to map onto the matrix defined by  ymin, ymax, amin, amax,
   TwoD_AR_cnt=0;
+  echoinput<<" now read 0/1 for 2D_AR"<<endl;
   *(ad_comm::global_datafile) >> TwoD_AR_do;
-    echoinput<<TwoD_AR_do<<"  #_ 0/1 to request experimental 2D_AR selectivity smoother options  "<<endl;
+  echoinput<<TwoD_AR_do<<"  #_ 0/1 to request experimental 2D_AR selectivity smoother options  "<<endl;
   
   if(TwoD_AR_do>0)
   {
@@ -2754,7 +2754,9 @@
            *(ad_comm::global_datafile) >> dtempvec(1,7);
            timevary_parm_rd.push_back (dtempvec);
            echoinput<<" sigmasel for age: "<<j<<" "<<dtempvec(3)<<endl;
-           ParCount++; timevary_parm_cnt++; timevary_parm_cnt_sel++; N_selparm2++; ParmLabel+="_sigmasel_"+fleetname(f)+"("+NumLbl(f)+")_"+anystring+"("+NumLbl(j)+")";
+           if(timevary_parm_start_sel==0) {timevary_parm_start_sel=timevary_parm_cnt+1; timevary_parm_cnt_sel=timevary_parm_cnt;}
+           ParCount++; timevary_parm_cnt++; timevary_parm_cnt_sel++; N_selparm2++;
+           ParmLabel+="_sigmasel_"+fleetname(f)+"("+NumLbl(f)+")_"+anystring+"("+NumLbl(max(1,j))+")";
          }
          if(use_rho==1)
          {
@@ -2778,6 +2780,8 @@
         }
     } while(ender==0);
   }
+   echoinput<<"N_selparm: "<<N_selparm<<" with timevary: "<<N_selparm3<<" with TV and 2D_AR: "<<
+   N_selparm2<<" timevary parm range for sel: "<<timevary_parm_start_sel<<" "<<timevary_parm_cnt_sel<<" "<<timevary_parm_cnt<<endl;
 
    if(timevary_parm_cnt>0)
    {
@@ -2812,7 +2816,6 @@
    j=N_selparm;
    if(timevary_parm_start_sel>0)
    {
-     echoinput<<"N base selparms: "<<N_selparm<<"   N total selparms: "<<N_selparm2<<endl;
      for (f=timevary_parm_start_sel;f<=timevary_parm_cnt_sel;f++)
      {
       j++;
@@ -3855,7 +3858,6 @@
     }
   }
 
-  echoinput<<ParmLabel<<endl;
   echoinput<<"ParCount "<<ParCount<<"   Active parameters: "<<active_count<<endl<<"Turn_off_phase "<<Turn_off_phase<<endl<<" max_phase "<<max_phase<<endl;
   echoinput<<active_parm.indexmax()<<endl;
 
@@ -4286,6 +4288,7 @@
         }
       }
     }
+    echoinput<<"finished reading empirical wt-at-age.ss"<<endl;
   }
  END_CALCS
 

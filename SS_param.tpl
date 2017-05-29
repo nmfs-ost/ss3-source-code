@@ -9,7 +9,7 @@ PARAMETER_SECTION
 
     // set the filename to all ADMB output files to "ss.[ext]"
     ad_comm::adprogram_name = "ss";
-
+    echoinput<<"now in PARAMETER_SECTION "<<endl;
     if(readparfile>=1)
     {cout<<" read parm file"<<endl;
     ad_comm::change_pinfile_name("ss.par");}
@@ -312,6 +312,10 @@ PARAMETER_SECTION
   3darray SzFreqTrans(1,SzFreq_Nmeth*nseas,1,nlength2,1,SzFreq_Nbins_seas_g);
 
 !!//  SS_Label_Info_5.1.5 #Selectivity-related parameters
+!!  echoinput<<" now dimension the selectivity arrays "<<N_selparm2<<endl;
+!! echoinput<<selparm_LO<<endl;
+!! echoinput<<selparm_HI<<endl;
+!! echoinput<<selparm_PH<<endl;
   init_bounded_number_vector selparm(1,N_selparm2,selparm_LO,selparm_HI,selparm_PH)
 
 //  init_bounded_matrix selparm_dev(1,N_selparm_dev,selparm_dev_minyr,selparm_dev_maxyr,-10,10,selparm_dev_PH)
@@ -330,9 +334,13 @@ PARAMETER_SECTION
   4darray discmort2_a(styr-3,YrMax,1,Nfleet,1,gender,0,nages)
   4darray sel_a_r(styr-3,YrMax,1,Nfleet,1,gender,0,nages)
 
+!!  echoinput<<" OK after dimension the selectivity arrays "<<endl;
+!!  echoinput<<" check "<<TwoD_AR_cnt<<" "<<TwoD_AR_cor_dim<<endl;
+
   3darray cor(1,TwoD_AR_cnt,1,TwoD_AR_cor_dim,1,TwoD_AR_cor_dim)
   3darray inv_cor(1,TwoD_AR_cnt,1,TwoD_AR_cor_dim,1,TwoD_AR_cor_dim)
   vector det_cor(1,TwoD_AR_cnt);
+!!  echoinput<<" OK after dimension the 2dar arrays "<<endl;
 
 !!//  SS_Label_Info_5.1.6 #Create tag parameters and associated arrays
   matrix TG_alive(1,pop,1,gmorph)

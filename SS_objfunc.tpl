@@ -712,6 +712,8 @@ FUNCTION void evaluate_the_objective_function()
           {
             f=parm_dev_info(i);  //  pointer from list of devvectors to 2DAR list
             dvariable sigmasel=selparm(TwoD_AR_def[f](13));
+            parm_dev_stddev(i)=sigmasel;
+            parm_dev_rho(i)=0.0;
 //            echoinput<<" sigmasel "<<sigmasel<<endl;
             parm_dev_like(i,1)-=-0.5*log(det_cor(f));
             if(TwoD_AR_def[f](6)==TwoD_AR_def[f](4))  //  only one sigmasel by age
@@ -719,11 +721,13 @@ FUNCTION void evaluate_the_objective_function()
 //  nll -= - 0.5*log(det(cor)) - 0.5*nages*nyears*log(2.0*PI ) - 0.5*S_hat_vec*inv(cor)*S_hat_vec/pow(sigmaS,2) - 0.5*2*nages*nyears*log(sigmaS);
                if(TwoD_AR_def[f](7)==0)  // do not use rho
                {
-                 parm_dev_like(i,1)-=  - 0.5*TwoD_AR_degfree(f)*log(2.0*PI ) - 0.5*sumsq(parm_dev(i))/pow(sigmasel,2) - TwoD_AR_degfree(f)*log(sigmasel);
+                 parm_dev_like(i,1)-=  - 0.5*TwoD_AR_degfree(f)*log(2.0*PI ) - 0.5*sumsq(parm_dev(i))/pow(sigmasel,2);
+                 parm_dev_like(i,2)-=  - TwoD_AR_degfree(f)*log(sigmasel);
                }
                else
                {
-                 parm_dev_like(i,1)-=  - 0.5*TwoD_AR_degfree(f)*log(2.0*PI ) - 0.5*parm_dev(i)*inv_cor(f)*parm_dev(i)/pow(sigmasel,2) - TwoD_AR_degfree(f)*log(sigmasel);
+                 parm_dev_like(i,1)-=  - 0.5*TwoD_AR_degfree(f)*log(2.0*PI ) - 0.5*parm_dev(i)*inv_cor(f)*parm_dev(i)/pow(sigmasel,2);
+                 parm_dev_like(i,2)-=  - TwoD_AR_degfree(f)*log(sigmasel);
                }
             }
             else  //  some age-specific sigmasel

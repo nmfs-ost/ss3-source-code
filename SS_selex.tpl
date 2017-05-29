@@ -1153,11 +1153,13 @@ FUNCTION void get_selectivity()
               z=TwoD_AR_def[j](12);  //  dev vector used
               k=(y-TwoD_AR_ymin(j))*(TwoD_AR_amax(j)-TwoD_AR_amin(j)+1);
               a1=TwoD_AR_def[j](13)-1;  //  parameter number-1  for sigmasel
+              if(docheckup==1) echoinput<<y<<"  age selex before 2D_AR"<<sel_a(y,fs,gg)<<endl;
               for(a=TwoD_AR_amin(j);a<=TwoD_AR_def[j](6);a++)  //  age-varying sigmasel
               {
                 a1++;
                 dvariable sigmasel=selparm(a1);
                 k++; 
+                if(docheckup==1) warning<<y<<" "<<a<<" "<<z<<" sigmasel  "<<sigmasel<<" dev "<<parm_dev(z,k)<<endl;
                 sel_a(y,fs,gg,a)*=mfexp(sigmasel*parm_dev(z,k));
               }
               if(TwoD_AR_def[j](6)<TwoD_AR_amax(j))
@@ -1167,10 +1169,12 @@ FUNCTION void get_selectivity()
                 {
                   dvariable sigmasel=selparm(a1);
                   k++; 
+                if(docheckup==1) warning<<y<<" "<<a<<" "<<z<<" sigmasel  "<<sigmasel<<" dev "<<parm_dev(z,k)<<" bef "<<sel_a(y,fs,gg,a);
                   sel_a(y,fs,gg,a)*=mfexp(sigmasel*parm_dev(z,k));
+                  if(docheckup==1) warning<<" "<<sel_a(y,fs,gg,a)<<endl;
                 }
               }
-              if(docheckup==1) echoinput<<"age selex after 2D_AR"<<sel_a(y,fs,gg)<<endl;
+              if(docheckup==1) echoinput<<y<<" age selex after 2D_AR"<<sel_a(y,fs,gg)<<endl;
             }
           }
         }  //  end gender loop
