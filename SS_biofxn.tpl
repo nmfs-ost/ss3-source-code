@@ -978,11 +978,10 @@ FUNCTION void get_recr_distribution()
         }
       }
     }
-    echoinput<<"recrdist : "<<recr_dist<<endl;
   }
 //  SS_Label_Info_18.4  #scale the recr_dist matrix to sum to 1.0
   recr_dist/=sum(recr_dist);
-    if(do_once==1) echoinput<<"recruitment distribution in year: "<<y<<"  DIST: "<<recr_dist<<endl;
+    if(do_once==1) echoinput<<"recruitment distribution in year: "<<y<<"  DIST: "<<endl<<recr_dist<<endl;
   }
 
 //*******************************************************************

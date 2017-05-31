@@ -708,16 +708,15 @@ FUNCTION void get_selectivity()
           }
           if(docheckup==1&&y==styr)
           {
-            echoinput<<"retention parms "<<sp(k)<<" "<<sp(k+1)<<" "<<sp(k+3)<<" "<<temp1;
+            echoinput<<"retention parms start at #: "<<k<<" infl: "<<sp(k)<<" slope: "<<sp(k+1)<<" male_offset "<<sp(k+3)<<" asymptote: "<<temp1;
             if(seltype(f,2)==4)
             {
                 // additional dome-shaped retention parameters
                 echoinput<<" "<<sp(k+4)<<" "<<sp(k+5)<<" "<<sp(k+6);
             }
             echoinput<<endl<<"maleoff "<<male_offset<<endl;
+            echoinput<<"retention "<<retain(y,f)<<endl;
           }
-          if(docheckup==1&&y==styr) echoinput<<"lenbins "<<len_bins_m2<<endl;
-          if(docheckup==1&&y==styr) echoinput<<"retention "<<retain(y,f)<<endl;
 
           if(seltype(f,2)==1)  // all discards are dead
           {

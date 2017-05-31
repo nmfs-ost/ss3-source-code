@@ -1437,8 +1437,7 @@ FUNCTION void Get_Forecast()
             }  // end continuous F
 
 //  SS_Label_106  call to Get_expected_values
-            Get_expected_values();
-
+           Get_expected_values();
            if(show_MSY==1)
            {
             report5<<p<<" "<<y<<" "<<ABC_Loop<<" "<<s<<" "<<ABC_buffer(y)<<" "<<totbio<<" "<<smrybio<<" ";
@@ -1554,12 +1553,12 @@ FUNCTION void Get_Forecast()
                 }
               }
           }
-
           if(Hermaphro_Option!=0)  //hermaphroditism
           {
             if(Hermaphro_seas==-1 || Hermaphro_seas==s)
             {
               k=gmorph/2;
+              for(p=1;p<=pop;p++)
               for (g=1;g<=k;g++)  //  loop females
               if(use_morph(g)>0)
               {
@@ -1582,7 +1581,6 @@ FUNCTION void Get_Forecast()
               }
             }
           }
-
           if(do_migration>0)  // movement between areas in forecast
           {
             natage_temp=natage(t+1);
@@ -1596,7 +1594,6 @@ FUNCTION void Get_Forecast()
               if(k>0) natage(t+1,p2,g) += elem_prod(natage_temp(p,g),migrrate(bio_yr,k));
               }
           }
-
           if( (save_for_report>0) || ((sd_phase() || mceval_phase()) && (initial_params::mc_phase==0)) )
           {
 
@@ -1702,7 +1699,6 @@ FUNCTION void Get_Forecast()
               totcatch+=Fcast_Catch_Store(t,f);
             }
           }
-
           if(show_MSY==1)
           {
             if(s==nseas) {report5<<" "<<totcatch<<" ";} else {report5<<" NA ";}
@@ -1823,7 +1819,6 @@ FUNCTION void Get_Forecast()
           Smry_Table(y,20+gmorph+g)=(maxF(g));
         }
       }
-
     }  //  end year loop
     if(save_for_report==2) save_for_report=1;
   }  //  end Fcast_Loop1  for the different stages of the forecast

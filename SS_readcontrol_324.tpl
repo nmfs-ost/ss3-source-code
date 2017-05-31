@@ -37,6 +37,14 @@
   vector shadow(1,N_platoon)
   vector platoon_distr(1,N_platoon);
  LOCAL_CALCS
+  if(N_GP>1)
+  {
+    N_warn++;
+    warning<<"the converter cannot handle N growth patterns > 1;  revise input file before proceeding; SS will exit "<<endl;
+    warning<<"all parameter lines associated with the additonal GP's will need to be commented out before re-running"<<endl;
+    warning<<"also revise references to GP>1 in the recruitment distribution setup"<<endl;
+    exit(1);
+  }
   if(N_platoon>1)
   {
     *(ad_comm::global_datafile) >> sd_ratio;
@@ -479,12 +487,12 @@
   if(N_Block_Designs>0)
     {
       for(i=1;i<=N_Block_Designs;i++)  {*(ad_comm::global_datafile) >> Nblk(i);}
-      echoinput<<Nblk<<" N_Blocks_per design"<<endl;
     }
 
     // for the initial equil year
     N_Block_Designs=N_Block_Designs+1;
     Nblk(N_Block_Designs)=1;
+    echoinput<<Nblk<<" N_Blocks_per design"<<endl;
 
     Nblk2=Nblk + Nblk;
  END_CALCS
@@ -988,6 +996,7 @@
   matrix MGparm_2(1,N_MGparm,1,14)  //  re-ordered matrix in 3.30 parm order
 
  LOCAL_CALCS
+  echoinput<<"MGparm as read: "<<endl<<MGparm_rd<<endl<<endl;
 //  remove the bseas lines
   for(ParCount=1;ParCount<=recr_dist_parms-1;ParCount++)
   {MGparm_1(ParCount)=MGparm_rd(ParCount);}
@@ -1039,6 +1048,8 @@
   }
   ParCount=ParCount2;
 
+  echoinput<<"MGparm after bseas to settletime conversion: "<<endl<<MGparm_1<<endl<<endl;
+
   {
   //set base parm for cohort growth dev to permissable values
   MGparm_1(MGP_CGD,1)=1.;  //min
@@ -1079,9 +1090,7 @@
 
   MGparm_1=MGparm_2;
   }
- END_CALCS
 
- LOCAL_CALCS
   echoinput<<" Biology parameter setup"<<endl;
   for (i=1;i<=N_MGparm;i++)
   {
@@ -1574,7 +1583,7 @@
     if(temp<0) temp=0;
     MGparm_seas_1(f,5)=MGparm_seas_1(f,6);
     MGparm_seas_1(f,6)=temp;
-    MGparm_PRtype(j)=MGparm_seas_1(f,5);
+    MGparm_PRtype(j)=temp;
     MGparm_CV(j)=MGparm_seas_1(f,6);
     MGparm_PH(j)=MGparm_seas_1(f,7);
    }
@@ -2612,7 +2621,7 @@
 //  do 2*Nfleet to create options for size-selex (first), then age-selex
   init_imatrix seltype_rd(1,2*Nfleet,1,4)    // read selex type for each fleet/survey, Do_retention, Do_male
   imatrix seltype(1,2*Nfleet,1,4)
-  !! echoinput<<endl<<"*******************"<<endl<<" selex types "<<endl<<seltype<<endl;
+  !! echoinput<<endl<<"*******************"<<endl<<" selex types "<<endl<<seltype_rd<<endl;
   int N_selparm   // figure out the Total number of selex parameters
   int N_selparm2                 // N selparms plus env links and blocks
   int N_selparm3                 // need for 2D_AR
@@ -2702,11 +2711,11 @@
        {RetainParm(f)=0;}  //  no parameters needed
        else
        {
-//         RetainParm(f1)=N_selparmvec(f)+1;
+         RetainParm(f)=N_selparmvec(f)+1;
 //       N_selparmvec(f) +=4*seltype(f,2);          // N retention parms first 4 for retention; next 4 for mortality
        for (j=1;j<=N_ret_parm(seltype(f,2));j++)
        {
-         if(j==1) RetainParm(f)=ParCount-firstselparm+1;
+//        if(j==1) RetainParm(f)=ParCount-firstselparm+1;
          ParCount++; N_selparmvec(f)++; ParmLabel+="Retain_P"+NumLbl(j)+"_"+fleetname(f)+"("+NumLbl(f)+")";
        }
        // location of where to insert placeholder params
@@ -2822,12 +2831,13 @@
           N_warn++; cout<<" EXIT - see warning "<<endl; warning<<" ERROR:  cannot have both age and size retention functions "<<f<<"  but retention parms not setup "<<endl; exit(1);
         }
        if(seltype(f,2)==3)
-       {RetainParm(f1)=0;}  //  no parameters needed
+       {RetainParm(f)=0;}  //  no parameters needed
        else
        {
+         RetainParm(f)=N_selparmvec(f)+1;
          for (j=1;j<=N_ret_parm(seltype(f,2));j++)
          {
-           if(j==1) RetainParm(f)=ParCount-firstselparm+1;
+//           if(j==1) RetainParm(f)=ParCount-firstselparm+1;
            ParCount++; N_selparmvec(f)++; ParmLabel+="Retain_age_P"+NumLbl(j)+"_"+fleetname(f1)+"("+NumLbl(f1)+")";
          }
          if(seltype(f,2)==2 || seltype(f,2)==4)
