@@ -2189,7 +2189,7 @@
                                      // env-var
                                      // extra sd
                                      // Qtype(<0=mirror, 0=float_nobiasadj 1=float_biasadj, 2=parm_nobiasadj, 3=rand, 4=randwalk)
-  imatrix Q_setup_parms_324(1,Nfleet,1,4)
+  imatrix Q_setup_parms_324(1,Nfleet,1,4)  //  location in 3.24 parm list of first parm for each type
 
 //  arrays for 330 format
   imatrix Q_setup(1,Nfleet,1,5)
@@ -2237,7 +2237,7 @@
      	parm330_cnt++;  Q_setup(f,1)=3;  //  set  link function to be same as 3.24 power
     }
   }
-
+  echoinput<<" Q_Npar "<<Q_Npar<<endl;
   for (f=1;f<=Nfleet;f++)
   {
     if(Q_setup_324(f,2)!=0)  //  env link
@@ -2246,6 +2246,7 @@
       Q_setup(f,2)=1;
     }
   }
+  echoinput<<" Q_Npar "<<Q_Npar<<endl;
 
   for (f=1;f<=Nfleet;f++)
   {
@@ -2256,6 +2257,7 @@
    		Q_setup(f,3)=1;  // do extra sd
     }
   }
+  echoinput<<" Q_Npar "<<Q_Npar<<endl;
 
   for (f=1;f<=Nfleet;f++)
   {
@@ -2279,7 +2281,8 @@
   {
     if(Q_setup_324(f,4)>=2)
     {
-      Q_Npar++; Q_Npar2++; Q_setup_parms_324(f,4)=Q_Npar;
+//      Q_Npar++; Q_Npar2++; Q_setup_parms_324(f,4)=Q_Npar;
+      Q_Npar++; Q_Npar2++; Q_setup_parms_324(f,4)=Q_Npar2;
       if(Q_setup_324(f,4)==3)
       {
         ask_detail=1;
@@ -2288,7 +2291,6 @@
       }
       if(Q_setup_324(f,4)==4)
       {
-        echoinput<<"found randwalk in 3.24 "<<endl;
         ask_detail=1;
         Q_Npar2++;
         Q_Npar+=Svy_N_fleet(f)-1;
@@ -2340,7 +2342,6 @@
 // Now  convert to 3.30 format where parameters are in fleet order, not fleet within parameter type
   parm330_cnt=0;  //  restart the index
   firstQparm=ParCount;  //  base index before adding Q parms
-  echoinput<<" firstQparm: "<<firstQparm<<endl;
   Q_parm_1.initialize();
   echoinput<<endl<<"transfer Q setup from 324 to 330 and create base Q parms"<<endl;
   for (f=1;f<=Nfleet;f++)
@@ -2391,7 +2392,6 @@
   	     Q_parm_1(parm330_cnt,10)=Svy_styr(f); //  dev min year
   	     Q_parm_1(parm330_cnt,11)=Svy_endyr(f); //  dev maxyear
   	     Q_parm_1(parm330_cnt,12)=Q_parm_2(Q_setup_parms_324(f,4)+1)(6);//  dev se from 3.24, will get overwritten with the phase later
-  	     echoinput<<" add info for catchability devs for Qparmcount:"<<parm330_cnt<<endl;
   	  }
 
     if(Q_setup_324(f,1)>0)  //  do_power  provided for compatibility, but will be replaced by density-dependent link function
@@ -2445,7 +2445,6 @@
 //  4=block or trend type; 5=block pattern; 6= env link type; 7=env variable;
 //  8=dev vector used; 9=dev link type; 10=dev min year; 11=dev maxyear; 12=dev phase; 13=all parm index of baseparm
        if(timevary_parm_start_Q==0) timevary_parm_start_Q=timevary_parm_cnt+1;
-       echoinput<<endl<<" create timevary Q for fleet: "<<f<<endl;
        timevary_cnt++;  //  count parameters with time-vary effect
        Qparm_timevary(Q_setup_parms(f,1))=timevary_cnt;  //  base Q parameter will use this timevary specification
        timevary_setup(1)=3; //  indicates a Q parm
@@ -2519,7 +2518,6 @@
      echoinput<<"Q  uses timevary parms:  "<<Qparm_timevary<<endl;
      echoinput<<" Q  timevary_parm_cnt start and end "<<timevary_parm_start_Q<<" "<<timevary_parm_cnt_Q<<endl;
    }
-   echoinput<<"Q_Npar and Q_Npar2:  "<<Q_Npar<<" "<<Q_Npar2<<endl;
  END_CALCS
 
   vector Q_parm_LO(1,Q_Npar2)
@@ -2557,7 +2555,6 @@
     for (f=timevary_parm_start_Q;f<=timevary_parm_cnt_Q;f++)
      {
       j++;
-      echoinput<<f<<" "<<j<<" "<<timevary_parm_rd[f]<<endl;
       Q_parm_LO(j)=timevary_parm_rd[f](1);
       Q_parm_HI(j)=timevary_parm_rd[f](2);
       Q_parm_RD(j)=timevary_parm_rd[f](3);

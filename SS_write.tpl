@@ -1514,22 +1514,20 @@ FUNCTION void write_nudata()
     // changes authored by Gavin Fay in June 2016 in SS 3.24Y
     TG_recap_gen.initialize();
     int N_TG_recap_gen=0;
-
     for(TG=1;TG<=N_TG;TG++)
     {
       overdisp=TG_parm(2*N_TG+TG);
 
       dvector TG_fleet_probs(1,Nfleet);
       dvector temp_tags(1,Nfleet);
-
-      for (t=0;t<=TG_maxperiods;t++) {
+//  problem:  TG_recap_exp only dimensioned to TG_endtime
+      for (t=0;t<=min(TG_maxperiods,TG_endtime(TG));t++) {
         if (value(TG_recap_exp(TG,t,0))>0) {
           temp_negbin.initialize();
           temp_negbin.fill_randnegbinomial(value(TG_recap_exp(TG,t,0)), value(overdisp), radm);
           //cout << TG << " " << t << " " << temp_negbin <<  " " << TG_recap_exp(TG,t,0) << " " << value(overdisp) << endl;
           if (temp_negbin(1)>0) {
             TG_fleet_probs = value(TG_recap_exp(TG,t)(1,Nfleet))/temp_negbin(1);
-
             temp_tags = 0.0;
             temp_mult.fill_multinomial(radm,TG_fleet_probs);
             for (compindex=1; compindex<=temp_negbin(1); compindex++) // cumulate the multinomial draws by index in the new data
