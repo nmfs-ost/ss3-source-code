@@ -152,7 +152,7 @@
     *(ad_comm::global_datafile) >> pop;
     echoinput<<pop<<" N_areas "<<endl;
     *(ad_comm::global_datafile) >> Nfleet;
-    Nfleet1=Nfleet;
+    // Nfleet1=Nfleet;
     Nsurvey=0;
     nages2=gender*nages+gender-1;
     echoinput<<Nfleet<<" total number of fishing fleets and surveys "<<endl;
@@ -224,6 +224,7 @@
       }
     }
   */
+    Nfleet1 = N_catchfleets;
     N_retParm=0;
   }
  END_CALCS
@@ -2682,7 +2683,7 @@
 
  END_CALCS
 //  init_vector Fcast_Input_rd(1,k)
-  
+
  LOCAL_CALCS
   if(Do_Forecast>0)
   {
@@ -2695,7 +2696,7 @@
   if(Do_Forecast>0&&N_Fcast_Yrs<=0) {N_warn++; cout<<"Critical error in forecast input, see warning"<<endl; warning<<"ERROR: cannot do a forecast of zero years: "<<N_Fcast_Yrs<<endl; exit(1);}
   YrMax=endyr+N_Fcast_Yrs;
   TimeMax_Fcast_std = styr+(YrMax-styr)*nseas+nseas-1;
-  
+
   echoinput<<endl<<"# next read Fmult value to be used only if Forecast basis==5"<<endl;
 //  k++; Fcast_Flevel=Fcast_Input(k);
   *(ad_comm::global_datafile) >> Fcast_Flevel;
