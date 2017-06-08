@@ -153,6 +153,7 @@
     echoinput<<pop<<" N_areas "<<endl;
     *(ad_comm::global_datafile) >> Nfleet;
     // Nfleet1=Nfleet;
+    Nfleet1=0;
     Nsurvey=0;
     nages2=gender*nages+gender-1;
     echoinput<<Nfleet<<" total number of fishing fleets and surveys "<<endl;
@@ -165,8 +166,8 @@
   ivector need_catch_mult(1,Nfleet)  // 0=no, 1=need catch_multiplier parameter
   vector surveytime(1,Nfleet)   // fraction of season (not year) in which survey occurs
   ivector fleet_area(1,Nfleet)    // areas in which each fleet/survey operates
-  vector catchunits1(1,Nfleet1)  // 1=biomass; 2=numbers
-  vector catch_se_rd1(1,Nfleet1)  // units are se of log(catch); use -1 to ignore input catch values for discard only fleets
+  vector catchunits1(1,Nfleet)  // 1=biomass; 2=numbers
+  vector catch_se_rd1(1,Nfleet)  // units are se of log(catch); use -1 to ignore input catch values for discard only fleets
   vector catchunits(1,Nfleet)
   vector catch_se_rd(1,Nfleet)
   matrix catch_se(styr-nseas,TimeMax,1,Nfleet);
