@@ -1625,7 +1625,7 @@
     {
       N_warn++;warning<<"The R1_offset parameter is now the regime parameter and it must not be estimated and should have value of 0.0"<<endl<<
       "Instead, time-varying offsets to the regime parameter can be estimated; and a block for doing this has been created"<<endl<<
-      "you will need to manually create the parameter line for that block or turn autogen value to 0 for SR_parms";
+      "you will need to manually create the parameter line for that block or turn autogen value to 0 for SR_parms"<<endl;
       SR_parm_1(N_SRparm2-1,7)=-1;
       SR_parm_1(N_SRparm2-1,3)=0.0;
       SR_parm_1(N_SRparm2-1,13)=N_Block_Designs;

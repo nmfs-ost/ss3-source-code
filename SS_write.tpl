@@ -743,7 +743,7 @@ FUNCTION void write_nudata()
        report1<<"-9999 0 0"<<endl;
       }
 
-  report1<<SzFreq_Nmeth<<" # N sizefreq methods to read "<<endl;
+  report1<<"#"<<endl<<SzFreq_Nmeth<<" # N sizefreq methods to read "<<endl;
   if(SzFreq_Nmeth>0)
   {
     report1<<SzFreq_Nbins<<" #Sizefreq N bins per method"<<endl;
@@ -2140,7 +2140,7 @@ FUNCTION void write_nucontrol()
    }
    report4<<"#"<<endl;
    report4<<"#_size_selex_types"<<endl;
-   report4<<"#discard_options:_0=none;_1=define_retention;_2=retention&mortality;_3=all_discarded_dead"<<endl;
+   report4<<"#_discard_options:_0=none;_1=define_retention;_2=retention&mortality;_3=all_discarded_dead;_4=define_dome-shaped_retention"<<endl;
    report4<<"#_Pattern Discard Male Special"<<endl;
    for (f=1;f<=Nfleet;f++) report4<<seltype(f)<<" # "<<f<<" "<<fleetname(f)<<endl;
    report4<<"#"<<endl;
