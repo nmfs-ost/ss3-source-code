@@ -910,6 +910,7 @@
   ivector AccumBin_L(1,Nfleet)  //  collapse bins down to this bin number (0 for no collapse; positive value for number to accumulate)
   ivector Comp_Err_L(1,Nfleet)  //  composition error type
   ivector Comp_Err_L2(1,Nfleet)  //  composition error type parameter location
+  vector min_sample_size_L(1,Nfleet)  // minimum sample size
   int Comp_Err_ParmCount;  // counts number of fleets that need a parameter for the error estimation
  LOCAL_CALCS
   Comp_Err_ParmCount=0;
@@ -923,6 +924,8 @@
     echoinput<<"#_compressbins: accumulate upper tail by this number of bins; acts simultaneous with mintailcomp; set=0 for no forced accumulation"<<endl;
     echoinput<<"#_Comp_Error:  0=multinomial, 1=Dirichlet"<<endl;
     echoinput<<"#_Comp_ERR-2:  index of Dirichlet parameter to use"<<endl;
+    echoinput<<"#_minsamplesize: minimum sample size; set to 1 to match 3.24, set to 0 for no minimum"<<endl;
+
     for (f=1;f<=Nfleet;f++)
     {
     *(ad_comm::global_datafile) >> min_tail_L(f);
@@ -931,7 +934,14 @@
     *(ad_comm::global_datafile) >> AccumBin_L(f);
     *(ad_comm::global_datafile) >> Comp_Err_L(f);
     *(ad_comm::global_datafile) >> Comp_Err_L2(f);
-    echoinput<<min_tail_L(f)<<" "<<min_comp_L(f)<<" "<<CombGender_L(f)<<" "<<AccumBin_L(f)<<" "<<Comp_Err_L(f)<<" "<<Comp_Err_L2(f)<<"  #_fleet: "<<f<<" "<<fleetname(f)<<endl;
+    *(ad_comm::global_datafile) >> min_sample_size_L(f);
+    echoinput<<min_tail_L(f)<<" "<<min_comp_L(f)<<" "<<CombGender_L(f)<<" "<<AccumBin_L(f)<<" "<<Comp_Err_L(f)<<" "<<Comp_Err_L2(f)<<" "<<min_sample_size_L(f)<<"  #_fleet: "<<f<<" "<<fleetname(f)<<endl;
+
+      if (min_sample_size_L(f) < 0)
+      {
+        N_warn++; warning<<" minimum sample size for length comps must be >= 0; minimum sample size set to 0 "<<endl;
+        min_sample_size_L(f) = 0.0;
+      }
     }
     //  get count of needed dirichlet composition parameters
     //  the count for age data will be added after reading the age data setup
@@ -1464,6 +1474,7 @@
   ivector AccumBin_A(1,Nfleet)  //  collapse bins down to this bin number (0 for no collapse; positive value for N to accumulate)
   ivector Comp_Err_A(1,Nfleet)  //  composition error type
   ivector Comp_Err_A2(1,Nfleet)  //  composition error parameter location
+  vector min_sample_size_A(1,Nfleet)  // minimum sample size
   int Nobs_a_tot
   int nobsa_rd
   int Lbin_method  //#_Lbin_method: 1=poplenbins; 2=datalenbins; 3=lengths
@@ -1528,6 +1539,7 @@
     echoinput<<"#_compressbins: accumulate upper tail by this number of bins; acts simultaneous with mintailcomp; set=0 for no forced accumulation"<<endl;
     echoinput<<"#_Comp_Error:  0=multinomial, 1=dirichlet"<<endl;
     echoinput<<"#_Comp_ERR-2:  index of parameter to use"<<endl;
+    echoinput<<"#_minsamplesize: minimum sample size; set to 1 to match 3.24, set to 0 for no minimum"<<endl;
 
     for (f=1;f<=Nfleet;f++)
     {
@@ -1537,7 +1549,14 @@
       *(ad_comm::global_datafile) >> AccumBin_A(f);
       *(ad_comm::global_datafile) >> Comp_Err_A(f);
       *(ad_comm::global_datafile) >> Comp_Err_A2(f);
-      echoinput<<min_tail_A(f)<<" "<<min_comp_A(f)<<" "<<CombGender_A(f)<<" "<<AccumBin_A(f)<<" "<<Comp_Err_A(f)<<" "<<Comp_Err_A2(f)<<"  #_fleet: "<<f<<" "<<fleetname(f)<<endl;
+      *(ad_comm::global_datafile) >> min_sample_size_A(f);
+      echoinput<<min_tail_A(f)<<" "<<min_comp_A(f)<<" "<<CombGender_A(f)<<" "<<AccumBin_A(f)<<" "<<Comp_Err_A(f)<<" "<<Comp_Err_A2(f)<<" "<<min_sample_size_A(f)<<"  #_fleet: "<<f<<" "<<fleetname(f)<<endl;
+
+      if (min_sample_size_A(f) < 0)
+      {
+        N_warn++; warning<<" minimum sample size for age comps must be >= 0; minimum sample size set to 0 "<<endl;
+        min_sample_size_A(f) = 0.0;
+      }
     }
       //  get count of needed dirichlet composition parameters
     j=max(Comp_Err_A2);

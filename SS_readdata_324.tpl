@@ -979,6 +979,7 @@
   ivector AccumBin_L(1,Nfleet)  //  collapse bins down to this bin number (0 for no collapse; positive value for number to accumulate)
   ivector Comp_Err_L(1,Nfleet)  //  composition error type
   ivector Comp_Err_L2(1,Nfleet)  //  composition error type parameter location
+  vector min_sample_size_L(1,Nfleet) // minimum sample size
   int Comp_Err_ParmCount;  // counts number of fleets that need a parameter for the error estimation
  LOCAL_CALCS
   Comp_Err_ParmCount=0;
@@ -997,6 +998,7 @@
       AccumBin_L(f) = 0;
       Comp_Err_L(f)=0;  //  for multinomial
       Comp_Err_L2(f)=0;  // no parameter needed
+      min_sample_size_L(f) = 1.0;
     }
   *(ad_comm::global_datafile) >> nlen_bin;
   echoinput<<nlen_bin<<" nlen_bin_for_data "<<endl;
@@ -1558,6 +1560,7 @@
   ivector AccumBin_A(1,Nfleet)  //  collapse bins down to this bin number (0 for no collapse; positive value for N to accumulate)
   ivector Comp_Err_A(1,Nfleet)  //  composition error type
   ivector Comp_Err_A2(1,Nfleet)  //  composition error parameter location
+  vector min_sample_size_A(1,Nfleet)  // minimum sample size
   int Nobs_a_tot
   int nobsa_rd
   int Lbin_method  //#_Lbin_method: 1=poplenbins; 2=datalenbins; 3=lengths
@@ -1579,6 +1582,7 @@
       AccumBin_A(f) = 0;
       Comp_Err_A(f)=0;  //  for multinomial
       Comp_Err_A2(f)=0;  //  no parameter needed
+      min_sample_size_A(f) = 1.0;
     }
 
   if(nobsa_rd>0 && N_ageerr==0)

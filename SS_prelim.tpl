@@ -100,6 +100,7 @@ PRELIMINARY_CALCS_SECTION
   {
     nsamp_l(f,i)*=var_adjust(4,f);
     // {if(nsamp_l(f,i)<=1.0) nsamp_l(f,i)=1.;}                              //  adjust sample size
+    nsamp_l(f,i) = max(min_sample_size_L(f),nsamp_l(f,i));
     if(gen_l(f,i) !=2) offset_l(f,i) -= nsamp_l(f,i) *
     obs_l(f,i)(tails_l(f,i,1),tails_l(f,i,2))*log(obs_l(f,i)(tails_l(f,i,1),tails_l(f,i,2)));
     if(gen_l(f,i) >=2 && gender==2) offset_l(f,i) -= nsamp_l(f,i) *
@@ -253,6 +254,7 @@ PRELIMINARY_CALCS_SECTION
   {
     nsamp_a(f,i)*=var_adjust(5,f);
     // {if(nsamp_a(f,i)<=1.0) nsamp_a(f,i)=1.;}                                //  adjust sample size
+    nsamp_a(f,i) = max(min_sample_size_A(f),nsamp_a(f,i));
   if(gen_a(f,i) !=2) offset_a(f,i) -= nsamp_a(f,i) *
     obs_a(f,i)(tails_a(f,i,1),tails_a(f,i,2))*log(obs_a(f,i)(tails_a(f,i,1),tails_a(f,i,2)));
   if(gen_a(f,i) >=2 && gender==2) offset_a(f,i) -= nsamp_a(f,i) *
