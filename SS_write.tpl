@@ -3831,16 +3831,16 @@ FUNCTION void write_bigoutput()
 //It might also be good to add a keyword to the top of those lower tables which could simplify the logic of parsing them separately from the FIT_..._COMPS tables above them and therefore be more robust to changes in format.
 
    SS2out<<endl<<"Length_Comp_Fit_Summary"<<endl<<
-   "Fleet N Npos mean_inputN*Adj mean_effN HarMean Curr_Var_Adj Recommend_Var_Adj FleetName"<<endl;
+   "Fleet N Npos min_inputN mean_inputN*Adj mean_effN HarMean Curr_Var_Adj Recommend_Var_Adj FleetName"<<endl;
    for (f=1;f<=Nfleet;f++)
    {
     if(n_rmse(f)>0) {rmse(f)/=n_rmse(f); mean_CV(f)/=n_rmse(f); Hrmse(f)=n_rmse(f)/Hrmse(f);}
     SS2out<<f;
     if(Nobs_l(f)>0)
-    {SS2out<<" "<<Nobs_l(f)<<" "<<n_rmse(f)<<" "<<mean_CV(f)<<" "<<rmse(f)<<" "<<Hrmse(f)
+    {SS2out<<" "<<Nobs_l(f)<<" "<<n_rmse(f)<<" " <<min_sample_size_L(f)<<" "<<mean_CV(f)<<" "<<rmse(f)<<" "<<Hrmse(f)
     <<" "<<var_adjust(4,f)<<" "<<Hrmse(f)/mean_CV(f)*var_adjust(4,f)<<" "<<fleetname(f)<<endl;}
     else
-    {SS2out<<" _ _ _ _ _ _ _ _ "<<endl;}
+    {SS2out<<" _ _ _ _ _ _ _ _ _ "<<endl;}
    }
 
   SS2out <<endl<< "FIT_AGE_COMPS" << endl;
@@ -3884,16 +3884,16 @@ FUNCTION void write_bigoutput()
       {SS2out<<" _ "<<endl;}
       }
    SS2out<<endl<<"Age_Comp_Fit_Summary"<<endl;
-   SS2out<<endl<<"Fleet N Npos mean_effN mean(inputN*Adj) HarMean(effN) Mean(effN/inputN) MeaneffN/MeaninputN Var_Adj"<<endl;
+   SS2out<<endl<<"Fleet N Npos min_inputN mean_effN mean(inputN*Adj) HarMean(effN) Mean(effN/inputN) MeaneffN/MeaninputN Var_Adj"<<endl;
    for(f=1;f<=Nfleet;f++)
    {
     if(n_rmse(f)>0) {rmse(f)/=n_rmse(f); mean_CV(f)/=n_rmse(f); Hrmse(f)=n_rmse(f)/Hrmse(f); Rrmse(f)/=n_rmse(f); }
     SS2out<<f;
     if(Nobs_a(f)>0)
-    {SS2out<<" "<<Nobs_a(f)<<" "<<n_rmse(f)<<" "<<rmse(f)<<" "<<mean_CV(f)<<" "<<Hrmse(f)<<" "<<Rrmse(f)<<" "<<rmse(f)/mean_CV(f)
+    {SS2out<<" "<<Nobs_a(f)<<" "<<n_rmse(f)<<" "<<min_sample_size_A(f)<<" "<<rmse(f)<<" "<<mean_CV(f)<<" "<<Hrmse(f)<<" "<<Rrmse(f)<<" "<<rmse(f)/mean_CV(f)
     <<" "<<var_adjust(5,f)<<" "<<fleetname(f)<<endl;}
     else
-    {SS2out<<" _ _ _ _ _ _ _ _ "<<endl;}
+    {SS2out<<" _ _ _ _ _ _ _ _ _ "<<endl;}
    }
 
   SS2out <<endl<< "FIT_SIZE_COMPS" << endl;                     // SS_Label_350
