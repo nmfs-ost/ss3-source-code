@@ -934,13 +934,14 @@
     *(ad_comm::global_datafile) >> AccumBin_L(f);
     *(ad_comm::global_datafile) >> Comp_Err_L(f);
     *(ad_comm::global_datafile) >> Comp_Err_L2(f);
-    *(ad_comm::global_datafile) >> min_sample_size_L(f);
+//    *(ad_comm::global_datafile) >> min_sample_size_L(f);
+    min_sample_size_L(f)=1.;
     echoinput<<min_tail_L(f)<<" "<<min_comp_L(f)<<" "<<CombGender_L(f)<<" "<<AccumBin_L(f)<<" "<<Comp_Err_L(f)<<" "<<Comp_Err_L2(f)<<" "<<min_sample_size_L(f)<<"  #_fleet: "<<f<<" "<<fleetname(f)<<endl;
 
       if (min_sample_size_L(f) < 0)
       {
-        N_warn++; warning<<" minimum sample size for length comps must be >= 0; minimum sample size set to 0 "<<endl;
-        min_sample_size_L(f) = 0.0;
+        N_warn++; warning<<" minimum sample size for length comps must be > 0; minimum sample size set to 0.001 "<<endl;
+        min_sample_size_L(f) = 0.001;
       }
     }
     //  get count of needed dirichlet composition parameters
@@ -1549,13 +1550,14 @@
       *(ad_comm::global_datafile) >> AccumBin_A(f);
       *(ad_comm::global_datafile) >> Comp_Err_A(f);
       *(ad_comm::global_datafile) >> Comp_Err_A2(f);
-      *(ad_comm::global_datafile) >> min_sample_size_A(f);
+//      *(ad_comm::global_datafile) >> min_sample_size_A(f);
+      min_sample_size_A(f)=1.;
       echoinput<<min_tail_A(f)<<" "<<min_comp_A(f)<<" "<<CombGender_A(f)<<" "<<AccumBin_A(f)<<" "<<Comp_Err_A(f)<<" "<<Comp_Err_A2(f)<<" "<<min_sample_size_A(f)<<"  #_fleet: "<<f<<" "<<fleetname(f)<<endl;
 
       if (min_sample_size_A(f) < 0)
       {
-        N_warn++; warning<<" minimum sample size for age comps must be >= 0; minimum sample size set to 0 "<<endl;
-        min_sample_size_A(f) = 0.0;
+        N_warn++; warning<<" minimum sample size for age comps must be > 0; minimum sample size set to 0.001 "<<endl;
+        min_sample_size_A(f) = 0.001;
       }
     }
       //  get count of needed dirichlet composition parameters
