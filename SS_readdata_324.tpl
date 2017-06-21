@@ -2815,9 +2815,14 @@
   int Fcast_Do_Area_Cap;
   int Fcast_Cap_FirstYear;
 
+  int Fcast_Specify_Selex   // 0=do not use; 1=specify one selectivity for all fishing fleets for forecasts (not implemented); 2=specify selectivity per fishing fleet for forecasts (not implemented)
+
 //  matrix Fcast_RelF(1,nseas,1,Nfleet)
 
  LOCAL_CALCS
+
+  Fcast_Specify_Selex = 0;  // default for 3.24 files
+
   if(Do_Forecast==0)
   {
     k=0;

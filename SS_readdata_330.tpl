@@ -934,11 +934,10 @@
     *(ad_comm::global_datafile) >> AccumBin_L(f);
     *(ad_comm::global_datafile) >> Comp_Err_L(f);
     *(ad_comm::global_datafile) >> Comp_Err_L2(f);
-//    *(ad_comm::global_datafile) >> min_sample_size_L(f);
-    min_sample_size_L(f)=1.;
+    *(ad_comm::global_datafile) >> min_sample_size_L(f);
     echoinput<<min_tail_L(f)<<" "<<min_comp_L(f)<<" "<<CombGender_L(f)<<" "<<AccumBin_L(f)<<" "<<Comp_Err_L(f)<<" "<<Comp_Err_L2(f)<<" "<<min_sample_size_L(f)<<"  #_fleet: "<<f<<" "<<fleetname(f)<<endl;
 
-      if (min_sample_size_L(f) < 0)
+      if (min_sample_size_L(f) < 0.001)
       {
         N_warn++; warning<<" minimum sample size for length comps must be > 0; minimum sample size set to 0.001 "<<endl;
         min_sample_size_L(f) = 0.001;
@@ -1550,11 +1549,10 @@
       *(ad_comm::global_datafile) >> AccumBin_A(f);
       *(ad_comm::global_datafile) >> Comp_Err_A(f);
       *(ad_comm::global_datafile) >> Comp_Err_A2(f);
-//      *(ad_comm::global_datafile) >> min_sample_size_A(f);
-      min_sample_size_A(f)=1.;
+      *(ad_comm::global_datafile) >> min_sample_size_A(f);
       echoinput<<min_tail_A(f)<<" "<<min_comp_A(f)<<" "<<CombGender_A(f)<<" "<<AccumBin_A(f)<<" "<<Comp_Err_A(f)<<" "<<Comp_Err_A2(f)<<" "<<min_sample_size_A(f)<<"  #_fleet: "<<f<<" "<<fleetname(f)<<endl;
 
-      if (min_sample_size_A(f) < 0)
+      if (min_sample_size_A(f) < 0.001)
       {
         N_warn++; warning<<" minimum sample size for age comps must be > 0; minimum sample size set to 0.001 "<<endl;
         min_sample_size_A(f) = 0.001;
@@ -2695,6 +2693,7 @@
   vector Fcast_MaxAreaCatch(1,pop)
   ivector Allocation_Fleet_Assignments(1,Nfleet)
   matrix Fcast_RelF_Input(1,nseas,1,Nfleet1)
+  int Fcast_Specify_Selex   // 0=do not use; 1=specify one selectivity for all fishing fleets for forecasts (not implemented); 2=specify selectivity per fishing fleet for forecasts (not implemented)
 
  LOCAL_CALCS
   Fcast_MaxFleetCatch.initialize();
@@ -2707,6 +2706,8 @@
 //  init_vector Fcast_Input_rd(1,k)
 
  LOCAL_CALCS
+  Fcast_Specify_Selex = 0;  // default
+
   if(Do_Forecast>0)
   {
 //    Fcast_Input(1,k)=Fcast_Input_rd(1,k);
@@ -2752,6 +2753,11 @@
   Fcast_Rec_yr1=Fcast_yr(5);
   Fcast_Rec_yr2=Fcast_yr(6);
   echoinput<<Fcast_yr<<"  # After Transformation"<<endl;
+
+  echoinput<<endl<<"# next read flag for specifying selectivity used in forecasts (not implemented yet)"<<endl;
+  *(ad_comm::global_datafile) >> Fcast_Specify_Selex;
+  echoinput<<Fcast_Specify_Selex<<" # echoed value"<<endl;
+  if (Fcast_Specify_Selex != 0) Fcast_Specify_Selex = 0;    // not implemented yet
 
   echoinput<<endl<<"next read 4 values for:  control rule shape(1 or 2), inflection (like 0.40), cutoff(like 0.10), scale(like 0.75)"<<endl;
   *(ad_comm::global_datafile) >> HarvestPolicy;

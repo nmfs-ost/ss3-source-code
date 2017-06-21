@@ -1662,6 +1662,8 @@ FUNCTION void write_nucontrol()
   NuFore<<N_Fcast_Yrs<<" # N forecast years "<<endl;
   NuFore<<Fcast_Flevel<<" # F scalar (only used for Do_Forecast==5)"<<endl;
   NuFore<<"#_Fcast_years:  beg_selex, end_selex, beg_relF, end_relF, beg_recruits, end_recruits  (enter actual year, or values of 0 or -integer to be rel. endyr)"<<endl<<Fcast_yr_rd<<endl;
+  NuFore<<Fcast_Specify_Selex<<" # Forecast selectivity (0=do not use; 1=specify one selectivity for all fishing fleets (not implemented); 2=specify selectivity per fishing fleet (not implemented))"<<endl;
+
   NuFore<<HarvestPolicy<<" # Control rule method (1=catch=f(SSB) west coast; 2=F=f(SSB) ) "<<endl;
   NuFore<<H4010_top<<" # Control rule Biomass level for constant F (as frac of Bzero, e.g. 0.40); (Must be > the no F level below) "<<endl;
   NuFore<<H4010_bot<<" # Control rule Biomass level for no F (as frac of Bzero, e.g. 0.10) "<<endl;
