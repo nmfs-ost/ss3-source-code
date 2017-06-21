@@ -1958,6 +1958,8 @@
   ivector N_suprper_ms(1,Nfleet)      // N super_yrs per obs
 
  LOCAL_CALCS
+   Nobs_ms.initialize();
+   N_suprper_ms.initialize();
   if(use_meansizedata>0)
   {
     k=7+2*n_abins2;
@@ -2003,6 +2005,7 @@
   else
   {
     Nobs_ms=0;
+    N_suprper_ms=0;
     nobs_ms_tot=0;
   }
  END_CALCS
@@ -2025,7 +2028,6 @@
    Nobs_ms=0;
    suprper_ms1.initialize();
    suprper_ms2.initialize();
-   N_suprper_ms.initialize();
    if(nobs_ms_tot>0)
    {
      in_superperiod=0;
