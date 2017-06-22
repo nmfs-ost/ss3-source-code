@@ -513,7 +513,7 @@ FUNCTION void write_nudata()
   report1<<"#_fleet_area:  area the fleet/survey operates in "<<endl;
   report1<<"#_units of catch:  1=bio; 2=num (ignored for surveys; their units read later)"<<endl;
   report1<<"#_catch_mult: 0=no; 1=yes"<<endl;
-  report1<<"#_rows are fleets"<<endl<<"#_fleet_type, timing, area, units, need_catch_mult fleetname"<<endl;
+  report1<<"#_rows are fleets"<<endl<<"#_fleet_type timing area units need_catch_mult fleetname"<<endl;
   for (f=1;f<=Nfleet;f++)
   {report1<<fleet_setup(f)<<" "<<fleetname(f)<<"  # "<<f<<endl;}
   if(N_bycatch>0)
@@ -641,10 +641,10 @@ FUNCTION void write_nudata()
   report1<<"#_compressbins: accumulate upper tail by this number of bins; acts simultaneous with mintailcomp; set=0 for no forced accumulation"<<endl;
   report1<<"#_Comp_Error:  0=multinomial, 1=dirichlet"<<endl;
   report1<<"#_Comp_Error2:  parm number  for dirichlet"<<endl;
-  report1<<"#_minsamplesize: minimum sample size; set to 1 to match 3.24, set to 0 for no minimum"<<endl;
+  report1<<"#_minsamplesize: minimum sample size; set to 1 to match 3.24, minimum value is 0.001"<<endl;
   report1<<"#_mintailcomp addtocomp combM+F CompressBins CompError ParmSelect minsamplesize"<<endl;
   for (f=1;f<=Nfleet;f++)
-  {report1<<min_tail_L(f)<<" "<<min_comp_L(f)<<" "<<CombGender_L(f)<<" "<<AccumBin_L(f)<<" "<<Comp_Err_L(f)<<" "<<Comp_Err_L2(f)<<" # "<<min_sample_size_L(f)<<" #_fleet:"<<f<<"_"<<fleetname(f)<<endl;}
+  {report1<<min_tail_L(f)<<" "<<min_comp_L(f)<<" "<<CombGender_L(f)<<" "<<AccumBin_L(f)<<" "<<Comp_Err_L(f)<<" "<<Comp_Err_L2(f)<<" "<<min_sample_size_L(f)<<" #_fleet:"<<f<<"_"<<fleetname(f)<<endl;}
 
   report1<<"# sex codes:  0=combined; 1=use female only; 2=use male only; 3=use both as joint sexxlength distribution"<<endl;
   report1<<"# partition codes:  (0=combined; 1=discard; 2=retained"<<endl;
@@ -683,12 +683,12 @@ FUNCTION void write_nudata()
   report1<<"#_compressbins: accumulate upper tail by this number of bins; acts simultaneous with mintailcomp; set=0 for no forced accumulation"<<endl;
   report1<<"#_Comp_Error:  0=multinomial, 1=dirichlet"<<endl;
   report1<<"#_Comp_Error2:  parm number  for dirichlet"<<endl;
-  report1<<"#_minsamplesize: minimum sample size; set to 1 to match 3.24, set to 0 for no minimum"<<endl;
+  report1<<"#_minsamplesize: minimum sample size; set to 1 to match 3.24, minimum value is 0.001"<<endl;
   report1<<"#_mintailcomp addtocomp combM+F CompressBins CompError ParmSelect minsamplesize"<<endl;
   for (f=1;f<=Nfleet;f++)
   {
     if (n_abins <= 0) report1<<"# ";
-    report1<<min_tail_A(f)<<" "<<min_comp_A(f)<<" "<<CombGender_A(f)<<" "<<AccumBin_A(f)<<" "<<Comp_Err_A(f)<<" "<<Comp_Err_A2(f)<<" # "<<min_sample_size_A(f)<<" #_fleet:"<<f<<"_"<<fleetname(f)<<endl;
+    report1<<min_tail_A(f)<<" "<<min_comp_A(f)<<" "<<CombGender_A(f)<<" "<<AccumBin_A(f)<<" "<<Comp_Err_A(f)<<" "<<Comp_Err_A2(f)<<" "<<min_sample_size_A(f)<<" #_fleet:"<<f<<"_"<<fleetname(f)<<endl;
   }
 
   if (n_abins <= 0) report1<<"# ";
@@ -948,9 +948,10 @@ FUNCTION void write_nudata()
   report1<<"#_compressbins: accumulate upper tail by this number of bins; acts simultaneous with mintailcomp; set=0 for no forced accumulation"<<endl;
   report1<<"#_Comp_Error:  0=multinomial, 1=dirichlet"<<endl;
   report1<<"#_Comp_Error2:  parm number  for dirichlet"<<endl;
+  report1<<"#_minsamplesize: minimum sample size; set to 1 to match 3.24, minimum value is 0.001"<<endl;
   report1<<"#_mintailcomp addtocomp combM+F CompressBins CompError ParmSelect minsamplesize"<<endl;
   for (f=1;f<=Nfleet;f++)
-  {report1<<min_tail_L(f)<<" "<<min_comp_L(f)<<" "<<CombGender_L(f)<<" "<<AccumBin_L(f)<<" "<<Comp_Err_L(f)<<" "<<Comp_Err_L2(f)<<" # "<<min_sample_size_L(f)<<" #_fleet:"<<f<<"_"<<fleetname(f)<<endl;}
+  {report1<<min_tail_L(f)<<" "<<min_comp_L(f)<<" "<<CombGender_L(f)<<" "<<AccumBin_L(f)<<" "<<Comp_Err_L(f)<<" "<<Comp_Err_L2(f)<<" "<<min_sample_size_L(f)<<" #_fleet:"<<f<<"_"<<fleetname(f)<<endl;}
   report1<<"# sex codes:  0=combined; 1=use female only; 2=use male only; 3=use both as joint sexxlength distribution"<<endl;
   report1<<"# partition codes:  (0=combined; 1=discard; 2=retained"<<endl;
   report1<<nlen_bin<<" #_N_LengthBins"<<endl<<len_bins_dat<<endl;
@@ -991,10 +992,10 @@ FUNCTION void write_nudata()
   report1<<"#_compressbins: accumulate upper tail by this number of bins; acts simultaneous with mintailcomp; set=0 for no forced accumulation"<<endl;
   report1<<"#_Comp_Error:  0=multinomial, 1=dirichlet"<<endl;
   report1<<"#_Comp_Error2:  parm number  for dirichlet"<<endl;
-  report1<<"#_minsamplesize: minimum sample size; set to 1 to match 3.24, set to 0 for no minimum"<<endl;
+  report1<<"#_minsamplesize: minimum sample size; set to 1 to match 3.24, minimum value is 0.001"<<endl;
   report1<<"#_mintailcomp addtocomp combM+F CompressBins CompError ParmSelect minsamplesize"<<endl;
   for (f=1;f<=Nfleet;f++)
-  {report1<<min_tail_A(f)<<" "<<min_comp_A(f)<<" "<<CombGender_A(f)<<" "<<AccumBin_A(f)<<" "<<Comp_Err_A(f)<<" "<<Comp_Err_A2(f)<<" # "<<min_sample_size_A(f)<<" #_fleet:"<<f<<"_"<<fleetname(f)<<endl;}
+  {report1<<min_tail_A(f)<<" "<<min_comp_A(f)<<" "<<CombGender_A(f)<<" "<<AccumBin_A(f)<<" "<<Comp_Err_A(f)<<" "<<Comp_Err_A2(f)<<" "<<min_sample_size_A(f)<<" #_fleet:"<<f<<"_"<<fleetname(f)<<endl;}
   report1<<Lbin_method<<" #_Lbin_method_for_Age_Data: 1=poplenbins; 2=datalenbins; 3=lengths"<<endl;
   report1<<"# sex codes:  0=combined; 1=use female only; 2=use male only; 3=use both as joint sexxlength distribution"<<endl;
   report1<<"# partition codes:  (0=combined; 1=discard; 2=retained"<<endl;
@@ -1318,10 +1319,10 @@ FUNCTION void write_nudata()
   report1<<"#_compressbins: accumulate upper tail by this number of bins; acts simultaneous with mintailcomp; set=0 for no forced accumulation"<<endl;
   report1<<"#_Comp_Error:  0=multinomial, 1=dirichlet"<<endl;
   report1<<"#_Comp_Error2:  parm number  for dirichlet"<<endl;
-  report1<<"#_minsamplesize: minimum sample size; set to 1 to match 3.24, set to 0 for no minimum"<<endl;
+  report1<<"#_minsamplesize: minimum sample size; set to 1 to match 3.24, minimum value is 0.001"<<endl;
   report1<<"#_mintailcomp addtocomp combM+F CompressBins CompError ParmSelect minsamplesize"<<endl;
   for (f=1;f<=Nfleet;f++)
-  {report1<<min_tail_L(f)<<" "<<min_comp_L(f)<<" "<<CombGender_L(f)<<" "<<AccumBin_L(f)<<" "<<Comp_Err_L(f)<<" "<<Comp_Err_L2(f)<<" # "<<min_sample_size_L(f)<<" #_fleet:"<<f<<"_"<<fleetname(f)<<endl;}
+  {report1<<min_tail_L(f)<<" "<<min_comp_L(f)<<" "<<CombGender_L(f)<<" "<<AccumBin_L(f)<<" "<<Comp_Err_L(f)<<" "<<Comp_Err_L2(f)<<" "<<min_sample_size_L(f)<<" #_fleet:"<<f<<"_"<<fleetname(f)<<endl;}
   report1<<nlen_bin<<" #_N_LengthBins"<<endl<<len_bins_dat<<endl;
 //  report1<<sum(Nobs_l)<<" #_N_Length_obs"<<endl;
   report1<<"# sex codes:  0=combined; 1=use female only; 2=use male only; 3=use both as joint sexxlength distribution"<<endl;
@@ -1382,7 +1383,7 @@ FUNCTION void write_nudata()
   report1<<"#_minsamplesize: minimum sample size; set to 1 to match 3.24, set to 0 for no minimum"<<endl;
   report1<<"#_mintailcomp addtocomp combM+F CompressBins CompError ParmSelect minsamplesize"<<endl;
   for (f=1;f<=Nfleet;f++)
-  {report1<<min_tail_A(f)<<" "<<min_comp_A(f)<<" "<<CombGender_A(f)<<" "<<AccumBin_A(f)<<" "<<Comp_Err_A(f)<<" "<<Comp_Err_A2(f)<<" # "<<min_sample_size_A(f)<<" #_fleet:"<<f<<"_"<<fleetname(f)<<endl;}
+  {report1<<min_tail_A(f)<<" "<<min_comp_A(f)<<" "<<CombGender_A(f)<<" "<<AccumBin_A(f)<<" "<<Comp_Err_A(f)<<" "<<Comp_Err_A2(f)<<" "<<min_sample_size_A(f)<<" #_fleet:"<<f<<"_"<<fleetname(f)<<endl;}
   report1<<Lbin_method<<" #_Lbin_method_for_Age_Data: 1=poplenbins; 2=datalenbins; 3=lengths"<<endl;
   report1<<"# sex codes:  0=combined; 1=use female only; 2=use male only; 3=use both as joint sexxlength distribution"<<endl;
   report1<<"# partition codes:  (0=combined; 1=discard; 2=retained"<<endl;
