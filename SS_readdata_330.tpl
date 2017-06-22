@@ -2200,6 +2200,7 @@
   int SzFreq_N_Like
 
  LOCAL_CALCS
+  SzFreq_totobs = 0;
   //  SS_Label_Info_2.11.1 #Size comp bins according to scaling method
   if(SzFreq_Nmeth>0)
   {
@@ -2279,11 +2280,11 @@
   number N_suprper_SzFreq   //  no real need to keep track of these by method, so just use a number
  LOCAL_CALCS
   SzFreq_N_Like=0;
+  N_suprper_SzFreq=0;
   if(SzFreq_Nmeth>0)
   {
     SzFreq_LikeComponent.initialize();
     SzFreq_obs.initialize();
-    N_suprper_SzFreq=0;
     iobs=0;
     for (k=1;k<=SzFreq_Nmeth;k++)
     {
@@ -2546,6 +2547,7 @@
   else
   {
     Morphcomp_nobs=0;
+    Morphcomp_nmorph=0;
   }
  END_CALCS
  init_matrix Morphcomp_obs(1,Morphcomp_nobs,1,5+Morphcomp_nmorph)
