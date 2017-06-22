@@ -2028,6 +2028,7 @@
    Nobs_ms=0;
    suprper_ms1.initialize();
    suprper_ms2.initialize();
+   N_suprper_ms.initialize();
    if(nobs_ms_tot>0)
    {
      in_superperiod=0;
