@@ -2761,7 +2761,7 @@
 
   echoinput<<endl<<"# next read flag for specifying selectivity used in forecasts (not implemented yet)"<<endl;
   *(ad_comm::global_datafile) >> Fcast_Specify_Selex;
-  echoinput<<Fcast_Specify_Selex<<" # echoed value"<<endl;
+  echoinput<<Fcast_Specify_Selex<<" # echoed Fcast_Specify_Selex value"<<endl;
   if (Fcast_Specify_Selex != 0) Fcast_Specify_Selex = 0;    // not implemented yet
 
   echoinput<<endl<<"next read 4 values for:  control rule shape(1 or 2), inflection (like 0.40), cutoff(like 0.10), scale(like 0.75)"<<endl;
@@ -2954,6 +2954,17 @@
         echoinput<<" allocation assignment: "<<tempvec(1,k)<<endl;
       } while (ender==0);
       j=Fcast_Catch_Allocation_list.size()-1;
+
+      if (j == 0)
+      {
+        N_warn++;
+        cout<<" EXIT - see warning "<<endl;
+        warning<<"Error: there are no allocation fractions specified and there are "<<Fcast_Catch_Allocation_Groups<<" allocation groups"<<endl;
+        echoinput<<"Error: there are no allocation fractions specified and there are "<<Fcast_Catch_Allocation_Groups<<" allocation groups"<<endl;
+
+        exit(1);
+      }
+
         for(k=0;k<=j-1;k++)
         {
           for(y=Fcast_Catch_Allocation_list[k](1)-endyr;y<=N_Fcast_Yrs;y++)
