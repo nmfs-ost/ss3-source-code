@@ -1382,7 +1382,7 @@ FUNCTION void write_nudata()
   report1<<"#_compressbins: accumulate upper tail by this number of bins; acts simultaneous with mintailcomp; set=0 for no forced accumulation"<<endl;
   report1<<"#_Comp_Error:  0=multinomial, 1=dirichlet"<<endl;
   report1<<"#_Comp_Error2:  parm number  for dirichlet"<<endl;
-  report1<<"#_minsamplesize: minimum sample size; set to 1 to match 3.24, set to 0 for no minimum"<<endl;
+  report1<<"#_minsamplesize: minimum sample size; set to 1 to match 3.24, minimum value is 0.001"<<endl;
   report1<<"#_mintailcomp addtocomp combM+F CompressBins CompError ParmSelect minsamplesize"<<endl;
   for (f=1;f<=Nfleet;f++)
   {report1<<min_tail_A(f)<<" "<<min_comp_A(f)<<" "<<CombGender_A(f)<<" "<<AccumBin_A(f)<<" "<<Comp_Err_A(f)<<" "<<Comp_Err_A2(f)<<" "<<min_sample_size_A(f)<<" #_fleet:"<<f<<"_"<<fleetname(f)<<endl;}
