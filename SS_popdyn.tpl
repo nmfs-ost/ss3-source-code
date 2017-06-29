@@ -6,6 +6,7 @@ FUNCTION void get_initial_conditions()
   catch_fleet.initialize();
   annual_catch.initialize();
   annual_F.initialize();
+  Recr.initialize();
 
   if(SzFreq_Nmeth>0) SzFreq_exp.initialize();
 
@@ -645,9 +646,12 @@ FUNCTION void get_time_series()
             //  use NatM to calculate the virtual numbers that would have existed at the beginning of the season of the settlement
             //  need to use natM(t) because natM(t+offset) is not yet known
             //  also need to store the integer age at settlement
-            //  NOTE: the settlement shows up at the beginning of the season in which the settlement occurs, so it can be fished and sampled even before its settlement time
-            //  this is a shortcoming that might be dealt with in future.  For now, users will need to create finer season structure
-  //  SS_Label_Info_24.2.4 #Distribute Recruitment of age 0 fish among the pops and gmorphs
+            //  NOTE: the settlement is added to natage at the beginning of the season in which the settlement occurs, 
+            //  so it will be fished and sampled even before its settlement time
+            //  this is a shortcoming that might be dealt with in future. 
+            //   For now, users will need to create finer season structure
+            //  NOTE:  the distributed recruits are added into natage because more than one settlement can occur in same season
+            //  but each settlement has a unique "g", so maybe additive is not necessary
           for (g=1;g<=gmorph;g++)
           if(use_morph(g)>0)
           {
@@ -658,10 +662,9 @@ FUNCTION void get_time_series()
               natage(t+Settle_seas_offset(settle),p,g,Settle_age(settle)) +=
                Recruits*recr_dist(GP(g),settle,p)*platoon_distr(GP2(g))*
                mfexp(natM(s,GP3(g),Settle_age(settle))*Settle_timing_seas(settle));
+               Recr(p,t+Settle_seas_offset(settle))+=Recruits*recr_dist(GP(g),settle,p)*platoon_distr(GP2(g));
                //  the adjustment for mortality increases recruit value for elapsed time since begin of season because M will then be applied from beginning of season
                if(docheckup==1) echoinput<<y<<" Recruits, dist, surv, result"<<Recruits<<" "<<recr_dist(GP(g),settle,p)<<" "<<mfexp(natM(s,GP3(g),Settle_age(settle))*Settle_timing_seas(settle))<<" "<<natage(t+Settle_seas_offset(settle),p,g,Settle_age(settle))<<endl;
-          if(docheckup==1) echoinput<<p<<" "<<g<<" "<<GP3(g)<<" area & morph "<<endl<<"N-at-age after recruits "<<natage(t,p,g)(0,min(6,nages))<<endl
-           <<"survival "<<surv1(s,GP3(g))(0,min(6,nages))<<endl;
             }
           }
       }
@@ -1020,10 +1023,9 @@ FUNCTION void get_time_series()
 
         Recruits=Spawn_Recr(SPB_use,R0_use,SPB_current);  // calls to function Spawn_Recr
 
-// distribute Recruitment of age 0 fish among the current and future settlements; and among areas and morphs
+// distribute Recruitment among settlements, areas and morphs
 //  note that because SPB_current is calculated at end of season to take into account Z,
 //  this means that recruitment cannot occur until a subsequent season
-//  SPAWN-RECR:   distribute recruits among areas, settlements, morphs
           for (g=1;g<=gmorph;g++)
           if(use_morph(g)>0)
           {
@@ -1034,9 +1036,8 @@ FUNCTION void get_time_series()
 
               natage(t+Settle_seas_offset(settle),p,g,Settle_age(settle)) += Recruits*recr_dist(GP(g),settle,p)*platoon_distr(GP2(g))*
                mfexp(natM(s,GP3(g),Settle_age(settle))*Settle_timing_seas(settle));
+               Recr(p,t+Settle_seas_offset(settle))+=Recruits*recr_dist(GP(g),settle,p)*platoon_distr(GP2(g));
                if(docheckup==1) echoinput<<y<<" Recruits, dist, surv, result"<<Recruits<<" "<<recr_dist(GP(g),settle,p)<<" "<<mfexp(natM(s,GP3(g),Settle_age(settle))*Settle_timing_seas(settle))<<" "<<natage(t+Settle_seas_offset(settle),p,g,Settle_age(settle))<<endl;
-          if(docheckup==1) echoinput<<p<<" "<<g<<" "<<GP3(g)<<" area & morph "<<endl<<"N-at-age after recruits "<<natage(t,p,g)(0,min(6,nages))<<endl
-           <<"survival "<<surv1(s,GP3(g))(0,min(6,nages))<<endl;
             }
           }
       }

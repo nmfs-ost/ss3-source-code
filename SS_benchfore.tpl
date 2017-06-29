@@ -1065,7 +1065,7 @@ FUNCTION void Get_Forecast()
               exp_rec(y,4)=exp_rec(y,2);  // within the spawn_recr function this has value with recrdev, so need to reset here
             }
 
-//  SPAWN-RECR: distribute Recruitment of age 0 fish among the current and future settlements; and among areas and morphs
+//  SPAWN-RECR: distribute Recruitment among settlements, areas and morphs
               for (g=1;g<=gmorph;g++)
               if(use_morph(g)>0)
               {
@@ -1075,6 +1075,7 @@ FUNCTION void Get_Forecast()
                   if(y==endyr+1) natage(t+Settle_seas_offset(settle),p,g,Settle_age(settle))=0.0;  //  to negate the additive code
                   natage(t+Settle_seas_offset(settle),p,g,Settle_age(settle)) = Recruits*recr_dist(GP(g),settle,p)*platoon_distr(GP2(g))*
                    mfexp(natM(s,GP3(g),Settle_age(settle))*Settle_timing_seas(settle));
+                  if(Fcast_Loop1==jloop && ABC_Loop==ABC_Loop_end) Recr(p,t+Settle_seas_offset(settle))+=Recruits*recr_dist(GP(g),settle,p)*platoon_distr(GP2(g));
                    //  the adjustment for mortality increases recruit value for elapsed time since begin of season because M will then be applied from beginning of season
                 }
               }
@@ -1536,20 +1537,17 @@ FUNCTION void Get_Forecast()
           }
 
             Recruits=Spawn_Recr(SPB_use,R0_use,SPB_current);  // calls to function Spawn_Recr
-    // distribute Recruitment of age 0 fish among the current and future settlements; and among areas and morphs
-    //  note that because SPB_current is calculated at end of season to take into account Z,
-    //  this means that recruitment cannot occur until a subsequent season
-    //  SPAWN-RECR:   distribute recruits among areas, settlements, morphs
+    // distribute Recruitment  among the settlements, areas and morphs
               for (g=1;g<=gmorph;g++)
               if(use_morph(g)>0)
               {
                 settle=settle_g(g);
                 for (p=1;p<=pop;p++)
                 {
-                  if(y==styr) natage(t+Settle_seas_offset(settle),p,g,Settle_age(settle))=0.0;  //  to negate the additive code
-
+                  if(y==endyr+1) natage(t+Settle_seas_offset(settle),p,g,Settle_age(settle))=0.0;  //  to negate the additive code
                   natage(t+Settle_seas_offset(settle),p,g,Settle_age(settle)) += Recruits*recr_dist(GP(g),settle,p)*platoon_distr(GP2(g))*
                    mfexp(natM(s,GP3(g),Settle_age(settle))*Settle_timing_seas(settle));
+                  if(Fcast_Loop1==jloop && ABC_Loop==ABC_Loop_end) Recr(p,t+Settle_seas_offset(settle))+=Recruits*recr_dist(GP(g),settle,p)*platoon_distr(GP2(g));
                 }
               }
           }

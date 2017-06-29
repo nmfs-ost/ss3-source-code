@@ -12,11 +12,15 @@ copy/b SS_versioninfo_330trans.tpl+SS_readstarter.tpl+SS_readdata_324.tpl+SS_rea
 copy Make_SS_transition.bat "C:\Users\richard.methot\Documents\SS_model\Compile"
 cd "C:\Users\richard.methot\Documents\SS_model\Compile"
 
-TPL2CPP.EXE ss3_3
-call "C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\vcvarsall.bat" x86_amd64
+pushd "%VS140COMNTOOLS%\..\..\VC" & call vcvarsall.bat amd64 & popd
 
-cl /c /nologo /EHsc /I. /I"c:\ADMB\include" /I"c:\ADMB\contrib\include" /Foss3_3.obj  ss3_3.cpp
-cl /Fess_trans.exe ss3_3.obj "c:\ADMB\lib\admb-contrib.lib" "c:\ADMB\lib\admb.lib" /link
+set "PATH=%CD%\bin;%CD%\utilities;%PATH%"
+
+TPL2CPP.EXE ss3_3
+
+cl /c /nologo /EHsc /O2 /I. /I"C:\ADMB\include" /I"C:\ADMB\contrib\include" /FoSS3_3.obj SS3_3.cpp
+
+cl /Fess_trans.exe ss3_3.obj "C:\ADMB\lib\admb-contrib.lib" /link
 
 copy SS3_3.* "C:\Users\richard.methot\Documents\SS_model\Trans_324_330"
 copy ss_trans.exe "C:\Users\richard.methot\Documents\SS_model\Trans_324_330"

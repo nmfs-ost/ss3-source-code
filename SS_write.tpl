@@ -3109,11 +3109,11 @@ FUNCTION void write_bigoutput()
     Bio_Comp.initialize();
     Num_Comp.initialize();
     totbio.initialize(); smrybio.initialize(); smrynum.initialize(); SPB_vir_LH.initialize(); smryage.initialize();
-    Recr(p,y)=0;
+//    Recr(p,y)=0;
     for (g=1;g<=gmorph;g++)
     if(use_morph(g)>0)
     {
-     if(s==Bseas(g)) Recr(p,y)+=natage(t,p,g,0);
+//     if(s==Bseas(g)) Recr(p,y)+=natage(t,p,g,0);
      gg=sx(g);
      temp=natage(t,p,g)(Smry_Age,nages)*Save_Wt_Age(bio_t,g)(Smry_Age,nages);
      Bio_Comp(GP(g))+=value(temp);   //sums to accumulate across platoons and settlements
@@ -3156,7 +3156,7 @@ FUNCTION void write_bigoutput()
     }
     else
     {SS2out<<" _ ";}
-    SS2out<<" "<<Recr(p,y)<<" ";
+    SS2out<<" "<<Recr(p,t)<<" ";
     if(s==spawn_seas)
     {
       SS2out<<SPB_pop_gp(y,p);

@@ -254,6 +254,9 @@
       echoinput<<settle_time<<" / "<<Settle_month(settle_time);
       echoinput<<"  /  "<<Settle_seas(settle_time)<<" / "<<Settle_seas_offset(settle_time)<<" / "
       <<Settle_timing_seas(settle_time)<<"  / "<<Settle_age(settle_time)<<endl;
+      if(Settle_seas_offset(settle_time)==0 && spawn_time_seas>0.0)
+        {N_warn++; cout<<"see warning for fatal input issue"<<endl; warning<<"Cannot have spawn_time_seas after beginning of a season and settlements in the same season"<<endl<<
+          "put spawning at beginning of the season, or move settlements to next season"<<endl; exit(1);}
     }
   }
   else

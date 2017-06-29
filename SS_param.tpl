@@ -172,7 +172,7 @@ PARAMETER_SECTION
   number SPB_equil;
   number SPR_temp;  //  used to pass quantity into Equil_SpawnRecr
   number Recruits;                            // Age0 Recruits
-  matrix Recr(1,pop,styr-3,YrMax)         //Recruitment
+  matrix Recr(1,pop,styr-3*nseas,TimeMax_Fcast_std+1)         //Recruitment
   matrix exp_rec(styr-3,YrMax,1,4) //expected value for recruitment: 1=spawner-recr only; 2=with environ and cycle; 3=with bias_adj; 4=with dev
   matrix Nmid(1,gmorph,0,nages);
   matrix Nsurv(1,gmorph,0,nages);
