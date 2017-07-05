@@ -646,9 +646,9 @@ FUNCTION void get_time_series()
             //  use NatM to calculate the virtual numbers that would have existed at the beginning of the season of the settlement
             //  need to use natM(t) because natM(t+offset) is not yet known
             //  also need to store the integer age at settlement
-            //  NOTE: the settlement is added to natage at the beginning of the season in which the settlement occurs, 
+            //  NOTE: the settlement is added to natage at the beginning of the season in which the settlement occurs,
             //  so it will be fished and sampled even before its settlement time
-            //  this is a shortcoming that might be dealt with in future. 
+            //  this is a shortcoming that might be dealt with in future.
             //   For now, users will need to create finer season structure
             //  NOTE:  the distributed recruits are added into natage because more than one settlement can occur in same season
             //  but each settlement has a unique "g", so maybe additive is not necessary
@@ -1217,11 +1217,13 @@ FUNCTION void get_time_series()
         {
           for(g=1;g<=gmorph;g++)
           {
+            gg=sx(g);
+
             if(ishadow(GP2(g))==0)
               {
-          if(s==spawn_seas) bodywtout<<y<<" "<<s<<" "<<sx(g)<<" "<<GP4(g)<<" "<<Bseas(g)<<" "<<-2<<" "<<fec(g)<<" #fecundity "<<endl;
-          bodywtout<<y<<" "<<s<<" "<<gg<<" "<<GP4(g)<<" "<<Bseas(g)<<" "<<0<<" "<<Wt_Age_beg(s,g)<<" #popwt_beg "<<endl;
-          bodywtout<<y<<" "<<s<<" "<<gg<<" "<<GP4(g)<<" "<<Bseas(g)<<" "<<-1<<" "<<Wt_Age_mid(s,g)<<" #popwt_mid "<<endl;
+                if(s==spawn_seas) bodywtout<<y<<" "<<s<<" "<<gg<<" "<<GP4(g)<<" "<<Bseas(g)<<" "<<-2<<" "<<fec(g)<<" #fecundity "<<endl;
+                bodywtout<<y<<" "<<s<<" "<<gg<<" "<<GP4(g)<<" "<<Bseas(g)<<" "<<0<<" "<<Wt_Age_beg(s,g)<<" #popwt_beg "<<endl;
+                bodywtout<<y<<" "<<s<<" "<<gg<<" "<<GP4(g)<<" "<<Bseas(g)<<" "<<-1<<" "<<Wt_Age_mid(s,g)<<" #popwt_mid "<<endl;
               }
           }
         }
