@@ -2653,7 +2653,9 @@
 
 //  SS_Label_Info_4.9.2 #Process selectivity parameter count and create parameter labels
   int depletion_fleet;  //  stores fleet(survey) number for the fleet that is defined as "depletion"
+  int depletion_type;  //  entered by Q_setup(f,2) and stores additional controls for depletion fleet
   depletion_fleet=0;
+  depletion_type=0;
    firstselparm=ParCount;
    N_selparm=0;
    Do_Retain.initialize();

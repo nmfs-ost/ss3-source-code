@@ -2295,8 +2295,10 @@
   N_disc_mort_parm(4)= 4;   // for dome-shaped retention and 4 param discard mort
 
 //  SS_Label_Info_4.9.2 #Process selectivity parameter count and create parameter labels
-  int depletion_fleet;  //  stores fleet(survey) number for the fleet that is defined as "depletion"
+  int depletion_fleet;  //  stores fleet(survey) number for the fleet that is defined as "depletion" by survey type=34
+  int depletion_type;  //  entered by Q_setup(f,2) and stores additional controls for depletion fleet
   depletion_fleet=0;
+  depletion_type=0;
    firstselparm=ParCount;
    N_selparm=0;
 //   N_ret_parm=7;    // to allow for dome-shaped retention
@@ -2349,9 +2351,13 @@
      // account for the low and high bin parameters
      if(seltype(f,1) == 42 || seltype(f,1) == 43) N_selparmvec(f)+=2;
 
-     if(Svy_units(f)==34)  //  special code for depletion, so adjust phases and lambdas
+     if(Svy_units(f)==34)  //  special code for depletion, so prepare to adjust phases and lambdas
       {
         depletion_fleet=f;
+        depletion_type=Q_setup(f,2);
+        //  Q_setup(f,2)=0  add 1 to phases of all parms; only R0 active in new phase 1
+        //  Q_setup(f,2)=1  only R0 active in phase 1; then exit;  useful for data-limited draws of other fixed parameter
+        //  Q_setup(f,2)=2  no phase adjustments, can be used when profiling on fixed R0
       }
 
      if(seltype(f,2)>=1)
@@ -3025,9 +3031,6 @@
          parm_dev_maxyr(k)=timevary_setup(11);
          parm_dev_PH(k)=timevary_setup(12);
          parm_dev_type(k)=1;
-         if(depletion_fleet>0 && parm_dev_PH(k)>0) parm_dev_PH(k)++;//  add 1 to phase if using depletion fleet
-         if(parm_dev_PH(k)>Turn_off_phase) parm_dev_PH(k) =-1;
-         if(parm_dev_PH(k)>max_phase) max_phase=parm_dev_PH(k);
          echoinput<<" dev vector #:  "<<k<<" setup: "<<timevary_setup<<" phase: "<<parm_dev_PH(k)<<endl;
          f=timevary_setup(13);  //  index of base parameter
          for(y=parm_dev_minyr(k);y<=parm_dev_maxyr(k);y++)
@@ -3137,7 +3140,7 @@
   {
     N_warn++; warning<<" With sd_offset set to 0, be sure you are not estimating any variance parameters "<<endl;
   }
-  if(depletion_fleet>0 && max_lambda_phase<2)
+  if(depletion_fleet>0  && depletion_type<2 && max_lambda_phase<2)
     {
       max_lambda_phase=2;
       N_warn++; warning<<"Increase max_lambda_phase to 2 because depletion fleet is being used"<<endl;
@@ -3204,7 +3207,7 @@
    TG_lambda2=1.;  //16
    F_ballpark_lambda=1.;  // 17
 
-    if(depletion_fleet>0)
+    if(depletion_fleet>0  && depletion_type<2)
     {
       for (f=1;f<=Nfleet;f++)
       {
@@ -3491,9 +3494,12 @@
 //***********************************************
 !!//  SS_Label_Info_4.14.1 #Adjust the phases to negative if beyond turn_off_phase and find resultant max_phase
   int max_phase;
+  int Turn_off_phase2
 
  LOCAL_CALCS
   echoinput<<"Adjust the phases "<<endl;
+  Turn_off_phase2=Turn_off_phase;
+  if(depletion_fleet>0 && depletion_type==1) Turn_off_phase2=1;
   max_phase=1;
   active_count=0;
   active_parm(1,ParCount)=0;
@@ -3505,8 +3511,8 @@
   {
     ParCount++;
     if(MGparm_PH(k)==-9999) {MGparm_RD(k)=prof_var(prof_var_cnt); prof_var_cnt+=1;}
-    if(depletion_fleet>0 && MGparm_PH(k)>0) MGparm_PH(k)++;  //  add 1 to phase if using depletion fleet
-    if(MGparm_PH(k) > Turn_off_phase) MGparm_PH(k) =-1;
+    if(depletion_fleet>0  && depletion_type<2 && MGparm_PH(k)>0) MGparm_PH(k)++;  //  add 1 to phase if using depletion fleet
+    if(MGparm_PH(k) > Turn_off_phase2) MGparm_PH(k) =-1;
     if(MGparm_PH(k) > max_phase) max_phase=MGparm_PH(k);
     if(MGparm_PH(k)>=0)
     {
@@ -3518,9 +3524,9 @@
   {
     ParCount++;
     if(SR_parm_PH(j)==-9999) {SR_parm_1(j,3)=prof_var(prof_var_cnt); prof_var_cnt+=1;}
-    if(depletion_fleet>0 && SR_parm_PH(j)>0) SR_parm_PH(j)++;  //  add 1 to phase if using depletion fleet
-    if(depletion_fleet>0 && j==1) SR_parm_PH(1)=1;  //
-    if(SR_parm_PH(j) > Turn_off_phase) SR_parm_PH(j) =-1;
+    if(depletion_fleet>0 && depletion_type<2 && SR_parm_PH(j)>0) SR_parm_PH(j)++;  //  add 1 to phase if using depletion fleet
+    if(depletion_fleet>0  && depletion_type<2 && j==1) SR_parm_PH(1)=1;  //  R0 active in phase 1, unless type==2
+    if(SR_parm_PH(j) > Turn_off_phase2) SR_parm_PH(j) =-1;
     if(SR_parm_PH(j) > max_phase) max_phase=SR_parm_PH(j);
     if(SR_parm_PH(j)>=0)
     {
@@ -3536,15 +3542,15 @@
       recdev_cycle_LO(y)=recdev_cycle_parm_RD(y,1);
       recdev_cycle_HI(y)=recdev_cycle_parm_RD(y,2);
       recdev_cycle_PH(y)=recdev_cycle_parm_RD(y,7);
-      if(depletion_fleet>0 && recdev_cycle_PH(y)>0) recdev_cycle_PH(y)++;  //  add 1 to phase if using depletion fleet
-      if(recdev_cycle_PH(y) > Turn_off_phase) recdev_cycle_PH(y) =-1;
+      if(depletion_fleet>0  && depletion_type<2 && recdev_cycle_PH(y)>0) recdev_cycle_PH(y)++;  //  add 1 to phase if using depletion fleet
+      if(recdev_cycle_PH(y) > Turn_off_phase2) recdev_cycle_PH(y) =-1;
       if(recdev_cycle_PH(y) > max_phase) max_phase=recdev_cycle_PH(y);
       if(recdev_cycle_PH(y)>=0) {active_count++; active_parm(active_count)=ParCount;}
     }
   }
 
-  if(depletion_fleet>0 && recdev_early_PH_rd>0) recdev_early_PH_rd++;  //  add 1 to phase if using depletion fleet
-  if(recdev_early_PH_rd > Turn_off_phase)
+  if(depletion_fleet>0  && depletion_type<2 && recdev_early_PH_rd>0) recdev_early_PH_rd++;  //  add 1 to phase if using depletion fleet
+  if(recdev_early_PH_rd > Turn_off_phase2)
     {recdev_early_PH =-1;}
     else
     {recdev_early_PH =recdev_early_PH_rd;}
@@ -3560,8 +3566,8 @@
   }
   }
 
-  if(depletion_fleet>0 && recdev_PH>0) recdev_PH++;  //  add 1 to phase if using depletion fleet
-  if(recdev_PH > Turn_off_phase) recdev_PH =-1;
+  if(depletion_fleet>0  && depletion_type<2 && recdev_PH>0) recdev_PH++;  //  add 1 to phase if using depletion fleet
+  if(recdev_PH > Turn_off_phase2) recdev_PH =-1;
   if(recdev_PH > max_phase) max_phase=recdev_PH;
   if(do_recdev>0)
   {
@@ -3581,10 +3587,12 @@
       if(Fcast_recr_PH_rd!=0)  // read value for forecast_PH
       {
         Fcast_recr_PH2=Fcast_recr_PH;
-        if(depletion_fleet>0 && Fcast_recr_PH2>0) Fcast_recr_PH2++;
-        if(Fcast_recr_PH2 > Turn_off_phase) Fcast_recr_PH2 =-1;
+        if(depletion_fleet>0  && depletion_type<2 && Fcast_recr_PH2>0) Fcast_recr_PH2++;
+        if(Fcast_recr_PH2 > Turn_off_phase2) Fcast_recr_PH2 =-1;
         if(Fcast_recr_PH2 > max_phase) max_phase=Fcast_recr_PH2;
       }
+      if(depletion_fleet>0  && depletion_type==1)
+        {max_phase=1; Fcast_recr_PH2=-1;}
       for (y=recdev_end+1;y<=YrMax;y++)
       {
         ParCount++;
@@ -3605,7 +3613,6 @@
   }
   else
   {Fcast_recr_PH2=-1;}
-
   for (s=1;s<=nseas;s++)
   for (f=1;f<=Nfleet;f++)
   {
@@ -3614,8 +3621,8 @@
       j=init_F_loc(s,f);
       ParCount++;
       if(init_F_PH(j)==-9999) {init_F_parm_1(j,3)=prof_var(prof_var_cnt); init_F_RD(j)=init_F_parm_1(j,3);  prof_var_cnt++;}
-      if(depletion_fleet>0 && init_F_PH(j)>0) init_F_PH(j)++;
-      if(init_F_PH(j) > Turn_off_phase) init_F_PH(j) =-1;
+      if(depletion_fleet>0  && depletion_type<2 && init_F_PH(j)>0) init_F_PH(j)++;
+      if(init_F_PH(j) > Turn_off_phase2) init_F_PH(j) =-1;
       if(init_F_PH(j) > max_phase) max_phase=init_F_PH(j);
       if(init_F_PH(j)>=0)
       {
@@ -3629,8 +3636,8 @@
     for (g=1;g<=N_Fparm;g++)
     {
       ParCount++;
-      if(depletion_fleet>0 && Fparm_PH(g)>0) Fparm_PH(g)++;  //  increase phase by 1
-      if(Fparm_PH(g) > Turn_off_phase) Fparm_PH(g) =-1;
+      if(depletion_fleet>0  && depletion_type<2 && Fparm_PH(g)>0) Fparm_PH(g)++;  //  increase phase by 1
+      if(Fparm_PH(g) > Turn_off_phase2) Fparm_PH(g) =-1;
       if(Fparm_PH(g) > max_phase) max_phase=Fparm_PH(g);
       if(Fparm_PH(g)>0)
       {
@@ -3644,8 +3651,8 @@
   {
     ParCount++;
     if(Q_parm_PH(f)==-9999) {Q_parm_1(f,3)=prof_var(prof_var_cnt); prof_var_cnt++;}
-    if(depletion_fleet>0 && Q_parm_PH(f)>0) Q_parm_PH(f)++;
-    if(Q_parm_PH(f) > Turn_off_phase) Q_parm_PH(f) =-1;
+    if(depletion_fleet>0  && depletion_type<2 && Q_parm_PH(f)>0) Q_parm_PH(f)++;
+    if(Q_parm_PH(f) > Turn_off_phase2) Q_parm_PH(f) =-1;
     if(Q_parm_PH(f) > max_phase) max_phase=Q_parm_PH(f);
     if(Q_parm_PH(f)>=0)
     {
@@ -3815,8 +3822,8 @@
    {
      ParCount++;
      if(selparm_PH(k)==-9999) {selparm_RD(k)=prof_var(prof_var_cnt); prof_var_cnt++;}
-     if(depletion_fleet>0 && selparm_PH(k)>0) selparm_PH(k)++;
-     if(selparm_PH(k) > Turn_off_phase) selparm_PH(k) =-1;
+     if(depletion_fleet>0  && depletion_type<2 && selparm_PH(k)>0) selparm_PH(k)++;
+     if(selparm_PH(k) > Turn_off_phase2) selparm_PH(k) =-1;
      if(selparm_PH(k) > max_phase) max_phase=selparm_PH(k);
      if(selparm_PH(k)>=0)
     {
@@ -3829,8 +3836,8 @@
     for (k=1;k<=3*N_TG+2*Nfleet1;k++)
     {
       ParCount++;
-      if(depletion_fleet>0 && TG_parm_PH(k)>0) TG_parm_PH(k)++;
-      if(TG_parm_PH(k) > Turn_off_phase) TG_parm_PH(k) =-1;
+      if(depletion_fleet>0  && depletion_type<2 && TG_parm_PH(k)>0) TG_parm_PH(k)++;
+      if(TG_parm_PH(k) > Turn_off_phase2) TG_parm_PH(k) =-1;
       if(TG_parm_PH(k) > max_phase) max_phase=TG_parm_PH(k);
       if(TG_parm_PH(k)>=0)
       {
@@ -3838,6 +3845,22 @@
       }
     }
   }
+  
+   if(timevary_cnt>0)
+   {
+     for (j=1;j<=timevary_cnt;j++)  //  loop all timevary to set up devs; note that 2D_AR1 is counted in N_parm_dev, but not in timevary_cnt
+     {
+       ivector timevary_setup(1,13);
+       timevary_setup(1,13)=timevary_def[j](1,13);
+       if(timevary_setup(8)>0)
+       {
+         k=timevary_setup(8);  //  dev vector used
+         if(depletion_fleet>0 && depletion_type<2 && parm_dev_PH(k)>0) parm_dev_PH(k)++;//  add 1 to phase if using depletion fleet
+         if(parm_dev_PH(k)>Turn_off_phase2) parm_dev_PH(k) =-1;
+         if(parm_dev_PH(k)>max_phase) max_phase=parm_dev_PH(k);
+       }
+     }
+   }
 
   if(N_parm_dev>0)
   {
@@ -3858,7 +3881,10 @@
   {
     if(Fcast_recr_PH==0)  // read value for forecast_PH.  This code is repeats earlier code in case other parameters have changed maxphase
     {
-      Fcast_recr_PH2=max_phase+1;
+      if(depletion_fleet>0 && depletion_type==1)
+        {}
+        else
+        {Fcast_recr_PH2=max_phase+1;}
     }
   }
 
