@@ -534,7 +534,8 @@ FUNCTION void write_nudata()
   {
 
   report1<<"#_Catch data: yr, seas, fleet, catch, catch_se"<<endl;
-  report1<<"#_catch_se:  standard error of log(catch); can be overridden in control file with detailed F input"<<endl;
+  report1<<"#_catch_se:  standard error of log(catch)"<<endl;
+  report1<<"#_NOTE:  catch data is ignored for survey fleets"<<endl;
   k=0;
   for(f=1;f<=Nfleet;f++)
   {
@@ -1665,7 +1666,7 @@ FUNCTION void write_nucontrol()
   NuFore<<N_Fcast_Yrs<<" # N forecast years "<<endl;
   NuFore<<Fcast_Flevel<<" # F scalar (only used for Do_Forecast==5)"<<endl;
   NuFore<<"#_Fcast_years:  beg_selex, end_selex, beg_relF, end_relF, beg_recruits, end_recruits  (enter actual year, or values of 0 or -integer to be rel. endyr)"<<endl<<Fcast_yr_rd<<endl;
-  NuFore<<Fcast_Specify_Selex<<" # Forecast selectivity (0=do not use; 1=specify one selectivity for all fishing fleets (not implemented); 2=specify selectivity per fishing fleet (not implemented))"<<endl;
+  NuFore<<Fcast_Specify_Selex<<" # Forecast selectivity (0=fcast selex is mean from year range; 1=fcast selectivity from annual time-vary parms)"<<endl;
 
   NuFore<<HarvestPolicy<<" # Control rule method (1=catch=f(SSB) west coast; 2=F=f(SSB) ) "<<endl;
   NuFore<<H4010_top<<" # Control rule Biomass level for constant F (as frac of Bzero, e.g. 0.40); (Must be > the no F level below) "<<endl;
@@ -2877,26 +2878,32 @@ FUNCTION void write_bigoutput()
   }
 
    if(reportdetail == 1) {k1=YrMax;} else {k1=styr;}
-   SS2out<<endl<<"MGparm_By_Year_after_adjustments"<<endl<<"Yr ";
+   SS2out<<endl<<"MGparm_By_Year_after_adjustments"<<endl<<"Yr   Change?  Parameters";
    for (i=1;i<=N_MGparm;i++) SS2out<<" "<<ParmLabel(i);
    SS2out<<endl;
    for (y=styr;y<=k1;y++)
-     SS2out<<y<<" "<<mgp_save(y)<<endl;
+     SS2out<<y<<" "<<timevary_MG(y,0)<<" "<<mgp_save(y)<<endl;
+   SS2out<<endl;
 
-   SS2out<<endl<<"selparm(Size)_By_Year_after_adjustments"<<endl<<"Fleet Yr"<<endl;
+   if(Fcast_Specify_Selex==0)
+    {SS2out<<"forecast_selectivity_averaged_over_years:_"<<Fcast_Sel_yr1<<"_to_"<<Fcast_Sel_yr2<<endl;}
+    else
+    {SS2out<<"forecast_selectivity_from_time-varying_parameters "<<endl;}
+      
+   SS2out<<endl<<"selparm(Size)_By_Year_after_adjustments"<<endl<<"Fleet Yr  Change?  Parameters"<<endl;
    for (f=1;f<=Nfleet;f++)
    for (y=styr;y<=k1;y++)
      {
      k=N_selparmvec(f);
-     if(k>0) SS2out<<f<<" "<<y<<" "<<save_sp_len(y,f)(1,k)<<endl;
+     if(k>0) SS2out<<f<<" "<<y<<" "<<timevary_sel(y,f)<<" "<<save_sp_len(y,f)(1,k)<<endl;
      }
 
-   SS2out<<endl<<"selparm(Age)_By_Year_after_adjustments"<<endl<<"Fleet Yr"<<endl;
+   SS2out<<endl<<"selparm(Age)_By_Year_after_adjustments"<<endl<<"Fleet Yr  Change?  Parameters"<<endl;
    for (f=Nfleet+1;f<=2*Nfleet;f++)
    for (y=styr;y<=k1;y++)
      {
      k=N_selparmvec(f);
-     if(k>0) SS2out<<f-Nfleet<<" "<<y<<" "<<save_sp_len(y,f)(1,k)<<endl;
+     if(k>0) SS2out<<f-Nfleet<<" "<<y<<" "<<timevary_sel(y,f)<<" "<<save_sp_len(y,f)(1,k)<<endl;
      }
 
    SS2out<<endl<<"RECRUITMENT_DIST"<<endl<<"Settle# settle_timing# G_pattern Area Settle_Month Seas Age Time_w/in_seas Frac/sex"<<endl;
@@ -3094,7 +3101,7 @@ FUNCTION void write_bigoutput()
      if(F_Method==1) {SS2out<<" Hrate:_"<<f;} else {SS2out<<" F:_"<<f;}
   }
 
-  SS2out<<" SSB_vir_LH"<<endl;
+  SS2out<<" SSB_vir_LH ABC_buffer"<<endl;
 
   for (p=1;p<=pop;p++)
   {
@@ -3185,9 +3192,14 @@ FUNCTION void write_bigoutput()
       {SS2out<<" 0 0 0 0 0 0 0 0 ";}
     }
     if(s==spawn_seas)
-        {SS2out<<" "<<SPB_vir_LH<<endl;}
+        {SS2out<<" "<<SPB_vir_LH;}
     else
-      {SS2out<<" _"<<endl;}
+      {SS2out<<" _";}
+    if(y<=endyr)
+      {SS2out<<" NA";}
+      else
+      {SS2out<<" "<<ABC_buffer(y);}
+    SS2out<<endl;
     }
    }
   }
@@ -3452,7 +3464,7 @@ FUNCTION void write_bigoutput()
             SS2out<<temp<<" "<<Svy_q(f,i)<<" "<<temp/Svy_selec_abund(f,i)<<" "<<Svy_se_use(f,i);
             if(Svy_use(f,i) > 0)
             {
-              SS2out<<" "<<Svy_obs_log(f,i)-temp<<" ";
+              SS2out<<" "<<Svy_obs_log(f,i)-Svy_est(f,i)<<" ";
               if(Svy_errtype(f)==0)
               {
                 SS2out<<0.5*square( ( Svy_obs_log(f,i)-Svy_est(f,i) ) / Svy_se_use(f,i))<<" "
@@ -3473,14 +3485,14 @@ FUNCTION void write_bigoutput()
           }
           else  // normal
           {
-            temp = Svy_est(f,i)*Svy_q(f,i);
-            SS2out<<temp<<" "<<Svy_q(f,i)<<" "<<temp/Svy_selec_abund(f,i)<<" "<<Svy_se_use(f,i);
+//            temp = Svy_est(f,i)*Svy_q(f,i);
+            SS2out<<Svy_est(f,i)<<" "<<Svy_q(f,i)<<" "<<Svy_est(f,i)/Svy_selec_abund(f,i)<<" "<<Svy_se_use(f,i);
             if(Svy_use(f,i)>0)
             {
-              SS2out<<" "<<Svy_obs(f,i)-temp<<" ";
-              SS2out<<0.5*square( ( Svy_obs(f,i)-temp ) / Svy_se_use(f,i))<<" "
-              <<0.5*square( ( Svy_obs(f,i)-temp ) / Svy_se_use(f,i))+log(Svy_se_use(f,i));
-              rmse(f)+=value(square(Svy_obs(f,i)-temp)); n_rmse(f)+=1.;
+              SS2out<<" "<<Svy_obs(f,i)-Svy_est(f,i)<<" ";
+              SS2out<<0.5*square( ( Svy_obs(f,i)-Svy_est(f,i) ) / Svy_se_use(f,i))<<" "
+              <<0.5*square( ( Svy_obs(f,i)-Svy_est(f,i) ) / Svy_se_use(f,i))+log(Svy_se_use(f,i));
+              rmse(f)+=value(square(Svy_obs(f,i)-Svy_est(f,i))); n_rmse(f)+=1.;
               mean_CV(f)+=Svy_se_rd(f,i); mean_CV3(f)+=Svy_se(f,i); mean_CV2(f)+=value(Svy_se_use(f,i));
             }
             else
@@ -3677,7 +3689,6 @@ FUNCTION void write_bigoutput()
        Rrmse(f)+=value(neff_l(f,i)/nsamp_l(f,i));
 
        more_comp_info.initialize();
-
        // do both sexes  tails_l(f,i,4) has been set to tails_l(f,i,2) if males not in this sample
        if(gen_l(f,i)==3 || gen_l(f,i)==0)
        {
@@ -3849,7 +3860,10 @@ FUNCTION void write_bigoutput()
    }
 
   SS2out <<endl<< "FIT_AGE_COMPS" << endl;
-  SS2out<<"Fleet Yr Month Seas Yr.frac Sex Mkt Ageerr Lbin_lo Lbin_hi Nsamp effN Like SuprPer Use"<<endl;
+  SS2out<<"Fleet Yr Month Seas Yr.frac Sex Mkt Ageerr Lbin_lo Lbin_hi Nsamp effN Like SuprPer Use";
+  SS2out<<" All_obs_mean All_exp_mean All_delta All_exp_5% All_exp_95% All_DurWat";
+  if(gender==2) SS2out<<" F_obs_mean F_exp_mean F_delta F_exp_5% F_exp_95% F_DurWat M_obs_mean M_exp_mean M_delta M_exp_5% M_exp_95% M_DurWat %F_obs %F_exp ";
+  SS2out<<endl;
   rmse = 0.0;  n_rmse = 0.0; mean_CV=0.0;  Hrmse=0.0; Rrmse=0.0;
    if(Nobs_a_tot>0)
    for(f=1;f<=Nfleet;f++)
@@ -3867,7 +3881,134 @@ FUNCTION void write_bigoutput()
        mean_CV(f)+=nsamp_a(f,i);
        Hrmse(f)+=value(1./neff_a(f,i));
        Rrmse(f)+=value(neff_a(f,i)/nsamp_a(f,i));
+       more_comp_info.initialize();
+       // do both sexes  tails_a(f,i,4) has been set to tails_a(f,i,2) if males not in this sample
+       if(gen_a(f,i)==3 || gen_a(f,i)==0)
+       {
+         more_comp_info(1)=obs_a(f,i)(tails_a(f,i,1),tails_a(f,i,4))*age_bins_mean(tails_a(f,i,1),tails_a(f,i,4));
+         more_comp_info(2)=value(exp_a(f,i)(tails_a(f,i,1),tails_a(f,i,4))*age_bins_mean(tails_a(f,i,1),tails_a(f,i,4)));
+         more_comp_info(3)=more_comp_info(1)-more_comp_info(2);
+         //  calc tails of distribution and Durbin-Watson for autocorrelation
+         temp1=0.0;
+         z=tails_a(f,i,1);
+         cumdist_save=0.0;
+         cumdist=0.0;
+         for(z=1;z<=n_abins;z++)
+         {
+          cumdist+=exp_a(f,i,z);
+          if(gender==2)  cumdist+=exp_a(f,i,z+n_abins);  // add males and females
+          if(cumdist>=0.05 && cumdist_save<0.05)  //  found bin for 5%
+          {
+            if(z==1)
+            {more_comp_info(4)=age_bins(z);}  //  set to lower edge
+            else
+            {more_comp_info(4)=age_bins(z)+(age_bins(min(z+1,n_abins))-age_bins(z))*(0.05-cumdist_save)/(cumdist-cumdist_save);}
+          }
+          if(cumdist>=0.95 && cumdist_save<0.95)  //  found bin for 95%
+          {
+            more_comp_info(5)=age_bins(z)+(age_bins(min(z+1,n_abins))-age_bins(z))*(0.95-cumdist_save)/(cumdist-cumdist_save);
+          }
+          cumdist_save=cumdist;
 
+          temp=obs_a(f,i,z)-exp_a(f,i,z);  //  obs-exp
+          if(z>tails_a(f,i,1))
+          {
+            more_comp_info(6)+=value(square(temp2-temp));
+            temp1+=value(square(temp));
+          }
+          temp2=temp;
+         }
+         if(gen_a(f,i)==3 && gender==2)  // do sex ratio
+         {
+           more_comp_info(19)=sum(obs_a(f,i)(tails_a(f,i,1),tails_a(f,i,2)));  //  sum obs female fractions =  %female
+           more_comp_info(20)=value(sum(exp_a(f,i)(tails_a(f,i,1),tails_a(f,i,2)))); //  sum exp female fractions =  %female
+           for(z=tails_a(f,i,3);z<=tails_a(f,i,4);z++)
+           {
+            temp=obs_a(f,i,z)-exp_a(f,i,z);  //  obs-exp
+            if(z>tails_a(f,i,1))
+            {
+              more_comp_info(6)+=value(square(temp2-temp));
+              temp1+=value(square(temp));
+            }
+            temp2=temp;
+           }
+         }
+         more_comp_info(6)=(more_comp_info(6)/temp1) - 2.0;
+       }
+
+       if(gen_a(f,i)==1 || gen_a(f,i)==3)  //  need females
+       {
+         //  where len_bins_dat_m2() holds midpoints of the data length bins
+         more_comp_info(7)=(obs_a(f,i)(tails_a(f,i,1),tails_a(f,i,2))*age_bins_mean(tails_a(f,i,1),tails_a(f,i,2)))/sum(obs_a(f,i)(tails_a(f,i,1),tails_a(f,i,2)));
+         more_comp_info(8)=value((exp_a(f,i)(tails_a(f,i,1),tails_a(f,i,2))*age_bins_mean(tails_a(f,i,1),tails_a(f,i,2)))/sum(exp_a(f,i)(tails_a(f,i,1),tails_a(f,i,2))));
+         more_comp_info(9)=more_comp_info(7)-more_comp_info(8);
+         //  calc tails of distribution and Durbin-Watson for autocorrelation
+         temp1=0.0;
+         z=tails_a(f,i,1);
+         cumdist_save=0.0;
+         cumdist=0.0;
+         for(z=tails_a(f,i,1);z<=tails_a(f,i,2);z++)
+         {
+          cumdist+=value(exp_a(f,i,z));
+          if(cumdist>=0.05*more_comp_info(20) && cumdist_save<0.05*more_comp_info(20))  //  found bin for 5%
+          {
+            if(z==1)
+            {more_comp_info(10)=age_bins(z);}  //  set to lower edge
+            else
+            {more_comp_info(10)=age_bins(z)+(age_bins(min(z+1,n_abins))-age_bins(z))*(0.05*more_comp_info(20)-cumdist_save)/(cumdist-cumdist_save);}
+          }
+          if(cumdist>=0.95*more_comp_info(20) && cumdist_save<0.95*more_comp_info(20))  //  found bin for 95%
+          {
+            more_comp_info(11)=age_bins(z)+(age_bins(min(z+1,n_abins))-age_bins(z))*(0.95*more_comp_info(20)-cumdist_save)/(cumdist-cumdist_save);
+          }
+          cumdist_save=cumdist;
+
+          temp=obs_a(f,i,z)-exp_a(f,i,z);  //  obs-exp
+          if(z>tails_a(f,i,1))
+          {
+            more_comp_info(12)+=value(square(temp2-temp));
+            temp1+=value(square(temp));
+          }
+          temp2=temp; //  save current delta
+         }
+         more_comp_info(12)=(more_comp_info(12)/temp1) - 2.0;
+       }
+       if(gen_a(f,i)>=2 && gender==2)  // need males
+       {
+         more_comp_info(13)=(obs_a(f,i)(tails_a(f,i,3),tails_a(f,i,4))*age_bins_mean(tails_a(f,i,3),tails_a(f,i,4)))/sum(obs_a(f,i)(tails_a(f,i,3),tails_a(f,i,4)));
+         more_comp_info(14)=value((exp_a(f,i)(tails_a(f,i,3),tails_a(f,i,4))*age_bins_mean(tails_a(f,i,3),tails_a(f,i,4)))/sum(exp_a(f,i)(tails_a(f,i,3),tails_a(f,i,4))));
+         more_comp_info(15)=more_comp_info(13)-more_comp_info(14);
+         //  calc tails of distribution and Durbin-Watson for autocorrelation
+         temp1=0.0;
+         z=tails_a(f,i,3);
+         cumdist_save=0.0;
+         cumdist=0.0;
+         for(z=tails_a(f,i,3);z<=tails_a(f,i,4);z++)
+         {
+          cumdist+=value(exp_a(f,i,z));
+          if(cumdist>=0.05*more_comp_info(20) && cumdist_save<0.05*more_comp_info(20))  //  found bin for 5%
+          {
+            if(z==n_abins+1)
+            {more_comp_info(16)=age_bins(z);}  //  set to lower edge
+            else
+            {more_comp_info(16)=age_bins(z)+(age_bins(min(z+1,n_abins2))-age_bins(z))*(0.05*more_comp_info(20)-cumdist_save)/(cumdist-cumdist_save);}
+          }
+          if(cumdist>=0.95*more_comp_info(20) && cumdist_save<0.95*more_comp_info(20))  //  found bin for 95%
+          {
+            more_comp_info(17)=age_bins(z)+(age_bins(min(z+1,n_abins2))-age_bins(z))*(0.95*more_comp_info(20)-cumdist_save)/(cumdist-cumdist_save);
+          }
+          cumdist_save=cumdist;
+
+          temp=obs_a(f,i,z)-exp_a(f,i,z);  //  obs-exp
+          if(z>tails_a(f,i,1))
+          {
+            more_comp_info(18)+=value(square(temp2-temp));
+            temp1+=value(square(temp));
+          }
+          temp2=temp; //  save current delta
+         }
+         more_comp_info(18)=(more_comp_info(18)/temp1) - 2.0;
+       }
      }
      else
      {
@@ -3884,10 +4025,15 @@ FUNCTION void write_bigoutput()
       else
       {SS2out<<" _ ";}
       if(header_a(f,i,3)<0 || nsamp_a(f,i)<0)
-      {SS2out<<" skip "<<endl;}
+      {SS2out<<" skip ";}
       else
-      {SS2out<<" _ "<<endl;}
-      }
+      {SS2out<<" _ ";}
+      SS2out<<more_comp_info(1,6);
+      if(gender==2) SS2out<<" "<<more_comp_info(7,20);
+      SS2out<<endl;
+     
+    }
+
    SS2out<<endl<<"Age_Comp_Fit_Summary"<<endl;
    SS2out<<endl<<"Fleet N Npos min_inputN mean_effN mean(inputN*Adj) HarMean(effN) Mean(effN/inputN) MeaneffN/MeaninputN Var_Adj"<<endl;
    for(f=1;f<=Nfleet;f++)
@@ -3999,10 +4145,10 @@ FUNCTION void write_bigoutput()
   SS2out<<"Factor Fleet Yr Sex Label "<<len_bins_m<<endl;
   for (f=1;f<=Nfleet;f++)
   {
-    if(f<=Nfleet) {k=styr-3; j=endyr+1;} else {k=styr; j=endyr;}
+    k=styr-3; j=YrMax;
     for (y=k;y<=j;y++)
     for (gg=1;gg<=gender;gg++)
-    if(y==styr-3 || y==endyr || (y>=styr && (timevary_sel(y,f)>0 || timevary_sel(y+1,f)>0)))
+    if(y==styr-3 || y==endyr || y==YrMax || (y>=styr && (timevary_sel(y,f)>0 || timevary_sel(y+1,f)>0)))
     {
       SS2out<<"Lsel "<<f<<" "<<y<<" "<<gg<<" "<<y<<"_"<<f<<"_Lsel";
       for (z=1;z<=nlength;z++) {SS2out<<" "<<sel_l(y,f,gg,z);}
@@ -4012,9 +4158,9 @@ FUNCTION void write_bigoutput()
 
   for (f=1;f<=Nfleet;f++)
   if(fleet_type(f)<=2)
-  for (y=styr-3;y<=endyr+1;y++)
+  for (y=styr-3;y<=YrMax;y++)
   for (gg=1;gg<=gender;gg++)
-  if(y==styr-3 || y==endyr || (y>=styr && (timevary_sel(y,f)>0 || timevary_sel(y+1,f)>0)))
+  if(y==styr-3 || y==endyr || y==YrMax || (y>=styr && (timevary_sel(y,f)>0 || timevary_sel(y+1,f)>0)))
   {
     if(y>=styr && y<=endyr)
     {
@@ -4048,10 +4194,10 @@ FUNCTION void write_bigoutput()
   SS2out<<endl;
   for (f=1;f<=Nfleet;f++)
   {
-    if(f<=Nfleet) {k=styr-3; j=endyr+1;} else {k=styr; j=endyr;}
+    k=styr-3; j=YrMax;
     for (y=k;y<=j;y++)
     for (gg=1;gg<=gender;gg++)
-    if(y==styr-3 || y==endyr || (y>=styr && (timevary_sel(y,f+Nfleet)>0 || timevary_sel(y+1,f+Nfleet)>0)))
+    if(y==styr-3 || y==endyr || y==YrMax || (y>=styr && (timevary_sel(y,f+Nfleet)>0 || timevary_sel(y+1,f+Nfleet)>0)))
     {
       SS2out<<"Asel "<<f<<" "<<y<<" 1 "<<gg<<" 1 "<<y<<"_"<<f<<"Asel";
       for (a=0;a<=nages;a++) {SS2out<<" "<<sel_a(y,f,gg,a);}
@@ -4062,7 +4208,7 @@ FUNCTION void write_bigoutput()
   if(reportdetail == 1)
   {
     if(Do_Forecast>0)
-    {k=endyr+1;}
+    {k=YrMax;}
     else
     {k=endyr;}
     for (y=styr-3;y<=k;y++)

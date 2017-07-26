@@ -28,7 +28,6 @@ FUNCTION void get_selectivity()
   splineY.initialize();
 
   Ip=0;
-
   //  SS_Label_Info_22.2 #Loop all fisheries and surveys twice; first for size selectivity, then for age selectivity
   for (f=1;f<=2*Nfleet;f++)
   {
@@ -58,7 +57,8 @@ FUNCTION void get_selectivity()
         }  // end j parm loop
         if(docheckup==1) echoinput<<" selex parms for fleet: "<<f<<" "<<endl<<sp(1,N_selparmvec(f))<<endl;
         if(save_for_report>0 || do_once==1)
-        {for (j=1;j<=N_selparmvec(f);j++) save_sp_len(y,f,j)=sp(j);}
+        {for (j=1;j<=N_selparmvec(f);j++) save_sp_len(y,f,j)=sp(j);
+        }
       }
 
       if(f<=Nfleet)  // do size selectivity, retention, discard mort
@@ -1338,7 +1338,7 @@ FUNCTION void Make_FishSelex()
     int tz;
     gg=sx(g);
 //    if(y>endyr) {yz=endyr; } else {yz=y;}  //  not used
-    if(y>endyr+1) {yf=endyr+1;} else {yf=y;}    //  yf stores in endyr+1 the average selex from a range of years
+    if(y>endyr+1 && Fcast_Specify_Selex==0) {yf=endyr+1;} else {yf=y;}    //  yf stores in endyr+1 the average selex from a range of years if Fcast_Specify_Selex==0
     tz=styr+(y-styr)*nseas+s-1;  // can use y, not yf, because wtage_emp values are read in and can extend into forecast
     for (f=1;f<=Nfleet;f++)
     {

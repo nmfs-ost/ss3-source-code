@@ -145,6 +145,7 @@ PARAMETER_SECTION
   {k=-1;}
  END_CALCS
   init_bounded_vector Fcast_impl_error(endyr+1,YrMax,-1,1,k)
+  vector ABC_buffer(endyr+1,YrMax);
 
 //  SPAWN-RECR:   define some spawning biomass and recruitment entities
   number SPB_current;                            // Spawning biomass

@@ -331,7 +331,6 @@ FUNCTION void Get_expected_values();
                    break;
                  }
                }
-                //  Note:  Svy_est() is multiplied by Q in the likelihood section
               }
               break;
             }  //  end survey index

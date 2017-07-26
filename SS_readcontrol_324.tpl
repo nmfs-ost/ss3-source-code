@@ -1616,10 +1616,10 @@
    f++;                   *(ad_comm::global_datafile) >> SR_parm_1(f)(1,7);  //  read autocorr
   echoinput<<" SR parms "<<endl<<SR_parm_1<<endl;
 
-  if(SR_parm_1(N_SRparm2-1,5)==-999)  //  using the PR_type as a flag for applying steepness in the initial equilibrium calc
-    {init_equ_steepness=1;}
-    else
+  if(SR_parm_1(N_SRparm2-1,5)>-999)  //  using the PR_type as a flag for applying steepness in the initial equilibrium calc
     {init_equ_steepness=0;}
+    else
+    {init_equ_steepness=1;}
 
   if(SR_parm_1(N_SRparm2-1,7)>=0 || SR_parm_1(N_SRparm2-1,3)!=0.0)
     {

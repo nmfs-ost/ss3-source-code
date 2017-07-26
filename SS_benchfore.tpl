@@ -674,7 +674,6 @@ FUNCTION void Get_Forecast()
   dvariable SPB_use;
   dvar_matrix catage_w(1,gmorph,0,nages);
   dvar_vector tempcatch(1,Nfleet);
-  dvar_vector ABC_buffer(endyr+1,YrMax);
   imatrix Do_F_tune(t_base,TimeMax_Fcast_std,1,Nfleet);  //  flag for doing F from catch
   dvar_matrix Fcast_Catch_Store(t_base,TimeMax_Fcast_std,1,Nfleet);
   dvar_vector Fcast_Catch_Calc_Annual(1,Nfleet);
@@ -928,8 +927,7 @@ FUNCTION void Get_Forecast()
         }
       }
   //  SS_Label_Info_24.1.2  #Call selectivity, which does its own internal check for time-varying changes
-      get_selectivity();
-
+      if(Fcast_Specify_Selex>0) get_selectivity();
       // ABC_loop:  1=get OFL; 2=get_ABC, use input catches; 3=recalc with caps and allocations
       for (int ABC_Loop=ABC_Loop_start; ABC_Loop<=ABC_Loop_end;ABC_Loop++)
       {
@@ -1438,7 +1436,7 @@ FUNCTION void Get_Forecast()
             }  // end continuous F
 
 //  SS_Label_106  call to Get_expected_values
-           Get_expected_values();
+           if(y<endyr+20) Get_expected_values();
            if(show_MSY==1)
            {
             report5<<p<<" "<<y<<" "<<ABC_Loop<<" "<<s<<" "<<ABC_buffer(y)<<" "<<totbio<<" "<<smrybio<<" ";

@@ -2759,10 +2759,9 @@
   Fcast_Rec_yr2=Fcast_yr(6);
   echoinput<<Fcast_yr<<"  # After Transformation"<<endl;
 
-  echoinput<<endl<<"# next read flag for specifying selectivity used in forecasts (not implemented yet)"<<endl;
+  echoinput<<endl<<"# next read flag for specifying selectivity used in forecasts; 0 is value that mimics 3.24, 1 is experimental"<<endl;
   *(ad_comm::global_datafile) >> Fcast_Specify_Selex;
   echoinput<<Fcast_Specify_Selex<<" # echoed Fcast_Specify_Selex value"<<endl;
-  if (Fcast_Specify_Selex != 0) Fcast_Specify_Selex = 0;    // not implemented yet
 
   echoinput<<endl<<"next read 4 values for:  control rule shape(1 or 2), inflection (like 0.40), cutoff(like 0.10), scale(like 0.75)"<<endl;
   *(ad_comm::global_datafile) >> HarvestPolicy;

@@ -136,7 +136,7 @@ PROCEDURE_SECTION
 //  SS_Label_Info_7.5 #Get averages from selected years to use in forecasts
     if(Do_Forecast>0)
     {
-//      if(save_for_report>0 || last_phase() || current_phase()==max_phase || ((sd_phase() || mceval_phase()) && (initial_params::mc_phase==0)))
+      if(Fcast_Specify_Selex==0)
       {
 //  SS_Label_Info_7.5.1 #Calc average selectivity to use in forecast; store in endyr+1
         temp=float(Fcast_Sel_yr2-Fcast_Sel_yr1+1.);
@@ -146,62 +146,67 @@ PROCEDURE_SECTION
           tempvec_l.initialize();
           for (y=Fcast_Sel_yr1;y<=Fcast_Sel_yr2;y++) {tempvec_l+=sel_l(y,f,gg);}
           sel_l(endyr+1,f,gg)=tempvec_l/temp;
+          sel_l(YrMax,f,gg)=tempvec_l/temp;
 
           tempvec_l.initialize();
           for (y=Fcast_Sel_yr1;y<=Fcast_Sel_yr2;y++) {tempvec_l+=sel_l_r(y,f,gg);}
           sel_l_r(endyr+1,f,gg)=tempvec_l/temp;
+          sel_l_r(YrMax,f,gg)=tempvec_l/temp;
 
           tempvec_l.initialize();
           for (y=Fcast_Sel_yr1;y<=Fcast_Sel_yr2;y++) {tempvec_l+=discmort2(y,f,gg);}
           discmort2(endyr+1,f,gg)=tempvec_l/temp;
+          discmort2(YrMax,f,gg)=tempvec_l/temp;
 
           tempvec_a.initialize();
           for (y=Fcast_Sel_yr1;y<=Fcast_Sel_yr2;y++) {tempvec_a+=sel_a(y,f,gg);}
           sel_a(endyr+1,f,gg)=tempvec_a/temp;
+          sel_a(YrMax,f,gg)=tempvec_a/temp;
 
           tempvec_a.initialize();
           for (y=Fcast_Sel_yr1;y<=Fcast_Sel_yr2;y++) {tempvec_a+=discmort2_a(y,f,gg);}
           discmort2_a(endyr+1,f,gg)=tempvec_a/temp;
+          discmort2_a(YrMax,f,gg)=tempvec_a/temp;
         }
 
+      }
 //  SS_Label_Info_7.5.2 #Set-up relative F among fleets and seasons for forecast
-        if(Fcast_RelF_Basis==1)  // set allocation according to range of years
+      if(Fcast_RelF_Basis==1)  // set allocation according to range of years
+      {
+        temp=0.0;
+        Fcast_RelF_Use.initialize();
+        for (y=Fcast_RelF_yr1;y<=Fcast_RelF_yr2;y++)
+        for (f=1;f<=Nfleet;f++)
+        for (s=1;s<=nseas;s++)
         {
-          temp=0.0;
-          Fcast_RelF_Use.initialize();
-          for (y=Fcast_RelF_yr1;y<=Fcast_RelF_yr2;y++)
-          for (f=1;f<=Nfleet;f++)
-          for (s=1;s<=nseas;s++)
-          {
-            t=styr+(y-styr)*nseas+s-1;
-            Fcast_RelF_Use(s,f)+=Hrate(f,t);
-          }
-          temp=sum(Fcast_RelF_Use);
-          if(temp==0.0)
-          {
-            Fcast_RelF_Use(1,1)=1.0;
-            Fcurr_Fmult=0.0;
-          }
-          else
-          {
-            Fcast_RelF_Use/=temp;
-            Fcurr_Fmult=temp/float(Fcast_RelF_yr2-Fcast_RelF_yr1+1);
-          }
+          t=styr+(y-styr)*nseas+s-1;
+          Fcast_RelF_Use(s,f)+=Hrate(f,t);
         }
-        else  // Fcast_RelF_Basis==2 so set to values that were read
+        temp=sum(Fcast_RelF_Use);
+        if(temp==0.0)
         {
-          temp=0.0;
-          for (f=1;f<=Nfleet1;f++)
-          for (s=1;s<=nseas;s++)
-          {
-            temp+=Fcast_RelF_Input(s,f);
-            Fcast_RelF_Use(s,f) = Fcast_RelF_Input(s,f);
-          }
-          // Fcast_RelF_Use=Fcast_RelF_Input/temp;
-          Fcast_RelF_Use /= temp;
-          Fcurr_Fmult=temp;
+          Fcast_RelF_Use(1,1)=1.0;
+          Fcurr_Fmult=0.0;
         }
-      }  //  end being in a phase for these calcs
+        else
+        {
+          Fcast_RelF_Use/=temp;
+          Fcurr_Fmult=temp/float(Fcast_RelF_yr2-Fcast_RelF_yr1+1);
+        }
+      }
+      else  // Fcast_RelF_Basis==2 so set to values that were read
+      {
+        temp=0.0;
+        for (f=1;f<=Nfleet1;f++)
+        for (s=1;s<=nseas;s++)
+        {
+          temp+=Fcast_RelF_Input(s,f);
+          Fcast_RelF_Use(s,f) = Fcast_RelF_Input(s,f);
+        }
+        // Fcast_RelF_Use=Fcast_RelF_Input/temp;
+        Fcast_RelF_Use /= temp;
+        Fcurr_Fmult=temp;
+      }
     }  //  end getting quantities for forecasts
 
 //  SS_Label_Info_7.5.3 #Calc average selectivity to use in benchmarks; store in styr-3
@@ -336,7 +341,7 @@ PROCEDURE_SECTION
       {
         report5<<"THIS FORECAST FOR PURPOSES OF STD REPORTING"<<endl;
         Get_Forecast();
-        cout<<"finished forecast  for STD quantities "<<F_std<<endl;
+        cout<<"finished forecast  for STD quantities "<<endl;
         did_MSY=1;
       }
 
