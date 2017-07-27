@@ -172,7 +172,7 @@
             k=0;
             for(j=1;j<=N_settle_timings;j++)
             {
-              if(settle_timings_tempvec(j)!=real_month)
+              if(settle_timings_tempvec(j)==real_month) // found matching settle_time
               {
                 settle_assignments_timing(settle)=j;
                 k=1;
@@ -189,7 +189,6 @@
       }
     echoinput<<"N settle timings: "<<N_settle_timings<<endl<<" settle_month: "<<settle_timings_tempvec(1,N_settle_timings)<<endl;
     echoinput<<"settle_assignments_timing: "<<settle_assignments_timing<<endl;
-
 //  SS_Label_Info_4.2.3 #Set-up arrays and indexing for growth patterns, gender, settlements, platoons
  END_CALCS
    int g3i;

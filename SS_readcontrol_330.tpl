@@ -85,7 +85,7 @@
 
 !!//  SS_Label_Info_4.2.2  #Define distribution of recruitment(settlement) among growth patterns, areas, months
 
-  int recr_dist_method  //  1=like 3.24; 2=main effects for GP, Settle timing, Area; 3=each Settle entity; 4=none when N_GP*Nsettle*pop==1
+  int recr_dist_method  //  1=like 3.24 (not used); 2=main effects for GP, Settle timing, Area; 3=each Settle entity; 4=none when N_GP*Nsettle*pop==1
   int recr_dist_area  //  1=global SRR; 2=area-specific SRR
   int N_settle_assignments  //  number of assigned settlements for GP, Settle_month, Area (>=0)
   int N_settle_assignments_rd  //  number read, needed to distinguish between ss3.24 and SS3.30 setup
