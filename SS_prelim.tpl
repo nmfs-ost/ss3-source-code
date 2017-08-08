@@ -444,10 +444,17 @@ PRELIMINARY_CALCS_SECTION
         for (k=1;k<=F_detail;k++)
         {
           f=F_setup2(k,1); y=F_setup2(k,2); s=F_setup2(k,3);
-          t=styr+(y-styr)*nseas+s-1;
-          g=do_Fparm(f,t);
-          if(F_setup2(k,4)!=-999)
+          if(y>0)
+          {y1=y; y2=y;}
+          else
+          {y1=-y; y2=endyr;}
+          for(y=y1; y<=y2; y++)
+          {
+            t=styr+(y-styr)*nseas+s-1;
+            g=do_Fparm(f,t);
+            if(g>0 && F_setup2(k,4)!=-999)
             {F_rate(g)=F_setup2(k,4); Hrate(f,t)=F_setup2(k,4);}
+          }
         }
       }
        echoinput<< " Fmort_parms have been reset "<<endl;

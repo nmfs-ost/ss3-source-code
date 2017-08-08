@@ -581,7 +581,6 @@ FINAL_SECTION
 
 //  SS_Label_Info_12.2 #Output the covariance matrix to covar.sso
     ofstream covarout("covar.sso");
-    covarout<<version_info_short<<endl;
     covarout<<version_info<<endl;
     covarout<<"start_time: "<<ctime(&start)<<endl;
     covarout<<active_parms<<" "<<CoVar_Count<<endl;

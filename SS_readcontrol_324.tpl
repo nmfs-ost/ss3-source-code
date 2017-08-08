@@ -1969,7 +1969,8 @@
   !! echoinput<<F_Method<<" F_Method "<<endl;
   init_number max_harvest_rate
   number Equ_F_joiner
-
+  int y1;
+  
  LOCAL_CALCS
     echoinput<<max_harvest_rate<<" max_harvest_rate "<<endl;
   if(F_Method<1 || F_Method>3)

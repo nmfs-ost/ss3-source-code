@@ -121,10 +121,8 @@
     }
   }
  END_CALCS
-  !! echoinput<<version_info<<endl;
-  !! echoinput<<ctime(&start)<<endl;
-  !! warning<<version_info<<endl;
-  !! warning<<ctime(&start)<<endl;
+  !! echoinput<<version_info<<endl<<ctime(&start)<<endl;
+  !! warning<<version_info<<endl<<ctime(&start)<<endl;
   init_adstring datfilename
   !!echoinput<<datfilename<<"  datfilename"<<endl;
   init_adstring ctlfilename

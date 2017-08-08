@@ -26,7 +26,6 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
 
    if(show_MSY==1)
    {
-     report5<<version_info_short<<endl;
      report5<<version_info<<endl<<ctime(&start);
      report5<<"Bmark_relF(by_fleet_&seas)"<<endl<<Bmark_RelF_Use<<endl<<"#"<<endl;
      report5<<"NOTE:_SPR_is_spawner_potential_ratio=(fishedSSB/R)/(unfishedSSB/R))"<<endl;

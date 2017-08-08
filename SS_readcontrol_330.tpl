@@ -1605,7 +1605,7 @@
 
 //  SS_Label_Info_4.6.4 #Setup recruitment deviations and create parm labels for each year
   if(recdev_end>retro_yr) recdev_end=retro_yr;
-  if(recdev_start<(styr-nages)) {recdev_start=styr-nages; N_warn++; warning<<" adjusting recdev_start to: "<<recdev_start<<endl;}
+  if(recdev_start<(styr-nages)) {N_warn++; warning<<" recdev_start: "<<recdev_start<<" <styr-nages: "<<styr-nages<<" reset "<<endl; recdev_start=styr-nages; }
   recdev_first=recdev_start;   // stores first recdev, whether from the early period or the standard dev period
 
   if(recdev_early_start>=recdev_start)
@@ -1715,17 +1715,16 @@
 
  LOCAL_CALCS
     echoinput<<max_harvest_rate<<" max_harvest_rate "<<endl;
-  if(F_Method<1 || F_Method>3)
+  if(F_Method<1 || F_Method>4)
     {
       N_warn++;
-    warning<<" ERROR:  F_Method must be 1 or 2 or 3, value is: "<<F_Method<<endl;
+    warning<<" ERROR:  F_Method must be 1 or 2 or 3 or 4, value is: "<<F_Method<<endl;
     cout<<" EXIT - see warning "<<endl;
     exit(1);
     }
    if(F_Method==1)
    {
      k=-1;
-     j=-1;
      Equ_F_joiner=(log(1./max_harvest_rate -1.))/(max_harvest_rate-0.2);  //  used to spline the harvest rate
      if(max_harvest_rate>0.999)
      {N_warn++; cout<<" EXIT - see warning "<<endl; warning<<" max harvest rate must  be <1.0 for F_method 1 "<<max_harvest_rate<<endl; exit(1);}
@@ -1735,22 +1734,23 @@
    else
    {
      if(max_harvest_rate<1.0)
-     {N_warn++; warning<<" max harvest rate should be >1.0 for F_method 2 or 3 "<<max_harvest_rate<<endl;}
-     if(F_Method==2)
+     {N_warn++; warning<<" max harvest rate should be >1.0 for F_method 2, 3 or 4 "<<max_harvest_rate<<endl;}
+     if(F_Method==2)  //  all fleets start with same info and use parameters
      {
        k=3;
-       j=Nfleet*(TimeMax-styr+1);
      }
-     else
+     else if(F_Method==3)  //  hybrid
      {
        k=1;
-       j=-1;
      }
+     else  //  parameters, with fleet-specific setup
+    {
+      k=1;
+    }
    }
  END_CALCS
 
   init_vector F_setup(1,k)
-//  vector F_rate_max(1,j)
 // setup for F_rate with F_Method=2
 // F_setup(1) = overall initial value
 // F_setup(2) = overall phase
@@ -1886,7 +1886,8 @@
   ivector Fparm_PH(1,N_Fparm);
   imatrix Fparm_loc(1,N_Fparm,1,2);  //  stores f,t
   vector Fparm_max(1,N_Fparm);
-
+  int y1;
+  
  LOCAL_CALCS
   Fparm_max.initialize();
   Fparm_PH.initialize();
@@ -1912,10 +1913,17 @@
         for (k=1;k<=F_detail;k++)
         {
           f=F_setup2(k,1); y=F_setup2(k,2); s=F_setup2(k,3);
-          t=styr+(y-styr)*nseas+s-1;
-          j=do_Fparm(f,t);
-          if(F_setup2(k,6)!=-999) Fparm_PH(j)=F_setup2(k,6);    //   used to setup the phase for F_rate
-          if(F_setup2(k,5)!=-999) catch_se(t,f)=F_setup2(k,5);    //    reset the se for this observation
+          if(y>0)
+          {y1=y; y2=y;}
+          else
+          {y1=-y; y2=endyr;}
+          for(y=y1; y<=y2; y++)
+          {
+            t=styr+(y-styr)*nseas+s-1;
+            j=do_Fparm(f,t);
+            if(j>0 && F_setup2(k,6)!=-999) Fparm_PH(j)=F_setup2(k,6);    //   used to setup the phase for F_rate
+            if(j>0 && F_setup2(k,5)!=-999) catch_se(t,f)=F_setup2(k,5);    //    reset the se for this observation
+          }
           //  setup of F_rate values occurs later in the parameter section
         }
       }

@@ -8,9 +8,9 @@ FUNCTION void write_summaryoutput()
   elapsed_time = difftime(finish,start);
   report2<<runnumber<<" -logL: "<<obj_fun<<" SSB(Vir_Start_End): "<<SPB_yr(styr-2)<<" "<<SPB_yr(styr)<<" "<<SPB_yr(endyr)<<endl;
   report2<<runnumber<<" Files: "<<datfilename<<" "<<ctlfilename;
-  if(readparfile>=1) report2<<" Start_from_SS3.PAR";
+  if(readparfile>=1) report2<<" Start_from_ss.par";
   report2<<endl<<runnumber<<" N_iter: "<<niter<<" runtime(sec): "<<elapsed_time<<" starttime: "<<ctime(&start);
-  report2<<runnumber<<" "<<version_info<<endl;
+  report2<<runnumber<<version_info<<endl;
   report2<<runnumber<<" F_Method: "<<F_Method<<" Retro_YR: "<<retro_yr<<" Forecast_Type: "<<Do_Forecast<<" MSY_Type: "<<Do_MSY<<endl;
   if(N_SC>0)
   {
@@ -483,8 +483,7 @@ FUNCTION void write_nudata()
   for (i=1;i<=1234;i++) temp = randn(radm);
   cout << " N_nudata: " << N_nudata << endl;
   ofstream report1("data.ss_new");
-  report1<<version_info_short<<endl;
-  report1<<"#_"<<version_info<<endl<<"#_"<<version_info2<<endl<<"#_"<<version_info3<<endl<<"#_Start_time: "<<ctime(&start);
+  report1<<version_info<<endl<<version_info2<<endl<<version_info3<<endl<<"#_Start_time: "<<ctime(&start);
   report1  << "#_Number_of_datafiles: " << N_nudata << endl;
   for (Nudat=1;Nudat<=N_nudata;Nudat++)
   {
@@ -497,7 +496,7 @@ FUNCTION void write_nudata()
   {report1 << "#_expected values with no error added " << endl;}
   else
   {report1 << "#_bootstrap file: " << Nudat-2 << endl;}
-  report1<<version_info_short<<endl;
+  report1<<version_info<<endl;
   report1 << styr << " #_StartYr"<<endl;
   report1 << endyr <<" #_EndYr"<< endl;
   report1 << nseas <<" #_Nseas"<< endl;
@@ -1613,7 +1612,7 @@ FUNCTION void write_nucontrol()
   {
   cout<<" Write new starter file "<<endl;
   ofstream NuStart("starter.ss_new");
-  NuStart<<version_info_short<<endl;
+  NuStart<<version_info<<endl<<version_info2<<endl<<version_info3<<endl;
   if(N_SC>0) NuStart<<Starter_Comments<<endl;
   NuStart<<datfilename<<endl<<ctlfilename<<endl;
   NuStart<<readparfile<<" # 0=use init values in control file; 1=use ss.par"<<endl;
@@ -1653,7 +1652,7 @@ FUNCTION void write_nucontrol()
 
   cout<<" Write new forecast file "<<endl;
   ofstream NuFore("forecast.ss_new");
-  NuFore<<version_info_short<<endl;
+  NuFore<<version_info<<endl;
   if(N_FC>0) NuFore<<Forecast_Comments<<endl;
   NuFore<<"# for all year entries except rebuilder; enter either: actual year, -999 for styr, 0 for endyr, neg number for rel. endyr"<<endl;
   NuFore<<Do_Benchmark<<" # Benchmarks: 0=skip; 1=calc F_spr,F_btgt,F_msy "<<endl;
@@ -1775,10 +1774,10 @@ FUNCTION void write_nucontrol()
   cout<<" Write new control file "<<endl;
 
   ofstream report4("control.ss_new");
-  report4<<version_info_short<<endl;
+  report4<<version_info<<endl;
   if(N_CC>0) report4<<Control_Comments<<endl;
   report4 << "#_data_and_control_files: "<<datfilename<<" // "<<ctlfilename<<endl;
-  report4<<"#_"<<version_info<<endl<<"#_"<<version_info2<<endl<<"#_"<<version_info3<<endl;
+  report4<<version_info<<endl<<version_info2<<endl<<version_info3<<endl;
   report4<<WTage_rd<<"  # 0 means do not read wtatage.ss; 1 means read and use wtatage.ss and also read and use growth parameters"<<endl;
   report4 << N_GP << "  #_N_Growth_Patterns"<<endl;
   report4 << N_platoon << " #_N_platoons_Within_GrowthPattern "<<endl;
@@ -2046,7 +2045,7 @@ FUNCTION void write_nucontrol()
  if(F_Method==2)
   {
     report4<<F_setup<<" # overall start F value; overall phase; N detailed inputs to read"<<endl;
-    report4<<"#Fleet Yr Seas F_value se phase (for detailed setup of F_Method=2)"<<endl<<F_setup2<<endl;
+    report4<<"#Fleet Yr Seas F_value se phase (for detailed setup of F_Method=2; -Yr to fill remaining years)"<<endl<<F_setup2<<endl;
   }
   else if(F_Method==3)
   {report4<<F_Tune<<"  # N iterations for tuning F in hybrid method (recommend 3 to 7)"<<endl;}
@@ -2379,12 +2378,9 @@ FUNCTION void write_bigoutput()
 
   k=current_phase();
   if(k>max_lambda_phase) k=max_lambda_phase;
-  SS2out<<version_info_short<<endl;
   SS2out<<version_info<<endl<<version_info2<<endl<<version_info3<<endl<<endl;
   time(&finish);
-  SS_compout<<version_info_short<<endl;
   SS_compout<<version_info<<endl<<"StartTime: "<<ctime(&start);
-  SIS_table<<version_info_short<<endl;
   SIS_table<<version_info<<endl<<"StartTime: "<<ctime(&start);
   SIS_table<<endl<<"Data_File: "<<datfilename<<endl;
   SIS_table<<"Control_File: "<<ctlfilename<<endl;
@@ -5261,6 +5257,7 @@ FUNCTION void write_bigoutput()
   {
         SS2out<<endl<<"SPR/YPR_Profile "<<endl<<"SPRloop Iter Fmult F_report SPR YPR YPR*Recr SSB Recruits SSB/Bzero Tot_Catch ";
         for (f=1;f<=Nfleet;f++) {if(fleet_type(f)<=2) SS2out<<" "<<fleetname(f)<<"("<<f<<")";}
+        for (f=1;f<=Nfleet;f++) {if(fleet_type(f)<=2) SS2out<<" "<<fleetname(f)<<"("<<f<<")";}
         for (p=1;p<=pop;p++)
         for (gp=1;gp<=N_GP;gp++)
         {SS2out<<" Area:"<<p<<"_GP:"<<gp;}
@@ -5305,14 +5302,41 @@ FUNCTION void write_bigoutput()
 
     equ_Recr=1.0;
     Fishon=0;
+    int SPRloops;
     Do_Equil_Calc(equ_Recr);
     SPR_unf=SPB_equil;
-        for (int SPRloop1=0; SPRloop1<=2; SPRloop1++)
+        for (int SPRloop1=0; SPRloop1<=5; SPRloop1++)
         {
           Fmultchanger1=value(pow(0.0001/Fcrash,0.025));
           Fmultchanger2=value(Fcrash/39.);
-          if(SPRloop1==1)  Fmult2=Fcrash;
-          for (SPRloop=1; SPRloop<=40; SPRloop++)
+          SPRloops=40;
+          switch(SPRloop1)
+          {
+            case 1:
+            {
+              Fmult2=Fcrash;
+              break;
+            }
+            case 3:
+            {
+              Fmult2=SPR_Fmult;
+              SPRloops=1;
+              break;
+            }
+            case 4:
+            {
+              Fmult2=Btgt_Fmult;
+              SPRloops=1;
+              break;
+            }
+            case 5:
+            {
+              Fmult2=MSY_Fmult;
+              SPRloops=1;
+              break;
+            }
+          }
+          for (SPRloop=1; SPRloop<=SPRloops; SPRloop++)
           {
             for (f=1;f<=Nfleet;f++)
             for (s=1;s<=nseas;s++)
@@ -5343,6 +5367,21 @@ FUNCTION void write_bigoutput()
               for(s=1;s<=nseas;s++) {temp+=equ_catch_fleet(2,s,f);}
               SS2out<<" "<<temp*Btgt_prof_rec;
             }
+//  report mean age of CATCH
+            for(f=1;f<=Nfleet;f++)
+            if(fleet_type(f)<=2)
+            {
+              temp=0.0; temp2=0;
+              for(s=1;s<=nseas;s++) 
+              for(g=1;g<=gmorph;g++)
+              if(use_morph(g)>0)
+              {
+                temp+=equ_catage(s,f,g)*r_ages;
+                temp2+=sum(equ_catage(s,f,g));
+              }
+              SS2out<<" "<<temp/temp2;
+            }
+            
             for (p=1;p<=pop;p++)
             for (gp=1;gp<=N_GP;gp++)
             {SS2out<<" "<<SPB_equil_pop_gp(p,gp)*Btgt_prof_rec;}
@@ -5384,7 +5423,7 @@ FUNCTION void write_bigoutput()
           Btgt_prof=Equ_SpawnRecr_Result(1);
           Btgt_prof_rec=Equ_SpawnRecr_Result(2);
           SPR_trial=value(SPB_equil/SPR_unf);
-            SS2out<<"3 "<<SPRloop<<" "<<Fmult2<<" "<<equ_F_std<<" "<<value(SPB_equil/SPR_unf)<<" "<<value(YPR_dead)<<" "
+            SS2out<<"6 "<<SPRloop<<" "<<Fmult2<<" "<<equ_F_std<<" "<<value(SPB_equil/SPR_unf)<<" "<<value(YPR_dead)<<" "
             <<value(YPR_dead*Btgt_prof_rec)<<" "<<Btgt_prof<<" "<<Btgt_prof_rec<<" "<<value(Btgt_prof/SPB_virgin)
             <<" "<<value(sum(equ_catch_fleet(2))*Btgt_prof_rec);
             for(f=1;f<=Nfleet;f++)
@@ -5394,12 +5433,34 @@ FUNCTION void write_bigoutput()
               for(s=1;s<=nseas;s++) {temp+=equ_catch_fleet(2,s,f);}
               SS2out<<" "<<temp*Btgt_prof_rec;
             }
+//  report mean age of CATCH
+            for(f=1;f<=Nfleet;f++)
+            if(fleet_type(f)<=2)
+            {
+              temp=0.0; temp2=0;
+              for(s=1;s<=nseas;s++) 
+              for(g=1;g<=gmorph;g++)
+              if(use_morph(g)>0)
+              {
+                temp+=equ_catage(s,f,g)*r_ages;
+                temp2+=sum(equ_catage(s,f,g));
+              }
+              SS2out<<" "<<temp/temp2;
+            }
             for (p=1;p<=pop;p++)
             for (gp=1;gp<=N_GP;gp++)
             {SS2out<<" "<<SPB_equil_pop_gp(p,gp)*Btgt_prof_rec;}
             SS2out<<endl;        }
         // end Btarget profile
         SS2out<<"Finish SPR/YPR profile"<<endl;
+        SS2out<<"#Profile 0 is descending additively from max possible F:  "<<maxpossF<<endl;
+        SS2out<<"#Profile 1 is descending multiplicatively back to nil F"<<endl;
+        SS2out<<"#Profile 2 is additive back to Fcrash: "<<Fcrash<<endl;
+        SS2out<<"#value 3 is Fspr: "<<SPR_Fmult<<endl;
+        SS2out<<"#value 4 is Fbtgt: "<<Btgt_Fmult<<endl;
+        SS2out<<"#value 5 is Fmsy: "<<MSY_Fmult<<endl;
+        SS2out<<"#Profile 6 increases from Fmsy to Fcrash"<<endl;
+        
   }
 
 // ******************************************************
