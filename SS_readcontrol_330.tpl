@@ -2024,7 +2024,7 @@
   {
     if(Q_setup_check(f)>0)
     {
-      N_warn++; warning<<f<<" Q setup error; no survey obs but Q setup was read "<<endl;
+      N_warn++; cout<<"exit see warning "<<endl; warning<<f<<" Q setup error; no survey obs but Q setup was read "<<endl;  exit(1);
     }
   }
   }
