@@ -208,7 +208,7 @@ FUNCTION void get_growth2()
           if(y==styr)
           {
 //  SS_Label_Info_16.2.4.1  #set up the delta in growth variability across ages if needed
-    if( g==1 && do_once==1) echoinput<<y<<" initial yr do CV setup for gp, g: "<<gp<<" "<<g<<endl;
+            if( g==1 && do_once==1) echoinput<<y<<" initial yr do CV setup for gp, g: "<<gp<<" "<<g<<endl;
             if(CV_const(gp)>0)
             {
               if(CV_depvar_a==0)
@@ -224,15 +224,15 @@ FUNCTION void get_growth2()
 
 //  SS_Label_Info_16.2.4.1.1  #if y=styr, get size-at-age in first subseason of first season of this first year
             if(do_once==1) echoinput<<y<<" seas: "<<1<<" growth gp,g: "<<gp<<" "<<g<<" settle_age "<<Settle_age(settle)<<" Lmin: "<<Lmin(gp)<<" Linf: "<<L_inf(gp)<<endl<<" K@age: "<<-VBK(gp)<<endl;
-            Ave_Size(styr,1,g,0)=L_inf(gp) + (Lmin(gp)-L_inf(gp))*mfexp(VBK(gp,0)*VBK_seas(0)*(real_age(g,1,0)-AFIX));
-            for (a=1;a<=nages+Settle_age(settle);a++)
+//            Ave_Size(styr,1,g,0)=L_inf(gp) + (Lmin(gp)-L_inf(gp))*mfexp(VBK(gp,0)*VBK_seas(0)*(real_age(g,1,0)-AFIX));
+//  test          for (a=1;a<=nages+Settle_age(settle);a++)
+            for (a=0;a<=nages;a++)
             {
-              a1=a-Settle_age(settle);
-                Ave_Size(styr,1,g,a1) = Lmin(gp) + (Lmin(gp)-L_inf(gp))* (mfexp(VBK(gp,0)*VBK_seas(0)*(real_age(g,1,a1)-AFIX))-1.0);
+// test           a1=a-Settle_age(settle);
+//              a1=a;
+                Ave_Size(styr,1,g,a) = Lmin(gp) + (Lmin(gp)-L_inf(gp))* (mfexp(VBK(gp,a)*VBK_seas(0)*(real_age(g,1,a)-AFIX))-1.0);
             }  // done ageloop
-
             if(do_once==1) echoinput<<" L@A(w/o lin): "<<Ave_Size(styr,1,g)<<endl;
-
 //  SS_Label_Info_16.2.4.1.4  #calc approximation to mean size at maxage to account for growth after reaching the maxage (accumulator age)
             current_size=Ave_Size(styr,1,g,nages);
             if(Linf_decay!=-999.)
@@ -245,7 +245,7 @@ FUNCTION void get_growth2()
               for (a=nages+1;a<=3*nages;a++)
               {
                 temp4*=temp2;  //  decay numbers at age by exp(-0.xxx)
-                current_size+=(L_inf(gp)-current_size)* (1.0-mfexp(VBK(gp,0)*VBK_seas(0)));
+                current_size+=(L_inf(gp)-current_size)* (1.0-mfexp(VBK(gp,nages)*VBK_seas(0)));
                 temp+=temp4*current_size;
                 temp1+=temp4;   //  accumulate numbers to create denominator for mean size calculation
               }
@@ -330,7 +330,7 @@ FUNCTION void get_growth2()
               if(do_once==1&&g==1) echoinput<<" final_val "<<Ave_Size(t+1,1,g,nages)<<endl;
             }
 
-            if(docheckup==1) echoinput<<y<<" seas: "<<s<<" sex: "<<sx(g)<<" gp: "<<gp<<" settle: "<<settle_g(g)<<" Lmin: "<<Lmin(gp)<<" Linf: "<<L_inf(gp)<<" VBK: "<<VBK(gp,nages)<<endl
+            if(do_once==1) echoinput<<y<<" seas: "<<s<<" sex: "<<sx(g)<<" gp: "<<gp<<" settle: "<<settle_g(g)<<" Lmin: "<<Lmin(gp)<<" Linf: "<<L_inf(gp)<<" VBK: "<<VBK(gp,nages)<<endl
             <<" size@t+1   "<<Ave_Size(t+1,1,g)(0,min(6,nages))<<" "<<Ave_Size(t+1,1,g,nages)<<endl;
           }  // end of season
 //  SS_Label_Info_16.2.4.3  #propagate Ave_Size from early years forward until first year that has time-vary growth
@@ -469,7 +469,7 @@ FUNCTION void get_growth2_Richards()
             first_grow_age=0;
             for (a=1;a<=nages+Settle_age(settle);a++)
             {
-              a1=a-Settle_age(settle);
+              a1=a;
               temp=LinfR + (LminR-LinfR)*mfexp(VBK_temp2*(real_age(g,1,a1)-AFIX));
               Ave_Size(styr,1,g,a1) = pow(temp,inv_Richards);
             }  // done ageloop
@@ -486,7 +486,7 @@ FUNCTION void get_growth2_Richards()
               for (a=nages+1;a<=3*nages;a++)
               {
                 temp4*=temp2;  //  decay numbers at age by exp(-0.xxx)
-                current_size+=(L_inf(gp)-current_size)* (1.0-mfexp(VBK(gp,0)*VBK_seas(0)));
+                current_size+=(L_inf(gp)-current_size)* (1.0-mfexp(VBK_temp2));
                 temp+=temp4*current_size;
                 temp1+=temp4;   //  accumulate numbers to create denominator for mean size calculation
               }

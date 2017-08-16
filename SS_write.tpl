@@ -1690,16 +1690,16 @@ FUNCTION void write_nucontrol()
 
   NuFore<<Fcast_Catch_Basis<<" # basis for fcast catch tuning and for fcast catch caps and allocation  (2=deadbio; 3=retainbio; 5=deadnum; 6=retainnum)"<<endl;
 
-    NuFore<<"# Conditional input if relative F choice = 2"<<endl;
+    NuFore<<"# Conditional input if relative F choice = 2;  NOTE that all fishing fleets must be first"<<endl;
     NuFore<<"# Fleet relative F:  rows are seasons, columns are fleets"<<endl;
     if(Fcast_RelF_Basis==1)
     {
       NuFore<<"#_Fleet: ";
-      for (f=1;f<=Nfleet;f++) NuFore<<" "<<fleetname(f);
+      for (f=1;f<=Nfleet1;f++) NuFore<<" "<<fleetname(f);
       NuFore<<endl;
       for (s=1;s<=nseas;s++)
       {
-        NuFore<<"# "<<Fcast_RelF_Use(s)<<endl;
+        NuFore<<"# "<<Fcast_RelF_Use(s)(1,Nfleet1)<<endl;
       }
     }
     else
@@ -1844,7 +1844,7 @@ FUNCTION void write_nucontrol()
 
     report4<<Grow_type<<" # GrowthModel: 1=vonBert with L1&L2; 2=Richards with L1&L2; 3=age_specific_K; 4=not implemented"<<endl;
     if(Grow_type<=3)
-    {report4<<AFIX<<" #_Growth_Age_for_L1"<<endl<<
+    {report4<<AFIX<<" #_Age(post-settlement)_for_L1;linear growth below this"<<endl<<
       AFIX2<<" #_Growth_Age_for_L2 (999 to use as Linf)"<<endl<<
       Linf_decay<<" #_exponential decay for growth above maxage (fixed at 0.2 in 3.24; value should approx initial Z; -999 replicates 3.24)"<<endl;
       report4<<"0  #_placeholder for future growth feature"<<endl;
@@ -5305,7 +5305,7 @@ FUNCTION void write_bigoutput()
     int SPRloops;
     Do_Equil_Calc(equ_Recr);
     SPR_unf=SPB_equil;
-        for (int SPRloop1=0; SPRloop1<=5; SPRloop1++)
+        for (int SPRloop1=0; SPRloop1<=6; SPRloop1++)
         {
           Fmultchanger1=value(pow(0.0001/Fcrash,0.025));
           Fmultchanger2=value(Fcrash/39.);
@@ -5319,17 +5319,23 @@ FUNCTION void write_bigoutput()
             }
             case 3:
             {
-              Fmult2=SPR_Fmult;
+              Fmult2=1;
               SPRloops=1;
               break;
             }
             case 4:
             {
-              Fmult2=Btgt_Fmult;
+              Fmult2=SPR_Fmult;
               SPRloops=1;
               break;
             }
             case 5:
+            {
+              Fmult2=Btgt_Fmult;
+              SPRloops=1;
+              break;
+            }
+            case 6:
             {
               Fmult2=MSY_Fmult;
               SPRloops=1;
@@ -5343,7 +5349,15 @@ FUNCTION void write_bigoutput()
             if(fleet_type(f)<=2)
             {
               t=bio_t_base+s;
-              Hrate(f,t)=Fmult2*Bmark_RelF_Use(s,f);
+              if(SPRloop1!=3)
+              {
+                Hrate(f,t)=Fmult2*Bmark_RelF_Use(s,f);
+              }
+              else
+              {
+                a=styr+(endyr-styr)*nseas+s-1;
+                Hrate(f,t)=Hrate(f,a);
+              }
             }
             Fishon=1;
             Do_Equil_Calc(equ_Recr);
@@ -5423,7 +5437,7 @@ FUNCTION void write_bigoutput()
           Btgt_prof=Equ_SpawnRecr_Result(1);
           Btgt_prof_rec=Equ_SpawnRecr_Result(2);
           SPR_trial=value(SPB_equil/SPR_unf);
-            SS2out<<"6 "<<SPRloop<<" "<<Fmult2<<" "<<equ_F_std<<" "<<value(SPB_equil/SPR_unf)<<" "<<value(YPR_dead)<<" "
+            SS2out<<"7 "<<SPRloop<<" "<<Fmult2<<" "<<equ_F_std<<" "<<value(SPB_equil/SPR_unf)<<" "<<value(YPR_dead)<<" "
             <<value(YPR_dead*Btgt_prof_rec)<<" "<<Btgt_prof<<" "<<Btgt_prof_rec<<" "<<value(Btgt_prof/SPB_virgin)
             <<" "<<value(sum(equ_catch_fleet(2))*Btgt_prof_rec);
             for(f=1;f<=Nfleet;f++)
@@ -5456,10 +5470,11 @@ FUNCTION void write_bigoutput()
         SS2out<<"#Profile 0 is descending additively from max possible F:  "<<maxpossF<<endl;
         SS2out<<"#Profile 1 is descending multiplicatively back to nil F"<<endl;
         SS2out<<"#Profile 2 is additive back to Fcrash: "<<Fcrash<<endl;
-        SS2out<<"#value 3 is Fspr: "<<SPR_Fmult<<endl;
-        SS2out<<"#value 4 is Fbtgt: "<<Btgt_Fmult<<endl;
-        SS2out<<"#value 5 is Fmsy: "<<MSY_Fmult<<endl;
-        SS2out<<"#Profile 6 increases from Fmsy to Fcrash"<<endl;
+        SS2out<<"#value 3 uses endyr F, which has different fleet allocation than benchmark"<<endl;
+        SS2out<<"#value 4 is Fspr: "<<SPR_Fmult<<endl;
+        SS2out<<"#value 5 is Fbtgt: "<<Btgt_Fmult<<endl;
+        SS2out<<"#value 6 is Fmsy: "<<MSY_Fmult<<endl;
+        SS2out<<"#Profile 7 increases from Fmsy to Fcrash"<<endl;
         
   }
 

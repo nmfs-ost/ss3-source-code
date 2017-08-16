@@ -349,29 +349,49 @@
        }
       }
    }
-
-   echoinput<<"g_start "<<g_Start<<endl;
-   echoinput<<"g_finder "<<g_finder<<endl;
-   echoinput<<" g  s  subseas  ALK_idx real_age&calen_age"<<endl;
+   echoinput<<"calen_age is elapsed years since beginning of year in which spawning occurred"<<endl;
+   echoinput<<"real_age is elapsed years since settlement"<<endl;
+   echoinput<<" g  s  subseas  ALK_idx settle_time  age calen_age  real_age"<<endl;
+   calen_age.initialize();
+   real_age.initialize();
+   keep_age.initialize();
    for (g=1;g<=gmorph;g++)
+   if(use_morph(g)==1)
    for (s=1;s<=nseas;s++)
    for (subseas=1;subseas<=N_subseas;subseas++)
    {
      ALK_idx=(s-1)*N_subseas+subseas;
-     real_age(g,ALK_idx)=r_ages+azero_seas(s)-azero_G(g)+double(subseas-1)/double(N_subseas)*seasdur(s);
-     calen_age(g,ALK_idx)=real_age(g,ALK_idx)+azero_G(g);
-     if(azero_G(g)>=azero_seas(s))
+     settle_time=settle_g(g);
+//   real_age is age since settlement and is used in growth calculations
+//   calen_age is age since the beginning of the year in which spawning occurred
+     for(a=0;a<=nages;a++)
      {
-       a=0;
-       while(real_age(g,ALK_idx,a)<0.0)
-       {keep_age(g,ALK_idx,a)=0.0; real_age(g,ALK_idx,a)=0.0; a++;}
-       {a++;}
+       calen_age(g,ALK_idx,a)=r_ages(a)+azero_seas(s)+double(subseas-1)/double(N_subseas)*seasdur(s);
+       if(a<Settle_age(settle_time))
+       {
+         real_age(g,ALK_idx,a)=0.;
+         keep_age(g,ALK_idx,a)=0.;
+       }
+       else if (a==Settle_age(settle_time))
+       {
+         if(calen_age(g,ALK_idx,a)>=(azero_G(g)+Settle_age(settle_time)))
+         {
+           real_age(g,ALK_idx,a)=calen_age(g,ALK_idx,a)-azero_G(g)-Settle_age(settle_time);
+           keep_age(g,ALK_idx,a)=1.;
+         }
+         else
+         {
+           real_age(g,ALK_idx,a)=0.;
+           keep_age(g,ALK_idx,a)=0.;
+         }
+       }
+       else
+       {
+         real_age(g,ALK_idx,a)=calen_age(g,ALK_idx,a)-azero_G(g)-Settle_age(settle_time);
+         keep_age(g,ALK_idx,a)=1.;
+       }
      }
-     a=0;
-     echoinput<<g<<" "<<s<<" "<<subseas<<" "<<ALK_idx<<" real_age: "<<real_age(g,ALK_idx)<<endl;
-     echoinput<<g<<" "<<s<<" "<<subseas<<" "<<ALK_idx<<" cal_age : "<<calen_age(g,ALK_idx)<<endl;
    }
-   echoinput<<"done with ALK_idx"<<endl;
 
     if(N_TG>0)
     {
@@ -651,9 +671,9 @@
       for (subseas=1;subseas<=N_subseas;subseas++)
       {
         ALK_idx=(s-1)*N_subseas+subseas;
-        if(a==0 && s<Bseas(g))
-          {lin_grow(g,ALK_idx,a)=0.0;}  //  so fish are not yet born so will get zero length
-        else if(real_age(g,ALK_idx,a)<AFIX)
+//        if(a==0 && s<Bseas(g))
+//          {lin_grow(g,ALK_idx,a)=0.0;}  //  so fish are not yet born so will get zero length
+        if(real_age(g,ALK_idx,a)<AFIX)
           {lin_grow(g,ALK_idx,a)=real_age(g,ALK_idx,a)/AFIX_plus;}  //  on linear portion of the growth
         else if(real_age(g,ALK_idx,a)==AFIX)
           {
@@ -667,7 +687,7 @@
         else
           {lin_grow(g,ALK_idx,a)=-2.0;}  //  flag for being in growth curve
 
-        if(lin_grow(g,ALK_idx,a)>-2.0) echoinput<<g<<" "<<a<<" "<<s<<" "<<subseas<<" "<<ALK_idx<<" "<<real_age(g,ALK_idx,a)
+        if(lin_grow(g,ALK_idx,a)>-2.0||a<4) echoinput<<g<<" "<<a<<" "<<s<<" "<<subseas<<" "<<ALK_idx<<" "<<real_age(g,ALK_idx,a)
           <<" "<<calen_age(g,ALK_idx,a)<<" "<<lin_grow(g,ALK_idx,a)<<" "<<first_grow_age<<endl;
       }
     }

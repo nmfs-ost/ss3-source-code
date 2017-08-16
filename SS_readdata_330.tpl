@@ -2827,7 +2827,10 @@
   if(Fcast_RelF_Basis==2)
   {
     echoinput<<endl<<"Fcast_RelF_Basis==2, so now read seas(row) x fleet (column) array of relative F; will be re-scaled to sum to 1.0"<<endl;
-    for(s=1;s<=nseas;s++) *(ad_comm::global_datafile) >> Fcast_RelF_Input(s)(1,Nfleet);
+    for(s=1;s<=nseas;s++) 
+    {echoinput<<"read season "<<s<<" "<<Nfleet1<<" "<<Nfleet<<endl;
+      *(ad_comm::global_datafile) >> Fcast_RelF_Input(s)(1,Nfleet1);
+    }
     echoinput<<" fleet relative F by season and fleet as read"<<endl<<Fcast_RelF_Input<<endl;
   }
   else
