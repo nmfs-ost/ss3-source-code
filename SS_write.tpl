@@ -241,8 +241,267 @@ FUNCTION void write_summaryoutput()
       }
     }
     report2<<endl;
-    cout<<"ending summary "<<endl;
-  }  //  end summary output
+    cout<<"ending report to cumreport.sso "<<endl;
+  }
+
+FUNCTION void write_SS_summary()
+  {
+    ofstream SS_smry("ss_summary.sso");
+    SS_smry<<version_info<<endl;
+    SS_smry<<datfilename<<" #_DataFile "<<endl;
+    SS_smry<<ctlfilename<<" #_Control "<<endl;
+    SS_smry<<"Run_Date: "<<ctime(&start);
+
+    k=current_phase();
+    if(k>max_lambda_phase) k=max_lambda_phase;
+    SS_smry<<"#_"<<"LIKELIHOOD "<<endl;
+    SS_smry<<"logL*Lambda Label"<<endl;
+    SS_smry<<obj_fun<<" TOTAL_LogL"<<endl;
+    if(F_Method>1) 
+      {SS_smry<<catch_like*column(catch_lambda,k);} 
+      else {SS_smry<<0.0;} 
+      SS_smry <<" Catch "<<endl;
+    SS_smry <<equ_catch_like*init_equ_lambda(k)<<" Equil_catch "<<endl;
+      if(Svy_N>0) {SS_smry<<surv_like*column(surv_lambda,k);} 
+      else {SS_smry<<0.0;} 
+    SS_smry <<" Survey"<<endl;
+      if(nobs_disc>0) {SS_smry<<disc_like*column(disc_lambda,k);}
+      else {SS_smry<<0.0;} 
+    SS_smry <<" Discard "<<endl;
+      if(nobs_mnwt>0) {SS_smry<<mnwt_like*column(mnwt_lambda,k);}
+      else {SS_smry<<0.0;} 
+    SS_smry <<" Mean_body_wt "<<endl;
+      if(Nobs_l_tot>0) {SS_smry<<length_like_tot*column(length_lambda,k);}
+      else {SS_smry<<0.0;} 
+    SS_smry <<" Length_comp "<<endl;
+      if(Nobs_a_tot>0) {SS_smry<<age_like_tot*column(age_lambda,k);}
+      else {SS_smry<<0.0;} 
+    SS_smry <<" Age_comp "<<endl;
+      if(nobs_ms_tot>0) {SS_smry<<sizeage_like*column(sizeage_lambda,k);}
+      else {SS_smry<<0.0;} 
+    SS_smry <<" Size_at_age "<<endl;
+      if(SzFreq_Nmeth>0) {SS_smry<<SzFreq_like*column(SzFreq_lambda,k);}
+      else {SS_smry<<0.0;} 
+    SS_smry <<" SizeFreq "<<endl;
+      if(Do_Morphcomp>0) {SS_smry<<Morphcomp_lambda(k)*Morphcomp_like;}
+      else {SS_smry<<0.0;} 
+    SS_smry <<" Morphcomp "<<endl;
+      if(Do_TG>0) {SS_smry<<TG_like1*column(TG_lambda1,k)+TG_like2*column(TG_lambda2,k);}
+      else {SS_smry<<0.0;} 
+    SS_smry <<" Tag_Data "<<endl;
+    SS_smry <<recr_like*recrdev_lambda(k)<<" Recruitment "<<endl;
+    SS_smry <<Fcast_recr_like<<" Forecast_Recruitment "<<endl;
+    SS_smry <<parm_like*parm_prior_lambda(k)<<" Parm_priors "<<endl;
+      if(SoftBound>0) {SS_smry<<SoftBoundPen;}
+      else {SS_smry<<0.0;} 
+    SS_smry <<" Parm_softbounds "<<endl;
+      if(N_parm_dev>0) {SS_smry<<(sum(parm_dev_like))*parm_dev_lambda(k);}
+      else {SS_smry<<0.0;} 
+    SS_smry <<" Parm_devs"<<endl;
+      if(F_ballpark_yr>0) {SS_smry<<F_ballpark_lambda(k)*F_ballpark_like;}
+      else {SS_smry<<0.0;} 
+    SS_smry <<" F_Ballpark "<<endl;
+    SS_smry <<CrashPen_lambda(k)*CrashPen<<" Crash_Pen "<<endl;
+
+  NP=0;   // count of number of parameters
+  active_count=0;
+  SS_smry<<"#_"<<"BIOLOGY"<<endl;
+  SS_smry<<"#_value se label"<<endl;
+  for (j=1;j<=N_MGparm2;j++)
+  {
+    NP++;
+    SS_smry<<MGparm(j)<<" ";
+    if(active(MGparm(j))) {active_count++;  SS_smry<<CoVar(active_count,1);}  else  SS_smry<<0.0;
+    SS_smry<<" "<<ParmLabel(NP)<<endl;
+  }
+  SS_smry<<"#_"<<"SPAWN_RECR"<<endl;
+  SS_smry<<"#_value se label"<<endl;
+  for (j=1;j<=N_SRparm3;j++)
+  {
+    NP++;
+    SS_smry<<SR_parm(j)<<" ";
+    if(active(SR_parm(j))) {active_count++;  SS_smry<<CoVar(active_count,1);} else  SS_smry<<0.0;
+    SS_smry<<" "<<ParmLabel(NP)<<endl;
+  }
+
+  if(recdev_cycle>0)
+  {
+  for (j=1;j<=recdev_cycle;j++)
+  {
+    NP++;
+    SS_smry<<recdev_cycle_parm(j)<<" ";
+    if(active(recdev_cycle_parm(j))) {active_count++;  SS_smry<<CoVar(active_count,1);} else  SS_smry<<0.0;
+    SS_smry<<" "<<ParmLabel(NP)<<endl;
+  }
+  }
+
+  if(recdev_do_early>0)
+  {
+  for (j=recdev_early_start;j<=recdev_early_end;j++)
+  {
+    NP++;
+    SS_smry<<recdev(j)<<" ";
+    if(active(recdev_early)) {active_count++;  SS_smry<<CoVar(active_count,1);} else  SS_smry<<0.0;
+    SS_smry<<" "<<ParmLabel(NP)<<endl;
+  }
+  }
+
+  if(do_recdev>0)
+  {
+  for (j=recdev_start;j<=recdev_end;j++)
+  {
+    NP++;
+    SS_smry<<recdev(j)<<" ";
+    if(active(recdev1)||active(recdev2)) {active_count++;  SS_smry<<CoVar(active_count,1);} else  SS_smry<<0.0;
+    SS_smry<<" "<<ParmLabel(NP)<<endl;
+  }
+  }
+
+  if(Do_Forecast>0)
+  {
+  for (j=recdev_end+1;j<=YrMax;j++)
+  {
+    NP++;
+    SS_smry<<Fcast_recruitments(j)<<" ";
+    if(active(Fcast_recruitments)) {active_count++;  SS_smry<<CoVar(active_count,1);} else  SS_smry<<0.0;
+    SS_smry<<" "<<ParmLabel(NP)<<endl;
+  }
+
+  for (j=endyr+1;j<=YrMax;j++)
+  {
+    NP++;
+    SS_smry<<Fcast_impl_error(j)<<" ";
+    if(active(Fcast_impl_error)) {active_count++;  SS_smry<<CoVar(active_count,1);} else  SS_smry<<0.0;
+    SS_smry<<" "<<ParmLabel(NP)<<endl;
+  }
+  }
+
+  SS_smry<<"#_"<<"Fish_Mort"<<endl;
+  SS_smry<<"#_value se label"<<endl;
+  if(N_init_F>0)
+  for (j=1;j<=N_init_F;j++)
+  {
+    NP++;
+    SS_smry<<init_F(j)<<" ";
+    if(active(init_F(j))) {active_count++;  SS_smry<<CoVar(active_count,1);} else  SS_smry<<0.0;
+    SS_smry<<" "<<ParmLabel(NP)<<endl;
+  }
+
+  if(F_Method==2)
+  for (j=1;j<=N_Fparm;j++)
+  {
+    NP++;
+    SS_smry<<F_rate(j)<<" ";
+    if(active(F_rate(j))) {active_count++;  SS_smry<<CoVar(active_count,1);} else  SS_smry<<0.0;
+    SS_smry<<" "<<ParmLabel(NP)<<endl;
+  }
+
+  SS_smry<<"#_"<<"Catchability"<<endl;
+  SS_smry<<"#_value se label"<<endl;
+  if(Q_Npar2>0)
+  for (j=1;j<=Q_Npar2;j++)
+  {
+    NP++;
+    SS_smry<<Q_parm(j)<<" ";
+    if(active(Q_parm(j))) {active_count++;  SS_smry<<CoVar(active_count,1);} else  SS_smry<<0.0;
+    SS_smry<<" "<<ParmLabel(NP)<<endl;
+  }
+
+  SS_smry<<"#_"<<"Selectivity"<<endl;
+  SS_smry<<"#_value se label"<<endl;
+  if(N_selparm2>0)
+  for (j=1;j<=N_selparm2;j++)
+  {
+    NP++;
+    SS_smry<<selparm(j)<<" ";
+    if(active(selparm(j))) {active_count++;  SS_smry<<CoVar(active_count,1);} else  SS_smry<<0.0;
+    SS_smry<<" "<<ParmLabel(NP)<<endl;
+  }
+
+  SS_smry<<"#_"<<"Tag_Recapture"<<endl;
+  SS_smry<<"#_value se label"<<endl;
+  if(Do_TG>0)
+  for (j=1;j<=3*N_TG+2*Nfleet1;j++)
+  {
+    NP++;
+    SS_smry<<TG_parm(j)<<" ";
+    if(active(TG_parm(j))) {active_count++;  SS_smry<<CoVar(active_count,1);} else  SS_smry<<0.0;
+    SS_smry<<" "<<ParmLabel(NP)<<endl;
+  }
+
+  SS_smry<<"#_"<<"Parm_Dev"<<endl;
+  SS_smry<<"#_value se label"<<endl;
+  if(N_parm_dev>0)
+  for (i=1;i<=N_parm_dev;i++)
+  for (j=parm_dev_minyr(i);j<=parm_dev_maxyr(i);j++)
+  {
+    NP++;
+    SS_smry<<parm_dev(i,j)<<" ";
+    if(parm_dev_PH(i)) {active_count++;  SS_smry<<CoVar(active_count,1);} else  SS_smry<<0.0;
+    SS_smry<<" "<<ParmLabel(NP)<<endl;
+  }
+
+  SS_smry<<"#_"<<"Derived_Quantities"<<endl;
+  SS_smry<<"#_"<<"Spawn_Bio"<<endl;
+  SS_smry<<"#_value se label"<<endl;
+  for (j=1;j<=N_STD_Yr;j++)
+  {
+    NP++; active_count++; 
+    SS_smry<<SPB_std(j)<<" "<<CoVar(active_count,1)<<" "<<ParmLabel(NP)<<endl;
+  }
+
+  SS_smry<<"#_"<<"Recruitment"<<endl;
+  SS_smry<<"#_value se label"<<endl;
+  for (j=1;j<=N_STD_Yr;j++)
+  {
+    NP++; active_count++; 
+    SS_smry<<recr_std(j)<<" "<<CoVar(active_count,1)<<" "<<ParmLabel(NP)<<endl;
+  }
+
+  SS_smry<<"#_"<<"SPR_std"<<endl;
+  SS_smry<<"#_value se label"<<endl;
+  for (j=1;j<=N_STD_Yr_Ofish;j++)
+  {
+    NP++; active_count++; 
+    SS_smry<<SPR_std(j)<<" "<<CoVar(active_count,1)<<" "<<ParmLabel(NP)<<endl;
+  }
+
+  SS_smry<<"#_"<<"F_std"<<endl;
+  SS_smry<<"#_value se label"<<endl;
+  for (j=1;j<=N_STD_Yr_F;j++)
+  {
+    NP++; active_count++; 
+    SS_smry<<F_std(j)<<" "<<CoVar(active_count,1)<<" "<<ParmLabel(NP)<<endl;
+  }
+
+  SS_smry<<"#_"<<"Depletion_std"<<endl;
+  SS_smry<<"#_value se label"<<endl;
+  for (j=1;j<=N_STD_Yr_Dep;j++)
+  {
+    NP++; active_count++; 
+    SS_smry<<depletion(j)<<" "<<CoVar(active_count,1)<<" "<<ParmLabel(NP)<<endl;
+  }
+
+  SS_smry<<"#_"<<"Mgmt_Quantity"<<endl;
+  SS_smry<<"#_value se label"<<endl;
+  for (j=1;j<=N_STD_Mgmt_Quant;j++)
+  {
+    NP++; active_count++; 
+    SS_smry<<Mgmt_quant(j)<<" "<<CoVar(active_count,1)<<" "<<ParmLabel(NP)<<endl;
+  }
+
+  SS_smry<<"#_"<<"Extra_stdev"<<endl;
+  SS_smry<<"#_value se label"<<endl;
+  for (j=1;j<=Extra_Std_N;j++)
+  {
+    NP++; active_count++; 
+    SS_smry<<Extra_Std(j)<<" "<<CoVar(active_count,1)<<" "<<ParmLabel(NP)<<endl;
+  }
+
+    SS_smry.close();
+    cout<<" ending report to SS_summary.sso"<<endl;
+    return;
+  }
 
 //********************************************************************
  /*  SS_Label_FUNCTION 37 write_rebuilder_output */
@@ -1690,30 +1949,22 @@ FUNCTION void write_nucontrol()
 
   NuFore<<Fcast_Catch_Basis<<" # basis for fcast catch tuning and for fcast catch caps and allocation  (2=deadbio; 3=retainbio; 5=deadnum; 6=retainnum)"<<endl;
 
-    NuFore<<"# Conditional input if relative F choice = 2;  NOTE that all fishing fleets must be first"<<endl;
-    NuFore<<"# Fleet relative F:  rows are seasons, columns are fleets"<<endl;
-    if(Fcast_RelF_Basis==1)
+    NuFore<<"# Conditional input if relative F choice = 2"<<endl;
+    NuFore<<"# enter list of:  season,  fleet, relF; if used, terminate with season=-9999"<<endl;
     {
-      NuFore<<"#_Fleet: ";
-      for (f=1;f<=Nfleet1;f++) NuFore<<" "<<fleetname(f);
-      NuFore<<endl;
       for (s=1;s<=nseas;s++)
+      for(f=1;f<=Nfleet;f++)
       {
-        NuFore<<"# "<<Fcast_RelF_Use(s)(1,Nfleet1)<<endl;
+        if(Fcast_RelF_Use(s,f)>0.0)
+          {
+            if(Fcast_RelF_Basis==1)  NuFore<<"# ";
+            NuFore<<s<<" "<<f<<" "<<Fcast_RelF_Use(s,f)<<endl;
+          }
       }
-    }
-    else
-    {
-      NuFore<<"#_Fleet: ";
-      for (f=1;f<=Nfleet;f++) NuFore<<" "<<fleetname(f);
-      NuFore<<endl;
-      for (s=1;s<=nseas;s++)
-      {
-        NuFore<<Fcast_RelF_Use(s)<<endl;
-      }
+      if(Fcast_RelF_Basis==2) NuFore<<"-9999 0 0  # terminator for list of relF"<<endl;
     }
 
-  NuFore<<"# enter list of fleet number and max for fleets with max annual catch; terminate with fleet=-9999"<<endl;
+  NuFore<<"# enter list of: fleet number, max annual catch for fleets with a max; terminate with fleet=-9999"<<endl;
   for(f=1;f<=Nfleet;f++)
   {
     if(Fcast_MaxFleetCatch(f)>-1) NuFore<<f<<" "<<Fcast_MaxFleetCatch(f)<<endl;
@@ -2376,8 +2627,6 @@ FUNCTION void write_bigoutput()
 //  ofstream SS_compout2("CompReport2.sso");
   ofstream SIS_table("SIS_table.sso");
 
-  k=current_phase();
-  if(k>max_lambda_phase) k=max_lambda_phase;
   SS2out<<version_info<<endl<<version_info2<<endl<<version_info3<<endl<<endl;
   time(&finish);
   SS_compout<<version_info<<endl<<"StartTime: "<<ctime(&start);
@@ -2502,6 +2751,8 @@ FUNCTION void write_bigoutput()
     SS2out<<fleet_setup(f)<<" "<<Svy_units(f)<<" "<<Svy_errtype(f)<<" # Fleet:_"<<f<<"_ "<<fleetname(f)<<endl;
   }
 
+  k=current_phase();
+  if(k>max_lambda_phase) k=max_lambda_phase;
   SS2out<<endl<<"LIKELIHOOD "<<obj_fun<<endl;                         //SS_Label_310
   SS2out<<"Component logL*Lambda Lambda"<<endl;
   SS2out<<"TOTAL "<<obj_fun<<endl;
@@ -4436,7 +4687,7 @@ FUNCTION void write_bigoutput()
      {
      if(use_morph(g)>0)
      {
-       for (y=styr-1;y<=endyr;y++)
+       for (y=styr-1;y<=YrMax;y++)
        for (s=1;s<=nseas;s++)
        {
          t = styr+(y-styr)*nseas+s-1;

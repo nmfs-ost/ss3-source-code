@@ -73,6 +73,10 @@ PARAMETER_SECTION
   matrix Hermaphro_val(1,N_GP,0,nages)
 
   matrix catch_mult(styr-1,YrMax,1,Nfleet)
+  4darray Save_PopLen(styr-3*nseas,TimeMax_Fcast_std+1,1,2*pop,1,gmorph,1,nlength)
+  4darray Save_PopWt(styr-3*nseas,TimeMax_Fcast_std+1,1,2*pop,1,gmorph,1,nlength)
+  4darray Save_PopAge(styr-3*nseas,TimeMax_Fcast_std+1,1,2*pop,1,gmorph,0,nages)
+  4darray Save_PopBio(styr-3*nseas,TimeMax_Fcast_std+1,1,2*pop,1,gmorph,0,nages)
 
  LOCAL_CALCS
    mat_len=1.0;
@@ -178,11 +182,6 @@ PARAMETER_SECTION
   matrix Nmid(1,gmorph,0,nages);
   matrix Nsurv(1,gmorph,0,nages);
   3darray natage_temp(1,pop,1,gmorph,0,nages)
-  4darray Save_PopLen(styr-3*nseas,TimeMax_Fcast_std+1,1,2*pop,1,gmorph,1,nlength)
-  4darray Save_PopWt(styr-3*nseas,TimeMax_Fcast_std+1,1,2*pop,1,gmorph,1,nlength)
-  4darray Save_PopAge(styr-3*nseas,TimeMax_Fcast_std+1,1,2*pop,1,gmorph,0,nages)
-  4darray Save_PopBio(styr-3*nseas,TimeMax_Fcast_std+1,1,2*pop,1,gmorph,0,nages)
-
   number ave_age    //  average age of fish in unfished population; used to weight R1
 
 !!//  SS_Label_Info_5.1.3 #Create F parameters and associated arrays and constants

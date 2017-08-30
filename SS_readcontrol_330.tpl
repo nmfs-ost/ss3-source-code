@@ -1854,7 +1854,7 @@
    k=nseas;
 
    for (s=1;s<=k;s++)
-   for (f=1;f<=Nfleet1;f++)
+   for (f=1;f<=Nfleet;f++)
    {
      if(init_F_loc(s,f)>0)
      {

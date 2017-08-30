@@ -152,7 +152,6 @@
     *(ad_comm::global_datafile) >> pop;
     echoinput<<pop<<" N_areas "<<endl;
     *(ad_comm::global_datafile) >> Nfleet;
-    // Nfleet1=Nfleet;
     Nfleet1=0;
     Nsurvey=0;
     nages2=gender*nages+gender-1;
@@ -371,10 +370,12 @@
       }
     }
   }
-
+    obs_equ_catch.initialize();
     for(s=1;s<=nseas;s++)
     {
-      for (f=1;f<=Nfleet1;f++) {obs_equ_catch(s,f)=catch_ret_obs(f,styr-nseas-1+s);}
+      for (f=1;f<=Nfleet;f++) 
+      if(fleet_type(f)<=2)
+        {obs_equ_catch(s,f)=catch_ret_obs(f,styr-nseas-1+s);}
       echoinput<<" equ, seas:   -1 "<<s<<" catches: "<<obs_equ_catch(s)<<endl;
     }
     for(y=styr;y<=endyr;y++)
@@ -2697,7 +2698,7 @@
   vector Fcast_MaxFleetCatch(1,Nfleet)
   vector Fcast_MaxAreaCatch(1,pop)
   ivector Allocation_Fleet_Assignments(1,Nfleet)
-  matrix Fcast_RelF_Input(1,nseas,1,Nfleet1)
+  matrix Fcast_RelF_Input(1,nseas,1,Nfleet)
   int Fcast_Specify_Selex   // 0=do not use; 1=specify one selectivity for all fishing fleets for forecasts (not implemented); 2=specify selectivity per fishing fleet for forecasts (not implemented)
 
  LOCAL_CALCS
@@ -2705,7 +2706,7 @@
   Fcast_MaxAreaCatch.initialize();
   Allocation_Fleet_Assignments.initialize();
   Fcast_Catch_Allocation.initialize();
-
+  Fcast_RelF_Input.initialize();
 
  END_CALCS
 //  init_vector Fcast_Input_rd(1,k)
@@ -2826,16 +2827,36 @@
 
   if(Fcast_RelF_Basis==2)
   {
-    echoinput<<endl<<"Fcast_RelF_Basis==2, so now read seas(row) x fleet (column) array of relative F; will be re-scaled to sum to 1.0"<<endl;
-    for(s=1;s<=nseas;s++) 
-    {echoinput<<"read season "<<s<<" "<<Nfleet1<<" "<<Nfleet<<endl;
-      *(ad_comm::global_datafile) >> Fcast_RelF_Input(s)(1,Nfleet1);
-    }
+    ivector  checkfleet(1,Nfleet);
+    checkfleet.initialize();
+    echoinput<<endl<<"Fcast_RelF_Basis==2, so now read list of seas, fleet#, relF_value"<<endl<<
+    "Terminate with -9999 for season"<<endl<<"Will be re-scaled to sum to 1.0"<<endl;
+    ender=0;
+    do {
+      dvector tempvec(1,3);
+      *(ad_comm::global_datafile) >> tempvec(1,3);
+      echoinput<<tempvec<<endl;
+      if(tempvec(1)==-9999.)
+      {ender=1;}
+      else
+      {
+        s=int(tempvec(1));
+        f=int(tempvec(2));
+        if(fleet_type(f)<=2)
+        {Fcast_RelF_Input(s,f)=tempvec(3);  checkfleet(f)=1;}
+        else
+        {echoinput<<"exit for fleet "<<f<<"  ;cannot set fcast relF for survey fleets"<<endl; exit(1);}
+      }
+    } while (ender==0);
     echoinput<<" fleet relative F by season and fleet as read"<<endl<<Fcast_RelF_Input<<endl;
+    for(f=1;f<=Nfleet;f++)
+    {
+      if(fleet_type(f)==1 && checkfleet(f)==0)
+        {N_warn++; warning<<"fleet: "<<f<<" "<<fleetname(f)<<"  is a fishing fleet but forecast relF not read"<<endl;}
+    }
   }
   else
-  {Fcast_RelF_Input.initialize();}
-
+  {}
   }
 
   else  //  set forecast defaults
@@ -3011,7 +3032,7 @@
   }
  END_CALCS
 
-  3darray Fcast_InputCatch(k1,y,1,Nfleet1,1,2)  //  values and basis to be used
+  3darray Fcast_InputCatch(k1,y,1,Nfleet,1,2)  //  values and basis to be used
   matrix Fcast_InputCatch_rd(1,N_Fcast_Input_Catches,1,j)
 
  LOCAL_CALCS
@@ -3022,7 +3043,7 @@
     if(N_Fcast_Input_Catches>0)
     {
       for (t=k1;t<=y;t++)
-      for (f=1;f<=Nfleet1;f++)
+      for (f=1;f<=Nfleet;f++)
       {Fcast_InputCatch(t,f,1)=-1;}
 
       for (i=0;i<=N_Fcast_Input_Catches-1;i++)
@@ -3030,7 +3051,7 @@
    echoinput<<i<<" "<<Fcast_InputCatch_list[i]<<endl;
         Fcast_InputCatch_rd(i+1)=Fcast_InputCatch_list[i];
         y=Fcast_InputCatch_rd(i+1,1); s=Fcast_InputCatch_rd(i+1,2); f=Fcast_InputCatch_rd(i+1,3);
-        if(y>endyr && y<=YrMax && f<=Nfleet1)
+        if(y>endyr && y<=YrMax && fleet_type(f)<=2)
         {
           t=styr+(y-styr)*nseas +s-1;
           Fcast_InputCatch(t,f,1)=Fcast_InputCatch_rd(i+1,4);

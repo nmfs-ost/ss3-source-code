@@ -197,7 +197,7 @@ PROCEDURE_SECTION
       else  // Fcast_RelF_Basis==2 so set to values that were read
       {
         temp=0.0;
-        for (f=1;f<=Nfleet1;f++)
+        for (f=1;f<=Nfleet;f++)
         for (s=1;s<=nseas;s++)
         {
           temp+=Fcast_RelF_Input(s,f);

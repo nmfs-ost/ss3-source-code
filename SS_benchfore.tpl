@@ -1408,6 +1408,7 @@ FUNCTION void Get_Forecast()
                   catch_fleet(t,f,4)+=tempvec_a*elem_prod(natage(t,p,g),sel_al_3(s,g,f));      // encountered catch numbers
                   catch_fleet(t,f,5)+=tempvec_a*elem_prod(natage(t,p,g),deadfish(s,g,f));      // deadfish catch numbers
                   catch_fleet(t,f,6)+=tempvec_a*elem_prod(natage(t,p,g),sel_al_4(s,g,f));      // retained catch numbers
+                  catage(t,f,g)=elem_prod(elem_prod(natage(t,p,g),deadfish(s,g,f)),tempvec_a);
                 }  //close gmorph loop
 
               }  // close fishery

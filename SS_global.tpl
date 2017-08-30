@@ -638,18 +638,19 @@ FINAL_SECTION
      Process_STDquant();
      cout<<" finished STD quantities for reporting"<<endl;
 
-//  SS_Label_Info_12.4 #Do Outputs
-//  SS_Label_Info_12.4.1 #Call fxn write_bigoutput()
-    write_bigoutput();
-    cout<<" finished big report"<<endl;
-
 //  SS_Label_Info_12.4.2 #Call fxn write_summaryoutput() to produce report.sso and compreport.sso
     if(Do_CumReport>0) write_summaryoutput();
     cout<<" finished summary report "<<endl;
+     write_SS_summary();
 
 //  SS_Label_Info_12.4.3 #Call fxn write_rebuilder_output to produce rebuilder.sso
     if(Do_Rebuilder>0 && mceval_counter<=1) write_rebuilder_output();
     cout<<" finished rebuilder report "<<endl;
+
+//  SS_Label_Info_12.4 #Do Outputs
+//  SS_Label_Info_12.4.1 #Call fxn write_bigoutput()
+    write_bigoutput();
+    cout<<" finished big report"<<endl;
 
 //  SS_Label_Info_12.4.4 #Call fxn write_nudata() to create bootstrap data in data.ss_new
     write_nudata();
@@ -688,8 +689,7 @@ FINAL_SECTION
     cout<<" write wtatage.ss_new "<<endl;
 
     warning<<" N warnings: "<<N_warn<<endl;
-    if(parm_adjust_method==3) warning<<"time-vary MGparms not bound checked"<<endl;
-    if(parm_adjust_method==3) warning<<"time-vary selparms not bound checked"<<endl;
+    if(parm_adjust_method==3) warning<<"time-vary parms not bound checked"<<endl;
     cout<<endl<<"!!  Run has completed  !!            ";
 
 //  SS_Label_Info_12.4.7 #Finish up with final writes to warning.sso
