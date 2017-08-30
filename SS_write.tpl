@@ -1329,7 +1329,7 @@ FUNCTION void write_nudata()
        report1<<"-9999 0 0"<<endl;
       }
 
-  report1<<"#"<<SzFreq_Nmeth<<" # N sizefreq methods to read "<<endl;
+  report1<<"#"<<endl<<SzFreq_Nmeth<<" # N sizefreq methods to read "<<endl;
   if(SzFreq_Nmeth>0)
   {
     report1<<SzFreq_Nbins<<" #Sizefreq N bins per method"<<endl;
