@@ -2341,17 +2341,13 @@ FUNCTION void write_nucontrol()
     }
    NP+=N_Fparm;
    report4<<"#"<<endl;
-   report4<<"#_Q_setup"<<endl;
-// 1:  link type
-// 2:  extra input for link, i.e. mirror fleet
-// 3:  0/1 to select extra sd parameter
-// 4:  0/1 for biasadj or not
-// 5:  0/1 to float
+   report4<<"#_Q_setup for every fleet, even if no survey"<<endl;
+   report4<<"#_1:  link type: (1=simple q, 1 parm; 2=mirror simple q, 1 mirrored parm; 3=q and power, 2 parm)"<<endl;
+   report4<<"#_2:  extra input for link, i.e. mirror fleet"<<endl;
+   report4<<"#_3:  0/1 to select extra sd parameter"<<endl;
+   report4<<"#_4:  0/1 for biasadj or not"<<endl;
+   report4<<"#_5:  0/1 to float"<<endl;
 
-//  Link types
-//  1  simple q, 1 parm
-//  2  mirror simple q, 1 mirrored parameter
-//  3  q and power, 2 parm   " # Q_type options:  <0=mirror, 0=float_nobiasadj, 1=float_biasadj, 2=parm_nobiasadj, 3=parm_w_random_dev, 4=parm_w_randwalk, 5=mean_unbiased_float_assign_to_parm"<<endl;
    report4<<"#_   fleet      link link_info  extra_se   biasadj     float  #  fleetname"<<endl;
    for (f=1;f<=Nfleet;f++)
    {
@@ -2399,12 +2395,48 @@ FUNCTION void write_nucontrol()
       report4.unsetf(std::ios_base::fixed); report4.unsetf(std::ios_base::floatfield);
    }
    report4<<"#"<<endl;
-   report4<<"#_size_selex_types"<<endl;
+   report4<<"#_size_selex_patterns"<<endl;
+
+   report4<<"#Pattern:_0; parm=0; selex=1.0 for all sizes"<<endl;
+   report4<<"#Pattern:_1; parm=2; logistic; with 95% width specification"<<endl;
+   report4<<"#Pattern:_5; parm=2; mirror another size selex; PARMS pick the min-max bin to mirror"<<endl;
+   report4<<"#Pattern:_15; parm=0; mirror another age or length selex"<<endl;
+   report4<<"#Pattern:_6; parm=2+special; non-parm len selex"<<endl;
+   report4<<"#Pattern:_43; parm=2+special+2;  like 6, with 2 additional param for scaling (average over bin range)"<<endl;
+   report4<<"#Pattern:_8; parm=8; New doublelogistic with smooth transitions and constant above Linf option"<<endl;
+   report4<<"#Pattern:_9; parm=6; simple 4-parm double logistic with starting length; parm 5 is first length; parm 6=1 does desc as offset"<<endl;
+   report4<<"#Pattern:_21; parm=2+special; non-parm len selex, read as pairs of size, then selex"<<endl;
+   report4<<"#Pattern:_22; parm=4; double_normal as in CASAL"<<endl;
+   report4<<"#Pattern:_23; parm=6; double_normal where final value is directly equal to sp(6) so can be >1.0"<<endl;
+   report4<<"#Pattern:_24; parm=6; double_normal with sel(minL) and sel(maxL), using joiners"<<endl;
+   report4<<"#Pattern:_25; parm=3; exponential-logistic in size"<<endl;
+   report4<<"#Pattern:_27; parm=3+special; cubic spline "<<endl;
+   report4<<"#Pattern:_42; parm=2+special+3; // like 27, with 2 additional param for scaling (average over bin range)"<<endl;
+   
    report4<<"#_discard_options:_0=none;_1=define_retention;_2=retention&mortality;_3=all_discarded_dead;_4=define_dome-shaped_retention"<<endl;
    report4<<"#_Pattern Discard Male Special"<<endl;
    for (f=1;f<=Nfleet;f++) report4<<seltype(f)<<" # "<<f<<" "<<fleetname(f)<<endl;
    report4<<"#"<<endl;
+   
+   
    report4<<"#_age_selex_types"<<endl;
+   report4<<"#Pattern:_0; parm=0; selex=1.0 for ages 0 to maxage"<<endl;
+   report4<<"#Pattern:_10; parm=0; selex=1.0 for ages 1 to maxage"<<endl;
+   report4<<"#Pattern:_11; parm=2; selex=1.0  for specified min-max age"<<endl;
+   report4<<"#Pattern:_12; parm=2; age logistic"<<endl;
+   report4<<"#Pattern:_13; parm=8; age double logistic"<<endl;
+   report4<<"#Pattern:_14; parm=nages+1; age empirical"<<endl;
+   report4<<"#Pattern:_15; parm=0; mirror another age or length selex"<<endl;
+   report4<<"#Pattern:_16; parm=2; Coleraine - Gaussian"<<endl;
+   report4<<"#Pattern:_17; parm=nages+1; empirical as random walk  N parameters to read can be overridden by setting special to non-zero"<<endl;
+   report4<<"#Pattern:_41; parm=2+nages+1; // like 17, with 2 additional param for scaling (average over bin range)"<<endl;
+   report4<<"#Pattern:_18; parm=8; double logistic - smooth transition"<<endl;
+   report4<<"#Pattern:_19; parm=6; simple 4-parm double logistic with starting age"<<endl;
+   report4<<"#Pattern:_20; parm=6; double_normal,using joiners"<<endl;
+   report4<<"#Pattern:_26; parm=3; exponential-logistic in age"<<endl;
+   report4<<"#Pattern:_27; parm=3+special; cubic spline in age"<<endl;
+   report4<<"#Pattern:_42; parm=2+nages+1; // cubic spline; with 2 additional param for scaling (average over bin range)"<<endl;
+
    report4<<"#_Pattern Discard Male Special"<<endl;
    for (f=1;f<=Nfleet;f++) report4<<seltype(f+Nfleet)<<" # "<<f<<" "<<fleetname(f)<<endl;
    report4<<"#"<<endl;
