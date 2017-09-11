@@ -1242,7 +1242,14 @@ FUNCTION void write_nudata()
   }
 
    report1<<"#"<<endl<<n_abins<<" #_N_age_bins"<<endl;
-  if(n_abins>0) report1<<age_bins1<<endl;
+  if(n_abins>0)
+  {
+    report1<<age_bins1<<endl;
+  }
+  else
+  {
+    report1<<"# ";
+  }
   report1 << N_ageerr <<" #_N_ageerror_definitions"<< endl;
   if(N_ageerr>0) report1 << age_err_rd << endl;
 
@@ -1255,7 +1262,12 @@ FUNCTION void write_nudata()
   report1<<"#_minsamplesize: minimum sample size; set to 1 to match 3.24, minimum value is 0.001"<<endl;
   report1<<"#_mintailcomp addtocomp combM+F CompressBins CompError ParmSelect minsamplesize"<<endl;
   for (f=1;f<=Nfleet;f++)
-  {report1<<min_tail_A(f)<<" "<<min_comp_A(f)<<" "<<CombGender_A(f)<<" "<<AccumBin_A(f)<<" "<<Comp_Err_A(f)<<" "<<Comp_Err_A2(f)<<" "<<min_sample_size_A(f)<<" #_fleet:"<<f<<"_"<<fleetname(f)<<endl;}
+  {
+    if (n_abins <= 0) report1<<"# ";
+    report1<<min_tail_A(f)<<" "<<min_comp_A(f)<<" "<<CombGender_A(f)<<" "<<AccumBin_A(f)<<" "<<Comp_Err_A(f)<<" "<<Comp_Err_A2(f)<<" "<<min_sample_size_A(f)<<" #_fleet:"<<f<<"_"<<fleetname(f)<<endl;
+  }
+  
+  if (n_abins <= 0) report1<<"# ";
   report1<<Lbin_method<<" #_Lbin_method_for_Age_Data: 1=poplenbins; 2=datalenbins; 3=lengths"<<endl;
   report1<<"# sex codes:  0=combined; 1=use female only; 2=use male only; 3=use both as joint sexxlength distribution"<<endl;
   report1<<"# partition codes:  (0=combined; 1=discard; 2=retained"<<endl;
@@ -1280,6 +1292,7 @@ FUNCTION void write_nudata()
     }
    }
   f=exp_a_temp.size()+8;
+  if (n_abins <= 0) report1<<"# ";
   report1 << "-9999 ";
   for(i=1;i<=f;i++) report1<<" 0";
   report1<<endl;
@@ -1631,7 +1644,14 @@ FUNCTION void write_nudata()
   }
 
    report1<<"#"<<endl<<n_abins<<" #_N_age_bins"<<endl;
-  if(n_abins>0) report1<<age_bins1<<endl;
+  if(n_abins>0)
+  {
+    report1<<age_bins1<<endl;
+  }
+  else
+  {
+    report1<<"# ";
+  }
   report1 << N_ageerr <<" #_N_ageerror_definitions"<< endl;
   if(N_ageerr>0) report1 << age_err_rd << endl;
 
@@ -1644,7 +1664,12 @@ FUNCTION void write_nudata()
   report1<<"#_minsamplesize: minimum sample size; set to 1 to match 3.24, minimum value is 0.001"<<endl;
   report1<<"#_mintailcomp addtocomp combM+F CompressBins CompError ParmSelect minsamplesize"<<endl;
   for (f=1;f<=Nfleet;f++)
-  {report1<<min_tail_A(f)<<" "<<min_comp_A(f)<<" "<<CombGender_A(f)<<" "<<AccumBin_A(f)<<" "<<Comp_Err_A(f)<<" "<<Comp_Err_A2(f)<<" "<<min_sample_size_A(f)<<" #_fleet:"<<f<<"_"<<fleetname(f)<<endl;}
+  {
+    if (n_abins <= 0) report1<<"# ";
+    report1<<min_tail_A(f)<<" "<<min_comp_A(f)<<" "<<CombGender_A(f)<<" "<<AccumBin_A(f)<<" "<<Comp_Err_A(f)<<" "<<Comp_Err_A2(f)<<" "<<min_sample_size_A(f)<<" #_fleet:"<<f<<"_"<<fleetname(f)<<endl;
+  }
+  
+  if (n_abins <= 0) report1<<"# ";
   report1<<Lbin_method<<" #_Lbin_method_for_Age_Data: 1=poplenbins; 2=datalenbins; 3=lengths"<<endl;
   report1<<"# sex codes:  0=combined; 1=use female only; 2=use male only; 3=use both as joint sexxlength distribution"<<endl;
   report1<<"# partition codes:  (0=combined; 1=discard; 2=retained"<<endl;
@@ -1689,6 +1714,7 @@ FUNCTION void write_nudata()
     }
   }
   f=exp_a_temp.size()+8;
+  if (n_abins <= 0) report1<<"# ";
   report1 << "-9999 ";
   for(i=1;i<=f;i++) report1<<" 0";
   report1<<endl;
