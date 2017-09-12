@@ -68,7 +68,7 @@
     {seasdur /=12.;}
   seasdur_half = seasdur*0.5;   // half a season
   subseasdur_delta=seasdur/double(N_subseas);
-  TimeMax = styr+(endyr-styr)*nseas+nseas-1;
+  TimeMax = styr+(endyr+20-styr)*nseas+nseas-1;
   retro_yr=endyr+retro_yr;
 
   azero_seas(1)=0.;

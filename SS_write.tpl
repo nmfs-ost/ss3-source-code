@@ -518,7 +518,7 @@ FUNCTION void write_rebuilder_output()
       rebuild_dat<<"SSv3_default_rebuild.dat"<<endl;
       rebuild_dat<<"# Number of sexes"<<endl<<gender<<endl;
       rebuild_dat<<"# Age range to consider (minimum age; maximum age)"<<endl<<0<<" "<<nages<<endl;
-      rebuild_dat<<"# Number of fleets"<<endl<<Nfleet<<endl;
+      rebuild_dat<<"# Number of fleets"<<endl<<Nfleet1<<endl;
       rebuild_dat<<"# First year of projection (Yinit)"<<endl<<Rebuild_Yinit<<endl;
       rebuild_dat<<"# First Year of rebuilding period (Ydecl)"<<endl<<Rebuild_Ydecl<<endl;
       rebuild_dat<<"# Number of simulations"<<endl<<1000<<endl;
@@ -566,7 +566,7 @@ FUNCTION void write_rebuilder_output()
     // use the deadfish vectors that account for discard and for mortality of discards
     // average across morphs and areas using N_at_Age in year Yinit and across seasons using Fcast_RelF
     for (gg=1;gg<=gender;gg++)
-    for (f=1;f<=Nfleet;f++)
+    for (f=1;f<=Nfleet1;f++)
     {
       tempvec_a.initialize();tempvec2.initialize();tempvec3.initialize(); j=0;
       for (s=1;s<=nseas;s++)
@@ -586,11 +586,11 @@ FUNCTION void write_rebuilder_output()
       {
         tempvec_a= elem_div(tempvec_a,tempvec3);
         tempvec2 = elem_div(tempvec2,tempvec3);
-        rebuilder <<tempvec_a<< " #bodywt for gender,fleet: "<<gg<<" / "<<f<< endl;
-        rebuilder <<tempvec2<< " #selex for gender,fleet: "<<gg<<" / "<<f<< endl;
+        rebuilder <<tempvec_a<< " #bodywt for gender,fleet: "<<gg<<" / "<<f<<" "<<fleetname(f)<<endl;
+        rebuilder <<tempvec2<< " #selex for gender,fleet: "<<gg<<" / "<<f<<" "<<fleetname(f)<<endl;
         if(mceval_counter==0)
         {
-          rebuild_dat << " #wt and selex for gender,fleet: "<<gg<<" "<<f<< endl;
+          rebuild_dat << " #wt and selex for gender,fleet: "<<gg<<" "<<f<<" "<<fleetname(f)<<endl;
           rebuild_dat <<tempvec_a<<endl<<tempvec2<< endl;
         }
       }
@@ -999,8 +999,12 @@ FUNCTION void write_nudata()
   }
     report1<<"#"<<endl << N_envvar<<" #_N_environ_variables"<<endl;
     report1<<"#Yr Variable Value"<<endl;
+    if(finish_starter==999) 
+      {j=1;}
+      else
+      {j=0;}
     if(N_envvar>0)
-      {for(i=1;i<=N_envdata;i++) report1<<env_temp[i]<<endl;
+      {for(i=j;i<=N_envdata-1+j;i++) report1<<env_temp[i]<<endl;
        report1<<"-9999 0 0"<<endl;
       }
 
@@ -1337,8 +1341,12 @@ FUNCTION void write_nudata()
 
     report1<<"#"<<endl << N_envvar<<" #_N_environ_variables"<<endl;
     report1<<"#Yr Variable Value"<<endl;
+    if(finish_starter==999) 
+      {j=1;}
+      else
+      {j=0;}
     if(N_envvar>0)
-      {for(i=1;i<=N_envdata;i++) report1<<env_temp[i]<<endl;
+      {for(i=j;i<=N_envdata-1+j;i++) report1<<env_temp[i]<<endl;
        report1<<"-9999 0 0"<<endl;
       }
 
@@ -1760,8 +1768,12 @@ FUNCTION void write_nudata()
 
     report1<<"#"<<endl << N_envvar<<" #_N_environ_variables"<<endl;
     report1<<"#Yr Variable Value"<<endl;
+    if(finish_starter==999) 
+      {j=1;}
+      else
+      {j=0;}
     if(N_envvar>0)
-      {for(i=1;i<=N_envdata;i++) report1<<env_temp[i]<<endl;
+      {for(i=j;i<=N_envdata-1+j;i++) report1<<env_temp[i]<<endl;
        report1<<"-9999 0 0"<<endl;
       }
 
@@ -4548,8 +4560,8 @@ FUNCTION void write_bigoutput()
 
    if(N_envvar>0)
    {
-   SS2out << endl<<"ENVIRONMENTAL_DATA Begins_in_startyr-1"<<endl;         // SS_Label_397
-   SS2out<<"Yr rel_smrynum rel_smrybio exp(decdev) rel_SSB null "; for (i=1;i<=N_envvar;i++) SS2out<<" env:_"<<i;
+   SS2out << endl<<"ENVIRONMENTAL_DATA Begins_in_startyr-1, which shows the base value to which other years are scaled"<<endl;         // SS_Label_397
+   SS2out<<"Yr rel_smrynum rel_smrybio exp(recdev) rel_SSB null "; for (i=1;i<=N_envvar;i++) SS2out<<" env:_"<<i;
    SS2out<<endl;
     for (y=styr-1;y<=YrMax;y++)
     {
