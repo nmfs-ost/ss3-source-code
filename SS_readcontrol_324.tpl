@@ -524,6 +524,13 @@
     }
   }
  END_CALCS
+
+   ivector varparm_estimated(1,5)  // flag to show what types of variance parameters are estimated
+   // (1) for growth
+   // (2)  for recruitment sigmaR
+   // (3)  for survey extraSD
+!!  varparm_estimated.initialize();
+
 !!//  SS_Label_Info_4.5 #Read setup and parameters for natmort, growth, biology, recruitment distribution, and migration
 // read setup for natmort parameters:  LO, HI, INIT, PRIOR, PR_type, CV, PHASE, use_env, use_dev, dev_minyr, dev_maxyr, dev_stddev, Block, Block_type
   int N_MGparm
@@ -2213,12 +2220,16 @@
 
   imatrix Q_setup_parms(1,Nfleet,1,5)  //
 //  index of first parameter for:  1=base q with link;  2=extrastd; 3=env; 4=block/trend; 5=dev;
+  int depletion_fleet;  //  stores fleet(survey) number for the fleet that is defined as "depletion" by survey type=34
+  int depletion_type;  //  entered by Q_setup(f,2) and stores additional controls for depletion fleet
 
  LOCAL_CALCS
   Q_setup_324.initialize();
   Q_setup_parms_324.initialize();
   Q_setup.initialize();
   Q_setup_parms.initialize();
+  depletion_type=0;
+  depletion_fleet=0;
 
  	*(ad_comm::global_datafile) >> Q_setup_324;
   echoinput<<" Q setup from 324 "<<endl<<Q_setup_324<<endl;

@@ -2385,6 +2385,17 @@ FUNCTION void write_nucontrol()
    report4<<"#_3:  0/1 to select extra sd parameter"<<endl;
    report4<<"#_4:  0/1 for biasadj or not"<<endl;
    report4<<"#_5:  0/1 to float"<<endl;
+    if(depletion_fleet>0)  //  special code for depletion, so prepare to adjust phases and lambdas
+      {
+        f=depletion_fleet;
+        report4<<"#_survey: "<<f<<" "<<fleetname(f)<<" is a depletion fleet"<<endl;
+        if(depletion_type==0)
+          report4<<"#_Q_setup(f,2)=0; add 1 to phases of all parms; only R0 active in new phase 1"<<endl;
+        if(depletion_type==1)
+          report4<<"#_Q_setup(f,2)=1  only R0 active in phase 1; then exit;  useful for data-limited draws of other fixed parameter"<<endl;
+        if(depletion_type==2)
+          report4<<"#_Q_setup(f,2)=2  no phase adjustments, can be used when profiling on fixed R0"<<endl;
+      }
 
    report4<<"#_   fleet      link link_info  extra_se   biasadj     float  #  fleetname"<<endl;
    for (f=1;f<=Nfleet;f++)
@@ -2637,7 +2648,7 @@ FUNCTION void write_nucontrol()
   report4.precision(6); report4.unsetf(std::ios_base::fixed); report4.unsetf(std::ios_base::floatfield);
 
   report4<<"#"<<endl<<max_lambda_phase<<" #_maxlambdaphase"<<endl;
-  report4<<sd_offset<<" #_sd_offset"<<endl;
+  report4<<sd_offset<<" #_sd_offset; must be 1 if any growthCV, sigmaR, or survey extraSD is an estimated parameter"<<endl;
 
   report4<<"# read "<<N_lambda_changes<<" changes to default Lambdas (default value is 1.0)"<<endl;
   report4<<"# Like_comp codes:  1=surv; 2=disc; 3=mnwt; 4=length; 5=age; 6=SizeFreq; 7=sizeage; 8=catch; 9=init_equ_catch; "<<
@@ -3844,6 +3855,18 @@ FUNCTION void write_bigoutput()
       <<" "<<Q_dev_like(f,1)<<" "<<Q_dev_like(f,2)<<" "<<fleetname(f)<<endl;
     }
   }
+    if(depletion_fleet>0)  //  special code for depletion, so prepare to adjust phases and lambdas
+      {
+        f=depletion_fleet;
+        SS2out<<"#_survey: "<<f<<" "<<fleetname(f)<<" is a depletion fleet"<<endl;
+        if(depletion_type==0)
+          SS2out<<"#_Q_setup(f,2)=0; add 1 to phases of all parms; only R0 active in new phase 1"<<endl;
+        if(depletion_type==1)
+          SS2out<<"#_Q_setup(f,2)=1  only R0 active in phase 1; then exit;  useful for data-limited draws of other fixed parameter"<<endl;
+        if(depletion_type==2)
+          SS2out<<"#_Q_setup(f,2)=2  no phase adjustments, can be used when profiling on fixed R0"<<endl;
+      }
+
     SS2out<<"RMSE_Qdev_not_in_logL"<<endl<<"penalty_mean_Qdev_not_in_logL_in_randwalk_approach"<<endl;
 
   SS2out <<"#"<<endl<< "INDEX_3"<<endl<<"Fleet  Q_parm_assignments"<<endl;

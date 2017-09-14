@@ -547,7 +547,12 @@
    init_ivector autogen_timevary(1,5);  //  0 means to autogenerate time-vary parameters; 1 means to read
                                        //  first element for biology, 2nd for SRR; 3rd for Q; 4th for tag; 5th for selex
    !! echoinput<<autogen_timevary<<"  timevarying parameter autogenerate (0) or read (1) for each parm type"<<endl;
-
+   ivector varparm_estimated(1,5)  // flag to show what types of variance parameters are estimated
+   // (1) for growth
+   // (2)  for recruitment sigmaR
+   // (3)  for survey extraSD
+!!  varparm_estimated.initialize();
+   
 !!//  SS_Label_Info_4.5 #Read setup and parameters for natmort, growth, biology, recruitment distribution, and migration
 // read setup for natmort parameters:  LO, HI, INIT, PRIOR, PR_type, CV, PHASE, use_env, use_dev, dev_minyr, dev_maxyr, dev_phase, Block, Block_type
   int N_MGparm
@@ -1057,6 +1062,10 @@
      mgp_type(Ip,Ip+N_natMparms-1)=1; // natmort parms
      Ip+=N_natMparms;
      mgp_type(Ip,Ip+N_growparms-1)=2;  // growth parms
+     
+//  check on estimation of variance parameters
+     if(MGparm_1(Ip+N_growparms-2,7)>0) varparm_estimated(1)=1;  //  for CV_young
+     if(MGparm_1(Ip+N_growparms-1,7)>0) varparm_estimated(1)=1;  //  for CV_old
      Ip=Ip+N_growparms;
      mgp_type(Ip,Ip+1)=3;   // wtlen
      Ip+=2;
@@ -1391,6 +1400,8 @@
   ParmLabel+="SR_regime";
   ParmLabel+="SR_autocorr";
   ParCount+=N_SRparm2;
+
+  if(SR_parm_1(N_SRparm2-2,7) > 0) varparm_estimated(2)=1;  //  sigmaR is estimated so need sd_offset=1
 
   if(SR_parm_1(N_SRparm2,3)!=0.0 || SR_parm_1(N_SRparm2,7)>0)
     {SR_autocorr=1;}
@@ -1959,11 +1970,15 @@
   int Q_Npar2
   int Q_Npar
   ivector Q_link(1,10)
+  int depletion_fleet;  //  stores fleet(survey) number for the fleet that is defined as "depletion" by survey type=34
+  int depletion_type;  //  entered by Q_setup(f,2) and stores additional controls for depletion fleet
 
  LOCAL_CALCS
   Q_link(1)=1;  //  simple q, 1 parm
   Q_link(2)=1;  //  mirror simple q, 1 mirrored parameter
   Q_link(3)=2;  //  q and power, 2 parm
+  depletion_fleet=0;
+  depletion_type=0;
 
 //Q_setup for 3.30
 // 1:  link type
@@ -2039,6 +2054,19 @@
        Q_setup_parms(f,2)=Q_Npar;
       ParmLabel+="Q_extraSD_"+fleetname(f)+"("+NumLbl(f)+")";
     }
+    if(Svy_units(f)==34)  //  special code for depletion, so prepare to adjust phases and lambdas
+      {
+        echoinput<<"# survey: "<<f<<" "<<fleetname(f)<<" is a depletion fleet"<<endl;
+        depletion_fleet=f;
+        depletion_type=Q_setup(f,2);
+        if(depletion_type==0)
+          echoinput<<"Q_setup(f,2)=0; add 1 to phases of all parms; only R0 active in new phase 1"<<endl;
+        if(depletion_type==1)
+          echoinput<<"Q_setup(f,2)=1  only R0 active in phase 1; then exit;  useful for data-limited draws of other fixed parameter"<<endl;
+        if(depletion_type==2)
+          echoinput<<"Q_setup(f,2)=2  no phase adjustments, can be used when profiling on fixed R0"<<endl;
+      }
+
   }
   else
   {
@@ -2128,6 +2156,13 @@
       {
         if(Q_parm_1(j,7)>=0)  {N_warn++;  warning<<"fleet: "<<f<<"   Q cannot be active if it is set to float"<<endl;  Q_parm_1(j,7)=-1; }
       }
+      
+     //  check for extraSD estimation
+     if(Q_setup(f,3)>0)
+      {
+        if(Q_parm_1(Q_setup_parms(f,2),7)>0) varparm_estimated(3)=1; // extraSD is estimated, so need sd_offset=1
+      }
+
      if(Q_parm_1(j,13)==0 && Q_parm_1(j,8)==0 && Q_parm_1(j,9)==0)
      {
       //  no time-vary parameter effects
@@ -2243,6 +2278,7 @@
  	  }
  	}
  	echoinput<<"Q_parm_RD: "<<Q_parm_RD<<endl;
+
  END_CALCS
 
 !!//  SS_Label_Info_4.9 #Define Selectivity patterns and N parameters needed per pattern
@@ -2323,10 +2359,6 @@
   N_disc_mort_parm(4)= 4;   // for dome-shaped retention and 4 param discard mort
 
 //  SS_Label_Info_4.9.2 #Process selectivity parameter count and create parameter labels
-  int depletion_fleet;  //  stores fleet(survey) number for the fleet that is defined as "depletion" by survey type=34
-  int depletion_type;  //  entered by Q_setup(f,2) and stores additional controls for depletion fleet
-  depletion_fleet=0;
-  depletion_type=0;
    firstselparm=ParCount;
    N_selparm=0;
 //   N_ret_parm=7;    // to allow for dome-shaped retention
@@ -2378,15 +2410,6 @@
 
      // account for the low and high bin parameters
      if(seltype(f,1) == 42 || seltype(f,1) == 43) N_selparmvec(f)+=2;
-
-     if(Svy_units(f)==34)  //  special code for depletion, so prepare to adjust phases and lambdas
-      {
-        depletion_fleet=f;
-        depletion_type=Q_setup(f,2);
-        //  Q_setup(f,2)=0  add 1 to phases of all parms; only R0 active in new phase 1
-        //  Q_setup(f,2)=1  only R0 active in phase 1; then exit;  useful for data-limited draws of other fixed parameter
-        //  Q_setup(f,2)=2  no phase adjustments, can be used when profiling on fixed R0
-      }
 
      if(seltype(f,2)>=1)
      {
@@ -3163,10 +3186,20 @@
 
  LOCAL_CALCS
   echoinput<<max_lambda_phase<<" max_lambda_phase "<<endl;
-  echoinput<<sd_offset<<" sd_offset (adds log(s)) "<<endl;
+  echoinput<<sd_offset<<" sd_offset (adds log(s)); needed if variance parameters are estimated "<<endl;
   if(sd_offset==0)
   {
-    N_warn++; warning<<" With sd_offset set to 0, be sure you are not estimating any variance parameters "<<endl;
+    if(varparm_estimated(1)==1)
+    {
+      N_warn++; cout<<"exit with warning"<<endl; 
+      warning<<" growth variance is estimated parameter, so change sd_offset to 1"<<endl; exit(1);
+    }
+    if(varparm_estimated(2)==1)
+    {N_warn++; cout<<"exit with warning"<<endl; 
+      warning<<" recruitment sigmaR is estimated parameter, so change sd_offset to 1"<<endl; exit(1);}
+    if(varparm_estimated(3)==1)
+    {N_warn++; cout<<"exit with warning"<<endl; 
+      warning<<" survey extraSD is estimated parameter, so change sd_offset to 1"<<endl; exit(1);}
   }
   if(depletion_fleet>0  && depletion_type<2 && max_lambda_phase<2)
     {
