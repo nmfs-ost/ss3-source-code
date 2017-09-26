@@ -3,7 +3,7 @@ del ss.exe
 
 cd "C:\Users\richard.methot\Documents\SS_model\Compile"
 del *.obj
-del ss.exe
+del *.exe
 
 cd "C:\Users\Richard.Methot\Documents\GitHub\StockSynthesis_3.3"
 del SS_functions.temp
@@ -13,7 +13,6 @@ copy Make_SS_330a.bat "C:\Users\richard.methot\Documents\SS_model\Compile"
 cd "C:\Users\richard.methot\Documents\SS_model\Compile"
 
 pushd "%VS140COMNTOOLS%\..\..\VC" & call vcvarsall.bat amd64 & popd
-
 set "PATH=%CD%\bin;%CD%\utilities;%PATH%"
 
 tpl2cpp SS3_3

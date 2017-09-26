@@ -3,7 +3,7 @@ del ss_opt.exe
 
 cd "C:\Users\richard.methot\Documents\SS_model\Compile"
 del *.obj
-del ss_opt.exe
+del *.exe
 
 cd "C:\Users\Richard.Methot\Documents\GitHub\StockSynthesis_3.3"
 del SS_functions.temp
@@ -12,8 +12,12 @@ copy/b SS_versioninfo_330opt.tpl+SS_readstarter.tpl+SS_readdata_330.tpl+SS_readc
 copy Make_SS_330_fast_opt.bat "C:\Users\richard.methot\Documents\SS_model\Compile"
 cd "C:\Users\richard.methot\Documents\SS_model\Compile"
 
+pushd "%VS140COMNTOOLS%\..\..\VC" & call vcvarsall.bat amd64 & popd
+set "PATH=%CD%\bin;%CD%\utilities;%PATH%"
+
 TPL2CPP.EXE ss3_3
-call "C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\vcvarsall.bat" x86_amd64
+
+REM call "C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\vcvarsall.bat" x86_amd64
 
 REM  For optimize  add /O2
 cl /c /nologo /EHsc /DOPT_LIB /O2 /I. /I"c:\ADMB\include" /I"c:\ADMB\contrib\include" /Foss3_3.obj  ss3_3.cpp 
