@@ -114,6 +114,8 @@ FUNCTION void get_selectivity()
           {
            i=int(value(sp(1)));  if(i<=0) i=1;
            j=int(value(sp(2)));  if(j<=0) j=nlength;
+           if(i>j)
+           {N_warn++; cout<<" EXIT - see warning "<<endl; warning<<" Critical error, size selex mirror length range min ("<<i<<") greater than max ("<<j<<") for fleet: "<<f<<endl; exit(1);}
            if(j>nlength)
            {N_warn++; cout<<" EXIT - see warning "<<endl; warning<<" Critical error, size selex mirror length is too large for fleet: "<<f<<endl; exit(1);}
            sel.initialize();
