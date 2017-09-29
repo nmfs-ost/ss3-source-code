@@ -638,10 +638,11 @@ FINAL_SECTION
      Process_STDquant();
      cout<<" finished STD quantities for reporting"<<endl;
 
-//  SS_Label_Info_12.4.2 #Call fxn write_summaryoutput() to produce report.sso and compreport.sso
+//  SS_Label_Info_12.4.2 #Call fxn write_summaryoutput()
     if(Do_CumReport>0) write_summaryoutput();
     cout<<" finished summary report "<<endl;
      write_SS_summary();
+    cout<<" finished new summary report "<<endl;
 
 //  SS_Label_Info_12.4.3 #Call fxn write_rebuilder_output to produce rebuilder.sso
     if(Do_Rebuilder>0 && mceval_counter<=1) write_rebuilder_output();

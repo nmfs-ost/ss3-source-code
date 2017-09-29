@@ -437,7 +437,10 @@ FUNCTION void write_SS_summary()
   {
     NP++;
     SS_smry<<parm_dev(i,j)<<" ";
-    if(parm_dev_PH(i)) {active_count++;  SS_smry<<CoVar(active_count,1);} else  SS_smry<<0.0;
+    if(parm_dev_PH(i)>0) 
+      {active_count++;  SS_smry<<CoVar(active_count,1);}
+       else
+      {SS_smry<<0.0;}
     SS_smry<<" "<<ParmLabel(NP)<<endl;
   }
 
@@ -482,7 +485,7 @@ FUNCTION void write_SS_summary()
     SS_smry<<depletion(j)<<" "<<CoVar(active_count,1)<<" "<<ParmLabel(NP)<<endl;
   }
 
-  SS_smry<<"#_"<<"Mgmt_Quantity"<<endl;
+  SS_smry<<"#_"<<"Mgmt_Quantity "<<N_STD_Mgmt_Quant<<endl;
   SS_smry<<"#_value se label"<<endl;
   for (j=1;j<=N_STD_Mgmt_Quant;j++)
   {
