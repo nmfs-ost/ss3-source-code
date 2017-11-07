@@ -2382,7 +2382,7 @@ FUNCTION void write_nucontrol()
     }
    NP+=N_Fparm;
    report4<<"#"<<endl;
-   report4<<"#_Q_setup for every fleet, even if no survey"<<endl;
+   report4<<"#_Q_setup for fleets with cpue or survey data"<<endl;
    report4<<"#_1:  link type: (1=simple q, 1 parm; 2=mirror simple q, 1 mirrored parm; 3=q and power, 2 parm)"<<endl;
    report4<<"#_2:  extra input for link, i.e. mirror fleet"<<endl;
    report4<<"#_3:  0/1 to select extra sd parameter"<<endl;

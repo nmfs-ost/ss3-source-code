@@ -902,7 +902,8 @@ FUNCTION void Get_Forecast()
       }
 
 //  do biology for this year
-      yz=endyr+1;  //  biology year for parameters
+//      yz=endyr+1;  //  biology year for parameters
+      yz=y;
       if(timevary_MG(endyr+1,2)>0 || save_for_report>0)  //  so uses endyr+1 timevary setting for duration of forecast
       {
         get_MGsetup();
@@ -1069,7 +1070,7 @@ FUNCTION void Get_Forecast()
                 settle=settle_g(g);  //  get settlement event
                 for (p=1;p<=pop;p++)
                 {
-                  if(y==endyr+1) natage(t+Settle_seas_offset(settle),p,g,Settle_age(settle))=0.0;  //  to negate the additive code
+//                  if(y==endyr+1) natage(t+Settle_seas_offset(settle),p,g,Settle_age(settle))=0.0;  //  to negate the additive code
                   natage(t+Settle_seas_offset(settle),p,g,Settle_age(settle)) = Recruits*recr_dist(GP(g),settle,p)*platoon_distr(GP2(g))*
                    mfexp(natM(s,GP3(g),Settle_age(settle))*Settle_timing_seas(settle));
                   if(Fcast_Loop1==jloop && ABC_Loop==ABC_Loop_end) Recr(p,t+Settle_seas_offset(settle))+=Recruits*recr_dist(GP(g),settle,p)*platoon_distr(GP2(g));
@@ -1542,8 +1543,9 @@ FUNCTION void Get_Forecast()
                 settle=settle_g(g);
                 for (p=1;p<=pop;p++)
                 {
-                  if(y==endyr+1) natage(t+Settle_seas_offset(settle),p,g,Settle_age(settle))=0.0;  //  to negate the additive code
-                  natage(t+Settle_seas_offset(settle),p,g,Settle_age(settle)) += Recruits*recr_dist(GP(g),settle,p)*platoon_distr(GP2(g))*
+//                  if(y==endyr+1) natage(t+Settle_seas_offset(settle),p,g,Settle_age(settle))=0.0;  //  to negate the additive code
+//                  natage(t+Settle_seas_offset(settle),p,g,Settle_age(settle)) += Recruits*recr_dist(GP(g),settle,p)*platoon_distr(GP2(g))*
+                  natage(t+Settle_seas_offset(settle),p,g,Settle_age(settle)) = Recruits*recr_dist(GP(g),settle,p)*platoon_distr(GP2(g))*
                    mfexp(natM(s,GP3(g),Settle_age(settle))*Settle_timing_seas(settle));
                   if(Fcast_Loop1==jloop && ABC_Loop==ABC_Loop_end) Recr(p,t+Settle_seas_offset(settle))+=Recruits*recr_dist(GP(g),settle,p)*platoon_distr(GP2(g));
                 }
