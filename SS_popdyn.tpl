@@ -1142,7 +1142,10 @@ FUNCTION void get_time_series()
       }
 
   //  SS_Label_Info_24.11  #calc annual F quantities
-      if( fishery_on_off==1 && ((save_for_report>0) || ((sd_phase() || mceval_phase()) && (initial_params::mc_phase==0)|| (F_ballpark_yr>=styr))) )
+      if( fishery_on_off==1 && 
+          ((save_for_report>0) ||
+           ((sd_phase() || mceval_phase()) && (initial_params::mc_phase==0))
+            || (F_ballpark_yr>=styr)))
       {
         for (f=1;f<=Nfleet;f++)
         {
