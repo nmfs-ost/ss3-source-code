@@ -79,6 +79,12 @@
   CRLF+="";
   GenderLbl+="Fem";
   GenderLbl+="Mal";
+  GP_Lbl+="_GP_1";
+  GP_Lbl+="_GP_2";
+  GP_Lbl+="_GP_3";
+  GP_Lbl+="_GP_4";
+  GP_Lbl+="_GP_5";
+  GP_Lbl+="_GP_6";
   onenum="    ";
   for (i=1;i<=199;i++) /* SS_loop: fill string NumLbl with numbers */
   {

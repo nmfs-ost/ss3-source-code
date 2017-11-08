@@ -328,6 +328,7 @@
   matrix totcatch_byarea(styr,TimeMax,1,pop)
   vector totcat(styr-1,endyr)  //  by year, not by t
   int first_catch_yr
+  vector catch_by_fleet(1,Nfleet)
 
  LOCAL_CALCS
   catch_ret_obs.initialize();
@@ -411,13 +412,25 @@
     if(totcat(y)>0.0 && first_catch_yr==0) first_catch_yr=y;
     if(y==endyr && totcat(y)==0.0)
     {
-      N_warn++; warning<<" catch is 0.0 in endyr; this will cause failure in the benchmark and forecast calculations"<<endl;
+      N_warn++; warning<<" catch is 0.0 in endyr; this can cause problem in the benchmark and forecast calculations"<<endl;
     }
   }
+    echoinput<<endl<<"#_show_total_catch_by_fleet"<<endl;
+    catch_by_fleet=rowsum(catch_ret_obs);
+    for(f=1;f<=Nfleet;f++)
+    {
+      echoinput<<f<<" type: "<<fleet_type(f)<<" "<<fleetname(f)<<" catch: "<<catch_by_fleet(f);
+      if(fleet_type(f)==3 && catch_by_fleet(f)>0.0) 
+        {
+          echoinput<<"  Catch by survey fleet will be ignored ";
+          N_warn++; warning<<"  Catch by survey fleet will be ignored "<<fleet_type(f)<<endl;
+        }
+      echoinput<<endl;
+    }
  END_CALCS
 
   //  SS_Label_Info_2.3 #Read fishery CPUE, effort, and Survey index or abundance
-  !!echoinput<<"#_  now read fleet #, svyunits, svyerrtype for each fleet "<<endl;
+  !!echoinput<<endl<<"#_  now read survey characteristics:  fleet_#, svyunits, svyerrtype for each fleet "<<endl;
   int Svy_N_rd
   int Svy_N
   init_imatrix Svy_units_rd(1,Nfleet,1,4)

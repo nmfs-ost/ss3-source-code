@@ -4711,7 +4711,7 @@ FUNCTION void write_bigoutput()
     for (g=1;g<=gmorph;g++)
     if(use_morph(g)>0)
       {
-      for (y=styr;y<=endyr;y++)
+      for (y=styr;y<=YrMax;y++)
       for (s=1;s<=nseas;s++)
        {
        t = styr+(y-styr)*nseas+s-1;
@@ -4746,7 +4746,7 @@ FUNCTION void write_bigoutput()
     for (g=1;g<=gmorph;g++)
     if(use_morph(g)>0)
       {
-      for (y=styr;y<=endyr;y++)
+      for (y=styr;y<=YrMax;y++)
       for (s=1;s<=nseas;s++)
        {
        t = styr+(y-styr)*nseas+s-1;

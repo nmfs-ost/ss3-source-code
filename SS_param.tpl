@@ -190,13 +190,13 @@ PARAMETER_SECTION
 
   !!if(Do_Forecast>0) {k=TimeMax_Fcast_std+1;} else {k=TimeMax+nseas;}
   4darray natage(styr-3*nseas,k,1,pop,1,gmorph,0,nages)  //  add +1 year
-  4darray catage(styr-nseas,TimeMax,1,Nfleet,1,gmorph,0,nages)
+  4darray catage(styr-nseas,k,1,Nfleet,1,gmorph,0,nages)
   4darray equ_catage(1,nseas,1,Nfleet,1,gmorph,0,nages)
   4darray equ_numbers(1,nseas,1,pop,1,gmorph,0,3*nages)
   4darray equ_Z(1,nseas,1,pop,1,gmorph,0,nages)
   matrix catage_tot(1,gmorph,0,nages)//sum the catches for all fleets, reuse matrix each year
   matrix Hrate(1,Nfleet,styr-3*nseas,k) //Harvest Rate for each fleet
-  3darray catch_fleet(styr-3*nseas,TimeMax_Fcast_std,1,Nfleet,1,6)  //  1=sel_bio, 2=kill_bio; 3=ret_bio; 4=sel_num; 5=kill_num; 6=ret_num
+  3darray catch_fleet(styr-3*nseas,k,1,Nfleet,1,6)  //  1=sel_bio, 2=kill_bio; 3=ret_bio; 4=sel_num; 5=kill_num; 6=ret_num
   matrix annual_catch(styr,YrMax,1,6)  //  same six as above
   matrix annual_F(styr,YrMax,1,2)  //  1=sum of hrate (if Pope fmethod) or sum hrate*seasdur if F; 2=Z-M for selected ages
   3darray equ_catch_fleet(1,6,1,nseas,1,Nfleet)

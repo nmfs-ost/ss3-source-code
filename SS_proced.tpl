@@ -46,6 +46,7 @@ PROCEDURE_SECTION
         {biasadj_full(y)=recdev_adj(5)-(y-recdev_adj(3)) / (recdev_adj(4)-recdev_adj(3))*recdev_adj(5);}
       else
         {biasadj_full(y)=0.;}
+      if(y>recdev_end) {biasadj_full(y)=0.0;}
     }
   }
 

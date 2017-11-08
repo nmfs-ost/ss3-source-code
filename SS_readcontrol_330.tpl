@@ -39,6 +39,9 @@
   vector shadow(1,N_platoon)
   vector platoon_distr(1,N_platoon);
  LOCAL_CALCS
+  if(WTage_rd>0 && nobs_mnwt>0)
+    {N_warn++;
+    warning<<"incompatible option:  empirical bodywt-at-age is used, but meanbody_wt obs fit using growth curve"<<endl;}
   if(N_platoon>1)
   {
     *(ad_comm::global_datafile) >> sd_ratio;
@@ -860,80 +863,80 @@
         ParCount++;
         onenum="    ";
         sprintf(onenum, "%d", k);
-        ParmLabel+="NatM_p_"+onenum+"_"+GenderLbl(gg)+"_GP_"+NumLbl(gp);
+        ParmLabel+="NatM_p_"+onenum+"_"+GenderLbl(gg)+GP_Lbl(gp);
       }
       switch (Grow_type)
       {
         case 1:
         {
-          ParmLabel+="L_at_Amin_"+GenderLbl(gg)+"_GP_"+NumLbl(gp);
-          ParmLabel+="L_at_Amax_"+GenderLbl(gg)+"_GP_"+NumLbl(gp);
-          ParmLabel+="VonBert_K_"+GenderLbl(gg)+"_GP_"+NumLbl(gp);
+          ParmLabel+="L_at_Amin_"+GenderLbl(gg)+GP_Lbl(gp);
+          ParmLabel+="L_at_Amax_"+GenderLbl(gg)+GP_Lbl(gp);
+          ParmLabel+="VonBert_K_"+GenderLbl(gg)+GP_Lbl(gp);
           ParCount+=3;
           break;
         }
         case 2:
         {
-          ParmLabel+="L_at_Amin_"+GenderLbl(gg)+"_GP_"+NumLbl(gp);
-          ParmLabel+="L_at_Amax_"+GenderLbl(gg)+"_GP_"+NumLbl(gp);
-          ParmLabel+="VonBert_K_"+GenderLbl(gg)+"_GP_"+NumLbl(gp);
-          ParmLabel+="Richards_"+GenderLbl(gg)+"_GP_"+NumLbl(gp);
+          ParmLabel+="L_at_Amin_"+GenderLbl(gg)+GP_Lbl(gp);
+          ParmLabel+="L_at_Amax_"+GenderLbl(gg)+GP_Lbl(gp);
+          ParmLabel+="VonBert_K_"+GenderLbl(gg)+GP_Lbl(gp);
+          ParmLabel+="Richards_"+GenderLbl(gg)+GP_Lbl(gp);
           ParCount+=4;
           break;
         }
         case 3:
         {
-          ParmLabel+="L_at_Amin_"+GenderLbl(gg)+"_GP_"+NumLbl(gp);
-          ParmLabel+="L_at_Amax_"+GenderLbl(gg)+"_GP_"+NumLbl(gp);
-          ParmLabel+="VonBert_K_"+GenderLbl(gg)+"_GP_"+NumLbl(gp);
+          ParmLabel+="L_at_Amin_"+GenderLbl(gg)+GP_Lbl(gp);
+          ParmLabel+="L_at_Amax_"+GenderLbl(gg)+GP_Lbl(gp);
+          ParmLabel+="VonBert_K_"+GenderLbl(gg)+GP_Lbl(gp);
           ParCount+=3;
           for (a=1;a<=Age_K_count;a++)
           {
-            ParmLabel+="Age_K_"+GenderLbl(gg)+"_GP_"+NumLbl(gp)+"_a_"+NumLbl(Age_K_points(a));
+            ParmLabel+="Age_K_"+GenderLbl(gg)+GP_Lbl(gp)+"_a_"+NumLbl(Age_K_points(a));
             ParCount++;
           }
           break;
         }
       }
-      ParmLabel+="CV_young_"+GenderLbl(gg)+"_GP_"+NumLbl(gp);
-      ParmLabel+="CV_old_"+GenderLbl(gg)+"_GP_"+NumLbl(gp);
+      ParmLabel+="CV_young_"+GenderLbl(gg)+GP_Lbl(gp);
+      ParmLabel+="CV_old_"+GenderLbl(gg)+GP_Lbl(gp);
       ParCount+=2;
-      ParmLabel+="Wtlen_1_"+GenderLbl(gg);
-      ParmLabel+="Wtlen_2_"+GenderLbl(gg);
+      ParmLabel+="Wtlen_1_"+GenderLbl(gg)+GP_Lbl(gp);
+      ParmLabel+="Wtlen_2_"+GenderLbl(gg)+GP_Lbl(gp);
       ParCount+=2;
       if(gg==1)  //  add parms for maturity and fecundity for females only
       {
-        ParmLabel+="Mat50%_"+GenderLbl(1);
-        ParmLabel+="Mat_slope_"+GenderLbl(1);
+        ParmLabel+="Mat50%_"+GenderLbl(1)+GP_Lbl(gp);
+        ParmLabel+="Mat_slope_"+GenderLbl(1)+GP_Lbl(gp);
         ParCount+=2;
         if(Fecund_Option==1)
         {
-          ParmLabel+="Eggs/kg_inter_"+GenderLbl(1);
-          ParmLabel+="Eggs/kg_slope_wt_"+GenderLbl(1);
+          ParmLabel+="Eggs/kg_inter_"+GenderLbl(1)+GP_Lbl(gp);
+          ParmLabel+="Eggs/kg_slope_wt_"+GenderLbl(1)+GP_Lbl(gp);
           ParCount+=2;
         }
         else if(Fecund_Option==2)
         {
-          ParmLabel+="Eggs_scalar_"+GenderLbl(1);
-          ParmLabel+="Eggs_exp_len_"+GenderLbl(1);
+          ParmLabel+="Eggs_scalar_"+GenderLbl(1)+GP_Lbl(gp);
+          ParmLabel+="Eggs_exp_len_"+GenderLbl(1)+GP_Lbl(gp);
           ParCount+=2;
         }
         else if(Fecund_Option==3)
         {
-          ParmLabel+="Eggs_scalar_"+GenderLbl(1);
-          ParmLabel+="Eggs_exp_wt_"+GenderLbl(1);
+          ParmLabel+="Eggs_scalar_"+GenderLbl(1)+GP_Lbl(gp);
+          ParmLabel+="Eggs_exp_wt_"+GenderLbl(1)+GP_Lbl(gp);
           ParCount+=2;
         }
         else if(Fecund_Option==4)
         {
-          ParmLabel+="Eggs_intercept_"+GenderLbl(1);
-          ParmLabel+="Eggs_slope_len_"+GenderLbl(1);
+          ParmLabel+="Eggs_intercept_"+GenderLbl(1)+GP_Lbl(gp);
+          ParmLabel+="Eggs_slope_len_"+GenderLbl(1)+GP_Lbl(gp);
           ParCount+=2;
         }
         else if(Fecund_Option==5)
         {
-          ParmLabel+="Eggs_intercept_"+GenderLbl(1);
-          ParmLabel+="Eggs_slope_Wt_"+GenderLbl(1);
+          ParmLabel+="Eggs_intercept_"+GenderLbl(1)+GP_Lbl(gp);
+          ParmLabel+="Eggs_slope_Wt_"+GenderLbl(1)+GP_Lbl(gp);
           ParCount+=2;
         }
       }
@@ -983,8 +986,8 @@
    for (k=1;k<=do_migration;k++)
      {
      s=move_def(k,1); gp=move_def(k,2); p=move_def(k,3); p2=move_def(k,4);
-     ParCount++; ParmLabel+="MoveParm_A_seas_"+NumLbl(s)+"_GP_"+NumLbl(gp)+"from_"+NumLbl(p)+"to_"+NumLbl(p2);
-     ParCount++; ParmLabel+="MoveParm_B_seas_"+NumLbl(s)+"_GP_"+NumLbl(gp)+"from_"+NumLbl(p)+"to_"+NumLbl(p2);
+     ParCount++; ParmLabel+="MoveParm_A_seas_"+NumLbl(s)+GP_Lbl(gp)+"from_"+NumLbl(p)+"to_"+NumLbl(p2);
+     ParCount++; ParmLabel+="MoveParm_B_seas_"+NumLbl(s)+GP_Lbl(gp)+"from_"+NumLbl(p)+"to_"+NumLbl(p2);
     }
   }
 
@@ -1573,6 +1576,8 @@
     recdev_adj(2)=recdev_options(6);
     recdev_adj(3)=recdev_options(7);
     recdev_adj(4)=recdev_options(8);
+    if(recdev_adj(4)>recdev_end)
+      {N_warn++; warning<<"bias adjustment ramp extends past recdev_end; biasadj set to 0.0 after recdev_end"<<endl;}
     recdev_adj(5)=recdev_options(9);  // maxbias adj
 
     recdev_cycle=recdev_options(10);
@@ -1615,6 +1620,7 @@
     echoinput<<recdev_adj(3)<<" #_last_yr_fullbias_adj_in_MPD"<<endl;
     echoinput<<recdev_adj(4)<<" #_first_recent_yr_nobias_adj_in_MPD"<<endl;
     echoinput<<recdev_adj(5)<<" #_max_bias_adj_in_MPD"<<endl;
+    echoinput<<" #_NOTE: biasadjustment forced to 0.0 after year recdev_end"<<endl;
     echoinput<<recdev_cycle<<" # period of cycle in recruitment "<<endl;
     echoinput<<recdev_LO<<" #min rec_dev"<<endl;
     echoinput<<recdev_HI<<" #max rec_dev"<<endl;
@@ -2616,7 +2622,7 @@
      {
      if(disc_N_fleet(f)>0 && seltype(f,2)==0 && seltype(f+Nfleet,2)==0)
        {N_warn++; cout<<" EXIT - see warning "<<endl; warning<<" ERROR:  discard data exist for fleet "<<f<<"  but retention parms not setup "<<endl; exit(1);}
-     else if (disc_N_fleet(f)==0 && seltype(f,2)!=0)
+     else if (disc_N_fleet(f)==0 && seltype(f,2)>0)
        {N_warn++; warning<<" WARNING:  no discard amount data for fleet "<<f<<"  but retention parms have been defined "<<endl;}
      }
  END_CALCS

@@ -66,6 +66,7 @@ GLOBALS_SECTION
   adstring_array Forecast_Comments;
   adstring_array NumLbl;
   adstring_array GenderLbl;   // gender label
+  adstring_array GP_Lbl;   // gender label
   adstring_array CRLF;   // blank to terminate lines
 
 //  declare some entities that need global access

@@ -1849,6 +1849,8 @@
     echoinput<<recdev_adj(2)<<" #_first_yr_fullbias_adj_in_MPD"<<endl;
     echoinput<<recdev_adj(3)<<" #_last_yr_fullbias_adj_in_MPD"<<endl;
     echoinput<<recdev_adj(4)<<" #_first_recent_yr_nobias_adj_in_MPD"<<endl;
+    if(recdev_adj(4)>recdev_end)
+      {N_warn++; warning<<"bias adjustment ramp extends past recdev_end; biasadj set to 0.0 after recdev_end"<<endl;}
     echoinput<<recdev_adj(5)<<" #_max_bias_adj_in_MPD"<<endl;
     echoinput<<recdev_cycle<<" # period of cycle in recruitment "<<endl;
     echoinput<<recdev_LO<<" #min rec_dev"<<endl;
@@ -2893,7 +2895,7 @@
    {
    if(disc_N_fleet(f)>0 && seltype(f,2)==0)
      {N_warn++; cout<<" EXIT - see warning "<<endl; warning<<" ERROR:  discard data exist for fleet "<<f<<"  but retention parms not setup "<<endl; exit(1);}
-   else if (disc_N_fleet(f)==0 && seltype(f,2)!=0)
+   else if (disc_N_fleet(f)==0 && seltype(f,2)>0)
      {N_warn++; warning<<" WARNING:  no discard amount data for fleet "<<f<<"  but retention parms have been defined "<<endl;}
    }
  END_CALCS
