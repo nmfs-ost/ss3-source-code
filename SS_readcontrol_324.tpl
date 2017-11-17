@@ -3203,6 +3203,8 @@
   int TwoD_AR_do;
   int TwoD_AR_cnt
   ivector TwoD_AR_use(1,2*Nfleet);
+  ivector TwoD_AR_before(1,TwoD_AR_cnt) //  what to do in years before the year range
+  ivector TwoD_AR_after(1,TwoD_AR_cnt)  //  what to do in years after the year range
 
  LOCAL_CALCS
    timevary_sel.initialize();    // stores years to calc non-constant sel parms by fleet

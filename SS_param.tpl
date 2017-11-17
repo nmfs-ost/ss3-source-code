@@ -340,6 +340,7 @@ PARAMETER_SECTION
   3darray cor(1,TwoD_AR_cnt,1,TwoD_AR_cor_dim,1,TwoD_AR_cor_dim)
   3darray inv_cor(1,TwoD_AR_cnt,1,TwoD_AR_cor_dim,1,TwoD_AR_cor_dim)
   vector det_cor(1,TwoD_AR_cnt);
+  matrix TwoD_AR_ave(1,TwoD_AR_cnt,TwoD_AR_amin,TwoD_AR_amax) //  ragged array for these averages
 !!  echoinput<<" OK after dimension the 2dar arrays "<<endl;
 
 !!//  SS_Label_Info_5.1.6 #Create tag parameters and associated arrays

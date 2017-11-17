@@ -2787,10 +2787,10 @@
     {
       ivector tempvec(1,13);
       //  1-fleet, 2-ymin, 3-ymax, 4-amin, 5-amax, 6-sigma_amax, 7-use_rho, 8-age/len, 9-dev_phase
-      //  10-mindimension, 11=maxdim, 12-N_parm_dev,  13-selparm_location
+      //  10-before yr range, 11=after yr range, 12-N_parm_dev,  13-selparm_location
       tempvec.initialize();
-      *(ad_comm::global_datafile) >> tempvec(1,9);
-      echoinput<<tempvec(1,9)<<endl;
+      *(ad_comm::global_datafile) >> tempvec(1,11);
+      echoinput<<tempvec(1,11)<<endl;
       f=tempvec(1);
       if(f<0)
         {ender=1;}
@@ -2808,8 +2808,9 @@
          if(sigma_amax<amin || sigma_amax>tempvec(5))
           {N_warn++; warning<<"fatal error:  sigmasel_amax must be >=amin and <=amax: "<<amin<<" "<<sigma_amax<<" "<<tempvec(5)<<endl; exit(1);}
          tempvec(12)=N_parm_dev;
-         tempvec(10)=1;  //  used for dimensioning the dev vectors in SS_param   parm_dev_minyr(k)
-         tempvec(11)=(tempvec(3)-tempvec(2)+1)*(tempvec(5)-amin+1);   //parm_dev_maxyr(k)
+//         apply two lines below later when the timevary_setup is created
+//         tempvec(10)=1;  //  used for dimensioning the dev vectors in SS_param   parm_dev_minyr(k)
+//         tempvec(11)=(tempvec(3)-tempvec(2)+1)*(tempvec(5)-amin+1);   //parm_dev_maxyr(k)
          tempvec(13)=N_selparm2+1;
          z=f;
          if(tempvec(8)==2) z=f+Nfleet;
@@ -3072,6 +3073,8 @@
    ivector TwoD_AR_ymax(1,TwoD_AR_cnt)
    ivector TwoD_AR_amin(1,TwoD_AR_cnt)
    ivector TwoD_AR_amax(1,TwoD_AR_cnt)
+   ivector TwoD_AR_before(1,TwoD_AR_cnt) //  what to do in years before the year range
+   ivector TwoD_AR_after(1,TwoD_AR_cnt)  //  what to do in years after the year range
    ivector TwoD_AR_degfree(1,TwoD_AR_cnt)  //  N years with observations * nages in the 2D_AR range
    ivector TwoD_AR_cor_dim(1,TwoD_AR_cnt)
 
@@ -3104,7 +3107,7 @@
            else if(timevary_setup(9)==4)
            {ParmLabel+=ParmLabel(f)+"_DEV_MR_rwalk_"+onenum+CRLF(1);}
            else
-           {N_warn++; cout<<" EXIT - see warning "<<endl; warning<<" illegal MGparmdevtype for parm "<<f<<endl; exit(1);}
+           {N_warn++; cout<<" EXIT - see warning "<<endl; warning<<" illegal parmdevtype for parm "<<f<<endl; exit(1);}
          }
        }
      }
@@ -3117,11 +3120,12 @@
        ivector timevary_setup(1,13);
     //  1-fleet, 2-ymin, 3-ymax, 4-amin, 5-amax, 6-sigma_amax, 7-use_rho, 8-age/len, 9-dev_phase
     //  10-mindimension, 11=maxdim, 12-N_parm_dev, 13-selparm_location
+    //  note that elements 10 and 11 have different usages when used for time-varying parameters
        timevary_setup(1,13)=TwoD_AR_def[f](1,13);
-       echoinput<<f<<" "<<j<<" 2D_AR1 setup "<<timevary_setup<<endl;
+       echoinput<<f<<" 2D_AR1 setup "<<timevary_setup<<endl;
          k=timevary_setup(12);  //  dev vector used
-         parm_dev_minyr(k)=timevary_setup(10);  //  used for dimensioning the dev vectors in SS_param
-         parm_dev_maxyr(k)=timevary_setup(11);
+         parm_dev_minyr(k)=1;  //  used for dimensioning the dev vectors in SS_param   parm_dev_minyr(k)
+         parm_dev_maxyr(k)=(timevary_setup(3)-timevary_setup(2)+1)*(timevary_setup(5)-timevary_setup(4)+1);   //parm_dev_maxyr(k)
          parm_dev_PH(k)=timevary_setup(9);
          parm_dev_type(k)=2;  //  distinguish 2D_AR devs from parameter devs
          parm_dev_info(k)=f;  //  pointer from parmdev list to the 2D_AR list
@@ -3129,6 +3133,8 @@
          TwoD_AR_ymax(f)=timevary_setup(3);
          TwoD_AR_amin(f)=timevary_setup(4);
          TwoD_AR_amax(f)=timevary_setup(5);
+         TwoD_AR_before(f)=timevary_setup(10);
+         TwoD_AR_after(f)=timevary_setup(11);
          TwoD_AR_cor_dim(f)=(TwoD_AR_ymax(f)-TwoD_AR_ymin(f)+1)*(TwoD_AR_amax(f)-TwoD_AR_amin(f)+1);
          for(y=timevary_setup(2);y<=timevary_setup(3);y++)
          {
@@ -3567,7 +3573,12 @@
  LOCAL_CALCS
   echoinput<<"Adjust the phases "<<endl;
   Turn_off_phase2=Turn_off_phase;
-  if(depletion_fleet>0 && depletion_type==1) Turn_off_phase2=1;
+  echoinput<<" requested turn_off phase: "<<Turn_off_phase<<endl;
+  if(depletion_fleet>0 && depletion_type==1) 
+    {
+      Turn_off_phase2=1;
+      echoinput<<"depletion fleet and type are: "<<depletion_fleet<<" "<<depletion_type<<" so set turn0ff to phase 1 "<<endl;
+    }
   max_phase=1;
   active_count=0;
   active_parm(1,ParCount)=0;
@@ -3923,6 +3934,22 @@
        if(timevary_setup(8)>0)
        {
          k=timevary_setup(8);  //  dev vector used
+         if(depletion_fleet>0 && depletion_type<2 && parm_dev_PH(k)>0) parm_dev_PH(k)++;//  add 1 to phase if using depletion fleet
+         if(parm_dev_PH(k)>Turn_off_phase2) parm_dev_PH(k) =-1;
+         if(parm_dev_PH(k)>max_phase) max_phase=parm_dev_PH(k);
+       }
+     }
+   }
+
+   if(TwoD_AR_cnt>0)
+   {
+     for (j=1;j<=TwoD_AR_cnt;j++)  //  loop all timevary to set up devs; note that 2D_AR1 is counted in N_parm_dev, but not in timevary_cnt
+     {
+       ivector timevary_setup(1,13);
+       timevary_setup(1,13)=TwoD_AR_def[j](1,13);
+       if(timevary_setup(12)>0)
+       {
+         k=timevary_setup(12);  //  dev vector used
          if(depletion_fleet>0 && depletion_type<2 && parm_dev_PH(k)>0) parm_dev_PH(k)++;//  add 1 to phase if using depletion fleet
          if(parm_dev_PH(k)>Turn_off_phase2) parm_dev_PH(k) =-1;
          if(parm_dev_PH(k)>max_phase) max_phase=parm_dev_PH(k);

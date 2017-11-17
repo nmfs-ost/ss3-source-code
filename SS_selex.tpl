@@ -275,7 +275,7 @@ FUNCTION void get_selectivity()
            sel(k1,nlength) =   elem_prod(  (1/(1+mfexp(-sp(2)*(len_bins_m(k1,nlength)-sp(1)) ))),
                                                 (1-1/(1+mfexp(-sp(4)*(len_bins_m(k1,nlength)-(sp(1)*sp(6)+sp(3))) ))) );
            sel += 1.0e-6;
-           sel /= max(sel);
+           sel /=max(sel);
            break;
             }
 
@@ -614,37 +614,91 @@ FUNCTION void get_selectivity()
         }  // end doing males
         if(docheckup==1) echoinput<<gg<<"  sel-len"<<sel_l(y,f,gg)<<endl;
 
-//  apply 2D_AR adjustment to sex-specific length selectivity
-        if(TwoD_AR_use(f)>0)
-        {
-          j=TwoD_AR_use(f);
-            if(y>=TwoD_AR_ymin(j) && y<=TwoD_AR_ymax(j) && TwoD_AR_def[j](8)==1)  //  in year range and effect is on length
-            {
-              z=TwoD_AR_def[j](12);  //  dev vector used
-              k=(y-TwoD_AR_ymin(j))*(TwoD_AR_amax(j)-TwoD_AR_amin(j)+1);
-              a1=TwoD_AR_def[j](13)-1;  //  parameter number-1  for sigmasel
-              for(a=TwoD_AR_amin(j);a<=TwoD_AR_def[j](6);a++)  //  age-varying sigmasel
-              {
-                a1++;
-                dvariable sigmasel=selparm(a1);
-                k++; 
-                sel_l(y,f,gg,a)*=mfexp(sigmasel*parm_dev(z,k));
-              }
-              if(TwoD_AR_def[j](6)<TwoD_AR_amax(j))
-              {
-                dvariable sigmasel=selparm(a1);
-                for(a=TwoD_AR_def[j](6)+1; a<=TwoD_AR_amax(j);a++)  //  age-varying sigmasel
-                {
-                  dvariable sigmasel=selparm(a1);
-                  k++; 
-                  sel_l(y,f,gg,a)*=mfexp(sigmasel*parm_dev(z,k));
-                }
-              }
-              if(docheckup==1) echoinput<<"len selex after 2D_AR"<<sel_l(y,f,gg)<<endl;
-            }
-        }
       }  // end loop of genders
-        
+
+//  apply 2D_AR adjustment to sex-specific length selectivity
+//  TwoD_AR_def: read:  1-fleet, 2-ymin, 3-ymax, 4-amin, 5-amax, 6-sigma_amax, 7-use_rho, 8-age/len, 9-dev_phase; 10-before_yrs, 11=after_yrs, 
+//  calc quantities:  12-N_parm_dev, 13-selparm_location
+
+    if(TwoD_AR_use(f)>0)
+    {
+      j=TwoD_AR_use(f);  //  get index for this fleet's effect
+      if(TwoD_AR_def[j](8)==1)  //  age vs length flag
+      {
+        z=TwoD_AR_def[j](12);  // index of dev vector used
+        if(docheckup==1) echoinput<<"2dar for fleet: "<<f<<" 2DAR: "<<j<<" dev: "<<z<<endl;
+
+        if(y==styr && (TwoD_AR_before(j)==3 || TwoD_AR_after(j)==3) )  //  if needed, calculate average dev for each length over the range of years
+        {
+          TwoD_AR_ave(j).initialize();
+          for(int yyy=TwoD_AR_ymin(j); yyy<=TwoD_AR_ymax(j); yyy++)
+          {
+            k=(yyy-TwoD_AR_ymin(j))*(TwoD_AR_amax(j)-TwoD_AR_amin(j)+1);  //  index of 1st dev in vector created from year and length index
+            for(int ll=TwoD_AR_amin(j);ll<=TwoD_AR_amax(j);ll++)
+            {
+              k++;
+              TwoD_AR_ave(j,ll)+=parm_dev(z,k);   //  sum devs for each length
+            }
+          }
+          TwoD_AR_ave(j)/=(TwoD_AR_ymax(j)-TwoD_AR_ymin(j)+1.0);
+          if(do_once==1) echoinput<<"mean 2D AR dev for fleet: "<<f<<" means: "<<TwoD_AR_ave(j)<<endl;
+        }
+
+        if(y<TwoD_AR_ymin(j))  //  early years
+        {
+          if(TwoD_AR_before(j)==0)  //  apply no devs
+          {k=-2;}
+          else if(TwoD_AR_before(j)==1)   //  use first year devs
+          {
+//          k=(TwoD_AR_ymin(j)-TwoD_AR_ymin(j))*(TwoD_AR_amax(j)-TwoD_AR_amin(j)+1);  //  index of 1st dev in vector created from year and length index
+            k=0;
+          }
+          else if(TwoD_AR_before(j)==3)   //  use mean length-specific devs
+          {k=-1;}
+        }
+        else if(y<=TwoD_AR_ymax(j))  //  in year range for annual devs
+        {
+          k=(y-TwoD_AR_ymin(j))*(TwoD_AR_amax(j)-TwoD_AR_amin(j)+1);  //  index of 1st dev in vector created from year and length index
+        }
+        else  //  later years
+        {
+          if(TwoD_AR_after(j)==0)  //  apply no devs
+          {k=-2;}
+          else if(TwoD_AR_after(j)==1)   //  use last year devs
+          {k=(TwoD_AR_ymax(j)-TwoD_AR_ymin(j))*(TwoD_AR_amax(j)-TwoD_AR_amin(j)+1);}  //  index of 1st dev in vector created from year and length index
+          else if(TwoD_AR_after(j)==3)   //  use mean length-specific devs
+          {k=-1;}
+        }
+
+        if(docheckup==1) echoinput<<"K value for first dev to use: "<<k<<endl;
+        if(k>-2)
+        {
+          a1=TwoD_AR_def[j](13)-1;  //  parameter number-1  for sigmasel
+          dvariable sigmasel;
+          for(a=TwoD_AR_amin(j);a<=TwoD_AR_amax(j);a++)  // loop lengths, using "a" as index
+          {
+            if(a<=TwoD_AR_def[j](6))  // so get sigmasel for this length bin
+            {
+              a1++;
+              sigmasel=selparm(a1);
+            }
+            if(k>=0)
+            {
+              k++; 
+              if(docheckup==1) echoinput<<a<<"  sigmasel: "<<sigmasel<<endl;
+              sel_l(y,f,1,a)*=mfexp(sigmasel*parm_dev(z,k));
+              if(gender==2) sel_l(y,f,2,a)*=mfexp(sigmasel*parm_dev(z,k));
+            }
+            else  //  use mean devs
+            {
+              sel_l(y,f,1,a)*=mfexp(sigmasel*TwoD_AR_ave(j,a));
+              if(gender==2) sel_l(y,f,2,a)*=mfexp(sigmasel*TwoD_AR_ave(j,a));
+            }
+          }
+        }
+        if(docheckup==1) echoinput<<"len selex after 2D_AR"<<endl<<sel_l(y,f)<<endl;
+      }
+    }
 
   //  SS_Label_Info_22.5.1 #Calculate discmort
   // discmort is the size-specific fraction of discarded fish that die
@@ -961,7 +1015,7 @@ FUNCTION void get_selectivity()
               k1=int(value(sp(5)));
               sel_a(y,fs,1)(k1,nages) =   elem_prod((1./(1.+mfexp(-sp(2)*(r_ages(k1,nages)-sp(1)) ))),
                                                    (1.-1./(1.+mfexp(-sp(4)*(r_ages(k1,nages)-(sp(1)*sp(6)+sp(3))) ))) );
-              sel_a(y,fs,1)(k1,nages) /= max(sel_a(y,fs,1)(k1,nages));
+              sel_a(y,fs,1)(k1,nages) /=max(sel_a(y,fs,1)(k1,nages));
               if(k1>0) sel_a(y,fs,1)(0,k1-1)=1.0e-6;
               break;
             }
@@ -1145,40 +1199,91 @@ FUNCTION void get_selectivity()
             {sel_a(y,fs,2)=sel_a(y,fs,1);}   // set males = females
             if(docheckup==1) echoinput<<" sel-age "<<sel_a(y,fs)<<endl;
           }
+        }  //  end gender loop
+
 //  apply 2D_AR adjustment to sex-specific age selectivity
-          if(TwoD_AR_use(f)>0)
+//  TwoD_AR_def: read:  1-fleet, 2-ymin, 3-ymax, 4-amin, 5-amax, 6-sigma_amax, 7-use_rho, 8-age/len, 9-dev_phase; 10-before_yrs, 11=after_yrs, 
+//  calc quantities:  12-N_parm_dev, 13-selparm_location
+
+    if(TwoD_AR_use(f)>0)
+    {
+      j=TwoD_AR_use(f);  //  get index for this fleet's effect
+      if(TwoD_AR_def[j](8)==2)  //  age (2) vs length (1) flag
+      {
+        z=TwoD_AR_def[j](12);  // index of dev vector used
+        if(docheckup==1) echoinput<<"2dar for fleet: "<<f<<" 2DAR: "<<j<<" dev: "<<z<<endl;
+
+        if(y==styr && (TwoD_AR_before(j)==3 || TwoD_AR_after(j)==3) )  //  if needed, calculate average dev for each age over the range of years
+        {
+          TwoD_AR_ave(j).initialize();
+          for(int yyy=TwoD_AR_ymin(j); yyy<=TwoD_AR_ymax(j); yyy++)
           {
-            j=TwoD_AR_use(f);
-            if(y>=TwoD_AR_ymin(j) && y<=TwoD_AR_ymax(j) && TwoD_AR_def[j](8)==2)  //  in year range and effect is on age (not length)
+            k=(yyy-TwoD_AR_ymin(j))*(TwoD_AR_amax(j)-TwoD_AR_amin(j)+1);  //  index of 1st dev in vector created from year and age index
+            for(int ll=TwoD_AR_amin(j);ll<=TwoD_AR_amax(j);ll++)
             {
-              z=TwoD_AR_def[j](12);  //  dev vector used
-              k=(y-TwoD_AR_ymin(j))*(TwoD_AR_amax(j)-TwoD_AR_amin(j)+1);
-              a1=TwoD_AR_def[j](13)-1;  //  parameter number-1  for sigmasel
-              if(docheckup==1) echoinput<<y<<"  age selex before 2D_AR"<<sel_a(y,fs,gg)<<endl;
-              for(a=TwoD_AR_amin(j);a<=TwoD_AR_def[j](6);a++)  //  age-varying sigmasel
-              {
-                a1++;
-                dvariable sigmasel=selparm(a1);
-                k++; 
-                if(docheckup==1) warning<<y<<" "<<a<<" "<<z<<" sigmasel  "<<sigmasel<<" dev "<<parm_dev(z,k)<<endl;
-                sel_a(y,fs,gg,a)*=mfexp(sigmasel*parm_dev(z,k));
-              }
-              if(TwoD_AR_def[j](6)<TwoD_AR_amax(j))
-              {
-                dvariable sigmasel=selparm(a1);
-                for(a=TwoD_AR_def[j](6)+1; a<=TwoD_AR_amax(j);a++)  //  age-varying sigmasel
-                {
-                  dvariable sigmasel=selparm(a1);
-                  k++; 
-                if(docheckup==1) warning<<y<<" "<<a<<" "<<z<<" sigmasel  "<<sigmasel<<" dev "<<parm_dev(z,k)<<" bef "<<sel_a(y,fs,gg,a);
-                  sel_a(y,fs,gg,a)*=mfexp(sigmasel*parm_dev(z,k));
-                  if(docheckup==1) warning<<" "<<sel_a(y,fs,gg,a)<<endl;
-                }
-              }
-              if(docheckup==1) echoinput<<y<<" age selex after 2D_AR"<<sel_a(y,fs,gg)<<endl;
+              k++;
+              TwoD_AR_ave(j,ll)+=parm_dev(z,k);   //  sum devs for each age
             }
           }
-        }  //  end gender loop
+          TwoD_AR_ave(j)/=(TwoD_AR_ymax(j)-TwoD_AR_ymin(j)+1.0);
+          if(do_once==1) echoinput<<"mean 2D AR dev for fleet: "<<f<<" means: "<<TwoD_AR_ave(j)<<endl;
+        }
+
+        if(y<TwoD_AR_ymin(j))  //  early years
+        {
+          if(TwoD_AR_before(j)==0)  //  apply no devs
+          {k=-2;}
+          else if(TwoD_AR_before(j)==1)   //  use first year devs
+          {
+//          k=(TwoD_AR_ymin(j)-TwoD_AR_ymin(j))*(TwoD_AR_amax(j)-TwoD_AR_amin(j)+1);  //  index of 1st dev in vector created from year and age index
+            k=0;
+          }
+          else if(TwoD_AR_before(j)==3)   //  use mean length-specific devs
+          {k=-1;}
+        }
+        else if(y<=TwoD_AR_ymax(j))  //  in year range for annual devs
+        {
+          k=(y-TwoD_AR_ymin(j))*(TwoD_AR_amax(j)-TwoD_AR_amin(j)+1);  //  index of 1st dev in vector created from year and age index
+        }
+        else  //  later years
+        {
+          if(TwoD_AR_after(j)==0)  //  apply no devs
+          {k=-2;}
+          else if(TwoD_AR_after(j)==1)   //  use last year devs
+          {k=(TwoD_AR_ymax(j)-TwoD_AR_ymin(j))*(TwoD_AR_amax(j)-TwoD_AR_amin(j)+1);}  //  index of 1st dev in vector created from year and age index
+          else if(TwoD_AR_after(j)==3)   //  use mean length-specific devs
+          {k=-1;}
+        }
+
+        if(docheckup==1) echoinput<<"K value for first dev to use: "<<k<<endl;
+        if(k>-2)
+        {
+          a1=TwoD_AR_def[j](13)-1;  //  parameter number-1  for sigmasel
+          dvariable sigmasel;
+          for(a=TwoD_AR_amin(j);a<=TwoD_AR_amax(j);a++)  // loop lengths, using "a" as index
+          {
+            if(a<=TwoD_AR_def[j](6))  // so get sigmasel for this length bin
+            {
+              a1++;
+              sigmasel=selparm(a1);
+            }
+            if(k>=0)
+            {
+              k++; 
+              if(docheckup==1) echoinput<<a<<"  sigmasel: "<<sigmasel<<endl;
+              sel_a(y,fs,1,a)*=mfexp(sigmasel*parm_dev(z,k));
+              if(gender==2) sel_a(y,fs,2,a)*=mfexp(sigmasel*parm_dev(z,k));
+            }
+            else  //  use mean devs
+            {
+              sel_a(y,fs,1,a)*=mfexp(sigmasel*TwoD_AR_ave(j,a));
+              if(gender==2) sel_a(y,fs,2,a)*=mfexp(sigmasel*TwoD_AR_ave(j,a));
+            }
+          }
+        }
+        if(docheckup==1) echoinput<<"len selex after 2D_AR"<<endl<<sel_l(y,fs)<<endl;
+      }
+    }
 
         {  //  calculation of age retention and discard mortality here
   //  SS_Label_Info_22.5.1 #Calculate age-specific retention and discmort

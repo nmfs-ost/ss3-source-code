@@ -2532,11 +2532,11 @@ FUNCTION void write_nucontrol()
   {
     k=timevary_parm_start_sel+N_selparm3-N_selparm-1;  //  starting point in timevary_parm_rd
     report4<<"#_specifications for 2D_AR1 and associated parameters"<<endl;
-    report4<<"#_specs:  fleet, ymin, ymax, amin, amax, sigma_amax, use_rho, len1/age2, devphase"<<endl;
+    report4<<"#_specs:  fleet, ymin, ymax, amin, amax, sigma_amax, use_rho, len1/age2, devphase, before_range, after_range"<<endl;
     for(j=1; j<=TwoD_AR_cnt; j++)
     {
-       ivector tempvec(1,9);  //  fleet, ymin, ymax, amin, amax, sigma_amax, use_rho, len1/age2, devphase
-       tempvec(1,9)=TwoD_AR_def[j](1,9);
+       ivector tempvec(1,11);  //  fleet, ymin, ymax, amin, amax, sigma_amax, use_rho, len1/age2, devphase
+       tempvec(1,11)=TwoD_AR_def[j](1,11);
        report4<<tempvec<<"  #  2d_AR specs for fleet: "<<fleetname(tempvec(1))<<endl;
        int sigma_amax = tempvec(6);
        int use_rho = tempvec(7);
@@ -2559,7 +2559,7 @@ FUNCTION void write_nucontrol()
          report4<<dtempvec<<"  # rho_age for fleet:  "<<tempvec(1)<<endl;
        }
     }
-    report4<<"-9999  0 0 0 0 0 0 0 0  # terminator"<<endl;
+    report4<<"-9999  0 0 0 0 0 0 0 0 0 0 # terminator"<<endl;
   }
   else
   {
