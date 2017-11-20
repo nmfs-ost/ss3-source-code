@@ -2805,7 +2805,7 @@
   number H4010_scale
   int Do_Impl_Error
   number Impl_Error_Std
-  ivector Fcast_Loop_Control(1,5)
+  vector Fcast_Loop_Control(1,5)
   int N_Fcast_Input_Catches
   int Fcast_InputCatch_Basis  //  2=dead catch; 3=retained catch;  99=F; -1=read fleet/time specific  (biomass vs numbers will match catchunits(fleet)
   int Fcast_Catch_Basis  //  2=dead catch bio, 3=retained catch bio, 5= dead catch numbers 6=retained catch numbers;   Same for all fleets

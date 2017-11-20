@@ -1791,7 +1791,7 @@
   int recdev_read
   number recdev_LO;
   number recdev_HI;
-  ivector recdev_doit(styr-nages,endyr+1)
+  ivector recdev_doit(styr-nages,YrMax)
 
  LOCAL_CALCS
 //  SS_Label_Info_4.6.2 #Setup advanced recruitment options

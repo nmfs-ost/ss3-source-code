@@ -1974,8 +1974,15 @@ FUNCTION void write_nucontrol()
 
   NuFore<<Fcast_Loop_Control(1)<<" #_N forecast loops (1=OFL only; 2=ABC; 3=get F from forecast ABC catch with allocations applied)"<<endl;
   NuFore<<Fcast_Loop_Control(2)<<" #_First forecast loop with stochastic recruitment"<<endl;
-  NuFore<<Fcast_Loop_Control(3)<<" #_Forecast loop control #3 (reserved for future bells&whistles) "<<endl;
-  NuFore<<Fcast_Loop_Control(4)<<" #_Forecast loop control #4 (reserved for future bells&whistles) "<<endl;
+  NuFore<<Fcast_Loop_Control(3)<<" #_Forecast recruitment:  0= spawn_recr; 1=value*spawn_recr; 2=value*VirginRecr; 3=recent mean) "<<endl;
+  if(Fcast_Loop_Control(3)==0)
+    {NuFore<<1.0<<" # value is ignored "<<endl;}
+  if(Fcast_Loop_Control(3)==1)
+    {NuFore<<Fcast_Loop_Control(4)<<" # value is multiplier of SRR "<<endl;}
+  else if(Fcast_Loop_Control(3)==2)
+    {NuFore<<Fcast_Loop_Control(4)<<" # value is multiplier on virgin recr"<<endl;}
+  else if(Fcast_Loop_Control(3)==3)
+    {NuFore<<Fcast_Loop_Control(4)<<" # value is N recent main recruitments to average"<<endl;}
   NuFore<<Fcast_Loop_Control(5)<<" #_Forecast loop control #5 (reserved for future bells&whistles) "<<endl;
   NuFore<<Fcast_Cap_FirstYear<<"  #FirstYear for caps and allocations (should be after years with fixed inputs) "<<endl;
 
@@ -1990,20 +1997,20 @@ FUNCTION void write_nucontrol()
 
   NuFore<<Fcast_Catch_Basis<<" # basis for fcast catch tuning and for fcast catch caps and allocation  (2=deadbio; 3=retainbio; 5=deadnum; 6=retainnum)"<<endl;
 
-    NuFore<<"# Conditional input if relative F choice = 2"<<endl;
-    NuFore<<"# enter list of:  season,  fleet, relF; if used, terminate with season=-9999"<<endl;
+  NuFore<<"# Conditional input if relative F choice = 2"<<endl;
+  NuFore<<"# enter list of:  season,  fleet, relF; if used, terminate with season=-9999"<<endl;
+  {
+    for (s=1;s<=nseas;s++)
+    for(f=1;f<=Nfleet;f++)
     {
-      for (s=1;s<=nseas;s++)
-      for(f=1;f<=Nfleet;f++)
-      {
-        if(Fcast_RelF_Use(s,f)>0.0)
-          {
-            if(Fcast_RelF_Basis==1)  NuFore<<"# ";
-            NuFore<<s<<" "<<f<<" "<<Fcast_RelF_Use(s,f)<<endl;
-          }
-      }
-      if(Fcast_RelF_Basis==2) NuFore<<"-9999 0 0  # terminator for list of relF"<<endl;
+      if(Fcast_RelF_Use(s,f)>0.0)
+        {
+          if(Fcast_RelF_Basis==1)  NuFore<<"# ";
+          NuFore<<s<<" "<<f<<" "<<Fcast_RelF_Use(s,f)<<endl;
+        }
     }
+    if(Fcast_RelF_Basis==2) NuFore<<"-9999 0 0  # terminator for list of relF"<<endl;
+  }
 
   NuFore<<"# enter list of: fleet number, max annual catch for fleets with a max; terminate with fleet=-9999"<<endl;
   for(f=1;f<=Nfleet;f++)

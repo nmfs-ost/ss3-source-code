@@ -24,27 +24,6 @@ FUNCTION dvariable Spawn_Recr(const prevariable& SPB_virgin_adj, const prevariab
     steepness=SR_parm_work(2);
     regime_change=SR_parm_work(N_SRparm2-1);  //  this is a persistent deviation off the S/R curve
 
-
-  /*
-//  SS_Label_43.2  adjust for environmental effects on S-R parameters: Rzero or steepness
-    if(SR_env_target==2)
-    {
-      Recr_virgin_adj*=mfexp(SR_parm(N_SRparm2-2)* env_data(y,SR_env_link));
-      SPB_virgin_adj*=mfexp(SR_parm(N_SRparm2-2)* env_data(y,SR_env_link));
-    }
-
-    if(SR_env_target==3)
-    {
-      temp=log((SR_parm_HI(2)-SR_parm_LO(2)+0.0000002)/(SR_parm(2)-SR_parm_LO(2)+0.0000001)-1.)/(-2.);
-      temp+=SR_parm(N_SRparm2-2)* env_data(y,SR_env_link);
-      steepness=SR_parm_LO(2)+(SR_parm_HI(2)-SR_parm_LO(2))/(1.+mfexp(-2.*temp));
-    }
-    else
-    {
-      steepness=SR_parm(2);
-    }
-  */
-  
     if(SR_fxn==8)
     {
       Shepard_c=SR_parm_work(3);
@@ -153,25 +132,64 @@ FUNCTION dvariable Spawn_Recr(const prevariable& SPB_virgin_adj, const prevariab
     {
 //  SS_Label_43.4  For non-survival based SRR, get recruitment deviations by adjusting recruitment itself
       exp_rec(y,1)=NewRecruits;   // expected arithmetic mean recruitment
+//    exp_rec(y,2) is with regime shift or other env effect;
+//    exp_rec(y,3) is with bias adjustment
+//    exp_rec(y,4) is with dev
 
-//      if(SR_env_target==1) NewRecruits*=mfexp(SR_parm(N_SRparm2-2)* env_data(y,SR_env_link));   // environ effect on annual recruitment
       if(recdev_cycle>0)
       {
         gg=y - (styr+(int((y-styr)/recdev_cycle))*recdev_cycle)+1;
         NewRecruits*=mfexp(recdev_cycle_parm(gg));
       }
       
-      NewRecruits*=mfexp(regime_change);  //  adjust for regime
-      exp_rec(y,2)=NewRecruits;
+      NewRecruits*=mfexp(regime_change);  //  adjust for regime which includes env and block effects; and forecast adjustments
+      exp_rec(y,2)=NewRecruits;  //  adjusted for env and special forecast conditions
       if(SR_fxn!=4) NewRecruits*=mfexp(-biasadj(y)*half_sigmaRsq);     // bias adjustment
       exp_rec(y,3)=NewRecruits;
-      if(y <=recdev_end)
+
+      if(y<=recdev_end)
       {
         if(recdev_doit(y)>0) NewRecruits*=mfexp(recdev(y));  //  recruitment deviation
       }
+
       else if(Do_Forecast>0)
       {
-        NewRecruits *= mfexp(Fcast_recruitments(y));
+        switch (int(Fcast_Loop_Control(3)))
+        {
+          case 0:
+          {
+            break;
+          }
+          case 1:
+          {
+            exp_rec(y,2)*=Fcast_Loop_Control(4);  //  apply fcast multiplier to the regime-adjusted expected value
+            NewRecruits=exp_rec(y,2);
+            if(SR_fxn!=4) NewRecruits*=mfexp(-biasadj(y)*half_sigmaRsq);     // bias adjustment
+            exp_rec(y,3)=NewRecruits;
+            break;
+          }
+          case 2:  //  use multiplier of R0
+          {
+            exp_rec(y,2)=Recr_virgin_adj*Fcast_Loop_Control(4);  //  apply fcast multiplier to the virgin recruitment
+            NewRecruits=exp_rec(y,2);
+            if(SR_fxn!=4) NewRecruits*=mfexp(-biasadj(y)*half_sigmaRsq);     // bias adjustment
+            exp_rec(y,3)=NewRecruits;
+            break;
+          }
+          case 3:  //  use recent mean
+          {
+//  values going into the mean have already been bias adjusted and had dev applied, so take straight mean
+            NewRecruits=0.0;
+            for(j=recdev_end-int(Fcast_Loop_Control(4))+1; j<=recdev_end;j++)
+            {
+              NewRecruits+=exp_rec(j,4);
+            }
+            NewRecruits/=Fcast_Loop_Control(4);
+            exp_rec(y,3)=NewRecruits;  //  store in the bias-adjusted field
+            break;
+          }
+        }
+        NewRecruits*=mfexp(Fcast_recruitments(y));  //  recruitment deviation
       }
       exp_rec(y,4)=NewRecruits;
     }

@@ -2699,7 +2699,7 @@
   number H4010_scale
   int Do_Impl_Error
   number Impl_Error_Std
-  ivector Fcast_Loop_Control(1,5)
+  vector Fcast_Loop_Control(1,5)
   int N_Fcast_Input_Catches
   int Fcast_InputCatch_Basis  //  2=dead catch; 3=retained catch;  99=F; -1=read fleet/time specific  (biomass vs numbers will match catchunits(fleet)
   int Fcast_Catch_Basis  //  2=dead catch bio, 3=retained catch bio, 5= dead catch numbers 6=retained catch numbers;   Same for all fleets
@@ -2794,8 +2794,16 @@
   *(ad_comm::global_datafile) >> Fcast_Loop_Control(1,5);
   echoinput<<Fcast_Loop_Control(1)<<" #echoed N forecast loops (1-3) (recommend 3)"<<endl;
   echoinput<<Fcast_Loop_Control(2)<<" #echoed First forecast loop with stochastic recruitment (recommend 3)"<<endl;
-  echoinput<<Fcast_Loop_Control(3)<<" #echoed Forecast loop control #3 (reserved for future use) "<<endl;
-  echoinput<<Fcast_Loop_Control(4)<<" #echoed Forecast loop control #4 (reserved for future use) "<<endl;
+  echoinput<<Fcast_Loop_Control(3)<<" #echoed Forecast recruitment:  0=spawn_recr; 1=value*spawn_recr; 2=value*VirginRecr; 3=recent mean"<<endl;
+  if(Fcast_Loop_Control(3)==0)
+    {echoinput<<Fcast_Loop_Control(4)<<" #echoed Forecast loop control #4 (not used) "<<endl;}
+  else if(Fcast_Loop_Control(3)==1)
+    {echoinput<<Fcast_Loop_Control(4)<<" #echoed Forecast loop control #4:  multiplier on spawn_recr"<<endl;}
+  else if(Fcast_Loop_Control(3)==2)
+    {echoinput<<Fcast_Loop_Control(4)<<" #echoed Forecast loop control #4:  multiplier on virgin recr"<<endl;}
+  else if(Fcast_Loop_Control(3)==3)
+    {echoinput<<Fcast_Loop_Control(4)<<" #echoed Forecast loop control #4:  N recent main recruitments to average"<<endl;}
+
   echoinput<<Fcast_Loop_Control(5)<<" #echoed Forecast loop control #5 (reserved for future use) "<<endl;
 
   echoinput<<endl<<"#next enter year in which Fcast loop 3 caps and allocations begin to be applied"<<endl;
@@ -2819,7 +2827,7 @@
   *(ad_comm::global_datafile) >> Rebuild_Yinit;
   echoinput<<Rebuild_Yinit<<" # echoed value"<<endl;
 
-  echoinput<<endl<<"#next select fleet relative F:  1=use first-last alloc year read above; 2=read seas(row) x fleet(col) below"<<endl;
+  echoinput<<endl<<"#next select fleet relative F:  1=use first-last alloc year read above; 2=read list of seas, fleet, relF below"<<endl;
   echoinput<<"# Note that fleet allocation is used directly as average F if Do_Forecast=4 "<<endl;
   *(ad_comm::global_datafile) >> Fcast_RelF_Basis;
   echoinput<<Fcast_RelF_Basis<<" # echoed value"<<endl;
