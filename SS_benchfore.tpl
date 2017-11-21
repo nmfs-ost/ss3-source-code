@@ -120,6 +120,7 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
     SPB_Bmark=SPB_equil;
 
 // find Fspr             SS_Label_710
+  {
     if(show_MSY==1)
     {
     report5<<"& & & & & find_target_SPR"<<endl;
@@ -162,7 +163,7 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
 
       for (int ii=jj;ii>=1;ii--)
         {
-          Fmult=40.00/(1+mfexp(-F1(ii)));
+          Fmult=40.00/(1.0+mfexp(-F1(ii)));
 
           for (f=1;f<=Nfleet;f++)
           for (s=1;s<=nseas;s++)
@@ -240,8 +241,71 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
     Mgmt_quant(11)=YPR_dead*Equ_SpawnRecr_Result(2);
 
     SPR_at_target=SPR_actual;
-//   end finding Fspr
+  } //   end finding Fspr
 
+//  Find F0.1
+  {
+    dvariable F01_origin;
+    dvariable F01_second;
+    dvariable F01_actual;
+    dvar_vector Fmult_save(1,3);
+    equ_Recr=1.0;
+    Fishon=1;
+//  get slope at origin
+    Fmult=0.000001;
+    for (f=1;f<=Nfleet;f++)
+    for (s=1;s<=nseas;s++)
+      {t=bio_t_base+s; Hrate(f,t)=Fmult*Bmark_RelF_Use(s,f);}
+    Do_Equil_Calc(equ_Recr);
+    F01_origin=YPR_dead/0.000001;
+    if(show_MSY==1)
+    {
+      report5<<"& & & & & Find_F0.1; slope_at_origin_wrt_Fmult: "<<F01_origin<<endl;
+      report5<<"Iter Fmult   F_std    SPR    YPR    F0.1"<<endl;
+    }
+
+    Nloops=15; Closer=0.5;
+    F1(1)=-log((10./0.01)-1.0); last_calc=0.;
+    df=1.e-5;
+    F01_second=-1.;  //  initial guess at 2nd derivative
+    for (j=1;j<=Nloops;j++)   // loop to find F0.1
+    {
+      F1(2) = F1(1) + df*.5;
+      F1(3) = F1(2) - df;
+      for (int ii=3;ii>=1;ii--)
+      {
+        Fmult_save(ii)=10.00/(1.0+mfexp(-F1(ii)));
+        for (f=1;f<=Nfleet;f++)
+        for (s=1;s<=nseas;s++)
+        {t=bio_t_base+s; Hrate(f,t)=Fmult_save(ii)*Bmark_RelF_Use(s,f);}
+        Do_Equil_Calc(equ_Recr);
+        yld1(ii)=YPR_dead;
+      }
+      F01_actual=(yld1(2) - yld1(3))/(Fmult_save(2)-Fmult_save(3));
+      last_F1=F1(1);
+      F1(1) += (F01_origin*0.1-F01_actual)/(F01_second);
+      F1(1)=(1.-Closer)*F1(1)+Closer*last_F1;
+
+      if(show_MSY==1)
+      {
+        report5<<j<<" "<<Fmult_save(1)<<" "<<equ_F_std<<" "<<SPB_equil/SPR_unf<<" "<<YPR_dead<<" "<<F01_actual<<endl;
+      }
+    }   // end search loop
+    if(show_MSY==1)
+    {
+      if(fabs(F01_origin*0.1-F01_actual)>=0.001)
+      {N_warn++; warning<<" warning: poor convergence in F0.1 search target= "<<F01_origin*0.1<<"  actual= "<<F01_actual<<endl;}
+      report5<<"seas fleet encB deadB retB encN deadN retN): "<<endl;
+      for (s=1;s<=nseas;s++)
+      for (f=1;f<=Nfleet;f++)
+      if(fleet_type(f)<=2)
+      {
+        report5<<s<<" "<<f;
+        for (g=1;g<=6;g++) {report5<<" "<<equ_catch_fleet(g,s,f);}
+        report5<<endl;
+      }
+    }
+  }  //  end F0.1
 
 // ******************************************************
 //  find F giving Btarget      SS_Label_720
