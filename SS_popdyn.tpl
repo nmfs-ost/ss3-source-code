@@ -15,10 +15,10 @@ FUNCTION void get_initial_conditions()
   y=styr;
   yz=styr;
   t_base=styr-1;
-  recr_dist_Bmark.initialize();
-  natM_Bmark.initialize();
-  surv1_Bmark.initialize();
-  surv2_Bmark.initialize();
+  recr_dist_unf.initialize();
+  natM_unf.initialize();
+  surv1_unf.initialize();
+  surv2_unf.initialize();
 
 //  Create time varying parameters
 //  following call is to routine that does this for all timevary parameters
@@ -55,9 +55,9 @@ FUNCTION void get_initial_conditions()
     for (s=1;s<=nseas;s++)
     for (gp=1;gp<=N_GP*gender*N_settle_timings;gp++)
     {
-      natM_Bmark(s,gp)+=natM(s,gp);   //  need nseas to capture differences due to settlement
-      surv1_Bmark(s,gp)+=surv1(s,gp);   //  need nseas to capture differences due to settlement
-      surv2_Bmark(s,gp)+=surv2(s,gp);   //  need nseas to capture differences due to settlement
+      natM_unf(s,gp)+=natM(s,gp);   //  need nseas to capture differences due to settlement
+      surv1_unf(s,gp)+=surv1(s,gp);   //  need nseas to capture differences due to settlement
+      surv2_unf(s,gp)+=surv2(s,gp);   //  need nseas to capture differences due to settlement
     }
   }
 
@@ -70,8 +70,8 @@ FUNCTION void get_initial_conditions()
     for (settle=1;settle<=N_settle_timings;settle++)
     if(recr_dist_pattern(gp,settle,p)>0)
     {
-      recr_dist_Bmark(gp,settle,p)+=recr_dist(gp,settle,p);
-      if(gender==2) recr_dist_Bmark(gp+N_GP,settle,p)+=recr_dist(gp+N_GP,settle,p);
+      recr_dist_unf(gp,settle,p)+=recr_dist(gp,settle,p);
+      if(gender==2) recr_dist_unf(gp+N_GP,settle,p)+=recr_dist(gp+N_GP,settle,p);
     }
   }
 
@@ -169,9 +169,9 @@ FUNCTION void get_initial_conditions()
     Do_Equil_Calc(equ_Recr);                      //  call function to do equilibrium calculation
     SPB_virgin=SPB_equil;
     SPR_virgin=SPB_equil/Recr_virgin;  //  spawners per recruit
-    Mgmt_quant(1)=SPB_equil;
-    if(Do_Benchmark>0)
+    if(Do_Benchmark==0)
     {
+      Mgmt_quant(1)=SPB_virgin;
       Mgmt_quant(2)=totbio;
       Mgmt_quant(3)=smrybio;
       Mgmt_quant(4)=Recr_virgin;
@@ -468,9 +468,9 @@ FUNCTION void get_time_series()
         for (s=1;s<=nseas;s++)
         for (gp=1;gp<=N_GP*gender*N_settle_timings;gp++)
         {
-          natM_Bmark(s,gp)+=natM(s,gp);
-          surv1_Bmark(s,gp)+=surv1(s,gp);
-          surv2_Bmark(s,gp)+=surv2(s,gp);
+          natM_unf(s,gp)+=natM(s,gp);
+          surv1_unf(s,gp)+=surv1(s,gp);
+          surv2_unf(s,gp)+=surv2(s,gp);
         }
       }
       if(timevary_MG(y,3)>0) get_wtlen();
@@ -482,8 +482,8 @@ FUNCTION void get_time_series()
         for (settle=1;settle<=N_settle_timings;settle++)
         if(recr_dist_pattern(gp,settle,p)>0)
         {
-          recr_dist_Bmark(gp,settle,p)+=recr_dist(gp,settle,p);
-          if(gender==2) recr_dist_Bmark(gp+N_GP,settle,p)+=recr_dist(gp+N_GP,settle,p);
+          recr_dist_unf(gp,settle,p)+=recr_dist(gp,settle,p);
+          if(gender==2) recr_dist_unf(gp+N_GP,settle,p)+=recr_dist(gp+N_GP,settle,p);
         }
       }
       if(timevary_MG(y,5)>0) get_migration();
@@ -1238,17 +1238,17 @@ FUNCTION void get_time_series()
     if( (save_for_report>0) || ((sd_phase() || mceval_phase()) && (initial_params::mc_phase==0)) )
     {
       eq_yr=y; equ_Recr=Recr_virgin; bio_yr=y;
-      dvariable SPR_unf;
+//      dvariable SPB_unf;
       Fishon=0;
       Do_Equil_Calc(equ_Recr);                      //  call function to do equilibrium calculation with current year's biology
-      SPR_unf=SPB_equil;
-      Smry_Table(y,11)=SPR_unf;
+      SPB_unf=SPB_equil;
+      Smry_Table(y,11)=SPB_unf;
       Smry_Table(y,13)=GenTime;
       Fishon=1;
       Do_Equil_Calc(equ_Recr);                      //  call function to do equilibrium calculation with current year's biology and F
       if(STD_Yr_Reverse_Ofish(y)>0)
       {
-        SPR_std(STD_Yr_Reverse_Ofish(y))=SPB_equil/SPR_unf;
+        SPR_std(STD_Yr_Reverse_Ofish(y))=SPB_equil/SPB_unf;
       }
       Smry_Table(y,9)=(totbio);
       Smry_Table(y,10)=(smrybio);

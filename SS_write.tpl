@@ -777,18 +777,17 @@ FUNCTION void write_nudata()
   report1<<"#_rows are fleets"<<endl<<"#_fleet_type timing area units need_catch_mult fleetname"<<endl;
   for (f=1;f<=Nfleet;f++)
   {report1<<fleet_setup(f)<<" "<<fleetname(f)<<"  # "<<f<<endl;}
-  if(N_bycatch>0)
+  report1<<"#Bycatch_fleet_input_goes_next"<<endl;
+  report1<<"#a:  fleet index"<<endl;
+  report1<<"#b:  1=deadfish in MSY, ABC and other benchmark and forecast output; 2=omit from MSY and ABC (but still include the mortality)"<<endl;
+  report1<<"#c:  1=Fmult scales with other fleets; 2=bycatch F constant at input value; 3=bycatch F form range of years"<<endl;
+  report1<<"#d:  F or first year of range"<<endl;
+  report1<<"#e:  last year of range"<<endl;
+  report1<<"#f:  not used"<<endl;
+  report1<<"# a   b   c   d   e   f "<<endl;
+  for (f=1;f<=Nfleet;f++)
   {
- /*
-    report1<<"#Bycatch_fleet_input_goes_next"<<endl;
-    report1<<"#a:  1=use retention curve like other fleets; 2=all discarded"<<endl;
-    report1<<"#b:  1=deadfish in MSY, ABC and other benchmark and forecast output; 2=omit from MSY and ABC (but still include the mortality)"<<endl;
-    report1<<"#c:  1=Fmult scales with other fleets; 2=bycatch F constant at input value; 3=bycatch F form range of years"<<endl;
-    report1<<"#d:  F or first year of range"<<endl;
-    report1<<"#e:  last year of range"<<endl;
-    report1<<"#   a   b   c   d   e"<<endl;
-    report1<<bycatch_setup<<endl;
- */
+    if(fleet_type(f)==2) report1<<bycatch_setup(f)<<"  # "<<fleetname(f)<<endl;
   }
 
   if(Nudat==1)  // report back the input data
@@ -1955,13 +1954,13 @@ FUNCTION void write_nucontrol()
   NuFore<<version_info<<endl;
   if(N_FC>0) NuFore<<Forecast_Comments<<endl;
   NuFore<<"# for all year entries except rebuilder; enter either: actual year, -999 for styr, 0 for endyr, neg number for rel. endyr"<<endl;
-  NuFore<<Do_Benchmark<<" # Benchmarks: 0=skip; 1=calc F_spr,F_btgt,F_msy "<<endl;
-  NuFore<<Do_MSY<<" # MSY: 1= set to F(SPR); 2=calc F(MSY); 3=set to F(Btgt); 4=set to F(endyr) "<<endl;
+  NuFore<<Do_Benchmark<<" # Benchmarks: 0=skip; 1=calc F_spr,F_btgt,F_msy; 2=calc F_spr,F0.1,F_msy "<<endl;
+  NuFore<<Do_MSY<<" # MSY: 1= set to F(SPR); 2=calc F(MSY); 3=set to F(Btgt) or F0.1; 4=set to F(endyr) "<<endl;
   NuFore<<SPR_target<<" # SPR target (e.g. 0.40)"<<endl;
   NuFore<<BTGT_target<<" # Biomass target (e.g. 0.40)"<<endl;
   NuFore<<"#_Bmark_years: beg_bio, end_bio, beg_selex, end_selex, beg_relF, end_relF, beg_recr_dist, end_recr_dist, beg_SRparm, end_SRparm (enter actual year, or values of 0 or -integer to be rel. endyr)"<<endl<<Bmark_Yr<<endl;
   NuFore<<Bmark_RelF_Basis<<" #Bmark_relF_Basis: 1 = use year range; 2 = set relF same as forecast below"<<endl;
-  NuFore<<"#"<<endl<<Do_Forecast<<" # Forecast: 0=none; 1=F(SPR); 2=F(MSY) 3=F(Btgt); 4=Ave F (uses first-last relF yrs); 5=input annual F scalar"<<endl;
+  NuFore<<"#"<<endl<<Do_Forecast<<" # Forecast: 0=none; 1=F(SPR); 2=F(MSY) 3=F(Btgt) or F0.1; 4=Ave F (uses first-last relF yrs); 5=input annual F scalar"<<endl;
   NuFore<<N_Fcast_Yrs<<" # N forecast years "<<endl;
   NuFore<<Fcast_Flevel<<" # F scalar (only used for Do_Forecast==5)"<<endl;
   NuFore<<"#_Fcast_years:  beg_selex, end_selex, beg_relF, end_relF, beg_recruits, end_recruits  (enter actual year, or values of 0 or -integer to be rel. endyr)"<<endl<<Fcast_yr_rd<<endl;
@@ -1974,7 +1973,7 @@ FUNCTION void write_nucontrol()
 
   NuFore<<Fcast_Loop_Control(1)<<" #_N forecast loops (1=OFL only; 2=ABC; 3=get F from forecast ABC catch with allocations applied)"<<endl;
   NuFore<<Fcast_Loop_Control(2)<<" #_First forecast loop with stochastic recruitment"<<endl;
-  NuFore<<Fcast_Loop_Control(3)<<" #_Forecast recruitment:  0= spawn_recr; 1=value*spawn_recr; 2=value*VirginRecr; 3=recent mean) "<<endl;
+  NuFore<<Fcast_Loop_Control(3)<<" #_Forecast recruitment:  0= spawn_recr; 1=value*spawn_recr_fxn; 2=value*VirginRecr; 3=recent mean) "<<endl;
   if(Fcast_Loop_Control(3)==0)
     {NuFore<<1.0<<" # value is ignored "<<endl;}
   if(Fcast_Loop_Control(3)==1)
@@ -3259,7 +3258,7 @@ FUNCTION void write_bigoutput()
       p=settlement_pattern_rd(settle,3);  //  settlement area
       settle_time=settle_assignments_timing(settle);
       SS2out<<settle<<" "<<settle_time<<" "<<gp<<" "<<p<<" "<<Settle_month(settle_time)<<" "<<Settle_seas(settle_time)<<" "<<
-      Settle_age(settle_time)<<" "<<Settle_timing_seas(settle_time)<<" "<<recr_dist_Bmark(gp,settle_time,p)/(Bmark_Yr(8)-Bmark_Yr(7)+1)<<endl;
+      Settle_age(settle_time)<<" "<<Settle_timing_seas(settle_time)<<" "<<recr_dist_unf(gp,settle_time,p)/(Bmark_Yr(8)-Bmark_Yr(7)+1)<<endl;
    }
    SS2out<<endl<<"RECRUITMENT_DIST_endyr"<<endl<<"Settle# settle_timing# G_pattern Area Settle_Month Seas Age Time_w/in_seas Frac/sex"<<endl;
    for (settle=1;settle<=N_settle_assignments;settle++)
@@ -4836,7 +4835,7 @@ FUNCTION void write_bigoutput()
       {
         g++;
         if(use_morph(g)>0)
-        {for (s=1;s<=nseas;s++) SS2out<<gp<<" "<<gg<<" "<<settle<<" "<<s<<" "<<natM_Bmark(s,g)/(Bmark_Yr(2)-Bmark_Yr(1)+1)<<endl;}
+        {for (s=1;s<=nseas;s++) SS2out<<gp<<" "<<gg<<" "<<settle<<" "<<s<<" "<<natM_unf(s,g)/(Bmark_Yr(2)-Bmark_Yr(1)+1)<<endl;}
       }
 
     SS2out<<endl<<"Natural_Mortality_endyr"<<endl<<"Bio_Pattern Sex Settlement Seas "<<age_vector<<endl;
@@ -5595,27 +5594,29 @@ FUNCTION void write_bigoutput()
 
 // ******************************************************
 //  Do Ypr/Spr profile
-        int SPRloop;
-        int bio_t_base;
-        dvariable Fmult2=maxpossF;
-        dvariable Fcrash=Fmult2;
-        dvariable Fmultchanger0=value(Fmult2/39.);
-        dvariable Fmultchanger1;
-        dvariable Fmultchanger2;
-        dvariable Btgt_prof;
-        dvariable Btgt_prof_rec;
-        dvariable SPR_last;
-        dvariable SPR_trial;
+  int SPRloop;
+  int bio_t_base;
+  dvariable Fmult2=maxpossF;
+  dvariable Fcrash=Fmult2;
+  dvariable Fmultchanger0=value(Fmult2/39.);
+  dvariable Fmultchanger1;
+  dvariable Fmultchanger2;
+  dvariable Btgt_prof;
+  dvariable Btgt_prof_rec;
+  dvariable SPR_last;
+  dvariable SPR_trial;
+  dvariable YPR_last;
 
   if(Do_Benchmark>0 && wrote_bigreport==1)
   {
-        SS2out<<endl<<"SPR/YPR_Profile "<<endl<<"SPRloop Iter Fmult F_report SPR YPR YPR*Recr SSB Recruits SSB/Bzero Tot_Catch ";
-        for (f=1;f<=Nfleet;f++) {if(fleet_type(f)<=2) SS2out<<" "<<fleetname(f)<<"("<<f<<")";}
-        for (f=1;f<=Nfleet;f++) {if(fleet_type(f)<=2) SS2out<<" "<<fleetname(f)<<"("<<f<<")";}
-        for (p=1;p<=pop;p++)
-        for (gp=1;gp<=N_GP;gp++)
-        {SS2out<<" Area:"<<p<<"_GP:"<<gp;}
-        SS2out<<endl;
+    SS2out<<endl<<"SPR/YPR_Profile "<<endl<<"SPRloop Iter Bycatch Fmult F_report SPR YPR YPR*Recr SSB Recruits SSB/Bzero Tot_Catch ";
+    for (f=1;f<=Nfleet;f++) {if(fleet_type(f)<=2) SS2out<<" "<<fleetname(f)<<"("<<f<<")Dead";}
+    for (f=1;f<=Nfleet;f++) {if(fleet_type(f)<=2) SS2out<<" "<<fleetname(f)<<"("<<f<<")Ret";}
+    for (f=1;f<=Nfleet;f++) {if(fleet_type(f)<=2) SS2out<<" "<<fleetname(f)<<"("<<f<<")Age";}
+    for (p=1;p<=pop;p++)
+    for (gp=1;gp<=N_GP;gp++)
+    {SS2out<<" SSB_Area:"<<p<<"_GP:"<<gp;}
+    SS2out<<endl;
     y=styr-3;
     yz=y;
     bio_yr=y;
@@ -5658,177 +5659,163 @@ FUNCTION void write_bigoutput()
     Fishon=0;
     int SPRloops;
     Do_Equil_Calc(equ_Recr);
-    SPR_unf=SPB_equil;
-        for (int SPRloop1=0; SPRloop1<=6; SPRloop1++)
+    SPB_unf=SPB_equil;
+    if(N_bycatch==0) {k=0;} else {k=1;}
+    for (int with_BYC=0; with_BYC<=k;with_BYC++)
+    for (int SPRloop1=0; SPRloop1<=7; SPRloop1++)
+    {
+      Fmultchanger1=value(pow(0.0001/Fcrash,0.025));
+      Fmultchanger2=value(Fcrash/39.);
+      SPRloops=40;
+      switch(SPRloop1)
+      {
+        case 0:
         {
-          Fmultchanger1=value(pow(0.0001/Fcrash,0.025));
-          Fmultchanger2=value(Fcrash/39.);
+          Fmult2=maxpossF;
+          break;
+        }
+        case 1:
+        {
+          Fmult2=Fcrash;
+          break;
+        }
+        case 3:
+        {
+          Fmult2=1;
+          SPRloops=1;
+          break;
+        }
+        case 4:
+        {
+          Fmult2=SPR_Fmult;
+          SPRloops=1;
+          break;
+        }
+        case 5:
+        {
+          Fmult2=Btgt_Fmult;
+          SPRloops=1;
+          break;
+        }
+        case 6:
+        {
+          Fmult2=MSY_Fmult;
+          SPRloops=1;
+          break;
+        }
+        case 7:
+        {
+          Fmult2=MSY_Fmult;
           SPRloops=40;
-          switch(SPRloop1)
+          SPR_trial=value(SPB_equil/SPB_unf);
+          SPR_last=SPR_trial*2.;
+          YPR_last=-1.;
+          break;
+        }
+      }
+      for (SPRloop=1; SPRloop<=SPRloops; SPRloop++)
+      {
+        for (f=1;f<=Nfleet;f++)
+        for (s=1;s<=nseas;s++)
+        {
+          t=bio_t_base+s;
+          if(fleet_type(f)==1 || (fleet_type(f)==2 && bycatch_setup(f,3)==1))
           {
-            case 1:
+            if(SPRloop1!=3)
             {
-              Fmult2=Fcrash;
-              break;
+              Hrate(f,t)=Fmult2*Bmark_RelF_Use(s,f);
             }
-            case 3:
+            else
             {
-              Fmult2=1;
-              SPRloops=1;
-              break;
-            }
-            case 4:
-            {
-              Fmult2=SPR_Fmult;
-              SPRloops=1;
-              break;
-            }
-            case 5:
-            {
-              Fmult2=Btgt_Fmult;
-              SPRloops=1;
-              break;
-            }
-            case 6:
-            {
-              Fmult2=MSY_Fmult;
-              SPRloops=1;
-              break;
+              a=styr+(endyr-styr)*nseas+s-1;
+              Hrate(f,t)=Hrate(f,a);
             }
           }
-          for (SPRloop=1; SPRloop<=SPRloops; SPRloop++)
-          {
-            for (f=1;f<=Nfleet;f++)
-            for (s=1;s<=nseas;s++)
-            if(fleet_type(f)<=2)
-            {
-              t=bio_t_base+s;
-              if(SPRloop1!=3)
-              {
-                Hrate(f,t)=Fmult2*Bmark_RelF_Use(s,f);
-              }
-              else
-              {
-                a=styr+(endyr-styr)*nseas+s-1;
-                Hrate(f,t)=Hrate(f,a);
-              }
-            }
-            Fishon=1;
-            Do_Equil_Calc(equ_Recr);
-//  SPAWN-RECR:   calc equil spawn-recr in the SPR loop
-            SPR_temp=SPB_equil;
-            Equ_SpawnRecr_Result = Equil_Spawn_Recr_Fxn(SR_parm(2), SR_parm(3), SPB_virgin, Recr_virgin, SPR_temp);  //  returns 2 element vector containing equilibrium biomass and recruitment at this SPR
-            Btgt_prof=Equ_SpawnRecr_Result(1);
-            Btgt_prof_rec=Equ_SpawnRecr_Result(2);
-            if(SPRloop1==0)
-            {
-              if(Btgt_prof<0.001 && Btgt_prof_rec<0.001)
-              {Fcrash=Fmult2;}
-            }
-            SS2out<<SPRloop1<<" "<<SPRloop<<" "<<Fmult2<<" "<<equ_F_std<<" "<<value(SPB_equil/SPR_unf)<<" "<<value(YPR_dead)<<" "
-            <<value(YPR_dead*Btgt_prof_rec)<<" "<<Btgt_prof<<" "<<Btgt_prof_rec<<" "<<value(Btgt_prof/SPB_virgin)
-            <<" "<<value(sum(equ_catch_fleet(2))*Btgt_prof_rec);
-            for(f=1;f<=Nfleet;f++)
-            if(fleet_type(f)<=2)
-            {
-              temp=0.0;
-              for(s=1;s<=nseas;s++) {temp+=equ_catch_fleet(2,s,f);}
-              SS2out<<" "<<temp*Btgt_prof_rec;
-            }
-//  report mean age of CATCH
-            for(f=1;f<=Nfleet;f++)
-            if(fleet_type(f)<=2)
-            {
-              temp=0.0; temp2=0;
-              for(s=1;s<=nseas;s++) 
-              for(g=1;g<=gmorph;g++)
-              if(use_morph(g)>0)
-              {
-                temp+=equ_catage(s,f,g)*r_ages;
-                temp2+=sum(equ_catage(s,f,g));
-              }
-              SS2out<<" "<<temp/temp2;
-            }
-            
-            for (p=1;p<=pop;p++)
-            for (gp=1;gp<=N_GP;gp++)
-            {SS2out<<" "<<SPB_equil_pop_gp(p,gp)*Btgt_prof_rec;}
-            SS2out<<endl;
-            if(SPRloop1==0)
-              {Fmult2-=Fmultchanger0;}
-            else if(SPRloop1==1)
-              {Fmult2*=Fmultchanger1;}
-            else if(SPRloop1==2)
-              {Fmult2+=Fmultchanger2;}
-          }
-        }  // end Fmult profile
+          else if (fleet_type(f)==2 && bycatch_setup(f,3)>1)
+          {Hrate(f,t)=double(with_BYC)*bycatch_F(f,s);}
+          else
+          {Hrate(f,t)=0.0;}
+        }
+        Fishon=1;
 
-        SPR_trial=value(SPB_equil/SPR_unf);
-        SPR_last=SPR_trial*2.;
-        SPRloop=0;
-        dvariable YPR_last;
-        YPR_last=-1.;
-        while (SPR_trial>0.001 && SPR_last>1.00001*SPR_trial && YPR_last<YPR_dead && SPRloop<1000)
+        if(SPRloop1==7)
         {
           if(F_Method>1)
           {Fmult2*=1.05;}
           else
           {Fmult2=Fmult2+(1.0-Fmult2)*0.05;}
+          if (SPR_trial<=0.001) SPRloop=1001;
           SPR_last=SPR_trial;
           YPR_last=YPR_dead;
-          for (f=1;f<=Nfleet;f++)
-          for (s=1;s<=nseas;s++)
+        }
+
+        Do_Equil_Calc(equ_Recr);
+//  SPAWN-RECR:   calc equil spawn-recr in the SPR loop
+        SPR_temp=SPB_equil;
+        Equ_SpawnRecr_Result = Equil_Spawn_Recr_Fxn(SR_parm(2), SR_parm(3), SPB_virgin, Recr_virgin, SPR_temp);  //  returns 2 element vector containing equilibrium biomass and recruitment at this SPR
+        Btgt_prof=Equ_SpawnRecr_Result(1);
+        Btgt_prof_rec=Equ_SpawnRecr_Result(2);
+        if(SPRloop1==0)
+        {
+          if(Btgt_prof<0.001 && Btgt_prof_rec<0.001)
+          {Fcrash=Fmult2;}
+        }
+        SS2out<<SPRloop1<<" "<<SPRloop<<" "<<with_BYC<<" "<<Fmult2<<" "<<equ_F_std<<" "<<value(SPB_equil/SPB_unf)<<" "<<value(YPR_dead)<<" "
+        <<value(YPR_dead*Btgt_prof_rec)<<" "<<Btgt_prof<<" "<<Btgt_prof_rec<<" "<<value(Btgt_prof/SPB_virgin)
+        <<" "<<value(sum(equ_catch_fleet(2))*Btgt_prof_rec);
+        for(f=1;f<=Nfleet;f++)
           if(fleet_type(f)<=2)
+        {
+          temp=0.0;
+          for(s=1;s<=nseas;s++) {temp+=equ_catch_fleet(2,s,f);}
+          SS2out<<" "<<temp*Btgt_prof_rec;
+        }
+        for(f=1;f<=Nfleet;f++)
+          if(fleet_type(f)<=2)
+        {
+          temp=0.0;
+          for(s=1;s<=nseas;s++) {temp+=equ_catch_fleet(3,s,f);}
+          SS2out<<" "<<temp*Btgt_prof_rec;
+        }
+//  report mean age of CATCH of non-bycatch fleets
+        for(f=1;f<=Nfleet;f++)
+          if(fleet_type(f)<=2)
+        {
+          temp=0.0; temp2=0;
+          for(s=1;s<=nseas;s++) 
+          for(g=1;g<=gmorph;g++)
+          if(use_morph(g)>0)
           {
-            t=bio_t_base+s;
-            Hrate(f,t)=Fmult2*Bmark_RelF_Use(s,f);
+            temp+=equ_catage(s,f,g)*r_ages;
+            temp2+=sum(equ_catage(s,f,g));
           }
-          SPRloop+=1;
-          Fishon=1;
-          Do_Equil_Calc(equ_Recr);
-          SPR_temp=SPB_equil;
-          Equ_SpawnRecr_Result = Equil_Spawn_Recr_Fxn(SR_parm(2), SR_parm(3), SPB_virgin, Recr_virgin, SPR_temp);  //  returns 2 element vector containing equilibrium biomass and recruitment at this SPR
-          Btgt_prof=Equ_SpawnRecr_Result(1);
-          Btgt_prof_rec=Equ_SpawnRecr_Result(2);
-          SPR_trial=value(SPB_equil/SPR_unf);
-            SS2out<<"7 "<<SPRloop<<" "<<Fmult2<<" "<<equ_F_std<<" "<<value(SPB_equil/SPR_unf)<<" "<<value(YPR_dead)<<" "
-            <<value(YPR_dead*Btgt_prof_rec)<<" "<<Btgt_prof<<" "<<Btgt_prof_rec<<" "<<value(Btgt_prof/SPB_virgin)
-            <<" "<<value(sum(equ_catch_fleet(2))*Btgt_prof_rec);
-            for(f=1;f<=Nfleet;f++)
-            if(fleet_type(f)<=2)
-            {
-              temp=0.0;
-              for(s=1;s<=nseas;s++) {temp+=equ_catch_fleet(2,s,f);}
-              SS2out<<" "<<temp*Btgt_prof_rec;
-            }
-//  report mean age of CATCH
-            for(f=1;f<=Nfleet;f++)
-            if(fleet_type(f)<=2)
-            {
-              temp=0.0; temp2=0;
-              for(s=1;s<=nseas;s++) 
-              for(g=1;g<=gmorph;g++)
-              if(use_morph(g)>0)
-              {
-                temp+=equ_catage(s,f,g)*r_ages;
-                temp2+=sum(equ_catage(s,f,g));
-              }
-              SS2out<<" "<<temp/temp2;
-            }
-            for (p=1;p<=pop;p++)
-            for (gp=1;gp<=N_GP;gp++)
-            {SS2out<<" "<<SPB_equil_pop_gp(p,gp)*Btgt_prof_rec;}
-            SS2out<<endl;        }
-        // end Btarget profile
-        SS2out<<"Finish SPR/YPR profile"<<endl;
-        SS2out<<"#Profile 0 is descending additively from max possible F:  "<<maxpossF<<endl;
-        SS2out<<"#Profile 1 is descending multiplicatively back to nil F"<<endl;
-        SS2out<<"#Profile 2 is additive back to Fcrash: "<<Fcrash<<endl;
-        SS2out<<"#value 3 uses endyr F, which has different fleet allocation than benchmark"<<endl;
-        SS2out<<"#value 4 is Fspr: "<<SPR_Fmult<<endl;
-        SS2out<<"#value 5 is Fbtgt: "<<Btgt_Fmult<<endl;
-        SS2out<<"#value 6 is Fmsy: "<<MSY_Fmult<<endl;
-        SS2out<<"#Profile 7 increases from Fmsy to Fcrash"<<endl;
+          if(temp2>0.0) {SS2out<<" "<<temp/temp2;} else SS2out<<" NA";
+        }
+        
+        for (p=1;p<=pop;p++)
+        for (gp=1;gp<=N_GP;gp++)
+        {SS2out<<" "<<SPB_equil_pop_gp(p,gp)*Btgt_prof_rec;}
+        SS2out<<endl;
+        if(SPRloop1==0)
+          {Fmult2-=Fmultchanger0;
+           if(Fmult2<0.0) Fmult2=1.0e-6;}
+        else if(SPRloop1==1)
+          {Fmult2*=Fmultchanger1;}
+        else if(SPRloop1==2)
+          {Fmult2+=Fmultchanger2;}
+      }
+    }
+
+    SS2out<<"Finish SPR/YPR profile"<<endl;
+    SS2out<<"#Profile 0 is descending additively from max possible F:  "<<maxpossF<<endl;
+    SS2out<<"#Profile 1 is descending multiplicatively half of max possible F"<<endl;
+    SS2out<<"#Profile 2 is additive back to Fcrash: "<<Fcrash<<endl;
+    SS2out<<"#value 3 uses endyr F, which has different fleet allocation than benchmark"<<endl;
+    SS2out<<"#value 4 is Fspr: "<<SPR_Fmult<<endl;
+    SS2out<<"#value 5 is Fbtgt: "<<Btgt_Fmult<<endl;
+    SS2out<<"#value 6 is Fmsy: "<<MSY_Fmult<<endl;
+    SS2out<<"#Profile 7 increases from Fmsy to Fcrash"<<endl;
+    SS2out<<"#NOTE: meanage of catch is for total catch of fleet_type==1 or bycatch fleets with scaled Hrate"<<endl;
         
   }
 

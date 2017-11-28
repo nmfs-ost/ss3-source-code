@@ -37,13 +37,13 @@ PARAMETER_SECTION
 //  vector natM2(1,N_GP*gender)
   matrix natMparms(1,N_natMparms,1,N_GP*gender)
   3darray natM(1,nseas,1,N_GP*gender*N_settle_timings,0,nages)   //  need nseas to capture differences due to settlement
-  3darray natM_Bmark(1,nseas,1,N_GP*gender*N_settle_timings,0,nages)   //  need nseas to capture differences due to settlement
+  3darray natM_unf(1,nseas,1,N_GP*gender*N_settle_timings,0,nages)   //  need nseas to capture differences due to settlement
   3darray natM_endyr(1,nseas,1,N_GP*gender*N_settle_timings,0,nages)   //  need nseas to capture differences due to settlement
   3darray surv1(1,nseas,1,N_GP*gender*N_settle_timings,0,nages)
-  3darray surv1_Bmark(1,nseas,1,N_GP*gender*N_settle_timings,0,nages)
+  3darray surv1_unf(1,nseas,1,N_GP*gender*N_settle_timings,0,nages)
   3darray surv1_endyr(1,nseas,1,N_GP*gender*N_settle_timings,0,nages)
   3darray surv2(1,nseas,1,N_GP*gender*N_settle_timings,0,nages)
-  3darray surv2_Bmark(1,nseas,1,N_GP*gender*N_settle_timings,0,nages)
+  3darray surv2_unf(1,nseas,1,N_GP*gender*N_settle_timings,0,nages)
   3darray surv2_endyr(1,nseas,1,N_GP*gender*N_settle_timings,0,nages)
   vector CVLmin(1,N_GP*gender)
   vector CVLmax(1,N_GP*gender)
@@ -102,7 +102,7 @@ PARAMETER_SECTION
 
   3darray migrrate(styr-3,YrMax,1,do_migr2,0,nages)
   3darray recr_dist(1,N_GP*gender,1,N_settle_timings,1,pop);
-  3darray recr_dist_Bmark(1,N_GP*gender,1,N_settle_timings,1,pop);
+  3darray recr_dist_unf(1,N_GP*gender,1,N_settle_timings,1,pop);
   3darray recr_dist_endyr(1,N_GP*gender,1,N_settle_timings,1,pop);
 !!//  SS_Label_Info_5.1.2 #Create SR_parm vector, recruitment vectors
   init_bounded_number_vector SR_parm(1,N_SRparm3,SR_parm_LO,SR_parm_HI,SR_parm_PH)
@@ -152,21 +152,68 @@ PARAMETER_SECTION
   vector ABC_buffer(endyr+1,YrMax);
 
 //  SPAWN-RECR:   define some spawning biomass and recruitment entities
-  number SPB_current;                            // Spawning biomass
-  number SPB_vir_LH
-  number Recr_virgin
   number SPB_virgin
-  number SPB_Bmark
-  number Recr_Bmark
-  number SPR_unf
+  number Recr_virgin
+  number SPB_vir_LH
+
+  number SPB_unf
+  number Recr_unf
+  
+  number SPB_current;                            // Spawning biomass
+  number SPB_equil;
+
   number SPR_trial
-//  vector S1(0,1);
+  number SPR_actual;
+  number SPR_temp;  //  used to pass quantity into Equil_SpawnRecr
+  number Recruits;                            // Age0 Recruits
+  number equ_mat_bio
+  number equ_mat_num
+
+  number YPR    // variable still used in SPR series
+  number YPR_Btgt_enc;
+  number YPR_Btgt_dead;
+  number YPR_Btgt_N_dead;
+  number YPR_Btgt_ret;
+  number YPR_Btgt;
+  number YPR_tgt_enc;
+  number YPR_tgt_dead;
+  number YPR_tgt_N_dead;
+  number YPR_tgt_ret;
+  number YPR_spr;
+
+  number Vbio_spr;
+  number Vbio1_spr;
+  number Vbio_Btgt;
+  number Vbio1_Btgt;
+
+  number Btgt;
+  number Btgttgt;
+  number SPR_Btgt;
+  number Btgt_Rec;
+  number Bspr;
+  number Bspr_rec;
+
+  number MSY
+  number Bmsy
+  number Recr_msy
+  number YPR_msy_enc;
+  number YPR_msy_dead;
+  number YPR_msy_N_dead;
+  number YPR_msy_ret;
+
+  number YPR_enc;
+  number YPR_dead;
+  number YPR_N_dead;
+  number YPR_ret;
+  number MSY_Fmult;
+  number SPR_Fmult;
+  number Btgt_Fmult;
+  number MSY_SPR;
+
   3darray SPB_pop_gp(styr-3,YrMax,1,pop,1,N_GP)         //Spawning biomass
   vector SPB_yr(styr-3,YrMax)
   vector SPB_B_yr(styr-3,YrMax)  //  mature biomass (no fecundity)
   vector SPB_N_yr(styr-3,YrMax)   //  mature numbers
-  number equ_mat_bio
-  number equ_mat_num
   !!k=0;
   !!if(Hermaphro_Option!=0) k=1;
 
@@ -174,9 +221,6 @@ PARAMETER_SECTION
 
   matrix SPB_equil_pop_gp(1,pop,1,N_GP);
   matrix MaleSPB_equil_pop_gp(1,pop,1,N_GP);
-  number SPB_equil;
-  number SPR_temp;  //  used to pass quantity into Equil_SpawnRecr
-  number Recruits;                            // Age0 Recruits
   matrix Recr(1,pop,styr-3*nseas,TimeMax_Fcast_std+1)         //Recruitment
   matrix exp_rec(styr-3,YrMax,1,4) //expected value for recruitment: 1=spawner-recr only; 2=with environ and cycle; 3=with bias_adj; 4=with dev
   matrix Nmid(1,gmorph,0,nages);
@@ -196,6 +240,7 @@ PARAMETER_SECTION
   4darray equ_Z(1,nseas,1,pop,1,gmorph,0,nages)
   matrix catage_tot(1,gmorph,0,nages)//sum the catches for all fleets, reuse matrix each year
   matrix Hrate(1,Nfleet,styr-3*nseas,k) //Harvest Rate for each fleet
+  matrix bycatch_F(1,Nfleet,1,nseas)
   3darray catch_fleet(styr-3*nseas,k,1,Nfleet,1,6)  //  1=sel_bio, 2=kill_bio; 3=ret_bio; 4=sel_num; 5=kill_num; 6=ret_num
   matrix annual_catch(styr,YrMax,1,6)  //  same six as above
   matrix annual_F(styr,YrMax,1,2)  //  1=sum of hrate (if Pope fmethod) or sum hrate*seasdur if F; 2=Z-M for selected ages
@@ -236,36 +281,6 @@ PARAMETER_SECTION
 
   vector Nmigr(1,pop);
   number Nsurvive;
-  number YPR_tgt_enc;
-  number YPR_tgt_dead;
-  number YPR_tgt_N_dead;
-  number YPR_tgt_ret;
-  number YPR_spr; number Vbio_spr; number Vbio1_spr; number SPR_actual;
-
-  number YPR_Btgt_enc;
-  number YPR_Btgt_dead;
-  number YPR_Btgt_N_dead;
-  number YPR_Btgt_ret;
-  number YPR_Btgt; number Vbio_Btgt; number Vbio1_Btgt;
-  number Btgt; number Btgttgt; number SPR_Btgt; number Btgt_Rec;
-  number Bspr; number Bspr_rec;
-
-  number YPR    // variable still used in SPR series
-  number MSY
-  number Bmsy
-  number Recr_msy
-  number YPR_msy_enc;
-  number YPR_msy_dead;
-  number YPR_msy_N_dead;
-  number YPR_msy_ret;
-
-  number YPR_enc;
-  number YPR_dead;
-  number YPR_N_dead;
-  number YPR_ret;
-  number MSY_Fmult;
-  number SPR_Fmult;
-  number Btgt_Fmult;
 
   number caa;
    number Fmult;
@@ -277,7 +292,6 @@ PARAMETER_SECTION
    matrix Bmark_RelF_Use(1,nseas,1,Nfleet);
    number alpha;
    number beta;
-   number MSY_SPR;
    number GenTime;
    vector cumF(1,gmorph);
    vector maxF(1,gmorph);

@@ -171,7 +171,7 @@
   vector catch_se_rd(1,Nfleet)
   matrix catch_se(styr-nseas,TimeMax,1,Nfleet);
   matrix fleet_setup(1,Nfleet,1,5)  // type, timing, area, units, need_catch_mult
-  matrix bycatch_setup(1,Nfleet,1,5)
+  matrix bycatch_setup(1,Nfleet,1,6)
   int N_bycatch;  //  number of bycatch only fleets
   int N_catchfleets; //  number of bycatch plus landed catch fleets
 
@@ -210,20 +210,37 @@
         {N_warn++; cout<<"exit; see warning"<<endl; warning<<"Need_catch_mult can be used only for fleet_type=1 fleet= "<<f<<endl; exit(1);}
       echoinput<<f<<" # "<<fleet_setup(f)<<" # "<<fleetname(f)<<endl;
     }
-  /*
+
     if(N_bycatch>0)
     {
       echoinput<<"Now read bycatch fleet characteristics for "<<N_bycatch<<" fleets"<<endl;
-      for(f=1;f<=Nfleet;f++)
+    echoinput<<"a:  fleet number; must match fleet definitions"<<endl;
+    echoinput<<"b:  1=deadfish in MSY, ABC and other benchmark and forecast output; 2=omit from MSY and ABC (but still include the mortality)"<<endl;
+    echoinput<<"c:  1=Fmult scales with other fleets; 2=bycatch F constant at input value; 3=bycatch F form range of years"<<endl;
+    echoinput<<"d:  F or first year of range"<<endl;
+    echoinput<<"e:  last year of range"<<endl;
+    echoinput<<"f:  not used"<<endl;
+       for(j=1;j<=N_bycatch;j++)
       {
+        *(ad_comm::global_datafile) >> f;
+        bycatch_setup(f,1)=f;
+        *(ad_comm::global_datafile) >> bycatch_setup(f)(2,6);
         if(fleet_type(f)==2)
         {
-          *(ad_comm::global_datafile) >> bycatch_setup(f)(1,5);
-          echoinput<<f<<" "<<fleetname(f)<<" bycatch_setup: "<<bycatch_setup<<endl;
+          echoinput<<f<<" "<<fleetname(f)<<" bycatch_setup: "<<bycatch_setup(f)<<endl;
+          if(bycatch_setup(f,3)==3)  //  check year range
+          {
+            if(bycatch_setup(f,4)<styr)  bycatch_setup(f,4)=styr;
+            if(bycatch_setup(f,5)>retro_yr)  bycatch_setup(f,5)=retro_yr;
+          }
+        }
+        else
+        {
+          N_warn++; cout<<"fatal input error"<<endl; warning<<"fleet "<<f<<" is in bycatch list but not designated as bycatch fleet"<<endl; exit(1);
         }
       }
     }
-  */
+
     Nfleet1 = N_catchfleets;
     N_retParm=0;
   }
@@ -2626,9 +2643,9 @@
   }
  END_CALCS
   !!echoinput<<"read Do_Benchmark(0/1), then MSY basis(1=F_SPR,2=F_Btarget,3=calcMSY,4=mult*F_endyr)"<<endl;
-  init_int Do_Benchmark  // 0=skip; do Fspr, Fbtgt, Fmsy
+  init_int Do_Benchmark  // 0=skip; 1= do Fspr, Fbtgt, Fmsy; 2=do Fspr, F0.1, Fmsy
   !!echoinput<<Do_Benchmark<<" echoed Do_Benchmark "<<endl;
-  init_int Do_MSY   //  1= set to F(SPR); 2=calc F(MSY); 3=set to F(Btgt); 4=set to F(endyr)
+  init_int Do_MSY   //  1= set to F(SPR); 2=calc F(MSY); 3=set to F(Btgt) or F0.1; 4=set to F(endyr)
   !!echoinput<<Do_MSY<<" echoed MSY basis"<<endl;
 
   int did_MSY;

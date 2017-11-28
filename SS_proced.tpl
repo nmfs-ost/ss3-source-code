@@ -180,8 +180,9 @@ PROCEDURE_SECTION
         for (f=1;f<=Nfleet;f++)
         for (s=1;s<=nseas;s++)
         {
-          t=styr+(y-styr)*nseas+s-1;
-          Fcast_RelF_Use(s,f)+=Hrate(f,t);
+          if(fleet_type(f)==1 || (fleet_type(f)==2 && bycatch_setup(f,3)==1))
+          {t=styr+(y-styr)*nseas+s-1;
+          Fcast_RelF_Use(s,f)+=Hrate(f,t);}
         }
         temp=sum(Fcast_RelF_Use);
         if(temp==0.0)
@@ -241,7 +242,7 @@ PROCEDURE_SECTION
               for (t=Bmark_t(1);t<=Bmark_t(2);t+=nseas) {tempvec_a+=save_sel_fec(t+s,g,f);}
               save_sel_fec(styr-3*nseas+s,g,f)=tempvec_a/temp;
             }
-// natmort_bmark is accumulated while doing the time_series
+// natmort_unf is accumulated while doing the time_series
 // then it's mean is calculated in Get_Benchmarks and assigned back to natmort
           }
         }
@@ -258,7 +259,7 @@ PROCEDURE_SECTION
               migrrate(styr-3,j)=tempvec_a/temp;
             }
           }
-// recr_dist_bmark is accumulated while doing the time_series
+// recr_dist_unf is accumulated while doing the time_series
 // then its mean is calculated in Get_Benchmarks and assigned to recr_dist
 //  the SR_parm_bench is calculated from Bmark_yrs 9-10 in benchmark code using values stored in SR_parm_byyr
 
@@ -300,6 +301,7 @@ PROCEDURE_SECTION
           Bmark_RelF_Use.initialize();
           for (y=Bmark_Yr(5);y<=Bmark_Yr(6);y++)
           for (f=1;f<=Nfleet;f++)
+          if(fleet_type(f)==1 || (fleet_type(f)==2 && bycatch_setup(f,3)==1))
           for (s=1;s<=nseas;s++)
           {
             t=styr+(y-styr)*nseas+s-1;

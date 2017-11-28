@@ -24,4 +24,7 @@ DATA_SECTION
 !!//  V3.30.08.03  2017-09-29  fix error in the new code for ss_summary.sso
 !!//  V3.30.08.04  2017-11-06  VLAB #40546; fix forecast recruitment error when spawn_month>1
 !!//  V3.30.09.00  2017-11-17  expand 2D_AR to provide control for extrapolation to years before and after the dev range
-!!//  V3.30.09.00  2017-11-20  provide controls for forecast recruitment 
+!!//  V3.30.09.00  2017-11-20  provide controls for forecast recruitment
+!!//  V3.30.10.00  2017-11-27  provide controls for bycatch fleets; mandatory I/O change if they exist
+!!//  V3.30.10.00  2017-11-27  provide benchmark and forecast option to use F0.1; this is either or with F(Btgt)
+!!//  V3.30.10.00  2017-11-27  clarify internal usage and output for SSB_virgin vs SSB_unfished (benchmark)
