@@ -828,7 +828,7 @@ PRELIMINARY_CALCS_SECTION
 //  SS_Label_Info_6.8.9 #Calculated values have been set equal to value() to remove derivative info and save space if their parameters are held constant
 
 //  SS_Label_Info_6.9 #Set up headers for ParmTrace
-    if(Do_ParmTrace>0) ParmTrace<<"Phase Iter ObjFun Change SPB_start SPB_end BiasAdj_st BiasAdj_max BiasAdj_end ";
+    if(Do_ParmTrace>0) ParmTrace<<"Phase Iter ObjFun Change SSB_start SSB_end BiasAdj_st BiasAdj_max BiasAdj_end ";
     if(Do_ParmTrace==1 || Do_ParmTrace==4)
     {
       for (i=1;i<=active_count;i++) {ParmTrace<<" "<<ParmLabel(active_parm(i));}

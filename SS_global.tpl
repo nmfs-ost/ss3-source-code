@@ -531,7 +531,7 @@ GLOBALS_SECTION
 BETWEEN_PHASES_SECTION
   {
   int j_phase=current_phase();  // this is the phase to come
-  cout<<current_phase()-1<<" "<<niter<<" -log(L): "<<obj_fun<<"  Spbio: "<<value(SPB_yr(styr))<<" "<<value(SPB_yr(endyr));
+  cout<<current_phase()-1<<" "<<niter<<" -log(L): "<<obj_fun<<"  Spbio: "<<value(SSB_yr(styr))<<" "<<value(SSB_yr(endyr));
 
 //  SS_Label_Info_11.1 #Save last value of objective function
   if(j_phase>1)
@@ -627,7 +627,7 @@ FINAL_SECTION
       cout<<" finished benchmark for reporting"<<endl;
     }
     else
-    {Mgmt_quant(1)=SPB_virgin;}
+    {Mgmt_quant(1)=SSB_virgin;}
     if(Do_Forecast>0)
     {
       report5<<"THIS FORECAST FOR PURPOSES OF GETTING DISPLAY QUANTITIES"<<endl;
@@ -726,13 +726,13 @@ REPORT_SECTION
   if(F_Method>1) {report<<"Catch "<<catch_like<<endl;} else {report<<"  crash "<<CrashPen<<endl;}
   if(SzFreq_Nmeth>0) report<<" sizefreq "<<SzFreq_like<<endl;
   if(Do_TG>0) report<<" TG-fleetcomp "<<TG_like1<<endl<<" TG-negbin "<<TG_like2<<endl;
-  report<<" -log(L): "<<obj_fun<<"  Spbio: "<<value(SPB_yr(styr))<<
-  " "<<value(SPB_yr(endyr))<<endl;
+  report<<" -log(L): "<<obj_fun<<"  Spbio: "<<value(SSB_yr(styr))<<
+  " "<<value(SSB_yr(endyr))<<endl;
 
   report<<endl<<"Year Spbio Recruitment"<<endl;
-  report<<"Virg "<<SPB_yr(styr-2)<<" "<<exp_rec(styr-2,4)<<endl;
-  report<<"Init "<<SPB_yr(styr-1)<<" "<<exp_rec(styr-1,4)<<endl;
-  for(y=styr;y<=endyr;y++) report<<y<<" "<<SPB_yr(y)<<" "<<exp_rec(y,4)<<endl;
+  report<<"Virg "<<SSB_yr(styr-2)<<" "<<exp_rec(styr-2,4)<<endl;
+  report<<"Init "<<SSB_yr(styr-1)<<" "<<exp_rec(styr-1,4)<<endl;
+  for(y=styr;y<=endyr;y++) report<<y<<" "<<SSB_yr(y)<<" "<<exp_rec(y,4)<<endl;
 
   report<<endl<<"EXPLOITATION F_Method: ";
   if(F_Method==1) {report<<" Pope's_approx ";} else {report<<" instantaneous_annual_F ";}

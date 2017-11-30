@@ -825,22 +825,22 @@ FUNCTION void Process_STDquant()
       {
         if(STD_Yr_Reverse(y)>0)
         {
-          SPB_std(STD_Yr_Reverse(y))=SPB_yr(y);
+          SSB_std(STD_Yr_Reverse(y))=SSB_yr(y);
           recr_std(STD_Yr_Reverse(y))=exp_rec(y,4);
         }
-        if(STD_Yr_Reverse_Dep(y)>0) {depletion(STD_Yr_Reverse_Dep(y))=SPB_yr(y);}
+        if(STD_Yr_Reverse_Dep(y)>0) {depletion(STD_Yr_Reverse_Dep(y))=SSB_yr(y);}
       }
 
       switch(depletion_basis)
       {
         case 0:
         {
-          depletion/=SPB_virgin;
+          depletion/=SSB_virgin;
           break;
         }
         case 1:
         {
-          depletion/= (depletion_level*SPB_virgin);
+          depletion/= (depletion_level*SSB_virgin);
           break;
         }
         case 2:
@@ -850,7 +850,7 @@ FUNCTION void Process_STDquant()
         }
         case 3:
         {
-          depletion/= (depletion_level*SPB_yr(styr));
+          depletion/= (depletion_level*SSB_yr(styr));
           break;
         }
       }
@@ -985,7 +985,7 @@ FUNCTION void Process_STDquant()
 
     if(Extra_Std_N==1)
     {
-      Extra_Std(1)=SPB_virgin;
+      Extra_Std(1)=SSB_virgin;
     }
 
     if(Svy_N>0)
@@ -1411,7 +1411,7 @@ FUNCTION void get_posteriors()
   der_posts<<mceval_counter<<" "<<obj_fun<<" ";
   for (j=1;j<=N_STD_Yr;j++) // spawning biomass
   {
-    der_posts<<SPB_std(j)<<" ";
+    der_posts<<SSB_std(j)<<" ";
   }
   for (j=1;j<=N_STD_Yr;j++) // recruitment
   {

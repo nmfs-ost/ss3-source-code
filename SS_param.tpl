@@ -152,15 +152,15 @@ PARAMETER_SECTION
   vector ABC_buffer(endyr+1,YrMax);
 
 //  SPAWN-RECR:   define some spawning biomass and recruitment entities
-  number SPB_virgin
+  number SSB_virgin
   number Recr_virgin
-  number SPB_vir_LH
+  number SSB_vir_LH
 
-  number SPB_unf
+  number SSB_unf
   number Recr_unf
   
-  number SPB_current;                            // Spawning biomass
-  number SPB_equil;
+  number SSB_current;                            // Spawning biomass
+  number SSB_equil;
 
   number SPR_trial
   number SPR_actual;
@@ -210,17 +210,17 @@ PARAMETER_SECTION
   number Btgt_Fmult;
   number MSY_SPR;
 
-  3darray SPB_pop_gp(styr-3,YrMax,1,pop,1,N_GP)         //Spawning biomass
-  vector SPB_yr(styr-3,YrMax)
-  vector SPB_B_yr(styr-3,YrMax)  //  mature biomass (no fecundity)
-  vector SPB_N_yr(styr-3,YrMax)   //  mature numbers
+  3darray SSB_pop_gp(styr-3,YrMax,1,pop,1,N_GP)         //Spawning biomass
+  vector SSB_yr(styr-3,YrMax)
+  vector SSB_B_yr(styr-3,YrMax)  //  mature biomass (no fecundity)
+  vector SSB_N_yr(styr-3,YrMax)   //  mature numbers
   !!k=0;
   !!if(Hermaphro_Option!=0) k=1;
 
   3darray MaleSPB(styr-3,YrMax*k,1,pop,1,N_GP)         //Male Spawning biomass
 
-  matrix SPB_equil_pop_gp(1,pop,1,N_GP);
-  matrix MaleSPB_equil_pop_gp(1,pop,1,N_GP);
+  matrix SSB_equil_pop_gp(1,pop,1,N_GP);
+  matrix MaleSSB_equil_pop_gp(1,pop,1,N_GP);
   matrix Recr(1,pop,styr-3*nseas,TimeMax_Fcast_std+1)         //Recruitment
   matrix exp_rec(styr-3,YrMax,1,4) //expected value for recruitment: 1=spawner-recr only; 2=with environ and cycle; 3=with bias_adj; 4=with dev
   matrix Nmid(1,gmorph,0,nages);
@@ -466,7 +466,7 @@ PARAMETER_SECTION
 !!//  SS_Label_Info_5.1.8 #Create matrix called smry to store derived quantities of interest
   matrix Smry_Table(styr-3,YrMax,1,20+2*gmorph);
   // 1=totbio, 2=smrybio, 3=smrynum, 4=enc_catch, 5=dead_catch, 6=ret_catch, 7=spbio, 8=recruit,
-  // 9=equ_totbio, 10=equ_smrybio, 11=equ_SPB_virgin, 12=equ_S1, 13=Gentime, 14=YPR, 15=meanage_spawners, 16=meanage_smrynums, 17=meanage_catch
+  // 9=equ_totbio, 10=equ_smrybio, 11=equ_SSB_virgin, 12=equ_S1, 13=Gentime, 14=YPR, 15=meanage_spawners, 16=meanage_smrynums, 17=meanage_catch
   // 18, 19, 20  not used
   // 21+cumF-bymorph, maxF-by morph
 
@@ -478,7 +478,7 @@ PARAMETER_SECTION
   vector parm_gradients(1,parm_grad_active_count);
 
 !!//  SS_Label_Info_5.2 #Create sdreport vectors
-  sdreport_vector SPB_std(1,N_STD_Yr);
+  sdreport_vector SSB_std(1,N_STD_Yr);
   sdreport_vector recr_std(1,N_STD_Yr);
   sdreport_vector SPR_std(1,N_STD_Yr_Ofish);
   sdreport_vector F_std(1,N_STD_Yr_F);

@@ -167,22 +167,22 @@ FUNCTION void get_initial_conditions()
     exp_rec(eq_yr,3)=Recr_virgin;
     exp_rec(eq_yr,4)=Recr_virgin;
     Do_Equil_Calc(equ_Recr);                      //  call function to do equilibrium calculation
-    SPB_virgin=SPB_equil;
-    SPR_virgin=SPB_equil/Recr_virgin;  //  spawners per recruit
+    SSB_virgin=SSB_equil;
+    SPR_virgin=SSB_equil/Recr_virgin;  //  spawners per recruit
     if(Do_Benchmark==0)
     {
-      Mgmt_quant(1)=SPB_virgin;
+      Mgmt_quant(1)=SSB_virgin;
       Mgmt_quant(2)=totbio;
       Mgmt_quant(3)=smrybio;
       Mgmt_quant(4)=Recr_virgin;
     }
 
-    SPB_pop_gp(eq_yr)=SPB_equil_pop_gp;   // dimensions of pop x N_GP
-    if(Hermaphro_Option!=0) MaleSPB(eq_yr)=MaleSPB_equil_pop_gp;
-    SPB_yr(eq_yr)=SPB_equil;
-    SR_parm_byyr(eq_yr,N_SRparm2+1)=SPB_equil;
-    SR_parm_virg(N_SRparm2+1)=SPB_equil;
-    SR_parm_work(N_SRparm2+1)=SPB_equil;
+    SSB_pop_gp(eq_yr)=SSB_equil_pop_gp;   // dimensions of pop x N_GP
+    if(Hermaphro_Option!=0) MaleSPB(eq_yr)=MaleSSB_equil_pop_gp;
+    SSB_yr(eq_yr)=SSB_equil;
+    SR_parm_byyr(eq_yr,N_SRparm2+1)=SSB_equil;
+    SR_parm_virg(N_SRparm2+1)=SSB_equil;
+    SR_parm_work(N_SRparm2+1)=SSB_equil;
     t=styr-2*nseas-1;
     for (s=1;s<=nseas;s++)
     for (p=1;p<=pop;p++)
@@ -192,8 +192,8 @@ FUNCTION void get_initial_conditions()
     }
     if(save_for_report>0)
     {
-      SPB_B_yr(eq_yr).initialize();
-      SPB_N_yr(eq_yr).initialize();
+      SSB_B_yr(eq_yr).initialize();
+      SSB_N_yr(eq_yr).initialize();
       for (s=1;s<=nseas;s++)
       for (p=1;p<=pop;p++)
       for (g=1;g<=gmorph;g++)
@@ -201,8 +201,8 @@ FUNCTION void get_initial_conditions()
       {
         if(s==spawn_seas && sx(g)==1)
         {
-           SPB_B_yr(eq_yr) += make_mature_bio(GP4(g))*natage(t+s,p,g);
-           SPB_N_yr(eq_yr) += make_mature_numbers(GP4(g))*natage(t+s,p,g);
+           SSB_B_yr(eq_yr) += make_mature_bio(GP4(g))*natage(t+s,p,g);
+           SSB_N_yr(eq_yr) += make_mature_numbers(GP4(g))*natage(t+s,p,g);
         }
         Save_PopBio(t+s,p,g)=elem_prod(natage(t+s,p,g),Wt_Age_beg(s,g));
       }
@@ -272,9 +272,9 @@ FUNCTION void get_initial_conditions()
     equ_Recr=Recr_virgin;
     Do_Equil_Calc(equ_Recr);
     CrashPen += Equ_penalty;
-    SPR_temp=SPB_equil/equ_Recr;  //  spawners per recruit at initial F
+    SPR_temp=SSB_equil/equ_Recr;  //  spawners per recruit at initial F
   //  get equilibrium SSB and recruitment from SPR_temp, Recr_virgin and virgin steepness
-    Equ_SpawnRecr_Result = Equil_Spawn_Recr_Fxn(SR_parm(2), SR_parm(3), SPB_virgin, Recr_virgin, SPR_temp);  //  returns 2 element vector containing equilibrium biomass and recruitment at this SPR
+    Equ_SpawnRecr_Result = Equil_Spawn_Recr_Fxn(SR_parm(2), SR_parm(3), SSB_virgin, Recr_virgin, SPR_temp);  //  returns 2 element vector containing equilibrium biomass and recruitment at this SPR
 
     R1_exp=Equ_SpawnRecr_Result(2);     //  set the expected recruitment equal to this equilibrium
     exp_rec(eq_yr,1)=R1_exp;
@@ -285,17 +285,17 @@ FUNCTION void get_initial_conditions()
     exp_rec(eq_yr,4)=equ_Recr;
     R1=equ_Recr;
 
-    Do_Equil_Calc(equ_Recr);  // calculated SPB_equil
+    Do_Equil_Calc(equ_Recr);  // calculated SSB_equil
     CrashPen += Equ_penalty;
   }
 
-   SPB_pop_gp(eq_yr)=SPB_equil_pop_gp;   // dimensions of pop x N_GP
-   if(Hermaphro_Option!=0) MaleSPB(eq_yr)=MaleSPB_equil_pop_gp;
-   SPB_yr(eq_yr)=SPB_equil;
-    SR_parm_byyr(eq_yr,N_SRparm2+1)=SPB_equil;
-    SR_parm_work(N_SRparm2+1)=SPB_equil;
-   SPB_yr(styr)=SPB_equil;
-   env_data(styr-1,-1)=SPB_equil;
+   SSB_pop_gp(eq_yr)=SSB_equil_pop_gp;   // dimensions of pop x N_GP
+   if(Hermaphro_Option!=0) MaleSPB(eq_yr)=MaleSSB_equil_pop_gp;
+   SSB_yr(eq_yr)=SSB_equil;
+    SR_parm_byyr(eq_yr,N_SRparm2+1)=SSB_equil;
+    SR_parm_work(N_SRparm2+1)=SSB_equil;
+   SSB_yr(styr)=SSB_equil;
+   env_data(styr-1,-1)=SSB_equil;
    env_data(styr-1,-2)=1.0;
    env_data(styr-1,-3)=smrybio;
    env_data(styr-1,-4)=smrynum;
@@ -341,8 +341,8 @@ FUNCTION void get_initial_conditions()
     if(save_for_report>0)
     {
       t=styr-nseas-1;
-      SPB_B_yr(eq_yr).initialize();
-      SPB_N_yr(eq_yr).initialize();
+      SSB_B_yr(eq_yr).initialize();
+      SSB_N_yr(eq_yr).initialize();
       for (s=1;s<=nseas;s++)
       for (p=1;p<=pop;p++)
       for (g=1;g<=gmorph;g++)
@@ -350,8 +350,8 @@ FUNCTION void get_initial_conditions()
       {
         if(s==spawn_seas && sx(g)==1)
         {
-           SPB_B_yr(eq_yr) += make_mature_bio(GP4(g))*natage(t+s,p,g);
-           SPB_N_yr(eq_yr) += make_mature_numbers(GP4(g))*natage(t+s,p,g);
+           SSB_B_yr(eq_yr) += make_mature_bio(GP4(g))*natage(t+s,p,g);
+           SSB_N_yr(eq_yr) += make_mature_numbers(GP4(g))*natage(t+s,p,g);
         }
         Save_PopBio(t+s,p,g)=elem_prod(natage(t+s,p,g),Wt_Age_beg(s,g));
       }
@@ -372,9 +372,9 @@ FUNCTION void get_initial_conditions()
        natage(styr,p,g,a) *=mfexp(recdev(j)-biasadj(j)*half_sigmaRsq);
      }
    }
-   SPB_pop_gp(styr)=SPB_pop_gp(styr-1);  //  placeholder in case not calculated early in styr
+   SSB_pop_gp(styr)=SSB_pop_gp(styr-1);  //  placeholder in case not calculated early in styr
 
-   //  note:  the above keeps SPB_pop_gp(styr) = SPB_equil.  It does not adjust for initial agecomp, but probably should
+   //  note:  the above keeps SSB_pop_gp(styr) = SSB_equil.  It does not adjust for initial agecomp, but probably should
   }  //  end initial_conditions
 
   //*********************************************************************
@@ -385,12 +385,12 @@ FUNCTION void get_time_series()
   dvariable interim_tot_catch;
   dvariable Z_adjuster;
   dvariable R0_use;
-  dvariable SPB_use;
+  dvariable SSB_use;
   if(Do_Morphcomp) Morphcomp_exp.initialize();
 
   //  SS_Label_Info_24.0 #Retrieve spawning biomass and recruitment from the initial equilibrium
 //  SPAWN-RECR:   begin of time series, retrieve last spbio and recruitment
-  SPB_current = SPB_yr(styr);  //  need these initial assignments in case recruitment distribution occurs before spawnbio&recruits
+  SSB_current = SSB_yr(styr);  //  need these initial assignments in case recruitment distribution occurs before spawnbio&recruits
   if(recdev_doit(styr-1)>0)
   { Recruits = R1 * mfexp(recdev(styr-1)-biasadj(styr-1)*half_sigmaRsq); }
   else
@@ -418,7 +418,7 @@ FUNCTION void get_time_series()
    }
 
     	{
-    		env_data(y,-1)=SPB_current/SPB_yr(styr-1);  //  store most recent value for density-dependent effects, NOTE - off by a year if recalc'ed at beginning of season 1
+    		env_data(y,-1)=SSB_current/SSB_yr(styr-1);  //  store most recent value for density-dependent effects, NOTE - off by a year if recalc'ed at beginning of season 1
         if(recdev_doit(y)>0)
         	{env_data(y,-2)=mfexp(recdev(y));} //  store so can do density-dependence
         	else
@@ -588,21 +588,21 @@ FUNCTION void get_time_series()
 //  SPAWN-RECR:   calc SPB in time series if spawning is at beginning of the season
       if(s==spawn_seas && spawn_time_seas<0.0001)    //  compute spawning biomass if spawning at beginning of season so recruits could occur later this season
       {
-        SPB_pop_gp(y).initialize();
-        SPB_B_yr(y).initialize();
-        SPB_N_yr(y).initialize();
+        SSB_pop_gp(y).initialize();
+        SSB_B_yr(y).initialize();
+        SSB_N_yr(y).initialize();
         for (p=1;p<=pop;p++)
         {
           for (g=1;g<=gmorph;g++)
           if(sx(g)==1 && use_morph(g)>0)     //  female
           {
-            SPB_pop_gp(y,p,GP4(g)) += fec(g)*natage(t,p,g);   // accumulates SSB by area and by growthpattern
-            SPB_B_yr(y) += make_mature_bio(GP4(g))*natage(t,p,g);
-            SPB_N_yr(y) += make_mature_numbers(GP4(g))*natage(t,p,g);
+            SSB_pop_gp(y,p,GP4(g)) += fec(g)*natage(t,p,g);   // accumulates SSB by area and by growthpattern
+            SSB_B_yr(y) += make_mature_bio(GP4(g))*natage(t,p,g);
+            SSB_N_yr(y) += make_mature_numbers(GP4(g))*natage(t,p,g);
           }
         }
-        SPB_current=sum(SPB_pop_gp(y));
-        SPB_yr(y)=SPB_current;
+        SSB_current=sum(SSB_pop_gp(y));
+        SSB_yr(y)=SSB_current;
         if(Hermaphro_Option!=0)  // get male biomass
         {
           MaleSPB(y).initialize();
@@ -616,15 +616,15 @@ FUNCTION void get_time_series()
           }
           if(Hermaphro_maleSPB==1) // add MaleSPB to female SSB
           {
-            SPB_current+=sum(MaleSPB(y));
-            SPB_yr(y)=SPB_current;
+            SSB_current+=sum(MaleSPB(y));
+            SSB_yr(y)=SSB_current;
           }
         }
 
   //  SS_Label_Info_24.2.3 #Get the total recruitment produced by this spawning biomass
 //  SPAWN-RECR:   calc recruitment in time series; need to make this area-specific
       if(SR_parm_timevary(1)==0)  //  R0 is not time-varying
-      {R0_use=Recr_virgin; SPB_use=SPB_virgin;}
+      {R0_use=Recr_virgin; SSB_use=SSB_virgin;}
       else
       {
         R0_use=mfexp(SR_parm_work(1));
@@ -634,10 +634,10 @@ FUNCTION void get_time_series()
         bio_yr=y;
         Do_Equil_Calc(R0_use);                      //  call function to do equilibrium calculation
         if(fishery_on_off==1) {Fishon=1;} else {Fishon=0;}
-        SPB_use=SPB_equil;
+        SSB_use=SSB_equil;
       }
 
-        Recruits=Spawn_Recr(SPB_use,R0_use,SPB_current);  // calls to function Spawn_Recr
+        Recruits=Spawn_Recr(SSB_use,R0_use,SSB_current);  // calls to function Spawn_Recr
 // distribute Recruitment of age 0 fish among the current and future settlements; and among areas and morphs
             //  use t offset for each birth event:  Settlement_offset(settle)
             //  so the total number of Recruits will be relative to their numbers at the time of the set of settlement_events.
@@ -972,21 +972,21 @@ FUNCTION void get_time_series()
 //  SPAWN-RECR:   calc spawn biomass in time series if after beginning of the season
       if(s==spawn_seas && spawn_time_seas>=0.0001)    //  compute spawning biomass
       {
-        SPB_pop_gp(y).initialize();
-        SPB_B_yr(y).initialize();
-        SPB_N_yr(y).initialize();
+        SSB_pop_gp(y).initialize();
+        SSB_B_yr(y).initialize();
+        SSB_N_yr(y).initialize();
         for (p=1;p<=pop;p++)
         {
           for (g=1;g<=gmorph;g++)
           if(sx(g)==1 && use_morph(g)>0)     //  female
           {
-            SPB_pop_gp(y,p,GP4(g)) += fec(g)*elem_prod(natage(t,p,g),mfexp(-Z_rate(t,p,g)*spawn_time_seas));   // accumulates SSB by area and by growthpattern
-            SPB_B_yr(y) += make_mature_bio(GP4(g))*elem_prod(natage(t,p,g),mfexp(-Z_rate(t,p,g)*spawn_time_seas));
-            SPB_N_yr(y) += make_mature_numbers(GP4(g))*elem_prod(natage(t,p,g),mfexp(-Z_rate(t,p,g)*spawn_time_seas));
+            SSB_pop_gp(y,p,GP4(g)) += fec(g)*elem_prod(natage(t,p,g),mfexp(-Z_rate(t,p,g)*spawn_time_seas));   // accumulates SSB by area and by growthpattern
+            SSB_B_yr(y) += make_mature_bio(GP4(g))*elem_prod(natage(t,p,g),mfexp(-Z_rate(t,p,g)*spawn_time_seas));
+            SSB_N_yr(y) += make_mature_numbers(GP4(g))*elem_prod(natage(t,p,g),mfexp(-Z_rate(t,p,g)*spawn_time_seas));
           }
         }
-        SPB_current=sum(SPB_pop_gp(y));
-        SPB_yr(y)=SPB_current;
+        SSB_current=sum(SSB_pop_gp(y));
+        SSB_yr(y)=SSB_current;
 
         if(Hermaphro_Option!=0)  // get male biomass
         {
@@ -1001,14 +1001,14 @@ FUNCTION void get_time_series()
           }
           if(Hermaphro_maleSPB==1) // add MaleSPB to female SSB
           {
-            SPB_current+=sum(MaleSPB(y));
-            SPB_yr(y)=SPB_current;
+            SSB_current+=sum(MaleSPB(y));
+            SSB_yr(y)=SSB_current;
           }
         }
   //  SS_Label_Info_24.3.4.1 #Get recruitment from this spawning biomass
 //  SPAWN-RECR:   calc recruitment in time series; need to make this area-specific
       if(SR_parm_timevary(1)==0)  //  R0 is not time-varying
-      {R0_use=Recr_virgin; SPB_use=SPB_virgin;}
+      {R0_use=Recr_virgin; SSB_use=SSB_virgin;}
       else
       {
         R0_use=mfexp(SR_parm_work(1));
@@ -1018,13 +1018,13 @@ FUNCTION void get_time_series()
         bio_yr=y;
         Do_Equil_Calc(R0_use);                      //  call function to do equilibrium calculation
         if(fishery_on_off==1) {Fishon=1;} else {Fishon=0;}
-        SPB_use=SPB_equil;
+        SSB_use=SSB_equil;
       }
 
-        Recruits=Spawn_Recr(SPB_use,R0_use,SPB_current);  // calls to function Spawn_Recr
+        Recruits=Spawn_Recr(SSB_use,R0_use,SSB_current);  // calls to function Spawn_Recr
 
 // distribute Recruitment among settlements, areas and morphs
-//  note that because SPB_current is calculated at end of season to take into account Z,
+//  note that because SSB_current is calculated at end of season to take into account Z,
 //  this means that recruitment cannot occur until a subsequent season
           for (g=1;g<=gmorph;g++)
           if(use_morph(g)>0)
@@ -1238,21 +1238,21 @@ FUNCTION void get_time_series()
     if( (save_for_report>0) || ((sd_phase() || mceval_phase()) && (initial_params::mc_phase==0)) )
     {
       eq_yr=y; equ_Recr=Recr_virgin; bio_yr=y;
-//      dvariable SPB_unf;
+//      dvariable SSB_unf;
       Fishon=0;
       Do_Equil_Calc(equ_Recr);                      //  call function to do equilibrium calculation with current year's biology
-      SPB_unf=SPB_equil;
-      Smry_Table(y,11)=SPB_unf;
+      SSB_unf=SSB_equil;
+      Smry_Table(y,11)=SSB_unf;
       Smry_Table(y,13)=GenTime;
       Fishon=1;
       Do_Equil_Calc(equ_Recr);                      //  call function to do equilibrium calculation with current year's biology and F
       if(STD_Yr_Reverse_Ofish(y)>0)
       {
-        SPR_std(STD_Yr_Reverse_Ofish(y))=SPB_equil/SPB_unf;
+        SPR_std(STD_Yr_Reverse_Ofish(y))=SSB_equil/SSB_unf;
       }
       Smry_Table(y,9)=(totbio);
       Smry_Table(y,10)=(smrybio);
-      Smry_Table(y,12)=(SPB_equil);
+      Smry_Table(y,12)=(SSB_equil);
       Smry_Table(y,14)=(YPR_dead);
       for (g=1;g<=gmorph;g++)
       {
@@ -1435,8 +1435,8 @@ FUNCTION void Do_Equil_Calc(const prevariable& equ_Recr)
    bio_t_base=styr+(bio_yr-styr)*nseas-1;
    GenTime.initialize(); Equ_penalty.initialize();
    cumF.initialize(); maxF.initialize();
-   SPB_equil_pop_gp.initialize();
-   if(Hermaphro_Option!=0) MaleSPB_equil_pop_gp.initialize();
+   SSB_equil_pop_gp.initialize();
+   if(Hermaphro_Option!=0) MaleSSB_equil_pop_gp.initialize();
    equ_mat_bio=0.0;
    equ_mat_num=0.0;
    equ_catch_fleet.initialize();
@@ -1698,7 +1698,7 @@ FUNCTION void Do_Equil_Calc(const prevariable& equ_Recr)
              if(gg==1)  // compute equilibrium spawning biomass for females
              {
               tempvec_a=elem_prod(equ_numbers(s,p,g)(0,nages),mfexp(-spawn_time_seas*equ_Z(s,p,g)(0,nages)));
-               SPB_equil_pop_gp(p,GP4(g))+=tempvec_a*fec(g);
+               SSB_equil_pop_gp(p,GP4(g))+=tempvec_a*fec(g);
                equ_mat_bio+=elem_prod(equ_numbers(s,p,g)(0,nages),mfexp(-spawn_time_seas*equ_Z(s,p,g)(0,nages)))*make_mature_bio(GP4(g));
                equ_mat_num+=elem_prod(equ_numbers(s,p,g)(0,nages),mfexp(-spawn_time_seas*equ_Z(s,p,g)(0,nages)))*make_mature_numbers(GP4(g));
                GenTime+=tempvec_a*elem_prod(fec(g),r_ages);
@@ -1706,7 +1706,7 @@ FUNCTION void Do_Equil_Calc(const prevariable& equ_Recr)
              else if(Hermaphro_Option!=0 && gg==2)
              {
                tempvec_a=elem_prod(equ_numbers(s,p,g)(0,nages),mfexp(-spawn_time_seas*equ_Z(s,p,g)(0,nages)));
-               MaleSPB_equil_pop_gp(p,GP4(g))+=tempvec_a*Wt_Age_beg(s,g)(0,nages);
+               MaleSSB_equil_pop_gp(p,GP4(g))+=tempvec_a*Wt_Age_beg(s,g)(0,nages);
              }
            }
          }
@@ -1781,11 +1781,11 @@ FUNCTION void Do_Equil_Calc(const prevariable& equ_Recr)
        equ_F_std = log(temp2)-log(temp1);
      }
    }
-   SPB_equil=sum(SPB_equil_pop_gp);
-   GenTime/=SPB_equil;
+   SSB_equil=sum(SSB_equil_pop_gp);
+   GenTime/=SSB_equil;
    smryage /= smrynum;
    cumF/=(r_ages(nages)-r_ages(Smry_Age)+1.);
-   if(Hermaphro_maleSPB==1) SPB_equil+=sum(MaleSPB_equil_pop_gp);
+   if(Hermaphro_maleSPB==1) SSB_equil+=sum(MaleSSB_equil_pop_gp);
 
   }  //  end equil calcs
 

@@ -467,11 +467,11 @@ Date:   Tue Dec 23 14:15:06 2014 -0800
     create a new switch recr_dist_area
     read after recr_dist_method
     if value = 2, then recruitment distribution in each year of a multi-area
-    model has the recr dist multiplied by the ratio of spb_pop_gp(y) to
-    spb_pop_gp(virgin).
+    model has the recr dist multiplied by the ratio of SSB_pop_gp(y) to
+    SSB_pop_gp(virgin).
     
     recr_dist(gp,settle,p)=femfrac(gp)*recr_dist_parm(gp)*recr_dist_parm(N_GP+p)*recr_dist_parm(N_GP+pop+settle);
-    recr_dist(gp,settle,p)*=SPB_pop_gp(y,p,gp)/SPB_pop_gp(styr-2,p,gp);
+    recr_dist(gp,settle,p)*=SSB_pop_gp(y,p,gp)/SSB_pop_gp(styr-2,p,gp);
     
     note that this only occurs for years after styr
 

@@ -336,7 +336,7 @@ PROCEDURE_SECTION
         did_MSY=1;
       }
       else
-      {Mgmt_quant(1)=SPB_virgin;}
+      {Mgmt_quant(1)=SSB_virgin;}
 
 
 //  SS_Label_Info_7.6.2 #Call fxn Get_Forecast()
@@ -378,11 +378,11 @@ PROCEDURE_SECTION
        temp=norm2(recdev(recdev_start,recdev_end));
        temp=sqrt((temp+0.0000001)/(double(recdev_end-recdev_start+1)));
      if(mcmc_counter==0 && mceval_counter==0)
-     {cout<<current_phase()<<" "<<niter<<" -log(L): "<<obj_fun<<"  Spbio: "<<value(SPB_yr(styr))<<" "<<value(SPB_yr(endyr));}
+     {cout<<current_phase()<<" "<<niter<<" -log(L): "<<obj_fun<<"  Spbio: "<<value(SSB_yr(styr))<<" "<<value(SSB_yr(endyr));}
      else if (mcmc_counter>0)
-     {cout<<" MCMC: "<<mcmc_counter<<" -log(L): "<<obj_fun<<"  Spbio: "<<value(SPB_yr(styr))<<" "<<value(SPB_yr(endyr));}
+     {cout<<" MCMC: "<<mcmc_counter<<" -log(L): "<<obj_fun<<"  Spbio: "<<value(SSB_yr(styr))<<" "<<value(SSB_yr(endyr));}
      else if (mceval_counter>0)
-     {cout<<" MCeval: "<<mceval_counter<<" -log(L): "<<obj_fun<<"  Spbio: "<<value(SPB_yr(styr))<<" "<<value(SPB_yr(endyr));}
+     {cout<<" MCeval: "<<mceval_counter<<" -log(L): "<<obj_fun<<"  Spbio: "<<value(SSB_yr(styr))<<" "<<value(SSB_yr(endyr));}
        if(F_Method>1 && sum(catch_like)>0.01) {cout<<" cat "<<sum(catch_like);}
        else if (CrashPen>0.01) {cout<<"  crash "<<CrashPen;}
        cout<<endl;
@@ -392,7 +392,7 @@ PROCEDURE_SECTION
       if((Do_ParmTrace==1 && obj_fun<=last_objfun) || Do_ParmTrace==4)
       {
         ParmTrace<<current_phase()<<" "<<niter<<" "<<obj_fun<<" "<<obj_fun-last_objfun
-        <<" "<<value(SPB_yr(styr))<<" "<<value(SPB_yr(endyr))<<" "<<biasadj(styr)<<" "<<max(biasadj)<<" "<<biasadj(endyr);
+        <<" "<<value(SSB_yr(styr))<<" "<<value(SSB_yr(endyr))<<" "<<biasadj(styr)<<" "<<max(biasadj)<<" "<<biasadj(endyr);
         for (j=1;j<=MGparm_PH.indexmax();j++)
         {
           if(MGparm_PH(j)>=0) {ParmTrace<<" "<<MGparm(j);}
@@ -451,7 +451,7 @@ PROCEDURE_SECTION
       else if((Do_ParmTrace==2 && obj_fun<=last_objfun) || Do_ParmTrace==3)
       {
         ParmTrace<<current_phase()<<" "<<niter<<" "<<obj_fun<<" "<<obj_fun-last_objfun
-        <<" "<<value(SPB_yr(styr))<<" "<<value(SPB_yr(endyr))<<" "<<biasadj(styr)<<" "<<max(biasadj)<<" "<<biasadj(endyr);
+        <<" "<<value(SSB_yr(styr))<<" "<<value(SSB_yr(endyr))<<" "<<biasadj(styr)<<" "<<max(biasadj)<<" "<<biasadj(endyr);
         ParmTrace<<" "<<MGparm<<" ";
         ParmTrace<<SR_parm<<" ";
         if(recdev_cycle>0) ParmTrace<<recdev_cycle_parm;

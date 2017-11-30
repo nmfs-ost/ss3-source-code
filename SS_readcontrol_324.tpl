@@ -4463,14 +4463,14 @@
     {
     CoVar_Count++; j++; active_parm(CoVar_Count)=j;
     if(y==styr-2)
-    {ParmLabel+="SPB_Virgin";}
+    {ParmLabel+="SSB_Virgin";}
     else if(y==styr-1)
-    {ParmLabel+="SPB_Initial";}
+    {ParmLabel+="SSB_Initial";}
     else
     {
 //      _itoa(y,onenum,10);
       sprintf(onenum, "%d", y);
-      ParmLabel+="SPB_"+onenum+CRLF(1);
+      ParmLabel+="SSB_"+onenum+CRLF(1);
     }
     }
   }

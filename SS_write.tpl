@@ -6,7 +6,7 @@ FUNCTION void write_summaryoutput()
   cout<<"in summary report "<<endl;
   time(&finish);
   elapsed_time = difftime(finish,start);
-  report2<<runnumber<<" -logL: "<<obj_fun<<" SSB(Vir_Start_End): "<<SPB_yr(styr-2)<<" "<<SPB_yr(styr)<<" "<<SPB_yr(endyr)<<endl;
+  report2<<runnumber<<" -logL: "<<obj_fun<<" SSB(Vir_Start_End): "<<SSB_yr(styr-2)<<" "<<SSB_yr(styr)<<" "<<SSB_yr(endyr)<<endl;
   report2<<runnumber<<" Files: "<<datfilename<<" "<<ctlfilename;
   if(readparfile>=1) report2<<" Start_from_ss.par";
   report2<<endl<<runnumber<<" N_iter: "<<niter<<" runtime(sec): "<<elapsed_time<<" starttime: "<<ctime(&start);
@@ -450,7 +450,7 @@ FUNCTION void write_SS_summary()
   for (j=1;j<=N_STD_Yr;j++)
   {
     NP++; active_count++; 
-    SS_smry<<SPB_std(j)<<" "<<CoVar(active_count,1)<<" "<<ParmLabel(NP)<<endl;
+    SS_smry<<SSB_std(j)<<" "<<CoVar(active_count,1)<<" "<<ParmLabel(NP)<<endl;
   }
 
   SS_smry<<"#_"<<"Recruitment"<<endl;
@@ -517,7 +517,7 @@ FUNCTION void write_rebuilder_output()
     if(mceval_counter==0) // writing to rebuild.dat
     {
       rebuild_dat<<"#Title, #runnumber: "<<runnumber<<" "<<datfilename<<" "<<ctlfilename<<
-         " "<<obj_fun<<" "<<SPB_yr(styr-2)<<" "<<SPB_yr(endyr+1)<<" StartTime: "<<ctime(&start);
+         " "<<obj_fun<<" "<<SSB_yr(styr-2)<<" "<<SSB_yr(endyr+1)<<" StartTime: "<<ctime(&start);
       rebuild_dat<<"SSv3_default_rebuild.dat"<<endl;
       rebuild_dat<<"# Number of sexes"<<endl<<gender<<endl;
       rebuild_dat<<"# Age range to consider (minimum age; maximum age)"<<endl<<0<<" "<<nages<<endl;
@@ -542,7 +542,7 @@ FUNCTION void write_rebuilder_output()
                     else rebuilder<<"# in maximization mode, StartTime: "<<ctime(&start);
 
     if(mceval_counter==0) rebuild_dat <<"#"<< age_vector << " #runnumber: "<<runnumber<<" "<<datfilename<<" "<<ctlfilename<<" "<<obj_fun<<
-      " "<<SPB_yr(styr-2)<<" "<<SPB_yr(endyr+1)<<endl;
+      " "<<SSB_yr(styr-2)<<" "<<SSB_yr(endyr+1)<<endl;
 
 //b.  fecundity-at-age
     t = styr+(Rebuild_Yinit-styr)*nseas;
@@ -649,7 +649,7 @@ FUNCTION void write_rebuilder_output()
     rebuilder << " #Recruits"<<endl;
 
 //h. spawnbio
-    rebuilder << SPB_yr(styr-2)<<" "<<SPB_yr(styr,k) <<" #SpawnBio"<<endl;
+    rebuilder << SSB_yr(styr-2)<<" "<<SSB_yr(styr,k) <<" #SpawnBio"<<endl;
 
 //i. steepness; SigmaR; rho
     rebuilder << SR_parm(2) <<" "<< sigmaR <<" "<< SR_parm(N_SRparm2) <<" # spawn-recr steepness, sigmaR, autocorr"<< endl;
@@ -666,7 +666,7 @@ FUNCTION void write_rebuilder_output()
       rebuild_dat<<exp_rec(styr-2,4)<<" ";
       for(y=styr;y<=k;y++) {rebuild_dat<<exp_rec(y,4)<<" ";}
       rebuild_dat<<" #recruits; first value is R0 (virgin)"<< endl;
-      rebuild_dat<<SPB_yr(styr-2)<<" "<<SPB_yr(styr,k) <<" #spbio; first value is SSB_virgin (virgin)"<< endl;
+      rebuild_dat<<SSB_yr(styr-2)<<" "<<SSB_yr(styr,k) <<" #spbio; first value is SSB_virgin (virgin)"<< endl;
       rebuild_dat<<1<<" ";
       for (y=styr;y<=k;y++) rebuild_dat<<0<<" ";
       rebuild_dat<<" # in Bzero"<<endl;
@@ -3143,7 +3143,7 @@ FUNCTION void write_bigoutput()
   SS2out<<" Label Value  StdDev (Val-1.0)/Stddev  CumNorm"<<endl;
   for (j=1;j<=N_STD_Yr;j++)
   {
-    NP++;  SS2out<<" "<<ParmLabel(NP)<<" "<<SPB_std(j);
+    NP++;  SS2out<<" "<<ParmLabel(NP)<<" "<<SSB_std(j);
     active_count++;
     SS2out<<" "<<CoVar(active_count,1)<<endl;
   }
@@ -3451,7 +3451,7 @@ FUNCTION void write_bigoutput()
     if(y<=styr) {bio_t=styr-1+s;}
     Bio_Comp.initialize();
     Num_Comp.initialize();
-    totbio.initialize(); smrybio.initialize(); smrynum.initialize(); SPB_vir_LH.initialize(); smryage.initialize();
+    totbio.initialize(); smrybio.initialize(); smrynum.initialize(); SSB_vir_LH.initialize(); smryage.initialize();
 //    Recr(p,y)=0;
     for (g=1;g<=gmorph;g++)
     if(use_morph(g)>0)
@@ -3465,7 +3465,7 @@ FUNCTION void write_bigoutput()
      smrybio+= temp;
      smrynum+=sum(natage(t,p,g)(Smry_Age,nages));
      smryage+=natage(t,p,g)(Smry_Age,nages)*r_ages(Smry_Age,nages);
-     SPB_vir_LH += natage(t,p,g)*virg_fec(g);
+     SSB_vir_LH += natage(t,p,g)*virg_fec(g);
      if(y<=endyr)
      {
        for (f=1;f<=Nfleet;f++)
@@ -3493,7 +3493,7 @@ FUNCTION void write_bigoutput()
     SS2out<<s<<" "<<totbio<<" "<<smrybio<<" ";
     if(s==spawn_seas)
     {
-      temp=sum(SPB_pop_gp(y,p));
+      temp=sum(SSB_pop_gp(y,p));
       if(Hermaphro_maleSPB==1) temp+=sum(MaleSPB(y,p));
       SS2out<<temp;
     }
@@ -3502,7 +3502,7 @@ FUNCTION void write_bigoutput()
     SS2out<<" "<<Recr(p,t)<<" ";
     if(s==spawn_seas)
     {
-      SS2out<<SPB_pop_gp(y,p);
+      SS2out<<SSB_pop_gp(y,p);
       if(Hermaphro_Option!=0) SS2out<<MaleSPB(y,p);
     }
     else
@@ -3512,7 +3512,7 @@ FUNCTION void write_bigoutput()
     }
     SS2out<<" "<<Bio_Comp<<" "<<Num_Comp;
     if(s==1 && y<=endyr) {Smry_Table(y,1)+=totbio; Smry_Table(y,2)+=smrybio;  Smry_Table(y,3)+=smrynum; Smry_Table(y,15)+=smryage;}  // already calculated for the forecast years
-    Smry_Table(y,7)=SPB_yr(y);
+    Smry_Table(y,7)=SSB_yr(y);
     Smry_Table(y,8)=exp_rec(y,4);
     for (f=1;f<=Nfleet;f++)
     if(fleet_type(f)<=2)
@@ -3528,7 +3528,7 @@ FUNCTION void write_bigoutput()
       {SS2out<<" 0 0 0 0 0 0 0 0 ";}
     }
     if(s==spawn_seas)
-        {SS2out<<" "<<SPB_vir_LH;}
+        {SS2out<<" "<<SSB_vir_LH;}
     else
       {SS2out<<" _";}
     if(y<=endyr)
@@ -3656,7 +3656,7 @@ FUNCTION void write_bigoutput()
   SS2out<<"Yr  B/Bmsy  F/Fmsy"<<endl;
    for (y=styr;y<=YrMax;y++)
    {
-    SS2out<<y<<" "<<SPB_yr(y)/Bmsy<<" ";
+    SS2out<<y<<" "<<SSB_yr(y)/Bmsy<<" ";
      if(y>=styr && STD_Yr_Reverse_F(y)>0 ) {SS2out<<" "<<F_std(STD_Yr_Reverse_F(y));} else {SS2out<<" _ ";}
      SS2out<<endl;
    }
@@ -3706,7 +3706,7 @@ FUNCTION void write_bigoutput()
   SS2out<<endl<<"SPAWN_RECRUIT Function: "<<SR_fxn<<" _ _ _ _ _ _"<<endl<<
   SR_parm(1)<<" Ln(R0) "<<mfexp(SR_parm(1))<<endl<<
   SR_parm(2)<<" steep"<<endl<<
-  Bmsy/SPB_virgin<<" Bmsy/Bzero ";
+  Bmsy/SSB_virgin<<" Bmsy/Bzero ";
   if(SR_fxn==8) SS2out<<Shepard_c<<" Shepard_c "<<Hupper<<" steepness_limit "<<temp<<" Adjusted_steepness";
   SS2out<<endl;
   SS2out<<sigmaR<<" sigmaR"<<endl;
@@ -3742,35 +3742,35 @@ FUNCTION void write_bigoutput()
    {SS2out<<endl;}
 
   SS2out<<"Yr SpawnBio exp_recr with_regime bias_adjusted pred_recr dev biasadjuster era mature_bio mature_num"<<endl;
-  SS2out<<"S/Rcurve "<<SPB_virgin<<" "<<Recr_virgin<<endl;
+  SS2out<<"S/Rcurve "<<SSB_virgin<<" "<<Recr_virgin<<endl;
   y=styr-2;
-  SS2out<<"Virg "<<SPB_yr(y)<<" "<<exp_rec(y)<<" - "<<0.0<<" Virg "<<SPB_B_yr(y)<<" "<<SPB_N_yr(y)<<endl;
+  SS2out<<"Virg "<<SSB_yr(y)<<" "<<exp_rec(y)<<" - "<<0.0<<" Virg "<<SSB_B_yr(y)<<" "<<SSB_N_yr(y)<<endl;
   y=styr-1;
-  SS2out<<"Init "<<SPB_yr(y)<<" "<<exp_rec(y)<<" - "<<0.0<<" Init "<<SPB_B_yr(y)<<" "<<SPB_N_yr(y)<<endl;
+  SS2out<<"Init "<<SSB_yr(y)<<" "<<exp_rec(y)<<" - "<<0.0<<" Init "<<SSB_B_yr(y)<<" "<<SSB_N_yr(y)<<endl;
 
   if(recdev_first<styr)
   {
     for (y=recdev_first;y<=styr-1;y++)
     {
-      SS2out<<y<<" "<<SPB_yr(styr-1)<<" "<<exp_rec(styr-1,1)<<" "<<exp_rec(styr-1,2)<<" "<<exp_rec(styr-1,3)*mfexp(-biasadj(y)*half_sigmaRsq)<<" "<<
+      SS2out<<y<<" "<<SSB_yr(styr-1)<<" "<<exp_rec(styr-1,1)<<" "<<exp_rec(styr-1,2)<<" "<<exp_rec(styr-1,3)*mfexp(-biasadj(y)*half_sigmaRsq)<<" "<<
       exp_rec(styr-1,3)*mfexp(recdev(y)-biasadj(y)*half_sigmaRsq)<<" "
-      <<recdev(y)<<" "<<biasadj(y)<<" Init_age "<<SPB_B_yr(styr-1)<<" "<<SPB_N_yr(styr-1)<<endl;
+      <<recdev(y)<<" "<<biasadj(y)<<" Init_age "<<SSB_B_yr(styr-1)<<" "<<SSB_N_yr(styr-1)<<endl;
     }
   }
    for (y=styr;y<=YrMax;y++)
    {
-     SS2out<<y<<" "<<SPB_yr(y)<<" "<<exp_rec(y)<<" ";
+     SS2out<<y<<" "<<SSB_yr(y)<<" "<<exp_rec(y)<<" ";
      if(recdev_do_early>0 && y>=recdev_early_start && y<=recdev_early_end)
-       {SS2out<<recdev(y)<<" "<<biasadj(y)<<" Early "<<SPB_B_yr(y)<<" "<<SPB_N_yr(y);}
+       {SS2out<<recdev(y)<<" "<<biasadj(y)<<" Early "<<SSB_B_yr(y)<<" "<<SSB_N_yr(y);}
      else if(y>=recdev_start && y<=recdev_end)
-       {SS2out<<recdev(y)<<" "<<biasadj(y)<<" Main "<<SPB_B_yr(y)<<" "<<SPB_N_yr(y);}
+       {SS2out<<recdev(y)<<" "<<biasadj(y)<<" Main "<<SSB_B_yr(y)<<" "<<SSB_N_yr(y);}
      else if(Do_Forecast>0 && y>recdev_end)
      {
         SS2out<<Fcast_recruitments(y)<<" "<<biasadj(y);
         if(y<=endyr)
-        {SS2out<<" Late "<<SPB_B_yr(y)<<" "<<SPB_N_yr(y);}
+        {SS2out<<" Late "<<SSB_B_yr(y)<<" "<<SSB_N_yr(y);}
         else
-        {SS2out<<" Forecast "<<SPB_B_yr(y)<<" "<<SPB_N_yr(y);}
+        {SS2out<<" Forecast "<<SSB_B_yr(y)<<" "<<SSB_N_yr(y);}
       }
      else
        {SS2out<<" _ _ Fixed";}
@@ -5659,7 +5659,7 @@ FUNCTION void write_bigoutput()
     Fishon=0;
     int SPRloops;
     Do_Equil_Calc(equ_Recr);
-    SPB_unf=SPB_equil;
+    SSB_unf=SSB_equil;
     if(N_bycatch==0) {k=0;} else {k=1;}
     for (int with_BYC=0; with_BYC<=k;with_BYC++)
     for (int SPRloop1=0; SPRloop1<=7; SPRloop1++)
@@ -5707,7 +5707,7 @@ FUNCTION void write_bigoutput()
         {
           Fmult2=MSY_Fmult;
           SPRloops=40;
-          SPR_trial=value(SPB_equil/SPB_unf);
+          SPR_trial=value(SSB_equil/SSB_unf);
           SPR_last=SPR_trial*2.;
           YPR_last=-1.;
           break;
@@ -5751,8 +5751,8 @@ FUNCTION void write_bigoutput()
 
         Do_Equil_Calc(equ_Recr);
 //  SPAWN-RECR:   calc equil spawn-recr in the SPR loop
-        SPR_temp=SPB_equil;
-        Equ_SpawnRecr_Result = Equil_Spawn_Recr_Fxn(SR_parm(2), SR_parm(3), SPB_virgin, Recr_virgin, SPR_temp);  //  returns 2 element vector containing equilibrium biomass and recruitment at this SPR
+        SPR_temp=SSB_equil;
+        Equ_SpawnRecr_Result = Equil_Spawn_Recr_Fxn(SR_parm(2), SR_parm(3), SSB_virgin, Recr_virgin, SPR_temp);  //  returns 2 element vector containing equilibrium biomass and recruitment at this SPR
         Btgt_prof=Equ_SpawnRecr_Result(1);
         Btgt_prof_rec=Equ_SpawnRecr_Result(2);
         if(SPRloop1==0)
@@ -5760,8 +5760,8 @@ FUNCTION void write_bigoutput()
           if(Btgt_prof<0.001 && Btgt_prof_rec<0.001)
           {Fcrash=Fmult2;}
         }
-        SS2out<<SPRloop1<<" "<<SPRloop<<" "<<with_BYC<<" "<<Fmult2<<" "<<equ_F_std<<" "<<value(SPB_equil/SPB_unf)<<" "<<value(YPR_dead)<<" "
-        <<value(YPR_dead*Btgt_prof_rec)<<" "<<Btgt_prof<<" "<<Btgt_prof_rec<<" "<<value(Btgt_prof/SPB_virgin)
+        SS2out<<SPRloop1<<" "<<SPRloop<<" "<<with_BYC<<" "<<Fmult2<<" "<<equ_F_std<<" "<<value(SSB_equil/SSB_unf)<<" "<<value(YPR_dead)<<" "
+        <<value(YPR_dead*Btgt_prof_rec)<<" "<<Btgt_prof<<" "<<Btgt_prof_rec<<" "<<value(Btgt_prof/SSB_virgin)
         <<" "<<value(sum(equ_catch_fleet(2))*Btgt_prof_rec);
         for(f=1;f<=Nfleet;f++)
           if(fleet_type(f)<=2)
@@ -5794,7 +5794,7 @@ FUNCTION void write_bigoutput()
         
         for (p=1;p<=pop;p++)
         for (gp=1;gp<=N_GP;gp++)
-        {SS2out<<" "<<SPB_equil_pop_gp(p,gp)*Btgt_prof_rec;}
+        {SS2out<<" "<<SSB_equil_pop_gp(p,gp)*Btgt_prof_rec;}
         SS2out<<endl;
         if(SPRloop1==0)
           {Fmult2-=Fmultchanger0;
@@ -5951,7 +5951,7 @@ FUNCTION void write_Bzero_output()
          {SS2out<<" FORE ";}
       for (p=1;p<=pop;p++)
       for (gp=1;gp<=N_GP;gp++)
-      {SS2out<<" "<<SPB_pop_gp(y,p,gp);}
+      {SS2out<<" "<<SSB_pop_gp(y,p,gp);}
       SS2out<<endl;
     }
 

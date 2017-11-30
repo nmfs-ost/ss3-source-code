@@ -222,11 +222,11 @@ FUNCTION void Get_expected_values();
                   {
                     if(pop==1 || fleet_area(f)==0)
                     {
-                      vbio=SPB_current;
+                      vbio=SSB_current;
                      }
                      else
                      {
-                       vbio=sum(SPB_pop_gp(y,fleet_area(f)));
+                       vbio=sum(SSB_pop_gp(y,fleet_area(f)));
                      }
                     break;
                   }
@@ -241,9 +241,9 @@ FUNCTION void Get_expected_values();
                   case 32:  // recruitment without density-dependence (for pre-recruit survey) #32
                   {
                    if(y>=recdev_start && y<=recdev_end)
-                   {vbio=SPB_current*mfexp(recdev(y));}
+                   {vbio=SSB_current*mfexp(recdev(y));}
                    else
-                   {vbio=SPB_current;}
+                   {vbio=SSB_current;}
                    break;
                   }
                   case 33:  // recruitment  #33
@@ -253,11 +253,11 @@ FUNCTION void Get_expected_values();
                   {
                     if(pop==1 || fleet_area(f)==0)
                     {
-                      vbio=(SPB_current+1.0e-06)/(SPB_virgin+1.0e-06);
+                      vbio=(SSB_current+1.0e-06)/(SSB_virgin+1.0e-06);
                      }
                      else
                      {
-                       vbio=(sum(SPB_pop_gp(y,fleet_area(f)))+1.0e-06)/(SPB_virgin+1.0e-06);
+                       vbio=(sum(SSB_pop_gp(y,fleet_area(f)))+1.0e-06)/(SSB_virgin+1.0e-06);
                      }
                     break;
                   }
