@@ -673,13 +673,13 @@ FINAL_SECTION
     save_for_report=2;
 //    bodywtout<<1<<"  #_user_must_replace_this_value_with_number_of_lines_with_wtatage_below"<<endl;
     bodywtout<<nages<<" # maxage"<<endl;
-    bodywtout<<"# if yr is negative, then fill remaining years for that seas, growpattern, gender, fleet"<<endl;
-    bodywtout<<"# if season is negative, then fill remaining fleets for that seas, growpattern, gender, fleet"<<endl;
+    bodywtout<<"# if Yr is negative, then fill remaining years for that Seas, growpattern, Bio_Pattern, Fleet"<<endl;
+    bodywtout<<"# if season is negative, then fill remaining fleets for that Seas, Bio_Pattern, Sex, Fleet"<<endl;
     bodywtout<<"# will fill through forecast years, so be careful"<<endl;
     bodywtout<<"# fleet 0 contains begin season pop WT"<<endl;
     bodywtout<<"# fleet -1 contains mid season pop WT"<<endl;
     bodywtout<<"# fleet -2 contains maturity*fecundity"<<endl;
-    bodywtout<<"#yr seas gender growpattern birthseas fleet "<<age_vector<<endl;
+    bodywtout<<"#Yr Seas Sex Bio_Pattern BirthSeas Fleet "<<age_vector<<endl;
     save_gparm=0;
     y=styr;
     fishery_on_off=1;
@@ -738,7 +738,7 @@ REPORT_SECTION
   if(F_Method==1) {report<<" Pope's_approx ";} else {report<<" instantaneous_annual_F ";}
   report<<endl<<"X Catch_Units ";
   for (f=1;f<=Nfleet;f++) if(catchunits(f)==1) {report<<" Bio ";} else {report<<" Num ";}
-  report<<endl<<"yr seas"; for (f=1;f<=Nfleet;f++) report<<" "<<f;
+  report<<endl<<"Yr Seas"; for (f=1;f<=Nfleet;f++) report<<" "<<f;
   report<<endl<<"init_yr 1 ";
   for (s=1;s<=nseas;s++)
   for (f=1;f<=Nfleet;f++)
@@ -757,7 +757,7 @@ REPORT_SECTION
   }
 
   report<<endl<< "LEN_SELEX" << endl;
-  report<<"Fleet gender "<<len_bins_m<<endl;
+  report<<"Fleet Sex "<<len_bins_m<<endl;
   for (f=1;f<=Nfleet;f++)
   {
     if(seltype(f,1)>0)
@@ -767,7 +767,7 @@ REPORT_SECTION
   }
 
   report<<endl<< "AGE_SELEX" << endl;
-  report<<"Fleet gender "<<age_vector<<endl;
+  report<<"Fleet Sex "<<age_vector<<endl;
   for (f=1;f<=Nfleet;f++)
   {
     if(seltype(f+Nfleet,1)>10)
