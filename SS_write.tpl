@@ -3271,7 +3271,7 @@ FUNCTION void write_bigoutput()
    }
 
    SS2out<<endl<<"MORPH_INDEXING"<<endl;
-   SS2out<<"Index GP Sex BirthSeason Platoon Platoon_Dist Sex*GP Sex*GP*Settle BirthAge_Rel_Jan1"<<endl;
+   SS2out<<"Index GP Sex BirthSeas Platoon Platoon_Dist Sex*GP Sex*GP*Settle BirthAge_Rel_Jan1"<<endl;
    for (g=1; g<=gmorph; g++)
    {
      SS2out<<g<<" "<<GP4(g)<<" "<<sx(g)<<" "<<Bseas(g)<<" "<<GP2(g)<<" "<<platoon_distr(GP2(g))<<" "<<GP(g)<<" "<<GP3(g)<<" "<<azero_G(g)<<endl;
@@ -4640,7 +4640,7 @@ FUNCTION void write_bigoutput()
 
 // ************************                     SS_Label_400
     SS2out << endl << "NUMBERS_AT_AGE" << endl;       // SS_Label_410
-    SS2out << "Area Bio_Pattern Sex BirthSeason Settlement Platoon Morph Yr Seas Time Beg/Mid Era"<<age_vector <<endl;
+    SS2out << "Area Bio_Pattern Sex BirthSeas Settlement Platoon Morph Yr Seas Time Beg/Mid Era"<<age_vector <<endl;
   if(reportdetail == 1)
   {
     for (p=1;p<=pop;p++)
@@ -4677,7 +4677,7 @@ FUNCTION void write_bigoutput()
       }
 
     SS2out << endl << "BIOMASS_AT_AGE" << endl;       // SS_Label_410
-    SS2out << "Area Bio_Pattern Sex BirthSeason Settlement Platoon Morph Yr Seas Time Beg/Mid Era"<<age_vector <<endl;
+    SS2out << "Area Bio_Pattern Sex BirthSeas Settlement Platoon Morph Yr Seas Time Beg/Mid Era"<<age_vector <<endl;
     for (p=1;p<=pop;p++)
     for (g=1;g<=gmorph;g++)
     if(use_morph(g)>0)
@@ -4712,7 +4712,7 @@ FUNCTION void write_bigoutput()
       }
 
     SS2out << endl << "NUMBERS_AT_LENGTH" << endl;
-    SS2out << "Area Bio_Pattern Sex BirthSeason Settlement Platoon Morph Yr Seas Time Beg/Mid Era "<<len_bins <<endl;
+    SS2out << "Area Bio_Pattern Sex BirthSeas Settlement Platoon Morph Yr Seas Time Beg/Mid Era "<<len_bins <<endl;
     for (p=1;p<=pop;p++)
     for (g=1;g<=gmorph;g++)
     if(use_morph(g)>0)
@@ -4747,7 +4747,7 @@ FUNCTION void write_bigoutput()
       }
 
     SS2out << endl << "BIOMASS_AT_LENGTH" << endl;
-    SS2out << "Area Bio_Pattern Sex BirthSeason Settlement Platoon Morph Yr Seas Time Beg/Mid Era "<<len_bins <<endl;
+    SS2out << "Area Bio_Pattern Sex BirthSeas Settlement Platoon Morph Yr Seas Time Beg/Mid Era "<<len_bins <<endl;
     for (p=1;p<=pop;p++)
     for (g=1;g<=gmorph;g++)
     if(use_morph(g)>0)
