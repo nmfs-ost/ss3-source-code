@@ -1583,7 +1583,7 @@
     recdev_adj(2)=recdev_options(6);
     recdev_adj(3)=recdev_options(7);
     recdev_adj(4)=recdev_options(8);
-    if(recdev_adj(4)>recdev_end)
+    if(recdev_adj(4)>recdev_end && do_recdev>0)
       {N_warn++; warning<<"bias adjustment ramp extends past recdev_end; biasadj set to 0.0 after recdev_end"<<endl;}
     recdev_adj(5)=recdev_options(9);  // maxbias adj
 
@@ -4101,23 +4101,23 @@
         ParmLabel+="SSB_Btgt"+CRLF(1); CoVar_Count++; j++; active_parm(CoVar_Count)=j;
         ParmLabel+="SPR_Btgt"+CRLF(1); CoVar_Count++; j++; active_parm(CoVar_Count)=j;
         ParmLabel+="Fstd_Btgt"+CRLF(1); CoVar_Count++; j++; active_parm(CoVar_Count)=j;
-        ParmLabel+="TotYield_Btgt"+CRLF(1); CoVar_Count++; j++; active_parm(CoVar_Count)=j;
+        ParmLabel+="Dead_Catch_Btgt"+CRLF(1); CoVar_Count++; j++; active_parm(CoVar_Count)=j;
       }
       else if(Do_Benchmark==2)
       {
         ParmLabel+="SSB_F01"+CRLF(1); CoVar_Count++; j++; active_parm(CoVar_Count)=j;
         ParmLabel+="SPR_F01"+CRLF(1); CoVar_Count++; j++; active_parm(CoVar_Count)=j;
         ParmLabel+="Fstd_F01"+CRLF(1); CoVar_Count++; j++; active_parm(CoVar_Count)=j;
-        ParmLabel+="TotYield_F01"+CRLF(1); CoVar_Count++; j++; active_parm(CoVar_Count)=j;
+        ParmLabel+="Dead_Catch_F01"+CRLF(1); CoVar_Count++; j++; active_parm(CoVar_Count)=j;
       }
-      ParmLabel+="SSB_SPRtgt"+CRLF(1); CoVar_Count++; j++; active_parm(CoVar_Count)=j;
-      ParmLabel+="Fstd_SPRtgt"+CRLF(1); CoVar_Count++; j++; active_parm(CoVar_Count)=j;
-      ParmLabel+="TotYield_SPRtgt"+CRLF(1); CoVar_Count++; j++; active_parm(CoVar_Count)=j;
+      ParmLabel+="SSB_SPR"+CRLF(1); CoVar_Count++; j++; active_parm(CoVar_Count)=j;
+      ParmLabel+="Fstd_SPR"+CRLF(1); CoVar_Count++; j++; active_parm(CoVar_Count)=j;
+      ParmLabel+="Dead_Catch_SPR"+CRLF(1); CoVar_Count++; j++; active_parm(CoVar_Count)=j;
       ParmLabel+="SSB_MSY"+CRLF(1); CoVar_Count++; j++; active_parm(CoVar_Count)=j;
       ParmLabel+="SPR_MSY"+CRLF(1); CoVar_Count++; j++; active_parm(CoVar_Count)=j;
       ParmLabel+="Fstd_MSY"+CRLF(1); CoVar_Count++; j++; active_parm(CoVar_Count)=j;
-      ParmLabel+="TotYield_MSY"+CRLF(1); CoVar_Count++; j++; active_parm(CoVar_Count)=j;
-      ParmLabel+="RetYield_MSY"+CRLF(1); CoVar_Count++; j++; active_parm(CoVar_Count)=j;
+      ParmLabel+="Dead_Catch_MSY"+CRLF(1); CoVar_Count++; j++; active_parm(CoVar_Count)=j;
+      ParmLabel+="Dead_Catch_MSY"+CRLF(1); CoVar_Count++; j++; active_parm(CoVar_Count)=j;
     }
     else
     {

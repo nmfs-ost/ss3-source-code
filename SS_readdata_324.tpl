@@ -157,7 +157,8 @@
   vector catch_se_rd(1,Nfleet)
   matrix catch_se(styr-nseas,TimeMax,1,Nfleet);
   matrix fleet_setup(1,Nfleet,1,5)  // type, timing, area, units, need_catch_mult
-  matrix bycatch_setup(1,Nfleet,1,5)
+  matrix bycatch_setup(1,Nfleet,1,6)
+  vector YPR_mask(1,Nfleet)
   int N_bycatch;  //  number of bycatch only fleets
   int N_catchfleets; //  number of bycatch plus landed catch fleets
 
@@ -166,6 +167,7 @@
 
  LOCAL_CALCS
   bycatch_setup.initialize();
+  YPR_mask.initialize();
     *(ad_comm::global_datafile) >> fleetnameread;
   for (f=1;f<=Nfleet;f++) {pfleetname(f,1)=1; pfleetname(f,2)=1;}    /* SS_loop: set pointer to fleetnames to default in case not enough names are read */
   f=1;
@@ -191,13 +193,14 @@
     {
       if(f<=Nfleet1)
       {
+        YPR_mask(f)=1.0;
         catchunits(f)=catchunits1(f);
         catch_se_rd(f)=catch_se_rd1(f);
         fleet_type(f)=1;
         if(catch_se_rd(f)<0) // bycatch only;  set values to default from SS_3.24
         {
           fleet_type(f)=2;
-          bycatch_setup(f,1)=1;  //  do retention fxn like fleet_type=1
+          bycatch_setup(f,1)=f;
           bycatch_setup(f,2)=1;  //  include dead bycatch in benchmark and forecast quantities
           bycatch_setup(f,3)=1;  //  scale F with Fmult like other fleets
         }

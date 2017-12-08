@@ -779,8 +779,8 @@ FUNCTION void write_nudata()
   {report1<<fleet_setup(f)<<" "<<fleetname(f)<<"  # "<<f<<endl;}
   report1<<"#Bycatch_fleet_input_goes_next"<<endl;
   report1<<"#a:  fleet index"<<endl;
-  report1<<"#b:  1=deadfish in MSY, ABC and other benchmark and forecast output; 2=omit from MSY and ABC (but still include the mortality)"<<endl;
-  report1<<"#c:  1=Fmult scales with other fleets; 2=bycatch F constant at input value; 3=bycatch F form range of years"<<endl;
+  report1<<"#b:  1=include dead bycatch in total dead catch for F0.1 and MSY optimizations and forecast ABC; 2=omit from total catch for these purposes (but still include the mortality)"<<endl;
+  report1<<"#c:  1=Fmult scales with other fleets; 2=bycatch F constant at input value; 3=bycatch F from range of years"<<endl;
   report1<<"#d:  F or first year of range"<<endl;
   report1<<"#e:  last year of range"<<endl;
   report1<<"#f:  not used"<<endl;
@@ -5715,6 +5715,17 @@ FUNCTION void write_bigoutput()
       }
       for (SPRloop=1; SPRloop<=SPRloops; SPRloop++)
       {
+        if(SPRloop1==7 && SPRloop>1)
+        {
+          if(F_Method>1)
+          {Fmult2*=1.05;}
+          else
+          {Fmult2=Fmult2+(1.0-Fmult2)*0.05;}
+          if (SPR_trial<=0.001) SPRloop=1001;
+          SPR_last=SPR_trial;
+          YPR_last=YPR_dead;
+        }
+
         for (f=1;f<=Nfleet;f++)
         for (s=1;s<=nseas;s++)
         {
@@ -5737,17 +5748,6 @@ FUNCTION void write_bigoutput()
           {Hrate(f,t)=0.0;}
         }
         Fishon=1;
-
-        if(SPRloop1==7)
-        {
-          if(F_Method>1)
-          {Fmult2*=1.05;}
-          else
-          {Fmult2=Fmult2+(1.0-Fmult2)*0.05;}
-          if (SPR_trial<=0.001) SPRloop=1001;
-          SPR_last=SPR_trial;
-          YPR_last=YPR_dead;
-        }
 
         Do_Equil_Calc(equ_Recr);
 //  SPAWN-RECR:   calc equil spawn-recr in the SPR loop

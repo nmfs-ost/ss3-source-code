@@ -2370,11 +2370,11 @@
     }
     else
     {
-    	Q_parm_1(parm330_cnt).fill("{-15, 15, 0, 0,-1, 1, 1, 0, 0, 0, 0, 0, 0, 0}");
+    	Q_parm_1(parm330_cnt).fill("{-25, 25, 0, 0,-1, 1, 1, 0, 0, 0, 0, 0, 0, 0}");
     }
     if(Q_setup(f,1)<0)  //  mirror
     {
-    	Q_parm_1(parm330_cnt).fill("{-15,15,0,0,-1,1,-1, 0, 0, 0, 0, 0, 0, 0}");
+    	Q_parm_1(parm330_cnt).fill("{-25,25,0,0,-1,1,-1, 0, 0, 0, 0, 0, 0, 0}");
       // because Q is a vector for each time series of observations, the mirror is to the first observation's Q
       // so time-varying property cannot be mirrored
       //  need to trap for this when reading
@@ -4538,15 +4538,15 @@
       ParmLabel+="SSB_Btgt"+CRLF(1); CoVar_Count++; j++; active_parm(CoVar_Count)=j;
       ParmLabel+="SPR_Btgt"+CRLF(1); CoVar_Count++; j++; active_parm(CoVar_Count)=j;
       ParmLabel+="Fstd_Btgt"+CRLF(1); CoVar_Count++; j++; active_parm(CoVar_Count)=j;
-      ParmLabel+="TotYield_Btgt"+CRLF(1); CoVar_Count++; j++; active_parm(CoVar_Count)=j;
+      ParmLabel+="Dead_Catch_Btgt"+CRLF(1); CoVar_Count++; j++; active_parm(CoVar_Count)=j;
       ParmLabel+="SSB_SPRtgt"+CRLF(1); CoVar_Count++; j++; active_parm(CoVar_Count)=j;
       ParmLabel+="Fstd_SPRtgt"+CRLF(1); CoVar_Count++; j++; active_parm(CoVar_Count)=j;
-      ParmLabel+="TotYield_SPRtgt"+CRLF(1); CoVar_Count++; j++; active_parm(CoVar_Count)=j;
+      ParmLabel+="Dead_Catch_SPRtgt"+CRLF(1); CoVar_Count++; j++; active_parm(CoVar_Count)=j;
       ParmLabel+="SSB_MSY"+CRLF(1); CoVar_Count++; j++; active_parm(CoVar_Count)=j;
       ParmLabel+="SPR_MSY"+CRLF(1); CoVar_Count++; j++; active_parm(CoVar_Count)=j;
       ParmLabel+="Fstd_MSY"+CRLF(1); CoVar_Count++; j++; active_parm(CoVar_Count)=j;
-      ParmLabel+="TotYield_MSY"+CRLF(1); CoVar_Count++; j++; active_parm(CoVar_Count)=j;
-      ParmLabel+="RetYield_MSY"+CRLF(1); CoVar_Count++; j++; active_parm(CoVar_Count)=j;
+      ParmLabel+="Dead_Catch_MSY"+CRLF(1); CoVar_Count++; j++; active_parm(CoVar_Count)=j;
+      ParmLabel+="Retain_Catch_MSY"+CRLF(1); CoVar_Count++; j++; active_parm(CoVar_Count)=j;
     }
     else
     {

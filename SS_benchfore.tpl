@@ -10,7 +10,6 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
   dvariable SPR_unfished;
   dvariable Vbio_MSY;
   dvariable Vbio1_MSY;
-  dvariable SPR_at_target;
   dvariable junk; dvariable Nmid_c;
 
   dvariable df;
@@ -33,7 +32,6 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
    {
      report5<<version_info<<endl<<ctime(&start);
      report5<<"Bmark_relF(by_fleet_&seas)"<<endl<<Bmark_RelF_Use<<endl<<"#"<<endl;
-     report5<<"NOTE:_SPR_is_spawner_potential_ratio=(fishedSSB/R)/(unfishedSSB/R))"<<endl;
    }
     y=styr-3;  //  the average biology from specified benchmark years is stored here
     yz=y;
@@ -158,7 +156,8 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
   {
     if(show_MSY==1)
     {
-    report5<<"& & & & & find_target_SPR"<<endl;
+    report5<<"#"<<endl<<"find_target_SPR"<<endl;
+    report5<<"SPR_is_spawner_potential_ratio=(fishedSSB/R)/(unfishedSSB/R))"<<endl;
     report5<<"Iter Fmult F_std SPR tot_catch";
     for (p=1;p<=pop;p++)
     for (gp=1;gp<=N_GP;gp++)
@@ -210,9 +209,9 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
 
           Fishon=1;
           Do_Equil_Calc(equ_Recr);
-          yld1(ii)=SSB_equil/SPR_unfished;
+          yld1(ii)=SSB_equil/SPR_unfished;  //  spawning potential ratio
         }
-        SPR_actual=yld1(1);
+        SPR_actual=yld1(1); //  spawning potential ratio
 
           if(jj==3)
             {
@@ -263,23 +262,20 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
     }
 
 //  SPAWN-RECR:   calc equil spawn-recr in YPR; need to make this area-specific
-    SPR_temp=SPR_actual*SPR_unfished;
-    Equ_SpawnRecr_Result = Equil_Spawn_Recr_Fxn(SR_parm_work(2), SR_parm_work(3), SSB_unf, Recr_unf, SPR_temp);  //  returns 2 element vector containing equilibrium biomass and recruitment at this SPR
+    Equ_SpawnRecr_Result = Equil_Spawn_Recr_Fxn(SR_parm_work(2), SR_parm_work(3), SSB_unf, Recr_unf, SSB_equil);  //  returns 2 element vector containing equilibrium biomass and recruitment at this SPR
 
     Bspr=Equ_SpawnRecr_Result(1);
     Bspr_rec=Equ_SpawnRecr_Result(2);
-    YPR_tgt_enc  = YPR_enc;         //  total encountered yield per recruit
-    YPR_tgt_dead = YPR_dead;           // total dead yield per recruit
-    YPR_tgt_N_dead = YPR_N_dead;
-    YPR_tgt_ret = YPR_ret;
+    YPR_spr_enc  = YPR_enc;         //  total encountered yield per recruit
+    YPR_spr_dead = YPR_dead;           // total dead yield per recruit
+    YPR_spr_N_dead = YPR_N_dead;
+    YPR_spr_ret = YPR_ret;
     SPR_Fmult=Fmult;
     if(rundetail>0 && mceval_counter==0 && show_MSY==1) cout<<" got Fspr "<<SPR_Fmult<<" "<<SPR_actual<<endl;
-    YPR_spr=YPR_tgt_dead; Vbio_spr=totbio; Vbio1_spr=smrybio;
+    Vbio_spr=totbio; Vbio1_spr=smrybio;
     Mgmt_quant(10)=equ_F_std;
     Mgmt_quant(9)=Equ_SpawnRecr_Result(1);
     Mgmt_quant(11)=YPR_dead*Equ_SpawnRecr_Result(2);
-
-    SPR_at_target=SPR_actual;
   } //   end finding Fspr
 
   if(Do_Benchmark==2)  //  Find F0.1
@@ -297,7 +293,7 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
         //  else  Hrate for bycatch fleets set above
       }
       Do_Equil_Calc(equ_Recr);
-      F01_origin=YPR_dead/0.000001;
+      F01_origin=YPR_opt/0.000001;
       
       BTGT_target=0.1;   //  now relative to Bmark
       Btgttgt=F01_origin*0.1;
@@ -327,12 +323,12 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
             //  else  Hrate for bycatch fleets set above
           }
           Do_Equil_Calc(equ_Recr);
-          yld1(ii)=YPR_dead;
+          yld1(ii)=YPR_opt;
         }
         F01_actual=(yld1(2) - yld1(3))/(Fmult_save(2)-Fmult_save(3));
         if(show_MSY==1)
         {
-          report5<<j<<" "<<Fmult_save(1)<<" "<<equ_F_std<<" "<<SSB_equil/SSB_unf<<" "<<YPR_dead<<" "<<F01_actual<<endl;
+          report5<<j<<" "<<Fmult_save(1)<<" "<<equ_F_std<<" "<<SSB_equil/SSB_unf<<" "<<YPR_opt<<" "<<F01_actual<<endl;
         }
         last_F1=F1(1);
         F1(1) += (F01_origin*0.1-F01_actual)/(F01_second);
@@ -355,7 +351,7 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
       }
 
     Btgt_Fmult=Fmult_save(1);
-    if(rundetail>0 && mceval_counter==0 && show_MSY==1) cout<<" got_F0.1 "<<Btgt_Fmult<<endl;
+    if(rundetail>0 && mceval_counter==0 && show_MSY==1) cout<<" got_F0.1: "<<Btgt_Fmult<<" dead catch: "<<YPR_dead<<"  Catch for optimize: "<<YPR_opt<<endl;
     Equ_SpawnRecr_Result = Equil_Spawn_Recr_Fxn(SR_parm_work(2), SR_parm_work(3), SSB_unf, Recr_unf, SPR_temp);  //  returns 2 element vector containing equilibrium biomass and recruitment at this SPR
     Btgt=Equ_SpawnRecr_Result(1);
     Btgt_Rec=Equ_SpawnRecr_Result(2);
@@ -371,12 +367,13 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
     Mgmt_quant(8)=YPR_dead*Btgt_Rec;
 
   }  //  end F0.1
+
   else  //  find F giving Btarget      SS_Label_720
   {
 // ******************************************************
     if(show_MSY==1)
     {
-      report5<<"+ + + + + + + + + find_target_SSB/Bzero; where Bzero is for Bmark years, not Virgin"<<endl<<"Iter Fmult F_std SPR Catch SSB Recruits SSB/Bzero Tot_catch";
+      report5<<"#"<<endl<<"Find_target_SSB/Bzero; where Bzero is for Bmark years, not Virgin"<<endl<<"Iter Fmult F_std SPR Catch SSB Recruits SSB/Bzero Tot_catch";
       for (p=1;p<=pop;p++)
       for (gp=1;gp<=N_GP;gp++)
       {report5<<" SSB_Area:"<<p<<"_GP:"<<gp;}
@@ -442,7 +439,7 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
 
       if(show_MSY==1)
       {
-        report5<<j<<" "<<Fmult<<" "<<equ_F_std<<" "<<(Btgt/Equ_SpawnRecr_Result(2))/SSB_unf<<" "<<YPR_dead*Equ_SpawnRecr_Result(2)<<" "<<Btgt<<" "<<Equ_SpawnRecr_Result(2)
+        report5<<j<<" "<<Fmult<<" "<<equ_F_std<<" "<<SPR_Btgt<<" "<<YPR_dead*Equ_SpawnRecr_Result(2)<<" "<<Btgt<<" "<<Equ_SpawnRecr_Result(2)
         <<" "<<Btgt/SSB_unf<<" "<<sum(equ_catch_fleet(2))*Equ_SpawnRecr_Result(2);
         for (p=1;p<=pop;p++)
         for (gp=1;gp<=N_GP;gp++)
@@ -517,7 +514,7 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
 
       if(show_MSY==1)
       {
-        report5<<"+ + + + + + + + + find_MSY_catch"<<endl<<"Iter Fmult F_std SPR Catch SSB Recruits SSB/Bzero Gradient Curvature Tot_Catch";
+        report5<<"#"<<endl<<"Find_MSY_catch"<<endl<<"Iter Fmult F_std SPR Catch SSB Recruits SSB/Bzero Gradient Curvature Tot_Catch";
         for (p=1;p<=pop;p++)
         for (gp=1;gp<=N_GP;gp++)
         {report5<<" Area:"<<p<<"_GP:"<<gp;}
@@ -554,8 +551,8 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
           Equ_SpawnRecr_Result = Equil_Spawn_Recr_Fxn(SR_parm_work(2), SR_parm_work(3), SSB_unf, Recr_unf, SPR_temp);  //  returns 2 element vector containing equilibrium biomass and recruitment at this SPR
           Bmsy=Equ_SpawnRecr_Result(1);
           Recr_msy=Equ_SpawnRecr_Result(2);
-          yld1(ii)=YPR_dead*Recr_msy;   //  *mfexp(-Equ_penalty);
-          Yield=YPR_dead*Recr_msy;
+          yld1(ii)=YPR_opt*Recr_msy;   //  *mfexp(-Equ_penalty);
+          Yield=YPR_opt*Recr_msy;
           bestF1+=F1(ii)*(pow(mfexp(Yield/1.0e08),5)-1.);
           bestF2+=pow(mfexp(Yield/1.0e08),5)-1.;
           }   //  end gradient calc
@@ -582,7 +579,7 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
         }   // end search loop
 
       YPR_msy_enc = YPR_enc;
-      YPR_msy_dead = YPR_dead;           // total dead yieldt
+      YPR_msy_dead = YPR_dead;           // total dead yield
       YPR_msy_N_dead = YPR_N_dead;           // total dead yield
       YPR_msy_ret = YPR_ret;           // total retained yield
       MSY=Yield;
@@ -608,6 +605,7 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
         for (g=1;g<=6;g++) {report5<<" "<<Recr_msy*equ_catch_fleet(g,s,f);}
         report5<<endl;
       }
+      report5<<"#"<<endl<<"Total dead catch: "<<Recr_msy*YPR_dead<<"   Total catch for optimize:  "<<MSY<<endl<<"#"<<endl;
 
     report5<<"Equil_N_at_age_at_MSY_each"<<endl<<"Seas Area GP Sex subM"<<age_vector<<endl;
      for (s=1;s<=nseas;s++)
@@ -695,57 +693,68 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
 // ***************** show management report   SS_Label_740
     if(show_MSY==1)
     {
-  report5<<"+ + + + +"<<endl<<"Management_report"<<endl;
-  report5<<"Steepness_Recr_SSB_virgin(R0) "<<SR_parm(2)<<" "<<Recr_virgin<<" "<<SSB_virgin<<endl;
-  report5<<"Steepness_Recr_SSB_benchmark "<<SR_parm_work(2)<<" "<<Recr_unf<<" "<<SSB_unf<<endl;
-  report5<<"+"<<endl<<"Element Value Bio/Recr Bio/R0 Numbers N/R0 (B_in_mT;_N_in_thousands)"<<endl;
-  report5<<"Recr_unfished(Bmark) "<<Recr_unf<<" -- -- "<<endl;
-  report5<<"SSB_unfished(Bmark) "<<SSB_unf<<" -- -- "<<endl;
-  report5<<"BIO_Smry_unfished(Bmark) "<<Vbio1_unfished*Recr_unf<<" "<<Vbio1_unfished<<" "<<Vbio1_unfished<<endl<<"+ + + + +"<<endl;
+      report5<<"#"<<endl<<"Management_report"<<endl;
+      report5<<"Steepness_Recr_SSB_virgin(R0) "<<SR_parm(2)<<" "<<Recr_virgin<<" "<<SSB_virgin<<endl;
+      report5<<"Steepness_Recr_SSB_benchmark "<<SR_parm_work(2)<<" "<<Recr_unf<<" "<<SSB_unf<<endl;
+      report5<<"#"<<endl<<"Summary_age: "<<Smry_Age<<endl;
+      report5<<"#_Bmark_years: beg_bio, end_bio, beg_selex, end_selex, beg_relF, end_relF, beg_recr_dist, end_recr_dist, beg_SRparm, end_SRparm"<<endl<<Bmark_Yr<<endl;
+      if(N_bycatch>0)
+      {
+         report5<<"Bycatch_Fleets: "<<column(bycatch_setup,1)<<endl;
+         report5<<"Fleets_in_optimized_catch: "<<YPR_mask<<endl;
+         report5<<"Bycatch_Fleets_F_scaling: "<<column(bycatch_setup,3)<<endl;
+      }
+      report5<<"#"<<endl<<"Element Value Value/Recr"<<endl;
+      report5<<"Recr_unfished(Bmark) "<<Recr_unf<<endl;
+      report5<<"SSB_unfished(Bmark) "<<SSB_unf<<" "<<SSB_unf/Recr_unf<<endl;
+      report5<<"BIO_Smry_unfished(Bmark) "<<Vbio1_unfished*Recr_unf<<" "<<Vbio1_unfished<<endl;
+      report5<<"#"<<endl<<"Spawner_Potential_Ratio_as_target"<<endl;
 
-  report5<<"SPR_target "<<SPR_target<<endl;
-  report5<<"SPR_calc "<<SPR_actual<<endl;
-  report5<<"Fmult "<<SPR_Fmult<<endl;
-  report5<<"F_std "<<Mgmt_quant(10)<<endl;
-  report5<<"Exploit(Y/Bsmry) "<<YPR_spr/Vbio1_spr<<endl;
-  report5<<"Recruits@Fspr "<<Bspr_rec<<" -- -- "<<Bspr_rec<<" "<<Bspr_rec/Recr_unf<<" "<<endl;
-  report5<<"SPBio "<<SPR_at_target*Bspr_rec*SSB_unf<<" "<<SPR_at_target*SSB_unf<<" -- "<<endl;
-  report5<<"YPR_encountered "<<YPR_tgt_enc*Bspr_rec<<" "<<YPR_tgt_enc<<" -- "<<endl;
-  report5<<"YPR_dead "<<YPR_tgt_dead*Bspr_rec<<" "<<YPR_tgt_dead<<" -- "<<" "<<YPR_tgt_N_dead*Bspr_rec<<endl;
-  report5<<"YPR_retain "<<YPR_tgt_ret*Bspr_rec<<" "<<YPR_tgt_ret<<" -- "<<endl;
-  report5<<"Biomass_Smry "<<Vbio1_spr*Bspr_rec<<" "<<Vbio1_spr<<" -- "<<endl<<"+ + + + +"<<endl;
+      report5<<"SPR_target "<<SPR_target<<endl;
+      report5<<"SPR_calc "<<SPR_actual<<endl;
+      report5<<"Fmult "<<SPR_Fmult<<endl;
+      report5<<"F_std "<<Mgmt_quant(10)<<endl;
+      report5<<"Exploit(Catch_dead/B_smry) "<<YPR_spr_dead/Vbio1_spr<<endl;
+      report5<<"Recruits "<<Bspr_rec<<endl;
+      report5<<"SPBio "<<Bspr<<" "<<Bspr/Bspr_rec<<endl;
+      report5<<"Catch_encountered "<<YPR_spr_enc*Bspr_rec<<" "<<YPR_spr_enc<<endl;
+      report5<<"Catch_dead "<<YPR_spr_dead*Bspr_rec<<" "<<YPR_spr_dead<<endl;
+      report5<<"Catch_retain "<<YPR_spr_ret*Bspr_rec<<" "<<YPR_spr_ret<<endl;
+      report5<<"Biomass_Smry "<<Vbio1_spr*Bspr_rec<<" "<<Vbio1_spr<<endl;
 
-  if(Do_Benchmark==2)  //  F0.1
-  {
-    report5<<"F0.1  "<<F01_origin*0.1<<endl;
-    report5<<"Yield slope / target "<<F01_actual/(F01_origin*0.1)<<endl;
-    report5<<"SPR_for_F0.1 "<<SPR_Btgt<<endl;
-    report5<<"Fmult "<<Btgt_Fmult<<endl;
-    report5<<"F_std "<<Mgmt_quant(7)<<endl;
-    report5<<"Exploit(Y/Bsmry) "<<YPR_Btgt_dead/Vbio1_Btgt<<endl;
-    report5<<"Recruits@F0.1 "<<Btgt_Rec<<" -- -- "<<Btgt_Rec<<" "<<Btgt_Rec/Recr_unf<<endl;
-    report5<<"SPBio "<<Btgt<<" "<<Btgt/Btgt_Rec<<" -- "<<endl;
-    report5<<"YPR_encountered "<<YPR_Btgt_enc*Btgt_Rec<<" "<<YPR_Btgt_enc<<" -- "<<endl;
-    report5<<"YPR_dead "<<YPR_Btgt_dead*Btgt_Rec<<" "<<YPR_Btgt_dead<<" -- "<<YPR_Btgt_N_dead*Btgt_Rec<<endl;
-    report5<<"YPR_retain "<<YPR_Btgt_ret*Btgt_Rec<<" "<<YPR_Btgt_ret<<" -- "<<endl;
-    report5<<"Biomass_Smry "<<Vbio1_Btgt*Btgt_Rec<<" "<<Vbio1_Btgt<<" -- "<<endl<<"+ + + + +"<<endl;
-  }
-  else
-  {
-    report5<<"Btarget  "<<BTGT_target<<endl;
-    report5<<"Btgt_calc_rel_SSB_unf "<<Btgt/SSB_unf<<endl;
-    report5<<"SPR_for_Btgt "<<SPR_Btgt<<endl;
-    report5<<"Fmult "<<Btgt_Fmult<<endl;
-    report5<<"F_std "<<Mgmt_quant(7)<<endl;
-    report5<<"Exploit(Y/Bsmry) "<<YPR_Btgt_dead/Vbio1_Btgt<<endl;
-    report5<<"Recruits@Btgt "<<Btgt_Rec<<" -- -- "<<Btgt_Rec<<" "<<Btgt_Rec/Recr_unf<<endl;
-    report5<<"SPBio "<<Btgt<<" "<<Btgt/Btgt_Rec<<" -- "<<endl;
-    report5<<"YPR_encountered "<<YPR_Btgt_enc*Btgt_Rec<<" "<<YPR_Btgt_enc<<" -- "<<endl;
-    report5<<"YPR_dead "<<YPR_Btgt_dead*Btgt_Rec<<" "<<YPR_Btgt_dead<<" -- "<<YPR_Btgt_N_dead*Btgt_Rec<<endl;
-    report5<<"YPR_retain "<<YPR_Btgt_ret*Btgt_Rec<<" "<<YPR_Btgt_ret<<" -- "<<endl;
-    report5<<"Biomass_Smry "<<Vbio1_Btgt*Btgt_Rec<<" "<<Vbio1_Btgt<<" -- "<<endl<<"+ + + + +"<<endl;
-  }
+      if(Do_Benchmark==2)  //  F0.1
+      {
+        report5<<"#"<<endl<<"F0.1_as_target"<<endl;
+        report5<<"YPR_slope / target "<<F01_actual/(F01_origin*0.1)<<endl;
+        report5<<"SPR@F0.1 "<<SPR_Btgt<<endl;
+        report5<<"Fmult "<<Btgt_Fmult<<endl;
+        report5<<"F_std "<<Mgmt_quant(7)<<endl;
+        report5<<"Exploit(Catch_dead/B_smry) "<<YPR_Btgt_dead/Vbio1_Btgt<<endl;
+        report5<<"Recruits@F0.1 "<<Btgt_Rec<<endl;
+        report5<<"SPBio "<<Btgt<<" "<<Btgt/Btgt_Rec<<endl;
+        report5<<"Catch_encountered "<<YPR_Btgt_enc*Btgt_Rec<<" "<<YPR_Btgt_enc<<endl;
+        report5<<"Catch_dead "<<YPR_Btgt_dead*Btgt_Rec<<" "<<YPR_Btgt_dead<<endl;
+        report5<<"Catch_retain "<<YPR_Btgt_ret*Btgt_Rec<<" "<<YPR_Btgt_ret<<endl;
+        report5<<"Biomass_Smry "<<Vbio1_Btgt*Btgt_Rec<<" "<<Vbio1_Btgt<<endl;
+      }
+      else
+      {
+        report5<<"#"<<endl<<"Ratio_SSB/B0_as_target"<<endl;
+        report5<<"Ratio_target  "<<BTGT_target<<endl;
+        report5<<"Ratio_calc "<<Btgt/SSB_unf<<endl;
+        report5<<"SPR@Btgt "<<SPR_Btgt<<endl;
+        report5<<"Fmult "<<Btgt_Fmult<<endl;
+        report5<<"F_std "<<Mgmt_quant(7)<<endl;
+        report5<<"Exploit(Catch_dead/B_smry) "<<YPR_Btgt_dead/Vbio1_Btgt<<endl;
+        report5<<"Recruits "<<Btgt_Rec<<endl;
+        report5<<"SPBio "<<Btgt<<" "<<Btgt/Btgt_Rec<<endl;
+        report5<<"Catch_encountered "<<YPR_Btgt_enc*Btgt_Rec<<" "<<YPR_Btgt_enc<<endl;
+        report5<<"Catch_dead "<<YPR_Btgt_dead*Btgt_Rec<<" "<<YPR_Btgt_dead<<endl;
+        report5<<"Catch_retain "<<YPR_Btgt_ret*Btgt_Rec<<" "<<YPR_Btgt_ret<<endl;
+        report5<<"Biomass_Smry "<<Vbio1_Btgt*Btgt_Rec<<" "<<Vbio1_Btgt<<endl;
+      }
 
+      report5<<"#"<<endl<<"Maximum_Sustainable_Yield;_where_Yield_is_Dead_Catch"<<endl;
       switch(Do_MSY)
         {
         case 1:  // set Fmsy=Fspr
@@ -754,36 +763,35 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
         case 2:  // calc Fmsy
           {report5<<"calculate_FMSY"<<endl;
           break;}
-        case 3:  // set Fmsy=Fbtgt
-          {report5<<"set_Fmsy=Fbtgt"<<endl;
+        case 3:  // set Fmsy=Fbtgt or F0.1
+          {
+            if(Do_Benchmark==1) report5<<"set_Fmsy=Fbtgt"<<endl;
+            if(Do_Benchmark==2) report5<<"set_Fmsy=F0.1"<<endl;
           break;}
         case 4:   //  set fmult for Fmsy to 1
-          {report5<<"set_Fmsy_using_Fmult=1.0"<<endl;
+          {report5<<"set_Fmsy_using_input_Fmult"<<endl;
           break;}
         }
-  report5<<"SPR "<<MSY_SPR<<endl;
-  report5<<"Fmult "<<MSY_Fmult<<endl;
-  report5<<"F_std "<<Mgmt_quant(14)<<endl;
-  report5<<"Exploit(Y/Bsmry) "<<MSY/(Vbio1_MSY*Recr_msy)<<endl;
-  report5<<"Recruits@MSY "<<Recr_msy<<" -- -- "<<Recr_msy<<" "<<Recr_msy/Recr_unf<<endl;
-  report5<<"SPBio "<<Bmsy<<" "<<Bmsy/Recr_msy<<" -- "<<endl;
-  report5<<"SPBmsy/SPBzero(using_SSB_unf) "<<Bmsy/SSB_unf<<" -- --"<<endl;  // new version
-  report5<<"SPBmsy/SPBzero(using_BenchmarkYr_biology) "<<Bmsy/(Recr_unf*SSB_unf)<<" -- --"<<endl;
-  report5<<"MSY_for_optimize "<<MSY<<" "<<MSY/Recr_msy<<" -- "<<endl;
-  report5<<"MSY_encountered "<<YPR_msy_enc*Recr_msy<<" "<<YPR_msy_enc<<" -- "<<endl;
-  report5<<"MSY_dead "<<YPR_msy_dead*Recr_msy<<" "<<YPR_msy_dead<<" -- "<<YPR_msy_N_dead*Recr_msy<<endl;
-  report5<<"MSY_retain "<<YPR_msy_ret*Recr_msy<<" "<<YPR_msy_ret<<" -- "<<endl;
-  report5<<"Biomass_Smry "<<Vbio1_MSY*Recr_msy<<" "<<Vbio1_MSY<<" -- "<<endl<<"+"<<endl;
-  report5<<"Summary_age: "<<Smry_Age<<endl<<"#"<<endl;
-  report5<<"#_SPR outputs use biology averaged over years: "<<Bmark_Yr(1)<<" "<<Bmark_Yr(2)<<endl;
-  report5<<"#_MSY and Bmsy use Bmark years biology"<<endl<<"#"<<endl;
+      report5<<"SPR "<<MSY_SPR<<endl;
+      report5<<"Fmult "<<MSY_Fmult<<endl;
+      report5<<"F_std "<<Mgmt_quant(14)<<endl;
+      report5<<"Exploit(Catch/Bsmry) "<<MSY/(Vbio1_MSY*Recr_msy)<<endl;
+      report5<<"Recruits@MSY "<<Recr_msy<<endl;
+      report5<<"SPBio "<<Bmsy<<" "<<Bmsy/Recr_msy<<endl;
+      report5<<"SPBmsy/SPB_virgin "<<Bmsy/SSB_virgin<<endl;
+      report5<<"SPBmsy/SPB_unfished "<<Bmsy/SSB_unf<<endl;
+      report5<<"MSY_for_optimize "<<MSY<<" "<<MSY/Recr_msy<<endl;
+      report5<<"MSY_encountered "<<YPR_msy_enc*Recr_msy<<" "<<YPR_msy_enc<<endl;
+      report5<<"MSY_dead "<<YPR_msy_dead*Recr_msy<<" "<<YPR_msy_dead<<endl;
+      report5<<"MSY_retain "<<YPR_msy_ret*Recr_msy<<" "<<YPR_msy_ret<<endl;
+      report5<<"Biomass_Smry "<<Vbio1_MSY*Recr_msy<<" "<<Vbio1_MSY<<endl;
 
-  report5<<"#"<<endl;
+      report5<<"#"<<endl;
     }
     else if(show_MSY==2)  //  do brief output
     {
-      SS2out<<SPR_actual<<" "<<SPR_Fmult<<" "<<Mgmt_quant(10)<<" "<<YPR_spr/Vbio1_spr<<" "<<Bspr_rec<<" "
-      <<SPR_at_target*Bspr_rec*SSB_unf<<" "<<YPR_tgt_dead*Bspr_rec<<" "<<YPR_tgt_ret*Bspr_rec
+      SS2out<<SPR_actual<<" "<<SPR_Fmult<<" "<<Mgmt_quant(10)<<" "<<YPR_spr_dead/Vbio1_spr<<" "<<Bspr_rec<<" "
+      <<SPR_actual*Bspr_rec*SSB_unf<<" "<<YPR_spr_dead*Bspr_rec<<" "<<YPR_spr_ret*Bspr_rec
       <<" "<<Vbio1_spr*Bspr_rec<<" # ";
 
       SS2out<<SPR_Btgt<<" "<<Btgt/SSB_unf<<" "<<Btgt_Fmult<<" "<<Mgmt_quant(7)<<" "<<YPR_Btgt_dead/Vbio1_Btgt<<" "<<Btgt_Rec<<" "
@@ -1757,8 +1765,12 @@ FUNCTION void Get_Forecast()
             {
               for (f=1;f<=Nfleet;f++)
               {
-                if(fleet_type(f)<=2)
-              {Mgmt_quant(Fcast_catch_start+N_Fcast_Yrs+y-endyr)+=catch_fleet(t,f,2);}
+                if(fleet_type(f)==1)
+                {Mgmt_quant(Fcast_catch_start+N_Fcast_Yrs+y-endyr)+=catch_fleet(t,f,2);}
+                else if (fleet_type(f)==3)
+                {}  //  survey
+                else if(bycatch_setup(f,2)==1) //  bycatch
+                {Mgmt_quant(Fcast_catch_start+N_Fcast_Yrs+y-endyr)+=catch_fleet(t,f,2);}
               }
             }
 
@@ -1770,7 +1782,11 @@ FUNCTION void Get_Forecast()
                 {
                   for (f=1;f<=Nfleet;f++)
                   {
-                    if(fleet_type(f)<=2)
+                    if(fleet_type(f)==1)
+                    {F_std(STD_Yr_Reverse_F(y))+=catch_fleet(t,f,2);}   // add up dead catch biomass
+                    else if (fleet_type(f)==3)
+                    {}  //  survey
+                    else if(bycatch_setup(f,2)==1) //  bycatch
                     {F_std(STD_Yr_Reverse_F(y))+=catch_fleet(t,f,2);}   // add up dead catch biomass
                   }
                   if(s==nseas) F_std(STD_Yr_Reverse_F(y))/=Smry_Table(y,2);
@@ -1779,7 +1795,11 @@ FUNCTION void Get_Forecast()
                 {
                   for (f=1;f<=Nfleet;f++)
                   {
-                    if(fleet_type(f)<=2)
+                    if(fleet_type(f)==1)
+                    {F_std(STD_Yr_Reverse_F(y))+=catch_fleet(t,f,5);}   // add up dead catch numbers
+                    else if (fleet_type(f)==3)
+                    {}  //  survey
+                    else if(bycatch_setup(f,2)==1) //  bycatch
                     {F_std(STD_Yr_Reverse_F(y))+=catch_fleet(t,f,5);}   // add up dead catch numbers
                   }
                   if(s==nseas) F_std(STD_Yr_Reverse_F(y))/=Smry_Table(y,3);
@@ -1837,7 +1857,14 @@ FUNCTION void Get_Forecast()
               }
               for (f=1;f<=Nfleet;f++)
               {
-                if(fleet_type(f)<=2)
+                if(fleet_type(f)==1)
+                {
+                  Mgmt_quant(Fcast_catch_start+y-endyr)+=catch_fleet(t,f,2);
+                  if(max(Do_Retain)>0) Mgmt_quant(Fcast_catch_start+2*N_Fcast_Yrs+y-endyr)+=catch_fleet(t,f,3);
+                }
+                else if (fleet_type(f)==3)
+                {}  //  survey
+                else if(bycatch_setup(f,2)==1) //  bycatch
                 {
                   Mgmt_quant(Fcast_catch_start+y-endyr)+=catch_fleet(t,f,2);
                   if(max(Do_Retain)>0) Mgmt_quant(Fcast_catch_start+2*N_Fcast_Yrs+y-endyr)+=catch_fleet(t,f,3);
@@ -1849,12 +1876,20 @@ FUNCTION void Get_Forecast()
           //  store catches to allow calc of adjusted F to match this catch when doing ABC_loop=3, and then when doing Fcast_loop1=3
           for (f=1;f<=Nfleet;f++)
           {
-            if(fleet_type(f)<=2)
+            if(fleet_type(f)==1)
             {
               Fcast_Catch_Store(t,f)=catch_fleet(t,f,Fcast_Catch_Basis);
               totcatch+=Fcast_Catch_Store(t,f);
             }
+            else if(fleet_type(f)==3)
+            {}  //  survey
+            else  //  bycatch
+            {
+              Fcast_Catch_Store(t,f)=catch_fleet(t,f,Fcast_Catch_Basis);
+              if(bycatch_setup(f,2)==1) totcatch+=Fcast_Catch_Store(t,f);
+            }
           }
+
           if(show_MSY==1)
           {
             if(s==nseas) {report5<<" "<<totcatch<<" ";} else {report5<<" NA ";}

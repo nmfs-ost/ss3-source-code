@@ -172,6 +172,7 @@
   matrix catch_se(styr-nseas,TimeMax,1,Nfleet);
   matrix fleet_setup(1,Nfleet,1,5)  // type, timing, area, units, need_catch_mult
   matrix bycatch_setup(1,Nfleet,1,6)
+  ivector YPR_mask(1,Nfleet)
   int N_bycatch;  //  number of bycatch only fleets
   int N_catchfleets; //  number of bycatch plus landed catch fleets
 
@@ -180,6 +181,7 @@
 
  LOCAL_CALCS
   bycatch_setup.initialize();
+  YPR_mask.initialize();
   {
     N_bycatch=0;
     N_catchfleets=0;
@@ -195,6 +197,7 @@
       surveytime(f) = fleet_setup(f,2);
       if(fleet_type(f)<=2)
         {
+          YPR_mask(f)=1;
           if(surveytime(f)!=-1.)
           {warning<<"fleet: "<<f<<" surveytime read for fishing fleet as: "<<surveytime(f)<<" normally is -1 for fishing fleet; can override by month>1000"<<endl;}
         }
@@ -214,12 +217,12 @@
     if(N_bycatch>0)
     {
       echoinput<<"Now read bycatch fleet characteristics for "<<N_bycatch<<" fleets"<<endl;
-    echoinput<<"a:  fleet number; must match fleet definitions"<<endl;
-    echoinput<<"b:  1=deadfish in MSY, ABC and other benchmark and forecast output; 2=omit from MSY and ABC (but still include the mortality)"<<endl;
-    echoinput<<"c:  1=Fmult scales with other fleets; 2=bycatch F constant at input value; 3=bycatch F form range of years"<<endl;
-    echoinput<<"d:  F or first year of range"<<endl;
-    echoinput<<"e:  last year of range"<<endl;
-    echoinput<<"f:  not used"<<endl;
+    echoinput<<"1:  fleet number; must match fleet definitions"<<endl;
+    echoinput<<"2:  1=include dead bycatch in total dead catch for F0.1 and MSY optimizations and forecast ABC; 2=omit from total catch for these purposes (but still include the mortality)"<<endl;
+    echoinput<<"3:  1=Fmult scales with other fleets; 2=bycatch F constant at input value; 3=mean bycatch F from range of years"<<endl;
+    echoinput<<"4:  F or first year of range"<<endl;
+    echoinput<<"5:  last year of range"<<endl;
+    echoinput<<"6:  not used"<<endl;
        for(j=1;j<=N_bycatch;j++)
       {
         *(ad_comm::global_datafile) >> f;
@@ -228,6 +231,10 @@
         if(fleet_type(f)==2)
         {
           echoinput<<f<<" "<<fleetname(f)<<" bycatch_setup: "<<bycatch_setup(f)<<endl;
+          if(bycatch_setup(f,2)==2)  //  omit bycatch fleet catch from YPR optimize
+          {
+            YPR_mask(f)=0;
+          }
           if(bycatch_setup(f,3)==3)  //  check year range
           {
             if(bycatch_setup(f,4)<styr)  bycatch_setup(f,4)=styr;
@@ -240,7 +247,7 @@
         }
       }
     }
-
+    echoinput<<"YPR_optimize_mask: "<<YPR_mask<<endl;
     Nfleet1 = N_catchfleets;
     N_retParm=0;
   }
