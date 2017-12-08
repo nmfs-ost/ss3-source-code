@@ -1849,8 +1849,8 @@
     echoinput<<recdev_adj(2)<<" #_first_yr_fullbias_adj_in_MPD"<<endl;
     echoinput<<recdev_adj(3)<<" #_last_yr_fullbias_adj_in_MPD"<<endl;
     echoinput<<recdev_adj(4)<<" #_first_recent_yr_nobias_adj_in_MPD"<<endl;
-    if(recdev_adj(4)>recdev_end)
-      {N_warn++; warning<<"bias adjustment ramp extends past recdev_end; biasadj set to 0.0 after recdev_end"<<endl;}
+    if(recdev_adj(4)>endyr && do_recdev>0)
+      {N_warn++; warning<<"bias adjustment ramp extends into forecast; biasadj set to 0.0 internally for forecast years"<<endl;}
     echoinput<<recdev_adj(5)<<" #_max_bias_adj_in_MPD"<<endl;
     echoinput<<recdev_cycle<<" # period of cycle in recruitment "<<endl;
     echoinput<<recdev_LO<<" #min rec_dev"<<endl;

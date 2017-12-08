@@ -1583,8 +1583,8 @@
     recdev_adj(2)=recdev_options(6);
     recdev_adj(3)=recdev_options(7);
     recdev_adj(4)=recdev_options(8);
-    if(recdev_adj(4)>recdev_end && do_recdev>0)
-      {N_warn++; warning<<"bias adjustment ramp extends past recdev_end; biasadj set to 0.0 after recdev_end"<<endl;}
+    if(recdev_adj(4)>endyr && do_recdev>0)
+      {N_warn++; warning<<"bias adjustment ramp extends into forecast; biasadj set to 0.0 internally for forecast years"<<endl;}
     recdev_adj(5)=recdev_options(9);  // maxbias adj
 
     recdev_cycle=recdev_options(10);
