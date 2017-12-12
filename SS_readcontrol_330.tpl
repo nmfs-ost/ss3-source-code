@@ -4117,7 +4117,7 @@
       ParmLabel+="SPR_MSY"+CRLF(1); CoVar_Count++; j++; active_parm(CoVar_Count)=j;
       ParmLabel+="Fstd_MSY"+CRLF(1); CoVar_Count++; j++; active_parm(CoVar_Count)=j;
       ParmLabel+="Dead_Catch_MSY"+CRLF(1); CoVar_Count++; j++; active_parm(CoVar_Count)=j;
-      ParmLabel+="Dead_Catch_MSY"+CRLF(1); CoVar_Count++; j++; active_parm(CoVar_Count)=j;
+      ParmLabel+="Ret_Catch_MSY"+CRLF(1); CoVar_Count++; j++; active_parm(CoVar_Count)=j;
     }
     else
     {
