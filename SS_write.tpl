@@ -993,9 +993,7 @@ FUNCTION void write_nudata()
       }
     }
     report1<<"-9999 ";
-    for (j=1;j<=6+n_abins2;j++) report1<<" 0";
-    report1<<endl;
-    for (j=1;j<=n_abins2;j++) report1<<" 0";
+    for (j=1;j<=6+2*n_abins2;j++) report1<<" 0";
     report1<<endl;
   }
   }
