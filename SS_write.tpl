@@ -5659,7 +5659,6 @@ FUNCTION void write_bigoutput()
     Fishon=0;
     int SPRloops;
     Do_Equil_Calc(equ_Recr);
-    SSB_unf=SSB_equil;
     if(N_bycatch==0) {k=0;} else {k=1;}
     for (int with_BYC=0; with_BYC<=k;with_BYC++)
     for (int SPRloop1=0; SPRloop1<=7; SPRloop1++)
@@ -5707,7 +5706,7 @@ FUNCTION void write_bigoutput()
         {
           Fmult2=MSY_Fmult;
           SPRloops=40;
-          SPR_trial=value(SSB_equil/SSB_unf);
+          SPR_trial=value(SSB_equil/SSB_virgin);
           SPR_last=SPR_trial*2.;
           YPR_last=-1.;
           break;
@@ -5752,7 +5751,8 @@ FUNCTION void write_bigoutput()
         Do_Equil_Calc(equ_Recr);
 //  SPAWN-RECR:   calc equil spawn-recr in the SPR loop
         SPR_temp=SSB_equil;
-        Equ_SpawnRecr_Result = Equil_Spawn_Recr_Fxn(SR_parm(2), SR_parm(3), SSB_virgin, Recr_virgin, SPR_temp);  //  returns 2 element vector containing equilibrium biomass and recruitment at this SPR
+//        Equ_SpawnRecr_Result = Equil_Spawn_Recr_Fxn(SR_parm(2), SR_parm(3), SSB_virgin, Recr_virgin, SPR_temp);  //  returns 2 element vector containing equilibrium biomass and recruitment at this SPR
+        Equ_SpawnRecr_Result = Equil_Spawn_Recr_Fxn(SR_parm_work(2), SR_parm_work(3), SSB_unf, Recr_unf, SPR_temp);  //  returns 2 element vector containing equilibrium biomass and recruitment at this SPR
         Btgt_prof=Equ_SpawnRecr_Result(1);
         Btgt_prof_rec=Equ_SpawnRecr_Result(2);
         if(SPRloop1==0)
@@ -5760,8 +5760,8 @@ FUNCTION void write_bigoutput()
           if(Btgt_prof<0.001 && Btgt_prof_rec<0.001)
           {Fcrash=Fmult2;}
         }
-        SS2out<<SPRloop1<<" "<<SPRloop<<" "<<with_BYC<<" "<<Fmult2<<" "<<equ_F_std<<" "<<value(SSB_equil/SSB_unf)<<" "<<value(YPR_dead)<<" "
-        <<value(YPR_dead*Btgt_prof_rec)<<" "<<Btgt_prof<<" "<<Btgt_prof_rec<<" "<<value(Btgt_prof/SSB_virgin)
+        SS2out<<SPRloop1<<" "<<SPRloop<<" "<<with_BYC<<" "<<Fmult2<<" "<<equ_F_std<<" "<<SSB_equil/(SSB_unf/Recr_unf)<<" "<<YPR_dead<<" "
+        <<YPR_dead*Btgt_prof_rec<<" "<<Btgt_prof<<" "<<Btgt_prof_rec<<" "<<Btgt_prof/SSB_unf
         <<" "<<value(sum(equ_catch_fleet(2))*Btgt_prof_rec);
         for(f=1;f<=Nfleet;f++)
           if(fleet_type(f)<=2)

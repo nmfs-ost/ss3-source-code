@@ -791,7 +791,7 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
     else if(show_MSY==2)  //  do brief output
     {
       SS2out<<SPR_actual<<" "<<SPR_Fmult<<" "<<Mgmt_quant(10)<<" "<<YPR_spr_dead/Vbio1_spr<<" "<<Bspr_rec<<" "
-      <<SPR_actual*Bspr_rec*SSB_unf<<" "<<YPR_spr_dead*Bspr_rec<<" "<<YPR_spr_ret*Bspr_rec
+      <<Bspr<<" "<<YPR_spr_dead*Bspr_rec<<" "<<YPR_spr_ret*Bspr_rec
       <<" "<<Vbio1_spr*Bspr_rec<<" # ";
 
       SS2out<<SPR_Btgt<<" "<<Btgt/SSB_unf<<" "<<Btgt_Fmult<<" "<<Mgmt_quant(7)<<" "<<YPR_Btgt_dead/Vbio1_Btgt<<" "<<Btgt_Rec<<" "
@@ -1993,16 +1993,14 @@ FUNCTION void Get_Forecast()
         Fishon=0;
         Do_Equil_Calc(equ_Recr);                      //  call function to do equilibrium calculation
 
-        SSB_unf=SSB_equil;
-        Smry_Table(y,11)=SSB_unf;
+        Smry_Table(y,11)=SSB_equil;
         Smry_Table(y,13)=GenTime;
         Fishon=1;
         Do_Equil_Calc(equ_Recr);                      //  call function to do equilibrium calculation
-        SPR_trial=SSB_equil;
-        if(STD_Yr_Reverse_Ofish(y)>0) SPR_std(STD_Yr_Reverse_Ofish(y))=SPR_trial/SSB_unf;
+        if(STD_Yr_Reverse_Ofish(y)>0) SPR_std(STD_Yr_Reverse_Ofish(y))=SSB_equil/Smry_Table(y,11);
         Smry_Table(y,9)=totbio;
         Smry_Table(y,10)=smrybio;
-        Smry_Table(y,12)=SPR_trial;
+        Smry_Table(y,12)=SSB_equil;
         Smry_Table(y,14)=YPR_dead;
         for (g=1;g<=gmorph;g++)
         {

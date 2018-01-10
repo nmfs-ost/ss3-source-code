@@ -1241,14 +1241,13 @@ FUNCTION void get_time_series()
 //      dvariable SSB_unf;
       Fishon=0;
       Do_Equil_Calc(equ_Recr);                      //  call function to do equilibrium calculation with current year's biology
-      SSB_unf=SSB_equil;
-      Smry_Table(y,11)=SSB_unf;
+      Smry_Table(y,11)=SSB_equil;
       Smry_Table(y,13)=GenTime;
       Fishon=1;
       Do_Equil_Calc(equ_Recr);                      //  call function to do equilibrium calculation with current year's biology and F
       if(STD_Yr_Reverse_Ofish(y)>0)
       {
-        SPR_std(STD_Yr_Reverse_Ofish(y))=SSB_equil/SSB_unf;
+        SPR_std(STD_Yr_Reverse_Ofish(y))=SSB_equil/Smry_Table(y,11);
       }
       Smry_Table(y,9)=(totbio);
       Smry_Table(y,10)=(smrybio);
