@@ -223,16 +223,16 @@
       Settle_month(settle_time)=settle_timings_tempvec(settle_time);
 //      Settle_month(settle_time)=settle_timings_tempvec(settle);
     }
-    j=0;  //  temp value for calculated settlement age
     for (settle_time=1;settle_time<=N_settle_timings;settle_time++)
     {
+      j=0;  //  temp value for calculated settlement age
       if(spawn_month>Settle_month(settle_time))
       {
-        k=1; j++;
+        k=1; j++;  //  so sets season 1 as earliest possible settlement at age 1
       }
       else
       {
-        k=spawn_seas;  //  earliest possible season for settlement
+        k=spawn_seas;  //  earliest possible season for settlement at age 0
       }
       temp=azero_seas(k); //  annual elapsed time fraction at begin of this season
       Settle_timing_seas(settle_time)=(Settle_month(settle_time)-1.0)/12.;  //  fraction of year at settlement month
@@ -247,7 +247,7 @@
       }
       if(j!=Settle_age(settle_time))
       {
-        N_warn++; warning<<"logical age at settlement calculated to be: "<<j<<
+        N_warn++; warning<<"settle_month is less than spawn_month, so logical age at settlement calculated to be: "<<j<<
         "  for settle_time "<<settle_time<<".  Does not match read value of "
         <<Settle_age(settle_time)<<" are you sure? "<<endl;
       }
