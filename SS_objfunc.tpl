@@ -693,7 +693,8 @@ FUNCTION void evaluate_the_objective_function()
   //  new code to match mean-reverting random walk approach used for recdevs
       for(i=1;i<=N_parm_dev;i++)
       {
-        if(parm_dev_PH(i)>0 && parm_dev_lambda(k_phase)>0.0)
+//        if(parm_dev_PH(i)>0 && parm_dev_lambda(k_phase)>0.0)
+        if(parm_dev_lambda(k_phase)>0.0)
         {
           if(parm_dev_type(i)==1)  //  parameter dev
           {
@@ -714,7 +715,6 @@ FUNCTION void evaluate_the_objective_function()
             dvariable sigmasel=selparm(TwoD_AR_def[f](13));
             parm_dev_stddev(i)=sigmasel;
             parm_dev_rho(i)=0.0;
-//            echoinput<<" sigmasel "<<sigmasel<<endl;
             parm_dev_like(i,1)-=-0.5*log(det_cor(f));
             if(TwoD_AR_def[f](6)==TwoD_AR_def[f](4))  //  only one sigmasel by age
             {
@@ -731,7 +731,29 @@ FUNCTION void evaluate_the_objective_function()
                }
             }
             else  //  some age-specific sigmasel
+                  //  note that devs are organized as list with age nested within year
             {
+              int devcnt;
+              for (a=TwoD_AR_def[f](4); a<=TwoD_AR_def[f](5);a++)
+              {
+                dvariable sigmasel=selparm(TwoD_AR_def[f](13)+min(a,TwoD_AR_def[f](6))-TwoD_AR_def[f](4));
+                dvariable degfree = TwoD_AR_degfree(f)/(TwoD_AR_def[f](5)-TwoD_AR_def[f](4)+1.0); //  df per age
+//                if(TwoD_AR_def[f](7)==0)  // do not use rho
+                {
+                  parm_dev_like(i,1)-=  - 0.5*degfree*log(2.0*PI );
+                  parm_dev_like(i,2)-=  - degfree*log(sigmasel);
+                  temp=0.0;
+                  devcnt=a-TwoD_AR_def[f](4)+1.0;  //  dev counter in first year
+                  j=TwoD_AR_def[f](5)-TwoD_AR_def[f](4)+1;  //  n ages
+                  for(int y=TwoD_AR_def[f](2); y<=TwoD_AR_def[f](3);y++)
+                  {
+                    temp+=square(parm_dev(i,devcnt));  //  ignore rho for now; need indexing for inv_cor()
+                    devcnt+=j;
+                  }
+                  parm_dev_like(i,1)-= - 0.5*temp/(sigmasel*sigmasel);
+                }
+                
+              }
 //  nll -= - 0.5*log(det(cor)) - 0.5*nages*nyears*log(2.0*PI ) - 0.5*S_hat_vec*inv(cor)*S_hat_vec/pow(sigmaS,2) - 0.5*2*nages*nyears*log(sigmaS);
             }
           }

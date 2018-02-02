@@ -5,7 +5,7 @@ DATA_SECTION
 !!//  SS_Label_Section_1.0 #DATA_SECTION
 
 !!//  SS_Label_Info_1.1.1  #Create string with version info
-!!version_info+="#V3.30.10.01-safe;_2018_01_25;_Stock_Synthesis_by_Richard_Methot_(NOAA)_using_ADMB_11.6";
+!!version_info+="#V3.30.10.02-safe;_2018_02_02;_Stock_Synthesis_by_Richard_Methot_(NOAA)_using_ADMB_11.6";
 !!version_info2+="#_user_support_available_at:NMFS.Stock.Synthesis@noaa.gov";
 !!version_info3+="#_user_info_available_at:https://vlab.ncep.noaa.gov/group/stock-synthesis";
 
@@ -30,3 +30,6 @@ DATA_SECTION
 !!//  V3.30.10.00  2017-11-27  clarify internal usage and output for SSB_virgin vs SSB_unfished (benchmark)
 !!//  V3.30.10.00  2018-01-09  clarify output in forecast-report.sso and SPR/YPR profile
 !!//  V3.30.10.01  2018-01-25  fix logic bug in calculation of settlement age 
+!!//  V3.30.10.02  2018-02-02  fix problem with super year in generalized size comp
+!!//  V3.30.10.02  2018-02-02  break SS_write.tpl into SS_write, SS_write_report and SS_write_ssnew
+!!//  V3.30.10.02  2018-02-02  clean-up the cout's at end of run

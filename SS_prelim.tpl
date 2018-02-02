@@ -283,20 +283,19 @@ PRELIMINARY_CALCS_SECTION
   {
     N_suprper_SzFreq=0;  // redo this counter so can use the counter
 
+    in_superperiod=0;
     for (iobs=1; iobs <= SzFreq_totobs; iobs++)
     {
-        in_superperiod=0;
-
-        if (var_adjust(7,SzFreq_obs1(iobs,4)) != 1.0)
+        f=abs(SzFreq_obs1(iobs,4));
+        if (var_adjust(7,f) != 1.0)
         {
-            SzFreq_sampleN(iobs)*=var_adjust(7,SzFreq_obs1(iobs,4));
-            if (SzFreq_sampleN(iobs) < 1.0) SzFreq_sampleN(iobs) = 1.;
+            SzFreq_sampleN(iobs)*=var_adjust(7,f);
+//            if (SzFreq_sampleN(iobs) < 1.0) SzFreq_sampleN(iobs) = 1.;
         }
-
         k=SzFreq_obs_hdr(iobs,6);  //  get the method
         f=abs(SzFreq_obs_hdr(iobs,3));
         s=SzFreq_obs_hdr(iobs,2);  // sign used to indicate start/stop of super period
-        if(SzFreq_obs_hdr(iobs,3)>0)  // negative for out of range or skip
+        if(SzFreq_obs_hdr(iobs,3)>0)
         {
             z1=SzFreq_obs_hdr(iobs,7);
             z2=SzFreq_obs_hdr(iobs,8);
@@ -320,7 +319,6 @@ PRELIMINARY_CALCS_SECTION
             }
         }
     }
-
     echoinput<<" gen size comp var adjust has been set-up "<<endl;
 
     if(N_suprper_SzFreq>0)

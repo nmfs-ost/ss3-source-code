@@ -332,7 +332,6 @@ PROCEDURE_SECTION
       if(Do_Benchmark>0)
       {
         Get_Benchmarks(show_MSY);
-        cout<<"finished benchmark for STD quantities "<<endl;
         did_MSY=1;
       }
       else
@@ -344,13 +343,12 @@ PROCEDURE_SECTION
       {
         report5<<"THIS FORECAST FOR PURPOSES OF STD REPORTING"<<endl;
         Get_Forecast();
-        cout<<"finished forecast  for STD quantities "<<endl;
         did_MSY=1;
       }
 
 //  SS_Label_Info_7.7 #Call fxn Process_STDquant() to move calculated values into sd_containers
-      cout<<" process STD "<<endl;
       Process_STDquant();
+      if(rundetail>0) cout<<"finished benchmark, forecast, and sdreporting"<<endl;
     }  // end of things to do in std_phase
 
 //  SS_Label_Info_7.9 #Do screen output of procedure results from this iteration

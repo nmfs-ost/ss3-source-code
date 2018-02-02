@@ -37,7 +37,6 @@ GLOBALS_SECTION
 
 //  SS_Label_Info_10.1 #Open output files using ofstream
   ofstream warning("warning.sso");
-  ofstream checkup("checkup.sso");
   ofstream echoinput("echoinput.sso");
   ofstream ParmTrace("ParmTrace.sso");
   ofstream report5("Forecast-report.sso");
@@ -641,26 +640,28 @@ FINAL_SECTION
 
 //  SS_Label_Info_12.4.2 #Call fxn write_summaryoutput()
     if(Do_CumReport>0) write_summaryoutput();
-    cout<<" finished summary report "<<endl;
-     write_SS_summary();
-    cout<<" finished new summary report "<<endl;
+
+    write_SS_summary();
 
 //  SS_Label_Info_12.4.3 #Call fxn write_rebuilder_output to produce rebuilder.sso
     if(Do_Rebuilder>0 && mceval_counter<=1) write_rebuilder_output();
-    cout<<" finished rebuilder report "<<endl;
+    cout<<" finished rebuilder.sso "<<endl;
 
+    write_SIStable();
+    cout<<" finished SIStable.sso "<<endl;
+    
 //  SS_Label_Info_12.4 #Do Outputs
 //  SS_Label_Info_12.4.1 #Call fxn write_bigoutput()
     write_bigoutput();
-    cout<<" finished big report"<<endl;
+    cout<<" finished report.sso"<<endl;
 
 //  SS_Label_Info_12.4.4 #Call fxn write_nudata() to create bootstrap data in data.ss_new
     write_nudata();
-    cout<<" finished nudata report "<<endl;
+    cout<<" finished data.ss_new with N replicates: "<<N_nudata<<endl;
 
 //  SS_Label_Info_12.4.5 #Call fxn write_nucontrol() to produce control.ss_new
     write_nucontrol();
-    cout<<" finished nucontrol report "<<endl;
+    cout<<" finished control.ss_new "<<endl;
 
 //  SS_Label_Info_12.4.6 #Call fxn write_Bzero_output()  appended to report.sso
     if (reportdetail != 2)
@@ -702,7 +703,7 @@ FINAL_SECTION
     if(N_warn>0)
     {cout<<"See warning.sso for N warnings: "<<N_warn<<endl;}
     else
-    {cout<<"No warnings"<<endl;}
+    {cout<<"No warnings :)"<<endl;}
   }
   }  //  end final section
 
