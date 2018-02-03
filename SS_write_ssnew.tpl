@@ -1183,7 +1183,7 @@ FUNCTION void write_nucontrol()
   NuStart<<readparfile<<" # 0=use init values in control file; 1=use ss.par"<<endl;
   NuStart<<rundetail<<" # run display detail (0,1,2)"<<endl;
   NuStart<<reportdetail<<" # detailed age-structured reports in REPORT.SSO (0=low,1=high,2=low for data-limited) "<<endl;
-  NuStart<<docheckup<<" # write detailed checkup.sso file (0,1) "<<endl;
+  NuStart<<docheckup<<" # write 1st iteration details to echoinput.sso file (0,1) "<<endl;
   NuStart<<Do_ParmTrace<<" # write parm values to ParmTrace.sso (0=no,1=good,active; 2=good,all; 3=every_iter,all_parms; 4=every,active)"<<endl;
   NuStart<<Do_CumReport<<" # write to cumreport.sso (0=no,1=like&timeseries; 2=add survey fits)"<<endl;
   NuStart<<Do_all_priors<<" # Include prior_like for non-estimated parameters (0,1) "<<endl;
@@ -1521,10 +1521,10 @@ FUNCTION void write_nucontrol()
    report4<<onenum<<recdev_early_PH_rd<<" #_recdev_early_phase"<<endl;
    report4<<onenum<<Fcast_recr_PH_rd<<" #_forecast_recruitment phase (incl. late recr) (0 value resets to maxphase+1)"<<endl;
    report4<<onenum<<Fcast_recr_lambda<<" #_lambda for Fcast_recr_like occurring before endyr+1"<<endl;
-   report4<<onenum<<recdev_adj(1)<<" #_last_early_yr_nobias_adj_in_MPD"<<endl;
-   report4<<onenum<<recdev_adj(2)<<" #_first_yr_fullbias_adj_in_MPD"<<endl;
+   report4<<onenum<<recdev_adj(1)<<" #_last_yr_nobias_adj_in_MPD; begin of ramp"<<endl;
+   report4<<onenum<<recdev_adj(2)<<" #_first_yr_fullbias_adj_in_MPD; begin of plateau"<<endl;
    report4<<onenum<<recdev_adj(3)<<" #_last_yr_fullbias_adj_in_MPD"<<endl;
-   report4<<onenum<<recdev_adj(4)<<" #_first_recent_yr_nobias_adj_in_MPD"<<endl;
+   report4<<onenum<<recdev_adj(4)<<" #_end_yr_for_ramp_in_MPD (can be in forecast to shape ramp, but SS sets bias_adj to 0.0 for fcast yrs)"<<endl;
    report4<<onenum<<recdev_adj(5)<<" #_max_bias_adj_in_MPD (-1 to override ramp and set biasadj=1.0 for all estimated recdevs)"<<endl;
    report4<<onenum<<recdev_cycle<<" #_period of cycles in recruitment (N parms read below)"<<endl;
    report4<<onenum<<recdev_LO<<" #min rec_dev"<<endl;
