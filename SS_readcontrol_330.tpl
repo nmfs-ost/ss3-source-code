@@ -1067,9 +1067,17 @@
      Ip+=N_natMparms;
      mgp_type(Ip,Ip+N_growparms-1)=2;  // growth parms
      
-//  check on estimation of variance parameters
-     if(MGparm_1(Ip+N_growparms-2,7)>0) varparm_estimated(1)=1;  //  for CV_young
-     if(MGparm_1(Ip+N_growparms-1,7)>0) varparm_estimated(1)=1;  //  for CV_old
+//  check on estimation of variance parameters for CV_young and CV_old
+     for(int kk=Ip+N_growparms-2;kk<=Ip+N_growparms-1;kk++)
+     {
+       if(MGparm_1(kk,7)>0) varparm_estimated(1)=1;
+       if(MGparm_1(kk,8)!=0 || MGparm_1(kk,9)!=0 || MGparm_1(kk,13)!=0)
+        {N_warn++; cout<<"see fatal warning"<<endl; warning<<"EXIT. CV of growth parameters cannot be time-varying"<<endl; exit(1);
+        }
+     }
+//     if(MGparm_1(Ip+N_growparms-2,7)>0) varparm_estimated(1)=1;  //  for CV_young
+//     if(MGparm_1(Ip+N_growparms-1,7)>0) varparm_estimated(1)=1;  //  for CV_old
+
      Ip=Ip+N_growparms;
      mgp_type(Ip,Ip+1)=3;   // wtlen
      Ip+=2;
@@ -4151,7 +4159,6 @@
     }
 
 // do labels for Selex_Std
-  echoinput<<"parm "<<j<<" covar "<<CoVar_Count<<endl;
     if(Do_Selex_Std>0)
     {
       for (g=1;g<=gender;g++)
@@ -4177,7 +4184,6 @@
       }
     }
 
-  echoinput<<"parm "<<j<<" covar "<<CoVar_Count<<endl;
     if(Do_Growth_Std>0)
     {
       for (g=1;g<=gender;g++)
@@ -4187,7 +4193,6 @@
         ParmLabel+="Grow_std_"+NumLbl(Do_Growth_Std)+"_"+GenderLbl(g)+"_A_"+NumLbl(age_vector(Growth_Std_Pick(i)))+CRLF(1);
       }
     }
-  echoinput<<"parm after growthstd"<<j<<" covar "<<CoVar_Count<<endl;
     if(Do_NatAge_Std!=0)
     {
       for (g=1;g<=gender;g++)
@@ -4200,13 +4205,11 @@
         {ParmLabel+="NatAge_std_All_"+GenderLbl(g)+"_A_"+NumLbl(age_vector(NatAge_Std_Pick(i)))+CRLF(1);}
       }
     }
-  echoinput<<"parm after natage"<<j<<" covar "<<CoVar_Count<<endl;
     if(Do_Selex_Std==0 && Do_Growth_Std==0 && Do_NatAge_Std==0)
     {
       CoVar_Count++; j++; active_parm(CoVar_Count)=j;
       ParmLabel+="Bzero_again"+CRLF(1);
     }
-  echoinput<<"parm after Bzero bump"<<j<<" covar "<<CoVar_Count<<endl;
 
    sprintf(onenum, "%d", int(100*depletion_level));
    switch(depletion_basis)

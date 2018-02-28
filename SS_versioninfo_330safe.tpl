@@ -5,15 +5,15 @@ DATA_SECTION
 !!//  SS_Label_Section_1.0 #DATA_SECTION
 
 !!//  SS_Label_Info_1.1.1  #Create string with version info
-!!version_info+="#V3.30.10.02-safe;_2018_02_02;_Stock_Synthesis_by_Richard_Methot_(NOAA)_using_ADMB_11.6";
+!!version_info+="#V3.30.11.00-safe;_2018_02_27;_Stock_Synthesis_by_Richard_Methot_(NOAA)_using_ADMB_11.6";
+!!version_info+="#This is a work of the U.S. Government and is not subject to copyright protection in the United States.";
+!!version_info+="#Foreign copyrights may apply. See copyright.txt for more information.";
 !!version_info2+="#_user_support_available_at:NMFS.Stock.Synthesis@noaa.gov";
 !!version_info3+="#_user_info_available_at:https://vlab.ncep.noaa.gov/group/stock-synthesis";
-
 
 !!//  V3.30.01.13  fix problem with transition to linear growth in Richards growth function
 !!//  V3.30.04.01  05/23/2017  convert 3.24 birthseason to 3.30 settlement_event; no mandatory I/O change
 !!//  V3.30.04.02  05/30/2017  fix index issue in converter for MGparm seasonal effects and for retention in fleet >1
-
 !!//  V3.30.05.02  06/28/2017  fix issue with settlement events in spawn_season
 !!//  V3.30.06.01  07/12/2017  enhance capability and control of depletion fleet
 !!//  V3.30.06.02  07/25/2017  implement fcast_specify_selex to fix problem&various other format ++
@@ -33,3 +33,7 @@ DATA_SECTION
 !!//  V3.30.10.02  2018-02-02  fix problem with super year in generalized size comp
 !!//  V3.30.10.02  2018-02-02  break SS_write.tpl into SS_write, SS_write_report and SS_write_ssnew
 !!//  V3.30.10.02  2018-02-02  clean-up the cout's at end of run
+!!//  V3.30.11.00  2018-02-27  for Richards growth, disable trap on fish shrinkage due to code interaction
+!!//  V3.30.11.00  2018-02-27  add copyright disclaimer
+!!//  V3.30.11.00  2018-02-27  reformat ss_summary.sso
+!!//  V3.30.11.00  2018-02-27  add totbio, smrybio, and total catch biomass to end of ss_summary.sso, but no se

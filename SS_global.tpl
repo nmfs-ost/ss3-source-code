@@ -55,7 +55,7 @@ GLOBALS_SECTION
   adstring onenum(4);
   adstring anystring;
   adstring anystring2;
-  adstring version_info;
+  adstring_array version_info;
   adstring version_info2;
   adstring version_info3;
   adstring version_info_short;

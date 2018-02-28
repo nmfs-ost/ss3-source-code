@@ -20,23 +20,8 @@ FUNCTION dvariable Spawn_Recr(const prevariable& SSB_virgin_adj, const prevariab
 //  SS_Label_43.1  add 0.1 to input spawning biomass value to make calculation more rebust
     SSB_curr_adj = SSB_current + 0.100;   // robust
 
-
-    steepness=SR_parm_work(2);
     regime_change=SR_parm_work(N_SRparm2-1);  //  this is a persistent deviation off the S/R curve
-
-    if(SR_fxn==8)
-    {
-      Shepard_c=SR_parm_work(3);
-      Shepard_c2=pow(0.2,Shepard_c);
-      Hupper=1.0/(5.0*Shepard_c2);
-      steep2=0.2+(steepness-0.2)/(0.8)*(Hupper-0.2);
-    }
-    else if(SR_fxn==6 || SR_fxn==3)
-    {
-      alpha = 4.0 * steepness*Recr_virgin / (5.*steepness-1.);
-      beta = (SSB_virgin_adj*(1.-steepness)) / (5.*steepness-1.);
-    }
-    
+   
 //  SS_Label_43.3  calculate expected recruitment from the input spawning biomass and the SR curve
 // functions below use Recr_virgin_adj,SSB_virgin_adj which could have been adjusted adjusted above from R0,SSB_virgin
     switch(SR_fxn)
@@ -49,12 +34,16 @@ FUNCTION dvariable Spawn_Recr(const prevariable& SSB_virgin_adj, const prevariab
 //  SS_Label_43.3.2  Ricker
       case 2:  // ricker
       {
+        steepness=SR_parm_work(2);
         NewRecruits = Recr_virgin_adj*SSB_curr_adj/SSB_virgin_adj * mfexp(steepness*(1.-SSB_curr_adj/SSB_virgin_adj));
         break;
       }
 //  SS_Label_43.3.3  Beverton-Holt
       case 3: // Beverton-Holt
       {
+        steepness=SR_parm_work(2);
+        alpha = 4.0 * steepness*Recr_virgin / (5.*steepness-1.);
+        beta = (SSB_virgin_adj*(1.-steepness)) / (5.*steepness-1.);
         NewRecruits =  (4.*steepness*Recr_virgin_adj*SSB_curr_adj) / (SSB_virgin_adj*(1.-steepness)+(5.*steepness-1.)*SSB_curr_adj);
         break;
       }
@@ -68,6 +57,7 @@ FUNCTION dvariable Spawn_Recr(const prevariable& SSB_virgin_adj, const prevariab
       case 5:  // hockey stick  where "steepness" is now the fraction of B0 below which recruitment declines linearly
                //  the 3rd parameter allows for a minimum recruitment level
       {
+        steepness=SR_parm_work(2);
         temp=SR_parm_work(3)*Recr_virgin_adj + SSB_curr_adj/(steepness*SSB_virgin_adj)*(Recr_virgin_adj-SR_parm_work(3)*Recr_virgin_adj);  //  linear decrease below steepness*SSB_virgin_adj
         NewRecruits=Join_Fxn(0.0*SSB_virgin_adj,SSB_virgin_adj,steepness*SSB_virgin_adj, SSB_curr_adj, temp, Recr_virgin_adj);
         break;
@@ -76,6 +66,9 @@ FUNCTION dvariable Spawn_Recr(const prevariable& SSB_virgin_adj, const prevariab
 //  SS_Label_43.3.6  Beverton-Holt, with constraint to have constant R about Bzero
       case 6: //Beverton-Holt constrained
       {
+        alpha = 4.0 * steepness*Recr_virgin / (5.*steepness-1.);
+        beta = (SSB_virgin_adj*(1.-steepness)) / (5.*steepness-1.);
+        steepness=SR_parm_work(2);
         if(SSB_curr_adj>SSB_virgin_adj) {SSB_BH1=SSB_virgin_adj;} else {SSB_BH1=SSB_curr_adj;}
         NewRecruits=(4.*steepness*Recr_virgin_adj*SSB_BH1) / (SSB_virgin_adj*(1.-steepness)+(5.*steepness-1.)*SSB_BH1);
         break;
@@ -121,6 +114,25 @@ FUNCTION dvariable Spawn_Recr(const prevariable& SSB_virgin_adj, const prevariab
 //  SS_Label_43.3.8  Shepard
       case 8:  // Shepard 3-parameter SRR.  per Punt document at PFMC
       {
+        steepness=SR_parm_work(2);
+        Shepard_c=SR_parm_work(3);
+        Shepard_c2=pow(0.2,Shepard_c);
+        Hupper=1.0/(5.0*Shepard_c2);
+        steep2=0.2+(steepness-0.2)/(0.8)*(Hupper-0.2);
+        temp=(SSB_curr_adj)/(SSB_virgin_adj);
+        NewRecruits =  (5.*steep2*Recr_virgin_adj*(1.-Shepard_c2)*temp) /
+        (1.0 - 5.0*steep2*Shepard_c2 + (5.*steep2-1.)*pow(temp,Shepard_c));
+        break;
+      }
+
+//  SS_Label_43.3.8  Shepard
+      case 9:  // re-parameterizedShepard 3-parameter SRR.  per Punt document at PFMC
+      {
+        steepness=(0.8)/(1.0+exp(-SR_parm_work(2)));
+        Shepard_c=exp(SR_parm_work(3));
+        Shepard_c2=pow(0.2,Shepard_c);
+        Hupper=1.0/(5.0*Shepard_c2);
+        steep2=0.20001+(steepness-0.2)/(0.8)*(Hupper-0.2);
         temp=(SSB_curr_adj)/(SSB_virgin_adj);
         NewRecruits =  (5.*steep2*Recr_virgin_adj*(1.-Shepard_c2)*temp) /
         (1.0 - 5.0*steep2*Shepard_c2 + (5.*steep2-1.)*pow(temp,Shepard_c));
@@ -275,6 +287,8 @@ FUNCTION dvar_vector Equil_Spawn_Recr_Fxn(const prevariable &steepness, const pr
         B_equil = SSB_virgin * (1. - (log(1./SPR_temp) - SRZ_0)/pow((SRZ_max - SRZ_0),(1./SRparm3) ));
         SRZ_surv=mfexp((1.-pow((B_equil/SSB_virgin),SR_parm_work(3)) )*(SRZ_max-SRZ_0)+SRZ_0);  //  survival
         R_equil=B_equil*SRZ_surv;
+        warning<<steepness<<" "<<SRparm3<<" "<<SR_parm_work(3)<<" SRZ_0 "<<SRZ_0<<" SRZ_max "<<SRZ_max<<
+        " SPR_temp "<<SPR_temp<<" SRZ_surv "<<SRZ_surv<<" SSB "<<SSB_virgin<<" "<<B_equil<<" Rec "<<Recr_virgin<<" "<<R_equil<<endl;
         break;
       }
 
@@ -303,6 +317,33 @@ FUNCTION dvar_vector Equil_Spawn_Recr_Fxn(const prevariable &steepness, const pr
         B_equil=R_equil*SPR_temp;
         break;
       }
+
+      case 9:  // re-parameterized Shepard
+      {
+        dvariable Shep_top;
+        dvariable Shep_bot;
+        dvariable Hupper;
+        dvariable steep2;
+        dvariable Shep_top2;
+//  Andre's FORTRAN
+//        TOP = 5*Steep*(1-0.2**POWER)*SPR/SPRF0-(1-5*Steep*0.2**POWER)
+//      BOT = (5*Steep-1)
+//       REC = (TOP/BOT)**(1.0/POWER)*SPRF0/SPR
+// Power = exp(logC);
+// Hupper = 1.0/(5.0 * pow(0.2,Power));
+        Shepard_c=exp(SRparm3);
+        Shepard_c2=pow(0.2,Shepard_c);
+        Hupper=1.0/(5.0*Shepard_c2);
+        steep2=0.20001+((0.8)/(1.0+exp(-steepness))-0.2)/(0.8)*(Hupper-0.2);
+//        steep2=0.20001+(steepness-0.2)/(0.8)*(Hupper-0.2);
+        Shep_top=5.0*steep2*(1.0-Shepard_c2)*(SPR_temp*Recr_virgin)/SSB_virgin-(1.0-5.0*steep2*Shepard_c2);
+        Shep_bot=5.0*steep2-1.0;
+        Shep_top2=posfun(Shep_top,0.001,temp);  
+        R_equil=(SSB_virgin/SPR_temp) * pow((Shep_top2/Shep_bot),(1.0/Shepard_c));
+        B_equil=R_equil*SPR_temp;
+        break;
+      }
+
     }
     Equil_Spawn_Recr_Calc(1)=B_equil;
     Equil_Spawn_Recr_Calc(2)=R_equil;

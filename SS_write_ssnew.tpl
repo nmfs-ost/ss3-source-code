@@ -1339,9 +1339,9 @@ FUNCTION void write_nucontrol()
 
   ofstream report4("control.ss_new");
   report4<<version_info<<endl;
+  report4<<version_info2<<endl<<version_info3<<endl;
   if(N_CC>0) report4<<Control_Comments<<endl;
   report4 << "#_data_and_control_files: "<<datfilename<<" // "<<ctlfilename<<endl;
-  report4<<version_info<<endl<<version_info2<<endl<<version_info3<<endl;
   report4<<WTage_rd<<"  # 0 means do not read wtatage.ss; 1 means read and use wtatage.ss and also read and use growth parameters"<<endl;
   report4 << N_GP << "  #_N_Growth_Patterns"<<endl;
   report4 << N_platoon << " #_N_platoons_Within_GrowthPattern "<<endl;

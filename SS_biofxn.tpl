@@ -537,10 +537,10 @@ FUNCTION void get_growth2_Richards()
                 temp=pow(Ave_Size(t,1,g,a),Richards(gp));
                 t2=temp-LinfR;  //  remaining growth potential
 //                if(timevary_MG(y,2)>0 && t2>-1.)
-                {
-                  join1=1.0/(1.0+mfexp(-(50.*t2/(1.0+fabs(t2)))));  //  note the logit transform is not perfect, so growth near Linf will not be exactly same as with native growth function
-                  t2*=(1.-join1);  // trap to prevent decrease in size-at-age
-                }
+//                {
+//                  join1=1.0/(1.0+mfexp(-(50.*t2/(1.0+fabs(t2)))));  //  note the logit transform is not perfect, so growth near Linf will not be exactly same as with native growth function
+//                  t2*=(1.-join1);  // trap to prevent decrease in size-at-age
+//                }
                 if((a<nages || s<nseas)) Ave_Size(t+1,1,g,k2) =
                   pow((temp+(mfexp(VBK_temp2*seasdur(s))-1.0)*(t2)*Cohort_Growth(y,a)),inv_Richards);
               }
@@ -659,11 +659,8 @@ FUNCTION void get_growth3(const int s, const int subseas)
             {
               temp=pow(Ave_Size(t,1,g,a),Richards(gp));
               t2=temp-LinfR;  //  remaining growth potential
-//              if(timevary_MG(y,2)>0 && t2>-1.)
-              {
-                join1=1.0/(1.0+mfexp(-(50.*t2/(1.0+fabs(t2)))));  //  note the logit transform is not perfect, so growth near Linf will not be exactly same as with native growth function
-                t2*=(1.-join1);  // trap to prevent decrease in size-at-age
-              }
+//              join1=1.0/(1.0+mfexp(-(50.*t2/(1.0+fabs(t2)))));  //  note the logit transform is not perfect, so growth near Linf will not be exactly same as with native growth function
+//              t2*=(1.-join1);  // trap to prevent decrease in size-at-age
               temp += (mfexp(VBK(gp,nages)*subseasdur(s,subseas)*VBK_seas(s))-1.0)*t2*Cohort_Growth(y,a);
               Ave_Size(t,subseas,g,a) = pow(temp,inv_Richards);
             }

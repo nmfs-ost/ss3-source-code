@@ -1989,6 +1989,7 @@ FUNCTION void Get_Forecast()
 
       if( (Fcast_Loop1==Fcast_Loop_Control(1) && (save_for_report>0)) || ((sd_phase() || mceval_phase()) && (initial_params::mc_phase==0)) )
       {
+        Smry_Table(y,4)=Mgmt_quant(Fcast_catch_start+y-endyr);
         eq_yr=y; equ_Recr=Recr_unf; bio_yr=endyr;
         Fishon=0;
         Do_Equil_Calc(equ_Recr);                      //  call function to do equilibrium calculation
