@@ -947,12 +947,10 @@ FUNCTION void get_recr_distribution()
   }
   else if(recr_dist_method==1)  //  only used for sstrans
   {
-    echoinput<<"recrdist pattern: "<<recr_dist_pattern<<endl;
     for (gp=1;gp<=N_GP;gp++)
     for (p=1;p<=pop;p++)
     for (s=1;s<=N_settle_timings;s++)
     {
-      echoinput<<gp<<" "<<p<<" "<<s<<endl;
     if(recr_dist_pattern(gp,s,p)>0)
     {
       recr_dist(gp,s,p)=femfrac(gp)*recr_dist_parm(gp)*recr_dist_parm(N_GP+p)*recr_dist_parm(N_GP+pop+s);

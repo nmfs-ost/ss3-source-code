@@ -91,7 +91,8 @@ FUNCTION void get_initial_conditions()
     if(do_once==1) cout<<" ageerr_key OK"<<endl;
   }
 
-  if(save_for_report>0) get_saveGparm();
+  if(save_for_report>0) 
+    {get_saveGparm();} 
 
   //  SS_Label_Info_23.2 #Calculate selectivity in the initial year
   get_selectivity();
@@ -532,7 +533,6 @@ FUNCTION void get_time_series()
           }
         }
       }
-
       if(WTage_rd>0)
       {
         for (g=1;g<=gmorph;g++)
@@ -569,22 +569,7 @@ FUNCTION void get_time_series()
         {Make_FishSelex();}
       }
 
-      if(s==1)  //  calc some Smry_Table quantities that could be needed for exploitation rate calculations, but recalc these in the time_series report section
-      {
-        Smry_Table(y,2)=0.0;
-        Smry_Table(y,3)=0.0;
-        for (g=1;g<=gmorph;g++)
-        if(use_morph(g)>0)
-        {
-        for (p=1;p<=pop;p++)
-        {
-          Smry_Table(y,2)+=natage(t,p,g)(Smry_Age,nages)*Save_Wt_Age(t,g)(Smry_Age,nages);
-          Smry_Table(y,3)+=sum(natage(t,p,g)(Smry_Age,nages));   //sums to accumulate across platoons and settlements
-        }
-        }
-      }
-
-  //  SS_Label_Info_24.2.2 #Compute spawning biomass if this is spawning season so recruits could occur later this season
+//  SS_Label_Info_24.2.2 #Compute spawning biomass if this is spawning season so recruits could occur later this season
 //  SPAWN-RECR:   calc SPB in time series if spawning is at beginning of the season
       if(s==spawn_seas && spawn_time_seas<0.0001)    //  compute spawning biomass if spawning at beginning of season so recruits could occur later this season
       {
@@ -603,6 +588,7 @@ FUNCTION void get_time_series()
         }
         SSB_current=sum(SSB_pop_gp(y));
         SSB_yr(y)=SSB_current;
+        
         if(Hermaphro_Option!=0)  // get male biomass
         {
           MaleSPB(y).initialize();
@@ -1085,7 +1071,6 @@ FUNCTION void get_time_series()
 
   //  SS_Label_Info_24.7  #call to Get_expected_values
     Get_expected_values();
-
   //  SS_Label_Info_24.8  #hermaphroditism
       if(Hermaphro_Option!=0)
       {
@@ -1148,10 +1133,12 @@ FUNCTION void get_time_series()
             || (F_ballpark_yr>=styr)))
       {
         for (f=1;f<=Nfleet;f++)
+        if(fleet_type(f)<=2)
         {
           for (k=1;k<=6;k++)
           {
             annual_catch(y,k)+=catch_fleet(t,f,k);
+            if(k<=3) Smry_Table(y,k+3)=annual_catch(y,k);
           }
           if(F_Method==1)
           {
@@ -1186,7 +1173,8 @@ FUNCTION void get_time_series()
                 else
                 {
                   temp3=natage(t-nseas+1,p,g,a);  //  numbers at begin of year
-                  for (j=1;j<=nseas;j++) {temp3*=mfexp(-seasdur(j)*natM(j,GP3(g),a));}
+                  for (j=1;j<=nseas;j++) {
+                    temp3*=mfexp(-seasdur(j)*natM(j,GP3(g),a));}
                   temp2+=temp3;
                 }
               }

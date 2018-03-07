@@ -279,7 +279,7 @@ FUNCTION void write_SS_summary()
     SS_smry <<"F_Ballpark "<<F_ballpark_lambda(k)*F_ballpark_like<<endl; 
     SS_smry <<"Crash_Pen "<<CrashPen_lambda(k)*CrashPen<<endl;
 
-  SS_smry<<"#_PARAMETERS"<<endl<<"#label value se"<<endl;
+  SS_smry<<"#_PARAMETERS"<<endl<<"#label value se active? range"<<endl;
   NP=0;   // count of number of parameters
   active_count=0;
   SS_smry<<"#_BIOLOGY"<<endl;
@@ -287,16 +287,16 @@ FUNCTION void write_SS_summary()
   {
     NP++;
     SS_smry<<ParmLabel(NP)<<" "<<MGparm(j)<<" ";
-    if(active(MGparm(j))) {active_count++;  SS_smry<<CoVar(active_count,1);}  else  SS_smry<<0.0;
-    SS_smry<<endl;
+    if(active(MGparm(j))) {active_count++;  SS_smry<<CoVar(active_count,1)<<" Act ";}  else  {SS_smry<<0.0<<" Fix ";}
+    SS_smry<<(MGparm(j)-MGparm_LO(j))/(MGparm_HI(j)-MGparm_LO(j)+1.0e-6)<<endl;
   }
   SS_smry<<"#_SPAWN_RECR"<<endl;
   for (j=1;j<=N_SRparm3;j++)
   {
     NP++;
     SS_smry<<ParmLabel(NP)<<" "<<SR_parm(j)<<" ";
-    if(active(SR_parm(j))) {active_count++;  SS_smry<<CoVar(active_count,1);} else  SS_smry<<0.0;
-    SS_smry<<endl;
+    if(active(SR_parm(j))) {active_count++;  SS_smry<<CoVar(active_count,1)<<" Act ";}  else  {SS_smry<<0.0<<" Fix ";}
+    SS_smry<<(SR_parm(j)-SR_parm_LO(j))/(SR_parm_HI(j)-SR_parm_LO(j)+1.0e-6)<<endl;
   }
 
   if(recdev_cycle>0)
@@ -305,8 +305,8 @@ FUNCTION void write_SS_summary()
   {
     NP++;
     SS_smry<<ParmLabel(NP)<<" "<<recdev_cycle_parm(j)<<" ";
-    if(active(recdev_cycle_parm(j))) {active_count++;  SS_smry<<CoVar(active_count,1);} else  SS_smry<<0.0;
-    SS_smry<<endl;
+    if(active(recdev_cycle_parm(j))) {active_count++;  SS_smry<<CoVar(active_count,1)<<" Act ";}  else  {SS_smry<<0.0<<" Fix ";}
+    SS_smry<<(recdev_cycle_parm(j)-recdev_cycle_LO(j))/(recdev_cycle_HI(j)-recdev_cycle_LO(j)+1.0e-6)<<endl;
   }
   }
 
@@ -440,21 +440,21 @@ FUNCTION void write_SS_summary()
     SS_smry<<ParmLabel(NP)<<" "<<recr_std(j)<<" "<<CoVar(active_count,1)<<endl;
   }
 
-  SS_smry<<"#_SPR Basis="<<SPR_report_label<<endl;
+  SS_smry<<"#_SPR Basis= "<<SPR_report_label<<endl;
   for (j=1;j<=N_STD_Yr_Ofish;j++)
   {
     NP++; active_count++; 
     SS_smry<<ParmLabel(NP)<<" "<<SPR_std(j)<<" "<<CoVar(active_count,1)<<endl;
   }
 
-  SS_smry<<"#_F Basis="<<F_report_label<<endl;
+  SS_smry<<"#_F Basis= "<<F_report_label<<endl;
   for (j=1;j<=N_STD_Yr_F;j++)
   {
     NP++; active_count++; 
     SS_smry<<ParmLabel(NP)<<" "<<F_std(j)<<" "<<CoVar(active_count,1)<<endl;
   }
 
-  SS_smry<<"#_Depletion Basis="<<depletion_basis_label<<endl;
+  SS_smry<<"#_Depletion Basis= "<<depletion_basis_label<<endl;
   for (j=1;j<=N_STD_Yr_Dep;j++)
   {
     NP++; active_count++; 
@@ -475,20 +475,20 @@ FUNCTION void write_SS_summary()
     SS_smry<<ParmLabel(NP)<<" "<<Extra_Std(j)<<" "<<CoVar(active_count,1)<<endl;
   }
 
-  SS_smry<<"TotBio_Vir "<<Smry_Table(styr-2,1)<<" 0.0"<<endl;
-  SS_smry<<"TotBio_init "<<Smry_Table(styr-1,1)<<" 0.0"<<endl;
+  SS_smry<<"TotBio_Virgin "<<Smry_Table(styr-2,1)<<" 0.0"<<endl;
+  SS_smry<<"TotBio_Initial "<<Smry_Table(styr-1,1)<<" 0.0"<<endl;
   for (y=styr;y<=YrMax;y++)
   {
     SS_smry<<"TotBio_"<<y<<" "<<Smry_Table(y,2)<<" 0.0"<<endl;
   }
-  SS_smry<<"SmryBio_Vir "<<Smry_Table(styr-2,2)<<" 0.0"<<endl;
-  SS_smry<<"SmryBio_init "<<Smry_Table(styr-1,2)<<" 0.0"<<endl;
+  SS_smry<<"SmryBio_Virgin "<<Smry_Table(styr-2,2)<<" 0.0"<<endl;
+  SS_smry<<"SmryBio_Initial "<<Smry_Table(styr-1,2)<<" 0.0"<<endl;
   for (y=styr;y<=YrMax;y++)
   {
     SS_smry<<"SmryBio_"<<y<<" "<<Smry_Table(y,2)<<" 0.0"<<endl;
   }
-  SS_smry<<"TotCatch_Vir "<<Smry_Table(styr-2,4)<<" 0.0"<<endl;
-  SS_smry<<"TotCatch_init "<<Smry_Table(styr-1,4)<<" 0.0"<<endl;
+  SS_smry<<"TotCatch_Virgin "<<Smry_Table(styr-2,4)<<" 0.0"<<endl;
+  SS_smry<<"TotCatch_Initial "<<Smry_Table(styr-1,4)<<" 0.0"<<endl;
   for (y=styr;y<=YrMax;y++)
   {
     SS_smry<<"TotCatch_"<<y<<" "<<Smry_Table(y,4)<<" 0.0"<<endl;

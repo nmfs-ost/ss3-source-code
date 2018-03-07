@@ -264,7 +264,7 @@
   else
   {
     F_reporting_ages(1)=nages/2;
-    F_reporting_ages(2)=F_reporting_ages(1)+1;
+    F_reporting_ages(2)=F_reporting_ages(1);
   }
  END_CALCS
 

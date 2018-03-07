@@ -530,7 +530,7 @@ GLOBALS_SECTION
 BETWEEN_PHASES_SECTION
   {
   int j_phase=current_phase();  // this is the phase to come
-  cout<<current_phase()-1<<" "<<niter<<" -log(L): "<<obj_fun<<"  Spbio: "<<value(SSB_yr(styr))<<" "<<value(SSB_yr(endyr));
+//  cout<<current_phase()-1<<" "<<niter<<" -log(L): "<<obj_fun<<"  Spbio: "<<value(SSB_yr(styr))<<" "<<value(SSB_yr(endyr));
 
 //  SS_Label_Info_11.1 #Save last value of objective function
   if(j_phase>1)
@@ -602,14 +602,10 @@ FINAL_SECTION
           covarout<<ParmLabel(active_parm(i))<<" "<<ParmLabel(active_parm(j-1))<<" "<<CoVar(i,j)<<endl;
         }
       }
+      if(mceval_phase()==0) cout<<" finished COVAR.SSO"<<endl;
     }
-    cout<<" finished COVAR.SSO"<<endl;
-
-    get_posteriors();
 
 //  SS_Label_Info_12.3 #Go thru time series calculations again to get extra output quantities
-
-
 //  SS_Label_Info_12.3.2 #Set save_for_report=1 then call initial_conditions and time_series to get other output quantities
     save_for_report=1;
     save_gparm=0;
@@ -617,13 +613,15 @@ FINAL_SECTION
     get_initial_conditions();
     get_time_series();  //  in final_section with save_for_report on
     evaluate_the_objective_function();
-
 //  SS_Label_Info_12.3.3 #Do benchmarks and forecast and stdquantities with save_for_report=1
-    if(mceval_phase()==0) {show_MSY=1;} else {show_MSY=0;}
+    if(mceval_phase()==0) {show_MSY=1;} else {show_MSY=0;}  //  turn on reporting in not in mceval
     if(Do_Benchmark>0)
     {
-      if(did_MSY==0) Get_Benchmarks(show_MSY);
-      cout<<" finished benchmark for reporting"<<endl;
+      if(did_MSY==0) 
+      {
+        Get_Benchmarks(show_MSY);
+        if(mceval_phase()==0) cout<<" finished benchmark for reporting"<<endl;
+      }
     }
     else
     {Mgmt_quant(1)=SSB_virgin;}
@@ -631,12 +629,14 @@ FINAL_SECTION
     {
       report5<<"THIS FORECAST FOR PURPOSES OF GETTING DISPLAY QUANTITIES"<<endl;
       Get_Forecast();
-      cout<<" finished forecast for reporting"<<endl;
+      if(mceval_phase()==0) cout<<" finished forecast for reporting"<<endl;
     }
 
 //  SS_Label_Info_12.3.4  #call fxn STDquant()
      Process_STDquant();
-     cout<<" finished STD quantities for reporting"<<endl;
+     if(mceval_phase()==0) cout<<" finished STD quantities for reporting"<<endl;
+     get_posteriors();
+     if(mceval_phase()==0) cout<<" finished posteriors reporting"<<endl;
 
 //  SS_Label_Info_12.4.2 #Call fxn write_summaryoutput()
     if(Do_CumReport>0) write_summaryoutput();
@@ -644,6 +644,8 @@ FINAL_SECTION
     write_SS_summary();
 
 //  SS_Label_Info_12.4.3 #Call fxn write_rebuilder_output to produce rebuilder.sso
+    if(reportdetail>0)
+    {
     if(Do_Rebuilder>0 && mceval_counter<=1) write_rebuilder_output();
     cout<<" finished rebuilder.sso "<<endl;
 
@@ -654,23 +656,29 @@ FINAL_SECTION
 //  SS_Label_Info_12.4.1 #Call fxn write_bigoutput()
     write_bigoutput();
     cout<<" finished report.sso"<<endl;
+    }
 
 //  SS_Label_Info_12.4.4 #Call fxn write_nudata() to create bootstrap data in data.ss_new
+    if(reportdetail>0)
+    {
     write_nudata();
-    cout<<" finished data.ss_new with N replicates: "<<N_nudata<<endl;
+    if(show_MSY==1) cout<<" finished data.ss_new with N replicates: "<<N_nudata<<endl;
 
 //  SS_Label_Info_12.4.5 #Call fxn write_nucontrol() to produce control.ss_new
     write_nucontrol();
-    cout<<" finished control.ss_new "<<endl;
+    if(show_MSY==1) cout<<" finished control.ss_new "<<endl;
+    }
 
 //  SS_Label_Info_12.4.6 #Call fxn write_Bzero_output()  appended to report.sso
-    if (reportdetail != 2)
+    if (reportdetail ==1)
     {
         write_Bzero_output();
-        cout<<" finished Bzero and global MSY "<<endl;
+        if(show_MSY==1) cout<<" finished Bzero and global MSY "<<endl;
     }
 
 //  SS_Label_Info_12.3.1 #Write out body weights to wtatage.ss_new.  Occurs while doing procedure with save_for_report=2
+    if(reportdetail==1)
+    {
     save_for_report=2;
 //    bodywtout<<1<<"  #_user_must_replace_this_value_with_number_of_lines_with_wtatage_below"<<endl;
     bodywtout<<nages<<" # maxage"<<endl;
@@ -689,7 +697,8 @@ FINAL_SECTION
     Get_Forecast();
     bodywtout<<-9999<<" "<<1<<" "<<1<<" "<<1<<" "<<1<<" "<<0<<" "<<Wt_Age_mid(1,1)<<" #terminator "<<endl;
     bodywtout.close();
-    cout<<" write wtatage.ss_new "<<endl;
+    if(show_MSY==1) cout<<" write wtatage.ss_new "<<endl;
+    }
 
     warning<<" N warnings: "<<N_warn<<endl;
     if(parm_adjust_method==3) warning<<"time-vary parms not bound checked"<<endl;
@@ -713,7 +722,9 @@ REPORT_SECTION
     save_gradients(gradients);
     for (int i = 1; i <= gradients.size(); i++) parm_gradients(i) = gradients(i);
 
-//  SS_Label_Info_13.1 #Write limited output to SS3.rep
+//  SS_Label_Info_13.1 #Write limited output to SS.rep
+  if(reportdetail>0)
+  {
   if(Svy_N>0) report<<" CPUE " <<surv_like<<endl;
   if(nobs_disc>0) report<<" Disc " <<disc_like<<endl;
   if(nobs_mnwt>0) report<<" MnWt " <<mnwt_like<<endl;
@@ -776,6 +787,7 @@ REPORT_SECTION
       for (gg=1;gg<=gender;gg++) report<<f<<"-"<<fleetname(f)<<" "<<gg<<" "<<sel_a(endyr,f,gg)<<endl;
     }
   }
+  }
 
 //  SS_Label_Info_13.2 #Call fxn write_bigoutput() as last_phase finishes and before doing Hessian
     if(last_phase()>0)
@@ -783,12 +795,16 @@ REPORT_SECTION
     save_for_report=1;
     save_gparm=0;
     y=styr;
+    cout<<"ready to do report"<<endl;
     get_initial_conditions();
     get_time_series();  //  in ADMB's report_section
     evaluate_the_objective_function();
     wrote_bigreport=0;
+    if(reportdetail>0)
+    {
     write_bigoutput();
     cout<<" finished writing bigoutput for last_phase in report section and before hessian "<<endl;
+    }
     save_for_report=0;
     SS2out.close();
     }

@@ -37,3 +37,4 @@ DATA_SECTION
 !!//  V3.30.11.00  2018-02-27  add copyright disclaimer
 !!//  V3.30.11.00  2018-02-27  reformat ss_summary.sso
 !!//  V3.30.11.00  2018-02-27  add totbio, smrybio, and total catch biomass to end of ss_summary.sso, but no se
+!!//  V3.30.11.00  2018-03-06  revise reportdetail so value of 0 omits nearly all output files

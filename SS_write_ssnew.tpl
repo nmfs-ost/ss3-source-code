@@ -1182,7 +1182,7 @@ FUNCTION void write_nucontrol()
   NuStart<<datfilename<<endl<<ctlfilename<<endl;
   NuStart<<readparfile<<" # 0=use init values in control file; 1=use ss.par"<<endl;
   NuStart<<rundetail<<" # run display detail (0,1,2)"<<endl;
-  NuStart<<reportdetail<<" # detailed age-structured reports in REPORT.SSO (0=low,1=high,2=low for data-limited) "<<endl;
+  NuStart<<reportdetail<<" # detailed output (0=minimal for data-limited, 1=high, 2=brief) "<<endl;
   NuStart<<docheckup<<" # write 1st iteration details to echoinput.sso file (0,1) "<<endl;
   NuStart<<Do_ParmTrace<<" # write parm values to ParmTrace.sso (0=no,1=good,active; 2=good,all; 3=every_iter,all_parms; 4=every,active)"<<endl;
   NuStart<<Do_CumReport<<" # write to cumreport.sso (0=no,1=like&timeseries; 2=add survey fits)"<<endl;

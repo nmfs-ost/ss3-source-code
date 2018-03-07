@@ -328,27 +328,26 @@ PROCEDURE_SECTION
     if( (sd_phase() || mceval_phase()) && (initial_params::mc_phase==0))
     {
 //  SS_Label_Info_7.6.1 #Call fxn Get_Benchmarks()
-      if(mceval_phase()==0) {show_MSY=1;}
+      if(mceval_phase()==0) {show_MSY=1;}  //  so only show details if not in mceval
+      if(show_MSY==1) cout<<"do benchmark and forecast if requested in sdphase"<<endl;
       if(Do_Benchmark>0)
       {
         Get_Benchmarks(show_MSY);
-        did_MSY=1;
       }
       else
       {Mgmt_quant(1)=SSB_virgin;}
-
+      did_MSY=1;   //  set flag to not calculate the benchmarks again in final section
 
 //  SS_Label_Info_7.6.2 #Call fxn Get_Forecast()
       if(Do_Forecast>0)
       {
-        report5<<"THIS FORECAST FOR PURPOSES OF STD REPORTING"<<endl;
+        if(show_MSY==1) report5<<"THIS FORECAST FOR PURPOSES OF STD REPORTING"<<endl;
         Get_Forecast();
-        did_MSY=1;
       }
 
 //  SS_Label_Info_7.7 #Call fxn Process_STDquant() to move calculated values into sd_containers
       Process_STDquant();
-      if(rundetail>0) cout<<"finished benchmark, forecast, and sdreporting"<<endl;
+      if(rundetail>0 && mceval_phase()==0) cout<<"finished benchmark, forecast, and sdreporting"<<endl;
     }  // end of things to do in std_phase
 
 //  SS_Label_Info_7.9 #Do screen output of procedure results from this iteration

@@ -728,7 +728,7 @@ FUNCTION void write_bigoutput()
   {
    for (y=styr-2;y<=YrMax;y++)
    {
-    if(y<=endyr && p==1) {Smry_Table(y)(1,8).initialize();  Smry_Table(y)(15,17).initialize();}
+//    if(y<=endyr && p==1) {Smry_Table(y)(1,8).initialize();  Smry_Table(y)(15,17).initialize();}
     for (s=1;s<=nseas;s++)
     {
     t = styr+(y-styr)*nseas+s-1;
@@ -762,8 +762,6 @@ FUNCTION void write_bigoutput()
          }
        }
      }
-
-
     } //close gmorph loop
     SS2out<<p<<" "<<y;
        if(y==styr-2)
@@ -796,9 +794,9 @@ FUNCTION void write_bigoutput()
 
     }
     SS2out<<" "<<Bio_Comp<<" "<<Num_Comp;
-    if(s==1 && y<=endyr) {Smry_Table(y,1)+=totbio; Smry_Table(y,2)+=smrybio;  Smry_Table(y,3)+=smrynum; Smry_Table(y,15)+=smryage;}  // already calculated for the forecast years
-    Smry_Table(y,7)=SSB_yr(y);
-    Smry_Table(y,8)=exp_rec(y,4);
+//    if(s==1 && y<=endyr) {Smry_Table(y,1)+=totbio; Smry_Table(y,2)+=smrybio;  Smry_Table(y,3)+=smrynum; Smry_Table(y,15)+=smryage;}  // already calculated for the forecast years
+//    Smry_Table(y,7)=SSB_yr(y);
+//    Smry_Table(y,8)=exp_rec(y,4);
     for (f=1;f<=Nfleet;f++)
     if(fleet_type(f)<=2)
     {
@@ -806,8 +804,7 @@ FUNCTION void write_bigoutput()
       {
         SS2out<<" "<<catch_fleet(t,f)<<" ";
         if(y<=endyr) {SS2out<<catch_ret_obs(f,t)<<" "<<Hrate(f,t);} else {SS2out<<" _ "<<Hrate(f,t);}
-        if(y<=endyr) {Smry_Table(y,4)+=catch_fleet(t,f,1); Smry_Table(y,5)+=catch_fleet(t,f,2); Smry_Table(y,6)+=catch_fleet(t,f,3);}
-
+//        if(y<=endyr) {Smry_Table(y,4)+=catch_fleet(t,f,1); Smry_Table(y,5)+=catch_fleet(t,f,2); Smry_Table(y,6)+=catch_fleet(t,f,3);}
       }
       else
       {SS2out<<" 0 0 0 0 0 0 0 0 ";}
@@ -3038,7 +3035,7 @@ FUNCTION void write_bigoutput()
 
 // ******************************************************
 //  GLOBAL_MSY with knife-edge age selection, then slot-age selection
-  if(Do_Benchmark>0 && wrote_bigreport==1 && reportdetail != 2)
+  if(Do_Benchmark>0 && wrote_bigreport==1 && reportdetail ==1)
   {
     y=styr-3;  //  stores the averaged
     yz=y;

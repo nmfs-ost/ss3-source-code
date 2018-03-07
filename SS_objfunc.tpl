@@ -1234,7 +1234,6 @@ FUNCTION void get_posteriors()
       NP++;  der_posts<<ParmLabel(NP)<<" ";
     }
     der_posts << endl;
-
     if(depletion_basis!=2) post_vecs<<"depletion_basis_is_not_=2;_so_info_below_is_not_B/Bmsy"<<endl;
     if(F_std_basis!=2) post_vecs<<"F_std_basis_is_not_=2;_so_info_below_is_not_F/Fmsy"<<endl;
     post_vecs<<"Endyr+1= "<<endyr+1<<endl;
