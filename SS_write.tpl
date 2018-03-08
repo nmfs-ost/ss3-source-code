@@ -316,8 +316,8 @@ FUNCTION void write_SS_summary()
   {
     NP++;
     SS_smry<<ParmLabel(NP)<<" "<<recdev(j)<<" ";
-    if(active(recdev_early)) {active_count++;  SS_smry<<CoVar(active_count,1);} else  SS_smry<<0.0;
-    SS_smry<<endl;
+    if(active(recdev_early)) {active_count++;  SS_smry<<CoVar(active_count,1)<<" Act ";} else {SS_smry<<0.0<<" Fix ";}
+    SS_smry<<(recdev(j)-recdev_LO)/(recdev_HI-recdev_LO+1.0e-6)<<endl;
   }
   }
 
@@ -327,8 +327,8 @@ FUNCTION void write_SS_summary()
   {
     NP++;
     SS_smry<<ParmLabel(NP)<<" "<<recdev(j)<<" ";
-    if(active(recdev1)||active(recdev2)) {active_count++;  SS_smry<<CoVar(active_count,1);} else  SS_smry<<0.0;
-    SS_smry<<endl;
+    if(active(recdev1)||active(recdev2)) {active_count++;  SS_smry<<CoVar(active_count,1)<<" Act ";} else {SS_smry<<0.0<<" Fix ";}
+    SS_smry<<(recdev(j)-recdev_LO)/(recdev_HI-recdev_LO+1.0e-6)<<endl;
   }
   }
 
@@ -338,16 +338,16 @@ FUNCTION void write_SS_summary()
   {
     NP++;
     SS_smry<<ParmLabel(NP)<<" "<<Fcast_recruitments(j)<<" ";
-    if(active(Fcast_recruitments)) {active_count++;  SS_smry<<CoVar(active_count,1);} else  SS_smry<<0.0;
-    SS_smry<<endl;
+    if(active(Fcast_recruitments)) {active_count++; SS_smry<<CoVar(active_count,1)<<" Act ";} else {SS_smry<<0.0<<" Fix ";}
+    SS_smry<<(Fcast_recruitments(j)-recdev_LO)/(recdev_HI-recdev_LO+1.0e-6)<<endl;
   }
 
   for (j=endyr+1;j<=YrMax;j++)
   {
     NP++;
     SS_smry<<ParmLabel(NP)<<" "<<Fcast_impl_error(j)<<" ";
-    if(active(Fcast_impl_error)) {active_count++;  SS_smry<<CoVar(active_count,1);} else  SS_smry<<0.0;
-    SS_smry<<endl;
+    if(active(Fcast_impl_error)) {active_count++;  SS_smry<<CoVar(active_count,1)<<" Act ";} else {SS_smry<<0.0<<" Fix ";}
+    SS_smry<<(Fcast_impl_error(j)-(-1.))/(1.0-(-1.0)+1.0e-6)<<endl;
   }
   }
 
@@ -358,8 +358,8 @@ FUNCTION void write_SS_summary()
   {
     NP++;
     SS_smry<<ParmLabel(NP)<<" "<<init_F(j)<<" ";
-    if(active(init_F(j))) {active_count++;  SS_smry<<CoVar(active_count,1);} else  SS_smry<<0.0;
-    SS_smry<<endl;
+    if(active(init_F(j))) {active_count++;  SS_smry<<CoVar(active_count,1)<<" Act ";} else {SS_smry<<0.0<<" Fix ";}
+    SS_smry<<(init_F(j)-init_F_LO(j))/(init_F_HI(j)-init_F_LO(j)+1.0e-6)<<endl;
   }
   }
 
@@ -370,8 +370,8 @@ FUNCTION void write_SS_summary()
   {
     NP++;
     SS_smry<<ParmLabel(NP)<<" "<<F_rate(j)<<" ";
-    if(active(F_rate(j))) {active_count++;  SS_smry<<CoVar(active_count,1);} else  SS_smry<<0.0;
-    SS_smry<<endl;
+    if(active(F_rate(j))) {active_count++;  SS_smry<<CoVar(active_count,1)<<" Act ";} else {SS_smry<<0.0<<" Fix ";}
+    SS_smry<<(F_rate(j)-0.)/(Fparm_max(j)-0+1.0e-6)<<endl;
   }
   }
 
@@ -382,8 +382,8 @@ FUNCTION void write_SS_summary()
   {
     NP++;
     SS_smry<<ParmLabel(NP)<<" "<<Q_parm(j)<<" ";
-    if(active(Q_parm(j))) {active_count++;  SS_smry<<CoVar(active_count,1);} else  SS_smry<<0.0;
-    SS_smry<<endl;
+    if(active(Q_parm(j))) {active_count++;  SS_smry<<CoVar(active_count,1)<<" Act ";} else {SS_smry<<0.0<<" Fix ";}
+    SS_smry<<(Q_parm(j)-Q_parm_LO(j))/(Q_parm_HI(j)-Q_parm_LO(j)+1.0e-6)<<endl;
   }
   }
 
@@ -393,8 +393,8 @@ FUNCTION void write_SS_summary()
   {
     NP++;
     SS_smry<<ParmLabel(NP)<<" "<<selparm(j)<<" ";
-    if(active(selparm(j))) {active_count++;  SS_smry<<CoVar(active_count,1);} else  SS_smry<<0.0;
-    SS_smry<<endl;
+    if(active(selparm(j))) {active_count++; SS_smry<<CoVar(active_count,1)<<" Act ";} else {SS_smry<<0.0<<" Fix ";}
+    SS_smry<<(selparm(j)-selparm_LO(j))/(selparm_HI(j)-selparm_LO(j)+1.0e-6)<<endl;
   }
 
   if(Do_TG>0)
@@ -404,8 +404,8 @@ FUNCTION void write_SS_summary()
   {
     NP++;
     SS_smry<<ParmLabel(NP)<<" "<<TG_parm(j)<<" ";
-    if(active(TG_parm(j))) {active_count++;  SS_smry<<CoVar(active_count,1);} else  SS_smry<<0.0;
-    SS_smry<<endl;
+    if(active(TG_parm(j))) {active_count++;  SS_smry<<CoVar(active_count,1)<<" Act ";} else {SS_smry<<0.0<<" Fix ";}
+    SS_smry<<(TG_parm(j)-TG_parm_LO(j))/(TG_parm_HI(j)-TG_parm_LO(j)+1.0e-6)<<endl;
   }
   }
 
@@ -418,10 +418,10 @@ FUNCTION void write_SS_summary()
     NP++;
     SS_smry<<ParmLabel(NP)<<" "<<parm_dev(i,j)<<" ";
     if(parm_dev_PH(i)>0) 
-      {active_count++;  SS_smry<<CoVar(active_count,1);}
+      {active_count++;  SS_smry<<CoVar(active_count,1)<<" ACT ";}
        else
-      {SS_smry<<0.0;}
-    SS_smry<<endl;
+      {SS_smry<<0.0<<" FIX ";}
+    SS_smry<<(parm_dev(i,j)-(-10.))/(10.-(-10)+1.0e-6)<<endl;
   }
   }
 

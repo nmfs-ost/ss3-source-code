@@ -405,7 +405,6 @@ FUNCTION void get_selectivity()
 
 
   //  SS_Label_Info_22.3.24 #case 24 size selectivity using double_normal_plateau and lots of bells and whistles
- /*  cannot be used with Pope's because can cause selex to be >1.0 */
           case 24:
           {
           if(seltype(f,3)<3 || (gg==1 && seltype(f,3)==3) || (gg==2 && seltype(f,3)==4))

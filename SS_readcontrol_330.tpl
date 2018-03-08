@@ -2424,6 +2424,15 @@
            ParCount++; ParmLabel+="SizeSpline_Val_"+NumLbl(s)+"_"+fleetname(f)+"("+NumLbl(f)+")";
          }
      }
+     else if (seltype(f,1)==24)  //  double_normal
+     {
+       ParCount++; ParmLabel+="Size_DblN_peak_"+fleetname(f)+"("+NumLbl(f)+")";
+       ParCount++; ParmLabel+="Size_DblN_top_logit_"+fleetname(f)+"("+NumLbl(f)+")";
+       ParCount++; ParmLabel+="Size_DblN_ascend_se_"+fleetname(f)+"("+NumLbl(f)+")";
+       ParCount++; ParmLabel+="Size_DblN_descend_se_"+fleetname(f)+"("+NumLbl(f)+")";
+       ParCount++; ParmLabel+="Size_DblN_start_logit_"+fleetname(f)+"("+NumLbl(f)+")";
+       ParCount++; ParmLabel+="Size_DblN_end_logit_"+fleetname(f)+"("+NumLbl(f)+")";
+     }
      else
      {
        for (j=1;j<=N_selparmvec(f);j++)
@@ -2553,6 +2562,15 @@
        {
          ParCount++; ParmLabel+="AgeSpline_Val_"+NumLbl(s)+"_"+fleetname(f-Nfleet)+"_"+NumLbl(f-Nfleet);
        }
+     }
+     else if (seltype(f,1)==20)
+     {
+       ParCount++; ParmLabel+="Age_DblN_peak_"+fleetname(f)+"("+NumLbl(f)+")";
+       ParCount++; ParmLabel+="Age_DblN_top_logit_"+fleetname(f)+"("+NumLbl(f)+")";
+       ParCount++; ParmLabel+="Age_DblN_ascend_se_"+fleetname(f)+"("+NumLbl(f)+")";
+       ParCount++; ParmLabel+="Age_DblN_descend_se_"+fleetname(f)+"("+NumLbl(f)+")";
+       ParCount++; ParmLabel+="Age_DblN_start_logit_"+fleetname(f)+"("+NumLbl(f)+")";
+       ParCount++; ParmLabel+="Age_DblN_end_logit_"+fleetname(f)+"("+NumLbl(f)+")";
      }
      else
      {
@@ -3848,7 +3866,6 @@
           else
           {p=3+N_knots+1+0.5*N_knots;}
 
-          echoinput<<" p "<<p<<endl;
           for (z=N_knots+1+3;z<=3+2*N_knots;z++)
           {
             a=Ip+z;
