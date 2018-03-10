@@ -77,13 +77,13 @@ b8a214f make a fix to data.ss_new
 c25101a more progress
 d7291c5 further progress on conditional read
 9cd67ae begin conditional read depending on version
-8c96f90 with Shepard SRR
+8c96f90 with Shepherd SRR
 f0442dd output looks good for yr, seas, month
 8e0baf1 working on arrays for keeping track of time
 2179d00 complete fix to lin_growth coding
 0a1bced working on fix in growth
-2da499f make corrections to Shepard SRR code
-bc78ed4 add Shepard SRR thx to Andre
+2da499f make corrections to Shepherd SRR code
+bc78ed4 add Shepherd SRR thx to Andre
 46aabc2 Finish test version of 3.30a
 01148d8 work on ss_new outputs
 1428c17 forecast - default is 1 year
@@ -758,9 +758,9 @@ commit 8c96f901ba14ea3cec3589044b2a4e8b7830e95f
 Author: RickMethot <richard.methot@noaa.gov>
 Date:   Fri Aug 29 11:37:00 2014 -0700
 
-    with Shepard SRR
+    with Shepherd SRR
     
-    adding SRR #8 with Shepard 3-parameter relationship.  Per Andre's math
+    adding SRR #8 with Shepherd 3-parameter relationship.  Per Andre's math
 
 commit f0442dd9180a3bad6a5770f8ecd324722efe4b57
 Author: RickMethot <richard.methot@noaa.gov>
@@ -790,13 +790,13 @@ commit 2da499f98bf7fb3030ebab739299c23a5cb5b27e
 Author: RickMethot <richard.methot@noaa.gov>
 Date:   Wed Jul 23 15:51:59 2014 -0700
 
-    make corrections to Shepard SRR code
+    make corrections to Shepherd SRR code
 
 commit bc78ed4814615a3c8b2dde9aa8ac26d6275aef57
 Author: RickMethot <richard.methot@noaa.gov>
 Date:   Tue Jul 22 22:34:17 2014 -0700
 
-    add Shepard SRR thx to Andre
+    add Shepherd SRR thx to Andre
 
 commit 46aabc25564050126eb0ad41b7d6af00de738784
 Author: RickMethot <richard.methot@noaa.gov>

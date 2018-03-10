@@ -728,7 +728,7 @@ FUNCTION void write_bigoutput()
   {
    for (y=styr-2;y<=YrMax;y++)
    {
-//    if(y<=endyr && p==1) {Smry_Table(y)(1,8).initialize();  Smry_Table(y)(15,17).initialize();}
+    if(y<=endyr && p==1) {Smry_Table(y,1)=0.; Smry_Table(y)(15,17).initialize();}
     for (s=1;s<=nseas;s++)
     {
     t = styr+(y-styr)*nseas+s-1;
@@ -794,9 +794,7 @@ FUNCTION void write_bigoutput()
 
     }
     SS2out<<" "<<Bio_Comp<<" "<<Num_Comp;
-//    if(s==1 && y<=endyr) {Smry_Table(y,1)+=totbio; Smry_Table(y,2)+=smrybio;  Smry_Table(y,3)+=smrynum; Smry_Table(y,15)+=smryage;}  // already calculated for the forecast years
-//    Smry_Table(y,7)=SSB_yr(y);
-//    Smry_Table(y,8)=exp_rec(y,4);
+    if(s==1 && y<=endyr) {Smry_Table(y,1)+=totbio; Smry_Table(y,15)+=smryage;}  // already calculated for the forecast years
     for (f=1;f<=Nfleet;f++)
     if(fleet_type(f)<=2)
     {
@@ -843,7 +841,8 @@ FUNCTION void write_bigoutput()
      SS2out<<(Smry_Table(y,14)/Recr_virgin)<<" "<<Smry_Table(y,13)<<" ";
      if(STD_Yr_Reverse_Dep(y)>0) {SS2out<<depletion(STD_Yr_Reverse_Dep(y));} else {SS2out<<" _ ";}
      if(y>=styr && STD_Yr_Reverse_F(y)>0 ) {SS2out<<" "<<F_std(STD_Yr_Reverse_F(y));} else {SS2out<<" _ ";}
-     SS2out<<" & "<<Smry_Table(y)(1,3)<<" "<<Smry_Table(y,15)/Smry_Table(y,3)<<" "<<Smry_Table(y)(4,6)<<" "<<Smry_Table(y,17)/(Smry_Table(y,16)+1.0e-06)<<" "<<Smry_Table(y)(7,8)<<" "<<Smry_Table(y,5)/Smry_Table(y,2);
+     SS2out<<" & "<<Smry_Table(y)(1,3)<<" "<<Smry_Table(y,15)/Smry_Table(y,3)<<" "<<Smry_Table(y)(4,6)<<" "<<Smry_Table(y,17)/(Smry_Table(y,16)+1.0e-06);
+     SS2out<<" "<<SSB_yr(y)<<" "<<exp_rec(y,4)<<" "<<Smry_Table(y,5)/Smry_Table(y,2);
      SS2out<<" & "<<Smry_Table(y)(21,20+gmorph)<<" "<<Smry_Table(y)(21+gmorph,20+2*gmorph)<<" "<<annual_catch(y)<<" "<<annual_F(y)<<endl;
    } // end year loop
 // end SPR time series
@@ -906,22 +905,41 @@ FUNCTION void write_bigoutput()
    if(n_rmse(3)>0. && rmse(3)>0.) rmse(3) = sqrt(rmse(3)/n_rmse(3));  //rmse during early period
    if(n_rmse(3)>0.) rmse(4) = rmse(4)/n_rmse(3);  // mean biasadj during early period
 
-    dvariable Shepard_c;
-    dvariable Shepard_c2;
-    dvariable Hupper;
-    if(SR_fxn==8)
-    {
-      Shepard_c=SR_parm(3);
-      Shepard_c2=pow(0.2,Shepard_c);
-      Hupper=1.0/(5.0*Shepard_c2);
-      temp=0.2+(SR_parm(2)-0.2)/(0.8)*(Hupper-0.2);
-    }
 //  SPAWN-RECR: output to report.sso
+  dvariable steepness=SR_parm(2);
+  if(SR_fxn==9)  steepness=(0.8)/(1.0+exp(-SR_parm(2)));
+  if(SR_fxn==10) steepness = 0.2 + (10.0 - 0.2)/(1+exp(-SR_parm_work(2)));
   SS2out<<endl<<"SPAWN_RECRUIT Function: "<<SR_fxn<<" _ _ _ _ _ _"<<endl<<
   SR_parm(1)<<" Ln(R0) "<<mfexp(SR_parm(1))<<endl<<
-  SR_parm(2)<<" steep"<<endl<<
+  steepness<<" steep"<<endl<<
   Bmsy/SSB_virgin<<" Bmsy/Bzero ";
-  if(SR_fxn==8) SS2out<<Shepard_c<<" Shepard_c "<<Hupper<<" steepness_limit "<<temp<<" Adjusted_steepness";
+  if(SR_fxn==8)
+  {
+    dvariable Shepherd_c;
+    dvariable Shepherd_c2;
+    dvariable Hupper;
+    Shepherd_c=SR_parm(3);
+    Shepherd_c2=pow(0.2,Shepherd_c);
+    Hupper=1.0/(5.0*Shepherd_c2);
+    temp=0.2+(SR_parm(2)-0.2)/(0.8)*(Hupper-0.2);
+    SS2out<<" Shepherd_c: "<<Shepherd_c<<" steepness_limit: "<<Hupper<<" Adjusted_steepness: "<<temp;
+  }
+  else if(SR_fxn==9)
+  {
+    dvariable Shepherd_c;
+    dvariable Shepherd_c2;
+    dvariable Hupper;
+    Shepherd_c=exp(SR_parm(3));
+    Shepherd_c2=pow(0.2,Shepherd_c);
+    Hupper=1.0/(5.0*Shepherd_c2);
+    temp=0.2+(steepness-0.2)/(0.8)*(Hupper-0.2);
+    SS2out<<" Shepherd_c: "<<Shepherd_c<<" steepness_limit: "<<Hupper<<" Adjusted_steepness: "<<temp;
+  }
+  else if(SR_fxn==10)
+  {
+    SS2out<<" Ricker_Power: "<<exp(SR_parm_work(3));
+  }
+  
   SS2out<<endl;
   SS2out<<sigmaR<<" sigmaR"<<endl;
   SS2out<<init_equ_steepness<<"  # 0/1 to use steepness in initial equ recruitment calculation"<<endl;

@@ -7,8 +7,8 @@ FUNCTION dvariable Spawn_Recr(const prevariable& SSB_virgin_adj, const prevariab
     dvariable SSB_BH1;
     dvariable recdev_offset;
     dvariable steepness;
-    dvariable Shepard_c;
-    dvariable Shepard_c2;
+    dvariable Shepherd_c;
+    dvariable Shepherd_c2;
     dvariable Hupper;
     dvariable steep2;
     dvariable SSB_curr_adj;
@@ -66,9 +66,9 @@ FUNCTION dvariable Spawn_Recr(const prevariable& SSB_virgin_adj, const prevariab
 //  SS_Label_43.3.6  Beverton-Holt, with constraint to have constant R about Bzero
       case 6: //Beverton-Holt constrained
       {
+        steepness=SR_parm_work(2);
         alpha = 4.0 * steepness*Recr_virgin / (5.*steepness-1.);
         beta = (SSB_virgin_adj*(1.-steepness)) / (5.*steepness-1.);
-        steepness=SR_parm_work(2);
         if(SSB_curr_adj>SSB_virgin_adj) {SSB_BH1=SSB_virgin_adj;} else {SSB_BH1=SSB_curr_adj;}
         NewRecruits=(4.*steepness*Recr_virgin_adj*SSB_BH1) / (SSB_virgin_adj*(1.-steepness)+(5.*steepness-1.)*SSB_BH1);
         break;
@@ -111,31 +111,41 @@ FUNCTION dvariable Spawn_Recr(const prevariable& SSB_virgin_adj, const prevariab
         break;
       }
 
-//  SS_Label_43.3.8  Shepard
-      case 8:  // Shepard 3-parameter SRR.  per Punt document at PFMC
+//  SS_Label_43.3.8  Shepherd
+      case 8:  // Shepherd 3-parameter SRR. per Punt & Cope 2017
       {
-        steepness=SR_parm_work(2);
-        Shepard_c=SR_parm_work(3);
-        Shepard_c2=pow(0.2,Shepard_c);
-        Hupper=1.0/(5.0*Shepard_c2);
-        steep2=0.2+(steepness-0.2)/(0.8)*(Hupper-0.2);
+        Shepherd_c=SR_parm_work(3);
+        Shepherd_c2=pow(0.2,SR_parm_work(3));
+        Hupper=1.0/(5.0*Shepherd_c2);
+        steepness=0.2+(SR_parm_work(2)-0.2)/(0.8)*(Hupper-0.2);
         temp=(SSB_curr_adj)/(SSB_virgin_adj);
-        NewRecruits =  (5.*steep2*Recr_virgin_adj*(1.-Shepard_c2)*temp) /
-        (1.0 - 5.0*steep2*Shepard_c2 + (5.*steep2-1.)*pow(temp,Shepard_c));
+        NewRecruits =  (5.*steepness*Recr_virgin_adj*(1.-Shepherd_c2)*temp) /
+        (1.0 - 5.0*steepness*Shepherd_c2 + (5.*steepness-1.)*pow(temp,Shepherd_c));
         break;
       }
 
-//  SS_Label_43.3.8  Shepard
-      case 9:  // re-parameterizedShepard 3-parameter SRR.  per Punt document at PFMC
+//  SS_Label_43.3.8  Shepherd
+      case 9:  // re-parameterizedShepherd 3-parameter SRR.  per Punt & Cope 2017
       {
-        steepness=(0.8)/(1.0+exp(-SR_parm_work(2)));
-        Shepard_c=exp(SR_parm_work(3));
-        Shepard_c2=pow(0.2,Shepard_c);
-        Hupper=1.0/(5.0*Shepard_c2);
-        steep2=0.20001+(steepness-0.2)/(0.8)*(Hupper-0.2);
+        Shepherd_c=exp(SR_parm_work(3));
+        Shepherd_c2=pow(0.2,exp(SR_parm_work(3)));
+        Hupper=1.0/(5.0*Shepherd_c2);
+//        steep2=(0.8)/(1.0+exp(-SR_parm_work(2)));
+        steepness=0.2+((0.8)/(1.0+exp(-SR_parm_work(2)))-0.2)/(0.8)*(Hupper-0.2);
         temp=(SSB_curr_adj)/(SSB_virgin_adj);
-        NewRecruits =  (5.*steep2*Recr_virgin_adj*(1.-Shepard_c2)*temp) /
-        (1.0 - 5.0*steep2*Shepard_c2 + (5.*steep2-1.)*pow(temp,Shepard_c));
+        NewRecruits =  (5.*steepness*Recr_virgin_adj*(1.-Shepherd_c2)*temp) /
+        (1.0 - 5.0*steepness*Shepherd_c2 + (5.*steepness-1.)*pow(temp,Shepherd_c));
+        break;
+      }
+//  SS_Label_43.3.8  Ricker-power
+      case 10:  // Ricker power 3-parameter SRR.  per Punt & Cope 2017
+      {
+        steepness = 0.2 + (10.0 - 0.2)/(1+exp(-SR_parm_work(2)));
+        dvariable RkrPower=exp(SR_parm_work(3));
+        temp=SSB_curr_adj/SSB_virgin_adj;
+        dvariable RkrTop =  log(5.0*steepness) * pow((1.0-temp),RkrPower) / pow(0.8,RkrPower);
+        NewRecruits = Recr_virgin_adj * temp * exp(RkrTop);
+        NewRecruits = posfun(NewRecruits,0.0001,CrashPen);
         break;
       }
     }
@@ -211,7 +221,7 @@ FUNCTION dvariable Spawn_Recr(const prevariable& SSB_virgin_adj, const prevariab
 //********************************************************************
  /*  SS_Label_FUNCTION 44 Equil_Spawn_Recr_Fxn */
 //  SPAWN-RECR:   function  Equil_Spawn_Recr_Fxn
-FUNCTION dvar_vector Equil_Spawn_Recr_Fxn(const prevariable &steepness, const prevariable &SRparm3, 
+FUNCTION dvar_vector Equil_Spawn_Recr_Fxn(const prevariable &SRparm2, const prevariable &SRparm3, 
          const prevariable& SSB_virgin, const prevariable& Recr_virgin, const prevariable& SPR_temp)
   {
     RETURN_ARRAYS_INCREMENT();
@@ -219,13 +229,15 @@ FUNCTION dvar_vector Equil_Spawn_Recr_Fxn(const prevariable &steepness, const pr
     dvariable B_equil;  
     dvariable R_equil;
     dvariable temp;
+    dvariable steepness;
     dvariable join;
-    dvariable Shepard_c;
-    dvariable Shepard_c2;
+    dvariable Shepherd_c;
+    dvariable Shepherd_c2;
     dvariable SRZ_0;
     dvariable SRZ_max;
     dvariable SRZ_surv;
 
+    steepness=SRparm2;  //  common usage but some different
 //  SS_Label_44.1  calc equilibrium SpawnBio and Recruitment from input SPR_temp, which is spawning biomass per recruit at some given F level
     switch(SR_fxn)
     {
@@ -292,13 +304,12 @@ FUNCTION dvar_vector Equil_Spawn_Recr_Fxn(const prevariable &steepness, const pr
         break;
       }
 
-//  SS_Label_44.1.8  3 parameter Shepard
-      case 8:  // Shepard
+//  SS_Label_44.1.8  3 parameter Shepherd
+      case 8:  // Shepherd
       {
         dvariable Shep_top;
         dvariable Shep_bot;
         dvariable Hupper;
-        dvariable steep2;
         dvariable Shep_top2;
 //  Andre's FORTRAN
 //        TOP = 5*Steep*(1-0.2**POWER)*SPR/SPRF0-(1-5*Steep*0.2**POWER)
@@ -306,24 +317,23 @@ FUNCTION dvar_vector Equil_Spawn_Recr_Fxn(const prevariable &steepness, const pr
 //       REC = (TOP/BOT)**(1.0/POWER)*SPRF0/SPR
 // Power = exp(logC);
 // Hupper = 1.0/(5.0 * pow(0.2,Power));
-        Shepard_c=SRparm3;
-        Shepard_c2=pow(0.2,Shepard_c);
-        Hupper=1.0/(5.0*Shepard_c2);
-        steep2=0.2+(steepness-0.2)/(0.8)*(Hupper-0.2);
-        Shep_top=5.0*steep2*(1.0-Shepard_c2)*(SPR_temp*Recr_virgin)/SSB_virgin-(1.0-5.0*steep2*Shepard_c2);
-        Shep_bot=5.0*steep2-1.0;
+        Shepherd_c=SRparm3;
+        Shepherd_c2=pow(0.2,SRparm3);
+        Hupper=1.0/(5.0*Shepherd_c2);
+        steepness=0.2+(SRparm2-0.2)/(0.8)*(Hupper-0.2);
+        Shep_top=5.0*steepness*(1.0-Shepherd_c2)*(SPR_temp*Recr_virgin)/SSB_virgin-(1.0-5.0*steepness*Shepherd_c2);
+        Shep_bot=5.0*steepness-1.0;
         Shep_top2=posfun(Shep_top,0.001,temp);  
-        R_equil=(SSB_virgin/SPR_temp) * pow((Shep_top2/Shep_bot),(1.0/Shepard_c));
+        R_equil=(SSB_virgin/SPR_temp) * pow((Shep_top2/Shep_bot),(1.0/SRparm3));
         B_equil=R_equil*SPR_temp;
         break;
       }
 
-      case 9:  // re-parameterized Shepard
+      case 9:  // re-parameterized Shepherd
       {
         dvariable Shep_top;
         dvariable Shep_bot;
         dvariable Hupper;
-        dvariable steep2;
         dvariable Shep_top2;
 //  Andre's FORTRAN
 //        TOP = 5*Steep*(1-0.2**POWER)*SPR/SPRF0-(1-5*Steep*0.2**POWER)
@@ -331,15 +341,35 @@ FUNCTION dvar_vector Equil_Spawn_Recr_Fxn(const prevariable &steepness, const pr
 //       REC = (TOP/BOT)**(1.0/POWER)*SPRF0/SPR
 // Power = exp(logC);
 // Hupper = 1.0/(5.0 * pow(0.2,Power));
-        Shepard_c=exp(SRparm3);
-        Shepard_c2=pow(0.2,Shepard_c);
-        Hupper=1.0/(5.0*Shepard_c2);
-        steep2=0.20001+((0.8)/(1.0+exp(-steepness))-0.2)/(0.8)*(Hupper-0.2);
+        Shepherd_c=exp(SRparm3);
+        Shepherd_c2=pow(0.2,Shepherd_c);
+        Hupper=1.0/(5.0*Shepherd_c2);
+        steepness=0.20001+((0.8)/(1.0+exp(-SRparm2))-0.2)/(0.8)*(Hupper-0.2);
 //        steep2=0.20001+(steepness-0.2)/(0.8)*(Hupper-0.2);
-        Shep_top=5.0*steep2*(1.0-Shepard_c2)*(SPR_temp*Recr_virgin)/SSB_virgin-(1.0-5.0*steep2*Shepard_c2);
-        Shep_bot=5.0*steep2-1.0;
+        Shep_top=5.0*steepness*(1.0-Shepherd_c2)*(SPR_temp*Recr_virgin)/SSB_virgin-(1.0-5.0*steepness*Shepherd_c2);
+        Shep_bot=5.0*steepness-1.0;
         Shep_top2=posfun(Shep_top,0.001,temp);  
-        R_equil=(SSB_virgin/SPR_temp) * pow((Shep_top2/Shep_bot),(1.0/Shepard_c));
+        R_equil=(SSB_virgin/SPR_temp) * pow((Shep_top2/Shep_bot),(1.0/Shepherd_c));
+        B_equil=R_equil*SPR_temp;
+        break;
+      }
+
+//  SS_Label_43.3.8  Ricker-power
+      case 10:  // Ricker power 3-parameter SRR.  per Punt & Cope 2017
+      {
+//   Hupper = 10.0;
+//   Steep = 0.2 + (Hupper - 0.2)/(1+exp(-1*Steep2))+1.0e-5;
+//   Top =  pow(0.8,Power)*log(SPRF0/SPR)/log(5.0*Steep);
+//   Top = posfun(Top,0.000001,Penal);
+//   Recs = (SPRF0/SPR) * (1.0 - pow(Top,1.0/Power));
+//   Recs = posfun(Recs,0.0001,Penal);
+//   if (Recs < 0) Rec2 = 0; else Rec2 = Recs;
+        steepness = 0.2 + (10.0 - 0.2)/(1+exp(-SR_parm_work(2)));
+        dvariable RkrPower=exp(SR_parm_work(3));
+        temp=SSB_virgin/(SPR_temp*Recr_virgin);
+        dvariable RkrTop =  pow(0.8,RkrPower)*log(temp)/log(5.0*steepness);
+        RkrTop = posfun(RkrTop,0.000001,CrashPen);
+        R_equil = temp *Recr_virgin * (1.0 - pow(RkrTop,1.0/RkrPower));
         B_equil=R_equil*SPR_temp;
         break;
       }

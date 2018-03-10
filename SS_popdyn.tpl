@@ -441,7 +441,7 @@ FUNCTION void get_time_series()
         {
           for (p=1;p<=pop;p++)
           {
-            smrybio+=natage(t,p,g)(Smry_Age,nages)*Wt_Age_beg(s,g)(Smry_Age,nages);
+            smrybio+=natage(t,p,g)(Smry_Age,nages)*Save_Wt_Age(t,g)(Smry_Age,nages);
             smrynum+=sum(natage(t,p,g)(Smry_Age,nages));   //sums to accumulate across platoons and settlements
           }
         }

@@ -1605,7 +1605,7 @@
   int N_SRparm3
   int init_equ_steepness
   int sigmaR_dendep  //    future feature:  0/1 to make realized sigmaR a function of SR curvature"<<endl;
-  !!echoinput<<SR_fxn<<" #_SR_function: 1=null; 2=Ricker; 3=std_B-H; 4=SCAA; 5=Hockey; 6=B-H_flattop; 7=Survival_3Parm; 8=Shepard "<<endl;
+  !!echoinput<<SR_fxn<<" #_SR_function: 1=null; 2=Ricker; 3=std_B-H; 4=SCAA; 5=Hockey; 6=B-H_flattop; 7=Survival_3Parm; 8=Shepherd "<<endl;
   !!N_SRparm2=N_SRparm(SR_fxn)+3;
 
   matrix SR_parm_1(1,N_SRparm2,1,14)
@@ -1748,10 +1748,10 @@
       ParmLabel+="SR_surv_Beta";
       break;
     }
-    case 8:  // shepard
+    case 8:  // Shepherd
     {
       ParmLabel+="SR_steepness";
-      ParmLabel+="SR_Shepard_c";
+      ParmLabel+="SR_Shepherd_c";
       break;
     }
   }
