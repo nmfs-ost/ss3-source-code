@@ -46,6 +46,7 @@ GLOBALS_SECTION
 
 //  SS_Label_Info_10.2 #Define some adstring variables
   adstring_array ParmLabel;  // extendable array to hold the parameter labels
+  adstring_array Parm_info;  // extendable array to hold the parameter labels
   adstring_array retParmLabel;  // extendable array for the 3.24 -> 3.30 retention parameter labels
   adstring_array fleetname;
   adstring fleetnameread;
@@ -75,6 +76,7 @@ GLOBALS_SECTION
 //  SS_Label_Info_10.3  #start random number generator with seed based on time
   random_number_generator radm(long(time(&start)));
 
+  std::vector<int> Parm_minmax;
   std::vector<dvector> catch_read;
   std::vector<dvector> Svy_data;
   std::vector<dvector> discdata;

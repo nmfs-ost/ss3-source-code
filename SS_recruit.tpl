@@ -44,7 +44,8 @@ FUNCTION dvariable Spawn_Recr(const prevariable& SSB_virgin_adj, const prevariab
         steepness=SR_parm_work(2);
         alpha = 4.0 * steepness*Recr_virgin / (5.*steepness-1.);
         beta = (SSB_virgin_adj*(1.-steepness)) / (5.*steepness-1.);
-        NewRecruits =  (4.*steepness*Recr_virgin_adj*SSB_curr_adj) / (SSB_virgin_adj*(1.-steepness)+(5.*steepness-1.)*SSB_curr_adj);
+        NewRecruits =  (4.*steepness*Recr_virgin_adj*SSB_curr_adj) /
+                       (SSB_virgin_adj*(1.-steepness)+(5.*steepness-1.)*SSB_curr_adj);
         break;
       }
 //  SS_Label_43.3.4  constant expected recruitment
@@ -124,28 +125,16 @@ FUNCTION dvariable Spawn_Recr(const prevariable& SSB_virgin_adj, const prevariab
         break;
       }
 
-//  SS_Label_43.3.8  Shepherd
-      case 9:  // re-parameterizedShepherd 3-parameter SRR.  per Punt & Cope 2017
-      {
-        Shepherd_c=exp(SR_parm_work(3));
-        Shepherd_c2=pow(0.2,exp(SR_parm_work(3)));
-        Hupper=1.0/(5.0*Shepherd_c2);
-//        steep2=(0.8)/(1.0+exp(-SR_parm_work(2)));
-        steepness=0.2+((0.8)/(1.0+exp(-SR_parm_work(2)))-0.2)/(0.8)*(Hupper-0.2);
-        temp=(SSB_curr_adj)/(SSB_virgin_adj);
-        NewRecruits =  (5.*steepness*Recr_virgin_adj*(1.-Shepherd_c2)*temp) /
-        (1.0 - 5.0*steepness*Shepherd_c2 + (5.*steepness-1.)*pow(temp,Shepherd_c));
-        break;
-      }
 //  SS_Label_43.3.8  Ricker-power
-      case 10:  // Ricker power 3-parameter SRR.  per Punt & Cope 2017
+      case 9:  // Ricker power 3-parameter SRR.  per Punt & Cope 2017
       {
-        steepness = 0.2 + (10.0 - 0.2)/(1+exp(-SR_parm_work(2)));
-        dvariable RkrPower=exp(SR_parm_work(3));
+        steepness = SR_parm_work(2);
+        dvariable RkrPower=SR_parm_work(3);
         temp=SSB_curr_adj/SSB_virgin_adj;
-        dvariable RkrTop =  log(5.0*steepness) * pow((1.0-temp),RkrPower) / pow(0.8,RkrPower);
-        NewRecruits = Recr_virgin_adj * temp * exp(RkrTop);
-        NewRecruits = posfun(NewRecruits,0.0001,CrashPen);
+        temp2 = posfun(1.0-temp,0.001,CrashPen);
+        temp=1.0-temp2;  //  Rick's new line to stabilize recruitment at R0 if B>B0
+        dvariable RkrTop =  log(5.0*steepness) * pow(temp2,RkrPower) / pow(0.8,RkrPower);
+        NewRecruits = Recr_virgin_adj * temp * mfexp(RkrTop);
         break;
       }
     }
@@ -163,7 +152,6 @@ FUNCTION dvariable Spawn_Recr(const prevariable& SSB_virgin_adj, const prevariab
         gg=y - (styr+(int((y-styr)/recdev_cycle))*recdev_cycle)+1;
         NewRecruits*=mfexp(recdev_cycle_parm(gg));
       }
-      
       NewRecruits*=mfexp(regime_change);  //  adjust for regime which includes env and block effects; and forecast adjustments
       exp_rec(y,2)=NewRecruits;  //  adjusted for env and special forecast conditions
       if(SR_fxn!=4) NewRecruits*=mfexp(-biasadj(y)*half_sigmaRsq);     // bias adjustment
@@ -297,10 +285,8 @@ FUNCTION dvar_vector Equil_Spawn_Recr_Fxn(const prevariable &SRparm2, const prev
         SRZ_0=log(1.0/(SSB_virgin/Recr_virgin));
         SRZ_max=SRZ_0+steepness*(0.0-SRZ_0);
         B_equil = SSB_virgin * (1. - (log(1./SPR_temp) - SRZ_0)/pow((SRZ_max - SRZ_0),(1./SRparm3) ));
-        SRZ_surv=mfexp((1.-pow((B_equil/SSB_virgin),SR_parm_work(3)) )*(SRZ_max-SRZ_0)+SRZ_0);  //  survival
+        SRZ_surv=mfexp((1.-pow((B_equil/SSB_virgin),SRparm3) )*(SRZ_max-SRZ_0)+SRZ_0);  //  survival
         R_equil=B_equil*SRZ_surv;
-        warning<<steepness<<" "<<SRparm3<<" "<<SR_parm_work(3)<<" SRZ_0 "<<SRZ_0<<" SRZ_max "<<SRZ_max<<
-        " SPR_temp "<<SPR_temp<<" SRZ_surv "<<SRZ_surv<<" SSB "<<SSB_virgin<<" "<<B_equil<<" Rec "<<Recr_virgin<<" "<<R_equil<<endl;
         break;
       }
 
@@ -329,7 +315,21 @@ FUNCTION dvar_vector Equil_Spawn_Recr_Fxn(const prevariable &SRparm2, const prev
         break;
       }
 
-      case 9:  // re-parameterized Shepherd
+//  SS_Label_43.3.8  Ricker-power
+      case 9:  // Ricker power 3-parameter SRR.  per Punt & Cope 2017
+      {
+        steepness = SRparm2;
+        dvariable RkrPower=SRparm3;
+        temp=SSB_virgin/(SPR_temp*Recr_virgin);
+        dvariable RkrTop =  pow(0.8,RkrPower)*log(temp)/log(5.0*steepness);
+        RkrTop = posfun(RkrTop,0.000001,CrashPen);
+        R_equil = temp *Recr_virgin * (1.0 - pow(RkrTop,1.0/RkrPower));
+        B_equil=R_equil*SPR_temp;
+        break;
+      }
+
+ /*
+      case 19:  // re-parameterized Shepherd
       {
         dvariable Shep_top;
         dvariable Shep_bot;
@@ -355,7 +355,7 @@ FUNCTION dvar_vector Equil_Spawn_Recr_Fxn(const prevariable &SRparm2, const prev
       }
 
 //  SS_Label_43.3.8  Ricker-power
-      case 10:  // Ricker power 3-parameter SRR.  per Punt & Cope 2017
+      case 20:  // Ricker power 3-parameter SRR.  per Punt & Cope 2017
       {
 //   Hupper = 10.0;
 //   Steep = 0.2 + (Hupper - 0.2)/(1+exp(-1*Steep2))+1.0e-5;
@@ -373,7 +373,7 @@ FUNCTION dvar_vector Equil_Spawn_Recr_Fxn(const prevariable &SRparm2, const prev
         B_equil=R_equil*SPR_temp;
         break;
       }
-
+ */
     }
     Equil_Spawn_Recr_Calc(1)=B_equil;
     Equil_Spawn_Recr_Calc(2)=R_equil;

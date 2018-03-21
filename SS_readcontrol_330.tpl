@@ -25,6 +25,14 @@
   }
  END_CALCS
 
+//  when a parameter is defined and its label (hence usage) is created,
+//  the value of its min, max, init, prior have not yet been read
+//  so when it gets created, need to pushback a code to indicate what special conditions affect it
+//  also may want to save indicator of whether the parameter is multiplier, logit, etc.
+//  so pushback a code to the ivector Parm_minmax
+//  and add a string to the adstring_array Parm_info
+  ivector minmax_types(1,10)  //  set of canned min-max types
+ 
 !!//  SS_Label_Info_4.2 #Read info for growth patterns, gender, settlement events, platoons
   init_int WTage_rd  // 0 means do not read wtatage.ss; 1 means read and use wtatage.ss and also read and use growth parameters
                      //  future option 2 will suppress reading and use of growth
@@ -505,33 +513,28 @@
 
 
 !!//  SS_Label_Info_4.4 #Define the time blocks for time-varying parameters
-  int k1
-  int k2
-  int k3
-  init_int N_Block_Designs                      // read N block designs
-  !!echoinput<<N_Block_Designs<<" N_Block_Designs"<<endl;
-  init_ivector Nblk(1,N_Block_Designs)    // N blocks in each design
+  int N_Block_Designs                      // read N block designs
+  ivector Nblk
+  imatrix Block_Design
  LOCAL_CALCS
-  if(N_Block_Designs>0) echoinput<<Nblk<<" N_Blocks_per design"<<endl;
-  k1=N_Block_Designs;
-  if(k1==0) k1=1;
- END_CALCS
-
-  ivector Nblk2(1,k1)   //  vector to create ragged array of dimensions for block matrix
- LOCAL_CALCS
-  Nblk2=2;
-  if(N_Block_Designs>0) Nblk2=Nblk + Nblk;
- END_CALCS
-  init_imatrix Block_Design(1,N_Block_Designs,1,Nblk2)  // read the ending year for each block
-
- LOCAL_CALCS
+  *(ad_comm::global_datafile) >> N_Block_Designs;
+  echoinput<<N_Block_Designs<<" N_Block_Designs"<<endl;
   if(N_Block_Designs>0)
   {
-    echoinput<<" read block info "<<endl<<Block_Design<<endl;
-    for (j=1;j<=N_Block_Designs;j++)
+    Nblk.allocate(1,N_Block_Designs);
+    *(ad_comm::global_datafile) >>Nblk(1,N_Block_Designs);
+    echoinput<<Nblk<<" N_Blocks_per design"<<endl;
+
+    ivector Nblk2;   //  temporary vector to create ragged array of dimensions for block matrix
+    Nblk2.allocate(1,N_Block_Designs);
+    Nblk2=Nblk + Nblk;
+    Block_Design.allocate(1,N_Block_Designs,1,Nblk2);
+    for(j=1;j<=N_Block_Designs;j++)
     {
+      *(ad_comm::global_datafile) >> Block_Design(j)(1,Nblk2(j));
+      echoinput<<" block design #: "<<j<<"  read year pairs: "<<Block_Design(j)<<endl;
       a=-1;
-      for (k=1;k<=Nblk2(j)/2;k++)
+      for (k=1;k<=Nblk(j);k++)
       {
         a+=2;
         if(Block_Design(j,a+1)<Block_Design(j,a)) {N_warn++; cout<<" EXIT - see warning "<<endl; warning<<"Block:"<<j<<" "<<k<<" ends before it starts; fatal error"<<endl; exit(1);}
@@ -540,9 +543,13 @@
         if(Block_Design(j,a)>retro_yr+1) {N_warn++; warning<<"Block:"<<j<<" "<<k<<" starts after retroyr+1; do not estimate "<<endl;}
         if(Block_Design(j,a+1)>retro_yr+1) {N_warn++; warning<<"Block:"<<j<<" "<<k<<" ends in: "<<Block_Design(j,a+1)<<" after retroyr+1:  "<<retro_yr+1<<endl;}
         if(Block_Design(j,a+1)>YrMax) {N_warn++; warning<<"Block:"<<j<<" "<<k<<" ends in: "<<Block_Design(j,a+1)<<" reset to YrMax:  "<<YrMax<<endl;Block_Design(j,a+1)=YrMax;}
-
       }
     }
+  }
+  else
+  {
+    Nblk.allocate(1,1);
+    Block_Design.allocate(1,1,1,1);
   }
  END_CALCS
 
@@ -850,6 +857,8 @@
   // if(gender==2) femfrac(N_GP+1,N_GP+N_GP)=1.-fracfemale;
 
   ParCount=0;
+  Parm_minmax.push_back (0);  // to start real info at index "1" to align with ParCount
+  
 //  retParCount=-1;   // for 3.24 -> 3.30 dome-shaped retention  replace with ivector N_retparm()
 
 //  SS_Label_Info_4.5.3 #Set up indexing and parameter names for MG parameters
@@ -864,14 +873,22 @@
         onenum="    ";
         sprintf(onenum, "%d", k);
         ParmLabel+="NatM_p_"+onenum+"_"+GenderLbl(gg)+GP_Lbl(gp);
+        Parm_info+="val";
+        Parm_minmax.push_back (3);
       }
       switch (Grow_type)
       {
         case 1:
         {
           ParmLabel+="L_at_Amin_"+GenderLbl(gg)+GP_Lbl(gp);
+          Parm_info+="val";
+          Parm_minmax.push_back (3);
           ParmLabel+="L_at_Amax_"+GenderLbl(gg)+GP_Lbl(gp);
+          Parm_info+="val";
+          Parm_minmax.push_back (2);
           ParmLabel+="VonBert_K_"+GenderLbl(gg)+GP_Lbl(gp);
+          Parm_info+="val";
+          Parm_minmax.push_back (1);
           ParCount+=3;
           break;
         }
@@ -888,11 +905,11 @@
         {
           ParmLabel+="L_at_Amin_"+GenderLbl(gg)+GP_Lbl(gp);
           ParmLabel+="L_at_Amax_"+GenderLbl(gg)+GP_Lbl(gp);
-          ParmLabel+="VonBert_K_"+GenderLbl(gg)+GP_Lbl(gp);
+          ParmLabel+="VonBert_K_young_"+GenderLbl(gg)+GP_Lbl(gp);
           ParCount+=3;
           for (a=1;a<=Age_K_count;a++)
           {
-            ParmLabel+="Age_K_"+GenderLbl(gg)+GP_Lbl(gp)+"_a_"+NumLbl(Age_K_points(a));
+            ParmLabel+="Age_K_mult_"+GenderLbl(gg)+GP_Lbl(gp)+"_a_"+NumLbl(Age_K_points(a));
             ParCount++;
           }
           break;
@@ -942,7 +959,7 @@
       }
     }
   }
-
+  
   if(Hermaphro_Option==1 || Hermaphro_Option==-1)
   {
      MGparm_Hermaphro=ParCount+1;  // pointer to first hermaphroditism parameter
@@ -1373,7 +1390,7 @@
     }
     case 2:  // Ricker
     {
-      ParmLabel+="SR_Ricker";
+      ParmLabel+="SR_Ricker_beta";
       break;
     }
     case 3:  // Bev-Holt
@@ -1409,16 +1426,10 @@
       ParmLabel+="SR_Shepherd_c";
       break;
     }
-    case 9:  // Shepherd transformed parameters
+    case 9:  //  Ricker Power parameters
     {
-      ParmLabel+="SR_logit(steepness)";
-      ParmLabel+="SR_ln(Shepherd_c)";
-      break;
-    }
-    case 10:  // Ricker Power parameters
-    {
-      ParmLabel+="SR_logit(steepness)";
-      ParmLabel+="SR_ln(RkrPower)";
+      ParmLabel+="SR_RkrPower_steep";
+      ParmLabel+="SR_RkrPower_gamma";
       break;
     }
   }

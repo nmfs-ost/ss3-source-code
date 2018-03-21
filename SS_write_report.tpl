@@ -907,11 +907,9 @@ FUNCTION void write_bigoutput()
 
 //  SPAWN-RECR: output to report.sso
   dvariable steepness=SR_parm(2);
-  if(SR_fxn==9)  steepness=(0.8)/(1.0+exp(-SR_parm(2)));
-  if(SR_fxn==10) steepness = 0.2 + (10.0 - 0.2)/(1+exp(-SR_parm_work(2)));
   SS2out<<endl<<"SPAWN_RECRUIT Function: "<<SR_fxn<<" _ _ _ _ _ _"<<endl<<
   SR_parm(1)<<" Ln(R0) "<<mfexp(SR_parm(1))<<endl<<
-  steepness<<" steep"<<endl<<
+  steepness<<" parm2"<<endl<<
   Bmsy/SSB_virgin<<" Bmsy/Bzero ";
   if(SR_fxn==8)
   {
@@ -926,37 +924,14 @@ FUNCTION void write_bigoutput()
   }
   else if(SR_fxn==9)
   {
-    dvariable Shepherd_c;
-    dvariable Shepherd_c2;
-    dvariable Hupper;
-    Shepherd_c=exp(SR_parm(3));
-    Shepherd_c2=pow(0.2,Shepherd_c);
-    Hupper=1.0/(5.0*Shepherd_c2);
-    temp=0.2+(steepness-0.2)/(0.8)*(Hupper-0.2);
-    SS2out<<" Shepherd_c: "<<Shepherd_c<<" steepness_limit: "<<Hupper<<" Adjusted_steepness: "<<temp;
-  }
-  else if(SR_fxn==10)
-  {
-    SS2out<<" Ricker_Power: "<<exp(SR_parm_work(3));
+    SS2out<<" Ricker_Power: "<<SR_parm(3);
   }
   
   SS2out<<endl;
   SS2out<<sigmaR<<" sigmaR"<<endl;
   SS2out<<init_equ_steepness<<"  # 0/1 to use steepness in initial equ recruitment calculation"<<endl;
-  /*
-  SS2out<<SR_parm(N_SRparm2-2)<<" env_link_";
-  if(SR_env_link>0)
-    {
-    SS2out<<"to_envvar:_"<<SR_env_link<<"_with_affect_on:";
-    if(SR_env_target==1)
-      {SS2out<<"_Annual_devs";}
-    else if(SR_env_target==2)
-      {SS2out<<"_Rzero";}
-    else if(SR_env_target==3)
-      {SS2out<<"_Steepness";}
-    }
-  */
-  SS2out<<SR_parm(N_SRparm2-1)<<" init_eq "<<mfexp(SR_parm(1)+SR_parm(N_SRparm2-1))<<endl<<
+
+  SS2out<<SR_parm(N_SRparm2-1)<<" init_eq:  see below"<<endl<<
   recdev_start<<" "<<recdev_end<<" main_recdev:start_end"<<endl<<
   recdev_adj(1)<<" "<<recdev_adj(2,5)<<" breakpoints_for_bias_adjustment_ramp "<<endl;
 
@@ -1010,6 +985,16 @@ FUNCTION void write_bigoutput()
      SS2out<<endl;
    }
 
+   {
+    SS2out<<"#"<<endl<<"Full_Spawn_Recr_Curve"<<endl<<"SSB/SSB_virgin  Recruitment"<<endl;
+    y=styr;
+    SR_parm_work = SR_parm_byyr(styr);
+    for(f=1;f<=120;f++)
+    {
+      SSB_current=double(f)/100.*SSB_virgin;
+      SS2out<<SSB_current/SSB_virgin<<" "<<Spawn_Recr(SSB_virgin,Recr_virgin,SSB_current)<<endl;
+    }
+   }
 // ******************************************************************************
 //                                             SS_Label_340
 

@@ -1486,8 +1486,7 @@ FUNCTION void write_nucontrol()
   }
 
   report4<<"#"<<endl;
-   report4<<"#_Spawner-Recruitment Options: 2=Ricker; 3=std_B-H; 4=SCAA; 5=Hockey; 6=B-H_flattop; 7=survival_3Parm; 8=Shepherd_3Parm; 9=Shepard_3Parm_transformed; 10=RickerPower_3parm_transformed"<<endl;
-   report4<<"#_Spawner-Recruitment: "<<endl<<SR_fxn<<endl;
+   report4<<SR_fxn<<" #_Spawner-Recruitment; Options: 2=Ricker; 3=std_B-H; 4=SCAA; 5=Hockey; 6=B-H_flattop; 7=survival_3Parm; 8=Shepherd_3Parm; 9=RickerPower_3parm"<<endl;
    report4<<init_equ_steepness<<"  # 0/1 to use steepness in initial equ recruitment calculation"<<endl;
    report4<<sigmaR_dendep<<"  #  future feature:  0/1 to make realized sigmaR a function of SR curvature"<<endl;
    report4<<"#_          LO            HI          INIT         PRIOR         PR_SD       PR_type      PHASE    env-var    use_dev   dev_mnyr   dev_mxyr     dev_PH      Block    Blk_Fxn #  parm_name"<<endl;

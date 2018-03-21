@@ -39,6 +39,9 @@
   int j1
   int j2
   int k
+  int k1
+  int k2
+  int k3
   int s_off  // offset for male section of vectors
   int Fishon  // whether or not to do fishery catch in equil_calc
   int NP  // number of parameters
