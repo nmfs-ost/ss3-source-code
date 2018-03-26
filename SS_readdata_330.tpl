@@ -1619,8 +1619,10 @@
 
      if(b<n_abins)
      {age_bins_mean(b) =(age_bins1(b)+age_bins1(b+1))*0.5;}
-     else
+     else if (b>1)
      {age_bins_mean(b) =age_bins1(b)+0.5*(age_bins1(b)-age_bins1(b-1));}
+     else
+     {age_bins_mean(b) =age_bins1(b) + 0.5;}
 
      if(gender==2)
       {

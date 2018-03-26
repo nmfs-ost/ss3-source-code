@@ -841,13 +841,24 @@ PRELIMINARY_CALCS_SECTION
     if(Turn_off_phase<0)
       {
         cout<<" Requested exit after read when turn_off_phase < 0 "<<endl;
+        N_nudata=1;       
         write_nudata();
         cout<<" finished nudata report "<<endl;
         write_nucontrol();
         cout<<" finished nucontrol report "<<endl;
         exit(1);
       }
-    cout<<endl<<endl<<"Estimating...please wait..."<<endl;
+      
+      if(noest_flag==1)
+        {
+          cout<<endl<<"skip to final section for -noest"<<endl;
+          F_Method_use=F_Method;
+          N_nudata=1;       
+        }
+        else
+        {
+          cout<<endl<<endl<<"Estimating...please wait..."<<endl;
+        }
     last_objfun=1.0e30;
   }  // end PRELIMINARY_CALCS_SECTION
 

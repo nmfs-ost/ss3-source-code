@@ -474,9 +474,6 @@
 
 
 !!//  SS_Label_Info_4.4 #Define the time blocks for time-varying parameters
-  int k1
-  int k2
-  int k3
   init_int N_Block_Designs                      // read N block designs
   !!echoinput<<N_Block_Designs<<" N_Block_Designs"<<endl;
   !!echoinput<<"will add one block for year=initial equil yr to replace the R1 offset "<<endl;
@@ -4858,9 +4855,6 @@
       }
     }
   }
- END_CALCS
-
- LOCAL_CALCS
 
   if (N_nudata < 1) N_nudata=1; // output the new version of the DAT file
 

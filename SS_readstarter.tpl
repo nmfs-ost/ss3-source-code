@@ -65,9 +65,18 @@
 
   int icycle
   int No_Report  //  flag to skip output reports after MCMC and MCeval
-  number mcmcFlag
+  int mcmcFlag
+  int noest_flag
   number temp;
   number temp1;
+  int save_for_report;
+  int save_gparm;
+  int save_gparm_print;
+  int N_warn;
+  
+  !! save_for_report=0;
+  !! save_gparm=0;
+  !! N_warn=0;
 
   int Nparm_on_bound;
  !! No_Report=0;
@@ -95,17 +104,6 @@
   NumLbl+=onenum+CRLF(1);
   }
 
-  adstring sw;
-  mcmcFlag = 0;
-  for (i=0;i<argc;i++)  /* SS_loop: check command line arguments for mcmc commands */
-  {
-    sw = argv[i];
-    j=strcmp(sw,"-mcmc");
-    if(j==0) {mcmcFlag = 1;}
-    j=strcmp(sw,"-mceval");
-    if(j==0) {mcmcFlag = 1;}
-  }
-
 //  SS_Label_Info_1.2  #Read the STARTER.SS file
 // /*  SS_Label_Flow  read STARTER.SS */
   ad_comm::change_datafile_name("starter.ss");       //  get filenames
@@ -129,9 +127,27 @@
       if(j==0) {N_SC++; Starter_Comments+=readline;}
     }
   }
+  echoinput<<version_info<<endl<<ctime(&start)<<endl;
+  warning<<version_info<<endl<<ctime(&start)<<endl;
+
+  adstring sw;  //  used for reading of ADMB switches from command line
+  mcmcFlag = 0;
+  noest_flag=0;
+  for (i=0;i<argc;i++)  /* SS_loop: check command line arguments for mcmc commands */
+  {
+    sw = argv[i];
+    j=strcmp(sw,"-mcmc");
+    if(j==0) {mcmcFlag = 1;}
+    j=strcmp(sw,"-mceval");
+    if(j==0) {mcmcFlag = 1;}
+    j=strcmp(sw,"-noest");
+    if(j==0) {
+      N_warn++; warning<<"SS is not designed to work with the ADMB flag -noest.  Use -maxfn 0 -phase 100 instead"<<endl;
+      noest_flag=1;}
+  }
  END_CALCS
-  !! echoinput<<version_info<<endl<<ctime(&start)<<endl;
-  !! warning<<version_info<<endl<<ctime(&start)<<endl;
+
+
   init_adstring datfilename
   !!echoinput<<datfilename<<"  datfilename"<<endl;
   init_adstring ctlfilename
@@ -156,7 +172,9 @@
    !!echoinput<<Do_all_priors<<"  Do_all_priors"<<endl;
   init_int SoftBound
    !!echoinput<<SoftBound<<"  SoftBound"<<endl;
-  init_int N_nudata
+  init_int N_nudata_read
+  int N_nudata
+   !! N_nudata=N_nudata_read;
    !!echoinput<<N_nudata<<"  N_nudata"<<endl;
   init_int Turn_off_phase
    !!echoinput<<Turn_off_phase<<"  Turn_off_phase"<<endl;
@@ -180,14 +198,6 @@
   init_ivector STD_Yr_RD(1,N_STD_Yr_RD)
    !!if(N_STD_Yr_RD>0) echoinput<<STD_Yr_RD<<"  vector of extra STD years"<<endl;
   // wait to process the above until after styr, endyr, N-forecast_yrs are read in data and forecast sections below
-
-  int save_for_report;
-  int save_gparm;
-  int save_gparm_print;
-  int N_warn;
-  !! save_for_report=0;
-  !! save_gparm=0;
-  !! N_warn=0;
 
 // set up the mcmc chain counter
   int mceval_counter;

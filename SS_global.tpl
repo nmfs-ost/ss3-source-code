@@ -612,6 +612,7 @@ FINAL_SECTION
     save_for_report=1;
     save_gparm=0;
     y=styr;
+    setup_recdevs();
     get_initial_conditions();
     get_time_series();  //  in final_section with save_for_report on
     evaluate_the_objective_function();
@@ -619,6 +620,7 @@ FINAL_SECTION
     if(mceval_phase()==0) {show_MSY=1;} else {show_MSY=0;}  //  turn on reporting in not in mceval
     if(Do_Benchmark>0)
     {
+      setup_Benchmark();
       if(did_MSY==0) 
       {
         Get_Benchmarks(show_MSY);
@@ -694,6 +696,7 @@ FINAL_SECTION
     save_gparm=0;
     y=styr;
     fishery_on_off=1;
+    setup_recdevs();
     get_initial_conditions();
     get_time_series();  //  in final_section
     Get_Forecast();
@@ -798,6 +801,7 @@ REPORT_SECTION
     save_gparm=0;
     y=styr;
     cout<<"ready to do report"<<endl;
+    setup_recdevs();
     get_initial_conditions();
     get_time_series();  //  in ADMB's report_section
     evaluate_the_objective_function();

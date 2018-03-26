@@ -1,3 +1,80 @@
+FUNCTION void setup_recdevs()
+  {
+  //  SS_Label_Info_7.1 #Set up recruitment bias_adjustment vector
+    sigmaR=SR_parm(N_SRparm(SR_fxn)+1);
+    two_sigmaRsq=2.0*sigmaR*sigmaR;
+    half_sigmaRsq=0.5*sigmaR*sigmaR;
+
+    biasadj.initialize();
+    if(mcmcFlag==1)  //  so will do mcmc this run or is in mceval
+    {
+      biasadj_full=1.0;
+    }
+    else if(recdev_adj(5)<0.0)
+    {
+      biasadj_full=1.0;
+    }
+    else
+    {
+      for (y=styr-nages; y<=YrMax; y++)
+      {
+        if(y<recdev_first)  // before start of recrdevs
+          {biasadj_full(y)=0.;}
+        else if(y<=recdev_adj(1))
+          {biasadj_full(y)=0.;}
+        else if (y<=recdev_adj(2))
+          {biasadj_full(y)=(y-recdev_adj(1)) / (recdev_adj(2)-recdev_adj(1))*recdev_adj(5);}
+        else if (y<=recdev_adj(3))
+          {biasadj_full(y)=recdev_adj(5);}   // max bias adjustment
+        else if (y<=recdev_adj(4))
+          {biasadj_full(y)=recdev_adj(5)-(y-recdev_adj(3)) / (recdev_adj(4)-recdev_adj(3))*recdev_adj(5);}
+        else
+          {biasadj_full(y)=0.;}
+        if(y>endyr) {biasadj_full(y)=0.0;}
+      }
+    }
+
+    if(SR_fxn==4 || do_recdev==0)
+    {
+      // keep all at 0.0 if not using SR fxn
+    }
+    else
+    {
+      if(recdev_do_early>0 && recdev_options(2)>=0 )    //  do logic on basis of recdev_options(2), which is read, not recdev_PH which can be reset to a neg. value
+      {
+        for (i=recdev_early_start;i<=recdev_early_end;i++)
+        {if(i>=styr-nages) biasadj(i)=biasadj_full(i);}
+      }
+      if(do_recdev>0 && recdev_PH_rd>=0 )
+      {
+        for (i=recdev_start;i<=recdev_end;i++)
+        {if(i>=styr-nages) biasadj(i)=biasadj_full(i);}
+      }
+      if(Do_Forecast>0 && recdev_options(3)>=0 )
+      {
+        for (i=recdev_end+1;i<=YrMax;i++)
+        {biasadj(i)=biasadj_full(i);}
+      }
+      if(recdev_read>0)
+      {
+        for (j=1;j<=recdev_read;j++)
+        {
+          y=recdev_input(j,1);
+          if(y>=recdev_first && y<=YrMax) biasadj(y)=biasadj_full(y);
+        }
+      }
+    }
+    sd_offset_rec=sum(biasadj)*sd_offset;
+
+  //  SS_Label_Info_7.2 #Copy recdev parm vectors into full time series vector
+    if(recdev_do_early>0) {recdev(recdev_early_start,recdev_early_end)=recdev_early(recdev_early_start,recdev_early_end);}
+    if(do_recdev==1)
+      {recdev(recdev_start,recdev_end)=recdev1(recdev_start,recdev_end);}
+    else if(do_recdev==2)
+      {recdev(recdev_start,recdev_end)=recdev2(recdev_start,recdev_end);}
+    if(Do_Forecast>0) recdev(recdev_end+1,YrMax)=Fcast_recruitments(recdev_end+1,YrMax);  // only needed here for reporting
+  }  //  end setup for recdevs
+
 FUNCTION void get_initial_conditions()
   {
   //*********************************************************************

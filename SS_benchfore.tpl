@@ -1,3 +1,196 @@
+FUNCTION void setup_Benchmark()
+  {
+//  SS_Label_Info_7.5 #Get averages from selected years to use in forecasts
+    if(Do_Forecast>0)
+    {
+      if(Fcast_Specify_Selex==0)
+      {
+//  SS_Label_Info_7.5.1 #Calc average selectivity to use in forecast; store in endyr+1
+        temp=float(Fcast_Sel_yr2-Fcast_Sel_yr1+1.);
+        for (gg=1;gg<=gender;gg++)
+        for (f=1;f<=Nfleet;f++)
+        {
+          tempvec_l.initialize();
+          for (y=Fcast_Sel_yr1;y<=Fcast_Sel_yr2;y++) {tempvec_l+=sel_l(y,f,gg);}
+          sel_l(endyr+1,f,gg)=tempvec_l/temp;
+          sel_l(YrMax,f,gg)=tempvec_l/temp;
+
+          tempvec_l.initialize();
+          for (y=Fcast_Sel_yr1;y<=Fcast_Sel_yr2;y++) {tempvec_l+=sel_l_r(y,f,gg);}
+          sel_l_r(endyr+1,f,gg)=tempvec_l/temp;
+          sel_l_r(YrMax,f,gg)=tempvec_l/temp;
+
+          tempvec_l.initialize();
+          for (y=Fcast_Sel_yr1;y<=Fcast_Sel_yr2;y++) {tempvec_l+=discmort2(y,f,gg);}
+          discmort2(endyr+1,f,gg)=tempvec_l/temp;
+          discmort2(YrMax,f,gg)=tempvec_l/temp;
+
+          tempvec_a.initialize();
+          for (y=Fcast_Sel_yr1;y<=Fcast_Sel_yr2;y++) {tempvec_a+=sel_a(y,f,gg);}
+          sel_a(endyr+1,f,gg)=tempvec_a/temp;
+          sel_a(YrMax,f,gg)=tempvec_a/temp;
+
+          tempvec_a.initialize();
+          for (y=Fcast_Sel_yr1;y<=Fcast_Sel_yr2;y++) {tempvec_a+=discmort2_a(y,f,gg);}
+          discmort2_a(endyr+1,f,gg)=tempvec_a/temp;
+          discmort2_a(YrMax,f,gg)=tempvec_a/temp;
+        }
+
+      }
+//  SS_Label_Info_7.5.2 #Set-up relative F among fleets and seasons for forecast
+      if(Fcast_RelF_Basis==1)  // set allocation according to range of years
+      {
+        temp=0.0;
+        Fcast_RelF_Use.initialize();
+        for (y=Fcast_RelF_yr1;y<=Fcast_RelF_yr2;y++)
+        for (f=1;f<=Nfleet;f++)
+        for (s=1;s<=nseas;s++)
+        {
+          if(fleet_type(f)==1 || (fleet_type(f)==2 && bycatch_setup(f,3)==1))
+          {t=styr+(y-styr)*nseas+s-1;
+          Fcast_RelF_Use(s,f)+=Hrate(f,t);}
+        }
+        temp=sum(Fcast_RelF_Use);
+        if(temp==0.0)
+        {
+          Fcast_RelF_Use(1,1)=1.0;
+          Fcurr_Fmult=0.0;
+        }
+        else
+        {
+          Fcast_RelF_Use/=temp;
+          Fcurr_Fmult=temp/float(Fcast_RelF_yr2-Fcast_RelF_yr1+1);
+        }
+      }
+      else  // Fcast_RelF_Basis==2 so set to values that were read
+      {
+        temp=0.0;
+        for (f=1;f<=Nfleet;f++)
+        for (s=1;s<=nseas;s++)
+        {
+          temp+=Fcast_RelF_Input(s,f);
+          Fcast_RelF_Use(s,f) = Fcast_RelF_Input(s,f);
+        }
+        // Fcast_RelF_Use=Fcast_RelF_Input/temp;
+        Fcast_RelF_Use /= temp;
+        Fcurr_Fmult=temp;
+      }
+    }  //  end getting quantities for forecasts
+
+//  SS_Label_Info_7.5.3 #Calc average selectivity to use in benchmarks; store in styr-3
+//  Bmark_Yr(1,6)<<" Benchmark years:  beg-end bio; beg-end selex; beg-end alloc"<<endl;
+
+    if(Do_Benchmark>0)
+    {
+//      if(save_for_report>0 || last_phase() || current_phase()==max_phase || ((sd_phase() || mceval_phase()) && (initial_params::mc_phase==0)))
+      {
+    //  calc average body size to use in equil; store in styr-3
+        temp=float(Bmark_Yr(2)-Bmark_Yr(1)+1.);  //  get denominator
+        for (g=1;g<=gmorph;g++)
+        if(use_morph(g)>0)
+        {
+          for (s=0;s<=nseas-1;s++)
+          {
+            tempvec_a.initialize();
+            for (t=Bmark_t(1);t<=Bmark_t(2);t+=nseas) {tempvec_a+=Ave_Size(t+s,1,g);}
+            Ave_Size(styr-3*nseas+s,1,g)=tempvec_a/temp;
+            tempvec_a.initialize();
+            for (t=Bmark_t(1);t<=Bmark_t(2);t+=nseas) {tempvec_a+=Ave_Size(t+s,mid_subseas,g);}
+            Ave_Size(styr-3*nseas+s,mid_subseas,g)=tempvec_a/temp;
+
+            tempvec_a.initialize();
+            for (t=Bmark_t(1);t<=Bmark_t(2);t+=nseas) {tempvec_a+=Save_Wt_Age(t+s,g);}
+            Save_Wt_Age(styr-3*nseas+s,g)=tempvec_a/temp;
+
+            for (f=0;f<=Nfleet;f++)  //  goes to Nfleet because this contains fecundity as well as asel2(f)
+            {
+              tempvec_a.initialize();
+              for (t=Bmark_t(1);t<=Bmark_t(2);t+=nseas) {tempvec_a+=save_sel_fec(t+s,g,f);}
+              save_sel_fec(styr-3*nseas+s,g,f)=tempvec_a/temp;
+            }
+// natmort_unf is accumulated while doing the time_series
+// then it's mean is calculated in Get_Benchmarks and assigned back to natmort
+          }
+        }
+
+        if(pop>0)
+        {
+          if(do_migration>0)
+          {
+            temp=float(Bmark_Yr(8)-Bmark_Yr(7)+1.);  //  get denominator
+            for (j=1;j<=do_migr2;j++)
+            {
+              tempvec_a.initialize();
+              for (y=Bmark_Yr(7);y<=Bmark_Yr(8);y++){tempvec_a+=migrrate(y,j);}
+              migrrate(styr-3,j)=tempvec_a/temp;
+            }
+          }
+// recr_dist_unf is accumulated while doing the time_series
+// then its mean is calculated in Get_Benchmarks and assigned to recr_dist
+//  the SR_parm_bench is calculated from Bmark_yrs 9-10 in benchmark code using values stored in SR_parm_byyr
+
+//  same for natmort and survival (surv1 and surv2)
+
+        }
+
+    //  calc average selectivity to use in equil; store in styr-1
+        temp=float(Bmark_Yr(4)-Bmark_Yr(3)+1.);  //  get denominator
+        for (gg=1;gg<=gender;gg++)
+        for (f=1;f<=Nfleet;f++)
+        {
+          tempvec_l.initialize();
+          for (y=Bmark_Yr(3);y<=Bmark_Yr(4);y++) {tempvec_l+=sel_l(y,f,gg);}
+          sel_l(styr-3,f,gg)=tempvec_l/temp;
+
+          tempvec_l.initialize();
+          for (y=Bmark_Yr(3);y<=Bmark_Yr(4);y++) {tempvec_l+=sel_l_r(y,f,gg);}
+          sel_l_r(styr-3,f,gg)=tempvec_l/temp;
+
+          tempvec_l.initialize();
+          for (y=Bmark_Yr(3);y<=Bmark_Yr(4);y++) {tempvec_l+=discmort2(y,f,gg);}
+          discmort2(styr-3,f,gg)=tempvec_l/temp;
+
+          tempvec_a.initialize();
+          for (y=Bmark_Yr(3);y<=Bmark_Yr(4);y++) {tempvec_a+=sel_a(y,f,gg);}
+          sel_a(styr-3,f,gg)=tempvec_a/temp;
+
+          tempvec_a.initialize();
+          for (y=Bmark_Yr(3);y<=Bmark_Yr(4);y++) {tempvec_a+=discmort2_a(y,f,gg);}
+          discmort2_a(styr-3,f,gg)=tempvec_a/temp;
+
+        }
+
+    //  set-up relative F among fleets and seasons
+        if(Bmark_RelF_Basis==1)  // set allocation according to range of years
+        {
+          temp=0.0;
+          Bmark_RelF_Use.initialize();
+          for (y=Bmark_Yr(5);y<=Bmark_Yr(6);y++)
+          for (f=1;f<=Nfleet;f++)
+          if(fleet_type(f)==1 || (fleet_type(f)==2 && bycatch_setup(f,3)==1))
+          for (s=1;s<=nseas;s++)
+          {
+            t=styr+(y-styr)*nseas+s-1;
+            Bmark_RelF_Use(s,f)+=Hrate(f,t);
+          }
+          temp=sum(Bmark_RelF_Use);
+          if(temp==0.0)
+          {
+            Bmark_RelF_Use(1,1)=1.0;
+          }
+          else
+          {
+          Bmark_RelF_Use/=temp;
+          }
+        }
+        else  // Bmark_RelF_Basis==2 so set same as forecast
+        {
+          Bmark_RelF_Use=Fcast_RelF_Use;
+        }
+      }  //  end being in a phase for these calcs
+    }  //  end getting quantities for benchmarks
+  }
+
 FUNCTION void Get_Benchmarks(const int show_MSY)
   {
 //********************************************************************

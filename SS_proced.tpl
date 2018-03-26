@@ -2,6 +2,8 @@
 //  SS_Label_Section_7.0 #PROCEDURE_SECTION
 PROCEDURE_SECTION
   {
+
+ /*
   Mgmt_quant.initialize();
   Extra_Std.initialize();
   CrashPen.initialize();
@@ -89,7 +91,8 @@ PROCEDURE_SECTION
   else if(do_recdev==2)
     {recdev(recdev_start,recdev_end)=recdev2(recdev_start,recdev_end);}
   if(Do_Forecast>0) recdev(recdev_end+1,YrMax)=Fcast_recruitments(recdev_end+1,YrMax);  // only needed here for reporting
-
+ */
+ 
 //  SS_Label_Info_7.3 #Reset Fmethod 2 to Fmethod 3 according to the phase
     if(F_Method==2)
     {
@@ -115,6 +118,7 @@ PROCEDURE_SECTION
   {
 //  add dynamic Bzero here
 
+    setup_recdevs();
     y=styr;
 //  SS_Label_Info_7.4.1 #Call fxn get_initial_conditions() to get the virgin and initial equilibrium population
     get_initial_conditions();
@@ -131,9 +135,9 @@ PROCEDURE_SECTION
     if(do_once==1)
     {
       cout<<" OK with obj_func "<<obj_fun<<endl;
-      do_once=0;
     }
 
+ /*
 //  SS_Label_Info_7.5 #Get averages from selected years to use in forecasts
     if(Do_Forecast>0)
     {
@@ -323,10 +327,12 @@ PROCEDURE_SECTION
         }
       }  //  end being in a phase for these calcs
     }  //  end getting quantities for benchmarks
-
+ */
+ 
 //  SS_Label_Info_7.6 #If sdphase or mcevalphase, do benchmarks and forecast and derived quantities
     if( (sd_phase() || mceval_phase()) && (initial_params::mc_phase==0))
     {
+      setup_Benchmark();
 //  SS_Label_Info_7.6.1 #Call fxn Get_Benchmarks()
       if(mceval_phase()==0) {show_MSY=1;}  //  so only show details if not in mceval
       if(show_MSY==1) cout<<"do benchmark and forecast if requested in sdphase"<<endl;

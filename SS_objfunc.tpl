@@ -837,6 +837,12 @@ FUNCTION void evaluate_the_objective_function()
    if(Do_TG>0 && Nfleet>1) obj_fun += TG_like1*column(TG_lambda1,k_phase);
    if(Do_TG>0) obj_fun += TG_like2*column(TG_lambda2,k_phase);
 //   cout<<" obj_fun final "<<obj_fun<<endl;
+    if(do_once==1)
+    {
+      cout<<" OK with obj_func "<<obj_fun<<endl;
+      do_once=0;
+    }
+
   }  //  end objective_function
 
 //********************************************************************

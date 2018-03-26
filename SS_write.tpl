@@ -804,6 +804,7 @@ FUNCTION void write_Bzero_output()
       save_gparm=0;
       if(fishery_on_off==0)
       {
+        setup_recdevs();
         get_initial_conditions();
         get_time_series();  //  in write_big_report
 
