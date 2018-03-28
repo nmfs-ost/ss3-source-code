@@ -594,7 +594,7 @@ FUNCTION void evaluate_the_objective_function()
         }
       }
       recr_like += 0.5 * square( log(R1/R1_exp) / (sigmaR/ave_age) );
-      if(do_once==1) cout<<" did recruitdev obj_fun "<<recr_like<<endl;
+      if(do_once==1) cout<<" did recruitdev obj_fun "<<recr_like<<" "<<sd_offset_rec<<" "<<two_sigmaRsq<<endl;
     }
     if(Do_Forecast>0)
     {
@@ -1011,10 +1011,9 @@ FUNCTION void Process_STDquant()
       }
     }
 
-    if(Extra_Std_N==1)
-    {
-      Extra_Std(1)=SSB_virgin;
-    }
+    Extra_Std(1)=log(SSB_yr(styr));
+    Extra_Std(2)=log(SSB_yr(int((styr+endyr)/2)));
+    Extra_Std(3)=log(SSB_yr(endyr));
 
     if(Svy_N>0)
     {

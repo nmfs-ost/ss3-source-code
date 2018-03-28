@@ -5,7 +5,7 @@ DATA_SECTION
 !!//  SS_Label_Section_1.0 #DATA_SECTION
 
 !!//  SS_Label_Info_1.1.1  #Create string with version info
-!!version_info+="#V3.30.11.00-safe;_2018_03_26;_Stock_Synthesis_by_Richard_Methot_(NOAA)_using_ADMB_11.6";
+!!version_info+="#V3.30.11.00-safe;_2018_03_28;_Stock_Synthesis_by_Richard_Methot_(NOAA)_using_ADMB_11.6";
 !!version_info+="#This is a work of the U.S. Government and is not subject to copyright protection in the United States.";
 !!version_info+="#Foreign copyrights may apply. See copyright.txt for more information.";
 !!version_info2+="#_user_support_available_at:NMFS.Stock.Synthesis@noaa.gov";
@@ -42,3 +42,6 @@ DATA_SECTION
 !!//  V3.30.11.00  2018-03-10  trial versions Ricker-Power spawner-recruitment
 !!//  V3.30.11.00  2018-03-26  re-arrange code to allow -noest option to work
 !!//  V3.30.11.00  2018-03-26  add spawner-recruitment plotting output below spawn_recr in report.sso
+!!//  V3.30.11.00  2018-03-28  add output of selected estimated survey values to sdreport and show in ss_summary.sso
+!!//  V3.30.11.00  2018-03-28  add output of ln(SPB) for 3 years to sdreport and show in ss_summary.sso
+!!//  V3.30.11.00  2018-03-28  improve treatment of biasadjustment when first entering MCMC phase; read adjustment factor in starter

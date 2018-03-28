@@ -168,6 +168,9 @@ FUNCTION dvariable Spawn_Recr(const prevariable& SSB_virgin_adj, const prevariab
         {
           case 0:
           {
+            NewRecruits=exp_rec(y,2);
+            if(SR_fxn!=4) NewRecruits*=mfexp(-biasadj(y)*half_sigmaRsq);     // bias adjustment
+            exp_rec(y,3)=NewRecruits;
             break;
           }
           case 1:

@@ -498,6 +498,23 @@ FUNCTION void write_bigoutput()
     SS2out<<" "<<CoVar(active_count,1)<<endl;
   }
 
+  if(Svy_N_sdreport>0)
+  {
+    k=0;
+    for (f = 1; f <= Nfleet; ++f)
+    {
+      if (Svy_sdreport(f) > 0)
+      {
+        for (j=1;j<=Svy_N_fleet(f);j++)
+        {
+          active_count++; k++;
+          SS2out<<fleetname(f)<<"_"<<Svy_yr(f,j)<<" ";
+          SS2out<<Svy_est(f,j)<<" "<<CoVar(active_count,1)<<" "<<Svy_sdreport_est(k)<<endl;
+        }
+      }
+    }
+  }
+
    if(reportdetail == 1) {k1=YrMax;} else {k1=styr;}
    SS2out<<endl<<"MGparm_By_Year_after_adjustments"<<endl<<"Yr   Change? ";
    for (i=1;i<=N_MGparm;i++) SS2out<<" "<<ParmLabel(i);
@@ -886,19 +903,17 @@ FUNCTION void write_bigoutput()
   dvector mean_CV3(1,k);
 //                                                            SS_Label_330
   rmse = 0.0;  n_rmse = 0.0;
-
    for (y=recdev_first;y<=recdev_end;y++)
    {
      temp1=recdev(y);
      if(y<recdev_start)  // so in early period
      {
-       rmse(3)+=value(square(temp1)); n_rmse(3)+=1.; rmse(4)+=value(biasadj(y));
+       rmse(3)+=value(square(temp1)); n_rmse(3)+=1.; rmse(4)+=biasadj(y);
      }
      else
      {
-       rmse(1)+=value(square(temp1)); n_rmse(1)+=1.; rmse(2)+=value(biasadj(y));
+       rmse(1)+=value(square(temp1)); n_rmse(1)+=1.; rmse(2)+=biasadj(y);
      }
-
    }
    if(n_rmse(1)>0. && rmse(1)>0.) rmse(1) = sqrt(rmse(1)/n_rmse(1));  // rmse during main period
    if(n_rmse(1)>0.) rmse(2) = rmse(2)/n_rmse(1);  // mean biasadj during main period
