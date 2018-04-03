@@ -499,6 +499,7 @@ FUNCTION void write_SS_summary()
     }
   }
 
+  SS_smry<<"#_Biomass"<<endl;
   SS_smry<<"TotBio_Virgin "<<Smry_Table(styr-2,1)<<" 0.0"<<endl;
   SS_smry<<"TotBio_Initial "<<Smry_Table(styr-1,1)<<" 0.0"<<endl;
   for (y=styr;y<=YrMax;y++)

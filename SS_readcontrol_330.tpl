@@ -1345,7 +1345,7 @@
   !!//  SS_Label_Info_4.6 #Read setup for Spawner-Recruitment parameters
   //  SPAWN-RECR: read setup for SR parameters:  LO, HI, INIT, PRIOR, PRtype, CV, PHASE
   init_int SR_fxn
-  !!echoinput<<SR_fxn<<" #_SR_function: 1=null; 2=Ricker; 3=std_B-H; 4=SCAA; 5=Hockey; 6=B-H_flattop; 7=Survival_3Parm; 8=Shepherd "<<endl;
+  !!echoinput<<SR_fxn<<" #_SR_function: 1=NA; 2=Ricker(2 parms); 3=BevHolt(2); 4=SCAA(2); 5=Hockey(3); 6=B-H_flattop(2); 7=Survival(3); 8=Shepherd(3); 9=Ricker_Power(3) "<<endl;
   init_int init_equ_steepness;
   !!echoinput<<init_equ_steepness<<"  # 0/1 to use steepness in initial equ recruitment calculation"<<endl;
   init_int sigmaR_dendep;
@@ -3805,7 +3805,6 @@
       }
     }
   }
-
 
   for (f=1;f<=Q_Npar2;f++)
   {

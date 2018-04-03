@@ -1011,9 +1011,9 @@ FUNCTION void Process_STDquant()
       }
     }
 
-    Extra_Std(1)=log(SSB_yr(styr));
-    Extra_Std(2)=log(SSB_yr(int((styr+endyr)/2)));
-    Extra_Std(3)=log(SSB_yr(endyr));
+    Extra_Std(Extra_Std_N-2)=log(SSB_yr(styr));
+    Extra_Std(Extra_Std_N-1)=log(SSB_yr(int((styr+endyr)/2)));
+    Extra_Std(Extra_Std_N)=log(SSB_yr(endyr));
 
     if(Svy_N>0)
     {
