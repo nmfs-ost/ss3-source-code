@@ -1789,6 +1789,8 @@
   number recdev_LO;
   number recdev_HI;
   ivector recdev_doit(styr-nages,YrMax)
+  vector biasadj(styr-nages,YrMax)  // biasadj as used; depends on whether a recdev is estimated or not
+  vector biasadj_full(styr-nages,YrMax)  //  full time series of biasadj values, only used in defined conditions
 
  LOCAL_CALCS
 //  SS_Label_Info_4.6.2 #Setup advanced recruitment options
@@ -1854,6 +1856,24 @@
     echoinput<<recdev_HI<<" #max rec_dev"<<endl;
     echoinput<<recdev_read<<" #_read_recdevs"<<endl;
     echoinput<<"#_end of advanced SR options"<<endl;
+
+      for (y=styr-nages; y<=YrMax; y++)
+      {
+        if(y<recdev_first)  // before start of recrdevs
+          {biasadj_full(y)=0.;}
+        else if(y<=recdev_adj(1))
+          {biasadj_full(y)=0.;}
+        else if (y<=recdev_adj(2))
+          {biasadj_full(y)=(y-recdev_adj(1)) / (recdev_adj(2)-recdev_adj(1))*recdev_adj(5);}
+        else if (y<=recdev_adj(3))
+          {biasadj_full(y)=recdev_adj(5);}   // max bias adjustment
+        else if (y<=recdev_adj(4))
+          {biasadj_full(y)=recdev_adj(5)-(y-recdev_adj(3)) / (recdev_adj(4)-recdev_adj(3))*recdev_adj(5);}
+        else
+          {biasadj_full(y)=0.;}
+        if(y>endyr) {biasadj_full(y)=0.0;}
+      }
+    echoinput<<"#_recruitment bias adjustment"<<endl<<biasadj_full<<endl;;
 
 //  SS_Label_Info_4.6.3 #Create parm labels for recruitment cycle parameters
   if(recdev_cycle>0)

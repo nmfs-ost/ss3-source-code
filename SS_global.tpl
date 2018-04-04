@@ -800,7 +800,6 @@ REPORT_SECTION
     save_for_report=1;
     save_gparm=0;
     y=styr;
-    cout<<"ready to do report"<<endl;
     setup_recdevs();
     get_initial_conditions();
     get_time_series();  //  in ADMB's report_section

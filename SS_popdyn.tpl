@@ -6,37 +6,15 @@ FUNCTION void setup_recdevs()
     half_sigmaRsq=0.5*sigmaR*sigmaR;
 
     biasadj.initialize();
-    if(mcmcFlag==1)  //  so will do mcmc this run or is in mceval
-    {
-      biasadj_full=1.0;
-    }
-    else if(recdev_adj(5)<0.0)
-    {
-      biasadj_full=1.0;
-    }
-    else
-    {
-      for (y=styr-nages; y<=YrMax; y++)
-      {
-        if(y<recdev_first)  // before start of recrdevs
-          {biasadj_full(y)=0.;}
-        else if(y<=recdev_adj(1))
-          {biasadj_full(y)=0.;}
-        else if (y<=recdev_adj(2))
-          {biasadj_full(y)=(y-recdev_adj(1)) / (recdev_adj(2)-recdev_adj(1))*recdev_adj(5);}
-        else if (y<=recdev_adj(3))
-          {biasadj_full(y)=recdev_adj(5);}   // max bias adjustment
-        else if (y<=recdev_adj(4))
-          {biasadj_full(y)=recdev_adj(5)-(y-recdev_adj(3)) / (recdev_adj(4)-recdev_adj(3))*recdev_adj(5);}
-        else
-          {biasadj_full(y)=0.;}
-        if(y>endyr) {biasadj_full(y)=0.0;}
-      }
-    }
 
     if(SR_fxn==4 || do_recdev==0)
     {
       // keep all at 0.0 if not using SR fxn
+    }
+    else if (mceval_phase() || initial_params::mc_phase==1 || recdev_adj(5)<0.0)
+    {
+//      biasadj=1.0;
+      biasadj=recdev_doit;  //  sets to 1.0 for the years or initial ages with estimated recruitments
     }
     else
     {
@@ -65,7 +43,6 @@ FUNCTION void setup_recdevs()
       }
     }
     sd_offset_rec=sum(biasadj)*sd_offset;
-
   //  SS_Label_Info_7.2 #Copy recdev parm vectors into full time series vector
     if(recdev_do_early>0) {recdev(recdev_early_start,recdev_early_end)=recdev_early(recdev_early_start,recdev_early_end);}
     if(do_recdev==1)

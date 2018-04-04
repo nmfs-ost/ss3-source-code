@@ -475,6 +475,31 @@ FUNCTION void write_SS_summary()
     SS_smry<<ParmLabel(NP)<<" "<<Extra_Std(j)<<" "<<CoVar(active_count,1)<<endl;
   }
 
+  SS_smry<<"#_survey_stdev "<<Svy_N_sdreport<<endl;
+  if(Svy_N_sdreport>0)
+  {
+    k=0;
+    for (f = 1; f <= Nfleet; ++f)
+    {
+      if (Svy_sdreport(f) > 0)
+      {
+        for (j=1;j<=Svy_N_fleet(f);j++)
+        {
+          active_count++; k++; NP++; 
+          if(Svy_errtype(f)==-1) 
+          {
+            SS_smry<<ParmLabel(NP)<<" "<<Svy_sdreport_est(k)<<" "<<CoVar(active_count,1)<<" #: "<<Svy_est(f,j)<<" q: "<<Svy_q(f,j)<<endl;
+          }
+          else
+          {
+            SS_smry<<ParmLabel(NP)<<" "<<Svy_sdreport_est(k)<<" "<<CoVar(active_count,1)<<" #exp(): "<<mfexp(Svy_est(f,j))<<" q: "<<Svy_q(f,j)<<endl;
+          }
+        }
+      }
+    }
+  }
+
+  SS_smry<<"#_Biomass"<<endl;
   SS_smry<<"TotBio_Virgin "<<Smry_Table(styr-2,1)<<" 0.0"<<endl;
   SS_smry<<"TotBio_Initial "<<Smry_Table(styr-1,1)<<" 0.0"<<endl;
   for (y=styr;y<=YrMax;y++)

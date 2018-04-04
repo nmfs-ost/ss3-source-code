@@ -128,8 +128,8 @@ PARAMETER_SECTION
 
  END_CALCS
 
-  vector biasadj(styr-nages,YrMax)  // biasadj as used; depends on whether a recdev is estimated or not
-  vector biasadj_full(styr-nages,YrMax)  //  full time series of biasadj values, only used in defined conditions
+//  vector biasadj(styr-nages,YrMax)  // biasadj as used; depends on whether a recdev is estimated or not
+//  vector biasadj_full(styr-nages,YrMax)  //  full time series of biasadj values, only used in defined conditions
   number sd_offset_rec
 
   init_bounded_number_vector recdev_cycle_parm(1,recdev_cycle,recdev_cycle_LO,recdev_cycle_HI,recdev_cycle_PH)

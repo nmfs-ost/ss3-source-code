@@ -131,7 +131,7 @@ FUNCTION dvariable Spawn_Recr(const prevariable& SSB_virgin_adj, const prevariab
         steepness = SR_parm_work(2);
         dvariable RkrPower=SR_parm_work(3);
         temp=SSB_curr_adj/SSB_virgin_adj;
-        temp2 = posfun(1.0-temp,0.001,CrashPen);
+        temp2 = posfun(1.0-temp,0.001,temp3);
         temp=1.0-temp2;  //  Rick's new line to stabilize recruitment at R0 if B>B0
         dvariable RkrTop =  log(5.0*steepness) * pow(temp2,RkrPower) / pow(0.8,RkrPower);
         NewRecruits = Recr_virgin_adj * temp * mfexp(RkrTop);
@@ -168,6 +168,9 @@ FUNCTION dvariable Spawn_Recr(const prevariable& SSB_virgin_adj, const prevariab
         {
           case 0:
           {
+            NewRecruits=exp_rec(y,2);
+            if(SR_fxn!=4) NewRecruits*=mfexp(-biasadj(y)*half_sigmaRsq);     // bias adjustment
+            exp_rec(y,3)=NewRecruits;
             break;
           }
           case 1:

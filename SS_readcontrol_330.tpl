@@ -1345,7 +1345,7 @@
   !!//  SS_Label_Info_4.6 #Read setup for Spawner-Recruitment parameters
   //  SPAWN-RECR: read setup for SR parameters:  LO, HI, INIT, PRIOR, PRtype, CV, PHASE
   init_int SR_fxn
-  !!echoinput<<SR_fxn<<" #_SR_function: 1=null; 2=Ricker; 3=std_B-H; 4=SCAA; 5=Hockey; 6=B-H_flattop; 7=Survival_3Parm; 8=Shepherd "<<endl;
+  !!echoinput<<SR_fxn<<" #_SR_function: 1=NA; 2=Ricker(2 parms); 3=BevHolt(2); 4=SCAA(2); 5=Hockey(3); 6=B-H_flattop(2); 7=Survival(3); 8=Shepherd(3); 9=Ricker_Power(3) "<<endl;
   init_int init_equ_steepness;
   !!echoinput<<init_equ_steepness<<"  # 0/1 to use steepness in initial equ recruitment calculation"<<endl;
   init_int sigmaR_dendep;
@@ -1599,6 +1599,8 @@
   number recdev_LO;
   number recdev_HI;
   ivector recdev_doit(styr-nages,YrMax)
+  vector biasadj(styr-nages,YrMax)  // biasadj as used; depends on whether a recdev is estimated or not
+  vector biasadj_full(styr-nages,YrMax)  //  full time series of biasadj values, only used in defined conditions
 
  LOCAL_CALCS
 //  SS_Label_Info_4.6.2 #Setup advanced recruitment options
@@ -1664,6 +1666,24 @@
     echoinput<<recdev_HI<<" #max rec_dev"<<endl;
     echoinput<<recdev_read<<" #_read_recdevs"<<endl;
     echoinput<<"#_end of advanced SR options"<<endl;
+
+      for (y=styr-nages; y<=YrMax; y++)
+      {
+        if(y<recdev_first)  // before start of recrdevs
+          {biasadj_full(y)=0.;}
+        else if(y<=recdev_adj(1))
+          {biasadj_full(y)=0.;}
+        else if (y<=recdev_adj(2))
+          {biasadj_full(y)=(y-recdev_adj(1)) / (recdev_adj(2)-recdev_adj(1))*recdev_adj(5);}
+        else if (y<=recdev_adj(3))
+          {biasadj_full(y)=recdev_adj(5);}   // max bias adjustment
+        else if (y<=recdev_adj(4))
+          {biasadj_full(y)=recdev_adj(5)-(y-recdev_adj(3)) / (recdev_adj(4)-recdev_adj(3))*recdev_adj(5);}
+        else
+          {biasadj_full(y)=0.;}
+        if(y>endyr) {biasadj_full(y)=0.0;}
+      }
+    echoinput<<"#_recruitment bias adjustment"<<endl<<biasadj_full<<endl;;
 
  END_CALCS
 
@@ -1749,6 +1769,7 @@
   {
     for (y=recdev_end+1;y<=YrMax;y++)
     {
+      recdev_doit(y)=1;
       sprintf(onenum, "%d", y);
       ParCount++;
       if(y>endyr)
@@ -3534,7 +3555,6 @@
   if(Do_Growth_Std<=0) Growth_Std_Cnt=0;
   if(Do_NatAge_Std==0) NatAge_Std_Cnt=0;
 
-  Extra_Std_N=0;
   if(Do_Selex_Std>0)
   {
     if(Selex_Std_Pick(1)<=0)  //  then self-generate even bin selection
@@ -3590,9 +3610,8 @@
     }
   }
   Extra_Std_N+=gender*NatAge_Std_Cnt;
+  Extra_Std_N+=3;  //  add 3 values for ln(Spbio)
 
-  if(Extra_Std_N==0) Extra_Std_N=1;   //  assign a minimum length to dimension the sdreport vector Selex_Std
-  echoinput<<"After processing"<<endl;
   if(Selex_Std_Cnt>0) echoinput<<Selex_Std_Pick<<" # vector with selex std bin picks (-1 in first bin to self-generate)"<<endl;
   if(Growth_Std_Cnt>0) echoinput<<Growth_Std_Pick<<" # vector with growth std bin picks (-1 in first bin to self-generate)"<<endl;
   if(NatAge_Std_Cnt>0) echoinput<<NatAge_Std_Pick<<" # vector with NatAge std bin picks (-1 in first bin to self-generate)"<<endl;
@@ -3622,7 +3641,7 @@
   Fcast_catch_start=N_STD_Mgmt_Quant;
   if(max(Do_Retain)>0) {j=1;} else {j=0;}
   if(Do_Forecast>0) {N_STD_Mgmt_Quant+=N_Fcast_Yrs*(1+j)+N_Fcast_Yrs;}
-  k=ParCount+2*N_STD_Yr+N_STD_Yr_Dep+N_STD_Yr_Ofish+N_STD_Yr_F+N_STD_Mgmt_Quant+gender*Selex_Std_Cnt+gender*Growth_Std_Cnt+gender*NatAge_Std_Cnt;
+  k=ParCount+2*N_STD_Yr+N_STD_Yr_Dep+N_STD_Yr_Ofish+N_STD_Yr_F+N_STD_Mgmt_Quant+gender*Selex_Std_Cnt+gender*Growth_Std_Cnt+gender*NatAge_Std_Cnt+3+Svy_N_sdreport;
   echoinput<<"N parameters: "<<ParCount<<endl<<"Parameters plus derived quant: "<<k<<endl;
  END_CALCS
   ivector active_parm(1,k)  //  pointer from active list to the element of the full parameter list to get label later
@@ -3786,7 +3805,6 @@
       }
     }
   }
-
 
   for (f=1;f<=Q_Npar2;f++)
   {
@@ -4245,11 +4263,34 @@
         {ParmLabel+="NatAge_std_All_"+GenderLbl(g)+"_A_"+NumLbl(age_vector(NatAge_Std_Pick(i)))+CRLF(1);}
       }
     }
-    if(Do_Selex_Std==0 && Do_Growth_Std==0 && Do_NatAge_Std==0)
+
+//  output ln(Spbio) for selected years
+    CoVar_Count++; j++; active_parm(CoVar_Count)=j;
+    sprintf(onenum, "%d", styr);
+    ParmLabel+="ln(SPB)_"+onenum+CRLF(1);
+    CoVar_Count++; j++; active_parm(CoVar_Count)=j;
+    sprintf(onenum, "%d", int((endyr+styr)/2));
+    ParmLabel+="ln(SPB)_"+onenum+CRLF(1);
+    CoVar_Count++; j++; active_parm(CoVar_Count)=j;
+    sprintf(onenum, "%d", endyr);
+    ParmLabel+="ln(SPB)_"+onenum+CRLF(1);
+
+  if(Svy_N_sdreport>0)
+  {
+    k=0;
+    for (f = 1; f <= Nfleet; ++f)
     {
-      CoVar_Count++; j++; active_parm(CoVar_Count)=j;
-      ParmLabel+="Bzero_again"+CRLF(1);
+      if (Svy_sdreport(f) > 0)
+      {
+        for (i=1;i<=Svy_N_fleet(f);i++)
+        {
+          CoVar_Count++; j++; active_parm(CoVar_Count)=j;
+          sprintf(onenum, "%d", Svy_yr(f,i));
+          ParmLabel+=fleetname(f)+"_"+onenum+CRLF(1);
+        }
+      }
     }
+  }
 
    sprintf(onenum, "%d", int(100*depletion_level));
    switch(depletion_basis)
