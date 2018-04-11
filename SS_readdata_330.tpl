@@ -2803,7 +2803,7 @@
   *(ad_comm::global_datafile) >> Fcast_Specify_Selex;
   echoinput<<Fcast_Specify_Selex<<" # echoed Fcast_Specify_Selex value"<<endl;
 
-  echoinput<<endl<<"next read 4 values for:  control rule shape(1 or 2), inflection (like 0.40), cutoff(like 0.10), scale(like 0.75)"<<endl;
+  echoinput<<endl<<"next read 4 values for:  control rule shape(1, 2, 3 or 4), inflection (like 0.40), cutoff(like 0.10), scale(like 0.75)"<<endl;
   *(ad_comm::global_datafile) >> HarvestPolicy;
   echoinput<<HarvestPolicy<<"  # echoed HarvestPolicy "<<endl;
   *(ad_comm::global_datafile) >> H4010_top;
