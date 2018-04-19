@@ -1193,15 +1193,18 @@
     if(use_length_data>0)
     {
     ender=0;
+    z=0;
     do {
       dvector tempvec(1,k);
         *(ad_comm::global_datafile) >> tempvec(1,k);
           if(tempvec(1)==-9999.) ender=1;
+      z++;
+      if(z<=2) echoinput<<"len_obs_#:"<<z<<" # "<<tempvec(1,k)<<endl;
       lendata.push_back (tempvec(1,k));
     } while (ender==0);
     nobsl_rd=lendata.size()-1;
     echoinput<<nobsl_rd<<" N length comp observations "<<endl;
-    if(nobsl_rd>0) echoinput<<" first lencomp obs "<<endl<<lendata[0]<<endl<<" last obs"<<endl<<lendata[nobsl_rd-1]<<endl;
+    if(nobsl_rd>0) echoinput<<"len_obs_#:"<<nobsl_rd<<" # "<<lendata[nobsl_rd-1]<<endl;
 
     data_type=4;
     Nobs_l=0;                       //  number of observations from each fleet/survey
@@ -1633,15 +1636,18 @@
 //  SS_Label_Info_2.8.2 #Read Age data
   k=9+n_abins2;
   ender=0;
+  z=0;
   do {
     dvector tempvec(1,k);
     *(ad_comm::global_datafile) >> tempvec(1,k);
     if(tempvec(1)==-9999.) ender=1;
+    z++;
+    if(z<=2) echoinput<<"age_obs_#:"<<z<<" # "<<tempvec(1,k)<<endl;
     Age_Data.push_back (tempvec(1,k));
   } while (ender==0);
   nobsa_rd=Age_Data.size()-1;
   echoinput<<nobsa_rd<<" N age comp observations "<<endl;
-  if(nobsa_rd>0) echoinput<<" first agecomp obs "<<endl<<Age_Data[0]<<endl<<" last obs"<<endl<<Age_Data[nobsa_rd-1]<<endl;;
+  if(nobsa_rd>0) echoinput<<"age_obs_#:"<<nobsa_rd<<" # "<<Age_Data[nobsa_rd-1]<<endl;
 
   data_type=5;  //  for age data
 
@@ -2004,15 +2010,18 @@
   {
     k=7+2*n_abins2;
     ender=0;
+    z=0;
     do {
       dvector tempvec(1,k);
       *(ad_comm::global_datafile) >> tempvec(1,k);
       if(tempvec(1)==-9999.) ender=1;
+      z++;
+      if(z<=2) echoinput<<"meansize@age_obs_#:"<<z<<" # "<<tempvec(1,k)<<endl;
       sizeAge_Data.push_back (tempvec(1,k));
   } while (ender==0);
   nobs_ms_rd=sizeAge_Data.size()-1;
-  echoinput<<nobs_ms_rd<<" N size-at-age observations read "<<endl;
-  if(nobs_ms_rd>0) echoinput<<" first size-at-age obs "<<endl<<sizeAge_Data[0]<<endl<<" last obs"<<endl<<sizeAge_Data[nobs_ms_rd-1]<<endl;;
+  echoinput<<nobs_ms_rd<<" N size@age obs read "<<endl;
+  if(nobs_ms_rd>0) echoinput<<"meansize@age_obs_#:"<<nobs_ms_rd<<" # "<<sizeAge_Data[nobs_ms_rd-1]<<endl;
 
   data_type=7;  //  for size (length or weight)-at-age data
   Nobs_ms=0;

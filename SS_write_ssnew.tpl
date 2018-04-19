@@ -573,7 +573,7 @@ FUNCTION void write_nudata()
   if(use_meansizedata>0)
   {
   report1<<"# sex codes:  0=combined; 1=use female only; 2=use male only; 3=use both as joint sexxlength distribution"<<endl;
-  report1<<"# partition codes:  (0=combined; 1=discard; 2=retained"<<endl;
+  report1<<"# partition codes: 0=combined; 1=discard; 2=retained"<<endl;
   report1<<"# ageerr codes:  positive means mean length-at-age; negative means mean bodywt_at_age"<<endl;
   report1<<"#_yr month fleet sex part ageerr ignore datavector(female-male)"<<endl;
   report1<<"#                                          samplesize(female-male)"<<endl;

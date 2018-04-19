@@ -1209,7 +1209,7 @@ FUNCTION void Get_Forecast()
     if(show_MSY==1)
     {
     if(HarvestPolicy<=2) report5<<"pop year ABC_Loop season Ramp&Buffer bio-all bio-Smry SpawnBio Depletion recruit-0 ";
-    if(HarvestPolicy<=3) report5<<"pop year ABC_Loop season Ramp bio-all bio-Smry SpawnBio Depletion recruit-0 ";
+    if(HarvestPolicy>=3) report5<<"pop year ABC_Loop season Ramp bio-all bio-Smry SpawnBio Depletion recruit-0 ";
     for (f=1;f<=Nfleet;f++)
     if(fleet_type(f)<=2)
     {report5<<" sel(B):_"<<f<<" dead(B):_"<<f<<" retain(B):_"<<f<<
@@ -1670,8 +1670,8 @@ FUNCTION void Get_Forecast()
               if (fleet_area(f)==p && fleet_type(f)<=2)
               {
                 catch_fleet(t,f).initialize();
-                if(ABC_Loop==2 && bycatch_setup(f,3)<=1 && HarvestPolicy>=3)   // fleet has scalable catch and policy applies to catch, not F
-                {Hrate(f,t)*=H4010_scale;}
+//                if(ABC_Loop==2 && bycatch_setup(f,3)<=1 && HarvestPolicy>=3)   // fleet has scalable catch and policy applies to catch, not F
+//                {Hrate(f,t)*=H4010_scale;}
                 // here for Pope's, ok to do scale adjustment to Hrate; will have to be on catch for continuous F                    
                 
                 temp=Hrate(f,t);
