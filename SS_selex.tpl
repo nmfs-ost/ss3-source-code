@@ -753,8 +753,7 @@ FUNCTION void get_selectivity()
             {temp1=1.0;}
           else
             {temp1=1.0/(1.0+mfexp(-sp(k+2)));}
-//          temp=1.-sp(k+2);
-//          temp1=1.-posfun(temp,0.0,CrashPen);
+//  where maleoffset is a vector of 2*nbins with 0 in length bins for females and 1 for male bins
           retain(y,f)=temp1/(1.+mfexp(-(len_bins_m2-(sp(k)+male_offset*sp(k+3)))/sp(k+1)));  // males are at end of vector, so automatically get done
           if(seltype(f,2)==4)
           {
@@ -769,7 +768,6 @@ FUNCTION void get_selectivity()
                 // additional dome-shaped retention parameters
                 echoinput<<" "<<sp(k+4)<<" "<<sp(k+5)<<" "<<sp(k+6);
             }
-            echoinput<<endl<<"maleoff "<<male_offset<<endl;
             echoinput<<"retention "<<retain(y,f)<<endl;
           }
 
@@ -1350,15 +1348,14 @@ FUNCTION void get_selectivity()
           }
           if(docheckup==1&&y==styr)
           {
-            echoinput<<"age_retention parms "<<sp(k)<<" "<<sp(k+1)<<" "<<sp(k+3)<<" "<<temp1;
+            echoinput<<"age_retention parms: inflec: "<<sp(k)<<" width: "<<sp(k+1)<<" male_offset: "<<sp(k+3)<<" asymptote: "<<temp1;
             if(seltype(f,2)==4)
             {
                 echoinput<<" "<<sp(k+4)<<" "<<sp(k+5)<<" "<<sp(k+6);
             }
-            echoinput<<endl<<"maleoff "<<male_offset<<endl;
+            echoinput<<endl<<"ages "<<r_ages<<endl;
+            echoinput<<"retention "<<retain_a(y,fs)<<endl;
           }
-          if(docheckup==1&&y==styr) echoinput<<"ages "<<r_ages<<endl;
-          if(docheckup==1&&y==styr) echoinput<<"retention "<<retain_a(y,fs)<<endl;
 
           if(seltype(f,2)==1)  // all discards are dead
           {
