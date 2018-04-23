@@ -818,38 +818,42 @@
 
 
 !!//  SS_Label_Info_2.5 #Read Mean Body Weight data
-//  note that syntax for storing this info internal is done differently than for surveys and discard
+//  note that syntax for storing this info internally is done differently than for surveys and discard
   init_int do_meanbodywt
   int nobs_mnwt_rd
   int nobs_mnwt
   number DF_bodywt  // DF For meanbodywt T-distribution
   !!echoinput<<do_meanbodywt<<" Use mean body size (weight or length); If 0, then no additional input in 3.30 "<<endl;
 
-//   matrix mnwtdata1(1,nobs_mnwt_rd,1,6)
  LOCAL_CALCS
   if(do_meanbodywt>0)
   {
     *(ad_comm::global_datafile) >> DF_bodywt;
     echoinput<<DF_bodywt<<" degrees of freedom for bodywt T-distribution "<<endl;
-    echoinput<<"#_yr month fleet part obs stderr"<<endl;
+    echoinput<<"#_yr month fleet part type obs stderr"<<endl;
+    echoinput<<"# type is a required new input with 3.30.12"<<endl;
+    echoinput<<"# type makes explicit the infor previously contained in the sign of partition, e.g. "<<endl;
     echoinput<<"# if part<0, then obs are mean length, if part>0 then obs are mean weight"<<endl;
-
+    echoinput<<"# type=1 is for mean length, type=2 is for mean weight, and type=3 is for mean true age"<<endl;
     ender=0;
     nobs_mnwt=0;
+    z=0;
     do {
-     dvector tempvec(1,6);
-     *(ad_comm::global_datafile) >> tempvec(1,6);
-     echoinput<<tempvec<<endl;
+     dvector tempvec(1,7);
+     *(ad_comm::global_datafile) >> tempvec(1,7);
      if(tempvec(1)==-9999.) ender=1;
-     mnwtdata1.push_back (tempvec(1,6));
+     z++;
+     if(z<=2) echoinput<<"meansize_obs_#:"<<z<<" # "<<tempvec<<endl;
+     mnwtdata1.push_back (tempvec(1,7));
      if(tempvec(1)>=styr) nobs_mnwt++;
     } while (ender==0);
     nobs_mnwt_rd=mnwtdata1.size()-1;
     echoinput<<nobs_mnwt_rd<<" nobs for mean body size"<<endl;
+    if(nobs_mnwt_rd>0) echoinput<<"meansize_obs_#:"<<nobs_mnwt_rd<<" # "<<mnwtdata1[nobs_mnwt_rd-1]<<endl;
   }
  END_CALCS
-  matrix mnwtdata(1,9,1,nobs_mnwt)  //  working matrix for the mean size data
-//  9 items are:  yr, seas, type, mkt, obs, se, then three intermediate variance quantities
+  matrix mnwtdata(1,11,1,nobs_mnwt)  //  working matrix for the mean size data
+//  10 items are:  1yr, 2seas, 3fleet, 4part, 5type, 6obs, 7se, then three intermediate variance quantities, then ALKtime
   3darray yr_mnwt2(1,Nfleet,styr,TimeMax,0,2)  // last dimension here is for total, discard, retain
 
  LOCAL_CALCS
@@ -873,6 +877,7 @@
       if(y>retro_yr) mnwtdata1[i](3)=-f;
       t=timing_i_result(2);
       ALK_time=timing_i_result(5);
+//      disc_time_ALK(f,j)=ALK_time;  //  subseas that this observation is in
 
       if(data_time(ALK_time,f,1)<0.0)  //  so first occurrence of data at ALK_time,f
       {data_time(ALK_time,f)(1,3)=timing_r_result(1,3);}  // real_month,fraction of season, year.fraction
@@ -888,9 +893,11 @@
       have_data(ALK_time,f,data_type,p)=j;  //  store data index for the p'th observation in this subseas
 
       z=mnwtdata1[i](4);  // z is partition (0, 1, 2)
-      yr_mnwt2(f,t,z)=j;  //  seems redundant with have_data, but this stores the partition info, so allows both disard and retained obs in same f,t
+      yr_mnwt2(f,t,z)=j;  //  stores according to partition, so allows both disard and retained obs in same f,t
 
-      for (k=1;k<=6;k++) mnwtdata(k,j)=mnwtdata1[i](k);
+      for (k=1;k<=7;k++) mnwtdata(k,j)=mnwtdata1[i](k);
+      mnwtdata(1,j)=t;  //  note:  saving t, not y so have direct access to t later
+      mnwtdata(11,j)=ALK_time;
     }
   }
   echoinput<<"Successful pre-processing of mean-bodysize data"<<endl;

@@ -1135,7 +1135,7 @@ FUNCTION void write_bigoutput()
   }
 
   SS2out<<"#"<<endl<<"DISCARD_OUTPUT "<<endl;
-  SS2out<<"Fleet Name Yr Seas Yr.S Obs Exp Std_in Std_use Dev Like Like+log(s) SuprPer Use Obs_cat Exp_cat catch_mult exp_cat*catch_mult F_rate"<<endl;
+  SS2out<<"Fleet Name Yr Month Seas Yr.frac Obs Exp Std_in Std_use Dev Like Like+log(s) SuprPer Use Obs_cat Exp_cat catch_mult exp_cat*catch_mult F_rate"<<endl;
   data_type=2;
   if(nobs_disc>0)
   for (f=1;f<=Nfleet;f++)
@@ -1150,8 +1150,8 @@ FUNCTION void write_bigoutput()
       {gg=3;}  //  biomass
       else
       {gg=6;}  //  numbers
-      SS2out<<f<<" "<<fleetname(f)<<" "<<Show_Time(t)<<" "<<data_time(ALK_time,f,3)<<" "<<obs_disc(f,i)<<" "
-      <<exp_disc(f,i)<<" "<<" "<<cv_disc(f,i)<<" "<<sd_disc(f,i);
+      SS2out<<f<<" "<<fleetname(f)<<" "<<Show_Time(t,1)<<" "<<data_time(ALK_time,f,1)<<" "<<Show_Time(t,2)<<" "<<data_time(ALK_time,f,3)
+      <<" "<<obs_disc(f,i)<<" "<<exp_disc(f,i)<<" "<<" "<<cv_disc(f,i)<<" "<<sd_disc(f,i);
 
       if(yr_disc_use(f,i)>=0.0)
       {
@@ -1200,19 +1200,22 @@ FUNCTION void write_bigoutput()
 
   SS2out <<endl<< "MEAN_BODY_WT_OUTPUT"<<endl;
   if(nobs_mnwt>0) SS2out<<"log(L)_based_on_T_distribution_with_DF=_"<<DF_bodywt<< endl;
-  SS2out<<"Fleet Name Yr Seas Yr.S Mkt Obs Exp CV Dev NeglogL Neg(logL+log(s)) Use"<<endl;
+  SS2out<<"Fleet Name Yr Month Seas Yr.frac Part Type Obs Exp CV Dev NeglogL Neg(logL+log(s)) Use"<<endl;
+//  10 items are:  1yr, 2seas, 3fleet, 4part, 5type, 6obs, 7se, then three intermediate variance quantities
   if(nobs_mnwt>0)
   for (i=1;i<=nobs_mnwt;i++)
   {
     t=mnwtdata(1,i);
     f=abs(mnwtdata(3,i));
-    SS2out << mnwtdata(3,i)<<" "<<fleetname(f)<<" "<<Show_Time(t)<<" NA "
-    <<mnwtdata(4,i)<<" "<<mnwtdata(5,i)<<" "<<exp_mnwt(i)<<" "<<mnwtdata(6,i);
+    ALK_time=mnwtdata(11,i);
+    SS2out << mnwtdata(3,i)<<" "<<fleetname(f)<<" "<<Show_Time(t,1)<<" "<<data_time(ALK_time,f,1)<<
+    " "<<Show_Time(t,2)<<" "<<data_time(ALK_time,f,3)<<" "
+    <<mnwtdata(4,i)<<" "<<mnwtdata(5,i)<<" "<<mnwtdata(6,i)<<" "<<exp_mnwt(i)<<" "<<mnwtdata(7,i);
     if(mnwtdata(3,i)>0.)
     {
-      SS2out<<" "<<mnwtdata(5,i)-exp_mnwt(i)<<" "<<
-       0.5*(DF_bodywt+1.)*log(1.+square(mnwtdata(5,i)-exp_mnwt(i))/mnwtdata(8,i))<<" "<<
-       0.5*(DF_bodywt+1.)*log(1.+square(mnwtdata(5,i)-exp_mnwt(i))/mnwtdata(8,i))+ mnwtdata(9,i)<<" "<<1;
+      SS2out<<" "<<mnwtdata(6,i)-exp_mnwt(i)<<" "<<
+       0.5*(DF_bodywt+1.)*log(1.+square(mnwtdata(6,i)-exp_mnwt(i))/mnwtdata(9,i))<<" "<<
+       0.5*(DF_bodywt+1.)*log(1.+square(mnwtdata(6,i)-exp_mnwt(i))/mnwtdata(9,i))+ mnwtdata(10,i)<<" "<<1;
     }
     else
     {

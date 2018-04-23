@@ -371,23 +371,35 @@ FUNCTION void Get_expected_values();
             case(3):  // mean body weight
    /* SS_Label_46.3 expected mean body weight */
             {
-            if(have_data(ALK_time,f,data_type,0)>0)  //  number of observations
-            {
-            j=yr_mnwt2(f,t,0); //   sample from total catch
-            if(j>0) {exp_mnwt(j) = (exp_l_temp*wt_len2(s,1)) / sum(exp_l_temp);}  // total sample
-            else if(j<0)
-            {exp_mnwt(-j) = (exp_l_temp*len_bins_m2) / sum(exp_l_temp);}
+              if(have_data(ALK_time,f,data_type,0)>0)  //  number of observations
+              {
+              j=yr_mnwt2(f,t,0); //   sample from total catch
+              if(j>0)
+              {
+              z=mnwtdata(5,j);  //  type 1=length, 2=weight
+              if(z==2) {exp_mnwt(j) = (exp_l_temp*wt_len2(s,1)) / sum(exp_l_temp);}  // total sample
+              else
+              {exp_mnwt(j) = (exp_l_temp*len_bins_m2) / sum(exp_l_temp);}
+              }
 
-            j=yr_mnwt2(f,t,1);   // sample from discard
-            if(j>0) exp_mnwt(j) = (exp_l_temp-exp_l_temp_ret)*wt_len2(s,1) / (sum(exp_l_temp)-sum(exp_l_temp_ret));  // discard sample
-            else if(j<0)
-            {exp_mnwt(-j) = (exp_l_temp-exp_l_temp_ret)*len_bins_m2 / (sum(exp_l_temp)-sum(exp_l_temp_ret));}
+              j=yr_mnwt2(f,t,1);   // sample from discard
+              if(j>0)
+              {
+              z=mnwtdata(5,j);  //  type 1=length, 2=weight
+              if(z==2) exp_mnwt(j) = (exp_l_temp-exp_l_temp_ret)*wt_len2(s,1) / (sum(exp_l_temp)-sum(exp_l_temp_ret));  // discard sample
+              else
+              {exp_mnwt(j) = (exp_l_temp-exp_l_temp_ret)*len_bins_m2 / (sum(exp_l_temp)-sum(exp_l_temp_ret));}
+              }
 
-            j=yr_mnwt2(f,t,2);  // sample from retained catch
-            if(j>0) exp_mnwt(j) = (exp_l_temp_ret*wt_len2(s,1)) / sum(exp_l_temp_ret);    // retained only
-            else if(j<0)
-            {exp_mnwt(-j) = (exp_l_temp_ret*len_bins_m2) / sum(exp_l_temp_ret);}
-            }
+              j=yr_mnwt2(f,t,2);  // sample from retained catch
+              if(j>0)
+              {
+              z=mnwtdata(5,j);  //  type 1=length, 2=weight
+              if(z==2) exp_mnwt(j) = (exp_l_temp_ret*wt_len2(s,1)) / sum(exp_l_temp_ret);    // retained only
+              else
+              {exp_mnwt(j) = (exp_l_temp_ret*len_bins_m2) / sum(exp_l_temp_ret);}
+              }
+              }
 
             break;
             }

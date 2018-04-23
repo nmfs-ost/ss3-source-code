@@ -213,16 +213,10 @@ FUNCTION void evaluate_the_objective_function()
    if(nobs_mnwt>0)
    {
      for (i=1;i<=nobs_mnwt;i++)
-     if(mnwtdata(5,i)>0. && mnwtdata(3,i)>0.)
+     if(mnwtdata(3,i)>0.)
      {
-       mnwt_like(mnwtdata(3,i)) +=0.5*(DF_bodywt+1.)*log(1.+square(mnwtdata(5,i)-exp_mnwt(i))/mnwtdata(8,i))+ mnwtdata(9,i);
+       mnwt_like(mnwtdata(3,i)) +=0.5*(DF_bodywt+1.)*log(1.+square(mnwtdata(6,i)-exp_mnwt(i))/mnwtdata(9,i))+ mnwtdata(10,i);
      }
-      // mnwtdata(6,i)+=var_adjust(3,mnwtdata(3,i));  adjusted input error as a CV
-      // if(mnwtdata(6,i)<=0.0) mnwtdata(6,i)=0.001;
-      // mnwtdata(7,i)=mnwtdata(5,i)*mnwtdata(6,i);  se = obs*CV
-      // mnwtdata(8,i)=DF_bodywt*square(mnwtdata(7,i));   error as T-dist
-      // mnwtdata(9,i)=sd_offset*log(mnwtdata(7,i));  for the -log(s) component
-
      if(do_once==1) cout<<" did meanwt obj_fun "<<mnwt_like<<endl;
    }
 

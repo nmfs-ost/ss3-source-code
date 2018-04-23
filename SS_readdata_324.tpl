@@ -842,8 +842,9 @@
     if(y>=styr && y<=retro_yr) nobs_mnwt++;
   }
  END_CALCS
-  matrix mnwtdata(1,9,1,nobs_mnwt)
-//  9 items are:  yr, seas, type, mkt, obs, se, then three intermediate variance quantities
+  matrix mnwtdata(1,11,1,nobs_mnwt)  //  working matrix for the mean size data
+//  10 items are:  1yr, 2seas, 3fleet, 4part, 5type, 6obs, 7se, then three intermediate variance quantities, ALK_time
+//  # if part<0, then obs are mean length, if part>0 then obs are mean weight
   3darray yr_mnwt2(1,Nfleet,styr,TimeMax,0,2)  // last dimension here is for total, discard, retain
 
  LOCAL_CALCS
@@ -918,12 +919,19 @@
 
       if(s<1) {N_warn++; cout<<" EXIT - see warning "<<endl; warning<<" Critical error, season for meanwt obs "<<i<<" is <0; superper is not implemented for meanwt"<<endl; exit(1);}
       if(s>nseas) {N_warn++; cout<<" EXIT - see warning "<<endl; warning<<" Critical error, season for meanwt obs "<<i<<" is > nseas"<<endl; exit(1);}
-      z=mnwtdata1(i,4);  // z is partition (0, 1, 2)
+      z=abs(mnwtdata1(i,4));  // z is partition (0, 1, 2)
       yr_mnwt2(f,t,z)=j;  //  seems redundant with have_data, but this stores the partition info, so allows both disard and retained obs in same f,t
+//  1yr, 2seas, 3fleet, 4part, 5type, 6obs, 7se, then three intermediate variance quantities
 
       mnwtdata(1,j)=t;
       mnwtdata(2,j)=real_month;
-      for (k=3;k<=6;k++) mnwtdata(k,j)=mnwtdata1(i,k);
+      mnwtdata(3,j)=mnwtdata1(i,3);
+      mnwtdata(4,j)=mnwtdata1(i,4);
+      if(mnwtdata1(i,4)<0)
+      {mnwtdata(5,j)=1;}  //  body length
+      else
+      {mnwtdata(5,j)=2;}  //  body weight
+      mnwtdata(11,j)=ALK_time;
     }
   }
   echoinput<<"Successful read of mean-bodywt data, N= "<< nobs_mnwt <<endl;

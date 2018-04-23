@@ -129,15 +129,15 @@ FUNCTION void write_nudata()
   report1 <<"#"<<endl<< do_meanbodywt <<" #_use meanbodysize_data (0/1)"<< endl;
   if(nobs_mnwt_rd==0) report1<<"#_COND_";
   report1<<DF_bodywt<<" #_DF_for_meanbodysize_T-distribution_like"<<endl;
-  report1<<"# note:  use positive partition value for mean body wt, negative partition for mean body length "<<endl;
-  report1<<"#_yr month fleet part obs stderr"<<endl;
+  report1<<"# note:  type=1 for mean length; type=2 for mean body weight "<<endl;
+  report1<<"#_yr month fleet part type obs stderr"<<endl;
   if(nobs_mnwt>0)
    {
    for (i=1;i<=nobs_mnwt;i++)
     {
      f=abs(mnwtdata(3,i));
-     report1 << Show_Time(mnwtdata(1,i),1)<<" "<<mnwtdata(2,i)<<" "<<mnwtdata(3,i)<<" "<<mnwtdata(4,i)<<" "<<
-     mnwtdata(5,i)<<" "<<mnwtdata(6,i)-var_adjust(3,f)<<" #_ "<<fleetname(f)<<endl;
+     report1 << Show_Time(mnwtdata(1,i),1)<<" "<<mnwtdata(2,i)<<" "<<mnwtdata(3,i)<<" "<<mnwtdata(4,i)<<" "<<mnwtdata(5,i)<<" "<<
+     mnwtdata(6,i)<<" "<<mnwtdata(7,i)-var_adjust(3,f)<<" #_ "<<fleetname(f)<<endl;
     }
    }
   if(do_meanbodywt==0) report1<<"# ";
@@ -439,15 +439,15 @@ FUNCTION void write_nudata()
 
   if(nobs_mnwt_rd==0) report1<<"#_COND_";
   report1<<DF_bodywt<<" #_DF_for_meanbodysize_T-distribution_like"<<endl;
-  report1<<"# note:  use positive partition value for mean body wt, negative partition for mean body length "<<endl;
-  report1<<"#_yr month fleet part obs stderr"<<endl;
+  report1<<"# note:  type=1 for mean length; type=2 for mean body weight "<<endl;
+  report1<<"#_yr month fleet part type obs stderr"<<endl;
   if(nobs_mnwt>0)
    {
    for (i=1;i<=nobs_mnwt;i++)
     {
      f=abs(mnwtdata(3,i));
-     report1 << Show_Time(mnwtdata(1,i),1)<<" "<<mnwtdata(2,i)<<" "<<mnwtdata(3,i)<<" "<<mnwtdata(4,i)<<" "<<
-     exp_mnwt(i)<<" "<<mnwtdata(6,i)-var_adjust(3,f)<<" #_orig_obs: "<<mnwtdata(5,i)<<"  #_ "<<fleetname(f)<<endl;
+     report1 << Show_Time(mnwtdata(1,i),1)<<" "<<mnwtdata(2,i)<<" "<<mnwtdata(3,i)<<" "<<mnwtdata(4,i)<<" "<<mnwtdata(5,i)<<" "<<
+     exp_mnwt(i)<<" "<<mnwtdata(7,i)-var_adjust(3,f)<<" #_orig_obs: "<<mnwtdata(6,i)<<"  #_ "<<fleetname(f)<<endl;
     }
    }
   if(do_meanbodywt==0) report1<<"# ";
@@ -820,24 +820,24 @@ FUNCTION void write_nudata()
   report1 <<"#"<<endl<< do_meanbodywt <<" #_use meanbodysize_data (0/1)"<< endl;
   if(do_meanbodywt==0) report1<<"#_COND_";
   report1<<DF_bodywt<<" #_DF_for_meanbodysize_T-distribution_like"<<endl;
-  report1<<"# note:  use positive partition value for mean body wt, negative partition for mean body length "<<endl;
-  report1<<"#_yr month fleet part obs stderr"<<endl;
+  report1<<"# note:  type=1 for mean length; type=2 for mean body weight "<<endl;
+  report1<<"#_yr month fleet part type obs stderr"<<endl;
   if(nobs_mnwt>0)
   {
     for (i=1;i<=nobs_mnwt;i++)
     {
-      if(mnwtdata(3,i)>0 && mnwtdata(5,i)>0.)
+      if(mnwtdata(3,i)>0 && mnwtdata(6,i)>0.)
       {
-        temp=exp_mnwt(i)+randn(radm)*mnwtdata(6,i)*sqrt((DF_bodywt+1.)/DF_bodywt) *exp_mnwt(i);
+        temp=exp_mnwt(i)+randn(radm)*mnwtdata(7,i)*sqrt((DF_bodywt+1.)/DF_bodywt) *exp_mnwt(i);
         if(temp<=0.0) {temp=0.0001;}
       }
       else
       {
-        temp=mnwtdata(5,i);
+        temp=mnwtdata(6,i);
       }
       f=abs(mnwtdata(3,i));
-      report1 << Show_Time(mnwtdata(1,i),1)<<" "<<mnwtdata(2,i)<<" "<<mnwtdata(3,i)<<" "<<mnwtdata(4,i)<<" "<<
-      temp<<" "<<mnwtdata(6,i)-var_adjust(3,f)<<" #_orig_obs: "<<mnwtdata(5,i)<<"  #_ "<<fleetname(f)<<endl;    }
+      report1 << Show_Time(mnwtdata(1,i),1)<<" "<<mnwtdata(2,i)<<" "<<mnwtdata(3,i)<<" "<<mnwtdata(4,i)<<" "<<mnwtdata(5,i)<<" "<<
+      temp<<" "<<mnwtdata(7,i)-var_adjust(3,f)<<" #_orig_obs: "<<mnwtdata(6,i)<<"  #_ "<<fleetname(f)<<endl;    }
   }
   if(do_meanbodywt==0) report1<<"# ";
   report1<<" -9999 0 0 0 0 0 # terminator for mean body size data "<<endl;
