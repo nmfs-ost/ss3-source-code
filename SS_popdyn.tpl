@@ -374,11 +374,15 @@ FUNCTION void get_initial_conditions()
        t=styr-nseas-1+s;
        for (f=1;f<=Nfleet;f++)
        {
-         for (g=1;g<=6;g++) {catch_fleet(t,f,g)=equ_catch_fleet(g,s,f);}  // gets all 6 elements
+         for (g=1;g<=6;g++) 
+         {catch_fleet(t,f,g)=equ_catch_fleet(g,s,f);
+          annual_catch(styr-1,g)+=equ_catch_fleet(g,s,f);
+         }
          for (g=1;g<=gmorph;g++)
-         {catage(t,f,g)=value(equ_catage(s,f,g)); }
+         {catage(t,f,g)=equ_catage(s,f,g); }
        }
      }
+     for(k=1;k<=3;k++) {Smry_Table(styr-1,k+3)=annual_catch(styr-1,k);}
    }
 
 

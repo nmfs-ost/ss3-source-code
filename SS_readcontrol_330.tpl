@@ -2388,6 +2388,7 @@
    seltype_Nparam(41)=2+seltype_Nparam(17); // like 17, with 2 additional parameters for scaling (average over bin range)
    seltype_Nparam(42)=2+seltype_Nparam(27); // like 27, with 2 additional parameters for scaling (average over bin range)
    seltype_Nparam(43)=2+seltype_Nparam(6);  // like 6, with 2 additional parameters for scaling (average over bin range)
+   seltype_Nparam(44)=4;  // like 17 for two sexes with male selectivity as separate parameters
 
  END_CALCS
 
@@ -2442,7 +2443,6 @@
      if(seltype(f,1)==21) N_selparmvec(f) +=2*(seltype(f,4)-1);  // special setup of N parms
      if(seltype(f,1)==27 || seltype(f,1)==42) N_selparmvec(f) +=2*seltype(f,4);  // special setup of N parms for cubic spline
      if(seltype(f,1)>0 && Svy_units(f)<30) {dolen(f)=1;} else {dolen(f)=0;}
-
      if(seltype(f,1)==43)
      {
          ParCount++; ParmLabel+="SizeSel_ScaleBinLo_"+fleetname(f)+"("+NumLbl(f)+")";
@@ -2621,6 +2621,19 @@
          ParCount++; ParmLabel+="AgeSpline_Val_"+NumLbl(s)+"_"+fleetname(f1)+"_"+NumLbl(f1);
        }
      }
+     else if(seltype(f,1)==44)
+     {
+       N_selparmvec(f)=4+2*seltype(f,4);   // this is nages+1
+       ParCount++; ParmLabel+="first_selage_"+fleetname(f1)+"("+NumLbl(f1)+")";
+       ParCount++; ParmLabel+="first_age_mean_"+fleetname(f1)+"("+NumLbl(f1)+")";
+       ParCount++; ParmLabel+="last_age_mean_"+fleetname(f1)+"("+NumLbl(f1)+")";
+       ParCount++; ParmLabel+="Male_ln(ratio)_"+fleetname(f1)+"("+NumLbl(f1)+")";
+       for(int gg=1;gg<=seltype(f,4);gg++)
+       {ParCount++; ParmLabel+="female_ln(selchange)_"+NumLbl(gg)+"_"+fleetname(f1)+"("+NumLbl(f1)+")";}
+       for(int gg=1;gg<=seltype(f,4);gg++)
+       {ParCount++; ParmLabel+="male_ln(selchange)_"+NumLbl(gg)+"_"+fleetname(f1)+"("+NumLbl(f1)+")";}
+     }
+
      else if (seltype(f,1)==20)
      {
        ParCount++; ParmLabel+="Age_DblN_peak_"+fleetname(f)+"("+NumLbl(f)+")";

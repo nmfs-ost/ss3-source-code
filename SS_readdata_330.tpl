@@ -1703,7 +1703,7 @@
   imatrix  Lbin_lo(1,Nfleet,1,Nobs_a)
   imatrix  Lbin_hi(1,Nfleet,1,Nobs_a)
   3darray tails_a(1,Nfleet,1,Nobs_a,1,4)   // min-max bin for females; min-max bin for males
-  3darray header_a(1,Nfleet,1,Nobs_a,0,9)
+  3darray header_a(1,Nfleet,1,Nobs_a,1,9)
   3darray header_a_rd(1,Nfleet,1,Nobs_a,2,3)
 
 // arrays for Super-years
@@ -1774,8 +1774,6 @@
             header_a(f,j,2) = timing_r_result(1);  // month
           }
           if(y>retro_yr) header_a(f,j,3)=-f;
-          //  note that following storage is redundant with Show_Time(t,3) calculated later
-          header_a(f,j,0) = float(y)+0.01*int(100.*(azero_seas(s)+seasdur_half(s)));  //
           gen_a(f,j)=Age_Data[i](4);         // gender 0=combined, 1=female, 2=male, 3=both
           mkt_a(f,j)=Age_Data[i](5);         // partition: 0=all, 1=discard, 2=retained
           nsamp_a_read(f,j)=Age_Data[i](9);  // assigned sample size for observation
@@ -3167,7 +3165,7 @@
  END_CALCS
 
   imatrix Show_Time(styr,TimeMax_Fcast_std,1,2)  //  for each t:  shows year, season
-  imatrix Show_Time2(1,ALK_time_max,1,2)  //  for each ALK_time:  shows year, season
+  imatrix Show_Time2(1,ALK_time_max,1,3)  //  for each ALK_time:  shows year, season, subseas
  LOCAL_CALCS
   t=styr-1;
   for (y=styr;y<=YrMax;y++) /* SS_loop:  fill Show_Time(t,1) with year value */
@@ -3185,6 +3183,7 @@
     ALK_idx++;
     Show_Time2(ALK_idx,1)=y;
     Show_Time2(ALK_idx,2)=s;
+    Show_Time2(ALK_idx,3)=subseas;
   }
  END_CALCS
 

@@ -243,8 +243,8 @@ PARAMETER_SECTION
   matrix Hrate(1,Nfleet,styr-3*nseas,k) //Harvest Rate for each fleet
   matrix bycatch_F(1,Nfleet,1,nseas)
   3darray catch_fleet(styr-3*nseas,k,1,Nfleet,1,6)  //  1=sel_bio, 2=kill_bio; 3=ret_bio; 4=sel_num; 5=kill_num; 6=ret_num
-  matrix annual_catch(styr,YrMax,1,6)  //  same six as above
-  matrix annual_F(styr,YrMax,1,2)  //  1=sum of hrate (if Pope fmethod) or sum hrate*seasdur if F; 2=Z-M for selected ages
+  matrix annual_catch(styr-1,YrMax,1,6)  //  same six as above
+  matrix annual_F(styr-1,YrMax,1,2)  //  1=sum of hrate (if Pope fmethod) or sum hrate*seasdur if F; 2=Z-M for selected ages
   3darray equ_catch_fleet(1,6,1,nseas,1,Nfleet)
 
   matrix fec(1,gmorph,0,nages)            //relative fecundity at age, is the maturity times the weight-at-age times eggs/kg for females

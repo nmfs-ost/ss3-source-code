@@ -55,7 +55,8 @@ FUNCTION void get_selectivity()
             }
           }
         }  // end j parm loop
-        if(docheckup==1) echoinput<<" selex parms for fleet: "<<f<<" "<<endl<<sp(1,N_selparmvec(f))<<endl;
+        if(docheckup==1 && f<=Nfleet) echoinput<<" len selex parms for fleet: "<<f<<" "<<endl<<sp(1,N_selparmvec(f))<<endl;
+        if(docheckup==1 && f>Nfleet) echoinput<<" age selex parms for fleet: "<<f-Nfleet<<" "<<endl<<sp(1,N_selparmvec(f))<<endl;
         if(save_for_report>0 || do_once==1)
         {for (j=1;j<=N_selparmvec(f);j++) save_sp_len(y,f,j)=sp(j);
         }
@@ -806,7 +807,7 @@ FUNCTION void get_selectivity()
       {
         for (gg=1;gg<=gender;gg++)
         {
-          if(gg==1 || (gg==2 && seltype(f,3)>=3))  //  in age selex
+          if(gg==1 || (gg==2 && seltype(f,3)>=3) || (gg==2 && seltype(f,1)==44))  //  in age selex
           {
   //  SS_Label_Logic_22.7 #Switch depending on the age-selectivity pattern selected
             switch(seltype(f,1))
@@ -968,6 +969,58 @@ FUNCTION void get_selectivity()
                   {sel_a(y,fs,1,a)=0.0;}
                 }
               }
+              break;
+            }
+
+              case 44:  //  like age selex 17 but with separate parameters for males and with revised controls
+            {
+              //  sp(1) is first age with non-zero selectivity; can be age 0
+              //  seltype(f,4) is number of selectivity change parameters beginning at age=first_age+1
+              //  sp(2) is first age in mean selex
+              //  sp(3) is last age  in mean selex
+              //  sp(4) is male mean selex relative to female mean.
+              //  -999 code means to keep the change unchanged from previous age (so keeps same rate of change)
+              // -1000 code is only for males and sets the male change to be same as female change
+              // -1001 code is only for males and sets male change to be in addition to the female change
+              //  gg is the index for sex, where 1=female, 2=male
+              sel_a(y,fs,gg).initialize();
+              dvariable seldelta=0.0;  //  value is the change in log(selex)
+              tempvec_a=-999.; //  null value for vector
+              int first_age=int(value(sp(1)));
+              tempvec_a(first_age)=0.0;   //  start value for random walk across ages
+              int last_age=first_age+seltype(f,4);  //  because seltype(f,4) contains the number of changes
+              if(gg==1) {scaling_offset=4;} else {scaling_offset=4+last_age;}  // to get male vs female starting point for parameters
+              for (a=first_age+1;a<=last_age;a++)
+              {
+                //  with use of -999, lastsel stays constant until changed, so could create a linear change in ln(selex)
+                if(sp(a+scaling_offset)>-999.) {seldelta=sp(a+scaling_offset);}  // so allows for seldelta to remain unchanged
+                else if(sp(a+scaling_offset)==-1000.) {seldelta=sp(a+4);}  //  use female delta for the male delta at this age
+                else if(sp(a+scaling_offset)==-1001.) {seldelta=sp(a+4)+sp(a+scaling_offset);}  //  use female delta for the male delta at this age
+                tempvec_a(a)=tempvec_a(a-1)+seldelta;   // cumulative log(selex)
+              }
+              int low_bin  = int(value(sp(2)));
+              int high_bin = int(value(sp(3)));
+              if(do_once==1)  //  this should move to readcontrol!
+              {
+                if (low_bin < 0)
+                {
+                    low_bin = 0;
+                    N_warn++; warning<<" selex pattern 44; value for low bin is less than 0, so set to 0 "<<endl;
+                }
+                if (high_bin > nages)
+                {
+                    high_bin = nages;
+                    N_warn++; warning<<" selex pattern 44; value for high bin is greater than "<<nages<<", so set to "<<nages<<" "<<endl;
+                }
+                if (high_bin < low_bin) high_bin = low_bin;
+                if (low_bin > high_bin) low_bin = high_bin;
+                sp(2) = low_bin;
+                sp(3) = high_bin;
+              }
+              temp=mean(tempvec_a(low_bin,high_bin));
+              sel_a(y,fs,gg)(first_age,last_age)=mfexp(tempvec_a(first_age,last_age)-temp);
+              if(gg==2) sel_a(y,fs,gg)(first_age,last_age)*=mfexp(sp(4)); //  apply male ratio
+              if (last_age<nages) {sel_a(y,fs,gg)(last_age+1,nages)=sel_a(y,fs,gg,last_age);}
               break;
             }
 
@@ -1192,7 +1245,7 @@ FUNCTION void get_selectivity()
                 }
               }
             }
-            else if(seltype(f,3)!=3 && seltype(f,3)!=4 &&seltype(f,1)!=15)
+            else if(seltype(f,3)!=3 && seltype(f,3)!=4 &&seltype(f,1)!=15 && seltype(f,1)!=43)
             {sel_a(y,fs,2)=sel_a(y,fs,1);}   // set males = females
             if(docheckup==1) echoinput<<" sel-age "<<sel_a(y,fs)<<endl;
           }
@@ -1208,7 +1261,7 @@ FUNCTION void get_selectivity()
       if(TwoD_AR_def[j](8)==2)  //  age (2) vs length (1) flag
       {
         z=TwoD_AR_def[j](12);  // index of dev vector used
-        if(docheckup==1) echoinput<<"2dar for fleet: "<<f<<" 2DAR: "<<j<<" dev: "<<z<<endl;
+        if(docheckup==1) echoinput<<"age-based 2DAR for fleet: "<<f<<" 2DAR: "<<j<<" using dev_vector: "<<z<<endl;
 
         if(y==styr && (TwoD_AR_before(j)==3 || TwoD_AR_after(j)==3) )  //  if needed, calculate average dev for each age over the range of years
         {
@@ -1235,7 +1288,7 @@ FUNCTION void get_selectivity()
 //          k=(TwoD_AR_ymin(j)-TwoD_AR_ymin(j))*(TwoD_AR_amax(j)-TwoD_AR_amin(j)+1);  //  index of 1st dev in vector created from year and age index
             k=0;
           }
-          else if(TwoD_AR_before(j)==3)   //  use mean length-specific devs
+          else if(TwoD_AR_before(j)==3)   //  use mean age-specific devs
           {k=-1;}
         }
         else if(y<=TwoD_AR_ymax(j))  //  in year range for annual devs
@@ -1278,7 +1331,7 @@ FUNCTION void get_selectivity()
             }
           }
         }
-        if(docheckup==1) echoinput<<"len selex after 2D_AR"<<endl<<sel_l(y,fs)<<endl;
+        if(docheckup==1) echoinput<<"age selex after 2D_AR"<<endl<<sel_a(y,fs)<<endl;
       }
     }
 
