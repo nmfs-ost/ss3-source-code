@@ -2623,15 +2623,23 @@
      }
      else if(seltype(f,1)==44)
      {
-       N_selparmvec(f)=4+2*seltype(f,4);   // this is nages+1
+       N_selparmvec(f)=2+gender+gender*seltype(f,4);
        ParCount++; ParmLabel+="first_selage_"+fleetname(f1)+"("+NumLbl(f1)+")";
        ParCount++; ParmLabel+="first_age_mean_"+fleetname(f1)+"("+NumLbl(f1)+")";
        ParCount++; ParmLabel+="last_age_mean_"+fleetname(f1)+"("+NumLbl(f1)+")";
-       ParCount++; ParmLabel+="Male_ln(ratio)_"+fleetname(f1)+"("+NumLbl(f1)+")";
-       for(int gg=1;gg<=seltype(f,4);gg++)
-       {ParCount++; ParmLabel+="female_ln(selchange)_"+NumLbl(gg)+"_"+fleetname(f1)+"("+NumLbl(f1)+")";}
-       for(int gg=1;gg<=seltype(f,4);gg++)
-       {ParCount++; ParmLabel+="male_ln(selchange)_"+NumLbl(gg)+"_"+fleetname(f1)+"("+NumLbl(f1)+")";}
+       if(gender==2) 
+       {
+        ParCount++; ParmLabel+="Male_ln(ratio)_"+fleetname(f1)+"("+NumLbl(f1)+")";
+        for(int gg=1;gg<=seltype(f,4);gg++)
+        {ParCount++; ParmLabel+="female_ln(selchange)_"+NumLbl(gg)+"_"+fleetname(f1)+"("+NumLbl(f1)+")";}
+        for(int gg=1;gg<=seltype(f,4);gg++)
+        {ParCount++; ParmLabel+="male_ln(selchange)_"+NumLbl(gg)+"_"+fleetname(f1)+"("+NumLbl(f1)+")";}
+      }
+      else
+      {
+        for(int gg=1;gg<=seltype(f,4);gg++)
+        {ParCount++; ParmLabel+="ln(selchange)_"+NumLbl(gg)+"_"+fleetname(f1)+"("+NumLbl(f1)+")";}
+      }
      }
 
      else if (seltype(f,1)==20)

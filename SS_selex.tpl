@@ -981,23 +981,31 @@ FUNCTION void get_selectivity()
               //  sp(4) is male mean selex relative to female mean.
               //  -999 code means to keep the change unchanged from previous age (so keeps same rate of change)
               // -1000 code is only for males and sets the male change to be same as female change
-              // -1001 code is only for males and sets male change to be in addition to the female change
               //  gg is the index for sex, where 1=female, 2=male
               sel_a(y,fs,gg).initialize();
               dvariable seldelta=0.0;  //  value is the change in log(selex)
-              tempvec_a=-999.; //  null value for vector
+              tempvec_a.initialize(); //  null value for vector
+//              echoinput<<" sp "<<sp(1,N_selparmvec(f))<<endl;
               int first_age=int(value(sp(1)));
               tempvec_a(first_age)=0.0;   //  start value for random walk across ages
               int last_age=first_age+seltype(f,4);  //  because seltype(f,4) contains the number of changes
-              if(gg==1) {scaling_offset=4;} else {scaling_offset=4+last_age;}  // to get male vs female starting point for parameters
+              if(gg==1) {scaling_offset=2+gender;} else {scaling_offset=2+gender+seltype(f,4);}  // to get male vs female starting point for parameters
+//               echoinput<<first_age <<" "<< last_age <<" "<< scaling_offset<<endl;
+              j=scaling_offset;
               for (a=first_age+1;a<=last_age;a++)
               {
+                j++;
                 //  with use of -999, lastsel stays constant until changed, so could create a linear change in ln(selex)
-                if(sp(a+scaling_offset)>-999.) {seldelta=sp(a+scaling_offset);}  // so allows for seldelta to remain unchanged
-                else if(sp(a+scaling_offset)==-1000.) {seldelta=sp(a+4);}  //  use female delta for the male delta at this age
-                else if(sp(a+scaling_offset)==-1001.) {seldelta=sp(a+4)+sp(a+scaling_offset);}  //  use female delta for the male delta at this age
+                if(sp(j)>-999.) {seldelta=sp(j);}  // so allows for seldelta to remain unchanged
+                if(gg==2)  //  more options for male selectivity
+                {
+                  if(sp(j)==-1000.) {seldelta=sp(j-seltype(f,4));}  //  use female delta for the male delta at this age
+                }
+//                echoinput<<a<<" "<<j<<" "<<sp(j)<<" "<<seldelta<<" a-1 "<<tempvec_a(a-1)<<" a ";
                 tempvec_a(a)=tempvec_a(a-1)+seldelta;   // cumulative log(selex)
+//                echoinput<<tempvec_a(a)<<endl;
               }
+//              echoinput<<tempvec_a<<endl;
               int low_bin  = int(value(sp(2)));
               int high_bin = int(value(sp(3)));
               if(do_once==1)  //  this should move to readcontrol!
@@ -1019,8 +1027,13 @@ FUNCTION void get_selectivity()
               }
               temp=mean(tempvec_a(low_bin,high_bin));
               sel_a(y,fs,gg)(first_age,last_age)=mfexp(tempvec_a(first_age,last_age)-temp);
+//              echoinput<<tempvec_a<<endl;
+//              echoinput<<sel_a(y,fs,gg)<<endl;
               if(gg==2) sel_a(y,fs,gg)(first_age,last_age)*=mfexp(sp(4)); //  apply male ratio
               if (last_age<nages) {sel_a(y,fs,gg)(last_age+1,nages)=sel_a(y,fs,gg,last_age);}
+//              echoinput<<sel_a(y,fs,gg)<<endl;
+              scaling_offset=0;
+//              if(gg==gender) exit(1);
               break;
             }
 
