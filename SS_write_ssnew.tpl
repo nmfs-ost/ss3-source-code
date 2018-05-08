@@ -129,15 +129,15 @@ FUNCTION void write_nudata()
   report1 <<"#"<<endl<< do_meanbodywt <<" #_use meanbodysize_data (0/1)"<< endl;
   if(nobs_mnwt_rd==0) report1<<"#_COND_";
   report1<<DF_bodywt<<" #_DF_for_meanbodysize_T-distribution_like"<<endl;
-  report1<<"# note:  use positive partition value for mean body wt, negative partition for mean body length "<<endl;
-  report1<<"#_yr month fleet part obs stderr"<<endl;
+  report1<<"# note:  type=1 for mean length; type=2 for mean body weight "<<endl;
+  report1<<"#_yr month fleet part type obs stderr"<<endl;
   if(nobs_mnwt>0)
    {
    for (i=1;i<=nobs_mnwt;i++)
     {
      f=abs(mnwtdata(3,i));
-     report1 << Show_Time(mnwtdata(1,i),1)<<" "<<mnwtdata(2,i)<<" "<<mnwtdata(3,i)<<" "<<mnwtdata(4,i)<<" "<<
-     mnwtdata(5,i)<<" "<<mnwtdata(6,i)-var_adjust(3,f)<<" #_ "<<fleetname(f)<<endl;
+     report1 << Show_Time(mnwtdata(1,i),1)<<" "<<mnwtdata(2,i)<<" "<<mnwtdata(3,i)<<" "<<mnwtdata(4,i)<<" "<<mnwtdata(5,i)<<" "<<
+     mnwtdata(6,i)<<" "<<mnwtdata(7,i)-var_adjust(3,f)<<" #_ "<<fleetname(f)<<endl;
     }
    }
   if(do_meanbodywt==0) report1<<"# ";
@@ -439,15 +439,15 @@ FUNCTION void write_nudata()
 
   if(nobs_mnwt_rd==0) report1<<"#_COND_";
   report1<<DF_bodywt<<" #_DF_for_meanbodysize_T-distribution_like"<<endl;
-  report1<<"# note:  use positive partition value for mean body wt, negative partition for mean body length "<<endl;
-  report1<<"#_yr month fleet part obs stderr"<<endl;
+  report1<<"# note:  type=1 for mean length; type=2 for mean body weight "<<endl;
+  report1<<"#_yr month fleet part type obs stderr"<<endl;
   if(nobs_mnwt>0)
    {
    for (i=1;i<=nobs_mnwt;i++)
     {
      f=abs(mnwtdata(3,i));
-     report1 << Show_Time(mnwtdata(1,i),1)<<" "<<mnwtdata(2,i)<<" "<<mnwtdata(3,i)<<" "<<mnwtdata(4,i)<<" "<<
-     exp_mnwt(i)<<" "<<mnwtdata(6,i)-var_adjust(3,f)<<" #_orig_obs: "<<mnwtdata(5,i)<<"  #_ "<<fleetname(f)<<endl;
+     report1 << Show_Time(mnwtdata(1,i),1)<<" "<<mnwtdata(2,i)<<" "<<mnwtdata(3,i)<<" "<<mnwtdata(4,i)<<" "<<mnwtdata(5,i)<<" "<<
+     exp_mnwt(i)<<" "<<mnwtdata(7,i)-var_adjust(3,f)<<" #_orig_obs: "<<mnwtdata(6,i)<<"  #_ "<<fleetname(f)<<endl;
     }
    }
   if(do_meanbodywt==0) report1<<"# ";
@@ -573,7 +573,7 @@ FUNCTION void write_nudata()
   if(use_meansizedata>0)
   {
   report1<<"# sex codes:  0=combined; 1=use female only; 2=use male only; 3=use both as joint sexxlength distribution"<<endl;
-  report1<<"# partition codes:  (0=combined; 1=discard; 2=retained"<<endl;
+  report1<<"# partition codes: 0=combined; 1=discard; 2=retained"<<endl;
   report1<<"# ageerr codes:  positive means mean length-at-age; negative means mean bodywt_at_age"<<endl;
   report1<<"#_yr month fleet sex part ageerr ignore datavector(female-male)"<<endl;
   report1<<"#                                          samplesize(female-male)"<<endl;
@@ -820,24 +820,24 @@ FUNCTION void write_nudata()
   report1 <<"#"<<endl<< do_meanbodywt <<" #_use meanbodysize_data (0/1)"<< endl;
   if(do_meanbodywt==0) report1<<"#_COND_";
   report1<<DF_bodywt<<" #_DF_for_meanbodysize_T-distribution_like"<<endl;
-  report1<<"# note:  use positive partition value for mean body wt, negative partition for mean body length "<<endl;
-  report1<<"#_yr month fleet part obs stderr"<<endl;
+  report1<<"# note:  type=1 for mean length; type=2 for mean body weight "<<endl;
+  report1<<"#_yr month fleet part type obs stderr"<<endl;
   if(nobs_mnwt>0)
   {
     for (i=1;i<=nobs_mnwt;i++)
     {
-      if(mnwtdata(3,i)>0 && mnwtdata(5,i)>0.)
+      if(mnwtdata(3,i)>0 && mnwtdata(6,i)>0.)
       {
-        temp=exp_mnwt(i)+randn(radm)*mnwtdata(6,i)*sqrt((DF_bodywt+1.)/DF_bodywt) *exp_mnwt(i);
+        temp=exp_mnwt(i)+randn(radm)*mnwtdata(7,i)*sqrt((DF_bodywt+1.)/DF_bodywt) *exp_mnwt(i);
         if(temp<=0.0) {temp=0.0001;}
       }
       else
       {
-        temp=mnwtdata(5,i);
+        temp=mnwtdata(6,i);
       }
       f=abs(mnwtdata(3,i));
-      report1 << Show_Time(mnwtdata(1,i),1)<<" "<<mnwtdata(2,i)<<" "<<mnwtdata(3,i)<<" "<<mnwtdata(4,i)<<" "<<
-      temp<<" "<<mnwtdata(6,i)-var_adjust(3,f)<<" #_orig_obs: "<<mnwtdata(5,i)<<"  #_ "<<fleetname(f)<<endl;    }
+      report1 << Show_Time(mnwtdata(1,i),1)<<" "<<mnwtdata(2,i)<<" "<<mnwtdata(3,i)<<" "<<mnwtdata(4,i)<<" "<<mnwtdata(5,i)<<" "<<
+      temp<<" "<<mnwtdata(7,i)-var_adjust(3,f)<<" #_orig_obs: "<<mnwtdata(6,i)<<"  #_ "<<fleetname(f)<<endl;    }
   }
   if(do_meanbodywt==0) report1<<"# ";
   report1<<" -9999 0 0 0 0 0 # terminator for mean body size data "<<endl;
@@ -1211,7 +1211,7 @@ FUNCTION void write_nucontrol()
   {NuStart<<"#COND 10 15 #_min and max age over which average F will be calculated with F_reporting=4"<<endl;}
   NuStart<<F_std_basis<<" # F_report_basis: 0=raw_F_report; 1=F/Fspr; 2=F/Fmsy ; 3=F/Fbtgt"<<endl;
   NuStart<<double(mcmc_output_detail)+MCMC_bump<<
-  " MCMC output detail: integer part (0=default; 1=adds obj func components); and decimal part (added to SR_LN(R0) on first call to mcmc)"<<endl;
+  " # MCMC output detail: integer part (0=default; 1=adds obj func components); and decimal part (added to SR_LN(R0) on first call to mcmc)"<<endl;
   NuStart<<ALK_tolerance<<" # ALK tolerance (example 0.0001)"<<endl;
   NuStart<<"3.30 # check value for end of file and for version control"<<endl;
   NuStart.close();
@@ -1233,7 +1233,7 @@ FUNCTION void write_nucontrol()
   NuFore<<"#_Fcast_years:  beg_selex, end_selex, beg_relF, end_relF, beg_recruits, end_recruits  (enter actual year, or values of 0 or -integer to be rel. endyr)"<<endl<<Fcast_yr_rd<<endl;
   NuFore<<Fcast_Specify_Selex<<" # Forecast selectivity (0=fcast selex is mean from year range; 1=fcast selectivity from annual time-vary parms)"<<endl;
 
-  NuFore<<HarvestPolicy<<" # Control rule method (1=catch=f(SSB) west coast; 2=F=f(SSB) ) "<<endl;
+  NuFore<<HarvestPolicy<<" # Control rule method (1: ramp does catch=f(SSB), buffer on F; 2: ramp does F=f(SSB), buffer on F; 3: ramp does catch=f(SSB), buffer on catch; 4: ramp does F=f(SSB), buffer on catch) "<<endl;
   NuFore<<H4010_top<<" # Control rule Biomass level for constant F (as frac of Bzero, e.g. 0.40); (Must be > the no F level below) "<<endl;
   NuFore<<H4010_bot<<" # Control rule Biomass level for no F (as frac of Bzero, e.g. 0.10) "<<endl;
   NuFore<<H4010_scale<<" # Control rule target as fraction of Flimit (e.g. 0.75) "<<endl;

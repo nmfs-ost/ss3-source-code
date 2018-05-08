@@ -818,38 +818,42 @@
 
 
 !!//  SS_Label_Info_2.5 #Read Mean Body Weight data
-//  note that syntax for storing this info internal is done differently than for surveys and discard
+//  note that syntax for storing this info internally is done differently than for surveys and discard
   init_int do_meanbodywt
   int nobs_mnwt_rd
   int nobs_mnwt
   number DF_bodywt  // DF For meanbodywt T-distribution
   !!echoinput<<do_meanbodywt<<" Use mean body size (weight or length); If 0, then no additional input in 3.30 "<<endl;
 
-//   matrix mnwtdata1(1,nobs_mnwt_rd,1,6)
  LOCAL_CALCS
   if(do_meanbodywt>0)
   {
     *(ad_comm::global_datafile) >> DF_bodywt;
     echoinput<<DF_bodywt<<" degrees of freedom for bodywt T-distribution "<<endl;
-    echoinput<<"#_yr month fleet part obs stderr"<<endl;
+    echoinput<<"#_yr month fleet part type obs stderr"<<endl;
+    echoinput<<"# type is a required new input with 3.30.12"<<endl;
+    echoinput<<"# type makes explicit the infor previously contained in the sign of partition, e.g. "<<endl;
     echoinput<<"# if part<0, then obs are mean length, if part>0 then obs are mean weight"<<endl;
-
+    echoinput<<"# type=1 is for mean length, type=2 is for mean weight, and type=3 is for mean true age"<<endl;
     ender=0;
     nobs_mnwt=0;
+    z=0;
     do {
-     dvector tempvec(1,6);
-     *(ad_comm::global_datafile) >> tempvec(1,6);
-     echoinput<<tempvec<<endl;
+     dvector tempvec(1,7);
+     *(ad_comm::global_datafile) >> tempvec(1,7);
      if(tempvec(1)==-9999.) ender=1;
-     mnwtdata1.push_back (tempvec(1,6));
+     z++;
+     if(z<=2) echoinput<<"meansize_obs_#:"<<z<<" # "<<tempvec<<endl;
+     mnwtdata1.push_back (tempvec(1,7));
      if(tempvec(1)>=styr) nobs_mnwt++;
     } while (ender==0);
     nobs_mnwt_rd=mnwtdata1.size()-1;
     echoinput<<nobs_mnwt_rd<<" nobs for mean body size"<<endl;
+    if(nobs_mnwt_rd>0) echoinput<<"meansize_obs_#:"<<nobs_mnwt_rd<<" # "<<mnwtdata1[nobs_mnwt_rd-1]<<endl;
   }
  END_CALCS
-  matrix mnwtdata(1,9,1,nobs_mnwt)  //  working matrix for the mean size data
-//  9 items are:  yr, seas, type, mkt, obs, se, then three intermediate variance quantities
+  matrix mnwtdata(1,11,1,nobs_mnwt)  //  working matrix for the mean size data
+//  10 items are:  1yr, 2seas, 3fleet, 4part, 5type, 6obs, 7se, then three intermediate variance quantities, then ALKtime
   3darray yr_mnwt2(1,Nfleet,styr,TimeMax,0,2)  // last dimension here is for total, discard, retain
 
  LOCAL_CALCS
@@ -873,6 +877,7 @@
       if(y>retro_yr) mnwtdata1[i](3)=-f;
       t=timing_i_result(2);
       ALK_time=timing_i_result(5);
+//      disc_time_ALK(f,j)=ALK_time;  //  subseas that this observation is in
 
       if(data_time(ALK_time,f,1)<0.0)  //  so first occurrence of data at ALK_time,f
       {data_time(ALK_time,f)(1,3)=timing_r_result(1,3);}  // real_month,fraction of season, year.fraction
@@ -888,9 +893,11 @@
       have_data(ALK_time,f,data_type,p)=j;  //  store data index for the p'th observation in this subseas
 
       z=mnwtdata1[i](4);  // z is partition (0, 1, 2)
-      yr_mnwt2(f,t,z)=j;  //  seems redundant with have_data, but this stores the partition info, so allows both disard and retained obs in same f,t
+      yr_mnwt2(f,t,z)=j;  //  stores according to partition, so allows both disard and retained obs in same f,t
 
-      for (k=1;k<=6;k++) mnwtdata(k,j)=mnwtdata1[i](k);
+      for (k=1;k<=7;k++) mnwtdata(k,j)=mnwtdata1[i](k);
+      mnwtdata(1,j)=t;  //  note:  saving t, not y so have direct access to t later
+      mnwtdata(11,j)=ALK_time;
     }
   }
   echoinput<<"Successful pre-processing of mean-bodysize data"<<endl;
@@ -1087,7 +1094,7 @@
     }
   }
   echoinput<<endl<<"Processed Population length bin info "<<endl<<len_bins<<endl;
-
+  
   maxL=len_bins_m(nlength);
   minL=len_bins(1);
   minL_m=len_bins_m(1);
@@ -1193,15 +1200,18 @@
     if(use_length_data>0)
     {
     ender=0;
+    z=0;
     do {
       dvector tempvec(1,k);
         *(ad_comm::global_datafile) >> tempvec(1,k);
           if(tempvec(1)==-9999.) ender=1;
+      z++;
+      if(z<=2) echoinput<<"len_obs_#:"<<z<<" # "<<tempvec(1,k)<<endl;
       lendata.push_back (tempvec(1,k));
     } while (ender==0);
     nobsl_rd=lendata.size()-1;
     echoinput<<nobsl_rd<<" N length comp observations "<<endl;
-    if(nobsl_rd>0) echoinput<<" first lencomp obs "<<endl<<lendata[0]<<endl<<" last obs"<<endl<<lendata[nobsl_rd-1]<<endl;
+    if(nobsl_rd>0) echoinput<<"len_obs_#:"<<nobsl_rd<<" # "<<lendata[nobsl_rd-1]<<endl;
 
     data_type=4;
     Nobs_l=0;                       //  number of observations from each fleet/survey
@@ -1633,15 +1643,18 @@
 //  SS_Label_Info_2.8.2 #Read Age data
   k=9+n_abins2;
   ender=0;
+  z=0;
   do {
     dvector tempvec(1,k);
     *(ad_comm::global_datafile) >> tempvec(1,k);
     if(tempvec(1)==-9999.) ender=1;
+    z++;
+    if(z<=2) echoinput<<"age_obs_#:"<<z<<" # "<<tempvec(1,k)<<endl;
     Age_Data.push_back (tempvec(1,k));
   } while (ender==0);
   nobsa_rd=Age_Data.size()-1;
   echoinput<<nobsa_rd<<" N age comp observations "<<endl;
-  if(nobsa_rd>0) echoinput<<" first agecomp obs "<<endl<<Age_Data[0]<<endl<<" last obs"<<endl<<Age_Data[nobsa_rd-1]<<endl;;
+  if(nobsa_rd>0) echoinput<<"age_obs_#:"<<nobsa_rd<<" # "<<Age_Data[nobsa_rd-1]<<endl;
 
   data_type=5;  //  for age data
 
@@ -1690,7 +1703,7 @@
   imatrix  Lbin_lo(1,Nfleet,1,Nobs_a)
   imatrix  Lbin_hi(1,Nfleet,1,Nobs_a)
   3darray tails_a(1,Nfleet,1,Nobs_a,1,4)   // min-max bin for females; min-max bin for males
-  3darray header_a(1,Nfleet,1,Nobs_a,0,9)
+  3darray header_a(1,Nfleet,1,Nobs_a,1,9)
   3darray header_a_rd(1,Nfleet,1,Nobs_a,2,3)
 
 // arrays for Super-years
@@ -1761,8 +1774,6 @@
             header_a(f,j,2) = timing_r_result(1);  // month
           }
           if(y>retro_yr) header_a(f,j,3)=-f;
-          //  note that following storage is redundant with Show_Time(t,3) calculated later
-          header_a(f,j,0) = float(y)+0.01*int(100.*(azero_seas(s)+seasdur_half(s)));  //
           gen_a(f,j)=Age_Data[i](4);         // gender 0=combined, 1=female, 2=male, 3=both
           mkt_a(f,j)=Age_Data[i](5);         // partition: 0=all, 1=discard, 2=retained
           nsamp_a_read(f,j)=Age_Data[i](9);  // assigned sample size for observation
@@ -2004,15 +2015,18 @@
   {
     k=7+2*n_abins2;
     ender=0;
+    z=0;
     do {
       dvector tempvec(1,k);
       *(ad_comm::global_datafile) >> tempvec(1,k);
       if(tempvec(1)==-9999.) ender=1;
+      z++;
+      if(z<=2) echoinput<<"meansize@age_obs_#:"<<z<<" # "<<tempvec(1,k)<<endl;
       sizeAge_Data.push_back (tempvec(1,k));
   } while (ender==0);
   nobs_ms_rd=sizeAge_Data.size()-1;
-  echoinput<<nobs_ms_rd<<" N size-at-age observations read "<<endl;
-  if(nobs_ms_rd>0) echoinput<<" first size-at-age obs "<<endl<<sizeAge_Data[0]<<endl<<" last obs"<<endl<<sizeAge_Data[nobs_ms_rd-1]<<endl;;
+  echoinput<<nobs_ms_rd<<" N size@age obs read "<<endl;
+  if(nobs_ms_rd>0) echoinput<<"meansize@age_obs_#:"<<nobs_ms_rd<<" # "<<sizeAge_Data[nobs_ms_rd-1]<<endl;
 
   data_type=7;  //  for size (length or weight)-at-age data
   Nobs_ms=0;
@@ -2803,7 +2817,7 @@
   *(ad_comm::global_datafile) >> Fcast_Specify_Selex;
   echoinput<<Fcast_Specify_Selex<<" # echoed Fcast_Specify_Selex value"<<endl;
 
-  echoinput<<endl<<"next read 4 values for:  control rule shape(1 or 2), inflection (like 0.40), cutoff(like 0.10), scale(like 0.75)"<<endl;
+  echoinput<<endl<<"next read 4 values for:  control rule shape(1, 2, 3 or 4), inflection (like 0.40), cutoff(like 0.10), scale(like 0.75)"<<endl;
   *(ad_comm::global_datafile) >> HarvestPolicy;
   echoinput<<HarvestPolicy<<"  # echoed HarvestPolicy "<<endl;
   *(ad_comm::global_datafile) >> H4010_top;
@@ -3151,7 +3165,7 @@
  END_CALCS
 
   imatrix Show_Time(styr,TimeMax_Fcast_std,1,2)  //  for each t:  shows year, season
-  imatrix Show_Time2(1,ALK_time_max,1,2)  //  for each ALK_time:  shows year, season
+  imatrix Show_Time2(1,ALK_time_max,1,3)  //  for each ALK_time:  shows year, season, subseas
  LOCAL_CALCS
   t=styr-1;
   for (y=styr;y<=YrMax;y++) /* SS_loop:  fill Show_Time(t,1) with year value */
@@ -3169,6 +3183,7 @@
     ALK_idx++;
     Show_Time2(ALK_idx,1)=y;
     Show_Time2(ALK_idx,2)=s;
+    Show_Time2(ALK_idx,3)=subseas;
   }
  END_CALCS
 

@@ -842,8 +842,9 @@
     if(y>=styr && y<=retro_yr) nobs_mnwt++;
   }
  END_CALCS
-  matrix mnwtdata(1,9,1,nobs_mnwt)
-//  9 items are:  yr, seas, type, mkt, obs, se, then three intermediate variance quantities
+  matrix mnwtdata(1,11,1,nobs_mnwt)  //  working matrix for the mean size data
+//  10 items are:  1yr, 2seas, 3fleet, 4part, 5type, 6obs, 7se, then three intermediate variance quantities, ALK_time
+//  # if part<0, then obs are mean length, if part>0 then obs are mean weight
   3darray yr_mnwt2(1,Nfleet,styr,TimeMax,0,2)  // last dimension here is for total, discard, retain
 
  LOCAL_CALCS
@@ -918,12 +919,19 @@
 
       if(s<1) {N_warn++; cout<<" EXIT - see warning "<<endl; warning<<" Critical error, season for meanwt obs "<<i<<" is <0; superper is not implemented for meanwt"<<endl; exit(1);}
       if(s>nseas) {N_warn++; cout<<" EXIT - see warning "<<endl; warning<<" Critical error, season for meanwt obs "<<i<<" is > nseas"<<endl; exit(1);}
-      z=mnwtdata1(i,4);  // z is partition (0, 1, 2)
+      z=abs(mnwtdata1(i,4));  // z is partition (0, 1, 2)
       yr_mnwt2(f,t,z)=j;  //  seems redundant with have_data, but this stores the partition info, so allows both disard and retained obs in same f,t
+//  1yr, 2seas, 3fleet, 4part, 5type, 6obs, 7se, then three intermediate variance quantities
 
       mnwtdata(1,j)=t;
       mnwtdata(2,j)=real_month;
-      for (k=3;k<=6;k++) mnwtdata(k,j)=mnwtdata1(i,k);
+      mnwtdata(3,j)=mnwtdata1(i,3);
+      mnwtdata(4,j)=mnwtdata1(i,4);
+      if(mnwtdata1(i,4)<0)
+      {mnwtdata(5,j)=1;}  //  body length
+      else
+      {mnwtdata(5,j)=2;}  //  body weight
+      mnwtdata(11,j)=ALK_time;
     }
   }
   echoinput<<"Successful read of mean-bodywt data, N= "<< nobs_mnwt <<endl;
@@ -1690,7 +1698,7 @@
   imatrix  Lbin_lo(1,Nfleet,1,Nobs_a)
   imatrix  Lbin_hi(1,Nfleet,1,Nobs_a)
   3darray tails_a(1,Nfleet,1,Nobs_a,1,4)   // min-max bin for females; min-max bin for males
-  3darray header_a(1,Nfleet,1,Nobs_a,0,9)
+  3darray header_a(1,Nfleet,1,Nobs_a,1,9)
   3darray header_a_rd(1,Nfleet,1,Nobs_a,2,3)
 
 // arrays for Super-years
@@ -1801,8 +1809,6 @@
             header_a(f,j,2) = real_month;  // month
           }
           header_a(f,j,3) = Age_Data[i](3);   // fleet
-          //  note that following storage is redundant with Show_Time(t,3) calculated later
-          header_a(f,j,0) = float(y)+0.01*int(100.*(azero_seas(s)+seasdur_half(s)));  //
           gen_a(f,j)=Age_Data[i](4);         // gender 0=combined, 1=female, 2=male, 3=both
           mkt_a(f,j)=Age_Data[i](5);         // partition: 0=all, 1=discard, 2=retained
           nsamp_a_read(f,j)=Age_Data[i](9);  // assigned sample size for observation
@@ -3152,7 +3158,7 @@
  END_CALCS
 
   imatrix Show_Time(styr,TimeMax_Fcast_std,1,2)  //  for each t:  shows year, season
-  imatrix Show_Time2(1,ALK_time_max,1,2)  //  for each ALK_time:  shows year, season
+  imatrix Show_Time2(1,ALK_time_max,1,3)  //  for each ALK_time:  shows year, season, subseason
  LOCAL_CALCS
   t=styr-1;
   for (y=styr;y<=YrMax;y++) /* SS_loop:  fill Show_Time(t,1) with year value */
@@ -3170,6 +3176,7 @@
     ALK_idx++;
     Show_Time2(ALK_idx,1)=y;
     Show_Time2(ALK_idx,2)=s;
+    Show_Time3(ALK_idx,3)=subseas;
   }
  END_CALCS
 

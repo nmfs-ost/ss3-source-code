@@ -79,15 +79,16 @@ PRELIMINARY_CALCS_SECTION
   echoinput<<" discard stderr has been set-up "<<endl;
 
 //  SS_Label_Info_6.2.3 #Set up variance for mean body wt data, note different reference to array that was read
+//  10 items are:  1yr, 2seas, 3fleet, 4part, 5type, 6obs, 7se, then three intermediate variance quantities
   for (i=1;i<=nobs_mnwt;i++)
   {
-    if(mnwtdata(5,i)>0. && mnwtdata(3,i)>0.)  //  used observation
+    if(mnwtdata(3,i)>0.)  //  used observation
     {
-      mnwtdata(6,i)+=var_adjust(3,mnwtdata(3,i));
-      if(mnwtdata(6,i)<=0.0) mnwtdata(6,i)=0.001;
-      mnwtdata(7,i)=mnwtdata(5,i)*mnwtdata(6,i);
-      mnwtdata(8,i)=DF_bodywt*square(mnwtdata(7,i));
-      mnwtdata(9,i)=sd_offset*log(mnwtdata(7,i));
+      mnwtdata(7,i)+=var_adjust(3,mnwtdata(3,i));
+      if(mnwtdata(7,i)<=0.0) mnwtdata(7,i)=0.001;
+      mnwtdata(8,i)=mnwtdata(6,i)*mnwtdata(7,i);  //  se = cv*obs
+      mnwtdata(9,i)=DF_bodywt*square(mnwtdata(8,i));
+      mnwtdata(10,i)=sd_offset*log(mnwtdata(8,i));
     }
   }
   echoinput<<" mean bodywt stderr has been set-up "<<endl;

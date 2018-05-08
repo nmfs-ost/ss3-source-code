@@ -2388,6 +2388,7 @@
    seltype_Nparam(41)=2+seltype_Nparam(17); // like 17, with 2 additional parameters for scaling (average over bin range)
    seltype_Nparam(42)=2+seltype_Nparam(27); // like 27, with 2 additional parameters for scaling (average over bin range)
    seltype_Nparam(43)=2+seltype_Nparam(6);  // like 6, with 2 additional parameters for scaling (average over bin range)
+   seltype_Nparam(44)=4;  // like 17 for two sexes with male selectivity as separate parameters
 
  END_CALCS
 
@@ -2442,7 +2443,6 @@
      if(seltype(f,1)==21) N_selparmvec(f) +=2*(seltype(f,4)-1);  // special setup of N parms
      if(seltype(f,1)==27 || seltype(f,1)==42) N_selparmvec(f) +=2*seltype(f,4);  // special setup of N parms for cubic spline
      if(seltype(f,1)>0 && Svy_units(f)<30) {dolen(f)=1;} else {dolen(f)=0;}
-
      if(seltype(f,1)==43)
      {
          ParCount++; ParmLabel+="SizeSel_ScaleBinLo_"+fleetname(f)+"("+NumLbl(f)+")";
@@ -2477,6 +2477,11 @@
        ParCount++; ParmLabel+="Size_DblN_start_logit_"+fleetname(f)+"("+NumLbl(f)+")";
        ParCount++; ParmLabel+="Size_DblN_end_logit_"+fleetname(f)+"("+NumLbl(f)+")";
      }
+     else if (seltype(f,1)==1)  //  logistic
+     {
+       ParCount++; ParmLabel+="Size_inflection_"+fleetname(f)+"("+NumLbl(f)+")";
+       ParCount++; ParmLabel+="Size_95%width_"+fleetname(f)+"("+NumLbl(f)+")";
+     }
      else
      {
        for (j=1;j<=N_selparmvec(f);j++)
@@ -2503,16 +2508,25 @@
        {
        RetainParm(f)=N_selparmvec(f)+1;
 //       N_selparmvec(f) +=N_ret_parm*seltype(f,2);          // N retention parms first [N_ret_parm] for retention; next [N_ret_parm] for discard mortality
-       for (j=1;j<=N_ret_parm(seltype(f,2));j++)
+       if(N_ret_parm(seltype(f,2))>0)
        {
-         ParCount++; N_selparmvec(f)++; ParmLabel+="Retain_P"+NumLbl(j)+"_"+fleetname(f)+"("+NumLbl(f)+")";
+         ParCount++; N_selparmvec(f)++;ParmLabel+="Retain_L_infl_"+fleetname(f)+"("+NumLbl(f)+")";
+         ParCount++; N_selparmvec(f)++;ParmLabel+="Retain_L_width_"+fleetname(f)+"("+NumLbl(f)+")";
+         ParCount++; N_selparmvec(f)++;ParmLabel+="Retain_L_asymptote_logit_"+fleetname(f)+"("+NumLbl(f)+")";
+         ParCount++; N_selparmvec(f)++;ParmLabel+="Retain_L_maleoffset_"+fleetname(f)+"("+NumLbl(f)+")";
+         if(N_ret_parm(seltype(f,2))==7)  //  doing dome
+         {
+           ParCount++; N_selparmvec(f)++;ParmLabel+="Retain_L_dome_infl_"+fleetname(f)+"("+NumLbl(f)+")";
+           ParCount++; N_selparmvec(f)++;ParmLabel+="Retain_L_dome_width_"+fleetname(f)+"("+NumLbl(f)+")";
+           ParCount++; N_selparmvec(f)++;ParmLabel+="Retain_L_dome_maleoffset_"+fleetname(f)+"("+NumLbl(f)+")";
+         }
        }
        if(seltype(f,2)==2 || seltype(f,2)==4)
        {
-         for (j=1;j<=N_disc_mort_parm(seltype(f,2));j++)
-         {
-           ParCount++; N_selparmvec(f)++; ParmLabel+="DiscMort_P"+NumLbl(j)+"_"+fleetname(f)+"("+NumLbl(f)+")";
-         }
+         ParCount++; N_selparmvec(f)++; ParmLabel+="DiscMort_L_infl_"+fleetname(f)+"("+NumLbl(f)+")";
+         ParCount++; N_selparmvec(f)++; ParmLabel+="DiscMort_L_width_"+fleetname(f)+"("+NumLbl(f)+")";
+         ParCount++; N_selparmvec(f)++; ParmLabel+="DiscMort_L_level_old_"+fleetname(f)+"("+NumLbl(f)+")";
+         ParCount++; N_selparmvec(f)++; ParmLabel+="DiscMort_L_male_offset_"+fleetname(f)+"("+NumLbl(f)+")";
        }
       }
      }
@@ -2562,7 +2576,7 @@
      int f1=f-Nfleet;  // actual fleet number
      if(seltype(f,1)==15) // mirror
      {
-       if(seltype(f,4)==0 || seltype(f,4)>=f-Nfleet)
+       if(seltype(f,4)==0 || seltype(f,4)>=f1)
        {
          N_warn++; cout<<" EXIT - see warning "<<endl; warning<<" illegal mirror for age selex fleet "<<f-Nfleet<<endl; exit(1);
        }
@@ -2583,30 +2597,51 @@
 
      if(seltype(f,1)==41)
      {
-         ParCount++; ParmLabel+="AgeSel_ScaleAgeLo_"+fleetname(f-Nfleet)+"("+NumLbl(f-Nfleet)+")";
-         ParCount++; ParmLabel+="AgeSel_ScaleAgeHi_"+fleetname(f-Nfleet)+"("+NumLbl(f-Nfleet)+")";
+         ParCount++; ParmLabel+="AgeSel_ScaleAgeLo_"+fleetname(f1)+"("+NumLbl(f1)+")";
+         ParCount++; ParmLabel+="AgeSel_ScaleAgeHi_"+fleetname(f1)+"("+NumLbl(f1)+")";
      }
 
      if(seltype(f,1)==27 || seltype(f,1)==42)
      {
        if(seltype(f,1)==42)
        {
-         ParCount++; ParmLabel+="AgeSpline_ScaleAgeLo_"+fleetname(f-Nfleet)+"("+NumLbl(f-Nfleet)+")";
-         ParCount++; ParmLabel+="AgeSpline_ScaleAgeHi_"+fleetname(f-Nfleet)+"("+NumLbl(f-Nfleet)+")";
+         ParCount++; ParmLabel+="AgeSpline_ScaleAgeLo_"+fleetname(f1)+"("+NumLbl(f1)+")";
+         ParCount++; ParmLabel+="AgeSpline_ScaleAgeHi_"+fleetname(f1)+"("+NumLbl(f1)+")";
        }
        N_selparmvec(f)+=2*seltype(f,4);  // special setup of N parms for cubic spline
-       ParCount++; ParmLabel+="AgeSpline_Code_"+fleetname(f-Nfleet)+"_"+NumLbl(f-Nfleet);
-       ParCount++; ParmLabel+="AgeSpline_GradLo_"+fleetname(f-Nfleet)+"_"+NumLbl(f-Nfleet);
-       ParCount++; ParmLabel+="AgeSpline_GradHi_"+fleetname(f-Nfleet)+"_"+NumLbl(f-Nfleet);
+       ParCount++; ParmLabel+="AgeSpline_Code_"+fleetname(f1)+"_"+NumLbl(f1);
+       ParCount++; ParmLabel+="AgeSpline_GradLo_"+fleetname(f1)+"_"+NumLbl(f1);
+       ParCount++; ParmLabel+="AgeSpline_GradHi_"+fleetname(f1)+"_"+NumLbl(f1);
        for (s=1;s<=seltype(f,4);s++)
        {
-         ParCount++; ParmLabel+="AgeSpline_Knot_"+NumLbl(s)+"_"+fleetname(f-Nfleet)+"_"+NumLbl(f-Nfleet);
+         ParCount++; ParmLabel+="AgeSpline_Knot_"+NumLbl(s)+"_"+fleetname(f1)+"_"+NumLbl(f1);
        }
        for (s=1;s<=seltype(f,4);s++)
        {
-         ParCount++; ParmLabel+="AgeSpline_Val_"+NumLbl(s)+"_"+fleetname(f-Nfleet)+"_"+NumLbl(f-Nfleet);
+         ParCount++; ParmLabel+="AgeSpline_Val_"+NumLbl(s)+"_"+fleetname(f1)+"_"+NumLbl(f1);
        }
      }
+     else if(seltype(f,1)==44)
+     {
+       N_selparmvec(f)=2+gender+gender*seltype(f,4);
+       ParCount++; ParmLabel+="first_selage_"+fleetname(f1)+"("+NumLbl(f1)+")";
+       ParCount++; ParmLabel+="first_age_mean_"+fleetname(f1)+"("+NumLbl(f1)+")";
+       ParCount++; ParmLabel+="last_age_mean_"+fleetname(f1)+"("+NumLbl(f1)+")";
+       if(gender==2) 
+       {
+        ParCount++; ParmLabel+="Male_ln(ratio)_"+fleetname(f1)+"("+NumLbl(f1)+")";
+        for(int gg=1;gg<=seltype(f,4);gg++)
+        {ParCount++; ParmLabel+="female_ln(selchange)_"+NumLbl(gg)+"_"+fleetname(f1)+"("+NumLbl(f1)+")";}
+        for(int gg=1;gg<=seltype(f,4);gg++)
+        {ParCount++; ParmLabel+="male_ln(selchange)_"+NumLbl(gg)+"_"+fleetname(f1)+"("+NumLbl(f1)+")";}
+      }
+      else
+      {
+        for(int gg=1;gg<=seltype(f,4);gg++)
+        {ParCount++; ParmLabel+="ln(selchange)_"+NumLbl(gg)+"_"+fleetname(f1)+"("+NumLbl(f1)+")";}
+      }
+     }
+
      else if (seltype(f,1)==20)
      {
        ParCount++; ParmLabel+="Age_DblN_peak_"+fleetname(f)+"("+NumLbl(f)+")";
@@ -2616,11 +2651,21 @@
        ParCount++; ParmLabel+="Age_DblN_start_logit_"+fleetname(f)+"("+NumLbl(f)+")";
        ParCount++; ParmLabel+="Age_DblN_end_logit_"+fleetname(f)+"("+NumLbl(f)+")";
      }
+     else if (seltype(f,1)==12)
+     {
+       ParCount++; ParmLabel+="Age_inflection_"+fleetname(f1)+"("+NumLbl(f1)+")";
+       ParCount++; ParmLabel+="Age_95%width_"+fleetname(f1)+"("+NumLbl(f1)+")";
+     }
+     else if (seltype(f,1)==11)
+     {
+       ParCount++; ParmLabel+="minage@sel=1_"+fleetname(f1)+"("+NumLbl(f1)+")";
+       ParCount++; ParmLabel+="maxage@sel=1_"+fleetname(f1)+"("+NumLbl(f1)+")";
+     }
      else
      {
        for (j=1;j<=N_selparmvec(f);j++)
        {
-         ParCount++; ParmLabel+="AgeSel_P"+NumLbl(j)+"_"+fleetname(f-Nfleet)+"("+NumLbl(f-Nfleet)+")";
+         ParCount++; ParmLabel+="AgeSel_P"+NumLbl(j)+"_"+fleetname(f1)+"("+NumLbl(f1)+")";
        }
      }
 
@@ -2645,16 +2690,30 @@
        {
          RetainParm(f1)=N_selparmvec(f)+1;
 //         N_selparmvec(f) +=N_ret_parm*seltype(f,2);          // N retention parms first [N_ret_parm] for retention; next [N_ret_parm] for discard mortality
-         for (j=1;j<=N_ret_parm(seltype(f,2));j++)
+//         for (j=1;j<=N_ret_parm(seltype(f,2));j++)
+//         {
+//           ParCount++; N_selparmvec(f)++; ParmLabel+="Retain_age_P"+NumLbl(j)+"_"+fleetname(f1)+"("+NumLbl(f1)+")";
+//         }
+       if(N_ret_parm(seltype(f,2))>0)
+       {
+         ParCount++; N_selparmvec(f)++;ParmLabel+="Retain_A_infl_"+fleetname(f1)+"("+NumLbl(f1)+")";
+         ParCount++; N_selparmvec(f)++;ParmLabel+="Retain_A_width_"+fleetname(f1)+"("+NumLbl(f1)+")";
+         ParCount++; N_selparmvec(f)++;ParmLabel+="Retain_A_asymptote_logit_"+fleetname(f1)+"("+NumLbl(f1)+")";
+         ParCount++; N_selparmvec(f)++;ParmLabel+="Retain_A_maleoffset_"+fleetname(f1)+"("+NumLbl(f1)+")";
+         if(N_ret_parm(seltype(f,2))==7)  //  doing dome
          {
-           ParCount++; N_selparmvec(f)++; ParmLabel+="Retain_age_P"+NumLbl(j)+"_"+fleetname(f1)+"("+NumLbl(f1)+")";
+           ParCount++; N_selparmvec(f)++;ParmLabel+="Retain_A_dome_infl_"+fleetname(f1)+"("+NumLbl(f1)+")";
+           ParCount++; N_selparmvec(f)++;ParmLabel+="Retain_A_dome_width_"+fleetname(f1)+"("+NumLbl(f1)+")";
+           ParCount++; N_selparmvec(f)++;ParmLabel+="Retain_A_dome_maleoffset_"+fleetname(f1)+"("+NumLbl(f1)+")";
          }
+       }
+
          if(seltype(f,2)==2 || seltype(f,2)==4)
          {
-           for (j=1;j<=N_disc_mort_parm(seltype(f,2));j++)
-           {
-             ParCount++; N_selparmvec(f)++; ParmLabel+="DiscMort_age_P"+NumLbl(j)+"_"+fleetname(f1)+"("+NumLbl(f1)+")";
-           }
+           ParCount++; N_selparmvec(f)++; ParmLabel+="DiscMort_A_infl_"+fleetname(f1)+"("+NumLbl(f1)+")";
+           ParCount++; N_selparmvec(f)++; ParmLabel+="DiscMort_A_width_"+fleetname(f1)+"("+NumLbl(f1)+")";
+           ParCount++; N_selparmvec(f)++; ParmLabel+="DiscMort_A_level_old_"+fleetname(f1)+"("+NumLbl(f1)+")";
+           ParCount++; N_selparmvec(f)++; ParmLabel+="DiscMort_A_male_offset_"+fleetname(f1)+"("+NumLbl(f1)+")";
          }
        }
      }
@@ -2665,19 +2724,19 @@
         Maleselparm(f)=N_selparmvec(f)+1;
         if(seltype(f,3)==1 || seltype(f,3)==2)
         {
-          N_selparmvec(f)++; ParCount++; ParmLabel+="AgeSel_"+NumLbl(f-Nfleet)+"MaleDogleg_"+fleetname(f-Nfleet);
-          N_selparmvec(f)++; ParCount++; ParmLabel+="AgeSel_"+NumLbl(f-Nfleet)+"MaleatZero_"+fleetname(f-Nfleet);
-          N_selparmvec(f)++; ParCount++; ParmLabel+="AgeSel_"+NumLbl(f-Nfleet)+"MaleatDogleg_"+fleetname(f-Nfleet);
-          N_selparmvec(f)++; ParCount++; ParmLabel+="AgeSel_"+NumLbl(f-Nfleet)+"MaleatMaxage_"+fleetname(f-Nfleet);
+          N_selparmvec(f)++; ParCount++; ParmLabel+="AgeSel_"+NumLbl(f1)+"MaleDogleg_"+fleetname(f1);
+          N_selparmvec(f)++; ParCount++; ParmLabel+="AgeSel_"+NumLbl(f1)+"MaleatZero_"+fleetname(f1);
+          N_selparmvec(f)++; ParCount++; ParmLabel+="AgeSel_"+NumLbl(f1)+"MaleatDogleg_"+fleetname(f1);
+          N_selparmvec(f)++; ParCount++; ParmLabel+="AgeSel_"+NumLbl(f1)+"MaleatMaxage_"+fleetname(f1);
         }
         else if(seltype(f,3)>=3 && seltype(f,1)==20)
         {
           if(seltype(f,3)==3) {anystring="Male_";} else {anystring="Fem_";}
-          N_selparmvec(f)++; ParCount++; ParmLabel+="AgeSel_"+NumLbl(f-Nfleet)+anystring+"Peak_"+fleetname(f-Nfleet);
-          N_selparmvec(f)++; ParCount++; ParmLabel+="AgeSel_"+NumLbl(f-Nfleet)+anystring+"Ascend_"+fleetname(f-Nfleet);
-          N_selparmvec(f)++; ParCount++; ParmLabel+="AgeSel_"+NumLbl(f-Nfleet)+anystring+"Descend_"+fleetname(f-Nfleet);
-          N_selparmvec(f)++; ParCount++; ParmLabel+="AgeSel_"+NumLbl(f-Nfleet)+anystring+"Final_"+fleetname(f-Nfleet);
-          N_selparmvec(f)++; ParCount++; ParmLabel+="AgeSel_"+NumLbl(f-Nfleet)+anystring+"Scale_"+fleetname(f-Nfleet);
+          N_selparmvec(f)++; ParCount++; ParmLabel+="AgeSel_"+NumLbl(f1)+anystring+"Peak_"+fleetname(f1);
+          N_selparmvec(f)++; ParCount++; ParmLabel+="AgeSel_"+NumLbl(f1)+anystring+"Ascend_"+fleetname(f1);
+          N_selparmvec(f)++; ParCount++; ParmLabel+="AgeSel_"+NumLbl(f1)+anystring+"Descend_"+fleetname(f1);
+          N_selparmvec(f)++; ParCount++; ParmLabel+="AgeSel_"+NumLbl(f1)+anystring+"Final_"+fleetname(f1);
+          N_selparmvec(f)++; ParCount++; ParmLabel+="AgeSel_"+NumLbl(f1)+anystring+"Scale_"+fleetname(f1);
         }
         else
         {
