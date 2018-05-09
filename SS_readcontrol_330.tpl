@@ -4464,6 +4464,15 @@
       F_report_label+="_"+onenum;
       break;
     }
+    case 5:      // F=Z-M for specified ages (unweighted)
+    {
+      F_report_label+=";_with_F=Z-M;_for_ages_unweighted_";
+      sprintf(onenum, "%d", int(F_reporting_ages(1)));
+      F_report_label+=onenum;
+      sprintf(onenum, "%d", int(F_reporting_ages(2)));
+      F_report_label+="_"+onenum;
+      break;
+    }    
   }
   echoinput<<"Active parameters plus derived quantities:  "<<CoVar_Count<<endl;
  END_CALCS

@@ -253,7 +253,7 @@
   for (a=0;a<=nages;a++) r_ages(a) = double(a); /* SS_loop: fill real vector r_ages */
   frac_ages=r_ages/r_ages(nages);
   for (y=styr;y<=endyr;y++) {years(y)=y; r_years(y)=y;}    //year vector
-  if (F_reporting==4)
+  if (F_reporting==4 || F_reporting==5)
   {
     F_reporting_ages=F_reporting_ages_R;
     if(F_reporting_ages(1)>(nages-2) || F_reporting_ages(1)<0)

@@ -231,10 +231,10 @@
    !!echoinput<<depletion_level<<"  depletion_level"<<endl;
   init_int SPR_reporting  // 0=skip; 1=SPR; 2=SPR_MSY; 3=SPR_Btarget; 4=(1-SPR)
    !!echoinput<<SPR_reporting<<"  SPR_reporting"<<endl;
-  init_int F_reporting  // 0=skip; 1=exploit(Bio); 2=exploit(Num); 3=sum(frates); 4=true F
+  init_int F_reporting  // 0=skip; 1=exploit(Bio); 2=exploit(Num); 3=sum(frates); 4=true F for range of ages; 5=unweighted avg F for range of ages
  LOCAL_CALCS
   echoinput<<F_reporting<<"  F_reporting"<<endl;
-  if(F_reporting==4) {k=2;} else {k=0;}
+  if(F_reporting==4 || F_reporting==5) {k=2;} else {k=0;}
  END_CALCS
   init_ivector F_reporting_ages_R(1,k);
   //  convert to F_reporting_ages later after nages is read.

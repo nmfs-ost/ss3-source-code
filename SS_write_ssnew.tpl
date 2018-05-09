@@ -1204,11 +1204,11 @@ FUNCTION void write_nucontrol()
   NuStart<<depletion_basis<<" # Depletion basis:  denom is: 0=skip; 1=rel X*B0; 2=rel X*Bmsy; 3=rel X*B_styr"<<endl;
   NuStart<<depletion_level<<" # Fraction (X) for Depletion denominator (e.g. 0.4)"<<endl;
   NuStart<<SPR_reporting<<" # SPR_report_basis:  0=skip; 1=(1-SPR)/(1-SPR_tgt); 2=(1-SPR)/(1-SPR_MSY); 3=(1-SPR)/(1-SPR_Btarget); 4=rawSPR"<<endl;
-  NuStart<<F_reporting<<" # F_report_units: 0=skip; 1=exploitation(Bio); 2=exploitation(Num); 3=sum(Frates); 4=true F for range of ages"<<endl;
-  if(F_reporting==4)
+  NuStart<<F_reporting<<" # F_report_units: 0=skip; 1=exploitation(Bio); 2=exploitation(Num); 3=sum(Frates); 4=true F for range of ages; 5=unweighted avg. F for range of ages"<<endl;
+  if(F_reporting==4 || F_reporting==5)
   {NuStart<<F_reporting_ages<<" #_min and max age over which average F will be calculated"<<endl;}
   else
-  {NuStart<<"#COND 10 15 #_min and max age over which average F will be calculated with F_reporting=4"<<endl;}
+  {NuStart<<"#COND 10 15 #_min and max age over which average F will be calculated with F_reporting=4 or 5"<<endl;}
   NuStart<<F_std_basis<<" # F_report_basis: 0=raw_F_report; 1=F/Fspr; 2=F/Fmsy ; 3=F/Fbtgt"<<endl;
   NuStart<<double(mcmc_output_detail)+MCMC_bump<<
   " # MCMC output detail: integer part (0=default; 1=adds obj func components); and decimal part (added to SR_LN(R0) on first call to mcmc)"<<endl;
