@@ -1227,7 +1227,7 @@ FUNCTION void get_time_series()
               {
                 for (a=F_reporting_ages(1);a<=F_reporting_ages(2);a++)   //  should not let a go higher than nages-2 because of accumulator
                 {
-                  temp1+=natage(t+1,p,g,a+1);
+                  temp1+=natage(t+1,p,g,a+1);  // sum of numbers at next age at begin of next year
                   if(nseas==1)
                   {
                     temp2+=natage(t,p,g,a)*mfexp(-seasdur(s)*natM(s,GP3(g),a));
@@ -1243,8 +1243,8 @@ FUNCTION void get_time_series()
               }
             }
             annual_F(y,2) = log(temp2)-log(temp1);
-
           } // end if F_reporting!=5
+
           else
           {    // F_reporting==5 (ICES-style arithmetic mean across ages)
                //  like option 4 above, but F is calculated 1 age at a time to get a
@@ -1271,7 +1271,7 @@ FUNCTION void get_time_series()
                   }
                   annual_F(y,2) += log(temp2)-log(temp1);
                   temp += 1; // increment count of values included in average
-                  cout<<" y: "<<y<<" g: "<<g<<" p: "<<p<<" a: "<<a<<" temp: "<<temp<<" annual_F(y,2): "<<annual_F(y,2)<<" log(temp2)-log(temp1): "<<log(temp2)-log(temp1)<<endl;
+//                  warning<<" y: "<<y<<" g: "<<g<<" p: "<<p<<" a: "<<a<<" temp: "<<temp<<" annual_F(y,2): "<<annual_F(y,2)<<" log(temp2)-log(temp1): "<<log(temp2)-log(temp1)<<endl;
                 }
               }
             }
