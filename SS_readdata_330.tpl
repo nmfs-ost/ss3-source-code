@@ -2714,7 +2714,9 @@
 
   !!echoinput<<endl<<"next read forecast basis: 0=none; 1=F(SPR); 2=F(MSY) 3=F(Btgt); 4=Ave F (enter yrs); 5=read Fmult"<<endl;
 
-  init_int Do_Forecast
+  init_int Do_Forecast_rd
+  int Do_Forecast
+  !! Do_Forecast=Do_Forecast_rd;
   !!echoinput<<Do_Forecast<<" echoed Forecast basis"<<endl;
 
   vector Fcast_Input(1,24);
@@ -2767,7 +2769,7 @@
  LOCAL_CALCS
   Fcast_Specify_Selex = 0;  // default
 
-  if(Do_Forecast>0)
+  if(Do_Forecast_rd>0)
   {
 //    Fcast_Input(1,k)=Fcast_Input_rd(1,k);
 //  k=0;
@@ -2775,7 +2777,7 @@
   echoinput<<endl<<"#next read N forecast years"<<endl;
   *(ad_comm::global_datafile) >> N_Fcast_Yrs;
   echoinput<<N_Fcast_Yrs<<" #echoed N_Fcast_Yrs "<<endl;
-  if(Do_Forecast>0&&N_Fcast_Yrs<=0) {N_warn++; cout<<"Critical error in forecast input, see warning"<<endl; warning<<"ERROR: cannot do a forecast of zero years: "<<N_Fcast_Yrs<<endl; exit(1);}
+  if(Do_Forecast_rd>0 && N_Fcast_Yrs<=0) {N_warn++; cout<<"Critical error in forecast input, see warning"<<endl; warning<<"ERROR: cannot do a forecast of zero years: "<<N_Fcast_Yrs<<endl; exit(1);}
   YrMax=endyr+N_Fcast_Yrs;
   TimeMax_Fcast_std = styr+(YrMax-styr)*nseas+nseas-1;
 
@@ -2871,7 +2873,7 @@
   echoinput<<"# Note that fleet allocation is used directly as average F if Do_Forecast=4 "<<endl;
   *(ad_comm::global_datafile) >> Fcast_RelF_Basis;
   echoinput<<Fcast_RelF_Basis<<" # echoed value"<<endl;
-  if(Do_Forecast==4 && Fcast_RelF_Basis==2)
+  if(Do_Forecast_rd==4 && Fcast_RelF_Basis==2)
   {
     N_warn++; warning<<"Cannot specify forecast fleet relative F because Do_Forecast==4 specifies relative F directly as F;"<<endl;
     echoinput<<"Cannot specify forecast fleet relative F because Do_Forecast==4 specifies relative F directly as F;"<<endl;
@@ -2922,8 +2924,10 @@
 
   else  //  set forecast defaults
   {
-    echoinput<<"No forecast selected, so rest of forecast file will not be read and can be omitted"<<endl;
+    N_warn++; warning<<"No forecast selected, so rest of forecast file will not be read and can be omitted;"<<endl<<
+    "A one year forecast using recent F will be done automatically"<<endl;
     if(Bmark_RelF_Basis==2) {N_warn++; cout<<" EXIT - see warning "<<endl; warning<<"Fatal stop:  no forecast, but bmark set to use fcast"<<endl;  exit(1);}
+  Do_Forecast=4;
   N_Fcast_Yrs=1;
   YrMax=endyr+1;
   TimeMax_Fcast_std = styr+(YrMax-styr)*nseas+nseas-1;
@@ -2956,7 +2960,7 @@
   matrix Fcast_Catch_Allocation(1,N_Fcast_Yrs,1,Nfleet);  //   dimension to Nfleet but use only to N alloc groups
 
  LOCAL_CALCS
-  if(Do_Forecast>0)
+  if(Do_Forecast_rd>0)
   {
 
     echoinput<<endl<<"# next read list of fleet ID and max annual catch;  end with fleet=-9999"<<endl;
@@ -3099,7 +3103,7 @@
  LOCAL_CALCS
   Fcast_InputCatch.initialize();
   Fcast_InputCatch_rd.initialize();
-  if(Do_Forecast>0)
+  if(Do_Forecast_rd>0)
   {
     if(N_Fcast_Input_Catches>0)
     {
@@ -3130,10 +3134,10 @@
     }
   }
 
-  if(Do_Rebuilder>0 && Do_Forecast<=0) {N_warn++; cout<<" EXIT - see warning "<<endl; warning<<" error: Rebuilder output selected without requesting forecast"<<endl; exit(1);}
+  if(Do_Rebuilder>0 && Do_Forecast_rd<=0) {N_warn++; cout<<" EXIT - see warning "<<endl; warning<<" error: Rebuilder output selected without requesting forecast"<<endl; exit(1);}
   if(Do_Benchmark==0)
   {
-    if(Do_Forecast>=1 && Do_Forecast<=3) {Do_Benchmark=1; N_warn++; warning<<" Turn Benchmark on because Forecast needs it"<<endl;}
+    if(Do_Forecast_rd>=1 && Do_Forecast_rd<=3) {Do_Benchmark=1; N_warn++; warning<<" Turn Benchmark on because Forecast needs it"<<endl;}
     if(Do_Forecast==0 && F_std_basis>0) {F_std_basis=0; N_warn++; warning<<" Set F_std_basis=0 because no benchmark or forecast"<<endl;}
     if(depletion_basis==2) {depletion_basis=1; N_warn++; warning<<" Change depletion basis to 1 because benchmarks are off"<<endl;}
     if(SPR_reporting>=1 && SPR_reporting<=3) {SPR_reporting=4; N_warn++; warning<<" Change SPR_reporting to 4 because benchmarks are off"<<endl;}
@@ -3159,9 +3163,9 @@
   init_number fif
 
  LOCAL_CALCS
-  if(Do_Forecast>0 && fif!=999) {cout<<" EXIT, must have 999 to verify end of forecast inputs "<<fif<<endl; exit(1);}
+  if(Do_Forecast_rd>0 && fif!=999) {cout<<" EXIT, must have 999 to verify end of forecast inputs "<<fif<<endl; exit(1);}
   echoinput<<" done reading forecast "<<endl<<endl;
-  if(Do_Forecast==0) Do_Forecast=4;
+//  if(Do_Forecast==0) Do_Forecast=4;
  END_CALCS
 
   imatrix Show_Time(styr,TimeMax_Fcast_std,1,2)  //  for each t:  shows year, season

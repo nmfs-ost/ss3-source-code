@@ -807,7 +807,7 @@ FUNCTION void get_selectivity()
       {
         for (gg=1;gg<=gender;gg++)
         {
-          if(gg==1 || (gg==2 && seltype(f,3)>=3) || (gg==2 && seltype(f,1)==44))  //  in age selex
+          if(gg==1 || (gg==2 && seltype(f,3)>=3) || (gg==2 && (seltype(f,1)==44 || seltype(f,1)==45)))  //  in age selex
           {
   //  SS_Label_Logic_22.7 #Switch depending on the age-selectivity pattern selected
             switch(seltype(f,1))
@@ -976,8 +976,8 @@ FUNCTION void get_selectivity()
             {
               //  sp(1) is first age with non-zero selectivity; can be age 0
               //  seltype(f,4) is number of selectivity change parameters beginning at age=first_age+1
-              //  sp(2) is first age in mean selex
-              //  sp(3) is last age  in mean selex
+              //  sp(2) is first age for which mean selex=1
+              //  sp(3) is last age  for which mean selex=1
               //  sp(4) is male mean selex relative to female mean.
               //  -999 code means to keep the change unchanged from previous age (so keeps same rate of change)
               // -1000 code is only for males and sets the male change to be same as female change
@@ -997,15 +997,10 @@ FUNCTION void get_selectivity()
                 j++;
                 //  with use of -999, lastsel stays constant until changed, so could create a linear change in ln(selex)
                 if(sp(j)>-999.) {seldelta=sp(j);}  // so allows for seldelta to remain unchanged
-                if(gg==2)  //  more options for male selectivity
-                {
-                  if(sp(j)==-1000.) {seldelta=sp(j-seltype(f,4));}  //  use female delta for the male delta at this age
-                }
-//                echoinput<<a<<" "<<j<<" "<<sp(j)<<" "<<seldelta<<" a-1 "<<tempvec_a(a-1)<<" a ";
+                else if(gg==2 && sp(j)==-1000.)  //  more options for male selectivity
+                  {seldelta=sp(j-seltype(f,4));}  //  use female delta for the male delta at this age
                 tempvec_a(a)=tempvec_a(a-1)+seldelta;   // cumulative log(selex)
-//                echoinput<<tempvec_a(a)<<endl;
               }
-//              echoinput<<tempvec_a<<endl;
               int low_bin  = int(value(sp(2)));
               int high_bin = int(value(sp(3)));
               if(do_once==1)  //  this should move to readcontrol!
@@ -1027,13 +1022,64 @@ FUNCTION void get_selectivity()
               }
               temp=mean(tempvec_a(low_bin,high_bin));
               sel_a(y,fs,gg)(first_age,last_age)=mfexp(tempvec_a(first_age,last_age)-temp);
-//              echoinput<<tempvec_a<<endl;
-//              echoinput<<sel_a(y,fs,gg)<<endl;
               if(gg==2) sel_a(y,fs,gg)(first_age,last_age)*=mfexp(sp(4)); //  apply male ratio
               if (last_age<nages) {sel_a(y,fs,gg)(last_age+1,nages)=sel_a(y,fs,gg,last_age);}
-//              echoinput<<sel_a(y,fs,gg)<<endl;
               scaling_offset=0;
-//              if(gg==gender) exit(1);
+              break;
+            }
+
+              case 45:  //  like age selex 14 but with separate parameters for males and with revised controls
+            {
+              //  parameter value is logit(selectivity)
+              //  peak selex in logit space is penalized towards value of 8.0, which gives selex near 1.0
+              //  sp(1) is first age with non-zero selectivity; can be age 0
+              //  seltype(f,4) is number of selectivity parameters beginning at age=first_age
+              //  sp(2) is first age in mean for peak selex
+              //  sp(3) is last age  in mean for peak selex
+              //  sp(4) is male mean selex relative to female mean.
+              //  -999 code means to keep the selex same as previous age
+              // -1000 code is only for males and sets the male selex to be same as female selex
+              //  gg is the index for sex, where 1=female, 2=male
+              sel_a(y,fs,gg).initialize();
+              tempvec_a.initialize(); //  null value for vector
+              int first_age=int(value(sp(1)));
+              int last_age=first_age+seltype(f,4)-1;  //  because seltype(f,4) contains the number of ages with selex parameter
+              if(gg==1) {scaling_offset=2+gender;} else {scaling_offset=2+gender+seltype(f,4);}  // to get male vs female starting point for parameters
+              j=scaling_offset;
+              for (a=first_age;a<=last_age;a++)
+              {
+                j++;
+                if(sp(j)>-999)
+                  {tempvec_a(a) = sp(j);}
+                else if(gg==2 && sp(j)==-1000.)  //  set male selectivity raw value same as female
+                  {tempvec_a(a)=sp(j-seltype(f,4));}  //  use female parameter for males
+                else  //  so value is -999 so set to next younger age
+                {tempvec_a(a) = tempvec_a(a-1);}
+          //    warning<<" sex "<<gg<<" a "<<a<<"  j "<<j<<"  sp "<<sp(j)<<" use "<<tempvec_a(a)<<endl;
+              }
+              int low_bin  = int(value(sp(2)));
+              int high_bin = int(value(sp(3)));
+              if(do_once==1)  //  this should move to readcontrol!
+              {
+                if (low_bin < 0)
+                {
+                    low_bin = 0;
+                    N_warn++; warning<<" selex pattern 44; value for low bin is less than 0, so set to 0 "<<endl;
+                }
+                if (high_bin > nages)
+                {
+                    high_bin = nages;
+                    N_warn++; warning<<" selex pattern 44; value for high bin is greater than "<<nages<<", so set to "<<nages<<" "<<endl;
+                }
+                if (high_bin < low_bin) high_bin = low_bin;
+                if (low_bin > high_bin) low_bin = high_bin;
+              }
+              temp=8.-mean(tempvec_a(low_bin,high_bin));
+//              CrashPen+=temp*temp;
+              sel_a(y,fs,gg)(first_age,last_age) = 1./(1.+mfexp(-(tempvec_a(first_age,last_age)+temp)));
+              if(gg==2) {sel_a(y,fs,gg)(first_age,last_age)*=mfexp(sp(4));} //  apply male ratio
+              if (last_age<nages) {sel_a(y,fs,gg)(last_age+1,nages)=sel_a(y,fs,gg,last_age);}
+              scaling_offset=0;
               break;
             }
 
@@ -1258,7 +1304,7 @@ FUNCTION void get_selectivity()
                 }
               }
             }
-            else if(seltype(f,3)!=3 && seltype(f,3)!=4 &&seltype(f,1)!=15 && seltype(f,1)!=43)
+            else if(seltype(f,3)!=3 && seltype(f,3)!=4 &&seltype(f,1)!=15 && seltype(f,1)!=44 && seltype(f,1)!=45)
             {sel_a(y,fs,2)=sel_a(y,fs,1);}   // set males = females
             if(docheckup==1) echoinput<<" sel-age "<<sel_a(y,fs)<<endl;
           }

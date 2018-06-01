@@ -226,6 +226,7 @@ FUNCTION void get_initial_conditions()
     SPR_virgin=SSB_equil/Recr_virgin;  //  spawners per recruit
     if(Do_Benchmark==0)
     {
+      cout<<"N std  "<<N_STD_Mgmt_Quant<<endl;
       Mgmt_quant(1)=SSB_virgin;
       Mgmt_quant(2)=totbio;
       Mgmt_quant(3)=smrybio;

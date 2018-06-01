@@ -852,7 +852,6 @@ FUNCTION void Process_STDquant()
         }
         if(STD_Yr_Reverse_Dep(y)>0) {depletion(STD_Yr_Reverse_Dep(y))=SSB_yr(y);}
       }
-
       switch(depletion_basis)
       {
         case 0:
@@ -930,6 +929,7 @@ FUNCTION void Process_STDquant()
           break;
         }
       }
+
 //  SS_Label_7.8  get extra std quantities
     if(Selex_Std_Cnt>0)
     {
@@ -1008,7 +1008,6 @@ FUNCTION void Process_STDquant()
     Extra_Std(Extra_Std_N-2)=log(SSB_yr(styr));
     Extra_Std(Extra_Std_N-1)=log(SSB_yr(int((styr+endyr)/2)));
     Extra_Std(Extra_Std_N)=log(SSB_yr(endyr));
-
     if(Svy_N>0)
     {
       int Svy_sdreport_counter = 1;

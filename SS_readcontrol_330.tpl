@@ -574,7 +574,8 @@
   imatrix MGparm_point(1,gender,1,N_GP)
   number natM_amin;
   number natM_amax;
-  // init_number fracfemale;
+  number fracfemale;
+  !!fracfemale=0.5;
   // !!echoinput<<fracfemale<<" fracfemale"<<endl;
   // !!if(fracfemale>=1.0) fracfemale=0.999999;
   // !!if(fracfemale<=0.0) fracfemale=0.000001;
@@ -665,6 +666,8 @@
     N_growparms=2;  // for the two CV parameters
     k1=N_GP*gender;  // for reading age_natmort
   }
+  
+  echoinput<<" N_growparms  "<<N_growparms<<endl;
   AFIX2_forCV=AFIX2;
   if(AFIX2_forCV>nages) AFIX2_forCV=nages;
 
@@ -842,7 +845,6 @@
 
   int do_once;
   int doit;
-  vector femfrac(1,N_GP*gender)
 
   int MGP_CGD
   int CGD_onoff;  //  switch for cohort growth dev
@@ -1072,7 +1074,7 @@
   }
  END_CALCS
 
-  ivector mgp_type(1,N_MGparm)  //  contains category to parameter (1=natmort; 2=growth; 3=wtlen & fec; 4=recr_dist; 5=movement)
+  ivector mgp_type(1,N_MGparm)  //  contains category to parameter (1=natmort; 2=growth; 3=wtlen & fec; 4=recr_dist&femfrac; 5=movement; 6=ageerrorkey; 7=catchmult)
  LOCAL_CALCS
    gp=0;
    for(gg=1;gg<=gender;gg++)
@@ -1106,8 +1108,8 @@
    if(do_migration>0)  mgp_type(MGP_CGD+1,N_MGparm)=5;  // note that it fills until end of MGparm list, but some get overwritten
    if(Use_AgeKeyZero>0) mgp_type(AgeKeyParm,N_MGparm)=6;
    if(catch_mult_pointer>0) mgp_type(catch_mult_pointer,N_MGparm)=7;
-   for(f=frac_female_pointer; f<=frac_female_pointer+N_GP-1;f++) mgp_type(f)=3;
-   echoinput<<"mgparm_type for each parm: 1=M; 2=growth; 3=wtlen,mat,fec,hermo,sexratio; 4=recr; 5=migr; 6=ageerror; 7=catchmult "<<endl<<mgp_type<<endl;
+   for(f=frac_female_pointer; f<=frac_female_pointer+N_GP-1;f++) mgp_type(f)=4;
+   echoinput<<"mgparm_type for each parm: 1=M; 2=growth; 3=wtlen,mat,fec,hermo; 4=recr&femfrac; 5=migr; 6=ageerror; 7=catchmult"<<endl<<mgp_type<<endl;
  END_CALCS
 
 !!// SS_Label_Info_4... //  quantities used to track all time-varying parameters
@@ -1123,9 +1125,9 @@
 
   ivector MGparm_timevary(1,N_MGparm)  //  holds index in timevary_def used by this base parameter
   imatrix timevary_MG(styr-3,YrMax+1,0,7)  // goes to yrmax+1 to allow referencing in forecast, but only endyr+1 is checked
-                                            // stores years to calc non-constant MG parms (1=natmort; 2=growth; 3=wtlen & fec; 4=recr_dist; 5=movement; 6=ageerrorkey)
+                                            // stores years to calc non-constant MG parms (1=natmort; 2=growth; 3=wtlen & fec; 4=recr_dist&femfrac; 5=movement; 6=ageerrorkey; 7=catchmult)
   ivector timevary_pass(styr-3,YrMax+1)    //  extracted column
-  ivector MG_active(0,7)  // 0=all, 1=M, 2=growth 3=wtlen, 4=recr_dist, 5=migration, 6=ageerror, 7=catchmult
+  ivector MG_active(0,7)  // 0=all, 1=M, 2=growth 3=wtlen, 4=recr_dist&femfrac, 5=migration, 6=ageerror, 7=catchmult
   vector env_data_pass(styr-1,YrMax)
 
  LOCAL_CALCS
@@ -2389,6 +2391,7 @@
    seltype_Nparam(42)=2+seltype_Nparam(27); // like 27, with 2 additional parameters for scaling (average over bin range)
    seltype_Nparam(43)=2+seltype_Nparam(6);  // like 6, with 2 additional parameters for scaling (average over bin range)
    seltype_Nparam(44)=4;  // like 17 for two sexes with male selectivity as separate parameters
+   seltype_Nparam(45)=4;  // like 14 for two sexes with male selectivity as separate parameters
 
  END_CALCS
 
@@ -2634,6 +2637,26 @@
         {ParCount++; ParmLabel+="female_ln(selchange)_"+NumLbl(gg)+"_"+fleetname(f1)+"("+NumLbl(f1)+")";}
         for(int gg=1;gg<=seltype(f,4);gg++)
         {ParCount++; ParmLabel+="male_ln(selchange)_"+NumLbl(gg)+"_"+fleetname(f1)+"("+NumLbl(f1)+")";}
+      }
+      else
+      {
+        for(int gg=1;gg<=seltype(f,4);gg++)
+        {ParCount++; ParmLabel+="ln(selchange)_"+NumLbl(gg)+"_"+fleetname(f1)+"("+NumLbl(f1)+")";}
+      }
+     }
+     else if(seltype(f,1)==45)
+     {
+       N_selparmvec(f)=2+gender+gender*seltype(f,4);
+       ParCount++; ParmLabel+="first_selage_"+fleetname(f1)+"("+NumLbl(f1)+")";
+       ParCount++; ParmLabel+="first_age_mean_"+fleetname(f1)+"("+NumLbl(f1)+")";
+       ParCount++; ParmLabel+="last_age_mean_"+fleetname(f1)+"("+NumLbl(f1)+")";
+       if(gender==2) 
+       {
+        ParCount++; ParmLabel+="Male_ln(ratio)_"+fleetname(f1)+"("+NumLbl(f1)+")";
+        for(int gg=1;gg<=seltype(f,4);gg++)
+        {ParCount++; ParmLabel+="female_sel_logit_"+NumLbl(gg)+"_"+fleetname(f1)+"("+NumLbl(f1)+")";}
+        for(int gg=1;gg<=seltype(f,4);gg++)
+        {ParCount++; ParmLabel+="male_sel_logit_"+NumLbl(gg)+"_"+fleetname(f1)+"("+NumLbl(f1)+")";}
       }
       else
       {
@@ -3696,7 +3719,7 @@
     N_STD_Mgmt_Quant=16;
   }
   else
-  {N_STD_Mgmt_Quant=1;}
+  {N_STD_Mgmt_Quant=4;}
   Fcast_catch_start=N_STD_Mgmt_Quant;
   if(max(Do_Retain)>0) {j=1;} else {j=0;}
   if(Do_Forecast>0) {N_STD_Mgmt_Quant+=N_Fcast_Yrs*(1+j)+N_Fcast_Yrs;}

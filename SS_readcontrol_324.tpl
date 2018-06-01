@@ -802,7 +802,6 @@
    ivector autogen_timevary(1,5);  //  0 means to autogenerate all time-vary parameters; 1 means to read
   int do_once;
   int doit;
-  vector femfrac(1,N_GP*gender)
 
   int MGP_CGD
   int CGD_onoff;  //  switch for cohort growth dev
@@ -816,8 +815,6 @@
       warning<<" Only parm_adjust_method 1 and 3 implemented in SS3.30; resetting value to 1 "<<endl;
       parm_adjust_method=1;
     }
-  femfrac(1,N_GP)=fracfemale;
-  if(gender==2) femfrac(N_GP+1,N_GP+N_GP)=1.-fracfemale;
 
   ParCount=0;
   retParCount=0;    // for 3.24 -> 3.30 dome-shaped retention
@@ -4045,9 +4042,8 @@
     }
   }
   Extra_Std_N+=gender*NatAge_Std_Cnt;
+  Extra_Std_N+=3;
 
-  if(Extra_Std_N==0) Extra_Std_N=1;   //  assign a minimum length to dimension the sdreport vector Selex_Std
-  echoinput<<"After processing"<<endl;
   if(Selex_Std_Cnt>0) echoinput<<Selex_Std_Pick<<" # vector with selex std bin picks (-1 in first bin to self-generate)"<<endl;
   if(Growth_Std_Cnt>0) echoinput<<Growth_Std_Pick<<" # vector with growth std bin picks (-1 in first bin to self-generate)"<<endl;
   if(NatAge_Std_Cnt>0) echoinput<<NatAge_Std_Pick<<" # vector with NatAge std bin picks (-1 in first bin to self-generate)"<<endl;
@@ -4073,7 +4069,7 @@
     N_STD_Mgmt_Quant=16;
   }
   else
-  {N_STD_Mgmt_Quant=1;}
+  {N_STD_Mgmt_Quant=4;}
   Fcast_catch_start=N_STD_Mgmt_Quant;
   if(max(Do_Retain)>0) {j=1;} else {j=0;}
   if(Do_Forecast>0) {N_STD_Mgmt_Quant+=N_Fcast_Yrs*(1+j)+N_Fcast_Yrs;}
@@ -4642,11 +4638,17 @@
         {ParmLabel+="NatAge_std_All_"+GenderLbl(g)+"_A_"+NumLbl(age_vector(NatAge_Std_Pick(i)))+CRLF(1);}
       }
     }
-    if(Do_Selex_Std==0 && Do_Growth_Std==0 && Do_NatAge_Std==0)
-    {
-      CoVar_Count++; j++; active_parm(CoVar_Count)=j;
-      ParmLabel+="Bzero_again"+CRLF(1);
-    }
+
+//  output ln(Spbio) for selected years
+    CoVar_Count++; j++; active_parm(CoVar_Count)=j;
+    sprintf(onenum, "%d", styr);
+    ParmLabel+="ln(SPB)_"+onenum+CRLF(1);
+    CoVar_Count++; j++; active_parm(CoVar_Count)=j;
+    sprintf(onenum, "%d", int((endyr+styr)/2));
+    ParmLabel+="ln(SPB)_"+onenum+CRLF(1);
+    CoVar_Count++; j++; active_parm(CoVar_Count)=j;
+    sprintf(onenum, "%d", endyr);
+    ParmLabel+="ln(SPB)_"+onenum+CRLF(1);
 
    sprintf(onenum, "%d", int(100*depletion_level));
    switch(depletion_basis)

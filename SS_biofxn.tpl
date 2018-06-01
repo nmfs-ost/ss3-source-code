@@ -7,7 +7,7 @@ FUNCTION void get_MGsetup()
 
     for (f=1;f<=N_MGparm;f++)
     {
-      if(MGparm_timevary(f)>0)   // not  timevary
+      if(MGparm_timevary(f)>0)   // timevary
       {
         mgp_adj(f)=parm_timevary(MGparm_timevary(f),yz);
         if(parm_adjust_method==1 && (save_for_report>0 || do_once==1))
@@ -32,6 +32,7 @@ FUNCTION void get_MGsetup()
     }
   if(save_for_report>0) mgp_save(yz)=value(mgp_adj);
   }
+
 
 //********************************************************************
  /*  SS_Label_FUNCTION 15 get_growth1;  calc some seasonal and CV_growth biology factors that cannot be time-varying */
@@ -883,6 +884,21 @@ FUNCTION void get_recr_distribution()
   {
  /*  SS_Label_Function_18 #get_recr_distribution among areas and morphs */
 
+//  SS_Label_Info_18.15  #get fraction female
+  if (frac_female_pointer > 0)
+  {
+      Ip = frac_female_pointer - 1;
+      for (gp=1;gp<=N_GP;gp++)
+      {
+        femfrac(gp) = mgp_adj(Ip + gp);
+        if(gender==2) femfrac(N_GP+gp) = 1.0 - femfrac(gp);
+      }
+  }
+  else
+  {femfrac(1,N_GP)=fracfemale;
+   if(gender==2) femfrac(N_GP,2*N_GP)=1.0-fracfemale;}
+  
+  if(do_once==1)  echoinput<<" femfrac "<<femfrac<<endl;
   if(finish_starter==999)
   {k=MGP_CGD-recr_dist_parms+nseas;}
   else
@@ -895,16 +911,6 @@ FUNCTION void get_recr_distribution()
   for (f=1;f<=MGP_CGD-recr_dist_parms;f++)
   {
     recr_dist_parm(f)=mfexp(mgp_adj(Ip+f));
-  }
-//  SS_Label_Info_18.15  #get fraction female (these could be time-varying in a future version)
-  if (frac_female_pointer > 0)
-  {
-      Ip = frac_female_pointer - 1;
-      for (gp=1;gp<=N_GP;gp++)
-      {
-        femfrac(gp) = value(mgp_adj(Ip + gp));
-        if(gender==2) femfrac(N_GP+gp) = 1.0 - femfrac(gp);
-      }
   }
 //  SS_Label_Info_18.2  #loop gp * settlements * area and multiply together the recr_dist_parm values
   if(recr_dist_method==2)
@@ -975,6 +981,7 @@ FUNCTION void get_recr_distribution()
     }
   }
 //  SS_Label_Info_18.4  #scale the recr_dist matrix to sum to 1.0
+  if(do_once==1) echoinput<<"recruitment distribution raw "<<endl<<recr_dist<<endl;
   recr_dist/=sum(recr_dist);
     if(do_once==1) echoinput<<"recruitment distribution in year: "<<y<<"  DIST: "<<endl<<recr_dist<<endl;
   }

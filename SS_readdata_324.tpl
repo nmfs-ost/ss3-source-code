@@ -3176,7 +3176,7 @@
     ALK_idx++;
     Show_Time2(ALK_idx,1)=y;
     Show_Time2(ALK_idx,2)=s;
-    Show_Time3(ALK_idx,3)=subseas;
+//    Show_Time3(ALK_idx,3)=subseas;
   }
  END_CALCS
 

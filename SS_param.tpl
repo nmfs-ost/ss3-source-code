@@ -25,6 +25,7 @@ PARAMETER_SECTION
 !!//  SS_Label_Info_5.1.1 #Create MGparm vector and associated arrays
   // natural mortality and growth
   init_bounded_number_vector MGparm(1,N_MGparm2,MGparm_LO,MGparm_HI,MGparm_PH)
+  vector femfrac(1,N_GP*gender);
   vector L_inf(1,N_GP*gender);
   vector Lmax_temp(1,N_GP*gender);
   vector CV_delta(1,N_GP*gender);
