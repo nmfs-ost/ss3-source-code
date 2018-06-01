@@ -1217,29 +1217,66 @@ FUNCTION void get_time_series()
           temp=0.0;
           temp1=0.0;
           temp2=0.0;
-          for (g=1;g<=gmorph;g++)
-          if(use_morph(g)>0)
+          // calculated average F weighted by numbers (option 5 is unweighted)
+          if(F_reporting!=5)
           {
-            for (p=1;p<=pop;p++)
+            for (g=1;g<=gmorph;g++)
+            if(use_morph(g)>0)
             {
-              for (a=F_reporting_ages(1);a<=F_reporting_ages(2);a++)   //  should not let a go higher than nages-2 because of accumulator
+              for (p=1;p<=pop;p++)
               {
-                temp1+=natage(t+1,p,g,a+1);
-                if(nseas==1)
+                for (a=F_reporting_ages(1);a<=F_reporting_ages(2);a++)   //  should not let a go higher than nages-2 because of accumulator
                 {
-                  temp2+=natage(t,p,g,a)*mfexp(-seasdur(s)*natM(s,GP3(g),a));
-                }
-                else
-                {
-                  temp3=natage(t-nseas+1,p,g,a);  //  numbers at begin of year
-                  for (j=1;j<=nseas;j++) {
-                    temp3*=mfexp(-seasdur(j)*natM(j,GP3(g),a));}
-                  temp2+=temp3;
+                  temp1+=natage(t+1,p,g,a+1);
+                  if(nseas==1)
+                  {
+                    temp2+=natage(t,p,g,a)*mfexp(-seasdur(s)*natM(s,GP3(g),a));
+                  }
+                  else
+                  {
+                    temp3=natage(t-nseas+1,p,g,a);  //  numbers at begin of year
+                    for (j=1;j<=nseas;j++) {
+                      temp3*=mfexp(-seasdur(j)*natM(j,GP3(g),a));}
+                    temp2+=temp3;
+                  }
                 }
               }
             }
-          }
-          annual_F(y,2) = log(temp2)-log(temp1);
+            annual_F(y,2) = log(temp2)-log(temp1);
+
+          } // end if F_reporting!=5
+          else
+          {    // F_reporting==5 (ICES-style arithmetic mean across ages)
+               //  like option 4 above, but F is calculated 1 age at a time to get a
+               //  unweighted average across ages within each year
+            temp=0.0;  // used for count of Fs included in average
+            for (g=1;g<=gmorph;g++)
+            if(use_morph(g)>0)
+            {
+              for (p=1;p<=pop;p++)
+              {
+                for (a=F_reporting_ages(1);a<=F_reporting_ages(2);a++)   //  should not let a go higher than nages-2 because of accumulator
+                {
+                  temp1=natage(t+1,p,g,a+1);
+                  if(nseas==1)
+                  {
+                    temp2=natage(t,p,g,a)*mfexp(-seasdur(s)*natM(s,GP3(g),a));
+                  }
+                  else
+                  {
+                    temp3=natage(t-nseas+1,p,g,a);  //  numbers at begin of year
+                    for (j=1;j<=nseas;j++) {
+                      temp3*=mfexp(-seasdur(j)*natM(j,GP3(g),a));}
+                    temp2=temp3; // temp2 and temp3 are redundant but match code above
+                  }
+                  annual_F(y,2) += log(temp2)-log(temp1);
+                  temp += 1; // increment count of values included in average
+                  cout<<" y: "<<y<<" g: "<<g<<" p: "<<p<<" a: "<<a<<" temp: "<<temp<<" annual_F(y,2): "<<annual_F(y,2)<<" log(temp2)-log(temp1): "<<log(temp2)-log(temp1)<<endl;
+                }
+              }
+            }
+            annual_F(y,2) /= temp;
+          } // end F_reporting==5
 
           if(STD_Yr_Reverse_F(y)>0)  //  save selected std quantity
           {
@@ -1256,7 +1293,7 @@ FUNCTION void get_time_series()
             {
               F_std(STD_Yr_Reverse_F(y))=annual_F(y,1);
             }
-            else if(F_reporting==4)
+            else if(F_reporting==4 || F_reporting==5)
             {
               F_std(STD_Yr_Reverse_F(y))=annual_F(y,2);
             }
