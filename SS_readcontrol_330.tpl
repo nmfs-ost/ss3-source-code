@@ -2509,29 +2509,29 @@
        {RetainParm(f)=0;}  //  no parameters needed
        else
        {
-       RetainParm(f)=N_selparmvec(f)+1;
+         RetainParm(f)=N_selparmvec(f)+1;
 //       N_selparmvec(f) +=N_ret_parm*seltype(f,2);          // N retention parms first [N_ret_parm] for retention; next [N_ret_parm] for discard mortality
-       if(N_ret_parm(seltype(f,2))>0)
-       {
-         ParCount++; N_selparmvec(f)++;ParmLabel+="Retain_L_infl_"+fleetname(f)+"("+NumLbl(f)+")";
-         ParCount++; N_selparmvec(f)++;ParmLabel+="Retain_L_width_"+fleetname(f)+"("+NumLbl(f)+")";
-         ParCount++; N_selparmvec(f)++;ParmLabel+="Retain_L_asymptote_logit_"+fleetname(f)+"("+NumLbl(f)+")";
-         ParCount++; N_selparmvec(f)++;ParmLabel+="Retain_L_maleoffset_"+fleetname(f)+"("+NumLbl(f)+")";
-         if(N_ret_parm(seltype(f,2))==7)  //  doing dome
+         if(N_ret_parm(seltype(f,2))>0)
          {
-           ParCount++; N_selparmvec(f)++;ParmLabel+="Retain_L_dome_infl_"+fleetname(f)+"("+NumLbl(f)+")";
-           ParCount++; N_selparmvec(f)++;ParmLabel+="Retain_L_dome_width_"+fleetname(f)+"("+NumLbl(f)+")";
-           ParCount++; N_selparmvec(f)++;ParmLabel+="Retain_L_dome_maleoffset_"+fleetname(f)+"("+NumLbl(f)+")";
+           ParCount++; N_selparmvec(f)++;ParmLabel+="Retain_L_infl_"+fleetname(f)+"("+NumLbl(f)+")";
+           ParCount++; N_selparmvec(f)++;ParmLabel+="Retain_L_width_"+fleetname(f)+"("+NumLbl(f)+")";
+           ParCount++; N_selparmvec(f)++;ParmLabel+="Retain_L_asymptote_logit_"+fleetname(f)+"("+NumLbl(f)+")";
+           ParCount++; N_selparmvec(f)++;ParmLabel+="Retain_L_maleoffset_"+fleetname(f)+"("+NumLbl(f)+")";
+           if(N_ret_parm(seltype(f,2))==7)  //  doing dome
+           {
+             ParCount++; N_selparmvec(f)++;ParmLabel+="Retain_L_dome_infl_"+fleetname(f)+"("+NumLbl(f)+")";
+             ParCount++; N_selparmvec(f)++;ParmLabel+="Retain_L_dome_width_"+fleetname(f)+"("+NumLbl(f)+")";
+             ParCount++; N_selparmvec(f)++;ParmLabel+="Retain_L_dome_maleoffset_"+fleetname(f)+"("+NumLbl(f)+")";
+           }
+         }
+         if(seltype(f,2)==2 || seltype(f,2)==4)
+         {
+           ParCount++; N_selparmvec(f)++; ParmLabel+="DiscMort_L_infl_"+fleetname(f)+"("+NumLbl(f)+")";
+           ParCount++; N_selparmvec(f)++; ParmLabel+="DiscMort_L_width_"+fleetname(f)+"("+NumLbl(f)+")";
+           ParCount++; N_selparmvec(f)++; ParmLabel+="DiscMort_L_level_old_"+fleetname(f)+"("+NumLbl(f)+")";
+           ParCount++; N_selparmvec(f)++; ParmLabel+="DiscMort_L_male_offset_"+fleetname(f)+"("+NumLbl(f)+")";
          }
        }
-       if(seltype(f,2)==2 || seltype(f,2)==4)
-       {
-         ParCount++; N_selparmvec(f)++; ParmLabel+="DiscMort_L_infl_"+fleetname(f)+"("+NumLbl(f)+")";
-         ParCount++; N_selparmvec(f)++; ParmLabel+="DiscMort_L_width_"+fleetname(f)+"("+NumLbl(f)+")";
-         ParCount++; N_selparmvec(f)++; ParmLabel+="DiscMort_L_level_old_"+fleetname(f)+"("+NumLbl(f)+")";
-         ParCount++; N_selparmvec(f)++; ParmLabel+="DiscMort_L_male_offset_"+fleetname(f)+"("+NumLbl(f)+")";
-       }
-      }
      }
      if(seltype(f,3)>=1)
       {
@@ -2667,12 +2667,12 @@
 
      else if (seltype(f,1)==20)
      {
-       ParCount++; ParmLabel+="Age_DblN_peak_"+fleetname(f)+"("+NumLbl(f)+")";
-       ParCount++; ParmLabel+="Age_DblN_top_logit_"+fleetname(f)+"("+NumLbl(f)+")";
-       ParCount++; ParmLabel+="Age_DblN_ascend_se_"+fleetname(f)+"("+NumLbl(f)+")";
-       ParCount++; ParmLabel+="Age_DblN_descend_se_"+fleetname(f)+"("+NumLbl(f)+")";
-       ParCount++; ParmLabel+="Age_DblN_start_logit_"+fleetname(f)+"("+NumLbl(f)+")";
-       ParCount++; ParmLabel+="Age_DblN_end_logit_"+fleetname(f)+"("+NumLbl(f)+")";
+       ParCount++; ParmLabel+="Age_DblN_peak_"+fleetname(f1)+"("+NumLbl(f)+")";
+       ParCount++; ParmLabel+="Age_DblN_top_logit_"+fleetname(f1)+"("+NumLbl(f)+")";
+       ParCount++; ParmLabel+="Age_DblN_ascend_se_"+fleetname(f1)+"("+NumLbl(f)+")";
+       ParCount++; ParmLabel+="Age_DblN_descend_se_"+fleetname(f1)+"("+NumLbl(f)+")";
+       ParCount++; ParmLabel+="Age_DblN_start_logit_"+fleetname(f1)+"("+NumLbl(f)+")";
+       ParCount++; ParmLabel+="Age_DblN_end_logit_"+fleetname(f1)+"("+NumLbl(f)+")";
      }
      else if (seltype(f,1)==12)
      {

@@ -931,10 +931,14 @@
       {mnwtdata(5,j)=1;}  //  body length
       else
       {mnwtdata(5,j)=2;}  //  body weight
+      mnwtdata(6,j)=mnwtdata1(i,5);
+      mnwtdata(6,j)=mnwtdata1(i,5);
+      mnwtdata(7,j)=mnwtdata1(i,6);
       mnwtdata(11,j)=ALK_time;
     }
   }
   echoinput<<"Successful read of mean-bodywt data, N= "<< nobs_mnwt <<endl;
+  echoinput<<"processed mnwtdata:"<<endl<<trans(mnwtdata)<<endl;
  END_CALCS
 
 !!//  SS_Label_Info_2.6 #Setup population Length bins

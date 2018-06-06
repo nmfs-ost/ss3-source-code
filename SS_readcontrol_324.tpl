@@ -2738,14 +2738,10 @@
        else
        {
          RetainParm(f)=N_selparmvec(f)+1;
-//       N_selparmvec(f) +=4*seltype(f,2);          // N retention parms first 4 for retention; next 4 for mortality
        for (j=1;j<=N_ret_parm(seltype(f,2));j++)
        {
-//        if(j==1) RetainParm(f)=ParCount-firstselparm+1;
          ParCount++; N_selparmvec(f)++; ParmLabel+="Retain_P"+NumLbl(j)+"_"+fleetname(f)+"("+NumLbl(f)+")";
        }
-       // location of where to insert placeholder params
-//       N_retParm++; retParmLoc(N_retParm)=RetainParm(f)+4;
 
        if(seltype(f,2)==2 || seltype(f,2)==4)
        {
@@ -2863,7 +2859,6 @@
          RetainParm(f)=N_selparmvec(f)+1;
          for (j=1;j<=N_ret_parm(seltype(f,2));j++)
          {
-//           if(j==1) RetainParm(f)=ParCount-firstselparm+1;
            ParCount++; N_selparmvec(f)++; ParmLabel+="Retain_age_P"+NumLbl(j)+"_"+fleetname(f1)+"("+NumLbl(f1)+")";
          }
          if(seltype(f,2)==2 || seltype(f,2)==4)
@@ -2940,14 +2935,16 @@
     }
   }
 //  check on conversion of retention parameter
+  int parmcount;
+  parmcount=0;
   for(f=1;f<=2*Nfleet;f++)
   {
     if(RetainParm(f)>0)
     {
-      k=RetainParm(f)+2;
+      k=parmcount+RetainParm(f)+2;
       if(selparm_1(k,1) >=0.0)
         {
-          N_warn++; warning<<"convert asymptotic retention to 1/(1+e(-x)) format"<<endl;
+          N_warn++; warning<<"convert asymptotic retention to 1/(1+e(-x)) format for fleet: "<<f<<" parm: "<<k<<endl;
           warning<<"old min, max, init, prior: "<<selparm_1(k)(1,4)<<endl;
 
           new_lower_bound=-10.;
@@ -2998,6 +2995,7 @@
           warning<<"if timevarying, you will need to do conversion manually"<<endl;
         }
     }
+    parmcount+=N_selparmvec(f);
   }
   echoinput<<"end conversion of retention "<<endl;
  END_CALCS
@@ -4315,11 +4313,15 @@
         }
         if(k==2)  //  create default bounds, priors, etc.
         {
-        echoinput<<"Do complete setup of lo, hi, prior, etc."<<endl;
+        echoinput<<"Do complete setup of lo, hi, prior, etc. for fleet: "<<f<<endl;
           for (z=Ip+4;z<=Ip+3+N_knots;z++)
           {
-            selparm_LO(z)=age_bins(1);
-            selparm_HI(z)=age_bins(n_abins);
+            if(f<=Nfleet)
+            {selparm_LO(z)=len_bins_dat(1);
+              selparm_HI(z)=len_bins_dat(nlen_bin);}
+            else
+            {selparm_LO(z)=age_bins(1);
+             selparm_HI(z)=age_bins(n_abins);}
             selparm_PR(z)=0.;
             selparm_PRtype(z)=0;
             selparm_CV(z)=0.;
@@ -4333,7 +4335,6 @@
           else
           {p=3+N_knots+1+0.5*N_knots;}
 
-          echoinput<<" p "<<p<<endl;
           for (z=N_knots+1+3;z<=3+2*N_knots;z++)
           {
             a=Ip+z;
@@ -4386,16 +4387,17 @@
           selparm_CV(p)=0.;
           selparm_PH(p)=-99;
           }
-
+          echoinput<<"saving adjusted cubic spline setup"<<endl;
           for (z=Ip+1;z<=Ip+3+2*N_knots;z++)
           {
             selparm_1(z,1)=selparm_LO(z);
             selparm_1(z,2)=selparm_HI(z);
             selparm_1(z,3)=selparm_RD(z);
             selparm_1(z,4)=selparm_PR(z);
-            selparm_1(z,5)=selparm_PRtype(z);
-            selparm_1(z,6)=selparm_CV(z);
+            selparm_1(z,5)=selparm_CV(z);
+            selparm_1(z,6)=selparm_PRtype(z);
             selparm_1(z,7)=selparm_PH(z);
+            echoinput<<z<<" selparm "<<selparm_1(z)(1,7)<<endl;
           }
         }
       }
