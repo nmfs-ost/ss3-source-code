@@ -47,7 +47,8 @@ GLOBALS_SECTION
 //  SS_Label_Info_10.2 #Define some adstring variables
   adstring_array ParmLabel;  // extendable array to hold the parameter labels
   adstring_array Parm_info;  // extendable array to hold the parameter labels
-  adstring_array retParmLabel;  // extendable array for the 3.24 -> 3.30 retention parameter labels
+  adstring_array SzFreq_units_label;
+  adstring_array SzFreq_scale_label;
   adstring_array fleetname;
   adstring fleetnameread;
   adstring depletion_basis_label;
@@ -508,6 +509,7 @@ GLOBALS_SECTION
        }
        timevary_setup(12)=-5;  //  set reasonable phase for devs;
        baseparm_list(12)=-5;
+       N_warn++; warning<<"A parameter dev vector has been created with phase set to negative.  Edit phase as needed "<<endl;
       }
       timevary_parm_rd.push_back (dvector(tempvec(1,7)));
 

@@ -1738,7 +1738,7 @@
     }
     case 7:  // survival
     {
-      ParmLabel+="SR_surv_Sfrac";
+      ParmLabel+="SR_surv_zfrac";
       ParmLabel+="SR_surv_Beta";
       break;
     }
@@ -4322,9 +4322,9 @@
             else
             {selparm_LO(z)=age_bins(1);
              selparm_HI(z)=age_bins(n_abins);}
-            selparm_PR(z)=0.;
+            selparm_PR(z)=int((selparm_LO(z)+selparm_HI(z))/2.);
             selparm_PRtype(z)=0;
-            selparm_CV(z)=0.;
+            selparm_CV(z)=1.0;
             selparm_PH(z)=-99;
           }
 
@@ -4351,14 +4351,14 @@
           }
           selparm_PH(Ip+p)=-99;
           selparm_PRtype(Ip+p)=0;
-          selparm_CV(Ip+p)=0.;
+          selparm_CV(Ip+p)=1.0;
 
           p=Ip+1;
           selparm_LO(p)=0.;
           selparm_HI(p)=2.;
           selparm_PR(p)=0.;
           selparm_PRtype(p)=0;
-          selparm_CV(p)=0.;
+          selparm_CV(p)=1.0;
           selparm_PH(p)=-99;
           p++;
           selparm_LO(p)=-0.001;
@@ -4384,7 +4384,7 @@
           selparm_RD(p)=0.00;
           selparm_PR(p)=0.;
           selparm_PRtype(p)=0;
-          selparm_CV(p)=0.;
+          selparm_CV(p)=1.0;
           selparm_PH(p)=-99;
           }
           echoinput<<"saving adjusted cubic spline setup"<<endl;

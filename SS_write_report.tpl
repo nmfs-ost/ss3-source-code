@@ -112,18 +112,37 @@ FUNCTION void write_bigoutput()
   SS2out<<"X Dynamic_Bzero "<<endl;
 
   SS2out<<endl<<"DEFINITIONS"<<endl;
-  SS2out<<"N_seasons "<<nseas<<endl;
+  SS2out<<"N_seasons: "<<nseas<<endl;
+  SS2out<<"N_sub_seasons: "<<N_subseas<<endl;
   SS2out<<"Sum_of_months_on_read_was:_ "<<sumseas<<" rescaled_to_sum_to: "<<sum(seasdur)<<endl;
-  SS2out<<"Season_Durations "<<seasdur<<endl;
-  SS2out<<"fleet_ID#: ";
-  for (f=1;f<=Nfleet;f++) SS2out<<" "<<f;
-  SS2out<<endl<<"fleet_names: ";
-  for (f=1;f<=Nfleet;f++) SS2out<<" "<<fleetname(f);
-  SS2out<<endl;
-  SS2out<<"#_rows are fleets; columns are: fleet_type, timing, area, units, catch_mult, survey_units survey_error "<<endl;
+  SS2out<<"Season_Durations: "<<seasdur<<endl;
+  SS2out<<"Spawn_month: "<<spawn_month<<endl<<"Spawn_seas: "<<spawn_seas<<endl<<"Spawn_timing_in_season: "<<spawn_time_seas<<endl;
+  SS2out<<"N_areas: "<<pop<<endl;
+  SS2out<<"Start_year: "<<styr<<endl;
+  SS2out<<"End_year: "<<endyr<<endl;
+  SS2out<<"Retro_year: "<<retro_yr<<endl;
+  SS2out<<"N_forecast_yrs: "<<N_Fcast_Yrs<<endl;
+  SS2out<<"N_areas: "<<pop<<endl;
+  SS2out<<"N_sexes: "<<gender<<endl;
+  SS2out<<"Max_age: "<<nages<<endl;
+  SS2out<<"Empirical_wt_at_age(0,1): "<<WTage_rd<<endl;
+  SS2out<<"N_bio_patterns: "<<N_GP<<endl;
+  SS2out<<"N_platoons: "<<N_platoon<<endl;
+  SS2out<<"Start_from_par(0,1): "<<readparfile<<endl;
+  SS2out<<"Do_all_priors(0,1): "<<Do_all_priors<<endl;
+  SS2out<<"Use_softbound(0,1): "<<SoftBound<<endl;
+  SS2out<<"N_nudata: "<<N_nudata<<endl;
+  SS2out<<"Max_phase: "<<max_phase<<endl;
+  SS2out<<"Current_phase: "<<current_phase()<<endl;
+  SS2out<<"Jitter: "<<jitter<<endl;
+  SS2out<<"ALK_tolerance: "<<ALK_tolerance<<endl;
+  SS2out<<"Fleet_names: "; for(f=1;f<=Nfleet;f++) {SS2out<<" "<<fleetname(f);}
+  SS2out<<endl<<"Fleet_type: "<<fleet_type<<endl;
+  SS2out<<"Fleet_area: "<<fleet_area<<endl;
+  SS2out<<"Fleet fleet_type timing area catch_units catch_mult survey_units survey_error fleet_name"<<endl;
   for (f=1;f<=Nfleet;f++)
   {
-    SS2out<<fleet_setup(f)<<" "<<Svy_units(f)<<" "<<Svy_errtype(f)<<" # Fleet:_"<<f<<"_ "<<fleetname(f)<<endl;
+    SS2out<<f<<" "<<fleet_setup(f)<<" "<<Svy_units(f)<<" "<<Svy_errtype(f)<<" "<<fleetname(f)<<endl;
   }
 
   k=current_phase();
@@ -1135,7 +1154,7 @@ FUNCTION void write_bigoutput()
   }
 
   SS2out<<"#"<<endl<<"DISCARD_OUTPUT "<<endl;
-  SS2out<<"Fleet Name Yr Seas Yr.S Obs Exp Std_in Std_use Dev Like Like+log(s) SuprPer Use Obs_cat Exp_cat catch_mult exp_cat*catch_mult F_rate"<<endl;
+  SS2out<<"Fleet Name Yr Month Seas Yr.frac Obs Exp Std_in Std_use Dev Like Like+log(s) SuprPer Use Obs_cat Exp_cat catch_mult exp_cat*catch_mult F_rate"<<endl;
   data_type=2;
   if(nobs_disc>0)
   for (f=1;f<=Nfleet;f++)
@@ -1150,8 +1169,8 @@ FUNCTION void write_bigoutput()
       {gg=3;}  //  biomass
       else
       {gg=6;}  //  numbers
-      SS2out<<f<<" "<<fleetname(f)<<" "<<Show_Time(t)<<" "<<data_time(ALK_time,f,3)<<" "<<obs_disc(f,i)<<" "
-      <<exp_disc(f,i)<<" "<<" "<<cv_disc(f,i)<<" "<<sd_disc(f,i);
+      SS2out<<f<<" "<<fleetname(f)<<" "<<Show_Time(t,1)<<" "<<data_time(ALK_time,f,1)<<" "<<Show_Time(t,2)<<" "<<data_time(ALK_time,f,3)
+      <<" "<<obs_disc(f,i)<<" "<<exp_disc(f,i)<<" "<<" "<<cv_disc(f,i)<<" "<<sd_disc(f,i);
 
       if(yr_disc_use(f,i)>=0.0)
       {
@@ -1200,19 +1219,22 @@ FUNCTION void write_bigoutput()
 
   SS2out <<endl<< "MEAN_BODY_WT_OUTPUT"<<endl;
   if(nobs_mnwt>0) SS2out<<"log(L)_based_on_T_distribution_with_DF=_"<<DF_bodywt<< endl;
-  SS2out<<"Fleet Name Yr Seas Yr.S Mkt Obs Exp CV Dev NeglogL Neg(logL+log(s)) Use"<<endl;
+  SS2out<<"Fleet Name Yr Month Seas Time Part Type Obs Exp CV Dev NeglogL Neg(logL+log(s)) Use"<<endl;
+//  10 items are:  1yr, 2seas, 3fleet, 4part, 5type, 6obs, 7se, then three intermediate variance quantities
   if(nobs_mnwt>0)
   for (i=1;i<=nobs_mnwt;i++)
   {
     t=mnwtdata(1,i);
     f=abs(mnwtdata(3,i));
-    SS2out << mnwtdata(3,i)<<" "<<fleetname(f)<<" "<<Show_Time(t)<<" NA "
-    <<mnwtdata(4,i)<<" "<<mnwtdata(5,i)<<" "<<exp_mnwt(i)<<" "<<mnwtdata(6,i);
+    ALK_time=mnwtdata(11,i);
+    SS2out << mnwtdata(3,i)<<" "<<fleetname(f)<<" "<<Show_Time(t,1)<<" "<<data_time(ALK_time,f,1)<<
+    " "<<Show_Time(t,2)<<" "<<data_time(ALK_time,f,3)<<" "
+    <<mnwtdata(4,i)<<" "<<mnwtdata(5,i)<<" "<<mnwtdata(6,i)<<" "<<exp_mnwt(i)<<" "<<mnwtdata(7,i);
     if(mnwtdata(3,i)>0.)
     {
-      SS2out<<" "<<mnwtdata(5,i)-exp_mnwt(i)<<" "<<
-       0.5*(DF_bodywt+1.)*log(1.+square(mnwtdata(5,i)-exp_mnwt(i))/mnwtdata(8,i))<<" "<<
-       0.5*(DF_bodywt+1.)*log(1.+square(mnwtdata(5,i)-exp_mnwt(i))/mnwtdata(8,i))+ mnwtdata(9,i)<<" "<<1;
+      SS2out<<" "<<mnwtdata(6,i)-exp_mnwt(i)<<" "<<
+       0.5*(DF_bodywt+1.)*log(1.+square(mnwtdata(6,i)-exp_mnwt(i))/mnwtdata(9,i))<<" "<<
+       0.5*(DF_bodywt+1.)*log(1.+square(mnwtdata(6,i)-exp_mnwt(i))/mnwtdata(9,i))+ mnwtdata(10,i)<<" "<<1;
     }
     else
     {
@@ -1222,7 +1244,7 @@ FUNCTION void write_bigoutput()
   }
 
   SS2out <<endl<< "FIT_LEN_COMPS" << endl;                     // SS_Label_350
-  SS2out<<"Fleet Yr Month Seas Yr.frac Sex Mkt SuprPer Use Nsamp effN Like";
+  SS2out<<"Fleet Fleet_Name Area Yr Month Seas Subseas Time Sexes Part SuprPer Use Nsamp effN Like";
   SS2out<<" All_obs_mean All_exp_mean All_delta All_exp_5% All_exp_95% All_DurWat";
   if(gender==2) SS2out<<" F_obs_mean F_exp_mean F_delta F_exp_5% F_exp_95% F_DurWat M_obs_mean M_exp_mean M_delta M_exp_5% M_exp_95% M_DurWat %F_obs %F_exp ";
   SS2out<<endl;
@@ -1232,6 +1254,10 @@ FUNCTION void write_bigoutput()
   dvar_vector more_comp_info(1,20);
   dvariable cumdist;
   dvariable cumdist_save;
+  dvector minsamp(1,Nfleet);
+  dvector maxsamp(1,Nfleet);
+  minsamp=10000.;
+  maxsamp=0.;
   //mean_all_obs; 1
   //mean_all_exp; 2
   //mean_all_delta; 3
@@ -1258,6 +1284,7 @@ FUNCTION void write_bigoutput()
    {
      t=Len_time_t(f,i);
      ALK_time=Len_time_ALK(f,i);
+     more_comp_info.initialize();
      if(header_l(f,i,3)>0)
      {
        neff_l(f,i)  = exp_l(f,i)*(1-exp_l(f,i))+1.0e-06;     // constant added for stability
@@ -1267,142 +1294,19 @@ FUNCTION void write_bigoutput()
        mean_CV(f)+=nsamp_l(f,i);
        Hrmse(f)+=value(1./neff_l(f,i));
        Rrmse(f)+=value(neff_l(f,i)/nsamp_l(f,i));
-
-       more_comp_info.initialize();
-       // do both sexes  tails_l(f,i,4) has been set to tails_l(f,i,2) if males not in this sample
-       if(gen_l(f,i)==3 || gen_l(f,i)==0)
-       {
-         more_comp_info(1)=obs_l(f,i)(tails_l(f,i,1),tails_l(f,i,4))*len_bins_dat_m2(tails_l(f,i,1),tails_l(f,i,4));
-         more_comp_info(2)=value(exp_l(f,i)(tails_l(f,i,1),tails_l(f,i,4))*len_bins_dat_m2(tails_l(f,i,1),tails_l(f,i,4)));
-         more_comp_info(3)=more_comp_info(1)-more_comp_info(2);
-         //  calc tails of distribution and Durbin-Watson for autocorrelation
-         temp1=0.0;
-         z=tails_l(f,i,1);
-         cumdist_save=0.0;
-         cumdist=0.0;
-         for(z=1;z<=nlen_bin;z++)
-         {
-          cumdist+=exp_l(f,i,z);
-          if(gender==2)  cumdist+=exp_l(f,i,z+nlen_bin);  // add males and females
-          if(cumdist>=0.05 && cumdist_save<0.05)  //  found bin for 5%
-          {
-            if(z==1)
-            {more_comp_info(4)=len_bins_dat2(z);}  //  set to lower edge
-            else
-            {more_comp_info(4)=len_bins_dat2(z)+(len_bins_dat2(min(z+1,nlen_bin))-len_bins_dat2(z))*(0.05-cumdist_save)/(cumdist-cumdist_save);}
-          }
-          if(cumdist>=0.95 && cumdist_save<0.95)  //  found bin for 95%
-          {
-            more_comp_info(5)=len_bins_dat2(z)+(len_bins_dat2(min(z+1,nlen_bin))-len_bins_dat2(z))*(0.95-cumdist_save)/(cumdist-cumdist_save);
-          }
-          cumdist_save=cumdist;
-
-          temp=obs_l(f,i,z)-exp_l(f,i,z);  //  obs-exp
-          if(z>tails_l(f,i,1))
-          {
-            more_comp_info(6)+=value(square(temp2-temp));
-            temp1+=value(square(temp));
-          }
-          temp2=temp;
-         }
-         if(gen_l(f,i)==3 && gender==2)  // do sex ratio
-         {
-           more_comp_info(19)=sum(obs_l(f,i)(tails_l(f,i,1),tails_l(f,i,2)));  //  sum obs female fractions =  %female
-           more_comp_info(20)=value(sum(exp_l(f,i)(tails_l(f,i,1),tails_l(f,i,2)))); //  sum exp female fractions =  %female
-           for(z=tails_l(f,i,3);z<=tails_l(f,i,4);z++)
-           {
-            temp=obs_l(f,i,z)-exp_l(f,i,z);  //  obs-exp
-            if(z>tails_l(f,i,1))
-            {
-              more_comp_info(6)+=value(square(temp2-temp));
-              temp1+=value(square(temp));
-            }
-            temp2=temp;
-           }
-         }
-         more_comp_info(6)=(more_comp_info(6)/temp1) - 2.0;
-       }
-
-       if(gen_l(f,i)==1 || gen_l(f,i)==3)  //  need females
-       {
-         //  where len_bins_dat_m2() holds midpoints of the data length bins
-         more_comp_info(7)=(obs_l(f,i)(tails_l(f,i,1),tails_l(f,i,2))*len_bins_dat_m2(tails_l(f,i,1),tails_l(f,i,2)))/sum(obs_l(f,i)(tails_l(f,i,1),tails_l(f,i,2)));
-         more_comp_info(8)=value((exp_l(f,i)(tails_l(f,i,1),tails_l(f,i,2))*len_bins_dat_m2(tails_l(f,i,1),tails_l(f,i,2)))/sum(exp_l(f,i)(tails_l(f,i,1),tails_l(f,i,2))));
-         more_comp_info(9)=more_comp_info(7)-more_comp_info(8);
-         //  calc tails of distribution and Durbin-Watson for autocorrelation
-         temp1=0.0;
-         z=tails_l(f,i,1);
-         cumdist_save=0.0;
-         cumdist=0.0;
-         for(z=tails_l(f,i,1);z<=tails_l(f,i,2);z++)
-         {
-          cumdist+=value(exp_l(f,i,z));
-          if(cumdist>=0.05*more_comp_info(20) && cumdist_save<0.05*more_comp_info(20))  //  found bin for 5%
-          {
-            if(z==1)
-            {more_comp_info(10)=len_bins_dat2(z);}  //  set to lower edge
-            else
-            {more_comp_info(10)=len_bins_dat2(z)+(len_bins_dat2(min(z+1,nlen_bin))-len_bins_dat2(z))*(0.05*more_comp_info(20)-cumdist_save)/(cumdist-cumdist_save);}
-          }
-          if(cumdist>=0.95*more_comp_info(20) && cumdist_save<0.95*more_comp_info(20))  //  found bin for 95%
-          {
-            more_comp_info(11)=len_bins_dat2(z)+(len_bins_dat2(min(z+1,nlen_bin))-len_bins_dat2(z))*(0.95*more_comp_info(20)-cumdist_save)/(cumdist-cumdist_save);
-          }
-          cumdist_save=cumdist;
-
-          temp=obs_l(f,i,z)-exp_l(f,i,z);  //  obs-exp
-          if(z>tails_l(f,i,1))
-          {
-            more_comp_info(12)+=value(square(temp2-temp));
-            temp1+=value(square(temp));
-          }
-          temp2=temp; //  save current delta
-         }
-         more_comp_info(12)=(more_comp_info(12)/temp1) - 2.0;
-       }
-       if(gen_l(f,i)>=2 && gender==2)  // need males
-       {
-         more_comp_info(13)=(obs_l(f,i)(tails_l(f,i,3),tails_l(f,i,4))*len_bins_dat_m2(tails_l(f,i,3),tails_l(f,i,4)))/sum(obs_l(f,i)(tails_l(f,i,3),tails_l(f,i,4)));
-         more_comp_info(14)=value((exp_l(f,i)(tails_l(f,i,3),tails_l(f,i,4))*len_bins_dat_m2(tails_l(f,i,3),tails_l(f,i,4)))/sum(exp_l(f,i)(tails_l(f,i,3),tails_l(f,i,4))));
-         more_comp_info(15)=more_comp_info(13)-more_comp_info(14);
-         //  calc tails of distribution and Durbin-Watson for autocorrelation
-         temp1=0.0;
-         z=tails_l(f,i,3);
-         cumdist_save=0.0;
-         cumdist=0.0;
-         for(z=tails_l(f,i,3);z<=tails_l(f,i,4);z++)
-         {
-          cumdist+=value(exp_l(f,i,z));
-          if(cumdist>=0.05*more_comp_info(20) && cumdist_save<0.05*more_comp_info(20))  //  found bin for 5%
-          {
-            if(z==nlen_bin+1)
-            {more_comp_info(16)=len_bins_dat2(z);}  //  set to lower edge
-            else
-            {more_comp_info(16)=len_bins_dat2(z)+(len_bins_dat2(min(z+1,nlen_bin2))-len_bins_dat2(z))*(0.05*more_comp_info(20)-cumdist_save)/(cumdist-cumdist_save);}
-          }
-          if(cumdist>=0.95*more_comp_info(20) && cumdist_save<0.95*more_comp_info(20))  //  found bin for 95%
-          {
-            more_comp_info(17)=len_bins_dat2(z)+(len_bins_dat2(min(z+1,nlen_bin2))-len_bins_dat2(z))*(0.95*more_comp_info(20)-cumdist_save)/(cumdist-cumdist_save);
-          }
-          cumdist_save=cumdist;
-
-          temp=obs_l(f,i,z)-exp_l(f,i,z);  //  obs-exp
-          if(z>tails_l(f,i,1))
-          {
-            more_comp_info(18)+=value(square(temp2-temp));
-            temp1+=value(square(temp));
-          }
-          temp2=temp; //  save current delta
-         }
-         more_comp_info(18)=(more_comp_info(18)/temp1) - 2.0;
-       }
+       if(nsamp_l(f,i)<minsamp(f)) minsamp(f)=nsamp_l(f,i);
+       if(nsamp_l(f,i)>maxsamp(f)) maxsamp(f)=nsamp_l(f,i);
+       more_comp_info=process_comps(gender,gen_l(f,i),len_bins_dat2,len_bins_dat_m2,tails_l(f,i),obs_l(f,i), value(exp_l(f,i)));
      }
      else
      {
        neff_l(f,i)=0.;
      }
+     
+     
+//  SS2out<<"Fleet Fleet_Name Area Yr Month Seas Subseas Time Sexes Part SuprPer Use Nsamp effN Like";
 
-      SS2out<<f<<" "<<header_l(f,i,1)<<" "<<abs(header_l(f,i,2))<<" "<<Show_Time2(ALK_time,2)<<" "<<data_time(ALK_time,f,3)<<" "<<gen_l(f,i)<<" "<<mkt_l(f,i);
+      SS2out<<f<<" "<<fleetname(f)<<" "<<fleet_area(f)<<" "<<header_l(f,i,1)<<" "<<abs(header_l(f,i,2))<<" "<<Show_Time2(ALK_time)(2,3)<<" "<<data_time(ALK_time,f,3)<<" "<<gen_l(f,i)<<" "<<mkt_l(f,i);
       if(header_l(f,i,2)<0 && in_superperiod==0)
       {SS2out<<" start "; in_superperiod=1;}
       else if (header_l(f,i,2)<0 && in_superperiod==1)
@@ -1418,7 +1322,7 @@ FUNCTION void write_bigoutput()
       SS2out<<nsamp_l(f,i)<<" "<<neff_l(f,i)<<" "<<length_like(f,i)<<" ";
       SS2out<<more_comp_info(1,6);
       if(gender==2) SS2out<<" "<<more_comp_info(7,20);
-      SS2out<<endl;
+      SS2out<<endl;      
     }
 
 //Fleet N Npos mean_effN mean(inputN*Adj) HarMean(effN) Mean(effN/inputN) MeaneffN/MeaninputN Var_Adj
@@ -1427,31 +1331,30 @@ FUNCTION void write_bigoutput()
 //It might also be good to add a keyword to the top of those lower tables which could simplify the logic of parsing them separately from the FIT_..._COMPS tables above them and therefore be more robust to changes in format.
 
    SS2out<<endl<<"Length_Comp_Fit_Summary"<<endl<<
-   "Fleet N Npos min_inputN mean_inputN*Adj mean_effN HarMean Curr_Var_Adj Recommend_Var_Adj FleetName"<<endl;
+   "Factor Fleet Recommend_var_adj # N Npos min_inputN max_inputN mean_adj_inputN mean_effN HarMean Curr_Var_Adj FleetName"<<endl;
    for (f=1;f<=Nfleet;f++)
    {
-    if(n_rmse(f)>0) {rmse(f)/=n_rmse(f); mean_CV(f)/=n_rmse(f); Hrmse(f)=n_rmse(f)/Hrmse(f);}
-    SS2out<<f;
-    if(Nobs_l(f)>0)
-    {SS2out<<" "<<Nobs_l(f)<<" "<<n_rmse(f)<<" " <<min_sample_size_L(f)<<" "<<mean_CV(f)<<" "<<rmse(f)<<" "<<Hrmse(f)
-    <<" "<<var_adjust(4,f)<<" "<<Hrmse(f)/mean_CV(f)*var_adjust(4,f)<<" "<<fleetname(f)<<endl;}
-    else
-    {SS2out<<" _ _ _ _ _ _ _ _ _ "<<endl;}
+    if(n_rmse(f)>0) 
+    {
+      rmse(f)/=n_rmse(f); mean_CV(f)/=n_rmse(f); Hrmse(f)=n_rmse(f)/Hrmse(f); Rrmse(f)/=n_rmse(f);
+      SS2out<<"4 "<<f<<" "<<Hrmse(f)/mean_CV(f)*var_adjust(4,f)<<" # "<<Nobs_l(f)<<" "<<n_rmse(f)<<" " <<
+      minsamp(f)<<" "<<maxsamp(f)<<" "<<mean_CV(f)<<" "<<rmse(f)<<" "<<Hrmse(f)<<" "<<var_adjust(4,f)<<" "<<fleetname(f)<<endl;
+   }
    }
 
   SS2out <<endl<< "FIT_AGE_COMPS" << endl;
-  SS2out<<"Fleet Yr Month Seas Yr.frac Sex Mkt Ageerr Lbin_lo Lbin_hi Nsamp effN Like SuprPer Use";
+  SS2out<<"Fleet Fleet_Name Area Yr Month Seas Subseas Time Sexes Part Ageerr Lbin_lo Lbin_hi SuprPer Use Nsamp effN Like ";
   SS2out<<" All_obs_mean All_exp_mean All_delta All_exp_5% All_exp_95% All_DurWat";
   if(gender==2) SS2out<<" F_obs_mean F_exp_mean F_delta F_exp_5% F_exp_95% F_DurWat M_obs_mean M_exp_mean M_delta M_exp_5% M_exp_95% M_DurWat %F_obs %F_exp ";
   SS2out<<endl;
-  rmse = 0.0;  n_rmse = 0.0; mean_CV=0.0;  Hrmse=0.0; Rrmse=0.0;
+  rmse = 0.0;  n_rmse = 0.0; mean_CV=0.0;  Hrmse=0.0; Rrmse=0.0;  minsamp=10000.; maxsamp=0.;
    if(Nobs_a_tot>0)
    for(f=1;f<=Nfleet;f++)
    for(i=1;i<=Nobs_a(f);i++)
-     {
+    {
       t=Age_time_t(f,i);
       ALK_time=Age_time_ALK(f,i);
-
+      more_comp_info.initialize();
      if(nsamp_a(f,i)>0 && header_a(f,i,3)>0)
      {
        neff_a(f,i)  = exp_a(f,i)*(1-exp_a(f,i))+1.0e-06;     // constant added for stability
@@ -1461,141 +1364,17 @@ FUNCTION void write_bigoutput()
        mean_CV(f)+=nsamp_a(f,i);
        Hrmse(f)+=value(1./neff_a(f,i));
        Rrmse(f)+=value(neff_a(f,i)/nsamp_a(f,i));
+       if(nsamp_a(f,i)<minsamp(f)) minsamp(f)=nsamp_a(f,i);
+       if(nsamp_a(f,i)>maxsamp(f)) maxsamp(f)=nsamp_a(f,i);
        more_comp_info.initialize();
-       // do both sexes  tails_a(f,i,4) has been set to tails_a(f,i,2) if males not in this sample
-       if(gen_a(f,i)==3 || gen_a(f,i)==0)
-       {
-         more_comp_info(1)=obs_a(f,i)(tails_a(f,i,1),tails_a(f,i,4))*age_bins_mean(tails_a(f,i,1),tails_a(f,i,4));
-         more_comp_info(2)=value(exp_a(f,i)(tails_a(f,i,1),tails_a(f,i,4))*age_bins_mean(tails_a(f,i,1),tails_a(f,i,4)));
-         more_comp_info(3)=more_comp_info(1)-more_comp_info(2);
-         //  calc tails of distribution and Durbin-Watson for autocorrelation
-         temp1=0.0;
-         z=tails_a(f,i,1);
-         cumdist_save=0.0;
-         cumdist=0.0;
-         for(z=1;z<=n_abins;z++)
-         {
-          cumdist+=exp_a(f,i,z);
-          if(gender==2)  cumdist+=exp_a(f,i,z+n_abins);  // add males and females
-          if(cumdist>=0.05 && cumdist_save<0.05)  //  found bin for 5%
-          {
-            if(z==1)
-            {more_comp_info(4)=age_bins(z);}  //  set to lower edge
-            else
-            {more_comp_info(4)=age_bins(z)+(age_bins(min(z+1,n_abins))-age_bins(z))*(0.05-cumdist_save)/(cumdist-cumdist_save);}
-          }
-          if(cumdist>=0.95 && cumdist_save<0.95)  //  found bin for 95%
-          {
-            more_comp_info(5)=age_bins(z)+(age_bins(min(z+1,n_abins))-age_bins(z))*(0.95-cumdist_save)/(cumdist-cumdist_save);
-          }
-          cumdist_save=cumdist;
-
-          temp=obs_a(f,i,z)-exp_a(f,i,z);  //  obs-exp
-          if(z>tails_a(f,i,1))
-          {
-            more_comp_info(6)+=value(square(temp2-temp));
-            temp1+=value(square(temp));
-          }
-          temp2=temp;
-         }
-         if(gen_a(f,i)==3 && gender==2)  // do sex ratio
-         {
-           more_comp_info(19)=sum(obs_a(f,i)(tails_a(f,i,1),tails_a(f,i,2)));  //  sum obs female fractions =  %female
-           more_comp_info(20)=value(sum(exp_a(f,i)(tails_a(f,i,1),tails_a(f,i,2)))); //  sum exp female fractions =  %female
-           for(z=tails_a(f,i,3);z<=tails_a(f,i,4);z++)
-           {
-            temp=obs_a(f,i,z)-exp_a(f,i,z);  //  obs-exp
-            if(z>tails_a(f,i,1))
-            {
-              more_comp_info(6)+=value(square(temp2-temp));
-              temp1+=value(square(temp));
-            }
-            temp2=temp;
-           }
-         }
-         more_comp_info(6)=(more_comp_info(6)/temp1) - 2.0;
-       }
-
-       if(gen_a(f,i)==1 || gen_a(f,i)==3)  //  need females
-       {
-         //  where len_bins_dat_m2() holds midpoints of the data length bins
-         more_comp_info(7)=(obs_a(f,i)(tails_a(f,i,1),tails_a(f,i,2))*age_bins_mean(tails_a(f,i,1),tails_a(f,i,2)))/sum(obs_a(f,i)(tails_a(f,i,1),tails_a(f,i,2)));
-         more_comp_info(8)=value((exp_a(f,i)(tails_a(f,i,1),tails_a(f,i,2))*age_bins_mean(tails_a(f,i,1),tails_a(f,i,2)))/sum(exp_a(f,i)(tails_a(f,i,1),tails_a(f,i,2))));
-         more_comp_info(9)=more_comp_info(7)-more_comp_info(8);
-         //  calc tails of distribution and Durbin-Watson for autocorrelation
-         temp1=0.0;
-         z=tails_a(f,i,1);
-         cumdist_save=0.0;
-         cumdist=0.0;
-         for(z=tails_a(f,i,1);z<=tails_a(f,i,2);z++)
-         {
-          cumdist+=value(exp_a(f,i,z));
-          if(cumdist>=0.05*more_comp_info(20) && cumdist_save<0.05*more_comp_info(20))  //  found bin for 5%
-          {
-            if(z==1)
-            {more_comp_info(10)=age_bins(z);}  //  set to lower edge
-            else
-            {more_comp_info(10)=age_bins(z)+(age_bins(min(z+1,n_abins))-age_bins(z))*(0.05*more_comp_info(20)-cumdist_save)/(cumdist-cumdist_save);}
-          }
-          if(cumdist>=0.95*more_comp_info(20) && cumdist_save<0.95*more_comp_info(20))  //  found bin for 95%
-          {
-            more_comp_info(11)=age_bins(z)+(age_bins(min(z+1,n_abins))-age_bins(z))*(0.95*more_comp_info(20)-cumdist_save)/(cumdist-cumdist_save);
-          }
-          cumdist_save=cumdist;
-
-          temp=obs_a(f,i,z)-exp_a(f,i,z);  //  obs-exp
-          if(z>tails_a(f,i,1))
-          {
-            more_comp_info(12)+=value(square(temp2-temp));
-            temp1+=value(square(temp));
-          }
-          temp2=temp; //  save current delta
-         }
-         more_comp_info(12)=(more_comp_info(12)/temp1) - 2.0;
-       }
-       if(gen_a(f,i)>=2 && gender==2)  // need males
-       {
-         more_comp_info(13)=(obs_a(f,i)(tails_a(f,i,3),tails_a(f,i,4))*age_bins_mean(tails_a(f,i,3),tails_a(f,i,4)))/sum(obs_a(f,i)(tails_a(f,i,3),tails_a(f,i,4)));
-         more_comp_info(14)=value((exp_a(f,i)(tails_a(f,i,3),tails_a(f,i,4))*age_bins_mean(tails_a(f,i,3),tails_a(f,i,4)))/sum(exp_a(f,i)(tails_a(f,i,3),tails_a(f,i,4))));
-         more_comp_info(15)=more_comp_info(13)-more_comp_info(14);
-         //  calc tails of distribution and Durbin-Watson for autocorrelation
-         temp1=0.0;
-         z=tails_a(f,i,3);
-         cumdist_save=0.0;
-         cumdist=0.0;
-         for(z=tails_a(f,i,3);z<=tails_a(f,i,4);z++)
-         {
-          cumdist+=value(exp_a(f,i,z));
-          if(cumdist>=0.05*more_comp_info(20) && cumdist_save<0.05*more_comp_info(20))  //  found bin for 5%
-          {
-            if(z==n_abins+1)
-            {more_comp_info(16)=age_bins(z);}  //  set to lower edge
-            else
-            {more_comp_info(16)=age_bins(z)+(age_bins(min(z+1,n_abins2))-age_bins(z))*(0.05*more_comp_info(20)-cumdist_save)/(cumdist-cumdist_save);}
-          }
-          if(cumdist>=0.95*more_comp_info(20) && cumdist_save<0.95*more_comp_info(20))  //  found bin for 95%
-          {
-            more_comp_info(17)=age_bins(z)+(age_bins(min(z+1,n_abins2))-age_bins(z))*(0.95*more_comp_info(20)-cumdist_save)/(cumdist-cumdist_save);
-          }
-          cumdist_save=cumdist;
-
-          temp=obs_a(f,i,z)-exp_a(f,i,z);  //  obs-exp
-          if(z>tails_a(f,i,1))
-          {
-            more_comp_info(18)+=value(square(temp2-temp));
-            temp1+=value(square(temp));
-          }
-          temp2=temp; //  save current delta
-         }
-         more_comp_info(18)=(more_comp_info(18)/temp1) - 2.0;
-       }
+       more_comp_info=process_comps(gender,gen_a(f,i),age_bins,age_bins_mean,tails_a(f,i),obs_a(f,i), value(exp_a(f,i)));
      }
      else
      {
         neff_a(f,i)=0.;
      }
-     SS2out<<f<<" "<<header_a(f,i,1)<<" "<<abs(header_a(f,i,2))<<" "<<Show_Time2(ALK_time,2)<<" "<<data_time(ALK_time,f,3)<<" "<<gen_a(f,i)<<" "<<mkt_a(f,i)<<" "<<ageerr_type_a(f,i)<<" "<<Lbin_lo(f,i)<<" "<<Lbin_hi(f,i)<<" "<<nsamp_a(f,i)<<" "<<neff_a(f,i)<<" "<<
-     age_like(f,i)<<" ";
+//  SS2out<<"Fleet Fleet_Name Area Yr Month Seas Subseas Time Sexes Part Ageerr Lbin_lo Lbin_hi Nsamp effN Like SuprPer Use";
+     SS2out<<f<<" "<<fleetname(f)<<" "<<fleet_area(f)<<" "<<header_a(f,i,1)<<" "<<abs(header_a(f,i,2))<<" "<<Show_Time2(ALK_time)(2,3)<<" "<<data_time(ALK_time,f,3)<<" "<<gen_a(f,i)<<" "<<mkt_a(f,i)<<" "<<ageerr_type_a(f,i)<<" "<<Lbin_lo(f,i)<<" "<<Lbin_hi(f,i)<<" ";
      if(header_a(f,i,2)<0 && in_superperiod==0)
       {SS2out<<" start "; in_superperiod=1;}
       else if (header_a(f,i,2)<0 && in_superperiod==1)
@@ -1608,83 +1387,114 @@ FUNCTION void write_bigoutput()
       {SS2out<<" skip ";}
       else
       {SS2out<<" _ ";}
-      SS2out<<more_comp_info(1,6);
+      SS2out<<nsamp_a(f,i)<<" "<<neff_a(f,i)<<" "<<age_like(f,i)<<" "<<more_comp_info(1,6);
       if(gender==2) SS2out<<" "<<more_comp_info(7,20);
       SS2out<<endl;
-     
     }
 
-   SS2out<<endl<<"Age_Comp_Fit_Summary"<<endl;
-   SS2out<<endl<<"Fleet N Npos min_inputN mean_effN mean(inputN*Adj) HarMean(effN) Mean(effN/inputN) MeaneffN/MeaninputN Var_Adj"<<endl;
+   SS2out<<endl<<"Age_Comp_Fit_Summary"<<endl<<
+   "Factor Fleet Recommend_var_adj # N Npos min_inputN max_inputN mean_adj_inputN mean_effN HarMean Curr_Var_Adj FleetName"<<endl;
    for(f=1;f<=Nfleet;f++)
    {
-    if(n_rmse(f)>0) {rmse(f)/=n_rmse(f); mean_CV(f)/=n_rmse(f); Hrmse(f)=n_rmse(f)/Hrmse(f); Rrmse(f)/=n_rmse(f); }
-    SS2out<<f;
-    if(Nobs_a(f)>0)
-    {SS2out<<" "<<Nobs_a(f)<<" "<<n_rmse(f)<<" "<<min_sample_size_A(f)<<" "<<rmse(f)<<" "<<mean_CV(f)<<" "<<Hrmse(f)<<" "<<Rrmse(f)<<" "<<rmse(f)/mean_CV(f)
-    <<" "<<var_adjust(5,f)<<" "<<fleetname(f)<<endl;}
-    else
-    {SS2out<<" _ _ _ _ _ _ _ _ _ "<<endl;}
+    if(n_rmse(f)>0)
+    {
+      rmse(f)/=n_rmse(f); mean_CV(f)/=n_rmse(f); Hrmse(f)=n_rmse(f)/Hrmse(f); Rrmse(f)/=n_rmse(f);
+      SS2out<<"5 "<<f<<" "<<Hrmse(f)/mean_CV(f)*var_adjust(5,f)<<" # "<<Nobs_a(f)<<" "<<n_rmse(f)<<" "<<
+      minsamp(f)<<" "<<maxsamp(f)<<" "<<mean_CV(f)<<" "<<rmse(f)<<" "<<Hrmse(f)<<" "<<var_adjust(5,f)<<" "<<fleetname(f)<<endl;
+    }
    }
 
   SS2out <<endl<< "FIT_SIZE_COMPS" << endl;                     // SS_Label_350
-  rmse = 0.0;  n_rmse = 0.0; mean_CV=0.0;  Hrmse=0.0; Rrmse=0.0;
+    
     if(SzFreq_Nmeth>0)       //  have some sizefreq data
     {
       SzFreq_effN.initialize();
       SzFreq_eachlike.initialize();
-      SS2out<<"Fleet Yr Seas Method Sex Mkt Nsamp effN Like"<<endl;
-      for (iobs=1;iobs<=SzFreq_totobs;iobs++)
+      for(int sz_method=1; sz_method<=SzFreq_Nmeth; sz_method++)
       {
-        y=SzFreq_obs_hdr(iobs,1);
-        s=SzFreq_obs_hdr(iobs,2);
-        f=abs(SzFreq_obs_hdr(iobs,3));
-        gg=SzFreq_obs_hdr(iobs,4);  // gender
-        k=SzFreq_obs_hdr(iobs,6);
-        if(SzFreq_obs_hdr(iobs,3)>0)  // flag for date range in bounds
+        SS2out<<"#Method: "<<sz_method;
+        SS2out<<"  #Units: "<<SzFreq_units_label(SzFreq_units(sz_method));
+        SS2out<<"  #Scale: "<<SzFreq_scale_label(SzFreq_scale(sz_method));
+        SS2out<<"  #Add_to_comp: "<<SzFreq_mincomp(sz_method)<<"  #N_bins: "<<SzFreq_Nbins(sz_method)<<endl;
+        SS2out<<"Fleet Fleet_Name Area Yr Month Seas Subseas Time Sexes Part SuprPer Use Nsamp effN Like";
+        SS2out<<" All_obs_mean All_exp_mean All_delta All_exp_5% All_exp_95% All_DurWat"<<endl;
+        rmse = 0.0;  n_rmse = 0.0; mean_CV=0.0;  Hrmse=0.0; Rrmse=0.0;
+        minsamp=10000.;
+        maxsamp=0.;
+       
+        dvector sz_tails(1,4);
+        sz_tails(1)=1;
+        sz_tails(2)=SzFreq_Nbins(sz_method);
+        sz_tails(3)=SzFreq_Nbins(sz_method)+1;
+        sz_tails(4)=2*SzFreq_Nbins(sz_method);
+        for(f=1;f<=Nfleet;f++)
         {
-          p=SzFreq_obs_hdr(iobs,5);  // partition
-          z1=SzFreq_obs_hdr(iobs,7);
-          z2=SzFreq_obs_hdr(iobs,8);
-          if(SzFreq_obs_hdr(iobs,3)>0)
+          for (iobs=1;iobs<=SzFreq_totobs;iobs++)
           {
-          temp=0.0;
-          temp1=0.0;
-          for (z=z1;z<=z2;z++)
-          {
-            SzFreq_effN(iobs)+= value(SzFreq_exp(iobs,z)*(1.0-SzFreq_exp(iobs,z)));
-            temp += square(SzFreq_obs(iobs,z)-SzFreq_exp(iobs,z));
-            temp1 += SzFreq_obs(iobs,z)*log(SzFreq_obs(iobs,z))-SzFreq_obs(iobs,z)*log(SzFreq_exp(iobs,z));
-          }
-          SzFreq_effN(iobs) =(SzFreq_effN(iobs)+1.0e-06)/value((temp+1.0e-06));
-          temp1*=SzFreq_sampleN(iobs);
-          SzFreq_eachlike(iobs)=value(temp1);
-            n_rmse(f)+=1.;
-            rmse(f)+=SzFreq_effN(iobs);
-            mean_CV(f)+=SzFreq_sampleN(iobs);
-            Hrmse(f)+=1./SzFreq_effN(iobs);
-            Rrmse(f)+=SzFreq_effN(iobs)/SzFreq_sampleN(iobs);
-          }
-          else
-          {
-            SzFreq_effN(iobs)=0.;
-            SzFreq_eachlike(iobs)=0.;
-          }
-          SS2out<<f<<" "<<y<<" "<<s<<" "<<k<<" "<<gg<<" "<<p<<" "<<SzFreq_sampleN(iobs)<<" "<<SzFreq_effN(iobs)<<" "<<SzFreq_eachlike(iobs)<<endl;
-        }
-      }
-      SS2out<<endl<<"Size_Comp_Fit_Summary"<<endl;
-      SS2out<<endl<<"Fleet N Npos mean_effN mean(inputN*Adj) HarMean(effN) Mean(effN/inputN) MeaneffN/MeaninputN Var_Adj"<<endl;
-      for (f=1;f<=Nfleet;f++)
-      {
-        if(n_rmse(f)>0)
+            k=SzFreq_obs_hdr(iobs,6);
+            if(k==sz_method && abs(SzFreq_obs_hdr(iobs,3)==f))
+            {
+              if(SzFreq_obs_hdr(iobs,1)>0)  // year is positive, so use this obs
+              {
+                y=SzFreq_obs_hdr(iobs,1);
+                s=SzFreq_obs_hdr(iobs,2);
+                t=SzFreq_time_t(iobs);
+                ALK_time=SzFreq_time_ALK(iobs);
+                gg=SzFreq_obs_hdr(iobs,4);  // gender
+                p=SzFreq_obs_hdr(iobs,5);  // partition
+                z1=SzFreq_obs_hdr(iobs,7);
+                z2=SzFreq_obs_hdr(iobs,8);
+                if(SzFreq_obs_hdr(iobs,3)>0)
+                {
+                  temp=0.0;
+                  temp1=0.0;
+                  for (z=z1;z<=z2;z++)
+                  {
+                    SzFreq_effN(iobs)+= value(SzFreq_exp(iobs,z)*(1.0-SzFreq_exp(iobs,z)));
+                    temp += square(SzFreq_obs(iobs,z)-SzFreq_exp(iobs,z));
+                    temp1 += SzFreq_obs(iobs,z)*log(SzFreq_obs(iobs,z))-SzFreq_obs(iobs,z)*log(SzFreq_exp(iobs,z));
+                  }
+                  SzFreq_effN(iobs) =(SzFreq_effN(iobs)+1.0e-06)/value((temp+1.0e-06));
+                  temp1*=SzFreq_sampleN(iobs);
+                  SzFreq_eachlike(iobs)=value(temp1);
+                  n_rmse(f)+=1.;
+                  rmse(f)+=SzFreq_effN(iobs);
+                  mean_CV(f)+=SzFreq_sampleN(iobs);
+                  if(SzFreq_sampleN(iobs)<minsamp(f)) minsamp(f)=SzFreq_sampleN(iobs);
+                  if(SzFreq_sampleN(iobs)>maxsamp(f)) maxsamp(f)=SzFreq_sampleN(iobs);
+                  Hrmse(f)+=1./SzFreq_effN(iobs);
+                  Rrmse(f)+=SzFreq_effN(iobs)/SzFreq_sampleN(iobs);
+                  more_comp_info.initialize();
+                  more_comp_info=process_comps(gender,gg,SzFreq_bins(sz_method),SzFreq_means(sz_method),sz_tails,SzFreq_obs(iobs), value(SzFreq_exp(iobs)));
+                }
+                else
+                {
+                  SzFreq_effN(iobs)=0.;
+                  SzFreq_eachlike(iobs)=0.;
+                }
+                SS2out<<f<<" "<<fleetname(f)<<" "<<fleet_area(f)<<" "<<y<<" "<<s<<" "<<Show_Time2(ALK_time)(2,3)
+                <<" "<<data_time(ALK_time,f,3)<<" "<<gg<<" "<<p<<" na na "
+                " "<<SzFreq_sampleN(iobs)<<" "<<SzFreq_effN(iobs)<<" "<<SzFreq_eachlike(iobs)<<more_comp_info(1,6);
+                if(gender==2) SS2out<<" "<<more_comp_info(7,20);
+                SS2out<<endl;
+              }  //  end finding observation that is being used
+            }  //  end observation matching selected method
+          }  //  end loop of observations
+        }  //  end fleet loop
+  //      SS2out<<"Fleet N Npos mean_effN mean(inputN*Adj) HarMean(effN) Mean(effN/inputN) MeaneffN/MeaninputN Var_Adj"<<endl;
+        SS2out<<"Factor Fleet Recommend_Var_Adj # N Npos min_inputN max_inputN mean_adj_inputN mean_effN HarMean Curr_Var_Adj FleetName"<<endl;
+        for(f=1;f<=Nfleet;f++)
         {
-          rmse(f)/=n_rmse(f); mean_CV(f)/=n_rmse(f); Hrmse(f)=n_rmse(f)/Hrmse(f); Rrmse(f)/=n_rmse(f);
-          SS2out<<f<<" "<<"NA"<<" "<<n_rmse(f)<<" "<<rmse(f)<<" "<<mean_CV(f)<<" "<<Hrmse(f)<<" "<<Rrmse(f)<<" "<<rmse(f)/mean_CV(f)
-          <<" "<<var_adjust(4,f)<<" "<<fleetname(f)<<endl;
+          if(n_rmse(f)>0)
+          {
+            rmse(f)/=n_rmse(f); mean_CV(f)/=n_rmse(f); Hrmse(f)=n_rmse(f)/Hrmse(f); Rrmse(f)/=n_rmse(f);
+            SS2out<<"7 "<<f<<" "<<Hrmse(f)/mean_CV(f)*var_adjust(7,f)<<" #  NA "<<n_rmse(f)<<" "<<minsamp(f)<<" "
+            <<maxsamp(f)<<" "<<mean_CV(f)<<" "<<rmse(f)<<" "<<Hrmse(f)
+            <<" "<<var_adjust(7,f)<<" "<<fleetname(f)<<endl;
+          }
         }
-      }
-    }
+      }  //  end loop of methods
+    }  // end have sizecomp
     else
     {SS2out<<"#_none"<<endl;}
 
@@ -2370,12 +2180,12 @@ FUNCTION void write_bigoutput()
   SS_compout<<endl<<"Method_for_Lbin_definition_for_agecomp_data: "<<Lbin_method<<endl;
 
   SS_compout<<"For_Sizefreq,_Lbin_Lo_is_units(bio_or_numbers);_Lbin_hi_is_scale(kg,_lb,_cm,_in),_Ageerr_is_method"<<endl;
-  SS_compout<<"Yr.frac_is_fraction_of_year_based_on_subseas"<<endl;
+  SS_compout<<"Time_is_fraction_of_year_based_on_subseas"<<endl;
   SS_compout<<"For_Tag_output,_Rep_contains_Tag_Group,_Bin_is_fleet_for_TAG1_and_Bin_is_Year.Seas_for_TAG2"<<endl;
   SS_compout<<"Column_Super?_indicates_super-periods;_column_used_indicates_inclusion_in_logL"<<endl;
 
   SS_compout <<endl<< "Composition_Database" << endl;           // SS_Label_480
-  SS_compout<<"Yr Seas Yr.frac Fleet Rep Pick_sex Kind Part Ageerr Sex Lbin_lo Lbin_hi Bin Obs Exp Pearson N effN Like Cum_obs Cum_exp SuprPer Used?"<<endl;
+  SS_compout<<"Yr Seas Time Fleet Repl. Sexes Kind Part Ageerr Sex Lbin_lo Lbin_hi Bin Obs Exp Pearson N effN Like Cum_obs Cum_exp SuprPer Used?"<<endl;
   int lasttime;
   int lastfleet;
   int repli;
@@ -3135,3 +2945,146 @@ FUNCTION void write_bigoutput()
   wrote_bigreport=1;  // flag so that second call to writebigreport will do extra output
   return;
   }  //  end writebigreport
+  
+FUNCTION dvector process_comps(const int sexes, const int sex, dvector &bins, dvector &means, dvector &tails, 
+         dvector& obs, dvector& exp)
+  {
+    dvector more_comp_info(1,20);
+    double cumdist;
+    double cumdist_save;
+    double temp, temp1, temp2;
+    int z;
+    more_comp_info.initialize();
+    //  sexes is 1 or 2 for numbers of sexes in model
+    //  sex is 0, 1, 2, 3 for range of sexes used in this sample
+    int nbins = bins.indexmax()/sexes; // find number of bins
+     // do both sexes  tails(4) has been set to tails(2) if males not in this sample
+     if(sex==3 || sex==0)
+     {
+       more_comp_info(1)=obs(tails(1),tails(4))*means(tails(1),tails(4));
+       more_comp_info(2)=exp(tails(1),tails(4))*means(tails(1),tails(4));
+       more_comp_info(3)=more_comp_info(1)-more_comp_info(2);
+//  calc tails of distribution and Durbin-Watson for autocorrelation
+       temp1=0.0; temp2=0.0;
+       cumdist_save=0.0;
+       cumdist=0.0;
+       for(z=1;z<=nbins;z++)
+       {
+        cumdist+=exp(z);
+        if(sexes==2)  cumdist+=exp(z+nbins);  // add males and females
+        if(cumdist>=0.05 && cumdist_save<0.05)  //  found bin for 5%
+        {
+          if(z==1)
+          {more_comp_info(4)=bins(z);}  //  set to lower edge
+          else
+          {more_comp_info(4)=bins(z)+(bins(min(z+1,nbins))-bins(z))*(0.05-cumdist_save)/(cumdist-cumdist_save);}
+        }
+        if(cumdist>=0.95 && cumdist_save<0.95)  //  found bin for 95%
+        {
+          more_comp_info(5)=bins(z)+(bins(min(z+1,nbins))-bins(z))*(0.95-cumdist_save)/(cumdist-cumdist_save);
+        }
+        cumdist_save=cumdist;
+
+        temp=obs(z)-exp(z);  //  obs-exp
+        if(z>tails(1))
+        {
+          more_comp_info(6)+=square(temp2-temp);
+          temp1+=square(temp);
+        }
+        temp2=temp;
+       }
+
+       if(sex==3 && sexes==2)  // do sex ratio
+       {
+         more_comp_info(19)=sum(obs(tails(1),tails(2)));  //  sum obs female fractions =  %female
+         more_comp_info(20)=sum(exp(tails(1),tails(2))); //  sum exp female fractions =  %female
+         for(z=tails(3);z<=tails(4);z++)
+         {
+          temp=obs(z)-exp(z);  //  obs-exp
+          if(z>tails(3))
+          {
+            more_comp_info(6)+=square(temp2-temp);
+            temp1+=square(temp);
+          }
+          temp2=temp;
+         }
+       }
+       more_comp_info(6)=(more_comp_info(6)/temp1) - 2.0;
+     }
+
+    
+     if(sex==1 || sex==3)  //  need females
+     {
+       //  where means() holds midpoints of the data length bins
+       more_comp_info(7)=(obs(tails(1),tails(2))*means(tails(1),tails(2)))/sum(obs(tails(1),tails(2)));
+       more_comp_info(8)=(exp(tails(1),tails(2))*means(tails(1),tails(2)))/sum(exp(tails(1),tails(2)));
+       more_comp_info(9)=more_comp_info(7)-more_comp_info(8);
+       //  calc tails of distribution and Durbin-Watson for autocorrelation
+       temp1=0.0;
+       cumdist_save=0.0;
+       cumdist=0.0;
+       for(z=tails(1);z<=tails(2);z++)
+       {
+        cumdist+=exp(z);
+        if(cumdist>=0.05*more_comp_info(20) && cumdist_save<0.05*more_comp_info(20))  //  found bin for 5%
+        {
+          if(z==1)
+          {more_comp_info(10)=bins(z);}  //  set to lower edge
+          else
+          {more_comp_info(10)=bins(z)+(bins(min(z+1,nlen_bin))-bins(z))*(0.05*more_comp_info(20)-cumdist_save)/(cumdist-cumdist_save);}
+        }
+        if(cumdist>=0.95*more_comp_info(20) && cumdist_save<0.95*more_comp_info(20))  //  found bin for 95%
+        {
+          more_comp_info(11)=bins(z)+(bins(min(z+1,nlen_bin))-bins(z))*(0.95*more_comp_info(20)-cumdist_save)/(cumdist-cumdist_save);
+        }
+        cumdist_save=cumdist;
+
+        temp=obs(z)-exp(z);  //  obs-exp
+        if(z>tails(1))
+        {
+          more_comp_info(12)+=square(temp2-temp);
+          temp1+=square(temp);
+        }
+        temp2=temp; //  save current delta
+       }
+       more_comp_info(12)=(more_comp_info(12)/temp1) - 2.0;
+     }
+     if(sex>=2 && sexes==2)  // need males
+     {
+       more_comp_info(13)=(obs(tails(3),tails(4))*means(tails(3),tails(4)))/sum(obs(tails(3),tails(4)));
+       more_comp_info(14)=(exp(tails(3),tails(4))*means(tails(3),tails(4)))/sum(exp(tails(3),tails(4)));
+       more_comp_info(15)=more_comp_info(13)-more_comp_info(14);
+       //  calc tails of distribution and Durbin-Watson for autocorrelation
+       temp1=0.0;
+       cumdist_save=0.0;
+       cumdist=0.0;
+       //  where (1-more_comp_info(20)) is the total of male fractions
+       for(z=tails(3);z<=tails(4);z++)
+       {
+        cumdist+=exp(z);
+        if(cumdist>=0.05*(1.0-more_comp_info(20)) && cumdist_save<0.05*(1.0-more_comp_info(20)))  //  found bin for 5%
+        {
+          if(z==nbins+1)
+          {more_comp_info(16)=bins(z);}  //  set to lower edge
+          else
+          {more_comp_info(16)=bins(z)+(bins(min(z+1,2*nbins))-bins(z))*(0.05*more_comp_info(20)-cumdist_save)/(cumdist-cumdist_save);}
+        }
+        if(cumdist>=0.95*(1.0-more_comp_info(20)) && cumdist_save<0.95*(1.0-more_comp_info(20)))  //  found bin for 95%
+        {
+          more_comp_info(17)=bins(z)+(bins(min(z+1,2*nbins))-bins(z))*(0.95*(1.0-more_comp_info(20))-cumdist_save)/(cumdist-cumdist_save);
+        }
+        cumdist_save=cumdist;
+
+        temp=obs(z)-exp(z);  //  obs-exp
+        if(z>tails(3))
+        {
+          more_comp_info(18)+=square(temp2-temp);
+          temp1+=square(temp);
+        }
+        temp2=temp; //  save current delta
+       }
+       more_comp_info(18)=(more_comp_info(18)/temp1) - 2.0;
+     }
+     
+    return more_comp_info;
+  }

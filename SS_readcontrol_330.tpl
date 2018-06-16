@@ -1418,7 +1418,7 @@
     }
     case 7:  // survival
     {
-      ParmLabel+="SR_surv_Sfrac";
+      ParmLabel+="SR_surv_zfrac";
       ParmLabel+="SR_surv_Beta";
       break;
     }
@@ -3974,11 +3974,15 @@
         echoinput<<"Do complete setup of lo, hi, prior, etc."<<endl;
           for (z=Ip+4;z<=Ip+3+N_knots;z++)
           {
-            selparm_LO(z)=age_bins(1);
-            selparm_HI(z)=age_bins(n_abins);
-            selparm_PR(z)=0.;
-            selparm_PRtype(z)=-1;
-            selparm_CV(z)=0.;
+            if(f<=Nfleet)
+            {selparm_LO(z)=len_bins_dat(1);
+              selparm_HI(z)=len_bins_dat(nlen_bin);}
+            else
+            {selparm_LO(z)=age_bins(1);
+             selparm_HI(z)=age_bins(n_abins);}
+            selparm_PR(z)=int((selparm_LO(z)+selparm_HI(z))/2.);
+            selparm_PRtype(z)=0;
+            selparm_CV(z)=1.0;
             selparm_PH(z)=-99;
           }
 
@@ -3999,20 +4003,20 @@
             selparm_LO(a)=-9.;
             selparm_HI(a)=7.;
             selparm_PR(a)=0.;
-            selparm_PRtype(a)=6;
+            selparm_PRtype(a)=1;  //  symmetric beta
             selparm_CV(a)=0.001;
             selparm_PH(a)=2;
           }
           selparm_PH(Ip+p)=-99;
           selparm_PRtype(Ip+p)=0;
-          selparm_CV(Ip+p)=0.;
+          selparm_CV(Ip+p)=1.0;
 
           p=Ip+1;
           selparm_LO(p)=0.;
           selparm_HI(p)=2.;
           selparm_PR(p)=0.;
           selparm_PRtype(p)=0;
-          selparm_CV(p)=0.;
+          selparm_CV(p)=1.0;
           selparm_PH(p)=-99;
           p++;
           selparm_LO(p)=-0.001;
@@ -4029,7 +4033,7 @@
           {
           selparm_RD(p)=-0.001;  // small negative gradient at top
           selparm_PR(p)=0.;
-          selparm_PRtype(p)=6;
+          selparm_PRtype(p)=1;
           selparm_CV(p)=0.001;
           selparm_PH(p)=3;
           }
@@ -4038,7 +4042,7 @@
           selparm_RD(p)=0.00;
           selparm_PR(p)=0.;
           selparm_PRtype(p)=0;
-          selparm_CV(p)=0.;
+          selparm_CV(p)=1.0;
           selparm_PH(p)=-99;
           }
 

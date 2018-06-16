@@ -833,8 +833,7 @@
     echoinput<<"#_yr month fleet part type obs stderr"<<endl;
     echoinput<<"# type is a required new input with 3.30.12"<<endl;
     echoinput<<"# type makes explicit the infor previously contained in the sign of partition, e.g. "<<endl;
-    echoinput<<"# if part<0, then obs are mean length, if part>0 then obs are mean weight"<<endl;
-    echoinput<<"# type=1 is for mean length, type=2 is for mean weight, and type=3 is for mean true age"<<endl;
+    echoinput<<"# type=1 is for mean length, type=2 is for mean weight, (future, type=3 is for mean true age)"<<endl;
     ender=0;
     nobs_mnwt=0;
     z=0;
@@ -2208,19 +2207,24 @@
   init_ivector SzFreq_Nbins(1,SzFreq_Nmeth);               //  number of bins for each method
   !!if(SzFreq_Nmeth>0) echoinput<<SzFreq_Nbins<<" Sizefreq N bins per method"<<endl;
   init_ivector SzFreq_units(1,SzFreq_Nmeth);               //  units for proportions (1 = biomass; 2=numbers ) for each method
-  !!if(SzFreq_Nmeth>0) echoinput<<SzFreq_units<<" Sizetfreq units(bio/num) per method"<<endl;
+  !!if(SzFreq_Nmeth>0) echoinput<<SzFreq_units<<" Sizetfreq units(1=bio/2=num) per method"<<endl;
   init_ivector SzFreq_scale(1,SzFreq_Nmeth);               //  bin scale (1=kg; 2=lbs; 3=cm; 4=in) for each method
-  !!if(SzFreq_Nmeth>0) echoinput<<SzFreq_scale<<" Sizefreq scale(kg/lbs/cm/inches) per method"<<endl;
+  !!if(SzFreq_Nmeth>0) echoinput<<SzFreq_scale<<" Sizefreq scale(1=kg/2=lbs/3=cm/4=inches) per method"<<endl;
   init_vector SzFreq_mincomp(1,SzFreq_Nmeth);               //  mincomp to add for each method
-  !!if(SzFreq_Nmeth>0) echoinput<<SzFreq_mincomp<<" Sizefreq mincomp per method "<<endl;
+  !!if(SzFreq_Nmeth>0) echoinput<<SzFreq_mincomp<<" Sizefreq:  add small constant to comps, per method "<<endl;
   init_ivector SzFreq_nobs(1,SzFreq_Nmeth);
   !!if(SzFreq_Nmeth>0) echoinput<<SzFreq_nobs<<" Sizefreq N obs per method"<<endl;
-
   ivector SzFreq_Nbins_seas_g(1,SzFreq_Nmeth*nseas);   //  array dimensioner used only for the SzFreqTrans array
   ivector SzFreq_Nbins3(1,SzFreq_Nmeth)        // doubles the Nbins if gender==2
   int SzFreqMethod_seas;
 
  LOCAL_CALCS
+  SzFreq_units_label+="bio";
+  SzFreq_units_label+="numbers";
+  SzFreq_scale_label+="kg";
+  SzFreq_scale_label+="lbs";
+  SzFreq_scale_label+="cm";
+  SzFreq_scale_label+="inches";
   g=0;
   data_type=6;  //  for generalized size composition data
 
@@ -2252,6 +2256,7 @@
   ivector SzFreq_Omit_Small(1,SzFreq_Nmeth);
   int SzFreq_totobs
   int SzFreq_N_Like
+  matrix SzFreq_means(1,SzFreq_Nmeth,1,SzFreq_Nbins3);     //  szfreq mean size in bins as processed and doubled for the males if necessary
 
  LOCAL_CALCS
   SzFreq_totobs = 0;
@@ -2295,7 +2300,20 @@
       for (j=1;j<=SzFreq_Nbins(k);j++)
       {SzFreq_bins2(k,j+SzFreq_Nbins(k)+1)=SzFreq_bins2(k,j);}
     }
-    echoinput<<"Processed_SizeFreqMethod_bins"<<k<<endl<<SzFreq_bins(k)<<endl;;
+
+    for (z=1;z<=SzFreq_Nbins(k);z++)
+    {
+      if(z<SzFreq_Nbins(k))
+      {
+        SzFreq_means(k,z)=0.5*(SzFreq_bins2(k,z)+SzFreq_bins2(k,z+1));  //  this is not gender specific
+      }
+      else
+      {
+        SzFreq_means(k,z)=SzFreq_means(k,z-1)+ (SzFreq_bins2(k,z)-SzFreq_bins2(k,z-1));
+      }
+      if(gender==2) SzFreq_means(k,z+SzFreq_Nbins(k))=SzFreq_means(k,z);
+    }
+    echoinput<<"Processed_SizeFreqMethod_bins for method: "<<k<<endl<<"low: "<<SzFreq_bins(k)<<endl<<"mean: "<<SzFreq_means(k)<<endl;
   }
   SzFreq_totobs=sum(SzFreq_nobs);
   }

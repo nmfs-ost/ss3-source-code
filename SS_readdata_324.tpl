@@ -2306,6 +2306,7 @@
   !!if(SzFreq_Nmeth>0) echoinput<<" SizeFreq bins-raw "<<endl<<SzFreq_bins1<<endl;
   matrix SzFreq_bins(1,SzFreq_Nmeth,1,SzFreq_Nbins3);     //  szfreq bins as processed and doubled for the males if necessary
   matrix SzFreq_bins2(1,SzFreq_Nmeth,0,SzFreq_Nbins3+1);   //  as above, but one more bin to aid in the search for bin boundaries
+  matrix SzFreq_means(1,SzFreq_Nmeth,1,SzFreq_Nbins3); 
   ivector SzFreq_Omit_Small(1,SzFreq_Nmeth);
   int SzFreq_totobs
   int SzFreq_N_Like
@@ -2351,6 +2352,20 @@
       for (j=1;j<=SzFreq_Nbins(k);j++)
       {SzFreq_bins2(k,j+SzFreq_Nbins(k)+1)=SzFreq_bins2(k,j);}
     }
+    for (z=1;z<=SzFreq_Nbins(k);z++)
+    {
+      if(z<SzFreq_Nbins(k))
+      {
+        SzFreq_means(k,z)=0.5*(SzFreq_bins2(k,z)+SzFreq_bins2(k,z+1));  //  this is not gender specific
+      }
+      else
+      {
+        SzFreq_means(k,z)=SzFreq_means(k,z-1)+ (SzFreq_bins2(k,z)-SzFreq_bins2(k,z-1));
+      }
+      if(gender==2) SzFreq_means(k,z+SzFreq_Nbins(k))=SzFreq_means(k,z);
+    }
+    echoinput<<"Processed_SizeFreqMethod_bins for method: "<<k<<endl<<"low: "<<SzFreq_bins(k)<<endl<<"mean: "<<SzFreq_means(k)<<endl;
+
     echoinput<<"Processed_SizeFreqMethod_bins"<<k<<endl<<SzFreq_bins(k)<<endl;;
   }
   SzFreq_totobs=sum(SzFreq_nobs);

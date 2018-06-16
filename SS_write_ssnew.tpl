@@ -280,9 +280,9 @@ FUNCTION void write_nudata()
   if(SzFreq_Nmeth>0)
   {
     report1<<SzFreq_Nbins<<" #Sizefreq N bins per method"<<endl;
-    report1<<SzFreq_units<<" #Sizetfreq units(bio/num) per method"<<endl;
-    report1<<SzFreq_scale<<" #Sizefreq scale(kg/lbs/cm/inches) per method"<<endl;
-    report1<<SzFreq_mincomp<<" #Sizefreq mincomp per method "<<endl;
+    report1<<SzFreq_units<<" #Sizetfreq units(1=bio/2=num) per method"<<endl;
+    report1<<SzFreq_scale<<" #Sizefreq scale(1=kg/2=lbs/3=cm/4=inches) per method"<<endl;
+    report1<<SzFreq_mincomp<<" #Sizefreq:  add small constant to comps, per method "<<endl;
     report1<<SzFreq_nobs<<" #Sizefreq N obs per method"<<endl;
     report1<<"#_Sizefreq bins "<<endl;
     for (i=1;i<=SzFreq_Nmeth;i++) {report1<<SzFreq_Omit_Small(i)*SzFreq_bins1(i,1)<<SzFreq_bins1(i)(2,SzFreq_Nbins(i))<<endl;}
@@ -622,9 +622,9 @@ FUNCTION void write_nudata()
   if(SzFreq_Nmeth>0)
   {
     report1<<SzFreq_Nbins<<" #Sizefreq N bins per method"<<endl;
-    report1<<SzFreq_units<<" #Sizetfreq units(bio/num) per method"<<endl;
-    report1<<SzFreq_scale<<" #Sizefreq scale(kg/lbs/cm/inches) per method"<<endl;
-    report1<<SzFreq_mincomp<<" #Sizefreq mincomp per method "<<endl;
+    report1<<SzFreq_units<<" #Sizetfreq units(1=bio/2=num) per method"<<endl;
+    report1<<SzFreq_scale<<" #Sizefreq scale(1=kg/2=lbs/3=cm/4=inches) per method"<<endl;
+    report1<<SzFreq_mincomp<<" #Sizefreq:  add small constant to comps, per method "<<endl;
     report1<<SzFreq_nobs<<" #Sizefreq N obs per method"<<endl;
     report1<<"#_Sizefreq bins "<<endl;
     for (i=1;i<=SzFreq_Nmeth;i++) {report1<<SzFreq_Omit_Small(i)*SzFreq_bins1(i,1)<<SzFreq_bins1(i)(2,SzFreq_Nbins(i))<<endl;}
@@ -1049,9 +1049,9 @@ FUNCTION void write_nudata()
   if(SzFreq_Nmeth>0)
   {
     report1<<SzFreq_Nbins<<" #Sizefreq N bins per method"<<endl;
-    report1<<SzFreq_units<<" #Sizetfreq units(bio/num) per method"<<endl;
-    report1<<SzFreq_scale<<" #Sizefreq scale(kg/lbs/cm/inches) per method"<<endl;
-    report1<<SzFreq_mincomp<<" #Sizefreq mincomp per method "<<endl;
+    report1<<SzFreq_units<<" #Sizetfreq units(1=bio/2=num) per method"<<endl;
+    report1<<SzFreq_scale<<" #Sizefreq scale(1=kg/2=lbs/3=cm/4=inches) per method"<<endl;
+    report1<<SzFreq_mincomp<<" #Sizefreq:  add small constant to comps, per method "<<endl;
     report1<<SzFreq_nobs<<" #Sizefreq N obs per method"<<endl;
     report1<<"#_Sizefreq bins "<<endl;
     for (i=1;i<=SzFreq_Nmeth;i++) {report1<<SzFreq_Omit_Small(i)*SzFreq_bins1(i,1)<<SzFreq_bins1(i)(2,SzFreq_Nbins(i))<<endl;}
@@ -1843,28 +1843,6 @@ FUNCTION void write_nucontrol()
 
 
   }
-//  else
-//  {
-//    // shenanigans for inserting dome-shaped retention parameter placeholders for 3.24 -> 3.30
-//      int NsrP=1;   // number of sets of placeholder retention parameters for 3.24
-//      int NrP=0;    // number of placeholder retention parameters for 3.24
-//      for (f=1;f<=N_selparm;f++)
-//      {
-//        if(f==retParmLoc(NsrP))
-//        {
-//            // insert the placeholders
-//            NrP++; report4<<"  1 100 100   0   -1  99  -99  0   0   0   0   0   0   0"<<" # "<<retParmLabel(NrP)<<endl;
-//            NrP++; report4<<"-10  10   1   0   -1  99  -99  0   0   0   0   0   0   0"<<" # "<<retParmLabel(NrP)<<endl;
-//            NrP++; report4<<"-10  10   1   0   -1  99  -99  0   0   0   0   0   0   0"<<" # "<<retParmLabel(NrP)<<endl;
-
-//            NsrP++;
-//        }
-
-//        NP++;
-//        selparm_1(f,3)=value(selparm(f));
-//        report4<<selparm_1(f)<<" # "<<ParmLabel(NP)<<endl;
-//      }
-//  }
 
   j=N_selparm;
 
