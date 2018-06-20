@@ -941,10 +941,15 @@ FUNCTION void Process_STDquant()
           Extra_Std(i)=sel_l(Selex_Std_Year,Do_Selex_Std,1,j);
           if(gender==2) Extra_Std(i+Selex_Std_Cnt)=sel_l(Selex_Std_Year,Do_Selex_Std,2,j);
         }
-        else
+        else if(Selex_Std_AL==2)
         {
           Extra_Std(i)=sel_a(Selex_Std_Year,Do_Selex_Std,1,j);
           if(gender==2) Extra_Std(i+Selex_Std_Cnt)=sel_a(Selex_Std_Year,Do_Selex_Std,2,j);
+        }
+        else if(Selex_Std_AL==3)
+        {
+          Extra_Std(i)=sel_al_3(Selex_Std_Year,Do_Selex_Std,1,j);
+          if(gender==2) Extra_Std(i+Selex_Std_Cnt)=sel_al_3(Selex_Std_Year,Do_Selex_Std,2,j);
         }
       }
     }

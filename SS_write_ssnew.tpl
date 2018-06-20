@@ -1937,14 +1937,14 @@ FUNCTION void write_nucontrol()
 
   if(Do_More_Std>0)
   {
-    report4<<More_Std_Input<<" # selex type, len/age, year, N selex bins, Growth pattern, N growth ages, NatAge_area(-1 for all), NatAge_yr, N Natages"<<endl;
-    if(More_Std_Input(4)>0) report4<<Selex_Std_Pick<<" # vector with selex std bin picks (-1 in first bin to self-generate)"<<endl;
-    if(More_Std_Input(6)>0) report4<<Growth_Std_Pick<<" # vector with growth std bin picks (-1 in first bin to self-generate)"<<endl;
-    if(More_Std_Input(9)>0) report4<<NatAge_Std_Pick<<" # vector with NatAge std bin picks (-1 in first bin to self-generate)"<<endl;
+    report4<<More_Std_Input<<" # selex_fleet, 1=len/2=age/3=both, year, N selex bins, 0 or Growth pattern, N growth ages, 0 or NatAge_area(-1 for sum), NatAge_yr, N Natages"<<endl;
+    if(More_Std_Input(4)>0) report4<<Selex_Std_Pick<<" # vector with selex std bins (-1 in first bin to self-generate)"<<endl;
+    if(More_Std_Input(6)>0) report4<<Growth_Std_Pick<<" # vector with growth std ages picks (-1 in first bin to self-generate)"<<endl;
+    if(More_Std_Input(9)>0) report4<<NatAge_Std_Pick<<" # vector with NatAge std ages (-1 in first bin to self-generate)"<<endl;
   }
   else
   {
-    report4<<" # 0 1 -1 5 1 5 1 -1 5 # placeholder for selex type, len/age, year, N selex bins, Growth pattern, N growth ages, NatAge_area(-1 for all), NatAge_yr, N Natages"<<endl;
+    report4<<" # 0 0 0 0 0 0 0 0 0 # placeholder for # selex_fleet, 1=len/2=age/3=both, year, N selex bins, 0 or Growth pattern, N growth ages, 0 or NatAge_area(-1 for all), NatAge_yr, N Natages"<<endl;
     report4<<" # placeholder for vector of selex bins to be reported"<<endl;
     report4<<" # placeholder for vector of growth ages to be reported"<<endl;
     report4<<" # placeholder for vector of NatAges ages to be reported"<<endl;

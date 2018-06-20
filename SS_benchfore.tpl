@@ -2181,6 +2181,21 @@ FUNCTION void Get_Forecast()
             if(s==nseas && STD_Yr_Reverse_F(y)>0) {report5<<F_std(STD_Yr_Reverse_F(y));} else {report5<<" NA ";}
             report5<<endl;
           }
+        if(save_for_report==2)
+        {
+          for(g=1;g<=gmorph;g++)
+          {
+            gg=sx(g);
+
+            if(ishadow(GP2(g))==0)
+              {
+                if(s==spawn_seas) bodywtout<<y<<" "<<s<<" "<<gg<<" "<<GP4(g)<<" "<<Bseas(g)<<" "<<-2<<" "<<fec(g)<<" #fecundity "<<endl;
+                bodywtout<<y<<" "<<s<<" "<<gg<<" "<<GP4(g)<<" "<<Bseas(g)<<" "<<0<<" "<<Wt_Age_beg(s,g)<<" #popwt_beg "<<endl;
+                bodywtout<<y<<" "<<s<<" "<<gg<<" "<<GP4(g)<<" "<<Bseas(g)<<" "<<-1<<" "<<Wt_Age_mid(s,g)<<" #popwt_mid "<<endl;
+              }
+          }
+        }
+
         }  //  end loop of seasons
 
         if(ABC_Loop==2) //  apply caps and store catches to allow calc of adjusted F to match this catch when doing ABC_loop=3, and then when doing Fcast_loop1=3

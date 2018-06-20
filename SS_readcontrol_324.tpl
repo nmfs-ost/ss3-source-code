@@ -3922,7 +3922,7 @@
   init_int Do_More_Std
   init_ivector More_Std_Input(1,Do_More_Std*9)
  LOCAL_CALCS
-  echoinput<<Do_More_Std<<" # read specs for more stddev reporting "<<endl;
+  echoinput<<Do_More_Std<<" # (0/1) read specs for more stddev reporting "<<endl;
   if(Do_More_Std>0)
   {echoinput<<More_Std_Input<<" # vector with selex type, len/age, year, N selex bins, Growth pattern, N growth ages, N_at_age_Area, NatAge_yr, Natage_ages"<<endl;}
   else
@@ -3982,7 +3982,7 @@
 // reset the counter here after using it to dimension the input statement above
   if(Do_Selex_Std<=0) Selex_Std_Cnt=0;
   if(Do_Growth_Std<=0) Growth_Std_Cnt=0;
-  if(Do_NatAge_Std==0) NatAge_Std_Cnt=0;
+  if(Do_NatAge_Std<=0) NatAge_Std_Cnt=0;
 
   Extra_Std_N=0;
   if(Do_Selex_Std>0)

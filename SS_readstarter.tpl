@@ -78,10 +78,20 @@
   !! N_warn=0;
 
   int Nparm_on_bound;
- !! No_Report=0;
- !! Ncycle=3;
 
  LOCAL_CALCS
+
+  No_Report=0;
+  Ncycle=3;
+  z=0; z1=0; z2=0; L1=0; L2=0; A2=0;  a1=0; f=0; f1=0; fs=0; 
+  gmorph=0; g=0; GPat=0; gg=0; gp=0; gp2=0; 
+  a=0; b=0; p=0; p1=0; p2=0; i=0; y=0; yz=0; s=0; s2=0; 
+  mid_subseas=0;  subseas=0; ALK_idx=0; ALK_time=0; ALK_idx_mid=0; 
+  t=0; mo=0; j=0; j1=0; j2=0; k=0; k1=0; k2=0; k3=0; s_off=0; 
+  Fishon=0; NP=0; Ip=0; firstseas=0; t_base=0; niter=0; loop=0; 
+  TG_t=0; Fcast_catch_start=0; retParCount=0; N_SC=0; N_DC=0; N_CC=0; N_FC=0; catch_mult_pointer=0; frac_female_pointer=0; icycle=0; No_Report=0; 
+  mcmcFlag=0; noest_flag=0; temp=0; temp1=0; save_gparm_print=0; 
+
   //  SS_Label_Info_1.1.2  #Create elements of parameter labels
 //  adstring_array NumLbl;
 //  adstring_array GenderLbl;   // gender label

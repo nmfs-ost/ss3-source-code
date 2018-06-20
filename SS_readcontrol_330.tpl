@@ -1724,7 +1724,7 @@
     if(recdev_early_start<(styr-nages))
       {recdev_early_start=styr-nages; N_warn++; warning<<" adjusting recdev_early to: "<<recdev_early_start<<endl;}
     if(recdev_start-recdev_early_start<6)
-    {N_warn++; warning<<" Are you sure you want so few early recrdevs? "<<recdev_start-recdev_early_start<<endl;}
+    {N_warn++; warning<<" Are you sure you want so few early recrdevs? Better to include in range of main recdevs "<<recdev_start-recdev_early_start<<endl;}
 
     recdev_first=recdev_early_start;  // because this is before recdev_start
     recdev_early_end=recdev_start-1;
@@ -3575,11 +3575,9 @@
   init_int Do_More_Std
   init_ivector More_Std_Input(1,Do_More_Std*9)
  LOCAL_CALCS
-  echoinput<<Do_More_Std<<" # read specs for more stddev reporting "<<endl;
+  echoinput<<Do_More_Std<<" # (0/1) read specs for reporting stdev for selectivity, size, and numbers"<<endl;
   if(Do_More_Std>0)
-  {echoinput<<More_Std_Input<<" # vector with selex type, len/age, year, N selex bins, Growth pattern, N growth ages, N_at_age_Area, NatAge_yr, Natage_ages"<<endl;}
-  else
-  {echoinput<<" # placeholder vector with selex type, len/age, year, N selex bins, Growth pattern, N growth ages"<<endl;}
+  {echoinput<<More_Std_Input<<" # vector with: 0 or selex fleet, 1=len/2=age, selex year, N selex bins, 0 or Growth pattern, N ages for length-at-age, 0 or area for N_at_age, NatAge_yr, Natage_ages"<<endl;}
  END_CALCS
 
   int Do_Selex_Std;
@@ -3594,7 +3592,8 @@
   int Extra_Std_N;   //  dimension for the sdreport vector Selex_Std which also contains the Growth_Std
 
  LOCAL_CALCS
-   if(Do_More_Std==1)
+   Extra_Std_N=0;
+   if(Do_More_Std>0)
    {
      Do_Selex_Std=More_Std_Input(1);
      Selex_Std_AL=More_Std_Input(2);
@@ -3608,6 +3607,9 @@
      NatAge_Std_Year=More_Std_Input(8);
      if(NatAge_Std_Year<0) NatAge_Std_Year=endyr+1;
      NatAge_Std_Cnt=More_Std_Input(9);
+     if(Do_Selex_Std<=0) Selex_Std_Cnt=0;
+     if(Do_Growth_Std<=0) Growth_Std_Cnt=0;
+     if(Do_NatAge_Std==0) NatAge_Std_Cnt=0;
    }
    else
    {
@@ -3624,43 +3626,58 @@
  END_CALCS
 
   init_ivector Selex_Std_Pick(1,Selex_Std_Cnt);
-  init_ivector Growth_Std_Pick(1,Growth_Std_Cnt);
-  init_ivector NatAge_Std_Pick(1,NatAge_Std_Cnt);
 
  LOCAL_CALCS
-  if(Selex_Std_Cnt>0) echoinput<<Selex_Std_Pick<<" # vector with selex std bin picks (-1 in first bin to self-generate)"<<endl;
-  if(Growth_Std_Cnt>0) echoinput<<Growth_Std_Pick<<" # vector with growth std bin picks (-1 in first bin to self-generate)"<<endl;
-  if(NatAge_Std_Cnt>0) echoinput<<NatAge_Std_Pick<<" # vector with NatAge std bin picks (-1 in first bin to self-generate)"<<endl;
-
-// reset the counter here after using it to dimension the input statement above
-  if(Do_Selex_Std<=0) Selex_Std_Cnt=0;
-  if(Do_Growth_Std<=0) Growth_Std_Cnt=0;
-  if(Do_NatAge_Std==0) NatAge_Std_Cnt=0;
-
   if(Do_Selex_Std>0)
   {
-    if(Selex_Std_Pick(1)<=0)  //  then self-generate even bin selection
+    echoinput<<Selex_Std_Pick<<" # vector with selex std bins (-1 in first bin to self-generate)"<<endl;
+    if(Selex_Std_Pick(1)<0)  //  then self-generate even bin selection
     {
       if(Selex_Std_AL==1)
       {
-        j=nlength/(Selex_Std_Cnt-1);
-        Selex_Std_Pick(1)=j/2;
-        for (i=2;i<=Selex_Std_Cnt-1;i++) Selex_Std_Pick(i)=Selex_Std_Pick(i-1)+j;
-        Selex_Std_Pick(Selex_Std_Cnt)=nlength;
+        if(Selex_Std_Cnt==1)
+          {Selex_Std_Pick(1)=nlength/2;}
+        else if(Selex_Std_Cnt==2)
+          {Selex_Std_Pick(1)=nlength/2; Selex_Std_Pick(2)=nlength;}
+        else
+        { j=nlength/(Selex_Std_Cnt-1);
+          Selex_Std_Pick(1)=j/2;
+          for (i=2;i<=Selex_Std_Cnt-1;i++) Selex_Std_Pick(i)=Selex_Std_Pick(i-1)+j;
+          Selex_Std_Pick(Selex_Std_Cnt)=nlength;
+        }
+        echoinput<<"generate age selex std for fleet: "<<Do_Selex_Std<<" in year: "<<Selex_Std_Year<<" at bins: "<<Selex_Std_Pick<<endl;
       }
       else
       {
-        j=nages/(Selex_Std_Cnt-1);
-        Selex_Std_Pick(1)=j/2;
-        for (i=2;i<=Selex_Std_Cnt-1;i++) Selex_Std_Pick(i)=Selex_Std_Pick(i-1)+j;
-        Selex_Std_Pick(Selex_Std_Cnt)=nages;
+        if(Selex_Std_Cnt==1)
+          {Selex_Std_Pick(1)=nages/2;}
+        else if(Selex_Std_Cnt==2)
+          {Selex_Std_Pick(1)=nages/2; Selex_Std_Pick(2)=nages;}
+        else
+        {         
+          j=nages/(Selex_Std_Cnt-1);
+          Selex_Std_Pick(1)=j/2;
+          for (i=2;i<=Selex_Std_Cnt-1;i++) Selex_Std_Pick(i)=Selex_Std_Pick(i-1)+j;
+          Selex_Std_Pick(Selex_Std_Cnt)=nages;
+        }
+        echoinput<<"generate age selex std for fleet: "<<Do_Selex_Std<<" in year: "<<Selex_Std_Year<<" at ages: "<<Selex_Std_Pick<<endl;
       }
+    }
+    for(i=1;i<=Selex_Std_Cnt;i++)
+    {
+      if(Selex_Std_Pick(i)<=0) Selex_Std_Pick(i)=1;
+      if(Selex_Std_Pick(i)>nlength && Selex_Std_AL==1) Selex_Std_Pick(i)=nlength;
+      if(Selex_Std_Pick(i)>nages && Selex_Std_AL>1) Selex_Std_Pick(i)=nages;
     }
     Extra_Std_N=gender*Selex_Std_Cnt;
   }
+ END_CALCS
 
+  init_ivector Growth_Std_Pick(1,Growth_Std_Cnt);
+ LOCAL_CALCS
   if(Do_Growth_Std>0)
   {
+    echoinput<<Growth_Std_Pick<<" # vector with growth std ages (-1 in first bin to self-generate)"<<endl;
     if(Growth_Std_Pick(1)<=0)
     {
       Growth_Std_Pick(1)=AFIX;
@@ -3673,11 +3690,19 @@
         for (i=k+1;i<=Growth_Std_Cnt-1;i++) Growth_Std_Pick(i)=Growth_Std_Pick(i-1)+j;
       }
     }
+    for(i=1;i<=Growth_Std_Cnt;i++)
+    {
+      if(Growth_Std_Pick(i)<=0) Growth_Std_Pick(i)=1;
+      if(Growth_Std_Pick(i)>nages) Growth_Std_Pick(i)=nages;
+    }
+    Extra_Std_N+=gender*Growth_Std_Cnt;
   }
-  Extra_Std_N+=gender*Growth_Std_Cnt;
-
+ END_CALCS
+  init_ivector NatAge_Std_Pick(1,NatAge_Std_Cnt);
+ LOCAL_CALCS
   if(Do_NatAge_Std!=0)
   {
+    echoinput<<NatAge_Std_Pick<<" # vector with NatAge std bins (-1 in first bin to self-generate)"<<endl;
     if(NatAge_Std_Pick(1)<=0)
     {
       NatAge_Std_Pick(1)=1;
@@ -3690,13 +3715,14 @@
         for (i=k+1;i<=NatAge_Std_Cnt-1;i++) NatAge_Std_Pick(i)=NatAge_Std_Pick(i-1)+j;
       }
     }
+    for(i=1;i<=NatAge_Std_Cnt;i++)
+    {
+      if(NatAge_Std_Pick(i)<=0) NatAge_Std_Pick(i)=1;
+      if(NatAge_Std_Pick(i)>nages) NatAge_Std_Pick(i)=nages;
+    }
+    Extra_Std_N+=gender*NatAge_Std_Cnt;
   }
-  Extra_Std_N+=gender*NatAge_Std_Cnt;
   Extra_Std_N+=3;  //  add 3 values for ln(Spbio)
-
-  if(Selex_Std_Cnt>0) echoinput<<Selex_Std_Pick<<" # vector with selex std bin picks (-1 in first bin to self-generate)"<<endl;
-  if(Growth_Std_Cnt>0) echoinput<<Growth_Std_Pick<<" # vector with growth std bin picks (-1 in first bin to self-generate)"<<endl;
-  if(NatAge_Std_Cnt>0) echoinput<<NatAge_Std_Pick<<" # vector with NatAge std bin picks (-1 in first bin to self-generate)"<<endl;
 
  END_CALCS
 
@@ -4305,6 +4331,7 @@
 // do labels for Selex_Std
     if(Do_Selex_Std>0)
     {
+      echoinput<<" do selex std labels "<<Selex_Std_Cnt<<" "<<Selex_Std_AL<<endl;
       for (g=1;g<=gender;g++)
       for (i=1;i<=Selex_Std_Cnt;i++)
       {
@@ -4315,21 +4342,29 @@
           {
             N_warn++; cout<<" EXIT - see warning "<<endl; warning<<" cannot select stdev for length bin greater than nlength "<<Selex_Std_Pick(i)<<" > "<<nlength<<endl; exit(1);
           }
-          ParmLabel+="Selex_std_"+NumLbl(Do_Selex_Std)+"_"+GenderLbl(g)+"_L_"+NumLbl(len_bins(Selex_Std_Pick(i)))+CRLF(1);
+          ParmLabel+="LenSelex_std_"+NumLbl(Do_Selex_Std)+"_"+GenderLbl(g)+"_L_"+NumLbl(len_bins(Selex_Std_Pick(i)))+CRLF(1);
         }
-        else
+        else if(Selex_Std_AL==2)
         {
           if(Selex_Std_Pick(i)>nages)
           {
             N_warn++; cout<<" EXIT - see warning "<<endl; warning<<" cannot select stdev for age bin greater than maxage "<<Selex_Std_Pick(i)<<" > "<<nages<<endl; exit(1);
           }
-          ParmLabel+="Selex_std_"+NumLbl(Do_Selex_Std)+"_"+GenderLbl(g)+"_A_"+NumLbl(age_vector(Selex_Std_Pick(i)))+CRLF(1);
+          ParmLabel+="AgeSelex_std_"+NumLbl(Do_Selex_Std)+"_"+GenderLbl(g)+"_A_"+NumLbl(age_vector(Selex_Std_Pick(i)))+CRLF(1);
+        }
+        else if(Selex_Std_AL==3)
+        {
+          if(Selex_Std_Pick(i)>nages)
+          {
+            N_warn++; cout<<" EXIT - see warning "<<endl; warning<<" cannot select stdev for age bin greater than maxage "<<Selex_Std_Pick(i)<<" > "<<nages<<endl; exit(1);
+          }
+          ParmLabel+="AgeLenSelex_std_"+NumLbl(Do_Selex_Std)+"_"+GenderLbl(g)+"_A_"+NumLbl(age_vector(Selex_Std_Pick(i)))+CRLF(1);
         }
       }
     }
-
     if(Do_Growth_Std>0)
     {
+      echoinput<<" do growth std labels "<<Growth_Std_Cnt<<endl;
       for (g=1;g<=gender;g++)
       for (i=1;i<=Growth_Std_Cnt;i++)
       {
@@ -4337,8 +4372,10 @@
         ParmLabel+="Grow_std_"+NumLbl(Do_Growth_Std)+"_"+GenderLbl(g)+"_A_"+NumLbl(age_vector(Growth_Std_Pick(i)))+CRLF(1);
       }
     }
+
     if(Do_NatAge_Std!=0)
     {
+      echoinput<<" do natage std labels "<<NatAge_Std_Cnt<<endl;
       for (g=1;g<=gender;g++)
       for (i=1;i<=NatAge_Std_Cnt;i++)
       {
@@ -4349,7 +4386,6 @@
         {ParmLabel+="NatAge_std_All_"+GenderLbl(g)+"_A_"+NumLbl(age_vector(NatAge_Std_Pick(i)))+CRLF(1);}
       }
     }
-
 //  output ln(Spbio) for selected years
     CoVar_Count++; j++; active_parm(CoVar_Count)=j;
     sprintf(onenum, "%d", styr);
@@ -4570,7 +4606,11 @@
  LOCAL_CALCS
   if(WTage_rd>0)
   {
-    WTage_emp.initialize();
+    for(f=-2;f<=Nfleet;f++)
+    for(t=styr;t<=k2;t++)
+    for(g=1;g<=gmorph;g++)
+    for(a=0;a<=nages;a++)
+    {WTage_emp(t,g,f,a)=-9999.;}
     if(N_WTage_maxage>nages) N_WTage_maxage=nages;  //  so extra ages being read will be ignored
     dvector tempvec(1,7+N_WTage_maxage);
     for (i=0;i<=N_WTage_rd-1;i++)
@@ -4602,7 +4642,15 @@
           }
         }
       }
+    }
+    for(f=-2;f<=Nfleet;f++)
+    for(t=styr;t<=k2-1;t++)
+    for(g=1;g<=gmorph;g++)
+    for(a=0;a<=nages;a++)
+    if(WTage_emp(t,g,f,a)==-9999.)
+      {N_warn++; warning<<"wtatage not assigned for: time, morph, fleet, age: "<<t<<" "<<g<<" "<<f<<" "<<a<<endl;}
       temp=float(Bmark_Yr(2)-Bmark_Yr(1)+1.);  //  get denominator
+      echoinput<<" fill benchmark years with mean "<<endl;
       for (f=-2;f<=Nfleet;f++)
       for (g=1;g<=gmorph;g++)
       if(use_morph(g)>0)
@@ -4614,7 +4662,6 @@
           WTage_emp(styr-3*nseas+s,GP3(g),f)=junkvec2/temp;
         }
       }
-    }
     echoinput<<"finished reading empirical wt-at-age.ss"<<endl;
   }
  END_CALCS
