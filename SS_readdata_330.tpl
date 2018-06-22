@@ -292,7 +292,7 @@
 !!//  SS_Label_Info_2.1.6  #Indexes for data timing.  "have_data" and "data_time" hold pointers for data occurrence, timing, and ALK need
   int data_type
   number data_timing
-  4darray have_data(1,ALK_time_max,0,Nfleet,0,9,0,150);  //  this can be a i4array in ADMB 11
+  4iarray have_data(1,ALK_time_max,0,Nfleet,0,9,0,150);  //  this can be a i4array in ADMB 11
 //    4iarray have_data(1,ALK_time_max,0,Nfleet,0,9,0,60);  //  this can be a i4array in ADMB 11
   imatrix have_data_yr(styr,endyr+20,0,Nfleet)
 
@@ -1308,7 +1308,7 @@
           if(data_time(ALK_time,f,1)<0.0)  //  so first occurrence of data at ALK_time,f
           {data_time(ALK_time,f)(1,3)=timing_r_result(1,3);}  // real_month,fraction of season, year.fraction
           else if (timing_r_result(1) !=  data_time(ALK_time,f,1))
-          {N_warn++; warning<<"LENGTH: data_month already set for y,s,f: "<<y<<" "<<s<<" "<<f<<" to real month: "<< data_time(ALK_time,f,1)<<"  but read value is: "<<timing_r_result(1)<<endl;}
+          {N_warn++; warning<<"LENGTH: data_month already set for y,m,f: "<<y<<" "<<timing_r_result(1)<<" "<<f<<" to real month: "<< data_time(ALK_time,f,1)<<"  so treat as replicate"<<endl;}
 
             have_data(ALK_time,0,0,0)=1;
             have_data(ALK_time,f,0,0)=1;  //  so have data of some type
@@ -1530,6 +1530,7 @@
   ivector N_suprper_a(1,Nfleet)      // N super_yrs per obs
 
  LOCAL_CALCS
+  nobsa_rd=0;
   Nobs_a.initialize();
   N_suprper_a.initialize();
   echoinput<<"Enter the number of agebins, or 0 if no age data"<<endl;
@@ -1749,7 +1750,7 @@
            if(data_time(ALK_time,f,1)<0.0)  //  so first occurrence of data at ALK_time,f
            {data_time(ALK_time,f)(1,3)=timing_r_result(1,3);}  // real_month,fraction of season, year.fraction
            else if (timing_r_result(1) !=  data_time(ALK_time,f,1))
-           {N_warn++; warning<<"AGE: data_month already set for y,s,f: "<<y<<" "<<s<<" "<<f<<" to real month: "<< data_time(ALK_time,f,1)<<"  but read value is: "<<timing_r_result(1)<<endl;}
+           {N_warn++; warning<<"AGE: data_month already set for y,m,f: "<<y<<" "<<timing_r_result(1)<<" "<<f<<" to real month: "<< data_time(ALK_time,f,1)<<"  so treat as replicate"<<endl;}
             have_data(ALK_time,0,0,0)=1;
             have_data(ALK_time,f,0,0)=1;  //  so have data of some type
             have_data(ALK_time,f,data_type,0)++;  //  count the number of observations in this subseas
@@ -2110,7 +2111,7 @@
            if(data_time(ALK_time,f,1)<0.0)  //  so first occurrence of data at ALK_time,f
            {data_time(ALK_time,f)(1,3)=timing_r_result(1,3);}  // real_month,fraction of season, year.fraction
            else if (timing_r_result(1) !=  data_time(ALK_time,f,1))
-           {N_warn++; warning<<"LEN@AGE: data_month already set for y,s,f: "<<y<<" "<<s<<" "<<f<<" to real month: "<< data_time(ALK_time,f,1)<<"  but read value is: "<<timing_r_result(1)<<endl;}
+           {N_warn++; warning<<"LEN@AGE: data_month already set for y,m,f: "<<y<<" "<<timing_r_result(1)<<" "<<f<<" to real month: "<< data_time(ALK_time,f,1)<<"  so treat as replicate"<<endl;}
             have_data(ALK_time,0,0,0)=1;
             have_data(ALK_time,f,0,0)=1;  //  so have data of some type
             have_data(ALK_time,f,data_type,0)++;  //  count the number of observations in this subseas
@@ -2421,6 +2422,10 @@
             	SzFreq_obs_hdr(iobs,9)=1;  //  flag that will be ehecked in ss_expval
             }
 
+           if(data_time(ALK_time,f,1)<0.0)  //  so first occurrence of data at ALK_time,f
+           {data_time(ALK_time,f)(1,3)=timing_r_result(1,3);}  // real_month,fraction of season, year.fraction
+           else if (timing_r_result(1) !=  data_time(ALK_time,f,1))
+           {N_warn++; warning<<"SIZE: data_month already set for y,m,f: "<<y<<" "<<timing_r_result(1)<<" "<<f<<" to real month: "<< data_time(ALK_time,f,1)<<"  so treat as replicate"<<endl;}
           have_data(ALK_time,0,0,0)=1;
           have_data(ALK_time,f,0,0)=1;  //  so have data of some type
           have_data(ALK_time,f,data_type,0)++;  //  count the number of observations in this subseas

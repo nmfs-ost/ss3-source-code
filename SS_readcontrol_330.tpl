@@ -306,9 +306,10 @@
 
   3darray lin_grow(1,gmorph,1,nseas*N_subseas,0,nages)  //  during linear phase has fraction of Size at Afix
   ivector settle_g(1,gmorph)   //  settlement pattern for each platoon
-
+  int ALK_count;
+  
  LOCAL_CALCS
-
+  ALK_count=0;
   ALK_range_g_lo=1;
   ALK_range_g_hi=nlength;
 
@@ -1854,10 +1855,11 @@
 // F_setup(1) = overall initial value
 // F_setup(2) = overall phase
 // F_setup(3) = number of specific initial values and phases to read
-  int F_detail
-  int F_Tune
+  int F_detail;
+  int F_Tune;
  LOCAL_CALCS
   F_detail=-1;
+  F_Tune=0;
   if(F_Method>1)
   {
     if(F_Method==2)
@@ -2037,11 +2039,18 @@
   int parm330_cnt
   int Q_Npar2
   int Q_Npar
-  ivector Q_link(1,10)
+  int firstQparm;
+  int timevary_parm_cnt_Q;
+  int timevary_parm_start_Q;
+  ivector Q_link(1,10);
   int depletion_fleet;  //  stores fleet(survey) number for the fleet that is defined as "depletion" by survey type=34
   int depletion_type;  //  entered by Q_setup(f,2) and stores additional controls for depletion fleet
 
  LOCAL_CALCS
+  firstQparm=0;
+  timevary_parm_cnt_Q=0;
+  timevary_parm_start_Q=0;
+  Q_link.initialize();
   Q_link(1)=1;  //  simple q, 1 parm
   Q_link(2)=1;  //  mirror simple q, 1 mirrored parameter
   Q_link(3)=2;  //  q and power, 2 parm
@@ -2199,9 +2208,6 @@
  END_CALCS
 
   init_matrix Q_parm_1(1,Q_Npar,1,14)
-  int firstQparm;
-  int timevary_parm_cnt_Q;
-  int timevary_parm_start_Q;
   ivector Qparm_timevary(1,Q_Npar)  //  holds index in timevary_def used by each base parameter
                                          //  dimensioned to hold the extra_sd parms, but these cannot be time-varying
   imatrix timevary_Qparm(styr-3,YrMax+1,0,Nfleet)  // goes to yrmax+1 to allow referencing in forecast, but only endyr+1 is checked

@@ -2180,12 +2180,15 @@ FUNCTION void write_bigoutput()
   SS_compout<<endl<<"Method_for_Lbin_definition_for_agecomp_data: "<<Lbin_method<<endl;
 
   SS_compout<<"For_Sizefreq,_Lbin_Lo_is_units(bio_or_numbers);_Lbin_hi_is_scale(kg,_lb,_cm,_in),_Ageerr_is_method"<<endl;
-  SS_compout<<"Time_is_fraction_of_year_based_on_subseas"<<endl;
+  SS_compout<<"subseas is derived from month and the number of subseasons per season, which is: "<<N_subseas<<endl;
+  SS_compout<<"Time_is_fraction_of_year_based_on_subseas, not directly on month"<<endl;
+  SS_compout<<"If observations with same or different month value are assigned to the same subseas, then repli(cate) counter is incremented"<<endl;
   SS_compout<<"For_Tag_output,_Rep_contains_Tag_Group,_Bin_is_fleet_for_TAG1_and_Bin_is_Year.Seas_for_TAG2"<<endl;
   SS_compout<<"Column_Super?_indicates_super-periods;_column_used_indicates_inclusion_in_logL"<<endl;
 
   SS_compout <<endl<< "Composition_Database" << endl;           // SS_Label_480
-  SS_compout<<"Yr Seas Time Fleet Repl. Sexes Kind Part Ageerr Sex Lbin_lo Lbin_hi Bin Obs Exp Pearson N effN Like Cum_obs Cum_exp SuprPer Used?"<<endl;
+
+  SS_compout<<"Yr Month Seas Subseas Time Fleet Area Repl. Sexes Kind Part Ageerr Sex Lbin_lo Lbin_hi Bin Obs Exp Pearson N effN Like Cum_obs Cum_exp SuprPer Used?"<<endl;
   int lasttime;
   int lastfleet;
   int repli;
@@ -2210,10 +2213,10 @@ FUNCTION void write_bigoutput()
       ALK_time=Len_time_ALK(f,i);
       temp2=0.0;
       temp1=0.0;
-      if(t==last_t)
+      if(ALK_time==last_t)
       {repli++;}
       else
-      {repli=1;last_t=t;}
+      {repli=1;last_t=ALK_time;}
       if(header_l(f,i,2)<0 && in_superperiod==0)
       {in_superperiod=1; anystring="Sup";}
       else if (header_l(f,i,2)<0 && in_superperiod>0)
@@ -2231,7 +2234,7 @@ FUNCTION void write_bigoutput()
         s_off=1;
         for (z=tails_l(f,i,1);z<=tails_l(f,i,2);z++)
         {
-            SS_compout<<Show_Time(t,1)<<" "<<Show_Time(t,2)<<" "<<data_time(ALK_time,f,3)<<" "<<f<<" "<<repli<<" "<<gen_l(f,i)<<" LEN "<<mkt_l(f,i)<<" 0 "<<s_off<<" "<<
+            SS_compout<<header_l(f,i,1)<<" "<<header_l(f,i,2)<<" "<<Show_Time2(ALK_time)(2,3)<<" "<<data_time(ALK_time,f,3)<<" "<<f<<" "<<fleet_area(f)<<" "<<repli<<" "<<gen_l(f,i)<<" LEN "<<mkt_l(f,i)<<" 0 "<<s_off<<" "<<
             1<<" "<<1<<" "<<len_bins_dat2(z)<<" "<<obs_l(f,i,z)<<" "<<exp_l(f,i,z)<<" ";
             temp2+=obs_l(f,i,z);
             temp1+=exp_l(f,i,z);
@@ -2262,7 +2265,7 @@ FUNCTION void write_bigoutput()
          SS_compout<<" "<<temp2<<" "<<temp1<<" "<<anystring<<endl;
         }
 
-        SS_compout<<Show_Time(t,1)<<" "<<Show_Time(t,2)<<" "<<data_time(ALK_time,f,3)<<" "<<f<<" "<<repli<<" "<<gen_l(f,i)<<" LEN "
+        SS_compout<<header_l(f,i,1)<<" "<<header_l(f,i,2)<<" "<<Show_Time2(ALK_time)(2,3)<<" "<<data_time(ALK_time,f,3)<<" "<<f<<" "<<fleet_area(f)<<" "<<repli<<" "<<gen_l(f,i)<<" LEN "
         <<mkt_l(f,i)<<" 0 "<<s_off<<" "<<1<<" "<<1<<endl;
       }
       if(gen_l(f,i)>=2 && gender==2)  // do males
@@ -2270,7 +2273,7 @@ FUNCTION void write_bigoutput()
         s_off=2;
         for (z=tails_l(f,i,3);z<=tails_l(f,i,4);z++)
         {
-           SS_compout<<Show_Time(t,1)<<" "<<Show_Time(t,2)<<" "<<data_time(ALK_time,f,3)<<" "<<f<<" "<<repli<<" "<<gen_l(f,i)<<" LEN "<<mkt_l(f,i)<<" 0 "<<s_off<<" "<<
+           SS_compout<<header_l(f,i,1)<<" "<<header_l(f,i,2)<<" "<<Show_Time2(ALK_time)(2,3)<<" "<<data_time(ALK_time,f,3)<<" "<<f<<" "<<fleet_area(f)<<" "<<repli<<" "<<gen_l(f,i)<<" LEN "<<mkt_l(f,i)<<" 0 "<<s_off<<" "<<
            1<<" "<<nlength<<" "<<len_bins_dat2(z)<<" "<<obs_l(f,i,z)<<" "<<exp_l(f,i,z)<<" ";
            temp2+=obs_l(f,i,z);
            temp1+=exp_l(f,i,z);
@@ -2300,7 +2303,7 @@ FUNCTION void write_bigoutput()
            {SS_compout<<" NA NA NA NA ";}
            SS_compout<<" "<<temp2<<" "<<temp1<<" "<<anystring<<endl;
         }
-        SS_compout<<Show_Time(t,1)<<" "<<Show_Time(t,2)<<" "<<data_time(ALK_time,f,3)<<" "<<f<<" "<<repli<<" "<<gen_l(f,i)<<" LEN "
+        SS_compout<<header_l(f,i,1)<<" "<<header_l(f,i,2)<<" "<<Show_Time2(ALK_time)(2,3)<<" "<<data_time(ALK_time,f,3)<<" "<<f<<" "<<fleet_area(f)<<" "<<repli<<" "<<gen_l(f,i)<<" LEN "
         <<mkt_l(f,i)<<" 0 "<<s_off<<" "<<1<<" "<<1<<endl;
       }
     }
@@ -2319,11 +2322,11 @@ FUNCTION void write_bigoutput()
       ALK_time=Age_time_ALK(f,i);
       temp2=0.0;
       temp1=0.0;
-      if(t==last_t)
+      if(ALK_time==last_t)
       {repli++;}
       else
-      {repli=1;last_t=t;}
-      if(header_a(f,i,2)<0 && in_superperiod==0)
+      {repli=1;last_t=ALK_time;}
+     if(header_a(f,i,2)<0 && in_superperiod==0)
       {in_superperiod=1; anystring="Sup";}
       else if (header_a(f,i,2)<0 && in_superperiod>0)
       {anystring="Sup"; in_superperiod=0;}
@@ -2339,7 +2342,7 @@ FUNCTION void write_bigoutput()
         if(gen_a(f,i)!=2)
          {s_off=1;
          for (z=tails_a(f,i,1);z<=tails_a(f,i,2);z++)
-          {SS_compout<<Show_Time(t,1)<<" "<<Show_Time(t,2)<<" "<<data_time(ALK_time,f,3)<<" "<<f<<" "<<repli<<" "<<gen_a(f,i)<<" AGE "<<mkt_a(f,i)<<" "<<ageerr_type_a(f,i)
+          {SS_compout<<header_a(f,i,1)<<" "<<header_a(f,i,2)<<" "<<Show_Time2(ALK_time)(2,3)<<" "<<data_time(ALK_time,f,3)<<" "<<f<<" "<<fleet_area(f)<<" "<<repli<<" "<<gen_a(f,i)<<" AGE "<<mkt_a(f,i)<<" "<<ageerr_type_a(f,i)
          <<" "<<s_off<<" "<<len_bins(Lbin_lo(f,i))<<" "<<len_bins(Lbin_hi(f,i))<<" "<<age_bins(z)<<" "<<obs_a(f,i,z)<<" " <<exp_a(f,i,z)<<" ";
            temp2+=obs_a(f,i,z);
            temp1+=exp_a(f,i,z);
@@ -2370,13 +2373,13 @@ FUNCTION void write_bigoutput()
          SS_compout<<" "<<temp2<<" "<<temp1<<" "<<anystring<<endl;
         }
 
-        SS_compout<<Show_Time(t,1)<<" "<<Show_Time(t,2)<<" "<<data_time(ALK_time,f,3)<<" "<<f<<" "<<repli<<" "<<gen_a(f,i)<<" AGE "
+        SS_compout<<header_a(f,i,1)<<" "<<header_a(f,i,2)<<" "<<Show_Time2(ALK_time)(2,3)<<" "<<data_time(ALK_time,f,3)<<" "<<f<<" "<<fleet_area(f)<<" "<<repli<<" "<<gen_a(f,i)<<" AGE "
          <<mkt_a(f,i)<<" "<<ageerr_type_a(f,i)<<" "<<s_off<<" "<<1<<" "<<nlength<<endl;}
 
         if(gen_a(f,i)>=2 && gender==2)  // do males
          {s_off=2;
          for (z=tails_a(f,i,3);z<=tails_a(f,i,4);z++)
-          {SS_compout<<Show_Time(t,1)<<" "<<Show_Time(t,2)<<" "<<data_time(ALK_time,f,3)<<" "<<f<<" "<<repli<<" "<<gen_a(f,i)<<" AGE "<<mkt_a(f,i)<<" "<<ageerr_type_a(f,i)<<" "<<s_off
+          {SS_compout<<header_a(f,i,1)<<" "<<header_a(f,i,2)<<" "<<Show_Time2(ALK_time)(2,3)<<" "<<data_time(ALK_time,f,3)<<" "<<f<<" "<<fleet_area(f)<<" "<<repli<<" "<<gen_a(f,i)<<" AGE "<<mkt_a(f,i)<<" "<<ageerr_type_a(f,i)<<" "<<s_off
          <<" "<<len_bins(Lbin_lo(f,i))<<" "<<len_bins(Lbin_hi(f,i))<<" "<<age_bins(z)<<" "<<obs_a(f,i,z)<<" "<<exp_a(f,i,z)<<" ";
            temp2+=obs_a(f,i,z);
            temp1+=exp_a(f,i,z);
@@ -2406,7 +2409,7 @@ FUNCTION void write_bigoutput()
         {SS_compout<<" NA NA NA NA ";}
          SS_compout<<" "<<temp2<<" "<<temp1<<" "<<anystring<<endl;
         }
-        SS_compout<<Show_Time(t,1)<<" "<<Show_Time(t,2)<<" "<<data_time(ALK_time,f,3)<<" "<<f<<" "<<repli<<" "<<gen_a(f,i)<<" AGE "
+        SS_compout<<header_a(f,i,1)<<" "<<header_a(f,i,2)<<" "<<Show_Time2(ALK_time)(2,3)<<" "<<data_time(ALK_time,f,3)<<" "<<f<<" "<<fleet_area(f)<<" "<<repli<<" "<<gen_a(f,i)<<" AGE "
          <<mkt_a(f,i)<<" "<<ageerr_type_a(f,i)<<" "<<s_off<<" "<<1<<" "<<nlength<<endl;}
        }
       }  //end have agecomp data
@@ -2424,10 +2427,10 @@ FUNCTION void write_bigoutput()
       ALK_time=msz_time_ALK(f,i);
       temp2=0.0;
       temp1=0.0;
-      if(t==last_t)
+      if(ALK_time==last_t)
       {repli++;}
       else
-      {repli=1;last_t=t;}
+      {repli=1;last_t=ALK_time;}
       if(header_ms(f,i,2)<0 && in_superperiod==0)
       {in_superperiod=1; anystring="Sup";}
       else if (header_ms(f,i,2)<0 && in_superperiod>0)
@@ -2448,7 +2451,7 @@ FUNCTION void write_bigoutput()
         //  whre:  obs_ms_n(f,i,z)=sqrt(var_adjust(6,f)*obs_ms_n(f,i,z));
         if(ageerr_type_ms(f,i)>0) {anystring2=" L@A ";} else {anystring2=" W@A ";}
         if(t1>0.) t1=square(t1);
-        SS_compout<<Show_Time(t,1)<<" "<<Show_Time(t,2)<<" "<<data_time(ALK_time,f,3)<<" "<<f<<" "<<repli<<" "<<gen_ms(f,i)<<anystring2<<mkt_ms(f,i)<<" "<<
+        SS_compout<<header_ms(f,i,1)<<" "<<header_ms(f,i,2)<<" "<<Show_Time2(ALK_time)(2,3)<<" "<<data_time(ALK_time,f,3)<<" "<<f<<" "<<fleet_area(f)<<" "<<repli<<" "<<gen_ms(f,i)<<anystring2<<mkt_ms(f,i)<<" "<<
          ageerr_type_ms(f,i)<<" "<<s_off<<" "<<exp_ms_sq(f,i,z)<<" "<<nlen_bin<<" "<<age_bins(z)<<" "<<
          obs_ms(f,i,z)<<" "<<exp_ms(f,i,z)<<" ";
         if(obs_ms(f,i,z)>0. && t1>0. && header_ms(f,i,3)>0)
@@ -2463,7 +2466,7 @@ FUNCTION void write_bigoutput()
           SS_compout<<" NA "<<t1<<" NA NA ";
         }
         SS_compout<<" NA NA "<<anystring<<endl;
-        if(z==n_abins || z==n_abins2) SS_compout<<Show_Time(t,1)<<" "<<Show_Time(t,2)<<" "<<data_time(ALK_time,f,3)<<" "<<f<<" "<<repli<<" "<<gen_ms(f,i)<<
+        if(z==n_abins || z==n_abins2) SS_compout<<header_ms(f,i,1)<<" "<<header_ms(f,i,2)<<" "<<Show_Time2(ALK_time)(2,3)<<" "<<data_time(ALK_time,f,3)<<" "<<f<<" "<<fleet_area(f)<<" "<<repli<<" "<<gen_ms(f,i)<<
          anystring2<<mkt_ms(f,i)<<" "<<ageerr_type_ms(f,i)<<" "<<s_off<<" "<<1<<" "<<nlen_bin<<endl;
        }
       }  //end have data
@@ -2482,8 +2485,7 @@ FUNCTION void write_bigoutput()
           N_out++;
           temp2=0.0;
           temp1=0.0;
-          s=abs(SzFreq_obs_hdr(iobs,2));
-//          temp=float(y)+float(abs(s)-1.)/float(nseas);
+          real_month=abs(SzFreq_obs_hdr(iobs,2));  //  month
           f=abs(SzFreq_obs_hdr(iobs,3));
           gg=SzFreq_obs_hdr(iobs,4);  // gender
           k=SzFreq_obs_hdr(iobs,6);
@@ -2506,14 +2508,14 @@ FUNCTION void write_bigoutput()
           ALK_time=SzFreq_time_ALK(iobs);
           temp2=0.0;
           temp1=0.0;
-          if(t==last_t)
-          {repli++;}
-          else
-          {repli=1;last_t=t;}
-          for (z=z1;z<=z2;z++)
+      if(ALK_time==last_t)
+      {repli++;}
+      else
+      {repli=1;last_t=ALK_time;}
+         for (z=z1;z<=z2;z++)
           {
             s_off=1;
-            SS_compout<<Show_Time(t,1)<<" "<<Show_Time(t,2)<<" "<<data_time(ALK_time,f,3)<<" "<<f<<" "<<repli<<" "<<gg<<" SIZE "<<p<<" "<<k;
+            SS_compout<<SzFreq_obs_hdr(iobs,1)<<" "<<SzFreq_obs_hdr(iobs,2)<<" "<<Show_Time2(ALK_time)(2,3)<<" "<<data_time(ALK_time,f,3)<<" "<<f<<" "<<fleet_area(f)<<" "<<repli<<" "<<gg<<" SIZE "<<p<<" "<<k;
             if(z>SzFreq_Nbins(k)) s_off=2;
             SS_compout<<" "<<s_off<<" "<<SzFreq_units(k)<<" "<<SzFreq_scale(k)<<" ";
             if(s_off==1) {SS_compout<<SzFreq_bins1(k,z);} else {SS_compout<<SzFreq_bins1(k,z-SzFreq_Nbins(k));}
@@ -2536,7 +2538,7 @@ FUNCTION void write_bigoutput()
             {SS_compout<<" NA NA NA NA ";}
             SS_compout<<" "<<temp2<<" "<<temp1<<" "<<anystring<<endl;
             if(z==z2 || z==SzFreq_Nbins(k))
-            SS_compout<<y<<" "<<s<<" "<<temp<<" "<<f<<" "<<repli<<" "<<gg<<" SIZE "<<p<<" "<<k<<" "<<s_off<<" "<<1<<" "<<2<<endl;
+            SS_compout<<SzFreq_obs_hdr(iobs,1)<<" "<<SzFreq_obs_hdr(iobs,2)<<" "<<Show_Time2(ALK_time)(2,3)<<" "<<data_time(ALK_time,f,3)<<" "<<f<<" "<<fleet_area(f)<<" "<<repli<<" "<<gg<<" SIZE "<<p<<" "<<k<<" "<<s_off<<" "<<1<<" "<<2<<endl;
           }
         }
       }
@@ -2591,8 +2593,7 @@ FUNCTION void write_bigoutput()
     }
 
   if(N_out==0) SS_compout<<styr<<" -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1"<<endl;
-  SS_compout<<"-1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1"<<endl<<"End_comp_data"<<endl;
-  SS_compout<<"end "<<endl;
+  SS_compout<<styr<<" -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1"<<endl<<" End_comp_data"<<endl;
 
   SS2out <<endl<< "SELEX_database" << endl;
   SS2out<<"Fleet Yr Kind Sex Bin Selex"<<endl;

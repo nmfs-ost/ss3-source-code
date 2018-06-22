@@ -280,7 +280,7 @@
   imatrix TG_use_morph(1,N_TG2,1,gmorph)
   imatrix ALK_range_g_lo(1,N_subseas*nseas*gmorph,0,nages)
   imatrix ALK_range_g_hi(1,N_subseas*nseas*gmorph,0,nages)
-
+  int ALK_count;
   vector azero_G(1,gmorph);  //  time since Jan 1 at beginning of settlement in which "g" was born
   3darray real_age(1,gmorph,1,nseas*N_subseas,0,nages);  // real age since settlement
   3darray keep_age(1,gmorph,1,nseas*N_subseas,0,nages);  // set to 0.0 if real_age<0.  this allows omitting virtual young fish to be excluded from expected values
@@ -290,7 +290,7 @@
   ivector settle_g(1,gmorph)   //  settlement pattern for each platoon
 
  LOCAL_CALCS
-
+  ALK_count=0;
   ALK_range_g_lo = 1;
   ALK_range_g_hi = nlength;
 
@@ -2917,6 +2917,8 @@
   number new_lower_bound;
 
  LOCAL_CALCS
+  new_lower_bound=0;
+  new_upper_bound=1;
   echoinput<<" selex base parameters "<<endl;
   for (g=1;g<=N_selparm;g++)
   {

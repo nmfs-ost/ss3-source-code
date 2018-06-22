@@ -9,7 +9,7 @@ FUNCTION void Make_AgeLength_Key(const int s, const int subseas)
  //  moves these mean sizes into a _W working vector 
  //  then it calls calc_ALK to make and store the age-length key for that subseason for each biological entity
  
-  int gstart;
+  int gstart=0;
    ALK_idx=(s-1)*N_subseas+subseas;
    dvar_vector use_Ave_Size_W(0,nages);
    dvar_vector use_SD_Size(0,nages);
@@ -127,7 +127,7 @@ FUNCTION imatrix calc_ALK_range(const dvector &len_bins, const dvar_vector &mean
                  const double ALK_tolerance)
   {
  //SS_Label_FUNCTION_31.2 # calc_ALK_range finds the range for the distribution of length for each age
-  int a, z;  // declare indices
+  int a, z=0;  // declare indices
   int nlength = len_bins.indexmax(); // find number of lengths
   int nages = mean_len_at_age.indexmax(); // find number of ages
   imatrix ALK_range(0,nages,1,2); // stores minimum and maximum
@@ -177,6 +177,7 @@ FUNCTION dvar_matrix calc_ALK(const dvector &len_bins, const ivector &ALK_range_
   dvar_matrix ALK_w(0,nages, 1,nlength); // create matrix to return with length vectors for each age
   dvar_vector AL(1,nlength+1); // create temporary vector
   dvariable len_dev;
+//  ALK_count++;
   for (a = 0; a <= nages; a++)
   {
     AL.initialize();
@@ -189,6 +190,7 @@ FUNCTION dvar_matrix calc_ALK(const dvector &len_bins, const ivector &ALK_range_
     ALK_w(a)=first_difference(AL);
     ALK_w(a,1)+=AL(1);  //  because first bin is from cumulative calc
   }   // end age loop
+
   RETURN_ARRAYS_DECREMENT();
   return (ALK_w);
   }
