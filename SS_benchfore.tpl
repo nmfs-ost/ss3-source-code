@@ -1318,7 +1318,6 @@ FUNCTION void Get_Forecast()
         {
           t = t_base+s;
           bio_t=styr+(endyr-styr)*nseas+s-1;
-
           if(ABC_Loop==ABC_Loop_start)  // do seasonal ALK and fishery selex
           {
             if(timevary_MG(endyr+1,2)>0 || save_for_report==1)
@@ -1456,7 +1455,6 @@ FUNCTION void Get_Forecast()
               }
 
           }  //  end of spawner-recruitment calculations
-
 //  SPAWN-RECR:  total spawn bio used in F policy.  Make this area-specific too?
           if(ABC_Loop==1)  //  doing OFL this loop
           {
@@ -1527,6 +1525,7 @@ FUNCTION void Get_Forecast()
           else
           {  //  ABC buffer remains at previously calculated value
           }
+          
           for (p=1;p<=pop;p++)  //  loop areas
           {
             totbio.initialize();smrybio.initialize(); smrynum.initialize();

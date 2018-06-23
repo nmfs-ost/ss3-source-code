@@ -2943,6 +2943,7 @@ FUNCTION void write_bigoutput()
     }
   }
   SS2out<<"#"<<endl;
+  
   wrote_bigreport=1;  // flag so that second call to writebigreport will do extra output
   return;
   }  //  end writebigreport

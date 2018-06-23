@@ -74,10 +74,10 @@ PARAMETER_SECTION
   matrix Hermaphro_val(1,N_GP,0,nages)
 
   matrix catch_mult(styr-1,YrMax,1,Nfleet)
-  4darray Save_PopLen(styr-3*nseas,TimeMax_Fcast_std+1,1,2*pop,1,gmorph,1,nlength)
-  4darray Save_PopWt(styr-3*nseas,TimeMax_Fcast_std+1,1,2*pop,1,gmorph,1,nlength)
-  4darray Save_PopAge(styr-3*nseas,TimeMax_Fcast_std+1,1,2*pop,1,gmorph,0,nages)
-  4darray Save_PopBio(styr-3*nseas,TimeMax_Fcast_std+1,1,2*pop,1,gmorph,0,nages)
+  4darray Save_PopLen(styr-3*nseas,TimeMax_Fcast_std+nseas,1,2*pop,1,gmorph,1,nlength)
+  4darray Save_PopWt(styr-3*nseas,TimeMax_Fcast_std+nseas,1,2*pop,1,gmorph,1,nlength)
+  4darray Save_PopAge(styr-3*nseas,TimeMax_Fcast_std+nseas,1,2*pop,1,gmorph,0,nages)
+  4darray Save_PopBio(styr-3*nseas,TimeMax_Fcast_std+nseas,1,2*pop,1,gmorph,0,nages)
 
  LOCAL_CALCS
    mat_len=1.0;
@@ -97,7 +97,7 @@ PARAMETER_SECTION
   3darray Sd_Size_between(1,N_subseas*nseas,1,gmorph,0,nages)  //  2*nseas stacks begin of seas and end of seas
   4darray Ave_Size(styr-3*nseas,TimeMax_Fcast_std+nseas,1,N_subseas,1,gmorph,0,nages)
   3darray CV_G(1,N_GP*gender,1,N_subseas*nseas,0,nages);   //  temporary storage of CV enroute to sd of len-at-age
-  3darray Save_Wt_Age(styr-3*nseas,TimeMax_Fcast_std+1,1,gmorph,0,nages)
+  3darray Save_Wt_Age(styr-3*nseas,TimeMax_Fcast_std+nseas,1,gmorph,0,nages)
   3darray Wt_Age_beg(1,nseas,1,gmorph,0,nages)
   3darray Wt_Age_mid(1,nseas,1,gmorph,0,nages)
 
@@ -223,7 +223,7 @@ PARAMETER_SECTION
 
   matrix SSB_equil_pop_gp(1,pop,1,N_GP);
   matrix MaleSSB_equil_pop_gp(1,pop,1,N_GP);
-  matrix Recr(1,pop,styr-3*nseas,TimeMax_Fcast_std+1)         //Recruitment
+  matrix Recr(1,pop,styr-3*nseas,TimeMax_Fcast_std+nseas)         //Recruitment
   matrix exp_rec(styr-3,YrMax,1,4) //expected value for recruitment: 1=spawner-recr only; 2=with environ and cycle; 3=with bias_adj; 4=with dev
   matrix Nmid(1,gmorph,0,nages);
   matrix Nsurv(1,gmorph,0,nages);
@@ -234,7 +234,7 @@ PARAMETER_SECTION
   init_bounded_number_vector init_F(1,N_init_F,init_F_LO,init_F_HI,init_F_PH)
   matrix est_equ_catch(1,nseas,1,Nfleet)
 
-  !!if(Do_Forecast>0) {k=TimeMax_Fcast_std+1;} else {k=TimeMax+nseas;}
+  !!if(Do_Forecast>0) {k=TimeMax_Fcast_std+nseas;} else {k=TimeMax+nseas;}
   4darray natage(styr-3*nseas,k,1,pop,1,gmorph,0,nages)  //  add +1 year
   4darray catage(styr-nseas,k,1,Nfleet,1,gmorph,0,nages)
   4darray equ_catage(1,nseas,1,Nfleet,1,gmorph,0,nages)
@@ -383,7 +383,7 @@ PARAMETER_SECTION
 
  LOCAL_CALCS
   if(Do_Forecast>0)
-  {k=TimeMax_Fcast_std+1;}
+  {k=TimeMax_Fcast_std+nseas;}
   else
   {k=TimeMax+nseas;}
  END_CALCS
