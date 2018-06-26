@@ -14,7 +14,7 @@ FUNCTION dvariable Spawn_Recr(const prevariable& SSB_virgin_adj, const prevariab
     dvariable SSB_curr_adj;
     dvariable join;
     dvariable SRZ_0;
-    dvariable SRZ_max;
+    dvariable srz_min;
     dvariable SRZ_surv;
 
 //  SS_Label_43.1  add 0.1 to input spawning biomass value to make calculation more rebust
@@ -83,8 +83,8 @@ FUNCTION dvariable Spawn_Recr(const prevariable& SSB_virgin_adj, const prevariab
         // Pups_0=SSB_virgin_adj;  //  total population fecundity is the number of pups produced
         // Sfrac=SR_parm(2);
         SRZ_0=log(1.0/(SSB_virgin_adj/Recr_virgin_adj));
-        SRZ_max=SRZ_0+SR_parm_work(2)*(0.0-SRZ_0);
-        SRZ_surv=mfexp((1.-pow((SSB_curr_adj/SSB_virgin_adj),SR_parm_work(3)) )*(SRZ_max-SRZ_0)+SRZ_0);  //  survival
+        srz_min=SRZ_0*(1.0-steepness);
+        SRZ_surv=mfexp((1.-pow((SSB_curr_adj/SSB_virgin_adj),SR_parm_work(3)) )*(srz_min-SRZ_0)+SRZ_0);  //  survival
         NewRecruits=SSB_curr_adj*SRZ_surv;
         exp_rec(y,1)=NewRecruits;   // expected arithmetic mean recruitment
 //  SS_Label_43.3.7.1  Do variation in recruitment by adjusting survival
@@ -225,7 +225,7 @@ FUNCTION dvar_vector Equil_Spawn_Recr_Fxn(const prevariable &SRparm2, const prev
     dvariable Shepherd_c;
     dvariable Shepherd_c2;
     dvariable SRZ_0;
-    dvariable SRZ_max;
+    dvariable srz_min;
     dvariable SRZ_surv;
 
     steepness=SRparm2;  //  common usage but some different
@@ -286,9 +286,9 @@ FUNCTION dvar_vector Equil_Spawn_Recr_Fxn(const prevariable &SRparm2, const prev
       case 7:  // survival
       {
         SRZ_0=log(1.0/(SSB_virgin/Recr_virgin));
-        SRZ_max=SRZ_0+steepness*(0.0-SRZ_0);
-        B_equil = SSB_virgin * (1. - (log(1./SPR_temp) - SRZ_0)/pow((SRZ_max - SRZ_0),(1./SRparm3) ));
-        SRZ_surv=mfexp((1.-pow((B_equil/SSB_virgin),SRparm3) )*(SRZ_max-SRZ_0)+SRZ_0);  //  survival
+        srz_min=SRZ_0*(1.0-steepness);
+        B_equil = SSB_virgin * (1. - (log(1./SPR_temp) - SRZ_0)/pow((srz_min - SRZ_0),(1./SRparm3) ));
+        SRZ_surv=mfexp((1.-pow((B_equil/SSB_virgin),SRparm3) )*(srz_min-SRZ_0)+SRZ_0);  //  survival
         R_equil=B_equil*SRZ_surv;
         break;
       }

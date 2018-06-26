@@ -349,7 +349,6 @@ FUNCTION void write_bigoutput()
         SS2out <<" dev "<<endl;
         }
       }
-
   for (j=1;j<=N_init_F;j++)
   {
     NP++;

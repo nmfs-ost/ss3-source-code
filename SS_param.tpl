@@ -492,7 +492,7 @@ PARAMETER_SECTION
 
 !!//  SS_Label_Info_5.3 #Create log-Likelihood vectors
   vector MGparm_Like(1,N_MGparm2)
-  vector init_F_Like(1,Nfleet)
+  vector init_F_Like(1,N_init_F)
   vector Q_parm_Like(1,Q_Npar2)
   vector selparm_Like(1,N_selparm2)
   vector SR_parm_Like(1,N_SRparm3)
