@@ -163,7 +163,7 @@
   imatrix pfleetname(1,Nfleet,1,2)
   ivector fleet_type(1,Nfleet)   // 1=fleet with catch; 2=discard only fleet with F; 3=survey(ignore catch); 4=ignore completely
   ivector need_catch_mult(1,Nfleet)  // 0=no, 1=need catch_multiplier parameter
-  vector surveytime(1,Nfleet)   // fraction of season (not year) in which survey occurs
+  vector surveytime(1,Nfleet)   // (-1, 1) code for fisheries to indicate use of season-wide observations, or specifically timed observations
   ivector fleet_area(1,Nfleet)    // areas in which each fleet/survey operates
   vector catchunits1(1,Nfleet)  // 1=biomass; 2=numbers
   vector catch_se_rd1(1,Nfleet)  // units are se of log(catch); use -1 to ignore input catch values for discard only fleets
@@ -194,17 +194,18 @@
       fleet_type(f) = int(fleet_setup(f,1));
       if(fleet_type(f)==2) N_bycatch++;
       if(fleet_type(f)<=2) N_catchfleets++;
-      surveytime(f) = fleet_setup(f,2);
+      surveytime(f) = fleet_setup(f,2)/abs(fleet_setup(f,2));
+      fleet_setup(f,2)=surveytime(f);
       if(fleet_type(f)<=2)
         {
           YPR_mask(f)=1;
           if(surveytime(f)!=-1.)
-          {warning<<"fleet: "<<f<<" surveytime read for fishing fleet as: "<<surveytime(f)<<" normally is -1 for fishing fleet; can override by month>1000"<<endl;}
+          {warning<<"fishing fleet: "<<f<<" surveytime read as: "<<surveytime(f)<<" normally is -1 for fishing fleet; can override for indiv. obs. using 1000+month"<<endl;}
         }
         else if (fleet_type(f)==3)
           {if(surveytime(f)==-1.)
-          {warning<<"fleet: "<<f<<" surveytime read for survey fleet as: "<<surveytime(f)<<" reset to 0.5 for survey fleet; will be overridden by month"<<endl;
-            surveytime(f)=0.5;}
+          {warning<<"survey fleet: "<<f<<" surveytime read as: "<<surveytime(f)<<" SS resets to 1 for all survey fleets, and always overridden by indiv. obs. month"<<endl;
+            surveytime(f)=1.;}
           }
       fleet_area(f) = int(fleet_setup(f,3));
       catchunits(f) = int(fleet_setup(f,4));
@@ -2344,9 +2345,9 @@
    !!if(SzFreq_totobs>0) echoinput<<" first sizefreq obs "<<endl<<SzFreq_obs1(1)<<endl<<" last obs"<<endl<<SzFreq_obs1(SzFreq_totobs)<<endl;;
   imatrix SzFreq_obs_hdr(1,SzFreq_totobs,1,9);
   // SzFreq_obs1:     Method, Year, season, Fleet, Gender, Partition, SampleSize, <data>
-  // SzFreq_obs_hdr:     1=y; 2=s; 3=f; 4=gender; 5=partition; 6=method&skip flag; 7=first bin to use; 8=last bin(e.g. to include males or not); 9=flag to indicate transition matrix needs calculation
+  // SzFreq_obs_hdr:     1=y; 2=month; 3=f; 4=gender; 5=partition; 6=method&skip flag; 7=first bin to use; 8=last bin(e.g. to include males or not); 9=flag to indicate transition matrix needs calculation
   vector SzFreq_sampleN(1,SzFreq_totobs);
-  vector SzFreq_effN(1,SzFreq_totobs);
+  vector SzFreq_effN(1,SzFreq_totobs)
   vector SzFreq_eachlike(1,SzFreq_totobs);
   matrix SzFreq_obs(1,SzFreq_totobs,1,SzFreq_Setup2);
   imatrix SzFreq_LikeComponent(1,Nfleet,1,SzFreq_Nmeth)
@@ -2366,9 +2367,9 @@
 //       if(y>=styr && y<=retro_yr)  // not used because all obs in one list
         iobs++;
         for (z=1;z<=5;z++)
-        {SzFreq_obs_hdr(iobs,z) = int(SzFreq_obs1(iobs,z+1));}
+        {SzFreq_obs_hdr(iobs,z) = SzFreq_obs1(iobs,z+1);}
         SzFreq_sampleN(iobs) = SzFreq_obs1(iobs,7);
-        if(SzFreq_obs_hdr(iobs,2)<0) N_suprper_SzFreq++;  //  count the number of superperiod start/stops
+        if(SzFreq_obs1(iobs,3)<0) N_suprper_SzFreq++;  //  count the number of superperiod start/stops
         if(SzFreq_obs_hdr(iobs,4)==3)  // both genders
         {
           for (z=1;z<=SzFreq_Setup2(iobs);z++) {SzFreq_obs(iobs,z)=SzFreq_obs1(iobs,7+z);}
@@ -2392,6 +2393,7 @@
         {N_warn++;warning<<"forecast observations cannot be beyond endyr+20; SS will exit"<<endl; exit(1);}
 
         timing_input(1,3)=SzFreq_obs_hdr(iobs)(1,3);
+        timing_input(2)=SzFreq_obs1(iobs,3);
         get_data_timing(timing_input, timing_constants, timing_i_result, timing_r_result, seasdur, subseasdur_delta, azero_seas, surveytime);
 
         f=abs(SzFreq_obs_hdr(iobs,3));
@@ -2399,9 +2401,6 @@
         t=timing_i_result(2);
         ALK_time=timing_i_result(5);
         real_month=timing_r_result(1);
-
-        SzFreq_obs_hdr(iobs,2)=SzFreq_obs_hdr(iobs,2)/abs(SzFreq_obs_hdr(iobs,2))*real_month;
-        SzFreq_obs1(iobs,3)=real_month;
 
         SzFreq_time_t(iobs)=t;
         SzFreq_time_ALK(iobs)=ALK_time;

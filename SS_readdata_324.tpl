@@ -149,7 +149,7 @@
   imatrix pfleetname(1,Nfleet,1,2)
   ivector fleet_type(1,Nfleet)   // 1=fleet with catch; 2=discard only fleet with F; 3=survey(ignore catch); 4=ignore completely
   ivector need_catch_mult(1,Nfleet)  // 0=no, 1=need catch_multiplier parameter
-  vector surveytime(1,Nfleet)   // fraction of season (not year) in which survey occurs
+  vector surveytime(1,Nfleet)   // (-1, 1) code for fisheries to indicate use of season-wide observations, or specifically timed observations
   ivector fleet_area(1,Nfleet)    // areas in which each fleet/survey operates
   vector catchunits1(1,Nfleet1)  // 1=biomass; 2=numbers
   vector catch_se_rd1(1,Nfleet1)  // units are se of log(catch); use -1 to ignore input catch values for discard only fleets
@@ -222,7 +222,7 @@
           for (t=styr-nseas;t<=TimeMax;t++) {catch_se(t,f)=0.1;} // set a value for catch se for surveys and bycatch fleets (not used)
         }
       fleet_setup(f,1)=fleet_type(f);
-      fleet_setup(f,2)=surveytime(f);
+      fleet_setup(f,2)=surveytime(f)/abs(surveytime(f));
       fleet_setup(f,3)=fleet_area(f);
       fleet_setup(f,4)=catchunits(f);
       fleet_setup(f,5)=need_catch_mult(f);

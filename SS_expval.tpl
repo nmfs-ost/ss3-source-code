@@ -143,6 +143,7 @@ FUNCTION void Get_expected_values();
             exp_truea_ret=agetemp;  //  covers cases where retention not used, but observations have partition=2
             exp_l_temp_ret=exp_l_temp;
           }
+
 //          end creation of selected A-L
         }
 

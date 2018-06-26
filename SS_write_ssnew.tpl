@@ -38,11 +38,11 @@ FUNCTION void write_nudata()
   report1 << pop<<" #_Nareas"<<endl;
   report1 << Nfleet<<" #_Nfleets (including surveys)"<< endl;
   report1<<"#_fleet_type: 1=catch fleet; 2=bycatch only fleet; 3=survey; 4=ignore "<<endl;
-  report1<<"#_survey_timing: -1=for use of catch-at-age to override the month value associated with a datum "<<endl;
+  report1<<"#_survey_timing: -1 for fishing fleet to midseason catch-at-age for observations, or 1 to use observation month;  (always 1 for surveys)"<<endl;
   report1<<"#_fleet_area:  area the fleet/survey operates in "<<endl;
   report1<<"#_units of catch:  1=bio; 2=num (ignored for surveys; their units read later)"<<endl;
   report1<<"#_catch_mult: 0=no; 1=yes"<<endl;
-  report1<<"#_rows are fleets"<<endl<<"#_fleet_type timing area units need_catch_mult fleetname"<<endl;
+  report1<<"#_rows are fleets"<<endl<<"#_fleet_type fishery_timing area catch_units need_catch_mult fleetname"<<endl;
   for (f=1;f<=Nfleet;f++)
   {report1<<fleet_setup(f)<<" "<<fleetname(f)<<"  # "<<f<<endl;}
   report1<<"#Bycatch_fleet_input_goes_next"<<endl;
@@ -284,7 +284,7 @@ FUNCTION void write_nudata()
     report1<<SzFreq_scale<<" #Sizefreq scale(1=kg/2=lbs/3=cm/4=inches) per method"<<endl;
     report1<<SzFreq_mincomp<<" #Sizefreq:  add small constant to comps, per method "<<endl;
     report1<<SzFreq_nobs<<" #Sizefreq N obs per method"<<endl;
-    report1<<"#_Sizefreq bins "<<endl;
+    report1<<"#_Sizefreq bins "<<endl<<"Note: negative value for first bin makes it accumulate all smaller fish vs. truncate small fish"<<endl;
     for (i=1;i<=SzFreq_Nmeth;i++) {report1<<SzFreq_Omit_Small(i)*SzFreq_bins1(i,1)<<SzFreq_bins1(i)(2,SzFreq_Nbins(i))<<endl;}
     report1<<"#_method year month fleet gender partition SampleSize <data> "<<endl<<SzFreq_obs1<<endl;
   }
@@ -626,7 +626,7 @@ FUNCTION void write_nudata()
     report1<<SzFreq_scale<<" #Sizefreq scale(1=kg/2=lbs/3=cm/4=inches) per method"<<endl;
     report1<<SzFreq_mincomp<<" #Sizefreq:  add small constant to comps, per method "<<endl;
     report1<<SzFreq_nobs<<" #Sizefreq N obs per method"<<endl;
-    report1<<"#_Sizefreq bins "<<endl;
+    report1<<"#_Sizefreq bins "<<endl<<"Note: negative value for first bin makes it accumulate all smaller fish vs. truncate small fish"<<endl;
     for (i=1;i<=SzFreq_Nmeth;i++) {report1<<SzFreq_Omit_Small(i)*SzFreq_bins1(i,1)<<SzFreq_bins1(i)(2,SzFreq_Nbins(i))<<endl;}
     report1<<"#_method yr month fleet sex partition SampleSize <data> "<<endl;
     for (iobs=1;iobs<=SzFreq_totobs;iobs++)
@@ -1053,7 +1053,7 @@ FUNCTION void write_nudata()
     report1<<SzFreq_scale<<" #Sizefreq scale(1=kg/2=lbs/3=cm/4=inches) per method"<<endl;
     report1<<SzFreq_mincomp<<" #Sizefreq:  add small constant to comps, per method "<<endl;
     report1<<SzFreq_nobs<<" #Sizefreq N obs per method"<<endl;
-    report1<<"#_Sizefreq bins "<<endl;
+    report1<<"#_Sizefreq bins "<<endl<<"Note: negative value for first bin makes it accumulate all smaller fish vs. truncate small fish"<<endl;
     for (i=1;i<=SzFreq_Nmeth;i++) {report1<<SzFreq_Omit_Small(i)*SzFreq_bins1(i,1)<<SzFreq_bins1(i)(2,SzFreq_Nbins(i))<<endl;}
     report1<<"#_method year month fleet sex partition SampleSize <data> "<<endl;
     j=2*max(SzFreq_Nbins);
