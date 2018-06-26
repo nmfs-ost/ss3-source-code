@@ -5,7 +5,7 @@ DATA_SECTION
 !!//  SS_Label_Section_1.0 #DATA_SECTION
 
 !!//  SS_Label_Info_1.1.1  #Create string with version info
-!!version_info+="#V3.30.12.00-beta-safe;_2018_06_05;_Stock_Synthesis_by_Richard_Methot_(NOAA)_using_ADMB_11.6";
+!!version_info+="#V3.30.12.00-beta-safe;_2018_06_26;_Stock_Synthesis_by_Richard_Methot_(NOAA)_using_ADMB_11.6";
 !!version_info+="#Stock Synthesis (SS) is a work of the U.S. Government and is not subject to copyright protection in the United States.";
 !!version_info+="#Foreign copyrights may apply. See copyright.txt for more information.";
 !!version_info2+="#_user_support_available_at:NMFS.Stock.Synthesis@noaa.gov";
@@ -45,3 +45,11 @@ DATA_SECTION
 !!//  V3.30.11.00  2018-03-28  add output of selected estimated survey values to sdreport and show in ss_summary.sso
 !!//  V3.30.11.00  2018-03-28  add output of ln(SPB) for 3 years to sdreport and show in ss_summary.sso
 !!//  V3.30.11.00  2018-03-28  improve treatment of biasadjustment when first entering MCMC phase; read adjustment factor in starter
+!!//  V3.30.13.00  2018-06-26   add more control rule methods
+!!//  V3.30.13.00  2018-06-26   Input Change:  add new column to mean body size input to cleanly separate mean length vs mean weight
+!!//  V3.30.13.00  2018-06-26   add new age selectivity non-parametric, sex-specific options #44 and #45
+!!//  V3.30.13.00  2018-06-26   add new mean F for reporting to get mean without numbers weighting
+!!//  V3.30.13.00  2018-06-26   improve output to Fit_Len, Fit_Age, fit_Size and include subseas info; also subseas info in compreport.sso
+!!//  V3.30.13.00  2018-06-26   improve error checking on read of wtatage.ss and improve creation of wtatage.ss_new
+!!//  V3.30.13.00  2018-06-26   update and clarify usage of the "-1" code for fishery sample timing
+!!//  V3.30.13.00  2018-06-26   change mean forecast recruitment option to use range of years previously specified in forecast years

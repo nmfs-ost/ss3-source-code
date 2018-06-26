@@ -1230,7 +1230,7 @@ FUNCTION void write_nucontrol()
   NuFore<<"#"<<endl<<Do_Forecast<<" # Forecast: 0=none; 1=F(SPR); 2=F(MSY) 3=F(Btgt) or F0.1; 4=Ave F (uses first-last relF yrs); 5=input annual F scalar"<<endl;
   NuFore<<N_Fcast_Yrs<<" # N forecast years "<<endl;
   NuFore<<Fcast_Flevel<<" # F scalar (only used for Do_Forecast==5)"<<endl;
-  NuFore<<"#_Fcast_years:  beg_selex, end_selex, beg_relF, end_relF, beg_recruits, end_recruits  (enter actual year, or values of 0 or -integer to be rel. endyr)"<<endl<<Fcast_yr_rd<<endl;
+  NuFore<<"#_Fcast_years:  beg_selex, end_selex, beg_relF, end_relF, beg_mean recruits, end_recruits  (enter actual year, or values of 0 or -integer to be rel. endyr)"<<endl<<Fcast_yr_rd<<endl;
   NuFore<<Fcast_Specify_Selex<<" # Forecast selectivity (0=fcast selex is mean from year range; 1=fcast selectivity from annual time-vary parms)"<<endl;
 
   NuFore<<HarvestPolicy<<" # Control rule method (1: ramp does catch=f(SSB), buffer on F; 2: ramp does F=f(SSB), buffer on F; 3: ramp does catch=f(SSB), buffer on catch; 4: ramp does F=f(SSB), buffer on catch) "<<endl;
@@ -1240,7 +1240,7 @@ FUNCTION void write_nucontrol()
 
   NuFore<<Fcast_Loop_Control(1)<<" #_N forecast loops (1=OFL only; 2=ABC; 3=get F from forecast ABC catch with allocations applied)"<<endl;
   NuFore<<Fcast_Loop_Control(2)<<" #_First forecast loop with stochastic recruitment"<<endl;
-  NuFore<<Fcast_Loop_Control(3)<<" #_Forecast recruitment:  0= spawn_recr; 1=value*spawn_recr_fxn; 2=value*VirginRecr; 3=recent mean) "<<endl;
+  NuFore<<Fcast_Loop_Control(3)<<" #_Forecast recruitment:  0= spawn_recr; 1=value*spawn_recr_fxn; 2=value*VirginRecr; 3=recent mean from yr range above "<<endl;
   if(Fcast_Loop_Control(3)==0)
     {NuFore<<1.0<<" # value is ignored "<<endl;}
   if(Fcast_Loop_Control(3)==1)
@@ -1248,7 +1248,7 @@ FUNCTION void write_nucontrol()
   else if(Fcast_Loop_Control(3)==2)
     {NuFore<<Fcast_Loop_Control(4)<<" # value is multiplier on virgin recr"<<endl;}
   else if(Fcast_Loop_Control(3)==3)
-    {NuFore<<Fcast_Loop_Control(4)<<" # value is N recent main recruitments to average"<<endl;}
+    {NuFore<<Fcast_Loop_Control(4)<<" # not used"<<endl;}
   NuFore<<Fcast_Loop_Control(5)<<" #_Forecast loop control #5 (reserved for future bells&whistles) "<<endl;
   NuFore<<Fcast_Cap_FirstYear<<"  #FirstYear for caps and allocations (should be after years with fixed inputs) "<<endl;
 

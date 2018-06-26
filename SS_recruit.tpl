@@ -193,11 +193,11 @@ FUNCTION dvariable Spawn_Recr(const prevariable& SSB_virgin_adj, const prevariab
           {
 //  values going into the mean have already been bias adjusted and had dev applied, so take straight mean
             NewRecruits=0.0;
-            for(j=recdev_end-int(Fcast_Loop_Control(4))+1; j<=recdev_end;j++)
+            for(j=Fcast_Rec_yr1; j<=Fcast_Rec_yr2; j++)
             {
               NewRecruits+=exp_rec(j,4);
             }
-            NewRecruits/=Fcast_Loop_Control(4);
+            NewRecruits/=(Fcast_Rec_yr2-Fcast_Rec_yr1+1);
             exp_rec(y,3)=NewRecruits;  //  store in the bias-adjusted field
             break;
           }

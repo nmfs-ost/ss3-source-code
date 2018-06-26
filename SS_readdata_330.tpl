@@ -2858,7 +2858,7 @@
   *(ad_comm::global_datafile) >> Fcast_Loop_Control(1,5);
   echoinput<<Fcast_Loop_Control(1)<<" #echoed N forecast loops (1-3) (recommend 3)"<<endl;
   echoinput<<Fcast_Loop_Control(2)<<" #echoed First forecast loop with stochastic recruitment (recommend 3)"<<endl;
-  echoinput<<Fcast_Loop_Control(3)<<" #echoed Forecast recruitment:  0=spawn_recr; 1=value*spawn_recr; 2=value*VirginRecr; 3=recent mean"<<endl;
+  echoinput<<Fcast_Loop_Control(3)<<" #echoed Forecast recruitment:  0=spawn_recr; 1=value*spawn_recr; 2=value*VirginRecr; 3=mean from year range"<<endl;
   if(Fcast_Loop_Control(3)==0)
     {echoinput<<Fcast_Loop_Control(4)<<" #echoed Forecast loop control #4 (not used) "<<endl;}
   else if(Fcast_Loop_Control(3)==1)
@@ -2866,7 +2866,7 @@
   else if(Fcast_Loop_Control(3)==2)
     {echoinput<<Fcast_Loop_Control(4)<<" #echoed Forecast loop control #4:  multiplier on virgin recr"<<endl;}
   else if(Fcast_Loop_Control(3)==3)
-    {echoinput<<Fcast_Loop_Control(4)<<" #echoed Forecast loop control #4:  N recent main recruitments to average"<<endl;}
+    {echoinput<<" #mean recruitment from years: "<<Fcast_Rec_yr1<<" to "<<Fcast_Rec_yr2<<endl;}
 
   echoinput<<Fcast_Loop_Control(5)<<" #echoed Forecast loop control #5 (reserved for future use) "<<endl;
 
