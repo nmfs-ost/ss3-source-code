@@ -1045,13 +1045,16 @@
 
  LOCAL_CALCS
   //set base parm for cohort growth dev to permissable values
-  MGparm_1(MGP_CGD,1)=1.;  //min
-  MGparm_1(MGP_CGD,2)=1.;  //max
-  MGparm_1(MGP_CGD,3)=1.;  //init
-  MGparm_1(MGP_CGD,4)=1.;  //prior
-  MGparm_1(MGP_CGD,5)=1.;  //  prior_sd
-  MGparm_1(MGP_CGD,6)=0.;  //  prior type
-  MGparm_1(MGP_CGD,7)=-1.;  // phase
+  if(MGparm_1(MGP_CGD,3)==0 || (MGparm_1(MGP_CGD,1)==MGparm_1(MGP_CGD,2)))
+    {
+      MGparm_1(MGP_CGD,1)=0.1;  //min
+      MGparm_1(MGP_CGD,2)=10.;  //max
+      MGparm_1(MGP_CGD,3)=1.;  //init
+      MGparm_1(MGP_CGD,4)=1.;  //prior
+      MGparm_1(MGP_CGD,5)=1.;  //  prior_sd
+      MGparm_1(MGP_CGD,6)=0.;  //  prior type
+      MGparm_1(MGP_CGD,7)=-1.;  // phase
+    }
 
   echoinput<<" Biology base parameter setup"<<endl;
   for (i=1;i<=N_MGparm;i++)
@@ -4441,6 +4444,11 @@
       case 3:
       {
         depletion_basis_label+=" "+onenum+"%*StartYr_Biomass";
+        break;
+      }
+      case 4:
+      {
+        depletion_basis_label+=" "+onenum+"%*EndYr_Biomass";
         break;
       }
     }

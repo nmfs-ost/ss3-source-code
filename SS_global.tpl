@@ -524,9 +524,9 @@ GLOBALS_SECTION
          tempvec(3)=baseparm_list(12);  //  set init to value on the 3.24 format base parameter line
          tempvec(4)=baseparm_list(12);  //  set prior
        }
-       timevary_setup(12)=-5;  //  set reasonable phase for devs;
-       baseparm_list(12)=-5;
-       N_warn++; warning<<"A parameter dev vector has been created with phase set to negative.  Edit phase as needed "<<endl;
+//       timevary_setup(12)=-5;  //  set reasonable phase for devs;
+//       baseparm_list(12)=-5;
+//       N_warn++; warning<<"A parameter dev vector has been created with phase set to negative.  Edit phase as needed "<<endl;
       }
       timevary_parm_rd.push_back (dvector(tempvec(1,7)));
 

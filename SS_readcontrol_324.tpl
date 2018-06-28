@@ -1028,6 +1028,7 @@
 
 //  MGP_CGD=ParCount2+1;  // pointer to cohort growth deviation base parameter
   ParCount++; ParCount2++;
+  MGparm_1(ParCount2)=MGparm_rd(ParCount);  //  for cohort growth dev
 
   if(do_migration>0)
   {
@@ -1046,19 +1047,24 @@
        ParCount++;  ParCount2++; MGparm_1(ParCount2)=MGparm_rd(ParCount);
     }
   }
+  echoinput<<ParCount<<" "<<ParCount2<<endl;
+  echoinput<<MGparm_rd(MGP_CGD)<<endl;
   ParCount=ParCount2;
 
   echoinput<<"MGparm after bseas to settletime conversion: "<<endl<<MGparm_1<<endl<<endl;
 
   {
   //set base parm for cohort growth dev to permissable values
-  MGparm_1(MGP_CGD,1)=1.;  //min
-  MGparm_1(MGP_CGD,2)=1.;  //max
-  MGparm_1(MGP_CGD,3)=1.;  //init
-  MGparm_1(MGP_CGD,4)=1.;  //prior
-  MGparm_1(MGP_CGD,5)=-1.;  //  prior type
-  MGparm_1(MGP_CGD,6)=1.;  //  prior_sd
-  MGparm_1(MGP_CGD,7)=-1.;  // phase
+  if(MGparm_1(MGP_CGD,3)==0 || (MGparm_1(MGP_CGD,1)==MGparm_1(MGP_CGD,2)))
+    {
+      MGparm_1(MGP_CGD,1)=0.1;  //min
+      MGparm_1(MGP_CGD,2)=10.;  //max
+      MGparm_1(MGP_CGD,3)=1.;  //init
+      MGparm_1(MGP_CGD,4)=1.;  //prior
+      MGparm_1(MGP_CGD,6)=1.;  //  prior_sd
+      MGparm_1(MGP_CGD,5)=0.;  //  prior type
+      MGparm_1(MGP_CGD,7)=-1.;  // phase
+    }
 
   MGparm_2=MGparm_1;
   j=0;  //  pointer to matrix as read
@@ -1271,15 +1277,7 @@
     N_MGparm_dev=0;
     for(j=1;j<=N_MGparm;j++)
     {
-    if(MGparm_1(j,9)>0)
-      {
-        N_MGparm_dev++;
-//  these are not parameters in 3.24  need to create anyway
-//        ParCount++;
-//        ParmLabel+=ParmLabel(j)+"_dev_se"+CRLF(1);
-//        ParCount++;
-//        ParmLabel+=ParmLabel(j)+"_dev_rho"+CRLF(1);
-      }
+    if(MGparm_1(j,9)>0)  {N_MGparm_dev++;}
     }
     echoinput<<"# Number of MGparms with devs: "<<N_MGparm_dev<<endl;
     MGparm_dev_PH=0;
@@ -1288,7 +1286,6 @@
       *(ad_comm::global_datafile) >> MGparm_dev_PH;
       echoinput<<MGparm_dev_PH<<" MGparm_dev_PH"<<endl;
       if(MGparm_dev_PH==0) MGparm_dev_PH=6;
-      if(MGparm_dev_PH<0) MGparm_dev_PH=0;
     }
 
  END_CALCS
@@ -1394,6 +1391,7 @@
        {
          create_timevary(MGparm_1(j),timevary_setup, timevary_pass, autogen_timevary(timevary_setup(1)), mgp_type(j), block_design_null, parm_adjust_method, env_data_pass, N_parm_dev, finish_starter);
        }
+       if(MGparm_1(j,12)>0) MGparm_1(j,12)=MGparm_dev_PH;
   /*
    where:
    MGparm_1(j):           vector with the base parameter which has some type of timevary characteristic
@@ -3287,6 +3285,7 @@
        {
          create_timevary(selparm_1(j),timevary_setup, timevary_pass, autogen_timevary(timevary_setup(1)), selparm_fleet(j), block_design_null, parm_adjust_method, env_data_pass, N_parm_dev,finish_starter);
        }
+       if(selparm_1(j,9)>0) selparm_1(j,12) = selparm_dev_PH;
   /*
    where:
    selparm_1(j):           vector with the base parameter which has some type of timevary characteristic

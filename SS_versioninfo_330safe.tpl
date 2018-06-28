@@ -53,3 +53,4 @@ DATA_SECTION
 !!//  V3.30.13.00  2018-06-26   improve error checking on read of wtatage.ss and improve creation of wtatage.ss_new
 !!//  V3.30.13.00  2018-06-26   update and clarify usage of the "-1" code for fishery sample timing
 !!//  V3.30.13.00  2018-06-26   change mean forecast recruitment option to use range of years previously specified in forecast years
+!!//  V3.30.13.00  2018-06-28   move dev phase and dev se from 3.24 format into 3.30 format

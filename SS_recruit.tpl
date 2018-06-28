@@ -3,6 +3,7 @@
 //  SPAWN-RECR:   function: to calc R from S
 FUNCTION dvariable Spawn_Recr(const prevariable& SSB_virgin_adj, const prevariable& Recr_virgin_adj, const prevariable& SSB_current)
   {
+    RETURN_ARRAYS_INCREMENT();
     dvariable NewRecruits;
     dvariable SSB_BH1;
     dvariable recdev_offset;
@@ -206,6 +207,7 @@ FUNCTION dvariable Spawn_Recr(const prevariable& SSB_virgin_adj, const prevariab
       }
       exp_rec(y,4)=NewRecruits;
     }
+    RETURN_ARRAYS_DECREMENT();
     return NewRecruits;
   }  //  end spawner_recruitment
 

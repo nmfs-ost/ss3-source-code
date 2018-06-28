@@ -2,10 +2,12 @@
  /*  SS_Label_FUNCTION 42 Join_Fxn  */
 FUNCTION dvariable Join_Fxn(const prevariable& MinPoss, const prevariable& MaxPoss, const prevariable& Inflec, const prevariable& Xvar, const prevariable& Y1, const prevariable& Y2)
   {
+    RETURN_ARRAYS_INCREMENT();
   dvariable Yresult;
   dvariable join;
   join=1.000/(1.000+mfexp(1000.0*(Xvar-Inflec)/(MaxPoss-MinPoss)));  //  steep joiner at the inflection
   Yresult=Y1*(join)+Y2*(1.000-join);
+    RETURN_ARRAYS_DECREMENT();
   return Yresult;
   }
 

@@ -874,6 +874,11 @@ FUNCTION void Process_STDquant()
           depletion/= (depletion_level*SSB_yr(styr));
           break;
         }
+        case 4:
+        {
+          depletion/= (depletion_level*SSB_yr(endyr));
+          break;
+        }
       }
 
       switch (SPR_reporting)
@@ -1035,6 +1040,7 @@ FUNCTION void Process_STDquant()
  /*  SS_Label_FUNCTION 27 Check_Parm */
 FUNCTION dvariable Check_Parm(const int iparm, const int& PrPH, const double& Pmin, const double& Pmax, const int& Prtype, const double& Pr, const double& Psd, const double& jitter, const prevariable& Pval)
   {
+    RETURN_ARRAYS_INCREMENT();
     const dvariable zmin = inv_cumd_norm(0.001);    // z value for Pmin
     const dvariable zmax = inv_cumd_norm(0.999);    // z value for Pmax
     const dvariable Pmean = (Pmin + Pmax) / 2.0;
@@ -1092,6 +1098,7 @@ FUNCTION dvariable Check_Parm(const int iparm, const int& PrPH, const double& Pm
       if(Psd<=0.0) {N_warn++; cout<<"fatal error in prior check, see warning"<<endl; warning<<"FATAL:  A prior is selected but prior sd is zero. Prtype: "<<Prtype<<" Prior: "<<Pr<<" Pr_sd: "<<Psd<<" for parm: "<<iparm<<endl; exit(1);}
     }
 
+    RETURN_ARRAYS_DECREMENT();
     return NewVal;
   }
 
@@ -1099,6 +1106,7 @@ FUNCTION dvariable Check_Parm(const int iparm, const int& PrPH, const double& Pm
  /*  SS_Label_FUNCTION 29 Get_Prior */
 FUNCTION dvariable Get_Prior(const int T, const double& Pmin, const double& Pmax, const double& Pr, const double& Psd, const prevariable& Pval)
   {
+    RETURN_ARRAYS_INCREMENT();
     dvariable Prior_Like=0.;
     dvariable mu;
     dvariable tau;
@@ -1163,6 +1171,7 @@ FUNCTION dvariable Get_Prior(const int T, const double& Pmin, const double& Pmax
         break;
       }
     }
+    RETURN_ARRAYS_DECREMENT();
     return Prior_Like;
   }
 
