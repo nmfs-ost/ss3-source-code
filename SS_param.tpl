@@ -17,6 +17,10 @@ PARAMETER_SECTION
     maximum_function_evaluations=func_eval;
     convergence_criteria.allocate(func_conv.indexmin(),func_conv.indexmax());
     convergence_criteria=func_conv;
+    if(do_ageK==1)
+      {k=nages;}  // use for dimension of VBK()
+      else
+      {k=0;}
  END_CALCS
 
 !!//  SS_Label_Info_5.0.2 #Create dummy_parm that will be estimated even if turn_off_phase is set to 0
@@ -29,7 +33,7 @@ PARAMETER_SECTION
   vector L_inf(1,N_GP*gender);
   vector Lmax_temp(1,N_GP*gender);
   vector CV_delta(1,N_GP*gender);
-  matrix VBK(1,N_GP*gender,0,nages);
+  matrix VBK(1,N_GP*gender,0,k);
   vector Richards(1,N_GP*gender);
 
   vector Lmin(1,N_GP*gender);

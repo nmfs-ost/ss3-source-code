@@ -721,10 +721,7 @@ PRELIMINARY_CALCS_SECTION
     CVLmax=value(CVLmax);
 
 //  SS_Label_Info_6.8.3 #Call fxn get_growth2() to calculate size-at-age
-    if(Grow_type!=2)
-    {get_growth2();} //   in preliminary calcs
-    else
-    {get_growth2_Richards();} //   in preliminary calcs
+    get_growth2(); //   in preliminary calcs
     echoinput<<" did growth2 in prelim calcs"<<endl<<Ave_Size(styr,1,1)<<endl;
     if(minL>10.0) {N_warn++; warning<<" Minimum size bin is:_"<<minL<<"; which is >10cm, which is large for use as size-at-age 0.0 recruitment"<<endl;}
     temp=Ave_Size(styr,1,1,nages);

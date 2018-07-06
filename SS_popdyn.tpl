@@ -89,10 +89,7 @@ FUNCTION void get_initial_conditions()
   if(MG_active(2)>0 || save_for_report>0)
   {
     ALK_subseas_update=1;  //  to indicate that all ALKs need calculation
-    if(Grow_type!=2)
-    {get_growth2();}
-    else
-    {get_growth2_Richards();}
+    get_growth2();
     for (s=1;s<=nseas;s++)
     {
       for(subseas=1;subseas<=N_subseas;subseas++)  //  do all subseasons in first year
@@ -474,7 +471,7 @@ FUNCTION void get_time_series()
       {
         SR_parm_work(f)=parm_timevary(SR_parm_timevary(f),y);
       }
-      SR_parm_byyr(eq_yr,f)=SR_parm_work(f);
+      SR_parm_byyr(y,f)=SR_parm_work(f);
    }
 
     	{
@@ -517,10 +514,7 @@ FUNCTION void get_time_series()
       if(timevary_MG(y,2)>0)
         {
           ALK_subseas_update=1;  // indicate that all ALKs will need re-estimation
-          if(Grow_type!=2)
-          {get_growth2();}
-          else
-          {get_growth2_Richards();}
+          get_growth2();
         }
       if(timevary_MG(y,1)>0) get_natmort();
       if(y>=Bmark_Yr(1)&&y<=Bmark_Yr(2))

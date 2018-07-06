@@ -585,10 +585,11 @@
   number AFIX_plus;
   number Linf_decay;  //  decay factor to calculate mean L at maxage from Linf and the decaying abundance above maxage
                       //  forced equal to 0.20 in 3.24 (which also assumed linear, not VBK, growth)
+  int do_ageK;
   int first_grow_age;
   !! k=0;
-  !! if(Grow_type<=2) {k=2;}  //  AFIX and AFIX2
-  !! if (Grow_type==3) {k=3;}  //  min and max age for age-specific K
+  !! if(Grow_type<=2) {k=2; do_ageK=0;}  //  AFIX and AFIX2
+  !! if (Grow_type==3) {k=3; do_ageK=1;}  //  min and max age for age-specific K
   init_vector tempvec5(1,k)
   int Age_K_count;
 

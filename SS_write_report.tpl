@@ -1893,7 +1893,7 @@ FUNCTION void write_bigoutput()
         {for (s=1;s<=nseas;s++) SS2out<<gp<<" "<<gg<<" "<<settle<<" "<<s<<" "<<natM_endyr(s,g)<<endl;}
       }
 
-    if(Grow_type==3)  //  age-specific K
+    if(Grow_type==3 || Grow_type==4)  //  age-specific K
     {
     SS2out<<endl<<"Age_Specific_K"<<endl<<"Bio_Pattern Sex "<<age_vector<<endl;
       g=0;

@@ -1234,6 +1234,18 @@ FUNCTION void Get_Forecast()
     for (y=endyr+1;y<=YrMax;y++)
     {
       t_base=styr+(y-styr)*nseas-1;
+   for(f=1;f<=N_SRparm2;f++)
+   {
+      if(SR_parm_timevary(f)==0)
+      {
+          //  no change to SR_parm_work
+      }
+      else
+      {
+        SR_parm_work(f)=parm_timevary(SR_parm_timevary(f),y);
+      }
+      SR_parm_byyr(y,f)=SR_parm_work(f);
+   }
      	env_data(y,-1)=SSB_current/SSB_yr(styr-1);  //  store most recent value for density-dependent effects, NOTE - off by a year if recalc'ed at beginning of season 1
       env_data(y,-2)=mfexp(recdev(y));  //  store for density-dependent effects
         if(timevary_MG(y,2)>0 || timevary_MG(y,3)>0 || save_for_report==1 || WTage_rd>0)
@@ -1285,10 +1297,7 @@ FUNCTION void Get_Forecast()
       {
         get_MGsetup();
         ALK_subseas_update=1;  //  vector to indicate if ALK needs recalculating
-        if(Grow_type!=2)
-        {get_growth2();}
-        else
-        {get_growth2_Richards();}
+        get_growth2();
       }
       if(timevary_MG(endyr+1,1)>0) get_natmort();
       if(timevary_MG(endyr+1,3)>0) get_wtlen();
@@ -1432,7 +1441,6 @@ FUNCTION void Get_Forecast()
       }
 
         Recruits=Spawn_Recr(SSB_use,R0_use,SSB_current);  // calls to function Spawn_Recr
-
             if(Fcast_Loop1<Fcast_Loop_Control(2))    //  use expected recruitment  this should include environ effect - CHECK THIS
             {
               Recruits=exp_rec(y,2);

@@ -302,7 +302,7 @@
   vector azero_G(1,gmorph);  //  time since Jan 1 at beginning of settlement in which "g" was born
   3darray real_age(1,gmorph,1,nseas*N_subseas,0,nages);  // real age since settlement
   3darray keep_age(1,gmorph,1,nseas*N_subseas,0,nages);  // set to 0.0 if real_age<0.  this allows omitting virtual young fish to be excluded from expected values
-  3darray calen_age(1,gmorph,1,nseas*N_subseas,0,nages);  // real age since Jan 1 of birth year
+  3darray calen_age(1,gmorph,1,nseas*N_subseas,0,nages);  // real age since Jan 1 of spawn year
 
   3darray lin_grow(1,gmorph,1,nseas*N_subseas,0,nages)  //  during linear phase has fraction of Size at Afix
   ivector settle_g(1,gmorph)   //  settlement pattern for each platoon
@@ -363,7 +363,7 @@
    }
    echoinput<<"calen_age is elapsed years since beginning of year in which spawning occurred"<<endl;
    echoinput<<"real_age is elapsed years since settlement"<<endl;
-   echoinput<<" g  s  subseas  ALK_idx settle_time  age calen_age  real_age"<<endl;
+   echoinput<<"g  s  subseas  ALK_idx settle_time age@settle age real_age calen_age"<<endl;
    calen_age.initialize();
    real_age.initialize();
    keep_age.initialize();
@@ -374,8 +374,8 @@
    {
      ALK_idx=(s-1)*N_subseas+subseas;
      settle_time=settle_g(g);
-//   real_age is age since settlement and is used in growth calculations
-//   calen_age is age since the beginning of the year in which spawning occurred
+//   real_age is real age since settlement and is used in growth calculations
+//   calen_age is real age since the beginning of the year in which spawning occurred
      for(a=0;a<=nages;a++)
      {
        calen_age(g,ALK_idx,a)=r_ages(a)+azero_seas(s)+double(subseas-1)/double(N_subseas)*seasdur(s);
@@ -402,6 +402,8 @@
          real_age(g,ALK_idx,a)=calen_age(g,ALK_idx,a)-azero_G(g)-Settle_age(settle_time);
          keep_age(g,ALK_idx,a)=1.;
        }
+        if(a<4) echoinput<<g<<" "<<s<<" "<<subseas<<" "<<ALK_idx<<" "<<settle_time<<" "<<Settle_age(settle_time)
+          <<" "<<a<<" "<<real_age(g,ALK_idx,a)<<" "<<calen_age(g,ALK_idx,a)<<endl;
      }
    }
 
@@ -515,13 +517,14 @@
 
 !!//  SS_Label_Info_4.4 #Define the time blocks for time-varying parameters
   int N_Block_Designs                      // read N block designs
-  ivector Nblk
-  imatrix Block_Design
+  ivector Nblk(1,1)
+  imatrix Block_Design(1,1,1,1)
  LOCAL_CALCS
   *(ad_comm::global_datafile) >> N_Block_Designs;
   echoinput<<N_Block_Designs<<" N_Block_Designs"<<endl;
   if(N_Block_Designs>0)
   {
+    Nblk.deallocate();
     Nblk.allocate(1,N_Block_Designs);
     *(ad_comm::global_datafile) >>Nblk(1,N_Block_Designs);
     echoinput<<Nblk<<" N_Blocks_per design"<<endl;
@@ -529,6 +532,7 @@
     ivector Nblk2;   //  temporary vector to create ragged array of dimensions for block matrix
     Nblk2.allocate(1,N_Block_Designs);
     Nblk2=Nblk + Nblk;
+    Block_Design.deallocate();
     Block_Design.allocate(1,N_Block_Designs,1,Nblk2);
     for(j=1;j<=N_Block_Designs;j++)
     {
@@ -613,7 +617,7 @@
   !!if(k1>0) echoinput<<" Age_NatMort "<<Age_NatMort<<endl;
 
 // read growth setup
-  init_int Grow_type  // 1=vonbert; 2=Richards; 3=age-specific K;  4=read vector(not implemented)
+  init_int Grow_type  // 1=vonbert; 2=Richards; 3=age-specific K ascend;  4=age-specific K descend; 5=age-specific K; 6=read vector(not implemented)
   !!echoinput<<Grow_type<<" growth model "<<endl;
 !!//  SS_Label_Info_4.5.1 #Create time constants for growth
   number AFIX;
@@ -623,10 +627,12 @@
   number AFIX_plus;
   number Linf_decay;  //  decay factor to calculate mean L at maxage from Linf and the decaying abundance above maxage
                       //  forced equal to 0.20 in 3.24 (which also assumed linear, not VBK, growth)
+  int do_ageK;
   int first_grow_age;
   !! k=0;
+  !! do_ageK=0;
   !! if(Grow_type<=2) {k=4;}  //  AFIX and AFIX2
-  !! if (Grow_type==3) {k=5;}  //  min and max age for age-specific K
+  !! if (Grow_type>=3 && Grow_type<=5) {do_ageK=1; k=5;}  //  number of ages for age-specific K
   init_vector tempvec5(1,k)
   int Age_K_count;
 
@@ -653,19 +659,20 @@
     Linf_decay=tempvec5(3);
     //  tempvec(4) is a placeholder
   }
-  else if(Grow_type==3)
+  else if(do_ageK==1)
   {
     AFIX=tempvec5(1);
     AFIX2=tempvec5(2);
     Linf_decay=tempvec5(3);
     //  tempvec(4) is a placeholder
     Age_K_count=tempvec5(5);
-    N_growparms=5+Age_K_count;;
+    echoinput<<" read this number of ages for age-specific K "<<Age_K_count<<endl;
+    N_growparms=5+Age_K_count;
   }
-  else if(Grow_type==4)
+  else if(Grow_type==6)  //  not implemented
   {
     N_growparms=2;  // for the two CV parameters
-    k1=N_GP*gender;  // for reading age_natmort
+    k1=N_GP*gender;  // for reading empirical length_at_age
   }
   
   echoinput<<" N_growparms  "<<N_growparms<<endl;
@@ -707,7 +714,7 @@
         else
           {lin_grow(g,ALK_idx,a)=-2.0;}  //  flag for being in growth curve
 
-        if(lin_grow(g,ALK_idx,a)>-2.0||a<4) echoinput<<g<<" "<<a<<" "<<s<<" "<<subseas<<" "<<ALK_idx<<" "<<real_age(g,ALK_idx,a)
+        if(a<4) echoinput<<g<<" "<<a<<" "<<s<<" "<<subseas<<" "<<ALK_idx<<" "<<real_age(g,ALK_idx,a)
           <<" "<<calen_age(g,ALK_idx,a)<<" "<<lin_grow(g,ALK_idx,a)<<" "<<first_grow_age<<endl;
       }
     }
@@ -728,15 +735,27 @@
   int CV_depvar_b;
   int Grow_logN
  LOCAL_CALCS
-//   if(CV_depvar==0 || CV_depvar==2)
-//     {CV_depvar_a=0;}
-//   else
-//     {CV_depvar_a=1;}
-//   if(CV_depvar<=1)
-//     {CV_depvar_b=0;}
-//   else
-//     {CV_depvar_b=1;}
 
+   if(Age_K_count>1)
+   {
+    if(Grow_type==3)
+    {
+      for(j=2;j<=Age_K_count;j++)
+      {
+        if(Age_K_points(j)<=Age_K_points(j-1))
+        {N_warn++; warning<<"EXIT:  age K points must be unique and ascending order "<<endl;exit(1);}
+      }
+    }
+    else if(Grow_type==4 || Grow_type==5)
+    {
+      for(j=2;j<=Age_K_count;j++)
+      {
+        if(Age_K_points(j)>=Age_K_points(j-1))
+        {N_warn++; warning<<"EXIT:  age K points must be unique and decending order "<<endl;exit(1);}
+      }
+    }
+     
+   }
    Grow_logN=0;
    switch (CV_depvar)
    {
@@ -913,6 +932,32 @@
           for (a=1;a<=Age_K_count;a++)
           {
             ParmLabel+="Age_K_mult_"+GenderLbl(gg)+GP_Lbl(gp)+"_a_"+NumLbl(Age_K_points(a));
+            ParCount++;
+          }
+          break;
+        }
+        case 4:
+        {
+          ParmLabel+="L_at_Amin_"+GenderLbl(gg)+GP_Lbl(gp);
+          ParmLabel+="L_at_Amax_"+GenderLbl(gg)+GP_Lbl(gp);
+          ParmLabel+="VonBert_K_old_"+GenderLbl(gg)+GP_Lbl(gp);
+          ParCount+=3;
+          for (a=1;a<=Age_K_count;a++)
+          {
+            ParmLabel+="Age_K_mult_"+GenderLbl(gg)+GP_Lbl(gp)+"_a_"+NumLbl(Age_K_points(a));
+            ParCount++;
+          }
+          break;
+        }
+        case 5:
+        {
+          ParmLabel+="L_at_Amin_"+GenderLbl(gg)+GP_Lbl(gp);
+          ParmLabel+="L_at_Amax_"+GenderLbl(gg)+GP_Lbl(gp);
+          ParmLabel+="VonBert_K_old_"+GenderLbl(gg)+GP_Lbl(gp);
+          ParCount+=3;
+          for (a=1;a<=Age_K_count;a++)
+          {
+            ParmLabel+="Age_K_each_"+GenderLbl(gg)+GP_Lbl(gp)+"_a_"+NumLbl(Age_K_points(a));
             ParCount++;
           }
           break;

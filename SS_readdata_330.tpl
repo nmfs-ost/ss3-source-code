@@ -2955,6 +2955,7 @@
   TimeMax_Fcast_std = styr+(YrMax-styr)*nseas+nseas-1;
   Fcast_Flevel=1.;
   Fcast_yr=0;
+  Fcast_yr_rd=0;
   Fcast_RelF_Basis=1;
   Fcast_Sel_yr1=endyr;
   Fcast_Sel_yr2=endyr;

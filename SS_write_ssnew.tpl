@@ -1182,7 +1182,7 @@ FUNCTION void write_nucontrol()
   NuStart<<datfilename<<endl<<ctlfilename<<endl;
   NuStart<<readparfile<<" # 0=use init values in control file; 1=use ss.par"<<endl;
   NuStart<<rundetail<<" # run display detail (0,1,2)"<<endl;
-  NuStart<<reportdetail<<" # detailed output (0=minimal for data-limited, 1=high, 2=brief) "<<endl;
+  NuStart<<reportdetail<<" # detailed output (0=minimal for data-limited, 1=high (w/ wtatage.ss_new), 2=brief) "<<endl;
   NuStart<<docheckup<<" # write 1st iteration details to echoinput.sso file (0,1) "<<endl;
   NuStart<<Do_ParmTrace<<" # write parm values to ParmTrace.sso (0=no,1=good,active; 2=good,all; 3=every_iter,all_parms; 4=every,active)"<<endl;
   NuStart<<Do_CumReport<<" # write to cumreport.sso (0=no,1=like&timeseries; 2=add survey fits)"<<endl;
@@ -1275,13 +1275,14 @@ FUNCTION void write_nucontrol()
           NuFore<<s<<" "<<f<<" "<<Fcast_RelF_Use(s,f)<<endl;
         }
     }
-    if(Fcast_RelF_Basis==2) NuFore<<"-9999 0 0  # terminator for list of relF"<<endl;
+    if(Fcast_RelF_Basis==1)  NuFore<<"# ";
+    NuFore<<"-9999 0 0  # terminator for list of relF"<<endl;
   }
 
   NuFore<<"# enter list of: fleet number, max annual catch for fleets with a max; terminate with fleet=-9999"<<endl;
   for(f=1;f<=Nfleet;f++)
   {
-    if(Fcast_MaxFleetCatch(f)>-1) NuFore<<f<<" "<<Fcast_MaxFleetCatch(f)<<endl;
+    if(Fcast_MaxFleetCatch(f)>-1 && fleet_type(f)==1) NuFore<<f<<" "<<Fcast_MaxFleetCatch(f)<<endl;
   }
   NuFore<<"-9999 -1"<<endl;
 
@@ -1407,17 +1408,17 @@ FUNCTION void write_nucontrol()
     else
     {report4<<"  #_no additional input for selected M option; read 1P per morph"<<endl;}
 
-    report4<<Grow_type<<" # GrowthModel: 1=vonBert with L1&L2; 2=Richards with L1&L2; 3=age_specific_K; 4=not implemented"<<endl;
-    if(Grow_type<=3)
+    report4<<Grow_type<<" # GrowthModel: 1=vonBert with L1&L2; 2=Richards with L1&L2; 3=age_specific_K_incr; 4=age_specific_K_decr; 5=age_specific_K_each; 6=not implemented"<<endl;
+    if(Grow_type<=5)
     {report4<<AFIX<<" #_Age(post-settlement)_for_L1;linear growth below this"<<endl<<
       AFIX2<<" #_Growth_Age_for_L2 (999 to use as Linf)"<<endl<<
       Linf_decay<<" #_exponential decay for growth above maxage (fixed at 0.2 in 3.24; value should approx initial Z; -999 replicates 3.24)"<<endl;
       report4<<"0  #_placeholder for future growth feature"<<endl;
-      if(Grow_type==3)
+      if(Grow_type>=3 && Grow_type<=5)
       {report4<<Age_K_count<<" # number of K multipliers to read"<<endl<<Age_K_points<<" # ages for K multiplier"<<endl;}
     }
     else
-    {report4<<" #_growth type 4 is not implemented"<<endl;}
+    {report4<<" #_growth type 6 is not implemented"<<endl;}
 
     report4<<SD_add_to_LAA<<" #_SD_add_to_LAA (set to 0.1 for SS2 V1.x compatibility)"<<endl;   // constant added to SD length-at-age (set to 0.1 for compatibility with SS2 V1.x
     report4<<CV_depvar<<" #_CV_Growth_Pattern:  0 CV=f(LAA); 1 CV=F(A); 2 SD=F(LAA); 3 SD=F(A); 4 logSD=F(A)"<<endl;

@@ -5,7 +5,7 @@ DATA_SECTION
 !!//  SS_Label_Section_1.0 #DATA_SECTION
 
 !!//  SS_Label_Info_1.1.1  #Create string with version info
-!!version_info+="#V3.30.12.00-beta-safe;_2018_06_26;_Stock_Synthesis_by_Richard_Methot_(NOAA)_using_ADMB_11.6";
+!!version_info+="#V3.30.12.00-beta-safe;_2018_07_06;_Stock_Synthesis_by_Richard_Methot_(NOAA)_using_ADMB_11.6";
 !!version_info+="#Stock Synthesis (SS) is a work of the U.S. Government and is not subject to copyright protection in the United States.";
 !!version_info+="#Foreign copyrights may apply. See copyright.txt for more information.";
 !!version_info2+="#_user_support_available_at:NMFS.Stock.Synthesis@noaa.gov";
@@ -54,3 +54,5 @@ DATA_SECTION
 !!//  V3.30.13.00  2018-06-26   update and clarify usage of the "-1" code for fishery sample timing
 !!//  V3.30.13.00  2018-06-26   change mean forecast recruitment option to use range of years previously specified in forecast years
 !!//  V3.30.13.00  2018-06-28   move dev phase and dev se from 3.24 format into 3.30 format
+!!//  V3.30.13.00  2018-06-29   fix to enable time-vary SRR parms in forecast
+!!//  V3.30.13.00  2018-07-06   re_arrange get_growth2 and prep for more growth options;
