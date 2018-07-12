@@ -58,14 +58,12 @@ FUNCTION void get_growth1()
       for(gp=1;gp<=N_GP;gp++)
       for (j=1;j<=8;j++)
       {
-        echoinput<<j<<"  wt_len seas "<<MGparm_seas_effects(j)<<endl;
+        if (do_once==1) echoinput<<j<<"  wt_len seas "<<MGparm_seas_effects(j)<<endl;
         if(MGparm_seas_effects(j)>0)
         {
           wtlen_seas(0,gp,j)=0.0;
           for (s=1;s<=nseas;s++)
           {
-            echoinput<<" seas "<<s<<endl;
-            echoinput<<"parm "<<MGparm(MGparm_seas_effects(j)+s)<<endl;
             wtlen_seas(s,gp,j)=mfexp(MGparm(MGparm_seas_effects(j)+s));
             wtlen_seas(0,gp,j)+=wtlen_seas(s,gp,j)*seasdur(s);  //  this seems not to be used
           }
@@ -260,7 +258,7 @@ FUNCTION void get_growth2()
             {L_inf(gp)=Lmax_temp(gp);}
             else
             {L_inf(gp)=Lmin(gp)+(Lmax_temp(gp)-Lmin(gp))/(1.-mfexp(VBK_temp*VBK_seas(0)*(AFIX_delta)));}
-            echoinput<<VBK_temp<<" linf  "<<L_inf(gp)<<endl;
+            if (do_once==1) echoinput<<"VBK: "<<VBK_temp<<" linf  "<<L_inf(gp)<<endl;
           }         
 
     //  SS_Label_Info_16.2.3  #Set up Lmin and Lmax in Start Year

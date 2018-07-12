@@ -140,6 +140,8 @@ FUNCTION void get_initial_conditions()
   {
     if(MG_active(6)>0) get_age_age(Use_AgeKeyZero,AgeKey_StartAge,AgeKey_Linear1,AgeKey_Linear2); //  call function to get the age_age key
     if(do_once==1) cout<<" ageerr_key OK"<<endl;
+            if(save_for_report==1) echoinput<<" ageerr_key recalc in "<<y<<endl<<
+              age_age(Use_AgeKeyZero)<<endl;
   }
 
   if(save_for_report>0) 
@@ -544,6 +546,17 @@ FUNCTION void get_time_series()
       if(timevary_MG(y,7)>0)
       {
         get_catch_mult(y, catch_mult_pointer);
+      }
+      
+      if(Use_AgeKeyZero>0)
+      {
+        if(timevary_MG(y,6)>0) 
+          {
+            get_age_age(Use_AgeKeyZero,AgeKey_StartAge,AgeKey_Linear1,AgeKey_Linear2); //  call function to get the age_age key
+            if(do_once==1) cout<<" ageerr_key recalc in "<<y<<endl;
+            if(save_for_report==1) echoinput<<" ageerr_key recalc in "<<y<<endl<<
+              age_age(Use_AgeKeyZero)<<endl;
+          }
       }
 
       if(save_for_report>0)
