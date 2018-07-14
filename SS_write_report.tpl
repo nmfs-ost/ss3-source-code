@@ -1284,10 +1284,11 @@ FUNCTION void write_bigoutput()
      t=Len_time_t(f,i);
      ALK_time=Len_time_ALK(f,i);
      more_comp_info.initialize();
-     if(header_l(f,i,3)>0)
-     {
        neff_l(f,i)  = exp_l(f,i)*(1-exp_l(f,i))+1.0e-06;     // constant added for stability
        neff_l(f,i) /= (obs_l(f,i)-exp_l(f,i))*(obs_l(f,i)-exp_l(f,i))+1.0e-06;
+       more_comp_info=process_comps(gender,gen_l(f,i),len_bins_dat2,len_bins_dat_m2,tails_l(f,i),obs_l(f,i), value(exp_l(f,i)));
+     if(header_l(f,i,3)>0)
+     {
        n_rmse(f)+=1.;
        rmse(f)+=value(neff_l(f,i));
        mean_CV(f)+=nsamp_l(f,i);
@@ -1295,13 +1296,8 @@ FUNCTION void write_bigoutput()
        Rrmse(f)+=value(neff_l(f,i)/nsamp_l(f,i));
        if(nsamp_l(f,i)<minsamp(f)) minsamp(f)=nsamp_l(f,i);
        if(nsamp_l(f,i)>maxsamp(f)) maxsamp(f)=nsamp_l(f,i);
-       more_comp_info=process_comps(gender,gen_l(f,i),len_bins_dat2,len_bins_dat_m2,tails_l(f,i),obs_l(f,i), value(exp_l(f,i)));
      }
-     else
-     {
-       neff_l(f,i)=0.;
-     }
-     
+    
      
 //  SS2out<<"Fleet Fleet_Name Area Yr Month Seas Subseas Time Sexes Part SuprPer Use Nsamp effN Like";
       temp=abs(header_l_rd(f,i,2));
@@ -1355,10 +1351,11 @@ FUNCTION void write_bigoutput()
       t=Age_time_t(f,i);
       ALK_time=Age_time_ALK(f,i);
       more_comp_info.initialize();
-     if(nsamp_a(f,i)>0 && header_a(f,i,3)>0)
-     {
        neff_a(f,i)  = exp_a(f,i)*(1-exp_a(f,i))+1.0e-06;     // constant added for stability
        neff_a(f,i) /= (obs_a(f,i)-exp_a(f,i))*(obs_a(f,i)-exp_a(f,i))+1.0e-06;
+       more_comp_info=process_comps(gender,gen_a(f,i),age_bins,age_bins_mean,tails_a(f,i),obs_a(f,i), value(exp_a(f,i)));
+     if(nsamp_a(f,i)>0 && header_a(f,i,3)>0)
+     {
        n_rmse(f)+=1.;
        rmse(f)+=value(neff_a(f,i));
        mean_CV(f)+=nsamp_a(f,i);
@@ -1366,12 +1363,8 @@ FUNCTION void write_bigoutput()
        Rrmse(f)+=value(neff_a(f,i)/nsamp_a(f,i));
        if(nsamp_a(f,i)<minsamp(f)) minsamp(f)=nsamp_a(f,i);
        if(nsamp_a(f,i)>maxsamp(f)) maxsamp(f)=nsamp_a(f,i);
-       more_comp_info=process_comps(gender,gen_a(f,i),age_bins,age_bins_mean,tails_a(f,i),obs_a(f,i), value(exp_a(f,i)));
      }
-     else
-     {
-        neff_a(f,i)=0.;
-     }
+
 //  SS2out<<"Fleet Fleet_Name Area Yr Month Seas Subseas Time Sexes Part Ageerr Lbin_lo Lbin_hi Nsamp effN Like SuprPer Use";
       temp=abs(header_a_rd(f,i,2));
       if(temp>999) temp-=1000;
@@ -1430,6 +1423,7 @@ FUNCTION void write_bigoutput()
         sz_tails(4)=2*SzFreq_Nbins(sz_method);
         for(f=1;f<=Nfleet;f++)
         {
+          in_superperiod=0;
           for (iobs=1;iobs<=SzFreq_totobs;iobs++)
           {
             more_comp_info.initialize();
@@ -1445,8 +1439,6 @@ FUNCTION void write_bigoutput()
                 p=SzFreq_obs_hdr(iobs,5);  // partition
                 z1=SzFreq_obs_hdr(iobs,7);
                 z2=SzFreq_obs_hdr(iobs,8);
-                if(SzFreq_obs_hdr(iobs,3)>0)
-                {
                   temp=0.0;
                   temp1=0.0;
                   for (z=z1;z<=z2;z++)
@@ -1458,6 +1450,9 @@ FUNCTION void write_bigoutput()
                   SzFreq_effN(iobs) =(SzFreq_effN(iobs)+1.0e-06)/value((temp+1.0e-06));
                   temp1*=SzFreq_sampleN(iobs);
                   SzFreq_eachlike(iobs)=value(temp1);
+                  more_comp_info=process_comps(gender,gg,SzFreq_bins(sz_method),SzFreq_means(sz_method),sz_tails,SzFreq_obs(iobs), value(SzFreq_exp(iobs)));
+                if(SzFreq_obs_hdr(iobs,3)>0)
+                {
                   n_rmse(f)+=1.;
                   rmse(f)+=SzFreq_effN(iobs);
                   mean_CV(f)+=SzFreq_sampleN(iobs);
@@ -1465,7 +1460,6 @@ FUNCTION void write_bigoutput()
                   if(SzFreq_sampleN(iobs)>maxsamp(f)) maxsamp(f)=SzFreq_sampleN(iobs);
                   Hrmse(f)+=1./SzFreq_effN(iobs);
                   Rrmse(f)+=SzFreq_effN(iobs)/SzFreq_sampleN(iobs);
-                  more_comp_info=process_comps(gender,gg,SzFreq_bins(sz_method),SzFreq_means(sz_method),sz_tails,SzFreq_obs(iobs), value(SzFreq_exp(iobs)));
                 }
                 else
                 {
@@ -1475,8 +1469,20 @@ FUNCTION void write_bigoutput()
                 temp= SzFreq_obs1(iobs,3);  //  use original input value because 
                 if(temp>999) temp-=1000.;
                 SS2out<<f<<" "<<fleetname(f)<<" "<<fleet_area(f)<<" "<<y<<" "<<temp<<" "<<Show_Time2(ALK_time)(2,3)
-                <<" "<<data_time(ALK_time,f,3)<<" "<<gg<<" "<<p<<" _ _ "
-                " "<<SzFreq_sampleN(iobs)<<"  "<<SzFreq_effN(iobs)<<"  "<<SzFreq_eachlike(iobs)<<" "<<more_comp_info(1,6);
+                <<" "<<data_time(ALK_time,f,3)<<" "<<gg<<" "<<p;
+     if(SzFreq_obs_hdr(iobs,2)<0 && in_superperiod==0)
+      {SS2out<<" start "; in_superperiod=1;}
+      else if (SzFreq_obs_hdr(iobs,2)<0 && in_superperiod==1)
+      {SS2out<<" end "; in_superperiod=0;}
+      else if (in_superperiod==1)
+      {SS2out<<" in ";}
+      else
+      {SS2out<<" _ ";}
+      if(SzFreq_obs_hdr(iobs,3)<0)
+      {SS2out<<" skip ";}
+      else
+      {SS2out<<" _ ";}                
+                SS2out<<" "<<SzFreq_sampleN(iobs)<<"  "<<SzFreq_effN(iobs)<<"  "<<SzFreq_eachlike(iobs)<<" "<<more_comp_info(1,6);
                 if(gender==2) SS2out<<" "<<more_comp_info(7,20);
                 SS2out<<endl;
               }  //  end finding observation that is being used

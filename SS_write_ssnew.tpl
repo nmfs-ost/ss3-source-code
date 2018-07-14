@@ -1657,11 +1657,12 @@ FUNCTION void write_nucontrol()
    NP+=N_Fparm;
    report4<<"#"<<endl;
    report4<<"#_Q_setup for fleets with cpue or survey data"<<endl;
-   report4<<"#_1:  link type: (1=simple q, 1 parm; 2=mirror simple q, 1 mirrored parm; 3=q and power, 2 parm)"<<endl;
-   report4<<"#_2:  extra input for link, i.e. mirror fleet"<<endl;
-   report4<<"#_3:  0/1 to select extra sd parameter"<<endl;
-   report4<<"#_4:  0/1 for biasadj or not"<<endl;
-   report4<<"#_5:  0/1 to float"<<endl;
+   report4<<"#_1:  fleet number"<<endl;
+   report4<<"#_2:  link type: (1=simple q, 1 parm; 2=mirror simple q, 1 mirrored parm; 3=q and power, 2 parm)"<<endl;
+   report4<<"#_3:  extra input for link, i.e. mirror fleet# or dev index number"<<endl;
+   report4<<"#_4:  0/1 to select extra sd parameter"<<endl;
+   report4<<"#_5:  0/1 for biasadj or not"<<endl;
+   report4<<"#_6:  0/1 to float"<<endl;
     if(depletion_fleet>0)  //  special code for depletion, so prepare to adjust phases and lambdas
       {
         f=depletion_fleet;

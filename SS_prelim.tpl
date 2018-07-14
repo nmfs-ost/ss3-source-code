@@ -97,7 +97,7 @@ PRELIMINARY_CALCS_SECTION
   if(Nobs_l_tot>0)
   for (f=1; f <= Nfleet; f++)
   for (i=1; i <= Nobs_l(f); i++)
-  if(header_l(f,i,3)>0)
+//  if(header_l(f,i,3)>0)
   {
     nsamp_l(f,i)*=var_adjust(4,f);
     // {if(nsamp_l(f,i)<=1.0) nsamp_l(f,i)=1.;}                              //  adjust sample size
@@ -251,7 +251,7 @@ PRELIMINARY_CALCS_SECTION
   if(Nobs_a_tot>0)
   for (f=1; f <= Nfleet; f++)
   for (i=1; i <= Nobs_a(f); i++)
-  if(header_a(f,i,3)>0)
+//  if(header_a(f,i,3)>0)
   {
     nsamp_a(f,i)*=var_adjust(5,f);
     // {if(nsamp_a(f,i)<=1.0) nsamp_a(f,i)=1.;}                                //  adjust sample size
@@ -296,7 +296,7 @@ PRELIMINARY_CALCS_SECTION
         k=SzFreq_obs_hdr(iobs,6);  //  get the method
         f=abs(SzFreq_obs_hdr(iobs,3));
         s=SzFreq_obs_hdr(iobs,2);  // sign used to indicate start/stop of super period
-        if(SzFreq_obs_hdr(iobs,3)>0)
+//        if(SzFreq_obs_hdr(iobs,3)>0)
         {
             z1=SzFreq_obs_hdr(iobs,7);
             z2=SzFreq_obs_hdr(iobs,8);

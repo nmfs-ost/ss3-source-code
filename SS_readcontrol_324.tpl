@@ -586,7 +586,8 @@
   number Linf_decay;  //  decay factor to calculate mean L at maxage from Linf and the decaying abundance above maxage
                       //  forced equal to 0.20 in 3.24 (which also assumed linear, not VBK, growth)
   int do_ageK;
-  int first_grow_age;
+  ivector first_grow_age(1,gmorph);
+  !! first_grow_age.initialize();
   !! k=0;
   !! if(Grow_type<=2) {k=2; do_ageK=0;}  //  AFIX and AFIX2
   !! if (Grow_type==3) {k=3; do_ageK=1;}  //  min and max age for age-specific K
@@ -639,7 +640,6 @@
   for (g=1;g<=gmorph;g++)
   if(use_morph(g)>0)
   {
-    first_grow_age=0;
     for (a=0;a<=nages;a++)
     {
       for (s=1;s<=nseas;s++)
@@ -654,16 +654,16 @@
           {
             lin_grow(g,ALK_idx,a)=1.0;  //  at the transition from linear to VBK growth
           }
-        else if (first_grow_age==0)
+        else if (first_grow_age(g)==0)
           {
             lin_grow(g,ALK_idx,a)=-1.0;  //  flag for first age on growth curve beyond AFIX
-            if(subseas==N_subseas) {first_grow_age=1;}  //  so that lingrow will be -1 for rest of this season
+            if(subseas==N_subseas) {first_grow_age(g)=a;}  //  so that lingrow will be -1 for rest of this season
           }
         else
           {lin_grow(g,ALK_idx,a)=-2.0;}  //  flag for being in growth curve
 
         if(lin_grow(g,ALK_idx,a)>-2.0) echoinput<<g<<" "<<a<<" "<<s<<" "<<subseas<<" "<<ALK_idx<<" "<<real_age(g,ALK_idx,a)
-          <<" "<<calen_age(g,ALK_idx,a)<<" "<<lin_grow(g,ALK_idx,a)<<" "<<first_grow_age<<endl;
+          <<" "<<calen_age(g,ALK_idx,a)<<" "<<lin_grow(g,ALK_idx,a)<<" "<<first_grow_age(g)<<endl;
       }
     }
   }

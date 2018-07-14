@@ -165,25 +165,26 @@ FUNCTION void get_growth2()
         default:  //  process parameters for all other grow_type
         {
 //  SS_Label_Info_16.2.1  #set Lmin, Lmax, VBK, Richards to this year's values for mgp_adj
-          if(MGparm_def==1 || gp==1)   // switch for growth parms
-          {
-            Lmin(gp)=mgp_adj(Ip);
-            Lmax_temp(gp)=mgp_adj(Ip+1);  //  size at A2; could be 999 to indicate Linf
-            VBK(gp)=-mgp_adj(Ip+2);  // because always used as negative; assigns to all ages for which VBK is defined
-          }
-          else
+          if(MGparm_def>1 && gp>1)   // switch for growth parms
           {
             Lmin(gp)=Lmin(1)*mfexp(mgp_adj(Ip));
             Lmax_temp(gp)=Lmax_temp(1)*mfexp(mgp_adj(Ip+1));
             VBK(gp)=VBK(1)*mfexp(mgp_adj(Ip+2));  //  assigns to all ages for which VBK is defined
           }
+          else
+          {
+            Lmin(gp)=mgp_adj(Ip);
+            Lmax_temp(gp)=mgp_adj(Ip+1);  //  size at A2; could be 999 to indicate Linf
+            VBK(gp)=-mgp_adj(Ip+2);  // because always used as negative; assigns to all ages for which VBK is defined
+          }
           VBK_temp=VBK(gp,0);  //  will be reset to VBK(gp,nages) if using age-specific K
           if(Grow_type==2)  //  Richards
           {
-            if(MGparm_def==1 || gp==1)   // switch for growth parms
-            {Richards(gp)==mgp_adj(Ip+3);}
-            else
+            if(MGparm_def>1 && gp>1)   // switch for growth parms
             {Richards(gp)=Richards(1)*mfexp(mgp_adj(Ip+3));}
+            else
+            {Richards(gp)=mgp_adj(Ip+3);}
+
             LminR=pow(Lmin(gp),Richards(gp));
             inv_Richards=1.0/Richards(gp);
             if(AFIX2==999)
@@ -321,11 +322,11 @@ FUNCTION void get_growth2()
                 }  // done ageloop
                 break;
               }
-              case 2:  // Richards  WHY IS THIS LOOP DIFFERENT?
+              case 2:  // Richards
               {
-                Ave_Size(styr,1,g,0) = Lmin(gp);
+                Ave_Size(styr,1,g)(0,first_grow_age(g)) = Lmin(gp);
                 VBK_temp2=VBK_temp*VBK_seas(0);
-                for (a=0;a<=nages;a++)
+                for (a=first_grow_age(g);a<=nages;a++)
                 {
                   temp=LinfR + (LminR-LinfR)*mfexp(VBK_temp2*(real_age(g,1,a)-AFIX));
                   Ave_Size(styr,1,g,a) = pow(temp,inv_Richards);

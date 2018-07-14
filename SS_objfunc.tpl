@@ -285,7 +285,7 @@ FUNCTION void evaluate_the_objective_function()
         }
         exp_l(f,i) /= sum(exp_l(f,i));
 
-     if(header_l(f,i,3)>0)
+     if(header_l(f,i,3)>0 || save_for_report==1)
      {
       if(Comp_Err_L(f)==0) // multinomial
       {
@@ -390,7 +390,7 @@ FUNCTION void evaluate_the_objective_function()
 
           exp_a(f,i) /= (1.0e-15+sum(exp_a(f,i)));
 
-          if(header_a(f,i,3)>0)
+          if(header_a(f,i,3)>0 || save_for_report==1)
           {
             if(Comp_Err_A(f)==0)  //  multinomial
             {

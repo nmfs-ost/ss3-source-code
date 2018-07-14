@@ -57,3 +57,5 @@ DATA_SECTION
 !!//  V3.30.12.00  2018-06-29   fix to enable time-vary SRR parms in forecast
 !!//  V3.30.12.00  2018-07-06   re_arrange get_growth2 and prep for more growth options;
 !!//  V3.30.12.00  2018-07-11   enable time-varying ageing bias and error parameters
+!!//  V3.30.12.00  2018-07-11   depletion_basis now includes endyear: 0=skip; 1=rel X*SPB0; 2=rel SPBmsy; 3=rel X*SPB_styr; 4=rel X*SPB_endyr
+

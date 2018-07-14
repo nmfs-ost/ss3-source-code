@@ -628,7 +628,8 @@
   number Linf_decay;  //  decay factor to calculate mean L at maxage from Linf and the decaying abundance above maxage
                       //  forced equal to 0.20 in 3.24 (which also assumed linear, not VBK, growth)
   int do_ageK;
-  int first_grow_age;
+  ivector first_grow_age(1,gmorph);
+  !! first_grow_age.initialize();
   !! k=0;
   !! do_ageK=0;
   !! if(Grow_type<=2) {k=4;}  //  AFIX and AFIX2
@@ -691,7 +692,6 @@
   for (g=1;g<=gmorph;g++)
   if(use_morph(g)>0)
   {
-    first_grow_age=0;
     for (a=0;a<=nages;a++)
     {
       for (s=1;s<=nseas;s++)
@@ -706,16 +706,16 @@
           {
             lin_grow(g,ALK_idx,a)=1.0;  //  at the transition from linear to VBK growth
           }
-        else if (first_grow_age==0)
+        else if (first_grow_age(g)==0)
           {
             lin_grow(g,ALK_idx,a)=-1.0;  //  flag for first age on growth curve beyond AFIX
-            if(subseas==N_subseas) {first_grow_age=1;}  //  so that lingrow will be -1 for rest of this season
+            if(subseas==N_subseas) {first_grow_age(g)=a;}  //  so that lingrow will be -1 for rest of this season
           }
         else
           {lin_grow(g,ALK_idx,a)=-2.0;}  //  flag for being in growth curve
 
         if(a<4) echoinput<<g<<" "<<a<<" "<<s<<" "<<subseas<<" "<<ALK_idx<<" "<<real_age(g,ALK_idx,a)
-          <<" "<<calen_age(g,ALK_idx,a)<<" "<<lin_grow(g,ALK_idx,a)<<" "<<first_grow_age<<endl;
+          <<" "<<calen_age(g,ALK_idx,a)<<" "<<lin_grow(g,ALK_idx,a)<<" "<<first_grow_age(g)<<endl;
       }
     }
   }
@@ -2162,7 +2162,7 @@
         {
           break;
         }
-        case 2:  //  nirror
+        case 2:  //  mirror
         {
           break;
         }
@@ -2201,54 +2201,6 @@
     }
   }
   }
-
-//  get extra_std parameter count
-  /*
-  for(f=1;f<=Nfleet;f++)
-  {
-    if(Q_setup(f,3)>0)
-    {
-       Q_Npar++;  ParCount++;
-       Q_setup_parms(f,2)=Q_Npar;
-      ParmLabel+="Q_extraSD_"+fleetname(f)+"("+NumLbl(f)+")";
-    }
-  }
-    */
-
-  /*
-//  get env parameter count
-  for(f=1;f<=Nfleet;f++)
-  {
-    if(Q_setup(f,1) == 1 && abs(Q_setup(f,2)) == 1)
-    {
-       Q_Npar++;  ParCount++;
-       Q_setup_parms(f,3)=Q_Npar;
-      ParmLabel+="Q_envlink_"+fleetname(f)+"("+NumLbl(f)+")";
-    }
-  }
-
-//  get block/trend parameter count
-  for(f=1;f<=Nfleet;f++)
-  {
-    if(Q_setup(f,1) == 1 && Q_setup(f,2) == 2)
-    {
-       Q_Npar++;  ParCount++;
-       Q_setup_parms(f,4)=Q_Npar;
-      ParmLabel+="Q_trend-block_"+fleetname(f)+"("+NumLbl(f)+")";
-    }
-  }
-
-//  get dev parameter count
-  for(f=1;f<=Nfleet;f++)
-  {
-    if(Q_setup(f,1) == 1 && Q_setup(f,2) == 3)
-    {
-       Q_Npar++;  ParCount++;
-       Q_setup_parms(f,5)=Q_Npar;
-      ParmLabel+="Q_dev_"+fleetname(f)+"("+NumLbl(f)+")";
-    }
-  }
-  */
 
   echoinput<<"q setup "<<endl<<Q_setup<<endl;
   echoinput<<"q setup parms "<<endl<<Q_setup_parms<<endl;
