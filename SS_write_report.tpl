@@ -163,6 +163,7 @@ FUNCTION void write_bigoutput()
   if(Do_TG>0) SS2out <<"Tag_comp "<<TG_like1*column(TG_lambda1,k)<<endl;
   if(Do_TG>0) SS2out <<"Tag_negbin "<<TG_like2*column(TG_lambda2,k)<<endl;
   SS2out <<"Recruitment "<<recr_like*recrdev_lambda(k)<<" "<<recrdev_lambda(k)<<endl;
+  SS2out <<"InitEQ_Regime "<<regime_like*regime_lambda(k)<<" "<<regime_lambda(k)<<endl;
   SS2out <<"Forecast_Recruitment "<<Fcast_recr_like<<" "<<Fcast_recr_lambda<<endl;
   SS2out <<"Parm_priors "<<parm_like*parm_prior_lambda(k)<<" "<<parm_prior_lambda(k)<<endl;
   if(SoftBound>0) SS2out <<"Parm_softbounds "<<SoftBoundPen<<" "<<" NA "<<endl;

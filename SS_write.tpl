@@ -53,10 +53,10 @@ FUNCTION void write_summaryoutput()
   if(Do_TG>0) report2<<runnumber<<" Like_Emph Tag_negbin All "<<column(TG_lambda2,k)<<endl<<
   runnumber<<" Like_Value Tag_negbin "<<TG_like2*column(TG_lambda2,k)<<" " <<TG_like2<<endl;
 
-  report2<<runnumber<<" Like_Comp Equ_Catch Recruits Fcast_Recr Biasadj Priors ParmDevs CrashPen"<<endl;
-  report2<<runnumber<<" Like_Emph "<<init_equ_lambda(k)<<" "<<recrdev_lambda(k)<<" " <<Fcast_recr_lambda<<" "
+  report2<<runnumber<<" Like_Comp Equ_Catch Recruits Regime Fcast_Recr Biasadj Priors ParmDevs CrashPen"<<endl;
+  report2<<runnumber<<" Like_Emph "<<init_equ_lambda(k)<<" "<<recrdev_lambda(k)<<" "<<regime_lambda(k)<<" " <<Fcast_recr_lambda<<" "
          <<parm_prior_lambda(k)<<" " <<parm_dev_lambda(k)<<" " <<CrashPen_lambda(k)<<endl;
-  report2<<runnumber<<" Like_Value*Emph "<<equ_catch_like*init_equ_lambda(k)<<" "<<recr_like*recrdev_lambda(k)<<" "
+  report2<<runnumber<<" Like_Value*Emph "<<equ_catch_like*init_equ_lambda(k)<<" "<<recr_like*recrdev_lambda(k)<<" "<<regime_like*regime_lambda(k)<<" "
          <<Fcast_recr_like<<" "<<parm_like*parm_prior_lambda(k)<<" "<<
          sum(parm_dev_like)*parm_dev_lambda(k)<<" "<<CrashPen*CrashPen_lambda(k)<<endl;
 
@@ -272,6 +272,7 @@ FUNCTION void write_SS_summary()
       SS_smry <<"Tag_Data_2 "<<TG_like2*column(TG_lambda2,k)<<endl;
     }
     SS_smry <<"Recruitment "<<recr_like*recrdev_lambda(k)<<endl;
+    SS_smry <<"InitEQ_regime "<<regime_like*regime_lambda(k)<<endl;
     SS_smry <<"Forecast_Recruitment "<<Fcast_recr_like<<endl;
     SS_smry <<"Parm_priors "<<parm_like*parm_prior_lambda(k)<<endl;
     SS_smry <<"Parm_softbounds "<<SoftBoundPen<<endl;

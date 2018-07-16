@@ -436,6 +436,7 @@ PARAMETER_SECTION
   number equ_catch_like
   vector catch_like(1,Nfleet)
   number recr_like
+  number regime_like
   number Fcast_recr_like
   number parm_like
   matrix parm_dev_like(1,N_parm_dev,1,2)

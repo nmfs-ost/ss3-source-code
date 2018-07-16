@@ -587,7 +587,7 @@ FUNCTION void evaluate_the_objective_function()
           recr_like += square(recdev(y)-rho*recdev(y-1)) / ((1.0-rho*rho)*two_sigmaRsq);
         }
       }
-      recr_like += 0.5 * square( log(R1/R1_exp) / (sigmaR/ave_age) );
+      regime_like = 0.5 * square( log(R1/R1_exp) / (sigmaR/ave_age) );
       if(do_once==1) cout<<" did recruitdev obj_fun "<<recr_like<<" "<<sd_offset_rec<<" "<<two_sigmaRsq<<endl;
     }
     if(Do_Forecast>0)
@@ -810,6 +810,8 @@ FUNCTION void evaluate_the_objective_function()
 //            catch_like(f) += 0.5*square( (log(1.1*catch_ret_obs(f,t)) -log(catch_fleet(t,f,i)*catch_mult(y,f)+0.1*catch_ret_obs(f,t))) / catch_se(t,f));
 //   cout<<" obj_fun catch "<<obj_fun<<catch_like<<endl;
    obj_fun += recr_like*recrdev_lambda(k_phase);
+   obj_fun += regime_like*regime_lambda(k_phase);
+   
 //   cout<<" obj_fun recr "<<obj_fun<<endl;
    obj_fun += parm_like*parm_prior_lambda(k_phase);
 //   cout<<" obj_fun parm "<<obj_fun<<endl;
@@ -1509,7 +1511,7 @@ FUNCTION void get_posteriors()
       if(SzFreq_Nmeth>0) post_obj_func << " | " << SzFreq_like;
       if(Do_Morphcomp>0) post_obj_func << " | " << Morphcomp_like;
       if(Do_TG>0) post_obj_func << " | " << TG_like1 << " | " << TG_like2;
-      post_obj_func << " | " << recr_like;
+      post_obj_func << " | " << recr_like+regime_like;
       post_obj_func << " | " << Fcast_recr_like;
       post_obj_func << " | " << parm_like;
       if(SoftBound>0) post_obj_func << " | " << SoftBoundPen;

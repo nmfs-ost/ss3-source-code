@@ -1908,7 +1908,7 @@ FUNCTION void write_nucontrol()
 
   report4<<"# read "<<N_lambda_changes<<" changes to default Lambdas (default value is 1.0)"<<endl;
   report4<<"# Like_comp codes:  1=surv; 2=disc; 3=mnwt; 4=length; 5=age; 6=SizeFreq; 7=sizeage; 8=catch; 9=init_equ_catch; "<<
-   endl<<"# 10=recrdev; 11=parm_prior; 12=parm_dev; 13=CrashPen; 14=Morphcomp; 15=Tag-comp; 16=Tag-negbin; 17=F_ballpark"<<
+   endl<<"# 10=recrdev; 11=parm_prior; 12=parm_dev; 13=CrashPen; 14=Morphcomp; 15=Tag-comp; 16=Tag-negbin; 17=F_ballpark; 18=initEQregime"<<
    endl<<"#like_comp fleet  phase  value  sizefreq_method"<<endl;
 
   if(N_lambda_changes>0) report4<<Lambda_changes<<endl;

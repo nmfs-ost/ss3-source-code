@@ -3761,6 +3761,7 @@
   vector init_equ_lambda(1,max_lambda_phase)
   matrix catch_lambda(1,Nfleet,1,max_lambda_phase)
   vector recrdev_lambda(1,max_lambda_phase)
+  vector regime_lambda(1,max_lambda_phase)
   vector parm_prior_lambda(1,max_lambda_phase)
   vector parm_dev_lambda(1,max_lambda_phase)
   vector CrashPen_lambda(1,max_lambda_phase)
@@ -3794,6 +3795,7 @@
    TG_lambda1=1.; // 15
    TG_lambda2=1.;  //16
    F_ballpark_lambda=1.;  // 17
+   regime_lambda=1.; // 18
 
     if(depletion_fleet>0)
     {

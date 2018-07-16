@@ -109,6 +109,7 @@ PROCEDURE_SECTION
        if(SzFreq_Nmeth>0) cout<<" sizefreq "<<SzFreq_like<<endl;
        if(Do_TG>0) cout<<" TG-fleetcomp "<<TG_like1<<endl<<" TG-negbin "<<TG_like2<<endl;
        cout<<" Recr " <<recr_like<<endl;
+       cout<<" InitEQ_Regime " <<regime_like<<endl;
        cout<<" Parm_Priors " <<parm_like<<endl;
        cout<<" Parm_devs " <<parm_dev_like<<endl;
        cout<<" SoftBound "<<SoftBoundPen<<endl;

@@ -2539,6 +2539,11 @@
          }
        }
      }
+     else if (seltype(f,2)<0) //  mirror retention
+     {
+       Do_Retain(f)=1;
+       RetainParm(f)=0;
+     }
      if(seltype(f,3)>=1)
       {
         if(gender==1) {N_warn++; cout<<"Critical error"<<endl; warning<<" Male selex cannot be used in one sex model; fleet: "<<f<<endl; exit(1);}
@@ -2745,6 +2750,11 @@
            ParCount++; N_selparmvec(f)++; ParmLabel+="DiscMort_A_male_offset_"+fleetname(f1)+"("+NumLbl(f1)+")";
          }
        }
+     }
+     else if (seltype(f,2)<0) //  mirror retention
+     {
+       Do_Retain(f1)=1;
+       RetainParm(f1)=0;
      }
 
      if(seltype(f,3)>=1)
@@ -3402,6 +3412,7 @@
   vector init_equ_lambda(1,max_lambda_phase)
   matrix catch_lambda(1,Nfleet,1,max_lambda_phase)
   vector recrdev_lambda(1,max_lambda_phase)
+  vector regime_lambda(1,max_lambda_phase)
   vector parm_prior_lambda(1,max_lambda_phase)
   vector parm_dev_lambda(1,max_lambda_phase)
   vector CrashPen_lambda(1,max_lambda_phase)
@@ -3451,6 +3462,7 @@
    TG_lambda1=1.; // 15
    TG_lambda2=1.;  //16
    F_ballpark_lambda=1.;  // 17
+   regime_lambda=1.;  //  18
 
     if(depletion_fleet>0  && depletion_type<2)
     {
@@ -3509,7 +3521,7 @@
           warning<<" illegal tag group for lambda change at row: "<<j<<" Tag: "<<f<<" > N_taggroups"<<endl;
         }
       }
-      else if(k>17)
+      else if(k>18)
       {
         k=0;
         N_warn++;
@@ -3564,6 +3576,8 @@
           {TG_lambda2(f)(s,max_lambda_phase)=temp; break;}
         case 17:  // F ballpark
           {F_ballpark_lambda(s,max_lambda_phase)=temp; break;}
+        case 18:  // regime lambda - only for initial equilibrium
+          {regime_lambda(s,max_lambda_phase)=temp; break;}
       }
     }
     for (f=1;f<=Nfleet;f++)
