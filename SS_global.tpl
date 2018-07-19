@@ -551,7 +551,7 @@ GLOBALS_SECTION
 BETWEEN_PHASES_SECTION
   {
   int j_phase=current_phase();  // this is the phase to come
-//  cout<<current_phase()-1<<" "<<niter<<" -log(L): "<<obj_fun<<"  Spbio: "<<value(SSB_yr(styr))<<" "<<value(SSB_yr(endyr));
+  cout<<current_phase()-1<<" "<<niter<<" -log(L): "<<obj_fun<<"  between "<<endl;
 
 //  SS_Label_Info_11.1 #Save last value of objective function
   if(j_phase>1)

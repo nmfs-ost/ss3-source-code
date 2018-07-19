@@ -60,4 +60,6 @@ DATA_SECTION
 !!//  V3.30.12.00  2018-07-11   depletion_basis now includes endyear option: 0=skip; 1=rel X*SPB0; 2=rel SPBmsy; 3=rel X*SPB_styr; 4=rel X*SPB_endyr
 !!//  V3.30.12.00  2018-07-16   BIG FIX restore ability to mirror retention
 !!//  V3.30.12.00  2018-07-16   add lambda change type 18 for initial equilibrium regime shift
+!!//  V3.30.12.00  2018-07-18   add fatal warning for len selectivity mirroring of higher numbered fleet
+!!//  V3.30.12.00  2018-07-18   improve implementation of softparmbounds using selparm_PH_soft()
 

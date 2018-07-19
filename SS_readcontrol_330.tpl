@@ -2164,6 +2164,10 @@
         }
         case 2:  //  mirror
         {
+       if(Q_setup(f,2)==0 || Q_setup(f,2)>=f)
+       {
+         N_warn++; cout<<" EXIT - see warning "<<endl; warning<<" illegal mirror for q for fleet: "<<f<<" trying to mirror fleet: "<<Q_setup(f,2)<<endl; exit(1);
+     }
           break;
         }
         case 3:  //  add power
@@ -2452,6 +2456,14 @@
      if(seltype(f,1)==21) N_selparmvec(f) +=2*(seltype(f,4)-1);  // special setup of N parms
      if(seltype(f,1)==27 || seltype(f,1)==42) N_selparmvec(f) +=2*seltype(f,4);  // special setup of N parms for cubic spline
      if(seltype(f,1)>0 && Svy_units(f)<30) {dolen(f)=1;} else {dolen(f)=0;}
+     if(seltype(f,1)==15 || seltype(f,1)==5) // mirror
+     {
+       if(seltype(f,4)==0 || seltype(f,4)>=f)
+       {
+         N_warn++; cout<<" EXIT - see warning "<<endl; warning<<" illegal mirror for len selex fleet "<<f<<"trying to mirror fleet: "<<seltype(f,4)<<endl; exit(1);
+       }
+       N_selparmvec(f)=0;   // Nunber of Age selex parms
+     }
      if(seltype(f,1)==43)
      {
          ParCount++; ParmLabel+="SizeSel_ScaleBinLo_"+fleetname(f)+"("+NumLbl(f)+")";
@@ -3050,6 +3062,7 @@
   vector selparm_PRtype(1,N_selparm2)
   vector selparm_CV(1,N_selparm2)
   ivector selparm_PH(1,N_selparm2)
+  ivector selparm_PH_soft(1,N_selparm2)
 
  LOCAL_CALCS
 //  SS_Label_Info_4.9.12 #Create vectors, e.g. selparm_PH(), that will be used to create actual array of estimted parameters
@@ -4107,7 +4120,7 @@
     }
     Ip+=N_selparmvec(f);
   }
-
+   selparm_PH_soft=selparm_PH;
    for (k=1;k<=selparm_PH.indexmax();k++)
    {
      ParCount++;

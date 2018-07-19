@@ -103,7 +103,7 @@ PROCEDURE_SECTION
        if(Svy_N>0) cout<<" CPUE " <<surv_like<<endl;
        if(nobs_disc>0) cout<<" Disc " <<disc_like<<endl;
        if(nobs_mnwt>0) cout<<" MnWt " <<mnwt_like<<endl;
-       if(Nobs_l_tot>0) cout<<" did lencomp obj_fun  " <<length_like_tot<<endl;
+       if(Nobs_l_tot>0) cout<<" Length  " <<length_like_tot<<endl;
        if(Nobs_a_tot>0) cout<<" AGE  " <<age_like_tot<<endl;
        if(nobs_ms_tot>0) cout<<" L-at-A  " <<sizeage_like<<endl;
        if(SzFreq_Nmeth>0) cout<<" sizefreq "<<SzFreq_like<<endl;
@@ -114,8 +114,9 @@ PROCEDURE_SECTION
        cout<<" Parm_devs " <<parm_dev_like<<endl;
        cout<<" SoftBound "<<SoftBoundPen<<endl;
        cout<<" F_ballpark " <<F_ballpark_like<<endl;
-       if(F_Method>1) {cout<<"Catch "<<catch_like;} else {cout<<"  crash "<<CrashPen;}
+       if(F_Method>1) {cout<<"Catch "<<sum(catch_like)<<endl;}
        cout<<" EQUL_catch " <<equ_catch_like<<endl;
+       cout<<"  crash "<<CrashPen<<endl;
       }
      if(rundetail>0)
      {

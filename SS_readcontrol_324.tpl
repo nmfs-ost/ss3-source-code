@@ -3207,6 +3207,7 @@
   vector selparm_PRtype(1,N_selparm2)
   vector selparm_CV(1,N_selparm2)
   ivector selparm_PH(1,N_selparm2)
+  ivector selparm_PH_soft(1,N_selparm2)
 
 !!//  SS_Label_Info_4.5.4 #Set up time-varying parameters for sel parms
   int timevary_parm_cnt_sel;
@@ -4408,7 +4409,7 @@
     }
     Ip+=N_selparmvec(f);
   }
-
+   selparm_PH_soft=selparm_PH;
    for (k=1;k<=selparm_PH.indexmax();k++)
    {
      ParCount++;

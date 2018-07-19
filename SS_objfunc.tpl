@@ -781,7 +781,7 @@ FUNCTION void evaluate_the_objective_function()
     SoftBoundPen=0.0;
 
       for (i=1;i<=N_selparm2;i++)
-      if(active(selparm(i)))
+      if(selparm_PH_soft(i)>0)
         {SoftBoundPen+=Get_Prior(1, selparm_LO(i), selparm_HI(i), 1., 0.001, selparm(i));}
   }
 

@@ -943,7 +943,7 @@ FUNCTION void write_bigoutput()
   dvariable steepness=SR_parm(2);
   SS2out<<endl<<"SPAWN_RECRUIT Function: "<<SR_fxn<<" _ _ _ _ _ _"<<endl<<
   SR_parm(1)<<" Ln(R0) "<<mfexp(SR_parm(1))<<endl<<
-  steepness<<" parm2"<<endl<<
+  steepness<<" steepness"<<endl<<
   Bmsy/SSB_virgin<<" Bmsy/Bzero ";
   if(SR_fxn==8)
   {
@@ -1034,7 +1034,7 @@ FUNCTION void write_bigoutput()
 
   SS2out <<endl<< "INDEX_2" << endl;
   rmse = 0.0;  n_rmse = 0.0; mean_CV=0.0; mean_CV2=0.0; mean_CV3=0.0;
-  SS2out<<"Fleet Name Yr Seas Yr.frac Vuln_bio Obs Exp Calc_Q Eff_Q SE Dev Like Like+log(s) SuprPer Use"<<endl;
+  SS2out<<"Fleet Fleet_name Area Yr Seas Yr.frac Vuln_bio Obs Exp Calc_Q Eff_Q SE Dev Like Like+log(s) SuprPer Use"<<endl;
   if(Svy_N>0)
   {
     for (f=1;f<=Nfleet;f++)
@@ -1044,7 +1044,7 @@ FUNCTION void write_bigoutput()
       {
         t=Svy_time_t(f,i);
         ALK_time=Svy_ALK_time(f,i);
-          SS2out<<f<<" "<<fleetname(f)<<" "<<Show_Time(t)<<" "<<data_time(ALK_time,f,3)<<" "<<Svy_selec_abund(f,i)<<" "<<Svy_obs(f,i)<<" ";
+          SS2out<<f<<" "<<fleetname(f)<<" "<<fleet_area(f)<<" "<<Show_Time(t)<<" "<<data_time(ALK_time,f,3)<<" "<<Svy_selec_abund(f,i)<<" "<<Svy_obs(f,i)<<" ";
           if(Svy_errtype(f)>=0)  // lognormal
           {
             temp = mfexp(Svy_est(f,i));

@@ -1746,7 +1746,7 @@ FUNCTION void write_nucontrol()
    report4<<"#"<<endl;
    
    
-   report4<<"#_age_selex_types"<<endl;
+   report4<<"#_age_selex_patterns"<<endl;
    report4<<"#Pattern:_0; parm=0; selex=1.0 for ages 0 to maxage"<<endl;
    report4<<"#Pattern:_10; parm=0; selex=1.0 for ages 1 to maxage"<<endl;
    report4<<"#Pattern:_11; parm=2; selex=1.0  for specified min-max age"<<endl;
@@ -1773,16 +1773,22 @@ FUNCTION void write_nucontrol()
    // set back to default configuration for output
    report4.unsetf(std::ios_base::fixed); report4.unsetf(std::ios_base::floatfield);
 
-//  if(seltype(f,2)==4)
   {
-      for (f=1;f<=N_selparm;f++)
+    k=0;
+    for(f=1;f<=2*Nfleet;f++)
+    {
+      if(f>Nfleet) {f1=f-Nfleet; anystring="AgeSelex";} else {f1=f;anystring="LenSelex";}
+      report4<<"# "<<f1<<"   "<<fleetname(f1)<<" "<<anystring<<endl;
+      for (j=1;j<=N_selparmvec(f);j++)
       {
         NP++;
-        selparm_1(f)(3)=value(selparm(f));
-        for(j=1;j<=6;j++) report4<<setw(14)<<selparm_1(f,j);
-        for(j=7;j<=14;j++) report4<<setw(11)<<selparm_1(f,j);
+        k++;
+        selparm_1(k)(3)=value(selparm(k));
+        for(z=1;z<=6;z++) report4<<setw(14)<<selparm_1(k,z);
+        for(z=7;z<=14;z++) report4<<setw(11)<<selparm_1(k,z);
         report4<<"  #  "<<ParmLabel(NP)<<endl;
       }
+    }
   if(N_selparm3 > N_selparm)
   {
     report4<<"# timevary selex parameters "<<endl;
@@ -1842,8 +1848,6 @@ FUNCTION void write_nucontrol()
   }
 
   report4.unsetf(std::ios_base::fixed); report4.unsetf(std::ios_base::floatfield);
-
-
   }
 
   j=N_selparm;
