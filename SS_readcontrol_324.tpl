@@ -91,7 +91,7 @@
 
 !!//  SS_Label_Info_4.2.2  #Define distribution of recruitment(settlement) among growth patterns, areas, months
 
-  int recr_dist_method  //  1=like 3.24; 2=main effects for GP, Settle timing, Area; 3=each Settle entity; 4=none when N_GP*Nsettle*pop==1
+  int recr_dist_method  //  1=like 3.24; 2=main effects for GP, Settle timing, Area; 3=each Settle entity
   int recr_dist_area  //  1=global SRR; 2=area-specific SRR
   int N_settle_assignments  //  number of assigned settlements for GP, Settle_month, Area (>=0)
   int N_settle_assignments_rd  //  number read, needed to distinguish between ss3.24 and SS3.30 setup
@@ -1301,6 +1301,7 @@
   int N_parm_dev     //  number of  all parms that use annual deviations
   ivector timevary_pass(styr-3,YrMax+1)    //  extracted column
   vector env_data_pass(styr-1,YrMax)
+  int  do_densitydependent;
 
 !!//  SS_Label_Info_4.5.4 #Set up time-varying parameters for MG parms
   int timevary_parm_cnt_MG;
@@ -1313,6 +1314,7 @@
   int MGblkcnt;
 
  LOCAL_CALCS
+   do_densitydependent=0;
    timevary_cnt=0;
    N_parm_dev=0;
    timevary_parm_cnt=0;

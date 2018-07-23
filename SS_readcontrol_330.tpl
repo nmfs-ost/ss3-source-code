@@ -96,7 +96,7 @@
 
 !!//  SS_Label_Info_4.2.2  #Define distribution of recruitment(settlement) among growth patterns, areas, months
 
-  int recr_dist_method  //  1=like 3.24 (not used); 2=main effects for GP, Settle timing, Area; 3=each Settle entity; 4=none when N_GP*Nsettle*pop==1
+  int recr_dist_method  //  1=like 3.24 (not used); 2=main effects for GP, Settle timing, Area; 3=each Settle entity; 4=no parms (only if GPXsettleXarea=1)
   int recr_dist_area  //  1=global SRR; 2=area-specific SRR
   int N_settle_assignments  //  number of assigned settlements for GP, Settle_month, Area (>=0)
   int N_settle_assignments_rd  //  number read, needed to distinguish between ss3.24 and SS3.30 setup
@@ -138,8 +138,18 @@
         *(ad_comm::global_datafile) >> recr_dist_inx;
         break;
       }
+    case 4:
+      {
+        *(ad_comm::global_datafile) >> N_settle_assignments;
+        *(ad_comm::global_datafile) >> recr_dist_inx;
+        break;
+      }
   }
   echoinput<<N_settle_assignments<<" Number of settlement events: GP/area/month to read (>=0) "<<endl;
+  if(N_settle_assignments==1 && recr_dist_method!=4)
+    {N_warn++; warning<<"You have just one settlement event; recommend changing to recr_dist_method 4 which takes no parameters"<<endl;}
+  if(recr_dist_method<3)
+    {N_warn++; warning<<"Recommend changing to recr_dist_method 3 which takes 1 parm for each settlement"<<endl;}
   echoinput<<recr_dist_inx<<"  # unused option "<<endl;
  END_CALCS
 
@@ -1101,7 +1111,7 @@
       MGparm_1(MGP_CGD,7)=-1.;  // phase
     }
 
-  echoinput<<" Biology base parameter setup"<<endl;
+  echoinput<<" Biology base parameter setup "<<N_MGparm<<endl;
   for (i=1;i<=N_MGparm;i++)
   echoinput<<i<<" "<<MGparm_1(i)<<" "<<ParmLabel(ParCount-N_MGparm+i)<<endl;
 
@@ -1152,7 +1162,7 @@
      if(gg==1) {mgp_type(Ip,Ip+3)=3;  Ip+=4;}  // maturity and fecundity
    }
    if(Hermaphro_Option!=0) {mgp_type(MGparm_Hermaphro,MGparm_Hermaphro+2)=3;}  //   herma parameters done with wtlen and fecundity
-   mgp_type(Ip,MGP_CGD-1)=4;   // recruit apportionments
+   if(recr_dist_method<4) mgp_type(Ip,MGP_CGD-1)=4;   // recruit apportionments
    mgp_type(MGP_CGD)=2;   // cohort growth dev
    if(do_migration>0)  mgp_type(MGP_CGD+1,N_MGparm)=5;  // note that it fills until end of MGparm list, but some get overwritten
    if(Use_AgeKeyZero>0) mgp_type(AgeKeyParm,N_MGparm)=6;
@@ -1178,8 +1188,10 @@
   ivector timevary_pass(styr-3,YrMax+1)    //  extracted column
   ivector MG_active(0,7)  // 0=all, 1=M, 2=growth 3=wtlen, 4=recr_dist&femfrac, 5=migration, 6=ageerror, 7=catchmult
   vector env_data_pass(styr-1,YrMax)
-
+  int  do_densitydependent;
+  
  LOCAL_CALCS
+   do_densitydependent=0;
    timevary_cnt=0;
    N_parm_dev=0;
    timevary_parm_cnt=0;
@@ -1228,16 +1240,20 @@
        timevary_setup(3)=timevary_parm_cnt+1;  //  first parameter within total list of all timevary parms
        z=MGparm_1(j,13);    // specified block or trend definition
 
-       k=int(MGparm_1(j,8)/100);  //  find the env link code
+       k=int(abs(MGparm_1(j,8))/100);  //  find the env link code
        timevary_setup(6)=k;  //  link code for env
-       timevary_setup(7)=int(MGparm_1(j,8))-k*100;  //  env variable used
-       if(timevary_setup(7)>0)
+       if(MGparm_1(j,8)>0)  //  env variable used
        {
+         timevary_setup(7)=int(abs(MGparm_1(j,8)))-k*100;
          k=timevary_setup(7);
          for(y=styr-1;y<=YrMax;y++) env_data_pass(y)=env_data_RD(y,k);
        }
-       else
-       {k=0; env_data_pass.initialize();}
+       else  //  density-dependence
+       {
+         timevary_setup(7)=-int(abs(MGparm_1(j,8))-k*100);
+         do_densitydependent=1;
+         k=0; env_data_pass.initialize();
+       }
 
        if(z>0)  //  doing blocks
        {
@@ -1526,21 +1542,20 @@
        timevary_setup(3)=timevary_parm_cnt+1;  //  first parameter within total list of all timevary parms
        timevary_pass=1;  // placeholder; not used for SR parms
 //  set up env link info
-//   where abs(selparm1(j,8) is the environmental variable used;  store this in timevary_setup(7)
-//   and the sign indicates the link;  store this in timevary_setup(6)
        echoinput<<" check for env "<<SR_parm_1(j,8)<<endl;
-       if(SR_parm_1(j,8)>0)
-       {
-        k=int(SR_parm_1(j,8)/100);  //  find the env link code
+       k=int(abs(SR_parm_1(j,8))/100);  //  find the env link code
        timevary_setup(6)=k;  //  link code for env
-       timevary_setup(7)=int(SR_parm_1(j,8))-k*100;  //  env variable used
-       if(timevary_setup(7)>0)
+       if(SR_parm_1(j,8)>0)  //  env variable used
        {
+         timevary_setup(7)=int(abs(SR_parm_1(j,8)))-k*100;
          k=timevary_setup(7);
          for(y=styr-1;y<=YrMax;y++) env_data_pass(y)=env_data_RD(y,k);
        }
-       else
-       {k=0; env_data_pass.initialize();}
+       else  //  density-dependence
+       {
+         timevary_setup(7)=-int(abs(SR_parm_1(j,8))-k*100);
+         do_densitydependent=1;
+         k=0; env_data_pass.initialize();
        }
 
        if(SR_parm_1(j,13)>0)  //  doing blocks
@@ -2262,19 +2277,22 @@
        timevary_setup(3)=timevary_parm_cnt+1;  //  first parameter within total list of all timevary parms
        timevary_pass=column(timevary_Qparm,f);  // year vector for this fleet
 //  set up env link info
-//   where abs(selparm1(j,8) is the environmental variable used;  store this in timevary_setup(7)
-//   and the sign indicates the link;  store this in timevary_setup(6)
       echoinput<<" check for env "<<Q_parm_1(j,8)<<endl;
-       k=int(Q_parm_1(j,8)/100);  //  find the env link code
+
+       k=int(abs(Q_parm_1(j,8))/100);  //  find the env link code
        timevary_setup(6)=k;  //  link code for env
-       timevary_setup(7)=int(Q_parm_1(j,8))-k*100;  //  env variable used
-       if(timevary_setup(7)>0)
+       if(Q_parm_1(j,8)>0)  //  env variable used
        {
+         timevary_setup(7)=int(abs(Q_parm_1(j,8)))-k*100;
          k=timevary_setup(7);
          for(y=styr-1;y<=YrMax;y++) env_data_pass(y)=env_data_RD(y,k);
        }
-       else
-       {k=0; env_data_pass.initialize();}
+       else  //  density-dependence
+       {
+         timevary_setup(7)=-int(abs(Q_parm_1(j,8))-k*100);
+         do_densitydependent=1;
+         k=0; env_data_pass.initialize();
+       }
 
        if(Q_parm_1(j,13)>0)  //  doing blocks
        {
@@ -2907,16 +2925,20 @@
        timevary_setup(3)=timevary_parm_cnt+1;  //  first TV parameter within total list of all timevary parms
        z=selparm_1(j,13);    // specified block or trend definition
 
-       k=int(selparm_1(j,8)/100);  //  find the env link code
+       k=int(abs(selparm_1(j,8))/100);  //  find the env link code
        timevary_setup(6)=k;  //  link code for env
-       timevary_setup(7)=int(selparm_1(j,8))-k*100;  //  env variable used
-       if(timevary_setup(7)>0)
+       if(selparm_1(j,8)>0)  //  env variable used
        {
+         timevary_setup(7)=int(abs(selparm_1(j,8)))-k*100;
          k=timevary_setup(7);
          for(y=styr-1;y<=YrMax;y++) env_data_pass(y)=env_data_RD(y,k);
        }
-       else
-       {k=0; env_data_pass.initialize();}
+       else  //  density-dependence
+       {
+         timevary_setup(7)=-int(abs(selparm_1(j,8))-k*100);
+         do_densitydependent=1;
+         k=0; env_data_pass.initialize();
+       }
        if(z>0)  //  doing blocks
        {
          if(z>N_Block_Designs)

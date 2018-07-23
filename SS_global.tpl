@@ -413,10 +413,10 @@ GLOBALS_SECTION
     if(baseparm_list(8)!=0)  //  env effect is used
     {
       k=timevary_setup(6);
-      if(timevary_setup(7)==99) timevary_setup(7)=-1;  //  for linking to rel_spawn biomass
-      if(timevary_setup(7)==98) timevary_setup(7)=-2;  //  for linking to exp(recdev)
-      if(timevary_setup(7)==97) timevary_setup(7)=-3;  //  for linking to rel_smrybio
-      if(timevary_setup(7)==96) timevary_setup(7)=-4;  //  for linking to rel_smry_num
+//      if(timevary_setup(7)==99) timevary_setup(7)=-1;  //  for linking to rel_spawn biomass
+//      if(timevary_setup(7)==98) timevary_setup(7)=-2;  //  for linking to exp(recdev)
+//      if(timevary_setup(7)==97) timevary_setup(7)=-3;  //  for linking to rel_smrybio
+//      if(timevary_setup(7)==96) timevary_setup(7)=-4;  //  for linking to rel_smry_num
       echoinput<<"env link_type: "<<k<<" env_var: "<<timevary_setup(7)<<endl;
       switch (k)
       {

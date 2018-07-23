@@ -910,7 +910,10 @@ FUNCTION void get_recr_distribution()
     recr_dist_parm(f)=mfexp(mgp_adj(Ip+f));
   }
 //  SS_Label_Info_18.2  #loop gp * settlements * area and multiply together the recr_dist_parm values
-  if(recr_dist_method==2)
+  switch(recr_dist_method)
+  {
+    
+  case 2:
   {
     for (gp=1;gp<=N_GP;gp++)
     for (p=1;p<=pop;p++)
@@ -936,8 +939,9 @@ FUNCTION void get_recr_distribution()
         }
       }
     }
+    break;
   }
-  else if(recr_dist_method==3)
+  case 3:
   {
     for (settle=1;settle<=N_settle_assignments;settle++)
     {
@@ -947,8 +951,15 @@ FUNCTION void get_recr_distribution()
       recr_dist(gp,settle_time,p)=femfrac(gp)*recr_dist_parm(settle);
       if(gender==2) recr_dist(gp+N_GP,settle_time,p)=femfrac(gp+N_GP)*recr_dist_parm(settle);  //males
     }
+    break;
   }
-  else if(recr_dist_method==1)  //  only used for sstrans
+  case 4:
+  {
+    recr_dist(1,1,1)=femfrac(1);
+    if(gender==2) recr_dist(2,1,1)=femfrac(2);
+    break;
+  }
+  case 1:  //  only used for sstrans
   {
     for (gp=1;gp<=N_GP;gp++)
     for (p=1;p<=pop;p++)
@@ -976,6 +987,8 @@ FUNCTION void get_recr_distribution()
         }
       }
     }
+    break;
+  }
   }
 //  SS_Label_Info_18.4  #scale the recr_dist matrix to sum to 1.0
   if(do_once==1) echoinput<<"recruitment distribution raw "<<endl<<recr_dist<<endl;

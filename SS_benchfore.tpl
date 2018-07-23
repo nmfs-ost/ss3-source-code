@@ -1246,8 +1246,8 @@ FUNCTION void Get_Forecast()
       }
       SR_parm_byyr(y,f)=SR_parm_work(f);
    }
-     	env_data(y,-1)=SSB_current/SSB_yr(styr-1);  //  store most recent value for density-dependent effects, NOTE - off by a year if recalc'ed at beginning of season 1
-      env_data(y,-2)=mfexp(recdev(y));  //  store for density-dependent effects
+     	env_data(y,-1)=log(SSB_current/SSB_yr(styr-1));  //  store most recent value for density-dependent effects, NOTE - off by a year if recalc'ed at beginning of season 1
+      env_data(y,-2)=recdev(y);  //  store for density-dependent effects
         if(timevary_MG(y,2)>0 || timevary_MG(y,3)>0 || save_for_report==1 || WTage_rd>0)
         {
           s=1;
@@ -1270,9 +1270,8 @@ FUNCTION void Get_Forecast()
             smrynum+=sum(natage(t,p,g)(Smry_Age,nages));   //sums to accumulate across platoons and settlements
           }
         }
-        env_data(y,-3)=smrybio/env_data(styr-1,-3);
-        env_data(y,-4)=smrynum/env_data(styr-1,-4);
-
+        env_data(y,-3)=log(smrybio/Smry_Table(styr-1,2));
+        env_data(y,-4)=log(smrynum/Smry_Table(styr-1,3));
 
       Smry_Table(y).initialize();
 
@@ -1293,6 +1292,8 @@ FUNCTION void Get_Forecast()
 //  do biology for this year
 //      yz=endyr+1;  //  biology year for parameters
       yz=y;
+      if(do_densitydependent==1)  make_densitydependent_parm(y);  //  call to adjust for density dependence
+        
       if(timevary_MG(endyr+1,2)>0 || save_for_report>0)  //  so uses endyr+1 timevary setting for duration of forecast
       {
         get_MGsetup();

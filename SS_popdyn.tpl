@@ -77,7 +77,7 @@ FUNCTION void get_initial_conditions()
 //  Create time varying parameters
 //  following call is to routine that does this for all timevary parameters
 //  that are then copied over to replace the base parameter for MG, SRR, Q, Selex, or Tag as needed
-  make_timevaryparm();  //  this fills array parm_timevary for all years
+  make_timevaryparm();  //  this fills array parm_timevary for all years;   densitydependence must be done year-by-year later
 
   if(MG_active(0)>0 || save_for_report>0)
     {
@@ -350,10 +350,10 @@ FUNCTION void get_initial_conditions()
     SR_parm_byyr(eq_yr,N_SRparm2+1)=SSB_equil;
     SR_parm_work(N_SRparm2+1)=SSB_equil;
    SSB_yr(styr)=SSB_equil;
-   env_data(styr-1,-1)=SSB_equil;
-   env_data(styr-1,-2)=1.0;
-   env_data(styr-1,-3)=smrybio;
-   env_data(styr-1,-4)=smrynum;
+   env_data(styr-1,-1)=0.0;
+   env_data(styr-1,-2)=0.0;
+   env_data(styr-1,-3)=0.0;
+   env_data(styr-1,-4)=0.0;
 
    for (s=1;s<=nseas;s++)
    for (f=1;f<=Nfleet;f++)
@@ -455,6 +455,20 @@ FUNCTION void get_time_series()
   else
   { Recruits = R1;}
 
+        smrybio=0.0;
+        smrynum=0.0;
+        for (g=1;g<=gmorph;g++)
+        if(use_morph(g)>0)
+        {
+          for (p=1;p<=pop;p++)
+          {
+            smrybio+=natage(styr,p,g)(Smry_Age,nages)*Save_Wt_Age(styr,g)(Smry_Age,nages);
+            smrynum+=sum(natage(styr,p,g)(Smry_Age,nages));   //sums to accumulate across platoons and settlements
+          }
+        }
+        Smry_Table(styr-1,2)=smrybio;
+        Smry_Table(styr-1,3)=smrynum;
+
   //  SS_Label_Info_24.1 #Loop the years
   for (y=styr;y<=endyr;y++)
   {
@@ -477,12 +491,13 @@ FUNCTION void get_time_series()
    }
 
     	{
-    		env_data(y,-1)=SSB_current/SSB_yr(styr-1);  //  store most recent value for density-dependent effects, NOTE - off by a year if recalc'ed at beginning of season 1
+    		env_data(y,-1)=log(SSB_current/SSB_yr(styr-1));  //  store most recent value for density-dependent effects, NOTE - off by a year if recalc'ed at beginning of season 1
         if(recdev_doit(y)>0)
-        	{env_data(y,-2)=mfexp(recdev(y));} //  store so can do density-dependence
+        	{env_data(y,-2)=recdev(y);} //  store so can do density-dependence
         	else
         	{  //  should be 0.0
         	}
+//        	warning<<y<<" "<<SSB_current<<" "<<SSB_yr(styr-1)<<" "<<recdev(y)<<" env: "<<env_data(y)<<endl;
         t=t_base+1;  // first season
         s=1;
         if(timevary_MG(y,2)>0 || timevary_MG(y,3)>0 || save_for_report==1 || WTage_rd>0)
@@ -499,18 +514,20 @@ FUNCTION void get_time_series()
         {
           for (p=1;p<=pop;p++)
           {
-            smrybio+=natage(t,p,g)(Smry_Age,nages)*Save_Wt_Age(t,g)(Smry_Age,nages);
+            smrybio+=natage(t,p,g)(Smry_Age,nages)*Wt_Age_beg(1,g)(Smry_Age,nages);
             smrynum+=sum(natage(t,p,g)(Smry_Age,nages));   //sums to accumulate across platoons and settlements
           }
         }
-        env_data(y,-3)=smrybio/env_data(styr-1,-3);
-        env_data(y,-4)=smrynum/env_data(styr-1,-4);
+        env_data(y,-3)=log(smrybio/Smry_Table(styr-1,2));
+        env_data(y,-4)=log(smrynum/Smry_Table(styr-1,3));
         Smry_Table(y,2)=smrybio;
         Smry_Table(y,3)=smrynum;
     	}
-
     if(y>styr)
     {
+
+    if(do_densitydependent==1)  make_densitydependent_parm(y);  //  call to adjust for density dependence
+        
   //  SS_Label_Info_24.1.1 #Update the time varying biology factors if necessary
       if(timevary_MG(y,0)>0 || save_for_report>0) get_MGsetup();
       if(timevary_MG(y,2)>0)

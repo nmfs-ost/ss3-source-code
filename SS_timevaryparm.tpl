@@ -2,7 +2,6 @@
  /*  SS_Label_Function_14 #make_timevaryparm():  create trend and block time series */
 FUNCTION void make_timevaryparm()
   {
-
     dvariable baseparm;
     double baseparm_min;
     double baseparm_max;
@@ -177,7 +176,7 @@ FUNCTION void make_timevaryparm()
         parm_timevary(tvary,styr-1)=baseparm;
       }
 
-      if(timevary_setup(7)>0)   //  env link, but not density-dependent
+      if(timevary_setup(7)>0)   //  env link
       {
         if(do_once==1) echoinput<<"env_link to env_variable: "<<timevary_setup(7)<<"  using link_type "<<timevary_setup(6)<<endl;
         switch(int(timevary_setup(6)))
@@ -209,13 +208,14 @@ FUNCTION void make_timevaryparm()
             	// first parm is offset ; second is slope
               for (int y1=styr;y1<=YrMax;y1++)
               {
-                parm_timevary(tvary,y1)=2.00000/(1.00000 + mfexp(-timevary_parm(timevary_parm_cnt+1)*(env_data(yz,timevary_setup(7))-timevary_parm(timevary_parm_cnt))));
+                parm_timevary(tvary,y1)*=2.00000/(1.00000 + mfexp(-timevary_parm(timevary_parm_cnt+1)*(env_data(yz,timevary_setup(7))-timevary_parm(timevary_parm_cnt))));
               }
               timevary_parm_cnt+=2;
               break;
             }
         }
       }
+
   //  SS_Label_Info_14.3 #Create parm dev randwalks if needed
       if(timevary_setup(8)>0)   //  devs
       {
@@ -267,5 +267,44 @@ FUNCTION void make_timevaryparm()
         }
       }
       if(do_once==1) echoinput<<"result by year: "<<parm_timevary(tvary)<<endl;
+    }
+  }  //  end timevary_parm setup for all years
+
+
+FUNCTION void make_densitydependent_parm(int const y1)
+  {
+
+   for (int tvary=1;tvary<=timevary_cnt;tvary++)
+    {
+      ivector timevary_setup(1,13);
+      timevary_setup(1,13)=timevary_def[tvary](1,13);
+      if(timevary_setup(7)<0)   //  density-dependent
+      {
+        timevary_parm_cnt=timevary_setup(3);  //  link parameter index
+        if(do_once==1) echoinput<<y1<<"  density-dependent to env_variable: "<<timevary_setup(7)<<"  using link_type "<<timevary_setup(6)<<"  env: "<<env_data(y1,timevary_setup(7))<<"  parm: "<<timevary_parm(timevary_parm_cnt)<<endl;
+        switch(int(timevary_setup(6)))
+        {
+          case 1:  //  exponential  env link
+            {
+              parm_timevary(tvary,y1)*=mfexp(timevary_parm(timevary_parm_cnt)*(env_data(y1,timevary_setup(7))));
+              break;
+            }
+          case 2:  //  linear  env link
+            {
+              parm_timevary(tvary,y1)+=timevary_parm(timevary_parm_cnt)*env_data(y1,timevary_setup(7));
+              break;
+            }
+          case 3:
+          	{
+          		//  not implemented
+          	}
+          case 4:  //  logistic MGparm env link
+            {
+            	// first parm is offset ; second is slope
+              parm_timevary(tvary,y1)=2.00000/(1.00000 + mfexp(-timevary_parm(timevary_parm_cnt+1)*(env_data(yz,timevary_setup(7))-timevary_parm(timevary_parm_cnt))));
+              break;
+            }
+        }
+      }
     }
   }

@@ -1353,9 +1353,9 @@ FUNCTION void write_nucontrol()
   report4<<platoon_distr(1,N_platoon)<<" #vector_Morphdist_(-1_in_first_val_gives_normal_approx)"<<endl;
   report4<<"#"<<endl;
   if(finish_starter==999)
-    {report4<<2<<" # recr_dist_method for parameters:  2=main effects for GP, Settle timing, Area; 3=each Settle entity; 4=none when N_GP*Nsettle*pop==1"<<endl;}
+    {report4<<2<<" # recr_dist_method for parameters:  2=main effects for GP, Settle timing, Area; 3=each Settle entity; 4=none, only when N_GP*Nsettle*pop==1"<<endl;}
     else
-    {report4<<recr_dist_method<<" # recr_dist_method for parameters:  2=main effects for GP, Area, Settle timing; 3=each Settle entity"<<endl;}
+    {report4<<recr_dist_method<<" # recr_dist_method for parameters:  2=main effects for GP, Area, Settle timing; 3=each Settle entity; 4=none (only when N_GP*Nsettle*pop==1)"<<endl;}
   report4<<recr_dist_area<<" # not yet implemented; Future usage: Spawner-Recruitment: 1=global; 2=by area"<<endl;
   report4<<N_settle_assignments<<" #  number of recruitment settlement assignments "<<endl;
   report4<<0<< " # unused option"<<endl;
@@ -1397,6 +1397,13 @@ FUNCTION void write_nucontrol()
   }
   report4<<"# where: 0 = autogen all time-varying parms; 1 = read each time-varying parm line; 2 = read then autogen if parm min==-12345"<<endl<<"# "<<endl;
 
+  report4<<"#"<<endl<<"#_Available timevary codes"<<endl;
+  report4<<"#_Block types: 0: Pblock=Pbase*exp(TVP); 1: Pblock=Pbase+TVP; 2: Pblock=TVP; 3: Pblock=Pblock(-1) + TVP"<<endl;
+  report4<<"#_Block_trends: -1: trend bounded by base parm min-max and parms in transformed units (beware); -2: endtrend and infl_year direct values; -3: end and infl as fraction of base range"<<endl;
+  
+  report4<<"#_EnvLinks:  1: P(y)=Pbase*exp(TVP*env(y));  2: P(y)=Pbase+TVP*env(y);  3: null;  4: P(y)=2.0/(1.0+exp(-TVP1*env(y) - TVP2))"<<endl;
+  report4<<"#_DevLinks:  1: P(y)*=exp(dev(y)*dev_se;  2: P(y)+=env(y)*dev_se;  3: random walk;  4: zero-reverting random walk with rho"<<endl;
+  report4<<"#"<<endl;
   report4<<"#"<<endl<<"# setup for M, growth, maturity, fecundity, recruitment distibution, movement "<<endl;
   report4<<"#"<<endl<<natM_type<<" #_natM_type:_0=1Parm; 1=N_breakpoints;_2=Lorenzen;_3=agespecific;_4=agespec_withseasinterpolate"<<endl;
     if(natM_type==1)
@@ -1407,7 +1414,7 @@ FUNCTION void write_nucontrol()
     {report4<<" #_Age_natmort_by sex x growthpattern"<<endl<<Age_NatMort<<endl;}
     else
     {report4<<"  #_no additional input for selected M option; read 1P per morph"<<endl;}
-
+    report4<<"#"<<endl;
     report4<<Grow_type<<" # GrowthModel: 1=vonBert with L1&L2; 2=Richards with L1&L2; 3=age_specific_K_incr; 4=age_specific_K_decr; 5=age_specific_K_each; 6=not implemented"<<endl;
     if(Grow_type<=5)
     {report4<<AFIX<<" #_Age(post-settlement)_for_L1;linear growth below this"<<endl<<
@@ -1419,9 +1426,10 @@ FUNCTION void write_nucontrol()
     }
     else
     {report4<<" #_growth type 6 is not implemented"<<endl;}
-
+    report4<<"#"<<endl;
     report4<<SD_add_to_LAA<<" #_SD_add_to_LAA (set to 0.1 for SS2 V1.x compatibility)"<<endl;   // constant added to SD length-at-age (set to 0.1 for compatibility with SS2 V1.x
     report4<<CV_depvar<<" #_CV_Growth_Pattern:  0 CV=f(LAA); 1 CV=F(A); 2 SD=F(LAA); 3 SD=F(A); 4 logSD=F(A)"<<endl;
+    report4<<"#"<<endl;
     report4<<Maturity_Option<<" #_maturity_option:  1=length logistic; 2=age logistic; 3=read age-maturity matrix by growth_pattern; 4=read age-fecundity; 5=disabled; 6=read length-maturity"<<endl;
     if(Maturity_Option==3)
     {report4<<"#_Age_Maturity by growth pattern"<<endl<<Age_Maturity<<endl;}
@@ -1441,13 +1449,113 @@ FUNCTION void write_nucontrol()
   report4<<"#_growth_parms"<<endl;
   report4<<"#_ LO HI INIT PRIOR PR_SD PR_type PHASE env_var&link dev_link dev_minyr dev_maxyr dev_PH Block Block_Fxn"<<endl;
   NP=0;
-  for (f=1;f<=N_MGparm;f++)
+  for (gg=1;gg<=gender;gg++)
   {
-    NP++;
-    MGparm_1(f,3)=value(MGparm(f));
-    report4<<MGparm_1(f)<<" # "<<ParmLabel(NP)<<endl;
+    for (gp=1;gp<=N_GP;gp++)
+    {
+      report4<<"# Sex: "<<gg<<"  BioPattern: "<<gp<<"  NatMort"<<endl;
+      for (k=1;k<=N_natMparms;k++)
+      {
+        NP++;
+        MGparm_1(NP,3)=value(MGparm(NP));
+        report4<<MGparm_1(NP)<<" # "<<ParmLabel(NP)<<endl;
+      }
+      report4<<"# Sex: "<<gg<<"  BioPattern: "<<gp<<"  Growth"<<endl;
+      for (k=1;k<=N_growparms;k++)
+      {
+        NP++;
+        MGparm_1(NP,3)=value(MGparm(NP));
+        report4<<MGparm_1(NP)<<" # "<<ParmLabel(NP)<<endl;
+      }
+      report4<<"# Sex: "<<gg<<"  BioPattern: "<<gp<<"  WtLen"<<endl;
+      for (k=1;k<=2;k++)
+      {
+        NP++;
+        MGparm_1(NP,3)=value(MGparm(NP));
+        report4<<MGparm_1(NP)<<" # "<<ParmLabel(NP)<<endl;
+      }
+      if(gg==1)
+      {
+        report4<<"# Sex: "<<gg<<"  BioPattern: "<<gp<<"  Maturity&Fecundity"<<endl;
+        for (k=1;k<=4;k++)
+        {
+          NP++;
+          MGparm_1(NP,3)=value(MGparm(NP));
+          report4<<MGparm_1(NP)<<" # "<<ParmLabel(NP)<<endl;
+        }
+      }
+    }
   }
-  if(frac_female_pointer == -1)
+      report4<<"# Hermaphroditism"<<endl;
+      if(Hermaphro_Option!=0)
+      {
+        for (k=1;k<=3;k++)
+        {
+          NP++;
+          MGparm_1(NP,3)=value(MGparm(NP));
+          report4<<MGparm_1(NP)<<" # "<<ParmLabel(NP)<<endl;
+        }
+      }
+      
+      report4<<"#  Recruitment Distribution"<<endl;
+      if(MGP_CGD>NP+1)
+      {
+        for (k=1;k<=MGP_CGD-NP+1;k++)
+        {
+          NP++;
+          MGparm_1(NP,3)=value(MGparm(NP));
+          report4<<MGparm_1(NP)<<" # "<<ParmLabel(NP)<<endl;
+        }
+      }
+      
+      report4<<"#  Cohort growth dev base"<<endl;
+      NP++;
+      MGparm_1(NP,3)=value(MGparm(NP));
+      report4<<MGparm_1(NP)<<" # "<<ParmLabel(NP)<<endl;
+
+      report4<<"#  Movement"<<endl;
+      if(do_migration>0)
+      {
+        for (k=1;k<=2*do_migration;k++)
+        {
+          NP++;
+          MGparm_1(NP,3)=value(MGparm(NP));
+          report4<<MGparm_1(NP)<<" # "<<ParmLabel(NP)<<endl;
+        }
+      }
+
+      report4<<"#  Age Error from parameters"<<endl;
+      if(Use_AgeKeyZero>0)
+      {
+        for (k=1;k<=7;k++)
+        {
+          NP++;
+          MGparm_1(NP,3)=value(MGparm(NP));
+          report4<<MGparm_1(NP)<<" # "<<ParmLabel(NP)<<endl;
+        }
+      }
+
+      report4<<"#  catch multiplier"<<endl;
+      if(catch_mult_pointer>0)
+      {
+        for (k=1;k<=Nfleet;k++)
+        if(need_catch_mult(k)==1)
+        {
+          NP++;
+          MGparm_1(NP,3)=value(MGparm(NP));
+          report4<<MGparm_1(NP)<<" # "<<ParmLabel(NP)<<endl;
+        }
+      }
+
+//  for (f=1;f<=N_MGparm;f++)
+//  {
+//    NP++;
+//    MGparm_1(f,3)=value(MGparm(f));
+//    report4<<MGparm_1(f)<<" # "<<ParmLabel(NP)<<endl;
+//  }
+      report4<<"#  fraction female, by GP"<<endl;
+
+  if(frac_female_pointer == -1)  //  3.24 format
   {
     // placeholders to change fracfemale (3.24) to MGparm (3.30)
     for (gp=1;gp<=N_GP;gp++)
@@ -1455,6 +1563,16 @@ FUNCTION void write_nucontrol()
         report4 << " 0.000001 0.999999 " << femfrac(gp) << " 0.5  0.5 0 -99 0 0 0 0 0 0 0 " << "# FracFemale_GP_" << gp << endl;
     }
   }
+  else
+  {
+    for (gp=1;gp<=N_GP;gp++)
+    {
+          NP++;
+          MGparm_1(NP,3)=value(MGparm(NP));
+          report4<<MGparm_1(NP)<<" # "<<ParmLabel(NP)<<endl;
+    }
+  }
+
   report4<<"#"<<endl;
   j=N_MGparm;
   if(timevary_parm_cnt_MG>0)
