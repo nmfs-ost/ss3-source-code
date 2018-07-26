@@ -105,7 +105,10 @@ FUNCTION void setup_Benchmark()
             for (f=0;f<=Nfleet;f++)  //  goes to Nfleet because this contains fecundity as well as asel2(f)
             {
               tempvec_a.initialize();
-              for (t=Bmark_t(1);t<=Bmark_t(2);t+=nseas) {tempvec_a+=save_sel_fec(t+s,g,f);}
+              for (t=Bmark_t(1);t<=Bmark_t(2);t+=nseas) 
+              {
+                tempvec_a+=save_sel_fec(t+s,g,f);
+              }
               save_sel_fec(styr-3*nseas+s,g,f)=tempvec_a/temp;
             }
 // natmort_unf is accumulated while doing the time_series
@@ -220,7 +223,6 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
   dvar_vector F1(1,3);
   dvar_vector yld1(1,3);
   dvar_vector Fmult_save(1,3);
-
    if(show_MSY==1)
    {
      report5<<version_info<<endl<<ctime(&start);
@@ -268,9 +270,11 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
         t = styr-3*nseas+s-1;
 
         subseas=1;  //   for begin of season   ALK_idx calculated within Make_AgeLength_Key
+//        get_growth3(s, subseas);
         Make_AgeLength_Key(s, subseas);  //  begin season
 
         subseas=mid_subseas;
+//        get_growth3(s, subseas);
         Make_AgeLength_Key(s, subseas);
 
   //  SPAWN-RECR:   call make_fecundity for benchmarks
@@ -279,11 +283,12 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
           if(spawn_subseas!=1 && spawn_subseas!=mid_subseas)
           {
             subseas=spawn_subseas;
+//            get_growth3(s, subseas);
             Make_AgeLength_Key(s, subseas);  //  spawn subseas
           }
           Make_Fecundity();
+            for(g=1;g<=gmorph;g++) {fec(g)=save_sel_fec(styr-3*nseas+s-1,g,0);}
         }
-
         for(g=1;g<=gmorph;g++)
         {
           Wt_Age_beg(s,g)=Save_Wt_Age(styr-3*nseas+s-1,g);
@@ -338,7 +343,7 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
     Do_Equil_Calc(Recr_unf);
     SSB_unf=SSB_equil;
     SR_parm_work(N_SRparm2+1)=SSB_unf;
-    if(show_MSY==1) report5<<"SR_parm for benchmark: "<<SR_parm_work<<endl<<"for years: "<<Bmark_Yr(9)<<" "<<Bmark_Yr(10)<<endl;
+    if(show_MSY==1) report5<<"SR_parm for benchmark: "<<SR_parm_work<<endl<<"for years: "<<Bmark_Yr(9)<<" "<<Bmark_Yr(10)<<"  SSB_virgin was: "<<SSB_virgin<<endl;
     if(show_MSY==1) report5<<"Repro_output_by_age: "<<fec(1)<<endl;
     Mgmt_quant(1)=SSB_unf;
     Mgmt_quant(2)=totbio;
@@ -1253,7 +1258,7 @@ FUNCTION void Get_Forecast()
           s=1;
           subseas=1;  //  begin season  note that ALK_idx re-calculated inside get_growth3
           ALK_idx=(s-1)*N_subseas+subseas;  //  redundant with calc inside get_growth3 ????
-  //      get_growth3(s, subseas);  //  not needed because size-at-age already has been propagated to seas 1 subseas 1
+          get_growth3(s, subseas);  //  not needed because size-at-age already has been propagated to seas 1 subseas 1
           Make_AgeLength_Key(s, subseas);  //  this will give wt_age_beg before any time-varying parameter changes for this year
         }
 

@@ -2375,8 +2375,10 @@
      }
  	  }
  	}
- 	echoinput<<"Q_parm_RD: "<<Q_parm_RD<<endl;
-
+ 	echoinput<<"Q_parm_RD: "<<endl;
+ 	for(z=1;z<=Q_Npar2;z++)
+ 	echoinput<<z<<" "<<Q_parm_RD(z)<<" "<<ParmLabel(ParCount-Q_Npar2+z)<<endl;
+  echoinput<<"#"<<endl;
  END_CALCS
 
 !!//  SS_Label_Info_4.9 #Define Selectivity patterns and N parameters needed per pattern
@@ -2417,7 +2419,7 @@
 
    seltype_Nparam(41)=2+seltype_Nparam(17); // like 17, with 2 additional parameters for scaling (average over bin range)
    seltype_Nparam(42)=2+seltype_Nparam(27); // like 27, with 2 additional parameters for scaling (average over bin range)
-   seltype_Nparam(43)=2+seltype_Nparam(6);  // like 6, with 2 additional parameters for scaling (average over bin range)
+   seltype_Nparam(43)=seltype_Nparam(6);  // like 6, with 2 additional parameters for scaling (average over bin range)
    seltype_Nparam(44)=4;  // like 17 for two sexes with male selectivity as separate parameters
    seltype_Nparam(45)=4;  // like 14 for two sexes with male selectivity as separate parameters
 
@@ -2472,7 +2474,8 @@
      N_selparmvec(f)=seltype_Nparam(seltype(f,1));   // N Length selex parms
      if(seltype(f,1)==6 || seltype(f,1)==43) N_selparmvec(f) +=seltype(f,4);  // special setup of N parms
      if(seltype(f,1)==21) N_selparmvec(f) +=2*(seltype(f,4)-1);  // special setup of N parms
-     if(seltype(f,1)==27 || seltype(f,1)==42) N_selparmvec(f) +=2*seltype(f,4);  // special setup of N parms for cubic spline
+     if(seltype(f,1)==27) N_selparmvec(f) +=2*seltype(f,4);  // special setup of N parms for cubic spline
+     if(seltype(f,1)==42) N_selparmvec(f) +=2*seltype(f,4);  // special setup of N parms for cubic spline
      if(seltype(f,1)>0 && Svy_units(f)<30) {dolen(f)=1;} else {dolen(f)=0;}
      if(seltype(f,1)==15 || seltype(f,1)==5) // mirror
      {
@@ -2480,12 +2483,12 @@
        {
          N_warn++; cout<<" EXIT - see warning "<<endl; warning<<" illegal mirror for len selex fleet "<<f<<"trying to mirror fleet: "<<seltype(f,4)<<endl; exit(1);
        }
-       N_selparmvec(f)=0;   // Nunber of Age selex parms
      }
      if(seltype(f,1)==43)
      {
          ParCount++; ParmLabel+="SizeSel_ScaleBinLo_"+fleetname(f)+"("+NumLbl(f)+")";
          ParCount++; ParmLabel+="SizeSel_ScaleBinHi_"+fleetname(f)+"("+NumLbl(f)+")";
+         echoinput<<"N parm "<<N_selparmvec(f)<<endl;
      }
 
      if(seltype(f,1)==27 || seltype(f,1)==42)
@@ -2523,6 +2526,7 @@
      }
      else
      {
+      echoinput<<f<<" nsel "<<N_selparmvec(f)<<endl;
        for (j=1;j<=N_selparmvec(f);j++)
        {
          ParCount++; ParmLabel+="SizeSel_P"+NumLbl(j)+"_"+fleetname(f)+"("+NumLbl(f)+")";
@@ -2530,7 +2534,7 @@
      }
 
      // account for the low and high bin parameters
-     if(seltype(f,1) == 42 || seltype(f,1) == 43) N_selparmvec(f)+=2;
+     if(seltype(f,1) == 43) N_selparmvec(f)+=2;
 
      if(seltype(f,2)>=1)
      {

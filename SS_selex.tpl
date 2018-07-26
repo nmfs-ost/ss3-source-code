@@ -144,6 +144,7 @@ FUNCTION void get_selectivity()
           SelPoint=value(sp(1+scaling_offset));   //  first size that will get a parameter.  Value will get incremented by step interval (temp1)
           z=3+scaling_offset;  // parameter counter
           temp1 = (finalSelPoint-SelPoint)/(seltype(f,4)-1.0);  // step interval
+          
           for (j=1;j<=nlength;j++)
           {
             if(len_bins_m(j)<SelPoint)
@@ -174,7 +175,7 @@ FUNCTION void get_selectivity()
             }
             else
             {tempvec_l(j)=sp(z);}
-
+            if(do_once==1)  echoinput<<"selex42  "<<j<<" "<<len_bins_m(j)<<" "<<SelPoint<<" "<<tempvec_l(j)<<endl;
           }
           if (scaling_offset == 0)
           {

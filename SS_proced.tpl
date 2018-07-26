@@ -81,7 +81,7 @@ PROCEDURE_SECTION
         Get_Benchmarks(show_MSY);
       }
       else
-      {Mgmt_quant(1)=SSB_virgin;}
+      {Mgmt_quant(1)=SSB_virgin;  warning<<"set to virgin in proced if no benchmark"<<endl;}
       did_MSY=1;   //  set flag to not calculate the benchmarks again in final section
 
 //  SS_Label_Info_7.6.2 #Call fxn Get_Forecast()

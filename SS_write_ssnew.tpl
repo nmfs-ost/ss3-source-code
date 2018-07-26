@@ -1497,10 +1497,11 @@ FUNCTION void write_nucontrol()
         }
       }
       
-      report4<<"#  Recruitment Distribution"<<endl;
-      if(MGP_CGD>NP+1)
+      report4<<"#  Recruitment Distribution  "<<endl;
+      j=NP+1;
+      if(MGP_CGD>j)
       {
-        for (k=1;k<=MGP_CGD-NP+1;k++)
+        for (k=j;k<=MGP_CGD-1;k++)
         {
           NP++;
           MGparm_1(NP,3)=value(MGparm(NP));

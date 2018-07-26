@@ -1492,7 +1492,7 @@ FUNCTION void Make_Fecundity()
       else
       {fec(g)=WTage_emp(t,GP3(g),-2);}
  */
-        save_sel_fec(t,g,0)= fec(g);   //  save sel_al_3 and save fecundity for output
+        if(t>=styr) save_sel_fec(t,g,0)= fec(g);   //  save sel_al_3 and save fecundity for output
         if(y==endyr) save_sel_fec(t+nseas,g,0)=fec(g);
     }
   }

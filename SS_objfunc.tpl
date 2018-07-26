@@ -1048,18 +1048,20 @@ FUNCTION dvariable Check_Parm(const int iparm, const int& PrPH, const double& Pm
     const dvariable Pmean = (Pmin + Pmax) / 2.0;
     dvariable NewVal;
     // dvariable temp;
-    dvariable Psigma, zval, kval, kjitter, zjitter;
+    dvariable Psigma, zval, kval, kjitter, zjitter, temp;
 
     NewVal=Pval;
-    if(Pmin>Pmax)
+    if((Pmin<=-99 || Pmax>=999) && PrPH>=0)
+      {N_warn++; warning<<" jitter not done unless parameter min & max are in reasonable parameter range "<<Pmin<<" "<<Pmax<<endl;}
+    else if(Pmin>Pmax)
     {N_warn++; cout<<" EXIT - see warning "<<endl; warning<<" parameter min > parameter max "<<Pmin<<" > "<<Pmax<<" for parm: "<<iparm<<endl; cout<<" fatal error, see warning"<<endl; exit(1);}
-    if(Pmin==Pmax && PrPH>=0)
+    else if(Pmin==Pmax && PrPH>=0)
     {N_warn++; warning<<" parameter min is same as parameter max"<<Pmin<<" = "<<Pmax<<" for parm: "<<iparm<<endl;}
-    if(Pval<Pmin && PrPH>=0)
+    else if(Pval<Pmin && PrPH>=0)
     {N_warn++; warning<<" parameter init value is less than parameter min "<<Pval<<" < "<<Pmin<<" for parm: "<<iparm<<endl; NewVal=Pmin;}
-    if(Pval>Pmax && PrPH>=0)
+    else if(Pval>Pmax && PrPH>=0)
     {N_warn++; warning<<" parameter init value is greater than parameter max "<<Pval<<" > "<<Pmax<<" for parm: "<<iparm<<endl; NewVal=Pmax;}
-    if(jitter>0.0 && PrPH>=0)
+    else if(jitter>0.0 && PrPH>=0)
     {
       // temp=log((Pmax-Pmin+0.0000002)/(NewVal-Pmin+0.0000001)-1.)/(-2.);   // transform the parameter
       // temp += randn(radm) * jitter;
@@ -1067,6 +1069,7 @@ FUNCTION dvariable Check_Parm(const int iparm, const int& PrPH, const double& Pm
 
       // generate jitter value from cumulative normal given Pmin and Pmax
       Psigma = (Pmax - Pmean) / zmax;   // Psigma should also be equal to (Pmin - Pmean) / zmin;
+      
       if (Psigma < 0.00001)    // how small a sigma is too small?
       {
           N_warn++;
@@ -1076,24 +1079,25 @@ FUNCTION dvariable Check_Parm(const int iparm, const int& PrPH, const double& Pm
       }
       zval = (Pval - Pmean) / Psigma;
       kval = cumd_norm(zval);
-      kjitter = kval + (jitter * ((2.0 * randu(radm)) - 1.0));  // kjitter is between kval - jitter and kval + jitter
+      temp=randu(radm);
+      kjitter = kval + (jitter * ((2.00 * temp) - 1.));  // kjitter is between kval - jitter and kval + jitter
       if (kjitter < 0.001)
       {
-          zjitter = zmin;
+          NewVal=Pmin+0.001*(Pmax-Pmin);
       }
       else if (kjitter > 0.999)
       {
-          zjitter = zmax;
+          NewVal=Pmax-0.001*(Pmax-Pmin);
       }
       else
       {
           zjitter = inv_cumd_norm(kjitter);
+          NewVal = (Psigma * zjitter) + Pmean;
       }
-      NewVal = (Psigma * zjitter) + Pmean;
-
-      if(Pmin==-99 || Pmax==99)
-      {N_warn++; warning<<" use of jitter not advised unless parameter min & max are in reasonable parameter range "<<Pmin<<" "<<Pmax<<endl;}
+      warning<<"jitter (min, max, old, new, rand):  "<<Pmin<<" "<<Pmax<<" "<<Pval<<" "<<NewVal<<" "<<temp<<endl;
+      
     }
+
     //  now check prior
     if(Prtype>0)
     {

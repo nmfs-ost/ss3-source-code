@@ -807,9 +807,10 @@
   int MGP_CGD
   int CGD_onoff;  //  switch for cohort growth dev
   int ParCount2
-
+  int  parm_adjust_method_rd
  LOCAL_CALCS
   autogen_timevary=0;
+  parm_adjust_method_rd=parm_adjust_method;
     if(parm_adjust_method==2)
     {
       N_warn++;
@@ -1287,6 +1288,8 @@
       *(ad_comm::global_datafile) >> MGparm_dev_PH;
       echoinput<<MGparm_dev_PH<<" MGparm_dev_PH"<<endl;
       if(MGparm_dev_PH==0) MGparm_dev_PH=6;
+      if(parm_adjust_method_rd==2)
+      {N_warn++; warning<<"3.24 had parm adjust method=2, so the se of the dev vectors will need to be re-estimated"<<endl;}
     }
 
  END_CALCS
@@ -3195,6 +3198,8 @@
   {
     *(ad_comm::global_datafile) >> temp;
      echoinput<<temp<<" dummy read of parm_adjust_method"<<endl;
+     if(temp!=parm_adjust_method)
+      {N_warn++; warning<<"3.24 had selex with parmadjust= "<<temp<<"; will use in 3.30 the same as MGparm: "<<parm_adjust_method<<endl;}
   }
   N_selparm2=N_selparm+N_selparm_env+N_selparm_blk+2*N_selparm_dev;
   N_selparm3=N_selparm2;

@@ -647,7 +647,7 @@ FINAL_SECTION
       }
     }
     else
-    {Mgmt_quant(1)=SSB_virgin;}
+    {Mgmt_quant(1)=SSB_virgin; warning<<" set to virg in global "<<SSB_virgin<<endl;}
     if(Do_Forecast>0)
     {
       report5<<"THIS FORECAST FOR PURPOSES OF GETTING DISPLAY QUANTITIES"<<endl;

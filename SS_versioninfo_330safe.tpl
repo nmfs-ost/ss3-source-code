@@ -5,7 +5,7 @@ DATA_SECTION
 !!//  SS_Label_Section_1.0 #DATA_SECTION
 
 !!//  SS_Label_Info_1.1.1  #Create string with version info
-!!version_info+="#V3.30.12.00-safe;_2018_07_23;_Stock_Synthesis_by_Richard_Methot_(NOAA)_using_ADMB_11.6";
+!!version_info+="#V3.30.12.00-safe;_2018_07_26;_Stock_Synthesis_by_Richard_Methot_(NOAA)_using_ADMB_11.6";
 !!version_info+="#Stock Synthesis (SS) is a work of the U.S. Government and is not subject to copyright protection in the United States.";
 !!version_info+="#Foreign copyrights may apply. See copyright.txt for more information.";
 !!version_info2+="#_user_support_available_at:NMFS.Stock.Synthesis@noaa.gov";
@@ -64,4 +64,7 @@ DATA_SECTION
 !!//  V3.30.12.00  2018-07-18   improve implementation of softparmbounds using selparm_PH_soft()
 !!//  V3.30.12.00  2018-07-20   get density-dependence working for parameters; note changed format for input
 !!//  V3.30.12.00  2018-07-23   add lines in control.ss_new to improve readability of parameter lines
-
+!!//  V3.30.12.00  2018-07-26   make time-vary R0 available in initial equilibrium year to match 3.24
+!!//  V3.30.12.00  2018-07-26   improve performance of jitter when parameter nears bounds
+!!//  V3.30.12.00  2018-07-26   fix reading of selex patterns 42 and 43
+!!//  V3.30.12.00  2018-07-26   fix overwriting of fecundity-at-age for benchmack when growth is time-varying

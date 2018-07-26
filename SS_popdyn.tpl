@@ -227,6 +227,7 @@ FUNCTION void get_initial_conditions()
     {
       cout<<"N std  "<<N_STD_Mgmt_Quant<<endl;
       Mgmt_quant(1)=SSB_virgin;
+      warning<<" set in popdyn if no benchmark "<<SSB_virgin<<endl;
       Mgmt_quant(2)=totbio;
       Mgmt_quant(3)=smrybio;
       Mgmt_quant(4)=Recr_virgin;
@@ -297,9 +298,11 @@ FUNCTION void get_initial_conditions()
    }
 
 //  for the initial equilibrium, R0 and steepness will remain same as for virgin, but a regime shift is allowed
-  exp_rec(eq_yr,1)=Recr_virgin;
-  R1_exp=Recr_virgin;
-
+//  change with 3.30.12 to allow R0 to change according to a timevary effect
+//  exp_rec(eq_yr,1)=Recr_virgin;
+//  R1_exp=Recr_virgin;
+    R1_exp=mfexp(SR_parm_work(1));
+    exp_rec(eq_yr,1)=R1_exp;
 //  SS_Label_Info_23.5.1  #Apply adjustments to the recruitment level
 //  SPAWN-RECR:   adjust recruitment for the initial equilibrium
   regime_change=1.0;
@@ -310,7 +313,8 @@ FUNCTION void get_initial_conditions()
 
   if(init_equ_steepness==0) // Adjustments do not include spawner-recruitment steepness
   {
-   R1=Recr_virgin*regime_change;
+//   R1=Recr_virgin*regime_change;
+   R1=R1_exp*regime_change;
    exp_rec(eq_yr,2)=R1;
    exp_rec(eq_yr,3)=R1;
    exp_rec(eq_yr,4)=R1;
@@ -324,7 +328,9 @@ FUNCTION void get_initial_conditions()
     //  do initial equilibrium with R1 based on offset from spawner-recruitment curve, using same approach as the benchmark calculations
     //  first get SPR for this init_F
 //  SPAWN-RECR:   calc initial equilibrium pop, SPB, Recruitment
-    equ_Recr=Recr_virgin;
+//    equ_Recr=Recr_virgin;
+    equ_Recr=R1_exp*regime_change;
+
     Do_Equil_Calc(equ_Recr);
     CrashPen += Equ_penalty;
     SPR_temp=SSB_equil/equ_Recr;  //  spawners per recruit at initial F
@@ -782,6 +788,175 @@ FUNCTION void get_time_series()
         {
           switch (F_Method_use)
           {
+  //  SS_Label_Info_24.3.3.3 #use the hybrid F method
+            case 3:          // hybrid F_method
+            {
+              
+  //  SS_Label_Info_24.3.3.3.1 #Start by doing a Pope's approximation
+              for (f=1;f<=Nfleet;f++)
+              if(fleet_type(f)==1) // do exact catch for this fleet; skipping adjustment for bycatch fleets
+              {
+                if (catch_seas_area(t,p,f)==1)
+                {
+                  vbio.initialize();
+                  for (g=1;g<=gmorph;g++)
+                  if(use_morph(g)>0)
+                  {
+                    if(catchunits(f)==1)
+                      {vbio+=Nmid(g)*sel_al_2(s,g,f);}    // retained catch bio
+                    else
+                      {vbio+=Nmid(g)*sel_al_4(s,g,f);}  // retained catch numbers
+                  }  //close gmorph loop
+    //  SS_Label_Info_24.3.3.3.2 #Apply constraint so that no fleet's initial calculation of harvest rate would exceed 95%
+                  temp = catch_ret_obs(f,t)/(vbio+0.1*catch_ret_obs(f,t));  //  Pope's rate  robust
+                  join1=1./(1.+mfexp(30.*(temp-0.95)));  // steep logistic joiner at harvest rate of 0.95
+                  temp1=join1*temp + (1.-join1)*0.95;
+    //  SS_Label_Info_24.3.3.3.3 #Convert the harvest rate to a starting value for F
+                  Hrate(f,t)=-log(1.-temp1)/seasdur(s);  // initial estimate of F (even though labelled as Hrate)
+                  //echoinput<<t<<" "<<vbio<<" "<<catch_ret_obs(f,t)<<" "<<temp<<" "<<Hrate(f,t)<<endl<<
+                  //Nmid(1)<<endl<<sel_al_2(s,1,f)<<endl;
+                  //if(catch_ret_obs(f,t)>0.0) exit(1);
+                  //  done with starting values from Pope's approximation
+                }
+                else
+                {
+                  // Hrate(f,t) previously set to zero or set to a parameter value
+                }
+              }
+  //  SS_Label_Info_24.3.3.3.4 #Do a specified number of loops to tune up these F values to more closely match the observed catch
+            	for (int tune_F=1;tune_F<=F_Tune-1;tune_F++)
+              {
+  //  SS_Label_Info_24.3.3.3.5 #add F+M to get Z
+                for (g=1;g<=gmorph;g++)
+                if(use_morph(g)>0)
+                {
+                  Z_rate(t,p,g)=natM(s,GP3(g));
+                  for (f=1;f<=Nfleet;f++)       //loop over fishing fleets to get Z
+                  if (catch_seas_area(t,p,f)!=0)
+                  {
+                    Z_rate(t,p,g)+=deadfish(s,g,f)*Hrate(f,t);
+                  }
+                  Zrate2(p,g)=elem_div( (1.-mfexp(-seasdur(s)*Z_rate(t,p,g))), Z_rate(t,p,g));
+                }
+//            gradient_structure::set_NO_DERIVATIVES();
+
+  //  SS_Label_Info_24.3.3.3.6 #Now calc adjustment to Z based on changes to be made to Hrate
+//                if(tune_F<F_Tune)
+                {
+                  //  now calc adjustment to Z based on changes to be made to Hrate
+                  interim_tot_catch=0.0;   // this is the expected total catch that would occur with the current Hrates and Z
+                  for (f=1;f<=Nfleet;f++)
+                  if(fleet_type(f)==1)  //  skips bycatch fleets
+                  {
+                    if (catch_seas_area(t,p,f)==1)
+                    {
+                      for (g=1;g<=gmorph;g++)
+                      if(use_morph(g)>0)
+                      {
+                        if(catchunits(f)==1)
+                        {
+                          interim_tot_catch+=Hrate(f,t)*elem_prod(natage(t,p,g),sel_al_2(s,g,f))*Zrate2(p,g);  // biomass basis
+                        }
+                        else
+                        {
+                          interim_tot_catch+=Hrate(f,t)*elem_prod(natage(t,p,g),sel_al_4(s,g,f))*Zrate2(p,g);  //  numbers basis
+                        }
+                      }  //close gmorph loop
+                    }  // close fishery
+                  }
+                  Z_adjuster = totcatch_byarea(t,p)/(interim_tot_catch+0.0001);   // but this totcatch_by_area needs to exclude fisheries with F from param
+                  for (g=1;g<=gmorph;g++)
+                  if(use_morph(g)>0)
+                  {
+                    Z_rate(t,p,g)=natM(s,GP3(g)) + Z_adjuster*(Z_rate(t,p,g)-natM(s,GP3(g)));  // need to modify to only do the exact catches
+                    Zrate2(p,g)=elem_div( (1.-mfexp(-seasdur(s)*Z_rate(t,p,g))), Z_rate(t,p,g));
+                  }
+                  for (f=1;f<=Nfleet;f++)       //loop over fishing  fleets with input catch
+                  if(fleet_type(f)==1)
+                  {
+                    if(catch_seas_area(t,p,f)==1)
+                    {
+                      vbio=0.;  // now use this to calc the selected vulnerable biomass (numbers) to each fishery with the adjusted Zrate2
+                      //  since catch = N * F*sel * (1-e(-Z))/Z
+                      //  so F = catch / (N*sel * (1-e(-Z)) /Z )
+                      for (g=1;g<=gmorph;g++)
+                      if(use_morph(g)>0)
+                      {
+                        if(catchunits(f)==1)
+                        {
+                          vbio+=elem_prod(natage(t,p,g),sel_al_2(s,g,f)) *Zrate2(p,g);
+                        }
+                        else
+                        {
+                          vbio+=elem_prod(natage(t,p,g),sel_al_4(s,g,f)) *Zrate2(p,g);
+                        }
+                      }  //close gmorph loop
+                      temp=catch_ret_obs(f,t)/(catch_mult(y,f)*vbio+0.0001);  //  prototype new F
+                      join1=1./(1.+mfexp(30.*(temp-0.95*max_harvest_rate)));
+                      Hrate(f,t)=join1*temp + (1.-join1)*max_harvest_rate;  //  new F value for this fleet
+                    }  // close fishery
+                  }
+                }
+ /*
+                else
+                {
+  //  SS_Label_Info_24.3.3.3.7 #Final tuning loop; loop over fleets to apply the iterated F
+                for (f=1;f<=Nfleet;f++)
+                if (catch_seas_area(t,p,f)==1)
+                {
+                  for (g=1;g<=gmorph;g++)
+                  if(use_morph(g)>0)
+                  {
+                    catch_fleet(t,f,1)+=Hrate(f,t)*elem_prod(natage(t,p,g),sel_al_1(s,g,f))*Zrate2(p,g);
+                    catch_fleet(t,f,2)+=Hrate(f,t)*elem_prod(natage(t,p,g),deadfish_B(s,g,f))*Zrate2(p,g);
+                    catch_fleet(t,f,3)+=Hrate(f,t)*elem_prod(natage(t,p,g),sel_al_2(s,g,f))*Zrate2(p,g);
+                    catch_fleet(t,f,4)+=Hrate(f,t)*elem_prod(natage(t,p,g),sel_al_3(s,g,f))*Zrate2(p,g);
+                    catch_fleet(t,f,5)+=Hrate(f,t)*elem_prod(natage(t,p,g),deadfish(s,g,f))*Zrate2(p,g);
+                    catch_fleet(t,f,6)+=Hrate(f,t)*elem_prod(natage(t,p,g),sel_al_4(s,g,f))*Zrate2(p,g);
+                    catage(t,f,g)=Hrate(f,t)*elem_prod(elem_prod(natage(t,p,g),deadfish(s,g,f)),Zrate2(p,g));
+                  }  //close gmorph loop
+                }  // close fishery
+                }
+ */
+               }
+//              break;
+//          gradient_structure::set_YES_DERIVATIVES();
+            }   //  end hybrid F_Method
+  //  SS_Label_Info_24.3.3.2 #Use a parameter for continuoous F
+            case 2:          // continuous F_method
+            {
+  //  SS_Label_Info_24.3.3.2.1 #For each platoon, loop fleets to calculate Z = M+sum(F)
+              for (g=1;g<=gmorph;g++)
+              if(use_morph(g)>0)
+              {
+                Z_rate(t,p,g)=natM(s,GP3(g));
+                for (f=1;f<=Nfleet;f++)
+                if (catch_seas_area(t,p,f)==1)
+                {
+                  Z_rate(t,p,g)+=deadfish(s,g,f)*Hrate(f,t);
+                }
+                Zrate2(p,g)=elem_div( (1.-mfexp(-seasdur(s)*Z_rate(t,p,g))), Z_rate(t,p,g));
+              }
+
+  //  SS_Label_Info_24.3.3.2.2 #For each fleet, loop platoons and accumulate catch
+              for (f=1;f<=Nfleet;f++)
+              if (catch_seas_area(t,p,f)==1)
+              {
+                for (g=1;g<=gmorph;g++)
+                if(use_morph(g)>0)
+                {
+                  catch_fleet(t,f,1)+=Hrate(f,t)*elem_prod(natage(t,p,g),sel_al_1(s,g,f))*Zrate2(p,g);
+                  catch_fleet(t,f,2)+=Hrate(f,t)*elem_prod(natage(t,p,g),deadfish_B(s,g,f))*Zrate2(p,g);
+                  catch_fleet(t,f,3)+=Hrate(f,t)*elem_prod(natage(t,p,g),sel_al_2(s,g,f))*Zrate2(p,g); // retained bio
+                  catch_fleet(t,f,4)+=Hrate(f,t)*elem_prod(natage(t,p,g),sel_al_3(s,g,f))*Zrate2(p,g);
+                  catch_fleet(t,f,5)+=Hrate(f,t)*elem_prod(natage(t,p,g),deadfish(s,g,f))*Zrate2(p,g);
+                  catch_fleet(t,f,6)+=Hrate(f,t)*elem_prod(natage(t,p,g),sel_al_4(s,g,f))*Zrate2(p,g);  // retained numbers
+                  catage(t,f,g)=Hrate(f,t)*elem_prod(elem_prod(natage(t,p,g),deadfish(s,g,f)),Zrate2(p,g));
+                }  //close gmorph loop
+              }  // close fishery
+              break;
+            }   //  end continuous F method
+
             case 1:          // F_Method is Pope's approximation
             {
   //  SS_Label_Info_24.3.3.1 #Use F_Method=1 for Pope's approximation
@@ -862,170 +1037,6 @@ FUNCTION void get_time_series()
               break;
             }   //  end Pope's approx
 
-  //  SS_Label_Info_24.3.3.2 #Use a parameter for continuoous F
-            case 2:          // continuous F_method
-            {
-  //  SS_Label_Info_24.3.3.2.1 #For each platoon, loop fleets to calculate Z = M+sum(F)
-              for (g=1;g<=gmorph;g++)
-              if(use_morph(g)>0)
-              {
-                Z_rate(t,p,g)=natM(s,GP3(g));
-                for (f=1;f<=Nfleet;f++)
-                if (catch_seas_area(t,p,f)==1)
-                {
-                  Z_rate(t,p,g)+=deadfish(s,g,f)*Hrate(f,t);
-                }
-                Zrate2(p,g)=elem_div( (1.-mfexp(-seasdur(s)*Z_rate(t,p,g))), Z_rate(t,p,g));
-              }
-
-  //  SS_Label_Info_24.3.3.2.2 #For each fleet, loop platoons and accumulate catch
-              for (f=1;f<=Nfleet;f++)
-              if (catch_seas_area(t,p,f)==1)
-              {
-                for (g=1;g<=gmorph;g++)
-                if(use_morph(g)>0)
-                {
-                  catch_fleet(t,f,1)+=Hrate(f,t)*elem_prod(natage(t,p,g),sel_al_1(s,g,f))*Zrate2(p,g);
-                  catch_fleet(t,f,2)+=Hrate(f,t)*elem_prod(natage(t,p,g),deadfish_B(s,g,f))*Zrate2(p,g);
-                  catch_fleet(t,f,3)+=Hrate(f,t)*elem_prod(natage(t,p,g),sel_al_2(s,g,f))*Zrate2(p,g); // retained bio
-                  catch_fleet(t,f,4)+=Hrate(f,t)*elem_prod(natage(t,p,g),sel_al_3(s,g,f))*Zrate2(p,g);
-                  catch_fleet(t,f,5)+=Hrate(f,t)*elem_prod(natage(t,p,g),deadfish(s,g,f))*Zrate2(p,g);
-                  catch_fleet(t,f,6)+=Hrate(f,t)*elem_prod(natage(t,p,g),sel_al_4(s,g,f))*Zrate2(p,g);  // retained numbers
-                  catage(t,f,g)=Hrate(f,t)*elem_prod(elem_prod(natage(t,p,g),deadfish(s,g,f)),Zrate2(p,g));
-                }  //close gmorph loop
-              }  // close fishery
-              break;
-            }   //  end continuous F method
-
-  //  SS_Label_Info_24.3.3.3 #use the hybrid F method
-            case 3:          // hybrid F_method
-            {
-  //  SS_Label_Info_24.3.3.3.1 #Start by doing a Pope's approximation
-              for (f=1;f<=Nfleet;f++)
-              if(fleet_type(f)==1) // do exact catch for this fleet; skipping adjustment for bycatch fleets
-              {
-                if (catch_seas_area(t,p,f)==1)
-                {
-                  vbio.initialize();
-                  for (g=1;g<=gmorph;g++)
-                  if(use_morph(g)>0)
-                  {
-                    if(catchunits(f)==1)
-                      {vbio+=Nmid(g)*sel_al_2(s,g,f);}    // retained catch bio
-                    else
-                      {vbio+=Nmid(g)*sel_al_4(s,g,f);}  // retained catch numbers
-                  }  //close gmorph loop
-    //  SS_Label_Info_24.3.3.3.2 #Apply constraint so that no fleet's initial calculation of harvest rate would exceed 95%
-                  temp = catch_ret_obs(f,t)/(vbio+0.1*catch_ret_obs(f,t));  //  Pope's rate  robust
-                  join1=1./(1.+mfexp(30.*(temp-0.95)));  // steep logistic joiner at harvest rate of 0.95
-                  temp1=join1*temp + (1.-join1)*0.95;
-    //  SS_Label_Info_24.3.3.3.3 #Convert the harvest rate to a starting value for F
-                  Hrate(f,t)=-log(1.-temp1)/seasdur(s);  // initial estimate of F (even though labelled as Hrate)
-                  //echoinput<<t<<" "<<vbio<<" "<<catch_ret_obs(f,t)<<" "<<temp<<" "<<Hrate(f,t)<<endl<<
-                  //Nmid(1)<<endl<<sel_al_2(s,1,f)<<endl;
-                  //if(catch_ret_obs(f,t)>0.0) exit(1);
-                  //  done with starting values from Pope's approximation
-                }
-                else
-                {
-                  // Hrate(f,t) previously set to zero or set to a parameter value
-                }
-              }
-  //  SS_Label_Info_24.3.3.3.4 #Do a specified number of loops to tune up these F values to more closely match the observed catch
-            	for (int tune_F=1;tune_F<=F_Tune;tune_F++)
-              {
-  //  SS_Label_Info_24.3.3.3.5 #add F+M to get Z
-                for (g=1;g<=gmorph;g++)
-                if(use_morph(g)>0)
-                {
-                  Z_rate(t,p,g)=natM(s,GP3(g));
-                  for (f=1;f<=Nfleet;f++)       //loop over fishing fleets to get Z
-                  if (catch_seas_area(t,p,f)!=0)
-                  {
-                    Z_rate(t,p,g)+=deadfish(s,g,f)*Hrate(f,t);
-                  }
-                  Zrate2(p,g)=elem_div( (1.-mfexp(-seasdur(s)*Z_rate(t,p,g))), Z_rate(t,p,g));
-                }
-
-  //  SS_Label_Info_24.3.3.3.6 #Now calc adjustment to Z based on changes to be made to Hrate
-                if(tune_F<F_Tune)
-                {
-                  //  now calc adjustment to Z based on changes to be made to Hrate
-                  interim_tot_catch=0.0;   // this is the expected total catch that would occur with the current Hrates and Z
-                  for (f=1;f<=Nfleet;f++)
-                  if(fleet_type(f)==1)  //  skips bycatch fleets
-                  {
-                    if (catch_seas_area(t,p,f)==1)
-                    {
-                      for (g=1;g<=gmorph;g++)
-                      if(use_morph(g)>0)
-                      {
-                        if(catchunits(f)==1)
-                        {
-                          interim_tot_catch+=Hrate(f,t)*elem_prod(natage(t,p,g),sel_al_2(s,g,f))*Zrate2(p,g);  // biomass basis
-                        }
-                        else
-                        {
-                          interim_tot_catch+=Hrate(f,t)*elem_prod(natage(t,p,g),sel_al_4(s,g,f))*Zrate2(p,g);  //  numbers basis
-                        }
-                      }  //close gmorph loop
-                    }  // close fishery
-                  }
-                  Z_adjuster = totcatch_byarea(t,p)/(interim_tot_catch+0.0001);   // but this totcatch_by_area needs to exclude fisheries with F from param
-                  for (g=1;g<=gmorph;g++)
-                  if(use_morph(g)>0)
-                  {
-                    Z_rate(t,p,g)=natM(s,GP3(g)) + Z_adjuster*(Z_rate(t,p,g)-natM(s,GP3(g)));  // need to modify to only do the exact catches
-                    Zrate2(p,g)=elem_div( (1.-mfexp(-seasdur(s)*Z_rate(t,p,g))), Z_rate(t,p,g));
-                  }
-                  for (f=1;f<=Nfleet;f++)       //loop over fishing  fleets with input catch
-                  if(fleet_type(f)==1)
-                  {
-                    if(catch_seas_area(t,p,f)==1)
-                    {
-                      vbio=0.;  // now use this to calc the selected vulnerable biomass (numbers) to each fishery with the adjusted Zrate2
-                      //  since catch = N * F*sel * (1-e(-Z))/Z
-                      //  so F = catch / (N*sel * (1-e(-Z)) /Z )
-                      for (g=1;g<=gmorph;g++)
-                      if(use_morph(g)>0)
-                      {
-                        if(catchunits(f)==1)
-                        {
-                          vbio+=elem_prod(natage(t,p,g),sel_al_2(s,g,f)) *Zrate2(p,g);
-                        }
-                        else
-                        {
-                          vbio+=elem_prod(natage(t,p,g),sel_al_4(s,g,f)) *Zrate2(p,g);
-                        }
-                      }  //close gmorph loop
-                      temp=catch_ret_obs(f,t)/(catch_mult(y,f)*vbio+0.0001);  //  prototype new F
-                      join1=1./(1.+mfexp(30.*(temp-0.95*max_harvest_rate)));
-                      Hrate(f,t)=join1*temp + (1.-join1)*max_harvest_rate;  //  new F value for this fleet
-                    }  // close fishery
-                  }
-                }
-                else
-                {
-  //  SS_Label_Info_24.3.3.3.7 #Final tuning loop; loop over fleets to apply the iterated F
-                for (f=1;f<=Nfleet;f++)
-                if (catch_seas_area(t,p,f)==1)
-                {
-                  for (g=1;g<=gmorph;g++)
-                  if(use_morph(g)>0)
-                  {
-                    catch_fleet(t,f,1)+=Hrate(f,t)*elem_prod(natage(t,p,g),sel_al_1(s,g,f))*Zrate2(p,g);
-                    catch_fleet(t,f,2)+=Hrate(f,t)*elem_prod(natage(t,p,g),deadfish_B(s,g,f))*Zrate2(p,g);
-                    catch_fleet(t,f,3)+=Hrate(f,t)*elem_prod(natage(t,p,g),sel_al_2(s,g,f))*Zrate2(p,g);
-                    catch_fleet(t,f,4)+=Hrate(f,t)*elem_prod(natage(t,p,g),sel_al_3(s,g,f))*Zrate2(p,g);
-                    catch_fleet(t,f,5)+=Hrate(f,t)*elem_prod(natage(t,p,g),deadfish(s,g,f))*Zrate2(p,g);
-                    catch_fleet(t,f,6)+=Hrate(f,t)*elem_prod(natage(t,p,g),sel_al_4(s,g,f))*Zrate2(p,g);
-                    catage(t,f,g)=Hrate(f,t)*elem_prod(elem_prod(natage(t,p,g),deadfish(s,g,f)),Zrate2(p,g));
-                  }  //close gmorph loop
-                }  // close fishery
-                }
-              }
-              break;
-            }   //  end hybrid F_Method
           }  // end F_Method switch
         }  //  end have some catch in this seas x area
         else
