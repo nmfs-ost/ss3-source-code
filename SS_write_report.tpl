@@ -1020,13 +1020,14 @@ FUNCTION void write_bigoutput()
    }
 
    {
-    SS2out<<"#"<<endl<<"Full_Spawn_Recr_Curve"<<endl<<"SSB/SSB_virgin  Recruitment"<<endl;
+    SS2out<<"#"<<endl<<"Full_Spawn_Recr_Curve"<<endl<<"SSB/SSB_virgin    SSB    Recruitment"<<endl;
     y=styr;
     SR_parm_work = SR_parm_byyr(styr);
     for(f=1;f<=120;f++)
     {
       SSB_current=double(f)/100.*SSB_virgin;
-      SS2out<<SSB_current/SSB_virgin<<" "<<Spawn_Recr(SSB_virgin,Recr_virgin,SSB_current)<<endl;
+      temp=Spawn_Recr(SSB_virgin,Recr_virgin,SSB_current);
+      SS2out<<SSB_current/SSB_virgin<<" "<<SSB_current<<" "<<exp_rec(y,1)<<endl;
     }
    }
 // ******************************************************************************

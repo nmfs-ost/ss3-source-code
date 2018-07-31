@@ -244,7 +244,7 @@ FUNCTION void get_selectivity()
            break;
           }    // end New double logistic
 
-  //  SS_Label_Info_22.3.8 #case 8 double logistic  with six parameters
+  //  SS_Label_Info_22.3.8 #case 8 double logistic  with eight parameters
           case 8:                  // *******New double logistic in simpler code
     // 1=peak, 2=init,  3=infl,  4=slope, 5=final, 6=infl2, 7=slope2 8=binwidth;    Mirror=1===const_above_Linf
           {

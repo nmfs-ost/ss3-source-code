@@ -67,4 +67,5 @@ DATA_SECTION
 !!//  V3.30.12.00  2018-07-26   make time-vary R0 available in initial equilibrium year to match 3.24
 !!//  V3.30.12.00  2018-07-26   improve performance of jitter when parameter nears bounds
 !!//  V3.30.12.00  2018-07-26   fix reading of selex patterns 42 and 43
-!!//  V3.30.12.00  2018-07-26   fix overwriting of fecundity-at-age for benchmack when growth is time-varying
+!!//  V3.30.12.00  2018-07-26   FIX overwriting of fecundity-at-age for benchmack when growth is time-varying
+!!//  V3.30.12.00  2018-07-30   FIX offset in reporting the full spawn_recr curve
