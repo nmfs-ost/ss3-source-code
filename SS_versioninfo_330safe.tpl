@@ -5,7 +5,7 @@ DATA_SECTION
 !!//  SS_Label_Section_1.0 #DATA_SECTION
 
 !!//  SS_Label_Info_1.1.1  #Create string with version info
-!!version_info+="#V3.30.12.00-safe;_2018_07_26;_Stock_Synthesis_by_Richard_Methot_(NOAA)_using_ADMB_11.6";
+!!version_info+="#V3.30.12.00-safe;_2018_08_01;_Stock_Synthesis_by_Richard_Methot_(NOAA)_using_ADMB_11.6";
 !!version_info+="#Stock Synthesis (SS) is a work of the U.S. Government and is not subject to copyright protection in the United States.";
 !!version_info+="#Foreign copyrights may apply. See copyright.txt for more information.";
 !!version_info2+="#_user_support_available_at:NMFS.Stock.Synthesis@noaa.gov";
@@ -58,6 +58,7 @@ DATA_SECTION
 !!//  V3.30.12.00  2018-07-06   re_arrange get_growth2 and prep for more growth options;
 !!//  V3.30.12.00  2018-07-11   enable time-varying ageing bias and error parameters
 !!//  V3.30.12.00  2018-07-11   depletion_basis now includes endyear option: 0=skip; 1=rel X*SPB0; 2=rel SPBmsy; 3=rel X*SPB_styr; 4=rel X*SPB_endyr
+!!//  V3.30.12.00  2018-07-13   FIX  in Richard growth
 !!//  V3.30.12.00  2018-07-16   BIG FIX restore ability to mirror retention
 !!//  V3.30.12.00  2018-07-16   add lambda change type 18 for initial equilibrium regime shift
 !!//  V3.30.12.00  2018-07-18   add fatal warning for len selectivity mirroring of higher numbered fleet
@@ -67,5 +68,8 @@ DATA_SECTION
 !!//  V3.30.12.00  2018-07-26   make time-vary R0 available in initial equilibrium year to match 3.24
 !!//  V3.30.12.00  2018-07-26   improve performance of jitter when parameter nears bounds
 !!//  V3.30.12.00  2018-07-26   fix reading of selex patterns 42 and 43
-!!//  V3.30.12.00  2018-07-26   FIX overwriting of fecundity-at-age for benchmack when growth is time-varying
+!!//  V3.30.12.00  2018-07-26   FIX overwriting of fecundity-at-age for benchmark when growth is time-varying
 !!//  V3.30.12.00  2018-07-30   FIX offset in reporting the full spawn_recr curve
+!!//  V3.30.12.00  2018-07-30   FIX re-enable time-vary growth when using Richards growth
+!!//  V3.30.12.00  2018-08-01   BIG FIX when growth is time-varying, incorrect ALK could get used for benchmark selectivities
+!!//  V3.30.12.00  2018-08-01   change growth within plus group back to 3.24 approach and create option to ignore plus group growth

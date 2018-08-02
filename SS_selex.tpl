@@ -1617,7 +1617,6 @@ FUNCTION void Make_FishSelex()
             sel_al_1(s,g,f,a)=sel_a(yf,f,gg,a)*(ALK_w(a)(llo,lhi) * tempvec_l(llo,lhi));
             sel_al_3(s,g,f,a)=sel_a(yf,f,gg,a)*(ALK_w(a)(llo,lhi) * sel_l(yf,f,gg)(llo,lhi));
             fish_body_wt(tz,g,f,a)=(ALK_w(a)(llo,lhi)*tempvec_l(llo,lhi)) / (ALK_w(a)(llo,lhi)*sel_l(yf,f,gg)(llo,lhi));
-
             if(seltype(f,2)!=0)  //  size discard, so need retention function
             {
               sel_al_2(s,g,f,a)=sel_a(yf,f,gg,a)*(ALK_w(a)(llo,lhi) * sel_l_r_w(llo,lhi) );

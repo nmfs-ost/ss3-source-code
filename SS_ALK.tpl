@@ -17,7 +17,7 @@ FUNCTION void Make_AgeLength_Key(const int s, const int subseas)
    if(ALK_subseas_update(ALK_idx)==1) //  so need to calculate
    {
 
-   ALK_subseas_update(ALK_idx)=0;  //  reset to 0 to indicate update not needed
+   ALK_subseas_update(ALK_idx)=0;  //  reset to 0 to indicate update has been done
    gp=0;
     for (int sex=1;sex<=gender;sex++)
     for (GPat=1;GPat<=N_GP;GPat++)
@@ -76,6 +76,7 @@ FUNCTION void Make_AgeLength_Key(const int s, const int subseas)
           if(CV_depvar_b==0) echoinput<<"CV   "<<CV_G(gp,ALK_idx)(0,min(6,nages))<<" @nages "<<CV_G(gp,ALK_idx,nages)<<endl;
           echoinput<<"sd   "<<Sd_Size_within(ALK_idx,g)(0,min(6,nages))<<" @nages "<<Sd_Size_within(ALK_idx,g,nages)<<endl;
         }
+
 //  end sd_within updating          
 
           for (gp2=1;gp2<=N_platoon;gp2++)      // loop the platoons
@@ -103,19 +104,6 @@ FUNCTION void Make_AgeLength_Key(const int s, const int subseas)
             {
               ALK(ALK_idx,g)=calc_ALK_log(log_len_bins,use_Ave_Size_W,use_SD_Size);
             }
-
- /*
-            if(subseas==1)
-            {
-              if(WTage_rd==0)
-              {Wt_Age_beg(s,g)=(ALK(ALK_idx,g)*wt_len(s,GP(g)));}   // wt-at-age at beginning of period
-            }
-            if(subseas==mid_subseas)
-            {
-              if(WTage_rd==0)
-              {Wt_Age_mid(s,g)=ALK(ALK_idx,g)*wt_len(s,GP(g));}  // use for fisheries with no size selectivity
-            }
- */            
           }  // end platoon loop
         }
       }   // end settle loop

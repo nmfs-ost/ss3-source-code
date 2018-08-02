@@ -94,14 +94,13 @@ FUNCTION void setup_Benchmark()
             tempvec_a.initialize();
             for (t=Bmark_t(1);t<=Bmark_t(2);t+=nseas) {tempvec_a+=Ave_Size(t+s,1,g);}
             Ave_Size(styr-3*nseas+s,1,g)=tempvec_a/temp;
+            
             tempvec_a.initialize();
             for (t=Bmark_t(1);t<=Bmark_t(2);t+=nseas) {tempvec_a+=Ave_Size(t+s,mid_subseas,g);}
             Ave_Size(styr-3*nseas+s,mid_subseas,g)=tempvec_a/temp;
-
             tempvec_a.initialize();
             for (t=Bmark_t(1);t<=Bmark_t(2);t+=nseas) {tempvec_a+=Save_Wt_Age(t+s,g);}
             Save_Wt_Age(styr-3*nseas+s,g)=tempvec_a/temp;
-
             for (f=0;f<=Nfleet;f++)  //  goes to Nfleet because this contains fecundity as well as asel2(f)
             {
               tempvec_a.initialize();
@@ -228,12 +227,14 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
      report5<<version_info<<endl<<ctime(&start);
      report5<<"Bmark_relF(by_fleet_&seas)"<<endl<<Bmark_RelF_Use<<endl<<"#"<<endl;
    }
+
     y=styr-3;  //  the average biology from specified benchmark years is stored here
     yz=y;
     bio_yr=y;
     eq_yr=y;
     t_base=y+(y-styr)*nseas-1;
     bio_t_base=styr+(bio_yr-styr)*nseas-1;
+
 
 //  set the Hrate for bycatch fleets so not scaled with other fleets
 //  bycatch_F(f,s) is created here for use in forecast
@@ -268,26 +269,20 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
       for (s=1;s<=nseas;s++)
       {
         t = styr-3*nseas+s-1;
-
-        subseas=1;  //   for begin of season   ALK_idx calculated within Make_AgeLength_Key
-//        get_growth3(s, subseas);
+        subseas=1;  //   for begin of season
+        ALK_idx=(s-1)*N_subseas+subseas;
+        ALK_subseas_update(ALK_idx)=1;  // new in 3.30.12   force updating
         Make_AgeLength_Key(s, subseas);  //  begin season
 
         subseas=mid_subseas;
-//        get_growth3(s, subseas);
+        ALK_idx=(s-1)*N_subseas+subseas;
+        ALK_subseas_update(ALK_idx)=1;  // new in 3.30.12   force updating
         Make_AgeLength_Key(s, subseas);
 
   //  SPAWN-RECR:   call make_fecundity for benchmarks
         if(s==spawn_seas)
         {
-          if(spawn_subseas!=1 && spawn_subseas!=mid_subseas)
-          {
-            subseas=spawn_subseas;
-//            get_growth3(s, subseas);
-            Make_AgeLength_Key(s, subseas);  //  spawn subseas
-          }
-          Make_Fecundity();
-            for(g=1;g<=gmorph;g++) {fec(g)=save_sel_fec(styr-3*nseas+s-1,g,0);}
+          for(g=1;g<=gmorph;g++) {fec(g)=save_sel_fec(styr-3*nseas+s-1,g,0);}
         }
         for(g=1;g<=gmorph;g++)
         {
@@ -300,7 +295,7 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
       for (g=1;g<=gmorph;g++)
       if(use_morph(g)>0)
       {
-        ALK_idx=(s-1)*N_subseas+mid_subseas;;  //  for midseason
+        ALK_idx=(s-1)*N_subseas+mid_subseas;  //  for midseason
         Make_FishSelex();
       }
     }

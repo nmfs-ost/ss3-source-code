@@ -1419,7 +1419,7 @@ FUNCTION void write_nucontrol()
     if(Grow_type<=5)
     {report4<<AFIX<<" #_Age(post-settlement)_for_L1;linear growth below this"<<endl<<
       AFIX2<<" #_Growth_Age_for_L2 (999 to use as Linf)"<<endl<<
-      Linf_decay<<" #_exponential decay for growth above maxage (fixed at 0.2 in 3.24; value should approx initial Z; -999 replicates 3.24)"<<endl;
+      Linf_decay<<" #_exponential decay for growth above maxage (value should approx initial Z; -999 replicates 3.24; -998 to not allow growth above maxage)"<<endl;
       report4<<"0  #_placeholder for future growth feature"<<endl;
       if(Grow_type>=3 && Grow_type<=5)
       {report4<<Age_K_count<<" # number of K multipliers to read"<<endl<<Age_K_points<<" # ages for K multiplier"<<endl;}

@@ -649,7 +649,7 @@
 
  LOCAL_CALCS
   Age_K_count=0;
-  if(k>0) echoinput<<tempvec5<<" growth specifications"<<endl;
+  if(k>0) echoinput<<tempvec5<<" # growth specifications: AFIX1 AFIX2 LINF_decay placeholder  age-specific_K_ages"<<endl;
   k1=0;
   AFIX=0.;
   AFIX2=999.;  // this value invokes setting Linf equal to the L2 parameter
