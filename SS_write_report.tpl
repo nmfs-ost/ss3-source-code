@@ -2816,10 +2816,11 @@ FUNCTION void write_bigoutput()
         Equ_SpawnRecr_Result = Equil_Spawn_Recr_Fxn(SR_parm_work(2), SR_parm_work(3), SSB_unf, Recr_unf, SPR_temp);  //  returns 2 element vector containing equilibrium biomass and recruitment at this SPR
         Btgt_prof=Equ_SpawnRecr_Result(1);
         Btgt_prof_rec=Equ_SpawnRecr_Result(2);
-        if(SPRloop1==0)
+        
+        if(Btgt_prof<0.001 || Btgt_prof_rec<0.001)
         {
-          if(Btgt_prof<0.001 && Btgt_prof_rec<0.001)
-          {Fcrash=Fmult2;}
+          Btgt_prof_rec=0.0; Btgt_prof=0.;
+          if(SPRloop1==0) Fcrash=Fmult2;
         }
         SS2out<<SPRloop1<<" "<<SPRloop<<" "<<with_BYC<<" "<<Fmult2<<" "<<equ_F_std<<" "<<SSB_equil/(SSB_unf/Recr_unf)<<" "<<YPR_dead<<" "
         <<YPR_dead*Btgt_prof_rec<<" "<<Btgt_prof<<" "<<Btgt_prof_rec<<" "<<Btgt_prof/SSB_unf
