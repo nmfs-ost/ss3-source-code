@@ -782,6 +782,7 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
       Mgmt_quant(13)=MSY_SPR;
       Mgmt_quant(14)=equ_F_std;
       Mgmt_quant(16)=YPR_ret*Recr_msy;
+      Mgmt_quant(17)=Bmsy/SSB_unf;
       Vbio1_MSY=smrybio;
       Vbio_MSY=totbio;
 

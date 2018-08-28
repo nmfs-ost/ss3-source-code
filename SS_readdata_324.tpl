@@ -326,6 +326,8 @@
   matrix totcatch_byarea(styr,TimeMax,1,pop)
   vector totcat(styr-1,endyr)  //  by year, not by t
   int first_catch_yr
+  ivector disc_fleet_list(1,Nfleet);
+  int N_retain_fleets;
 
  LOCAL_CALCS
   catch_ret_obs.initialize();

@@ -5,7 +5,7 @@ DATA_SECTION
 !!//  SS_Label_Section_1.0 #DATA_SECTION
 
 !!//  SS_Label_Info_1.1.1  #Create string with version info
-!!version_info+="#V3.30.12.00-safe;_2018_08_01;_Stock_Synthesis_by_Richard_Methot_(NOAA)_using_ADMB_11.6";
+!!version_info+="#V3.30.12.00-safe;_2018_08_27;_Stock_Synthesis_by_Richard_Methot_(NOAA)_using_ADMB_11.6";
 !!version_info+="#Stock Synthesis (SS) is a work of the U.S. Government and is not subject to copyright protection in the United States.";
 !!version_info+="#Foreign copyrights may apply. See copyright.txt for more information.";
 !!version_info2+="#_user_support_available_at:NMFS.Stock.Synthesis@noaa.gov";
@@ -73,3 +73,6 @@ DATA_SECTION
 !!//  V3.30.12.00  2018-07-30   FIX re-enable time-vary growth when using Richards growth
 !!//  V3.30.12.00  2018-08-01   BIG FIX when growth is time-varying, incorrect ALK could get used for benchmark selectivities
 !!//  V3.30.12.00  2018-08-01   change growth within plus group back to 3.24 approach and create option to ignore plus group growth
+!!//  V3.30.12.00  2018-08-10   add Bmsy/Bzero to list of derived quantities
+!!//  V3.30.12.00  2018-08-10   enable display of logL for ignored length and age comp observations
+!!//  V3.30.12.00  2018-08-27   add reporting of discard at age

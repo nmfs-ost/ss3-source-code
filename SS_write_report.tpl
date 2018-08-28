@@ -867,7 +867,7 @@ FUNCTION void write_bigoutput()
    " More_F(by_Morph): ";
    for (g=1;g<=gmorph;g++) {SS2out<<" aveF_"<<g;}
    for (g=1;g<=gmorph;g++) {SS2out<<" maxF_"<<g;}
-   SS2out<<" Enc_Catch_B Dead_Catch_B Retain_Catch_B  Enc_Catch_N Dead_Catch_N Retain_Catch_N sum_Apical_F F=Z-M";
+   SS2out<<" Enc_Catch_B Dead_Catch_B Retain_Catch_B  Enc_Catch_N Dead_Catch_N Retain_Catch_N sum_Apical_F F=Z-M  M";
    SS2out<<endl;
 
    for (y=styr;y<=YrMax;y++)
@@ -1288,7 +1288,9 @@ FUNCTION void write_bigoutput()
      more_comp_info.initialize();
        neff_l(f,i)  = exp_l(f,i)*(1-exp_l(f,i))+1.0e-06;     // constant added for stability
        neff_l(f,i) /= (obs_l(f,i)-exp_l(f,i))*(obs_l(f,i)-exp_l(f,i))+1.0e-06;
-       more_comp_info=process_comps(gender,gen_l(f,i),len_bins_dat2,len_bins_dat_m2,tails_l(f,i),obs_l(f,i), value(exp_l(f,i)));
+   dvector tempvec_l(1,exp_l(f,i).size());
+       tempvec_l = value(exp_l(f,i));
+       more_comp_info=process_comps(gender,gen_l(f,i),len_bins_dat2,len_bins_dat_m2,tails_l(f,i),obs_l(f,i),tempvec_l);
      if(header_l(f,i,3)>0)
      {
        n_rmse(f)+=1.;
@@ -1355,7 +1357,9 @@ FUNCTION void write_bigoutput()
       more_comp_info.initialize();
        neff_a(f,i)  = exp_a(f,i)*(1-exp_a(f,i))+1.0e-06;     // constant added for stability
        neff_a(f,i) /= (obs_a(f,i)-exp_a(f,i))*(obs_a(f,i)-exp_a(f,i))+1.0e-06;
-       more_comp_info=process_comps(gender,gen_a(f,i),age_bins,age_bins_mean,tails_a(f,i),obs_a(f,i), value(exp_a(f,i)));
+       dvector tempvec_a(1,exp_a(f,i).size());
+       tempvec_a = value(exp_a(f,i));
+       more_comp_info=process_comps(gender,gen_a(f,i),age_bins,age_bins_mean,tails_a(f,i),obs_a(f,i), tempvec_a);
      if(nsamp_a(f,i)>0 && header_a(f,i,3)>0)
      {
        n_rmse(f)+=1.;
@@ -1452,7 +1456,9 @@ FUNCTION void write_bigoutput()
                   SzFreq_effN(iobs) =(SzFreq_effN(iobs)+1.0e-06)/value((temp+1.0e-06));
                   temp1*=SzFreq_sampleN(iobs);
                   SzFreq_eachlike(iobs)=value(temp1);
-                  more_comp_info=process_comps(gender,gg,SzFreq_bins(sz_method),SzFreq_means(sz_method),sz_tails,SzFreq_obs(iobs), value(SzFreq_exp(iobs)));
+                  dvector tempvec_l (1,SzFreq_exp(iobs).size());
+                  tempvec_l=value(SzFreq_exp(iobs));
+                  more_comp_info=process_comps(gender,gg,SzFreq_bins(sz_method),SzFreq_means(sz_method),sz_tails,SzFreq_obs(iobs),tempvec_l);
                 if(SzFreq_obs_hdr(iobs,3)>0)
                 {
                   n_rmse(f)+=1.;
@@ -1834,7 +1840,7 @@ FUNCTION void write_bigoutput()
       }
 
      SS2out <<endl<< "CATCH_AT_AGE" << endl;              // SS_Label_420
-     SS2out << "Area Fleet Sex  XX XX Morph Yr Seas XX Era"<<age_vector <<endl;
+     SS2out << "Area Fleet Sex  XX XX Type Morph Yr Seas XX Era"<<age_vector <<endl;
      for (f=1;f<=Nfleet;f++)
      if(fleet_type(f)<=2)
      for (g=1;g<=gmorph;g++)
@@ -1845,7 +1851,7 @@ FUNCTION void write_bigoutput()
        for (s=1;s<=nseas;s++)
        {
          t = styr+(y-styr)*nseas+s-1;
-         SS2out <<fleet_area(f)<<" "<<f<<" "<<sx(g)<<" XX XX "<<g<<" "<<y<<" "<<s;
+         SS2out <<fleet_area(f)<<" "<<f<<" "<<sx(g)<<" XX XX dead "<<g<<" "<<y<<" "<<s;
          if(y==styr-1)
            {SS2out<<" XX INIT ";}
          else if (y<=endyr)
@@ -1855,7 +1861,57 @@ FUNCTION void write_bigoutput()
          SS2out<<catage(t,f,g)<< endl;
        }
      }
-    }
+     }
+
+     SS2out <<endl<< "DISCARD_AT_AGE" << endl;              // SS_Label_420
+     SS2out << "Area Fleet Sex  XX XX Type Morph Yr Seas XX Era"<<age_vector <<endl;
+     for (f=1;f<=Nfleet;f++)
+     if(fleet_type(f)<=2 && Do_Retain(f)>0)
+     for (g=1;g<=gmorph;g++)
+     {
+     if(use_morph(g)>0)
+     {
+       for (y=styr-1;y<=YrMax;y++)
+       for (s=1;s<=nseas;s++)
+       {
+         t = styr+(y-styr)*nseas+s-1;
+         SS2out <<fleet_area(f)<<" "<<f<<" "<<sx(g)<<" XX XX dead "<<g<<" "<<y<<" "<<s;
+         if(y==styr-1)
+           {SS2out<<" XX INIT ";}
+         else if (y<=endyr)
+           {SS2out<<" XX TIME ";}
+         else
+           {SS2out<<" XX FORE ";}
+         SS2out<<catage(t,f,g)<< endl;
+         SS2out <<fleet_area(f)<<" "<<f<<" "<<sx(g)<<" XX XX sel "<<g<<" "<<y<<" "<<s;
+         if(y==styr-1)
+           {SS2out<<" XX INIT ";}
+         else if (y<=endyr)
+           {SS2out<<" XX TIME ";}
+         else
+           {SS2out<<" XX FORE ";}
+         SS2out<<disc_age(t,disc_fleet_list(f),g)<< endl;
+
+         SS2out <<fleet_area(f)<<" "<<f<<" "<<sx(g)<<" XX XX ret "<<g<<" "<<y<<" "<<s;
+         if(y==styr-1)
+           {SS2out<<" XX INIT ";}
+         else if (y<=endyr)
+           {SS2out<<" XX TIME ";}
+         else
+           {SS2out<<" XX FORE ";}
+         SS2out<<disc_age(t,disc_fleet_list(f)+N_retain_fleets,g)<< endl;
+
+         SS2out <<fleet_area(f)<<" "<<f<<" "<<sx(g)<<" XX XX disc "<<g<<" "<<y<<" "<<s;
+         if(y==styr-1)
+           {SS2out<<" XX INIT ";}
+         else if (y<=endyr)
+           {SS2out<<" XX TIME ";}
+         else
+           {SS2out<<" XX FORE ";}
+         SS2out<<disc_age(t,disc_fleet_list(f),g)-disc_age(t,disc_fleet_list(f)+N_retain_fleets,g)<< endl;
+         }
+     }
+     }
   }
 
   SS2out <<endl<< "BIOLOGY "<<sum(use_morph)<<" "<<nlength<<" "<<nages<<" "<<nseas<<" N_Used_morphs;_lengths;_ages;_season;_by_season_in_endyr" << endl;
@@ -2968,7 +3024,7 @@ FUNCTION void write_bigoutput()
   }  //  end writebigreport
   
 FUNCTION dvector process_comps(const int sexes, const int sex, dvector &bins,  dvector &means, const dvector &tails, 
-         dvector& obs, dvector& exp)
+          dvector& obs,  dvector& exp)
   {
     dvector more_comp_info(1,20);
     double cumdist;

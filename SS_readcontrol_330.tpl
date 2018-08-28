@@ -2787,7 +2787,7 @@
      }
      else if (seltype(f,2)<0) //  mirror retention
      {
-       Do_Retain(f1)=1;
+       Do_Retain(f1)=2;
        RetainParm(f1)=0;
      }
 
@@ -2818,7 +2818,19 @@
       }
      N_selparm += N_selparmvec(f);
    }
-
+   
+//  create index to fleets with discard
+  disc_fleet_list.initialize();
+  N_retain_fleets=0;
+  for(f=1;f<=Nfleet;f++)
+  {
+    if(Do_Retain(f)>0)
+      {
+        N_retain_fleets++;
+        disc_fleet_list(f)=N_retain_fleets;  //  for compact storage of disc_age(t,f,g)
+      } 
+  }
+  
 //  SS_Label_Info_4.097 #Read parameters needed for estimating variance of composition data
   {
     echoinput<<"#Now count parameters for variance of composition data; CANNOT be time-varying"<<endl;
@@ -3801,7 +3813,7 @@
  LOCAL_CALCS
   if(Do_Benchmark>0)
   {
-    N_STD_Mgmt_Quant=16;
+    N_STD_Mgmt_Quant=17;
   }
   else
   {N_STD_Mgmt_Quant=4;}
@@ -4355,6 +4367,7 @@
       ParmLabel+="Fstd_MSY"+CRLF(1); CoVar_Count++; j++; active_parm(CoVar_Count)=j;
       ParmLabel+="Dead_Catch_MSY"+CRLF(1); CoVar_Count++; j++; active_parm(CoVar_Count)=j;
       ParmLabel+="Ret_Catch_MSY"+CRLF(1); CoVar_Count++; j++; active_parm(CoVar_Count)=j;
+      ParmLabel+="B_MSY/SSB_unfished"+CRLF(1); CoVar_Count++; j++; active_parm(CoVar_Count)=j;
     }
     else
     {

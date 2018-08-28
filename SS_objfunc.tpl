@@ -320,9 +320,9 @@ FUNCTION void evaluate_the_objective_function()
         }
         length_like(f,i)-=temp;
       }
+      if(header_l(f,i,3)>0) length_like_tot(f)+=length_like(f,i);
      }
      }
-     length_like_tot(f)=sum(length_like(f));
     }
    }
     if(do_once==1) cout<<" did lencomp obj_fun  " <<length_like_tot<<endl;
@@ -424,8 +424,8 @@ FUNCTION void evaluate_the_objective_function()
               age_like(f,i)-=temp;
             }
           }
+      if(header_a(f,i,3)>0) age_like_tot(f)+=age_like(f,i);
         }
-        age_like_tot(f)=sum(age_like(f));
       }
     }
     if(do_once==1) cout<<" did agecomp obj_fun "<<age_like_tot<<endl;

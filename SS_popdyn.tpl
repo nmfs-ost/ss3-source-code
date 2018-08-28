@@ -225,9 +225,7 @@ FUNCTION void get_initial_conditions()
     SPR_virgin=SSB_equil/Recr_virgin;  //  spawners per recruit
     if(Do_Benchmark==0)
     {
-      cout<<"N std  "<<N_STD_Mgmt_Quant<<endl;
       Mgmt_quant(1)=SSB_virgin;
-      warning<<" set in popdyn if no benchmark "<<SSB_virgin<<endl;
       Mgmt_quant(2)=totbio;
       Mgmt_quant(3)=smrybio;
       Mgmt_quant(4)=Recr_virgin;
@@ -952,6 +950,11 @@ FUNCTION void get_time_series()
                   catch_fleet(t,f,5)+=Hrate(f,t)*elem_prod(natage(t,p,g),deadfish(s,g,f))*Zrate2(p,g);
                   catch_fleet(t,f,6)+=Hrate(f,t)*elem_prod(natage(t,p,g),sel_al_4(s,g,f))*Zrate2(p,g);  // retained numbers
                   catage(t,f,g)=Hrate(f,t)*elem_prod(elem_prod(natage(t,p,g),deadfish(s,g,f)),Zrate2(p,g));
+                  if(Do_Retain(f)>0)
+                    {
+                    disc_age(t,disc_fleet_list(f),g)=Hrate(f,t)*elem_prod(elem_prod(natage(t,p,g),sel_al_3(s,g,f)),Zrate2(p,g)); //  selected numbers
+                    disc_age(t,disc_fleet_list(f)+N_retain_fleets,g)=Hrate(f,t)*elem_prod(elem_prod(natage(t,p,g),sel_al_4(s,g,f)),Zrate2(p,g)); //  selected numbers
+                    }
                 }  //close gmorph loop
               }  // close fishery
               break;
@@ -1221,6 +1224,7 @@ FUNCTION void get_time_series()
       }
 
   //  SS_Label_Info_24.11  #calc annual F quantities
+      dvariable tempM;
       if( fishery_on_off==1 && 
           ((save_for_report>0) ||
            ((sd_phase() || mceval_phase()) && (initial_params::mc_phase==0))
@@ -1250,6 +1254,7 @@ FUNCTION void get_time_series()
   //  also project from the initial numbers and M, the number of survivors without F
   //  then F = ln(n+1/n)(M+F) - ln(n+1/n)(M only), but ln(n) cancels out, so only need the ln of the ratio of the two ending quantities
           temp=0.0;
+          tempM=0.0;
           temp1=0.0;
           temp2=0.0;
           // calculated average F weighted by numbers (option 5 is unweighted)
@@ -1262,22 +1267,24 @@ FUNCTION void get_time_series()
               {
                 for (a=F_reporting_ages(1);a<=F_reporting_ages(2);a++)   //  should not let a go higher than nages-2 because of accumulator
                 {
+                  tempM+=natage(t,p,g,a);  // sum of numbers at beginning
                   temp1+=natage(t+1,p,g,a+1);  // sum of numbers at next age at begin of next year
                   if(nseas==1)
                   {
-                    temp2+=natage(t,p,g,a)*mfexp(-seasdur(s)*natM(s,GP3(g),a));
+                    temp2+=natage(t,p,g,a)*mfexp(-seasdur(s)*natM(s,GP3(g),a));  //  sum of numbers if only M
                   }
                   else
                   {
                     temp3=natage(t-nseas+1,p,g,a);  //  numbers at begin of year
                     for (j=1;j<=nseas;j++) {
                       temp3*=mfexp(-seasdur(j)*natM(j,GP3(g),a));}
-                    temp2+=temp3;
+                    temp2+=temp3;   //  sum of numbers if only M
                   }
                 }
               }
             }
-            annual_F(y,2) = log(temp2)-log(temp1);
+            annual_F(y,2) = log(temp2)-log(temp1);  //  F = Z-M
+            annual_F(y,3) = log(temp2)-log(tempM);  //  M
           } // end if F_reporting!=5
 
           else
@@ -1292,6 +1299,7 @@ FUNCTION void get_time_series()
               {
                 for (a=F_reporting_ages(1);a<=F_reporting_ages(2);a++)   //  should not let a go higher than nages-2 because of accumulator
                 {
+                  tempM+=natage(t,p,g,a);  // sum of numbers at beginning
                   temp1=natage(t+1,p,g,a+1);
                   if(nseas==1)
                   {
@@ -1305,12 +1313,14 @@ FUNCTION void get_time_series()
                     temp2=temp3; // temp2 and temp3 are redundant but match code above
                   }
                   annual_F(y,2) += log(temp2)-log(temp1);
+                  annual_F(y,3) += log(temp2)-log(tempM);
                   temp += 1; // increment count of values included in average
 //                  warning<<" y: "<<y<<" g: "<<g<<" p: "<<p<<" a: "<<a<<" temp: "<<temp<<" annual_F(y,2): "<<annual_F(y,2)<<" log(temp2)-log(temp1): "<<log(temp2)-log(temp1)<<endl;
                 }
               }
             }
             annual_F(y,2) /= temp;
+            annual_F(y,3) /= temp;
           } // end F_reporting==5
 
           if(STD_Yr_Reverse_F(y)>0)  //  save selected std quantity
@@ -1543,6 +1553,7 @@ FUNCTION void Do_Equil_Calc(const prevariable& equ_Recr)
   int s;
   dvariable N_mid;
   dvariable N_beg;
+  dvariable tempM;
   dvariable Fishery_Survival;
   dvariable crashtemp;
   dvariable crashtemp1;
@@ -1561,6 +1572,7 @@ FUNCTION void Do_Equil_Calc(const prevariable& equ_Recr)
    equ_numbers.initialize();
    equ_catage.initialize();
    equ_F_std=0.0;
+   equ_M_std=0.0;
    totbio=0.0;
    smrybio=0.0;
    smryage=0.0;
@@ -1853,13 +1865,16 @@ FUNCTION void Do_Equil_Calc(const prevariable& equ_Recr)
      if(F_reporting<=1)
      {
        equ_F_std=YPR_dead/smrybio;
+       equ_M_std=natM(1,1,int(nages/2));
      }
      else if(F_reporting==2)
      {
        equ_F_std=YPR_N_dead/smrynum;
+       equ_M_std=natM(1,1,int(nages/2));
      }
      else if(F_reporting==3)
      {
+       equ_M_std=natM(1,1,int(nages/2));
        if(F_Method==1)
        {
          for (s=1;s<=nseas;s++)
@@ -1887,6 +1902,7 @@ FUNCTION void Do_Equil_Calc(const prevariable& equ_Recr)
      {
        temp1=0.0;
        temp2=0.0;
+       tempM=0.;
        for (g=1;g<=gmorph;g++)
        if(use_morph(g)>0)
        {
@@ -1894,14 +1910,14 @@ FUNCTION void Do_Equil_Calc(const prevariable& equ_Recr)
          {
            for (a=F_reporting_ages(1);a<=F_reporting_ages(2);a++)   //  should not let a go higher than nages-2 because of accumulator
            {
+             tempM+=equ_numbers(1,p,g,a);
+             temp1+=equ_numbers(1,p,g,a+1);
              if(nseas==1)
              {
-               temp1+=equ_numbers(1,p,g,a+1);
                temp2+=equ_numbers(1,p,g,a)*mfexp(-seasdur(1)*natM(1,GP3(g),a));
              }
              else
              {
-               temp1+=equ_numbers(1,p,g,a+1);
                temp3=equ_numbers(1,p,g,a);  //  numbers at begin of year
                for (int kkk=1;kkk<=nseas;kkk++) {temp3*=mfexp(-seasdur(kkk)*natM(kkk,GP3(g),a));}
                temp2+=temp3;
@@ -1910,6 +1926,7 @@ FUNCTION void Do_Equil_Calc(const prevariable& equ_Recr)
          }
        }
        equ_F_std = log(temp2)-log(temp1);
+       equ_M_std = log(temp2)-log(tempM);
      }
    }
    SSB_equil=sum(SSB_equil_pop_gp);

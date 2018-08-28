@@ -2903,6 +2903,18 @@
      N_selparm += N_selparmvec(f);
    }
 
+//  create index to fleets with discard
+  disc_fleet_list.initialize();
+  N_retain_fleets=0;
+  for(f=1;f<=Nfleet;f++)
+  {
+    if(Do_Retain(f)>0)
+      {
+        N_retain_fleets++;
+        disc_fleet_list(f)=N_retain_fleets;  //  for compact storage of disc_age(t,f,g)
+      } 
+  }
+
 //  SS_Label_Info_4.097 #Read parameters needed for estimating variance of composition data
    for (f=1;f<=Nfleet;f++)
    {
@@ -4076,7 +4088,7 @@
  LOCAL_CALCS
   if(Do_Benchmark>0)
   {
-    N_STD_Mgmt_Quant=16;
+    N_STD_Mgmt_Quant=17;
   }
   else
   {N_STD_Mgmt_Quant=4;}
@@ -4574,6 +4586,7 @@
       ParmLabel+="Fstd_MSY"+CRLF(1); CoVar_Count++; j++; active_parm(CoVar_Count)=j;
       ParmLabel+="Dead_Catch_MSY"+CRLF(1); CoVar_Count++; j++; active_parm(CoVar_Count)=j;
       ParmLabel+="Retain_Catch_MSY"+CRLF(1); CoVar_Count++; j++; active_parm(CoVar_Count)=j;
+      ParmLabel+="B_MSY/SSB_unfished"+CRLF(1); CoVar_Count++; j++; active_parm(CoVar_Count)=j;
     }
     else
     {

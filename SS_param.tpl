@@ -241,6 +241,7 @@ PARAMETER_SECTION
   !!if(Do_Forecast>0) {k=TimeMax_Fcast_std+nseas;} else {k=TimeMax+nseas;}
   4darray natage(styr-3*nseas,k,1,pop,1,gmorph,0,nages)  //  add +1 year
   4darray catage(styr-nseas,k,1,Nfleet,1,gmorph,0,nages)
+  4darray disc_age(styr-3*nseas,TimeMax_Fcast_std+nseas,1,2*N_retain_fleets,1,gmorph,0,nages);
   4darray equ_catage(1,nseas,1,Nfleet,1,gmorph,0,nages)
   4darray equ_numbers(1,nseas,1,pop,1,gmorph,0,3*nages)
   4darray equ_Z(1,nseas,1,pop,1,gmorph,0,nages)
@@ -249,7 +250,7 @@ PARAMETER_SECTION
   matrix bycatch_F(1,Nfleet,1,nseas)
   3darray catch_fleet(styr-3*nseas,k,1,Nfleet,1,6)  //  1=sel_bio, 2=kill_bio; 3=ret_bio; 4=sel_num; 5=kill_num; 6=ret_num
   matrix annual_catch(styr-1,YrMax,1,6)  //  same six as above
-  matrix annual_F(styr-1,YrMax,1,2)  //  1=sum of hrate (if Pope fmethod) or sum hrate*seasdur if F; 2=Z-M for selected ages
+  matrix annual_F(styr-1,YrMax,1,3)  //  1=sum of hrate (if Pope fmethod) or sum hrate*seasdur if F; 2=Z-M for selected ages; 3=M
   3darray equ_catch_fleet(1,6,1,nseas,1,Nfleet)
 
   matrix fec(1,gmorph,0,nages)            //relative fecundity at age, is the maturity times the weight-at-age times eggs/kg for females
@@ -469,6 +470,7 @@ PARAMETER_SECTION
   number timing
   number equ_Recr
   number equ_F_std
+  number equ_M_std
 
 !!//  SS_Label_Info_5.1.8 #Create matrix called smry to store derived quantities of interest
   matrix Smry_Table(styr-3,YrMax,1,20+2*gmorph);
