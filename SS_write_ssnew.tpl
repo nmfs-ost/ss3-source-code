@@ -141,7 +141,7 @@ FUNCTION void write_nudata()
     }
    }
   if(do_meanbodywt==0) report1<<"# ";
-  report1<<" -9999 0 0 0 0 0 # terminator for mean body size data "<<endl;
+  report1<<" -9999 0 0 0 0 0 0 # terminator for mean body size data "<<endl;
 
   report1<<"#"<<endl<<"# set up population length bin structure (note - irrelevant if not using size data and using empirical wtatage"<<endl;
   report1<<LenBin_option<<" # length bin method: 1=use databins; 2=generate from binwidth,min,max below; 3=read vector"<<endl;
@@ -451,7 +451,7 @@ FUNCTION void write_nudata()
     }
    }
   if(do_meanbodywt==0) report1<<"# ";
-  report1<<" -9999 0 0 0 0 0 # terminator for mean body size data "<<endl;
+  report1<<" -9999 0 0 0 0 0 0 # terminator for mean body size data "<<endl;
 
   report1<<"#"<<endl<<"# set up population length bin structure (note - irrelevant if not using size data and using empirical wtatage"<<endl;
   report1<<LenBin_option<<" # length bin method: 1=use databins; 2=generate from binwidth,min,max below; 3=read vector"<<endl;
@@ -840,7 +840,7 @@ FUNCTION void write_nudata()
       temp<<" "<<mnwtdata(7,i)-var_adjust(3,f)<<" #_orig_obs: "<<mnwtdata(6,i)<<"  #_ "<<fleetname(f)<<endl;    }
   }
   if(do_meanbodywt==0) report1<<"# ";
-  report1<<" -9999 0 0 0 0 0 # terminator for mean body size data "<<endl;
+  report1<<" -9999 0 0 0 0 0 0 # terminator for mean body size data "<<endl;
 
   report1<<"#"<<endl<<"# set up population length bin structure (note - irrelevant if not using size data and using empirical wtatage"<<endl;
   report1<<LenBin_option<<" # length bin method: 1=use databins; 2=generate from binwidth,min,max below; 3=read vector"<<endl;
