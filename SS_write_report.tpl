@@ -1020,7 +1020,7 @@ FUNCTION void write_bigoutput()
    }
 
    {
-    SS2out<<"#"<<endl<<"Full_Spawn_Recr_Curve"<<endl<<"SSB/SSB_virgin    SSB    Recruitment"<<endl;
+    SS2out<<endl<<"#"<<endl<<"Full_Spawn_Recr_Curve"<<endl<<"SSB/SSB_virgin    SSB    Recruitment"<<endl;
     y=styr;
     SR_parm_work = SR_parm_byyr(styr);
     for(f=1;f<=120;f++)
