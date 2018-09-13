@@ -1081,21 +1081,20 @@ FUNCTION dvariable Check_Parm(const int iparm, const int& PrPH, const double& Pm
       kval = cumd_norm(zval);
       temp=randu(radm);
       kjitter = kval + (jitter * ((2.00 * temp) - 1.));  // kjitter is between kval - jitter and kval + jitter
-      if (kjitter < 0.001)
+      if (kjitter < 0.0001)
       {
-          NewVal=Pmin+0.001*(Pmax-Pmin);
+          NewVal=Pmin+0.1*(Pval-Pmin);
       }
-      else if (kjitter > 0.999)
+      else if (kjitter > 0.9999)
       {
-          NewVal=Pmax-0.001*(Pmax-Pmin);
+          NewVal=Pmax-0.1*(Pmax-Pval);
       }
       else
       {
           zjitter = inv_cumd_norm(kjitter);
           NewVal = (Psigma * zjitter) + Pmean;
       }
-      warning<<"jitter (min, max, old, new, rand):  "<<Pmin<<" "<<Pmax<<" "<<Pval<<" "<<NewVal<<" "<<temp<<endl;
-      
+      echoinput<<"jitter (min, max, old, new):  "<<Pmin<<" "<<Pmax<<" "<<Pval<<" "<<NewVal<<endl;
     }
 
     //  now check prior
