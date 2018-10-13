@@ -128,6 +128,10 @@ FUNCTION void write_bigoutput()
   SS2out<<"Empirical_wt_at_age(0,1): "<<WTage_rd<<endl;
   SS2out<<"N_bio_patterns: "<<N_GP<<endl;
   SS2out<<"N_platoons: "<<N_platoon<<endl;
+  SS2out<<"NatMort: "<<natM_type<<" # options:_(0)1Parm;_(1)N_breakpoints;_(2)Lorenzen;_(3)agespecific;_(4)agespec_withseasinterpolate"<<endl;
+  SS2out<<"GrowthModel: "<<Grow_type<<" # options:_(1)vonBert with L1&L2;_(2)Richards with L1&L2;_(3)age_specific_K_incr;_(4)age_specific_K_decr; (5)age_specific_K_each; (6)not implemented"<<endl;
+  SS2out<<"Maturity: "<<Maturity_Option<<" # options:_(1)length logistic;_(2)age logistic;_(3)read age-maturity;_(4)read age-fecundity;_(5)disabled;_(6)read length-maturity"<<endl;
+  SS2out<<"Fecundity: "<<Fecund_Option<<" # options:_(1)eggs=Wt*(a+b*Wt);_(2)eggs=a*L^b;_(3)eggs=a*Wt^b;_(4)eggs=a+b*L;_(5)eggs=a+b*W"<<endl;
   SS2out<<"Start_from_par(0,1): "<<readparfile<<endl;
   SS2out<<"Do_all_priors(0,1): "<<Do_all_priors<<endl;
   SS2out<<"Use_softbound(0,1): "<<SoftBound<<endl;
@@ -136,10 +140,10 @@ FUNCTION void write_bigoutput()
   SS2out<<"Current_phase: "<<current_phase()<<endl;
   SS2out<<"Jitter: "<<jitter<<endl;
   SS2out<<"ALK_tolerance: "<<ALK_tolerance<<endl;
-  SS2out<<"Fleet_names: "; for(f=1;f<=Nfleet;f++) {SS2out<<" "<<fleetname(f);}
+  SS2out<<"Fleet_name: "; for(f=1;f<=Nfleet;f++) {SS2out<<" "<<fleetname(f);}
   SS2out<<endl<<"Fleet_type: "<<fleet_type<<endl;
   SS2out<<"Fleet_area: "<<fleet_area<<endl;
-  SS2out<<"Fleet fleet_type timing area catch_units catch_mult survey_units survey_error fleet_name"<<endl;
+  SS2out<<"Fleet fleet_type timing area catch_units catch_mult survey_units survey_error Fleet_name"<<endl;
   for (f=1;f<=Nfleet;f++)
   {
     SS2out<<f<<" "<<fleet_setup(f)<<" "<<Svy_units(f)<<" "<<Svy_errtype(f)<<" "<<fleetname(f)<<endl;
@@ -799,6 +803,7 @@ FUNCTION void write_bigoutput()
        }
      }
     } //close gmorph loop
+    if(gender_rd==-1) SSB_vir_LH*=femfrac(1);
     SS2out<<p<<" "<<y;
        if(y==styr-2)
          {SS2out<<" VIRG ";}
@@ -1331,7 +1336,7 @@ FUNCTION void write_bigoutput()
 //It might also be good to add a keyword to the top of those lower tables which could simplify the logic of parsing them separately from the FIT_..._COMPS tables above them and therefore be more robust to changes in format.
 
    SS2out<<endl<<"Length_Comp_Fit_Summary"<<endl<<
-   "Factor Fleet Recommend_var_adj # N Npos min_inputN max_inputN mean_adj_inputN mean_effN HarMean Curr_Var_Adj FleetName"<<endl;
+   "Factor Fleet Recommend_var_adj # N Npos min_inputN max_inputN mean_adj_inputN mean_effN HarMean Curr_Var_Adj Fleet_name"<<endl;
    for (f=1;f<=Nfleet;f++)
    {
     if(n_rmse(f)>0) 
@@ -1393,7 +1398,7 @@ FUNCTION void write_bigoutput()
     }
 
    SS2out<<endl<<"Age_Comp_Fit_Summary"<<endl<<
-   "Factor Fleet Recommend_var_adj # N Npos min_inputN max_inputN mean_adj_inputN mean_effN HarMean Curr_Var_Adj FleetName"<<endl;
+   "Factor Fleet Recommend_var_adj # N Npos min_inputN max_inputN mean_adj_inputN mean_effN HarMean Curr_Var_Adj Fleet_name"<<endl;
    for(f=1;f<=Nfleet;f++)
    {
     if(n_rmse(f)>0)
@@ -1498,7 +1503,7 @@ FUNCTION void write_bigoutput()
           }  //  end loop of observations
         }  //  end fleet loop
   //      SS2out<<"Fleet N Npos mean_effN mean(inputN*Adj) HarMean(effN) Mean(effN/inputN) MeaneffN/MeaninputN Var_Adj"<<endl;
-        SS2out<<"Factor Fleet Recommend_Var_Adj # N Npos min_inputN max_inputN mean_adj_inputN mean_effN HarMean Curr_Var_Adj FleetName"<<endl;
+        SS2out<<"Factor Fleet Recommend_Var_Adj # N Npos min_inputN max_inputN mean_adj_inputN mean_effN HarMean Curr_Var_Adj Fleet_name"<<endl;
         for(f=1;f<=Nfleet;f++)
         {
           if(n_rmse(f)>0)
@@ -2650,13 +2655,14 @@ FUNCTION void write_bigoutput()
           temp1=s-1.;
 //          temp=float(y)+temp1/float(nseas);
           temp = float(y)+0.01*int(100.*(azero_seas(s)+seasdur_half(s)));
-          SS_compout<<y<<" "<<s<<" "<<temp<<" "<<0<<" "<<TG<<" "<<TG_release(TG,6)<<" TAG2 NA NA NA NA NA "<<
+//  SS_compout<<"Yr Month Seas Subseas Time Fleet Area Repl. Sexes Kind Part Ageerr Sex Lbin_lo Lbin_hi Bin Obs Exp Pearson N effN Like Cum_obs Cum_exp SuprPer Used?"<<endl;
+          SS_compout<<y<<" NA "<<s<<" NA "<<temp<<" NA "<<TG_release(TG,2)<<" "<<TG<<" "<<TG_release(TG,6)<<" TAG2 NA NA NA NA NA "<<
           temp<<" "<<TG_recap_obs(TG,TG_t,0)<<" "<<TG_recap_exp(TG,TG_t,0)<<" NA NA NA NA NA NA NA ";
           if(TG_t>=TG_mixperiod) {SS_compout<<"_"<<endl;} else {SS_compout<<" skip"<<endl;}
           if(Nfleet>1)
           for (f=1;f<=Nfleet;f++)
           {
-            SS_compout<<y<<" "<<s<<" "<<temp<<" "<<f<<" "<<TG<<" "<<TG_release(TG,6)<<" TAG1 NA NA NA NA NA "<<
+            SS_compout<<y<<" NA "<<s<<" NA "<<temp<<" "<<f<<" "<<fleet_area(f)<<" "<<TG<<" "<<TG_release(TG,6)<<" TAG1 NA NA NA NA NA "<<
             f<<" "<<TG_recap_obs(TG,TG_t,f)<<" "<<TG_recap_exp(TG,TG_t,f)<<" NA "<<TG_recap_obs(TG,TG_t,0)
             <<" NA NA NA NA NA ";
           if(TG_t>=TG_mixperiod) {SS_compout<<"_"<<endl;} else {SS_compout<<" skip"<<endl;}

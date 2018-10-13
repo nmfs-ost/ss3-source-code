@@ -908,6 +908,7 @@ FUNCTION void get_recr_distribution()
  /*  SS_Label_Function_18 #get_recr_distribution among areas and morphs */
 
 //  SS_Label_Info_18.15  #get fraction female
+// fracfemale_mult is not used to distribute recruits; it is a multiplier used in the SSB calc and has default value of 1, and value of femfrac if requested in 1 sex setup
   if (frac_female_pointer > 0)
   {
       Ip = frac_female_pointer - 1;
@@ -918,8 +919,14 @@ FUNCTION void get_recr_distribution()
       }
   }
   else
-  {femfrac(1,N_GP)=fracfemale;
-   if(gender==2) femfrac(N_GP,2*N_GP)=1.0-fracfemale;}
+  {
+    femfrac(1,N_GP)=fracfemale;
+    if(gender==2) femfrac(N_GP,2*N_GP)=1.0-fracfemale;
+  }
+  if(gender_rd==-1) 
+    {
+      fracfemale_mult=value(femfrac(1));
+    }
   
   if(do_once==1)  echoinput<<" femfrac "<<femfrac<<endl;
   if(finish_starter==999)

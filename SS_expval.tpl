@@ -283,6 +283,11 @@ FUNCTION void Get_expected_values();
                {
                  Svy_log_q(f,j) = Svy_log_q(Q_setup(f,2),1);
                }
+               else if(Q_setup(f,1)==4)
+               {
+                 Svy_log_q(f,j) = Svy_log_q(Q_setup(f,2),1)+Q_parm(Q_setup_parms(f,1)+1);
+                 Q_parm(Q_setup_parms(f,1))=Svy_log_q(f,1);    // base Q  So this sets parameter equal to the scaling coefficient and can then have a prior
+               }
 
                else   //  Q from parameter
                {
@@ -311,6 +316,10 @@ FUNCTION void Get_expected_values();
                switch (Q_setup(f,1))
                {
                  case 2:
+                 {
+                   //  no break, so do same as case 1
+                 }
+                 case 4:
                  {
                    //  no break, so do same as case 1
                  }

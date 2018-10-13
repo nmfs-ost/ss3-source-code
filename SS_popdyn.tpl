@@ -668,9 +668,12 @@ FUNCTION void get_time_series()
           for (g=1;g<=gmorph;g++)
           if(sx(g)==1 && use_morph(g)>0)     //  female
           {
-            SSB_pop_gp(y,p,GP4(g)) += fec(g)*natage(t,p,g);   // accumulates SSB by area and by growthpattern
-            SSB_B_yr(y) += make_mature_bio(GP4(g))*natage(t,p,g);
-            SSB_N_yr(y) += make_mature_numbers(GP4(g))*natage(t,p,g);
+            SSB_pop_gp(y,p,GP4(g)) += fracfemale_mult*fec(g)*natage(t,p,g);   // accumulates SSB by area and by growthpattern
+            SSB_B_yr(y) += fracfemale_mult*make_mature_bio(GP4(g))*natage(t,p,g);
+            SSB_N_yr(y) += fracfemale_mult*make_mature_numbers(GP4(g))*natage(t,p,g);
+//            SSB_pop_gp(y,p,GP4(g)) += fec(g)*natage(t,p,g);   // accumulates SSB by area and by growthpattern
+//            SSB_B_yr(y) += make_mature_bio(GP4(g))*natage(t,p,g);
+//            SSB_N_yr(y) += make_mature_numbers(GP4(g))*natage(t,p,g);
           }
         }
         SSB_current=sum(SSB_pop_gp(y));
@@ -1063,9 +1066,12 @@ FUNCTION void get_time_series()
           for (g=1;g<=gmorph;g++)
           if(sx(g)==1 && use_morph(g)>0)     //  female
           {
-            SSB_pop_gp(y,p,GP4(g)) += fec(g)*elem_prod(natage(t,p,g),mfexp(-Z_rate(t,p,g)*spawn_time_seas));   // accumulates SSB by area and by growthpattern
-            SSB_B_yr(y) += make_mature_bio(GP4(g))*elem_prod(natage(t,p,g),mfexp(-Z_rate(t,p,g)*spawn_time_seas));
-            SSB_N_yr(y) += make_mature_numbers(GP4(g))*elem_prod(natage(t,p,g),mfexp(-Z_rate(t,p,g)*spawn_time_seas));
+            SSB_pop_gp(y,p,GP4(g)) += fracfemale_mult*fec(g)*elem_prod(natage(t,p,g),mfexp(-Z_rate(t,p,g)*spawn_time_seas));   // accumulates SSB by area and by growthpattern
+            SSB_B_yr(y) += fracfemale_mult*make_mature_bio(GP4(g))*elem_prod(natage(t,p,g),mfexp(-Z_rate(t,p,g)*spawn_time_seas));
+            SSB_N_yr(y) += fracfemale_mult*make_mature_numbers(GP4(g))*elem_prod(natage(t,p,g),mfexp(-Z_rate(t,p,g)*spawn_time_seas));
+//            SSB_pop_gp(y,p,GP4(g)) += fec(g)*elem_prod(natage(t,p,g),mfexp(-Z_rate(t,p,g)*spawn_time_seas));   // accumulates SSB by area and by growthpattern
+//            SSB_B_yr(y) += make_mature_bio(GP4(g))*elem_prod(natage(t,p,g),mfexp(-Z_rate(t,p,g)*spawn_time_seas));
+//            SSB_N_yr(y) += make_mature_numbers(GP4(g))*elem_prod(natage(t,p,g),mfexp(-Z_rate(t,p,g)*spawn_time_seas));
           }
         }
         SSB_current=sum(SSB_pop_gp(y));
@@ -1828,10 +1834,14 @@ FUNCTION void Do_Equil_Calc(const prevariable& equ_Recr)
              if(gg==1)  // compute equilibrium spawning biomass for females
              {
               tempvec_a=elem_prod(equ_numbers(s,p,g)(0,nages),mfexp(-spawn_time_seas*equ_Z(s,p,g)(0,nages)));
-               SSB_equil_pop_gp(p,GP4(g))+=tempvec_a*fec(g);
-               equ_mat_bio+=elem_prod(equ_numbers(s,p,g)(0,nages),mfexp(-spawn_time_seas*equ_Z(s,p,g)(0,nages)))*make_mature_bio(GP4(g));
-               equ_mat_num+=elem_prod(equ_numbers(s,p,g)(0,nages),mfexp(-spawn_time_seas*equ_Z(s,p,g)(0,nages)))*make_mature_numbers(GP4(g));
-               GenTime+=tempvec_a*elem_prod(fec(g),r_ages);
+               SSB_equil_pop_gp(p,GP4(g))+=fracfemale_mult*tempvec_a*fec(g);
+               equ_mat_bio+=fracfemale_mult*elem_prod(equ_numbers(s,p,g)(0,nages),mfexp(-spawn_time_seas*equ_Z(s,p,g)(0,nages)))*make_mature_bio(GP4(g));
+               equ_mat_num+=fracfemale_mult*elem_prod(equ_numbers(s,p,g)(0,nages),mfexp(-spawn_time_seas*equ_Z(s,p,g)(0,nages)))*make_mature_numbers(GP4(g));
+               GenTime+=fracfemale_mult*tempvec_a*elem_prod(fec(g),r_ages);
+//               SSB_equil_pop_gp(p,GP4(g))+=tempvec_a*fec(g);
+//              equ_mat_bio+=elem_prod(equ_numbers(s,p,g)(0,nages),mfexp(-spawn_time_seas*equ_Z(s,p,g)(0,nages)))*make_mature_bio(GP4(g));
+//               equ_mat_num+=elem_prod(equ_numbers(s,p,g)(0,nages),mfexp(-spawn_time_seas*equ_Z(s,p,g)(0,nages)))*make_mature_numbers(GP4(g));
+//               GenTime+=tempvec_a*elem_prod(fec(g),r_ages);
              }
              else if(Hermaphro_Option!=0 && gg==2)
              {

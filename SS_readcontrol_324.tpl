@@ -539,6 +539,8 @@
   number natM_amin;
   number natM_amax;
   init_number fracfemale;
+  number fracfemale_mult;
+  !!fracfemale_mult=1.0;  //  multiplier used in female SSB calc
   !!echoinput<<fracfemale<<" fracfemale"<<endl;
   !!if(fracfemale>=1.0) fracfemale=0.999999;
   !!if(fracfemale<=0.0) fracfemale=0.000001;
@@ -983,11 +985,6 @@
   N_MGparm=ParCount2;
 
   frac_female_pointer=-1;   // indicates 3.24 version
-  // for(gp=1;gp<=N_GP;gp++)
-  // {
-  //   ParCount++; ParmLabel+="FracFemale_GP_"+NumLbl(gp);
-  // }
-  // N_MGparm=ParCount;
 
  END_CALCS
 

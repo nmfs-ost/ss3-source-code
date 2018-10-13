@@ -109,8 +109,6 @@
  LOCAL_CALCS
     *(ad_comm::global_datafile) >> recr_dist_method;
     echoinput<<recr_dist_method<<"  # Recruitment distribution method; where: 2=parms for main effects for GP, Area, Settle timing; 3=one parm for each Settle event"<<endl;
-    if(recr_dist_method==1)
-      {N_warn++; warning<<"fatal error:  recr_dist_method cannot be 1 in SS3.30 "<<endl; cout<<"see warning for input error"<<endl; exit(1);}
     *(ad_comm::global_datafile) >> recr_dist_area;
     echoinput<<recr_dist_area<<"  # future option for recr_dist_area: 1 is hardwired to do global SRR; 2 in future will do area-specific SRR"<<endl;
   recr_dist_area=1;  //hardwire for testing
@@ -146,10 +144,12 @@
       }
   }
   echoinput<<N_settle_assignments<<" Number of settlement events: GP/area/month to read (>=0) "<<endl;
-  if(N_settle_assignments==1 && recr_dist_method!=4)
-    {N_warn++; warning<<"You have just one settlement event; recommend changing to recr_dist_method 4 which takes no parameters"<<endl;}
-  if(recr_dist_method<3)
-    {N_warn++; warning<<"Recommend changing to recr_dist_method 3 which takes 1 parm for each settlement"<<endl;}
+  if(recr_dist_method==1)
+    {N_warn++; warning<<"fatal error:  recr_dist_method cannot be 1 in SS3.30 "<<endl; cout<<"see warning.sso for input error"<<endl; exit(1);}
+  else if(N_settle_assignments==1 && recr_dist_method!=4)
+    {N_warn++; warning<<"You have just one settlement event; recommend changing to recr_dist_method 4 which takes no recr_dist parameters"<<endl;}
+  else if(recr_dist_method==2)
+    {N_warn++; warning<<"Note that recr_dist_method 3 is simpler and takes 1 parm for each settlement"<<endl;}
   echoinput<<recr_dist_inx<<"  # unused option "<<endl;
  END_CALCS
 
@@ -590,10 +590,9 @@
   number natM_amin;
   number natM_amax;
   number fracfemale;
-  !!fracfemale=0.5;
-  // !!echoinput<<fracfemale<<" fracfemale"<<endl;
-  // !!if(fracfemale>=1.0) fracfemale=0.999999;
-  // !!if(fracfemale<=0.0) fracfemale=0.000001;
+  !!fracfemale=1.00;
+  number fracfemale_mult;
+  !!fracfemale_mult=1.0;  //  multiplier used in female SSB calc; gets changed to femfrac(1) if gender_rd==-1
 
 // read natmort setup
   init_int natM_type;  //  0=1Parm; 1=segmented; 2=Lorenzen; 3=agespecific; 4=agespec with seas interpolate
@@ -885,8 +884,6 @@
       N_warn++; cout<<" EXIT - see warning "<<endl;
       warning<<" illegal parm_adjust_method; must be 1 or 2 or 3 "<<endl;  exit(1);
     }
-  // femfrac(1,N_GP)=fracfemale;
-  // if(gender==2) femfrac(N_GP+1,N_GP+N_GP)=1.-fracfemale;
 
   ParCount=0;
   Parm_minmax.push_back (0);  // to start real info at index "1" to align with ParCount
@@ -2179,16 +2176,26 @@
         }
         case 2:  //  mirror
         {
-       if(Q_setup(f,2)==0 || Q_setup(f,2)>=f)
-       {
-         N_warn++; cout<<" EXIT - see warning "<<endl; warning<<" illegal mirror for q for fleet: "<<f<<" trying to mirror fleet: "<<Q_setup(f,2)<<endl; exit(1);
-     }
+          if(Q_setup(f,2)==0 || Q_setup(f,2)>=f)
+          {
+            N_warn++; cout<<" EXIT - see warning "<<endl; warning<<" illegal mirror for q for fleet: "<<f<<" trying to mirror fleet: "<<Q_setup(f,2)<<endl; exit(1);
+          }
           break;
         }
         case 3:  //  add power
         {
           Q_Npar++;  ParCount++;
           ParmLabel+="Q_power_"+fleetname(f)+"("+NumLbl(f)+")";
+          break;
+        }
+        case 4:  //  mirror with offset, where offset typically is ln(area_base/area_dependent)  ln(Q2) = ln(Q1) + ln (area1 / area2)
+        {
+          if(Q_setup(f,2)==0 || Q_setup(f,2)>=f)
+          {
+            N_warn++; cout<<" EXIT - see warning "<<endl; warning<<" illegal mirror for q for fleet: "<<f<<" trying to mirror fleet: "<<Q_setup(f,2)<<endl; exit(1);
+          }
+          Q_Npar++;  ParCount++;
+          ParmLabel+="Q_mirror_offset_"+fleetname(f)+"("+NumLbl(f)+")";
           break;
         }
       }

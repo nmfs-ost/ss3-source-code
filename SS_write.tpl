@@ -65,8 +65,8 @@ FUNCTION void write_summaryoutput()
   if(k==endyr) k=endyr+1;
   for (y=endyr+1;y<=k;y++) {report2<<y<<"F ";}
   report2 <<endl;
-  report2 <<runnumber<<" Timeseries SpawnBio "<<column(Smry_Table,7)<<endl;
-  report2 <<runnumber<<" Timeseries Recruit "<<column(Smry_Table,8)<<endl;
+  report2 <<runnumber<<" Timeseries SpawnBio "<<SSB_yr(styr-2,YrMax)<<endl;
+  report2 <<runnumber<<" Timeseries Recruit "<<column(exp_rec,4)<<endl;
   report2 <<runnumber<<" Timeseries TotBio "<<column(Smry_Table,1)<<endl;
   report2 <<runnumber<<" Timeseries SmryBio-"<<Smry_Age<<" "<<column(Smry_Table,2)<<endl;
   report2 <<runnumber<<" Timeseries TotCatch "<<column(Smry_Table,4)<<endl;

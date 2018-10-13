@@ -137,6 +137,7 @@
    }
  END_CALCS
   int pop   // number of areas (populations)
+  int gender_rd
   int gender  //  number of sexes
   int nages  //  maxage as accumulator
   int nages2  //  doubled vector to store males after females = gender*nages+gender-1
@@ -146,7 +147,9 @@
 
  LOCAL_CALCS
   {
-    *(ad_comm::global_datafile) >> gender;
+    *(ad_comm::global_datafile) >> gender_rd;
+    gender=abs(gender_rd);
+    if(gender_rd<0) echoinput<<"gender read is negative, so total spawnbiomass will be multiplied by frac_female parameter"<<endl;
     *(ad_comm::global_datafile) >> nages;
     echoinput<<gender<<" N sexes "<<endl<<"Accumulator age "<<nages<<endl;
     *(ad_comm::global_datafile) >> pop;

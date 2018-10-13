@@ -227,8 +227,8 @@ PARAMETER_SECTION
 
   matrix SSB_equil_pop_gp(1,pop,1,N_GP);
   matrix MaleSSB_equil_pop_gp(1,pop,1,N_GP);
-  matrix Recr(1,pop,styr-3*nseas,TimeMax_Fcast_std+nseas)         //Recruitment
-  matrix exp_rec(styr-3,YrMax,1,4) //expected value for recruitment: 1=spawner-recr only; 2=with environ and cycle; 3=with bias_adj; 4=with dev
+  matrix Recr(1,pop,styr-2*nseas,TimeMax_Fcast_std+nseas)         //Recruitment
+  matrix exp_rec(styr-2,YrMax,1,4) //expected value for recruitment: 1=spawner-recr only; 2=with environ and cycle; 3=with bias_adj; 4=with dev
   matrix Nmid(1,gmorph,0,nages);
   matrix Nsurv(1,gmorph,0,nages);
   3darray natage_temp(1,pop,1,gmorph,0,nages)

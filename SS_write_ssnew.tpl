@@ -33,8 +33,8 @@ FUNCTION void write_nudata()
   report1 << 12.*seasdur<<" #_months/season"<< endl;
   report1 << N_subseas<<" #_Nsubseasons (even number, minimum is 2)"<<endl;
   report1 << spawn_month <<" #_spawn_month"<< endl;
-  report1 << gender<<" #_Ngenders"<< endl;
-  report1 << nages<<" #_Nages=accumulator age"<< endl;
+  report1 << gender_rd<<" #_Ngenders: 1, 2, (use -1 for 1 sex setup with SSB multiplied by female_frac parameter)"<< endl;
+  report1 << nages<<" #_Nages=accumulator age, first age is always age 0"<< endl;
   report1 << pop<<" #_Nareas"<<endl;
   report1 << Nfleet<<" #_Nfleets (including surveys)"<< endl;
   report1<<"#_fleet_type: 1=catch fleet; 2=bycatch only fleet; 3=survey; 4=ignore "<<endl;
@@ -1777,7 +1777,7 @@ FUNCTION void write_nucontrol()
    report4<<"#"<<endl;
    report4<<"#_Q_setup for fleets with cpue or survey data"<<endl;
    report4<<"#_1:  fleet number"<<endl;
-   report4<<"#_2:  link type: (1=simple q, 1 parm; 2=mirror simple q, 1 mirrored parm; 3=q and power, 2 parm)"<<endl;
+   report4<<"#_2:  link type: (1=simple q, 1 parm; 2=mirror simple q, 1 mirrored parm; 3=q and power, 2 parm; 4=mirror with offset, 1 parm)"<<endl;
    report4<<"#_3:  extra input for link, i.e. mirror fleet# or dev index number"<<endl;
    report4<<"#_4:  0/1 to select extra sd parameter"<<endl;
    report4<<"#_5:  0/1 for biasadj or not"<<endl;

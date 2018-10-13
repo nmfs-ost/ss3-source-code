@@ -128,6 +128,7 @@
  END_CALCS
   int pop   // number of areas (populations)
   int gender  //  number of sexes
+  int gender_rd
   int nages  //  maxage as accumulator
   int nages2  //  doubled vector to store males after females = gender*nages+gender-1
   int Nsurvey
@@ -233,6 +234,7 @@
 //  ProgLabel_2.1.5  define genders and max age
  LOCAL_CALCS
      *(ad_comm::global_datafile) >> gender;
+     gender_rd=gender;
      echoinput<<gender<<" N sexes "<<endl;
      *(ad_comm::global_datafile) >> nages;
      echoinput<<nages<<" nages is maxage "<<endl;
