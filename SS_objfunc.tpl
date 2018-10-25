@@ -1419,7 +1419,7 @@ FUNCTION void get_posteriors()
       if(active(F_rate(i))) posts<<F_rate(i)<<" ";
     }
   }
-  for (i=1;i<=Q_Npar;i++)
+  for (i=1;i<=Q_Npar2;i++)
   {
     if(active(Q_parm(i)))posts<<Q_parm(i)<<" ";
   }
