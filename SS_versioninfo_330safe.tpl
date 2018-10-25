@@ -5,7 +5,7 @@ DATA_SECTION
 !!//  SS_Label_Section_1.0 #DATA_SECTION
 
 !!//  SS_Label_Info_1.1.1  #Create string with version info
-!!version_info+="#V3.30.12.00-safe;_2018_09_13;_Stock_Synthesis_by_Richard_Methot_(NOAA)_using_ADMB_12.0";
+!!version_info+="#V3.30.13_beta-safe;_2018_10_15;_Stock_Synthesis_by_Richard_Methot_(NOAA)_using_ADMB_12.0";
 !!version_info+="#Stock Synthesis (SS) is a work of the U.S. Government and is not subject to copyright protection in the United States.";
 !!version_info+="#Foreign copyrights may apply. See copyright.txt for more information.";
 !!version_info2+="#_user_support_available_at:NMFS.Stock.Synthesis@noaa.gov";
@@ -78,3 +78,8 @@ DATA_SECTION
 !!//  V3.30.12.00  2018-08-27   add reporting of discard at age
 !!//  V3.30.12.00  2018-09_13   small tweak to jitter
 !!//  V3.30.12.00  2018-09_13   begin compiling with ADMB 12.0
+!!//  V3.30.13_beta  2018-10_15   allow gender=-1 to invoke Female SSB = SSB*fracfem
+!!//  V3.30.13_beta  2018-10_15   fix formatting problem for tags output in compreport.sso
+!!//  V3.30.13_beta  2018-10_15   create new Q option so that mirror Q uses an offset to ln(Q)
+!!//  V3.30.13_beta  2018-10_15   revise warning for recrdist options
+!!//  V3.30.13_beta  2018-10-24   small fix to posteriors.sso for Q parms

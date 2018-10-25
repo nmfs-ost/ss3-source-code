@@ -626,7 +626,7 @@
   !!if(k1>0) echoinput<<" Age_NatMort "<<Age_NatMort<<endl;
 
 // read growth setup
-  init_int Grow_type  // 1=vonbert; 2=Richards; 3=age-specific K ascend;  4=age-specific K descend; 5=age-specific K; 6=read vector(not implemented)
+  init_int Grow_type  // 1=vonbert; 2=Richards; 3=age-specific K ascend;  4=age-specific K descend; 5=age-specific K; 6=read vector(not implemented); 8=growth cessation
   !!echoinput<<Grow_type<<" growth model "<<endl;
 !!//  SS_Label_Info_4.5.1 #Create time constants for growth
   number AFIX;
@@ -641,7 +641,7 @@
   !! first_grow_age.initialize();
   !! k=0;
   !! do_ageK=0;
-  !! if(Grow_type<=2) {k=4;}  //  AFIX and AFIX2
+  !! if(Grow_type<=2 || Grow_type==8) {k=4;}  //  AFIX and AFIX2
   !! if (Grow_type>=3 && Grow_type<=5) {do_ageK=1; k=5;}  //  number of ages for age-specific K
   init_vector tempvec5(1,k)
   int Age_K_count;
@@ -661,12 +661,22 @@
     Linf_decay=tempvec5(3);
     //  tempvec(4) is a placeholder
   }
-  else if(Grow_type==2)
+  else if(Grow_type==2 || Grow_type==8)
   {
     N_growparms=6;
     AFIX=tempvec5(1);
     AFIX2=tempvec5(2);
     Linf_decay=tempvec5(3);
+    if(Grow_type==8 && AFIX2 !=999)
+      {
+        N_warn++; warning<<"AFIX2 set to 999 for grow_type==8 because only Linfinity allowed for growth cessation "<<endl;
+        AFIX2=999.;
+      }
+    if(Grow_type==8 && AFIX !=0.0)
+      {
+        N_warn++; warning<<"AFIX set to 0.0 for grow_type==8;  growth cessation "<<endl;
+        AFIX2=0.0;
+      }
     //  tempvec(4) is a placeholder
   }
   else if(do_ageK==1)
@@ -967,6 +977,15 @@
             ParmLabel+="Age_K_each_"+GenderLbl(gg)+GP_Lbl(gp)+"_a_"+NumLbl(Age_K_points(a));
             ParCount++;
           }
+          break;
+        }
+        case 8:
+        {
+          ParmLabel+="L_at_Amin_"+GenderLbl(gg)+GP_Lbl(gp);
+          ParmLabel+="Linf_"+GenderLbl(gg)+GP_Lbl(gp);
+          ParmLabel+="VonBert_K_"+GenderLbl(gg)+GP_Lbl(gp);
+          ParmLabel+="Cessation_"+GenderLbl(gg)+GP_Lbl(gp);
+          ParCount+=4;
           break;
         }
       }
@@ -2211,11 +2230,11 @@
         depletion_fleet=f;
         depletion_type=Q_setup(f,2);
         if(depletion_type==0)
-          echoinput<<"Q_setup(f,2)=0; add 1 to phases of all parms; only R0 active in new phase 1"<<endl;
+          echoinput<<"link_info=0; add 1 to phases of all parms; only R0 active in new phase 1 (same as 3.24 logic)"<<endl;
         if(depletion_type==1)
-          echoinput<<"Q_setup(f,2)=1  only R0 active in phase 1; then exit;  useful for data-limited draws of other fixed parameter"<<endl;
+          echoinput<<"link_info=1  only R0 active in phase 1; then exit;  useful for data-limited draws of other fixed parameter"<<endl;
         if(depletion_type==2)
-          echoinput<<"Q_setup(f,2)=2  no phase adjustments, can be used when profiling on fixed R0"<<endl;
+          echoinput<<"link_info=2  no phase adjustments, can be used when profiling on fixed R0"<<endl;
       }
 
   }

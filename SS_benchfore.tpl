@@ -476,7 +476,8 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
       equ_Recr=1.0;
       Fishon=1;
   //  get slope at origin
-      Fmult=0.000001;
+//      Fmult=0.000001;
+      Fmult=0.001;
       for (f=1;f<=Nfleet;f++)
       {
         if(fleet_type(f)==1 || (fleet_type(f)==2 && bycatch_setup(f,3)==1))
@@ -486,42 +487,42 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
         //  else  Hrate for bycatch fleets set above
       }
       Do_Equil_Calc(equ_Recr);
-      F01_origin=YPR_opt/0.000001;
+      F01_origin=YPR_opt/Fmult;
       
       BTGT_target=0.1;   //  now relative to Bmark
       Btgttgt=F01_origin*0.1;
       if(show_MSY==1)
       {
-        report5<<"& & & & & Find_F0.1; slope_at_origin_wrt_Fmult: "<<F01_origin<<endl;
-        report5<<"Iter Fmult   F_std    SPR    YPR    Fslope"<<endl;
+        report5<<"#"<<endl<<"#Find_F0.1; slope_at_origin_wrt_Fmult: "<<F01_origin<<endl;
+        report5<<"Iter  Fmult   F_std    SPR    YPR    YPR_slope  YPR_curvature"<<endl;
       }
 
-      Nloops=15; Closer=0.5;
-      F1(1)=-log((10.0 / 1.0e-03)-1.0); last_calc=0.;
-      df=1.e-5;
-      F01_second=-1.;  //  initial guess at 2nd derivative
+      Nloops=10; Closer=0.5;
+      F1(1)=SPR_Fmult;
       for (j=1;j<=Nloops;j++)   // loop to find F0.1
       {
+        df=0.001*F1(1);
         F1(2) = F1(1) + df*.5;
         F1(3) = F1(2) - df;
         for (int ii=3;ii>=1;ii--)
         {
-          Fmult_save(ii)=10.00/(1.0+mfexp(-F1(ii)));
           for (f=1;f<=Nfleet;f++)
           {
             if(fleet_type(f)==1 || (fleet_type(f)==2 && bycatch_setup(f,3)==1))
             {
-              for (s=1;s<=nseas;s++) {t=bio_t_base+s; Hrate(f,t)=Fmult_save(ii)*Bmark_RelF_Use(s,f);}
+              for (s=1;s<=nseas;s++) {t=bio_t_base+s; Hrate(f,t)=F1(ii)*Bmark_RelF_Use(s,f);}
             }
             //  else  Hrate for bycatch fleets set above
           }
           Do_Equil_Calc(equ_Recr);
           yld1(ii)=YPR_opt;
         }
-        F01_actual=(yld1(2) - yld1(3))/(Fmult_save(2)-Fmult_save(3));
+        
+        F01_actual=(yld1(2) - yld1(3))/(F1(2)-F1(3));
+        F01_second=((yld1(2)-yld1(1))/(F1(2)-F1(1))-(yld1(1)-yld1(3))/(F1(1)-F1(3)))/(F1(2)-F1(3));
         if(show_MSY==1)
         {
-          report5<<j<<" "<<Fmult_save(1)<<" "<<equ_F_std<<" "<<SSB_equil/SSB_unf<<" "<<YPR_opt<<" "<<F01_actual<<endl;
+          report5<<j<<" "<<F1(1)<<" "<<equ_F_std<<" "<<SSB_equil/SPR_unfished<<" "<<YPR_opt<<" "<<F01_actual<<" "<<F01_second<<endl;
         }
         last_F1=F1(1);
         F1(1) += (F01_origin*0.1-F01_actual)/(F01_second);
@@ -543,8 +544,9 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
         }
       }
 
-    Btgt_Fmult=Fmult_save(1);
-    if(rundetail>0 && mceval_counter==0 && show_MSY==1) cout<<" got_F0.1: "<<Btgt_Fmult<<" dead catch: "<<YPR_dead<<"  Catch for optimize: "<<YPR_opt<<endl;
+    Btgt_Fmult=F1(1);
+    if(rundetail>0 && mceval_counter==0 && show_MSY==1) cout<<" got_F0.1: "<<Btgt_Fmult<<endl;
+    SPR_temp=SSB_equil;
     Equ_SpawnRecr_Result = Equil_Spawn_Recr_Fxn(SR_parm_work(2), SR_parm_work(3), SSB_unf, Recr_unf, SPR_temp);  //  returns 2 element vector containing equilibrium biomass and recruitment at this SPR
     Btgt=Equ_SpawnRecr_Result(1);
     Btgt_Rec=Equ_SpawnRecr_Result(2);
@@ -552,7 +554,7 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
     YPR_Btgt_dead = YPR_dead;           // total dead yield per recruit
     YPR_Btgt_N_dead = YPR_N_dead;           // total dead yield per recruit
     YPR_Btgt_ret = YPR_ret;
-    SPR_Btgt=SSB_equil/SSB_unf;
+    SPR_Btgt=SSB_equil/SPR_unfished;
     Vbio_Btgt=totbio; Vbio1_Btgt=smrybio;
     Mgmt_quant(7)=equ_F_std;
     Mgmt_quant(5)=SSB_equil/SSB_unf*Btgt_Rec;
@@ -919,7 +921,8 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
       if(Do_Benchmark==2)  //  F0.1
       {
         report5<<"#"<<endl<<"F0.1_as_target"<<endl;
-        report5<<"YPR_slope / target "<<F01_actual/(F01_origin*0.1)<<endl;
+        report5<<"slope_target: "<<F01_origin*0.1<<endl;
+        report5<<"slope_calc:   "<<F01_actual<<endl;
         report5<<"SPR@F0.1 "<<SPR_Btgt<<endl;
         report5<<"Fmult "<<Btgt_Fmult<<endl;
         report5<<"F_std "<<Mgmt_quant(7)<<endl;

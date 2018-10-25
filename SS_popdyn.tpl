@@ -1368,12 +1368,10 @@ FUNCTION void get_time_series()
     } //close season loop
   //  SS_Label_Info_24.12 #End loop of seasons
 
-
   //  SS_Label_Info_24.13 #Use current F intensity to calculate the equilibrium SPR for this year
     if( (save_for_report>0) || ((sd_phase() || mceval_phase()) && (initial_params::mc_phase==0)) )
     {
       eq_yr=y; equ_Recr=Recr_virgin; bio_yr=y;
-//      dvariable SSB_unf;
       Fishon=0;
       Do_Equil_Calc(equ_Recr);                      //  call function to do equilibrium calculation with current year's biology
       Smry_Table(y,11)=SSB_equil;
