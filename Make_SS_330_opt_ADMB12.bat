@@ -9,12 +9,12 @@ copy/b SS_versioninfo_330safe.tpl+SS_readstarter.tpl+SS_readdata_330.tpl+SS_read
 
 set "PATH=C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\BIN\amd64_x86;C:\Program Files (x86)\MSBuild\14.0\bin\amd64;C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin\amd64;%PATH%"
 cd "C:\Users\richard.methot\Documents\SS_model\Compile"
-C:\ADMB64\bin\tpl2cpp ss
+C:\ADMB_12.0_use\bin\tpl2cpp ss
 
 pushd "%VS140COMNTOOLS%\..\..\VC" & call vcvarsall.bat amd64 & popd
 
-cl /c /nologo /EHsc /O2 /I. /I"C:\ADMB64" /I"C:\ADMB64\include" /I"C:\ADMB64\contrib\include" /Foss.obj ss.cpp
+cl /c /nologo /EHsc /DOPT_LIB /O2 /I. /I"C:\ADMB_12.0_use" /I"C:\ADMB_12.0_use\include" /I"C:\ADMB_12.0_use\contrib\include" /Foss_opt.obj ss.cpp
 
-cl /Fess.exe ss.obj "C:\ADMB64\lib\admb-contrib.lib" /link
+cl /Fess_opt.exe ss_opt.obj "C:\ADMB_12.0_use\lib\admb-contribo.lib" "C:\ADMB_12.0_use\lib\admbo.lib" /link
 
-dir ss.exe
+dir ss_opt.exe

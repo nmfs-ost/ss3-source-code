@@ -3214,7 +3214,7 @@
 // if Tags are used, the read parameters for initial tag loss, chronic tag loss, andd
 // fleet-specific tag reporting.  Of these, only reporting rate will be allowed to be time-varying
   init_int TG_custom;  // 1=read; 0=create default parameters
-  !! echoinput<<TG_custom<<" TG_custom (need to read even if no tag data )"<<endl;
+  !! echoinput<<TG_custom<<" TG_custom (need to read even if no tag data )  "<<Nfleet1<<endl;
   !! k=TG_custom*Do_TG*(3*N_TG+2*Nfleet1);
   init_matrix TG_parm1(1,k,1,14);  // read initial values
   !! if(k>0) echoinput<<" Tag parameters as read "<<endl<<TG_parm1<<endl;
@@ -3276,7 +3276,7 @@
         TG_parm2(k,7)=-4.;
       }
     }
-
+    echoinput<<"create tag labels  "<<endl;
 //  SS_Label_Info_4.10.1 #Create parameter count and parameter names for tag parameters
        onenum="    ";
        for (j=1;j<=N_TG;j++)
@@ -3296,13 +3296,19 @@
       }
        for (j=1;j<=Nfleet;j++)
       {
-       sprintf(onenum, "%d", j);
-       ParCount++; ParmLabel+="TG_report_fleet:_"+onenum+CRLF(1);
+       if(fleet_type(j)<=2)
+       {
+         sprintf(onenum, "%d", j);
+         ParCount++; ParmLabel+="TG_report_fleet:_"+onenum+CRLF(1);
+       }
       }
        for (j=1;j<=Nfleet;j++)
       {
-       sprintf(onenum, "%d", j);
-       ParCount++; ParmLabel+="TG_rpt_decay_fleet:_"+onenum+CRLF(1);
+       if(fleet_type(j)<=2)
+       {
+         sprintf(onenum, "%d", j);
+         ParCount++; ParmLabel+="TG_rpt_decay_fleet:_"+onenum+CRLF(1);
+       }
       }
 
     TG_parm_LO=column(TG_parm2,1);
