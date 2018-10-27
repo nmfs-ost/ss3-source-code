@@ -1415,8 +1415,8 @@ FUNCTION void write_nucontrol()
     else
     {report4<<"  #_no additional input for selected M option; read 1P per morph"<<endl;}
     report4<<"#"<<endl;
-    report4<<Grow_type<<" # GrowthModel: 1=vonBert with L1&L2; 2=Richards with L1&L2; 3=age_specific_K_incr; 4=age_specific_K_decr; 5=age_specific_K_each; 6=not implemented"<<endl;
-    if(Grow_type<=5)
+    report4<<Grow_type<<" # GrowthModel: 1=vonBert with L1&L2; 2=Richards with L1&L2; 3=age_specific_K_incr; 4=age_specific_K_decr; 5=age_specific_K_each; 6=NA; 7=NA; 8=growth cessation"<<endl;
+    if(Grow_type<=5 || Grow_type==8)
     {report4<<AFIX<<" #_Age(post-settlement)_for_L1;linear growth below this"<<endl<<
       AFIX2<<" #_Growth_Age_for_L2 (999 to use as Linf)"<<endl<<
       Linf_decay<<" #_exponential decay for growth above maxage (value should approx initial Z; -999 replicates 3.24; -998 to not allow growth above maxage)"<<endl;
@@ -1425,7 +1425,7 @@ FUNCTION void write_nucontrol()
       {report4<<Age_K_count<<" # number of K multipliers to read"<<endl<<Age_K_points<<" # ages for K multiplier"<<endl;}
     }
     else
-    {report4<<" #_growth type 6 is not implemented"<<endl;}
+    {report4<<" #_growth type not implemented"<<endl;}
     report4<<"#"<<endl;
     report4<<SD_add_to_LAA<<" #_SD_add_to_LAA (set to 0.1 for SS2 V1.x compatibility)"<<endl;   // constant added to SD length-at-age (set to 0.1 for compatibility with SS2 V1.x
     report4<<CV_depvar<<" #_CV_Growth_Pattern:  0 CV=f(LAA); 1 CV=F(A); 2 SD=F(LAA); 3 SD=F(A); 4 logSD=F(A)"<<endl;

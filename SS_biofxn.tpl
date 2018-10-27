@@ -125,9 +125,15 @@ FUNCTION void get_growth1()
  /*  SS_Label_Function_ 16 #get_growth2; (do seasonal growth calculations for a selected year) */
 FUNCTION void get_growth2()
   {
-//  progress mean growth through time series, accounting for seasonality and possible change in parameters
-//   get mean size at the beginning and end of the season
-//    dvariable grow;
+//  called at beginning of each year, so y is known
+//  if y=styr, then does equilibrium size-at-age according to start year growth parameters
+//  for any year, calculates for each season the size at the beginning of the next season, with growth increment calculated according to that year's parameters 
+
+//Growth Cessation Model code added by Mark Maunder October 2018
+//The growth cessation model is described in 
+//Maunder, M.N., Deriso, R.B., Schaefer, K.M., Fuller, D.W., Aires-da-Silva, A.M., Minte‑Vera, C.V., Campana, S.E. 2018. The growth cessation model: a growth model for species showing a near cessation in growth with application to bigeye tuna (Thunnus obesus). Marine Biology (2018) 165:76. 
+//Ian Taylor derived the formula for Linf
+
     int k2;
     int add_age;
     int ALK_idx2;  //  beginning of first subseas of next season
