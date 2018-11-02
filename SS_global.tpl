@@ -72,7 +72,8 @@ GLOBALS_SECTION
 
 //  declare some entities that need global access
   int ParCount; int timevary_parm_cnt; int N_warn;
-  int styr; int endyr; int YrMax; int nseas; int Ncycle;
+  int styr; int endyr; int YrMax; int nseas; int Ncycle; int seas_as_year;
+
 
 //  SS_Label_Info_10.3  #start random number generator with seed based on time
   random_number_generator radm(long(time(&start)));
@@ -152,7 +153,10 @@ GLOBALS_SECTION
           month-=1000.;
         }
       }
-      temp1=max(0.00001,(month-1.0)/12.);  //  month as fraction of year
+
+      if(seas_as_year==0)
+      {
+        temp1=max(0.00001,(month-1.0)/12.); //  month as fraction of year
       s=1;  // earlist possible seas;
       subseas=1;  //  earliest possible subseas in seas
       temp=subseasdur_delta(s);  //  starting value
@@ -165,9 +169,13 @@ GLOBALS_SECTION
         temp+=subseasdur_delta(s);
       }
       data_timing_seas=(temp1-azero_seas(s))/seasdur(s);  //  remainder converted to fraction of season (and multiplied by seasdur when used)
+      }
+      else
+      {temp1=0.5;  month=0.5*seasdur(1)*12.; s=1;  subseas=timing_constants(4);  data_timing_seas=0.5;}
     }
 
     // i_result(1,6) will contain y, t, s, f, ALK_time, use_midseas
+    // r_result(1,3) will contain: real_month, data_timing_seas*use_midseas, data_timing_yr,
 //    t=styr+(y-styr)*nseas+s-1;
 //    ALK_time=(yr-styr)*nseas*N_subseas+(s-1)*N_subseas+subseas;
     i_result(1)=y;
@@ -175,22 +183,32 @@ GLOBALS_SECTION
     i_result(3)=s;
     i_result(4)=f;
     
-    if(i_result(6)>=0)
+    if(seas_as_year==0)
     {
-      i_result(5)=(y-timing_constants(5))*timing_constants(2)*timing_constants(3)+(s-1)*timing_constants(3)+subseas;  //  ALK_time
-      // r_result(1,3) : real_month, data_timing_seas, data_timing_yr,
-      r_result(1)=month;
-      r_result(2)=data_timing_seas*i_result(6);
-      r_result(3)=float(y)+(month-1.)/12.;  //  year.fraction
+      if(i_result(6)>=0)
+      {
+        i_result(5)=(y-timing_constants(5))*timing_constants(2)*timing_constants(3)+(s-1)*timing_constants(3)+subseas;  //  ALK_time
+        // r_result(1,3) : real_month, data_timing_seas, data_timing_yr,
+        r_result(1)=month;
+        r_result(2)=data_timing_seas*i_result(6);
+        r_result(3)=float(y)+(month-1.)/12.;  //  year.fraction
+      }
+      else  //  assign to midseason
+      {
+        i_result(5)=(y-timing_constants(5))*timing_constants(2)*timing_constants(3)+(s-1)*timing_constants(3)+timing_constants(4);  //  ALK_time
+        data_timing_seas=0.5;
+        month=1.0 + azero_seas(s)*12. + 12.*data_timing_seas*seasdur(s);
+        r_result(1)=month;
+        r_result(2)=data_timing_seas*i_result(6);
+        r_result(3)=float(y)+(month-1.)/12.;  //  year.fraction
+      }
     }
-    else  //  assign to midseason
+    else
     {
-      i_result(5)=(y-timing_constants(5))*timing_constants(2)*timing_constants(3)+(s-1)*timing_constants(3)+timing_constants(4);  //  ALK_time
-      data_timing_seas=0.5;
-      month=1.0 + azero_seas(s)*12. + 12.*data_timing_seas*seasdur(s);
-      r_result(1)=month;
-      r_result(2)=data_timing_seas*i_result(6);
-      r_result(3)=float(y)+(month-1.)/12.;  //  year.fraction
+        i_result(5)=(y-timing_constants(5))*timing_constants(2)*timing_constants(3)+(s-1)*timing_constants(3)+timing_constants(4);  //  ALK_time
+        r_result(1)=month;
+        r_result(2)=data_timing_seas*i_result(6);
+        r_result(3)=float(y)+0.5;  //  year.fraction
     }
     return;
   }

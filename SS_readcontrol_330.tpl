@@ -253,7 +253,7 @@
         k=spawn_seas;  //  earliest possible season for settlement at age 0
       }
       temp=azero_seas(k); //  annual elapsed time fraction at begin of this season
-      Settle_timing_seas(settle_time)=(Settle_month(settle_time)-1.0)/12.;  //  fraction of year at settlement month
+      Settle_timing_seas(settle_time)=(Settle_month(settle_time)-1.0)/sumseas;  //  fraction of year at settlement month
 
       while((temp+seasdur(k))<=Settle_timing_seas(settle_time))
       {
@@ -353,7 +353,7 @@
          GP2(g)=gp2; //   reverse pointer to platoon counter
          GP4(g)=gp;  //  counter for growth pattern
          settle_g(g)=settle;  //  to find the settlement timing for this platoon
-         azero_G(g)=(Settle_month(settle)-1.0)/12.  ; //  settlement month converted to fraction of year; could be > one year
+         azero_G(g)=(Settle_month(settle)-1.0)/sumseas; //  settlement month converted to fraction of year; could be > one year
          for (p=1;p<=pop;p++)
          {
            if(recr_dist_pattern(gp,settle,p)>0.)
@@ -1422,7 +1422,6 @@
    }
    MG_active(0)=sum(MG_active(1,7));
    echoinput<<"MG_active "<<MG_active<<endl;
-   echoinput<<"timevary_MG "<<endl<<timevary_MG<<endl;
  END_CALCS
 
   !!//  SS_Label_Info_4.6 #Read setup for Spawner-Recruitment parameters

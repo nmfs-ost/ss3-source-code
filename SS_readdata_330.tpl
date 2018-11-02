@@ -73,9 +73,18 @@
  LOCAL_CALCS
   sumseas=sum(seasdur);
   if(sumseas>=11.9)
-    {seasdur /=sumseas;}
+    {
+      seasdur /=sumseas;
+      seas_as_year=0;
+      sumseas=12.0;  // to be sure it is exactly 12.
+    }
   else
-    {seasdur /=12.;}
+    {
+      seasdur /=12.;
+      seas_as_year=1;
+      //  sumseas will now be used as the duration of the pseudo-year, rather than assuming year has 12 months;
+      if(nseas>1) { N_warn++; warning<<"Error.  Can only have 1 season when during seasons as psuedo-years."<<endl;  exit(1);}
+    }
   seasdur_half = seasdur*0.5;   // half a season
   subseasdur_delta=seasdur/double(N_subseas);
   TimeMax = styr+(endyr+20-styr)*nseas+nseas-1;
@@ -96,6 +105,13 @@
   echoinput<<seasdur<<" processed season duration (frac. of year) "<<endl;
   echoinput<<subseasdur_delta<<" processed subseason duration (frac. of year) "<<endl;
   echoinput<<" processed subseason cumulative annual time within season "<<endl<<subseasdur<<endl;
+  if(seas_as_year==1)
+    {
+      echoinput<<"Season durations sum to <11.9, so SS assumes you are doing seasons as pseudo-years."<<endl<<
+      "There can be only 1 season in this pseudo-year and SS will ignore month input and assume all observation occur at middle of this pseudo-year"<<endl<<
+      "mortality, growth and movement rates are per annum, so will get multiplied by the duration of this pseudo-year as they are used."<<endl<<
+      "spawn_month and settlement_month in control file are best set to 1.0 when doing pseudo-years"<<endl;
+    }
 
  END_CALCS
 
@@ -109,14 +125,14 @@
   if(read_seas_mo==1)  //  so reading values of integer season
     {
       spawn_seas=spawn_rd;
-      spawn_month=1.0 + azero_seas(spawn_seas)/12.;
+      spawn_month=1.0 + azero_seas(spawn_seas)/sumseas;
       spawn_subseas=1;
       spawn_time_seas=0.0;
     }
   else  //  reading values of month
     {
       spawn_month=spawn_rd;
-      temp1=(spawn_month-1.0)/12.;  //  spawn_month as fraction of year
+      temp1=(spawn_month-1.0)/sumseas;  //  spawn_month as fraction of year
       spawn_seas=1;  // earlist possible spawn_seas;
       spawn_subseas=1;  //  earliest possible subseas in spawn_seas
       temp=azero_seas(spawn_seas)+subseasdur_delta(spawn_seas);  //  starting value
@@ -593,7 +609,6 @@
         j=Svy_N_fleet(f);  //  index of observation as stored in working array
         t=timing_i_result(2);
         ALK_time=timing_i_result(5);
-
 //  some fleet specific indexes and working versions of the data and se
         Svy_time_t(f,j)=t;
         Svy_ALK_time(f,j)=ALK_time;  //  continuous subseas counter in which jth obs from fleet f occurs
