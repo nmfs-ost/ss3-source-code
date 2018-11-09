@@ -2194,9 +2194,15 @@
         }
         case 2:  //  mirror
         {
-          if(Q_setup(f,2)==0 || Q_setup(f,2)>=f)
+          int fmirror;
+          fmirror=Q_setup(f,2);
+          if(fmirror==0 || fmirror>=f)
           {
             N_warn++; cout<<" EXIT - see warning "<<endl; warning<<" illegal mirror for q for fleet: "<<f<<" trying to mirror fleet: "<<Q_setup(f,2)<<endl; exit(1);
+          }
+          if(Q_setup(fmirror,5)==1)
+          {
+            N_warn++; cout<<" EXIT - see warning "<<endl; warning<<" fleet: "<<f<<"  cannot mirror fleet that has float q: "<<fmirror<<endl; exit(1);
           }
           break;
         }

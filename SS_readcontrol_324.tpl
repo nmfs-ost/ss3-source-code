@@ -2387,12 +2387,24 @@
     {
     	Q_parm_1(parm330_cnt).fill("{-25, 25, 0, 0,-1, 1, 1, 0, 0, 0, 0, 0, 0, 0}");
     }
-    if(Q_setup(f,1)<0)  //  mirror
+    echoinput<<f<<"  Q_setup:  "<<Q_setup(f)<<endl;
+    if(Q_setup(f,1)==2)  //  mirror
     {
+      echoinput<<"making adjustments for mirror q"<<endl;
     	Q_parm_1(parm330_cnt).fill("{-25,25,0,0,-1,1,-1, 0, 0, 0, 0, 0, 0, 0}");
       // because Q is a vector for each time series of observations, the mirror is to the first observation's Q
       // so time-varying property cannot be mirrored
       //  need to trap for this when reading
+      int fmirror;
+      fmirror=Q_setup(f,2);
+      if(fmirror==0 || fmirror>=f)
+      {
+        N_warn++; cout<<" EXIT - see warning "<<endl; warning<<" illegal mirror for q for fleet: "<<f<<" trying to mirror fleet: "<<Q_setup(f,2)<<endl; exit(1);
+      }
+      if(Q_setup(fmirror,5)==1)
+      {
+        N_warn++; warning<<" fleet: "<<f<<"  cannot mirror fleet that has float q: "<<fmirror<<" make edits to the converted control file"<<endl;
+      }
     }
     if(Q_setup(f,5)==1)  //  float Q_setup, so cannot be active
       {Q_parm_1(parm330_cnt,7)=-1;}

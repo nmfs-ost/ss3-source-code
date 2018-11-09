@@ -282,6 +282,7 @@ FUNCTION void Get_expected_values();
                if(Q_setup(f,1)==2)        // mirror Q from lower numbered survey
                {
                  Svy_log_q(f,j) = Svy_log_q(Q_setup(f,2),1);
+                 Q_parm(Q_setup_parms(f,1))=Svy_log_q(f,1);    // base Q  So this sets parameter equal to the scaling coefficient and can then have a prior
                }
                else if(Q_setup(f,1)==4)
                {
@@ -325,10 +326,20 @@ FUNCTION void Get_expected_values();
                  }
                  case 1:
                  {
-                   if(Svy_errtype(f)>=0)  //  lognormal or T-distribution
-                   {Svy_est(f,j)=log(vbio+0.000001)+Svy_log_q(f,j);}
+                   if(Q_setup(f,5)==1)  // float  Q calculated and applied in objfun section
+                   {
+                     if(Svy_errtype(f)>=0)  //  lognormal or T-distribution
+                     {Svy_est(f,j)=log(vbio+0.000001);}
+                     else
+                     {Svy_est(f,j)=vbio;}
+                   }
                    else
-                   {Svy_est(f,j)=vbio*Svy_q(f,j);}
+                   {
+                     if(Svy_errtype(f)>=0)  //  lognormal or T-distribution
+                     {Svy_est(f,j)=log(vbio+0.000001)+Svy_log_q(f,j);}
+                     else
+                     {Svy_est(f,j)=vbio*Svy_q(f,j);}
+                   }
                    break;
                  }
                  case 3:  //  link is power function

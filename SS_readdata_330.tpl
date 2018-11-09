@@ -107,10 +107,19 @@
   echoinput<<" processed subseason cumulative annual time within season "<<endl<<subseasdur<<endl;
   if(seas_as_year==1)
     {
-      echoinput<<"Season durations sum to <11.9, so SS assumes you are doing seasons as pseudo-years."<<endl<<
-      "There can be only 1 season in this pseudo-year and SS will ignore month input and assume all observation occur at middle of this pseudo-year"<<endl<<
-      "mortality, growth and movement rates are per annum, so will get multiplied by the duration of this pseudo-year as they are used."<<endl<<
-      "spawn_month and settlement_month in control file are best set to 1.0 when doing pseudo-years"<<endl;
+      echoinput<<"Season durations sum to <11.9, so SS assumes you are doing years as pseudo-seasons."<<endl<<
+      "There can be only 1 season in this timestep and SS will ignore month input and assume all observation occur at middle of this pseudo-year"<<endl<<
+      "mortality, growth and movement rates are per annum, so will get multiplied by the duration of this timestep as they are used."<<endl<<
+      "What gets reported as age is now age in timesteps; and input of age-specific M or K requires one entry per timestep"<<endl<<
+      "Similarly, output of age-specific quantities is in terms of number of timesteps, not real years"<<endl<<
+      "spawn_month and settlement_month in control file are best set to 1.0 when doing years as pseudo-seasons"<<endl;
+      N_warn++;
+      warning<<"Season durations sum to <11.9, so SS assumes you are doing years as pseudo-seasons."<<endl<<
+      "There can be only 1 season in this timestep and SS will ignore month input and assume all observation occur at middle of this pseudo-year"<<endl<<
+      "mortality, growth and movement rates are per annum, so will get multiplied by the duration of this timestep as they are used."<<endl<<
+      "What gets reported as age is now age in timesteps; and input of age-specific M or K requires one entry per timestep"<<endl<<
+      "Similarly, output of age-specific quantities is in terms of number of timesteps, not real years"<<endl<<
+      "spawn_month and settlement_month in control file are best set to 1.0 when doing years as pseudo-seasons"<<endl;
     }
 
  END_CALCS
