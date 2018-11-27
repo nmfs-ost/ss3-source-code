@@ -108,7 +108,7 @@ PROCEDURE_SECTION
        if(nobs_ms_tot>0) cout<<" L-at-A  " <<sizeage_like<<endl;
        if(SzFreq_Nmeth>0) cout<<" sizefreq "<<SzFreq_like<<endl;
        if(Do_TG>0) cout<<" TG-fleetcomp "<<TG_like1<<endl<<" TG-negbin "<<TG_like2<<endl;
-       cout<<" Recr " <<recr_like<<endl;
+       cout<<" Recr " <<recr_like<<"  sum_recdev: "<<sum_recdev<<endl;
        cout<<" InitEQ_Regime " <<regime_like<<endl;
        cout<<" Parm_Priors " <<parm_like<<endl;
        cout<<" Parm_devs " <<parm_dev_like<<endl;
@@ -157,7 +157,7 @@ PROCEDURE_SECTION
         if(recdev_PH>0)
         {
           if(do_recdev==1) {ParmTrace<<" "<<recdev1;}
-          if(do_recdev==2) {ParmTrace<<" "<<recdev2;}
+          if(do_recdev>=2) {ParmTrace<<" "<<recdev2;}
         }
         if(Do_Forecast>0) ParmTrace<<Fcast_recruitments<<" ";
         if(Do_Forecast>0 && Do_Impl_Error>0) ParmTrace<<Fcast_impl_error<<" ";
@@ -202,7 +202,7 @@ PROCEDURE_SECTION
         if(recdev_cycle>0) ParmTrace<<recdev_cycle_parm;
         if(recdev_do_early>0) ParmTrace<<recdev_early<<" ";
         if(do_recdev==1) {ParmTrace<<recdev1<<" ";}
-        if(do_recdev==2) {ParmTrace<<recdev2<<" ";}
+        if(do_recdev>=2) {ParmTrace<<recdev2<<" ";}
         if(Do_Forecast>0) ParmTrace<<Fcast_recruitments<<" "<<Fcast_impl_error<<" ";
         if(N_init_F>0) ParmTrace<<init_F<<" ";
         if(F_Method==2) ParmTrace<<F_rate<<" ";

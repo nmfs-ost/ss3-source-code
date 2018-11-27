@@ -5,7 +5,7 @@ DATA_SECTION
 !!//  SS_Label_Section_1.0 #DATA_SECTION
 
 !!//  SS_Label_Info_1.1.1  #Create string with version info
-!!version_info+="#V3.30.13_beta-safe;_2018_11_08;_Stock_Synthesis_by_Richard_Methot_(NOAA)_using_ADMB_12.0";
+!!version_info+="#V3.30.13_beta-safe;_2018_11_27;_Stock_Synthesis_by_Richard_Methot_(NOAA)_using_ADMB_12.0";
 !!version_info+="#Stock Synthesis (SS) is a work of the U.S. Government and is not subject to copyright protection in the United States.";
 !!version_info+="#Foreign copyrights may apply. See copyright.txt for more information.";
 !!version_info2+="#_user_support_available_at:NMFS.Stock.Synthesis@noaa.gov";
@@ -91,4 +91,5 @@ DATA_SECTION
 !!//  V3.30.13_beta  2018-11-07   fix implementation of seasons as pseudo-years
 !!//  V3.30.13_beta  2018-11-07   fix ss_trans to handle mirror q better
 !!//  V3.30.13_beta  2018-11-08   improve implementation of float q
+!!//  V3.30.13_beta  2018-11-27   add new recdev approaches
 

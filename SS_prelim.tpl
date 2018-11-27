@@ -379,7 +379,7 @@ PRELIMINARY_CALCS_SECTION
 
     if(do_recdev==1)
     {recdev1.initialize();}                // set devs to zero
-    else if(do_recdev==2)
+    else if(do_recdev>=2)
     {recdev2.initialize();}                // set devs to zero
 
     if(recdev_read>0)
@@ -397,7 +397,7 @@ PRELIMINARY_CALCS_SECTION
           {
             if(do_recdev==1)
             {recdev1(y)=recdev_input(j,2);}
-            else if(do_recdev==2)
+            else if(do_recdev>=2)
             {recdev2(y)=recdev_input(j,2);}
           }
           else
@@ -413,7 +413,7 @@ PRELIMINARY_CALCS_SECTION
     }
     echoinput<< " rec_devs read from ctl ";
     if(do_recdev==1) echoinput<<recdev1<<endl;
-    if(do_recdev==2) echoinput<<recdev2<<endl;
+    if(do_recdev>=2) echoinput<<recdev2<<endl;
 
 // **************************************************
     for (i=1;i<=Q_Npar2;i++)

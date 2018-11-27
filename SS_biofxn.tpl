@@ -1125,9 +1125,18 @@ FUNCTION void get_recr_distribution()
   }
   }
 //  SS_Label_Info_18.4  #scale the recr_dist matrix to sum to 1.0
-  if(do_once==1) echoinput<<"recruitment distribution raw "<<endl<<recr_dist<<endl;
   recr_dist/=sum(recr_dist);
-    if(do_once==1) echoinput<<"recruitment distribution in year: "<<y<<"  DIST: "<<endl<<recr_dist<<endl;
+    if(do_once==1) 
+      {
+        echoinput<<"recruitment distribution in year: "<<y<<endl<<"GP Seas Area Use? female_recr_dist male"<<endl;
+      for (gp=1;gp<=N_GP;gp++)
+      for (s=1;s<=N_settle_timings;s++)
+      for (p=1;p<=pop;p++)
+      {echoinput<<gp<<" "<<s<<" "<<p<<" "<<recr_dist_pattern(gp,s,p)<<" "<<recr_dist(gp,s,p);
+        if(gender==2) echoinput<<" "<<recr_dist(gp+N_GP,s,p);
+        echoinput<<endl;
+        }
+     }
   }
 
 //*******************************************************************

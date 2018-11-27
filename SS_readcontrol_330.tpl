@@ -989,8 +989,17 @@
           break;
         }
       }
-      ParmLabel+="CV_young_"+GenderLbl(gg)+GP_Lbl(gp);
-      ParmLabel+="CV_old_"+GenderLbl(gg)+GP_Lbl(gp);
+//  init_int CV_depvar     //  select CV_growth pattern; 0 CV=f(LAA); 1 CV=F(A); 2 SD=F(LAA); 3 SD=F(A); 4 logSD=f(A) 
+      if(CV_depvar<=1)
+      {ParmLabel+="CV_young_"+GenderLbl(gg)+GP_Lbl(gp);
+      ParmLabel+="CV_old_"+GenderLbl(gg)+GP_Lbl(gp);}
+      else if(CV_depvar<=3)
+      {ParmLabel+="SD_young_"+GenderLbl(gg)+GP_Lbl(gp);
+      ParmLabel+="SD_old_"+GenderLbl(gg)+GP_Lbl(gp);}
+      else
+      {ParmLabel+="lnSD_young_"+GenderLbl(gg)+GP_Lbl(gp);
+      ParmLabel+="LnSD_old_"+GenderLbl(gg)+GP_Lbl(gp);}
+        
       ParCount+=2;
       ParmLabel+="Wtlen_1_"+GenderLbl(gg)+GP_Lbl(gp);
       ParmLabel+="Wtlen_2_"+GenderLbl(gg)+GP_Lbl(gp);
@@ -1648,7 +1657,7 @@
  	echoinput<<"SR_parm_RD: "<<SR_parm_RD<<endl;
  END_CALCS
 
-  init_int do_recdev  //  0=none; 1=devvector; 2=simple deviations
+  init_int do_recdev  //  0=none; 1=devvector; 2=simple deviations; 3=dev from R0
   !!echoinput<<do_recdev<<" do_recdev"<<endl;
   init_int recdev_start;
   !!echoinput<<recdev_start<<" recdev_start"<<endl;

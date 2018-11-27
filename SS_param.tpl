@@ -126,7 +126,7 @@ PARAMETER_SECTION
 //  if(SR_parm(N_SRparm2)!=0.0 || SR_parm_PH(N_SRparm2)>0) {SR_autocorr=1;} else {SR_autocorr=0;}  // flag for recruitment autocorrelation
   if(do_recdev==1)
   {k=recdev_start; j=recdev_end; s=1; p=-1;}
-  else if(do_recdev==2)
+  else if(do_recdev>=2)
   {s=recdev_start; p=recdev_end; k=1; j=-1;}
   else
   {s=1; p=-1; k=1; j=-1;}
@@ -438,6 +438,7 @@ PARAMETER_SECTION
   vector catch_like(1,Nfleet)
   number recr_like
   number regime_like
+  number sum_recdev
   number Fcast_recr_like
   number parm_like
   matrix parm_dev_like(1,N_parm_dev,1,2)

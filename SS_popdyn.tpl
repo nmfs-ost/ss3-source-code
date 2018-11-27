@@ -47,7 +47,7 @@ FUNCTION void setup_recdevs()
     if(recdev_do_early>0) {recdev(recdev_early_start,recdev_early_end)=recdev_early(recdev_early_start,recdev_early_end);}
     if(do_recdev==1)
       {recdev(recdev_start,recdev_end)=recdev1(recdev_start,recdev_end);}
-    else if(do_recdev==2)
+    else if(do_recdev>=2)
       {recdev(recdev_start,recdev_end)=recdev2(recdev_start,recdev_end);}
     if(Do_Forecast>0) recdev(recdev_end+1,YrMax)=Fcast_recruitments(recdev_end+1,YrMax);  // only needed here for reporting
   }  //  end setup for recdevs
@@ -714,6 +714,8 @@ FUNCTION void get_time_series()
       }
 
         Recruits=Spawn_Recr(SSB_use,R0_use,SSB_current);  // calls to function Spawn_Recr
+        apply_recdev(Recruits, R0_use);  //  apply recruitment deviation
+        
 // distribute Recruitment of age 0 fish among the current and future settlements; and among areas and morphs
             //  use t offset for each birth event:  Settlement_offset(settle)
             //  so the total number of Recruits will be relative to their numbers at the time of the set of settlement_events.
@@ -1111,6 +1113,7 @@ FUNCTION void get_time_series()
       }
 
         Recruits=Spawn_Recr(SSB_use,R0_use,SSB_current);  // calls to function Spawn_Recr
+        apply_recdev(Recruits, R0_use);  //  apply recruitment deviation
 
 // distribute Recruitment among settlements, areas and morphs
 //  note that because SSB_current is calculated at end of season to take into account Z,

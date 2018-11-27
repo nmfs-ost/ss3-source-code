@@ -33,12 +33,12 @@ FUNCTION void write_nudata()
   report1 << 12.*seasdur<<" #_months/season"<< endl;
   report1 << N_subseas<<" #_Nsubseasons (even number, minimum is 2)"<<endl;
   report1 << spawn_month <<" #_spawn_month"<< endl;
-  report1 << gender_rd<<" #_Ngenders: 1, 2, (use -1 for 1 sex setup with SSB multiplied by female_frac parameter)"<< endl;
+  report1 << gender_rd<<" #_Ngenders: 1, 2, -1  (use -1 for 1 sex setup with SSB multiplied by female_frac parameter)"<< endl;
   report1 << nages<<" #_Nages=accumulator age, first age is always age 0"<< endl;
   report1 << pop<<" #_Nareas"<<endl;
   report1 << Nfleet<<" #_Nfleets (including surveys)"<< endl;
   report1<<"#_fleet_type: 1=catch fleet; 2=bycatch only fleet; 3=survey; 4=ignore "<<endl;
-  report1<<"#_survey_timing: -1 for fishing fleet to midseason catch-at-age for observations, or 1 to use observation month;  (always 1 for surveys)"<<endl;
+  report1<<"#_sample_timing: -1 for fishing fleet to use season-long catch-at-age for observations, or 1 to use observation month;  (always 1 for surveys)"<<endl;
   report1<<"#_fleet_area:  area the fleet/survey operates in "<<endl;
   report1<<"#_units of catch:  1=bio; 2=num (ignored for surveys; their units read later)"<<endl;
   report1<<"#_catch_mult: 0=no; 1=yes"<<endl;
@@ -1632,7 +1632,7 @@ FUNCTION void write_nucontrol()
        report4.precision(6); report4.unsetf(std::ios_base::fixed); report4.unsetf(std::ios_base::floatfield);
     }
 
-   report4<<do_recdev<<" #do_recdev:  0=none; 1=devvector; 2=simple deviations"<<endl;
+   report4<<do_recdev<<" #do_recdev:  0=none; 1=devvector (R=F(SSB)+dev); 2=deviations (R=F(SSB)+dev); 3=deviations (R=R0*dev; dev2=R-f(SSB)); 4=like 3 with sum(dev2) adding penalty"<<endl;
    report4<<recdev_start<<" # first year of main recr_devs; early devs can preceed this era"<<endl;
    report4<<recdev_end<<" # last year of main recr_devs; forecast devs start in following year"<<endl;
    report4<<recdev_PH_rd<<" #_recdev phase "<<endl;

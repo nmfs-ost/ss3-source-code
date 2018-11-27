@@ -139,14 +139,19 @@ FUNCTION dvariable Spawn_Recr(const prevariable& SSB_virgin_adj, const prevariab
         break;
       }
     }
+    RETURN_ARRAYS_DECREMENT();
+    return NewRecruits;
+  }  //  end spawner_recruitment
 
-    if(SR_fxn!=7)
-    {
+FUNCTION void apply_recdev(prevariable& NewRecruits,  const prevariable& Recr_virgin_adj)
+  {
+    RETURN_ARRAYS_INCREMENT();
 //  SS_Label_43.4  For non-survival based SRR, get recruitment deviations by adjusting recruitment itself
       exp_rec(y,1)=NewRecruits;   // expected arithmetic mean recruitment
 //    exp_rec(y,2) is with regime shift or other env effect;
 //    exp_rec(y,3) is with bias adjustment
 //    exp_rec(y,4) is with dev
+      regime_change=SR_parm_work(N_SRparm2-1);  //  this is a persistent deviation off the S/R curve
 
       if(recdev_cycle>0)
       {
@@ -160,7 +165,17 @@ FUNCTION dvariable Spawn_Recr(const prevariable& SSB_virgin_adj, const prevariab
 
       if(y<=recdev_end)
       {
-        if(recdev_doit(y)>0) NewRecruits*=mfexp(recdev(y));  //  recruitment deviation
+        if(recdev_doit(y)>0)
+        {
+        if(do_recdev>=3)
+        {
+          NewRecruits=Recr_virgin_adj*mfexp(recdev(y));  //  recruitment deviation
+        }
+        else if(SR_fxn!=7)
+        {
+          NewRecruits*=mfexp(recdev(y));  //  recruitment deviation
+        }
+        }
       }
 
       else if(Do_Forecast>0)
@@ -206,9 +221,7 @@ FUNCTION dvariable Spawn_Recr(const prevariable& SSB_virgin_adj, const prevariab
         NewRecruits*=mfexp(Fcast_recruitments(y));  //  recruitment deviation
       }
       exp_rec(y,4)=NewRecruits;
-    }
     RETURN_ARRAYS_DECREMENT();
-    return NewRecruits;
   }  //  end spawner_recruitment
 
 //********************************************************************

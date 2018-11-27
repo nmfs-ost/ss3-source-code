@@ -573,20 +573,41 @@ FUNCTION void evaluate_the_objective_function()
       recr_like = sd_offset_rec*log(sigmaR);
       // where sd_offset_rec takes account for the number of recruitment years fully estimated
       // this is calculated as the sum of the biasadj vector
-      if(SR_autocorr==0)
+      if(do_recdev<3)
       {
-      recr_like += norm2(recdev(recdev_first,recdev_end))/two_sigmaRsq;
+        if(SR_autocorr==0)
+        {
+        recr_like += norm2(recdev(recdev_first,recdev_end))/two_sigmaRsq;
+        }
+        else
+        {
+          rho=SR_parm(N_SRparm2);
+          recr_like += square(recdev(recdev_first))/two_sigmaRsq;
+          for (y=recdev_first+1;y<=recdev_end;y++)
+          {
+            recr_like += square(recdev(y)-rho*recdev(y-1)) / ((1.0-rho*rho)*two_sigmaRsq);
+          }
+        }
+        sum_recdev=sum(recdev);
       }
       else
       {
         rho=SR_parm(N_SRparm2);
-        recr_like += square(recdev(recdev_first))/two_sigmaRsq;
+        dvariable dev;
+        dvariable dev_last;
+        dev_last=log(exp_rec(recdev_first,3)/exp_rec(recdev_first,4));
+        recr_like += square(dev_last)/two_sigmaRsq;
+        sum_recdev=dev_last;
         for (y=recdev_first+1;y<=recdev_end;y++)
         {
-          recr_like += square(recdev(y)-rho*recdev(y-1)) / ((1.0-rho*rho)*two_sigmaRsq);
+          dev=log(exp_rec(y,3)/exp_rec(y,4));
+          recr_like += square(dev-rho*dev_last) / ((1.0-rho*rho)*two_sigmaRsq);
+          dev_last=dev;
+          sum_recdev+=dev;  //  get sum of devs
         }
       }
       regime_like = 0.5 * square( log(R1/R1_exp) / (sigmaR/ave_age) );
+      if(do_recdev==4) regime_like+=square(sum_recdev);
       if(do_once==1) cout<<" did recruitdev obj_fun "<<recr_like<<" "<<sd_offset_rec<<" "<<two_sigmaRsq<<endl;
     }
     if(Do_Forecast>0)

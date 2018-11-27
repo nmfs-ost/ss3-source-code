@@ -250,7 +250,7 @@ FUNCTION void write_SS_summary()
     SS_smry<<datfilename<<" #_DataFile "<<endl;
     SS_smry<<ctlfilename<<" #_Control "<<endl;
     SS_smry<<"Run_Date: "<<ctime(&start);
-
+    SS_smry<<"Final_phase: "<<current_phase()<<"  N_iterations: "<<niter<<endl;
     k=current_phase();
     if(k>max_lambda_phase) k=max_lambda_phase;
     SS_smry<<"#_LIKELIHOOD "<<endl;
@@ -273,6 +273,7 @@ FUNCTION void write_SS_summary()
     }
     SS_smry <<"Recruitment "<<recr_like*recrdev_lambda(k)<<endl;
     SS_smry <<"InitEQ_regime "<<regime_like*regime_lambda(k)<<endl;
+    SS_smry <<"Sum_recdevs "<<sum_recdev<<endl;
     SS_smry <<"Forecast_Recruitment "<<Fcast_recr_like<<endl;
     SS_smry <<"Parm_priors "<<parm_like*parm_prior_lambda(k)<<endl;
     SS_smry <<"Parm_softbounds "<<SoftBoundPen<<endl;
