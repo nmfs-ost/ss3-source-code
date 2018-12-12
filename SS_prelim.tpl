@@ -296,7 +296,7 @@ PRELIMINARY_CALCS_SECTION
         k=SzFreq_obs_hdr(iobs,6);  //  get the method
         f=abs(SzFreq_obs_hdr(iobs,3));
         s=SzFreq_obs_hdr(iobs,2);  // sign used to indicate start/stop of super period
-//        if(SzFreq_obs_hdr(iobs,3)>0)
+        if(SzFreq_sampleN(iobs)>0)
         {
             z1=SzFreq_obs_hdr(iobs,7);
             z2=SzFreq_obs_hdr(iobs,8);

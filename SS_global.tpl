@@ -830,7 +830,6 @@ REPORT_SECTION
     }
   }
   }
-
 //  SS_Label_Info_13.2 #Call fxn write_bigoutput() as last_phase finishes and before doing Hessian
     if(last_phase()>0)
     {

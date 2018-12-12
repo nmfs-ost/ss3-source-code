@@ -143,6 +143,11 @@ FUNCTION void write_bigoutput()
   SS2out<<"Fleet_name: "; for(f=1;f<=Nfleet;f++) {SS2out<<" "<<fleetname(f);}
   SS2out<<endl<<"Fleet_type: "<<fleet_type<<endl;
   SS2out<<"Fleet_area: "<<fleet_area<<endl;
+  SS2out<<"Lencomp_error_type: "<<Comp_Err_L<<endl;
+  SS2out<<"Lencomp_error_parms: "<<Comp_Err_L2<<endl;
+  SS2out<<"Agecomp_error_type: "<<Comp_Err_A<<endl;
+  SS2out<<"Agecomp_error_parms: "<<Comp_Err_A2<<endl;
+  SS2out<<"#"<<endl;
   SS2out<<"Fleet fleet_type timing area catch_units catch_mult survey_units survey_error Fleet_name"<<endl;
   for (f=1;f<=Nfleet;f++)
   {

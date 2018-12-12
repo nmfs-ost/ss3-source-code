@@ -54,7 +54,6 @@ FUNCTION void get_growth1()
       {
         VBK_seas=sum(seasdur);  // set vector to null effect
       }
-
       for(gp=1;gp<=N_GP;gp++)
       for (j=1;j<=8;j++)
       {
@@ -1496,7 +1495,8 @@ FUNCTION void get_saveGparm()
             save_seas_parm(s,k)=value(wtlen_p(GPat,k)*wtlen_seas(s,GPat,k));
             }
             save_seas_parm(s,9)=value(Lmin(1));
-            save_seas_parm(s,10)=value(VBK(1,nages)*VBK_seas(s));
+            if(Grow_type<=2 || Grow_type==8) save_seas_parm(s,10)=value(VBK(1,0)*VBK_seas(s));
+            if(Grow_type>=3 && Grow_type<=5) save_seas_parm(s,10)=value(VBK(1,nages)*VBK_seas(s));
           }
         }
     }

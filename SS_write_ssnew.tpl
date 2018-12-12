@@ -1908,6 +1908,19 @@ FUNCTION void write_nucontrol()
         report4<<"  #  "<<ParmLabel(NP)<<endl;
       }
     }
+    if(Comp_Err_ParmCount>0)
+    {
+      report4<<"#_Dirichlet parameters"<<endl;
+      k=Comp_Err_Parm_Start;
+      for(f=1;f<=Comp_Err_ParmCount;f++)
+      {
+          k++; NP++;
+          for(z=1;z<=6;z++) report4<<setw(14)<<selparm_1(k,z);
+          for(z=7;z<=14;z++) report4<<setw(11)<<selparm_1(k,z);
+          report4<<"  #  "<<ParmLabel(NP)<<endl;
+      }
+    }
+
   if(N_selparm3 > N_selparm)
   {
     report4<<"# timevary selex parameters "<<endl;

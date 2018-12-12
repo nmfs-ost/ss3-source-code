@@ -481,12 +481,11 @@ FUNCTION void evaluate_the_objective_function()
           f=abs(SzFreq_obs_hdr(iobs,3));
           z1=SzFreq_obs_hdr(iobs,7);
           z2=SzFreq_obs_hdr(iobs,8);
-          //  is there a check for ignored obs with f<0?
           SzFreq_like(SzFreq_LikeComponent(f,k))-=SzFreq_sampleN(iobs)*SzFreq_obs(iobs)(z1,z2)*log(SzFreq_exp(iobs)(z1,z2));
         }
       }
 
-      if(do_once==1) cout<<" did sizefreq obj_fun: "<<SzFreq_like<<endl;
+      if(do_once==1) cout<<" did sizefreq obj_fun: "<<SzFreq_like<<"  base: "<<SzFreq_like_base<<endl;
     }
 
   //  SS_Label_Info_25.8 #Fit to morph composition
@@ -595,12 +594,26 @@ FUNCTION void evaluate_the_objective_function()
         rho=SR_parm(N_SRparm2);
         dvariable dev;
         dvariable dev_last;
-        dev_last=log(exp_rec(recdev_first,3)/exp_rec(recdev_first,4));
+        if(recdev_first>=styr)
+        {
+          dev_last=log(exp_rec(recdev_first,3)/exp_rec(recdev_first,4));
+        }
+        else
+        {
+          dev_last=recdev(recdev_first);
+        }
         recr_like += square(dev_last)/two_sigmaRsq;
         sum_recdev=dev_last;
         for (y=recdev_first+1;y<=recdev_end;y++)
         {
-          dev=log(exp_rec(y,3)/exp_rec(y,4));
+          if(y>=styr)
+          {
+            dev=log(exp_rec(y,3)/exp_rec(y,4));
+          }
+          else
+          {
+            dev=recdev(y);
+          }
           recr_like += square(dev-rho*dev_last) / ((1.0-rho*rho)*two_sigmaRsq);
           dev_last=dev;
           sum_recdev+=dev;  //  get sum of devs

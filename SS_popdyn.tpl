@@ -78,7 +78,6 @@ FUNCTION void get_initial_conditions()
 //  following call is to routine that does this for all timevary parameters
 //  that are then copied over to replace the base parameter for MG, SRR, Q, Selex, or Tag as needed
   make_timevaryparm();  //  this fills array parm_timevary for all years;   densitydependence must be done year-by-year later
-
   if(MG_active(0)>0 || save_for_report>0)
     {
       get_MGsetup();
@@ -427,6 +426,8 @@ FUNCTION void get_initial_conditions()
    //  apply a fraction of the bias adjustment, so bias adjustment gets less linearly as proceed back in time
    if(recdev_first<styr)
    {
+    if(do_recdev<=2 && SR_fxn!=4)
+    {
      for (p=1;p<=pop;p++)
      for (g=1;g<=gmorph;g++)
      for (a=styr-recdev_first; a>=1; a--)
@@ -434,6 +435,18 @@ FUNCTION void get_initial_conditions()
        j=styr-a;
        natage(styr,p,g,a) *=mfexp(recdev(j)-biasadj(j)*half_sigmaRsq);
      }
+    }
+    else
+    {
+     for (p=1;p<=pop;p++)
+     for (g=1;g<=gmorph;g++)
+     for (a=styr-recdev_first; a>=1; a--)
+     {
+       j=styr-a;
+       natage(styr,p,g,a) *=mfexp(recdev(j));
+     }
+    }
+      
    }
    SSB_pop_gp(styr)=SSB_pop_gp(styr-1);  //  placeholder in case not calculated early in styr
 
