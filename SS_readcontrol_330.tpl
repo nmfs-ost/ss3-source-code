@@ -1736,6 +1736,13 @@
   }
 
   recdev_early_start=recdev_early_start_rd;
+  
+  if(do_recdev==0)
+    {
+      recdev_PH_rd=-3;
+      recdev_early_PH_rd=-4;
+      Fcast_recr_PH_rd=-4;
+    }
   if(recdev_adv>0)
   {echoinput<<"#_start of advanced SR options"<<endl;}
   else
@@ -2777,9 +2784,6 @@
        }
      }
 
-     // account for the low and high bin parameters
-     if(seltype(f,1) == 41 || seltype(f,1) == 42) N_selparmvec(f)+=2;
-
 //  age-specific retention function
      if(seltype(f,2)>=1)
      {
@@ -3376,13 +3380,20 @@
          {
            sprintf(onenum, "%d", y);
            ParCount++;
-           if(timevary_setup(9)==1)
+           int picker=timevary_setup(9);
+           int continue_last=0;
+           if(picker>20)
+           {
+            picker-=20;
+            continue_last=1;
+           }
+           if(picker==1)
            {ParmLabel+=ParmLabel(f)+"_DEVmult_"+onenum+CRLF(1);}
-           else if(timevary_setup(9)==2)
+           else if(picker==2)
            {ParmLabel+=ParmLabel(f)+"_DEVadd_"+onenum+CRLF(1);}
-           else if(timevary_setup(9)==3)
+           else if(picker==3)
            {ParmLabel+=ParmLabel(f)+"_DEVrwalk_"+onenum+CRLF(1);}
-           else if(timevary_setup(9)==4)
+           else if(picker==4)
            {ParmLabel+=ParmLabel(f)+"_DEV_MR_rwalk_"+onenum+CRLF(1);}
            else
            {N_warn++; cout<<" EXIT - see warning "<<endl; warning<<" illegal parmdevtype for parm "<<f<<endl; exit(1);}
@@ -3883,7 +3894,7 @@
   if(depletion_fleet>0 && depletion_type==1) 
     {
       Turn_off_phase2=1;
-      echoinput<<"depletion fleet and type are: "<<depletion_fleet<<" "<<depletion_type<<" so set turn0ff to phase 1 "<<endl;
+      echoinput<<"depletion fleet and type are: "<<depletion_fleet<<" "<<depletion_type<<" so set turn-off to phase 1 "<<endl;
     }
   max_phase=1;
   active_count=0;

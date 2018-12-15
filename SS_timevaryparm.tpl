@@ -223,7 +223,14 @@ FUNCTION void make_timevaryparm()
         if(do_once==1) echoinput<<"dev vector #: "<<k<<endl;
         parm_dev_stddev(k)=timevary_parm(timevary_parm_cnt);
         parm_dev_rho(k)=timevary_parm(timevary_parm_cnt+1);
-        switch(timevary_setup(9))
+        int picker=timevary_setup(9);
+        int continue_last=0;
+        if(picker>20)
+          {
+            picker-=20;
+            continue_last=1;
+          }
+        switch(picker)
         {
           case 1:
           {
@@ -264,6 +271,10 @@ FUNCTION void make_timevaryparm()
             }
             break;
           }
+        }
+        if(continue_last==1)
+        {
+          for(j=timevary_setup(11)+1;j<=YrMax;j++) parm_timevary(tvary,j) = parm_timevary(tvary,timevary_setup(11));
         }
       }
       if(do_once==1) echoinput<<"result by year: "<<parm_timevary(tvary)<<endl;

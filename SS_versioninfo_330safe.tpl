@@ -5,7 +5,7 @@ DATA_SECTION
 !!//  SS_Label_Section_1.0 #DATA_SECTION
 
 !!//  SS_Label_Info_1.1.1  #Create string with version info
-!!version_info+="#V3.30.13_beta-safe;_2018_12_12;_Stock_Synthesis_by_Richard_Methot_(NOAA)_using_ADMB_12.0";
+!!version_info+="#V3.30.13_beta-safe;_2018_12_14;_Stock_Synthesis_by_Richard_Methot_(NOAA)_using_ADMB_12.0";
 !!version_info+="#Stock Synthesis (SS) is a work of the U.S. Government and is not subject to copyright protection in the United States.";
 !!version_info+="#Foreign copyrights may apply. See copyright.txt for more information.";
 !!version_info2+="#_user_support_available_at:NMFS.Stock.Synthesis@noaa.gov";
@@ -94,5 +94,6 @@ DATA_SECTION
 !!//  V3.30.13_beta  2018-11-27   add new recdev approaches; but still testing for early recdevs
 !!//  V3.30.13_beta  2018-12-06   fix reporting when using seasonal MGparms
 !!//  V3.30.13_beta  2018-12-12   fix output of Dirichlet parameters
+!!//  V3.30.13_beta  2018-12-14   add dev vector options so last dev persists to end of time series (codes 21, 22, 23, 24)
 
 

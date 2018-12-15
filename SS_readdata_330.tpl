@@ -1387,6 +1387,8 @@
            {obs_l(f,j,z)= lendata[i](6+z);}
 
           if(sum(obs_l(f,j))<=0.0) {N_warn++; warning<<" zero fish in size comp (fleet, year) "<<f<<" "<<y<<endl; cout<<" EXIT - see warning "<<endl; exit(1);}
+          if(nsamp_l_read(f,j)<=0.0)
+          {N_warn++; cout<<" EXIT - see warning "<<endl; warning<<" Input N is <=0.0 in length comp "<<header_l_rd(f,j)<<endl;  exit(1);}
           tails_l(f,j,1)=1;
           tails_l(f,j,2)=nlen_bin;
           tails_l(f,j,3)=nlen_binP;
@@ -1828,6 +1830,8 @@
            {obs_a(f,j,b)=Age_Data[i](9+b);}
            if(sum(obs_a(f,j))<=0.0)
            {N_warn++; cout<<" EXIT - see warning "<<endl; warning<<" zero fish in age comp "<<header_a(f,j)<<endl;  exit(1);}
+           if(nsamp_a_read(f,j)<=0.0)
+           {N_warn++; cout<<" EXIT - see warning "<<endl; warning<<" Input N is <=0.0 in age comp "<<header_a_rd(f,j)<<endl;  exit(1);}
 
            Lbin_lo(f,j)=Age_Data[i](7);
            Lbin_hi(f,j)=Age_Data[i](8);
@@ -2415,6 +2419,10 @@
           for (z=SzFreq_Nbins(k)+1;z<=SzFreq_Setup2(iobs);z++) {SzFreq_obs(iobs,z)=SzFreq_obs1(iobs,7+z);}
         }
         if(gender==1) SzFreq_obs_hdr(iobs,4)=1;  // just in case
+        if(sum(SzFreq_obs(iobs))<=0.0)
+        {N_warn++; cout<<" EXIT - see warning "<<endl; warning<<" zero fish in size comp "<<SzFreq_obs_hdr(iobs)<<endl;  exit(1);}
+        if(SzFreq_sampleN(iobs)<=0.0)
+        {N_warn++; cout<<" EXIT - see warning "<<endl; warning<<" Input N is <=0.0 in size comp "<<SzFreq_obs_hdr(iobs)<<endl;  exit(1);}
 
         f=abs(SzFreq_obs_hdr(iobs,3));
         SzFreq_obs(iobs)/=sum(SzFreq_obs(iobs));

@@ -1386,7 +1386,7 @@ FUNCTION void write_nucontrol()
   {report4<<"#_Cond "<<0<<" #_blocks_per_pattern "<<endl<<"# begin and end years of blocks"<<endl;}
   report4<<"#"<<endl;
   report4<<"# controls for all timevary parameters "<<endl;
-  report4<<parm_adjust_method<<" #_env/block/dev_adjust_method for all time-vary parms (1=warn relative to base parm bounds; 3=no bound check)"<<endl<<"#  autogen"<<endl;
+  report4<<parm_adjust_method<<" #_env/block/dev_adjust_method for all time-vary parms (1=warn relative to base parm bounds; 3=no bound check)"<<endl<<"#"<<endl<<"# AUTOGEN"<<endl;
   if(timevary_cnt>0)
   {
     report4<<"1 1 1 1 1 # autogen: 1st element for biology, 2nd for SR, 3rd for Q, 4th reserved, 5th for selex"<<endl;
@@ -1395,14 +1395,14 @@ FUNCTION void write_nucontrol()
   {
     report4<<"0 0 0 0 0 # autogen: 1st element for biology, 2nd for SR, 3rd for Q, 4th reserved, 5th for selex"<<endl;
   }
-  report4<<"# where: 0 = autogen all time-varying parms; 1 = read each time-varying parm line; 2 = read then autogen if parm min==-12345"<<endl<<"# "<<endl;
+  report4<<"# where: 0 = autogen all time-varying parms; 1 = read each time-varying parm line; 2 = read then autogen if parm min==-12345"<<endl;
 
   report4<<"#"<<endl<<"#_Available timevary codes"<<endl;
   report4<<"#_Block types: 0: Pblock=Pbase*exp(TVP); 1: Pblock=Pbase+TVP; 2: Pblock=TVP; 3: Pblock=Pblock(-1) + TVP"<<endl;
   report4<<"#_Block_trends: -1: trend bounded by base parm min-max and parms in transformed units (beware); -2: endtrend and infl_year direct values; -3: end and infl as fraction of base range"<<endl;
   
   report4<<"#_EnvLinks:  1: P(y)=Pbase*exp(TVP*env(y));  2: P(y)=Pbase+TVP*env(y);  3: null;  4: P(y)=2.0/(1.0+exp(-TVP1*env(y) - TVP2))"<<endl;
-  report4<<"#_DevLinks:  1: P(y)*=exp(dev(y)*dev_se;  2: P(y)+=env(y)*dev_se;  3: random walk;  4: zero-reverting random walk with rho"<<endl;
+  report4<<"#_DevLinks:  1: P(y)*=exp(dev(y)*dev_se;  2: P(y)+=env(y)*dev_se;  3: random walk;  4: zero-reverting random walk with rho;  21-24 keep last dev for rest of years"<<endl<<"#"<<endl;
   report4<<"#"<<endl;
   report4<<"#"<<endl<<"# setup for M, growth, maturity, fecundity, recruitment distibution, movement "<<endl;
   report4<<"#"<<endl<<natM_type<<" #_natM_type:_0=1Parm; 1=N_breakpoints;_2=Lorenzen;_3=agespecific;_4=agespec_withseasinterpolate"<<endl;
