@@ -91,9 +91,10 @@ DATA_SECTION
 !!//  V3.30.13_beta  2018-11-07   fix implementation of seasons as pseudo-years
 !!//  V3.30.13_beta  2018-11-07   fix ss_trans to handle mirror q better
 !!//  V3.30.13_beta  2018-11-08   improve implementation of float q
-!!//  V3.30.13_beta  2018-11-27   add new recdev approaches; but still testing for early recdevs
 !!//  V3.30.13_beta  2018-12-06   fix reporting when using seasonal MGparms
 !!//  V3.30.13_beta  2018-12-12   fix output of Dirichlet parameters
 !!//  V3.30.13_beta  2018-12-14   add dev vector options so last dev persists to end of time series (codes 21, 22, 23, 24)
+!!//  V3.30.13_beta  2018-12-20   fix reading of sizecomp obs before styr
+!!//  V3.30.13_beta  2018-12-20   add new recdev approaches based on dev being relative to R0, not SRR
 
 

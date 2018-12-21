@@ -63,9 +63,20 @@
  LOCAL_CALCS
   sumseas=sum(seasdur);
   if(sumseas>=11.9)
-    {seasdur /=sumseas;}
+    {
+      seasdur /=sumseas;
+      seas_as_year=0;
+      sumseas=12.0;  // to be sure it is exactly 12.
+    }
   else
-    {seasdur /=12.;}
+    {
+      seasdur /=12.;
+      seas_as_year=1;
+      //  sumseas will now be used as the duration of the pseudo-year, rather than assuming year has 12 months;
+      if(nseas>1) { N_warn++; warning<<"Error.  Can only have 1 season when during seasons as psuedo-years."<<endl;  exit(1);}
+    }
+
+
   seasdur_half = seasdur*0.5;   // half a season
   subseasdur_delta=seasdur/double(N_subseas);
   TimeMax = styr+(endyr+20-styr)*nseas+nseas-1;
@@ -2282,6 +2293,12 @@
   int SzFreqMethod_seas;
 
  LOCAL_CALCS
+  SzFreq_units_label+="bio";
+  SzFreq_units_label+="numbers";
+  SzFreq_scale_label+="kg";
+  SzFreq_scale_label+="lbs";
+  SzFreq_scale_label+="cm";
+  SzFreq_scale_label+="inches";
   g=0;
   data_type=6;  //  for generalized size composition data
 
@@ -2482,10 +2499,6 @@
         SzFreq_obs_hdr(iobs,2)=SzFreq_obs_hdr(iobs,2)/abs(SzFreq_obs_hdr(iobs,2))*real_month;
         SzFreq_obs1(iobs,3)=real_month;
 
-        t=styr+(y-styr)*nseas+s-1;
-        ALK_time=(y-styr)*nseas*N_subseas+(s-1)*N_subseas+subseas;
-        SzFreq_time_t(iobs)=t;
-        SzFreq_time_ALK(iobs)=ALK_time;
         if(gender==1) {SzFreq_obs_hdr(iobs,4)=0;}
         z=SzFreq_obs_hdr(iobs,4);  // gender
 // get min and max index according to use of 0, 1, 2, 3 gender index
@@ -2496,12 +2509,16 @@
         if(k!=SzFreq_obs1(iobs,1)) {N_warn++; warning<<" sizefreq ID # doesn't match "<<endl; } // save method code for later use
         if(y>=styr && y<=retro_yr)
         {
+          t=styr+(y-styr)*nseas+s-1;
+          ALK_time=(y-styr)*nseas*N_subseas+(s-1)*N_subseas+subseas;
+          SzFreq_time_t(iobs)=t;
+          SzFreq_time_ALK(iobs)=ALK_time;
           SzFreq_LikeComponent(f,k)=1;    // indicates that this combination is being used
           if(SzFreq_HaveObs2(k,ALK_time)==0)  //  transition matirx needs calculation
-            {
-            	SzFreq_HaveObs2(k,ALK_time)=1;  // flad showing condition met
-            	SzFreq_obs_hdr(iobs,9)=1;  //  flag that will be ehecked in ss_expval
-            }
+          {
+          	SzFreq_HaveObs2(k,ALK_time)=1;  // flad showing condition met
+          	SzFreq_obs_hdr(iobs,9)=1;  //  flag that will be ehecked in ss_expval
+          }
 
           have_data(ALK_time,0,0,0)=1;
           have_data(ALK_time,f,0,0)=1;  //  so have data of some type
@@ -2514,6 +2531,8 @@
         else
         {
           SzFreq_obs_hdr(iobs,3)=-abs(SzFreq_obs_hdr(iobs,3));  //  flag for skipping this obs
+          SzFreq_time_t(iobs)=styr;
+          SzFreq_time_ALK(iobs)=1;
         }
       }
     }

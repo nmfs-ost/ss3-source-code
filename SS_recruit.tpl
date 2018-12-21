@@ -49,6 +49,19 @@ FUNCTION dvariable Spawn_Recr(const prevariable& SSB_virgin_adj, const prevariab
                        (SSB_virgin_adj*(1.-steepness)+(5.*steepness-1.)*SSB_curr_adj);
         break;
       }
+
+// Beverton-Holt with alpha beta
+ /*
+      case 3: // Beverton-Holt
+      {
+        steepness=SR_parm_work(2);
+        alpha = 4.0 * steepness*Recr_virgin / (5.*steepness-1.);
+        beta = (SSB_virgin_adj*(1.-steepness)) / (5.*steepness-1.);
+        NewRecruits =  (alpha*SSB_curr_adj) / (beta+SSB_curr_adj);
+        break;
+      }
+ */
+
 //  SS_Label_43.3.4  constant expected recruitment
       case 4:  // none
       {

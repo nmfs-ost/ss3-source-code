@@ -951,7 +951,7 @@ FUNCTION void write_bigoutput()
 
 //  SPAWN-RECR: output to report.sso
   dvariable steepness=SR_parm(2);
-  SS2out<<endl<<"SPAWN_RECRUIT Function: "<<SR_fxn<<" _ _ _ _ _ _"<<endl<<
+  SS2out<<endl<<"SPAWN_RECRUIT Function: "<<SR_fxn<<"  RecDev_method: "<<do_recdev<<"   sum_recdev: "<<sum_recdev<<endl<<
   SR_parm(1)<<" Ln(R0) "<<mfexp(SR_parm(1))<<endl<<
   steepness<<" steepness"<<endl<<
   Bmsy/SSB_virgin<<" Bmsy/Bzero ";
@@ -992,12 +992,12 @@ FUNCTION void write_bigoutput()
    else
    {SS2out<<endl;}
 
-  SS2out<<"Yr SpawnBio exp_recr with_regime bias_adjusted pred_recr dev biasadjuster era mature_bio mature_num"<<endl;
+  SS2out<<"Yr SpawnBio exp_recr with_regime bias_adjusted pred_recr dev biasadjuster era mature_bio mature_num raw_dev"<<endl;
   SS2out<<"S/Rcurve "<<SSB_virgin<<" "<<Recr_virgin<<endl;
   y=styr-2;
-  SS2out<<"Virg "<<SSB_yr(y)<<" "<<exp_rec(y)<<" - "<<0.0<<" Virg "<<SSB_B_yr(y)<<" "<<SSB_N_yr(y)<<endl;
+  SS2out<<"Virg "<<SSB_yr(y)<<" "<<exp_rec(y)<<" - "<<0.0<<" Virg "<<SSB_B_yr(y)<<" "<<SSB_N_yr(y)<<" 0.0 "<<endl;
   y=styr-1;
-  SS2out<<"Init "<<SSB_yr(y)<<" "<<exp_rec(y)<<" - "<<0.0<<" Init "<<SSB_B_yr(y)<<" "<<SSB_N_yr(y)<<endl;
+  SS2out<<"Init "<<SSB_yr(y)<<" "<<exp_rec(y)<<" - "<<0.0<<" Init "<<SSB_B_yr(y)<<" "<<SSB_N_yr(y)<<" "<<0.0<<endl;
 
   if(recdev_first<styr)
   {
@@ -1005,23 +1005,23 @@ FUNCTION void write_bigoutput()
     {
       SS2out<<y<<" "<<SSB_yr(styr-1)<<" "<<exp_rec(styr-1,1)<<" "<<exp_rec(styr-1,2)<<" "<<exp_rec(styr-1,3)*mfexp(-biasadj(y)*half_sigmaRsq)<<" "<<
       exp_rec(styr-1,3)*mfexp(recdev(y)-biasadj(y)*half_sigmaRsq)<<" "
-      <<recdev(y)<<" "<<biasadj(y)<<" Init_age "<<SSB_B_yr(styr-1)<<" "<<SSB_N_yr(styr-1)<<endl;
+      <<recdev(y)<<" "<<biasadj(y)<<" Init_age "<<SSB_B_yr(styr-1)<<" "<<SSB_N_yr(styr-1)<<" "<<recdev(y)<<endl;   // newdev approach uses devs for initial agecomp directly
     }
   }
    for (y=styr;y<=YrMax;y++)
    {
      SS2out<<y<<" "<<SSB_yr(y)<<" "<<exp_rec(y)<<" ";
      if(recdev_do_early>0 && y>=recdev_early_start && y<=recdev_early_end)
-       {SS2out<<recdev(y)<<" "<<biasadj(y)<<" Early "<<SSB_B_yr(y)<<" "<<SSB_N_yr(y);}
+       {SS2out<<log(exp_rec(y,4)/exp_rec(y,3))<<" "<<biasadj(y)<<" Early "<<SSB_B_yr(y)<<" "<<SSB_N_yr(y)<<" "<<recdev(y);}
      else if(y>=recdev_start && y<=recdev_end)
-       {SS2out<<recdev(y)<<" "<<biasadj(y)<<" Main "<<SSB_B_yr(y)<<" "<<SSB_N_yr(y);}
+       {SS2out<<log(exp_rec(y,4)/exp_rec(y,3))<<" "<<biasadj(y)<<" Main "<<SSB_B_yr(y)<<" "<<SSB_N_yr(y)<<" "<<recdev(y);}
      else if(Do_Forecast>0 && y>recdev_end)
      {
-        SS2out<<Fcast_recruitments(y)<<" "<<biasadj(y);
+        SS2out<<log(exp_rec(y,4)/exp_rec(y,3))<<" "<<biasadj(y);
         if(y<=endyr)
-        {SS2out<<" Late "<<SSB_B_yr(y)<<" "<<SSB_N_yr(y);}
+        {SS2out<<" Late "<<SSB_B_yr(y)<<" "<<SSB_N_yr(y)<<" "<<Fcast_recruitments(y);}
         else
-        {SS2out<<" Forecast "<<SSB_B_yr(y)<<" "<<SSB_N_yr(y);}
+        {SS2out<<" Forecast "<<SSB_B_yr(y)<<" "<<SSB_N_yr(y)<<" "<<Fcast_recruitments(y);}
       }
      else
        {SS2out<<" _ _ Fixed";}
@@ -1446,7 +1446,7 @@ FUNCTION void write_bigoutput()
             k=SzFreq_obs_hdr(iobs,6);
             if(k==sz_method && abs(SzFreq_obs_hdr(iobs,3))==f)
             {
-              if(SzFreq_obs_hdr(iobs,1)>0)  // year is positive, so use this obs
+              if(SzFreq_obs_hdr(iobs,1)>=styr)  // year is positive, so use this obs
               {
                 y=SzFreq_obs_hdr(iobs,1);
                 t=SzFreq_time_t(iobs);

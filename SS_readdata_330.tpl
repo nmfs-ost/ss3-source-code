@@ -2439,12 +2439,7 @@
         f=abs(SzFreq_obs_hdr(iobs,3));
         if(y>retro_yr) SzFreq_obs_hdr(iobs,3)=-f;
         t=timing_i_result(2);
-        ALK_time=timing_i_result(5);
-        real_month=timing_r_result(1);
-
-        SzFreq_time_t(iobs)=t;
-        SzFreq_time_ALK(iobs)=ALK_time;
-        if(gender==1) {SzFreq_obs_hdr(iobs,4)=0;}
+         if(gender==1) {SzFreq_obs_hdr(iobs,4)=0;}
         z=SzFreq_obs_hdr(iobs,4);  // gender
 // get min and max index according to use of 0, 1, 2, 3 gender index
         if(z!=2) {SzFreq_obs_hdr(iobs,7)=1;} else {SzFreq_obs_hdr(iobs,7)=SzFreq_Nbins(k)+1;}
@@ -2454,6 +2449,11 @@
         if(k!=SzFreq_obs1(iobs,1)) {N_warn++; warning<<" sizefreq ID # doesn't match "<<endl; } // save method code for later use
         if(y>=styr)
         {
+          ALK_time=timing_i_result(5);
+          real_month=timing_r_result(1);
+
+          SzFreq_time_t(iobs)=t;
+          SzFreq_time_ALK(iobs)=ALK_time;
           SzFreq_LikeComponent(f,k)=1;    // indicates that this combination is being used
           if(SzFreq_HaveObs2(k,ALK_time)==0)  //  transition matrix needs calculation
             {
@@ -2477,6 +2477,8 @@
         else
         {
           SzFreq_obs_hdr(iobs,3)=-abs(SzFreq_obs_hdr(iobs,3));  //  flag for skipping this obs
+          SzFreq_time_t(iobs)=styr;
+          SzFreq_time_ALK(iobs)=1;
         }
       }
     }

@@ -596,11 +596,11 @@ FUNCTION void evaluate_the_objective_function()
         dvariable dev_last;
         if(recdev_first>=styr)
         {
-          dev_last=log(exp_rec(recdev_first,3)/exp_rec(recdev_first,4));
+          dev_last=log(exp_rec(recdev_first,4)/exp_rec(recdev_first,3));
         }
         else
         {
-          dev_last=recdev(recdev_first);
+          dev_last=recdev(recdev_first);   // so use devs for initial agecomp directly
         }
         recr_like += square(dev_last)/two_sigmaRsq;
         sum_recdev=dev_last;
@@ -608,11 +608,11 @@ FUNCTION void evaluate_the_objective_function()
         {
           if(y>=styr)
           {
-            dev=log(exp_rec(y,3)/exp_rec(y,4));
+            dev=log(exp_rec(y,4)/exp_rec(y,3));
           }
           else
           {
-            dev=recdev(y);
+            dev=recdev(y);  // so use devs for initial agecomp directly
           }
           recr_like += square(dev-rho*dev_last) / ((1.0-rho*rho)*two_sigmaRsq);
           dev_last=dev;
