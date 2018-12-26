@@ -1317,32 +1317,23 @@ FUNCTION void get_time_series()
             for (g=1;g<=gmorph;g++)
             if(use_morph(g)>0)
             {
-              for (p=1;p<=pop;p++)
+              for (a=F_reporting_ages(1);a<=F_reporting_ages(2);a++)   //  should not let a go higher than nages-2 because of accumulator
               {
-                for (a=F_reporting_ages(1);a<=F_reporting_ages(2);a++)   //  should not let a go higher than nages-2 because of accumulator
+                for (p=1;p<=pop;p++)
                 {
                   tempM+=natage(t,p,g,a);  // sum of numbers at beginning
-                  temp1=natage(t+1,p,g,a+1);
-                  if(nseas==1)
-                  {
-                    temp2=natage(t,p,g,a)*mfexp(-seasdur(s)*natM(s,GP3(g),a));
-                  }
-                  else
-                  {
-                    temp3=natage(t-nseas+1,p,g,a);  //  numbers at begin of year
-                    for (j=1;j<=nseas;j++) {
-                      temp3*=mfexp(-seasdur(j)*natM(j,GP3(g),a));}
-                    temp2=temp3; // temp2 and temp3 are redundant but match code above
-                  }
-                  annual_F(y,2) += log(temp2)-log(temp1);
-                  annual_F(y,3) += log(temp2)-log(tempM);
-                  temp += 1; // increment count of values included in average
-//                  warning<<" y: "<<y<<" g: "<<g<<" p: "<<p<<" a: "<<a<<" temp: "<<temp<<" annual_F(y,2): "<<annual_F(y,2)<<" log(temp2)-log(temp1): "<<log(temp2)-log(temp1)<<endl;
+                  temp1+=natage(t+1,p,g,a+1);
+                  temp3=natage(t-nseas+1,p,g,a);  //  numbers at begin of year
+                  for (j=1;j<=nseas;j++) {temp3*=mfexp(-seasdur(j)*natM(j,GP3(g),a));}
+                  temp2+=temp3;
                 }
+                annual_F(y,2) += log(temp2)-log(temp1);  // F
+                annual_F(y,3) += log(temp2)-log(tempM);  // M
+                temp += 1; // increment count of values included in average
               }
             }
-            annual_F(y,2) /= temp;
-            annual_F(y,3) /= temp;
+            annual_F(y,2) /= temp;   // F
+            annual_F(y,3) /= temp;  // M
           } // end F_reporting==5
 
           if(STD_Yr_Reverse_F(y)>0)  //  save selected std quantity
@@ -1432,7 +1423,7 @@ FUNCTION void Do_Equil_Calc(const prevariable& equ_Recr)
   int s;
   dvariable N_mid;
   dvariable N_beg;
-  dvariable tempM;
+  dvariable tempM, tempN, temp1, temp2, temp3;
   dvariable Fishery_Survival;
   dvariable crashtemp;
   dvariable crashtemp1;
@@ -1811,6 +1802,40 @@ FUNCTION void Do_Equil_Calc(const prevariable& equ_Recr)
        equ_F_std = log(temp2)-log(temp1);
        equ_M_std = log(temp2)-log(tempM);
      }
+      else if(F_reporting==5)
+      {
+    //  F_reporting==5 (ICES-style arithmetic mean across ages)
+    //  like option 4 above, but F is calculated 1 age at a time to get a
+    //  unweighted average across ages within each year
+    //  Need to put area loop within age loop
+        tempN=0.0;
+        equ_F_std=0.0;
+        equ_M_std=0.0;
+        for (g=1;g<=gmorph;g++)
+        if(use_morph(g)>0)
+        {
+          for (a=F_reporting_ages(1);a<=F_reporting_ages(2);a++)   //  should not let a go higher than nages-2 because of accumulator
+          {
+            temp1=0.0;  //  sum survivors across all g and p
+            tempM=0.0;//  sum beginning N across all g and p
+            temp2=0.0;
+            for (p=1;p<=pop;p++)
+            {
+              temp1+=equ_numbers(1,p,g,a+1);  //  number survivors with M+F
+              tempM+=equ_numbers(1,p,g,a);  //  numbers at begin of year
+              temp3=equ_numbers(1,p,g,a);  //  numbers at begin of year
+              for (int j=1;j<=nseas;j++)  {temp3*=mfexp(-seasdur(j)*natM(j,GP3(g),a));}
+              temp2+=temp3;
+            }
+            // add F-at-age to tally
+            equ_F_std += log(temp2)-log(temp1);
+            equ_M_std += log(temp2)-log(tempM);
+            tempN += 1.0; // increment count of values included in average
+          }
+        }
+        equ_F_std /= tempN;
+        equ_M_std /= tempN;
+      } // end F_reporting==5
    }
    SSB_equil=sum(SSB_equil_pop_gp);
    GenTime/=SSB_equil;

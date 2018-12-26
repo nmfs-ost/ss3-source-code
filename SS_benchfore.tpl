@@ -2128,26 +2128,20 @@ FUNCTION void Get_Forecast()
                   for (g=1;g<=gmorph;g++)
                   if(use_morph(g)>0)
                   {
-                    for (p=1;p<=pop;p++)
+                    for (a=F_reporting_ages(1);a<=F_reporting_ages(2);a++)   //  should not let a go higher than nages-2 because of accumulator
                     {
-                      for (a=F_reporting_ages(1);a<=F_reporting_ages(2);a++)   //  should not let a go higher than nages-2 because of accumulator
+                      temp1=0.0;  //  sum survivors across all g and p
+                      temp2=0.0;
+                      for (p=1;p<=pop;p++)
                       {
-                        temp1=natage(t+1,p,g,a+1);
-                        if(nseas==1)
-                        {
-                          temp2=natage(t,p,g,a)*mfexp(-seasdur(s)*natM(s,GP3(g),a));
-                        }
-                        else
-                        {
-                          temp3=natage(t-nseas+1,p,g,a);  //  numbers at begin of year
-                          for (j=1;j<=nseas;j++) {
-                            temp3*=mfexp(-seasdur(j)*natM(j,GP3(g),a));}
-                          temp2=temp3; // temp2 and temp3 are redundant but match code above
-                        }
-                        // add F-at-age to tally
-                        F_std(STD_Yr_Reverse_F(y)) += log(temp2)-log(temp1);
-                        temp += 1; // increment count of values included in average
+                        temp1+=natage(t+1,p,g,a+1);
+                        temp3=natage(t-nseas+1,p,g,a);  //  numbers at begin of year
+                        for (j=1;j<=nseas;j++) {temp3*=mfexp(-seasdur(j)*natM(j,GP3(g),a));}
+                        temp2+=temp3; // temp2 and temp3 are redundant but match code above
                       }
+                        // add F-at-age to tally
+                      F_std(STD_Yr_Reverse_F(y)) += log(temp2)-log(temp1);
+                      temp += 1; // increment count of values included in average
                     }
                   }
                   F_std(STD_Yr_Reverse_F(y)) /= temp;
