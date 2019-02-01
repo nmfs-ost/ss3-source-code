@@ -815,6 +815,11 @@ FUNCTION void write_Bzero_output()
 //  output annual time series for beginning of year and summing across areas for each GP and gender
     for (fishery_on_off=1;fishery_on_off>=0;fishery_on_off--)
     {
+      
+ /*
+ in first pass, fishery is on (1) so just report current values
+ in second pass, rerun the time series with no fishery, then do the same reporting
+ */      
     SS2out<<endl<<"Dynamic_Bzero"<<endl;
     SS2out<<"Spawning_Biomass_Report";
     if(fishery_on_off==0) {SS2out<<"_1 No_fishery_for_Z=M_and_dynamic_Bzero";} else {SS2out<<"_2 With_fishery";}
@@ -864,7 +869,8 @@ FUNCTION void write_Bzero_output()
     if(fishery_on_off==0) {SS2out<<"_1 No_fishery_for_Z=M_and_dynamic_Bzero";} else {SS2out<<"_2 With_fishery";}
     SS2out << endl;
     SS2out << "Bio_Pattern Sex Yr "<<age_vector <<endl;
-    dvector tempvec2(1,nages);
+    dvector tempvec2(1,nages);  // holds summed survivors
+    tempvec2.initialize();
     for (gg=1;gg<=gender;gg++)
     for (gp=1;gp<=N_GP;gp++)
     for (y=styr;y<=YrMax;y++)
@@ -873,67 +879,54 @@ FUNCTION void write_Bzero_output()
       t = styr+(y-styr)*nseas;  // first season only
       for (p=1;p<=pop;p++)
       for (g=1;g<=gmorph;g++)
-      if(use_morph(g)>0)
+      if(use_morph(g)>0 && GP4(g)==gp && sx(g)==gg)
       {
-        if(GP4(g)==gp && sx(g)==gg) tempvec_a+= value(natage(t,p,g));
-      }
-      if(nseas>1)
-      {
-        tempvec_a(0)=0.;
-        for (s=1;s<=nseas;s++)
-        for (p=1;p<=pop;p++)
-        for (g=1;g<=gmorph;g++)
-        if(use_morph(g)>0 && Bseas(g)==s)
+        tempvec_a+= value(natage(t,p,g));
+        if(nseas>1)
         {
-          if(GP4(g)==gp && sx(g)==gg) tempvec_a(0) += value(natage(t,p,g,0));
+     //  add in age 0 fish recruiting in later seasons
+          for (s=2;s<=nseas;s++) 
+          if(Bseas(g)==s) tempvec_a(0) += value(natage(t+s-1,p,g,0));
         }
       }
       SS2out <<gp<<" "<<gg<<" "<<y<<" "<<tempvec_a<<endl;
     }
-
     SS2out << endl << "Z_AT_AGE_Annual";
     if(fishery_on_off==0) {SS2out<<"_1 No_fishery_for_Z=M_and_dynamic_Bzero";} else {SS2out<<"_2 With_fishery";}
     if(Hermaphro_Option!=0) SS2out<<"_hermaphrodites_combined_sex_output";
     SS2out << endl;
     SS2out << "Bio_Pattern Sex Yr "<<age_vector <<endl;
-    if(Hermaphro_Option!=0)
-    {k=1;}
-    else
-    {k=gender;}
-    for (gg=1;gg<=k;gg++)
+    for (gg=1;gg<=gender;gg++)
     for (gp=1;gp<=N_GP;gp++)
-    for (y=styr;y<=YrMax;y++)
     {
-      tempvec_a.initialize();
-      t = styr+(y-styr)*nseas;  // first season only
-      for (p=1;p<=pop;p++)
-      for (g=1;g<=gmorph;g++)
-      if(use_morph(g)>0)
+      tempvec2.initialize();
+      for (y=styr;y<=YrMax;y++)
       {
-        if(GP4(g)==gp && (sx(g)==gg || Hermaphro_Option!=0)) tempvec_a+= value(natage(t,p,g));
-      }
-      if(nseas>1)
-      {
-        tempvec_a(0)=0.;
-        for (s=1;s<=nseas;s++)
+        tempvec_a.initialize();
+        t = styr+(y-styr)*nseas;  // first season only
         for (p=1;p<=pop;p++)
         for (g=1;g<=gmorph;g++)
-        if(use_morph(g)>0 && Bseas(g)==s)
+        if(use_morph(g)>0 && GP4(g)==gp && sx(g)==gg) 
         {
-          if(GP4(g)==gp && (sx(g)==gg || Hermaphro_Option!=0)) tempvec_a(0) += value(natage(t,p,g,0));
+          tempvec_a+= value(natage(t,p,g));
+          if(nseas>1)
+          {
+            for (s=2;s<=nseas;s++)
+            if(Bseas(g)==s)
+            {
+              tempvec_a(0) += value(natage(t+s-1,p,g,0));
+            }
+          }
+          if(y>styr)  {SS2out <<gp<<" "<<gg<<" "<<y-1<<" "<<log(elem_div(tempvec2(1,nages),tempvec_a(1,nages)))<<" _ "<<endl;}
+          for (a=0;a<=nages-1;a++) tempvec2(a+1)=value(tempvec_a(a));
+          tempvec2(nages)+=value(tempvec_a(nages));
         }
       }
-      if(y>styr)
-      {
-      SS2out <<gp<<" "<<gg<<" "<<y-1<<" "<<log(elem_div(tempvec2(1,nages),tempvec_a(1,nages)))<<" _ "<<endl;
-      }
-      for (a=0;a<=nages-1;a++) tempvec2(a+1)=value(tempvec_a(a));
-      tempvec2(nages)+=value(tempvec_a(nages));
     }
     }
     SS2out<<" Note:  Z calculated as -ln(Nt+1 / Nt)"<<endl;
-    SS2out<<" Note:  Z calculation for maxage-1 includes numbers at maxage, so is approximate"<<endl;
-    if(nseas>1) SS2out<<" Age zero fish summed across settlements, but Z calc is as if all born in season 1"<<endl;
+    SS2out<<" Note:  Z calculation for maxage not possible, for maxage-1 includes numbers at maxage, so is approximate"<<endl;
+    if(nseas>1) SS2out<<" Z for age zero fish is not correct here if recruitment occurs in season after season 1"<<endl;
     fishery_on_off=1;
     return;
   }  //  end write bzero
