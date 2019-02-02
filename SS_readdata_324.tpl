@@ -2853,7 +2853,9 @@
   int HarvestPolicy  // 1=west coast adjust catch; 2=AK to adjust F
   number H4010_top
   number H4010_bot
+  number H4010_scale_rd
   number H4010_scale
+  vector H4010_vec_rd(1,1)
   int Do_Impl_Error
   number Impl_Error_Std
   vector Fcast_Loop_Control(1,5)
@@ -2936,7 +2938,7 @@
   k++; HarvestPolicy=int(Fcast_Input(k));
   k++; H4010_top=Fcast_Input(k);
   k++; H4010_bot=Fcast_Input(k);
-  k++; H4010_scale=Fcast_Input(k);
+  k++; H4010_scale_rd=Fcast_Input(k); H4010_scale=Fcast_Input(k);
   echoinput<<HarvestPolicy<<"  HarvestPolicy "<<endl<<
   H4010_top<<"  H4010_top "<<endl<<
   H4010_bot<<"  H4010_bot "<<endl<<
@@ -3048,7 +3050,10 @@
   vector Fcast_MaxFleetCatch(1,Nfleet)
   vector Fcast_MaxAreaCatch(1,pop)
   ivector Allocation_Fleet_Assignments(1,Nfleet)
+  vector H4010_scale_vec(endyr+1,YrMax)
+
  LOCAL_CALCS
+    for (j=endyr+1;j<=YrMax;j++) H4010_scale_vec(j) = H4010_scale_rd;
     for(f=1;f<=Nfleet;f++) Fcast_MaxFleetCatch(f)=-1;
     Fcast_Do_Fleet_Cap=0;
     Allocation_Fleet_Assignments.initialize();

@@ -86,6 +86,7 @@ GLOBALS_SECTION
   std::vector<dvector> lendata;
   std::vector<dvector> Age_Data;
   std::vector<dvector> sizeAge_Data;
+  std::vector<dvector> H4010_scale_vec_rd;
   std::vector<dvector> Fcast_InputCatch_list;
   std::vector<dvector> Fcast_Catch_Allocation_list;
   std::vector<dvector> env_temp;

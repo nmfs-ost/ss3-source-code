@@ -2803,6 +2803,7 @@
   number H4010_top
   number H4010_bot
   number H4010_scale
+  number H4010_scale_rd
   int Do_Impl_Error
   number Impl_Error_Std
   vector Fcast_Loop_Control(1,5)
@@ -2890,10 +2891,24 @@
   echoinput<<H4010_top<<"   # echoed harvest policy inflection "<<endl;
   *(ad_comm::global_datafile) >> H4010_bot;
   echoinput<<H4010_bot<<"   # echoed harvest policy cutoff "<<endl;
-  *(ad_comm::global_datafile) >> H4010_scale;
+  *(ad_comm::global_datafile) >> H4010_scale_rd;
+    H4010_scale=H4010_scale_rd;
   echoinput<<H4010_scale<<"   # echoed harvest policy scalar "<<endl;
   if(H4010_top<=H4010_bot) {N_warn++; cout<<" EXIT - see warning "<<endl; warning<<" control rule inflection: "<<H4010_top<<" must be > control rule bottom "<<H4010_bot<<endl; exit(1);}
   if(H4010_scale>1.0) {N_warn++; warning<<" Sure you want control rule scalar > 1.0? "<<H4010_scale<<endl;}
+
+  if(H4010_scale<0.0)
+  {
+     echoinput<<"# now read pairs of year,H4010scale; each read fills from that year to YrMax; end with year<0.0 "<<endl;
+     ender=0;
+     do {
+        dvector tempvec(1,2);
+        *(ad_comm::global_datafile) >> tempvec(1,2);
+        if(tempvec(1)<0.0) ender=1;
+        H4010_scale_vec_rd.push_back (tempvec(1,2));
+        echoinput<<" H4010 read: "<<tempvec(1,2)<<endl;
+      } while (ender==0);
+  }
 
   echoinput<<endl<<"# next enter 2 values that control looping through the forecast (see manual), then 3 placeholder values"<<endl;
   echoinput<<"# first does F_msy or proxy; 2nd applies control rule; 3rd applies caps and allocations"<<endl;
@@ -3008,6 +3023,7 @@
   HarvestPolicy=1;
   H4010_top=0.001;
   H4010_bot=0.0001;
+  H4010_scale_rd=1.0;
   H4010_scale=1.0;
   Fcast_Loop_Control.fill("{1,1,0,0,0}");
   Fcast_Cap_FirstYear=endyr+1;
@@ -3023,11 +3039,11 @@
  END_CALCS
 
   matrix Fcast_Catch_Allocation(1,N_Fcast_Yrs,1,Nfleet);  //   dimension to Nfleet but use only to N alloc groups
+  vector H4010_scale_vec(endyr+1,YrMax)
 
  LOCAL_CALCS
   if(Do_Forecast_rd>0)
   {
-
     echoinput<<endl<<"# next read list of fleet ID and max annual catch;  end with fleet=-9999"<<endl;
     for(f=1;f<=Nfleet;f++) Fcast_MaxFleetCatch(f)=-1;
     Fcast_Do_Fleet_Cap=0;
@@ -3160,6 +3176,30 @@
     k1=1;
     y=0;
   }
+
+  echoinput<<"Now fill H4010_scale_vec"<<endl;
+  H4010_scale_vec.initialize();
+  if(H4010_scale_rd>=0.0)
+    {
+      H4010_scale_vec=H4010_scale_rd;
+    }
+    else
+    {
+      j=H4010_scale_vec_rd.size()-1;
+      for (int s=0; s<=j-1; s++) 
+      {
+        y=H4010_scale_vec_rd[s](1);
+        echoinput<<H4010_scale_vec_rd[s]<<" "<<y<<endl;
+        if(s==0 && y>endyr)
+          {N_warn++; warning<<" "<<endl;}
+        for(k=y;k<=YrMax;k++) 
+        {
+          H4010_scale_vec(k)=H4010_scale_vec_rd[s](2);
+        }
+      }
+    }
+  echoinput<<"H4010_scale: "<<H4010_scale_vec<<endl;
+
  END_CALCS
 
   3darray Fcast_InputCatch(k1,y,1,Nfleet,1,2)  //  values and basis to be used

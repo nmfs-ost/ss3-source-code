@@ -1236,7 +1236,15 @@ FUNCTION void write_nucontrol()
   NuFore<<HarvestPolicy<<" # Control rule method (1: ramp does catch=f(SSB), buffer on F; 2: ramp does F=f(SSB), buffer on F; 3: ramp does catch=f(SSB), buffer on catch; 4: ramp does F=f(SSB), buffer on catch) "<<endl;
   NuFore<<H4010_top<<" # Control rule Biomass level for constant F (as frac of Bzero, e.g. 0.40); (Must be > the no F level below) "<<endl;
   NuFore<<H4010_bot<<" # Control rule Biomass level for no F (as frac of Bzero, e.g. 0.10) "<<endl;
-  NuFore<<H4010_scale<<" # Control rule target as fraction of Flimit (e.g. 0.75) "<<endl;
+  NuFore<<H4010_scale_rd<<" # Control rule target as fraction of Flimit (e.g. 0.75), negative value invokes list of [year, scalar] with filling from year to YrMax "<<endl;
+  if(H4010_scale_rd<0)
+  {
+    j=H4010_scale_vec_rd.size()-1;
+    for (int s=0; s<=j; s++) 
+    {
+      NuFore<<H4010_scale_vec_rd[s]<<endl;
+    }
+  }
 
   NuFore<<Fcast_Loop_Control(1)<<" #_N forecast loops (1=OFL only; 2=ABC; 3=get F from forecast ABC catch with allocations applied)"<<endl;
   NuFore<<Fcast_Loop_Control(2)<<" #_First forecast loop with stochastic recruitment"<<endl;

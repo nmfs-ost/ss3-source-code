@@ -1026,7 +1026,7 @@ FUNCTION void Get_Forecast()
     dvar_vector  C_temp(1,Nfleet);
     dvar_vector  H_old(1,Nfleet);
     dvar_vector  C_old(1,Nfleet);
-
+    
   int Tune_F;
   int Tune_F_loops;
 
@@ -1151,7 +1151,7 @@ FUNCTION void Get_Forecast()
     }
     report5<<"#"<<endl;
     report5<<"N_forecast_yrs: "<<N_Fcast_Yrs<<endl;
-    report5<<"OY_Control_Rule "<<" Inflection: "<<H4010_top<<" Intercept: "<<H4010_bot<<" Scale: "<<H4010_scale<<"; ";
+    report5<<"OY_Control_Rule "<<" Inflection: "<<H4010_top<<" Intercept: "<<H4010_bot<<" Scale: "<<H4010_scale_vec(endyr+1)<<"; ";
     switch(HarvestPolicy)
     {
     case 1:  // west coast
@@ -1485,27 +1485,27 @@ FUNCTION void Get_Forecast()
             case 1:  // west coast
                     // ramp scales catch as f(B) and buffer (H4010_scale) applied to F
             {
-              ABC_buffer(y) = H4010_scale*
+              ABC_buffer(y) = H4010_scale_vec(y)*
               (
               (0.0001*SSB_current/(H4010_bot*temp) ) *(join1)   // low
               +(0.0001+(1.0-0.0001)*(H4010_top*temp/SSB_current)*(SSB_current-H4010_bot*temp)/(H4010_top*temp-H4010_bot*temp)) * (1.0-join1) // curve
               )
               *(join2)   // scale combo
               +
-              (H4010_scale) * (1.0-join2);    // scale right side
+              (H4010_scale_vec(y)) * (1.0-join2);    // scale right side
               break;
             }
             case 2:  // Alaska
                     // ramp scales F as f(B) and buffer (H4010_scale) applied to F
             {
-              ABC_buffer(y) = H4010_scale*
+              ABC_buffer(y) = H4010_scale_vec(y)*
               (
               (0.0001*SSB_current/(H4010_bot*temp) ) *(join1)   // low
               +(0.0001+(1.0-0.0001)*(SSB_current-H4010_bot*temp)/(H4010_top*temp-H4010_bot*temp)) * (1.0-join1)   // curve
               )
               *(join2)   // scale combo
               +
-              (H4010_scale) * (1.0-join2);    // scale right side
+              (H4010_scale_vec(y)) * (1.0-join2);    // scale right side
               break;
             }
             case 3:  // west coast
@@ -2236,7 +2236,7 @@ FUNCTION void Get_Forecast()
           {
             if(fleet_type(f)==1)
             {
-              if(ABC_Loop==2 && HarvestPolicy>=3) {catch_fleet(t,f)*=H4010_scale;}
+              if(ABC_Loop==2 && HarvestPolicy>=3) {catch_fleet(t,f)*=H4010_scale_vec(y);}
               Fcast_Catch_Store(t,f)=catch_fleet(t,f,Fcast_Catch_Basis);
               totcatch+=Fcast_Catch_Store(t,f);
             }
@@ -2244,7 +2244,7 @@ FUNCTION void Get_Forecast()
             {}  //  survey
             else  //  bycatch
             {
-              if(ABC_Loop==2 && HarvestPolicy>=3 && bycatch_setup(f,3)<=1) {catch_fleet(t,f)*=H4010_scale;}
+              if(ABC_Loop==2 && HarvestPolicy>=3 && bycatch_setup(f,3)<=1) {catch_fleet(t,f)*=H4010_scale_vec(y);}
               Fcast_Catch_Store(t,f)=catch_fleet(t,f,Fcast_Catch_Basis);
               if(bycatch_setup(f,2)==1) totcatch+=Fcast_Catch_Store(t,f);
             }
