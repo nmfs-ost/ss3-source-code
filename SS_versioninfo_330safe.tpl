@@ -5,7 +5,7 @@ DATA_SECTION
 !!//  SS_Label_Section_1.0 #DATA_SECTION
 
 !!//  SS_Label_Info_1.1.1  #Create string with version info
-!!version_info+="#V3.30.13_beta-safe;_2019_02_01;_Stock_Synthesis_by_Richard_Methot_(NOAA)_using_ADMB_12.0";
+!!version_info+="#V3.30.13_beta-safe;_2019_02_12;_Stock_Synthesis_by_Richard_Methot_(NOAA)_using_ADMB_12.0";
 !!version_info+="#Stock Synthesis (SS) is a work of the U.S. Government and is not subject to copyright protection in the United States.";
 !!version_info+="#Foreign copyrights may apply. See copyright.txt for more information.";
 !!version_info2+="#_user_support_available_at:NMFS.Stock.Synthesis@noaa.gov";
@@ -98,4 +98,5 @@ DATA_SECTION
 !!//  V3.30.13_beta  2018-12-20   add new recdev approaches based on dev being relative to R0, not SRR; add column to spawn_recr in report.sso
 !!//  V3.30.13_beta  2018-12-20   fix output of equilibrium F when using F_reporting=5
 !!//  V3.30.13_beta  2019-01-31   fix issues with F_reporting=4 and 5 for multiseason models; still testing
-!!//  V3.30.13_beta  2019-02_01   update F_reporting for equil calcs; put annual_F into EXPLOITATION table;
+!!//  V3.30.13_beta  2019-02_01   update F_reporting for equil calcs;
+!!//  V3.30.13_beta  2019-02_01   add new forecast feature:  year-specific ABC buffer

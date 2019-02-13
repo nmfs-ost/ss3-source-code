@@ -1248,7 +1248,7 @@ FUNCTION void write_nucontrol()
 
   NuFore<<Fcast_Loop_Control(1)<<" #_N forecast loops (1=OFL only; 2=ABC; 3=get F from forecast ABC catch with allocations applied)"<<endl;
   NuFore<<Fcast_Loop_Control(2)<<" #_First forecast loop with stochastic recruitment"<<endl;
-  NuFore<<Fcast_Loop_Control(3)<<" #_Forecast recruitment:  0= spawn_recr; 1=value*spawn_recr_fxn; 2=value*VirginRecr; 3=recent mean from yr range above "<<endl;
+  NuFore<<Fcast_Loop_Control(3)<<" #_Forecast recruitment:  0= spawn_recr; 1=value*spawn_recr_fxn; 2=value*VirginRecr; 3=recent mean from yr range above (need to set phase to -1 in control to get constant recruitment in MCMC)"<<endl;
   if(Fcast_Loop_Control(3)==0)
     {NuFore<<1.0<<" # value is ignored "<<endl;}
   if(Fcast_Loop_Control(3)==1)

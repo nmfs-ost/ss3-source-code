@@ -2218,7 +2218,8 @@
           }
           if(Q_setup(fmirror,5)==1)
           {
-            N_warn++; cout<<" EXIT - see warning "<<endl; warning<<" fleet: "<<f<<"  cannot mirror fleet that has float q: "<<fmirror<<endl; exit(1);
+            N_warn++; cout<<" EXIT - see warning "<<endl; warning<<" fleet: "<<f<<"  cannot mirror fleet that has float q: "<<fmirror<<endl; 
+            exit(1);
           }
           break;
         }

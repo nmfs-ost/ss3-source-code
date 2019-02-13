@@ -1365,6 +1365,7 @@
        timevary_setup(3)=timevary_parm_cnt+1;  //  first parameter within total list of all timevary parms
        z=MGparm_1(j,13);    // specified block or trend definition
 
+//  convert format of env linkages
       if(MGparm_1(j,8)>0)
       {
         timevary_setup(6)=1; timevary_setup(7)=MGparm_1(j,8);
@@ -1386,6 +1387,7 @@
        }
        else
        {k=0; env_data_pass.initialize();}
+
        if(z>0)  //  doing blocks
        {
          create_timevary(MGparm_1(j),timevary_setup, timevary_pass, autogen_timevary(timevary_setup(1)), mgp_type(j), Block_Design(z), parm_adjust_method, env_data_pass, N_parm_dev, finish_starter);
@@ -1444,7 +1446,7 @@
           }
        }
 
-       if(customMGenvsetup==1)
+       if(timevary_setup(7)>0 && customMGenvsetup==1)
        {
          tvparm++;
          MGenvcnt++;

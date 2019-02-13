@@ -1621,7 +1621,7 @@
   }
   for (f=1;f<=Nfleet;f++)
   {
-    if(CombGender_A(f)>n_abins2)
+    if(n_abins>0 && CombGender_A(f)>n_abins2)
   {
     N_warn++; warning<<"Combgender_A(f) cannot be greater than n_abins for fleet:_"<<f<<"; resetting"<<endl;  CombGender_A(f)=n_abins2;
   }
