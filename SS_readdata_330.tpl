@@ -884,10 +884,8 @@
  END_CALCS
   matrix mnwtdata(1,11,1,nobs_mnwt)  //  working matrix for the mean size data
 //  10 items are:  1yr, 2seas, 3fleet, 4part, 5type, 6obs, 7se, then three intermediate variance quantities, then ALKtime
-  3darray yr_mnwt2(1,Nfleet,styr,TimeMax,0,2)  // last dimension here is for total, discard, retain
 
  LOCAL_CALCS
-  yr_mnwt2.initialize();
   mnwtdata.initialize();
   j=0;
   data_type=3;
@@ -923,7 +921,6 @@
       have_data(ALK_time,f,data_type,p)=j;  //  store data index for the p'th observation in this subseas
 
       z=mnwtdata1[i](4);  // z is partition (0, 1, 2)
-      yr_mnwt2(f,t,z)=j;  //  stores according to partition, so allows both disard and retained obs in same f,t
 
       for (k=1;k<=7;k++) mnwtdata(k,j)=mnwtdata1[i](k);
       mnwtdata(1,j)=t;  //  note:  saving t, not y so have direct access to t later
