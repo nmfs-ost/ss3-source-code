@@ -3351,6 +3351,7 @@
    int Do_Var_adjust
 
    ivector parm_dev_type(1,N_parm_dev);  //  distinguish parameter dev vectors from 2DAR devs
+   ivector parm_dev_use_rho(1,N_parm_dev);  //  uses rho parameter, or not
    ivector parm_dev_info(1,N_parm_dev);  //  pointer from list of devvectorsto 2DAR list
    ivector TwoD_AR_ymin(1,TwoD_AR_cnt)
    ivector TwoD_AR_ymax(1,TwoD_AR_cnt)
@@ -3362,6 +3363,7 @@
    ivector TwoD_AR_cor_dim(1,TwoD_AR_cnt)
 
  LOCAL_CALCS
+   parm_dev_use_rho.initialize();
    if(timevary_cnt>0)
    {
      for (j=1;j<=timevary_cnt;j++)  //  loop all timevary to set up devs; note that 2D_AR1 is counted in N_parm_dev, but not in timevary_cnt
@@ -3374,20 +3376,27 @@
          parm_dev_minyr(k)=timevary_setup(10);  //  used for dimensioning the dev vectors in SS_param
          parm_dev_maxyr(k)=timevary_setup(11);
          parm_dev_PH(k)=timevary_setup(12);
-         parm_dev_type(k)=1;
          echoinput<<" dev vector #:  "<<k<<" setup: "<<timevary_setup<<" phase: "<<parm_dev_PH(k)<<endl;
          f=timevary_setup(13);  //  index of base parameter
-         for(y=parm_dev_minyr(k);y<=parm_dev_maxyr(k);y++)
-         {
-           sprintf(onenum, "%d", y);
-           ParCount++;
            int picker=timevary_setup(9);
+           parm_dev_type(k)=1;  //  so P'=P+dev*se with objfun using  -log(1)
            int continue_last=0;
            if(picker>20)
            {
             picker-=20;
             continue_last=1;
            }
+           parm_dev_use_rho(k)=0;
+           if(picker>10) 
+           {
+             parm_dev_type(k)=3;  // use objfun using -log(se) to match 3.30.12 and earlier
+             picker-=10;
+           }
+           if(picker==4) parm_dev_use_rho(k)=1;
+         for(y=parm_dev_minyr(k);y<=parm_dev_maxyr(k);y++)
+         {
+           sprintf(onenum, "%d", y);
+           ParCount++;
            if(picker==1)
            {ParmLabel+=ParmLabel(f)+"_DEVmult_"+onenum+CRLF(1);}
            else if(picker==2)
@@ -3418,6 +3427,7 @@
          parm_dev_maxyr(k)=(timevary_setup(3)-timevary_setup(2)+1)*(timevary_setup(5)-timevary_setup(4)+1);   //parm_dev_maxyr(k)
          parm_dev_PH(k)=timevary_setup(9);
          parm_dev_type(k)=2;  //  distinguish 2D_AR devs from parameter devs
+         parm_dev_use_rho(k)=0;  //  need to update when implemented
          parm_dev_info(k)=f;  //  pointer from parmdev list to the 2D_AR list
          TwoD_AR_ymin(f)=timevary_setup(2);
          TwoD_AR_ymax(f)=timevary_setup(3);

@@ -716,19 +716,51 @@ FUNCTION void evaluate_the_objective_function()
     }
   //  SS_Label_Info_25.15 #logL for parameter process errors (devs)
     {
-
-  //  new code to match mean-reverting random walk approach used for recdevs
       for(i=1;i<=N_parm_dev;i++)
       {
-//        if(parm_dev_PH(i)>0 && parm_dev_lambda(k_phase)>0.0)
         if(parm_dev_lambda(k_phase)>0.0)
         {
-          if(parm_dev_type(i)==1)  //  parameter dev
+          if(parm_dev_type(i)==1)  //  in timevary the adjusted parm is: p'=p+dev*se;  so assumes that the devs are distributed as unit normal
+ /*
           {
             dvariable temp;
-//        temp=1.00 / (2.000*(1.0-parm_dev_rho(i)*parm_dev_rho(i))*square(parm_dev_stddev(i)));
+ //        temp=1.00 / (2.000*(1.0-parm_dev_rho(i)*parm_dev_rho(i))*square(parm_dev_stddev(i)));
             temp=1.00 / (2.000*(1.0-parm_dev_rho(i)*parm_dev_rho(i))*square(1.00));
 
+            parm_dev_like(i,1) += square( parm_dev(i,parm_dev_minyr(i)));  //  first year
+            for(j=parm_dev_minyr(i)+1;j<=parm_dev_maxyr(i);j++)
+            {parm_dev_like(i,1) += square( parm_dev(i,j)-parm_dev_rho(i)*parm_dev(i,j-1) );}
+            parm_dev_like(i,1) *=temp;
+            parm_dev_like(i,2) += float(parm_dev_maxyr(i)-parm_dev_minyr(i)+1.)*log(parm_dev_stddev(i));
+            //  include parm_dev_like(i,2) in the total, or not, using sd_offset
+          }
+ */
+
+          {
+            dvariable temp;
+            if(parm_dev_use_rho(i)==0)  //  no rho
+            {
+              temp=0.5;  // temp=1.00 / (2.000*square(1.0));
+              parm_dev_like(i,1) = square( parm_dev(i,parm_dev_minyr(i)));  //  first year
+              for(j=parm_dev_minyr(i)+1;j<=parm_dev_maxyr(i);j++)
+              {parm_dev_like(i,1) += square(parm_dev(i,j));}
+            }
+            else
+            {
+              temp = 0.5/((1.0-parm_dev_rho(i)*parm_dev_rho(i)));  // temp=1.00 / (2.000*(1.0-parm_dev_rho(i)*parm_dev_rho(i))*square(1.0));
+              parm_dev_like(i,1) += square( parm_dev(i,parm_dev_minyr(i)));  //  first year
+              for(j=parm_dev_minyr(i)+1;j<=parm_dev_maxyr(i);j++)
+              {parm_dev_like(i,1) += square( parm_dev(i,j)-parm_dev_rho(i)*(parm_dev(i,j-1)) );}
+            }
+            parm_dev_like(i,1) *=temp;
+            parm_dev_like(i,2) =0.0;  //  += float(parm_dev_maxyr(i)-parm_dev_minyr(i)+1.)*log(1.0);
+//          parm_dev_like(i,2), is included in the total parm_dev_like by user setting: sd_offset=1.0
+
+          }
+          else if(parm_dev_type(i)==3)  //  for testing only and compatibility with 3.30.12 and earlier 3.30
+          {
+            dvariable temp;
+            temp=1.00 / (2.000*(1.0-parm_dev_rho(i)*parm_dev_rho(i))*square(1.00));
             parm_dev_like(i,1) += square( parm_dev(i,parm_dev_minyr(i)));  //  first year
             for(j=parm_dev_minyr(i)+1;j<=parm_dev_maxyr(i);j++)
             {parm_dev_like(i,1) += square( parm_dev(i,j)-parm_dev_rho(i)*parm_dev(i,j-1) );}

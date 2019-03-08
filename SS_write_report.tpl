@@ -38,58 +38,26 @@ FUNCTION void write_bigoutput()
     SS2out<<"#"<<endl<<"Forecast_Comments"<<endl<<Forecast_Comments<<endl;
   }
 
-  SS2out<<endl<<"KeyWords"<<endl;
+  SS2out<<endl<<"KeyWords (Of_Tables_Available_In_report.sso)"<<endl;
+  SS2out<<endl<<"X List_Tables_related_to_basic_input_pre-processing_and_output"<<endl;
+  SS2out<<"X AGE_AGE'_KEY"<<endl;
+  SS2out<<"X AGE_LENGTH_KEY"<<endl;
+  SS2out<<"X BIOLOGY"<<endl;
   SS2out<<"X DEFINITIONS"<<endl;
-  SS2out<<"X LIKELIHOOD"<<endl;
-  SS2out<<"X Input_Variance_Adjustment"<<endl;
-  SS2out<<"X PARAMETERS"<<endl;
   SS2out<<"X DERIVED_QUANTITIES"<<endl;
-//  SS2out<<"X MGParm_Block_Assignments"<<endl;
-//  SS2out<<"X Selex_Block_Assignments"<<endl;
-  SS2out<<"X MGparm_By_Year_after_adjustments"<<endl;
-  SS2out<<"X selparm(Size)_By_Year_after_adjustments"<<endl;
-  SS2out<<"X selparm(Age)_By_Year_after_adjustments"<<endl;
-  SS2out<<"X RECRUITMENT_DIST"<<endl;
-  SS2out<<"X MORPH_INDEXING"<<endl;
-  SS2out<<"X SIZEFREQ_TRANSLATION"<<endl;
-  SS2out<<"X MOVEMENT"<<endl;
-  SS2out<<"X EXPLOITATION"<<endl;
-  SS2out<<"X TIME_SERIES"<<endl;
-  SS2out<<"X SPR_series"<<endl;
-  SS2out<<"X Kobe_Plot"<<endl;
-  SS2out<<"X SPAWN_RECRUIT"<<endl;
-  SS2out<<"X Spawning_Biomass_Report_1"<<endl;
-  SS2out<<"X NUMBERS_AT_AGE_Annual_1"<<endl;
-  SS2out<<"X Z_AT_AGE_Annual_1"<<endl;
-  SS2out<<"X Spawning_Biomass_Report_2"<<endl;
-  SS2out<<"X NUMBERS_AT_AGE_Annual_2"<<endl;
-  SS2out<<"X Z_AT_AGE_Annual_2"<<endl;
-  SS2out<<"X INDEX_1"<<endl;
-  SS2out<<"X INDEX_2"<<endl;
-  SS2out<<"X INDEX_3"<<endl;
-  SS2out<<"X CATCH"<<endl;
-  SS2out<<"X DISCARD_SPECIFICATION"<<endl;
-  SS2out<<"X DISCARD_OUTPUT"<<endl;
-  SS2out<<"X DISCARD_MORT"<<endl;
-  SS2out<<"X MEAN_BODY_WT"<<endl;
-  SS2out<<"X FIT_LEN_COMPS"<<endl;
-  SS2out<<"X FIT_AGE_COMPS"<<endl;
-  SS2out<<"X FIT_SIZE_COMPS"<<endl;
-  SS2out<<"X OVERALL_COMPS"<<endl;
-  SS2out<<"X LEN_SELEX"<<endl;
-  SS2out<<"X RETENTION"<<endl;
-  SS2out<<"X KEEPERS"<<endl;
-  SS2out<<"X DEADFISH"<<endl;
-  SS2out<<"X AGE_SELEX"<<endl;
   SS2out<<"X ENVIRONMENTAL_DATA"<<endl;
-  SS2out<<"X TAG_Recapture"<<endl;
-  SS2out<<"X NUMBERS_AT_AGE";
-  if (reportdetail == 2) SS2out<<" ---";    // indicate not included
-  SS2out<<endl;
+  SS2out<<"X Input_Variance_Adjustment"<<endl;
+  SS2out<<"X LIKELIHOOD"<<endl;
+  SS2out<<"X MGparm_By_Year_after_adjustments"<<endl;
+  SS2out<<"X MORPH_INDEXING (defines_associations_for_sex_growth_pattern_platoons_settlements)"<<endl;
+  SS2out<<"X MOVEMENT (fraction_moving_between_areas)"<<endl;
+  SS2out<<"X OVERALL_COMPS (average_length_and_age_composition_observed_by_each_fleet)"<<endl;
+  SS2out<<"X PARAMETERS"<<endl;
+  SS2out<<"X RECRUITMENT_DIST (distribution_of_recruits_among_morphs_areas_settlement_time)"<<endl;
+  SS2out<<"X SIZEFREQ_TRANSLATION (If_using_generalized_size_comp)"<<endl;
+  
+  SS2out<<endl<<"X List_Tables_related_to_timeseries_output"<<endl;
   SS2out<<"X BIOMASS_AT_AGE";
-  if (reportdetail == 2) SS2out<<" ---";    // indicate not included
-  SS2out<<endl;
-  SS2out<<"X NUMBERS_AT_LENGTH";
   if (reportdetail == 2) SS2out<<" ---";    // indicate not included
   SS2out<<endl;
   SS2out<<"X BIOMASS_AT_LENGTH";
@@ -98,18 +66,54 @@ FUNCTION void write_bigoutput()
   SS2out<<"X CATCH_AT_AGE";
   if (reportdetail == 2) SS2out<<" ---";    // indicate not included
   SS2out<<endl;
-  SS2out<<"X BIOLOGY"<<endl;
-  SS2out<<"X SPR/YPR_PROFILE"<<endl;
-  SS2out<<"X ACTUAL_SELECTIVITY_MSY";
+  SS2out<<"X F_AT_AGE";
   if (reportdetail == 2) SS2out<<" ---";    // indicate not included
   SS2out<<endl;
-  SS2out<<"X KNIFE_AGE_SELECTIVITY_MSY";
+  SS2out<<"X CATCH"<<endl;
+  SS2out<<"X EXPLOITATION (showing_F_rates_by_fleet)"<<endl;
+  SS2out<<"X MEAN_SIZE_TIMESERIES (body length)"<<endl;
+  SS2out<<"X NUMBERS_AT_AGE";
   if (reportdetail == 2) SS2out<<" ---";    // indicate not included
   SS2out<<endl;
-  SS2out<<"X SLOT_AGE_SELECTIVITY_MSY";
+  SS2out<<"X NUMBERS_AT_LENGTH";
   if (reportdetail == 2) SS2out<<" ---";    // indicate not included
   SS2out<<endl;
+  SS2out<<"X SPAWN_RECRUIT"<<endl;
+  SS2out<<"X SPR_series (equilibrium_SPR_and_YPR_calculations_for_each_year)"<<endl;
+  SS2out<<"X TIME_SERIES"<<endl;
+
+  SS2out<<endl<<"X List_Tables_related_to_fit_to_data"<<endl;
+  SS2out<<"X DISCARD_SPECIFICATION"<<endl;
+  SS2out<<"X DISCARD_OUTPUT"<<endl;
+  SS2out<<"X INDEX_1 (Survey_Fit_Summary)"<<endl;
+  SS2out<<"X INDEX_2 (Survey_Observations_By_Year)"<<endl;
+  SS2out<<"X INDEX_3 (Survey_Q)"<<endl;
+  SS2out<<"X FIT_LEN_COMPS"<<endl;
+  SS2out<<"X FIT_AGE_COMPS"<<endl;
+  SS2out<<"X FIT_SIZE_COMPS"<<endl;
+  SS2out<<"X MEAN_BODY_WT"<<endl;
+  SS2out<<"X TAG_Recapture"<<endl;
+
+  SS2out<<endl<<"X List_Tables_related_to_selectivity_and_discard"<<endl;
+  SS2out<<"X AGE_SELEX"<<endl;
+  SS2out<<"X DEADFISH (fraction_of_catch_retained_or_dead_discard)"<<endl;
+  SS2out<<"X DISCARD_MORT"<<endl;
+  SS2out<<"X KEEPERS (fraction_of_catch_retained)"<<endl;
+  SS2out<<"X LEN_SELEX"<<endl;
+  SS2out<<"X RETENTION"<<endl;
+  SS2out<<"X selparm(Size)_By_Year_after_adjustments"<<endl;
+  SS2out<<"X selparm(Age)_By_Year_after_adjustments"<<endl;
+
+  SS2out<<endl<<"X List_Tables_related_to_equilibrium_reference_points"<<endl;
+  SS2out<<"X also_see_forecast_report.sso"<<endl;
   SS2out<<"X Dynamic_Bzero "<<endl;
+  SS2out<<"X GLOBAL_MSY (including_knife-edge_selex_and_slot-age_selex)"<<endl;
+  SS2out<<"X Kobe_Plot"<<endl;
+  SS2out<<"X SPR/YPR_PROFILE"<<endl;
+  SS2out<<"X Z_AT_AGE_Annual_1 (with_fishing)"<<endl;
+  SS2out<<"X Z_AT_AGE_Annual_2 (with_F=zero)"<<endl;
+  if (reportdetail == 2) SS2out<<" ---";    // indicate not included
+  SS2out<<endl;
 
 // REPORT_KEYWORD DEFINITIONS
   SS2out<<endl<<"DEFINITIONS"<<endl;
@@ -1618,7 +1622,7 @@ FUNCTION void write_bigoutput()
     else
     {SS2out<<"#_none"<<endl;}
 
-// REPORT_KEYWORD OVERALL_COMPS  average composiition for all observations
+// REPORT_KEYWORD OVERALL_COMPS  average composition for all observations
   SS2out<<"#"<<endl<<"OVERALL_COMPS"<<endl;
   SS2out<<"Fleet N_obs len_bins "<<len_bins_dat<<endl;
   for (f=1;f<=Nfleet;f++)
@@ -1735,6 +1739,7 @@ FUNCTION void write_bigoutput()
         for (f=1;f<=Nfleet;f++)
         {
           SS2out<<"Asel2 "<<f<<" "<<y<<" "<<s<<" "<<sx(g)<<" "<<g<<" "<<y<<"_"<<f<<"_Asel2"<<save_sel_fec(t,g,f)<<endl;
+          if(fleet_type(f)<=2) SS2out<<"F "<<f<<" "<<y<<" "<<s<<" "<<sx(g)<<" "<<g<<" "<<y<<"_"<<f<<"_F"<<Hrate(f,t)*save_sel_fec(t,g,f)<<endl;
           SS2out<<"bodywt "<<f<<" "<<y<<" "<<s<<" "<<sx(g)<<" "<<g<<" "<<y<<"_"<<f<<"_bodywt"<<fish_body_wt(t,g,f)<<endl;
         }
       }
@@ -1951,6 +1956,31 @@ FUNCTION void write_bigoutput()
        SS2out<< Save_PopWt(t,p+pop,g) << endl;
        }
       }
+
+// REPORT_KEYWORD F_AT_AGE
+     SS2out <<endl<< "F_AT_AGE" << endl;              // SS_Label_420
+     SS2out << "Area Fleet Sex Morph Yr Seas Era"<<age_vector <<endl;
+     for (f=1;f<=Nfleet;f++)
+     if(fleet_type(f)<=2)
+     for (g=1;g<=gmorph;g++)
+     {
+     if(use_morph(g)>0)
+     {
+       for (y=styr-1;y<=YrMax;y++)
+       for (s=1;s<=nseas;s++)
+       {
+         t = styr+(y-styr)*nseas+s-1;
+         SS2out <<fleet_area(f)<<" "<<f<<" "<<sx(g)<<" "<<g<<" "<<y<<" "<<s;
+         if(y==styr-1)
+           {SS2out<<" INIT ";}
+         else if (y<=endyr)
+           {SS2out<<" TIME ";}
+         else
+           {SS2out<<" FORE ";}
+         SS2out<<Hrate(f,t)*save_sel_fec(t,g,f)<< endl;
+       }
+     }
+     }
 
 // REPORT_KEYWORD CATCH_AT_AGE
      SS2out <<endl<< "CATCH_AT_AGE" << endl;              // SS_Label_420
@@ -3067,6 +3097,7 @@ FUNCTION void write_bigoutput()
 // REPORT_KEYWORD GLOBAL_MSY
   if(Do_Benchmark>0 && wrote_bigreport==1 && reportdetail ==1)
   {
+    SS2out<<"GLOBAL_MSY"<<endl;
     y=styr-3;  //  stores the averaged
     yz=y;
     bio_yr=y;

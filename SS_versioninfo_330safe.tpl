@@ -5,7 +5,7 @@ DATA_SECTION
 !!//  SS_Label_Section_1.0 #DATA_SECTION
 
 !!//  SS_Label_Info_1.1.1  #Create string with version info
-!!version_info+="#V3.30.13_beta-safe;_2019_02_12;_Stock_Synthesis_by_Richard_Methot_(NOAA)_using_ADMB_12.0";
+!!version_info+="#V3.30.13-safe;_2019_03_08;_Stock_Synthesis_by_Richard_Methot_(NOAA)_using_ADMB_12.0";
 !!version_info+="#Stock Synthesis (SS) is a work of the U.S. Government and is not subject to copyright protection in the United States.";
 !!version_info+="#Foreign copyrights may apply. See copyright.txt for more information.";
 !!version_info2+="#_user_support_available_at:NMFS.Stock.Synthesis@noaa.gov";
@@ -87,7 +87,7 @@ DATA_SECTION
 !!//  V3.30.13_beta  2018-10-26   first commit for growth cessation model
 !!//  V3.30.13_beta  2018-10-26   move tag recapture calculations into a function in SS_tagrep.tpl
 !!//  V3.30.13_beta  2018-11-07   fix issue with calc of float Q that may have been source of some poor convergences
-!!//  V3.30.13_beta  2018-11-07   BIG fix with implementation of age-specific K
+!!//  V3.30.13_beta  2018-11-07   fix problem with age-specific K introduced with the growth cessation code
 !!//  V3.30.13_beta  2018-11-07   fix implementation of seasons as pseudo-years
 !!//  V3.30.13_beta  2018-11-07   fix ss_trans to handle mirror q better
 !!//  V3.30.13_beta  2018-11-08   improve implementation of float q
@@ -97,6 +97,9 @@ DATA_SECTION
 !!//  V3.30.13_beta  2018-12-20   fix reading of sizecomp obs before styr
 !!//  V3.30.13_beta  2018-12-20   add new recdev approaches based on dev being relative to R0, not SRR; add column to spawn_recr in report.sso
 !!//  V3.30.13_beta  2018-12-20   fix output of equilibrium F when using F_reporting=5
-!!//  V3.30.13_beta  2019-01-31   fix issues with F_reporting=4 and 5 for multiseason models; still testing
-!!//  V3.30.13_beta  2019-02_01   update F_reporting for equil calcs;
-!!//  V3.30.13_beta  2019-02_01   add new forecast feature:  year-specific ABC buffer
+!!//  V3.30.13_beta  2019-01-31   fix issues with F_reporting=4 and 5 for multiseason models
+!!//  V3.30.13_beta  2019-02-01   update F_reporting for equil calcs;
+!!//  V3.30.13_beta  2019-02-01   add new forecast feature:  year-specific ABC buffer
+!!//  V3.30.13_beta  2019-02-25   re-order and organize the list of tables appearing at top of report.sso; add table for F
+!!//  V3.30.13_beta  2019-02-25   Important: revised the logL calculation for parameter deviations
+!!//  V3.30.13  2019-03-08  Roll up the above changes and remove beta label

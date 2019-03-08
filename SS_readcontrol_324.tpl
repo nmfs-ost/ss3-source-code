@@ -3648,6 +3648,7 @@
    ivector parm_dev_maxyr(1,N_parm_dev);
    ivector parm_dev_PH(1,N_parm_dev);
    ivector parm_dev_type(1,N_parm_dev);  //  distinguish parameter dev vectors from 2DAR devs
+   ivector parm_dev_use_rho(1,N_parm_dev);  //  distinguish parameter dev vectors from 2DAR devs
    ivector parm_dev_info(1,N_parm_dev);  //  pointer from list of devvectorsto 2DAR list
    ivector TwoD_AR_ymin(1,1)
    ivector TwoD_AR_ymax(1,1)
@@ -3657,7 +3658,7 @@
    ivector TwoD_AR_cor_dim(1,1)
 
  LOCAL_CALCS
-
+   parm_dev_use_rho.initialize();
    TwoD_AR_ymin.initialize();
    TwoD_AR_ymax.initialize();
    TwoD_AR_amin.initialize();

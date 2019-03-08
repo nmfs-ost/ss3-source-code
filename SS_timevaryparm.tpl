@@ -230,6 +230,10 @@ FUNCTION void make_timevaryparm()
             picker-=20;
             continue_last=1;
           }
+        if(picker>10)
+          {
+            picker-=10;
+          }
         switch(picker)
         {
           case 1:
