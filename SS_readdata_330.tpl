@@ -3174,29 +3174,6 @@
     y=0;
   }
 
-  echoinput<<"Now fill H4010_scale_vec"<<endl;
-  H4010_scale_vec.initialize();
-  if(H4010_scale_rd>=0.0)
-    {
-      H4010_scale_vec=H4010_scale_rd;
-    }
-    else
-    {
-      j=H4010_scale_vec_rd.size()-1;
-      for (int s=0; s<=j-1; s++) 
-      {
-        y=H4010_scale_vec_rd[s](1);
-        echoinput<<H4010_scale_vec_rd[s]<<" "<<y<<endl;
-        if(s==0 && y>endyr)
-          {N_warn++; warning<<" "<<endl;}
-        for(k=y;k<=YrMax;k++) 
-        {
-          H4010_scale_vec(k)=H4010_scale_vec_rd[s](2);
-        }
-      }
-    }
-  echoinput<<"H4010_scale: "<<H4010_scale_vec<<endl;
-
  END_CALCS
 
   3darray Fcast_InputCatch(k1,y,1,Nfleet,1,2)  //  values and basis to be used
@@ -3235,6 +3212,29 @@
       }
     }
   }
+
+  echoinput<<"Now fill H4010_scale_vec"<<endl;
+  H4010_scale_vec.initialize();
+  if(H4010_scale_rd>=0.0)
+    {
+      H4010_scale_vec=H4010_scale_rd;
+    }
+    else
+    {
+      j=H4010_scale_vec_rd.size()-1;
+      for (int s=0; s<=j-1; s++) 
+      {
+        y=H4010_scale_vec_rd[s](1);
+        echoinput<<H4010_scale_vec_rd[s]<<" "<<y<<endl;
+        if(s==0 && y>endyr)
+          {N_warn++; warning<<" "<<endl;}
+        for(k=y;k<=YrMax;k++) 
+        {
+          H4010_scale_vec(k)=H4010_scale_vec_rd[s](2);
+        }
+      }
+    }
+  echoinput<<"H4010_scale: "<<H4010_scale_vec<<endl;
 
   if(Do_Rebuilder>0 && Do_Forecast_rd<=0) {N_warn++; cout<<" EXIT - see warning "<<endl; warning<<" error: Rebuilder output selected without requesting forecast"<<endl; exit(1);}
   if(Do_Benchmark==0)
