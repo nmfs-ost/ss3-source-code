@@ -266,6 +266,7 @@ GLOBALS_SECTION
          timevary_byyear(y)=1;
          sprintf(onenum, "%d", y);
 
+         echoinput<<" block method "<<k<<endl;
          switch(k)
          {
            case 0:
@@ -273,7 +274,8 @@ GLOBALS_SECTION
             dvector tempvec(1,7);  //  temporary vector for a time-vary parameter  LO HI INIT PRIOR PR_type SD PHASE
             tempvec.initialize();
             if(autogen_timevary>=1)  //  read
-            {*(ad_comm::global_datafile) >> tempvec(1,7);}
+            {*(ad_comm::global_datafile) >> tempvec(1,7);
+              echoinput<<"read timevary block parameter: "<<tempvec<<endl;}
             if(autogen_timevary==0 || autogen_timevary==2 || (autogen_timevary==3 && tempvec(1)==-12345))  //  create or overwrite
             {
               tempvec.fill("{0,0,0.,0.,0,6,4}");
@@ -291,7 +293,8 @@ GLOBALS_SECTION
             dvector tempvec(1,7);  //  temporary vector for a time-vary parameter  LO HI INIT PRIOR PR_type SD PHASE
             tempvec.initialize();
             if(autogen_timevary>=1)  //  read
-            {*(ad_comm::global_datafile) >> tempvec(1,7);}
+            {*(ad_comm::global_datafile) >> tempvec(1,7);
+              echoinput<<"read timevary block parameter: "<<tempvec<<endl;}
             if(autogen_timevary==0 || autogen_timevary==2 || (autogen_timevary==3 && tempvec(1)==-12345))  //  create or overwrite
             {
               tempvec.fill("{0,0,0.,0.,0,6,4}");
@@ -306,7 +309,8 @@ GLOBALS_SECTION
             dvector tempvec(1,7);  //  temporary vector for a time-vary parameter  LO HI INIT PRIOR PR_type SD PHASE
             tempvec.initialize();
             if(autogen_timevary>=1)  //  read
-            {*(ad_comm::global_datafile) >> tempvec(1,7);}
+            {*(ad_comm::global_datafile) >> tempvec(1,7);
+              echoinput<<"read timevary block parameter: "<<tempvec<<endl;}
             if(autogen_timevary==0 || autogen_timevary==2 || (autogen_timevary==3 && tempvec(1)==-12345))  //  create or overwrite
             {
               for(int s=1;s<=7;s++) tempvec(s)=baseparm_list(s);
@@ -317,6 +321,7 @@ GLOBALS_SECTION
                 tempvec(5)=tempvec(6);
                 tempvec(6)=temp;
               }
+              echoinput<<"set timevary block parameter to base: "<<tempvec<<endl;
             }
             timevary_parm_rd.push_back (tempvec);
              break;}
@@ -325,7 +330,8 @@ GLOBALS_SECTION
             dvector tempvec(1,7);  //  temporary vector for a time-vary parameter  LO HI INIT PRIOR PR_type SD PHASE
             tempvec.initialize();
             if(autogen_timevary>=1)  //  read
-            {*(ad_comm::global_datafile) >> tempvec(1,7);}
+            {*(ad_comm::global_datafile) >> tempvec(1,7);
+              echoinput<<" read timevary block parm: "<<tempvec<<endl;}
             if(autogen_timevary==0 || autogen_timevary==2 || (autogen_timevary==3 && tempvec(1)==-12345))  //  create or overwrite
             {
               tempvec.fill("{0,0,0.,0.,0,6,4}");
@@ -337,13 +343,12 @@ GLOBALS_SECTION
              break;}
          }
          y=block_design_pass(g+1)+1;  // first year after block
-         if(y>endyr+1) y=endyr+1;  //  should change this to YrMax
-         timevary_byyear(y)=1;
+         if(y<=YrMax) timevary_byyear(y)=1;
          if(targettype==7 && timevary_setup(1)==1)  //  so doing catch_mult which needs annual values calculated for each year of the block
          {
-           for(k=block_design_pass(g);k<=y;k++)  //  where y has end year of block + 1
+           for(int z=block_design_pass(g);z<=y;z++)  //  where y has end year of block + 1
            {
-             timevary_byyear(k)=1;
+             timevary_byyear(z)=1;
            }
          }
          g+=2;

@@ -555,8 +555,9 @@
         if(Block_Design(j,a+1)<Block_Design(j,a)) {N_warn++; cout<<" EXIT - see warning "<<endl; warning<<"Block:"<<j<<" "<<k<<" ends before it starts; fatal error"<<endl; exit(1);}
         if(Block_Design(j,a)<styr-1) {N_warn++; warning<<"Block:"<<j<<" "<<k<<" starts before styr; resetting"<<endl; Block_Design(j,a)=styr;}
         if(Block_Design(j,a+1)<styr-1) {N_warn++; cout<<" EXIT - see warning "<<endl; warning<<"Block:"<<j<<" "<<k<<" ends before styr; fatal error"<<endl; exit(1);}
-        if(Block_Design(j,a)>retro_yr+1) {N_warn++; warning<<"Block:"<<j<<" "<<k<<" starts after retroyr+1; do not estimate "<<endl;}
+        if(Block_Design(j,a)>retro_yr+1) {N_warn++; warning<<"Block:"<<j<<" "<<k<<" starts after retroyr+1; should not estimate "<<endl;}
         if(Block_Design(j,a+1)>retro_yr+1) {N_warn++; warning<<"Block:"<<j<<" "<<k<<" ends in: "<<Block_Design(j,a+1)<<" after retroyr+1:  "<<retro_yr+1<<endl;}
+        if(Block_Design(j,a)>YrMax) {N_warn++; warning<<"Block:"<<j<<" "<<k<<" starts in: "<<Block_Design(j,a+1)<<" which is > YrMax:  "<<YrMax<<" fatal error"<<endl;exit(1);}
         if(Block_Design(j,a+1)>YrMax) {N_warn++; warning<<"Block:"<<j<<" "<<k<<" ends in: "<<Block_Design(j,a+1)<<" reset to YrMax:  "<<YrMax<<endl;Block_Design(j,a+1)=YrMax;}
       }
     }

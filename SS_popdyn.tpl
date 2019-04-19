@@ -871,11 +871,11 @@ FUNCTION void get_time_series()
                       {
                         if(catchunits(f)==1)
                         {
-                          interim_tot_catch+=Hrate(f,t)*elem_prod(natage(t,p,g),sel_al_2(s,g,f))*Zrate2(p,g);  // biomass basis
+                          interim_tot_catch+=catch_mult(y,f)*Hrate(f,t)*elem_prod(natage(t,p,g),sel_al_2(s,g,f))*Zrate2(p,g);  // biomass basis
                         }
                         else
                         {
-                          interim_tot_catch+=Hrate(f,t)*elem_prod(natage(t,p,g),sel_al_4(s,g,f))*Zrate2(p,g);  //  numbers basis
+                          interim_tot_catch+=catch_mult(y,f)*Hrate(f,t)*elem_prod(natage(t,p,g),sel_al_4(s,g,f))*Zrate2(p,g);  //  numbers basis
                         }
                       }  //close gmorph loop
                     }  // close fishery
