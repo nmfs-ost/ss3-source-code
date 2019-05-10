@@ -20,13 +20,6 @@ FUNCTION void get_selectivity()
 
   dvar_vector sp(1,199);                 // temporary vector for selex parms
 
-  // define vectors which form the basis for cubic spline selectivity
-  // IMPORTANT: these vectors might need to be expanded to fit values for multiple fleets
-  dvector splineX(1,200);
-  dvar_vector splineY(1,200);
-  splineX.initialize();
-  splineY.initialize();
-
   Ip=0;
   //  SS_Label_Info_22.2 #Loop all fisheries and surveys twice; first for size selectivity, then for age selectivity
   for (f=1;f<=2*Nfleet;f++)
@@ -492,7 +485,12 @@ FUNCTION void get_selectivity()
           {
             int j1;
             int j2;
-
+  // define vectors which form the basis for cubic spline selectivity
+  // IMPORTANT: these vectors might need to be expanded to fit values for multiple fleets
+  dvector splineX(1,200);
+  dvar_vector splineY(1,200);
+  splineX.initialize();
+  splineY.initialize();
             j=1;
             k=seltype(f,4);  // n points to include in cubic spline
             for (i=1;i<=k;i++)
@@ -1207,6 +1205,13 @@ FUNCTION void get_selectivity()
             scaling_offset = 2;
           case 27:
           {
+  // define vectors which form the basis for cubic spline selectivity
+  // IMPORTANT: these vectors might need to be expanded to fit values for multiple fleets
+  dvector splineX(1,200);
+  dvar_vector splineY(1,200);
+  splineX.initialize();
+  splineY.initialize();
+
             k=seltype(f,4);  // n points to include in cubic spline
             for (i=1;i<=k;i++)
             {

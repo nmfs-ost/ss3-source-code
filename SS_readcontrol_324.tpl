@@ -2971,9 +2971,9 @@
     if(RetainParm(f)>0)
     {
       k=parmcount+RetainParm(f)+2;
-      if(selparm_1(k,1) >=0.0)
+//      if(selparm_1(k,1) >=0.0)  // better to always do this for 3.24 files
         {
-          N_warn++; warning<<"convert asymptotic retention to 1/(1+e(-x)) format for fleet: "<<f<<" parm: "<<k<<endl;
+          N_warn++; warning<<"converting asymptotic retention parameter to 1/(1+e(-x)) format for fleet: "<<f<<" parm: "<<k<<endl;
           warning<<"old min, max, init, prior: "<<selparm_1(k)(1,4)<<endl;
 
           new_lower_bound=-10.;
@@ -3021,7 +3021,7 @@
           selparm_1(k,2)=new_upper_bound;
 
           warning<<"new min, max, init, prior: "<<selparm_1(k)(1,4)<<endl;
-          warning<<"if timevarying, you will need to do conversion manually"<<endl;
+          if (selparm_1(k,8) !=0 || selparm_1(k,9)!=0 || selparm_1(k,13)!=0) warning<<"Timevarying, so you must do timevary parm conversion manually"<<endl;
         }
     }
     parmcount+=N_selparmvec(f);

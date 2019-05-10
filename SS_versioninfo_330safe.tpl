@@ -5,7 +5,7 @@ DATA_SECTION
 !!//  SS_Label_Section_1.0 #DATA_SECTION
 
 !!//  SS_Label_Info_1.1.1  #Create string with version info
-!!version_info+="#V3.30.13.01-safe;_2019_03_09;_Stock_Synthesis_by_Richard_Methot_(NOAA)_using_ADMB_12.0";
+!!version_info+="#V3.30.13.02-safe;_2019_05_10;_Stock_Synthesis_by_Richard_Methot_(NOAA)_using_ADMB_12.0";
 !!version_info+="#Stock Synthesis (SS) is a work of the U.S. Government and is not subject to copyright protection in the United States.";
 !!version_info+="#Foreign copyrights may apply. See copyright.txt for more information.";
 !!version_info2+="#_user_support_available_at:NMFS.Stock.Synthesis@noaa.gov";
@@ -104,3 +104,6 @@ DATA_SECTION
 !!//  V3.30.13_beta  2019-02-25   Important: revised the logL calculation for parameter deviations
 !!//  V3.30.13  2019-03-08  Roll up the above changes and remove beta label
 !!//  V3.30.13.01  2019-04-19  fix implementation of catch_mult and its time-varying capability
+!!//  V3.30.13.02  2019-05-08  fix implementation of profilevalues.ss for spawn_recruitment parameters
+!!//  V3.30.13.02  2019-05-08  change trans so that conversion of retention asymptotic parm always occurs
+!!//  V3.30.13.02  2019-05-10  FIX updating of fecundity-at-age for forecast to improve std.err. reporting for spawning biomass

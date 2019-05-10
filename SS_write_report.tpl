@@ -1678,8 +1678,8 @@ FUNCTION void write_bigoutput()
   for (gg=1;gg<=gender;gg++)
   if(y==styr-3 || y==endyr || y==YrMax || (y>=styr && (timevary_sel(y,f)>0 || timevary_sel(y+1,f)>0)))
   {
-    if(y>=styr && y<=endyr)
-    {
+//    if(y>=styr && y<=endyr)
+//    {
       SS2out<<"Ret "<<f<<" "<<y<<" "<<gg<<" "<<y<<"_"<<f<<"_Ret";
       if(gg==1) {for (z=1;z<=nlength;z++) {SS2out<<" "<<retain(y,f,z);}}
       else
@@ -1690,7 +1690,7 @@ FUNCTION void write_bigoutput()
       else
       {for (z=nlength1;z<=nlength2;z++) {SS2out<<" "<<discmort(y,f,z);}}
       SS2out<<endl;
-    }
+//    }
     SS2out<<"Keep "<<f<<" "<<y<<" "<<gg<<" "<<y<<"_"<<f<<"_Keep";
     for (z=1;z<=nlength;z++) {SS2out<<" "<<sel_l_r(y,f,gg,z);}
     SS2out<<endl;

@@ -3322,6 +3322,9 @@
   if(STD_Yr_max>YrMax) STD_Yr_max=YrMax;
    STD_Yr_Reverse.initialize();
    for (y=STD_Yr_min;y<=STD_Yr_max;y++) {STD_Yr_Reverse(y)=1;}
+   STD_Yr_Reverse(styr-2)=1;
+   STD_Yr_Reverse(styr-1)=1;
+   STD_Yr_Reverse(styr)=1;
    for (i=1;i<=N_STD_Yr_RD;i++)
    {if(STD_Yr_RD(i)>=styr && STD_Yr_RD(i)<YrMax) {STD_Yr_Reverse(STD_Yr_RD(i))=1;}}
 

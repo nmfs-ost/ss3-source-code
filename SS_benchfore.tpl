@@ -35,8 +35,15 @@ FUNCTION void setup_Benchmark()
           discmort2_a(endyr+1,f,gg)=tempvec_a/temp;
           discmort2_a(YrMax,f,gg)=tempvec_a/temp;
         }
-
       }
+        t=styr+(endyr+1-styr)*nseas+spawn_seas-1;
+      
+        for (g=1;g<=gmorph;g++)
+        if(use_morph(g)>0 && sx(g)==1)
+        {
+          fec(g)=save_sel_fec(t,g,0);
+       }
+
 //  SS_Label_Info_7.5.2 #Set-up relative F among fleets and seasons for forecast
       if(Fcast_RelF_Basis==1)  // set allocation according to range of years
       {
@@ -75,6 +82,7 @@ FUNCTION void setup_Benchmark()
         Fcast_RelF_Use /= temp;
         Fcurr_Fmult=temp;
       }
+
     }  //  end getting quantities for forecasts
 
 //  SS_Label_Info_7.5.3 #Calc average selectivity to use in benchmarks; store in styr-3
@@ -1304,6 +1312,7 @@ FUNCTION void Get_Forecast()
         ALK_subseas_update=1;  //  vector to indicate if ALK needs recalculating
         get_growth2();
       }
+//      warning<<Ave_Size(endyr,1,1,nages)<<" "<<Ave_Size(endyr,1,2,nages)<<" end+1: "<<Ave_Size(endyr+1,1,1,nages)<<" "<<Ave_Size(endyr+1,1,2,nages)<<endl;
       if(timevary_MG(endyr+1,1)>0) get_natmort();
       if(timevary_MG(endyr+1,3)>0) get_wtlen();
       if(timevary_MG(endyr+1,4)>0) get_recr_distribution();
@@ -1319,6 +1328,7 @@ FUNCTION void Get_Forecast()
       }
   //  SS_Label_Info_24.1.2  #Call selectivity, which does its own internal check for time-varying changes
       if(Fcast_Specify_Selex>0) get_selectivity();
+
       // ABC_loop:  1=get OFL; 2=get_ABC, use input catches; 3=recalc with caps and allocations
       for (int ABC_Loop=ABC_Loop_start; ABC_Loop<=ABC_Loop_end;ABC_Loop++)
       {
@@ -1366,7 +1376,7 @@ FUNCTION void Get_Forecast()
                 if(s==spawn_seas) fec(g)=WTage_emp(t,GP3(g),-2);
               }
             }
-            else if(timevary_MG(endyr+1,2)>0 || timevary_MG(endyr+1,3)>0 || save_for_report==1)
+            else if(timevary_MG(endyr+1,2)>0 || timevary_MG(endyr+1,3)>0 ||  save_for_report>0 || ((sd_phase() || mceval_phase()) && (initial_params::mc_phase==0)) )
             {
                Make_Fecundity();
                for (g=1;g<=gmorph;g++)
@@ -1380,6 +1390,7 @@ FUNCTION void Get_Forecast()
                  Wt_Age_mid(s,g)=ALK(ALK_idx,g)*wt_len(s,GP(g));  // use for fisheries with no size selectivity
               }
             }
+            else
             Save_Wt_Age(t)=Wt_Age_beg(s);
 
             for (g=1;g<=gmorph;g++)

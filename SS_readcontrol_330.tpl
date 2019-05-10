@@ -3931,7 +3931,7 @@
   for (j=1;j<=SR_parm_PH.indexmax();j++)
   {
     ParCount++;
-    if(SR_parm_PH(j)==-9999) {SR_parm_1(j,3)=prof_var(prof_var_cnt); prof_var_cnt+=1;}
+    if(SR_parm_PH(j)==-9999) {SR_parm_1(j,3)=prof_var(prof_var_cnt); SR_parm_RD(j,3)=SR_parm_1(j,3); prof_var_cnt+=1;}
     if(depletion_fleet>0 && depletion_type<2 && SR_parm_PH(j)>0) SR_parm_PH(j)++;  //  add 1 to phase if using depletion fleet
     if(depletion_fleet>0  && depletion_type<2 && j==1) SR_parm_PH(1)=1;  //  R0 active in phase 1, unless type==2
     if(SR_parm_PH(j) > Turn_off_phase2) SR_parm_PH(j) =-1;
@@ -4057,7 +4057,7 @@
   for (f=1;f<=Q_Npar2;f++)
   {
     ParCount++;
-    if(Q_parm_PH(f)==-9999) {Q_parm_1(f,3)=prof_var(prof_var_cnt); prof_var_cnt++;}
+    if(Q_parm_PH(f)==-9999) {Q_parm_1(f,3)=prof_var(prof_var_cnt); Q_parm_RD(f,3)=prof_var(prof_var_cnt); prof_var_cnt++;}
     if(depletion_fleet>0  && depletion_type<2 && Q_parm_PH(f)>0) Q_parm_PH(f)++;
     if(Q_parm_PH(f) > Turn_off_phase2) Q_parm_PH(f) =-1;
     if(Q_parm_PH(f) > max_phase) max_phase=Q_parm_PH(f);
@@ -4231,7 +4231,7 @@
    for (k=1;k<=selparm_PH.indexmax();k++)
    {
      ParCount++;
-     if(selparm_PH(k)==-9999) {selparm_RD(k)=prof_var(prof_var_cnt); prof_var_cnt++;}
+     if(selparm_PH(k)==-9999) {selparm_RD(k)=prof_var(prof_var_cnt); selparm_1(k)=prof_var(prof_var_cnt); prof_var_cnt++;}
      if(depletion_fleet>0  && depletion_type<2 && selparm_PH(k)>0) selparm_PH(k)++;
      if(selparm_PH(k) > Turn_off_phase2) selparm_PH(k) =-1;
      if(selparm_PH(k) > max_phase) max_phase=selparm_PH(k);

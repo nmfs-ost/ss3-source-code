@@ -952,7 +952,7 @@ FUNCTION void Process_STDquant()
           break;
         }
       }
-
+      
       switch (SPR_reporting)
       {
         case 0:      // keep as raw value
