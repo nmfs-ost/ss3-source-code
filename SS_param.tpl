@@ -437,6 +437,8 @@ PARAMETER_SECTION
   number equ_catch_like
   vector catch_like(1,Nfleet)
   number recr_like
+  number noBias_recr_like
+  number JT_obj_fun
   number regime_like
   number sum_recdev
   number Fcast_recr_like

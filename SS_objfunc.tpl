@@ -3,7 +3,7 @@
 FUNCTION void evaluate_the_objective_function()
   {
   surv_like.initialize();   Q_dev_like.initialize(); disc_like.initialize(); length_like.initialize(); age_like.initialize();
-  sizeage_like.initialize(); parm_like.initialize(); parm_dev_like.initialize();
+  sizeage_like.initialize(); parm_like.initialize(); parm_dev_like.initialize();noBias_recr_like.initialize();
   mnwt_like.initialize(); equ_catch_like.initialize(); recr_like.initialize(); Fcast_recr_like.initialize();
   catch_like.initialize(); Morphcomp_like.initialize(); TG_like1.initialize(); TG_like2.initialize();
   length_like_tot.initialize(); age_like_tot.initialize();
@@ -625,6 +625,7 @@ FUNCTION void evaluate_the_objective_function()
           sum_recdev+=dev;  //  get sum of devs
         }
       }
+      noBias_recr_like=recr_like-sd_offset_rec*log(sigmaR)+(recdev_end-recdev_first+1.)*log(sigmaR);
       regime_like = 0.5 * square( log(R1/R1_exp) / (sigmaR/ave_age) );
       if(do_recdev==4) regime_like+=square(sum_recdev);
       if(do_once==1) cout<<" did recruitdev obj_fun "<<recr_like<<" "<<sd_offset_rec<<" "<<two_sigmaRsq<<endl;
@@ -904,6 +905,8 @@ FUNCTION void evaluate_the_objective_function()
    if(Do_TG>0 && Nfleet>1) obj_fun += TG_like1*column(TG_lambda1,k_phase);
    if(Do_TG>0) obj_fun += TG_like2*column(TG_lambda2,k_phase);
 //   cout<<" obj_fun final "<<obj_fun<<endl;
+    JT_obj_fun=obj_fun-recr_like*recrdev_lambda(k_phase)+noBias_recr_like*recrdev_lambda(k_phase);
+
     if(do_once==1)
     {
       cout<<" OK with obj_func "<<obj_fun<<endl;
