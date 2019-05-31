@@ -5,7 +5,7 @@ DATA_SECTION
 !!//  SS_Label_Section_1.0 #DATA_SECTION
 
 !!//  SS_Label_Info_1.1.1  #Create string with version info
-!!version_info+="#V3.30.13.03-safe;_2019_05_14;_Stock_Synthesis_by_Richard_Methot_(NOAA)_using_ADMB_12.0";
+!!version_info+="#V3.30.13.04-safe;_2019_05_31;_Stock_Synthesis_by_Richard_Methot_(NOAA)_using_ADMB_12.0";
 !!version_info+="#Stock Synthesis (SS) is a work of the U.S. Government and is not subject to copyright protection in the United States.";
 !!version_info+="#Foreign copyrights may apply. See copyright.txt for more information.";
 !!version_info2+="#_user_support_available_at:NMFS.Stock.Synthesis@noaa.gov";
@@ -107,4 +107,8 @@ DATA_SECTION
 !!//  V3.30.13.02  2019-05-08  fix implementation of profilevalues.ss for spawn_recruitment parameters
 !!//  V3.30.13.02  2019-05-08  change trans so that conversion of retention asymptotic parm always occurs
 !!//  V3.30.13.03  2019-05-14  revise format of LIKELIHOOD table in report.sso so all rows have 3 elements and info for Laplace calculations is shown
+!!//  V3.30.13.04  2019-05-31  fix output of dirichlet parameters to control.ss_new
+!!//  V3.30.13.04  2019-05-31  fix assignment of forecast relF when a bycatch fleet is not associated with input catch
+!!//  V3.30.13.04  2019-05-31  add parm_gradient for F parameters
+
 

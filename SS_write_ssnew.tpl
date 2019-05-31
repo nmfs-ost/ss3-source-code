@@ -1923,6 +1923,7 @@ FUNCTION void write_nucontrol()
       for(f=1;f<=Comp_Err_ParmCount;f++)
       {
           k++; NP++;
+          selparm_1(k)(3)=value(selparm(k));
           for(z=1;z<=6;z++) report4<<setw(14)<<selparm_1(k,z);
           for(z=7;z<=14;z++) report4<<setw(11)<<selparm_1(k,z);
           report4<<"  #  "<<ParmLabel(NP)<<endl;

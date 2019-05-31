@@ -200,6 +200,13 @@
   matrix catch_se(styr-nseas,TimeMax,1,Nfleet);
   matrix fleet_setup(1,Nfleet,1,5)  // type, timing, area, units, need_catch_mult
   matrix bycatch_setup(1,Nfleet,1,6)
+    // 1:  fleet number; must match fleet definitions"<<endl;
+    // 2:  1=include dead bycatch in total dead catch for F0.1 and MSY optimizations and forecast ABC; 2=omit from total catch for these purposes (but still include the mortality)"<<endl;
+    // 3:  1=Fmult scales with other fleets; 2=bycatch F constant at input value; 3=mean bycatch F from range of years"<<endl;
+    // 4:  F or first year of range"<<endl;
+    // 5:  last year of range"<<endl;
+    // 6:  not used"<<endl;
+
   ivector YPR_mask(1,Nfleet)
   int N_bycatch;  //  number of bycatch only fleets
   int N_catchfleets; //  number of bycatch plus landed catch fleets

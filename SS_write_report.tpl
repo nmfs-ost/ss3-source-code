@@ -386,11 +386,13 @@ FUNCTION void write_bigoutput()
     {
       for (i=1;i<=N_Fparm;i++)
       {
-        NP++;  SS2out<<NP<<" "<<ParmLabel(NP)<<" "<<F_rate(i);
+        NP++;  Activ=0;
+        SS2out<<NP<<" "<<ParmLabel(NP)<<" "<<F_rate(i);
         if(active(F_rate(i)))
         {
           active_count++;
-          SS2out<<" "<<active_count<<" "<<Fparm_PH(i)<<" 0.0  8.0  _ "<<Fparm_use(i)<<" act "<<CoVar(active_count,1);
+          Activ=1;
+          SS2out<<" "<<active_count<<" "<<Fparm_PH(i)<<" 0.0  8.0  _ "<<Fparm_use(i)<<" act "<<CoVar(active_count,1)<<" "<<parm_gradients(active_count);
         }
         else
         {SS2out<<" _ _ _ _ _ _ NA _ _ ";}
