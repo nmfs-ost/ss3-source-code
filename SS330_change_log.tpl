@@ -97,4 +97,5 @@ V3.30.13.02  2019-05-08  change trans so that conversion of retention asymptotic
 V3.30.13.03  2019-05-14  revise format of LIKELIHOOD table in report.sso so all rows have 3 elements and info for Laplace calculations is shown
 V3.30.13.04  2019-05-31  fix output of dirichlet parameters to control.ss_new  VLAB#64174
 V3.30.13.04  2019-05-31  fix assignment of forecast relF when a bycatch fleet is not associated with input catch  VLAB#64476
-V3.30.13.04  2019-05-31  add parm_gradient for F parameters  VLAB#64449
+V3.30.13.04  2019-05-31  add parm_gradient for F parameters  VLAB #64449
+V3.30.13.05  2019-06-04  minor fix to repair fatal interaction between Lorenzen M and growth specification.  VLAB #64589

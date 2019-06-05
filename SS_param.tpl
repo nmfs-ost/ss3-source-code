@@ -17,7 +17,7 @@ PARAMETER_SECTION
     maximum_function_evaluations=func_eval;
     convergence_criteria.allocate(func_conv.indexmin(),func_conv.indexmax());
     convergence_criteria=func_conv;
-    if(do_ageK==1)
+    if(do_ageK==1)  //  need for age-specific K
       {k=nages;}  // use for dimension of VBK()
       else
       {k=0;}

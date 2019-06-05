@@ -805,6 +805,8 @@ FUNCTION void get_natmort()
   dvariable t_age;
   int gpi;
   int Do_AveAge;
+  int K_index;
+  K_index=VBK(1).indexmax();
   Do_AveAge=0;
   t_base=styr+(yz-styr)*nseas-1;
   Ip=-N_M_Grow_parms;   // start counter for MGparms
@@ -927,7 +929,7 @@ FUNCTION void get_natmort()
   //  SS_Label_Info_17.1.2.2  #case 2:  lorenzen M
           case 2:  //  Lorenzen M
           {
-            Loren_temp2=L_inf(gp)*(mfexp(-VBK(gp,nages)*VBK_seas(0))-1.);   // need to verify use of VBK_seas here
+            Loren_temp2=L_inf(gp)*(mfexp(-VBK(gp,K_index)*VBK_seas(0))-1.);   // need to verify use of VBK_seas here
             t=styr+(yz-styr)*nseas+Bseas(g)-1;
             Loren_temp=Ave_Size(styr,mid_subseas,g,int(natM_amin));  // uses mean size in middle of season 1 for the reference age
             Loren_M1=natMparms(1,gp)/log(Loren_temp/(Loren_temp+Loren_temp2));
