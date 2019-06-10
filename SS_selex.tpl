@@ -42,8 +42,8 @@ FUNCTION void get_selectivity()
               if(sp(j)>-999 && (sp(j)<selparm_1(Ip+j,1) || sp(j)>selparm_1(Ip+j,2)))
               {
                 N_warn++;
-                warning<<" adjusted selparm out of base parm bounds (Parm#, yr, min, max, base, value) "<<
-                Ip+j<<" "<<y<<" "<<selparm_1(Ip+j,1)<<" "<<selparm_1(Ip+j,2)<<" "<<selparm(Ip+j)<<" "<<sp(j)<<endl;
+                warning<<" adjusted selparm out of base parm bounds (Phase, Iter, Parm#, yr, min, max, base, value) "<<
+                current_phase()<<" "<<niter<<" "<<Ip+j<<" "<<y<<" "<<selparm_1(Ip+j,1)<<" "<<selparm_1(Ip+j,2)<<" "<<selparm(Ip+j)<<" "<<sp(j)<<endl;
               }
             }
           }

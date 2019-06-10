@@ -1558,6 +1558,16 @@ FUNCTION void write_bigoutput()
                 t=SzFreq_time_t(iobs);
                 ALK_time=SzFreq_time_ALK(iobs);
                 gg=SzFreq_obs_hdr(iobs,4);  // gender
+                if(gender==2 && (gg==3 || gg==2))
+                {
+                  sz_tails(3)=SzFreq_Nbins(sz_method)+1;
+                  sz_tails(4)=2*SzFreq_Nbins(sz_method);
+                }
+                else
+                {
+                  sz_tails(3)=1;
+                  sz_tails(4)=SzFreq_Nbins(sz_method);
+                }
                 p=SzFreq_obs_hdr(iobs,5);  // partition
                 z1=SzFreq_obs_hdr(iobs,7);
                 z2=SzFreq_obs_hdr(iobs,8);
@@ -1574,7 +1584,8 @@ FUNCTION void write_bigoutput()
                   SzFreq_eachlike(iobs)=value(temp1);
                   dvector tempvec_l (1,SzFreq_exp(iobs).size());
                   tempvec_l=value(SzFreq_exp(iobs));
-                  more_comp_info=process_comps(gender,gg,SzFreq_bins(sz_method),SzFreq_means(sz_method),sz_tails,SzFreq_obs(iobs),tempvec_l);
+                 more_comp_info=process_comps(gender,gg,SzFreq_bins(sz_method),SzFreq_means(sz_method),sz_tails,SzFreq_obs(iobs),tempvec_l);
+
                 if(SzFreq_obs_hdr(iobs,3)>0)
                 {
                   n_rmse(f)+=1.;
@@ -1592,6 +1603,7 @@ FUNCTION void write_bigoutput()
                 }
                 temp= SzFreq_obs1(iobs,3);  //  use original input value because 
                 if(temp>999) temp-=1000.;
+                  SS2out<<" here "<<endl;
                 SS2out<<f<<" "<<fleetname(f)<<" "<<fleet_area(f)<<" "<<Show_Time2(ALK_time)<<" "<<data_time(ALK_time,f,1)<<" "<<data_time(ALK_time,f,3)<<" "<<gg<<" "<<p;
      if(SzFreq_obs_hdr(iobs,2)<0 && in_superperiod==0)
       {SS2out<<" start "; in_superperiod=1;}
@@ -3200,7 +3212,7 @@ FUNCTION dvector process_comps(const int sexes, const int sex, dvector &bins,  d
     //  sex is 0, 1, 2, 3 for range of sexes used in this sample
     int nbins = bins.indexmax()/sexes; // find number of bins
      // do both sexes  tails(4) has been set to tails(2) if males not in this sample
-     if(sex==3 || sex==0)
+     if((sex==3&&sexes==2) || sex==0)
      {
        more_comp_info(1)=obs(tails(1),tails(4))*means(tails(1),tails(4));
        more_comp_info(2)=exp(tails(1),tails(4))*means(tails(1),tails(4));
@@ -3254,7 +3266,7 @@ FUNCTION dvector process_comps(const int sexes, const int sex, dvector &bins,  d
      }
 
     
-     if(sex==1 || sex==3)  //  need females
+     if(sex==1 || (sex==3&&sexes==2))  //  need females
      {
        //  where means() holds midpoints of the data length bins
        more_comp_info(7)=(obs(tails(1),tails(2))*means(tails(1),tails(2)))/sum(obs(tails(1),tails(2)));

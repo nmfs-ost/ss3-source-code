@@ -15,7 +15,7 @@ FUNCTION void get_MGsetup()
           if(mgp_adj(f)<MGparm_1(f,1) || mgp_adj(f)>MGparm_1(f,2))
           {
             N_warn++;
-            warning<<" adjusted MGparm out of bounds (parm#, yr, min, max, base, adj_value) "<<f<<" "<<yz<<" "<<
+            warning<<" adjusted MGparm out of bounds (Phase, Iter, parm#, yr, min, max, base, adj_value) "<<current_phase()<<" "<<niter<<f<<" "<<yz<<" "<<
             MGparm_1(f,1)<<" "<<MGparm_1(f,2)<<" "<<MGparm(f)<<" "<<mgp_adj(f)<<" "<<ParmLabel(f)<<endl;
           }
         }
