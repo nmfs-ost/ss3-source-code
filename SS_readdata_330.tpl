@@ -2162,9 +2162,6 @@
           if(s>nseas)
            {N_warn++; cout<<" EXIT - see warning "<<endl; warning<<" Critical error, season for size-age obs "<<i<<" is > nseas"<<endl; exit(1);}
 
-          if(sizeAge_Data[i](6)<0.0)
-            {N_warn++; warning<<"negative values not allowed for size-at-age sample size, use -fleet to omit from -logL"<<endl;}
-
           header_ms(f,j)(1,7)=sizeAge_Data[i](1,7);
           header_ms_rd(f,j)(2,3)=sizeAge_Data[i](2,3);
           if(sizeAge_Data[i](2)<0)
@@ -2182,7 +2179,7 @@
 
            gen_ms(f,j)=sizeAge_Data[i](4);
            mkt_ms(f,j)=sizeAge_Data[i](5);
-           if(sizeAge_Data[i](6)>N_ageerr)
+           if(abs(sizeAge_Data[i](6))>N_ageerr)
            {
               N_warn++;cout<<" EXIT - see warning "<<endl;
               warning<<" in meansize, ageerror type must be <= "<<N_ageerr<<endl; exit(1);
@@ -2847,6 +2844,8 @@
   *(ad_comm::global_datafile) >> N_Fcast_Yrs;
   echoinput<<N_Fcast_Yrs<<" #echoed N_Fcast_Yrs "<<endl;
   if(Do_Forecast_rd>0 && N_Fcast_Yrs<=0) {N_warn++; cout<<"Critical error in forecast input, see warning"<<endl; warning<<"ERROR: cannot do a forecast of zero years: "<<N_Fcast_Yrs<<endl; exit(1);}
+  if(Do_Forecast_rd>0 && STD_Yr_max==-1) {N_warn++; warning<<"note: Std_yrmax=-1 in starter, so no variance output for forecast quantities after endyr+1 "<<endl;}
+
   YrMax=endyr+N_Fcast_Yrs;
   TimeMax_Fcast_std = styr+(YrMax-styr)*nseas+nseas-1;
 
@@ -3029,7 +3028,7 @@
   H4010_bot=0.0001;
   H4010_scale_rd=1.0;
   H4010_scale=1.0;
-  Fcast_Loop_Control.fill("{1,1,0,0,0}");
+  Fcast_Loop_Control.fill("{2,1,0,0,0}");
   Fcast_Cap_FirstYear=endyr+1;
   Impl_Error_Std=0.0;
   Do_Impl_Error=0;
@@ -3324,7 +3323,7 @@
 
  LOCAL_CALCS
   if(STD_Yr_min<0 || STD_Yr_min<(styr-2) ) STD_Yr_min=styr-2;
-  if(STD_Yr_max==-1) STD_Yr_max=endyr;
+  if(STD_Yr_max==-1) STD_Yr_max=endyr+1;
   if(STD_Yr_max==-2) STD_Yr_max=YrMax;
   if(STD_Yr_max>YrMax) STD_Yr_max=YrMax;
    STD_Yr_Reverse.initialize();

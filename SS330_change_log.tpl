@@ -101,3 +101,5 @@ V3.30.13.04  2019-05-31  add parm_gradient for F parameters  VLAB #64449
 V3.30.13.05  2019-06-04  minor fix to repair fatal interaction between Lorenzen M and growth specification.  VLAB #64589
 V3.30.13.06  2019-06-10  fix to forecast recruitment when using recent mean.  VLAB #64801
 V3.30.13.06  2019-06-10  fix to Fit_SizeComp output when using a one sex model.  VLAB #64821
+V3.30.13.07  2019-06-13  fix to mean size-at-age Input check.
+V3.30.13.08  2019-06-15  improve forecast rubustness  VLAB #65043

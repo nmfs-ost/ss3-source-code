@@ -1345,7 +1345,6 @@ FUNCTION void Get_Forecast()
         Mgmt_quant(Fcast_catch_start+y-endyr)=0.0;  //  for ABC
         if(max(Do_Retain)>0) Mgmt_quant(Fcast_catch_start+2*N_Fcast_Yrs+y-endyr)=0.0;  // for retained ABC
         if(STD_Yr_Reverse_F(y)>0) F_std(STD_Yr_Reverse_F(y))=0.0;
-
         for (s=1;s<=nseas;s++)
         {
           t = t_base+s;
@@ -2058,12 +2057,70 @@ FUNCTION void Get_Forecast()
               }
             }
 
-            if(Fcast_Loop1==Fcast_Loop_Control(1) && ABC_Loop==3)  //  in final loop, so do variance quantities
+            if(Fcast_Loop1==Fcast_Loop_Control(1) && ABC_Loop==ABC_Loop_end)  //  in final loop, so do variance quantities
             {
-      double countN;
-      dvariable tempbase;
-      dvariable tempM;
-      dvariable tempZ;
+              double countN;
+              dvariable tempbase;
+              dvariable tempM;
+              dvariable tempZ;
+              if(F_reporting!=5 && s==nseas)
+              {
+                tempbase=0.0;
+                tempM=0.0;
+                tempZ=0.0;
+                //  accumulate numbers across ages, morphs, sexes, areas
+                for (a=F_reporting_ages(1);a<=F_reporting_ages(2);a++)   //  should not let a go higher than nages-2 because of accumulator
+                {
+                  for (g=1;g<=gmorph;g++)
+                  if(use_morph(g)>0)
+                  {
+                    for (p=1;p<=pop;p++)
+                    {
+                       tempbase+=natage(t-nseas+1,p,g,a);  // sum of numbers at beginning of year 
+                       tempZ+=natage(t+1,p,g,a+1);  // numbers at beginning of next year
+                       temp3=natage(t-nseas+1,p,g,a);  //  numbers at begin of year
+                       for (j=1;j<=nseas;j++) {temp3*=mfexp(-seasdur(j)*natM(j,GP3(g),a));}
+                       tempM+=temp3;  //  survivors if just M operating
+                    }
+                  }
+                }
+                annual_F(y,2) += log(tempM)-log(tempZ);  // F=Z-M
+                annual_F(y,3) += log(tempbase)-log(tempM);  // M
+              }
+                
+              if(F_reporting==5 && s==nseas)
+              {    // F_reporting==5 (ICES-style arithmetic mean across ages)
+                   //  like option 4 above, but F is calculated 1 age at a time to get a
+                   //  unweighted average across ages within each year
+               countN=0.0;  // used for count of Fs included in average
+               for (a=F_reporting_ages(1);a<=F_reporting_ages(2);a++)   //  should not let a go higher than nages-2 because of accumulator
+               {
+                 tempbase=0.0;
+                 tempM=0.0;
+                 tempZ=0.0;
+//  accumulate numbers across all morphs, sexes, and areas
+                 for (g=1;g<=gmorph;g++)
+                 if(use_morph(g)>0)
+                 {
+                    for (p=1;p<=pop;p++)
+                    {
+                      tempbase+=natage(t-nseas+1,p,g,a);  // sum of numbers at beginning of year 
+                      tempZ+=natage(t+1,p,g,a+1);  // numbers at beginning of next year
+                      temp3=natage(t-nseas+1,p,g,a);  //  numbers at begin of year
+                      for (j=1;j<=nseas;j++) {temp3*=mfexp(-seasdur(j)*natM(j,GP3(g),a));}
+                      tempM+=temp3;  //  survivors if just M operating
+                   }
+                 }
+//  calc F and M for this age and add to the total              
+                 countN += 1; // increment count of values included in average
+                 annual_F(y,2) += log(tempM)-log(tempZ);  // F=Z-M
+                 annual_F(y,3) += log(tempbase)-log(tempM);  // M
+//              if(save_for_report==1) warning<<y<<"  age: "<<a<<" count: "<<countN<<" Z: "<<log(tempbase)-log(tempZ)<<" M: "<<log(tempbase)-log(tempM)<<" F: "<<log(tempM)-log(tempZ)<<" "<<annual_F(y)(2,3)<<endl;
+            }
+            annual_F(y,3) /= countN;  // M
+            annual_F(y,2) /= countN;   // F
+              } // end F_reporting==5
+
               if(STD_Yr_Reverse_F(y)>0)
               {
                 if(F_reporting<=1)
@@ -2111,6 +2168,8 @@ FUNCTION void Get_Forecast()
                     }
                   }
                 }
+                else
+                {F_std(STD_Yr_Reverse_F(y))=annual_F(y,2);}
  /*                
                 else if(F_reporting==4 && s==nseas)
                 {
@@ -2171,66 +2230,6 @@ FUNCTION void Get_Forecast()
                   F_std(STD_Yr_Reverse_F(y)) /= temp;
                 } // end F_reporting==5
  */                
-          else if(F_reporting!=5 && s==nseas)
-          {
-            tempbase=0.0;
-            tempM=0.0;
-            tempZ=0.0;
-            //  accumulate numbers across ages, morphs, sexes, areas
-            for (a=F_reporting_ages(1);a<=F_reporting_ages(2);a++)   //  should not let a go higher than nages-2 because of accumulator
-            {
-              for (g=1;g<=gmorph;g++)
-              if(use_morph(g)>0)
-              {
-                for (p=1;p<=pop;p++)
-                {
-                   tempbase+=natage(t-nseas+1,p,g,a);  // sum of numbers at beginning of year 
-                   tempZ+=natage(t+1,p,g,a+1);  // numbers at beginning of next year
-                   temp3=natage(t-nseas+1,p,g,a);  //  numbers at begin of year
-                   for (j=1;j<=nseas;j++) {temp3*=mfexp(-seasdur(j)*natM(j,GP3(g),a));}
-                   tempM+=temp3;  //  survivors if just M operating
-                }
-              }
-            }
-            annual_F(y,2) += log(tempM)-log(tempZ);  // F=Z-M
-            annual_F(y,3) += log(tempbase)-log(tempM);  // M
-            F_std(STD_Yr_Reverse_F(y))=annual_F(y,2);
-          } // end if F_reporting!=5
-
-          else if (s==nseas)
-          {    // F_reporting==5 (ICES-style arithmetic mean across ages)
-               //  like option 4 above, but F is calculated 1 age at a time to get a
-               //  unweighted average across ages within each year
-            countN=0.0;  // used for count of Fs included in average
-            for (a=F_reporting_ages(1);a<=F_reporting_ages(2);a++)   //  should not let a go higher than nages-2 because of accumulator
-            {
-              tempbase=0.0;
-              tempM=0.0;
-              tempZ=0.0;
-//  accumulate numbers across all morphs, sexes, and areas
-              for (g=1;g<=gmorph;g++)
-              if(use_morph(g)>0)
-              {
-                 for (p=1;p<=pop;p++)
-                 {
-                   tempbase+=natage(t-nseas+1,p,g,a);  // sum of numbers at beginning of year 
-                   tempZ+=natage(t+1,p,g,a+1);  // numbers at beginning of next year
-                   temp3=natage(t-nseas+1,p,g,a);  //  numbers at begin of year
-                   for (j=1;j<=nseas;j++) {temp3*=mfexp(-seasdur(j)*natM(j,GP3(g),a));}
-                   tempM+=temp3;  //  survivors if just M operating
-                }
-              }
-//  calc F and M for this age and add to the total              
-              countN += 1; // increment count of values included in average
-              annual_F(y,2) += log(tempM)-log(tempZ);  // F=Z-M
-              annual_F(y,3) += log(tempbase)-log(tempM);  // M
-//              if(save_for_report==1) warning<<y<<"  age: "<<a<<" count: "<<countN<<" Z: "<<log(tempbase)-log(tempZ)<<" M: "<<log(tempbase)-log(tempM)<<" F: "<<log(tempM)-log(tempZ)<<" "<<annual_F(y)(2,3)<<endl;
-            }
-            annual_F(y,3) /= countN;  // M
-            annual_F(y,2) /= countN;   // F
-            F_std(STD_Yr_Reverse_F(y))=annual_F(y,2);
-          } // end F_reporting==5
-
 
               }
               for (f=1;f<=Nfleet;f++)

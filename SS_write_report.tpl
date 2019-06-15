@@ -736,7 +736,8 @@ FUNCTION void write_bigoutput()
    {
      t=styr+(y-styr)*nseas+s-1;
      SS2out<<y<<" "<<s<<" "<<seasdur(s);
-     if(s==1 && STD_Yr_Reverse_F(y)>0 ) {SS2out<<" "<<F_std(STD_Yr_Reverse_F(y))<<" "<<annual_F(y)(2,3);} else {SS2out<<" _ _ _ ";}
+     if(s==1 && STD_Yr_Reverse_F(y)>0 ) {SS2out<<" "<<F_std(STD_Yr_Reverse_F(y));} else {SS2out<<" _ ";}
+     SS2out<<" "<<annual_F(y)(2,3);
      for(f=1;f<=Nfleet;f++)
      if(fleet_type(f)<=2)
       {SS2out<<" "<<Hrate(f,t);}
