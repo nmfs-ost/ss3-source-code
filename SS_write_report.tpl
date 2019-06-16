@@ -858,7 +858,6 @@ FUNCTION void write_bigoutput()
   }
 
   SS2out<<" SSB_vir_LH ABC_buffer"<<endl;
-
   for (p=1;p<=pop;p++)
   {
    for (y=styr-2;y<=YrMax;y++)

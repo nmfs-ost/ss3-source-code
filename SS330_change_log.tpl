@@ -103,3 +103,4 @@ V3.30.13.06  2019-06-10  fix to forecast recruitment when using recent mean.  VL
 V3.30.13.06  2019-06-10  fix to Fit_SizeComp output when using a one sex model.  VLAB #64821
 V3.30.13.07  2019-06-13  fix to mean size-at-age Input check.
 V3.30.13.08  2019-06-15  improve forecast rubustness  VLAB #65043
+V3.30.13.08  2019-06-16  fix storing body-wt-at-age in forecast, which fixes calculation of totbio in time_series output  VLAB #65043
