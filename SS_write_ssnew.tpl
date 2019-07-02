@@ -1630,7 +1630,7 @@ FUNCTION void write_nucontrol()
    report4.unsetf(std::ios_base::fixed); report4.unsetf(std::ios_base::floatfield);
    if(N_SRparm3>N_SRparm2)
     {
-       report4<<"#Next are short parm lines for timevary "<<endl;
+       report4<<"# timevary SR parameters"<<endl;
        for (f=timevary_parm_start_SR;f<=timevary_parm_cnt_SR;f++)
        {
           NP++;
@@ -1638,6 +1638,10 @@ FUNCTION void write_nucontrol()
           report4<<timevary_parm_rd[f]<<" # "<<ParmLabel(NP)<<endl;
        }
        report4.precision(6); report4.unsetf(std::ios_base::fixed); report4.unsetf(std::ios_base::floatfield);
+    }
+    else
+    {
+       report4<<"#_no timevary SR parameters"<<endl;
     }
 
    report4<<do_recdev<<" #do_recdev:  0=none; 1=devvector (R=F(SSB)+dev); 2=deviations (R=F(SSB)+dev); 3=deviations (R=R0*dev; dev2=R-f(SSB)); 4=like 3 with sum(dev2) adding penalty"<<endl;

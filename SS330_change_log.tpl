@@ -104,3 +104,6 @@ V3.30.13.06  2019-06-10  fix to Fit_SizeComp output when using a one sex model. 
 V3.30.13.07  2019-06-13  fix to mean size-at-age Input check.
 V3.30.13.08  2019-06-15  improve forecast rubustness  VLAB #65043
 V3.30.13.08  2019-06-16  fix storing body-wt-at-age in forecast, which fixes calculation of totbio in time_series output  VLAB #65043
+V3.30.13.09  2019-06-28  revise the SPR search to search for SPR*100 to improve numerical precision  VLAB #65508
+V3.30.13.09  2019-07-01  Fix error in Lorenzen M for seasonal models  VLAB #65581
+V3.30.13.09  2019-07-01  Fix error in Richards growth.  Noticed with seasonal models but could affect annual also for first age with growth. VLAB #65581

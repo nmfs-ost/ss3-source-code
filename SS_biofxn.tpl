@@ -514,7 +514,8 @@ FUNCTION void get_growth2()
                   }
                   else if(lin_grow(g,ALK_idx,a)==-1.0)  // first time point beyond AFIX;  lin_grow will stay at -1 for all remaining subseas of this season
                   {
-                    temp=LminR + (LminR-LinfR)*(mfexp(VBK_temp*seasdur(s)*(real_age(g,ALK_idx2,k2)-AFIX))-1.0)*Cohort_Growth(y,a);
+//                  temp=LminR + (LminR-LinfR)*(mfexp(VBK_temp*seasdur(s)*(real_age(g,ALK_idx2,k2)-AFIX))-1.0)*Cohort_Growth(y,a);
+                    temp=LminR + (LminR-LinfR)*(mfexp(VBK_temp*(real_age(g,ALK_idx2,k2)-AFIX)*VBK_seas(s))-1.0)*Cohort_Growth(y,a);
                     Ave_Size(t+1,1,g,k2) = pow(temp,inv_Richards);
                   }
                   else  // in linear phase for subseas
@@ -935,13 +936,14 @@ FUNCTION void get_natmort()
             Loren_M1=natMparms(1,gp)/log(Loren_temp/(Loren_temp+Loren_temp2));
             for (s=nseas;s>=1;s--)
             {
-              ALK_idx=(s-1)*N_subseas+mid_subseas;  //  for midseason
+//              ALK_idx=(s-1)*N_subseas+mid_subseas;  //  for midseason
               for (a=nages; a>=0;a--)
               {
                 if(a==0 && s<Bseas(g))
                 {natM(s,gpi,a)=natM(s+1,gpi,a);}
                 else
-                {natM(s,gpi,a)=log(Ave_Size(t,ALK_idx,g,a)/(Ave_Size(t,ALK_idx,g,a)+Loren_temp2))*Loren_M1;}
+//                {natM(s,gpi,a)=log(Ave_Size(t,ALK_idx,g,a)/(Ave_Size(t,ALK_idx,g,a)+Loren_temp2))*Loren_M1;}
+                {natM(s,gpi,a)=log(Ave_Size(t,mid_subseas,g,a)/(Ave_Size(t,mid_subseas,g,a)+Loren_temp2))*Loren_M1;}
                 surv1(s,gpi,a)=mfexp(-natM(s,gpi,a)*seasdur_half(s));
                 surv2(s,gpi,a)=square(surv1(s,gpi,a));
               }   // end age loop

@@ -2485,14 +2485,14 @@ FUNCTION void write_bigoutput()
             {
               if(exp_l(f,i,z)!=0.0 && exp_l(f,i,z)!=1.0)
               {
-                if(Comp_Err_L(f)==0) SS_compout<<value((obs_l(f,i,z)-exp_l(f,i,z))/sqrt( exp_l(f,i,z) * (1.0-exp_l(f,i,z)) / sfabs(nsamp_l(f,i)))); // Pearson for multinomial
+                if(Comp_Err_L(f)==0) SS_compout<<value((obs_l(f,i,z)-exp_l(f,i,z))/sqrt( exp_l(f,i,z) * (1.0-exp_l(f,i,z)) / fabs(nsamp_l(f,i)))); // Pearson for multinomial
                 if(Comp_Err_L(f)==1){
                   dirichlet_Parm=mfexp(selparm(Comp_Err_Parm_Start+Comp_Err_L2(f)))*nsamp_l(f,i);
-                  SS_compout<<value( (obs_l(f,i,z)-exp_l(f,i,z))/sqrt( exp_l(f,i,z) * (1.0-exp_l(f,i,z)) / sfabs(nsamp_l(f,i)) * (sfabs(nsamp_l(f,i))+dirichlet_Parm)/(1.+dirichlet_Parm) ) );  // Pearson for Dirichlet-multinomial using negative-exponential parameterization
+                  SS_compout<<value( (obs_l(f,i,z)-exp_l(f,i,z))/sqrt( exp_l(f,i,z) * (1.0-exp_l(f,i,z)) / fabs(nsamp_l(f,i)) * (fabs(nsamp_l(f,i))+dirichlet_Parm)/(1.+dirichlet_Parm) ) );  // Pearson for Dirichlet-multinomial using negative-exponential parameterization
                 }
                 if(Comp_Err_L(f)==2){
                   dirichlet_Parm=mfexp(selparm(Comp_Err_Parm_Start+Comp_Err_L2(f)));
-                  SS_compout<<value( (obs_l(f,i,z)-exp_l(f,i,z))/sqrt( exp_l(f,i,z) * (1.0-exp_l(f,i,z)) / sfabs(nsamp_l(f,i)) * (sfabs(nsamp_a(f,i))+dirichlet_Parm)/(1.+dirichlet_Parm) ) ); // Pearson for Dirichlet-multinomial using harmonic sum parameterization
+                  SS_compout<<value( (obs_l(f,i,z)-exp_l(f,i,z))/sqrt( exp_l(f,i,z) * (1.0-exp_l(f,i,z)) / fabs(nsamp_l(f,i)) * (fabs(nsamp_a(f,i))+dirichlet_Parm)/(1.+dirichlet_Parm) ) ); // Pearson for Dirichlet-multinomial using harmonic sum parameterization
                 }
               }
               else
@@ -2524,14 +2524,14 @@ FUNCTION void write_bigoutput()
            {
             if(exp_l(f,i,z)!=0.0 && exp_l(f,i,z)!=1.0)
             {
-              if(Comp_Err_L(f)==0) SS_compout<<value((obs_l(f,i,z)-exp_l(f,i,z))/sqrt( exp_l(f,i,z) * (1.0-exp_l(f,i,z)) / sfabs(nsamp_l(f,i)))); // Pearson for multinomial
+              if(Comp_Err_L(f)==0) SS_compout<<value((obs_l(f,i,z)-exp_l(f,i,z))/sqrt( exp_l(f,i,z) * (1.0-exp_l(f,i,z)) / fabs(nsamp_l(f,i)))); // Pearson for multinomial
               if(Comp_Err_L(f)==1){
                 dirichlet_Parm=mfexp(selparm(Comp_Err_Parm_Start+Comp_Err_L2(f)))*nsamp_l(f,i);
-                SS_compout<<value( (obs_l(f,i,z)-exp_l(f,i,z))/sqrt( exp_l(f,i,z) * (1.0-exp_l(f,i,z)) / sfabs(nsamp_l(f,i)) * (sfabs(nsamp_l(f,i))+dirichlet_Parm)/(1.+dirichlet_Parm) ) );  // Pearson for Dirichlet-multinomial using negative-exponential parameterization
+                SS_compout<<value( (obs_l(f,i,z)-exp_l(f,i,z))/sqrt( exp_l(f,i,z) * (1.0-exp_l(f,i,z)) / fabs(nsamp_l(f,i)) * (fabs(nsamp_l(f,i))+dirichlet_Parm)/(1.+dirichlet_Parm) ) );  // Pearson for Dirichlet-multinomial using negative-exponential parameterization
               }
               if(Comp_Err_L(f)==2){
                 dirichlet_Parm=mfexp(selparm(Comp_Err_Parm_Start+Comp_Err_L2(f)));
-                SS_compout<<value( (obs_l(f,i,z)-exp_l(f,i,z))/sqrt( exp_l(f,i,z) * (1.0-exp_l(f,i,z)) / sfabs(nsamp_l(f,i)) * (sfabs(nsamp_a(f,i))+dirichlet_Parm)/(1.+dirichlet_Parm) ) ); // Pearson for Dirichlet-multinomial using harmonic sum parameterization
+                SS_compout<<value( (obs_l(f,i,z)-exp_l(f,i,z))/sqrt( exp_l(f,i,z) * (1.0-exp_l(f,i,z)) / fabs(nsamp_l(f,i)) * (fabs(nsamp_a(f,i))+dirichlet_Parm)/(1.+dirichlet_Parm) ) ); // Pearson for Dirichlet-multinomial using harmonic sum parameterization
               }
             }
           else
@@ -2595,14 +2595,14 @@ FUNCTION void write_bigoutput()
           {
             if(exp_a(f,i,z)!=0.0 && exp_a(f,i,z)!=1.0)
             {
-              if(Comp_Err_A(f)==0) SS_compout<<value((obs_a(f,i,z)-exp_a(f,i,z))/sqrt( exp_a(f,i,z) * (1.0-exp_a(f,i,z)) / sfabs(nsamp_a(f,i)))); // Pearson for multinomial
+              if(Comp_Err_A(f)==0) SS_compout<<value((obs_a(f,i,z)-exp_a(f,i,z))/sqrt( exp_a(f,i,z) * (1.0-exp_a(f,i,z)) / fabs(nsamp_a(f,i)))); // Pearson for multinomial
               if(Comp_Err_A(f)==1){
                 dirichlet_Parm=mfexp(selparm(Comp_Err_Parm_Start+Comp_Err_A2(f)))*nsamp_a(f,i);
-                SS_compout<<value( (obs_a(f,i,z)-exp_a(f,i,z))/sqrt( exp_a(f,i,z) * (1.0-exp_a(f,i,z)) / sfabs(nsamp_a(f,i)) * (sfabs(nsamp_a(f,i))+dirichlet_Parm)/(1.+dirichlet_Parm) ) );  // Pearson for Dirichlet-multinomial using negative-exponential parameterization
+                SS_compout<<value( (obs_a(f,i,z)-exp_a(f,i,z))/sqrt( exp_a(f,i,z) * (1.0-exp_a(f,i,z)) / fabs(nsamp_a(f,i)) * (fabs(nsamp_a(f,i))+dirichlet_Parm)/(1.+dirichlet_Parm) ) );  // Pearson for Dirichlet-multinomial using negative-exponential parameterization
               }
               if(Comp_Err_A(f)==2){
                 dirichlet_Parm=mfexp(selparm(Comp_Err_Parm_Start+Comp_Err_A2(f)));
-                SS_compout<<value( (obs_a(f,i,z)-exp_a(f,i,z))/sqrt( exp_a(f,i,z) * (1.0-exp_a(f,i,z)) / sfabs(nsamp_a(f,i)) * (sfabs(nsamp_a(f,i))+dirichlet_Parm)/(1.+dirichlet_Parm) ) ); // Pearson for Dirichlet-multinomial using harmonic sum parameterization
+                SS_compout<<value( (obs_a(f,i,z)-exp_a(f,i,z))/sqrt( exp_a(f,i,z) * (1.0-exp_a(f,i,z)) / fabs(nsamp_a(f,i)) * (fabs(nsamp_a(f,i))+dirichlet_Parm)/(1.+dirichlet_Parm) ) ); // Pearson for Dirichlet-multinomial using harmonic sum parameterization
               }
             }
             else
@@ -2632,14 +2632,14 @@ FUNCTION void write_bigoutput()
           {
           if(exp_a(f,i,z)!=0.0 && exp_a(f,i,z)!=1.0)
           {
-              if(Comp_Err_A(f)==0) SS_compout<<value((obs_a(f,i,z)-exp_a(f,i,z))/sqrt( exp_a(f,i,z) * (1.0-exp_a(f,i,z)) / sfabs(nsamp_a(f,i)))); // Pearson for multinomial
+              if(Comp_Err_A(f)==0) SS_compout<<value((obs_a(f,i,z)-exp_a(f,i,z))/sqrt( exp_a(f,i,z) * (1.0-exp_a(f,i,z)) / fabs(nsamp_a(f,i)))); // Pearson for multinomial
               if(Comp_Err_A(f)==1){
                 dirichlet_Parm=mfexp(selparm(Comp_Err_Parm_Start+Comp_Err_A2(f)))*nsamp_a(f,i);
-                SS_compout<<value( (obs_a(f,i,z)-exp_a(f,i,z))/sqrt( exp_a(f,i,z) * (1.0-exp_a(f,i,z)) / sfabs(nsamp_a(f,i)) * (sfabs(nsamp_a(f,i))+dirichlet_Parm)/(1.+dirichlet_Parm) ) );  // Pearson for Dirichlet-multinomial using negative-exponential parameterization
+                SS_compout<<value( (obs_a(f,i,z)-exp_a(f,i,z))/sqrt( exp_a(f,i,z) * (1.0-exp_a(f,i,z)) / fabs(nsamp_a(f,i)) * (fabs(nsamp_a(f,i))+dirichlet_Parm)/(1.+dirichlet_Parm) ) );  // Pearson for Dirichlet-multinomial using negative-exponential parameterization
               }
               if(Comp_Err_A(f)==2){
                 dirichlet_Parm=mfexp(selparm(Comp_Err_Parm_Start+Comp_Err_A2(f)));
-                SS_compout<<value( (obs_a(f,i,z)-exp_a(f,i,z))/sqrt( exp_a(f,i,z) * (1.0-exp_a(f,i,z)) / sfabs(nsamp_a(f,i)) * (sfabs(nsamp_a(f,i))+dirichlet_Parm)/(1.+dirichlet_Parm) ) ); // Pearson for Dirichlet-multinomial using harmonic sum parameterization
+                SS_compout<<value( (obs_a(f,i,z)-exp_a(f,i,z))/sqrt( exp_a(f,i,z) * (1.0-exp_a(f,i,z)) / fabs(nsamp_a(f,i)) * (fabs(nsamp_a(f,i))+dirichlet_Parm)/(1.+dirichlet_Parm) ) ); // Pearson for Dirichlet-multinomial using harmonic sum parameterization
               }
           }
           else

@@ -378,6 +378,9 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
 
     equ_Recr=1.0;
     Fishon=0;
+    dvariable SPR_target100;
+    SPR_target100=SPR_target*100.;
+    
     Do_Equil_Calc(equ_Recr);
     SPR_unfished=SSB_unf/Recr_unf;  //  this corresponds to the biology for benchmark average years, not the virgin SSB_virgin
     Vbio1_unfished=smrybio;       // gets value from equil_calc
@@ -418,7 +421,7 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
 
           Fishon=1;
           Do_Equil_Calc(equ_Recr);
-          yld1(ii)=SSB_equil/SPR_unfished;  //  spawning potential ratio
+          yld1(ii)=100.*SSB_equil/SPR_unfished;  //  spawning potential ratio
         }
         SPR_actual=yld1(1); //  spawning potential ratio
 
@@ -427,7 +430,7 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
             Closer*=0.5;
               dyld=(yld1(2) - yld1(3))/df;   // First derivative (to find the root of this)
               if(dyld!=0.)
-                {last_F1=F1(1); F1(1) += (SPR_target-SPR_actual)/(dyld+0.001);
+                {last_F1=F1(1); F1(1) += (SPR_target100-SPR_actual)/(dyld+0.001);
                  F1(1)=(1.-Closer)*F1(1)+Closer*last_F1;
                 }        // averages with last good value to keep from changing too fast
               else
@@ -436,7 +439,7 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
           else
             {
 //              if((last_calc-SPR_target)*(SPR_actual-SPR_target)<0.0) {Fchange*=-0.5;}   // changed sign, so reverse search direction
-              temp=(last_calc-SPR_target)*(SPR_actual-SPR_target)/(sfabs(last_calc-SPR_target)*sfabs(SPR_actual-SPR_target));  // values of -1 or 1
+              temp=(last_calc-SPR_target100)*(SPR_actual-SPR_target100)/(sfabs(last_calc-SPR_target100)*sfabs(SPR_actual-SPR_target100));  // values of -1 or 1
               temp1=temp-1.;  // values of -2 or 0
               Fchange*=exp(temp1/4.)*temp;
               F1(1)+=Fchange;  last_calc=SPR_actual;
@@ -444,7 +447,7 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
 
           if(show_MSY==1)
           {
-            report5<<j<<" "<<Fmult<<" "<<equ_F_std<<" "<<SPR_actual<<" "<<sum(equ_catch_fleet(2));
+            report5<<j<<" "<<Fmult<<" "<<equ_F_std<<" "<<SPR_actual/100.<<" "<<sum(equ_catch_fleet(2));
             for (p=1;p<=pop;p++)
             for (gp=1;gp<=N_GP;gp++)
             {report5<<" "<<SSB_equil_pop_gp(p,gp);}
@@ -454,10 +457,10 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
 
     if(show_MSY==1)
     {
-      if(fabs(SPR_actual-SPR_target)>=0.001)
-      {N_warn++; warning<<" warning: poor convergence in Fspr search "<<SPR_target<<" "<<SPR_actual<<endl;}
-      if(SPR_actual/SPR_target>=1.01)
-      {N_warn++; warning<<" warning: high Fmult for Fspr: "<<Fmult<<" needed to come close to low SPR "<<SPR_target<<" "<<SPR_actual<<endl;}
+      if(fabs(SPR_actual-SPR_target100)>=0.1)
+      {N_warn++; warning<<" warning: poor convergence in Fspr search "<<SPR_target<<" "<<SPR_actual/100.<<endl;}
+      if(SPR_actual/SPR_target100>=1.01)
+      {N_warn++; warning<<" warning: Fmult = "<<Fmult<<" cannot get high enough to achieve low SPR target: "<<SPR_target<<"; SPR achieved is: "<<SPR_actual/100.<<endl;}
 
       report5<<"seas fleet Hrate encB deadB retB encN deadN retN: "<<endl;
       for (s=1;s<=nseas;s++)
@@ -480,7 +483,7 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
     YPR_spr_N_dead = YPR_N_dead;
     YPR_spr_ret = YPR_ret;
     SPR_Fmult=Fmult;
-    if(rundetail>0 && mceval_counter==0 && show_MSY==1) cout<<" got Fspr "<<SPR_Fmult<<" "<<SPR_actual<<endl;
+    if(rundetail>0 && mceval_counter==0 && show_MSY==1) cout<<" got Fspr "<<SPR_Fmult<<" "<<SPR_actual/100.<<endl;
     Vbio_spr=totbio; Vbio1_spr=smrybio;
     Mgmt_quant(10)=equ_F_std;
     Mgmt_quant(9)=Equ_SpawnRecr_Result(1);
@@ -923,7 +926,7 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
       report5<<"#"<<endl<<"Spawner_Potential_Ratio_as_target"<<endl;
 
       report5<<"SPR_target "<<SPR_target<<endl;
-      report5<<"SPR_calc "<<SPR_actual<<endl;
+      report5<<"SPR_calc "<<SPR_actual/100.<<endl;
       report5<<"Fmult "<<SPR_Fmult<<endl;
       report5<<"F_std "<<Mgmt_quant(10)<<endl;
       report5<<"Exploit(Catch_dead/B_smry) "<<YPR_spr_dead/Vbio1_spr<<endl;
@@ -1003,7 +1006,7 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
     }
     else if(show_MSY==2)  //  do brief output
     {
-      SS2out<<SPR_actual<<" "<<SPR_Fmult<<" "<<Mgmt_quant(10)<<" "<<YPR_spr_dead/Vbio1_spr<<" "<<Bspr_rec<<" "
+      SS2out<<SPR_actual/100.<<" "<<SPR_Fmult<<" "<<Mgmt_quant(10)<<" "<<YPR_spr_dead/Vbio1_spr<<" "<<Bspr_rec<<" "
       <<Bspr<<" "<<YPR_spr_dead*Bspr_rec<<" "<<YPR_spr_ret*Bspr_rec
       <<" "<<Vbio1_spr*Bspr_rec<<" # ";
 
