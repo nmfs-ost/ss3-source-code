@@ -14,3 +14,5 @@ copy/b SS_versioninfo_330safe.tpl+SS_readstarter.tpl+SS_readdata_330.tpl+SS_read
 REM compile executable
 cd "Compile"
 admb -f ss_opt
+cd ..
+
