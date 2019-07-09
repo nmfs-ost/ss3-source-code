@@ -1569,6 +1569,10 @@
   ivector N_suprper_a(1,Nfleet)      // N super_yrs per obs
 
  LOCAL_CALCS
+    Use_AgeKeyZero=0;
+    N_ageerr=0;
+    n_abins1=0;
+    n_abins2=0;
   nobsa_rd=0;
   Nobs_a.initialize();
   N_suprper_a.initialize();
@@ -1582,8 +1586,14 @@
   vector age_bins1(1,n_abins) // age classes for data
   vector age_bins(1,n_abins2) // age classes for data  female then male end-to-end
   vector age_bins_mean(1,n_abins2)  //  holds mean age for each data age bin
+  3darray age_err_rd(1,1,1,1,0,0)  
 
  LOCAL_CALCS
+  age_bins1.initialize();
+  age_bins.initialize();
+  age_bins_mean.initialize();
+  age_err_rd.initialize();
+  
   if(n_abins>0)
   {
     *(ad_comm::global_datafile) >> age_bins1;
@@ -1591,16 +1601,20 @@
 
     *(ad_comm::global_datafile) >> N_ageerr;   // number of ageing error matrices to be calculated
     echoinput<<N_ageerr<<" N age error defs "<<endl;
+    
+    age_err_rd.deallocate();
+    age_err_rd.allocate(1,N_ageerr,1,2,0,nages);
+    for(j=1;j<=N_ageerr;j++)
+    {
+      *(ad_comm::global_datafile) >> age_err_rd(j,1)(0,nages);
+      *(ad_comm::global_datafile) >> age_err_rd(j,2)(0,nages);
+    }
   }
   else
   {
     echoinput<<"N bins set to zero, so no more reading of age data inputs"<<endl;
-    N_ageerr=0;
-    n_abins1=0;
-    n_abins2=0;
   }
  END_CALCS
-  init_3darray age_err_rd(1,N_ageerr,1,2,0,nages) // ageing imprecision as stddev for each age
 
  LOCAL_CALCS
   Nobs_a=0;
@@ -1615,7 +1629,7 @@
       {
         if(age_err_rd(i,2,0)<0.) Use_AgeKeyZero=i;  //  set flag for setup of age error parameters
       }
-      echoinput<<"AgeKey: "<<Use_AgeKeyZero<<" will create key from parameters"<<endl;
+      if(Use_AgeKeyZero>0) echoinput<<"AgeKey: "<<Use_AgeKeyZero<<" will be created from parameters"<<endl;
     }
 
     Comp_Err_A2.initialize();
