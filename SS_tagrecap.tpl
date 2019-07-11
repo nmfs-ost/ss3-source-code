@@ -4,6 +4,29 @@ FUNCTION void Tag_Recapture()
     dvariable TG_init_loss;
     dvariable TG_chron_loss;
     TG_recap_exp.initialize();
+
+//  get reporting rates by fleet that will be used for all Tag Groups
+      for (f=1;f<=Nfleet1;f++)
+      {
+        j=3*N_TG+f;
+        warning<<f<<" "<<TG_parm_PH(j)<<" "<<TG_parm_PH(j+Nfleet1)<<" ";
+      if(TG_parm_PH(j)==-1000.)	
+      	{TG_report(f)=TG_report(f-1);} //  do nothing keep same value
+      else
+      {
+        if (TG_parm_PH(j)>-1000.)	{k=j;} else {k=-1000-TG_parm_PH(j);}
+      	TG_report(f)=mfexp(TG_parm(k))/(1.+mfexp(TG_parm(k)));
+      }
+        j+=Nfleet1;
+      if(TG_parm_PH(j)==-1000.)	
+      	{TG_rep_decay(f)=TG_rep_decay(f-1);}//  do nothing keep same value
+      else
+      {
+        if (TG_parm_PH(j)>-1000.)	{k=j;} else {k=-1000-TG_parm_PH(j);}
+      	TG_rep_decay(f) = TG_parm(k);
+      }
+      }
+
     for (TG=1;TG<=N_TG;TG++)
     {
       firstseas=int(TG_release(TG,4));  // release season
@@ -24,13 +47,22 @@ FUNCTION void Tag_Recapture()
           if(sx(g)==gg) {TG_alive(p,g) = natage(t,p,g,a1);}  //  only does the selected gender
         }
       }
-      TG_init_loss = mfexp(TG_parm(TG))/(1.+mfexp(TG_parm(TG)));
-      TG_chron_loss = mfexp(TG_parm(TG+N_TG))/(1.+mfexp(TG_parm(TG+N_TG)));
-      for (f=1;f<=Nfleet1;f++)
+      if(TG_parm_PH(TG)==-1000.)	
+      	{ }//  do nothing keep same TG_init_loss
+      else
       {
-        k=3*N_TG+f;
-        TG_report(f) = mfexp(TG_parm(k))/(1.0+mfexp(TG_parm(k)));
-        TG_rep_decay(f) = TG_parm(k+Nfleet1);
+        if (TG_parm_PH(TG)>-1000.)	{k=TG;} else {k=-1000-TG_parm_PH(TG);}
+      	TG_init_loss=mfexp(TG_parm(k))/(1.+mfexp(TG_parm(k)));
+      }
+      
+//  get chronic loss parameter
+      j=TG+N_TG;
+      if(TG_parm_PH(j)==-1000.)	
+      	{ }//  do nothing keep same value
+      else
+      {
+        if (TG_parm_PH(j)>-1000.)	{k=j;} else {k=-1000-TG_parm_PH(j);}
+      	TG_chron_loss=mfexp(TG_parm(k))/(1.+mfexp(TG_parm(k)));
       }
       TG_alive /= sum(TG_alive);     // proportions across morphs at age a1 in release area p at time of release t
       TG_alive *= TG_release(TG,8);   //  number released as distributed across morphs
@@ -47,7 +79,8 @@ FUNCTION void Tag_Recapture()
         for (s=firstseas;s<=nseas;s++)
         {
           if(save_for_report>0 && TG_t<=TG_endtime(TG))
-          {TG_save(TG,3+TG_t)=value(sum(TG_alive));} //  OK to do simple sum because only selected morphs are populated
+          {TG_save(TG,3+TG_t)=value(sum(TG_alive));
+          	} //  OK to do simple sum because only selected morphs are populated
 
           for (p=1;p<=pop;p++)
           {
@@ -75,20 +108,10 @@ FUNCTION void Tag_Recapture()
                   *TG_report(f)
                   *mfexp(TG_t*TG_rep_decay(f));
                 }
+                
   if(docheckup==1) echoinput<<" TG_"<<TG<<" y_"<<y<<" s_"<<s<<" area_"<<p<<" g_"<<g<<" GP3_"<<GP3(g)<<" f_"<<f<<" a1_"<<a1<<" Sel_"<<Sel_for_tag(t,g,f,a1)<<" TG_alive_"<<TG_alive(p,g)<<" TG_obs_"<<TG_recap_obs(TG,TG_t,f)<<" TG_exp_"<<TG_recap_exp(TG,TG_t,f)<<endl;
               }  // end fleet loop for recaptures
-
-// calculate survival
-              if(F_Method==1)
-              {
-                if(s==nseas) {k=1;} else {k=0;}   //      advance age or not
-                if((a1+k)<=(nages-1)) {f=a1-1;} else {f=nages-2;}
-                TG_alive(p,g)*=(natage(t+1,p,g,f+k)+1.0e-10)/(natage(t,p,g,f)+1.0e-10)*(1.-TG_chron_loss*seasdur(s));
-              }
-              else   //  use for method 2 and 3
-              {
                 TG_alive(p,g)*=mfexp(-seasdur(s)*(Z_rate(t,p,g,a1)+TG_chron_loss));
-              }
             }  // end morph loop
           }  // end area loop
 

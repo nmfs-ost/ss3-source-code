@@ -1,7 +1,7 @@
 REM compiling ss_trans.exe (safe executable) with generic path
 REM requires "Compile" directory in the same directory where
 REM the .tpl files and this .bat file sit.
-
+cd ..
 REM deleted temporary file
 del SS_functions.temp
 
@@ -14,4 +14,4 @@ copy/b SS_versioninfo_330trans.tpl+SS_readstarter.tpl+SS_readdata_324.tpl+SS_rea
 REM compile executable
 cd "Compile"
 admb ss_trans
-cd ..
+

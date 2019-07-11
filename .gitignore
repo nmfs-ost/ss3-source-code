@@ -2,4 +2,10 @@
 *.bak
 *.temp
 *.pdf
-Compile/*
+*.cpp
+*.exe
+*.htp
+*.obj
+ss.tpl
+ss_opt.tpl
+ss_trans.tpl

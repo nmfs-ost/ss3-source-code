@@ -3259,12 +3259,16 @@
       {
         TG_parm2(j,1)=-10;  // min
         TG_parm2(j,2)=10;   // max
-        TG_parm2(j,3)=-9.;   // init
-        TG_parm2(j,4)=-9.;   // prior
+        TG_parm2(j,3)=-7.;   // init
+        TG_parm2(j,4)=-7.;   // prior
         TG_parm2(j,5)=0.001;  //  prior is quite diffuse
         TG_parm2(j,6)=1.;   // default prior type is symmetric beta
-        TG_parm2(j,7)=-4;  // phase
+        if(j==1)
+        {TG_parm2(j,7)=-4; } // phase
+        	else
+        {TG_parm2(j,7)=-1000; } // phase
       }
+
       for (j=1;j<=N_TG;j++)
       {
         TG_parm2(j+N_TG)=TG_parm2(1);  // set chronic tag retention equal to initial tag_retention
@@ -3277,11 +3281,23 @@
         TG_parm2(j+2*N_TG,4)=2.;   // prior
         TG_parm2(j+2*N_TG,5)=0.001;  //  prior is quite diffuse
         TG_parm2(j+2*N_TG,6)=1.;   // default prior type is symmetric beta
-        TG_parm2(j+2*N_TG,7)=-4;  // phase
+        if(j==1)
+        {TG_parm2(j+2*N_TG,7)=-4; } // phase
+        	else
+        {TG_parm2(j+2*N_TG,7)=-1000; } // phase
       }
       for (j=1;j<=Nfleet1;j++)
       {
-        TG_parm2(j+3*N_TG)=TG_parm2(1);  // set tag reporting equal to near 1.0, as is the tag retention parameters
+        TG_parm2(j+3*N_TG,1)=-10;  // min
+        TG_parm2(j+3*N_TG,2)=10;   // max
+        TG_parm2(j+3*N_TG,3)=7.;   // init
+        TG_parm2(j+3*N_TG,4)=7.;   // prior
+        TG_parm2(j+3*N_TG,5)=0.001;  //  prior is quite diffuse
+        TG_parm2(j+3*N_TG,6)=1.;   // default prior type is symmetric beta
+        if(j==1)
+        {TG_parm2(j+3*N_TG,7)=-4; } // phase
+        	else
+        {TG_parm2(j+3*N_TG,7)=-1000; } // phase
       }
       // set tag reporting decay to nil decay rate
       for (j=1;j<=Nfleet1;j++)
@@ -3293,7 +3309,10 @@
         TG_parm2(k,4)=0.;    // prior of zero
         TG_parm2(k,5)=2.;  // sd dev of prior
         TG_parm2(k,6)=6.;  // default prior type is squared dev
-        TG_parm2(k,7)=-4.;
+        if(j==1)
+        {TG_parm2(k,7)=-4; } // phase
+        	else
+        {TG_parm2(k,7)=-1000; } // phase
       }
     }
     echoinput<<"create tag labels  "<<endl;
@@ -3500,6 +3519,7 @@
 
  LOCAL_CALCS
   echoinput<<max_lambda_phase<<" max_lambda_phase "<<endl;
+  if(max_lambda_phase<1) max_lambda_phase=1;
   echoinput<<sd_offset<<" sd_offset (adds log(s)); needed if variance parameters are estimated "<<endl;
   if(sd_offset==0)
   {
