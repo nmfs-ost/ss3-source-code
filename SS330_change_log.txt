@@ -1,0 +1,129 @@
+Version;Date;Description;VLAB_issue;Input_Change?;Type;Category;Sub_Category
+3.30.13.10;2019-07-10;Fix error in unitialized nabins (number of age bins) issue (occurs when nabins = 0);#65854;;Bug;misc. input;
+3.30.13.10;2019-07-10;Fix forecast error with new buffer methods 3 and 4;#65275;;Bug;forecast;
+3.30.13.09;2019-07-01;Fix error in Lorenzen M for seasonal models;#65581;No;fix;natM;
+3.30.13.09;2019-07-01;Fix error in Richards growth.  Noticed with seasonal models but could affect annual also for first age with growth;#65581;No;fix;growth;
+3.30.13.09;2019-06-28;revise the SPR search to search for SPR*100 to improve numerical precision;#65508;No;revise;benchmark
+3.30.13.08;2019-06-15;improve forecast robustness;#65043;No;revise;forecast;
+3.30.13.08;2019-06-16;"fix storing body-wt-at-age in forecast, which fixes calculation of totbio in time_series output";#65043;No;fix;output;
+3.30.13.07;2019-06-13;fix to mean size-at-age Input check.;;No;fix;input;
+3.30.13.06;2019-06-10;fix to forecast recruitment when using recent mean;#64801;No;fix;forecast;
+3.30.13.06;2019-06-10;fix to Fit_SizeComp output when using a one sex model.;#64821;No;fix;output;
+3.30.13.05;2019-06-04;minor fix to repair fatal interaction between Lorenzen M and growth specification.;#64589;No;fix;natM;
+3.30.13.04;2019-05-31;add parm_gradient for F parameters;#64449;No;revise;output;
+3.30.13.04;2019-05-31;fix output of dirichlet parameters to control.ss_new;#64174;No;fix;output;
+3.30.13.04;2019-05-31;fix assignment of forecast relF when bycatch fleet is not associated with input catch;#64476;No;fix;forecast;
+3.30.13.03;2019-05-14;revise format of LIKELIHOOD table in report.sso so all rows have 3 elements and info for Laplace calculations is shown;;No;revise;output;
+3.30.13.02;2019-05-08;change trans so that conversion of retention asymptotic parm always occurs;;No;revise;input;
+3.30.13.02;2019-05-08;fix implementation of profilevalues.ss for spawn_recruitment parameters;;No;fix;input;
+3.30.13.01;2019-04-19;fix implementation of catch_mult and its time-varying capability;;No;fix;catch;
+3.30.13.00;2019-03-08;fix formatting problem for tags output in compreport.sso;;;fix;tag;
+3.30.13.00;2019-03-08;fix issue with calc of float Q that may have been source of some poor convergences;;;fix;survey;
+3.30.13.00;2019-03-08;fix implementation of seasons as pseudo-years;;;fix;controls;
+3.30.13.00;2019-03-08;fix ss_trans to handle mirror q better;;;fix;survey;
+3.30.13.00;2019-03-08;fix reporting when using seasonal MGparms;;;fix;output;
+3.30.13.00;2019-03-08;fix output of Dirichlet parameters;;;fix;output;
+3.30.13.00;2019-03-08;fix reading of sizecomp obs before styr;;;fix;input;
+3.30.13.00;2019-03-08;fix output of equilibrium F when using F_reporting=5;;;fix;output;
+3.30.13.00;2019-03-08;fix issues with F_reporting=4 and 5 for multiseason models;;;fix;output;
+3.30.13.00;2019-03-08;Important: corrected the -logL calculation for parameter deviations;;;fix;statistics;
+3.30.13.00;2019-03-08;create new Q option so that mirror Q uses an offset to ln(Q);;"Yes, if used";new;survey;
+3.30.13.00;2019-03-08;add growth cessation model per Maunder et al (2018);;"Yes, if used";new;growth;
+3.30.13.00;2019-03-08;"add dev vector options so last dev can persist to end of time series (codes 21, 22, 23, 24)";;"Yes, if used";new;time_vary;
+3.30.13.00;2019-03-08;"add new recdev approach based on dev being relative to R0, not SRR, add column to spawn_recr in report.sso";;"Yes, if used";new;recruitment;
+3.30.13.00;2019-03-08;add new forecast feature:  year-specific ABC buffer;;"Yes, if used";new;forecast;
+3.30.13.00;2019-03-08;add table for F in report.sso;;;new;output;
+3.30.13.00;2019-03-08;revise warning for recrdist options;;;revise;input;
+3.30.13.00;2019-03-08;move tag recapture code into a separate file for ease in future updating:  SS_tagrep.tpl;;;revise;tag;
+3.30.13.00;2019-03-08;re-order and organize the list of tables appearing at top of report.sso;;;revise;output;
+3.30.13.00;2019-03-08;small fix to posteriors.sso for Q parms;;;revise;output;
+3.30.12.00;2018-08-29;Time-vary SRR parms will now work in the forecast, e.g. regime shift on mean recruitment;;;fix;forecast;
+3.30.12.00;2018-08-29;Selectivity Patterns 42 and 43 will now be read correctly;;;fix;selectivity;
+3.30.12.00;2018-08-29;fecundity-at-age for benchmark when growth is time-varying is no longer being overwritten;;;fix;benchmark;
+3.30.12.00;2018-08-29;"Time-vary growth parameters now work with Richards growth function, but there is no trap to prevent  shrinkage";;;fix;growth;
+3.30.12.00;2018-08-29;Benchmark selectivities now use the correct ALK when growth was time-varying;;;fix;benchmark;
+3.30.12.00;2018-08-29;Implement time-varying ageing bias parameters;;;implement;time_vary;age_error
+3.30.12.00;2018-08-29;Implement density-dependent environmental effects on parameters, change specification format;;;implement;time_vary;density_dependent
+3.30.12.00;2018-08-29;improved error checking on read of wtatage.ss ;;;improve;read;
+3.30.12.00;2018-08-29;"Update and explain the usage of the ""-1"" code for fishery sample timing ";;;improve;fleets;
+3.30.12.00;2018-08-29;Enable transferring parameter dev phase and dev_se from 3.24 format into 3.30 format;;;improve;read;
+3.30.12.00;2018-08-29;A fatal warning for len selectivity mirroring of higher numbered fleet;;;improve;read;
+3.30.12.00;2018-08-29;only calculate selectivity softparmbounds when parameter phase is positive;;;improve;statistics;
+3.30.12.00;2018-08-29;Label lines in the control.ss_new file have been added to improve readability of the parameters;;;improve;output;
+3.30.12.00;2018-08-29;improve performance of jitter when parameter are near bounds;;;improve;read;
+3.30.12.00;2018-08-29;"enhance control rule options to:  Control rule method (1: ramp does catch=f(SSB), buffer on F, 2: ramp does F=f(SSB), buffer on F, 3: ramp does catch=f(SSB), buffer on catch, 4: ramp does F=f(SSB), buffer on catch)";;"Yes, if used";revise;forecast;
+3.30.12.00;2018-08-29;"add column for ""type"" in mean body size:  #_yr month fleet part type obs stderr,  where type=1 for mean length, type=2 for mean body weight,  replaces use of the sign of partition for indicating type";;"Yes, if used";revise;Mean_Size;
+3.30.12.00;2018-08-29;A new age selectivity non-parametric for sex-specific options #44 and #45;;"Yes, if used";new;selectivity;
+3.30.12.00;2018-08-29;Create lambda  type 18 for initial equilibrium regime shift;;"Yes, if used";new;recruitment;
+3.30.12.00;2018-08-29;"There is now better  output to Fit_Len, Fit_Age, Fit_Size for Francis weighting applications, and Durbin-Watson statistic for autocorrelation of devs";;;report;output;composition
+3.30.12.00;2018-08-29;subseas info is now reported to improve ability to discern when monthly timing of samples has resulted in assignment to a different subseason;;;report;output;
+3.30.12.00;2018-08-29;Fix and enhance reporting the full spawn_recr curve in report.sso (just after the spawn_recr output);;;report;output;
+3.30.12.00;2018-08-29;Bmsy/Bzero has been added to the list of derived quantities;;;report;output;
+3.30.12.00;2018-08-29;Enabled the display of logL for ignored length and age comp observations.;;;report;output;
+3.30.12.00;2018-08-29;Discard-at-age is now reported after catch_at_age in report.sso;;;report;output;discard
+3.30.12.00;2018-08-29;Option to report mean F without numbers weighting;;"Yes, if used";revise;output;fishing mortality
+3.30.12.00;2018-08-29;Changed mean forecast recruitment option to use range of years previously specified in forecast years;;;revise;forecast;
+3.30.12.00;2018-08-29;Allow time-vary R0 to occur in initial equilibrium year, matches 3.24;;;revise;recruitment;
+3.30.12.00;2018-08-29;plus_group growth options now include:  value>0 means exponential decay for growth above maxage (value should approximate initial Z, -999 replicates 3.24, -998 to not allow growth above maxage;;"Yes, if used";revise;growth;
+3.30.12.00;2018-09-13;small tweak to parameter jitter and now output the jittering to echoinput.sso;;;revise;input;
+3.30.12.00;2018-09-13;begin compiliation with ADMB 12.0;;;revise;internal;
+3.30.11.00;2018-02-27;" for Richards growth, disable trap on fish shrinkage due to code interaction";;No;fix;growth;
+3.30.11.00;2018-02-27;revise format of ss_summary;;No;revise;output;
+3.30.11.00;2018-02-27;"add totbio, smrybio and totcal catch to end of ss_summary, but without se";;No;new;output;
+3.30.11.00;2018-02-27;add copyright disclaimer;;No;new;output;
+3.30.11.00;2018-03-06;revise reportdetail in starter.ss so value of 0 omits nearly all output files except ss_summary.sso;;No;new;output;
+3.30.11.00;2018-03-07; parameter specific labels for double normal selectivity;;No;new;output;
+3.30.11.00;2018-03-10;Ricker power spawner-recruitment, see Cope and Punt (2017);;No;new;recruitment;
+3.30.11.00;2018-03-26;re-arrange code to allow -noest option to work, note that -maxfn 0 -phase 99  also works to bypass estimation;;No;new;controls;
+3.30.11.00;2018-03-26;add spawner-recruitment plotting output below spawn_recr in report.sso;;No;new;output;
+3.30.11.00;2018-03-28;improve treatment of biasadjustment when transitioning into MCMC, include MCMC_bump read from starter.ss;;Cond;revise;MCMC;
+3.30.11.00;2018-03-28;add output of selected estimated survey values to sdreport and show in ss_summary.sso;;No;revise;MCMC;
+3.30.11.00;2018-03-28;add output of ln(SPB) for 3 years to sdreport and show in ss_summary.sso;;No;revise;MCMC;
+3.30.10.02;2018-02-02;fix problem with super year in generalized size comp;;No;fix;various;
+3.30.10.02;2018-02-02;"break SS_write.tpl into SS_write, SS_write_report and SS_write_ssnew";;No;misc;various;
+3.30.10.02;2018-02-02; clean-up the cout's at end of run;;No;misc;various;
+3.30.10.01;2018-01-25;"fix logic error in calculation of settlement age in 2 season, 2 settlement setup";;No;new;read;
+3.30.10.00;2017-11-27;provide controls for bycatch fleets;;Yes;new;fleets;
+3.30.10.00;2017-11-27;provide benchmark and forecast option to use F0.1, this is either/or with F(Btgt);;No;new;forecast;
+3.30.10.00;2017-11-27;clarify internal usage and output for SSB_virgin vs SSB_unfished (benchmark), add description to manual;;No;new;forecast;
+3.30.10.00;2018-01-09;clarify output in forecast-report.sso and SPR/YPR profile;;No;new;forecast;
+3.30.09.00;2017-11-17;provide controls for extrapolating 2D_AR selectivity outside of year range of the devs;;Yes;new;selectivity;
+3.30.09.00;2017-11-20;"provide controls for adjusting forecast recruitments, includes recent mean and multiplier on R0 and others";;Yes;new;forecast;
+3.30.08.04;2017-11-06;fix forecast recruitment error when spawn_month>1;;No;fix;forecast;
+3.30.08.04;2017-11-07;"after biasadjustment ramp is calculated, set biasadjustment to 0.0 for years after recdev_end";;No;new;recruitment;
+3.30.08.04;2017-11-07;improve some warnings and adjust array dimensions to allow very long forecasts;;No;revise;various;
+3.30.08.03;2017-09-29;fix sometimes fatal error in writing to the new summary output file:  ss_summary.sso;;No;fix;output;
+3.30.08.02;2017-09-11;test and confirm that rebuilder output is correct,  it was not fully correct in version 3.30.04.02;;No;fix;rebuild;
+3.30.08.02;2017-09-11;fix range of years output of environmental data in data.ss_new;;No;fix;data_generator;
+3.30.08.02;2017-09-11;add info on selectivity and catchability options to control.ss_new;;No;new;selectivity;
+3.30.08.01;2017-08-29;"fix code that still needed fishing fleets before survey fleets, however tag parameters still need fishing fleets first.  That will be addressed soon.\nThis fix creates a conditional I/O change in forecast.ss:\n# Conditional input if relative F choice = 2\n# enter list of:  season,  fleet, relF, if used, terminate with season=-9999\n1 1 1\n-9999 0 0  # terminator for list of relF";;No;fix;fleets;
+3.30.07.02;2017-08-15;repair age-specific K, fix growth problem if settlement age >0;;No;fix;growth;
+3.30.07.01;2017-08-07;augmentation of SPR/YPR profile to show mean age of catch and other updates;;No;revise;benchmark;report
+3.30.07.01;2017-08-07;revise detailed F input to allow filling all years with one input record;;"Yes, conditional in control file";revise;fishing mortality;input
+3.30.06.02;2017-07-26;"fix problem that overwrote averaged forecast selectivity with base selectivity when time-varying was used, set new switch in forecast.ss to 0 to use average selectivity over a range of years, as in 3.24";;"Yes, mandatory in forecast file";fix;forecast;
+3.30.06.02;2017-07-26;improve reporting of selectivity in forecast era;;No;new;selectivity;
+3.30.06.02;2017-07-26;report more info in fit_age_comps section to match what is displayed for fit_len_comps;;No;new;agecomp;report
+3.30.06.02;2017-07-26;fix reporting of dev column in INDEX_2 section of report.sso;;No;fix;survey;report
+3.30.06.02;2017-07-26;remove the constrant that the blocks cannot end after retroyr in order to allow changes in forecast;;No;update;selectivity;blocks
+3.30.06.02;2017-07-26;add column with ABC_buffer to time_series table in report.sso;;No;new;forecast;report
+3.30.06.02;2017-07-27;"in sstrans, fix creation of settlement timings from multiple settlement events that happen in same month";;No;fix;recruitment;
+3.30.06.01;2017-07-12;enhance control of phases when using depletion fleet, no mandatory I/O change;;"Yes, conditional in control file";new;survey;
+3.30.05.02;2017-06-28;fix recruitment reporting issue when settlement events happen in same season as spawn_season;;No;fix;various;
+3.30.05.01;2017-06-21;"min sample size now is input, add new switch, fcast_specify_selex, in forecast.ss for selectivity method";;"Yes, mandatory in control file";new;various;
+3.30.04.01;2017-05-23;convert conversion of 3.24's birthseason to 3.30's settlement events and revise required number of recruitment distribution parameters;;"Yes, mandatory in control file";revise;read;spawn_recruit
+3.30.04.01;2017-05-30;fix index issue in converter for MGparm seasonal effects and for retention if fleet >1, fix hermaphrodites in forecast;;No;fix;various;
+3.30.03.04;2017-05-10;major re-work of echoinput during reading of forecast.ss;;No;update;forecast;read
+3.30.03.04;2017-05-10;correct reporting of mature biomass and mature numbers in forecast;;No;fix;report;spawn_recruit
+3.30.03.03;2017-05-08;update sdreport for index values;;No;update;statistics;
+3.30.03.03;2017-05-08;"fix doubled logL from forecast recruitments, investigate issue with blocks ending at endyr, not endyr+1";;No;fix;forecast;
+3.30.03.02;2017-05-01;correct issue with Lorenzen M when growth is not estimated;;No;fix;growth;
+3.30.03.01;2017-04-18;correct order of parameter reporting in parmtrace and posteriors, correct issue in autogenerate of dev se;;No;fix;selectivity;
+3.30.03.00;2017-04-14;modify I/O in survey CPUE setup for getting sdreport on survey expected value, but functional code still in development;;"Yes; mandatory in data file";new;statistics;
+3.30.03.00;2017-04-18;modify I/O in selectivity setup to invoke 2d_AR1 selectivity, but functional code still in development;;"Yes, mandatory in control file";new;selectivity;
+3.30.02.00;2017-04-13;add ability to have expected values in forecast, all data read after retroyr set to have no logL; also add explicit timing option (month>1000) for fishery samples;;"Yes;  conditional in data file";new;forecast,expected_values
+3.30.01.15;2017-04-13;various fixes implemented, see git for details.  Includes addition of truncated normal error for discard data;;"Yes, conditional in control file";fix;;
+3.30.01.00;2016-11-22;"revise 3rd retention parameter from direct estimate on 0, 1 scale to logit:  1/(1+exp(-X)), convert with sstrans";;"Yes, conditional in control file";revise;selectivity;retention
+3.30.00.03;2016-11-17;fix Q parm count issue in ss_readcontrol_324;;No;fix;read;Q
+3.30.00.02;2016-11-15;fix missing write of length_maturity vector for maturity option 6;;No;fix;write;biology
+3.30.00.01;2016-11-09;fix missing surv1_endyr and nilnumbers value, both needed for forecast with Pope's approx;;No;fix;forecast;
+3.30.00.00;2016-11-09;Initial beta for SS 3.30;;Yes;;;
