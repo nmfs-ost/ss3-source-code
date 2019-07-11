@@ -1,6 +1,6 @@
 FUNCTION void Tag_Recapture()
   {
-  //  SS_Label_Info_24.15 #do tag mortality, movement and recapture
+  //  SS_Label_Info_24.15 #do tag mortality, movement and recapture  revise 7/10/2019
     dvariable TG_init_loss;
     dvariable TG_chron_loss;
     TG_recap_exp.initialize();
