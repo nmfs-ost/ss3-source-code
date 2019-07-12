@@ -2000,16 +2000,18 @@ FUNCTION void write_nucontrol()
   report4<<"#"<<endl<<"# Tag loss and Tag reporting parameters go next"<<endl;
   if(Do_TG>0)
   {
-    report4<<1<<" # TG_custom:  0=no read; 1=read"<<endl;
+    report4<<1<<" # TG_custom:  0=no read and autogen if tag data exist; 1=read"<<endl;
+    report4<<"#_Note -  tag parameters cannot be time-varying"<<endl;
+    report4<<"#_Note -  phase=-1000 sets parm value to previous parm; phase=-100X sets to parm(X) value"<<endl;
     for (f=1;f<=3*N_TG+2*Nfleet1;f++)
     {
       NP++;
-      report4<<TG_parm2(f)<<" # "<<ParmLabel(NP)<<endl;
+      report4<<TG_parm2(f)(1,2)<<" "<<TG_parm(f)<<" "<<TG_parm2(f)(4,14)<<" # "<<ParmLabel(NP)<<endl;
     }
   }
   else
   {
-    report4<<"0  # TG_custom:  0=no read; 1=read if tags exist"<<endl
+    report4<<"0  # TG_custom:  0=no read and autogen if tag data exist; 1=read"<<endl
     <<"#_Cond -6 6 1 1 2 0.01 -4 0 0 0 0 0 0 0  #_placeholder if no parameters"<<endl;;
   }
   report4<<"#"<<endl;

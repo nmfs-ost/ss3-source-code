@@ -9,7 +9,6 @@ FUNCTION void Tag_Recapture()
       for (f=1;f<=Nfleet1;f++)
       {
         j=3*N_TG+f;
-        warning<<f<<" "<<TG_parm_PH(j)<<" "<<TG_parm_PH(j+Nfleet1)<<" ";
       if(TG_parm_PH(j)==-1000.)	
       	{TG_report(f)=TG_report(f-1);} //  do nothing keep same value
       else

@@ -1,14 +1,17 @@
 Version;Date;Description;VLAB_issue;Input_Change?;Type;Category;Sub_Category
-3.30.13.10;2019-07-10;Fix error in unitialized nabins (number of age bins) issue (occurs when nabins = 0);#65854;;Bug;misc. input;
-3.30.13.10;2019-07-10;Fix forecast error with new buffer methods 3 and 4;#65275;;Bug;forecast;
-3.30.13.09;2019-07-01;Fix error in Lorenzen M for seasonal models;#65581;No;fix;natM;
-3.30.13.09;2019-07-01;Fix error in Richards growth.  Noticed with seasonal models but could affect annual also for first age with growth;#65581;No;fix;growth;
-3.30.13.09;2019-06-28;revise the SPR search to search for SPR*100 to improve numerical precision;#65508;No;revise;benchmark
-3.30.13.08;2019-06-15;improve forecast robustness;#65043;No;revise;forecast;
-3.30.13.08;2019-06-16;"fix storing body-wt-at-age in forecast, which fixes calculation of totbio in time_series output";#65043;No;fix;output;
-3.30.13.07;2019-06-13;fix to mean size-at-age Input check.;;No;fix;input;
+3.30.14.00;2019-07-12;Roll up 20 fixes and upgrades to version 3.30.13;;Cond;release;;
+3.30.14.00;2019-07-12;Revise tag parameter input to allow mirroring (sharing);#65893;Cond;revise;tag;input
+3.30.14.00;2019-07-12;Revise movement parameter input to set old fish movement = young fish movement rate;;Cond;New;movement;input
+3.30.13.10;2019-07-10;Fix error in uninitialized nabins (number of age bins) issue (occurs when nabins = 0);#65854;No;fix;age_data;input
+3.30.13.10;2019-07-10;Fix forecast error with new buffer methods 3 and 4;#65275;No;fix;forecast;calc
+3.30.13.09;2019-07-01;Fix error in Lorenzen M for seasonal models;#65581;No;fix;natM;calc
+3.30.13.09;2019-07-01;Fix error in Richards growth.  Noticed with seasonal models but could affect annual also for first age with growth;#65581;No;fix;growth;calc
+3.30.13.09;2019-06-28;revise the SPR search to search for SPR*100 to improve numerical precision;#65508;No;revise;benchmark;calc
+3.30.13.08;2019-06-15;improve forecast robustness;#65043;No;revise;forecast;calc
+3.30.13.08;2019-06-16;"fix storing body-wt-at-age in forecast, which fixes calculation of totbio in time_series output";#65043;No;fix;forecast;output
+3.30.13.07;2019-06-13;fix to mean size-at-age Input check;;No;fix;input;
 3.30.13.06;2019-06-10;fix to forecast recruitment when using recent mean;#64801;No;fix;forecast;
-3.30.13.06;2019-06-10;fix to Fit_SizeComp output when using a one sex model.;#64821;No;fix;output;
+3.30.13.06;2019-06-10;fix to Fit_SizeComp output when using a one sex model;#64821;No;fix;output;
 3.30.13.05;2019-06-04;minor fix to repair fatal interaction between Lorenzen M and growth specification.;#64589;No;fix;natM;
 3.30.13.04;2019-05-31;add parm_gradient for F parameters;#64449;No;revise;output;
 3.30.13.04;2019-05-31;fix output of dirichlet parameters to control.ss_new;#64174;No;fix;output;
