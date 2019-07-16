@@ -1353,12 +1353,12 @@ FUNCTION void write_nucontrol()
   if(N_CC>0) report4<<Control_Comments<<endl;
   report4 << "#_data_and_control_files: "<<datfilename<<" // "<<ctlfilename<<endl;
   report4<<WTage_rd<<"  # 0 means do not read wtatage.ss; 1 means read and use wtatage.ss and also read and use growth parameters"<<endl;
-  report4 << N_GP << "  #_N_Growth_Patterns"<<endl;
+  report4 << N_GP << "  #_N_Growth_Patterns (Growth Patterns, Morphs, Bio Patterns, GP are terms used interchangeably in SS)"<<endl;
   report4 << N_platoon << " #_N_platoons_Within_GrowthPattern "<<endl;
   if(N_platoon==1) report4<<"#_Cond ";
-  report4<<sd_ratio<<" #_Morph_between/within_stdev_ratio (no read if N_morphs=1)"<<endl;
+  report4<<sd_ratio<<" #_Platoon_between/within_stdev_ratio (no read if N_platoons=1)"<<endl;
   if(N_platoon==1) report4<<"#_Cond ";
-  report4<<platoon_distr(1,N_platoon)<<" #vector_Morphdist_(-1_in_first_val_gives_normal_approx)"<<endl;
+  report4<<platoon_distr(1,N_platoon)<<" #vector_platoon_dist_(-1_in_first_val_gives_normal_approx)"<<endl;
   report4<<"#"<<endl;
   if(finish_starter==999)
     {report4<<2<<" # recr_dist_method for parameters:  2=main effects for GP, Settle timing, Area; 3=each Settle entity; 4=none, only when N_GP*Nsettle*pop==1"<<endl;}

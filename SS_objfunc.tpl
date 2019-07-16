@@ -1116,8 +1116,9 @@ FUNCTION void Process_STDquant()
 FUNCTION dvariable Check_Parm(const int iparm, const int& PrPH, const double& Pmin, const double& Pmax, const int& Prtype, const double& Pr, const double& Psd, const double& jitter, const prevariable& Pval)
   {
     RETURN_ARRAYS_INCREMENT();
-    const dvariable zmin = inv_cumd_norm(0.001);    // z value for Pmin
-    const dvariable zmax = inv_cumd_norm(0.999);    // z value for Pmax
+    const double bound=0.001;
+    const dvariable zmin = inv_cumd_norm(bound);    // z value for Pmin
+    const dvariable zmax = inv_cumd_norm((1.0-bound));    // z value for Pmax
     const dvariable Pmean = (Pmin + Pmax) / 2.0;
     dvariable NewVal;
     // dvariable temp;
@@ -1148,17 +1149,17 @@ FUNCTION dvariable Check_Parm(const int iparm, const int& PrPH, const double& Pm
           N_warn++;
           cout<<" EXIT - see warning "<<endl;
           warning<<" in Check_Parm jitter:  Psigma < 0.00001 "<<Psigma<<endl;
-          cout<<" fatal error, see warning"<<endl; exit(1);
+          cout<<" fatal error in jitter, see warning"<<endl; exit(1);
       }
-      zval = (Pval - Pmean) / Psigma;
+      zval = (Pval - Pmean) / Psigma;  //  current parm value converted to zscore
       kval = cumd_norm(zval);
       temp=randu(radm);
       kjitter = kval + (jitter * ((2.00 * temp) - 1.));  // kjitter is between kval - jitter and kval + jitter
-      if (kjitter < 0.0001)
+      if (kjitter < bound)
       {
           NewVal=Pmin+0.1*(Pval-Pmin);
       }
-      else if (kjitter > 0.9999)
+      else if (kjitter > (1.0-bound))
       {
           NewVal=Pmax-0.1*(Pmax-Pval);
       }

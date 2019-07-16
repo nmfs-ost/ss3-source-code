@@ -97,6 +97,7 @@ FUNCTION dvariable Spawn_Recr(const prevariable& SSB_virgin_adj, const prevariab
         // Pups_0=SSB_virgin_adj;  //  total population fecundity is the number of pups produced
         // Sfrac=SR_parm(2);
         SRZ_0=log(1.0/(SSB_virgin_adj/Recr_virgin_adj));
+        steepness=SR_parm_work(2);
         srz_min=SRZ_0*(1.0-steepness);
         SRZ_surv=mfexp((1.-pow((SSB_curr_adj/SSB_virgin_adj),SR_parm_work(3)) )*(srz_min-SRZ_0)+SRZ_0);  //  survival
         NewRecruits=SSB_curr_adj*SRZ_surv;
