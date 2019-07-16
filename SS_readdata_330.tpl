@@ -229,7 +229,7 @@
       fleet_type(f) = int(fleet_setup(f,1));
       if(fleet_type(f)==2) N_bycatch++;
       if(fleet_type(f)<=2) N_catchfleets++;
-      surveytime(f) = fleet_setup(f,2)/abs(fleet_setup(f,2));
+      surveytime(f) = fleet_setup(f,2)/fabs(fleet_setup(f,2));
       fleet_setup(f,2)=surveytime(f);
       if(fleet_type(f)<=2)
         {
