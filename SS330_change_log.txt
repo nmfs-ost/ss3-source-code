@@ -1,5 +1,7 @@
 Version;Date;Description;VLAB_issue;Input_Change?;Type;Category;Sub_Category
-3.30.14.00;2019-07-16;Roll up fixes and upgrades to version 3.30.13;;Cond;release;;
+3.30.14.00;2019-07-19;Roll up fixes and upgrades to version 3.30.13;;Cond;release;;
+3.30.14.00;2019-07-19;revise recruitment assignment algorithm to safeguard a rare situation;;;revise;recruitment;calc
+3.30.14.00;2019-07-19;clean-up a report omission;;;fix;output;output
 3.30.14.00;2019-07-16;Fix an unassigned variable in spawn_recr method 7, caused poor convergence;#66044;_;fix;recruitment;calc
 3.30.14.00;2019-07-16;Improve internal consistency of jitter calculation;#65995;_;revise;parameter;calc
 3.30.14.00;2019-07-12;Revise tag parameter input to allow mirroring (sharing);#65893;Cond;revise;tag;input

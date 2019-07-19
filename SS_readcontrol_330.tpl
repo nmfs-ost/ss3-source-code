@@ -157,7 +157,7 @@
 
   matrix settlement_pattern_rd(1,N_settle_assignments,1,4);   //  for each settlement event:  GPat, Month, area, age
   ivector settle_assignments_timing(1,N_settle_assignments);  //  stores the settle_timing index for each assignment
-  vector settle_timings_tempvec(1,N_settle_assignments)  //  temporary storage for real_month of each settlement_timing
+  matrix settle_timings_tempvec(1,N_settle_assignments,1,2)  //  temporary storage for real_month and age of each settlement_timing
                                                         //  dimensioned by assignments, but only uses N_settle_timings of these
  LOCAL_CALCS
    *(ad_comm::global_datafile) >> settlement_pattern_rd;
@@ -168,17 +168,20 @@
       if(N_settle_assignments==0)
       {
         N_settle_timings=1;
-        settle_timings_tempvec(1)=1.0;
+        settle_timings_tempvec(1,1)=1.0;
+        settle_timings_tempvec(1,2)=0;
       }
       else
       {
         for (settle=1;settle<=N_settle_assignments;settle++)
         {
           real_month=settlement_pattern_rd(settle,2);
+          int settle_age_here=settlement_pattern_rd(settle,4);
           if(N_settle_timings==0)
           {
             N_settle_timings++;
-            settle_timings_tempvec(N_settle_timings)=real_month;
+            settle_timings_tempvec(N_settle_timings,1)=real_month;
+            settle_timings_tempvec(N_settle_timings,2)=settle_age_here;
             settle_assignments_timing(settle)=N_settle_timings;
           }
           else
@@ -186,7 +189,7 @@
             k=0;
             for(j=1;j<=N_settle_timings;j++)
             {
-              if(settle_timings_tempvec(j)==real_month)  // found matching settle_time
+              if(settle_timings_tempvec(j,1)==real_month && settle_timings_tempvec(j,2)==settle_age_here)  // found matching settle_time
               {
                 settle_assignments_timing(settle)=j;
                 k=1;
@@ -195,13 +198,14 @@
             if(k==0)
             {
               N_settle_timings++;
-              settle_timings_tempvec(N_settle_timings)=real_month;
+              settle_timings_tempvec(N_settle_timings,1)=real_month;
+              settle_timings_tempvec(N_settle_timings,2)=settle_age_here;
               settle_assignments_timing(settle)=N_settle_timings;
             }
           }
         }
       }
-    echoinput<<"N settle timings: "<<N_settle_timings<<endl<<" unique_settle_times: "<<settle_timings_tempvec(1,N_settle_timings)<<endl;
+    echoinput<<"N settle timings: "<<N_settle_timings<<endl<<" unique_settle_times: "<<endl<<settle_timings_tempvec<<endl;
     echoinput<<"settle events use these settle_times: "<<settle_assignments_timing<<endl;
 
     if(recr_dist_method==2)
@@ -238,8 +242,7 @@
       Settle_age(settle_time)=settlement_pattern_rd(settle,4);  //  settlement age as read
       recr_dist_pattern(gp,settle_time,p)=1;  //  indicates that settlement will occur here
       recr_dist_pattern(gp,settle_time,0)=1;  //  for growth updating
-      Settle_month(settle_time)=settle_timings_tempvec(settle_time);
-//      Settle_month(settle_time)=settle_timings_tempvec(settle);
+      Settle_month(settle_time)=settle_timings_tempvec(settle_time,1);
     }
     for (settle_time=1;settle_time<=N_settle_timings;settle_time++)
     {
@@ -4756,6 +4759,7 @@
    }
    else
    {
+     N_WTage_rd=0;
      N_WTage_maxage=nages;
      k2=styr;
    }

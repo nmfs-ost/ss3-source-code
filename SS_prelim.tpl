@@ -557,10 +557,8 @@ PRELIMINARY_CALCS_SECTION
     {
       echoinput<<endl<<" now check init_F parm bounds and priors and do jitter if requested "<<endl;
       for (i=1;i<=N_init_F;i++)
-      {
-        {init_F(i) = Check_Parm(i,init_F_PH(i), init_F_LO(i),init_F_HI(i), init_F_PRtype(i), init_F_PR(i), init_F_CV(i), jitter, init_F(i));}
-        echoinput<< " initF_parms after check "<<init_F<<endl;
-      }
+      {init_F(i) = Check_Parm(i,init_F_PH(i), init_F_LO(i),init_F_HI(i), init_F_PRtype(i), init_F_PR(i), init_F_CV(i), jitter, init_F(i));}
+      echoinput<< " initF_parms after check "<<init_F<<endl;
       init_F_use=value(init_F);
     }
 

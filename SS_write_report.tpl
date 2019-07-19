@@ -1853,7 +1853,7 @@ FUNCTION void write_bigoutput()
          {SS2out<<" TIME ";}
        else
          {SS2out<<" FORE ";}
-       SS2out<<natage(t,p,g)<<endl;
+       SS2out<<Save_PopAge(t,p,g)<<endl;
        temp=double(y)+azero_seas(s)+seasdur_half(s);
        SS2out <<p<<" "<<GP4(g)<<" "<<sx(g)<<" "<<Bseas(g)<<" "<<settle_g(g)<<" "<<GP2(g)<<" "<<g<<" "<<y<<" "<<s<<" "<<temp<<" M";
        if(y==styr-2)

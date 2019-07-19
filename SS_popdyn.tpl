@@ -208,6 +208,7 @@ FUNCTION void get_initial_conditions()
   bio_yr=styr;
   Fishon=0;
   virg_fec = fec;
+  Recr.initialize();  //  will store recruitment by area
   for(int i=1;i<=N_SRparm2;i++) {SR_parm_byyr(eq_yr,i)=SR_parm(i);  SR_parm_virg(i)=SR_parm(i);  SR_parm_work(i)=SR_parm(i);}
 
 //  SPAWN-RECR:   get expected recruitment globally or by area
@@ -239,9 +240,14 @@ FUNCTION void get_initial_conditions()
     t=styr-2*nseas-1;
     for (s=1;s<=nseas;s++)
     for (p=1;p<=pop;p++)
-    for (g=1;g<=gmorph;g++)
     {
-      natage(t+s,p,g)(0,nages)=equ_numbers(s,p,g)(0,nages);
+      for (g=1;g<=gmorph;g++)
+      {
+        if(use_morph(g)>0)
+        {
+        natage(t+s,p,g)(0,nages)=equ_numbers(s,p,g)(0,nages);
+        }
+      }
     }
     if(save_for_report>0)
     {
@@ -257,6 +263,8 @@ FUNCTION void get_initial_conditions()
            SSB_B_yr(eq_yr) += make_mature_bio(GP4(g))*natage(t+s,p,g);
            SSB_N_yr(eq_yr) += make_mature_numbers(GP4(g))*natage(t+s,p,g);
         }
+        Save_PopAge(t+s,p,g)=natage(t+s,p,g);
+        Recr(p,t+s)+=equ_Recr*recr_dist(GP(g),settle_g(g),p)*platoon_distr(GP2(g));
         Save_PopBio(t+s,p,g)=elem_prod(natage(t+s,p,g),Wt_Age_beg(s,g));
       }
     }
@@ -416,6 +424,8 @@ FUNCTION void get_initial_conditions()
            SSB_N_yr(eq_yr) += make_mature_numbers(GP4(g))*natage(t+s,p,g);
         }
         Save_PopBio(t+s,p,g)=elem_prod(natage(t+s,p,g),Wt_Age_beg(s,g));
+        Save_PopAge(t+s,p,g)=natage(t+s,p,g);
+        Recr(p,t+s)+=equ_Recr*recr_dist(GP(g),settle_g(g),p)*platoon_distr(GP2(g));
       }
     }
 
