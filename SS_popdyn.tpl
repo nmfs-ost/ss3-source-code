@@ -650,7 +650,12 @@ FUNCTION void get_time_series()
         {
           Wt_Age_beg(s,g)=WTage_emp(t,GP3(g),0);
           Wt_Age_mid(s,g)=WTage_emp(t,GP3(g),-1);
-          if(s==spawn_seas) fec(g)=WTage_emp(t,GP3(g),-2);
+          if(s==spawn_seas) 
+          	{
+          		fec(g)=WTage_emp(t,GP3(g),-2);
+              save_sel_fec(t,g,0)= fec(g);
+//              if(y==endyr) save_sel_fec(t+nseas,g,0)=fec(g);
+              }
         }
       }
       else if(timevary_MG(y,2)>0 || timevary_MG(y,3)>0 || save_for_report==1 || do_once==1)

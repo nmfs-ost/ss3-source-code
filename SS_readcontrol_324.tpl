@@ -2150,11 +2150,11 @@
 
  LOCAL_CALCS
 //  SS_Label_Info_4.7.2 #Create parameter labels for F parameters if F_method==2
-  if(F_Method==2)
-  {
     Fparm_start = ParCount;
     N_Fparm=0;
     do_Fparm.initialize();
+  if(F_Method==2)
+  {
     for (f=1;f<=Nfleet;f++)
     for (y=styr;y<=endyr;y++)
     for (s=1;s<=nseas;s++)
