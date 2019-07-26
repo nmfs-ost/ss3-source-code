@@ -1603,7 +1603,6 @@ FUNCTION void write_bigoutput()
                 }
                 temp= SzFreq_obs1(iobs,3);  //  use original input value because 
                 if(temp>999) temp-=1000.;
-                  SS2out<<" here "<<endl;
                 SS2out<<f<<" "<<fleetname(f)<<" "<<fleet_area(f)<<" "<<Show_Time2(ALK_time)<<" "<<data_time(ALK_time,f,1)<<" "<<data_time(ALK_time,f,3)<<" "<<gg<<" "<<p;
      if(SzFreq_obs_hdr(iobs,2)<0 && in_superperiod==0)
       {SS2out<<" start "; in_superperiod=1;}

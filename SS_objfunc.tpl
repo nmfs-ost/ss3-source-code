@@ -1128,13 +1128,21 @@ FUNCTION dvariable Check_Parm(const int iparm, const int& PrPH, const double& Pm
     if((Pmin<=-99 || Pmax>=999) && PrPH>=0)
       {N_warn++; warning<<" jitter not done unless parameter min & max are in reasonable parameter range "<<Pmin<<" "<<Pmax<<endl;}
     else if(Pmin>Pmax)
-    {N_warn++; cout<<" EXIT - see warning "<<endl; warning<<" parameter min > parameter max "<<Pmin<<" > "<<Pmax<<" for parm: "<<iparm<<endl; cout<<" fatal error, see warning"<<endl; exit(1);}
+    {N_warn++; cout<<" EXIT - see warning "<<endl; 
+    	warning<<" parameter min > parameter max "<<Pmin<<" > "<<Pmax<<" for parm: "<<iparm<<endl; cout<<" fatal error, see warning"<<endl;
+    	echoinput<<" parameter min > parameter max "<<Pmin<<" > "<<Pmax<<" for parm: "<<iparm<<endl; cout<<" fatal error, see warning"<<endl; exit(1);}
     else if(Pmin==Pmax && PrPH>=0)
-    {N_warn++; warning<<" parameter min is same as parameter max"<<Pmin<<" = "<<Pmax<<" for parm: "<<iparm<<endl;}
+    {N_warn++;
+    	warning<<" parameter min is same as parameter max"<<Pmin<<" = "<<Pmax<<" for parm: "<<iparm<<endl;
+    	echoinput<<" parameter min is same as parameter max"<<Pmin<<" = "<<Pmax<<" for parm: "<<iparm<<endl;}
     else if(Pval<Pmin && PrPH>=0)
-    {N_warn++; warning<<" parameter init value is less than parameter min "<<Pval<<" < "<<Pmin<<" for parm: "<<iparm<<endl; NewVal=Pmin;}
+    {N_warn++;
+    	warning<<" parameter init value is less than parameter min "<<Pval<<" < "<<Pmin<<" for parm: "<<iparm<<endl;
+    	echoinput<<" parameter init value is less than parameter min "<<Pval<<" < "<<Pmin<<" for parm: "<<iparm<<endl; NewVal=Pmin;}
     else if(Pval>Pmax && PrPH>=0)
-    {N_warn++; warning<<" parameter init value is greater than parameter max "<<Pval<<" > "<<Pmax<<" for parm: "<<iparm<<endl; NewVal=Pmax;}
+    {N_warn++; 
+    	warning<<" parameter init value is greater than parameter max "<<Pval<<" > "<<Pmax<<" for parm: "<<iparm<<endl;
+    	echoinput<<" parameter init value is greater than parameter max "<<Pval<<" > "<<Pmax<<" for parm: "<<iparm<<endl; NewVal=Pmax;}
     else if(jitter>0.0 && PrPH>=0)
     {
       // temp=log((Pmax-Pmin+0.0000002)/(NewVal-Pmin+0.0000001)-1.)/(-2.);   // transform the parameter

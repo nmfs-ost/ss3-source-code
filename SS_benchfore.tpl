@@ -305,7 +305,6 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
           Wt_Age_beg(s,g)=Save_Wt_Age(styr-3*nseas+s-1,g);
         }
       }
-      warning<<" fec: "<<fec<<endl;
 //  following uses the values of sel_l, sel_a, etc. stored in yr=styr-3
       for (s=1;s<=nseas;s++)
       for (g=1;g<=gmorph;g++)

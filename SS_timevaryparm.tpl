@@ -3,8 +3,8 @@
 FUNCTION void make_timevaryparm()
   {
     dvariable baseparm;
-    double baseparm_min;
-    double baseparm_max;
+    double baseparm_min=-999.;
+    double baseparm_max=999;
     dvariable endtrend;
     dvariable infl_year;
     dvariable slope;
