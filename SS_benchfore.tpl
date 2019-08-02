@@ -2255,10 +2255,10 @@ FUNCTION void Get_Forecast()
             if(fleet_type(f)==1)
             {
               if(ABC_Loop==2 && HarvestPolicy>=3) {catch_fleet(t,f)*=H4010_scale_vec(y);}
-              if(Fcast_InputCatch(t,f,2)>1)  //  have input catch
-              {Fcast_Catch_Store(t,f)=Fcast_InputCatch(t,f,1);}
+              if(Fcast_InputCatch(t,f,2)==1 ||  Fcast_InputCatch(t,f,2)==2)  //  have input catch
+              {Fcast_Catch_Store(t,f)=Fcast_InputCatch(t,f,1);} //  copy input catch to stored catch
               	else
-              {Fcast_Catch_Store(t,f)=catch_fleet(t,f,Fcast_Catch_Basis);}
+              {Fcast_Catch_Store(t,f)=catch_fleet(t,f,Fcast_Catch_Basis);}   //  copy calculated catch to stored catch if input is Hrate or if no input
               totcatch+=Fcast_Catch_Store(t,f);
             }
             else if(fleet_type(f)==3)
@@ -2266,10 +2266,10 @@ FUNCTION void Get_Forecast()
             else  //  bycatch
             {
               if(ABC_Loop==2 && HarvestPolicy>=3 && bycatch_setup(f,3)<=1) {catch_fleet(t,f)*=H4010_scale_vec(y);}
-              if(Fcast_InputCatch(t,f,2)>1)  //  have input catch
-              {Fcast_Catch_Store(t,f)=Fcast_InputCatch(t,f,1);}
+              if(Fcast_InputCatch(t,f,2)==1 ||  Fcast_InputCatch(t,f,2)==2)  //  have input catch
+              {Fcast_Catch_Store(t,f)=Fcast_InputCatch(t,f,1);}  //  copy input catch to stored catch
               	else
-              {Fcast_Catch_Store(t,f)=catch_fleet(t,f,Fcast_Catch_Basis);}
+              {Fcast_Catch_Store(t,f)=catch_fleet(t,f,Fcast_Catch_Basis);}  //  copy calculated catch to stored catch if input is Hrate or if no input
               if(bycatch_setup(f,2)==1) totcatch+=Fcast_Catch_Store(t,f);
             }
           }

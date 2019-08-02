@@ -596,7 +596,7 @@ FUNCTION void write_nudata()
          else
              {report1 << obs_ms(f,i,a) ;}
        }
-       report1 << endl<< elem_prod(obs_ms_n(f,i),obs_ms_n(f,i)) << endl;
+       report1 << endl<< obs_ms_n_read(f,i) << endl;
      }
     }
    }
@@ -1023,7 +1023,7 @@ FUNCTION void write_nudata()
           else
           {report1 << exp_ms(f,i,a) ;}
          }
-         report1 << endl<< elem_prod(obs_ms_n(f,i),obs_ms_n(f,i)) << endl;
+         report1 << endl<< obs_ms_n_read(f,i) << endl;
        }
      }
     }

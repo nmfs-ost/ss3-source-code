@@ -695,6 +695,61 @@ PRELIMINARY_CALCS_SECTION
     }
     Richards=1.0;
 
+//  check data against settings for inconsistencies
+  for(f==1;f<=Nfleet;f++)
+  {
+  	if(Do_Retain(f)==0)  //  retention not defined; check for illogical observations
+  		{
+  			// check for discard obs
+  			if(disc_N_fleet(f)>0) {N_warn++; warning<<"fleet: "<<f<<"  discard data exist but retention fxn not defined; exit"<<endl; exit(1);}
+
+  			// check for composition obs with partition =1 or =2; use a new summary of obs by partition type for this test
+				for(i==1;i<=Nobs_l(f);i++)
+				{
+					if(mkt_l(f,i)>0)
+					{
+				  	N_warn++; warning<<"fleet: "<<f<<"lencomp data contains obs with partition>0 and retention fxn not defined; SS changes partition to 0"<<endl;
+            mkt_l(f,i)=0;
+					}
+				}
+				for(i==1;i<=Nobs_a(f);i++)
+				{
+					if(mkt_a(f,i)>0)
+					{
+				  	N_warn++; warning<<"fleet: "<<f<<"agecomp data contains obs with partition>0 and retention fxn not defined; SS changes partition to 0"<<endl;
+            mkt_a(f,i)=0;
+					}
+				}
+				for(i==1;i<=Nobs_ms(f);i++)
+				{
+					if(mkt_ms(f,i)>0)
+					{
+				  	N_warn++; warning<<"fleet: "<<f<<"size@age data contains obs with partition>0 and retention fxn not defined; SS changes partition to 0"<<endl;
+            mkt_ms(f,i)=0;
+					}
+				}
+  			// check for mean body size obs with partition =1 or =2
+        for (i=1;i<=nobs_mnwt;i++)  //   loop all obs
+        {
+          int f1=mnwtdata(3,i);
+          if(f1==f)
+          	{
+              int parti = mnwtdata(4,i);  //  partition:  0=all, 1=discard, 2=retained
+          		if(parti>0)
+          		{
+          			N_warn++; warning<<"fleet: "<<f<<"meansize data contains obs with partition>0 and retention fxn not defined; SS changes partition to 0"<<endl;
+          			mnwtdata(4,i)=0;
+          		}
+          	}
+        }
+  		}
+  		else  //  retention is defined
+  	  {
+  		  //  if seltype(f,2)==3 or fleet_type(f)==2; then all discard so noretained catch obs allowed	
+  		}
+  }
+
+
 //  SS_Label_Info_6.8 #Go thru biological calculations once, with do_once flag=1 to produce extra output to echoinput.sso
     cout<< " ready to evaluate once in prelim"<<endl;
     echoinput<< " ready to evaluate once "<<endl;

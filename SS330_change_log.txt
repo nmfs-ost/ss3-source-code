@@ -1,4 +1,5 @@
 Version;Date;Description;VLAB_issue;Input_Change?;Type;Category;Sub_Category
+3.30.14.01;2019-07-26;additional fix for fixed F inputs for forecast;#64801;-;fix;forecast;calc
 3.30.14.01;2019-07-26;minor formatting tweaks;-;-;-;-;output
 3.30.14.01;2019-07-23;Fix internal storage of annual fecundity with empirical wt-at-age;#66365;-;fix;bodywt;calc
 3.30.14.01;2019-07-23;fix unassigned variable in N_Fparm;-;-;fix;Fmort;input
@@ -50,7 +51,8 @@ Version;Date;Description;VLAB_issue;Input_Change?;Type;Category;Sub_Category
 3.30.12.00;2018-08-29;Time-vary SRR parms will now work in the forecast, e.g. regime shift on mean recruitment;;;fix;forecast;
 3.30.12.00;2018-08-29;Selectivity Patterns 42 and 43 will now be read correctly;;;fix;selectivity;
 3.30.12.00;2018-08-29;fecundity-at-age for benchmark when growth is time-varying is no longer being overwritten;;;fix;benchmark;
-3.30.12.00;2018-08-29;"Time-vary growth parameters now work with Richards growth function, but there is no trap to prevent  shrinkage";;;fix;growth;
+3.30.12.00;2018-08-29;Time-vary growth parameters now work with Richards growth function, but there is no trap to prevent  shrinkage;;;fix;growth;
+3.30.12.00;2018-08-29; add recr_dist option 4 to allow for no parameters if no distribution needed ;;;revise;recruitment;
 3.30.12.00;2018-08-29;Benchmark selectivities now use the correct ALK when growth was time-varying;;;fix;benchmark;
 3.30.12.00;2018-08-29;Implement time-varying ageing bias parameters;;;implement;time_vary;age_error
 3.30.12.00;2018-08-29;Implement density-dependent environmental effects on parameters, change specification format;;;implement;time_vary;density_dependent
