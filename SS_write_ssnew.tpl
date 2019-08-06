@@ -1269,7 +1269,7 @@ FUNCTION void write_nucontrol()
   NuFore<<Fcast_RelF_Basis<<" # fleet relative F:  1=use first-last alloc year; 2=read seas, fleet, alloc list below"<<endl;
   NuFore<<"# Note that fleet allocation is used directly as average F if Do_Forecast=4 "<<endl;
 
-  NuFore<<Fcast_Catch_Basis<<" # basis for fcast catch tuning and for fcast catch caps and allocation  (2=deadbio; 3=retainbio; 5=deadnum; 6=retainnum)"<<endl;
+  NuFore<<Fcast_Catch_Basis<<" # basis for fcast catch tuning and for fcast catch caps and allocation  (2=deadbio; 3=retainbio; 5=deadnum; 6=retainnum); NOTE: same units for all fleets"<<endl;
 
   NuFore<<"# Conditional input if relative F choice = 2"<<endl;
   NuFore<<"# enter list of:  season,  fleet, relF; if used, terminate with season=-9999"<<endl;
@@ -1331,7 +1331,7 @@ FUNCTION void write_nucontrol()
     {NuFore<<"# no allocation groups"<<endl;}
 
   NuFore<<Fcast_InputCatch_Basis<<
-  " # basis for input Fcast catch: -1=read basis with each obs; 2=dead catch; 3=retained catch; 99=input Hrate(F)"<<endl;
+  " # basis for input Fcast catch: -1=read basis with each obs; 2=dead catch; 3=retained catch; 99=input Hrate(F); NOTE: bio vs num based on fleet's catchunits"<<endl;
 
   NuFore<<"#enter list of Fcast catches; terminate with line having year=-9999"<<endl;
   NuFore<<"#_Yr Seas Fleet Catch(or_F)";

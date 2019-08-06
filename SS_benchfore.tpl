@@ -1119,7 +1119,7 @@ FUNCTION void Get_Forecast()
     {report5<<"6:_Caps_&_Alloc_use_retained_catchnum"<<endl;}
     if(N_Fcast_Input_Catches>0)
     {
-      report5<<"-1 #Input_fixed_catches_or_F_with_fleet/time_specific_values (3 for retained catch; 2 for dead catch; 99 for F)"<<endl;
+      report5<<"-1 #Input_fixed_catches_or_F_with_fleet/time_specific_values (3 for retained catch; 2 for dead catch; 99 for F); NOTE: bio vs. num based on fleet's catchunits"<<endl;
     }
     report5<<"#_Relative_F_among_fleets"<<endl;
     if(Fcast_RelF_Basis==1)
@@ -1322,7 +1322,6 @@ FUNCTION void Get_Forecast()
         ALK_subseas_update=1;  //  vector to indicate if ALK needs recalculating
         get_growth2();
       }
-//      warning<<Ave_Size(endyr,1,1,nages)<<" "<<Ave_Size(endyr,1,2,nages)<<" end+1: "<<Ave_Size(endyr+1,1,1,nages)<<" "<<Ave_Size(endyr+1,1,2,nages)<<endl;
       if(timevary_MG(endyr+1,1)>0) get_natmort();
       if(timevary_MG(endyr+1,3)>0) get_wtlen();
       if(timevary_MG(endyr+1,4)>0) get_recr_distribution();
@@ -1828,7 +1827,6 @@ FUNCTION void Get_Forecast()
                         C_old(f)=C_temp(f);
                         H_old(f)=H_temp(f);
                         Hrate(f,t)*=(Fcast_Catch_Store(t,f)+1.0)/(temp+1.0);  //  adjust Hrate using catch stored from ABCloop2
-//                    report5<<" new F "<<Hrate(f,t)<<endl;
                       }
                       else
                       {
@@ -2255,10 +2253,10 @@ FUNCTION void Get_Forecast()
             if(fleet_type(f)==1)
             {
               if(ABC_Loop==2 && HarvestPolicy>=3) {catch_fleet(t,f)*=H4010_scale_vec(y);}
-              if(Fcast_InputCatch(t,f,2)==1 ||  Fcast_InputCatch(t,f,2)==2)  //  have input catch
-              {Fcast_Catch_Store(t,f)=Fcast_InputCatch(t,f,1);} //  copy input catch to stored catch
-              	else
-              {Fcast_Catch_Store(t,f)=catch_fleet(t,f,Fcast_Catch_Basis);}   //  copy calculated catch to stored catch if input is Hrate or if no input
+//              if(Fcast_InputCatch(t,f,2)==2 ||  Fcast_InputCatch(t,f,2)==3)  //  have input catch
+//              {Fcast_Catch_Store(t,f)=Fcast_InputCatch(t,f,1);} //  copy input catch to stored catch
+//             	else
+              {Fcast_Catch_Store(t,f)=catch_fleet(t,f,Fcast_Catch_Basis);}   //  copy calculated catch to stored catch
               totcatch+=Fcast_Catch_Store(t,f);
             }
             else if(fleet_type(f)==3)
@@ -2266,10 +2264,10 @@ FUNCTION void Get_Forecast()
             else  //  bycatch
             {
               if(ABC_Loop==2 && HarvestPolicy>=3 && bycatch_setup(f,3)<=1) {catch_fleet(t,f)*=H4010_scale_vec(y);}
-              if(Fcast_InputCatch(t,f,2)==1 ||  Fcast_InputCatch(t,f,2)==2)  //  have input catch
-              {Fcast_Catch_Store(t,f)=Fcast_InputCatch(t,f,1);}  //  copy input catch to stored catch
-              	else
-              {Fcast_Catch_Store(t,f)=catch_fleet(t,f,Fcast_Catch_Basis);}  //  copy calculated catch to stored catch if input is Hrate or if no input
+//              if(Fcast_InputCatch(t,f,2)==2 ||  Fcast_InputCatch(t,f,2)==3)  //  have input catch
+//              {Fcast_Catch_Store(t,f)=Fcast_InputCatch(t,f,1);}  //  copy input catch to stored catch
+//              	else
+              {Fcast_Catch_Store(t,f)=catch_fleet(t,f,Fcast_Catch_Basis);}  //  copy calculated catch to stored catch
               if(bycatch_setup(f,2)==1) totcatch+=Fcast_Catch_Store(t,f);
             }
           }
