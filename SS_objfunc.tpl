@@ -494,10 +494,7 @@ FUNCTION void evaluate_the_objective_function()
       for (iobs=1;iobs<=Morphcomp_nobs;iobs++)
       {
         k=5+Morphcomp_nmorph;
-        Morphcomp_exp(iobs)(6,k) /= sum(Morphcomp_exp(iobs)(6,k));
-        Morphcomp_exp(iobs)(6,k) += Morphcomp_mincomp;
-        Morphcomp_exp(iobs)(6,k) /= 1.+Morphcomp_mincomp*Morphcomp_nmorph;
-        if(Morphcomp_obs(iobs,5)>0.) Morphcomp_like -= Morphcomp_obs(iobs,5)*Morphcomp_obs(iobs)(6,k) * log(elem_div(Morphcomp_exp(iobs)(6,k),Morphcomp_obs(iobs)(6,k)));
+        if(Morphcomp_obs(iobs,3)>0.) Morphcomp_like -= Morphcomp_obs(iobs,5)*Morphcomp_obs(iobs)(6,k) * log(elem_div(Morphcomp_exp(iobs)(6,k),Morphcomp_obs(iobs)(6,k)));
       }
     if(do_once==1) cout<<" did morphcomp obj_fun "<<Morphcomp_like<<endl;
     }

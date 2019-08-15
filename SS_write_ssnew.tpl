@@ -318,9 +318,12 @@ FUNCTION void write_nudata()
     report1<<"#"<<endl<<Do_Morphcomp<<" #    morphcomp data(0/1) "<<endl;
     if(Do_Morphcomp>0)
     {
-      report1<<mc_temp<<"  #  Nobs, Nmorphs, mincomp"<<endl;
-      report1<<"# yr, seas, type, partition, Nsamp, datavector_by_Nmorphs"<<endl;
-      report1<<Morphcomp_obs<<endl;
+      report1<<Morphcomp_nobs_rd<<"  #  Nobs"<<endl;
+      report1<<Morphcomp_nmorph<<" # Nmorphs"<<endl;
+      report1<<Morphcomp_mincomp<<" # add_to_comp"<<endl;
+      report1<<"# yr, seas, type, null, Nsamp, datavector_by_Nmorphs"<<endl;
+      for(i=1;i<=Morphcomp_nobs_rd;i++)
+      {report1<<Morphcomp_obs_rd<<endl;}
     }
     else
     {
@@ -679,9 +682,12 @@ FUNCTION void write_nudata()
     if(Do_Morphcomp>0)
     {
       report1<<"# note that raw data, not bootstrap are reported here "<<endl;
-      report1<<mc_temp<<"  #  Nobs, Nmorphs, mincomp"<<endl;
-      report1<<"# yr, seas, type, partition, Nsamp, datavector_by_Nmorphs"<<endl;
-      report1<<Morphcomp_obs<<endl;
+      report1<<Morphcomp_nobs<<"  #  Nobs"<<endl;
+      report1<<Morphcomp_nmorph<<" # Nmorphs"<<endl;
+      report1<<Morphcomp_mincomp<<" # add_to_comp"<<endl;
+      report1<<"# yr, seas, type, null, Nsamp, datavector_by_Nmorphs"<<endl;
+      for(i=1;i<=Morphcomp_nobs;i++)
+      {report1<<Morphcomp_obs(i)(1,5)<<" "<<Morphcomp_exp(i)<<endl;}
     }
     else
     {
@@ -1149,9 +1155,12 @@ FUNCTION void write_nudata()
     if(Do_Morphcomp>0)
     {
       report1<<"# note that raw data, not bootstrap are reported here "<<endl;
-      report1<<mc_temp<<"  #  Nobs, Nmorphs, mincomp"<<endl;
-      report1<<"#  yr, seas, type, partition, Nsamp, datavector_by_Nmorphs"<<endl;
-      report1<<Morphcomp_obs<<endl;
+      report1<<Morphcomp_nobs<<"  #  Nobs"<<endl;
+      report1<<Morphcomp_nmorph<<" # Nmorphs"<<endl;
+      report1<<Morphcomp_mincomp<<" # add_to_comp"<<endl;
+      report1<<"#  yr, seas, type, null, Nsamp, datavector_by_Nmorphs  (no error added!!!)"<<endl;
+      for(i=1;i<=Morphcomp_nobs;i++)
+      {report1<<Morphcomp_obs(i)(1,5)<<" "<<Morphcomp_exp(i)<<endl;}
     }
     else
     {
@@ -1395,15 +1404,8 @@ FUNCTION void write_nucontrol()
   report4<<"#"<<endl;
   report4<<"# controls for all timevary parameters "<<endl;
   report4<<parm_adjust_method<<" #_env/block/dev_adjust_method for all time-vary parms (1=warn relative to base parm bounds; 3=no bound check)"<<endl<<"#"<<endl<<"# AUTOGEN"<<endl;
-  if(timevary_cnt>0)
-  {
-    report4<<"1 1 1 1 1 # autogen: 1st element for biology, 2nd for SR, 3rd for Q, 4th reserved, 5th for selex"<<endl;
-  }
-  else
-  {
-    report4<<"0 0 0 0 0 # autogen: 1st element for biology, 2nd for SR, 3rd for Q, 4th reserved, 5th for selex"<<endl;
-  }
-  report4<<"# where: 0 = autogen all time-varying parms; 1 = read each time-varying parm line; 2 = read then autogen if parm min==-12345"<<endl;
+  report4<<autogen_timevary<<" # autogen: 1st element for biology, 2nd for SR, 3rd for Q, 4th reserved, 5th for selex"<<endl;
+  report4<<"# where: 0 = autogen time-varying parms of this category; 1 = read each time-varying parm line; 2 = read then autogen if parm min==-12345"<<endl;
 
   report4<<"#"<<endl<<"#_Available timevary codes"<<endl;
   report4<<"#_Block types: 0: P_block=P_base*exp(TVP); 1: P_block=P_base+TVP; 2: P_block=TVP; 3: P_block=P_block(-1) + TVP"<<endl;

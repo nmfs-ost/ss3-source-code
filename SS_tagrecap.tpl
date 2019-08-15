@@ -60,7 +60,7 @@ FUNCTION void Tag_Recapture()
       	{ }//  do nothing keep same value
       else
       {
-        if (TG_parm_PH(j)>-1000.)	{k=j;} else {k=-1000-TG_parm_PH(j);}
+        if (TG_parm_PH(j)>-1000.)	{k=j;} else {k=-1000-TG_parm_PH(j)+N_TG;}
       	TG_chron_loss=mfexp(TG_parm(k))/(1.+mfexp(TG_parm(k)));
       }
       TG_alive /= sum(TG_alive);     // proportions across morphs at age a1 in release area p at time of release t

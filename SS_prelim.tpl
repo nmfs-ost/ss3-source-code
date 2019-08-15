@@ -696,7 +696,7 @@ PRELIMINARY_CALCS_SECTION
     Richards=1.0;
 
 //  check data against settings for inconsistencies
-  for(f==1;f<=Nfleet;f++)
+  for(f=1;f<=Nfleet;f++)
   {
   	if(Do_Retain(f)==0)  //  retention not defined; check for illogical observations
   		{
@@ -704,7 +704,7 @@ PRELIMINARY_CALCS_SECTION
   			if(disc_N_fleet(f)>0) {N_warn++; warning<<"fleet: "<<f<<"  discard data exist but retention fxn not defined; exit"<<endl; exit(1);}
 
   			// check for composition obs with partition =1 or =2; use a new summary of obs by partition type for this test
-				for(i==1;i<=Nobs_l(f);i++)
+				for(i=1;i<=Nobs_l(f);i++)
 				{
 					if(mkt_l(f,i)>0)
 					{
@@ -712,7 +712,7 @@ PRELIMINARY_CALCS_SECTION
             mkt_l(f,i)=0;
 					}
 				}
-				for(i==1;i<=Nobs_a(f);i++)
+				for(i=1;i<=Nobs_a(f);i++)
 				{
 					if(mkt_a(f,i)>0)
 					{
@@ -720,7 +720,7 @@ PRELIMINARY_CALCS_SECTION
             mkt_a(f,i)=0;
 					}
 				}
-				for(i==1;i<=Nobs_ms(f);i++)
+				for(i=1;i<=Nobs_ms(f);i++)
 				{
 					if(mkt_ms(f,i)>0)
 					{

@@ -14,7 +14,6 @@ FUNCTION void Get_expected_values();
       get_growth3(s, subseas);
       Make_AgeLength_Key(s, subseas);
     }
-
     for (f=1;f<=Nfleet;f++)
     {
       if(have_data(ALK_time,f,0,0)>0)
@@ -118,13 +117,78 @@ FUNCTION void Get_expected_values();
               }
             }
 
-            if(Do_Morphcomp)
-            {
-              if(Morphcomp_havedata(f,t,0)>0)
+//  code below once erroneously built up catch by morph from exp_AL
+//  that approach is incorrect, because exp_AL already accumulates the morphs!!!!!
+//  putting a morph accumulation into the code above would slow computations for everyone in order to have this rarely used feature
+//  so instead, replicate the above to store directly into morphcomp_exp, rather than into the exp_AL matrix
+//  note that partition is read with morphcomp data, but it is not used
+//  fleets with no defined retention function base morphcomp off total catch
+//  fleets with retention defined, use retained catch
+            if(have_data(ALK_time,f,8,0)>0)  //  morphcomp observation
               {
-                Morphcomp_exp(Morphcomp_havedata(f,t,0),5+GP4(g))+=sum(exp_AL);     // total catch of this GP in this season x area
+              	int j=have_data(ALK_time,f,8,1);  //  observation number
+//             	{Morphcomp_exp(j,5+GP4(g))+=sum(exp_AL);
+
+                if(Do_Retain(f)==0)
+                {
+                  if(dolen(f)==1)  //  uses length selectivity
+                  {
+                    for (a=0;a<=nages;a++)
+                    {
+                      temp=tempvec_a(a);
+                      for(z=ALK_range_lo(a);z<=ALK_range_hi(a);z++)
+                      {
+                        Morphcomp_exp(j,5+GP4(g))+=temp*ALK(ALK_idx,g,a,z)*sel_l(y,f,gg,z);;  //  note that A2 and L1 depend on what sex g is
+                      }
+                    }
+                  }
+                  else
+                  {
+                    for (a=0;a<=nages;a++)
+                    {
+                      temp=tempvec_a(a);
+                      for(z=ALK_range_lo(a);z<=ALK_range_hi(a);z++)
+                      {
+                        Morphcomp_exp(j,5+GP4(g))+=temp*ALK(ALK_idx,g,a,z);
+                      }
+                    }
+                  }
+                }
+                else  //  must base sample on retained catch from a fleet that has retention defined
+                {
+                  if(dolen(f)==1)  //  need retention and length
+                  {
+                    for (a=0;a<=nages;a++)
+                    {
+                      temp=tempvec_a(a);
+                      temp1=tempvec_a(a)*retain_a(y,f,gg,a);
+                      for(z=ALK_range_lo(a);z<=ALK_range_hi(a);z++)
+                      {
+                        Morphcomp_exp(j,5+GP4(g)) +=temp1*ALK(ALK_idx,g,a,z)*sel_l(y,f,gg,z)*retain(y,f,L1-1+z);  //  note that A2 and L1 depend on what sex g is
+                      }
+                    }
+                  }
+                  else  //  need retention, but no length selex
+                  {
+                    for (a=0;a<=nages;a++)
+                    {
+                      temp=tempvec_a(a);
+                      temp1=tempvec_a(a)*retain_a(y,f,gg,a);
+                      for(z=ALK_range_lo(a);z<=ALK_range_hi(a);z++)
+                      {
+                        Morphcomp_exp(j,5+GP4(g))+=temp1*ALK(ALK_idx,g,a,z)*retain(y,f,L1-1+z);
+                      }
+                    }
+                  }
+                }
+                if(g==gmorph) 
+               	{
+                  k=5+Morphcomp_nmorph;
+                  Morphcomp_exp(j)(6,k) /= sum(Morphcomp_exp(j)(6,k));
+                  Morphcomp_exp(j)(6,k) += Morphcomp_mincomp;
+                  Morphcomp_exp(j)(6,k) /= 1.+Morphcomp_mincomp*Morphcomp_nmorph;
+               	}
               }
-            }
           } //close gmorph loop
 
           exp_l_temp=colsum(exp_AL);  //  total size composition

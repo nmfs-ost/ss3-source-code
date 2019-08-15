@@ -2701,12 +2701,14 @@
   !!echoinput<<Do_Morphcomp<<" Do_Morphcomp(0/1) "<<endl;
    init_vector mc_temp(1,3*Do_Morphcomp);
    int Morphcomp_nobs
+   int Morphcomp_nobs_rd
    int Morphcomp_nmorph
    number Morphcomp_mincomp
  LOCAL_CALCS
   if(Do_Morphcomp>0)
   {
     Morphcomp_nobs=mc_temp(1);
+    Morphcomp_nobs_rd=Morphcomp_nobs;
     Morphcomp_nmorph=mc_temp(2);   // later compare this value to the n morphs in the control file and exit if different
     Morphcomp_mincomp=mc_temp(3);
   echoinput<<Morphcomp_nobs<<" Morphcomp_nobs "<<endl;
@@ -2716,9 +2718,14 @@
   else
   {
     Morphcomp_nobs=0;
+    Morphcomp_nobs_rd=0;
+    Morphcomp_nmorph=0;
+    Morphcomp_mincomp=0;
   }
  END_CALCS
- init_matrix Morphcomp_obs(1,Morphcomp_nobs,1,5+Morphcomp_nmorph)
+ init_matrix Morphcomp_obs_rd(1,Morphcomp_nobs_rd,1,5+Morphcomp_nmorph)
+ matrix Morphcomp_obs(1,Morphcomp_nobs,1,5+Morphcomp_nmorph)
+ 
 //    yr, seas, type, partition, Nsamp, datavector
 
   3darray Morphcomp_havedata(1,Nfleet*Do_Morphcomp,styr,TimeMax,0,0)    // last dimension is reserved for future use of Partition
@@ -2729,6 +2736,7 @@
   Morphcomp_havedata=0;
   for (i=1;i<=Morphcomp_nobs;i++)
   {
+  	Morphcomp_obs(i)=Morphcomp_obs_rd(i);
     y=Morphcomp_obs(i,1); s=Morphcomp_obs(i,2); t=styr+(y-styr)*nseas+s-1;
     f=Morphcomp_obs(i,3); z=Morphcomp_obs(i,4);   // z not used, partition must be 0 (e.g. combined discard and retained)
     Morphcomp_havedata(f,t,0)=i;

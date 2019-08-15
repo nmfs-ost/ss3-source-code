@@ -574,9 +574,9 @@
 
    init_int parm_adjust_method
    !! echoinput<<parm_adjust_method<<"  timevarying parameter constraint method"<<endl;
-   init_ivector autogen_timevary(1,5);  //  0 means to autogenerate time-vary parameters; 1 means to read
+   init_ivector autogen_timevary(1,5);  //  0 means to autogenerate time-vary parameters; 1 means to read; (2) read then autogen if parm min==-12345
                                        //  first element for biology, 2nd for SRR; 3rd for Q; 4th for tag; 5th for selex
-   !! echoinput<<autogen_timevary<<"  timevarying parameter autogenerate (0) or read (1) for each parm type"<<endl;
+   !! echoinput<<autogen_timevary<<"  timevarying parameter autogenerate (0) or read (1) for each parm type or (2) read then autogen if parm min==-12345"<<endl;
    ivector varparm_estimated(1,5)  // flag to show what types of variance parameters are estimated
    // (1) for growth
    // (2)  for recruitment sigmaR

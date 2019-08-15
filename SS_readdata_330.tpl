@@ -901,7 +901,7 @@
   {
     y=mnwtdata1[i](1);
       if(y>endyr+20)
-      {N_warn++;warning<<"forecast observations cannot be beyond endyr+20; SS will exit"<<endl; exit(1);}
+      {N_warn++;warning<<"mnwt forecast observations cannot be beyond endyr+20; SS will exit"<<endl; exit(1);}
     if(y>=styr)
     {
       if(mnwtdata1[i](2)<0.0) {N_warn++; warning<<"negative season not allowed for mnwtdata because superperiods not implemented "<<endl;}
@@ -2663,48 +2663,77 @@
 !!//  SS_Label_Info_2.13 #Morph composition data
    init_int Do_Morphcomp
   !!echoinput<<Do_Morphcomp<<" Do_Morphcomp(0/1) "<<endl;
-   init_vector mc_temp(1,3*Do_Morphcomp);
    int Morphcomp_nobs
+   int Morphcomp_nobs_rd
    int Morphcomp_nmorph
    number Morphcomp_mincomp
+   matrix Morphcomp_obs_rd(1,1,1,1)  //  reallocate if needed
+   matrix Morphcomp_obs(1,1,1,1)  //  reallocate if needed
  LOCAL_CALCS
-  if(Do_Morphcomp>0)
+  if(Do_Morphcomp==0)
   {
-    Morphcomp_nobs=mc_temp(1);
-    Morphcomp_nmorph=mc_temp(2);   // later compare this value to the n morphs in the control file and exit if different
-    Morphcomp_mincomp=mc_temp(3);
-  echoinput<<Morphcomp_nobs<<" Morphcomp_nobs "<<endl;
-  echoinput<<Morphcomp_nmorph<<" Morphcomp_nmorph "<<endl;
-  echoinput<<Morphcomp_mincomp<<" Morphcomp_mincomp "<<endl;
+    Morphcomp_nobs=0;
+    Morphcomp_nobs_rd=0;
+    Morphcomp_nmorph=0;
+    Morphcomp_mincomp=0.00001;
   }
   else
   {
-    Morphcomp_nobs=0;
-    Morphcomp_nmorph=0;
-  }
- END_CALCS
- init_matrix Morphcomp_obs(1,Morphcomp_nobs,1,5+Morphcomp_nmorph)
-//    yr, seas, type, partition, Nsamp, datavector
+    *(ad_comm::global_datafile) >> Morphcomp_nobs_rd;
+    *(ad_comm::global_datafile) >> Morphcomp_nmorph;   // later compare this value to the n morphs in the control file and exit if different
+    *(ad_comm::global_datafile) >> Morphcomp_mincomp;
+    echoinput<<Morphcomp_nobs_rd<<" Morphcomp_nobs "<<endl;
+    echoinput<<Morphcomp_nmorph<<" Morphcomp_nmorph "<<endl;
+    echoinput<<Morphcomp_mincomp<<" Morphcomp_mincomp "<<endl;
 
-  3darray Morphcomp_havedata(1,Nfleet*Do_Morphcomp,styr,TimeMax,0,0)    // last dimension is reserved for future use of Partition
- LOCAL_CALCS
-  if(Do_Morphcomp>0)
-  {
-  echoinput<<" morph composition data"<<endl<<"yr seas type partition Nsamp datavector"<<endl<< Morphcomp_obs<<endl;
-  Morphcomp_havedata=0;
-  for (i=1;i<=Morphcomp_nobs;i++)
-  {
-    y=Morphcomp_obs(i,1); s=Morphcomp_obs(i,2); t=styr+(y-styr)*nseas+s-1;
-    f=Morphcomp_obs(i,3); z=Morphcomp_obs(i,4);   // z not used, partition must be 0 (e.g. combined discard and retained)
-    Morphcomp_havedata(f,t,0)=i;
-//  CODE HERE NEEDS UPDATE
-    have_data(t,f,8)=i;
-    have_data(t,f,8,2)=s;  // season or month; later will be processed according to value of readseasmo
-    if(y>retro_yr) Morphcomp_obs(i,5) = -fabs(Morphcomp_obs(i,5));
-    Morphcomp_obs(i)(6,5+Morphcomp_nmorph) /= sum(Morphcomp_obs(i)(6,5+Morphcomp_nmorph));
-    Morphcomp_obs(i)(6,5+Morphcomp_nmorph) += Morphcomp_mincomp;
-    Morphcomp_obs(i)(6,5+Morphcomp_nmorph) /= sum(Morphcomp_obs(i)(6,5+Morphcomp_nmorph));
-  }
+    Morphcomp_obs.deallocate();
+    Morphcomp_obs.allocate(1,Morphcomp_nobs_rd,1,5+Morphcomp_nmorph);
+    Morphcomp_obs.initialize();
+    Morphcomp_obs_rd.deallocate();
+    Morphcomp_obs_rd.allocate(1,Morphcomp_nobs_rd,1,5+Morphcomp_nmorph);  //  but will only get filled with the used obs
+    Morphcomp_obs_rd.initialize();
+//    yr, seas, fleet, partition, Nsamp, datavector
+    data_type=8;  //  for morphcomp
+
+    echoinput<<" morph composition data"<<endl<<"yr seas type null Nsamp datavector"<<endl;
+    Morphcomp_nobs=0;
+    for (i=1;i<=Morphcomp_nobs_rd;i++)
+    {
+     *(ad_comm::global_datafile) >> Morphcomp_obs_rd(i);
+      echoinput<<Morphcomp_obs_rd(i)<<endl;
+      timing_input(1,3)=Morphcomp_obs_rd(i)(1,3);
+      y=timing_input(1);
+      if(y>=styr && y<=endyr+20)  //  obs is in year range
+      {
+        if(timing_input(2)<0.0)
+        {N_warn++; warning<<"negative season not allowed for morphcomp because superperiods not implemented "<<endl; exit(1);}
+        get_data_timing(timing_input, timing_constants, timing_i_result, timing_r_result, seasdur, subseasdur_delta, azero_seas, surveytime);
+
+        s=timing_input(2); f=abs(timing_input(3)); t=timing_i_result(2);
+        ALK_time=timing_i_result(5);
+        
+        Morphcomp_nobs++;
+        Morphcomp_obs(Morphcomp_nobs)=Morphcomp_obs_rd(i);  //  save observations to be used
+        if(y>retro_yr) Morphcomp_obs(Morphcomp_nobs,3)=-f;  //  set to dummy observation
+        if(data_time(ALK_time,f,1)<0.0)  //  so first occurrence of data at ALK_time,f
+        {data_time(ALK_time,f)(1,3)=timing_r_result(1,3);}  // real_month,fraction of season, year.fraction
+        else if (timing_r_result(1) !=  data_time(ALK_time,f,1))
+        {
+          N_warn++;
+          warning<<"morph_comp: data_month already set for y,s,f: "<<y<<" "<<s<<" "<<f<<" to real month: "<< data_time(ALK_time,f,1)<<"  but read value is: "<<timing_r_result(1)<<endl;
+        }
+        have_data(ALK_time,0,0,0)=1;
+        have_data(ALK_time,f,0,0)=1;  //  so have data of some type
+        have_data(ALK_time,f,data_type,0)++;  //  count the number of observations in this subseas
+        p=have_data(ALK_time,f,data_type,0);
+        have_data(ALK_time,f,data_type,p)=Morphcomp_nobs;  //  store data index for the p'th observation in this subseas
+
+        Morphcomp_obs(Morphcomp_nobs)(6,5+Morphcomp_nmorph) /= sum(Morphcomp_obs(Morphcomp_nobs)(6,5+Morphcomp_nmorph));
+        Morphcomp_obs(Morphcomp_nobs)(6,5+Morphcomp_nmorph) += Morphcomp_mincomp;
+        Morphcomp_obs(Morphcomp_nobs)(6,5+Morphcomp_nmorph) /= sum(Morphcomp_obs(Morphcomp_nobs)(6,5+Morphcomp_nmorph));
+      }
+    }
+    echoinput<<"processed morphcomp: Nread:"<<Morphcomp_nobs_rd<<" N save: "<<Morphcomp_nobs<<endl<<Morphcomp_obs<<endl;
   }
  END_CALCS
 

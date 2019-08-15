@@ -472,7 +472,7 @@ FUNCTION void get_time_series()
   dvariable Z_adjuster;
   dvariable R0_use;
   dvariable SSB_use;
-  if(Do_Morphcomp) Morphcomp_exp.initialize();
+  if(Do_Morphcomp>0) Morphcomp_exp.initialize();
 
   //  SS_Label_Info_24.0 #Retrieve spawning biomass and recruitment from the initial equilibrium
 //  SPAWN-RECR:   begin of time series, retrieve last spbio and recruitment

@@ -161,7 +161,6 @@ FUNCTION void get_growth2()
     {
       gp++;
       Ip=MGparm_point(gg,GPat)+N_natMparms;
-      
       switch(Grow_type)   //  create specific growth parameters from the mgp_adj list of current MGparms
       {
         case 7:  //  empirical length
