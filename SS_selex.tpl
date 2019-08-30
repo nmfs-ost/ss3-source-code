@@ -168,7 +168,9 @@ FUNCTION void get_selectivity()
             }
             else
             {tempvec_l(j)=sp(z);}
+ #ifdef DO_ONCE
             if(do_once==1)  echoinput<<"selex42  "<<j<<" "<<len_bins_m(j)<<" "<<SelPoint<<" "<<tempvec_l(j)<<endl;
+ #endif
           }
           if (scaling_offset == 0)
           {
@@ -285,6 +287,7 @@ FUNCTION void get_selectivity()
             lastsel=0.0;
             lastSelPoint=0.0;
 
+ #ifdef DO_ONCE
             if(do_once==1)
             {
               if(sp(k)>len_bins(nlength))
@@ -292,6 +295,7 @@ FUNCTION void get_selectivity()
               if(sp(k-1)>len_bins(nlength-1))
               {N_warn++; warning<<"Selex21: should not have selpoint(n-1) > pop_lenbin(nlength-1)"<<endl;}
             }
+ #endif
 
             while(j<=nlength)
             {
@@ -640,7 +644,9 @@ FUNCTION void get_selectivity()
             }
           }
           TwoD_AR_ave(j)/=(TwoD_AR_ymax(j)-TwoD_AR_ymin(j)+1.0);
+ #ifdef DO_ONCE
           if(do_once==1) echoinput<<"mean 2D AR dev for fleet: "<<f<<" means: "<<TwoD_AR_ave(j)<<endl;
+ #endif
         }
 
         if(y<TwoD_AR_ymin(j))  //  early years
@@ -1002,6 +1008,7 @@ FUNCTION void get_selectivity()
               }
               int low_bin  = int(value(sp(2)));
               int high_bin = int(value(sp(3)));
+ #ifdef DO_ONCE
               if(do_once==1)  //  this should move to readcontrol!
               {
                 if (low_bin < 0)
@@ -1019,6 +1026,7 @@ FUNCTION void get_selectivity()
                 sp(2) = low_bin;
                 sp(3) = high_bin;
               }
+ #endif
               temp=mean(tempvec_a(low_bin,high_bin));
               sel_a(y,fs,gg)(first_age,last_age)=mfexp(tempvec_a(first_age,last_age)-temp);
               if(gg==2) sel_a(y,fs,gg)(first_age,last_age)*=mfexp(sp(4)); //  apply male ratio
@@ -1058,6 +1066,7 @@ FUNCTION void get_selectivity()
               }
               int low_bin  = int(value(sp(2)));
               int high_bin = int(value(sp(3)));
+ #ifdef DO_ONCE
               if(do_once==1)  //  this should move to readcontrol!
               {
                 if (low_bin < 0)
@@ -1073,6 +1082,7 @@ FUNCTION void get_selectivity()
                 if (high_bin < low_bin) high_bin = low_bin;
                 if (low_bin > high_bin) low_bin = high_bin;
               }
+ #endif
               temp=8.-mean(tempvec_a(low_bin,high_bin));
 //              CrashPen+=temp*temp;
               sel_a(y,fs,gg)(first_age,last_age) = 1./(1.+mfexp(-(tempvec_a(first_age,last_age)+temp)));
@@ -1341,7 +1351,9 @@ FUNCTION void get_selectivity()
             }
           }
           TwoD_AR_ave(j)/=(TwoD_AR_ymax(j)-TwoD_AR_ymin(j)+1.0);
+ #ifdef DO_ONCE
           if(do_once==1) echoinput<<"mean 2D AR dev for fleet: "<<f<<" means: "<<TwoD_AR_ave(j)<<endl;
+ #endif
         }
 
         if(y<TwoD_AR_ymin(j))  //  early years
@@ -1605,6 +1617,14 @@ FUNCTION void Make_FishSelex()
               sel_al_4(s,g,f)=elem_prod(sel_al_3(s,g,f),retain_a(y,fs,gg));  //  retained numbers
               deadfish_B(s,g,f)=elem_prod(sel_al_2(s,g,f),discmort_a(y,fs,gg));  //  dead wt
               deadfish(s,g,f)=elem_prod(sel_al_4(s,g,f),discmort_a(y,fs,gg));  //  dead numbers
+              break;
+            }
+            case 3:  //  all selected fish are dead
+            {
+              sel_al_2(s,g,f)=0.0;  //  retained wt-at-age
+              sel_al_4(s,g,f)=0.0;  //  retained numbers
+              deadfish_B(s,g,f)=sel_al_1(s,g,f);  //  dead wt
+              deadfish(s,g,f)=sel_al_3(s,g,f);  //  dead numbers
               break;
             }
           }

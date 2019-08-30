@@ -1,5 +1,10 @@
 Version;Date;Description;VLAB_issue;Input_Change?;Type;Category;Sub_Category
-
+3.30.14.04;2019-08-30;add reporting of time-varying age-age' key when blocks are used;#66223;-;add;age_error;output
+3.30.14.04;2019-08-20;add handling of age-retention when discard option=3;-;-;revise;discard;calc
+3.30.14.04;2019-08-20;add check for correct usage of asymptotic retention;-;-;revise;discard;input
+3.30.14.04;2019-08-20;fix autogen of block offsets;-;-;fix;timevary;calc
+3.30.14.04;2019-08-20;fix array bound for retainparm(f) to allow for age-retention;-;-;fix;discard;input
+3.30.14.04;2019-08-20;fix revision of autogen to retain input values unless used;#66609;-;fix;timevary;input
 3.30.14.04;2019-08-14;fix major problem that affected expected values for morph composition since creation of this feature in 3.24;#67197;-;fix;morph;calc
 3.30.14.04;2019-08-14;fix the mirroring of tag recapture parameters;#65893;-;fix;tag;calc
 3.30.14.04;2019-08-14;revise autogen to retain input values unless used;#66609;-;revise;timevary;input

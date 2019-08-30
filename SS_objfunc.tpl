@@ -1264,7 +1264,7 @@ FUNCTION void get_posteriors()
 //********************************************************************
  /*  SS_Label_FUNCTION 33 get_posteriors  (MCMC eval) */
   if(rundetail>1) cout<<" mceval counter: "<<mceval_counter<<endl;
-  if(rundetail==0 & double(mceval_counter)/200.==double(mceval_counter/200.)) cout<<" mceval counter: "<<mceval_counter<<endl;
+  if(rundetail==0 && double(mceval_counter)/200.==double(mceval_counter/200.)) cout<<" mceval counter: "<<mceval_counter<<endl;
 
   if(mceval_header==0 && mceval_phase())    // first pass through the mceval phase
   {

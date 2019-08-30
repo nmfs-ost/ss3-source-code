@@ -278,13 +278,15 @@ GLOBALS_SECTION
               echoinput<<"read timevary block parameter: "<<tempvec<<endl;}
             if(autogen_timevary==0 || (autogen_timevary==2 && tempvec(1)==-12345))  //  create or overwrite
             {
-              tempvec.fill("{0,0,0.,0.,0,6,4}");
+              tempvec.fill("{-10,10,0.,0.,5,6,4}");
               if(baseparm_list(1)<=0.0) 
               {N_warn++; warning<<" cannot use multiplicative blocks for parameter with a negative lower bound;  exit "<<endl<<
             baseparm_list(1)<<" "<<baseparm_list(2)<<" "<<baseparm_list(3)<<endl;  cout<<"exit, see warning"<<endl; exit(1);}
               tempvec(1)=log(baseparm_list(1)/baseparm_list(3));  //  max negative change
               tempvec(2)=log(baseparm_list(2)/baseparm_list(3));   //  max positive change
-              tempvec(5)=0.5*fmin(abs(tempvec(1)),tempvec(2));   //  sd of normal prior
+//              tempvec(5)=0.5*fmin(fabs(tempvec(1)),tempvec(2));   //  sd of normal prior
+              tempvec(5)=(tempvec(2)-tempvec(1))/4.;   //  range/4 to approx sd of normal prior
+              echoinput<<" autogen mult block: "<<tempvec<<endl;
             }
             timevary_parm_rd.push_back (tempvec);
             break;}
@@ -297,10 +299,11 @@ GLOBALS_SECTION
               echoinput<<"read timevary block parameter: "<<tempvec<<endl;}
             if(autogen_timevary==0 || (autogen_timevary==2 && tempvec(1)==-12345))  //  create or overwrite
             {
-              tempvec.fill("{0,0,0.,0.,0,6,4}");
+              tempvec.fill("{-10,10,0.,0.,5,6,4}");
               tempvec(1)=baseparm_list(1)-baseparm_list(3);  //  max negative change
               tempvec(2)=baseparm_list(2)-baseparm_list(3);   //  max positive change
-              tempvec(5)=0.5*fmin(abs(tempvec(1)),tempvec(2));   //  sd of normal prior
+              tempvec(5)=(tempvec(2)-tempvec(1))/4.;   //  range/4 to approx sd of normal prior
+              echoinput<<" autogen additive block: "<<tempvec<<endl;
             }
             timevary_parm_rd.push_back (tempvec);
              break;}
@@ -321,7 +324,7 @@ GLOBALS_SECTION
                 tempvec(5)=tempvec(6);
                 tempvec(6)=temp;
               }
-              echoinput<<"set timevary block parameter to base: "<<tempvec<<endl;
+              echoinput<<"autogen block replace: "<<tempvec<<endl;
             }
             timevary_parm_rd.push_back (tempvec);
              break;}
@@ -334,10 +337,11 @@ GLOBALS_SECTION
               echoinput<<" read timevary block parm: "<<tempvec<<endl;}
             if(autogen_timevary==0 || (autogen_timevary==2 && tempvec(1)==-12345))  //  create or overwrite
             {
-              tempvec.fill("{0,0,0.,0.,0,6,4}");
+              tempvec.fill("{-10,10,0.,0.,5,6,4}");
               tempvec(1)=baseparm_list(1)-baseparm_list(3);  //  max negative change
               tempvec(2)=baseparm_list(2)-baseparm_list(3);   //  max positive change
-              tempvec(5)=0.5*fmin(abs(tempvec(1)),tempvec(2));   //  sd of normal prior
+              tempvec(5)=(tempvec(2)-tempvec(1))/4.;   //  range/4 to approx sd of normal prior
+              echoinput<<" autogen block delta: "<<tempvec<<endl;
             }
             timevary_parm_rd.push_back (tempvec);
              break;}
@@ -538,9 +542,10 @@ GLOBALS_SECTION
             if(autogen_timevary>=1)  //  read
       {
         *(ad_comm::global_datafile) >> tempvec(1,7);
-        timevary_setup(12)=baseparm_list(12); //  dev phase
       }
-            if(autogen_timevary==0 || (autogen_timevary==2 && tempvec(1)==-12345))  //  create or overwrite
+      timevary_setup(12)=baseparm_list(12); //  dev phase
+      echoinput<<"parameter dev vector created with phase set to: "<<timevary_setup(12)<<endl;
+      if(autogen_timevary==0 || (autogen_timevary==2 && tempvec(1)==-12345))  //  create or overwrite
       {
        tempvec.fill("{0.0001,2.0,0.5,0.5,0.5,6,-5}");
        if(finish_starter==999)
@@ -567,7 +572,6 @@ GLOBALS_SECTION
       echoinput<<"dev vec: "<<timevary_setup(8)<<" with link: "<<timevary_setup(9)<<" min, max year "<<timevary_setup(10,11)<<endl;
     }
     echoinput<<"timevary_setup"<<timevary_setup<<endl;
-    autogen_timevary=1;
     return;
   }
 //  }  //  end GLOBALS_SECTION

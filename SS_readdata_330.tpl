@@ -464,7 +464,7 @@
       t=styr+(y-styr)*nseas+s-1;
       for (p=1;p<=pop;p++)
       for (f=1;f<=Nfleet;f++)
-      if(fleet_area(f)==p && catch_ret_obs(f,t) > 0.0)
+      if(fleet_area(f)==p && catch_ret_obs(f,t) > 0.0 && fleet_type(f)==1)  //  excludes bycatch & survey fleets
       {
         totcat(y) += catch_ret_obs(f,t);
         catch_seas_area(t,p,f)=1;
@@ -1550,6 +1550,8 @@
   int n_abins2;
   int Use_AgeKeyZero;  //  set to ageerr_type for the age data that use parameter approach
   int AgeKeyParm;  //  holds starting parm number for age error parameters
+  int store_agekey_add;  //  when parameter based key uses blocks, this stores dimension
+  int save_agekey_count;  //  counter for storing those keys
   int AgeKey_StartAge;
   int AgeKey_Linear1;
   int AgeKey_Linear2;
@@ -1574,6 +1576,7 @@
     n_abins1=0;
     n_abins2=0;
   nobsa_rd=0;
+  store_agekey_add=0;
   Nobs_a.initialize();
   N_suprper_a.initialize();
   echoinput<<"Enter the number of agebins, or 0 if no age data"<<endl;

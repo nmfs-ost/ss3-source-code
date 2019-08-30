@@ -82,9 +82,13 @@ FUNCTION void get_initial_conditions()
     {
       get_MGsetup();
     }
+ #ifdef DO_ONCE
   if(do_once==1) cout<<" MG setup OK "<<endl;
+ #endif
   if(MG_active(2)>0) get_growth1();   // seasonal effects and CV
+ #ifdef DO_ONCE
   if(do_once==1) cout<<" growth1 OK"<<endl;
+ #endif
   if(MG_active(2)>0 || save_for_report>0)
   {
     ALK_subseas_update=1;  //  to indicate that all ALKs need calculation
@@ -99,7 +103,9 @@ FUNCTION void get_initial_conditions()
   }
 
   if(MG_active(1)>0) get_natmort();
+ #ifdef DO_ONCE
   if(do_once==1) cout<<" natmort OK"<<endl;
+ #endif
   if(y>=Bmark_Yr(1)&&y<=Bmark_Yr(2))
   {
     for (s=1;s<=nseas;s++)
@@ -126,7 +132,9 @@ FUNCTION void get_initial_conditions()
   }
 
   if(MG_active(5)>0) get_migration();
+ #ifdef DO_ONCE
   if(do_once==1) cout<<" migr OK"<<endl;
+ #endif
   if(MG_active(7)>0)
   {
     get_catch_mult(y, catch_mult_pointer);
@@ -138,9 +146,19 @@ FUNCTION void get_initial_conditions()
   if(Use_AgeKeyZero>0)
   {
     if(MG_active(6)>0) get_age_age(Use_AgeKeyZero,AgeKey_StartAge,AgeKey_Linear1,AgeKey_Linear2); //  call function to get the age_age key
-    if(do_once==1) cout<<" ageerr_key OK"<<endl;
-            if(save_for_report==1) echoinput<<" ageerr_key recalc in "<<y<<endl<<
-              age_age(Use_AgeKeyZero)<<endl;
+    if(save_for_report==1 && store_agekey_add>0)
+    	{
+      	save_agekey_count=N_ageerr+1;  //  first blank key after the used keys
+    		age_age(save_agekey_count)=age_age(Use_AgeKeyZero);
+    		age_err(save_agekey_count)=age_err(Use_AgeKeyZero);
+    	}
+ #ifdef DO_ONCE
+    if(do_once==1) 
+    	{
+    		cout<<" ageerr_key OK"<<endl;
+    		echoinput<<" ageerr_key recalc in "<<y<<endl;
+    	}
+ #endif
   }
 
   if(save_for_report>0) 
@@ -148,7 +166,9 @@ FUNCTION void get_initial_conditions()
 
   //  SS_Label_Info_23.2 #Calculate selectivity in the initial year
   get_selectivity();
+ #ifdef DO_ONCE
   if(do_once==1) cout<<" selex OK, ready to call ALK and fishselex "<<endl;
+ #endif
 
   //  SS_Label_Info_23.3 #Loop seasons and subseasons
   for (s=1;s<=nseas;s++)
@@ -202,7 +222,9 @@ FUNCTION void get_initial_conditions()
     }
   }
 
+ #ifdef DO_ONCE
   if(do_once==1) cout<<" ready for virgin age struc "<<endl;
+ #endif
   //  SS_Label_Info_23.4 #calculate unfished (virgin) numbers-at-age
   eq_yr=styr-2;
   bio_yr=styr;
@@ -275,7 +297,9 @@ FUNCTION void get_initial_conditions()
   }
 
   //  SS_Label_Info_23.5  #Calculate equilibrium using initial F
+ #ifdef DO_ONCE
   if(do_once==1) cout<<" ready for initial age struc "<<endl;
+ #endif
    eq_yr=styr-1;
    bio_yr=styr;
    if(fishery_on_off==1) {Fishon=1;} else {Fishon=0;}
@@ -595,12 +619,19 @@ FUNCTION void get_time_series()
       if(Use_AgeKeyZero>0)
       {
         if(timevary_MG(y,6)>0) 
-          {
-            get_age_age(Use_AgeKeyZero,AgeKey_StartAge,AgeKey_Linear1,AgeKey_Linear2); //  call function to get the age_age key
-            if(do_once==1) cout<<" ageerr_key recalc in "<<y<<endl;
-            if(save_for_report==1) echoinput<<" ageerr_key recalc in "<<y<<endl<<
-              age_age(Use_AgeKeyZero)<<endl;
-          }
+        {
+          get_age_age(Use_AgeKeyZero,AgeKey_StartAge,AgeKey_Linear1,AgeKey_Linear2); //  call function to get the age_age key
+          if(save_for_report==1 && store_agekey_add>0)
+        	{
+          	save_agekey_count++;  //  next blank key after the used keys
+        		age_age(save_agekey_count)=age_age(Use_AgeKeyZero);
+        		age_err(save_agekey_count)=age_err(Use_AgeKeyZero);
+        	}
+
+ #ifdef DO_ONCE
+          if(do_once==1) echoinput<<" ageerr_key recalc in "<<y<<endl;
+ #endif
+        }
       }
 
       if(save_for_report>0)
@@ -1429,6 +1460,10 @@ FUNCTION void get_time_series()
   if(Do_TG>0) Tag_Recapture();
 
   }  //  end time_series
+ #ifdef DO_ONCE
+          if(do_once==1) echoinput<<" finished time series "<<endl;
+ #endif
+  
   //  SS_Label_Info_24.16  # end of time series function
 
 //********************************************************************

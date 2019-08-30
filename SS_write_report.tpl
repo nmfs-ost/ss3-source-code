@@ -2368,7 +2368,7 @@ FUNCTION void write_bigoutput()
   {
     if(N_ageerr>0)
     {
-      for (k=1;k<=N_ageerr;k++)
+      for (k=1;k<=N_ageerr+store_agekey_add;k++)
       {
       SS2out << "KEY: "<<k<<endl<< "mean " << age_err(k,1) << endl<< "SD " << age_err(k,2) << endl;
       for (b=n_abins;b>=1;b--)
@@ -2721,6 +2721,7 @@ FUNCTION void write_bigoutput()
 
     if(SzFreq_Nmeth>0)       //  have some sizefreq data
     {
+      repli=0;
       in_superperiod=0;
       last_t=-999;
       for (iobs=1;iobs<=SzFreq_totobs;iobs++)
@@ -3272,7 +3273,7 @@ FUNCTION dvector process_comps(const int sexes, const int sex, dvector &bins,  d
        more_comp_info(8)=(exp(tails(1),tails(2))*means(tails(1),tails(2)))/sum(exp(tails(1),tails(2)));
        more_comp_info(9)=more_comp_info(7)-more_comp_info(8);
        //  calc tails of distribution and Durbin-Watson for autocorrelation
-       temp1=0.0;
+       temp1=0.0; temp2=0.0;
        cumdist_save=0.0;
        cumdist=0.0;
        for(z=tails(1);z<=tails(2);z++)
@@ -3307,7 +3308,7 @@ FUNCTION dvector process_comps(const int sexes, const int sex, dvector &bins,  d
        more_comp_info(14)=(exp(tails(3),tails(4))*means(tails(3),tails(4)))/sum(exp(tails(3),tails(4)));
        more_comp_info(15)=more_comp_info(13)-more_comp_info(14);
        //  calc tails of distribution and Durbin-Watson for autocorrelation
-       temp1=0.0;
+       temp1=0.0; temp2=0.;
        cumdist_save=0.0;
        cumdist=0.0;
        //  where (1-more_comp_info(20)) is the total of male fractions

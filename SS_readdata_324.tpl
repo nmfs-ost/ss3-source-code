@@ -1555,12 +1555,16 @@
   int AgeKey_StartAge;
   int AgeKey_Linear1;
   int AgeKey_Linear2;
+  int store_agekey_add;  //  when parameter based key uses blocks, this stores dimension
+  int save_agekey_count;  //  counter for storing those keys
 
  LOCAL_CALCS
    *(ad_comm::global_datafile) >> n_abins;
   echoinput<<n_abins<<" N age bins "<<endl;
   n_abins1=n_abins+1;
   n_abins2=gender*n_abins;
+  store_agekey_add=0;
+  save_agekey_count=0;
  END_CALCS
 
   init_vector age_bins1(1,n_abins) // age classes for data

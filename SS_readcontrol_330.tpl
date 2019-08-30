@@ -1208,6 +1208,7 @@
   int N_parm_dev     //  number of  all parms that use annual deviations
 
 !!//  SS_Label_Info_4.5.4 #Set up time-varying parameters for MG parms
+  int timevary_used;
   int timevary_parm_cnt_MG;
   int timevary_parm_start_MG;
 
@@ -1239,6 +1240,7 @@
 
    timevary_parm_start_MG=0;
    timevary_parm_cnt_MG=0;
+   timevary_used=0;
    MGparm_timevary.initialize();
    ivector block_design_null(1,1);
    block_design_null.initialize();
@@ -1260,6 +1262,7 @@
 //  4=block or trend type; 5=block pattern; 6= env link type; 7=env variable;
 //  8=dev vector used; 9=dev link type; 10=dev min year; 11=dev maxyear; 12=dev phase; 13=all parm index of baseparm
        timevary_parm_start_MG=1;  //  at least one MG parm is time varying
+       timevary_used=1;
        echoinput<<endl<<" timevary for MG parameter: "<<j<<endl;
        timevary_cnt++;  //  count parameters with time-vary effect
        MGparm_timevary(j)=timevary_cnt;  //  base parameter will use this timevary specification
@@ -1302,7 +1305,7 @@
    timevary_pass:        vector containing column(timevary_MG,mgp_type(j)), will be modified in create_timevary
    autogen_timevary:      switch to autogenerate or not
    mgp_type(j):           integer with type of MGparm being worked on; analogous to 2*fleet in the selectivity section
-   block_design(z):       block design, if any, being used
+   Block_Design(z):       block design, if any, being used
    parm_adjust_method:    switch to determine if adjusted parameter will stay in bounds; used to create warnings in create_timevary
    env_data_RD:           matrix containing entire set of environmental data as read
    N_parm_dev:            integer that is incremented in create_timevary as dev vectors are created; cumulative across all types of parameters
@@ -1310,9 +1313,13 @@
        timevary_def.push_back (timevary_setup(1,13));
        for(y=styr-3;y<=YrMax+1;y++) {timevary_MG(y,mgp_type(j))=timevary_pass(y);}  // year vector for this category og MGparm
        if(j==MGP_CGD) CGD_onoff=1;
+       if(mgp_type(j)==6)  //  doing time-vary age-age' key;  can only use blocks
+       	{
+       		store_agekey_add=Nblk(z)+2;  //  additional storage space for block-based Age error keys
+       	}
      }
    }
-
+   if(timevary_used==1) autogen_timevary(1)=1;  //  indicate that some parameter is time-varying
    timevary_parm_cnt_MG=timevary_parm_cnt;
 
   //  SS_Label_Info_4.5.9 #Set up random deviations for MG parms
@@ -1541,7 +1548,7 @@
     {SR_autocorr=0;}
   // flag for recruitment autocorrelation
   echoinput<<" Do recruitment_autocorr: "<<SR_autocorr<<endl;
-
+   timevary_used=0;
    for (j=1;j<=N_SRparm(SR_fxn)+2;j++)
    if(j!=N_SRparm(SR_fxn)+1)  //  because sigmaR and autocorr cannot be time-varying
    {
@@ -1558,6 +1565,7 @@
 //  8=dev vector used; 9=dev link type; 10=dev min year; 11=dev maxyear; 12=dev phase; 13=all parm index of baseparm
        if(timevary_parm_start_SR==0) timevary_parm_start_SR=timevary_parm_cnt+1;
        echoinput<<" timevary for SR parm: "<<j<<endl;
+       timevary_used=1;
        timevary_cnt++;  //  count parameters with time-vary effect
        SR_parm_timevary(j)=timevary_cnt;  //  base SR parameter will use this timevary specification
        timevary_setup(1)=2; //  indicates a SR parm
@@ -1616,6 +1624,7 @@
    if(timevary_parm_start_SR>0)
    {
      timevary_parm_cnt_SR=timevary_parm_cnt;
+     if(timevary_used==1) autogen_timevary(2)=1;  //  indicate that some parameter is time-varying
      N_SRparm3+=(timevary_parm_cnt_SR-timevary_parm_start_SR+1);
      echoinput<<" SR timevary_parm_cnt start and end "<<timevary_parm_start_SR<<" "<<timevary_parm_cnt_SR<<endl;
      echoinput<<"link to timevary parms:  "<<SR_parm_timevary<<endl;
@@ -2291,7 +2300,7 @@
   timevary_Qparm.initialize();
   timevary_parm_start_Q=0;
   timevary_parm_cnt_Q=0;
-
+  timevary_used=0;
   for(f=1;f<=Nfleet;f++)
   if(Svy_N_fleet(f)>0)
   {
@@ -2314,6 +2323,7 @@
      }
      else  //  set up a timevary parameter definition
      {
+     	 timevary_used=1;
        ivector timevary_setup(1,13);  //  temporary vector for timevary specs
        timevary_setup.initialize();
 //  1=baseparm type; 2=baseparm index; 3=first timevary parm
@@ -2378,6 +2388,7 @@
    Q_Npar2 = Q_Npar;
    if(timevary_parm_start_Q>0)
    {
+     if(timevary_used==1) autogen_timevary(3)=1;  //  indicate that some parameter is time-varying
      timevary_parm_cnt_Q=timevary_parm_cnt;
      Q_Npar2+=(timevary_parm_cnt_Q-timevary_parm_start_Q+1);
      echoinput<<"Q  uses timevary parms:  "<<Qparm_timevary<<endl;
@@ -2486,7 +2497,7 @@
   int N_selparm2                 // N selparms plus timevary parms and 2D_AR1 parms
   ivector N_selparmvec(1,2*Nfleet)  //  N selparms by type, including extra parms for male selex, retention, etc.
   ivector Maleselparm(1,2*Nfleet)
-  ivector RetainParm(1,Nfleet)
+  ivector RetainParm(1,Nfleet)  //  can only have length or age retention, not both for a fleet
   ivector dolen(1,Nfleet)
   int blkparm
   int firstselparm
@@ -2943,6 +2954,74 @@
       }
    }
   }
+
+//  check on conversion of retention parameter
+  int parmcount;
+  int new_lower_bound;
+  int new_upper_bound;
+  parmcount=0;
+  for(f=1;f<=Nfleet;f++)
+  {
+    if(RetainParm(f)>0)  //  could point to length or age retention
+    {
+      k=parmcount+RetainParm(f)+2;
+      if(selparm_1(k,1) >=0.0)  // check to see if user has bounds relevant for 3.24 format
+        {
+          N_warn++; 
+          warning<<"converting asymptotic retention parameter to 1/(1+e(-x)) format for fleet: "<<f1<<" parm: "<<k<<endl;
+          warning<<"old min, max, init, prior: "<<selparm_1(k)(1,4)<<endl;
+          echoinput<<"converting asymptotic retention parameter to 1/(1+e(-x)) format for fleet: "<<f1<<" parm: "<<k<<endl;
+          echoinput<<"because parm min was >=0.0"<<endl;
+          new_lower_bound=-10.;
+          new_upper_bound=10.;
+
+          // check initial value against lower and upper bounds first
+          if (selparm_1(k,3) <= selparm_1(k,1))
+          {
+            selparm_1(k,3) = new_lower_bound;
+          }
+          else if (selparm_1(k,3) >= selparm_1(k,2))
+          {
+            selparm_1(k,3) = new_upper_bound;
+          }
+          else if(selparm_1(k,3)>0.)
+          {
+            if(selparm_1(k,3)<1.0)
+            {selparm_1(k,3)=-log(1.0/selparm_1(k,3)-1.0);}
+            else
+            {selparm_1(k,3)=999.;}  //  hardwire to force to be 1.0
+          }
+          else
+          {selparm_1(k,3)=-999.;}  //  hardwire to force to 0.0
+
+          // check prior value against lower and upper bounds first
+          if (selparm_1(k,4) <= selparm_1(k,1))
+          {
+            selparm_1(k,4) = new_lower_bound;
+          }
+          else if (selparm_1(k,4) >= selparm_1(k,2))
+          {
+            selparm_1(k,4) = new_upper_bound;
+          }
+          else if(selparm_1(k,4)>0.)
+          {
+            if(selparm_1(k,4)<1.0)
+            {selparm_1(k,4)=-log(1.0/selparm_1(k,4)-1.0);}
+            else
+            {selparm_1(k,4)=999.;}  //  hardwire to force to be 1.0
+          }
+          else
+          {selparm_1(k,4)=-999.;}  //  hardwire to force to 0.0
+
+          selparm_1(k,1)=new_lower_bound;
+          selparm_1(k,2)=new_upper_bound;
+
+          warning<<"new min, max, init, prior: "<<selparm_1(k)(1,4)<<endl;
+//          if (selparm_1(k,8) !=0 || selparm_1(k,9)!=0 || selparm_1(k,13)!=0) warning<<"Timevarying, so you must do timevary parm conversion manually"<<endl;
+        }
+    }
+    parmcount+=N_selparmvec(f);
+  }
  END_CALCS
 
   int timevary_parm_cnt_sel;
@@ -2960,9 +3039,10 @@
   timevary_sel.initialize();
   selparm_timevary.initialize();
   TwoD_AR_use.initialize();
-
+  timevary_used=0;
   for (j=1;j<=N_selparm;j++)
   {
+  	echoinput<<j<<" sel "<<selparm_1(j)<<endl;
      k=selparm_fleet(j);
      timevary_pass=column(timevary_sel,k);  // year vector for this category of selparm
      if(selparm_1(j,13)==0 && selparm_1(j,8)==0 && selparm_1(j,9)==0)
@@ -2975,6 +3055,7 @@
      }
      else  //  set up a timevary parameter defintion
      {
+     	 timevary_used=1;
        ivector timevary_setup(1,13);  //  temporary vector for timevary specs
        timevary_setup.initialize();
 //  1=baseparm type; 2=baseparm index; 3=first timevary parm
@@ -3039,6 +3120,7 @@
    N_selparm3=N_selparm;
    if(timevary_parm_start_sel>0)
    {
+     if(timevary_used==1) autogen_timevary(5)=1;  //  indicate that some parameter is time-varying
      timevary_parm_cnt_sel=timevary_parm_cnt;  //  last timevary_selparm
      N_selparm3=N_selparm+timevary_parm_cnt_sel-timevary_parm_start_sel+1;
    }

@@ -193,14 +193,18 @@ FUNCTION void Get_expected_values();
 
           exp_l_temp=colsum(exp_AL);  //  total size composition
           agetemp=rowsum(exp_AL);  //  total age composition
+ #ifdef DO_ONCE
           if(do_once==1) echoinput<<"yr "<<y<<", seas: "<<s<<", fleet:"<<f<<endl<<
             " sampled  size "<<exp_l_temp<<endl<<
-            " sampled  age  "<<agetemp<<endl;;
+            " sampled  age  "<<agetemp<<endl;
+ #endif
           if(Do_Retain(f)>0)
           {
             exp_l_temp_ret=colsum(exp_AL_ret);
             exp_truea_ret=rowsum(exp_AL_ret);
+ #ifdef DO_ONCE
             if(do_once==1) echoinput<<" retained size "<<exp_l_temp_ret<<endl<<" retained age "<<exp_truea_ret<<endl;;
+ #endif
           }
           else
           {
@@ -766,7 +770,9 @@ FUNCTION void Get_expected_values();
                       break;
                     }
                   }
+ #ifdef DO_ONCE
                   if(do_once==1) echoinput<<y<<" "<<f<<" szfreq_exp_initial  "<<SzFreq_exp(iobs)<<endl;
+ #endif
 
                   if(gender==2)
                   {
@@ -830,7 +836,9 @@ FUNCTION void Get_expected_values();
                       SzFreq_exp(iobs)(1,k)/=sum(SzFreq_exp(iobs)(1,k));
                     }
                   }
+ #ifdef DO_ONCE
                   if(do_once==1) echoinput<<y<<" "<<f<<" szfreq_exp_final  "<<SzFreq_exp(iobs)<<endl;
+ #endif
                 }  // end loop of obs for fleet = f
               }   //  end having some obs for this method in this fleet
             }    //  end use of generalized size freq data

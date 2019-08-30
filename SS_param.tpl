@@ -90,8 +90,9 @@ PARAMETER_SECTION
    fec_len=1.0;
  END_CALCS
 
-  3darray age_age(0,N_ageerr,1,n_abins2,0,gender*nages+gender-1)
-  3darray age_err(1,N_ageerr,1,2,0,nages) // ageing imprecision as stddev for each age
+  3darray age_age(0,N_ageerr+store_agekey_add,1,n_abins2,0,gender*nages+gender-1)
+  //  where store_agekey_add will normally be 0, but can be the number of blocks if key is from parameters that invoke blocks
+  3darray age_err(1,N_ageerr+store_agekey_add,1,2,0,nages) // ageing imprecision as stddev for each age
 
 // Age-length keys for each gmorph
   4darray ALK(1,N_subseas*nseas,1,gmorph,0,nages,1,nlength)

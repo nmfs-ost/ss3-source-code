@@ -706,26 +706,23 @@ PRELIMINARY_CALCS_SECTION
   			// check for composition obs with partition =1 or =2; use a new summary of obs by partition type for this test
 				for(i=1;i<=Nobs_l(f);i++)
 				{
-					if(mkt_l(f,i)>0)
+					if(mkt_l(f,i)==1)
 					{
-				  	N_warn++; warning<<"fleet: "<<f<<"lencomp data contains obs with partition>0 and retention fxn not defined; SS changes partition to 0"<<endl;
-            mkt_l(f,i)=0;
+				  	N_warn++; warning<<"fleet: "<<f<<"  lencomp data contains obs with partition==1 and retention fxn not defined"<<endl; exit(1);
 					}
 				}
 				for(i=1;i<=Nobs_a(f);i++)
 				{
-					if(mkt_a(f,i)>0)
+					if(mkt_a(f,i)==1)
 					{
-				  	N_warn++; warning<<"fleet: "<<f<<"agecomp data contains obs with partition>0 and retention fxn not defined; SS changes partition to 0"<<endl;
-            mkt_a(f,i)=0;
+				  	N_warn++; warning<<"fleet: "<<f<<"  agecomp data contains obs with partition==1 and retention fxn not defined"<<endl; exit(1);
 					}
 				}
 				for(i=1;i<=Nobs_ms(f);i++)
 				{
-					if(mkt_ms(f,i)>0)
+					if(mkt_ms(f,i)==1)
 					{
-				  	N_warn++; warning<<"fleet: "<<f<<"size@age data contains obs with partition>0 and retention fxn not defined; SS changes partition to 0"<<endl;
-            mkt_ms(f,i)=0;
+				  	N_warn++; warning<<"fleet: "<<f<<"  size@age data contains obs with partition==1 and retention fxn not defined"<<endl; exit(1);
 					}
 				}
   			// check for mean body size obs with partition =1 or =2
@@ -735,10 +732,9 @@ PRELIMINARY_CALCS_SECTION
           if(f1==f)
           	{
               int parti = mnwtdata(4,i);  //  partition:  0=all, 1=discard, 2=retained
-          		if(parti>0)
+          		if(parti==1)
           		{
-          			N_warn++; warning<<"fleet: "<<f<<"meansize data contains obs with partition>0 and retention fxn not defined; SS changes partition to 0"<<endl;
-          			mnwtdata(4,i)=0;
+          			N_warn++; warning<<"fleet: "<<f<<"meansize data contains obs with partition>0 and retention fxn not defined"<<endl; exit(1);
           		}
           	}
         }
