@@ -274,6 +274,10 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
           bycatch_F(f,s)=Hrate(f,t);
         }
       }
+      else
+      {
+        for (s=1;s<=nseas;s++) {t=bio_t_base+s; Hrate(f,t)=0.0;}
+      }
     }
 
     if(show_MSY==2)
@@ -511,15 +515,15 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
       Btgttgt=F01_origin*0.1;
       if(show_MSY==1)
       {
-        report5<<"#"<<endl<<"#Find_F0.1; slope_at_origin_wrt_Fmult: "<<F01_origin<<endl;
+        report5<<"#"<<endl<<"#Find_F0.1; slope_at_origin_wrt_Fmult: "<<F01_origin<<" "<<YPR_opt<<" "<<Hrate(1,bio_t_base+3)<<endl;
         report5<<"Iter  Fmult   F_std    SPR    YPR    YPR_slope  YPR_curvature"<<endl;
       }
 
-      Nloops=10; Closer=0.5;
-      F1(1)=SPR_Fmult;
+      Nloops=20; Closer=0.75;
+      F1(1)=SPR_Fmult*0.1;
       for (j=1;j<=Nloops;j++)   // loop to find F0.1
       {
-        df=0.001*F1(1);
+        df=0.01*F1(1);
         F1(2) = F1(1) + df*.5;
         F1(3) = F1(2) - df;
         for (int ii=3;ii>=1;ii--)
@@ -538,18 +542,20 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
         
         F01_actual=(yld1(2) - yld1(3))/(F1(2)-F1(3));
         F01_second=((yld1(2)-yld1(1))/(F1(2)-F1(1))-(yld1(1)-yld1(3))/(F1(1)-F1(3)))/(F1(2)-F1(3));
+        
+        last_F1=F1(1);
         if(show_MSY==1)
         {
-          report5<<j<<" "<<F1(1)<<" "<<equ_F_std<<" "<<SSB_equil/SPR_unfished<<" "<<YPR_opt<<" "<<F01_actual<<" "<<F01_second<<endl;
+          report5<<j<<" "<<F1(1)<<" "<<equ_F_std<<" "<<SSB_equil/SPR_unfished<<" "<<YPR_opt<<" "<<F01_actual<<" "<<F01_second<<" last F1 "<<last_F1<<" Closer "<<Closer<<" delta "<<(F01_origin*0.1-F01_actual)/(F01_second)<<endl;
         }
-        last_F1=F1(1);
         F1(1) += (F01_origin*0.1-F01_actual)/(F01_second);
         F1(1)=(1.-Closer)*F1(1)+Closer*last_F1;
+        Closer*=0.75;
       }   // end search loop
 
       if(show_MSY==1)
       {
-        if(fabs(F01_origin*0.1-F01_actual)>=0.001)
+        if(sfabs(F01_origin*0.1-F01_actual)>=0.001)
         {N_warn++; warning<<" warning: poor convergence in F0.1 search target= "<<F01_origin*0.1<<"  actual= "<<F01_actual<<endl;}
         report5<<"seas fleet Hrate encB deadB retB encN deadN retN): "<<endl;
         for (s=1;s<=nseas;s++)

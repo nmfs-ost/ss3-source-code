@@ -464,12 +464,12 @@
       t=styr+(y-styr)*nseas+s-1;
       for (p=1;p<=pop;p++)
       for (f=1;f<=Nfleet;f++)
-      if(fleet_area(f)==p && catch_ret_obs(f,t) > 0.0 && fleet_type(f)==1)  //  excludes bycatch & survey fleets
+      if(fleet_area(f)==p && catch_ret_obs(f,t) > 0.0 && fleet_type(f)<=2)  //  excludes survey fleets
       {
-        totcat(y) += catch_ret_obs(f,t);
         catch_seas_area(t,p,f)=1;
         catch_seas_area(t,p,0)=1;
-        totcatch_byarea(t,p)+=catch_ret_obs(f,t);
+        if(fleet_type(f)==1) totcat(y) += catch_ret_obs(f,t);
+        if(fleet_type(f)==1) totcatch_byarea(t,p)+=catch_ret_obs(f,t);
       }
     }
     if(totcat(y)>0.0 && first_catch_yr==0) first_catch_yr=y;
@@ -2800,6 +2800,8 @@
   ivector Bmark_t(1,2)  //  for range of time values for averaging body size
   init_ivector Bmark_Yr_rd(1,10)
  LOCAL_CALCS
+  if(Do_Benchmark==2 && N_bycatch>0)
+  	{N_warn++; warning<<"F0.1 does not work well with bycatch fleets; check output carefully"<<endl;}
   echoinput<<Bmark_Yr_rd<<" echoed Benchmark years"<<endl;
   for (i=1;i<=10;i++)  //  beg-end bio; beg-end selex; beg-end relF
   {

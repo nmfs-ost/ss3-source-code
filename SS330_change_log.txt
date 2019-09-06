@@ -1,5 +1,6 @@
 Version;Date;Description;VLAB_issue;Input_Change?;Type;Category;Sub_Category
-3.30.14.04;2019-08-30;add reporting of time-varying age-age' key when blocks are used;#66223;-;add;age_error;output
+3.30.14.05;2019-09-05;small augmentation to expected value logic, note issue with F0.1 and bycatch fleets;#68202,#68203;-;revise;bycatch;calc
+3.30.14.05;2019-08-30;add reporting of time-varying age-age' key when blocks are used;#66223;-;add;age_error;output
 3.30.14.04;2019-08-20;add handling of age-retention when discard option=3;-;-;revise;discard;calc
 3.30.14.04;2019-08-20;add check for correct usage of asymptotic retention;-;-;revise;discard;input
 3.30.14.04;2019-08-20;fix autogen of block offsets;-;-;fix;timevary;calc

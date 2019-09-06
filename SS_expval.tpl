@@ -73,7 +73,6 @@ FUNCTION void Get_expected_values();
                     exp_AL(a+A2,L1-1+z)+=temp*ALK(ALK_idx,g,a,z)*sel_l(y,f,gg,z);;  //  note that A2 and L1 depend on what sex g is
                   }
                 }
-                exp_AL_ret=exp_AL;
               }
               else
               {
@@ -86,6 +85,7 @@ FUNCTION void Get_expected_values();
                   }
                 }
               }
+              exp_AL_ret=exp_AL;  //  in case user has retain code 2 rather than 0
             }
             else  //  need retain matrix
             {
