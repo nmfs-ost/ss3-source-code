@@ -1203,7 +1203,8 @@ FUNCTION void get_selectivity()
   //  SS_Label_Info_22.7.26 #age selectivity: exponential logistic
             case 26:
             {
-              peak = r_ages(0) + sp(2)*(r_ages(nages)-r_ages(0));
+//              peak = r_ages(0) + sp(2)*(r_ages(nages)-r_ages(0));
+              peak = sp(2)*r_ages(nages);
               for (a=0;a<=nages;a++)
                 {sel_a(y,fs,1,a) = mfexp(sp(3)*sp(1)*(peak-r_ages(a)))/(1.0-sp(3)*(1.0-mfexp(sp(1)*(peak-r_ages(a)))));}
               break;

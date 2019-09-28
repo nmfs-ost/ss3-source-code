@@ -2775,12 +2775,12 @@
 
      else if (seltype(f,1)==20)
      {
-       ParCount++; ParmLabel+="Age_DblN_peak_"+fleetname(f1)+"("+NumLbl(f)+")";
-       ParCount++; ParmLabel+="Age_DblN_top_logit_"+fleetname(f1)+"("+NumLbl(f)+")";
-       ParCount++; ParmLabel+="Age_DblN_ascend_se_"+fleetname(f1)+"("+NumLbl(f)+")";
-       ParCount++; ParmLabel+="Age_DblN_descend_se_"+fleetname(f1)+"("+NumLbl(f)+")";
-       ParCount++; ParmLabel+="Age_DblN_start_logit_"+fleetname(f1)+"("+NumLbl(f)+")";
-       ParCount++; ParmLabel+="Age_DblN_end_logit_"+fleetname(f1)+"("+NumLbl(f)+")";
+       ParCount++; ParmLabel+="Age_DblN_peak_"+fleetname(f1)+"("+NumLbl(f1)+")";
+       ParCount++; ParmLabel+="Age_DblN_top_logit_"+fleetname(f1)+"("+NumLbl(f1)+")";
+       ParCount++; ParmLabel+="Age_DblN_ascend_se_"+fleetname(f1)+"("+NumLbl(f1)+")";
+       ParCount++; ParmLabel+="Age_DblN_descend_se_"+fleetname(f1)+"("+NumLbl(f1)+")";
+       ParCount++; ParmLabel+="Age_DblN_start_logit_"+fleetname(f1)+"("+NumLbl(f1)+")";
+       ParCount++; ParmLabel+="Age_DblN_end_logit_"+fleetname(f1)+"("+NumLbl(f1)+")";
      }
      else if (seltype(f,1)==12)
      {
@@ -2968,9 +2968,9 @@
       if(selparm_1(k,1) >=0.0)  // check to see if user has bounds relevant for 3.24 format
         {
           N_warn++; 
-          warning<<"converting asymptotic retention parameter to 1/(1+e(-x)) format for fleet: "<<f1<<" parm: "<<k<<endl;
+          warning<<"converting asymptotic retention parameter to 1/(1+e(-x)) format for fleet: "<<f<<" parm: "<<k<<endl;
           warning<<"old min, max, init, prior: "<<selparm_1(k)(1,4)<<endl;
-          echoinput<<"converting asymptotic retention parameter to 1/(1+e(-x)) format for fleet: "<<f1<<" parm: "<<k<<endl;
+          echoinput<<"converting asymptotic retention parameter to 1/(1+e(-x)) format for fleet: "<<f<<" parm: "<<k<<endl;
           echoinput<<"because parm min was >=0.0"<<endl;
           new_lower_bound=-10.;
           new_upper_bound=10.;

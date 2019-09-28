@@ -234,7 +234,7 @@
           for (t=styr-nseas;t<=TimeMax;t++) {catch_se(t,f)=0.1;} // set a value for catch se for surveys and bycatch fleets (not used)
         }
       fleet_setup(f,1)=fleet_type(f);
-      fleet_setup(f,2)=surveytime(f)/abs(surveytime(f));
+      fleet_setup(f,2)=surveytime(f)/fabs(surveytime(f));
       fleet_setup(f,3)=fleet_area(f);
       fleet_setup(f,4)=catchunits(f);
       fleet_setup(f,5)=need_catch_mult(f);
@@ -535,7 +535,7 @@
           if(Svy_endyr(f)==0 || (y<=endyr && y>Svy_endyr(f)) )  Svy_endyr(f)=y;  //  for dimensioning survey q devs
 
           {  //  start have_data index and timing processing
-            temp=abs(Svy_data(i,2));  //  read value that could be season or month; abs ()because neg value indicates super period
+            temp=fabs(Svy_data(i,2));  //  read value that could be season or month; abs ()because neg value indicates super period
             if(read_seas_mo==1)  // reading season
             {
               s=int(temp);
@@ -734,7 +734,7 @@
          j=disc_N_fleet(f);  //  index number for data that are in date range
 
           {  //  start have_data index and timing processing
-          temp=abs(discdata(i,2));  //  read value that could be season or month; abs ()because neg value indicates super period
+          temp=fabs(discdata(i,2));  //  read value that could be season or month; abs ()because neg value indicates super period
             if(read_seas_mo==1)  // reading season
             {
               s=int(temp);
@@ -801,7 +801,7 @@
          cv_disc(f,j)=discdata(i,5);
          obs_disc(f,j)=fabs(discdata(i,4));
 
-         if(discdata(i,4)<0.0) discdata(i,3)=-abs(discdata(i,3));  //  convert to new format using negative fleet
+         if(discdata(i,4)<0.0) discdata(i,3)=-fabs(discdata(i,3));  //  convert to new format using negative fleet
          if(discdata(i,3)<0) {yr_disc_use(f,j)=-1;} else {yr_disc_use(f,j)=1;}
          if(catch_ret_obs(f,t)<=0.0)
          {
@@ -875,7 +875,7 @@
 
       {  //  start have_data index and timing processing
         if(mnwtdata1(i,2)<0.0) {N_warn++; warning<<"negative season not allowed for mnwtdata because superperiods not implemented "<<endl;}
-      temp=abs(mnwtdata1(i,2));  //  read value that could be season or month; abs ()because neg value indicates super period
+      temp=fabs(mnwtdata1(i,2));  //  read value that could be season or month; abs ()because neg value indicates super period
             if(read_seas_mo==1)  // reading season
             {
               s=int(temp);
@@ -1334,7 +1334,7 @@
 
             t=styr+(y-styr)*nseas+s-1;
             ALK_time=(y-styr)*nseas*N_subseas+(s-1)*N_subseas+subseas;
-            lendata[i](2)=lendata[i](2)/abs(lendata[i](2))*real_month;
+            lendata[i](2)=lendata[i](2)/fabs(lendata[i](2))*real_month;
             Len_time_t(f,j)=t;     // sequential time = year+season
             Len_time_ALK(f,j)=ALK_time;
             if(data_time(ALK_time,f,1)<0.0)
@@ -1753,7 +1753,7 @@
            j=Nobs_a(f);
 
           {  //  start have_data index and timing processing
-          temp=abs(Age_Data[i](2));  //  read value that could be season or month; abs ()because neg value indicates super period
+          temp=fabs(Age_Data[i](2));  //  read value that could be season or month; abs ()because neg value indicates super period
             if(read_seas_mo==1)  // reading season
             {
               s=int(temp);
@@ -1789,7 +1789,7 @@
 
             t=styr+(y-styr)*nseas+s-1;
             ALK_time=(y-styr)*nseas*N_subseas+(s-1)*N_subseas+subseas;
-            Age_Data[i](2)=Age_Data[i](2)/abs(Age_Data[i](2))*real_month;
+            Age_Data[i](2)=Age_Data[i](2)/fabs(Age_Data[i](2))*real_month;
 
           Age_time_t(f,j)=t;                     // sequential time = year+season
           Age_time_ALK(f,j)=ALK_time;
@@ -2136,7 +2136,7 @@
            j=Nobs_ms(f);  //  observation counter
 
           {  //  start have_data index and timing processing
-          temp=abs(sizeAge_Data[i](2));  //  read value that could be season or month; abs ()because neg value indicates super period
+          temp=fabs(sizeAge_Data[i](2));  //  read value that could be season or month; abs ()because neg value indicates super period
             if(read_seas_mo==1)  // reading season
             {
               s=int(temp);
@@ -2172,7 +2172,7 @@
 
             t=styr+(y-styr)*nseas+s-1;
             ALK_time=(y-styr)*nseas*N_subseas+(s-1)*N_subseas+subseas;
-            sizeAge_Data[i](2)=sizeAge_Data[i](2)/abs(sizeAge_Data[i](2))*real_month;
+            sizeAge_Data[i](2)=sizeAge_Data[i](2)/fabs(sizeAge_Data[i](2))*real_month;
 
            msz_time_t(f,j)=t;
 
@@ -2462,7 +2462,7 @@
         SzFreq_obs(iobs)+=SzFreq_mincomp(k);
         SzFreq_obs(iobs)/=sum(SzFreq_obs(iobs));
         y=SzFreq_obs_hdr(iobs,1);
-        temp=abs(SzFreq_obs_hdr(iobs,2));
+        temp=fabs(SzFreq_obs_hdr(iobs,2));
         if(read_seas_mo==1)  // reading season
         {
               s=int(temp);
@@ -2497,7 +2497,7 @@
             data_timing=0.5;
           }
         }
-        SzFreq_obs_hdr(iobs,2)=SzFreq_obs_hdr(iobs,2)/abs(SzFreq_obs_hdr(iobs,2))*real_month;
+        SzFreq_obs_hdr(iobs,2)=SzFreq_obs_hdr(iobs,2)/fabs(SzFreq_obs_hdr(iobs,2))*real_month;
         SzFreq_obs1(iobs,3)=real_month;
 
         if(gender==1) {SzFreq_obs_hdr(iobs,4)=0;}
@@ -2527,11 +2527,11 @@
           p=have_data(ALK_time,f,data_type,0);
           have_data(ALK_time,f,data_type,p)=iobs;  //  store data index for the p'th observation in this subseas
 
-          if(SzFreq_obs_hdr(iobs,7)<0) SzFreq_obs_hdr(iobs,3)=-abs(SzFreq_obs_hdr(iobs,3));  //  old method for excluding from logL
+          if(SzFreq_obs_hdr(iobs,7)<0) SzFreq_obs_hdr(iobs,3)=-fabs(SzFreq_obs_hdr(iobs,3));  //  old method for excluding from logL
         }
         else
         {
-          SzFreq_obs_hdr(iobs,3)=-abs(SzFreq_obs_hdr(iobs,3));  //  flag for skipping this obs
+          SzFreq_obs_hdr(iobs,3)=-fabs(SzFreq_obs_hdr(iobs,3));  //  flag for skipping this obs
           SzFreq_time_t(iobs)=styr;
           SzFreq_time_ALK(iobs)=1;
         }

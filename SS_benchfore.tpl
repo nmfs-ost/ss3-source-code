@@ -1771,11 +1771,11 @@ FUNCTION void Get_Forecast()
                 for (f=1;f<=Nfleet;f++)   // get calculated catch
                 if (fleet_area(f)==p && Fcast_RelF_Use(s,f)>0.0 && fleet_type(f)<=2)
                 {
-//                    report5<<Tune_F<<" tune F "<<Hrate(f,t)<<endl;
-                  temp=0.0;  //  will hold fleet's catch
+                  C_temp(f)=0.0;  //  will hold fleet's calculated catch
                   if(Do_F_tune(t,f)==1)  // have an input catch or in ABC_loop 3, so get expected catch from F and Z
                   {
-                    if(ABC_Loop==2 && N_Fcast_Input_Catches>0)  //  tune to input catch in ABCloop 2, then it becomes fixed in the stored catch
+//                    if(ABC_Loop==2 && N_Fcast_Input_Catches>0)  //  tune to input catch in ABCloop 2, then it becomes fixed in the stored catch
+                    if(ABC_Loop==2)  //  tune to input catch in ABCloop 2;  Do_F_tune(t,f) is only turned on if there is input catch
                     {
                       for (g=1;g<=gmorph;g++)
                       if(use_morph(g)>0)
@@ -1783,66 +1783,66 @@ FUNCTION void Get_Forecast()
                         if(catchunits(f)==1)  //  catch in weight
                         {
                           if(Fcast_InputCatch(t,f,2)==2)
-                            {temp+=elem_prod(natage(t,p,g),deadfish_B(s,g,f))*Zrate2(p,g);}      // dead catch bio
+                            {C_temp(f)+=elem_prod(natage(t,p,g),deadfish_B(s,g,f))*Zrate2(p,g);}      // dead catch bio
                           else if(Fcast_InputCatch(t,f,2)==3)
-                            {temp+=elem_prod(natage(t,p,g),sel_al_2(s,g,f))*Zrate2(p,g);}      // retained catch bio
+                            {C_temp(f)+=elem_prod(natage(t,p,g),sel_al_2(s,g,f))*Zrate2(p,g);}      // retained catch bio
                         }
                         else   //  catch in numbers
                         {
                           if(Fcast_InputCatch(t,f,2)==2)
-                          {temp+=elem_prod(natage(t,p,g),deadfish(s,g,f))*Zrate2(p,g);}      // deadfish catch numbers
+                          {C_temp(f)+=elem_prod(natage(t,p,g),deadfish(s,g,f))*Zrate2(p,g);}      // deadfish catch numbers
                           else if(Fcast_InputCatch(t,f,2)==3)
-                          {temp+=elem_prod(natage(t,p,g),sel_al_4(s,g,f))*Zrate2(p,g);}      // retained catch numbers
+                          {C_temp(f)+=elem_prod(natage(t,p,g),sel_al_4(s,g,f))*Zrate2(p,g);}      // retained catch numbers
                         }
                       }  //close gmorph loop
-                      temp*=Hrate(f,t);
+                      C_temp(f)*=Hrate(f,t);  //  where temp was the available biomass or numbers calculated above and convert to catch here
                       H_temp(f)=Hrate(f,t);
-                      C_temp(f)=temp;
+                      temp=Hrate(f,t);
                       if(Tune_F<3)
                       {
-                        C_old(f)=C_temp(f);
-                        H_old(f)=H_temp(f);
-                        Hrate(f,t)*=(Fcast_InputCatch(t,f,1)+1.0)/(temp+1.0);  //  apply adjustment
+                        temp*=(Fcast_InputCatch(t,f,1)+1.0)/(C_temp(f)+1.0);  //  apply adjustment using ratio of target to calculated catch
                       }
                       else
                       {
-                        Hrate(f,t)=H_old(f)+(H_temp(f)-H_old(f))/(C_temp(f)-C_old(f)+1.0e-6) * (Fcast_InputCatch(t,f,1)-C_old(f));
-                        C_old(f)=C_temp(f);
-                        H_old(f)=H_temp(f);
+                        temp=H_old(f)+(H_temp(f)-H_old(f))/(C_temp(f)-C_old(f)+1.0e-6) * (Fcast_InputCatch(t,f,1)-C_old(f));
                       }
+                      join1=1./(1.+mfexp(30.*(temp-0.95*max_harvest_rate)));
+                      Hrate(f,t)=join1*temp + (1.-join1)*max_harvest_rate; // new F value for this fleet, constrained by max_harvest_rate
+//                      if(f==1) warning<<y<<" "<<Tune_F<<" Inputcatch old F "<<H_temp(f)<<" catch "<<C_temp(f)<<" tempF "<<temp<<" join "<<join1<<" new F "<<Hrate(f,t)<<endl;
+                      C_old(f)=C_temp(f);
+                      H_old(f)=H_temp(f);
                     }
                     else if (fishery_on_off==1) //  tune to adjusted catch calculated in ABC_Loop=2 (note different basis for catch)
                     {
+                      C_temp(f)=0.0;
                       for (g=1;g<=gmorph;g++)
                       if(use_morph(g)>0)
                       {
                         if(Fcast_Catch_Basis==2)
-                        {temp+=elem_prod(natage(t,p,g),deadfish_B(s,g,f))*Zrate2(p,g);}      // dead catch bio
+                        {C_temp(f)+=elem_prod(natage(t,p,g),deadfish_B(s,g,f))*Zrate2(p,g);}      // dead catch bio
                         else if(Fcast_Catch_Basis==3)
-                        {temp+=elem_prod(natage(t,p,g),sel_al_2(s,g,f))*Zrate2(p,g);}      // retained catch bio
+                        {C_temp(f)+=elem_prod(natage(t,p,g),sel_al_2(s,g,f))*Zrate2(p,g);}      // retained catch bio
                         else if(Fcast_Catch_Basis==5)
-                        {temp+=elem_prod(natage(t,p,g),deadfish(s,g,f))*Zrate2(p,g);}      // deadfish catch numbers
+                        {C_temp(f)+=elem_prod(natage(t,p,g),deadfish(s,g,f))*Zrate2(p,g);}      // deadfish catch numbers
                         else if(Fcast_Catch_Basis==6)
-                        {temp+=elem_prod(natage(t,p,g),sel_al_4(s,g,f))*Zrate2(p,g);}      // retained catch numbers
+                        {C_temp(f)+=elem_prod(natage(t,p,g),sel_al_4(s,g,f))*Zrate2(p,g);}      // retained catch numbers
                       }  //close gmorph loop
-                      temp*=Hrate(f,t);
+                      C_temp(f)*=Hrate(f,t);
                       H_temp(f)=Hrate(f,t);
-                      C_temp(f)=temp;
+                      temp=Hrate(f,t);
                       if(Tune_F<3)
                       {
-                        C_old(f)=C_temp(f);
-                        H_old(f)=H_temp(f);
-                        Hrate(f,t)*=(Fcast_Catch_Store(t,f)+1.0)/(temp+1.0);  //  adjust Hrate using catch stored from ABCloop2
+                        temp*=(Fcast_Catch_Store(t,f)+1.0)/(C_temp(f)+1.0);  //  adjust Hrate using catch stored from ABCloop2
                       }
                       else
                       {
-                        if(Tune_F<7)
-                        {Hrate(f,t)=(H_old(f)+(H_temp(f)-H_old(f))/(C_temp(f)-C_old(f)+1.0e-6) * (Fcast_Catch_Store(t,f)-C_old(f)));}
-                        else if(Tune_F==7)
-                        {Hrate(f,t)=(H_old(f)+(H_temp(f)-H_old(f))/(C_temp(f)-C_old(f)+1.0e-6) * (Fcast_Catch_Store(t,f)-C_old(f)));}
-                        C_old(f)=C_temp(f);
-                        H_old(f)=H_temp(f);
+                        temp=(H_old(f)+(H_temp(f)-H_old(f))/(C_temp(f)-C_old(f)+1.0e-6) * (Fcast_Catch_Store(t,f)-C_old(f)));
                       }
+                      join1=1./(1.+mfexp(30.*(temp-0.95*max_harvest_rate)));
+                      Hrate(f,t)=join1*temp + (1.-join1)*max_harvest_rate; // new F value for this fleet, constrained by max_harvest_rate
+//                      if(f==1) warning<<y<<" "<<Tune_F<<" stored old F "<<H_temp(f)<<" catch "<<C_temp(f)<<" tempF "<<temp<<" join "<<join1<<" new F "<<Hrate(f,t)<<endl;
+                      C_old(f)=C_temp(f);
+                      H_old(f)=H_temp(f);
                     }
                   }  // end have fixed catch to be matched
                 }  // end fishery loop

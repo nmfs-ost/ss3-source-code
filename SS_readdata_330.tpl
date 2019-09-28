@@ -827,7 +827,7 @@
          cv_disc(f,j)= discdata[i](5);
          obs_disc(f,j)=fabs( discdata[i](4));
 
-         if( discdata[i](4)<0.0)  discdata[i](3)=-abs( discdata[i](3));  //  convert to new format using negative fleet
+         if( discdata[i](4)<0.0)  discdata[i](3)=-fabs( discdata[i](3));  //  convert to new format using negative fleet
          if( discdata[i](3)<0) {yr_disc_use(f,j)=-1;} else {yr_disc_use(f,j)=1;}
          if(catch_ret_obs(f,t)<=0.0)
          {

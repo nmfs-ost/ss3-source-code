@@ -234,7 +234,7 @@ FUNCTION void write_bigoutput()
       }
       SS2out<<endl;
     }
-    SS2out<<SzFreq_like<<endl<<SzFreq_like_base<<endl;
+//    SS2out<<SzFreq_like<<endl<<SzFreq_like_base<<endl;
   }
 
   if(Do_TG>0)
@@ -1132,7 +1132,7 @@ FUNCTION void write_bigoutput()
     {
       SSB_current=double(f)/100.*SSB_virgin;
       temp=Spawn_Recr(SSB_virgin,Recr_virgin,SSB_current);
-      SS2out<<SSB_current/SSB_virgin<<" "<<SSB_current<<" "<<exp_rec(y,1)<<endl;
+      SS2out<<SSB_current/SSB_virgin<<" "<<SSB_current<<" "<<temp<<endl;
     }
    }
 // ******************************************************************************
