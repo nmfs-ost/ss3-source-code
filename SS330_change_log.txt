@@ -1,4 +1,9 @@
 Version;Date;Description;VLAB_issue;Input_Change?;Type;Category;Sub_Category
+3.30.14.06;2019-10-15;fix Z-at-age output for N morphs>1;#69869;-;fix;output;output
+3.30.14.06;2019-10-15;add option allowing age selection start at age 1;#69509;Cond;new;selectivity;calc
+3.30.14.06;2019-10-15;make forecast F robust to high catches and pin at maxF;#69039;-;revise;forecast;calc
+3.30.14.06;2019-10-15;various small tweaks;#68203,#66580,#68888;-;fix;misc;misc
+
 3.30.14.05;2019-09-05;small augmentation to expected value logic, note issue with F0.1 and bycatch fleets;#68202,#68203;-;revise;bycatch;calc
 3.30.14.05;2019-08-30;add reporting of time-varying age-age' key when blocks are used;#66223;-;add;age_error;output
 3.30.14.04;2019-08-20;add handling of age-retention when discard option=3;-;-;revise;discard;calc

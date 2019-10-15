@@ -2673,11 +2673,13 @@
   ivector N_ret_parm(0,6)  //  6 possible retention functions allowed
   ivector N_disc_mort_parm(0,6)  //  6 possible discard mortality functions allowed
   ivector Do_Retain(1,Nfleet)  // indicates 0=none, 1=length based, 2=age based
+  ivector Min_selage(1,Nfleet) //  minimum selected age
 
  LOCAL_CALCS
 //  define number of parameters for each retention type
   RetainParm.initialize();
   seltype.initialize();
+  Min_selage.initialize();
   for(f=1;f<=2*Nfleet;f++)
   {seltype(f)(1,4)=seltype_rd(f)(1,4);}
   N_ret_parm(0)= 0;

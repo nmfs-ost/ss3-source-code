@@ -917,10 +917,10 @@ FUNCTION void write_Bzero_output()
               tempvec_a(0) += value(natage(t+s-1,p,g,0));
             }
           }
-          if(y>styr)  {SS2out <<gp<<" "<<gg<<" "<<y-1<<" "<<log(elem_div(tempvec2(1,nages),tempvec_a(1,nages)))<<" _ "<<endl;}
-          for (a=0;a<=nages-1;a++) tempvec2(a+1)=value(tempvec_a(a));
-          tempvec2(nages)+=value(tempvec_a(nages));
         }
+        if(y>styr)  {SS2out <<gp<<" "<<gg<<" "<<y-1<<" "<<log(elem_div(tempvec2(1,nages),tempvec_a(1,nages)))<<" _ "<<endl;}
+        for (a=0;a<=nages-1;a++) tempvec2(a+1)=value(tempvec_a(a));
+        tempvec2(nages)+=value(tempvec_a(nages));
       }
     }
     }

@@ -837,7 +837,7 @@ FUNCTION void get_selectivity()
 
   //  SS_Label_Info_22.7.12 #age selectivity - logistic
               case 12:
-              { sel_a(y,fs,1) = 1/(1+mfexp(neglog19*(r_ages-sp(1))/sp(2))); break;}
+              { sel_a(y,fs,1)(Min_selage(fs),nages) = 1/(1+mfexp(neglog19*(r_ages(Min_selage(fs),nages)-sp(1))/sp(2))); break;}
 
   //  SS_Label_Info_22.7.13 #age selectivity - double logistic
               case 13:

@@ -2490,7 +2490,8 @@
 
 !!//  SS_Label_Info_4.9.1 #Read selectivity definitions
 //  do 2*Nfleet to create options for size-selex (first), then age-selex
-  init_imatrix seltype(1,2*Nfleet,1,4)    // read selex type for each fleet/survey, retention option, male_offset_option, special
+  init_imatrix seltype_rd(1,2*Nfleet,1,4)    // read selex type for each fleet/survey, retention option, male_offset_option, special
+  imatrix seltype(1,2*Nfleet,1,4)    // read selex type for each fleet/survey, retention option, male_offset_option, special
 
   int N_selparm   // figure out the Total number of selex parameters
   int N_selparm3                 // N selparms plus timevary parms
@@ -2504,11 +2505,31 @@
   ivector N_ret_parm(0,6)  //  6 possible retention functions allowed
   ivector N_disc_mort_parm(0,6)  //  6 possible discard mortality functions allowed
   ivector Do_Retain(1,Nfleet)  // indicates 0=none, 1=length based, 2=age based
-
+  ivector Min_selage(1,Nfleet) //  minimum selected age
  LOCAL_CALCS
-  echoinput<<" selex types "<<endl<<seltype<<endl;
+  echoinput<<" selex types "<<endl<<seltype_rd<<endl;
+  
+  //  identify fleets with adjusted first_selected age
+  seltype=seltype_rd;  //  set matrices to be same
+  Min_selage.initialize();
+  for(f=1;f<=2*Nfleet;f++)
+  {
+  	if(seltype_rd(f,1)>=100)
+		{
+			if(f<=Nfleet)
+			{
+				N_warn++; warning<<"fleet: "<<f<<"  cannot use >100 code for length selectivity"<<endl;
+				seltype_rd(f,1)-=100;  //  change input value so will be written correctly in ss_new
+			}
+			else
+			{
+				Min_selage(f-Nfleet)=1;
+			}
+			seltype(f,1)-=100;
+		}
+  }
+  
   RetainParm.initialize();
-
 //  define number of parameters for each retention type
   N_ret_parm(0)= 0;
   N_ret_parm(1)= 4; // for asymptotic retention
