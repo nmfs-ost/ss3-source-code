@@ -390,7 +390,7 @@ FUNCTION void write_nudata()
       t=Svy_time_t(f,i);
       ALK_time=Svy_ALK_time(f,i);
       report1 << Show_Time(t,1)<<" "<<Svy_super(f,i)*data_time(ALK_time,f,1)<<" "<<f*Svy_use(f,i)<<" ";
-      if(Svy_use(f,i)>0)
+      if(Svy_use(f,i)>0 || y>retro_yr)
       {
         if(Svy_errtype(f)>=0)  // lognormal
         {

@@ -1408,7 +1408,7 @@ FUNCTION void get_time_series()
           }
         }  //  end s==nseas
       }
-        if(save_for_report==2)
+        if(write_bodywt>0)
         {
           for(g=1;g<=gmorph;g++)
           {

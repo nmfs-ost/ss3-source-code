@@ -1,6 +1,7 @@
 FUNCTION void setup_Benchmark()
   {
 //  SS_Label_Info_7.5 #Get averages from selected years to use in forecasts
+
     if(Do_Forecast>0)
     {
       if(Fcast_Specify_Selex==0)
@@ -238,6 +239,11 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
   dvar_vector F1(1,3);
   dvar_vector yld1(1,3);
   dvar_vector Fmult_save(1,3);
+  
+  int write_bodywt_save;
+    write_bodywt_save=write_bodywt;
+    write_bodywt=0;
+  
    if(show_MSY==1)
    {
      report5<<version_info<<endl<<ctime(&start);
@@ -1023,6 +1029,7 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
       <<Bmsy<<" "<<MSY<<" "<<YPR_msy_dead*Recr_msy<<" "<<YPR_msy_ret*Recr_msy
       <<" "<<Vbio1_MSY*Recr_msy<<" # "<<endl;
     }
+    write_bodywt=write_bodywt_save;
   }   //  end benchmarks
 
 FUNCTION void Get_Forecast()
@@ -1057,6 +1064,8 @@ FUNCTION void Get_Forecast()
   int ABC_Loop_start;
   int ABC_Loop_end;
 
+  int write_bodywt_save;
+  
   Do_F_tune.initialize();
 
    if(fishery_on_off==1)
@@ -1094,6 +1103,7 @@ FUNCTION void Get_Forecast()
    {
      Fcast_Fmult=0.0;
    }
+    warning<<"Annual_Forecast_Fmult: "<<Fcast_Fmult<<" "<<SPR_Fmult<<endl;
 
   if(show_MSY==1)  //  write more headers
   {
@@ -1208,6 +1218,8 @@ FUNCTION void Get_Forecast()
   {jloop=Fcast_Loop_Control(1);}
   else
   {jloop=1;}
+  write_bodywt_save=write_bodywt;  //  save initial value so can be restored in last loop
+  
   for (int Fcast_Loop1=1; Fcast_Loop1<=jloop;Fcast_Loop1++)  //   for different forecast conditions
   {
     switch(Fcast_Loop1)  //  select which ABC_loops to use
@@ -1276,7 +1288,7 @@ FUNCTION void Get_Forecast()
    }
      	env_data(y,-1)=log(SSB_current/SSB_yr(styr-1));  //  store most recent value for density-dependent effects, NOTE - off by a year if recalc'ed at beginning of season 1
       env_data(y,-2)=recdev(y);  //  store for density-dependent effects
-        if(timevary_MG(y,2)>0 || timevary_MG(y,3)>0 || save_for_report==1 || WTage_rd>0)
+        if(timevary_MG(y,2)>0 || timevary_MG(y,3)>0 || save_for_report>0 || WTage_rd>0)
         {
           s=1;
           subseas=1;  //  begin season  note that ALK_idx re-calculated inside get_growth3
@@ -1358,7 +1370,7 @@ FUNCTION void Get_Forecast()
           bio_t=styr+(endyr-styr)*nseas+s-1;
           if(ABC_Loop==ABC_Loop_start)  // do seasonal ALK and fishery selex
           {
-            if(timevary_MG(endyr+1,2)>0 || save_for_report==1)
+            if(timevary_MG(endyr+1,2)>0 || save_for_report>0)
             {
               subseas=1;  //   for begin of season   ALK_idx calculated within Make_AgeLength_Key
               get_growth3(s, subseas);
@@ -1575,7 +1587,7 @@ FUNCTION void Get_Forecast()
               temp=natage(t,p,g)(Smry_Age,nages)*Wt_Age_beg(s,g)(Smry_Age,nages);
               smrybio+=temp;
               smrynum+=sum(natage(t,p,g)(Smry_Age,nages));
-              if(save_for_report==1)
+              if(save_for_report>0)
               {
                 Save_PopLen(t,p,g)=0.0;
                 Save_PopLen(t,p+pop,g)=0.0;  // later put midseason here
@@ -1738,7 +1750,7 @@ FUNCTION void Get_Forecast()
                 }
                 natage(t+1,p,g,nages) = Nsurv(g,nages)*surv1(s,GP3(g),nages);   // plus group
                 if(s==nseas) natage(t+1,p,g,nages) += Nsurv(g,nages-1)*surv1(s,GP3(g),nages-1);
-                if(save_for_report==1)
+                if(save_for_report>0)
                 {
                   j=p+pop;
                   for (a=0;a<=nages;a++)
@@ -1874,7 +1886,7 @@ FUNCTION void Get_Forecast()
                 for (a=1;a<nages;a++) {natage(t+1,p,g,a) = natage(t,p,g,a-adv_age)*mfexp(-Z_rate(t,p,g,a-adv_age)*seasdur(s));}
                 natage(t+1,p,g,nages) = natage(t,p,g,nages)*mfexp(-Z_rate(t,p,g,nages)*seasdur(s));   // plus group
                 if(s==nseas) natage(t+1,p,g,nages) += natage(t,p,g,nages-1)*mfexp(-Z_rate(t,p,g,nages-1)*seasdur(s));
-                if(save_for_report==1)
+                if(save_for_report>0)
                 {
                   j=p+pop;
                   for (a=0;a<=nages;a++)
@@ -1889,7 +1901,13 @@ FUNCTION void Get_Forecast()
             }  // end continuous F
 
 //  SS_Label_106  call to Get_expected_values
+           write_bodywt=0;
+           if(ABC_Loop==ABC_Loop_end && Fcast_Loop1==Fcast_Loop_Control(1))
+           	{
+           		write_bodywt=write_bodywt_save;
            if(y<endyr+20) Get_expected_values();
+           if(y==2003) warning<<ABC_Loop<<" "<<y<<" got exp in forecast "<<Svy_est(3)<<endl;
+           	}
            if(show_MSY==1)
            {
             report5<<p<<" "<<y<<" "<<ABC_Loop<<" "<<s<<" "<<ABC_buffer(y)<<" "<<totbio<<" "<<smrybio<<" ";
@@ -2251,6 +2269,20 @@ FUNCTION void Get_Forecast()
                   if(max(Do_Retain)>0) Mgmt_quant(Fcast_catch_start+2*N_Fcast_Yrs+y-endyr)+=catch_fleet(t,f,3);
                 }
               }
+                if(write_bodywt>0 )
+                {
+                  for(g=1;g<=gmorph;g++)
+                  {
+                    gg=sx(g);
+
+                    if(ishadow(GP2(g))==0)
+                      {
+                        if(s==spawn_seas) bodywtout<<y<<" "<<s<<" "<<gg<<" "<<GP4(g)<<" "<<Bseas(g)<<" "<<-2<<" "<<fec(g)<<" #fecundity "<<endl;
+                        bodywtout<<y<<" "<<s<<" "<<gg<<" "<<GP4(g)<<" "<<Bseas(g)<<" "<<0<<" "<<Wt_Age_beg(s,g)<<" #popwt_beg "<<endl;
+                        bodywtout<<y<<" "<<s<<" "<<gg<<" "<<GP4(g)<<" "<<Bseas(g)<<" "<<-1<<" "<<Wt_Age_mid(s,g)<<" #popwt_mid "<<endl;
+                      }
+                  }
+                }
             }
           }
 
@@ -2284,20 +2316,6 @@ FUNCTION void Get_Forecast()
             if(s==nseas && STD_Yr_Reverse_F(y)>0) {report5<<F_std(STD_Yr_Reverse_F(y));} else {report5<<" NA ";}
             report5<<endl;
           }
-        if(save_for_report==2)
-        {
-          for(g=1;g<=gmorph;g++)
-          {
-            gg=sx(g);
-
-            if(ishadow(GP2(g))==0)
-              {
-                if(s==spawn_seas) bodywtout<<y<<" "<<s<<" "<<gg<<" "<<GP4(g)<<" "<<Bseas(g)<<" "<<-2<<" "<<fec(g)<<" #fecundity "<<endl;
-                bodywtout<<y<<" "<<s<<" "<<gg<<" "<<GP4(g)<<" "<<Bseas(g)<<" "<<0<<" "<<Wt_Age_beg(s,g)<<" #popwt_beg "<<endl;
-                bodywtout<<y<<" "<<s<<" "<<gg<<" "<<GP4(g)<<" "<<Bseas(g)<<" "<<-1<<" "<<Wt_Age_mid(s,g)<<" #popwt_mid "<<endl;
-              }
-          }
-        }
 
         }  //  end loop of seasons
 
@@ -2413,7 +2431,6 @@ FUNCTION void Get_Forecast()
         }
       }
     }  //  end year loop
-    if(save_for_report==2) save_for_report=1;
   }  //  end Fcast_Loop1  for the different stages of the forecast
 
   }

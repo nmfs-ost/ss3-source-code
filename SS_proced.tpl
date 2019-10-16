@@ -89,6 +89,7 @@ PROCEDURE_SECTION
       {
         if(show_MSY==1) report5<<"THIS FORECAST FOR PURPOSES OF STD REPORTING"<<endl;
         Get_Forecast();
+    warning<<" did forecast from proced for STD "<<Svy_est(3)<<endl;
       }
 
 //  SS_Label_Info_7.7 #Call fxn Process_STDquant() to move calculated values into sd_containers

@@ -1,4 +1,6 @@
 Version;Date;Description;VLAB_issue;Input_Change?;Type;Category;Sub_Category
+3.30.14.07;2019-10-16;merge writing of wtatage.ss_new into other reporting rather than separate iteration;#69960;-;revise;bodywt;calc
+
 3.30.14.06;2019-10-15;fix Z-at-age output for N morphs>1;#69869;-;fix;output;output
 3.30.14.06;2019-10-15;add option allowing age selection start at age 1;#69509;Cond;new;selectivity;calc
 3.30.14.06;2019-10-15;make forecast F robust to high catches and pin at maxF;#69039;-;revise;forecast;calc

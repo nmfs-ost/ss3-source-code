@@ -845,6 +845,7 @@ FUNCTION void write_Bzero_output()
           show_MSY=0;
         report5<<"#"<<endl<<" FORECAST: in Bzero report with fishery onoff= "<<fishery_on_off<<endl;
           Get_Forecast();
+    warning<<" did forecast for Bzero "<<Svy_est(3)<<endl;
         }
       }
 

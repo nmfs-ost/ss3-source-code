@@ -658,6 +658,19 @@ FINAL_SECTION
 //  SS_Label_Info_12.3 #Go thru time series calculations again to get extra output quantities
 //  SS_Label_Info_12.3.2 #Set save_for_report=1 then call initial_conditions and time_series to get other output quantities
     save_for_report=1;
+    if(reportdetail==1) 
+    {
+    	write_bodywt=1;
+    bodywtout<<nages<<" # maxage"<<endl;
+    bodywtout<<"# if Yr is negative, then fill remaining years for that Seas, growpattern, Bio_Pattern, Fleet"<<endl;
+    bodywtout<<"# if season is negative, then fill remaining fleets for that Seas, Bio_Pattern, Sex, Fleet"<<endl;
+    bodywtout<<"# will fill through forecast years, so be careful"<<endl;
+    bodywtout<<"# fleet 0 contains begin season pop WT"<<endl;
+    bodywtout<<"# fleet -1 contains mid season pop WT"<<endl;
+    bodywtout<<"# fleet -2 contains maturity*fecundity"<<endl;
+    bodywtout<<"#Yr Seas Sex Bio_Pattern BirthSeas Fleet "<<age_vector<<endl;
+
+    }
     save_gparm=0;
     y=styr;
     setup_recdevs();
@@ -665,7 +678,7 @@ FINAL_SECTION
     get_time_series();  //  in final_section with save_for_report on
     evaluate_the_objective_function();
 //  SS_Label_Info_12.3.3 #Do benchmarks and forecast and stdquantities with save_for_report=1
-    if(mceval_phase()==0) {show_MSY=1;} else {show_MSY=0;}  //  turn on reporting in not in mceval
+    if(mceval_phase()==0) {show_MSY=1;} else {show_MSY=0;}  //  turn on reporting if not in mceval
     if(Do_Benchmark>0)
     {
       setup_Benchmark();
@@ -680,9 +693,16 @@ FINAL_SECTION
     if(Do_Forecast>0)
     {
       report5<<"THIS FORECAST FOR PURPOSES OF GETTING DISPLAY QUANTITIES"<<endl;
+      if(did_MSY>0) show_MSY=0;
       Get_Forecast();
       if(mceval_phase()==0) cout<<" finished forecast for reporting"<<endl;
     }
+    if(write_bodywt>0)
+    {
+    bodywtout<<-9999<<" "<<1<<" "<<1<<" "<<1<<" "<<1<<" "<<0<<" "<<Wt_Age_mid(1,1)<<" #terminator "<<endl;
+    bodywtout.close();
+    }
+    write_bodywt=0;
 
 //  SS_Label_Info_12.3.4  #call fxn STDquant()
      Process_STDquant();
@@ -726,31 +746,6 @@ FINAL_SECTION
     {
         write_Bzero_output();
         if(show_MSY==1) cout<<" finished Bzero and global MSY "<<endl;
-    }
-
-//  SS_Label_Info_12.3.1 #Write out body weights to wtatage.ss_new.  Occurs while doing procedure with save_for_report=2
-    if(reportdetail==1)
-    {
-    save_for_report=2;
-//    bodywtout<<1<<"  #_user_must_replace_this_value_with_number_of_lines_with_wtatage_below"<<endl;
-    bodywtout<<nages<<" # maxage"<<endl;
-    bodywtout<<"# if Yr is negative, then fill remaining years for that Seas, growpattern, Bio_Pattern, Fleet"<<endl;
-    bodywtout<<"# if season is negative, then fill remaining fleets for that Seas, Bio_Pattern, Sex, Fleet"<<endl;
-    bodywtout<<"# will fill through forecast years, so be careful"<<endl;
-    bodywtout<<"# fleet 0 contains begin season pop WT"<<endl;
-    bodywtout<<"# fleet -1 contains mid season pop WT"<<endl;
-    bodywtout<<"# fleet -2 contains maturity*fecundity"<<endl;
-    bodywtout<<"#Yr Seas Sex Bio_Pattern BirthSeas Fleet "<<age_vector<<endl;
-    save_gparm=0;
-    y=styr;
-    fishery_on_off=1;
-    setup_recdevs();
-    get_initial_conditions();
-    get_time_series();  //  in final_section
-    Get_Forecast();
-    bodywtout<<-9999<<" "<<1<<" "<<1<<" "<<1<<" "<<1<<" "<<0<<" "<<Wt_Age_mid(1,1)<<" #terminator "<<endl;
-    bodywtout.close();
-    if(show_MSY==1) cout<<" write wtatage.ss_new "<<endl;
     }
 
     warning<<" N warnings: "<<N_warn<<endl;

@@ -1667,7 +1667,7 @@ FUNCTION void Make_FishSelex()
 
           }  //  end age loop
         }
-        if(save_for_report==2 && ishadow(GP2(g))==0)
+        if(write_bodywt>0 && ishadow(GP2(g))==0)
           {
             if(sum(fish_body_wt(tz,g,f))>0.00001)
             {

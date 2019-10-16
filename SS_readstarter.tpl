@@ -70,12 +70,14 @@
   number temp;
   number temp1;
   int save_for_report;
+  int write_bodywt;
   int save_gparm;
   int save_gparm_print;
   int N_warn;
   !! save_for_report=0;
   !! save_gparm=0;
   !! N_warn=0;
+  !! write_bodywt=0;
 
   int Nparm_on_bound;
 

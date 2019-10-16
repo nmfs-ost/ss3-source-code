@@ -220,7 +220,6 @@ FUNCTION void Get_expected_values();
             if(do_once==1) {N_warn++; warning<<"warn just once for:  Observation exists, but nil selected fish for year, seas, fleet "<<y<<" "<<s<<" "<<f<<endl;}
             exp_l_temp+=1.0e-05;
           }
-
         for (data_type=1;data_type<=9;data_type++)
         {
           switch(data_type)
@@ -420,6 +419,8 @@ FUNCTION void Get_expected_values();
                    break;
                  }
                }
+              if(y>endyr) warning<<y<<" exp vbio  "<<vbio<<" lnQ "<<Svy_log_q(f,j)<<" est "<<Svy_est(f,j)<<endl;
+
               }
               break;
             }  //  end survey index
