@@ -390,8 +390,6 @@ FUNCTION void write_nudata()
       t=Svy_time_t(f,i);
       ALK_time=Svy_ALK_time(f,i);
       report1 << Show_Time(t,1)<<" "<<Svy_super(f,i)*data_time(ALK_time,f,1)<<" "<<f*Svy_use(f,i)<<" ";
-      if(Svy_use(f,i)>0 || y>retro_yr)
-      {
         if(Svy_errtype(f)>=0)  // lognormal
         {
           report1 << mfexp(Svy_est(f,i));
@@ -400,11 +398,6 @@ FUNCTION void write_nudata()
         {
           report1<<Svy_est(f,i);
         }
-      }
-      else
-      {
-        report1 << Svy_obs(f,i);
-      }
       report1 <<" "<<Svy_se_rd(f,i)<<" #_orig_obs: "<<Svy_obs(f,i)<<" "<<fleetname(f)<<endl;
     }
     report1<<"-9999 1 1 1 1 # terminator for survey observations "<<endl;
@@ -425,10 +418,7 @@ FUNCTION void write_nudata()
     {
       ALK_time=disc_time_ALK(f,i);
       report1 << Show_Time(disc_time_t(f,i),1)<<" "<<yr_disc_super(f,i)*data_time(ALK_time,f,1)<<" "<<f*yr_disc_use(f,i)<<" ";
-      if(yr_disc_use(f,i) >= 0.0 )
         {report1 << exp_disc(f,i);}
-      else
-      {report1 << obs_disc(f,i);}
       report1 << " "<< cv_disc(f,i)<<" #_orig_obs: "<<obs_disc(f,i)<<" #_ "<<fleetname(f)<<endl;
     }
   }
@@ -498,13 +488,8 @@ FUNCTION void write_nudata()
     {
      for (i=1;i<=Nobs_l(f);i++)
      {
-      if(header_l(f,i,3)>0) // do only if this was a real observation
-      {
        k=1000;  if(nsamp_l(f,i)<k) k=nsamp_l(f,i);
        exp_l_temp_dat = nsamp_l(f,i)*value(exp_l(f,i)/sum(exp_l(f,i)));
-      }
-      else
-      {exp_l_temp_dat = obs_l(f,i);}
      report1 << header_l_rd(f,i)(1,3)<<" "<<gen_l(f,i)<<" "<<mkt_l(f,i)<<" "<<nsamp_l(f,i)<<" "<<exp_l_temp_dat<<endl;
     }}}
     report1<<-9999.<<" ";
@@ -554,14 +539,9 @@ FUNCTION void write_nudata()
     {
      for (i=1;i<=Nobs_a(f);i++)
      {
-     if(header_a(f,i,3)>0) // if real observation
-     {
       k=1000;  if(nsamp_a(f,i)<k) k=nsamp_a(f,i);  // note that nsamp is adjusted by var_adjust, so var_adjust
                                                    // should be reset to 1.0 in control files that read the nudata.dat files
       exp_a_temp = nsamp_a(f,i)*value(exp_a(f,i)/sum(exp_a(f,i)));
-     }
-     else
-     {exp_a_temp = obs_a(f,i);}
     report1 << header_a(f,i)(1)<<" "<<header_a_rd(f,i)(2,3)<<" "<<header_a(f,i)(4,8)<<" "<<nsamp_a(f,i)<<" "<<exp_a_temp<<endl;
     }
     }
@@ -590,14 +570,9 @@ FUNCTION void write_nudata()
        for (a=1;a<=n_abins2;a++)
        {
          report1 << " " ;
-         if(obs_ms_n(f,i,a)>0)
-          {
             temp=exp_ms(f,i,a);
             if(temp<=0.) {temp=0.0001;}
             report1 << temp;
-          }
-         else
-             {report1 << obs_ms(f,i,a) ;}
        }
        report1 << endl<< obs_ms_n_read(f,i) << endl;
      }
@@ -634,14 +609,7 @@ FUNCTION void write_nudata()
     report1<<"#_method yr month fleet sex partition SampleSize <data> "<<endl;
     for (iobs=1;iobs<=SzFreq_totobs;iobs++)
     {
-      if(SzFreq_obs_hdr(iobs,3)>0)  // flag for date range in bounds
-      {
         report1<<SzFreq_obs1(iobs)(1,7)<<" "<<SzFreq_exp(iobs)<<endl;
-      }
-      else
-      {
-        report1<<SzFreq_obs1(iobs)<<endl;
-      }
     }
   }
 
@@ -760,8 +728,6 @@ FUNCTION void write_nudata()
     t=Svy_time_t(f,i);
     ALK_time=Svy_ALK_time(f,i);
     report1 << Show_Time(t,1)<<" "<<Svy_super(f,i)*data_time(ALK_time,f,1)<<" "<<f*Svy_use(f,i)<<" ";
-    if(Svy_use(f,i) > 0)
-    {
       if(Svy_errtype(f)==-1)  // normal error
       {
         report1<<Svy_est(f,i)+randn(radm)*Svy_se_use(f,i);    //  uses Svy_se_use, not Svy_se_rd to include both effect of input var_adjust and extra_sd
@@ -775,11 +741,7 @@ FUNCTION void write_nudata()
         temp = sqrt( (Svy_errtype(f)+1.)/Svy_errtype(f));  // where df=Svy_errtype(f)
         report1 << mfexp(Svy_est(f,i)+ randn(radm)*Svy_se_use(f,i)*temp );    //  adjusts the sd by the df sample size
       }
-    }
-    else
-    {
-      report1 << Svy_obs(f,i);
-    }
+
     report1 <<" "<<Svy_se_rd(f,i)<<" #_orig_obs: "<<Svy_obs(f,i)<<" "<<fleetname(f)<<endl;
   }
   report1<<"-9999 1 1 1 1 # terminator for survey observations "<<endl;
@@ -799,8 +761,6 @@ FUNCTION void write_nudata()
     {
       ALK_time=disc_time_ALK(f,i);
       report1 << Show_Time(disc_time_t(f,i),1)<<" "<<yr_disc_super(f,i)*data_time(ALK_time,f,1)<<" "<<f*yr_disc_use(f,i)<<" ";
-      if(yr_disc_use(f,i) >= 0.0 )
-      {
         if(disc_errtype(f)>=1)
         {temp=exp_disc(f,i) + randn(radm)*sd_disc(f,i)*sqrt((disc_errtype(f)+1.)/disc_errtype(f)) * exp_disc(f,i); if(temp<0.001) temp=0.001;}
         else if(disc_errtype(f)==0)
@@ -811,9 +771,7 @@ FUNCTION void write_nudata()
         {temp=exp_disc(f,i) * mfexp(randn(radm)*sd_disc(f,i));}
         else if(disc_errtype(f)==-3)
         {temp=exp_disc(f,i) + randn(radm)*(sd_disc(f,i) / sqrt(cumd_norm( (1 - exp_disc(f,i)) / sd_disc(f,i) ) - cumd_norm( (0 - exp_disc(f,i)) / sd_disc(f,i) ))); if(temp<0.001) temp=0.001; }
-      }
-      else
-      {temp=obs_disc(f,i);}
+
       report1 <<" "<<temp<< " "<< cv_disc(f,i)<<" #_orig_obs: "<<obs_disc(f,i)<<" #_ "<<fleetname(f)<<endl;
     }
   }
@@ -832,15 +790,8 @@ FUNCTION void write_nudata()
   {
     for (i=1;i<=nobs_mnwt;i++)
     {
-      if(mnwtdata(3,i)>0 && mnwtdata(6,i)>0.)
-      {
-        temp=exp_mnwt(i)+randn(radm)*mnwtdata(7,i)*sqrt((DF_bodywt+1.)/DF_bodywt) *exp_mnwt(i);
-        if(temp<=0.0) {temp=0.0001;}
-      }
-      else
-      {
-        temp=mnwtdata(6,i);
-      }
+      temp=exp_mnwt(i)+randn(radm)*mnwtdata(7,i)*sqrt((DF_bodywt+1.)/DF_bodywt) *exp_mnwt(i);
+      if(temp<=0.0) {temp=0.0001;}
       f=abs(mnwtdata(3,i));
       report1 << Show_Time(mnwtdata(1,i),1)<<" "<<mnwtdata(2,i)<<" "<<mnwtdata(3,i)<<" "<<mnwtdata(4,i)<<" "<<mnwtdata(5,i)<<" "<<
       temp<<" "<<mnwtdata(7,i)-var_adjust(3,f)<<" #_orig_obs: "<<mnwtdata(6,i)<<"  #_ "<<fleetname(f)<<endl;    }
@@ -890,8 +841,6 @@ FUNCTION void write_nudata()
     {
      for (i=1;i<=Nobs_l(f);i++)
      {
-      if(header_l(f,i,3)>0) // do only if this was a real observation
-      {
         if(Comp_Err_L(f)==0)  //  multinomial
         {
            k=50000;  if(nsamp_l(f,i)<k) k=nsamp_l(f,i);
@@ -911,9 +860,7 @@ FUNCTION void write_nudata()
            for (compindex=1; compindex<=k; compindex++) // cumulate the multinomial draws by index in the new data
            {exp_l_temp_dat(temp_mult(compindex)) += 1.0;}
         }
-      }
-      else
-      {exp_l_temp_dat = obs_l(f,i);}
+
      report1 << header_l_rd(f,i)(1,3)<<" "<<gen_l(f,i)<<" "<<mkt_l(f,i)<<" "<<nsamp_l(f,i)<<" "<<exp_l_temp_dat<<endl;
     }}}
     report1<<-9999.<<" ";
@@ -964,8 +911,6 @@ FUNCTION void write_nudata()
     {
        for (i=1;i<=Nobs_a(f);i++)
        {
-       if(header_a(f,i,3)>0) // if real observation
-       {
         if(Comp_Err_A(f)==0) //  multinomial
         {
           k=50000;  if(nsamp_a(f,i)<k) k=nsamp_a(f,i);  // note that nsamp is adjusted by var_adjust, so var_adjust
@@ -988,9 +933,6 @@ FUNCTION void write_nudata()
           {exp_a_temp(temp_mult(compindex)) += 1.0;}
         }
 
-       }
-       else
-       {exp_a_temp = obs_a(f,i);}
        report1 << header_a(f,i)(1)<<" "<<header_a_rd(f,i)(2,3)<<" "<<header_a(f,i)(4,8)<<" "<<nsamp_a(f,i)<<" "<<exp_a_temp<<endl;
       }
     }
@@ -1020,14 +962,9 @@ FUNCTION void write_nudata()
          for (a=1;a<=n_abins2;a++)
          {
           report1<< " " ;
-          if(obs_ms_n(f,i,a)>0)
-          {
             temp=exp_ms(f,i,a)+randn(radm)*exp_ms_sq(f,i,a)/obs_ms_n(f,i,a);
             if(temp<=0.) {temp=0.0001;}
             report1 << temp;
-          }
-          else
-          {report1 << exp_ms(f,i,a) ;}
          }
          report1 << endl<< obs_ms_n_read(f,i) << endl;
        }
@@ -1067,8 +1004,6 @@ FUNCTION void write_nudata()
     dvector SzFreq_newdat(1,j);
     for (iobs=1;iobs<=SzFreq_totobs;iobs++)
     {
-      if(SzFreq_obs_hdr(iobs,3)>0)  // flag for date range in bounds and used
-      {
        j=50000;  if(SzFreq_obs1(iobs,7)<j) j=SzFreq_obs1(iobs,7);
        SzFreq_newdat.initialize();
        temp_probs3(1,SzFreq_Setup2(iobs)) = value(SzFreq_exp(iobs));
@@ -1077,11 +1012,6 @@ FUNCTION void write_nudata()
        {SzFreq_newdat(temp_mult(compindex)) += 1.0;}
 
         report1<<SzFreq_obs1(iobs)(1,7)<<" "<<SzFreq_newdat(1,SzFreq_Setup2(iobs))<<endl;
-      }
-      else
-      {
-        report1<<SzFreq_obs1(iobs)<<endl;
-      }
     }
   }
   // begin tagging data section #3 (bootstrap data)

@@ -335,7 +335,7 @@
   matrix catch_bioT(1,N_ReadCatch,1,j)
   matrix catch_ret_obs(1,Nfleet,styr-nseas,TimeMax+nseas)
   imatrix do_Fparm(1,Nfleet,styr-nseas,TimeMax+nseas)
-  3darray catch_seas_area(styr,TimeMax,1,pop,0,Nfleet)
+  3iarray catch_seas_area(styr,TimeMax,1,pop,0,Nfleet)
   matrix totcatch_byarea(styr,TimeMax,1,pop)
   vector totcat(styr-1,endyr)  //  by year, not by t
   int first_catch_yr

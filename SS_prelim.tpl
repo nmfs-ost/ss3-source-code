@@ -748,7 +748,7 @@ PRELIMINARY_CALCS_SECTION
 
 //  SS_Label_Info_6.8 #Go thru biological calculations once, with do_once flag=1 to produce extra output to echoinput.sso
     cout<< " ready to evaluate once in prelim"<<endl;
-    echoinput<< " ready to evaluate once "<<endl;
+    echoinput<< " ready to evaluate once in prelim"<<endl;
     ALK_subseas_update=1;  //  vector to indicate if ALK needs recalculating
     do_once=1;
     niter=0;

@@ -2,7 +2,6 @@
 //  SS_Label_Section_7.0 #PROCEDURE_SECTION
 PROCEDURE_SECTION
   {
-
   Mgmt_quant.initialize();
   Extra_Std.initialize();
   CrashPen.initialize();
