@@ -1,5 +1,11 @@
 Version;Date;Description;VLAB_issue;Input_Change?;Type;Category;Sub_Category
-3.30.14.07;2019-10-20;new bootstrap data now functioning in forecast for out to 100 years;#30394;-;fix;forecast;calc
+3.30.14.08;2019-11-08;fix problem that converted fractional data months to integers;#71109;-;fix;input;input
+3.30.14.08;2019-11-08;clean-up biology function calls to pass time indexes to growth3 and Lorenzen and generally;#19553;revise;
+3.30.14.08;2019-11-08;fix output issue with recruitment in time_series for seasonal models;#70658;fix;
+3.30.14.08;2019-11-08;revise the nil expected value warning so it only adds a smaller constant;#70635;revise
+3.30.14.08;2019-11-08;add selectivity modifier so age 0 fish can be omitted;#69509;new
+3.30.14.08;2019-11-08;add more warnings to help with depletion fleets;#69772;revise
+3.30.14.07;2019-10-20;new bootstrap data now functioning in forecast for out to 50 years;#30394;-;fix;forecast;calc
 3.30.14.07;2019-10-16;merge writing of wtatage.ss_new into other reporting rather than separate iteration;#69960;-;revise;bodywt;calc
 
 3.30.14.06;2019-10-15;fix Z-at-age output for N morphs>1;#69869;-;fix;output;output

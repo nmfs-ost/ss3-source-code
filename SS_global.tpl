@@ -113,9 +113,8 @@ GLOBALS_SECTION
 //  timing_constants(6)-endyr;
 
     y=int(to_process(1));
-    month=abs(to_process(2));
+    month=fabs(to_process(2));
     f=abs(int(to_process(3)));
-
     if(timing_constants(1)==1)  // reading season
     {
       s=int(month);
@@ -720,7 +719,6 @@ FINAL_SECTION
     {
     if(Do_Rebuilder>0 && mceval_counter<=1) write_rebuilder_output();
     cout<<" finished rebuilder.sso "<<endl;
-
     write_SIStable();
     cout<<" finished SIStable.sso "<<endl;
     
@@ -739,6 +737,10 @@ FINAL_SECTION
 //  SS_Label_Info_12.4.5 #Call fxn write_nucontrol() to produce control.ss_new
     write_nucontrol();
     if(show_MSY==1) cout<<" finished control.ss_new "<<endl;
+    }
+    else
+    {
+    	cout<<"*.ss_new files are not produced with reportdetail=0"<<endl;
     }
 
 //  SS_Label_Info_12.4.6 #Call fxn write_Bzero_output()  appended to report.sso

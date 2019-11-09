@@ -2162,11 +2162,11 @@ FUNCTION void write_bigoutput()
           bio_t=styr+(endyr-styr)*nseas+s-1;
           subseas=1;
           ALK_idx=(s-1)*N_subseas+subseas;
-          get_growth3(s, subseas);
+          get_growth3(styr,t,s, subseas);
           Make_AgeLength_Key(s, subseas);  //  for begin season
           subseas=mid_subseas;
           ALK_idx=(s-1)*N_subseas+subseas;
-          get_growth3(s, subseas);
+          get_growth3(styr,t,s, subseas);
           Make_AgeLength_Key(s, subseas);  //  for midseason
           if(s==spawn_seas)
           {
@@ -2174,7 +2174,7 @@ FUNCTION void write_bigoutput()
             ALK_idx=(s-1)*N_subseas+subseas;
             if(spawn_subseas!=1 && spawn_subseas!=mid_subseas)
             {
-              get_growth3(s, subseas);
+              get_growth3(styr,t,s, subseas);
               Make_AgeLength_Key(s, subseas);  //  spawn subseas
             }
             Make_Fecundity();

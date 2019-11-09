@@ -1033,15 +1033,16 @@ FUNCTION void Process_STDquant()
 
     if(Growth_Std_Cnt>0)
     {
+      int t_write=styr+(endyr-styr)*nseas;  //  season 1 of endyr
       for (i=1;i<=Growth_Std_Cnt;i++)
       {
         j=Growth_Std_Pick(i);  // selected age
         k=g_finder(Do_Growth_Std,1);  // selected GP and gender  gp3
-        Extra_Std(gender*Selex_Std_Cnt+i)=Ave_Size(t,mid_subseas,k,j);
+        Extra_Std(gender*Selex_Std_Cnt+i)=Ave_Size(t_write,mid_subseas,k,j);
         if(gender==2)
         {
           k=g_finder(Do_Growth_Std,2);  // selected GP and gender  gp3
-          Extra_Std(gender*Selex_Std_Cnt+Growth_Std_Cnt+i)=Ave_Size(t,mid_subseas,k,j);
+          Extra_Std(gender*Selex_Std_Cnt+Growth_Std_Cnt+i)=Ave_Size(t_write,mid_subseas,k,j);
         }
       }
     }

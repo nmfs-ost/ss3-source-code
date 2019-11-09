@@ -1,6 +1,6 @@
 //********************************************************************
  /*  SS_Label_FUNCTION 46  Get_expected_values:  check for data */
-FUNCTION void Get_expected_values();
+FUNCTION void Get_expected_values(const int y,const int t);
   {
     dvariable temp1;
     dvar_vector age_exp(0,nages2);
@@ -11,7 +11,7 @@ FUNCTION void Get_expected_values();
     ALK_time=(y-styr)*nseas*N_subseas+(s-1)*N_subseas+subseas;
     if(ALK_subseas_update(ALK_idx)==1 || have_data(ALK_time,0,0,0)>0)  //  need ALK update for growth reasons or for data reasons
     {
-      get_growth3(s, subseas);
+      get_growth3(y,t,s, subseas);
       Make_AgeLength_Key(s, subseas);
     }
     for (f=1;f<=Nfleet;f++)
@@ -217,8 +217,8 @@ FUNCTION void Get_expected_values();
 
         if(sum(exp_l_temp)<1.0e-8)
           {
-            if(do_once==1) {N_warn++; warning<<"warn just once for:  Observation exists, but nil selected fish for year, seas, fleet "<<y<<" "<<s<<" "<<f<<endl;}
-            exp_l_temp+=1.0e-05;
+           if(do_once==1) {N_warn++; warning<<current_phase()<<" "<<niter<<"warn in first call:  Observation exists, but nil selected fish for year, seas, fleet "<<y<<" "<<s<<" "<<f<<endl;}
+            exp_l_temp+=1.0e-09;
           }
         for (data_type=1;data_type<=9;data_type++)
         {
@@ -365,8 +365,7 @@ FUNCTION void Get_expected_values();
                  }
                  else
                  {
-                   y=Svy_yr(f,j);
-                   Svy_log_q(f,j)=parm_timevary(Qparm_timevary(Q_setup_parms(f,1)),y);
+                   Svy_log_q(f,j)=parm_timevary(Qparm_timevary(Q_setup_parms(f,1)),Svy_yr(f,j));
                  }
                }
 

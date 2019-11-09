@@ -759,7 +759,7 @@ PRELIMINARY_CALCS_SECTION
     make_timevaryparm();
 
 //  SS_Label_Info_6.8.1 #Call fxn get_MGsetup() to copy MGparms to working array and applies time-varying factors
-    get_MGsetup();
+    get_MGsetup(styr);
     echoinput<<" did MG setup"<<endl;
 
 //  SS_Label_Info_6.8.2 #Call fxn get_growth1() to calculate quantities that are not time-varying
@@ -771,7 +771,7 @@ PRELIMINARY_CALCS_SECTION
     CVLmax=value(CVLmax);
 
 //  SS_Label_Info_6.8.3 #Call fxn get_growth2() to calculate size-at-age
-    get_growth2(); //   in preliminary calcs
+    get_growth2(styr); //   in preliminary calcs
     echoinput<<" did growth2 in prelim calcs"<<endl<<Ave_Size(styr,1,1)<<endl;
     if(minL>10.0) {N_warn++; warning<<" Minimum size bin is:_"<<minL<<"; which is >10cm, which is large for use as size-at-age 0.0 recruitment"<<endl;}
     temp=Ave_Size(styr,1,1,nages);
@@ -785,7 +785,7 @@ PRELIMINARY_CALCS_SECTION
       for(subseas=1;subseas<=N_subseas;subseas++)
       {
         ALK_idx=(s-1)*N_subseas+subseas;
-        get_growth3(s, subseas);  //  this will calculate the cv of growth for all subseasons of first year
+        get_growth3(styr,t,s, subseas);  //  this will calculate the cv of growth for all subseasons of first year
       }
     }
     echoinput<<"ready to do natmort "<<endl;
@@ -810,7 +810,7 @@ PRELIMINARY_CALCS_SECTION
       for(subseas=1;subseas<=N_subseas;subseas++)
       {
         ALK_idx=(s-1)*N_subseas+subseas;
-        get_growth3(s, subseas);  //  this will calculate the cv of growth for all subseasons of first year
+        get_growth3(styr,t,s, subseas);  //  this will calculate the cv of growth for all subseasons of first year
         Make_AgeLength_Key(s,subseas);   //  ALK_idx calculated within Make_AgeLength_Key
         ALK(ALK_idx) = value(ALK(ALK_idx));
       }

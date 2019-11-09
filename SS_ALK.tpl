@@ -166,6 +166,7 @@ FUNCTION dvar_matrix calc_ALK(const dvector &len_bins, const ivector &ALK_range_
   dvar_vector AL(1,nlength+1); // create temporary vector
   dvariable len_dev;
 //  ALK_count++;
+  ALK_w.initialize();
   for (a = 0; a <= nages; a++)
   {
     AL.initialize();

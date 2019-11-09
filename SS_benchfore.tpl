@@ -1103,7 +1103,6 @@ FUNCTION void Get_Forecast()
    {
      Fcast_Fmult=0.0;
    }
-    warning<<"Annual_Forecast_Fmult: "<<Fcast_Fmult<<" "<<SPR_Fmult<<endl;
 
   if(show_MSY==1)  //  write more headers
   {
@@ -1291,9 +1290,10 @@ FUNCTION void Get_Forecast()
         if(timevary_MG(y,2)>0 || timevary_MG(y,3)>0 || save_for_report>0 || WTage_rd>0)
         {
           s=1;
+          t=t_base+s;
           subseas=1;  //  begin season  note that ALK_idx re-calculated inside get_growth3
           ALK_idx=(s-1)*N_subseas+subseas;  //  redundant with calc inside get_growth3 ????
-          get_growth3(s, subseas);  //  not needed because size-at-age already has been propagated to seas 1 subseas 1
+          get_growth3(y,t,s, subseas);  //  not needed because size-at-age already has been propagated to seas 1 subseas 1
           Make_AgeLength_Key(s, subseas);  //  this will give wt_age_beg before any time-varying parameter changes for this year
         }
 
@@ -1336,9 +1336,9 @@ FUNCTION void Get_Forecast()
         
       if(timevary_MG(endyr+1,2)>0 || save_for_report>0)  //  so uses endyr+1 timevary setting for duration of forecast
       {
-        get_MGsetup();
+        get_MGsetup(y);
         ALK_subseas_update=1;  //  vector to indicate if ALK needs recalculating
-        get_growth2();
+        get_growth2(y);
       }
       if(timevary_MG(endyr+1,1)>0) get_natmort();
       if(timevary_MG(endyr+1,3)>0) get_wtlen();
@@ -1373,11 +1373,11 @@ FUNCTION void Get_Forecast()
             if(timevary_MG(endyr+1,2)>0 || save_for_report>0)
             {
               subseas=1;  //   for begin of season   ALK_idx calculated within Make_AgeLength_Key
-              get_growth3(s, subseas);
+              get_growth3(y,t,s, subseas);
               Make_AgeLength_Key(s, subseas);  //  begin season
 
               subseas=mid_subseas;
-              get_growth3(s, subseas);
+              get_growth3(y,t,s, subseas);
               Make_AgeLength_Key(s, subseas);  //  for middle of season (begin of 3rd quarter)
 
 //  SPAWN-RECR:   call Make_Fecundity in forecast
@@ -1386,7 +1386,7 @@ FUNCTION void Get_Forecast()
                 subseas=spawn_subseas;
                 if(spawn_subseas!=1 && spawn_subseas!=mid_subseas)
                 {
-                  get_growth3(s, subseas);
+                  get_growth3(y,t,s, subseas);
                   Make_AgeLength_Key(s, subseas);  //  spawn subseas
                 }
               }
@@ -1905,8 +1905,7 @@ FUNCTION void Get_Forecast()
            if(ABC_Loop==ABC_Loop_end && Fcast_Loop1==Fcast_Loop_Control(1))
            	{
            		write_bodywt=write_bodywt_save;
-           if(y<endyr+20) Get_expected_values();
-           if(y==2003) warning<<ABC_Loop<<" "<<y<<" got exp in forecast "<<Svy_est(3)<<endl;
+           if(y<endyr+50) Get_expected_values(y,t);
            	}
            if(show_MSY==1)
            {

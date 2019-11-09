@@ -1,6 +1,6 @@
 //*********************************************************************
  /*  SS_Label_Function_14 #Get_MGsetup:  apply time-varying factors this year to the MG parameters to create mgp_adj vector */
-FUNCTION void get_MGsetup()
+FUNCTION void get_MGsetup(const int yz)
   {
     mgp_adj=MGparm;  //  set all to base parm value
     int y1;
@@ -124,7 +124,7 @@ FUNCTION void get_growth1()
 
 //********************************************************************
  /*  SS_Label_Function_ 16 #get_growth2; (do seasonal growth calculations for a selected year) */
-FUNCTION void get_growth2()
+FUNCTION void get_growth2(const int y)
   {
 //  called at beginning of each year, so y is known
 //  if y=styr, then does equilibrium size-at-age according to start year growth parameters
@@ -676,7 +676,7 @@ FUNCTION void get_growth2()
 
   //  *******************************************************************************************************
   //  SS_Label_Function_16.5  #get_growth3 which calculates mean size-at-age for selected subseason
-FUNCTION void get_growth3(const int s, const int subseas)
+FUNCTION void get_growth3(const int y, const int t, const int s, const int subseas)
   {
 //  progress mean growth through time series, accounting for seasonality and possible change in parameters
 //   get mean size at the beginning and end of the season
@@ -949,7 +949,7 @@ FUNCTION void get_natmort()
           case 2:  //  Lorenzen M
           {
             Loren_temp2=L_inf(gp)*(mfexp(-VBK(gp,K_index)*VBK_seas(0))-1.);   // need to verify use of VBK_seas here
-            t=styr+(yz-styr)*nseas+Bseas(g)-1;
+            int Loren_t=styr+(yz-styr)*nseas+Bseas(g)-1;
             Loren_temp=Ave_Size(styr,mid_subseas,g,int(natM_amin));  // uses mean size in middle of season 1 for the reference age
             Loren_M1=natMparms(1,gp)/log(Loren_temp/(Loren_temp+Loren_temp2));
             for (s=nseas;s>=1;s--)
@@ -961,7 +961,7 @@ FUNCTION void get_natmort()
                 {natM(s,gpi,a)=natM(s+1,gpi,a);}
                 else
 //                {natM(s,gpi,a)=log(Ave_Size(t,ALK_idx,g,a)/(Ave_Size(t,ALK_idx,g,a)+Loren_temp2))*Loren_M1;}
-                {natM(s,gpi,a)=log(Ave_Size(t,mid_subseas,g,a)/(Ave_Size(t,mid_subseas,g,a)+Loren_temp2))*Loren_M1;}
+                {natM(s,gpi,a)=log(Ave_Size(Loren_t,mid_subseas,g,a)/(Ave_Size(Loren_t,mid_subseas,g,a)+Loren_temp2))*Loren_M1;}
                 surv1(s,gpi,a)=mfexp(-natM(s,gpi,a)*seasdur_half(s));
                 surv2(s,gpi,a)=square(surv1(s,gpi,a));
               }   // end age loop

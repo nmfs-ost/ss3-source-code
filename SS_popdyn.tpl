@@ -80,7 +80,7 @@ FUNCTION void get_initial_conditions()
   make_timevaryparm();  //  this fills array parm_timevary for all years;   densitydependence must be done year-by-year later
   if(MG_active(0)>0 || save_for_report>0)
     {
-      get_MGsetup();
+      get_MGsetup(y);
     }
  #ifdef DO_ONCE
   if(do_once==1) cout<<" MG setup OK "<<endl;
@@ -89,15 +89,18 @@ FUNCTION void get_initial_conditions()
  #ifdef DO_ONCE
   if(do_once==1) cout<<" growth1 OK"<<endl;
  #endif
-  if(MG_active(2)>0 || save_for_report>0)
+  if(MG_active(2)>0 || MG_active(3)>0 || save_for_report>0)
   {
     ALK_subseas_update=1;  //  to indicate that all ALKs need calculation
-    get_growth2();
+    get_growth2(y);
+    t=styr-1;
     for (s=1;s<=nseas;s++)
     {
+    	t++;
       for(subseas=1;subseas<=N_subseas;subseas++)  //  do all subseasons in first year
       {
-        get_growth3(s, subseas);  //  in case needed for Lorenzen M
+        get_growth3(y,t,s, subseas);  //  in case needed for Lorenzen M
+        Make_AgeLength_Key(s, subseas);
       }
     }
   }
@@ -171,10 +174,11 @@ FUNCTION void get_initial_conditions()
  #endif
 
   //  SS_Label_Info_23.3 #Loop seasons and subseasons
+  t=styr-1;
   for (s=1;s<=nseas;s++)
   {
-    t = styr+s-1;
-
+    t++;
+ /*   //  redundant
     if(MG_active(2)>0 || MG_active(3)>0 || save_for_report>0)  //  initial year; if growth parms are active, get growth
     {
       for(subseas=1;subseas<=N_subseas;subseas++)  //  do all subseasons in first year
@@ -184,6 +188,7 @@ FUNCTION void get_initial_conditions()
         Make_AgeLength_Key(s, subseas);
       }
     }
+ */
 
     if(WTage_rd>0)
     {
@@ -286,7 +291,7 @@ FUNCTION void get_initial_conditions()
            SSB_N_yr(eq_yr) += make_mature_numbers(GP4(g))*natage(t+s,p,g);
         }
         Save_PopAge(t+s,p,g)=natage(t+s,p,g);
-        Recr(p,t+s)+=equ_Recr*recr_dist(GP(g),settle_g(g),p)*platoon_distr(GP2(g));
+        Recr(p,t+1+Settle_seas_offset(settle_g(g)))+=equ_Recr*recr_dist(GP(g),settle_g(g),p)*platoon_distr(GP2(g));
         Save_PopBio(t+s,p,g)=elem_prod(natage(t+s,p,g),Wt_Age_beg(s,g));
       }
     }
@@ -449,7 +454,8 @@ FUNCTION void get_initial_conditions()
         }
         Save_PopBio(t+s,p,g)=elem_prod(natage(t+s,p,g),Wt_Age_beg(s,g));
         Save_PopAge(t+s,p,g)=natage(t+s,p,g);
-        Recr(p,t+s)+=equ_Recr*recr_dist(GP(g),settle_g(g),p)*platoon_distr(GP2(g));
+//        warning<<s<<" init  "<<t+Settle_seas_offset(settle_g(g))<<endl;
+        Recr(p,t+1+Settle_seas_offset(settle_g(g)))+=equ_Recr*recr_dist(GP(g),settle_g(g),p)*platoon_distr(GP2(g));
       }
     }
 
@@ -580,11 +586,11 @@ FUNCTION void get_time_series()
     if(do_densitydependent==1)  make_densitydependent_parm(y);  //  call to adjust for density dependence
         
   //  SS_Label_Info_24.1.1 #Update the time varying biology factors if necessary
-      if(timevary_MG(y,0)>0 || save_for_report>0) get_MGsetup();
+      if(timevary_MG(y,0)>0 || save_for_report>0) get_MGsetup(y);
       if(timevary_MG(y,2)>0)
         {
           ALK_subseas_update=1;  // indicate that all ALKs will need re-estimation
-          get_growth2();
+          get_growth2(y);
         }
       if(timevary_MG(y,1)>0) get_natmort();
       if(y>=Bmark_Yr(1)&&y<=Bmark_Yr(2))
@@ -657,11 +663,11 @@ FUNCTION void get_time_series()
       if(timevary_MG(y,2)>0 || save_for_report==1)
       {
         subseas=1;  //  begin season  note that ALK_idx re-calculated inside get_growth3
-        get_growth3(s, subseas);
+        get_growth3(y,t,s, subseas);
         Make_AgeLength_Key(s, subseas);
 
         subseas=mid_subseas;
-        get_growth3(s, subseas);
+        get_growth3(y,t,s, subseas);
         Make_AgeLength_Key(s, subseas);  //  for midseason
 //  SPAWN-RECR:   call Make_Fecundity in time series
         if(s==spawn_seas)
@@ -669,7 +675,7 @@ FUNCTION void get_time_series()
           if(spawn_subseas!=1 && spawn_subseas!=mid_subseas)
           {
             subseas=spawn_subseas;
-            get_growth3(s, subseas);
+            get_growth3(y,t,s, subseas);
             Make_AgeLength_Key(s, subseas);  //  spawn subseas
           }
         }
@@ -1235,7 +1241,7 @@ FUNCTION void get_time_series()
       }
 
   //  SS_Label_Info_24.7  #call to Get_expected_values
-    Get_expected_values();
+    Get_expected_values(y,t);
   //  SS_Label_Info_24.8  #hermaphroditism
       if(Hermaphro_Option!=0)
       {
@@ -1508,6 +1514,7 @@ FUNCTION void Do_Equil_Calc(const prevariable& equ_Recr)
         if(use_morph(g)>0)
         {
           settle=settle_g(g);
+          
           for (p=1;p<=pop;p++)
           {
             equ_numbers(Settle_seas(settle),p,g,Settle_age(settle)) = equ_Recr*recr_dist(GP(g),settle,p)*platoon_distr(GP2(g))*

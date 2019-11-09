@@ -87,7 +87,7 @@
     }
   seasdur_half = seasdur*0.5;   // half a season
   subseasdur_delta=seasdur/double(N_subseas);
-  TimeMax = styr+(endyr+100-styr)*nseas+nseas-1;
+  TimeMax = styr+(endyr+50-styr)*nseas+nseas-1;
   retro_yr=endyr+retro_yr;
 
   azero_seas(1)=0.;
@@ -323,14 +323,14 @@
   int ALK_time_max
 
  LOCAL_CALCS
-  ALK_time_max=(endyr-styr+100)*nseas*N_subseas;  //  sets maximum size for data array indexing  20 years into forecast is allowed
+  ALK_time_max=(endyr-styr+50)*nseas*N_subseas;  //  sets maximum size for data array indexing  20 years into forecast is allowed
  END_CALCS
 !!//  SS_Label_Info_2.1.6  #Indexes for data timing.  "have_data" and "data_time" hold pointers for data occurrence, timing, and ALK need
   int data_type
   number data_timing
-  4iarray have_data(1,ALK_time_max,0,Nfleet,0,9,0,50);
+  4iarray have_data(1,ALK_time_max,0,Nfleet,0,9,0,100);
 
-  imatrix have_data_yr(styr,endyr+100,0,Nfleet)
+  imatrix have_data_yr(styr,endyr+50,0,Nfleet)
 
 //  have_data stores the data index of each datum occurring at time ALK_time, for fleet f of observation type k.  Up to 150 data are allowed due to CAAL data
 //  have_data(ALK_idx,0,0,0) is overall indicator that some datum requires ALK update in this ALK_time
@@ -610,15 +610,14 @@
     for (i=0;i<=Svy_N_rd-1;i++)  // loop all, including those out of yr range
     {
       y= Svy_data[i](1);
-      if(y>endyr +100)
-      {N_warn++;warning<<"forecast observations cannot be beyond endyr +100; SS will exit"<<endl; exit(1);}
+      if(y>endyr +50)
+      {N_warn++;warning<<"forecast observations cannot be beyond endyr +50; SS will exit"<<endl; exit(1);}
       if(y>=styr)
       {
 //  call a global function to calculate data timing and create various indexes
 //  function will return: data_timing, ALK_time, real_month, use_midseas
         timing_input(1,3)=Svy_data[i](1,3);
         get_data_timing(timing_input, timing_constants, timing_i_result, timing_r_result, seasdur, subseasdur_delta, azero_seas, surveytime);
-
         f=abs( Svy_data[i](3));
         if(y>retro_yr) Svy_data[i](3)=-f;
         Svy_N_fleet(f)++;  //  count obs by fleet
@@ -797,8 +796,8 @@
       for (i=0;i<=disc_N_read-1;i++)
       {
         y= discdata[i](1);
-        if(y>endyr +100)
-        {N_warn++;warning<<"forecast observations cannot be beyond endyr +100; SS will exit"<<endl; exit(1);}
+        if(y>endyr +50)
+        {N_warn++;warning<<"forecast observations cannot be beyond endyr +50; SS will exit"<<endl; exit(1);}
         if(y>=styr)
         {
          timing_input(1,3)=discdata[i](1,3);
@@ -900,8 +899,8 @@
   for (i=0;i<=nobs_mnwt_rd-1;i++)  //   loop all obs
   {
     y=mnwtdata1[i](1);
-      if(y>endyr +100)
-      {N_warn++;warning<<"mnwt forecast observations cannot be beyond endyr +100; SS will exit"<<endl; exit(1);}
+      if(y>endyr +50)
+      {N_warn++;warning<<"mnwt forecast observations cannot be beyond endyr +50; SS will exit"<<endl; exit(1);}
     if(y>=styr)
     {
       if(mnwtdata1[i](2)<0.0) {N_warn++; warning<<"negative season not allowed for mnwtdata because superperiods not implemented "<<endl;}
@@ -1323,8 +1322,8 @@
     for (i=0;i<=nobsl_rd-1;i++)   //  loop all observations to find those for this fleet/time
     {
       y= lendata[i](1);
-      if(y>endyr +100)
-      {N_warn++;warning<<"forecast observations cannot be beyond endyr +100; SS will exit"<<endl; exit(1);}
+      if(y>endyr +50)
+      {N_warn++;warning<<"forecast observations cannot be beyond endyr +50; SS will exit"<<endl; exit(1);}
       if(y>=styr)
       {
         f=abs( lendata[i](3));
@@ -1785,8 +1784,8 @@
      for (i=0;i<=nobsa_rd-1;i++)
      {
        y=Age_Data[i](1);
-       if(y>endyr +100)
-       {N_warn++;warning<<"forecast observations cannot be beyond endyr +100; SS will exit"<<endl; exit(1);}
+       if(y>endyr +50)
+       {N_warn++;warning<<"forecast observations cannot be beyond endyr +50; SS will exit"<<endl; exit(1);}
        if(y>=styr)
        {
          f=abs(Age_Data[i](3));
@@ -1811,6 +1810,8 @@
             have_data(ALK_time,f,0,0)=1;  //  so have data of some type
             have_data(ALK_time,f,data_type,0)++;  //  count the number of observations in this subseas
             p=have_data(ALK_time,f,data_type,0);
+            if(p>100) 
+            	{N_warn++; warning<<"fatal:  max agecomp obs per fleet*time is 100; you requested "<<p<<" for fleet x year "<<f<<" "<<y<<endl;exit(1);}
             have_data(ALK_time,f,data_type,p)=j;  //  store data index for the p'th observation in this subseas
             have_data_yr(y,f)=1;  have_data_yr(y,0)=1;  //  survey or comp data exist this year
 
@@ -2148,8 +2149,8 @@
      for (i=0;i<=nobs_ms_rd-1;i++)
      {
        y=sizeAge_Data[i](1);
-       if(y>endyr +100)
-       {N_warn++;warning<<"forecast observations cannot be beyond endyr +100; SS will exit"<<endl; exit(1);}
+       if(y>endyr +50)
+       {N_warn++;warning<<"forecast observations cannot be beyond endyr +50; SS will exit"<<endl; exit(1);}
        if(y>=styr)
        {
          f=abs(sizeAge_Data[i](3));
@@ -2447,8 +2448,8 @@
         SzFreq_obs(iobs)+=SzFreq_mincomp(k);
         SzFreq_obs(iobs)/=sum(SzFreq_obs(iobs));
         y=SzFreq_obs_hdr(iobs,1);
-        if(y>endyr +100)
-        {N_warn++;warning<<"forecast observations cannot be beyond endyr +100; SS will exit"<<endl; exit(1);}
+        if(y>endyr +50)
+        {N_warn++;warning<<"forecast observations cannot be beyond endyr +50; SS will exit"<<endl; exit(1);}
 
         timing_input(1,3)=SzFreq_obs_hdr(iobs)(1,3);
         timing_input(2)=SzFreq_obs1(iobs,3);
@@ -2706,7 +2707,7 @@
       echoinput<<Morphcomp_obs_rd(i)<<endl;
       timing_input(1,3)=Morphcomp_obs_rd(i)(1,3);
       y=timing_input(1);
-      if(y>=styr && y<=endyr +100)  //  obs is in year range
+      if(y>=styr && y<=endyr +50)  //  obs is in year range
       {
         if(timing_input(2)<0.0)
         {N_warn++; warning<<"negative season not allowed for morphcomp because superperiods not implemented "<<endl; exit(1);}

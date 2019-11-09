@@ -2270,9 +2270,13 @@
           echoinput<<"link_info=1  only R0 active in phase 1; then exit;  useful for data-limited draws of other fixed parameter"<<endl;
         if(depletion_type==2)
           echoinput<<"link_info=2  no phase adjustments, can be used when profiling on fixed R0"<<endl;
+        if(Q_setup(f,5)==1)
+        	{N_warn++; 
+        		warning<<"change to no_float for depletion fleet # "<<f<<endl
+        		<<"++ and you must set phase to negative so not estimated"<<endl; Q_setup(f,5)=0;
+        	}
       }
-
-  }
+    }
   else
   {
     if(Q_setup_check(f)>0)
