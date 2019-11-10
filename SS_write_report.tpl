@@ -2418,10 +2418,12 @@ FUNCTION void write_bigoutput()
 //  SS_compout<<"Age: "<<age_bins(CombGender_A)<<endl;
   SS_compout<<endl<<"Method_for_Lbin_definition_for_agecomp_data: "<<Lbin_method<<endl;
 
-  SS_compout<<"For_Sizefreq,_Lbin_Lo_is_units(bio_or_numbers);_Lbin_hi_is_scale(kg,_lb,_cm,_in),_Ageerr_is_method"<<endl;
-  SS_compout<<"subseas is derived from month and the number of subseasons per season, which is: "<<N_subseas<<endl;
-  SS_compout<<"Time_is_fraction_of_year_based_on_subseas, not directly on month"<<endl;
-  SS_compout<<"If observations with same or different month value are assigned to the same subseas, then repli(cate) counter is incremented"<<endl;
+  SS_compout<<"For_Sizefreq;_Lbin_Lo_is_units(bio_or_numbers);_Lbin_hi_is_scale(kg,_lb,_cm,_in),_Ageerr_is_method"<<endl;
+  SS_compout<<"For_mean_size_at_age,_the_sign_of_ageerror_indicates_length(positive),_or_weight(negative)"<<endl;
+  SS_compout<<"For_mean_size_at_age,_the_std_dev_of_size_at_age_is_stored_in_LbinLo_ans_LbinHi_is_ignored"<<endl;
+  SS_compout<<"subseas_is_derived_from_month_and_the_number_of_subseasons_per_season,_which_is: "<<N_subseas<<endl;
+  SS_compout<<"Time_is_fraction_of_year_based_on_subseas,_not_directly_on_month"<<endl;
+  SS_compout<<"If_observations_with_same_or_different_month_value_are_assigned_to_the_same_subseas,_then_repli(cate)_counter_is_incremented"<<endl;
   SS_compout<<"For_Tag_output,_Rep_contains_Tag_Group,_Bin_is_fleet_for_TAG1_and_Bin_is_Year.Seas_for_TAG2"<<endl;
   SS_compout<<"Column_Super?_indicates_super-periods;_column_used_indicates_inclusion_in_logL"<<endl;
 
@@ -2694,7 +2696,7 @@ FUNCTION void write_bigoutput()
        {
         if(z<=n_abins) s_off=1; else s_off=2;
         t1=obs_ms_n(f,i,z);
-        //  whre:  obs_ms_n(f,i,z)=sqrt(var_adjust(6,f)*obs_ms_n(f,i,z));
+        //  where:  obs_ms_n(f,i,z)=sqrt(var_adjust(6,f)*obs_ms_n(f,i,z));
         if(ageerr_type_ms(f,i)>0) {anystring2=" L@A ";} else {anystring2=" W@A ";}
         if(t1>0.) t1=square(t1);
         SS_compout<<header_ms(f,i,1)<<" "<<real_month<<" "<<Show_Time2(ALK_time)(2,3)<<" "<<data_time(ALK_time,f,3)<<" "<<f<<" "<<fleet_area(f)<<" "<<repli<<" "<<gen_ms(f,i)<<anystring2<<mkt_ms(f,i)<<" "<<
@@ -2704,7 +2706,7 @@ FUNCTION void write_bigoutput()
         {
           SS_compout<<(obs_ms(f,i,z) -exp_ms(f,i,z)) / (exp_ms_sq(f,i,z)/obs_ms_n(f,i,z))<<" ";  // Pearson
           SS_compout<<t1<<" ";  // sample size
-          SS_compout<<square(1.0/((obs_ms(f,i,z) -exp_ms(f,i,z)) / exp_ms_sq(f,i,z)))<<" "; // effectiove sample size
+          SS_compout<<square(1.0/((obs_ms(f,i,z) -exp_ms(f,i,z)) / exp_ms_sq(f,i,z)))<<" "; // effective sample size
           SS_compout<<0.5*square((obs_ms(f,i,z) -exp_ms(f,i,z)) / (exp_ms_sq(f,i,z)/obs_ms_n(f,i,z))) + sd_offset*log(exp_ms_sq(f,i,z)/obs_ms_n(f,i,z)); //  -logL
         }
         else

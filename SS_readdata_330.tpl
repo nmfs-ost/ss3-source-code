@@ -2137,6 +2137,7 @@
   imatrix suprper_ms1(1,Nfleet,1,N_suprper_ms)
   imatrix suprper_ms2(1,Nfleet,1,N_suprper_ms)
 
+//  note:  sizeAge_Data[i](6) has age error method used; sign is positive to indicate mean length-at-age; negative for mean weight-at-age
  LOCAL_CALCS
    Nobs_ms=0;
    suprper_ms1.initialize();
@@ -2160,7 +2161,6 @@
            get_data_timing(timing_input, timing_constants, timing_i_result, timing_r_result, seasdur, subseasdur_delta, azero_seas, surveytime);
            Nobs_ms(f)++;
            j=Nobs_ms(f);  //  observation counter
-           f=abs(sizeAge_Data[i](3));
            t=timing_i_result(2);
            s=timing_i_result(3);
            real_month=timing_r_result(1);
@@ -2182,14 +2182,7 @@
 
           header_ms(f,j)(1,7)=sizeAge_Data[i](1,7);
           header_ms_rd(f,j)(2,3)=sizeAge_Data[i](2,3);
-          if(sizeAge_Data[i](2)<0)
-          {
-            header_ms(f,j,2) = -real_month;  //month
-          }
-          else
-          {
-            header_ms(f,j,2) = real_month;  //month
-          }
+
           //  note that following storage is redundant with Show_Time(t,3) calculated later
           if(y>retro_yr) header_ms(f,j,3)=-f;
           if(sizeAge_Data[i](3)<0) header_ms(f,j,3)=-f;
@@ -2202,16 +2195,21 @@
               N_warn++;cout<<" EXIT - see warning "<<endl;
               warning<<" in meansize, ageerror type must be <= "<<N_ageerr<<endl; exit(1);
            }
-           ageerr_type_ms(f,j)=sizeAge_Data[i](6);
+           ageerr_type_ms(f,j)=abs(sizeAge_Data[i](6));
 
   //  SS_Label_Info_2.9.1 #Create super-periods for meansize data
            if(sizeAge_Data[i](2)<0)  // start/stop a super-period  ALL observations must be continguous in the file
            {
+             header_ms(f,j,2) = -real_month;  //month
              if(in_superperiod==0)  //  start superperiod
              {N_suprper_ms(f)++; suprper_ms1(f,N_suprper_ms(f))=j; in_superperiod=1;}
              else
              if(in_superperiod==1)  // end a super-period
              {suprper_ms2(f,N_suprper_ms(f))=j; in_superperiod=0;}
+           }
+           else
+           {
+             header_ms(f,j,2) = real_month;  //month
            }
 
            for (b=1;b<=n_abins2;b++)
