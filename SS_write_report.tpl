@@ -364,7 +364,7 @@ FUNCTION void write_bigoutput()
         {
           NP++; SS2out<<NP<<" "<<ParmLabel(NP)<<" "<<Fcast_impl_error(i);
           if(active(Fcast_impl_error))
-          {active_count++; SS2out<<" "<<active_count<<" "<<Fcast_recr_PH2<<" -1 1 _ _ act "<<CoVar(active_count,1)<<" "<<parm_gradients(active_count);}
+          {active_count++; SS2out<<" "<<active_count<<" "<<Fcast_recr_PH2<<" -1 1 0 0 act "<<CoVar(active_count,1)<<" "<<parm_gradients(active_count);}
           else
           {SS2out<<"  _ _ _ _ _ _ NA _ _ ";}
         SS2out <<" dev "<<endl;
@@ -392,7 +392,7 @@ FUNCTION void write_bigoutput()
         {
           active_count++;
           Activ=1;
-          SS2out<<" "<<active_count<<" "<<Fparm_PH(i)<<" 0.0  8.0  _ "<<Fparm_use(i)<<" act "<<CoVar(active_count,1)<<" "<<parm_gradients(active_count);
+          SS2out<<" "<<active_count<<" "<<Fparm_PH(i)<<" 0.0 "<<Fparm_max(i)<<" "<<F_setup(1)<<" "<<Fparm_use(i)<<" act "<<CoVar(active_count,1)<<" "<<parm_gradients(active_count);
         }
         else
         {SS2out<<" _ _ _ _ _ _ NA _ _ ";}
