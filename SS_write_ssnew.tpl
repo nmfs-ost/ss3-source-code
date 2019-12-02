@@ -1351,7 +1351,7 @@ FUNCTION void write_nucontrol()
     else if(natM_type==2)
     {report4<<natM_amin<<" #_reference age for Lorenzen M; read 1P per morph"<<endl;}
     else if(natM_type>=3)
-    {report4<<" #_Age_natmort_by sex x growthpattern"<<endl<<Age_NatMort<<endl;}
+    {report4<<" #_Age_natmort_by sex x growthpattern (nest GP in sex)"<<endl<<Age_NatMort<<endl;}
     else
     {report4<<"  #_no additional input for selected M option; read 1P per morph"<<endl;}
     report4<<"#"<<endl;
@@ -1386,7 +1386,9 @@ FUNCTION void write_nucontrol()
     if (Hermaphro_Option!=0) report4<<Hermaphro_seas<<" # Hermaphro_season "<<endl<<Hermaphro_maleSPB<<" # Hermaphro_maleSSB "<<endl;
     report4<<MGparm_def<<" #_parameter_offset_approach (1=none, 2= M, G, CV_G as offset from female-GP1, 3=like SS2 V1.x)"<<endl;
   report4<<"#"<<endl;
-  report4<<"#_growth_parms"<<endl;
+  report4<<"#_growth_parms";
+  if(N_GP>1) report4<<";  if N_GP>1, then nest GP within sex in parameters below";
+  report4<<endl;
   report4<<"#_ LO HI INIT PRIOR PR_SD PR_type PHASE env_var&link dev_link dev_minyr dev_maxyr dev_PH Block Block_Fxn"<<endl;
   NP=0;
   for (gg=1;gg<=gender;gg++)

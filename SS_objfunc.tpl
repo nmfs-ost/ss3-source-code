@@ -710,11 +710,11 @@ FUNCTION void evaluate_the_objective_function()
         {
           recdev_cycle_Like(i)=Get_Prior(recdev_cycle_parm_RD(i,6), recdev_cycle_parm_RD(i,1), recdev_cycle_parm_RD(i,2), recdev_cycle_parm_RD(i,4), recdev_cycle_parm_RD(i,5), recdev_cycle_parm(i));
           parm_like+=recdev_cycle_Like(i);
-          temp+=mfexp(recdev_cycle_parm(i));
-          temp1+=1.0;
+          temp+=mfexp(recdev_cycle_parm(i));  //  accumulate values that should each be near 1.0 if there is no cycle effect
+          temp1+=1.0;  //  accumulate N
         }
       }
-      temp-=temp1;
+      temp-=temp1;  //  should be near zero
       parm_like+=10000.*temp*temp;  //  similar to ADMB's approach to getting zero-centered dev_vectors
     }
     }

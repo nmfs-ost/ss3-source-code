@@ -2894,7 +2894,6 @@
   if(Do_Forecast_rd>0 && STD_Yr_max==-1) {N_warn++; warning<<"note: Std_yrmax=-1 in starter, so no variance output for forecast quantities after endyr+1 "<<endl;}
 
   YrMax=endyr+N_Fcast_Yrs;
-  TimeMax_Fcast_std = styr+(YrMax-styr)*nseas+nseas-1;
 
   echoinput<<endl<<"# next read Fmult value to be used only if Forecast basis==5"<<endl;
 //  k++; Fcast_Flevel=Fcast_Input(k);
@@ -3059,7 +3058,6 @@
   Do_Forecast=4;
   N_Fcast_Yrs=1;
   YrMax=endyr+1;
-  TimeMax_Fcast_std = styr+(YrMax-styr)*nseas+nseas-1;
   Fcast_Flevel=1.;
   Fcast_yr=0;
   Fcast_yr_rd=0;
@@ -3321,6 +3319,7 @@
   if(Do_Forecast_rd>0 && fif!=999) {cout<<" EXIT, must have 999 to verify end of forecast inputs "<<fif<<endl; exit(1);}
   echoinput<<" done reading forecast "<<endl<<endl;
 //  if(Do_Forecast==0) Do_Forecast=4;
+    TimeMax_Fcast_std = styr+(max(YrMax,endyr+50)-styr)*nseas+nseas-1;
  END_CALCS
 
   imatrix Show_Time(styr,TimeMax_Fcast_std,1,2)  //  for each t:  shows year, season
