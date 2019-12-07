@@ -1295,7 +1295,7 @@ FUNCTION void write_nucontrol()
   report4 << N_GP << "  #_N_Growth_Patterns (Growth Patterns, Morphs, Bio Patterns, GP are terms used interchangeably in SS)"<<endl;
   report4 << N_platoon << " #_N_platoons_Within_GrowthPattern "<<endl;
   if(N_platoon==1) report4<<"#_Cond ";
-  report4<<sd_ratio<<" #_Platoon_between/within_stdev_ratio (no read if N_platoons=1)"<<endl;
+  report4<<sd_ratio<<" #_Platoon_within/between_stdev_ratio (no read if N_platoons=1)"<<endl;
   if(N_platoon==1) report4<<"#_Cond ";
   report4<<platoon_distr(1,N_platoon)<<" #vector_platoon_dist_(-1_in_first_val_gives_normal_approx)"<<endl;
   report4<<"#"<<endl;
