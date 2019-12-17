@@ -4898,7 +4898,7 @@
 //      }
       y=abs(tempvec(1));
       if(y<styr) y=styr;
-      if(tempvec(1)<0) {y2=YrMax;} else {y2=y;}  //  allows filling to end of time series
+      if(tempvec(1)<0) {y2=max(YrMax,endyr+50);} else {y2=y;}  //  allows filling to end of time series
       s=abs(tempvec(2));
       f=tempvec(6);
       if(tempvec(2)<0) {f2=Nfleet;} else {f2=f;}  //  allows filling all fleets

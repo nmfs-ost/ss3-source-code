@@ -1061,8 +1061,8 @@ FUNCTION void Get_Forecast()
   int Tune_F;
   int Tune_F_loops;
 
-  int ABC_Loop_start;
-  int ABC_Loop_end;
+  int ABC_Loop_start=1;
+  int ABC_Loop_end=3;
 
   int write_bodywt_save;
   
