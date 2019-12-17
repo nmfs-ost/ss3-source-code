@@ -1,4 +1,6 @@
 Version;Date;Description;VLAB_issue;Input_Change?;Type;Category;Sub_Category
+3.30.14.09;2019-12-16;gamma prior (wrong sign);#72459;no;Bug;prior;
+3.30.14.09;2019-12-16;filling wtatage in forecast years;#72432;no;Bug;bodywt;
 3.30.14.08;2019-11-20;formatting fixes in .ssnew and reporting in Impl_err and F parameters in output;#71328;no;Bug;misc. output;
 3.30.14.08;2019-11-08;fix problem that converted fractional data months to integers;#71109;-;fix;input;input
 3.30.14.08;2019-11-08;clean-up biology function calls to pass time indexes to growth3 and Lorenzen and generally;#19553;revise;
