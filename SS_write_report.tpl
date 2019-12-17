@@ -633,7 +633,7 @@ FUNCTION void write_bigoutput()
      SS2out<<endl<<"SIZEFREQ_TRANSLATION "<<SzFreq_scale<<endl;
      for (SzFreqMethod=1;SzFreqMethod<=SzFreq_Nmeth;SzFreqMethod++)
      {
-       SS2out<<SzFreqMethod<<" seas len mid-len ";
+       SS2out<<SzFreqMethod<<" gp seas len mid-len ";
            if(SzFreq_scale(SzFreqMethod)==1)
            {SS2out<<" mid-kg ";}
            else if(SzFreq_scale(SzFreqMethod)==2)

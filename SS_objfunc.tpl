@@ -1250,7 +1250,7 @@ FUNCTION dvariable Get_Prior(const int T, const double& Pmin, const double& Pmax
           {
             dvariable scale=square(Psd)/Pr;  // gamma parameters by method of moments
             dvariable shape=Pr/scale;
-            Prior_Like= -shape*log(scale)-gammln(shape)+(shape-1.0)*log(Pval)-Pval/scale;
+            Prior_Like= -1*(-shape*log(scale)-gammln(shape)+(shape-1.0)*log(Pval)-Pval/scale);
           }
         }
         break;
