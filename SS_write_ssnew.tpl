@@ -1133,7 +1133,7 @@ FUNCTION void write_nucontrol()
   NuStart<<thin_intvl<<" # MCeval thin interval"<<endl;
   NuStart<<jitter<<" # jitter initial parm value by this fraction"<<endl;
   NuStart<<STD_Yr_min<<" # min yr for sdreport outputs (-1 for styr)"<<endl;
-  NuStart<<STD_Yr_max<<" # max yr for sdreport outputs (-1 for endyr; -2 for endyr+Nforecastyrs"<<endl;
+  NuStart<<STD_Yr_max<<" # max yr for sdreport outputs (-1 for endyr+1; -2 for endyr+Nforecastyrs"<<endl;
   NuStart<<N_STD_Yr_RD<<" # N individual STD years "<<endl;
   NuStart<<"#vector of year values "<<endl<<STD_Yr_RD<<endl;
 
@@ -1166,7 +1166,8 @@ FUNCTION void write_nucontrol()
   NuFore<<BTGT_target<<" # Biomass target (e.g. 0.40)"<<endl;
   NuFore<<"#_Bmark_years: beg_bio, end_bio, beg_selex, end_selex, beg_relF, end_relF, beg_recr_dist, end_recr_dist, beg_SRparm, end_SRparm (enter actual year, or values of 0 or -integer to be rel. endyr)"<<endl<<Bmark_Yr<<endl;
   NuFore<<Bmark_RelF_Basis<<" #Bmark_relF_Basis: 1 = use year range; 2 = set relF same as forecast below"<<endl;
-  NuFore<<"#"<<endl<<Do_Forecast<<" # Forecast: 0=none; 1=F(SPR); 2=F(MSY) 3=F(Btgt) or F0.1; 4=Ave F (uses first-last relF yrs); 5=input annual F scalar"<<endl;
+  NuFore<<"#"<<endl<<Do_Forecast_rd<<" # Forecast: -1=none; 0=simple; 1=F(SPR); 2=F(MSY) 3=F(Btgt) or F0.1; 4=Ave F (uses first-last relF yrs); 5=input annual F scalar"<<endl;
+  NuFore<<"# where simple requires no input after this line and does a one year forecast using end year F"<<endl;
   NuFore<<N_Fcast_Yrs<<" # N forecast years "<<endl;
   NuFore<<Fcast_Flevel<<" # F scalar (only used for Do_Forecast==5)"<<endl;
   NuFore<<"#_Fcast_years:  beg_selex, end_selex, beg_relF, end_relF, beg_mean recruits, end_recruits  (enter actual year, or values of 0 or -integer to be rel. endyr)"<<endl<<Fcast_yr_rd<<endl;

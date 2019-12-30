@@ -4571,9 +4571,12 @@
     else
     {
       ParmLabel+="Bzero_again"+CRLF(1); CoVar_Count++; j++; active_parm(CoVar_Count)=j;
+      ParmLabel+="Totbio_unfished"+CRLF(1); CoVar_Count++; j++; active_parm(CoVar_Count)=j;
+      ParmLabel+="SmryBio_unfished"+CRLF(1); CoVar_Count++; j++; active_parm(CoVar_Count)=j;
+      ParmLabel+="Recr_unfished"+CRLF(1); CoVar_Count++; j++; active_parm(CoVar_Count)=j;
     }
 
-  echoinput<<"parm "<<j<<" covar "<<CoVar_Count<<endl;
+  echoinput<<"parm "<<j<<" covar "<<CoVar_Count<<"  after benchmark "<<endl;
     if(Do_Forecast>0)
     {
       for (y=endyr+1;y<=YrMax;y++)
@@ -4598,6 +4601,7 @@
         }
       }
     }
+  echoinput<<"parm "<<j<<" covar "<<CoVar_Count<<"  after forecast "<<endl;
 
 // do labels for Selex_Std
     if(Do_Selex_Std>0)
@@ -4684,7 +4688,7 @@
       }
     }
   }
-
+  echoinput<<"parm "<<j<<" covar "<<CoVar_Count<<"  after all derived quantities "<<endl;
    sprintf(onenum, "%d", int(100*depletion_level));
    switch(depletion_basis)
     {

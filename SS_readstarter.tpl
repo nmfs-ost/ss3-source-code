@@ -70,11 +70,13 @@
   number temp;
   number temp1;
   int save_for_report;
+  int bigsaver;  //  (save_for_report>0) || ((sd_phase() || mceval_phase()) && (initial_params::mc_phase==0))
   int write_bodywt;
   int save_gparm;
   int save_gparm_print;
   int N_warn;
   !! save_for_report=0;
+  !! bigsaver=0;
   !! save_gparm=0;
   !! N_warn=0;
   !! write_bodywt=0;
@@ -198,7 +200,7 @@
   init_int STD_Yr_min  // min yr for sdreport
    !!echoinput<<STD_Yr_min<<"  STD_Yr_min"<<endl;
   init_int STD_Yr_max  // max yr for sdreport
-   !!echoinput<<STD_Yr_max<<"  STD_Yr_max"<<endl;
+   !!echoinput<<STD_Yr_max<<"  STD_Yr_max (-1 for "<<endl;
   init_int N_STD_Yr_RD  // N extra years to read
    !!echoinput<<N_STD_Yr_RD<<"  N extra STD years to read"<<endl;
   int N_STD_Yr

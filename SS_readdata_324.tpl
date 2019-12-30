@@ -2840,9 +2840,10 @@
   echoinput<<Bmark_RelF_Basis<<"  1=use range of years for relF; 2 = set same as forecast relF below"<<endl;
  END_CALCS
 
-  init_int Do_Forecast   //  0=none; 1=F(SPR); 2=F(MSY) 3=F(Btgt); 4=Ave F (enter yrs); 5=read Fmult
+  init_int Do_Forecast_rd   //  0=none; 1=F(SPR); 2=F(MSY) 3=F(Btgt); 4=Ave F (enter yrs); 5=read Fmult
+  int Do_Forecast;
+  !! Do_Forecast=Do_Forecast_rd;
   !!echoinput<<Do_Forecast<<" Do_Forecast "<<endl;
-
   vector Fcast_Input(1,22);
 
   int N_Fcast_Yrs

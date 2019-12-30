@@ -3052,12 +3052,22 @@
 
   else  //  set forecast defaults
   {
-    N_warn++; warning<<"No forecast selected, so rest of forecast file will not be read and can be omitted;"<<endl<<
-    "A one year forecast using recent F will be done automatically"<<endl;
+    N_warn++; warning<<"Forecast=0 or -1, so rest of forecast file will not be read and can be omitted;"<<endl;
     if(Bmark_RelF_Basis==2) {N_warn++; cout<<" EXIT - see warning "<<endl; warning<<"Fatal stop:  no forecast, but bmark set to use fcast"<<endl;  exit(1);}
-  Do_Forecast=4;
-  N_Fcast_Yrs=1;
-  YrMax=endyr+1;
+  if(Do_Forecast==0) 
+  	{
+      warning<<"A one year forecast using recent F will be done automatically"<<endl;
+  		Do_Forecast=4;  //  sets simple forecast; else Do_Forecast==-1 causes no forecast
+      N_Fcast_Yrs=1;
+      YrMax=endyr+1;
+    }
+    else
+  	{
+  		Do_Forecast=-1;  //  no forecast
+      N_Fcast_Yrs=0;
+      YrMax=endyr;
+    }
+    	
   Fcast_Flevel=1.;
   Fcast_yr=0;
   Fcast_yr_rd=0;

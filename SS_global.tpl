@@ -678,21 +678,19 @@ FINAL_SECTION
     evaluate_the_objective_function();
 //  SS_Label_Info_12.3.3 #Do benchmarks and forecast and stdquantities with save_for_report=1
     if(mceval_phase()==0) {show_MSY=1;} else {show_MSY=0;}  //  turn on reporting if not in mceval
+    setup_Benchmark();  //  calculates biology and selectivity to be used
     if(Do_Benchmark>0)
     {
-      setup_Benchmark();
       if(did_MSY==0) 
       {
         Get_Benchmarks(show_MSY);
         if(mceval_phase()==0) cout<<" finished benchmark for reporting"<<endl;
       }
     }
-    else
-    {Mgmt_quant(1)=SSB_virgin; warning<<" set to virg in global "<<SSB_virgin<<endl;}
-    if(Do_Forecast>0)
+    if(Do_Forecast>=0)
     {
       report5<<"THIS FORECAST FOR PURPOSES OF GETTING DISPLAY QUANTITIES"<<endl;
-      if(did_MSY>0) show_MSY=0;
+      if(did_MSY>0) show_MSY=0;  //  so to not repeat forecast_report.sso
       Get_Forecast();
       if(mceval_phase()==0) cout<<" finished forecast for reporting"<<endl;
     }

@@ -364,7 +364,7 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
     SSB_unf=SSB_equil;
     SR_parm_work(N_SRparm2+1)=SSB_unf;
     if(show_MSY==1) report5<<"SR_parm for benchmark: "<<SR_parm_work<<endl<<"for years: "<<Bmark_Yr(9)<<" "<<Bmark_Yr(10)<<"  SSB_virgin was: "<<SSB_virgin<<endl;
-    if(show_MSY==1) report5<<"Repro_output_by_age: "<<fec(1)<<endl;
+    if(show_MSY==1) report5<<"Repro_output_by_age_for_morph_1: "<<fec(1)<<endl;
     Mgmt_quant(1)=SSB_unf;
     Mgmt_quant(2)=totbio;
     Mgmt_quant(3)=smrybio;
@@ -1103,7 +1103,6 @@ FUNCTION void Get_Forecast()
    {
      Fcast_Fmult=0.0;
    }
-
   if(show_MSY==1)  //  write more headers
   {
     report5<<"Annual_Forecast_Fmult: "<<Fcast_Fmult<<endl;
@@ -1402,7 +1401,7 @@ FUNCTION void Get_Forecast()
                 if(s==spawn_seas) fec(g)=WTage_emp(t,GP3(g),-2);
               }
             }
-            else if(timevary_MG(endyr+1,2)>0 || timevary_MG(endyr+1,3)>0 ||  save_for_report>0 || ((sd_phase() || mceval_phase()) && (initial_params::mc_phase==0)) )
+            else if(timevary_MG(endyr+1,2)>0 || timevary_MG(endyr+1,3)>0 ||  bigsaver==1 )
             {
                Make_Fecundity();
                for (g=1;g<=gmorph;g++)
@@ -2062,7 +2061,7 @@ FUNCTION void Get_Forecast()
               if(k>0) natage(t+1,p2,g) += elem_prod(natage_temp(p,g),migrrate(bio_yr,k));
               }
           }
-          if( (save_for_report>0) || ((sd_phase() || mceval_phase()) && (initial_params::mc_phase==0)) )
+          if( bigsaver==1 )
           {
 
             if(Fcast_Loop1==2 && ABC_Loop==1)  // get variance in OFL

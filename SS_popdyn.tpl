@@ -200,7 +200,7 @@ FUNCTION void get_initial_conditions()
         if(s==spawn_seas) fec(g)=WTage_emp(t,GP3(g),-2);
       }
     }
-    else if(MG_active(2)>0 || MG_active(3)>0 || save_for_report>0 || do_once==1)
+      else if(timevary_MG(y,2)>0 || timevary_MG(y,3)>0 || bigsaver==1 || do_once==1)
     {
        Make_Fecundity();
 //       if(do_once==1) echoinput<<"Save_fec in initial year: "<<t<<" %% "<<save_sel_fec(t,1,0)<<endl;
@@ -253,6 +253,8 @@ FUNCTION void get_initial_conditions()
     if(Do_Benchmark==0)
     {
       Mgmt_quant(1)=SSB_virgin;
+      SSB_unf=SSB_virgin;
+      Recr_unf=Recr_virgin;
       Mgmt_quant(2)=totbio;
       Mgmt_quant(3)=smrybio;
       Mgmt_quant(4)=Recr_virgin;
@@ -695,10 +697,9 @@ FUNCTION void get_time_series()
               }
         }
       }
-      else if(timevary_MG(y,2)>0 || timevary_MG(y,3)>0 || save_for_report==1 || do_once==1)
+      else if(timevary_MG(y,2)>0 || timevary_MG(y,3)>0 || bigsaver==1 || do_once==1)
       {
          Make_Fecundity();
-//         if(do_once==1) echoinput<<"Save_fec in "<<t<<" %% "<<save_sel_fec(t,1,0)<<endl;
          for (g=1;g<=gmorph;g++)
          if(use_morph(g)>0)
          {
@@ -712,7 +713,6 @@ FUNCTION void get_time_series()
       }
 
       Save_Wt_Age(t)=Wt_Age_beg(s);
-//      if(do_once==1) echoinput<<"Save_Wt_Age in "<<t<<" %% "<<Save_Wt_Age(t)<<endl;
 
       if(y>styr)    // because styr is done as part of initial conditions
       {
@@ -1302,10 +1302,7 @@ FUNCTION void get_time_series()
       dvariable tempbase;
       dvariable tempM;
       dvariable tempZ;
-      if( fishery_on_off==1 && 
-          ((save_for_report>0) ||
-           ((sd_phase() || mceval_phase()) && (initial_params::mc_phase==0))
-            || (F_ballpark_yr>=styr)))
+      if( fishery_on_off==1 && (bigsaver==1 || (F_ballpark_yr>=styr)))
       {
         for (f=1;f<=Nfleet;f++)
         if(fleet_type(f)<=2)
@@ -1432,7 +1429,8 @@ FUNCTION void get_time_series()
   //  SS_Label_Info_24.12 #End loop of seasons
 
   //  SS_Label_Info_24.13 #Use current F intensity to calculate the equilibrium SPR for this year
-    if( (save_for_report>0) || ((sd_phase() || mceval_phase()) && (initial_params::mc_phase==0)) )
+//    if( (save_for_report>0) || ((sd_phase() || mceval_phase()) && (initial_params::mc_phase==0)) )
+   if(bigsaver==1)
     {
       eq_yr=y; equ_Recr=Recr_virgin; bio_yr=y;
       Fishon=0;

@@ -6,6 +6,7 @@ PROCEDURE_SECTION
   Extra_Std.initialize();
   CrashPen.initialize();
   niter++;
+  
   if(mceval_phase() ) mceval_counter ++;   // increment the counter
   if(initial_params::mc_phase==1) 
   {
@@ -48,6 +49,10 @@ PROCEDURE_SECTION
   if(mceval_counter==0 || (mceval_counter>burn_intvl &&  ((double(mceval_counter)/double(thin_intvl)) - double((mceval_counter/thin_intvl))==0)  )) // check to see if burn in period is over
   {
 //  add dynamic Bzero here
+  //  create bigsaver to simplfy some condition statements later
+  if( (save_for_report>0) || ((sd_phase() || mceval_phase()) && (initial_params::mc_phase==0)) )
+    {bigsaver=1;} else 
+    {bigsaver=0;}
 
     setup_recdevs();
     y=styr;
@@ -89,8 +94,6 @@ PROCEDURE_SECTION
       {
         Get_Benchmarks(show_MSY);
       }
-      else
-      {Mgmt_quant(1)=SSB_virgin;  warning<<"set to virgin in proced if no benchmark"<<endl;}
       did_MSY=1;   //  set flag to not calculate the benchmarks again in final section
 
 //  SS_Label_Info_7.6.2 #Call fxn Get_Forecast()

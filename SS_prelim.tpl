@@ -498,7 +498,7 @@ PRELIMINARY_CALCS_SECTION
     {
       echoinput<<endl<<" now check recdev_cycle bounds and priors and do jitter if requested "<<endl;
       for (j=1;j<=recdev_cycle;j++)
-      {recdev_cycle_parm(j) = Check_Parm(j,recdev_cycle_PH(j),recdev_cycle_LO(j),recdev_cycle_HI(j), recdev_cycle_parm_RD(i,6), recdev_cycle_parm_RD(i,4), recdev_cycle_parm_RD(i,5), jitter, recdev_cycle_parm(j));}
+      {recdev_cycle_parm(j) = Check_Parm(j,recdev_cycle_PH(j),recdev_cycle_LO(j),recdev_cycle_HI(j), recdev_cycle_parm_RD(j,6), recdev_cycle_parm_RD(j,4), recdev_cycle_parm_RD(j,5), jitter, recdev_cycle_parm(j));}
       echoinput<< " recdev_cycle after check "<<recdev_cycle_parm<<endl;
       recdev_cycle_use=value(recdev_cycle_parm);
     }
@@ -535,7 +535,7 @@ PRELIMINARY_CALCS_SECTION
       }
     }
 
-    if(Do_Forecast>0)
+    if(Do_Forecast>=0)
       {
         recdev_RD(recdev_end+1,YrMax)=value(Fcast_recruitments(recdev_end+1,YrMax));
         recdev_use(recdev_end+1,YrMax)=value(Fcast_recruitments(recdev_end+1,YrMax));
@@ -682,16 +682,13 @@ PRELIMINARY_CALCS_SECTION
     sel_l.initialize(); sel_a.initialize(); retain.initialize();  discmort.initialize(); discmort2.initialize(); discmort2_a.initialize();
 
     for (f=1;f<=Nfleet;f++)
-    for (y=styr;y<=endyr+1;y++)
+    for (y=styr;y<=YrMax;y++)
     for (gg=1;gg<=gender;gg++)
     {
       discmort2(y,f,gg)=1.0;
-      if(y<=endyr+1)
-      {
         discmort(y,f)=1.0;
         discmort_a(y,f)=1.0;
         retain(y,f)=1.0;
-      }
     }
     Richards=1.0;
 

@@ -1617,7 +1617,7 @@ FUNCTION void Make_Fecundity()
         }
       }
  */
-      if( (save_for_report>0) || ((sd_phase() || mceval_phase()) && (initial_params::mc_phase==0)) )
+      if( bigsaver==1 )
       {
       switch(Maturity_Option)
       {

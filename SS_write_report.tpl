@@ -528,7 +528,7 @@ FUNCTION void write_bigoutput()
   for (j=1;j<=N_STD_Mgmt_Quant;j++)
   {
     NP++; active_count++;
-    SS2out<<" "<<ParmLabel(NP)<<" "<<Mgmt_quant(j);
+    SS2out<<NP<<" "<<ParmLabel(NP)<<" "<<Mgmt_quant(j);
 
     SS2out<<" "<<CoVar(active_count,1)<<endl;
   }
@@ -536,7 +536,7 @@ FUNCTION void write_bigoutput()
   for (j=1;j<=Extra_Std_N;j++)
   {
     NP++;      active_count++;
-    SS2out<<" "<<ParmLabel(NP)<<" "<<Extra_Std(j);
+    SS2out<<NP<<" "<<active_count<<" "<<ParmLabel(NP)<<" "<<Extra_Std(j);
     SS2out<<" "<<CoVar(active_count,1)<<endl;
   }
 
@@ -550,7 +550,7 @@ FUNCTION void write_bigoutput()
         for (j=1;j<=Svy_N_fleet(f);j++)
         {
           active_count++; k++;
-          SS2out<<fleetname(f)<<"_"<<Svy_yr(f,j)<<" ";
+          SS2out<<active_count<<" "<<fleetname(f)<<"_"<<Svy_yr(f,j)<<" ";
           SS2out<<Svy_est(f,j)<<" "<<CoVar(active_count,1)<<" "<<Svy_sdreport_est(k)<<endl;
         }
       }
