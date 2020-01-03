@@ -1,4 +1,6 @@
 Version;Date;Description;VLAB_issue;Input_Change?;Type;Category;Sub_Category
+3.30.14.11;2020-01-02;allow user input of seed for random number generator;#67971;cond;feature;bootstrap;
+3.30.14.11;2020-01-02;revise starter.ss to allow conditional input of random seed;#72993;cond;feature;input;
 3.30.14.10;2019-12-30;add no forecast (-1) option and check all combos of bench and fcast;#66582;no;feature;forecast;
 3.30.14.09;2019-12-16;gamma prior (wrong sign);#72459;no;Bug;prior;
 3.30.14.09;2019-12-16;filling wtatage in forecast years;#72432;no;Bug;bodywt;

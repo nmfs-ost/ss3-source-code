@@ -3,7 +3,6 @@
 FUNCTION void write_nudata()
   {
 //  code for multinomial distribution developed by Ian Stewart, Oct 2005
-  random_number_generator radm(long(time(&start)));
 
   dvector temp_mult(1,50000);
   dvector temp_probs(1,nlen_bin2);
@@ -11,7 +10,14 @@ FUNCTION void write_nudata()
   dvector temp_probs2(1,n_abins2);
   int Nudat;
 //  create bootstrap data files; except first file just replicates the input and second is the estimate without error
-  for (i=1;i<=1234;i++) temp = randn(radm);
+  	if(irand_seed<0) irand_seed=long(time(&start));
+  		
+  random_number_generator radm(irand_seed);
+  for (i=1;i<=1234;i++) 
+  {
+  	temp = randn(radm);
+  }
+
   ofstream report1("data.ss_new");
   report1<<version_info<<endl<<version_info2<<endl<<version_info3<<endl<<"#_Start_time: "<<ctime(&start);
   report1  << "#_Number_of_datafiles: " << N_nudata << endl;
@@ -25,7 +31,8 @@ FUNCTION void write_nudata()
   else if(Nudat==2)
   {report1 << "#_expected values with no error added " << endl;}
   else
-  {report1 << "#_bootstrap file: " << Nudat-2 << endl;}
+  { 
+  report1 << "#_bootstrap file: " << Nudat-2 <<"  irand_seed: "<<irand_seed<<" first rand#: "<<randn(radm)<<endl;}
   report1<<version_info<<endl;
   report1 << styr << " #_StartYr"<<endl;
   report1 << endyr <<" #_EndYr"<< endl;
@@ -1550,7 +1557,7 @@ FUNCTION void write_nucontrol()
   }
 
   report4<<"#"<<endl;
-   report4<<SR_fxn<<" #_Spawner-Recruitment; Options: 2=Ricker; 3=std_B-H; 4=SCAA; 5=Hockey; 6=B-H_flattop; 7=survival_3Parm; 8=Shepherd_3Parm; 9=RickerPower_3parm"<<endl;
+   report4<<SR_fxn<<" #_Spawner-Recruitment; Options: 1=NA; 2=Ricker; 3=std_B-H; 4=SCAA; 5=Hockey; 6=B-H_flattop; 7=survival_3Parm; 8=Shepherd_3Parm; 9=RickerPower_3parm"<<endl;
    report4<<init_equ_steepness<<"  # 0/1 to use steepness in initial equ recruitment calculation"<<endl;
    report4<<sigmaR_dendep<<"  #  future feature:  0/1 to make realized sigmaR a function of SR curvature"<<endl;
    report4<<"#_          LO            HI          INIT         PRIOR         PR_SD       PR_type      PHASE    env-var    use_dev   dev_mnyr   dev_mxyr     dev_PH      Block    Blk_Fxn #  parm_name"<<endl;

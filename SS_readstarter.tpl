@@ -211,7 +211,6 @@
 // set up the mcmc chain counter
   int mceval_counter;
   int mceval_header;
-  number MCMC_bump  //  value read and added to ln(R0) when starting into MCMC
   !! mceval_counter = 0;
   !! mceval_header = 0;
   int mcmc_counter;
@@ -264,22 +263,34 @@
   !!echoinput<<F_std_basis<<"  F_std_basis"<<endl;
   !!echoinput<<"For Kobe plot, set depletion_basis=2; depletion_level=1.0; F_reporting=your choose; F_std_basis=2"<<endl;
   number finish_starter
-  number finish_starter2
-  number finish_starter3
   int mcmc_output_detail
+  number MCMC_bump  //  value read and added to ln(R0) when starting into MCMC
   number ALK_tolerance
   number tempin;
+  int ender;
+  int irand_seed;
 
  LOCAL_CALCS
    {
-   mcmc_output_detail = 0;
-   MCMC_bump=0.;
-   ALK_tolerance=0.0;
-   *(ad_comm::global_datafile) >> tempin;
-   echoinput<<tempin<<endl;
-   if(tempin==999.)
-    {
+    mcmc_output_detail = 0;
+    MCMC_bump=0.;
+    ALK_tolerance=0.0;
+    irand_seed=0;
+    ender=0;
+    //embed following reads in a do-while such that additional reads can be added while retaining backward compatibility with files that do not have the added elements
+    //  element list:
+    //  1.  MCMC_output_detail.MCMC_bump
+    //  2.  ALK_tolerance
+    //  3.  irand_seed;  added for 3.30.15
+    //  xx.  finish_starter
+     while (ender==0)
+     {	
+      *(ad_comm::global_datafile) >> tempin;
       finish_starter=tempin;
+      if(tempin==3.30 || tempin==999) ender=1;
+
+   if(tempin==999.)  // finish read in 3.24 format for ss_trans
+    {
       if (readparfile > 0)
       {
         echoinput<<endl<<"ss_trans does not read the PAR file; readparfile set to 0"<<endl<<endl;
@@ -289,36 +300,47 @@
 
       echoinput<<"Read files in 3.24 format"<<endl<<endl;
     }
-    else
-   // if(finish_starter==3.30)
+    else   // reading in 3.30 format
    {
+     finish_starter=3.30;
      echoinput<<"Read files in 3.30 format"<<endl;
-
-     echoinput<<"Now read MCMC output detail.MCMC_bump;  separate values will be parsed from input"<<endl;
+     echoinput<<"SS will read values until it reads 3.30"<<endl;
+   	
+     echoinput<<"read MCMC_output_detail.MCMC_bump as a single real number;  separate values will be parsed from integer and fraction"<<endl;
      mcmc_output_detail = int(tempin);
      MCMC_bump=tempin-mcmc_output_detail;
      if (mcmc_output_detail < 0 || mcmc_output_detail > 3) mcmc_output_detail = 0;
      echoinput<<"MCMC output detail:  "<<mcmc_output_detail<<endl;
+     echoinput<<"MCMC bump to R0:  "<<MCMC_bump<<endl;
 
-     echoinput<<"Now read ALK tolerance (suggest 0.0001)"<<endl;
-     *(ad_comm::global_datafile) >> finish_starter2;
-     ALK_tolerance = finish_starter2;
+     echoinput<<"Now get ALK tolerance (0.0 is OK for no compression; 0.1 is too big;  suggest 0.0001)"<<endl;
+     *(ad_comm::global_datafile) >> ALK_tolerance;
      echoinput<<"ALK tolerance:  "<<ALK_tolerance<<endl;
      // enforce valid range of ALK_tolerance
      if (ALK_tolerance < 0.0 || ALK_tolerance > 0.1)
      {
-         echoinput<<"Error: ALK tolerance must be between 0.0 and 0.1"<<endl;
+         warning<<"Error: ALK tolerance must be between 0.0 and 0.1"<<endl;
          cout<<"Error: ALK_tolerance must be between 0.0 and 0.1: "<<ALK_tolerance<<endl; exit(1);
      }
 
-     *(ad_comm::global_datafile) >> finish_starter3;
-     if (finish_starter3 != 3.30)
-     {
-        echoinput<<"Error: the last line of starter.ss should be '3.30'"<<endl;
-        cout<<"CRITICAL error reading finish_starter in starter.ss: "<<finish_starter3<<endl; exit(1);
-     }
-     finish_starter=3.30;
+     echoinput<<"Now get random number seed; enter -1 to use long(time) as the seed"<<endl;
+     *(ad_comm::global_datafile) >> tempin;
+      if(tempin==3.30) {ender=1;}
+      	else
+     {irand_seed=int(tempin);
+     echoinput<<"random number seed:  "<<irand_seed<<endl;
+     tempin=0;
    }
+   
+     *(ad_comm::global_datafile) >> tempin;
+      if(tempin==3.30) 
+      	{ender=1;}
+      	else
+        {N_warn++; warning<<"starter.ss has extra input lines; check echoinput to verify read"<<endl;
+        	echoinput<<endl<<"starter.ss should have read 3.30 here; it read: "<<tempin<<endl; exit(1);}
+    }
+   }
+//   } while (ender==0);
    echoinput<<"  finish reading starter.ss"<<endl<<endl;
    }
  END_CALCS
