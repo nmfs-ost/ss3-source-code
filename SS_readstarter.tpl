@@ -269,13 +269,15 @@
   number tempin;
   int ender;
   int irand_seed;
+  int irand_seed_rd;
 
  LOCAL_CALCS
    {
     mcmc_output_detail = 0;
     MCMC_bump=0.;
     ALK_tolerance=0.0;
-    irand_seed=0;
+    irand_seed_rd=-1;
+    irand_seed=-1;
     ender=0;
     //embed following reads in a do-while such that additional reads can be added while retaining backward compatibility with files that do not have the added elements
     //  element list:
@@ -325,9 +327,11 @@
 
      echoinput<<"Now get random number seed; enter -1 to use long(time) as the seed"<<endl;
      *(ad_comm::global_datafile) >> tempin;
-      if(tempin==3.30) {ender=1;}
+      if(tempin==3.30) 
+      {ender=1; irand_seed_rd=-1; irand_seed=-1;}
       	else
-     {irand_seed=int(tempin);
+     {irand_seed_rd=int(tempin);
+     irand_seed=irand_seed_rd;
      echoinput<<"random number seed:  "<<irand_seed<<endl;
      tempin=0;
    }

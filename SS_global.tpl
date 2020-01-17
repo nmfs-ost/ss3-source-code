@@ -657,6 +657,7 @@ FINAL_SECTION
 //  SS_Label_Info_12.3 #Go thru time series calculations again to get extra output quantities
 //  SS_Label_Info_12.3.2 #Set save_for_report=1 then call initial_conditions and time_series to get other output quantities
     save_for_report=1;
+    bigsaver=1;
     if(reportdetail==1) 
     {
     	write_bodywt=1;

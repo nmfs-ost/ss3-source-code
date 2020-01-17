@@ -3871,7 +3871,8 @@
      if(Selex_Std_Year<0) Selex_Std_Year=endyr;
      Selex_Std_Cnt=More_Std_Input(4);
      Do_Growth_Std=More_Std_Input(5);
-     if(MG_active(2)==0) Do_Growth_Std=0;
+     if(MG_active(2)==0 && Do_Growth_Std>0)
+     	{N_warn++; warning<<"error; growth output stderr requested but no growth parameters are estimated"<<endl;Do_Growth_Std=0;}
      Growth_Std_Cnt=More_Std_Input(6);
      Do_NatAge_Std=More_Std_Input(7);
      NatAge_Std_Year=More_Std_Input(8);
@@ -4548,22 +4549,22 @@
       {
         ParmLabel+="SSB_Btgt"+CRLF(1); CoVar_Count++; j++; active_parm(CoVar_Count)=j;
         ParmLabel+="SPR_Btgt"+CRLF(1); CoVar_Count++; j++; active_parm(CoVar_Count)=j;
-        ParmLabel+="Fstd_Btgt"+CRLF(1); CoVar_Count++; j++; active_parm(CoVar_Count)=j;
+        ParmLabel+="annF_Btgt"+CRLF(1); CoVar_Count++; j++; active_parm(CoVar_Count)=j;
         ParmLabel+="Dead_Catch_Btgt"+CRLF(1); CoVar_Count++; j++; active_parm(CoVar_Count)=j;
       }
       else if(Do_Benchmark==2)
       {
         ParmLabel+="SSB_F01"+CRLF(1); CoVar_Count++; j++; active_parm(CoVar_Count)=j;
         ParmLabel+="SPR_F01"+CRLF(1); CoVar_Count++; j++; active_parm(CoVar_Count)=j;
-        ParmLabel+="Fstd_F01"+CRLF(1); CoVar_Count++; j++; active_parm(CoVar_Count)=j;
+        ParmLabel+="annF_F01"+CRLF(1); CoVar_Count++; j++; active_parm(CoVar_Count)=j;
         ParmLabel+="Dead_Catch_F01"+CRLF(1); CoVar_Count++; j++; active_parm(CoVar_Count)=j;
       }
       ParmLabel+="SSB_SPR"+CRLF(1); CoVar_Count++; j++; active_parm(CoVar_Count)=j;
-      ParmLabel+="Fstd_SPR"+CRLF(1); CoVar_Count++; j++; active_parm(CoVar_Count)=j;
+      ParmLabel+="annF_SPR"+CRLF(1); CoVar_Count++; j++; active_parm(CoVar_Count)=j;
       ParmLabel+="Dead_Catch_SPR"+CRLF(1); CoVar_Count++; j++; active_parm(CoVar_Count)=j;
       ParmLabel+="SSB_MSY"+CRLF(1); CoVar_Count++; j++; active_parm(CoVar_Count)=j;
       ParmLabel+="SPR_MSY"+CRLF(1); CoVar_Count++; j++; active_parm(CoVar_Count)=j;
-      ParmLabel+="Fstd_MSY"+CRLF(1); CoVar_Count++; j++; active_parm(CoVar_Count)=j;
+      ParmLabel+="annF_MSY"+CRLF(1); CoVar_Count++; j++; active_parm(CoVar_Count)=j;
       ParmLabel+="Dead_Catch_MSY"+CRLF(1); CoVar_Count++; j++; active_parm(CoVar_Count)=j;
       ParmLabel+="Ret_Catch_MSY"+CRLF(1); CoVar_Count++; j++; active_parm(CoVar_Count)=j;
       ParmLabel+="B_MSY/SSB_unfished"+CRLF(1); CoVar_Count++; j++; active_parm(CoVar_Count)=j;
@@ -4644,7 +4645,7 @@
       for (i=1;i<=Growth_Std_Cnt;i++)
       {
         CoVar_Count++; j++; active_parm(CoVar_Count)=j;
-        ParmLabel+="Grow_std_"+NumLbl(Do_Growth_Std)+"_"+GenderLbl(g)+"_A_"+NumLbl(age_vector(Growth_Std_Pick(i)))+CRLF(1);
+        ParmLabel+="Grow_std_GP:_"+NumLbl(Do_Growth_Std)+"_"+GenderLbl(g)+"_A_"+NumLbl(age_vector(Growth_Std_Pick(i)))+CRLF(1);
       }
     }
 

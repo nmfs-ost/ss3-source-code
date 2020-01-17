@@ -528,7 +528,7 @@ FUNCTION void write_bigoutput()
   for (j=1;j<=N_STD_Mgmt_Quant;j++)
   {
     NP++; active_count++;
-    SS2out<<NP<<" "<<ParmLabel(NP)<<" "<<Mgmt_quant(j);
+    SS2out<<ParmLabel(NP)<<" "<<Mgmt_quant(j);
 
     SS2out<<" "<<CoVar(active_count,1)<<endl;
   }
@@ -536,7 +536,7 @@ FUNCTION void write_bigoutput()
   for (j=1;j<=Extra_Std_N;j++)
   {
     NP++;      active_count++;
-    SS2out<<NP<<" "<<active_count<<" "<<ParmLabel(NP)<<" "<<Extra_Std(j);
+    SS2out<<ParmLabel(NP)<<" "<<Extra_Std(j);
     SS2out<<" "<<CoVar(active_count,1)<<endl;
   }
 
@@ -550,7 +550,7 @@ FUNCTION void write_bigoutput()
         for (j=1;j<=Svy_N_fleet(f);j++)
         {
           active_count++; k++;
-          SS2out<<active_count<<" "<<fleetname(f)<<"_"<<Svy_yr(f,j)<<" ";
+          SS2out<<fleetname(f)<<"_"<<Svy_yr(f,j)<<" ";
           SS2out<<Svy_est(f,j)<<" "<<CoVar(active_count,1)<<" "<<Svy_sdreport_est(k)<<endl;
         }
       }
@@ -743,53 +743,6 @@ FUNCTION void write_bigoutput()
       {SS2out<<" "<<Hrate(f,t);}
      SS2out<<endl;
    }
-
- /*  old code from 3.30.12 below for EXPLOITATION
-   SS2out<<endl<<"EXPLOITATION"<<endl<<"F_Method: "<<F_Method;
-   if(F_Method==1) {SS2out<<"  Pope's_approx ";} else {SS2out<<"  Continuous_F;_(NOTE:_F_report_adjusts_for_seasdur_but_each_fleet_F_is_annual)";}
-   SS2out<<endl<<"F_report_units: "<<F_reporting<<F_report_label<<endl<<"_ _ _ ";
-   for (f=1;f<=Nfleet;f++)
-   if(fleet_type(f)<=2)
-   {if(catchunits(f)==1) {SS2out<<" Bio ";} else {SS2out<<" Num ";}}
-   SS2out<<endl<<"_ _ _ ";
-   for (f=1;f<=Nfleet;f++)
-   if(fleet_type(f)<=2)
-   {SS2out<<" "<<f;}
-   SS2out<<endl<<"Yr Seas F_report";
-   for (f=1;f<=Nfleet;f++)
-   if(fleet_type(f)<=2)
-   {SS2out<<" "<<fleetname(f);}
-   SS2out<<endl;
-   if(N_init_F>0)
-   {
-     for (s=1;s<=nseas;s++)
-     {
-       SS2out<<"init_yr "<<s<<" _ ";
-       for (f=1;f<=Nfleet;f++)
-       if(fleet_type(f)<=2)
-       {
-         if(init_F_loc(s,f)>0)
-           {SS2out<<" "<<init_F(init_F_loc(s,f));}
-          else
-          {SS2out<<" _ ";}
-       }
-       SS2out<<endl;
-     }
-   }
-
-   for (y=styr;y<=YrMax;y++)
-   for (s=1;s<=nseas;s++)
-   {
-     t=styr+(y-styr)*nseas+s-1;
-     SS2out<<y<<" "<<s<<" ";
-     if(s==1 && y>=styr && STD_Yr_Reverse_F(y)>0 ) {SS2out<<F_std(STD_Yr_Reverse_F(y));} else {SS2out<<" _ ";}
-     SS2out<<" ";
-     for(f=1;f<=Nfleet;f++)
-     if(fleet_type(f)<=2)
-      {SS2out<<" "<<Hrate(f,t);}
-     SS2out<<endl;
-   }
- */
  
 // REPORT_KEYWORD CATCH
 //  Fleet Fleet_Name Area Yr Era Seas Subseas Month Time

@@ -1150,15 +1150,16 @@ FUNCTION void write_nucontrol()
   NuStart<<depletion_basis<<" # Depletion basis:  denom is: 0=skip; 1=rel X*SPB0; 2=rel SPBmsy; 3=rel X*SPB_styr; 4=rel X*SPB_endyr"<<endl;
   NuStart<<depletion_level<<" # Fraction (X) for Depletion denominator (e.g. 0.4)"<<endl;
   NuStart<<SPR_reporting<<" # SPR_report_basis:  0=skip; 1=(1-SPR)/(1-SPR_tgt); 2=(1-SPR)/(1-SPR_MSY); 3=(1-SPR)/(1-SPR_Btarget); 4=rawSPR"<<endl;
-  NuStart<<F_reporting<<" # F_report_units: 0=skip; 1=exploitation(Bio); 2=exploitation(Num); 3=sum(Frates); 4=true F for range of ages; 5=unweighted avg. F for range of ages"<<endl;
+  NuStart<<F_reporting<<" # Annual_F_units: 0=skip; 1=exploitation(Bio); 2=exploitation(Num); 3=sum(Apical_F's); 4=true F for range of ages; 5=unweighted avg. F for range of ages"<<endl;
   if(F_reporting==4 || F_reporting==5)
-  {NuStart<<F_reporting_ages<<" #_min and max age over which average F will be calculated"<<endl;}
+  {NuStart<<F_reporting_ages<<" #_min and max age over which average F will be calculated, with F=Z-M"<<endl;}
   else
   {NuStart<<"#COND 10 15 #_min and max age over which average F will be calculated with F_reporting=4 or 5"<<endl;}
-  NuStart<<F_std_basis<<" # F_report_basis: 0=raw_F_report; 1=F/Fspr; 2=F/Fmsy ; 3=F/Fbtgt"<<endl;
+  NuStart<<F_std_basis<<" # F_std_basis: 0=raw_annual_F; 1=F/Fspr; 2=F/Fmsy ; 3=F/Fbtgt; where F means annual_F"<<endl;
   NuStart<<double(mcmc_output_detail)+MCMC_bump<<
   " # MCMC output detail: integer part (0=default; 1=adds obj func components); and decimal part (added to SR_LN(R0) on first call to mcmc)"<<endl;
   NuStart<<ALK_tolerance<<" # ALK tolerance (example 0.0001)"<<endl;
+  NuStart<<irand_seed_rd<<" # random number seed for bootstrap data (-1 to use long(time) as seed): # "<< irand_seed<<endl;
   NuStart<<"3.30 # check value for end of file and for version control"<<endl;
   NuStart.close();
 
@@ -1173,10 +1174,10 @@ FUNCTION void write_nucontrol()
   NuFore<<BTGT_target<<" # Biomass target (e.g. 0.40)"<<endl;
   NuFore<<"#_Bmark_years: beg_bio, end_bio, beg_selex, end_selex, beg_relF, end_relF, beg_recr_dist, end_recr_dist, beg_SRparm, end_SRparm (enter actual year, or values of 0 or -integer to be rel. endyr)"<<endl<<Bmark_Yr<<endl;
   NuFore<<Bmark_RelF_Basis<<" #Bmark_relF_Basis: 1 = use year range; 2 = set relF same as forecast below"<<endl;
-  NuFore<<"#"<<endl<<Do_Forecast_rd<<" # Forecast: -1=none; 0=simple; 1=F(SPR); 2=F(MSY) 3=F(Btgt) or F0.1; 4=Ave F (uses first-last relF yrs); 5=input annual F scalar"<<endl;
-  NuFore<<"# where simple requires no input after this line and does a one year forecast using end year F"<<endl;
+  NuFore<<"#"<<endl<<Do_Forecast_rd<<" # Forecast: -1=none; 0=simple_1yr; 1=F(SPR); 2=F(MSY) 3=F(Btgt) or F0.1; 4=Ave F (uses first-last relF yrs); 5=input annual F scalar"<<endl;
+  NuFore<<"# where none and simple require no input after this line; simple sets forecast F same as end year F"<<endl;
   NuFore<<N_Fcast_Yrs<<" # N forecast years "<<endl;
-  NuFore<<Fcast_Flevel<<" # F scalar (only used for Do_Forecast==5)"<<endl;
+  NuFore<<Fcast_Flevel<<" # Fmult (only used for Do_Forecast==5) such that apical_F(f)=Fmult*relF(f)"<<endl;
   NuFore<<"#_Fcast_years:  beg_selex, end_selex, beg_relF, end_relF, beg_mean recruits, end_recruits  (enter actual year, or values of 0 or -integer to be rel. endyr)"<<endl<<Fcast_yr_rd<<endl;
   NuFore<<Fcast_Specify_Selex<<" # Forecast selectivity (0=fcast selex is mean from year range; 1=fcast selectivity from annual time-vary parms)"<<endl;
 
@@ -1278,9 +1279,9 @@ FUNCTION void write_nucontrol()
     {NuFore<<"# no allocation groups"<<endl;}
 
   NuFore<<Fcast_InputCatch_Basis<<
-  " # basis for input Fcast catch: -1=read basis with each obs; 2=dead catch; 3=retained catch; 99=input Hrate(F); NOTE: bio vs num based on fleet's catchunits"<<endl;
+  " # basis for input Fcast catch: -1=read basis with each obs; 2=dead catch; 3=retained catch; 99=input apical_F; NOTE: bio vs num based on fleet's catchunits"<<endl;
 
-  NuFore<<"#enter list of Fcast catches; terminate with line having year=-9999"<<endl;
+  NuFore<<"#enter list of Fcast catches or Fa; terminate with line having year=-9999"<<endl;
   NuFore<<"#_Yr Seas Fleet Catch(or_F)";
   if(Fcast_InputCatch_Basis==-1) NuFore<<" Basis ";
   NuFore<<endl;
@@ -2030,19 +2031,35 @@ FUNCTION void write_nucontrol()
 
   report4<<Do_More_Std<<" # (0/1) read specs for more stddev reporting "<<endl;
 
+//3868      Do_Selex_Std=More_Std_Input(1);
+//3869      Selex_Std_AL=More_Std_Input(2);
+//3870      Selex_Std_Year=More_Std_Input(3);
+//3872      Selex_Std_Cnt=More_Std_Input(4);
+//3873      Do_Growth_Std=More_Std_Input(5);
+//3875      Growth_Std_Cnt=More_Std_Input(6);
+//3876      Do_NatAge_Std=More_Std_Input(7);
+//3877      NatAge_Std_Year=More_Std_Input(8);
+//3879      NatAge_Std_Cnt=More_Std_Input(9);
+
   if(Do_More_Std>0)
   {
-    report4<<More_Std_Input<<" # selex_fleet, 1=len/2=age/3=both, year, N selex bins, 0 or Growth pattern, N growth ages, 0 or NatAge_area(-1 for sum), NatAge_yr, N Natages"<<endl;
-    if(More_Std_Input(4)>0) report4<<Selex_Std_Pick<<" # vector with selex std bins (-1 in first bin to self-generate)"<<endl;
-    if(More_Std_Input(6)>0) report4<<Growth_Std_Pick<<" # vector with growth std ages picks (-1 in first bin to self-generate)"<<endl;
-    if(More_Std_Input(9)>0) report4<<NatAge_Std_Pick<<" # vector with NatAge std ages (-1 in first bin to self-generate)"<<endl;
+//    report4<<More_Std_Input<<" # selex_fleet, 1=len/2=age/3=both, year, N selex bins, 0 or Growth pattern, N growth ages, 0 or NatAge_area(-1 for sum), NatAge_yr, N Natages"<<endl;
+    report4<<More_Std_Input(1,4)<<" # Selectivity: (1) 0 or fleet, (2) 1=len/2=age/3=combined, (3) year, (4) N selex bins; NOTE: combined reports in age bins"<<endl;
+    report4<<More_Std_Input(5,6)<<" # Growth: (1) 0 or growth pattern, (2) growth ages; NOTE: does each sex"<<endl;
+    report4<<More_Std_Input(7,9)<<" # Numbers-at-age: (1) 0 or area(-1 for all), (2) year, (3) N ages;  NOTE: sums across morphs"<<endl;
+
+    if(Do_Selex_Std>0) report4<<Selex_Std_Pick<<" # vector with selex std bins (-1 in first bin to self-generate)"<<endl;
+    if(Do_Growth_Std>0) report4<<Growth_Std_Pick<<" # vector with growth std ages picks (-1 in first bin to self-generate)"<<endl;
+    if(Do_NatAge_Std!=0) report4<<NatAge_Std_Pick<<" # vector with NatAge std ages (-1 in first bin to self-generate)"<<endl;
   }
   else
   {
-    report4<<" # 0 0 0 0 0 0 0 0 0 # placeholder for # selex_fleet, 1=len/2=age/3=both, year, N selex bins, 0 or Growth pattern, N growth ages, 0 or NatAge_area(-1 for all), NatAge_yr, N Natages"<<endl;
-    report4<<" # placeholder for vector of selex bins to be reported"<<endl;
-    report4<<" # placeholder for vector of growth ages to be reported"<<endl;
-    report4<<" # placeholder for vector of NatAges ages to be reported"<<endl;
+    report4<<" # 0 2 0 0 # Selectivity: (1) fleet, (2) 1=len/2=age/3=both, (3) year, (4) N selex bins"<<endl;
+    report4<<" # 0 0 # Growth: (1) growth pattern, (2) growth ages"<<endl;
+    report4<<" # 0 0 0 # Numbers-at-age: (1) area(-1 for all), (2) year, (3) N ages"<<endl;
+    report4<<" # -1 # list of bin #'s for selex std (-1 in first bin to self-generate)"<<endl;
+    report4<<" # -1 # list of ages for growth std (-1 in first bin to self-generate)"<<endl;
+    report4<<" # -1 # list of ages for NatAge std (-1 in first bin to self-generate)"<<endl;
   }
   report4<<fim<<endl<<endl; // end of file indicator
   return;
