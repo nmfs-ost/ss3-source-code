@@ -14,4 +14,8 @@ RUN dpkg -i admb-12.0-ubuntu16-64bit_12.0.deb
 
 RUN chmod 755 /usr/local/bin/admb
 
+RUN groupadd --gid 502 jenkins && \
+    useradd --shell /bin/bash --gid 502 --uid 501 jenkins
+USER jenkins
+
 CMD ["admb"]
