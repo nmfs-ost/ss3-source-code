@@ -9,14 +9,14 @@ pipeline {
                 checkout([$class: 'GitSCM', branches: [[name: '*/master']], doGenerateSubmoduleConfigurations: false, extensions: [[$class: 'RelativeTargetDirectory', relativeTargetDir: 'vlab/stock-synthesis']], submoduleCfg: [], userRemoteConfigs: [[credentialsId: '1aa2d7c8-749f-4270-9de2-6ffcf0cd2beb', url: 'https://stock_synthesis.build@vlab.ncep.noaa.gov/git/stock-synthesis']]])
             }
         }
-        stage('Build SS Exectutable') {
+        stage('Build SS Executable') {
             steps {
                 checkout([$class: 'GitSCM', branches: [[name: '*/master']], doGenerateSubmoduleConfigurations: false, extensions: [[$class: 'RelativeTargetDirectory', relativeTargetDir: 'vlab/stock-synthesis']], submoduleCfg: [], userRemoteConfigs: [[credentialsId: '1aa2d7c8-749f-4270-9de2-6ffcf0cd2beb', url: 'https://stock_synthesis.build@vlab.ncep.noaa.gov/git/stock-synthesis']]])
                 // sh label: 'Check ADMB Version', script: 'admb'
                 // sh label: 'Double check source', script: 'ls vlab/stock-synthesis'
                 sh label: 'Copy build script to base location', script: 'cp vlab/stock-synthesis/Make_SS_330.sh .'
                 sh label: 'Make build script executable', script: 'chmod a+x Make_SS_330.sh'
-                sh label: 'Set BUILD_DIR env var', script: 'pwd && ls && set BUILD_DIR="SS330"'
+                sh label: 'Set BUILD_DIR env var', script: 'pwd && ls && export BUILD_DIR="SS330"'
                 sh label: 'Run build', script: './Make_SS_330.sh'
 
             }
