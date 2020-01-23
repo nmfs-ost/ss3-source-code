@@ -10,4 +10,4 @@ RUN wget https://github.com/admb-project/admb/releases/download/admb-12.0/admb-1
 
 RUN dpkg -i admb-12.0-ubuntu16-64bit_12.0.deb
 
-RUN ["chmod", "a+x", "/usr/local/bin/admb"]
+CMD ["admb"]
