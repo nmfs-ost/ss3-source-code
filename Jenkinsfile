@@ -1,5 +1,8 @@
 pipeline {
-    agent { dockerfile { dir 'jenkins/stock-synthesis' } }
+    agent { dockerfile {
+        dir 'jenkins/stock-synthesis'
+        args '-u 0:0'}
+    }
     stages {
         stage('Build SS Exectutable') {
             steps {
