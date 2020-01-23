@@ -1,13 +1,9 @@
 FROM ubuntu:xenial
 MAINTAINER FRAM Data Team <nmfs.nwfsc.fram.data.team@noaa.gov>
 
-## Set a default user. Available via runtime flag `--user docker`
-## Add user to 'staff' group, granting them write privileges to /usr/local/lib/R/site.library
-## User should also have & own a home directory (for rstudio or linked volumes to work properly).
-RUN useradd admb \
-	&& mkdir /home/admb \
-	&& chown admb:admb /home/admb \
-	&& addgroup admb staff
+RUN groupadd --gid 502 jenkins && \
+    useradd --shell /bin/bash --gid 502 --uid 501 jenkins
+USER jenkins
 
 RUN apt-get update \
   && apt-get install -y wget
