@@ -17,8 +17,8 @@ pipeline {
                 //sh label: 'Copy build script to base location', script: 'cp vlab/stock-synthesis/Make_SS_330.sh .'
 
                 sh label: 'Make build script executable', script: 'cd vlab/stock-synthesis && chmod a+x Make_SS_330.sh'
-                sh label: 'Set BUILD_DIR env var', script: 'pwd && ls && export BUILD_DIR="SS330"'
-                sh label: 'Run build', script: './Make_SS_330.sh'
+                sh label: 'Set BUILD_DIR env var', script: 'export BUILD_DIR="SS330"'
+                sh label: 'Run build', script: 'cd vlab/stock-synthesis && ls && ./Make_SS_330.sh'
 
             }
         }
