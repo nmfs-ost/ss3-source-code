@@ -1,10 +1,6 @@
 FROM ubuntu:xenial
 MAINTAINER FRAM Data Team <nmfs.nwfsc.fram.data.team@noaa.gov>
 
-RUN groupadd --gid 502 jenkins && \
-    useradd --shell /bin/bash --gid 502 --uid 501 jenkins
-USER jenkins
-
 RUN apt-get update \
   && apt-get install -y wget
 
