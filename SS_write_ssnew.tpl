@@ -1816,7 +1816,7 @@ FUNCTION void write_nucontrol()
    
    report4<<"#_discard_options:_0=none;_1=define_retention;_2=retention&mortality;_3=all_discarded_dead;_4=define_dome-shaped_retention"<<endl;
    report4<<"#_Pattern Discard Male Special"<<endl;
-   for (f=1;f<=Nfleet;f++) report4<<seltype(f)<<" # "<<f<<" "<<fleetname(f)<<endl;
+   for (f=1;f<=Nfleet;f++) report4<<seltype_rd(f)<<" # "<<f<<" "<<fleetname(f)<<endl;
    report4<<"#"<<endl;
    
    
@@ -1837,9 +1837,9 @@ FUNCTION void write_nucontrol()
    report4<<"#Pattern:_26; parm=3; exponential-logistic in age"<<endl;
    report4<<"#Pattern:_27; parm=3+special; cubic spline in age"<<endl;
    report4<<"#Pattern:_42; parm=2+special+3; // cubic spline; with 2 additional param for scaling (average over bin range)"<<endl;
-
+   report4<<"#Age patterns entered with value >100 create Min_selage from first digit and pattern from remainder"<<endl;
    report4<<"#_Pattern Discard Male Special"<<endl;
-   for (f=1;f<=Nfleet;f++) report4<<seltype(f+Nfleet)<<" # "<<f<<" "<<fleetname(f)<<endl;
+   for (f=1;f<=Nfleet;f++) report4<<seltype_rd(f+Nfleet)<<" # "<<f<<" "<<fleetname(f)<<endl;
    report4<<"#"<<endl;
 
    report4<<"#_          LO            HI          INIT         PRIOR         PR_SD       PR_type      PHASE    env-var    use_dev   dev_mnyr   dev_mxyr     dev_PH      Block    Blk_Fxn  #  parm_name"<<endl;

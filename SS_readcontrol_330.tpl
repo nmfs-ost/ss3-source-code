@@ -2518,18 +2518,37 @@
   Min_selage.initialize();
   for(f=1;f<=2*Nfleet;f++)
   {
+  	echoinput<<f<<" "<<seltype_rd(f,1)<<endl;
   	if(seltype_rd(f,1)>=100)
 		{
 			if(f<=Nfleet)
 			{
-				N_warn++; warning<<"fleet: "<<f<<"  cannot use >100 code for length selectivity"<<endl;
-				seltype_rd(f,1)-=100;  //  change input value so will be written correctly in ss_new
+				N_warn++; warning<<"fleet: "<<f<<"  cannot use >100 code for length selectivity; SS will correct"<<endl;
+				j=int(seltype(f,1)/100);
+				k=seltype(f,1)-100*j;
+				seltype_rd(f,1)=k;  //  change input value so will be written correctly in ss_new
+	  		seltype(f,1)=seltype_rd(f,1);
 			}
 			else
 			{
-				Min_selage(f-Nfleet)=1;
+				Min_selage(f-Nfleet)=int(seltype(f,1)/100);
+				k=seltype(f,1)-100*Min_selage(f-Nfleet);
+				echoinput<<seltype(f,1)<<" "<<k<<" "<<Min_selage(f-Nfleet)<<endl;
+				if(k==12 || k==13 || k==14 || k==16 || k==18 || k==26 || k==27)
+				{echoinput<<"OK to have min_selage=1 for selex pattern: "<<k<<" for fleet: "<<f-Nfleet<<endl;}
+				else if (k==17 || k==44 || k==45)
+			  {N_warn++; warning<<"Don't use min_selage for age selectivity: "<<k<<" for fleet: "<<f-Nfleet<<
+			  	" because separate control exists"<<endl;}
+				else if (k==19)
+			  {N_warn++; warning<<"can't use min_selage for age selectivity: "<<k<<" for fleet: "<<f-Nfleet<<
+			  	" because separate control will set sel = 1.0e-06 below a specified age"<<endl;}
+				else if (k==20)
+			  {N_warn++; warning<<"careful with min_selage for age selectivity: "<<k<<" for fleet: "<<f-Nfleet<<
+			  	" because separate control can set sel = 1.0e-06 below a specified age"<<endl;}
+			  else
+			  {echoinput<<"Min_selage not implemented and not relevant for selex pattern: "<<k<<" for fleet: "<<f-Nfleet<<endl;}
+			  seltype(f,1)=k;
 			}
-			seltype(f,1)-=100;
 		}
   }
   
@@ -2614,7 +2633,6 @@
      }
      else
      {
-      echoinput<<f<<" nsel "<<N_selparmvec(f)<<endl;
        for (j=1;j<=N_selparmvec(f);j++)
        {
          ParCount++; ParmLabel+="SizeSel_P"+NumLbl(j)+"_"+fleetname(f)+"("+NumLbl(f)+")";
@@ -3344,8 +3362,9 @@
 // if Tags are used, the read parameters for initial tag loss, chronic tag loss, andd
 // fleet-specific tag reporting.  Of these, only reporting rate will be allowed to be time-varying
   init_int TG_custom;  // 1=read; 0=create default parameters
-  !! echoinput<<TG_custom<<" TG_custom (need to read even if no tag data )  "<<Nfleet1<<endl;
+  !! echoinput<<TG_custom<<" TG_custom (need to read even if no tag data ); tag_data?: "<<Do_TG<<" N_Fleet: "<<Nfleet1<<endl;
   !! k=TG_custom*Do_TG*(3*N_TG+2*Nfleet1);
+  !! 
   init_matrix TG_parm1(1,k,1,14);  // read initial values
   !! if(k>0) echoinput<<" Tag parameters as read "<<endl<<TG_parm1<<endl;
   !! k=Do_TG*(3*N_TG+2*Nfleet1);

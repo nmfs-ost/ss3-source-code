@@ -837,12 +837,16 @@ FUNCTION void get_selectivity()
 
   //  SS_Label_Info_22.7.12 #age selectivity - logistic
               case 12:
-              { sel_a(y,fs,1)(Min_selage(fs),nages) = 1/(1+mfexp(neglog19*(r_ages(Min_selage(fs),nages)-sp(1))/sp(2))); break;}
+              {
+              	sel_a(y,fs,1).initialize();
+              	sel_a(y,fs,1)(Min_selage(fs),nages) = 1./(1.+mfexp(neglog19*(r_ages(Min_selage(fs),nages)-sp(1))/sp(2)));
+              	break;}
 
   //  SS_Label_Info_22.7.13 #age selectivity - double logistic
               case 13:
                                        // 1=peak, 2=init,  3=infl,  4=slope, 5=final, 6=infl2, 7=slope2, 8=plateau
               {
+               	sel_a(y,fs,1).initialize();
                 t1=0.+(1./(1.+mfexp(-sp(3))))*(sp(1)-0.);    // INFL
                 t1min=1./(1.+mfexp(-sp(4)*(0.-t1)))*0.9999999;  // asc value at minage
                 t1max=1./(1.+mfexp(-sp(4)*(sp(1)-t1)))*1.00001;  // asc value at peak
@@ -855,7 +859,7 @@ FUNCTION void get_selectivity()
                 final=1./(1.+mfexp(-sp(5)));
                 k1=int(value(sp(1))); k2=int(value(sp(1)+sp(8)));
 
-                for (a=0; a<=nages; a++)  //calculate the value over ages
+                for (a=Min_selage(fs); a<=nages; a++)  //calculate the value over ages
                 {
                   if (a < k1) // ascending limb
                   {
@@ -877,7 +881,8 @@ FUNCTION void get_selectivity()
               case 14:
             {
              temp=9.-max(sp(1,nages+1));  //  this forces at least one age to have selex weight equal to 9
-             for (a=0;a<=nages;a++)
+             	sel_a(y,fs,1).initialize();
+             for (a=Min_selage(fs);a<=nages;a++)
              {
               if(sp(a+1)>-999)
               {sel_a(y,fs,1,a) = 1./(1.+mfexp(-(sp(a+1)+temp)));}
@@ -899,7 +904,8 @@ FUNCTION void get_selectivity()
               case 16:
             {
              t1 = 1/(1+mfexp(-sp(1)))*nages;
-             for (a=0;a<=nages;a++)
+             sel_a(y,fs,1).initialize();
+             for (a=Min_selage(fs);a<=nages;a++)
              {
               if(a<t1)
               {sel_a(y,fs,1,a) = mfexp(-square(r_ages(a)-t1)/mfexp(sp(2)));}
@@ -1096,6 +1102,7 @@ FUNCTION void get_selectivity()
               case 18:                 // *******double logistic with smooth transition
                                        // 1=peak, 2=init,  3=infl,  4=slope, 5=final, 6=infl2, 7=slope2
             {
+             sel_a(y,fs,1).initialize();
              t1=0.+(1./(1.+mfexp(-sp(3))))*(sp(1)-0.);    // INFL
              t1min=1./(1.+mfexp(-sp(4)*(0.-t1)))*0.9999;  // asc value at minsize
              t1max=1./(1.+mfexp(-sp(4)*(sp(1)-t1)))*1.00001;  // asc value at peak
@@ -1106,7 +1113,7 @@ FUNCTION void get_selectivity()
              t2max=1./(1.+mfexp(-sp(7)*(r_ages(nages)-t2)))*1.00001;  // asc value at maxage
              t2power=log(0.5)/log((0.5-t2min)/(t2max-t2min));
              final=1./(1.+mfexp(-sp(5)));
-             for (a=0; a<=nages; a++)  //calculate the value over ages
+             for (a=Min_selage(fs); a<=nages; a++)  //calculate the value over ages
              {
               sel_a(y,fs,1,a) =
                 (
@@ -1158,7 +1165,7 @@ FUNCTION void get_selectivity()
               }
               else
               {
-                j=-1;                // start selex at age 0
+                j=Min_selage(fs)-1;                // start selex at Min_selage
                 if(sp(5)>-999)
                 {
                   point1=1./(1.+mfexp(-sp(5)));
@@ -1204,8 +1211,9 @@ FUNCTION void get_selectivity()
             case 26:
             {
 //              peak = r_ages(0) + sp(2)*(r_ages(nages)-r_ages(0));
+              sel_a(y,fs,1).initialize();
               peak = sp(2)*r_ages(nages);
-              for (a=0;a<=nages;a++)
+              for (a=Min_selage(fs);a<=nages;a++)
                 {sel_a(y,fs,1,a) = mfexp(sp(3)*sp(1)*(peak-r_ages(a)))/(1.0-sp(3)*(1.0-mfexp(sp(1)*(peak-r_ages(a)))));}
               break;
             }
@@ -1222,7 +1230,7 @@ FUNCTION void get_selectivity()
   dvar_vector splineY(1,200);
   splineX.initialize();
   splineY.initialize();
-
+            sel_a(y,fs,1).initialize();
             k=seltype(f,4);  // n points to include in cubic spline
             for (i=1;i<=k;i++)
             {
@@ -1242,10 +1250,10 @@ FUNCTION void get_selectivity()
             {
                 int low_bin  = int(value(sp(1)));
                 int high_bin = int(value(sp(2)));
-                if (low_bin < 0)
+                if (low_bin < Min_selage(fs))
                 {
-                    low_bin = 0;
-                    N_warn++; warning<<" selex pattern 42; value for low bin is less than 0, so set to 0 "<<endl;
+                    low_bin = Min_selage(fs);
+                    N_warn++; warning<<" selex pattern 42; value for low bin is less than min_selage, so set to "<<Min_selage(fs)<<endl;
                 }
                 if (high_bin > nages)
                 {
@@ -1261,7 +1269,7 @@ FUNCTION void get_selectivity()
             }
             tempvec_a-=temp;  // rescale to get max of 0.0
             tempvec_a(j2+1,nages) = tempvec_a(j2);  //  set constant above last node
-            sel_a(y,fs,1)=mfexp(tempvec_a);
+            sel_a(y,fs,1)(Min_selage(fs),nages)=mfexp(tempvec_a)(Min_selage(fs),nages);
             break;
           }
 
@@ -1286,7 +1294,7 @@ FUNCTION void get_selectivity()
               {
                 case 1:
                 {                       // do males relative to females
-                  for (a=0;a<=nages;a++)   //
+                  for (a=Min_selage(fs);a<=nages;a++)   //
                   {
                     if(r_ages(a)<=temp)
                     {sel_a(y,fs,2,a)=sel_a(y,fs,1,a)*mfexp(sp(k+1)+(r_ages(a)-0.)   /(temp-0.)   * (sp(k+2)-sp(k+1)) );}
@@ -1303,7 +1311,7 @@ FUNCTION void get_selectivity()
                 case 2:
                 {                   //  do females relative to males
                   sel_a(y,fs,2)=sel_a(y,fs,1);
-                  for (a=0;a<=nages;a++)   //
+                  for (a=Min_selage(fs);a<=nages;a++)   //
                   {
                     if(r_ages(a)<=temp)
                       {sel_a(y,fs,1,a)=sel_a(y,fs,2,a)*mfexp(sp(k+1)+(r_ages(a)-0.)   /(temp-0.)   * (sp(k+2)-sp(k+1)) );}
