@@ -1097,7 +1097,7 @@ FUNCTION void write_bigoutput()
 //  show_time2(ALK) has yr, seas, subseas
   SS2out <<endl<< "INDEX_2" << endl;
   rmse = 0.0;  n_rmse = 0.0; mean_CV=0.0; mean_CV2=0.0; mean_CV3=0.0;
-  SS2out<<"Fleet Fleet_name Area Yr Seas Subseas Month Time Vuln_bio Obs Exp Calc_Q Eff_Q SE Dev Like Like+log(s) SuprPer Use"<<endl;
+  SS2out<<"Fleet Fleet_name Area Yr Seas Subseas Month Time Vuln_bio Obs Exp Calc_Q Eff_Q SE SE_input Dev Like Like+log(s) SuprPer Use"<<endl;
   if(Svy_N>0)
   {
     for (f=1;f<=Nfleet;f++)
@@ -1111,7 +1111,7 @@ FUNCTION void write_bigoutput()
           if(Svy_errtype(f)>=0)  // lognormal
           {
             temp = mfexp(Svy_est(f,i));
-            SS2out<<temp<<" "<<Svy_q(f,i)<<" "<<temp/Svy_selec_abund(f,i)<<" "<<Svy_se_use(f,i);
+            SS2out<<temp<<" "<<Svy_q(f,i)<<" "<<temp/Svy_selec_abund(f,i)<<" "<<Svy_se_use(f,i)<<" "<<Svy_se(f,i);
             if(Svy_use(f,i) > 0)
             {
               SS2out<<" "<<Svy_obs_log(f,i)-Svy_est(f,i)<<" ";
