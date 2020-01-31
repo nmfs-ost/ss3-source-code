@@ -2041,18 +2041,7 @@ FUNCTION void write_nucontrol()
 //3877      NatAge_Std_Year=More_Std_Input(8);
 //3879      NatAge_Std_Cnt=More_Std_Input(9);
 
-  if(Do_More_Std>0)
-  {
-//    report4<<More_Std_Input<<" # selex_fleet, 1=len/2=age/3=both, year, N selex bins, 0 or Growth pattern, N growth ages, 0 or NatAge_area(-1 for sum), NatAge_yr, N Natages"<<endl;
-    report4<<More_Std_Input(1,4)<<" # Selectivity: (1) 0 or fleet, (2) 1=len/2=age/3=combined, (3) year, (4) N selex bins; NOTE: combined reports in age bins"<<endl;
-    report4<<More_Std_Input(5,6)<<" # Growth: (1) 0 or growth pattern, (2) growth ages; NOTE: does each sex"<<endl;
-    report4<<More_Std_Input(7,9)<<" # Numbers-at-age: (1) 0 or area(-1 for all), (2) year, (3) N ages;  NOTE: sums across morphs"<<endl;
-
-    if(Do_Selex_Std>0) report4<<Selex_Std_Pick<<" # vector with selex std bins (-1 in first bin to self-generate)"<<endl;
-    if(Do_Growth_Std>0) report4<<Growth_Std_Pick<<" # vector with growth std ages picks (-1 in first bin to self-generate)"<<endl;
-    if(Do_NatAge_Std!=0) report4<<NatAge_Std_Pick<<" # vector with NatAge std ages (-1 in first bin to self-generate)"<<endl;
-  }
-  else
+  if(Do_More_Std==0) // empty/dummy values when extra stddev reporting not used
   {
     report4<<" # 0 2 0 0 # Selectivity: (1) fleet, (2) 1=len/2=age/3=both, (3) year, (4) N selex bins"<<endl;
     report4<<" # 0 0 # Growth: (1) growth pattern, (2) growth ages"<<endl;
@@ -2060,6 +2049,24 @@ FUNCTION void write_nucontrol()
     report4<<" # -1 # list of bin #'s for selex std (-1 in first bin to self-generate)"<<endl;
     report4<<" # -1 # list of ages for growth std (-1 in first bin to self-generate)"<<endl;
     report4<<" # -1 # list of ages for NatAge std (-1 in first bin to self-generate)"<<endl;
+  }
+  if(Do_More_Std > 0) // these outputs needed for options 1 and 2
+  {
+//    report4<<More_Std_Input<<" # selex_fleet, 1=len/2=age/3=both, year, N selex bins, 0 or Growth pattern, N growth ages, 0 or NatAge_area(-1 for sum), NatAge_yr, N Natages"<<endl;
+    report4<<More_Std_Input(1,4)<<" # Selectivity: (1) 0 or fleet, (2) 1=len/2=age/3=combined, (3) year, (4) N selex bins; NOTE: combined reports in age bins"<<endl;
+    report4<<More_Std_Input(5,6)<<" # Growth: (1) 0 or growth pattern, (2) growth ages; NOTE: does each sex"<<endl;
+    report4<<More_Std_Input(7,9)<<" # Numbers-at-age: (1) 0 or area(-1 for all), (2) year, (3) N ages;  NOTE: sums across morphs"<<endl;
+  } 
+  if(Do_More_Std==2) // additional output when option 2 is selected
+  {
+    report4<<More_Std_Input(10,11)<<" # Mortality: (1) 0 or growth pattern, (2) M ages; NOTE: does each sex"<<endl;
+  }
+  if(Do_More_Std > 0) // vectors associated with options 1 and 2
+  {
+    if(Do_Selex_Std>0) report4<<Selex_Std_Pick<<" # vector with selex std bins (-1 in first bin to self-generate)"<<endl;
+    if(Do_Growth_Std>0) report4<<Growth_Std_Pick<<" # vector with growth std ages picks (-1 in first bin to self-generate)"<<endl;
+    if(Do_NatAge_Std!=0) report4<<NatAge_Std_Pick<<" # vector with NatAge std ages (-1 in first bin to self-generate)"<<endl;
+    if(Do_NatM_Std>0) report4<<NatM_Std_Pick<<" # vector with NatM std ages picks (-1 in first bin to self-generate)"<<endl;
   }
   report4<<fim<<endl<<endl; // end of file indicator
   return;

@@ -3861,12 +3861,30 @@
  END_CALCS
 
 !!//  SS_Label_Info_4.12 #Read setup for more derived quantities to include in the STD report
-  init_int Do_More_Std
-  init_ivector More_Std_Input(1,Do_More_Std*9)
+  init_int Do_More_Std   // option (currently 0, 1, or 2)
+  int More_Std_N_Inputs; // count of inputs (depends on option above)
  LOCAL_CALCS
-  echoinput<<Do_More_Std<<" # (0/1) read specs for reporting stdev for selectivity, size, and numbers"<<endl;
+  More_Std_N_Inputs=0;
+  if(Do_More_Std==1){
+    More_Std_N_Inputs=9;
+  }
+  if(Do_More_Std==2){
+    More_Std_N_Inputs=11;
+  }
+ END_CALCS
+  init_ivector More_Std_Input(1,More_Std_N_Inputs); // read dimensions
+ LOCAL_CALCS
+  echoinput<<Do_More_Std<<" # extra stdev reporting: 0 = skip, 1 = read specs for reporting stdev for selectivity, size, and numbers, 2 = mortality in addition to values in option 1"<<endl;
   if(Do_More_Std>0)
-  {echoinput<<More_Std_Input<<" # vector with: 0 or selex fleet, 1=len/2=age, selex year, N selex bins, 0 or Growth pattern, N ages for length-at-age, 0 or area for N_at_age, NatAge_yr, Natage_ages"<<endl;}
+  {
+    echoinput<<More_Std_Input(1,4)<<" # Selectivity: (1) 0 or fleet, (2) 1=len/2=age/3=combined, (3) year, (4) N selex bins; NOTE: combined reports in age bins"<<endl;
+    echoinput<<More_Std_Input(5,6)<<" # Growth: (1) 0 or growth pattern, (2) growth ages; NOTE: does each sex"<<endl;
+    echoinput<<More_Std_Input(7,9)<<" # Numbers-at-age: (1) 0 or area(-1 for all), (2) year, (3) N ages;  NOTE: sums across morphs"<<endl;
+  }
+  if(Do_More_Std==2)
+  {
+    echoinput<<More_Std_Input(10,11)<<" # Mortality: (1) 0 or growth pattern, (2) M ages; NOTE: does each sex"<<endl;
+  }
  END_CALCS
 
   int Do_Selex_Std;
@@ -3878,10 +3896,30 @@
   int Do_NatAge_Std;
   int NatAge_Std_Year;
   int NatAge_Std_Cnt;
+  int Do_NatM_Std;
+  int NatM_Std_Cnt;
   int Extra_Std_N;   //  dimension for the sdreport vector Selex_Std which also contains the Growth_Std
 
  LOCAL_CALCS
    Extra_Std_N=0;
+
+   // don't read any extra std inputs
+   if(Do_More_Std==0)
+   {
+     Do_Selex_Std=0;
+     Selex_Std_AL=1;
+     Selex_Std_Year=endyr;
+     Selex_Std_Cnt=0;
+     Do_Growth_Std=0;
+     Growth_Std_Cnt=0;
+     Do_NatAge_Std=0;
+     NatAge_Std_Cnt=0;
+     NatAge_Std_Year=endyr;
+     Do_NatM_Std=0;
+     NatM_Std_Cnt=0;
+   }
+
+   // read standard extra std inputs (only option prior to 3.30.15)
    if(Do_More_Std>0)
    {
      Do_Selex_Std=More_Std_Input(1);
@@ -3900,30 +3938,30 @@
      if(Do_Selex_Std<=0) Selex_Std_Cnt=0;
      if(Do_Growth_Std<=0) Growth_Std_Cnt=0;
      if(Do_NatAge_Std==0) NatAge_Std_Cnt=0;
+     Do_NatM_Std=0;  // value replaced below if Do_More_Std==2
+     NatM_Std_Cnt=0; // value replaced below if Do_More_Std==2
    }
-   else
+
+   // read additional extra std inputs for NatM (added in 3.30.15)
+   if(Do_More_Std==2)
    {
-     Do_Selex_Std=0;
-     Selex_Std_AL=1;
-     Selex_Std_Year=endyr;
-     Selex_Std_Cnt=0;
-     Do_Growth_Std=0;
-     Growth_Std_Cnt=0;
-     Do_NatAge_Std=0;
-     NatAge_Std_Cnt=0;
-     NatAge_Std_Year=endyr;
+     Do_NatM_Std=More_Std_Input(10);
+     NatM_Std_Cnt=More_Std_Input(11);
+     if(Do_NatM_Std<=0){
+       NatM_Std_Cnt=0;
+     }
    }
  END_CALCS
 
+  // get vector of length bins or ages for selex std (either input or autogenerate)
   init_ivector Selex_Std_Pick(1,Selex_Std_Cnt);
-
  LOCAL_CALCS
   if(Do_Selex_Std>0)
   {
     echoinput<<Selex_Std_Pick<<" # vector with selex std bins (-1 in first bin to self-generate)"<<endl;
     if(Selex_Std_Pick(1)<0)  //  then self-generate even bin selection
     {
-      if(Selex_Std_AL==1)
+      if(Selex_Std_AL==1) // length-based selex
       {
         if(Selex_Std_Cnt==1)
           {Selex_Std_Pick(1)=nlength/2;}
@@ -3935,9 +3973,9 @@
           for (i=2;i<=Selex_Std_Cnt-1;i++) Selex_Std_Pick(i)=Selex_Std_Pick(i-1)+j;
           Selex_Std_Pick(Selex_Std_Cnt)=nlength;
         }
-        echoinput<<"generate age selex std for fleet: "<<Do_Selex_Std<<" in year: "<<Selex_Std_Year<<" at bins: "<<Selex_Std_Pick<<endl;
+        echoinput<<"generate length selex std for fleet: "<<Do_Selex_Std<<" in year: "<<Selex_Std_Year<<" at bins: "<<Selex_Std_Pick<<endl;
       }
-      else
+      else  // age-based or age-length-combined selex
       {
         if(Selex_Std_Cnt==1)
           {Selex_Std_Pick(1)=nages/2;}
@@ -3953,22 +3991,32 @@
         echoinput<<"generate age selex std for fleet: "<<Do_Selex_Std<<" in year: "<<Selex_Std_Year<<" at ages: "<<Selex_Std_Pick<<endl;
       }
     }
+    // adjust values to keep in range
     for(i=1;i<=Selex_Std_Cnt;i++)
     {
-      if(Selex_Std_Pick(i)<=0) Selex_Std_Pick(i)=1;
-      if(Selex_Std_Pick(i)>nlength && Selex_Std_AL==1) Selex_Std_Pick(i)=nlength;
-      if(Selex_Std_Pick(i)>nages && Selex_Std_AL>1) Selex_Std_Pick(i)=nages;
+      if(Selex_Std_AL==1) // length-based selex
+      {
+        if(Selex_Std_Pick(i)<=0) Selex_Std_Pick(i)=1;
+        if(Selex_Std_Pick(i)>nlength) Selex_Std_Pick(i)=nlength;
+      }
+      else // age-based or age-length-combined selex
+      {
+        if(Selex_Std_Pick(i)<0) Selex_Std_Pick(i)=0;
+        if(Selex_Std_Pick(i)>nages) Selex_Std_Pick(i)=nages;
+      }
     }
+    // increment count
     Extra_Std_N=gender*Selex_Std_Cnt;
   }
  END_CALCS
 
+  // get vector of bins for growth std (either input or autogenerate)
   init_ivector Growth_Std_Pick(1,Growth_Std_Cnt);
  LOCAL_CALCS
   if(Do_Growth_Std>0)
   {
     echoinput<<Growth_Std_Pick<<" # vector with growth std ages (-1 in first bin to self-generate)"<<endl;
-    if(Growth_Std_Pick(1)<=0)
+    if(Growth_Std_Pick(1)<0)
     {
       Growth_Std_Pick(1)=AFIX;
       Growth_Std_Pick(Growth_Std_Cnt)=nages;
@@ -3982,18 +4030,20 @@
     }
     for(i=1;i<=Growth_Std_Cnt;i++)
     {
-      if(Growth_Std_Pick(i)<=0) Growth_Std_Pick(i)=1;
+      if(Growth_Std_Pick(i)<0) Growth_Std_Pick(i)=0;
       if(Growth_Std_Pick(i)>nages) Growth_Std_Pick(i)=nages;
     }
     Extra_Std_N+=gender*Growth_Std_Cnt;
   }
  END_CALCS
+
+  // get vector of bins for N-at-age std (either input or autogenerate)
   init_ivector NatAge_Std_Pick(1,NatAge_Std_Cnt);
  LOCAL_CALCS
   if(Do_NatAge_Std!=0)
   {
     echoinput<<NatAge_Std_Pick<<" # vector with NatAge std bins (-1 in first bin to self-generate)"<<endl;
-    if(NatAge_Std_Pick(1)<=0)
+    if(NatAge_Std_Pick(1)<0)
     {
       NatAge_Std_Pick(1)=1;
       NatAge_Std_Pick(NatAge_Std_Cnt)=nages;
@@ -4007,12 +4057,54 @@
     }
     for(i=1;i<=NatAge_Std_Cnt;i++)
     {
-      if(NatAge_Std_Pick(i)<=0) NatAge_Std_Pick(i)=1;
+      if(NatAge_Std_Pick(i)<=0) NatAge_Std_Pick(i)=0;
       if(NatAge_Std_Pick(i)>nages) NatAge_Std_Pick(i)=nages;
     }
     Extra_Std_N+=gender*NatAge_Std_Cnt;
   }
-  Extra_Std_N+=3;  //  add 3 values for ln(Spbio)
+
+ END_CALCS
+
+  // get vector of bins for NatM std (either input or autogenerate)
+  init_ivector NatM_Std_Pick(1,NatM_Std_Cnt);
+ LOCAL_CALCS
+  if(Do_NatM_Std>0)
+  {
+    echoinput<<NatM_Std_Pick<<" # vector with NatM std ages (-1 in first bin to self-generate)"<<endl;
+    // autogenerate the ages
+    if(NatM_Std_Pick(1)<0)
+    {
+      // set first and last to reference ages
+      NatM_Std_Pick(1)=AFIX;
+      NatM_Std_Pick(NatM_Std_Cnt)=nages;
+      // if there is more than 2, fill in the middle
+      if(NatM_Std_Cnt>2)
+      {
+        // first half of values increment by 1
+        k=NatM_Std_Cnt/2;
+        for (i=2;i<=k;i++){
+          NatM_Std_Pick(i)=NatM_Std_Pick(i-1)+1;
+        }
+        // remainder are evently distributed across range
+        j=(nages-NatM_Std_Pick(k))/(NatM_Std_Cnt-k);
+        for (i=k+1;i<=NatM_Std_Cnt-1;i++){
+          NatM_Std_Pick(i)=NatM_Std_Pick(i-1)+j;
+        }
+      }
+    }
+    // shift any negative values to 0 and any that are too large down to nages
+    for(i=1;i<=NatM_Std_Cnt;i++)
+    {
+      if(NatM_Std_Pick(i)<0) NatM_Std_Pick(i)=0;
+      if(NatM_Std_Pick(i)>nages) NatM_Std_Pick(i)=nages;
+    }
+    // increment counter
+    Extra_Std_N+=gender*NatM_Std_Cnt;
+  }
+
+  // add 3 values for ln(Spbio)
+  // (years are automatically generated as startyr, mid-point, and endyr)
+  Extra_Std_N+=3;  
 
  END_CALCS
 
@@ -4039,7 +4131,7 @@
   Fcast_catch_start=N_STD_Mgmt_Quant;
   if(max(Do_Retain)>0) {j=1;} else {j=0;}
   if(Do_Forecast>0) {N_STD_Mgmt_Quant+=N_Fcast_Yrs*(1+j)+N_Fcast_Yrs;}
-  k=ParCount+2*N_STD_Yr+N_STD_Yr_Dep+N_STD_Yr_Ofish+N_STD_Yr_F+N_STD_Mgmt_Quant+gender*Selex_Std_Cnt+gender*Growth_Std_Cnt+gender*NatAge_Std_Cnt+3+Svy_N_sdreport;
+  k=ParCount+2*N_STD_Yr+N_STD_Yr_Dep+N_STD_Yr_Ofish+N_STD_Yr_F+N_STD_Mgmt_Quant+gender*Selex_Std_Cnt+gender*Growth_Std_Cnt+gender*NatAge_Std_Cnt+gender*NatM_Std_Cnt+3+Svy_N_sdreport;
   echoinput<<"N parameters: "<<ParCount<<endl<<"Parameters plus derived quant: "<<k<<endl;
  END_CALCS
   ivector active_parm(1,k)  //  pointer from active list to the element of the full parameter list to get label later
@@ -4645,7 +4737,7 @@
           {
             N_warn++; cout<<" EXIT - see warning "<<endl; warning<<" cannot select stdev for age bin greater than maxage "<<Selex_Std_Pick(i)<<" > "<<nages<<endl; exit(1);
           }
-          ParmLabel+="AgeSelex_std_"+NumLbl(Do_Selex_Std)+"_"+GenderLbl(g)+"_A_"+NumLbl(age_vector(Selex_Std_Pick(i)))+CRLF(1);
+          ParmLabel+="AgeSelex_std_"+NumLbl(Do_Selex_Std)+"_"+GenderLbl(g)+"_A_"+NumLbl0(age_vector(Selex_Std_Pick(i))+1)+CRLF(1);
         }
         else if(Selex_Std_AL==3)
         {
@@ -4653,7 +4745,7 @@
           {
             N_warn++; cout<<" EXIT - see warning "<<endl; warning<<" cannot select stdev for age bin greater than maxage "<<Selex_Std_Pick(i)<<" > "<<nages<<endl; exit(1);
           }
-          ParmLabel+="AgeLenSelex_std_"+NumLbl(Do_Selex_Std)+"_"+GenderLbl(g)+"_A_"+NumLbl(age_vector(Selex_Std_Pick(i)))+CRLF(1);
+          ParmLabel+="AgeLenSelex_std_"+NumLbl(Do_Selex_Std)+"_"+GenderLbl(g)+"_A_"+NumLbl0(age_vector(Selex_Std_Pick(i))+1)+CRLF(1);
         }
       }
     }
@@ -4664,7 +4756,7 @@
       for (i=1;i<=Growth_Std_Cnt;i++)
       {
         CoVar_Count++; j++; active_parm(CoVar_Count)=j;
-        ParmLabel+="Grow_std_GP:_"+NumLbl(Do_Growth_Std)+"_"+GenderLbl(g)+"_A_"+NumLbl(age_vector(Growth_Std_Pick(i)))+CRLF(1);
+        ParmLabel+="Grow_std_GP:_"+NumLbl(Do_Growth_Std)+"_"+GenderLbl(g)+"_A_"+NumLbl0(age_vector(Growth_Std_Pick(i))+1)+CRLF(1);
       }
     }
 
@@ -4676,12 +4768,29 @@
       {
         CoVar_Count++; j++; active_parm(CoVar_Count)=j;
         if(Do_NatAge_Std>0)
-        {ParmLabel+="NatAge_std_"+NumLbl(Do_NatAge_Std)+"_"+GenderLbl(g)+"_A_"+NumLbl(age_vector(NatAge_Std_Pick(i)))+CRLF(1);}
+        {ParmLabel+="NatAge_std_"+NumLbl(Do_NatAge_Std)+"_"+GenderLbl(g)+"_A_"+NumLbl0(age_vector(NatAge_Std_Pick(i))+1)+CRLF(1);}
         else
-        {ParmLabel+="NatAge_std_All_"+GenderLbl(g)+"_A_"+NumLbl(age_vector(NatAge_Std_Pick(i)))+CRLF(1);}
+        {ParmLabel+="NatAge_std_All_"+GenderLbl(g)+"_A_"+NumLbl0(age_vector(NatAge_Std_Pick(i))+1)+CRLF(1);}
       }
     }
-//  output ln(Spbio) for selected years
+
+    if(Do_NatM_Std>0)
+    {
+      echoinput<<" do NatM std labels "<<NatM_Std_Cnt<<endl;
+      for (g=1;g<=gender;g++)
+      for (i=1;i<=NatM_Std_Cnt;i++)
+      {
+        CoVar_Count++; j++; active_parm(CoVar_Count)=j;
+        // cout<<"i: "<<i<<endl;
+        // cout<<"NatM_Std_Pick(i): "<<NatM_Std_Pick(i)<<endl;
+        // cout<<"age_vector(NatM_Std_Pick(i)): "<<age_vector(NatM_Std_Pick(i))<<endl;
+        // cout<<"NumLbl0(age_vector(NatM_Std_Pick(i))+1): "<<NumLbl0(age_vector(NatM_Std_Pick(i))+1)<<endl;
+        ParmLabel+="NatM_std_GP:_"+NumLbl(Do_NatM_Std)+"_"+GenderLbl(g)+"_A_"+NumLbl0(age_vector(NatM_Std_Pick(i))+1)+CRLF(1);
+      }
+    }
+
+    //  output ln(SPB) std for selected years
+    echoinput<<" do ln(SPB) std labels for 3 years"<<endl;
     CoVar_Count++; j++; active_parm(CoVar_Count)=j;
     sprintf(onenum, "%d", styr);
     ParmLabel+="ln(SPB)_"+onenum+CRLF(1);
@@ -4692,6 +4801,8 @@
     sprintf(onenum, "%d", endyr);
     ParmLabel+="ln(SPB)_"+onenum+CRLF(1);
 
+  //  output Svy_sdreport value std for selected years
+  echoinput<<" do Svy_sdreport labels "<<Svy_N_sdreport<<endl;
   if(Svy_N_sdreport>0)
   {
     k=0;
@@ -4708,6 +4819,8 @@
       }
     }
   }
+
+  // additional labels
   echoinput<<"parm "<<j<<" covar "<<CoVar_Count<<"  after all derived quantities "<<endl;
    sprintf(onenum, "%d", int(100*depletion_level));
    switch(depletion_basis)
