@@ -1008,6 +1008,7 @@ FUNCTION void Process_STDquant()
       }
 
 //  SS_Label_7.8  get extra std quantities
+    // selectivity
     if(Selex_Std_Cnt>0)
     {
       for (i=1;i<=Selex_Std_Cnt;i++)
@@ -1031,6 +1032,7 @@ FUNCTION void Process_STDquant()
       }
     }
 
+    // growth
     if(Growth_Std_Cnt>0)
     {
       int t_write=styr+(endyr-styr)*nseas;  //  season 1 of endyr
@@ -1047,6 +1049,7 @@ FUNCTION void Process_STDquant()
       }
     }
 
+    // numbers at age
     if(NatAge_Std_Cnt>0)
     {
       if(Do_NatAge_Std<0)  // sum all areas
@@ -1088,6 +1091,23 @@ FUNCTION void Process_STDquant()
       }
     }
 
+    // NatM
+    if(NatM_Std_Cnt>0)
+    {
+      for (i=1;i<=NatM_Std_Cnt;i++)
+      {
+        j=NatM_Std_Pick(i);  // selected age
+        k=g_finder(Do_NatM_Std,1);  // selected GP and gender  gp3
+        Extra_Std(gender*(Selex_Std_Cnt+Growth_Std_Cnt+NatAge_Std_Cnt)+i)=natM(1,k,j);
+        if(gender==2)
+        {
+          k=g_finder(Do_NatM_Std,2);  // selected GP and gender  gp3
+          Extra_Std(gender*(Selex_Std_Cnt+Growth_Std_Cnt+NatAge_Std_Cnt)+NatM_Std_Cnt+i)=natM(1,k,j);
+        }
+      }
+    }
+
+    // ln(SSB)
     Extra_Std(Extra_Std_N-2)=log(SSB_yr(styr));
     Extra_Std(Extra_Std_N-1)=log(SSB_yr(int((styr+endyr)/2)));
     Extra_Std(Extra_Std_N)=log(SSB_yr(endyr));

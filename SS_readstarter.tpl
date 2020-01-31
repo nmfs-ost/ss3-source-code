@@ -111,10 +111,15 @@
   GP_Lbl+="_GP_5";
   GP_Lbl+="_GP_6";
   onenum="    ";
-  for (i=1;i<=199;i++) /* SS_loop: fill string NumLbl with numbers */
+  for (i=1;i<=199;i++) /* SS_loop: fill string NumLbl with numbers (start at 1) */
   {
   sprintf(onenum, "%d", i);
   NumLbl+=onenum+CRLF(1);
+  }
+  for (i=0;i<=198;i++) /* SS_loop: fill string NumLbl0 with numbers (start at 0) */
+  {
+  sprintf(onenum, "%d", i);
+  NumLbl0+=onenum+CRLF(1);
   }
 
 //  SS_Label_Info_1.2  #Read the STARTER.SS file
