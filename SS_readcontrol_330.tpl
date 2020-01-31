@@ -2535,18 +2535,18 @@
 				k=seltype(f,1)-100*Min_selage(f-Nfleet);
 				echoinput<<seltype(f,1)<<" "<<k<<" "<<Min_selage(f-Nfleet)<<endl;
 				if(k==12 || k==13 || k==14 || k==16 || k==18 || k==26 || k==27)
-				{echoinput<<"OK to have min_selage=1 for selex pattern: "<<k<<" for fleet: "<<f-Nfleet<<endl;}
+				{echoinput<<"OK to use min_selage for selex pattern: "<<k<<" for fleet: "<<f-Nfleet<<endl;}
 				else if (k==17 || k==44 || k==45)
 			  {N_warn++; warning<<"Don't use min_selage for age selectivity: "<<k<<" for fleet: "<<f-Nfleet<<
-			  	" because separate control exists"<<endl;}
+			  " because separate control exists; SS will correct"<<endl; seltype_rd(f,1)=k;} //  change input value so will be written correctly in ss_new
 				else if (k==19)
 			  {N_warn++; warning<<"can't use min_selage for age selectivity: "<<k<<" for fleet: "<<f-Nfleet<<
-			  	" because separate control will set sel = 1.0e-06 below a specified age"<<endl;}
+			  	" because separate control sets sel = 1.0e-06 below a specified age SS will correct"<<endl;seltype_rd(f,1)=k;}
 				else if (k==20)
-			  {N_warn++; warning<<"careful with min_selage for age selectivity: "<<k<<" for fleet: "<<f-Nfleet<<
-			  	" because separate control can set sel = 1.0e-06 below a specified age"<<endl;}
+			  {N_warn++; warning<<"OK to use min_selage for age selectivity: "<<k<<" for fleet: "<<f-Nfleet<<
+			  	" but be aware that a separate control for parm 5 can set sel = 1.0e-06 below a specified age"<<endl;}
 			  else
-			  {echoinput<<"Min_selage not implemented and not relevant for selex pattern: "<<k<<" for fleet: "<<f-Nfleet<<endl;}
+			  {echoinput<<"Min_selage not implemented and not relevant for selex pattern: "<<k<<" for fleet: "<<f-Nfleet<<endl;seltype_rd(f,1)=k;}
 			  seltype(f,1)=k;
 			}
 		}

@@ -527,7 +527,8 @@
 
 //   init_matrix Svy_data(1,Svy_N_rd,1,5)
 //  !!if(Svy_N_rd>0) echoinput<<" Svy_data "<<endl<<Svy_data<<endl;
-  ivector Svy_N_fleet(1,Nfleet)
+  ivector Svy_N_fleet(1,Nfleet)  // total N
+  ivector Svy_N_fleet_use(1,Nfleet)  // N in likelihood
   int in_superperiod
   ivector Svy_super_N(1,Nfleet)      // N super_yrs per fleet
 
@@ -535,6 +536,7 @@
   //  count the number of observations, exclude those outside the specified year range, count the number of superperiods
   Svy_N=0;
   Svy_N_fleet=0;
+  Svy_N_fleet_use=0;
   Svy_super_N=0;
   if(Svy_N_rd>0)
   {
@@ -620,7 +622,7 @@
         get_data_timing(timing_input, timing_constants, timing_i_result, timing_r_result, seasdur, subseasdur_delta, azero_seas, surveytime);
         f=abs( Svy_data[i](3));
         if(y>retro_yr) Svy_data[i](3)=-f;
-        Svy_N_fleet(f)++;  //  count obs by fleet
+        Svy_N_fleet(f)++;  //  count obs by fleet again
         j=Svy_N_fleet(f);  //  index of observation as stored in working array
         t=timing_i_result(2);
         ALK_time=timing_i_result(5);
@@ -628,7 +630,7 @@
         Svy_time_t(f,j)=t;
         Svy_ALK_time(f,j)=ALK_time;  //  continuous subseas counter in which jth obs from fleet f occurs
         Svy_se_rd(f,j)= Svy_data[i](5);   // later adjust with varadjust, copy to se_cr_use, then adjust with extra se parameter
-        if( Svy_data[i](3)<0) {Svy_use(f,j)=-1;} else {Svy_use(f,j)=1;}
+        if( Svy_data[i](3)<0) {Svy_use(f,j)=-1;} else {Svy_use(f,j)=1;Svy_N_fleet_use(f)++;}
         Svy_obs(f,j)= Svy_data[i](4);
           Svy_yr(f,j)=y;
           if(Svy_styr(f)==0 || (y>=styr && y<Svy_styr(f)) )  Svy_styr(f)=y;  //  for dimensioning survey q devs
@@ -698,6 +700,7 @@
    int nobs_disc  //  number of discard records kept in active array
    int disc_N_read  //  number of records read
    ivector disc_N_fleet(1,Nfleet)  //  kept obs per fleet
+   ivector disc_N_fleet_use(1,Nfleet)  //  kept obs per fleet
    ivector N_suprper_disc(1,Nfleet)      // N super_yrs per obs
 
  LOCAL_CALCS
@@ -718,6 +721,7 @@
   disc_errtype.initialize();
   nobs_disc=0;
   disc_N_fleet=0;
+  disc_N_fleet_use=0;
   N_suprper_disc=0;
   if(Ndisc_fleets>0)
   {
@@ -827,7 +831,7 @@
          obs_disc(f,j)=fabs( discdata[i](4));
 
          if( discdata[i](4)<0.0)  discdata[i](3)=-fabs( discdata[i](3));  //  convert to new format using negative fleet
-         if( discdata[i](3)<0) {yr_disc_use(f,j)=-1;} else {yr_disc_use(f,j)=1;}
+         if( discdata[i](3)<0) {yr_disc_use(f,j)=-1;} else {yr_disc_use(f,j)=1;disc_N_fleet_use(f)++;}
          if(catch_ret_obs(f,t)<=0.0)
          {
            N_warn++; warning<<" discard observation: "<<i<<" has no corresponding catch "<<discdata[i]<<endl;
@@ -859,10 +863,15 @@
   init_int do_meanbodywt
   int nobs_mnwt_rd
   int nobs_mnwt
+  ivector mnwt_N_fleet(1,Nfleet)
+  ivector mnwt_N_fleet_use(1,Nfleet)
   number DF_bodywt  // DF For meanbodywt T-distribution
   !!echoinput<<do_meanbodywt<<" Use mean body size (weight or length); If 0, then no additional input in 3.30 "<<endl;
 
  LOCAL_CALCS
+    nobs_mnwt=0;
+    mnwt_N_fleet.initialize();
+    mnwt_N_fleet_use.initialize();
   if(do_meanbodywt>0)
   {
     *(ad_comm::global_datafile) >> DF_bodywt;
@@ -872,7 +881,6 @@
     echoinput<<"# type makes explicit the infor previously contained in the sign of partition, e.g. "<<endl;
     echoinput<<"# type=1 is for mean length, type=2 is for mean weight, (future, type=3 is for mean true age)"<<endl;
     ender=0;
-    nobs_mnwt=0;
     z=0;
     do {
      dvector tempvec(1,7);
@@ -909,6 +917,8 @@
       j++;
       f=abs(mnwtdata1[i](3));
       if(y>retro_yr) mnwtdata1[i](3)=-f;
+      mnwt_N_fleet(f)++;
+      if(mnwtdata1[i](3)>0) {mnwt_N_fleet_use(f)++;}
       t=timing_i_result(2);
       ALK_time=timing_i_result(5);
 //      disc_time_ALK(f,j)=ALK_time;  //  subseas that this observation is in
@@ -1224,6 +1234,7 @@
    int nobsl_rd
    int Nobs_l_tot
   ivector Nobs_l(1,Nfleet)
+  ivector Nobs_l_use(1,Nfleet)
   ivector N_suprper_l(1,Nfleet)      // N super_yrs per obs
 
 //   vector tempvec_lenread(1,6+nlen_bin2);
@@ -1231,6 +1242,7 @@
  LOCAL_CALCS
     k=6+nlen_bin2;
     Nobs_l.initialize();
+    Nobs_l_use.initialize();
     N_suprper_l.initialize();
     if(use_length_data>0)
     {
@@ -1249,8 +1261,6 @@
     if(nobsl_rd>0) echoinput<<"len_obs_#:"<<nobsl_rd<<" # "<<lendata[nobsl_rd-1]<<endl;
 
     data_type=4;
-    Nobs_l=0;                       //  number of observations from each fleet/survey
-    N_suprper_l=0;
     if(nobsl_rd>0)
     for (i=0;i<=nobsl_rd-1;i++)
     {
@@ -1371,6 +1381,7 @@
           header_l_rd(f,j)(1,3) =  lendata[i](1,3);   // values as in input file
           header_l(f,j,3)=lendata[i](3);
           if(y>retro_yr) header_l(f,j,3)=-f;
+          if(header_l(f,j,3)>0) Nobs_l_use(f)++;
           //  note that following storage is redundant with Show_Time(t,3) calculated later
           header_l(f,j,0) = float(y)+0.01*int(100.*(azero_seas(s)+seasdur_half(s)));  //
           gen_l(f,j)= lendata[i](4);         // gender 0=combined, 1=female, 2=male, 3=both
@@ -1567,6 +1578,7 @@
   int Lbin_method  //#_Lbin_method: 1=poplenbins; 2=datalenbins; 3=lengths
   int CombGender_a  //  combine genders through this age bin
   ivector Nobs_a(1,Nfleet)
+  ivector Nobs_a_use(1,Nfleet)
   ivector N_suprper_a(1,Nfleet)      // N super_yrs per obs
 
  LOCAL_CALCS
@@ -1831,6 +1843,7 @@
             header_a(f,j,2) = timing_r_result(1);  // month
           }
           if(y>retro_yr) header_a(f,j,3)=-f;
+          if(header_a(f,j,3)>0) Nobs_a_use(f)++;
           gen_a(f,j)=Age_Data[i](4);         // gender 0=combined, 1=female, 2=male, 3=both
           mkt_a(f,j)=Age_Data[i](5);         // partition: 0=all, 1=discard, 2=retained
           nsamp_a_read(f,j)=Age_Data[i](9);  // assigned sample size for observation
@@ -2065,6 +2078,7 @@
   !!echoinput<<use_meansizedata<<" (0/1) use mean size-at-age data "<<endl;
 //  init_matrix sizeAge_Data(1,nobs_ms_rd,1,7+2*n_abins2)
   ivector Nobs_ms(1,Nfleet)
+  ivector Nobs_ms_use(1,Nfleet)
   ivector N_suprper_ms(1,Nfleet)      // N super_yrs per obs
 
  LOCAL_CALCS
@@ -2186,6 +2200,7 @@
           //  note that following storage is redundant with Show_Time(t,3) calculated later
           if(y>retro_yr) header_ms(f,j,3)=-f;
           if(sizeAge_Data[i](3)<0) header_ms(f,j,3)=-f;
+          if(header_ms(f,j,3)>0) Nobs_ms_use(f)++;
           header_ms(f,j,0) = float(y)+0.01*int(100.*(azero_seas(s)+seasdur_half(s)));  //
 
            gen_ms(f,j)=sizeAge_Data[i](4);

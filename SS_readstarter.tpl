@@ -285,7 +285,7 @@
     //  2.  ALK_tolerance
     //  3.  irand_seed;  added for 3.30.15
     //  xx.  finish_starter
-     while (ender==0)
+     do
      {	
       *(ad_comm::global_datafile) >> tempin;
       finish_starter=tempin;
@@ -334,17 +334,17 @@
      irand_seed=irand_seed_rd;
      echoinput<<"random number seed:  "<<irand_seed<<endl;
      tempin=0;
-   }
-   
+     }
+     if(ender==0) {
      *(ad_comm::global_datafile) >> tempin;
       if(tempin==3.30) 
       	{ender=1;}
       	else
         {N_warn++; warning<<"starter.ss has extra input lines; check echoinput to verify read"<<endl;
         	echoinput<<endl<<"starter.ss should have read 3.30 here; it read: "<<tempin<<endl; exit(1);}
+        }
     }
-   }
-//   } while (ender==0);
+     } while (ender==0);
    echoinput<<"  finish reading starter.ss"<<endl<<endl;
    }
  END_CALCS

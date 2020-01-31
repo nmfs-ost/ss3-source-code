@@ -191,16 +191,50 @@ FUNCTION void write_bigoutput()
   SS2out<<"NoBias_corr_Recruitment(info_only) "<<noBias_recr_like*recrdev_lambda(k)<<" "<<recrdev_lambda(k)<<endl;
   SS2out<<"Laplace_obj_fun(info_only) "<<JT_obj_fun<<" NA"<<endl;
 
-  SS2out<<"_"<<endl<<"Fleet:  ALL ";
+  SS2out<<endl<<"Fleet_name:  ALL ";
+  for (f=1;f<=Nfleet;f++) SS2out<<fleetname(f)<<" ";
+  SS2out<<endl<<"Fleet:  ALL ";
   for (f=1;f<=Nfleet;f++) SS2out<<f<<" ";
   SS2out<<endl;
   if(F_Method>1) SS2out<<"Catch_lambda: _ "<<column(catch_lambda,k)<<endl<<"Catch_like: "<<catch_like*column(catch_lambda,k) <<" "<<catch_like<<endl;
-  if(Svy_N>0) SS2out<<"Surv_lambda: _ "<<column(surv_lambda,k)<<endl<<"Surv_like: "<<surv_like*column(surv_lambda,k)<<" "<<surv_like<<endl;
-  if(nobs_disc>0) SS2out<<"Disc_lambda: _ "<<column(disc_lambda,k)<<endl<<"Disc_like: "<<disc_like*column(disc_lambda,k)<<" "<<disc_like<<endl;
-  if(nobs_mnwt>0) SS2out<<"mnwt_lambda: _ "<<column(mnwt_lambda,k)<<endl<<"mnwt_like: "<<mnwt_like*column(mnwt_lambda,k)<<" "<<mnwt_like<<endl;
-  if(Nobs_l_tot>0) SS2out<<"Length_lambda: _ "<<column(length_lambda,k)<<endl<<"Length_like: "<<length_like_tot*column(length_lambda,k)<<" "<<length_like_tot<<endl;
-  if(Nobs_a_tot>0) SS2out<<"Age_lambda: _ "<<column(age_lambda,k)<<endl<<"Age_like: "<<age_like_tot*column(age_lambda,k)<<" "<<age_like_tot<<endl;
-  if(nobs_ms_tot>0) SS2out<<"Sizeatage_lambda: _ "<<column(sizeage_lambda,k)<<endl<<"sizeatage_like: "<<sizeage_like*column(sizeage_lambda,k)<<" "<<sizeage_like<<endl;
+  if(Svy_N>0) {
+  	SS2out<<"Surv_lambda: _ "<<column(surv_lambda,k)<<endl<<"Surv_like: "<<surv_like*column(surv_lambda,k)<<" "<<surv_like<<endl;
+    SS2out<<"Surv_N_use: _ "<<Svy_N_fleet_use<<endl;
+    SS2out<<"Surv_N_skip: _ "<<(Svy_N_fleet-Svy_N_fleet_use)<<endl;
+    }
+  if(nobs_disc>0) {
+  	SS2out<<"Disc_lambda: _ "<<column(disc_lambda,k)<<endl<<"Disc_like: "<<disc_like*column(disc_lambda,k)<<" "<<disc_like<<endl;
+    SS2out<<"Disc_N_use: _ "<<disc_N_fleet_use<<endl;
+  	SS2out<<"Disc_N_skip: _ "<<(disc_N_fleet-disc_N_fleet_use)<<endl;
+  }
+  if(nobs_mnwt>0)
+  	{
+  		SS2out<<"mnwt_lambda: _ "<<column(mnwt_lambda,k)<<endl;
+  		SS2out<<"mnwt_like: "<<mnwt_like*column(mnwt_lambda,k)<<" "<<mnwt_like<<endl;
+    SS2out<<"mnwt_N_use: _ "<<mnwt_N_fleet_use<<endl;
+  	SS2out<<"mnwt_N_skip: _ "<<(mnwt_N_fleet-mnwt_N_fleet_use)<<endl;
+  	}
+  if(Nobs_l_tot>0)
+  {
+  	SS2out<<"Length_lambda: _ "<<column(length_lambda,k)<<endl;
+  	SS2out<<"Length_like: "<<length_like_tot*column(length_lambda,k)<<" "<<length_like_tot<<endl;
+    SS2out<<"Length_N_use: _ "<<Nobs_l_use<<endl;
+  	SS2out<<"Length_N_skip: _ "<<(Nobs_l-Nobs_l_use)<<endl;
+  }
+  if(Nobs_a_tot>0)
+  {
+  	SS2out<<"Age_lambda: _ "<<column(age_lambda,k)<<endl;
+  	SS2out<<"Age_like: "<<age_like_tot*column(age_lambda,k)<<" "<<age_like_tot<<endl;
+    SS2out<<"Age_N_use: _ "<<Nobs_a_use<<endl;
+  	SS2out<<"Age_N_skip: _ "<<(Nobs_a-Nobs_a_use)<<endl;
+  }
+  if(nobs_ms_tot>0)
+  {
+  	SS2out<<"Sizeatage_lambda: _ "<<column(sizeage_lambda,k)<<endl;
+  	SS2out<<"sizeatage_like: "<<sizeage_like*column(sizeage_lambda,k)<<" "<<sizeage_like<<endl;
+    SS2out<<"sizeatage_N_use: _ "<<Nobs_ms_use<<endl;
+  	SS2out<<"sizeatage_N_skip: _ "<<(Nobs_ms-Nobs_ms_use)<<endl;
+  }
 
   if(N_parm_dev>0)
   {

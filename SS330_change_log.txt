@@ -1,4 +1,9 @@
 Version;Date;Description;VLAB_issue;Input_Change?;Type;Category;Sub_Category
+3.30.14.14;2020-01-31;introduce sample size info to logL table;#69176
+3.30.14.13;2020-01-28;introduce ability to set selex = 0.0 for young age range;#69509;
+3.30.14.12;2020-01-17;improve controls for no forecast and simple forecast;#66582;
+3.30.14.12;2020-01-17;improve format of extra std input at end of control file;#73272;
+
 3.30.14.11;2020-01-02;allow user input of seed for random number generator;#67971;cond;feature;bootstrap;
 3.30.14.11;2020-01-02;revise starter.ss to allow conditional input of random seed;#72993;cond;feature;input;
 3.30.14.10;2019-12-30;add no forecast (-1) option and check all combos of bench and fcast;#66582;no;feature;forecast;
