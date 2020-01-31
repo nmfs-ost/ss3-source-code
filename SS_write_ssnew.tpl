@@ -2063,10 +2063,29 @@ FUNCTION void write_nucontrol()
   }
   if(Do_More_Std > 0) // vectors associated with options 1 and 2
   {
-    if(Do_Selex_Std>0) report4<<Selex_Std_Pick<<" # vector with selex std bins (-1 in first bin to self-generate)"<<endl;
-    if(Do_Growth_Std>0) report4<<Growth_Std_Pick<<" # vector with growth std ages picks (-1 in first bin to self-generate)"<<endl;
-    if(Do_NatAge_Std!=0) report4<<NatAge_Std_Pick<<" # vector with NatAge std ages (-1 in first bin to self-generate)"<<endl;
-    if(Do_NatM_Std>0) report4<<NatM_Std_Pick<<" # vector with NatM std ages picks (-1 in first bin to self-generate)"<<endl;
+    if(Do_Selex_Std>0){
+      report4<<Selex_Std_Pick<<" # vector with selex std bins (-1 in first bin to self-generate)"<<endl;
+    }else{
+      report4<<" # -1 # list of bin #'s for selex std (-1 in first bin to self-generate)"<<endl;
+    }
+    if(Do_Growth_Std>0){
+      report4<<Growth_Std_Pick<<" # vector with growth std ages picks (-1 in first bin to self-generate)"<<endl;
+    }else{
+      report4<<" # -1 # list of ages for growth std (-1 in first bin to self-generate)"<<endl;
+    }
+    if(Do_NatAge_Std!=0){
+      report4<<NatAge_Std_Pick<<" # vector with NatAge std ages (-1 in first bin to self-generate)"<<endl;
+    }else{
+      report4<<" # -1 # list of ages for NatAge std (-1 in first bin to self-generate)"<<endl;
+    }
+    if(Do_More_Std==2) // additional output when option 2 is selected
+    {
+      if(Do_NatM_Std>0){
+        report4<<NatM_Std_Pick<<" # vector with NatM std ages picks (-1 in first bin to self-generate)"<<endl;
+      }else{
+        report4<<" # -1 # list of ages for NatM std (-1 in first bin to self-generate)"<<endl;
+      }
+    }
   }
   report4<<fim<<endl<<endl; // end of file indicator
   return;
