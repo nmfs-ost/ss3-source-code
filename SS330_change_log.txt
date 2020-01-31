@@ -1,5 +1,7 @@
 Version;Date;Description;VLAB_issue;Input_Change?;Type;Category;Sub_Category
-3.30.14.14;2020-01-31;introduce sample size info to logL table;#69176
+3.30.14.14;2020-01-31;augment INDEX_2 table in report.sso;#73827
+3.30.14.14;2020-01-31;introduce sdreport output for M-at-age;#72659
+3.30.14.14;2020-01-31;introduce sample size info to logL table in report.sso;#69176
 3.30.14.13;2020-01-28;introduce ability to set selex = 0.0 for young age range;#69509;
 3.30.14.12;2020-01-17;improve controls for no forecast and simple forecast;#66582;
 3.30.14.12;2020-01-17;improve format of extra std input at end of control file;#73272;
