@@ -3883,7 +3883,7 @@
   }
   if(Do_More_Std==2)
   {
-    echoinput<<More_Std_Input(10,11)<<" # Mortality: (1) 0 or growth pattern, (2) M ages; NOTE: does each sex"<<endl;
+    echoinput<<More_Std_Input(10,11)<<" # Mortality: (1) 0 or growth pattern, (2) N ages for mortality; NOTE: does each sex"<<endl;
   }
  END_CALCS
 
