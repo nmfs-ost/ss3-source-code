@@ -634,7 +634,10 @@ PRELIMINARY_CALCS_SECTION
       }
       else
       {
-        j=TwoD_AR_def[f](13)+TwoD_AR_def[f](6)-TwoD_AR_def[f](4)+1;  //  first sigmalocation + other sigmasels, then the rho's
+      	if(TwoD_AR_def[f](6)<0) 
+      		{j=TwoD_AR_def[f](13)+1;}
+      		else
+        {j=TwoD_AR_def[f](13)+TwoD_AR_def[f](6)-TwoD_AR_def[f](4)+1;}  //  first sigmalocation + other sigmasels, then the rho's
         rho_y=value(selparm(j));
         rho_a=value(selparm(j+1));
         echoinput<<"fleet: "<<f<<" 2D_AR rho in prelim for time and age/size "<<rho_y<<" "<<rho_a<<endl;

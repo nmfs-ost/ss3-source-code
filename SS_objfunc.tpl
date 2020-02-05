@@ -779,7 +779,7 @@ FUNCTION void evaluate_the_objective_function()
             parm_dev_stddev(i)=sigmasel;
             parm_dev_rho(i)=0.0;
             parm_dev_like(i,1)-=-0.5*log(det_cor(f));
-            if(TwoD_AR_def[f](6)==TwoD_AR_def[f](4))  //  only one sigmasel by age
+            if(TwoD_AR_def[f](6)<=TwoD_AR_def[f](4))  //  only one sigmasel by age
             {
 //  nll -= - 0.5*log(det(cor)) - 0.5*nages*nyears*log(2.0*PI ) - 0.5*S_hat_vec*inv(cor)*S_hat_vec/pow(sigmaS,2) - 0.5*2*nages*nyears*log(sigmaS);
                if(TwoD_AR_def[f](7)==0)  // do not use rho

@@ -455,6 +455,7 @@
    init_matrix Svy_data(1,Svy_N_rd,1,5)
   !!if(Svy_N_rd>0) echoinput<<" Svy_data "<<endl<<Svy_data<<endl;
   ivector Svy_N_fleet(1,Nfleet)
+  ivector Svy_N_fleet_use(1,Nfleet)
   int in_superperiod
   ivector Svy_super_N(1,Nfleet)      // N super_yrs per fleet
 
@@ -622,7 +623,7 @@
           }
         }
       }
-
+      Svy_N_fleet_use = Svy_N_fleet;
       echoinput<<" processed survey data "<<endl;
       for (f=1;f<=Nfleet;f++)
       {echoinput<<f<<" "<<fleetname(f)<<" styr "<<Svy_styr(f)<<"  endyear "<<Svy_endyr(f)<<"  obs: "<<Svy_obs(f)<<endl;}
@@ -670,6 +671,7 @@
   init_matrix discdata(1,disc_N_read,1,5)
   !! if(disc_N_read>0) echoinput<<" discarddata "<<endl<<discdata<<endl;
    ivector disc_N_fleet(1,Nfleet)
+   ivector disc_N_fleet_use(1,Nfleet)
    ivector N_suprper_disc(1,Nfleet)      // N super_yrs per obs
 
  LOCAL_CALCS
@@ -824,6 +826,7 @@
         }
       }
     }
+    disc_N_fleet_use=disc_N_fleet;
     echoinput<<"Successful read of discard data, N by fleet = "<< nobs_disc << endl;
     echoinput<<"N superperiods by fleet = "<< N_suprper_disc << endl;
  END_CALCS
@@ -834,6 +837,8 @@
    init_int nobs_mnwt_rd
    int nobs_mnwt
    int do_meanbodywt
+  ivector mnwt_N_fleet(1,Nfleet)
+  ivector mnwt_N_fleet_use(1,Nfleet)
   number DF_bodywt  // DF For meanbodywt T-distribution
   !!echoinput<<nobs_mnwt_rd<<" nobs_mean body wt.  If 0, then no additional input in 3.30 "<<endl;
 
@@ -842,6 +847,8 @@
     *(ad_comm::global_datafile) >> DF_bodywt;
     echoinput<<DF_bodywt<<" degrees of freedom for bodywt T-distribution "<<endl;
   do_meanbodywt=0;
+    mnwt_N_fleet.initialize();
+    mnwt_N_fleet_use.initialize();
   if(nobs_mnwt_rd>0)
   {
     *(ad_comm::global_datafile) >> mnwtdata1;
@@ -928,6 +935,8 @@
       have_data(ALK_time,f,data_type,0)++;  //  count the number of observations in this subseas
       p=have_data(ALK_time,f,data_type,0);
       have_data(ALK_time,f,data_type,p)=j;  //  store data index for the p'th observation in this subseas
+      mnwt_N_fleet(f)++;
+      if(mnwtdata1[i](3)>0) {mnwt_N_fleet_use(f)++;}
       }  //  end have_data index and timing processing
 
       if(s<1) {N_warn++; cout<<" EXIT - see warning "<<endl; warning<<" Critical error, season for meanwt obs "<<i<<" is <0; superper is not implemented for meanwt"<<endl; exit(1);}
@@ -1212,6 +1221,7 @@
  END_CALCS
 
   ivector Nobs_l(1,Nfleet)
+  ivector Nobs_l_use(1,Nfleet)
   ivector N_suprper_l(1,Nfleet)      // N super_yrs per obs
 
  LOCAL_CALCS
@@ -1224,7 +1234,8 @@
     if(nobsl_rd>0) echoinput<<" first lencomp obs "<<endl<<lendata[0]<<endl<<" last obs"<<endl<<lendata[nobsl_rd-1]<<endl;;
 
     data_type=4;
-    Nobs_l=0;                       //  number of observations from each fleet/survey
+    Nobs_l.initialize();                       //  number of observations from each fleet/survey
+    Nobs_l_use.initialize();                       //  number of observations from each fleet/survey
     N_suprper_l=0;
     if(nobsl_rd>0)
     for(i=0;i<=nobsl_rd-1;i++)
@@ -1378,6 +1389,8 @@
           mkt_l(f,j)=lendata[i](5);         // partition: 0=all, 1=discard, 2=retained
           nsamp_l_read(f,j)=lendata[i](6);  // assigned sample size for observation
           nsamp_l(f,j)=nsamp_l_read(f,j);
+          if(y>retro_yr) header_l(f,j,3)=-f;
+          if(header_l(f,j,3)>0) Nobs_l_use(f)++;
 
   //  SS_Label_Info_2.7.6 #Create super-periods for length compositions
           if(lendata[i](2)<0)  // start/stop a super-period  ALL observations must be continguous in the file
@@ -1632,6 +1645,7 @@
 
 //  init_matrix Age_Data(1,nobsa_rd,1,9+n_abins2)
   ivector Nobs_a(1,Nfleet)
+  ivector Nobs_a_use(1,Nfleet)
   ivector N_suprper_a(1,Nfleet)      // N super_yrs per obs
 
   vector age_bins(1,n_abins2) // age classes for data  female then male end-to-end
@@ -1672,6 +1686,7 @@
     if(nobsa_rd>0) echoinput<<" first agecomp obs "<<endl<<Age_Data[0]<<endl<<" last obs"<<endl<<Age_Data[nobsa_rd-1]<<endl;;
 
   Nobs_a=0;
+  Nobs_a_use=0;
   N_suprper_a=0;
 
     for(i=0;i<=nobsa_rd-1;i++)
@@ -1829,6 +1844,8 @@
             header_a(f,j,2) = real_month;  // month
           }
           header_a(f,j,3) = Age_Data[i](3);   // fleet
+          if(y>retro_yr) header_a(f,j,3)=-f;
+          if(header_a(f,j,3)>0) Nobs_a_use(f)++;
           gen_a(f,j)=Age_Data[i](4);         // gender 0=combined, 1=female, 2=male, 3=both
           mkt_a(f,j)=Age_Data[i](5);         // partition: 0=all, 1=discard, 2=retained
           nsamp_a_read(f,j)=Age_Data[i](9);  // assigned sample size for observation
@@ -2065,12 +2082,14 @@
   init_matrix sizeAge_Data(1,nobs_ms_rd,1,7+2*n_abins2)
    !!if(nobs_ms_rd>0) echoinput<<" first size-at-age obs "<<endl<<sizeAge_Data(1)<<endl<<" last obs"<<endl<<sizeAge_Data(nobs_ms_rd)<<endl;;
   ivector Nobs_ms(1,Nfleet)
+  ivector Nobs_ms_use(1,Nfleet)
   ivector N_suprper_ms(1,Nfleet)      // N super_yrs per obs
 
  LOCAL_CALCS
   use_meansizedata=0;
   data_type=7;  //  for size (length or weight)-at-age data
   Nobs_ms=0;
+  Nobs_ms_use=0;
   N_suprper_ms=0;
   if(nobs_ms_rd>0)
   {
@@ -2213,6 +2232,8 @@
             header_ms(f,j,2) = real_month;  //month
           }
           header_ms(f,j,3) = sizeAge_Data[i](3);   // fleet
+          if(y>retro_yr) header_ms(f,j,3)=-f;
+          if(header_ms(f,j,3)>0) Nobs_ms_use(f)++;
           if(sizeAge_Data[i](3)<0) header_ms(f,j,3)=-f;
           //  note that following storage is redundant with Show_Time(t,3) calculated later
           header_ms(f,j,0) = float(y)+0.01*int(100.*(azero_seas(s)+seasdur_half(s)));  //

@@ -3185,16 +3185,21 @@
     ivector tempvec(1,13);  //  fleet, ymin, ymax, amin, amax, sigma_amax, use_rho, age/len
     tempvec.initialize();
     TwoD_AR_def.push_back (tempvec);  //  bypass that pesky zeroth row
+    TwoD_AR_def_rd.push_back (tempvec);  //  bypass that pesky zeroth row
     echoinput<<"read specification for first 2D_AR1:  fleet, ymin, ymax, amin, amax, sigma_amax, use_rho, len1/age2"<<endl;
 
     ender=0;
+    int save_sigmaval=0;
     do
     {
       ivector tempvec(1,13);
+      ivector tempvec2(1,13);
       //  1-fleet, 2-ymin, 3-ymax, 4-amin, 5-amax, 6-sigma_amax, 7-use_rho, 8-age/len, 9-dev_phase
       //  10-before yr range, 11=after yr range, 12-N_parm_dev,  13-selparm_location
       tempvec.initialize();
+      tempvec2.initialize();
       *(ad_comm::global_datafile) >> tempvec(1,11);
+      tempvec2=tempvec;
       echoinput<<tempvec(1,11)<<endl;
       f=tempvec(1);
       if(f<0)
@@ -3207,11 +3212,16 @@
         {anystring="LEN"; fs=f; TwoD_AR_use(fs)=TwoD_AR_cnt;}
         else
         {anystring="AGE"; fs=f+Nfleet; TwoD_AR_use(fs)=TwoD_AR_cnt;}
+
+         save_sigmaval=tempvec(6);  //  to restore into TwoD_AR_def_rd later
+         if(tempvec(6)<tempvec(4)) tempvec(6)=tempvec(4);
+         if(tempvec(6)>tempvec(5)) tempvec(6)=tempvec(5);
          int sigma_amax = tempvec(6);
          int use_rho = tempvec(7);
          int amin = tempvec(4);
-         if(sigma_amax<amin || sigma_amax>tempvec(5))
-          {N_warn++; warning<<"fatal error:  sigmasel_amax must be >=amin and <=amax: "<<amin<<" "<<sigma_amax<<" "<<tempvec(5)<<endl; exit(1);}
+
+         TwoD_AR_def_rd.push_back (tempvec2);  //  saves the values as read for writing to control.ss_new
+
          tempvec(12)=N_parm_dev;
 //         apply two lines below later when the timevary_setup is created
 //         tempvec(10)=1;  //  used for dimensioning the dev vectors in SS_param   parm_dev_minyr(k)
@@ -3221,16 +3231,17 @@
          if(tempvec(8)==2) z=f+Nfleet;
          for(y=tempvec(2);y<=tempvec(3)+1;y++)  {timevary_sel(y,z)=1;}
          TwoD_AR_def.push_back (tempvec);
+         
          for(j=amin;j<=sigma_amax;j++)
          {
            dvector dtempvec(1,7);  //  Lo, Hi, init, prior, prior_sd, prior_type, phase;
            dtempvec.initialize();
            *(ad_comm::global_datafile) >> dtempvec(1,7);
            timevary_parm_rd.push_back (dtempvec);
-           echoinput<<" sigmasel for age: "<<j<<" "<<dtempvec(3)<<endl;
+           echoinput<<" sigmasel for "<<anystring<<" "<<j<<" "<<dtempvec(3)<<endl;
            if(timevary_parm_start_sel==0) {timevary_parm_start_sel=timevary_parm_cnt+1; timevary_parm_cnt_sel=timevary_parm_cnt;}
            ParCount++; timevary_parm_cnt++; timevary_parm_cnt_sel++; N_selparm2++;
-           ParmLabel+="_sigmasel_"+fleetname(f)+"("+NumLbl(f)+")_"+anystring+"("+NumLbl(max(1,j))+")";
+           ParmLabel+="sigmasel_"+fleetname(f)+"("+NumLbl(f)+")_"+anystring+"("+NumLbl(max(1,j))+")";
          }
          if(use_rho==1)
          {
@@ -3240,15 +3251,17 @@
            *(ad_comm::global_datafile) >> dtempvec(1,7);
            timevary_parm_rd.push_back (dtempvec);
            echoinput<<" rho year: "<<dtempvec(3)<<endl;
-           ParCount++; timevary_parm_cnt++; timevary_parm_cnt_sel++; N_selparm2++; ParmLabel+=anystring+"_rho_yr_"+fleetname(f)+"("+NumLbl(f)+")";
+           ParCount++; timevary_parm_cnt++; timevary_parm_cnt_sel++; N_selparm2++; 
+           ParmLabel+="rho_yr_"+fleetname(f)+"("+NumLbl(f)+")_"+anystring;
            }
            {
            dvector dtempvec(1,7);  //  Lo, Hi, init, prior, prior_sd, prior_type, phase;
            dtempvec.initialize();
            *(ad_comm::global_datafile) >> dtempvec(1,7);
            timevary_parm_rd.push_back (dtempvec);
-           echoinput<<" rho age: "<<dtempvec(3)<<endl;
-           ParCount++; timevary_parm_cnt++; timevary_parm_cnt_sel++; N_selparm2++; ParmLabel+=anystring+"_rho_age_"+fleetname(f)+"("+NumLbl(f)+")";
+           echoinput<<" rho "<<anystring<<": "<<dtempvec(3)<<endl;
+           ParCount++; timevary_parm_cnt++; timevary_parm_cnt_sel++; N_selparm2++; 
+           ParmLabel+="rho_"+fleetname(f)+"("+NumLbl(f)+")"+anystring;
           }
          }
         }
@@ -3593,7 +3606,10 @@
              sprintf(onenum, "%d", y);
              sprintf(anystring, "%d", a);
              ParCount++;
-             ParmLabel+=fleetname(timevary_setup(1))+"_ARDEV_y"+onenum+"_a"+anystring+CRLF(1);
+             if(timevary_setup(8)==1)
+             {ParmLabel+=fleetname(timevary_setup(1))+"_ARDEV_y"+onenum+"_Lbin"+anystring+CRLF(1);}
+             else
+             {ParmLabel+=fleetname(timevary_setup(1))+"_ARDEV_y"+onenum+"_A"+anystring+CRLF(1);}
            }
          }
          echoinput<<" total years, and with data  "<<timevary_setup(3)-timevary_setup(2)+1<<" "<<TwoD_AR_degfree(f)<<"  times nages: ";

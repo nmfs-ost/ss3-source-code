@@ -3976,9 +3976,15 @@
   int Do_NatAge_Std;
   int NatAge_Std_Year;
   int NatAge_Std_Cnt;
+  int Do_NatM_Std;
+  int NatM_Std_Cnt;
+  ivector NatM_Std_Pick(1,1);
   int Extra_Std_N;   //  dimension for the sdreport vector Selex_Std which also contains the Growth_Std
 
  LOCAL_CALCS
+   Do_NatM_Std=0;
+   NatM_Std_Cnt=0;
+   NatM_Std_Pick.initialize();
    if(Do_More_Std==1)
    {
      Do_Selex_Std=More_Std_Input(1);

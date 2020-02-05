@@ -1,4 +1,5 @@
 Version;Date;Description;VLAB_issue;Input_Change?;Type;Category;Sub_Category
+3.30.14.15;2020-02-05;clarify age/len terminology in 2DAR;#69279
 3.30.14.14;2020-01-31;augment INDEX_2 table in report.sso;#73827
 3.30.14.14;2020-01-31;introduce sdreport output for M-at-age;#72659
 3.30.14.14;2020-01-31;introduce sample size info to logL table in report.sso;#69176
