@@ -696,19 +696,114 @@ PRELIMINARY_CALCS_SECTION
     Richards=1.0;
 
 //  check data against settings for inconsistencies
+// check for composition obs with partition =1 or =2; use a new summary of obs by partition type for this test
+  ivector parti_cnt(0,2);
   for(f=1;f<=Nfleet;f++)
   {
+  	// check for discard obs
+  	if(disc_N_fleet(f)>0 and Do_Retain(f)==0) {
+  		N_warn++; cout<<"SS will exit, see warning"<<endl; 
+  		warning<<"fleet: "<<f<<"  discard data exist but retention fxn not defined; exit"<<endl; exit(1);}
+
+    parti_cnt.initialize();
+    if(Nobs_l(f)>0)
+    {
+  		for(i=1;i<=Nobs_l(f);i++) {parti_cnt(abs(mkt_l(f,i)))++;}
+  		if(parti_cnt(1)>0 and Do_Retain(f)==0)
+  		{
+  			N_warn++; cout<<"SS will exit, see warning"<<endl; 
+  			warning<<"fleet: "<<f<<"  lencomp contains N obs with partition==1 and retention fxn not defined; N= "<<parti_cnt(1)<<endl; exit(1);
+  		}
+  		if(parti_cnt(2)>0 and Do_Retain(f)==0)
+  		{
+  			N_warn++; 
+  			warning<<"fleet: "<<f<<"  lencomp has obs with partition==2; will treat as partition=0 because retention not defined; N= "<<parti_cnt(2)<<endl;
+  		}
+  		if(parti_cnt(2)>0 and (fleet_type(f)==2 || seltype(f,2)==3 || seltype(Nfleet+f,2)==3))  //  error if retained catch obs are with no retention fleets
+  		{
+  			N_warn++; cout<<"SS will exit, see warning"<<endl; 
+  			warning<<"fleet: "<<f<<" EXIT; lencomp has obs with partition==2; but fleet does not retain any catch; N= "<<parti_cnt(2)<<endl; exit(1);
+  		}
+    }
+
+    parti_cnt.initialize();
+    if(Nobs_a(f)>0)
+    {
+  		for(i=1;i<=Nobs_a(f);i++) {parti_cnt(abs(mkt_a(f,i)))++;}
+  		if(parti_cnt(1)>0 and Do_Retain(f)==0)
+  		{
+  			N_warn++; cout<<"SS will exit, see warning"<<endl; 
+  			warning<<"fleet: "<<f<<"  agecomp contains N obs with partition==1 and retention fxn not defined; N= "<<parti_cnt(1)<<endl; exit(1);
+  		}
+  		if(parti_cnt(2)>0 and Do_Retain(f)==0)
+  		{
+  			N_warn++; 
+  			warning<<"fleet: "<<f<<"  agecomp has obs with partition==2; will treat as partition=0 because retention not defined; N= "<<parti_cnt(2)<<endl;
+  		}
+  		if(parti_cnt(2)>0 and (fleet_type(f)==2 || seltype(f,2)==3 || seltype(Nfleet+f,2)==3))  //  error if retained catch obs are with no retention fleets
+  		{
+  			N_warn++; cout<<"SS will exit, see warning"<<endl; 
+  			warning<<"fleet: "<<f<<" EXIT; agecomp has obs with partition==2; but fleet does not retain any catch; N= "<<parti_cnt(2)<<endl; exit(1);
+  		}
+    }
+
+    parti_cnt.initialize();
+    if(Nobs_ms(f)>0)
+    {
+  		for(i=1;i<=Nobs_ms(f);i++) {parti_cnt(abs(mkt_ms(f,i)))++;}
+  		if(parti_cnt(1)>0 and Do_Retain(f)==0)
+  		{
+  			N_warn++; cout<<"SS will exit, see warning"<<endl; 
+  			warning<<"fleet: "<<f<<"  size-at-age data contains obs with partition==1 and retention fxn not defined; N= "<<parti_cnt(1)<<endl; exit(1);
+  		}
+  		if(parti_cnt(2)>0 and Do_Retain(f)==0)
+  		{
+  			N_warn++; 
+  			warning<<"fleet: "<<f<<"  size-at-age data  has obs with partition==2; will treat as partition=0 because retention not defined; N= "<<parti_cnt(2)<<endl;
+  		}
+  		if(parti_cnt(2)>0 and (fleet_type(f)==2 || seltype(f,2)==3 || seltype(Nfleet+f,2)==3))  //  error if retained catch obs are with no retention fleets
+  		{
+  			N_warn++; cout<<"SS will exit, see warning"<<endl; 
+  			warning<<"fleet: "<<f<<" EXIT; size-at-age data has obs with partition==2; but fleet does not retain any catch; N= "<<parti_cnt(2)<<endl; exit(1);
+  		}
+    }
+
+    parti_cnt.initialize();
+    if(nobs_mnwt>0)
+    {
+  		for(i=1;i<=nobs_mnwt;i++) {
+        int f1=mnwtdata(3,i);
+        if(f1==f) {
+         int parti = abs(mnwtdata(4,i));  //  partition:  0=all, 1=discard, 2=retained
+    		parti_cnt(parti)++;}}
+  		if(parti_cnt(1)>0 and Do_Retain(f)==0)
+  		{
+  			N_warn++; cout<<"SS will exit, see warning"<<endl; 
+  			warning<<"fleet: "<<f<<"  meansize data contains obs with partition==1 and retention fxn not defined; N= "<<parti_cnt(1)<<endl; exit(1);
+  		}
+  		if(parti_cnt(2)>0 and Do_Retain(f)==0)
+  		{
+  			N_warn++; 
+  			warning<<"fleet: "<<f<<"  meansize data has obs with partition==2; will treat as partition=0 because retention not defined; N= "<<parti_cnt(2)<<endl;
+  		}
+  		if(parti_cnt(2)>0 and (fleet_type(f)==2 || seltype(f,2)==3 || seltype(Nfleet+f,2)==3))  //  error if retained catch obs are with no retention fleets
+  		{
+  			N_warn++; cout<<"SS will exit, see warning"<<endl; 
+  			warning<<"fleet: "<<f<<" EXIT; meansize data has obs with partition==2; but fleet does not retain any catch; N= "<<parti_cnt(2)<<endl; exit(1);
+  		}
+    }
+
+
+ /*
   	if(Do_Retain(f)==0)  //  retention not defined; check for illogical observations
   		{
   			// check for discard obs
   			if(disc_N_fleet(f)>0) {N_warn++; warning<<"fleet: "<<f<<"  discard data exist but retention fxn not defined; exit"<<endl; exit(1);}
 
-  			// check for composition obs with partition =1 or =2; use a new summary of obs by partition type for this test
 				for(i=1;i<=Nobs_l(f);i++)
 				{
 					if(mkt_l(f,i)==1)
 					{
-				  	N_warn++; warning<<"fleet: "<<f<<"  lencomp data contains obs with partition==1 and retention fxn not defined"<<endl; exit(1);
 					}
 				}
 				for(i=1;i<=Nobs_a(f);i++)
@@ -734,7 +829,7 @@ PRELIMINARY_CALCS_SECTION
               int parti = mnwtdata(4,i);  //  partition:  0=all, 1=discard, 2=retained
           		if(parti==1)
           		{
-          			N_warn++; warning<<"fleet: "<<f<<"meansize data contains obs with partition>0 and retention fxn not defined"<<endl; exit(1);
+          			N_warn++; warning<<"fleet: "<<f<<"meansize data contains obs with partition==1 and retention fxn not defined"<<endl; exit(1);
           		}
           	}
         }
@@ -743,6 +838,7 @@ PRELIMINARY_CALCS_SECTION
   	  {
   		  //  if seltype(f,2)==3 or fleet_type(f)==2; then all discard so noretained catch obs allowed	
   		}
+ */
   }
 
 
