@@ -2778,22 +2778,22 @@ FUNCTION void write_bigoutput()
         }
       }
     }
+
+// Yr Month Seas Subseas Time Fleet Area Repl. Sexes Kind Part Ageerr Sex Lbin_lo Lbin_hi Bin Obs Exp Pearson N effN Like Cum_obs Cum_exp SuprPer Used?
+
     if(Do_Morphcomp>0)
     {
       for (iobs=1;iobs<=Morphcomp_nobs;iobs++)
       {
         N_out++;
-        y=Morphcomp_obs(iobs,1); s=Morphcomp_obs(iobs,2);
-        temp1=s-1.;
-        temp2=y;
-        temp = float(y)+0.01*int(100.*(azero_seas(s)+seasdur_half(s)));
-//        temp=temp2+temp1/nseas;
+        y=Morphcomp_obs(iobs,1); real_month=Morphcomp_obs(iobs,2);
+        ALK_time=Morphcomp_obs(iobs,5+1+Morphcomp_nmorph);
         f=Morphcomp_obs(iobs,3);
         k=5+Morphcomp_nmorph;
         for (z=6;z<=k;z++)
         {
-          SS_compout<<y<<" "<<s<<" "<<temp<<" "<<1<<" "<<1<<" GP% "<<0<<" "<<Morphcomp_obs(iobs,5);
-         SS_compout<<" "<<0<<" "<<0<<" "<<0<<" "<<z-5<<" "<<Morphcomp_obs(iobs,z)<<" " <<Morphcomp_exp(iobs,z)<<" "<<endl;
+          SS_compout<<y<<" "<<real_month<<" "<<Show_Time2(ALK_time)(2,3)<<" "<<data_time(ALK_time,f,3)<<" "<<f<<" "<<fleet_area(f)<<" 1  1 "<<" GP% ";
+         SS_compout<<" 0 0 0 0 0 "<<z-5<<" "<<Morphcomp_obs(iobs,z)<<" " <<Morphcomp_exp(iobs,z)<<" NA "<<Morphcomp_obs(iobs,5)<<" NA NA NA NA _ _ "<<endl;
         }
       }
     }
