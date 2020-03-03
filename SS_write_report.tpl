@@ -1344,7 +1344,7 @@ FUNCTION void write_bigoutput()
 
 // REPORT_KEYWORD FIT_LEN_COMPS
   SS2out <<endl<< "FIT_LEN_COMPS" << endl;                     // SS_Label_350
-  SS2out<<"Fleet Fleet_Name Area Yr Seas Subseas Month Time Sexes Part SuprPer Use Nsamp effN Like";
+  SS2out<<"Fleet Fleet_Name Area Yr Seas Subseas Month Time Sexes Part SuprPer Use Nsamp Nsamp_DM effN Like";
   SS2out<<" All_obs_mean All_exp_mean All_delta All_exp_5% All_exp_95% All_DurWat";
   if(gender==2) SS2out<<" F_obs_mean F_exp_mean F_delta F_exp_5% F_exp_95% F_DurWat M_obs_mean M_exp_mean M_delta M_exp_5% M_exp_95% M_DurWat %F_obs %F_exp ";
   SS2out<<endl;
@@ -1354,6 +1354,7 @@ FUNCTION void write_bigoutput()
   dvar_vector more_comp_info(1,20);
   dvariable cumdist;
   dvariable cumdist_save;
+  double Nsamp_DM;
   dvector minsamp(1,Nfleet);
   dvector maxsamp(1,Nfleet);
   minsamp=10000.;
@@ -1390,19 +1391,36 @@ FUNCTION void write_bigoutput()
    dvector tempvec_l(1,exp_l(f,i).size());
        tempvec_l = value(exp_l(f,i));
        more_comp_info=process_comps(gender,gen_l(f,i),len_bins_dat2,len_bins_dat_m2,tails_l(f,i),obs_l(f,i),tempvec_l);
+      if(Comp_Err_L(f)==0) // multinomial
+      {
+      	Nsamp_DM=nsamp_l(f,i);
+      }
+      else if(Comp_Err_L(f)==1) //  Dirichlet #1
+    	{
+    		dirichlet_Parm=mfexp(selparm(Comp_Err_Parm_Start+Comp_Err_L2(f)))*nsamp_l(f,i);  //  Thorson's theta fro eq 10
+//          effN_DM = 1/(1+theta) + n*theta/(1+theta)
+        Nsamp_DM = value(1./(1.+dirichlet_Parm) + nsamp_l(f,i)*dirichlet_Parm/(1.+dirichlet_Parm));
+    	}
+    	else if(Comp_Err_L(f)==2) //  Dirichlet #2
+  		{
+  			dirichlet_Parm=mfexp(selparm(Comp_Err_Parm_Start+Comp_Err_L2(f)));  //  Thorson's beta from eq 12
+//          effN_DM = (n+n*beta)/(n+beta)      computed in Fit_LenComp    			
+        Nsamp_DM = value((nsamp_l(f,i)+dirichlet_Parm*nsamp_l(f,i))/(dirichlet_Parm+nsamp_l(f,i)));    			
+   		}
+
      if(header_l(f,i,3)>0)
      {
        n_rmse(f)+=1.;
        rmse(f)+=value(neff_l(f,i));
-       mean_CV(f)+=nsamp_l(f,i);
+       mean_CV(f)+=Nsamp_DM;
        Hrmse(f)+=value(1./neff_l(f,i));
-       Rrmse(f)+=value(neff_l(f,i)/nsamp_l(f,i));
-       if(nsamp_l(f,i)<minsamp(f)) minsamp(f)=nsamp_l(f,i);
-       if(nsamp_l(f,i)>maxsamp(f)) maxsamp(f)=nsamp_l(f,i);
+       Rrmse(f)+=value(neff_l(f,i)/Nsamp_DM);
+       if(Nsamp_DM<minsamp(f)) minsamp(f)=Nsamp_DM;
+       if(Nsamp_DM>maxsamp(f)) maxsamp(f)=Nsamp_DM;
      }
     
      
-//  SS2out<<"Fleet Fleet_Name Area Yr Month Seas Subseas Time Sexes Part SuprPer Use Nsamp effN Like";
+//  SS2out<<"Fleet Fleet_Name Area Yr Month Seas Subseas Time Sexes Part SuprPer Use Nsamp Nsamp_DM effN Like";
 //      temp=abs(header_l_rd(f,i,2));
 //      if(temp>999) temp-=1000;
       SS2out<<f<<" "<<fleetname(f)<<" "<<fleet_area(f)<<" "<<Show_Time2(ALK_time)<<" "<<data_time(ALK_time,f,1)<<" "<<data_time(ALK_time,f,3)<<" "<<gen_l(f,i)<<" "<<mkt_l(f,i);
@@ -1418,7 +1436,7 @@ FUNCTION void write_bigoutput()
       {SS2out<<" skip ";}
       else
       {SS2out<<" _ ";}
-      SS2out<<nsamp_l(f,i)<<" "<<neff_l(f,i)<<" "<<length_like(f,i)<<" ";
+      SS2out<<nsamp_l(f,i)<<" "<<Nsamp_DM<<" "<<neff_l(f,i)<<" "<<length_like(f,i)<<" ";
       SS2out<<more_comp_info(1,6);
       if(gender==2) SS2out<<" "<<more_comp_info(7,20);
       SS2out<<endl;      
@@ -1443,7 +1461,7 @@ FUNCTION void write_bigoutput()
 
 // REPORT_KEYWORD FIT_AGE_COMPS
   SS2out <<endl<< "FIT_AGE_COMPS" << endl;
-  SS2out<<"Fleet Fleet_Name Area Yr Seas Subseas Month Time Sexes Part Ageerr Lbin_lo Lbin_hi SuprPer Use Nsamp effN Like ";
+  SS2out<<"Fleet Fleet_Name Area Yr Seas Subseas Month Time Sexes Part Ageerr Lbin_lo Lbin_hi SuprPer Use Nsamp Nsamp_DM effN Like ";
   SS2out<<" All_obs_mean All_exp_mean All_delta All_exp_5% All_exp_95% All_DurWat";
   if(gender==2) SS2out<<" F_obs_mean F_exp_mean F_delta F_exp_5% F_exp_95% F_DurWat M_obs_mean M_exp_mean M_delta M_exp_5% M_exp_95% M_DurWat %F_obs %F_exp ";
   SS2out<<endl;
@@ -1460,15 +1478,33 @@ FUNCTION void write_bigoutput()
        dvector tempvec_a(1,exp_a(f,i).size());
        tempvec_a = value(exp_a(f,i));
        more_comp_info=process_comps(gender,gen_a(f,i),age_bins,age_bins_mean,tails_a(f,i),obs_a(f,i), tempvec_a);
-     if(nsamp_a(f,i)>0 && header_a(f,i,3)>0)
+
+      if(Comp_Err_A(f)==0) // multinomial
+      {
+      	Nsamp_DM=nsamp_a(f,i);
+      }
+      else if(Comp_Err_L(f)==1) //  Dirichlet #1
+    	{
+    		dirichlet_Parm=mfexp(selparm(Comp_Err_Parm_Start+Comp_Err_A2(f)))*nsamp_a(f,i);  //  Thorson's theta fro eq 10
+//          effN_DM = 1/(1+theta) + n*theta/(1+theta)
+        Nsamp_DM = value(1./(1.+dirichlet_Parm) + nsamp_a(f,i)*dirichlet_Parm/(1.+dirichlet_Parm));
+    	}
+    	else if(Comp_Err_A(f)==2) //  Dirichlet #2
+  		{
+  			dirichlet_Parm=mfexp(selparm(Comp_Err_Parm_Start+Comp_Err_A2(f)));  //  Thorson's beta from eq 12
+//          effN_DM = (n+n*beta)/(n+beta)      computed in Fit_LenComp    			
+        Nsamp_DM = value((nsamp_a(f,i)+dirichlet_Parm*nsamp_a(f,i))/(dirichlet_Parm+nsamp_a(f,i)));    			
+   		}
+
+     if(header_a(f,i,3)>0)
      {
        n_rmse(f)+=1.;
        rmse(f)+=value(neff_a(f,i));
-       mean_CV(f)+=nsamp_a(f,i);
+       mean_CV(f)+=Nsamp_DM;
        Hrmse(f)+=value(1./neff_a(f,i));
-       Rrmse(f)+=value(neff_a(f,i)/nsamp_a(f,i));
-       if(nsamp_a(f,i)<minsamp(f)) minsamp(f)=nsamp_a(f,i);
-       if(nsamp_a(f,i)>maxsamp(f)) maxsamp(f)=nsamp_a(f,i);
+       Rrmse(f)+=value(neff_a(f,i)/Nsamp_DM);
+       if(Nsamp_DM<minsamp(f)) minsamp(f)=Nsamp_DM;
+       if(Nsamp_DM>maxsamp(f)) maxsamp(f)=Nsamp_DM;
      }
 
 //  SS2out<<"Fleet Fleet_Name Area Yr  Seas Subseas Month Time Sexes Part Ageerr Lbin_lo Lbin_hi Nsamp effN Like SuprPer Use";
@@ -1487,7 +1523,7 @@ FUNCTION void write_bigoutput()
       {SS2out<<" skip ";}
       else
       {SS2out<<" _ ";}
-      SS2out<<nsamp_a(f,i)<<" "<<neff_a(f,i)<<" "<<age_like(f,i)<<" "<<more_comp_info(1,6);
+      SS2out<<nsamp_a(f,i)<<" "<<Nsamp_DM<<" "<<neff_a(f,i)<<" "<<age_like(f,i)<<" "<<more_comp_info(1,6);
       if(gender==2) SS2out<<" "<<more_comp_info(7,20);
       SS2out<<endl;
     }
