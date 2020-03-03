@@ -793,6 +793,9 @@ FUNCTION void write_nudata()
   report1<<DF_bodywt<<" #_DF_for_meanbodysize_T-distribution_like"<<endl;
   report1<<"# note:  type=1 for mean length; type=2 for mean body weight "<<endl;
   report1<<"#_yr month fleet part type obs stderr"<<endl;
+  
+  // NOTE, the se stored in mnwtdata(7,i) was adjusted in prelim calc to include the input var_adjustment
+  //  so var_adjust is subtracted here when the observation is written
   if(nobs_mnwt>0)
   {
     for (i=1;i<=nobs_mnwt;i++)
@@ -1675,7 +1678,7 @@ FUNCTION void write_nucontrol()
       }
     }
   report4<<endl<<"#"<<endl;
-  report4<<"#Fishing Mortality info "<<endl<<F_ballpark<<" # F ballpark"<<endl;
+  report4<<"#Fishing Mortality info "<<endl<<F_ballpark<<" # F ballpark value in units of annual_F"<<endl;
   report4<<F_ballpark_yr<<" # F ballpark year (neg value to disable)"<<endl;
   report4<<F_Method<<" # F_Method:  1=Pope; 2=instan. F; 3=hybrid (hybrid is recommended)"<<endl;
   report4<<max_harvest_rate<<" # max F or harvest rate, depends on F_Method"<<endl;

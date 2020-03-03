@@ -1911,7 +1911,7 @@
 
 !!//  SS_Label_Info_4.7 #Input F_method setup
   init_number F_ballpark
-  !! echoinput<<F_ballpark<<" F ballpark is annual F for fleet 1 for specified year"<<endl;
+  !! echoinput<<F_ballpark<<" F ballpark is annual F, as specified in F_reporting, for a specified year"<<endl;
   init_int F_ballpark_yr
   !! echoinput<<F_ballpark_yr<<" F_ballpark_yr (<0 to ignore)  "<<endl;
   init_int F_Method;           // 1=Pope's; 2=continuouos F; 3=hybrid

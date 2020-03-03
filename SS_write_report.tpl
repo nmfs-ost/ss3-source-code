@@ -20,7 +20,8 @@ FUNCTION void write_bigoutput()
   SS2out<<"Data_File: "<<datfilename<<endl;
   SS2out<<"Control_File: "<<ctlfilename<<endl;
   if(readparfile>=1) SS2out<<"Start_parm_values_from_SS3.PAR"<<endl;
-  SS2out<<endl<<"Convergence_Level: "<<objective_function_value::pobjfun->gmax<<" is_final_gradient"<<endl<<"Hessian: "<<endl;
+  SS2out<<endl<<"Convergence_Level: "<<objective_function_value::pobjfun->gmax<<" is_final_gradient"<<endl; 
+//  	<<"Hessian: "<<endl;
   if(N_SC>0)
   {
     SS2out<<"#"<<endl<<"Starter_Comments"<<endl<<Starter_Comments<<endl;
