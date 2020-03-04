@@ -5,7 +5,7 @@ pipeline {
     }
     stages {
         stage('Copy ss.zip artifact from previous stage') {
-            copyArtifacts filter: 'ss.zip', fingerprintArtifacts: true, projectName: 'stock-synthesis-build', selector: lastSuccessful()
+            copyArtifacts filter: 'ss.gz', fingerprintArtifacts: true, projectName: 'stock-synthesis-build', selector: lastSuccessful()
         }
         stage('Git clone src for stock synthesis Example files') {
             steps {

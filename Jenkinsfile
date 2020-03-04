@@ -19,12 +19,12 @@ pipeline {
                 sh label: 'Make build script executable', script: 'cd vlab/stock-synthesis && chmod a+x Make_SS_330.sh'
                 sh label: 'Run build', script: 'cd vlab/stock-synthesis && ls && export BUILD_DIR="SS330" && ./Make_SS_330.sh'
                 sh label: 'Validate build', script: 'cp vlab/stock-synthesis/SS330/ss . && sha256sum ss'
-                sh label: 'Archive ss executable', script: 'zip ss.zip ss'
+                sh label: 'Archive ss executable', script: 'gzip -v ss'
             }
         }
         stage('Archive artifact') {
             steps {
-              archiveArtifacts 'ss.zip'
+              archiveArtifacts 'ss.gz'
             }
         }
     }
