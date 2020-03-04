@@ -1420,7 +1420,7 @@ FUNCTION void write_bigoutput()
      }
     
      
-//  SS2out<<"Fleet Fleet_Name Area Yr Month Seas Subseas Time Sexes Part SuprPer Use Nsamp Nsamp_DM effN Like";
+//  SS2out<<"Fleet Fleet_Name Area Yr Month Seas Subseas Time Sexes Part SuprPer Use Nsamp_adj Nsamp_in Nsamp_DM effN Like";
 //      temp=abs(header_l_rd(f,i,2));
 //      if(temp>999) temp-=1000;
       SS2out<<f<<" "<<fleetname(f)<<" "<<fleet_area(f)<<" "<<Show_Time2(ALK_time)<<" "<<data_time(ALK_time,f,1)<<" "<<data_time(ALK_time,f,3)<<" "<<gen_l(f,i)<<" "<<mkt_l(f,i);
@@ -1436,7 +1436,7 @@ FUNCTION void write_bigoutput()
       {SS2out<<" skip ";}
       else
       {SS2out<<" _ ";}
-      SS2out<<nsamp_l(f,i)<<" "<<Nsamp_DM<<" "<<neff_l(f,i)<<" "<<length_like(f,i)<<" ";
+      SS2out<<nsamp_l(f,i)<<" "<<nsamp_l_read(f,i)<<" "<<Nsamp_DM<<" "<<neff_l(f,i)<<" "<<length_like(f,i)<<" ";
       SS2out<<more_comp_info(1,6);
       if(gender==2) SS2out<<" "<<more_comp_info(7,20);
       SS2out<<endl;      
@@ -1448,7 +1448,7 @@ FUNCTION void write_bigoutput()
 //It might also be good to add a keyword to the top of those lower tables which could simplify the logic of parsing them separately from the FIT_..._COMPS tables above them and therefore be more robust to changes in format.
 
    SS2out<<endl<<"Length_Comp_Fit_Summary"<<endl<<
-   "Factor Fleet Recommend_var_adj # N Npos min_inputN max_inputN mean_adj_inputN mean_effN HarMean Curr_Var_Adj Fleet_name"<<endl;
+   "Factor Fleet Recommend_var_adj # N Npos min_Nsamp_in max_Nsamp_in mean_adj_Nsamp_in mean_effN HarMean Curr_Var_Adj Fleet_name"<<endl;
    for (f=1;f<=Nfleet;f++)
    {
     if(n_rmse(f)>0) 
@@ -1461,7 +1461,7 @@ FUNCTION void write_bigoutput()
 
 // REPORT_KEYWORD FIT_AGE_COMPS
   SS2out <<endl<< "FIT_AGE_COMPS" << endl;
-  SS2out<<"Fleet Fleet_Name Area Yr Seas Subseas Month Time Sexes Part Ageerr Lbin_lo Lbin_hi SuprPer Use Nsamp Nsamp_DM effN Like ";
+  SS2out<<"Fleet Fleet_Name Area Yr Seas Subseas Month Time Sexes Part Ageerr Lbin_lo Lbin_hi SuprPer Use Nsamp_adj Nsamp_in Nsamp_DM effN Like ";
   SS2out<<" All_obs_mean All_exp_mean All_delta All_exp_5% All_exp_95% All_DurWat";
   if(gender==2) SS2out<<" F_obs_mean F_exp_mean F_delta F_exp_5% F_exp_95% F_DurWat M_obs_mean M_exp_mean M_delta M_exp_5% M_exp_95% M_DurWat %F_obs %F_exp ";
   SS2out<<endl;
@@ -1507,7 +1507,7 @@ FUNCTION void write_bigoutput()
        if(Nsamp_DM>maxsamp(f)) maxsamp(f)=Nsamp_DM;
      }
 
-//  SS2out<<"Fleet Fleet_Name Area Yr  Seas Subseas Month Time Sexes Part Ageerr Lbin_lo Lbin_hi Nsamp effN Like SuprPer Use";
+//  SS2out<<"Fleet Fleet_Name Area Yr  Seas Subseas Month Time Sexes Part Ageerr Lbin_lo Lbin_hi Nsamp_adj Nsamp_in Nsamp_DM effN Like SuprPer Use";
       temp=abs(header_a_rd(f,i,2));
       if(temp>999) temp-=1000;
      SS2out<<f<<" "<<fleetname(f)<<" "<<fleet_area(f)<<Show_Time2(ALK_time)<<" "<<data_time(ALK_time,f,1)<<" "<<data_time(ALK_time,f,3)<<" "<<gen_a(f,i)<<" "<<mkt_a(f,i)<<" "<<ageerr_type_a(f,i)<<" "<<Lbin_lo(f,i)<<" "<<Lbin_hi(f,i)<<" ";
@@ -1523,13 +1523,13 @@ FUNCTION void write_bigoutput()
       {SS2out<<" skip ";}
       else
       {SS2out<<" _ ";}
-      SS2out<<nsamp_a(f,i)<<" "<<Nsamp_DM<<" "<<neff_a(f,i)<<" "<<age_like(f,i)<<" "<<more_comp_info(1,6);
+      SS2out<<nsamp_a(f,i)<<" "<<nsamp_a_read(f,i)<<" "<<Nsamp_DM<<" "<<neff_a(f,i)<<" "<<age_like(f,i)<<" "<<more_comp_info(1,6);
       if(gender==2) SS2out<<" "<<more_comp_info(7,20);
       SS2out<<endl;
     }
 
    SS2out<<endl<<"Age_Comp_Fit_Summary"<<endl<<
-   "Factor Fleet Recommend_var_adj # N Npos min_inputN max_inputN mean_adj_inputN mean_effN HarMean Curr_Var_Adj Fleet_name"<<endl;
+   "Factor Fleet Recommend_var_adj # N Npos min_Nsamp_in max_Nsamp_in mean_Nsamp_adj mean_effN HarMean Curr_Var_Adj Fleet_name"<<endl;
    for(f=1;f<=Nfleet;f++)
    {
     if(n_rmse(f)>0)
@@ -1645,7 +1645,7 @@ FUNCTION void write_bigoutput()
           }  //  end loop of observations
         }  //  end fleet loop
   //      SS2out<<"Fleet N Npos mean_effN mean(inputN*Adj) HarMean(effN) Mean(effN/inputN) MeaneffN/MeaninputN Var_Adj"<<endl;
-        SS2out<<"Factor Fleet Recommend_Var_Adj # N Npos min_inputN max_inputN mean_adj_inputN mean_effN HarMean Curr_Var_Adj Fleet_name"<<endl;
+        SS2out<<"Factor Fleet Recommend_Var_Adj # N Npos min_Nsamp_in max_Nsamp_in mean_Nsamp_adj mean_effN HarMean Curr_Var_Adj Fleet_name"<<endl;
         for(f=1;f<=Nfleet;f++)
         {
           if(n_rmse(f)>0)
@@ -2450,7 +2450,7 @@ FUNCTION void write_bigoutput()
 
   SS_compout <<endl<< "Composition_Database" << endl;           // SS_Label_480
 
-  SS_compout<<"Yr Month Seas Subseas Time Fleet Area Repl. Sexes Kind Part Ageerr Sex Lbin_lo Lbin_hi Bin Obs Exp Pearson N_adj N_input effN Like Cum_obs Cum_exp SuprPer Used?"<<endl;
+  SS_compout<<"Yr Month Seas Subseas Time Fleet Area Repl. Sexes Kind Part Ageerr Sex Lbin_lo Lbin_hi Bin Obs Exp Pearson Nsamp_adj Nsamp_in effN Like Cum_obs Cum_exp SuprPer Used?"<<endl;
   int lasttime;
   int lastfleet;
   int repli;
@@ -2526,7 +2526,7 @@ FUNCTION void write_bigoutput()
                 SS_compout<<" NA ";
               }
               // next add the following columns:
-              // N_adj N_input effN
+              // Nsamp_adj Nsamp_in effN
               SS_compout<<" "<<nsamp_l(f,i)<<" "<<nsamp_l_read(f,i)<<" "<<neff_l(f,i)<<" ";
               // next add Like column
               if(obs_l(f,i,z)!=0.0 && exp_l(f,i,z)!=0.0)
@@ -2574,7 +2574,7 @@ FUNCTION void write_bigoutput()
           else
           {SS_compout<<" NA ";}
           // next add the following columns:
-          // N_adj N_input effN
+          // Nsamp_adj Nsamp_in effN
           SS_compout<<" "<<nsamp_l(f,i)<<" "<<nsamp_l_read(f,i)<<" "<<neff_l(f,i)<<" ";
 	  // next add Like column
           if(obs_l(f,i,z)!=0.0 && exp_l(f,i,z)!=0.0)
@@ -2654,7 +2654,7 @@ FUNCTION void write_bigoutput()
             else
             {SS_compout<<" NA ";}
             // next add the following columns:
-            // N_adj N_input effN
+            // Nsamp_adj Nsamp_in effN
             SS_compout<<" "<<nsamp_a(f,i)<<" "<<nsamp_a_read(f,i)<<" "<<neff_a(f,i)<<" ";
             // next add Like column
             if(obs_a(f,i,z)!=0.0 && exp_a(f,i,z)!=0.0)
@@ -2701,7 +2701,7 @@ FUNCTION void write_bigoutput()
           else
           {SS_compout<<" NA ";}
           // next add the following columns:
-          // N_adj N_input effN
+          // Nsamp_adj Nsamp_in effN
           SS_compout<<" "<<nsamp_a(f,i)<<" "<<nsamp_a_read(f,i)<<" "<<neff_a(f,i)<<" ";
           // next add Like column
           if(obs_a(f,i,z)!=0.0 && exp_a(f,i,z)!=0.0)
@@ -2846,7 +2846,7 @@ FUNCTION void write_bigoutput()
               else
                 {SS_compout<<" NA ";}
               // next add the following columns:
-              // N_adj, N_input (temporarily "NA"), effN
+              // Nsamp_adj, Nsamp_in (temporarily "NA"), effN
               SS_compout<<" "<<SzFreq_sampleN(iobs)<<" NA "<<SzFreq_effN(iobs)<<" ";
               // next add Like column
               if(SzFreq_obs(iobs,z)!=0.0 && SzFreq_exp(iobs,z)!=0.0)
@@ -2902,7 +2902,7 @@ FUNCTION void write_bigoutput()
           // Fill in columns for: Yr Month Seas Subseas Time Fleet Area Repl. Sexes Kind Part Ageerr Sex Lbin_lo Lbin_hi Bin
           SS_compout<<y<<" NA "<<s<<" NA "<<temp<<" NA "<<TG_release(TG,2)<<" "<<TG<<" "<<TG_release(TG,6)<<" TAG2 NA NA NA NA NA "<<
           // TAG2 values (total recaptures)
-          // Fill in columns for: Obs Exp Pearson N_adj N_input effN Like Cum_obs Cum_exp SuprPer Used?
+          // Fill in columns for: Obs Exp Pearson Nsamp_adj Nsamp_in effN Like Cum_obs Cum_exp SuprPer Used?
           temp<<" "<<TG_recap_obs(TG,TG_t,0)<<" "<<TG_recap_exp(TG,TG_t,0)<<" NA NA NA NA NA NA NA NA ";
           if(TG_t>=TG_mixperiod) {SS_compout<<"_"<<endl;} else {SS_compout<<" skip"<<endl;}
           // TAG1 values (proportions for each fleet) associated with the above TAG2 output
@@ -2911,7 +2911,7 @@ FUNCTION void write_bigoutput()
           {
             // Fill in columns for: Yr Month Seas Subseas Time Fleet Area Repl. Sexes Kind Part Ageerr Sex Lbin_lo Lbin_hi 
             SS_compout<<y<<" NA "<<s<<" NA "<<temp<<" "<<f<<" "<<fleet_area(f)<<" "<<TG<<" "<<TG_release(TG,6)<<" TAG1 NA NA NA NA NA "<<
-            // Fill in columns for:: Bin Obs Exp Pearson N_adj N_input 
+            // Fill in columns for:: Bin Obs Exp Pearson Nsamp_adj Nsamp_in 
             f<<" "<<TG_recap_obs(TG,TG_t,f)<<" "<<TG_recap_exp(TG,TG_t,f)<<" NA "<<TG_recap_obs(TG,TG_t,0)<<" NA "
             <<" NA NA NA NA NA "; // NA values are for: effN Like Cum_obs Cum_exp SuprPer
           // Fill in Used? column
