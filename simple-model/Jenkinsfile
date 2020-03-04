@@ -11,7 +11,9 @@ pipeline {
         }
         stage('Unpack ss.gz artifact') {
             steps {
+                sh label: 'Remove ss if exists', script: 'rm ss | true'
                 sh label: 'Unzip ss', script: 'gunzip ss.gz'
+                sh label: 'Make ss executable', script: 'chmod a+rwx ss'
                 sh label: 'Get dir listing', script: 'ls -alh ss*'
             }
         }
