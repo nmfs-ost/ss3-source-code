@@ -1,6 +1,7 @@
 pipeline {
     agent { dockerfile {
           dir 'jenkins/stock-synthesis'
+          args '-u 0:0'
         }
     }
     stages {
