@@ -20,7 +20,6 @@ pipeline {
                 sh label: 'Unzip ss', script: 'gunzip ss.gz'
                 sh label: 'Make ss executable', script: 'chmod a+rwx ss'
                 sh label: 'Get dir listing', script: 'ls -alh ss*'
-                sh label: 'Get ss SHA fingerprint (debugging)', script: 'sha256 ss'
             }
         }
         stage('Run ss on Simple/ model') {
