@@ -14,12 +14,6 @@ pipeline {
                 checkout([$class: 'GitSCM', branches: [[name: '*/master']], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[credentialsId: '1aa2d7c8-749f-4270-9de2-6ffcf0cd2beb', url: 'https://stock_synthesis.build@vlab.ncep.noaa.gov/git/ss_examples']]])
             }
         }
-        stage('Zip for archival') {
-            steps {
-                sh label: 'Remove Simple.zip if exists', script: 'rm Simple.zip | true'
-                sh label: 'Zip Simple folder', script: 'zip Simple.zip Simple/'
-            }
-        }
         stage('Unpack ss.gz artifact') {
             steps {
                 sh label: 'Remove ss if exists', script: 'rm ss | true'
@@ -33,6 +27,13 @@ pipeline {
                 sh label: 'Copy ss to Simple', script: 'cp ss Simple/'
                 sh label: 'Run ss on Simple', script: 'cd Simple && ./ss'
                 sh label: 'Get dir listing', script: 'ls -alh *'
+            }
+        }
+        stage('Zip and Archive') {
+            steps {
+                sh label: 'Remove Simple.zip if exists', script: 'rm Simple.zip | true'
+                sh label: 'Zip Simple folder', script: 'zip Simple.zip Simple/'
+                archiveArtifacts 'Simple.zip'
             }
         }
 
