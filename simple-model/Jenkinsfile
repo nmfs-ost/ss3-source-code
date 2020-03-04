@@ -25,7 +25,7 @@ pipeline {
         stage('Run ss on Simple/ model') {
             steps {
                 sh label: 'Copy ss to Simple', script: 'cp ss Simple/'
-                sh label: 'Run ss on Simple', script: 'cd Simple && ss'
+                sh label: 'Run ss on Simple', script: 'cd Simple && ./ss'
                 sh label: 'Get dir listing', script: 'ls -alh *'
             }
         }
