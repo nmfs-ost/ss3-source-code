@@ -24,7 +24,7 @@ pipeline {
         }
         stage('Run ss on Simple/ model') {
             steps {
-                sh label: 'Run ss on ./ss_examples/Simple', script: './ss'
+                sh label: 'Run ss on ./ss_examples/Simple', script: './ss Simple/'
                 sh label: 'Get dir listing', script: 'ls -alh *'
             }
         }
