@@ -1,4 +1,7 @@
 Version;Date;Description;VLAB_issue;Input_Change?;Type;Category;Sub_Category
+
+
+3.30.14.17;2020-02-18;fixes to morphcomp reporting;#74995
 3.30.14.16;2020-02-07;add warnings for illogical data specifications for retention;#66580, #68203
 3.30.14.15;2020-02-05;clarify age/len terminology in 2DAR;#69279
 3.30.14.14;2020-01-31;augment INDEX_2 table in report.sso;#73827

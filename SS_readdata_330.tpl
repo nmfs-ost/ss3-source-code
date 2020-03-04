@@ -3,6 +3,8 @@
   //  SS_Label_Info_2.0 #READ DATA FILE
   //  SS_Label_Info_2.1 #Read comments and dimension info
   //  SS_Label_Info_2.1.1 #Read and save comments at top of data file
+  number fif  //  end of file marker
+
  LOCAL_CALCS
   ad_comm::change_datafile_name(datfilename);
   cout<<" reading from data file"<<endl;
@@ -2704,7 +2706,7 @@
     echoinput<<Morphcomp_mincomp<<" Morphcomp_mincomp "<<endl;
 
     Morphcomp_obs.deallocate();
-    Morphcomp_obs.allocate(1,Morphcomp_nobs_rd,1,5+Morphcomp_nmorph);
+    Morphcomp_obs.allocate(1,Morphcomp_nobs_rd,1,5+Morphcomp_nmorph+1);  // terminal +1 will contain computed value of ALK_time
     Morphcomp_obs.initialize();
     Morphcomp_obs_rd.deallocate();
     Morphcomp_obs_rd.allocate(1,Morphcomp_nobs_rd,1,5+Morphcomp_nmorph);  //  but will only get filled with the used obs
@@ -2712,7 +2714,7 @@
 //    yr, seas, fleet, partition, Nsamp, datavector
     data_type=8;  //  for morphcomp
 
-    echoinput<<" morph composition data"<<endl<<"yr seas type null Nsamp datavector"<<endl;
+    echoinput<<" morph composition data"<<endl<<"yr month fleet null Nsamp datavector"<<endl;
     Morphcomp_nobs=0;
     for (i=1;i<=Morphcomp_nobs_rd;i++)
     {
@@ -2723,14 +2725,15 @@
       if(y>=styr && y<=endyr +50)  //  obs is in year range
       {
         if(timing_input(2)<0.0)
-        {N_warn++; warning<<"negative season not allowed for morphcomp because superperiods not implemented "<<endl; exit(1);}
+        {N_warn++; warning<<"negative month not allowed for morphcomp because superperiods not implemented "<<endl; exit(1);}
         get_data_timing(timing_input, timing_constants, timing_i_result, timing_r_result, seasdur, subseasdur_delta, azero_seas, surveytime);
 
         s=timing_input(2); f=abs(timing_input(3)); t=timing_i_result(2);
         ALK_time=timing_i_result(5);
         
         Morphcomp_nobs++;
-        Morphcomp_obs(Morphcomp_nobs)=Morphcomp_obs_rd(i);  //  save observations to be used
+        Morphcomp_obs(Morphcomp_nobs)(1,5+Morphcomp_nmorph)=Morphcomp_obs_rd(i)(1,5+Morphcomp_nmorph);  //  save observations to be used
+        Morphcomp_obs(Morphcomp_nobs,5+Morphcomp_nmorph+1)=ALK_time;  //  for reporting
         if(y>retro_yr) Morphcomp_obs(Morphcomp_nobs,3)=-f;  //  set to dummy observation
         if(data_time(ALK_time,f,1)<0.0)  //  so first occurrence of data at ALK_time,f
         {data_time(ALK_time,f)(1,3)=timing_r_result(1,3);}  // real_month,fraction of season, year.fraction
@@ -3248,6 +3251,8 @@
     Fcast_InputCatch_Basis=2;
     k1=1;
     y=0;
+    j=0;
+    fif=999;
   }
 
  END_CALCS
@@ -3335,12 +3340,8 @@
   if(Fcast_Rec_yr2>endyr || Fcast_Rec_yr2<styr) {N_warn++; cout<<" EXIT - see warning "<<endl; warning<<" Error, Fcast_Rec_Yr2 must be between styr and endyr"<<endl;  exit(1);}
 
   did_MSY=0;
+  if(Do_Forecast>0) *(ad_comm::global_datafile) >> fif;
 
- END_CALCS
-
-  init_number fif
-
- LOCAL_CALCS
   if(Do_Forecast_rd>0 && fif!=999) {cout<<" EXIT, must have 999 to verify end of forecast inputs "<<fif<<endl; exit(1);}
   echoinput<<" done reading forecast "<<endl<<endl;
 //  if(Do_Forecast==0) Do_Forecast=4;

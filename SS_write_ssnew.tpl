@@ -328,7 +328,7 @@ FUNCTION void write_nudata()
       report1<<Morphcomp_nobs_rd<<"  #  Nobs"<<endl;
       report1<<Morphcomp_nmorph<<" # Nmorphs"<<endl;
       report1<<Morphcomp_mincomp<<" # add_to_comp"<<endl;
-      report1<<"# yr, seas, type, null, Nsamp, datavector_by_Nmorphs"<<endl;
+      report1<<"# yr, month, fleet, null, Nsamp, datavector_by_Nmorphs"<<endl;
       for(i=1;i<=Morphcomp_nobs_rd;i++)
       {report1<<Morphcomp_obs_rd<<endl;}
     }
@@ -660,7 +660,7 @@ FUNCTION void write_nudata()
       report1<<Morphcomp_nobs<<"  #  Nobs"<<endl;
       report1<<Morphcomp_nmorph<<" # Nmorphs"<<endl;
       report1<<Morphcomp_mincomp<<" # add_to_comp"<<endl;
-      report1<<"# yr, seas, type, null, Nsamp, datavector_by_Nmorphs"<<endl;
+      report1<<"# yr, month, fleet, null, Nsamp, datavector_by_Nmorphs"<<endl;
       for(i=1;i<=Morphcomp_nobs;i++)
       {report1<<Morphcomp_obs(i)(1,5)<<" "<<Morphcomp_exp(i)<<endl;}
     }
@@ -1095,7 +1095,7 @@ FUNCTION void write_nudata()
       report1<<Morphcomp_nobs<<"  #  Nobs"<<endl;
       report1<<Morphcomp_nmorph<<" # Nmorphs"<<endl;
       report1<<Morphcomp_mincomp<<" # add_to_comp"<<endl;
-      report1<<"#  yr, seas, type, null, Nsamp, datavector_by_Nmorphs  (no error added!!!)"<<endl;
+      report1<<"#  yr, month, fleet, null, Nsamp, datavector_by_Nmorphs  (no error added!!!)"<<endl;
       for(i=1;i<=Morphcomp_nobs;i++)
       {report1<<Morphcomp_obs(i)(1,5)<<" "<<Morphcomp_exp(i)<<endl;}
     }
