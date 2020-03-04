@@ -13,6 +13,8 @@ RUN chmod 755 /usr/local/bin/admb
 
 RUN groupadd --gid 498 jenkins && \
     useradd --shell /bin/bash --gid 498 --uid 498 jenkins
+
+RUN usermod -a -G root jenkins
 USER jenkins
 
 CMD ["admb"]
