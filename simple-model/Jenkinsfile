@@ -4,6 +4,9 @@ pipeline {
         args '-u 0:0'}
     }
     stages {
+        stage('Copy ss.zip artifact from previous stage') {
+            copyArtifacts filter: 'ss.zip', fingerprintArtifacts: true, projectName: 'stock-synthesis-build', selector: lastSuccessful()
+        }
         stage('Git clone src for stock synthesis Example files') {
             steps {
                 checkout([$class: 'GitSCM', branches: [[name: '*/master']], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[credentialsId: '1aa2d7c8-749f-4270-9de2-6ffcf0cd2beb', url: 'https://stock_synthesis.build@vlab.ncep.noaa.gov/git/ss_examples']]])
