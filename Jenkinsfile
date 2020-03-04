@@ -1,7 +1,7 @@
 pipeline {
     agent { dockerfile {
-        dir 'jenkins/stock-synthesis'
-        args '-u 498:498'}
+          dir 'jenkins/stock-synthesis'
+        }
     }
     stages {
         stage('Git clone src for stock-synthesis') {

@@ -1,7 +1,7 @@
 pipeline {
     agent { dockerfile {
-        dir 'jenkins/stock-synthesis/simple-model'
-        args '-u 498:498'}
+          dir 'jenkins/stock-synthesis/simple-model'
+        }
     }
     stages {
         stage('Copy ss.gz artifact from previous stage') {
