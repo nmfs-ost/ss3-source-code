@@ -19,13 +19,14 @@ pipeline {
                 sh label: 'Remove ss if exists', script: 'rm ss | true'
                 sh label: 'Unzip ss', script: 'gunzip ss.gz'
                 sh label: 'Make ss executable', script: 'chmod a+rwx ss'
-                sh label: 'Get dir listing', script: 'ls -alh ss*'
+                sh label: 'Get dir listing', script: 'ls -alh *'
             }
         }
         stage('Run ss on Simple/ model') {
             steps {
-                sh label: 'Run ss on ./ss_examples/Simple', script: './ss ss_examples/Simple'
-                sh label: 'Get dir listing', script: 'ls -alh ss*'
+                sh label: 'Copy ss to ./ss_examples/Simple', script: 'cp ss ss_examples/Simple'
+                sh label: 'Run ss on ./ss_examples/Simple', script: 'cd ss_examples/Simple && ss'
+                sh label: 'Get dir listing', script: 'ls -alh *'
             }
         }
 
