@@ -1386,27 +1386,27 @@ FUNCTION void write_bigoutput()
      t=Len_time_t(f,i);
      ALK_time=Len_time_ALK(f,i);
      more_comp_info.initialize();
-       neff_l(f,i)  = exp_l(f,i)*(1-exp_l(f,i))+1.0e-06;     // constant added for stability
-       neff_l(f,i) /= (obs_l(f,i)-exp_l(f,i))*(obs_l(f,i)-exp_l(f,i))+1.0e-06;
-   dvector tempvec_l(1,exp_l(f,i).size());
-       tempvec_l = value(exp_l(f,i));
-       more_comp_info=process_comps(gender,gen_l(f,i),len_bins_dat2,len_bins_dat_m2,tails_l(f,i),obs_l(f,i),tempvec_l);
-      if(Comp_Err_L(f)==0) // multinomial
-      {
-      	Nsamp_DM=nsamp_l(f,i);
-      }
-      else if(Comp_Err_L(f)==1) //  Dirichlet #1
-    	{
-    		dirichlet_Parm=mfexp(selparm(Comp_Err_Parm_Start+Comp_Err_L2(f)))*nsamp_l(f,i);  //  Thorson's theta fro eq 10
-//          effN_DM = 1/(1+theta) + n*theta/(1+theta)
-        Nsamp_DM = value(1./(1.+dirichlet_Parm) + nsamp_l(f,i)*dirichlet_Parm/(1.+dirichlet_Parm));
-    	}
-    	else if(Comp_Err_L(f)==2) //  Dirichlet #2
-  		{
-  			dirichlet_Parm=mfexp(selparm(Comp_Err_Parm_Start+Comp_Err_L2(f)));  //  Thorson's beta from eq 12
-//          effN_DM = (n+n*beta)/(n+beta)      computed in Fit_LenComp    			
-        Nsamp_DM = value((nsamp_l(f,i)+dirichlet_Parm*nsamp_l(f,i))/(dirichlet_Parm+nsamp_l(f,i)));    			
-   		}
+     neff_l(f,i)  = exp_l(f,i)*(1-exp_l(f,i))+1.0e-06;     // constant added for stability
+     neff_l(f,i) /= (obs_l(f,i)-exp_l(f,i))*(obs_l(f,i)-exp_l(f,i))+1.0e-06;
+     dvector tempvec_l(1,exp_l(f,i).size());
+     tempvec_l = value(exp_l(f,i));
+     more_comp_info=process_comps(gender,gen_l(f,i),len_bins_dat2,len_bins_dat_m2,tails_l(f,i),obs_l(f,i),tempvec_l);
+     if(Comp_Err_L(f)==0) // multinomial
+     {
+       Nsamp_DM=nsamp_l(f,i);
+     }
+     else if(Comp_Err_L(f)==1) //  Dirichlet #1
+     {
+       dirichlet_Parm=mfexp(selparm(Comp_Err_Parm_Start+Comp_Err_L2(f)))*nsamp_l(f,i);  //  Thorson's theta fro eq 10
+       // effN_DM = 1/(1+theta) + n*theta/(1+theta)
+       Nsamp_DM = value(1./(1.+dirichlet_Parm) + nsamp_l(f,i)*dirichlet_Parm/(1.+dirichlet_Parm));
+     }
+     else if(Comp_Err_L(f)==2) //  Dirichlet #2
+     {
+       dirichlet_Parm=mfexp(selparm(Comp_Err_Parm_Start+Comp_Err_L2(f)));  //  Thorson's beta from eq 12
+       // effN_DM = (n+n*beta)/(n+beta)      computed in Fit_LenComp
+       Nsamp_DM = value((nsamp_l(f,i)+dirichlet_Parm*nsamp_l(f,i))/(dirichlet_Parm+nsamp_l(f,i)));
+     }
 
      if(header_l(f,i,3)>0)
      {
@@ -1418,7 +1418,7 @@ FUNCTION void write_bigoutput()
        if(Nsamp_DM<minsamp(f)) minsamp(f)=Nsamp_DM;
        if(Nsamp_DM>maxsamp(f)) maxsamp(f)=Nsamp_DM;
      }
-    
+
      
 //  SS2out<<"Fleet Fleet_Name Area Yr Month Seas Subseas Time Sexes Part SuprPer Use Nsamp_adj Nsamp_in Nsamp_DM effN Like";
 //      temp=abs(header_l_rd(f,i,2));
@@ -1473,39 +1473,39 @@ FUNCTION void write_bigoutput()
       t=Age_time_t(f,i);
       ALK_time=Age_time_ALK(f,i);
       more_comp_info.initialize();
-       neff_a(f,i)  = exp_a(f,i)*(1-exp_a(f,i))+1.0e-06;     // constant added for stability
-       neff_a(f,i) /= (obs_a(f,i)-exp_a(f,i))*(obs_a(f,i)-exp_a(f,i))+1.0e-06;
-       dvector tempvec_a(1,exp_a(f,i).size());
-       tempvec_a = value(exp_a(f,i));
-       more_comp_info=process_comps(gender,gen_a(f,i),age_bins,age_bins_mean,tails_a(f,i),obs_a(f,i), tempvec_a);
+      neff_a(f,i)  = exp_a(f,i)*(1-exp_a(f,i))+1.0e-06;     // constant added for stability
+      neff_a(f,i) /= (obs_a(f,i)-exp_a(f,i))*(obs_a(f,i)-exp_a(f,i))+1.0e-06;
+      dvector tempvec_a(1,exp_a(f,i).size());
+      tempvec_a = value(exp_a(f,i));
+      more_comp_info=process_comps(gender,gen_a(f,i),age_bins,age_bins_mean,tails_a(f,i),obs_a(f,i), tempvec_a);
 
       if(Comp_Err_A(f)==0) // multinomial
       {
-      	Nsamp_DM=nsamp_a(f,i);
+        Nsamp_DM=nsamp_a(f,i);
       }
-      else if(Comp_Err_L(f)==1) //  Dirichlet #1
-    	{
-    		dirichlet_Parm=mfexp(selparm(Comp_Err_Parm_Start+Comp_Err_A2(f)))*nsamp_a(f,i);  //  Thorson's theta fro eq 10
-//          effN_DM = 1/(1+theta) + n*theta/(1+theta)
+      else if(Comp_Err_A(f)==1) //  Dirichlet #1
+      {
+        dirichlet_Parm=mfexp(selparm(Comp_Err_Parm_Start+Comp_Err_A2(f)));  //  Thorson's theta fro eq 10
+        // effN_DM = 1/(1+theta) + n*theta/(1+theta)
         Nsamp_DM = value(1./(1.+dirichlet_Parm) + nsamp_a(f,i)*dirichlet_Parm/(1.+dirichlet_Parm));
-    	}
-    	else if(Comp_Err_A(f)==2) //  Dirichlet #2
-  		{
-  			dirichlet_Parm=mfexp(selparm(Comp_Err_Parm_Start+Comp_Err_A2(f)));  //  Thorson's beta from eq 12
-//          effN_DM = (n+n*beta)/(n+beta)      computed in Fit_LenComp    			
-        Nsamp_DM = value((nsamp_a(f,i)+dirichlet_Parm*nsamp_a(f,i))/(dirichlet_Parm+nsamp_a(f,i)));    			
-   		}
+      }
+      else if(Comp_Err_A(f)==2) //  Dirichlet #2
+      {
+        dirichlet_Parm=mfexp(selparm(Comp_Err_Parm_Start+Comp_Err_A2(f)))*nsamp_a(f,i);  //  Thorson's beta from eq 12
+        // effN_DM = (n+n*beta)/(n+beta)      computed in Fit_LenComp                           
+        Nsamp_DM = value((nsamp_a(f,i)+dirichlet_Parm*nsamp_a(f,i))/(dirichlet_Parm+nsamp_a(f,i)));                     
+      }
 
-     if(header_a(f,i,3)>0)
-     {
-       n_rmse(f)+=1.;
-       rmse(f)+=value(neff_a(f,i));
-       mean_CV(f)+=Nsamp_DM;
-       Hrmse(f)+=value(1./neff_a(f,i));
-       Rrmse(f)+=value(neff_a(f,i)/Nsamp_DM);
-       if(Nsamp_DM<minsamp(f)) minsamp(f)=Nsamp_DM;
-       if(Nsamp_DM>maxsamp(f)) maxsamp(f)=Nsamp_DM;
-     }
+      if(header_a(f,i,3)>0)
+      {
+        n_rmse(f)+=1.;
+        rmse(f)+=value(neff_a(f,i));
+        mean_CV(f)+=Nsamp_DM;
+        Hrmse(f)+=value(1./neff_a(f,i));
+        Rrmse(f)+=value(neff_a(f,i)/Nsamp_DM);
+        if(Nsamp_DM<minsamp(f)) minsamp(f)=Nsamp_DM;
+        if(Nsamp_DM>maxsamp(f)) maxsamp(f)=Nsamp_DM;
+      }
 
 //  SS2out<<"Fleet Fleet_Name Area Yr  Seas Subseas Month Time Sexes Part Ageerr Lbin_lo Lbin_hi Nsamp_adj Nsamp_in Nsamp_DM effN Like SuprPer Use";
       temp=abs(header_a_rd(f,i,2));
