@@ -11,7 +11,8 @@ pipeline {
         }
         stage('Unpack ss.gz artifact') {
             steps {
-                sh label: 'Make build script executable', script: 'gunzip ss.gz'
+                sh label: 'Unzip ss', script: 'gunzip ss.gz'
+                sh label: 'Get dir listing', script: 'ls -alh ss*'
             }
         }
         stage('Git clone src for stock synthesis Example files') {
