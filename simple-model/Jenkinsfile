@@ -9,17 +9,24 @@ pipeline {
               copyArtifacts filter: 'ss.gz', fingerprintArtifacts: true, projectName: 'stock-synthesis-build', selector: lastSuccessful()
             }
         }
+        stage('Git clone src for stock synthesis Example files') {
+            steps {
+                checkout([$class: 'GitSCM', branches: [[name: '*/master']], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[credentialsId: '1aa2d7c8-749f-4270-9de2-6ffcf0cd2beb', url: 'https://stock_synthesis.build@vlab.ncep.noaa.gov/git/ss_examples']]])
+            }
+        }
         stage('Unpack ss.gz artifact') {
             steps {
                 sh label: 'Remove ss if exists', script: 'rm ss | true'
                 sh label: 'Unzip ss', script: 'gunzip ss.gz'
                 sh label: 'Make ss executable', script: 'chmod a+rwx ss'
                 sh label: 'Get dir listing', script: 'ls -alh ss*'
+                sh label: 'Get ss SHA fingerprint (debugging)', script: 'sha256 ss'
             }
         }
-        stage('Git clone src for stock synthesis Example files') {
+        stage('Run ss on Simple/ model') {
             steps {
-                checkout([$class: 'GitSCM', branches: [[name: '*/master']], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[credentialsId: '1aa2d7c8-749f-4270-9de2-6ffcf0cd2beb', url: 'https://stock_synthesis.build@vlab.ncep.noaa.gov/git/ss_examples']]])
+                sh label: 'Run ss on ./ss_examples/Simple', script: './ss ss_examples/Simple'
+                sh label: 'Get dir listing', script: 'ls -alh ss*'
             }
         }
 
