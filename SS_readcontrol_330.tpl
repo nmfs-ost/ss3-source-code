@@ -1777,27 +1777,7 @@
     echoinput<<recdev_read<<" #_read_recdevs"<<endl;
     echoinput<<"#_end of advanced SR options"<<endl;
 
-      for (y=styr-nages; y<=YrMax; y++)
-      {
-        if(y<recdev_first)  // before start of recrdevs
-          {biasadj_full(y)=0.;}
-        else if(y<=recdev_adj(1))
-          {biasadj_full(y)=0.;}
-        else if (y<=recdev_adj(2))
-          {biasadj_full(y)=(y-recdev_adj(1)) / (recdev_adj(2)-recdev_adj(1))*recdev_adj(5);}
-        else if (y<=recdev_adj(3))
-          {biasadj_full(y)=recdev_adj(5);}   // max bias adjustment
-        else if (y<=recdev_adj(4))
-          {biasadj_full(y)=recdev_adj(5)-(y-recdev_adj(3)) / (recdev_adj(4)-recdev_adj(3))*recdev_adj(5);}
-        else
-          {biasadj_full(y)=0.;}
-        if(y>endyr) {biasadj_full(y)=0.0;}
-      }
-    echoinput<<"#_recruitment bias adjustment"<<endl<<biasadj_full<<endl;;
 
- END_CALCS
-
- LOCAL_CALCS
 //  SS_Label_Info_4.6.3 #Create parm labels for recruitment cycle parameters
   if(recdev_cycle>0)
   {
@@ -1895,6 +1875,34 @@
       ParmLabel+="Impl_err_"+onenum+CRLF(1);
     }
   }
+
+      biasadj_full.initialize();
+      if(recdev_adj(5)==-1)  //  all years with estimated recruitments
+      	{biasadj_full=recdev_doit;}
+      else if(recdev_adj(5)==-2)  //  no ramp
+      	{biasadj_full(recdev_first,endyr)=recdev_doit(recdev_first,endyr);}
+      else if(recdev_adj(5)==-3)  //  all to 0.0
+      	{biasadj_full=0.0;}
+      else {    //  do ramp
+        for (y=styr-nages; y<=YrMax; y++)
+        {
+          if(y<recdev_first)  // before start of recrdevs
+            {biasadj_full(y)=0.;}
+          else if(y<=recdev_adj(1))
+            {biasadj_full(y)=0.;}
+          else if (y<=recdev_adj(2))
+            {biasadj_full(y)=(y-recdev_adj(1)) / (recdev_adj(2)-recdev_adj(1))*recdev_adj(5);}
+          else if (y<=recdev_adj(3))
+            {biasadj_full(y)=recdev_adj(5);}   // max bias adjustment
+          else if (y<=recdev_adj(4))
+            {biasadj_full(y)=recdev_adj(5)-(y-recdev_adj(3)) / (recdev_adj(4)-recdev_adj(3))*recdev_adj(5);}
+          else
+            {biasadj_full(y)=0.;}
+          if(y>endyr) {biasadj_full(y)=0.0;}
+        }
+      }
+    echoinput<<"#_recruitment bias adjustment"<<endl<<biasadj_full<<endl;;
+
  END_CALCS
 
 !!//  SS_Label_Info_4.6.5 #Read recdev_cycle parameters and input recruitment deviations if needed

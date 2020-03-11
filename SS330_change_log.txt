@@ -1,6 +1,8 @@
 Version;Date;Description;VLAB_issue;Input_Change?;Type;Category;Sub_Category
 
-
+3.30.14.18;2020-03-11;expand and clarify controls for recr bias adjustment;#75968;
+3.30.14.18;2020-03-11;clarify how prior lke for non-estmated parameters is used;#76038;
+3.30.14.18;2020-03-11;improve reporting of D-M for composition fits;#28432;
 3.30.14.17;2020-02-18;fixes to morphcomp reporting;#74995
 3.30.14.16;2020-02-07;add warnings for illogical data specifications for retention;#66580, #68203
 3.30.14.15;2020-02-05;clarify age/len terminology in 2DAR;#69279

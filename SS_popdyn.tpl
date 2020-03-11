@@ -11,7 +11,8 @@ FUNCTION void setup_recdevs()
     {
       // keep all at 0.0 if not using SR fxn
     }
-    else if (mceval_phase() || initial_params::mc_phase==1 || recdev_adj(5)<0.0)
+//    else if (mceval_phase() || initial_params::mc_phase==1 || recdev_adj(5)<0.0)
+    else if (mceval_phase() || initial_params::mc_phase==1)
     {
 //      biasadj=1.0;
       biasadj=recdev_doit;  //  sets to 1.0 for the years or initial ages with estimated recruitments
