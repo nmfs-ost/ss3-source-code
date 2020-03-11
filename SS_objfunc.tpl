@@ -29,7 +29,7 @@ FUNCTION void evaluate_the_objective_function()
     if(Svy_N>0)
     {
       for (f=1;f<=Nfleet;f++)
-      if(surv_lambda(f,k_phase)>0.0 || save_for_report>0)      // skip if zero emphasis
+//      if(surv_lambda(f,k_phase)>0.0 || save_for_report>0)      // skip if zero emphasis
       {
         if(Svy_N_fleet(f)>0)
         {
@@ -682,7 +682,6 @@ FUNCTION void evaluate_the_objective_function()
         Q_parm_Like(i)=Get_Prior(Q_parm_PRtype(i), Q_parm_LO(i), Q_parm_HI(i), Q_parm_PR(i), Q_parm_CV(i), Q_parm(i));
         parm_like+=Q_parm_Like(i);
         }
-
       for (i=1;i<=N_selparm2;i++)
       if(selparm_PRtype(i)>0 && (active(selparm(i))|| Do_all_priors>0))
         {
@@ -1207,6 +1206,7 @@ FUNCTION dvariable Check_Parm(const int iparm, const int& PrPH, const double& Pm
     if(Prtype>0)
     {
       if(Psd<=0.0) {N_warn++; cout<<"fatal error in prior check, see warning"<<endl; warning<<"FATAL:  A prior is selected but prior sd is zero. Prtype: "<<Prtype<<" Prior: "<<Pr<<" Pr_sd: "<<Psd<<" for parm: "<<iparm<<endl; exit(1);}
+      if(PrPH<0) {prior_ignore_warning++;}  //  increment warning if parameter is not estimated
     }
 
     RETURN_ARRAYS_DECREMENT();

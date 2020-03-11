@@ -183,6 +183,8 @@
   init_int Do_CumReport
    !!echoinput<<Do_CumReport<<"  Do_CumReport"<<endl;
   init_int Do_all_priors
+   int prior_ignore_warning  //  count number of parameters with priors that are not estimated
+   !! prior_ignore_warning=0;
    !!echoinput<<Do_all_priors<<"  Do_all_priors"<<endl;
   init_int SoftBound
    !!echoinput<<SoftBound<<"  SoftBound"<<endl;
