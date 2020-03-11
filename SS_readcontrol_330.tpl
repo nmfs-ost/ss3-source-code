@@ -2942,7 +2942,7 @@
       echoinput<<Comp_Err_ParmCount<<"  #_parameters are needed"<<endl;
       Comp_Err_Parm_Start=N_selparm;
       for(f=1;f<=Comp_Err_ParmCount;f++)
-        {N_selparm++; ParCount++; ParmLabel+="ln(EffN_mult)_"+NumLbl(f);}
+        {N_selparm++; ParCount++; ParmLabel+="ln(DM_theta)_"+NumLbl(f);}
     }
   }
 

@@ -29,7 +29,7 @@ FUNCTION void evaluate_the_objective_function()
     if(Svy_N>0)
     {
       for (f=1;f<=Nfleet;f++)
-      if(surv_lambda(f,k_phase)>0.0 || save_for_report>0)      // skip if zero emphasis
+//      if(surv_lambda(f,k_phase)>0.0 || save_for_report>0)      // skip if zero emphasis
       {
         if(Svy_N_fleet(f)>0)
         {
@@ -244,7 +244,7 @@ FUNCTION void evaluate_the_objective_function()
 
      for (i=1;i<=Nobs_l(f);i++)
      {
-     length_like(f,i) = -offset_l(f,i);  //  so a perfect fit will approach 0.0
+     length_like(f,i) = -offset_l(f,i);  //  so a perfect fit will approach 0.0, except Dirichlet can change the effN
      if(gender==2)
      {
        if(gen_l(f,i)==0)
@@ -298,10 +298,16 @@ FUNCTION void evaluate_the_objective_function()
       else  //  dirichlet
       {
 // from Thorson:  NLL -= gammln(A) - gammln(ninput_t(t)+A) + sum(gammln(ninput_t(t)*extract_row(pobs_ta,t) + A*extract_row(pexp_ta,t))) - sum(lgamma(A*extract_row(pexp_ta,t))) \
-//        dirichlet_Parm=mfexp(selparm(Comp_Err_Parm_Start+Comp_Err_L2(f)))*nsamp_l(f,i);
-        if(Comp_Err_L(f)==1) dirichlet_Parm=mfexp(selparm(Comp_Err_Parm_Start+Comp_Err_L2(f)))*nsamp_l(f,i);
-        if(Comp_Err_L(f)==2) dirichlet_Parm=mfexp(selparm(Comp_Err_Parm_Start+Comp_Err_L2(f)));
-//                             dirichlet_Parm=mfexp(selparm(Comp_Err_Parm_Start+Comp_Err_L2(f)));
+        if(Comp_Err_L(f)==1) 
+        	{
+        		dirichlet_Parm=mfexp(selparm(Comp_Err_Parm_Start+Comp_Err_L2(f)))*nsamp_l(f,i);  //  Thorson's theta fro eq 10
+//          effN_DM = 1/(1+theta) + n*theta/(1+theta)  computed in Fit_LenComp
+        	}
+        	else if(Comp_Err_L(f)==2) 
+      		{
+      			dirichlet_Parm=mfexp(selparm(Comp_Err_Parm_Start+Comp_Err_L2(f)));  //  Thorson's beta from eq 12
+//          effN_DM = (n+n*beta)/(n+beta)      computed in Fit_LenComp    			
+       		}
         temp = gammln(dirichlet_Parm) - gammln(nsamp_l(f,i)+dirichlet_Parm);
         // get female or combined sex logL
         if(gen_l(f,i) !=2) //  so not male only
@@ -348,7 +354,7 @@ FUNCTION void evaluate_the_objective_function()
 
         for (i=1;i<=Nobs_a(f);i++)
         {
-          age_like(f,i) = -offset_a(f,i);  //  so a perfect fit will approach 0.0
+          age_like(f,i) = -offset_a(f,i);  //  so a perfect fit will approach 0.0, except Dirichlet can change the effN
           if(gender==2)
           {
             if(gen_a(f,i)==0)                         // combined sex observation
@@ -676,7 +682,6 @@ FUNCTION void evaluate_the_objective_function()
         Q_parm_Like(i)=Get_Prior(Q_parm_PRtype(i), Q_parm_LO(i), Q_parm_HI(i), Q_parm_PR(i), Q_parm_CV(i), Q_parm(i));
         parm_like+=Q_parm_Like(i);
         }
-
       for (i=1;i<=N_selparm2;i++)
       if(selparm_PRtype(i)>0 && (active(selparm(i))|| Do_all_priors>0))
         {
@@ -1201,6 +1206,7 @@ FUNCTION dvariable Check_Parm(const int iparm, const int& PrPH, const double& Pm
     if(Prtype>0)
     {
       if(Psd<=0.0) {N_warn++; cout<<"fatal error in prior check, see warning"<<endl; warning<<"FATAL:  A prior is selected but prior sd is zero. Prtype: "<<Prtype<<" Prior: "<<Pr<<" Pr_sd: "<<Psd<<" for parm: "<<iparm<<endl; exit(1);}
+      if(PrPH<0) {prior_ignore_warning++;}  //  increment warning if parameter is not estimated
     }
 
     RETURN_ARRAYS_DECREMENT();

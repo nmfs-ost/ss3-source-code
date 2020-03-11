@@ -612,8 +612,12 @@ PRELIMINARY_CALCS_SECTION
     {parm_dev_use(i,j)=value(parm_dev(i,j));}
     echoinput<< " parm_devs after check  "<<parm_dev_use<<endl;
   }
-//  end bound check and jitter
 
+//  end bound check and jitter
+  if(Do_all_priors==0 && prior_ignore_warning>0) {
+  	N_warn++; warning<<"setting in starter does not request all priors, and "<<prior_ignore_warning<<
+  	" parameters have priors and are not estimated, so their prior not included in obj_fun."<<endl;
+  }
   if (TwoD_AR_cnt>0)
   {
 //  create correlation matrix for 2D_AR approaches
