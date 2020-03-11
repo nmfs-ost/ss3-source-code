@@ -1001,13 +1001,19 @@ FUNCTION void write_bigoutput()
 // ******************************************************************************
   k=Nfleet;
   if(k<4) k=4;
+	// quantities to store summary statistics
   dvector rmse(1,k);    //  used in the SpBio, Index, Lencomp and Agecomp reports
   dvector Hrmse(1,k);
   dvector Rrmse(1,k);
   dvector n_rmse(1,k);
-  dvector mean_CV(1,k);
-  dvector mean_CV2(1,k);
-  dvector mean_CV3(1,k);
+	// following vectors used for index-related quantities
+  dvector mean_CV(1,k); 
+  dvector mean_CV2(1,k); 
+  dvector mean_CV3(1,k);
+	// vectors to store mean sample sizes for comp data
+	dvector mean_Nsamp_in(1,k);
+	dvector mean_Nsamp_adj(1,k);
+	dvector mean_Nsamp_DM(1,k);
 //                                                            SS_Label_330
   rmse = 0.0;  n_rmse = 0.0;
    for (y=recdev_first;y<=recdev_end;y++)
@@ -1344,17 +1350,20 @@ FUNCTION void write_bigoutput()
 
 // REPORT_KEYWORD FIT_LEN_COMPS
   SS2out <<endl<< "FIT_LEN_COMPS" << endl;                     // SS_Label_350
-  SS2out<<"Fleet Fleet_Name Area Yr Seas Subseas Month Time Sexes Part SuprPer Use Nsamp Nsamp_DM effN Like";
+  SS2out<<"Fleet Fleet_Name Area Yr Seas Subseas Month Time Sexes Part SuprPer Use Nsamp_in Nsamp_adj Nsamp_DM effN Like";
   SS2out<<" All_obs_mean All_exp_mean All_delta All_exp_5% All_exp_95% All_DurWat";
   if(gender==2) SS2out<<" F_obs_mean F_exp_mean F_delta F_exp_5% F_exp_95% F_DurWat M_obs_mean M_exp_mean M_delta M_exp_5% M_exp_95% M_DurWat %F_obs %F_exp ";
   SS2out<<endl;
-  rmse = 0.0;  n_rmse = 0.0; mean_CV=0.0;  Hrmse=0.0; Rrmse=0.0; neff_l.initialize();
+  rmse = 0.0;  n_rmse = 0.0; mean_Nsamp_in=0.0; mean_Nsamp_adj=0.0; mean_Nsamp_DM=0.0;
+	Hrmse=0.0; Rrmse=0.0; neff_l.initialize();
   in_superperiod=0;
   data_type=4;
   dvar_vector more_comp_info(1,20);
   dvariable cumdist;
   dvariable cumdist_save;
-  double Nsamp_DM;
+  double Nsamp_DM;  // equals Nsamp_adj when not using Dirichlet-Multinomial likelihood
+  double Nsamp_adj; // input sample size after input variance adjustment
+  double Nsamp_in;  // input sample size
   dvector minsamp(1,Nfleet);
   dvector maxsamp(1,Nfleet);
   minsamp=10000.;
@@ -1386,39 +1395,44 @@ FUNCTION void write_bigoutput()
      t=Len_time_t(f,i);
      ALK_time=Len_time_ALK(f,i);
      more_comp_info.initialize();
-       neff_l(f,i)  = exp_l(f,i)*(1-exp_l(f,i))+1.0e-06;     // constant added for stability
-       neff_l(f,i) /= (obs_l(f,i)-exp_l(f,i))*(obs_l(f,i)-exp_l(f,i))+1.0e-06;
-   dvector tempvec_l(1,exp_l(f,i).size());
-       tempvec_l = value(exp_l(f,i));
-       more_comp_info=process_comps(gender,gen_l(f,i),len_bins_dat2,len_bins_dat_m2,tails_l(f,i),obs_l(f,i),tempvec_l);
-      if(Comp_Err_L(f)==0) // multinomial
-      {
-      	Nsamp_DM=nsamp_l(f,i);
-      }
-      else if(Comp_Err_L(f)==1) //  Dirichlet #1
-    	{
-    		dirichlet_Parm=mfexp(selparm(Comp_Err_Parm_Start+Comp_Err_L2(f)))*nsamp_l(f,i);  //  Thorson's theta fro eq 10
-//          effN_DM = 1/(1+theta) + n*theta/(1+theta)
-        Nsamp_DM = value(1./(1.+dirichlet_Parm) + nsamp_l(f,i)*dirichlet_Parm/(1.+dirichlet_Parm));
-    	}
-    	else if(Comp_Err_L(f)==2) //  Dirichlet #2
-  		{
-  			dirichlet_Parm=mfexp(selparm(Comp_Err_Parm_Start+Comp_Err_L2(f)));  //  Thorson's beta from eq 12
-//          effN_DM = (n+n*beta)/(n+beta)      computed in Fit_LenComp    			
-        Nsamp_DM = value((nsamp_l(f,i)+dirichlet_Parm*nsamp_l(f,i))/(dirichlet_Parm+nsamp_l(f,i)));    			
-   		}
+     neff_l(f,i)  = exp_l(f,i)*(1-exp_l(f,i))+1.0e-06;     // constant added for stability
+     neff_l(f,i) /= (obs_l(f,i)-exp_l(f,i))*(obs_l(f,i)-exp_l(f,i))+1.0e-06;
+     // store sample sizes
+     Nsamp_in = nsamp_l_read(f,i);
+     Nsamp_adj = nsamp_l(f,i);
+     dvector tempvec_l(1,exp_l(f,i).size());
+     tempvec_l = value(exp_l(f,i));
+     more_comp_info=process_comps(gender,gen_l(f,i),len_bins_dat2,len_bins_dat_m2,tails_l(f,i),obs_l(f,i),tempvec_l);
+     if(Comp_Err_L(f)==0) // multinomial
+     {
+       Nsamp_DM=nsamp_l(f,i); // not used
+     }
+     else if(Comp_Err_L(f)==1) //  Dirichlet #1
+     {
+       dirichlet_Parm=mfexp(selparm(Comp_Err_Parm_Start+Comp_Err_L2(f)));  //  Thorson's theta fro eq 10
+       // effN_DM = 1/(1+theta) + n*theta/(1+theta)
+       Nsamp_DM = value(1./(1.+dirichlet_Parm) + nsamp_l(f,i)*dirichlet_Parm/(1.+dirichlet_Parm));
+     }
+     else if(Comp_Err_L(f)==2) //  Dirichlet #2
+     {
+       dirichlet_Parm=mfexp(selparm(Comp_Err_Parm_Start+Comp_Err_L2(f)))*nsamp_l(f,i);  //  Thorson's beta from eq 12
+       // effN_DM = (n+n*beta)/(n+beta)      computed in Fit_LenComp
+       Nsamp_DM = value((nsamp_l(f,i)+dirichlet_Parm*nsamp_l(f,i))/(dirichlet_Parm+nsamp_l(f,i)));
+     }
 
      if(header_l(f,i,3)>0)
      {
        n_rmse(f)+=1.;
        rmse(f)+=value(neff_l(f,i));
-       mean_CV(f)+=Nsamp_DM;
+       mean_Nsamp_in(f)  += Nsamp_in;
+       mean_Nsamp_adj(f) += Nsamp_adj;
+       mean_Nsamp_DM(f)  += Nsamp_DM;
        Hrmse(f)+=value(1./neff_l(f,i));
-       Rrmse(f)+=value(neff_l(f,i)/Nsamp_DM);
-       if(Nsamp_DM<minsamp(f)) minsamp(f)=Nsamp_DM;
-       if(Nsamp_DM>maxsamp(f)) maxsamp(f)=Nsamp_DM;
+       Rrmse(f)+=value(neff_l(f,i)/Nsamp_adj);
+       if(Nsamp_adj<minsamp(f)) minsamp(f)=Nsamp_adj;
+       if(Nsamp_adj>maxsamp(f)) maxsamp(f)=Nsamp_adj;
      }
-    
+
      
 //  SS2out<<"Fleet Fleet_Name Area Yr Month Seas Subseas Time Sexes Part SuprPer Use Nsamp_adj Nsamp_in Nsamp_DM effN Like";
 //      temp=abs(header_l_rd(f,i,2));
@@ -1436,11 +1450,11 @@ FUNCTION void write_bigoutput()
       {SS2out<<" skip ";}
       else
       {SS2out<<" _ ";}
-      SS2out<<nsamp_l(f,i)<<" "<<nsamp_l_read(f,i)<<" "<<Nsamp_DM<<" "<<neff_l(f,i)<<" "<<length_like(f,i)<<" ";
+      SS2out<<Nsamp_in<<" "<<Nsamp_adj<<" "<<Nsamp_DM<<" "<<neff_l(f,i)<<" "<<length_like(f,i)<<" ";
       SS2out<<more_comp_info(1,6);
       if(gender==2) SS2out<<" "<<more_comp_info(7,20);
       SS2out<<endl;      
-    }
+    } // end loops over observation i and fleet f
 
 //Fleet N Npos mean_effN mean(inputN*Adj) HarMean(effN) Mean(effN/inputN) MeaneffN/MeaninputN Var_Adj
 //long ago, Ian Stewart had the proto-r4ss add a column called "HarEffN/MeanInputN" which was the ratio of the columns "HarMean(effN)" column and the "mean(inputN*Adj)" and has been used as the multiplier on the adjustment factor in the status-quo NWFSC tuning approach.
@@ -1448,24 +1462,37 @@ FUNCTION void write_bigoutput()
 //It might also be good to add a keyword to the top of those lower tables which could simplify the logic of parsing them separately from the FIT_..._COMPS tables above them and therefore be more robust to changes in format.
 
    SS2out<<endl<<"Length_Comp_Fit_Summary"<<endl<<
-   "Factor Fleet Recommend_var_adj # N Npos min_Nsamp_in max_Nsamp_in mean_adj_Nsamp_in mean_effN HarMean Curr_Var_Adj Fleet_name"<<endl;
+   "Factor Fleet Recommend_var_adj # N Npos min_Nsamp max_Nsamp mean_Nsamp_in mean_Nsamp_adj mean_Nsamp_DM DM_theta mean_effN HarMean_effN Curr_Var_Adj Fleet_name"<<endl;
    for (f=1;f<=Nfleet;f++)
    {
-    if(n_rmse(f)>0) 
-    {
-      rmse(f)/=n_rmse(f); mean_CV(f)/=n_rmse(f); Hrmse(f)=n_rmse(f)/Hrmse(f); Rrmse(f)/=n_rmse(f);
-      SS2out<<"4 "<<f<<" "<<Hrmse(f)/mean_CV(f)*var_adjust(4,f)<<" # "<<Nobs_l(f)<<" "<<n_rmse(f)<<" " <<
-      minsamp(f)<<" "<<maxsamp(f)<<" "<<mean_CV(f)<<" "<<rmse(f)<<" "<<Hrmse(f)<<" "<<var_adjust(4,f)<<" "<<fleetname(f)<<endl;
-   }
+     if(n_rmse(f)>0) 
+     {
+		   // calculate summary statistics
+       rmse(f)/=n_rmse(f); Hrmse(f)=n_rmse(f)/Hrmse(f); Rrmse(f)/=n_rmse(f);
+			 mean_Nsamp_in(f)/=n_rmse(f); mean_Nsamp_adj(f)/=n_rmse(f); mean_Nsamp_DM(f)/=n_rmse(f);
+			 // write values to file
+       SS2out<<"4 "<<f<<" "<<Hrmse(f)/mean_Nsamp_adj(f)*var_adjust(4,f)<<" # "<<Nobs_l(f)<<" "<<n_rmse(f)<<" " <<
+       minsamp(f)<<" "<<maxsamp(f)<<" "<<mean_Nsamp_in(f)<<" "<<mean_Nsamp_adj(f);
+       if(Comp_Err_L(f)==0){ // standard multinomial
+			   // placeholders for mean_Nsamp_DM and DM_theta (not used)
+         SS2out<<" NA NA ";
+       }
+       if(Comp_Err_L(f) > 0){ // Dirichlet-multinomial (Recommend_var_adj = 1)
+			   // mean_Nsamp_DM and DM_theta
+         SS2out<<" "<<mean_Nsamp_DM(f)<<" "<<mfexp(selparm(Comp_Err_Parm_Start+Comp_Err_L2(f)))<<" ";
+       }
+			 SS2out<<rmse(f)<<" "<<Hrmse(f)<<" "<<var_adjust(4,f)<<" "<<fleetname(f)<<endl;
+     }
    }
 
 // REPORT_KEYWORD FIT_AGE_COMPS
   SS2out <<endl<< "FIT_AGE_COMPS" << endl;
-  SS2out<<"Fleet Fleet_Name Area Yr Seas Subseas Month Time Sexes Part Ageerr Lbin_lo Lbin_hi SuprPer Use Nsamp_adj Nsamp_in Nsamp_DM effN Like ";
+  SS2out<<"Fleet Fleet_Name Area Yr Seas Subseas Month Time Sexes Part Ageerr Lbin_lo Lbin_hi SuprPer Use Nsamp_in Nsamp_adj Nsamp_DM effN Like ";
   SS2out<<" All_obs_mean All_exp_mean All_delta All_exp_5% All_exp_95% All_DurWat";
   if(gender==2) SS2out<<" F_obs_mean F_exp_mean F_delta F_exp_5% F_exp_95% F_DurWat M_obs_mean M_exp_mean M_delta M_exp_5% M_exp_95% M_DurWat %F_obs %F_exp ";
   SS2out<<endl;
-  rmse = 0.0;  n_rmse = 0.0; mean_CV=0.0;  Hrmse=0.0; Rrmse=0.0;  minsamp=10000.; maxsamp=0.;
+  rmse = 0.0;  n_rmse = 0.0; mean_Nsamp_in=0.0; mean_Nsamp_adj=0.0; mean_Nsamp_DM=0.0;
+	Hrmse=0.0; Rrmse=0.0;  minsamp=10000.; maxsamp=0.;
    if(Nobs_a_tot>0)
    for(f=1;f<=Nfleet;f++)
    for(i=1;i<=Nobs_a(f);i++)
@@ -1473,41 +1500,43 @@ FUNCTION void write_bigoutput()
       t=Age_time_t(f,i);
       ALK_time=Age_time_ALK(f,i);
       more_comp_info.initialize();
-       neff_a(f,i)  = exp_a(f,i)*(1-exp_a(f,i))+1.0e-06;     // constant added for stability
-       neff_a(f,i) /= (obs_a(f,i)-exp_a(f,i))*(obs_a(f,i)-exp_a(f,i))+1.0e-06;
-       dvector tempvec_a(1,exp_a(f,i).size());
-       tempvec_a = value(exp_a(f,i));
-       more_comp_info=process_comps(gender,gen_a(f,i),age_bins,age_bins_mean,tails_a(f,i),obs_a(f,i), tempvec_a);
+      neff_a(f,i)  = exp_a(f,i)*(1-exp_a(f,i))+1.0e-06;     // constant added for stability
+      neff_a(f,i) /= (obs_a(f,i)-exp_a(f,i))*(obs_a(f,i)-exp_a(f,i))+1.0e-06;
+      dvector tempvec_a(1,exp_a(f,i).size());
+      tempvec_a = value(exp_a(f,i));
+      more_comp_info=process_comps(gender,gen_a(f,i),age_bins,age_bins_mean,tails_a(f,i),obs_a(f,i), tempvec_a);
 
       if(Comp_Err_A(f)==0) // multinomial
       {
-      	Nsamp_DM=nsamp_a(f,i);
+        Nsamp_DM=nsamp_a(f,i);
       }
-      else if(Comp_Err_L(f)==1) //  Dirichlet #1
-    	{
-    		dirichlet_Parm=mfexp(selparm(Comp_Err_Parm_Start+Comp_Err_A2(f)))*nsamp_a(f,i);  //  Thorson's theta fro eq 10
-//          effN_DM = 1/(1+theta) + n*theta/(1+theta)
+      else if(Comp_Err_A(f)==1) //  Dirichlet #1
+      {
+        dirichlet_Parm=mfexp(selparm(Comp_Err_Parm_Start+Comp_Err_A2(f)));  //  Thorson's theta fro eq 10
+        // effN_DM = 1/(1+theta) + n*theta/(1+theta)
         Nsamp_DM = value(1./(1.+dirichlet_Parm) + nsamp_a(f,i)*dirichlet_Parm/(1.+dirichlet_Parm));
-    	}
-    	else if(Comp_Err_A(f)==2) //  Dirichlet #2
-  		{
-  			dirichlet_Parm=mfexp(selparm(Comp_Err_Parm_Start+Comp_Err_A2(f)));  //  Thorson's beta from eq 12
-//          effN_DM = (n+n*beta)/(n+beta)      computed in Fit_LenComp    			
-        Nsamp_DM = value((nsamp_a(f,i)+dirichlet_Parm*nsamp_a(f,i))/(dirichlet_Parm+nsamp_a(f,i)));    			
-   		}
+      }
+      else if(Comp_Err_A(f)==2) //  Dirichlet #2
+      {
+        dirichlet_Parm=mfexp(selparm(Comp_Err_Parm_Start+Comp_Err_A2(f)))*nsamp_a(f,i);  //  Thorson's beta from eq 12
+        // effN_DM = (n+n*beta)/(n+beta)      computed in Fit_LenComp                           
+        Nsamp_DM = value((nsamp_a(f,i)+dirichlet_Parm*nsamp_a(f,i))/(dirichlet_Parm+nsamp_a(f,i)));                     
+      }
 
-     if(header_a(f,i,3)>0)
-     {
-       n_rmse(f)+=1.;
-       rmse(f)+=value(neff_a(f,i));
-       mean_CV(f)+=Nsamp_DM;
-       Hrmse(f)+=value(1./neff_a(f,i));
-       Rrmse(f)+=value(neff_a(f,i)/Nsamp_DM);
-       if(Nsamp_DM<minsamp(f)) minsamp(f)=Nsamp_DM;
-       if(Nsamp_DM>maxsamp(f)) maxsamp(f)=Nsamp_DM;
-     }
+      if(header_a(f,i,3)>0)
+      {
+        n_rmse(f)+=1.;
+        rmse(f)+=value(neff_a(f,i));
+        mean_Nsamp_in(f)  += Nsamp_in;
+        mean_Nsamp_adj(f) += Nsamp_adj;
+        mean_Nsamp_DM(f)  += Nsamp_DM;
+        Hrmse(f)+=value(1./neff_a(f,i));
+        Rrmse(f)+=value(neff_a(f,i)/Nsamp_adj);
+        if(Nsamp_adj<minsamp(f)) minsamp(f)=Nsamp_adj;
+        if(Nsamp_adj>maxsamp(f)) maxsamp(f)=Nsamp_adj;
+      }
 
-//  SS2out<<"Fleet Fleet_Name Area Yr  Seas Subseas Month Time Sexes Part Ageerr Lbin_lo Lbin_hi Nsamp_adj Nsamp_in Nsamp_DM effN Like SuprPer Use";
+//  SS2out<<"Fleet Fleet_Name Area Yr  Seas Subseas Month Time Sexes Part Ageerr Lbin_lo Lbin_hi Nsamp_in Nsamp_adj Nsamp_DM effN Like SuprPer Use";
       temp=abs(header_a_rd(f,i,2));
       if(temp>999) temp-=1000;
      SS2out<<f<<" "<<fleetname(f)<<" "<<fleet_area(f)<<Show_Time2(ALK_time)<<" "<<data_time(ALK_time,f,1)<<" "<<data_time(ALK_time,f,3)<<" "<<gen_a(f,i)<<" "<<mkt_a(f,i)<<" "<<ageerr_type_a(f,i)<<" "<<Lbin_lo(f,i)<<" "<<Lbin_hi(f,i)<<" ";
@@ -1523,21 +1552,32 @@ FUNCTION void write_bigoutput()
       {SS2out<<" skip ";}
       else
       {SS2out<<" _ ";}
-      SS2out<<nsamp_a(f,i)<<" "<<nsamp_a_read(f,i)<<" "<<Nsamp_DM<<" "<<neff_a(f,i)<<" "<<age_like(f,i)<<" "<<more_comp_info(1,6);
+      SS2out<<Nsamp_in<<" "<<Nsamp_adj<<" "<<Nsamp_DM<<" "<<" "<<neff_a(f,i)<<" "<<age_like(f,i)<<" "<<more_comp_info(1,6);
       if(gender==2) SS2out<<" "<<more_comp_info(7,20);
       SS2out<<endl;
     }
 
    SS2out<<endl<<"Age_Comp_Fit_Summary"<<endl<<
-   "Factor Fleet Recommend_var_adj # N Npos min_Nsamp_in max_Nsamp_in mean_Nsamp_adj mean_effN HarMean Curr_Var_Adj Fleet_name"<<endl;
+   "Factor Fleet Recommend_var_adj # N Npos min_Nsamp max_Nsamp mean_Nsamp_in mean_Nsamp_adj mean_Nsamp_DM DM_theta mean_effN HarMean_effN Curr_Var_Adj Fleet_name"<<endl;
    for(f=1;f<=Nfleet;f++)
    {
-    if(n_rmse(f)>0)
-    {
-      rmse(f)/=n_rmse(f); mean_CV(f)/=n_rmse(f); Hrmse(f)=n_rmse(f)/Hrmse(f); Rrmse(f)/=n_rmse(f);
-      SS2out<<"5 "<<f<<" "<<Hrmse(f)/mean_CV(f)*var_adjust(5,f)<<" # "<<Nobs_a(f)<<" "<<n_rmse(f)<<" "<<
-      minsamp(f)<<" "<<maxsamp(f)<<" "<<mean_CV(f)<<" "<<rmse(f)<<" "<<Hrmse(f)<<" "<<var_adjust(5,f)<<" "<<fleetname(f)<<endl;
-    }
+     if(n_rmse(f)>0)
+     {
+       // calculate summary statistics
+       rmse(f)/=n_rmse(f); mean_Nsamp_adj(f)/=n_rmse(f); Hrmse(f)=n_rmse(f)/Hrmse(f); Rrmse(f)/=n_rmse(f);
+			 // write values to file
+       SS2out<<"5 "<<f<<" 1 # "<<Nobs_l(f)<<" "<<n_rmse(f)<<" " <<
+       minsamp(f)<<" "<<maxsamp(f)<<" "<<mean_Nsamp_in(f)<<" "<<mean_Nsamp_adj(f);
+       if(Comp_Err_A(f)==0){ // standard multinomial
+         // placeholders for mean_Nsamp_DM and DM_theta (not used)
+         SS2out<<" NA NA ";
+       }
+       if(Comp_Err_A(f) > 0){ // Dirichlet-multinomial (Recommend_var_adj = 1)
+         // mean_Nsamp_DM and DM_theta
+         SS2out<<" "<<mean_Nsamp_DM(f)<<" "<<mfexp(selparm(Comp_Err_Parm_Start+Comp_Err_A2(f)))<<" ";
+       }
+       SS2out<<rmse(f)<<" "<<Hrmse(f)<<" "<<var_adjust(5,f)<<" "<<fleetname(f)<<endl;
+     }
    }
 
 // REPORT_KEYWORD FIT_SIZE_COMPS
