@@ -1601,7 +1601,7 @@ FUNCTION void write_nucontrol()
    report4<<onenum<<recdev_adj(2)<<" #_first_yr_fullbias_adj_in_MPD; begin of plateau"<<endl;
    report4<<onenum<<recdev_adj(3)<<" #_last_yr_fullbias_adj_in_MPD"<<endl;
    report4<<onenum<<recdev_adj(4)<<" #_end_yr_for_ramp_in_MPD (can be in forecast to shape ramp, but SS sets bias_adj to 0.0 for fcast yrs)"<<endl;
-   report4<<onenum<<recdev_adj(5)<<" #_max_bias_adj_in_MPD (-1 to override ramp and set biasadj=1.0 for all estimated recdevs)"<<endl;
+   report4<<onenum<<recdev_adj(5)<<" #_max_bias_adj_in_MPD (typical ~0.8; -3 sets all years to 0.0; -2 sets all non-forecast yrs w/ estimated recdevs to 1.0; -1 sets biasadj=1.0 for all yrs w/ recdevs)"<<endl;
    report4<<onenum<<recdev_cycle<<" #_period of cycles in recruitment (N parms read below)"<<endl;
    report4<<onenum<<recdev_LO<<" #min rec_dev"<<endl;
    report4<<onenum<<recdev_HI<<" #max rec_dev"<<endl;
