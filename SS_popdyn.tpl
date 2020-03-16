@@ -201,7 +201,7 @@ FUNCTION void get_initial_conditions()
         if(s==spawn_seas) fec(g)=WTage_emp(t,GP3(g),-2);
       }
     }
-      else if(timevary_MG(y,2)>0 || timevary_MG(y,3)>0 || bigsaver==1 || do_once==1)
+      else if(MG_active(2)>0 || MG_active(3)>0 || save_for_report>0 || do_once==1)
     {
        Make_Fecundity();
 //       if(do_once==1) echoinput<<"Save_fec in initial year: "<<t<<" %% "<<save_sel_fec(t,1,0)<<endl;
@@ -698,7 +698,7 @@ FUNCTION void get_time_series()
               }
         }
       }
-      else if(timevary_MG(y,2)>0 || timevary_MG(y,3)>0 || bigsaver==1 || do_once==1)
+      else if(timevary_MG(y,2)>0 || timevary_MG(y,3)>0 || save_for_report>0 || do_once==1)
       {
          Make_Fecundity();
          for (g=1;g<=gmorph;g++)

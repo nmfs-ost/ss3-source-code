@@ -328,7 +328,7 @@
      // enforce valid range of ALK_tolerance
      if (ALK_tolerance < 0.0 || ALK_tolerance > 0.1)
      {
-         warning<<"Error: ALK tolerance must be between 0.0 and 0.1"<<endl;
+         N_warn++; warning<<"Error: ALK tolerance must be between 0.0 and 0.1"<<endl;
          cout<<"Error: ALK_tolerance must be between 0.0 and 0.1: "<<ALK_tolerance<<endl; exit(1);
      }
 

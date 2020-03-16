@@ -237,11 +237,11 @@
         {
           YPR_mask(f)=1;
           if(surveytime(f)!=-1.)
-          {warning<<"fishing fleet: "<<f<<" surveytime read as: "<<surveytime(f)<<" normally is -1 for fishing fleet; can override for indiv. obs. using 1000+month"<<endl;}
+          {N_warn++; warning<<"fishing fleet: "<<f<<" surveytime read as: "<<surveytime(f)<<" normally is -1 for fishing fleet; can override for indiv. obs. using 1000+month"<<endl;}
         }
         else if (fleet_type(f)==3)
           {if(surveytime(f)==-1.)
-          {warning<<"survey fleet: "<<f<<" surveytime read as: "<<surveytime(f)<<" SS resets to 1 for all survey fleets, and always overridden by indiv. obs. month"<<endl;
+          {N_warn++; warning<<"survey fleet: "<<f<<" surveytime read as: "<<surveytime(f)<<" SS resets to 1 for all survey fleets, and always overridden by indiv. obs. month"<<endl;
             surveytime(f)=1.;}
           }
       fleet_area(f) = int(fleet_setup(f,3));
