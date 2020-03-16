@@ -325,7 +325,7 @@
   int ALK_time_max
 
  LOCAL_CALCS
-  ALK_time_max=(endyr-styr+50)*nseas*N_subseas;  //  sets maximum size for data array indexing  20 years into forecast is allowed
+  ALK_time_max=(endyr-styr+50)*nseas*N_subseas;  //  sets maximum size for data array indexing 50 years into forecast
  END_CALCS
 !!//  SS_Label_Info_2.1.6  #Indexes for data timing.  "have_data" and "data_time" hold pointers for data occurrence, timing, and ALK need
   int data_type
