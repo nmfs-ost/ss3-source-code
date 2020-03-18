@@ -9,6 +9,7 @@ FUNCTION void write_nudata()
   int compindex;
   dvector temp_probs2(1,n_abins2);
   int Nudat;
+  int Nsamp_DM;
 //  create bootstrap data files; except first file just replicates the input and second is the estimate without error
   	if(irand_seed<0) irand_seed=long(time(&start));
   		
@@ -851,27 +852,31 @@ FUNCTION void write_nudata()
     {
      for (i=1;i<=Nobs_l(f);i++)
      {
-        if(Comp_Err_L(f)==0)  //  multinomial
-        {
-           k=50000;  if(nsamp_l(f,i)<k) k=nsamp_l(f,i);
-           exp_l_temp_dat.initialize();
-           temp_probs = value(exp_l(f,i));
-           temp_mult.fill_multinomial(radm,temp_probs);  // create multinomial draws with prob = expected values
-           for (compindex=1; compindex<=k; compindex++) // cumulate the multinomial draws by index in the new data
-           {exp_l_temp_dat(temp_mult(compindex)) += 1.0;}
-        }
-        else  //  Dirichlet
-        {
-//  need to replace this with Dirichlet equivalent
-           k=50000;  if(nsamp_l(f,i)<k) k=nsamp_l(f,i);
-           exp_l_temp_dat.initialize();
-           temp_probs = value(exp_l(f,i));
-           temp_mult.fill_multinomial(radm,temp_probs);  // create multinomial draws with prob = expected values
-           for (compindex=1; compindex<=k; compindex++) // cumulate the multinomial draws by index in the new data
-           {exp_l_temp_dat(temp_mult(compindex)) += 1.0;}
-        }
+       if(Comp_Err_L(f)==0)  //  multinomial
+       {
+          Nsamp_DM=nsamp_l(f,i);
+       }
+       else if(Comp_Err_L(f)==1) //  Dirichlet #1
+       {
+         dirichlet_Parm=mfexp(selparm(Comp_Err_Parm_Start+Comp_Err_L2(f)));  //  Thorson's theta fro eq 10
+         // effN_DM = 1/(1+theta) + n*theta/(1+theta)
+         Nsamp_DM = value(1./(1.+dirichlet_Parm) + nsamp_l(f,i)*dirichlet_Parm/(1.+dirichlet_Parm));
+       }
+       else if(Comp_Err_L(f)==2) //  Dirichlet #2
+       {
+         dirichlet_Parm=mfexp(selparm(Comp_Err_Parm_Start+Comp_Err_L2(f)))*nsamp_l(f,i);  //  Thorson's beta from eq 12
+         // effN_DM = (n+n*beta)/(n+beta)      computed in Fit_LenComp
+         Nsamp_DM = value((nsamp_l(f,i)+dirichlet_Parm*nsamp_l(f,i))/(dirichlet_Parm+nsamp_l(f,i)));
+       }
+       Nsamp_DM=min(Nsamp_DM,50000);
+       Nsamp_DM=max(Nsamp_DM,1);
+       exp_l_temp_dat.initialize();
+       temp_probs = value(exp_l(f,i));
+       temp_mult.fill_multinomial(radm,temp_probs);  // create multinomial draws with prob = expected values
+       for (compindex=1; compindex<=Nsamp_DM; compindex++) // cumulate the multinomial draws by index in the new data
+       {exp_l_temp_dat(temp_mult(compindex)) += 1.0;}
 
-     report1 << header_l_rd(f,i)(1,3)<<" "<<gen_l(f,i)<<" "<<mkt_l(f,i)<<" "<<nsamp_l(f,i)<<" "<<exp_l_temp_dat<<endl;
+       report1 << header_l_rd(f,i)(1,3)<<" "<<gen_l(f,i)<<" "<<mkt_l(f,i)<<" "<<Nsamp_DM<<" "<<exp_l_temp_dat<<endl;
     }}}
     report1<<-9999.<<" ";
     for(j=2;j<=6+nlen_bin2;j++) report1<<"0 ";
@@ -917,42 +922,41 @@ FUNCTION void write_nudata()
   if(Nobs_a_tot>0)
   for (f=1;f<=Nfleet;f++)
   {
-    if(Nobs_a(f)>=1)
+    if(Nobs_a(f)>0)
     {
-       for (i=1;i<=Nobs_a(f);i++)
+     for (i=1;i<=Nobs_a(f);i++)
+     {
+       if(Comp_Err_A(f)==0)  //  multinomial
        {
-        if(Comp_Err_A(f)==0) //  multinomial
-        {
-          k=50000;  if(nsamp_a(f,i)<k) k=nsamp_a(f,i);  // note that nsamp is adjusted by var_adjust, so var_adjust
-                                                       // should be reset to 1.0 in control files that read the nudata.dat files
-          exp_a_temp = 0.0;
-          temp_probs2 = value(exp_a(f,i));
-          temp_mult.fill_multinomial(radm,temp_probs2);
-          for (compindex=1; compindex<=k; compindex++) // cumulate the multinomial draws by index in the new data
-          {exp_a_temp(temp_mult(compindex)) += 1.0;}
-        }
-        else  //  Dirichlet
-        {
-          //  need to replace this with code for dirichlet
-          k=50000;  if(nsamp_a(f,i)<k) k=nsamp_a(f,i);  // note that nsamp is adjusted by var_adjust, so var_adjust
-                                                       // should be reset to 1.0 in control files that read the nudata.dat files
-          exp_a_temp = 0.0;
-          temp_probs2 = value(exp_a(f,i));
-          temp_mult.fill_multinomial(radm,temp_probs2);
-          for (compindex=1; compindex<=k; compindex++) // cumulate the multinomial draws by index in the new data
-          {exp_a_temp(temp_mult(compindex)) += 1.0;}
-        }
+          Nsamp_DM=nsamp_a(f,i);
+       }
+       else if(Comp_Err_A(f)==1) //  Dirichlet #1
+       {
+         dirichlet_Parm=mfexp(selparm(Comp_Err_Parm_Start+Comp_Err_A2(f)));  //  Thorson's theta from eq 10
+         // effN_DM = 1/(1+theta) + n*theta/(1+theta)
+         Nsamp_DM = value(1./(1.+dirichlet_Parm) + nsamp_a(f,i)*dirichlet_Parm/(1.+dirichlet_Parm));
+       }
+       else if(Comp_Err_A(f)==2) //  Dirichlet #2
+       {
+         dirichlet_Parm=mfexp(selparm(Comp_Err_Parm_Start+Comp_Err_A2(f)))*nsamp_a(f,i);  //  Thorson's beta from eq 12
+         // effN_DM = (n+n*beta)/(n+beta)      computed in Fit_LenComp
+         Nsamp_DM = value((nsamp_a(f,i)+dirichlet_Parm*nsamp_a(f,i))/(dirichlet_Parm+nsamp_a(f,i)));
+       }
+       Nsamp_DM=min(Nsamp_DM,50000);
+       Nsamp_DM=max(Nsamp_DM,1);
+       exp_a_temp.initialize();
+       temp_probs2 = value(exp_a(f,i));
+       temp_mult.fill_multinomial(radm,temp_probs2);  // create multinomial draws with prob = expected values
+       for (compindex=1; compindex<=Nsamp_DM; compindex++) // cumulate the multinomial draws by index in the new data
+       {exp_a_temp(temp_mult(compindex)) += 1.0;}
 
-       report1 << header_a(f,i)(1)<<" "<<header_a_rd(f,i)(2,3)<<" "<<header_a(f,i)(4,8)<<" "<<nsamp_a(f,i)<<" "<<exp_a_temp<<endl;
-      }
-    }
-  }
+       report1 << header_a(f,i)(1)<<" "<<header_a_rd(f,i)(2,3)<<" "<<header_a(f,i)(4,8)<<" "<<Nsamp_DM<<" "<<exp_a_temp<<endl;
+    }}}
   f=exp_a_temp.size()+8;
   if (n_abins <= 0) report1<<"# ";
   report1 << "-9999 ";
   for(i=1;i<=f;i++) report1<<" 0";
   report1<<endl;
-
 
   report1<<"#"<<endl<<use_meansizedata<<" #_Use_MeanSize-at-Age_obs (0/1)"<<endl;
   if(use_meansizedata>0)

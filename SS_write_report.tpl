@@ -1502,6 +1502,9 @@ FUNCTION void write_bigoutput()
       more_comp_info.initialize();
       neff_a(f,i)  = exp_a(f,i)*(1-exp_a(f,i))+1.0e-06;     // constant added for stability
       neff_a(f,i) /= (obs_a(f,i)-exp_a(f,i))*(obs_a(f,i)-exp_a(f,i))+1.0e-06;
+     // store sample sizes
+       Nsamp_in = nsamp_a_read(f,i);
+       Nsamp_adj = nsamp_a(f,i);
       dvector tempvec_a(1,exp_a(f,i).size());
       tempvec_a = value(exp_a(f,i));
       more_comp_info=process_comps(gender,gen_a(f,i),age_bins,age_bins_mean,tails_a(f,i),obs_a(f,i), tempvec_a);
@@ -1564,7 +1567,8 @@ FUNCTION void write_bigoutput()
      if(n_rmse(f)>0)
      {
        // calculate summary statistics
-       rmse(f)/=n_rmse(f); mean_Nsamp_adj(f)/=n_rmse(f); Hrmse(f)=n_rmse(f)/Hrmse(f); Rrmse(f)/=n_rmse(f);
+       rmse(f)/=n_rmse(f); Hrmse(f)=n_rmse(f)/Hrmse(f); Rrmse(f)/=n_rmse(f);
+			 mean_Nsamp_in(f)/=n_rmse(f); mean_Nsamp_adj(f)/=n_rmse(f); mean_Nsamp_DM(f)/=n_rmse(f);
 			 // write values to file
        SS2out<<"5 "<<f<<" 1 # "<<Nobs_l(f)<<" "<<n_rmse(f)<<" " <<
        minsamp(f)<<" "<<maxsamp(f)<<" "<<mean_Nsamp_in(f)<<" "<<mean_Nsamp_adj(f);
@@ -1594,7 +1598,9 @@ FUNCTION void write_bigoutput()
         SS2out<<"  #Scale: "<<SzFreq_scale_label(SzFreq_scale(sz_method));
         SS2out<<"  #Add_to_comp: "<<SzFreq_mincomp(sz_method)<<"  #N_bins: "<<SzFreq_Nbins(sz_method)<<endl;
         SS2out<<"Fleet Fleet_Name Area Yr  Seas Subseas Month Time Sexes Part SuprPer Use Nsamp effN Like";
-        SS2out<<" All_obs_mean All_exp_mean All_delta All_exp_5% All_exp_95% All_DurWat"<<endl;
+        SS2out<<" All_obs_mean All_exp_mean All_delta All_exp_5% All_exp_95% All_DurWat";
+        if(gender==2) SS2out<<" F_obs_mean F_exp_mean F_delta F_exp_5% F_exp_95% F_DurWat M_obs_mean M_exp_mean M_delta M_exp_5% M_exp_95% M_DurWat %F_obs %F_exp ";
+        SS2out<<endl;
         rmse = 0.0;  n_rmse = 0.0; mean_CV=0.0;  Hrmse=0.0; Rrmse=0.0;
         minsamp=10000.;
         maxsamp=0.;
@@ -2558,7 +2564,7 @@ FUNCTION void write_bigoutput()
                 }
                 if(Comp_Err_L(f)==2){
                   dirichlet_Parm=mfexp(selparm(Comp_Err_Parm_Start+Comp_Err_L2(f)));
-                  SS_compout<<value( (obs_l(f,i,z)-exp_l(f,i,z))/sqrt( exp_l(f,i,z) * (1.0-exp_l(f,i,z)) / fabs(nsamp_l(f,i)) * (fabs(nsamp_a(f,i))+dirichlet_Parm)/(1.+dirichlet_Parm) ) ); // Pearson for Dirichlet-multinomial using harmonic sum parameterization
+                  SS_compout<<value( (obs_l(f,i,z)-exp_l(f,i,z))/sqrt( exp_l(f,i,z) * (1.0-exp_l(f,i,z)) / fabs(nsamp_l(f,i)) * (fabs(nsamp_l(f,i))+dirichlet_Parm)/(1.+dirichlet_Parm) ) ); // Pearson for Dirichlet-multinomial using harmonic sum parameterization
                 }
               }
               else
@@ -2608,7 +2614,7 @@ FUNCTION void write_bigoutput()
               }
               if(Comp_Err_L(f)==2){
                 dirichlet_Parm=mfexp(selparm(Comp_Err_Parm_Start+Comp_Err_L2(f)));
-                SS_compout<<value( (obs_l(f,i,z)-exp_l(f,i,z))/sqrt( exp_l(f,i,z) * (1.0-exp_l(f,i,z)) / fabs(nsamp_l(f,i)) * (fabs(nsamp_a(f,i))+dirichlet_Parm)/(1.+dirichlet_Parm) ) ); // Pearson for Dirichlet-multinomial using harmonic sum parameterization
+                SS_compout<<value( (obs_l(f,i,z)-exp_l(f,i,z))/sqrt( exp_l(f,i,z) * (1.0-exp_l(f,i,z)) / fabs(nsamp_l(f,i)) * (fabs(nsamp_l(f,i))+dirichlet_Parm)/(1.+dirichlet_Parm) ) ); // Pearson for Dirichlet-multinomial using harmonic sum parameterization
               }
             }
           else

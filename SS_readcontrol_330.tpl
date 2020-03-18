@@ -2989,16 +2989,17 @@
   }
   if(Comp_Err_ParmCount>0)
   {
+  	echoinput<<"comp_error parameters"<<endl<<"L: "<<Comp_Err_L<<endl<<"L2: "<<Comp_Err_L2<<endl<<"A: "<<Comp_Err_A<<endl<<"A2: "<<Comp_Err_A2<<endl;
    for (f = 1; f <= Nfleet; f++)
    {
       // if Dirichlet was indicated, set fleet for this parameter
-      if (Comp_Err_L(f) == 1 && Comp_Err_L2(f) > 0)
+      if (Comp_Err_L(f) >0 && Comp_Err_L2(f) > 0)
       {
         j = Comp_Err_Parm_Start + Comp_Err_L2(f);
         selparm_fleet(j)=f;
       }
 
-      if (Comp_Err_A(f) == 1 && Comp_Err_A2(f) > 0)
+      if (Comp_Err_A(f) >0 && Comp_Err_A2(f) > 0)
       {
         j = Comp_Err_Parm_Start + Comp_Err_A2(f);
         selparm_fleet(j)=f;

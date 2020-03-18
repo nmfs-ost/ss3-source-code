@@ -1,5 +1,7 @@
 Version;Date;Description;VLAB_issue;Input_Change?;Type;Category;Sub_Category
 
+3.30.14.20;2020-03-17;extend D-M to generate bootstrap data and fix to DM output;#68809 and #28432;
+
 3.30.14.19;2020-03-16;fix Dec 2019 creation of "bigsaver" flag;;
 3.30.14.19;2020-03-16;Improve accuracy of N_warn count;;
 
