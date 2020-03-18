@@ -5008,9 +5008,11 @@
   int N_WTage_maxage
   int y2
   ivector last_yr_read(-2,Nfleet)
+  ivector filled_once(-2,Nfleet)
   
  LOCAL_CALCS
    last_yr_read.initialize();
+   filled_once.initialize();
    if(WTage_rd>0)
    {
      ad_comm::change_datafile_name("wtatage.ss");
@@ -5027,6 +5029,7 @@
         y=abs(tempvec(1));
         f=tempvec(6);
         if(y<9999) last_yr_read(f)=max(y,last_yr_read(f));
+        if(y<9999 && tempvec(1)<0) filled_once(f)=y;  //  record latest fill event for this input category
       WTage_in.push_back (tempvec(1,k));
      } while (ender==0);
      N_WTage_rd=WTage_in.size()-1;
@@ -5040,6 +5043,7 @@
    }
    echoinput<<" N_WTage_rd "<<N_WTage_rd<<endl;
    echoinput<<" last year read for -2 through Nfleet:  "<<last_yr_read<<endl;
+   echoinput<<" latest fill year for -2 through Nfleet:  "<<filled_once<<endl;
  END_CALCS
   vector junkvec2(0,nages)
   4darray WTage_emp(styr-3*nseas,k2,1,gender*N_GP*nseas,-2,Nfleet,0,nages)  //  set to begin period for pop (type=0), or mid period for fleet/survey
@@ -5068,7 +5072,7 @@
       y=abs(tempvec(1));
       f=tempvec(6);
       if(y<styr) y=styr;
-      if(tempvec(1)<0 || y==last_yr_read(f)) {y2=max(YrMax,endyr+50);} else {y2=y;}  //  allows filling to end of time series
+      if(tempvec(1)<0 || (y==last_yr_read(f)&&filled_once(f)==0)) {y2=max(YrMax,endyr+50);} else {y2=y;}  //  allows filling to end of time series
       s=abs(tempvec(2));
       if(tempvec(2)<0) {f2=Nfleet;} else {f2=f;}  //  allows filling all fleets
       gg=tempvec(3);
