@@ -2550,7 +2550,7 @@ FUNCTION void write_bigoutput()
             // Ageerr Sex Lbin_lo Lbin_hi Bin Obs Exp 
             SS_compout<<header_l(f,i,1)<<" "<<real_month<<" "<<Show_Time2(ALK_time)(2,3)<<" "<<data_time(ALK_time,f,3)<<" "<<f<<" "<<fleet_area(f)<<" "<<repli<<" "<<gen_l(f,i)<<" LEN "<<mkt_l(f,i)<<" 0 "<<s_off<<" "<<
             1<<" "<<1<<" "<<len_bins_dat2(z)<<" "<<obs_l(f,i,z)<<" "<<exp_l(f,i,z)<<" ";
-            // next add Pearson column
+            // next add these 5 columns: Pearson Nsamp_adj Nsamp_in effN Like 
             temp2+=obs_l(f,i,z);
             temp1+=exp_l(f,i,z);
             if(nsamp_l(f,i)>0 && header_l(f,i,3)>0) // check for values to include
@@ -2581,7 +2581,11 @@ FUNCTION void write_bigoutput()
               {SS_compout<<" NA ";}
             }
             else // sample size zero or skip
-            {SS_compout<<" NA NA NA NA ";}
+            {
+              SS_compout<<" NA "; // placeholder for Pearson
+              SS_compout<<" "<<nsamp_l(f,i)<<" "<<nsamp_l_read(f,i); // Nsamp_adj and Nsamp_in
+              SS_compout<<" NA NA "; // placeholder for effN and Like
+            }
          // next add the following columns:
          // Cum_obs Cum_exp SuprPer Used?
          SS_compout<<" "<<temp2<<" "<<temp1<<" "<<anystring<<endl;
@@ -2622,14 +2626,20 @@ FUNCTION void write_bigoutput()
           // next add the following columns:
           // Nsamp_adj Nsamp_in effN
           SS_compout<<" "<<nsamp_l(f,i)<<" "<<nsamp_l_read(f,i)<<" "<<neff_l(f,i)<<" ";
-	  // next add Like column
+      	  // next add Like column
           if(obs_l(f,i,z)!=0.0 && exp_l(f,i,z)!=0.0)
           {SS_compout<<" "<<value(obs_l(f,i,z)*log(obs_l(f,i,z)/exp_l(f,i,z))*nsamp_l(f,i));}
           else
           {SS_compout<<" NA ";}
            }
            else // sample size zero or skip
-           {SS_compout<<" NA NA NA NA ";}
+           {
+             SS_compout<<" NA "; // placeholder for Pearson
+             SS_compout<<" "<<nsamp_l(f,i)<<" "<<nsamp_l_read(f,i); // Nsamp_adj and Nsamp_in
+             SS_compout<<" NA NA "; // placeholder for effN and Like
+           }
+           // next add the following columns:
+           // Cum_obs Cum_exp SuprPer Used?
            SS_compout<<" "<<temp2<<" "<<temp1<<" "<<anystring<<endl;
         }
         // single row representing info from previous bin-specific rows
@@ -2682,7 +2692,7 @@ FUNCTION void write_bigoutput()
           <<" "<<s_off<<" "<<len_bins(Lbin_lo(f,i))<<" "<<len_bins(Lbin_hi(f,i))<<" "<<age_bins(z)<<" "<<obs_a(f,i,z)<<" " <<exp_a(f,i,z)<<" ";
            temp2+=obs_a(f,i,z);
            temp1+=exp_a(f,i,z);
-          // next add Pearson column
+          // next add these 5 columns: Pearson Nsamp_adj Nsamp_in effN Like 
           if(header_a(f,i,3)>0)
           {
             if(exp_a(f,i,z)!=0.0 && exp_a(f,i,z)!=1.0)
@@ -2709,7 +2719,11 @@ FUNCTION void write_bigoutput()
             {SS_compout<<" NA ";}
           }
           else  // sample size zero or skip
-          {SS_compout<<" NA NA NA NA ";}
+          {
+            SS_compout<<" NA "; // placeholder for Pearson
+            SS_compout<<" "<<nsamp_a(f,i)<<" "<<nsamp_a_read(f,i); // Nsamp_adj and Nsamp_in
+            SS_compout<<" NA NA "; // placeholder for effN and Like
+          }
           // next add the following columns:
           // Cum_obs Cum_exp SuprPer Used?
           SS_compout<<" "<<temp2<<" "<<temp1<<" "<<anystring<<endl;
@@ -2756,7 +2770,11 @@ FUNCTION void write_bigoutput()
           {SS_compout<<" NA ";}
         }
         else  // sample size zero or skip
-        {SS_compout<<" NA NA NA NA ";}
+        {
+          SS_compout<<" NA "; // placeholder for Pearson
+          SS_compout<<" "<<nsamp_a(f,i)<<" "<<nsamp_a_read(f,i); // Nsamp_adj and Nsamp_in
+          SS_compout<<" NA NA "; // placeholder for effN and Like
+				}
          // next add the following columns:
          // Cum_obs Cum_exp SuprPer Used?
          SS_compout<<" "<<temp2<<" "<<temp1<<" "<<anystring<<endl;
@@ -2901,7 +2919,11 @@ FUNCTION void write_bigoutput()
                 {SS_compout<<" NA ";}
             }
             else  // sample size zero or skip
-            {SS_compout<<" NA NA NA NA ";}
+            {
+              SS_compout<<" NA "; // placeholder for Pearson
+              SS_compout<<" "<<SzFreq_sampleN(iobs)<<" NA"; // Nsamp_adj and Nsamp_in (NA for now)
+              SS_compout<<" NA NA "; // placeholder for effN and Like
+					  }
             // next add the following columns:
             // Cum_obs Cum_exp SuprPer Used?
             SS_compout<<" "<<temp2<<" "<<temp1<<" "<<anystring<<endl;
