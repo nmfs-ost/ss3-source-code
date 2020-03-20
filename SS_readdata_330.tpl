@@ -2991,6 +2991,9 @@
     {echoinput<<Fcast_Loop_Control(4)<<" #echoed Forecast loop control #4:  multiplier on virgin recr"<<endl;}
   else if(Fcast_Loop_Control(3)==3)
     {echoinput<<" #mean recruitment from years: "<<Fcast_Rec_yr1<<" to "<<Fcast_Rec_yr2<<endl;}
+  else //  input probably was a -1 from pre 3.30.15, so convert to 0
+    {  Fcast_Loop_Control(3)=0; Fcast_Loop_Control(4)=1.0;
+    	echoinput<<Fcast_Loop_Control(4)<<" #echoed Forecast loop control #4:  multiplier on spawn_recr"<<endl;}
 
   echoinput<<Fcast_Loop_Control(5)<<" #echoed Forecast loop control #5 (reserved for future use) "<<endl;
 

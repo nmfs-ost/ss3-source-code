@@ -1212,6 +1212,8 @@ FUNCTION void write_nucontrol()
     {NuFore<<Fcast_Loop_Control(4)<<" # value is multiplier on virgin recr"<<endl;}
   else if(Fcast_Loop_Control(3)==3)
     {NuFore<<Fcast_Loop_Control(4)<<" # not used"<<endl;}
+  else
+  	{NuFore<<"0 # not used"<<endl;}
   NuFore<<Fcast_Loop_Control(5)<<" #_Forecast loop control #5 (reserved for future bells&whistles) "<<endl;
   NuFore<<Fcast_Cap_FirstYear<<"  #FirstYear for caps and allocations (should be after years with fixed inputs) "<<endl;
 

@@ -50,27 +50,35 @@ FUNCTION void evaluate_the_objective_function()
           if(Q_setup(f,5)>0 )  //  do float Q
           {                                       //  NOTE:  cannot use float option if error type is normal
             temp=0.; temp1=0.; temp2=0.;  Svy_log_q(f)=0.0;  Svy_q(f)=0.0;
-            for (i=1;i<=Svy_N_fleet(f);i++)
+            if(Svy_N_fleet_use(f)>0) //  be sure that some observation is being used
             {
-              if(Svy_use(f,i) > 0)
+              for (i=1;i<=Svy_N_fleet(f);i++)
               {
-                temp2 += (Svy_obs_log(f,i)-Svy_est(f,i))/square(Svy_se_use(f,i));
-                temp += 1.0/square(Svy_se_use(f,i));
-                temp1 += 1.;
+                if(Svy_use(f,i) > 0)
+                {
+                  temp2 += (Svy_obs_log(f,i)-Svy_est(f,i))/square(Svy_se_use(f,i));
+                  temp += 1.0/square(Svy_se_use(f,i));
+                  temp1 += 1.;
+                }
               }
-            }
 
-            if(Q_setup(f,4)==0)                               // mean q, with nobiasadjustment
-            {
-              Svy_log_q(f) =temp2/temp;
-              Svy_est(f) += temp2/temp;
+              if(Q_setup(f,4)==0)                               // mean q, with nobiasadjustment
+              {
+                Svy_log_q(f) =temp2/temp;
+                Svy_est(f) += temp2/temp;
+              }
+              else                  // for value = 1 or 5       // mean q with variance bias adjustment
+              {
+                Svy_log_q(f) = (temp2 + temp1*0.5)/temp;
+                Svy_est(f) += (temp2 + temp1*0.5)/temp;
+              }
+              Q_parm(Q_setup_parms(f,1))=Svy_log_q(f,1);    // base Q  So this sets parameter equal to the scaling coefficient and can then have a prior
             }
-            else                  // for value = 1 or 5       // mean q with variance bias adjustment
+            else  //  no observations
             {
-              Svy_log_q(f) = (temp2 + temp1*0.5)/temp;
-              Svy_est(f) += (temp2 + temp1*0.5)/temp;
+              Q_parm(Q_setup_parms(f,1))=Svy_log_q(f,1);
             }
-            Q_parm(Q_setup_parms(f,1))=Svy_log_q(f,1);    // base Q  So this sets parameter equal to the scaling coefficient and can then have a prior
+            
             if(Svy_errtype(f)==-1)  // normal
             {
               Svy_q(f) = Svy_log_q(f);        //  q already in  arithmetic space
