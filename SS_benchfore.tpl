@@ -376,7 +376,7 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
     {
     report5<<"#"<<endl<<"find_target_SPR"<<endl;
     report5<<"SPR_is_spawner_potential_ratio=(fishedSSB/R)/(unfishedSSB/R))"<<endl;
-    report5<<"Iter Fmult F_std SPR tot_catch";
+    report5<<"Iter Fmult ann_F SPR tot_catch";
     for (p=1;p<=pop;p++)
     for (gp=1;gp<=N_GP;gp++)
     {report5<<" SSB_Area:"<<p<<"_GP:"<<gp;}
@@ -522,7 +522,7 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
       if(show_MSY==1)
       {
         report5<<"#"<<endl<<"#Find_F0.1; slope_at_origin_wrt_Fmult: "<<F01_origin<<" "<<YPR_opt<<" "<<Hrate(1,bio_t_base+3)<<endl;
-        report5<<"Iter  Fmult   F_std    SPR    YPR    YPR_slope  YPR_curvature"<<endl;
+        report5<<"Iter  Fmult   ann_F    SPR    YPR    YPR_slope  YPR_curvature"<<endl;
       }
 
       Nloops=20; Closer=0.75;
@@ -598,7 +598,7 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
 // ******************************************************
     if(show_MSY==1)
     {
-      report5<<"#"<<endl<<"Find_target_SSB/Bzero; where Bzero is for Bmark years, not Virgin"<<endl<<"Iter Fmult F_std SPR Catch SSB Recruits SSB/Bzero Tot_catch";
+      report5<<"#"<<endl<<"Find_target_SSB/Bzero; where Bzero is for Bmark years, not Virgin"<<endl<<"Iter Fmult ann_F SPR Catch SSB Recruits SSB/Bzero Tot_catch";
       for (p=1;p<=pop;p++)
       for (gp=1;gp<=N_GP;gp++)
       {report5<<" SSB_Area:"<<p<<"_GP:"<<gp;}
@@ -739,7 +739,7 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
 
       if(show_MSY==1)
       {
-        report5<<"#"<<endl<<"Find_MSY_catch"<<endl<<"Iter Fmult F_std SPR Catch SSB Recruits SSB/Bzero Gradient Curvature Tot_Catch";
+        report5<<"#"<<endl<<"Find_MSY_catch"<<endl<<"Iter Fmult ann_F SPR Catch SSB Recruits SSB/Bzero Gradient Curvature Tot_Catch";
         for (p=1;p<=pop;p++)
         for (gp=1;gp<=N_GP;gp++)
         {report5<<" Area:"<<p<<"_GP:"<<gp;}
@@ -939,7 +939,7 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
       report5<<"SPR_target "<<SPR_target<<endl;
       report5<<"SPR_calc "<<SPR_actual/100.<<endl;
       report5<<"Fmult "<<SPR_Fmult<<endl;
-      report5<<"F_std "<<Mgmt_quant(10)<<endl;
+      report5<<"ann_F "<<Mgmt_quant(10)<<endl;
       report5<<"Exploit(Catch_dead/B_smry) "<<YPR_spr_dead/Vbio1_spr<<endl;
       report5<<"Recruits "<<Bspr_rec<<endl;
       report5<<"SPBio "<<Bspr<<" "<<Bspr/Bspr_rec<<endl;
@@ -955,7 +955,7 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
         report5<<"slope_calc:   "<<F01_actual<<endl;
         report5<<"SPR@F0.1 "<<SPR_Btgt<<endl;
         report5<<"Fmult "<<Btgt_Fmult<<endl;
-        report5<<"F_std "<<Mgmt_quant(7)<<endl;
+        report5<<"ann_F "<<Mgmt_quant(7)<<endl;
         report5<<"Exploit(Catch_dead/B_smry) "<<YPR_Btgt_dead/Vbio1_Btgt<<endl;
         report5<<"Recruits@F0.1 "<<Btgt_Rec<<endl;
         report5<<"SPBio "<<Btgt<<" "<<Btgt/Btgt_Rec<<endl;
@@ -971,7 +971,7 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
         report5<<"Ratio_calc "<<Btgt/SSB_unf<<endl;
         report5<<"SPR@Btgt "<<SPR_Btgt<<endl;
         report5<<"Fmult "<<Btgt_Fmult<<endl;
-        report5<<"F_std "<<Mgmt_quant(7)<<endl;
+        report5<<"ann_F "<<Mgmt_quant(7)<<endl;
         report5<<"Exploit(Catch_dead/B_smry) "<<YPR_Btgt_dead/Vbio1_Btgt<<endl;
         report5<<"Recruits "<<Btgt_Rec<<endl;
         report5<<"SPBio "<<Btgt<<" "<<Btgt/Btgt_Rec<<endl;
@@ -1001,7 +1001,7 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
         }
       report5<<"SPR "<<MSY_SPR<<endl;
       report5<<"Fmult "<<MSY_Fmult<<endl;
-      report5<<"F_std "<<Mgmt_quant(14)<<endl;
+      report5<<"ann_F "<<Mgmt_quant(14)<<endl;
       report5<<"Exploit(Catch/Bsmry) "<<MSY/(Vbio1_MSY*Recr_msy)<<endl;
       report5<<"Recruits@MSY "<<Recr_msy<<endl;
       report5<<"SPBio "<<Bmsy<<" "<<Bmsy/Recr_msy<<endl;
@@ -1166,7 +1166,7 @@ FUNCTION void Get_Forecast()
     }
     else
     {
-      report5<<"Seasonal_apicalF=Fmult*Alloc*seas_dur_(can_be>F_std_because_of_selex)"<<endl;
+      report5<<"Seasonal_apicalF=Fmult*Alloc*seas_dur_(can_be>ann_F_because_of_selex)"<<endl;
       report5<<"seas seas_dur "; for (f=1;f<=Nfleet;f++) {if(fleet_type(f)<=2) {report5<<" "<<fleetname(f);}}
       report5<<endl;
       for (s=1;s<=nseas;s++)
@@ -1252,7 +1252,7 @@ FUNCTION void Get_Forecast()
     if(fleet_type(f)<=2)
     {report5<<" sel(B):_"<<f<<" dead(B):_"<<f<<" retain(B):_"<<f<<
     " sel(N):_"<<f<<" dead(N):_"<<f<<" retain(N):_"<<f<<" F:_"<<f<<" R/C";}
-    report5<<" Catch_Cap Total_Catch F_Std"<<endl;
+    report5<<" Catch_Cap Total_Catch ann_F"<<endl;
     }
 
     //  note that spawnbio and Recruits need to retain their value from calculation in endyr,
