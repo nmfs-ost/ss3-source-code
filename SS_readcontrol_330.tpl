@@ -2319,9 +2319,14 @@
      j=Q_setup_parms(f,1);
      echoinput<<"fleet "<<f<<" base index "<<j<<endl;
      if(Q_setup(f,5)==1)  //  float
-      {
-        if(Q_parm_1(j,7)>=0)  {N_warn++;  warning<<"fleet: "<<f<<"   Q cannot be active if it is set to float"<<endl;  Q_parm_1(j,7)=-1; }
+      {if(Q_parm_1(j,7)>=0)  {N_warn++;  warning<<"fleet: "<<f<<"  SS changed Q to not estimate because it is set to float"<<endl;  Q_parm_1(j,7)=-1; }
       }
+
+//  depletion fleet check
+    if(Svy_units(f)==34)  //  special code for depletion
+    	{if(Q_parm_1(j,7)>=0)  {N_warn++;  warning<<"fleet: "<<f<<" SS changed Q to not estimate because it is depletion fleet"<<endl;  Q_parm_1(j,7)=-1; }
+    	}
+
       
      //  check for extraSD estimation
      if(Q_setup(f,3)>0)
@@ -2639,6 +2644,7 @@
        ParCount++; ParmLabel+="Size_inflection_"+fleetname(f)+"("+NumLbl(f)+")";
        ParCount++; ParmLabel+="Size_95%width_"+fleetname(f)+"("+NumLbl(f)+")";
      }
+     
      else
      {
        for (j=1;j<=N_selparmvec(f);j++)
@@ -2967,8 +2973,9 @@
   init_matrix selparm_1(1,N_selparm,1,14)
   ivector selparm_fleet(1,N_selparm) // holds the fleet ID for each selparm
                                   //  equivalent to the mgp_type() for MGparms
-
+  matrix mirror_mask(1,Nfleet,1,nlength)
  LOCAL_CALCS
+  mirror_mask.initialize();
   echoinput<<" selex and composition base parameters "<<endl;
   for (g=1;g<=N_selparm;g++)
   {
@@ -3074,6 +3081,24 @@
     }
     parmcount+=N_selparmvec(f);
   }
+
+//  check on mirror bounds
+  parmcount=0;
+  for(f=1;f<=Nfleet;f++)
+  {
+  	if(seltype(f,1)==5)  //  uses mirror
+  		{
+        i=int(selparm_1(parmcount+1,3));
+        j=int(selparm_1(parmcount+2,3));
+        if(i<1) {N_warn++; warning<<" size selex mirror, length range min bin read is ("<<i<<") reset to 1 for fleet: "<<f<<endl;selparm_1(parmcount,3)=1;}
+        if(i>j) {N_warn++; cout<<" EXIT - see warning "<<endl; warning<<" Critical error, size selex mirror length range min ("<<i<<") greater than max ("<<j<<") for fleet: "<<f<<endl; exit(1);}
+        if(j>nlength) {N_warn++; warning<<" size selex mirror length is > nlength for fleet: "<<f<<" reset to nlength"<<endl;selparm_1(parmcount+1,3)=nlength;}
+        mirror_mask(f)(1,i)=1.0e-10;
+        mirror_mask(f)(i,j)=1.;
+  		}
+    parmcount+=N_selparmvec(f);
+  }
+
  END_CALCS
 
   int timevary_parm_cnt_sel;
@@ -3377,6 +3402,17 @@
     }  // end type
 
   } // end years
+  echoinput<<"Recalc_flag_for_length_recalc_by_year"<<endl;
+  for (f=1;f<=Nfleet;f++)
+  {
+  	echoinput<<f<<" "<<fleetname(f)<<" "<<column(timevary_sel,f)<<endl;
+  }
+  echoinput<<"Recalc_flag_for_age_recalc_by_year"<<endl;
+  for (f=1;f<=Nfleet;f++)
+  {
+  	int f2=f+Nfleet;
+  	echoinput<<f<<" "<<fleetname(f)<<" "<<column(timevary_sel,f2)<<endl;
+  }
 
  END_CALCS
 

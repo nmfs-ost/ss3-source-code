@@ -657,7 +657,7 @@ FUNCTION void get_time_series()
     {
       if (docheckup==1) echoinput<<endl<<"************************************"<<endl<<" year, seas "<<y<<" "<<s<<endl;
   //  SS_Label_Info_24.1.2  #Call selectivity, which does its own internal check for time-varying changes
-      if(s==1) get_selectivity();
+      if(s==1 && y>styr) get_selectivity();
       t = t_base+s;
 
   //  SS_Label_Info_24.2.1 #Update the age-length key and the fishery selectivity for this season

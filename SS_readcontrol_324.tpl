@@ -811,7 +811,7 @@
   int ParCount2
   int  parm_adjust_method_rd
  LOCAL_CALCS
-  autogen_timevary=0;
+  autogen_timevary=0;  //  set to 0 so so no autogen occurs, then set to 1 at end of routine because some parameters may be converted in the trans process
   parm_adjust_method_rd=parm_adjust_method;
     if(parm_adjust_method==2)
     {
@@ -2942,6 +2942,7 @@
   init_matrix selparm_1(1,N_selparm,1,14)
   ivector selparm_fleet(1,N_selparm) // holds the fleet ID for each selparm
                                   //  equivalent to the mgp_type() for MGparms
+  matrix mirror_mask(1,Nfleet,1,nlength)
   number new_upper_bound;
   number new_lower_bound;
 
@@ -3029,6 +3030,24 @@
     parmcount+=N_selparmvec(f);
   }
   echoinput<<"end conversion of retention "<<endl;
+  mirror_mask.initialize();
+//  check on mirror bounds
+  parmcount=0;
+  for(f=1;f<=Nfleet;f++)
+  {
+  	if(seltype(f,1)==5)  //  uses mirror
+  		{
+        i=int(selparm_1(parmcount+1,3));
+        j=int(selparm_1(parmcount+2,3));
+        if(i<1) {N_warn++; warning<<" size selex mirror, length range min bin read is ("<<i<<") reset to 1 for fleet: "<<f<<endl;selparm_1(parmcount,3)=1;}
+        if(i>j) {N_warn++; cout<<" EXIT - see warning "<<endl; warning<<" Critical error, size selex mirror length range min ("<<i<<") greater than max ("<<j<<") for fleet: "<<f<<endl; exit(1);}
+        if(j>nlength) {N_warn++; warning<<" size selex mirror length is > nlength for fleet: "<<f<<" reset to nlength"<<endl;selparm_1(parmcount+1,3)=nlength;}
+        mirror_mask(f)(1,i)=1.0e-10;
+        mirror_mask(f)(i,j)=1.;
+  		}
+    parmcount+=N_selparmvec(f);
+  }
+
  END_CALCS
 
   imatrix timevary_makefishsel(styr-3,YrMax,1,Nfleet)
@@ -4491,6 +4510,7 @@
       }
     }
   }
+  autogen_timevary=1;  // set to 1 at end of routine because some parameters may be converted in the trans process
 
   echoinput<<"ParCount "<<ParCount<<"   Active parameters: "<<active_count<<endl<<"Turn_off_phase "<<Turn_off_phase<<endl<<" max_phase "<<max_phase<<endl;
   echoinput<<active_parm.indexmax()<<endl;

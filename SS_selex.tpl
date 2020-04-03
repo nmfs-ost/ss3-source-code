@@ -102,25 +102,17 @@ FUNCTION void get_selectivity()
             {N_warn++; cout<<" EXIT - see warning "<<endl; warning<<" selex pattern 4 discontinued; use pattern 30 to get spawning biomass "<<endl; exit(1); break;}                   // do this as a numbers survey because wt is included here
 
   //  SS_Label_Info_22.3.5 #case 5 mirror another fleets size selectivity for specified bin range
+  //  use only the specified bin range using mirror_mask created upon read
+  // must refer to a lower numbered type (f)
           case 5:
-                                            //  use only the specified bin range
-                                           // must refer to a lower numbered type (f)
           {
-           i=int(value(sp(1)));  if(i<=0) i=1;
-           j=int(value(sp(2)));  if(j<=0) j=nlength;
-           if(i>j)
-           {N_warn++; cout<<" EXIT - see warning "<<endl; warning<<" Critical error, size selex mirror length range min ("<<i<<") greater than max ("<<j<<") for fleet: "<<f<<endl; exit(1);}
-           if(j>nlength)
-           {N_warn++; cout<<" EXIT - see warning "<<endl; warning<<" Critical error, size selex mirror length is too large for fleet: "<<f<<endl; exit(1);}
-           sel.initialize();
-           sel(i,j)=sel_l(y,seltype(f,4),1)(i,j);
+           sel=elem_prod(mirror_mask(f),sel_l(y,seltype(f,4),1));
            break;
           }
 
   //  SS_Label_Info_22.3.15 #case 15 mirror another fleets size selectivity for all size bins
           case 15:
           {
-           sel.initialize();
            sel=sel_l(y,seltype(f,4),1);
            break;
           }
