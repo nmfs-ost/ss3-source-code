@@ -204,12 +204,16 @@
   init_number jitter
    !!echoinput<<jitter<<"  jitter fraction for initial parm values"<<endl;
 
-  init_int STD_Yr_min  // min yr for sdreport
-   !!echoinput<<STD_Yr_min<<"  STD_Yr_min"<<endl;
-  init_int STD_Yr_max  // max yr for sdreport
-   !!echoinput<<STD_Yr_max<<"  STD_Yr_max (-1 for "<<endl;
+  int STD_Yr_min
+  int STD_Yr_max
+  init_int STD_Yr_min_rd  // min yr for sdreport
+   !!echoinput<<STD_Yr_min_rd<<"  STD_Yr_min"<<endl;
+   !!STD_Yr_min=STD_Yr_min_rd;
+  init_int STD_Yr_max_rd  // max yr for sdreport
+   !!echoinput<<STD_Yr_max_rd<<"  STD_Yr_max (-1 for "<<endl;
   init_int N_STD_Yr_RD  // N extra years to read
    !!echoinput<<N_STD_Yr_RD<<"  N extra STD years to read"<<endl;
+   !!STD_Yr_max=STD_Yr_max_rd;
   int N_STD_Yr
   init_ivector STD_Yr_RD(1,N_STD_Yr_RD)
    !!if(N_STD_Yr_RD>0) echoinput<<STD_Yr_RD<<"  vector of extra STD years"<<endl;

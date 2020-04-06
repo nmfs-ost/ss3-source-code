@@ -1146,8 +1146,8 @@ FUNCTION void write_nucontrol()
   NuStart<<burn_intvl<<" # MCeval burn interval"<<endl;
   NuStart<<thin_intvl<<" # MCeval thin interval"<<endl;
   NuStart<<jitter<<" # jitter initial parm value by this fraction"<<endl;
-  NuStart<<STD_Yr_min<<" # min yr for sdreport outputs (-1 for styr)"<<endl;
-  NuStart<<STD_Yr_max<<" # max yr for sdreport outputs (-1 for endyr+1; -2 for endyr+Nforecastyrs"<<endl;
+  NuStart<<STD_Yr_min_rd<<" # min yr for sdreport outputs (-1 for styr); #_"<<STD_Yr_min<<endl;
+  NuStart<<STD_Yr_max_rd<<" # max yr for sdreport outputs (-1 for endyr+1; -2 for endyr+Nforecastyrs); #_"<<STD_Yr_max<<endl;
   NuStart<<N_STD_Yr_RD<<" # N individual STD years "<<endl;
   NuStart<<"#vector of year values "<<endl<<STD_Yr_RD<<endl;
 
