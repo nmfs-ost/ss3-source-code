@@ -20,6 +20,8 @@ pipeline {
                 sh label: 'Unzip ss', script: 'gunzip ss.gz'
                 sh label: 'Make ss executable', script: 'chmod a+rwx ss'
                 sh label: 'Get dir listing', script: 'ls -alh *'
+
+                sh label: 'FAKE BUILD BREAK', script: 'asdfasdfasdf'
             }
         }
         stage('Run ss on Simple/ model') {
