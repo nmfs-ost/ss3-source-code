@@ -20,8 +20,6 @@ pipeline {
                 sh label: 'Unzip ss', script: 'gunzip ss.gz'
                 sh label: 'Make ss executable', script: 'chmod a+rwx ss'
                 sh label: 'Get dir listing', script: 'ls -alh *'
-
-                sh label: 'FAKE BUILD BREAK', script: 'asdfasdfasdf'
             }
         }
         stage('Run ss on Simple/ model') {
@@ -42,7 +40,15 @@ pipeline {
     }
     post {
         failure {
-            mail bcc: '', body: '<b>Stock Synthesis</b><br>Project: ${env.JOB_NAME} <br>Build Number: ${env.BUILD_NUMBER}', cc: '', from: '', replyTo: '', subject: 'Stock Synthesis Model: Jenkins Build Failure', to: 'kathryn.doering@noaa.gov will.smith@noaa.gov'
-         }
+            mail bcc: '', body: 'Stock Synthesis build failed.', cc: '', from: '', replyTo: '', subject: 'Stock Synthesis Model: Jenkins Build Failure', to: 'kathryn.doering@noaa.gov will.smith@noaa.gov'
+        }
+        changed {
+            script {
+                if (currentBuild.currentResult == 'SUCCESS') { // Other values: SUCCESS, UNSTABLE
+                    // Send an email only if the build status has changed from red to green
+                   mail bcc: '', body: 'Stock Synthesis build now passing!', cc: '', from: '', replyTo: '', subject: 'Stock Synthesis Model: Jenkins Build Passing Again', to: 'kathryn.doering@noaa.gov will.smith@noaa.gov'
+                }
+            }
+        }
     }
 }
