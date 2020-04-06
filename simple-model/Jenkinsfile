@@ -38,4 +38,9 @@ pipeline {
         }
 
     }
+    post {
+        failure {
+            mail bcc: '', body: '<b>Stock Synthesis</b><br>Project: ${env.JOB_NAME} <br>Build Number: ${env.BUILD_NUMBER}', cc: '', from: '', replyTo: '', subject: 'Stock Synthesis Model: Jenkins Build Failure', to: 'kathryn.doering@noaa.gov will.smith@noaa.gov'
+         }
+    }
 }
