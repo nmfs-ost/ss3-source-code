@@ -26,6 +26,19 @@ FUNCTION void setup_Benchmark()
           discmort2(endyr+1,f,gg)=tempvec_l/temp;
           discmort2(YrMax,f,gg)=tempvec_l/temp;
 
+          if(gg==gender)
+          	{
+          exp_l_temp.initialize();
+          for (y=Fcast_Sel_yr1;y<=Fcast_Sel_yr2;y++) {exp_l_temp+=retain(y,f);}
+          retain(endyr+1,f)=exp_l_temp/temp;
+          retain(YrMax,f)=exp_l_temp/temp;
+          
+          exp_l_temp.initialize();
+          for (y=Fcast_Sel_yr1;y<=Fcast_Sel_yr2;y++) {exp_l_temp+=discmort(y,f);}
+          discmort(endyr+1,f)=exp_l_temp/temp;
+          discmort(YrMax,f)=exp_l_temp/temp;
+          	}
+
           tempvec_a.initialize();
           for (y=Fcast_Sel_yr1;y<=Fcast_Sel_yr2;y++) {tempvec_a+=sel_a(y,f,gg);}
           sel_a(endyr+1,f,gg)=tempvec_a/temp;
@@ -164,6 +177,16 @@ FUNCTION void setup_Benchmark()
           tempvec_l.initialize();
           for (y=Bmark_Yr(3);y<=Bmark_Yr(4);y++) {tempvec_l+=sel_l_r(y,f,gg);}
           sel_l_r(styr-3,f,gg)=tempvec_l/temp;
+
+          if(gg==gender)
+          	{
+          exp_l_temp.initialize();  //  use because dimensioned to nlength2
+          for (y=Bmark_Yr(3);y<=Bmark_Yr(4);y++) {exp_l_temp+=retain(y,f);}
+          retain(styr-3,f)=exp_l_temp/temp;
+          exp_l_temp.initialize();
+          for (y=Bmark_Yr(3);y<=Bmark_Yr(4);y++) {exp_l_temp+=discmort(y,f);}
+          discmort(styr-3,f)=exp_l_temp/temp;
+          	}
 
           tempvec_l.initialize();
           for (y=Bmark_Yr(3);y<=Bmark_Yr(4);y++) {tempvec_l+=discmort2(y,f,gg);}
