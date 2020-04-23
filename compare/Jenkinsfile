@@ -8,7 +8,9 @@ pipeline {
             steps {
               copyArtifacts filter: 'Simple.zip', fingerprintArtifacts: true, projectName: 'stock-synthesis-model', selector: lastSuccessful()
               sh label: 'create subfolder to move artifact', script: 'mkdir simple_run'
-			  sh label: 'move src files', script: 'mv Simple.zip'           
+			  sh label: 'move src files', script: 'mv Simple.zip simple_run'
+			  sh label: 'view files', script: 'ls .'
+			  sh label: 'view files in home dir', script: 'ls ~'
 		   }
         }
         stage('Git clone src for stock synthesis reference run files') {
@@ -21,6 +23,7 @@ pipeline {
 			    sh label: 'change dir', script: 'cd simple_run'
 		        sh label: 'Unzip Simple.ss', script: 'unzip Simple.zip'
 				sh label: 'change back dir', script: 'cd -'
+				sh label: 'view files', script: 'ls .'
 			}	
 		}
 	    stage('Run R code to test R') {
