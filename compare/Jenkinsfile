@@ -64,7 +64,7 @@ pipeline {
             script {
                 if (currentBuild.currentResult == 'SUCCESS') { // Other values: SUCCESS, UNSTABLE
                     // Send an email only if the build status has changed from red to green
-                   mail bcc: '', body: 'Stock Synthesis build now passing!', cc: '', from: '', replyTo: '', subject: 'Stock Synthesis Model: Jenkins Build Passing Again', to: 'kathryn.doering@noaa.gov'
+                   mail bcc: '', body: 'Stock Synthesis build now passing!', cc: '', from: '', replyTo: '', subject: 'Jenkins Build Passing Again: stock-synthesis-compare', to: 'kathryn.doering@noaa.gov'
                 }
             }
         }
