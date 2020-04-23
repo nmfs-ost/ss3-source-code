@@ -20,20 +20,20 @@ pipeline {
 			  sh label: ' view files in simple_run', script: 'ls simple_run'
 		   }
         }
-        stage('Git clone src for stock synthesis reference run files') {
-            steps {
-                checkout([$class: 'GitSCM', branches: [[name: '*/master']], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[credentialsId: '1aa2d7c8-749f-4270-9de2-6ffcf0cd2beb', url: 'https://stock_synthesis.build@vlab.ncep.noaa.gov/git/ss_examples']]])
-			}
-        }
 		stage('Unzip Simple.zip artifact') {
 		    steps{
-			    sh label: 'change dir', script: 'cd simple_run'
 			    sh label: 'view files', script: 'ls .'
-		        sh label: 'Unzip Simple.ss', script: 'unzip Simple.zip'
-				sh label: 'change back dir', script: 'cd -'
+				sh label: 'view files', script: 'ls simple_run'
+		        sh label: 'Unzip Simple.ss', script: 'unzip simple_run/Simple.zip'
 				sh label: 'view files', script: 'ls .'
 			}	
 		}
+        stage('Git clone src for stock synthesis reference run files') {
+            steps {
+                checkout([$class: 'GitSCM', branches: [[name: '*/master']], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[credentialsId: '1aa2d7c8-749f-4270-9de2-6ffcf0cd2beb', url: 'https://stock_synthesis.build@vlab.ncep.noaa.gov/git/ss_examples']]])
+			    sh label: 'view files', script: 'ls .'
+			}
+        }
 	    stage('Run R code to test R') {
 		    steps{
 			    sh label: 'test R code', script: 'R -e "test <- 2+2; print(test)"'
