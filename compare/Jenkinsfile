@@ -11,6 +11,7 @@ pipeline {
 			  sh label: 'remove an old dir (force in case does not exist)', script: 'rm -rf Simple'
 			  sh label: 'remove an old dir (force in case does not exist)', script: 'rm -rf simple_run'
 			  sh label: 'remove an old dir (force in case does not exist)', script: 'rm -rf ss_example_files'
+			  sh label: 'remove an old dir (force in case does not exist)', script: 'rm -rf run_R'
 			  sh label: 'remove an old file (force in case does not exist)', script: 'rm -f Simple.zip'
 			  sh label: 'verify removed', script: 'ls .'
 		   }
@@ -47,6 +48,11 @@ pipeline {
 	    stage('Run R code to test R') {
 		    steps{
 			    sh label: 'test R code', script: 'R -e "test <- 2+2; print(test)"'
+			}	
+		}
+	    stage('Run test R script') {
+		    steps{
+			    sh label: 'test R code', script: 'Rscript compare.R"'
 			}	
 		}
 	}
