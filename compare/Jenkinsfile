@@ -10,6 +10,7 @@ pipeline {
 			  sh label: 'view files', script: 'ls .'
 			  sh label: 'remove an old dir (force in case does not exist)', script: 'rm -rf Simple'
 			  sh label: 'remove an old dir (force in case does not exist)', script: 'rm -rf simple_run'
+			  sh label: 'remove an old dir (force in case does not exist)', script: 'rm -rf simple_example_files'
 			  sh label: 'remove an old file (force in case does not exist)', script: 'rm -f Simple.zip'
 			  sh label: 'verify removed', script: 'ls .'
 		   }
@@ -20,7 +21,7 @@ pipeline {
               copyArtifacts filter: 'Simple.zip', fingerprintArtifacts: true, projectName: 'stock-synthesis-model', selector: lastSuccessful()
 			  sh label: 'view files', script: 'ls .'
               sh label: 'move Simple.zip', script: 'mv Simple.zip simple_run/Simple.zip' 
-			  sh label: 'verify move', script: 'cd simple_run && ls.'
+			  sh label: 'verify move', script: 'cd simple_run && ls .'
 			  sh label: 'Unzip Simple.zip', script: 'cd simple_run && unzip Simple.zip'
 			  sh label: 'view files', script: 'ls .'
 		   }
