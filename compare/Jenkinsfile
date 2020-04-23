@@ -55,6 +55,11 @@ pipeline {
 			    sh label: 'test R code', script: 'Rscript run_compare.R'
 			}	
 		}
+		stage('archive') {
+            steps {
+                archiveArtifacts 'run_R/compare_test.txt'
+            }
+        }
 	}
     post {
         failure {
