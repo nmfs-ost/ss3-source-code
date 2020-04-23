@@ -52,7 +52,7 @@ pipeline {
 		}
 	    stage('Run test R script') {
 		    steps{
-			    sh label: 'test R code', script: 'Rscript compare.R"'
+			    sh label: 'test R code', script: 'Rscript compare.R'
 			}	
 		}
 	}
