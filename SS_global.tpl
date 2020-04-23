@@ -840,7 +840,8 @@ REPORT_SECTION
   }
   }
 //  SS_Label_Info_13.2 #Call fxn write_bigoutput() as last_phase finishes and before doing Hessian
-    if(last_phase()>0)
+    wrote_bigreport=0;
+    if(last_phase()>0 && SDmode==1)
     {
     save_for_report=1;
     save_gparm=0;
@@ -849,7 +850,6 @@ REPORT_SECTION
     get_initial_conditions();
     get_time_series();  //  in ADMB's report_section
     evaluate_the_objective_function();
-    wrote_bigreport=0;
     if(reportdetail>0)
     {
     write_bigoutput();

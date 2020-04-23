@@ -855,12 +855,10 @@ FUNCTION void evaluate_the_objective_function()
   if(SoftBound>0)
   {
     SoftBoundPen=0.0;
-
-      for (i=1;i<=N_selparm2;i++)
-      if(selparm_PH_soft(i)>0)
-        {SoftBoundPen+=Get_Prior(1, selparm_LO(i), selparm_HI(i), 1., 0.001, selparm(i));}
+    for (i=1;i<=N_selparm2;i++)
+    if(selparm_PH_soft(i)>0)
+    {SoftBoundPen+=Get_Prior(1, selparm_LO(i), selparm_HI(i), 1., 0.001, selparm(i));}
   }
-
 
   //  SS_Label_Info_25.18 #Crash penalty
 //   CrashPen = square(1.0+CrashPen)-1.0;   this was used until V3.00L  7/10/2008

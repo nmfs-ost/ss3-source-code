@@ -1067,6 +1067,8 @@ FUNCTION void write_bigoutput()
    temp=sigmaR*sigmaR;  //  sigmaR^2
    SS2out<<"ERA    N    RMSE  RMSE^2/sigmaR^2  mean_BiasAdj"<<endl;
    SS2out<<"main  "<<n_rmse(1)<<" "<<rmse(1)<<" "<<square(rmse(1))/temp<<" "<<rmse(2);
+   if(wrote_bigreport==0)
+   {
    if(rmse(1)<0.5*sigmaR && rmse(2)>(0.01+2.0*square(rmse(1))/temp))
    {N_warn++; warning<<" Main recdev biasadj is >2 times ratio of rmse to sigmaR"<<endl; SS2out<<" # Main_recdev_biasadj_is_>2_times_ratio_of_rmse_to_sigmaR"<<endl;}
    else
@@ -1076,7 +1078,10 @@ FUNCTION void write_bigoutput()
    {N_warn++; warning<<" Early recdev biasadj is >2 times ratio of rmse to sigmaR"<<endl; SS2out<<" # Early_recdev_biasadj_is_>2_times_ratio_of_rmse_to_sigmaR"<<endl;}
    else
    {SS2out<<endl;}
-
+ }
+ else
+   {SS2out<<endl;}
+ 	
   SS2out<<"Yr SpawnBio exp_recr with_regime bias_adjusted pred_recr dev biasadjuster era mature_bio mature_num raw_dev"<<endl;
   SS2out<<"S/Rcurve "<<SSB_virgin<<" "<<Recr_virgin<<endl;
   y=styr-2;

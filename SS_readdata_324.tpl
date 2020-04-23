@@ -2825,15 +2825,19 @@
   init_number BTGT_target
   !!echoinput<<BTGT_target<<" BTGT_target "<<endl;
 
-  ivector Bmark_Yr(1,10)
   ivector Bmark_t(1,2)  //  for range of time values for averaging body size
-  init_ivector Bmark_Yr_rd(1,6)
+  init_ivector Bmark_Yr_rd1(1,6)
+  ivector Bmark_Yr(1,10)
+  ivector Bmark_Yr_rd(1,10)
   init_int Bmark_RelF_Basis
  LOCAL_CALCS
   echoinput<<Bmark_Yr_rd<<" Benchmark years as read:  beg-end bio; beg-end selex; beg-end relF"<<endl;
-
+  Bmark_Yr.initialize();
+  Bmark_Yr_rd.initialize();
+  
   for (i=1;i<=6;i++)  //  beg-end bio; beg-end selex; beg-end relF
   {
+  	Bmark_Yr_rd(i)=Bmark_Yr_rd1(i);
     if(Bmark_Yr_rd(i)==-999)
     {Bmark_Yr(i)=styr;}
     else if(Bmark_Yr_rd(i)>=styr)
@@ -3167,9 +3171,11 @@
 
   3darray Fcast_InputCatch(k1,y,1,Nfleet1,1,2)  //  values and basis to be used
   init_matrix Fcast_InputCatch_rd(1,N_Fcast_Input_Catches,1,j)  //  values to be read:  yr, seas, fleet, value, (basis)
+  imatrix Fcast_RelF_special(1,nseas,1,Nfleet)  //  records whether an input catch or F occurs
 
  LOCAL_CALCS
   Fcast_InputCatch.initialize();
+  Fcast_RelF_special.initialize();
   if(N_Fcast_Input_Catches>0) echoinput<<" Fcast_catches_input "<<endl<<Fcast_InputCatch_rd<<endl;
   if(Do_Forecast>0)
   {
@@ -3184,6 +3190,7 @@
         y=Fcast_InputCatch_rd(i,1); s=Fcast_InputCatch_rd(i,2); f=Fcast_InputCatch_rd(i,3);
         if(y>endyr && y<=YrMax && f<=Nfleet1)
         {
+        	Fcast_RelF_special(s,f)=1;
           t=styr+(y-styr)*nseas +s-1;
           Fcast_InputCatch(t,f,1)=Fcast_InputCatch_rd(i,4);
           if(y>=Fcast_Cap_FirstYear) {N_warn++;warning<<"Input catches in "<<y<<" can be overridden by caps or allocations"<<endl;}

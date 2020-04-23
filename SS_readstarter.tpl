@@ -82,9 +82,11 @@
   !! write_bodywt=0;
 
   int Nparm_on_bound;
+ int on;
+ int SDmode;
 
  LOCAL_CALCS
-
+  on=0;
   No_Report=0;
   Ncycle=3;
   z=0; z1=0; z2=0; L1=0; L2=0; A2=0;  a1=0; f=0; f1=0; fs=0; 
@@ -96,7 +98,7 @@
   TG_t=0; Fcast_catch_start=0; retParCount=0; N_SC=0; N_DC=0; N_CC=0; N_FC=0; catch_mult_pointer=0; frac_female_pointer=0; icycle=0; No_Report=0; 
   mcmcFlag=0; noest_flag=0; temp=0; temp1=0; save_gparm_print=0; 
 
-  //  SS_Label_Info_1.1.2  #Create elements of parameter labels
+  //  SS_Label_Info_1.1.2  #arrays for parameter labels are created in GLOBAL
 //  adstring_array NumLbl;
 //  adstring_array GenderLbl;   // gender label
 //  adstring_array CRLF;   // blank to terminate lines
@@ -122,6 +124,14 @@
   NumLbl0+=onenum+CRLF(1);
   }
 
+//  check command line inputs
+  SDmode=1;
+  if ( (on=option_match(argc,argv,"-nohess"))>-1)
+  {
+    SDmode = 0;
+  }
+   echoinput<<" -nohess flag (1 means do Hessian): "<<SDmode<<endl;
+   
 //  SS_Label_Info_1.2  #Read the STARTER.SS file
 // /*  SS_Label_Flow  read STARTER.SS */
   ad_comm::change_datafile_name("starter.ss");       //  get filenames

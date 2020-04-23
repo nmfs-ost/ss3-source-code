@@ -105,6 +105,15 @@ FUNCTION void setup_Benchmark()
             {Fcast_RelF_Use(s,f)=1.0e-6; warning<<"setting positive forecast relF for bycatch fleet: "<<f<<endl;}
         }
       }
+      if(N_Fcast_Input_Catches>0)
+      {
+        for (f=1;f<=Nfleet;f++)
+        for (s=1;s<=nseas;s++)
+        {
+          if(Fcast_RelF_special(s,f)==1 && Fcast_RelF_Use(s,f)==0.0) 
+            {Fcast_RelF_Use(s,f)=1.0e-6; warning<<"setting positive forecast relF for forecast only fleet: "<<f<<endl;}
+        }
+      }
     }  //  end getting quantities for forecasts
 
 //  SS_Label_Info_7.5.3 #Calc average selectivity to use in benchmarks; store in styr-3

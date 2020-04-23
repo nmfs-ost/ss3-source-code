@@ -1591,6 +1591,7 @@
   nobsa_rd=0;
   store_agekey_add=0;
   Nobs_a.initialize();
+  Nobs_a_use.initialize();
   N_suprper_a.initialize();
   echoinput<<"Enter the number of agebins, or 0 if no age data"<<endl;
   *(ad_comm::global_datafile) >> n_abins;
@@ -2085,6 +2086,7 @@
 
  LOCAL_CALCS
    Nobs_ms.initialize();
+   Nobs_ms_use.initialize();
    N_suprper_ms.initialize();
   if(use_meansizedata>0)
   {
@@ -3264,10 +3266,12 @@
 
   3darray Fcast_InputCatch(k1,y,1,Nfleet,1,2)  //  values and basis to be used
   matrix Fcast_InputCatch_rd(1,N_Fcast_Input_Catches,1,j)
+  imatrix Fcast_RelF_special(1,nseas,1,Nfleet)  //  records whether an input catch or F occurs
 
  LOCAL_CALCS
   Fcast_InputCatch.initialize();
   Fcast_InputCatch_rd.initialize();
+  Fcast_RelF_special.initialize();
   if(Do_Forecast_rd>0)
   {
     if(N_Fcast_Input_Catches>0)
@@ -3283,6 +3287,7 @@
         y=Fcast_InputCatch_rd(i+1,1); s=Fcast_InputCatch_rd(i+1,2); f=Fcast_InputCatch_rd(i+1,3);
         if(y>endyr && y<=YrMax && fleet_type(f)<=2)
         {
+        	Fcast_RelF_special(s,f)=1;
           t=styr+(y-styr)*nseas +s-1;
           Fcast_InputCatch(t,f,1)=Fcast_InputCatch_rd(i+1,4);
           if(y>=Fcast_Cap_FirstYear) {N_warn++;warning<<"Input catches in "<<y<<" can be overridden by caps or allocations"<<endl;}
