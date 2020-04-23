@@ -9,7 +9,7 @@ pipeline {
 			  sh label: 'view files', script: 'ls .'
               copyArtifacts filter: 'Simple.zip', fingerprintArtifacts: true, projectName: 'stock-synthesis-model', selector: lastSuccessful()
 			  sh label: 'view files', script: 'ls *.zip'
-			  sh label: 'remove an old dir', script: 'rmdir simple_run'
+			  sh label: 'remove an old dir', script: 'if -d simple_run; then rm -r simple_run; fi'
               sh label: 'create subfolder to move artifact', script: 'mkdir simple_run'
 			  sh label: 'view files', script: 'ls .'
 			  sh label: 'move src files', script: 'mv Simple.zip simple_run'
