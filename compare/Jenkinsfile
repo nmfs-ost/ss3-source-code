@@ -1,0 +1,44 @@
+pipeline {
+    agent { dockerfile {
+          dir 'jenkins/stock-synthesis/compare'
+        }
+    }
+    stages { 
+        stage('Copy Simple.zip artifact from previous stage') {
+            steps {
+              copyArtifacts filter: 'Simple.zip', fingerprintArtifacts: true, projectName: 'stock-synthesis-model', selector: lastSuccessful()
+              sh label: 'create subfolder to move artifact', script: 'mkdir simple_run'
+			  sh label: 'move src files', script: 'mv Simple.zip'           
+		   }
+        }
+        stage('Git clone src for stock synthesis reference run files') {
+            steps {
+                checkout([$class: 'GitSCM', branches: [[name: '*/master']], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[credentialsId: '1aa2d7c8-749f-4270-9de2-6ffcf0cd2beb', url: 'https://stock_synthesis.build@vlab.ncep.noaa.gov/git/ss_examples']]])
+			}
+        }
+		stage('Unzip Simple.zip artifact') {
+		    steps{
+			    sh label: 'change dir', script: 'cd simple_run'
+		        sh label: 'Unzip Simple.ss', script: 'unzip Simple.zip'
+				sh label: 'change back dir', script: 'cd -'
+			}	
+		}
+	    stage('Run R code to test R') {
+		    steps{
+			    sh label: 'test R code', script: 'R -e 'test <- 2+2; print(test)'
+			}	
+		}
+    post {
+        failure {
+            mail bcc: '', body: 'Stock Synthesis build failed.', cc: '', from: '', replyTo: '', subject: 'Jenkins Build Failure: stock-synthesis-compare', to: 'kathryn.doering@noaa.gov '
+        }
+        changed {
+            script {
+                if (currentBuild.currentResult == 'SUCCESS') { // Other values: SUCCESS, UNSTABLE
+                    // Send an email only if the build status has changed from red to green
+                   mail bcc: '', body: 'Stock Synthesis build now passing!', cc: '', from: '', replyTo: '', subject: 'Stock Synthesis Model: Jenkins Build Passing Again', to: 'kathryn.doering@noaa.gov'
+                }
+            }
+        }
+    }
+}
