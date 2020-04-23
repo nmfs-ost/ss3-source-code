@@ -28,6 +28,7 @@ pipeline {
 			    sh label: 'test R code', script: 'R -e "test <- 2+2; print(test)"'
 			}	
 		}
+	}
     post {
         failure {
             mail bcc: '', body: 'Stock Synthesis build failed.', cc: '', from: '', replyTo: '', subject: 'Jenkins Build Failure: stock-synthesis-compare', to: 'kathryn.doering@noaa.gov '
