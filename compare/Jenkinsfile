@@ -7,6 +7,7 @@ pipeline {
         stage('Copy Simple.zip artifact from previous stage') {
             steps {
 			  sh label: 'view files', script: 'ls .'
+			  sh label: 'remove an old dir (force in case does not exist)', script: 'rm -rf Simple'
 			  sh label: 'remove an old dir (force in case does not exist)', script: 'rm -rf simple_run'
 			  sh label: 'remove an old file (force in case does not exist)', script: 'rm -f Simple.zip'
 			  sh label: 'verify removed', script: 'ls .'
@@ -24,14 +25,21 @@ pipeline {
 		    steps{
 			    sh label: 'view files', script: 'ls .'
 				sh label: 'view files', script: 'ls simple_run'
-		        sh label: 'Unzip Simple.ss', script: 'unzip simple_run/Simple.zip'
+				sh label: 'change dir', script: 'cd simple_run'
+		        sh label: 'Unzip Simple.ss', script: 'Simple.zip'
+				sh label: 'view files', script: 'ls .'
+				sh label: 'change dir back', script: 'cd ..'
 				sh label: 'view files', script: 'ls .'
 			}	
 		}
         stage('Git clone src for stock synthesis reference run files') {
             steps {
+			    sh label: 'create subfolder to move repo files', script: 'mkdir ss_example_files'
+				sh label: 'change directory', script: 'cd ss_example_files'
                 checkout([$class: 'GitSCM', branches: [[name: '*/master']], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[credentialsId: '1aa2d7c8-749f-4270-9de2-6ffcf0cd2beb', url: 'https://stock_synthesis.build@vlab.ncep.noaa.gov/git/ss_examples']]])
 			    sh label: 'view files', script: 'ls .'
+				sh label: 'change dir back', script: 'cd ..'
+				sh label: 'view files', script: 'ls .'
 			}
         }
 	    stage('Run R code to test R') {
