@@ -6,12 +6,16 @@ pipeline {
     stages { 
         stage('Copy Simple.zip artifact from previous stage') {
             steps {
+			  sh label: 'view files', script: 'ls .'
               copyArtifacts filter: 'Simple.zip', fingerprintArtifacts: true, projectName: 'stock-synthesis-model', selector: lastSuccessful()
+			  sh label: 'view files', script: 'ls *.zip'
 			  sh label: 'remove an old dir', script: 'rmdir simple_run'
               sh label: 'create subfolder to move artifact', script: 'mkdir simple_run'
+			  sh label: 'view files', script: 'ls .'
 			  sh label: 'move src files', script: 'mv Simple.zip simple_run'
 			  sh label: 'view files', script: 'ls .'
 			  sh label: 'view files in home dir', script: 'ls ~'
+			  sh label: ' view files in simple_run', script: 'ls simple_run'
 		   }
         }
         stage('Git clone src for stock synthesis reference run files') {
@@ -22,6 +26,7 @@ pipeline {
 		stage('Unzip Simple.zip artifact') {
 		    steps{
 			    sh label: 'change dir', script: 'cd simple_run'
+			    sh label: 'view files', script: 'ls .'
 		        sh label: 'Unzip Simple.ss', script: 'unzip Simple.zip'
 				sh label: 'change back dir', script: 'cd -'
 				sh label: 'view files', script: 'ls .'
