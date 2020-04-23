@@ -28,9 +28,12 @@ pipeline {
         }
         stage('Git clone src for stock synthesis reference run files') {
             steps {
-			    sh label: 'create subfolder to move repo files', script: 'mkdir ss_example_files'
                 checkout([$class: 'GitSCM', branches: [[name: '*/master']], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[credentialsId: '1aa2d7c8-749f-4270-9de2-6ffcf0cd2beb', url: 'https://stock_synthesis.build@vlab.ncep.noaa.gov/git/ss_examples']]])
 			    sh label: 'view files', script: 'ls .'
+				sh label: 'create subfolder to move repo files', script: 'mkdir ss_example_files'
+				sh label: 'move the repo Simple files', script: 'mv Simple ss_example_files'
+				sh label: 'view files', script: 'ls .'
+				sh label: 'view files', script: 'cd ss_example_files && ls .'
 			}
         }
 	    stage('Run R code to test R') {
