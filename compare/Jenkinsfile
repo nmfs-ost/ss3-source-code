@@ -7,6 +7,7 @@ pipeline {
         stage('Copy Simple.zip artifact from previous stage') {
             steps {
               copyArtifacts filter: 'Simple.zip', fingerprintArtifacts: true, projectName: 'stock-synthesis-model', selector: lastSuccessful()
+			  sh label: 'remove an old dir', script: 'rmdir simple_run'
               sh label: 'create subfolder to move artifact', script: 'mkdir simple_run'
 			  sh label: 'move src files', script: 'mv Simple.zip simple_run'
 			  sh label: 'view files', script: 'ls .'
