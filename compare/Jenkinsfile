@@ -25,7 +25,7 @@ pipeline {
 		}
 	    stage('Run R code to test R') {
 		    steps{
-			    sh label: 'test R code', script: 'R -e 'test <- 2+2; print(test)'
+			    sh label: 'test R code', script: 'R -e "test <- 2+2; print(test)"'
 			}	
 		}
     post {
