@@ -220,7 +220,7 @@
    !!echoinput<<STD_Yr_min_rd<<"  STD_Yr_min"<<endl;
    !!STD_Yr_min=STD_Yr_min_rd;
   init_int STD_Yr_max_rd  // max yr for sdreport
-   !!echoinput<<STD_Yr_max_rd<<"  STD_Yr_max (-1 for "<<endl;
+   !!echoinput<<STD_Yr_max_rd<<"  STD_Yr_max (-1 for endyr; -2 for YrMax)"<<endl;
   init_int N_STD_Yr_RD  // N extra years to read
    !!echoinput<<N_STD_Yr_RD<<"  N extra STD years to read"<<endl;
    !!STD_Yr_max=STD_Yr_max_rd;
@@ -280,9 +280,7 @@
     }
  END_CALCS
 
-  init_int F_std_basis // 0=raw; 1=rel Fspr; 2=rel Fmsy ; 3=rel Fbtgt; 4=annual F for range of years
-  !!echoinput<<F_std_basis<<"  F_std_basis"<<endl;
-  !!echoinput<<"For Kobe plot, set depletion_basis=2; depletion_level=1.0; F_reporting=your choose; F_std_basis=2"<<endl;
+  init_int F_std_basis_rd // 0=raw; 1=rel Fspr; 2=rel Fmsy ; 3=rel Fbtgt; 4=annual F for range of years  OPTION #4 not implemented
   number finish_starter
   int mcmc_output_detail
   number MCMC_bump  //  value read and added to ln(R0) when starting into MCMC
@@ -291,9 +289,24 @@
   int ender;
   int irand_seed;
   int irand_seed_rd;
+  int F_std_multi;  //  for multi-year averaging of F_std
+  int F_std_basis;
 
  LOCAL_CALCS
    {
+   	F_std_multi=0;
+    echoinput<<F_std_basis_rd<<"  F_std_basis_rd"<<endl;
+   	if(F_std_basis_rd>10)  //  invokes multiyr
+   	{
+   		F_std_multi=int(F_std_basis_rd/10);
+   		F_std_basis=F_std_basis_rd-10*F_std_multi;
+   	}
+   	else
+    {F_std_basis=F_std_basis_rd;}
+    echoinput<<"F_std_multi and F_std_basis: "<<F_std_multi<<" "<<F_std_basis<<endl;
+    if(F_std_multi>1) N_warn++; warning<<"NOTE: new feature for multiyr F_std reporting, be sure STD reporting covers all years from styr to endyr"<<endl;
+   echoinput<<"For Kobe plot, set depletion_basis=2; depletion_level=1.0; F_reporting=your choose; F_std_basis=2"<<endl;
+
     mcmc_output_detail = 0;
     MCMC_bump=0.;
     ALK_tolerance=0.0;

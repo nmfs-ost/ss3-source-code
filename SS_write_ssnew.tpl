@@ -1162,7 +1162,7 @@ FUNCTION void write_nucontrol()
   {NuStart<<F_reporting_ages<<" #_min and max age over which average F will be calculated, with F=Z-M"<<endl;}
   else
   {NuStart<<"#COND 10 15 #_min and max age over which average F will be calculated with F_reporting=4 or 5"<<endl;}
-  NuStart<<F_std_basis<<" # F_std_basis: 0=raw_annual_F; 1=F/Fspr; 2=F/Fmsy ; 3=F/Fbtgt; where F means annual_F"<<endl;
+  NuStart<<F_std_basis_rd<<" # F_std_basis: 0=raw_annual_F; 1=F/Fspr; 2=F/Fmsy; 3=F/Fbtgt; where F means annual_F; values >=11 invoke multiyr with 10's digit"<<endl;
   NuStart<<double(mcmc_output_detail)+MCMC_bump<<
   " # MCMC output detail: integer part (0=default; 1=adds obj func components); and decimal part (added to SR_LN(R0) on first call to mcmc)"<<endl;
   NuStart<<ALK_tolerance<<" # ALK tolerance (example 0.0001)"<<endl;

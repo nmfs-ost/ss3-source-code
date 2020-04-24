@@ -987,7 +987,20 @@ FUNCTION void Process_STDquant()
         }
       }
 
-//  init_int Do_Forecast   //  0=none; 1=F(SPR); 2=F(MSY) 3=F(Btgt); 4=F(endyr); 5=Ave F (enter yrs); 6=read Fmult
+//  Do multi-year average of F_std if requested;  assumes that F_std is NOT custom, so exists for all years
+//  otherwise, would need to check for positive value for STD_Yr_Reverse_F(y) and need to deal with averaging across not-reporting years = MESSY
+//  note that averaging starts in endyr, not endyr+N_forecast;  otherwise the averaging could span endyr.
+    if(F_std_multi>1)
+    {
+    	for(y=endyr;y>=styr+1;y--)
+    	{
+    		temp=F_std(STD_Yr_Reverse_F(y));  //  initialize
+    		for(y1=y-1;y1>max(styr,y-F_std_multi);y1--)
+    		{temp+=F_std(STD_Yr_Reverse_F(y1));}
+    		F_std(STD_Yr_Reverse_F(y))=temp/(y-y1);
+    	}
+    }
+
 //  Use the selected F method for the forecast as the denominator for the F_std ratio
       switch (F_std_basis)
       {
