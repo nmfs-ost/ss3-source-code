@@ -41,7 +41,7 @@ pipeline {
             steps {
 			    sh label: 'make an R directory', script: 'mkdir run_R'
 				sh label: 'move the ref file', script: 'mv ss_example_files/Simple/ss_summary.sso run_R/ss_summary_ref.sso'
-				sh label: 'move the artifact file', script: 'mv simple_run/Simple run_R'
+				sh label: 'move the artifact file', script: 'mv simple_run/Simple/* run_R'
 				sh label: 'view files', script: 'ls -R run_R'
 			}
         }
