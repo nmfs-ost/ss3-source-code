@@ -62,6 +62,11 @@ pipeline {
                 archiveArtifacts 'run_R/compare_test.txt'
             }
         }
+		stage('Determine results of test) {
+		    steps{
+			    sh label: 'run R code', script: 'R -e "if(file.exists(file.path("run_R", "test_failed.txt"))) stop("Tests failed")"'
+			}
+		}
 	}
     post {
         failure {
