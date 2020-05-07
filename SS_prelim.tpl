@@ -667,13 +667,31 @@ PRELIMINARY_CALCS_SECTION
   }
 //  SS_Label_Info_6.6 #Copy the environmental data as read into the dmatrix environmental data array
 //  this will allow dynamic derived quantities like biomass and recruitment to be mapped into this same dmatrix
-    env_data.initialize();
-    if(N_envvar>=1)
-      {
-      for (y=styr-1;y<=(YrMax);y++)
-        for (j=1;j<=N_envvar;j++)
-          {env_data(y,j)=env_data_RD(y,j);}
-      }
+
+  env_data.initialize();
+
+  if(N_envdata>0)
+  {
+  	//  raw input is in vector vector env_temp
+  	//  the fields are yr, envvar, value
+  	//  yr=-2 instructs SS to subtract mean before storing
+  	//  yr=-1 instructs SS to subtract mean and divide by stddev
+    
+    //  first pass to calculate means and other summary data
+    for (i=0;i<=N_envdata-1;i++)
+    {
+    	y=env_temp[i](1);
+    	if(y>=(styr-1) && y<=YrMax)
+    	{
+    		k=env_temp[i](2);
+    		double val=env_temp[i](3);
+    		env_data(y,k)=val;
+    		if(env_data_do_mean(k)==1) env_data(y,k)-=env_data_mean(k);
+    		if(env_data_do_stdev(k)==1) env_data(y,k)/=env_data_stdev(k);
+    	}
+    }
+    echoinput<<" env matrix after processing"<<endl<<env_data<<endl;
+  }
 
 //  SS_Label_Info_6.7 #Initialize several rebuilding items
     if(Rebuild_Ydecl==-1) Rebuild_Ydecl=1999;

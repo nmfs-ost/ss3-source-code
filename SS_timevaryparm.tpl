@@ -17,8 +17,8 @@ FUNCTION void make_timevaryparm()
 
    for (int tvary=1;tvary<=timevary_cnt;tvary++)
     {
-      ivector timevary_setup(1,13);
-      timevary_setup(1,13)=timevary_def[tvary](1,13);
+      ivector timevary_setup(1,14);
+      timevary_setup(1,14)=timevary_def[tvary](1,14);
       if(do_once==1) echoinput<<"timevary #: "<<tvary<<endl<<"setup:  "<<timevary_setup<<endl;
       //  what type of parameter is being affected?  get the baseparm and its bounds
       switch(timevary_setup(1))      //  parameter type
@@ -199,9 +199,19 @@ FUNCTION void make_timevaryparm()
               timevary_parm_cnt++;
               break;
             }
-          case 3:
+          case 3:  //  result constrained by baseparm_min-max; input values are unit normal
           	{
-          		//  not implemented
+            	dvariable temp;
+            	double p_range=baseparm_max-baseparm_min;
+            	
+              for (int y1=env_data_minyr(timevary_setup(7));y1<=env_data_maxyr(timevary_setup(7));y1++)
+              {
+                temp=log((parm_timevary(tvary,y1)-baseparm_min+1.0e-7)/(baseparm_max-parm_timevary(tvary,y1)+1.0e-7));
+                temp+=timevary_parm(timevary_parm_cnt)*env_data(y1,timevary_setup(7));
+                parm_timevary(tvary,y1)=baseparm_min+p_range/(1.0+exp(-temp));
+              }
+              timevary_parm_cnt++;
+              break;
           	}
           case 4:  //  logistic MGparm env link
             {
@@ -215,7 +225,6 @@ FUNCTION void make_timevaryparm()
             }
         }
       }
-
   //  SS_Label_Info_14.3 #Create parm dev randwalks if needed
       if(timevary_setup(8)>0)   //  devs
       {
@@ -224,16 +233,8 @@ FUNCTION void make_timevaryparm()
         parm_dev_stddev(k)=timevary_parm(timevary_parm_cnt);
         parm_dev_rho(k)=timevary_parm(timevary_parm_cnt+1);
         int picker=timevary_setup(9);
-        int continue_last=0;
-        if(picker>20)
-          {
-            picker-=20;
-            continue_last=1;
-          }
-        if(picker>10)
-          {
-            picker-=10;
-          }
+        int continue_last=timevary_setup(14);
+
         switch(picker)
         {
           case 1:
@@ -265,18 +266,39 @@ FUNCTION void make_timevaryparm()
           }
           case 4:  // mean reverting random walk
           {
-            parm_dev_rwalk(k,timevary_setup(10))=parm_dev(k,timevary_setup(10))*parm_dev_stddev(k);
-            parm_timevary(tvary,timevary_setup(10))+=parm_dev_rwalk(k,timevary_setup(10));
+            parm_dev_rwalk(k,timevary_setup(10))=parm_dev(k,timevary_setup(10))*parm_dev_stddev(k);  //  1st yr dev
+            parm_timevary(tvary,timevary_setup(10))+=parm_dev_rwalk(k,timevary_setup(10));  //  add dev to current value
             for (j=timevary_setup(10)+1;j<=timevary_setup(11);j++)
             {
               //    =(1-rho)*mean + rho*prevval + dev   //  where mean = 0.0
-              parm_dev_rwalk(k,j)=parm_dev_rho(k)*parm_dev_rwalk(k,j-1)+parm_dev(k,j)*parm_dev_stddev(k);
-              parm_timevary(tvary,j)+=parm_dev_rwalk(k,j);
+              parm_dev_rwalk(k,j)=parm_dev_rho(k)*parm_dev_rwalk(k,j-1)+parm_dev(k,j)*parm_dev_stddev(k);  //  update MRRW using annual dev
+              parm_timevary(tvary,j)+=parm_dev_rwalk(k,j);  //  add dev to current value of annual parameter, which may previously be adjusted by block or env
             }
             break;
           }
+          case 5:  // mean reverting random walk constrained by base parameter's min-max:
+          {
+//          NOTE:  if the stddev parameter is greater than 1.8, the distribution of adjusted parameters will become U-shaped
+          	dvariable temp;
+          	double p_range=baseparm_max-baseparm_min;
+          	int j=timevary_setup(10);
+            parm_dev_rwalk(k,j)=parm_dev(k,j)*parm_dev_stddev(k);  //  1st yr dev
+//            p_base=(parm_timevary(tvary,j)-baseparm_min)/(baseparm_max-baseparm_min);  //  convert parm to (0,1) scale
+//            temp=log(p_base/(1.-p_base)) + parm_dev_rwalk(k,j);  //  convert to logit and add dev; so dev must be in units of the logit
+            temp=log((parm_timevary(tvary,j)-baseparm_min+1.0e-7)/(baseparm_max-parm_timevary(tvary,j)+1.0e-7));
+            parm_timevary(tvary,j)=baseparm_min+p_range/(1.0+exp(-temp-parm_dev_rwalk(k,j)));
+            for (j=timevary_setup(10)+1;j<=timevary_setup(11);j++)
+            {
+              //    =(1-rho)*mean + rho*prevval + dev   //  where mean = 0.0
+              parm_dev_rwalk(k,j)=parm_dev_rho(k)*parm_dev_rwalk(k,j-1)+parm_dev(k,j)*parm_dev_stddev(k);  //  update MRRW using annual dev
+              temp=log((parm_timevary(tvary,j)-baseparm_min+1.0e-7)/(baseparm_max-parm_timevary(tvary,j)+1.0e-7));
+              parm_timevary(tvary,j)=baseparm_min+p_range/(1.0+exp(-temp-parm_dev_rwalk(k,j)));
+            }
+            break;
+          }
+
         }
-        if(continue_last==1)
+        if(timevary_setup(14)==1)  //  continue_last
         {
           for(j=timevary_setup(11)+1;j<=YrMax;j++) parm_timevary(tvary,j) = parm_timevary(tvary,timevary_setup(11));
         }

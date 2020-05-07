@@ -3381,14 +3381,65 @@
   }
  END_CALCS
 
-  matrix env_data_RD(styr-1,YrMax,1,N_envvar)
+//  matrix env_data_RD(styr-1,YrMax,1,N_envvar)
+//  vectors below will be processed in prelim
+  vector env_data_mean(1,N_envvar)
+  vector env_data_stdev(1,N_envvar)
+  vector env_data_N(1,N_envvar)
+  ivector env_data_minyr(1,N_envvar)
+  ivector env_data_maxyr(1,N_envvar)
+  ivector env_data_do_mean(1,N_envvar)
+  ivector env_data_do_stdev(1,N_envvar)
+
  LOCAL_CALCS
+  env_data_mean.initialize();
+  env_data_stdev.initialize();
+  env_data_N.initialize();
+  env_data_minyr.initialize();
+  env_data_maxyr.initialize();
+  env_data_do_mean.initialize();
+  env_data_do_stdev.initialize();
+
   if(N_envdata>0)
   {
-    env_data_RD=0.;
+  	env_data_minyr=9876;
     for (i=0;i<=N_envdata-1;i++)
-    if(env_temp[i](1)>=(styr-1) && env_temp[i](1)<=YrMax)
-    {env_data_RD(env_temp[i](1), env_temp[i](2) ) = env_temp[i](3);}
+    {
+    	y=env_temp[i](1);
+    	k=env_temp[i](2);
+    	if(y<=-1)  //  flag to do_mean  so use -2 to get mean but not stdev
+    	{env_data_do_mean(k)=1;}
+    	if(y==-1)  //  flag to do_stdev
+    	{env_data_do_stdev(k)=1;}
+      if(y>=(styr-1) && y<=YrMax)
+    	{
+        env_data_mean(k)+=env_temp[i](3);
+        env_data_stdev(k)+=env_temp[i](3)*env_temp[i](3);
+        env_data_N(k)++;
+        env_data_minyr(k)=min(env_data_minyr(k),y);
+        env_data_maxyr(k)=max(env_data_maxyr(k),y);
+      }
+    }
+    echoinput<<" process environmental input data"<<endl;
+    for(k=1;k<=N_envvar;k++)
+    {
+    	if(env_data_N(k)>0)
+    	{
+    		env_data_mean(k)/=env_data_N(k);
+    	}
+    	else
+    	{//  no data
+    	}
+    	if(env_data_N(k)>1)
+    	{
+    		temp=env_data_stdev(k)/(env_data_N(k)-1.);
+    		env_data_stdev(k)=sqrt(temp-env_data_mean(k)*env_data_mean(k));
+    	}
+    	else
+    	{//  no data
+    	}
+      echoinput<<k<<" N "<<env_data_N(k)<<" min-max yr "<<env_data_minyr(k)<<" "<<env_data_maxyr(k)<<" mean "<<env_data_mean(k)<<" stdev "<<env_data_stdev(k)<<" subtract mean "<<env_data_do_mean(k)<<" divide stddev "<<env_data_do_stdev(k)<<endl;
+    }
   }
  END_CALCS
 

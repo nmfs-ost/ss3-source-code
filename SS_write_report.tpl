@@ -719,6 +719,7 @@ FUNCTION void write_bigoutput()
    if(F_Method==1) {SS2out<<";.Pope's_approx,.fleet.F.is.mid-season.exploitation.fraction ";} else {SS2out<<";.Continuous_F;.fleet.F.will.be.multiplied.by.season.duration.when.it.is.used.and.in.the.F_std.calculation";}
    SS2out<<endl<<"Info: Displayed.fleet-specific.F.values.are.the.F.for.ages.with.compound.age-length-sex.selectivity=1.0"<<endl;
    SS2out<<"Info: F_std_basis:."<<F_report_label<<endl;
+   SS2out<<"F_std averaged over N years: "<<F_std_multi<<endl;
    if(F_reporting>=4)
    {SS2out<<"Info: Annual_F.shown.here.is.done.by.the.Z-M.method.for.ages:."<<F_reporting_ages(1)<<"-"<<F_reporting_ages(2)<<endl;}
    else

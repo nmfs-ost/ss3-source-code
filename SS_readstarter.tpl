@@ -304,7 +304,7 @@
    	else
     {F_std_basis=F_std_basis_rd;}
     echoinput<<"F_std_multi and F_std_basis: "<<F_std_multi<<" "<<F_std_basis<<endl;
-    if(F_std_multi>1) N_warn++; warning<<"NOTE: new feature for multiyr F_std reporting, be sure STD reporting covers all years from styr to endyr"<<endl;
+    if(F_std_multi>1) {N_warn++; warning<<"NOTE: new feature for multiyr F_std reporting, be sure STD reporting covers all years from styr to endyr"<<endl;}
    echoinput<<"For Kobe plot, set depletion_basis=2; depletion_level=1.0; F_reporting=your choose; F_std_basis=2"<<endl;
 
     mcmc_output_detail = 0;

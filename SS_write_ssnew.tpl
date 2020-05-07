@@ -2045,7 +2045,7 @@ FUNCTION void write_nucontrol()
   if(Do_Morphcomp>0) report4<<"# "<< Morphcomp_lambda<<" #_Morphcomplambda"<<endl;
   report4<<"# "<<F_ballpark_lambda<<" # F_ballpark_lambda"<<endl;
 
-  report4<<Do_More_Std<<" # (0/1/2) read specs for more stddev reporting: 0 = skip, 1 = read specs for reporting stdev for selectivity, size, and numbers, 2 = mortality in addition to values in option 1"<<endl;
+  report4<<Do_More_Std<<" # (0/1/2) read specs for more stddev reporting: 0 = skip, 1 = read specs for reporting stdev for selectivity, size, and numbers, 2 = add options for M and Dyn Bzero"<<endl;
 
 //3868      Do_Selex_Std=More_Std_Input(1);
 //3869      Selex_Std_AL=More_Std_Input(2);
@@ -2069,13 +2069,14 @@ FUNCTION void write_nucontrol()
   if(Do_More_Std > 0) // these outputs needed for options 1 and 2
   {
 //    report4<<More_Std_Input<<" # selex_fleet, 1=len/2=age/3=both, year, N selex bins, 0 or Growth pattern, N growth ages, 0 or NatAge_area(-1 for sum), NatAge_yr, N Natages"<<endl;
-    report4<<More_Std_Input(1,4)<<" # Selectivity: (1) 0 or fleet, (2) 1=len/2=age/3=combined, (3) year, (4) N selex bins; NOTE: combined reports in age bins"<<endl;
-    report4<<More_Std_Input(5,6)<<" # Growth: (1) 0 or growth pattern, (2) growth ages; NOTE: does each sex"<<endl;
+    report4<<More_Std_Input(1,4)<<" # Selectivity: (1) 0 to skip or fleet, (2) 1=len/2=age/3=combined, (3) year, (4) N selex bins; NOTE: combined reports in age bins"<<endl;
+    report4<<More_Std_Input(5,6)<<" # Growth: (1) 0 to skip or growth pattern, (2) growth ages; NOTE: does each sex"<<endl;
     report4<<More_Std_Input(7,9)<<" # Numbers-at-age: (1) 0 or area(-1 for all), (2) year, (3) N ages;  NOTE: sums across morphs"<<endl;
   } 
   if(Do_More_Std==2) // additional output when option 2 is selected
   {
-    report4<<More_Std_Input(10,11)<<" # Mortality: (1) 0 or growth pattern, (2) N ages for mortality; NOTE: does each sex"<<endl;
+    report4<<More_Std_Input(10,11)<<" # Mortality: (1) 0 to skip or growth pattern, (2) N ages for mortality; NOTE: does each sex"<<endl;
+    report4<<More_Std_Input(12,13)<<" # Dyn Bzero: (1) 0 to skip or 1, (2) any value"<<endl;
   }
   if(Do_More_Std > 0) // vectors associated with options 1 and 2
   {

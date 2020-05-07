@@ -1244,7 +1244,7 @@ FUNCTION void Get_Forecast()
   }
 
   int jloop;
-  if(fishery_on_off==1)
+  if(fishery_on_off==1 || Do_Dyn_Bzero>0)
   {jloop=Fcast_Loop_Control(1);}
   else
   {jloop=1;}
@@ -1300,6 +1300,25 @@ FUNCTION void Get_Forecast()
     natM=natM_endyr;
     surv1=surv1_endyr;
     surv2=surv2_endyr;
+    
+    y=endyr;
+  {
+    ALK_subseas_update=1;  //  to indicate that all ALKs need calculation
+//    if(MG_active(2)
+    	get_growth2(y);
+    t=styr+(y-styr)*nseas-1;
+    
+    for (s=1;s<=nseas;s++)
+    {
+    	t++;
+      for(subseas=1;subseas<=N_subseas;subseas++)  //  do all subseasons in first year
+      {
+        get_growth3(y,t,s, subseas);  //  in case needed for Lorenzen M
+        Make_AgeLength_Key(s, subseas);
+      }
+      if(s==spawn_seas) Make_Fecundity();
+    }
+  }
 
     for (y=endyr+1;y<=YrMax;y++)
     {
@@ -1318,6 +1337,7 @@ FUNCTION void Get_Forecast()
    }
      	env_data(y,-1)=log(SSB_current/SSB_yr(styr-1));  //  store most recent value for density-dependent effects, NOTE - off by a year if recalc'ed at beginning of season 1
       env_data(y,-2)=recdev(y);  //  store for density-dependent effects
+
         if(timevary_MG(y,2)>0 || timevary_MG(y,3)>0 || save_for_report>0 || WTage_rd>0)
         {
           s=1;
@@ -1365,21 +1385,20 @@ FUNCTION void Get_Forecast()
       yz=y;
       if(do_densitydependent==1)  make_densitydependent_parm(y);  //  call to adjust for density dependence
         
-      if(timevary_MG(endyr+1,2)>0 || save_for_report>0)  //  so uses endyr+1 timevary setting for duration of forecast
-      {
-        get_MGsetup(y);
-        ALK_subseas_update=1;  //  vector to indicate if ALK needs recalculating
-        get_growth2(y);
-      }
-      if(timevary_MG(endyr+1,1)>0) get_natmort();
-      if(timevary_MG(endyr+1,3)>0) get_wtlen();
-      if(timevary_MG(endyr+1,4)>0) get_recr_distribution();
-      if(timevary_MG(endyr+1,5)>0) get_migration();
-      if(timevary_MG(endyr+1,7)>0)  get_catch_mult(y, catch_mult_pointer);
+      if(timevary_MG(y,0)>0 || save_for_report>0) get_MGsetup(y);
+      if(timevary_MG(y,2)>0)
+        {
+          get_growth2(y);
+        }
+      if(timevary_MG(y,1)>0) get_natmort();
+      if(timevary_MG(y,3)>0) get_wtlen();
+      if(timevary_MG(y,4)>0) get_recr_distribution();
+      if(timevary_MG(y,5)>0) get_migration();
+      if(timevary_MG(y,7)>0)  get_catch_mult(y, catch_mult_pointer);
 
       if(save_for_report>0 && Fcast_Loop1==Fcast_Loop_Control(1))
       {
-        if(timevary_MG(endyr+1,1)>0 || timevary_MG(endyr+1,2)>0 || timevary_MG(endyr+1,3)>0)
+        if(timevary_MG(y,1)>0 || timevary_MG(y,2)>0 || timevary_MG(y,3)>0)
         {
           get_saveGparm();
         }
@@ -1401,7 +1420,7 @@ FUNCTION void Get_Forecast()
           bio_t=styr+(endyr-styr)*nseas+s-1;
           if(ABC_Loop==ABC_Loop_start)  // do seasonal ALK and fishery selex
           {
-            if(timevary_MG(endyr+1,2)>0 || save_for_report>0)
+            if(timevary_MG(y,2)>0 || save_for_report>0)
             {
               subseas=1;  //   for begin of season   ALK_idx calculated within Make_AgeLength_Key
               get_growth3(y,t,s, subseas);
@@ -1433,7 +1452,7 @@ FUNCTION void Get_Forecast()
                 if(s==spawn_seas) fec(g)=WTage_emp(t,GP3(g),-2);
               }
             }
-            else if(timevary_MG(endyr+1,2)>0 || timevary_MG(endyr+1,3)>0 ||  bigsaver==1 )
+            else if(timevary_MG(y,2)>0 || timevary_MG(y,3)>0 ||  bigsaver==1 )
             {
                Make_Fecundity();
                for (g=1;g<=gmorph;g++)
@@ -1442,6 +1461,7 @@ FUNCTION void Get_Forecast()
                  subseas=1;
                  ALK_idx=(s-1)*N_subseas+subseas;
                  Wt_Age_beg(s,g)=(ALK(ALK_idx,g)*wt_len(s,GP(g)));  // wt-at-age at beginning of period
+                 
                  subseas=mid_subseas;
                  ALK_idx=(s-1)*N_subseas+subseas;
                  Wt_Age_mid(s,g)=ALK(ALK_idx,g)*wt_len(s,GP(g));  // use for fisheries with no size selectivity
@@ -1533,7 +1553,6 @@ FUNCTION void Get_Forecast()
                    //  the adjustment for mortality increases recruit value for elapsed time since begin of season because M will then be applied from beginning of season
                 }
               }
-
           }  //  end of spawner-recruitment calculations
 //  SPAWN-RECR:  total spawn bio used in F policy.  Make this area-specific too?
           if(ABC_Loop==1)  //  doing OFL this loop
@@ -2096,8 +2115,9 @@ FUNCTION void Get_Forecast()
           if( bigsaver==1 )
           {
 
-            if(Fcast_Loop1==2 && ABC_Loop==1)  // get variance in OFL
+            if((Fcast_Loop1==2 || Fcast_Loop_Control(1)==1) && ABC_Loop==1)  // get variance in OFL
             {
+            	Mgmt_quant(Fcast_catch_start+N_Fcast_Yrs+y-endyr)=0.;
               for (f=1;f<=Nfleet;f++)
               {
                 if(fleet_type(f)==1)

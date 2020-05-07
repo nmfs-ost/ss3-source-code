@@ -1202,7 +1202,7 @@
 
 !!// SS_Label_Info_4... //  quantities used to track all time-varying parameters
   int timevary_cnt   //  cumulative count of timevarying parameters across MG, SRR, Q, Selex, Tag
-                     //  it counts the number of times timevary_setup(1,13) is created
+                     //  it counts the number of times timevary_setup is created
                      //  by the function  "create_timevary"
                      //  and is pushed to the vector_vector  timevary_def
   int N_parm_dev     //  number of  all parms that use annual deviations
@@ -1217,8 +1217,23 @@
                                             // stores years to calc non-constant MG parms (1=natmort; 2=growth; 3=wtlen & fec; 4=recr_dist&femfrac; 5=movement; 6=ageerrorkey; 7=catchmult)
   ivector timevary_pass(styr-3,YrMax+1)    //  extracted column
   ivector MG_active(0,7)  // 0=all, 1=M, 2=growth 3=wtlen, 4=recr_dist&femfrac, 5=migration, 6=ageerror, 7=catchmult
-  vector env_data_pass(styr-1,YrMax)
+  vector env_data_pass(1,2)  //  holds min-max year with env data  
   int  do_densitydependent;
+
+//  timevary_setup(1)=baseparm type;
+//  timevary_setup(2)=baseparm index;
+//  timevary_setup(3)=first timevary parm
+//  timevary_setup(4)=block or trend type
+//  timevary_setup(5)=block pattern
+//  timevary_setup(6)=env link type
+//  timevary_setup(7)=env variable
+//  timevary_setup(8)=dev vector used
+//  timevary_setup(9)=dev link type
+//  timevary_setup(10)=dev min year
+//  timevary_setup(11)=dev maxyear
+//  timevary_setup(12)=dev phase
+//  timevary_setup(13)=all parm index of baseparm
+//  timevary_setup(14)=continue_last dev
   
  LOCAL_CALCS
    do_densitydependent=0;
@@ -1227,9 +1242,9 @@
    timevary_parm_cnt=0;
 
 //  push once so 0'th row is not used
-   ivector timevary_setup(1,13);
+   ivector timevary_setup(1,14);
    timevary_setup.initialize();
-   timevary_def.push_back (timevary_setup(1,13));
+   timevary_def.push_back (timevary_setup(1,14));
    dvector tempvec(1,7);  //  temporary vector for a time-vary parameter  LO HI INIT PRIOR PR_type SD PHASE
    timevary_parm_rd.push_back (tempvec);
 
@@ -1256,11 +1271,8 @@
      }
      else
      {
-       ivector timevary_setup(1,13);  //  temporary vector for timevary specs
+       ivector timevary_setup(1,14);  //  temporary vector for timevary specs
        timevary_setup.initialize();
-//  1=baseparm type; 2=baseparm index; 3=first timevary parm
-//  4=block or trend type; 5=block pattern; 6= env link type; 7=env variable;
-//  8=dev vector used; 9=dev link type; 10=dev min year; 11=dev maxyear; 12=dev phase; 13=all parm index of baseparm
        timevary_parm_start_MG=1;  //  at least one MG parm is time varying
        timevary_used=1;
        echoinput<<endl<<" timevary for MG parameter: "<<j<<endl;
@@ -1278,7 +1290,9 @@
        {
          timevary_setup(7)=int(abs(MGparm_1(j,8)))-k*100;
          k=timevary_setup(7);
-         for(y=styr-1;y<=YrMax;y++) env_data_pass(y)=env_data_RD(y,k);
+//         for(y=styr-1;y<=YrMax;y++) env_data_pass(y)=env_data_RD(y,k);
+         env_data_pass(1)=env_data_minyr(k);
+         env_data_pass(2)=env_data_maxyr(k);
        }
        else  //  density-dependence
        {
@@ -1310,8 +1324,8 @@
    env_data_RD:           matrix containing entire set of environmental data as read
    N_parm_dev:            integer that is incremented in create_timevary as dev vectors are created; cumulative across all types of parameters
   */
-       timevary_def.push_back (timevary_setup(1,13));
-       for(y=styr-3;y<=YrMax+1;y++) {timevary_MG(y,mgp_type(j))=timevary_pass(y);}  // year vector for this category og MGparm
+       timevary_def.push_back (timevary_setup(1,14));
+       for(y=styr-3;y<=YrMax+1;y++) {timevary_MG(y,mgp_type(j))=timevary_pass(y);}  // year vector for this category of MGparm
        if(j==MGP_CGD) CGD_onoff=1;
        if(mgp_type(j)==6)  //  doing time-vary age-age' key;  can only use blocks
        	{
@@ -1327,6 +1341,7 @@
 
   //  SS_Label_Info_4.5.95 #Populate time_bio_category array defining when biology changes
      k=YrMax+1;
+     echoinput<<"Display timevary_MG flag"<<endl;
     for (y=styr+1;y<=YrMax;y++)
     {
       if(timevary_MG(y,2)>0 && y<k)  k=y;
@@ -1348,6 +1363,7 @@
           timevary_MG(y,0)=1;  // tracks active status for all MG types
         }
       }
+      echoinput<<y<<" timevary_MG: "<<timevary_MG(y)<<endl;
     }
  END_CALCS
 
@@ -1558,11 +1574,8 @@
      }
      else  //  set up a timevary parameter definition
      {
-       ivector timevary_setup(1,13);  //  temporary vector for timevary specs
+       ivector timevary_setup(1,14);  //  temporary vector for timevary specs
        timevary_setup.initialize();
-//  1=baseparm type; 2=baseparm index; 3=first timevary parm
-//  4=block or trend type; 5=block pattern; 6= env link type; 7=env variable;
-//  8=dev vector used; 9=dev link type; 10=dev min year; 11=dev maxyear; 12=dev phase; 13=all parm index of baseparm
        if(timevary_parm_start_SR==0) timevary_parm_start_SR=timevary_parm_cnt+1;
        echoinput<<" timevary for SR parm: "<<j<<endl;
        timevary_used=1;
@@ -1585,7 +1598,9 @@
        {
          timevary_setup(7)=int(abs(SR_parm_1(j,8)))-k*100;
          k=timevary_setup(7);
-         for(y=styr-1;y<=YrMax;y++) env_data_pass(y)=env_data_RD(y,k);
+//         for(y=styr-1;y<=YrMax;y++) env_data_pass(y)=env_data_RD(y,k);
+         env_data_pass(1)=env_data_minyr(k);
+         env_data_pass(2)=env_data_maxyr(k);
        }
        else  //  density-dependence
        {
@@ -1616,7 +1631,7 @@
    env_data_RD:           matrix containing entire set of environmental data as read
    N_parm_dev:            integer that is incremented in create_timevary as dev vectors are created; cumulative across all types of parameters
   */
-       timevary_def.push_back (timevary_setup(1,13));
+       timevary_def.push_back (timevary_setup(1,14));
        for(y=styr-3;y<=YrMax+1;y++) {timevary_SRparm(y)=timevary_pass(y);}  // year vector for this category og MGparm
      }
    }
@@ -2341,11 +2356,8 @@
      else  //  set up a timevary parameter definition
      {
      	 timevary_used=1;
-       ivector timevary_setup(1,13);  //  temporary vector for timevary specs
+       ivector timevary_setup(1,14);  //  temporary vector for timevary specs
        timevary_setup.initialize();
-//  1=baseparm type; 2=baseparm index; 3=first timevary parm
-//  4=block or trend type; 5=block pattern; 6= env link type; 7=env variable;
-//  8=dev vector used; 9=dev link type; 10=dev min year; 11=dev maxyear; 12=dev phase; 13=all parm index of baseparm
        if(timevary_parm_start_Q==0) timevary_parm_start_Q=timevary_parm_cnt+1;
        echoinput<<endl<<" timevary Q for fleet: "<<f<<endl;
        timevary_cnt++;  //  count parameters with time-vary effect
@@ -2364,7 +2376,9 @@
        {
          timevary_setup(7)=int(abs(Q_parm_1(j,8)))-k*100;
          k=timevary_setup(7);
-         for(y=styr-1;y<=YrMax;y++) env_data_pass(y)=env_data_RD(y,k);
+//         for(y=styr-1;y<=YrMax;y++) env_data_pass(y)=env_data_RD(y,k);
+         env_data_pass(1)=env_data_minyr(k);
+         env_data_pass(2)=env_data_maxyr(k);
        }
        else  //  density-dependence
        {
@@ -2397,7 +2411,7 @@
    N_parm_dev:            integer that is incremented in create_timevary as dev vectors are created; cumulative across all types of parameters
   */
 
-       timevary_def.push_back (timevary_setup(1,13));
+       timevary_def.push_back (timevary_setup(1,14));
        for(y=styr-3;y<=YrMax+1;y++) {timevary_Qparm(y,f)=timevary_pass(y);}  // year vector for this category og MGparm
      }
   }
@@ -2983,6 +2997,7 @@
   }
 
   //  now identify the fleet associated with each parameter
+  echoinput<<"identify the fleet associated with each parameter"<<endl;
   j=0;
   for(f=1;f<=2*Nfleet;f++)
   {
@@ -3015,6 +3030,7 @@
   }
 
 //  check on conversion of retention parameter
+  echoinput<<"check on conversion of retention parameter"<<endl;
   int parmcount;
   int new_lower_bound;
   int new_upper_bound;
@@ -3083,6 +3099,7 @@
   }
 
 //  check on mirror bounds
+  echoinput<<"check on size selex mirror bounds"<<endl;
   parmcount=0;
   for(f=1;f<=Nfleet;f++)
   {
@@ -3090,6 +3107,8 @@
   		{
         i=int(selparm_1(parmcount+1,3));
         j=int(selparm_1(parmcount+2,3));
+        if(i<0) i=1;
+        if(j<0) j=nlength;
         if(i<1) {N_warn++; warning<<" size selex mirror, length range min bin read is ("<<i<<") reset to 1 for fleet: "<<f<<endl;selparm_1(parmcount,3)=1;}
         if(i>j) {N_warn++; cout<<" EXIT - see warning "<<endl; warning<<" Critical error, size selex mirror length range min ("<<i<<") greater than max ("<<j<<") for fleet: "<<f<<endl; exit(1);}
         if(j>nlength) {N_warn++; warning<<" size selex mirror length is > nlength for fleet: "<<f<<" reset to nlength"<<endl;selparm_1(parmcount+1,3)=nlength;}
@@ -3133,11 +3152,8 @@
      else  //  set up a timevary parameter defintion
      {
      	 timevary_used=1;
-       ivector timevary_setup(1,13);  //  temporary vector for timevary specs
+       ivector timevary_setup(1,14);  //  temporary vector for timevary specs
        timevary_setup.initialize();
-//  1=baseparm type; 2=baseparm index; 3=first timevary parm
-//  4=block or trend type; 5=block pattern; 6= env link type; 7=env variable;
-//  8=dev vector used; 9=dev link type; 10=dev min year; 11=dev maxyear; 12=dev phase; 13=all parm index of baseparm
        if(timevary_parm_start_sel==0) timevary_parm_start_sel=timevary_parm_cnt+1;
        echoinput<<endl<<" timevary for sel parameter: "<<j<<endl;
        timevary_cnt++;  //  count parameters with time-vary effect
@@ -3154,7 +3170,9 @@
        {
          timevary_setup(7)=int(abs(selparm_1(j,8)))-k*100;
          k=timevary_setup(7);
-         for(y=styr-1;y<=YrMax;y++) env_data_pass(y)=env_data_RD(y,k);
+//         for(y=styr-1;y<=YrMax;y++) env_data_pass(y)=env_data_RD(y,k);
+         env_data_pass(1)=env_data_minyr(k);
+         env_data_pass(2)=env_data_maxyr(k);
        }
        else  //  density-dependence
        {
@@ -3185,14 +3203,14 @@
    env_data_RD:           matrix containing entire set of environmental data as read
    N_parm_dev:            integer that is incremented in create_timevary as dev vectors are created; cumulative across all types of parameters
   */
-       timevary_def.push_back (timevary_setup(1,13));
+       timevary_def.push_back (timevary_setup(1,14));
        for(y=styr-3;y<=YrMax+1;y++) {timevary_sel(y,selparm_fleet(j))=timevary_pass(y);}  // year vector for this category
      }
   }
 
    timevary_setup.initialize();
    timevary_setup(3)=timevary_parm_cnt+1;  //  one past last one used
-   timevary_def.push_back (timevary_setup(1,13));
+   timevary_def.push_back (timevary_setup(1,14));
 
    N_selparm3=N_selparm;
    if(timevary_parm_start_sel>0)
@@ -3402,12 +3420,12 @@
     }  // end type
 
   } // end years
-  echoinput<<"Recalc_flag_for_length_recalc_by_year"<<endl;
+  echoinput<<"Recalc_flag_for_length_selex_recalc_by_year"<<endl;
   for (f=1;f<=Nfleet;f++)
   {
   	echoinput<<f<<" "<<fleetname(f)<<" "<<column(timevary_sel,f)<<endl;
   }
-  echoinput<<"Recalc_flag_for_age_recalc_by_year"<<endl;
+  echoinput<<"Recalc_flag_for_age_selex_recalc_by_year"<<endl;
   for (f=1;f<=Nfleet;f++)
   {
   	int f2=f+Nfleet;
@@ -3575,8 +3593,8 @@
    {
      for (j=1;j<=timevary_cnt;j++)  //  loop all timevary to set up devs; note that 2D_AR1 is counted in N_parm_dev, but not in timevary_cnt
      {
-       ivector timevary_setup(1,13);
-       timevary_setup(1,13)=timevary_def[j](1,13);
+       ivector timevary_setup(1,14);
+       timevary_setup(1,14)=timevary_def[j](1,14);
        if(timevary_setup(8)>0)
        {
          k=timevary_setup(8);  //  dev vector used
@@ -3587,19 +3605,21 @@
          f=timevary_setup(13);  //  index of base parameter
            int picker=timevary_setup(9);
            parm_dev_type(k)=1;  //  so P'=P+dev*se with objfun using  -log(1)
-           int continue_last=0;
            if(picker>20)
            {
             picker-=20;
-            continue_last=1;
+            timevary_setup(14)=1;  //  flag to continue last dev through to YrMax
            }
-           parm_dev_use_rho(k)=0;
            if(picker>10) 
            {
              parm_dev_type(k)=3;  // use objfun using -log(se) to match 3.30.12 and earlier
              picker-=10;
            }
-           if(picker==4) parm_dev_use_rho(k)=1;
+           timevary_setup(9)=picker;   //  set to its core function because parm_dev_type has been setup
+           timevary_def[j](9)=picker;  //  save in array also
+
+           parm_dev_use_rho(k)=0;
+           if(picker==4 || picker==5) parm_dev_use_rho(k)=1;
          for(y=parm_dev_minyr(k);y<=parm_dev_maxyr(k);y++)
          {
            sprintf(onenum, "%d", y);
@@ -3612,6 +3632,8 @@
            {ParmLabel+=ParmLabel(f)+"_DEVrwalk_"+onenum+CRLF(1);}
            else if(picker==4)
            {ParmLabel+=ParmLabel(f)+"_DEV_MR_rwalk_"+onenum+CRLF(1);}
+           else if(picker==5)
+           {ParmLabel+=ParmLabel(f)+"_DEV_MR_rwalk_bnd"+onenum+CRLF(1);}  //  for bounding result on base parm min-max
            else
            {N_warn++; cout<<" EXIT - see warning "<<endl; warning<<" illegal parmdevtype for parm "<<f<<endl; exit(1);}
          }
@@ -3623,41 +3645,41 @@
      TwoD_AR_degfree.initialize();
      for (f=1;f<=TwoD_AR_cnt;f++)
      {
-       ivector timevary_setup(1,13);
+       ivector TwoD_AR_setup(1,13);
     //  1-fleet, 2-ymin, 3-ymax, 4-amin, 5-amax, 6-sigma_amax, 7-use_rho, 8-age/len, 9-dev_phase
     //  10-mindimension, 11=maxdim, 12-N_parm_dev, 13-selparm_location
     //  note that elements 10 and 11 have different usages when used for time-varying parameters
-       timevary_setup(1,13)=TwoD_AR_def[f](1,13);
-       echoinput<<f<<" 2D_AR1 setup "<<timevary_setup<<endl;
-         k=timevary_setup(12);  //  dev vector used
+       TwoD_AR_setup(1,13)=TwoD_AR_def[f](1,13);
+       echoinput<<f<<" 2D_AR1 setup "<<TwoD_AR_setup<<endl;
+         k=TwoD_AR_setup(12);  //  dev vector used
          parm_dev_minyr(k)=1;  //  used for dimensioning the dev vectors in SS_param   parm_dev_minyr(k)
-         parm_dev_maxyr(k)=(timevary_setup(3)-timevary_setup(2)+1)*(timevary_setup(5)-timevary_setup(4)+1);   //parm_dev_maxyr(k)
-         parm_dev_PH(k)=timevary_setup(9);
+         parm_dev_maxyr(k)=(TwoD_AR_setup(3)-TwoD_AR_setup(2)+1)*(TwoD_AR_setup(5)-TwoD_AR_setup(4)+1);   //parm_dev_maxyr(k)
+         parm_dev_PH(k)=TwoD_AR_setup(9);
          parm_dev_type(k)=2;  //  distinguish 2D_AR devs from parameter devs
          parm_dev_use_rho(k)=0;  //  need to update when implemented
          parm_dev_info(k)=f;  //  pointer from parmdev list to the 2D_AR list
-         TwoD_AR_ymin(f)=timevary_setup(2);
-         TwoD_AR_ymax(f)=timevary_setup(3);
-         TwoD_AR_amin(f)=timevary_setup(4);
-         TwoD_AR_amax(f)=timevary_setup(5);
-         TwoD_AR_before(f)=timevary_setup(10);
-         TwoD_AR_after(f)=timevary_setup(11);
+         TwoD_AR_ymin(f)=TwoD_AR_setup(2);
+         TwoD_AR_ymax(f)=TwoD_AR_setup(3);
+         TwoD_AR_amin(f)=TwoD_AR_setup(4);
+         TwoD_AR_amax(f)=TwoD_AR_setup(5);
+         TwoD_AR_before(f)=TwoD_AR_setup(10);
+         TwoD_AR_after(f)=TwoD_AR_setup(11);
          TwoD_AR_cor_dim(f)=(TwoD_AR_ymax(f)-TwoD_AR_ymin(f)+1)*(TwoD_AR_amax(f)-TwoD_AR_amin(f)+1);
-         for(y=timevary_setup(2);y<=timevary_setup(3);y++)
+         for(y=TwoD_AR_ymin(f);y<=TwoD_AR_ymax(f);y++)
          {
            TwoD_AR_degfree(f)+=have_data_yr(y,timevary_setup(1));
-           for(a=timevary_setup(4);a<=timevary_setup(5);a++)
+           for(a=TwoD_AR_amin(f);a<=TwoD_AR_amax(f);a++)
            {
              sprintf(onenum, "%d", y);
              sprintf(anystring, "%d", a);
              ParCount++;
-             if(timevary_setup(8)==1)
-             {ParmLabel+=fleetname(timevary_setup(1))+"_ARDEV_y"+onenum+"_Lbin"+anystring+CRLF(1);}
+             if(TwoD_AR_setup(8)==1)
+             {ParmLabel+=fleetname(TwoD_AR_setup(1))+"_ARDEV_y"+onenum+"_Lbin"+anystring+CRLF(1);}
              else
-             {ParmLabel+=fleetname(timevary_setup(1))+"_ARDEV_y"+onenum+"_A"+anystring+CRLF(1);}
+             {ParmLabel+=fleetname(TwoD_AR_setup(1))+"_ARDEV_y"+onenum+"_A"+anystring+CRLF(1);}
            }
          }
-         echoinput<<" total years, and with data  "<<timevary_setup(3)-timevary_setup(2)+1<<" "<<TwoD_AR_degfree(f)<<"  times nages: ";
+         echoinput<<" total years, and with data  "<<TwoD_AR_ymax(f)-TwoD_AR_ymin(f)+1<<" "<<TwoD_AR_degfree(f)<<"  times nages: ";
          TwoD_AR_degfree(f)*=(TwoD_AR_amax(f)-TwoD_AR_amin(f)+1);
          echoinput<<TwoD_AR_degfree(f)<<endl;
      }
@@ -3930,21 +3952,25 @@
     More_Std_N_Inputs=9;
   }
   if(Do_More_Std==2){
-    More_Std_N_Inputs=11;
+    More_Std_N_Inputs=13;
   }
  END_CALCS
-  init_ivector More_Std_Input(1,More_Std_N_Inputs); // read dimensions
+  ivector More_Std_Input(1,13); // read dimensions
+  init_ivector temp_std_input(1,More_Std_N_Inputs)
  LOCAL_CALCS
-  echoinput<<Do_More_Std<<" # extra stdev reporting: 0 = skip, 1 = read specs for reporting stdev for selectivity, size, and numbers, 2 = mortality in addition to values in option 1"<<endl;
+  echoinput<<Do_More_Std<<" # extra stdev reporting: 0 = skip, 1 = read specs for reporting stdev for selectivity, size, and numbers, 2 = add option for M and dyn. Bzero "<<endl;
+  More_Std_Input.initialize();
   if(Do_More_Std>0)
   {
-    echoinput<<More_Std_Input(1,4)<<" # Selectivity: (1) 0 or fleet, (2) 1=len/2=age/3=combined, (3) year, (4) N selex bins; NOTE: combined reports in age bins"<<endl;
-    echoinput<<More_Std_Input(5,6)<<" # Growth: (1) 0 or growth pattern, (2) growth ages; NOTE: does each sex"<<endl;
-    echoinput<<More_Std_Input(7,9)<<" # Numbers-at-age: (1) 0 or area(-1 for all), (2) year, (3) N ages;  NOTE: sums across morphs"<<endl;
+    More_Std_Input(1,More_Std_N_Inputs) = temp_std_input(1,More_Std_N_Inputs);
+    echoinput<<More_Std_Input(1,4)<<" # Selectivity: (1) 0 to skip or fleet, (2) 1=len/2=age/3=combined, (3) year, (4) N selex bins; NOTE: combined reports in age bins"<<endl;
+    echoinput<<More_Std_Input(5,6)<<" # Growth: (1) 0 to skip or growth pattern, (2) growth ages; NOTE: does each sex"<<endl;
+    echoinput<<More_Std_Input(7,9)<<" # Numbers-at-age: (1) 0 to skip or area(-1 for all), (2) year, (3) N ages;  NOTE: sums across morphs"<<endl;
   }
-  if(Do_More_Std==2)
+  if(Do_More_Std>=2)
   {
-    echoinput<<More_Std_Input(10,11)<<" # Mortality: (1) 0 or growth pattern, (2) N ages for mortality; NOTE: does each sex"<<endl;
+    echoinput<<More_Std_Input(10,11)<<" # Mortality: (1) 0 to skip or growth pattern, (2) N ages for mortality; NOTE: does each sex"<<endl;
+    echoinput<<More_Std_Input(12,13)<<" # Dyn_Bzero: (1) 0 to skip, 1 to do, 2 w/ recr (2) reserved for future use"<<endl;
   }
  END_CALCS
 
@@ -3959,6 +3985,7 @@
   int NatAge_Std_Cnt;
   int Do_NatM_Std;
   int NatM_Std_Cnt;
+  int Do_Dyn_Bzero;
   int Extra_Std_N;   //  dimension for the sdreport vector Selex_Std which also contains the Growth_Std
 
  LOCAL_CALCS
@@ -3978,6 +4005,7 @@
      NatAge_Std_Year=endyr;
      Do_NatM_Std=0;
      NatM_Std_Cnt=0;
+     Do_Dyn_Bzero=0;
    }
 
    // read standard extra std inputs (only option prior to 3.30.15)
@@ -4011,6 +4039,7 @@
      if(Do_NatM_Std<=0){
        NatM_Std_Cnt=0;
      }
+     Do_Dyn_Bzero=More_Std_Input(12);
    }
  END_CALCS
 
@@ -4163,6 +4192,12 @@
     Extra_Std_N+=gender*NatM_Std_Cnt;
   }
 
+  if(Do_Dyn_Bzero>0)
+  {
+  	Do_Dyn_Bzero=Extra_Std_N+1;  //  start spot for Dynamic Bzero
+  	Extra_Std_N+=YrMax-(styr-2)+1;
+  	if(More_Std_Input(12)==2) Extra_Std_N+=YrMax-(styr-2)+1;  //  for recruitment
+  }
   // add 3 values for ln(Spbio)
   // (years are automatically generated as startyr, mid-point, and endyr)
   Extra_Std_N+=3;  
@@ -4192,7 +4227,13 @@
   Fcast_catch_start=N_STD_Mgmt_Quant;
   if(max(Do_Retain)>0) {j=1;} else {j=0;}
   if(Do_Forecast>0) {N_STD_Mgmt_Quant+=N_Fcast_Yrs*(1+j)+N_Fcast_Yrs;}
-  k=ParCount+2*N_STD_Yr+N_STD_Yr_Dep+N_STD_Yr_Ofish+N_STD_Yr_F+N_STD_Mgmt_Quant+gender*Selex_Std_Cnt+gender*Growth_Std_Cnt+gender*NatAge_Std_Cnt+gender*NatM_Std_Cnt+3+Svy_N_sdreport;
+  k=ParCount+2*N_STD_Yr+N_STD_Yr_Dep+N_STD_Yr_Ofish+N_STD_Yr_F+N_STD_Mgmt_Quant+gender*Selex_Std_Cnt+gender*Growth_Std_Cnt+gender*NatAge_Std_Cnt+gender*NatM_Std_Cnt;
+  if(Do_More_Std>=2)
+  {
+    k+=Do_Dyn_Bzero*(YrMax-(styr-2)-1);
+    if(More_Std_Input(12)==2) k+=(YrMax-(styr-2)-1);  //  for recruits
+  }
+  k+=3+Svy_N_sdreport;
   echoinput<<"N parameters: "<<ParCount<<endl<<"Parameters plus derived quant: "<<k<<endl;
  END_CALCS
   ivector active_parm(1,k)  //  pointer from active list to the element of the full parameter list to get label later
@@ -4563,8 +4604,8 @@
    {
      for (j=1;j<=timevary_cnt;j++)  //  loop all timevary to set up devs; note that 2D_AR1 is counted in N_parm_dev, but not in timevary_cnt
      {
-       ivector timevary_setup(1,13);
-       timevary_setup(1,13)=timevary_def[j](1,13);
+       ivector timevary_setup(1,14);
+       timevary_setup(1,14)=timevary_def[j](1,14);
        if(timevary_setup(8)>0)
        {
          k=timevary_setup(8);  //  dev vector used
@@ -4579,11 +4620,11 @@
    {
      for (j=1;j<=TwoD_AR_cnt;j++)  //  loop all timevary to set up devs; note that 2D_AR1 is counted in N_parm_dev, but not in timevary_cnt
      {
-       ivector timevary_setup(1,13);
-       timevary_setup(1,13)=TwoD_AR_def[j](1,13);
-       if(timevary_setup(12)>0)
+       ivector TwoD_AR_setup(1,13);
+       TwoD_AR_setup(1,13)=TwoD_AR_def[j](1,13);
+       if(TwoD_AR_setup(12)>0)
        {
-         k=timevary_setup(12);  //  dev vector used
+         k=TwoD_AR_setup(12);  //  dev vector used
          if(depletion_fleet>0 && depletion_type<2 && parm_dev_PH(k)>0) parm_dev_PH(k)++;//  add 1 to phase if using depletion fleet
          if(parm_dev_PH(k)>Turn_off_phase2) parm_dev_PH(k) =-1;
          if(parm_dev_PH(k)>max_phase) max_phase=parm_dev_PH(k);
@@ -4847,6 +4888,35 @@
         // cout<<"age_vector(NatM_Std_Pick(i)): "<<age_vector(NatM_Std_Pick(i))<<endl;
         // cout<<"NumLbl0(age_vector(NatM_Std_Pick(i))+1): "<<NumLbl0(age_vector(NatM_Std_Pick(i))+1)<<endl;
         ParmLabel+="NatM_std_GP:_"+NumLbl(Do_NatM_Std)+"_"+GenderLbl(g)+"_A_"+NumLbl0(age_vector(NatM_Std_Pick(i))+1)+CRLF(1);
+      }
+    }
+
+    if(Do_Dyn_Bzero>0)
+    {
+      echoinput<<" do Dyn Bzero std labels "<<endl;
+        CoVar_Count++; j++; active_parm(CoVar_Count)=j;
+        ParmLabel+="Dyn_Bzero_Virg"+CRLF(1);
+        CoVar_Count++; j++; active_parm(CoVar_Count)=j;
+        ParmLabel+="Dyn_Bzero_InitEq"+CRLF(1);
+      for (y=styr;y<=YrMax;y++)
+      {
+        CoVar_Count++; j++; active_parm(CoVar_Count)=j;
+        sprintf(onenum, "%d", y);
+        ParmLabel+="Dyn_Bzero_"+onenum+CRLF(1);
+      }
+    }
+    if(More_Std_Input(12)==2)
+    {
+      echoinput<<" do Dyn Bzero Recruits std labels "<<endl;
+        CoVar_Count++; j++; active_parm(CoVar_Count)=j;
+        ParmLabel+="Dyn_Recr_Virg"+CRLF(1);
+        CoVar_Count++; j++; active_parm(CoVar_Count)=j;
+        ParmLabel+="Dyn_Recr_InitEq"+CRLF(1);
+      for (y=styr;y<=YrMax;y++)
+      {
+        CoVar_Count++; j++; active_parm(CoVar_Count)=j;
+        sprintf(onenum, "%d", y);
+        ParmLabel+="Dyn_Recr_"+onenum+CRLF(1);
       }
     }
 

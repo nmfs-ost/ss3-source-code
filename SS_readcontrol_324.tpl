@@ -1322,7 +1322,7 @@
    MGblkcnt=0;
 
 //  push once so 0'th row is not used
-   ivector timevary_setup(1,13);
+   ivector timevary_setup(1,14);
    timevary_setup.initialize();
    timevary_def.push_back (timevary_setup(1,13));
    dvector tempvec(1,7);  //  temporary vector for a time-vary parameter  LO HI INIT PRIOR PR_type SD PHASE
@@ -3997,12 +3997,14 @@
   int NatAge_Std_Cnt;
   int Do_NatM_Std;
   int NatM_Std_Cnt;
+  int Do_Dyn_Bzero;
   ivector NatM_Std_Pick(1,1);
   int Extra_Std_N;   //  dimension for the sdreport vector Selex_Std which also contains the Growth_Std
 
  LOCAL_CALCS
    Do_NatM_Std=0;
    NatM_Std_Cnt=0;
+   Do_Dyn_Bzero=0;
    NatM_Std_Pick.initialize();
    if(Do_More_Std==1)
    {

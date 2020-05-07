@@ -74,7 +74,7 @@ GLOBALS_SECTION
 //  declare some entities that need global access
   int ParCount; int timevary_parm_cnt; int N_warn;
   int styr; int endyr; int YrMax; int nseas; int Ncycle; int seas_as_year;
-
+  int special_flag=0;  //  for whenever I need one
 
 //  SS_Label_Info_10.3  #start random number generator with seed based on time
   random_number_generator radm(long(time(&start)));
@@ -239,6 +239,20 @@ GLOBALS_SECTION
                        const dvector &env_data_pass, int &N_parm_dev, const double& finish_starter)
   {
 //  where timevary_byyear is a selected column of a year x type matrix (e.g. timevary_MG) in read_control
+//  timevary_setup(1)=baseparm type;
+//  timevary_setup(2)=baseparm index;
+//  timevary_setup(3)=first timevary parm
+//  timevary_setup(4)=block or trend type
+//  timevary_setup(5)=block pattern
+//  timevary_setup(6)=env link type
+//  timevary_setup(7)=env variable
+//  timevary_setup(8)=dev vector used
+//  timevary_setup(9)=dev link type
+//  timevary_setup(10)=dev min year
+//  timevary_setup(11)=dev maxyear
+//  timevary_setup(12)=dev phase
+//  timevary_setup(13)=all parm index of baseparm
+//  timevary_setup(14)=continue_last dev
     echoinput<<"baseparm: "<<baseparm_list<<endl;
     int j; int g; int y; int a; int f;
     int k;
@@ -477,6 +491,20 @@ GLOBALS_SECTION
            timevary_parm_rd.push_back (tempvec(1,7));
            break;
          }
+        case 3:  //  additive in logistic space to stay in min-max bounds
+         {
+          echoinput<<" do env constrained "<<endl;
+           ParCount++; ParmLabel+=ParmLabel(j)+"_ENV_add_constr";
+           timevary_parm_cnt++;
+           dvector tempvec(1,7);
+            tempvec.initialize();
+            if(autogen_timevary>=1)  //  read
+           {*(ad_comm::global_datafile) >> tempvec(1,7);}
+            if(autogen_timevary==0 || (autogen_timevary==2 && tempvec(1)==-12345))  //  create or overwrite
+           {tempvec.fill("{-1.8,1.8,1.0,1.0,0.5,6,4}");}
+           timevary_parm_rd.push_back (tempvec(1,7));
+           break;
+         }
         case 4:  //  logistic with offset
          {
            ParCount++; ParmLabel+=ParmLabel(j)+"_ENV_offset";
@@ -499,14 +527,13 @@ GLOBALS_SECTION
            break;
          }
       }
-      for (y=env_data_pass.indexmin();y<=env_data_pass.indexmax()-1;y++)
       {
        if(timevary_setup(7)>0 )
        {
-         if(env_data_pass(y)!=0.0) {timevary_byyear(y)=1; timevary_byyear(y+1)=1; }
+         timevary_byyear(env_data_pass(1),env_data_pass(2)+1)=1;
        }
        else if (timevary_setup(7)<0 )  //  density-dependence being used
-       {timevary_byyear(y)=1; }
+       {timevary_byyear(styr,YrMax)=1; }
       }
     }
 

@@ -520,7 +520,7 @@ FUNCTION void write_SS_summary()
   {
     SS_smry<<"TotCatch_"<<y<<" "<<Smry_Table(y,4)<<" 0.0"<<endl;
   }
-  
+
 //    report2 <<runnumber<<" Timeseries TotBio "<<column(Smry_Table,1)<<endl;
 //  report2 <<runnumber<<" Timeseries SmryBio-"<<Smry_Age<<" "<<column(Smry_Table,2)<<endl;
 //  report2 <<runnumber<<" Timeseries TotCatch "<<column(Smry_Table,4)<<endl;

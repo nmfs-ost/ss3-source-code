@@ -1549,6 +1549,7 @@ FUNCTION void Make_Fecundity()
 //  to calculate the mean fecundity at each age
  /* SS_Label_31.1 FUNCTION Make_Fecundity */
 //  SPAWN-RECR:   here is the make_Fecundity function
+    fec.initialize();
     ALK_idx=(spawn_seas-1)*N_subseas+spawn_subseas;
     for (g=1;g<=gmorph;g++)
     if(sx(g)==1 && use_morph(g)>0)
@@ -1570,11 +1571,11 @@ FUNCTION void Make_Fecundity()
         default:
         {
               int ALK_finder=(ALK_idx-1)*gmorph+g;
-          for(a=0;a<=nages;a++)
+          for(a=First_Mature_Age;a<=nages;a++)
           {
             tempvec_a(a) = ALK(ALK_idx,g,a)(ALK_range_g_lo(ALK_finder,a),ALK_range_g_hi(ALK_finder,a)) *mat_fec_len(GPat)(ALK_range_g_lo(ALK_finder,a),ALK_range_g_hi(ALK_finder,a));
           }
-          fec(g) = elem_prod(tempvec_a,mat_age(GPat));  //  reproductive output at age
+          fec(g)(First_Mature_Age,nages) = elem_prod(tempvec_a(First_Mature_Age,nages),mat_age(GPat)(First_Mature_Age,nages));  //  reproductive output at age
         }
       }
 

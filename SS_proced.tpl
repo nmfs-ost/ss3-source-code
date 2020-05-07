@@ -85,6 +85,47 @@ PROCEDURE_SECTION
 //  SS_Label_Info_7.6 #If sdphase or mcevalphase, do benchmarks and forecast and derived quantities
     if( (sd_phase() || mceval_phase()) && (initial_params::mc_phase==0))
     {
+
+    if(Do_Dyn_Bzero>0) //  do dynamic Bzero
+    	{
+      save_gparm=0;
+      fishery_on_off=0;
+      setup_recdevs();
+      y=styr;
+      get_initial_conditions();
+      get_time_series();
+      setup_Benchmark(); 
+      if(Do_Benchmark>0)
+      {
+        Get_Benchmarks(show_MSY); // should not be needed, but something critical is getting setup
+      }
+      if(Do_Forecast>0)
+      {
+        show_MSY=0;
+        Get_Forecast();
+      }
+      k=Do_Dyn_Bzero;
+      for(j=styr-2; j<=YrMax;j++)
+      {
+        Extra_Std(k)=SSB_yr(j); k++;
+      }
+      if(More_Std_Input(12)==2)
+    	{
+        for(j=styr-2; j<=YrMax;j++)
+        {
+          Extra_Std(k)=exp_rec(j,4); k++;
+        }
+    	}
+//  end dynamic Bzero
+    	}
+
+      save_gparm=0;
+      fishery_on_off=1;
+      setup_recdevs();
+      y=styr;
+      get_initial_conditions();
+      get_time_series();  //  in write_big_report
+      evaluate_the_objective_function();
       setup_Benchmark();
 //  SS_Label_Info_7.6.1 #Call fxn Get_Benchmarks()
       if(mceval_phase()==0) {show_MSY=1;}  //  so only show details if not in mceval
