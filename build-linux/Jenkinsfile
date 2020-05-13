@@ -23,7 +23,7 @@ pipeline {
                 sh label: 'Run build', script: 'cd vlab/stock-synthesis && /bin/bash ./Make_SS_330_new.sh -b SS330 -a /usr/local/bin/admb -o'
                 sh label: 'Validate build', script: 'cp vlab/stock-synthesis/SS330/ss_opt . && sha256sum ss_opt' 
                 sh label: 'Make build executable', script: 'chmod a+x vlab/stock-synthesis/SS330/ss_opt'                     
-           }   
+            }   
         }
         stage('Build SS trans executable')  {
             steps {
@@ -32,6 +32,7 @@ pipeline {
                 sh label: 'Make build executable', script: 'chmod a+x vlab/stock-synthesis/SS330/ss_trans'                
            }
         }
+    }
 	post {
         always {
             archiveArtifacts 'vlab/stock-synthesis/SS330/*'
