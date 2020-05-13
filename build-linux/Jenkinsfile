@@ -12,38 +12,30 @@ pipeline {
         }
         stage('Build SS safe executable') {
             steps {
-                sh label: 'Make build script executable', script: 'cd vlab/stock-synthesis && chmod a+x Make_SS_330_new.sh'
+                sh label: 'confirm build script executable', script: 'cd vlab/stock-synthesis && ls -l'
                 sh label: 'Run build', script: 'cd vlab/stock-synthesis && /bin/bash ./Make_SS_330_new.sh -b SS330 -a /usr/local/bin/admb'
-                
-                //sh label: 'Make build script executable', script: 'cd vlab/stock-synthesis && chmod a+x Make_SS_330.sh'
-                //sh label: 'Run build', script: 'cd vlab/stock-synthesis && ls && export BUILD_DIR="SS330" && ./Make_SS_330.sh'
-                //sh label: 'Validate build', script: 'cp vlab/stock-synthesis/SS330/ss . && sha256sum ss'
+                sh label: 'Validate build', script: 'cp vlab/stock-synthesis/SS330/ss . && sha256sum ss'
+                sh label: 'Make build executable', script: 'chmod a+x vlab/stock-synthesis/SS330/ss'   
             }
         }
         stage('Build SS opt executable')  {
-            steps{
-                sh label: 'Dummy option: see dir contents', script: 'ls'
-                // sh label: 'Make build script executable', script: 'cd vlab/stock-synthesis && chmod a+x Make_SS_330_opt.sh'
-                //sh label: 'Run build', script: 'cd vlab/stock-synthesis && ls && export BUILD_DIR="SS330" && ./Make_SS_330_opt.sh'
-                //sh label: 'Validate build', script: 'cp vlab/stock-synthesis/SS330/ss_opt . && sha256sum ss_opt'         
+            steps
+                sh label: 'Run build', script: 'cd vlab/stock-synthesis && /bin/bash ./Make_SS_330_new.sh -b SS330 -a /usr/local/bin/admb -o'
+                sh label: 'Validate build', script: 'cp vlab/stock-synthesis/SS330/ss_opt . && sha256sum ss_opt' 
+                sh label: 'Make build executable', script: 'chmod a+x vlab/stock-synthesis/SS330/ss_opt'                     
            }   
         }
         stage('Build SS trans executable')  {
             steps {
-                   sh label: 'Dummy option: see dir contents', script: 'ls'
-                // sh label: 'Make build script executable', script: 'cd vlab/stock-synthesis && chmod a+x Make_SS_transition.sh'
-                // sh label: 'Run build', script: 'cd vlab/stock-synthesis && ls && export BUILD_DIR="SS330_tr" && ./Make_SS_transition.sh'
-                // sh label: 'Validate build', script: 'cp vlab/stock-synthesis/SS330_tr/ss_trans . && sha256sum ss_trans'          
+                sh label: 'Run build', script: 'cd vlab/stock-synthesis && /bin/bash ./Make_SS_330_new.sh -b SS330 -a /usr/local/bin/admb -t'
+                sh label: 'Validate build', script: 'cp vlab/stock-synthesis/SS330/ss_trans . && sha256sum ss_trans'   
+                sh label: 'Make build executable', script: 'chmod a+x vlab/stock-synthesis/SS330/ss_trans'                
            }
         }
-        stage('Archive artifact') {
-            steps {
-                archiveArtifacts 'vlab/stock-synthesis/SS330/ss'
-                // archiveArtifacts 'vlab/stock-synthesis/SS330/ss, vlab/stock-synthesis/SS330/ss.tpl, vlab/stock-synthesis/SS330/ss_opt, vlab/stock-synthesis/SS330_tr/ss_trans'
-            }
-        }
-    }
 	post {
+        always {
+            archiveArtifacts 'vlab/stock-synthesis/SS330/*'
+        }
 		failure {
 			mail bcc: '', body: 'The job Stock-Synthesis-build-linux failed.', cc: '', from: '', replyTo: '', subject: 'stock-synthesis-build: Jenkins Build Failure', to: 'kathryn.doering@noaa.gov'
 		}
