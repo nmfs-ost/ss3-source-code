@@ -22,13 +22,15 @@ pipeline {
         }
         stage('Build SS opt executable')  {
             steps{
-               // sh label: 'Make build script executable', script: 'cd vlab/stock-synthesis && chmod a+x Make_SS_330_opt.sh'
+                sh label: 'Dummy option: see dir contents', script: 'ls'
+                // sh label: 'Make build script executable', script: 'cd vlab/stock-synthesis && chmod a+x Make_SS_330_opt.sh'
                 //sh label: 'Run build', script: 'cd vlab/stock-synthesis && ls && export BUILD_DIR="SS330" && ./Make_SS_330_opt.sh'
                 //sh label: 'Validate build', script: 'cp vlab/stock-synthesis/SS330/ss_opt . && sha256sum ss_opt'         
            }   
         }
         stage('Build SS trans executable')  {
             steps {
+                   sh label: 'Dummy option: see dir contents', script: 'ls'
                 // sh label: 'Make build script executable', script: 'cd vlab/stock-synthesis && chmod a+x Make_SS_transition.sh'
                 // sh label: 'Run build', script: 'cd vlab/stock-synthesis && ls && export BUILD_DIR="SS330_tr" && ./Make_SS_transition.sh'
                 // sh label: 'Validate build', script: 'cp vlab/stock-synthesis/SS330_tr/ss_trans . && sha256sum ss_trans'          
