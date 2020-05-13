@@ -10,23 +10,33 @@ pipeline {
                 checkout([$class: 'GitSCM', branches: [[name: '*/master']], doGenerateSubmoduleConfigurations: false, extensions: [[$class: 'RelativeTargetDirectory', relativeTargetDir: 'vlab/stock-synthesis']], submoduleCfg: [], userRemoteConfigs: [[credentialsId: '1aa2d7c8-749f-4270-9de2-6ffcf0cd2beb', url: 'https://stock_synthesis.build@vlab.ncep.noaa.gov/git/stock-synthesis']]])
             }
         }
-        stage('Build SS Executables') {
+        stage('Build SS Executable') {
             steps {
-                checkout([$class: 'GitSCM', branches: [[name: '*/master']], doGenerateSubmoduleConfigurations: false, extensions: [[$class: 'RelativeTargetDirectory', relativeTargetDir: 'vlab/stock-synthesis']], submoduleCfg: [], userRemoteConfigs: [[credentialsId: '1aa2d7c8-749f-4270-9de2-6ffcf0cd2beb', url: 'https://stock_synthesis.build@vlab.ncep.noaa.gov/git/stock-synthesis']]])
-
                 sh label: 'Make build script executable', script: 'cd vlab/stock-synthesis && chmod a+x Make_SS_330.sh'
-                sh label: 'Make build script executable', script: 'cd vlab/stock-synthesis && chmod a+x Make_SS_330_opt.sh'
-                sh label: 'Make build script executable', script: 'cd vlab/stock-synthesis && chmod a+x Make_SS_transition.sh'
                 sh label: 'Run build', script: 'cd vlab/stock-synthesis && ls && export BUILD_DIR="SS330" && ./Make_SS_330.sh'
-                sh label: 'Run build', script: 'cd vlab/stock-synthesis && ls && export BUILD_DIR="SS330" && ./Make_SS_330_opt.sh'
-                sh label: 'Run build', script: 'cd vlab/stock-synthesis && ls && export BUILD_DIR="SS330" && ./Make_SS_transition.sh'
                 sh label: 'Validate build', script: 'cp vlab/stock-synthesis/SS330/ss . && sha256sum ss'
                 sh label: 'Archive ss executable', script: 'rm -f ss.gz && gzip -v ss'
             }
         }
+        stage('Build SS opt executable')  {
+            steps{
+                sh label: 'Make build script executable', script: 'cd vlab/stock-synthesis && chmod a+x Make_SS_330_opt.sh'
+                sh label: 'Run build', script: 'cd vlab/stock-synthesis && ls && export BUILD_DIR="SS330" && ./Make_SS_330_opt.sh'
+                sh label: 'Validate build', script: 'cp vlab/stock-synthesis/SS330/ss_opt . && sha256sum ss_opt'
+                sh label: 'Archive ss executable', script: 'rm -f ss_opt.gz && gzip -v ss_opt'           
+           }   
+        }
+        stage('Build SS trans executable')  {
+            steps {
+                sh label: 'Make build script executable', script: 'cd vlab/stock-synthesis && chmod a+x Make_SS_transition.sh'
+                sh label: 'Run build', script: 'cd vlab/stock-synthesis && ls && export BUILD_DIR="SS330_tr" && ./Make_SS_transition.sh'
+                sh label: 'Validate build', script: 'cp vlab/stock-synthesis/SS330_tr/ss_trans . && sha256sum ss_trans'
+                sh label: 'Archive ss executable', script: 'rm -f ss_trans.gz && gzip -v ss_trans'           
+           }
+        }
         stage('Archive artifact') {
             steps {
-              archiveArtifacts 'ss.gz'
+              archiveArtifacts 'vlab/stock-synthesis/SS330/*'
             }
         }
     }
