@@ -273,14 +273,12 @@ FUNCTION void write_nudata()
     report1<<endl;
   }
   }
+
     report1<<"#"<<endl << N_envvar<<" #_N_environ_variables"<<endl;
+    report1<<"# -2 in yr will subtract mean for that env_var; -1 will subtract mean and divide by stddev (e.g. Z-score)"<<endl;
     report1<<"#Yr Variable Value"<<endl;
-    if(finish_starter==999) 
-      {j=1;}
-      else
-      {j=0;}
     if(N_envvar>0)
-      {for(i=j;i<=N_envdata-1+j;i++) report1<<env_temp[i]<<endl;
+      {for(i=0;i<=N_envdata-1;i++) report1<<env_temp[i]<<endl;
        report1<<"-9999 0 0"<<endl;
       }
 
@@ -594,13 +592,10 @@ FUNCTION void write_nudata()
   }
 
     report1<<"#"<<endl << N_envvar<<" #_N_environ_variables"<<endl;
+    report1<<"# -2 in yr will subtract mean for that env_var; -1 will subtract mean and divide by stddev (e.g. Z-score)"<<endl;
     report1<<"#Yr Variable Value"<<endl;
-    if(finish_starter==999) 
-      {j=1;}
-      else
-      {j=0;}
     if(N_envvar>0)
-      {for(i=j;i<=N_envdata-1+j;i++) report1<<env_temp[i]<<endl;
+      {for(i=0;i<=N_envdata-1;i++) report1<<env_temp[i]<<endl;
        report1<<"-9999 0 0"<<endl;
       }
 
@@ -992,13 +987,10 @@ FUNCTION void write_nudata()
   }
 
     report1<<"#"<<endl << N_envvar<<" #_N_environ_variables"<<endl;
+    report1<<"# -2 in yr will subtract mean for that env_var; -1 will subtract mean and divide by stddev (e.g. Z-score)"<<endl;
     report1<<"#Yr Variable Value"<<endl;
-    if(finish_starter==999) 
-      {j=1;}
-      else
-      {j=0;}
     if(N_envvar>0)
-      {for(i=j;i<=N_envdata-1+j;i++) report1<<env_temp[i]<<endl;
+      {for(i=0;i<=N_envdata-1;i++) report1<<env_temp[i]<<endl;
        report1<<"-9999 0 0"<<endl;
       }
 
@@ -1359,10 +1351,11 @@ FUNCTION void write_nucontrol()
   report4<<"#_Block types: 0: P_block=P_base*exp(TVP); 1: P_block=P_base+TVP; 2: P_block=TVP; 3: P_block=P_block(-1) + TVP"<<endl;
   report4<<"#_Block_trends: -1: trend bounded by base parm min-max and parms in transformed units (beware); -2: endtrend and infl_year direct values; -3: end and infl as fraction of base range"<<endl;
   
-  report4<<"#_EnvLinks:  1: P(y)=P_base*exp(TVP*env(y));  2: P(y)=P_base+TVP*env(y);  3: null;  4: P(y)=2.0/(1.0+exp(-TVP1*env(y) - TVP2))"<<endl;
-  report4<<"#_DevLinks:  1: P(y)*=exp(dev(y)*dev_se;  2: P(y)+=dev(y)*dev_se;  3: random walk;  4: zero-reverting random walk with rho;  21-24 keep last dev for rest of years"<<endl<<"#"<<endl;
+  report4<<"#_EnvLinks:  1: P(y)=P_base*exp(TVP*env(y));  2: P(y)=P_base+TVP*env(y);  3: P(y)=f(TVP,env_Zscore) w/ logit to stay in min-max;  4: P(y)=2.0/(1.0+exp(-TVP1*env(y) - TVP2))"<<endl;
+  report4<<"#_DevLinks:  1: P(y)*=exp(dev(y)*dev_se;  2: P(y)+=dev(y)*dev_se;  3: random walk;  4: zero-reverting random walk with rho;  5: like 4 with logit transform to stay in base min-max"<<endl
+         <<"#_DevLinks(more):  21-25 keep last dev for rest of years"<<endl<<"#"<<endl;
   report4<<"#_Prior_codes:  0=none; 6=normal; 1=symmetric beta; 2=CASAL's beta; 3=lognormal; 4=lognormal with biascorr; 5=gamma"<<endl;
-  report4<<"#"<<endl<<"# setup for M, growth, maturity, fecundity, recruitment distibution, movement "<<endl;
+  report4<<"#"<<endl<<"# setup for M, growth, wt-len, maturity, fecundity, (hermaphro), recr_distr, cohort_grow, (movement), (age error), (catch_mult), sex ratio "<<endl;
   report4<<"#"<<endl<<natM_type<<" #_natM_type:_0=1Parm; 1=N_breakpoints;_2=Lorenzen;_3=agespecific;_4=agespec_withseasinterpolate"<<endl;
     if(natM_type==1)
     {report4<<N_natMparms<<" #_N_breakpoints"<<endl<<NatM_break<<" # age(real) at M breakpoints"<<endl;}
@@ -1711,7 +1704,7 @@ FUNCTION void write_nucontrol()
       if(obs_equ_catch(1,f)!=0.) report4<<init_F_parm_1(f)<<" # "<<ParmLabel(NP)<<endl;
      }
    }
-   else
+   else if(N_init_F2>0)
    {
      for (f=1;f<=N_init_F2;f++)
      {

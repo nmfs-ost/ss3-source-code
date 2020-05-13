@@ -7,6 +7,8 @@
 
  LOCAL_CALCS
   ad_comm::change_datafile_name(datfilename);
+  if(finish_starter==999)
+  {N_warn++; warning<<"finish_starter=999, so probably used a 3.24 starter.ss; please update"<<endl; finish_starter=3.30;  }
   cout<<" reading from data file"<<endl;
   ifstream Data_Stream(datfilename);   //  even if the global_datafile name is used, there still is a different logical device created
   k=0;
@@ -2255,19 +2257,18 @@
 
   ender=0;
   N_envdata=0;
-  j=endyr;  //  use to store maxyear with env data
+//  j=endyr;  //  use to store maxyear with env data
   if(N_envvar>0)
   {
     do {
       dvector tempvec(1,3);
       *(ad_comm::global_datafile) >> tempvec(1,3);
       if(tempvec(1)==-9999.) ender=1;
-      if(tempvec(1)>j) j=tempvec(1);
+//      if(tempvec(1)>j) j=tempvec(1);
       env_temp.push_back (tempvec(1,3));
     } while (ender==0);
     N_envdata=env_temp.size()-1;
     echoinput<<" successful read of "<<N_envdata<<" environmental observations "<<endl;
-    //  after forecast.ss is read, then N_forecast years will be known so env_data_RD can be dimensioned
   }
  END_CALCS
 
@@ -3382,7 +3383,6 @@
  END_CALCS
 
 //  matrix env_data_RD(styr-1,YrMax,1,N_envvar)
-//  vectors below will be processed in prelim
   vector env_data_mean(1,N_envvar)
   vector env_data_stdev(1,N_envvar)
   vector env_data_N(1,N_envvar)
@@ -3392,6 +3392,7 @@
   ivector env_data_do_stdev(1,N_envvar)
 
  LOCAL_CALCS
+  {
   env_data_mean.initialize();
   env_data_stdev.initialize();
   env_data_N.initialize();
@@ -3440,6 +3441,7 @@
     	}
       echoinput<<k<<" N "<<env_data_N(k)<<" min-max yr "<<env_data_minyr(k)<<" "<<env_data_maxyr(k)<<" mean "<<env_data_mean(k)<<" stdev "<<env_data_stdev(k)<<" subtract mean "<<env_data_do_mean(k)<<" divide stddev "<<env_data_do_stdev(k)<<endl;
     }
+  }
   }
  END_CALCS
 

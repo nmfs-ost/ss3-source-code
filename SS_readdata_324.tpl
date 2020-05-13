@@ -4,6 +4,8 @@
   //  SS_Label_Info_2.1.1 #Read and save comments at top of data file
  LOCAL_CALCS
   ad_comm::change_datafile_name(datfilename);
+  if(finish_starter==3.30)
+  {N_warn++; warning<<"finish_starter=3.30, so probably used an already transitioned set of files; SS will exit"<<endl; exit(1);}
   cout<<" reading from data file"<<endl;
   ifstream Data_Stream(datfilename);   //  even if the global_datafile name is used, there still is a different logical device created
   k=0;
@@ -2279,17 +2281,81 @@
     init_int N_envdata
   !!echoinput<<N_envdata<<" N_envdata "<<endl;
 
-    matrix env_data_RD(styr-1,endyr+100,1,N_envvar)  //  leave enough room for N_Fcast_Yrs which is not yet known
-    init_matrix env_temp(1,N_envdata,1,3)
+//    matrix env_data_RD(styr-1,endyr+100,1,N_envvar)  //  leave enough room for N_Fcast_Yrs which is not yet known
+  vector env_data_mean(1,N_envvar)
+  vector env_data_stdev(1,N_envvar)
+  vector env_data_N(1,N_envvar)
+  ivector env_data_minyr(1,N_envvar)
+  ivector env_data_maxyr(1,N_envvar)
+  ivector env_data_do_mean(1,N_envvar)
+  ivector env_data_do_stdev(1,N_envvar)
+
  LOCAL_CALCS
-     if(N_envdata>0)
-     {
-      if(N_envdata>0)echoinput<<" env data "<<endl<<env_temp<<endl;
-      env_data_RD=0.;
-      for (i=1;i<=N_envdata;i++)
-        if(env_temp(i,1)>=(styr-1))
-        {env_data_RD(env_temp(i,1), env_temp(i,2) ) = env_temp(i,3);}
-     }
+  env_data_mean.initialize();
+  env_data_stdev.initialize();
+  env_data_N.initialize();
+  env_data_minyr.initialize();
+  env_data_maxyr.initialize();
+  env_data_do_mean.initialize();
+  env_data_do_stdev.initialize();
+
+  if(N_envdata>0)
+  {
+    ender=0;
+    do {
+      dvector tempvec(1,3);
+      *(ad_comm::global_datafile) >> tempvec(1,3);
+      ender++;
+      env_temp.push_back (tempvec(1,3));
+    } while (ender<N_envdata);
+    echoinput<<" successful read of "<<N_envdata<<" environmental observations "<<endl;
+
+//  env data will be processed after creating YrMax after reading forecast.ss
+
+  /*
+  	env_data_minyr=9876;
+    for (i=0;i<=N_envdata-1;i++)
+    {
+    	y=env_temp[i](1);
+    	k=env_temp[i](2);
+    	echoinput<<i<<" env "<<y<<" "<<k<<endl;
+    	if(y<=-1)  //  flag to do_mean  so use -2 to get mean but not stdev
+    	{env_data_do_mean(k)=1;}
+    	if(y==-1)  //  flag to do_stdev
+    	{env_data_do_stdev(k)=1;}
+      if(y>=(styr-1) && y<=YrMax)
+    	{
+        env_data_mean(k)+=env_temp[i](3);
+        env_data_stdev(k)+=env_temp[i](3)*env_temp[i](3);
+        env_data_N(k)++;
+        env_data_minyr(k)=min(env_data_minyr(k),y);
+        env_data_maxyr(k)=max(env_data_maxyr(k),y);
+        echoinput<<env_data_N<<endl;
+      }
+      
+    }
+    echoinput<<" process environmental input data"<<endl;
+    for(k=1;k<=N_envvar;k++)
+    {
+    	if(env_data_N(k)>0)
+    	{
+    		env_data_mean(k)/=env_data_N(k);
+    	}
+    	else
+    	{//  no data
+    	}
+    	if(env_data_N(k)>1)
+    	{
+    		temp=env_data_stdev(k)/(env_data_N(k)-1.);
+    		env_data_stdev(k)=sqrt(temp-env_data_mean(k)*env_data_mean(k));
+    	}
+    	else
+    	{//  no data
+    	}
+      echoinput<<k<<" N "<<env_data_N(k)<<" min-max yr "<<env_data_minyr(k)<<" "<<env_data_maxyr(k)<<" mean "<<env_data_mean(k)<<" stdev "<<env_data_stdev(k)<<" subtract mean "<<env_data_do_mean(k)<<" divide stddev "<<env_data_do_stdev(k)<<endl;
+    }
+  */
+  }
  END_CALCS
 
 !!//  SS_Label_Info_2.11 #Start generalized size composition section
@@ -3262,6 +3328,60 @@
     Show_Time2(ALK_idx,1)=y;
     Show_Time2(ALK_idx,2)=s;
 //    Show_Time3(ALK_idx,3)=subseas;
+  }
+ END_CALCS
+ 
+ LOCAL_CALCS
+  {
+  env_data_mean.initialize();
+  env_data_stdev.initialize();
+  env_data_N.initialize();
+  env_data_minyr.initialize();
+  env_data_maxyr.initialize();
+  env_data_do_mean.initialize();
+  env_data_do_stdev.initialize();
+
+  if(N_envdata>0)
+  {
+  	env_data_minyr=9876;
+    for (i=0;i<=N_envdata-1;i++)
+    {
+    	y=env_temp[i](1);
+    	k=env_temp[i](2);
+    	if(y<=-1)  //  flag to do_mean  so use -2 to get mean but not stdev
+    	{env_data_do_mean(k)=1;}
+    	if(y==-1)  //  flag to do_stdev
+    	{env_data_do_stdev(k)=1;}
+      if(y>=(styr-1) && y<=YrMax)
+    	{
+        env_data_mean(k)+=env_temp[i](3);
+        env_data_stdev(k)+=env_temp[i](3)*env_temp[i](3);
+        env_data_N(k)++;
+        env_data_minyr(k)=min(env_data_minyr(k),y);
+        env_data_maxyr(k)=max(env_data_maxyr(k),y);
+      }
+    }
+    echoinput<<" process environmental input data"<<endl;
+    for(k=1;k<=N_envvar;k++)
+    {
+    	if(env_data_N(k)>0)
+    	{
+    		env_data_mean(k)/=env_data_N(k);
+    	}
+    	else
+    	{//  no data
+    	}
+    	if(env_data_N(k)>1)
+    	{
+    		temp=env_data_stdev(k)/(env_data_N(k)-1.);
+    		env_data_stdev(k)=sqrt(temp-env_data_mean(k)*env_data_mean(k));
+    	}
+    	else
+    	{//  no data
+    	}
+      echoinput<<k<<" N "<<env_data_N(k)<<" min-max yr "<<env_data_minyr(k)<<" "<<env_data_maxyr(k)<<" mean "<<env_data_mean(k)<<" stdev "<<env_data_stdev(k)<<" subtract mean "<<env_data_do_mean(k)<<" divide stddev "<<env_data_do_stdev(k)<<endl;
+    }
+  }
   }
  END_CALCS
 

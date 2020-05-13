@@ -1300,7 +1300,7 @@
                      //  the timevary parameters themselves will be pushed to time_vary_parm_rd
   int N_parm_dev     //  number of  all parms that use annual deviations
   ivector timevary_pass(styr-3,YrMax+1)    //  extracted column
-  vector env_data_pass(styr-1,YrMax)
+  vector env_data_pass(1,2)
   int  do_densitydependent;
 
 !!//  SS_Label_Info_4.5.4 #Set up time-varying parameters for MG parms
@@ -1383,7 +1383,9 @@
        if(timevary_setup(7)>0)
        {
          k=timevary_setup(7);
-         for(y=styr-1;y<=YrMax;y++) env_data_pass(y)=env_data_RD(y,k);
+//         for(y=styr-1;y<=YrMax;y++) env_data_pass(y)=env_data_RD(y,k);
+         env_data_pass(1)=env_data_minyr(k);
+         env_data_pass(2)=env_data_maxyr(k);
        }
        else
        {k=0; env_data_pass.initialize();}
@@ -2520,7 +2522,9 @@
        if(timevary_setup(7)>0)
        {
          k=timevary_setup(7);
-         for(y=styr-1;y<=YrMax;y++) env_data_pass(y)=env_data_RD(y,k);
+//         for(y=styr-1;y<=YrMax;y++) env_data_pass(y)=env_data_RD(y,k);
+         env_data_pass(1)=env_data_minyr(k);
+         env_data_pass(2)=env_data_maxyr(k);
        }
        else
        {k=0; env_data_pass.initialize();}
@@ -3324,7 +3328,9 @@
           selparm_1(j,8)=100.*timevary_setup(6)+timevary_setup(7);
           echoinput<<" convert env to 330 format "<<selparm_1(j,8)<<endl;
          k=timevary_setup(7);
-         for(y=styr-1;y<=YrMax;y++) env_data_pass(y)=env_data_RD(y,k);
+//         for(y=styr-1;y<=YrMax;y++) env_data_pass(y)=env_data_RD(y,k);
+         env_data_pass(1)=env_data_minyr(k);
+         env_data_pass(2)=env_data_maxyr(k);
         }
        else
        {env_data_pass.initialize();}

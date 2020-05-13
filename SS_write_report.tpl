@@ -1855,6 +1855,11 @@ FUNCTION void write_bigoutput()
    if(N_envvar>0)
    {
    SS2out << endl<<"ENVIRONMENTAL_DATA Begins_in_startyr-1, which shows the base value to which other years are scaled"<<endl;         // SS_Label_397
+   SS2out <<"ENVIRONMENTAL_DATA2:_moments_and_scaling;_N_envvar= "<<N_envvar<<endl;
+   SS2out<<"Index N minyr maxyr mean stdev -mean? /stdev?"<<endl;
+   for(k=1;k<=N_envvar;k++)
+   {SS2out<<k<<" "<<env_data_N(k)<<" "<<env_data_minyr(k)<<" "<<env_data_maxyr(k)<<" "<<env_data_mean(k)<<" "<<env_data_stdev(k)<<" "<<env_data_do_mean(k)<<" "<<env_data_do_stdev(k)<<endl;}
+
    SS2out<<"Yr rel_smrynum rel_smrybio exp(recdev) rel_SSB null "; for (i=1;i<=N_envvar;i++) SS2out<<" env:_"<<i;
    SS2out<<endl;
     for (y=styr-1;y<=YrMax;y++)
