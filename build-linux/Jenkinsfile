@@ -10,32 +10,44 @@ pipeline {
                 checkout([$class: 'GitSCM', branches: [[name: '*/master']], doGenerateSubmoduleConfigurations: false, extensions: [[$class: 'RelativeTargetDirectory', relativeTargetDir: 'vlab/stock-synthesis']], submoduleCfg: [], userRemoteConfigs: [[credentialsId: '1aa2d7c8-749f-4270-9de2-6ffcf0cd2beb', url: 'https://stock_synthesis.build@vlab.ncep.noaa.gov/git/stock-synthesis']]])
             }
         }
+        stage('Make folder to store archives')  {
+            steps{
+                sh label: 'view repo', script: 'ls vlab/stock-synthesis'
+                sh label: 'remove an old dir (force in case does not exist)', script: 'rm -rf vlab/stock-synthesis/builds'
+                sh label: 'make directory', script: 'mkdir vlab/stock-synthesis/builds'
+            }
+        }
         stage('Build SS safe executable') {
             steps {
                 sh label: 'confirm build script executable', script: 'cd vlab/stock-synthesis && ls -l'
                 sh label: 'Run build', script: 'cd vlab/stock-synthesis && /bin/bash ./Make_SS_330_new.sh -b SS330 -a /usr/local/bin/admb'
                 sh label: 'Validate build', script: 'cp vlab/stock-synthesis/SS330/ss . && sha256sum ss'
-                sh label: 'Make build executable', script: 'chmod a+x vlab/stock-synthesis/SS330/ss'   
+                sh label: 'Make build executable', script: 'chmod a+x vlab/stock-synthesis/SS330/ss'  
+                sh label: 'Move build to archive folder', script: 'mv vlab/stock-synthesis/SS330/ss  vlab/stock-synthesis/builds/ss'    
+                sh label: 'Copy tpl to archive folder', script: 'mv vlab/stock-synthesis/SS330/ss.tpl  vlab/stock-synthesis/builds/ss.tpl'                 
             }
         }
         stage('Build SS opt executable')  {
             steps {
                 sh label: 'Run build', script: 'cd vlab/stock-synthesis && /bin/bash ./Make_SS_330_new.sh -b SS330 -a /usr/local/bin/admb -o'
                 sh label: 'Validate build', script: 'cp vlab/stock-synthesis/SS330/ss_opt . && sha256sum ss_opt' 
-                sh label: 'Make build executable', script: 'chmod a+x vlab/stock-synthesis/SS330/ss_opt'                     
+                sh label: 'Make build executable', script: 'chmod a+x vlab/stock-synthesis/SS330/ss_opt'   
+                sh label: 'Move build to archive folder', script: 'mv vlab/stock-synthesis/SS330/ss_opt  vlab/stock-synthesis/builds/ss_opt'                    
             }   
         }
         stage('Build SS trans executable')  {
             steps {
                 sh label: 'Run build', script: 'cd vlab/stock-synthesis && /bin/bash ./Make_SS_330_new.sh -b SS330 -a /usr/local/bin/admb -t'
                 sh label: 'Validate build', script: 'cp vlab/stock-synthesis/SS330/ss_trans . && sha256sum ss_trans'   
-                sh label: 'Make build executable', script: 'chmod a+x vlab/stock-synthesis/SS330/ss_trans'                
+                sh label: 'Make build executable', script: 'chmod a+x vlab/stock-synthesis/SS330/ss_trans'     
+                sh label: 'Copy build to archive folder', script: 'mv vlab/stock-synthesis/SS330/ss_trans  vlab/stock-synthesis/builds/ss_trans'                   
+                sh label: 'Check build permissions', script: 'cd vlab/stock-synthesis/builds && ls -l'
            }
         }
     }
 	post {
         always {
-            archiveArtifacts 'vlab/stock-synthesis/SS330/*'
+            archiveArtifacts 'vlab/stock-synthesis/builds/*'
         }
 		failure {
 			mail bcc: '', body: 'The job Stock-Synthesis-build-linux failed.', cc: '', from: '', replyTo: '', subject: 'stock-synthesis-build: Jenkins Build Failure', to: 'kathryn.doering@noaa.gov'
