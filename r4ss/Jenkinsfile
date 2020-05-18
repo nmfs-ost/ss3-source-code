@@ -49,6 +49,7 @@ pipeline {
 		    	sh label: 'install and run r4ss', script: 'Rscript jenkins/stock-synthesis/r4ss/run_r4ss.R'
 			}	
 		}
+	}
     post {
 	    always {
 		    archiveArtifacts 'simple_run/Simple/plots/*'
