@@ -1312,11 +1312,11 @@ FUNCTION void get_posteriors()
     // will generate a warning if no files exist
     // but will play through just fine
     // NOTE:  "del" works on Windows only; use "rm" on other operating systems
-    system("del rebuild.sso");
-    system("del posteriors.sso");
-    system("del derived_posteriors.sso");
-    system("del posterior_vectors.sso");
-    system("del posterior_obj_func.sso");
+    ofstream rebuilder("rebuild.sso",ios::out);
+    ofstream posts("posteriors.sso",ios::out);
+    ofstream der_posts("derived_posteriors.sso",ios::out);
+    ofstream post_vecs("posterior_vectors.sso",ios::out);
+	ofstream post_obj_func("posterior_obj_func.sso",ios::out);
     if(rundetail>0) cout<<" did system commands "<<endl;
   };
   // define the mcmc output files;

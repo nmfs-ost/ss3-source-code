@@ -141,7 +141,7 @@ fi
 
 # change to build dir and build 
 cd $BUILD_DIR
-admb STATICFLAG $BUILD_TYPE
+admb $STATICFLAG $BUILD_TYPE
 chmod a+x $BUILD_TYPE
 
 # output warnings
