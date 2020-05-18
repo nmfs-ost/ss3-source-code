@@ -24,26 +24,6 @@ pipeline {
 			  sh label: 'view files', script: 'ls .'
 		   }
         }
-        stage('Git clone src for stock synthesis reference run files') {
-            steps {
-                checkout([$class: 'GitSCM', branches: [[name: '*/master']], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[credentialsId: '1aa2d7c8-749f-4270-9de2-6ffcf0cd2beb', url: 'https://stock_synthesis.build@vlab.ncep.noaa.gov/git/ss_examples']]])
-			    sh label: 'view files', script: 'ls .'
-				sh label: 'create subfolder to move repo files', script: 'mkdir ss_example_files'
-				sh label: 'move the repo Simple files', script: 'mv Simple ss_example_files'
-				sh label: 'view files', script: 'ls .'
-				sh label: 'view files', script: 'cd ss_example_files && ls -R .'
-			}
-        }
-		stage('setup folders for running R') {
-            steps {
-			    sh label: 'make an R directory', script: 'mkdir run_R'
-				sh label: 'move the ref summary file', script: 'mv ss_example_files/Simple/ss_summary.sso run_R/ss_summary_ref.sso'
-				sh label: 'move the ref warning file', script: 'mv ss_example_files/Simple/warning.sso run_R/warning_ref.sso'
-				sh label: 'move the ref par file', script: 'mv ss_example_files/Simple/ss.par run_R/ss_ref.par'
-				sh label: 'move the artifact file', script: 'mv simple_run/Simple/* run_R'
-				sh label: 'view files', script: 'ls -R run_R'
-			}
-        }
 	    stage('Run R code to test R') {
 		    steps{
 		    	sh label: 'install and run r4ss', script: 'Rscript jenkins/stock-synthesis/r4ss/run_r4ss.R'
