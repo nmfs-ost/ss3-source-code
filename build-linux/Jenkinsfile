@@ -12,9 +12,12 @@ pipeline {
         }
         stage('Make folder to store archives')  {
             steps{
+			    sh label: 'view workspace', script: 'ls -l'
                 sh label: 'view repo', script: 'ls vlab/stock-synthesis'
-                sh label: 'remove an old dir (force in case does not exist)', script: 'rm -rf vlab/stock-synthesis/builds'
+                sh label: 'remove old build dir (force in case does not exist)', script: 'rm -rf vlab/stock-synthesis/builds'
                 sh label: 'make directory', script: 'mkdir vlab/stock-synthesis/builds'
+				sh label: 'remove old SS330 dir (force in case does not exist)', script: 'rm -rf vlab/stock-synthesis/SS330'
+				sh label: 'make SS330 directory', script: 'mkdir vlab/stock-synthesis/SS330'
             }
         }
         stage('Build SS safe executable') {
