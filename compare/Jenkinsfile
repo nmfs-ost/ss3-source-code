@@ -8,12 +8,12 @@ pipeline {
             steps {
 			  sh label: 'print wd', script: 'pwd'
 			  sh label: 'view files', script: 'ls .'
-			  //sh label: 'remove an old dir (force in case does not exist)', script: 'rm -rf Simple'
-			  //sh label: 'remove an old dir (force in case does not exist)', script: 'rm -rf simple_run'
-			  //sh label: 'remove an old dir (force in case does not exist)', script: 'rm -rf ss_example_files'
-			  //sh label: 'remove an old dir (force in case does not exist)', script: 'rm -rf run_R'
-			  //sh label: 'remove an old file (force in case does not exist)', script: 'rm -f Simple.zip'
-			  //sh label: 'verify removed', script: 'ls .'
+			  sh label: 'remove an old dir (force in case does not exist)', script: 'rm -rf Simple'
+			  sh label: 'remove an old dir (force in case does not exist)', script: 'rm -rf simple_run'
+			  sh label: 'remove an old dir (force in case does not exist)', script: 'rm -rf ss_example_files'
+			  sh label: 'remove an old dir (force in case does not exist)', script: 'rm -rf run_R'
+			  sh label: 'remove an old file (force in case does not exist)', script: 'rm -f Simple.zip'
+			  sh label: 'verify removed', script: 'ls .'
 		   }
         }
         stage('Copy Simple.zip artifact from previous stage') {
@@ -78,8 +78,5 @@ pipeline {
                 }
             }
         }
-		cleanup { 
-		    cleanWs() /* clean up workspace */
-		}
     }
 }
