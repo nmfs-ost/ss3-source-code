@@ -4217,6 +4217,9 @@
   int CoVar_Count;
   int active_count;    // count the active parameters
   int active_parms;    // count the active parameters
+  int deriv_start;  //  start index for derived quantities
+  int deriv_covar_start
+  
  LOCAL_CALCS
   if(Do_Benchmark>0)
   {
@@ -4345,17 +4348,17 @@
       }
       if(depletion_fleet>0  && depletion_type==1)
         {max_phase=1; Fcast_recr_PH2=-1;}
-      for (y=recdev_end+1;y<=YrMax;y++)
-      {
-        ParCount++;
-        if(Fcast_recr_PH2>-1) {active_count++; active_parm(active_count)=ParCount;}
-      }
     }
     else
       {
         Fcast_recr_PH2=-1;
       }
 
+      for (y=recdev_end+1;y<=YrMax;y++)
+      {
+        ParCount++;
+        if(Fcast_recr_PH2>-1) {active_count++; active_parm(active_count)=ParCount;}
+      }
     for (y=endyr+1;y<=YrMax;y++)
     {
       ParCount++;
@@ -4673,7 +4676,10 @@
     j=ParCount;
     active_parms=active_count;
     CoVar_Count=active_count;
+    deriv_start=ParCount;
+    deriv_covar_start=active_count;
   echoinput<<"parm "<<j<<" covar "<<CoVar_Count<<endl;
+  echoinput<<"deriv_start "<<deriv_start<<" "<<deriv_covar_start<<endl;
   onenum="    ";
   for (y=styr-2;y<=YrMax;y++)
   {

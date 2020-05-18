@@ -70,6 +70,8 @@ GLOBALS_SECTION
   adstring_array GenderLbl;   // gender label
   adstring_array GP_Lbl;   // gender label
   adstring_array CRLF;   // blank to terminate lines
+  adstring_array pick_report_name;  //  name of report
+  adstring_array pick_report_use;  //  X if used; 0 if not
 
 //  declare some entities that need global access
   int ParCount; int timevary_parm_cnt; int N_warn;
@@ -98,6 +100,7 @@ GLOBALS_SECTION
   std::vector<ivector> timevary_def;
   std::vector<ivector> TwoD_AR_def;
   std::vector<ivector> TwoD_AR_def_rd;
+  std::vector<ivector> reportdetail_list;
 
 //  function in GLOBALS to do the timing setup in the data section
   void get_data_timing(const dvector& to_process, const ivector& timing_constants, ivector i_result, dvector r_result, const dvector& seasdur, const dvector& subseasdur_delta, const dvector& azero_seas, const dvector& surveytime)
@@ -687,7 +690,7 @@ FINAL_SECTION
 //  SS_Label_Info_12.3.2 #Set save_for_report=1 then call initial_conditions and time_series to get other output quantities
     save_for_report=1;
     bigsaver=1;
-    if(reportdetail==1) 
+    if(reportdetail==1 || pick_report_use(54)=="X") 
     {
     	write_bodywt=1;
     bodywtout<<nages<<" # maxage"<<endl;
@@ -772,7 +775,7 @@ FINAL_SECTION
     }
 
 //  SS_Label_Info_12.4.6 #Call fxn write_Bzero_output()  appended to report.sso
-    if (reportdetail ==1)
+    if (reportdetail ==1 || pick_report_use(53)=="X")
     {
         write_Bzero_output();
         if(show_MSY==1) cout<<" finished Bzero and global MSY "<<endl;

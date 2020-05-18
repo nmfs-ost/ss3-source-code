@@ -1117,7 +1117,7 @@ FUNCTION void write_nudata()
   }  //  end of write data
 
 //********************************************************************
- /*  SS_Label_FUNCTION 39 write_nucontrol  write new control file */
+ /*  SS_Label_FUNCTION 39 write_nucontrol  write new control file and starter file */
 FUNCTION void write_nucontrol()
   {
   cout<<" Write new starter file "<<endl;
@@ -1127,7 +1127,18 @@ FUNCTION void write_nucontrol()
   NuStart<<datfilename<<endl<<ctlfilename<<endl;
   NuStart<<readparfile<<" # 0=use init values in control file; 1=use ss.par"<<endl;
   NuStart<<rundetail<<" # run display detail (0,1,2)"<<endl;
-  NuStart<<reportdetail<<" # detailed output (0=minimal for data-limited, 1=high (w/ wtatage.ss_new), 2=brief) "<<endl;
+  NuStart<<reportdetail<<" # detailed output (0=minimal for data-limited, 1=high (w/ wtatage.ss_new), 2=brief, 3=custom) "<<endl;
+  if(reportdetail==3)
+  	{
+  		NuStart<<"# custom report options: -100 to start with minimal; -101 to start with all; -number to remove, +number to add, -999 to end"<<endl;
+  	  for( int j=0;j<=reportdetail_list.size()-1;j++) {NuStart<<reportdetail_list[j](1)<<endl;}
+  	}
+  	else
+  		{
+  		NuStart<<"# custom report options: -100 to start with minimal; -101 to start with all; -number to remove, +number to add, -999 to end"<<endl;
+  		}
+  
+  
   NuStart<<docheckup<<" # write 1st iteration details to echoinput.sso file (0,1) "<<endl;
   NuStart<<Do_ParmTrace<<" # write parm values to ParmTrace.sso (0=no,1=good,active; 2=good,all; 3=every_iter,all_parms; 4=every,active)"<<endl;
   NuStart<<Do_CumReport<<" # write to cumreport.sso (0=no,1=like&timeseries; 2=add survey fits)"<<endl;
