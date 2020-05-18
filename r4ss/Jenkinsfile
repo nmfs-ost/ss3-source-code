@@ -13,11 +13,6 @@ pipeline {
 			  sh label: 'verify removed', script: 'ls .'
 		   }
         }
-		stage('make R library location writable') {
-		    steps {
-			    sh label: 'change mode', script: 'chmod 755 /usr/local/lib/R/site-library'
-			}
-		}
         stage('Copy Simple.zip artifact from previous stage') {
             steps {
 			  sh label: 'create subfolder to save artifact', script: 'mkdir simple_run'
