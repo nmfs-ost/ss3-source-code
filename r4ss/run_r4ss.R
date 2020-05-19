@@ -4,12 +4,14 @@ remotes::install_github("r4ss/r4ss@development", upgrade = "always",
                         lib = "/usr/local/lib/R/site-library")
 out <- tryCatch(r4ss::SS_output("simple_run/Simple", verbose = FALSE), 
 	              error = function(e) {
+	            print("r4ss::SS_output had an error. traceback:")
 			        traceback(e)
 			        q(status = 1)
 			      }
                )
 tryCatch(r4ss::SS_plots(out, verbose = FALSE),
            error = function(e) {
+         print("r4ss::SS_plots had an error. traceback:")
 		     traceback(e)
 			 q(status = 1)
 		   }
