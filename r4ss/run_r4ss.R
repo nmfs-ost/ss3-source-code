@@ -2,5 +2,17 @@
 install.packages("remotes", lib = "/usr/local/lib/R/site-library")
 remotes::install_github("r4ss/r4ss@development", upgrade = "always", 
                         lib = "/usr/local/lib/R/site-library")
-out <- r4ss::SS_output("simple_run/Simple", verbose = FALSE)
-r4ss::SS_plots(out, verbose = FALSE)
+						
+out <- tryCatch(r4ss::SS_output("simple_run/Simple", verbose = FALSE), 
+	              error = function() {
+			        traceback()
+			        q(status = 1)
+			      }
+               )         
+tryCatch(r4ss::SS_plots(out, verbose = FALSE),
+           error = function() {
+		     traceback()
+			 q(status = 1)
+		   }
+		)
+print("r4ss functions completed")
