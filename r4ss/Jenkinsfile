@@ -10,6 +10,7 @@ pipeline {
 			  sh label: 'view files', script: 'ls .'
 			  sh label: 'remove an old dir (force in case does not exist)', script: 'rm -rf simple_run'
 			  sh label: 'remove an old file (force in case does not exist)', script: 'rm -f Simple.zip'
+			  sh label: 'remove an old file (force in case does not exist)', script: 'rm -rf local_R_lib'
 			  sh label: 'verify removed', script: 'ls .'
 		   }
         }
@@ -26,7 +27,8 @@ pipeline {
         }
 	    stage('Run R code to test R') {
 		    steps{
-			    sh label: 'view files and str', script: 'ls /usr/local/lib/R -lR'
+			    sh label: 'view files and str', script: 'ls /usr/local/lib/R -l'
+				sh label: 'create a dir for local r lib', script: 'mkdir local_R_lib'
 		    	sh label: 'install and run r4ss', script: 'Rscript jenkins/stock-synthesis/r4ss/run_r4ss.R'
 			}	
 		}
