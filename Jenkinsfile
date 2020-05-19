@@ -30,13 +30,13 @@ pipeline {
     }
 	post {
 		failure {
-			mail bcc: '', body: 'The job Stock-Synthesis-build failed.', cc: '', from: '', replyTo: '', subject: 'stock-synthesis-build: Jenkins Build Failure', to: 'kathryn.doering@noaa.gov will.smith@noaa.gov'
+			mail bcc: '', body: 'The job Stock-Synthesis-build failed.', cc: '', from: '', replyTo: '', subject: 'stock-synthesis-build: Jenkins Build Failure', to: 'kathryn.doering@noaa.gov richard.methot@noaa.gov ian.taylor@noaa.gov'
 		}
 		changed {
 			script {
 				if (currentBuild.currentResult == 'SUCCESS') { // Other values: SUCCESS, UNSTABLE
 					// Send an email only if the build status has changed from failure to success
-				   mail bcc: '', body: 'The job Stock-Synthesis-build is now passing.', cc: '', from: '', replyTo: '', subject: 'stock-synthesis-build: Jenkins Build Passing Again', to: 'kathryn.doering@noaa.gov will.smith@noaa.gov'
+				   mail bcc: '', body: 'The job Stock-Synthesis-build is now passing.', cc: '', from: '', replyTo: '', subject: 'stock-synthesis-build: Jenkins Build Passing Again', to: 'kathryn.doering@noaa.gov richard.methot@noaa.gov ian.taylor@noaa.gov'
 				}
 			}
 		}
