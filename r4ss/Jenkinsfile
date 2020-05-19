@@ -38,9 +38,6 @@ pipeline {
 	    always {
 		    archiveArtifacts 'simple_run/Simple/plots/*'
 		}
-        failure {
-            mail bcc: '', body: 'Stock Synthesis build failed.', cc: '', from: '', replyTo: '', subject: 'Jenkins Build Failure: stock-synthesis-r4ss', to: 'kathryn.doering@noaa.gov '
-        }
         changed {
             script {
                 if (currentBuild.currentResult == 'SUCCESS') { // Other values: SUCCESS, UNSTABLE
