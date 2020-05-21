@@ -198,9 +198,9 @@
   vector surveytime(1,Nfleet)   // (-1, 1) code for fisheries to indicate use of season-wide observations, or specifically timed observations
   ivector fleet_area(1,Nfleet)    // areas in which each fleet/survey operates
   vector catchunits1(1,Nfleet)  // 1=biomass; 2=numbers
-  vector catch_se_rd1(1,Nfleet)  // units are se of log(catch); use -1 to ignore input catch values for discard only fleets
+//  vector catch_se_rd1(1,Nfleet)  // units are se of log(catch); use -1 to ignore input catch values for discard only fleets
   vector catchunits(1,Nfleet)
-  vector catch_se_rd(1,Nfleet)
+//  vector catch_se_rd(1,Nfleet)
   matrix catch_se(styr-nseas,TimeMax,1,Nfleet);
   matrix fleet_setup(1,Nfleet,1,5)  // type, timing, area, units, need_catch_mult
   matrix bycatch_setup(1,Nfleet,1,6)
@@ -221,6 +221,7 @@
  LOCAL_CALCS
   bycatch_setup.initialize();
   YPR_mask.initialize();
+  catch_se=0.01;  //  initialize to a small value
   {
     N_bycatch=0;
     N_catchfleets=0;
@@ -388,6 +389,7 @@
 
   matrix catch_ret_obs(1,Nfleet,styr-nseas,TimeMax+nseas)
   imatrix do_Fparm(1,Nfleet,styr-nseas,TimeMax+nseas)
+  imatrix catch_record_count(1,Nfleet,styr-nseas,TimeMax+nseas)
   3iarray catch_seas_area(styr,TimeMax,1,pop,0,Nfleet)
   matrix totcatch_byarea(styr,TimeMax,1,pop)
   vector totcat(styr-1,endyr)  //  by year, not by t
@@ -399,8 +401,8 @@
 
  LOCAL_CALCS
   catch_ret_obs.initialize();
+  catch_record_count.initialize();
   tempvec.initialize();
-  k=0;  // counter for reading catch records
   for (k=0;k<=N_ReadCatch-1;k++)
   {
     //  do read in list format  y, s, f, catch, catch_se
@@ -423,6 +425,7 @@
 
         {
           catch_ret_obs(f,t) += tempvec(4);
+          catch_record_count(f,t)++;
           catch_se(t,f) = tempvec(5);
         }
       }
@@ -433,11 +436,22 @@
           t=styr+(y-styr)*nseas+s-1;
           {
             catch_ret_obs(f,t) += tempvec(4)/nseas;
+            catch_record_count(f,t)++;
           }
         }
       }
     }
   }
+
+//  warn on duplicate catch records
+    for(y=styr-1;y<=endyr;y++)
+    for(s=1;s<=nseas;s++)
+    for(f=1;f<=Nfleet;f++) {
+      t=styr+(y-styr)*nseas+s-1;
+      if(catch_record_count(f,t)>1)
+      	{N_warn++; warning<<catch_record_count(f,t)<<" catch records for yr, seas, fleet "<<y<<" "<<s<<" "<<f<<". SS has accumulated catches, total= "<<catch_ret_obs(f,t)<<endl;}
+    }
+
     obs_equ_catch.initialize();
     for(s=1;s<=nseas;s++)
     {

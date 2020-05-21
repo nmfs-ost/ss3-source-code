@@ -4132,6 +4132,9 @@
   int CoVar_Count;
   int active_count;    // count the active parameters
   int active_parms;    // count the active parameters
+  int deriv_start;  //  start index for derived quantities
+  int deriv_covar_start
+
  LOCAL_CALCS
   if(Do_Benchmark>0)
   {
@@ -4543,6 +4546,8 @@
     j=ParCount;
     active_parms=active_count;
     CoVar_Count=active_count;
+    deriv_start=ParCount;
+    deriv_covar_start=active_count;
   onenum="    ";
   for (y=styr-2;y<=YrMax;y++)
   {

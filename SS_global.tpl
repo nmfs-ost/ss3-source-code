@@ -690,7 +690,7 @@ FINAL_SECTION
 //  SS_Label_Info_12.3.2 #Set save_for_report=1 then call initial_conditions and time_series to get other output quantities
     save_for_report=1;
     bigsaver=1;
-    if(reportdetail==1 || pick_report_use(54)=="X") 
+    if(pick_report_use(54)=="Y") 
     {
     	write_bodywt=1;
     bodywtout<<nages<<" # maxage"<<endl;
@@ -743,15 +743,18 @@ FINAL_SECTION
 //  SS_Label_Info_12.4.2 #Call fxn write_summaryoutput()
     if(Do_CumReport>0) write_summaryoutput();
 
-    write_SS_summary();
+    if(pick_report_use(56)=="Y") {
+      write_SS_summary();
+      cout<<" finished SS_summary.sso "<<endl;}
 
 //  SS_Label_Info_12.4.3 #Call fxn write_rebuilder_output to produce rebuilder.sso
-    if(reportdetail>0)
     {
-    if(Do_Rebuilder>0 && mceval_counter<=1) write_rebuilder_output();
-    cout<<" finished rebuilder.sso "<<endl;
-    write_SIStable();
-    cout<<" finished SIStable.sso "<<endl;
+    if(pick_report_use(57)=="Y" && Do_Rebuilder>0 && mceval_counter<=1) {
+    	write_rebuilder_output();
+      cout<<" finished rebuilder.sso "<<endl;}
+    if(pick_report_use(58)=="Y") {
+    	write_SIStable();
+      cout<<" finished SIStable.sso "<<endl;}
     
 //  SS_Label_Info_12.4 #Do Outputs
 //  SS_Label_Info_12.4.1 #Call fxn write_bigoutput()
@@ -760,7 +763,7 @@ FINAL_SECTION
     }
 
 //  SS_Label_Info_12.4.4 #Call fxn write_nudata() to create bootstrap data in data.ss_new
-    if(reportdetail>0)
+    if(N_nudata>0)
     {
     write_nudata();
     if(show_MSY==1) cout<<" finished data.ss_new with N replicates: "<<N_nudata<<endl;
@@ -771,14 +774,14 @@ FINAL_SECTION
     }
     else
     {
-    	cout<<"*.ss_new files are not produced with reportdetail=0"<<endl;
+    	if(show_MSY==1) warning<<"NOTE:  *.ss_new files are not produced with N_nudata=0"<<endl;
     }
 
 //  SS_Label_Info_12.4.6 #Call fxn write_Bzero_output()  appended to report.sso
-    if (reportdetail ==1 || pick_report_use(53)=="X")
+    if (pick_report_use(59)=="Y")
     {
         write_Bzero_output();
-        if(show_MSY==1) cout<<" finished Bzero and global MSY "<<endl;
+        if(show_MSY==1) cout<<" finished dynamic Bzero and global MSY "<<endl;
     }
 
     if(parm_adjust_method==3) {N_warn++; warning<<"time-vary parms not bound checked"<<endl;}
@@ -880,7 +883,6 @@ REPORT_SECTION
     get_initial_conditions();
     get_time_series();  //  in ADMB's report_section
     evaluate_the_objective_function();
-    if(reportdetail>0)
     {
     write_bigoutput();
     cout<<" finished writing bigoutput for last_phase in report section and before hessian "<<endl;

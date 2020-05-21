@@ -124,66 +124,66 @@
   NumLbl0+=onenum+CRLF(1);
   }
 
-    pick_report_name+=" DEFINITIONS $report:1";pick_report_use+="S";
-    pick_report_name+=" LIKELIHOOD $report:2";pick_report_use+="S";
-    pick_report_name+=" Input_Variance_Adjustment $report:3";pick_report_use+="S";
-    pick_report_name+=" Parm_devs_detail $report:4";pick_report_use+="S";
-    pick_report_name+=" PARAMETERS $report:5";pick_report_use+="S";
-    pick_report_name+=" DERIVED_QUANTITIES $report:6";pick_report_use+="S";
-    pick_report_name+=" MGparm_By_Year_after_adjustments $report:7";pick_report_use+="S";
-    pick_report_name+=" selparm(Size)_By_Year_after_adjustments $report:8";pick_report_use+="S";
-    pick_report_name+=" selparm(Age)_By_Year_after_adjustments $report:9";pick_report_use+="S";
-    pick_report_name+=" RECRUITMENT_DIST $report:10";pick_report_use+="S";
-    pick_report_name+=" MORPH_INDEXING $report:11";pick_report_use+="S";
-    pick_report_name+=" SIZEFREQ_TRANSLATION $report:12";pick_report_use+="S";
-    pick_report_name+=" MOVEMENT $report:13";pick_report_use+="S";
-    pick_report_name+=" EXPLOITATION $report:14";pick_report_use+="S";
-    pick_report_name+=" CATCH $report:15";pick_report_use+="S";
-    pick_report_name+=" TIME_SERIES $report:16";pick_report_use+="S";
-    pick_report_name+=" SPR_SERIES $report:17";pick_report_use+="S";
-    pick_report_name+=" Kobe_Plot $report:18";pick_report_use+="S";
-    pick_report_name+=" SPAWN_RECRUIT $report:19";pick_report_use+="S";
-    pick_report_name+=" SPAWN_RECR_CURVE $report:20";pick_report_use+="S";
-    pick_report_name+=" INDEX_1 $report:21";pick_report_use+="S";
-    pick_report_name+=" INDEX_2 $report:22";pick_report_use+="S";
-    pick_report_name+=" INDEX_3 $report:23";pick_report_use+="S";
-    pick_report_name+=" DISCARD_SPECIFICATION $report:24";pick_report_use+="S";
-    pick_report_name+=" DISCARD_OUTPUT $report:25";pick_report_use+="S";
-    pick_report_name+=" MEAN_BODY_WT_OUTPUT $report:26";pick_report_use+="S";
-    pick_report_name+=" FIT_LEN_COMPS $report:27";pick_report_use+="S";
-    pick_report_name+=" FIT_AGE_COMPS $report:28";pick_report_use+="S";
-    pick_report_name+=" FIT_SIZE_COMPS $report:29";pick_report_use+="S";
-    pick_report_name+=" OVERALL_COMPS $report:30";pick_report_use+="S";
-    pick_report_name+=" LEN_SELEX $report:31";pick_report_use+="S";
-    pick_report_name+=" AGE_SELEX $report:32";pick_report_use+="S";
-    pick_report_name+=" ENVIRONMENTAL_DATA $report:33";pick_report_use+="S";
-    pick_report_name+=" TAG_Recapture $report:34";pick_report_use+="S";
-    pick_report_name+=" NUMBERS_AT_AGE $report:35";pick_report_use+="S";
-    pick_report_name+=" BIOMASS_AT_AGE $report:36";pick_report_use+="S";
-    pick_report_name+=" NUMBERS_AT_LENGTH $report:37";pick_report_use+="S";
-    pick_report_name+=" BIOMASS_AT_LENGTH $report:38";pick_report_use+="S";
-    pick_report_name+=" F_AT_AGE $report:39";pick_report_use+="S";
-    pick_report_name+=" CATCH_AT_AGE $report:40";pick_report_use+="S";
-    pick_report_name+=" DISCARD_AT_AGE $report:41";pick_report_use+="S";
-    pick_report_name+=" BIOLOGY $report:42";pick_report_use+="S";
-    pick_report_name+=" Natural_Mortality $report:43";pick_report_use+="S";
-    pick_report_name+=" AGE_SPECIFIC_K $report:44";pick_report_use+="S";
-    pick_report_name+=" Growth_Parameters $report:45";pick_report_use+="S";
-    pick_report_name+=" Seas_Effects $report:46";pick_report_use+="S";
-    pick_report_name+=" Biology_at_age_in_endyr $report:47";pick_report_use+="S";
-    pick_report_name+=" MEAN_BODY_WT(Begin) $report:48";pick_report_use+="S";
-    pick_report_name+=" MEAN_SIZE_TIMESERIES $report:49";pick_report_use+="S";
-    pick_report_name+=" AGE_LENGTH_KEY $report:50";pick_report_use+="S";
-    pick_report_name+=" AGE_AGE_KEY $report:51";pick_report_use+="S";
-    pick_report_name+=" COMPOSITION_DATABASE $report:52";pick_report_use+="S";
-    pick_report_name+=" SELEX_database $report:53";pick_report_use+="S";
-    pick_report_name+=" SPR/YPR_Profile $report:54";pick_report_use+="S";
-    pick_report_name+=" GLOBAL_MSY $report:55";pick_report_use+="S";
-    pick_report_name+=" SS_summary.sso $report:56";pick_report_use+="S";
-    pick_report_name+=" rebuilder.sso $report:57";pick_report_use+="S";
-    pick_report_name+=" SIStable.sso $report:58";pick_report_use+="S";
-    pick_report_name+=" Dynamic_Bzero $report:59";pick_report_use+="S";
-    pick_report_name+=" wtatage.ss_new $report:60";pick_report_use+="S";
+    pick_report_name+=" DEFINITIONS report:1";pick_report_use+="N";
+    pick_report_name+=" LIKELIHOOD report:2";pick_report_use+="N";
+    pick_report_name+=" Input_Variance_Adjustment report:3";pick_report_use+="N";
+    pick_report_name+=" Parm_devs_detail report:4";pick_report_use+="N";
+    pick_report_name+=" PARAMETERS report:5";pick_report_use+="N";
+    pick_report_name+=" DERIVED_QUANTITIES report:6";pick_report_use+="N";
+    pick_report_name+=" MGparm_By_Year_after_adjustments report:7";pick_report_use+="N";
+    pick_report_name+=" selparm(Size)_By_Year_after_adjustments report:8";pick_report_use+="N";
+    pick_report_name+=" selparm(Age)_By_Year_after_adjustments report:9";pick_report_use+="N";
+    pick_report_name+=" RECRUITMENT_DIST report:10";pick_report_use+="N";
+    pick_report_name+=" MORPH_INDEXING report:11";pick_report_use+="N";
+    pick_report_name+=" SIZEFREQ_TRANSLATION report:12";pick_report_use+="N";
+    pick_report_name+=" MOVEMENT report:13";pick_report_use+="N";
+    pick_report_name+=" EXPLOITATION report:14";pick_report_use+="N";
+    pick_report_name+=" CATCH report:15";pick_report_use+="N";
+    pick_report_name+=" TIME_SERIES report:16";pick_report_use+="N";
+    pick_report_name+=" SPR_SERIES report:17";pick_report_use+="N";
+    pick_report_name+=" Kobe_Plot report:18";pick_report_use+="N";
+    pick_report_name+=" SPAWN_RECRUIT report:19";pick_report_use+="N";
+    pick_report_name+=" SPAWN_RECR_CURVE report:20";pick_report_use+="N";
+    pick_report_name+=" INDEX_1 report:21";pick_report_use+="N";
+    pick_report_name+=" INDEX_2 report:22";pick_report_use+="N";
+    pick_report_name+=" INDEX_3 report:23";pick_report_use+="N";
+    pick_report_name+=" DISCARD_SPECIFICATION report:24";pick_report_use+="N";
+    pick_report_name+=" DISCARD_OUTPUT report:25";pick_report_use+="N";
+    pick_report_name+=" MEAN_BODY_WT_OUTPUT report:26";pick_report_use+="N";
+    pick_report_name+=" FIT_LEN_COMPS report:27";pick_report_use+="N";
+    pick_report_name+=" FIT_AGE_COMPS report:28";pick_report_use+="N";
+    pick_report_name+=" FIT_SIZE_COMPS report:29";pick_report_use+="N";
+    pick_report_name+=" OVERALL_COMPS report:30";pick_report_use+="N";
+    pick_report_name+=" LEN_SELEX report:31";pick_report_use+="N";
+    pick_report_name+=" AGE_SELEX report:32";pick_report_use+="N";
+    pick_report_name+=" ENVIRONMENTAL_DATA report:33";pick_report_use+="N";
+    pick_report_name+=" TAG_Recapture report:34";pick_report_use+="N";
+    pick_report_name+=" NUMBERS_AT_AGE report:35";pick_report_use+="N";
+    pick_report_name+=" BIOMASS_AT_AGE report:36";pick_report_use+="N";
+    pick_report_name+=" NUMBERS_AT_LENGTH report:37";pick_report_use+="N";
+    pick_report_name+=" BIOMASS_AT_LENGTH report:38";pick_report_use+="N";
+    pick_report_name+=" F_AT_AGE report:39";pick_report_use+="N";
+    pick_report_name+=" CATCH_AT_AGE report:40";pick_report_use+="N";
+    pick_report_name+=" DISCARD_AT_AGE report:41";pick_report_use+="N";
+    pick_report_name+=" BIOLOGY report:42";pick_report_use+="N";
+    pick_report_name+=" Natural_Mortality report:43";pick_report_use+="N";
+    pick_report_name+=" AGE_SPECIFIC_K report:44";pick_report_use+="N";
+    pick_report_name+=" Growth_Parameters report:45";pick_report_use+="N";
+    pick_report_name+=" Seas_Effects report:46";pick_report_use+="N";
+    pick_report_name+=" Biology_at_age_in_endyr report:47";pick_report_use+="N";
+    pick_report_name+=" MEAN_BODY_WT(Begin) report:48";pick_report_use+="N";
+    pick_report_name+=" MEAN_SIZE_TIMESERIES report:49";pick_report_use+="N";
+    pick_report_name+=" AGE_LENGTH_KEY report:50";pick_report_use+="N";
+    pick_report_name+=" AGE_AGE_KEY report:51";pick_report_use+="N";
+    pick_report_name+=" COMPOSITION_DATABASE report:52";pick_report_use+="N";
+    pick_report_name+=" SELEX_database report:53";pick_report_use+="N";
+    pick_report_name+=" SPR/YPR_Profile report:54";pick_report_use+="N";
+    pick_report_name+=" GLOBAL_MSY report:55";pick_report_use+="N";
+    pick_report_name+=" SS_summary.sso report:56";pick_report_use+="N";
+    pick_report_name+=" rebuilder.sso report:57";pick_report_use+="N";
+    pick_report_name+=" SIStable.sso report:58";pick_report_use+="N";
+    pick_report_name+=" Dynamic_Bzero report:59";pick_report_use+="N";
+    pick_report_name+=" wtatage.ss_new report:60";pick_report_use+="N";
 
 //  check command line inputs
   SDmode=1;
@@ -246,12 +246,12 @@
   
  LOCAL_CALCS
   if (reportdetail < 0 || reportdetail > 3) reportdetail = 0;
-  echoinput<<reportdetail<<"  reportdetail 0=minimal for data-limited, 1=high (w/ wtatage.ss_new), 2=brief, 3=custom"<<endl;
+  echoinput<<reportdetail<<"  reportdetail 0=minimal for data-limited, 1=all, 2=no growth, 3=custom"<<endl;
   if(reportdetail==3)
   {
 // -101 means to select all
 // -100 means to select data-limited
-// -102 means to select brief
+// -102 means to select no growth or length
 // positive integer means to add that item to selected list
 // negative integer means to remove selected item from list
 // -999 means to stop reading items for the list
@@ -275,51 +275,64 @@
   }
   	
 //  set background set of picked reports; then set custom if reportdetail==3
-  for(k=1;k<=60;k++) {pick_report_use(k)="S";}  //  all off
+  for(k=1;k<=60;k++) {pick_report_use(k)="N";}  //  all off
   if(rd_background==0)  //  limited
   {
-  	pick_report_use(1)="X";
-  	pick_report_use(2)="X";
-  	pick_report_use(3)="X";
-  	pick_report_use(4)="X";
-  	pick_report_use(12)="X";
-  	pick_report_use(13)="X";
-  	pick_report_use(14)="X";
+  	pick_report_use(1)="Y";
+  	pick_report_use(2)="Y";
+  	pick_report_use(5)="Y";
+  	pick_report_use(6)="Y";
+  	pick_report_use(14)="Y";
+  	pick_report_use(15)="Y";
+  	pick_report_use(16)="Y";
   }
-  else if(rd_background==2)  //  brief
+  else if(rd_background==2)  //  brief, no growth or length
   {
-  	for(k=1;k<=60;k++)	{pick_report_use(k)="X";}  //  all on
-  	pick_report_use(42)="S";
-  	pick_report_use(43)="S";
-  	pick_report_use(47)="S";
-  	pick_report_use(44)="S";
-  	pick_report_use(45)="S";
-  	pick_report_use(49)="S";
-  	pick_report_use(53)="S";
-  	pick_report_use(54)="S";
-  	pick_report_use(30)="S";
-  	pick_report_use(31)="S";
-  	pick_report_use(34)="S";
-  	pick_report_use(35)="S";
-  	pick_report_use(33)="S";
-  	pick_report_use(29)="S";
-  	pick_report_use(31)="S";
-  	pick_report_use(5)="S";
-  	pick_report_use(26)="S";
-  	pick_report_use(27)="S";
+  	for(k=1;k<=60;k++)	{pick_report_use(k)="Y";}  //  start with all on
+  	pick_report_use(7)="N";
+  	pick_report_use(8)="N";
+  	pick_report_use(11)="N";
+  	pick_report_use(12)="N";
+  	pick_report_use(13)="Y";
+  	pick_report_use(17)="N";
+  	pick_report_use(18)="N";
+  	pick_report_use(24)="N";
+  	pick_report_use(25)="N";
+  	pick_report_use(26)="N";
+  	pick_report_use(27)="N";
+  	pick_report_use(29)="N";
+  	pick_report_use(31)="N";
+  	pick_report_use(33)="N";
+  	pick_report_use(34)="N";
+  	pick_report_use(37)="N";
+  	pick_report_use(38)="N";
+  	pick_report_use(44)="N";
+  	pick_report_use(45)="N";
+  	pick_report_use(46)="N";
+  	pick_report_use(47)="N";
+  	pick_report_use(48)="N";
+  	pick_report_use(49)="N";
+  	pick_report_use(50)="N";
+  	pick_report_use(53)="N";
+  	pick_report_use(57)="N";
+  	pick_report_use(58)="N";
   }
   else  //  all on
   {
-  	for(k=1;k<=60;k++)	{pick_report_use(k)="X";}
+  	for(k=1;k<=60;k++)	{pick_report_use(k)="Y";}
   }
   if(reportdetail==3) {
   	for( int j=0;j<=reportdetail_list.size()-2;j++) {
-  		if(reportdetail_list[j](1)>0) {
-  			pick_report_use(reportdetail_list[j](1))="X";
+  		if(reportdetail_list[j](1)>0 && reportdetail_list[j](1)<=60) {
+  			pick_report_use(reportdetail_list[j](1))="Y";
   		}
   		else if(reportdetail_list[j](1)>-100) {
-  			pick_report_use(-reportdetail_list[j](1))="S";
+  			pick_report_use(-reportdetail_list[j](1))="N";
   		}
+  		else
+  			{
+  				N_warn++; warning<<"custom report number: "<<reportdetail_list[j](1)<<" is out of range and ignored"<<endl;
+  			}
     }
   } 
   

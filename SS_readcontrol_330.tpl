@@ -50,6 +50,7 @@
   if(WTage_rd>0 && nobs_mnwt>0)
     {N_warn++;
     warning<<"incompatible option:  empirical bodywt-at-age is used, but meanbody_wt obs fit using growth curve"<<endl;}
+
   if(N_platoon>1)
   {
     *(ad_comm::global_datafile) >> sd_ratio;
