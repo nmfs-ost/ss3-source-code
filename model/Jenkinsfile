@@ -1,6 +1,6 @@
 pipeline {
     agent { dockerfile {
-          dir 'jenkins/stock-synthesis/simple-model'
+          dir 'jenkins/stock-synthesis/model'
         }
     }
     stages {
@@ -22,31 +22,30 @@ pipeline {
                 sh label: 'Get dir listing', script: 'ls -alh *'
             }
         }
-        stage('Run ss on Simple/ model') {
+		stage('Run ss on models') {
             steps {
-                sh label: 'Copy ss to Simple', script: 'cp ss Simple/'
-                sh label: 'Run ss on Simple', script: 'cd Simple && ./ss'
-                sh label: 'Get dir listing', script: 'ls -alh *'
+                //sh label: 'Copy ss to Simple', script: 'cp ss Simple/'
+				sh label: 'Put SS in path and run models', script: 'jenkins/stock-synthesis/model/run_models.sh'
             }
         }
         stage('Zip and Archive') {
             steps {
                 sh label: 'Remove Simple.zip if exists', script: 'rm Simple.zip | true'
-                sh label: 'Zip Simple folder', script: 'zip Simple.zip Simple/*'
+				sh label: 'Remove models.zip if exists', script: 'rm models.zip | true'
+                sh label: 'Zip models folder', script: 'zip models.zip models/*'
                 archiveArtifacts 'Simple.zip'
             }
         }
-
     }
     post {
         failure {
-            mail bcc: '', body: 'Stock Synthesis build failed.', cc: '', from: '', replyTo: '', subject: 'stock-synthesis-model: Jenkins Build Failure', to: 'kathryn.doering@noaa.gov richard.methot@noaa.gov ian.taylor@noaa.gov'
+            mail bcc: '', body: 'Stock Synthesis build failed.', cc: '', from: '', replyTo: '', subject: 'stock-synthesis-model: Jenkins Build Failure', to: 'kathryn.doering@noaa.gov'
         }
         changed {
             script {
                 if (currentBuild.currentResult == 'SUCCESS') { // Other values: SUCCESS, UNSTABLE
                     // Send an email only if the build status has changed from red to green
-                   mail bcc: '', body: 'Stock Synthesis build now passing!', cc: '', from: '', replyTo: '', subject: 'stock-synthesis-model: Jenkins Build Passing Again', to: 'kathryn.doering@noaa.gov richard.methot@noaa.gov ian.taylor@noaa.gov'
+                   mail bcc: '', body: 'Stock Synthesis build now passing!', cc: '', from: '', replyTo: '', subject: 'stock-synthesis-model: Jenkins Build Passing Again', to: 'kathryn.doering@noaa.gov'
                 }
             }
         }
