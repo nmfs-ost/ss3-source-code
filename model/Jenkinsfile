@@ -4,7 +4,7 @@ pipeline {
         }
     }
     stages {
-		stage {
+		stage('clean up from previous run') {
 		    steps {
 		        sh label: 'remove an old dir (force in case does not exist)', script: 'rm -rf ss_bin'
 			}
