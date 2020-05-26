@@ -4,6 +4,12 @@ pipeline {
         }
     }
     stages {
+	    stage('move shell script') {
+		    steps{
+			    sh label: 'remove an old file (force in case does not exist)', script: 'rm -f run_models_2.sh'
+			    sh label: 'copy over new version', script: 'cp jenkins/stock-synthesis/model/run_models_2.sh run_models_2.sh'
+			}
+		}
         stage('Copy ss.gz artifact from previous stage') {
             steps {
               copyArtifacts filter: 'ss.gz', fingerprintArtifacts: true, projectName: 'stock-synthesis-build', selector: lastSuccessful()
@@ -25,7 +31,7 @@ pipeline {
 		stage('Run ss on models') {
             steps {
                 //sh label: 'Copy ss to Simple', script: 'cp ss Simple/'
-				sh label: 'Put SS in path and run models', script: 'run_models.sh'
+				sh label: 'Put SS in path and run models', script: './run_models_2.sh'
             }
         }
         stage('Zip and Archive') {
