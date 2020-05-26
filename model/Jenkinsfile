@@ -42,16 +42,15 @@ pipeline {
 				sh label: 'Put SS in path and run models', script: '/bin/bash ./run_models_2.sh'
             }
         }
-        stage('Zip and Archive') {
-            steps {
-                sh label: 'Remove Simple.zip if exists', script: 'rm Simple.zip | true'
+    }
+    post {
+	    always {
+		    steps {
 				sh label: 'Remove models.zip if exists', script: 'rm models.zip | true'
                 sh label: 'Zip models folder', script: 'zip models.zip models/*'
                 archiveArtifacts 'models.zip'
             }
-        }
-    }
-    post {
+		}
         failure {
             mail bcc: '', body: 'Stock Synthesis build failed.', cc: '', from: '', replyTo: '', subject: 'stock-synthesis-model: Jenkins Build Failure', to: 'kathryn.doering@noaa.gov'
         }
