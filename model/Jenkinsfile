@@ -50,7 +50,7 @@ pipeline {
     }
     post {
 	    always {
-                sh label: 'Zip models folder', script: 'zip models.zip models/*'
+                sh label: 'Zip models folder', script: 'zip -r models.zip models'
                 archiveArtifacts 'models.zip'
 		}
         failure {
