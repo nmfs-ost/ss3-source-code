@@ -45,11 +45,9 @@ pipeline {
     }
     post {
 	    always {
-		    steps {
 				sh label: 'Remove models.zip if exists', script: 'rm models.zip | true'
                 sh label: 'Zip models folder', script: 'zip models.zip models/*'
                 archiveArtifacts 'models.zip'
-            }
 		}
         failure {
             mail bcc: '', body: 'Stock Synthesis build failed.', cc: '', from: '', replyTo: '', subject: 'stock-synthesis-model: Jenkins Build Failure', to: 'kathryn.doering@noaa.gov'
