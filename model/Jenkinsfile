@@ -44,7 +44,7 @@ pipeline {
         }
 		stage('Run ss on models') {
             steps {   
-				sh label: 'Put SS in path and run models', script: '/bin/bash ./run_models_2.sh'
+				sh label: 'Put SS in path and run models', script: './run_models_2.sh'
             }
         }
     }
