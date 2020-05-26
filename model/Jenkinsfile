@@ -4,6 +4,11 @@ pipeline {
         }
     }
     stages {
+		stage {
+		    steps {
+		        sh label: 'remove an old dir (force in case does not exist)', script: 'rm -rf ss_bin'
+			}
+		}
 	    stage('move shell script') {
 		    steps{
 			    sh label: 'remove an old file (force in case does not exist)', script: 'rm -f run_models_2.sh'
@@ -26,6 +31,8 @@ pipeline {
                 sh label: 'Remove ss if exists', script: 'rm ss | true'
                 sh label: 'Unzip ss', script: 'gunzip ss.gz'
                 sh label: 'Make ss executable', script: 'chmod a+rwx ss'
+				sh label: 'make ss executable' folder, script: 'mkdir ss_bin'
+				sh label: 'Move ss executable', script: 'mv ss ss_bin/ss'
                 sh label: 'Get dir listing', script: 'ls -alh *'
             }
         }
