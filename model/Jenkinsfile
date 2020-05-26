@@ -7,6 +7,12 @@ pipeline {
 		stage('clean up from previous run') {
 		    steps {
 		        sh label: 'remove an old dir (force in case does not exist)', script: 'rm -rf ss_bin'
+				sh label: 'remove an old dir Simple (force in case does not exist)', script: 'rm -rf Simple'
+				sh label: 'remove old files (force in case does not exist)', script: 'rm -f *.sso'
+				sh label: 'remove old files (force in case does not exist)', script: 'rm -f *.log'
+				sh label: 'remove old files (force in case does not exist)', script: 'rm -f *.ss_new'
+				sh label: 'remove old files (force in case does not exist)', script: 'rm -f models.zip'
+				sh label: 'view folders/files', script: 'ls .'
 			}
 		}
 	    stage('move shell script') {
@@ -37,15 +43,13 @@ pipeline {
             }
         }
 		stage('Run ss on models') {
-            steps {
-                //sh label: 'Copy ss to Simple', script: 'cp ss Simple/'
+            steps {   
 				sh label: 'Put SS in path and run models', script: '/bin/bash ./run_models_2.sh'
             }
         }
     }
     post {
 	    always {
-				sh label: 'Remove models.zip if exists', script: 'rm models.zip | true'
                 sh label: 'Zip models folder', script: 'zip models.zip models/*'
                 archiveArtifacts 'models.zip'
 		}
