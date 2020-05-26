@@ -1,9 +1,9 @@
 #!/bin/sh
 
 # put ss in path
-SS_HOME=./ss
-export SS_HOME
-PATH=$SS_HOME:$PATH
+echo $PATH
+export PATH=$PATH:./ss
+echo $PATH
 
 # loop through the models
 cd models
