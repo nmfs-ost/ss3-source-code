@@ -7,7 +7,7 @@ pipeline {
         stage('Copy ss.gz artifact from previous stage') {
             steps {
               copyArtifacts filter: 'ss.gz', fingerprintArtifacts: true, projectName: 'stock-synthesis-build', selector: lastSuccessful()
-            }
+			}
         }
         stage('Git clone src for stock synthesis Example files') {
             steps {
@@ -25,7 +25,7 @@ pipeline {
 		stage('Run ss on models') {
             steps {
                 //sh label: 'Copy ss to Simple', script: 'cp ss Simple/'
-				sh label: 'Put SS in path and run models', script: 'jenkins/stock-synthesis/model/run_models.sh'
+				sh label: 'Put SS in path and run models', script: 'run_models.sh'
             }
         }
         stage('Zip and Archive') {
@@ -33,7 +33,7 @@ pipeline {
                 sh label: 'Remove Simple.zip if exists', script: 'rm Simple.zip | true'
 				sh label: 'Remove models.zip if exists', script: 'rm models.zip | true'
                 sh label: 'Zip models folder', script: 'zip models.zip models/*'
-                archiveArtifacts 'Simple.zip'
+                archiveArtifacts 'models.zip'
             }
         }
     }
