@@ -6,16 +6,10 @@ pipeline {
     stages { 
 	    stage('Prepare workspace') {
             steps {
-			  sh label: 'print wd', script: 'pwd'
-			  sh label: 'view files', script: 'ls .'
-			  sh label: 'remove an old dir (force in case does not exist)', script: 'rm -rf Simple'
-			  sh label: 'remove an old dir (force in case does not exist)', script: 'rm -rf simple_run'
 			  sh label: 'remove an old dir (force in case does not exist)', script: 'rm -rf ss_example_files'
 			  sh label: 'remove an old dir (force in case does not exist)', script: 'rm -rf run_R'
-			  sh label: 'remove an old file (force in case does not exist)', script: 'rm -f Simple.zip'
 			  sh label: 'remove an old file (force in case does not exist)', script: 'rm -f models.zip'
 			  sh label: 'remove an old file (force in case does not exist)', script: 'rm -f rename_ref_files.sh'
-			  sh label: 'verify removed', script: 'ls .'
 		   }
         }
 	    stage('move shell script') {
@@ -28,11 +22,9 @@ pipeline {
             steps {
 			  sh label: 'create subfolder to save artifact', script: 'mkdir run_R'
               copyArtifacts filter: 'models.zip', fingerprintArtifacts: true, projectName: 'stock-synthesis-model', selector: lastSuccessful()
-			  sh label: 'view files', script: 'ls .'
               sh label: 'move models.zip', script: 'mv models.zip run_R/models.zip' 
-			  sh label: 'verify move', script: 'cd run_R && ls .'
 			  sh label: 'Unzip models.zip', script: 'cd run_R && unzip models.zip'
-			  sh label: 'view files', script: 'ls -R run_R'
+			  // sh label: 'view files', script: 'ls -R run_R'
 		   }
         }
         stage('Git clone src for stock synthesis reference run files') {
@@ -42,18 +34,16 @@ pipeline {
         }
 		stage('set up stock synthesis reference run files') {
 		    steps {
-			    sh label: 'view files', script: 'ls .'
 				sh label: 'create subfolder to move repo files', script: 'mkdir ss_example_files'
 				sh label: 'move the repo Simple files', script: 'mv models ss_example_files'
-				sh label: 'view files', script: 'ls .'
-				sh label: 'view files', script: 'cd ss_example_files && ls -R .'
+				// sh label: 'view files', script: 'cd ss_example_files && ls -R .'
 				sh label: 'rename files', script: './rename_ref_files.sh'
-				sh label: 'view renamed files', script: 'cd ss_example_files && ls -R .'
+				// sh label: 'view renamed files', script: 'cd ss_example_files && ls -R .'
 			}
 		}
-	    stage('Run test R script') {
+	    stage('Run comparison R script') {
 		    steps{
-			    sh label: 'test R code', script: 'Rscript run_compare.R'
+			    sh label: 'Run comparison R code', script: 'Rscript run_compare.R'
 			}	
 		}
 		stage('Determine results of test') {
