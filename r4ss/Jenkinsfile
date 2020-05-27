@@ -10,19 +10,19 @@ pipeline {
 			  sh label: 'view files', script: 'ls .'
 			  sh label: 'remove an old dir (force in case does not exist)', script: 'rm -rf simple_run'
 			  sh label: 'remove an old file (force in case does not exist)', script: 'rm -f Simple.zip'
+			  sh label: 'remove an old file (force in case does not exist)', script: 'rm -f models.zip'
 			  sh label: 'remove an old file (force in case does not exist)', script: 'rm -rf local_R_lib'
+			  sh label: 'remove an old dir (force in case does not exist)', script: 'rm -rf run_R'
 			  sh label: 'verify removed', script: 'ls .'
 		   }
         }
-        stage('Copy Simple.zip artifact from previous stage') {
+        stage('Copy models.zip artifact from previous stage') {
             steps {
-			  sh label: 'create subfolder to save artifact', script: 'mkdir simple_run'
-              copyArtifacts filter: 'Simple.zip', fingerprintArtifacts: true, projectName: 'stock-synthesis-model', selector: lastSuccessful()
-			  sh label: 'view files', script: 'ls .'
-              sh label: 'move Simple.zip', script: 'mv Simple.zip simple_run/Simple.zip' 
-			  sh label: 'verify move', script: 'cd simple_run && ls .'
-			  sh label: 'Unzip Simple.zip', script: 'cd simple_run && unzip Simple.zip'
-			  sh label: 'view files', script: 'ls .'
+			  sh label: 'create subfolder to save artifact', script: 'mkdir run_R'
+              copyArtifacts filter: 'models.zip', fingerprintArtifacts: true, projectName: 'stock-synthesis-model', selector: lastSuccessful()
+              sh label: 'move models.zip', script: 'mv models.zip run_R/models.zip' 
+			  sh label: 'Unzip models.zip', script: 'cd run_R && unzip models.zip'
+			  // sh label: 'view files', script: 'ls -R run_R'
 		   }
         }
 	    stage('Run R code to test R') {
@@ -34,7 +34,8 @@ pipeline {
 	}
     post {
 	    always {
-		    archiveArtifacts 'simple_run/Simple/plots/*'
+		    sh label: 'Zip run_R folder', script: 'zip -r r4ss_results.zip run_R'
+		    archiveArtifacts 'r4ss_results.zip'
 		}
         changed {
             script {
