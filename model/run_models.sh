@@ -12,7 +12,7 @@ for dir in */; do
 	# check that report file was created to confirm model ran
 	FILE=./Report.sso
     if [ -f "$FILE" ]; then
-        echo "$FILE exist"
+        echo "$FILE exists"
     else 
         echo "$FILE does not exist"
 		exit 1
