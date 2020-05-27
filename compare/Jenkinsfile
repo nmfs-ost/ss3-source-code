@@ -13,18 +13,19 @@ pipeline {
 			  sh label: 'remove an old dir (force in case does not exist)', script: 'rm -rf ss_example_files'
 			  sh label: 'remove an old dir (force in case does not exist)', script: 'rm -rf run_R'
 			  sh label: 'remove an old file (force in case does not exist)', script: 'rm -f Simple.zip'
+			  sh label: 'remove an old file (force in case does not exist)', script: 'rm -f models.zip'
 			  sh label: 'verify removed', script: 'ls .'
 		   }
         }
-        stage('Copy Simple.zip artifact from previous stage') {
+        stage('Copy models.zip artifact from previous stage') {
             steps {
-			  sh label: 'create subfolder to save artifact', script: 'mkdir simple_run'
-              copyArtifacts filter: 'Simple.zip', fingerprintArtifacts: true, projectName: 'stock-synthesis-model', selector: lastSuccessful()
+			  sh label: 'create subfolder to save artifact', script: 'mkdir run_R'
+              copyArtifacts filter: 'models.zip', fingerprintArtifacts: true, projectName: 'stock-synthesis-model', selector: lastSuccessful()
 			  sh label: 'view files', script: 'ls .'
-              sh label: 'move Simple.zip', script: 'mv Simple.zip simple_run/Simple.zip' 
-			  sh label: 'verify move', script: 'cd simple_run && ls .'
-			  sh label: 'Unzip Simple.zip', script: 'cd simple_run && unzip Simple.zip'
-			  sh label: 'view files', script: 'ls .'
+              sh label: 'move models.zip', script: 'mv models.zip run_R/models.zip' 
+			  sh label: 'verify move', script: 'cd run_R && ls .'
+			  sh label: 'Unzip models.zip', script: 'cd run_R && unzip models.zip'
+			  sh label: 'view files', script: 'ls -R run_R'
 		   }
         }
         stage('Git clone src for stock synthesis reference run files') {
@@ -32,26 +33,14 @@ pipeline {
                 checkout([$class: 'GitSCM', branches: [[name: '*/master']], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[credentialsId: '1aa2d7c8-749f-4270-9de2-6ffcf0cd2beb', url: 'https://stock_synthesis.build@vlab.ncep.noaa.gov/git/ss_examples']]])
 			    sh label: 'view files', script: 'ls .'
 				sh label: 'create subfolder to move repo files', script: 'mkdir ss_example_files'
-				sh label: 'move the repo Simple files', script: 'mv Simple ss_example_files'
+				sh label: 'move the repo Simple files', script: 'mv models ss_example_files'
 				sh label: 'view files', script: 'ls .'
 				sh label: 'view files', script: 'cd ss_example_files && ls -R .'
+				sh label: 'rename sso files', script: 'cd ss_example_files &&  rename "s/.sso/_ref.sso/" *.sso'
+				sh label: 'rename par files', script: 'cd ss_example_files &&  rename "s/.par/_ref.par/" *.par'
+				sh label: 'view renamed files', script: 'cd ss_example_files && ls -R .'
 			}
         }
-		stage('setup folders for running R') {
-            steps {
-			    sh label: 'make an R directory', script: 'mkdir run_R'
-				sh label: 'move the ref summary file', script: 'mv ss_example_files/Simple/ss_summary.sso run_R/ss_summary_ref.sso'
-				sh label: 'move the ref warning file', script: 'mv ss_example_files/Simple/warning.sso run_R/warning_ref.sso'
-				sh label: 'move the ref par file', script: 'mv ss_example_files/Simple/ss.par run_R/ss_ref.par'
-				sh label: 'move the artifact file', script: 'mv simple_run/Simple/* run_R'
-				sh label: 'view files', script: 'ls -R run_R'
-			}
-        }
-	    stage('Run R code to test R') {
-		    steps{
-			    sh label: 'test R code', script: 'R -e "test <- 2+2; print(test)"'
-			}	
-		}
 	    stage('Run test R script') {
 		    steps{
 			    sh label: 'test R code', script: 'Rscript run_compare.R'
@@ -68,13 +57,13 @@ pipeline {
 		    archiveArtifacts 'run_R/compare_test.txt'
 		}
         failure {
-            mail bcc: '', body: 'Stock Synthesis build failed.', cc: '', from: '', replyTo: '', subject: 'Jenkins Build Failure: stock-synthesis-compare', to: 'kathryn.doering@noaa.gov richard.methot@noaa.gov ian.taylor@noaa.gov'
+            mail bcc: '', body: 'Stock Synthesis build failed.', cc: '', from: '', replyTo: '', subject: 'Jenkins Build Failure: stock-synthesis-compare', to: 'kathryn.doering@noaa.gov'
         }
         changed {
             script {
                 if (currentBuild.currentResult == 'SUCCESS') { // Other values: SUCCESS, UNSTABLE
                     // Send an email only if the build status has changed from red to green
-                   mail bcc: '', body: 'Stock Synthesis build now passing!', cc: '', from: '', replyTo: '', subject: 'Jenkins Build Passing Again: stock-synthesis-compare', to: 'kathryn.doering@noaa.gov richard.methot@noaa.gov ian.taylor@noaa.gov'
+                   mail bcc: '', body: 'Stock Synthesis build now passing!', cc: '', from: '', replyTo: '', subject: 'Jenkins Build Passing Again: stock-synthesis-compare', to: 'kathryn.doering@noaa.gov'
                 }
             }
         }
