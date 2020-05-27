@@ -14,6 +14,7 @@ pipeline {
 			  sh label: 'remove an old dir (force in case does not exist)', script: 'rm -rf run_R'
 			  sh label: 'remove an old file (force in case does not exist)', script: 'rm -f Simple.zip'
 			  sh label: 'remove an old file (force in case does not exist)', script: 'rm -f models.zip'
+			  sh label: 'remove an old file (force in case does not exist)', script: 'rm -f rename_ref_files.sh'
 			  sh label: 'verify removed', script: 'ls .'
 		   }
         }
@@ -36,8 +37,7 @@ pipeline {
 				sh label: 'move the repo Simple files', script: 'mv models ss_example_files'
 				sh label: 'view files', script: 'ls .'
 				sh label: 'view files', script: 'cd ss_example_files && ls -R .'
-				sh label: 'rename sso files', script: 'cd ss_example_files &&  rename "s/.sso/_ref.sso/" *.sso'
-				sh label: 'rename par files', script: 'cd ss_example_files &&  rename "s/.par/_ref.par/" *.par'
+				sh label: 'rename files', script: './rename_ref_files.sh'
 				sh label: 'view renamed files', script: 'cd ss_example_files && ls -R .'
 			}
         }
