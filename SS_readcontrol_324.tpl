@@ -3043,15 +3043,17 @@
   		{
         i=int(selparm_1(parmcount+1,3));
         j=int(selparm_1(parmcount+2,3));
-        if(i<1) {N_warn++; warning<<" size selex mirror, length range min bin read is ("<<i<<") reset to 1 for fleet: "<<f<<endl;selparm_1(parmcount,3)=1;}
+        if(i<1) {N_warn++; warning<<" size selex mirror, length range min bin read is ("<<i<<") reset to 1 for fleet: "<<f<<endl;selparm_1(parmcount,3)=1;i=1;}
+        if(j<1) {N_warn++; warning<<" size selex mirror end is < 1 for fleet: "<<f<<" reset to nlength"<<endl;selparm_1(parmcount+1,3)=nlength;j=nlength;}
+        if(j>nlength) {N_warn++; warning<<" size selex mirror length is > nlength for fleet: "<<f<<" reset to nlength"<<endl;selparm_1(parmcount+1,3)=nlength;j=nlength;}
         if(i>j) {N_warn++; cout<<" EXIT - see warning "<<endl; warning<<" Critical error, size selex mirror length range min ("<<i<<") greater than max ("<<j<<") for fleet: "<<f<<endl; exit(1);}
-        if(j>nlength) {N_warn++; warning<<" size selex mirror length is > nlength for fleet: "<<f<<" reset to nlength"<<endl;selparm_1(parmcount+1,3)=nlength;}
-        mirror_mask(f)(1,i)=1.0e-10;
+        mirror_mask(f)=1.0e-10;
+        echoinput<<"fleet: "<<f<<"  set mirror for bins: "<<i<<" through "<<j<<endl;
         mirror_mask(f)(i,j)=1.;
   		}
     parmcount+=N_selparmvec(f);
   }
-
+  echoinput<<"end check on mirror mask "<<endl;
  END_CALCS
 
   imatrix timevary_makefishsel(styr-3,YrMax,1,Nfleet)
@@ -4522,7 +4524,8 @@
     }
   }
   autogen_timevary=1;  // set to 1 at end of routine because some parameters may be converted in the trans process
-
+  warning<<"set autogen "<<autogen_timevary<<endl;
+  
   echoinput<<"ParCount "<<ParCount<<"   Active parameters: "<<active_count<<endl<<"Turn_off_phase "<<Turn_off_phase<<endl<<" max_phase "<<max_phase<<endl;
   echoinput<<active_parm.indexmax()<<endl;
 

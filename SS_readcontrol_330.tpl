@@ -3108,16 +3108,17 @@
   		{
         i=int(selparm_1(parmcount+1,3));
         j=int(selparm_1(parmcount+2,3));
-        if(i<0) i=1;
-        if(j<0) j=nlength;
-        if(i<1) {N_warn++; warning<<" size selex mirror, length range min bin read is ("<<i<<") reset to 1 for fleet: "<<f<<endl;selparm_1(parmcount,3)=1;}
+        if(i<1) {N_warn++; warning<<" size selex mirror, length range min bin read is ("<<i<<") reset to 1 for fleet: "<<f<<endl;selparm_1(parmcount,3)=1;i=1;}
+        if(j<1) {N_warn++; warning<<" size selex mirror end is < 1 for fleet: "<<f<<" reset to nlength"<<endl;selparm_1(parmcount+1,3)=nlength;j=nlength;}
+        if(j>nlength) {N_warn++; warning<<" size selex mirror length is > nlength for fleet: "<<f<<" reset to nlength"<<endl;selparm_1(parmcount+1,3)=nlength;j=nlength;}
         if(i>j) {N_warn++; cout<<" EXIT - see warning "<<endl; warning<<" Critical error, size selex mirror length range min ("<<i<<") greater than max ("<<j<<") for fleet: "<<f<<endl; exit(1);}
-        if(j>nlength) {N_warn++; warning<<" size selex mirror length is > nlength for fleet: "<<f<<" reset to nlength"<<endl;selparm_1(parmcount+1,3)=nlength;}
-        mirror_mask(f)(1,i)=1.0e-10;
+        mirror_mask(f)=1.0e-10;
         mirror_mask(f)(i,j)=1.;
+        echoinput<<"fleet: "<<f<<"  set mirror for bins: "<<i<<" through "<<j<<endl;
   		}
     parmcount+=N_selparmvec(f);
   }
+  echoinput<<"end check on mirror mask "<<endl;
 
  END_CALCS
 

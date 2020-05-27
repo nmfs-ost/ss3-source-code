@@ -752,6 +752,7 @@ FINAL_SECTION
     if(pick_report_use(57)=="Y" && Do_Rebuilder>0 && mceval_counter<=1) {
     	write_rebuilder_output();
       cout<<" finished rebuilder.sso "<<endl;}
+
     if(pick_report_use(58)=="Y") {
     	write_SIStable();
       cout<<" finished SIStable.sso "<<endl;}
