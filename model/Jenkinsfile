@@ -6,20 +6,18 @@ pipeline {
     stages {
 		stage('clean up from previous run') {
 		    steps {
+			    sh label: 'remove old files (force in case does not exist)', script: 'rm -f run_models_2.sh'
+			    sh label: 'remove an old file (force in case does not exist)', script: 'rm -f run_models.sh'
 		        sh label: 'remove an old dir (force in case does not exist)', script: 'rm -rf ss_bin'
-				sh label: 'remove an old dir Simple (force in case does not exist)', script: 'rm -rf Simple'
-				sh label: 'remove old files (force in case does not exist)', script: 'rm -f *.sso'
-				sh label: 'remove old files (force in case does not exist)', script: 'rm -f *.log'
-				sh label: 'remove old files (force in case does not exist)', script: 'rm -f *.ss_new'
+				sh label: 'remove an old dir (force in case does not exist)', script: 'rm -rf models'
 				sh label: 'remove old files (force in case does not exist)', script: 'rm -f models.zip'
-				sh label: 'view folders/files', script: 'ls .'
+				// sh label: 'view folders/files', script: 'ls .'
 			}
 		}
 	    stage('move shell script') {
 		    steps{
-			    sh label: 'remove an old file (force in case does not exist)', script: 'rm -f run_models_2.sh'
-			    sh label: 'copy over new version', script: 'cp jenkins/stock-synthesis/model/run_models_2.sh run_models_2.sh'
-				sh label: 'Make executable', script: 'chmod a+x run_models_2.sh'  
+			    sh label: 'copy over new version', script: 'cp jenkins/stock-synthesis/model/run_models.sh run_models.sh'
+				sh label: 'Make executable', script: 'chmod a+x run_models.sh'  
 			}
 		}
         stage('Copy ss.gz artifact from previous stage') {
@@ -27,24 +25,23 @@ pipeline {
               copyArtifacts filter: 'ss.gz', fingerprintArtifacts: true, projectName: 'stock-synthesis-build', selector: lastSuccessful()
 			}
         }
-        stage('Git clone src for stock synthesis Example files') {
+        stage('Git clone src for stock synthesis example models') {
             steps {
                 checkout([$class: 'GitSCM', branches: [[name: '*/master']], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[credentialsId: '1aa2d7c8-749f-4270-9de2-6ffcf0cd2beb', url: 'https://stock_synthesis.build@vlab.ncep.noaa.gov/git/ss_examples']]])
             }
         }
         stage('Unpack ss.gz artifact') {
             steps {
-                sh label: 'Remove ss if exists', script: 'rm ss | true'
                 sh label: 'Unzip ss', script: 'gunzip ss.gz'
                 sh label: 'Make ss executable', script: 'chmod a+rwx ss'
 				sh label: 'make ss executable folder', script: 'mkdir ss_bin'
 				sh label: 'Move ss executable', script: 'mv ss ss_bin/ss'
-                sh label: 'Get dir listing', script: 'ls -alh *'
+                // sh label: 'Get dir listing', script: 'ls -alh *'
             }
         }
 		stage('Run ss on models') {
             steps {   
-				sh label: 'Put SS in path and run models', script: './run_models_2.sh'
+				sh label: 'Put SS in path and run models', script: './run_models.sh'
             }
         }
     }
