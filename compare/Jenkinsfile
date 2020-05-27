@@ -20,7 +20,7 @@ pipeline {
         }
 	    stage('move shell script') {
 		    steps{
-			    sh label: 'copy over new version', script: 'cp jenkins/stock-synthesis/model/rename_ref_files.sh rename_ref_files.sh'
+			    sh label: 'copy over new version', script: 'cp jenkins/stock-synthesis/compare/rename_ref_files.sh rename_ref_files.sh'
 				sh label: 'Make executable', script: 'chmod a+x rename_ref_files.sh'  
 			}
 		}
