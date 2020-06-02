@@ -119,7 +119,7 @@ PRELIMINARY_CALCS_SECTION
   {
     if(Svy_super_N(f)>0)
     {
-      echoinput<<"Create superperiod sample weights for survey obs"<<endl<<"Fleet Super Obs SE_input samp_wt"<<endl;
+      echoinput<<"Create superperiod sample weights for survey obs"<<endl<<"Flt_num SuperP Obs_num Flt_code SE_input samp_wt"<<endl;
       for (j=1;j<=Svy_super_N(f);j++)                  // do each super period
       {
         temp=1.0;  //  relative sample weight for time period the accumulator observation
@@ -145,7 +145,7 @@ PRELIMINARY_CALCS_SECTION
 
     if(N_suprper_disc(f)>0)
     {
-      echoinput<<"Create superperiod sample weights for discard obs"<<endl<<"fleet Super Obs SE_input samp_wt"<<endl;
+      echoinput<<"Create superperiod sample weights for discard obs"<<endl<<"Flt_num SuperP Obs_num Flt_code SE_input samp_wt"<<endl;
       for (j=1;j<=N_suprper_disc(f);j++)                  // do each super period
       {
         temp=1.0;  //  relative sample weight for time period the accumulator observation
@@ -171,7 +171,7 @@ PRELIMINARY_CALCS_SECTION
 
     if(N_suprper_l(f)>0)
     {
-      echoinput<<"Create superperiod sample weights for length obs"<<endl<<"Super Obs effN_input samp_wt"<<endl;
+      echoinput<<"Create superperiod sample weights for length obs"<<endl<<"Flt_num SuperP Obs_num Flt_code effN_input samp_wt"<<endl;
       for (j=1;j<=N_suprper_l(f);j++)                  // do each super period
       {
         temp=1.0;  //  relative sample weight for time period the accumulator observation
@@ -197,7 +197,7 @@ PRELIMINARY_CALCS_SECTION
 
     if(N_suprper_a(f)>0)
     {
-      echoinput<<"Create superperiod sample weights for age obs"<<endl<<"Super Obs effN_input samp_wt"<<endl;
+      echoinput<<"Create superperiod sample weights for age obs"<<endl<<"Flt_num SuperP Obs_num Flt_code effN_input samp_wt"<<endl;
       for (j=1;j<=N_suprper_a(f);j++)                  // do each super period
       {
         temp=1.0;  //  relative sample weight for time period the accumulator observation
@@ -222,7 +222,7 @@ PRELIMINARY_CALCS_SECTION
     }
     if(N_suprper_ms(f)>0)
     {
-      echoinput<<"Create superperiod sample weights for meansize obs"<<endl<<"Super Obs effN_input samp_wt"<<endl;
+      echoinput<<"Create superperiod sample weights for meansize obs"<<endl<<"Flt_num SuperP Obs_num Flt_code effN_input samp_wt"<<endl;
       for (j=1;j<=N_suprper_ms(f);j++)                  // do each super period
       {
         temp=1.0;  //  relative sample weight for time period the accumulator observation
@@ -327,7 +327,7 @@ PRELIMINARY_CALCS_SECTION
     {
         echoinput<<"sizefreq superperiod start obs: "<<suprper_SzFreq_start<<endl<<"sizefreq superperiod end obs:   "<<suprper_SzFreq_end<<endl;
 
-        echoinput<<"Create superperiod sample weights for sizecomp obs "<<endl<<"Fleet Super OBS Super fleet Sample_N_read samp_wt"<<endl;
+        echoinput<<"Create superperiod sample weights for sizecomp obs "<<endl<<"Flt_num SuperP Obs_num Sample_N_read samp_wt"<<endl;
         for (j=1;j<=N_suprper_SzFreq;j++)                  // do each super period
         {
           temp=1.0;  //  relative sample weight for time period the accumulator observation
