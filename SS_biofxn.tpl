@@ -1477,6 +1477,109 @@ FUNCTION void get_migration()
 //  end migration
   }
 
+FUNCTION void get_migration2()
+  {
+//*******************************************************************
+//  SS_Label_FUNCTION 20 #get_migration
+//  for use with new movement approach
+//  each defined movedef rate (1 to do_migr2) has a min age, max age, functional form
+//  each move_pattern(GP, sex, settlement, seas, source, sink) selects rate it uses
+//  so all could point to just 1 rate definition, or a complex setup could be created
+//  to ease creation of setups of moderate complexity, use 0 to select all of that dimension
+//  for example, 0 in the sex field would assign the specified rate to both sexes
+//  for example, 0 in all fields would assign the same rate to everything
+
+  Ip=MGP_CGD;   // base counter for  movement parms
+  dvariable move1;  //  movement rate for young fish
+  dvariable move2;  //  movement rate for old fish
+  
+//  SS_Label_20.1  loop the needed movement rates
+  for (k=1;k<=do_migr2;k++)   //  loop all movement rates for this year (includes seas, morphs)
+  {
+//  seems not used    t=styr+(yz-styr)*nseas+move_def2(k,1)-1;
+    if(k<=do_migration) //  so an explicit movement rate
+    {
+//  set some movement rates same as the first movement rate
+      move1=mgp_adj(Ip+1);
+      if(mgp_adj(Ip+1)==-9999.) move1=mgp_adj(MGP_CGD+1);
+      move2=mgp_adj(Ip+1);
+      if(mgp_adj(Ip+2)==-9999.) move2=mgp_adj(MGP_CGD+2);
+//  set movement rate same for all ages
+      if(mgp_adj(Ip+2)==-9998.) move2=move1;
+
+//  SS_Label_Info_20.1.1  #age-specific movement strength based on parameters for selected area pairs
+      temp=1./(move_def2(k,6)-move_def2(k,5));
+      temp1=temp*(move2-move1);
+      migrrate(yz,k)=move1 + (r_ages-move_def2(k,5))*temp1;
+      migrrate(yz,k)(0,move_def2(k,5))=move1;
+      migrrate(yz,k)(move_def2(k,5),nages)=move2;
+      migrrate(yz,k)=mfexp(migrrate(yz,k));
+      Ip+=2;
+    }
+    else
+//  SS_Label_Info_20.1.2  #default movement strength =1.0 for other area pairs
+    {
+      migrrate(yz,k)=1.;
+    }
+  }
+
+//  SS_Label_Info_20.2  #loop seasons, GP, source areas
+  for (s=1;s<=nseas;s++)
+  {
+    t=styr+(yz-styr)*nseas+s-1;
+    for (gp=1;gp<=N_GP;gp++)
+    {
+      for (p=1;p<=pop;p++)
+      {
+        tempvec_a.initialize();   // zero out the summation vector
+        for (p2=1;p2<=pop;p2++)
+        {
+//  SS_Label_Info_20.2.1  #for each destination area, adjust movement rate by season duration and sum across all destination areas
+          k=move_pattern(s,gp,p,p2);
+          if(k>0)
+          {
+            if(p2!=p && nseas>1) migrrate(yz,k)*=seasdur(move_def2(k,1));  // fraction leaving an area is reduced if the season is short
+            tempvec_a+=migrrate(yz,k);          //  sum of all movement weights for the p2 fish
+          }
+        }   //end destination area
+//  SS_Label_Info_20.2.2 #now normalize for all movement from source area p
+        for (p2=1;p2<=pop;p2++)
+        {
+          k=move_pattern(s,gp,p,p2);
+          if(k>0)
+          {
+            migrrate(yz,k)=elem_div(migrrate(yz,k),tempvec_a);
+  //  SS_Label_Info_20.2.3 #Set rate to 0.0 (or 1.0 for stay rates) below the start age for migration
+            if(migr_start(s,gp)>0)
+            {
+              if(p!=p2)
+              {
+                migrrate(yz,k)(0,migr_start(s,gp)-1)=0.0;
+              }
+              else
+              {
+                migrrate(yz,k)(0,migr_start(s,gp)-1)=1.0;
+              }
+            }
+          }
+        }
+      }    //  end source areas loop
+    }  // end growth pattern
+  }  // end season
+
+  //  SS_Label_Info_20.2.4 #Copy annual migration rates forward until first year with time-varying migration rates
+  if(yz<endyr)
+  {
+    k=yz+1;
+    while(timevary_MG(k,5)==0 && k<=endyr)
+    {
+      migrrate(k)=migrrate(k-1);  k++;
+    }
+  }
+//  end migration
+  }
+
+
 FUNCTION void get_saveGparm()
   {
   //*********************************************************************

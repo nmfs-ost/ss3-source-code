@@ -456,8 +456,10 @@
       echoinput<<" only 1 area, so no read of do_migration or migr_firstage "<<endl;
     }
  END_CALCS
-   init_matrix move_def(1,do_migration,1,6)   // seas morph source dest minage maxge
-   4darray move_pattern(1,nseas,1,N_GP,1,pop,1,pop)
+   init_matrix move_def(1,do_migration,1,6)   // seas morph source dest minage maxage
+//  ivector GP3(1,gmorph)   // index for main gender*GPat*settlement in that order
+//  plan to revise such that movement is by GP3, not GP
+   4iarray move_pattern(1,nseas,1,N_GP,1,pop,1,pop)
    int do_migr2
    ivector firstBseas(1,N_GP)
 

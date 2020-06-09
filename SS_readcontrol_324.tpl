@@ -401,7 +401,7 @@
     }
  END_CALCS
    init_matrix move_def(1,do_migration,1,6)   // seas morph source dest minage maxge
-   4darray move_pattern(1,nseas,1,N_GP,1,pop,1,pop)
+   4iarray move_pattern(1,nseas,1,N_GP,1,pop,1,pop)
    int do_migr2
    ivector firstBseas(1,N_GP)
 
