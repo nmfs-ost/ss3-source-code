@@ -161,7 +161,7 @@ FUNCTION void write_bigoutput()
   SS2out<<"Lencomp_error_parms: "<<Comp_Err_L2<<endl;
   SS2out<<"Agecomp_error_type: "<<Comp_Err_A<<endl;
   SS2out<<"Agecomp_error_parms: "<<Comp_Err_A2<<endl;
-  SS2out<<endl;
+  SS2out<<"#"<<endl;
   SS2out<<"Fleet fleet_type timing area catch_units catch_mult survey_units survey_error Fleet_name"<<endl;
   for (f=1;f<=Nfleet;f++)
   {
@@ -3116,7 +3116,7 @@ FUNCTION void write_bigoutput()
   SS2out<<" end selex output "<<endl;
   }  // end do report detail
 
-// REPORT_KEYWORD 48 SPR/YPR_Profile
+// REPORT_KEYWORD 54 SPR/YPR_Profile
   int SPRloop;
   int bio_t_base;
   dvariable Fmult2=maxpossF;
@@ -3129,9 +3129,14 @@ FUNCTION void write_bigoutput()
   dvariable SPR_last;
   dvariable SPR_trial;
   dvariable YPR_last;
-
-  if(Do_Benchmark>0 && wrote_bigreport==1 && pick_report_use(48)=="Y")  {
-    SS2out<<endl<<"SPR/YPR_Profile %Report:48 "<<endl<<"SPRloop Iter Bycatch Fmult F_report SPR YPR YPR*Recr SSB Recruits SSB/Bzero Tot_Catch ";
+  if(Do_Benchmark>0 && pick_report_use(54)=="Y")  {
+    SS2out<<endl<<pick_report_name(54)<<endl;
+	  if(wrote_bigreport!=1){
+		  // if writing pre-Hessian version of the Report, don't include
+  		SS2out<<"This output only included after the Hessian is inverted"<<endl;
+		}else{
+		  // post-Hessian version of the Report
+    SS2out<<"SPRloop Iter Bycatch Fmult F_report SPR YPR YPR*Recr SSB Recruits SSB/Bzero Tot_Catch ";
     for (f=1;f<=Nfleet;f++) {if(fleet_type(f)<=2) SS2out<<" "<<fleetname(f)<<"("<<f<<")Dead";}
     for (f=1;f<=Nfleet;f++) {if(fleet_type(f)<=2) SS2out<<" "<<fleetname(f)<<"("<<f<<")Ret";}
     for (f=1;f<=Nfleet;f++) {if(fleet_type(f)<=2) SS2out<<" "<<fleetname(f)<<"("<<f<<")Age";}
@@ -3339,7 +3344,9 @@ FUNCTION void write_bigoutput()
     SS2out<<"#value 6 is Fmsy: "<<MSY_Fmult<<endl;
     SS2out<<"#Profile 7 increases from Fmsy to Fcrash"<<endl;
     SS2out<<"#NOTE: meanage of catch is for total catch of fleet_type==1 or bycatch fleets with scaled Hrate"<<endl;
-  }
+		} // end check for wrote_bigreport==1
+  } // end SPR/YPR_Profile
+	
 //  GLOBAL_MSY with knife-edge age selection, then slot-age selection
 // REPORT_KEYWORD 49 GLOBAL_MSY
   if(Do_Benchmark>0 && wrote_bigreport==1 && pick_report_use(49)=="Y")  {
