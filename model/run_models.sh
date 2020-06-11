@@ -9,7 +9,12 @@ for dir in */; do
     echo $dir
 	cd $dir
 	ss
-	# check that report file was created to confirm model ran
+	cd ..
+done
+for dir in */; do
+    echo $dir
+	cd $dir
+		# check that report file was created to confirm model ran
 	FILE=./Report.sso
     if [ -f "$FILE" ]; then
         echo "$FILE exists"
