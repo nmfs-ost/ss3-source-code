@@ -12,7 +12,6 @@ pipeline {
         }
         stage('Build SS Executable') {
             steps {
-			    sh label: 'see admb location', script: 'ls /usr/local -R'
                 // sh label: 'Check ADMB Version', script: 'admb'
                 // sh label: 'Double check source', script: 'ls vlab/stock-synthesis'
                 //sh label: 'Copy build script to base location', script: 'cp vlab/stock-synthesis/Make_SS_330.sh .'
