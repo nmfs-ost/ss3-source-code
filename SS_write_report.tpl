@@ -39,6 +39,7 @@ FUNCTION void write_bigoutput()
     SS2out<<endl<<"Forecast_Comments"<<endl<<Forecast_Comments<<endl;
   }
 
+  if(N_parm_dev==0) pick_report_use(4)="N";
   if(SzFreq_Nmeth==0) pick_report_use(12)="N";
   if(do_migration==0) pick_report_use(13)="N";
   if(Svy_N==0) pick_report_use(21)="N";
@@ -245,7 +246,9 @@ FUNCTION void write_bigoutput()
   	SS2out<<"sizeatage_N_skip: _ "<<(Nobs_ms-Nobs_ms_use)<<endl;
   }
 
-  if(N_parm_dev>0 && pick_report_use(4)=="Y")
+	// Parm_devs_detail
+	// (only reported if there are parameter deviations)
+  if(pick_report_use(4)=="Y")
   {
   	  SS2out<<endl<<pick_report_name(4)<<endl;
     SS2out<<"Index  Phase  MinYr  MaxYr  stddev  Rho  Like_devs  Like_se  mean  rmse"<<endl;

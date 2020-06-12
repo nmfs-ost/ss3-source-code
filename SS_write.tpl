@@ -820,7 +820,7 @@ FUNCTION void write_Bzero_output()
  in first pass, fishery is on (1) so just report current values
  in second pass, rerun the time series with no fishery, then do the same reporting
  */      
-    SS2out<<endl<<"Dynamic_Bzero"<<endl;
+    SS2out<<endl<<pick_report_name(59)<<endl;
     SS2out<<"Spawning_Biomass_Report";
     if(fishery_on_off==0) {SS2out<<"_1 No_fishery_for_Z=M_and_dynamic_Bzero";} else {SS2out<<"_2 With_fishery";}
     SS2out<<endl<<"Yr Area: ";
