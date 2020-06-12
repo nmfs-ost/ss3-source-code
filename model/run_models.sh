@@ -8,7 +8,7 @@ cd models
 for dir in */; do
     echo $dir
 	cd $dir
-	ss
+	ss -nox
 	cd ..
 done
 for dir in */; do
