@@ -2991,8 +2991,10 @@
   ivector selparm_fleet(1,N_selparm) // holds the fleet ID for each selparm
                                   //  equivalent to the mgp_type() for MGparms
   matrix mirror_mask(1,Nfleet,1,nlength)
+  matrix mirror_mask_a(1,Nfleet,0,nages)
  LOCAL_CALCS
   mirror_mask.initialize();
+  mirror_mask_a.initialize();
   echoinput<<" selex and composition base parameters "<<endl;
   for (g=1;g<=N_selparm;g++)
   {
@@ -3102,17 +3104,17 @@
   }
 
 //  check on mirror bounds
-  echoinput<<"check on size selex mirror bounds"<<endl;
   parmcount=0;
   for(f=1;f<=Nfleet;f++)
-  {
+  { 
   	if(seltype(f,1)==5)  //  uses mirror
   		{
         i=int(selparm_1(parmcount+1,3));
         j=int(selparm_1(parmcount+2,3));
-        if(i<1) {N_warn++; warning<<" size selex mirror, length range min bin read is ("<<i<<") reset to 1 for fleet: "<<f<<endl;selparm_1(parmcount,3)=1;i=1;}
-        if(j<1) {N_warn++; warning<<" size selex mirror end is < 1 for fleet: "<<f<<" reset to nlength"<<endl;selparm_1(parmcount+1,3)=nlength;j=nlength;}
-        if(j>nlength) {N_warn++; warning<<" size selex mirror length is > nlength for fleet: "<<f<<" reset to nlength"<<endl;selparm_1(parmcount+1,3)=nlength;j=nlength;}
+        echoinput<<"check on size selex mirror bounds for fleet: "<<f<<" "<<endl;
+        if(i<1) {echoinput<<" size selex mirror, length range min bin read is ("<<i<<") reset to 1 for fleet: "<<f<<endl;selparm_1(parmcount+1,3)=1;i=1;}
+        if(j<1) {echoinput<<" size selex mirror, length range max bin read is ("<<j<<") reset to nlength for fleet: "<<f<<endl;selparm_1(parmcount+2,3)=nlength;j=nlength;}
+        if(j>nlength) {N_warn++; warning<<" size selex mirror length is > nlength for fleet: "<<f<<" reset to nlength"<<endl;selparm_1(parmcount+2,3)=nlength;j=nlength;}
         if(i>j) {N_warn++; cout<<" EXIT - see warning "<<endl; warning<<" Critical error, size selex mirror length range min ("<<i<<") greater than max ("<<j<<") for fleet: "<<f<<endl; exit(1);}
         mirror_mask(f)=1.0e-10;
         mirror_mask(f)(i,j)=1.;
@@ -3120,7 +3122,33 @@
   		}
     parmcount+=N_selparmvec(f);
   }
-  echoinput<<"end check on mirror mask "<<endl;
+  echoinput<<"end check on mirror mask for size selex==5"<<endl;
+  for(f=1;f<=Nfleet;f++)
+  { 
+  	if(seltype(f+Nfleet,1)==11)  //  setting min-max age range
+  		{
+        echoinput<<"check on age selex min-max for fleet: "<<f<<" "<<selparm_1(parmcount+1,3)<<" "<<selparm_1(parmcount+2,3)<<" nages: "<<nages<<endl;
+        i=int(selparm_1(parmcount+1,3));
+        j=int(selparm_1(parmcount+2,3));
+        if((selparm_1(parmcount+1,3)-i)>0.)
+        	{
+        		N_warn++;warning<<"fleet: "<<f<<" age selex range min read is: "<<selparm_1(parmcount+1,3)<<"; SS expected an integer and will convert "<<endl; selparm_1(parmcount+1,3)=i;
+        	}
+        if((selparm_1(parmcount+2,3)-j)>0.)
+        	{
+        		N_warn++;warning<<"fleet: "<<f<<" age selex range max read is: "<<selparm_1(parmcount+2,3)<<"; SS expected an integer and will convert "<<endl; selparm_1(parmcount+2,3)=j;
+        	}
+        if(selparm_1(parmcount+2,3)>nages)
+        	{
+        		N_warn++;warning<<"fleet: "<<f<<" age selex range max read is: "<<selparm_1(parmcount+2,3)<<"; is >nages; SS will convert "<<endl; selparm_1(parmcount+2,3)=nages;
+        	}
+        	echoinput<<" accepted range: "<<selparm_1(parmcount+1,3)<<" "<<selparm_1(parmcount+2,3)<<endl;
+        	mirror_mask_a(f)(selparm_1(parmcount+1,3),selparm_1(parmcount+2,3))=1.0;
+        	echoinput<<"create mirror_mask: "<<mirror_mask_a(f)<<endl;
+  		}
+    parmcount+=N_selparmvec(f+Nfleet);
+  }
+  echoinput<<"end check on min-max ranges for age selex=11"<<endl;
 
  END_CALCS
 

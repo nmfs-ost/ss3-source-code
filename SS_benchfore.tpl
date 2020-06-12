@@ -1787,12 +1787,15 @@ FUNCTION void Get_Forecast()
                 }  //close gmorph loop
                 catch_fleet(t,f)*=temp;
               }  // close fishery
+
+//  calculate survival within area within season with Fmethod ==1
               for (g=1;g<=gmorph;g++)
               if(use_morph(g)>0)
               {
                 settle=settle_g(g);  //  get settlement event
                 j=Settle_age(settle);
-                if(s<nseas && Settle_seas(settle)<=s) natage(t+1,p,g,j) = Nsurv(g,j)*surv1(s,GP3(g),j);  // advance age zero within year
+                if(s<nseas && Settle_seas(settle)<=s) {
+                	natage(t+1,p,g,j) = Nsurv(g,j)*surv1(s,GP3(g),j);}  // advance age zero within year
                 for (a=j+1;a<nages;a++)
                 {
                   natage(t+1,p,g,a) = Nsurv(g,a-adv_age)*surv1(s,GP3(g),a-adv_age);
@@ -1928,15 +1931,13 @@ FUNCTION void Get_Forecast()
                 }  //close gmorph loop
               }  // close fishery
 
-//  calculate survival within area within season
+//  calculate survival within area within season with Fmethod >=2
               for (g=1;g<=gmorph;g++)
               if(use_morph(g)>0)
               {
+                settle=settle_g(g);  //  get settlement event
                 j=Settle_age(settle);
-                if(s<nseas && Settle_seas(settle)<=s)
-                  {
-                    natage(t+1,p,g,j) = natage(t,p,g,j)*mfexp(-Z_rate(t,p,g,j)*seasdur(s));  // advance new recruits within year
-                  }
+                if(s<nseas && Settle_seas(settle)<=s) {natage(t+1,p,g,j) = natage(t,p,g,j)*mfexp(-Z_rate(t,p,g,j)*seasdur(s));}  // advance new recruits within year
                 for (a=j+1;a<nages;a++) {
                   natage(t+1,p,g,a) = natage(t,p,g,a-adv_age)*mfexp(-Z_rate(t,p,g,a-adv_age)*seasdur(s));
                   }

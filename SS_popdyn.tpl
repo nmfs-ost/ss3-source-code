@@ -147,6 +147,7 @@ FUNCTION void get_initial_conditions()
       catch_mult(j)=catch_mult(y);
     }
   }
+
   if(Use_AgeKeyZero>0)
   {
     if(MG_active(6)>0) get_age_age(Use_AgeKeyZero,AgeKey_StartAge,AgeKey_Linear1,AgeKey_Linear2); //  call function to get the age_age key

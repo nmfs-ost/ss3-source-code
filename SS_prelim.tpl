@@ -910,7 +910,6 @@ PRELIMINARY_CALCS_SECTION
     natM = value(natM);
     surv1 = value(surv1);
     surv2 = value(surv2);
-    echoinput<<" did natmort "<<endl;
 
 //  SS_Label_Info_6.8.5 #Call fxn get_wtlen()  calculate weight-at-length and maturity vectors
     get_wtlen();
