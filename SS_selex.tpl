@@ -24,6 +24,8 @@ FUNCTION void get_selectivity()
   //  SS_Label_Info_22.2 #Loop all fisheries and surveys twice; first for size selectivity, then for age selectivity
   for (f=1;f<=2*Nfleet;f++)
   {
+//  	echoinput<<" selex fleet: "<<f<<" type "<<seltype(f);
+  	
     fs=f-Nfleet;  //index for saving age selex in the fleet arrays
   //  SS_Label_Info_22.2.1 #recalculate selectivity for any fleets or surveys with time-vary flag set for this year
     if(timevary_sel(y,f)==1 || save_for_report>0)
@@ -54,7 +56,7 @@ FUNCTION void get_selectivity()
         {for (j=1;j<=N_selparmvec(f);j++) save_sp_len(y,f,j)=sp(j);
         }
       }
-
+      	
       if(f<=Nfleet)  // do size selectivity, retention, discard mort
       {
       for (gg=1;gg<=gender;gg++)
@@ -546,9 +548,9 @@ FUNCTION void get_selectivity()
            {sel_l(y,f,2)=0.;}  // set males to zero for spawning biomass
          else if(seltype(f,1)==5)    // set males equal to mirrored males
          {
-          i=int(value(sp(1)));  if(i<=0) i=1;
-          j=int(value(sp(2)));  if(j<=0) j=nlength;
-          sel_l(y,f,2)(i,j)=sel_l(y,seltype(f,4),2)(i,j);
+//          i=int(value(sp(1)));  if(i<=0) i=1;
+//          j=int(value(sp(2)));  if(j<=0) j=nlength;
+          sel_l(y,f,2)=elem_prod(mirror_mask(f),sel_l(y,seltype(f,4),2));
          }
          else if(seltype(f,1)==15)    // set males equal to mirrored males
          {
@@ -821,9 +823,11 @@ FUNCTION void get_selectivity()
   //  SS_Label_Info_22.7.11 #Constant age-specific selex for specified age range
               case 11:   // selex=1.0 within a range of ages
               {
-                a=int(value(sp(2)));
-                if(a>nages) {a=nages;}
-                sel_a(y,fs,1)(int(value(sp(1))),a)=1.;
+//              	echoinput<<f<<" min max "<<sp(1)<<" "<<sp(2)<<endl;
+//                a=int(value(sp(2)));
+//                if(a>nages) {a=nages;}
+//                sel_a(y,fs,1)(int(value(sp(1))),a)=1.;
+                sel_a(y,fs,1)=mirror_mask_a(fs);
                 break;
               }
 
