@@ -57,13 +57,13 @@ pipeline {
 		    archiveArtifacts 'run_R/*.txt'
 		}
         failure {
-            mail bcc: '', body: 'Stock Synthesis build failed.', cc: '', from: '', replyTo: '', subject: 'Jenkins Build Failure: stock-synthesis-compare', to: 'kathryn.doering@noaa.gov richard.methot@noaa.gov ian.taylor@noaa.gov'
+            mail bcc: '', body: 'Stock Synthesis build failed.', cc: '', from: '', replyTo: '', subject: 'Jenkins Build Failure: stock-synthesis-compare', to: 'kathryn.doering@noaa.gov'
         }
         changed {
             script {
                 if (currentBuild.currentResult == 'SUCCESS') { // Other values: SUCCESS, UNSTABLE
                     // Send an email only if the build status has changed from red to green
-                   mail bcc: '', body: 'Stock Synthesis build now passing!', cc: '', from: '', replyTo: '', subject: 'Jenkins Build Passing Again: stock-synthesis-compare', to: 'kathryn.doering@noaa.gov richard.methot@noaa.gov ian.taylor@noaa.gov'
+                   mail bcc: '', body: 'Stock Synthesis build now passing!', cc: '', from: '', replyTo: '', subject: 'Jenkins Build Passing Again: stock-synthesis-compare', to: 'kathryn.doering@noaa.gov'
                 }
             }
         }
