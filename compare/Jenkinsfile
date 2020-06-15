@@ -54,7 +54,7 @@ pipeline {
 	}
     post {
 	    always {
-		    archiveArtifacts 'run_R/compare_test.txt'
+		    archiveArtifacts 'run_R/*.txt'
 		}
         failure {
             mail bcc: '', body: 'Stock Synthesis build failed.', cc: '', from: '', replyTo: '', subject: 'Jenkins Build Failure: stock-synthesis-compare', to: 'kathryn.doering@noaa.gov richard.methot@noaa.gov ian.taylor@noaa.gov'
