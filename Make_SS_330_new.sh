@@ -147,7 +147,7 @@ chmod a+x $BUILD_TYPE
 # output warnings
 if [[ "$WARNINGS" == "on" ]] ; then
     echo "... compiling a second time to get warnings ..."
-    g++ -c -std=c++0x -O3 -I. -I"$ADMB_HOME/build/dist/include" -I"/$ADMB_HOME/build/dist/contrib/include" -o$BUILD_TYPE.obj $BUILD_TYPE.cpp -Wall -Wextra
+    g++ -c -std=c++0x -O3 -I. -I"$ADMB_HOME/include" -I"/$ADMB_HOME/contrib/include" -o$BUILD_TYPE.obj $BUILD_TYPE.cpp -Wall -Wextra
 fi
 
 
