@@ -39,6 +39,7 @@ FUNCTION void write_bigoutput()
     SS2out<<endl<<"Forecast_Comments"<<endl<<Forecast_Comments<<endl;
   }
 
+  if(N_parm_dev==0) pick_report_use(4)="N";
   if(SzFreq_Nmeth==0) pick_report_use(12)="N";
   if(do_migration==0) pick_report_use(13)="N";
   if(Svy_N==0) pick_report_use(21)="N";
@@ -161,7 +162,7 @@ FUNCTION void write_bigoutput()
   SS2out<<"Lencomp_error_parms: "<<Comp_Err_L2<<endl;
   SS2out<<"Agecomp_error_type: "<<Comp_Err_A<<endl;
   SS2out<<"Agecomp_error_parms: "<<Comp_Err_A2<<endl;
-  SS2out<<endl;
+  SS2out<<"#"<<endl;
   SS2out<<"Fleet fleet_type timing area catch_units catch_mult survey_units survey_error Fleet_name"<<endl;
   for (f=1;f<=Nfleet;f++)
   {
@@ -202,7 +203,7 @@ FUNCTION void write_bigoutput()
   SS2out<<"NoBias_corr_Recruitment(info_only) "<<noBias_recr_like*recrdev_lambda(k)<<" "<<recrdev_lambda(k)<<endl;
   SS2out<<"Laplace_obj_fun(info_only) "<<JT_obj_fun<<" NA"<<endl;
 
-  SS2out<<"_"<<endl<<"Fleet:  ALL ";
+  SS2out<<"#"<<endl<<"Fleet:  ALL ";
   for (f=1;f<=Nfleet;f++) SS2out<<f<<" ";
   SS2out<<endl;
   if(F_Method>1) SS2out<<"Catch_lambda: _ "<<column(catch_lambda,k)<<endl<<"Catch_like: "<<catch_like*column(catch_lambda,k) <<" "<<catch_like<<endl;
@@ -245,7 +246,9 @@ FUNCTION void write_bigoutput()
   	SS2out<<"sizeatage_N_skip: _ "<<(Nobs_ms-Nobs_ms_use)<<endl;
   }
 
-  if(N_parm_dev>0 && pick_report_use(4)=="Y")
+	// Parm_devs_detail
+	// (only reported if there are parameter deviations)
+  if(pick_report_use(4)=="Y")
   {
   	  SS2out<<endl<<pick_report_name(4)<<endl;
     SS2out<<"Index  Phase  MinYr  MaxYr  stddev  Rho  Like_devs  Like_se  mean  rmse"<<endl;
@@ -283,7 +286,7 @@ FUNCTION void write_bigoutput()
 
   if(Do_TG>0)
   {
-    SS2out<<endl<<"_"<<endl<<"Tag_Group:  ALL ";
+    SS2out<<"#"<<endl<<"Tag_Group:  ALL ";
     for (f=1;f<=N_TG;f++) SS2out<<f<<" ";
     SS2out<<endl;
     SS2out<<"Tag_comp_Lambda _ "<<column(TG_lambda1,k)<<endl<<
@@ -505,7 +508,7 @@ FUNCTION void write_bigoutput()
     }
   }
 
-  SS2out<<endl<<"Number.of.parameters: "<<NP<<endl;
+  SS2out<<"#"<<endl<<"Number.of.parameters: "<<NP<<endl;
   SS2out<<"Active_count: "<<active_count<<endl;
   SS2out<<"Number_of_active_parameters_on_or_near_bounds: "<<Nparm_on_bound<<endl;
   }
@@ -661,7 +664,7 @@ FUNCTION void write_bigoutput()
       SS2out<<settle<<" "<<settle_time<<" "<<gp<<" "<<p<<" "<<Settle_month(settle_time)<<" "<<Settle_seas(settle_time)<<" "<<
       Settle_age(settle_time)<<" "<<Settle_timing_seas(settle_time)<<" "<<recr_dist(gp,settle_time,p)<<endl;
    }
-   SS2out<<endl<<"RECRUITMENT_DIST_Bmark"<<endl<<"Settle# settle_timing# G_pattern Area Settle_Month Seas Age Time_w/in_seas Frac/sex"<<endl;
+   SS2out<<"#"<<endl<<"RECRUITMENT_DIST_Bmark"<<endl<<"Settle# settle_timing# G_pattern Area Settle_Month Seas Age Time_w/in_seas Frac/sex"<<endl;
    for (settle=1;settle<=N_settle_assignments;settle++)
    {
       gp=settlement_pattern_rd(settle,1); //  growth patterns
@@ -670,7 +673,7 @@ FUNCTION void write_bigoutput()
       SS2out<<settle<<" "<<settle_time<<" "<<gp<<" "<<p<<" "<<Settle_month(settle_time)<<" "<<Settle_seas(settle_time)<<" "<<
       Settle_age(settle_time)<<" "<<Settle_timing_seas(settle_time)<<" "<<recr_dist_unf(gp,settle_time,p)/(Bmark_Yr(8)-Bmark_Yr(7)+1)<<endl;
    }
-   SS2out<<endl<<"RECRUITMENT_DIST_endyr"<<endl<<"Settle# settle_timing# G_pattern Area Settle_Month Seas Age Time_w/in_seas Frac/sex"<<endl;
+   SS2out<<"#"<<endl<<"RECRUITMENT_DIST_endyr"<<endl<<"Settle# settle_timing# G_pattern Area Settle_Month Seas Age Time_w/in_seas Frac/sex"<<endl;
    for (settle=1;settle<=N_settle_assignments;settle++)
    {
       gp=settlement_pattern_rd(settle,1); //  growth patterns
@@ -762,7 +765,7 @@ FUNCTION void write_bigoutput()
    {SS2out<<"Info: Annual_F.shown.here.is.done.by.the.Z-M.method.for.ages:."<<F_reporting_ages(1)<<"-"<<F_reporting_ages(2)<<endl;}
    else
    {SS2out<<"Info: Annual_F.shown.here.is.done.by.the.Z-M.method.for.nages/2="<<nages/2<<endl;}
-   SS2out<<endl;
+   SS2out<<"#"<<endl;
    SS2out<<"Yr Seas Seas_dur F_std annual_F annual_M ";
    for (f=1;f<=Nfleet;f++)
    if(fleet_type(f)<=2)
@@ -1015,7 +1018,8 @@ FUNCTION void write_bigoutput()
      SS2out<<" & "<<Smry_Table(y)(21,20+gmorph)<<" "<<Smry_Table(y)(21+gmorph,20+2*gmorph)<<" "<<annual_catch(y)<<" "<<annual_F(y)<<endl;
    } // end year loop
 // end SPR time series
-  SS2out<<endl<<"NOTE:_GENTIME_is_fecundity_weighted_mean_age"<<endl<<"NOTE:_MnAgeSmry_is_numbers_weighted_meanage_at_and_above_smryage(not_accounting_for_settlement_offsets)"<<endl;
+  SS2out<<"#"<<endl<<"NOTE:_GENTIME_is_fecundity_weighted_mean_age"<<endl<<
+	"NOTE:_MnAgeSmry_is_numbers_weighted_meanage_at_and_above_smryage(not_accounting_for_settlement_offsets)"<<endl;
  }
  
 // REPORT_KEYWORD 18 Kobe_Plot
@@ -1295,7 +1299,7 @@ FUNCTION void write_bigoutput()
 
 // REPORT_KEYWORD 23 INDEX_3  Survey_Q_setup
   SS2out<<endl<<pick_report_name(23)<<endl;
-  SS2out<<endl<< "INDEX_3"<<endl<<"Fleet  Q_parm_assignments"<<endl;
+  SS2out<<"#"<<endl<<"Fleet  Q_parm_assignments"<<endl;
   for (f=1;f<=Nfleet;f++)
     {SS2out<<f<<" "<<Q_setup_parms(f,1)<<" _ "<<Q_setup_parms(f,2)<<" _ "<<Q_setup_parms(f)(3,4)<<" "<<fleetname(f)<<endl;}
   }
@@ -1530,7 +1534,7 @@ FUNCTION void write_bigoutput()
 //My suggestion would be to remove the columns "Mean(effN/inputN)" and "MeaneffN/MeaninputN" if those are not recommended values for tuning (I don't get the impression that they are) and have SS internally produce the "HarEffN/MeanInputN" column so that it's available to all users.
 //It might also be good to add a keyword to the top of those lower tables which could simplify the logic of parsing them separately from the FIT_..._COMPS tables above them and therefore be more robust to changes in format.
 
-   SS2out<<endl<<"Length_Comp_Fit_Summary"<<endl<<
+   SS2out<<"#"<<endl<<"Length_Comp_Fit_Summary"<<endl<<
    "Factor Fleet Recommend_var_adj # N Npos min_Nsamp max_Nsamp mean_Nsamp_in mean_Nsamp_adj mean_Nsamp_DM DM_theta mean_effN HarMean_effN Curr_Var_Adj Fleet_name"<<endl;
    for (f=1;f<=Nfleet;f++)
    {
@@ -1630,7 +1634,7 @@ FUNCTION void write_bigoutput()
       SS2out<<endl;
     }
 
-   SS2out<<endl<<"Age_Comp_Fit_Summary"<<endl<<
+   SS2out<<"#"<<endl<<"Age_Comp_Fit_Summary"<<endl<<
    "Factor Fleet Recommend_var_adj # N Npos min_Nsamp max_Nsamp mean_Nsamp_in mean_Nsamp_adj mean_Nsamp_DM DM_theta mean_effN HarMean_effN Curr_Var_Adj Fleet_name"<<endl;
    for(f=1;f<=Nfleet;f++)
    {
@@ -1761,7 +1765,7 @@ FUNCTION void write_bigoutput()
           }  //  end loop of observations
         }  //  end fleet loop
   //      SS2out<<"Fleet N Npos mean_effN mean(inputN*Adj) HarMean(effN) Mean(effN/inputN) MeaneffN/MeaninputN Var_Adj"<<endl;
-        SS2out<<"Factor Fleet Recommend_Var_Adj # N Npos min_Nsamp_in max_Nsamp_in mean_Nsamp_adj mean_effN HarMean Curr_Var_Adj Fleet_name"<<endl;
+        SS2out<<"#"<<endl<<"Factor Fleet Recommend_Var_Adj # N Npos min_Nsamp_in max_Nsamp_in mean_Nsamp_adj mean_effN HarMean Curr_Var_Adj Fleet_name"<<endl;
         for(f=1;f<=Nfleet;f++)
         {
           if(n_rmse(f)>0)
@@ -2261,7 +2265,7 @@ FUNCTION void write_bigoutput()
         {for (s=1;s<=nseas;s++) SS2out<<gp<<" "<<gg<<" "<<settle<<" "<<s<<" "<<natM(s,g)<<endl;}
       }
 
-    SS2out<<endl<<"Natural_Mortality_Bmark"<<endl<<"Bio_Pattern Sex Settlement Seas "<<age_vector<<endl;
+    SS2out<<"#"<<endl<<"Natural_Mortality_Bmark"<<endl<<"Bio_Pattern Sex Settlement Seas "<<age_vector<<endl;
       g=0;
       for (gg=1;gg<=gender;gg++)
       for (gp=1;gp<=N_GP;gp++)
@@ -2272,7 +2276,7 @@ FUNCTION void write_bigoutput()
         {for (s=1;s<=nseas;s++) SS2out<<gp<<" "<<gg<<" "<<settle<<" "<<s<<" "<<natM_unf(s,g)/(Bmark_Yr(2)-Bmark_Yr(1)+1)<<endl;}
       }
 
-    SS2out<<endl<<"Natural_Mortality_endyr"<<endl<<"Bio_Pattern Sex Settlement Seas "<<age_vector<<endl;
+    SS2out<<"#"<<endl<<"Natural_Mortality_endyr"<<endl<<"Bio_Pattern Sex Settlement Seas "<<age_vector<<endl;
       g=0;
       for (gg=1;gg<=gender;gg++)
       for (gp=1;gp<=N_GP;gp++)
@@ -2461,7 +2465,7 @@ FUNCTION void write_bigoutput()
     s=1;
     for (i=1;i<=gender;i++)
     {
-      SS2out<<endl<<"mean_size_Jan_1_for_sex: "<<i<<" NOTE:_combines_all_settlements_areas_GP_and_platoons"<<endl;
+      SS2out<<"#"<<endl<<"mean_size_Jan_1_for_sex: "<<i<<" NOTE:_combines_all_settlements_areas_GP_and_platoons"<<endl;
       SS2out <<"Sex Yr Seas Beg "<<age_vector<<endl;
       for (y=styr;y<=YrMax;y++)
       {
@@ -2497,7 +2501,7 @@ FUNCTION void write_bigoutput()
   if(pick_report_use(50)=="Y")  {
   SS2out<<endl<<pick_report_name(50)<<endl;
   if(Grow_logN==1) SS2out<<" #Lognormal ";
-  SS2out<<endl;               // SS_Label_460
+  SS2out<<"#"<<endl;               // SS_Label_460
   SS2out<<" sdratio "<<sd_ratio<<endl;
   SS2out<<" sdwithin "<<sd_within_platoon<<endl;
   SS2out<<" sdbetween "<<sd_between_platoon<<endl;
@@ -2508,7 +2512,7 @@ FUNCTION void write_bigoutput()
    {
     t = styr+(endyr-styr)*nseas+s-1;
     ALK_idx=(s-1)*N_subseas+subseas;
-    SS2out <<endl<<" Seas: "<<s<<" Sub_Seas: "<<subseas<<"   Morph: "<<g<<endl;
+    SS2out <<"#"<<endl<<" Seas: "<<s<<" Sub_Seas: "<<subseas<<"   Morph: "<<g<<endl;
     SS2out <<"Age:";
     for (a=0;a<=nages;a++) SS2out << " "<<a;
     SS2out<<endl;
@@ -3115,7 +3119,7 @@ FUNCTION void write_bigoutput()
   SS2out<<" end selex output "<<endl;
   }  // end do report detail
 
-// REPORT_KEYWORD 48 SPR/YPR_Profile
+// REPORT_KEYWORD 54 SPR/YPR_Profile
   int SPRloop;
   int bio_t_base;
   dvariable Fmult2=maxpossF;
@@ -3128,9 +3132,14 @@ FUNCTION void write_bigoutput()
   dvariable SPR_last;
   dvariable SPR_trial;
   dvariable YPR_last;
-
-  if(Do_Benchmark>0 && wrote_bigreport==1 && pick_report_use(48)=="Y")  {
-    SS2out<<endl<<"SPR/YPR_Profile %Report:48 "<<endl<<"SPRloop Iter Bycatch Fmult F_report SPR YPR YPR*Recr SSB Recruits SSB/Bzero Tot_Catch ";
+  if(Do_Benchmark>0 && pick_report_use(54)=="Y")  {
+    SS2out<<endl<<pick_report_name(54)<<endl;
+	  if(wrote_bigreport!=1){
+		  // if writing pre-Hessian version of the Report, don't include
+  		SS2out<<"This output only included after the Hessian is inverted"<<endl;
+		}else{
+		  // post-Hessian version of the Report
+    SS2out<<"SPRloop Iter Bycatch Fmult F_report SPR YPR YPR*Recr SSB Recruits SSB/Bzero Tot_Catch ";
     for (f=1;f<=Nfleet;f++) {if(fleet_type(f)<=2) SS2out<<" "<<fleetname(f)<<"("<<f<<")Dead";}
     for (f=1;f<=Nfleet;f++) {if(fleet_type(f)<=2) SS2out<<" "<<fleetname(f)<<"("<<f<<")Ret";}
     for (f=1;f<=Nfleet;f++) {if(fleet_type(f)<=2) SS2out<<" "<<fleetname(f)<<"("<<f<<")Age";}
@@ -3338,11 +3347,13 @@ FUNCTION void write_bigoutput()
     SS2out<<"#value 6 is Fmsy: "<<MSY_Fmult<<endl;
     SS2out<<"#Profile 7 increases from Fmsy to Fcrash"<<endl;
     SS2out<<"#NOTE: meanage of catch is for total catch of fleet_type==1 or bycatch fleets with scaled Hrate"<<endl;
-  }
+		} // end check for wrote_bigreport==1
+  } // end SPR/YPR_Profile
+	
 //  GLOBAL_MSY with knife-edge age selection, then slot-age selection
 // REPORT_KEYWORD 49 GLOBAL_MSY
   if(Do_Benchmark>0 && wrote_bigreport==1 && pick_report_use(49)=="Y")  {
-    SS2out<<"GLOBAL_MSY %Report:49"<<endl;
+	  SS2out<<endl<<pick_report_name(49)<<endl;
     y=styr-3;  //  stores the averaged
     yz=y;
     bio_yr=y;
@@ -3353,11 +3364,11 @@ FUNCTION void write_bigoutput()
     for (int MSY_loop=0;MSY_loop<=2;MSY_loop++)
     {
       if(MSY_loop==0)
-      {SS2out<<endl<<"ACTUAL_SELECTIVITY_MSY "<<endl;}
+      {SS2out<<"#"<<endl<<"ACTUAL_SELECTIVITY_MSY "<<endl;}
       else if(MSY_loop==1)
-      {SS2out<<endl<<"KNIFE_AGE_SELECTIVITY_MSY "<<endl;}
+      {SS2out<<"#"<<endl<<"KNIFE_AGE_SELECTIVITY_MSY "<<endl;}
       else
-      {SS2out<<endl<<"SLOT_AGE_SELECTIVITY_MSY "<<endl;}
+      {SS2out<<"#"<<endl<<"SLOT_AGE_SELECTIVITY_MSY "<<endl;}
       SS2out<<"------  SPR  SPR SPR SPR SPR SPR SPR SPR SPR # BTGT BTGT BTGT BTGT BTGT BTGT BTGT BTGT   BTGT  BTGT # "<<
        "   MSY MSY MSY MSY MSY MSY MSY MSY MSY MSY MSY"<<endl<<
       "Age SPR  Fmult Fstd   Exploit Recruit SSB Y_dead Y_ret VBIO # SPR   B/B0  Fmult Fstd    Exploit Recruit SSB  Y_dead Y_ret VBIO "<<
