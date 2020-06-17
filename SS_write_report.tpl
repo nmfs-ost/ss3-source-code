@@ -3084,9 +3084,9 @@ FUNCTION void write_bigoutput()
   SS_compout<<styr<<" -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1"<<endl<<" End_comp_data"<<endl;
  }
  
-// REPORT_KEYWORD 47 SELEX_database
-  if(pick_report_use(47)=="Y") {
-  SS2out <<endl<< "SELEX_database %Report:47" << endl;
+// REPORT_KEYWORD 53 SELEX_database
+  if(pick_report_use(53)=="Y") {
+	SS2out<<endl<<pick_report_name(53)<<endl;
   SS2out<<"Fleet Yr Kind Sex Bin Selex"<<endl;
   for (f=1;f<=Nfleet;f++)
   for (y=styr-3;y<=endyr;y++)
