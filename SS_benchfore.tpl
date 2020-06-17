@@ -133,7 +133,6 @@ FUNCTION void setup_Benchmark()
             tempvec_a.initialize();
             for (t=Bmark_t(1);t<=Bmark_t(2);t+=nseas) {tempvec_a+=Ave_Size(t+s,1,g);}
             Ave_Size(styr-3*nseas+s,1,g)=tempvec_a/temp;
-            
             tempvec_a.initialize();
             for (t=Bmark_t(1);t<=Bmark_t(2);t+=nseas) {tempvec_a+=Ave_Size(t+s,mid_subseas,g);}
             Ave_Size(styr-3*nseas+s,mid_subseas,g)=tempvec_a/temp;
@@ -208,7 +207,6 @@ FUNCTION void setup_Benchmark()
           tempvec_a.initialize();
           for (y=Bmark_Yr(3);y<=Bmark_Yr(4);y++) {tempvec_a+=discmort2_a(y,f,gg);}
           discmort2_a(styr-3,f,gg)=tempvec_a/temp;
-
         }
 
     //  set-up relative F among fleets and seasons
@@ -1417,6 +1415,7 @@ FUNCTION void Get_Forecast()
         for (s=1;s<=nseas;s++)
         {
           t = t_base+s;
+          report5<<y<<" "<<s<<" "<<t<<endl;
           bio_t=styr+(endyr-styr)*nseas+s-1;
           if(ABC_Loop==ABC_Loop_start)  // do seasonal ALK and fishery selex
           {
@@ -1962,9 +1961,7 @@ FUNCTION void Get_Forecast()
            write_bodywt=0;
            if(ABC_Loop==ABC_Loop_end && Fcast_Loop1==Fcast_Loop_Control(1))
            	{
-           		write_bodywt=write_bodywt_save;
-           if(y<endyr+50) Get_expected_values(y,t);
-           	}
+           		write_bodywt=write_bodywt_save;           	}
            if(show_MSY==1)
            {
             report5<<p<<" "<<y<<" "<<ABC_Loop<<" "<<s<<" "<<ABC_buffer(y)<<" "<<totbio<<" "<<smrybio<<" ";
@@ -2008,6 +2005,11 @@ FUNCTION void Get_Forecast()
              Smry_Table(y,3)+=smrynum;   //sums to accumulate across platoons and settlements
            }
           }  //  end loop of areas
+
+           if(ABC_Loop==ABC_Loop_end && Fcast_Loop1==Fcast_Loop_Control(1))
+           	{
+           if(y<endyr+50) Get_expected_values(y,t);
+           	}
 
   //  SS_Label_Info_24.3.4 #Compute spawning biomass if occurs after start of current season
 //  SPAWN-RECR:   calc spawn biomass in time series if after beginning of the season

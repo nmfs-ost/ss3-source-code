@@ -714,6 +714,7 @@ FINAL_SECTION
     setup_Benchmark();  //  calculates biology and selectivity to be used
     if(Do_Benchmark>0)
     {
+    	cout<<"call bmark"<<endl;
       if(did_MSY==0) 
       {
         Get_Benchmarks(show_MSY);

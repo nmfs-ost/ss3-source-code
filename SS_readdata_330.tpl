@@ -2841,23 +2841,23 @@
   {
     if(Bmark_Yr_rd(i)==-999)
     {Bmark_Yr(i)=styr;}
-    else if(Bmark_Yr_rd(i)>=styr)
-    {Bmark_Yr(i)=Bmark_Yr_rd(i);}
     else if(Bmark_Yr_rd(i)<=0)
-    {Bmark_Yr(i)=endyr+Bmark_Yr_rd(i);}
+    {Bmark_Yr(i)+=endyr;}
+    else if(Bmark_Yr_rd(i)<styr)
+    {N_warn++;warning<<Bmark_Yr_rd(i)<<"benchmark year < styr; change to styr"<<endl;Bmark_Yr(i)=styr;}
+    else if(Bmark_Yr_rd(i)>endyr)
+    {N_warn++;warning<<Bmark_Yr_rd(i)<<"  benchmark year > endyr; change to endyr"<<endl; Bmark_Yr(i)=endyr;}
     else
-    {
-      N_warn++;Bmark_Yr(i)=styr;warning<<"benchmark year less than styr; reset to equal styr"<<endl;
-    }
+    {Bmark_Yr(i)=Bmark_Yr_rd(i);}
   }
   Bmark_t(1)=styr+(Bmark_Yr(1)-styr)*nseas;
   Bmark_t(2)=styr+(Bmark_Yr(2)-styr)*nseas;
 
   echoinput<<Bmark_Yr<<" Benchmark years as processed"<<endl;
-  echoinput<<"next read:  1=use range of years for relF; 2 = set same as forecast relF below"<<endl;
+  echoinput<<"next read:  1=use range of years as read for relF; 2 = set same as forecast relF below"<<endl;
  END_CALCS
   init_int Bmark_RelF_Basis
-  !!echoinput<<Bmark_RelF_Basis<<"  echoed Bmark_RelF_Basis"<<endl;
+  !!echoinput<<Bmark_RelF_Basis<<"  echoed Bmark_RelF_year basis"<<endl;
 
   !!echoinput<<endl<<"next read forecast basis: 0=none; 1=F(SPR); 2=F(MSY) 3=F(Btgt); 4=Ave F (enter yrs); 5=read Fmult"<<endl;
 
@@ -2951,10 +2951,14 @@
   {
     if(Fcast_yr(i)==-999)
     {Fcast_yr(i)=styr;}
-    else if(Fcast_yr(i)>0)
-    {Fcast_yr(i)=Fcast_yr(i);}
+    else if(Fcast_yr(i)<=0)
+    {Fcast_yr(i)+=endyr;}
+    else if(Fcast_yr(i)<styr)
+    {Fcast_yr(i)=styr;}
+    else if(Fcast_yr(i)>endyr)
+    {Fcast_yr(i)=endyr;}
     else
-    {Fcast_yr(i)=endyr+Fcast_yr(i);}
+    {}//  OK in range
   }
   Fcast_Sel_yr1=Fcast_yr(1);
   Fcast_Sel_yr2=Fcast_yr(2);

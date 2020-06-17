@@ -3112,8 +3112,12 @@
         i=int(selparm_1(parmcount+1,3));
         j=int(selparm_1(parmcount+2,3));
         echoinput<<"check on size selex mirror bounds for fleet: "<<f<<" "<<endl;
-        if(i<1) {echoinput<<" size selex mirror, length range min bin read is ("<<i<<") reset to 1 for fleet: "<<f<<endl;selparm_1(parmcount+1,3)=1;i=1;}
-        if(j<1) {echoinput<<" size selex mirror, length range max bin read is ("<<j<<") reset to nlength for fleet: "<<f<<endl;selparm_1(parmcount+2,3)=nlength;j=nlength;}
+        if(i<=-1) {i=1;} // legit input, use to set mirror_mask
+        else if(i==0) {echoinput<<" size selex mirror, length range min bin read is ("<<i<<") reset to 1 for fleet: "<<f<<endl;selparm_1(parmcount+1,3)=1;i=1;}
+        if(j<=-1) {j=nlength;}// legit input, use to set mirror_mask
+        else if(j==0) {echoinput<<" size selex mirror, length range max bin read is ("<<j<<") reset to nlength for fleet: "<<f<<endl;selparm_1(parmcount+2,3)=-1;j=nlength;}
+        if(j>nlength) {N_warn++; warning<<" size selex mirror length is > nlength for fleet: "<<f<<" reset to nlength"<<endl;selparm_1(parmcount+2,3)=-1;j=nlength;}
+        if(i>j) {N_warn++; cout<<" EXIT - see warning "<<endl; warning<<" Critical error, size selex mirror length range min ("<<i<<") greater than max ("<<j<<") for fleet: "<<f<<endl; exit(1);}
         if(j>nlength) {N_warn++; warning<<" size selex mirror length is > nlength for fleet: "<<f<<" reset to nlength"<<endl;selparm_1(parmcount+2,3)=nlength;j=nlength;}
         if(i>j) {N_warn++; cout<<" EXIT - see warning "<<endl; warning<<" Critical error, size selex mirror length range min ("<<i<<") greater than max ("<<j<<") for fleet: "<<f<<endl; exit(1);}
         mirror_mask(f)=1.0e-10;
