@@ -1087,7 +1087,6 @@ FUNCTION void Get_Forecast()
     dvar_vector  C_temp(1,Nfleet);
     dvar_vector  H_old(1,Nfleet);
     dvar_vector  C_old(1,Nfleet);
-    
   int Tune_F;
   int Tune_F_loops;
 
@@ -1386,7 +1385,9 @@ FUNCTION void Get_Forecast()
       if(timevary_MG(y,0)>0 || save_for_report>0) get_MGsetup(y);
       if(timevary_MG(y,2)>0)
         {
+          ALK_subseas_update=1;
           get_growth2(y);
+//          warning<<y<<" new "<<Ave_Size(y,1,1)<<" plus "<<Ave_Size(y+1,1,1,nages)<<endl;
         }
       if(timevary_MG(y,1)>0) get_natmort();
       if(timevary_MG(y,3)>0) get_wtlen();
@@ -1412,10 +1413,10 @@ FUNCTION void Get_Forecast()
         Mgmt_quant(Fcast_catch_start+y-endyr)=0.0;  //  for ABC
         if(max(Do_Retain)>0) Mgmt_quant(Fcast_catch_start+2*N_Fcast_Yrs+y-endyr)=0.0;  // for retained ABC
         if(STD_Yr_Reverse_F(y)>0) F_std(STD_Yr_Reverse_F(y))=0.0;
+//  consider move get_growth2 here so it can be responsive to mortality within the plus group as F changes between ABCloops   	
         for (s=1;s<=nseas;s++)
         {
           t = t_base+s;
-          report5<<y<<" "<<s<<" "<<t<<endl;
           bio_t=styr+(endyr-styr)*nseas+s-1;
           if(ABC_Loop==ABC_Loop_start)  // do seasonal ALK and fishery selex
           {
@@ -2075,7 +2076,7 @@ FUNCTION void Get_Forecast()
                 {
 //                  if(y==endyr+1) natage(t+Settle_seas_offset(settle),p,g,Settle_age(settle))=0.0;  //  to negate the additive code
 //                  natage(t+Settle_seas_offset(settle),p,g,Settle_age(settle)) += Recruits*recr_dist(GP(g),settle,p)*platoon_distr(GP2(g))*
-                  natage(t+Settle_seas_offset(settle),p,g,Settle_age(settle)) += Recruits*recr_dist(GP(g),settle,p)*platoon_distr(GP2(g))*
+                  natage(t+Settle_seas_offset(settle),p,g,Settle_age(settle)) = Recruits*recr_dist(GP(g),settle,p)*platoon_distr(GP2(g))*
                    mfexp(natM(s,GP3(g),Settle_age(settle))*Settle_timing_seas(settle));
                   if(Fcast_Loop1==jloop && ABC_Loop==ABC_Loop_end) Recr(p,t+Settle_seas_offset(settle))+=Recruits*recr_dist(GP(g),settle,p)*platoon_distr(GP2(g));
                 }

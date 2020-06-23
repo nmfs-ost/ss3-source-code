@@ -62,9 +62,6 @@ FUNCTION void write_bigoutput()
   SS2out<<endl<<"#_KeyWords_of_tables_available_in_report_sso"<<endl;
   SS2out<<"#_Note_that_table_number_is_order_in_which_tables_are_output"<<endl;
   SS2out<<"#_List_Tables_related_to_basic_input_pre-processing_and_output"<<endl;
-  k=51; SS2out<<pick_report_use(k)<<" "<<pick_report_name(k)<<endl;  // AGE_AGE'_KEY"
-  k=50; SS2out<<pick_report_use(k)<<" "<<pick_report_name(k)<<endl;  // AGE_LENGTH_KEY"
-  k=42; SS2out<<pick_report_use(k)<<" "<<pick_report_name(k)<<endl;  // BIOLOGY"
   k=1; SS2out<<pick_report_use(k)<<" "<<pick_report_name(k)<<endl;  // DEFINITIONS"
   k=6; SS2out<<pick_report_use(k)<<" "<<pick_report_name(k)<<endl;  // DERIVED_QUANTITIES"
   k=33; SS2out<<pick_report_use(k)<<" "<<pick_report_name(k)<<endl;  // ENVIRONMENTAL_DATA"
@@ -72,12 +69,9 @@ FUNCTION void write_bigoutput()
   k=2; SS2out<<pick_report_use(k)<<" "<<pick_report_name(k)<<endl;  // LIKELIHOOD
   k=7; SS2out<<pick_report_use(k)<<" "<<pick_report_name(k)<<endl;  // MGparm_By_Year_after_adjustments
   k=11; SS2out<<pick_report_use(k)<<" "<<pick_report_name(k)<<endl;  // MORPH_INDEXING (defines_associations_for_sex_growth_pattern_platoons_settlements)
-  k=13; SS2out<<pick_report_use(k)<<" "<<pick_report_name(k)<<endl;  // MOVEMENT (fraction_moving_between_areas)
   k=30; SS2out<<pick_report_use(k)<<" "<<pick_report_name(k)<<endl;  // OVERALL_COMPS (average_length_and_age_composition_observed_by_each_fleet)
   k=5; SS2out<<pick_report_use(k)<<" "<<pick_report_name(k)<<endl;  // PARAMETERS
   k=4; SS2out<<pick_report_use(k)<<" "<<pick_report_name(k)<<endl;  // parmdevs_detail
-  k=10; SS2out<<pick_report_use(k)<<" "<<pick_report_name(k)<<endl;  // RECRUITMENT_DIST (distribution_of_recruits_among_morphs_areas_settlement_time)
-  k=12; SS2out<<pick_report_use(k)<<" "<<pick_report_name(k)<<endl;  // SIZEFREQ_TRANSLATION (If_using_generalized_size_comp)
   
   SS2out<<endl<<"# List_Tables_related_to_timeseries_output"<<endl;
   k=36; SS2out<<pick_report_use(k)<<" "<<pick_report_name(k)<<endl;  // BIOMASS_AT_AGE
@@ -96,6 +90,7 @@ FUNCTION void write_bigoutput()
   k=16; SS2out<<pick_report_use(k)<<" "<<pick_report_name(k)<<endl;  // TIME_SERIES
 
   SS2out<<endl<<"# List_Tables_related_to_fit_to_data"<<endl;
+  k=52; SS2out<<pick_report_use(k)<<" "<<pick_report_name(k)<<endl;  // composition database
   k=24; SS2out<<pick_report_use(k)<<" "<<pick_report_name(k)<<endl;  // DISCARD specification
   k=25; SS2out<<pick_report_use(k)<<" "<<pick_report_name(k)<<endl;  // DISCARD
   k=21; SS2out<<pick_report_use(k)<<" "<<pick_report_name(k)<<endl;  // INDEX, CPUE, effort
@@ -112,15 +107,35 @@ FUNCTION void write_bigoutput()
   k=31; SS2out<<pick_report_use(k)<<" "<<pick_report_name(k)<<endl;  // LEN_SELEX
   k=8; SS2out<<pick_report_use(k)<<" "<<pick_report_name(k)<<endl;  // selparm(Size)_By_Year_after_adjustments
   k=9; SS2out<<pick_report_use(k)<<" "<<pick_report_name(k)<<endl;  // selparm(Age)_By_Year_after_adjustments
+  k=53; SS2out<<pick_report_use(k)<<" "<<pick_report_name(k)<<endl;  // selex database
+
+  SS2out<<endl<<"#_List_Tables_related_to_biology"<<endl;
+  k=51; SS2out<<pick_report_use(k)<<" "<<pick_report_name(k)<<endl;  // AGE_AGE'_KEY"
+  k=50; SS2out<<pick_report_use(k)<<" "<<pick_report_name(k)<<endl;  // AGE_LENGTH_KEY
+  k=44; SS2out<<pick_report_use(k)<<" "<<pick_report_name(k)<<endl;  // Age-Specific k
+  k=42; SS2out<<pick_report_use(k)<<" "<<pick_report_name(k)<<endl;  // BIOLOGY
+  k=47; SS2out<<pick_report_use(k)<<" "<<pick_report_name(k)<<endl;  // Biology-at-age
+  k=45; SS2out<<pick_report_use(k)<<" "<<pick_report_name(k)<<endl;  // Growth_parameters
+  k=48; SS2out<<pick_report_use(k)<<" "<<pick_report_name(k)<<endl;  // mean body wt time series
+  k=13; SS2out<<pick_report_use(k)<<" "<<pick_report_name(k)<<endl;  // MOVEMENT (fraction_moving_between_areas)
+  k=43; SS2out<<pick_report_use(k)<<" "<<pick_report_name(k)<<endl;  // Natural_Mortality
+  k=10; SS2out<<pick_report_use(k)<<" "<<pick_report_name(k)<<endl;  // RECRUITMENT_DIST (distribution_of_recruits_among_morphs_areas_settlement_time)
+  k=46; SS2out<<pick_report_use(k)<<" "<<pick_report_name(k)<<endl;  // Seasonal effects
+  k=12; SS2out<<pick_report_use(k)<<" "<<pick_report_name(k)<<endl;  // SIZEFREQ_TRANSLATION (If_using_generalized_size_comp)
 
   SS2out<<endl<<"# List_Tables_related_to_equilibrium_reference_points;_also_see_forecast_report.sso"<<endl;
   k=59; SS2out<<pick_report_use(k)<<" "<<pick_report_name(k)<<endl;  // Dynamic_Bzero
   k=55; SS2out<<pick_report_use(k)<<" "<<pick_report_name(k)<<endl;  // GLOBAL_MSY (including_knife-edge_selex_and_slot-age_selex)
   k=18; SS2out<<pick_report_use(k)<<" "<<pick_report_name(k)<<endl;  // Kobe_Plot
   k=54; SS2out<<pick_report_use(k)<<" "<<pick_report_name(k)<<endl;  // SPR/YPR_PROFILE
+
+  SS2out<<endl<<"# List_Additional_Tables"<<endl;
+  k=56; SS2out<<pick_report_use(k)<<" "<<pick_report_name(k)<<endl;  // ss_summary
+  k=57; SS2out<<pick_report_use(k)<<" "<<pick_report_name(k)<<endl;  // rebuilder
+  k=58; SS2out<<pick_report_use(k)<<" "<<pick_report_name(k)<<endl;  // SIS_table
   k=60; SS2out<<pick_report_use(k)<<" "<<pick_report_name(k)<<endl;  // wt-at-age.ss
 
-  SS2out<<"# vector_with_report_usage"<<endl;
+  SS2out<<endl<<"# vector_with_report_usage"<<endl;
   for(k=1;k<=60;k++) {SS2out<<" "<<pick_report_use(k);}
   SS2out<<endl<<endl;
 
