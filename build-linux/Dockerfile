@@ -1,10 +1,10 @@
-FROM ubuntu:bionic
+FROM centos:7.8.2003
 MAINTAINER FRAM Data Team <nmfs.nwfsc.fram.data.team@noaa.gov>
 
-RUN apt-get update
-RUN apt-get install -y wget
-RUN apt-get install -y build-essential
-RUN apt-get install -y zip unzip
+RUN yum -y update && yum clean all
+RUN yum -y install wget
+RUN yum install -y zip unzip
+RUN yum install -y gcc-c++
 
 RUN wget https://github.com/admb-project/admb/releases/download/admb-12.1/admb-12.1-linux-64bit.zip
 
