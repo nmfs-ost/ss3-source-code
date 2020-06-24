@@ -2036,7 +2036,7 @@ FUNCTION void write_nucontrol()
   if(Nobs_a_tot>0) {for (f=1;f<=Nfleet;f++) report4<<"# "<< age_lambda(f)<<" #_agecomp:_"<<f<<endl;}
   if(SzFreq_Nmeth>0) for (f=1;f<=SzFreq_N_Like;f++) report4<<"# "<<SzFreq_lambda(f)<<" #_sizefreq:_"<<f<<endl;
   if(nobs_ms_tot>0) {for (f=1;f<=Nfleet;f++) report4<<"# "<< sizeage_lambda(f)<<" #_size-age:_"<<f<<endl;}
-  report4<<"# "<< init_equ_lambda<<" #_init_equ_catch"<<endl;
+  for (f=1;f<=Nfleet;f++) report4<<"# "<< init_equ_lambda(f)<<" #_init_equ_catch"<<f<<endl;
   report4<<"# "<< recrdev_lambda<<" #_recruitments"<<endl;
   report4<<"# "<< parm_prior_lambda<<" #_parameter-priors"<<endl;
   report4<<"# "<< parm_dev_lambda<<" #_parameter-dev-vectors"<<endl;

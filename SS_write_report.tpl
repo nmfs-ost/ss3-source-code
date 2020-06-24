@@ -193,7 +193,7 @@ FUNCTION void write_bigoutput()
   SS2out<<"Component logL*Lambda Lambda"<<endl;
   SS2out<<"TOTAL "<<obj_fun<<" NA"<<endl;
   if(F_Method>1) SS2out <<"Catch "<<catch_like*column(catch_lambda,k)<<" NA"<<endl;
-  SS2out <<"Equil_catch "<<equ_catch_like*init_equ_lambda(k)<<" "<<init_equ_lambda(k)<<endl;
+  SS2out <<"Equil_catch "<<equ_catch_like*column(init_equ_lambda,k)<<" NA"<<endl;
   if(Svy_N>0) SS2out <<"Survey "<<surv_like*column(surv_lambda,k)<<" NA"<<endl;
   if(nobs_disc>0) SS2out <<"Discard "<<disc_like*column(disc_lambda,k)<<" NA"<<endl;
   if(nobs_mnwt>0) SS2out <<"Mean_body_wt "<<mnwt_like*column(mnwt_lambda,k)<<" NA"<<endl;
@@ -222,6 +222,7 @@ FUNCTION void write_bigoutput()
   for (f=1;f<=Nfleet;f++) SS2out<<f<<" ";
   SS2out<<endl;
   if(F_Method>1) SS2out<<"Catch_lambda: _ "<<column(catch_lambda,k)<<endl<<"Catch_like: "<<catch_like*column(catch_lambda,k) <<" "<<catch_like<<endl;
+  SS2out<<"Init_equ_lambda: _ "<<column(init_equ_lambda,k)<<endl<<"Init_equ_like: "<<equ_catch_like*column(init_equ_lambda,k) <<" "<<equ_catch_like<<endl;
   if(Svy_N>0) {
   	SS2out<<"Surv_lambda: _ "<<column(surv_lambda,k)<<endl<<"Surv_like: "<<surv_like*column(surv_lambda,k)<<" "<<surv_like<<endl;
     SS2out<<"Surv_N_use: _ "<<Svy_N_fleet_use<<endl;

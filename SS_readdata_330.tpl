@@ -2834,6 +2834,7 @@
   ivector Bmark_t(1,2)  //  for range of time values for averaging body size
   init_ivector Bmark_Yr_rd(1,10)
  LOCAL_CALCS
+  Bmark_Yr=0;
   if(Do_Benchmark==2 && N_bycatch>0)
   	{N_warn++; warning<<"F0.1 does not work well with bycatch fleets; check output carefully"<<endl;}
   echoinput<<Bmark_Yr_rd<<" echoed Benchmark years"<<endl;
@@ -2910,7 +2911,7 @@
   Allocation_Fleet_Assignments.initialize();
   Fcast_Catch_Allocation.initialize();
   Fcast_RelF_Input.initialize();
-
+  Fcast_yr.initialize();
  END_CALCS
 //  init_vector Fcast_Input_rd(1,k)
 

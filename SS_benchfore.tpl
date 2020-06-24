@@ -173,7 +173,7 @@ FUNCTION void setup_Benchmark()
 
         }
 
-    //  calc average selectivity to use in equil; store in styr-1
+    //  calc average selectivity to use in equil; store in styr-3
         temp=float(Bmark_Yr(4)-Bmark_Yr(3)+1.);  //  get denominator
         for (gg=1;gg<=gender;gg++)
         for (f=1;f<=Nfleet;f++)
@@ -221,15 +221,17 @@ FUNCTION void setup_Benchmark()
           {
             t=styr+(y-styr)*nseas+s-1;
             Bmark_RelF_Use(s,f)+=Hrate(f,t);
+            warning<<y<<" "<<f<<" "<<Bmark_RelF_Use<<endl;
           }
           temp=sum(Bmark_RelF_Use);
-          if(temp==0.0)
+          warning<<"total "<<temp<<endl;
+          if(temp>0.0)
           {
-            Bmark_RelF_Use(1,1)=1.0;
+            Bmark_RelF_Use/=temp;
           }
           else
           {
-          Bmark_RelF_Use/=temp;
+            Bmark_RelF_Use(1,1)=1.0;
           }
         }
         else  // Bmark_RelF_Basis==2 so set same as forecast

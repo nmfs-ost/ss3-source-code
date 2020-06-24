@@ -42,8 +42,13 @@ FUNCTION void write_summaryoutput()
   runnumber<<" Like_Value AgeComp "<<age_like_tot*column(age_lambda,k)<<" " <<age_like_tot<<endl;
   if(nobs_ms_tot>0) report2<<runnumber<<" Like_Emph MeanLAA All "<<column(sizeage_lambda,k)<<endl<<
   runnumber<<" Like_Value MeanLAA "<<sizeage_like*column(sizeage_lambda,k)<<" " <<sizeage_like<<endl;
+
   if(F_Method>1) report2<<runnumber<<" Like_Emph Catch All "<<column(catch_lambda,k)<<endl<<
   runnumber<<" Like_Value Catch "<<catch_like*column(catch_lambda,k)<<" " <<catch_like<<endl;
+
+  report2<<runnumber<<" Like_Emph init_equ All "<<column(init_equ_lambda,k)<<endl<<
+  runnumber<<" Like_Value Init_Equ "<<equ_catch_like*column(init_equ_lambda,k)<<" " <<catch_like<<endl;
+
   if(SzFreq_Nmeth>0) report2<<runnumber<<" Like_Emph WeightFreq All "<<column(SzFreq_lambda,k)<<endl<<
   runnumber<<" Like_Value WeightFreq "<<SzFreq_like*column(SzFreq_lambda,k)<<" " <<SzFreq_like<<endl;
   if(Do_Morphcomp>0) report2<<runnumber<<" Like_Emph Morphcomp All "<<Morphcomp_lambda(k)<<endl<<
@@ -53,10 +58,10 @@ FUNCTION void write_summaryoutput()
   if(Do_TG>0) report2<<runnumber<<" Like_Emph Tag_negbin All "<<column(TG_lambda2,k)<<endl<<
   runnumber<<" Like_Value Tag_negbin "<<TG_like2*column(TG_lambda2,k)<<" " <<TG_like2<<endl;
 
-  report2<<runnumber<<" Like_Comp Equ_Catch Recruits Regime Fcast_Recr Biasadj Priors ParmDevs CrashPen"<<endl;
-  report2<<runnumber<<" Like_Emph "<<init_equ_lambda(k)<<" "<<recrdev_lambda(k)<<" "<<regime_lambda(k)<<" " <<Fcast_recr_lambda<<" "
+  report2<<runnumber<<" Like_Comp Recruits Regime Fcast_Recr Biasadj Priors ParmDevs CrashPen"<<endl;
+  report2<<runnumber<<" Like_Emph "<<recrdev_lambda(k)<<" "<<regime_lambda(k)<<" " <<Fcast_recr_lambda<<" "
          <<parm_prior_lambda(k)<<" " <<parm_dev_lambda(k)<<" " <<CrashPen_lambda(k)<<endl;
-  report2<<runnumber<<" Like_Value*Emph "<<equ_catch_like*init_equ_lambda(k)<<" "<<recr_like*recrdev_lambda(k)<<" "<<regime_like*regime_lambda(k)<<" "
+  report2<<runnumber<<" Like_Value*Emph "<<recr_like*recrdev_lambda(k)<<" "<<regime_like*regime_lambda(k)<<" "
          <<Fcast_recr_like<<" "<<parm_like*parm_prior_lambda(k)<<" "<<
          sum(parm_dev_like)*parm_dev_lambda(k)<<" "<<CrashPen*CrashPen_lambda(k)<<endl;
 
@@ -257,7 +262,7 @@ FUNCTION void write_SS_summary()
     SS_smry<<"Label logL*Lambda"<<endl;
     SS_smry<<"TOTAL_LogL "<<obj_fun<<endl;
     if(F_Method>1) {SS_smry<<"Catch "<<catch_like*column(catch_lambda,k)<<endl;} 
-    if(N_init_F>0) SS_smry<<"Equil_catch "<<equ_catch_like*init_equ_lambda(k)<<endl;
+    if(N_init_F>0) SS_smry<<"Equil_catch "<<equ_catch_like*column(init_equ_lambda,k)<<endl;
     if(Svy_N>0) SS_smry<<"Survey "<<surv_like*column(surv_lambda,k)<<endl;
     if(nobs_disc>0) SS_smry<<"Discard "<<disc_like*column(disc_lambda,k)<<endl;
     if(nobs_mnwt>0) SS_smry<<"Mean_body_wt "<<mnwt_like*column(mnwt_lambda,k)<<endl;

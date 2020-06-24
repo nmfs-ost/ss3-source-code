@@ -3797,7 +3797,7 @@
   matrix length_lambda(1,Nfleet,1,max_lambda_phase)
   matrix age_lambda(1,Nfleet,1,max_lambda_phase)
   matrix sizeage_lambda(1,Nfleet,1,max_lambda_phase)
-  vector init_equ_lambda(1,max_lambda_phase)
+  matrix init_equ_lambda(1,Nfleet,1,max_lambda_phase)
   matrix catch_lambda(1,Nfleet,1,max_lambda_phase)
   vector recrdev_lambda(1,max_lambda_phase)
   vector regime_lambda(1,max_lambda_phase)
@@ -3857,6 +3857,7 @@
       for (f=1;f<=Nfleet;f++)
       {
         surv_lambda(f,1)=0.0;
+        init_equ_lambda(f,1)=0.0;
         disc_lambda(f,1)=0.0;
         mnwt_lambda(f,1)=0.0;
         length_lambda(f,1)=0.0;
@@ -3877,7 +3878,6 @@
           TG_lambda2(z,1)=0.0;
         }
       }
-      init_equ_lambda(1)=0.0;
       recrdev_lambda(1)=0.0;
       Morphcomp_lambda(1)=0.0;
       F_ballpark_lambda(1)=0.0;
@@ -3947,7 +3947,7 @@
         case 8:  // catch
           {catch_lambda(f)(s,max_lambda_phase)=temp; break;}
         case 9:  // init_equ_catch
-          {init_equ_lambda(s,max_lambda_phase)=temp; break;}
+          {init_equ_lambda(f)(s,max_lambda_phase)=temp; break;}
         case 10:  // recr_dev
           {recrdev_lambda(s,max_lambda_phase)=temp; break;}
         case 11:  // parm_prior

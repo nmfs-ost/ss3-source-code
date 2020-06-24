@@ -167,7 +167,7 @@ PROCEDURE_SECTION
        cout<<" SoftBound "<<SoftBoundPen<<endl;
        cout<<" F_ballpark " <<F_ballpark_like<<endl;
        if(F_Method>1) {cout<<"Catch "<<sum(catch_like)<<endl;}
-       cout<<" EQUL_catch " <<equ_catch_like<<endl;
+       cout<<" EQUL_catch " <<sum(equ_catch_like)<<endl;
        cout<<"  crash "<<CrashPen<<endl;
       }
      if(rundetail>0)

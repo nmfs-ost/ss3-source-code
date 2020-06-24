@@ -525,16 +525,13 @@ FUNCTION void evaluate_the_objective_function()
     }
 
   //  SS_Label_Info_25.10 #Fit to initial equilibrium catch
-    if(init_equ_lambda(k_phase)>0.0)
-    {
       for (s=1;s<=nseas;s++)
       for (f=1;f<=Nfleet;f++)
       {
-        if(fleet_type(f)==1 &&  obs_equ_catch(s,f)>0.0)
-          {equ_catch_like += 0.5*square( (log(1.1*obs_equ_catch(s,f)) -log(est_equ_catch(s,f)*catch_mult(styr-1,f)+0.1*obs_equ_catch(s,f))) / catch_se(styr-1,f));}
+        if(fleet_type(f)==1 &&  obs_equ_catch(s,f)>0.0 && init_equ_lambda(f,k_phase)>0.0)
+          {equ_catch_like(f) += 0.5*square( (log(1.1*obs_equ_catch(s,f)) -log(est_equ_catch(s,f)*catch_mult(styr-1,f)+0.1*obs_equ_catch(s,f))) / catch_se(styr-1,f));}
       }
       if(do_once==1) cout<<" initequ_catch -log(L) "<<equ_catch_like<<endl;
-    }
 
   //  SS_Label_Info_25.11 #Fit to catch by fleet/season
     if(F_Method>1)
@@ -878,7 +875,7 @@ FUNCTION void evaluate_the_objective_function()
    obj_fun += column(sizeage_lambda,k_phase)*sizeage_like;
 //   cout<<" obj_fun ms "<<obj_fun<<endl;
 
-   obj_fun += equ_catch_like*init_equ_lambda(k_phase);
+   obj_fun += equ_catch_like*column(catch_lambda,k_phase);
 //   cout<<" obj_fun equ_cat "<<obj_fun<<endl;
    obj_fun += column(catch_lambda,k_phase)*catch_like;
 //            catch_like(f) += 0.5*square( (log(1.1*catch_ret_obs(f,t)) -log(catch_fleet(t,f,i)*catch_mult(y,f)+0.1*catch_ret_obs(f,t))) / catch_se(t,f));
@@ -1403,7 +1400,7 @@ FUNCTION void get_posteriors()
         }
 
         iter_labels   << " | Equil_catch";
-        lambda_labels << " | " << init_equ_lambda(max_lambda_phase);
+        lambda_labels << " | " << column(init_equ_lambda,max_lambda_phase);
 
         if(Svy_N>0)
         {
@@ -1624,7 +1621,7 @@ FUNCTION void get_posteriors()
       post_obj_func<<mceval_counter<<" | "<<obj_fun;
 
       if(F_Method>1) post_obj_func << " | " << catch_like;
-      post_obj_func << " | " << equ_catch_like;
+      post_obj_func << " | " << sum(equ_catch_like);
       if(Svy_N>0) post_obj_func << " | " << surv_like;
       if(nobs_disc>0) post_obj_func << " | " << disc_like;
       if(nobs_mnwt>0) post_obj_func << " | " << mnwt_like;

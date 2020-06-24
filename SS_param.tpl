@@ -435,7 +435,7 @@ PARAMETER_SECTION
   3darray exp_ms_sq(1,Nfleet,1,Nobs_ms,1,n_abins2)
 
   number Morphcomp_like
-  number equ_catch_like
+  vector equ_catch_like(1,Nfleet)
   vector catch_like(1,Nfleet)
   number recr_like
   number noBias_recr_like

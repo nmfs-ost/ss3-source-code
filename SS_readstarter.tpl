@@ -326,10 +326,10 @@
   		if(reportdetail_list[j](1)>0 && reportdetail_list[j](1)<=60) {
   			pick_report_use(reportdetail_list[j](1))="Y";
   		}
-  		else if(reportdetail_list[j](1)>-100) {
+  		else if(reportdetail_list[j](1)>-60) {
   			pick_report_use(-reportdetail_list[j](1))="N";
   		}
-  		else
+  		else if(reportdetail_list[j](1)>-100) 
   			{
   				N_warn++; warning<<"custom report number: "<<reportdetail_list[j](1)<<" is out of range and ignored"<<endl;
   			}
@@ -337,7 +337,7 @@
   } 
   
   for(k=1;k<=60;k++)
-  echoinput<<k<<pick_report_use(k)<<" "<<pick_report_name(k)<<endl;
+  echoinput<<k<<" "<<pick_report_use(k)<<" "<<pick_report_name(k)<<endl;
  END_CALCS
 
   init_int docheckup           // flag for ending dump to "checkup.SS"
