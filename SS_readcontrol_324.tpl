@@ -3848,7 +3848,7 @@
   matrix length_lambda(1,Nfleet,1,max_lambda_phase)
   matrix age_lambda(1,Nfleet,1,max_lambda_phase)
   matrix sizeage_lambda(1,Nfleet,1,max_lambda_phase)
-  matrix init_equ_lambda(,Nfleet,1,max_lambda_phase)
+  matrix init_equ_lambda(1,Nfleet,1,max_lambda_phase)
   matrix catch_lambda(1,Nfleet,1,max_lambda_phase)
   vector recrdev_lambda(1,max_lambda_phase)
   vector regime_lambda(1,max_lambda_phase)
