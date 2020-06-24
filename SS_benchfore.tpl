@@ -221,10 +221,8 @@ FUNCTION void setup_Benchmark()
           {
             t=styr+(y-styr)*nseas+s-1;
             Bmark_RelF_Use(s,f)+=Hrate(f,t);
-            warning<<y<<" "<<f<<" "<<Bmark_RelF_Use<<endl;
           }
           temp=sum(Bmark_RelF_Use);
-          warning<<"total "<<temp<<endl;
           if(temp>0.0)
           {
             Bmark_RelF_Use/=temp;
