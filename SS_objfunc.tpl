@@ -6,7 +6,7 @@ FUNCTION void evaluate_the_objective_function()
   sizeage_like.initialize(); parm_like.initialize(); parm_dev_like.initialize();noBias_recr_like.initialize();
   mnwt_like.initialize(); equ_catch_like.initialize(); recr_like.initialize(); Fcast_recr_like.initialize();
   catch_like.initialize(); Morphcomp_like.initialize(); TG_like1.initialize(); TG_like2.initialize();
-  length_like_tot.initialize(); age_like_tot.initialize();
+  length_like_tot.initialize(); age_like_tot.initialize();regime_like.initialize();
   obj_fun=0.0;
 
     int k_phase=current_phase();

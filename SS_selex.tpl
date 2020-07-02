@@ -1584,7 +1584,7 @@ FUNCTION void Make_FishSelex()
       {
         makefishsel_yr = yf;
         fs=f+Nfleet;  //  for the age dimensioning
-        if (WTage_rd==1 || (seltype(f,1)==0 && seltype(f,2)==0) )  //  empirical wt-at-age; no size-based calculations
+        if (WTage_rd==1 || (seltype(f,1)==0 && seltype(f,2)==0) )  //  empirical wt-at-age or no size-selectivity; so no size-based calculations
         {
           if(WTage_rd==1)
           {
@@ -1681,7 +1681,7 @@ FUNCTION void Make_FishSelex()
             else
             {
               bodywtout<<y<<" "<<s<<" "<<gg<<" "<<GP4(g)<<" "<<Bseas(g)
-              <<" "<<f<<" "<<Wt_Age_beg(s,g)<<" #wt_flt_"<<f<<endl;
+              <<" "<<f<<" "<<Wt_Age_mid(s,g)<<" #wt_flt_"<<f<<endl;
             }
 
           }

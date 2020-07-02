@@ -10,11 +10,13 @@ PROCEDURE_SECTION
   if(mceval_phase() ) mceval_counter ++;   // increment the counter
   if(initial_params::mc_phase==1) 
   {
-    if(mcmc_counter==0)
+
+     if(mcmc_counter==0)
       {
         SR_parm(1)+=MCMC_bump;
         cout<<mcmc_counter<<"   adjusted SR_parm in first mcmc call "<<SR_parm(1)<<"  by  "<<MCMC_bump<<endl;
       }
+      
     mcmc_counter++;
   }
 
