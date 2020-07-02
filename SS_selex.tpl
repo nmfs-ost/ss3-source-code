@@ -270,6 +270,12 @@ FUNCTION void get_selectivity()
            break;
             }
 
+  //  SS_Label_Info_22.3.11 #case 11 selex=1.0 within a range of lengths
+		  case 11: 
+		  {
+			sel=mirror_mask(f); // (y,f,1)
+			break;
+          }
   //  SS_Label_Info_22.3.21 #case 21 non-parametric size selectivity
  /*  N points; where the first N parameters is vector of sizes for the line segment ends
     and second N parameters is selectivity at that size (no transformations) */
