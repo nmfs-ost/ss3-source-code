@@ -1811,14 +1811,15 @@ FUNCTION void write_nucontrol()
    report4<<"#"<<endl;
    report4<<"#_size_selex_patterns"<<endl;
 
-   report4<<"#Pattern:_0; parm=0; selex=1.0 for all sizes"<<endl;
-   report4<<"#Pattern:_1; parm=2; logistic; with 95% width specification"<<endl;
-   report4<<"#Pattern:_5; parm=2; mirror another size selex; PARMS pick the min-max bin to mirror"<<endl;
+   report4<<"#Pattern:_0;  parm=0; selex=1.0 for all sizes"<<endl;
+   report4<<"#Pattern:_1;  parm=2; logistic; with 95% width specification"<<endl;
+   report4<<"#Pattern:_5;  parm=2; mirror another size selex; PARMS pick the min-max bin to mirror"<<endl;
+   report4<<"#Pattern:_11; parm=2; selex=1.0  for specified min-max population length bin range"<<endl;
    report4<<"#Pattern:_15; parm=0; mirror another age or length selex"<<endl;
-   report4<<"#Pattern:_6; parm=2+special; non-parm len selex"<<endl;
+   report4<<"#Pattern:_6;  parm=2+special; non-parm len selex"<<endl;
    report4<<"#Pattern:_43; parm=2+special+2;  like 6, with 2 additional param for scaling (average over bin range)"<<endl;
-   report4<<"#Pattern:_8; parm=8; New doublelogistic with smooth transitions and constant above Linf option"<<endl;
-   report4<<"#Pattern:_9; parm=6; simple 4-parm double logistic with starting length; parm 5 is first length; parm 6=1 does desc as offset"<<endl;
+   report4<<"#Pattern:_8;  parm=8; double_logistic with smooth transitions and constant above Linf option"<<endl;
+   report4<<"#Pattern:_9;  parm=6; simple 4-parm double logistic with starting length; parm 5 is first length; parm 6=1 does desc as offset"<<endl;
    report4<<"#Pattern:_21; parm=2+special; non-parm len selex, read as pairs of size, then selex"<<endl;
    report4<<"#Pattern:_22; parm=4; double_normal as in CASAL"<<endl;
    report4<<"#Pattern:_23; parm=6; double_normal where final value is directly equal to sp(6) so can be >1.0"<<endl;

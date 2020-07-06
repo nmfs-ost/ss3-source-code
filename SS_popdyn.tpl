@@ -51,6 +51,7 @@ FUNCTION void setup_recdevs()
     else if(do_recdev>=2)
       {recdev(recdev_start,recdev_end)=recdev2(recdev_start,recdev_end);}
     if(Do_Forecast>0) recdev(recdev_end+1,YrMax)=Fcast_recruitments(recdev_end+1,YrMax);  // only needed here for reporting
+//    	if(mcmc_counter>0) warning<<mcmc_counter<<" MGparm "<<MGparm<<" SRparm "<<SR_parm<<" recdev "<<recdev2<<" fore_rec "<<Fcast_recruitments<<" selparm "<<selparm<<" q: "<<Q_parm<<endl;
   }  //  end setup for recdevs
 
 FUNCTION void get_initial_conditions()
