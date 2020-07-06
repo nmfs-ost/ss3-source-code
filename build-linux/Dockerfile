@@ -3,6 +3,7 @@ MAINTAINER FRAM Data Team <nmfs.nwfsc.fram.data.team@noaa.gov>
 
 RUN yum -y update && yum clean all
 RUN yum -y install wget
+RUN yum install -y dpkg
 RUN yum install -y zip unzip
 RUN yum install -y gcc-c++
 
