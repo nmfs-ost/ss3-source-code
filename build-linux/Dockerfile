@@ -6,10 +6,19 @@ RUN yum -y install wget
 RUN yum install -y zip unzip
 RUN yum install -y gcc-c++
 
-RUN wget https://github.com/admb-project/admb/releases/download/admb-12.1/admb-12.1-linux-64bit.zip
+RUN wget https://github.com/admb-project/admb/releases/download/admb-12.0/admb-12.0-ubuntu16-64bit_12.0.deb
 
-RUN unzip admb-12.1-linux-64bit.zip -d /usr/local
+RUN dpkg -i admb-12.0-ubuntu16-64bit_12.0.deb
 
-RUN chmod 755 /usr/local/admb-12.1/admb
+RUN chmod 755 /usr/local/bin/admb
 
-ENV PATH /usr/local/admb-12.1:$PATH
+# None of the below seemed to solve uid issue, solved by setting uid in Jenkinsfile but this seems to cause
+# workspace deletion problems
+# RUN groupadd --gid 498 jenkins && \
+#     useradd --shell /bin/bash --gid 498 --uid 498 jenkins
+
+# RUN usermod -a -G root jenkins
+# RUN chown jenkins:jenkins /usr/local/bin/admb
+# USER jenkins
+
+CMD ["admb"]
