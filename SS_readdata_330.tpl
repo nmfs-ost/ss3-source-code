@@ -1649,7 +1649,8 @@
   }
  END_CALCS
 
- LOCAL_CALCS
+   int n_neg
+LOCAL_CALCS
   Nobs_a=0;
   N_suprper_a=0;
   if(n_abins>0)
@@ -1660,9 +1661,15 @@
     {
       for (i=1;i<=N_ageerr;i++)
       {
-        if(age_err_rd(i,2,0)<0.) Use_AgeKeyZero=i;  //  set flag for setup of age error parameters
+        if(age_err_rd(i,2,0)<0.) {Use_AgeKeyZero=i;n_neg++;}  //  set flag for setup of age error parameters
       }
-      if(Use_AgeKeyZero>0) echoinput<<"AgeKey: "<<Use_AgeKeyZero<<" will be created from parameters"<<endl;
+      if(Use_AgeKeyZero>0){
+	    echoinput<<"AgeKey: "<<Use_AgeKeyZero<<" will be created from parameters"<<endl;
+		if(n_neg>1){
+		  N_warn++;warning<<"There are "<<n_neg<<" negative sd values for age 0 in age error definitions."<<endl;
+		  warning<<"SS will only use AgeKey parameters for definition "<<Use_AgeKeyZero<<"."<<endl;
+		}
+	  }
     }
 
     Comp_Err_A2.initialize();
