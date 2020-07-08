@@ -17,9 +17,7 @@ pipeline {
                 // sh label: 'Double check source', script: 'ls vlab/stock-synthesis'
                 //sh label: 'Copy build script to base location', script: 'cp vlab/stock-synthesis/Make_SS_330.sh .'
                 //sh label: 'Make build script executable', script: 'cd vlab/stock-synthesis && chmod a+x Make_SS_330_new.sh'
-				sh label: 'remove an old dir (force in case does not exist)', script: 'cd vlab/stock-synthesis && rm -rf SS330'
-				sh label: 'Make SS330 folder', script: 'cd vlab/stock-synthesis && mkdir SS330'
-                sh label: 'Run build', script: 'cd vlab/stock-synthesis && /bin/bash ./Make_SS_330_new.sh -b SS330 -a /usr/local/admb'
+                sh label: 'Run build', script: 'cd vlab/stock-synthesis && /bin/bash ./Make_SS_330_new.sh -b SS330 -a /usr/local/admb-admb-12.2pre'
                 sh label: 'Validate build', script: 'cp vlab/stock-synthesis/SS330/ss . && sha256sum ss'
                 sh label: 'Archive ss executable', script: 'rm -f ss.gz && gzip -v ss'
             }
