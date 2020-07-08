@@ -1665,6 +1665,7 @@
           {
             N_warn++; warning<<"SS can only create 1 age error definition from parameters, ";
             warning<<"but there are > 1 negative sd values for age 0 in age error definitions."<<endl;
+			echoinput<<"Error: There are > 1 negative sd values for age 0 in age error definitions."<<endl;
             cout<<" EXIT - see warning "<<endl; exit(1);
           }
           Use_AgeKeyZero=i;
