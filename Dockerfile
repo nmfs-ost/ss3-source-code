@@ -13,6 +13,12 @@ RUN ls
 
 RUN unzip admb-12.2pre.zip -d /usr/local
 
+RUN head -n 120 /usr/local/admb-admb-12.2pre/src/linad99/fvar.hpp
+
+RUN sed '/#define USE_VECTOR_SHAPE_POOL/d' /usr/local/admb-admb-12.2pre/src/linad99/fvar.hpp
+
+RUN head -n 120 /usr/local/admb-admb-12.2pre/src/linad99/fvar.hpp
+
 RUN cd /usr/local/admb-admb-12.2pre && make
 
 RUN chmod 755 /usr/local/admb-admb-12.2pre/admb
