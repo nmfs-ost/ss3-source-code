@@ -87,7 +87,7 @@
       seasdur /=12.;
       seas_as_year=1;
       //  sumseas will now be used as the duration of the pseudo-year, rather than assuming year has 12 months;
-      if(nseas>1) { N_warn++; warning<<"Error.  Can only have 1 season when during seasons as psuedo-years."<<endl;  exit(1);}
+      if(nseas>1) { N_warn++; cout<<"exit with warning"<<endl; warning<<"Error.  Can only have 1 season when during seasons as psuedo-years."<<endl;  exit(1);}
     }
   seasdur_half = seasdur*0.5;   // half a season
   subseasdur_delta=seasdur/double(N_subseas);
@@ -251,7 +251,7 @@
       catchunits(f) = int(fleet_setup(f,4));
       need_catch_mult(f) = int(fleet_setup(f,5));
       if(fleet_type(f)>1 && need_catch_mult(f)>0)
-        {N_warn++; cout<<"exit; see warning"<<endl; warning<<"Need_catch_mult can be used only for fleet_type=1 fleet= "<<f<<endl; exit(1);}
+        {N_warn++; cout<<"exit with warning"<<endl; warning<<"Need_catch_mult can be used only for fleet_type=1 fleet= "<<f<<endl; exit(1);}
       echoinput<<f<<" # "<<fleet_setup(f)<<" # "<<fleetname(f)<<endl;
     }
 
@@ -284,7 +284,7 @@
         }
         else
         {
-          N_warn++; cout<<"fatal input error"<<endl; warning<<"fleet "<<f<<" is in bycatch list but not designated as bycatch fleet"<<endl; exit(1);
+          N_warn++; cout<<"exit with warning"<<endl; warning<<"fleet "<<f<<" is in bycatch list but not designated as bycatch fleet"<<endl; exit(1);
         }
       }
     }
@@ -328,7 +328,7 @@
   int ALK_time_max
 
  LOCAL_CALCS
-  ALK_time_max=(endyr-styr+50)*nseas*N_subseas;  //  sets maximum size for data array indexing 50 years into forecast
+  ALK_time_max=(endyr-styr+51)*nseas*N_subseas;  //  sets maximum size for data array indexing 50 years into forecast
  END_CALCS
 !!//  SS_Label_Info_2.1.6  #Indexes for data timing.  "have_data" and "data_time" hold pointers for data occurrence, timing, and ALK need
   int data_type
@@ -631,7 +631,7 @@
     {
       y= Svy_data[i](1);
       if(y>endyr +50)
-      {N_warn++;warning<<"forecast observations cannot be beyond endyr +50; SS will exit"<<endl; exit(1);}
+      {N_warn++;cout<<" EXIT - see warning "<<endl; warning<<"forecast observations cannot be beyond endyr +50"<<endl; exit(1);}
       if(y>=styr)
       {
 //  call a global function to calculate data timing and create various indexes
@@ -819,7 +819,7 @@
       {
         y= discdata[i](1);
         if(y>endyr +50)
-        {N_warn++;warning<<"forecast observations cannot be beyond endyr +50; SS will exit"<<endl; exit(1);}
+        {N_warn++;cout<<" EXIT - see warning "<<endl; warning<<"forecast observations cannot be beyond endyr +50"<<endl; exit(1);}
         if(y>=styr)
         {
          timing_input(1,3)=discdata[i](1,3);
@@ -926,7 +926,7 @@
   {
     y=mnwtdata1[i](1);
       if(y>endyr +50)
-      {N_warn++;warning<<"mnwt forecast observations cannot be beyond endyr +50; SS will exit"<<endl; exit(1);}
+      {N_warn++;cout<<" EXIT - see warning "<<endl; warning<<"mnwt forecast observations cannot be beyond endyr +50"<<endl; exit(1);}
     if(y>=styr)
     {
       if(mnwtdata1[i](2)<0.0) {N_warn++; warning<<"negative season not allowed for mnwtdata because superperiods not implemented "<<endl;}
@@ -1186,7 +1186,7 @@
   }
   if(len_bins_dat(nlen_bin)>len_bins(nlength))
   {
-    N_warn++; cout<<"Critical error, see warning.sso"<<endl; warning<<" Data length bins extend beyond pop len bins "<<len_bins_dat(nlen_bin)<<" "<<len_bins(nlength)<<endl; exit(1);
+    N_warn++; cout<<" EXIT - see warning "<<endl; warning<<" Data length bins extend beyond pop len bins "<<len_bins_dat(nlen_bin)<<" "<<len_bins(nlength)<<endl; exit(1);
   }
   echoinput<<endl<<"Processed Data length bin info "<<endl<<len_bins_dat<<endl;
   }
@@ -1286,7 +1286,7 @@
       if(y>=styr)
       {
       f=abs( lendata[i](3));
-      if( lendata[i](6)<0) {N_warn++; cout<<"error in length data "<<endl; warning<<"Error: negative sample size no longer valid as indicator of skip data or superperiods "<<endl; exit(1);}
+      if( lendata[i](6)<0) {N_warn++; cout<<" EXIT - see warning "<<endl; warning<<"Error in length data: negative sample size no longer valid as indicator of skip data or superperiods "<<endl; exit(1);}
       if( lendata[i](2)<0) N_suprper_l(f)++;     // count the number of starts and ends of super-periods if seas<0
       Nobs_l(f)++;
       }
@@ -1296,7 +1296,7 @@
   {
     s=N_suprper_l(f)/2.;
     if(s*2!=N_suprper_l(f))
-    {N_warn++; cout<<"error in length data "<<endl; warning<<"Error: unequal number of length superperiod starts and stops "<<endl; exit(1);}
+    {N_warn++; cout<<" EXIT - see warning "<<endl; warning<<"Error: unequal number of length superperiod starts and stops "<<endl; exit(1);}
     else
     {N_suprper_l(f)=s;}// to get the number of superperiods
   }
@@ -1351,7 +1351,7 @@
     {
       y= lendata[i](1);
       if(y>endyr +50)
-      {N_warn++;warning<<"forecast observations cannot be beyond endyr +50; SS will exit"<<endl; exit(1);}
+      {N_warn++;cout<<" EXIT - see warning "<<endl; warning<<"forecast length obs cannot be beyond endyr +50;"<<endl; exit(1);}
       if(y>=styr)
       {
         f=abs( lendata[i](3));
@@ -1385,7 +1385,7 @@
            {N_warn++; cout<<" EXIT - see warning "<<endl; warning<<" Critical error, season for length obs "<<i<<" is > nseas"<<endl; exit(1);}
 
           if( lendata[i](6)<0.0)
-            {N_warn++; warning<<"negative values not allowed for lengthcomp sample size, use -fleet to omit from -logL"<<endl;}
+            {N_warn++; cout<<" EXIT - see warning "<<endl; warning<<"negative values not allowed for lengthcomp sample size, use -fleet to omit from -logL"<<endl; exit(1);}
           header_l(f,j,1) = y;
           if( lendata[i](2)<0)
           {
@@ -1750,8 +1750,8 @@
     if(y>=styr)
     {
      f=abs(Age_Data[i](3));
-     if(Age_Data[i](9)<0) {N_warn++; cout<<"error in age data "<<endl; warning<<"Error: negative sample size no longer valid as indicator of skip data or superperiods "<<endl; exit(1);}
-     if(Age_Data[i](6)==0 || Age_Data[i](6)>N_ageerr) {N_warn++; cout<<"error in age data "<<endl; warning<<"Error: undefined age_error type: "<<Age_Data[i](6)<<"  in obs: "<<i<<endl; exit(1);}
+     if(Age_Data[i](9)<0) {N_warn++; cout<<" EXIT - see warning "<<endl; warning<<"Error: negative sample size in age data no longer valid as indicator of skip data or superperiods "<<endl; exit(1);}
+     if(Age_Data[i](6)==0 || Age_Data[i](6)>N_ageerr) {N_warn++; cout<<" EXIT - see warning "<<endl; warning<<"Error: undefined age_error type: "<<Age_Data[i](6)<<"  in obs: "<<i<<endl; exit(1);}
      if(Age_Data[i](2)<0) N_suprper_a(f)++;     // count the number of starts and ends of super-periods if seas<0 or sampsize<0
 
      Nobs_a(f)++;
@@ -1761,7 +1761,7 @@
   {
     s=N_suprper_a(f)/2.;
     if(s*2!=N_suprper_a(f))
-    {N_warn++; cout<<"error in age data "<<endl; warning<<"Error: unequal number of age superperiod starts and stops "<<endl; exit(1);}
+    {N_warn++; cout<<" EXIT - see warning "<<endl; warning<<"Error: unequal number of age superperiod starts and stops "<<endl; exit(1);}
     else
     {N_suprper_a(f)/=2;}
   }
@@ -1816,7 +1816,7 @@
      {
        y=Age_Data[i](1);
        if(y>endyr +50)
-       {N_warn++;warning<<"forecast observations cannot be beyond endyr +50; SS will exit"<<endl; exit(1);}
+       {N_warn++; cout<<" EXIT - see warning "<<endl; warning<<"forecast age obs cannot be beyond endyr +50; SS will exit"<<endl; exit(1);}
        if(y>=styr)
        {
          f=abs(Age_Data[i](3));
@@ -1842,7 +1842,7 @@
             have_data(ALK_time,f,data_type,0)++;  //  count the number of observations in this subseas
             p=have_data(ALK_time,f,data_type,0);
             if(p>100) 
-            	{N_warn++; warning<<"fatal:  max agecomp obs per fleet*time is 100; you requested "<<p<<" for fleet x year "<<f<<" "<<y<<endl;exit(1);}
+            	{N_warn++; cout<<" EXIT - see warning "<<endl; warning<<"fatal:  max agecomp obs per fleet*time is 100; you requested "<<p<<" for fleet x year "<<f<<" "<<y<<endl;exit(1);}
             have_data(ALK_time,f,data_type,p)=j;  //  store data index for the p'th observation in this subseas
             have_data_yr(y,f)=1;  have_data_yr(y,0)=1;  //  survey or comp data exist this year
 
@@ -2131,7 +2131,7 @@
     if(y>=styr)
     {
       f=abs(sizeAge_Data[i](3));
-      if(sizeAge_Data[i](7)<0) {N_warn++; cout<<"error in meansize"<<endl; warning<<"error.  cannot use negative sampsize for meansize data ";exit(1);;}
+      if(sizeAge_Data[i](7)<0) {N_warn++; cout<<" EXIT - see warning "<<endl; warning<<"error.  cannot use negative sampsize for meansize data ";exit(1);;}
       if(sizeAge_Data[i](2)<0) N_suprper_ms(f)++;     // count the number of starts and ends of super-periods if seas<0 or sampsize<0
       Nobs_ms(f)++;
     }
@@ -2140,7 +2140,7 @@
   {
     s=N_suprper_ms(f)/2.;
     if(s*2!=N_suprper_ms(f))
-    {N_warn++; cout<<"error in meansize data "<<endl; warning<<"Error: unequal number of meansize superperiod starts and stops "<<endl; exit(1);}
+    {N_warn++; cout<<" EXIT - see warning "<<endl; warning<<"Error: unequal number of meansize superperiod starts and stops "<<endl; exit(1);}
     else
     {N_suprper_ms(f)/=2;}
   }
@@ -2185,7 +2185,7 @@
      {
        y=sizeAge_Data[i](1);
        if(y>endyr +50)
-       {N_warn++;warning<<"forecast observations cannot be beyond endyr +50; SS will exit"<<endl; exit(1);}
+       {N_warn++; cout<<" EXIT - see warning "<<endl; warning<<"forecast meansize obs cannot be beyond endyr +50"<<endl; exit(1);}
        if(y>=styr)
        {
          f=abs(sizeAge_Data[i](3));
@@ -2228,7 +2228,7 @@
            if(abs(sizeAge_Data[i](6))>N_ageerr)
            {
               N_warn++;cout<<" EXIT - see warning "<<endl;
-              warning<<" in meansize, ageerror type must be <= "<<N_ageerr<<endl; exit(1);
+              warning<<" in meansize-at-age, ageerror type must be <= "<<N_ageerr<<endl; exit(1);
            }
            ageerr_type_ms(f,j)=abs(sizeAge_Data[i](6));
 
@@ -2481,7 +2481,7 @@
         SzFreq_obs(iobs)/=sum(SzFreq_obs(iobs));
         y=SzFreq_obs_hdr(iobs,1);
         if(y>endyr +50)
-        {N_warn++;warning<<"forecast observations cannot be beyond endyr +50; SS will exit"<<endl; exit(1);}
+        {N_warn++;warning<<"forecast sizefreq obs cannot be beyond endyr +50"<<endl; exit(1);}
 
         timing_input(1,3)=SzFreq_obs_hdr(iobs)(1,3);
         timing_input(2)=SzFreq_obs1(iobs,3);
@@ -2742,7 +2742,7 @@
       if(y>=styr && y<=endyr +50)  //  obs is in year range
       {
         if(timing_input(2)<0.0)
-        {N_warn++; warning<<"negative month not allowed for morphcomp because superperiods not implemented "<<endl; exit(1);}
+        {N_warn++; cout<<" EXIT - see warning "<<endl; warning<<"negative month not allowed for morphcomp because superperiods not implemented "<<endl; exit(1);}
         get_data_timing(timing_input, timing_constants, timing_i_result, timing_r_result, seasdur, subseasdur_delta, azero_seas, surveytime);
 
         s=timing_input(2); f=abs(timing_input(3)); t=timing_i_result(2);
@@ -3046,7 +3046,7 @@
   echoinput<<Fcast_RelF_Basis<<" # echoed value"<<endl;
   if(Do_Forecast_rd==4 && Fcast_RelF_Basis==2)
   {
-    N_warn++; warning<<"Cannot specify forecast fleet relative F because Do_Forecast==4 specifies relative F directly as F;"<<endl;
+    N_warn++; cout<<" EXIT - see warning "<<endl; warning<<"Cannot specify forecast fleet relative F because Do_Forecast==4 specifies relative F directly as F;"<<endl;
     echoinput<<"Cannot specify forecast fleet relative F because Do_Forecast==4 specifies relative F directly as F;"<<endl;
     echoinput<<"exit:  need to align choice of forecast basis and forecast relative F basis"<<endl;
     exit(1);
@@ -3057,7 +3057,7 @@
   *(ad_comm::global_datafile) >> Fcast_Catch_Basis;
   echoinput<<Fcast_Catch_Basis<<" # echoed value"<<endl;
   if(Fcast_Catch_Basis<2 || Fcast_Catch_Basis>6)
-    {N_warn++; warning<<"illegal value for Fcast_Catch_Basis"<<endl; echoinput<<"exit:  illegal value for Fcast_Catch_Basis"<<endl; exit(1);}
+    {N_warn++; cout<<" EXIT - see warning "<<endl; warning<<"illegal value for Fcast_Catch_Basis"<<endl; echoinput<<"exit:  illegal value for Fcast_Catch_Basis"<<endl; exit(1);}
 
   if(Fcast_RelF_Basis==2)
   {
@@ -3079,7 +3079,7 @@
         if(fleet_type(f)<=2)
         {Fcast_RelF_Input(s,f)=tempvec(3);  checkfleet(f)=1;}
         else
-        {echoinput<<"exit for fleet "<<f<<"  ;cannot set fcast relF for survey fleets"<<endl; exit(1);}
+        {cout<<" EXIT - see warning "<<endl; warning<<"forecast exit for fleet "<<f<<"  ;cannot set fcast relF for survey fleets"<<endl; exit(1);}
       }
     } while (ender==0);
     echoinput<<" fleet relative F by season and fleet as read"<<endl<<Fcast_RelF_Input<<endl;
@@ -3161,7 +3161,7 @@
         if(fleet_type(f)<=2)
         {Fcast_MaxFleetCatch(f)=tempvec(2);}
         else
-        {echoinput<<"exit for fleet "<<f<<"  ;  cannot only set max catch for retained or discard catch fleets"<<endl; exit(1);}
+        {cout<<" EXIT - see warning "<<endl; echoinput<<"exit for fleet "<<f<<"  ;  cannot only set max catch for retained or discard catch fleets"<<endl; exit(1);}
         Fcast_Do_Fleet_Cap=1;
       }
     } while (ender==0);
@@ -3203,7 +3203,7 @@
         if(fleet_type(f)==1)
         {Allocation_Fleet_Assignments(f)=tempvec(2);}
         else
-        {echoinput<<"exit for fleet "<<f<<"  ;  cannot only put retained catch fleets in allocation groups"<<endl; exit(1);}
+        {cout<<" EXIT - see warning "<<endl; echoinput<<"exit for fleet "<<f<<"  ;  cannot only put retained catch fleets in allocation groups"<<endl; exit(1);}
       }
     } while (ender==0);
 
@@ -3382,7 +3382,7 @@
   imatrix Show_Time2(1,ALK_time_max,1,3)  //  for each ALK_time:  shows year, season, subseas
  LOCAL_CALCS
   t=styr-1;
-  for (y=styr;y<=YrMax;y++) /* SS_loop:  fill Show_Time(t,1) with year value */
+  for (y=styr;y<=max(YrMax,endyr+50);y++) /* SS_loop:  fill Show_Time(t,1) with year value */
   for (s=1;s<=nseas;s++) /* SS_loop:  fill Show_Time(t,2) with season value */
   {
     t++;
@@ -3390,7 +3390,7 @@
     Show_Time(t,2)=s;
   }
   ALK_idx=0;
-  for (y=styr;y<=endyr+19;y++)
+  for (y=styr;y<=max(YrMax,endyr+50);y++)
   for (s=1;s<=nseas;s++)
   for (subseas=1;subseas<=N_subseas;subseas++)
   {
