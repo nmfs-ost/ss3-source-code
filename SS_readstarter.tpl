@@ -528,7 +528,7 @@
       if(tempin==3.30) 
       	{ender=1;}
       	else
-        {N_warn++; warning<<"starter.ss has extra input lines; check echoinput to verify read"<<endl;
+        {N_warn++; cout<<" EXIT - see warning "<<endl; warning<<"starter.ss has extra input lines; check echoinput to verify read"<<endl;
         	echoinput<<endl<<"starter.ss should have read 3.30 here; it read: "<<tempin<<endl; exit(1);}
         }
     }

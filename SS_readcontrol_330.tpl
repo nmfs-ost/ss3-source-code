@@ -91,7 +91,7 @@
    else if (N_platoon==5)
      {ishadow.fill_seqadd(-2,1); shadow.fill_seqadd(-2.,1.);}
    else
-     {N_warn++; cout<<" EXIT - see warning "<<endl; warning<<" illegal N platoons, must be 1, 3 or 5 "<<N_platoon<<endl; cout<<" exit - see warning "<<endl; exit(1);}
+     {N_warn++; cout<<" EXIT - see warning "<<endl; warning<<" illegal N platoons, must be 1, 3 or 5 "<<N_platoon<<endl; exit(1);}
 
  END_CALCS
 
@@ -146,7 +146,7 @@
   }
   echoinput<<N_settle_assignments<<" Number of settlement events: GP/area/month to read (>=0) "<<endl;
   if(recr_dist_method==1)
-    {N_warn++; warning<<"fatal error:  recr_dist_method cannot be 1 in SS3.30 "<<endl; cout<<"see warning.sso for input error"<<endl; exit(1);}
+    {N_warn++;cout<<" EXIT - see warning "<<endl;  warning<<"fatal error:  recr_dist_method cannot be 1 in SS3.30 "<<endl; exit(1);}
   else if(N_settle_assignments==1 && recr_dist_method!=4)
     {N_warn++; warning<<"You have just one settlement event; recommend changing to recr_dist_method 4 which takes no recr_dist parameters"<<endl;}
   else if(recr_dist_method==2)
@@ -563,7 +563,7 @@
         if(Block_Design(j,a+1)<styr-1) {N_warn++; cout<<" EXIT - see warning "<<endl; warning<<"Block:"<<j<<" "<<k<<" ends before styr; fatal error"<<endl; exit(1);}
         if(Block_Design(j,a)>retro_yr+1) {N_warn++; warning<<"Block:"<<j<<" "<<k<<" starts after retroyr+1; should not estimate "<<endl;}
         if(Block_Design(j,a+1)>retro_yr+1) {N_warn++; warning<<"Block:"<<j<<" "<<k<<" ends in: "<<Block_Design(j,a+1)<<" after retroyr+1:  "<<retro_yr+1<<endl;}
-        if(Block_Design(j,a)>YrMax) {N_warn++; warning<<"Block:"<<j<<" "<<k<<" starts in: "<<Block_Design(j,a+1)<<" which is > YrMax:  "<<YrMax<<" fatal error"<<endl;exit(1);}
+        if(Block_Design(j,a)>YrMax) {N_warn++; cout<<" EXIT - see warning "<<endl; warning<<"Block:"<<j<<" "<<k<<" starts in: "<<Block_Design(j,a+1)<<" which is > YrMax:  "<<YrMax<<" fatal error"<<endl;exit(1);}
         if(Block_Design(j,a+1)>YrMax) {N_warn++; warning<<"Block:"<<j<<" "<<k<<" ends in: "<<Block_Design(j,a+1)<<" reset to YrMax:  "<<YrMax<<endl;Block_Design(j,a+1)=YrMax;}
       }
     }
@@ -769,7 +769,7 @@
       for(j=2;j<=Age_K_count;j++)
       {
         if(Age_K_points(j)<=Age_K_points(j-1))
-        {N_warn++; warning<<"EXIT:  age K points must be unique and ascending order "<<endl;exit(1);}
+        {N_warn++;cout<<" EXIT - see warning "<<endl;  warning<<"EXIT:  age K points must be unique and ascending order "<<endl;exit(1);}
       }
     }
     else if(Grow_type==4 || Grow_type==5)
@@ -777,7 +777,7 @@
       for(j=2;j<=Age_K_count;j++)
       {
         if(Age_K_points(j)>=Age_K_points(j-1))
-        {N_warn++; warning<<"EXIT:  age K points must be unique and decending order "<<endl;exit(1);}
+        {N_warn++;cout<<" EXIT - see warning "<<endl;  warning<<"EXIT:  age K points must be unique and decending order "<<endl;exit(1);}
       }
     }
      
@@ -838,7 +838,7 @@
     echoinput<<" fecundity and weight at age to be read from file:  wtatage.ss"<<endl;
     if(WTage_rd==0)
       {
-        N_warn++; warning<<"Exiting.  Must set WTage_rd to 1 to use Maturity_Option 5"<<endl;
+        N_warn++;cout<<" EXIT - see warning "<<endl;  warning<<"Must set WTage_rd to 1 to use wtatage.ss"<<endl;
         exit(1);
       }
   }
@@ -1182,7 +1182,7 @@
      {
        if(MGparm_1(kk,7)>0) varparm_estimated(1)=1;
        if(MGparm_1(kk,8)!=0 || MGparm_1(kk,9)!=0 || MGparm_1(kk,13)!=0)
-        {N_warn++; cout<<"see fatal warning"<<endl; warning<<"EXIT. CV of growth parameters cannot be time-varying"<<endl; exit(1);
+        {N_warn++; cout<<" EXIT - see warning "<<endl; warning<<"CV of growth parameters cannot be time-varying"<<endl; exit(1);
         }
      }
 //     if(MGparm_1(Ip+N_growparms-2,7)>0) varparm_estimated(1)=1;  //  for CV_young
@@ -1307,7 +1307,7 @@
        if(z>0)  //  doing blocks
        {
          if(z>N_Block_Designs)
-          {N_warn++; cout<<"Fatal_input_error, see warning"<<endl; warning<<" Error: MG block request exceeds N_block patterns"<<endl;  exit(1);}
+          {N_warn++; cout<<"Fatal_input_error, see warning"<<endl; warning<<"MG block request exceeds N_block patterns"<<endl;  exit(1);}
          create_timevary(MGparm_1(j),timevary_setup, timevary_pass, autogen_timevary(timevary_setup(1)), mgp_type(j), Block_Design(z), parm_adjust_method, env_data_pass, N_parm_dev,finish_starter);
        }
        else
@@ -1615,7 +1615,7 @@
        if(SR_parm_1(j,13)>0)  //  doing blocks
        {
          if(SR_parm_1(j,13)>N_Block_Designs)
-          {N_warn++; cout<<"Fatal_input_error, see warning"<<endl; warning<<" Error: SR block request exceeds N_block patterns"<<endl;  exit(1);}
+          {N_warn++; cout<<"Fatal_input_error, see warning"<<endl; warning<<"SR block request exceeds N_block patterns"<<endl;  exit(1);}
          create_timevary(SR_parm_1(j),timevary_setup, timevary_pass, autogen_timevary(timevary_setup(1)), f, Block_Design(SR_parm_1(j,13)), parm_adjust_method, env_data_pass, N_parm_dev,finish_starter);
        }
        else
@@ -1814,7 +1814,7 @@
 
   if(recdev_early_start>=recdev_start)
   {
-    N_warn++; cout<<" EXIT - see warning "<<endl; warning<<" error, cannot set recdev_early_start: "<<recdev_early_start<<" after main recdev start: "<<recdev_start<<endl;
+    N_warn++; cout<<" EXIT - see warning "<<endl; warning<<"Cannot set recdev_early_start: "<<recdev_early_start<<" after main recdev start: "<<recdev_start<<endl;
     exit(1);
   }
   else if(recdev_early_start==0)  // do not do early rec devs
@@ -2224,7 +2224,7 @@
   {
     if(Q_setup_check(f)==0)
     {
-      N_warn++; warning<<f<<" fatal Qsetup error;  survey obs exist but no Q setup was read "<<endl; exit(1);
+      N_warn++; cout<<" EXIT - see warning "<<endl; warning<<f<<" fatal Qsetup error;  survey obs exist but no Q setup was read "<<endl; exit(1);
     }
       Q_Npar++;  ParCount++;
       Q_setup_parms(f,1)=Q_Npar;  //  first parameter index for this fleet that has obs so needs a Q
@@ -2239,7 +2239,7 @@
       if(Svy_units(f)==35)
       {
         echoinput<<"fleet: "<<f<<"  is a survey of dev vector:  "<<Q_setup(f,2)<<endl;
-        if(Q_setup(f,2)==0)  {N_warn++; warning<<"fatal Qsetup error:  must enter index of dev_vector surveyed by fleet:  "<<f<<endl;  exit(1);}
+        if(Q_setup(f,2)==0)  {N_warn++; cout<<" EXIT - see warning "<<endl; warning<<"fatal Qsetup error:  must enter index of dev_vector surveyed by fleet:  "<<f<<endl;  exit(1);}
       }
    	  switch (Q_setup(f,1))
       {
@@ -2722,7 +2722,7 @@
      }
      if(seltype(f,3)>=1)
       {
-        if(gender==1) {N_warn++; cout<<"Critical error"<<endl; warning<<" Male selex cannot be used in one sex model; fleet: "<<f<<endl; exit(1);}
+        if(gender==1) {N_warn++; cout<<" EXIT - see warning "<<endl; warning<<" Male selex cannot be used in one sex model; fleet: "<<f<<endl; exit(1);}
         Maleselparm(f)=N_selparmvec(f)+1;
         if(seltype(f,3)==1 || seltype(f,3)==2)
         {
@@ -2932,7 +2932,7 @@
 
      if(seltype(f,3)>=1)
       {
-        if(gender==1) {N_warn++; cout<<"Critical error"<<endl; warning<<" Male selex cannot be used in one sex model; fleet: "<<f<<endl; exit(1);}
+        if(gender==1) {N_warn++; cout<<" EXIT - see warning "<<endl; warning<<" Male selex cannot be used in one sex model; fleet: "<<f<<endl; exit(1);}
         Maleselparm(f)=N_selparmvec(f)+1;
         if(seltype(f,3)==1 || seltype(f,3)==2)
         {
@@ -3808,10 +3808,10 @@
       warning<<" growth variance is estimated parameter, so change sd_offset to 1"<<endl; exit(1);
     }
     if(varparm_estimated(2)==1)
-    {N_warn++; cout<<"exit with warning"<<endl; 
+    {N_warn++; cout<<" EXIT - see warning "<<endl; 
       warning<<" recruitment sigmaR is estimated parameter, so change sd_offset to 1"<<endl; exit(1);}
     if(varparm_estimated(3)==1)
-    {N_warn++; cout<<"exit with warning"<<endl; 
+    {N_warn++; cout<<" EXIT - see warning "<<endl; 
       warning<<" survey extraSD is estimated parameter, so change sd_offset to 1"<<endl; exit(1);}
   }
   if(depletion_fleet>0  && depletion_type<2 && max_lambda_phase<2)
