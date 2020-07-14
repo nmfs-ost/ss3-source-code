@@ -4084,8 +4084,6 @@
      if(Selex_Std_Year<0) Selex_Std_Year=endyr;
      Selex_Std_Cnt=More_Std_Input(4);
      Do_Growth_Std=More_Std_Input(5);
-     if(MG_active(2)==0 && Do_Growth_Std>0)
-     	{N_warn++; warning<<"error; growth output stderr requested but no growth parameters are estimated"<<endl;Do_Growth_Std=0;}
      Growth_Std_Cnt=More_Std_Input(6);
      Do_NatAge_Std=More_Std_Input(7);
      NatAge_Std_Year=More_Std_Input(8);
@@ -4173,23 +4171,36 @@
   if(Do_Growth_Std>0)
   {
     echoinput<<Growth_Std_Pick<<" # vector with growth std ages (-1 in first bin to self-generate)"<<endl;
-    if(Growth_Std_Pick(1)<0)
+		// turn off growth extra stderr for growth if no estimated growth parameters
+    if(MG_active(2)==0)
     {
-      Growth_Std_Pick(1)=AFIX;
-      Growth_Std_Pick(Growth_Std_Cnt)=nages;
-      if(Growth_Std_Cnt>2)
+      N_warn++;
+  		warning<<"warning; growth output stderr requested but no growth parameters are estimated, changing growth stddev reporting specifications to 0"<<endl;
+  		Do_Growth_Std=0;
+      Do_Growth_Std=0;
+  		More_Std_Input(5)=0;
+  		More_Std_Input(6)=0;
+			Growth_Std_Cnt=0;
+    }else{
+		  // there are active growth parameters so proceed with processing stderr
+      if(Growth_Std_Pick(1)<0)
       {
-        k=Growth_Std_Cnt/2;
-        for (i=2;i<=k;i++) Growth_Std_Pick(i)=Growth_Std_Pick(i-1)+1;
-        j=(nages-Growth_Std_Pick(k))/(Growth_Std_Cnt-k);
-        for (i=k+1;i<=Growth_Std_Cnt-1;i++) Growth_Std_Pick(i)=Growth_Std_Pick(i-1)+j;
+        Growth_Std_Pick(1)=AFIX;
+        Growth_Std_Pick(Growth_Std_Cnt)=nages;
+        if(Growth_Std_Cnt>2)
+        {
+          k=Growth_Std_Cnt/2;
+          for (i=2;i<=k;i++) Growth_Std_Pick(i)=Growth_Std_Pick(i-1)+1;
+          j=(nages-Growth_Std_Pick(k))/(Growth_Std_Cnt-k);
+          for (i=k+1;i<=Growth_Std_Cnt-1;i++) Growth_Std_Pick(i)=Growth_Std_Pick(i-1)+j;
+        }
       }
-    }
-    for(i=1;i<=Growth_Std_Cnt;i++)
-    {
-      if(Growth_Std_Pick(i)<0) Growth_Std_Pick(i)=0;
-      if(Growth_Std_Pick(i)>nages) Growth_Std_Pick(i)=nages;
-    }
+      for(i=1;i<=Growth_Std_Cnt;i++)
+      {
+        if(Growth_Std_Pick(i)<0) Growth_Std_Pick(i)=0;
+        if(Growth_Std_Pick(i)>nages) Growth_Std_Pick(i)=nages;
+      }
+  	}
     Extra_Std_N+=gender*Growth_Std_Cnt;
   }
  END_CALCS
