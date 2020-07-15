@@ -174,11 +174,12 @@ FUNCTION void write_nudata()
   {
   report1<<"#_mintailcomp: upper and lower distribution for females and males separately are accumulated until exceeding this level."<<endl;
   report1<<"#_addtocomp:  after accumulation of tails; this value added to all bins"<<endl;
-  report1<<"#_males and females treated as combined gender below this bin number "<<endl;
+  report1<<"#_combM+F: males and females treated as combined gender below this bin number "<<endl;
   report1<<"#_compressbins: accumulate upper tail by this number of bins; acts simultaneous with mintailcomp; set=0 for no forced accumulation"<<endl;
   report1<<"#_Comp_Error:  0=multinomial, 1=dirichlet"<<endl;
-  report1<<"#_Comp_Error2:  parm number  for dirichlet"<<endl;
+  report1<<"#_ParmSelect:  parm number for dirichlet"<<endl;
   report1<<"#_minsamplesize: minimum sample size; set to 1 to match 3.24, minimum value is 0.001"<<endl;
+	report1<<"#"<<endl;
   report1<<"#_mintailcomp addtocomp combM+F CompressBins CompError ParmSelect minsamplesize"<<endl;
   for (f=1;f<=Nfleet;f++)
   {report1<<min_tail_L(f)<<" "<<min_comp_L(f)<<" "<<CombGender_L(f)<<" "<<AccumBin_L(f)<<" "<<Comp_Err_L(f)<<" "<<Comp_Err_L2(f)<<" "<<min_sample_size_L(f)<<" #_fleet:"<<f<<"_"<<fleetname(f)<<endl;}
@@ -216,11 +217,12 @@ FUNCTION void write_nudata()
 
   report1<<"#_mintailcomp: upper and lower distribution for females and males separately are accumulated until exceeding this level."<<endl;
   report1<<"#_addtocomp:  after accumulation of tails; this value added to all bins"<<endl;
-  report1<<"#_males and females treated as combined gender below this bin number "<<endl;
+  report1<<"#_combM+F: males and females treated as combined gender below this bin number "<<endl;
   report1<<"#_compressbins: accumulate upper tail by this number of bins; acts simultaneous with mintailcomp; set=0 for no forced accumulation"<<endl;
   report1<<"#_Comp_Error:  0=multinomial, 1=dirichlet"<<endl;
-  report1<<"#_Comp_Error2:  parm number  for dirichlet"<<endl;
+  report1<<"#_ParmSelect:  parm number for dirichlet"<<endl;
   report1<<"#_minsamplesize: minimum sample size; set to 1 to match 3.24, minimum value is 0.001"<<endl;
+	report1<<"#"<<endl;
   report1<<"#_mintailcomp addtocomp combM+F CompressBins CompError ParmSelect minsamplesize"<<endl;
   for (f=1;f<=Nfleet;f++)
   {
@@ -475,11 +477,12 @@ FUNCTION void write_nudata()
   {
   report1<<"#_mintailcomp: upper and lower distribution for females and males separately are accumulated until exceeding this level."<<endl;
   report1<<"#_addtocomp:  after accumulation of tails; this value added to all bins"<<endl;
-  report1<<"#_males and females treated as combined gender below this bin number "<<endl;
+  report1<<"#_combM+F: males and females treated as combined gender below this bin number "<<endl;
   report1<<"#_compressbins: accumulate upper tail by this number of bins; acts simultaneous with mintailcomp; set=0 for no forced accumulation"<<endl;
   report1<<"#_Comp_Error:  0=multinomial, 1=dirichlet"<<endl;
-  report1<<"#_Comp_Error2:  parm number  for dirichlet"<<endl;
+  report1<<"#_ParmSelect:  parm number for dirichlet"<<endl;
   report1<<"#_minsamplesize: minimum sample size; set to 1 to match 3.24, minimum value is 0.001"<<endl;
+	report1<<"#"<<endl;
   report1<<"#_mintailcomp addtocomp combM+F CompressBins CompError ParmSelect minsamplesize"<<endl;
   for (f=1;f<=Nfleet;f++)
   {report1<<min_tail_L(f)<<" "<<min_comp_L(f)<<" "<<CombGender_L(f)<<" "<<AccumBin_L(f)<<" "<<Comp_Err_L(f)<<" "<<Comp_Err_L2(f)<<" "<<min_sample_size_L(f)<<" #_fleet:"<<f<<"_"<<fleetname(f)<<endl;}
@@ -521,11 +524,12 @@ FUNCTION void write_nudata()
 
   report1<<"#_mintailcomp: upper and lower distribution for females and males separately are accumulated until exceeding this level."<<endl;
   report1<<"#_addtocomp:  after accumulation of tails; this value added to all bins"<<endl;
-  report1<<"#_males and females treated as combined gender below this bin number "<<endl;
+  report1<<"#_combM+F: males and females treated as combined gender below this bin number "<<endl;
   report1<<"#_compressbins: accumulate upper tail by this number of bins; acts simultaneous with mintailcomp; set=0 for no forced accumulation"<<endl;
   report1<<"#_Comp_Error:  0=multinomial, 1=dirichlet"<<endl;
-  report1<<"#_Comp_Error2:  parm number  for dirichlet"<<endl;
+  report1<<"#_ParmSelect:  parm number for dirichlet"<<endl;
   report1<<"#_minsamplesize: minimum sample size; set to 1 to match 3.24, minimum value is 0.001"<<endl;
+	report1<<"#"<<endl;
   report1<<"#_mintailcomp addtocomp combM+F CompressBins CompError ParmSelect minsamplesize"<<endl;
   for (f=1;f<=Nfleet;f++)
   {
@@ -828,11 +832,12 @@ FUNCTION void write_nudata()
   {
   report1<<"#_mintailcomp: upper and lower distribution for females and males separately are accumulated until exceeding this level."<<endl;
   report1<<"#_addtocomp:  after accumulation of tails; this value added to all bins"<<endl;
-  report1<<"#_males and females treated as combined sex below this bin number "<<endl;
+  report1<<"#_combM+F: males and females treated as combined gender below this bin number "<<endl;
   report1<<"#_compressbins: accumulate upper tail by this number of bins; acts simultaneous with mintailcomp; set=0 for no forced accumulation"<<endl;
   report1<<"#_Comp_Error:  0=multinomial, 1=dirichlet"<<endl;
-  report1<<"#_Comp_Error2:  parm number  for dirichlet"<<endl;
+  report1<<"#_ParmSelect:  parm number for dirichlet"<<endl;
   report1<<"#_minsamplesize: minimum sample size; set to 1 to match 3.24, minimum value is 0.001"<<endl;
+	report1<<"#"<<endl;
   report1<<"#_mintailcomp addtocomp combM+F CompressBins CompError ParmSelect minsamplesize"<<endl;
   for (f=1;f<=Nfleet;f++)
   {report1<<min_tail_L(f)<<" "<<min_comp_L(f)<<" "<<CombGender_L(f)<<" "<<AccumBin_L(f)<<" "<<Comp_Err_L(f)<<" "<<Comp_Err_L2(f)<<" "<<min_sample_size_L(f)<<" #_fleet:"<<f<<"_"<<fleetname(f)<<endl;}
@@ -896,11 +901,12 @@ FUNCTION void write_nudata()
 
   report1<<"#_mintailcomp: upper and lower distribution for females and males separately are accumulated until exceeding this level."<<endl;
   report1<<"#_addtocomp:  after accumulation of tails; this value added to all bins"<<endl;
-  report1<<"#_males and females treated as combined sex below this bin number "<<endl;
+  report1<<"#_combM+F: males and females treated as combined gender below this bin number "<<endl;
   report1<<"#_compressbins: accumulate upper tail by this number of bins; acts simultaneous with mintailcomp; set=0 for no forced accumulation"<<endl;
   report1<<"#_Comp_Error:  0=multinomial, 1=dirichlet"<<endl;
-  report1<<"#_Comp_Error2:  parm number  for dirichlet"<<endl;
+  report1<<"#_ParmSelect:  parm number for dirichlet"<<endl;
   report1<<"#_minsamplesize: minimum sample size; set to 1 to match 3.24, minimum value is 0.001"<<endl;
+	report1<<"#"<<endl;
   report1<<"#_mintailcomp addtocomp combM+F CompressBins CompError ParmSelect minsamplesize"<<endl;
   for (f=1;f<=Nfleet;f++)
   {
