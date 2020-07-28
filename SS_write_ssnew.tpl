@@ -1137,7 +1137,7 @@ FUNCTION void write_nucontrol()
   if(reportdetail==3)
   	{
   		NuStart<<"# custom report options: -100 to start with minimal; -101 to start with all; -number to remove, +number to add, -999 to end"<<endl;
-  	  for( int j=0;j<=reportdetail_list.size()-1;j++) {NuStart<<reportdetail_list[j](1)<<endl;}
+  	  for(unsigned j=0;j<=reportdetail_list.size()-1;j++) {NuStart<<reportdetail_list[j](1)<<endl;}
   	}
   	else
   		{

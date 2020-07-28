@@ -109,7 +109,7 @@ GLOBALS_SECTION
     // r_result(1,3) will contain: real_month, data_timing_seas, data_timing_yr,
     // i_result(1,6) will contain y, t, s, f, ALK_time, use_midseas
     int f,s,subseas,y;
-    double temp, temp1, month, data_timing_seas, data_timing_yr;
+    double temp, temp1, month, data_timing_seas;//, data_timing_yr;
 //  timing_constants(1)=read_seas_mo;
 //  timing_constants(2)=nseas;
 //  timing_constants(3)=N_subseas;
@@ -257,7 +257,7 @@ GLOBALS_SECTION
 //  timevary_setup(13)=all parm index of baseparm
 //  timevary_setup(14)=continue_last dev
     echoinput<<"baseparm: "<<baseparm_list<<endl;
-    int j; int g; int y; int a; int f;
+    int j; int g; int y; int a;// int f;
     int k;
     int z;
     int Nblocks;
@@ -805,8 +805,8 @@ FINAL_SECTION
 //  SS_Label_Section_13. #REPORT_SECTION  produces SS3.rep,which is less extensive than report.sso produced in final section
 REPORT_SECTION
   {
-    save_gradients(gradients);
-    for (int i = 1; i <= gradients.size(); i++) parm_gradients(i) = gradients(i);
+//    save_gradients(gradients);
+    for (unsigned i = 1; i <= gradients.size(); i++) parm_gradients(i) = gradients(i);
 
 //  SS_Label_Info_13.1 #Write limited output to SS.rep
   if(reportdetail>0)
