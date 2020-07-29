@@ -6,10 +6,10 @@ FUNCTION void write_nudata()
 
   dvector temp_mult(1,50000);
   dvector temp_probs(1,nlen_bin2);
-  int compindex;
+  int compindex=0;
   dvector temp_probs2(1,n_abins2);
-  int Nudat;
-  int Nsamp_DM;
+  int Nudat=0;
+  int Nsamp_DM=0;
 //  create bootstrap data files; except first file just replicates the input and second is the estimate without error
   	if(irand_seed<0) irand_seed=long(time(&start));
   		

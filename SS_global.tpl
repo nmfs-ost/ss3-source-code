@@ -637,7 +637,7 @@ BETWEEN_PHASES_SECTION
 //  SS_Label_Section_12. #FINAL_SECTION
 FINAL_SECTION
   {
-  int jj;
+//  int jj;
 //  SS_Label_Info_12.1 #Get run ending time
   time(&finish);
   elapsed_time = difftime(finish,start);

@@ -245,7 +245,7 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
 //********************************************************************
  /*  SS_Label_FUNCTION 34 Get_Benchmarks(Find Fspr, MSY) */
   int jj;  int Nloops;
-  int bio_t;
+//  int bio_t;
   int bio_t_base;
   dvariable last_F1;  dvariable Closer;
   dvariable Vbio1_unfished;
@@ -1435,7 +1435,7 @@ FUNCTION void Get_Forecast()
         for (s=1;s<=nseas;s++)
         {
           t = t_base+s;
-          bio_t=styr+(endyr-styr)*nseas+s-1;
+//          bio_t=styr+(endyr-styr)*nseas+s-1;
           if(ABC_Loop==ABC_Loop_start)  // do seasonal ALK and fishery selex
           {
             if(timevary_MG(y,2)>0 || save_for_report>0)
