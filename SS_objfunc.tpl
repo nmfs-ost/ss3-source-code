@@ -551,10 +551,8 @@ FUNCTION void evaluate_the_objective_function()
           if(fleet_type(f)==1 && catch_ret_obs(f,t)>0.0)
           {
 //          catch_like(f) += 0.5*square( (log(catch_ret_obs(f,t)) -log(catch_fleet(t,f,i)+0.000001)) / catch_se(t,f));
-            temp=catch_like(f);
-            catch_like(f) += 0.5*square( (log(1.1*catch_ret_obs(f,t)) -log(catch_fleet(t,f,i)*catch_mult(y,f)+0.1*catch_ret_obs(f,t))) / catch_se(t,f));
-//            if(f==2) warning<<y<<" "<<t<<" like: "<<catch_like(f)-temp<<" obs: "<<catch_ret_obs(f,t)<<" exp: "<<catch_fleet(t,f,i)<<" mult: "<<catch_mult(y,f)<<"  se: "<< catch_se(t,f)<<endl;
-            
+            temp=0.5*square( (log(1.1*catch_ret_obs(f,t)) -log(catch_fleet(t,f,i)*catch_mult(y,f)+0.1*catch_ret_obs(f,t))) / catch_se(t,f));
+            catch_like(f) += temp;
           }
         }
       }

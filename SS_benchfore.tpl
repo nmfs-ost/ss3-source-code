@@ -13,41 +13,34 @@ FUNCTION void setup_Benchmark()
         {
           tempvec_l.initialize();
           for (y=Fcast_Sel_yr1;y<=Fcast_Sel_yr2;y++) {tempvec_l+=sel_l(y,f,gg);}
-          sel_l(endyr+1,f,gg)=tempvec_l/temp;
-          sel_l(YrMax,f,gg)=tempvec_l/temp;
+          for (y=endyr+1;y<=YrMax;y++) {sel_l(y,f,gg)=tempvec_l/temp;}
 
           tempvec_l.initialize();
           for (y=Fcast_Sel_yr1;y<=Fcast_Sel_yr2;y++) {tempvec_l+=sel_l_r(y,f,gg);}
-          sel_l_r(endyr+1,f,gg)=tempvec_l/temp;
-          sel_l_r(YrMax,f,gg)=tempvec_l/temp;
+          for (y=endyr+1;y<=YrMax;y++) {sel_l_r(y,f,gg)=tempvec_l/temp;}
 
           tempvec_l.initialize();
           for (y=Fcast_Sel_yr1;y<=Fcast_Sel_yr2;y++) {tempvec_l+=discmort2(y,f,gg);}
-          discmort2(endyr+1,f,gg)=tempvec_l/temp;
-          discmort2(YrMax,f,gg)=tempvec_l/temp;
+          for (y=endyr+1;y<=YrMax;y++) {discmort2(y,f,gg)=tempvec_l/temp;}
 
-          if(gg==gender)
+          if(gg==gender)  //  vectors processed here have males stacked after females in same row
           	{
-          exp_l_temp.initialize();
-          for (y=Fcast_Sel_yr1;y<=Fcast_Sel_yr2;y++) {exp_l_temp+=retain(y,f);}
-          retain(endyr+1,f)=exp_l_temp/temp;
-          retain(YrMax,f)=exp_l_temp/temp;
-          
-          exp_l_temp.initialize();
-          for (y=Fcast_Sel_yr1;y<=Fcast_Sel_yr2;y++) {exp_l_temp+=discmort(y,f);}
-          discmort(endyr+1,f)=exp_l_temp/temp;
-          discmort(YrMax,f)=exp_l_temp/temp;
+              exp_l_temp.initialize();
+              for (y=Fcast_Sel_yr1;y<=Fcast_Sel_yr2;y++) {exp_l_temp+=retain(y,f);}
+              for (y=endyr+1;y<=YrMax;y++) {retain(y,f)=exp_l_temp/temp;}
+              
+              exp_l_temp.initialize();
+              for (y=Fcast_Sel_yr1;y<=Fcast_Sel_yr2;y++) {exp_l_temp+=discmort(y,f);}
+              for (y=endyr+1;y<=YrMax;y++) {discmort(y,f)=exp_l_temp/temp;}
           	}
 
           tempvec_a.initialize();
           for (y=Fcast_Sel_yr1;y<=Fcast_Sel_yr2;y++) {tempvec_a+=sel_a(y,f,gg);}
-          sel_a(endyr+1,f,gg)=tempvec_a/temp;
-          sel_a(YrMax,f,gg)=tempvec_a/temp;
+          for (y=endyr+1;y<=YrMax;y++) {sel_a(y,f,gg)=tempvec_a/temp;}
 
           tempvec_a.initialize();
           for (y=Fcast_Sel_yr1;y<=Fcast_Sel_yr2;y++) {tempvec_a+=discmort2_a(y,f,gg);}
-          discmort2_a(endyr+1,f,gg)=tempvec_a/temp;
-          discmort2_a(YrMax,f,gg)=tempvec_a/temp;
+          for (y=endyr+1;y<=YrMax;y++) {discmort2_a(y,f,gg)=tempvec_a/temp;}
         }
       }
         t=styr+(endyr+1-styr)*nseas+spawn_seas-1;

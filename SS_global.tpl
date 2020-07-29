@@ -622,7 +622,8 @@ BETWEEN_PHASES_SECTION
 //  SS_Label_Info_11.2 #For Fmethod=2, set parameter values (F_rate) equal to Hrate array fromcalculated using hybrid method in previous phase
     if(F_Method==2)
     {
-      if(F_setup(2)>1 && j_phase==F_setup(2) && readparfile==0)  //  so now start doing F as paameters
+      if(F_setup(2)>1 && j_phase==F_setup(2) && readparfile==0)  //  so now start doing F as parameters
+//      if(F_setup(2)>1 && j_phase==F_setup(2))  //  so now start doing F as paameters
       {
         for (f=1;f<=Nfleet;f++)
         for (t=styr;t<=TimeMax;t++)
@@ -656,6 +657,7 @@ FINAL_SECTION
 
   else
   {
+    cout<<" Iterations: "<<niter<<" -log(L): "<<obj_fun<<endl;
     cout<<"Final gradient: "<<objective_function_value::pobjfun->gmax << endl<<endl;
     if(objective_function_value::pobjfun->gmax >final_conv)
     {N_warn++; warning<<"Final gradient: "<<objective_function_value::pobjfun->gmax <<" is larger than final_conv: "<<final_conv<<endl;}

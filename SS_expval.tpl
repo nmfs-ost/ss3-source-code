@@ -418,6 +418,7 @@ FUNCTION void Get_expected_values(const int y,const int t);
                    break;
                  }
                }
+//              if(y>=endyr) warning<<y<<" bio "<<vbio<<" Q "<<Svy_q(f,j)<<" est "<<Svy_est(f,j)<<endl;
               }
               break;
             }  //  end survey index

@@ -990,6 +990,7 @@ FUNCTION void get_time_series()
                 }
  */
                }
+                             if(y==1989 || y==1950) warning<<niter<<" "<<y<<" hybrid "<<Hrate(4,t)<<" "<<catch_fleet(t,4,3)<<endl;
 //              break;
 //          gradient_structure::set_YES_DERIVATIVES();
             }   //  end hybrid F_Method
@@ -1030,6 +1031,8 @@ FUNCTION void get_time_series()
                     }
                 }  //close gmorph loop
               }  // close fishery
+                             if(y==1989 || y==1950) warning<<niter<<" "<<y<<" parm "<<Hrate(4,t)<<" "<<catch_fleet(t,4,3)<<endl;
+
               break;
             }   //  end continuous F method
 
