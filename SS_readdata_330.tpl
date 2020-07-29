@@ -1625,7 +1625,6 @@
   age_bins1.initialize();
   age_bins.initialize();
   age_bins_mean.initialize();
-  age_err_rd.initialize();
   
   if(n_abins>0)
   {
@@ -1637,6 +1636,7 @@
     
     age_err_rd.deallocate();
     age_err_rd.allocate(1,N_ageerr,1,2,0,nages);
+    age_err_rd.initialize();
     for(j=1;j<=N_ageerr;j++)
     {
       *(ad_comm::global_datafile) >> age_err_rd(j,1)(0,nages);
@@ -1660,9 +1660,17 @@
     {
       for (i=1;i<=N_ageerr;i++)
       {
-        if(age_err_rd(i,2,0)<0.) Use_AgeKeyZero=i;  //  set flag for setup of age error parameters
+        if(age_err_rd(i,2,0)<0.) {  //  set flag for setup of age error parameters
+          if (Use_AgeKeyZero>0) 
+          {
+            N_warn++; warning<<"SS can only create 1 age error definition from parameters, ";
+            warning<<"but there are > 1 negative sd values for age 0 in age error definitions."<<endl;
+			echoinput<<"Error: There are > 1 negative sd values for age 0 in age error definitions."<<endl;
+            cout<<" EXIT - see warning "<<endl; exit(1);
+          }
+          Use_AgeKeyZero=i;
+        }
       }
-      if(Use_AgeKeyZero>0) echoinput<<"AgeKey: "<<Use_AgeKeyZero<<" will be created from parameters"<<endl;
     }
 
     Comp_Err_A2.initialize();

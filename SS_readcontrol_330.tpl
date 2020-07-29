@@ -148,7 +148,7 @@
   if(recr_dist_method==1)
     {N_warn++;cout<<" EXIT - see warning "<<endl;  warning<<"fatal error:  recr_dist_method cannot be 1 in SS3.30 "<<endl; exit(1);}
   else if(N_settle_assignments==1 && recr_dist_method!=4)
-    {N_warn++; warning<<"You have just one settlement event; recommend changing to recr_dist_method 4 which takes no recr_dist parameters"<<endl;}
+    {N_warn++; warning<<"This model has just one settlement event; recommend changing to recr_dist_method 4 which takes no recr_dist parameters"<<endl;}
   else if(recr_dist_method==2)
     {N_warn++; warning<<"Note that recr_dist_method 3 is simpler and takes 1 parm for each settlement"<<endl;}
   echoinput<<recr_dist_inx<<"  # unused option "<<endl;
@@ -3300,7 +3300,7 @@
 
   if(TwoD_AR_do>0)
   {
-    N_warn++; warning<<"You have selected the experimental 2D_AR selectivity smoother option"<<endl;
+    N_warn++; warning<<"The experimental 2D_AR selectivity smoother option is selected!"<<endl;
     ivector tempvec(1,13);  //  fleet, ymin, ymax, amin, amax, sigma_amax, use_rho, age/len
     tempvec.initialize();
     TwoD_AR_def.push_back (tempvec);  //  bypass that pesky zeroth row
