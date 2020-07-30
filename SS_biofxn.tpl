@@ -680,8 +680,6 @@ FUNCTION void get_growth3(const int y, const int t, const int s, const int subse
   {
 //  progress mean growth through time series, accounting for seasonality and possible change in parameters
 //   get mean size at the beginning and end of the season
-//    int k2;
-//    int add_age;
     dvariable LinfR;
     dvariable LminR;
     dvariable inv_Richards;

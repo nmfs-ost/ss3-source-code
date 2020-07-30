@@ -1478,8 +1478,6 @@ FUNCTION void get_time_series()
 FUNCTION void Do_Equil_Calc(const prevariable& equ_Recr)
   {
   int t_base;
-//  int bio_t_base;
-//  int bio_t;
   int t;
   int s;
   dvariable N_mid;
@@ -1492,7 +1490,6 @@ FUNCTION void Do_Equil_Calc(const prevariable& equ_Recr)
   dvar_matrix Survivors2(1,pop,1,gmorph);
 
    t_base=styr+(eq_yr-styr)*nseas-1;
-//   bio_t_base=styr+(bio_yr-styr)*nseas-1;
    GenTime.initialize(); Equ_penalty.initialize();
    cumF.initialize(); maxF.initialize();
    SSB_equil_pop_gp.initialize();
@@ -1531,7 +1528,6 @@ FUNCTION void Do_Equil_Calc(const prevariable& equ_Recr)
        for (s=1;s<=nseas;s++)
        {
          t=t_base+s;
-//         bio_t=bio_t_base+s;
 
          for (g=1;g<=gmorph;g++)  //  need to loop g inside of a because of hermaphroditism
          if(use_morph(g)>0)
@@ -1720,7 +1716,6 @@ FUNCTION void Do_Equil_Calc(const prevariable& equ_Recr)
          for (p=1;p<=pop;p++)
          {
            t=t_base+s;
-//           bio_t=bio_t_base+s;
            equ_numbers(s,p,g,nages)+=sum(equ_numbers(s,p,g)(nages+1,3*nages));
            if(Fishon==1)
            {

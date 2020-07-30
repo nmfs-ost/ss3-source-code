@@ -371,8 +371,7 @@
 //  int Catch_read;
   vector tempvec(1,6)  //  vector used for temporary reads
  LOCAL_CALCS
-//    typedef std::char_traits<char>::pos_type pos_type;
-//    pos_type mark_pos = ad_comm::global_datafile->tellg();  // record current file position
+
 //  N_ReadCatch=count_records(5);
 //    ad_comm::global_datafile->seekg(mark_pos);  //  go back to the recorded position
 

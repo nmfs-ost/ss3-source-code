@@ -1068,8 +1068,6 @@ FUNCTION void Get_Forecast()
 //********************************************************************
  /*  SS_Label_FUNCTION 35 Get_Forecast */
   t_base=styr+(endyr-styr)*nseas-1;
-//  int Do_4010;
-//  int bio_t;
   int adv_age;
   dvariable OFL_catch;
   dvariable Fcast_Crash;
@@ -1435,7 +1433,6 @@ FUNCTION void Get_Forecast()
         for (s=1;s<=nseas;s++)
         {
           t = t_base+s;
-//          bio_t=styr+(endyr-styr)*nseas+s-1;
           if(ABC_Loop==ABC_Loop_start)  // do seasonal ALK and fishery selex
           {
             if(timevary_MG(y,2)>0 || save_for_report>0)

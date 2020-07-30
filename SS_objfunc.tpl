@@ -10,7 +10,6 @@ FUNCTION void evaluate_the_objective_function()
   obj_fun=0.0;
 
     int k_phase=current_phase();
-//    int fs;
     if(k_phase>max_lambda_phase) k_phase=max_lambda_phase;
 
 
@@ -655,7 +654,6 @@ FUNCTION void evaluate_the_objective_function()
 
   //  SS_Label_Info_25.13 #Penalty for the parameter priors
     dvariable mu; dvariable tau; dvariable Aprior; dvariable Bprior;
-//    int Ptype;
     dvariable Pconst;
     Pconst=0.0001;
 

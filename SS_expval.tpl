@@ -59,8 +59,6 @@ FUNCTION void Get_expected_values(const int y,const int t);
             }
             tempvec_a=elem_prod(tempvec_a,keep_age(g,ALK_idx));
             
-//            int retflag;
-//            retflag=0;
             if(Do_Retain(f)==0)
             {
               if(dolen(f)==1)

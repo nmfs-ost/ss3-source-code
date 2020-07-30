@@ -3308,7 +3308,6 @@
     echoinput<<"read specification for first 2D_AR1:  fleet, ymin, ymax, amin, amax, sigma_amax, use_rho, len1/age2"<<endl;
 
     ender=0;
-//    int save_sigmaval=0;
     do
     {
       ivector tempvec(1,13);

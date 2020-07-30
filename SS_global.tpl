@@ -109,7 +109,7 @@ GLOBALS_SECTION
     // r_result(1,3) will contain: real_month, data_timing_seas, data_timing_yr,
     // i_result(1,6) will contain y, t, s, f, ALK_time, use_midseas
     int f,s,subseas,y;
-    double temp, temp1, month, data_timing_seas;//, data_timing_yr;
+    double temp, temp1, month, data_timing_seas;
 //  timing_constants(1)=read_seas_mo;
 //  timing_constants(2)=nseas;
 //  timing_constants(3)=N_subseas;
@@ -637,7 +637,6 @@ BETWEEN_PHASES_SECTION
 //  SS_Label_Section_12. #FINAL_SECTION
 FINAL_SECTION
   {
-//  int jj;
 //  SS_Label_Info_12.1 #Get run ending time
   time(&finish);
   elapsed_time = difftime(finish,start);
@@ -805,7 +804,6 @@ FINAL_SECTION
 //  SS_Label_Section_13. #REPORT_SECTION  produces SS3.rep,which is less extensive than report.sso produced in final section
 REPORT_SECTION
   {
-//    save_gradients(gradients);
     for (unsigned i = 1; i <= gradients.size(); i++) parm_gradients(i) = gradients(i);
 
 //  SS_Label_Info_13.1 #Write limited output to SS.rep
