@@ -186,7 +186,6 @@ PROCEDURE_SECTION
        else if (CrashPen>0.01) {cout<<"  crash "<<CrashPen;}
        cout<<endl;
      }
-
 //  SS_Label_Info_7.10 #Write parameter values to ParmTrace
       if((Do_ParmTrace==1 && obj_fun<=last_objfun) || Do_ParmTrace==4)
       {

@@ -955,7 +955,7 @@
           ParCount+=3;
           for (a=1;a<=Age_K_count;a++)
           {
-            ParmLabel+="Age_K_mult_"+GenderLbl(gg)+GP_Lbl(gp)+"_a_"+NumLbl(Age_K_points(a));
+            ParmLabel+="Age_K_mult_"+GenderLbl(gg)+GP_Lbl(gp)+"_a_"+NumLbl0(Age_K_points(a)+1);
             ParCount++;
           }
           break;
@@ -968,7 +968,7 @@
           ParCount+=3;
           for (a=1;a<=Age_K_count;a++)
           {
-            ParmLabel+="Age_K_mult_"+GenderLbl(gg)+GP_Lbl(gp)+"_a_"+NumLbl(Age_K_points(a));
+            ParmLabel+="Age_K_mult_"+GenderLbl(gg)+GP_Lbl(gp)+"_a_"+NumLbl0(Age_K_points(a)+1);
             ParCount++;
           }
           break;
@@ -981,7 +981,7 @@
           ParCount+=3;
           for (a=1;a<=Age_K_count;a++)
           {
-            ParmLabel+="Age_K_each_"+GenderLbl(gg)+GP_Lbl(gp)+"_a_"+NumLbl(Age_K_points(a));
+            ParmLabel+="Age_K_each_"+GenderLbl(gg)+GP_Lbl(gp)+"_a_"+NumLbl0(Age_K_points(a)+1);
             ParCount++;
           }
           break;
