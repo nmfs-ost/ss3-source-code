@@ -14,13 +14,20 @@ done
 for dir in */; do
     echo $dir
 	cd $dir
-		# check that report file was created to confirm model ran
+		# check report file exists to confirm model ran, write result to screen
 	FILE=./Report.sso
     if [ -f "$FILE" ]; then
         echo "$FILE exists"
     else 
         echo "$FILE does not exist"
-		exit 1
+    fi
+	cd ..
+done
+for dir in */; do # fail the test if any report files are missing
+	cd $dir
+	FILE=./Report.sso
+    if [ ! -f "$FILE" ]; then
+	  exit 1
     fi
 	cd ..
 done
