@@ -2096,7 +2096,8 @@ FUNCTION void write_nucontrol()
     }else{
       report4<<" # -1 # list of bin #'s for selex std (-1 in first bin to self-generate)"<<endl;
     }
-    if(Do_Growth_Std>0){
+//    if(Do_Growth_Std>0){
+    if(More_Std_Input(5)>0){
       report4<<Growth_Std_Pick<<" # vector with growth std ages picks (-1 in first bin to self-generate)"<<endl;
     }else{
       report4<<" # -1 # list of ages for growth std (-1 in first bin to self-generate)"<<endl;

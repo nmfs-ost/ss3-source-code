@@ -4177,9 +4177,8 @@
       N_warn++;
   		warning<<"warning; growth output stderr requested but no growth parameters are estimated, changing growth stddev reporting specifications to 0"<<endl;
   		Do_Growth_Std=0;
-      Do_Growth_Std=0;
-  		More_Std_Input(5)=0;
-  		More_Std_Input(6)=0;
+//  		More_Std_Input(5)=0;
+//  		More_Std_Input(6)=0;
 			Growth_Std_Cnt=0;
     }else{
 		  // there are active growth parameters so proceed with processing stderr
@@ -4286,9 +4285,16 @@
   init_int fim // end of file indicator
 
  LOCAL_CALCS
-  cout<<"If you see 999, we got to the end of the control file successfully! "<<fim<<endl;
-  echoinput<<fim<<"  If you see 999, we got to the end of the control file successfully! "<<endl;
-  if(fim!=999) abort();
+  if(fim==999)
+  {
+  cout<<"End of control file successful! "<<fim<<endl;
+  echoinput<<"End of control file successful! "<<fim<<endl;
+  }
+  else
+  {
+  cout<<" Unsuccessful end of control file, SS will abort. check echoinput for clues.  Last read is: "<<fim<<endl;
+  abort();
+  }
  END_CALCS
 
 !!//  SS_Label_Info_4.14 #Create count of active parameters and derived quantities

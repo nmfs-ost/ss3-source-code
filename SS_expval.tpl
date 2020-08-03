@@ -380,7 +380,9 @@ FUNCTION void Get_expected_values(const int y,const int t);
                }
 
      // SS_Label_Info_46.1.1 #note order of operations,  vbio raised to a power, then constant is added, then later multiplied by Q.  Needs work
-               switch (Q_setup(f,1))
+ /* 
+   //  old code here
+               switch (Q_setup(f,1))  //  switch is based on the link type: (1=simple q; 2=mirror; 3=q and power; 4=mirror with offset in q)
                {
                  case 2:
                  {
@@ -390,16 +392,17 @@ FUNCTION void Get_expected_values(const int y,const int t);
                  {
                    //  no break, so do same as case 1
                  }
-                 case 1:
+                 case 1:  
                  {
-                   if(Q_setup(f,5)==1)  // float  Q calculated and applied in objfun section
+                   if(Q_setup(f,5)==1 && y<=endyr)  // float Q will be calculated and applied in objfun section, so temporarily store vbio in svy_est.
+                   	                                // note that if y is in forecast, then Q has already been calculated so can be applied in the else clause here
                    {
                      if(Svy_errtype(f)>=0)  //  lognormal or T-distribution
                      {Svy_est(f,j)=log(vbio+0.000001);}
                      else
                      {Svy_est(f,j)=vbio;}
                    }
-                   else
+                   else  //  Q based on parameters, or in forecast so Q has already been calculated through float approach in the objfun
                    {
                      if(Svy_errtype(f)>=0)  //  lognormal or T-distribution
                      {Svy_est(f,j)=log(vbio+0.000001)+Svy_log_q(f,j);}
@@ -418,8 +421,25 @@ FUNCTION void Get_expected_values(const int y,const int t);
                    break;
                  }
                }
-//              if(y>=endyr) warning<<y<<" bio "<<vbio<<" Q "<<Svy_q(f,j)<<" est "<<Svy_est(f,j)<<endl;
-              }
+ */
+
+               if (Q_setup(f,1)==3)  //  link is power function
+               { vbio=pow(vbio,1.0+Q_parm(Q_setup_parms(f,1)+1));}  //  raise vbio to a power
+
+               if(Svy_errtype(f)>=0)  //  lognormal or T-distribution
+               {Svy_est(f,j)=log(vbio+0.000001);}
+               else
+               {Svy_est(f,j)=vbio;}
+               
+               if(Q_setup(f,5)==0 || y>endyr)  // apply Q, but note: float Q will be calculated and applied in objfun section, so temporarily store vbio in svy_est.
+                   	                                // if y is in forecast, then Q has already been calculated so can be applied here
+               {
+                 if(Svy_errtype(f)>=0)  //  lognormal or T-distribution
+                 {Svy_est(f,j)+=Svy_log_q(f,j);}
+                 else
+                 {Svy_est(f,j)*=Svy_q(f,j);}
+                 }
+               }
               break;
             }  //  end survey index
 
