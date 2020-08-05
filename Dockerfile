@@ -1,14 +1,15 @@
-FROM ubuntu:xenial
+FROM ubuntu:bionic
 MAINTAINER FRAM Data Team <nmfs.nwfsc.fram.data.team@noaa.gov>
 
 RUN apt-get update
 RUN apt-get install -y wget
 RUN apt-get install -y build-essential
+RUN apt-get install -y zip unzip
 
-RUN wget https://github.com/admb-project/admb/releases/download/admb-12.0/admb-12.0-ubuntu16-64bit_12.0.deb
+RUN wget https://github.com/admb-project/admb/releases/download/admb-12.2/admb-12.2-linux.zip
 
-RUN dpkg -i admb-12.0-ubuntu16-64bit_12.0.deb
+RUN unzip admb-12.2-linux.zip -d /usr/local
 
-RUN chmod 755 /usr/local/bin/admb
+RUN chmod 755 /usr/local/admb-12.2/admb
 
-CMD ["admb"]
+ENV PATH /usr/local/admb-12.2:$PATH
