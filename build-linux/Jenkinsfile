@@ -23,7 +23,7 @@ pipeline {
         stage('Build SS safe executable') {
             steps {
                 sh label: 'confirm build script executable', script: 'cd vlab/stock-synthesis && ls -l'
-                sh label: 'Run build', script: 'cd vlab/stock-synthesis && /bin/bash ./Make_SS_330_new.sh -b SS330 -a /usr/local/admb -w'
+                sh label: 'Run build', script: 'cd vlab/stock-synthesis && /bin/bash ./Make_SS_330_new.sh -b SS330 -a /usr/local/admb-12.2 -w'
                 sh label: 'Validate build', script: 'cp vlab/stock-synthesis/SS330/ss . && sha256sum ss'
                 sh label: 'Make build executable', script: 'chmod a+x vlab/stock-synthesis/SS330/ss'  
                 sh label: 'Move build to archive folder', script: 'mv vlab/stock-synthesis/SS330/ss  vlab/stock-synthesis/builds/ss'    
@@ -32,7 +32,7 @@ pipeline {
         }
         stage('Build SS opt executable')  {
             steps {
-                sh label: 'Run build', script: 'cd vlab/stock-synthesis && /bin/bash ./Make_SS_330_new.sh -b SS330 -a /usr/local/admb -w -o'
+                sh label: 'Run build', script: 'cd vlab/stock-synthesis && /bin/bash ./Make_SS_330_new.sh -b SS330 -a /usr/local/admb-12.2 -w -o'
                 sh label: 'Validate build', script: 'cp vlab/stock-synthesis/SS330/ss_opt . && sha256sum ss_opt' 
                 sh label: 'Make build executable', script: 'chmod a+x vlab/stock-synthesis/SS330/ss_opt'   
                 sh label: 'Move build to archive folder', script: 'mv vlab/stock-synthesis/SS330/ss_opt  vlab/stock-synthesis/builds/ss_opt'                    
@@ -40,7 +40,7 @@ pipeline {
         }
         stage('Build SS trans executable')  {
             steps {
-                sh label: 'Run build', script: 'cd vlab/stock-synthesis && /bin/bash ./Make_SS_330_new.sh -b SS330 -a /usr/local/admb -w -t'
+                sh label: 'Run build', script: 'cd vlab/stock-synthesis && /bin/bash ./Make_SS_330_new.sh -b SS330 -a /usr/local/admb-12.2 -w -t'
                 sh label: 'Validate build', script: 'cp vlab/stock-synthesis/SS330/ss_trans . && sha256sum ss_trans'   
                 sh label: 'Make build executable', script: 'chmod a+x vlab/stock-synthesis/SS330/ss_trans'     
                 sh label: 'Copy build to archive folder', script: 'mv vlab/stock-synthesis/SS330/ss_trans  vlab/stock-synthesis/builds/ss_trans'                   
