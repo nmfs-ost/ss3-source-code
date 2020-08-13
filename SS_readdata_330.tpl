@@ -613,6 +613,8 @@
   number  real_month
   vector timing_input(1,3)
   vector timing_r_result(1,3)
+  vector Svy_minval(1,Nfleet)
+  vector Svy_maxval(1,Nfleet)
   ivector timing_i_result(1,6)
     // r_result(1,3) will contain: real_month, data_timing_seas, data_timing_yr,
     // i_result(1,6) will contain y, t, s, f, ALK_time, use_midseas
@@ -624,6 +626,10 @@
     Svy_styr.initialize();
     Svy_endyr.initialize();
     Svy_yr.initialize();
+    Svy_minval.initialize();
+    Svy_minval=999999999.;
+    Svy_maxval.initialize();
+    Svy_maxval=-999999999.;
   in_superperiod=0;
   if(Svy_N>0)
   {
@@ -653,7 +659,11 @@
           Svy_yr(f,j)=y;
           if(Svy_styr(f)==0 || (y>=styr && y<Svy_styr(f)) )  Svy_styr(f)=y;  //  for dimensioning survey q devs
           if(Svy_endyr(f)==0 || (y<=endyr && y>Svy_endyr(f)) )  Svy_endyr(f)=y;  //  for dimensioning survey q devs
-
+        if(y>=styr && Svy_data[i](3)>0)
+        	{
+        		Svy_minval(f)=min(Svy_minval(f),Svy_obs(f,j));
+        		Svy_maxval(f)=max(Svy_maxval(f),Svy_obs(f,j));
+        	}
 //  some all fleet indexes
         if(data_time(ALK_time,f,1)<0.0)  //  so first occurrence of data at ALK_time,f
           {data_time(ALK_time,f)(1,3)=timing_r_result(1,3);}  // real_month,fraction of season, year.fraction
@@ -691,16 +701,18 @@
       }
     }
 
-    echoinput<<" processed survey data "<<endl;
+  echoinput<<"Successful read of survey data; total N:  "<<Svy_N<<endl;
+  echoinput<<"Index Survey_name       N   Super_Per    Min_val   max_val  //  Observations:"<<endl;
     for (f=1;f<=Nfleet;f++)
-    {echoinput<<f<<" "<<fleetname(f)<<" "<<Svy_obs(f)<<endl;}
+    {
+    	if (Svy_N_fleet(f)>0) 
+    		{
+    			echoinput<<f<<"    "<<fleetname(f)<<"   "<<Svy_N_fleet(f)<<"     "<<Svy_super_N(f)<<"      "<<Svy_minval(f)<<" "<<Svy_maxval(f)<<" // "<<Svy_obs(f)<<endl;
+    			if(Svy_errtype(f)==0 && Svy_minval(f)<=0.)
+    				{N_warn++; cout<<" exit with bad survey obs "<<endl; warning<<"error, SS has exited. A fleet uses lognormal error and has an observation <=0.0; fleet: "<<f<<endl; exit(1);}
+      	}
+    }
   }
-  echoinput<<"Successful read of index data; N= "<<Svy_N<< endl;
-  echoinput<<"Number of survey superperiods by fleet: "<<Svy_super_N<<endl;
-
-  // why don't these work?
-  // Svy_N_sdreport = sum(elem_prod(Svy_sdreport, Svy_N_fleet);
-  // Svy_N_sdreport = sum(Svy_sdreport * Svy_N_fleet);
   Svy_N_sdreport = 0;
   for (f = 1; f <= Nfleet; ++f)
   {

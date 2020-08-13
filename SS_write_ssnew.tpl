@@ -1360,7 +1360,8 @@ FUNCTION void write_nucontrol()
   {report4<<"#_Cond "<<0<<" #_blocks_per_pattern "<<endl<<"# begin and end years of blocks"<<endl;}
   report4<<"#"<<endl;
   report4<<"# controls for all timevary parameters "<<endl;
-  report4<<parm_adjust_method<<" #_env/block/dev_adjust_method for all time-vary parms (1=warn relative to base parm bounds; 3=no bound check)"<<endl<<"#"<<endl<<"# AUTOGEN"<<endl;
+  report4<<parm_adjust_method<<" #_time-vary parm bound check (1=warn relative to base parm bounds; 3=no bound check); Also see env (3) and dev (5) options to constrain with base bounds"<<endl<<"#"<<endl;
+  report4<<"# AUTOGEN"<<endl;
   report4<<autogen_timevary<<" # autogen: 1st element for biology, 2nd for SR, 3rd for Q, 4th reserved, 5th for selex"<<endl;
   report4<<"# where: 0 = autogen time-varying parms of this category; 1 = read each time-varying parm line; 2 = read then autogen if parm min==-12345"<<endl;
 
@@ -1412,7 +1413,7 @@ FUNCTION void write_nucontrol()
     report4<<Fecund_Option<<" #_fecundity option:(1)eggs=Wt*(a+b*Wt);(2)eggs=a*L^b;(3)eggs=a*Wt^b; (4)eggs=a+b*L; (5)eggs=a+b*W"<<endl;
     report4<<Hermaphro_Option<<" #_hermaphroditism option:  0=none; 1=female-to-male age-specific fxn; -1=male-to-female age-specific fxn"<<endl;
     if (Hermaphro_Option!=0) report4<<Hermaphro_seas<<" # Hermaphro_season "<<endl<<Hermaphro_maleSPB<<" # Hermaphro_maleSSB "<<endl;
-    report4<<MGparm_def<<" #_parameter_offset_approach (1=none, 2= M, G, CV_G as offset from female-GP1, 3=like SS2 V1.x)"<<endl;
+    report4<<MGparm_def<<" #_parameter_offset_approach for M, G, CV_G:  1- direct, no offset; 2- male=fem_parm*exp(male_parm); 3: male=female*exp(parm) then old=young*exp(parm)"<<endl;
   report4<<"#"<<endl;
   report4<<"#_growth_parms";
   if(N_GP>1) report4<<";  if N_GP>1, then nest GP within sex in parameters below";

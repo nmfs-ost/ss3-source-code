@@ -213,9 +213,9 @@ FUNCTION void make_timevaryparm()
               timevary_parm_cnt++;
               break;
           	}
-          case 4:  //  logistic MGparm env link
+          case 4:  //  logistic env link
             {
-            	// first parm is offset ; second is slope
+            	// first parm is offset; second is slope
               for (int y1=styr;y1<=YrMax;y1++)
               {
                 parm_timevary(tvary,y1)*=2.00000/(1.00000 + mfexp(-timevary_parm(timevary_parm_cnt+1)*(env_data(yz,timevary_setup(7))-timevary_parm(timevary_parm_cnt))));
@@ -265,6 +265,18 @@ FUNCTION void make_timevaryparm()
             break;
           }
           case 4:  // mean reverting random walk
+          {
+            parm_dev_rwalk(k,timevary_setup(10))=parm_dev(k,timevary_setup(10))*parm_dev_stddev(k);  //  1st yr dev
+            parm_timevary(tvary,timevary_setup(10))+=parm_dev_rwalk(k,timevary_setup(10));  //  add dev to current value
+            for (j=timevary_setup(10)+1;j<=timevary_setup(11);j++)
+            {
+              //    =(1-rho)*mean + rho*prevval + dev   //  where mean = 0.0
+              parm_dev_rwalk(k,j)=parm_dev_rho(k)*parm_dev_rwalk(k,j-1)+parm_dev(k,j)*parm_dev_stddev(k);  //  update MRRW using annual dev
+              parm_timevary(tvary,j)+=parm_dev_rwalk(k,j);  //  add dev to current value of annual parameter, which may previously be adjusted by block or env
+            }
+            break;
+          }
+          case 6:  // mean reverting random walk with penalty to keep rmse near 1.0
           {
             parm_dev_rwalk(k,timevary_setup(10))=parm_dev(k,timevary_setup(10))*parm_dev_stddev(k);  //  1st yr dev
             parm_timevary(tvary,timevary_setup(10))+=parm_dev_rwalk(k,timevary_setup(10));  //  add dev to current value

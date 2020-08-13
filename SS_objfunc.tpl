@@ -774,6 +774,16 @@ FUNCTION void evaluate_the_objective_function()
             parm_dev_like(i,2) += float(parm_dev_maxyr(i)-parm_dev_minyr(i)+1.)*log(parm_dev_stddev(i));
             //  include parm_dev_like(i,2) in the total, or not, using sd_offset
           }
+          else if(parm_dev_type(i)==4)  //  for testing only 
+          {
+            dvariable temp;
+              temp = 0.5/((1.0-parm_dev_rho(i)*parm_dev_rho(i)));  // temp=1.00 / (2.000*(1.0-parm_dev_rho(i)*parm_dev_rho(i))*square(1.0));
+              parm_dev_like(i,1) += square( parm_dev(i,parm_dev_minyr(i)));  //  first year
+              for(j=parm_dev_minyr(i)+1;j<=parm_dev_maxyr(i);j++)
+              {parm_dev_like(i,1) += square( parm_dev(i,j)-parm_dev_rho(i)*(parm_dev(i,j-1)) );}
+            parm_dev_like(i,1) *=temp;
+            parm_dev_like(i,2) = square(10.*(1.0-(sumsq(parm_dev(i)+1.0e-9)/float(parm_dev_maxyr(i)-parm_dev_minyr(i)+1.))));
+          }
           else  //  2D_AR devs
           {
             f=parm_dev_info(i);  //  pointer from list of devvectors to 2DAR list

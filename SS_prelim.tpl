@@ -605,7 +605,7 @@ PRELIMINARY_CALCS_SECTION
     if(parm_dev_PH(i)>0)
     for (j=parm_dev_minyr(i);j<=parm_dev_maxyr(i);j++)
     {
-       parm_dev(i,j)=Check_Parm(j,parm_dev_PH(i), -5,5, 0, 0., 1., jitter, parm_dev(i,j));
+       parm_dev(i,j)=Check_Parm(j,parm_dev_PH(i), -10,10, 0, 0., 1., jitter, parm_dev(i,j));
     }
     for (i=1;i<=N_parm_dev;i++)
     for (j=parm_dev_minyr(i);j<=parm_dev_maxyr(i);j++)

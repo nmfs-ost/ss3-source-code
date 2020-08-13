@@ -60,7 +60,7 @@ FUNCTION void write_bigoutput()
 	
   	
   SS2out<<endl<<"#_KeyWords_of_tables_available_in_report_sso"<<endl;
-  SS2out<<"#_Note_that_table_number_is_order_in_which_tables_are_output"<<endl;
+  SS2out<<"#NOTE: table_number_is_order_in_which_tables_are_output"<<endl;
   SS2out<<"#_List_Tables_related_to_basic_input_pre-processing_and_output"<<endl;
   k=1; SS2out<<pick_report_use(k)<<" "<<pick_report_name(k)<<endl;  // DEFINITIONS"
   k=6; SS2out<<pick_report_use(k)<<" "<<pick_report_name(k)<<endl;  // DERIVED_QUANTITIES"
@@ -520,11 +520,26 @@ FUNCTION void write_bigoutput()
       }
       else
       {SS2out<<" _ _ _ _ _ _ NA _ _ ";}
-      SS2out<<" dev "<<endl;
+
+        temp=(parm_dev(i,j)-(-10))/(20);
+
+        if(temp==0.0 || temp==1.0)
+          {SS2out<<" BOUND "; Nparm_on_bound++;}
+        else if(temp<0.01)
+          {SS2out<<" LO "; Nparm_on_bound++;}
+        else if(temp>=0.99)
+          {SS2out<<" HI "; Nparm_on_bound++;}
+        else if (parm_dev(i,j)==parm_dev_use(i,j) && parm_dev_PH(i)>0)
+        {
+        SS2out<<" NO_MOVE ";
+        }
+        else
+        {SS2out<<" OK ";}
+      SS2out<<endl;
     }
   }
 
-  SS2out<<"#"<<endl<<"Number.of.parameters: "<<NP<<endl;
+  SS2out<<"#"<<endl<<"Number_of_parameters: "<<NP<<endl;
   SS2out<<"Active_count: "<<active_count<<endl;
   SS2out<<"Number_of_active_parameters_on_or_near_bounds: "<<Nparm_on_bound<<endl;
   }
@@ -714,7 +729,7 @@ FUNCTION void write_bigoutput()
 //  3darray SzFreqTrans(1,SzFreq_Nmeth*nseas,1,nlength2,1,SzFreq_Nbins_seas_g);
    if(pick_report_use(12)=="Y" && SzFreq_Nmeth>0) {
    SS2out<<endl<<pick_report_name(12)<<endl;
-     SS2out<<SzFreq_scale<<endl;
+   SS2out<<"#NOTE: rows_are_population_length_bins;_columns_are_recipient_size_bins_according_to_the_specified_method"<<endl;
      for (SzFreqMethod=1;SzFreqMethod<=SzFreq_Nmeth;SzFreqMethod++)
      {
        SS2out<<SzFreqMethod<<" gp seas len mid-len ";
@@ -1007,7 +1022,7 @@ FUNCTION void write_bigoutput()
 //  Fleet Fleet_Name Area Yr Era Seas Subseas Month Time
    if(pick_report_use(17)=="Y") {
    SS2out<<endl<<pick_report_name(17);
-   SS2out<<"  uses_R0= "<<Recr_virgin<<endl<<"###note_YPR_unit_is_Dead_Biomass"<<endl;
+   SS2out<<"  uses_R0= "<<Recr_virgin<<endl<<"#NOTE: YPR_unit_is_Dead_Biomass"<<endl;
    SS2out<<"Depletion_basis: "<<depletion_basis<<" # "<<depletion_basis_label<<endl;
    SS2out<<"F_report_basis: "<<F_reporting<<" # "<<F_report_label<<endl;
    SS2out<<"SPR_report_basis: "<<SPR_reporting<<" # "<<SPR_report_label<<endl;
@@ -1034,8 +1049,8 @@ FUNCTION void write_bigoutput()
      SS2out<<" & "<<Smry_Table(y)(21,20+gmorph)<<" "<<Smry_Table(y)(21+gmorph,20+2*gmorph)<<" "<<annual_catch(y)<<" "<<annual_F(y)<<endl;
    } // end year loop
 // end SPR time series
-  SS2out<<"#"<<endl<<"NOTE:_GENTIME_is_fecundity_weighted_mean_age"<<endl<<
-	"NOTE:_MnAgeSmry_is_numbers_weighted_meanage_at_and_above_smryage(not_accounting_for_settlement_offsets)"<<endl;
+  SS2out<<"#"<<endl<<"#NOTE: GENTIME_is_fecundity_weighted_mean_age"<<endl<<
+	"#NOTE: MnAgeSmry_is_numbers_weighted_meanage_at_and_above_smryage(not_accounting_for_settlement_offsets)"<<endl;
  }
  
 // REPORT_KEYWORD 18 Kobe_Plot
@@ -1742,7 +1757,6 @@ FUNCTION void write_bigoutput()
                   dvector tempvec_l (1,SzFreq_exp(iobs).size());
                   tempvec_l=value(SzFreq_exp(iobs));
                  more_comp_info=process_comps(gender,gg,SzFreq_bins(sz_method),SzFreq_means(sz_method),sz_tails,SzFreq_obs(iobs),tempvec_l);
-
                 if(SzFreq_obs_hdr(iobs,3)>0)
                 {
                   n_rmse(f)+=1.;
@@ -2437,7 +2451,7 @@ FUNCTION void write_bigoutput()
   if(pick_report_use(48)=="Y")  {
     SS2out<<endl<<pick_report_name(48)<<endl;
   if(WTage_rd>0) SS2out<<" as read from wtatage.ss";
-  SS2out<<" #NOTE_yr=_"<<styr-3<<"_stores_values_for_benchmark"<<endl;
+  SS2out<<"#NOTE: yr=_"<<styr-3<<"_stores_values_for_benchmark"<<endl;
   SS2out <<"Morph Yr Seas"<<age_vector<<endl;
     for (g=1;g<=gmorph;g++)
     if(use_morph(g)>0)
@@ -2481,7 +2495,7 @@ FUNCTION void write_bigoutput()
     s=1;
     for (i=1;i<=gender;i++)
     {
-      SS2out<<"#"<<endl<<"mean_size_Jan_1_for_sex: "<<i<<" NOTE:_combines_all_settlements_areas_GP_and_platoons"<<endl;
+      SS2out<<"#"<<endl<<"mean_size_Jan_1_for_sex: "<<i<<"#NOTE: combines_all_settlements_areas_GP_and_platoons"<<endl;
       SS2out <<"Sex Yr Seas Beg "<<age_vector<<endl;
       for (y=styr;y<=YrMax;y++)
       {
@@ -3362,7 +3376,7 @@ FUNCTION void write_bigoutput()
     SS2out<<"#value 5 is Fbtgt: "<<Btgt_Fmult<<endl;
     SS2out<<"#value 6 is Fmsy: "<<MSY_Fmult<<endl;
     SS2out<<"#Profile 7 increases from Fmsy to Fcrash"<<endl;
-    SS2out<<"#NOTE: meanage of catch is for total catch of fleet_type==1 or bycatch fleets with scaled Hrate"<<endl;
+    SS2out<<"#NOTE: meanage_of_catch_is_for_total_catch_of_fleet_type==1_or_bycatch_fleets_with_scaled_Hrate"<<endl;
 		} // end check for wrote_bigreport==1
   } // end SPR/YPR_Profile
 	

@@ -3682,11 +3682,13 @@
              parm_dev_type(k)=3;  // use objfun using -log(se) to match 3.30.12 and earlier
              picker-=10;
            }
+           if(picker==6) parm_dev_type(k)=4;  //  add penalty to keep rmse near 1. Needs to estimate stddev factor
+           	                                  //  this works, but slow final convergence because getting stddev exactly to 1.0 causes high correlation among devs
            timevary_setup(9)=picker;   //  set to its core function because parm_dev_type has been setup
            timevary_def[j](9)=picker;  //  save in array also
 
            parm_dev_use_rho(k)=0;
-           if(picker==4 || picker==5) parm_dev_use_rho(k)=1;
+           if(picker==4 || picker==5 || picker==6) parm_dev_use_rho(k)=1;
          for(y=parm_dev_minyr(k);y<=parm_dev_maxyr(k);y++)
          {
            sprintf(onenum, "%d", y);
@@ -3700,7 +3702,9 @@
            else if(picker==4)
            {ParmLabel+=ParmLabel(f)+"_DEV_MR_rwalk_"+onenum+CRLF(1);}
            else if(picker==5)
-           {ParmLabel+=ParmLabel(f)+"_DEV_MR_rwalk_bnd"+onenum+CRLF(1);}  //  for bounding result on base parm min-max
+           {ParmLabel+=ParmLabel(f)+"_DEV_MR_rwalk_bnd_"+onenum+CRLF(1);}  //  for bounding result on base parm min-max
+           else if(picker==6)
+           {ParmLabel+=ParmLabel(f)+"_DEV_MR_rwalk_pen_"+onenum+CRLF(1);}  //  like 3.24
            else
            {N_warn++; cout<<" EXIT - see warning "<<endl; warning<<" illegal parmdevtype for parm "<<f<<endl; exit(1);}
          }

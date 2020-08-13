@@ -186,6 +186,16 @@
     pick_report_name+=" wtatage.ss_new report:60";pick_report_use+="N";
 
 //  check command line inputs
+
+  if ( (on=option_match(argc,argv,"-noest"))>-1)
+  {
+    SDmode = 0;
+    cout<<"SS is not configured to work with -noest and will exit"<<endl;
+    cout<<"Instead: set maxphase=-1 (read-only) or 0 (single iteration with no estimation) in the starter.ss file"<<endl;
+    warning<<"SS exited because -noest was on the command line"<<endl;
+    exit(1);
+  }
+
   SDmode=1;
   if ( (on=option_match(argc,argv,"-nohess"))>-1)
   {
