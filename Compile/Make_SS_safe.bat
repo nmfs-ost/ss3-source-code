@@ -11,7 +11,14 @@ copy/b SS_biofxn.tpl+SS_miscfxn.tpl+SS_selex.tpl+SS_popdyn.tpl+SS_recruit.tpl+SS
 REM combine remaining files to create ss.tpl
 copy/b SS_versioninfo_330safe.tpl+SS_readstarter.tpl+SS_readdata_330.tpl+SS_readcontrol_330.tpl+SS_param.tpl+SS_prelim.tpl+SS_global.tpl+SS_proced.tpl+SS_functions.temp "Compile\ss.tpl"
 
-REM compile executable
 cd "Compile"
-admb ss
+
+ admb ss
+
+REM below is echo of the commands executed by "admb" above
+REM tpl2cpp   ss
+REM Compile: ss.cpp
+REM g++ -c -std=c++14 -O3 -fpermissive -D_FILE_OFFSET_BITS=64 -DUSE_ADMB_CONTRIBS -D_USE_MATH_DEFINES -I. -I"C:\ADMB-12.2\include" -I"C:\ADMB-12.2\include\contrib" -o ss.obj ss.cpp
+REM Linking: ss.obj
+REM g++ -static -o ss.exe ss.obj "C:\ADMB-12.2\lib\libadmb-contrib-mingw64-g++8.a"
 

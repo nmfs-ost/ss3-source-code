@@ -431,13 +431,16 @@
   ivector Svy_errtype(1,j)  // -1=normal / 0=lognormal / >0=T
   ivector Svy_sdreport(1,j) // 0=no sdreport; 1=enable sdreport
   int Svy_N_sdreport
+  vector Svy_minval(1,j)
+  vector Svy_maxval(1,j)
 
  LOCAL_CALCS
 
   // defaults for 3.24
   Svy_sdreport   = 0;
   Svy_N_sdreport = 0;
-
+  Svy_minval.initialize();
+  Svy_maxval.initialize();
   if(k>0)
   {
     echoinput<<"Units:  0=numbers; 1=biomass; 2=F"<<endl;
@@ -649,9 +652,13 @@
   ivector disc_units(1,j)  //  formerly scalar disc_type
   ivector disc_errtype(1,j)  // formerly scalar DF_disc
   vector disc_errtype_r(1,j)  // real version for T-dist
+  vector disc_minval(1,j)
+  vector disc_maxval(1,j)
  LOCAL_CALCS
   disc_units.initialize();
   disc_errtype.initialize();
+  disc_minval.initialize();
+  disc_maxval.initialize();
   if(Ndisc_fleets>0)
   {
     echoinput<<"#_discard_units (1=same_as_catchunits(bio/num);2=fraction; 3=numbers)"<<endl;

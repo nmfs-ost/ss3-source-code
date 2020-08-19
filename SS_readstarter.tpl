@@ -84,8 +84,10 @@
   int Nparm_on_bound;
  int on;
  int SDmode;
+ int maxI;
 
  LOCAL_CALCS
+  maxI=999;
   on=0;
   No_Report=0;
   Ncycle=3;
@@ -189,11 +191,16 @@
 
   if ( (on=option_match(argc,argv,"-noest"))>-1)
   {
-    SDmode = 0;
-    cout<<"SS is not configured to work with -noest and will exit"<<endl;
-    cout<<"Instead: set maxphase=-1 (read-only) or 0 (single iteration with no estimation) in the starter.ss file"<<endl;
-    warning<<"SS exited because -noest was on the command line"<<endl;
+    cout<<"SS is not configured to work with -noest; use -maxI instead which overrides maxphase in starter.ss"<<endl;
+    warning<<"SS exited with -noest, use -maxI <maxphase> instead"<<endl;
     exit(1);
+  }
+
+  if ( (on=option_match(argc,argv,"-maxI"))>-1)
+  {
+//  	if maxI > 999, maxphase will reset to maxI
+    maxI=atoi(ad_comm::argv[on+1]);
+  	echoinput<<"read maxI "<<maxI<<endl;
   }
 
   SDmode=1;
@@ -366,9 +373,10 @@
   int N_nudata
    !! N_nudata=N_nudata_read;
    !!echoinput<<N_nudata<<"  N_nudata"<<endl;
-  init_int Turn_off_phase
-   !!echoinput<<Turn_off_phase<<"  Turn_off_phase"<<endl;
-
+   int Turn_off_phase
+  init_int Turn_off_phase_rd
+   !!echoinput<<Turn_off_phase_rd<<"  Turn_off_phase"<<endl;
+   !!if(maxI<999) { Turn_off_phase=maxI; echoinput<<"-maxI resets it to: "<<Turn_off_phase<<endl;} else {Turn_off_phase=Turn_off_phase_rd;}
 // read in burn and thinning intervals
   init_int burn_intvl
    !!echoinput<<burn_intvl<<"  MCeval burn_intvl"<<endl;

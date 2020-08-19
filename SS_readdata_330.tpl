@@ -745,10 +745,16 @@
   ivector disc_units(1,j)  //  formerly scalar disc_type
   ivector disc_errtype(1,j)  // formerly scalar DF_disc
   vector disc_errtype_r(1,j)  // real version for T-dist
+  vector disc_minval(1,j)
+  vector disc_maxval(1,j)
 
  LOCAL_CALCS
   disc_units.initialize();
   disc_errtype.initialize();
+  disc_minval.initialize();
+  disc_minval=999999999.;
+  disc_maxval.initialize();
+  disc_maxval=-999999999.;
   nobs_disc=0;
   disc_N_fleet=0;
   disc_N_fleet_use=0;
@@ -859,7 +865,8 @@
 
          cv_disc(f,j)= discdata[i](5);
          obs_disc(f,j)=fabs( discdata[i](4));
-
+         disc_minval(f)=min(disc_minval(f),obs_disc(f,j));
+         disc_maxval(f)=max(disc_maxval(f),obs_disc(f,j));
          if( discdata[i](4)<0.0)  discdata[i](3)=-fabs( discdata[i](3));  //  convert to new format using negative fleet
          if( discdata[i](3)<0) {yr_disc_use(f,j)=-1;} else {yr_disc_use(f,j)=1;disc_N_fleet_use(f)++;}
          if(catch_ret_obs(f,t)<=0.0)
@@ -883,8 +890,18 @@
         }
       }
     }
-    echoinput<<"Successful read of discard data, N by fleet = "<< disc_N_fleet << endl;
-    echoinput<<"N superperiods by fleet = "<< N_suprper_disc << endl;
+  echoinput<<"Successful read of discard data  "<<endl;
+  echoinput<<"Index Survey_name       N   Super_Per    Min_val   max_val  //  Observations:"<<endl;
+    for (f=1;f<=Nfleet;f++)
+    {
+    	if (disc_N_fleet(f)>0) 
+    		{
+    			echoinput<<f<<"    "<<fleetname(f)<<"   "<<disc_N_fleet(f)<<"     "<<N_suprper_disc(f)<<
+    			"      "<<disc_minval(f)<<" "<<disc_maxval(f)<<" // "<<obs_disc(f)<<endl;
+    			if(disc_minval(f)<0.)
+    				{N_warn++; cout<<" exit with bad discard obs "<<endl; warning<<"error, SS has exited. A discard observation is <0.0; fleet: "<<f<<endl; exit(1);}
+      	}
+    }
  END_CALCS
 
 
@@ -1174,10 +1191,10 @@
   minL=len_bins(1);
   minL_m=len_bins_m(1);
   if(LenBin_option!=2) binwidth2=binwidth(nlength/2);  // set a reasonable value in case LenBin_option !=2
+  startbin=1;
 
   if(use_length_data>0)
   {
-  startbin=1;
   while(len_bins(startbin)<len_bins_dat(1))
   {startbin++;}
 

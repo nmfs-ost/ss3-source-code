@@ -734,22 +734,23 @@ FUNCTION void write_nudata()
   {
     t=Svy_time_t(f,i);
     ALK_time=Svy_ALK_time(f,i);
+    double newobs;
     report1 << Show_Time(t,1)<<" "<<Svy_super(f,i)*data_time(ALK_time,f,1)<<" "<<f*Svy_use(f,i)<<" ";
       if(Svy_errtype(f)==-1)  // normal error
       {
-        report1<<Svy_est(f,i)+randn(radm)*Svy_se_use(f,i);    //  uses Svy_se_use, not Svy_se_rd to include both effect of input var_adjust and extra_sd
+        newobs=value(Svy_est(f,i)+randn(radm)*Svy_se_use(f,i));    //  uses Svy_se_use, not Svy_se_rd to include both effect of input var_adjust and extra_sd
       }
       if(Svy_errtype(f)==0)  // lognormal
       {
-         report1 << mfexp(Svy_est(f,i)+ randn(radm)*Svy_se_use(f,i) );    //  uses Svy_se_use, not Svy_se_rd to include both effect of input var_adjust and extra_sd
+         newobs=value(mfexp(Svy_est(f,i)+ randn(radm)*Svy_se_use(f,i) ));    //  uses Svy_se_use, not Svy_se_rd to include both effect of input var_adjust and extra_sd
       }
       else if(Svy_errtype(f)>0)   // lognormal T_dist
       {
         temp = sqrt( (Svy_errtype(f)+1.)/Svy_errtype(f));  // where df=Svy_errtype(f)
-        report1 << mfexp(Svy_est(f,i)+ randn(radm)*Svy_se_use(f,i)*temp );    //  adjusts the sd by the df sample size
+        newobs=value(mfexp(Svy_est(f,i)+ randn(radm)*Svy_se_use(f,i)*temp ));    //  adjusts the sd by the df sample size
       }
-
-    report1 <<" "<<Svy_se_rd(f,i)<<" #_orig_obs: "<<Svy_obs(f,i)<<" "<<fleetname(f)<<endl;
+     if(Svy_minval(f)>=0.0 && Svy_errtype(f)!=0) newobs=max(newobs,0.5*Svy_minval(f));
+    report1 <<newobs<<" "<<Svy_se_rd(f,i)<<" #_orig_obs: "<<Svy_obs(f,i)<<" "<<fleetname(f)<<endl;
   }
   report1<<"-9999 1 1 1 1 # terminator for survey observations "<<endl;
 
@@ -778,6 +779,7 @@ FUNCTION void write_nudata()
         {temp=exp_disc(f,i) * mfexp(randn(radm)*sd_disc(f,i));}
         else if(disc_errtype(f)==-3)
         {temp=exp_disc(f,i) + randn(radm)*(sd_disc(f,i) / sqrt(cumd_norm( (1 - exp_disc(f,i)) / sd_disc(f,i) ) - cumd_norm( (0 - exp_disc(f,i)) / sd_disc(f,i) ))); if(temp<0.001) temp=0.001; }
+       if(disc_minval(f)>=0.0) temp=max(value(temp),0.5*disc_minval(f));
 
       report1 <<" "<<temp<< " "<< cv_disc(f,i)<<" #_orig_obs: "<<obs_disc(f,i)<<" #_ "<<fleetname(f)<<endl;
     }
@@ -1150,9 +1152,9 @@ FUNCTION void write_nucontrol()
   NuStart<<Do_CumReport<<" # write to cumreport.sso (0=no,1=like&timeseries; 2=add survey fits)"<<endl;
   NuStart<<Do_all_priors<<" # Include prior_like for non-estimated parameters (0,1) "<<endl;
   NuStart<<SoftBound<<" # Use Soft Boundaries to aid convergence (0,1) (recommended)"<<endl;
-  NuStart<<N_nudata_read<<" # Number of datafiles to produce: 1st is input, 2nd is estimates, 3rd and higher are bootstrap"<<endl;
-  NuStart<<Turn_off_phase<<" # Turn off estimation for parameters entering after this phase"<<endl;
-  NuStart<<burn_intvl<<" # MCeval burn interval"<<endl;
+  NuStart<<"#"<<endl<<N_nudata_read<<" # Number of datafiles to produce: 1st is input, 2nd is estimates, 3rd and higher are bootstrap, 0 turns off all *.ss_new output"<<endl;
+  NuStart<<Turn_off_phase_rd<<" # Turn off estimation for parameters entering after this phase"<<endl;
+  NuStart<<"#"<<endl<<burn_intvl<<" # MCeval burn interval"<<endl;
   NuStart<<thin_intvl<<" # MCeval thin interval"<<endl;
   NuStart<<jitter<<" # jitter initial parm value by this fraction"<<endl;
   NuStart<<STD_Yr_min_rd<<" # min yr for sdreport outputs (-1 for styr); #_"<<STD_Yr_min<<endl;
