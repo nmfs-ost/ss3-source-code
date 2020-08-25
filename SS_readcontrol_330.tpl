@@ -3308,7 +3308,6 @@
     echoinput<<"read specification for first 2D_AR1:  fleet, ymin, ymax, amin, amax, sigma_amax, use_rho, len1/age2"<<endl;
 
     ender=0;
-    int save_sigmaval=0;
     do
     {
       ivector tempvec(1,13);
@@ -3332,7 +3331,7 @@
         else
         {anystring="AGE"; fs=f+Nfleet; TwoD_AR_use(fs)=TwoD_AR_cnt;}
 
-         save_sigmaval=tempvec(6);  //  to restore into TwoD_AR_def_rd later
+//         save_sigmaval=tempvec(6);  //  to restore into TwoD_AR_def_rd later
          if(tempvec(6)<tempvec(4)) tempvec(6)=tempvec(4);
          if(tempvec(6)>tempvec(5)) tempvec(6)=tempvec(5);
          int sigma_amax = tempvec(6);

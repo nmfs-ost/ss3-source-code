@@ -238,7 +238,7 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
 //********************************************************************
  /*  SS_Label_FUNCTION 34 Get_Benchmarks(Find Fspr, MSY) */
   int jj;  int Nloops;
-  int bio_t;
+//  int bio_t;
   int bio_t_base;
   dvariable last_F1;  dvariable Closer;
   dvariable Vbio1_unfished;
@@ -349,7 +349,7 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
     }
 
       maxpossF.initialize();
-      for(g=1;g<=gmorph;g++)
+      for(g=1;g<=gmorph;g++) {
         for(s=1;s<=nseas;s++)
         {
           tempvec_a.initialize();
@@ -357,7 +357,8 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
           temp=max(tempvec_a);
           if(temp>maxpossF) maxpossF=temp;
         }
-        maxpossF =max_harvest_rate/maxpossF;    //  applies to any F_method
+	  }
+      maxpossF =max_harvest_rate/maxpossF;    //  applies to any F_method
 
 //  SPAWN-RECR:   notes regarding virgin vs. benchmark biology usage in spawn-recr
 //  the spawner-recruitment function has Bzero based on virgin biology, not benchmark biology
@@ -1060,8 +1061,6 @@ FUNCTION void Get_Forecast()
 //********************************************************************
  /*  SS_Label_FUNCTION 35 Get_Forecast */
   t_base=styr+(endyr-styr)*nseas-1;
-  int Do_4010;
-  int bio_t;
   int adv_age;
   dvariable OFL_catch;
   dvariable Fcast_Crash;
@@ -1095,11 +1094,23 @@ FUNCTION void Get_Forecast()
     switch(Do_Forecast)
     {
       case 1:
-        {Fcast_Fmult=SPR_Fmult; if(show_MSY==1) report5<<"1:  Forecast_using_Fspr"<<endl; break;}
+        {
+		Fcast_Fmult=SPR_Fmult; 
+		if(show_MSY==1) report5<<"1:  Forecast_using_Fspr"<<endl; 
+		break;
+		}
       case 2:
-        {Fcast_Fmult=MSY_Fmult; if(show_MSY==1) report5<<"2:  Forecast_using_Fmsy"<<endl; break;}
+        {
+		Fcast_Fmult=MSY_Fmult; 
+		if(show_MSY==1) report5<<"2:  Forecast_using_Fmsy"<<endl; 
+		break;
+		}
       case 3:
-        {Fcast_Fmult=Btgt_Fmult; if(show_MSY==1) report5<<"3:  Forecast_using_F(Btarget)"<<endl; break;}
+        {
+		Fcast_Fmult=Btgt_Fmult; 
+		if(show_MSY==1) report5<<"3:  Forecast_using_F(Btarget)"<<endl; 
+		break;
+		}
       case 4:
       {
         Fcast_Fmult=0.0;
@@ -1118,7 +1129,11 @@ FUNCTION void Get_Forecast()
         if(show_MSY==1) report5<<"4:  Forecast_using_ave_F_from:_"<<Fcast_RelF_yr1<<"_"<<Fcast_RelF_yr2<<endl; break;
       }
       case 5:
-      {Fcast_Fmult=Fcast_Flevel; if(show_MSY==1) report5<<"5:  Forecast_using_input_F "<<endl; break;}
+      {
+		Fcast_Fmult=Fcast_Flevel; 
+		if(show_MSY==1) report5<<"5:  Forecast_using_input_F "<<endl; 
+		break;
+	  }
     }
    }
    else
@@ -1342,15 +1357,16 @@ FUNCTION void Get_Forecast()
         smrynum=0.0;
         s=1;
         t=t_base+1;
-        for (g=1;g<=gmorph;g++)
-        if(use_morph(g)>0)
-        {
-          for (p=1;p<=pop;p++)
-          {
-            smrybio+=natage(t,p,g)(Smry_Age,nages)*Wt_Age_beg(s,g)(Smry_Age,nages);
-            smrynum+=sum(natage(t,p,g)(Smry_Age,nages));   //sums to accumulate across platoons and settlements
-          }
-        }
+        for (g=1;g<=gmorph;g++) {
+			if(use_morph(g)>0)
+			{
+			  for (p=1;p<=pop;p++)
+			  {
+				smrybio+=natage(t,p,g)(Smry_Age,nages)*Wt_Age_beg(s,g)(Smry_Age,nages);
+				smrynum+=sum(natage(t,p,g)(Smry_Age,nages));   //sums to accumulate across platoons and settlements
+			  }
+			}
+		}
         env_data(y,-3)=log(smrybio/Smry_Table(styr-1,2));
         env_data(y,-4)=log(smrynum/Smry_Table(styr-1,3));
 
@@ -1410,7 +1426,6 @@ FUNCTION void Get_Forecast()
         for (s=1;s<=nseas;s++)
         {
           t = t_base+s;
-          bio_t=styr+(endyr-styr)*nseas+s-1;
           if(ABC_Loop==ABC_Loop_start)  // do seasonal ALK and fishery selex
           {
             if(timevary_MG(y,2)>0 || save_for_report>0)

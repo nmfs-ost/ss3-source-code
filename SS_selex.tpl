@@ -3,8 +3,6 @@ FUNCTION void get_selectivity()
 //*******************************************************************
  /*  SS_Label_Function_22 #get_selectivity */
   //  SS_Label_Info_22.01  #define local variables for selectivity
-  int Ip_env;
-  int y1;
   int fs;
   int scaling_offset = 0;
   dvariable t1;
@@ -487,7 +485,6 @@ FUNCTION void get_selectivity()
             scaling_offset = 2;
           case 27:
           {
-            int j1;
             int j2;
   // define vectors which form the basis for cubic spline selectivity
   // IMPORTANT: these vectors might need to be expanded to fit values for multiple fleets
