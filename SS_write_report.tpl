@@ -516,13 +516,8 @@ FUNCTION void write_bigoutput()
       if(parm_dev_PH(i)>0)
       {
         active_count++;
-        SS2out<<" "<<active_count<<" "<<parm_dev_PH(i)<<" -10 10 "<<parm_dev_RD(i,j)<<" "<<parm_dev_use(i,j)<<" act "<<CoVar(active_count,1)<<" "<<parm_gradients(active_count);
-      }
-      else
-      {SS2out<<" _ _ _ _ _ _ NA _ _ ";}
-
+        SS2out<<" "<<active_count<<" "<<parm_dev_PH(i)<<" -10 10 "<<parm_dev_RD(i,j)<<" "<<parm_dev_use(i,j);
         temp=(parm_dev(i,j)-(-10))/(20);
-
         if(temp==0.0 || temp==1.0)
           {SS2out<<" BOUND "; Nparm_on_bound++;}
         else if(temp<0.01)
@@ -534,8 +529,11 @@ FUNCTION void write_bigoutput()
         SS2out<<" NO_MOVE ";
         }
         else
-        {SS2out<<" OK ";}
-      SS2out<<endl;
+        {SS2out<<" act ";}
+        SS2out<<CoVar(active_count,1)<<" "<<parm_gradients(active_count)<<" dev "<<endl;
+      }
+      else
+      {SS2out<<" _ _ _ _ _ _ NA _ _ dev"<<endl;}
     }
   }
 
@@ -2271,7 +2269,9 @@ FUNCTION void write_bigoutput()
    if(pick_report_use(42)=="Y") {
     SS2out<<endl<<pick_report_name(42)<<endl;
     SS2out<<sum(use_morph)<<" "<<nlength<<" "<<nages<<" "<<nseas<<" N_Used_morphs;_lengths;_ages;_season;_by_season_in_endyr" << endl;
-   SS2out<<"GP Bin Low Mean_Size Wt_len_F Mat_len Spawn Wt_len_M Fecundity"<<endl;
+   if(gender==2) {SS2out<<"GP Bin Low Mean_Size Wt_len_F Mat_len Spawn Wt_len_M Fecundity"<<endl;}
+   	else
+   {SS2out<<"GP Bin Low Mean_Size Wt_len Mat_len Spawn Fecundity"<<endl;}
    for(gp=1;gp<=N_GP;gp++)
    for (z=1;z<=nlength;z++)
      {
