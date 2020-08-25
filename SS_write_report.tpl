@@ -2619,13 +2619,9 @@ FUNCTION void write_bigoutput()
   SS_compout <<endl<< "Composition_Database" << endl;           // SS_Label_480
 
   SS_compout<<"Yr Month Seas Subseas Time Fleet Area Repl. Sexes Kind Part Ageerr Sex Lbin_lo Lbin_hi Bin Obs Exp Pearson Nsamp_adj Nsamp_in effN Like Cum_obs Cum_exp SuprPer Used?"<<endl;
-  int lasttime;
-  int lastfleet;
   int repli;
   int N_out;
   N_out=0;
-  lasttime=0;
-  lastfleet=0;
 
   for (f=1;f<=Nfleet;f++)
   {

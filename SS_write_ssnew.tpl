@@ -6,10 +6,10 @@ FUNCTION void write_nudata()
 
   dvector temp_mult(1,50000);
   dvector temp_probs(1,nlen_bin2);
-  int compindex;
+  int compindex=0;
   dvector temp_probs2(1,n_abins2);
-  int Nudat;
-  int Nsamp_DM;
+  int Nudat=0;
+  int Nsamp_DM=0;
 //  create bootstrap data files; except first file just replicates the input and second is the estimate without error
   	if(irand_seed<0) irand_seed=long(time(&start));
   		
@@ -1139,7 +1139,7 @@ FUNCTION void write_nucontrol()
   if(reportdetail==3)
   	{
   		NuStart<<"# custom report options: -100 to start with minimal; -101 to start with all; -number to remove, +number to add, -999 to end"<<endl;
-  	  for( int j=0;j<=reportdetail_list.size()-1;j++) {NuStart<<reportdetail_list[j](1)<<endl;}
+  	  for(unsigned j=0;j<=reportdetail_list.size()-1;j++) {NuStart<<reportdetail_list[j](1)<<endl;}
   	}
   	else
   		{

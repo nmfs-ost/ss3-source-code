@@ -233,7 +233,6 @@ FUNCTION void make_timevaryparm()
         parm_dev_stddev(k)=timevary_parm(timevary_parm_cnt);
         parm_dev_rho(k)=timevary_parm(timevary_parm_cnt+1);
         int picker=timevary_setup(9);
-        int continue_last=timevary_setup(14);
 
         switch(picker)
         {

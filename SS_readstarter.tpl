@@ -339,7 +339,7 @@
   	for(k=1;k<=60;k++)	{pick_report_use(k)="Y";}
   }
   if(reportdetail==3) {
-  	for( int j=0;j<=reportdetail_list.size()-2;j++) {
+  	for(unsigned j=0;j<=reportdetail_list.size()-2;j++) {
   		if(reportdetail_list[j](1)>0 && reportdetail_list[j](1)<=60) {
   			pick_report_use(reportdetail_list[j](1))="Y";
   		}
