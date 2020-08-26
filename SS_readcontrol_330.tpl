@@ -3119,7 +3119,7 @@
 		if (seltype(f,1)==5)
         echoinput<<"check on size selex mirror bounds for fleet: "<<f<<" "<<endl;
 		else
-        echoinput<<"check on size selex sel=1 using mirror bounds for fleet: "<<f<<" "<<endl;
+        echoinput<<"check on size selex =1.0 for specified min-max bin for fleet: "<<f<<" "<<endl;
         if(i<=-1) {i=1;} // legit input, use to set mirror_mask
         else if(i==0) {echoinput<<" size selex mirror, length range min bin read is ("<<i<<") reset to 1 for fleet: "<<f<<endl;selparm_1(parmcount+1,3)=1;i=1;}
         if(j<=-1) {j=nlength;}// legit input, use to set mirror_mask
@@ -3131,7 +3131,12 @@
         mirror_mask(f)=1.0e-10;
         mirror_mask(f)(i,j)=1.;
         echoinput<<"fleet: "<<f<<"  set mirror for bins: "<<i<<" through "<<j<<endl;
-		echoinput<<"end check on mirror mask for size selex=="<<seltype(f,1)<<endl;
+        echoinput<<"set to no prior and not estimated, just in case "<<endl;
+        selparm_1(parmcount+1,6)=0;
+        selparm_1(parmcount+2,6)=0;
+        selparm_1(parmcount+1,7)=-99;
+        selparm_1(parmcount+2,7)=-99;
+		echoinput<<"end check on mirror mask:  "<<endl;
   		}
   /*	if(seltype(f,1)==11) // setting min-max len range
 		{
@@ -3165,6 +3170,11 @@
         echoinput<<"check on age selex min-max for fleet: "<<f<<" "<<selparm_1(parmcount+1,3)<<" "<<selparm_1(parmcount+2,3)<<" nages: "<<nages<<endl;
         i=int(selparm_1(parmcount+1,3));
         j=int(selparm_1(parmcount+2,3));
+        echoinput<<"set to no prior and not estimated, just in case "<<endl;
+        selparm_1(parmcount+1,6)=0;
+        selparm_1(parmcount+2,6)=0;
+        selparm_1(parmcount+1,7)=-99;
+        selparm_1(parmcount+2,7)=-99;
         if((selparm_1(parmcount+1,3)-i)>0.)
         	{
         		N_warn++;warning<<"fleet: "<<f<<" age selex range min read is: "<<selparm_1(parmcount+1,3)<<"; SS expected an integer and will convert "<<endl; selparm_1(parmcount+1,3)=i;
