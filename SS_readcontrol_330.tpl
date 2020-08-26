@@ -3112,14 +3112,11 @@
   parmcount=0;
   for(f=1;f<=Nfleet;f++)
   { 
-  	if(seltype(f,1)==5 || seltype(f,1)==11)  //  uses mirror
+  	if(seltype(f,1)==5)  //  uses mirror
   		{
         i=int(selparm_1(parmcount+1,3));
         j=int(selparm_1(parmcount+2,3));
-		if (seltype(f,1)==5)
         echoinput<<"check on size selex mirror bounds for fleet: "<<f<<" "<<endl;
-		else
-        echoinput<<"check on size selex =1.0 for specified min-max bin for fleet: "<<f<<" "<<endl;
         if(i<=-1) {i=1;} // legit input, use to set mirror_mask
         else if(i==0) {echoinput<<" size selex mirror, length range min bin read is ("<<i<<") reset to 1 for fleet: "<<f<<endl;selparm_1(parmcount+1,3)=1;i=1;}
         if(j<=-1) {j=nlength;}// legit input, use to set mirror_mask
@@ -3138,9 +3135,9 @@
         selparm_1(parmcount+2,7)=-99;
 		echoinput<<"end check on mirror mask:  "<<endl;
   		}
-  /*	if(seltype(f,1)==11) // setting min-max len range
+    else if(seltype(f,1)==11) // setting min-max len range
 		{
-        echoinput<<"check on size selex min-max for fleet: "<<f<<" "<<selparm_1(parmcount+1,3)<<" "<<selparm_1(parmcount+2,3)<<" nsizes: "<<nlength<<endl;
+        echoinput<<"check on size selex min-max for fleet: "<<f<<" "<<selparm_1(parmcount+1,3)<<" "<<selparm_1(parmcount+2,3)<<" nsize bins: "<<nlength<<endl;
         i=int(selparm_1(parmcount+1,3));
         j=int(selparm_1(parmcount+2,3));
         if((selparm_1(parmcount+1,3)-i)>0.)
@@ -3153,13 +3150,19 @@
         	}
         if(selparm_1(parmcount+2,3)>nlength)
         	{
-        		N_warn++;warning<<"fleet: "<<f<<" age selex range max read is: "<<selparm_1(parmcount+2,3)<<"; is >nsizes; SS will convert "<<endl; selparm_1(parmcount+2,3)=nlength;
+        		N_warn++;warning<<"fleet: "<<f<<" size selex range max read is: "<<selparm_1(parmcount+2,3)<<"; is >nsizes; SS will convert "<<endl; selparm_1(parmcount+2,3)=nlength;
         	}
        	echoinput<<" accepted range: "<<selparm_1(parmcount+1,3)<<" "<<selparm_1(parmcount+2,3)<<endl;
+        echoinput<<"set to no prior and not estimated, just in case "<<endl;
+        selparm_1(parmcount+1,6)=0;
+        selparm_1(parmcount+2,6)=0;
+        selparm_1(parmcount+1,7)=-99;
+        selparm_1(parmcount+2,7)=-99;
         mirror_mask(f)=1.0e-10;
-        mirror_mask(f)(selparm_1(parmcount+1,3),selparm_1(parmcount+2,3))=1.;
+        mirror_mask(f)(selparm_1(parmcount+1,3),selparm_1(parmcount+2,3))=1.0;
        	echoinput<<"create mirror_mask: "<<mirror_mask(f)<<endl;
-  		}*/
+			echoinput<<"end check on min-max ranges for size selex=11"<<endl;
+  		}
 		
     parmcount+=N_selparmvec(f);
   }
@@ -3188,12 +3191,13 @@
         		N_warn++;warning<<"fleet: "<<f<<" age selex range max read is: "<<selparm_1(parmcount+2,3)<<"; is >nages; SS will convert "<<endl; selparm_1(parmcount+2,3)=nages;
         	}
         	echoinput<<" accepted range: "<<selparm_1(parmcount+1,3)<<" "<<selparm_1(parmcount+2,3)<<endl;
+			mirror_mask_a(f)=0;
         	mirror_mask_a(f)(selparm_1(parmcount+1,3),selparm_1(parmcount+2,3))=1.0;
         	echoinput<<"create mirror_mask: "<<mirror_mask_a(f)<<endl;
+			echoinput<<"end check on min-max ranges for age selex=11"<<endl;
   		}
     parmcount+=N_selparmvec(f+Nfleet);
   }
-  echoinput<<"end check on min-max ranges for age selex=11"<<endl;
 
  END_CALCS
 
