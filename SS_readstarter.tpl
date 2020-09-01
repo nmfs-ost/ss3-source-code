@@ -196,11 +196,11 @@
     exit(1);
   }
 
-  if ( (on=option_match(argc,argv,"-maxI"))>-1)
+  if ( (on=option_match(argc,argv,"-maxI"))>-1 || (on=option_match(argc,argv,"-stopph"))>-1)
   {
 //  	if maxI > 999, maxphase will reset to maxI
     maxI=atoi(ad_comm::argv[on+1]);
-  	echoinput<<"read maxI "<<maxI<<endl;
+  	echoinput<<"read max phase to override starter file's maxphase "<<maxI<<endl;
   }
 
   SDmode=1;
