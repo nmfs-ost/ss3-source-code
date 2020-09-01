@@ -14,6 +14,7 @@ copy/b SS_versioninfo_330opt.tpl+SS_readstarter.tpl+SS_readdata_330.tpl+SS_readc
 
 REM compile executable
 cd "Compile"
+set CXX=g++
 admb -f ss_opt
 
 

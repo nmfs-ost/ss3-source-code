@@ -13,9 +13,10 @@ copy/b SS_versioninfo_330safe.tpl+SS_readstarter.tpl+SS_readdata_330.tpl+SS_read
 
 cd "Compile"
 
+REM set CXX=cl
 set CXX=g++
 
-  admb ss
+admb ss
 
 REM below is echo of the commands executed by "admb" above
 REM tpl2cpp   ss

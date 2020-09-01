@@ -13,5 +13,6 @@ copy/b SS_versioninfo_330trans.tpl+SS_readstarter.tpl+SS_readdata_324.tpl+SS_rea
 
 REM compile executable
 cd "Compile"
+set CXX=g++
 admb ss_trans
 
