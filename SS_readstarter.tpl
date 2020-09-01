@@ -146,9 +146,9 @@
     pick_report_name+=" Kobe_Plot report:18";pick_report_use+="N";
     pick_report_name+=" SPAWN_RECRUIT report:19";pick_report_use+="N";
     pick_report_name+=" SPAWN_RECR_CURVE report:20";pick_report_use+="N";
-    pick_report_name+=" INDEX_1 report:21";pick_report_use+="N";
-    pick_report_name+=" INDEX_2 report:22";pick_report_use+="N";
-    pick_report_name+=" INDEX_3 report:23";pick_report_use+="N";
+    pick_report_name+=" INDEX_1 report:21 summary";pick_report_use+="N";
+    pick_report_name+=" INDEX_2 report:22 annual";pick_report_use+="N";
+    pick_report_name+=" INDEX_3 report:23 Qparms";pick_report_use+="N";
     pick_report_name+=" DISCARD_SPECIFICATION report:24";pick_report_use+="N";
     pick_report_name+=" DISCARD_OUTPUT report:25";pick_report_use+="N";
     pick_report_name+=" MEAN_BODY_WT_OUTPUT report:26";pick_report_use+="N";
