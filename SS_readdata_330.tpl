@@ -63,7 +63,7 @@
 
   int TimeMax
   int TimeMax_Fcast_std
-
+  int ALK_time_max
   int eq_yr;
   int bio_yr;
   number sumseas;
@@ -93,6 +93,8 @@
   subseasdur_delta=seasdur/double(N_subseas);
   TimeMax = styr+(endyr+50-styr)*nseas+nseas-1;
   retro_yr=endyr+retro_yr;
+  ALK_time_max=(endyr-styr+51)*nseas*N_subseas;  //  sets maximum size for data array indexing 50 years into forecast
+//  ALK_time_max will be redefined after reading forecast's YrMax to accomodate forecasts longer than the 50 year data limit
 
   azero_seas(1)=0.;
   if(nseas>1)
@@ -325,16 +327,10 @@
   }
  END_CALCS
 
-  int ALK_time_max
-
- LOCAL_CALCS
-  ALK_time_max=(endyr-styr+51)*nseas*N_subseas;  //  sets maximum size for data array indexing 50 years into forecast
- END_CALCS
-!!//  SS_Label_Info_2.1.6  #Indexes for data timing.  "have_data" and "data_time" hold pointers for data occurrence, timing, and ALK need
+//  SS_Label_Info_2.1.6  #Indexes for data timing.  "have_data" and "data_time" hold pointers for data occurrence, timing, and ALK need
   int data_type
   number data_timing
   4iarray have_data(1,ALK_time_max,0,Nfleet,0,9,0,100);
-
   imatrix have_data_yr(styr,endyr+50,0,Nfleet)
 
 //  have_data stores the data index of each datum occurring at time ALK_time, for fleet f of observation type k.  Up to 150 data are allowed due to CAAL data
@@ -3412,6 +3408,10 @@
   echoinput<<" done reading forecast "<<endl<<endl;
 //  if(Do_Forecast==0) Do_Forecast=4;
     TimeMax_Fcast_std = styr+(max(YrMax,endyr+50)-styr)*nseas+nseas-1;
+
+// redefine ALK_time_max for forecast years longer than 50, but no data past 50 years
+    j=max(YrMax,endyr+50);
+    ALK_time_max=(j-styr+1)*nseas*N_subseas;  //  sets maximum size for data array indexing 50 years into forecast
  END_CALCS
 
   imatrix Show_Time(styr,TimeMax_Fcast_std,1,2)  //  for each t:  shows year, season
