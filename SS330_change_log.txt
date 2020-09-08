@@ -39,7 +39,7 @@ Version;Date;Description;VLAB_issue;Input_Change?;Type;Category;Sub_Category
 3.30.14.06;2019-10-15;various small tweaks;#68203,#66580,#68888;-;fix;misc;misc
 
 3.30.14.05;2019-09-05;small augmentation to expected value logic, note issue with F0.1 and bycatch fleets;#68202,#68203;-;revise;bycatch;calc
-3.30.14.05;2019-08-30;add reporting of time-varying age-age' key when blocks are used;#66223;-;add;age_error;output
+3.30.14.05;2019-08-30;add reporting of time-varying age-age' key when blocks are used;#66223;-;add;AgeKeyor;output
 3.30.14.04;2019-08-20;add handling of age-retention when discard option=3;-;-;revise;discard;calc
 3.30.14.04;2019-08-20;add check for correct usage of asymptotic retention;-;-;revise;discard;input
 3.30.14.04;2019-08-20;fix autogen of block offsets;-;-;fix;timevary;calc
@@ -107,7 +107,7 @@ Version;Date;Description;VLAB_issue;Input_Change?;Type;Category;Sub_Category
 3.30.12.00;2018-08-29;Time-vary growth parameters now work with Richards growth function, but there is no trap to prevent  shrinkage;;;fix;growth;
 3.30.12.00;2018-08-29; add recr_dist option 4 to allow for no parameters if no distribution needed ;;;revise;recruitment;
 3.30.12.00;2018-08-29;Benchmark selectivities now use the correct ALK when growth was time-varying;;;fix;benchmark;
-3.30.12.00;2018-08-29;Implement time-varying ageing bias parameters;;;implement;time_vary;age_error
+3.30.12.00;2018-08-29;Implement time-varying ageing bias parameters;;;implement;time_vary;AgeKeyor
 3.30.12.00;2018-08-29;Implement density-dependent environmental effects on parameters, change specification format;;;implement;time_vary;density_dependent
 3.30.12.00;2018-08-29;improved error checking on read of wtatage.ss ;;;improve;read;
 3.30.12.00;2018-08-29;"Update and explain the usage of the ""-1"" code for fishery sample timing ";;;improve;fleets;

@@ -212,8 +212,8 @@ FUNCTION void write_nudata()
   {
     report1<<"# ";
   }
-  report1 << N_ageerr <<" #_N_ageerror_definitions"<< endl;
-  if(N_ageerr>0) report1 << age_err_rd << endl;
+  report1 << N_AgeKey <<" #_N_AgeKeyor_definitions"<< endl;
+  if(N_AgeKey>0) report1 << AgeKey_rd << endl;
 
   report1<<"#_mintailcomp: upper and lower distribution for females and males separately are accumulated until exceeding this level."<<endl;
   report1<<"#_addtocomp:  after accumulation of tails; this value added to all bins"<<endl;
@@ -234,7 +234,7 @@ FUNCTION void write_nudata()
   report1<<Lbin_method<<" #_Lbin_method_for_Age_Data: 1=poplenbins; 2=datalenbins; 3=lengths"<<endl;
   report1<<"# sex codes:  0=combined; 1=use female only; 2=use male only; 3=use both as joint sexxlength distribution"<<endl;
   report1<<"# partition codes:  (0=combined; 1=discard; 2=retained"<<endl;
-  report1<<"#_yr month fleet sex part ageerr Lbin_lo Lbin_hi Nsamp datavector(female-male)"<<endl;
+  report1<<"#_yr month fleet sex part AgeKey Lbin_lo Lbin_hi Nsamp datavector(female-male)"<<endl;
   if(nobsa_rd>0)
   {
     for(i=0;i<=nobsa_rd-1;i++)
@@ -251,8 +251,8 @@ FUNCTION void write_nudata()
   {
   report1<<"# sex codes:  0=combined; 1=use female only; 2=use male only; 3=use both as joint sexxlength distribution"<<endl;
   report1<<"# partition codes:  (0=combined; 1=discard; 2=retained"<<endl;
-  report1<<"# ageerr codes:  positive means mean length-at-age; negative means mean bodywt_at_age"<<endl;
-  report1<<"#_yr month fleet sex part ageerr ignore datavector(female-male)"<<endl;
+  report1<<"# AgeKey codes:  positive means mean length-at-age; negative means mean bodywt_at_age"<<endl;
+  report1<<"#_yr month fleet sex part AgeKey ignore datavector(female-male)"<<endl;
   report1<<"#                                          samplesize(female-male)"<<endl;
   if(nobs_ms_rd>0)
   {
@@ -519,8 +519,8 @@ FUNCTION void write_nudata()
   {
     report1<<"# ";
   }
-  report1 << N_ageerr <<" #_N_ageerror_definitions"<< endl;
-  if(N_ageerr>0) report1 << age_err_rd << endl;
+  report1 << N_AgeKey <<" #_N_AgeKeyor_definitions"<< endl;
+  if(N_AgeKey>0) report1 << AgeKey_rd << endl;
 
   report1<<"#_mintailcomp: upper and lower distribution for females and males separately are accumulated until exceeding this level."<<endl;
   report1<<"#_addtocomp:  after accumulation of tails; this value added to all bins"<<endl;
@@ -541,7 +541,7 @@ FUNCTION void write_nudata()
   report1<<Lbin_method<<" #_Lbin_method_for_Age_Data: 1=poplenbins; 2=datalenbins; 3=lengths"<<endl;
   report1<<"# sex codes:  0=combined; 1=use female only; 2=use male only; 3=use both as joint sexxlength distribution"<<endl;
   report1<<"# partition codes:  (0=combined; 1=discard; 2=retained"<<endl;
-  report1<<"#_yr month fleet sex part ageerr Lbin_lo Lbin_hi Nsamp datavector(female-male)"<<endl;
+  report1<<"#_yr month fleet sex part AgeKey Lbin_lo Lbin_hi Nsamp datavector(female-male)"<<endl;
    if(Nobs_a_tot>0)
    for (f=1;f<=Nfleet;f++)
    {
@@ -567,8 +567,8 @@ FUNCTION void write_nudata()
   {
   report1<<"# sex codes:  0=combined; 1=use female only; 2=use male only; 3=use both as joint sexxlength distribution"<<endl;
   report1<<"# partition codes: 0=combined; 1=discard; 2=retained"<<endl;
-  report1<<"# ageerr codes:  positive means mean length-at-age; negative means mean bodywt_at_age"<<endl;
-  report1<<"#_yr month fleet sex part ageerr ignore datavector(female-male)"<<endl;
+  report1<<"# AgeKey codes:  positive means mean length-at-age; negative means mean bodywt_at_age"<<endl;
+  report1<<"#_yr month fleet sex part AgeKey ignore datavector(female-male)"<<endl;
   report1<<"#                                          samplesize(female-male)"<<endl;
    for (f=1;f<=Nfleet;f++)
    {
@@ -898,8 +898,8 @@ FUNCTION void write_nudata()
   {
     report1<<"# ";
   }
-  report1 << N_ageerr <<" #_N_ageerror_definitions"<< endl;
-  if(N_ageerr>0) report1 << age_err_rd << endl;
+  report1 << N_AgeKey <<" #_N_AgeKeyor_definitions"<< endl;
+  if(N_AgeKey>0) report1 << AgeKey_rd << endl;
 
   report1<<"#_mintailcomp: upper and lower distribution for females and males separately are accumulated until exceeding this level."<<endl;
   report1<<"#_addtocomp:  after accumulation of tails; this value added to all bins"<<endl;
@@ -921,7 +921,7 @@ FUNCTION void write_nudata()
   report1<<"# sex codes:  0=combined; 1=use female only; 2=use male only; 3=use both as joint sexxlength distribution"<<endl;
   report1<<"# partition codes:  (0=combined; 1=discard; 2=retained"<<endl;
 
-  report1<<"#_yr month fleet sex part ageerr Lbin_lo Lbin_hi Nsamp datavector(female-male)"<<endl;
+  report1<<"#_yr month fleet sex part AgeKey Lbin_lo Lbin_hi Nsamp datavector(female-male)"<<endl;
   if(Nobs_a_tot>0)
   for (f=1;f<=Nfleet;f++)
   {
@@ -966,8 +966,8 @@ FUNCTION void write_nudata()
   {
     report1<<"# sex codes:  0=combined; 1=use female only; 2=use male only; 3=use both as joint sexxlength distribution"<<endl;
     report1<<"# partition codes:  (0=combined; 1=discard; 2=retained"<<endl;
-    report1<<"# ageerr codes:  positive means mean length-at-age; negative means mean bodywt_at_age"<<endl;
-    report1<<"#_yr month fleet sex part ageerr ignore datavector(female-male)"<<endl;
+    report1<<"# AgeKey codes:  positive means mean length-at-age; negative means mean bodywt_at_age"<<endl;
+    report1<<"#_yr month fleet sex part AgeKey ignore datavector(female-male)"<<endl;
     report1<<"#                                          samplesize(female-male)"<<endl;
     for (f=1;f<=Nfleet;f++)
     {
@@ -1499,7 +1499,7 @@ FUNCTION void write_nucontrol()
       }
 
       report4<<"#  Age Error from parameters"<<endl;
-      if(Use_AgeKeyZero>0)
+      if(Use_AgeKeyParm>0)
       {
         for (k=1;k<=7;k++)
         {

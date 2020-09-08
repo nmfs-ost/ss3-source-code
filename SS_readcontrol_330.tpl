@@ -1098,7 +1098,7 @@
     }
   }
 
-  if(Use_AgeKeyZero>0)
+  if(Use_AgeKeyParm>0)
   {
     AgeKeyParm=ParCount+1;
     for (k=1;k<=7;k++)
@@ -1165,7 +1165,7 @@
   }
  END_CALCS
 
-  ivector mgp_type(1,N_MGparm)  //  contains category to parameter (1=natmort; 2=growth; 3=wtlen & fec; 4=recr_dist&femfrac; 5=movement; 6=ageerrorkey; 7=catchmult)
+  ivector mgp_type(1,N_MGparm)  //  contains category to parameter (1=natmort; 2=growth; 3=wtlen & fec; 4=recr_dist&femfrac; 5=movement; 6=AgeKeyorkey; 7=catchmult)
  LOCAL_CALCS
    gp=0;
    for(gg=1;gg<=gender;gg++)
@@ -1197,10 +1197,10 @@
    if(recr_dist_method<4) mgp_type(Ip,MGP_CGD-1)=4;   // recruit apportionments
    mgp_type(MGP_CGD)=2;   // cohort growth dev
    if(do_migration>0)  mgp_type(MGP_CGD+1,N_MGparm)=5;  // note that it fills until end of MGparm list, but some get overwritten
-   if(Use_AgeKeyZero>0) mgp_type(AgeKeyParm,N_MGparm)=6;
+   if(Use_AgeKeyParm>0) mgp_type(AgeKeyParm,N_MGparm)=6;
    if(catch_mult_pointer>0) mgp_type(catch_mult_pointer,N_MGparm)=7;
    for(f=frac_female_pointer; f<=frac_female_pointer+N_GP-1;f++) mgp_type(f)=4;
-   echoinput<<"mgparm_type for each parm: 1=M; 2=growth; 3=wtlen,mat,fec,hermo; 4=recr&femfrac; 5=migr; 6=ageerror; 7=catchmult"<<endl<<mgp_type<<endl;
+   echoinput<<"mgparm_type for each parm: 1=M; 2=growth; 3=wtlen,mat,fec,hermo; 4=recr&femfrac; 5=migr; 6=AgeKeyor; 7=catchmult"<<endl<<mgp_type<<endl;
  END_CALCS
 
 !!// SS_Label_Info_4... //  quantities used to track all time-varying parameters
@@ -1217,9 +1217,9 @@
 
   ivector MGparm_timevary(1,N_MGparm)  //  holds index in timevary_def used by this base parameter
   imatrix timevary_MG(styr-3,YrMax+1,0,7)  // goes to yrmax+1 to allow referencing in forecast, but only endyr+1 is checked
-                                            // stores years to calc non-constant MG parms (1=natmort; 2=growth; 3=wtlen & fec; 4=recr_dist&femfrac; 5=movement; 6=ageerrorkey; 7=catchmult)
+                                            // stores years to calc non-constant MG parms (1=natmort; 2=growth; 3=wtlen & fec; 4=recr_dist&femfrac; 5=movement; 6=AgeKeyorkey; 7=catchmult)
   ivector timevary_pass(styr-3,YrMax+1)    //  extracted column
-  ivector MG_active(0,7)  // 0=all, 1=M, 2=growth 3=wtlen, 4=recr_dist&femfrac, 5=migration, 6=ageerror, 7=catchmult
+  ivector MG_active(0,7)  // 0=all, 1=M, 2=growth 3=wtlen, 4=recr_dist&femfrac, 5=migration, 6=AgeKeyor, 7=catchmult
   vector env_data_pass(1,2)  //  holds min-max year with env data  
   int  do_densitydependent;
 

@@ -548,7 +548,7 @@ FUNCTION void Get_expected_values(const int y,const int t);
              for (j=1;j<=have_data(ALK_time,f,data_type,0);j++)                          // loop all obs of this type
              {
               i=have_data(ALK_time,f,data_type,j);
-              k=ageerr_type_a(f,i);                           //  age-err type
+              k=AgeKey_type_a(f,i);                           //  age-err type
               if(use_Lbin_filter(f,i)==0)
               {                                              // sum across all length bins
                if(mkt_a(f,i)==0) age_exp = agetemp;
@@ -563,11 +563,11 @@ FUNCTION void Get_expected_values(const int y,const int t);
                 if(mkt_a(f,i)==2) age_exp = exp_AL_ret * Lbin_filter(f,i);    // retained only
               }
               exp_a(f,i) = age_age(k) * age_exp;
-              if(docheckup==1) echoinput<<"Lbin "<<Lbin_filter(f,i)<<endl<<" obs "<<obs_a(f,i)<<endl<<"expected "<<age_exp<<endl<<"exp with ageerr "<<exp_a(f,i)<<endl;
+              if(docheckup==1) echoinput<<"Lbin "<<Lbin_filter(f,i)<<endl<<" obs "<<obs_a(f,i)<<endl<<"expected "<<age_exp<<endl<<"exp with AgeKey "<<exp_a(f,i)<<endl;
               //  add code here to store exp_a_true(f,i)=age_exp
               //  then in data generation the sample can be from true age before ageing error is applied
 
-//              if(docheckup==1) echoinput<<" real age "<<age_exp<<endl<<"Lbin "<<Lbin_filter(f,i)<<endl<<" obs "<<obs_a(f,i)<<endl<<" exp with ageerr "<<exp_a(f,i)<<endl;
+//              if(docheckup==1) echoinput<<" real age "<<age_exp<<endl<<"Lbin "<<Lbin_filter(f,i)<<endl<<" obs "<<obs_a(f,i)<<endl<<" exp with AgeKey "<<exp_a(f,i)<<endl;
 
              }  // end agecomp loop within fleet/time
             }
@@ -870,8 +870,8 @@ FUNCTION void Get_expected_values(const int y,const int t);
            for (j=1;j<=have_data(ALK_time,f,data_type,0);j++)                          // loop all obs of this type
            {
             i=have_data(ALK_time,f,data_type,j);
-             k=abs(ageerr_type_ms(f,i));                           //  age-err type  where the sign selects length vs. weight
-             if(ageerr_type_ms(f,i)>0)  // values are length at age
+             k=abs(AgeKey_type_ms(f,i));                           //  age-err type  where the sign selects length vs. weight
+             if(AgeKey_type_ms(f,i)>0)  // values are length at age
              {
                if(mkt_ms(f,i)==0)  //  total catch
                {

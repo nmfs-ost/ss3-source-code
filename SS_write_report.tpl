@@ -55,7 +55,7 @@ FUNCTION void write_bigoutput()
   if(Do_TG==0) pick_report_use(34)="N";
   if(Grow_type<3 || Grow_type>6) pick_report_use(44)="N";
   if(MGparm_doseas==0) pick_report_use(46)="N";
-  if(N_ageerr==0) pick_report_use(51)="N";
+  if(N_AgeKey==0) pick_report_use(51)="N";
   if(use_length_data==0) pick_report_use(46)="N";
 	
   	
@@ -1591,7 +1591,7 @@ FUNCTION void write_bigoutput()
 // REPORT_KEYWORD 28 FIT_AGE_COMPS
    if(pick_report_use(28)=="Y" && Nobs_a_tot>0) {
     SS2out<<endl<<pick_report_name(28)<<endl;
-  SS2out<<"Fleet Fleet_Name Area Yr Seas Subseas Month Time Sexes Part Ageerr Lbin_lo Lbin_hi SuprPer Use Nsamp_in Nsamp_adj Nsamp_DM effN Like ";
+  SS2out<<"Fleet Fleet_Name Area Yr Seas Subseas Month Time Sexes Part AgeKey Lbin_lo Lbin_hi SuprPer Use Nsamp_in Nsamp_adj Nsamp_DM effN Like ";
   SS2out<<" All_obs_mean All_exp_mean All_delta All_exp_5% All_exp_95% All_DurWat";
   if(gender==2) SS2out<<" F_obs_mean F_exp_mean F_delta F_exp_5% F_exp_95% F_DurWat M_obs_mean M_exp_mean M_delta M_exp_5% M_exp_95% M_DurWat %F_obs %F_exp ";
   SS2out<<endl;
@@ -1642,10 +1642,10 @@ FUNCTION void write_bigoutput()
         if(Nsamp_adj>maxsamp(f)) maxsamp(f)=Nsamp_adj;
       }
 
-//  SS2out<<"Fleet Fleet_Name Area Yr  Seas Subseas Month Time Sexes Part Ageerr Lbin_lo Lbin_hi Nsamp_in Nsamp_adj Nsamp_DM effN Like SuprPer Use";
+//  SS2out<<"Fleet Fleet_Name Area Yr  Seas Subseas Month Time Sexes Part AgeKey Lbin_lo Lbin_hi Nsamp_in Nsamp_adj Nsamp_DM effN Like SuprPer Use";
       temp=abs(header_a_rd(f,i,2));
       if(temp>999) temp-=1000;
-     SS2out<<f<<" "<<fleetname(f)<<" "<<fleet_area(f)<<Show_Time2(ALK_time)<<" "<<data_time(ALK_time,f,1)<<" "<<data_time(ALK_time,f,3)<<" "<<gen_a(f,i)<<" "<<mkt_a(f,i)<<" "<<ageerr_type_a(f,i)<<" "<<Lbin_lo(f,i)<<" "<<Lbin_hi(f,i)<<" ";
+     SS2out<<f<<" "<<fleetname(f)<<" "<<fleet_area(f)<<Show_Time2(ALK_time)<<" "<<data_time(ALK_time,f,1)<<" "<<data_time(ALK_time,f,3)<<" "<<gen_a(f,i)<<" "<<mkt_a(f,i)<<" "<<AgeKey_type_a(f,i)<<" "<<Lbin_lo(f,i)<<" "<<Lbin_hi(f,i)<<" ";
      if(header_a(f,i,2)<0 && in_superperiod==0)
       {SS2out<<" start "; in_superperiod=1;}
       else if (header_a(f,i,2)<0 && in_superperiod==1)
@@ -2559,11 +2559,11 @@ FUNCTION void write_bigoutput()
   }
 
 // REPORT_KEYWORD 51 AGE_AGE_KEY
-  if(pick_report_use(51)=="Y" && N_ageerr>0)  {
+  if(pick_report_use(51)=="Y" && N_AgeKey>0)  {
     SS2out<<endl<<pick_report_name(51)<<endl;
-      for (k=1;k<=N_ageerr+store_agekey_add;k++)
+      for (k=1;k<=N_AgeKey+store_agekey_add;k++)
       {
-      SS2out << "KEY: "<<k<<endl<< "mean " << age_err(k,1) << endl<< "SD " << age_err(k,2) << endl;
+      SS2out << "KEY: "<<k<<endl<< "mean " << AgeKey(k,1) << endl<< "SD " << AgeKey(k,2) << endl;
       for (b=n_abins;b>=1;b--)
        {
         SS2out << age_bins(b) << " ";
@@ -2607,8 +2607,8 @@ FUNCTION void write_bigoutput()
 //  SS_compout<<"Age: "<<age_bins(CombGender_A)<<endl;
   SS_compout<<endl<<"Method_for_Lbin_definition_for_agecomp_data: "<<Lbin_method<<endl;
 
-  SS_compout<<"For_Sizefreq;_Lbin_Lo_is_units(bio_or_numbers);_Lbin_hi_is_scale(kg,_lb,_cm,_in),_Ageerr_is_method"<<endl;
-  SS_compout<<"For_mean_size_at_age,_the_sign_of_ageerror_indicates_length(positive),_or_weight(negative)"<<endl;
+  SS_compout<<"For_Sizefreq;_Lbin_Lo_is_units(bio_or_numbers);_Lbin_hi_is_scale(kg,_lb,_cm,_in),_AgeKey_is_method"<<endl;
+  SS_compout<<"For_mean_size_at_age,_the_sign_of_AgeKeyor_indicates_length(positive),_or_weight(negative)"<<endl;
   SS_compout<<"For_mean_size_at_age,_the_std_dev_of_size_at_age_is_stored_in_LbinLo_ans_LbinHi_is_ignored"<<endl;
   SS_compout<<"subseas_is_derived_from_month_and_the_number_of_subseasons_per_season,_which_is: "<<N_subseas<<endl;
   SS_compout<<"Time_is_fraction_of_year_based_on_subseas,_not_directly_on_month"<<endl;
@@ -2618,7 +2618,7 @@ FUNCTION void write_bigoutput()
 
   SS_compout <<endl<< "Composition_Database" << endl;           // SS_Label_480
 
-  SS_compout<<"Yr Month Seas Subseas Time Fleet Area Repl. Sexes Kind Part Ageerr Sex Lbin_lo Lbin_hi Bin Obs Exp Pearson Nsamp_adj Nsamp_in effN Like Cum_obs Cum_exp SuprPer Used?"<<endl;
+  SS_compout<<"Yr Month Seas Subseas Time Fleet Area Repl. Sexes Kind Part AgeKey Sex Lbin_lo Lbin_hi Bin Obs Exp Pearson Nsamp_adj Nsamp_in effN Like Cum_obs Cum_exp SuprPer Used?"<<endl;
   int repli;
   int N_out;
   N_out=0;
@@ -2665,7 +2665,7 @@ FUNCTION void write_bigoutput()
         {
             // The following columns printed by the next section:
             // Yr Month Seas Subseas Time Fleet Area Repl. Sexes Kind Part
-            // Ageerr Sex Lbin_lo Lbin_hi Bin Obs Exp 
+            // AgeKey Sex Lbin_lo Lbin_hi Bin Obs Exp 
             SS_compout<<header_l(f,i,1)<<" "<<real_month<<" "<<Show_Time2(ALK_time)(2,3)<<" "<<data_time(ALK_time,f,3)<<" "<<f<<" "<<fleet_area(f)<<" "<<repli<<" "<<gen_l(f,i)<<" LEN "<<mkt_l(f,i)<<" 0 "<<s_off<<" "<<
             1<<" "<<1<<" "<<len_bins_dat2(z)<<" "<<obs_l(f,i,z)<<" "<<exp_l(f,i,z)<<" ";
             // next add these 5 columns: Pearson Nsamp_adj Nsamp_in effN Like 
@@ -2719,7 +2719,7 @@ FUNCTION void write_bigoutput()
         {
            // The following columns printed by the next section:
            // Yr Month Seas Subseas Time Fleet Area Repl. Sexes Kind Part
-           // Ageerr Sex Lbin_lo Lbin_hi Bin Obs Exp 
+           // AgeKey Sex Lbin_lo Lbin_hi Bin Obs Exp 
            SS_compout<<header_l(f,i,1)<<" "<<real_month<<" "<<Show_Time2(ALK_time)(2,3)<<" "<<data_time(ALK_time,f,3)<<" "<<f<<" "<<fleet_area(f)<<" "<<repli<<" "<<gen_l(f,i)<<" LEN "<<mkt_l(f,i)<<" 0 "<<s_off<<" "<<
            1<<" "<<nlength<<" "<<len_bins_dat2(z)<<" "<<obs_l(f,i,z)<<" "<<exp_l(f,i,z)<<" ";
            // next add Pearson column
@@ -2805,8 +2805,8 @@ FUNCTION void write_bigoutput()
           {
           // The following columns printed by the next section:
           // Yr Month Seas Subseas Time Fleet Area Repl. Sexes Kind Part
-          // Ageerr Sex Lbin_lo Lbin_hi Bin Obs Exp 
-          SS_compout<<header_a(f,i,1)<<" "<<real_month<<" "<<Show_Time2(ALK_time)(2,3)<<" "<<data_time(ALK_time,f,3)<<" "<<f<<" "<<fleet_area(f)<<" "<<repli<<" "<<gen_a(f,i)<<" AGE "<<mkt_a(f,i)<<" "<<ageerr_type_a(f,i)
+          // AgeKey Sex Lbin_lo Lbin_hi Bin Obs Exp 
+          SS_compout<<header_a(f,i,1)<<" "<<real_month<<" "<<Show_Time2(ALK_time)(2,3)<<" "<<data_time(ALK_time,f,3)<<" "<<f<<" "<<fleet_area(f)<<" "<<repli<<" "<<gen_a(f,i)<<" AGE "<<mkt_a(f,i)<<" "<<AgeKey_type_a(f,i)
           <<" "<<s_off<<" "<<len_bins(Lbin_lo(f,i))<<" "<<len_bins(Lbin_hi(f,i))<<" "<<age_bins(z)<<" "<<obs_a(f,i,z)<<" " <<exp_a(f,i,z)<<" ";
            temp2+=obs_a(f,i,z);
            temp1+=exp_a(f,i,z);
@@ -2848,7 +2848,7 @@ FUNCTION void write_bigoutput()
         }
         // single row representing info from previous bin-specific rows
         SS_compout<<header_a(f,i,1)<<" "<<real_month<<" "<<Show_Time2(ALK_time)(2,3)<<" "<<data_time(ALK_time,f,3)<<" "<<f<<" "<<fleet_area(f)<<" "<<repli<<" "<<gen_a(f,i)<<" AGE "
-         <<mkt_a(f,i)<<" "<<ageerr_type_a(f,i)<<" "<<s_off<<" "<<1<<" "<<nlength<<endl;}
+         <<mkt_a(f,i)<<" "<<AgeKey_type_a(f,i)<<" "<<s_off<<" "<<1<<" "<<nlength<<endl;}
 
         if(gen_a(f,i)>=2 && gender==2)  // do males
          {s_off=2;
@@ -2856,8 +2856,8 @@ FUNCTION void write_bigoutput()
           {
           // The following columns printed by the next section:
           // Yr Month Seas Subseas Time Fleet Area Repl. Sexes Kind Part
-          // Ageerr Sex Lbin_lo Lbin_hi Bin Obs Exp 
-          SS_compout<<header_a(f,i,1)<<" "<<header_a(f,i,2)<<" "<<Show_Time2(ALK_time)(2,3)<<" "<<data_time(ALK_time,f,3)<<" "<<f<<" "<<fleet_area(f)<<" "<<repli<<" "<<gen_a(f,i)<<" AGE "<<mkt_a(f,i)<<" "<<ageerr_type_a(f,i)<<" "<<s_off
+          // AgeKey Sex Lbin_lo Lbin_hi Bin Obs Exp 
+          SS_compout<<header_a(f,i,1)<<" "<<header_a(f,i,2)<<" "<<Show_Time2(ALK_time)(2,3)<<" "<<data_time(ALK_time,f,3)<<" "<<f<<" "<<fleet_area(f)<<" "<<repli<<" "<<gen_a(f,i)<<" AGE "<<mkt_a(f,i)<<" "<<AgeKey_type_a(f,i)<<" "<<s_off
           <<" "<<len_bins(Lbin_lo(f,i))<<" "<<len_bins(Lbin_hi(f,i))<<" "<<age_bins(z)<<" "<<obs_a(f,i,z)<<" "<<exp_a(f,i,z)<<" ";
           // next add Pearson column
           temp2+=obs_a(f,i,z);
@@ -2899,7 +2899,7 @@ FUNCTION void write_bigoutput()
         }
         // single row representing info from previous bin-specific rows
         SS_compout<<header_a(f,i,1)<<" "<<real_month<<" "<<Show_Time2(ALK_time)(2,3)<<" "<<data_time(ALK_time,f,3)<<" "<<f<<" "<<fleet_area(f)<<" "<<repli<<" "<<gen_a(f,i)<<" AGE "
-         <<mkt_a(f,i)<<" "<<ageerr_type_a(f,i)<<" "<<s_off<<" "<<1<<" "<<nlength<<endl;}
+         <<mkt_a(f,i)<<" "<<AgeKey_type_a(f,i)<<" "<<s_off<<" "<<1<<" "<<nlength<<endl;}
        }
       }  //end have agecomp data
 
@@ -2940,10 +2940,10 @@ FUNCTION void write_bigoutput()
         if(z<=n_abins) s_off=1; else s_off=2;
         t1=obs_ms_n(f,i,z);
         //  where:  obs_ms_n(f,i,z)=sqrt(var_adjust(6,f)*obs_ms_n(f,i,z));
-        if(ageerr_type_ms(f,i)>0) {anystring2=" L@A ";} else {anystring2=" W@A ";}
+        if(AgeKey_type_ms(f,i)>0) {anystring2=" L@A ";} else {anystring2=" W@A ";}
         if(t1>0.) t1=square(t1);
         SS_compout<<header_ms(f,i,1)<<" "<<real_month<<" "<<Show_Time2(ALK_time)(2,3)<<" "<<data_time(ALK_time,f,3)<<" "<<f<<" "<<fleet_area(f)<<" "<<repli<<" "<<gen_ms(f,i)<<anystring2<<mkt_ms(f,i)<<" "<<
-         ageerr_type_ms(f,i)<<" "<<s_off<<" "<<exp_ms_sq(f,i,z)<<" "<<nlen_bin<<" "<<age_bins(z)<<" "<<
+         AgeKey_type_ms(f,i)<<" "<<s_off<<" "<<exp_ms_sq(f,i,z)<<" "<<nlen_bin<<" "<<age_bins(z)<<" "<<
          obs_ms(f,i,z)<<" "<<exp_ms(f,i,z)<<" ";
         if(obs_ms(f,i,z)>0. && t1>0. && header_ms(f,i,3)>0)
         {
@@ -2960,7 +2960,7 @@ FUNCTION void write_bigoutput()
         }
         SS_compout<<" NA NA "<<anystring<<endl;
         if(z==n_abins || z==n_abins2) SS_compout<<header_ms(f,i,1)<<" "<<real_month<<" "<<Show_Time2(ALK_time)(2,3)<<" "<<data_time(ALK_time,f,3)<<" "<<f<<" "<<fleet_area(f)<<" "<<repli<<" "<<gen_ms(f,i)<<
-         anystring2<<mkt_ms(f,i)<<" "<<ageerr_type_ms(f,i)<<" "<<s_off<<" "<<1<<" "<<nlen_bin<<endl;
+         anystring2<<mkt_ms(f,i)<<" "<<AgeKey_type_ms(f,i)<<" "<<s_off<<" "<<1<<" "<<nlen_bin<<endl;
        }
       }  //end have data
       }
@@ -3012,7 +3012,7 @@ FUNCTION void write_bigoutput()
             s_off=1;
             // The following columns printed by the section:
             // Yr Month Seas Subseas Time Fleet Area Repl. Sexes Kind Part
-            // Ageerr Sex Lbin_lo Lbin_hi Bin Obs Exp 
+            // AgeKey Sex Lbin_lo Lbin_hi Bin Obs Exp 
             SS_compout<<SzFreq_obs_hdr(iobs,1)<<" "<<real_month<<" "<<Show_Time2(ALK_time)(2,3)<<" "<<data_time(ALK_time,f,3)<<" "<<f<<" "<<fleet_area(f)<<" "<<repli<<" "<<gg<<" SIZE "<<p<<" "<<k;
             if(z>SzFreq_Nbins(k)) s_off=2;
             SS_compout<<" "<<s_off<<" "<<SzFreq_units(k)<<" "<<SzFreq_scale(k)<<" ";
@@ -3053,7 +3053,7 @@ FUNCTION void write_bigoutput()
       }
     }
 
-// Yr Month Seas Subseas Time Fleet Area Repl. Sexes Kind Part Ageerr Sex Lbin_lo Lbin_hi Bin Obs Exp Pearson N effN Like Cum_obs Cum_exp SuprPer Used?
+// Yr Month Seas Subseas Time Fleet Area Repl. Sexes Kind Part AgeKey Sex Lbin_lo Lbin_hi Bin Obs Exp Pearson N effN Like Cum_obs Cum_exp SuprPer Used?
     if(Do_Morphcomp>0)
     {
       for (iobs=1;iobs<=Morphcomp_nobs;iobs++)
@@ -3083,7 +3083,7 @@ FUNCTION void write_bigoutput()
           temp1=s-1.;
 //          temp=float(y)+temp1/float(nseas);
           temp = float(y)+0.01*int(100.*(azero_seas(s)+seasdur_half(s)));
-          // Fill in columns for: Yr Month Seas Subseas Time Fleet Area Repl. Sexes Kind Part Ageerr Sex Lbin_lo Lbin_hi Bin
+          // Fill in columns for: Yr Month Seas Subseas Time Fleet Area Repl. Sexes Kind Part AgeKey Sex Lbin_lo Lbin_hi Bin
           SS_compout<<y<<" NA "<<s<<" NA "<<temp<<" NA "<<TG_release(TG,2)<<" "<<TG<<" "<<TG_release(TG,6)<<" TAG2 NA NA NA NA NA "<<
           // TAG2 values (total recaptures)
           // Fill in columns for: Obs Exp Pearson Nsamp_adj Nsamp_in effN Like Cum_obs Cum_exp SuprPer Used?
@@ -3093,7 +3093,7 @@ FUNCTION void write_bigoutput()
           if(Nfleet>1)
           for (f=1;f<=Nfleet;f++)
           {
-            // Fill in columns for: Yr Month Seas Subseas Time Fleet Area Repl. Sexes Kind Part Ageerr Sex Lbin_lo Lbin_hi 
+            // Fill in columns for: Yr Month Seas Subseas Time Fleet Area Repl. Sexes Kind Part AgeKey Sex Lbin_lo Lbin_hi 
             SS_compout<<y<<" NA "<<s<<" NA "<<temp<<" "<<f<<" "<<fleet_area(f)<<" "<<TG<<" "<<TG_release(TG,6)<<" TAG1 NA NA NA NA NA "<<
             // Fill in columns for:: Bin Obs Exp Pearson Nsamp_adj Nsamp_in 
             f<<" "<<TG_recap_obs(TG,TG_t,f)<<" "<<TG_recap_exp(TG,TG_t,f)<<" NA "<<TG_recap_obs(TG,TG_t,0)<<" NA "

@@ -18,49 +18,49 @@ FUNCTION void get_age_age(const int Keynum, const int AgeKey_StartAge, const int
    //  FUTURE: calculate adjustment to oldest age based on continued ageing of old fish
     age_age(Keynum).initialize();
     dvariable age;
-    dvar_vector age_err_parm(1,7);
+    dvar_vector AgeKey_parm(1,7);
     dvariable temp;
 
-  if(Keynum==Use_AgeKeyZero)
+  if(Keynum==Use_AgeKeyParm)
   {
-//  SS_Label_45.1 set age_err_parm to mgp_adj, so can be time-varying according to MGparm options
+//  SS_Label_45.1 set AgeKey_parm to mgp_adj, so can be time-varying according to MGparm options
     for (a=1;a<=7;a++)
-    {age_err_parm(a)=mgp_adj(AgeKeyParm-1+a);}
-      age_err(Use_AgeKeyZero,1)(0,AgeKey_StartAge)=r_ages(0,AgeKey_StartAge)+0.5;
-      age_err(Use_AgeKeyZero,2)(0,AgeKey_StartAge)=age_err_parm(5)*(r_ages(0,AgeKey_StartAge)+0.5)/(age_err_parm(1)+0.5);
+    {AgeKey_parm(a)=mgp_adj(AgeKeyParm-1+a);}
+      AgeKey(Use_AgeKeyParm,1)(0,AgeKey_StartAge)=r_ages(0,AgeKey_StartAge)+0.5;
+      AgeKey(Use_AgeKeyParm,2)(0,AgeKey_StartAge)=AgeKey_parm(5)*(r_ages(0,AgeKey_StartAge)+0.5)/(AgeKey_parm(1)+0.5);
 //  SS_Label_45.3 calc ageing bias
       if(AgeKey_Linear1==0)
       {
-        age_err(Use_AgeKeyZero,1)(AgeKey_StartAge,nages)=0.5 + r_ages(AgeKey_StartAge,nages) + age_err_parm(2)+(age_err_parm(3)-age_err_parm(2))*
-        (1.0-mfexp(-age_err_parm(4)*(r_ages(AgeKey_StartAge,nages)-age_err_parm(1)))) / (1.0-mfexp(-age_err_parm(4)*(r_ages(nages)-age_err_parm(1))));
+        AgeKey(Use_AgeKeyParm,1)(AgeKey_StartAge,nages)=0.5 + r_ages(AgeKey_StartAge,nages) + AgeKey_parm(2)+(AgeKey_parm(3)-AgeKey_parm(2))*
+        (1.0-mfexp(-AgeKey_parm(4)*(r_ages(AgeKey_StartAge,nages)-AgeKey_parm(1)))) / (1.0-mfexp(-AgeKey_parm(4)*(r_ages(nages)-AgeKey_parm(1))));
       }
       else
       {
-        age_err(Use_AgeKeyZero,1)(AgeKey_StartAge,nages)=0.5 + r_ages(AgeKey_StartAge,nages) + age_err_parm(2)+(age_err_parm(3)-age_err_parm(2))*
-        (r_ages(AgeKey_StartAge,nages)-age_err_parm(1))/(r_ages(nages)-age_err_parm(1));
+        AgeKey(Use_AgeKeyParm,1)(AgeKey_StartAge,nages)=0.5 + r_ages(AgeKey_StartAge,nages) + AgeKey_parm(2)+(AgeKey_parm(3)-AgeKey_parm(2))*
+        (r_ages(AgeKey_StartAge,nages)-AgeKey_parm(1))/(r_ages(nages)-AgeKey_parm(1));
       }
 //  SS_Label_45.4 calc ageing variance
       if(AgeKey_Linear2==0)
       {
-        age_err(Use_AgeKeyZero,2)(AgeKey_StartAge,nages)=age_err_parm(5)+(age_err_parm(6)-age_err_parm(5))*
-        (1.0-mfexp(-age_err_parm(7)*(r_ages(AgeKey_StartAge,nages)-age_err_parm(1)))) / (1.0-mfexp(-age_err_parm(7)*(r_ages(nages)-age_err_parm(1))));
+        AgeKey(Use_AgeKeyParm,2)(AgeKey_StartAge,nages)=AgeKey_parm(5)+(AgeKey_parm(6)-AgeKey_parm(5))*
+        (1.0-mfexp(-AgeKey_parm(7)*(r_ages(AgeKey_StartAge,nages)-AgeKey_parm(1)))) / (1.0-mfexp(-AgeKey_parm(7)*(r_ages(nages)-AgeKey_parm(1))));
       }
       else
       {
-        age_err(Use_AgeKeyZero,2)(AgeKey_StartAge,nages)=age_err_parm(5)+(age_err_parm(6)-age_err_parm(5))*
-        (r_ages(AgeKey_StartAge,nages)-age_err_parm(1))/(r_ages(nages)-age_err_parm(1));
+        AgeKey(Use_AgeKeyParm,2)(AgeKey_StartAge,nages)=AgeKey_parm(5)+(AgeKey_parm(6)-AgeKey_parm(5))*
+        (r_ages(AgeKey_StartAge,nages)-AgeKey_parm(1))/(r_ages(nages)-AgeKey_parm(1));
       }
   }
 
 //  SS_Label_45.5 calc distribution of age' for each age
    for (a=0; a<=nages;a++)
     {
-     if(age_err(Keynum,1,a)<=-1)
-       {age_err(Keynum,1,a)=r_ages(a)+0.5;}
-     age=age_err(Keynum,1,a);
+     if(AgeKey(Keynum,1,a)<=-1)
+       {AgeKey(Keynum,1,a)=r_ages(a)+0.5;}
+     age=AgeKey(Keynum,1,a);
 
      for (b=2;b<=n_abins;b++)     //  so the lower tail is accumulated into the first age' bin
-     age_age(Keynum,b,a)= cumd_norm((age_bins(b)-age)/age_err(Keynum,2,a));
+     age_age(Keynum,b,a)= cumd_norm((age_bins(b)-age)/AgeKey(Keynum,2,a));
 
      for (b=1;b<=n_abins-1;b++)
        age_age(Keynum,b,a) = age_age(Keynum,b+1,a)-age_age(Keynum,b,a);
@@ -80,6 +80,74 @@ FUNCTION void get_age_age(const int Keynum, const int AgeKey_StartAge, const int
     return;
   }  //  end age_age key
 
+//********************************************************************
+ /*  SS_Label_FUNCTION 45 get_age_age advanced version*/
+FUNCTION void get_age_age2(const int Keynum, const int AgeKey_StartAge, const int AgeKey_Linear1, const int AgeKey_Linear2)
+  {
+   //  FUTURE: calculate adjustment to oldest age based on continued ageing of old fish
+    age_age(Keynum).initialize();
+    dvariable age;
+    dvar_vector AgeKey_parm(1,7);
+    dvariable temp;
+
+  if(Keynum==Use_AgeKeyParm)
+  {
+//  SS_Label_45.1 set AgeKey_parm to mgp_adj, so can be time-varying according to MGparm options
+    for (a=1;a<=7;a++)
+    {AgeKey_parm(a)=mgp_adj(AgeKeyParm-1+a);}
+      AgeKey(Use_AgeKeyParm,1)(0,AgeKey_StartAge)=r_ages(0,AgeKey_StartAge)+0.5;
+      AgeKey(Use_AgeKeyParm,2)(0,AgeKey_StartAge)=AgeKey_parm(5)*(r_ages(0,AgeKey_StartAge)+0.5)/(AgeKey_parm(1)+0.5);
+//  SS_Label_45.3 calc ageing bias
+      if(AgeKey_Linear1==0)
+      {
+        AgeKey(Use_AgeKeyParm,1)(AgeKey_StartAge,nages)=0.5 + r_ages(AgeKey_StartAge,nages) + AgeKey_parm(2)+(AgeKey_parm(3)-AgeKey_parm(2))*
+        (1.0-mfexp(-AgeKey_parm(4)*(r_ages(AgeKey_StartAge,nages)-AgeKey_parm(1)))) / (1.0-mfexp(-AgeKey_parm(4)*(r_ages(nages)-AgeKey_parm(1))));
+      }
+      else
+      {
+        AgeKey(Use_AgeKeyParm,1)(AgeKey_StartAge,nages)=0.5 + r_ages(AgeKey_StartAge,nages) + AgeKey_parm(2)+(AgeKey_parm(3)-AgeKey_parm(2))*
+        (r_ages(AgeKey_StartAge,nages)-AgeKey_parm(1))/(r_ages(nages)-AgeKey_parm(1));
+      }
+//  SS_Label_45.4 calc ageing variance
+      if(AgeKey_Linear2==0)
+      {
+        AgeKey(Use_AgeKeyParm,2)(AgeKey_StartAge,nages)=AgeKey_parm(5)+(AgeKey_parm(6)-AgeKey_parm(5))*
+        (1.0-mfexp(-AgeKey_parm(7)*(r_ages(AgeKey_StartAge,nages)-AgeKey_parm(1)))) / (1.0-mfexp(-AgeKey_parm(7)*(r_ages(nages)-AgeKey_parm(1))));
+      }
+      else
+      {
+        AgeKey(Use_AgeKeyParm,2)(AgeKey_StartAge,nages)=AgeKey_parm(5)+(AgeKey_parm(6)-AgeKey_parm(5))*
+        (r_ages(AgeKey_StartAge,nages)-AgeKey_parm(1))/(r_ages(nages)-AgeKey_parm(1));
+      }
+  }
+
+//  SS_Label_45.5 calc distribution of age' for each age
+   for (a=0; a<=nages;a++)
+    {
+     if(AgeKey(Keynum,1,a)<=-1)
+       {AgeKey(Keynum,1,a)=r_ages(a)+0.5;}
+     age=AgeKey(Keynum,1,a);
+
+     for (b=2;b<=n_abins;b++)     //  so the lower tail is accumulated into the first age' bin
+     age_age(Keynum,b,a)= cumd_norm((age_bins(b)-age)/AgeKey(Keynum,2,a));
+
+     for (b=1;b<=n_abins-1;b++)
+       age_age(Keynum,b,a) = age_age(Keynum,b+1,a)-age_age(Keynum,b,a);
+
+     age_age(Keynum,n_abins,a) = 1.-age_age(Keynum,n_abins,a) ;     // so remainder is accumulated into the last age' bin
+
+    }
+
+     if(gender == 2)                     //  copy ageing error matrix into male location also
+     {
+      L2=n_abins;
+      A2=nages+1;
+      for (b=1;b<=n_abins;b++)
+      for (a=0;a<=nages;a++)
+       {age_age(Keynum,b+L2,a+A2)=age_age(Keynum,b,a);}
+     }
+    return;
+  }  //  end age_age key
 
 FUNCTION void get_catch_mult(int y, int catch_mult_pointer)
   {

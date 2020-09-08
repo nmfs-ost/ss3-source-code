@@ -149,20 +149,20 @@ FUNCTION void get_initial_conditions()
     }
   }
 
-  if(Use_AgeKeyZero>0)
+  if(Use_AgeKeyParm>0)
   {
-    if(MG_active(6)>0) get_age_age(Use_AgeKeyZero,AgeKey_StartAge,AgeKey_Linear1,AgeKey_Linear2); //  call function to get the age_age key
+    if(MG_active(6)>0) get_age_age(Use_AgeKeyParm,AgeKey_StartAge,AgeKey_Linear1,AgeKey_Linear2); //  call function to get the age_age key
     if(save_for_report==1 && store_agekey_add>0)
     	{
-      	save_agekey_count=N_ageerr+1;  //  first blank key after the used keys
-    		age_age(save_agekey_count)=age_age(Use_AgeKeyZero);
-    		age_err(save_agekey_count)=age_err(Use_AgeKeyZero);
+      	save_agekey_count=N_AgeKey+1;  //  first blank key after the used keys
+    		age_age(save_agekey_count)=age_age(Use_AgeKeyParm);
+    		AgeKey(save_agekey_count)=AgeKey(Use_AgeKeyParm);
     	}
  #ifdef DO_ONCE
     if(do_once==1) 
     	{
-    		cout<<" ageerr_key OK"<<endl;
-    		echoinput<<" ageerr_key recalc in "<<y<<endl;
+    		cout<<" AgeKey_key OK"<<endl;
+    		echoinput<<" AgeKey_key recalc in "<<y<<endl;
     	}
  #endif
   }
@@ -627,20 +627,20 @@ FUNCTION void get_time_series()
         get_catch_mult(y, catch_mult_pointer);
       }
       
-      if(Use_AgeKeyZero>0)
+      if(Use_AgeKeyParm>0)
       {
         if(timevary_MG(y,6)>0) 
         {
-          get_age_age(Use_AgeKeyZero,AgeKey_StartAge,AgeKey_Linear1,AgeKey_Linear2); //  call function to get the age_age key
+          get_age_age(Use_AgeKeyParm,AgeKey_StartAge,AgeKey_Linear1,AgeKey_Linear2); //  call function to get the age_age key
           if(save_for_report==1 && store_agekey_add>0)
         	{
           	save_agekey_count++;  //  next blank key after the used keys
-        		age_age(save_agekey_count)=age_age(Use_AgeKeyZero);
-        		age_err(save_agekey_count)=age_err(Use_AgeKeyZero);
+        		age_age(save_agekey_count)=age_age(Use_AgeKeyParm);
+        		AgeKey(save_agekey_count)=AgeKey(Use_AgeKeyParm);
         	}
 
  #ifdef DO_ONCE
-          if(do_once==1) echoinput<<" ageerr_key recalc in "<<y<<endl;
+          if(do_once==1) echoinput<<" AgeKey_key recalc in "<<y<<endl;
  #endif
         }
       }

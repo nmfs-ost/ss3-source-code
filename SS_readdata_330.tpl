@@ -1597,17 +1597,18 @@
 
 !!//  SS_Label_Info_2.8 #Start age composition data section
 !!//  SS_Label_Info_2.8.1 #Read Age bin and ageing error vectors
+  int Age_Method // 0 = no ages; >=1 uses as N_abins; -1 invokes customized methods
   int n_abins // age classes for data
   int n_abins1;
   int n_abins2;
-  int Use_AgeKeyZero;  //  set to ageerr_type for the age data that use parameter approach
+  int Use_AgeKeyParm;  //  set to AgeKey_type for the age data that use parameter approach
   int AgeKeyParm;  //  holds starting parm number for age error parameters
   int store_agekey_add;  //  when parameter based key uses blocks, this stores dimension
   int save_agekey_count;  //  counter for storing those keys
   int AgeKey_StartAge;
   int AgeKey_Linear1;
   int AgeKey_Linear2;
-  int N_ageerr   // number of ageing error matrices to be calculated
+  int N_AgeKey   // number of ageing error matrices to be calculated
   vector min_tail_A(1,Nfleet)  //min_proportion_for_compressing_tails_of_observed_composition
   vector min_comp_A(1,Nfleet)  //  small value added to each composition bins
   ivector CombGender_A(1,Nfleet)  //  combine genders through this age bin (0 or -1 for no combine)
@@ -1624,8 +1625,8 @@
   ivector N_suprper_a(1,Nfleet)      // N super_yrs per obs
 
  LOCAL_CALCS
-    Use_AgeKeyZero=0;
-    N_ageerr=0;
+    Use_AgeKeyParm=0;
+    N_AgeKey=0;
     n_abins1=0;
     n_abins2=0;
   nobsa_rd=0;
@@ -1633,38 +1634,49 @@
   Nobs_a.initialize();
   Nobs_a_use.initialize();
   N_suprper_a.initialize();
-  echoinput<<"Enter the number of agebins, or 0 if no age data"<<endl;
-  *(ad_comm::global_datafile) >> n_abins;
-  echoinput<<n_abins<<" N age bins "<<endl;
-  n_abins1=n_abins+1;
-  n_abins2=gender*n_abins;
+  echoinput<<"Enter the number of agebins, or 0 if no age data, or -1 to invoke customized methods"<<endl;
+  *(ad_comm::global_datafile) >> Age_Method;
+  echoinput<<Age_Method<<" Age_Method "<<endl;
+  if(Age_Method>0)
+  	{
+  		n_abins=Age_Method;
+      echoinput<<n_abins<<" N age bins "<<endl;
+      n_abins1=n_abins+1;
+      n_abins2=gender*n_abins;
+  	}
+  else
+		{
+			n_abins=1;
+      n_abins1=n_abins+1;
+      n_abins2=gender*n_abins;
+		}
  END_CALCS
 
   vector age_bins1(1,n_abins) // age classes for data
   vector age_bins(1,n_abins2) // age classes for data  female then male end-to-end
   vector age_bins_mean(1,n_abins2)  //  holds mean age for each data age bin
-  3darray age_err_rd(1,1,1,1,0,0)  
+  3darray AgeKey_rd(1,1,1,1,0,0)  
 
  LOCAL_CALCS
   age_bins1.initialize();
   age_bins.initialize();
   age_bins_mean.initialize();
   
-  if(n_abins>0)
+  if(Age_Method>0)
   {
     *(ad_comm::global_datafile) >> age_bins1;
     echoinput << age_bins1<< " agebins "  << endl;
 
-    *(ad_comm::global_datafile) >> N_ageerr;   // number of ageing error matrices to be calculated
-    echoinput<<N_ageerr<<" N age error defs "<<endl;
+    *(ad_comm::global_datafile) >> N_AgeKey;   // number of ageing error matrices to be calculated
+    echoinput<<N_AgeKey<<" N age error defs "<<endl;
     
-    age_err_rd.deallocate();
-    age_err_rd.allocate(1,N_ageerr,1,2,0,nages);
-    age_err_rd.initialize();
-    for(j=1;j<=N_ageerr;j++)
+    AgeKey_rd.deallocate();
+    AgeKey_rd.allocate(1,N_AgeKey,1,2,0,nages);
+    AgeKey_rd.initialize();
+    for(j=1;j<=N_AgeKey;j++)
     {
-      *(ad_comm::global_datafile) >> age_err_rd(j,1)(0,nages);
-      *(ad_comm::global_datafile) >> age_err_rd(j,2)(0,nages);
+      *(ad_comm::global_datafile) >> AgeKey_rd(j,1)(0,nages);
+      *(ad_comm::global_datafile) >> AgeKey_rd(j,2)(0,nages);
     }
   }
   else
@@ -1676,23 +1688,23 @@
  LOCAL_CALCS
   Nobs_a=0;
   N_suprper_a=0;
-  if(n_abins>0)
+  if(Age_Method>0)
   {
-    echoinput<<"ageerror_definitions_as_read"<<endl<<age_err_rd<<endl;
-    Use_AgeKeyZero=0;
-    if(N_ageerr>0)
+    echoinput<<"AgeKey_definitions_as_read"<<endl<<AgeKey_rd<<endl;
+    Use_AgeKeyParm=0;
+    if(N_AgeKey>0)
     {
-      for (i=1;i<=N_ageerr;i++)
+      for (i=1;i<=N_AgeKey;i++)
       {
-        if(age_err_rd(i,2,0)<0.) {  //  set flag for setup of age error parameters
-          if (Use_AgeKeyZero>0) 
+        if(AgeKey_rd(i,2,0)<0.) {  //  set flag for setup of age error parameters
+          if (Use_AgeKeyParm>0) 
           {
             N_warn++; warning<<"SS can only create 1 age error definition from parameters, ";
             warning<<"but there are > 1 negative sd values for age 0 in age error definitions."<<endl;
 			echoinput<<"Error: There are > 1 negative sd values for age 0 in age error definitions."<<endl;
             cout<<" EXIT - see warning "<<endl; exit(1);
           }
-          Use_AgeKeyZero=i;
+          Use_AgeKeyParm=i;
         }
       }
     }
@@ -1730,9 +1742,9 @@
     *(ad_comm::global_datafile) >> Lbin_method;
     echoinput << Lbin_method<< " Lbin method for defined size ranges "  << endl;
 
-    if(nobsa_rd>0 && N_ageerr==0)
+    if(nobsa_rd>0 && N_AgeKey==0)
     {
-      N_warn++; cout<<" EXIT - see warning "<<endl; warning<<" must define ageerror vectors because age data exist"<<endl; exit(1);
+      N_warn++; cout<<" EXIT - see warning "<<endl; warning<<" must define AgeKeyor vectors because age data exist"<<endl; exit(1);
     }
     for (f=1;f<=Nfleet;f++)
     {
@@ -1783,7 +1795,7 @@
     {
      f=abs(Age_Data[i](3));
      if(Age_Data[i](9)<0) {N_warn++; cout<<" EXIT - see warning "<<endl; warning<<"Error: negative sample size in age data no longer valid as indicator of skip data or superperiods "<<endl; exit(1);}
-     if(Age_Data[i](6)==0 || Age_Data[i](6)>N_ageerr) {N_warn++; cout<<" EXIT - see warning "<<endl; warning<<"Error: undefined age_error type: "<<Age_Data[i](6)<<"  in obs: "<<i<<endl; exit(1);}
+     if(Age_Data[i](6)==0 || Age_Data[i](6)>N_AgeKey) {N_warn++; cout<<" EXIT - see warning "<<endl; warning<<"Error: undefined AgeKeyor type: "<<Age_Data[i](6)<<"  in obs: "<<i<<endl; exit(1);}
      if(Age_Data[i](2)<0) N_suprper_a(f)++;     // count the number of starts and ends of super-periods if seas<0 or sampsize<0
 
      Nobs_a(f)++;
@@ -1813,7 +1825,7 @@
   3darray obs_a_all(1,2,1,Nfleet,1,n_abins)  //  for the sum of all age comp data
   matrix  nsamp_a(1,Nfleet,1,Nobs_a)
   matrix  nsamp_a_read(1,Nfleet,1,Nobs_a)
-  imatrix  ageerr_type_a(1,Nfleet,1,Nobs_a)
+  imatrix  AgeKey_type_a(1,Nfleet,1,Nobs_a)
   imatrix  gen_a(1,Nfleet,1,Nobs_a)
   imatrix  mkt_a(1,Nfleet,1,Nobs_a)
   3darray  Lbin_filter(1,Nfleet,1,Nobs_a,1,nlength2)
@@ -1900,11 +1912,11 @@
           nsamp_a_read(f,j)=Age_Data[i](9);  // assigned sample size for observation
           nsamp_a(f,j)=nsamp_a_read(f,j);
 
-           if(Age_Data[i](6)>N_ageerr)
+           if(Age_Data[i](6)>N_AgeKey)
            {
-              N_warn++; cout<<" EXIT - see warning "<<endl; warning<<" ageerror type must be <= "<<N_ageerr<<endl; exit(1);
+              N_warn++; cout<<" EXIT - see warning "<<endl; warning<<" AgeKeyor type must be <= "<<N_AgeKey<<endl; exit(1);
            }
-           ageerr_type_a(f,j)=Age_Data[i](6);
+           AgeKey_type_a(f,j)=Age_Data[i](6);
 
   //  SS_Label_Info_2.8.4 #Create super-periods for age compositions
            if(in_superperiod==0 && Age_Data[i](2)<0)  // start a super-year  ALL observations must be continguous in the file
@@ -2194,7 +2206,7 @@
   3darray obs_ms(1,Nfleet,1,Nobs_ms,1,n_abins2)
   3darray obs_ms_n(1,Nfleet,1,Nobs_ms,1,n_abins2)
   3darray obs_ms_n_read(1,Nfleet,1,Nobs_ms,1,n_abins2)
-  imatrix  ageerr_type_ms(1,Nfleet,1,Nobs_ms)
+  imatrix  AgeKey_type_ms(1,Nfleet,1,Nobs_ms)
   imatrix  gen_ms(1,Nfleet,1,Nobs_ms)
   imatrix  mkt_ms(1,Nfleet,1,Nobs_ms)
   3darray header_ms(1,Nfleet,1,Nobs_ms,0,7)
@@ -2257,12 +2269,12 @@
 
            gen_ms(f,j)=sizeAge_Data[i](4);
            mkt_ms(f,j)=sizeAge_Data[i](5);
-           if(abs(sizeAge_Data[i](6))>N_ageerr)
+           if(abs(sizeAge_Data[i](6))>N_AgeKey)
            {
               N_warn++;cout<<" EXIT - see warning "<<endl;
-              warning<<" in meansize-at-age, ageerror type must be <= "<<N_ageerr<<endl; exit(1);
+              warning<<" in meansize-at-age, AgeKeyor type must be <= "<<N_AgeKey<<endl; exit(1);
            }
-           ageerr_type_ms(f,j)=abs(sizeAge_Data[i](6));
+           AgeKey_type_ms(f,j)=abs(sizeAge_Data[i](6));
 
   //  SS_Label_Info_2.9.1 #Create super-periods for meansize data
            if(sizeAge_Data[i](2)<0)  // start/stop a super-period  ALL observations must be continguous in the file
@@ -3256,7 +3268,7 @@
         echoinput<<" allocation assignment: "<<tempvec(1,k)<<endl;
       } while (ender==0);
       j=Fcast_Catch_Allocation_list.size()-1;
-
+         echoinput<<j<<endl;
       if (j == 0)
       {
         N_warn++;
@@ -3275,6 +3287,7 @@
             {
               Fcast_Catch_Allocation(y,a)=Fcast_Catch_Allocation_list[k](a+1);
             }
+            echoinput<<Fcast_Catch_Allocation(y)<<endl;
           }
         }
         echoinput<<"processed allocation groups by year"<<endl;

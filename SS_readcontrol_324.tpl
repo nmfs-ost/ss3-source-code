@@ -963,7 +963,7 @@
     }
   }
 
-  if(Use_AgeKeyZero>0)
+  if(Use_AgeKeyParm>0)
   {
     AgeKeyParm=ParCount2+1;
     for (k=1;k<=7;k++)
@@ -1038,7 +1038,7 @@
     }
   }
 
-  if(Use_AgeKeyZero>0)
+  if(Use_AgeKeyParm>0)
   {
 //    AgeKeyParm=ParCount2+1;
     for (k=1;k<=7;k++)
@@ -1148,10 +1148,10 @@
    mgp_type(Ip,MGP_CGD-1)=4;   // recruit apportionments
    mgp_type(MGP_CGD)=2;   // cohort growth dev
    if(do_migration>0)  mgp_type(MGP_CGD+1,N_MGparm)=5;  // note that it fills until end of MGparm list, but some get overwritten
-   if(Use_AgeKeyZero>0) mgp_type(AgeKeyParm,N_MGparm)=6;
+   if(Use_AgeKeyParm>0) mgp_type(AgeKeyParm,N_MGparm)=6;
    if(catch_mult_pointer>0) mgp_type(catch_mult_pointer,N_MGparm)=7;
    if(frac_female_pointer>0) for(f=frac_female_pointer; f<=frac_female_pointer+N_GP-1;f++) mgp_type(f)=3;
-   echoinput<<"mgparm_type for each parm: 1=M; 2=growth; 3=wtlen,mat,fec,hermo,sexratio; 4=recr; 5=migr; 6=ageerror; 7=catchmult "<<endl<<mgp_type<<endl;
+   echoinput<<"mgparm_type for each parm: 1=M; 2=growth; 3=wtlen,mat,fec,hermo,sexratio; 4=recr; 5=migr; 6=AgeKeyor; 7=catchmult "<<endl<<mgp_type<<endl;
    echoinput<<"Now read env, block/trend, seasonal, and dev adjustments to MGparms "<<endl;
 
 //   MGparm_env.initialize();   //  will store the index of environ fxns here
@@ -1306,7 +1306,7 @@
 !!//  SS_Label_Info_4.5.4 #Set up time-varying parameters for MG parms
   int timevary_parm_cnt_MG;
   int timevary_parm_start_MG;
-  ivector MG_active(0,7)  // 0=all, 1=M, 2=growth 3=wtlen, 4=recr_dist, 5=migration, 6=ageerror, 7=catchmult
+  ivector MG_active(0,7)  // 0=all, 1=M, 2=growth 3=wtlen, 4=recr_dist, 5=migration, 6=AgeKeyor, 7=catchmult
   ivector MGparm_timevary(1,N_MGparm)  //  holds index in timevary_def used by this base parameter
   imatrix timevary_MG(styr-3,YrMax+1,0,7)  // goes to yrmax+1 to allow referencing in forecast, but only endyr+1 is checked
   int tvparm;

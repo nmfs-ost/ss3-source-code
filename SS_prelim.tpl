@@ -955,16 +955,16 @@ PRELIMINARY_CALCS_SECTION
     }
 
 //  SS_Label_Info_6.8.8 #Call fxn get_age_age()  transition matrix from real age to observed age'
-    if(N_ageerr>0)
+    if(N_AgeKey>0)
     {
       AgeKey_StartAge=0;
       AgeKey_Linear1=1;
       AgeKey_Linear2=1;
-      for (j=1;j<=N_ageerr;j++)
+      for (j=1;j<=N_AgeKey;j++)
       {
-        if(j!=Use_AgeKeyZero)
+        if(j!=Use_AgeKeyParm)
         {
-          age_err(j)=age_err_rd(j);  //  this is an age err definition that has been read
+          AgeKey(j)=AgeKey_rd(j);  //  this is an age err definition that has been read
         }
         else
         {
