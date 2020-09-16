@@ -85,7 +85,12 @@ FUNCTION void Make_AgeLength_Key(const int s, const int subseas)
 
             use_Ave_Size_W=Ave_Size(t,subseas,gstart);
             use_SD_Size=Sd_Size_within(ALK_idx,gstart);
-            if(N_platoon>1) use_Ave_Size_W += shadow(gp2)*Sd_Size_between(ALK_idx,gstart);
+            if(N_platoon>1) 
+            	{
+            		use_Ave_Size_W += shadow(gp2)*Sd_Size_between(ALK_idx,gstart);
+            		Ave_Size(t,subseas,g)=use_Ave_Size_W;  // only needed for reporting because use_Ave_Size_W used for calcs
+            		Sd_Size_within(ALK_idx,g)=use_SD_Size; //  ditto; also same sd is used for all platoons
+            	}
 
             int ALK_phase=0;
             if(Grow_logN==0)
