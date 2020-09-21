@@ -267,13 +267,36 @@ FUNCTION void write_bigoutput()
   if(pick_report_use(4)=="Y")
   {
   	  SS2out<<endl<<pick_report_name(4)<<endl;
-    SS2out<<"Index  Phase  MinYr  MaxYr  stddev  Rho  Like_devs  Like_se  mean  rmse"<<endl;
+    SS2out<<"Index  Phase  MinYr  MaxYr  N   stddev  Rho  Like_devs  Like_se  mean  rmse  var sqrt(var) est_rho  D-W"<<endl;
     for(i=1;i<=N_parm_dev;i++)
     {
-      SS2out<<i<<" "<<parm_dev_PH(i)<<" "<<parm_dev_minyr(i)<<" "<<parm_dev_maxyr(i)<<" "<<parm_dev_stddev(i)<<" "<<
+    	dvector for_AR1(parm_dev_minyr(i),parm_dev_maxyr(i));
+    	dvector for_var(parm_dev_minyr(i),parm_dev_maxyr(i));
+    	int y1=parm_dev_minyr(i);
+    	int y2=parm_dev_maxyr(i);
+    	double count;
+    	count=float(y2-y1+1.);
+    	double mean;
+    	mean=value(sum(parm_dev(i))/count);
+    	for (j=y1+1;j<=y2;j++) {for_AR1(j) = value(parm_dev(i,j-1))-mean;}
+    	for_var = value(parm_dev(i))-mean;
+    	double cross;
+    	double Durbin;
+    	double var;
+    	var=sumsq(for_var);
+    	cross=0.;
+    	Durbin=0;
+    	for(j=y1+1;j<=y2;j++) 
+    	{
+    		cross+=for_var(j)*for_AR1(j);
+    		Durbin+=square(for_var(j)-for_AR1(j));
+    	}
+    	cross/=(count-1.);
+    	Durbin/=(var+1.0e-09);
+    	var/=count;
+      SS2out<<i<<" "<<parm_dev_PH(i)<<" "<<y1<<" "<<y2<<" "<<count<<" "<<parm_dev_stddev(i)<<" "<<
       parm_dev_rho(i)<<" "<<parm_dev_like(i)<<" "<<
-      sum(parm_dev(i))/float(parm_dev_maxyr(i)-parm_dev_minyr(i)+1.)<<" "<<
-      sqrt(sumsq(parm_dev(i)+1.0e-9)/float(parm_dev_maxyr(i)-parm_dev_minyr(i)+1.))<<endl;
+      sum(parm_dev(i))/count<<" "<<sqrt(sumsq(parm_dev(i))/(count))<<" "<<var<<" "<<sqrt(var)<<" "<<cross/var<<" "<<Durbin<<" "<<endl;
     }
   }
   if(SzFreq_Nmeth>0)
@@ -1105,6 +1128,10 @@ FUNCTION void write_bigoutput()
    if(pick_report_use(19)=="Y") {
 
   rmse = 0.0;  n_rmse = 0.0;
+    	double cross=0.0;
+    	double Durbin=0.0;
+    	double var=0.0;
+    	
    for (y=recdev_first;y<=recdev_end;y++)
    {
      temp1=recdev(y);
@@ -1114,6 +1141,12 @@ FUNCTION void write_bigoutput()
      }
      else
      {
+       var+=value(square(temp1));
+       if(y>recdev_start) // so not first year
+       	{
+       		cross+=value(temp1*recdev(y-1));
+       		Durbin+=value(square(temp1-recdev(y-1)));
+       	}
        rmse(1)+=value(square(temp1)); n_rmse(1)+=1.; rmse(2)+=biasadj(y);
      }
    }
@@ -1121,8 +1154,9 @@ FUNCTION void write_bigoutput()
    if(n_rmse(1)>0.) rmse(2) = rmse(2)/n_rmse(1);  // mean biasadj during main period
    if(n_rmse(3)>0. && rmse(3)>0.) rmse(3) = sqrt(rmse(3)/n_rmse(3));  //rmse during early period
    if(n_rmse(3)>0.) rmse(4) = rmse(4)/n_rmse(3);  // mean biasadj during early period
-
-
+    	cross/=(n_rmse(1)-1.);
+    	Durbin/=(var+1.0e-09);
+    	var/=n_rmse(1);
 
   dvariable steepness=SR_parm(2);
   SS2out<<endl<<pick_report_name(19);
@@ -1155,8 +1189,8 @@ FUNCTION void write_bigoutput()
   recdev_adj(1)<<" "<<recdev_adj(2,5)<<" breakpoints_for_bias_adjustment_ramp "<<endl;
 
    temp=sigmaR*sigmaR;  //  sigmaR^2
-   SS2out<<"ERA    N    RMSE  RMSE^2/sigmaR^2  mean_BiasAdj"<<endl;
-   SS2out<<"main  "<<n_rmse(1)<<" "<<rmse(1)<<" "<<square(rmse(1))/temp<<" "<<rmse(2);
+   SS2out<<"ERA    N    RMSE  RMSE^2/sigmaR^2  mean_BiasAdj est_rho Durbin-Watson"<<endl;
+   SS2out<<"main  "<<n_rmse(1)<<" "<<rmse(1)<<" "<<square(rmse(1))/temp<<" "<<rmse(2)<<" "<<cross/var<<" "<<Durbin;
    if(wrote_bigreport==0)
    {
    if(rmse(1)<0.5*sigmaR && rmse(2)>(0.01+2.0*square(rmse(1))/temp))
