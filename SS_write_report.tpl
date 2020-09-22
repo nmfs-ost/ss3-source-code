@@ -296,7 +296,7 @@ FUNCTION void write_bigoutput()
     	var/=count;
       SS2out<<i<<" "<<parm_dev_PH(i)<<" "<<y1<<" "<<y2<<" "<<count<<" "<<parm_dev_stddev(i)<<" "<<
       parm_dev_rho(i)<<" "<<parm_dev_like(i)<<" "<<
-      sum(parm_dev(i))/count<<" "<<sqrt(sumsq(parm_dev(i))/(count))<<" "<<var<<" "<<sqrt(var)<<" "<<cross/var<<" "<<Durbin<<" "<<endl;
+      sum(parm_dev(i))/count<<" "<<sqrt(1.0e-09+sumsq(parm_dev(i))/(count))<<" "<<var<<" "<<sqrt(1.0e-09+var)<<" "<<cross/(1.0e-09+var)<<" "<<Durbin<<" "<<endl;
     }
   }
   if(SzFreq_Nmeth>0)
@@ -1154,9 +1154,9 @@ FUNCTION void write_bigoutput()
    if(n_rmse(1)>0.) rmse(2) = rmse(2)/n_rmse(1);  // mean biasadj during main period
    if(n_rmse(3)>0. && rmse(3)>0.) rmse(3) = sqrt(rmse(3)/n_rmse(3));  //rmse during early period
    if(n_rmse(3)>0.) rmse(4) = rmse(4)/n_rmse(3);  // mean biasadj during early period
-    	cross/=(n_rmse(1)-1.);
+    	if(n_rmse(1)>=2.) {cross/=(n_rmse(1)-1.);} else {cross=0.0;}
     	Durbin/=(var+1.0e-09);
-    	var/=n_rmse(1);
+    	var/=(n_rmse(1)+1.0e-09);
 
   dvariable steepness=SR_parm(2);
   SS2out<<endl<<pick_report_name(19);
