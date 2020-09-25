@@ -932,35 +932,7 @@ FUNCTION void Process_STDquant()
         }
         if(STD_Yr_Reverse_Dep(y)>0) {depletion(STD_Yr_Reverse_Dep(y))=SSB_yr(y);}
       }
-      switch(depletion_basis)
-      {
-        case 0:
-        {
-          depletion/=SSB_virgin;
-          break;
-        }
-        case 1:
-        {
-          depletion/= (depletion_level*SSB_virgin);
-          break;
-        }
-        case 2:
-        {
-          depletion/= (depletion_level*Bmsy);
-          break;
-        }
-        case 3:
-        {
-          depletion/= (depletion_level*SSB_yr(styr));
-          break;
-        }
-        case 4:
-        {
-          depletion/= (depletion_level*SSB_yr(endyr));
-          break;
-        }
-      }
-      
+
       switch (SPR_reporting)
       {
         case 0:      // keep as raw value
@@ -990,20 +962,54 @@ FUNCTION void Process_STDquant()
         }
       }
 
-//  Do multi-year average of F_std if requested;  assumes that F_std is NOT custom, so exists for all years
+      switch(depletion_basis)
+      {
+        case 0:
+        {
+          depletion/=SSB_virgin;
+          break;
+        }
+        case 1:
+        {
+          depletion/= (depletion_level*SSB_virgin);
+          break;
+        }
+        case 2:
+        {
+          depletion/= (depletion_level*Bmsy);
+          break;
+        }
+        case 3:
+        {
+          depletion/= (depletion_level*SSB_yr(styr));
+          break;
+        }
+        case 4:
+        {
+          depletion/= (depletion_level*SSB_yr(endyr));
+          break;
+        }
+      }
+       warning<<" depletion "<<depletion<<endl;
+      if(depletion_log==1) depletion=log(depletion);
+      warning<<" depletion log "<<depletion<<endl;
+      	
+//  Do multi-year average of depletion_std if requested;  assumes that depletion_std is NOT custom, so exists for all years
 //  otherwise, would need to check for positive value for STD_Yr_Reverse_F(y) and need to deal with averaging across not-reporting years = MESSY
 //  note that averaging starts in endyr, not endyr+N_forecast;  otherwise the averaging could span endyr.
-    if(F_std_multi>1)
+
+    if(depletion_multi>1)
     {
-    	for(y=endyr;y>=styr+1;y--)
+    	for(y=endyr;y>=first_catch_yr+1;y--)
     	{
-    		temp=F_std(STD_Yr_Reverse_F(y));  //  initialize
-    		for(y1=y-1;y1>max(styr,y-F_std_multi);y1--)
-    		{temp+=F_std(STD_Yr_Reverse_F(y1));}
-    		F_std(STD_Yr_Reverse_F(y))=temp/(y-y1);
+    		temp=depletion(STD_Yr_Reverse_Dep(y));  //  initialize
+    		for(y1=y-1;y1>max(first_catch_yr,y-depletion_multi);y1--)
+    		{temp+=depletion(STD_Yr_Reverse_Dep(y1));}
+    		depletion(STD_Yr_Reverse_Dep(y))=temp/(y-y1);
     	}
     }
-
+       warning<<" depletion multi "<<depletion<<endl;
+  	      
 //  Use the selected F method for the forecast as the denominator for the F_std ratio
       switch (F_std_basis)
       {
@@ -1027,6 +1033,24 @@ FUNCTION void Process_STDquant()
           break;
         }
       }
+   warning<<" F_std "<<F_std<<endl;
+  if(F_std_log==1) F_std = log(F_std);
+   warning<<" F_std log "<<F_std<<endl;
+  	
+//  Do multi-year average of F_std if requested;  assumes that F_std is NOT custom, so exists for all years
+//  otherwise, would need to check for positive value for STD_Yr_Reverse_F(y) and need to deal with averaging across not-reporting years = MESSY
+//  note that averaging starts in endyr, not endyr+N_forecast;  otherwise the averaging could span endyr.
+    if(F_std_multi>1)
+    {
+    	for(y=endyr;y>=styr+1;y--)
+    	{
+    		temp=F_std(STD_Yr_Reverse_F(y));  //  initialize
+    		for(y1=y-1;y1>max(styr,y-F_std_multi);y1--)
+    		{temp+=F_std(STD_Yr_Reverse_F(y1));}
+    		F_std(STD_Yr_Reverse_F(y))=temp/(y-y1);
+    	}
+    }
+   warning<<" F_std multi "<<F_std<<endl;
 
 //  SS_Label_7.8  get extra std quantities
     // selectivity

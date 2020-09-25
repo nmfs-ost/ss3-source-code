@@ -430,16 +430,36 @@
 
   init_int Smry_Age
    !!echoinput<<Smry_Age<<"  Smry_Age"<<endl;
+  int depletion_basis
+  int depletion_multi
+  int depletion_log
+  init_int depletion_basis_rd   // 0=skip; 1=fraction of B0; 2=fraction of Bmsy where fraction is depletion_level 3=rel to styr; values >=11 invoke multiyr with 10's digit; >=100 invoke log(ratio) with hundreds digit
+ LOCAL_CALCS
+   echoinput<<depletion_basis_rd<<"  depletion_basis as read; this is also known as Bratio and is a std quantity; has multi-yr and log(ratio) options"<<endl;
+   	depletion_multi=0;
+   	depletion_log=0;
+    k=depletion_basis_rd;
+    
+    if(k>=100) //  invokes log(ratio)
+    	{k-=100; depletion_log=1;} 
+    	
+   	if(k>10)  //  invokes multiyr
+   	{
+   		depletion_multi=int(k/10);
+   		depletion_basis=k-10*depletion_multi;
+   	}
+   	else
+    {depletion_basis=depletion_basis_rd;}
+    echoinput<<"Parse into: depletion_log(ratio): "<<depletion_log<<" depletion_multi-yr: "<<depletion_multi<<" depletion_basis: "<<depletion_basis<<endl;
+ END_CALCS
 
-  init_int depletion_basis   // 0=skip; 1=fraction of B0; 2=fraction of Bmsy where fraction is depletion_level 3=rel to styr
-   !!echoinput<<depletion_basis<<"  depletion_basis"<<endl;
   init_number depletion_level
    !!echoinput<<depletion_level<<"  depletion_level"<<endl;
   init_int SPR_reporting  // 0=skip; 1=SPR; 2=SPR_MSY; 3=SPR_Btarget; 4=(1-SPR)
    !!echoinput<<SPR_reporting<<"  SPR_reporting"<<endl;
   init_int F_reporting  // 0=skip; 1=exploit(Bio); 2=exploit(Num); 3=sum(frates); 4=true F for range of ages; 5=unweighted avg F for range of ages
  LOCAL_CALCS
-  echoinput<<F_reporting<<"  F_reporting"<<endl;
+  echoinput<<F_reporting<<"  F_reporting quantity, e.g. 3=sum(apical Fs)"<<endl;
   if(F_reporting==4 || F_reporting==5) {k=2;} else {k=0;}
  END_CALCS
   init_ivector F_reporting_ages_R(1,k);
@@ -452,7 +472,7 @@
     }
  END_CALCS
 
-  init_int F_std_basis_rd // 0=raw; 1=rel Fspr; 2=rel Fmsy ; 3=rel Fbtgt; 4=annual F for range of years  OPTION #4 not implemented
+  init_int F_std_basis_rd // 0=raw; 1=rel Fspr; 2=rel Fmsy ; 3=rel Fbtgt; values >=11 invoke multiyr with 10's digit; >=100 invoke log(ratio) with hundreds digit
   number finish_starter
   int mcmc_output_detail
   number MCMC_bump  //  value read and added to ln(R0) when starting into MCMC
@@ -462,20 +482,27 @@
   int irand_seed;
   int irand_seed_rd;
   int F_std_multi;  //  for multi-year averaging of F_std
+  int F_std_log;  //  for log(ratio) of F_std
   int F_std_basis;
 
  LOCAL_CALCS
    {
    	F_std_multi=0;
-    echoinput<<F_std_basis_rd<<"  F_std_basis_rd"<<endl;
-   	if(F_std_basis_rd>10)  //  invokes multiyr
+   	F_std_log=0;
+    echoinput<<F_std_basis_rd<<"  F_std basis as read"<<endl;
+    k=F_std_basis_rd;
+    
+    if(k>=100) //  invokes log(ratio)
+    	{k-=100; F_std_log=1;} 
+    	
+   	if(k>10)  //  invokes multiyr
    	{
-   		F_std_multi=int(F_std_basis_rd/10);
-   		F_std_basis=F_std_basis_rd-10*F_std_multi;
+   		F_std_multi=int(k/10);
+   		F_std_basis=k-10*F_std_multi;
    	}
    	else
     {F_std_basis=F_std_basis_rd;}
-    echoinput<<"F_std_multi and F_std_basis: "<<F_std_multi<<" "<<F_std_basis<<endl;
+    echoinput<<"Parse into: F_std_log(ratio): "<<F_std_log<<" F_std_multi: "<<F_std_multi<<" F_std_basis: "<<F_std_basis<<endl;
     if(F_std_multi>1) {N_warn++; warning<<"NOTE: new feature for multiyr F_std reporting, be sure STD reporting covers all years from styr to endyr"<<endl;}
    echoinput<<"For Kobe plot, set depletion_basis=2; depletion_level=1.0; F_reporting=your choose; F_std_basis=2"<<endl;
 

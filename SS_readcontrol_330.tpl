@@ -5089,7 +5089,13 @@
         break;
       }
     }
-
+    if(depletion_log==1) depletion_basis_label+=";log";
+    if(depletion_multi>1) 
+    	{
+    	sprintf(onenum, "%d", depletion_multi);
+    	depletion_basis_label+=";multi:"+onenum;
+    	}
+    	
    switch (SPR_reporting)
   {
     case 0:      // keep as raw value
@@ -5188,6 +5194,13 @@
       break;
     }    
   }
+    if(F_std_log==1) F_report_label+=";log";
+    if(F_std_multi>1) 
+    	{
+    	sprintf(onenum, "%d", F_std_multi);
+    	F_report_label+=";multi:"+onenum;
+    	}
+
   echoinput<<"Active parameters plus derived quantities:  "<<CoVar_Count<<endl;
  END_CALCS
 
