@@ -994,6 +994,7 @@ PRELIMINARY_CALCS_SECTION
     if(Do_ParmTrace==1 || Do_ParmTrace==4)
     {
       for (i=1;i<=active_count;i++) {ParmTrace<<" "<<ParmLabel(active_parm(i));}
+      ParmTrace<<" Component_like_starts_here ";
     }
     else if(Do_ParmTrace>=2)
     {

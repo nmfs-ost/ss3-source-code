@@ -187,10 +187,17 @@ PROCEDURE_SECTION
        cout<<endl;
      }
 //  SS_Label_Info_7.10 #Write parameter values to ParmTrace
-      if((Do_ParmTrace==1 && obj_fun<=last_objfun) || Do_ParmTrace==4)
+      if((Do_ParmTrace==1 && obj_fun<=last_objfun) || Do_ParmTrace==4)  // only report active parameters
       {
-        ParmTrace<<current_phase()<<" "<<niter<<" "<<obj_fun<<" "<<obj_fun-last_objfun
-        <<" "<<value(SSB_yr(styr))<<" "<<value(SSB_yr(endyr))<<" "<<biasadj(styr)<<" "<<max(biasadj)<<" "<<biasadj(endyr);
+        ParmTrace<<current_phase();
+        if(sd_phase()) ParmTrace<<"sd";
+        if(mceval_phase()) ParmTrace<<"mc";
+        ParmTrace<<" "<<niter<<" ";
+        ParmTrace.precision(10);
+        ParmTrace<<obj_fun<<" "<<obj_fun-last_objfun<<" "<<value(SSB_yr(styr))<<" "<<value(SSB_yr(endyr));
+        ParmTrace.precision(2);
+        ParmTrace<<" "<<biasadj(styr)<<" "<<max(biasadj)<<" "<<biasadj(endyr);
+        ParmTrace.precision(7);
         for (j=1;j<=MGparm_PH.indexmax();j++)
         {
           if(MGparm_PH(j)>=0) {ParmTrace<<" "<<MGparm(j);}
@@ -244,9 +251,30 @@ PROCEDURE_SECTION
             if(parm_dev_PH(j)>0) ParmTrace<<parm_dev(j)<<" ";
           }
         }
+        ParmTrace.precision(10);
+
+  if(F_Method>1) ParmTrace <<" Catch "<<catch_like*column(catch_lambda,k);
+  ParmTrace <<" Equil_catch "<<equ_catch_like*column(init_equ_lambda,k);
+  if(Svy_N>0) ParmTrace <<" Survey "<<surv_like*column(surv_lambda,k)<<" "<<elem_prod(surv_like,column(surv_lambda,k));
+  if(nobs_disc>0) ParmTrace <<" Discard "<<disc_like*column(disc_lambda,k)<<" "<<elem_prod(disc_like,column(disc_lambda,k));
+  if(nobs_mnwt>0) ParmTrace <<" Mean_body_wt "<<mnwt_like*column(mnwt_lambda,k)<<" "<<elem_prod(mnwt_like,column(mnwt_lambda,k));
+  if(Nobs_l_tot>0) ParmTrace <<" Length "<<length_like_tot*column(length_lambda,k)<<" "<<elem_prod(length_like_tot,column(length_lambda,k));
+  if(Nobs_a_tot>0) ParmTrace <<" Age "<<age_like_tot*column(age_lambda,k)<<" "<<elem_prod(age_like_tot,column(age_lambda,k));
+  if(nobs_ms_tot>0) ParmTrace <<" Size_at_age "<<sizeage_like*column(sizeage_lambda,k)<<" "<<elem_prod(sizeage_like,column(sizeage_lambda,k));
+  if(SzFreq_Nmeth>0) ParmTrace <<" SizeFreq "<<SzFreq_like*column(SzFreq_lambda,k)<<" "<<elem_prod(SzFreq_like,column(SzFreq_lambda,k));
+  if(Do_Morphcomp>0) ParmTrace <<" Morph "<<Morphcomp_lambda(k)*Morphcomp_like;
+  if(Do_TG>0) ParmTrace <<" Tag_comp "<<TG_like1*column(TG_lambda1,k)<<" "<<elem_prod(TG_like1,column(TG_lambda1,k));
+  if(Do_TG>0) ParmTrace <<" Tag_negbin "<<TG_like2*column(TG_lambda2,k)<<" "<<elem_prod(TG_like2,column(TG_lambda2,k));
+  ParmTrace <<" Recr_dev "<<recr_like*recrdev_lambda(k);
+  ParmTrace <<" Regime "<<regime_like*regime_lambda(k);
+  ParmTrace <<" Fore_Recdev "<<Fcast_recr_like;
+  ParmTrace <<" Parm_priors "<<parm_like*parm_prior_lambda(k);
+  if(SoftBound>0) ParmTrace <<" Softbounds "<<SoftBoundPen;
+  ParmTrace <<" Parm_devs "<<(sum(parm_dev_like))*parm_dev_lambda(k);
+  if(F_ballpark_yr>0) ParmTrace <<" F_Ballpark "<<F_ballpark_lambda(k)*F_ballpark_like;
         ParmTrace<<endl;
       }
-      else if((Do_ParmTrace==2 && obj_fun<=last_objfun) || Do_ParmTrace==3)
+      else if((Do_ParmTrace==2 && obj_fun<=last_objfun) || Do_ParmTrace==3)  //  report active and inactive parameters
       {
         ParmTrace<<current_phase()<<" "<<niter<<" "<<obj_fun<<" "<<obj_fun-last_objfun
         <<" "<<value(SSB_yr(styr))<<" "<<value(SSB_yr(endyr))<<" "<<biasadj(styr)<<" "<<max(biasadj)<<" "<<biasadj(endyr);
