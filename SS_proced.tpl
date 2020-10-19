@@ -219,8 +219,12 @@ PROCEDURE_SECTION
           if(do_recdev==1) {ParmTrace<<" "<<recdev1;}
           if(do_recdev>=2) {ParmTrace<<" "<<recdev2;}
         }
-        if(Do_Forecast>0) ParmTrace<<Fcast_recruitments<<" ";
-        if(Do_Forecast>0 && Do_Impl_Error>0) ParmTrace<<Fcast_impl_error<<" ";
+        if(Fcast_recr_PH2>0 && Do_Forecast>0)
+        	{
+        		ParmTrace<<Fcast_recruitments<<" ";
+        		if(Do_Impl_Error>0) ParmTrace<<Fcast_impl_error<<" ";
+        	}
+
         for (f=1;f<=N_init_F;f++)
         {
           if(init_F_PH(f)>0) {ParmTrace<<" "<<init_F(f);}
@@ -252,7 +256,7 @@ PROCEDURE_SECTION
           }
         }
         ParmTrace.precision(10);
-
+  k=current_phase();
   if(F_Method>1) ParmTrace <<" Catch "<<catch_like*column(catch_lambda,k);
   ParmTrace <<" Equil_catch "<<equ_catch_like*column(init_equ_lambda,k);
   if(Svy_N>0) ParmTrace <<" Survey "<<surv_like*column(surv_lambda,k)<<" "<<elem_prod(surv_like,column(surv_lambda,k));
