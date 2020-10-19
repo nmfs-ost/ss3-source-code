@@ -4531,9 +4531,9 @@
       k=int(selparm_RD(Ip+1));  // setup method
       N_knots=seltype(f,4);  //  number of knots
 
-      if(k==0)
+      if(k==0 || k==10)
       {}  //  do nothing
-      else if(k==1 || k==2)  //  get new knots according to cumulative distribution of data
+      else if(k==1 || k==2 || k==11 || k==12)  //  get new knots according to cumulative distribution of data
       {
         echoinput<<"Adjust the cubic_spline setup for fleet: "<<f<<endl;
         s=4;  // counter for which knot is being set
@@ -4583,7 +4583,7 @@
           }
           echoinput<<"age_bins: "<<age_bins<<endl<<"Cum_comp: "<<obs_a_all(2,fs)(1,n_abins)<<endl<<"Knots: "<<selparm_RD(Ip+3+1,Ip+3+N_knots)<<endl;
         }
-        if(k==2)  //  create default bounds, priors, etc.
+        if(k==2 || k==12)  //  create default bounds, priors, etc.
         {
         echoinput<<"Do complete setup of lo, hi, prior, etc."<<endl;
           for (z=Ip+4;z<=Ip+3+N_knots;z++)
