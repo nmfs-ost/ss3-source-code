@@ -2915,7 +2915,7 @@
   int Do_Rebuilder
   int Rebuild_Ydecl
   int Rebuild_Yinit
-  int HarvestPolicy  // 1=west coast adjust catch; 2=AK to adjust F
+  int HarvestPolicy  // 0=none; 1=west coast adjust catch; 2=AK to adjust F
   number H4010_top
   number H4010_bot
   number H4010_scale
@@ -3007,6 +3007,8 @@
 
   echoinput<<endl<<"next read 4 values for:  control rule shape(1, 2, 3 or 4), inflection (like 0.40), cutoff(like 0.10), scale(like 0.75)"<<endl;
   *(ad_comm::global_datafile) >> HarvestPolicy;
+  if(HarvestPolicy==0) echoinput<<"HarvestPolicy=0, so values for top, bottom, buffer will be ignored"<<endl;
+  	
   echoinput<<HarvestPolicy<<"  # echoed HarvestPolicy "<<endl;
   *(ad_comm::global_datafile) >> H4010_top;
   echoinput<<H4010_top<<"   # echoed harvest policy inflection "<<endl;
@@ -3153,7 +3155,7 @@
   Fcast_RelF_yr2=endyr;
   Fcast_Rec_yr1=styr;
   Fcast_Rec_yr2=endyr;
-  HarvestPolicy=1;
+  HarvestPolicy=0;
   H4010_top=0.001;
   H4010_bot=0.0001;
   H4010_scale_rd=1.0;

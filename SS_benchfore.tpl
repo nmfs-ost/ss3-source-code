@@ -1223,6 +1223,11 @@ FUNCTION void Get_Forecast()
     report5<<"OY_Control_Rule "<<" Inflection: "<<H4010_top<<" Intercept: "<<H4010_bot<<" Scale: "<<H4010_scale_vec(endyr+1)<<"; ";
     switch(HarvestPolicy)
     {
+    case 0:  // none
+    {
+      report5<<"Policy (0): no ramp or buffer; F_ABC=F_limit"<<endl;
+      break;
+    }
     case 1:  // west coast
     {
       report5<<"Policy (1): ramp scales catch as f(B) and buffer (H4010_scale) applied to F"<<endl;
@@ -1283,6 +1288,7 @@ FUNCTION void Get_Forecast()
     }
     if(show_MSY==1)
     {
+    if(HarvestPolicy==0) report5<<"pop year ABC_Loop season No_buffer bio-all bio-Smry SpawnBio Depletion recruit-0 ";
     if(HarvestPolicy<=2) report5<<"pop year ABC_Loop season Ramp&Buffer bio-all bio-Smry SpawnBio Depletion recruit-0 ";
     if(HarvestPolicy>=3) report5<<"pop year ABC_Loop season Ramp bio-all bio-Smry SpawnBio Depletion recruit-0 ";
     for (f=1;f<=Nfleet;f++)
@@ -1575,6 +1581,11 @@ FUNCTION void Get_Forecast()
 
             switch(HarvestPolicy)
             {
+            case 0:
+            {
+            	ABC_buffer(y)=1.0;
+              break;
+            }
             case 1:  // west coast
                     // ramp scales catch as f(B) and buffer (H4010_scale) applied to F
             {
@@ -1746,8 +1757,11 @@ FUNCTION void Get_Forecast()
                           {temp+=Nmid(g)*sel_al_4(s,g,f);}      // retained catch numbers
                         }
                       }  //close gmorph loop
-                      temp=max_harvest_rate-Fcast_InputCatch(t,f,1)/(temp+NilNumbers);
-                      Hrate(f,t)=max_harvest_rate-posfun(temp,0.0001,Fcast_Crash);
+//                      temp=max_harvest_rate-Fcast_InputCatch(t,f,1)/(temp+NilNumbers);
+//                      Hrate(f,t)=max_harvest_rate-posfun(temp,0.0001,Fcast_Crash);
+                      join1=1./(1.+mfexp(30.*(temp-0.95*max_harvest_rate)));
+                      Hrate(f,t)=join1*temp + (1.-join1)*max_harvest_rate; // new F value for this fleet, constrained by max_harvest_rate
+
                     }
                     else if (fishery_on_off==1) //  tune to adjusted catch calculated from ABC_Loop=2
                     {
@@ -1763,8 +1777,10 @@ FUNCTION void Get_Forecast()
                         else if(Fcast_Catch_Basis==6)
                         {temp+=Nmid(g)*sel_al_4(s,g,f);}      // retained catch numbers
                       }  //close gmorph loop
-                      temp=max_harvest_rate-Fcast_Catch_Store(t,f)/(temp+NilNumbers);
-                      Hrate(f,t)=max_harvest_rate-posfun(temp,0.0001,Fcast_Crash);
+//                      temp=max_harvest_rate-Fcast_Catch_Store(t,f)/(temp+NilNumbers);
+//                      Hrate(f,t)=max_harvest_rate-posfun(temp,0.0001,Fcast_Crash);
+                      join1=1./(1.+mfexp(30.*(temp-0.95*max_harvest_rate)));
+                      Hrate(f,t)=join1*temp + (1.-join1)*max_harvest_rate; // new F value for this fleet, constrained by max_harvest_rate
                     }
                   }  // end have fixed catch to be matched
                 }  // end fishery loop
