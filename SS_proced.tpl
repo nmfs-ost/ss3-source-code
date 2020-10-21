@@ -190,8 +190,11 @@ PROCEDURE_SECTION
       if((Do_ParmTrace==1 && obj_fun<=last_objfun) || Do_ParmTrace==4)  // only report active parameters
       {
         ParmTrace<<current_phase();
-        if(sd_phase()) ParmTrace<<"sd";
-        if(mceval_phase()) ParmTrace<<"mc";
+        if(sd_phase()) {ParmTrace<<"_sd"; finished_minimize=3;}  // so flag is no longer==2
+        if(finished_minimize==2) ParmTrace<<"_hs";  //  each Hessian calculation takes 4 calls, all will get this flag, so output processor needs to create a 1-4 counter
+        if(finished_minimize==1) finished_minimize=2;  //  this prevents _hs flag  for the one iteration that occurs after minimizer ends and before first tweak of Hessian
+        if(mceval_phase()) ParmTrace<<"_mc";
+
         ParmTrace<<" "<<niter<<" ";
         ParmTrace.precision(10);
         ParmTrace<<obj_fun<<" "<<obj_fun-last_objfun<<" "<<value(SSB_yr(styr))<<" "<<value(SSB_yr(endyr));
@@ -256,10 +259,10 @@ PROCEDURE_SECTION
           }
         }
         ParmTrace.precision(10);
-  k=current_phase();
+  k=min(current_phase(),max_lambda_phase);
   if(F_Method>1) ParmTrace <<" Catch "<<catch_like*column(catch_lambda,k);
-  ParmTrace <<" Equil_catch "<<equ_catch_like*column(init_equ_lambda,k);
-  if(Svy_N>0) ParmTrace <<" Survey "<<surv_like*column(surv_lambda,k)<<" "<<elem_prod(surv_like,column(surv_lambda,k));
+  if(N_init_F>0) ParmTrace <<" Equil_catch "<<equ_catch_like*column(init_equ_lambda,k);
+  if(Svy_N>0) ParmTrace <<" Survey "<<k<<" "<<surv_like*column(surv_lambda,k)<<" "<<elem_prod(surv_like,column(surv_lambda,k));
   if(nobs_disc>0) ParmTrace <<" Discard "<<disc_like*column(disc_lambda,k)<<" "<<elem_prod(disc_like,column(disc_lambda,k));
   if(nobs_mnwt>0) ParmTrace <<" Mean_body_wt "<<mnwt_like*column(mnwt_lambda,k)<<" "<<elem_prod(mnwt_like,column(mnwt_lambda,k));
   if(Nobs_l_tot>0) ParmTrace <<" Length "<<length_like_tot*column(length_lambda,k)<<" "<<elem_prod(length_like_tot,column(length_lambda,k));
@@ -274,7 +277,7 @@ PROCEDURE_SECTION
   ParmTrace <<" Fore_Recdev "<<Fcast_recr_like;
   ParmTrace <<" Parm_priors "<<parm_like*parm_prior_lambda(k);
   if(SoftBound>0) ParmTrace <<" Softbounds "<<SoftBoundPen;
-  ParmTrace <<" Parm_devs "<<(sum(parm_dev_like))*parm_dev_lambda(k);
+  if(N_parm_dev>0) ParmTrace <<" Parm_devs "<<(sum(parm_dev_like))*parm_dev_lambda(k);
   if(F_ballpark_yr>0) ParmTrace <<" F_Ballpark "<<F_ballpark_lambda(k)*F_ballpark_like;
         ParmTrace<<endl;
       }

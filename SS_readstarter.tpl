@@ -62,7 +62,7 @@
   int catch_mult_pointer;
 
   int frac_female_pointer;
-
+  int finished_minimize;
   int icycle
   int No_Report  //  flag to skip output reports after MCMC and MCeval
   int mcmcFlag
@@ -99,7 +99,7 @@
   Fishon=0; NP=0; Ip=0; firstseas=0; t_base=0; niter=0; loop=0; 
   TG_t=0; Fcast_catch_start=0; retParCount=0; N_SC=0; N_DC=0; N_CC=0; N_FC=0; catch_mult_pointer=0; frac_female_pointer=0; icycle=0; No_Report=0; 
   mcmcFlag=0; noest_flag=0; temp=0; temp1=0; save_gparm_print=0; 
-
+  finished_minimize=0;
   //  SS_Label_Info_1.1.2  #arrays for parameter labels are created in GLOBAL
 //  adstring_array NumLbl;
 //  adstring_array GenderLbl;   // gender label

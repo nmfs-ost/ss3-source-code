@@ -3810,7 +3810,7 @@
   }
  END_CALCS
 
-  init_number max_lambda_phase
+  init_int max_lambda_phase
   init_number sd_offset
 
  LOCAL_CALCS

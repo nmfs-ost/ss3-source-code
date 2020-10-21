@@ -807,7 +807,7 @@ FINAL_SECTION
 REPORT_SECTION
   {
     for (unsigned i = 1; i <= gradients.size(); i++) parm_gradients(i) = gradients(i);
-
+    if(current_phase() >= max_phase && finished_minimize==0) finished_minimize=1;  //  because REPORT occurs after minimize finished
 //  SS_Label_Info_13.1 #Write limited output to SS.rep
   if(reportdetail>0)
   {
