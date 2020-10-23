@@ -217,7 +217,6 @@ FUNCTION void write_bigoutput()
   SS2out<<"#_info_for_Laplace_calculations"<<endl;
   SS2out<<"NoBias_corr_Recruitment(info_only) "<<noBias_recr_like*recrdev_lambda(k)<<" "<<recrdev_lambda(k)<<endl;
   SS2out<<"Laplace_obj_fun(info_only) "<<JT_obj_fun<<" NA"<<endl;
-
   SS2out<<"#"<<endl<<"Fleet:  ALL ";
   for (f=1;f<=Nfleet;f++) SS2out<<f<<" ";
   SS2out<<endl;

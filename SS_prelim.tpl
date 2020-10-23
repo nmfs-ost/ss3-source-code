@@ -16,7 +16,7 @@ PRELIMINARY_CALCS_SECTION
   catch_mult=1.0;
 
 //  SS_Label_Info_6.1.2 #Initialize the dummy parameter as needed
-  if(Turn_off_phase<=0) {dummy_parm=0.5;} else {dummy_parm=1.0;}
+  if(Turn_off_phase<=0) {dummy_parm=0.99999999999999;} else {dummy_parm=1.0;}
 
   Cohort_Growth=1.0;    // base value for cohort growth deviations
 
