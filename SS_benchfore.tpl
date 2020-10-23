@@ -1759,6 +1759,7 @@ FUNCTION void Get_Forecast()
                       }  //close gmorph loop
 //                      temp=max_harvest_rate-Fcast_InputCatch(t,f,1)/(temp+NilNumbers);
 //                      Hrate(f,t)=max_harvest_rate-posfun(temp,0.0001,Fcast_Crash);
+                      temp=Fcast_InputCatch(t,f,1)/(temp+NilNumbers);
                       join1=1./(1.+mfexp(30.*(temp-0.95*max_harvest_rate)));
                       Hrate(f,t)=join1*temp + (1.-join1)*max_harvest_rate; // new F value for this fleet, constrained by max_harvest_rate
 
@@ -1779,6 +1780,7 @@ FUNCTION void Get_Forecast()
                       }  //close gmorph loop
 //                      temp=max_harvest_rate-Fcast_Catch_Store(t,f)/(temp+NilNumbers);
 //                      Hrate(f,t)=max_harvest_rate-posfun(temp,0.0001,Fcast_Crash);
+                      temp=Fcast_InputCatch(t,f,1)/(temp+NilNumbers);
                       join1=1./(1.+mfexp(30.*(temp-0.95*max_harvest_rate)));
                       Hrate(f,t)=join1*temp + (1.-join1)*max_harvest_rate; // new F value for this fleet, constrained by max_harvest_rate
                     }
