@@ -1757,12 +1757,9 @@ FUNCTION void Get_Forecast()
                           {temp+=Nmid(g)*sel_al_4(s,g,f);}      // retained catch numbers
                         }
                       }  //close gmorph loop
-//                      temp=max_harvest_rate-Fcast_InputCatch(t,f,1)/(temp+NilNumbers);
-//                      Hrate(f,t)=max_harvest_rate-posfun(temp,0.0001,Fcast_Crash);
-                      temp=Fcast_InputCatch(t,f,1)/(temp+NilNumbers);
-                      join1=1./(1.+mfexp(30.*(temp-0.95*max_harvest_rate)));
-                      Hrate(f,t)=join1*temp + (1.-join1)*max_harvest_rate; // new F value for this fleet, constrained by max_harvest_rate
-
+                      temp1=Fcast_InputCatch(t,f,1)/(temp+NilNumbers);
+                      join1=1./(1.+mfexp(30.*(temp1-max_harvest_rate)));
+                      Hrate(f,t)=join1*temp1 + (1.-join1)*max_harvest_rate; // new F value for this fleet, constrained by max_harvest_rate
                     }
                     else if (fishery_on_off==1) //  tune to adjusted catch calculated from ABC_Loop=2
                     {
@@ -1778,11 +1775,9 @@ FUNCTION void Get_Forecast()
                         else if(Fcast_Catch_Basis==6)
                         {temp+=Nmid(g)*sel_al_4(s,g,f);}      // retained catch numbers
                       }  //close gmorph loop
-//                      temp=max_harvest_rate-Fcast_Catch_Store(t,f)/(temp+NilNumbers);
-//                      Hrate(f,t)=max_harvest_rate-posfun(temp,0.0001,Fcast_Crash);
-                      temp=Fcast_InputCatch(t,f,1)/(temp+NilNumbers);
-                      join1=1./(1.+mfexp(30.*(temp-0.95*max_harvest_rate)));
-                      Hrate(f,t)=join1*temp + (1.-join1)*max_harvest_rate; // new F value for this fleet, constrained by max_harvest_rate
+                      temp1=Fcast_Catch_Store(t,f)/(temp+NilNumbers);
+                      join1=1./(1.+mfexp(30.*(temp1-max_harvest_rate)));
+                      Hrate(f,t)=join1*temp1 + (1.-join1)*max_harvest_rate; // new F value for this fleet, constrained by max_harvest_rate
                     }
                   }  // end have fixed catch to be matched
                 }  // end fishery loop
