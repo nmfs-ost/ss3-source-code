@@ -14,7 +14,7 @@ The [SS user manual](https://vlab.ncep.noaa.gov/web/stock-synthesis/document-lib
 
 ## Contributing
 
-Have feature requests or bug reports? Please open an [issue](https://github.com/nmfs-stock-synthesis/stock-synthesis/issues).
+Have feature requests or bug reports? Please open an [issue](https://github.com/nmfs-stock-synthesis/stock-synthesis/issues) or submit a pull request. For complete details, please see [CONTRIBUTING.md](CONTRIBUTING.md)
 
 ## Tools for working with SS
 
