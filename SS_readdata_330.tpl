@@ -2262,7 +2262,7 @@
               N_warn++;cout<<" EXIT - see warning "<<endl;
               warning<<" in meansize-at-age, ageerror type must be <= "<<N_ageerr<<endl; exit(1);
            }
-           ageerr_type_ms(f,j)=abs(sizeAge_Data[i](6));
+           ageerr_type_ms(f,j)=sizeAge_Data[i](6);
 
   //  SS_Label_Info_2.9.1 #Create super-periods for meansize data
            if(sizeAge_Data[i](2)<0)  // start/stop a super-period  ALL observations must be continguous in the file
