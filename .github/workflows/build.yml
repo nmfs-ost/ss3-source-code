@@ -1,0 +1,57 @@
+name: build
+
+# Controls when the action will run. Triggers the workflow on push or pull request
+# events but only for the main branch
+on: [workflow_dispatch]
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  # This workflow contains a single job called "build"
+  build:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v2
+
+      # Runs a set of commands using the runners shell
+      - name: Install necessary tools
+        run: |
+          sudo apt-get install -y wget
+          sudo apt-get intall -y zip unzip
+
+      # Runs a set of commands using the runners shell
+      - name: Get admb and put in path
+        run: |
+          wget https://github.com/admb-project/admb/releases/download/admb-12.2/admb-12.2-linux.zip
+          unzip admb-12.2-linux.zip -d /usr/local
+          chmod 755 /usr/local/admb-12.2/admb
+          export PATH=$PATH:/usr/local/admb-12.2
+          echo $PATH
+          pwd
+          ls .
+      
+      # Check that admb still in path (for debugging)
+      - name: check path
+        run: |
+          echo $PATH
+          pwd
+          
+      # Runs a set of commands using the runners shell
+      - name: Build stock synthesis
+        run: |
+          rm -rf SS330
+          mkdir SS330
+          /bin/bash ./Make_SS_330_new.sh -b SS330 -a /usr/local/admb-12.2/admb
+          cp SS330/ss . && sha256sum ss
+          rm -f ss.gz && gzip -v ss
+          
+      # archive artifact - not sure how to do this.
+      - name: Upload check results
+        if: success()
+        uses: actions/upload-artifact@main
+        with:
+          name: ss.gz
+          path: ss.gz
