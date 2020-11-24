@@ -19,33 +19,29 @@ jobs:
       # Runs a set of commands using the runners shell
       - name: Install necessary tools
         run: |
-          sudo brew install -y zip unzip
+          brew install zip
+          brew install unzip
 
       # Runs a set of commands using the runners shell
       - name: Get admb and put in path
         run: |
-          curl https://github.com/admb-project/admb/releases/download/admb-12.2/admb-12.2-macos.zip -L -o admb-12.2.zip
-          sudo unzip admb-12.2.zip -d /usr/local/bin
+          curl https://github.com/admb-project/admb/releases/download/admb-12.2/admb-12.2-macos-xcode12.zip -L -o admb-12.2.zip
+          unzip admb-12.2.zip -d /usr/local/bin
           ls /usr/local/bin
-          sudo chmod 755 /usr/local/bin/admb-12.2/bin/admb
           echo "/usr/local/bin/admb-12.2/bin" >> $GITHUB_PATH
           
       # Runs a set of commands using the runners shell
       - name: Build stock synthesis
         run: |
-          echo $PATH
-          echo $GITHUB_PATH
-          which admb
           rm -rf SS330
           mkdir SS330
           /bin/bash ./Make_SS_330_new.sh -b SS330
-          cp SS330/ss . && sha256sum ss
-          rm -f ss.gz && gzip -v ss
+          cp SS330/ss . && shasum -a 256 ss
           
-      # archive artifact - not sure how to do this.
+      # archive artifact
       - name: Upload check results
         if: success()
         uses: actions/upload-artifact@main
         with:
-          name: ss.gz
-          path: ss.gz
+          name: ss
+          path: ss
