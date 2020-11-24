@@ -7,20 +7,14 @@ on: [workflow_dispatch]
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
   # This workflow contains a single job called "build"
-  build:
+  build-ubuntu:
     # The type of runner that the job will run on
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-18.04
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
-
-      # Runs a set of commands using the runners shell
-      - name: Install necessary tools
-        run: |
-          sudo apt-get install -y wget
-          sudo apt-get install -y zip unzip
 
       # Runs a set of commands using the runners shell
       - name: Get admb and put in path
@@ -33,16 +27,13 @@ jobs:
       # Runs a set of commands using the runners shell
       - name: Build stock synthesis
         run: |
-          echo $PATH
-          echo $GITHUB_PATH
-          which admb
           rm -rf SS330
           mkdir SS330
           /bin/bash ./Make_SS_330_new.sh -b SS330
           cp SS330/ss . && sha256sum ss
           rm -f ss.gz && gzip -v ss
           
-      # archive artifact - not sure how to do this.
+      # archive artifact
       - name: Upload check results
         if: success()
         uses: actions/upload-artifact@main
