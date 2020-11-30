@@ -10,7 +10,8 @@ jobs:
   build-win:
     # The type of runner that the job will run on
     runs-on: windows-2019
-
+    # Limit run time to 15 min to avoid wasting action minutes.
+    timeout-minutes: 15
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
