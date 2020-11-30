@@ -1,0 +1,44 @@
+name: build-centos
+
+# Controls when the action will run. Triggers the workflow on push or pull request
+# events but only for the main branch
+on: [workflow_dispatch]
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  build-centos:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-18.04
+    # Limit run time to 15 min to avoid wasting action minutes.
+    timeout-minutes: 15
+    container: 
+      image: centos:7.8.2003
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v2
+
+      # Runs a set of commands using the runners shell
+      - name: Get admb and put in path
+        run: |
+          wget https://github.com/admb-project/admb/releases/download/admb-12.2/admb-12.2-linux.zip
+          sudo unzip admb-12.2-linux.zip -d /usr/local/bin
+          sudo chmod 755 /usr/local/bin/admb-12.2/bin/admb
+          echo "/usr/local/bin/admb-12.2/bin" >> $GITHUB_PATH
+          
+      # Runs a set of commands using the runners shell
+      - name: Build stock synthesis
+        run: |
+          rm -rf SS330
+          mkdir SS330
+          /bin/bash ./Make_SS_330_new.sh -b SS330
+          cp SS330/ss . && sha256sum ss
+          rm -f ss.gz && gzip -v ss
+          
+      # archive artifact
+      - name: Upload check results
+        if: success()
+        uses: actions/upload-artifact@main
+        with:
+          name: ss.gz
+          path: ss.gz
