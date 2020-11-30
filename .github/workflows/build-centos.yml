@@ -18,7 +18,13 @@ jobs:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
 
-      # Runs a set of commands using the runners shell
+      - name: Get essential tools needed on docker
+        run: |
+         yum -y update && yum clean all
+         yum -y install wget
+         yum install -y zip unzip
+         yum install -y sudo
+         yum install -y gcc-c++
       - name: Get admb and put in path
         run: |
           wget https://github.com/admb-project/admb/releases/download/admb-12.2/admb-12.2-linux.zip
@@ -30,15 +36,29 @@ jobs:
       - name: Build stock synthesis
         run: |
           rm -rf SS330
+          rm -rf ss_linux.tar
           mkdir SS330
           /bin/bash ./Make_SS_330_new.sh -b SS330
-          cp SS330/ss . && sha256sum ss
-          rm -f ss.gz && gzip -v ss
+          /bin/bash ./Make_SS_330_new.sh -b SS330 -o
+          /bin/bash ./Make_SS_330_new.sh -b SS330 -t
           
-      # archive artifact
-      - name: Upload check results
+      - name: Verify binary
+        run: |
+          sha256sum SS330/ss
+          sha256sum SS330/ss_opt
+          sha256sum SS330/ss_trans
+
+      - name: Delete unneeded files
+        run: |
+          cd SS330
+          rm *.obj *.htp *.cpp ss_opt.tpl ss_trans.tpl
+          
+      - name: Tar files in order to preserve permissions
+        run: tar -cvf ss_linux.tar SS330
+          
+      - name: Archive the exes as tar.
         if: success()
         uses: actions/upload-artifact@main
         with:
-          name: ss.gz
-          path: ss.gz
+          name: ss_linux
+          path: ss_linux.tar
