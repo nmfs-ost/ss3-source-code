@@ -1,28 +1,16 @@
 name: build-mac
 
-# Controls when the action will run. Triggers the workflow on push or pull request
-# events but only for the main branch
+# on: Controls when the action will run. workflow_dispatch is a manual trigger.
 on: [workflow_dispatch]
 
-# A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  # This workflow contains a single job called "build-mac"
   build-mac:
-    # The type of runner that the job will run on
     runs-on: macos-10.15
-
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
 
-      # Runs a set of commands using the runners shell
-      - name: Install necessary tools
-        run: |
-          brew install zip
-          brew install unzip
-
-      # Runs a set of commands using the runners shell
       - name: Get admb and put in path
         run: |
           curl https://github.com/admb-project/admb/releases/download/admb-12.2/admb-12.2-macos-xcode12.zip -L -o admb-12.2.zip
@@ -30,18 +18,32 @@ jobs:
           ls /usr/local/bin
           echo "/usr/local/bin/admb-12.2/bin" >> $GITHUB_PATH
           
-      # Runs a set of commands using the runners shell
       - name: Build stock synthesis
         run: |
           rm -rf SS330
+          rm -rf ss_osx.tar
           mkdir SS330
           /bin/bash ./Make_SS_330_new.sh -b SS330
-          cp SS330/ss . && shasum -a 256 ss
+          /bin/bash ./Make_SS_330_new.sh -b SS330 -o
+          /bin/bash ./Make_SS_330_new.sh -b SS330 -t
+
+      - name: Verify binary
+        run: |
+          shasum -a 256 SS330/ss
+          shasum -a 256 SS330/ss_opt
+          shasum -a 256 SS330/ss_trans
+
+      - name: Delete unneeded files
+        run: |
+          cd SS330
+          rm *.obj *.htp *.cpp ss_opt.tpl ss_trans.tpl
           
-      # archive artifact
-      - name: Upload check results
+      - name: Tar files in order to preserve permissions
+        run: tar -cvf ss_osx.tar SS330
+          
+      - name: Archive the exes as tar.
         if: success()
         uses: actions/upload-artifact@main
         with:
-          name: ss
-          path: ss
+          name: ss_osx
+          path: ss_osx.tar
