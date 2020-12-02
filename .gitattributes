@@ -1,2 +1,5 @@
 # Reclassify .tpl files as c++ to get better syntax highlighting on github:
 *.tpl linguist-language=C++
+
+# Add settings for .tpl line endings
+*.tpl text=auto
