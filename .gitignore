@@ -1,11 +1,11 @@
 *.bak
-*.bak
 *.temp
 *.pdf
 *.cpp
 *.exe
 *.htp
 *.obj
+*.log
 ss.tpl
 ss_opt.tpl
 ss_trans.tpl
