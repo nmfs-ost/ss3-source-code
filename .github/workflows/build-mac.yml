@@ -39,12 +39,9 @@ jobs:
           cd SS330
           rm *.obj *.htp *.cpp ss_opt.tpl ss_trans.tpl
           
-      - name: Tar files in order to preserve permissions
-        run: tar -cvf ss_osx.tar SS330
-          
-      - name: Archive the exes as tar.
+      - name: Archive the binaries
         if: success()
         uses: actions/upload-artifact@main
         with:
           name: ss_osx
-          path: ss_osx.tar
+          path: SS330/
