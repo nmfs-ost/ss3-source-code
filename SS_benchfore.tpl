@@ -1126,15 +1126,24 @@ FUNCTION void Get_Forecast()
         }
         Fcast_Fmult/=float(Fcast_RelF_yr2-Fcast_RelF_yr1+1);
         Fcurr_Fmult=Fcast_Fmult;
-        if(show_MSY==1) report5<<"4:  Forecast_using_ave_F_from:_"<<Fcast_RelF_yr1<<"_"<<Fcast_RelF_yr2<<endl; break;
+        if(show_MSY==1) report5<<"4:  Forecast_using_ave_F_from:_"<<Fcast_RelF_yr1<<"_"<<Fcast_RelF_yr2<<endl;
+        break;
       }
       case 5:
       {
-		Fcast_Fmult=Fcast_Flevel; 
-		if(show_MSY==1) report5<<"5:  Forecast_using_input_F "<<endl; 
-		break;
-	  }
+    		Fcast_Fmult=Fcast_Flevel; 
+	    	if(show_MSY==1) report5<<"5:  Forecast_using_input_F "<<Fcast_Flevel<<endl; 
+	    	break;
+	    }
+	    
     }
+      join1=1./(1.+mfexp(30.*(Fcast_Fmult-max_harvest_rate)));
+      Fcast_Fmult=join1*Fcast_Fmult + (1.-join1)*max_harvest_rate; // new F value for this fleet, constrained by max_harvest_rate
+      if(join1<0.999)
+      {
+      	report5<<"Forecast F capped by max possible F from control file"<<max_harvest_rate<<endl;
+     		N_warn++; warning<<"Forecast F capped by max possible F from control file"<<max_harvest_rate<<endl;
+      }
    }
    else
    {
@@ -1721,6 +1730,7 @@ FUNCTION void Get_Forecast()
                 }
               }
             }
+
             if(F_Method==1)  //  calculate catch, survival and F using Fmethod==1 (Pope's)
             {
               for (g=1;g<=gmorph;g++)
@@ -2396,6 +2406,7 @@ FUNCTION void Get_Forecast()
           {
             if(s==nseas) {report5<<" "<<totcatch<<" ";} else {report5<<" NA ";}
             if(s==nseas && STD_Yr_Reverse_F(y)>0) {report5<<F_std(STD_Yr_Reverse_F(y));} else {report5<<" NA ";}
+//            report5<<" numbers "<<natage(t,p,g)<<"  Zrate "<<Z_rate(t,p,g);
             report5<<endl;
           }
 

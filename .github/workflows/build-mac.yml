@@ -1,0 +1,47 @@
+name: build-mac
+
+# on: Controls when the action will run. workflow_dispatch is a manual trigger.
+on: [workflow_dispatch]
+
+jobs:
+  build-mac:
+    runs-on: macos-10.15
+    # Limit run time to 15 min to avoid wasting action minutes.
+    timeout-minutes: 15
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v2
+
+      - name: Get admb and put in path
+        run: |
+          curl https://github.com/admb-project/admb/releases/download/admb-12.2/admb-12.2-macos-xcode12.zip -L -o admb-12.2.zip
+          unzip admb-12.2.zip -d /usr/local/bin
+          ls /usr/local/bin
+          echo "/usr/local/bin/admb-12.2/bin" >> $GITHUB_PATH
+          
+      - name: Build stock synthesis
+        run: |
+          rm -rf SS330
+          rm -rf ss_osx.tar
+          mkdir SS330
+          /bin/bash ./Make_SS_330_new.sh -b SS330
+          /bin/bash ./Make_SS_330_new.sh -b SS330 -o
+          /bin/bash ./Make_SS_330_new.sh -b SS330 -t
+
+      - name: Verify binary
+        run: |
+          shasum -a 256 SS330/ss
+          shasum -a 256 SS330/ss_opt
+          shasum -a 256 SS330/ss_trans
+
+      - name: Delete unneeded files
+        run: |
+          cd SS330
+          rm *.obj *.htp *.cpp ss_opt.tpl ss_trans.tpl
+          
+      - name: Archive the binaries
+        if: success()
+        uses: actions/upload-artifact@main
+        with:
+          name: ss_osx
+          path: SS330/

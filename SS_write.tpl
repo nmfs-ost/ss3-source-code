@@ -933,8 +933,43 @@ FUNCTION void write_Bzero_output()
     SS2out<<" Note:  Z calculation for maxage not possible, for maxage-1 includes numbers at maxage, so is approximate"<<endl;
     if(nseas>1) SS2out<<" Z for age zero fish is not correct here if recruitment occurs in season after season 1"<<endl;
     fishery_on_off=1;
+    SS2out<<endl<<"Report_Z_by_area_morph_platoon"<<endl;
+    for (fishery_on_off=1;fishery_on_off>=0;fishery_on_off--)
+    {
+    if(fishery_on_off==0) {SS2out<<"_1 No_fishery_for_Z=M";} else {SS2out<<"_2 With_fishery";}
+      save_gparm=0;
+        setup_recdevs();
+        get_initial_conditions();
+        get_time_series();  //  in write_big_report
+        if(Do_Forecast>0)
+        {
+          show_MSY=0;
+          report5<<"#"<<endl<<" FORECAST: in M & Z report with fishery onoff= "<<fishery_on_off<<endl;
+          Get_Forecast();
+        }
+    SS2out <<endl<<"Area Bio_Pattern Sex BirthSeas Settlement Platoon Morph Yr Seas Time Beg/Mid Era"<<age_vector <<endl;
+    for (p=1;p<=pop;p++)
+    for (g=1;g<=gmorph;g++)
+    if(use_morph(g)>0)
+      {
+      for (y=styr-1;y<=YrMax;y++)
+      for (s=1;s<=nseas;s++)
+      {
+       t = styr+(y-styr)*nseas+s-1;
+       temp=double(y)+azero_seas(s);
+       SS2out <<p<<" "<<GP4(g)<<" "<<sx(g)<<" "<<Bseas(g)<<" "<<settle_g(g)<<" "<<GP2(g)<<" "<<g<<" "<<y<<" "<<s<<" "<<temp<<" _ ";
+       if(y==styr-1)
+         {SS2out<<" INIT ";}
+       else if (y<=endyr)
+         {SS2out<<" TIME ";}
+       else
+         {SS2out<<" FORE ";}
+       SS2out<<Z_rate(t,p,g)<<endl;
+      }
+      }
+      }
     return;
-  }  //  end write bzero
+  }  //  end write Z report
 
 //********************************************************************
  /*  SS_Label_FUNCTION 28 Report_Parm */

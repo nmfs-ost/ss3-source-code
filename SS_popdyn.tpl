@@ -440,6 +440,7 @@ FUNCTION void get_initial_conditions()
      {
        natage(t,p,g)(0,nages)=equ_numbers(s,p,g)(0,nages);
        natage(a,p,g)(0,nages)=equ_numbers(s,p,g)(0,nages);
+       Z_rate(t,p,g)=equ_Z(s,p,g);
      }
    }
     if(save_for_report>0)
