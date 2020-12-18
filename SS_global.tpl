@@ -557,7 +557,7 @@ GLOBALS_SECTION
       if(y>YrMax)
       {
         N_warn++; warning<<" reset parm_dev end year to YrMax for parm: "<<j<<" "<<y<<endl;
-        y=endyr;
+        y=YrMax;
       }
       timevary_setup(11)=y;
       for (y=timevary_setup(10);y<=timevary_setup(11)+1;y++)

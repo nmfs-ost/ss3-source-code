@@ -3529,6 +3529,7 @@
   vector TG_parm_LO(1,k1);
   vector TG_parm_HI(1,k1);
   ivector TG_parm_PH(1,k1);
+  int firsttagparm;
  LOCAL_CALCS
   if(Do_TG>0)
   {
@@ -3603,6 +3604,7 @@
     echoinput<<"create tag labels  "<<endl;
 //  SS_Label_Info_4.10.1 #Create parameter count and parameter names for tag parameters
        onenum="    ";
+       firsttagparm=ParCount;
        for (j=1;j<=N_TG;j++)
        {
        sprintf(onenum, "%d", j);
@@ -3689,7 +3691,12 @@
            {
             picker-=20;
             timevary_setup(14)=1;  //  flag to continue last dev through to YrMax
-           }
+           timevary_def[j](14)=1;  //  save in array also
+            echoinput<<j<<" setting flag to continue last dev "<<Fcast_Specify_Selex<<" "<<firstselparm<<" "<<f<<" "<<firstselparm+N_selparm<<" "<<endl;
+           if(Fcast_Specify_Selex==0 && f>=firstselparm && f<=(firstselparm+N_selparm))
+           	{N_warn++; warning<<"for selectivity parmdevs, must change Fcast_Specify_Selex to 1 when using continue last dev"<<endl;
+           	 echoinput<<"for selectivity parmdevs, must change Fcast_Specify_Selex to 1 when using continue last dev"<<endl;}
+            }
            if(picker>10) 
            {
              parm_dev_type(k)=3;  // use objfun using -log(se) to match 3.30.12 and earlier
