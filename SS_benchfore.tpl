@@ -1096,19 +1096,19 @@ FUNCTION void Get_Forecast()
       case 1:
         {
 		Fcast_Fmult=SPR_Fmult; 
-		if(show_MSY==1) report5<<"1:  Forecast_using_Fspr"<<endl; 
+		if(show_MSY==1) report5<<"1:  Forecast_using_Fspr: "<<Fcast_Fmult<<endl; 
 		break;
 		}
       case 2:
         {
 		Fcast_Fmult=MSY_Fmult; 
-		if(show_MSY==1) report5<<"2:  Forecast_using_Fmsy"<<endl; 
+		if(show_MSY==1) report5<<"2:  Forecast_using_Fmsy: "<<Fcast_Fmult<<endl; 
 		break;
 		}
       case 3:
         {
 		Fcast_Fmult=Btgt_Fmult; 
-		if(show_MSY==1) report5<<"3:  Forecast_using_F(Btarget)"<<endl; 
+		if(show_MSY==1) report5<<"3:  Forecast_using_F(Btarget): "<<Fcast_Fmult<<endl; 
 		break;
 		}
       case 4:
@@ -1126,7 +1126,7 @@ FUNCTION void Get_Forecast()
         }
         Fcast_Fmult/=float(Fcast_RelF_yr2-Fcast_RelF_yr1+1);
         Fcurr_Fmult=Fcast_Fmult;
-        if(show_MSY==1) report5<<"4:  Forecast_using_ave_F_from:_"<<Fcast_RelF_yr1<<"_"<<Fcast_RelF_yr2<<endl;
+        if(show_MSY==1) report5<<"4:  Forecast_using_ave_F_from:_"<<Fcast_RelF_yr1<<"_"<<Fcast_RelF_yr2<<" value: "<<Fcast_Fmult<<endl;
         break;
       }
       case 5:
@@ -1142,7 +1142,7 @@ FUNCTION void Get_Forecast()
       if(join1<0.999)
       {
       	report5<<"Forecast F capped by max possible F from control file"<<max_harvest_rate<<endl;
-     		N_warn++; warning<<"Forecast F capped by max possible F from control file"<<max_harvest_rate<<endl;
+     		N_warn++; warning<<"Forecast F capped by max possible F from control file: "<<max_harvest_rate<<endl;
       }
    }
    else
