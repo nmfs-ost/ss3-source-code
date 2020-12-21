@@ -22,13 +22,20 @@ FUNCTION void write_bigoutput()
   if(readparfile>=1) SS2out<<"Start_parm_values_from_SS.PAR"<<endl;
   SS2out<<endl<<"Convergence_Level: "<<objective_function_value::pobjfun->gmax<<" is_final_gradient"<<endl;
   temp = get_ln_det_value();
-  if(temp > 0)
+  if (SDmode == 0)
   {
-	SS2out<<"Hessian: "<<temp<<" is ln(determinant)."<<endl;
+    SS2out<<"Hessian: Not requested."<<endl;
   }
-  if(temp <= 0)
+  if (SDmode == 1)
   {
-	SS2out<<"Hessian: "<<temp<<" is ln(determinant). Hessian is not positive definite or was not calculated, so don't trust variance estimates."<<endl;
+    if(temp > 0)
+    {
+	  SS2out<<"Hessian: "<<temp<<" is ln(determinant)."<<endl;
+    }
+    if(temp <= 0)
+    {
+	  SS2out<<"Hessian: "<<temp<<" is ln(determinant). Hessian is not positive definite, so don't trust variance estimates."<<endl;
+    }
   }
   if(N_SC>0)
   {
