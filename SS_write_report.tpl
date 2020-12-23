@@ -1205,7 +1205,7 @@ FUNCTION void write_bigoutput()
    temp=sigmaR*sigmaR;  //  sigmaR^2
    SS2out<<"ERA    N    RMSE  RMSE^2/sigmaR^2  mean_BiasAdj est_rho Durbin-Watson"<<endl;
    SS2out<<"main  "<<n_rmse(1)<<" "<<rmse(1)<<" "<<square(rmse(1))/temp<<" "<<rmse(2)<<" "<<cross/var<<" "<<Durbin;
-   if(wrote_bigreport==0)
+   if(wrote_bigreport==0)  //  first time writing bigreport
    {
    if(rmse(1)<0.5*sigmaR && rmse(2)>(0.01+2.0*square(rmse(1))/temp))
    {N_warn++; warning<<" Main recdev biasadj is >2 times ratio of rmse to sigmaR"<<endl; SS2out<<" # Main_recdev_biasadj_is_>2_times_ratio_of_rmse_to_sigmaR"<<endl;}
@@ -3208,7 +3208,8 @@ FUNCTION void write_bigoutput()
   dvariable YPR_last;
   if(Do_Benchmark>0 && pick_report_use(54)=="Y")  {
     SS2out<<endl<<pick_report_name(54)<<endl;
-	  if(wrote_bigreport!=1){
+	  if(wrote_bigreport==0)
+	  	{
 		  // if writing pre-Hessian version of the Report, don't include
   		SS2out<<"This output only included after the Hessian is inverted"<<endl;
 		}else{
@@ -3229,6 +3230,7 @@ FUNCTION void write_bigoutput()
     bio_t_base=styr+(bio_yr-styr)*nseas-1;
 
 //  SPAWN-RECR:  call make_fecundity for benchmark bio for SPR loop
+//  this code section that creates fecundity and selectivity seems antiquated; why is it different from the averages used for benchmark?
     for (s=1;s<=nseas;s++)
     {
       t = styr-3*nseas+s-1;
@@ -3426,7 +3428,7 @@ FUNCTION void write_bigoutput()
 	
 //  GLOBAL_MSY with knife-edge age selection, then slot-age selection
 // REPORT_KEYWORD 49 GLOBAL_MSY
-  if(Do_Benchmark>0 && wrote_bigreport==1 && pick_report_use(49)=="Y")  {
+  if(Do_Benchmark>0 && wrote_bigreport==0 && pick_report_use(49)=="Y")  {
 	  SS2out<<endl<<pick_report_name(49)<<endl;
     y=styr-3;  //  stores the averaged
     yz=y;

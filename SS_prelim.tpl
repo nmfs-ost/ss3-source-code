@@ -1003,6 +1003,19 @@ PRELIMINARY_CALCS_SECTION
     ParmTrace<<endl;
 
 //  SS_Label_Info_6.10 #Preliminary calcs done; Ready for estimation
+
+    if(pick_report_use(54)=="Y") 
+    {
+    bodywtout<<nages<<" # maxage"<<endl;
+    bodywtout<<"# if Yr is negative, then fill remaining years for that Seas, growpattern, Bio_Pattern, Fleet"<<endl;
+    bodywtout<<"# if season is negative, then fill remaining fleets for that Seas, Bio_Pattern, Sex, Fleet"<<endl;
+    bodywtout<<"# will fill through forecast years, so be careful"<<endl;
+    bodywtout<<"# fleet 0 contains begin season pop WT"<<endl;
+    bodywtout<<"# fleet -1 contains mid season pop WT"<<endl;
+    bodywtout<<"# fleet -2 contains maturity*fecundity"<<endl;
+    bodywtout<<"#Yr Seas Sex Bio_Pattern BirthSeas Fleet "<<age_vector<<endl;
+    }
+
     if(Turn_off_phase<0)
       {
         cout<<" Requested exit after read when turn_off_phase < 0 "<<endl;

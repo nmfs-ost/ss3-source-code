@@ -263,7 +263,6 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
   dvar_vector yld1(1,3);
   dvar_vector Fmult_save(1,3);
   
-  int write_bodywt_save;
     write_bodywt_save=write_bodywt;
     write_bodywt=0;
   
@@ -1085,8 +1084,6 @@ FUNCTION void Get_Forecast()
   int ABC_Loop_start=1;
   int ABC_Loop_end=3;
 
-  int write_bodywt_save;
-  
   Do_F_tune.initialize();
 
    if(fishery_on_off==1)

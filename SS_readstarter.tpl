@@ -72,6 +72,7 @@
   int save_for_report;
   int bigsaver;  //  (save_for_report>0) || ((sd_phase() || mceval_phase()) && (initial_params::mc_phase==0))
   int write_bodywt;
+  int write_bodywt_save;
   int save_gparm;
   int save_gparm_print;
   int N_warn;
@@ -80,6 +81,7 @@
   !! save_gparm=0;
   !! N_warn=0;
   !! write_bodywt=0;
+  !! write_bodywt_save=0;
 
   int Nparm_on_bound;
  int on;

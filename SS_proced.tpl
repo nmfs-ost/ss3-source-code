@@ -6,9 +6,8 @@ PROCEDURE_SECTION
   Extra_Std.initialize();
   CrashPen.initialize();
   niter++;
-  
   if(mceval_phase() ) mceval_counter ++;   // increment the counter
-  if(initial_params::mc_phase==1) 
+  if(initial_params::mc_phase==1) //  in MCMC phase
   {
 
      if(mcmc_counter==0)
@@ -52,7 +51,7 @@ PROCEDURE_SECTION
   {
 
   //  create bigsaver to simplfy some condition statements later
-  if( (save_for_report>0) || ((sd_phase() || mceval_phase()) && (initial_params::mc_phase==0)) )
+  if( (save_for_report>0) || ((sd_phase() || mceval_phase()) && (initial_params::mc_phase==0)) )  // (SAVE || ( (SD || EVAL) && (!MCMC) ) )
     {bigsaver=1;} else 
     {bigsaver=0;}
     setup_recdevs();
@@ -62,17 +61,6 @@ PROCEDURE_SECTION
       if(do_once==1) cout<<" OK with initial conditions "<<endl;
 //  SS_Label_Info_7.4.2 #Call fxn get_time_series() to do population calculations for each year and get expected values for observations
     get_time_series();  //  in procedure_section
-//       cout<<niter<<" "<<obj_fun<<" SSB "<<SSB_yr(styr)<<endl;
-//       cout<<" growth "<<Ave_Size(styr,1,1)(0,5)<<"  ... "<<Ave_Size(styr,1,1,nages)<<endl;
-//       cout<<" deadfish "<<deadfish_B(1,1,1)(0,5)<<"  ... "<<deadfish(1,1,1,nages)<<endl;
-//       cout<<" sel "<<sel_al_3(1,1,1)(0,5)<<"  ... "<<sel_al_3(1,1,1,nages)<<endl;
-//        cout<<"Hrate "<<Hrate(1)(styr-1,styr+6)<<" ... "<<Hrate(1,endyr)<<endl;
-//        cout<<" equ_N "<<equ_numbers(1,1,1)(0,5)<<"  ... "<<equ_numbers(1,1,1,nages)<<endl;
-//        cout<<" N virg "<<natage(styr-2,1,1)(0,5)<<"  ... "<<natage(styr-2,1,1,nages)<<endl;
-//        cout<<" N init "<<natage(styr-1,1,1)(0,5)<<"  ... "<<natage(styr-1,1,1,nages)<<endl;
-//        cout<<" N end "<<natage(endyr,1,1)(0,5)<<"  ... "<<natage(endyr,1,1,nages)<<endl;
-//        cout<<" equ_Z "<<equ_Z(1,1,1)(0,5)<<"  ... "<<equ_Z(1,1,1,nages)<<endl;
-
       if(do_once==1) cout<<" OK with time series "<<endl;
 
 //  SS_Label_Info_7.4.3 #Call fxn evaluate_the_objective_function()

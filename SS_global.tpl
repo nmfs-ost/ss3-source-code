@@ -691,20 +691,9 @@ FINAL_SECTION
 //  SS_Label_Info_12.3.2 #Set save_for_report=1 then call initial_conditions and time_series to get other output quantities
     save_for_report=1;
     bigsaver=1;
-    if(pick_report_use(54)=="Y") 
-    {
-    	write_bodywt=1;
-    bodywtout<<nages<<" # maxage"<<endl;
-    bodywtout<<"# if Yr is negative, then fill remaining years for that Seas, growpattern, Bio_Pattern, Fleet"<<endl;
-    bodywtout<<"# if season is negative, then fill remaining fleets for that Seas, Bio_Pattern, Sex, Fleet"<<endl;
-    bodywtout<<"# will fill through forecast years, so be careful"<<endl;
-    bodywtout<<"# fleet 0 contains begin season pop WT"<<endl;
-    bodywtout<<"# fleet -1 contains mid season pop WT"<<endl;
-    bodywtout<<"# fleet -2 contains maturity*fecundity"<<endl;
-    bodywtout<<"#Yr Seas Sex Bio_Pattern BirthSeas Fleet "<<age_vector<<endl;
-
-    }
     save_gparm=0;
+    wrote_bigreport=0;
+    if(SDmode==0 && pick_report_use(54)=="Y") write_bodywt=1;  //  turn on conditional on SDMode because SDMode=1 situation already written
     y=styr;
     setup_recdevs();
     get_initial_conditions();
@@ -712,6 +701,7 @@ FINAL_SECTION
     evaluate_the_objective_function();
 //  SS_Label_Info_12.3.3 #Do benchmarks and forecast and stdquantities with save_for_report=1
     if(mceval_phase()==0) {show_MSY=1;} else {show_MSY=0;}  //  turn on reporting if not in mceval
+    if(pick_report_use(54)=="Y") {write_bodywt=1;}  //  turn on bodywt after time series 
     setup_Benchmark();  //  calculates biology and selectivity to be used
     if(Do_Benchmark>0)
     {
@@ -874,10 +864,12 @@ REPORT_SECTION
     }
   }
   }
+
 //  SS_Label_Info_13.2 #Call fxn write_bigoutput() as last_phase finishes and before doing Hessian
     wrote_bigreport=0;
-    if(last_phase()>0 && SDmode==1)
+    if(last_phase() && SDmode==1)
     {
+    if(pick_report_use(54)=="Y") {write_bodywt=1;}
     save_for_report=1;
     save_gparm=0;
     y=styr;
@@ -885,11 +877,10 @@ REPORT_SECTION
     get_initial_conditions();
     get_time_series();  //  in ADMB's report_section
     evaluate_the_objective_function();
-    {
     write_bigoutput();
-    cout<<" finished writing bigoutput for last_phase in report section and before hessian "<<endl;
-    }
+    cout<<"Wrote bigoutput and bodywt for last_phase in REPORT_SECTION and before hessian, no benchmark or forecast "<<endl;
     save_for_report=0;
+    write_bodywt=0;
     SS2out.close();
     }
   }  //  end standard report section
