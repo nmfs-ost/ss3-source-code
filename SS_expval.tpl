@@ -733,6 +733,16 @@ FUNCTION void Get_expected_values(const int y,const int t);
                               {while(len_bins2(z1+1)<SzFreq_bins(SzFreqMethod,1)) {z1++;}
                                 //  echoinput<<"accumulate starting at bin: "<<z1<<endl;
                               }      // ignore tiny fish
+
+                              if( len_bins2(nlength2) < SzFreq_bins(SzFreqMethod,SzFreq_Nbins(SzFreqMethod)))
+                              {
+                                N_warn++; cout<<" EXIT - see warning "<<endl;
+                                warning<<" error:  max population len bin "<<len_bins2(nlength2)<<" is less than max data bin "<<
+                                SzFreq_bins(SzFreqMethod,SzFreq_Nbins(SzFreqMethod))<<
+                                " for SzFreqMethod "<<SzFreqMethod<<endl;
+                                exit(1);
+                              }
+
                               for (z=z1;z<=z2;z++)
                               {
                                 if(ibin==SzFreq_Nbins(SzFreqMethod))

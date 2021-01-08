@@ -152,7 +152,7 @@ FUNCTION void get_growth2(const int y)
     {
       temp=mgp_adj(MGP_CGD);
       k=min(nages,(YrMax-y));
-      for (a=0;a<=k;a++) {Cohort_Growth(y+a,a)=temp;}  //  so this multiplier on VBK is stored on a diagonal into the future
+      for (a=0;a<=k;a++) {Cohort_Growth(y+a,a)=temp;}  //  so this multiplier on growth_increment is stored on a diagonal into the future
     }
 
   //  SS_Label_Info_16.2 #Loop growth patterns (sex*N_GP)
