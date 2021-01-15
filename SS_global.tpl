@@ -594,11 +594,10 @@ GLOBALS_SECTION
       ParmLabel+=ParmLabel(j)+"_dev_autocorr"+CRLF(1);
       timevary_parm_cnt++;
       dvector tempvec2(1,7);
-            tempvec2.initialize();
-            if(autogen_timevary>=1)  //  read
-      {*(ad_comm::global_datafile) >> tempvec2(1,7);}
-            if(autogen_timevary==0 || (autogen_timevary==2 && tempvec(1)==-12345))  //  create or overwrite
-      {tempvec2.fill("{-0.99,0.99,0.0,0.0,0.5,6,-6}");}
+      tempvec2.initialize();
+      if(autogen_timevary>=1) {*(ad_comm::global_datafile) >> tempvec2(1,7);}  // read
+      if(autogen_timevary==0 || (autogen_timevary==2 && tempvec2(1)==-12345))  //  create or overwrite
+      {tempvec2.fill("{-0.99,0.99,0.0,0.0,0.5,6,-6}");}  
       timevary_parm_rd.push_back (dvector(tempvec2(1,7)));
       echoinput<<"dev vec: "<<timevary_setup(8)<<" with link: "<<timevary_setup(9)<<" min, max year "<<timevary_setup(10,11)<<endl;
     }
