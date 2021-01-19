@@ -207,7 +207,7 @@ FUNCTION void evaluate_the_objective_function()
         }
         else
         {
-            N_warn++; cout<<" EXIT - see warning "<<endl; warning<<" discard error type for fleet "<<f<<" = "<<disc_errtype(f)<<" should be -3, -2, -1, 0, or >=1"<<endl; cout<<" fatal error, see warning"<<endl; exit(1);
+            N_warn++; cout<<" EXIT - see warning "<<endl;  warning<<N_warn<<" "<<" discard error type for fleet "<<f<<" = "<<disc_errtype(f)<<" should be -3, -2, -1, 0, or >=1"<<endl; cout<<" fatal error, see warning"<<endl; exit(1);
         }
       }
     }
@@ -1183,22 +1183,22 @@ FUNCTION dvariable Check_Parm(const int iparm, const int& PrPH, const double& Pm
 
     NewVal=Pval;
     if((Pmin<=-99 || Pmax>=999) && PrPH>=0)
-      {N_warn++; warning<<" jitter not done unless parameter min & max are in reasonable parameter range "<<Pmin<<" "<<Pmax<<endl;}
+      {N_warn++;  warning<<N_warn<<" "<<" jitter not done unless parameter min & max are in reasonable parameter range "<<Pmin<<" "<<Pmax<<endl;}
     else if(Pmin>Pmax)
     {N_warn++; cout<<" EXIT - see warning "<<endl; 
-    	warning<<" parameter min > parameter max "<<Pmin<<" > "<<Pmax<<" for parm: "<<iparm<<endl; cout<<" fatal error, see warning"<<endl;
+    	 warning<<N_warn<<" "<<" parameter min > parameter max "<<Pmin<<" > "<<Pmax<<" for parm: "<<iparm<<endl; cout<<" fatal error, see warning"<<endl;
     	echoinput<<" parameter min > parameter max "<<Pmin<<" > "<<Pmax<<" for parm: "<<iparm<<endl; cout<<" fatal error, see warning"<<endl; exit(1);}
     else if(Pmin==Pmax && PrPH>=0)
     {N_warn++;
-    	warning<<" parameter min is same as parameter max"<<Pmin<<" = "<<Pmax<<" for parm: "<<iparm<<endl;
+    	 warning<<N_warn<<" "<<" parameter min is same as parameter max"<<Pmin<<" = "<<Pmax<<" for parm: "<<iparm<<endl;
     	echoinput<<" parameter min is same as parameter max"<<Pmin<<" = "<<Pmax<<" for parm: "<<iparm<<endl;}
     else if(Pval<Pmin && PrPH>=0)
     {N_warn++;
-    	warning<<" parameter init value is less than parameter min "<<Pval<<" < "<<Pmin<<" for parm: "<<iparm<<endl;
+    	 warning<<N_warn<<" "<<" parameter init value is less than parameter min "<<Pval<<" < "<<Pmin<<" for parm: "<<iparm<<endl;
     	echoinput<<" parameter init value is less than parameter min "<<Pval<<" < "<<Pmin<<" for parm: "<<iparm<<endl; NewVal=Pmin;}
     else if(Pval>Pmax && PrPH>=0)
     {N_warn++; 
-    	warning<<" parameter init value is greater than parameter max "<<Pval<<" > "<<Pmax<<" for parm: "<<iparm<<endl;
+    	 warning<<N_warn<<" "<<" parameter init value is greater than parameter max "<<Pval<<" > "<<Pmax<<" for parm: "<<iparm<<endl;
     	echoinput<<" parameter init value is greater than parameter max "<<Pval<<" > "<<Pmax<<" for parm: "<<iparm<<endl; NewVal=Pmax;}
     else if(jitter>0.0 && PrPH>=0)
     {
@@ -1213,7 +1213,7 @@ FUNCTION dvariable Check_Parm(const int iparm, const int& PrPH, const double& Pm
       {
           N_warn++;
           cout<<" EXIT - see warning "<<endl;
-          warning<<" in Check_Parm jitter:  Psigma < 0.00001 "<<Psigma<<endl;
+           warning<<N_warn<<" "<<" in Check_Parm jitter:  Psigma < 0.00001 "<<Psigma<<endl;
           cout<<" fatal error in jitter, see warning"<<endl; exit(1);
       }
       zval = (Pval - Pmean) / Psigma;  //  current parm value converted to zscore
@@ -1239,7 +1239,7 @@ FUNCTION dvariable Check_Parm(const int iparm, const int& PrPH, const double& Pm
     //  now check prior
     if(Prtype>0)
     {
-      if(Psd<=0.0) {N_warn++; cout<<"fatal error in prior check, see warning"<<endl; warning<<"FATAL:  A prior is selected but prior sd is zero. Prtype: "<<Prtype<<" Prior: "<<Pr<<" Pr_sd: "<<Psd<<" for parm: "<<iparm<<endl; exit(1);}
+      if(Psd<=0.0) {N_warn++; cout<<"fatal error in prior check, see warning"<<endl;  warning<<N_warn<<" "<<"FATAL:  A prior is selected but prior sd is zero. Prtype: "<<Prtype<<" Prior: "<<Pr<<" Pr_sd: "<<Psd<<" for parm: "<<iparm<<endl; exit(1);}
       if(PrPH<0) {prior_ignore_warning++;}
     }
 
@@ -1281,7 +1281,7 @@ FUNCTION dvariable Get_Prior(const int T, const double& Pmin, const double& Pmax
         mu=(Pr-Pmin) / (Pmax-Pmin);  // CASAL's v
         tau=(Pr-Pmin)*(Pmax-Pr)/square(Psd)-1.0;
         Bprior=tau*mu;  Aprior=tau*(1.0-mu);  // CASAL's m and n
-        if(Bprior<=1.0 || Aprior <=1.0) {warning<<" bad Beta prior "<<Pval<<" "<<Pr<<endl;N_warn++;}
+        if(Bprior<=1.0 || Aprior <=1.0) { warning<<N_warn<<" "<<" bad Beta prior "<<Pval<<" "<<Pr<<endl;N_warn++;}
         Prior_Like =  (1.0-Bprior)*log(Pconst+Pval-Pmin) + (1.0-Aprior)*log(Pconst+Pmax-Pval)
               -(1.0-Bprior)*log(Pconst+Pr-Pmin) - (1.0-Aprior)*log(Pconst+Pmax-Pr);
         break;
@@ -1289,23 +1289,23 @@ FUNCTION dvariable Get_Prior(const int T, const double& Pmin, const double& Pmax
       case 3: // lognormal without bias correction
       {
         if(Pmin>0.0) {Prior_Like = 0.5*square((log(Pval)-Pr)/Psd);}
-          else {N_warn++; warning<<" cannot do prior in log space for parm with min <=0.0" << endl;}
+          else {N_warn++;  warning<<N_warn<<" "<<" cannot do prior in log space for parm with min <=0.0" << endl;}
         break;
       }
       case 4: //lognormal with bias correction (from Larry Jacobson)
       {
         if(Pmin>0.0) Prior_Like=0.5*square((log(Pval)-Pr+0.5*square(Psd))/Psd);
-          else {N_warn++; warning<<" cannot do prior in log space for parm with min <=0.0" << endl;}
+          else {N_warn++;  warning<<N_warn<<" "<<" cannot do prior in log space for parm with min <=0.0" << endl;}
         break;
       }
       case 5: //gamma  (from Larry Jacobson)
       {
         double warnif=1e-15;
-        if(Pmin<0.0) {N_warn++; warning<<"Lower bound for gamma prior must be >=0.  Suggestion " << warnif*10.0 <<endl;}
+        if(Pmin<0.0) {N_warn++;  warning<<N_warn<<" "<<"Lower bound for gamma prior must be >=0.  Suggestion " << warnif*10.0 <<endl;}
         else
         {
 //Gamma is defined over [0,+inf) but x=zero causes trouble for some mean/variance combos.
-          if(Pval < warnif) {N_warn++; warning<<"Pval too close to zero in gamma prior - can not guarantee reliable calculations.  Suggest rescaling data (e.g. * 1000)? "<<endl;}
+          if(Pval < warnif) {N_warn++;  warning<<N_warn<<" "<<"Pval too close to zero in gamma prior - can not guarantee reliable calculations.  Suggest rescaling data (e.g. * 1000)? "<<endl;}
           else
           {
             dvariable scale=square(Psd)/Pr;  // gamma parameters by method of moments

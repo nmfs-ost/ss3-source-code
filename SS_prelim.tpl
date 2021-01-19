@@ -36,7 +36,7 @@ PRELIMINARY_CALCS_SECTION
         if(Svy_errtype(f)>=0)  // lognormal or lognormal T_dist
         {
           if(Svy_obs(f,i)<=0.0)
-          {N_warn++; cout<<" EXIT - see warning "<<endl; warning<<"Survey obs must be positive for lognormal error"<<endl; exit(1);}
+          {N_warn++; cout<<" EXIT - see warning "<<endl;  warning<<N_warn<<" "<<"Survey obs must be positive for lognormal error"<<endl; exit(1);}
           Svy_obs_log(f,i)=log(Svy_obs(f,i));
           Svy_se(f,i)+=var_adjust(1,f);
           if(Svy_se(f,i)<=0.0) Svy_se(f,i)=0.001;
@@ -131,7 +131,7 @@ PRELIMINARY_CALCS_SECTION
           else
           {k++;}
         }
-        if(k!=1) {N_warn++; cout<<"EXIT - see warning.sso"; warning<<" must have only 1 sample with real info in survey superperiod "<<j<<endl; exit(1);}
+        if(k!=1) {N_warn++; cout<<"EXIT - see warning.sso";  warning<<N_warn<<" "<<" must have only 1 sample with real info in survey superperiod "<<j<<endl; exit(1);}
         for (i=Svy_super_start(f,j);i<=Svy_super_end(f,j);i++)
         {
           if(Svy_use(f,i)<0)  //  so one of the obs to be combined
@@ -157,7 +157,7 @@ PRELIMINARY_CALCS_SECTION
           else
           {k++;}
         }
-        if(k!=1) {N_warn++; cout<<"EXIT - see warning.sso"; warning<<" must have only 1 sample with real info in survey superperiod "<<j<<endl; exit(1);}
+        if(k!=1) {N_warn++; cout<<"EXIT - see warning.sso";  warning<<N_warn<<" "<<" must have only 1 sample with real info in survey superperiod "<<j<<endl; exit(1);}
         for (i=suprper_disc1(f,j);i<=suprper_disc2(f,j);i++)
         {
           if(yr_disc_use(f,i)<0)  //  so one of the obs to be combined
@@ -183,7 +183,7 @@ PRELIMINARY_CALCS_SECTION
           else
           {k++;}
         }
-        if(k!=1) {N_warn++; cout<<"error in length data"; warning<<" must have only 1 sample with real info in length superperiod "<<j<<endl; exit(1);}
+        if(k!=1) {N_warn++; cout<<"error in length data";  warning<<N_warn<<" "<<" must have only 1 sample with real info in length superperiod "<<j<<endl; exit(1);}
         for (i=suprper_l1(f,j);i<=suprper_l2(f,j);i++)
         {
           if(header_l(f,i,3)<0)  //  so one of the obs to be combined
@@ -209,7 +209,7 @@ PRELIMINARY_CALCS_SECTION
           else
           {k++;}
         }
-        if(k!=1) {N_warn++; cout<<"error in age data"; warning<<" must have only 1 sample with real info in age superperiod "<<j<<endl; exit(1);}
+        if(k!=1) {N_warn++; cout<<"error in age data";  warning<<N_warn<<" "<<" must have only 1 sample with real info in age superperiod "<<j<<endl; exit(1);}
         for (i=suprper_a1(f,j);i<=suprper_a2(f,j);i++)
         {
           if(header_a(f,i,3)<0)  //  so one of the obs to be combined
@@ -234,7 +234,7 @@ PRELIMINARY_CALCS_SECTION
           else
           {k++;}
         }
-        if(k!=1) {N_warn++; cout<<"error in meansize data"; warning<<" must have only 1 sample with real info in meansize superperiod "<<j<<endl; exit(1);}
+        if(k!=1) {N_warn++; cout<<"error in meansize data";  warning<<N_warn<<" "<<" must have only 1 sample with real info in meansize superperiod "<<j<<endl; exit(1);}
         for (i=suprper_ms1(f,j);i<=suprper_ms2(f,j);i++)
         {
           if(header_ms(f,i,3)<0)  //  so one of the obs to be combined
@@ -339,7 +339,7 @@ PRELIMINARY_CALCS_SECTION
             else
             {k++;}  //  so counts the obs that are not just placeholders
           }
-          if(k!=1) {N_warn++; cout<<"error in sizecomp data"; warning<<" must have only 1 sample with real info in sizecomp superperiod "<<j<<endl; exit(1);}
+          if(k!=1) {N_warn++; cout<<"error in sizecomp data";  warning<<N_warn<<" "<<" must have only 1 sample with real info in sizecomp superperiod "<<j<<endl; exit(1);}
           for (iobs=suprper_SzFreq_start(j);iobs<=suprper_SzFreq_end(j);iobs++)
           {
             if(SzFreq_obs_hdr(iobs,3)<0)  //  so one of the obs to be combined
@@ -408,7 +408,7 @@ PRELIMINARY_CALCS_SECTION
         }
         else
         {
-          N_warn++; warning<<" Trying to specify a recdev out of allowable range of years "<<y<<endl;
+          N_warn++;  warning<<N_warn<<" "<<" Trying to specify a recdev out of allowable range of years "<<y<<endl;
         }
       }
     }
@@ -614,7 +614,7 @@ PRELIMINARY_CALCS_SECTION
   }
 //  end bound check and jitter
     if(Do_all_priors==0 && prior_ignore_warning>0) {
-      N_warn++; warning<<"setting in starter does not request all priors, and "<<prior_ignore_warning<<
+      N_warn++;  warning<<N_warn<<" "<<"setting in starter does not request all priors, and "<<prior_ignore_warning<<
       " parameters have priors and are not estimated, so their prior not included in obj_fun."<<endl;
     }
   if (TwoD_AR_cnt>0)
@@ -724,7 +724,7 @@ PRELIMINARY_CALCS_SECTION
   	// check for discard obs
   	if(disc_N_fleet(f)>0 && Do_Retain(f)==0) {
   		N_warn++; cout<<"SS will exit, see warning"<<endl; 
-  		warning<<"fleet: "<<f<<"  discard data exist but retention fxn not defined; exit"<<endl; exit(1);}
+  		 warning<<N_warn<<" "<<"fleet: "<<f<<"  discard data exist but retention fxn not defined; exit"<<endl; exit(1);}
 
     parti_cnt.initialize();
     if(Nobs_l(f)>0)
@@ -733,17 +733,17 @@ PRELIMINARY_CALCS_SECTION
   		if(parti_cnt(1)>0 && Do_Retain(f)==0)
   		{
   			N_warn++; cout<<"SS will exit, see warning"<<endl; 
-  			warning<<"fleet: "<<f<<"  lencomp contains N obs with partition==1 and retention fxn not defined; N= "<<parti_cnt(1)<<endl; exit(1);
+  			 warning<<N_warn<<" "<<"fleet: "<<f<<"  lencomp contains N obs with partition==1 and retention fxn not defined; N= "<<parti_cnt(1)<<endl; exit(1);
   		}
   		if(parti_cnt(2)>0 && Do_Retain(f)==0)
   		{
   			N_warn++; 
-  			warning<<"fleet: "<<f<<"  lencomp has obs with partition==2; will treat as partition=0 because retention not defined; N= "<<parti_cnt(2)<<endl;
+  			 warning<<N_warn<<" "<<"fleet: "<<f<<"  lencomp has obs with partition==2; will treat as partition=0 because retention not defined; N= "<<parti_cnt(2)<<endl;
   		}
   		if(parti_cnt(2)>0 && (fleet_type(f)==2 || seltype(f,2)==3 || seltype(Nfleet+f,2)==3))  //  error if retained catch obs are with no retention fleets
   		{
   			N_warn++; cout<<"SS will exit, see warning"<<endl; 
-  			warning<<"fleet: "<<f<<" EXIT; lencomp has obs with partition==2; but fleet does not retain any catch; N= "<<parti_cnt(2)<<endl; exit(1);
+  			 warning<<N_warn<<" "<<"fleet: "<<f<<" EXIT; lencomp has obs with partition==2; but fleet does not retain any catch; N= "<<parti_cnt(2)<<endl; exit(1);
   		}
     }
 
@@ -754,17 +754,17 @@ PRELIMINARY_CALCS_SECTION
   		if(parti_cnt(1)>0 && Do_Retain(f)==0)
   		{
   			N_warn++; cout<<"SS will exit, see warning"<<endl; 
-  			warning<<"fleet: "<<f<<"  agecomp contains N obs with partition==1 and retention fxn not defined; N= "<<parti_cnt(1)<<endl; exit(1);
+  			 warning<<N_warn<<" "<<"fleet: "<<f<<"  agecomp contains N obs with partition==1 and retention fxn not defined; N= "<<parti_cnt(1)<<endl; exit(1);
   		}
   		if(parti_cnt(2)>0 && Do_Retain(f)==0)
   		{
   			N_warn++; 
-  			warning<<"fleet: "<<f<<"  agecomp has obs with partition==2; will treat as partition=0 because retention not defined; N= "<<parti_cnt(2)<<endl;
+  			 warning<<N_warn<<" "<<"fleet: "<<f<<"  agecomp has obs with partition==2; will treat as partition=0 because retention not defined; N= "<<parti_cnt(2)<<endl;
   		}
   		if(parti_cnt(2)>0 && (fleet_type(f)==2 || seltype(f,2)==3 || seltype(Nfleet+f,2)==3))  //  error if retained catch obs are with no retention fleets
   		{
   			N_warn++; cout<<"SS will exit, see warning"<<endl; 
-  			warning<<"fleet: "<<f<<" EXIT; agecomp has obs with partition==2; but fleet does not retain any catch; N= "<<parti_cnt(2)<<endl; exit(1);
+  			 warning<<N_warn<<" "<<"fleet: "<<f<<" EXIT; agecomp has obs with partition==2; but fleet does not retain any catch; N= "<<parti_cnt(2)<<endl; exit(1);
   		}
     }
 
@@ -775,17 +775,17 @@ PRELIMINARY_CALCS_SECTION
   		if(parti_cnt(1)>0 && Do_Retain(f)==0)
   		{
   			N_warn++; cout<<"SS will exit, see warning"<<endl; 
-  			warning<<"fleet: "<<f<<"  size-at-age data contains obs with partition==1 and retention fxn not defined; N= "<<parti_cnt(1)<<endl; exit(1);
+  			 warning<<N_warn<<" "<<"fleet: "<<f<<"  size-at-age data contains obs with partition==1 and retention fxn not defined; N= "<<parti_cnt(1)<<endl; exit(1);
   		}
   		if(parti_cnt(2)>0 && Do_Retain(f)==0)
   		{
   			N_warn++; 
-  			warning<<"fleet: "<<f<<"  size-at-age data  has obs with partition==2; will treat as partition=0 because retention not defined; N= "<<parti_cnt(2)<<endl;
+  			 warning<<N_warn<<" "<<"fleet: "<<f<<"  size-at-age data  has obs with partition==2; will treat as partition=0 because retention not defined; N= "<<parti_cnt(2)<<endl;
   		}
   		if(parti_cnt(2)>0 && (fleet_type(f)==2 || seltype(f,2)==3 || seltype(Nfleet+f,2)==3))  //  error if retained catch obs are with no retention fleets
   		{
   			N_warn++; cout<<"SS will exit, see warning"<<endl; 
-  			warning<<"fleet: "<<f<<" EXIT; size-at-age data has obs with partition==2; but fleet does not retain any catch; N= "<<parti_cnt(2)<<endl; exit(1);
+  			 warning<<N_warn<<" "<<"fleet: "<<f<<" EXIT; size-at-age data has obs with partition==2; but fleet does not retain any catch; N= "<<parti_cnt(2)<<endl; exit(1);
   		}
     }
 
@@ -800,17 +800,17 @@ PRELIMINARY_CALCS_SECTION
   		if(parti_cnt(1)>0 && Do_Retain(f)==0)
   		{
   			N_warn++; cout<<"SS will exit, see warning"<<endl; 
-  			warning<<"fleet: "<<f<<"  meansize data contains obs with partition==1 and retention fxn not defined; N= "<<parti_cnt(1)<<endl; exit(1);
+  			 warning<<N_warn<<" "<<"fleet: "<<f<<"  meansize data contains obs with partition==1 and retention fxn not defined; N= "<<parti_cnt(1)<<endl; exit(1);
   		}
   		if(parti_cnt(2)>0 && Do_Retain(f)==0)
   		{
   			N_warn++; 
-  			warning<<"fleet: "<<f<<"  meansize data has obs with partition==2; will treat as partition=0 because retention not defined; N= "<<parti_cnt(2)<<endl;
+  			 warning<<N_warn<<" "<<"fleet: "<<f<<"  meansize data has obs with partition==2; will treat as partition=0 because retention not defined; N= "<<parti_cnt(2)<<endl;
   		}
   		if(parti_cnt(2)>0 && (fleet_type(f)==2 || seltype(f,2)==3 || seltype(Nfleet+f,2)==3))  //  error if retained catch obs are with no retention fleets
   		{
   			N_warn++; cout<<"SS will exit, see warning"<<endl; 
-  			warning<<"fleet: "<<f<<" EXIT; meansize data has obs with partition==2; but fleet does not retain any catch; N= "<<parti_cnt(2)<<endl; exit(1);
+  			 warning<<N_warn<<" "<<"fleet: "<<f<<" EXIT; meansize data has obs with partition==2; but fleet does not retain any catch; N= "<<parti_cnt(2)<<endl; exit(1);
   		}
     }
 
@@ -819,7 +819,7 @@ PRELIMINARY_CALCS_SECTION
   	if(Do_Retain(f)==0)  //  retention not defined; check for illogical observations
   		{
   			// check for discard obs
-  			if(disc_N_fleet(f)>0) {N_warn++; warning<<"fleet: "<<f<<"  discard data exist but retention fxn not defined; exit"<<endl; exit(1);}
+  			if(disc_N_fleet(f)>0) {N_warn++;  warning<<N_warn<<" "<<"fleet: "<<f<<"  discard data exist but retention fxn not defined; exit"<<endl; exit(1);}
 
 				for(i=1;i<=Nobs_l(f);i++)
 				{
@@ -831,14 +831,14 @@ PRELIMINARY_CALCS_SECTION
 				{
 					if(mkt_a(f,i)==1)
 					{
-				  	N_warn++; warning<<"fleet: "<<f<<"  agecomp data contains obs with partition==1 and retention fxn not defined"<<endl; exit(1);
+				  	N_warn++;  warning<<N_warn<<" "<<"fleet: "<<f<<"  agecomp data contains obs with partition==1 and retention fxn not defined"<<endl; exit(1);
 					}
 				}
 				for(i=1;i<=Nobs_ms(f);i++)
 				{
 					if(mkt_ms(f,i)==1)
 					{
-				  	N_warn++; warning<<"fleet: "<<f<<"  size@age data contains obs with partition==1 and retention fxn not defined"<<endl; exit(1);
+				  	N_warn++;  warning<<N_warn<<" "<<"fleet: "<<f<<"  size@age data contains obs with partition==1 and retention fxn not defined"<<endl; exit(1);
 					}
 				}
   			// check for mean body size obs with partition =1 or =2
@@ -850,7 +850,7 @@ PRELIMINARY_CALCS_SECTION
               int parti = mnwtdata(4,i);  //  partition:  0=all, 1=discard, 2=retained
           		if(parti==1)
           		{
-          			N_warn++; warning<<"fleet: "<<f<<"meansize data contains obs with partition==1 and retention fxn not defined"<<endl; exit(1);
+          			N_warn++;  warning<<N_warn<<" "<<"fleet: "<<f<<"meansize data contains obs with partition==1 and retention fxn not defined"<<endl; exit(1);
           		}
           	}
         }
@@ -890,9 +890,9 @@ PRELIMINARY_CALCS_SECTION
 //  SS_Label_Info_6.8.3 #Call fxn get_growth2() to calculate size-at-age
     get_growth2(styr); //   in preliminary calcs
     echoinput<<" did growth2 in prelim calcs"<<endl<<Ave_Size(styr,1,1)<<endl;
-    if(minL>10.0) {N_warn++; warning<<" Minimum size bin is:_"<<minL<<"; which is >10cm, which is large for use as size-at-age 0.0 recruitment"<<endl;}
+    if(minL>10.0) {N_warn++;  warning<<N_warn<<" "<<" Minimum size bin is:_"<<minL<<"; which is >10cm, which is large for use as size-at-age 0.0 recruitment"<<endl;}
     temp=Ave_Size(styr,1,1,nages);
-    if(temp>0.95*len_bins(nlength)) {N_warn++; warning<<" Maximum size at age: "<<temp
+    if(temp>0.95*len_bins(nlength)) {N_warn++;  warning<<N_warn<<" "<<" Maximum size at age: "<<temp
     <<"; is within 5% of the largest size bin: "<<len_bins(nlength)<<"; Add more bins"<<endl;}
 
 //  SS_Label_Info_6.8.4 #Call fxn get_natmort()

@@ -29,7 +29,7 @@ FUNCTION dvariable Spawn_Recr(const prevariable& SSB_virgin_adj, const prevariab
     {
       case 1: // previous placement for B-H constrained
       {
-        N_warn++; cout<<"Critical error:  see warning"<<endl; warning<<"B-H constrained curve is now Spawn-Recr option #6"<<endl; exit(1);
+        N_warn++; cout<<"Critical error:  see warning"<<endl;  warning<<N_warn<<" "<<"B-H constrained curve is now Spawn-Recr option #6"<<endl; exit(1);
         break;
       }
 //  SS_Label_43.3.2  Ricker
@@ -264,7 +264,7 @@ FUNCTION dvar_vector Equil_Spawn_Recr_Fxn(const prevariable &SRparm2, const prev
     {
       case 1: // previous placement for B-H constrained
       {
-        N_warn++; cout<<"Critical error:  see warning"<<endl; warning<<"B-H constrained curve is now Spawn-Recr option #6"<<endl; exit(1);
+        N_warn++; cout<<"Critical error:  see warning"<<endl;  warning<<N_warn<<" "<<"B-H constrained curve is now Spawn-Recr option #6"<<endl; exit(1);
         break;
       }
 //  SS_Label_44.1.1  Beverton-Holt with flattop beyond Bzero

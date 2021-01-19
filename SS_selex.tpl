@@ -42,7 +42,7 @@ FUNCTION void get_selectivity()
               if(sp(j)>-999 && (sp(j)<selparm_1(Ip+j,1) || sp(j)>selparm_1(Ip+j,2)))
               {
                 N_warn++;
-                warning<<" adjusted selparm out of base parm bounds (Phase, Iter, Parm#, yr, min, max, base, value) "<<
+                 warning<<N_warn<<" "<<" adjusted selparm out of base parm bounds (Phase, Iter, Parm#, yr, min, max, base, value) "<<
                 current_phase()<<" "<<niter<<" "<<Ip+j<<" "<<y<<" "<<selparm_1(Ip+j,1)<<" "<<selparm_1(Ip+j,2)<<" "<<selparm(Ip+j)<<" "<<sp(j)<<endl;
               }
             }
@@ -86,20 +86,20 @@ FUNCTION void get_selectivity()
             case 2:
               {
                                      // 1=peak, 2=init,  3=infl,  4=slope, 5=final, 6=infl2, 7=slope2
-            N_warn++; cout<<" EXIT - see warning "<<endl; warning<<" selex pattern 2 discontinued; use pattern 8 for double logistic "<<endl; exit(1);
+            N_warn++; cout<<" EXIT - see warning "<<endl;  warning<<N_warn<<" "<<" selex pattern 2 discontinued; use pattern 8 for double logistic "<<endl; exit(1);
            break;
           }    // end double logistic
 
   //  SS_Label_Info_22.3.3 #case 3 discontinued
           case 3:
           {
-            N_warn++; cout<<" EXIT - see warning "<<endl; warning<<" selex pattern 3 discontinued "<<endl; exit(1);
+            N_warn++; cout<<" EXIT - see warning "<<endl;  warning<<N_warn<<" "<<" selex pattern 3 discontinued "<<endl; exit(1);
            break;
           }  // end seltype=3
 
   //  SS_Label_Info_22.3.4 #case 4 discontinued; use pattern 30 to get spawning biomass
           case 4:
-            {N_warn++; cout<<" EXIT - see warning "<<endl; warning<<" selex pattern 4 discontinued; use pattern 30 to get spawning biomass "<<endl; exit(1); break;}                   // do this as a numbers survey because wt is included here
+            {N_warn++; cout<<" EXIT - see warning "<<endl;  warning<<N_warn<<" "<<" selex pattern 4 discontinued; use pattern 30 to get spawning biomass "<<endl; exit(1); break;}                   // do this as a numbers survey because wt is included here
 
   //  SS_Label_Info_22.3.5 #case 5 mirror another fleets size selectivity for specified bin range
   //  use only the specified bin range using mirror_mask created upon read
@@ -175,12 +175,12 @@ FUNCTION void get_selectivity()
             if (low_bin < 1)
             {
                 low_bin = 1;
-                N_warn++; warning<<" selex pattern 43; value for low bin is less than 1, so set to 1 "<<endl;
+                N_warn++;  warning<<N_warn<<" "<<" selex pattern 43; value for low bin is less than 1, so set to 1 "<<endl;
             }
             if (high_bin > nlength)
             {
                 high_bin = nlength;
-                N_warn++; warning<<" selex pattern 43; value for high bin is greater than "<<nlength<<", so set to "<<nlength<<" "<<endl;
+                N_warn++;  warning<<N_warn<<" "<<" selex pattern 43; value for high bin is greater than "<<nlength<<", so set to "<<nlength<<" "<<endl;
             }
             if (high_bin < low_bin) high_bin = low_bin;
             if (low_bin > high_bin) low_bin = high_bin;
@@ -197,7 +197,7 @@ FUNCTION void get_selectivity()
           case 7:                  // *******New double logistic
     // 1=peak, 2=init,  3=infl,  4=slope, 5=final, 6=infl2, 7=slope2 8=binwidth;    Mirror=1===const_above_Linf
           {
-            N_warn++; cout<<" EXIT - see warning "<<endl; warning<<" selex pattern 7 discontinued; use pattern 8 for double logistic "<<endl; exit(1);
+            N_warn++; cout<<" EXIT - see warning "<<endl;  warning<<N_warn<<" "<<" selex pattern 7 discontinued; use pattern 8 for double logistic "<<endl; exit(1);
  /*
            t1=minL+(1./(1.+mfexp(-sp(3))))*(sp(1)-minL);    // INFL
            t1min=1./(1.+mfexp(-sp(4)*(minL-t1)))*0.9999;  // asc value at minsize
@@ -289,9 +289,9 @@ FUNCTION void get_selectivity()
             if(do_once==1)
             {
               if(sp(k)>len_bins(nlength))
-              {N_warn++; cout<<" EXIT - see warning "<<endl; warning<<"Selex21: cannot have max selpoint > max_pop_lenbin"<<endl;  exit(1);}
+              {N_warn++; cout<<" EXIT - see warning "<<endl;  warning<<N_warn<<" "<<"Selex21: cannot have max selpoint > max_pop_lenbin"<<endl;  exit(1);}
               if(sp(k-1)>len_bins(nlength-1))
-              {N_warn++; warning<<"Selex21: should not have selpoint(n-1) > pop_lenbin(nlength-1)"<<endl;}
+              {N_warn++;  warning<<N_warn<<" "<<"Selex21: should not have selpoint(n-1) > pop_lenbin(nlength-1)"<<endl;}
             }
  #endif
 
@@ -515,12 +515,12 @@ FUNCTION void get_selectivity()
                 if (low_bin < 1)
                 {
                     low_bin = 1;
-                    N_warn++; warning<<" selex pattern 42; value for low bin is less than 1, so set to 1 "<<endl;
+                    N_warn++;  warning<<N_warn<<" "<<" selex pattern 42; value for low bin is less than 1, so set to 1 "<<endl;
                 }
                 if (high_bin > nlength)
                 {
                     high_bin = nlength;
-                    N_warn++; warning<<" selex pattern 42; value for high bin is greater than "<<nlength<<", so set to "<<nlength<<" "<<endl;
+                    N_warn++;  warning<<N_warn<<" "<<" selex pattern 42; value for high bin is greater than "<<nlength<<", so set to "<<nlength<<" "<<endl;
                 }
                 if (high_bin < low_bin) high_bin = low_bin;
                 if (low_bin > high_bin) low_bin = high_bin;
@@ -948,12 +948,12 @@ FUNCTION void get_selectivity()
                   if (low_bin < 0)
                   {
                       low_bin = 0;
-                      N_warn++; warning<<" selex pattern 41; value for low bin is less than 0, so set to 0 "<<endl;
+                      N_warn++;  warning<<N_warn<<" "<<" selex pattern 41; value for low bin is less than 0, so set to 0 "<<endl;
                   }
                   if (high_bin > nages)
                   {
                       high_bin = nages;
-                      N_warn++; warning<<" selex pattern 41; value for high bin is greater than "<<nages<<", so set to "<<nages<<" "<<endl;
+                      N_warn++;  warning<<N_warn<<" "<<" selex pattern 41; value for high bin is greater than "<<nages<<", so set to "<<nages<<" "<<endl;
                   }
                   if (high_bin < low_bin) high_bin = low_bin;
                   if (low_bin > high_bin) low_bin = high_bin;
@@ -1019,12 +1019,12 @@ FUNCTION void get_selectivity()
                 if (low_bin < 0)
                 {
                     low_bin = 0;
-                    N_warn++; warning<<" selex pattern 44; value for low bin is less than 0, so set to 0 "<<endl;
+                    N_warn++;  warning<<N_warn<<" "<<" selex pattern 44; value for low bin is less than 0, so set to 0 "<<endl;
                 }
                 if (high_bin > nages)
                 {
                     high_bin = nages;
-                    N_warn++; warning<<" selex pattern 44; value for high bin is greater than "<<nages<<", so set to "<<nages<<" "<<endl;
+                    N_warn++;  warning<<N_warn<<" "<<" selex pattern 44; value for high bin is greater than "<<nages<<", so set to "<<nages<<" "<<endl;
                 }
                 if (high_bin < low_bin) high_bin = low_bin;
                 if (low_bin > high_bin) low_bin = high_bin;
@@ -1067,7 +1067,7 @@ FUNCTION void get_selectivity()
                   {tempvec_a(a)=sp(j-seltype(f,4));}  //  use female parameter for males
                 else  //  so value is -999 so set to next younger age
                 {tempvec_a(a) = tempvec_a(a-1);}
-          //    warning<<" sex "<<gg<<" a "<<a<<"  j "<<j<<"  sp "<<sp(j)<<" use "<<tempvec_a(a)<<endl;
+          //     warning<<N_warn<<" "<<" sex "<<gg<<" a "<<a<<"  j "<<j<<"  sp "<<sp(j)<<" use "<<tempvec_a(a)<<endl;
               }
               int low_bin  = int(value(sp(2)));
               int high_bin = int(value(sp(3)));
@@ -1077,12 +1077,12 @@ FUNCTION void get_selectivity()
                 if (low_bin < 0)
                 {
                     low_bin = 0;
-                    N_warn++; warning<<" selex pattern 44; value for low bin is less than 0, so set to 0 "<<endl;
+                    N_warn++;  warning<<N_warn<<" "<<" selex pattern 44; value for low bin is less than 0, so set to 0 "<<endl;
                 }
                 if (high_bin > nages)
                 {
                     high_bin = nages;
-                    N_warn++; warning<<" selex pattern 44; value for high bin is greater than "<<nages<<", so set to "<<nages<<" "<<endl;
+                    N_warn++;  warning<<N_warn<<" "<<" selex pattern 44; value for high bin is greater than "<<nages<<", so set to "<<nages<<" "<<endl;
                 }
                 if (high_bin < low_bin) high_bin = low_bin;
                 if (low_bin > high_bin) low_bin = high_bin;
@@ -1252,12 +1252,12 @@ FUNCTION void get_selectivity()
                 if (low_bin < Min_selage(fs))
                 {
                     low_bin = Min_selage(fs);
-                    N_warn++; warning<<" selex pattern 42; value for low bin is less than min_selage, so set to "<<Min_selage(fs)<<endl;
+                    N_warn++;  warning<<N_warn<<" "<<" selex pattern 42; value for low bin is less than min_selage, so set to "<<Min_selage(fs)<<endl;
                 }
                 if (high_bin > nages)
                 {
                     high_bin = nages;
-                    N_warn++; warning<<" selex pattern 42; value for high bin is greater than "<<nages<<", so set to "<<nages<<" "<<endl;
+                    N_warn++;  warning<<N_warn<<" "<<" selex pattern 42; value for high bin is greater than "<<nages<<", so set to "<<nages<<" "<<endl;
                 }
                 if (high_bin < low_bin) high_bin = low_bin;
                 if (low_bin > high_bin) low_bin = high_bin;
@@ -1274,7 +1274,7 @@ FUNCTION void get_selectivity()
 
           default:   //  seltype not found.  But really need this check earlier when the N selex parameters are being processed.
           {
-            N_warn++; cout<<"Critical error, see warning"<<endl; warning<<"Age_selex option not valid "<<seltype(f,1)<<endl; exit(1);
+            N_warn++; cout<<"Critical error, see warning"<<endl;  warning<<N_warn<<" "<<"Age_selex option not valid "<<seltype(f,1)<<endl; exit(1);
             break;
           }
 

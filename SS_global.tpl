@@ -270,7 +270,7 @@ GLOBALS_SECTION
       if (z>0)  //  blocks with z as the block pattern
       {
         Nblocks=0.5*(block_design_pass.size());
-//        if(z>N_Block_Designs) {N_warn++; warning<<"parm: "<<j<<" ERROR, Block > N Blocks "<<z<<" "<<N_Block_Designs<<endl; exit(1);}
+//        if(z>N_Block_Designs) {N_warn++;  warning<<N_warn<<" "<<"parm: "<<j<<" ERROR, Block > N Blocks "<<z<<" "<<N_Block_Designs<<endl; exit(1);}
         k=int(baseparm_list(14));  //  block method
         echoinput<<"block pattern: "<<z<<" method "<<k<<" Nblocks: "<<Nblocks<<endl;
 
@@ -298,7 +298,7 @@ GLOBALS_SECTION
             {
               tempvec.fill("{-10,10,0.,0.,5,6,4}");
               if(baseparm_list(1)<=0.0) 
-              {N_warn++; warning<<" cannot use multiplicative blocks for parameter with a negative lower bound;  exit "<<endl<<
+              {N_warn++;  warning<<N_warn<<" "<<" cannot use multiplicative blocks for parameter with a negative lower bound;  exit "<<endl<<
             baseparm_list(1)<<" "<<baseparm_list(2)<<" "<<baseparm_list(3)<<endl;  cout<<"exit, see warning"<<endl; exit(1);}
               tempvec(1)=log(baseparm_list(1)/baseparm_list(3));  //  max negative change
               tempvec(2)=log(baseparm_list(2)/baseparm_list(3));   //  max positive change
@@ -548,7 +548,7 @@ GLOBALS_SECTION
       y=baseparm_list(10);
       if(y<styr)
       {
-        N_warn++; warning<<" reset parm_dev start year to styr for parm: "<<j<<" "<<y<<endl;
+        N_warn++;  warning<<N_warn<<" "<<" reset parm_dev start year to styr for parm: "<<j<<" "<<y<<endl;
         y=styr;
       }
       timevary_setup(10)=y;
@@ -556,7 +556,7 @@ GLOBALS_SECTION
       y=baseparm_list(11);
       if(y>YrMax)
       {
-        N_warn++; warning<<" reset parm_dev end year to YrMax for parm: "<<j<<" "<<y<<endl;
+        N_warn++;  warning<<N_warn<<" "<<" reset parm_dev end year to YrMax for parm: "<<j<<" "<<y<<endl;
         y=YrMax;
       }
       timevary_setup(11)=y;
@@ -586,7 +586,7 @@ GLOBALS_SECTION
        }
 //       timevary_setup(12)=-5;  //  set reasonable phase for devs;
 //       baseparm_list(12)=-5;
-//       N_warn++; warning<<"A parameter dev vector has been created with phase set to negative.  Edit phase as needed "<<endl;
+//       N_warn++;  warning<<N_warn<<" "<<"A parameter dev vector has been created with phase set to negative.  Edit phase as needed "<<endl;
       }
       timevary_parm_rd.push_back (dvector(tempvec(1,7)));
 
@@ -658,7 +658,7 @@ FINAL_SECTION
     cout<<" Iterations: "<<niter<<" -log(L): "<<obj_fun<<endl;
     cout<<"Final gradient: "<<objective_function_value::pobjfun->gmax << endl<<endl;
     if(objective_function_value::pobjfun->gmax >final_conv)
-    {N_warn++; warning<<"Final gradient: "<<objective_function_value::pobjfun->gmax <<" is larger than final_conv: "<<final_conv<<endl;}
+    {N_warn++;  warning<<N_warn<<" "<<"Final gradient: "<<objective_function_value::pobjfun->gmax <<" is larger than final_conv: "<<final_conv<<endl;}
 
 //  SS_Label_Info_12.2 #Output the covariance matrix to covar.sso
     ofstream covarout("covar.sso");
@@ -766,7 +766,7 @@ FINAL_SECTION
     }
     else
     {
-    	if(show_MSY==1) warning<<"NOTE:  *.ss_new files are not produced with N_nudata=0"<<endl;
+    	if(show_MSY==1)  warning<<N_warn<<" "<<"NOTE:  *.ss_new files are not produced with N_nudata=0"<<endl;
     }
 
 //  SS_Label_Info_12.4.6 #Call fxn write_Bzero_output()  appended to report.sso
@@ -776,14 +776,14 @@ FINAL_SECTION
         if(show_MSY==1) cout<<" finished dynamic Bzero and global MSY "<<endl;
     }
 
-    if(parm_adjust_method==3) {N_warn++; warning<<"time-vary parms not bound checked"<<endl;}
+    if(parm_adjust_method==3) {N_warn++;  warning<<N_warn<<" "<<"time-vary parms not bound checked"<<endl;}
 
 //  SS_Label_Info_12.4.7 #Finish up with final writes to warning.sso
     if(N_changed_lambdas>0)
-      {N_warn++; warning<<"Reminder: Number of lamdas !=0.0 and !=1.0:  "<<N_changed_lambdas<<endl; }
+      {N_warn++;  warning<<N_warn<<" "<<"Reminder: Number of lamdas !=0.0 and !=1.0:  "<<N_changed_lambdas<<endl; }
     
-    if(Nparm_on_bound>0) {N_warn++; warning<<"Number_of_active_parameters_on_or_near_bounds: "<<Nparm_on_bound<<endl;}
-    warning<<" N warnings: "<<N_warn<<endl;
+    if(Nparm_on_bound>0) {N_warn++;  warning<<N_warn<<" "<<"Number_of_active_parameters_on_or_near_bounds: "<<Nparm_on_bound<<endl;}
+     warning<<N_warn<<" "<<" N warnings: "<<N_warn<<endl;
     cout<<endl<<"!!  Run has completed  !!            ";
     if(N_warn>0)
     {cout<<"See warning.sso for N warnings: "<<N_warn<<endl;}

@@ -51,7 +51,7 @@ FUNCTION void setup_recdevs()
     else if(do_recdev>=2)
       {recdev(recdev_start,recdev_end)=recdev2(recdev_start,recdev_end);}
     if(Do_Forecast>0) recdev(recdev_end+1,YrMax)=Fcast_recruitments(recdev_end+1,YrMax);  // only needed here for reporting
-//    	if(mcmc_counter>0) warning<<mcmc_counter<<" MGparm "<<MGparm<<" SRparm "<<SR_parm<<" recdev "<<recdev2<<" fore_rec "<<Fcast_recruitments<<" selparm "<<selparm<<" q: "<<Q_parm<<endl;
+//    	if(mcmc_counter>0)  warning<<N_warn<<" "<<mcmc_counter<<" MGparm "<<MGparm<<" SRparm "<<SR_parm<<" recdev "<<recdev2<<" fore_rec "<<Fcast_recruitments<<" selparm "<<selparm<<" q: "<<Q_parm<<endl;
   }  //  end setup for recdevs
 
 FUNCTION void get_initial_conditions()
@@ -460,7 +460,7 @@ FUNCTION void get_initial_conditions()
         }
         Save_PopBio(t+s,p,g)=elem_prod(natage(t+s,p,g),Wt_Age_beg(s,g));
         Save_PopAge(t+s,p,g)=natage(t+s,p,g);
-//        warning<<s<<" init  "<<t+Settle_seas_offset(settle_g(g))<<endl;
+//         warning<<N_warn<<" "<<s<<" init  "<<t+Settle_seas_offset(settle_g(g))<<endl;
         Recr(p,t+1+Settle_seas_offset(settle_g(g)))+=equ_Recr*recr_dist(GP(g),settle_g(g),p)*platoon_distr(GP2(g));
       }
     }
@@ -560,7 +560,7 @@ FUNCTION void get_time_series()
         	else
         	{  //  should be 0.0
         	}
-//        	warning<<y<<" "<<SSB_current<<" "<<SSB_yr(styr-1)<<" "<<recdev(y)<<" env: "<<env_data(y)<<endl;
+//        	 warning<<N_warn<<" "<<y<<" "<<SSB_current<<" "<<SSB_yr(styr-1)<<" "<<recdev(y)<<" env: "<<env_data(y)<<endl;
         t=t_base+1;  // first season
         s=1;
         if(timevary_MG(y,2)>0 || timevary_MG(y,3)>0 || save_for_report==1 || WTage_rd>0)
@@ -1388,7 +1388,7 @@ FUNCTION void get_time_series()
               countN += 1; // increment count of values included in average
               annual_F(y,2) += log(tempM)-log(tempZ);  // F=Z-M
               annual_F(y,3) += log(tempbase)-log(tempM);  // M
-//              if(save_for_report==1) warning<<y<<"  age: "<<a<<" count: "<<countN<<" Z: "<<log(tempbase)-log(tempZ)<<" M: "<<log(tempbase)-log(tempM)<<" F: "<<log(tempM)-log(tempZ)<<" "<<annual_F(y)(2,3)<<endl;
+//              if(save_for_report==1)  warning<<N_warn<<" "<<y<<"  age: "<<a<<" count: "<<countN<<" Z: "<<log(tempbase)-log(tempZ)<<" M: "<<log(tempbase)-log(tempM)<<" F: "<<log(tempM)-log(tempZ)<<" "<<annual_F(y)(2,3)<<endl;
             }
             annual_F(y,3) /= countN;  // M
             annual_F(y,2) /= countN;   // F

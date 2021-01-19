@@ -95,7 +95,7 @@ FUNCTION void setup_Benchmark()
         for (s=1;s<=nseas;s++)
         {
           if(Fcast_RelF_Use(s,f)==0. && bycatch_setup(f,3)>0) 
-            {Fcast_RelF_Use(s,f)=1.0e-6; warning<<"setting positive forecast relF for bycatch fleet: "<<f<<endl;}
+            {Fcast_RelF_Use(s,f)=1.0e-6;  warning<<N_warn<<" "<<"setting positive forecast relF for bycatch fleet: "<<f<<endl;}
         }
       }
       if(N_Fcast_Input_Catches>0)
@@ -104,7 +104,7 @@ FUNCTION void setup_Benchmark()
         for (s=1;s<=nseas;s++)
         {
           if(Fcast_RelF_special(s,f)==1 && Fcast_RelF_Use(s,f)==0.0) 
-            {Fcast_RelF_Use(s,f)=1.0e-6; warning<<"setting positive forecast relF for forecast only fleet: "<<f<<endl;}
+            {Fcast_RelF_Use(s,f)=1.0e-6;  warning<<N_warn<<" "<<"setting positive forecast relF for forecast only fleet: "<<f<<endl;}
         }
       }
     }  //  end getting quantities for forecasts
@@ -490,9 +490,9 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
     if(show_MSY==1)
     {
       if(fabs(SPR_actual-SPR_target100)>=0.1)
-      {N_warn++; warning<<" warning: poor convergence in Fspr search "<<SPR_target<<" "<<SPR_actual/100.<<endl;}
+      {N_warn++;  warning<<N_warn<<" "<<" warning: poor convergence in Fspr search "<<SPR_target<<" "<<SPR_actual/100.<<endl;}
       if(SPR_actual/SPR_target100>=1.01)
-      {N_warn++; warning<<" warning: Fmult = "<<Fmult<<" cannot get high enough to achieve low SPR target: "<<SPR_target<<"; SPR achieved is: "<<SPR_actual/100.<<endl;}
+      {N_warn++;  warning<<N_warn<<" "<<" warning: Fmult = "<<Fmult<<" cannot get high enough to achieve low SPR target: "<<SPR_target<<"; SPR achieved is: "<<SPR_actual/100.<<endl;}
 
       report5<<"seas fleet Hrate encB deadB retB encN deadN retN: "<<endl;
       for (s=1;s<=nseas;s++)
@@ -585,7 +585,7 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
       if(show_MSY==1)
       {
         if(sfabs(F01_origin*0.1-F01_actual)>=0.001)
-        {N_warn++; warning<<" warning: poor convergence in F0.1 search target= "<<F01_origin*0.1<<"  actual= "<<F01_actual<<endl;}
+        {N_warn++;  warning<<N_warn<<" "<<" warning: poor convergence in F0.1 search target= "<<F01_origin*0.1<<"  actual= "<<F01_actual<<endl;}
         report5<<"seas fleet Hrate encB deadB retB encN deadN retN): "<<endl;
         for (s=1;s<=nseas;s++)
         for (f=1;f<=Nfleet;f++)
@@ -701,7 +701,7 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
     if(show_MSY==1)
     {
       if(fabs(log(Btgt/Btgttgt))>=0.001)
-      {N_warn++; warning<<" warning: poor convergence in Btarget search "<<Btgttgt<<" "<<Btgt<<endl;}
+      {N_warn++;  warning<<N_warn<<" "<<" warning: poor convergence in Btarget search "<<Btgttgt<<" "<<Btgt<<endl;}
       report5<<"seas fleet Hrate encB deadB retB encN deadN retN): "<<endl;
       for (s=1;s<=nseas;s++)
       for (f=1;f<=Nfleet;f++)
@@ -844,7 +844,7 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
       if(show_MSY==1)
       {
       if(Do_MSY==2 && fabs(dyld/dyldp)>=0.001)
-      {N_warn++; warning<<" warning: poor convergence in Fmsy, final dy/dy2= "<<dyld/dyldp<<endl;}
+      {N_warn++;  warning<<N_warn<<" "<<" warning: poor convergence in Fmsy, final dy/dy2= "<<dyld/dyldp<<endl;}
       report5<<"seas fleet Hrate encB deadB retB encN deadN retN): "<<endl;
       for (s=1;s<=nseas;s++)
       for (f=1;f<=Nfleet;f++)
@@ -931,9 +931,9 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
 
      Fishon=1;
 
-    if(Fmult*3.0 <= SPR_Fmult) {N_warn++; warning<<" Fmsy is <1/3 of Fspr are you sure?  check for convergence "<<endl;}
-    if(Fmult/3.0 >= SPR_Fmult) {N_warn++; warning<<" Fmsy is >3x of Fspr are you sure?  check for convergence "<<endl;}
-    if(Fmult/0.98 >= Fmax) {N_warn++; warning<<" Fmsy is close to max allowed; check for convergence "<<endl;}
+    if(Fmult*3.0 <= SPR_Fmult) {N_warn++;  warning<<N_warn<<" "<<" Fmsy is <1/3 of Fspr are you sure?  check for convergence "<<endl;}
+    if(Fmult/3.0 >= SPR_Fmult) {N_warn++;  warning<<N_warn<<" "<<" Fmsy is >3x of Fspr are you sure?  check for convergence "<<endl;}
+    if(Fmult/0.98 >= Fmax) {N_warn++;  warning<<N_warn<<" "<<" Fmsy is close to max allowed; check for convergence "<<endl;}
       }
     }
 
@@ -1139,7 +1139,7 @@ FUNCTION void Get_Forecast()
       if(join1<0.999)
       {
       	report5<<"Forecast F capped by max possible F from control file"<<max_harvest_rate<<endl;
-     		N_warn++; warning<<"Forecast F capped by max possible F from control file: "<<max_harvest_rate<<endl;
+     		N_warn++;  warning<<N_warn<<" "<<"Forecast F capped by max possible F from control file: "<<max_harvest_rate<<endl;
       }
    }
    else
@@ -1408,7 +1408,7 @@ FUNCTION void Get_Forecast()
         {
           ALK_subseas_update=1;
           get_growth2(y);
-//          warning<<y<<" new "<<Ave_Size(y,1,1)<<" plus "<<Ave_Size(y+1,1,1,nages)<<endl;
+//           warning<<N_warn<<" "<<y<<" new "<<Ave_Size(y,1,1)<<" plus "<<Ave_Size(y+1,1,1,nages)<<endl;
         }
       if(timevary_MG(y,1)>0) get_natmort();
       if(timevary_MG(y,3)>0) get_wtlen();
@@ -1901,7 +1901,7 @@ FUNCTION void Get_Forecast()
                       }
                       join1=1./(1.+mfexp(30.*(temp-0.95*max_harvest_rate)));
                       Hrate(f,t)=join1*temp + (1.-join1)*max_harvest_rate; // new F value for this fleet, constrained by max_harvest_rate
-//                      if(f==1) warning<<y<<" "<<Tune_F<<" Inputcatch old F "<<H_temp(f)<<" catch "<<C_temp(f)<<" tempF "<<temp<<" join "<<join1<<" new F "<<Hrate(f,t)<<endl;
+//                      if(f==1)  warning<<N_warn<<" "<<y<<" "<<Tune_F<<" Inputcatch old F "<<H_temp(f)<<" catch "<<C_temp(f)<<" tempF "<<temp<<" join "<<join1<<" new F "<<Hrate(f,t)<<endl;
                       C_old(f)=C_temp(f);
                       H_old(f)=H_temp(f);
                     }
@@ -1933,7 +1933,7 @@ FUNCTION void Get_Forecast()
                       }
                       join1=1./(1.+mfexp(30.*(temp-0.95*max_harvest_rate)));
                       Hrate(f,t)=join1*temp + (1.-join1)*max_harvest_rate; // new F value for this fleet, constrained by max_harvest_rate
-//                      if(f==1) warning<<y<<" "<<Tune_F<<" stored old F "<<H_temp(f)<<" catch "<<C_temp(f)<<" tempF "<<temp<<" join "<<join1<<" new F "<<Hrate(f,t)<<endl;
+//                      if(f==1)  warning<<N_warn<<" "<<y<<" "<<Tune_F<<" stored old F "<<H_temp(f)<<" catch "<<C_temp(f)<<" tempF "<<temp<<" join "<<join1<<" new F "<<Hrate(f,t)<<endl;
                       C_old(f)=C_temp(f);
                       H_old(f)=H_temp(f);
                     }
@@ -2226,7 +2226,7 @@ FUNCTION void Get_Forecast()
                  countN += 1; // increment count of values included in average
                  annual_F(y,2) += log(tempM)-log(tempZ);  // F=Z-M
                  annual_F(y,3) += log(tempbase)-log(tempM);  // M
-//              if(save_for_report==1) warning<<y<<"  age: "<<a<<" count: "<<countN<<" Z: "<<log(tempbase)-log(tempZ)<<" M: "<<log(tempbase)-log(tempM)<<" F: "<<log(tempM)-log(tempZ)<<" "<<annual_F(y)(2,3)<<endl;
+//              if(save_for_report==1)  warning<<N_warn<<" "<<y<<"  age: "<<a<<" count: "<<countN<<" Z: "<<log(tempbase)-log(tempZ)<<" M: "<<log(tempbase)-log(tempM)<<" F: "<<log(tempM)-log(tempZ)<<" "<<annual_F(y)(2,3)<<endl;
             }
             annual_F(y,3) /= countN;  // M
             annual_F(y,2) /= countN;   // F
