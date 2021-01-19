@@ -3362,21 +3362,29 @@
     }
   }
 
-  echoinput<<"Now fill H4010_scale_vec"<<endl;
   H4010_scale_vec.initialize();
   if(H4010_scale_rd>=0.0)
     {
+      echoinput<<"fill H4010_scale_vec with single input"<<endl;
       H4010_scale_vec=H4010_scale_rd;
     }
     else
     {
+      echoinput<<"fill H4010_scale_vec from input list; filling from read year to YrMax for each input"<<endl;
       j=H4010_scale_vec_rd.size()-1;
-      for (int s=0; s<=j-1; s++) 
+      int last_rd_yr;
+      last_rd_yr=endyr;
+      for (int s=0; s<=j-1; s++) //  loop input
       {
         y=H4010_scale_vec_rd[s](1);
-        echoinput<<H4010_scale_vec_rd[s]<<" "<<y<<endl;
-        if(s==0 && y>endyr)
-          {N_warn++;  warning<<N_warn<<" "<<" "<<endl;}
+        echoinput<<H4010_scale_vec_rd[s]<<endl;
+        if(y<=endyr)
+          {N_warn++;  warning<<N_warn<<"; "<<y<<" is <= endyr; set to endyr+1 "<<endl; echoinput<<"set to endyr+1 "<<endl; y=endyr+1;}
+        if(y<=last_rd_yr)
+          {N_warn++;  warning<<N_warn<<"; "<<y<<" is <= last_rd_yr; overwrite will occur "<<endl; echoinput<<"<= last_rd_yr; overwrite "<<endl;}
+          last_rd_yr=y;
+        if(y>YrMax)
+          {N_warn++;  warning<<N_warn<<"; "<<y<<" is > YrMax; set to YrMax "<<endl; y=YrMax;}
         for(k=y;k<=YrMax;k++) 
         {
           H4010_scale_vec(k)=H4010_scale_vec_rd[s](2);
@@ -3568,4 +3576,5 @@
     }
   }
   echoinput<<"Finished creating STD containers and indexes "<<endl;
+
  END_CALCS

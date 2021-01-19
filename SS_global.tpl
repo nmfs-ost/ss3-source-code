@@ -766,7 +766,7 @@ FINAL_SECTION
     }
     else
     {
-    	if(show_MSY==1)  warning<<N_warn<<" "<<"NOTE:  *.ss_new files are not produced with N_nudata=0"<<endl;
+    	if(show_MSY==1)  {N_warn++; warning<<N_warn<<" "<<"NOTE:  *.ss_new files are not produced with N_nudata=0"<<endl;}
     }
 
 //  SS_Label_Info_12.4.6 #Call fxn write_Bzero_output()  appended to report.sso

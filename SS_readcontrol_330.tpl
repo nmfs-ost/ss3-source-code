@@ -1461,6 +1461,7 @@
    }
    MG_active(0)=sum(MG_active(1,7));
    echoinput<<"MG_active "<<MG_active<<endl;
+
  END_CALCS
 
   !!//  SS_Label_Info_4.6 #Read setup for Spawner-Recruitment parameters
