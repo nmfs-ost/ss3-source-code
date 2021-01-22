@@ -798,7 +798,7 @@ FUNCTION void write_bigoutput()
            {
              SS2out<<SzFreqTrans(SzFreqMethod_seas,z,j)<<" ";
              if(SzFreqTrans(SzFreqMethod_seas,z,j)<0.0)
-             {N_warn++; warning<<" CRITICAL ERROR:  Bin widths narrower than pop len bins caused negative allocation in sizefreq method:"<<
+             {N_warn++;  warning<<N_warn<<" "<<" CRITICAL ERROR:  Bin widths narrower than pop len bins caused negative allocation in sizefreq method:"<<
             " method, season, size, bin: "<<SzFreqMethod<<" "<<s<<" "<<len_bins2(z)<<" "<<j<<endl; exit(1);}
            }
            SS2out<<endl;
@@ -1208,12 +1208,12 @@ FUNCTION void write_bigoutput()
    if(wrote_bigreport==0)  //  first time writing bigreport
    {
    if(rmse(1)<0.5*sigmaR && rmse(2)>(0.01+2.0*square(rmse(1))/temp))
-   {N_warn++; warning<<" Main recdev biasadj is >2 times ratio of rmse to sigmaR"<<endl; SS2out<<" # Main_recdev_biasadj_is_>2_times_ratio_of_rmse_to_sigmaR"<<endl;}
+   {N_warn++;  warning<<N_warn<<" "<<" Main recdev biasadj is >2 times ratio of rmse to sigmaR"<<endl; SS2out<<" # Main_recdev_biasadj_is_>2_times_ratio_of_rmse_to_sigmaR"<<endl;}
    else
    {SS2out<<endl;}
    SS2out<<"early "<<n_rmse(3)<<" "<<rmse(3)<<" "<<square(rmse(3))/temp<<" "<<rmse(4);
    if(rmse(3)<0.5*sigmaR && rmse(4)>(0.01+2.0*square(rmse(3))/temp))
-   {N_warn++; warning<<" Early recdev biasadj is >2 times ratio of rmse to sigmaR"<<endl; SS2out<<" # Early_recdev_biasadj_is_>2_times_ratio_of_rmse_to_sigmaR"<<endl;}
+   {N_warn++;  warning<<N_warn<<" "<<" Early recdev biasadj is >2 times ratio of rmse to sigmaR"<<endl; SS2out<<" # Early_recdev_biasadj_is_>2_times_ratio_of_rmse_to_sigmaR"<<endl;}
    else
    {SS2out<<endl;}
  }

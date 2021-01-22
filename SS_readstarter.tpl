@@ -194,7 +194,7 @@
   if ( (on=option_match(argc,argv,"-noest"))>-1)
   {
     cout<<"SS is not configured to work with -noest; use -maxI instead which overrides maxphase in starter.ss"<<endl;
-    warning<<"SS exited with -noest, use -maxI <maxphase> instead"<<endl;
+     warning<<N_warn<<" "<<"SS exited with -noest, use -maxI <maxphase> instead"<<endl;
     exit(1);
   }
 
@@ -236,7 +236,7 @@
     }
   }
   echoinput<<version_info<<endl<<ctime(&start)<<endl;
-  warning<<version_info<<endl<<ctime(&start)<<endl;
+   warning<<N_warn<<" "<<version_info<<endl<<ctime(&start)<<endl;
 
   adstring sw;  //  used for reading of ADMB switches from command line
   mcmcFlag = 0;
@@ -350,7 +350,7 @@
   		}
   		else if(reportdetail_list[j](1)>-100) 
   			{
-  				N_warn++; warning<<"custom report number: "<<reportdetail_list[j](1)<<" is out of range and ignored"<<endl;
+  				N_warn++;  warning<<N_warn<<" "<<"custom report number: "<<reportdetail_list[j](1)<<" is out of range and ignored"<<endl;
   			}
     }
   } 
@@ -505,7 +505,7 @@
    	else
     {F_std_basis=F_std_basis_rd;}
     echoinput<<"Parse into: F_std_log(ratio): "<<F_std_log<<" F_std_multi: "<<F_std_multi<<" F_std_basis: "<<F_std_basis<<endl;
-    if(F_std_multi>1) {N_warn++; warning<<"NOTE: new feature for multiyr F_std reporting, be sure STD reporting covers all years from styr to endyr"<<endl;}
+    if(F_std_multi>1) {N_warn++;  warning<<N_warn<<" "<<"NOTE: new feature for multiyr F_std reporting, be sure STD reporting covers all years from styr to endyr"<<endl;}
    echoinput<<"For Kobe plot, set depletion_basis=2; depletion_level=1.0; F_reporting=your choose; F_std_basis=2"<<endl;
 
     mcmc_output_detail = 0;
@@ -556,7 +556,7 @@
      // enforce valid range of ALK_tolerance
      if (ALK_tolerance < 0.0 || ALK_tolerance > 0.1)
      {
-         N_warn++; warning<<"Error: ALK tolerance must be between 0.0 and 0.1"<<endl;
+         N_warn++;  warning<<N_warn<<" "<<"Error: ALK tolerance must be between 0.0 and 0.1"<<endl;
          cout<<"Error: ALK_tolerance must be between 0.0 and 0.1: "<<ALK_tolerance<<endl; exit(1);
      }
 
@@ -575,7 +575,7 @@
       if(tempin==3.30) 
       	{ender=1;}
       	else
-        {N_warn++; cout<<" EXIT - see warning "<<endl; warning<<"starter.ss has extra input lines; check echoinput to verify read"<<endl;
+        {N_warn++; cout<<" EXIT - see warning "<<endl;  warning<<N_warn<<" "<<"starter.ss has extra input lines; check echoinput to verify read"<<endl;
         	echoinput<<endl<<"starter.ss should have read 3.30 here; it read: "<<tempin<<endl; exit(1);}
         }
     }

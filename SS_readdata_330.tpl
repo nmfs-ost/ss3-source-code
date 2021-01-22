@@ -8,7 +8,7 @@
  LOCAL_CALCS
   ad_comm::change_datafile_name(datfilename);
   if(finish_starter==999)
-  {N_warn++; warning<<"finish_starter=999, so probably used a 3.24 starter.ss; please update"<<endl; finish_starter=3.30;  }
+  {N_warn++;  warning<<N_warn<<" "<<"finish_starter=999, so probably used a 3.24 starter.ss; please update"<<endl; finish_starter=3.30;  }
   cout<<" reading from data file"<<endl;
   ifstream Data_Stream(datfilename);   //  even if the global_datafile name is used, there still is a different logical device created
   k=0;
@@ -87,7 +87,7 @@
       seasdur /=12.;
       seas_as_year=1;
       //  sumseas will now be used as the duration of the pseudo-year, rather than assuming year has 12 months;
-      if(nseas>1) { N_warn++; cout<<"exit with warning"<<endl; warning<<"Error.  Can only have 1 season when during seasons as psuedo-years."<<endl;  exit(1);}
+      if(nseas>1) { N_warn++; cout<<"exit with warning"<<endl;  warning<<N_warn<<" "<<"Error.  Can only have 1 season when during seasons as psuedo-years."<<endl;  exit(1);}
     }
   seasdur_half = seasdur*0.5;   // half a season
   subseasdur_delta=seasdur/double(N_subseas);
@@ -120,7 +120,7 @@
       "Similarly, output of age-specific quantities is in terms of number of timesteps, not real years"<<endl<<
       "spawn_month and settlement_month in control file are best set to 1.0 when doing years as pseudo-seasons"<<endl;
       N_warn++;
-      warning<<"Season durations sum to <11.9, so SS assumes you are doing years as pseudo-seasons."<<endl<<
+       warning<<N_warn<<" "<<"Season durations sum to <11.9, so SS assumes you are doing years as pseudo-seasons."<<endl<<
       "There can be only 1 season in this timestep and SS will ignore month input and assume all observation occur at middle of this pseudo-year"<<endl<<
       "mortality, growth and movement rates are per annum, so will get multiplied by the duration of this timestep as they are used."<<endl<<
       "What gets reported as age is now age in timesteps; and input of age-specific M or K requires one entry per timestep"<<endl<<
@@ -164,7 +164,7 @@
    echoinput<<"SPAWN month: "<<spawn_month<<"; seas: "<<spawn_seas<<"; subseas_for_ALK: "<<spawn_subseas<<"; timing_in_season: "<<spawn_time_seas<<endl;
    if(spawn_seas>nseas)
    {
-     N_warn++; warning<<" spawn_seas index must be <= nseas "<<endl;
+     N_warn++;  warning<<N_warn<<" "<<" spawn_seas index must be <= nseas "<<endl;
    }
  END_CALCS
   int pop   // number of areas (populations)
@@ -242,18 +242,18 @@
         {
           YPR_mask(f)=1;
           if(surveytime(f)!=-1.)
-          {N_warn++; warning<<"fishing fleet: "<<f<<" surveytime read as: "<<surveytime(f)<<" normally is -1 for fishing fleet; can override for indiv. obs. using 1000+month"<<endl;}
+          {N_warn++;  warning<<N_warn<<" "<<"fishing fleet: "<<f<<" surveytime read as: "<<surveytime(f)<<" normally is -1 for fishing fleet; can override for indiv. obs. using 1000+month"<<endl;}
         }
         else if (fleet_type(f)==3)
           {if(surveytime(f)==-1.)
-          {N_warn++; warning<<"survey fleet: "<<f<<" surveytime read as: "<<surveytime(f)<<" SS resets to 1 for all survey fleets, and always overridden by indiv. obs. month"<<endl;
+          {N_warn++;  warning<<N_warn<<" "<<"survey fleet: "<<f<<" surveytime read as: "<<surveytime(f)<<" SS resets to 1 for all survey fleets, and always overridden by indiv. obs. month"<<endl;
             surveytime(f)=1.;}
           }
       fleet_area(f) = int(fleet_setup(f,3));
       catchunits(f) = int(fleet_setup(f,4));
       need_catch_mult(f) = int(fleet_setup(f,5));
       if(fleet_type(f)>1 && need_catch_mult(f)>0)
-        {N_warn++; cout<<"exit with warning"<<endl; warning<<"Need_catch_mult can be used only for fleet_type=1 fleet= "<<f<<endl; exit(1);}
+        {N_warn++; cout<<"exit with warning"<<endl;  warning<<N_warn<<" "<<"Need_catch_mult can be used only for fleet_type=1 fleet= "<<f<<endl; exit(1);}
       echoinput<<f<<" # "<<fleet_setup(f)<<" # "<<fleetname(f)<<endl;
     }
 
@@ -286,7 +286,7 @@
         }
         else
         {
-          N_warn++; cout<<"exit with warning"<<endl; warning<<"fleet "<<f<<" is in bycatch list but not designated as bycatch fleet"<<endl; exit(1);
+          N_warn++; cout<<"exit with warning"<<endl;  warning<<N_warn<<" "<<"fleet "<<f<<" is in bycatch list but not designated as bycatch fleet"<<endl; exit(1);
         }
       }
     }
@@ -316,9 +316,9 @@
   {
     F_reporting_ages=F_reporting_ages_R;
     if(F_reporting_ages(1)>(nages-2) || F_reporting_ages(1)<0)
-    {N_warn++; warning<<" reset lower end of F_reporting_ages to be nages-2  "<<endl; F_reporting_ages(1)=nages-2;}
+    {N_warn++;  warning<<N_warn<<" "<<" reset lower end of F_reporting_ages to be nages-2  "<<endl; F_reporting_ages(1)=nages-2;}
     if(F_reporting_ages(2)>(nages-2) || F_reporting_ages(2)<0)
-    {N_warn++; warning<<" reset upper end of F_reporting_ages to be nages-2  "<<endl; F_reporting_ages(2)=nages-2;}
+    {N_warn++;  warning<<N_warn<<" "<<" reset upper end of F_reporting_ages to be nages-2  "<<endl; F_reporting_ages(2)=nages-2;}
   }
   else
   {
@@ -444,7 +444,7 @@
     for(f=1;f<=Nfleet;f++) {
       t=styr+(y-styr)*nseas+s-1;
       if(catch_record_count(f,t)>1)
-      	{N_warn++; warning<<catch_record_count(f,t)<<" catch records for yr, seas, fleet "<<y<<" "<<s<<" "<<f<<". SS has accumulated catches, total= "<<catch_ret_obs(f,t)<<endl;}
+      	{N_warn++;  warning<<N_warn<<" "<<catch_record_count(f,t)<<" catch records for yr, seas, fleet "<<y<<" "<<s<<" "<<f<<". SS has accumulated catches, total= "<<catch_ret_obs(f,t)<<endl;}
     }
 
     obs_equ_catch.initialize();
@@ -488,7 +488,7 @@
     if(totcat(y)>0.0 && first_catch_yr==0) first_catch_yr=y;
     if(y==endyr && totcat(y)==0.0)
     {
-      N_warn++; warning<<" catch is 0.0 in endyr; this can cause problem in the benchmark and forecast calculations"<<endl;
+      N_warn++;  warning<<N_warn<<" "<<" catch is 0.0 in endyr; this can cause problem in the benchmark and forecast calculations"<<endl;
     }
   }
     echoinput<<endl<<"#_show_total_catch_by_fleet"<<endl;
@@ -499,7 +499,7 @@
       if(fleet_type(f)==3 && catch_by_fleet(f)>0.0) 
         {
           echoinput<<"  Catch by survey fleet will be ignored ";
-          N_warn++; warning<<"  Catch by survey fleet will be ignored "<<fleet_type(f)<<endl;
+          N_warn++;  warning<<N_warn<<" "<<"  Catch by survey fleet will be ignored "<<fleet_type(f)<<endl;
         }
       echoinput<<endl;
     }
@@ -561,7 +561,7 @@
       {
         f=abs( Svy_data[i](3));  //  negative f turns off observation
         Svy_N_fleet(f)++;
-        if( Svy_data[i](5)<0) {N_warn++; cout<<" EXIT - see warning "<<endl; warning<<"cannot use negative se to indicate superperiods in survey data"<<endl; exit(1);}
+        if( Svy_data[i](5)<0) {N_warn++; cout<<" EXIT - see warning "<<endl;  warning<<N_warn<<" "<<"cannot use negative se to indicate superperiods in survey data"<<endl; exit(1);}
         if( Svy_data[i](2)<0) Svy_super_N(f)++;  // count the super-periods if seas<0
       }
     }
@@ -572,7 +572,7 @@
       j=Svy_super_N(f)/2;  // because we counted the begin and end
       if(2*j!=Svy_super_N(f))
       {
-        N_warn++; cout<<" EXIT - see warning "<<endl; warning<<"unequal number of starts and ends of survey superperiods "<<endl; exit(1);
+        N_warn++; cout<<" EXIT - see warning "<<endl;  warning<<N_warn<<" "<<"unequal number of starts and ends of survey superperiods "<<endl; exit(1);
       }
       else
       {
@@ -632,7 +632,7 @@
     {
       y= Svy_data[i](1);
       if(y>endyr +50)
-      {N_warn++;cout<<" EXIT - see warning "<<endl; warning<<"forecast observations cannot be beyond endyr +50"<<endl; exit(1);}
+      {N_warn++;cout<<" EXIT - see warning "<<endl;  warning<<N_warn<<" "<<"forecast observations cannot be beyond endyr +50"<<endl; exit(1);}
       if(y>=styr)
       {
 //  call a global function to calculate data timing and create various indexes
@@ -663,7 +663,7 @@
         if(data_time(ALK_time,f,1)<0.0)  //  so first occurrence of data at ALK_time,f
           {data_time(ALK_time,f)(1,3)=timing_r_result(1,3);}  // real_month,fraction of season, year.fraction
         else if (timing_r_result(1) !=  data_time(ALK_time,f,1))
-          {N_warn++; warning<<"SURVEY: data_month already set for y,s,f: "<<y<<" "<<s<<" "<<f<<" to real month: "<< data_time(ALK_time,f,1)<<"  but read value is: "<<real_month<<endl;}
+          {N_warn++;  warning<<N_warn<<" "<<"SURVEY: data_month already set for y,s,f: "<<y<<" "<<s<<" "<<f<<" to real month: "<< data_time(ALK_time,f,1)<<"  but read value is: "<<real_month<<endl;}
 
         have_data(ALK_time,0,0,0)=1;
         have_data(ALK_time,f,0,0)=1;  //  so have data of some type in this subseas, for this fleet
@@ -704,7 +704,7 @@
     		{
     			echoinput<<f<<"    "<<fleetname(f)<<"   "<<Svy_N_fleet(f)<<"     "<<Svy_super_N(f)<<"      "<<Svy_minval(f)<<" "<<Svy_maxval(f)<<" // "<<Svy_obs(f)<<endl;
     			if(Svy_errtype(f)==0 && Svy_minval(f)<=0.)
-    				{N_warn++; cout<<" exit with bad survey obs "<<endl; warning<<"error, SS has exited. A fleet uses lognormal error and has an observation <=0.0; fleet: "<<f<<endl; exit(1);}
+    				{N_warn++; cout<<" exit with bad survey obs "<<endl;  warning<<N_warn<<" "<<"error, SS has exited. A fleet uses lognormal error and has an observation <=0.0; fleet: "<<f<<endl; exit(1);}
       	}
     }
   }
@@ -788,7 +788,7 @@
         {
           f=abs( discdata[i](3));
           disc_N_fleet(f)++;
-          if( discdata[i](5)<0) {N_warn++; cout<<"EXIT - see warning"<<endl; warning<<"Cannot use negative se as indicator of superperiod in discard data"<<endl;}
+          if( discdata[i](5)<0) {N_warn++; cout<<"EXIT - see warning"<<endl;  warning<<N_warn<<" "<<"Cannot use negative se as indicator of superperiod in discard data"<<endl;}
           if( discdata[i](2)<0) N_suprper_disc(f)++;  // count the super-periods if seas<0 or se<0
         }
       }
@@ -799,7 +799,7 @@
         j=N_suprper_disc(f)/2;  // because we counted the begin and end
         if(2*j!=N_suprper_disc(f))
         {
-          N_warn++; cout<<"EXIT - see warning"<<endl; warning<<"unequal number of starts and ends of discard superperiods "<<endl; exit(1);
+          N_warn++; cout<<"EXIT - see warning"<<endl;  warning<<N_warn<<" "<<"unequal number of starts and ends of discard superperiods "<<endl; exit(1);
         }
         else
         {
@@ -832,7 +832,7 @@
       {
         y= discdata[i](1);
         if(y>endyr +50)
-        {N_warn++;cout<<" EXIT - see warning "<<endl; warning<<"forecast observations cannot be beyond endyr +50"<<endl; exit(1);}
+        {N_warn++;cout<<" EXIT - see warning "<<endl;  warning<<N_warn<<" "<<"forecast observations cannot be beyond endyr +50"<<endl; exit(1);}
         if(y>=styr)
         {
          timing_input(1,3)=discdata[i](1,3);
@@ -850,7 +850,7 @@
          if(data_time(ALK_time,f,1)<0.0)  //  so first occurrence of data at ALK_time,f
          {data_time(ALK_time,f)(1,3)=timing_r_result(1,3);}  // real_month,fraction of season, year.fraction
          else if (timing_r_result(1) !=  data_time(ALK_time,f,1))
-         {N_warn++; warning<<"DISCARD: data_month already set for y,s,f: "<<y<<" "<<s<<" "<<f<<" to real month: "<< data_time(ALK_time,f,1)<<"  but read value is: "<<timing_r_result(1)<<endl;}
+         {N_warn++;  warning<<N_warn<<" "<<"DISCARD: data_month already set for y,s,f: "<<y<<" "<<s<<" "<<f<<" to real month: "<< data_time(ALK_time,f,1)<<"  but read value is: "<<timing_r_result(1)<<endl;}
 
          have_data(ALK_time,0,0,0)=1;
          have_data(ALK_time,f,0,0)=1;  //  so have data of some type
@@ -866,7 +866,7 @@
          if( discdata[i](3)<0) {yr_disc_use(f,j)=-1;} else {yr_disc_use(f,j)=1;disc_N_fleet_use(f)++;}
          if(catch_ret_obs(f,t)<=0.0)
          {
-           N_warn++; warning<<" discard observation: "<<i<<" has no corresponding catch "<<discdata[i]<<endl;
+           N_warn++;  warning<<N_warn<<" "<<" discard observation: "<<i<<" has no corresponding catch "<<discdata[i]<<endl;
          }
 
   //  create super_year indexes
@@ -894,7 +894,7 @@
     			echoinput<<f<<"    "<<fleetname(f)<<"   "<<disc_N_fleet(f)<<"     "<<N_suprper_disc(f)<<
     			"      "<<disc_minval(f)<<" "<<disc_maxval(f)<<" // "<<obs_disc(f)<<endl;
     			if(disc_minval(f)<0.)
-    				{N_warn++; cout<<" exit with bad discard obs "<<endl; warning<<"error, SS has exited. A discard observation is <0.0; fleet: "<<f<<endl; exit(1);}
+    				{N_warn++; cout<<" exit with bad discard obs "<<endl;  warning<<N_warn<<" "<<"error, SS has exited. A discard observation is <0.0; fleet: "<<f<<endl; exit(1);}
       	}
     }
  END_CALCS
@@ -950,10 +950,10 @@
   {
     y=mnwtdata1[i](1);
       if(y>endyr +50)
-      {N_warn++;cout<<" EXIT - see warning "<<endl; warning<<"mnwt forecast observations cannot be beyond endyr +50"<<endl; exit(1);}
+      {N_warn++;cout<<" EXIT - see warning "<<endl;  warning<<N_warn<<" "<<"mnwt forecast observations cannot be beyond endyr +50"<<endl; exit(1);}
     if(y>=styr)
     {
-      if(mnwtdata1[i](2)<0.0) {N_warn++; warning<<"negative season not allowed for mnwtdata because superperiods not implemented "<<endl;}
+      if(mnwtdata1[i](2)<0.0) {N_warn++;  warning<<N_warn<<" "<<"negative season not allowed for mnwtdata because superperiods not implemented "<<endl;}
       timing_input(1,3)=mnwtdata1[i](1,3);
       get_data_timing(timing_input, timing_constants, timing_i_result, timing_r_result, seasdur, subseasdur_delta, azero_seas, surveytime);
       j++;
@@ -970,7 +970,7 @@
       else if (timing_r_result(1) !=  data_time(ALK_time,f,1))
       {
         N_warn++;
-        warning<<"MEAN_WEIGHT: data_month already set for y,s,f: "<<y<<" "<<s<<" "<<f<<" to real month: "<< data_time(ALK_time,f,1)<<"  but read value is: "<<timing_r_result(1)<<endl;
+         warning<<N_warn<<" "<<"MEAN_WEIGHT: data_month already set for y,s,f: "<<y<<" "<<s<<" "<<f<<" to real month: "<< data_time(ALK_time,f,1)<<"  but read value is: "<<timing_r_result(1)<<endl;
       }
       have_data(ALK_time,0,0,0)=1;
       have_data(ALK_time,f,0,0)=1;  //  so have data of some type
@@ -1012,7 +1012,7 @@
    else if(LenBin_option==3)
    {k=1;}
    else
-   {N_warn++; warning<<" LenBin_option must be 1, 2 or 3"<<LenBin_option<<endl;}
+   {N_warn++;  warning<<N_warn<<" "<<" LenBin_option must be 1, 2 or 3"<<LenBin_option<<endl;}
  END_CALCS
 
   init_vector PopBin_Read(1,k);
@@ -1071,7 +1071,7 @@
 
       if (min_sample_size_L(f) < 0.001)
       {
-        N_warn++; warning<<" minimum sample size for length comps must be > 0; minimum sample size set to 0.001 "<<endl;
+        N_warn++;  warning<<N_warn<<" "<<" minimum sample size for length comps must be > 0; minimum sample size set to 0.001 "<<endl;
         min_sample_size_L(f) = 0.001;
       }
     }
@@ -1098,7 +1098,7 @@
   {
   if(CombGender_L(f)>nlen_bin)
   {
-    N_warn++; warning<<"Combgender_L(f) cannot be greater than nlen_bin; resetting for fleet: "<<f<<endl;  CombGender_L(f)=nlen_bin;
+    N_warn++;  warning<<N_warn<<" "<<"Combgender_L(f) cannot be greater than nlen_bin; resetting for fleet: "<<f<<endl;  CombGender_L(f)=nlen_bin;
   }
   }
   nlen_binP=nlen_bin+1;
@@ -1210,11 +1210,11 @@
   }
   if(len_bins_dat(nlen_bin)>len_bins(nlength))
   {
-    N_warn++; cout<<" EXIT - see warning "<<endl; warning<<" Data length bins extend beyond pop len bins "<<len_bins_dat(nlen_bin)<<" "<<len_bins(nlength)<<endl; exit(1);
+    N_warn++; cout<<" EXIT - see warning "<<endl;  warning<<N_warn<<" "<<" Data length bins extend beyond pop len bins "<<len_bins_dat(nlen_bin)<<" "<<len_bins(nlength)<<endl; exit(1);
   }
   if(len_bins_dat(nlen_bin)<len_bins(nlength))
   {
-    N_warn++; warning<<" Data length bins stop before max pop len bins; "<<len_bins_dat(nlen_bin)<<" is < "<<len_bins(nlength)<<"; suggest make them same"<<endl;
+    N_warn++;  warning<<N_warn<<" "<<" Data length bins stop before max pop len bins; "<<len_bins_dat(nlen_bin)<<" is < "<<len_bins(nlength)<<"; suggest make them same"<<endl;
   }
   echoinput<<endl<<"Processed Data length bin info "<<endl<<len_bins_dat<<endl;
   }
@@ -1314,7 +1314,7 @@
       if(y>=styr)
       {
       f=abs( lendata[i](3));
-      if( lendata[i](6)<0) {N_warn++; cout<<" EXIT - see warning "<<endl; warning<<"Error in length data: negative sample size no longer valid as indicator of skip data or superperiods "<<endl; exit(1);}
+      if( lendata[i](6)<0) {N_warn++; cout<<" EXIT - see warning "<<endl;  warning<<N_warn<<" "<<"Error in length data: negative sample size no longer valid as indicator of skip data or superperiods "<<endl; exit(1);}
       if( lendata[i](2)<0) N_suprper_l(f)++;     // count the number of starts and ends of super-periods if seas<0
       Nobs_l(f)++;
       }
@@ -1324,7 +1324,7 @@
   {
     s=N_suprper_l(f)/2.;
     if(s*2!=N_suprper_l(f))
-    {N_warn++; cout<<" EXIT - see warning "<<endl; warning<<"Error: unequal number of length superperiod starts and stops "<<endl; exit(1);}
+    {N_warn++; cout<<" EXIT - see warning "<<endl;  warning<<N_warn<<" "<<"Error: unequal number of length superperiod starts and stops "<<endl; exit(1);}
     else
     {N_suprper_l(f)=s;}// to get the number of superperiods
   }
@@ -1379,7 +1379,7 @@
     {
       y= lendata[i](1);
       if(y>endyr +50)
-      {N_warn++;cout<<" EXIT - see warning "<<endl; warning<<"forecast length obs cannot be beyond endyr +50;"<<endl; exit(1);}
+      {N_warn++;cout<<" EXIT - see warning "<<endl;  warning<<N_warn<<" "<<"forecast length obs cannot be beyond endyr +50;"<<endl; exit(1);}
       if(y>=styr)
       {
         f=abs( lendata[i](3));
@@ -1400,7 +1400,7 @@
           if(data_time(ALK_time,f,1)<0.0)  //  so first occurrence of data at ALK_time,f
           {data_time(ALK_time,f)(1,3)=timing_r_result(1,3);}  // real_month,fraction of season, year.fraction
           else if (timing_r_result(1) !=  data_time(ALK_time,f,1))
-          {N_warn++; warning<<"LENGTH: data_month already set for y,m,f: "<<y<<" "<<timing_r_result(1)<<" "<<f<<" to real month: "<< data_time(ALK_time,f,1)<<"  so treat as replicate"<<endl;}
+          {N_warn++;  warning<<N_warn<<" "<<"LENGTH: data_month already set for y,m,f: "<<y<<" "<<timing_r_result(1)<<" "<<f<<" to real month: "<< data_time(ALK_time,f,1)<<"  so treat as replicate"<<endl;}
 
             have_data(ALK_time,0,0,0)=1;
             have_data(ALK_time,f,0,0)=1;  //  so have data of some type
@@ -1410,10 +1410,10 @@
             have_data_yr(y,f)=1;  have_data_yr(y,0)=1;  //  survey or comp data exist this year
 
           if(s>nseas)
-           {N_warn++; cout<<" EXIT - see warning "<<endl; warning<<" Critical error, season for length obs "<<i<<" is > nseas"<<endl; exit(1);}
+           {N_warn++; cout<<" EXIT - see warning "<<endl;  warning<<N_warn<<" "<<" Critical error, season for length obs "<<i<<" is > nseas"<<endl; exit(1);}
 
           if( lendata[i](6)<0.0)
-            {N_warn++; cout<<" EXIT - see warning "<<endl; warning<<"negative values not allowed for lengthcomp sample size, use -fleet to omit from -logL"<<endl; exit(1);}
+            {N_warn++; cout<<" EXIT - see warning "<<endl;  warning<<N_warn<<" "<<"negative values not allowed for lengthcomp sample size, use -fleet to omit from -logL"<<endl; exit(1);}
           header_l(f,j,1) = y;
           if( lendata[i](2)<0)
           {
@@ -1446,9 +1446,9 @@
           for (z=1;z<=nlen_bin2;z++)   // get the composition vector
            {obs_l(f,j,z)= lendata[i](6+z);}
 
-          if(sum(obs_l(f,j))<=0.0) {N_warn++; warning<<" zero fish in size comp (fleet, year) "<<f<<" "<<y<<endl; cout<<" EXIT - see warning "<<endl; exit(1);}
+          if(sum(obs_l(f,j))<=0.0) {N_warn++;  warning<<N_warn<<" "<<" zero fish in size comp (fleet, year) "<<f<<" "<<y<<endl; cout<<" EXIT - see warning "<<endl; exit(1);}
           if(nsamp_l_read(f,j)<=0.0)
-          {N_warn++; cout<<" EXIT - see warning "<<endl; warning<<" Input N is <=0.0 in length comp "<<header_l_rd(f,j)<<endl;  exit(1);}
+          {N_warn++; cout<<" EXIT - see warning "<<endl;  warning<<N_warn<<" "<<" Input N is <=0.0 in length comp "<<header_l_rd(f,j)<<endl;  exit(1);}
           tails_l(f,j,1)=1;
           tails_l(f,j,2)=nlen_bin;
           tails_l(f,j,3)=nlen_binP;
@@ -1691,8 +1691,8 @@
         if(age_err_rd(i,2,0)<0.) {  //  set flag for setup of age error parameters
           if (Use_AgeKeyZero>0) 
           {
-            N_warn++; warning<<"SS can only create 1 age error definition from parameters, ";
-            warning<<"but there are > 1 negative sd values for age 0 in age error definitions."<<endl;
+            N_warn++;  warning<<N_warn<<" "<<"SS can only create 1 age error definition from parameters, ";
+             warning<<N_warn<<" "<<"but there are > 1 negative sd values for age 0 in age error definitions."<<endl;
 			echoinput<<"Error: There are > 1 negative sd values for age 0 in age error definitions."<<endl;
             cout<<" EXIT - see warning "<<endl; exit(1);
           }
@@ -1724,7 +1724,7 @@
 
       if (min_sample_size_A(f) < 0.001)
       {
-        N_warn++; warning<<" minimum sample size for age comps must be > 0; minimum sample size set to 0.001 "<<endl;
+        N_warn++;  warning<<N_warn<<" "<<" minimum sample size for age comps must be > 0; minimum sample size set to 0.001 "<<endl;
         min_sample_size_A(f) = 0.001;
       }
     }
@@ -1736,13 +1736,13 @@
 
     if(nobsa_rd>0 && N_ageerr==0)
     {
-      N_warn++; cout<<" EXIT - see warning "<<endl; warning<<" must define ageerror vectors because age data exist"<<endl; exit(1);
+      N_warn++; cout<<" EXIT - see warning "<<endl;  warning<<N_warn<<" "<<" must define ageerror vectors because age data exist"<<endl; exit(1);
     }
     for (f=1;f<=Nfleet;f++)
     {
       if(CombGender_A(f)>n_abins2)
       {
-      N_warn++; warning<<"Combgender_A(f) cannot be greater than n_abins for fleet:_"<<f<<"; resetting"<<endl;  CombGender_A(f)=n_abins2;
+      N_warn++;  warning<<N_warn<<" "<<"Combgender_A(f) cannot be greater than n_abins for fleet:_"<<f<<"; resetting"<<endl;  CombGender_A(f)=n_abins2;
       }
     }
     for (b=1;b<=n_abins;b++)
@@ -1786,8 +1786,8 @@
     if(y>=styr)
     {
      f=abs(Age_Data[i](3));
-     if(Age_Data[i](9)<0) {N_warn++; cout<<" EXIT - see warning "<<endl; warning<<"Error: negative sample size in age data no longer valid as indicator of skip data or superperiods "<<endl; exit(1);}
-     if(Age_Data[i](6)==0 || Age_Data[i](6)>N_ageerr) {N_warn++; cout<<" EXIT - see warning "<<endl; warning<<"Error: undefined age_error type: "<<Age_Data[i](6)<<"  in obs: "<<i<<endl; exit(1);}
+     if(Age_Data[i](9)<0) {N_warn++; cout<<" EXIT - see warning "<<endl;  warning<<N_warn<<" "<<"Error: negative sample size in age data no longer valid as indicator of skip data or superperiods "<<endl; exit(1);}
+     if(Age_Data[i](6)==0 || Age_Data[i](6)>N_ageerr) {N_warn++; cout<<" EXIT - see warning "<<endl;  warning<<N_warn<<" "<<"Error: undefined age_error type: "<<Age_Data[i](6)<<"  in obs: "<<i<<endl; exit(1);}
      if(Age_Data[i](2)<0) N_suprper_a(f)++;     // count the number of starts and ends of super-periods if seas<0 or sampsize<0
 
      Nobs_a(f)++;
@@ -1797,7 +1797,7 @@
   {
     s=N_suprper_a(f)/2.;
     if(s*2!=N_suprper_a(f))
-    {N_warn++; cout<<" EXIT - see warning "<<endl; warning<<"Error: unequal number of age superperiod starts and stops "<<endl; exit(1);}
+    {N_warn++; cout<<" EXIT - see warning "<<endl;  warning<<N_warn<<" "<<"Error: unequal number of age superperiod starts and stops "<<endl; exit(1);}
     else
     {N_suprper_a(f)/=2;}
   }
@@ -1852,7 +1852,7 @@
      {
        y=Age_Data[i](1);
        if(y>endyr +50)
-       {N_warn++; cout<<" EXIT - see warning "<<endl; warning<<"forecast age obs cannot be beyond endyr +50; SS will exit"<<endl; exit(1);}
+       {N_warn++; cout<<" EXIT - see warning "<<endl;  warning<<N_warn<<" "<<"forecast age obs cannot be beyond endyr +50; SS will exit"<<endl; exit(1);}
        if(y>=styr)
        {
          f=abs(Age_Data[i](3));
@@ -1872,21 +1872,21 @@
            if(data_time(ALK_time,f,1)<0.0)  //  so first occurrence of data at ALK_time,f
            {data_time(ALK_time,f)(1,3)=timing_r_result(1,3);}  // real_month,fraction of season, year.fraction
            else if (timing_r_result(1) !=  data_time(ALK_time,f,1))
-           {N_warn++; warning<<"AGE: data_month already set for y,m,f: "<<y<<" "<<timing_r_result(1)<<" "<<f<<" to real month: "<< data_time(ALK_time,f,1)<<"  so treat as replicate"<<endl;}
+           {N_warn++;  warning<<N_warn<<" "<<"AGE: data_month already set for y,m,f: "<<y<<" "<<timing_r_result(1)<<" "<<f<<" to real month: "<< data_time(ALK_time,f,1)<<"  so treat as replicate"<<endl;}
             have_data(ALK_time,0,0,0)=1;
             have_data(ALK_time,f,0,0)=1;  //  so have data of some type
             have_data(ALK_time,f,data_type,0)++;  //  count the number of observations in this subseas
             p=have_data(ALK_time,f,data_type,0);
             if(p>100) 
-            	{N_warn++; cout<<" EXIT - see warning "<<endl; warning<<"fatal:  max agecomp obs per fleet*time is 100; you requested "<<p<<" for fleet x year "<<f<<" "<<y<<endl;exit(1);}
+            	{N_warn++; cout<<" EXIT - see warning "<<endl;  warning<<N_warn<<" "<<"fatal:  max agecomp obs per fleet*time is 100; you requested "<<p<<" for fleet x year "<<f<<" "<<y<<endl;exit(1);}
             have_data(ALK_time,f,data_type,p)=j;  //  store data index for the p'th observation in this subseas
             have_data_yr(y,f)=1;  have_data_yr(y,0)=1;  //  survey or comp data exist this year
 
           if(s>nseas)
-           {N_warn++; cout<<" EXIT - see warning "<<endl; warning<<" Critical error, season for age obs "<<i<<" is > nseas"<<endl; exit(1);}
+           {N_warn++; cout<<" EXIT - see warning "<<endl;  warning<<N_warn<<" "<<" Critical error, season for age obs "<<i<<" is > nseas"<<endl; exit(1);}
 
           if(Age_Data[i](6)<0.0)
-            {N_warn++; warning<<"negative values not allowed for age comp sample size, use -fleet to omit from -logL"<<endl;}
+            {N_warn++;  warning<<N_warn<<" "<<"negative values not allowed for age comp sample size, use -fleet to omit from -logL"<<endl;}
           header_a(f,j)(1,9)=Age_Data[i](1,9);
           header_a_rd(f,j)(2,3)=Age_Data[i](2,3);
           if(Age_Data[i](2)<0)
@@ -1906,7 +1906,7 @@
 
            if(Age_Data[i](6)>N_ageerr)
            {
-              N_warn++; cout<<" EXIT - see warning "<<endl; warning<<" ageerror type must be <= "<<N_ageerr<<endl; exit(1);
+              N_warn++; cout<<" EXIT - see warning "<<endl;  warning<<N_warn<<" "<<" ageerror type must be <= "<<N_ageerr<<endl; exit(1);
            }
            ageerr_type_a(f,j)=Age_Data[i](6);
 
@@ -1919,9 +1919,9 @@
            for (b=1;b<=gender*n_abins;b++)   // get the composition vector
            {obs_a(f,j,b)=Age_Data[i](9+b);}
            if(sum(obs_a(f,j))<=0.0)
-           {N_warn++; cout<<" EXIT - see warning "<<endl; warning<<" zero fish in age comp "<<header_a(f,j)<<endl;  exit(1);}
+           {N_warn++; cout<<" EXIT - see warning "<<endl;  warning<<N_warn<<" "<<" zero fish in age comp "<<header_a(f,j)<<endl;  exit(1);}
            if(nsamp_a_read(f,j)<=0.0)
-           {N_warn++; cout<<" EXIT - see warning "<<endl; warning<<" Input N is <=0.0 in age comp "<<header_a_rd(f,j)<<endl;  exit(1);}
+           {N_warn++; cout<<" EXIT - see warning "<<endl;  warning<<N_warn<<" "<<" Input N is <=0.0 in age comp "<<header_a_rd(f,j)<<endl;  exit(1);}
 
            Lbin_lo(f,j)=Age_Data[i](7);
            Lbin_hi(f,j)=Age_Data[i](8);
@@ -1942,7 +1942,7 @@
                {
                  if( len_bins(k)==len_bins_dat(Lbin_lo(f,j)) ) s=k;  //  find poplen bin that matches data len bin
                }
-               if(s==0) {N_warn++; cout<<" EXIT - see warning "<<endl; warning<<" L_bin_lo no match to poplenbins in age comp "<<header_a(f,j)<<endl;  exit(1);}
+               if(s==0) {N_warn++; cout<<" EXIT - see warning "<<endl;  warning<<N_warn<<" "<<" L_bin_lo no match to poplenbins in age comp "<<header_a(f,j)<<endl;  exit(1);}
                Lbin_lo(f,j)=s;
 
                s=0;
@@ -1950,7 +1950,7 @@
                {
                  if( len_bins(k)==len_bins_dat(Lbin_hi(f,j)) ) s=k;   //  find poplen bin that matches data len bin
                }
-               if(s==0) {N_warn++; cout<<" exit - see warning "<<endl; warning<<" L_bin_hi no match to poplenbins in age comp "<<header_a(f,j)<<endl;  exit(1);}
+               if(s==0) {N_warn++; cout<<" exit - see warning "<<endl;  warning<<N_warn<<" "<<" L_bin_hi no match to poplenbins in age comp "<<header_a(f,j)<<endl;  exit(1);}
                Lbin_hi(f,j)=s;
                break;
              }
@@ -1963,7 +1963,7 @@
                {
                  if( len_bins(k)==Lbin_lo(f,j) ) s=k;  //  find poplen bin that matches input length for lbin_lo
                }
-               if(s==0) {N_warn++; cout<<" exit - see warning "<<endl; warning<<"L_bin_lo no match to poplenbins in age comp "<<header_a(f,j)<<endl;  exit(1);}
+               if(s==0) {N_warn++; cout<<" exit - see warning "<<endl;  warning<<N_warn<<" "<<"L_bin_lo no match to poplenbins in age comp "<<header_a(f,j)<<endl;  exit(1);}
                Lbin_lo(f,j)=s;
 
                s=0;
@@ -1971,7 +1971,7 @@
                {
                  if( len_bins(k)==Lbin_hi(f,j) ) s=k;
                }
-               if(s==0) {N_warn++; cout<<" exit - see warning "<<endl; warning<<"L_bin_hi no match to poplenbins in age comp "<<header_a(f,j)<<endl;  exit(1);}
+               if(s==0) {N_warn++; cout<<" exit - see warning "<<endl;  warning<<N_warn<<" "<<"L_bin_hi no match to poplenbins in age comp "<<header_a(f,j)<<endl;  exit(1);}
                Lbin_hi(f,j)=s;
                break;
              }
@@ -1979,7 +1979,7 @@
 
            //  lbin_lo and lbin_hi are now in terms of poplenbins; their original values are retained in header_a
            if(Lbin_lo(f,j)>nlength || Lbin_lo(f,j)>Lbin_hi(f,j))
-           {N_warn++; cout<<" EXIT - see warning "<<endl; warning<<" L_bin_lo is too high in age comp.  Are you using lengths or bin numbers? "<<header_a(f,j)<<endl;  exit(1);}
+           {N_warn++; cout<<" EXIT - see warning "<<endl;  warning<<N_warn<<" "<<" L_bin_lo is too high in age comp.  Are you using lengths or bin numbers? "<<header_a(f,j)<<endl;  exit(1);}
            if(Lbin_lo(f,j)==1 && Lbin_hi(f,j)==nlength) {use_Lbin_filter(f,j)=0;} else {use_Lbin_filter(f,j)=1;}
 
            if(use_Lbin_filter(f,j)==1)
@@ -2098,7 +2098,7 @@
                obs_a_all(1,f,a)+=obs_a(f,j,n_abins+a);  //  males
              }
            }
-//           warning<<obs_a(f,j)(1,6)<<endl;
+//            warning<<N_warn<<" "<<obs_a(f,j)(1,6)<<endl;
          }
        }
      }
@@ -2167,7 +2167,7 @@
     if(y>=styr)
     {
       f=abs(sizeAge_Data[i](3));
-      if(sizeAge_Data[i](7)<0) {N_warn++; cout<<" EXIT - see warning "<<endl; warning<<"error.  cannot use negative sampsize for meansize data ";exit(1);;}
+      if(sizeAge_Data[i](7)<0) {N_warn++; cout<<" EXIT - see warning "<<endl;  warning<<N_warn<<" "<<"error.  cannot use negative sampsize for meansize data ";exit(1);;}
       if(sizeAge_Data[i](2)<0) N_suprper_ms(f)++;     // count the number of starts and ends of super-periods if seas<0 or sampsize<0
       Nobs_ms(f)++;
     }
@@ -2176,7 +2176,7 @@
   {
     s=N_suprper_ms(f)/2.;
     if(s*2!=N_suprper_ms(f))
-    {N_warn++; cout<<" EXIT - see warning "<<endl; warning<<"Error: unequal number of meansize superperiod starts and stops "<<endl; exit(1);}
+    {N_warn++; cout<<" EXIT - see warning "<<endl;  warning<<N_warn<<" "<<"Error: unequal number of meansize superperiod starts and stops "<<endl; exit(1);}
     else
     {N_suprper_ms(f)/=2;}
   }
@@ -2221,7 +2221,7 @@
      {
        y=sizeAge_Data[i](1);
        if(y>endyr +50)
-       {N_warn++; cout<<" EXIT - see warning "<<endl; warning<<"forecast meansize obs cannot be beyond endyr +50"<<endl; exit(1);}
+       {N_warn++; cout<<" EXIT - see warning "<<endl;  warning<<N_warn<<" "<<"forecast meansize obs cannot be beyond endyr +50"<<endl; exit(1);}
        if(y>=styr)
        {
          f=abs(sizeAge_Data[i](3));
@@ -2240,7 +2240,7 @@
            if(data_time(ALK_time,f,1)<0.0)  //  so first occurrence of data at ALK_time,f
            {data_time(ALK_time,f)(1,3)=timing_r_result(1,3);}  // real_month,fraction of season, year.fraction
            else if (timing_r_result(1) !=  data_time(ALK_time,f,1))
-           {N_warn++; warning<<"LEN@AGE: data_month already set for y,m,f: "<<y<<" "<<timing_r_result(1)<<" "<<f<<" to real month: "<< data_time(ALK_time,f,1)<<"  so treat as replicate"<<endl;}
+           {N_warn++;  warning<<N_warn<<" "<<"LEN@AGE: data_month already set for y,m,f: "<<y<<" "<<timing_r_result(1)<<" "<<f<<" to real month: "<< data_time(ALK_time,f,1)<<"  so treat as replicate"<<endl;}
             have_data(ALK_time,0,0,0)=1;
             have_data(ALK_time,f,0,0)=1;  //  so have data of some type
             have_data(ALK_time,f,data_type,0)++;  //  count the number of observations in this subseas
@@ -2248,7 +2248,7 @@
             have_data(ALK_time,f,data_type,p)=j;  //  store data index for the p'th observation in this subseas
 
           if(s>nseas)
-           {N_warn++; cout<<" EXIT - see warning "<<endl; warning<<" Critical error, season for size-age obs "<<i<<" is > nseas"<<endl; exit(1);}
+           {N_warn++; cout<<" EXIT - see warning "<<endl;  warning<<N_warn<<" "<<" Critical error, season for size-age obs "<<i<<" is > nseas"<<endl; exit(1);}
 
           header_ms(f,j)(1,7)=sizeAge_Data[i](1,7);
           header_ms_rd(f,j)(2,3)=sizeAge_Data[i](2,3);
@@ -2264,7 +2264,7 @@
            if(abs(sizeAge_Data[i](6))>N_ageerr)
            {
               N_warn++;cout<<" EXIT - see warning "<<endl;
-              warning<<" in meansize-at-age, ageerror type must be <= "<<N_ageerr<<endl; exit(1);
+               warning<<N_warn<<" "<<" in meansize-at-age, ageerror type must be <= "<<N_ageerr<<endl; exit(1);
            }
            ageerr_type_ms(f,j)=sizeAge_Data[i](6);
 
@@ -2361,7 +2361,7 @@
       if(SzFreq_units(k)==1 && SzFreq_scale(k)>2)
       {
         N_warn++; cout<<" EXIT - see warning "<<endl;
-        warning<<" error:  cannot accumulate biomass into length-based szfreq scale for method: "<<k<<endl;
+         warning<<N_warn<<" "<<" error:  cannot accumulate biomass into length-based szfreq scale for method: "<<k<<endl;
         exit(1);
       }
       SzFreq_Nbins3(k)=gender*SzFreq_Nbins(k);
@@ -2507,9 +2507,9 @@
         }
         if(gender==1) SzFreq_obs_hdr(iobs,4)=1;  // just in case
         if(sum(SzFreq_obs(iobs))<=0.0)
-        {N_warn++; cout<<" EXIT - see warning "<<endl; warning<<" zero fish in size comp "<<SzFreq_obs_hdr(iobs)<<endl;  exit(1);}
+        {N_warn++; cout<<" EXIT - see warning "<<endl;  warning<<N_warn<<" "<<" zero fish in size comp "<<SzFreq_obs_hdr(iobs)<<endl;  exit(1);}
         if(SzFreq_sampleN(iobs)<=0.0)
-        {N_warn++; cout<<" EXIT - see warning "<<endl; warning<<" Input N is <=0.0 in size comp "<<SzFreq_obs_hdr(iobs)<<endl;  exit(1);}
+        {N_warn++; cout<<" EXIT - see warning "<<endl;  warning<<N_warn<<" "<<" Input N is <=0.0 in size comp "<<SzFreq_obs_hdr(iobs)<<endl;  exit(1);}
 
         f=abs(SzFreq_obs_hdr(iobs,3));
         SzFreq_obs(iobs)/=sum(SzFreq_obs(iobs));
@@ -2517,7 +2517,7 @@
         SzFreq_obs(iobs)/=sum(SzFreq_obs(iobs));
         y=SzFreq_obs_hdr(iobs,1);
         if(y>endyr +50)
-        {N_warn++;warning<<"forecast sizefreq obs cannot be beyond endyr +50"<<endl; exit(1);}
+        {N_warn++; warning<<N_warn<<" "<<"forecast sizefreq obs cannot be beyond endyr +50"<<endl; exit(1);}
 
         timing_input(1,3)=SzFreq_obs_hdr(iobs)(1,3);
         timing_input(2)=SzFreq_obs1(iobs,3);
@@ -2533,7 +2533,7 @@
         if(z<=1) {SzFreq_obs_hdr(iobs,8)=SzFreq_Nbins(k);} else {SzFreq_obs_hdr(iobs,8)=2*SzFreq_Nbins(k);}
   //      SzFreq_obs_hdr(iobs,5);  // partition
         SzFreq_obs_hdr(iobs,6)=k;
-        if(k!=SzFreq_obs1(iobs,1)) {N_warn++; warning<<" sizefreq ID # doesn't match "<<endl; } // save method code for later use
+        if(k!=SzFreq_obs1(iobs,1)) {N_warn++;  warning<<N_warn<<" "<<" sizefreq ID # doesn't match "<<endl; } // save method code for later use
         if(y>=styr)
         {
           ALK_time=timing_i_result(5);
@@ -2551,7 +2551,7 @@
            if(data_time(ALK_time,f,1)<0.0)  //  so first occurrence of data at ALK_time,f
            {data_time(ALK_time,f)(1,3)=timing_r_result(1,3);}  // real_month,fraction of season, year.fraction
            else if (timing_r_result(1) !=  data_time(ALK_time,f,1))
-           {N_warn++; warning<<"SIZE: data_month already set for y,m,f: "<<y<<" "<<timing_r_result(1)<<" "<<f<<" to real month: "<< data_time(ALK_time,f,1)<<"  so treat as replicate"<<endl;}
+           {N_warn++;  warning<<N_warn<<" "<<"SIZE: data_month already set for y,m,f: "<<y<<" "<<timing_r_result(1)<<" "<<f<<" to real month: "<< data_time(ALK_time,f,1)<<"  so treat as replicate"<<endl;}
           have_data(ALK_time,0,0,0)=1;
           have_data(ALK_time,f,0,0)=1;  //  so have data of some type
           have_data(ALK_time,f,data_type,0)++;  //  count the number of observations in this subseas
@@ -2575,7 +2575,7 @@
       j=N_suprper_SzFreq/2;  // because we counted the begin and end
       if(2*j!=N_suprper_SzFreq)
       {
-        N_warn++; cout<<" EXIT - see warning "<<endl; warning<<"unequal number of starts and ends of sizefreq superperiods "<<endl; exit(1);
+        N_warn++; cout<<" EXIT - see warning "<<endl;  warning<<N_warn<<" "<<"unequal number of starts and ends of sizefreq superperiods "<<endl; exit(1);
       }
       else
       {
@@ -2717,7 +2717,7 @@
      if(t>TG_maxperiods) t=TG_maxperiods;
      if(t<0)
      {
-       N_warn++; cout<<" EXIT - see warning "<<endl; warning<<" recapture is before tag release for recap: "<<j<<endl;  exit(1);
+       N_warn++; cout<<" EXIT - see warning "<<endl;  warning<<N_warn<<" "<<" recapture is before tag release for recap: "<<j<<endl;  exit(1);
      }
      TG_recap_obs(TG,t,TG_recap_data(j,4))+=TG_recap_data(j,5);  //   save N recaptures by TG, fleet of recapture, elapsed time
    }
@@ -2778,7 +2778,7 @@
       if(y>=styr && y<=endyr +50)  //  obs is in year range
       {
         if(timing_input(2)<0.0)
-        {N_warn++; cout<<" EXIT - see warning "<<endl; warning<<"negative month not allowed for morphcomp because superperiods not implemented "<<endl; exit(1);}
+        {N_warn++; cout<<" EXIT - see warning "<<endl;  warning<<N_warn<<" "<<"negative month not allowed for morphcomp because superperiods not implemented "<<endl; exit(1);}
         get_data_timing(timing_input, timing_constants, timing_i_result, timing_r_result, seasdur, subseasdur_delta, azero_seas, surveytime);
 
         s=timing_input(2); f=abs(timing_input(3)); t=timing_i_result(2);
@@ -2793,7 +2793,7 @@
         else if (timing_r_result(1) !=  data_time(ALK_time,f,1))
         {
           N_warn++;
-          warning<<"morph_comp: data_month already set for y,s,f: "<<y<<" "<<s<<" "<<f<<" to real month: "<< data_time(ALK_time,f,1)<<"  but read value is: "<<timing_r_result(1)<<endl;
+           warning<<N_warn<<" "<<"morph_comp: data_month already set for y,s,f: "<<y<<" "<<s<<" "<<f<<" to real month: "<< data_time(ALK_time,f,1)<<"  but read value is: "<<timing_r_result(1)<<endl;
         }
         have_data(ALK_time,0,0,0)=1;
         have_data(ALK_time,f,0,0)=1;  //  so have data of some type
@@ -2872,7 +2872,7 @@
  LOCAL_CALCS
   Bmark_Yr=0;
   if(Do_Benchmark==2 && N_bycatch>0)
-  	{N_warn++; warning<<"F0.1 does not work well with bycatch fleets; check output carefully"<<endl;}
+  	{N_warn++;  warning<<N_warn<<" "<<"F0.1 does not work well with bycatch fleets; check output carefully"<<endl;}
   echoinput<<Bmark_Yr_rd<<" echoed Benchmark years"<<endl;
   for (i=1;i<=10;i++)  //  beg-end bio; beg-end selex; beg-end relF
   {
@@ -2881,9 +2881,9 @@
     else if(Bmark_Yr_rd(i)<=0)
     {Bmark_Yr(i)+=endyr;}
     else if(Bmark_Yr_rd(i)<styr)
-    {N_warn++;warning<<Bmark_Yr_rd(i)<<"benchmark year < styr; change to styr"<<endl;Bmark_Yr(i)=styr;}
+    {N_warn++; warning<<N_warn<<" "<<Bmark_Yr_rd(i)<<"benchmark year < styr; change to styr"<<endl;Bmark_Yr(i)=styr;}
     else if(Bmark_Yr_rd(i)>endyr)
-    {N_warn++;warning<<Bmark_Yr_rd(i)<<"  benchmark year > endyr; change to endyr"<<endl; Bmark_Yr(i)=endyr;}
+    {N_warn++; warning<<N_warn<<" "<<Bmark_Yr_rd(i)<<"  benchmark year > endyr; change to endyr"<<endl; Bmark_Yr(i)=endyr;}
     else
     {Bmark_Yr(i)=Bmark_Yr_rd(i);}
   }
@@ -2962,8 +2962,8 @@
   echoinput<<endl<<"#next read N forecast years"<<endl;
   *(ad_comm::global_datafile) >> N_Fcast_Yrs;
   echoinput<<N_Fcast_Yrs<<" #echoed N_Fcast_Yrs "<<endl;
-  if(Do_Forecast_rd>0 && N_Fcast_Yrs<=0) {N_warn++; cout<<"Critical error in forecast input, see warning"<<endl; warning<<"ERROR: cannot do a forecast of zero years: "<<N_Fcast_Yrs<<endl; exit(1);}
-  if(Do_Forecast_rd>0 && STD_Yr_max==-1) {N_warn++; warning<<"note: Std_yrmax=-1 in starter, so no variance output for forecast quantities after endyr+1 "<<endl;}
+  if(Do_Forecast_rd>0 && N_Fcast_Yrs<=0) {N_warn++; cout<<"Critical error in forecast input, see warning"<<endl;  warning<<N_warn<<" "<<"ERROR: cannot do a forecast of zero years: "<<N_Fcast_Yrs<<endl; exit(1);}
+  if(Do_Forecast_rd>0 && STD_Yr_max==-1) {N_warn++;  warning<<N_warn<<" "<<"note: Std_yrmax=-1 in starter, so no variance output for forecast quantities after endyr+1 "<<endl;}
 
   YrMax=endyr+N_Fcast_Yrs;
 
@@ -3021,8 +3021,8 @@
   *(ad_comm::global_datafile) >> H4010_scale_rd;
     H4010_scale=H4010_scale_rd;
   echoinput<<H4010_scale<<"   # echoed harvest policy scalar "<<endl;
-  if(H4010_top<=H4010_bot) {N_warn++; cout<<" EXIT - see warning "<<endl; warning<<" control rule inflection: "<<H4010_top<<" must be > control rule bottom "<<H4010_bot<<endl; exit(1);}
-  if(H4010_scale>1.0) {N_warn++; warning<<" Sure you want control rule scalar > 1.0? "<<H4010_scale<<endl;}
+  if(H4010_top<=H4010_bot) {N_warn++; cout<<" EXIT - see warning "<<endl;  warning<<N_warn<<" "<<" control rule inflection: "<<H4010_top<<" must be > control rule bottom "<<H4010_bot<<endl; exit(1);}
+  if(H4010_scale>1.0) {N_warn++;  warning<<N_warn<<" "<<" Sure you want control rule scalar > 1.0? "<<H4010_scale<<endl;}
 
   if(H4010_scale<0.0)
   {
@@ -3084,7 +3084,7 @@
   echoinput<<Fcast_RelF_Basis<<" # echoed value"<<endl;
   if(Do_Forecast_rd==4 && Fcast_RelF_Basis==2)
   {
-    N_warn++; cout<<" EXIT - see warning "<<endl; warning<<"Cannot specify forecast fleet relative F because Do_Forecast==4 specifies relative F directly as F;"<<endl;
+    N_warn++; cout<<" EXIT - see warning "<<endl;  warning<<N_warn<<" "<<"Cannot specify forecast fleet relative F because Do_Forecast==4 specifies relative F directly as F;"<<endl;
     echoinput<<"Cannot specify forecast fleet relative F because Do_Forecast==4 specifies relative F directly as F;"<<endl;
     echoinput<<"exit:  need to align choice of forecast basis and forecast relative F basis"<<endl;
     exit(1);
@@ -3095,7 +3095,7 @@
   *(ad_comm::global_datafile) >> Fcast_Catch_Basis;
   echoinput<<Fcast_Catch_Basis<<" # echoed value"<<endl;
   if(Fcast_Catch_Basis<2 || Fcast_Catch_Basis>6)
-    {N_warn++; cout<<" EXIT - see warning "<<endl; warning<<"illegal value for Fcast_Catch_Basis"<<endl; echoinput<<"exit:  illegal value for Fcast_Catch_Basis"<<endl; exit(1);}
+    {N_warn++; cout<<" EXIT - see warning "<<endl;  warning<<N_warn<<" "<<"illegal value for Fcast_Catch_Basis"<<endl; echoinput<<"exit:  illegal value for Fcast_Catch_Basis"<<endl; exit(1);}
 
   if(Fcast_RelF_Basis==2)
   {
@@ -3117,14 +3117,14 @@
         if(fleet_type(f)<=2)
         {Fcast_RelF_Input(s,f)=tempvec(3);  checkfleet(f)=1;}
         else
-        {cout<<" EXIT - see warning "<<endl; warning<<"forecast exit for fleet "<<f<<"  ;cannot set fcast relF for survey fleets"<<endl; exit(1);}
+        {cout<<" EXIT - see warning "<<endl;  warning<<N_warn<<" "<<"forecast exit for fleet "<<f<<"  ;cannot set fcast relF for survey fleets"<<endl; exit(1);}
       }
     } while (ender==0);
     echoinput<<" fleet relative F by season and fleet as read"<<endl<<Fcast_RelF_Input<<endl;
     for(f=1;f<=Nfleet;f++)
     {
       if(fleet_type(f)==1 && checkfleet(f)==0)
-        {N_warn++; warning<<"fleet: "<<f<<" "<<fleetname(f)<<"  is a fishing fleet but forecast relF not read"<<endl;}
+        {N_warn++;  warning<<N_warn<<" "<<"fleet: "<<f<<" "<<fleetname(f)<<"  is a fishing fleet but forecast relF not read"<<endl;}
     }
   }
   else
@@ -3133,11 +3133,11 @@
 
   else  //  set forecast defaults
   {
-    N_warn++; warning<<"Forecast=0 or -1, so rest of forecast file will not be read and can be omitted;"<<endl;
-    if(Bmark_RelF_Basis==2) {N_warn++; cout<<" EXIT - see warning "<<endl; warning<<"Fatal stop:  no forecast, but bmark set to use fcast"<<endl;  exit(1);}
+    N_warn++;  warning<<N_warn<<" "<<"Forecast=0 or -1, so rest of forecast file will not be read and can be omitted;"<<endl;
+    if(Bmark_RelF_Basis==2) {N_warn++; cout<<" EXIT - see warning "<<endl;  warning<<N_warn<<" "<<"Fatal stop:  no forecast, but bmark set to use fcast"<<endl;  exit(1);}
   if(Do_Forecast==0) 
   	{
-      warning<<"A one year forecast using recent F will be done automatically"<<endl;
+       warning<<N_warn<<" "<<"A one year forecast using recent F will be done automatically"<<endl;
   		Do_Forecast=4;  //  sets simple forecast; else Do_Forecast==-1 causes no forecast
       N_Fcast_Yrs=1;
       YrMax=endyr+1;
@@ -3267,7 +3267,7 @@
       {
         N_warn++;
         cout<<" EXIT - see warning "<<endl;
-        warning<<"Error: there are no allocation fractions specified and there are "<<Fcast_Catch_Allocation_Groups<<" allocation groups"<<endl;
+         warning<<N_warn<<" "<<"Error: there are no allocation fractions specified and there are "<<Fcast_Catch_Allocation_Groups<<" allocation groups"<<endl;
         echoinput<<"Error: there are no allocation fractions specified and there are "<<Fcast_Catch_Allocation_Groups<<" allocation groups"<<endl;
 
         exit(1);
@@ -3348,7 +3348,7 @@
         	Fcast_RelF_special(s,f)=1;
           t=styr+(y-styr)*nseas +s-1;
           Fcast_InputCatch(t,f,1)=Fcast_InputCatch_rd(i+1,4);
-          if(y>=Fcast_Cap_FirstYear) {N_warn++;warning<<"Input catches in "<<y<<" can be overridden by caps or allocations"<<endl;}
+          if(y>=Fcast_Cap_FirstYear) {N_warn++; warning<<N_warn<<" "<<"Input catches in "<<y<<" can be overridden by caps or allocations"<<endl;}
           if(Fcast_InputCatch_Basis==-1)
           {
             Fcast_InputCatch(t,f,2)=Fcast_InputCatch_rd(i+1,5);  //  new method
@@ -3362,21 +3362,29 @@
     }
   }
 
-  echoinput<<"Now fill H4010_scale_vec"<<endl;
   H4010_scale_vec.initialize();
   if(H4010_scale_rd>=0.0)
     {
+      echoinput<<"fill H4010_scale_vec with single input"<<endl;
       H4010_scale_vec=H4010_scale_rd;
     }
     else
     {
+      echoinput<<"fill H4010_scale_vec from input list; filling from read year to YrMax for each input"<<endl;
       j=H4010_scale_vec_rd.size()-1;
-      for (int s=0; s<=j-1; s++) 
+      int last_rd_yr;
+      last_rd_yr=endyr;
+      for (int s=0; s<=j-1; s++) //  loop input
       {
         y=H4010_scale_vec_rd[s](1);
-        echoinput<<H4010_scale_vec_rd[s]<<" "<<y<<endl;
-        if(s==0 && y>endyr)
-          {N_warn++; warning<<" "<<endl;}
+        echoinput<<H4010_scale_vec_rd[s]<<endl;
+        if(y<=endyr)
+          {N_warn++;  warning<<N_warn<<"; "<<y<<" is <= endyr; set to endyr+1 "<<endl; echoinput<<"set to endyr+1 "<<endl; y=endyr+1;}
+        if(y<=last_rd_yr)
+          {N_warn++;  warning<<N_warn<<"; "<<y<<" is <= last_rd_yr; overwrite will occur "<<endl; echoinput<<"<= last_rd_yr; overwrite "<<endl;}
+          last_rd_yr=y;
+        if(y>YrMax)
+          {N_warn++;  warning<<N_warn<<"; "<<y<<" is > YrMax; set to YrMax "<<endl; y=YrMax;}
         for(k=y;k<=YrMax;k++) 
         {
           H4010_scale_vec(k)=H4010_scale_vec_rd[s](2);
@@ -3385,27 +3393,27 @@
     }
   echoinput<<"H4010_scale: "<<H4010_scale_vec<<endl;
 
-  if(Do_Rebuilder>0 && Do_Forecast_rd<=0) {N_warn++; cout<<" EXIT - see warning "<<endl; warning<<" error: Rebuilder output selected without requesting forecast"<<endl; exit(1);}
+  if(Do_Rebuilder>0 && Do_Forecast_rd<=0) {N_warn++; cout<<" EXIT - see warning "<<endl;  warning<<N_warn<<" "<<" error: Rebuilder output selected without requesting forecast"<<endl; exit(1);}
   if(Do_Benchmark==0)
   {
-    if(Do_Forecast_rd>=1 && Do_Forecast_rd<=3) {Do_Benchmark=1; N_warn++; warning<<" Turn Benchmark on because Forecast needs it"<<endl;}
-    if(Do_Forecast==0 && F_std_basis>0) {F_std_basis=0; N_warn++; warning<<" Set F_std_basis=0 because no benchmark or forecast"<<endl;}
-    if(depletion_basis==2) {depletion_basis=1; N_warn++; warning<<" Change depletion basis to 1 because benchmarks are off"<<endl;}
-    if(SPR_reporting>=1 && SPR_reporting<=3) {SPR_reporting=4; N_warn++; warning<<" Change SPR_reporting to 4 because benchmarks are off"<<endl;}
+    if(Do_Forecast_rd>=1 && Do_Forecast_rd<=3) {Do_Benchmark=1; N_warn++;  warning<<N_warn<<" "<<" Turn Benchmark on because Forecast needs it"<<endl;}
+    if(Do_Forecast==0 && F_std_basis>0) {F_std_basis=0; N_warn++;  warning<<N_warn<<" "<<" Set F_std_basis=0 because no benchmark or forecast"<<endl;}
+    if(depletion_basis==2) {depletion_basis=1; N_warn++;  warning<<N_warn<<" "<<" Change depletion basis to 1 because benchmarks are off"<<endl;}
+    if(SPR_reporting>=1 && SPR_reporting<=3) {SPR_reporting=4; N_warn++;  warning<<N_warn<<" "<<" Change SPR_reporting to 4 because benchmarks are off"<<endl;}
   }
   else
   {
-     if(Do_MSY==0)  {Do_MSY=1; N_warn++; warning<<" Setting Do_MSY=1 because benchmarks are on"<<endl;}
+     if(Do_MSY==0)  {Do_MSY=1; N_warn++;  warning<<N_warn<<" "<<" Setting Do_MSY=1 because benchmarks are on"<<endl;}
   }
-//  if(Do_Forecast==2 && Do_MSY!=2) {Do_MSY=2; N_warn++; warning<<" Set MSY option =2 because Forecast option =2"<<endl;}
-//  if(depletion_basis==2 && Do_MSY!=2) {Do_MSY=2; N_warn++; warning<<" Set MSY option =2 because depletion basis is B_MSY"<<endl;}
-//  if(SPR_reporting==2 && Do_MSY!=2) {Do_MSY=2; N_warn++; warning<<" Set MSY option =2 because SPR basis is SPR_MSY"<<endl;}
-  if(Fcast_Sel_yr1>Fcast_Sel_yr2) {N_warn++; cout<<" EXIT - see warning "<<endl; warning<<" Error, Fcast_Sel_Yr1 must be at or before Fcast_Sel_Yr2"<<endl;  exit(1);}
-  if(Fcast_Sel_yr1>endyr || Fcast_Sel_yr1<styr) {N_warn++; cout<<" EXIT - see warning "<<endl; warning<<" Error, Fcast_Sel_Yr1 must be between styr and endyr"<<endl;  exit(1);}
-  if(Fcast_Sel_yr2>endyr || Fcast_Sel_yr2<styr) {N_warn++; cout<<" EXIT - see warning "<<endl; warning<<" Error, Fcast_Sel_Yr2 must be between styr and endyr"<<endl;  exit(1);}
-  if(Fcast_Rec_yr1>Fcast_Rec_yr2) {N_warn++; cout<<" EXIT - see warning "<<endl; warning<<" Error, Fcast_Rec_Yr1 must be at or before Fcast_Rec_Yr2"<<endl;  exit(1);}
-  if(Fcast_Rec_yr1>endyr || Fcast_Rec_yr1<styr) {N_warn++; cout<<" EXIT - see warning "<<endl; warning<<" Error, Fcast_Rec_Yr1 must be between styr and endyr"<<endl;  exit(1);}
-  if(Fcast_Rec_yr2>endyr || Fcast_Rec_yr2<styr) {N_warn++; cout<<" EXIT - see warning "<<endl; warning<<" Error, Fcast_Rec_Yr2 must be between styr and endyr"<<endl;  exit(1);}
+//  if(Do_Forecast==2 && Do_MSY!=2) {Do_MSY=2; N_warn++;  warning<<N_warn<<" "<<" Set MSY option =2 because Forecast option =2"<<endl;}
+//  if(depletion_basis==2 && Do_MSY!=2) {Do_MSY=2; N_warn++;  warning<<N_warn<<" "<<" Set MSY option =2 because depletion basis is B_MSY"<<endl;}
+//  if(SPR_reporting==2 && Do_MSY!=2) {Do_MSY=2; N_warn++;  warning<<N_warn<<" "<<" Set MSY option =2 because SPR basis is SPR_MSY"<<endl;}
+  if(Fcast_Sel_yr1>Fcast_Sel_yr2) {N_warn++; cout<<" EXIT - see warning "<<endl;  warning<<N_warn<<" "<<" Error, Fcast_Sel_Yr1 must be at or before Fcast_Sel_Yr2"<<endl;  exit(1);}
+  if(Fcast_Sel_yr1>endyr || Fcast_Sel_yr1<styr) {N_warn++; cout<<" EXIT - see warning "<<endl;  warning<<N_warn<<" "<<" Error, Fcast_Sel_Yr1 must be between styr and endyr"<<endl;  exit(1);}
+  if(Fcast_Sel_yr2>endyr || Fcast_Sel_yr2<styr) {N_warn++; cout<<" EXIT - see warning "<<endl;  warning<<N_warn<<" "<<" Error, Fcast_Sel_Yr2 must be between styr and endyr"<<endl;  exit(1);}
+  if(Fcast_Rec_yr1>Fcast_Rec_yr2) {N_warn++; cout<<" EXIT - see warning "<<endl;  warning<<N_warn<<" "<<" Error, Fcast_Rec_Yr1 must be at or before Fcast_Rec_Yr2"<<endl;  exit(1);}
+  if(Fcast_Rec_yr1>endyr || Fcast_Rec_yr1<styr) {N_warn++; cout<<" EXIT - see warning "<<endl;  warning<<N_warn<<" "<<" Error, Fcast_Rec_Yr1 must be between styr and endyr"<<endl;  exit(1);}
+  if(Fcast_Rec_yr2>endyr || Fcast_Rec_yr2<styr) {N_warn++; cout<<" EXIT - see warning "<<endl;  warning<<N_warn<<" "<<" Error, Fcast_Rec_Yr2 must be between styr and endyr"<<endl;  exit(1);}
 
   did_MSY=0;
   if(Do_Forecast>0) *(ad_comm::global_datafile) >> fif;
@@ -3568,4 +3576,5 @@
     }
   }
   echoinput<<"Finished creating STD containers and indexes "<<endl;
+
  END_CALCS
