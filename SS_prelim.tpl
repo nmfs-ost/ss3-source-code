@@ -890,7 +890,7 @@ PRELIMINARY_CALCS_SECTION
 //  SS_Label_Info_6.8.3 #Call fxn get_growth2() to calculate size-at-age
     get_growth2(styr); //   in preliminary calcs
     echoinput<<" did growth2 in prelim calcs"<<endl<<Ave_Size(styr,1,1)<<endl;
-    if(minL>10.0) {N_warn++;  warning<<N_warn<<" "<<" Minimum size bin is:_"<<minL<<"; which is >10cm, which is large for use as size-at-age 0.0 recruitment"<<endl;}
+    if(len_bins(1)>0.75*Ave_Size(styr,1,1,0)) {N_warn++;  warning<<N_warn<<" Minimum pop size bin is:_"<<len_bins(1)<<"; which is >75% of age 0 size: "<<Ave_Size(styr,1,1,0)<<endl;}
     temp=Ave_Size(styr,1,1,nages);
     if(temp>0.95*len_bins(nlength)) {N_warn++;  warning<<N_warn<<" "<<" Maximum size at age: "<<temp
     <<"; is within 5% of the largest size bin: "<<len_bins(nlength)<<"; Add more bins"<<endl;}
