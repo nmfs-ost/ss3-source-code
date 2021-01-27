@@ -1901,6 +1901,9 @@ FUNCTION void write_nucontrol()
           report4<<"  #  "<<ParmLabel(NP)<<endl;
       }
     }
+    {
+      report4<<"#_No_Dirichlet parameters"<<endl;
+    }
 
   if(N_selparm3 > N_selparm)
   {

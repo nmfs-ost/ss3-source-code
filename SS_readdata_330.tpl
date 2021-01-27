@@ -164,7 +164,7 @@
    echoinput<<"SPAWN month: "<<spawn_month<<"; seas: "<<spawn_seas<<"; subseas_for_ALK: "<<spawn_subseas<<"; timing_in_season: "<<spawn_time_seas<<endl;
    if(spawn_seas>nseas)
    {
-     N_warn++;  warning<<N_warn<<" "<<" spawn_seas index must be <= nseas "<<endl;
+     N_warn++;  warning<<N_warn<<" spawn_seas index must be <= nseas "<<endl;
    }
  END_CALCS
   int pop   // number of areas (populations)
@@ -316,9 +316,9 @@
   {
     F_reporting_ages=F_reporting_ages_R;
     if(F_reporting_ages(1)>(nages-2) || F_reporting_ages(1)<0)
-    {N_warn++;  warning<<N_warn<<" "<<" reset lower end of F_reporting_ages to be nages-2  "<<endl; F_reporting_ages(1)=nages-2;}
+    {N_warn++;  warning<<N_warn<<" reset lower end of F_reporting_ages to be nages-2  "<<endl; F_reporting_ages(1)=nages-2;}
     if(F_reporting_ages(2)>(nages-2) || F_reporting_ages(2)<0)
-    {N_warn++;  warning<<N_warn<<" "<<" reset upper end of F_reporting_ages to be nages-2  "<<endl; F_reporting_ages(2)=nages-2;}
+    {N_warn++;  warning<<N_warn<<" reset upper end of F_reporting_ages to be nages-2  "<<endl; F_reporting_ages(2)=nages-2;}
   }
   else
   {
@@ -488,7 +488,7 @@
     if(totcat(y)>0.0 && first_catch_yr==0) first_catch_yr=y;
     if(y==endyr && totcat(y)==0.0)
     {
-      N_warn++;  warning<<N_warn<<" "<<" catch is 0.0 in endyr; this can cause problem in the benchmark and forecast calculations"<<endl;
+      N_warn++;  warning<<N_warn<<" catch is 0.0 in endyr; this can cause problem in the benchmark and forecast calculations"<<endl;
     }
   }
     echoinput<<endl<<"#_show_total_catch_by_fleet"<<endl;
@@ -499,7 +499,7 @@
       if(fleet_type(f)==3 && catch_by_fleet(f)>0.0) 
         {
           echoinput<<"  Catch by survey fleet will be ignored ";
-          N_warn++;  warning<<N_warn<<" "<<"  Catch by survey fleet will be ignored "<<fleet_type(f)<<endl;
+          N_warn++;  warning<<N_warn<<"  Catch by survey fleet will be ignored "<<fleet_type(f)<<endl;
         }
       echoinput<<endl;
     }
@@ -866,7 +866,7 @@
          if( discdata[i](3)<0) {yr_disc_use(f,j)=-1;} else {yr_disc_use(f,j)=1;disc_N_fleet_use(f)++;}
          if(catch_ret_obs(f,t)<=0.0)
          {
-           N_warn++;  warning<<N_warn<<" "<<" discard observation: "<<i<<" has no corresponding catch "<<discdata[i]<<endl;
+           N_warn++;  warning<<N_warn<<" discard observation: "<<i<<" has no corresponding catch "<<discdata[i]<<endl;
          }
 
   //  create super_year indexes
@@ -1012,7 +1012,7 @@
    else if(LenBin_option==3)
    {k=1;}
    else
-   {N_warn++;  warning<<N_warn<<" "<<" LenBin_option must be 1, 2 or 3"<<LenBin_option<<endl;}
+   {N_warn++;  warning<<N_warn<<" LenBin_option must be 1, 2 or 3"<<LenBin_option<<endl;}
  END_CALCS
 
   init_vector PopBin_Read(1,k);
@@ -1047,6 +1047,13 @@
  LOCAL_CALCS
   Comp_Err_ParmCount=0;
   Comp_Err_L2.initialize();
+  min_tail_L.initialize();
+  CombGender_L.initialize();
+  AccumBin_L.initialize();
+  Comp_Err_L.initialize();
+  Comp_Err_L2.initialize();
+  min_sample_size_L.initialize();
+  
   if(use_length_data>0)
   {
     echoinput<<"#_now read for each fleet info for processing the length comps:"<<endl;
@@ -1071,7 +1078,7 @@
 
       if (min_sample_size_L(f) < 0.001)
       {
-        N_warn++;  warning<<N_warn<<" "<<" minimum sample size for length comps must be > 0; minimum sample size set to 0.001 "<<endl;
+        N_warn++;  warning<<N_warn<<" minimum sample size for length comps must be > 0; minimum sample size set to 0.001 "<<endl;
         min_sample_size_L(f) = 0.001;
       }
     }
@@ -1210,11 +1217,11 @@
   }
   if(len_bins_dat(nlen_bin)>len_bins(nlength))
   {
-    N_warn++; cout<<" EXIT - see warning "<<endl;  warning<<N_warn<<" "<<" Data length bins extend beyond pop len bins "<<len_bins_dat(nlen_bin)<<" "<<len_bins(nlength)<<endl; exit(1);
+    N_warn++; cout<<" EXIT - see warning "<<endl;  warning<<N_warn<<" Data length bins extend beyond pop len bins "<<len_bins_dat(nlen_bin)<<" "<<len_bins(nlength)<<endl; exit(1);
   }
   if(len_bins_dat(nlen_bin)<len_bins(nlength))
   {
-    N_warn++;  warning<<N_warn<<" "<<" Data length bins stop before max pop len bins; "<<len_bins_dat(nlen_bin)<<" is < "<<len_bins(nlength)<<"; suggest make them same"<<endl;
+    N_warn++;  warning<<N_warn<<" Data length bins stop before max pop len bins; "<<len_bins_dat(nlen_bin)<<" is < "<<len_bins(nlength)<<"; suggest make them same"<<endl;
   }
   echoinput<<endl<<"Processed Data length bin info "<<endl<<len_bins_dat<<endl;
   }
@@ -1296,8 +1303,10 @@
     z=0;
     do {
       dvector tempvec(1,k);
-        *(ad_comm::global_datafile) >> tempvec(1,k);
-          if(tempvec(1)==-9999.) ender=1;
+      *(ad_comm::global_datafile) >> tempvec(1,k);
+      if(sum(tempvec)==0.0) 
+      	{N_warn++; cout<<"exit; see warning"<<endl; warning<<N_warn<<" reading past end of file for length data; exit "<<endl;exit(1);}
+      if(tempvec(1)==-9999.) ender=1;
       z++;
       if(z<=2) echoinput<<"len_obs_#:"<<z<<" # "<<tempvec(1,k)<<endl;
       lendata.push_back (tempvec(1,k));
@@ -1410,7 +1419,7 @@
             have_data_yr(y,f)=1;  have_data_yr(y,0)=1;  //  survey or comp data exist this year
 
           if(s>nseas)
-           {N_warn++; cout<<" EXIT - see warning "<<endl;  warning<<N_warn<<" "<<" Critical error, season for length obs "<<i<<" is > nseas"<<endl; exit(1);}
+           {N_warn++; cout<<" EXIT - see warning "<<endl;  warning<<N_warn<<" Critical error, season for length obs "<<i<<" is > nseas"<<endl; exit(1);}
 
           if( lendata[i](6)<0.0)
             {N_warn++; cout<<" EXIT - see warning "<<endl;  warning<<N_warn<<" "<<"negative values not allowed for lengthcomp sample size, use -fleet to omit from -logL"<<endl; exit(1);}
@@ -1446,9 +1455,9 @@
           for (z=1;z<=nlen_bin2;z++)   // get the composition vector
            {obs_l(f,j,z)= lendata[i](6+z);}
 
-          if(sum(obs_l(f,j))<=0.0) {N_warn++;  warning<<N_warn<<" "<<" zero fish in size comp (fleet, year) "<<f<<" "<<y<<endl; cout<<" EXIT - see warning "<<endl; exit(1);}
+          if(sum(obs_l(f,j))<=0.0) {N_warn++;  warning<<N_warn<<" zero fish in size comp (fleet, year) "<<f<<" "<<y<<endl; cout<<" EXIT - see warning "<<endl; exit(1);}
           if(nsamp_l_read(f,j)<=0.0)
-          {N_warn++; cout<<" EXIT - see warning "<<endl;  warning<<N_warn<<" "<<" Input N is <=0.0 in length comp "<<header_l_rd(f,j)<<endl;  exit(1);}
+          {N_warn++; cout<<" EXIT - see warning "<<endl;  warning<<N_warn<<" Input N is <=0.0 in length comp "<<header_l_rd(f,j)<<endl;  exit(1);}
           tails_l(f,j,1)=1;
           tails_l(f,j,2)=nlen_bin;
           tails_l(f,j,3)=nlen_binP;
@@ -1670,144 +1679,142 @@
       *(ad_comm::global_datafile) >> age_err_rd(j,1)(0,nages);
       *(ad_comm::global_datafile) >> age_err_rd(j,2)(0,nages);
     }
+    Nobs_a=0;
+    N_suprper_a=0;
+    if(n_abins>0)
+    {
+      echoinput<<"ageerror_definitions_as_read"<<endl<<age_err_rd<<endl;
+      Use_AgeKeyZero=0;
+      if(N_ageerr>0)
+      {
+        for (i=1;i<=N_ageerr;i++)
+        {
+          if(age_err_rd(i,2,0)<0.) {  //  set flag for setup of age error parameters
+            if (Use_AgeKeyZero>0) 
+            {
+              N_warn++;  warning<<N_warn<<" "<<"SS can only create 1 age error definition from parameters, ";
+               warning<<N_warn<<" "<<"but there are > 1 negative sd values for age 0 in age error definitions."<<endl;
+  			echoinput<<"Error: There are > 1 negative sd values for age 0 in age error definitions."<<endl;
+              cout<<" EXIT - see warning "<<endl; exit(1);
+            }
+            Use_AgeKeyZero=i;
+          }
+        }
+      }
+
+      Comp_Err_A2.initialize();
+      echoinput<<"#_now read for each fleet info for processing the age comps:"<<endl;
+      echoinput<<"#_mintailcomp: upper and lower distribution for females and males separately are accumulated until exceeding this level."<<endl;
+      echoinput<<"#_addtocomp:  after accumulation of tails; this value added to all bins"<<endl;
+      echoinput<<"#_males and females treated as combined gender below this bin number "<<endl;
+      echoinput<<"#_compressbins: accumulate upper tail by this number of bins; acts simultaneous with mintailcomp; set=0 for no forced accumulation"<<endl;
+      echoinput<<"#_Comp_Error:  0=multinomial, 1=dirichlet"<<endl;
+      echoinput<<"#_Comp_ERR-2:  index of parameter to use, cumulative count after DM parms for length comp"<<endl;
+      echoinput<<"#_minsamplesize: minimum sample size; set to 1 to match 3.24, set to 0 for no minimum"<<endl;
+
+      for (f=1;f<=Nfleet;f++)
+      {
+        *(ad_comm::global_datafile) >> min_tail_A(f);
+        *(ad_comm::global_datafile) >> min_comp_A(f);
+        *(ad_comm::global_datafile) >> CombGender_A(f);
+        *(ad_comm::global_datafile) >> AccumBin_A(f);
+        *(ad_comm::global_datafile) >> Comp_Err_A(f);
+        *(ad_comm::global_datafile) >> Comp_Err_A2(f);
+        *(ad_comm::global_datafile) >> min_sample_size_A(f);
+        echoinput<<min_tail_A(f)<<" "<<min_comp_A(f)<<" "<<CombGender_A(f)<<" "<<AccumBin_A(f)<<" "<<Comp_Err_A(f)<<" "<<Comp_Err_A2(f)<<" "<<min_sample_size_A(f)<<"  #_fleet: "<<f<<" "<<fleetname(f)<<endl;
+
+        if (min_sample_size_A(f) < 0.001)
+        {
+          N_warn++;  warning<<N_warn<<" minimum sample size for age comps must be > 0; minimum sample size set to 0.001 "<<endl;
+          min_sample_size_A(f) = 0.001;
+        }
+      }
+        //  get count of needed dirichlet composition parameters
+      j=max(Comp_Err_A2);
+      Comp_Err_ParmCount=max(Comp_Err_ParmCount,j);  //  get the maximum parameter number referred to
+      *(ad_comm::global_datafile) >> Lbin_method;
+      echoinput << Lbin_method<< " Lbin method for defined size ranges "  << endl;
+
+      if(nobsa_rd>0 && N_ageerr==0)
+      {
+        N_warn++; cout<<" EXIT - see warning "<<endl;  warning<<N_warn<<" must define ageerror vectors because age data exist"<<endl; exit(1);
+      }
+      for (f=1;f<=Nfleet;f++)
+      {
+        if(CombGender_A(f)>n_abins2)
+        {
+        N_warn++;  warning<<N_warn<<" "<<"Combgender_A(f) cannot be greater than n_abins for fleet:_"<<f<<"; resetting"<<endl;  CombGender_A(f)=n_abins2;
+        }
+      }
+      for (b=1;b<=n_abins;b++)
+      {
+       age_bins(b) = age_bins1(b);
+
+       if(b<n_abins)
+       {age_bins_mean(b) =(age_bins1(b)+age_bins1(b+1))*0.5;}
+       else if (b>1)
+       {age_bins_mean(b) =age_bins1(b)+0.5*(age_bins1(b)-age_bins1(b-1));}
+       else
+       {age_bins_mean(b) =age_bins1(b) + 0.5;}
+
+       if(gender==2)
+        {
+          age_bins(b+n_abins)=age_bins1(b);
+          age_bins_mean(b+n_abins)=age_bins_mean(b);
+        }
+      }
+  //  SS_Label_Info_2.8.2 #Read Age data
+    k=9+n_abins2;
+    ender=0;
+    z=0;
+    do {
+      dvector tempvec(1,k);
+      *(ad_comm::global_datafile) >> tempvec(1,k);
+      if(sum(tempvec)==0.0) 
+      	{N_warn++; cout<<"exit; see warning"<<endl; warning<<N_warn<<" reading past end of file for age data; exit "<<endl;exit(1);}
+      if(tempvec(1)==-9999.) ender=1;
+      z++;
+      if(z<=2) echoinput<<"age_obs_#:"<<z<<" # "<<tempvec(1,k)<<endl;
+      Age_Data.push_back (tempvec(1,k));
+    } while (ender==0);
+    nobsa_rd=Age_Data.size()-1;
+    echoinput<<nobsa_rd<<" N age comp observations "<<endl;
+    if(nobsa_rd>0) echoinput<<"age_obs_#:"<<nobsa_rd<<" # "<<Age_Data[nobsa_rd-1]<<endl;
+
+    data_type=5;  //  for age data
+
+    for (i=0;i<=nobsa_rd-1;i++)
+    {
+      y=Age_Data[i](1);
+      if(y>=styr)
+      {
+       f=abs(Age_Data[i](3));
+       if(Age_Data[i](9)<0) {N_warn++; cout<<" EXIT - see warning "<<endl;  warning<<N_warn<<" "<<"Error: negative sample size in age data no longer valid as indicator of skip data or superperiods "<<endl; exit(1);}
+       if(Age_Data[i](6)==0 || Age_Data[i](6)>N_ageerr) {N_warn++; cout<<" EXIT - see warning "<<endl;  warning<<N_warn<<" "<<"Error: undefined age_error type: "<<Age_Data[i](6)<<"  in obs: "<<i<<endl; exit(1);}
+       if(Age_Data[i](2)<0) N_suprper_a(f)++;     // count the number of starts and ends of super-periods if seas<0 or sampsize<0
+
+       Nobs_a(f)++;
+      }
+    }
+    for (f=1;f<=Nfleet;f++)
+    {
+      s=N_suprper_a(f)/2.;
+      if(s*2!=N_suprper_a(f))
+      {N_warn++; cout<<" EXIT - see warning "<<endl;  warning<<N_warn<<" "<<"Error: unequal number of age superperiod starts and stops "<<endl; exit(1);}
+      else
+      {N_suprper_a(f)/=2;}
+    }
+    echoinput<<endl<<"Age_Data Nobs by fleet "<<Nobs_a<<endl;
+    echoinput<<"Age_Data superperiods by fleet "<<N_suprper_a<<endl;
+    Nobs_a_tot=sum(Nobs_a);
+
+    }
   }
   else
   {
     echoinput<<"N bins set to zero, so no more reading of age data inputs"<<endl;
   }
- END_CALCS
 
- LOCAL_CALCS
-  Nobs_a=0;
-  N_suprper_a=0;
-  if(n_abins>0)
-  {
-    echoinput<<"ageerror_definitions_as_read"<<endl<<age_err_rd<<endl;
-    Use_AgeKeyZero=0;
-    if(N_ageerr>0)
-    {
-      for (i=1;i<=N_ageerr;i++)
-      {
-        if(age_err_rd(i,2,0)<0.) {  //  set flag for setup of age error parameters
-          if (Use_AgeKeyZero>0) 
-          {
-            N_warn++;  warning<<N_warn<<" "<<"SS can only create 1 age error definition from parameters, ";
-             warning<<N_warn<<" "<<"but there are > 1 negative sd values for age 0 in age error definitions."<<endl;
-			echoinput<<"Error: There are > 1 negative sd values for age 0 in age error definitions."<<endl;
-            cout<<" EXIT - see warning "<<endl; exit(1);
-          }
-          Use_AgeKeyZero=i;
-        }
-      }
-    }
-
-    Comp_Err_A2.initialize();
-    echoinput<<"#_now read for each fleet info for processing the age comps:"<<endl;
-    echoinput<<"#_mintailcomp: upper and lower distribution for females and males separately are accumulated until exceeding this level."<<endl;
-    echoinput<<"#_addtocomp:  after accumulation of tails; this value added to all bins"<<endl;
-    echoinput<<"#_males and females treated as combined gender below this bin number "<<endl;
-    echoinput<<"#_compressbins: accumulate upper tail by this number of bins; acts simultaneous with mintailcomp; set=0 for no forced accumulation"<<endl;
-    echoinput<<"#_Comp_Error:  0=multinomial, 1=dirichlet"<<endl;
-    echoinput<<"#_Comp_ERR-2:  index of parameter to use, cumulative count after DM parms for length comp"<<endl;
-    echoinput<<"#_minsamplesize: minimum sample size; set to 1 to match 3.24, set to 0 for no minimum"<<endl;
-
-    for (f=1;f<=Nfleet;f++)
-    {
-      *(ad_comm::global_datafile) >> min_tail_A(f);
-      *(ad_comm::global_datafile) >> min_comp_A(f);
-      *(ad_comm::global_datafile) >> CombGender_A(f);
-      *(ad_comm::global_datafile) >> AccumBin_A(f);
-      *(ad_comm::global_datafile) >> Comp_Err_A(f);
-      *(ad_comm::global_datafile) >> Comp_Err_A2(f);
-      *(ad_comm::global_datafile) >> min_sample_size_A(f);
-      echoinput<<min_tail_A(f)<<" "<<min_comp_A(f)<<" "<<CombGender_A(f)<<" "<<AccumBin_A(f)<<" "<<Comp_Err_A(f)<<" "<<Comp_Err_A2(f)<<" "<<min_sample_size_A(f)<<"  #_fleet: "<<f<<" "<<fleetname(f)<<endl;
-
-      if (min_sample_size_A(f) < 0.001)
-      {
-        N_warn++;  warning<<N_warn<<" "<<" minimum sample size for age comps must be > 0; minimum sample size set to 0.001 "<<endl;
-        min_sample_size_A(f) = 0.001;
-      }
-    }
-      //  get count of needed dirichlet composition parameters
-    j=max(Comp_Err_A2);
-    Comp_Err_ParmCount=max(Comp_Err_ParmCount,j);  //  get the maximum parameter number referred to
-    *(ad_comm::global_datafile) >> Lbin_method;
-    echoinput << Lbin_method<< " Lbin method for defined size ranges "  << endl;
-
-    if(nobsa_rd>0 && N_ageerr==0)
-    {
-      N_warn++; cout<<" EXIT - see warning "<<endl;  warning<<N_warn<<" "<<" must define ageerror vectors because age data exist"<<endl; exit(1);
-    }
-    for (f=1;f<=Nfleet;f++)
-    {
-      if(CombGender_A(f)>n_abins2)
-      {
-      N_warn++;  warning<<N_warn<<" "<<"Combgender_A(f) cannot be greater than n_abins for fleet:_"<<f<<"; resetting"<<endl;  CombGender_A(f)=n_abins2;
-      }
-    }
-    for (b=1;b<=n_abins;b++)
-    {
-     age_bins(b) = age_bins1(b);
-
-     if(b<n_abins)
-     {age_bins_mean(b) =(age_bins1(b)+age_bins1(b+1))*0.5;}
-     else if (b>1)
-     {age_bins_mean(b) =age_bins1(b)+0.5*(age_bins1(b)-age_bins1(b-1));}
-     else
-     {age_bins_mean(b) =age_bins1(b) + 0.5;}
-
-     if(gender==2)
-      {
-        age_bins(b+n_abins)=age_bins1(b);
-        age_bins_mean(b+n_abins)=age_bins_mean(b);
-      }
-    }
-//  SS_Label_Info_2.8.2 #Read Age data
-  k=9+n_abins2;
-  ender=0;
-  z=0;
-  do {
-    dvector tempvec(1,k);
-    *(ad_comm::global_datafile) >> tempvec(1,k);
-    if(tempvec(1)==-9999.) ender=1;
-    z++;
-    if(z<=2) echoinput<<"age_obs_#:"<<z<<" # "<<tempvec(1,k)<<endl;
-    Age_Data.push_back (tempvec(1,k));
-  } while (ender==0);
-  nobsa_rd=Age_Data.size()-1;
-  echoinput<<nobsa_rd<<" N age comp observations "<<endl;
-  if(nobsa_rd>0) echoinput<<"age_obs_#:"<<nobsa_rd<<" # "<<Age_Data[nobsa_rd-1]<<endl;
-
-  data_type=5;  //  for age data
-
-  for (i=0;i<=nobsa_rd-1;i++)
-  {
-    y=Age_Data[i](1);
-    if(y>=styr)
-    {
-     f=abs(Age_Data[i](3));
-     if(Age_Data[i](9)<0) {N_warn++; cout<<" EXIT - see warning "<<endl;  warning<<N_warn<<" "<<"Error: negative sample size in age data no longer valid as indicator of skip data or superperiods "<<endl; exit(1);}
-     if(Age_Data[i](6)==0 || Age_Data[i](6)>N_ageerr) {N_warn++; cout<<" EXIT - see warning "<<endl;  warning<<N_warn<<" "<<"Error: undefined age_error type: "<<Age_Data[i](6)<<"  in obs: "<<i<<endl; exit(1);}
-     if(Age_Data[i](2)<0) N_suprper_a(f)++;     // count the number of starts and ends of super-periods if seas<0 or sampsize<0
-
-     Nobs_a(f)++;
-    }
-  }
-  for (f=1;f<=Nfleet;f++)
-  {
-    s=N_suprper_a(f)/2.;
-    if(s*2!=N_suprper_a(f))
-    {N_warn++; cout<<" EXIT - see warning "<<endl;  warning<<N_warn<<" "<<"Error: unequal number of age superperiod starts and stops "<<endl; exit(1);}
-    else
-    {N_suprper_a(f)/=2;}
-  }
-  echoinput<<endl<<"Age_Data Nobs by fleet "<<Nobs_a<<endl;
-  echoinput<<"Age_Data superperiods by fleet "<<N_suprper_a<<endl;
-  Nobs_a_tot=sum(Nobs_a);
-
-//  for (f=1;f<=Nfleet;f++)
-//      {if(Nobs_a(f)==0) Nobs_a(f)=1;}  //  why is this needed?
-  }
  END_CALCS
 
   matrix offset_a(1,Nfleet,1,Nobs_a) // Compute OFFSET for multinomial (i.e, value for the multinonial function
@@ -1883,7 +1890,7 @@
             have_data_yr(y,f)=1;  have_data_yr(y,0)=1;  //  survey or comp data exist this year
 
           if(s>nseas)
-           {N_warn++; cout<<" EXIT - see warning "<<endl;  warning<<N_warn<<" "<<" Critical error, season for age obs "<<i<<" is > nseas"<<endl; exit(1);}
+           {N_warn++; cout<<" EXIT - see warning "<<endl;  warning<<N_warn<<" Critical error, season for age obs "<<i<<" is > nseas"<<endl; exit(1);}
 
           if(Age_Data[i](6)<0.0)
             {N_warn++;  warning<<N_warn<<" "<<"negative values not allowed for age comp sample size, use -fleet to omit from -logL"<<endl;}
@@ -1906,7 +1913,7 @@
 
            if(Age_Data[i](6)>N_ageerr)
            {
-              N_warn++; cout<<" EXIT - see warning "<<endl;  warning<<N_warn<<" "<<" ageerror type must be <= "<<N_ageerr<<endl; exit(1);
+              N_warn++; cout<<" EXIT - see warning "<<endl;  warning<<N_warn<<" ageerror type must be <= "<<N_ageerr<<endl; exit(1);
            }
            ageerr_type_a(f,j)=Age_Data[i](6);
 
@@ -1919,9 +1926,9 @@
            for (b=1;b<=gender*n_abins;b++)   // get the composition vector
            {obs_a(f,j,b)=Age_Data[i](9+b);}
            if(sum(obs_a(f,j))<=0.0)
-           {N_warn++; cout<<" EXIT - see warning "<<endl;  warning<<N_warn<<" "<<" zero fish in age comp "<<header_a(f,j)<<endl;  exit(1);}
+           {N_warn++; cout<<" EXIT - see warning "<<endl;  warning<<N_warn<<" zero fish in age comp "<<header_a(f,j)<<endl;  exit(1);}
            if(nsamp_a_read(f,j)<=0.0)
-           {N_warn++; cout<<" EXIT - see warning "<<endl;  warning<<N_warn<<" "<<" Input N is <=0.0 in age comp "<<header_a_rd(f,j)<<endl;  exit(1);}
+           {N_warn++; cout<<" EXIT - see warning "<<endl;  warning<<N_warn<<" Input N is <=0.0 in age comp "<<header_a_rd(f,j)<<endl;  exit(1);}
 
            Lbin_lo(f,j)=Age_Data[i](7);
            Lbin_hi(f,j)=Age_Data[i](8);
@@ -1942,7 +1949,7 @@
                {
                  if( len_bins(k)==len_bins_dat(Lbin_lo(f,j)) ) s=k;  //  find poplen bin that matches data len bin
                }
-               if(s==0) {N_warn++; cout<<" EXIT - see warning "<<endl;  warning<<N_warn<<" "<<" L_bin_lo no match to poplenbins in age comp "<<header_a(f,j)<<endl;  exit(1);}
+               if(s==0) {N_warn++; cout<<" EXIT - see warning "<<endl;  warning<<N_warn<<" L_bin_lo no match to poplenbins in age comp "<<header_a(f,j)<<endl;  exit(1);}
                Lbin_lo(f,j)=s;
 
                s=0;
@@ -1950,7 +1957,7 @@
                {
                  if( len_bins(k)==len_bins_dat(Lbin_hi(f,j)) ) s=k;   //  find poplen bin that matches data len bin
                }
-               if(s==0) {N_warn++; cout<<" exit - see warning "<<endl;  warning<<N_warn<<" "<<" L_bin_hi no match to poplenbins in age comp "<<header_a(f,j)<<endl;  exit(1);}
+               if(s==0) {N_warn++; cout<<" exit - see warning "<<endl;  warning<<N_warn<<" L_bin_hi no match to poplenbins in age comp "<<header_a(f,j)<<endl;  exit(1);}
                Lbin_hi(f,j)=s;
                break;
              }
@@ -1979,7 +1986,7 @@
 
            //  lbin_lo and lbin_hi are now in terms of poplenbins; their original values are retained in header_a
            if(Lbin_lo(f,j)>nlength || Lbin_lo(f,j)>Lbin_hi(f,j))
-           {N_warn++; cout<<" EXIT - see warning "<<endl;  warning<<N_warn<<" "<<" L_bin_lo is too high in age comp.  Are you using lengths or bin numbers? "<<header_a(f,j)<<endl;  exit(1);}
+           {N_warn++; cout<<" EXIT - see warning "<<endl;  warning<<N_warn<<" L_bin_lo is too high in age comp.  Are you using lengths or bin numbers? "<<header_a(f,j)<<endl;  exit(1);}
            if(Lbin_lo(f,j)==1 && Lbin_hi(f,j)==nlength) {use_Lbin_filter(f,j)=0;} else {use_Lbin_filter(f,j)=1;}
 
            if(use_Lbin_filter(f,j)==1)
@@ -2148,6 +2155,8 @@
     do {
       dvector tempvec(1,k);
       *(ad_comm::global_datafile) >> tempvec(1,k);
+      if(sum(tempvec)==0.0) 
+      	{N_warn++; cout<<"exit; see warning"<<endl; warning<<N_warn<<" reading past end of file for size-at-age data; exit "<<endl;exit(1);}
       if(tempvec(1)==-9999.) ender=1;
       z++;
       if(z<=2) echoinput<<"meansize@age_obs_#:"<<z<<" # "<<tempvec(1,k)<<endl;
@@ -2248,7 +2257,7 @@
             have_data(ALK_time,f,data_type,p)=j;  //  store data index for the p'th observation in this subseas
 
           if(s>nseas)
-           {N_warn++; cout<<" EXIT - see warning "<<endl;  warning<<N_warn<<" "<<" Critical error, season for size-age obs "<<i<<" is > nseas"<<endl; exit(1);}
+           {N_warn++; cout<<" EXIT - see warning "<<endl;  warning<<N_warn<<" Critical error, season for size-age obs "<<i<<" is > nseas"<<endl; exit(1);}
 
           header_ms(f,j)(1,7)=sizeAge_Data[i](1,7);
           header_ms_rd(f,j)(2,3)=sizeAge_Data[i](2,3);
@@ -2264,7 +2273,7 @@
            if(abs(sizeAge_Data[i](6))>N_ageerr)
            {
               N_warn++;cout<<" EXIT - see warning "<<endl;
-               warning<<N_warn<<" "<<" in meansize-at-age, ageerror type must be <= "<<N_ageerr<<endl; exit(1);
+               warning<<N_warn<<" in meansize-at-age, ageerror type must be <= "<<N_ageerr<<endl; exit(1);
            }
            ageerr_type_ms(f,j)=sizeAge_Data[i](6);
 
@@ -2293,9 +2302,9 @@
          }
        }
      }
+     echoinput<<"Successful read of size-at-age data; N kept = "<<Nobs_ms<<endl;
    }
 
-   echoinput<<"Successful read of size-at-age data; N kept = "<<Nobs_ms<<endl;
  END_CALCS
 
 
@@ -2307,14 +2316,14 @@
 
   ender=0;
   N_envdata=0;
-//  j=endyr;  //  use to store maxyear with env data
   if(N_envvar>0)
   {
     do {
       dvector tempvec(1,3);
       *(ad_comm::global_datafile) >> tempvec(1,3);
       if(tempvec(1)==-9999.) ender=1;
-//      if(tempvec(1)>j) j=tempvec(1);
+      if(sum(tempvec)==0.0) 
+      	{N_warn++; cout<<"exit; see warning"<<endl; warning<<N_warn<<" reading past end of file for env data; exit "<<endl;exit(1);}
       env_temp.push_back (tempvec(1,3));
     } while (ender==0);
     N_envdata=env_temp.size()-1;
@@ -2361,7 +2370,7 @@
       if(SzFreq_units(k)==1 && SzFreq_scale(k)>2)
       {
         N_warn++; cout<<" EXIT - see warning "<<endl;
-         warning<<N_warn<<" "<<" error:  cannot accumulate biomass into length-based szfreq scale for method: "<<k<<endl;
+         warning<<N_warn<<" error:  cannot accumulate biomass into length-based szfreq scale for method: "<<k<<endl;
         exit(1);
       }
       SzFreq_Nbins3(k)=gender*SzFreq_Nbins(k);
@@ -2507,9 +2516,9 @@
         }
         if(gender==1) SzFreq_obs_hdr(iobs,4)=1;  // just in case
         if(sum(SzFreq_obs(iobs))<=0.0)
-        {N_warn++; cout<<" EXIT - see warning "<<endl;  warning<<N_warn<<" "<<" zero fish in size comp "<<SzFreq_obs_hdr(iobs)<<endl;  exit(1);}
+        {N_warn++; cout<<" EXIT - see warning "<<endl;  warning<<N_warn<<" zero fish in size comp "<<SzFreq_obs_hdr(iobs)<<endl;  exit(1);}
         if(SzFreq_sampleN(iobs)<=0.0)
-        {N_warn++; cout<<" EXIT - see warning "<<endl;  warning<<N_warn<<" "<<" Input N is <=0.0 in size comp "<<SzFreq_obs_hdr(iobs)<<endl;  exit(1);}
+        {N_warn++; cout<<" EXIT - see warning "<<endl;  warning<<N_warn<<" Input N is <=0.0 in size comp "<<SzFreq_obs_hdr(iobs)<<endl;  exit(1);}
 
         f=abs(SzFreq_obs_hdr(iobs,3));
         SzFreq_obs(iobs)/=sum(SzFreq_obs(iobs));
@@ -2533,7 +2542,7 @@
         if(z<=1) {SzFreq_obs_hdr(iobs,8)=SzFreq_Nbins(k);} else {SzFreq_obs_hdr(iobs,8)=2*SzFreq_Nbins(k);}
   //      SzFreq_obs_hdr(iobs,5);  // partition
         SzFreq_obs_hdr(iobs,6)=k;
-        if(k!=SzFreq_obs1(iobs,1)) {N_warn++;  warning<<N_warn<<" "<<" sizefreq ID # doesn't match "<<endl; } // save method code for later use
+        if(k!=SzFreq_obs1(iobs,1)) {N_warn++;  warning<<N_warn<<" sizefreq ID # doesn't match "<<endl; } // save method code for later use
         if(y>=styr)
         {
           ALK_time=timing_i_result(5);
@@ -2717,7 +2726,7 @@
      if(t>TG_maxperiods) t=TG_maxperiods;
      if(t<0)
      {
-       N_warn++; cout<<" EXIT - see warning "<<endl;  warning<<N_warn<<" "<<" recapture is before tag release for recap: "<<j<<endl;  exit(1);
+       N_warn++; cout<<" EXIT - see warning "<<endl;  warning<<N_warn<<" recapture is before tag release for recap: "<<j<<endl;  exit(1);
      }
      TG_recap_obs(TG,t,TG_recap_data(j,4))+=TG_recap_data(j,5);  //   save N recaptures by TG, fleet of recapture, elapsed time
    }
@@ -3021,8 +3030,8 @@
   *(ad_comm::global_datafile) >> H4010_scale_rd;
     H4010_scale=H4010_scale_rd;
   echoinput<<H4010_scale<<"   # echoed harvest policy scalar "<<endl;
-  if(H4010_top<=H4010_bot) {N_warn++; cout<<" EXIT - see warning "<<endl;  warning<<N_warn<<" "<<" control rule inflection: "<<H4010_top<<" must be > control rule bottom "<<H4010_bot<<endl; exit(1);}
-  if(H4010_scale>1.0) {N_warn++;  warning<<N_warn<<" "<<" Sure you want control rule scalar > 1.0? "<<H4010_scale<<endl;}
+  if(H4010_top<=H4010_bot) {N_warn++; cout<<" EXIT - see warning "<<endl;  warning<<N_warn<<" control rule inflection: "<<H4010_top<<" must be > control rule bottom "<<H4010_bot<<endl; exit(1);}
+  if(H4010_scale>1.0) {N_warn++;  warning<<N_warn<<" Sure you want control rule scalar > 1.0? "<<H4010_scale<<endl;}
 
   if(H4010_scale<0.0)
   {
@@ -3393,27 +3402,27 @@
     }
   echoinput<<"H4010_scale: "<<H4010_scale_vec<<endl;
 
-  if(Do_Rebuilder>0 && Do_Forecast_rd<=0) {N_warn++; cout<<" EXIT - see warning "<<endl;  warning<<N_warn<<" "<<" error: Rebuilder output selected without requesting forecast"<<endl; exit(1);}
+  if(Do_Rebuilder>0 && Do_Forecast_rd<=0) {N_warn++; cout<<" EXIT - see warning "<<endl;  warning<<N_warn<<" error: Rebuilder output selected without requesting forecast"<<endl; exit(1);}
   if(Do_Benchmark==0)
   {
-    if(Do_Forecast_rd>=1 && Do_Forecast_rd<=3) {Do_Benchmark=1; N_warn++;  warning<<N_warn<<" "<<" Turn Benchmark on because Forecast needs it"<<endl;}
-    if(Do_Forecast==0 && F_std_basis>0) {F_std_basis=0; N_warn++;  warning<<N_warn<<" "<<" Set F_std_basis=0 because no benchmark or forecast"<<endl;}
-    if(depletion_basis==2) {depletion_basis=1; N_warn++;  warning<<N_warn<<" "<<" Change depletion basis to 1 because benchmarks are off"<<endl;}
-    if(SPR_reporting>=1 && SPR_reporting<=3) {SPR_reporting=4; N_warn++;  warning<<N_warn<<" "<<" Change SPR_reporting to 4 because benchmarks are off"<<endl;}
+    if(Do_Forecast_rd>=1 && Do_Forecast_rd<=3) {Do_Benchmark=1; N_warn++;  warning<<N_warn<<" Turn Benchmark on because Forecast needs it"<<endl;}
+    if(Do_Forecast==0 && F_std_basis>0) {F_std_basis=0; N_warn++;  warning<<N_warn<<" Set F_std_basis=0 because no benchmark or forecast"<<endl;}
+    if(depletion_basis==2) {depletion_basis=1; N_warn++;  warning<<N_warn<<" Change depletion basis to 1 because benchmarks are off"<<endl;}
+    if(SPR_reporting>=1 && SPR_reporting<=3) {SPR_reporting=4; N_warn++;  warning<<N_warn<<" Change SPR_reporting to 4 because benchmarks are off"<<endl;}
   }
   else
   {
-     if(Do_MSY==0)  {Do_MSY=1; N_warn++;  warning<<N_warn<<" "<<" Setting Do_MSY=1 because benchmarks are on"<<endl;}
+     if(Do_MSY==0)  {Do_MSY=1; N_warn++;  warning<<N_warn<<" Setting Do_MSY=1 because benchmarks are on"<<endl;}
   }
-//  if(Do_Forecast==2 && Do_MSY!=2) {Do_MSY=2; N_warn++;  warning<<N_warn<<" "<<" Set MSY option =2 because Forecast option =2"<<endl;}
-//  if(depletion_basis==2 && Do_MSY!=2) {Do_MSY=2; N_warn++;  warning<<N_warn<<" "<<" Set MSY option =2 because depletion basis is B_MSY"<<endl;}
-//  if(SPR_reporting==2 && Do_MSY!=2) {Do_MSY=2; N_warn++;  warning<<N_warn<<" "<<" Set MSY option =2 because SPR basis is SPR_MSY"<<endl;}
-  if(Fcast_Sel_yr1>Fcast_Sel_yr2) {N_warn++; cout<<" EXIT - see warning "<<endl;  warning<<N_warn<<" "<<" Error, Fcast_Sel_Yr1 must be at or before Fcast_Sel_Yr2"<<endl;  exit(1);}
-  if(Fcast_Sel_yr1>endyr || Fcast_Sel_yr1<styr) {N_warn++; cout<<" EXIT - see warning "<<endl;  warning<<N_warn<<" "<<" Error, Fcast_Sel_Yr1 must be between styr and endyr"<<endl;  exit(1);}
-  if(Fcast_Sel_yr2>endyr || Fcast_Sel_yr2<styr) {N_warn++; cout<<" EXIT - see warning "<<endl;  warning<<N_warn<<" "<<" Error, Fcast_Sel_Yr2 must be between styr and endyr"<<endl;  exit(1);}
-  if(Fcast_Rec_yr1>Fcast_Rec_yr2) {N_warn++; cout<<" EXIT - see warning "<<endl;  warning<<N_warn<<" "<<" Error, Fcast_Rec_Yr1 must be at or before Fcast_Rec_Yr2"<<endl;  exit(1);}
-  if(Fcast_Rec_yr1>endyr || Fcast_Rec_yr1<styr) {N_warn++; cout<<" EXIT - see warning "<<endl;  warning<<N_warn<<" "<<" Error, Fcast_Rec_Yr1 must be between styr and endyr"<<endl;  exit(1);}
-  if(Fcast_Rec_yr2>endyr || Fcast_Rec_yr2<styr) {N_warn++; cout<<" EXIT - see warning "<<endl;  warning<<N_warn<<" "<<" Error, Fcast_Rec_Yr2 must be between styr and endyr"<<endl;  exit(1);}
+//  if(Do_Forecast==2 && Do_MSY!=2) {Do_MSY=2; N_warn++;  warning<<N_warn<<" Set MSY option =2 because Forecast option =2"<<endl;}
+//  if(depletion_basis==2 && Do_MSY!=2) {Do_MSY=2; N_warn++;  warning<<N_warn<<" Set MSY option =2 because depletion basis is B_MSY"<<endl;}
+//  if(SPR_reporting==2 && Do_MSY!=2) {Do_MSY=2; N_warn++;  warning<<N_warn<<" Set MSY option =2 because SPR basis is SPR_MSY"<<endl;}
+  if(Fcast_Sel_yr1>Fcast_Sel_yr2) {N_warn++; cout<<" EXIT - see warning "<<endl;  warning<<N_warn<<" Error, Fcast_Sel_Yr1 must be at or before Fcast_Sel_Yr2"<<endl;  exit(1);}
+  if(Fcast_Sel_yr1>endyr || Fcast_Sel_yr1<styr) {N_warn++; cout<<" EXIT - see warning "<<endl;  warning<<N_warn<<" Error, Fcast_Sel_Yr1 must be between styr and endyr"<<endl;  exit(1);}
+  if(Fcast_Sel_yr2>endyr || Fcast_Sel_yr2<styr) {N_warn++; cout<<" EXIT - see warning "<<endl;  warning<<N_warn<<" Error, Fcast_Sel_Yr2 must be between styr and endyr"<<endl;  exit(1);}
+  if(Fcast_Rec_yr1>Fcast_Rec_yr2) {N_warn++; cout<<" EXIT - see warning "<<endl;  warning<<N_warn<<" Error, Fcast_Rec_Yr1 must be at or before Fcast_Rec_Yr2"<<endl;  exit(1);}
+  if(Fcast_Rec_yr1>endyr || Fcast_Rec_yr1<styr) {N_warn++; cout<<" EXIT - see warning "<<endl;  warning<<N_warn<<" Error, Fcast_Rec_Yr1 must be between styr and endyr"<<endl;  exit(1);}
+  if(Fcast_Rec_yr2>endyr || Fcast_Rec_yr2<styr) {N_warn++; cout<<" EXIT - see warning "<<endl;  warning<<N_warn<<" Error, Fcast_Rec_Yr2 must be between styr and endyr"<<endl;  exit(1);}
 
   did_MSY=0;
   if(Do_Forecast>0) *(ad_comm::global_datafile) >> fif;
