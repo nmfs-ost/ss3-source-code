@@ -889,12 +889,23 @@ PRELIMINARY_CALCS_SECTION
 
 //  SS_Label_Info_6.8.3 #Call fxn get_growth2() to calculate size-at-age
     get_growth2(styr); //   in preliminary calcs
-    echoinput<<" did growth2 in prelim calcs"<<endl<<Ave_Size(styr,1,1)<<endl;
-    if(len_bins(1)>0.75*Ave_Size(styr,1,1,0)) {N_warn++;  warning<<N_warn<<" Minimum pop size bin is:_"<<len_bins(1)<<"; which is >75% of age 0 size: "<<Ave_Size(styr,1,1,0)<<endl;}
-    temp=Ave_Size(styr,1,1,nages);
-    if(temp>0.95*len_bins(nlength)) {N_warn++;  warning<<N_warn<<" "<<" Maximum size at age: "<<temp
-    <<"; is within 5% of the largest size bin: "<<len_bins(nlength)<<"; Add more bins"<<endl;}
-
+    gp=0;
+    for(gg=1;gg<=gender;gg++)
+    for (int GPat=1;GPat<=N_GP;GPat++)
+    {
+      gp++;
+      g=g_Start(gp);  //  base platoon
+      for (settle=1;settle<=N_settle_timings;settle++)
+      {
+        g+=N_platoon;
+      echoinput<<"sex: "<<gg<<"; Gpat: "<<GPat<<" settle: "<<settle<<"; L-at-Amin: "<<Lmin(gp)<<"; L at max age: "<<Ave_Size(styr,1,g,nages)<<endl;
+      if(len_bins(1)>Lmin(gp)) {N_warn++;  warning<<N_warn<<" Minimum pop size bin:_"<<len_bins(1)<<"; is > L at Amin for sex: "<<gg
+      	<<"; Gpat: "<<GPat<<"; L= "<<Lmin(gp)<<endl;}
+        if(Ave_Size(styr,1,g,nages)>0.95*len_bins(nlength)) {N_warn++; warning<<N_warn<<" Maximum pop size bin:_"<<len_bins(nlength)<<"; is within 5% of L at maxage for sex: "<<gg
+       	<<"; Gpat: "<<GPat<<" settle: "<<settle<<"; L= "<<Ave_Size(styr,1,g,nages)<<endl;}
+      }
+    }
+    
 //  SS_Label_Info_6.8.4 #Call fxn get_natmort()
     for (s=1;s<=nseas;s++)  //  get growth here in case needed for Lorenzen
     {
