@@ -3250,7 +3250,7 @@
         if(fleet_type(f)==1)
         {Allocation_Fleet_Assignments(f)=tempvec(2);}
         else
-        {cout<<" EXIT - see warning "<<endl; echoinput<<"exit for fleet "<<f<<"  ;  cannot only put retained catch fleets in allocation groups"<<endl; exit(1);}
+        {cout<<" EXIT - see warning "<<endl; N_warn++; warning<<N_warn<<" exit for fleet "<<f<<"  ;  can only put retained catch fleets in allocation groups"<<endl; exit(1);}
       }
     } while (ender==0);
 
@@ -3284,7 +3284,7 @@
 
         for(k=0;k<=j-1;k++)
         {
-          for(y=Fcast_Catch_Allocation_list[k](1)-endyr;y<=N_Fcast_Yrs;y++)
+          for(y=Fcast_Catch_Allocation_list[k](1)-endyr;y<=N_Fcast_Yrs;y++)  //  assign input from the input year through last forecast year
           {
             for(a=1;a<=Fcast_Catch_Allocation_Groups;a++)
             {
@@ -3295,8 +3295,12 @@
         echoinput<<"processed allocation groups by year"<<endl;
         for(y=1;y<=N_Fcast_Yrs;y++)
         {
-        	Fcast_Catch_Allocation(y)/=sum(Fcast_Catch_Allocation(y));
-        echoinput<<y+endyr<<" "<<Fcast_Catch_Allocation(y)<<endl;
+        	if(sum(Fcast_Catch_Allocation(y))==0.0)
+        		{N_warn++; warning<<N_warn<<" Fcast_Catch_allocation is blank for year: "<<y+endyr<<"; SS assigning uniform; can override with input catches"<<endl;
+        	Fcast_Catch_Allocation(y)(1,Fcast_Catch_Allocation_Groups)=1.0;}
+        	else
+        	{Fcast_Catch_Allocation(y)/=sum(Fcast_Catch_Allocation(y)(1,Fcast_Catch_Allocation_Groups));}
+        echoinput<<y+endyr<<" "<<Fcast_Catch_Allocation(y)(1,Fcast_Catch_Allocation_Groups)<<endl;
         }
     }
 
