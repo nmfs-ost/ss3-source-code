@@ -1715,7 +1715,8 @@ FUNCTION void write_nucontrol()
   {report4<<F_Tune<<"  # N iterations for tuning F in hybrid method (recommend 3 to 7)"<<endl;}
 
    report4<<"#"<<endl;
-   report4<<"#_initial_F_parms; count = "<<N_init_F2<<endl;
+   report4<<"#_initial_F_parms; for each fleet x season that has init_catch; nest season in fleet; count = "<<N_init_F2<<endl;
+   report4<<"#_for unconstrained init_F, use an arbitrary initial catch and set lambda=0 for its logL"<<endl;
    report4<<"#_ LO HI INIT PRIOR PR_SD  PR_type  PHASE"<<endl;
    if(finish_starter==999)
    {
@@ -1736,7 +1737,7 @@ FUNCTION void write_nucontrol()
      }
    }
 
-    report4<<"#"<<YrMax<<" "<<TimeMax+nseas<<endl<<"# F rates by fleet"<<endl;
+    report4<<"#"<<endl<<"# F rates by fleet x season"<<endl;
     report4<<"# Yr: ";
     for(y=styr;y<=YrMax;y++)
     for(s=1;s<=nseas;s++)
