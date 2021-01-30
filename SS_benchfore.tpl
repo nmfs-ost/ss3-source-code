@@ -51,6 +51,20 @@ FUNCTION void setup_Benchmark()
           fec(g)=save_sel_fec(t,g,0);
        }
 
+     if (Fcast_Loop_Control(3)==3)  //  using mean recruitment from range of years
+     	{
+     		//get average and store in each fcast years
+     		recr_dist_endyr.initialize();
+     		for(y=Fcast_Rec_yr1;y<=Fcast_Rec_yr2;y++)
+     		for(gp=1;gp<=N_GP*gender;gp++)
+     		{
+     			recr_dist_endyr(gp)+=recr_dist(y,gp);
+     		}
+     		recr_dist_endyr/=float(Fcast_Rec_yr2-Fcast_Rec_yr1+1);
+     		for(y=endyr+1;y<=YrMax;y++)
+     		recr_dist(y)=recr_dist_endyr;
+     	}
+
 //  SS_Label_Info_7.5.2 #Set-up relative F among fleets and seasons for forecast
       if(Fcast_RelF_Basis==1)  // set allocation according to range of years
       {
@@ -363,7 +377,7 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
 //  the spawner-recruitment function has Bzero based on virgin biology, not benchmark biology
 //  need to deal with possibility that with time-varying biology, the SSB_virgin calculated from virgin conditions will differ from the SSB_virgin used for benchmark conditions
 
-    recr_dist=recr_dist_unf/(Bmark_Yr(8)-Bmark_Yr(7)+1);
+    recr_dist(styr-3)=recr_dist_unf/(Bmark_Yr(8)-Bmark_Yr(7)+1);
 
     natM=natM_unf/(Bmark_Yr(2)-Bmark_Yr(1)+1);
     surv1=surv1_unf/(Bmark_Yr(2)-Bmark_Yr(1)+1);
@@ -1151,7 +1165,10 @@ FUNCTION void Get_Forecast()
     report5<<"Annual_Forecast_Fmult: "<<Fcast_Fmult<<endl;
     report5<<"Fmultiplier_during_selected_relF_years_was: "<<Fcurr_Fmult<<endl;
     report5<<"Selectivity_averaged_over_yrs:_"<<Fcast_Sel_yr1<<"_to_"<<Fcast_Sel_yr2<<endl;
-    report5<<"Recruitment_averaged_over_yrs:_"<<Fcast_Rec_yr1<<"_to_"<<Fcast_Rec_yr2<<endl;
+    if(Fcast_Loop_Control(3)==3) 
+    {report5<<"Recruitment_and_recrdist_averaged_over_yrs:_"<<Fcast_Rec_yr1<<"_to_"<<Fcast_Rec_yr2<<endl;}
+    else
+    {report5<<"Recruitment_from_spawn_recr_with_multiplier: "<<Fcast_Loop_Control(4)<<endl;}
     report5<<"Cap_totalcatch_by_fleet "<<endl<<Fcast_MaxFleetCatch<<endl;
     report5<<"Cap_totalcatch_by_area "<<endl<<Fcast_MaxAreaCatch<<endl;
     report5<<"Assign_fleets_to_allocation_groups_(0_means_not_in_a_group) "<<endl<<Allocation_Fleet_Assignments<<endl;
@@ -1313,7 +1330,7 @@ FUNCTION void Get_Forecast()
 
 //  refresh quantities that might have changed in benchmark.
 //  some of these might be change within forecast also
-    recr_dist=recr_dist_endyr;
+//    recr_dist(endyr)=recr_dist_endyr;
     natM=natM_endyr;
     surv1=surv1_endyr;
     surv2=surv2_endyr;
@@ -1412,7 +1429,8 @@ FUNCTION void Get_Forecast()
         }
       if(timevary_MG(y,1)>0) get_natmort();
       if(timevary_MG(y,3)>0) get_wtlen();
-      if(timevary_MG(y,4)>0) get_recr_distribution();
+      if(timevary_MG(y,4)>0 && Fcast_Loop_Control(3)!=3) 
+      	{get_recr_distribution();}
       if(timevary_MG(y,5)>0) get_migration();
       if(timevary_MG(y,7)>0)  get_catch_mult(y, catch_mult_pointer);
 
@@ -1567,9 +1585,9 @@ FUNCTION void Get_Forecast()
                 for (p=1;p<=pop;p++)
                 {
 //                  if(y==endyr+1) natage(t+Settle_seas_offset(settle),p,g,Settle_age(settle))=0.0;  //  to negate the additive code
-                  natage(t+Settle_seas_offset(settle),p,g,Settle_age(settle)) = Recruits*recr_dist(GP(g),settle,p)*platoon_distr(GP2(g))*
+                  natage(t+Settle_seas_offset(settle),p,g,Settle_age(settle)) = Recruits*recr_dist(y,GP(g),settle,p)*platoon_distr(GP2(g))*
                    mfexp(natM(s,GP3(g),Settle_age(settle))*Settle_timing_seas(settle));
-                  if(Fcast_Loop1==jloop && ABC_Loop==ABC_Loop_end) Recr(p,t+Settle_seas_offset(settle))+=Recruits*recr_dist(GP(g),settle,p)*platoon_distr(GP2(g));
+                  if(Fcast_Loop1==jloop && ABC_Loop==ABC_Loop_end) Recr(p,t+Settle_seas_offset(settle))+=Recruits*recr_dist(y,GP(g),settle,p)*platoon_distr(GP2(g));
                    //  the adjustment for mortality increases recruit value for elapsed time since begin of season because M will then be applied from beginning of season
                 }
               }
@@ -2103,10 +2121,10 @@ FUNCTION void Get_Forecast()
                 for (p=1;p<=pop;p++)
                 {
 //                  if(y==endyr+1) natage(t+Settle_seas_offset(settle),p,g,Settle_age(settle))=0.0;  //  to negate the additive code
-//                  natage(t+Settle_seas_offset(settle),p,g,Settle_age(settle)) += Recruits*recr_dist(GP(g),settle,p)*platoon_distr(GP2(g))*
-                  natage(t+Settle_seas_offset(settle),p,g,Settle_age(settle)) = Recruits*recr_dist(GP(g),settle,p)*platoon_distr(GP2(g))*
+//                  natage(t+Settle_seas_offset(settle),p,g,Settle_age(settle)) += Recruits*recr_dist(y,GP(g),settle,p)*platoon_distr(GP2(g))*
+                  natage(t+Settle_seas_offset(settle),p,g,Settle_age(settle)) = Recruits*recr_dist(y,GP(g),settle,p)*platoon_distr(GP2(g))*
                    mfexp(natM(s,GP3(g),Settle_age(settle))*Settle_timing_seas(settle));
-                  if(Fcast_Loop1==jloop && ABC_Loop==ABC_Loop_end) Recr(p,t+Settle_seas_offset(settle))+=Recruits*recr_dist(GP(g),settle,p)*platoon_distr(GP2(g));
+                  if(Fcast_Loop1==jloop && ABC_Loop==ABC_Loop_end) Recr(p,t+Settle_seas_offset(settle))+=Recruits*recr_dist(y,GP(g),settle,p)*platoon_distr(GP2(g));
                 }
               }
           }

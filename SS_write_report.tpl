@@ -728,7 +728,7 @@ FUNCTION void write_bigoutput()
       p=settlement_pattern_rd(settle,3);  //  settlement area
       settle_time=settle_assignments_timing(settle);
       SS2out<<settle<<" "<<settle_time<<" "<<gp<<" "<<p<<" "<<Settle_month(settle_time)<<" "<<Settle_seas(settle_time)<<" "<<
-      Settle_age(settle_time)<<" "<<Settle_timing_seas(settle_time)<<" "<<recr_dist(gp,settle_time,p)<<endl;
+      Settle_age(settle_time)<<" "<<Settle_timing_seas(settle_time)<<" "<<recr_dist(styr,gp,settle_time,p)<<endl;
    }
    SS2out<<"#"<<endl<<"RECRUITMENT_DIST_Bmark"<<endl<<"Settle# settle_timing# G_pattern Area Settle_Month Seas Age Time_w/in_seas Frac/sex"<<endl;
    for (settle=1;settle<=N_settle_assignments;settle++)
@@ -747,6 +747,21 @@ FUNCTION void write_bigoutput()
       settle_time=settle_assignments_timing(settle);
       SS2out<<settle<<" "<<settle_time<<" "<<gp<<" "<<p<<" "<<Settle_month(settle_time)<<" "<<Settle_seas(settle_time)<<" "<<
       Settle_age(settle_time)<<" "<<Settle_timing_seas(settle_time)<<" "<<recr_dist_endyr(gp,settle_time,p)<<endl;
+   }
+   
+   SS2out<<"RECRUITMENT_DIST_TIMESERIES"<<endl<<"Year settle_assignment"<<endl;
+   SS2out<<y<<" ";
+   for (settle=1;settle<=N_settle_assignments;settle++) SS2out<<settle<<" ";
+   SS2out<<endl;
+
+   for(y=styr;y<=YrMax;y++)
+   {
+   	SS2out<<y<<" ";
+   	   for(gp=1;gp<=N_GP;gp++)
+   	   for(settle=1;settle<=N_settle_timings;settle++)
+   	   for(p=1;p<=pop;p++)
+   	   if(recr_dist_pattern(gp,settle,p)==1) SS2out<<" "<<recr_dist(y,gp,settle,p);
+   	SS2out<<endl;
    }
   }
 

@@ -3018,7 +3018,7 @@
   *(ad_comm::global_datafile) >> Fcast_Specify_Selex;
   echoinput<<Fcast_Specify_Selex<<" # echoed Fcast_Specify_Selex value"<<endl;
 
-  echoinput<<endl<<"next read 4 values for:  control rule shape(1, 2, 3 or 4), inflection (like 0.40), cutoff(like 0.10), scale(like 0.75)"<<endl;
+  echoinput<<endl<<"next read 4 values for:  control rule shape(0, 1, 2, 3 or 4), inflection (like 0.40), cutoff(like 0.10), scale(like 0.75)"<<endl;
   *(ad_comm::global_datafile) >> HarvestPolicy;
   if(HarvestPolicy==0) echoinput<<"HarvestPolicy=0, so values for top, bottom, buffer will be ignored"<<endl;
   	
@@ -3059,7 +3059,7 @@
   else if(Fcast_Loop_Control(3)==2)
     {echoinput<<Fcast_Loop_Control(4)<<" #echoed Forecast loop control #4:  multiplier on virgin recr"<<endl;}
   else if(Fcast_Loop_Control(3)==3)
-    {echoinput<<" #mean recruitment from years: "<<Fcast_Rec_yr1<<" to "<<Fcast_Rec_yr2<<endl;}
+    {echoinput<<" #mean recruitment and recrdist from years: "<<Fcast_Rec_yr1<<" to "<<Fcast_Rec_yr2<<endl;}
   else //  input probably was a -1 from pre 3.30.15, so convert to 0
     {  Fcast_Loop_Control(3)=0; Fcast_Loop_Control(4)=1.0;
     	echoinput<<Fcast_Loop_Control(4)<<" #echoed Forecast loop control #4:  multiplier on spawn_recr"<<endl;}

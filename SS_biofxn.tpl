@@ -1059,7 +1059,7 @@ FUNCTION void get_recr_distribution()
   {k=MGP_CGD-recr_dist_parms;}
   dvar_vector recr_dist_parm(1,k);
 
-  recr_dist.initialize();
+//  recr_dist.initialize();
 //  SS_Label_Info_18.1  #set rec_dist_parms = exp(mgp_adj) for this year
   Ip=recr_dist_parms-1;
   for (f=1;f<=MGP_CGD-recr_dist_parms;f++)
@@ -1073,26 +1073,26 @@ FUNCTION void get_recr_distribution()
   case 2:
   {
     for (gp=1;gp<=N_GP;gp++)
-    for (p=1;p<=pop;p++)
     for (settle=1;settle<=N_settle_timings;settle++)
+    for (p=1;p<=pop;p++)
     if(recr_dist_pattern(gp,settle,p)>0)
     {
-      recr_dist(gp,settle,p)=femfrac(gp)*recr_dist_parm(gp)*recr_dist_parm(N_GP+p)*recr_dist_parm(N_GP+pop+settle);
-      if(gender==2) recr_dist(gp+N_GP,settle,p)=femfrac(gp+N_GP)*recr_dist_parm(gp)*recr_dist_parm(N_GP+p)*recr_dist_parm(N_GP+pop+settle);  //males
+      recr_dist(y,gp,settle,p)=femfrac(gp)*recr_dist_parm(gp)*recr_dist_parm(N_GP+p)*recr_dist_parm(N_GP+pop+settle);
+      if(gender==2) recr_dist(y,gp+N_GP,settle,p)=femfrac(gp+N_GP)*recr_dist_parm(gp)*recr_dist_parm(N_GP+p)*recr_dist_parm(N_GP+pop+settle);  //males
     }
   //  SS_Label_Info_18.3  #if recr_dist_interaction is chosen, then multiply these in also
     if(recr_dist_inx==1)
     {
       f=N_GP+pop+N_settle_timings;
       for (gp=1;gp<=N_GP;gp++)
-      for (p=1;p<=pop;p++)
       for (settle=1;settle<=N_settle_timings;settle++)
+      for (p=1;p<=pop;p++)
       {
         f++;
         if(recr_dist_pattern(gp,settle,p)>0)
         {
-          recr_dist(gp,settle,p)*=recr_dist_parm(f);
-          if(gender==2) recr_dist(gp+N_GP,settle,p)*=recr_dist_parm(f);
+          recr_dist(y,gp,settle,p)*=recr_dist_parm(f);
+          if(gender==2) recr_dist(y,gp+N_GP,settle,p)*=recr_dist_parm(f);
         }
       }
     }
@@ -1105,15 +1105,15 @@ FUNCTION void get_recr_distribution()
       gp=settlement_pattern_rd(settle,1);
       settle_time=settle_assignments_timing(settle);
       p=settlement_pattern_rd(settle,3);
-      recr_dist(gp,settle_time,p)=femfrac(gp)*recr_dist_parm(settle);
-      if(gender==2) recr_dist(gp+N_GP,settle_time,p)=femfrac(gp+N_GP)*recr_dist_parm(settle);  //males
+      recr_dist(y,gp,settle_time,p)=femfrac(gp)*recr_dist_parm(settle);
+      if(gender==2) recr_dist(y,gp+N_GP,settle_time,p)=femfrac(gp+N_GP)*recr_dist_parm(settle);  //males
     }
     break;
   }
   case 4:
   {
-    recr_dist(1,1,1)=femfrac(1);
-    if(gender==2) recr_dist(2,1,1)=femfrac(2);
+    recr_dist(y,1,1,1)=femfrac(1);
+    if(gender==2) recr_dist(y,2,1,1)=femfrac(2);
     break;
   }
   case 1:  //  only used for sstrans
@@ -1124,8 +1124,8 @@ FUNCTION void get_recr_distribution()
     {
     if(recr_dist_pattern(gp,s,p)>0)
     {
-      recr_dist(gp,s,p)=femfrac(gp)*recr_dist_parm(gp)*recr_dist_parm(N_GP+p)*recr_dist_parm(N_GP+pop+s);
-      if(gender==2) recr_dist(gp+N_GP,s,p)=femfrac(gp+N_GP)*recr_dist_parm(gp)*recr_dist_parm(N_GP+p)*recr_dist_parm(N_GP+pop+s);  //males
+      recr_dist(y,gp,s,p)=femfrac(gp)*recr_dist_parm(gp)*recr_dist_parm(N_GP+p)*recr_dist_parm(N_GP+pop+s);
+      if(gender==2) recr_dist(y,gp+N_GP,s,p)=femfrac(gp+N_GP)*recr_dist_parm(gp)*recr_dist_parm(N_GP+p)*recr_dist_parm(N_GP+pop+s);  //males
     }
     }
   //  SS_Label_Info_18.3  #if recr_dist_interaction is chosen, then multiply these in also
@@ -1139,8 +1139,8 @@ FUNCTION void get_recr_distribution()
         f++;
         if(recr_dist_pattern(gp,s,p)>0)
         {
-          recr_dist(gp,s,p)*=recr_dist_parm(f);
-          if(gender==2) recr_dist(gp+N_GP,s,p)*=recr_dist_parm(f);
+          recr_dist(y,gp,s,p)*=recr_dist_parm(f);
+          if(gender==2) recr_dist(y,gp+N_GP,s,p)*=recr_dist_parm(f);
         }
       }
     }
@@ -1148,16 +1148,19 @@ FUNCTION void get_recr_distribution()
   }
   }
 //  SS_Label_Info_18.4  #scale the recr_dist matrix to sum to 1.0
-  recr_dist/=sum(recr_dist);
+  recr_dist(y)/=sum(recr_dist(y));
+
+  if(y==styr)
+ 	{for(int yz=styr+1; yz<=YrMax;yz++) recr_dist(yz)=recr_dist(styr);}
+  
  #ifdef DO_ONCE
     if(do_once==1) 
       {
-        echoinput<<"recruitment distribution in year: "<<y<<endl<<"GP Seas Area Use? female_recr_dist male"<<endl;
+        echoinput<<"recruitment distribution in year: "<<y<<endl<<"GP Seas Area Use? female_recr_dist"<<endl;
       for (gp=1;gp<=N_GP;gp++)
       for (s=1;s<=N_settle_timings;s++)
       for (p=1;p<=pop;p++)
-      {echoinput<<gp<<" "<<s<<" "<<p<<" "<<recr_dist_pattern(gp,s,p)<<" "<<recr_dist(gp,s,p);
-        if(gender==2) echoinput<<" "<<recr_dist(gp+N_GP,s,p);
+      {echoinput<<gp<<" "<<s<<" "<<p<<" "<<recr_dist_pattern(gp,s,p)<<" "<<recr_dist(y,gp,s,p);
         echoinput<<endl;
         }
      }

@@ -223,7 +223,8 @@
   vector  Settle_timing_seas(1,N_settle_timings)  //  calculated elapsed time (frac of year) between settlement and the begin of season in which it occurs
   vector  Settle_month(1,N_settle_timings)  //  month (real)in which settlement occurs
   ivector Settle_age(1,N_settle_timings)  //  calculated age at which settlement occurs, with age 0 being the year in which spawning occurs
-  3darray recr_dist_pattern(1,N_GP,1,N_settle_timings,0,pop);  //  has flag to indicate each settlement events
+  3iarray recr_dist_pattern(1,N_GP,1,N_settle_timings,0,pop);  //  has flag to indicate each settlement events
+  4iarray recr_dist2(styr-3,YrMax,1,N_GP,1,N_settle_timings,1,pop);
 
  LOCAL_CALCS
   Settle_seas_offset.initialize();
@@ -350,7 +351,7 @@
        for (gp2=1;gp2<=N_platoon;gp2++)
        {
          g++;
-         GP3(g)=g3i;  // track counter for main morphs (gender x pattern x bseas)
+         GP3(g)=g3i;  // track counter for main morphs (gender x pattern x settlement)
          Bseas(g)=Settle_seas(settle);
          sx(g)=gg;
          GP(g)=gp+(gg-1)*N_GP;   // counter for pattern x gender so gp is nested inside gender
@@ -360,7 +361,7 @@
          azero_G(g)=(Settle_month(settle)-1.0)/sumseas; //  settlement month converted to fraction of year; could be > one year
          for (p=1;p<=pop;p++)
          {
-           if(recr_dist_pattern(gp,settle,p)>0.)
+           if(recr_dist_pattern(gp,settle,p)==1)
            {
              use_morph(g)=1;
            }

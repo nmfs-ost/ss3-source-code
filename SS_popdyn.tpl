@@ -131,8 +131,8 @@ FUNCTION void get_initial_conditions()
     for (settle=1;settle<=N_settle_timings;settle++)
     if(recr_dist_pattern(gp,settle,p)>0)
     {
-      recr_dist_unf(gp,settle,p)+=recr_dist(gp,settle,p);
-      if(gender==2) recr_dist_unf(gp+N_GP,settle,p)+=recr_dist(gp+N_GP,settle,p);
+      recr_dist_unf(gp,settle,p)+=recr_dist(y,gp,settle,p);
+      if(gender==2) recr_dist_unf(gp+N_GP,settle,p)+=recr_dist(y,gp+N_GP,settle,p);
     }
   }
 
@@ -296,7 +296,7 @@ FUNCTION void get_initial_conditions()
            SSB_N_yr(eq_yr) += make_mature_numbers(GP4(g))*natage(t+s,p,g);
         }
         Save_PopAge(t+s,p,g)=natage(t+s,p,g);
-        Recr(p,t+1+Settle_seas_offset(settle_g(g)))+=equ_Recr*recr_dist(GP(g),settle_g(g),p)*platoon_distr(GP2(g));
+        Recr(p,t+1+Settle_seas_offset(settle_g(g)))+=equ_Recr*recr_dist(y,GP(g),settle_g(g),p)*platoon_distr(GP2(g));
         Save_PopBio(t+s,p,g)=elem_prod(natage(t+s,p,g),Wt_Age_beg(s,g));
       }
     }
@@ -461,7 +461,7 @@ FUNCTION void get_initial_conditions()
         Save_PopBio(t+s,p,g)=elem_prod(natage(t+s,p,g),Wt_Age_beg(s,g));
         Save_PopAge(t+s,p,g)=natage(t+s,p,g);
 //         warning<<N_warn<<" "<<s<<" init  "<<t+Settle_seas_offset(settle_g(g))<<endl;
-        Recr(p,t+1+Settle_seas_offset(settle_g(g)))+=equ_Recr*recr_dist(GP(g),settle_g(g),p)*platoon_distr(GP2(g));
+        Recr(p,t+1+Settle_seas_offset(settle_g(g)))+=equ_Recr*recr_dist(y,GP(g),settle_g(g),p)*platoon_distr(GP2(g));
       }
     }
 
@@ -618,8 +618,8 @@ FUNCTION void get_time_series()
         for (settle=1;settle<=N_settle_timings;settle++)
         if(recr_dist_pattern(gp,settle,p)>0)
         {
-          recr_dist_unf(gp,settle,p)+=recr_dist(gp,settle,p);
-          if(gender==2) recr_dist_unf(gp+N_GP,settle,p)+=recr_dist(gp+N_GP,settle,p);
+          recr_dist_unf(gp,settle,p)+=recr_dist(y,gp,settle,p);
+          if(gender==2) recr_dist_unf(gp+N_GP,settle,p)+=recr_dist(y,gp+N_GP,settle,p);
         }
       }
       if(timevary_MG(y,5)>0) get_migration();
@@ -807,11 +807,11 @@ FUNCTION void get_time_series()
             {
               if(y==styr) natage(t+Settle_seas_offset(settle),p,g,Settle_age(settle))=0.0;  //  to negate the additive code
               natage(t+Settle_seas_offset(settle),p,g,Settle_age(settle)) +=
-               Recruits*recr_dist(GP(g),settle,p)*platoon_distr(GP2(g))*
+               Recruits*recr_dist(y,GP(g),settle,p)*platoon_distr(GP2(g))*
                mfexp(natM(s,GP3(g),Settle_age(settle))*Settle_timing_seas(settle));
-               Recr(p,t+Settle_seas_offset(settle))+=Recruits*recr_dist(GP(g),settle,p)*platoon_distr(GP2(g));
+               Recr(p,t+Settle_seas_offset(settle))+=Recruits*recr_dist(y,GP(g),settle,p)*platoon_distr(GP2(g));
                //  the adjustment for mortality increases recruit value for elapsed time since begin of season because M will then be applied from beginning of season
-               if(docheckup==1) echoinput<<y<<" Recruits, dist, surv, result"<<Recruits<<" "<<recr_dist(GP(g),settle,p)<<" "<<mfexp(natM(s,GP3(g),Settle_age(settle))*Settle_timing_seas(settle))<<" "<<natage(t+Settle_seas_offset(settle),p,g,Settle_age(settle))<<endl;
+               if(docheckup==1) echoinput<<y<<" Recruits, dist, surv, result"<<Recruits<<" "<<recr_dist(y,GP(g),settle,p)<<" "<<mfexp(natM(s,GP3(g),Settle_age(settle))*Settle_timing_seas(settle))<<" "<<natage(t+Settle_seas_offset(settle),p,g,Settle_age(settle))<<endl;
             }
           }
       }
@@ -1196,10 +1196,10 @@ FUNCTION void get_time_series()
             {
               if(y==styr) natage(t+Settle_seas_offset(settle),p,g,Settle_age(settle))=0.0;  //  to negate the additive code
 
-              natage(t+Settle_seas_offset(settle),p,g,Settle_age(settle)) += Recruits*recr_dist(GP(g),settle,p)*platoon_distr(GP2(g))*
+              natage(t+Settle_seas_offset(settle),p,g,Settle_age(settle)) += Recruits*recr_dist(y,GP(g),settle,p)*platoon_distr(GP2(g))*
                mfexp(natM(s,GP3(g),Settle_age(settle))*Settle_timing_seas(settle));
-               Recr(p,t+Settle_seas_offset(settle))+=Recruits*recr_dist(GP(g),settle,p)*platoon_distr(GP2(g));
-               if(docheckup==1) echoinput<<y<<" Recruits, dist, surv, result"<<Recruits<<" "<<recr_dist(GP(g),settle,p)<<" "<<mfexp(natM(s,GP3(g),Settle_age(settle))*Settle_timing_seas(settle))<<" "<<natage(t+Settle_seas_offset(settle),p,g,Settle_age(settle))<<endl;
+               Recr(p,t+Settle_seas_offset(settle))+=Recruits*recr_dist(y,GP(g),settle,p)*platoon_distr(GP2(g));
+               if(docheckup==1) echoinput<<y<<" Recruits, dist, surv, result"<<Recruits<<" "<<recr_dist(y,GP(g),settle,p)<<" "<<mfexp(natM(s,GP3(g),Settle_age(settle))*Settle_timing_seas(settle))<<" "<<natage(t+Settle_seas_offset(settle),p,g,Settle_age(settle))<<endl;
             }
           }
       }
@@ -1461,7 +1461,7 @@ FUNCTION void get_time_series()
   } //close year loop
 
 //  Save end year quantities to refresh for forecast after benchmark is called
-  recr_dist_endyr=recr_dist;
+  recr_dist_endyr=recr_dist(endyr);
   natM_endyr=natM;
   surv1_endyr=surv1;
   surv2_endyr=surv2;
@@ -1517,7 +1517,7 @@ FUNCTION void Do_Equil_Calc(const prevariable& equ_Recr)
           
           for (p=1;p<=pop;p++)
           {
-            equ_numbers(Settle_seas(settle),p,g,Settle_age(settle)) = equ_Recr*recr_dist(GP(g),settle,p)*platoon_distr(GP2(g))*
+            equ_numbers(Settle_seas(settle),p,g,Settle_age(settle)) = equ_Recr*recr_dist(y,GP(g),settle,p)*platoon_distr(GP2(g))*
              mfexp(natM(Settle_seas(settle),GP3(g),Settle_age(settle))*Settle_timing_seas(settle));
           }
         }
@@ -1541,7 +1541,7 @@ FUNCTION void Do_Equil_Calc(const prevariable& equ_Recr)
            {
              if(s==Settle_seas(settle) && a==Settle_age(settle))
               {
-                equ_numbers(Settle_seas(settle),p,g,Settle_age(settle)) = equ_Recr*recr_dist(GP(g),settle,p)*platoon_distr(GP2(g))*
+                equ_numbers(Settle_seas(settle),p,g,Settle_age(settle)) = equ_Recr*recr_dist(y,GP(g),settle,p)*platoon_distr(GP2(g))*
                 mfexp(natM(Settle_seas(settle),GP3(g),Settle_age(settle))*Settle_timing_seas(settle));
               }
 

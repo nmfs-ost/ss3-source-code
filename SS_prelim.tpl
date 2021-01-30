@@ -956,7 +956,7 @@ PRELIMINARY_CALCS_SECTION
 //  SS_Label_Info_6.8.6 #Call fxn get_recr_distribution() for distribution of recruitment among areas and seasons, which can be time-varying
       echoinput<<"do recrdist: "<<endl;
     get_recr_distribution();
-    recr_dist = value(recr_dist);    //  so the just calculated constant values will be used unless its parms are active
+    recr_dist(y) = value(recr_dist(y));    //  so the just calculated constant values will be used unless its parms are active
 
 //  SS_Label_Info_6.8.7 #Call fxn get_migration()
     if(do_migration>0)   // set up migration rates

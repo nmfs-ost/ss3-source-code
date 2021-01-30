@@ -107,7 +107,7 @@ PARAMETER_SECTION
   3darray Wt_Age_mid(1,nseas,1,gmorph,0,nages)
 
   3darray migrrate(styr-3,YrMax,1,do_migr2,0,nages)
-  3darray recr_dist(1,N_GP*gender,1,N_settle_timings,1,pop);
+  4darray recr_dist(styr-3,YrMax,1,N_GP*gender,1,N_settle_timings,1,pop);
   3darray recr_dist_unf(1,N_GP*gender,1,N_settle_timings,1,pop);
   3darray recr_dist_endyr(1,N_GP*gender,1,N_settle_timings,1,pop);
 !!//  SS_Label_Info_5.1.2 #Create SR_parm vector, recruitment vectors
