@@ -224,7 +224,6 @@
   vector  Settle_month(1,N_settle_timings)  //  month (real)in which settlement occurs
   ivector Settle_age(1,N_settle_timings)  //  calculated age at which settlement occurs, with age 0 being the year in which spawning occurs
   3iarray recr_dist_pattern(1,N_GP,1,N_settle_timings,0,pop);  //  has flag to indicate each settlement events
-  4iarray recr_dist2(styr-3,YrMax,1,N_GP,1,N_settle_timings,1,pop);
 
  LOCAL_CALCS
   Settle_seas_offset.initialize();
@@ -1785,6 +1784,9 @@
     echoinput<<recdev_early_PH_rd<<" #_recdev_early_phase"<<endl;
     echoinput<<Fcast_recr_PH_rd<<" #_forecast_recruitment phase (incl. late recr) (0 value resets to maxphase+1)"<<endl;
     echoinput<<Fcast_recr_lambda<<" #_lambda for Fcast_recr_like occurring before endyr+1"<<endl;
+    if(Fcast_Loop_Control(3)==3)
+    	{N_warn++; warning<<N_warn<<" mean recruitment for forecast is incompatible with pos. phase for forecast rec_devs; SS reset rec_dev phase to -99"<<endl;
+    		Fcast_recr_PH_rd=-99;}
     echoinput<<recdev_adj(1)<<" #_last_early_yr_nobias_adj_in_MPD"<<endl;
     echoinput<<recdev_adj(2)<<" #_first_yr_fullbias_adj_in_MPD"<<endl;
     echoinput<<recdev_adj(3)<<" #_last_yr_fullbias_adj_in_MPD"<<endl;
@@ -4449,7 +4451,7 @@
   {
     if(Turn_off_phase>0)
     {
-      if(Fcast_recr_PH_rd!=0)  // read value for forecast_PH
+      if(Fcast_recr_PH_rd>0)  // read value for forecast_PH
       {
         Fcast_recr_PH2=Fcast_recr_PH;
         if(depletion_fleet>0  && depletion_type<2 && Fcast_recr_PH2>0) Fcast_recr_PH2++;

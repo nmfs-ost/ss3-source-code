@@ -1466,6 +1466,14 @@ FUNCTION void get_time_series()
   surv1_endyr=surv1;
   surv2_endyr=surv2;
 
+  if(Do_Benchmark>0)
+ {  
+  recr_dist(styr-3)=recr_dist_unf/(Bmark_Yr(8)-Bmark_Yr(7)+1);
+  natM_unf/=(Bmark_Yr(2)-Bmark_Yr(1)+1);
+  surv1_unf/=(Bmark_Yr(2)-Bmark_Yr(1)+1);
+  surv2_unf/(Bmark_Yr(2)-Bmark_Yr(1)+1);
+ }
+
   if(Do_TG>0) Tag_Recapture();
 
   }  //  end time_series
