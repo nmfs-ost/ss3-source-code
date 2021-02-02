@@ -65,7 +65,7 @@ FUNCTION void setup_Benchmark()
      		{
      			if(timevary_MG(y,4)>0)
      			  {N_warn++; warning<<N_warn<<" mean recruitment for forecast is incompatible with timevary recr_dist in yr: "<<y<<"; user must adjust manually"<<endl;}
-     			recr_dist(y)=recr_dist_endyr;
+     		  recr_dist(y)=recr_dist_endyr;
      		}
      	}
 
