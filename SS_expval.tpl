@@ -215,7 +215,7 @@ FUNCTION void Get_expected_values(const int y,const int t);
 
         if(sum(exp_l_temp)<1.0e-8)
           {
-           if(do_once==1) {N_warn++;  warning<<N_warn<<" "<<current_phase()<<" "<<niter<<"warn in first call:  Observation exists, but nil selected fish for year, seas, fleet "<<y<<" "<<s<<" "<<f<<endl;}
+           if(do_once==1) {N_warn++;  warning<<N_warn<<" "<<current_phase()<<" "<<niter<<"warn in first call: Nil selected fish for year, seas, fleet "<<y<<" "<<s<<" "<<f<<"; SS may recover; suggest check initial parm. values for selectivity and growth"<<endl;}
             exp_l_temp+=1.0e-09;
           }
         for (data_type=1;data_type<=9;data_type++)
