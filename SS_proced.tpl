@@ -61,10 +61,12 @@ PROCEDURE_SECTION
       if(do_once==1) cout<<" OK with initial conditions "<<endl;
 //  SS_Label_Info_7.4.2 #Call fxn get_time_series() to do population calculations for each year and get expected values for observations
     get_time_series();  //  in procedure_section
-      if(do_once==1) cout<<" OK with time series "<<endl;
+      if(do_once==1) 
+      	{
+      		cout<<" OK with time series"<<endl;
+      	}
 
 //  SS_Label_Info_7.4.3 #Call fxn evaluate_the_objective_function()
-
     evaluate_the_objective_function();
 
     if(do_once==1)

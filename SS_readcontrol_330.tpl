@@ -4451,7 +4451,7 @@
   {
     if(Turn_off_phase>0)
     {
-      if(Fcast_recr_PH_rd>0)  // read value for forecast_PH
+      if(Fcast_recr_PH_rd!=0)  // read value for forecast_PH
       {
         Fcast_recr_PH2=Fcast_recr_PH;
         if(depletion_fleet>0  && depletion_type<2 && Fcast_recr_PH2>0) Fcast_recr_PH2++;
@@ -4480,6 +4480,9 @@
   }
   else
   {Fcast_recr_PH2=-1;}
+  
+  echoinput<<"Fcast_dev_phase (read and adjusted): "<<Fcast_recr_PH_rd<<" "<<Fcast_recr_PH2<<endl;
+  
   for (s=1;s<=nseas;s++)
   for (f=1;f<=Nfleet;f++)
   {

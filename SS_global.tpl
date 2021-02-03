@@ -757,23 +757,24 @@ FINAL_SECTION
 //  SS_Label_Info_12.4.4 #Call fxn write_nudata() to create bootstrap data in data.ss_new
     if(N_nudata>0)
     {
+    cout<<"data.ss_new with N replicates: "<<N_nudata;
     write_nudata();
-    if(show_MSY==1) cout<<" finished data.ss_new with N replicates: "<<N_nudata<<endl;
+    cout<<" finished"<<endl;
 
 //  SS_Label_Info_12.4.5 #Call fxn write_nucontrol() to produce control.ss_new
     write_nucontrol();
-    if(show_MSY==1) cout<<" finished control.ss_new "<<endl;
     }
     else
     {
-    	if(show_MSY==1)  {N_warn++; warning<<N_warn<<" "<<"NOTE:  *.ss_new files are not produced with N_nudata=0"<<endl;}
+    	{N_warn++; warning<<N_warn<<" "<<"NOTE:  *.ss_new files are not produced with N_nudata=0"<<endl;}
     }
 
 //  SS_Label_Info_12.4.6 #Call fxn write_Bzero_output()  appended to report.sso
     if (pick_report_use(59)=="Y")
     {
+        cout<<"dynamic Bzero and global MSY: ";
         write_Bzero_output();
-        if(show_MSY==1) cout<<" finished dynamic Bzero and global MSY "<<endl;
+        cout<<" finished "<<endl;
     }
 
     if(parm_adjust_method==3) {N_warn++;  warning<<N_warn<<" "<<"time-vary parms not bound checked"<<endl;}
