@@ -2888,7 +2888,7 @@
     if(Bmark_Yr_rd(i)==-999)
     {Bmark_Yr(i)=styr;}
     else if(Bmark_Yr_rd(i)<=0)
-    {Bmark_Yr(i)+=endyr;}
+    {Bmark_Yr(i)=Bmark_Yr_rd(i)+endyr;}
     else if(Bmark_Yr_rd(i)<styr)
     {N_warn++; warning<<N_warn<<" "<<Bmark_Yr_rd(i)<<"benchmark year < styr; change to styr"<<endl;Bmark_Yr(i)=styr;}
     else if(Bmark_Yr_rd(i)>endyr)
