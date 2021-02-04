@@ -915,6 +915,13 @@ FUNCTION void evaluate_the_objective_function()
     if(do_once==1)
     {
       cout<<" OK with obj_func "<<obj_fun<<endl;
+      if(SSB_yr(endyr)<0.01*SSB_yr(styr))
+      {N_warn++; warning<<N_warn<<" ssb(endyr)/ssb(styr)= "<<SSB_yr(endyr)/SSB_yr(styr)<<
+      	"; suggest start with larger R0 to get near 0.4; or use depletion fleet option"<<endl;}
+      if(annual_F(endyr,3)>2.0)
+      {N_warn++; warning<<N_warn<<" annual F in endyr > 2.0; check configuration; suggest start with larger R0"<<endl;}
+      if(sum(catch_like)>0.5*obj_fun && F_Method_use!=2)
+      {N_warn++; warning<<N_warn<<" catch logL > 50% total logL; check configuration; suggest start with larger R0"<<endl;}
       do_once=0;
     }
   }  //  end objective_function

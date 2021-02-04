@@ -69,11 +69,6 @@ PROCEDURE_SECTION
 //  SS_Label_Info_7.4.3 #Call fxn evaluate_the_objective_function()
     evaluate_the_objective_function();
 
-    if(do_once==1)
-    {
-      cout<<" OK with obj_func "<<obj_fun<<endl;
-    }
- 
 //  SS_Label_Info_7.6 #If sdphase or mcevalphase, do benchmarks and forecast and derived quantities
     if( (sd_phase() || mceval_phase()) && (initial_params::mc_phase==0))
     {
