@@ -305,11 +305,22 @@ FUNCTION void evaluate_the_objective_function()
       {
 // from Thorson:  NLL -= gammln(A) - gammln(ninput_t(t)+A) + sum(gammln(ninput_t(t)*extract_row(pobs_ta,t) + A*extract_row(pexp_ta,t))) - sum(lgamma(A*extract_row(pexp_ta,t))) \
 //        dirichlet_Parm=mfexp(selparm(Comp_Err_Parm_Start+Comp_Err_L2(f)))*nsamp_l(f,i);
+// in option 1, dirichlet_Parm = Theta*n from equation (10) of Thorson et al. 2016
+// in option 2, dirichlet_Parm = Beta from equation (4) of Thorson et al. 2016
         if(Comp_Err_L(f)==1) dirichlet_Parm=mfexp(selparm(Comp_Err_Parm_Start+Comp_Err_L2(f)))*nsamp_l(f,i);
         if(Comp_Err_L(f)==2) dirichlet_Parm=mfexp(selparm(Comp_Err_Parm_Start+Comp_Err_L2(f)));
 //                             dirichlet_Parm=mfexp(selparm(Comp_Err_Parm_Start+Comp_Err_L2(f)));
+
+        // second term in equations (4) and (10) which is only dependent on parameters and sample size
         temp = gammln(dirichlet_Parm) - gammln(nsamp_l(f,i)+dirichlet_Parm);
+        // optionally add first term in equations (4) and (10) only dependent on the observations
+        if(sd_offset == 1) 
+        {
+          temp+=gammln(nsamp_l(f,i) + 1);
+          temp-=sum(gammln(nsamp_l(f,i)*obs_l(f,i)(tails_w(1),tails_w(2)) + 1));
+        }
         // get female or combined sex logL
+        // final term in equations (4) and (10)
         if(gen_l(f,i) !=2) //  so not male only
         {
           temp+=sum(gammln(nsamp_l(f,i)*  obs_l(f,i)(tails_w(1),tails_w(2))
@@ -408,11 +419,22 @@ FUNCTION void evaluate_the_objective_function()
             {
 // from Thorson:  NLL -= gammln(A) - gammln(ninput_t(t)+A) + sum(gammln(ninput_t(t)*extract_row(pobs_ta,t) + A*extract_row(pexp_ta,t))) - sum(lgamma(A*extract_row(pexp_ta,t))) \
 //              dirichlet_Parm=mfexp(selparm(Comp_Err_Parm_Start+Comp_Err_A2(f)))*nsamp_a(f,i);
+// in option 1, dirichlet_Parm = Theta*n from equation (10) of Thorson et al. 2016
+// in option 2, dirichlet_Parm = Beta from equation (4) of Thorson et al. 2016
               if(Comp_Err_A(f)==1) dirichlet_Parm=mfexp(selparm(Comp_Err_Parm_Start+Comp_Err_A2(f)))*nsamp_a(f,i);
               if(Comp_Err_A(f)==2) dirichlet_Parm=mfexp(selparm(Comp_Err_Parm_Start+Comp_Err_A2(f)));
 //              dirichlet_Parm=mfexp(selparm(Comp_Err_Parm_Start+Comp_Err_A2(f)));
+
+              // second term in equations (4) and (10) which is only dependent on parameters and sample size
               temp = gammln(dirichlet_Parm) - gammln(nsamp_a(f,i)+dirichlet_Parm);
+              // optionally add first term in equations (4) and (10) only dependent on the observations
+              if(sd_offset == 1) 
+              {
+                temp+=gammln(nsamp_a(f,i) + 1);
+                temp-=sum(gammln(nsamp_a(f,i)*obs_a(f,i)(tails_w(1),tails_w(2)) + 1));
+              }
               // get female or combined sex logL
+              // final term in equations (4) and (10)
               if(gen_a(f,i) !=2) //  so not male only
               {
                 temp+=sum(gammln(nsamp_a(f,i)*  obs_a(f,i)(tails_w(1),tails_w(2))

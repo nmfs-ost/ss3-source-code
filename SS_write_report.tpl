@@ -1580,7 +1580,7 @@ FUNCTION void write_bigoutput()
      }
      else if(Comp_Err_L(f)==2) //  Dirichlet #2
      {
-       dirichlet_Parm=mfexp(selparm(Comp_Err_Parm_Start+Comp_Err_L2(f)))*nsamp_l(f,i);  //  Thorson's beta from eq 12
+       dirichlet_Parm=mfexp(selparm(Comp_Err_Parm_Start+Comp_Err_L2(f)));  //  Thorson's beta from eq 12
        // effN_DM = (n+n*beta)/(n+beta)      computed in Fit_LenComp
        Nsamp_DM = value((nsamp_l(f,i)+dirichlet_Parm*nsamp_l(f,i))/(dirichlet_Parm+nsamp_l(f,i)));
      }
@@ -1694,7 +1694,7 @@ FUNCTION void write_bigoutput()
       }
       else if(Comp_Err_A(f)==2) //  Dirichlet #2
       {
-        dirichlet_Parm=mfexp(selparm(Comp_Err_Parm_Start+Comp_Err_A2(f)))*nsamp_a(f,i);  //  Thorson's beta from eq 12
+        dirichlet_Parm=mfexp(selparm(Comp_Err_Parm_Start+Comp_Err_A2(f)));  //  Thorson's beta from eq 12
         // effN_DM = (n+n*beta)/(n+beta)      computed in Fit_LenComp                           
         Nsamp_DM = value((nsamp_a(f,i)+dirichlet_Parm*nsamp_a(f,i))/(dirichlet_Parm+nsamp_a(f,i)));                     
       }
