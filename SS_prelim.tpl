@@ -119,8 +119,22 @@ PRELIMINARY_CALCS_SECTION
     else
     {
       // Dirichlet-Multinomial (either 1 = linear, 2 = saturating)
-      offset_l(f,i) += gammln(nsamp_l(f,i) + 1) -
-        sum(gammln(1 + nsamp_l(f,i)*obs_l(f,i)(tails_l(f,i,3),tails_l(f,i,4))));
+      if(gen_l(f,i) !=2)
+      {
+        int z1=tails_l(f,i,1);
+        int z2=tails_l(f,i,2);
+        offset_l(f,i) += gammln(nsamp_l(f,i) + 1.) -
+//        sum(gammln(1. + nsamp_l(f,i)*obs_l(f,i)(tails_l(f,i,3),tails_l(f,i,4))));
+        sum(gammln(1. + nsamp_l(f,i)*obs_l(f,i)(z1,z2)));
+      }
+      if(gen_l(f,i) >=2 && gender==2)
+      {
+        int z1=tails_l(f,i,3);
+        int z2=tails_l(f,i,4);
+        offset_l(f,i) += gammln(nsamp_l(f,i) + 1.) -
+//        sum(gammln(1. + nsamp_l(f,i)*obs_l(f,i)(tails_l(f,i,3),tails_l(f,i,4))));
+        sum(gammln(1. + nsamp_l(f,i)*obs_l(f,i)(z1,z2)));
+      }
     }
   }
 //  echoinput<<" length_comp offset: "<<offset_l<<endl;
@@ -289,8 +303,20 @@ PRELIMINARY_CALCS_SECTION
     else
     {
       // Dirichlet-Multinomial (either 1 = linear, 2 = saturating)
-      offset_a(f,i) += gammln(nsamp_a(f,i) + 1) -
-        sum(gammln(1 + nsamp_a(f,i)*obs_a(f,i)(tails_a(f,i,3),tails_a(f,i,4))));
+      if(gen_a(f,i) !=2)
+      {
+      int z1=tails_a(f,i,1);
+      int z2=tails_a(f,i,2);
+      offset_a(f,i) += gammln(nsamp_a(f,i) + 1.) -
+        sum(gammln(1. + nsamp_a(f,i)*obs_a(f,i)(z1,z2)));
+      }
+      if(gen_a(f,i) >=2 && gender==2)
+      {
+      int z1=tails_a(f,i,3);
+      int z2=tails_a(f,i,4);
+      offset_a(f,i) += gammln(nsamp_a(f,i) + 1.) -
+        sum(gammln(1. + nsamp_a(f,i)*obs_a(f,i)(z1,z2)));
+      }
     }
   }
 //   echoinput<<" agecomp offset "<<offset_a<<endl;
