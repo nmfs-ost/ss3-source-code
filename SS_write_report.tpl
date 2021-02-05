@@ -1580,7 +1580,7 @@ FUNCTION void write_bigoutput()
      }
      else if(Comp_Err_L(f)==2) //  Dirichlet #2
      {
-       dirichlet_Parm=mfexp(selparm(Comp_Err_Parm_Start+Comp_Err_L2(f)))*nsamp_l(f,i);  //  Thorson's beta from eq 12
+       dirichlet_Parm=mfexp(selparm(Comp_Err_Parm_Start+Comp_Err_L2(f)));  //  Thorson's beta from eq 12
        // effN_DM = (n+n*beta)/(n+beta)      computed in Fit_LenComp
        Nsamp_DM = value((nsamp_l(f,i)+dirichlet_Parm*nsamp_l(f,i))/(dirichlet_Parm+nsamp_l(f,i)));
      }
@@ -1636,13 +1636,20 @@ FUNCTION void write_bigoutput()
        rmse(f)/=n_rmse(f); Hrmse(f)=n_rmse(f)/Hrmse(f); Rrmse(f)/=n_rmse(f);
 			 mean_Nsamp_in(f)/=n_rmse(f); mean_Nsamp_adj(f)/=n_rmse(f); mean_Nsamp_DM(f)/=n_rmse(f);
 			 // write values to file
-       SS2out<<"4 "<<f<<" "<<Hrmse(f)/mean_Nsamp_adj(f)*var_adjust(4,f)<<" # "<<Nobs_l(f)<<" "<<n_rmse(f)<<" " <<
+       SS2out<<"4 "<<f<<" ";
+       if(Comp_Err_L(f)==0){ // standard multinomial
+         SS2out<<Hrmse(f)/mean_Nsamp_adj(f)*var_adjust(4,f);
+       }
+       if(Comp_Err_L(f) > 0){ // Dirichlet-multinomial (Recommend_var_adj = 1)
+         SS2out<<"1";
+       }
+       SS2out<<" # "<<Nobs_l(f)<<" "<<n_rmse(f)<<" " <<
        minsamp(f)<<" "<<maxsamp(f)<<" "<<mean_Nsamp_in(f)<<" "<<mean_Nsamp_adj(f);
        if(Comp_Err_L(f)==0){ // standard multinomial
 			   // placeholders for mean_Nsamp_DM and DM_theta (not used)
          SS2out<<" NA NA ";
        }
-       if(Comp_Err_L(f) > 0){ // Dirichlet-multinomial (Recommend_var_adj = 1)
+       if(Comp_Err_L(f) > 0){ // Dirichlet-multinomial
 			   // mean_Nsamp_DM and DM_theta
          SS2out<<" "<<mean_Nsamp_DM(f)<<" "<<mfexp(selparm(Comp_Err_Parm_Start+Comp_Err_L2(f)))<<" ";
        }
@@ -1687,7 +1694,7 @@ FUNCTION void write_bigoutput()
       }
       else if(Comp_Err_A(f)==2) //  Dirichlet #2
       {
-        dirichlet_Parm=mfexp(selparm(Comp_Err_Parm_Start+Comp_Err_A2(f)))*nsamp_a(f,i);  //  Thorson's beta from eq 12
+        dirichlet_Parm=mfexp(selparm(Comp_Err_Parm_Start+Comp_Err_A2(f)));  //  Thorson's beta from eq 12
         // effN_DM = (n+n*beta)/(n+beta)      computed in Fit_LenComp                           
         Nsamp_DM = value((nsamp_a(f,i)+dirichlet_Parm*nsamp_a(f,i))/(dirichlet_Parm+nsamp_a(f,i)));                     
       }
@@ -1736,13 +1743,20 @@ FUNCTION void write_bigoutput()
        rmse(f)/=n_rmse(f); Hrmse(f)=n_rmse(f)/Hrmse(f); Rrmse(f)/=n_rmse(f);
 			 mean_Nsamp_in(f)/=n_rmse(f); mean_Nsamp_adj(f)/=n_rmse(f); mean_Nsamp_DM(f)/=n_rmse(f);
 			 // write values to file
-       SS2out<<"5 "<<f<<" 1 # "<<Nobs_l(f)<<" "<<n_rmse(f)<<" " <<
+       SS2out<<"5 "<<f<<" ";
+       if(Comp_Err_A(f)==0){ // standard multinomial
+         SS2out<<Hrmse(f)/mean_Nsamp_adj(f)*var_adjust(5,f);
+       }
+       if(Comp_Err_A(f) > 0){ // Dirichlet-multinomial (Recommend_var_adj = 1)
+         SS2out<<"1";
+       }
+       SS2out<<" # "<<Nobs_a(f)<<" "<<n_rmse(f)<<" " <<
        minsamp(f)<<" "<<maxsamp(f)<<" "<<mean_Nsamp_in(f)<<" "<<mean_Nsamp_adj(f);
        if(Comp_Err_A(f)==0){ // standard multinomial
          // placeholders for mean_Nsamp_DM and DM_theta (not used)
          SS2out<<" NA NA ";
        }
-       if(Comp_Err_A(f) > 0){ // Dirichlet-multinomial (Recommend_var_adj = 1)
+       if(Comp_Err_A(f) > 0){ // Dirichlet-multinomial
          // mean_Nsamp_DM and DM_theta
          SS2out<<" "<<mean_Nsamp_DM(f)<<" "<<mfexp(selparm(Comp_Err_Parm_Start+Comp_Err_A2(f)))<<" ";
        }
