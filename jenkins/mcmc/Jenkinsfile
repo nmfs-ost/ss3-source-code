@@ -11,6 +11,7 @@ pipeline {
 			  sh label: 'remove an old file (force in case does not exist)', script: 'rm -f models.zip'
 			  sh label: 'remove an old dir (force in case does not exist)', script: 'rm -rf ss_bin'
 			  sh label: 'remove an old dir (force in case does not exist)', script: 'rm -rf run_R'
+			  sh label: 'remove an old file (force in case does not exist)', script: 'rm -f ss'
 			  sh label: 'verify removed', script: 'ls .'
 		   }
         }
