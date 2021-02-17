@@ -2,6 +2,16 @@
 
 Stock Synthesis (SS or SS3) is a generalized age-structured population dynamics model implemented in [ADMB](http://www.admb-project.org/). It is used to assess the effect of fisheries on fish and shellfish stocks while taking into account the influence of environmental factors.
 
+## Citing Stock Synthesis
+
+Please cite Stock Synthesis as:
+
+```
+Methot, R.D. and Wetzel, C.R. (2013). Stock Synthesis: A biological and statistical
+framework for fish stock assessment and fishery management. Fisheries Research, 
+142: 86-99. https://doi.org/10.1016/j.fishres.2012.10.012
+```
+
 ## Installation
 
 Download the [latest compiled versions](https://vlab.ncep.noaa.gov/web/stock-synthesis/document-library/-/document_library/0LmuycloZeIt/view/5042555).
