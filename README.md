@@ -27,7 +27,7 @@ As SS usage has grown, so has the number of tools to work with it. These include
 
 Have a tool to work with SS that should be mentioned here? Open an issue or pull request to let us know!
 
-## Disclaimer / Liscense
+## Disclaimer
 
 “The United States Department of Commerce (DOC) GitHub project code is provided 
 on an ‘as is’ basis and the user assumes responsibility for its use. DOC has 
