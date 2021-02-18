@@ -1191,7 +1191,7 @@ FUNCTION void write_nucontrol()
   NuFore<<SPR_target<<" # SPR target (e.g. 0.40)"<<endl;
   NuFore<<BTGT_target<<" # Biomass target (e.g. 0.40)"<<endl;
   NuFore<<"#_Bmark_years: beg_bio, end_bio, beg_selex, end_selex, beg_relF, end_relF, beg_recr_dist, end_recr_dist, beg_SRparm, end_SRparm (enter actual year, or values of 0 or -integer to be rel. endyr)"<<endl<<Bmark_Yr_rd<<endl<<"# "<<Bmark_Yr<<endl;
-  NuFore<<"value <0 convert to endyr-value; except -999 converts to start_yr; must be >=start_yr and <=endyr"<<endl;
+  NuFore<<"# value <0 convert to endyr-value; except -999 converts to start_yr; must be >=start_yr and <=endyr"<<endl;
   NuFore<<Bmark_RelF_Basis<<" #Bmark_relF_Basis: 1 = use year range; 2 = set relF same as forecast below"<<endl;
   NuFore<<"#"<<endl<<Do_Forecast_rd<<" # Forecast: -1=none; 0=simple_1yr; 1=F(SPR); 2=F(MSY) 3=F(Btgt) or F0.1; 4=Ave F (uses first-last relF yrs); 5=input annual F scalar"<<endl;
   NuFore<<"# where none and simple require no input after this line; simple sets forecast F same as end year F"<<endl;
