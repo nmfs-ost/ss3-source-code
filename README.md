@@ -6,13 +6,17 @@ Stock Synthesis (SS or SS3) is a generalized age-structured population dynamics 
 
 Download the [latest compiled versions](https://vlab.ncep.noaa.gov/web/stock-synthesis/document-library/-/document_library/0LmuycloZeIt/view/5042555).
 
-## Usage
+## How can I learn how to use Stock Synthesis?
 
 To learn more about how to use stock synthesis, see the [getting started guide with SS guide](https://vlab.ncep.noaa.gov/web/stock-synthesis/document-library/-/document_library/0LmuycloZeIt/view_file/7137387). To learn how to build your own models in SS, see the [Develop an SS model guide](https://vlab.ncep.noaa.gov/web/stock-synthesis/document-library/-/document_library/0LmuycloZeIt/view_file/7137399).
 
 The [SS user manual](https://vlab.ncep.noaa.gov/web/stock-synthesis/document-library/-/document_library/0LmuycloZeIt/view_file/11684231) provides the complete documentation of SS, while the [helper spreadsheets](https://vlab.ncep.noaa.gov/web/stock-synthesis/document-library/-/document_library/0LmuycloZeIt/view/978337) are useful cheatsheets that outline inputs necessary for options that are widely used within SS.
 
-## Contributing
+## How do I ask questions about Stock Synthesis?
+
+Please look for answers or submit questions to the [Stock Synthesis forums](https://vlab.ncep.noaa.gov/web/stock-synthesis/public-forums). Note that an account is required to ask questions on the forums. Questions can also be asked by opening an [issue](https://github.com/nmfs-stock-synthesis/stock-synthesis/issues) in this repository or by emailing nmfs.stock.synthesis@noaa.gov.
+
+## How can I contribute to Stock Synthesis?
 
 Have feature requests or bug reports? Please open an [issue](https://github.com/nmfs-stock-synthesis/stock-synthesis/issues) or submit a pull request. For complete details, please see [CONTRIBUTING.md](CONTRIBUTING.md)
 
