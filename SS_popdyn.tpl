@@ -563,12 +563,26 @@ FUNCTION void get_time_series()
 //        	 warning<<N_warn<<" "<<y<<" "<<SSB_current<<" "<<SSB_yr(styr-1)<<" "<<recdev(y)<<" env: "<<env_data(y)<<endl;
         t=t_base+1;  // first season
         s=1;
-        if(timevary_MG(y,2)>0 || timevary_MG(y,3)>0 || save_for_report==1 || WTage_rd>0)
+      if(WTage_rd>0)
+      {
+        for (g=1;g<=gmorph;g++)
+        if(use_morph(g)>0)
+        {
+          Wt_Age_beg(s,g)=WTage_emp(t,GP3(g),0);
+          Wt_Age_mid(s,g)=WTage_emp(t,GP3(g),-1);
+        }
+
+      }
+      else if(timevary_MG(y,2)>0 || timevary_MG(y,3)>0 || save_for_report==1 || WTage_rd>0)
         {
           subseas=1;  //  begin season  note that ALK_idx re-calculated inside get_growth3
           ALK_idx=(s-1)*N_subseas+subseas;  //  redundant with calc inside get_growth3 ????
   //      get_growth3(s, subseas);  //  not needed because size-at-age already has been propagated to seas 1 subseas 1
           Make_AgeLength_Key(s, subseas);  //  this will give wt_age_beg before any time-varying parameter changes for this year
+           Wt_Age_beg(s,g)=(ALK(ALK_idx,g)*wt_len(s,GP(g)));  // wt-at-age at beginning of period
+           subseas=mid_subseas;
+           ALK_idx=(s-1)*N_subseas+subseas;
+           Wt_Age_mid(s,g)=ALK(ALK_idx,g)*wt_len(s,GP(g));  // use for fisheries with no size selectivity
         }
         smrybio=0.0;
         smrynum=0.0;
