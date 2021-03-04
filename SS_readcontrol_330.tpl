@@ -874,7 +874,7 @@
   Hermaphro_maleSPB=0;
   if (k>0)
   {
-    Hermaphro_seas=Hermaphro_more(1);
+    Hermaphro_seas=Hermaphro_more(1);  //  -1 for all seasons, or integer for particular season <=nseas
     Hermaphro_maleSPB=Hermaphro_more(2);
     echoinput<<Hermaphro_seas<<"  Hermaphro_season "<<endl;
     echoinput<<Hermaphro_maleSPB<<"  Hermaphro_maleSPB "<<endl;
