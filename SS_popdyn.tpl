@@ -579,10 +579,14 @@ FUNCTION void get_time_series()
           ALK_idx=(s-1)*N_subseas+subseas;  //  redundant with calc inside get_growth3 ????
   //      get_growth3(s, subseas);  //  not needed because size-at-age already has been propagated to seas 1 subseas 1
           Make_AgeLength_Key(s, subseas);  //  this will give wt_age_beg before any time-varying parameter changes for this year
+        for (g=1;g<=gmorph;g++)
+        if(use_morph(g)>0)
+        {
            Wt_Age_beg(s,g)=(ALK(ALK_idx,g)*wt_len(s,GP(g)));  // wt-at-age at beginning of period
            subseas=mid_subseas;
            ALK_idx=(s-1)*N_subseas+subseas;
            Wt_Age_mid(s,g)=ALK(ALK_idx,g)*wt_len(s,GP(g));  // use for fisheries with no size selectivity
+         }
         }
         smrybio=0.0;
         smrynum=0.0;
