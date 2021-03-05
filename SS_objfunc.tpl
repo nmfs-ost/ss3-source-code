@@ -455,7 +455,7 @@ FUNCTION void evaluate_the_objective_function()
     if(nobs_ms_tot>0)
     {
       for (f=1;f<=Nfleet;f++)
-      if(Nobs_ms(f)>0 && sizeage_lambda(f,k_phase)>0.0)
+      if(Nobs_ms(f)>0 && sizeage_lambda(f,k_phase)>0.0 || save_for_report>0)
       {
          for (j=1;j<=N_suprper_ms(f);j++)
          {
@@ -542,7 +542,7 @@ FUNCTION void evaluate_the_objective_function()
       for (s=1;s<=nseas;s++)
       for (f=1;f<=Nfleet;f++)
       {
-        if(fleet_type(f)==1 &&  obs_equ_catch(s,f)>0.0 && init_equ_lambda(f,k_phase)>0.0)
+        if(fleet_type(f)==1 &&  obs_equ_catch(s,f)>0.0 && (init_equ_lambda(f,k_phase)>0.0 || save_for_report>0))
           {equ_catch_like(f) += 0.5*square( (log(1.1*obs_equ_catch(s,f)) -log(est_equ_catch(s,f)*catch_mult(styr-1,f)+0.1*obs_equ_catch(s,f))) / catch_se(styr-1,f));}
       }
       if(do_once==1) cout<<" initequ_catch -log(L) "<<equ_catch_like<<endl;
@@ -586,7 +586,7 @@ FUNCTION void evaluate_the_objective_function()
 //  else
 //    rec_like(1)    = (norm2( chi +  sigmaRsq/2. ) / (2*sigmaRsq)) / (2.*sigmaRsq) + size_count(chi)*log(sigr);
 
-    if(recrdev_lambda(k_phase)>0.0 && (do_recdev>0 || recdev_do_early>0) )
+    if((recrdev_lambda(k_phase)>0.0 || save_for_report>0) && (do_recdev>0 || recdev_do_early>0) )
     {
       recr_like = sd_offset_rec*log(sigmaR);
       // where sd_offset_rec takes account for the number of recruitment years fully estimated
@@ -670,7 +670,7 @@ FUNCTION void evaluate_the_objective_function()
     dvariable Pconst;
     Pconst=0.0001;
 
-    if(parm_prior_lambda(k_phase)>0.0 || Do_all_priors>0)
+    if(parm_prior_lambda(k_phase)>0.0 || Do_all_priors>0 || save_for_report>0)
     {
       for (i=1;i<=N_MGparm2;i++)
       if(MGparm_PRtype(i)>0 && (active(MGparm(i))|| Do_all_priors>0))
@@ -737,7 +737,7 @@ FUNCTION void evaluate_the_objective_function()
     {
       for(i=1;i<=N_parm_dev;i++)
       {
-        if(parm_dev_lambda(k_phase)>0.0)
+        if(parm_dev_lambda(k_phase)>0.0 || save_for_report>0)
         {
           if(parm_dev_type(i)==1)  //  in timevary the adjusted parm is: p'=p+dev*se;  so assumes that the devs are distributed as unit normal
  /*
