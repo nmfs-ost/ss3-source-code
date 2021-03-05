@@ -3,6 +3,12 @@ name: build-win
 # Controls when the action will run. 
 on:
   workflow_dispatch:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
   schedule:
     # This should run the default branch weekly on sunday
     - cron: '0 0 * * 0'
