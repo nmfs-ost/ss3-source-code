@@ -860,23 +860,35 @@
 //   Value=5 sets eggs=a+b*W
   !! echoinput<<Fecund_Option<<"  Fecundity option"<<endl;
   !! if(Fecund_Option>5) {N_warn++; cout<<" EXIT - see warning "<<endl;  warning<<N_warn<<" "<<"Illegal fecundity option:  "<<Fecund_Option<<endl; exit(1);}
-  init_int Hermaphro_Option
-  int MGparm_Hermaphro  // pointer to start of these parameters
-  !! echoinput<<Hermaphro_Option<<"  Hermaphro_Option "<<endl;
-  !! MGparm_Hermaphro=0;
-  !! k=0;
-  !! if(Hermaphro_Option!=0) k=2;
-  init_ivector Hermaphro_more(1,k);
+
+  int Hermaphro_Option;
+  int MGparm_Hermaphro;
   int Hermaphro_seas;
-  int Hermaphro_maleSPB;
+  int Hermaphro_firstage;
+  number Hermaphro_seas_rd;
+  number Hermaphro_maleSPB;
  LOCAL_CALCS
   Hermaphro_seas=0;
-  Hermaphro_maleSPB=0;
-  if (k>0)
+  Hermaphro_maleSPB=0.0;
+  Hermaphro_firstage=0;
+  MGparm_Hermaphro=0;
+  
+  *(ad_comm::global_datafile) >> Hermaphro_Option;
+  echoinput<<Hermaphro_Option<<"  Hermaphro_Option: 0 means No; 1 for F to M; -1 for M to F"<<endl;
+  if (Hermaphro_Option!=0)
   {
-    Hermaphro_seas=Hermaphro_more(1);  //  -1 for all seasons, or integer for particular season <=nseas
-    Hermaphro_maleSPB=Hermaphro_more(2);
-    echoinput<<Hermaphro_seas<<"  Hermaphro_season "<<endl;
+  	*(ad_comm::global_datafile) >> Hermaphro_seas_rd;  //  -1 for all seasons, or integer for particular season <=nseas
+  		echoinput<<Hermaphro_seas_rd<<endl;
+  	Hermaphro_seas=int(Hermaphro_seas_rd);
+                                       // fractional part of Hermaphro_seas will be converted to the first age that switches
+    if(temp>0) {
+    Hermaphro_firstage=int((Hermaphro_seas_rd-Hermaphro_seas)*10.0+1.0e-6);}
+    else {
+    Hermaphro_firstage=int((abs(Hermaphro_seas_rd)-1)*10.0+1.0e-6);}
+                                           //  so  2.3 will do switch in season 2 beginning with age 3.
+    echoinput<<Hermaphro_seas<<"  Hermaphro_season (-1 means all seasons)"<<endl;
+    echoinput<<Hermaphro_firstage<<"  Hermaphro_firstage (from decimal part of seas input"<<endl;
+    *(ad_comm::global_datafile) >> Hermaphro_maleSPB;  // read as a fraction (0.0 to 1.0) of the male SSB added into the total SSB
     echoinput<<Hermaphro_maleSPB<<"  Hermaphro_maleSPB "<<endl;
   }
  END_CALCS

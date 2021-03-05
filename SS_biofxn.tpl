@@ -1370,10 +1370,11 @@ FUNCTION void get_wtlen()
       infl=mgp_adj(MGparm_Hermaphro);  // inflection
       stdev=mgp_adj(MGparm_Hermaphro+1);  // standard deviation
       maxval=mgp_adj(MGparm_Hermaphro+2);  // max value
+      Hermaphro_val.initialize();
 //      minval is 0.0;
-      temp2=cumd_norm((0.0-infl)/stdev);     //  cum_norm at age 0
+      temp2=cumd_norm((0.0-infl)/stdev);     //  cum_norm at age 0  //  could change to Hermaphro_firstage
       temp=maxval / (cumd_norm((r_ages(nages)-infl)/stdev)-temp2);   //  delta in cum_norm between styr and endyr
-      for (a=0; a<=nages; a++)
+      for (a=Hermaphro_firstage; a<=nages; a++)
       {
         Hermaphro_val(1,a)=0.0 + temp * (cumd_norm((r_ages(a)-infl)/stdev)-temp2);
       }
