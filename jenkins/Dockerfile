@@ -1,15 +1,15 @@
-FROM ubuntu:bionic
-MAINTAINER FRAM Data Team <nmfs.nwfsc.fram.data.team@noaa.gov>
+FROM centos:7.9.2009
+MAINTAINER Stock Synthesis Development Team <nmfs.stock.synthesis@noaa.gov>
 
-RUN apt-get update
-RUN apt-get install -y wget
-RUN apt-get install -y build-essential
-RUN apt-get install -y zip unzip
+RUN yum -y update && yum clean all
+RUN yum -y install wget
+RUN yum install -y zip unzip
+RUN yum install -y gcc-c++
 
-RUN wget https://github.com/admb-project/admb/releases/download/admb-12.2/admb-12.2-linux.zip
+RUN wget https://github.com/admb-project/admb/releases/download/admb-12.3/admb-12.3-linux.zip
 
-RUN unzip admb-12.2-linux.zip -d /usr/local
+RUN unzip admb-12.3-linux.zip -d /usr/local
 
-RUN chmod 755 /usr/local/admb-12.2/admb
+RUN chmod 755 /usr/local/admb-12.3/admb
 
-ENV PATH /usr/local/admb-12.2:$PATH
+ENV PATH /usr/local/admb-12.3:$PATH

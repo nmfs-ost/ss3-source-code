@@ -12,7 +12,7 @@ jobs:
     # Limit run time to 15 min to avoid wasting action minutes.
     timeout-minutes: 15
     container: 
-      image: centos:7.8.2003
+      image: centos:7.9.2009
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
@@ -27,10 +27,10 @@ jobs:
          yum install -y gcc-c++
       - name: Get admb and put in path
         run: |
-          wget https://github.com/admb-project/admb/releases/download/admb-12.2/admb-12.2-linux.zip
-          sudo unzip admb-12.2-linux.zip -d /usr/local/bin
-          sudo chmod 755 /usr/local/bin/admb-12.2/bin/admb
-          echo "/usr/local/bin/admb-12.2/bin" >> $GITHUB_PATH
+          wget https://github.com/admb-project/admb/releases/download/admb-12.3/admb-12.3-linux.zip
+          sudo unzip admb-12.3-linux.zip -d /usr/local/bin
+          sudo chmod 755 /usr/local/bin/admb-12.3/bin/admb
+          echo "/usr/local/bin/admb-12.3/bin" >> $GITHUB_PATH
           
       # Runs a set of commands using the runners shell
       - name: Build stock synthesis
