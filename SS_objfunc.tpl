@@ -455,7 +455,7 @@ FUNCTION void evaluate_the_objective_function()
     if(nobs_ms_tot>0)
     {
       for (f=1;f<=Nfleet;f++)
-      if(Nobs_ms(f)>0 && sizeage_lambda(f,k_phase)>0.0 || save_for_report>0)
+      if((Nobs_ms(f)>0 && sizeage_lambda(f,k_phase)>0.0) || save_for_report>0)
       {
          for (j=1;j<=N_suprper_ms(f);j++)
          {
