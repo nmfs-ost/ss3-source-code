@@ -19,9 +19,9 @@ jobs:
 
       - name: Get admb and put in path
         run: |
-          Invoke-WebRequest -Uri https://github.com/admb-project/admb/releases/download/admb-12.2/admb-12.2-windows.zip -OutFile "D:\a\stock-synthesis\stock-synthesis\admb-12.2.zip"
-          Expand-Archive -LiteralPath "D:\a\stock-synthesis\stock-synthesis\admb-12.2.zip" -DestinationPath "D:\a\stock-synthesis\stock-synthesis\"
-          echo "D:\a\stock-synthesis\stock-synthesis\admb-12.2\bin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+          Invoke-WebRequest -Uri https://github.com/admb-project/admb/releases/download/admb-12.3/admb-12.3-windows.zip -OutFile "D:\a\stock-synthesis\stock-synthesis\admb-12.3.zip"
+          Expand-Archive -LiteralPath "D:\a\stock-synthesis\stock-synthesis\admb-12.3.zip" -DestinationPath "D:\a\stock-synthesis\stock-synthesis\"
+          echo "D:\a\stock-synthesis\stock-synthesis\admb-12.3\bin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
           
       - name: Build stock synthesis
         run: |

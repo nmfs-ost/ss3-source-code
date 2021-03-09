@@ -1,6 +1,6 @@
 pipeline {
     agent { dockerfile {
-          dir 'jenkins'
+          dir 'jenkins/build'
           args '-u 0:0'
         }
     }
@@ -10,7 +10,7 @@ pipeline {
 			    sh label: 'Double check source', script: 'ls .'
 				sh label: 'remove an old dir (force in case does not exist)', script: 'rm -rf SS330'
 				sh label: 'Make SS330 folder', script: 'mkdir SS330'																								   														   
-                sh label: 'Run build', script: '/bin/bash ./Make_SS_330_new.sh -b SS330 -a /usr/local/admb-12.2/admb'
+                sh label: 'Run build', script: '/bin/bash ./Make_SS_330_new.sh -b SS330 -a /usr/local/admb-12.3/admb'
                 sh label: 'Validate build', script: 'cp SS330/ss . && sha256sum ss'
                 sh label: 'Archive ss executable', script: 'rm -f ss.gz && gzip -v ss'
             }

@@ -14,10 +14,10 @@ jobs:
 
       - name: Get admb and put in path
         run: |
-          curl https://github.com/admb-project/admb/releases/download/admb-12.2/admb-12.2-macos-xcode12.zip -L -o admb-12.2.zip
-          unzip admb-12.2.zip -d /usr/local/bin
+          curl https://github.com/admb-project/admb/releases/download/admb-12.3/admb-12.3-macos.zip -L -o admb-12.3.zip
+          unzip admb-12.3.zip -d /usr/local/bin
           ls /usr/local/bin
-          echo "/usr/local/bin/admb-12.2/bin" >> $GITHUB_PATH
+          echo "/usr/local/bin/admb-12.3/bin" >> $GITHUB_PATH
           
       - name: Build stock synthesis
         run: |
