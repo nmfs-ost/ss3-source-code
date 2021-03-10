@@ -745,7 +745,7 @@ FINAL_SECTION
       cout<<" finished rebuilder.sso "<<endl;}
 
     if(pick_report_use(58)=="Y") {
-    	write_SIStable();
+    	write_SIStable(); //note: SIStable is deprecated, but file with warning written for now
       cout<<" finished SIStable.sso "<<endl;}
     
 //  SS_Label_Info_12.4 #Do Outputs

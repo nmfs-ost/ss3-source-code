@@ -759,59 +759,10 @@ FUNCTION void write_rebuilder_output()
     }
   }  //  end output of rebuilding quantities
 
-FUNCTION void write_SIStable()
+FUNCTION void write_SIStable() //Note: deprecated, but add a message for now.
   {
   ofstream SIS_table("SIS_table.sso");
-  SIS_table<<version_info<<endl<<"StartTime: "<<ctime(&start);
-  SIS_table<<endl<<"Data_File: "<<datfilename<<endl;
-  SIS_table<<"Control_File: "<<ctlfilename<<endl;
-  SIS_table<<"to_come_#"  <<" Best_F"<<endl;
-  SIS_table<<"to_come_#"  <<"  F_units"<<endl;
-  SIS_table<<endyr<<" F_year"<<endl;
-  SIS_table<<"to_come_#"  <<" F_basis"<<endl;
-  SIS_table<<"to_come_#"  <<" F_limit"<<endl;
-  SIS_table<<"to_come_#"  <<"  F_limit_basis"<<endl;
-  SIS_table<<"to_come_#"  <<" F_msy"<<endl;
-  SIS_table<<"to_come_#"  <<" F_msy_basis"<<endl;
-  SIS_table<<"to_come_#"  <<" F_target"<<endl;
-  SIS_table<<"to_come_#"  <<" F_target_basis"<<endl;
-  SIS_table<<"to_come_#"  <<" F/F_limit"<<endl;
-  SIS_table<<"to_come_#"  <<" F/F_msy"<<endl;
-  SIS_table<<"to_come_#"  <<" F/F_target"<<endl;
-  SIS_table<<"to_come_#"  <<" Best_Bio"<<endl;
-  SIS_table<<"to_come_#"  <<" Bio_units"<<endl;
-  SIS_table<<endyr<<" Bio_year"<<endl;
-  SIS_table<<"to_come_#"  <<" Bio_basis"<<endl;
-  SIS_table<<"to_come_#"  <<" Bio_limit"<<endl;
-  SIS_table<<"to_come_#"  <<" Bio_limit_basis"<<endl;
-  SIS_table<<"to_come_#"  <<" Bio_MSY"<<endl;
-  SIS_table<<"to_come_#"  <<" Bio_MSY_basis"<<endl;
-  SIS_table<<"to_come_#"  <<" Bio_MSY"<<endl;
-  SIS_table<<"to_come_#"  <<" Bio_above_below"<<endl;
-  SIS_table<<"to_come_#"  <<" Bio/Bio_limit"<<endl;
-  SIS_table<<"to_come_#"  <<" Bio/Bio_MSY"<<endl<<endl;
-
-  SIS_table<<"Category Year Abundance Abundance Recruitment Spawners Catch Catch Catch Catch Catch Catch Fmort Fmort Fmort Fmort Fmort"<<endl;
-  SIS_table<<"Primary _ N Y Y Y N Y N N N N N N N Y Y"<<endl;
-  SIS_table<<"Type _ Biomass Biomass Age Female_Mature Sel_Bio Kill_Bio Retain_Bio Sel_Numbers Kill_Numbers Retain_Numbers Exploitation SPR_report F_report Sum_Fleet_Apical_Fs F=Z-M"<<endl;
-  SIS_table<<"Source _ Model Model Model Model Model Model Model Model Model Model Model Model Model Model Model"<<endl;
-  SIS_table<<"Basis _ Biomass Biomass Numbers Eggs Biomass Biomass Biomass Numbers Numbers Numbers Dead_Catch_Bio/Summary_Bio "<<SPR_report_label<<" "<<F_report_label<<"  Sum_Fleet_Apical_Fs F=Z-M"<<endl;
-  SIS_table<<"Range _ All Age_"<<Smry_Age<<"+ Age_0 Mature Exploitable_all Exploitable_dead Exploitable_retained  Exploitable_all Exploitable_dead Exploitable_retained ";
-  sprintf(onenum, "%d", int(F_reporting_ages(1)));
-  anystring=onenum;
-  sprintf(onenum, "%d", int(F_reporting_ages(2)));
-  anystring+="_"+onenum;
-  SIS_table<<" Exploitable_dead Exploitable_all Exploitable_all Exploitable_all "<<anystring<<endl;
-  SIS_table<<"Statistic _ Mean Mean Mean Mean Mean Mean Mean Mean Mean Mean Mean Mean Mean Mean Mean"<<endl;
-  SIS_table<<"Scalar _ 1 1 1000 1 1 1 1 1000 1000 1000 1 1 1 1 1"<<endl;
-
-   for (y=styr;y<=YrMax;y++)
-   {
-     SIS_table<<"_ "<<y<<" "<<Smry_Table(y,1)<<" "<<Smry_Table(y,2)<<" "<<Smry_Table(y,8)<<" "<<Smry_Table(y,7)<<" "<<annual_catch(y)<<" "<<annual_catch(y,2)/Smry_Table(y,2)<<" ";
-     if(STD_Yr_Reverse_Ofish(y)>0) {SIS_table<<SPR_std(STD_Yr_Reverse_Ofish(y))<<" ";} else {SIS_table<<" _ ";}
-     if(STD_Yr_Reverse_F(y)>0) {SIS_table<<F_std(STD_Yr_Reverse_F(y))<<" ";} else {SIS_table<<" _ ";}
-     SIS_table<<annual_F(y)<<endl;
-   } // end year loop
+  SIS_table<<"Note: SIS_table.sso is deprecated, please use the r4ss function get_SIS_info() instead"<<endl;
   }
 //********************************************************************
  /*  SS_Label_FUNCTION 41 write_Bzero_output */
