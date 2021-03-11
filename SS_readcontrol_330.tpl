@@ -2486,7 +2486,7 @@
  LOCAL_CALCS
    seltype_Nparam(0)=0;   // selex=1.0 for all sizes
    seltype_Nparam(1)=2;   // logistic; with 95% width specification
-   seltype_Nparam(2)=8;   // double logistic, with defined peak
+   seltype_Nparam(2)=6;   // test version of double normal (24)
    seltype_Nparam(3)=6;   // flat middle, power up, power down
    seltype_Nparam(4)=0;   // set size selex=female maturity
    seltype_Nparam(5)=2;   // mirror another selex; PARMS pick the min-max bin to mirror
@@ -2650,7 +2650,7 @@
            ParCount++; ParmLabel+="SizeSpline_Val_"+NumLbl(s)+"_"+fleetname(f)+"("+NumLbl(f)+")";
          }
      }
-     else if (seltype(f,1)==24)  //  double_normal
+     else if (seltype(f,1)==24 || seltype(f,1)==2)  //  double_normal
      {
        ParCount++; ParmLabel+="Size_DblN_peak_"+fleetname(f)+"("+NumLbl(f)+")";
        ParCount++; ParmLabel+="Size_DblN_top_logit_"+fleetname(f)+"("+NumLbl(f)+")";
@@ -2745,7 +2745,7 @@
             N_selparmvec(f)++; ParCount++; ParmLabel+="SzSel_"+anystring+"Slope_"+fleetname(f)+"("+NumLbl(f)+")";
             N_selparmvec(f)++; ParCount++; ParmLabel+="SzSel_"+anystring+"Scale_"+fleetname(f)+"("+NumLbl(f)+")";
           }
-          else if(seltype(f,1)==24)
+          else if(seltype(f,1)==24 || seltype(f,1)==2)
           {
             N_selparmvec(f)++; ParCount++; ParmLabel+="SzSel_"+anystring+"Peak_"+fleetname(f)+"("+NumLbl(f)+")";
             N_selparmvec(f)++; ParCount++; ParmLabel+="SzSel_"+anystring+"Ascend_"+fleetname(f)+"("+NumLbl(f)+")";
@@ -3456,12 +3456,12 @@
     z=0;  // parameter counter within this section
     for (f=1;f<=Nfleet;f++)
     {
-      if(seltype(f,1)==8 || seltype(f,1)==22 || seltype(f,1)==23 || seltype(f,1)==24)
+      if(seltype(f,1)==8 || seltype(f,1)==22 || seltype(f,1)==23 || seltype(f,1)==24 || seltype(f,1)==2)
       {
         if(selparm_1(z+1,1)<len_bins_m(2))
         {N_warn++;
            warning<<N_warn<<" "<<"Fleet:_"<<f<<" min bound on parameter for size at peak is "<<selparm_1(z+1,1)<<"; should be >= midsize bin 2 ("<<len_bins_m(2)<<")"<<endl;}
-        if(selparm_1(z+1,1)<len_bins_dat(1) && seltype(f,1)==24)
+        if(selparm_1(z+1,1)<len_bins_dat(1) && (seltype(f,1)==24 || seltype(f,1)==2))
         {N_warn++;
            warning<<N_warn<<" "<<"Fleet:_"<<f<<" min bound on parameter for size at peak is "<<selparm_1(z+1,1)<<"; which is < min databin ("<<len_bins_dat(1)<<"), so illogical."<<endl;}
         if(selparm_1(z+1,2)>len_bins_m(nlength-1))

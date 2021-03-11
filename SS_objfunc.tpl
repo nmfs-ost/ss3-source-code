@@ -8,6 +8,7 @@ FUNCTION void evaluate_the_objective_function()
   catch_like.initialize(); Morphcomp_like.initialize(); TG_like1.initialize(); TG_like2.initialize();
   length_like_tot.initialize(); age_like_tot.initialize();regime_like.initialize();
   obj_fun=0.0;
+  SoftBoundPen=0.0;
 
     int k_phase=current_phase();
     if(k_phase>max_lambda_phase) k_phase=max_lambda_phase;
@@ -870,13 +871,16 @@ FUNCTION void evaluate_the_objective_function()
       {F_ballpark_like=0.0;}
 
   //  SS_Label_Info_25.17 #Penalty for soft boundaries, uses the symmetric beta prior code
-  if(SoftBound>0)
-  {
-    SoftBoundPen=0.0;
+   if(SoftBound>0)
+   {
     for (i=1;i<=N_selparm2;i++)
-    if(selparm_PH_soft(i)>0)
-    {SoftBoundPen+=Get_Prior(1, selparm_LO(i), selparm_HI(i), 1., 0.001, selparm(i));}
-  }
+    {
+    	if(selparm_PH_soft(i)>0)
+    {
+    	SoftBoundPen+=Get_Prior(1, selparm_LO(i), selparm_HI(i), 1., 0.001, selparm(i));
+    	}
+    }
+   }
 
   //  SS_Label_Info_25.18 #Crash penalty
 //   CrashPen = square(1.0+CrashPen)-1.0;   this was used until V3.00L  7/10/2008
