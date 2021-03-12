@@ -1218,14 +1218,12 @@ FUNCTION dvariable Check_Parm(const int iparm, const int& PrPH, const double& Pm
     {N_warn++;
     	 warning<<N_warn<<" "<<" parameter min is same as parameter max"<<Pmin<<" = "<<Pmax<<" for parm: "<<iparm<<endl;
     	echoinput<<" parameter min is same as parameter max"<<Pmin<<" = "<<Pmax<<" for parm: "<<iparm<<endl;}
-    else if(Pval<Pmin && PrPH>=0)
-    {N_warn++;
-    	 warning<<N_warn<<" "<<" parameter init value is less than parameter min "<<Pval<<" < "<<Pmin<<" for parm: "<<iparm<<endl;
-    	echoinput<<" parameter init value is less than parameter min "<<Pval<<" < "<<Pmin<<" for parm: "<<iparm<<endl; NewVal=Pmin;}
-    else if(Pval>Pmax && PrPH>=0)
-    {N_warn++; 
-    	 warning<<N_warn<<" "<<" parameter init value is greater than parameter max "<<Pval<<" > "<<Pmax<<" for parm: "<<iparm<<endl;
-    	echoinput<<" parameter init value is greater than parameter max "<<Pval<<" > "<<Pmax<<" for parm: "<<iparm<<endl; NewVal=Pmax;}
+    else if(Pval<Pmin) {N_warn++; cout<<"exit on parm min-max violation"<<endl;
+    	 warning<<N_warn<<" "<<"parameter init value is less than parameter min "<<Pval<<" < "<<Pmin<<" for parm: "<<iparm<<endl;
+    	echoinput<<" parameter init value is less than parameter min "<<Pval<<" < "<<Pmin<<" for parm: "<<iparm<<endl; exit(1);}
+    else if(Pval>Pmax) {N_warn++;  cout<<"exit on parm min-max violation"<<endl;
+    	 warning<<N_warn<<" "<<"parameter init value is greater than parameter max "<<Pval<<" > "<<Pmax<<" for parm: "<<iparm<<endl;
+    	echoinput<<" parameter init value is greater than parameter max "<<Pval<<" > "<<Pmax<<" for parm: "<<iparm<<endl; exit(1);}
     else if(jitter>0.0 && PrPH>=0)
     {
       // temp=log((Pmax-Pmin+0.0000002)/(NewVal-Pmin+0.0000001)-1.)/(-2.);   // transform the parameter
