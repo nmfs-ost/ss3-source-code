@@ -218,7 +218,7 @@ FUNCTION void make_timevaryparm()
             	// first parm is offset; second is slope
               for (int y1=styr;y1<=YrMax;y1++)
               {
-                parm_timevary(tvary,y1)*=2.00000/(1.00000 + mfexp(-timevary_parm(timevary_parm_cnt+1)*(env_data(yz,timevary_setup(7))-timevary_parm(timevary_parm_cnt))));
+                parm_timevary(tvary,y1)*=2.00000/(1.00000 + mfexp(-timevary_parm(timevary_parm_cnt+1)*(env_data(y1,timevary_setup(7))-timevary_parm(timevary_parm_cnt))));
               }
               timevary_parm_cnt+=2;
               break;
@@ -349,7 +349,7 @@ FUNCTION void make_densitydependent_parm(int const y1)
           case 4:  //  logistic MGparm env link
             {
             	// first parm is offset ; second is slope
-              parm_timevary(tvary,y1)=2.00000/(1.00000 + mfexp(-timevary_parm(timevary_parm_cnt+1)*(env_data(yz,timevary_setup(7))-timevary_parm(timevary_parm_cnt))));
+              parm_timevary(tvary,y1)=2.00000/(1.00000 + mfexp(-timevary_parm(timevary_parm_cnt+1)*(env_data(y1,timevary_setup(7))-timevary_parm(timevary_parm_cnt))));
               break;
             }
         }

@@ -1218,18 +1218,14 @@ FUNCTION dvariable Check_Parm(const int iparm, const int& PrPH, const double& Pm
     {N_warn++;
     	 warning<<N_warn<<" "<<" parameter min is same as parameter max"<<Pmin<<" = "<<Pmax<<" for parm: "<<iparm<<endl;
     	echoinput<<" parameter min is same as parameter max"<<Pmin<<" = "<<Pmax<<" for parm: "<<iparm<<endl;}
-    else if(Pval<Pmin) {N_warn++; cout<<"exit on parm min-max violation"<<endl;
+    else if(Pval<Pmin) {N_warn++; cout<<"exit on parm min-max violation; check echoinput and warning for info"<<endl;
     	 warning<<N_warn<<" "<<"parameter init value is less than parameter min "<<Pval<<" < "<<Pmin<<" for parm: "<<iparm<<endl;
     	echoinput<<" parameter init value is less than parameter min "<<Pval<<" < "<<Pmin<<" for parm: "<<iparm<<endl; exit(1);}
-    else if(Pval>Pmax) {N_warn++;  cout<<"exit on parm min-max violation"<<endl;
+    else if(Pval>Pmax) {N_warn++;  cout<<"exit on parm min-max violation; check echoinput and warning for info"<<endl;
     	 warning<<N_warn<<" "<<"parameter init value is greater than parameter max "<<Pval<<" > "<<Pmax<<" for parm: "<<iparm<<endl;
     	echoinput<<" parameter init value is greater than parameter max "<<Pval<<" > "<<Pmax<<" for parm: "<<iparm<<endl; exit(1);}
     else if(jitter>0.0 && PrPH>=0)
     {
-      // temp=log((Pmax-Pmin+0.0000002)/(NewVal-Pmin+0.0000001)-1.)/(-2.);   // transform the parameter
-      // temp += randn(radm) * jitter;
-      // NewVal=Pmin+(Pmax-Pmin)/(1.+mfexp(-2.*temp));
-
       // generate jitter value from cumulative normal given Pmin and Pmax
       Psigma = (Pmax - Pmean) / zmax;   // Psigma should also be equal to (Pmin - Pmean) / zmin;
       
