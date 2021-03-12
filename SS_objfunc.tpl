@@ -1208,60 +1208,72 @@ FUNCTION dvariable Check_Parm(const int iparm, const int& PrPH, const double& Pm
     dvariable Psigma, zval, kval, kjitter, zjitter, temp;
 
     NewVal=Pval;
-    if((Pmin<=-99 || Pmax>=999) && PrPH>=0)
-      {N_warn++;  warning<<N_warn<<" "<<" jitter not done unless parameter min & max are in reasonable parameter range "<<Pmin<<" "<<Pmax<<endl;}
-    else if(Pmin>Pmax)
+    if(Pval>-900){
+    if(Pmin>Pmax)
     {N_warn++; cout<<" EXIT - see warning "<<endl; 
     	 warning<<N_warn<<" "<<" parameter min > parameter max "<<Pmin<<" > "<<Pmax<<" for parm: "<<iparm<<endl; cout<<" fatal error, see warning"<<endl;
     	echoinput<<" parameter min > parameter max "<<Pmin<<" > "<<Pmax<<" for parm: "<<iparm<<endl; cout<<" fatal error, see warning"<<endl; exit(1);}
     else if(Pmin==Pmax && PrPH>=0)
     {N_warn++;
-    	 warning<<N_warn<<" "<<" parameter min is same as parameter max"<<Pmin<<" = "<<Pmax<<" for parm: "<<iparm<<endl;
+    	warning<<N_warn<<" "<<" parameter min is same as parameter max: "<<Pmin<<" = "<<Pmax<<" for parm: "<<iparm<<" ; see echoinput for parm_type"<<endl;
     	echoinput<<" parameter min is same as parameter max"<<Pmin<<" = "<<Pmax<<" for parm: "<<iparm<<endl;}
-    else if(Pval<Pmin) {N_warn++; cout<<"exit on parm min-max violation; check echoinput and warning for info"<<endl;
-    	 warning<<N_warn<<" "<<"parameter init value is less than parameter min "<<Pval<<" < "<<Pmin<<" for parm: "<<iparm<<endl;
-    	echoinput<<" parameter init value is less than parameter min "<<Pval<<" < "<<Pmin<<" for parm: "<<iparm<<endl; exit(1);}
-    else if(Pval>Pmax) {N_warn++;  cout<<"exit on parm min-max violation; check echoinput and warning for info"<<endl;
-    	 warning<<N_warn<<" "<<"parameter init value is greater than parameter max "<<Pval<<" > "<<Pmax<<" for parm: "<<iparm<<endl;
-    	echoinput<<" parameter init value is greater than parameter max "<<Pval<<" > "<<Pmax<<" for parm: "<<iparm<<endl; exit(1);}
-    else if(jitter>0.0 && PrPH>=0)
-    {
-      // generate jitter value from cumulative normal given Pmin and Pmax
-      Psigma = (Pmax - Pmean) / zmax;   // Psigma should also be equal to (Pmin - Pmean) / zmin;
-      
-      if (Psigma < 0.00001)    // how small a sigma is too small?
-      {
-          N_warn++;
-          cout<<" EXIT - see warning "<<endl;
-           warning<<N_warn<<" "<<" in Check_Parm jitter:  Psigma < 0.00001 "<<Psigma<<endl;
-          cout<<" fatal error in jitter, see warning"<<endl; exit(1);
-      }
-      zval = (Pval - Pmean) / Psigma;  //  current parm value converted to zscore
-      kval = cumd_norm(zval);
-      temp=randu(radm);
-      kjitter = kval + (jitter * ((2.00 * temp) - 1.));  // kjitter is between kval - jitter and kval + jitter
-      if (kjitter < bound)
-      {
-          NewVal=Pmin+0.1*(Pval-Pmin);
-      }
-      else if (kjitter > (1.0-bound))
-      {
-          NewVal=Pmax-0.1*(Pmax-Pval);
-      }
+    else if(Pval<Pmin) {N_warn++;
+    	warning<<N_warn<<" "<<"parameter init value is less than parameter min "<<Pval<<" < "<<Pmin<<" for parm: "<<iparm<<" ; see echoinput for parm_type, will exit if prior requested"<<endl;
+    	echoinput<<" parameter init value is less than parameter min "<<Pval<<" < "<<Pmin<<" for parm: "<<iparm<<endl;
+    	if(Prtype>0) exit(1);}
+    else if(Pval>Pmax) {N_warn++;
+    	warning<<N_warn<<" "<<"parameter init value is greater than parameter max "<<Pval<<" > "<<Pmax<<" for parm: "<<iparm<<" ; see echoinput for parm_type, will exit if prior requested"<<endl;
+    	echoinput<<" parameter init value is greater than parameter max "<<Pval<<" > "<<Pmax<<" for parm: "<<iparm<<endl;
+    	if(Prtype>0) exit(1);}
+
+     if(jitter>0.0 && PrPH>=0)
+     {
+       if((Pmin<=-99 || Pmax>=999))
+       {N_warn++;  warning<<N_warn<<" "<<" jitter not done unless parameter min & max are in reasonable parameter range "<<Pmin<<" "<<Pmax<<endl;}
       else
       {
-          zjitter = inv_cumd_norm(kjitter);
-          NewVal = (Psigma * zjitter) + Pmean;
+        // generate jitter value from cumulative normal given Pmin and Pmax
+        Psigma = (Pmax - Pmean) / zmax;   // Psigma should also be equal to (Pmin - Pmean) / zmin;
+        if (Psigma < 0.00001)    // how small a sigma is too small?
+        {
+            N_warn++;
+            cout<<" EXIT - see warning "<<endl;
+             warning<<N_warn<<" "<<" in Check_Parm jitter:  Psigma < 0.00001 "<<Psigma<<endl;
+            cout<<" fatal error in jitter, see warning"<<endl; exit(1);
+        }
+        zval = (Pval - Pmean) / Psigma;  //  current parm value converted to zscore
+        kval = cumd_norm(zval);
+        temp=randu(radm);
+        kjitter = kval + (jitter * ((2.00 * temp) - 1.));  // kjitter is between kval - jitter and kval + jitter
+        if (kjitter < bound)
+        {
+            NewVal=Pmin+0.1*(Pval-Pmin);
+        }
+        else if (kjitter > (1.0-bound))
+        {
+            NewVal=Pmax-0.1*(Pmax-Pval);
+        }
+        else
+        {
+            zjitter = inv_cumd_norm(kjitter);
+            NewVal = (Psigma * zjitter) + Pmean;
+        }
+        echoinput<<"jitter (min, max, old, new):  "<<Pmin<<" "<<Pmax<<" "<<Pval<<" "<<NewVal<<endl;
       }
-      echoinput<<"jitter (min, max, old, new):  "<<Pmin<<" "<<Pmax<<" "<<Pval<<" "<<NewVal<<endl;
     }
-
     //  now check prior
     if(Prtype>0)
     {
-      if(Psd<=0.0) {N_warn++; cout<<"fatal error in prior check, see warning"<<endl;  warning<<N_warn<<" "<<"FATAL:  A prior is selected but prior sd is zero. Prtype: "<<Prtype<<" Prior: "<<Pr<<" Pr_sd: "<<Psd<<" for parm: "<<iparm<<endl; exit(1);}
+      if(Psd<=0.0) {N_warn++; cout<<"fatal error in prior check, see warning"<<endl;
+      	warning<<N_warn<<" "<<"FATAL:  A prior is selected but prior sd is zero. Prtype: "<<Prtype<<" Prior: "<<Pr<<" Pr_sd: "<<Psd<<" for parm: "<<iparm<<" ; see echoinput for parm_type"<<endl;
+      	exit(1);}
       if(PrPH<0) {prior_ignore_warning++;}
     }
+    }
+    else
+    	{
+    		//  checking ignored for inputs that are special codes
+    	}
 
     RETURN_ARRAYS_DECREMENT();
     return NewVal;
