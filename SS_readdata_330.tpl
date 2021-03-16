@@ -3563,7 +3563,8 @@
   N_STD_Yr_Ofish=0;
   N_STD_Yr_F=0;
 
-
+  echoinput<<"SPR_reporting "<<SPR_reporting<<endl;
+  echoinput<<"F_reporting "<<F_reporting<<endl;
   for (y=styr-2;y<=YrMax;y++)
   {
     if(STD_Yr_Reverse(y)>0)
@@ -3588,6 +3589,9 @@
       }
     }
   }
-  echoinput<<"Finished creating STD containers and indexes "<<endl;
-
+  echoinput<<"Finished creating STD containers and indexes "<<endl
+  <<" STD_SSB_Recr "<<STD_Yr_Reverse<<endl
+  <<" STD_deplet "<<STD_Yr_Reverse_Dep<<endl
+  <<" STD_SPR "<<STD_Yr_Reverse_Ofish<<endl
+  <<" STD_F "<<STD_Yr_Reverse_F<<endl;
  END_CALCS
