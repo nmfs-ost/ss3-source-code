@@ -1025,7 +1025,7 @@ FUNCTION void write_bigoutput()
     if(s==spawn_seas)
     {
       temp=sum(SSB_pop_gp(y,p));
-      if(Hermaphro_maleSPB==1) temp+=sum(MaleSPB(y,p));
+      if(Hermaphro_maleSPB>0) temp+=Hermaphro_maleSPB*sum(MaleSPB(y,p));
       SS2out<<temp;
     }
     else

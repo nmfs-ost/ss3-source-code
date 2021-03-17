@@ -777,9 +777,9 @@ FUNCTION void get_time_series()
               MaleSPB(y,p,GP4(g)) += Save_Wt_Age(t,g)*natage(t,p,g);   // accumulates SSB by area and by growthpattern
             }
           }
-          if(Hermaphro_maleSPB==1) // add MaleSPB to female SSB
+          if(Hermaphro_maleSPB>0.0)  // add MaleSPB to female SSB
           {
-            SSB_current+=sum(MaleSPB(y));
+            SSB_current+=Hermaphro_maleSPB*sum(MaleSPB(y));
             SSB_yr(y)=SSB_current;
           }
         }
@@ -1178,9 +1178,9 @@ FUNCTION void get_time_series()
               MaleSPB(y,p,GP4(g)) += Save_Wt_Age(t,g)*elem_prod(natage(t,p,g),mfexp(-Z_rate(t,p,g)*spawn_time_seas));   // accumulates SSB by area and by growthpattern
             }
           }
-          if(Hermaphro_maleSPB==1) // add MaleSPB to female SSB
+          if(Hermaphro_maleSPB>0.0)  // add MaleSPB to female SSB
           {
-            SSB_current+=sum(MaleSPB(y));
+            SSB_current+=Hermaphro_maleSPB*sum(MaleSPB(y));
             SSB_yr(y)=SSB_current;
           }
         }
@@ -1919,7 +1919,8 @@ FUNCTION void Do_Equil_Calc(const prevariable& equ_Recr)
    GenTime/=SSB_equil;
    smryage /= smrynum;
    cumF/=(r_ages(nages)-r_ages(Smry_Age)+1.);
-   if(Hermaphro_maleSPB==1) SSB_equil+=sum(MaleSSB_equil_pop_gp);
+   if(Hermaphro_maleSPB>0.0)  // add MaleSPB to female SSB
+              {SSB_equil+=Hermaphro_maleSPB*sum(MaleSSB_equil_pop_gp);}
 
   }  //  end equil calcs
 

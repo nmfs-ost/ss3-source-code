@@ -1416,7 +1416,9 @@ FUNCTION void write_nucontrol()
 
     report4<<Fecund_Option<<" #_fecundity option:(1)eggs=Wt*(a+b*Wt);(2)eggs=a*L^b;(3)eggs=a*Wt^b; (4)eggs=a+b*L; (5)eggs=a+b*W"<<endl;
     report4<<Hermaphro_Option<<" #_hermaphroditism option:  0=none; 1=female-to-male age-specific fxn; -1=male-to-female age-specific fxn"<<endl;
-    if (Hermaphro_Option!=0) report4<<Hermaphro_seas<<" # Hermaphro_season "<<endl<<Hermaphro_maleSPB<<" # Hermaphro_maleSSB "<<endl;
+    if (Hermaphro_Option!=0){
+   report4<<Hermaphro_seas_rd<<" # Hermaphro_season.first_age "<<endl<<Hermaphro_maleSPB<<" # fraction_of_maleSSB_added_to_total_SSB "<<endl;}
+   
     report4<<MGparm_def<<" #_parameter_offset_approach for M, G, CV_G:  1- direct, no offset; 2- male=fem_parm*exp(male_parm); 3: male=female*exp(parm) then old=young*exp(parm)"<<endl;
   report4<<"#"<<endl;
   report4<<"#_growth_parms";
