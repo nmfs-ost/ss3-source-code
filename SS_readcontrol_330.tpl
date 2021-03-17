@@ -1878,6 +1878,7 @@
 
   if(Do_Forecast>0)
   {
+    if(do_recdev!=0){
     for (y=recdev_end+1;y<=YrMax;y++)
     {
       recdev_doit(y)=1;
@@ -1888,13 +1889,16 @@
       else
       {ParmLabel+="Late_RecrDev_"+onenum+CRLF(1);}
     }
+    }
 
-    for (y=endyr+1;y<=YrMax;y++)
+    if(Do_Impl_Error>0){
+    	for (y=endyr+1;y<=YrMax;y++)
     {
       sprintf(onenum, "%d", y);
       ParCount++;
       ParmLabel+="Impl_err_"+onenum+CRLF(1);
     }
+   }
   }
 
       biasadj_full.initialize();
@@ -4465,16 +4469,20 @@
         Fcast_recr_PH2=-1;
       }
 
-      for (y=recdev_end+1;y<=YrMax;y++)
-      {
-        ParCount++;
-        if(Fcast_recr_PH2>-1) {active_count++; active_parm(active_count)=ParCount;}
+      if(do_recdev!=0){
+      	for (y=recdev_end+1;y<=YrMax;y++)
+        {
+          ParCount++;
+          if(Fcast_recr_PH2>-1) {active_count++; active_parm(active_count)=ParCount;}
+        }
       }
-    for (y=endyr+1;y<=YrMax;y++)
-    {
+      if(Do_Impl_Error>0){
+	    for (y=endyr+1;y<=YrMax;y++)
+      {
       ParCount++;
-      if(Do_Impl_Error>0 && Fcast_recr_PH2>-1)
+      if(Fcast_recr_PH2>-1)
       {active_count++; active_parm(active_count)=ParCount;}
+    }
     }
   }
   else
@@ -5223,7 +5231,6 @@
     vector recdev_cycle_use(1,recdev_cycle);
     vector recdev_use(recdev_first,YrMax);
     vector recdev_RD(recdev_first,YrMax);
-    vector impl_error_use(endyr+1,YrMax);
     vector Q_parm_use(1,Q_Npar2);
     vector init_F_use(1,N_init_F);
     vector Fparm_use(1,N_Fparm);

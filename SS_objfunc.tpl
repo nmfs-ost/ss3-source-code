@@ -644,16 +644,13 @@ FUNCTION void evaluate_the_objective_function()
       if(do_recdev==4) regime_like+=square(sum_recdev);
       if(do_once==1) cout<<" did recruitdev obj_fun "<<recr_like<<" "<<sd_offset_rec<<" "<<two_sigmaRsq<<endl;
     }
-    if(Do_Forecast>0)
+    if(Do_Forecast>0 && do_recdev>0)
     {
       if(recdev_end<endyr)
       {
         Fcast_recr_like = Fcast_recr_lambda*(norm2(Fcast_recruitments(recdev_end+1,endyr)))/two_sigmaRsq;
 //        Fcast_recr_like += sd_offset_fore*log(sigmaR);  this is now part of the recr_liker logL calculated above
       }
-      else
-      {Fcast_recr_like=0.0;}
-      if(Do_Impl_Error>0) Fcast_recr_like+=(norm2(Fcast_impl_error(endyr+1,YrMax)))/(2.0*Impl_Error_Std*Impl_Error_Std);  // implementation error
       if(SR_autocorr==0)
       {
         Fcast_recr_like += (norm2(Fcast_recruitments(endyr+1,YrMax)))/two_sigmaRsq;
@@ -665,6 +662,7 @@ FUNCTION void evaluate_the_objective_function()
         {Fcast_recr_like += square(Fcast_recruitments(y)-rho*Fcast_recruitments(y-1)) / ((1.0-rho*rho)*two_sigmaRsq);}
       }
     }
+    if(Do_Impl_Error>0) Fcast_recr_like+=(norm2(Fcast_impl_error(endyr+1,YrMax)))/(2.0*Impl_Error_Std*Impl_Error_Std);  // implementation error
 
   //  SS_Label_Info_25.13 #Penalty for the parameter priors
     dvariable mu; dvariable tau; dvariable Aprior; dvariable Bprior;
@@ -1569,18 +1567,20 @@ FUNCTION void get_posteriors()
     {
       if( active(recdev1)||active(recdev2) ) posts<<recdev(i)<<" ";
     }
-  }
-  if(Do_Forecast>0)
+  if(Do_Forecast>0 && active(Fcast_recruitments))
   {
     for (i=recdev_end+1;i<=YrMax;i++)
     {
-      if(active(Fcast_recruitments)) posts<<Fcast_recruitments(i)<<" ";
-    }
-    for (i=endyr+1;i<=YrMax;i++)
-    {
-      if(active(Fcast_impl_error)) posts<<Fcast_impl_error(i)<<" ";
+      posts<<Fcast_recruitments(i)<<" ";
     }
   }
+  }
+    if(Do_Impl_Error>0){   		
+    for (i=endyr+1;i<=YrMax;i++)
+    {
+      posts<<Fcast_impl_error(i)<<" ";
+    }
+   }
   for (i=1;i<=N_init_F;i++)
   {
     if(active(init_F(i))) posts<<init_F(i)<<" ";

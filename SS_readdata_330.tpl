@@ -3073,7 +3073,13 @@
   echoinput<<endl<<"#next enter 0, or stddev of implementation error"<<endl;
   *(ad_comm::global_datafile) >> Impl_Error_Std;
   echoinput<<Impl_Error_Std<<" # echoed value"<<endl;
-  if(Impl_Error_Std>0.0) Do_Impl_Error=1;
+  if(Impl_Error_Std>0.0){
+  	if(Do_Forecast_rd>0){
+  	 Do_Impl_Error=1;  //  OK to do impl error because forecast occurs
+  	}
+  	else
+  	{N_warn++; warning<<N_warn<<"; changing Imple_Error to 0 because no forecast "<<endl; Impl_Error_Std=0.0; Do_Impl_Error=0;}
+  }
 
   echoinput<<endl<<"#next select rebuilding program output (0/1)"<<endl;
   *(ad_comm::global_datafile) >> Do_Rebuilder;
