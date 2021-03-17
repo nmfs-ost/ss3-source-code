@@ -1971,6 +1971,7 @@ FUNCTION void write_bigoutput()
     SS2out<<endl<<pick_report_name(32)<<endl;
   SS2out<<"Asel_is_age_selectivity_alone"<<endl;
   SS2out<<"Asel2_is_sizesel*size_at_age(ALK)"<<endl;
+  SS2out<<"Aret_is_age_retention"<<endl;
   SS2out<<"COMBINED_ALK*selL*selA*wtlen*ret*discmort_in_makefishsel_yr: "<<makefishsel_yr<<" With_MeanSel_From: "<<Fcast_Sel_yr1<<" - "<<Fcast_Sel_yr2;     // SS_Label_380
   SS2out<<"; Year_styr-3_("<<styr-3<<")_stores_average_used_for_benchmark"<<endl;
 
@@ -1984,9 +1985,20 @@ FUNCTION void write_bigoutput()
     for (gg=1;gg<=gender;gg++)
     if(y==styr-3 || y==endyr || y==YrMax || (y>=styr && (timevary_sel(y,f+Nfleet)>0 || timevary_sel(y+1,f+Nfleet)>0)))
     {
-      SS2out<<"Asel "<<f<<" "<<y<<" 1 "<<gg<<" 1 "<<y<<"_"<<f<<"Asel";
-      for (a=0;a<=nages;a++) {SS2out<<" "<<sel_a(y,f,gg,a);}
-      SS2out<<endl;
+      SS2out<<"Asel "<<f<<" "<<y<<" 1 "<<gg<<" 1 "<<y<<"_"<<f<<"Asel "<<sel_a(y,f,gg)<<endl;
+    }
+  }
+  for (f=1;f<=Nfleet;f++)
+  {
+	if(seltype(f+Nfleet,2)>0)  // using age retention
+	{
+    for (y=styr-3;y<=YrMax;y++)
+    for (gg=1;gg<=gender;gg++)
+    if(y==styr-3 || y==endyr || y==YrMax || (y>=styr && (timevary_sel(y,f+Nfleet)>0 || timevary_sel(y+1,f+Nfleet)>0)))
+    {
+      SS2out<<"Aret "<<f<<" "<<y<<" 1 "<<gg<<" 1 "<<y<<"_"<<f<<"Aret "<<retain_a(y,f,gg)<<endl;
+      SS2out<<"Amort "<<f<<" "<<y<<" 1 "<<gg<<" 1 "<<y<<"_"<<f<<"Amort "<<discmort_a(y,f,gg)<<endl;
+	}
     }
   }
 
