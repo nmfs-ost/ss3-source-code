@@ -780,16 +780,22 @@
   !! if(Hermaphro_Option!=0) k=2;
   init_ivector Hermaphro_more(1,k);
   int Hermaphro_seas;
-  int Hermaphro_maleSPB;
+  number Hermaphro_maleSPB;
+  int Hermaphro_firstage;
+  number Hermaphro_seas_rd;
  LOCAL_CALCS
   Hermaphro_seas=0;
+  Hermaphro_seas_rd=0;
   Hermaphro_maleSPB=0;
+  Hermaphro_firstage=0;
   if (k>0)
   {
     Hermaphro_seas=Hermaphro_more(1);
+    Hermaphro_seas_rd=Hermaphro_seas;
     Hermaphro_maleSPB=Hermaphro_more(2);
     echoinput<<Hermaphro_seas<<"  Hermaphro_season "<<endl;
     echoinput<<Hermaphro_maleSPB<<"  Hermaphro_maleSPB "<<endl;
+    if(Hermaphro_maleSPB>1.) Hermaphro_maleSPB=1.0;
   }
  END_CALCS
 // if Hermaphro_Option=1, then read 3 parameters for switch from female to male by age
