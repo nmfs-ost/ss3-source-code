@@ -692,7 +692,7 @@ FINAL_SECTION
     bigsaver=1;
     save_gparm=0;
     wrote_bigreport=0;
-    if(SDmode==0 && pick_report_use(54)=="Y") write_bodywt=1;  //  turn on conditional on SDMode because SDMode=1 situation already written
+    if(SDmode==0 && pick_report_use(60)=="Y") write_bodywt=1;  //  turn on conditional on SDMode because SDMode=1 situation already written
     y=styr;
     setup_recdevs();
     get_initial_conditions();
@@ -700,7 +700,7 @@ FINAL_SECTION
     evaluate_the_objective_function();
 //  SS_Label_Info_12.3.3 #Do benchmarks and forecast and stdquantities with save_for_report=1
     if(mceval_phase()==0) {show_MSY=1;} else {show_MSY=0;}  //  turn on reporting if not in mceval
-    if(pick_report_use(54)=="Y") {write_bodywt=1;}  //  turn on bodywt after time series 
+    if(pick_report_use(60)=="Y") {write_bodywt=1;}  //  turn on bodywt after time series 
     setup_Benchmark();  //  calculates biology and selectivity to be used
     if(Do_Benchmark>0)
     {
@@ -869,7 +869,7 @@ REPORT_SECTION
     wrote_bigreport=0;
     if(last_phase() && SDmode==1)
     {
-    if(pick_report_use(54)=="Y") {write_bodywt=1;}
+    if(pick_report_use(60)=="Y") {write_bodywt=1;}
     save_for_report=1;
     save_gparm=0;
     y=styr;
