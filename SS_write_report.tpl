@@ -466,7 +466,7 @@ FUNCTION void write_bigoutput()
         for (i=endyr+1;i<=YrMax;i++)
         {
           NP++; SS2out<<NP<<" "<<ParmLabel(NP)<<" "<<Fcast_impl_error(i);
-          if(Do_Impl_Error>0)
+          if(Fcast_recr_PH2>0)  //  intentionally using recdev phase
           {active_count++; SS2out<<" "<<active_count<<" "<<Fcast_recr_PH2<<" -1 1 0 0 act "<<CoVar(active_count,1)<<" "<<parm_gradients(active_count);}
           else
           {SS2out<<"  _ _ _ _ _ _ NA _ _ ";}

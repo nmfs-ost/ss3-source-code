@@ -1786,6 +1786,8 @@
     echoinput<<Fcast_recr_lambda<<" #_lambda for Fcast_recr_like occurring before endyr+1"<<endl;
     if(Fcast_Loop_Control(3)==3 && Fcast_recr_PH_rd>=0)
     	{N_warn++; warning<<N_warn<<" mean recruitment for forecast is incompatible with pos. phase for forecast rec_devs; set phase to neg. unless using late rec_devs"<<endl;}
+    if(Do_Impl_Error>0 && Fcast_recr_PH_rd<0)
+    	{N_warn++; warning<<N_warn<<" Implementation error incompatible with neg. phase for forecast rec_devs; SS will run without active impl error"<<endl;}
     echoinput<<recdev_adj(1)<<" #_last_early_yr_nobias_adj_in_MPD"<<endl;
     echoinput<<recdev_adj(2)<<" #_first_yr_fullbias_adj_in_MPD"<<endl;
     echoinput<<recdev_adj(3)<<" #_last_yr_fullbias_adj_in_MPD"<<endl;
