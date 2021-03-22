@@ -144,17 +144,20 @@ PARAMETER_SECTION
   init_bounded_vector recdev_early(recdev_early_start,recdev_early_end,recdev_LO,recdev_HI,recdev_early_PH)
   init_bounded_dev_vector recdev1(k,j,recdev_LO,recdev_HI,recdev_PH)
   init_bounded_vector recdev2(s,p,recdev_LO,recdev_HI,recdev_PH)
-  init_bounded_vector Fcast_recruitments(recdev_end+1,YrMax,recdev_LO,recdev_HI,Fcast_recr_PH2)
   vector recdev(recdev_first,YrMax);
 
  LOCAL_CALCS
-  if(Do_Impl_Error>0)
-//  {k=max_phase+1;}
-  {k=Fcast_recr_PH2;}
+  if(do_recdev==0){
+  	s=-1;
+  } else{s=YrMax;}
+  if(Do_Impl_Error>0){
+  	k=Fcast_recr_PH2; j=YrMax;}
   else
-  {k=-1;}
+  {k=-1; j=-1;}
+  	
  END_CALCS
-  init_bounded_vector Fcast_impl_error(endyr+1,YrMax,-1,1,k)
+  init_bounded_vector Fcast_recruitments(recdev_end+1,s,recdev_LO,recdev_HI,Fcast_recr_PH2)
+  init_bounded_vector Fcast_impl_error(endyr+1,j,-1,1,k)
   vector ABC_buffer(endyr+1,YrMax);
 
 //  SPAWN-RECR:   define some spawning biomass and recruitment entities

@@ -233,7 +233,7 @@ FUNCTION void apply_recdev(prevariable& NewRecruits,  const prevariable& Recr_vi
             break;
           }
         }
-        NewRecruits*=mfexp(Fcast_recruitments(y));  //  recruitment deviation
+        if(do_recdev>0) NewRecruits*=mfexp(Fcast_recruitments(y));  //  recruitment deviation
       }
       exp_rec(y,4)=NewRecruits;
     RETURN_ARRAYS_DECREMENT();

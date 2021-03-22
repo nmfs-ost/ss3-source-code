@@ -433,8 +433,8 @@ PRELIMINARY_CALCS_SECTION
     }
 
     if(recdev_do_early>0) recdev_early.initialize();
-    if(Do_Forecast>0) Fcast_recruitments.initialize();
-    if(Do_Forecast>0) Fcast_impl_error.initialize();
+    if(Do_Forecast>0 && do_recdev!=0) Fcast_recruitments.initialize();
+    if(Do_Impl_Error>0) Fcast_impl_error.initialize();
 
     if(do_recdev==1)
     {recdev1.initialize();}                // set devs to zero
@@ -593,11 +593,10 @@ PRELIMINARY_CALCS_SECTION
       }
     }
 
-    if(Do_Forecast>=0)
+    if(Do_Forecast>=0 && do_recdev>0)
       {
         recdev_RD(recdev_end+1,YrMax)=value(Fcast_recruitments(recdev_end+1,YrMax));
         recdev_use(recdev_end+1,YrMax)=value(Fcast_recruitments(recdev_end+1,YrMax));
-        impl_error_use(endyr+1,YrMax)=value(Fcast_impl_error(endyr+1,YrMax));
       }
 
     echoinput<< " rec_devs after check "<<recdev_use<<endl;

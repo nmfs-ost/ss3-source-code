@@ -94,7 +94,8 @@ FUNCTION void write_summaryoutput()
   if(recdev_do_early>0) report2<<recdev_early<<" ";
   if(do_recdev==1) {report2<<recdev1<<" ";}
   if(do_recdev==2) {report2<<recdev2<<" ";}
-  if(Do_Forecast>0) report2<<Fcast_recruitments<<" "<<Fcast_impl_error<<" ";
+  if(Do_Forecast>0) report2<<Fcast_recruitments<<" ";
+  if(Do_Impl_Error>0) report2<<Fcast_impl_error<<" ";
   if(N_init_F>0) report2<<init_F<<" ";
   if(F_Method==2) report2<<" "<<F_rate;
   if(Q_Npar2>0) report2<<Q_parm<<" ";
@@ -147,16 +148,20 @@ FUNCTION void write_summaryoutput()
 
     if(Do_Forecast>0)
     {
+    	if(do_recdev>0){
       report2<<runnumber<<" Recr_fore ";
       for (i=recdev_end+1;i<=YrMax;i++) {NP++; report2<<" "<<ParmLabel(NP);}
       report2<<endl<<runnumber<<" Recr_fore ";
       for (i=recdev_end+1;i<=YrMax;i++) report2<<" "<<recdev(i);
       report2<<endl;
+    	}
+      if(Do_Impl_Error>0){
       report2<<runnumber<<" Impl_err ";
       for (i=endyr+1;i<=YrMax;i++) {NP++; report2<<" "<<ParmLabel(NP);}
       report2<<endl<<runnumber<<" Impl_err ";
       for (i=endyr+1;i<=YrMax;i++) report2<<" "<<Fcast_impl_error(i);
       report2<<endl;
+      }
     }
 
     report2<<runnumber<<" init_F ";
@@ -339,7 +344,7 @@ FUNCTION void write_SS_summary()
   }
   }
 
-  if(Do_Forecast>0)
+  if(Do_Forecast>0 && do_recdev>0)
   {
   for (j=recdev_end+1;j<=YrMax;j++)
   {
@@ -349,12 +354,14 @@ FUNCTION void write_SS_summary()
     SS_smry<<(Fcast_recruitments(j)-recdev_LO)/(recdev_HI-recdev_LO+1.0e-6)<<endl;
   }
 
+  if(Do_Impl_Error>0){
   for (j=endyr+1;j<=YrMax;j++)
   {
     NP++;
     SS_smry<<ParmLabel(NP)<<" "<<Fcast_impl_error(j)<<" ";
     if(active(Fcast_impl_error)) {active_count++;  SS_smry<<CoVar(active_count,1)<<" Act ";} else {SS_smry<<0.0<<" Fix ";}
     SS_smry<<(Fcast_impl_error(j)-(-1.))/(1.0-(-1.0)+1.0e-6)<<endl;
+  }
   }
   }
 

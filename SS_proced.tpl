@@ -276,7 +276,8 @@ PROCEDURE_SECTION
         if(recdev_do_early>0) ParmTrace<<recdev_early<<" ";
         if(do_recdev==1) {ParmTrace<<recdev1<<" ";}
         if(do_recdev>=2) {ParmTrace<<recdev2<<" ";}
-        if(Do_Forecast>0) ParmTrace<<Fcast_recruitments<<" "<<Fcast_impl_error<<" ";
+        if(Do_Forecast>0) ParmTrace<<Fcast_recruitments<<" ";
+        if(Do_Impl_Error>0) ParmTrace<<Fcast_impl_error<<" ";
         if(N_init_F>0) ParmTrace<<init_F<<" ";
         if(F_Method==2) ParmTrace<<F_rate<<" ";
         if(Q_Npar>0) ParmTrace<<Q_parm<<" ";

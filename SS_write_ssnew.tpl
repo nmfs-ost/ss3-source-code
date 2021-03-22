@@ -1694,13 +1694,17 @@ FUNCTION void write_nucontrol()
     if(Do_Forecast>0)
     {
       for (y=recdev_end+1;y<=YrMax;y++)  {NP++;  report4<<" "<<recdev(y);}
-      report4<<endl<<"# implementation error by year in forecast: ";
+      report4<<endl;
+      if(Do_Impl_Error>0){
+      report4<<"# implementation error by year in forecast: ";
       for (y=endyr+1;y<=YrMax;y++)
       {
         NP++;  report4<<" "<<Fcast_impl_error(y);
       }
+      report4<<endl;
+      }
     }
-  report4<<endl<<"#"<<endl;
+  report4<<"#"<<endl;
   report4<<"#Fishing Mortality info "<<endl<<F_ballpark<<" # F ballpark value in units of annual_F"<<endl;
   report4<<F_ballpark_yr<<" # F ballpark year (neg value to disable)"<<endl;
   report4<<F_Method<<" # F_Method:  1=Pope; 2=instan. F; 3=hybrid (hybrid is recommended)"<<endl;

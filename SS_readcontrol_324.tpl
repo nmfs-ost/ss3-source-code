@@ -4900,7 +4900,6 @@
     vector recdev_cycle_use(1,recdev_cycle);
     vector recdev_use(recdev_first,YrMax);
     vector recdev_RD(recdev_first,YrMax);
-    vector impl_error_use(endyr+1,YrMax);
     vector Q_parm_use(1,Q_Npar2);
     vector init_F_use(1,N_init_F);
     vector Fparm_use(1,N_Fparm);
