@@ -345,7 +345,7 @@
   		if(reportdetail_list[j](1)>0 && reportdetail_list[j](1)<=60) {
   			pick_report_use(reportdetail_list[j](1))="Y";
   		}
-  		else if(reportdetail_list[j](1)>-60) {
+  		else if(reportdetail_list[j](1)>=-60) {
   			pick_report_use(-reportdetail_list[j](1))="N";
   		}
   		else if(reportdetail_list[j](1)>-100) 

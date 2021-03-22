@@ -1072,7 +1072,7 @@ PRELIMINARY_CALCS_SECTION
 
 //  SS_Label_Info_6.10 #Preliminary calcs done; Ready for estimation
 
-    if(pick_report_use(54)=="Y") 
+    if(pick_report_use(60)=="Y") 
     {
     bodywtout<<nages<<" # maxage"<<endl;
     bodywtout<<"# if Yr is negative, then fill remaining years for that Seas, growpattern, Bio_Pattern, Fleet"<<endl;

@@ -36,6 +36,7 @@
 !!//  SS_Label_Info_4.2 #Read info for growth patterns, gender, settlement events, platoons
   init_int WTage_rd  // 0 means do not read wtatage.ss; 1 means read and use wtatage.ss and also read and use growth parameters
                      //  future option 2 will suppress reading and use of growth
+  !!echoinput<<WTage_rd<<" wtatage switch "<<endl;
   init_int N_GP  // number of growth patterns (morphs)
   !!echoinput<<N_GP<<" N growth patterns "<<endl;
   init_int N_platoon  //  number of platoons  1, 3, 5 are best values to use
