@@ -38,5 +38,5 @@ jobs:
           rm -rf SS330
           rm -rf ss_linux.tar
           mkdir SS330
-          /bin/bash ./Make_SS_330_new.sh -b SS330 -w
+          /bin/bash ./Make_SS_330_new.sh -a /usr/local/bin/admb-12.3 -b SS330 -w
           
