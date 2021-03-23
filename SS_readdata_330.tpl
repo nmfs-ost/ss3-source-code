@@ -253,8 +253,16 @@
       catchunits(f) = int(fleet_setup(f,4));
       need_catch_mult(f) = int(fleet_setup(f,5));
       if(fleet_type(f)>1 && need_catch_mult(f)>0)
-        {N_warn++; cout<<"exit with warning"<<endl;  warning<<N_warn<<" "<<"Need_catch_mult can be used only for fleet_type=1 fleet= "<<f<<endl; exit(1);}
+        {N_warn++; cout<<"exit with warning"<<endl; warning<<N_warn<<" "<<"Need_catch_mult can be used only for fleet_type=1 fleet= "<<f<<endl; exit(1);}
       echoinput<<f<<" # "<<fleet_setup(f)<<" # "<<fleetname(f)<<endl;
+      if(f>1){  // check for duplicate fleet names, which will break r4ss
+      	for(int f1=1;f1<f;f1++){
+      		if(fleetname(f1)==fleetname(f)){
+      			N_warn++; cout<<"exit with warning"<<endl; 
+      			warning<<N_warn<<" duplicate fleet names for fleets: "<<f1<<" and "<<f<<"; "<<fleetname(f)<<"; SS will exit"<<endl; exit(1);
+      		}
+      	}
+      }
     }
 
     if(N_bycatch>0)
