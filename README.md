@@ -28,15 +28,15 @@ Please look for answers or submit questions to the [Stock Synthesis forums](http
 
 ## How can I contribute to Stock Synthesis?
 
-Have feature requests or bug reports? Please open an [issue](https://github.com/nmfs-stock-synthesis/stock-synthesis/issues) or submit a pull request. For complete details, please see [CONTRIBUTING.md](CONTRIBUTING.md)
+Have feature requests or bug reports? Want to contribute code? Please open an [issue](https://github.com/nmfs-stock-synthesis/stock-synthesis/issues) or submit a pull request. For complete details, please see [CONTRIBUTING.md](CONTRIBUTING.md)
 
 ## Tools for working with SS
 
 As SS usage has grown, so has the number of tools to work with it. These include:
 
 - [r4ss](https://github.com/r4ss/r4ss): Create plots of SS output and functions to work with SS in R.
-- [ss3sim](https://github.com/ss3sim/ss3sim): Conduct simulation studies using SS
-- [SSI](https://vlab.ncep.noaa.gov/web/stock-synthesis/document-library/-/document_library/0LmuycloZeIt/view/5042951): Stock Synthesis Interface, a GUI for developing and running SS
+- [ss3sim](https://github.com/ss3sim/ss3sim): Conduct simulation studies using SS.
+- [SSI](https://vlab.ncep.noaa.gov/web/stock-synthesis/document-library/-/document_library/0LmuycloZeIt/view/5042951): Stock Synthesis Interface, a GUI for developing models and running SS. Links to r4ss.
 - [SSMSE](https://github.com/nmfs-fish-tools/SSMSE): Use SS operating models in Management Strategy Evaluation.
 
 Have a tool to work with SS that should be mentioned here? Open an issue or pull request to let us know!
