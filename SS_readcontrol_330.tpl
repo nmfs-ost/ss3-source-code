@@ -3043,7 +3043,7 @@
   }
   if(Comp_Err_ParmCount>0)
   {
-  	echoinput<<"comp_error parameters"<<endl<<"L: "<<Comp_Err_L<<endl<<"L2: "<<Comp_Err_L2<<endl<<"A: "<<Comp_Err_A<<endl<<"A2: "<<Comp_Err_A2<<endl;
+  	echoinput<<"comp_error parameters"<<endl<<"L_type: "<<Comp_Err_L<<endl<<"L_parm: "<<Comp_Err_L2<<endl<<"A_type: "<<Comp_Err_A<<endl<<"A_parm: "<<Comp_Err_A2<<endl;
    for (f = 1; f <= Nfleet; f++)
    {
       // if Dirichlet was indicated, set fleet for this parameter

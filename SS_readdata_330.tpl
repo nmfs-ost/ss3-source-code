@@ -1054,7 +1054,6 @@
   int Comp_Err_ParmCount;  // counts number of fleets that need a parameter for the error estimation
  LOCAL_CALCS
   Comp_Err_ParmCount=0;
-  Comp_Err_L2.initialize();
   min_tail_L.initialize();
   CombGender_L.initialize();
   AccumBin_L.initialize();
@@ -1089,10 +1088,16 @@
         N_warn++;  warning<<N_warn<<" minimum sample size for length comps must be > 0; minimum sample size set to 0.001 "<<endl;
         min_sample_size_L(f) = 0.001;
       }
+      if (Comp_Err_L2(f) >Nfleet)
+      {
+        N_warn++; cout<<"fatal input error, see warning "<<endl; warning<<N_warn<<"; length D-M index for fleet: "<<f<<" is: "<<Comp_Err_L2(f)<<" but must be an integer <=Nfleet "<<endl;
+        exit(1);
+      }
     }
     //  get count of needed dirichlet composition parameters
     //  the count for age data will be added after reading the age data setup
     Comp_Err_ParmCount=max(Comp_Err_L2);
+    echoinput<<"number of D-M parameters needed for length comp data: "<<Comp_Err_ParmCount<<endl<<endl;
     *(ad_comm::global_datafile) >> nlen_bin;
     echoinput<<nlen_bin<<" nlen_bin_for_data "<<endl;
   }
@@ -1710,6 +1715,7 @@
         }
       }
 
+      Comp_Err_A.initialize();
       Comp_Err_A2.initialize();
       echoinput<<"#_now read for each fleet info for processing the age comps:"<<endl;
       echoinput<<"#_mintailcomp: upper and lower distribution for females and males separately are accumulated until exceeding this level."<<endl;
@@ -1736,10 +1742,17 @@
           N_warn++;  warning<<N_warn<<" minimum sample size for age comps must be > 0; minimum sample size set to 0.001 "<<endl;
           min_sample_size_A(f) = 0.001;
         }
+      if (Comp_Err_A2(f) >Nfleet)
+      {
+        N_warn++; cout<<"fatal input error, see warning "<<endl; warning<<N_warn<<"; Age D-M index for fleet: "<<f<<" is: "<<Comp_Err_A2(f)<<" but must be an integer <=Nfleet "<<endl;
+        exit(1);
+      }
       }
         //  get count of needed dirichlet composition parameters
       j=max(Comp_Err_A2);
       Comp_Err_ParmCount=max(Comp_Err_ParmCount,j);  //  get the maximum parameter number referred to
+      echoinput<<"number of D-M parameters needed for length and age comp data: "<<Comp_Err_ParmCount<<endl;
+      
       *(ad_comm::global_datafile) >> Lbin_method;
       echoinput << Lbin_method<< " Lbin method for defined size ranges "  << endl;
 
