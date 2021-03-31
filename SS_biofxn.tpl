@@ -1149,7 +1149,6 @@ FUNCTION void get_recr_distribution()
   }
 //  SS_Label_Info_18.4  #scale the recr_dist matrix to sum to 1.0
   recr_dist(y)/=sum(recr_dist(y));
-
   if(y<YrMax)
   {
     k=y+1;
@@ -1160,7 +1159,7 @@ FUNCTION void get_recr_distribution()
   }
 //  if(y==styr)
 // 	{for(int yz=styr+1; yz<=YrMax;yz++) recr_dist(yz)=recr_dist(styr);}
-  warning<<y<<" recrdist: "<<recr_dist(y,1,1,4)<<" yr250 "<<recr_dist(250,1,1,4)<<" yr300 "<<recr_dist(300,1,1,4)<<endl;
+
  #ifdef DO_ONCE
     if(do_once==1) 
       {
