@@ -1440,7 +1440,7 @@ FUNCTION void Get_Forecast()
         }
       if(timevary_MG(y,1)>0) get_natmort();
       if(timevary_MG(y,3)>0) get_wtlen();
-      if(timevary_MG(y,4)>0 && Fcast_Loop_Control(3)!=3) 
+      if((timevary_MG(y,4)>0 || timevary_MG(endyr+1,4)>0) && Fcast_Loop_Control(3)!=3) 
       	{get_recr_distribution();}
       if(timevary_MG(y,5)>0) get_migration();
       if(timevary_MG(y,7)>0)  get_catch_mult(y, catch_mult_pointer);

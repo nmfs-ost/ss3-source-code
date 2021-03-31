@@ -1150,9 +1150,17 @@ FUNCTION void get_recr_distribution()
 //  SS_Label_Info_18.4  #scale the recr_dist matrix to sum to 1.0
   recr_dist(y)/=sum(recr_dist(y));
 
-  if(y==styr)
- 	{for(int yz=styr+1; yz<=YrMax;yz++) recr_dist(yz)=recr_dist(styr);}
-  
+  if(y<YrMax)
+  {
+    k=y+1;
+    while(timevary_MG(k,4)==0 && k<=YrMax)
+    {
+      recr_dist(k)=recr_dist(k-1);  k++;
+    }
+  }
+//  if(y==styr)
+// 	{for(int yz=styr+1; yz<=YrMax;yz++) recr_dist(yz)=recr_dist(styr);}
+  warning<<y<<" recrdist: "<<recr_dist(y,1,1,4)<<" yr250 "<<recr_dist(250,1,1,4)<<" yr300 "<<recr_dist(300,1,1,4)<<endl;
  #ifdef DO_ONCE
     if(do_once==1) 
       {
@@ -1468,10 +1476,10 @@ FUNCTION void get_migration()
   }  // end season
 
   //  SS_Label_Info_20.2.4 #Copy annual migration rates forward until first year with time-varying migration rates
-  if(yz<endyr)
+  if(yz<YrMax)
   {
     k=yz+1;
-    while(timevary_MG(k,5)==0 && k<=endyr)
+    while(timevary_MG(k,5)==0 && k<=YrMax)
     {
       migrrate(k)=migrrate(k-1);  k++;
     }
