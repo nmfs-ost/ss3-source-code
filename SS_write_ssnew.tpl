@@ -1691,7 +1691,7 @@ FUNCTION void write_nucontrol()
       for (y=recdev_start;y<=recdev_end;y++)  {NP++;  report4<<" "<<recdev(y);}
     }
 
-    if(Do_Forecast>0)
+    if(Do_Forecast>0 && do_recdev>0)
     {
       for (y=recdev_end+1;y<=YrMax;y++)  {NP++;  report4<<" "<<recdev(y);}
       report4<<endl;
