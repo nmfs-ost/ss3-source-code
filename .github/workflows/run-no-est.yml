@@ -1,0 +1,44 @@
+# run models without estimation
+name: run-no-est
+on: [workflow_dispatch]
+jobs:
+  run-no-est:
+    runs-on: ubuntu-latest
+    container: 
+      image: rocker/r-ver
+    steps:
+    
+      - name: Checkout ss repo
+        uses: actions/checkout@v2
+        
+      - name: print dir
+        run: pwd
+        
+      - name: Get last compiled version of SS
+        uses: dawidd6/action-download-artifact@v2
+        with: 
+          workflow: build-centos.yml
+          workflow_conclusion: success
+          steps:
+          name: ss_linux
+          path: ss_linux
+     
+      - name: see file names
+        run: ls
+          
+      - name: Checkout models repo
+        uses: actions/checkout@v2
+        with:
+          repository: 'stock-synthesis/ss-test-models'
+          path: ss-test-models-repo
+          
+      - name: see file names
+        run: ls
+        
+      - uses: r-lib/actions/setup-r@master
+#      - name: unpack ss exe
+#      - name: move scripts to needed locations
+#      - name: run models with no estimation
+#      - name: do comparison
+#      - name: Fail or pass job
+#      - name: save artifacts, maybe?
