@@ -262,14 +262,14 @@ FUNCTION void get_initial_conditions()
       Mgmt_quant(1)=SSB_virgin;
       SSB_unf=SSB_virgin;
       Recr_unf=Recr_virgin;
-      Mgmt_quant(2)=totbio;
-      Mgmt_quant(3)=smrybio;
+      Mgmt_quant(2)=totbio;  //  from equil calcs
+      Mgmt_quant(3)=smrybio;  //  from equil calcs
       Mgmt_quant(4)=Recr_virgin;
     }
 
-    Smry_Table(styr-2,2)=smrybio;
-    Smry_Table(styr-2,3)=smrynum;
-    Smry_Table(styr-2,1)=totbio;
+    Smry_Table(styr-2,2)=smrybio;  //  from equil calcs
+    Smry_Table(styr-2,3)=smrynum;  //  from equil calcs
+    Smry_Table(styr-2,1)=totbio;  //  from equil calcs
     SSB_pop_gp(eq_yr)=SSB_equil_pop_gp;   // dimensions of pop x N_GP
     if(Hermaphro_Option!=0) MaleSPB(eq_yr)=MaleSSB_equil_pop_gp;
     SSB_yr(eq_yr)=SSB_equil;
@@ -398,6 +398,9 @@ FUNCTION void get_initial_conditions()
     Do_Equil_Calc(equ_Recr);  // calculated SSB_equil
     CrashPen += Equ_penalty;
   }
+    Smry_Table(styr-1,2)=smrybio;  //  from equil calcs
+    Smry_Table(styr-1,3)=smrynum;  //  from equil calcs
+    Smry_Table(styr-1,1)=totbio;  //  from equil calcs
 
    SSB_pop_gp(eq_yr)=SSB_equil_pop_gp;   // dimensions of pop x N_GP
    if(Hermaphro_Option!=0) MaleSPB(eq_yr)=MaleSSB_equil_pop_gp;
@@ -479,7 +482,7 @@ FUNCTION void get_initial_conditions()
     }
 
 
-   if(docheckup==1) echoinput<<" init age comp for styr "<<styr<<endl<<natage(styr)<<endl<<endl;
+   if(docheckup==1) echoinput<<" init equil age comp for styr "<<styr<<endl<<natage(styr)<<endl<<endl;
 
    // if recrdevs start before styr, then use them to adjust the initial agecomp
    //  apply a fraction of the bias adjustment, so bias adjustment gets less linearly as proceed back in time
@@ -530,21 +533,6 @@ FUNCTION void get_time_series()
   { Recruits = R1 * mfexp(recdev(styr-1)-biasadj(styr-1)*half_sigmaRsq); }
   else
   { Recruits = R1;}
-
-        smrybio=0.0;
-        smrynum=0.0;
-        for (g=1;g<=gmorph;g++)
-        if(use_morph(g)>0)
-        {
-          for (p=1;p<=pop;p++)
-          {
-            smrybio+=natage(styr,p,g)(Smry_Age,nages)*Save_Wt_Age(styr,g)(Smry_Age,nages);
-            smrynum+=sum(natage(styr,p,g)(Smry_Age,nages));   //sums to accumulate across platoons and settlements
-          }
-        }
-        Smry_Table(styr-1,2)=smrybio;
-        Smry_Table(styr-1,3)=smrynum;
-        Smry_Table(styr-1,1)=totbio;
 
   //  SS_Label_Info_24.1 #Loop the years
   for (y=styr;y<=endyr;y++)
@@ -608,20 +596,18 @@ FUNCTION void get_time_series()
         smrybio=0.0;
         smrynum=0.0;
 
+//  do not do totbio here because new recruits have not yet occurred
         for (g=1;g<=gmorph;g++)
         if(use_morph(g)>0)
         {
           for (p=1;p<=pop;p++)
           {
-            smrybio+=natage(t,p,g)(Smry_Age,nages)*Wt_Age_beg(1,g)(Smry_Age,nages);
+            smrybio+=natage(t,p,g)(Smry_Age,nages)*Wt_Age_beg(1,g)(Smry_Age,nages);  // calc before recruitment and time-vary biology applied
             smrynum+=sum(natage(t,p,g)(Smry_Age,nages));   //sums to accumulate across platoons and settlements
           }
         }
         env_data(y,-3)=log(smrybio/Smry_Table(styr-1,2));
         env_data(y,-4)=log(smrynum/Smry_Table(styr-1,3));
-        Smry_Table(y,1)=totbio;
-        Smry_Table(y,2)=smrybio;
-        Smry_Table(y,3)=smrynum;
     	}
     if(y>styr)
     {
@@ -864,9 +850,10 @@ FUNCTION void get_time_series()
       }
 
   //  SS_Label_Info_24.3 #Loop the areas
+      totbio=0.;
+      smrybio=0.;  //  reset to zero happens every season, but accumulation and storage only in season=1; after area loop
       for (p=1;p<=pop;p++)
       {
-
         for (g=1;g<=gmorph;g++)
         if(use_morph(g)>0)
         {
@@ -892,6 +879,11 @@ FUNCTION void get_time_series()
               Save_PopAge(t,p,g,a)=value(natage(t,p,g,a));
               Save_PopBio(t,p,g,a)=value(natage(t,p,g,a))*value(Wt_Age_beg(s,g,a));
             } // close age loop
+              if(s==1){
+            totbio+=natage(t,p,g)(0,nages)*Wt_Age_beg(s,g)(0,nages);
+            smrybio+=natage(t,p,g)(Smry_Age,nages)*Wt_Age_beg(s,g)(Smry_Age,nages);
+            smrynum+=sum(natage(t,p,g)(Smry_Age,nages));   //sums to accumulate across platoons and settlements
+            }
           }
         }
 
@@ -1167,7 +1159,11 @@ FUNCTION void get_time_series()
           {Z_rate(t,p,g)=natM(s,GP3(g));}
         }
       } //close area loop
-
+      if(s==1){
+      	Smry_Table(y,1)=totbio;
+      	Smry_Table(y,2)=smrybio;
+      	Smry_Table(y,3)=smrynum;
+      }
   //  SS_Label_Info_24.3.4 #Compute spawning biomass if occurs after start of current season
 //  SPAWN-RECR:   calc spawn biomass in time series if after beginning of the season
       if(s==spawn_seas && spawn_time_seas>=0.0001)    //  compute spawning biomass
