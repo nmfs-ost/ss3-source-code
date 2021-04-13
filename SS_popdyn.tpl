@@ -267,6 +267,9 @@ FUNCTION void get_initial_conditions()
       Mgmt_quant(4)=Recr_virgin;
     }
 
+    Smry_Table(styr-2,2)=smrybio;
+    Smry_Table(styr-2,3)=smrynum;
+    Smry_Table(styr-2,1)=totbio;
     SSB_pop_gp(eq_yr)=SSB_equil_pop_gp;   // dimensions of pop x N_GP
     if(Hermaphro_Option!=0) MaleSPB(eq_yr)=MaleSSB_equil_pop_gp;
     SSB_yr(eq_yr)=SSB_equil;
@@ -282,6 +285,7 @@ FUNCTION void get_initial_conditions()
         if(use_morph(g)>0)
         {
         natage(t+s,p,g)(0,nages)=equ_numbers(s,p,g)(0,nages);
+        Z_rate(t+s,p,g)(0,nages)=equ_Z(s,p,g)(0,nages);
         }
       }
     }
@@ -300,8 +304,10 @@ FUNCTION void get_initial_conditions()
            SSB_N_yr(eq_yr) += make_mature_numbers(GP4(g))*natage(t+s,p,g);
         }
         Save_PopAge(t+s,p,g)=natage(t+s,p,g);
+        Save_PopAge(t+s,p+pop,g)=elem_prod(natage(t+s,p,g),mfexp(-Z_rate(t+s,p,g)*0.5*seasdur(s)));
         Recr(p,t+1+Settle_seas_offset(settle_g(g)))+=equ_Recr*recr_dist(y,GP(g),settle_g(g),p)*platoon_distr(GP2(g));
         Save_PopBio(t+s,p,g)=elem_prod(natage(t+s,p,g),Wt_Age_beg(s,g));
+        Save_PopBio(t+s,p+pop,g)=elem_prod(Save_PopAge(t+s,p+pop,g),Wt_Age_beg(s,g));
       }
     }
   }
@@ -462,8 +468,11 @@ FUNCTION void get_initial_conditions()
            SSB_B_yr(eq_yr) += make_mature_bio(GP4(g))*natage(t+s,p,g);
            SSB_N_yr(eq_yr) += make_mature_numbers(GP4(g))*natage(t+s,p,g);
         }
-        Save_PopBio(t+s,p,g)=elem_prod(natage(t+s,p,g),Wt_Age_beg(s,g));
         Save_PopAge(t+s,p,g)=natage(t+s,p,g);
+        Save_PopAge(t+s,p+pop,g)=elem_prod(natage(t+s,p,g),mfexp(-Z_rate(t+s,p,g)*0.5*seasdur(s)));
+        Save_PopBio(t+s,p,g)=elem_prod(natage(t+s,p,g),Wt_Age_beg(s,g));
+        Save_PopBio(t+s,p+pop,g)=elem_prod(Save_PopAge(t+s,p+pop,g),Wt_Age_beg(s,g));
+
 //         warning<<N_warn<<" "<<s<<" init  "<<t+Settle_seas_offset(settle_g(g))<<endl;
         Recr(p,t+1+Settle_seas_offset(settle_g(g)))+=equ_Recr*recr_dist(y,GP(g),settle_g(g),p)*platoon_distr(GP2(g));
       }
@@ -535,6 +544,7 @@ FUNCTION void get_time_series()
         }
         Smry_Table(styr-1,2)=smrybio;
         Smry_Table(styr-1,3)=smrynum;
+        Smry_Table(styr-1,1)=totbio;
 
   //  SS_Label_Info_24.1 #Loop the years
   for (y=styr;y<=endyr;y++)
@@ -609,6 +619,7 @@ FUNCTION void get_time_series()
         }
         env_data(y,-3)=log(smrybio/Smry_Table(styr-1,2));
         env_data(y,-4)=log(smrynum/Smry_Table(styr-1,3));
+        Smry_Table(y,1)=totbio;
         Smry_Table(y,2)=smrybio;
         Smry_Table(y,3)=smrynum;
     	}

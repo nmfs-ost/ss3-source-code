@@ -975,7 +975,7 @@ FUNCTION void write_bigoutput()
   {
    for (y=styr-2;y<=YrMax;y++)
    {
-    if(y<=endyr && p==1) {Smry_Table(y,1)=0.; Smry_Table(y)(15,17).initialize();}
+    if(y<=endyr && p==1) {Smry_Table(y)(15,17).initialize();}
     for (s=1;s<=nseas;s++)
     {
     t = styr+(y-styr)*nseas+s-1;
@@ -1042,7 +1042,7 @@ FUNCTION void write_bigoutput()
 
     }
     SS2out<<" "<<Bio_Comp<<" "<<Num_Comp;
-    if(s==1 && y<=endyr) {Smry_Table(y,1)+=totbio; Smry_Table(y,15)+=smryage;}  // already calculated for the forecast years
+    if(s==1 && y<=endyr) {Smry_Table(y,15)+=smryage;}  // already calculated for the forecast years
     for (f=1;f<=Nfleet;f++)
     if(fleet_type(f)<=2)
     {

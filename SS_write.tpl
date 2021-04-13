@@ -518,7 +518,7 @@ FUNCTION void write_SS_summary()
   SS_smry<<"TotBio_Initial "<<Smry_Table(styr-1,1)<<" 0.0"<<endl;
   for (y=styr;y<=YrMax;y++)
   {
-    SS_smry<<"TotBio_"<<y<<" "<<Smry_Table(y,2)<<" 0.0"<<endl;
+    SS_smry<<"TotBio_"<<y<<" "<<Smry_Table(y,1)<<" 0.0"<<endl;
   }
   SS_smry<<"SmryBio_Virgin "<<Smry_Table(styr-2,2)<<" 0.0"<<endl;
   SS_smry<<"SmryBio_Initial "<<Smry_Table(styr-1,2)<<" 0.0"<<endl;
@@ -910,12 +910,14 @@ FUNCTION void write_Bzero_output()
     for (g=1;g<=gmorph;g++)
     if(use_morph(g)>0)
       {
-      for (y=styr-1;y<=YrMax;y++)
+      for (y=styr-2;y<=YrMax;y++)
       for (s=1;s<=nseas;s++)
       {
        t = styr+(y-styr)*nseas+s-1;
        temp=double(y)+azero_seas(s);
        SS2out <<p<<" "<<GP4(g)<<" "<<sx(g)<<" "<<Bseas(g)<<" "<<settle_g(g)<<" "<<GP2(g)<<" "<<g<<" "<<y<<" "<<s<<" "<<temp<<" _ ";
+       if(y==styr-2)
+         {SS2out<<" VIRG ";}
        if(y==styr-1)
          {SS2out<<" INIT ";}
        else if (y<=endyr)
