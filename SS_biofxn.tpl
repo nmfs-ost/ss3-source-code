@@ -477,10 +477,12 @@ FUNCTION void get_growth2(const int y)
             if(s==nseas) add_age=1; else add_age=0;   //      advance age or not
 // growth to next season
             VBK_temp2=(mfexp(VBK_temp*seasdur(s)*VBK_seas(s))-1.0);
+//    warning<<t<<" ave_size_grow2_start "<<Ave_Size(t,1,1)(0,6)<<endl;
             switch (Grow_type)
             {
               case 1:
               {
+              	Ave_Size(t+1,1,g,0)=Ave_Size(t,1,g,0);  // carryforward, but may be overwritten in some circumstances
                 for (a=0;a<=nages;a++)
                 {
                   if(a==nages) {k2=a;} else {k2=a+add_age;}  // where add_age =1 if s=nseas, else 0  (k2 assignment could be in a matrix so not recalculated
@@ -506,8 +508,9 @@ FUNCTION void get_growth2(const int y)
                   }
                   else  // in linear phase
                   {
-                    Ave_Size(t+1,1,g,a) = len_bins(1)+lin_grow(g,ALK_idx,a)*(Cohort_Lmin(gp,y,a)-len_bins(1));
+                    Ave_Size(t+1,1,g,k2) = len_bins(1)+lin_grow(g,ALK_idx,a)*(Cohort_Lmin(gp,y,a)-len_bins(1));
                   }
+//                  if(y==1990 && g==1) warning<<a<<" "<<lin_grow(g,ALK_idx,a)<<" "<<Ave_Size(t,1,g,a)<<" "<<Ave_Size(t+1,1,g,k2)<<endl;
                 }  // done ageloop
                 break;
               }
@@ -651,6 +654,9 @@ FUNCTION void get_growth2(const int y)
             if(do_once==1) echoinput<<"  seas: "<<s<<"  size@t+1:  "<<Ave_Size(t+1,1,g)(0,min(6,nages))<<" plusgroup: "<<Ave_Size(t+1,1,g,nages)<<endl;
  #endif
            }  // end of season
+
+ /*
+//  move this code to popdyn in styr so can use adjustments made by growth3
 //  SS_Label_Info_16.2.4.3  #propagate Ave_Size from early years forward until first year that has time-vary growth
           k=y+1;
           j=yz+1;
@@ -668,6 +674,7 @@ FUNCTION void get_growth2(const int y)
             k++;
             if(j<endyr+1) j++;
           }
+ */
         }  // end need to consider this GP x settlement combo (usemorph>0)
       }  // end loop of settlements
       Ip+=N_M_Grow_parms;

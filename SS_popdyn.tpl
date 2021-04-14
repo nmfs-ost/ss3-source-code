@@ -91,7 +91,7 @@ FUNCTION void get_initial_conditions()
  #ifdef DO_ONCE
   if(do_once==1) cout<<" growth1 OK"<<endl;
  #endif
-  if(MG_active(2)>0 || MG_active(3)>0 || save_for_report>0)
+  if(MG_active(2)>0 || do_once==1)
   {
     ALK_subseas_update=1;  //  to indicate that all ALKs need calculation
     get_growth2(y);
@@ -105,6 +105,22 @@ FUNCTION void get_initial_conditions()
         Make_AgeLength_Key(s, subseas);
       }
     }
+
+//  SS_Label_Info_16.2.4.3  #propagate Ave_Size from early years forward until first year that has time-vary growth
+      k=styr+1;
+      do {
+        for (s=1;s<=nseas;s++)
+        {
+          t=styr+(k-styr)*nseas+s-1;
+          Ave_Size(t,1)=Ave_Size(t-nseas,1);
+        }  // end season loop
+        k++;
+      } while(timevary_MG(k,2)==0 && k<=YrMax);
+      if(k<=YrMax)
+      {
+        t=styr+(k-styr)*nseas;
+        Ave_Size(t,1)=Ave_Size(t-nseas,1);  // prep for time-vary next yr
+      }
   }
 
   if(MG_active(1)>0) get_natmort();
@@ -181,18 +197,7 @@ FUNCTION void get_initial_conditions()
   for (s=1;s<=nseas;s++)
   {
     t++;
- /*   //  redundant
-    if(MG_active(2)>0 || MG_active(3)>0 || save_for_report>0)  //  initial year; if growth parms are active, get growth
-    {
-      for(subseas=1;subseas<=N_subseas;subseas++)  //  do all subseasons in first year
-      {
-  //  SS_Label_Info_23.3.1 #calculate mean size-at-age, then size_at_age distribution (ALK)
-        get_growth3(s, subseas);
-        Make_AgeLength_Key(s, subseas);
-      }
-    }
- */
-
+ 
     if(WTage_rd>0)
     {
       for (g=1;g<=gmorph;g++)
@@ -220,7 +225,6 @@ FUNCTION void get_initial_conditions()
     }
 
     Save_Wt_Age(t)=Wt_Age_beg(s);
-//    if(do_once==1) echoinput<<"Save_Wt_Age in initial year: "<<t<<" %% "<<Save_Wt_Age(t)<<endl;
 
     for (g=1;g<=gmorph;g++)
     if(use_morph(g)>0)
@@ -258,11 +262,14 @@ FUNCTION void get_initial_conditions()
       Mgmt_quant(1)=SSB_virgin;
       SSB_unf=SSB_virgin;
       Recr_unf=Recr_virgin;
-      Mgmt_quant(2)=totbio;
-      Mgmt_quant(3)=smrybio;
+      Mgmt_quant(2)=totbio;  //  from equil calcs
+      Mgmt_quant(3)=smrybio;  //  from equil calcs
       Mgmt_quant(4)=Recr_virgin;
     }
 
+    Smry_Table(styr-2,2)=smrybio;  //  from equil calcs
+    Smry_Table(styr-2,3)=smrynum;  //  from equil calcs
+    Smry_Table(styr-2,1)=totbio;  //  from equil calcs
     SSB_pop_gp(eq_yr)=SSB_equil_pop_gp;   // dimensions of pop x N_GP
     if(Hermaphro_Option!=0) MaleSPB(eq_yr)=MaleSSB_equil_pop_gp;
     SSB_yr(eq_yr)=SSB_equil;
@@ -278,6 +285,7 @@ FUNCTION void get_initial_conditions()
         if(use_morph(g)>0)
         {
         natage(t+s,p,g)(0,nages)=equ_numbers(s,p,g)(0,nages);
+        Z_rate(t+s,p,g)(0,nages)=equ_Z(s,p,g)(0,nages);
         }
       }
     }
@@ -296,8 +304,10 @@ FUNCTION void get_initial_conditions()
            SSB_N_yr(eq_yr) += make_mature_numbers(GP4(g))*natage(t+s,p,g);
         }
         Save_PopAge(t+s,p,g)=natage(t+s,p,g);
+        Save_PopAge(t+s,p+pop,g)=elem_prod(natage(t+s,p,g),mfexp(-Z_rate(t+s,p,g)*0.5*seasdur(s)));
         Recr(p,t+1+Settle_seas_offset(settle_g(g)))+=equ_Recr*recr_dist(y,GP(g),settle_g(g),p)*platoon_distr(GP2(g));
         Save_PopBio(t+s,p,g)=elem_prod(natage(t+s,p,g),Wt_Age_beg(s,g));
+        Save_PopBio(t+s,p+pop,g)=elem_prod(Save_PopAge(t+s,p+pop,g),Wt_Age_beg(s,g));
       }
     }
   }
@@ -388,6 +398,9 @@ FUNCTION void get_initial_conditions()
     Do_Equil_Calc(equ_Recr);  // calculated SSB_equil
     CrashPen += Equ_penalty;
   }
+    Smry_Table(styr-1,2)=smrybio;  //  from equil calcs
+    Smry_Table(styr-1,3)=smrynum;  //  from equil calcs
+    Smry_Table(styr-1,1)=totbio;  //  from equil calcs
 
    SSB_pop_gp(eq_yr)=SSB_equil_pop_gp;   // dimensions of pop x N_GP
    if(Hermaphro_Option!=0) MaleSPB(eq_yr)=MaleSSB_equil_pop_gp;
@@ -458,15 +471,18 @@ FUNCTION void get_initial_conditions()
            SSB_B_yr(eq_yr) += make_mature_bio(GP4(g))*natage(t+s,p,g);
            SSB_N_yr(eq_yr) += make_mature_numbers(GP4(g))*natage(t+s,p,g);
         }
-        Save_PopBio(t+s,p,g)=elem_prod(natage(t+s,p,g),Wt_Age_beg(s,g));
         Save_PopAge(t+s,p,g)=natage(t+s,p,g);
+        Save_PopAge(t+s,p+pop,g)=elem_prod(natage(t+s,p,g),mfexp(-Z_rate(t+s,p,g)*0.5*seasdur(s)));
+        Save_PopBio(t+s,p,g)=elem_prod(natage(t+s,p,g),Wt_Age_beg(s,g));
+        Save_PopBio(t+s,p+pop,g)=elem_prod(Save_PopAge(t+s,p+pop,g),Wt_Age_beg(s,g));
+
 //         warning<<N_warn<<" "<<s<<" init  "<<t+Settle_seas_offset(settle_g(g))<<endl;
         Recr(p,t+1+Settle_seas_offset(settle_g(g)))+=equ_Recr*recr_dist(y,GP(g),settle_g(g),p)*platoon_distr(GP2(g));
       }
     }
 
 
-   if(docheckup==1) echoinput<<" init age comp for styr "<<styr<<endl<<natage(styr)<<endl<<endl;
+   if(docheckup==1) echoinput<<" init equil age comp for styr "<<styr<<endl<<natage(styr)<<endl<<endl;
 
    // if recrdevs start before styr, then use them to adjust the initial agecomp
    //  apply a fraction of the bias adjustment, so bias adjustment gets less linearly as proceed back in time
@@ -518,20 +534,6 @@ FUNCTION void get_time_series()
   else
   { Recruits = R1;}
 
-        smrybio=0.0;
-        smrynum=0.0;
-        for (g=1;g<=gmorph;g++)
-        if(use_morph(g)>0)
-        {
-          for (p=1;p<=pop;p++)
-          {
-            smrybio+=natage(styr,p,g)(Smry_Age,nages)*Save_Wt_Age(styr,g)(Smry_Age,nages);
-            smrynum+=sum(natage(styr,p,g)(Smry_Age,nages));   //sums to accumulate across platoons and settlements
-          }
-        }
-        Smry_Table(styr-1,2)=smrybio;
-        Smry_Table(styr-1,3)=smrynum;
-
   //  SS_Label_Info_24.1 #Loop the years
   for (y=styr;y<=endyr;y++)
   {
@@ -553,8 +555,9 @@ FUNCTION void get_time_series()
       SR_parm_byyr(y,f)=SR_parm_work(f);
    }
 
+//  store most recent value for density-dependent effects, NOTE - off by a year if recalc'ed at beginning of season 1
     	{
-    		env_data(y,-1)=log(SSB_current/SSB_yr(styr-1));  //  store most recent value for density-dependent effects, NOTE - off by a year if recalc'ed at beginning of season 1
+    		env_data(y,-1)=log(SSB_current/SSB_yr(styr-1));
         if(recdev_doit(y)>0)
         	{env_data(y,-2)=recdev(y);} //  store so can do density-dependence
         	else
@@ -575,34 +578,36 @@ FUNCTION void get_time_series()
       }
       else if(timevary_MG(y,2)>0 || timevary_MG(y,3)>0 || save_for_report==1 || WTage_rd>0)
         {
-          subseas=1;  //  begin season  note that ALK_idx re-calculated inside get_growth3
-          ALK_idx=(s-1)*N_subseas+subseas;  //  redundant with calc inside get_growth3 ????
-  //      get_growth3(s, subseas);  //  not needed because size-at-age already has been propagated to seas 1 subseas 1
-          Make_AgeLength_Key(s, subseas);  //  this will give wt_age_beg before any time-varying parameter changes for this year
+      get_growth3(y,t,1,1);  //  before season loop, used for summary biomass
+//      warning<<t<<" ave_size_for_smrybio "<<Ave_Size(t,1,1)(0,6)<<endl;
+          ALK_subseas_update(1)=1;  // do 1st subseas of 1st season;  ADD THIS LINE for 3.30.17
+          Make_AgeLength_Key(s, 1);  //  this will give wt_age_beg before any time-varying parameter changes for this year
+          ALK_idx=(s-1)*N_subseas+1;
         for (g=1;g<=gmorph;g++)
         if(use_morph(g)>0)
         {
-           Wt_Age_beg(s,g)=(ALK(ALK_idx,g)*wt_len(s,GP(g)));  // wt-at-age at beginning of period
-           subseas=mid_subseas;
-           ALK_idx=(s-1)*N_subseas+subseas;
-           Wt_Age_mid(s,g)=ALK(ALK_idx,g)*wt_len(s,GP(g));  // use for fisheries with no size selectivity
+          Wt_Age_beg(s,g)=(ALK(ALK_idx,g)*wt_len(s,GP(g)));  // wt-at-age at beginning of period
+//          subseas=mid_subseas;
+//          ALK_idx=(s-1)*N_subseas+subseas;
+//          Wt_Age_mid(s,g)=ALK(ALK_idx,g)*wt_len(s,GP(g));  // use for fisheries with no size selectivity
          }
+//    warning<<t<<" "<<" Wt_Age_for_smrybio: "<<Wt_Age_beg(s,1)(0,6)<<endl;
         }
         smrybio=0.0;
         smrynum=0.0;
+
+//  do not do totbio here because new recruits have not yet occurred
         for (g=1;g<=gmorph;g++)
         if(use_morph(g)>0)
         {
           for (p=1;p<=pop;p++)
           {
-            smrybio+=natage(t,p,g)(Smry_Age,nages)*Wt_Age_beg(1,g)(Smry_Age,nages);
+            smrybio+=natage(t,p,g)(Smry_Age,nages)*Wt_Age_beg(1,g)(Smry_Age,nages);  // calc before recruitment and time-vary biology applied
             smrynum+=sum(natage(t,p,g)(Smry_Age,nages));   //sums to accumulate across platoons and settlements
           }
         }
         env_data(y,-3)=log(smrybio/Smry_Table(styr-1,2));
         env_data(y,-4)=log(smrynum/Smry_Table(styr-1,3));
-        Smry_Table(y,2)=smrybio;
-        Smry_Table(y,3)=smrynum;
     	}
     if(y>styr)
     {
@@ -614,7 +619,8 @@ FUNCTION void get_time_series()
       if(timevary_MG(y,2)>0)
         {
           ALK_subseas_update=1;  // indicate that all ALKs will need re-estimation
-          get_growth2(y);
+          get_growth2(y);  //  propagates growth to each season this year and to begin next year
+          get_growth3(y,t,1,1);  //  cleans up the linear growth range for begin of this year
         }
       if(timevary_MG(y,1)>0) get_natmort();
       if(y>=Bmark_Yr(1)&&y<=Bmark_Yr(2))
@@ -672,11 +678,13 @@ FUNCTION void get_time_series()
         }
       }
     }
+
   //  SS_Label_Info_24.2  #Loop the seasons
     for (s=1;s<=nseas;s++)
     {
       if (docheckup==1) echoinput<<endl<<"************************************"<<endl<<" year, seas "<<y<<" "<<s<<endl;
   //  SS_Label_Info_24.1.2  #Call selectivity, which does its own internal check for time-varying changes
+  //  note that Make_Fish_selex is called later after the ALK's have been updated
       if(s==1 && y>styr) get_selectivity();
       t = t_base+s;
 
@@ -685,13 +693,11 @@ FUNCTION void get_time_series()
 //      if(timevary_MG(y,2)>0 || timevary_MG(y,3)>0 || save_for_report==1 || WTage_rd>0)
       if(timevary_MG(y,2)>0 || save_for_report==1)
       {
-        subseas=1;  //  begin season  note that ALK_idx re-calculated inside get_growth3
-        get_growth3(y,t,s, subseas);
-        Make_AgeLength_Key(s, subseas);
+        get_growth3(y,t,s, 1);  // first subseas of season=s
+        Make_AgeLength_Key(s, 1);
 
-        subseas=mid_subseas;
-        get_growth3(y,t,s, subseas);
-        Make_AgeLength_Key(s, subseas);  //  for midseason
+        get_growth3(y,t,s, mid_subseas); //  for midseason
+        Make_AgeLength_Key(s, mid_subseas); 
 //  SPAWN-RECR:   call Make_Fecundity in time series
         if(s==spawn_seas)
         {
@@ -720,20 +726,26 @@ FUNCTION void get_time_series()
       }
       else if(timevary_MG(y,2)>0 || timevary_MG(y,3)>0 || save_for_report>0 || do_once==1)
       {
+//    warning<<t<<" "<<1<<" saved: "<<Save_Wt_Age(t,1)(0,6)<<endl;
          Make_Fecundity();
          for (g=1;g<=gmorph;g++)
          if(use_morph(g)>0)
          {
            subseas=1;
            ALK_idx=(s-1)*N_subseas+subseas;
+           Make_AgeLength_Key(s,subseas);
            Wt_Age_beg(s,g)=(ALK(ALK_idx,g)*wt_len(s,GP(g)));  // wt-at-age at beginning of period
            subseas=mid_subseas;
            ALK_idx=(s-1)*N_subseas+subseas;
+           Make_AgeLength_Key(s,subseas);
            Wt_Age_mid(s,g)=ALK(ALK_idx,g)*wt_len(s,GP(g));  // use for fisheries with no size selectivity
         }
       }
 
       Save_Wt_Age(t)=Wt_Age_beg(s);
+//    warning<<t<<" ave_size_for_save_wt "<<Ave_Size(t,1,1)(0,6)<<endl;
+//    warning<<t<<" save_wt: "<<Save_Wt_Age(t,1)(0,6)<<endl;
+    
 
       if(y>styr)    // because styr is done as part of initial conditions
       {
@@ -838,9 +850,10 @@ FUNCTION void get_time_series()
       }
 
   //  SS_Label_Info_24.3 #Loop the areas
+      totbio=0.;
+      smrybio=0.;  //  reset to zero happens every season, but accumulation and storage only in season=1; after area loop
       for (p=1;p<=pop;p++)
       {
-
         for (g=1;g<=gmorph;g++)
         if(use_morph(g)>0)
         {
@@ -866,6 +879,11 @@ FUNCTION void get_time_series()
               Save_PopAge(t,p,g,a)=value(natage(t,p,g,a));
               Save_PopBio(t,p,g,a)=value(natage(t,p,g,a))*value(Wt_Age_beg(s,g,a));
             } // close age loop
+              if(s==1){
+            totbio+=natage(t,p,g)(0,nages)*Wt_Age_beg(s,g)(0,nages);
+            smrybio+=natage(t,p,g)(Smry_Age,nages)*Wt_Age_beg(s,g)(Smry_Age,nages);
+            smrynum+=sum(natage(t,p,g)(Smry_Age,nages));   //sums to accumulate across platoons and settlements
+            }
           }
         }
 
@@ -1141,7 +1159,11 @@ FUNCTION void get_time_series()
           {Z_rate(t,p,g)=natM(s,GP3(g));}
         }
       } //close area loop
-
+      if(s==1){
+      	Smry_Table(y,1)=totbio;
+      	Smry_Table(y,2)=smrybio;
+      	Smry_Table(y,3)=smrynum;
+      }
   //  SS_Label_Info_24.3.4 #Compute spawning biomass if occurs after start of current season
 //  SPAWN-RECR:   calc spawn biomass in time series if after beginning of the season
       if(s==spawn_seas && spawn_time_seas>=0.0001)    //  compute spawning biomass
