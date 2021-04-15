@@ -704,11 +704,10 @@ FINAL_SECTION
     setup_Benchmark();  //  calculates biology and selectivity to be used
     if(Do_Benchmark>0)
     {
-    	cout<<"call bmark"<<endl;
       if(did_MSY==0) 
       {
         Get_Benchmarks(show_MSY);
-        if(mceval_phase()==0) cout<<" finished benchmark for reporting"<<endl;
+        if(mceval_phase()==0) cout<<" finished benchmark"<<endl;
       }
     }
     if(Do_Forecast>=0)
@@ -716,7 +715,7 @@ FINAL_SECTION
       report5<<"THIS FORECAST FOR PURPOSES OF GETTING DISPLAY QUANTITIES"<<endl;
       if(did_MSY>0) show_MSY=0;  //  so to not repeat forecast_report.sso
       Get_Forecast();
-      if(mceval_phase()==0) cout<<" finished forecast for reporting"<<endl;
+      if(mceval_phase()==0) cout<<" finished forecast"<<endl;
     }
     if(write_bodywt>0)
     {
@@ -727,9 +726,9 @@ FINAL_SECTION
 
 //  SS_Label_Info_12.3.4  #call fxn STDquant()
      Process_STDquant();
-     if(mceval_phase()==0) cout<<" finished STD quantities for reporting"<<endl;
+     if(mceval_phase()==0) cout<<" finished StdDev quantities"<<endl;
      get_posteriors();
-     if(mceval_phase()==0) cout<<" finished posteriors reporting"<<endl;
+     if(mceval_phase()==0) cout<<" finished posteriors"<<endl;
 
 //  SS_Label_Info_12.4.2 #Call fxn write_summaryoutput()
     if(Do_CumReport>0) write_summaryoutput();
@@ -772,11 +771,14 @@ FINAL_SECTION
 //  SS_Label_Info_12.4.6 #Call fxn write_Bzero_output()  appended to report.sso
     if (pick_report_use(59)=="Y")
     {
-        cout<<"dynamic Bzero and global MSY: ";
+        cout<<"dynamic Bzero ";
         write_Bzero_output();
         cout<<" finished "<<endl;
     }
 
+   //  global MSY and SPR/YPR profile should be moved into functions similar to write_Bzero_output and called here from FINAL section here in global.
+   //  currently they are in write_report, but with some complicated logic
+   
     if(parm_adjust_method==3) {N_warn++;  warning<<N_warn<<" "<<"time-vary parms not bound checked"<<endl;}
 
 //  SS_Label_Info_12.4.7 #Finish up with final writes to warning.sso
@@ -866,7 +868,6 @@ REPORT_SECTION
   }
 
 //  SS_Label_Info_13.2 #Call fxn write_bigoutput() as last_phase finishes and before doing Hessian
-    wrote_bigreport=0;
     if(last_phase() && SDmode==1)
     {
     if(pick_report_use(60)=="Y") {write_bodywt=1;}
