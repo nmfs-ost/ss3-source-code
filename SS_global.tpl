@@ -691,7 +691,6 @@ FINAL_SECTION
     save_for_report=1;
     bigsaver=1;
     save_gparm=0;
-    wrote_bigreport=0;
     if(SDmode==0 && pick_report_use(60)=="Y") write_bodywt=1;  //  turn on conditional on SDMode because SDMode=1 situation already written
     y=styr;
     setup_recdevs();
@@ -771,14 +770,25 @@ FINAL_SECTION
 //  SS_Label_Info_12.4.6 #Call fxn write_Bzero_output()  appended to report.sso
     if (pick_report_use(59)=="Y")
     {
-        cout<<"dynamic Bzero ";
+        cout<<"dynamic Bzero: ";
         write_Bzero_output();
         cout<<" finished "<<endl;
     }
+    
+    if (pick_report_use(54)=="Y" && Do_Benchmark>0)
+    {
+        cout<<"SPR_profile: ";
+        SPR_profile();
+        cout<<" finished "<<endl;
+    }
 
-   //  global MSY and SPR/YPR profile should be moved into functions similar to write_Bzero_output and called here from FINAL section here in global.
-   //  currently they are in write_report, but with some complicated logic
-   
+    if (pick_report_use(49)=="Y" && Do_Benchmark>0)
+    {
+        cout<<"Global_MSY: ";
+        Global_MSY();
+        cout<<" finished "<<endl;
+    }
+
     if(parm_adjust_method==3) {N_warn++;  warning<<N_warn<<" "<<"time-vary parms not bound checked"<<endl;}
 
 //  SS_Label_Info_12.4.7 #Finish up with final writes to warning.sso
