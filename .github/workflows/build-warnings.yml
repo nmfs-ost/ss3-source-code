@@ -22,12 +22,6 @@ jobs:
       - name: Checkout ss repo
         uses: actions/checkout@v2
           
-      - name: Checkout models repo
-        uses: actions/checkout@v2
-        with:
-          repository: 'nmfs-stock-synthesis/ss-test-models'
-          path: ss-test-models-repo
-          
       - name: setup R  
         uses: r-lib/actions/setup-r@master
       
