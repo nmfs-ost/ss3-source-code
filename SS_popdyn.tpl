@@ -854,6 +854,7 @@ FUNCTION void get_time_series()
   //  SS_Label_Info_24.3 #Loop the areas
       totbio=0.;
       smrybio=0.;  //  reset to zero happens every season, but accumulation and storage only in season=1; after area loop
+      smrynum=0.;
       for (p=1;p<=pop;p++)
       {
 
