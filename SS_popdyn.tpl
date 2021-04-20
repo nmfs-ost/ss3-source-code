@@ -267,9 +267,9 @@ FUNCTION void get_initial_conditions()
       Mgmt_quant(4)=Recr_virgin;
     }
 
+    Smry_Table(styr-2,1)=totbio;  //  from equil calcs
     Smry_Table(styr-2,2)=smrybio;  //  from equil calcs
     Smry_Table(styr-2,3)=smrynum;  //  from equil calcs
-    Smry_Table(styr-2,1)=totbio;  //  from equil calcs
     SSB_pop_gp(eq_yr)=SSB_equil_pop_gp;   // dimensions of pop x N_GP
     if(Hermaphro_Option!=0) MaleSPB(eq_yr)=MaleSSB_equil_pop_gp;
     SSB_yr(eq_yr)=SSB_equil;
@@ -307,7 +307,7 @@ FUNCTION void get_initial_conditions()
         Save_PopAge(t+s,p+pop,g)=elem_prod(natage(t+s,p,g),mfexp(-Z_rate(t+s,p,g)*0.5*seasdur(s)));
         Recr(p,t+1+Settle_seas_offset(settle_g(g)))+=equ_Recr*recr_dist(y,GP(g),settle_g(g),p)*platoon_distr(GP2(g));
         Save_PopBio(t+s,p,g)=elem_prod(natage(t+s,p,g),Wt_Age_beg(s,g));
-        Save_PopBio(t+s,p+pop,g)=elem_prod(Save_PopAge(t+s,p+pop,g),Wt_Age_beg(s,g));
+        Save_PopBio(t+s,p+pop,g)=elem_prod(Save_PopAge(t+s,p+pop,g),Wt_Age_mid(s,g));
       }
     }
   }
@@ -398,9 +398,9 @@ FUNCTION void get_initial_conditions()
     Do_Equil_Calc(equ_Recr);  // calculated SSB_equil
     CrashPen += Equ_penalty;
   }
+    Smry_Table(styr-1,1)=totbio;  //  from equil calcs
     Smry_Table(styr-1,2)=smrybio;  //  from equil calcs
     Smry_Table(styr-1,3)=smrynum;  //  from equil calcs
-    Smry_Table(styr-1,1)=totbio;  //  from equil calcs
 
    SSB_pop_gp(eq_yr)=SSB_equil_pop_gp;   // dimensions of pop x N_GP
    if(Hermaphro_Option!=0) MaleSPB(eq_yr)=MaleSSB_equil_pop_gp;
@@ -474,7 +474,7 @@ FUNCTION void get_initial_conditions()
         Save_PopAge(t+s,p,g)=natage(t+s,p,g);
         Save_PopAge(t+s,p+pop,g)=elem_prod(natage(t+s,p,g),mfexp(-Z_rate(t+s,p,g)*0.5*seasdur(s)));
         Save_PopBio(t+s,p,g)=elem_prod(natage(t+s,p,g),Wt_Age_beg(s,g));
-        Save_PopBio(t+s,p+pop,g)=elem_prod(Save_PopAge(t+s,p+pop,g),Wt_Age_beg(s,g));
+        Save_PopBio(t+s,p+pop,g)=elem_prod(Save_PopAge(t+s,p+pop,g),Wt_Age_mid(s,g));
 
 //         warning<<N_warn<<" "<<s<<" init  "<<t+Settle_seas_offset(settle_g(g))<<endl;
         Recr(p,t+1+Settle_seas_offset(settle_g(g)))+=equ_Recr*recr_dist(y,GP(g),settle_g(g),p)*platoon_distr(GP2(g));
@@ -595,7 +595,6 @@ FUNCTION void get_time_series()
         }
         smrybio=0.0;
         smrynum=0.0;
-
 //  do not do totbio here because new recruits have not yet occurred
         for (g=1;g<=gmorph;g++)
         if(use_morph(g)>0)
@@ -608,6 +607,9 @@ FUNCTION void get_time_series()
         }
         env_data(y,-3)=log(smrybio/Smry_Table(styr-1,2));
         env_data(y,-4)=log(smrynum/Smry_Table(styr-1,3));
+
+        Smry_Table(y,2)=smrybio;  //  gets used as demoninator for some F_std options
+        Smry_Table(y,3)=smrynum;
     	}
     if(y>styr)
     {
@@ -854,6 +856,7 @@ FUNCTION void get_time_series()
       smrybio=0.;  //  reset to zero happens every season, but accumulation and storage only in season=1; after area loop
       for (p=1;p<=pop;p++)
       {
+
         for (g=1;g<=gmorph;g++)
         if(use_morph(g)>0)
         {
@@ -1159,7 +1162,7 @@ FUNCTION void get_time_series()
           {Z_rate(t,p,g)=natM(s,GP3(g));}
         }
       } //close area loop
-      if(s==1){
+      if(s==1 && save_for_report==1){
       	Smry_Table(y,1)=totbio;
       	Smry_Table(y,2)=smrybio;
       	Smry_Table(y,3)=smrynum;
@@ -1179,9 +1182,6 @@ FUNCTION void get_time_series()
             SSB_pop_gp(y,p,GP4(g)) += fracfemale_mult*fec(g)*elem_prod(natage(t,p,g),mfexp(-Z_rate(t,p,g)*spawn_time_seas));   // accumulates SSB by area and by growthpattern
             SSB_B_yr(y) += fracfemale_mult*make_mature_bio(GP4(g))*elem_prod(natage(t,p,g),mfexp(-Z_rate(t,p,g)*spawn_time_seas));
             SSB_N_yr(y) += fracfemale_mult*make_mature_numbers(GP4(g))*elem_prod(natage(t,p,g),mfexp(-Z_rate(t,p,g)*spawn_time_seas));
-//            SSB_pop_gp(y,p,GP4(g)) += fec(g)*elem_prod(natage(t,p,g),mfexp(-Z_rate(t,p,g)*spawn_time_seas));   // accumulates SSB by area and by growthpattern
-//            SSB_B_yr(y) += make_mature_bio(GP4(g))*elem_prod(natage(t,p,g),mfexp(-Z_rate(t,p,g)*spawn_time_seas));
-//            SSB_N_yr(y) += make_mature_numbers(GP4(g))*elem_prod(natage(t,p,g),mfexp(-Z_rate(t,p,g)*spawn_time_seas));
           }
         }
         SSB_current=sum(SSB_pop_gp(y));
@@ -1242,7 +1242,7 @@ FUNCTION void get_time_series()
           }
       }
 
-  //  SS_Label_Info_24.6 #Survival to next season
+  //  SS_Label_Info_24.6 #Survival to next season and saving midseason numbers and biomass
       for (p=1;p<=pop;p++)
       {
             if(s==nseas) {k=1;} else {k=0;}   //      advance age or not
