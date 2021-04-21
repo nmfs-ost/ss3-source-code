@@ -26,7 +26,7 @@ FUNCTION void write_bigoutput()
   {
     SS2out<<"Hessian: Not requested."<<endl;
   }
-  if (SDmode == 1)
+  else  //  (SDmode == 1)
   {
     if(temp > 0)
     {
@@ -3231,7 +3231,12 @@ FUNCTION void write_bigoutput()
   }
   SS2out<<" end selex output "<<endl;
   }  // end do report detail
+  wrote_bigreport++;
+  return;
+  }  //  end write_bigoutput
 
+FUNCTION void SPR_profile()
+  {
 // REPORT_KEYWORD 54 SPR/YPR_Profile
   int SPRloop;
   int bio_t_base;
@@ -3245,14 +3250,8 @@ FUNCTION void write_bigoutput()
   dvariable SPR_last;
   dvariable SPR_trial;
   dvariable YPR_last;
-  if(Do_Benchmark>0 && pick_report_use(54)=="Y")  {
+
     SS2out<<endl<<pick_report_name(54)<<endl;
-	  if(wrote_bigreport==0)
-	  	{
-		  // if writing pre-Hessian version of the Report, don't include
-  		SS2out<<"This output only included after the Hessian is inverted"<<endl;
-		}else{
-		  // post-Hessian version of the Report
     SS2out<<"SPRloop Iter Bycatch Fmult F_report SPR YPR YPR*Recr SSB Recruits SSB/Bzero Tot_Catch ";
     for (f=1;f<=Nfleet;f++) {if(fleet_type(f)<=2) SS2out<<" "<<fleetname(f)<<"("<<f<<")Dead";}
     for (f=1;f<=Nfleet;f++) {if(fleet_type(f)<=2) SS2out<<" "<<fleetname(f)<<"("<<f<<")Ret";}
@@ -3462,12 +3461,16 @@ FUNCTION void write_bigoutput()
     SS2out<<"#value 6 is Fmsy: "<<MSY_Fmult<<endl;
     SS2out<<"#Profile 7 increases from Fmsy to Fcrash"<<endl;
     SS2out<<"#NOTE: meanage_of_catch_is_for_total_catch_of_fleet_type==1_or_bycatch_fleets_with_scaled_Hrate"<<endl;
-		} // end check for wrote_bigreport==1
-  } // end SPR/YPR_Profile
+// end SPR/YPR_Profile
+    return;
+  }
 	
-//  GLOBAL_MSY with knife-edge age selection, then slot-age selection
+
+FUNCTION void Global_MSY()
+  {
 // REPORT_KEYWORD 49 GLOBAL_MSY
-  if(Do_Benchmark>0 && wrote_bigreport==0 && pick_report_use(49)=="Y")  {
+//  GLOBAL_MSY with knife-edge age selection, then slot-age selection
+    int bio_t_base;
 	  SS2out<<endl<<pick_report_name(49)<<endl;
     y=styr-3;  //  stores the averaged
     yz=y;
@@ -3545,10 +3548,8 @@ FUNCTION void write_bigoutput()
       }
     }
   SS2out<<endl;
-  }
-  wrote_bigreport=1;  // flag so that second call to writebigreport will do extra output
-  return;
-  }  //  end writebigreport
+		return;
+  }  
   
 FUNCTION dvector process_comps(const int sexes, const int sex, dvector &bins,  dvector &means, const dvector &tails, 
           dvector& obs,  dvector& exp)
