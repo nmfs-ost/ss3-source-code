@@ -1439,7 +1439,10 @@ FUNCTION void Get_Forecast()
           get_growth2(y);
         }
       if(timevary_MG(y,1)>0) get_natmort();
-      if(timevary_MG(y,3)>0) get_wtlen();
+      if(timevary_MG(y,3)>0){
+      	get_wtlen();
+        if(Hermaphro_Option!=0) get_Hermaphro();
+      } 
       if((timevary_MG(y,4)>0 || timevary_MG(endyr+1,4)>0) && Fcast_Loop_Control(3)!=3) 
       	{get_recr_distribution();}
       if(timevary_MG(y,5)>0) get_migration();

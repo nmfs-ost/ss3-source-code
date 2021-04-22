@@ -139,6 +139,7 @@ FUNCTION void get_initial_conditions()
   }
 
   if(MG_active(3)>0) get_wtlen();
+  if(Hermaphro_Option!=0) get_Hermaphro();
   if(MG_active(4)>0) get_recr_distribution();
   if(y>=Bmark_Yr(7)&&y<=Bmark_Yr(8))
   {
@@ -635,7 +636,10 @@ FUNCTION void get_time_series()
           surv2_unf(s,gp)+=surv2(s,gp);
         }
       }
-      if(timevary_MG(y,3)>0) get_wtlen();
+      if(timevary_MG(y,3)>0){
+      	get_wtlen();
+        if(Hermaphro_Option!=0) get_Hermaphro();
+      } 
       if(timevary_MG(y,4)>0) get_recr_distribution();
       if(y>=Bmark_Yr(7)&&y<=Bmark_Yr(8))
       {

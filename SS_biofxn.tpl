@@ -30,6 +30,22 @@ FUNCTION void get_MGsetup(const int yz)
         if(MGparm_offset(j)>0) mgp_adj(j) = mgp_adj(MGparm_offset(j));
       }
     }
+//  SS_Label_Info_19.1  #set wtlen and maturity/fecundity factors equal to annual values from mgp_adj
+  gp=0;
+  for (gg=1;gg<=gender;gg++)
+  for (GPat=1;GPat<=N_GP;GPat++)
+  {
+    gp++;
+    if(gg==1)
+    {
+      for(f=1;f<=6;f++) {wtlen_p(GPat,f)=mgp_adj(MGparm_point(gg,GPat)+N_M_Grow_parms+f-1);}
+    }
+    else
+    {
+      for(f=7;f<=8;f++) {wtlen_p(GPat,f)=mgp_adj(MGparm_point(gg,GPat)+N_M_Grow_parms+(f-6)-1);}
+    }
+    if(do_once==1) echoinput<<"get wtlen parms sex: "<<gg<<" Gpat: "<<GPat<<" sex*Gpat: "<<gp<<" "<<wtlen_p(GPat)<<endl;
+  }
   if(save_for_report>0) mgp_save(yz)=value(mgp_adj);
   }
 
@@ -1191,15 +1207,6 @@ FUNCTION void get_wtlen()
   for (GPat=1;GPat<=N_GP;GPat++)
   {
     gp++;
-    if(gg==1)
-    {
-      for(f=1;f<=6;f++) {wtlen_p(GPat,f)=mgp_adj(MGparm_point(gg,GPat)+N_M_Grow_parms+f-1);}
-    }
-    else
-    {
-      for(f=7;f<=8;f++) {wtlen_p(GPat,f)=mgp_adj(MGparm_point(gg,GPat)+N_M_Grow_parms+(f-6)-1);}
-    }
-//    if(do_once==1) echoinput<<"get wtlen parms sex: "<<gg<<" Gpat: "<<GPat<<" sex*Gpat: "<<gp<<" "<<wtlen_p(GPat)<<endl;
 
     for (s=1;s<=nseas;s++)
     {
@@ -1371,12 +1378,15 @@ FUNCTION void get_wtlen()
     }  // end season loop
   }  // end GP loop
 //  end wt-len and fecundity
+  return;
+  }  //  end wt-len
 
+
+FUNCTION void get_Hermaphro()
+  {
 //  SS_Label_Info_19.2.5  #Do Hermaphroditism (no seasonality and no gp differences)
 //  should build seasonally component here
 //  only one hermaphroditism definition is allowed (3 parameters), but it is stored by Gpat, so referenced by GP4(g)
-    if(Hermaphro_Option!=0)
-    {
       dvariable infl;  // inflection
       dvariable stdev;  // standard deviation
       dvariable maxval;  // max value
@@ -1392,13 +1402,11 @@ FUNCTION void get_wtlen()
       {
         Hermaphro_val(1,a)=0.0 + temp * (cumd_norm((r_ages(a)-infl)/stdev)-temp2);
       }
-      if(N_GP>1)
-        for(gp=2;gp<=N_GP;gp++)
-        {
-          Hermaphro_val(gp)=Hermaphro_val(1);
-        }
-    }
-
+      if(N_GP>1){
+        for(gp=2;gp<=N_GP;gp++){
+          Hermaphro_val(gp)=Hermaphro_val(1);}
+      }
+  return;
   }
 
 FUNCTION void get_migration()
@@ -1491,6 +1499,7 @@ FUNCTION void get_migration()
     }
   }
 //  end migration
+  return;
   }
 
 FUNCTION void get_migration2()
@@ -1593,6 +1602,7 @@ FUNCTION void get_migration2()
     }
   }
 //  end migration
+  return;
   }
 
 
