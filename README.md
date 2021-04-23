@@ -2,6 +2,16 @@
 
 Stock Synthesis (SS or SS3) is a generalized age-structured population dynamics model implemented in [ADMB](http://www.admb-project.org/). It is used to assess the effect of fisheries on fish and shellfish stocks while taking into account the influence of environmental factors.
 
+# Table of contents
+-   [Citing Stock Synthesis](#citing-stock-synthesis)
+-   [Installation](#installation)
+-   [How can I learn how to use Stock Synthesis?](#how-can-i-learn-how-to-use-stock-synthesis)
+-   [How do I ask questions about Stock Synthesis?](#how-do-i-ask-questions-about-stock-synthesis)
+-   [How can I contribute to Stock Synthesis?](#how-can-i-contribute-to-stock-synthesis)
+-   [Tools for working with SS](#tools-for-working-with-ss)
+-   [Disclaimer](#disclaimer)
+
+
 ## Citing Stock Synthesis
 
 Please cite Stock Synthesis as:
@@ -30,14 +40,19 @@ Please look for answers or submit questions to the [Stock Synthesis forums](http
 
 Have feature requests or bug reports? Want to contribute code? Please open an [issue](https://github.com/nmfs-stock-synthesis/stock-synthesis/issues) or submit a pull request. For complete details, please see [CONTRIBUTING.md](CONTRIBUTING.md)
 
+This project and everyone participating in it is governed by the [NMFS Fisheries Toolbox Code of Conduct](https://github.com/nmfs-fish-tools/Resources/blob/master/CODE_OF_CONDUCT.md). By participating, you are expected to uphold this code.
+
 ## Tools for working with SS
 
 As SS usage has grown, so has the number of tools to work with it. These include:
 
 - [r4ss](https://github.com/r4ss/r4ss): Create plots of SS output and functions to work with SS in R.
+- [ss3diags](https://github.com/jabbamodel/ss3diags): Run advanced diagnostics for SS models.
 - [ss3sim](https://github.com/ss3sim/ss3sim): Conduct simulation studies using SS.
 - [SSI](https://vlab.ncep.noaa.gov/web/stock-synthesis/document-library/-/document_library/0LmuycloZeIt/view/5042951): Stock Synthesis Interface, a GUI for developing models and running SS. Links to r4ss.
 - [SSMSE](https://github.com/nmfs-fish-tools/SSMSE): Use SS operating models in Management Strategy Evaluation.
+- [sa4ss](https://github.com/nwfsc-assess/sa4ss): Create accessible R markdown stock assessment documents with results from SS models. Note this tool is intended for use by analysts within the Northwest and Southwest Fisheries Science Centers currently.
+
 
 Have a tool to work with SS that should be mentioned here? Open an issue or pull request to let us know!
 
