@@ -3468,10 +3468,10 @@ FUNCTION void SPR_profile()
 
 FUNCTION void Global_MSY()
   {
-// REPORT_KEYWORD 49 GLOBAL_MSY
+// REPORT_KEYWORD 55 GLOBAL_MSY
 //  GLOBAL_MSY with knife-edge age selection, then slot-age selection
     int bio_t_base;
-	  SS2out<<endl<<pick_report_name(49)<<endl;
+	  SS2out<<endl<<pick_report_name(55)<<endl;
     y=styr-3;  //  stores the averaged
     yz=y;
     bio_yr=y;

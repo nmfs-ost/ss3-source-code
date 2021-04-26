@@ -782,7 +782,7 @@ FINAL_SECTION
         cout<<" finished "<<endl;
     }
 
-    if (pick_report_use(49)=="Y" && Do_Benchmark>0)
+    if (pick_report_use(55)=="Y" && Do_Benchmark>0)
     {
         cout<<"Global_MSY: ";
         Global_MSY();
