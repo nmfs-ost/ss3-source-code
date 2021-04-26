@@ -44,7 +44,7 @@ This project and everyone participating in it is governed by the [NMFS Fisheries
 
 ## Tools for working with SS
 
-As SS usage has grown, so has the number of tools to work with it. These include:
+As SS usage has grown, so has the number of tools to work with it. These include [repositories on github with the stock-synthesis topic](https://github.com/topics/stock-synthesis) as well as:
 
 - [r4ss](https://github.com/r4ss/r4ss): Create plots of SS output and functions to work with SS in R.
 - [ss3diags](https://github.com/jabbamodel/ss3diags): Run advanced diagnostics for SS models.
