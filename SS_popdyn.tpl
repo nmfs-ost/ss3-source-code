@@ -122,6 +122,9 @@ FUNCTION void get_initial_conditions()
         Ave_Size(t,1)=Ave_Size(t-nseas,1);  // prep for time-vary next yr
       }
   }
+  if(MG_active(3)>0) get_wtlen();  // stores values for all seasons
+  get_mat_fec();  //  does just spawn season and subseason using ALK calculated just above
+  if(Hermaphro_Option!=0) get_Hermaphro();
 
   if(MG_active(1)>0) get_natmort();
  #ifdef DO_ONCE
@@ -138,8 +141,6 @@ FUNCTION void get_initial_conditions()
     }
   }
 
-  if(MG_active(3)>0) get_wtlen();
-  if(Hermaphro_Option!=0) get_Hermaphro();
   if(MG_active(4)>0) get_recr_distribution();
   if(y>=Bmark_Yr(7)&&y<=Bmark_Yr(8))
   {
@@ -211,7 +212,7 @@ FUNCTION void get_initial_conditions()
     }
       else if(MG_active(2)>0 || MG_active(3)>0 || save_for_report>0 || do_once==1)
     {
-       Make_Fecundity();
+//       Make_Fecundity();
 //       if(do_once==1) echoinput<<"Save_fec in initial year: "<<t<<" %% "<<save_sel_fec(t,1,0)<<endl;
        for (g=1;g<=gmorph;g++)
        if(use_morph(g)>0)
@@ -579,20 +580,14 @@ FUNCTION void get_time_series()
       }
       else if(timevary_MG(y,2)>0 || timevary_MG(y,3)>0 || save_for_report==1 || WTage_rd>0)
         {
-      get_growth3(y,t,1,1);  //  before season loop, used for summary biomass
-//      warning<<t<<" ave_size_for_smrybio "<<Ave_Size(t,1,1)(0,6)<<endl;
+          get_growth3(y,t,1,1);  //  before season loop, used for summary biomass
           ALK_subseas_update(1)=1;  // do 1st subseas of 1st season;  ADD THIS LINE for 3.30.17
           Make_AgeLength_Key(s, 1);  //  this will give wt_age_beg before any time-varying parameter changes for this year
           ALK_idx=(s-1)*N_subseas+1;
-        for (g=1;g<=gmorph;g++)
-        if(use_morph(g)>0)
-        {
+          for (g=1;g<=gmorph;g++)
+          if(use_morph(g)>0) {
           Wt_Age_beg(s,g)=(ALK(ALK_idx,g)*wt_len(s,GP(g)));  // wt-at-age at beginning of period
-//          subseas=mid_subseas;
-//          ALK_idx=(s-1)*N_subseas+subseas;
-//          Wt_Age_mid(s,g)=ALK(ALK_idx,g)*wt_len(s,GP(g));  // use for fisheries with no size selectivity
          }
-//    warning<<t<<" "<<" Wt_Age_for_smrybio: "<<Wt_Age_beg(s,1)(0,6)<<endl;
         }
         smrybio=0.0;
         smrynum=0.0;
@@ -625,6 +620,12 @@ FUNCTION void get_time_series()
           get_growth2(y);  //  propagates growth to each season this year and to begin next year
           get_growth3(y,t,1,1);  //  cleans up the linear growth range for begin of this year
         }
+      if(timevary_MG(y,3)>0){
+      	get_wtlen();  //  stores values for all seasons
+      	//  note that get_mat_fec() will get called in the season loop because it may need the ALK for a later season
+      	// but Maunder's M in get_natmort() may use the fecundity vector, so would be using the most recently calculated  Problem??
+        if(Hermaphro_Option!=0) get_Hermaphro();
+      } 
       if(timevary_MG(y,1)>0) get_natmort();
       if(y>=Bmark_Yr(1)&&y<=Bmark_Yr(2))
       {
@@ -636,10 +637,6 @@ FUNCTION void get_time_series()
           surv2_unf(s,gp)+=surv2(s,gp);
         }
       }
-      if(timevary_MG(y,3)>0){
-      	get_wtlen();
-        if(Hermaphro_Option!=0) get_Hermaphro();
-      } 
       if(timevary_MG(y,4)>0) get_recr_distribution();
       if(y>=Bmark_Yr(7)&&y<=Bmark_Yr(8))
       {
@@ -732,26 +729,18 @@ FUNCTION void get_time_series()
       }
       else if(timevary_MG(y,2)>0 || timevary_MG(y,3)>0 || save_for_report>0 || do_once==1)
       {
-//    warning<<t<<" "<<1<<" saved: "<<Save_Wt_Age(t,1)(0,6)<<endl;
-         Make_Fecundity();
+         if(s==spawn_seas) get_mat_fec();
+         ALK_idx=(s-1)*N_subseas+1;  //  subseas=1
+         int ALK_idx2=(s-1)*N_subseas+mid_subseas;
          for (g=1;g<=gmorph;g++)
          if(use_morph(g)>0)
          {
-           subseas=1;
-           ALK_idx=(s-1)*N_subseas+subseas;
-           Make_AgeLength_Key(s,subseas);
            Wt_Age_beg(s,g)=(ALK(ALK_idx,g)*wt_len(s,GP(g)));  // wt-at-age at beginning of period
-           subseas=mid_subseas;
-           ALK_idx=(s-1)*N_subseas+subseas;
-           Make_AgeLength_Key(s,subseas);
-           Wt_Age_mid(s,g)=ALK(ALK_idx,g)*wt_len(s,GP(g));  // use for fisheries with no size selectivity
+           Wt_Age_mid(s,g)=ALK(ALK_idx2,g)*wt_len(s,GP(g));  // use for fisheries with no size selectivity
         }
       }
 
       Save_Wt_Age(t)=Wt_Age_beg(s);
-//    warning<<t<<" ave_size_for_save_wt "<<Ave_Size(t,1,1)(0,6)<<endl;
-//    warning<<t<<" save_wt: "<<Save_Wt_Age(t,1)(0,6)<<endl;
-    
 
       if(y>styr)    // because styr is done as part of initial conditions
       {
