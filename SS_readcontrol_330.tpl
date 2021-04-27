@@ -922,14 +922,15 @@
   	*(ad_comm::global_datafile) >> Hermaphro_seas_rd;  //  -1 for all seasons, or integer for particular season <=nseas
   		echoinput<<Hermaphro_seas_rd<<endl;
   	Hermaphro_seas=int(Hermaphro_seas_rd);
+  	
                                        // fractional part of Hermaphro_seas will be converted to the first age that switches
-    if(temp>0) {
+    if(Hermaphro_seas_rd>0) {
     Hermaphro_firstage=int((Hermaphro_seas_rd-Hermaphro_seas)*10.0+1.0e-6);}
     else {
     Hermaphro_firstage=int((abs(Hermaphro_seas_rd)-1)*10.0+1.0e-6);}
                                            //  so  2.3 will do switch in season 2 beginning with age 3.
     echoinput<<Hermaphro_seas<<"  Hermaphro_season (-1 means all seasons)"<<endl;
-    echoinput<<Hermaphro_firstage<<"  Hermaphro_firstage (from decimal part of seas input"<<endl;
+    echoinput<<Hermaphro_firstage<<"  Hermaphro_firstage (from decimal part of seas input; note that firstage can only be a single digit, so 9 is max"<<endl;
     *(ad_comm::global_datafile) >> Hermaphro_maleSPB;  // read as a fraction (0.0 to 1.0) of the male SSB added into the total SSB
     echoinput<<Hermaphro_maleSPB<<"  Hermaphro_maleSPB "<<endl;
   }

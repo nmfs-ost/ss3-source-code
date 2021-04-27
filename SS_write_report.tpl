@@ -2461,7 +2461,7 @@ FUNCTION void write_bigoutput()
               get_growth3(styr,t,s, subseas);
               Make_AgeLength_Key(s, subseas);  //  spawn subseas
             }
-            Make_Fecundity();
+            get_mat_fec();
           }
         }
       }
@@ -3288,7 +3288,7 @@ FUNCTION void SPR_profile()
         //don't call get_growth3(subseas) because using an average ave_size
             Make_AgeLength_Key(s, subseas);  //  spawn subseas
           }
-          Make_Fecundity();
+          get_mat_fec();
         }
       }
       for (g=1;g<=gmorph;g++)

@@ -1756,12 +1756,14 @@ FUNCTION void get_saveGparm()
     }
   }  //  end save_gparm
 
+//  this function is no longer used.  It has been moved into get_mat_fec()
+ /*
 FUNCTION void Make_Fecundity()
   {
 //********************************************************************
 //  this Make_Fecundity function does the dot product of the distribution of length-at-age (ALK) with maturity and fecundity vectors
 //  to calculate the mean fecundity at each age
- /* SS_Label_31.1 FUNCTION Make_Fecundity */
+ // SS_Label_31.1 FUNCTION Make_Fecundity
 //  SPAWN-RECR:   here is the make_Fecundity function
     fec.initialize();
     ALK_idx=(spawn_seas-1)*N_subseas+spawn_subseas;
@@ -1792,46 +1794,9 @@ FUNCTION void Make_Fecundity()
           fec(g)(First_Mature_Age,nages) = elem_prod(tempvec_a(First_Mature_Age,nages),mat_age(GPat)(First_Mature_Age,nages));  //  reproductive output at age
         }
       }
+      if(t>=styr) save_sel_fec(t,g,0)= fec(g);   //  save sel_al_3 and save fecundity for output
+      if(y==endyr) save_sel_fec(t+nseas,g,0)=fec(g);
 
- /*
-      switch(Maturity_Option)
-      {
-        case 1:  //  Maturity_Option=1  length logistic
-        {
-//          for(a=0;a<=nages;a++)
-//          {
-//            fec(g,a) = ALK(ALK_idx,g,a)(ALK_range_g_lo(g,a),ALK_range_g_hi(g,a)) *mat_fec_len(GPat)(ALK_range_g_lo(g,a),ALK_range_g_hi(g,a))*mat_age(GPat,a);  //  reproductive output at age
-//          }
-//          fec(g) = elem_prod(ALK(ALK_idx,g)*mat_fec_len(GPat),mat_age(GPat));  //  reproductive output at age
-          break;
-        }
-        case 2:  //  Maturity_Option=2  age logistic
-        {
-          fec(g) = elem_prod(ALK(ALK_idx,g)*mat_fec_len(GPat),mat_age(GPat));  //  reproductive output at age
-          break;
-        }
-        case 3:  //  Maturity_Option=3  read age-maturity
-        {
-          fec(g) = elem_prod(ALK(ALK_idx,g)*mat_fec_len(GPat),mat_age(GPat));  //  reproductive output at age
-          break;
-        }
-        case 4:  //  Maturity_Option=4   read age-fecundity into age-maturity
-        {
-          fec(g)=Age_Maturity(GPat);
-          break;
-        }
-        case 5:  //  Maturity_Option=5   read age-fecundity from wtatage.ss
-        {
-          fec(g)=WTage_emp(t,GP3(g),-2);
-           break;
-        }
-        case 6:  //  Maturity_Option=6   read length-maturity
-        {
-          fec(g) = elem_prod(ALK(ALK_idx,g)*mat_fec_len(GPat),mat_age(GPat));  //  reproductive output at age
-          break;
-        }
-      }
- */
       if( bigsaver==1 )
       {
       switch(Maturity_Option)
@@ -1875,22 +1840,6 @@ FUNCTION void Make_Fecundity()
         }
       }
       }
-
- /*
-      if(Maturity_Option<=3)
-      {
-        fec(g) = ALK(ALK_idx,g)*mat_fec_len;
-        if(Maturity_Option==3)
-        {fec(g) = elem_prod(fec(g),Age_Maturity(GP4(g)));}
-        else
-        {fec(g) = elem_prod(fec(g),mat_age);}
-      }
-      else if(Maturity_Option==4)
-      {fec(g)=Age_Maturity(GP4(g));}
-      else
-      {fec(g)=WTage_emp(t,GP3(g),-2);}
- */
-        if(t>=styr) save_sel_fec(t,g,0)= fec(g);   //  save sel_al_3 and save fecundity for output
-        if(y==endyr) save_sel_fec(t+nseas,g,0)=fec(g);
     }
   }
+ */
