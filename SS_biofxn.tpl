@@ -842,13 +842,20 @@ FUNCTION void get_natmort()
   dvariable Loren_M1;
   dvariable Loren_temp;
   dvariable Loren_temp2;
+  dvariable Maunder_Mjuv;
+  dvariable Maunder_lambda;
+  dvariable Maunder_Lmat;
+  dvariable Maunder_Mmat;
+  dvariable Maunder_beta;
+  dvariable Maunder_L50;
+  dvar_vector XX_mature(0,nages);
   dvariable t_age;
   int gpi;
   int Do_AveAge;
   int K_index;
   K_index=VBK(1).indexmax();
   Do_AveAge=0;
-  t_base=styr+(yz-styr)*nseas-1;
+  t_base=styr+(yz-styr)*nseas-1;  //  so looping s=1 to nseas; t=t_base+s
   Ip=-N_M_Grow_parms;   // start counter for MGparms
   //  SS_Label_Info_17.1  #loop growth patterns in each gender
   gp=0;
@@ -875,10 +882,8 @@ FUNCTION void get_natmort()
       {
         if(gp>1)
         {
-          for (j=1;j<=N_natMparms;j++)
-          {
-            natMparms(j,gp)=natMparms(j,1)*mfexp(natMparms(j,gp));
-          }
+          for (j=1;j<=N_natMparms;j++) {
+            natMparms(j,gp)=natMparms(j,1)*mfexp(natMparms(j,gp));}
         }
         break;
       }
@@ -1029,6 +1034,55 @@ FUNCTION void get_natmort()
             } // end season
             break;
           }
+  //  SS_Label_Info_17.1.2.5  #case 5:  age and gender specific M linked to maturity (developed by Mark Maunder and contributed to the SS project in Feb 2021).
+          case 5:
+          {
+            Maunder_Mjuv = natMparms(1,gp);     //
+            Maunder_lambda = natMparms(2,gp);      //
+            Maunder_Lmat = natMparms(3,gp);    //  constant for juvenile mort
+            Maunder_Mmat = natMparms(4,gp);    //
+            if(natM_5_opt<=2){	//use the SS mat50% and mat_slope parameters 
+  		        Maunder_L50  = wtlen_p(GPat,3); //from length-logistic selectivity, same for both sexes; so MUST use that maturity option with this M option
+          		Maunder_beta = wtlen_p(GPat,4); //slope
+          		XX_mature=make_mature_numbers(gpi);  //  will be same for all seasons
+  		      }
+            else if(natM_5_opt==3){	//use two new parameters  mat50% and mat_slope, which can be Gpat and sex specific.
+        		Maunder_L50  = natMparms(5,gp);    //
+		        Maunder_beta = natMparms(6,gp);    //
+            }
+              for (s=1;s<=nseas;s++)
+              {
+                t=t_base+s;
+//  using the most recent spawn seeason's age-maturity for females, unless doing option 3 here
+//  this code uses the length maturity parameters for females, and the ave_size for the current sex in the current season
+//                if(natM_5_opt<=2){   //  uses the SS maturity parameters, which could be in terms of length or age
+//                mat_len(GPat) =        1./(1. + mfexp(wtlen_p(GPat,4)*(len_bins_m(1,nlength)-wtlen_p(GPat,3))));
+                  XX_mature.initialize();
+                  XX_mature(First_Mature_Age,nages) = 1./(1. + mfexp(Maunder_beta*(Ave_Size(t,mid_subseas,g)(First_Mature_Age,nages)-Maunder_L50)));
+//                }
+//                  for (a=0; a<=nages;a++)
+                {
+//  original equation had:
+//  natM(s,gpi,a) = Maunder_Mjuv*pow(Ave_Size(t,ALK_idx,g,a)/Maunder_Lmat,Maunder_lambda) +
+//                  (Maunder_Mmat-Maunder_Mjuv*pow(Ave_Size(t,ALK_idx,g,a)/Maunder_Lmat,Maunder_lambda))*XXmaturity_Fem(a)XX;
+// Maunder_Lmat was not defined
+        	    		natM(s,gpi) = Maunder_Mjuv*pow((Ave_Size(t,mid_subseas,g)/Maunder_Lmat),Maunder_lambda);
+        	    		natM(s,gpi) += elem_prod((Maunder_Mmat-natM(s,gpi)),XX_mature);
+        	    	}
+        	    	if(do_once==1)
+        	    		{
+                    echoinput<<" seas "<<s<<" sex*GP "<<gpi<<endl<<"M_juv: "<<Maunder_Mjuv<<"; M_mat: "<<Maunder_Mmat<<"; lambda: "<<Maunder_lambda<<endl;
+                    echoinput<<" L50 "<<Maunder_L50<<" beta "<<Maunder_beta<<" Len_mat "<<Maunder_Lmat<<endl;
+                    echoinput<<"Age_mature_for_Maunder_M: "<<XX_mature<<endl;
+                    echoinput<<"avesize "<<Ave_Size(t,mid_subseas,g)<<endl;
+                    echoinput<<"avesize/Lmat "<<Ave_Size(t,mid_subseas,g)/Maunder_Lmat<<endl;
+        	      		echoinput<<" natM_juv: "<<Maunder_Mjuv*pow((Ave_Size(t,mid_subseas,g)/Maunder_Lmat),Maunder_lambda)<<endl;
+        	      		echoinput<<" natM_mat: "<<(Maunder_Mmat)*XX_mature<< endl;
+        	      		echoinput<<" natM_combined: "<<natM(s,gpi)<<endl;
+        	    		}
+        	    }
+          	break;
+          }
         }  // end natM_type switch
 
   //  SS_Label_Info_17.2  #calc an ave_age for the first gp as a scaling factor in logL for initial recruitment (R1) deviation
@@ -1040,7 +1094,7 @@ FUNCTION void get_natmort()
  #ifdef DO_ONCE
         if(do_once==1)
         {
-         for(s=1;s<=nseas;s++) echoinput<<"Natmort seas:"<<s<<" sex:"<<gg<<" Gpat:"<<GPat<<" sex*Gpat:"<<gp<<" settlement:"<<settle<<" gpi:"<<gpi<<" M: "<<natM(s,gpi)<<endl;
+         for(s=1;s<=nseas;s++) echoinput<<"Natmort seas:"<<s<<" sex:"<<gg<<" Gpat:"<<GPat<<" sex*Gpat:"<<gp<<" settlement:"<<settle<<" gpi:"<<gpi<<endl<<" M: "<<natM(s,gpi)<<endl;
         }
  #endif
       } //  end use of this morph
