@@ -24,7 +24,7 @@ framework for fish stock assessment and fishery management. Fisheries Research,
 
 ## Installation
 
-Download the [latest compiled versions](https://vlab.ncep.noaa.gov/web/stock-synthesis/document-library/-/document_library/0LmuycloZeIt/view/5042555).
+Download the latest compiled versions on the [Stock Synthesis Website](https://vlab.ncep.noaa.gov/web/stock-synthesis/document-library/-/document_library/0LmuycloZeIt/view/5042555) or [Github Releases](https://github.com/nmfs-stock-synthesis/stock-synthesis/releases).
 
 ## How can I learn how to use Stock Synthesis?
 
@@ -52,7 +52,7 @@ As SS usage has grown, so has the number of tools to work with it. These include
 - [SSI](https://vlab.ncep.noaa.gov/web/stock-synthesis/document-library/-/document_library/0LmuycloZeIt/view/5042951): Stock Synthesis Interface, a GUI for developing models and running SS. Links to r4ss.
 - [SSMSE](https://github.com/nmfs-fish-tools/SSMSE): Use SS operating models in Management Strategy Evaluation.
 - [sa4ss](https://github.com/nwfsc-assess/sa4ss): Create accessible R markdown stock assessment documents with results from SS models. Note this tool is intended for use by analysts within the Northwest and Southwest Fisheries Science Centers currently.
-
+- Data limited tools - Options included Simple Stock Synthesis ([SSS](https://github.com/shcaba/SSS)) and Extended Simple Stock Synthesis ([XSSS](https://github.com/chantelwetzel-noaa/XSSS)), as well as [SS-DL-tool](https://github.com/shcaba/SS-DL-tool), a shiny app that includes XSSS and SSS in its functionality.
 
 Have a tool to work with SS that should be mentioned here? Open an issue or pull request to let us know!
 
