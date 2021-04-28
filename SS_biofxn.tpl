@@ -1392,13 +1392,16 @@ FUNCTION void get_mat_fec();
       }
       case 2:  //  Maturity_Option=2  age logistic
       {
+        mat_age(GPat)(0,First_Mature_Age)=0.0;
         mat_age(GPat)(First_Mature_Age,nages) = 1./(1. + mfexp(wtlen_p(GPat,4)*(r_ages(First_Mature_Age,nages)-wtlen_p(GPat,3))));
+       mat_fec_len(gp) = elem_prod(mat_len(gp),fec_len(gp));
         make_mature_numbers(g)=mat_age(GPat);
         break;
       }
       case 3:  //  Maturity_Option=3  read age-maturity
       {
         mat_age(GPat)=Age_Maturity(GPat);
+        mat_fec_len(gp) = elem_prod(mat_len(gp),fec_len(gp));
         make_mature_numbers(g)=mat_age(GPat);
         break;
      }
@@ -1437,9 +1440,7 @@ FUNCTION void get_mat_fec();
            break;
         }
         default:
-     {
-        	if(Maturity_Option==1){
-        	}
+        {
           int ALK_finder=(ALK_idx-1)*gmorph+g;
           for(a=First_Mature_Age;a<=nages;a++)
           {
@@ -1457,6 +1458,7 @@ FUNCTION void get_mat_fec();
      if(do_once==1){
      echoinput<<"gp: "<<GPat<<" g "<<g<<endl<<"mat_len: "<<mat_len(GPat)<<endl<<
      " fec_len: "<<fec_len(GPat)<<endl<<
+     " mat_fec_len: "<<mat_fec_len(GPat)<<endl<<
      " mat_age: "<<mat_age(GPat)<<endl<<
      " mat_len_age: "<<make_mature_numbers(g)<<endl<<
      " fecundity_age: "<<fec(g)<<endl;
