@@ -963,31 +963,42 @@ PRELIMINARY_CALCS_SECTION
       }
     }
     
-//  SS_Label_Info_6.8.4 #Call fxn get_natmort()
     for (s=1;s<=nseas;s++)  //  get growth here in case needed for Lorenzen
     {
       t = styr+s-1;
       for(subseas=1;subseas<=N_subseas;subseas++)
       {
         ALK_idx=(s-1)*N_subseas+subseas;
-        get_growth3(styr,t,s, subseas);  //  this will calculate the cv of growth for all subseasons of first year
+        get_growth3(styr,t,s, subseas);  //  this will calculate the growth for all subseasons of first year
+        Make_AgeLength_Key(s,subseas);   //  ALK_idx calculated within Make_AgeLength_Key
+        ALK(ALK_idx) = value(ALK(ALK_idx));
       }
     }
-    echoinput<<"ready to do natmort "<<endl;
-    get_natmort();
-    natM = value(natM);
-    surv1 = value(surv1);
-    surv2 = value(surv2);
 
-//  SS_Label_Info_6.8.5 #Call fxn get_wtlen()  calculate weight-at-length and maturity vectors
+//  SS_Label_Info_6.8.5 #Call fxn get_wtlen() and get_mat_fec() to calculate weight-at-length and maturity and fecundity vectors
     get_wtlen();
+    get_mat_fec();
     wt_len=value(wt_len);
     wt_len2=value(wt_len2);
     wt_len_fd=value(wt_len_fd);
     mat_len=value(mat_len);
     mat_fec_len=value(mat_fec_len);
     mat_age=value(mat_age);
+    
+//  SS_Label_Info_6.8.4 #Call fxn get_natmort()
+    echoinput<<"ready to do natmort "<<endl;
+    get_natmort();
+    natM = value(natM);
+    surv1 = value(surv1);
+    surv2 = value(surv2);
 
+    s=spawn_seas;
+        subseas=spawn_subseas;
+        ALK_idx=(s-1)*N_subseas+subseas;
+        // get_growth3 already done for all subseasons
+//        Make_Fecundity();
+    
+ /*
     for (s=1;s<=nseas;s++)
     {
       t = styr+s-1;
@@ -995,8 +1006,6 @@ PRELIMINARY_CALCS_SECTION
       {
         ALK_idx=(s-1)*N_subseas+subseas;
         get_growth3(styr,t,s, subseas);  //  this will calculate the cv of growth for all subseasons of first year
-        Make_AgeLength_Key(s,subseas);   //  ALK_idx calculated within Make_AgeLength_Key
-        ALK(ALK_idx) = value(ALK(ALK_idx));
       }
 //  SPAWN-RECR:   calc fecundity in preliminary_calcs
       if(s==spawn_seas)
@@ -1009,7 +1018,8 @@ PRELIMINARY_CALCS_SECTION
         echoinput<<" fecundity ok "<<endl;
       }
     }
-
+ */
+ 
 //  SS_Label_Info_6.8.6 #Call fxn get_recr_distribution() for distribution of recruitment among areas and seasons, which can be time-varying
       echoinput<<"do recrdist: "<<endl;
     get_recr_distribution();

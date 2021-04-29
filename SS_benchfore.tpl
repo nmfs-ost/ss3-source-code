@@ -1362,8 +1362,9 @@ FUNCTION void Get_Forecast()
         get_growth3(y,t,s, subseas);  //  in case needed for Lorenzen M
         Make_AgeLength_Key(s, subseas);
       }
-      if(s==spawn_seas) Make_Fecundity();
+//      if(s==spawn_seas) Make_Fecundity();
     }
+      get_mat_fec();
   }
 
     for (y=endyr+1;y<=YrMax;y++)
@@ -1439,7 +1440,10 @@ FUNCTION void Get_Forecast()
           get_growth2(y);
         }
       if(timevary_MG(y,1)>0) get_natmort();
-      if(timevary_MG(y,3)>0) get_wtlen();
+      if(timevary_MG(y,3)>0){
+      	get_wtlen();
+        if(Hermaphro_Option!=0) get_Hermaphro();
+      } 
       if((timevary_MG(y,4)>0 || timevary_MG(endyr+1,4)>0) && Fcast_Loop_Control(3)!=3) 
       	{get_recr_distribution();}
       if(timevary_MG(y,5)>0) get_migration();
@@ -1503,7 +1507,8 @@ FUNCTION void Get_Forecast()
             }
             else if(timevary_MG(y,2)>0 || timevary_MG(y,3)>0 ||  bigsaver==1 )
             {
-               Make_Fecundity();
+//               Make_Fecundity();
+  get_mat_fec();  //  does just spawn season and subseason using ALK calculated just above
                for (g=1;g<=gmorph;g++)
                if(use_morph(g)>0)
                {

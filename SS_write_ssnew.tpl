@@ -1378,15 +1378,17 @@ FUNCTION void write_nucontrol()
          <<"#_DevLinks(more):  21-25 keep last dev for rest of years"<<endl<<"#"<<endl;
   report4<<"#_Prior_codes:  0=none; 6=normal; 1=symmetric beta; 2=CASAL's beta; 3=lognormal; 4=lognormal with biascorr; 5=gamma"<<endl;
   report4<<"#"<<endl<<"# setup for M, growth, wt-len, maturity, fecundity, (hermaphro), recr_distr, cohort_grow, (movement), (age error), (catch_mult), sex ratio "<<endl;
-  report4<<"#"<<endl<<natM_type<<" #_natM_type:_0=1Parm; 1=N_breakpoints;_2=Lorenzen;_3=agespecific;_4=agespec_withseasinterpolate"<<endl;
-    if(natM_type==1)
+  report4<<"#_NATMORT"<<endl<<natM_type<<" #_natM_type:_0=1Parm; 1=N_breakpoints;_2=Lorenzen;_3=agespecific;_4=agespec_withseasinterpolate;_5=BETA:_Maunder_link_to_maturity"<<endl;
+    if(natM_type==0)
+    {report4<<"  #_no additional input for selected M option; read 1P per morph"<<endl;}
+    else if(natM_type==1)
     {report4<<N_natMparms<<" #_N_breakpoints"<<endl<<NatM_break<<" # age(real) at M breakpoints"<<endl;}
     else if(natM_type==2)
     {report4<<natM_amin<<" #_reference age for Lorenzen M; read 1P per morph"<<endl;}
-    else if(natM_type>=3)
+    else if(natM_type>=3 && natM_type<5)
     {report4<<" #_Age_natmort_by sex x growthpattern (nest GP in sex)"<<endl<<Age_NatMort<<endl;}
     else
-    {report4<<"  #_no additional input for selected M option; read 1P per morph"<<endl;}
+    {report4<<natM_5_opt<<"  #_BETA: Maunder_M suboptions: 1 (4 parm per sex*GP, using age_maturity), 2 (4 parm, same), 3 (6 parm)"<<endl;}
     report4<<"#"<<endl;
     report4<<Grow_type<<" # GrowthModel: 1=vonBert with L1&L2; 2=Richards with L1&L2; 3=age_specific_K_incr; 4=age_specific_K_decr; 5=age_specific_K_each; 6=NA; 7=NA; 8=growth cessation"<<endl;
     if(Grow_type<=5 || Grow_type==8)
@@ -1417,7 +1419,7 @@ FUNCTION void write_nucontrol()
     report4<<Fecund_Option<<" #_fecundity option:(1)eggs=Wt*(a+b*Wt);(2)eggs=a*L^b;(3)eggs=a*Wt^b; (4)eggs=a+b*L; (5)eggs=a+b*W"<<endl;
     report4<<Hermaphro_Option<<" #_hermaphroditism option:  0=none; 1=female-to-male age-specific fxn; -1=male-to-female age-specific fxn"<<endl;
     if (Hermaphro_Option!=0){
-   report4<<Hermaphro_seas_rd<<" # Hermaphro_season.first_age "<<endl<<Hermaphro_maleSPB<<" # fraction_of_maleSSB_added_to_total_SSB "<<endl;}
+   report4<<Hermaphro_seas_rd<<" # Hermaphro_season.first_age (seas=-1 means all seasons; first_age must be 0 to 9)"<<endl<<Hermaphro_maleSPB<<" # fraction_of_maleSSB_added_to_total_SSB "<<endl;}
    
     report4<<MGparm_def<<" #_parameter_offset_approach for M, G, CV_G:  1- direct, no offset; 2- male=fem_parm*exp(male_parm); 3: male=female*exp(parm) then old=young*exp(parm)"<<endl;
   report4<<"#"<<endl;

@@ -546,12 +546,14 @@
   !!if(fracfemale<=0.0) fracfemale=0.000001;
 
 // read natmort setup
+  int natM_5_opt  //  option selection for Maunder approach
   init_int natM_type;  //  0=1Parm; 1=segmented; 2=Lorenzen; 3=agespecific; 4=agespec with seas interpolate
   !!echoinput<<natM_type<<" natM_type"<<endl;
   !! if(natM_type==1 || natM_type==2) {k=1;} else {k=0;}
   init_vector tempvec4(1,k)
  LOCAL_CALCS
   k=0; k1=0;
+  natM_5_opt=1;
   if(natM_type==0)
   {N_natMparms=1;}
   else if(natM_type==1)
