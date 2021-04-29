@@ -1042,30 +1042,25 @@ FUNCTION void get_natmort()
             Maunder_Lmat = natMparms(3,gp);    //  constant for juvenile mort
             Maunder_Mmat = natMparms(4,gp);    //
             if(natM_5_opt<=2){	//use the SS mat50% and mat_slope parameters 
-  		        Maunder_L50  = wtlen_p(GPat,3); //from length-logistic selectivity, same for both sexes; so MUST use that maturity option with this M option
+  		        Maunder_L50  = wtlen_p(GPat,3); //mat50%
           		Maunder_beta = wtlen_p(GPat,4); //slope
-          		XX_mature=make_mature_numbers(gpi);  //  will be same for all seasons
+//          		XX_mature=make_mature_numbers(gpi);  //  will be same for all seasons  THIS LINE SEEMS UNNECESSARY
   		      }
             else if(natM_5_opt==3){	//use two new parameters  mat50% and mat_slope, which can be Gpat and sex specific.
-        		Maunder_L50  = natMparms(5,gp);    //
-		        Maunder_beta = natMparms(6,gp);    //
+        		Maunder_L50  = natMparms(5,gp);
+		        Maunder_beta = natMparms(6,gp);
             }
               for (s=1;s<=nseas;s++)
               {
                 t=t_base+s;
-//  using the most recent spawn seeason's age-maturity for females, unless doing option 3 here
+//  using the most recent spawn season's age-maturity for females, unless doing option 3 here
 //  this code uses the length maturity parameters for females, and the ave_size for the current sex in the current season
-//                if(natM_5_opt<=2){   //  uses the SS maturity parameters, which could be in terms of length or age
-//                mat_len(GPat) =        1./(1. + mfexp(wtlen_p(GPat,4)*(len_bins_m(1,nlength)-wtlen_p(GPat,3))));
                   XX_mature.initialize();
                   XX_mature(First_Mature_Age,nages) = 1./(1. + mfexp(Maunder_beta*(Ave_Size(t,mid_subseas,g)(First_Mature_Age,nages)-Maunder_L50)));
-//                }
-//                  for (a=0; a<=nages;a++)
                 {
 //  original equation had:
 //  natM(s,gpi,a) = Maunder_Mjuv*pow(Ave_Size(t,ALK_idx,g,a)/Maunder_Lmat,Maunder_lambda) +
 //                  (Maunder_Mmat-Maunder_Mjuv*pow(Ave_Size(t,ALK_idx,g,a)/Maunder_Lmat,Maunder_lambda))*XXmaturity_Fem(a)XX;
-// Maunder_Lmat was not defined
         	    		natM(s,gpi) = Maunder_Mjuv*pow((Ave_Size(t,mid_subseas,g)/Maunder_Lmat),Maunder_lambda);
         	    		natM(s,gpi) += elem_prod((Maunder_Mmat-natM(s,gpi)),XX_mature);
         	    	}

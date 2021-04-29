@@ -1479,6 +1479,9 @@
           timevary_MG(y,0)=1;  // tracks active status for all MG types
         }
       }
+//  timevary growth or maturity and Maunder M refers to that maturity
+      if((timevary_MG(y,2)>0 || timevary_MG(y,3)>0) && natM_type==5 && natM_5_opt<3) timevary_MG(y,1)=1;
+      	
       echoinput<<y<<" timevary_MG: "<<timevary_MG(y)<<endl;
     }
  END_CALCS
