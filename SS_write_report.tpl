@@ -1302,14 +1302,14 @@ FUNCTION void write_bigoutput()
         t=Svy_time_t(f,i);
         ALK_time=Svy_ALK_time(f,i);
           SS2out<<f<<" "<<fleetname(f)<<" "<<fleet_area(f)<<" "<<Show_Time2(ALK_time)<<" "<<data_time(ALK_time,f,1)<<" "<<data_time(ALK_time,f,3)<<" "<<Svy_selec_abund(f,i)<<" "<<Svy_obs(f,i)<<" ";
-          if(Svy_errtype(f)>=0)  // lognormal
+          if(Svy_errtype(f)>=0)  // lognormal or student's T
           {
             temp = mfexp(Svy_est(f,i));
             SS2out<<temp<<" "<<Svy_q(f,i)<<" "<<temp/Svy_selec_abund(f,i)<<" "<<Svy_se_use(f,i)<<" "<<Svy_se(f,i);
             if(Svy_use(f,i) > 0)
             {
               SS2out<<" "<<Svy_obs_log(f,i)-Svy_est(f,i)<<" ";
-              if(Svy_errtype(f)==0)
+              if(Svy_errtype(f)==0) // lognormal
               {
                 SS2out<<0.5*square( ( Svy_obs_log(f,i)-Svy_est(f,i) ) / Svy_se_use(f,i))<<" "
                 <<0.5*square( ( Svy_obs_log(f,i)-Svy_est(f,i) ) / Svy_se_use(f,i))+log(Svy_se_use(f,i));
@@ -1330,7 +1330,7 @@ FUNCTION void write_bigoutput()
           else  // normal
           {
 //            temp = Svy_est(f,i)*Svy_q(f,i);
-            SS2out<<Svy_est(f,i)<<" "<<Svy_q(f,i)<<" "<<Svy_est(f,i)/Svy_selec_abund(f,i)<<" "<<Svy_se_use(f,i);
+            SS2out<<Svy_est(f,i)<<" "<<Svy_q(f,i)<<" "<<Svy_est(f,i)/Svy_selec_abund(f,i)<<" "<<Svy_se_use(f,i)<<" "<<Svy_se(f,i);
             if(Svy_use(f,i)>0)
             {
               SS2out<<" "<<Svy_obs(f,i)-Svy_est(f,i)<<" ";
