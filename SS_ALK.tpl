@@ -16,7 +16,6 @@ FUNCTION void Make_AgeLength_Key(const int s, const int subseas)
    imatrix ALK_range_use(0,nages,1,2);
    if(ALK_subseas_update(ALK_idx)==1) //  so need to calculate
    {
-
    ALK_subseas_update(ALK_idx)=0;  //  reset to 0 to indicate update has been done
    gp=0;
     for (int sex=1;sex<=gender;sex++)
