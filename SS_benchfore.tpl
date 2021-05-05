@@ -1363,8 +1363,9 @@ FUNCTION void Get_Forecast()
         Make_AgeLength_Key(s, subseas);
       }
 //      if(s==spawn_seas) Make_Fecundity();
+      if(s==spawn_seas) get_mat_fec();
     }
-      get_mat_fec();
+//      get_mat_fec();
   }
 
     for (y=endyr+1;y<=YrMax;y++)

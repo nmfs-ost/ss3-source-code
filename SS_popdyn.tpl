@@ -213,6 +213,7 @@ FUNCTION void get_initial_conditions()
       else if(MG_active(2)>0 || MG_active(3)>0 || save_for_report>0 || do_once==1)
     {
 //       Make_Fecundity();
+       if(s==spawn_seas && spawn_seas==1) get_mat_fec();
 //       if(do_once==1) echoinput<<"Save_fec in initial year: "<<t<<" %% "<<save_sel_fec(t,1,0)<<endl;
        for (g=1;g<=gmorph;g++)
        if(use_morph(g)>0)
@@ -259,15 +260,17 @@ FUNCTION void get_initial_conditions()
     Do_Equil_Calc(equ_Recr);                      //  call function to do equilibrium calculation
     SSB_virgin=SSB_equil;
     SPR_virgin=SSB_equil/Recr_virgin;  //  spawners per recruit
-    if(Do_Benchmark==0)
-    {
-      Mgmt_quant(1)=SSB_virgin;
-      SSB_unf=SSB_virgin;
-      Recr_unf=Recr_virgin;
-      Mgmt_quant(2)=totbio;  //  from equil calcs
-      Mgmt_quant(3)=smrybio;  //  from equil calcs
-      Mgmt_quant(4)=Recr_virgin;
-    }
+
+//  unnecessary because these are now done in benchmark itself
+//    if(Do_Benchmark==0)
+//    {
+//      Mgmt_quant(1)=SSB_virgin;
+//      SSB_unf=SSB_virgin;
+//      Recr_unf=Recr_virgin;
+//      Mgmt_quant(2)=totbio;  //  from equil calcs
+//      Mgmt_quant(3)=smrybio;  //  from equil calcs
+//      Mgmt_quant(4)=Recr_virgin;
+//    }
 
     Smry_Table(styr-2,1)=totbio;  //  from equil calcs
     Smry_Table(styr-2,2)=smrybio;  //  from equil calcs
@@ -729,6 +732,7 @@ FUNCTION void get_time_series()
       else if(timevary_MG(y,2)>0 || timevary_MG(y,3)>0 || save_for_report>0 || do_once==1)
       {
          if(s==spawn_seas) get_mat_fec();
+//         Make_Fecundity();
          ALK_idx=(s-1)*N_subseas+1;  //  subseas=1
          int ALK_idx2=(s-1)*N_subseas+mid_subseas;
          for (g=1;g<=gmorph;g++)

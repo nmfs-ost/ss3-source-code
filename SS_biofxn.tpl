@@ -1318,7 +1318,7 @@ FUNCTION void get_mat_fec();
 //  SPAWN-RECR:   calculate maturity and fecundity vectors
 
   make_mature_numbers.initialize();
-  int s=spawn_seas;
+  int s=spawn_seas;  // makes a local version of "s" as this gets called inside a "s" loop
   int ALK_idx=(spawn_seas-1)*N_subseas+spawn_subseas;
 
   for (g=1;g<=gmorph;g++)
@@ -1755,7 +1755,7 @@ FUNCTION void get_saveGparm()
   }  //  end save_gparm
 
 //  this function is no longer used.  It has been moved into get_mat_fec()
- /*
+
 FUNCTION void Make_Fecundity()
   {
 //********************************************************************
@@ -1840,4 +1840,4 @@ FUNCTION void Make_Fecundity()
       }
     }
   }
- */
+
