@@ -213,6 +213,7 @@ FUNCTION void get_initial_conditions()
       else if(MG_active(2)>0 || MG_active(3)>0 || save_for_report>0 || do_once==1)
     {
 //       Make_Fecundity();
+       if(s==spawn_seas && spawn_seas==1) get_mat_fec();
 //       if(do_once==1) echoinput<<"Save_fec in initial year: "<<t<<" %% "<<save_sel_fec(t,1,0)<<endl;
        for (g=1;g<=gmorph;g++)
        if(use_morph(g)>0)
@@ -259,15 +260,17 @@ FUNCTION void get_initial_conditions()
     Do_Equil_Calc(equ_Recr);                      //  call function to do equilibrium calculation
     SSB_virgin=SSB_equil;
     SPR_virgin=SSB_equil/Recr_virgin;  //  spawners per recruit
-    if(Do_Benchmark==0)
-    {
-      Mgmt_quant(1)=SSB_virgin;
-      SSB_unf=SSB_virgin;
-      Recr_unf=Recr_virgin;
-      Mgmt_quant(2)=totbio;  //  from equil calcs
-      Mgmt_quant(3)=smrybio;  //  from equil calcs
-      Mgmt_quant(4)=Recr_virgin;
-    }
+
+//  unnecessary because these are now done in benchmark itself
+//    if(Do_Benchmark==0)
+//    {
+//      Mgmt_quant(1)=SSB_virgin;
+//      SSB_unf=SSB_virgin;
+//      Recr_unf=Recr_virgin;
+//      Mgmt_quant(2)=totbio;  //  from equil calcs
+//      Mgmt_quant(3)=smrybio;  //  from equil calcs
+//      Mgmt_quant(4)=Recr_virgin;
+//    }
 
     Smry_Table(styr-2,1)=totbio;  //  from equil calcs
     Smry_Table(styr-2,2)=smrybio;  //  from equil calcs
@@ -576,9 +579,8 @@ FUNCTION void get_time_series()
           Wt_Age_beg(s,g)=WTage_emp(t,GP3(g),0);
           Wt_Age_mid(s,g)=WTage_emp(t,GP3(g),-1);
         }
-
       }
-      else if(timevary_MG(y,2)>0 || timevary_MG(y,3)>0 || save_for_report==1 || WTage_rd>0)
+      else if(timevary_MG(y,2)>0 || timevary_MG(y,3)>0 || save_for_report==1)
         {
           get_growth3(y,t,1,1);  //  before season loop, used for summary biomass
           ALK_subseas_update(1)=1;  // do 1st subseas of 1st season;  ADD THIS LINE for 3.30.17
@@ -730,6 +732,7 @@ FUNCTION void get_time_series()
       else if(timevary_MG(y,2)>0 || timevary_MG(y,3)>0 || save_for_report>0 || do_once==1)
       {
          if(s==spawn_seas) get_mat_fec();
+//         Make_Fecundity();
          ALK_idx=(s-1)*N_subseas+1;  //  subseas=1
          int ALK_idx2=(s-1)*N_subseas+mid_subseas;
          for (g=1;g<=gmorph;g++)
@@ -869,10 +872,11 @@ FUNCTION void get_time_series()
             Save_PopAge(t,p+pop,g)=0.0;  // later put midseason here
             Save_PopBio(t,p,g)=0.0;
             Save_PopBio(t,p+pop,g)=0.0;  // later put midseason here
+            ALK_idx=(s-1)*N_subseas+1;
             for (a=0;a<=nages;a++)
             {
-              Save_PopLen(t,p,g)+=value(natage(t,p,g,a))*value(ALK(s,g,a));
-              Save_PopWt(t,p,g)+=value(natage(t,p,g,a))*value(elem_prod(ALK(s,g,a),wt_len(s,GP(g))));
+              Save_PopLen(t,p,g)+=value(natage(t,p,g,a))*value(ALK(ALK_idx,g,a));
+              Save_PopWt(t,p,g)+=value(natage(t,p,g,a))*value(elem_prod(ALK(ALK_idx,g,a),wt_len(s,GP(g))));
               Save_PopAge(t,p,g,a)=value(natage(t,p,g,a));
               Save_PopBio(t,p,g,a)=value(natage(t,p,g,a))*value(Wt_Age_beg(s,g,a));
             } // close age loop
@@ -1259,6 +1263,7 @@ FUNCTION void get_time_series()
                   if(save_for_report==1)
                   {
                     j=p+pop;
+                    ALK_idx=(s-1)*N_subseas+mid_subseas;
                     for (a=0;a<=nages;a++)
                     {
                       Save_PopLen(t,j,g)+=value(natage(t,p,g,a)*mfexp(-Z_rate(t,p,g,a)*0.5*seasdur(s)))*value(ALK(ALK_idx,g,a));
@@ -1498,12 +1503,13 @@ FUNCTION void get_time_series()
   surv1_endyr=surv1;
   surv2_endyr=surv2;
 
+//  average quantities accumulated during the time series
   if(Do_Benchmark>0)
- {  
-  recr_dist(styr-3)=recr_dist_unf/(Bmark_Yr(8)-Bmark_Yr(7)+1);
-  natM_unf/=(Bmark_Yr(2)-Bmark_Yr(1)+1);
-  surv1_unf/=(Bmark_Yr(2)-Bmark_Yr(1)+1);
-  surv2_unf/(Bmark_Yr(2)-Bmark_Yr(1)+1);
+ {
+  recr_dist(styr-3)=recr_dist_unf/float(Bmark_Yr(8)-Bmark_Yr(7)+1);
+  natM_unf/=float(Bmark_Yr(2)-Bmark_Yr(1)+1);
+  surv1_unf/=float(Bmark_Yr(2)-Bmark_Yr(1)+1);
+  surv2_unf/float(Bmark_Yr(2)-Bmark_Yr(1)+1);
  }
 
   if(Do_TG>0) Tag_Recapture();
