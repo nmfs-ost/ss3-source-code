@@ -489,6 +489,13 @@ FUNCTION void write_SS_summary()
     SS_smry<<ParmLabel(NP)<<" "<<Extra_Std(j)<<" "<<CoVar(active_count,1)<<endl;
   }
 
+  if(Do_se_smrybio==0){
+  SS_smry<<"SmryBio_Virgin "<<Smry_Table(styr-2,2)<<" 0.0"<<endl;
+  SS_smry<<"SmryBio_Initial "<<Smry_Table(styr-1,2)<<" 0.0"<<endl;
+  for (y=styr;y<=YrMax;y++) {
+    SS_smry<<"SmryBio_"<<y<<" "<<Smry_Table(y,2)<<" 0.0"<<endl;}
+  }
+
   SS_smry<<"#_survey_stdev "<<Svy_N_sdreport<<endl;
   if(Svy_N_sdreport>0)
   {
@@ -520,12 +527,7 @@ FUNCTION void write_SS_summary()
   {
     SS_smry<<"TotBio_"<<y<<" "<<Smry_Table(y,1)<<" 0.0"<<endl;
   }
-  SS_smry<<"SmryBio_Virgin "<<Smry_Table(styr-2,2)<<" 0.0"<<endl;
-  SS_smry<<"SmryBio_Initial "<<Smry_Table(styr-1,2)<<" 0.0"<<endl;
-  for (y=styr;y<=YrMax;y++)
-  {
-    SS_smry<<"SmryBio_"<<y<<" "<<Smry_Table(y,2)<<" 0.0"<<endl;
-  }
+
   SS_smry<<"TotCatch_Virgin "<<Smry_Table(styr-2,4)<<" 0.0"<<endl;
   SS_smry<<"TotCatch_Initial "<<Smry_Table(styr-1,4)<<" 0.0"<<endl;
   for (y=styr;y<=YrMax;y++)

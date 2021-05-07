@@ -4043,6 +4043,8 @@
   int Do_NatM_Std;
   int NatM_Std_Cnt;
   int Do_Dyn_Bzero;
+  int Do_se_smrybio;
+  int Do_se_LnSSB;
   ivector NatM_Std_Pick(1,1);
   int Extra_Std_N;   //  dimension for the sdreport vector Selex_Std which also contains the Growth_Std
 
@@ -4050,6 +4052,8 @@
    Do_NatM_Std=0;
    NatM_Std_Cnt=0;
    Do_Dyn_Bzero=0;
+   Do_se_smrybio=0;
+   Do_se_LnSSB=0;
    NatM_Std_Pick.initialize();
    if(Do_More_Std==1)
    {

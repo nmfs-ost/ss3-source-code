@@ -441,17 +441,20 @@
    	depletion_multi=0;
    	depletion_log=0;
     k=depletion_basis_rd;
+    depletion_basis=depletion_basis_rd;  //  default
     
     if(k>=100) //  invokes log(ratio)
-    	{k-=100; depletion_log=1;} 
+    	{k-=100;
+    	depletion_log=1;
+    	depletion_basis=k;
+    	} 
     	
    	if(k>10)  //  invokes multiyr
    	{
    		depletion_multi=int(k/10);
    		depletion_basis=k-10*depletion_multi;
    	}
-   	else
-    {depletion_basis=depletion_basis_rd;}
+
     echoinput<<"Parse into: depletion_log(ratio): "<<depletion_log<<" depletion_multi-yr: "<<depletion_multi<<" depletion_basis: "<<depletion_basis<<endl;
  END_CALCS
 
@@ -493,21 +496,25 @@
    	F_std_log=0;
     echoinput<<F_std_basis_rd<<"  F_std basis as read"<<endl;
     k=F_std_basis_rd;
+    F_std_basis=F_std_basis_rd; // default
     
     if(k>=100) //  invokes log(ratio)
-    	{k-=100; F_std_log=1;} 
+  	{
+ 	  	F_std_log=1;
+  		k-=100;
+ 	  	F_std_basis=k;  //  can be overridden by next test
+  	} 
     	
    	if(k>10)  //  invokes multiyr
    	{
    		F_std_multi=int(k/10);
    		F_std_basis=k-10*F_std_multi;
    	}
-   	else
-    {F_std_basis=F_std_basis_rd;}
+
     echoinput<<"Parse into: F_std_log(ratio): "<<F_std_log<<" F_std_multi: "<<F_std_multi<<" F_std_basis: "<<F_std_basis<<endl;
     if(F_std_multi>1) {N_warn++;  warning<<N_warn<<" "<<"NOTE: new feature for multiyr F_std reporting, be sure STD reporting covers all years from styr to endyr"<<endl;}
    echoinput<<"For Kobe plot, set depletion_basis=2; depletion_level=1.0; F_reporting=your choose; F_std_basis=2"<<endl;
-
+     
     mcmc_output_detail = 0;
     MCMC_bump=0.;
     ALK_tolerance=0.0;
