@@ -500,7 +500,7 @@ PARAMETER_SECTION
   sdreport_vector F_std(1,N_STD_Yr_F);
   sdreport_vector depletion(1,N_STD_Yr_Dep);
   sdreport_vector Mgmt_quant(1,N_STD_Mgmt_Quant)
-  sdreport_vector Extra_Std(1,Extra_Std_N)
+  sdreport_vector Extra_Std(1,Extra_Std_N)  // includes many subvectors created in SS_readcontrol
 
   sdreport_vector Svy_sdreport_est(1,Svy_N_sdreport)
 

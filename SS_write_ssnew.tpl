@@ -2073,7 +2073,7 @@ FUNCTION void write_nucontrol()
   if(Do_Morphcomp>0) report4<<"# "<< Morphcomp_lambda<<" #_Morphcomplambda"<<endl;
   report4<<"# "<<F_ballpark_lambda<<" # F_ballpark_lambda"<<endl;
 
-  report4<<Do_More_Std<<" # (0/1/2) read specs for more stddev reporting: 0 = skip, 1 = read specs for reporting stdev for selectivity, size, and numbers, 2 = add options for M and Dyn Bzero"<<endl;
+  report4<<Do_More_Std<<" # (0/1/2) read specs for more stddev reporting: 0 = skip, 1 = read specs for reporting stdev for selectivity, size, and numbers, 2 = add options for M,Dyn. Bzero, SmryBio"<<endl;
 
 //3868      Do_Selex_Std=More_Std_Input(1);
 //3869      Selex_Std_AL=More_Std_Input(2);
@@ -2104,7 +2104,8 @@ FUNCTION void write_nucontrol()
   if(Do_More_Std==2) // additional output when option 2 is selected
   {
     report4<<More_Std_Input(10,11)<<" # Mortality: (1) 0 to skip or growth pattern, (2) N ages for mortality; NOTE: does each sex"<<endl;
-    report4<<More_Std_Input(12,13)<<" # Dyn Bzero: (1) 0 to skip or 1, (2) any value"<<endl;
+    report4<<More_Std_Input(12)<<" # Dyn Bzero: 0 to skip, 1 to include, or 2 to add recr"<<endl;
+    report4<<More_Std_Input(13)<<" # SmryBio: 0 to skip, 1 to include"<<endl;
   }
   if(Do_More_Std > 0) // vectors associated with options 1 and 2
   {

@@ -4174,7 +4174,7 @@
   ivector More_Std_Input(1,13); // read dimensions
   init_ivector temp_std_input(1,More_Std_N_Inputs)
  LOCAL_CALCS
-  echoinput<<Do_More_Std<<" # extra stdev reporting: 0 = skip, 1 = read specs for reporting stdev for selectivity, size, and numbers, 2 = add option for M and dyn. Bzero "<<endl;
+  echoinput<<Do_More_Std<<" # extra stdev reporting: 0 = skip, 1 = read specs for reporting stdev for selectivity, size, and numbers, 2 = add option for M, dyn. Bzero & Smrybio "<<endl;
   More_Std_Input.initialize();
   if(Do_More_Std>0)
   {
@@ -4186,7 +4186,8 @@
   if(Do_More_Std>=2)
   {
     echoinput<<More_Std_Input(10,11)<<" # Mortality: (1) 0 to skip or growth pattern, (2) N ages for mortality; NOTE: does each sex"<<endl;
-    echoinput<<More_Std_Input(12,13)<<" # Dyn_Bzero: (1) 0 to skip, 1 to do, 2 w/ recr (2) reserved for future use"<<endl;
+    echoinput<<More_Std_Input(12)<<" # Dyn_Bzero: 0 to skip, 1 to do, 2 w/ recr"<<endl;
+    echoinput<<More_Std_Input(13)<<" # SmryBio: 0 to skip, 1 to do"<<endl;
   }
  END_CALCS
 
@@ -4202,6 +4203,8 @@
   int Do_NatM_Std;
   int NatM_Std_Cnt;
   int Do_Dyn_Bzero;
+  int Do_se_smrybio;
+  int Do_se_LnSSB;
   int Extra_Std_N;   //  dimension for the sdreport vector Selex_Std which also contains the Growth_Std
 
  LOCAL_CALCS
@@ -4222,6 +4225,8 @@
      Do_NatM_Std=0;
      NatM_Std_Cnt=0;
      Do_Dyn_Bzero=0;
+     Do_se_smrybio=0;
+     Do_se_LnSSB=0;
    }
 
    // read standard extra std inputs (only option prior to 3.30.15)
@@ -4254,6 +4259,7 @@
        NatM_Std_Cnt=0;
      }
      Do_Dyn_Bzero=More_Std_Input(12);
+     Do_se_smrybio=More_Std_Input(13);
    }
  END_CALCS
 
@@ -4426,7 +4432,15 @@
   }
   // add 3 values for ln(Spbio)
   // (years are automatically generated as startyr, mid-point, and endyr)
-  Extra_Std_N+=3;  
+  Do_se_LnSSB=Extra_Std_N+1;
+  Extra_Std_N+=3;
+
+  if(Do_se_smrybio>0)
+  {
+  	Do_se_smrybio=Extra_Std_N+1;  //  start spot
+  	Extra_Std_N+=YrMax-(styr-2)+1;
+  }
+  // else  smrybio will be written anyway, but without se
 
  END_CALCS
 
@@ -5177,6 +5191,21 @@
     CoVar_Count++; j++; active_parm(CoVar_Count)=j;
     sprintf(onenum, "%d", endyr);
     ParmLabel+="ln(SPB)_"+onenum+CRLF(1);
+
+    if(Do_se_smrybio>0)
+    {
+      echoinput<<" do SmryBio std labels "<<endl;
+        CoVar_Count++; j++; active_parm(CoVar_Count)=j;
+        ParmLabel+="SmryBio_Virg"+CRLF(1);
+        CoVar_Count++; j++; active_parm(CoVar_Count)=j;
+        ParmLabel+="SmryBio_InitEq"+CRLF(1);
+      for (y=styr;y<=YrMax;y++)
+      {
+        CoVar_Count++; j++; active_parm(CoVar_Count)=j;
+        sprintf(onenum, "%d", y);
+        ParmLabel+="SmryBio_"+onenum+CRLF(1);
+      }
+    }
 
   //  output Svy_sdreport value std for selected years
   echoinput<<" do Svy_sdreport labels "<<Svy_N_sdreport<<endl;

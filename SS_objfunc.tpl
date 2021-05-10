@@ -1,4 +1,11 @@
 //********************************************************************
+// FUNCTIONS in file: SS_objfunc.tpl
+// evaluate_the_objective_function
+// Process_STDquant
+// Check_Parm
+// Get_Prior
+// get_posteriors
+
  /*  SS_Label_FUNCTION 25 evaluate_the_objective_function */
 FUNCTION void evaluate_the_objective_function()
   {
@@ -1171,9 +1178,17 @@ FUNCTION void Process_STDquant()
     }
 
     // ln(SSB)
-    Extra_Std(Extra_Std_N-2)=log(SSB_yr(styr));
-    Extra_Std(Extra_Std_N-1)=log(SSB_yr(int((styr+endyr)/2)));
-    Extra_Std(Extra_Std_N)=log(SSB_yr(endyr));
+    Extra_Std(Do_se_LnSSB)=log(SSB_yr(styr));
+    Extra_Std(Do_se_LnSSB+1)=log(SSB_yr(int((styr+endyr)/2)));
+    Extra_Std(Do_se_LnSSB+2)=log(SSB_yr(endyr));
+
+    if(Do_se_smrybio>0) //  do stderr of SmryBio
+    	{
+        k=Do_se_smrybio;
+        for(j=styr-2; j<=YrMax;j++) {
+        Extra_Std(k)=Smry_Table(j,2); k++;}
+    	}
+
     if(Svy_N>0)
     {
       int Svy_sdreport_counter = 1;

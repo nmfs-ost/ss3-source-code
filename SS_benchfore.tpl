@@ -1401,19 +1401,19 @@ FUNCTION void Get_Forecast()
         s=1;
         t=t_base+1;
         for (g=1;g<=gmorph;g++) {
-			if(use_morph(g)>0)
-			{
-			  for (p=1;p<=pop;p++)
-			  {
-				smrybio+=natage(t,p,g)(Smry_Age,nages)*Wt_Age_beg(s,g)(Smry_Age,nages);
-				smrynum+=sum(natage(t,p,g)(Smry_Age,nages));   //sums to accumulate across platoons and settlements
-			  }
-			}
-		}
+	  		 if(use_morph(g)>0) {
+			    for (p=1;p<=pop;p++)  {
+				   smrybio+=natage(t,p,g)(Smry_Age,nages)*Wt_Age_beg(s,g)(Smry_Age,nages);
+				   smrynum+=sum(natage(t,p,g)(Smry_Age,nages));   //sums to accumulate across platoons and settlements
+			    }
+			   }
+		    }
         env_data(y,-3)=log(smrybio/Smry_Table(styr-1,2));
         env_data(y,-4)=log(smrynum/Smry_Table(styr-1,3));
 
       Smry_Table(y).initialize();
+      Smry_Table(y,2)=smrybio;  // in forecast
+      Smry_Table(y,3)=smrynum;   //sums to accumulate across platoons and settlements
 
       if(Fcast_Loop1==3 && Do_Impl_Error>0)  //  apply implementation error, which is a random variable, so adds variance to forecast
                                              //  in future, could do this a fleet-specific implementation error
@@ -1685,20 +1685,17 @@ FUNCTION void Get_Forecast()
           {  //  ABC buffer remains at previously calculated value
           }
           
+          totbio.initialize();
           for (p=1;p<=pop;p++)  //  loop areas
           {
-            totbio.initialize();smrybio.initialize(); smrynum.initialize();
             for (g=1;g<=gmorph;g++)
             if(use_morph(g)>0)
             {
               gg=sx(g);
 
-              totbio+=natage(t,p,g)*Wt_Age_beg(s,g);
-              temp=natage(t,p,g)(Smry_Age,nages)*Wt_Age_beg(s,g)(Smry_Age,nages);
-              smrybio+=temp;
-              smrynum+=sum(natage(t,p,g)(Smry_Age,nages));
               if(save_for_report>0)
               {
+                totbio+=natage(t,p,g)*Wt_Age_beg(s,g);
                 Save_PopLen(t,p,g)=0.0;
                 Save_PopLen(t,p+pop,g)=0.0;  // later put midseason here
                 Save_PopWt(t,p,g)=0.0;
@@ -2061,13 +2058,10 @@ FUNCTION void Get_Forecast()
             if(s==nseas&&Fcast_MaxAreaCatch(p)>0.) {report5<<" "<<Fcast_MaxAreaCatch(p);} else {report5<<" NA ";} //  a max catch has been set for this area
            }
            if(p<pop && show_MSY==1) report5<<endl;
-           if(s==1&&Fcast_Loop1==Fcast_Loop_Control(1))
-           {
-             Smry_Table(y,1)+=totbio;
-             Smry_Table(y,2)+=smrybio;  // in forecast
-             Smry_Table(y,3)+=smrynum;   //sums to accumulate across platoons and settlements
-           }
           }  //  end loop of areas
+           if(s==1&&Fcast_Loop1==Fcast_Loop_Control(1)) {
+             Smry_Table(y,1)=totbio;
+           }
 
            if(ABC_Loop==ABC_Loop_end && Fcast_Loop1==Fcast_Loop_Control(1))
            	{
