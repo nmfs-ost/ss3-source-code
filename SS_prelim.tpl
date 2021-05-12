@@ -1,3 +1,11 @@
+// SS_Label_file  #6. **SS_prelim.tpl**
+// SS_Label_file  # - <div style="color: #ff0000">PRELIMINARY_CALCS_SECTION</div>
+// SS_Label_file  #   - preprocessing of the comp logL
+// SS_Label_file  #   - get initial parameter values from *ss.par* or from values in control file
+// SS_Label_file  #   - check parameter initial values and ranges and apply jitter using function check_parm() found in SS_objfun.tpl
+// SS_Label_file  #   - set y=styr and do_once flag=1; then call <u>all biology functions</u> once to check for problems
+// SS_Label_file  #   - exit if turn_off_phase<0, else continue to the PROCEDURE_SECTION found in SS_proced.tpl
+
 //******************************************************************************************
 //  SS_Label_Section_6.0 #PRELIMINARY_CALCS_SECTION
 PRELIMINARY_CALCS_SECTION
@@ -870,55 +878,7 @@ PRELIMINARY_CALCS_SECTION
   			 warning<<N_warn<<" "<<"fleet: "<<f<<" EXIT; meansize data has obs with partition==2; but fleet does not retain any catch; N= "<<parti_cnt(2)<<endl; exit(1);
   		}
     }
-
-
- /*
-  	if(Do_Retain(f)==0)  //  retention not defined; check for illogical observations
-  		{
-  			// check for discard obs
-  			if(disc_N_fleet(f)>0) {N_warn++;  warning<<N_warn<<" "<<"fleet: "<<f<<"  discard data exist but retention fxn not defined; exit"<<endl; exit(1);}
-
-				for(i=1;i<=Nobs_l(f);i++)
-				{
-					if(mkt_l(f,i)==1)
-					{
-					}
-				}
-				for(i=1;i<=Nobs_a(f);i++)
-				{
-					if(mkt_a(f,i)==1)
-					{
-				  	N_warn++;  warning<<N_warn<<" "<<"fleet: "<<f<<"  agecomp data contains obs with partition==1 and retention fxn not defined"<<endl; exit(1);
-					}
-				}
-				for(i=1;i<=Nobs_ms(f);i++)
-				{
-					if(mkt_ms(f,i)==1)
-					{
-				  	N_warn++;  warning<<N_warn<<" "<<"fleet: "<<f<<"  size@age data contains obs with partition==1 and retention fxn not defined"<<endl; exit(1);
-					}
-				}
-  			// check for mean body size obs with partition =1 or =2
-        for (i=1;i<=nobs_mnwt;i++)  //   loop all obs
-        {
-          int f1=mnwtdata(3,i);
-          if(f1==f)
-          	{
-              int parti = mnwtdata(4,i);  //  partition:  0=all, 1=discard, 2=retained
-          		if(parti==1)
-          		{
-          			N_warn++;  warning<<N_warn<<" "<<"fleet: "<<f<<"meansize data contains obs with partition==1 and retention fxn not defined"<<endl; exit(1);
-          		}
-          	}
-        }
-  		}
-  		else  //  retention is defined
-  	  {
-  		  //  if seltype(f,2)==3 or fleet_type(f)==2; then all discard so noretained catch obs allowed	
-  		}
- */
   }
-
 
 //  SS_Label_Info_6.8 #Go thru biological calculations once, with do_once flag=1 to produce extra output to echoinput.sso
     cout<< " ready to evaluate once in prelim"<<endl;
@@ -995,31 +955,7 @@ PRELIMINARY_CALCS_SECTION
     s=spawn_seas;
         subseas=spawn_subseas;
         ALK_idx=(s-1)*N_subseas+subseas;
-        // get_growth3 already done for all subseasons
-//        Make_Fecundity();
-    
- /*
-    for (s=1;s<=nseas;s++)
-    {
-      t = styr+s-1;
-      for(subseas=1;subseas<=N_subseas;subseas++)
-      {
-        ALK_idx=(s-1)*N_subseas+subseas;
-        get_growth3(styr,t,s, subseas);  //  this will calculate the cv of growth for all subseasons of first year
-      }
-//  SPAWN-RECR:   calc fecundity in preliminary_calcs
-      if(s==spawn_seas)
-      {
-      	echoinput<<" spawn "<<endl;
-        subseas=spawn_subseas;
-        ALK_idx=(s-1)*N_subseas+subseas;
-        // get_growth3 already done for all subseasons
-        Make_Fecundity();
-        echoinput<<" fecundity ok "<<endl;
-      }
-    }
- */
- 
+
 //  SS_Label_Info_6.8.6 #Call fxn get_recr_distribution() for distribution of recruitment among areas and seasons, which can be time-varying
       echoinput<<"do recrdist: "<<endl;
     get_recr_distribution();

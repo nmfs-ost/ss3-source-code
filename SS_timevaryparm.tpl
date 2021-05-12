@@ -1,3 +1,8 @@
+// SS_Label_file  #21. **SS_timevaryparm.tpl**
+// SS_Label_file  #* <u>make_timevaryparm()</u>  // makes parameters a function of input environmental data time series
+// SS_Label_file  #* <u>make_densitydependent_parm()</u>  // for the current year, changes a parameter value as a function of summary bio or recruitment at beginning of this year 
+// SS_Label_file  #
+
 //*********************************************************************
  /*  SS_Label_Function_14 #make_timevaryparm():  create trend and block time series */
 FUNCTION void make_timevaryparm()

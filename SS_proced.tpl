@@ -1,3 +1,12 @@
+// SS_Label_file  #8. **SS_proced.tpl**
+// SS_Label_file  # - <div style="color: #ff0000">PROCEDURE_SECTION</div> 
+// SS_Label_file  #   - do iterations under control of ADMB, in each iteration, call:  <u>setup_recdevs()</u>, <u>get_initial_conditions()</u>, <u>get_time_series()</u>, <u>evaluate_the_objective_function()</u>
+// SS_Label_file  #   - writes to *parmtrace.sso*
+// SS_Label_file  #   - calls <u>get_posteriors()</u>  //  to write to *posteriors.sso*
+// SS_Label_file  #  - upon reaching convergence, or if in mceval, do Dynamic_Bzero by calling those functions again with fishery_on_off=0
+// SS_Label_file  #
+// SS_Label_file  #  - call <u>setup_Benchmark(), Get_Benchmark(), Get_Forecast()</u>
+
 // ****************************************************************************************************************
 //  SS_Label_Section_7.0 #PROCEDURE_SECTION
 PROCEDURE_SECTION

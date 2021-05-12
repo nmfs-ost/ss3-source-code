@@ -1,3 +1,9 @@
+// SS_Label_file  #12. **SS_popdyn.tpl**
+// SS_Label_file  #* <u>setup_recdevs()</u>
+// SS_Label_file  #* <u>get_initial_conditions()</u> // does virgin and initial year by calling <u>Do_Equil_Calc()</u> with F=0, then F=init_F
+// SS_Label_file  #* <u>get_time_series()</u>  //  loops the years, calling biology, selectivity and spawn-recr functions as needed
+// SS_Label_file  #* <u>Do_Equil_Calc()</u>  // does per-recruit calculations and returns SSB/R and Y/R
+
 FUNCTION void setup_recdevs()
   {
   //  SS_Label_Info_7.1 #Set up recruitment bias_adjustment vector

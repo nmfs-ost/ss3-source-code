@@ -1,3 +1,28 @@
+// SS_Label_file  #7. **SS_global.tpl**
+// SS_Label_file  # - <div style="color: #ff0000">RUNTIME_SECTION</div>
+// SS_Label_file  #   - not used by SS
+// SS_Label_file  # - <div style="color: #ff0000">TOP_OF_MAIN_SECTION</div>
+// SS_Label_file  #   - revise some memory and array constraints
+// SS_Label_file  # - <div style="color: #ff0000">GLOBALS_SECTION</div>
+// SS_Label_file  # 
+// SS_Label_file  #   - open some output files
+// SS_Label_file  #   - create needed adstring_arrays for labels
+// SS_Label_file  #   - create vector_vector arrays that are appended to in readdata
+// SS_Label_file  #   - two functions included here in GLOBALS because need to be used in the DATA_SECTION:
+// SS_Label_file  #     - <u>get_data_timing()</u> and   <u>create_timevary()</u>
+// SS_Label_file  # - <div style="color: #ff0000">BETWEEN_PHASES_SECTION</div>
+// SS_Label_file  #   - for F_method 2, convert F as scaling factors to F as parameters in designated phase
+// SS_Label_file  # - <div style="color: #ff0000">FINAL_SECTION</div>
+// SS_Label_file  #   - output *covar.sso*
+// SS_Label_file  #   - set save_for_report to 1, then call: <u>setup_recdevs()</u>, <u>get_initial_conditions()</u>, <u>get_time_series()</u>, <u>evaluate_the_objective_function()</u>
+// SS_Label_file  #
+// SS_Label_file  #   - call benchmark and forecast if not already done in sdphase
+// SS_Label_file  #   - <u>call Process_STDquant()</u> and <u>get_posteriors()</u>
+// SS_Label_file  #   - write other reports using function calls: *cumreport.sso*, *ss_summary.sso*, *ss_rebuild.sso*, *SIS_table.sso*
+// SS_Label_file  #   - call write_big_output() to produce *report.sso* and *compreport.sso*
+// SS_Label_file  # - <div style="color: #ff0000">REPORT_SECTION</div> 
+// SS_Label_file  #   - produces *ss.rep*, but see write_big_output for the more complete *report.sso*
+
 //  SS_Label_Section_8 #RUNTIME_SECTION (not used in SS)
 RUNTIME_SECTION
 //  {
@@ -103,6 +128,7 @@ GLOBALS_SECTION
   std::vector<ivector> reportdetail_list;
 
 //  function in GLOBALS to do the timing setup in the data section
+// SS_Label_Function_xxxx  #get_data_timing()  called by readdata
   void get_data_timing(const dvector& to_process, const ivector& timing_constants, ivector i_result, dvector r_result, const dvector& seasdur, const dvector& subseasdur_delta, const dvector& azero_seas, const dvector& surveytime)
   {
 
@@ -218,24 +244,7 @@ GLOBALS_SECTION
     return;
   }
 
-//  global routine to count the number of records before reaching an end condition
-  int count_records(int N_fields)  //  function definition
-  {
-    int N_records;
-    dvector tempvec(1,N_fields);  //  vector used for temporary reads
-    echoinput<<" read list until -9999"<<endl;
-    N_records=0;
-    tempvec.initialize();
-    do {
-      N_records++;
-      *(ad_comm::global_datafile) >> tempvec;
-        echoinput<<N_records<<" A "<<tempvec<<endl;
-    } while(tempvec(1)!=-9999.);
-    echoinput<<" number of records = "<<N_records<<endl;
-    return N_records;
-  }
-
-//  global function to create timevary parameters
+// SS_Label_Function_xxxx  #create_timevary()  called by readdata to create timevary parameters
   void create_timevary(dvector &baseparm_list, ivector &timevary_setup,
                        ivector &timevary_byyear, int &autogen_timevary, const int &targettype,
                        const ivector &block_design_pass, const int &parm_adjust_method,

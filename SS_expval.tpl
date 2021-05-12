@@ -1,3 +1,7 @@
+// SS_Label_file  #15. **SS_expval.tpl**
+// SS_Label_file  #* <u>Get_expected_values()</u>  // for a specified season and subseason that has data, updates the ALK for that time and calculates expected values for any type of data from any fleet/survey
+// SS_Label_file  #
+
 //********************************************************************
  /*  SS_Label_FUNCTION 46  Get_expected_values:  check for data */
 FUNCTION void Get_expected_values(const int y,const int t);

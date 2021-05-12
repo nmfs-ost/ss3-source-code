@@ -1,8 +1,15 @@
+// SS_Label_file  #3. **SS_readdata.tpl**
+// SS_Label_file  #* read *data_file* named in STARTER.SS
+// SS_Label_file  #  * create arrays for data with dimensioning defined dynamically
+// SS_Label_file  #  * creates link from each data element to area/time/fleet that datum occur, and other arrays with specification of which data types occur in each area/time
+// SS_Label_file  #  * uses function found in SS_global:  <u>get_data_timing()</u>
+// SS_Label_file  #* read *forecast.ss*
+// SS_Label_file  #  * note that this extends the time dimension of some arrays, so is read before readcontrol
 
-// /*  SS_Label_Flow  read data file named in STARTER.SS file */
-  //  SS_Label_Info_2.0 #READ DATA FILE
-  //  SS_Label_Info_2.1 #Read comments and dimension info
-  //  SS_Label_Info_2.1.1 #Read and save comments at top of data file
+//  SS_Label_Flow  read data file named in STARTER.SS file
+//  SS_Label_Info_2.0 #READ DATA FILE
+//  SS_Label_Info_2.1 #Read comments and dimension info
+//  SS_Label_Info_2.1.1 #Read and save comments at top of data file
   number fif  //  end of file marker
 
  LOCAL_CALCS
@@ -376,10 +383,7 @@
   vector tempvec(1,6)  //  vector used for temporary reads
  LOCAL_CALCS
 
-//  N_ReadCatch=count_records(5);
-//    ad_comm::global_datafile->seekg(mark_pos);  //  go back to the recorded position
-
-    ender=0;
+  ender=0;
   do {
     dvector tempvec(1,5);
       *(ad_comm::global_datafile) >> tempvec(1,5);

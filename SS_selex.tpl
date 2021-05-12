@@ -1,3 +1,7 @@
+// SS_Label_file  #11. **SS_selex.tpl**
+// SS_Label_file  #* <u>get_selectivity()</u>  // does length and age selectivity and retention for all fleets
+// SS_Label_file  #* <u>make_fish_selex()</u>  // for all fleets in a particular season, does the dot product of length distribution with length selectivity and retention vectors to calculate equivalent mean quantities at age for each platoon
+
 FUNCTION void get_selectivity()
   {
 //*******************************************************************

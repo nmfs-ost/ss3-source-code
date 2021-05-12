@@ -1,3 +1,17 @@
+// SS_Label_file  #9. **SS_biofxn.tpl**
+// SS_Label_file  #* <u>get_MGsetup()</u>  // get parameter values for this year
+// SS_Label_file  #* <u>get_growth1()</u>  // prep growth quantities
+// SS_Label_file  #* <u>get_growth2()</u>  // growth to beginning of each season of upcoming year
+// SS_Label_file  #* <u>get_growth3()</u>  // growth to particular time point in a season
+// SS_Label_file  #* <u>get_natmort()</u>
+// SS_Label_file  #* <u>get_recr_distribution()</u>
+// SS_Label_file  #* <u>get_wtlen()</u>
+// SS_Label_file  #* <u>get_mat_fec()</u>
+// SS_Label_file  #* <u>get_Hermaphro()</u>
+// SS_Label_file  #* <u>get_migration()</u>
+// SS_Label_file  #* <u>get_saveGparm()</u>
+
+
 //*********************************************************************
  /*  SS_Label_Function_14 #Get_MGsetup:  apply time-varying factors this year to the MG parameters to create mgp_adj vector */
 FUNCTION void get_MGsetup(const int yz)
