@@ -1,3 +1,10 @@
+// SS_Label_file  #20. **SS_ALK.tpl**
+// SS_Label_file  #* <u>Make_AgeLength_Key()</u>  // calculates age-length key for a particular season and subseason; uses calc_ALK or calc_ALK_log
+// SS_Label_file  #* <u>calc_ALK_range()</u>  //  allows for condensing range of lengths for each age, but no longer used
+// SS_Label_file  #* <u>calc_ALK()</u>      //  calculates normal distribution of length-at-age
+// SS_Label_file  #* <u>calc_ALK_log()</u>  //  for lognormal distribution of length-at-age
+// SS_Label_file  #
+
 FUNCTION void Make_AgeLength_Key(const int s, const int subseas)
   {
 //********************************************************************

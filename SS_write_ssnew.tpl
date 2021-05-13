@@ -1,3 +1,8 @@
+// SS_Label_file  #18. **SS_write_ssnew.tpl**
+// SS_Label_file  #* <u>write_nudata()</u>  //  produces *starter.ss_new*, *forecast.ss_new*, *data.ss_new*
+// SS_Label_file  #* <u>write_nucontrol()</u>  //  produces *control.ss_new*
+// SS_Label_file  #
+
 //********************************************************************
  /*  SS_Label_FUNCTION 38 write_nudata */
 FUNCTION void write_nudata()

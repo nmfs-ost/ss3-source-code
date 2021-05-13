@@ -1,3 +1,12 @@
+// SS_Label_file  #4. **SS_readcontrol.tpl**
+// SS_Label_file  #* read *control_file* named in STARTER.SS
+// SS_Label_file  #   * define and read needed parameters from model options selected
+// SS_Label_file  #   * creates labels for those parameters
+// SS_Label_file  #   * uses a function found in SS_global, <u>create_timevary()</u>, to create, index and label time-varying parameters; including autogeneration option
+// SS_Label_file  #   * creates and labels derived quantities
+// SS_Label_file  #   * creates covariance matrix 
+// SS_Label_file  #   * reads *wt_at_age.ss* if requested
+// SS_Label_file  # * finish DATA_SECTION
 
  LOCAL_CALCS
 //********CONTROLS********************************

@@ -1,3 +1,11 @@
+// SS_Label_file  #17. **SS_write.tpl**
+// SS_Label_file  #* <u>write_summaryoutput()</u>  //  append writes to *cumreport.sso*
+// SS_Label_file  #* <u>write_SS_summary()</u>  //  writes *ss_summary.sso*
+// SS_Label_file  #* <u>write_rebuilder_output()</u> // special output 
+// SS_Label_file  #* <u>write_SIStable()</u>  //  deprecated, see new r4ss routines
+// SS_Label_file  #* <u>write_Bzero_output()</u>  //  
+// SS_Label_file  #* <u>Report_Parm()</u>  //  used by write_big_report in writing *report.sso*
+// SS_Label_file  #
 
  /*  SS_Label_FUNCTION 36 write_summaryoutput */
 FUNCTION void write_summaryoutput()

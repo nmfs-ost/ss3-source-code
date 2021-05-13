@@ -1,3 +1,9 @@
+// SS_Label_file  #14. **SS_benchfore.tpl**
+// SS_Label_file  #* <u>setup_Benchmark()</u> // calculates average biology and selectivity over specified range of years for use in benchmark
+// SS_Label_file  #* <u>get_benchmark()</u>  // searches for Fspr, Fmsy, etc. conditioned on average biology and selectivity conditions
+// SS_Label_file  #* <u>get_forecast()</u>  //  calculates forecast quantities, includes all popdy characteristics of the time series, writes forecast-report.sso
+// SS_Label_file  #
+
 FUNCTION void setup_Benchmark()
   {
 //  SS_Label_Info_7.5 #Get averages from selected years to use in forecasts

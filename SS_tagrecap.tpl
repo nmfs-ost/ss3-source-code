@@ -1,3 +1,7 @@
+// SS_Label_file  #22. **SS_tagrecap.tpl **
+// SS_Label_file  #* <u>Tag_Recapture()</u>  //  calculates expected values for number of tags returned by each fleet(and area), in each time step, for each tag release group
+// SS_Label_file  #
+
 FUNCTION void Tag_Recapture()
   {
   //  SS_Label_Info_24.15 #do tag mortality, movement and recapture  revise 7/10/2019

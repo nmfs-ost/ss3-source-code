@@ -1,3 +1,11 @@
+// SS_Label_file  #16. **SS_objfunc.tpl**
+// SS_Label_file  #* <u>evaluate_the_objective_function()</u>
+// SS_Label_file  #* <u>Process_STDquant()</u>  //  move info like SSB  to the sd_vectors
+// SS_Label_file  #* <u>Check_Parm()</u> // check parameter against its bounds and do jitter if requested
+// SS_Label_file  #* <u>Get_Prior()</u>  // calc the prior likelihood for a parameter
+// SS_Label_file  #* <u>get_posteriors()</u>  //  writes posteriors.sso and other MCMC relevant outputs
+// SS_Label_file  #
+
 //********************************************************************
 // FUNCTIONS in file: SS_objfunc.tpl
 // evaluate_the_objective_function
@@ -95,33 +103,6 @@ FUNCTION void evaluate_the_objective_function()
               Svy_q(f) = mfexp(Svy_log_q(f));        // get q in arithmetic space
             }
           }
-  /*
-          else if(Q_setup(f,1)==2)        // mirror Q from lower numbered survey
-                                           // because Q is a vector for each observation, the mirror is to the first observation's Q
-                                           // so time-varying property cannot be mirrored
-          {Svy_log_q(f) = Svy_log_q(Q_setup(f,2),1);}
-
-          else   //  Q from parameter
-                 //   add code here for more link options
-                 //  NOTE:  if Q_setup(f,1)==3  then the power function is used in SS_expval to adjust svy_exp by that function
-                 //  probably better to move this Q parameter code to right after the call to SS_timevaryparm  and to keep only the Q float code here
-          {
-            if(Qparm_timevary(Q_setup_parms(f,1))==0) //  not time-varying
-            {
-              Svy_log_q(f)=Q_parm(Q_setup_parms(f,1));  //  set to base parameter value
-            }
-            else
-            {
-              for(j=1;j<=Svy_N_fleet(f);j++)
-              {
-                y=Svy_yr(f,j);
-                Svy_log_q(f,j)=parm_timevary(Qparm_timevary(Q_setup_parms(f,1)),y);
-              }
-            }
-          }
-
-  // SS_Label_Info_25.1.3 #log or not
-   */
 
   // SS_Label_Info_25.1.4 #calc the logL
           if(Svy_errtype(f)==0)  // lognormal
@@ -746,21 +727,6 @@ FUNCTION void evaluate_the_objective_function()
         if(parm_dev_lambda(k_phase)>0.0 || save_for_report>0)
         {
           if(parm_dev_type(i)==1)  //  in timevary the adjusted parm is: p'=p+dev*se;  so assumes that the devs are distributed as unit normal
- /*
-          {
-            dvariable temp;
- //        temp=1.00 / (2.000*(1.0-parm_dev_rho(i)*parm_dev_rho(i))*square(parm_dev_stddev(i)));
-            temp=1.00 / (2.000*(1.0-parm_dev_rho(i)*parm_dev_rho(i))*square(1.00));
-
-            parm_dev_like(i,1) += square( parm_dev(i,parm_dev_minyr(i)));  //  first year
-            for(j=parm_dev_minyr(i)+1;j<=parm_dev_maxyr(i);j++)
-            {parm_dev_like(i,1) += square( parm_dev(i,j)-parm_dev_rho(i)*parm_dev(i,j-1) );}
-            parm_dev_like(i,1) *=temp;
-            parm_dev_like(i,2) += float(parm_dev_maxyr(i)-parm_dev_minyr(i)+1.)*log(parm_dev_stddev(i));
-            //  include parm_dev_like(i,2) in the total, or not, using sd_offset
-          }
- */
-
           {
             dvariable temp;
             if(parm_dev_use_rho(i)==0)  //  no rho

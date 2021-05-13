@@ -1,3 +1,9 @@
+// SS_Label_file  #19. **SS_write_report.tpl**
+// SS_Label_file  #* <u>write_bigoutput()</u>  // produces *report.sso* and *compreport.sso*
+// SS_Label_file  #* <u>SPR_profile()</u>  //  calls Do_Equil_Calc() and Equil_Spawn_Recr_Fxn() over a range of F to get SPR, YPR, and SSB and catch curves
+// SS_Label_file  #* <u>global_MSY()</u>  // similar to SPR_profile but first changes all selectivities to knife edge and profiles on age-at-entry
+// SS_Label_file  #
+
 //********************************************************************
  /*  SS_Label_FUNCTION 40 write_bigoutput */
 FUNCTION void write_bigoutput()

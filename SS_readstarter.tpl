@@ -1,3 +1,9 @@
+// SS_Label_file  #**SS_readstarter.tpl**
+// SS_Label_file  #  * define many global constants, also see GLOBALS_SECTION
+// SS_Label_file  #  * create list of pick_report_name values
+// SS_Label_file  #  * read and process *starter.ss*
+// SS_Label_file  #  * read *runnumber.ss*
+// SS_Label_file  #  * read *profilevalues.ss*
 
 //*********COUNTERS*************************
   int z // counters for size (length)

@@ -1,3 +1,8 @@
+// SS_Label_file  #13. **SS_recruit.tpl**
+// SS_Label_file  #* <u>Spawn_Recr()</u>  //  gets expected mean recruits from input spawning biomass
+// SS_Label_file  #* <u>apply_recdev()</u>  //  applies recdev to the expected mean recruits 
+// SS_Label_file  #* <u>Equil_Spawn_Recr_Fxn()</u>  // gets equilibrium recruitment and spawning biomass from an input SPR
+
 //********************************************************************
  /*  SS_Label_FUNCTION 43 Spawner-recruitment function */
 //  SPAWN-RECR:   function: to calc R from S
