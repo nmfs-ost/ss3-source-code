@@ -24,17 +24,17 @@ framework for fish stock assessment and fishery management. Fisheries Research,
 
 ## Installation
 
-Download the latest compiled versions on the [Stock Synthesis Website](https://vlab.ncep.noaa.gov/web/stock-synthesis/document-library/-/document_library/0LmuycloZeIt/view/5042555) or [Github Releases](https://github.com/nmfs-stock-synthesis/stock-synthesis/releases).
+Download the latest compiled versions on the [Stock Synthesis Website](https://vlab.noaa.gov/web/stock-synthesis/document-library/-/document_library/0LmuycloZeIt/view/5042555) or [Github Releases](https://github.com/nmfs-stock-synthesis/stock-synthesis/releases).
 
 ## How can I learn how to use Stock Synthesis?
 
-To learn more about how to use stock synthesis, see the [getting started guide with SS guide](https://vlab.ncep.noaa.gov/web/stock-synthesis/document-library/-/document_library/0LmuycloZeIt/view_file/7137387). To learn how to build your own models in SS, see the [Develop an SS model guide](https://vlab.ncep.noaa.gov/web/stock-synthesis/document-library/-/document_library/0LmuycloZeIt/view_file/7137399).
+To learn more about how to use stock synthesis, see the [getting started guide with SS guide](https://vlab.noaa.gov/web/stock-synthesis/document-library/-/document_library/0LmuycloZeIt/view_file/7137387). To learn how to build your own models in SS, see the [Develop an SS model guide](https://vlab.noaa.gov/web/stock-synthesis/document-library/-/document_library/0LmuycloZeIt/view_file/7137399).
 
-The [SS user manual](https://vlab.ncep.noaa.gov/web/stock-synthesis/document-library/-/document_library/0LmuycloZeIt/view_file/11684231) provides the complete documentation of SS, while the [helper spreadsheets](https://vlab.ncep.noaa.gov/web/stock-synthesis/document-library/-/document_library/0LmuycloZeIt/view/978337) are useful cheatsheets that outline inputs necessary for options that are widely used within SS.
+The [SS user manual](https://vlab.noaa.gov/web/stock-synthesis/document-library/-/document_library/0LmuycloZeIt/view_file/11684231) provides the complete documentation of SS, while the [helper spreadsheets](https://vlab.noaa.gov/web/stock-synthesis/document-library/-/document_library/0LmuycloZeIt/view/978337) are useful cheatsheets that outline inputs necessary for options that are widely used within SS.
 
 ## How do I ask questions about Stock Synthesis?
 
-Please look for answers or submit questions to the [Stock Synthesis forums](https://vlab.ncep.noaa.gov/web/stock-synthesis/public-forums). Note that an account is required to ask questions on the forums. Questions can also be asked by opening an [issue](https://github.com/nmfs-stock-synthesis/stock-synthesis/issues) in this repository or by emailing nmfs.stock.synthesis@noaa.gov.
+Please look for answers or submit questions to the [Stock Synthesis forums](https://vlab.noaa.gov/web/stock-synthesis/public-forums). Note that an account is required to ask questions on the forums. Questions can also be asked by opening an [issue](https://github.com/nmfs-stock-synthesis/stock-synthesis/issues) in this repository or by emailing nmfs.stock.synthesis@noaa.gov.
 
 ## How can I contribute to Stock Synthesis?
 
@@ -49,7 +49,7 @@ As SS usage has grown, so has the number of tools to work with it. These include
 - [r4ss](https://github.com/r4ss/r4ss): Create plots of SS output and functions to work with SS in R.
 - [ss3diags](https://github.com/jabbamodel/ss3diags): Run advanced diagnostics for SS models.
 - [ss3sim](https://github.com/ss3sim/ss3sim): Conduct simulation studies using SS.
-- [SSI](https://vlab.ncep.noaa.gov/web/stock-synthesis/document-library/-/document_library/0LmuycloZeIt/view/5042951): Stock Synthesis Interface, a GUI for developing models and running SS. Links to r4ss.
+- [SSI](https://vlab.noaa.gov/web/stock-synthesis/document-library/-/document_library/0LmuycloZeIt/view/5042951): Stock Synthesis Interface, a GUI for developing models and running SS. Links to r4ss.
 - [SSMSE](https://github.com/nmfs-fish-tools/SSMSE): Use SS operating models in Management Strategy Evaluation.
 - [sa4ss](https://github.com/nwfsc-assess/sa4ss): Create accessible R markdown stock assessment documents with results from SS models. Note this tool is intended for use by analysts within the Northwest and Southwest Fisheries Science Centers currently.
 - Data limited tools - Options included Simple Stock Synthesis ([SSS](https://github.com/shcaba/SSS)) and Extended Simple Stock Synthesis ([XSSS](https://github.com/chantelwetzel-noaa/XSSS)), as well as [SS-DL-tool](https://github.com/shcaba/SS-DL-tool), a shiny app that includes XSSS and SSS in its functionality.
