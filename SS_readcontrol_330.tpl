@@ -5112,6 +5112,7 @@
         }
         else if(Selex_Std_AL==3)
         {
+            N_warn++; cout<<" EXIT - see warning "<<endl;  warning<<N_warn<<" "<<" stderr on combined length-age selectivity is under repair "<<endl; exit(1);
           if(Selex_Std_Pick(i)>nages)
           {
             N_warn++; cout<<" EXIT - see warning "<<endl;  warning<<N_warn<<" "<<" cannot select stdev for age bin greater than maxage "<<Selex_Std_Pick(i)<<" > "<<nages<<endl; exit(1);

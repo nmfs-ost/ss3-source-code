@@ -906,12 +906,12 @@ FUNCTION void evaluate_the_objective_function()
     {
       cout<<" OK with obj_func "<<obj_fun<<endl;
       if(SSB_yr(endyr)<0.01*SSB_yr(styr))
-      {N_warn++; warning<<N_warn<<" ssb(endyr)/ssb(styr)= "<<SSB_yr(endyr)/SSB_yr(styr)<<
+      {N_warn++; warning<<N_warn<<" 1st iteration warning: ssb(endyr)/ssb(styr)= "<<SSB_yr(endyr)/SSB_yr(styr)<<
       	"; suggest start with larger R0 to get near 0.4; or use depletion fleet option"<<endl;}
       if(annual_F(endyr,3)>2.0)
-      {N_warn++; warning<<N_warn<<" annual F in endyr > 2.0; check configuration; suggest start with larger R0"<<endl;}
+      {N_warn++; warning<<N_warn<<" 1st iteration warning: annual F in endyr > 2.0; check configuration; suggest start with larger R0"<<endl;}
       if(sum(catch_like)>0.5*obj_fun && F_Method_use!=2)
-      {N_warn++; warning<<N_warn<<" catch logL > 50% total logL; check configuration; suggest start with larger R0"<<endl;}
+      {N_warn++; warning<<N_warn<<" 1st iteration warning: catch logL > 50% total logL; check configuration; suggest start with larger R0"<<endl;}
       do_once=0;
     }
   }  //  end objective_function
@@ -1062,8 +1062,9 @@ FUNCTION void Process_STDquant()
         }
         else if(Selex_Std_AL==3)
         {
-          Extra_Std(i)=sel_al_3(Selex_Std_Year,Do_Selex_Std,1,j);
-          if(gender==2) Extra_Std(i+Selex_Std_Cnt)=sel_al_3(Selex_Std_Year,Do_Selex_Std,2,j);
+//  need to re-write this section to reference    save_sel_fec(t,g,f)
+//          Extra_Std(i)=sel_al_3(Selex_Std_Year,Do_Selex_Std,1,j);
+//          if(gender==2) Extra_Std(i+Selex_Std_Cnt)=sel_al_3(Selex_Std_Year,Do_Selex_Std,2,j);
         }
       }
     }

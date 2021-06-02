@@ -1393,7 +1393,8 @@ FUNCTION void write_nucontrol()
     else if(natM_type>=3 && natM_type<5)
     {report4<<" #_Age_natmort_by sex x growthpattern (nest GP in sex)"<<endl<<Age_NatMort<<endl;}
     else
-    {report4<<natM_5_opt<<"  #_BETA: Maunder_M suboptions: 1 (4 parm per sex*GP, using age_maturity), 2 (4 parm, same), 3 (6 parm)"<<endl;}
+    {report4<<natM_5_opt<<"  #_Maunder_M suboptions: 1 (4 parm per sex*GP, using age_maturity), 2 (4 parm, same), 3 (6 parm)"<<endl;
+     report4<<"#_Note:_parm2(young_fish_power)_has_neg_value_(plaus._range:~-3_to_0.0);linear_@_-1.0; const_@_0.0"<<endl;}
     report4<<"#"<<endl;
     report4<<Grow_type<<" # GrowthModel: 1=vonBert with L1&L2; 2=Richards with L1&L2; 3=age_specific_K_incr; 4=age_specific_K_decr; 5=age_specific_K_each; 6=NA; 7=NA; 8=growth cessation"<<endl;
     if(Grow_type<=5 || Grow_type==8)
@@ -1426,7 +1427,8 @@ FUNCTION void write_nucontrol()
     if (Hermaphro_Option!=0){
    report4<<Hermaphro_seas_rd<<" # Hermaphro_season.first_age (seas=-1 means all seasons; first_age must be 0 to 9)"<<endl<<Hermaphro_maleSPB<<" # fraction_of_maleSSB_added_to_total_SSB "<<endl;}
    
-    report4<<MGparm_def<<" #_parameter_offset_approach for M, G, CV_G:  1- direct, no offset; 2- male=fem_parm*exp(male_parm); 3: male=female*exp(parm) then old=young*exp(parm)"<<endl;
+    report4<<MGparm_def<<" #_parameter_offset_approach for M, G, CV_G:  1- direct, no offset**; 2- male=fem_parm*exp(male_parm); 3: male=female*exp(parm) then old=young*exp(parm)"<<endl;
+    report4<<"#_** in option 1, any male parameter with value = 0.0 and phase <0 is set equal to female parameter"<<endl;
   report4<<"#"<<endl;
   report4<<"#_growth_parms";
   if(N_GP>1) report4<<";  if N_GP>1, then nest GP within sex in parameters below";
@@ -1849,9 +1851,9 @@ FUNCTION void write_nucontrol()
    report4<<"#Pattern:_22; parm=4; double_normal as in CASAL"<<endl;
    report4<<"#Pattern:_23; parm=6; double_normal where final value is directly equal to sp(6) so can be >1.0"<<endl;
    report4<<"#Pattern:_24; parm=6; double_normal with sel(minL) and sel(maxL), using joiners"<<endl;
-   report4<<"#Pattern:_25; parm=3; exponential-logistic in size"<<endl;
-   report4<<"#Pattern:_27; parm=3+special; cubic spline "<<endl;
-   report4<<"#Pattern:_42; parm=2+special+3; // like 27, with 2 additional param for scaling (average over bin range)"<<endl;
+   report4<<"#Pattern:_25; parm=3; exponential-logistic in length"<<endl;
+   report4<<"#Pattern:_27; parm=special+3; cubic spline in length; parm1==1 resets knots; parm1==2 resets all "<<endl;
+   report4<<"#Pattern:_42; parm=special+3+2; cubic spline; like 27, with 2 additional param for scaling (average over bin range)"<<endl;
    
    report4<<"#_discard_options:_0=none;_1=define_retention;_2=retention&mortality;_3=all_discarded_dead;_4=define_dome-shaped_retention"<<endl;
    report4<<"#_Pattern Discard Male Special"<<endl;
@@ -1874,7 +1876,7 @@ FUNCTION void write_nucontrol()
    report4<<"#Pattern:_19; parm=6; simple 4-parm double logistic with starting age"<<endl;
    report4<<"#Pattern:_20; parm=6; double_normal,using joiners"<<endl;
    report4<<"#Pattern:_26; parm=3; exponential-logistic in age"<<endl;
-   report4<<"#Pattern:_27; parm=3+special; cubic spline in age"<<endl;
+   report4<<"#Pattern:_27; parm=3+special; cubic spline in age; parm1==1 resets knots; parm1==2 resets all "<<endl;
    report4<<"#Pattern:_42; parm=2+special+3; // cubic spline; with 2 additional param for scaling (average over bin range)"<<endl;
    report4<<"#Age patterns entered with value >100 create Min_selage from first digit and pattern from remainder"<<endl;
    report4<<"#_Pattern Discard Male Special"<<endl;

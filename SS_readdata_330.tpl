@@ -1238,7 +1238,7 @@
   }
   if(len_bins_dat(nlen_bin)<len_bins(nlength))
   {
-    N_warn++;  warning<<N_warn<<" Data length bins stop before max pop len bins; "<<len_bins_dat(nlen_bin)<<" is < "<<len_bins(nlength)<<"; suggest make them same"<<endl;
+    N_warn++;  warning<<N_warn<<" NOTE:  Max data length bin: "<<len_bins_dat(nlen_bin)<<"  < max pop len bins: "<<len_bins(nlength)<<"; so will accumulate larger pop len bins"<<endl;
   }
   echoinput<<endl<<"Processed Data length bin info "<<endl<<len_bins_dat<<endl;
   }
