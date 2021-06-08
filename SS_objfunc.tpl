@@ -1195,14 +1195,14 @@ FUNCTION dvariable Check_Parm(const int iparm, const int& PrPH, const double& Pm
     	echoinput<<" parameter min > parameter max "<<Pmin<<" > "<<Pmax<<" for parm: "<<iparm<<endl; cout<<" fatal error, see warning"<<endl; exit(1);}
     else if(Pmin==Pmax && PrPH>=0)
     {N_warn++;
-    	warning<<N_warn<<" "<<" parameter min is same as parameter max: "<<Pmin<<" = "<<Pmax<<" for parm: "<<iparm<<" ; see echoinput for parm_type"<<endl;
+    	warning<<N_warn<<" "<<" parameter min is same as parameter max: "<<Pmin<<" = "<<Pmax<<" for parm: "<<iparm<<" ; search for <now check> echoinput for parm_type"<<endl;
     	echoinput<<" parameter min is same as parameter max"<<Pmin<<" = "<<Pmax<<" for parm: "<<iparm<<endl;}
     else if(Pval<Pmin) {N_warn++;
-    	warning<<N_warn<<" "<<"parameter init value is less than parameter min "<<Pval<<" < "<<Pmin<<" for parm: "<<iparm<<" ; see echoinput for parm_type, will exit if prior requested"<<endl;
+    	warning<<N_warn<<" "<<"parameter init value is less than parameter min "<<Pval<<" < "<<Pmin<<" for parm: "<<iparm<<" ; search for <now check> in echoinput for parm_type, will exit if prior requested"<<endl;
     	echoinput<<" parameter init value is less than parameter min "<<Pval<<" < "<<Pmin<<" for parm: "<<iparm<<endl;
     	if(Prtype>0) exit(1);}
     else if(Pval>Pmax) {N_warn++;
-    	warning<<N_warn<<" "<<"parameter init value is greater than parameter max "<<Pval<<" > "<<Pmax<<" for parm: "<<iparm<<" ; see echoinput for parm_type, will exit if prior requested"<<endl;
+    	warning<<N_warn<<" "<<"parameter init value is greater than parameter max "<<Pval<<" > "<<Pmax<<" for parm: "<<iparm<<" ; search for <now check> echoinput for parm_type, will exit if prior requested"<<endl;
     	echoinput<<" parameter init value is greater than parameter max "<<Pval<<" > "<<Pmax<<" for parm: "<<iparm<<endl;
     	if(Prtype>0) exit(1);}
 

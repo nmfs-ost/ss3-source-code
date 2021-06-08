@@ -798,14 +798,14 @@ FINAL_SECTION
         cout<<" finished "<<endl;
     }
 
-    if(parm_adjust_method==3) {N_warn++;  warning<<N_warn<<" "<<"time-vary parms not bound checked"<<endl;}
+    if(parm_adjust_method==3) {N_warn++;  warning<<N_warn<<"  Time-vary parms not bound checked"<<endl;}
 
 //  SS_Label_Info_12.4.7 #Finish up with final writes to warning.sso
     if(N_changed_lambdas>0)
-      {N_warn++;  warning<<N_warn<<" "<<"Reminder: Number of lamdas !=0.0 and !=1.0:  "<<N_changed_lambdas<<endl; }
+      {N_warn++;  warning<<N_warn<<" Reminder: Number of lamdas !=0.0 and !=1.0:  "<<N_changed_lambdas<<endl; }
     
-    if(Nparm_on_bound>0) {N_warn++;  warning<<N_warn<<" "<<"Number_of_active_parameters_on_or_near_bounds: "<<Nparm_on_bound<<endl;}
-     warning<<N_warn<<" "<<" N warnings: "<<N_warn<<endl;
+    if(Nparm_on_bound>0) {N_warn++;  warning<<N_warn<<"  Number_of_active_parameters_on_or_near_bounds: "<<Nparm_on_bound<<endl;}
+     warning<<"N warnings: "<<N_warn<<endl;
     cout<<endl<<"!!  Run has completed  !!            ";
     if(N_warn>0)
     {cout<<"See warning.sso for N warnings: "<<N_warn<<endl;}

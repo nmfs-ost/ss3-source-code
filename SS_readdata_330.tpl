@@ -3239,7 +3239,7 @@
         if(fleet_type(f)<=2)
         {Fcast_MaxFleetCatch(f)=tempvec(2);}
         else
-        {cout<<" EXIT - see warning "<<endl; echoinput<<"exit for fleet "<<f<<"  ;  cannot only set max catch for retained or discard catch fleets"<<endl; exit(1);}
+        {cout<<" EXIT - see warning "<<endl; warning<<"exit for fleet "<<f<<"  ;  can only set max catch for retained or discard catch fleets"<<endl; exit(1);}
         Fcast_Do_Fleet_Cap=1;
       }
     } while (ender==0);
