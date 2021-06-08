@@ -483,9 +483,10 @@ PRELIMINARY_CALCS_SECTION
     if(do_recdev>=2) echoinput<<recdev2<<endl;
 
 // **************************************************
-    for (i=1;i<=Q_Npar2;i++)
-    {Q_parm(i) = Q_parm_RD(i);}    //  set vector of initial index Q parms
-    if(Q_Npar>0) echoinput<< " Q_parms read from ctl "<<Q_parm<<endl;
+    if(Q_Npar2>0) {
+    for (i=1;i<=Q_Npar2;i++)  {Q_parm(i) = Q_parm_RD(i);}    //  set vector of initial index Q parms
+     echoinput<< " Q_parms read from ctl "<<Q_parm<<endl;
+    } 
 
     if(N_init_F>0)
     {

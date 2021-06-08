@@ -3305,6 +3305,7 @@ FUNCTION void SPR_profile()
       }
     }
 
+    
     equ_Recr=1.0;
     Fishon=0;
     int SPRloops;

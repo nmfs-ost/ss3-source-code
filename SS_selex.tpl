@@ -1665,7 +1665,6 @@ FUNCTION void Make_FishSelex()
             fish_body_wt(tz,g,f)=Wt_Age_mid(s,g);
           }
           sel_al_3(s,g,f)=sel_a(yf,f,gg);  //  selected numbers
-
           switch(seltype(f+Nfleet,2))  //  age-retention function
           {
             case 0:
