@@ -124,7 +124,7 @@ FUNCTION void write_nudata()
   {
     for (f=1;f<=Nfleet;f++)
     if(disc_units(f)>0) report1<<f<<" "<<disc_units(f)<<" "<<disc_errtype(f)<<" # "<<fleetname(f)<<endl;
-    report1<<"#_yr month fleet obs stderr"<<endl;
+    report1<<"#_yr seas fleet obs stderr"<<endl;
     for (f=1;f<=Nfleet;f++)
     for (i=1;i<=disc_N_fleet(f);i++)
     {
@@ -424,7 +424,7 @@ FUNCTION void write_nudata()
   {
     for (f=1;f<=Nfleet;f++)
     if(disc_units(f)>0) report1<<f<<" "<<disc_units(f)<<" "<<disc_errtype(f)<<" # "<<fleetname(f)<<endl;
-    report1<<"#_yr month fleet obs stderr"<<endl;
+    report1<<"#_yr seas fleet obs stderr"<<endl;
     for (f=1;f<=Nfleet;f++)
     if(disc_N_fleet(f)>0)
     for (i=1;i<=disc_N_fleet(f);i++)
@@ -768,7 +768,7 @@ FUNCTION void write_nudata()
   {
     for (f=1;f<=Nfleet;f++)
     if(disc_units(f)>0) report1<<f<<" "<<disc_units(f)<<" "<<disc_errtype(f)<<" # "<<fleetname(f)<<endl;
-    report1<<"#_yr month fleet obs stderr"<<endl;
+    report1<<"#_yr seas fleet obs stderr"<<endl;
     for (f=1;f<=Nfleet;f++)
     for (i=1;i<=disc_N_fleet(f);i++)
     {
@@ -1840,6 +1840,7 @@ FUNCTION void write_nucontrol()
 
    report4<<"#Pattern:_0;  parm=0; selex=1.0 for all sizes"<<endl;
    report4<<"#Pattern:_1;  parm=2; logistic; with 95% width specification"<<endl;
+   report4<<"#Pattern:_2;  parm=6; modification of pattern 24 with improved sex-specific offset"<<endl;
    report4<<"#Pattern:_5;  parm=2; mirror another size selex; PARMS pick the min-max bin to mirror"<<endl;
    report4<<"#Pattern:_11; parm=2; selex=1.0  for specified min-max population length bin range"<<endl;
    report4<<"#Pattern:_15; parm=0; mirror another age or length selex"<<endl;
