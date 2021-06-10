@@ -118,13 +118,14 @@ FUNCTION void write_nudata()
   report1<<"#"<<endl<<Ndisc_fleets<<" #_N_fleets_with_discard"<<endl;
   report1<<"#_discard_units (1=same_as_catchunits(bio/num); 2=fraction; 3=numbers)"<< endl;
   report1<<"#_discard_errtype:  >0 for DF of T-dist(read CV below); 0 for normal with CV; -1 for normal with se; -2 for lognormal; -3 for trunc normal with CV"<<endl;
-  report1<<"# note, only have units and errtype for fleets with discard "<<endl;
+  report1<<"# note: only enter units and errtype for fleets with discard "<<endl;
+  report1<<"# note: discard data is the total for an entire season, so input of month here must be to a month in that season"<<endl;
   report1<<"#_Fleet units errtype"<<endl;
   if(Ndisc_fleets>0)
   {
     for (f=1;f<=Nfleet;f++)
     if(disc_units(f)>0) report1<<f<<" "<<disc_units(f)<<" "<<disc_errtype(f)<<" # "<<fleetname(f)<<endl;
-    report1<<"#_yr seas fleet obs stderr"<<endl;
+    report1<<"#_yr month fleet obs stderr"<<endl;
     for (f=1;f<=Nfleet;f++)
     for (i=1;i<=disc_N_fleet(f);i++)
     {
@@ -418,13 +419,14 @@ FUNCTION void write_nudata()
   report1<<"#"<<endl<<Ndisc_fleets<<" #_N_fleets_with_discard"<<endl;
   report1<<"#_discard_units (1=same_as_catchunits(bio/num); 2=fraction; 3=numbers)"<< endl;
   report1<<"#_discard_errtype:  >0 for DF of T-dist(read CV below); 0 for normal with CV; -1 for normal with se; -2 for lognormal; -3 for trunc normal with CV"<<endl;
-  report1<<"# note, only have units and errtype for fleets with discard "<<endl;
+  report1<<"# note: only enter units and errtype for fleets with discard "<<endl;
+  report1<<"# note: discard data is the total for an entire season, so input of month here must be to a month in that season"<<endl;
   report1<<"#_Fleet units errtype"<<endl;
   if(Ndisc_fleets>0)
   {
     for (f=1;f<=Nfleet;f++)
     if(disc_units(f)>0) report1<<f<<" "<<disc_units(f)<<" "<<disc_errtype(f)<<" # "<<fleetname(f)<<endl;
-    report1<<"#_yr seas fleet obs stderr"<<endl;
+    report1<<"#_yr month fleet obs stderr"<<endl;
     for (f=1;f<=Nfleet;f++)
     if(disc_N_fleet(f)>0)
     for (i=1;i<=disc_N_fleet(f);i++)
@@ -762,13 +764,14 @@ FUNCTION void write_nudata()
   report1<<"#"<<endl<<Ndisc_fleets<<" #_N_fleets_with_discard"<<endl;
   report1<<"#_discard_units (1=same_as_catchunits(bio/num); 2=fraction; 3=numbers)"<< endl;
   report1<<"#_discard_errtype:  >0 for DF of T-dist(read CV below); 0 for normal with CV; -1 for normal with se; -2 for lognormal; -3 for trunc normal with CV"<<endl;
-  report1<<"# note, only have units and errtype for fleets with discard "<<endl;
+  report1<<"# note: only enter units and errtype for fleets with discard "<<endl;
+  report1<<"# note: discard data is the total for an entire season, so input of month here must be to a month in that season"<<endl;
   report1<<"#_Fleet units errtype"<<endl;
   if(Ndisc_fleets>0)
   {
     for (f=1;f<=Nfleet;f++)
     if(disc_units(f)>0) report1<<f<<" "<<disc_units(f)<<" "<<disc_errtype(f)<<" # "<<fleetname(f)<<endl;
-    report1<<"#_yr seas fleet obs stderr"<<endl;
+    report1<<"#_yr month fleet obs stderr"<<endl;
     for (f=1;f<=Nfleet;f++)
     for (i=1;i<=disc_N_fleet(f);i++)
     {
