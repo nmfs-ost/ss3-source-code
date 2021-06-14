@@ -1094,17 +1094,28 @@
         N_warn++;  warning<<N_warn<<" minimum sample size for length comps must be > 0; minimum sample size set to 0.001 "<<endl;
         min_sample_size_L(f) = 0.001;
       }
+
       if (Comp_Err_L2(f) >2*Nfleet)
       {
         N_warn++; cout<<"fatal input error, see warning "<<endl; warning<<N_warn<<"; length D-M index for fleet: "<<f<<" is: "<<Comp_Err_L2(f)<<" but must be an integer <=2*Nfleet "<<endl;
         exit(1);
       }
-      if(Comp_Err_L2(f)>0) DM_parmlist(Comp_Err_L2(f))=1;
+      else if(Comp_Err_L2(f)>Comp_Err_ParmCount+1)
+      {
+        N_warn++; cout<<"fatal input error, see warning "<<endl; 
+        warning<<N_warn<<"; length D-M must refer to existing parm num, or increment by 1:  "<<Comp_Err_L2(f)<<endl;
+        exit(1);
+      }
+      else if(Comp_Err_L2(f)>Comp_Err_ParmCount)
+      {
+        Comp_Err_ParmCount++;
+        DM_parmlist(f)=1;
+      }
+      //  else OK because refers to existing parameter
     }
-    //  get count of needed dirichlet composition parameters
     //  the count for age data will be added after reading the age data setup
-    Comp_Err_ParmCount=max(Comp_Err_L2);
     echoinput<<"number of D-M parameters needed for length comp data: "<<Comp_Err_ParmCount<<endl<<endl;
+
     *(ad_comm::global_datafile) >> nlen_bin;
     echoinput<<nlen_bin<<" nlen_bin_for_data "<<endl;
   }
@@ -1751,13 +1762,22 @@
         }
       if (Comp_Err_A2(f) >2*Nfleet)
       {
-        N_warn++; cout<<"fatal input error, see warning "<<endl; warning<<N_warn<<"; Age D-M index for fleet: "<<f<<" is: "<<Comp_Err_L2(f)<<" but must be an integer <=2*Nfleet "<<endl;
+        N_warn++; cout<<"fatal input error, see warning "<<endl; warning<<N_warn<<"; Age D-M index for fleet: "<<f<<" is: "<<Comp_Err_A2(f)<<" but must be an integer <=2*Nfleet "<<endl;
         exit(1);
       }
-      if(Comp_Err_A2(f)>0) DM_parmlist(Comp_Err_A2(f))=1;
+      else if(Comp_Err_A2(f)>Comp_Err_ParmCount+1)
+      {
+        N_warn++; cout<<"fatal input error, see warning "<<endl; 
+        warning<<N_warn<<"; Age D-M must refer to existing parm num, or increment by 1:  "<<Comp_Err_A2(f)<<endl;
+        exit(1);
       }
-        //  get count of needed dirichlet composition parameters
-      Comp_Err_ParmCount=sum(DM_parmlist);  //  get the maximum parameter number referred to
+      else if(Comp_Err_A2(f)>Comp_Err_ParmCount)
+      {
+        Comp_Err_ParmCount++;
+        DM_parmlist(f+Nfleet)=1;
+      }
+      //  else OK because refers to existing parameter
+      }
       echoinput<<"number of D-M parameters needed for length and age comp data: "<<Comp_Err_ParmCount<<endl;
       
       *(ad_comm::global_datafile) >> Lbin_method;

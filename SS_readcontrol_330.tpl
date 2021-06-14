@@ -3106,17 +3106,22 @@
   
 //  SS_Label_Info_4.097 #Read parameters needed for estimating variance of composition data
   {
-    echoinput<<"#Now count parameters for variance of composition data; CANNOT be time-varying"<<endl;
+    echoinput<<"#Now count parameters for D-M variance of composition data; CANNOT be time-varying"<<endl;
     if(Comp_Err_ParmCount>0)
     {
-      echoinput<<Comp_Err_ParmCount<<"  #_parameters are needed"<<endl;
+      echoinput<<Comp_Err_ParmCount<<"  #_parameters are needed: "<<DM_parmlist<<endl;
       Comp_Err_Parm_Start=N_selparm;
+      //  create a D-M parameter only for the first fleet that references that parm number
       for (f=1;f<=Nfleet;f++) {
-      if (DM_parmlist(f)>0) {
-       N_selparm++; ParCount++; ParmLabel+="ln(DM_theta)_Len_"+NumLbl(f)+"_P"+NumLbl(Comp_Err_L2(f));}}
+        if(Comp_Err_L2(f)>0){
+          if (DM_parmlist(f)==1) {
+            N_selparm++; ParCount++; ParmLabel+="ln(DM_theta)_Len_P"+NumLbl(Comp_Err_L2(f))+"("+NumLbl(f)+")";}}
+      	}
       for (f=1;f<=Nfleet;f++) {
-      if (DM_parmlist(f+Nfleet)>0){
-       N_selparm++; ParCount++; ParmLabel+="ln(DM_theta)_Age_"+NumLbl(f)+"_P"+NumLbl(Comp_Err_A2(f));}}
+        if(Comp_Err_A2(f)>0){
+          if (DM_parmlist(f+Nfleet)==1) {
+            N_selparm++; ParCount++; ParmLabel+="ln(DM_theta)_Age_P"+NumLbl(Comp_Err_A2(f))+"("+NumLbl(f)+")";}}
+      	}
     }
   }
 
@@ -3163,13 +3168,12 @@
    for (f = 1; f <= Nfleet; f++)
    {
       // if Dirichlet was indicated, set fleet for this parameter
-      if (Comp_Err_L(f) >0 && Comp_Err_L2(f) > 0)
+      if (Comp_Err_L2(f) > 0)
       {
         j = Comp_Err_Parm_Start + Comp_Err_L2(f);
         selparm_fleet(j)=f;
       }
-
-      if (Comp_Err_A(f) >0 && Comp_Err_A2(f) > 0)
+      if (Comp_Err_A2(f) > 0)
       {
         j = Comp_Err_Parm_Start + Comp_Err_A2(f);
         selparm_fleet(j)=f;
