@@ -3111,8 +3111,12 @@
     {
       echoinput<<Comp_Err_ParmCount<<"  #_parameters are needed"<<endl;
       Comp_Err_Parm_Start=N_selparm;
-      for(f=1;f<=Comp_Err_ParmCount;f++)
-        {N_selparm++; ParCount++; ParmLabel+="ln(DM_theta)_"+NumLbl(f);}
+      for (f=1;f<=Nfleet;f++) {
+      if (DM_parmlist(f)>0) {
+       N_selparm++; ParCount++; ParmLabel+="ln(DM_theta)_Len_"+NumLbl(f)+"_P"+NumLbl(Comp_Err_L2(f));}}
+      for (f=1;f<=Nfleet;f++) {
+      if (DM_parmlist(f+Nfleet)>0){
+       N_selparm++; ParCount++; ParmLabel+="ln(DM_theta)_Age_"+NumLbl(f)+"_P"+NumLbl(Comp_Err_A2(f));}}
     }
   }
 
