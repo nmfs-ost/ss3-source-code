@@ -1911,6 +1911,7 @@ FUNCTION void write_nucontrol()
     if(Comp_Err_ParmCount>0)
     {
       report4<<"#_Dirichlet parameters"<<endl;
+      report4<<"#_multiple_fleets_can_refer_to_same_parm;_but_list_cannot_have_gaps"<<endl;
       k=Comp_Err_Parm_Start;
       for(f=1;f<=Comp_Err_ParmCount;f++)
       {
@@ -1921,6 +1922,7 @@ FUNCTION void write_nucontrol()
           report4<<"  #  "<<ParmLabel(NP)<<endl;
       }
     }
+    else
     {
       report4<<"#_No_Dirichlet parameters"<<endl;
     }
