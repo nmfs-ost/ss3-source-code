@@ -37,14 +37,12 @@ jobs:
           cd Compile
           ./Make_SS_safe.bat
           ./Make_SS_fast.bat
-          ./Make_SS_trans.bat
 
       - name: Move exes to a new folder
         run: |
           mkdir exes
           mv Compile/ss.exe exes/
           mv Compile/ss_opt.exe exes/
-          mv Compile/ss_trans.exe exes/
 
       - name: Archive windows exes
         if: success()

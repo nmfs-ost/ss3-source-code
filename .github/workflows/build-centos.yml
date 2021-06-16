@@ -40,18 +40,16 @@ jobs:
           mkdir SS330
           /bin/bash ./Make_SS_330_new.sh -b SS330
           /bin/bash ./Make_SS_330_new.sh -b SS330 -o
-          /bin/bash ./Make_SS_330_new.sh -b SS330 -t
           
       - name: Verify binary
         run: |
           sha256sum SS330/ss
           sha256sum SS330/ss_opt
-          sha256sum SS330/ss_trans
 
       - name: Delete unneeded files
         run: |
           cd SS330
-          rm *.obj *.htp *.cpp ss_opt.tpl ss_trans.tpl
+          rm *.obj *.htp *.cpp ss_opt.tpl
           
       - name: Archive the exes as tar.
         if: success()
