@@ -19,7 +19,7 @@ function usage()
   echo ""
   echo "Call this script as follows:"
   echo "  ./Make_SS_330_new.sh [(-s | --source) source_dir] [(-b | --build) build_dir]" 
-  echo "   [(-a | --admb) admb_dir] [[-o | --opt] | [-t | --trans] | [-f | --safe]"
+  echo "   [(-a | --admb) admb_dir] [[-o | --opt] | [-f | --safe]"
   echo "   [-w | --warn] [-h | --help] [-d | --debug]"
   echo " (Directories may be relative or absolute)"
   echo ""
@@ -40,14 +40,6 @@ function cat_opt_files()
 # concatenate all tpl files to a single file
 cat SS_biofxn.tpl SS_miscfxn.tpl SS_selex.tpl SS_popdyn.tpl SS_recruit.tpl SS_benchfore.tpl SS_expval.tpl SS_objfunc.tpl SS_write.tpl SS_write_ssnew.tpl SS_write_report.tpl SS_ALK.tpl SS_timevaryparm.tpl SS_tagrecap.tpl > SS_functions.temp
 cat SS_versioninfo_330opt.tpl SS_readstarter.tpl SS_readdata_330.tpl SS_readcontrol_330.tpl SS_param.tpl SS_prelim.tpl SS_global.tpl SS_proced.tpl SS_functions.temp > $BUILD_DIR/ss_opt.tpl
-}
-
-# create trans source tpl
-function cat_trans_files()
-{
-# concatenate all tpl files to a single file
-cat SS_biofxn.tpl SS_miscfxn.tpl SS_selex.tpl SS_popdyn.tpl SS_recruit.tpl SS_benchfore.tpl SS_expval.tpl SS_objfunc.tpl SS_write.tpl SS_write_ssnew.tpl SS_write_report.tpl SS_ALK.tpl SS_timevaryparm.tpl SS_tagrecap.tpl > SS_functions.temp
-cat SS_versioninfo_330trans.tpl SS_readstarter.tpl SS_readdata_324.tpl SS_readcontrol_324.tpl SS_param.tpl SS_prelim.tpl SS_global.tpl SS_proced.tpl SS_functions.temp > $BUILD_DIR/ss_trans.tpl
 }
 
 # default directories
@@ -105,9 +97,6 @@ while [ "$1" != "" ]; do
                          ;;
          # build fast version
         -o | --opt )     BUILD_TYPE=ss_opt
-                         ;;
-         # build the transition 
-        -t | --trans )   BUILD_TYPE=ss_trans
     esac
     shift
 done
@@ -122,9 +111,6 @@ fi
 
 # create source files in build dir
 case $BUILD_TYPE in
-    ss_trans)  grep "trans" SS_versioninfo_330trans.tpl
-               cat_trans_files
-               ;;
     ss_opt )   grep "opt" SS_versioninfo_330opt.tpl
                cat_opt_files
                ;;
