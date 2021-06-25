@@ -593,22 +593,22 @@ FUNCTION void write_bigoutput()
   SS2out<<"B_ratio_denominator: "<<depletion_basis_label<<endl;
   NP=deriv_start;
   active_count=deriv_covar_start;
-  SS2out<<" Label Value  StdDev (Val-1.0)/Stddev  CumNorm"<<endl;
+  SS2out<<"Label Value  StdDev (Val-1.0)/Stddev  CumNorm"<<endl;
   for (j=1;j<=N_STD_Yr;j++)
   {
-    NP++;  SS2out<<" "<<ParmLabel(NP)<<" "<<SSB_std(j);
+    NP++;  SS2out<<ParmLabel(NP)<<" "<<SSB_std(j);
     active_count++;
     SS2out<<" "<<CoVar(active_count,1)<<endl;
   }
   for (j=1;j<=N_STD_Yr;j++)
   {
-    NP++;  SS2out<<" "<<ParmLabel(NP)<<" "<<recr_std(j);
+    NP++;  SS2out<<ParmLabel(NP)<<" "<<recr_std(j);
     active_count++;
     SS2out<<" "<<CoVar(active_count,1)<<endl;
   }
   for (j=1;j<=N_STD_Yr_Ofish;j++)
   {
-    NP++;  SS2out<<" "<<ParmLabel(NP)<<" "<<SPR_std(j);
+    NP++;  SS2out<<ParmLabel(NP)<<" "<<SPR_std(j);
     active_count++;
     SS2out<<" "<<CoVar(active_count,1);
     if( CoVar(active_count,1)>0.0)
@@ -623,7 +623,7 @@ FUNCTION void write_bigoutput()
   post_vecs<<runnumber<<" 0 "<<obj_fun<<" F/Fmsy_stdev ";
   for (j=1;j<=N_STD_Yr_F;j++)
   {
-    NP++;  SS2out<<" "<<ParmLabel(NP)<<" "<<F_std(j);
+    NP++;  SS2out<<ParmLabel(NP)<<" "<<F_std(j);
     active_count++;
     SS2out<<" "<<CoVar(active_count,1);
     post_vecs<<CoVar(active_count,1)<<" ";
@@ -639,7 +639,7 @@ FUNCTION void write_bigoutput()
 
   for (j=1;j<=N_STD_Yr_Dep;j++)
   {
-    NP++;  SS2out<<" "<<ParmLabel(NP)<<" "<<depletion(j);
+    NP++;  SS2out<<ParmLabel(NP)<<" "<<depletion(j);
     active_count++;
     SS2out<<" "<<CoVar(active_count,1);
     post_vecs<<CoVar(active_count,1)<<" ";

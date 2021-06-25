@@ -674,8 +674,10 @@
 //  some all fleet indexes
         if(data_time(ALK_time,f,1)<0.0)  //  so first occurrence of data at ALK_time,f
           {data_time(ALK_time,f)(1,3)=timing_r_result(1,3);}  // real_month,fraction of season, year.fraction
-        else if (timing_r_result(1) !=  data_time(ALK_time,f,1))
-          {N_warn++;  warning<<N_warn<<" "<<"SURVEY: data_month already set for y,s,f: "<<y<<" "<<s<<" "<<f<<" to real month: "<< data_time(ALK_time,f,1)<<"  but read value is: "<<real_month<<endl;}
+        else if (timing_r_result(1) ==  data_time(ALK_time,f,1))
+          {N_warn++; cout<<"fatal input error, see warning"<<endl;
+          	warning<<N_warn<<" SURVEY: duplicate survey obs for this time-fleet: y,s,f: "<<y<<" "<<s<<" "<<f<<" SS will exit "<<endl;
+          exit(1);}
 
         have_data(ALK_time,0,0,0)=1;
         have_data(ALK_time,f,0,0)=1;  //  so have data of some type in this subseas, for this fleet
