@@ -405,27 +405,32 @@
 
   ivector disc_fleet_list(1,Nfleet);
   int N_retain_fleets;
+  int catch_warn;
 
  LOCAL_CALCS
   catch_ret_obs.initialize();
   catch_record_count.initialize();
+  catch_warn=0;
   tempvec.initialize();
   for (k=0;k<=N_ReadCatch-1;k++)
   {
     //  do read in list format  y, s, f, catch, catch_se
-      tempvec(1,5)=catch_read[k];
-      g=tempvec(1); s=tempvec(2); f=tempvec(3);
-      if(g==-999)
-      {y=styr-1;}  // designates initial equilibrium
-      else
-      {y=g;}
-      if(k==0) echoinput<<"first catch record: "<<tempvec(1,5)<<endl;
-      if(k==(N_ReadCatch-1)) echoinput<<"last catch record: "<<tempvec(1,5)<<endl;
-
+    tempvec(1,5)=catch_read[k];
+    g=tempvec(1); s=tempvec(2); f=tempvec(3);
+    if(g==-999)
+    {y=styr-1;}  // designates initial equilibrium
+    else
+    {y=g;}
+    if(k==0) echoinput<<"first catch record: "<<tempvec(1,5)<<endl;
+    if(k==(N_ReadCatch-1)) echoinput<<"last catch record: "<<tempvec(1,5)<<endl;
     if(y>=styr-1 && y<=endyr && (g==-999 || g>=styr))  //  observation is in date range
     {
-      if(s>nseas) s=nseas;   // allows for collapsing multiple season catch data down into fewer seasons
-                               //  typically to collapse to annual because accumulation will all be in the index "nseas"
+      if(s>nseas){
+        catch_warn++;
+        s=nseas;
+        // allows for collapsing multiple season catch data down into fewer seasons
+        // typically to collapse to annual because accumulation will all be in the index "nseas"
+      }
       if(s>0)
       {
         t=styr+(y-styr)*nseas+s-1;
@@ -449,14 +454,16 @@
       }
     }
   }
-
+  if(catch_warn>0){
+    N_warn++; warning<<N_warn<<" at least one catch record has seas>nseas; perhaps erroneous entry of month rather than season; SS changed them to nseas"<<endl;
+  }
 //  warn on duplicate catch records
     for(y=styr-1;y<=endyr;y++)
     for(s=1;s<=nseas;s++)
     for(f=1;f<=Nfleet;f++) {
       t=styr+(y-styr)*nseas+s-1;
       if(catch_record_count(f,t)>1)
-      	{N_warn++;  warning<<N_warn<<" "<<catch_record_count(f,t)<<" catch records for yr, seas, fleet "<<y<<" "<<s<<" "<<f<<". SS has accumulated catches, total= "<<catch_ret_obs(f,t)<<endl;}
+      	{N_warn++;  warning<<N_warn<<" "<<catch_record_count(f,t)<<" catch records have been accumulated into yr, seas, fleet "<<y<<" "<<s<<" "<<f<<"; total catch= "<<catch_ret_obs(f,t)<<endl;}
     }
 
     obs_equ_catch.initialize();
@@ -674,8 +681,10 @@
 //  some all fleet indexes
         if(data_time(ALK_time,f,1)<0.0)  //  so first occurrence of data at ALK_time,f
           {data_time(ALK_time,f)(1,3)=timing_r_result(1,3);}  // real_month,fraction of season, year.fraction
-        else if (timing_r_result(1) !=  data_time(ALK_time,f,1))
-          {N_warn++;  warning<<N_warn<<" "<<"SURVEY: data_month already set for y,s,f: "<<y<<" "<<s<<" "<<f<<" to real month: "<< data_time(ALK_time,f,1)<<"  but read value is: "<<real_month<<endl;}
+        else if (timing_r_result(1) ==  data_time(ALK_time,f,1))
+          {N_warn++; cout<<"fatal input error, see warning"<<endl;
+          	warning<<N_warn<<" SURVEY: duplicate survey obs for this time-fleet: y,s,f: "<<y<<" "<<s<<" "<<f<<" SS will exit "<<endl;
+          exit(1);}
 
         have_data(ALK_time,0,0,0)=1;
         have_data(ALK_time,f,0,0)=1;  //  so have data of some type in this subseas, for this fleet
