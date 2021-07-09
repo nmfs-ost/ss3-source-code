@@ -501,10 +501,10 @@ PRELIMINARY_CALCS_SECTION
       {
       for (g=1;g<=N_Fparm;g++)
       {
-          F_rate(g)=F_setup(1);
+          F_rate(g)=F_start_rd;
           f=Fparm_loc(g,1);
           t=Fparm_loc(g,2);
-          Hrate(f,t)=F_setup(1);
+          Hrate(f,t)=F_start_rd;
       }
       if(F_detail>0)
       {

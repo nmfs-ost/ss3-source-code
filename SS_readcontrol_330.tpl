@@ -2074,78 +2074,97 @@
   !! echoinput<<F_ballpark<<" F ballpark is annual F, as specified in F_reporting, for a specified year"<<endl;
   init_int F_ballpark_yr
   !! echoinput<<F_ballpark_yr<<" F_ballpark_yr (<0 to ignore)  "<<endl;
-  init_int F_Method;           // 1=Pope's; 2=continuouos F; 3=hybrid
-  int F_Method_use
-  !! echoinput<<F_Method<<" F_Method "<<endl;
-  init_number max_harvest_rate
+  ivector F_Method_v(1,Nfleet);
+  ivector F_Method_use_v(1,Nfleet);
+
+  number F_start_rd;  //  initial value for F_parm when not using hybrid for early phases
+  vector F_start(1,Nfleet);
+  matrix F_setup2(1,1,1,1)
+  int F_detail;  // number of specific initial values and phases to read
+  int F_parm_PH;  //  phase to transition from hybrid to parameter
+  int F_Tune;
+  int F_Method_rd;           // 1=Pope's; 2=continuouos F; 3=hybrid; 4=fleet-specific
+  int F_Method;           // 1=Pope's; 2=continuouos F; 3=hybrid
+  int F_Method_use;           // 1=Pope's; 2=continuouos F; 3=hybrid
+  number max_harvest_rate
   number Equ_F_joiner
 
  LOCAL_CALCS
-    echoinput<<max_harvest_rate<<" max_harvest_rate "<<endl;
-  if(F_Method<1 || F_Method>4)
+  Equ_F_joiner=10;  //  defaults
+  F_detail=-1;
+  F_Tune=3;
+  F_start_rd=0.05;
+  F_parm_PH=1;
+  F_Method_v.initialize();
+  F_Method_use_v.initialize();
+  
+  *(ad_comm::global_datafile) >> F_Method_rd;
+  echoinput<<F_Method_rd<<" F_Method as read"<<endl;
+  F_Method=F_Method_rd;
+  F_Method_v=F_Method_rd;  //  assign scalar to vector
+  F_Method_use_v=F_Method_rd;  //  assign scalar to vector
+
+  *(ad_comm::global_datafile) >> max_harvest_rate;
+  echoinput<<max_harvest_rate<<" max_harvest_rate "<<endl;
+
+  if(F_Method_rd<1 || F_Method_rd>5)
+  {
+    N_warn++;
+   warning<<N_warn<<" ERROR:  F_Method must be 1 or 2 or 3 or 4, value is: "<<F_Method_rd<<endl;
+   cout<<" EXIT - see warning "<<endl;
+   exit(1);
+  }
+
+  switch(F_Method_rd)
+  {
+    case 1:  //  Pope's  no additional input required
     {
-      N_warn++;
-     warning<<N_warn<<" "<<" ERROR:  F_Method must be 1 or 2 or 3 or 4, value is: "<<F_Method<<endl;
-    cout<<" EXIT - see warning "<<endl;
-    exit(1);
-    }
-   if(F_Method==1)
-   {
-     k=-1;
      Equ_F_joiner=(log(1./max_harvest_rate -1.))/(max_harvest_rate-0.2);  //  used to spline the harvest rate
      if(max_harvest_rate>0.999)
      {N_warn++; cout<<" EXIT - see warning "<<endl;  warning<<N_warn<<" "<<" max harvest rate must  be <1.0 for F_method 1 "<<max_harvest_rate<<endl; exit(1);}
      if(max_harvest_rate<=0.30)
      {N_warn++;  warning<<N_warn<<" "<<" unexpectedly small value for max harvest rate for F_method 1:  "<<max_harvest_rate<<endl;}
-   }
-   else
-   {
-     if(max_harvest_rate<1.0)
-     {N_warn++;  warning<<N_warn<<" "<<" max harvest rate should be >1.0 for F_method 2, 3 or 4 "<<max_harvest_rate<<endl;}
-     if(F_Method==2)  //  all fleets start with same info and use parameters
-     {
-       k=3;
-     }
-     else if(F_Method==3)  //  hybrid
-     {
-       k=1;
-     }
-     else  //  parameters, with fleet-specific setup
-    {
-      k=1;
+      break;
     }
-   }
- END_CALCS
-
-  init_vector F_setup(1,k)
-// setup for F_rate with F_Method=2
-// F_setup(1) = overall initial value
-// F_setup(2) = overall phase
-// F_setup(3) = number of specific initial values and phases to read
-  int F_detail;
-  int F_Tune;
- LOCAL_CALCS
-  F_detail=-1;
-  F_Tune=0;
-  if(F_Method>1)
-  {
-    if(F_Method==2)
+    case 2:  //  parameters for all fleets
     {
-      echoinput<<F_setup<<" initial F value, F phase, N_detailed Fsetups to read "<<endl;
-      F_detail=F_setup(3);
+      *(ad_comm::global_datafile) >> F_start_rd;
+      *(ad_comm::global_datafile) >> F_parm_PH;
+      *(ad_comm::global_datafile) >> F_detail;
       F_Tune=4;
-//      F_rate_max=max_harvest_rate;  // used to set upper bound on F_rate parameter
+      echoinput<<F_start_rd<<" initial F value when not starting from hybrid "<<endl;
+      echoinput<<F_parm_PH<<" Phase to switch from hybrid to parameter "<<endl;
+      echoinput<<F_detail<<" N_detailed Fsetups to read (later -1 in yr field fills remaining years for that fleet)"<<endl;
+      break;
     }
-    else if(F_Method==3)
+    case 3:  //  hybrid for all fleets
     {
-      F_Tune=F_setup(1);
-      echoinput<<F_Tune<<" N iterations for tuning hybrid F "<<endl;
+      *(ad_comm::global_datafile) >> F_Tune;
+      echoinput<<F_Tune<<" N iterations for tuning hybrid F (typically 3-5)"<<endl;
+      break;
+    }
+    case 4:  //  fleet-specific choice for hybrid vs parameters
+    {
+      *(ad_comm::global_datafile) >> F_detail;
+    	// fleet-specific F_parm_PH obtained by going straight to F_detail and using -year to fill that fleet with phases
+    	//  so detail list must include entry for each fishing or bycatch fleet
+    	// must be same for all years for that fleet because of 
+      break;
     }
   }
- END_CALCS
+  if(F_detail>0){
+  	F_setup2.deallocate();
+  	F_setup2.allocate(1,F_detail,1,6);    // fleet, yr, seas, Fvalue, se, phase
+   *(ad_comm::global_datafile) >> F_setup2;
+  echoinput<<" detailed F_setups "<<endl<<F_setup2<<endl;
+  //  add some checks to be sure that a -year record has been read for each fleet with fleet_type<=2
+  }
+   {
+     if(max_harvest_rate<1.0)
+     {N_warn++;  warning<<N_warn<<" "<<" max harvest rate typically is >1.0 for F_method 2, 3 or 4 "<<max_harvest_rate<<endl;}
+   }
 
-  init_matrix F_setup2(1,F_detail,1,6)  // fleet, yr, seas, Fvalue, se, phase
-  !!echoinput<<" detailed F_setups "<<endl<<F_setup2<<endl;
+ END_CALCS
 
 !!//  SS_Label_Info_4.7.1 #Read setup for init_F parameters and create init_F parameter labels
 //  NEW  only read for catch fleets with positive initial equ catch
@@ -2232,7 +2251,7 @@
   N_Fparm=0;
   do_Fparm.initialize();
   Fparm_start = ParCount;
-  if(F_Method==2)
+  if(F_Method==2 || F_Method==4)
   {
     for (f=1;f<=Nfleet;f++)
     for (y=styr;y<=endyr;y++)
@@ -2252,19 +2271,25 @@
   }
  END_CALCS
   ivector Fparm_PH(1,N_Fparm);
-  imatrix Fparm_loc(1,N_Fparm,1,2);  //  stores f,t
+  imatrix Fparm_loc(1,N_Fparm,1,2);  //  stores f,t to find where in Hrate(f,t) to put the Fparm
+  ivector Fparm_loc_st(1,Nfleet);
+  ivector Fparm_loc_end(1,Nfleet);
   vector Fparm_max(1,N_Fparm);
   int y1;
   
  LOCAL_CALCS
   Fparm_max.initialize();
   Fparm_PH.initialize();
-  if(F_Method==2)
+  Fparm_loc_st.initialize();
+  Fparm_loc_end.initialize();
+  if(F_Method==2 || F_Method==4)
   {
     Fparm_max=max_harvest_rate;  //  populate vector with input value
-    Fparm_PH=F_setup(2);
+    Fparm_PH=F_parm_PH;  //  fill vector with input value
     g=0;
     for (f=1;f<=Nfleet;f++)
+    {
+    	Fparm_loc_st(f)=g+1;
     for (y=styr;y<=endyr;y++)
     for (s=1;s<=nseas;s++)
     {
@@ -2274,6 +2299,8 @@
         g++;
         Fparm_loc(g,1)=f; Fparm_loc(g,2)=t;
       }
+    }
+    	Fparm_loc_end(f)=g;
     }
 
       if(F_detail>0)

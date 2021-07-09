@@ -907,7 +907,7 @@ FUNCTION void get_time_series()
               
   //  SS_Label_Info_24.3.3.3.1 #Start by doing a Pope's approximation
               for (f=1;f<=Nfleet;f++)
-              if(fleet_type(f)==1) // do exact catch for this fleet; skipping adjustment for bycatch fleets
+              if(fleet_type(f)==1 && F_Method_use_v(f)==3) // do exact catch for this fleet; skipping adjustment for bycatch fleets
               {
                 if (catch_seas_area(t,p,f)==1)
                 {
@@ -1360,7 +1360,7 @@ FUNCTION void get_time_series()
             annual_catch(y,k)+=catch_fleet(t,f,k);
             if(k<=3) Smry_Table(y,k+3)=annual_catch(y,k);
           }
-          if(F_Method==1)
+          if(F_Method_use==1)
           {
             annual_F(y,1)+=Hrate(f,t);
           }
@@ -1600,7 +1600,7 @@ FUNCTION void Do_Equil_Calc(const prevariable& equ_Recr)
            if(equ_numbers(s,p,g,a)>0.0)  //  will only be zero if not yet settled
            {
              N_beg=equ_numbers(s,p,g,a);
-             if(F_Method==1)   // Pope's approx
+             if(F_Method_use==1)   // Pope's approx
              {
                  N_mid = N_beg*surv1(s,GP3(g),a1);     // numbers at middle of season
                  Nsurvive=N_mid;                            // initial number of fishery survivors
@@ -1737,7 +1737,7 @@ FUNCTION void Do_Equil_Calc(const prevariable& equ_Recr)
                 }
                 else if(a==(3*nages-1))           // do infinite tail; note that it uses Z from nseas as if it applies annually
                 {
-                  if(F_Method==1)
+                  if(F_Method_use==1)
                   {
                     equ_numbers(1,p,g,a+1) = Survivors(p,g)/(1.-exp(-equ_Z(nseas,p,g,nages)));
                   }
@@ -1773,7 +1773,7 @@ FUNCTION void Do_Equil_Calc(const prevariable& equ_Recr)
            equ_numbers(s,p,g,nages)+=sum(equ_numbers(s,p,g)(nages+1,3*nages));
            if(Fishon==1)
            {
-             if(F_Method>=2)
+             if(F_Method_use>=2)
              {
                Zrate2(p,g)=elem_div( (1.-mfexp(-seasdur(s)*equ_Z(s,p,g))), equ_Z(s,p,g));
                if(s<Bseas(g)) Zrate2(p,g,0)=0.0;
@@ -1860,7 +1860,7 @@ FUNCTION void Do_Equil_Calc(const prevariable& equ_Recr)
      else if(F_reporting==3)
      {
        equ_M_std=natM(1,1,int(nages/2));
-       if(F_Method==1)
+       if(F_Method_use==1)
        {
          for (s=1;s<=nseas;s++)
          {

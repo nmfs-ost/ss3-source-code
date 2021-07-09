@@ -295,6 +295,7 @@ PARAMETER_SECTION
   else
     {k=-1;}
  END_CALCS
+ //  defining F_rate as number_vector allows for Fparm_PH to be element specific
   init_bounded_number_vector F_rate(1,k,0.,Fparm_max,Fparm_PH)
 
   vector Nmigr(1,pop);

@@ -1726,7 +1726,7 @@ FUNCTION void write_nucontrol()
   report4<<"# if Fmethod=3; read N iterations for tuning for Fmethod 3"<<endl;
  if(F_Method==2)
   {
-    report4<<F_setup<<" # overall start F value; overall phase; N detailed inputs to read"<<endl;
+    report4<<F_start_rd<<" "<<F_parm_PH<<" "<<F_detail<<" # overall start F value; overall phase; N detailed inputs to read"<<endl;
     report4<<"#Fleet Yr Seas F_value se phase (for detailed setup of F_Method=2; -Yr to fill remaining years)"<<endl<<F_setup2<<endl;
   }
   else if(F_Method==3)
