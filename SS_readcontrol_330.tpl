@@ -2074,8 +2074,7 @@
   !! echoinput<<F_ballpark<<" F ballpark is annual F, as specified in F_reporting, for a specified year"<<endl;
   init_int F_ballpark_yr
   !! echoinput<<F_ballpark_yr<<" F_ballpark_yr (<0 to ignore)  "<<endl;
-  ivector F_Method_v(1,Nfleet);
-  ivector F_Method_use_v(1,Nfleet);
+  imatrix F_Method_byPH(1,Nfleet,1,50);  // 50 is for max_phase; stores F_method to use for each fleet in each PH
 
   number F_start_rd;  //  initial value for F_parm when not using hybrid for early phases
   vector F_start(1,Nfleet);
@@ -2084,8 +2083,7 @@
   int F_parm_PH;  //  phase to transition from hybrid to parameter
   int F_Tune;
   int F_Method_rd;           // 1=Pope's; 2=continuouos F; 3=hybrid; 4=fleet-specific
-  int F_Method;           // 1=Pope's; 2=continuouos F; 3=hybrid
-  int F_Method_use;           // 1=Pope's; 2=continuouos F; 3=hybrid
+  int F_Method;           // 1=Pope's; 2=continuous F; 3=hybrid
   number max_harvest_rate
   number Equ_F_joiner
 
@@ -2095,14 +2093,11 @@
   F_Tune=3;
   F_start_rd=0.05;
   F_parm_PH=1;
-  F_Method_v.initialize();
-  F_Method_use_v.initialize();
+  F_Method_byPH.initialize();
   
   *(ad_comm::global_datafile) >> F_Method_rd;
   echoinput<<F_Method_rd<<" F_Method as read"<<endl;
   F_Method=F_Method_rd;
-  F_Method_v=F_Method_rd;  //  assign scalar to vector
-  F_Method_use_v=F_Method_rd;  //  assign scalar to vector
 
   *(ad_comm::global_datafile) >> max_harvest_rate;
   echoinput<<max_harvest_rate<<" max_harvest_rate "<<endl;
@@ -2146,23 +2141,24 @@
     case 4:  //  fleet-specific choice for hybrid vs parameters
     {
       *(ad_comm::global_datafile) >> F_detail;
-    	// fleet-specific F_parm_PH obtained by going straight to F_detail and using -year to fill that fleet with phases
-    	//  so detail list must include entry for each fishing or bycatch fleet
-    	// must be same for all years for that fleet because of 
+      //  default each fleet to start with hybrid in phase 1
+      //  except bycatch fleets that start with parm in phase 1
+      //  then read for each fishing fleet the phase for the switch to parm
+    	// fleet-and phase specific F_parm_PH obtained by going straight to F_detail and using -year to fill that fleet with phases
+      //  so need to enforce that this read and assignment has occurred for each fishing fleet
       break;
     }
   }
   if(F_detail>0){
-  	F_setup2.deallocate();
-  	F_setup2.allocate(1,F_detail,1,6);    // fleet, yr, seas, Fvalue, se, phase
+    F_setup2.deallocate();
+    F_setup2.allocate(1,F_detail,1,6);    // fleet, yr, seas, Fvalue, se, phase
    *(ad_comm::global_datafile) >> F_setup2;
-  echoinput<<" detailed F_setups "<<endl<<F_setup2<<endl;
+   echoinput<<" detailed F_setups "<<endl<<F_setup2<<endl;
   //  add some checks to be sure that a -year record has been read for each fleet with fleet_type<=2
   }
-   {
-     if(max_harvest_rate<1.0)
-     {N_warn++;  warning<<N_warn<<" "<<" max harvest rate typically is >1.0 for F_method 2, 3 or 4 "<<max_harvest_rate<<endl;}
-   }
+
+  if(max_harvest_rate<1.0)
+  {N_warn++;  warning<<N_warn<<" "<<" max harvest rate typically is >1.0 for F_method 2, 3 or 4 "<<max_harvest_rate<<endl;}
 
  END_CALCS
 
@@ -2279,28 +2275,44 @@
   
  LOCAL_CALCS
   Fparm_max.initialize();
-  Fparm_PH.initialize();
   Fparm_loc_st.initialize();
   Fparm_loc_end.initialize();
-  if(F_Method==2 || F_Method==4)
+  Fparm_PH.initialize();
+  Fparm_PH=F_parm_PH;  //  set vector to input scalar
+  Fparm_max=max_harvest_rate;  //  populate vector with input value
+  F_Method_byPH = F_Method;  //  fill (f,PH) matrix to use base F_Method in all phases
+  
+
+  if(F_Method==2 || F_Method==4)  //  need F parameters
   {
-    Fparm_max=max_harvest_rate;  //  populate vector with input value
-    Fparm_PH=F_parm_PH;  //  fill vector with input value
     g=0;
     for (f=1;f<=Nfleet;f++)
     {
-    	Fparm_loc_st(f)=g+1;
-    for (y=styr;y<=endyr;y++)
-    for (s=1;s<=nseas;s++)
-    {
-      t=styr+(y-styr)*nseas+s-1;
-      if(catch_ret_obs(f,t)>0. && fleet_type(f)<=2)
+      if(fleet_type(f)<=2)
       {
-        g++;
-        Fparm_loc(g,1)=f; Fparm_loc(g,2)=t;
+      if(F_Method==2)
+      {
+        F_Method_byPH(f)(1,50)=3;  //  for early phases
+        F_Method_byPH(f)(Fparm_start,50)=2;  //  for later phases, but can be changed by F_detail
       }
-    }
-    	Fparm_loc_end(f)=g;
+        Fparm_loc_st(f)=g+1;
+        for (y=styr;y<=endyr;y++)
+        for (s=1;s<=nseas;s++)
+        {
+          t=styr+(y-styr)*nseas+s-1;
+          if(catch_ret_obs(f,t)>0. && fleet_type(f)<=2)
+          {
+            g++;
+            Fparm_loc(g,1)=f; Fparm_loc(g,2)=t;
+          }
+        }
+        Fparm_loc_end(f)=g;
+        echoinput<<f<<" loc st end: "<<Fparm_loc_st(f)<<" "<<Fparm_loc_end(f)<<endl;
+      }
+      else
+      {
+        F_Method_byPH(f)(1,50)=0;  //  for survey fleets
+      }
     }
 
       if(F_detail>0)
@@ -2312,14 +2324,33 @@
           {y1=y; y2=y;}
           else
           {y1=-y; y2=endyr;}
+          echoinput<<"detailed F setup #: "<<k<<":  "<<F_setup2(k)<<endl;
           for(y=y1; y<=y2; y++)
           {
             t=styr+(y-styr)*nseas+s-1;
             j=do_Fparm(f,t);
-            if(j>0 && F_setup2(k,6)!=-999) Fparm_PH(j)=F_setup2(k,6);    //   used to setup the phase for F_rate
+            if(j>0 && F_setup2(k,6)!=-999){
+              Fparm_PH(j)=F_setup2(k,6);    //   used to setup the phase for each F_rate parameter
+              F_Method_byPH(f)(Fparm_PH(j),50)=2;  //  set Fmethod=2 for this and all later phases for this fleet
+            }
             if(j>0 && F_setup2(k,5)!=-999) catch_se(t,f)=F_setup2(k,5);    //    reset the se for this observation
           }
-          //  setup of F_rate values occurs later in the parameter section
+          //  setup of F_rate values occurs later in the prelim calc section
+          
+        }
+
+      }
+
+      if(readparfile==1)
+      //  all fleets that use parm approach will do so in PH=1
+      {
+        for(f=1;f<=Nfleet;f++)
+        {
+          if(F_Method_byPH(f,50)==2)  //  fleet ends up using parm approach
+            {
+              F_Method_byPH(f)(1,50)=2;  //  set all PH to use Fmethod=2, so overwrites early PH with hybrid
+            }
+           echoinput<<f<<"  F_Method_byPH:  "<<F_Method_byPH(f)(1,10)<<endl;
         }
       }
   }

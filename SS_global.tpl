@@ -618,6 +618,7 @@ GLOBALS_SECTION
 //  SS_Label_Section_11. #BETWEEN_PHASES_SECTION
 BETWEEN_PHASES_SECTION
   {
+  warning<<"begin BETWEEN_PHASES_SECTION"<<endl;
   int j_phase=current_phase();  // this is the phase to come
   cout<<current_phase()-1<<" "<<niter<<" -log(L): "<<obj_fun<<"  between "<<endl;
 
@@ -633,14 +634,28 @@ BETWEEN_PHASES_SECTION
       if(F_parm_PH>1 && j_phase==F_parm_PH && readparfile==0)  //  so now start doing F as parameters
 //      if(F_setup(2)>1 && j_phase==F_setup(2))  //  so now start doing F as paameters
       {
-        for (f=1;f<=Nfleet;f++)
-        for (t=styr;t<=TimeMax;t++)
+        warning<<"Hrate into F_rate parameters "<<endl;
+        
+      for(f=1;f<=Nfleet;f++)
+      if(F_Method_byPH(f,current_phase())==2)
+      {
+  warning<<"Fleet: "<<f<<" set Fparm from Hrate in phase = "<<current_phase()<<" st end "<<Fparm_loc_st(f)<<" "<<Fparm_loc_end(f)<<endl;
+        for (g=Fparm_loc_st(f);g<=Fparm_loc_end(f);g++)
         {
-          g=do_Fparm(f,t);
-          if(g>0) {F_rate(g)=Hrate(f,t);}
-        }
+          f=Fparm_loc(g,1);
+          t=Fparm_loc(g,2);
+          F_rate(g)=Hrate(f,t);
+       }
+
+    warning<<"done  Hrate to parms "<<endl;
       }
     }
+    }
+    else if(F_Method==4)
+    {
+      
+    }
+    warning<<"end between_phases"<<endl;
   }  //  end BETWEEN_PHASES_SECTION
 
 //  SS_Label_Section_12. #FINAL_SECTION

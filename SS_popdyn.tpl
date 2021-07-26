@@ -899,17 +899,15 @@ FUNCTION void get_time_series()
 
         if(catch_seas_area(t,p,0)==1 && fishery_on_off==1)
         {
-          switch (F_Method_use)
+          if(F_Method>1)  //  not Pope's
           {
-  //  SS_Label_Info_24.3.3.3 #use the hybrid F method
-            case 3:          // hybrid F_method
+//  SS_Label_Info_24.3.3.3 #use the hybrid F method by selected fleets
+// hybrid F_method
             {
-              
   //  SS_Label_Info_24.3.3.3.1 #Start by doing a Pope's approximation
               for (f=1;f<=Nfleet;f++)
-              if(fleet_type(f)==1 && F_Method_use_v(f)==3) // do exact catch for this fleet; skipping adjustment for bycatch fleets
+              if(F_Method_byPH(f,current_phase())==3 && catch_seas_area(t,p,f)==1) // do hybrid F for this fleet
               {
-                if (catch_seas_area(t,p,f)==1)
                 {
                   vbio.initialize();
                   for (g=1;g<=gmorph;g++)
@@ -926,14 +924,6 @@ FUNCTION void get_time_series()
                   temp1=join1*temp + (1.-join1)*0.95;
     //  SS_Label_Info_24.3.3.3.3 #Convert the harvest rate to a starting value for F
                   Hrate(f,t)=-log(1.-temp1)/seasdur(s);  // initial estimate of F (even though labelled as Hrate)
-                  //echoinput<<t<<" "<<vbio<<" "<<catch_ret_obs(f,t)<<" "<<temp<<" "<<Hrate(f,t)<<endl<<
-                  //Nmid(1)<<endl<<sel_al_2(s,1,f)<<endl;
-                  //if(catch_ret_obs(f,t)>0.0) exit(1);
-                  //  done with starting values from Pope's approximation
-                }
-                else
-                {
-                  // Hrate(f,t) previously set to zero or set to a parameter value
                 }
               }
   //  SS_Label_Info_24.3.3.3.4 #Do a specified number of loops to tune up these F values to more closely match the observed catch
@@ -951,17 +941,15 @@ FUNCTION void get_time_series()
                   }
                   Zrate2(p,g)=elem_div( (1.-mfexp(-seasdur(s)*Z_rate(t,p,g))), Z_rate(t,p,g));
                 }
-//            gradient_structure::set_NO_DERIVATIVES();
 
   //  SS_Label_Info_24.3.3.3.6 #Now calc adjustment to Z based on changes to be made to Hrate
-//                if(tune_F<F_Tune)
                 {
-                  //  now calc adjustment to Z based on changes to be made to Hrate
                   interim_tot_catch=0.0;   // this is the expected total catch that would occur with the current Hrates and Z
+                  // totcatch_byarea(t,p) is now recalculated here just for the fleets doing hybrid in this phase
+                  double target_catch = 0.0;
                   for (f=1;f<=Nfleet;f++)
-                  if(fleet_type(f)==1)  //  skips bycatch fleets
                   {
-                    if (catch_seas_area(t,p,f)==1)
+                    if(F_Method_byPH(f,current_phase()) && catch_seas_area(t,p,f)==1)    //  skips bycatch fleets
                     {
                       for (g=1;g<=gmorph;g++)
                       if(use_morph(g)>0)
@@ -974,14 +962,15 @@ FUNCTION void get_time_series()
                         {
                           interim_tot_catch+=catch_mult(y,f)*Hrate(f,t)*elem_prod(natage(t,p,g),sel_al_4(s,g,f))*Zrate2(p,g);  //  numbers basis
                         }
+                        target_catch+=catch_ret_obs(f,t);;
                       }  //close gmorph loop
-                    }  // close fishery
-                  }
-                  Z_adjuster = totcatch_byarea(t,p)/(interim_tot_catch+0.0001);   // but this totcatch_by_area needs to exclude fisheries with F from param
+                    }
+                  }  // close fishery
+                  Z_adjuster = target_catch/(interim_tot_catch+0.0001);
                   for (g=1;g<=gmorph;g++)
                   if(use_morph(g)>0)
                   {
-                    Z_rate(t,p,g)=natM(s,GP3(g)) + Z_adjuster*(Z_rate(t,p,g)-natM(s,GP3(g)));  // need to modify to only do the exact catches
+                    Z_rate(t,p,g)=natM(s,GP3(g)) + Z_adjuster*(Z_rate(t,p,g)-natM(s,GP3(g)));  // find adjusted Z
                     Zrate2(p,g)=elem_div( (1.-mfexp(-seasdur(s)*Z_rate(t,p,g))), Z_rate(t,p,g));
                   }
                   for (f=1;f<=Nfleet;f++)       //loop over fishing  fleets with input catch
@@ -1010,33 +999,12 @@ FUNCTION void get_time_series()
                     }  // close fishery
                   }
                 }
- /*
-                else
-                {
-  //  SS_Label_Info_24.3.3.3.7 #Final tuning loop; loop over fleets to apply the iterated F
-                for (f=1;f<=Nfleet;f++)
-                if (catch_seas_area(t,p,f)==1)
-                {
-                  for (g=1;g<=gmorph;g++)
-                  if(use_morph(g)>0)
-                  {
-                    catch_fleet(t,f,1)+=Hrate(f,t)*elem_prod(natage(t,p,g),sel_al_1(s,g,f))*Zrate2(p,g);
-                    catch_fleet(t,f,2)+=Hrate(f,t)*elem_prod(natage(t,p,g),deadfish_B(s,g,f))*Zrate2(p,g);
-                    catch_fleet(t,f,3)+=Hrate(f,t)*elem_prod(natage(t,p,g),sel_al_2(s,g,f))*Zrate2(p,g);
-                    catch_fleet(t,f,4)+=Hrate(f,t)*elem_prod(natage(t,p,g),sel_al_3(s,g,f))*Zrate2(p,g);
-                    catch_fleet(t,f,5)+=Hrate(f,t)*elem_prod(natage(t,p,g),deadfish(s,g,f))*Zrate2(p,g);
-                    catch_fleet(t,f,6)+=Hrate(f,t)*elem_prod(natage(t,p,g),sel_al_4(s,g,f))*Zrate2(p,g);
-                    catage(t,f,g)=Hrate(f,t)*elem_prod(elem_prod(natage(t,p,g),deadfish(s,g,f)),Zrate2(p,g));
-                  }  //close gmorph loop
-                }  // close fishery
-                }
- */
                }
-//              break;
-//          gradient_structure::set_YES_DERIVATIVES();
+//  no break, so continues to get output from this F;
             }   //  end hybrid F_Method
+
   //  SS_Label_Info_24.3.3.2 #Use a parameter for continuoous F
-            case 2:          // continuous F_method
+// continuous F_method
             {
   //  SS_Label_Info_24.3.3.2.1 #For each platoon, loop fleets to calculate Z = M+sum(F)
               for (g=1;g<=gmorph;g++)
@@ -1072,91 +1040,89 @@ FUNCTION void get_time_series()
                     }
                 }  //close gmorph loop
               }  // close fishery
-
               break;
             }   //  end continuous F method
-
-            case 1:          // F_Method is Pope's approximation
+          }
+          else
+// F_Method is Pope's approximation
+          {
+//  SS_Label_Info_24.3.3.1 #Use F_Method=1 for Pope's approximation
+//  SS_Label_Info_24.3.3.1.1 #loop over fleets
+            for (f=1;f<=Nfleet;f++)
+            if (catch_seas_area(t,p,f)==1)
             {
-  //  SS_Label_Info_24.3.3.1 #Use F_Method=1 for Pope's approximation
-  //  SS_Label_Info_24.3.3.1.1 #loop over fleets
-              for (f=1;f<=Nfleet;f++)
-              if (catch_seas_area(t,p,f)==1)
-              {
-                dvar_matrix catage_w=catage(t,f);      // do shallow copy
+              dvar_matrix catage_w=catage(t,f);      // do shallow copy
 
-  //  SS_Label_Info_24.3.3.1.2 #loop over platoons and calculate the vulnerable biomass for each fleet
-                vbio.initialize();
-                for (g=1;g<=gmorph;g++)
-                if(use_morph(g)>0)
-                {
-                  // use sel_l to get total catch and use sel_l_r to get retained vbio
-                  // note that vbio in numbers can be used for both survey abund and fishery available "biomass"
-                  // vbio is for retained catch only;  harvest rate = retainedcatch/vbio;
-                  // then harvestrate*catage_w = total kill by this fishery for this morph
-
-                  if(catchunits(f)==1)
-                  { vbio+=Nmid(g)*sel_al_2(s,g,f);}    // retained catch bio
-                  else
-                  { vbio+=Nmid(g)*sel_al_4(s,g,f);}  // retained catch numbers
-
-                }  //close gmorph loop
-                if(docheckup==1) echoinput<<"fleet vbio obs_catch catch_mult vbio*catchmult"<<f<<" "<<vbio<<" "<<catch_ret_obs(f,t)<<" "<<catch_mult(y,f)<<" "<<catch_mult(y,f)*vbio<<endl;
-  //  SS_Label_Info_24.3.3.1.3 #Calculate harvest rate for each fleet from catch/vulnerable biomass
-                crashtemp1=0.;
-                crashtemp=max_harvest_rate-catch_ret_obs(f,t)/(catch_mult(y,f)*vbio+NilNumbers);
-                crashtemp1=posfun(crashtemp,0.000001,CrashPen);
-                harvest_rate=max_harvest_rate-crashtemp1;
-                if(crashtemp<0.&&rundetail>=2) {cout<<y<<" "<<f<<" crash vbio*catchmult "<<catch_ret_obs(f,t)/(catch_mult(y,f)*(vbio+NilNumbers))<<" "<<crashtemp<<
-                 " "<<crashtemp1<<" "<<CrashPen<<" "<<harvest_rate<<endl;}
-                Hrate(f,t) = harvest_rate;
-
-  //  SS_Label_Info_24.3.3.1.4 #Store various catch quantities in catch_fleet
-                for (g=1;g<=gmorph;g++)
-                if(use_morph(g)>0)
-                {
-                  catage_w(g)=harvest_rate*elem_prod(Nmid(g),deadfish(s,g,f));     // total kill numbers at age
-                  if(docheckup==1) echoinput<<"killrate "<<deadfish(s,g,f)(0,min(6,nages))<<endl;
-                  catage_tot(g) += catage_w(g); //catch at age for all fleets
-                  catch_fleet(t,f,2)+=Hrate(f,t)*Nmid(g)*deadfish_B(s,g,f);      // total fishery kill in biomass
-                  catch_fleet(t,f,5)+=Hrate(f,t)*Nmid(g)*deadfish(s,g,f);     // total fishery kill in numbers
-                  catch_fleet(t,f,1)+=Hrate(f,t)*Nmid(g)*sel_al_1(s,g,f);      //  total fishery encounter in biomass
-                  catch_fleet(t,f,3)+=Hrate(f,t)*Nmid(g)*sel_al_2(s,g,f);      // retained fishery kill in biomass
-                  catch_fleet(t,f,4)+=Hrate(f,t)*Nmid(g)*sel_al_3(s,g,f);      // encountered numbers
-                  catch_fleet(t,f,6)+=Hrate(f,t)*Nmid(g)*sel_al_4(s,g,f);      // retained fishery kill in numbers
-                }  // end g loop
-              }  // close fishery
-
-  //  SS_Label_Info_24.3.3.1.5 #Check for catch_total across fleets being greater than population numbers
+//  SS_Label_Info_24.3.3.1.2 #loop over platoons and calculate the vulnerable biomass for each fleet
+              vbio.initialize();
               for (g=1;g<=gmorph;g++)
               if(use_morph(g)>0)
               {
-                for (a=0;a<=nages;a++)    //  check for negative abundance, starting at age 1
+                // use sel_l to get total catch and use sel_l_r to get retained vbio
+                // note that vbio in numbers can be used for both survey abund and fishery available "biomass"
+                // vbio is for retained catch only;  harvest rate = retainedcatch/vbio;
+                // then harvestrate*catage_w = total kill by this fishery for this morph
+
+                if(catchunits(f)==1)
+                { vbio+=Nmid(g)*sel_al_2(s,g,f);}    // retained catch bio
+                else
+                { vbio+=Nmid(g)*sel_al_4(s,g,f);}  // retained catch numbers
+
+              }  //close gmorph loop
+              if(docheckup==1) echoinput<<"fleet vbio obs_catch catch_mult vbio*catchmult"<<f<<" "<<vbio<<" "<<catch_ret_obs(f,t)<<" "<<catch_mult(y,f)<<" "<<catch_mult(y,f)*vbio<<endl;
+//  SS_Label_Info_24.3.3.1.3 #Calculate harvest rate for each fleet from catch/vulnerable biomass
+              crashtemp1=0.;
+              crashtemp=max_harvest_rate-catch_ret_obs(f,t)/(catch_mult(y,f)*vbio+NilNumbers);
+              crashtemp1=posfun(crashtemp,0.000001,CrashPen);
+              harvest_rate=max_harvest_rate-crashtemp1;
+              if(crashtemp<0.&&rundetail>=2) {cout<<y<<" "<<f<<" crash vbio*catchmult "<<catch_ret_obs(f,t)/(catch_mult(y,f)*(vbio+NilNumbers))<<" "<<crashtemp<<
+               " "<<crashtemp1<<" "<<CrashPen<<" "<<harvest_rate<<endl;}
+              Hrate(f,t) = harvest_rate;
+
+//  SS_Label_Info_24.3.3.1.4 #Store various catch quantities in catch_fleet
+              for (g=1;g<=gmorph;g++)
+              if(use_morph(g)>0)
+              {
+                catage_w(g)=harvest_rate*elem_prod(Nmid(g),deadfish(s,g,f));     // total kill numbers at age
+                if(docheckup==1) echoinput<<"killrate "<<deadfish(s,g,f)(0,min(6,nages))<<endl;
+                catage_tot(g) += catage_w(g); //catch at age for all fleets
+                catch_fleet(t,f,2)+=Hrate(f,t)*Nmid(g)*deadfish_B(s,g,f);      // total fishery kill in biomass
+                catch_fleet(t,f,5)+=Hrate(f,t)*Nmid(g)*deadfish(s,g,f);     // total fishery kill in numbers
+                catch_fleet(t,f,1)+=Hrate(f,t)*Nmid(g)*sel_al_1(s,g,f);      //  total fishery encounter in biomass
+                catch_fleet(t,f,3)+=Hrate(f,t)*Nmid(g)*sel_al_2(s,g,f);      // retained fishery kill in biomass
+                catch_fleet(t,f,4)+=Hrate(f,t)*Nmid(g)*sel_al_3(s,g,f);      // encountered numbers
+                catch_fleet(t,f,6)+=Hrate(f,t)*Nmid(g)*sel_al_4(s,g,f);      // retained fishery kill in numbers
+              }  // end g loop
+            }  // close fishery
+
+//  SS_Label_Info_24.3.3.1.5 #Check for catch_total across fleets being greater than population numbers
+            for (g=1;g<=gmorph;g++)
+            if(use_morph(g)>0)
+            {
+              for (a=0;a<=nages;a++)    //  check for negative abundance, starting at age 1
+              {
+                if(natage(t,p,g,a)>0.0)
                 {
-                  if(natage(t,p,g,a)>0.0)
-                  {
-                  crashtemp=max_harvest_rate-catage_tot(g,a)/(Nmid(g,a)+0.0000001);
-                  crashtemp1=posfun(crashtemp,0.000001,CrashPen);
-                  if(crashtemp<0.&&rundetail>=2) {cout<<" crash age "<<catage_tot(g,a)/(Nmid(g,a)+0.0000001)<<" "<<crashtemp<<
-                    " "<<crashtemp1<<" "<<CrashPen<<" "<<(max_harvest_rate-crashtemp1)*Nmid(g,a)<<endl; }
-                  if(crashtemp<0.&&docheckup==1) {echoinput<<" crash age "<<catage_tot(g,a)/(Nmid(g,a)+0.0000001)<<" "<<crashtemp<<
-                    " "<<crashtemp1<<" "<<CrashPen<<" "<<(max_harvest_rate-crashtemp1)*Nmid(g,a)<<endl; }
-                  catage_tot(g,a)=(max_harvest_rate-crashtemp1)*Nmid(g,a);
+                crashtemp=max_harvest_rate-catage_tot(g,a)/(Nmid(g,a)+0.0000001);
+                crashtemp1=posfun(crashtemp,0.000001,CrashPen);
+                if(crashtemp<0.&&rundetail>=2) {cout<<" crash age "<<catage_tot(g,a)/(Nmid(g,a)+0.0000001)<<" "<<crashtemp<<
+                  " "<<crashtemp1<<" "<<CrashPen<<" "<<(max_harvest_rate-crashtemp1)*Nmid(g,a)<<endl; }
+                if(crashtemp<0.&&docheckup==1) {echoinput<<" crash age "<<catage_tot(g,a)/(Nmid(g,a)+0.0000001)<<" "<<crashtemp<<
+                  " "<<crashtemp1<<" "<<CrashPen<<" "<<(max_harvest_rate-crashtemp1)*Nmid(g,a)<<endl; }
+                catage_tot(g,a)=(max_harvest_rate-crashtemp1)*Nmid(g,a);
 
-                  temp = natage(t,p,g,a)*surv2(s,GP3(g),a) -catage_tot(g,a)*surv1(s,GP3(g),a);
-                  Z_rate(t,p,g,a)=-log(temp/natage(t,p,g,a))/seasdur(s);
-                  }
-                  else
-                  {
-                    Z_rate(t,p,g,a)=-log(surv2(s,GP3(g),a))/seasdur(s);
-                  }
+                temp = natage(t,p,g,a)*surv2(s,GP3(g),a) -catage_tot(g,a)*surv1(s,GP3(g),a);
+                Z_rate(t,p,g,a)=-log(temp/natage(t,p,g,a))/seasdur(s);
                 }
-                if(docheckup==1) echoinput<<y<<" "<<s<<"total catch-at-age for morph "<<g<<" "<<catage_tot(g)(0,min(6,nages))<<" Z: "<<Z_rate(t,p,g)(0,min(6,nages))<<endl;
+                else
+                {
+                  Z_rate(t,p,g,a)=-log(surv2(s,GP3(g),a))/seasdur(s);
+                }
               }
-              break;
-            }   //  end Pope's approx
-
-          }  // end F_Method switch
+              if(docheckup==1) echoinput<<y<<" "<<s<<"total catch-at-age for morph "<<g<<" "<<catage_tot(g)(0,min(6,nages))<<" Z: "<<Z_rate(t,p,g)(0,min(6,nages))<<endl;
+            }
+            break;
+          }   //  end Pope's approx
         }  //  end have some catch in this seas x area
         else
         {
@@ -1360,7 +1326,7 @@ FUNCTION void get_time_series()
             annual_catch(y,k)+=catch_fleet(t,f,k);
             if(k<=3) Smry_Table(y,k+3)=annual_catch(y,k);
           }
-          if(F_Method_use==1)
+          if(F_Method==1)
           {
             annual_F(y,1)+=Hrate(f,t);
           }
@@ -1600,7 +1566,7 @@ FUNCTION void Do_Equil_Calc(const prevariable& equ_Recr)
            if(equ_numbers(s,p,g,a)>0.0)  //  will only be zero if not yet settled
            {
              N_beg=equ_numbers(s,p,g,a);
-             if(F_Method_use==1)   // Pope's approx
+             if(F_Method==1)   // Pope's approx
              {
                  N_mid = N_beg*surv1(s,GP3(g),a1);     // numbers at middle of season
                  Nsurvive=N_mid;                            // initial number of fishery survivors
@@ -1737,7 +1703,7 @@ FUNCTION void Do_Equil_Calc(const prevariable& equ_Recr)
                 }
                 else if(a==(3*nages-1))           // do infinite tail; note that it uses Z from nseas as if it applies annually
                 {
-                  if(F_Method_use==1)
+                  if(F_Method==1)
                   {
                     equ_numbers(1,p,g,a+1) = Survivors(p,g)/(1.-exp(-equ_Z(nseas,p,g,nages)));
                   }
@@ -1773,7 +1739,7 @@ FUNCTION void Do_Equil_Calc(const prevariable& equ_Recr)
            equ_numbers(s,p,g,nages)+=sum(equ_numbers(s,p,g)(nages+1,3*nages));
            if(Fishon==1)
            {
-             if(F_Method_use>=2)
+             if(F_Method>=2)
              {
                Zrate2(p,g)=elem_div( (1.-mfexp(-seasdur(s)*equ_Z(s,p,g))), equ_Z(s,p,g));
                if(s<Bseas(g)) Zrate2(p,g,0)=0.0;
@@ -1860,7 +1826,7 @@ FUNCTION void Do_Equil_Calc(const prevariable& equ_Recr)
      else if(F_reporting==3)
      {
        equ_M_std=natM(1,1,int(nages/2));
-       if(F_Method_use==1)
+       if(F_Method==1)
        {
          for (s=1;s<=nseas;s++)
          {

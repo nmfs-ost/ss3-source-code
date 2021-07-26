@@ -495,6 +495,7 @@ PRELIMINARY_CALCS_SECTION
       echoinput<< " initF_parms read from ctl "<<init_F<<endl;
     }
 
+//SS_Label_Info_xxx setup F as parameters
     if (F_Method==2)
     {
       if(readparfile==0)
@@ -505,7 +506,9 @@ PRELIMINARY_CALCS_SECTION
           f=Fparm_loc(g,1);
           t=Fparm_loc(g,2);
           Hrate(f,t)=F_start_rd;
+          echoinput<<g<<" "<<f<<" "<<t<<" "<<F_rate(g)<<" "<<Fparm_PH(g)<<endl;
       }
+   echoinput<<endl<<"again in detail loop "<<endl;
       if(F_detail>0)
       {
         for (k=1;k<=F_detail;k++)
@@ -521,10 +524,11 @@ PRELIMINARY_CALCS_SECTION
             g=do_Fparm(f,t);
             if(g>0 && F_setup2(k,4)!=-999)
             {F_rate(g)=F_setup2(k,4); Hrate(f,t)=F_setup2(k,4);}
+            echoinput<<g<<" "<<f<<" "<<t<<" "<<F_rate(g)<<" "<<Fparm_PH(g)<<endl;
           }
         }
       }
-       echoinput<< " Fmort_parms have been reset "<<endl;
+       echoinput<< " Fmort_parms have been set according to F_detail input"<<endl;
       }
       else
       {
@@ -1045,7 +1049,6 @@ PRELIMINARY_CALCS_SECTION
       if(noest_flag==1)
         {
           cout<<endl<<"skip to final section for -noest"<<endl;
-          F_Method_use=F_Method;
           N_nudata=1;       
         }
         else
