@@ -38,7 +38,7 @@
 //  the value of its min, max, init, prior have not yet been read
 //  so when it gets created, need to pushback a code to indicate what special conditions affect it
 //  also may want to save indicator of whether the parameter is multiplier, logit, etc.
-//  so pushback a code to the ivector Parm_minmax
+//  so push_back a code to the ivector Parm_minmax
 //  and add a string to the adstring_array Parm_info
   ivector minmax_types(1,10)  //  set of canned min-max types
  
@@ -2074,13 +2074,12 @@
   !! echoinput<<F_ballpark<<" F ballpark is annual F, as specified in F_reporting, for a specified year"<<endl;
   init_int F_ballpark_yr
   !! echoinput<<F_ballpark_yr<<" F_ballpark_yr (<0 to ignore)  "<<endl;
-  imatrix F_Method_byPH(1,Nfleet,1,50);  // 50 is for max_phase; stores F_method to use for each fleet in each PH
 
-  number F_start_rd;  //  initial value for F_parm when not using hybrid for early phases
-  vector F_start(1,Nfleet);
+  vector F_parm_intval(1,Nfleet);  //  initial value for F_parm when not using hybrid for early phases
   matrix F_setup2(1,1,1,1)
   int F_detail;  // number of specific initial values and phases to read
-  int F_parm_PH;  //  phase to transition from hybrid to parameter
+  ivector F_Method_PH(1,Nfleet);  //  stores phase to transition from hybrid to parameter
+  imatrix F_Method_byPH(1,Nfleet,1,50);  // stores F_method to use for each fleet in each PH
   int F_Tune;
   int F_Method_rd;           // 1=Pope's; 2=continuouos F; 3=hybrid; 4=fleet-specific
   int F_Method;           // 1=Pope's; 2=continuous F; 3=hybrid
@@ -2091,8 +2090,8 @@
   Equ_F_joiner=10;  //  defaults
   F_detail=-1;
   F_Tune=3;
-  F_start_rd=0.05;
-  F_parm_PH=1;
+  F_parm_intval=0.05;  //  fill vector
+  F_Method_PH=-1;  //  fill vector
   F_Method_byPH.initialize();
   
   *(ad_comm::global_datafile) >> F_Method_rd;
@@ -2121,14 +2120,16 @@
      {N_warn++;  warning<<N_warn<<" "<<" unexpectedly small value for max harvest rate for F_method 1:  "<<max_harvest_rate<<endl;}
       break;
     }
-    case 2:  //  parameters for all fleets
+    case 2:  //  same setup for all fleets
     {
-      *(ad_comm::global_datafile) >> F_start_rd;
-      *(ad_comm::global_datafile) >> F_parm_PH;
+      *(ad_comm::global_datafile) >> F_parm_intval(1);
+      *(ad_comm::global_datafile) >> F_Method_PH(1);
       *(ad_comm::global_datafile) >> F_detail;
+      F_parm_intval = F_parm_intval(1); //  copy to rest of vector
+      F_Method_PH = F_Method_PH(1);
       F_Tune=4;
-      echoinput<<F_start_rd<<" initial F value when not starting from hybrid "<<endl;
-      echoinput<<F_parm_PH<<" Phase to switch from hybrid to parameter "<<endl;
+      echoinput<<F_parm_intval<<" initial F value when not starting from hybrid "<<endl;
+      echoinput<<F_Method_PH(1)<<" Phase to switch from hybrid to parameter "<<endl;
       echoinput<<F_detail<<" N_detailed Fsetups to read (later -1 in yr field fills remaining years for that fleet)"<<endl;
       break;
     }
@@ -2140,13 +2141,29 @@
     }
     case 4:  //  fleet-specific choice for hybrid vs parameters
     {
-      *(ad_comm::global_datafile) >> F_detail;
+//  read list of fleet ID, starting F, and phase to transition to parameters
+//  fishing fleets not listed will use hybrid for all phases
+//  enter PH = 99 to not create any F parms for the listed fleet
       //  default each fleet to start with hybrid in phase 1
       //  except bycatch fleets that start with parm in phase 1
       //  then read for each fishing fleet the phase for the switch to parm
-    	// fleet-and phase specific F_parm_PH obtained by going straight to F_detail and using -year to fill that fleet with phases
-      //  so need to enforce that this read and assignment has occurred for each fishing fleet
-      break;
+  do {
+    dvector tempvec(1,3);
+    *(ad_comm::global_datafile) >> tempvec(1,3);
+    if(tempvec(1)==-9999.) ender=1;
+    f=tempvec(1);  // fleet ID
+    if(f<=Nfleet)
+    {
+      if(fleet_type(f)==1)
+      {
+        F_parm_intval(f)=tempvec(2);
+        F_Method_PH(f)=tempvec(3);
+      }
+    }
+    } while (ender==0);
+
+    *(ad_comm::global_datafile) >> F_detail;
+    break;
     }
   }
   if(F_detail>0){
@@ -2198,12 +2215,16 @@
   vector init_F_PRtype(1,N_init_F)
   vector init_F_CV(1,N_init_F)
   ivector init_F_PH(1,N_init_F)
-    int N_Fparm
-    int Fparm_start
 
+  int N_Fparm
+  int Fparm_start  //  location in parameter list for first Fparm
+  ivector Fparm_loc_st(1,Nfleet);
+  ivector Fparm_loc_end(1,Nfleet);
+  ivector Fparm_PH_dim(1,1);  //  will be created in param section
+
+  int y1;
 
  LOCAL_CALCS
-
   if(N_init_F>0)
   {
    init_F_LO=column(init_F_parm_1,1);
@@ -2240,106 +2261,104 @@
      }
    }
   }
- END_CALCS
 
- LOCAL_CALCS
-//  SS_Label_Info_4.7.2 #Create parameter labels for F parameters if F_method==2
-  N_Fparm=0;
-  do_Fparm.initialize();
-  Fparm_start = ParCount;
-  if(F_Method==2 || F_Method==4)
   {
-    for (f=1;f<=Nfleet;f++)
-    for (y=styr;y<=endyr;y++)
-    for (s=1;s<=nseas;s++)
-    {
-      t=styr+(y-styr)*nseas+s-1;
-      if(catch_ret_obs(f,t)>0. && fleet_type(f)<=2)
-      {
-        N_Fparm++;
-        sprintf(onenum, "%d", y);
-        ParCount++;
-        do_Fparm(f,t)=N_Fparm;
-        ParmLabel+="F_fleet_"+NumLbl(f)+"_YR_"+onenum+"_s_"+NumLbl(s)+CRLF(1);
-      }
-    }
-    echoinput<<" N F parameters "<<N_Fparm<<endl;
-  }
- END_CALCS
-  ivector Fparm_PH(1,N_Fparm);
-  imatrix Fparm_loc(1,N_Fparm,1,2);  //  stores f,t to find where in Hrate(f,t) to put the Fparm
-  ivector Fparm_loc_st(1,Nfleet);
-  ivector Fparm_loc_end(1,Nfleet);
-  vector Fparm_max(1,N_Fparm);
-  int y1;
-  
- LOCAL_CALCS
-  Fparm_max.initialize();
+  do_Fparm.initialize();
   Fparm_loc_st.initialize();
   Fparm_loc_end.initialize();
-  Fparm_PH.initialize();
-  Fparm_PH=F_parm_PH;  //  set vector to input scalar
-  Fparm_max=max_harvest_rate;  //  populate vector with input value
-  F_Method_byPH = F_Method;  //  fill (f,PH) matrix to use base F_Method in all phases
-  
+  F_Method_byPH.initialize();
 
-  if(F_Method==2 || F_Method==4)  //  need F parameters
+  Fparm_start = ParCount;
+  N_Fparm=0;
+  
+  ivector tempin(1,2);
+  tempin.initialize();
+  Fparm_loc.push_back (tempin(1,2));
+  
+  if(F_Method==2 || F_Method==4)  //  need F parameters and to fill F_Method_byPH
   {
-    g=0;
     for (f=1;f<=Nfleet;f++)
     {
-      if(fleet_type(f)<=2)
-      {
-      if(F_Method==2)
-      {
-        F_Method_byPH(f)(1,50)=3;  //  for early phases
-        F_Method_byPH(f)(Fparm_start,50)=2;  //  for later phases, but can be changed by F_detail
-      }
-        Fparm_loc_st(f)=g+1;
-        for (y=styr;y<=endyr;y++)
-        for (s=1;s<=nseas;s++)
-        {
-          t=styr+(y-styr)*nseas+s-1;
-          if(catch_ret_obs(f,t)>0. && fleet_type(f)<=2)
-          {
-            g++;
-            Fparm_loc(g,1)=f; Fparm_loc(g,2)=t;
-          }
-        }
-        Fparm_loc_end(f)=g;
-        echoinput<<f<<" loc st end: "<<Fparm_loc_st(f)<<" "<<Fparm_loc_end(f)<<endl;
-      }
-      else
-      {
-        F_Method_byPH(f)(1,50)=0;  //  for survey fleets
-      }
-    }
+      if(fleet_type(f)==2)  //  bycatch fleet
+        {F_Method_byPH(f)=2;}
+      else if (fleet_type(f)==3)  //  survey fleet
+        {F_Method_byPH(f)=0;}
 
-      if(F_detail>0)
+      if (fleet_type(f)<=2)  //  catch or bycatch fleet
       {
-        for (k=1;k<=F_detail;k++)
+        if(F_Method==3)  //  all fleets do hybrid approach; no F parms
         {
-          f=F_setup2(k,1); y=F_setup2(k,2); s=F_setup2(k,3);
-          if(y>0)
-          {y1=y; y2=y;}
-          else
-          {y1=-y; y2=endyr;}
-          echoinput<<"detailed F setup #: "<<k<<":  "<<F_setup2(k)<<endl;
-          for(y=y1; y<=y2; y++)
+          if(fleet_type(f)==1) F_Method_byPH(f)=3;  // all phases hybrid; parameters not created
+        }
+        else if (F_Method==2 || F_Method==4 )  //  all fleets transition to parameters at specific phase
+        {
+          F_Method_byPH(f)(1,50)=3;  //  for early phases
+          if(F_Method_PH(f)>0 && F_Method_PH(f)<99) F_Method_byPH(f)(F_Method_PH(f),50)=2;  //  for later phases, but can be changed by F_detail
+        if(F_Method_byPH(f,50)==2)
+        {
+          echoinput<<" create parms for fleet "<<f<<endl;
+          Fparm_loc_st(f)=N_Fparm+1;
+          for (y=styr;y<=endyr;y++)
+          for (s=1;s<=nseas;s++)
           {
             t=styr+(y-styr)*nseas+s-1;
-            j=do_Fparm(f,t);
-            if(j>0 && F_setup2(k,6)!=-999){
-              Fparm_PH(j)=F_setup2(k,6);    //   used to setup the phase for each F_rate parameter
-              F_Method_byPH(f)(Fparm_PH(j),50)=2;  //  set Fmethod=2 for this and all later phases for this fleet
-            }
-            if(j>0 && F_setup2(k,5)!=-999) catch_se(t,f)=F_setup2(k,5);    //    reset the se for this observation
-          }
-          //  setup of F_rate values occurs later in the prelim calc section
-          
-        }
+            if(catch_ret_obs(f,t)>0. && fleet_type(f)<=2)
+            {
+              N_Fparm++;
 
+           ivector tempin(1,2);
+           tempin(1)=f;
+           tempin(2)=t;
+           Fparm_loc.push_back (tempin(1,2));
+           Fparm_PH.push_back (F_Method_PH(f));
+          sprintf(onenum, "%d", y);
+          ParCount++;
+          do_Fparm(f,t)=N_Fparm;
+          ParmLabel+="F_fleet_"+NumLbl(f)+"_YR_"+onenum+"_s_"+NumLbl(s)+CRLF(1);
+            }
+          }
+          Fparm_loc_end(f)=N_Fparm;
+        }
+        }
       }
+    }
+//  SS_Label_Info_4.7.2 #Create parameter labels for F parameters if F_method==2
+    echoinput<<"N F parameters "<<N_Fparm<<endl;
+    echoinput<<"Fparm_loc_st_by_fleet: "<<Fparm_loc_st<<endl;
+    echoinput<<"Fparm_loc_end_by_fleet: "<<Fparm_loc_end<<endl;
+  }
+
+    for (f=1;f<=Nfleet;f++)
+    {
+      if(F_Method_byPH(f,50)==2)  //
+      {
+        
+      }
+    }
+  if(F_detail>0)
+  {
+    for (k=1;k<=F_detail;k++)
+    {
+      f=F_setup2(k,1); y=F_setup2(k,2); s=F_setup2(k,3);
+      if(y>0)
+      {y1=y; y2=y;}
+      else
+      {y1=-y; y2=endyr;}
+      echoinput<<"detailed F setup #: "<<k<<":  "<<F_setup2(k)<<endl;
+      for(y=y1; y<=y2; y++)  //  what do do about s in this y loop?
+      {
+        t=styr+(y-styr)*nseas+s-1;
+        j=do_Fparm(f,t);
+        echoinput<<y<<" "<<s<<" "<<t<<" j "<<j<<endl;
+        if(j>0 && F_setup2(k,6)!=-999){
+//          Fparm_PH[j]=F_setup2(k,6);    //   used to setup the phase for each F_rate parameter
+//          F_Method_byPH(f)(F_setup2(k,6),50)=2;  //  set Fmethod=2 for this and all later phases for this fleet
+        }
+        if(j>0 && F_setup2(k,5)!=-999) catch_se(t,f)=F_setup2(k,5);    //    reset the se for this observation
+      }
+      //  setup of F_rate values occurs later in the prelim calc section
+    }
+  }
 
       if(readparfile==1)
       //  all fleets that use parm approach will do so in PH=1
@@ -4725,10 +4744,11 @@
     for (g=1;g<=N_Fparm;g++)
     {
       ParCount++;
-      if(depletion_fleet>0  && depletion_type<2 && Fparm_PH(g)>0) Fparm_PH(g)++;  //  increase phase by 1
-      if(Fparm_PH(g) > Turn_off_phase2) Fparm_PH(g) =-1;
-      if(Fparm_PH(g) > max_phase) max_phase=Fparm_PH(g);
-      if(Fparm_PH(g)>0)
+      echoinput<<g<<" "<<Fparm_PH[g]<<endl;
+      if(depletion_fleet>0  && depletion_type<2 && Fparm_PH[g]>0) Fparm_PH[g]++;  //  increase phase by 1
+      if(Fparm_PH[g] > Turn_off_phase2) Fparm_PH[g] =-1;
+      if(Fparm_PH[g] > max_phase) max_phase=Fparm_PH[g];
+      if(Fparm_PH[g]>0)
       {
         active_count++; active_parm(active_count)=ParCount;
       }

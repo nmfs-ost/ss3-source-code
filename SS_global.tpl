@@ -126,7 +126,8 @@ GLOBALS_SECTION
   std::vector<ivector> TwoD_AR_def;
   std::vector<ivector> TwoD_AR_def_rd;
   std::vector<ivector> reportdetail_list;
-
+  std::vector<ivector> Fparm_loc;
+  std::vector<int> Fparm_PH;;
 //  function in GLOBALS to do the timing setup in the data section
 // SS_Label_Function_xxxx  #get_data_timing()  called by readdata
   void get_data_timing(const dvector& to_process, const ivector& timing_constants, ivector i_result, dvector r_result, const dvector& seasdur, const dvector& subseasdur_delta, const dvector& azero_seas, const dvector& surveytime)
@@ -618,7 +619,6 @@ GLOBALS_SECTION
 //  SS_Label_Section_11. #BETWEEN_PHASES_SECTION
 BETWEEN_PHASES_SECTION
   {
-  warning<<"begin BETWEEN_PHASES_SECTION"<<endl;
   int j_phase=current_phase();  // this is the phase to come
   cout<<current_phase()-1<<" "<<niter<<" -log(L): "<<obj_fun<<"  between "<<endl;
 
@@ -631,7 +631,7 @@ BETWEEN_PHASES_SECTION
 //  SS_Label_Info_11.2 #For Fmethod=2, set parameter values (F_rate) equal to Hrate array fromcalculated using hybrid method in previous phase
     if(F_Method==2)
     {
-      if(F_parm_PH>1 && j_phase==F_parm_PH && readparfile==0)  //  so now start doing F as parameters
+      if(F_Method_PH(1)>1 && j_phase==F_Method_PH(1) && readparfile==0)  //  so now start doing F as parameters
 //      if(F_setup(2)>1 && j_phase==F_setup(2))  //  so now start doing F as paameters
       {
         warning<<"Hrate into F_rate parameters "<<endl;
@@ -642,8 +642,8 @@ BETWEEN_PHASES_SECTION
   warning<<"Fleet: "<<f<<" set Fparm from Hrate in phase = "<<current_phase()<<" st end "<<Fparm_loc_st(f)<<" "<<Fparm_loc_end(f)<<endl;
         for (g=Fparm_loc_st(f);g<=Fparm_loc_end(f);g++)
         {
-          f=Fparm_loc(g,1);
-          t=Fparm_loc(g,2);
+          f=Fparm_loc[g](1);
+          t=Fparm_loc[g](2);
           F_rate(g)=Hrate(f,t);
        }
 

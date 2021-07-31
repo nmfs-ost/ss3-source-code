@@ -15,7 +15,6 @@ PROCEDURE_SECTION
   Extra_Std.initialize();
   CrashPen.initialize();
   niter++;
-  warning<<"incr niter"<<niter<<endl;
   if(mceval_phase() ) mceval_counter ++;   // increment the counter
   if(initial_params::mc_phase==1) //  in MCMC phase
   {
@@ -50,8 +49,8 @@ PROCEDURE_SECTION
   warning<<"Fleet: "<<f<<" set Hrate from parms in phase = "<<current_phase()<<" st end "<<Fparm_loc_st(f)<<" "<<Fparm_loc_end(f)<<endl;
         for (g=Fparm_loc_st(f);g<=Fparm_loc_end(f);g++)
         {
-          f=Fparm_loc(g,1);
-          t=Fparm_loc(g,2);
+          f=Fparm_loc[g](1);
+          t=Fparm_loc[g](2);
           Hrate(f,t)=F_rate(g);
         }
       }
@@ -233,7 +232,7 @@ PROCEDURE_SECTION
         {
           for (k=1;k<=N_Fparm;k++)
           {
-            if(Fparm_PH(k)>0) {ParmTrace<<" "<<F_rate(k);}
+            if(Fparm_PH[k]>0) {ParmTrace<<" "<<F_rate(k);}
           }
         }
 
@@ -312,7 +311,7 @@ PROCEDURE_SECTION
   {
     No_Report=1;  //  flag to skip output reports after MCMC and McEVAL
   }
-   warning<<"ready to end procedure "<<endl;
+  cout<<"end proc  "<<F_Method_PH<<endl;
   }
 //  SS_Label_Info_7.12 #End of PROCEDURE_SECTION
 

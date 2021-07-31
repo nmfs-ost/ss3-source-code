@@ -393,7 +393,7 @@ FUNCTION void write_SS_summary()
     NP++;
     SS_smry<<ParmLabel(NP)<<" "<<F_rate(j)<<" ";
     if(active(F_rate(j))) {active_count++;  SS_smry<<CoVar(active_count,1)<<" Act ";} else {SS_smry<<0.0<<" Fix ";}
-    SS_smry<<(F_rate(j)-0.)/(Fparm_max(j)-0+1.0e-6)<<endl;
+    SS_smry<<(F_rate(j)-0.)/(max_harvest_rate-0+1.0e-6)<<endl;
   }
   }
 

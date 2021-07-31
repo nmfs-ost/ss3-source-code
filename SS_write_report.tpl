@@ -501,7 +501,7 @@ FUNCTION void write_bigoutput()
         {
           active_count++;
           Activ=1;
-          SS2out<<" "<<active_count<<" "<<Fparm_PH(i)<<" 0.0 "<<Fparm_max(i)<<" "<<F_start_rd<<" "<<Fparm_use(i)<<" act "<<CoVar(active_count,1)<<" "<<parm_gradients(active_count);
+          SS2out<<" "<<active_count<<" "<<Fparm_PH[i]<<" 0.0 "<<max_harvest_rate<<" "<<F_parm_intval(Fparm_loc[i](1))<<" "<<Fparm_use(i)<<" act "<<CoVar(active_count,1)<<" "<<parm_gradients(active_count);
         }
         else
         {SS2out<<" _ _ _ _ _ _ NA _ _ ";}

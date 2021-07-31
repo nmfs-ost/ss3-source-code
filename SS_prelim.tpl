@@ -502,12 +502,13 @@ PRELIMINARY_CALCS_SECTION
       {
       for (g=1;g<=N_Fparm;g++)
       {
-          F_rate(g)=F_start_rd;
-          f=Fparm_loc(g,1);
-          t=Fparm_loc(g,2);
-          Hrate(f,t)=F_start_rd;
-          echoinput<<g<<" "<<f<<" "<<t<<" "<<F_rate(g)<<" "<<Fparm_PH(g)<<endl;
+          f=Fparm_loc[g](1);
+          t=Fparm_loc[g](2);
+          F_rate(g)=F_parm_intval(f);
+          Hrate(f,t)=F_parm_intval(f);
+          echoinput<<g<<" "<<f<<" "<<t<<" "<<F_rate(g)<<" "<<Fparm_PH[g]<<endl;
       }
+      
    echoinput<<endl<<"again in detail loop "<<endl;
       if(F_detail>0)
       {
@@ -524,7 +525,7 @@ PRELIMINARY_CALCS_SECTION
             g=do_Fparm(f,t);
             if(g>0 && F_setup2(k,4)!=-999)
             {F_rate(g)=F_setup2(k,4); Hrate(f,t)=F_setup2(k,4);}
-            echoinput<<g<<" "<<f<<" "<<t<<" "<<F_rate(g)<<" "<<Fparm_PH(g)<<endl;
+            echoinput<<g<<" "<<f<<" "<<t<<" "<<F_rate(g)<<" "<<Fparm_PH[g]<<endl;
           }
         }
       }
@@ -637,7 +638,7 @@ PRELIMINARY_CALCS_SECTION
       echoinput<<endl<<" now check F parm bounds and priors and do jitter if requested "<<endl;
       for (i=1;i<=N_Fparm;i++)
       {
-        {F_rate(i) = Check_Parm(i,Fparm_PH(i), 0.,Fparm_max(i), 0, 0.05, 1., jitter, F_rate(i));}
+        {F_rate(i) = Check_Parm(i,Fparm_PH[i], 0.,max_harvest_rate, 0, 0.05, 1., jitter, F_rate(i));}
       }
       echoinput<< " F_parms after check "<<F_rate<<endl;
       Fparm_use=value(F_rate);
