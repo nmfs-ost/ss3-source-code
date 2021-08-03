@@ -506,7 +506,6 @@ PRELIMINARY_CALCS_SECTION
           t=Fparm_loc[g](2);
           F_rate(g)=F_parm_intval(f);
           Hrate(f,t)=F_parm_intval(f);
-          echoinput<<g<<" "<<f<<" "<<t<<" "<<F_rate(g)<<" "<<Fparm_PH[g]<<endl;
       }
       
       if(F_detail>0)
@@ -524,7 +523,6 @@ PRELIMINARY_CALCS_SECTION
             g=do_Fparm(f,t);
             if(g>0 && F_setup2(k,4)!=-999)
             {F_rate(g)=F_setup2(k,4); Hrate(f,t)=F_setup2(k,4);}
-            echoinput<<g<<" "<<f<<" "<<t<<" "<<F_rate(g)<<" "<<Fparm_PH[g]<<endl;
           }
         }
       }

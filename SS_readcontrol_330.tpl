@@ -2147,6 +2147,8 @@
       //  then read for each fishing fleet the phase for the switch to parm
   ender=0.;
   F_detail=0;
+  int byc_count;
+  byc_count=0;
   dvector tempvec(1,3);
   tempvec.initialize();
   F_Method_4_input.push_back (tempvec(1,3));
@@ -2157,17 +2159,19 @@
     F_Method_4_input.push_back (tempvec(1,3));
     ender=tempvec(1);
     f=int(tempvec(1));  // fleet ID
-    echoinput<<tempvec<<" f "<<f<<" ender "<<ender<<endl;
     if(f<=Nfleet && ender>0)
     {
       if(fleet_type(f)<=2)
       {
         F_parm_intval(f)=tempvec(2);
         F_Method_PH(f)=tempvec(3);
+        if(fleet_type(f)==2) {byc_count++;}  //  count bycatch fleets listed here
       }
     }
     }
-//    *(ad_comm::global_datafile) >> F_detail;
+    if(byc_count != N_bycatch)
+     {N_warn++; cout<<"Fatal_input_error, see warning"<<endl; warning<<"Fatal_input_error; not all bycatch fleets have been included in Fparm list"<<endl;exit(1);}
+    *(ad_comm::global_datafile) >> F_Tune;
     break;
     }
   }

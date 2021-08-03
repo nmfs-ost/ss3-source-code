@@ -1725,6 +1725,7 @@ FUNCTION void write_nucontrol()
   report4<<"# for Fmethod=2; read overall start F value; overall phase; N detailed inputs to read"<<endl;
   report4<<"# for Fmethod=3; read N iterations for tuning for Fmethod 3"<<endl;
   report4<<"# for Fmethod=4; read list of fleets needing parameters; syntax is:  fleet, F_starting_value (if start_PH=1), first PH for parms (99 to stay in hybrid)"<<endl;
+  report4<<"# for Fmethod=4; then read N tuning loops for hybrid fleets 2-3 normally enough"<<endl;
  if(F_Method==2)
   {
     report4<<F_parm_intval(1)<<" "<<F_Method_PH(1)<<" "<<F_detail<<" # overall start F value; overall phase; N detailed inputs to read"<<endl;
@@ -1735,7 +1736,8 @@ FUNCTION void write_nucontrol()
   else if(F_Method==4)
     {
       report4<<"#Fleet start_F first_parm_phase"<<endl;
-      for(int j=1;j<=F_Method_4_input.size();j++) report4<<F_Method_4_input[j]<<endl;
+      for(int j=1;j<=F_Method_4_input.size()-1;j++) {report4<<F_Method_4_input[j]<<endl;}
+      report4<<F_Tune<<" #_number of tuning loops for hybrid fleets; 4 good; 3 faster"<<endl;
     }
 
    report4<<"#"<<endl;

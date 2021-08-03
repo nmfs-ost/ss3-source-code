@@ -635,12 +635,10 @@ BETWEEN_PHASES_SECTION
       if(F_Method_PH(1)>1 && j_phase==F_Method_PH(1) && readparfile==0)  //  so now start doing F as parameters
 //      if(F_setup(2)>1 && j_phase==F_setup(2))  //  so now start doing F as paameters
       {
-        warning<<"Hrate into F_rate parameters "<<endl;
         
       for(f=1;f<=Nfleet;f++)
       if(F_Method_byPH(f,current_phase())==2)
       {
-  warning<<"Fleet: "<<f<<" set Fparm from Hrate in phase = "<<current_phase()<<" st end "<<Fparm_loc_st(f)<<" "<<Fparm_loc_end(f)<<endl;
         for (g=Fparm_loc_st(f);g<=Fparm_loc_end(f);g++)
         {
           f=Fparm_loc[g](1);
@@ -828,10 +826,11 @@ FINAL_SECTION
 //  SS_Label_Section_13. #REPORT_SECTION  produces SS3.rep,which is less extensive than report.sso produced in final section
 REPORT_SECTION
   {
-  cout<<"report "<<gradients.size()<<" "<<parm_gradients.size()<<" "<<active_count<<" "<<Fparm_PH_dim.size()<<" "<<N_Fparm<<endl;
-   for (unsigned i = 1; i <= gradients.size(); i++) parm_gradients(i) = gradients(i);
+    int k=gradients.size();
+    int k1=parm_gradients.size();
+    if(k1<k) k=k1;
+   for (unsigned i = 1; i <= k; i++) parm_gradients(i) = gradients(i);
     if(current_phase() >= max_phase && finished_minimize==0) finished_minimize=1;  //  because REPORT occurs after minimize finished
-  cout<<"OK"<<endl;
 //  SS_Label_Info_13.1 #Write limited output to SS.rep
   if(reportdetail>0)
   {
