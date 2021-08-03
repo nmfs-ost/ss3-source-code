@@ -496,7 +496,7 @@ PRELIMINARY_CALCS_SECTION
     }
 
 //SS_Label_Info_xxx setup F as parameters
-    if (F_Method==2)
+    if (N_Fparm>0)
     {
       if(readparfile==0)
       {
@@ -509,7 +509,6 @@ PRELIMINARY_CALCS_SECTION
           echoinput<<g<<" "<<f<<" "<<t<<" "<<F_rate(g)<<" "<<Fparm_PH[g]<<endl;
       }
       
-   echoinput<<endl<<"again in detail loop "<<endl;
       if(F_detail>0)
       {
         for (k=1;k<=F_detail;k++)

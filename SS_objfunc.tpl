@@ -1567,7 +1567,7 @@ FUNCTION void get_posteriors()
   {
     if(active(init_F(i))) posts<<init_F(i)<<" ";
   }
-  if(F_Method==2)
+  if(N_Fparm>0)
   {
     for (i=1;i<=N_Fparm;i++)
     {

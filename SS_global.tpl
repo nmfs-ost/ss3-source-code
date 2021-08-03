@@ -127,6 +127,7 @@ GLOBALS_SECTION
   std::vector<ivector> TwoD_AR_def_rd;
   std::vector<ivector> reportdetail_list;
   std::vector<ivector> Fparm_loc;
+  std::vector<dvector> F_Method_4_input;
   std::vector<int> Fparm_PH;;
 //  function in GLOBALS to do the timing setup in the data section
 // SS_Label_Function_xxxx  #get_data_timing()  called by readdata
@@ -628,8 +629,8 @@ BETWEEN_PHASES_SECTION
     last_objfun=obj_fun;
   }
 
-//  SS_Label_Info_11.2 #For Fmethod=2, set parameter values (F_rate) equal to Hrate array fromcalculated using hybrid method in previous phase
-    if(F_Method==2)
+//  SS_Label_Info_11.2 #For Fmethod=2 & 4, set parameter values (F_rate) equal to Hrate array fromcalculated using hybrid method in previous phase
+    if(N_Fparm>0)
     {
       if(F_Method_PH(1)>1 && j_phase==F_Method_PH(1) && readparfile==0)  //  so now start doing F as parameters
 //      if(F_setup(2)>1 && j_phase==F_setup(2))  //  so now start doing F as paameters
@@ -651,11 +652,6 @@ BETWEEN_PHASES_SECTION
       }
     }
     }
-    else if(F_Method==4)
-    {
-      
-    }
-    warning<<"end between_phases"<<endl;
   }  //  end BETWEEN_PHASES_SECTION
 
 //  SS_Label_Section_12. #FINAL_SECTION
@@ -832,8 +828,10 @@ FINAL_SECTION
 //  SS_Label_Section_13. #REPORT_SECTION  produces SS3.rep,which is less extensive than report.sso produced in final section
 REPORT_SECTION
   {
-    for (unsigned i = 1; i <= gradients.size(); i++) parm_gradients(i) = gradients(i);
+  cout<<"report "<<gradients.size()<<" "<<parm_gradients.size()<<" "<<active_count<<" "<<Fparm_PH_dim.size()<<" "<<N_Fparm<<endl;
+   for (unsigned i = 1; i <= gradients.size(); i++) parm_gradients(i) = gradients(i);
     if(current_phase() >= max_phase && finished_minimize==0) finished_minimize=1;  //  because REPORT occurs after minimize finished
+  cout<<"OK"<<endl;
 //  SS_Label_Info_13.1 #Write limited output to SS.rep
   if(reportdetail>0)
   {

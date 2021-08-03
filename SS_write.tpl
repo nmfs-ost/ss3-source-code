@@ -105,7 +105,7 @@ FUNCTION void write_summaryoutput()
   if(Do_Forecast>0) report2<<Fcast_recruitments<<" ";
   if(Do_Impl_Error>0) report2<<Fcast_impl_error<<" ";
   if(N_init_F>0) report2<<init_F<<" ";
-  if(F_Method==2) report2<<" "<<F_rate;
+  if(N_Fparm>0) report2<<" "<<F_rate;
   if(Q_Npar2>0) report2<<Q_parm<<" ";
   if(N_selparm2>0) report2<<selparm<<" ";
 //  if(N_selparm_dev>0) report2<<selparm_dev<<" ";
@@ -178,7 +178,7 @@ FUNCTION void write_summaryoutput()
     for (i=1;i<=N_init_F;i++) report2<<" "<<init_F(i);
     report2<<endl;
 
-    if(F_Method==2)
+    if(N_Fparm>0)
     {
       report2<<runnumber<<" F_rate ";
       for (i=1;i<=N_Fparm;i++) {NP++; report2<<" "<<ParmLabel(NP);}
@@ -385,7 +385,7 @@ FUNCTION void write_SS_summary()
   }
   }
 
-  if(F_Method==2 && N_Fparm>0)
+  if(N_Fparm>0)
   {
   SS_smry<<"#_F"<<endl;
   for (j=1;j<=N_Fparm;j++)

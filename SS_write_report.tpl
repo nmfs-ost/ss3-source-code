@@ -491,7 +491,7 @@ FUNCTION void write_bigoutput()
     Report_Parm(NP, active_count, Activ, init_F(j), init_F_LO(j), init_F_HI(j), init_F_RD(j), init_F_use(j), init_F_PR(j), init_F_CV(j),  init_F_PRtype(j),init_F_PH(j), init_F_Like(j));
   }
 
-    if(F_Method==2)
+    if(N_Fparm>0)
     {
       for (i=1;i<=N_Fparm;i++)
       {

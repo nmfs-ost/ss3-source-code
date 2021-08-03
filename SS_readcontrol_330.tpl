@@ -2081,8 +2081,7 @@
   ivector F_Method_PH(1,Nfleet);  //  stores phase to transition from hybrid to parameter
   imatrix F_Method_byPH(1,Nfleet,1,50);  // stores F_method to use for each fleet in each PH
   int F_Tune;
-  int F_Method_rd;           // 1=Pope's; 2=continuouos F; 3=hybrid; 4=fleet-specific
-  int F_Method;           // 1=Pope's; 2=continuous F; 3=hybrid
+  int F_Method;           // 1=Pope's; 2=continuous F; 3=hybrid; 4=fleet-specific
   number max_harvest_rate
   number Equ_F_joiner
 
@@ -2094,22 +2093,21 @@
   F_Method_PH=-1;  //  fill vector
   F_Method_byPH.initialize();
   
-  *(ad_comm::global_datafile) >> F_Method_rd;
-  echoinput<<F_Method_rd<<" F_Method as read"<<endl;
-  F_Method=F_Method_rd;
+  *(ad_comm::global_datafile) >> F_Method;
+  echoinput<<F_Method<<" F_Method as read"<<endl;
 
   *(ad_comm::global_datafile) >> max_harvest_rate;
   echoinput<<max_harvest_rate<<" max_harvest_rate "<<endl;
 
-  if(F_Method_rd<1 || F_Method_rd>5)
+  if(F_Method<1 || F_Method>5)
   {
     N_warn++;
-   warning<<N_warn<<" ERROR:  F_Method must be 1 or 2 or 3 or 4, value is: "<<F_Method_rd<<endl;
+   warning<<N_warn<<" ERROR:  F_Method must be 1 or 2 or 3 or 4, value is: "<<F_Method<<endl;
    cout<<" EXIT - see warning "<<endl;
    exit(1);
   }
 
-  switch(F_Method_rd)
+  switch(F_Method)
   {
     case 1:  //  Pope's  no additional input required
     {
@@ -2147,22 +2145,29 @@
       //  default each fleet to start with hybrid in phase 1
       //  except bycatch fleets that start with parm in phase 1
       //  then read for each fishing fleet the phase for the switch to parm
-  do {
+  ender=0.;
+  F_detail=0;
+  dvector tempvec(1,3);
+  tempvec.initialize();
+  F_Method_4_input.push_back (tempvec(1,3));
+  while (ender>=0.)
+   {
     dvector tempvec(1,3);
     *(ad_comm::global_datafile) >> tempvec(1,3);
-    if(tempvec(1)==-9999.) ender=1;
-    f=tempvec(1);  // fleet ID
-    if(f<=Nfleet)
+    F_Method_4_input.push_back (tempvec(1,3));
+    ender=tempvec(1);
+    f=int(tempvec(1));  // fleet ID
+    echoinput<<tempvec<<" f "<<f<<" ender "<<ender<<endl;
+    if(f<=Nfleet && ender>0)
     {
-      if(fleet_type(f)==1)
+      if(fleet_type(f)<=2)
       {
         F_parm_intval(f)=tempvec(2);
         F_Method_PH(f)=tempvec(3);
       }
     }
-    } while (ender==0);
-
-    *(ad_comm::global_datafile) >> F_detail;
+    }
+//    *(ad_comm::global_datafile) >> F_detail;
     break;
     }
   }
@@ -2274,8 +2279,21 @@
   ivector tempin(1,2);
   tempin.initialize();
   Fparm_loc.push_back (tempin(1,2));
+  Fparm_PH.push_back (0);
   
-  if(F_Method==2 || F_Method==4)  //  need F parameters and to fill F_Method_byPH
+  if(F_Method==1 || F_Method==3)  //  no F parameters
+  {
+    for (f=1;f<=Nfleet;f++)
+    {
+      if(fleet_type(f)==2)  //  bycatch fleet
+        {F_Method_byPH(f)=2;}
+      else if (fleet_type(f)==3)  //  survey fleet
+        {F_Method_byPH(f)=0;}
+      else
+        {F_Method_byPH(f)=F_Method;}
+    }
+  }
+  else  //  need F parameters and to fill F_Method_byPH
   {
     for (f=1;f<=Nfleet;f++)
     {
@@ -2286,14 +2304,10 @@
 
       if (fleet_type(f)<=2)  //  catch or bycatch fleet
       {
-        if(F_Method==3)  //  all fleets do hybrid approach; no F parms
-        {
-          if(fleet_type(f)==1) F_Method_byPH(f)=3;  // all phases hybrid; parameters not created
-        }
-        else if (F_Method==2 || F_Method==4 )  //  all fleets transition to parameters at specific phase
         {
           F_Method_byPH(f)(1,50)=3;  //  for early phases
           if(F_Method_PH(f)>0 && F_Method_PH(f)<99) F_Method_byPH(f)(F_Method_PH(f),50)=2;  //  for later phases, but can be changed by F_detail
+        echoinput<<f<<" FM_50 "<<F_Method_byPH(f,50)<<" input "<<F_Method_PH(f)<<endl;
         if(F_Method_byPH(f,50)==2)
         {
           echoinput<<" create parms for fleet "<<f<<endl;
@@ -2311,6 +2325,7 @@
            tempin(2)=t;
            Fparm_loc.push_back (tempin(1,2));
            Fparm_PH.push_back (F_Method_PH(f));
+           echoinput<<N_Fparm<<" "<<f<<" "<<t<<" "<<Fparm_PH[N_Fparm]<<" "<<F_Method_PH(f)<<endl;
           sprintf(onenum, "%d", y);
           ParCount++;
           do_Fparm(f,t)=N_Fparm;
@@ -4739,7 +4754,7 @@
     }
   }
 
-  if(F_Method==2)
+  if(N_Fparm>0)
   {
     for (g=1;g<=N_Fparm;g++)
     {
