@@ -924,6 +924,7 @@ FUNCTION void get_time_series()
                   temp1=join1*temp + (1.-join1)*0.95;
     //  SS_Label_Info_24.3.3.3.3 #Convert the harvest rate to a starting value for F
                   Hrate(f,t)=-log(1.-temp1)/seasdur(s);  // initial estimate of F (even though labelled as Hrate)
+//     if(y==1990)  warning<<"Pope "<<Hrate(f,t)<<" obs_cat "<<catch_ret_obs(1,t)<<endl;
                 }
               }
   //  SS_Label_Info_24.3.3.3.4 #Do a specified number of loops to tune up these F values to more closely match the observed catch
@@ -941,6 +942,7 @@ FUNCTION void get_time_series()
                   }
                   Zrate2(p,g)=elem_div( (1.-mfexp(-seasdur(s)*Z_rate(t,p,g))), Z_rate(t,p,g));
                 }
+//     if(y==1990)  warning<<tune_F<<" Z_6 "<<Z_rate(t,1,1,6)<<endl;
 
   //  SS_Label_Info_24.3.3.3.6 #Now calc adjustment to Z based on changes to be made to Hrate
                 {
@@ -962,8 +964,8 @@ FUNCTION void get_time_series()
                         {
                           interim_tot_catch+=catch_mult(y,f)*Hrate(f,t)*elem_prod(natage(t,p,g),sel_al_4(s,g,f))*Zrate2(p,g);  //  numbers basis
                         }
-                        target_catch+=catch_ret_obs(f,t);;
                       }  //close gmorph loop
+                      target_catch+=catch_ret_obs(f,t);
                     }
                   }  // close fishery
                   Z_adjuster = target_catch/(interim_tot_catch+0.0001);
@@ -973,6 +975,7 @@ FUNCTION void get_time_series()
                     Z_rate(t,p,g)=natM(s,GP3(g)) + Z_adjuster*(Z_rate(t,p,g)-natM(s,GP3(g)));  // find adjusted Z
                     Zrate2(p,g)=elem_div( (1.-mfexp(-seasdur(s)*Z_rate(t,p,g))), Z_rate(t,p,g));
                   }
+
                   for (f=1;f<=Nfleet;f++)       //loop over fishing  fleets with input catch
                   if(fleet_type(f)==1)
                   {
@@ -999,6 +1002,7 @@ FUNCTION void get_time_series()
                     }  // close fishery
                   }
                 }
+//     if(y==1990)  warning<<tune_F<<" new_Hrate "<<Hrate(1,t)<<" ratio  "<<temp<<" join  "<<join1<<endl;
                }
 //  no break, so continues to get output from this F;
             }   //  end hybrid F_Method
