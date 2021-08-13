@@ -57,7 +57,7 @@ FUNCTION void setup_recdevs()
     else if(do_recdev>=2)
       {recdev(recdev_start,recdev_end)=recdev2(recdev_start,recdev_end);}
     if(Do_Forecast>0 && do_recdev>0) recdev(recdev_end+1,YrMax)=Fcast_recruitments(recdev_end+1,YrMax);  // only needed here for reporting
-//    	if(mcmc_counter>0)  warning<<N_warn<<" "<<mcmc_counter<<" MGparm "<<MGparm<<" SRparm "<<SR_parm<<" recdev "<<recdev2<<" fore_rec "<<Fcast_recruitments<<" selparm "<<selparm<<" q: "<<Q_parm<<endl;
+//      if(mcmc_counter>0)  warning<<N_warn<<" "<<mcmc_counter<<" MGparm "<<MGparm<<" SRparm "<<SR_parm<<" recdev "<<recdev2<<" fore_rec "<<Fcast_recruitments<<" selparm "<<selparm<<" q: "<<Q_parm<<endl;
   }  //  end setup for recdevs
 
 FUNCTION void get_initial_conditions()
@@ -104,7 +104,7 @@ FUNCTION void get_initial_conditions()
     t=styr-1;
     for (s=1;s<=nseas;s++)
     {
-    	t++;
+      t++;
       for(subseas=1;subseas<=N_subseas;subseas++)  //  do all subseasons in first year
       {
         get_growth3(y,t,s, subseas);  //  in case needed for Lorenzen M
@@ -177,22 +177,22 @@ FUNCTION void get_initial_conditions()
   {
     if(MG_active(6)>0) get_age_age(Use_AgeKeyZero,AgeKey_StartAge,AgeKey_Linear1,AgeKey_Linear2); //  call function to get the age_age key
     if(save_for_report==1 && store_agekey_add>0)
-    	{
-      	save_agekey_count=N_ageerr+1;  //  first blank key after the used keys
-    		age_age(save_agekey_count)=age_age(Use_AgeKeyZero);
-    		age_err(save_agekey_count)=age_err(Use_AgeKeyZero);
-    	}
+      {
+        save_agekey_count=N_ageerr+1;  //  first blank key after the used keys
+        age_age(save_agekey_count)=age_age(Use_AgeKeyZero);
+        age_err(save_agekey_count)=age_err(Use_AgeKeyZero);
+      }
  #ifdef DO_ONCE
-    if(do_once==1) 
-    	{
-    		cout<<" ageerr_key OK"<<endl;
-    		echoinput<<" ageerr_key recalc in "<<y<<endl;
-    	}
+    if(do_once==1)
+      {
+        cout<<" ageerr_key OK"<<endl;
+        echoinput<<" ageerr_key recalc in "<<y<<endl;
+      }
  #endif
   }
 
-  if(save_for_report>0) 
-    {get_saveGparm();} 
+  if(save_for_report>0)
+    {get_saveGparm();}
 
   //  SS_Label_Info_23.2 #Calculate selectivity in the initial year
   get_selectivity();
@@ -205,7 +205,7 @@ FUNCTION void get_initial_conditions()
   for (s=1;s<=nseas;s++)
   {
     t++;
- 
+
     if(WTage_rd>0)
     {
       for (g=1;g<=gmorph;g++)
@@ -443,7 +443,7 @@ FUNCTION void get_initial_conditions()
        t=styr-nseas-1+s;
        for (f=1;f<=Nfleet;f++)
        {
-         for (g=1;g<=6;g++) 
+         for (g=1;g<=6;g++)
          {catch_fleet(t,f,g)=equ_catch_fleet(g,s,f);
           annual_catch(styr-1,g)+=equ_catch_fleet(g,s,f);
          }
@@ -519,7 +519,7 @@ FUNCTION void get_initial_conditions()
        natage(styr,p,g,a) *=mfexp(recdev(j));
      }
     }
-      
+
    }
    SSB_pop_gp(styr)=SSB_pop_gp(styr-1);  //  placeholder in case not calculated early in styr
 
@@ -567,14 +567,14 @@ FUNCTION void get_time_series()
    }
 
 //  store most recent value for density-dependent effects, NOTE - off by a year if recalc'ed at beginning of season 1
-    	{
-    		env_data(y,-1)=log(SSB_current/SSB_yr(styr-1));
+      {
+        env_data(y,-1)=log(SSB_current/SSB_yr(styr-1));
         if(recdev_doit(y)>0)
-        	{env_data(y,-2)=recdev(y);} //  store so can do density-dependence
-        	else
-        	{  //  should be 0.0
-        	}
-//        	 warning<<N_warn<<" "<<y<<" "<<SSB_current<<" "<<SSB_yr(styr-1)<<" "<<recdev(y)<<" env: "<<env_data(y)<<endl;
+          {env_data(y,-2)=recdev(y);} //  store so can do density-dependence
+          else
+          {  //  should be 0.0
+          }
+//           warning<<N_warn<<" "<<y<<" "<<SSB_current<<" "<<SSB_yr(styr-1)<<" "<<recdev(y)<<" env: "<<env_data(y)<<endl;
         t=t_base+1;  // first season
         s=1;
       if(WTage_rd>0)
@@ -614,12 +614,12 @@ FUNCTION void get_time_series()
 
         Smry_Table(y,2)=smrybio;  //  gets used as demoninator for some F_std options
         Smry_Table(y,3)=smrynum;
-    	}
+      }
     if(y>styr)
     {
 
     if(do_densitydependent==1)  make_densitydependent_parm(y);  //  call to adjust for density dependence
-        
+
   //  SS_Label_Info_24.1.1 #Update the time varying biology factors if necessary
       if(timevary_MG(y,0)>0 || save_for_report>0) get_MGsetup(y);
       if(timevary_MG(y,2)>0)
@@ -629,11 +629,11 @@ FUNCTION void get_time_series()
           get_growth3(y,t,1,1);  //  cleans up the linear growth range for begin of this year
         }
       if(timevary_MG(y,3)>0){
-      	get_wtlen();  //  stores values for all seasons
-      	//  note that get_mat_fec() will get called in the season loop because it may need the ALK for a later season
-      	// but Maunder's M in get_natmort() may use the fecundity vector, so would be using the most recently calculated  Problem??
+        get_wtlen();  //  stores values for all seasons
+        //  note that get_mat_fec() will get called in the season loop because it may need the ALK for a later season
+        // but Maunder's M in get_natmort() may use the fecundity vector, so would be using the most recently calculated  Problem??
         if(Hermaphro_Option!=0) get_Hermaphro();
-      } 
+      }
       if(timevary_MG(y,1)>0) get_natmort();
       if(y>=Bmark_Yr(1)&&y<=Bmark_Yr(2))
       {
@@ -662,18 +662,18 @@ FUNCTION void get_time_series()
       {
         get_catch_mult(y, catch_mult_pointer);
       }
-      
+
       if(Use_AgeKeyZero>0)
       {
-        if(timevary_MG(y,6)>0) 
+        if(timevary_MG(y,6)>0)
         {
           get_age_age(Use_AgeKeyZero,AgeKey_StartAge,AgeKey_Linear1,AgeKey_Linear2); //  call function to get the age_age key
           if(save_for_report==1 && store_agekey_add>0)
-        	{
-          	save_agekey_count++;  //  next blank key after the used keys
-        		age_age(save_agekey_count)=age_age(Use_AgeKeyZero);
-        		age_err(save_agekey_count)=age_err(Use_AgeKeyZero);
-        	}
+          {
+            save_agekey_count++;  //  next blank key after the used keys
+            age_age(save_agekey_count)=age_age(Use_AgeKeyZero);
+            age_err(save_agekey_count)=age_err(Use_AgeKeyZero);
+          }
 
  #ifdef DO_ONCE
           if(do_once==1) echoinput<<" ageerr_key recalc in "<<y<<endl;
@@ -708,7 +708,7 @@ FUNCTION void get_time_series()
         Make_AgeLength_Key(s, 1);
 
         get_growth3(y,t,s, mid_subseas); //  for midseason
-        Make_AgeLength_Key(s, mid_subseas); 
+        Make_AgeLength_Key(s, mid_subseas);
 //  SPAWN-RECR:   call Make_Fecundity in time series
         if(s==spawn_seas)
         {
@@ -727,9 +727,9 @@ FUNCTION void get_time_series()
         {
           Wt_Age_beg(s,g)=WTage_emp(t,GP3(g),0);
           Wt_Age_mid(s,g)=WTage_emp(t,GP3(g),-1);
-          if(s==spawn_seas) 
-          	{
-          		fec(g)=WTage_emp(t,GP3(g),-2);
+          if(s==spawn_seas)
+            {
+              fec(g)=WTage_emp(t,GP3(g),-2);
               save_sel_fec(t,g,0)= fec(g);
 //              if(y==endyr) save_sel_fec(t+nseas,g,0)=fec(g);
               }
@@ -780,7 +780,7 @@ FUNCTION void get_time_series()
         }
         SSB_current=sum(SSB_pop_gp(y));
         SSB_yr(y)=SSB_current;
-        
+
         if(Hermaphro_Option!=0)  // get male biomass
         {
           MaleSPB(y).initialize();
@@ -859,7 +859,6 @@ FUNCTION void get_time_series()
       smrynum=0.;
       for (p=1;p<=pop;p++)
       {
-
         for (g=1;g<=gmorph;g++)
         if(use_morph(g)>0)
         {
@@ -894,7 +893,7 @@ FUNCTION void get_time_series()
           }
         }
 
-  //  SS_Label_Info_24.3.3 #Do fishing mortality using switch(F_method)
+  //  SS_Label_Info_24.3.3 #Do fishing mortality
         catage_tot.initialize();
 
         if(catch_seas_area(t,p,0)==1 && fishery_on_off==1)
@@ -927,8 +926,9 @@ FUNCTION void get_time_series()
 //     if(y==1990)  warning<<"Pope "<<Hrate(f,t)<<" obs_cat "<<catch_ret_obs(1,t)<<endl;
                 }
               }
+
   //  SS_Label_Info_24.3.3.3.4 #Do a specified number of loops to tune up these F values to more closely match the observed catch
-            	for (int tune_F=1;tune_F<=F_Tune-1;tune_F++)
+              for (int tune_F=1;tune_F<=F_Tune-1;tune_F++)
               {
   //  SS_Label_Info_24.3.3.3.5 #add F+M to get Z
                 for (g=1;g<=gmorph;g++)
@@ -1003,8 +1003,7 @@ FUNCTION void get_time_series()
                   }
                 }
 //     if(y==1990)  warning<<tune_F<<" new_Hrate "<<Hrate(1,t)<<" ratio  "<<temp<<" join  "<<join1<<endl;
-               }
-//  no break, so continues to get output from this F;
+              }
             }   //  end hybrid F_Method
 
   //  SS_Label_Info_24.3.3.2 #Use a parameter for continuoous F
@@ -1044,8 +1043,8 @@ FUNCTION void get_time_series()
                     }
                 }  //close gmorph loop
               }  // close fishery
-              break;
             }   //  end continuous F method
+
           }
           else
 // F_Method is Pope's approximation
@@ -1125,7 +1124,6 @@ FUNCTION void get_time_series()
               }
               if(docheckup==1) echoinput<<y<<" "<<s<<"total catch-at-age for morph "<<g<<" "<<catage_tot(g)(0,min(6,nages))<<" Z: "<<Z_rate(t,p,g)(0,min(6,nages))<<endl;
             }
-            break;
           }   //  end Pope's approx
         }  //  end have some catch in this seas x area
         else
@@ -1137,9 +1135,9 @@ FUNCTION void get_time_series()
         }
       } //close area loop
       if(s==1 && save_for_report==1){
-      	Smry_Table(y,1)=totbio;
-      	Smry_Table(y,2)=smrybio;
-      	Smry_Table(y,3)=smrynum;
+        Smry_Table(y,1)=totbio;
+        Smry_Table(y,2)=smrybio;
+        Smry_Table(y,3)=smrynum;
       }
   //  SS_Label_Info_24.3.4 #Compute spawning biomass if occurs after start of current season
 //  SPAWN-RECR:   calc spawn biomass in time series if after beginning of the season
@@ -1362,7 +1360,7 @@ FUNCTION void get_time_series()
               {
                 for (p=1;p<=pop;p++)
                 {
-                   tempbase+=natage(t-nseas+1,p,g,a);  // sum of numbers at beginning of year 
+                   tempbase+=natage(t-nseas+1,p,g,a);  // sum of numbers at beginning of year
                    tempZ+=natage(t+1,p,g,a+1);  // numbers at beginning of next year
                    temp3=natage(t-nseas+1,p,g,a);  //  numbers at begin of year
                    for (j=1;j<=nseas;j++) {temp3*=mfexp(-seasdur(j)*natM(j,GP3(g),a));}
@@ -1370,8 +1368,10 @@ FUNCTION void get_time_series()
                 }
               }
             }
+            if(y==21 || y==220)  warning<<endl<<y<<" "<<tempbase<<" "<<tempM<<" "<<tempZ;
             annual_F(y,2) = log(tempM)-log(tempZ);  // F=Z-M
             annual_F(y,3) = log(tempbase)-log(tempM);  // M
+            if(y==21 || y==220)  warning<<annual_F(y,2)<<" "<<annual_F(y,3)<<endl;
           } // end if F_reporting!=5
 
           else
@@ -1390,14 +1390,14 @@ FUNCTION void get_time_series()
               {
                  for (p=1;p<=pop;p++)
                  {
-                   tempbase+=natage(t-nseas+1,p,g,a);  // sum of numbers at beginning of year 
+                   tempbase+=natage(t-nseas+1,p,g,a);  // sum of numbers at beginning of year
                    tempZ+=natage(t+1,p,g,a+1);  // numbers at beginning of next year
                    temp3=natage(t-nseas+1,p,g,a);  //  numbers at begin of year
                    for (j=1;j<=nseas;j++) {temp3*=mfexp(-seasdur(j)*natM(j,GP3(g),a));}
                    tempM+=temp3;  //  survivors if just M operating
                 }
               }
-//  calc F and M for this age and add to the total              
+//  calc F and M for this age and add to the total
               countN += 1; // increment count of values included in average
               annual_F(y,2) += log(tempM)-log(tempZ);  // F=Z-M
               annual_F(y,3) += log(tempbase)-log(tempM);  // M
@@ -1494,7 +1494,7 @@ FUNCTION void get_time_series()
  #ifdef DO_ONCE
           if(do_once==1) echoinput<<" finished time series "<<endl;
  #endif
-  
+
   //  SS_Label_Info_24.16  # end of time series function
 
 //********************************************************************
@@ -1536,7 +1536,7 @@ FUNCTION void Do_Equil_Calc(const prevariable& equ_Recr)
         if(use_morph(g)>0)
         {
           settle=settle_g(g);
-          
+
           for (p=1;p<=pop;p++)
           {
             equ_numbers(Settle_seas(settle),p,g,Settle_age(settle)) = equ_Recr*recr_dist(y,GP(g),settle,p)*platoon_distr(GP2(g))*
@@ -1757,7 +1757,7 @@ FUNCTION void Do_Equil_Calc(const prevariable& equ_Recr)
                    equ_catage(s,f,g)=elem_prod(elem_prod(equ_numbers(s,p,g)(0,nages),deadfish(s,g,f)) , Zrate2(p,g));
                    equ_catch_fleet(1,s,f)+=Hrate(f,t)*elem_prod(equ_numbers(s,p,g)(0,nages),sel_al_1(s,g,f))*Zrate2(p,g);      // encountered catch bio
                    equ_catch_fleet(4,s,f)+=Hrate(f,t)*elem_prod(equ_numbers(s,p,g)(0,nages),sel_al_3(s,g,f))*Zrate2(p,g);      // encountered catch bio
-                   equ_catch_fleet(6,s,f)+=Hrate(f,t)*elem_prod(equ_numbers(s,p,g)(0,nages),sel_al_4(s,g,f))*Zrate2(p,g);      // retained catch numbers                   
+                   equ_catch_fleet(6,s,f)+=Hrate(f,t)*elem_prod(equ_numbers(s,p,g)(0,nages),sel_al_4(s,g,f))*Zrate2(p,g);      // retained catch numbers
                }
              }
              else  // F_method=1
@@ -1866,7 +1866,7 @@ FUNCTION void Do_Equil_Calc(const prevariable& equ_Recr)
           {
             for (p=1;p<=pop;p++)
             {
-               tempbase+=equ_numbers(1,p,g,a);  // sum of numbers at beginning of year 
+               tempbase+=equ_numbers(1,p,g,a);  // sum of numbers at beginning of year
                tempZ+=equ_numbers(1,p,g,a+1);  // numbers at beginning of next year
                temp3=equ_numbers(1,p,g,a);  //  numbers at begin of year
                for (int kkk=1;kkk<=nseas;kkk++) {temp3*=mfexp(-seasdur(kkk)*natM(kkk,GP3(g),a));}
@@ -1895,7 +1895,7 @@ FUNCTION void Do_Equil_Calc(const prevariable& equ_Recr)
           {
              for (p=1;p<=pop;p++)
              {
-               tempbase+=equ_numbers(1,p,g,a);  // sum of numbers at beginning of year 
+               tempbase+=equ_numbers(1,p,g,a);  // sum of numbers at beginning of year
                tempZ+=equ_numbers(1,p,g,a+1);  // numbers at beginning of next year
                temp3=equ_numbers(1,p,g,a);  //  numbers at begin of year
                for (int kkk=1;kkk<=nseas;kkk++) {temp3*=mfexp(-seasdur(kkk)*natM(kkk,GP3(g),a));}
