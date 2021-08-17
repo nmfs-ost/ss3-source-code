@@ -2079,7 +2079,7 @@
   matrix F_setup2(1,1,1,1)
   int F_detail;  // number of specific initial values and phases to read
   ivector F_Method_PH(1,Nfleet);  //  stores phase to transition from hybrid to parameter
-  imatrix F_Method_byPH(1,Nfleet,1,50);  // stores F_method to use for each fleet in each PH
+  imatrix F_Method_byPH(0,Nfleet,1,50);  // stores F_method to use for each fleet in each PH; 0'th fleet stores max
   int F_Tune;
   int F_Method;           // 1=Pope's; 2=continuous F; 3=hybrid; 4=fleet-specific
   number max_harvest_rate
@@ -2139,7 +2139,7 @@
     }
     case 4:  //  fleet-specific choice for hybrid vs parameters
     {
-//  read list of fleet ID, starting F, and phase to transition to parameters
+      echoinput<<"read list of fleet ID, starting F, and phase to transition to parameters"<<endl;
 //  fishing fleets not listed will use hybrid for all phases
 //  enter PH = 99 to not create any F parms for the listed fleet
       //  default each fleet to start with hybrid in phase 1
@@ -2156,6 +2156,7 @@
    {
     dvector tempvec(1,3);
     *(ad_comm::global_datafile) >> tempvec(1,3);
+      echoinput<<tempvec<<endl;
     F_Method_4_input.push_back (tempvec(1,3));
     ender=tempvec(1);
     f=int(tempvec(1));  // fleet ID
@@ -2171,7 +2172,10 @@
     }
     if(byc_count != N_bycatch)
      {N_warn++; cout<<"Fatal_input_error, see warning"<<endl; warning<<"Fatal_input_error; not all bycatch fleets have been included in Fparm list"<<endl;exit(1);}
+    echoinput<<"now read N tuning loops when doing hybrid (4 recommended)"<<endl;
     *(ad_comm::global_datafile) >> F_Tune;
+    echoinput<<"value as read: "<<F_Tune<<endl;
+    echoinput<<"Note that F_detail cannot be read when using F_Method 4"<<endl;
     break;
     }
   }
@@ -2311,7 +2315,7 @@
         {
           F_Method_byPH(f)(1,50)=3;  //  for early phases
           if(F_Method_PH(f)>0 && F_Method_PH(f)<99) F_Method_byPH(f)(F_Method_PH(f),50)=2;  //  for later phases, but can be changed by F_detail
-        echoinput<<f<<" FM_50 "<<F_Method_byPH(f,50)<<" input "<<F_Method_PH(f)<<endl;
+        echoinput<<f<<" phase to switch to parms "<<F_Method_PH(f)<<endl;
         if(F_Method_byPH(f,50)==2)
         {
           echoinput<<" create parms for fleet "<<f<<endl;
@@ -2329,7 +2333,6 @@
            tempin(2)=t;
            Fparm_loc.push_back (tempin(1,2));
            Fparm_PH.push_back (F_Method_PH(f));
-           echoinput<<N_Fparm<<" "<<f<<" "<<t<<" "<<Fparm_PH[N_Fparm]<<" "<<F_Method_PH(f)<<endl;
           sprintf(onenum, "%d", y);
           ParCount++;
           do_Fparm(f,t)=N_Fparm;
@@ -2356,6 +2359,7 @@
     }
   if(F_detail>0)
   {
+    echoinput<<"Note that F_Detail can no longer set phase for each F parm; instead use F_Method 4 to set phase for each fleet"<<endl;
     for (k=1;k<=F_detail;k++)
     {
       f=F_setup2(k,1); y=F_setup2(k,2); s=F_setup2(k,3);
@@ -2368,7 +2372,6 @@
       {
         t=styr+(y-styr)*nseas+s-1;
         j=do_Fparm(f,t);
-        echoinput<<y<<" "<<s<<" "<<t<<" j "<<j<<endl;
         if(j>0 && F_setup2(k,6)!=-999){
 //          Fparm_PH[j]=F_setup2(k,6);    //   used to setup the phase for each F_rate parameter
 //          F_Method_byPH(f)(F_setup2(k,6),50)=2;  //  set Fmethod=2 for this and all later phases for this fleet
@@ -2391,6 +2394,17 @@
            echoinput<<f<<"  F_Method_byPH:  "<<F_Method_byPH(f)(1,10)<<endl;
         }
       }
+      
+//  find whether any fleet is hybrid for each phases
+    for(j=1;j<=50;j++)
+    {
+      F_Method_byPH(0,j)=2;
+      for(f=1;f<=Nfleet;f++)
+      {
+        if(F_Method_byPH(f,j)==3) F_Method_byPH(0,j)=3;
+      }
+    }
+    echoinput<<f<<"  Overall F_Method_byPH:  "<<F_Method_byPH(0)<<endl;
   }
 
  END_CALCS

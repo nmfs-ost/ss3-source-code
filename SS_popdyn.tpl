@@ -902,28 +902,31 @@ FUNCTION void get_time_series()
           {
 //  SS_Label_Info_24.3.3.3 #use the hybrid F method by selected fleets
 // hybrid F_method
+            k=current_phase();
+            if(F_Method_byPH(0,k)==3)  //  some fleet needs hybrid this phase
             {
   //  SS_Label_Info_24.3.3.3.1 #Start by doing a Pope's approximation
-              for (f=1;f<=Nfleet;f++)
-              if(F_Method_byPH(f,current_phase())==3 && catch_seas_area(t,p,f)==1) // do hybrid F for this fleet
+              for(int ff=1;ff<=N_catchfleets;ff++)
               {
+                f=fish_fleet(ff);
+                if(F_Method_byPH(f,current_phase())==3 && catch_seas_area(t,p,f)==1) // do hybrid F for this fleet
                 {
-                  vbio.initialize();
-                  for (g=1;g<=gmorph;g++)
-                  if(use_morph(g)>0)
-                  {
-                    if(catchunits(f)==1)
-                      {vbio+=Nmid(g)*sel_al_2(s,g,f);}    // retained catch bio
-                    else
-                      {vbio+=Nmid(g)*sel_al_4(s,g,f);}  // retained catch numbers
-                  }  //close gmorph loop
-    //  SS_Label_Info_24.3.3.3.2 #Apply constraint so that no fleet's initial calculation of harvest rate would exceed 95%
-                  temp = catch_ret_obs(f,t)/(vbio+0.1*catch_ret_obs(f,t));  //  Pope's rate  robust
-                  join1=1./(1.+mfexp(30.*(temp-0.95)));  // steep logistic joiner at harvest rate of 0.95
-                  temp1=join1*temp + (1.-join1)*0.95;
-    //  SS_Label_Info_24.3.3.3.3 #Convert the harvest rate to a starting value for F
-                  Hrate(f,t)=-log(1.-temp1)/seasdur(s);  // initial estimate of F (even though labelled as Hrate)
-//     if(y==1990)  warning<<"Pope "<<Hrate(f,t)<<" obs_cat "<<catch_ret_obs(1,t)<<endl;
+                    vbio.initialize();
+                    for (g=1;g<=gmorph;g++)
+                    if(use_morph(g)>0)
+                    {
+                      if(catchunits(f)==1)
+                        {vbio+=Nmid(g)*sel_al_2(s,g,f);}    // retained catch bio
+                      else
+                        {vbio+=Nmid(g)*sel_al_4(s,g,f);}  // retained catch numbers
+                    }  //close gmorph loop
+      //  SS_Label_Info_24.3.3.3.2 #Apply constraint so that no fleet's initial calculation of harvest rate would exceed 95%
+                    temp = catch_ret_obs(f,t)/(vbio+0.1*catch_ret_obs(f,t));  //  Pope's rate  robust
+                    join1=1./(1.+mfexp(30.*(temp-0.95)));  // steep logistic joiner at harvest rate of 0.95
+                    temp1=join1*temp + (1.-join1)*0.95;
+      //  SS_Label_Info_24.3.3.3.3 #Convert the harvest rate to a starting value for F
+                    Hrate(f,t)=-log(1.-temp1)/seasdur(s);  // initial estimate of F (even though labelled as Hrate)
+  //     if(y==1952)  warning<<"Pope "<<Hrate(f,t)<<" F_tune "<<F_Tune<<endl;
                 }
               }
 
@@ -942,7 +945,6 @@ FUNCTION void get_time_series()
                   }
                   Zrate2(p,g)=elem_div( (1.-mfexp(-seasdur(s)*Z_rate(t,p,g))), Z_rate(t,p,g));
                 }
-//     if(y==1990)  warning<<tune_F<<" Z_6 "<<Z_rate(t,1,1,6)<<endl;
 
   //  SS_Label_Info_24.3.3.3.6 #Now calc adjustment to Z based on changes to be made to Hrate
                 {
@@ -951,7 +953,7 @@ FUNCTION void get_time_series()
                   double target_catch = 0.0;
                   for (f=1;f<=Nfleet;f++)
                   {
-                    if(F_Method_byPH(f,current_phase()) && catch_seas_area(t,p,f)==1)    //  skips bycatch fleets
+                    if(F_Method_byPH(f,current_phase())==3 && catch_seas_area(t,p,f)==1)    //  skips bycatch fleets
                     {
                       for (g=1;g<=gmorph;g++)
                       if(use_morph(g)>0)
@@ -979,7 +981,7 @@ FUNCTION void get_time_series()
                   for (f=1;f<=Nfleet;f++)       //loop over fishing  fleets with input catch
                   if(fleet_type(f)==1)
                   {
-                    if(catch_seas_area(t,p,f)==1)
+                    if(F_Method_byPH(f,current_phase())==3 && catch_seas_area(t,p,f)==1)    //  skips bycatch fleets
                     {
                       vbio=0.;  // now use this to calc the selected vulnerable biomass (numbers) to each fishery with the adjusted Zrate2
                       //  since catch = N * F*sel * (1-e(-Z))/Z
@@ -999,10 +1001,10 @@ FUNCTION void get_time_series()
                       temp=catch_ret_obs(f,t)/(catch_mult(y,f)*vbio+0.0001);  //  prototype new F
                       join1=1./(1.+mfexp(30.*(temp-0.95*max_harvest_rate)));
                       Hrate(f,t)=join1*temp + (1.-join1)*max_harvest_rate;  //  new F value for this fleet
+//     if(y==1952 && f==3)  warning<<tune_F<<" new_Hrate "<<Hrate(f,t)<<" ratio  "<<temp<<" join  "<<join1<<endl;
                     }  // close fishery
                   }
                 }
-//     if(y==1990)  warning<<tune_F<<" new_Hrate "<<Hrate(1,t)<<" ratio  "<<temp<<" join  "<<join1<<endl;
               }
             }   //  end hybrid F_Method
 

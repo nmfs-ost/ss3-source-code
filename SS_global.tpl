@@ -630,26 +630,23 @@ BETWEEN_PHASES_SECTION
   }
 
 //  SS_Label_Info_11.2 #For Fmethod=2 & 4, set parameter values (F_rate) equal to Hrate array fromcalculated using hybrid method in previous phase
-    if(N_Fparm>0)
+    if(N_Fparm>0 && j_phase>1)
     {
-      if(F_Method_PH(1)>1 && j_phase==F_Method_PH(1) && readparfile==0)  //  so now start doing F as parameters
-//      if(F_setup(2)>1 && j_phase==F_setup(2))  //  so now start doing F as paameters
+      for(int ff=1;ff<=N_catchfleets;ff++)
       {
-        
-      for(f=1;f<=Nfleet;f++)
-      if(F_Method_byPH(f,current_phase())==2)
+        f=fish_fleet(ff);
+      if(F_Method_byPH(f,j_phase) < F_Method_byPH(f,j_phase-1))
       {
         for (g=Fparm_loc_st(f);g<=Fparm_loc_end(f);g++)
         {
-          f=Fparm_loc[g](1);
           t=Fparm_loc[g](2);
           F_rate(g)=Hrate(f,t);
        }
+    }
+    }
+    }
+//        warning<<"between: Hrate_2010:  "<<Hrate(1,2010)<<" "<<Hrate(2,2010)<<" "<<Hrate(3,2010)<<" "<<Hrate(4,2010)<<" "<<endl;
 
-    warning<<"done  Hrate to parms "<<endl;
-      }
-    }
-    }
   }  //  end BETWEEN_PHASES_SECTION
 
 //  SS_Label_Section_12. #FINAL_SECTION

@@ -46,10 +46,8 @@ PROCEDURE_SECTION
       for(f=1;f<=Nfleet;f++)
       if(F_Method_byPH(f,current_phase())==2)
       {
-  warning<<"Fleet: "<<f<<" set Hrate from parms in phase = "<<current_phase()<<" st end "<<Fparm_loc_st(f)<<" "<<Fparm_loc_end(f)<<endl;
         for (g=Fparm_loc_st(f);g<=Fparm_loc_end(f);g++)
         {
-          f=Fparm_loc[g](1);
           t=Fparm_loc[g](2);
           Hrate(f,t)=F_rate(g);
         }
