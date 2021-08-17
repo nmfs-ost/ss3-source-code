@@ -4777,7 +4777,6 @@
     for (g=1;g<=N_Fparm;g++)
     {
       ParCount++;
-      echoinput<<g<<" "<<Fparm_PH[g]<<endl;
       if(depletion_fleet>0  && depletion_type<2 && Fparm_PH[g]>0) Fparm_PH[g]++;  //  increase phase by 1
       if(Fparm_PH[g] > Turn_off_phase2) Fparm_PH[g] =-1;
       if(Fparm_PH[g] > max_phase) max_phase=Fparm_PH[g];
