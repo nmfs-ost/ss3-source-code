@@ -989,22 +989,17 @@ FUNCTION void get_natmort()
           case 2:  //  Lorenzen M
           {
             Loren_temp2=L_inf(gp)*(mfexp(-VBK(gp,K_index)*VBK_seas(0))-1.);   // need to verify use of VBK_seas here
-            int Loren_t=styr+(yz-styr)*nseas+Bseas(g)-1;
             Loren_temp=Ave_Size(styr,mid_subseas,g,int(natM_amin));  // uses mean size in middle of season 1 for the reference age
             Loren_M1=natMparms(1,gp)/log(Loren_temp/(Loren_temp+Loren_temp2));
             for (s=nseas;s>=1;s--)
             {
-//              ALK_idx=(s-1)*N_subseas+mid_subseas;  //  for midseason
-              for (a=nages; a>=0;a--)
-              {
-                if(a==0 && s<Bseas(g))
-                {natM(s,gpi,a)=natM(s+1,gpi,a);}
-                else
-//                {natM(s,gpi,a)=log(Ave_Size(t,ALK_idx,g,a)/(Ave_Size(t,ALK_idx,g,a)+Loren_temp2))*Loren_M1;}
-                {natM(s,gpi,a)=log(Ave_Size(Loren_t,mid_subseas,g,a)/(Ave_Size(Loren_t,mid_subseas,g,a)+Loren_temp2))*Loren_M1;}
-                surv1(s,gpi,a)=mfexp(-natM(s,gpi,a)*seasdur_half(s));
-                surv2(s,gpi,a)=square(surv1(s,gpi,a));
-              }   // end age loop
+              int Loren_t=styr+(yz-styr)*nseas+s-1;
+              natM(s,gpi)(0,nages)=log(
+               elem_div(Ave_Size(Loren_t,mid_subseas,g)(0,nages), (Ave_Size(Loren_t,mid_subseas,g)(0,nages)+Loren_temp2))
+               )*Loren_M1;
+              if(s<Bseas(g)) natM(s,gpi,0)=natM(s+1,gpi,0);
+              surv1(s,gpi)=value(mfexp(-natM(s,gpi)*seasdur_half(s)));
+              surv2(s,gpi)=value(square(surv1(s,gpi)));
             }
             break;
           }

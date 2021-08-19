@@ -350,7 +350,7 @@
    g=0;
    g3i=0;
    echoinput<<endl<<"MORPH_INDEXING"<<endl;
-   echoinput<<"g Sex GP Settlement Season Platoon Platoon% Sex*GP Sex*GP*settle_time Used(0/1) SettleTime_frac_yr"<<endl;
+   echoinput<<"g Sex GP Settlement Birth_Seas Platoon Platoon% Sex*GP Sex*GP*settle_time Used(0/1) SettleTime_frac_yr"<<endl;
    for (gg=1;gg<=gender;gg++)
    for (gp=1;gp<=N_GP;gp++)
    for (settle=1;settle<=N_settle_timings;settle++)
