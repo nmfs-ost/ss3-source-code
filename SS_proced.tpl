@@ -35,24 +35,24 @@ PROCEDURE_SECTION
     if(mcmc_counter>10 || mceval_counter>10) Do_ParmTrace=0;
   }
 
-//  SS_Label_Info_7.3 #Reset Fmethod 2 to Fmethod 3 according to the phase
-    if(F_Method==2)
+//  SS_Label_Info_7.3 #get Hrate from the parameter vector F_rate
+//  note that in SS_global  BETWEEN_PHASES is where F_rate, which is the parameter, gets assigned a starting value Hrate from Hrate calculated by hybrid in previous PH
+//  be careful about phases for when this mapping occurs for a whole fleet, versus estimation phase which can be value specific
+    if(N_Fparm>0)
     {
-      if(current_phase()>=F_setup(2) || (readparfile==1 && current_phase()<=1)) //  set Hrate = Frate parameters on first call if readparfile=1, or for advanced phases
+//      if(current_phase()>=F_parm_PH || (readparfile==1 && current_phase()<=1)) //  set Hrate = Frate parameters on first call if readparfile=1, or for advanced phases
+//  warning<<"FM by PH "<<endl<<F_Method_byPH<<endl;
       {
-        for (g=1;g<=N_Fparm;g++)
+      for(f=1;f<=Nfleet;f++)
+      if(F_Method_byPH(f,current_phase())==2)
+      {
+        for (g=Fparm_loc_st(f);g<=Fparm_loc_end(f);g++)
         {
-          f=Fparm_loc(g,1);
-          t=Fparm_loc(g,2);
+          t=Fparm_loc[g](2);
           Hrate(f,t)=F_rate(g);
         }
       }
-      F_Method_use=2;
-      if(current_phase() < F_setup(2)) F_Method_use=3;  // use hybrid
     }
-    else
-    {
-      F_Method_use=F_Method;
     }
 
 //  SS_Label_Info_7.4 #Do the time series calculations
@@ -226,13 +226,14 @@ PROCEDURE_SECTION
         {
           if(init_F_PH(f)>0) {ParmTrace<<" "<<init_F(f);}
         }
-        if(F_Method==2)    // continuous F
+        if(N_Fparm>0)    // continuous F
         {
           for (k=1;k<=N_Fparm;k++)
           {
-            if(Fparm_PH(k)>0) {ParmTrace<<" "<<F_rate(k);}
+            if(Fparm_PH[k]>0) {ParmTrace<<" "<<F_rate(k);}
           }
         }
+
         for (f=1;f<=Q_Npar2;f++)
         {
           if(Q_parm_PH(f)>0) {ParmTrace<<" "<<Q_parm(f);}
@@ -288,7 +289,7 @@ PROCEDURE_SECTION
         if(Do_Forecast>0) ParmTrace<<Fcast_recruitments<<" ";
         if(Do_Impl_Error>0) ParmTrace<<Fcast_impl_error<<" ";
         if(N_init_F>0) ParmTrace<<init_F<<" ";
-        if(F_Method==2) ParmTrace<<F_rate<<" ";
+        if(N_Fparm>0) ParmTrace<<F_rate<<" ";
         if(Q_Npar>0) ParmTrace<<Q_parm<<" ";
         ParmTrace<<selparm<<" ";
         if(Do_TG>0) ParmTrace<<TG_parm<<" ";
@@ -304,7 +305,6 @@ PROCEDURE_SECTION
 //  SS_Label_Info_7.11 #Call fxn get_posteriors if in mceval_phase
      if(mceval_phase()) get_posteriors();
   }  //  end doing of the calculations
-
   if(mceval_phase() || initial_params::mc_phase==1)
   {
     No_Report=1;  //  flag to skip output reports after MCMC and McEVAL

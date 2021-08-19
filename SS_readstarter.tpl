@@ -200,7 +200,7 @@
   if ( (on=option_match(argc,argv,"-noest"))>-1)
   {
     cout<<"SS is not configured to work with -noest; use -maxI instead which overrides maxphase in starter.ss"<<endl;
-     warning<<N_warn<<" "<<"SS exited with -noest, use -maxI <maxphase> instead"<<endl;
+     N_warn++; warning<<N_warn<<" SS exited with -noest, use -maxI <maxphase> instead"<<endl;
     exit(1);
   }
 
@@ -541,20 +541,18 @@
 
    if(tempin==999.)  // finish read in 3.24 format for ss_trans
     {
+      echoinput<<"SS read 999 from starter.ss, so will read files in 3.24 format"<<endl<<endl;
       if (readparfile > 0)
       {
-        echoinput<<endl<<"ss_trans does not read the PAR file; readparfile set to 0"<<endl<<endl;
-        cout<<"Error: ss_trans does not read the PAR file; readparfile set to 0"<<endl;
+        N_warn++; warning<<N_warn<<" ss_trans does not read the PAR file; readparfile set to 0"<<endl<<endl;
         readparfile = 0;
       }
-
-      echoinput<<"Read files in 3.24 format"<<endl<<endl;
     }
     else   // reading in 3.30 format
    {
      finish_starter=3.30;
      echoinput<<"Read files in 3.30 format"<<endl;
-     echoinput<<"SS will read values until it reads 3.30"<<endl;
+     echoinput<<"SS will continue reading from starter.ss until it reads 3.30"<<endl;
    	
      echoinput<<"read MCMC_output_detail.MCMC_bump as a single real number;  separate values will be parsed from integer and fraction"<<endl;
      mcmc_output_detail = int(tempin);
@@ -569,7 +567,7 @@
      // enforce valid range of ALK_tolerance
      if (ALK_tolerance < 0.0 || ALK_tolerance > 0.1)
      {
-         N_warn++;  warning<<N_warn<<" "<<"Error: ALK tolerance must be between 0.0 and 0.1"<<endl;
+         N_warn++;  warning<<N_warn<<" Error: ALK tolerance must be between 0.0 and 0.1"<<endl;
          cout<<"Error: ALK_tolerance must be between 0.0 and 0.1: "<<ALK_tolerance<<endl; exit(1);
      }
 

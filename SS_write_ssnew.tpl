@@ -1719,18 +1719,26 @@ FUNCTION void write_nucontrol()
   report4<<"#"<<endl;
   report4<<"#Fishing Mortality info "<<endl<<F_ballpark<<" # F ballpark value in units of annual_F"<<endl;
   report4<<F_ballpark_yr<<" # F ballpark year (neg value to disable)"<<endl;
-  report4<<F_Method<<" # F_Method:  1=Pope; 2=instan. F; 3=hybrid (hybrid is recommended)"<<endl;
+  report4<<F_Method<<" # F_Method:  1=Pope; 2=instan. F; 3=hybrid; 4=fleet-specific parm/hybrid (#4 is recommended)"<<endl;
   report4<<max_harvest_rate<<" # max F or harvest rate, depends on F_Method"<<endl;
-  report4<<"# no additional F input needed for Fmethod 1"<<endl;
-  report4<<"# if Fmethod=2; read overall start F value; overall phase; N detailed inputs to read"<<endl;
-  report4<<"# if Fmethod=3; read N iterations for tuning for Fmethod 3"<<endl;
+  report4<<"# for Fmethod 1; no additional F input needed"<<endl;
+  report4<<"# for Fmethod=2; read overall start F value; overall phase; N detailed inputs to read"<<endl;
+  report4<<"# for Fmethod=3; read N iterations for tuning for Fmethod 3"<<endl;
+  report4<<"# for Fmethod=4; read list of fleets needing parameters; syntax is:  fleet, F_starting_value (if start_PH=1), first PH for parms (99 to stay in hybrid)"<<endl;
+  report4<<"# for Fmethod=4; then read N tuning loops for hybrid fleets 2-3 normally enough"<<endl;
  if(F_Method==2)
   {
-    report4<<F_setup<<" # overall start F value; overall phase; N detailed inputs to read"<<endl;
+    report4<<F_parm_intval(1)<<" "<<F_Method_PH(1)<<" "<<F_detail<<" # overall start F value; overall phase; N detailed inputs to read"<<endl;
     report4<<"#Fleet Yr Seas F_value se phase (for detailed setup of F_Method=2; -Yr to fill remaining years)"<<endl<<F_setup2<<endl;
   }
   else if(F_Method==3)
   {report4<<F_Tune<<"  # N iterations for tuning F in hybrid method (recommend 3 to 7)"<<endl;}
+  else if(F_Method==4)
+    {
+      report4<<"#Fleet start_F first_parm_phase"<<endl;
+      for(int j=1;j<=F_Method_4_input.size()-1;j++) {report4<<F_Method_4_input[j]<<endl;}
+      report4<<F_Tune<<" #_number of tuning loops for hybrid fleets; 4 good; 3 faster"<<endl;
+    }
 
    report4<<"#"<<endl;
    report4<<"#_initial_F_parms; for each fleet x season that has init_catch; nest season in fleet; count = "<<N_init_F2<<endl;

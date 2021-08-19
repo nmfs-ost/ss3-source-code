@@ -910,7 +910,7 @@ FUNCTION void evaluate_the_objective_function()
       	"; suggest start with larger R0 to get near 0.4; or use depletion fleet option"<<endl;}
       if(annual_F(endyr,3)>2.0)
       {N_warn++; warning<<N_warn<<" 1st iteration warning: annual F in endyr > 2.0; check configuration; suggest start with larger R0"<<endl;}
-      if(sum(catch_like)>0.5*obj_fun && F_Method_use!=2)
+      if(sum(catch_like)>0.5*obj_fun && F_Method!=2)
       {N_warn++; warning<<N_warn<<" 1st iteration warning: catch logL > 50% total logL; check configuration; suggest start with larger R0"<<endl;}
       do_once=0;
     }
@@ -1567,7 +1567,7 @@ FUNCTION void get_posteriors()
   {
     if(active(init_F(i))) posts<<init_F(i)<<" ";
   }
-  if(F_Method==2)
+  if(N_Fparm>0)
   {
     for (i=1;i<=N_Fparm;i++)
     {

@@ -105,7 +105,7 @@ FUNCTION void write_summaryoutput()
   if(Do_Forecast>0) report2<<Fcast_recruitments<<" ";
   if(Do_Impl_Error>0) report2<<Fcast_impl_error<<" ";
   if(N_init_F>0) report2<<init_F<<" ";
-  if(F_Method==2) report2<<" "<<F_rate;
+  if(N_Fparm>0) report2<<" "<<F_rate;
   if(Q_Npar2>0) report2<<Q_parm<<" ";
   if(N_selparm2>0) report2<<selparm<<" ";
 //  if(N_selparm_dev>0) report2<<selparm_dev<<" ";
@@ -178,7 +178,7 @@ FUNCTION void write_summaryoutput()
     for (i=1;i<=N_init_F;i++) report2<<" "<<init_F(i);
     report2<<endl;
 
-    if(F_Method==2)
+    if(N_Fparm>0)
     {
       report2<<runnumber<<" F_rate ";
       for (i=1;i<=N_Fparm;i++) {NP++; report2<<" "<<ParmLabel(NP);}
@@ -385,7 +385,7 @@ FUNCTION void write_SS_summary()
   }
   }
 
-  if(F_Method==2 && N_Fparm>0)
+  if(N_Fparm>0)
   {
   SS_smry<<"#_F"<<endl;
   for (j=1;j<=N_Fparm;j++)
@@ -393,7 +393,7 @@ FUNCTION void write_SS_summary()
     NP++;
     SS_smry<<ParmLabel(NP)<<" "<<F_rate(j)<<" ";
     if(active(F_rate(j))) {active_count++;  SS_smry<<CoVar(active_count,1)<<" Act ";} else {SS_smry<<0.0<<" Fix ";}
-    SS_smry<<(F_rate(j)-0.)/(Fparm_max(j)-0+1.0e-6)<<endl;
+    SS_smry<<(F_rate(j)-0.)/(max_harvest_rate-0+1.0e-6)<<endl;
   }
   }
 

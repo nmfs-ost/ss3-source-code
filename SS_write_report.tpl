@@ -491,7 +491,7 @@ FUNCTION void write_bigoutput()
     Report_Parm(NP, active_count, Activ, init_F(j), init_F_LO(j), init_F_HI(j), init_F_RD(j), init_F_use(j), init_F_PR(j), init_F_CV(j),  init_F_PRtype(j),init_F_PH(j), init_F_Like(j));
   }
 
-    if(F_Method==2)
+    if(N_Fparm>0)
     {
       for (i=1;i<=N_Fparm;i++)
       {
@@ -501,7 +501,7 @@ FUNCTION void write_bigoutput()
         {
           active_count++;
           Activ=1;
-          SS2out<<" "<<active_count<<" "<<Fparm_PH(i)<<" 0.0 "<<Fparm_max(i)<<" "<<F_setup(1)<<" "<<Fparm_use(i)<<" act "<<CoVar(active_count,1)<<" "<<parm_gradients(active_count);
+          SS2out<<" "<<active_count<<" "<<Fparm_PH[i]<<" 0.0 "<<max_harvest_rate<<" "<<F_parm_intval(Fparm_loc[i](1))<<" "<<Fparm_use(i)<<" act "<<CoVar(active_count,1)<<" "<<parm_gradients(active_count);
         }
         else
         {SS2out<<" _ _ _ _ _ _ NA _ _ ";}

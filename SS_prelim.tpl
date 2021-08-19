@@ -495,17 +495,19 @@ PRELIMINARY_CALCS_SECTION
       echoinput<< " initF_parms read from ctl "<<init_F<<endl;
     }
 
-    if (F_Method==2)
+//SS_Label_Info_xxx setup F as parameters
+    if (N_Fparm>0)
     {
       if(readparfile==0)
       {
       for (g=1;g<=N_Fparm;g++)
       {
-          F_rate(g)=F_setup(1);
-          f=Fparm_loc(g,1);
-          t=Fparm_loc(g,2);
-          Hrate(f,t)=F_setup(1);
+          f=Fparm_loc[g](1);
+          t=Fparm_loc[g](2);
+          F_rate(g)=F_parm_intval(f);
+          Hrate(f,t)=F_parm_intval(f);
       }
+      
       if(F_detail>0)
       {
         for (k=1;k<=F_detail;k++)
@@ -524,7 +526,7 @@ PRELIMINARY_CALCS_SECTION
           }
         }
       }
-       echoinput<< " Fmort_parms have been reset "<<endl;
+       echoinput<< " Fmort_parms have been set according to F_detail input"<<endl;
       }
       else
       {
@@ -633,7 +635,7 @@ PRELIMINARY_CALCS_SECTION
       echoinput<<endl<<" now check F parm bounds and priors and do jitter if requested "<<endl;
       for (i=1;i<=N_Fparm;i++)
       {
-        {F_rate(i) = Check_Parm(i,Fparm_PH(i), 0.,Fparm_max(i), 0, 0.05, 1., jitter, F_rate(i));}
+        {F_rate(i) = Check_Parm(i,Fparm_PH[i], 0.,max_harvest_rate, 0, 0.05, 1., jitter, F_rate(i));}
       }
       echoinput<< " F_parms after check "<<F_rate<<endl;
       Fparm_use=value(F_rate);
@@ -1045,7 +1047,6 @@ PRELIMINARY_CALCS_SECTION
       if(noest_flag==1)
         {
           cout<<endl<<"skip to final section for -noest"<<endl;
-          F_Method_use=F_Method;
           N_nudata=1;       
         }
         else

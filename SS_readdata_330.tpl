@@ -203,6 +203,7 @@
 //  SS_Label_Info_2.1.5  #Define fleets, surveys and areas
   imatrix pfleetname(1,Nfleet,1,2)
   ivector fleet_type(1,Nfleet)   // 1=fleet with catch; 2=discard only fleet with F; 3=survey(ignore catch); 4=ignore completely
+  ivector fish_fleet(1,Nfleet)   // list of catch_fleets that are type 1 or 2, so have a F
   ivector need_catch_mult(1,Nfleet)  // 0=no, 1=need catch_multiplier parameter
   vector surveytime(1,Nfleet)   // (-1, 1) code for fisheries to indicate use of season-wide observations, or specifically timed observations
   ivector fleet_area(1,Nfleet)    // areas in which each fleet/survey operates
@@ -234,6 +235,7 @@
   {
     N_bycatch=0;
     N_catchfleets=0;
+    fish_fleet.initialize();
     echoinput<<"rows are fleets; columns are: Fleet_#, fleet_type, timing, area, units, need_catch_mult"<<endl;
     for(f=1;f<=Nfleet;f++)
     {
@@ -242,11 +244,12 @@
       fleetname+=anystring;
       fleet_type(f) = int(fleet_setup(f,1));
       if(fleet_type(f)==2) N_bycatch++;
-      if(fleet_type(f)<=2) N_catchfleets++;
       surveytime(f) = fleet_setup(f,2)/fabs(fleet_setup(f,2));
       fleet_setup(f,2)=surveytime(f);
       if(fleet_type(f)<=2)
         {
+          N_catchfleets++;
+          fish_fleet(N_catchfleets)=f;  //  to find the original fleet index
           YPR_mask(f)=1;
           if(surveytime(f)!=-1.)
           {N_warn++;  warning<<N_warn<<" "<<"fishing fleet: "<<f<<" surveytime read as: "<<surveytime(f)<<" normally is -1 for fishing fleet; can override for indiv. obs. using 1000+month"<<endl;}

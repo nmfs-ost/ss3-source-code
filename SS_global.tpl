@@ -126,7 +126,9 @@ GLOBALS_SECTION
   std::vector<ivector> TwoD_AR_def;
   std::vector<ivector> TwoD_AR_def_rd;
   std::vector<ivector> reportdetail_list;
-
+  std::vector<ivector> Fparm_loc;
+  std::vector<dvector> F_Method_4_input;
+  std::vector<int> Fparm_PH;;
 //  function in GLOBALS to do the timing setup in the data section
 // SS_Label_Function_xxxx  #get_data_timing()  called by readdata
   void get_data_timing(const dvector& to_process, const ivector& timing_constants, ivector i_result, dvector r_result, const dvector& seasdur, const dvector& subseasdur_delta, const dvector& azero_seas, const dvector& surveytime)
@@ -627,20 +629,24 @@ BETWEEN_PHASES_SECTION
     last_objfun=obj_fun;
   }
 
-//  SS_Label_Info_11.2 #For Fmethod=2, set parameter values (F_rate) equal to Hrate array fromcalculated using hybrid method in previous phase
-    if(F_Method==2)
+//  SS_Label_Info_11.2 #For Fmethod=2 & 4, set parameter values (F_rate) equal to Hrate array fromcalculated using hybrid method in previous phase
+    if(N_Fparm>0 && j_phase>1)
     {
-      if(F_setup(2)>1 && j_phase==F_setup(2) && readparfile==0)  //  so now start doing F as parameters
-//      if(F_setup(2)>1 && j_phase==F_setup(2))  //  so now start doing F as paameters
+      for(int ff=1;ff<=N_catchfleets;ff++)
       {
-        for (f=1;f<=Nfleet;f++)
-        for (t=styr;t<=TimeMax;t++)
+        f=fish_fleet(ff);
+      if(F_Method_byPH(f,j_phase) < F_Method_byPH(f,j_phase-1))
+      {
+        for (g=Fparm_loc_st(f);g<=Fparm_loc_end(f);g++)
         {
-          g=do_Fparm(f,t);
-          if(g>0) {F_rate(g)=Hrate(f,t);}
-        }
-      }
+          t=Fparm_loc[g](2);
+          F_rate(g)=Hrate(f,t);
+       }
     }
+    }
+    }
+//        warning<<"between: Hrate_2010:  "<<Hrate(1,2010)<<" "<<Hrate(2,2010)<<" "<<Hrate(3,2010)<<" "<<Hrate(4,2010)<<" "<<endl;
+
   }  //  end BETWEEN_PHASES_SECTION
 
 //  SS_Label_Section_12. #FINAL_SECTION
@@ -817,7 +823,10 @@ FINAL_SECTION
 //  SS_Label_Section_13. #REPORT_SECTION  produces SS3.rep,which is less extensive than report.sso produced in final section
 REPORT_SECTION
   {
-    for (unsigned i = 1; i <= gradients.size(); i++) parm_gradients(i) = gradients(i);
+    int k=gradients.size();
+    int k1=parm_gradients.size();
+    if(k1<k) k=k1;
+   for (unsigned i = 1; i <= k; i++) parm_gradients(i) = gradients(i);
     if(current_phase() >= max_phase && finished_minimize==0) finished_minimize=1;  //  because REPORT occurs after minimize finished
 //  SS_Label_Info_13.1 #Write limited output to SS.rep
   if(reportdetail>0)

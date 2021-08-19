@@ -289,13 +289,17 @@ PARAMETER_SECTION
   3darray Zrate2(1,pop,1,gmorph,0,nages)
 
  LOCAL_CALCS
-  if(F_Method==2)    // continuous F
-//    {k=Nfleet*(TimeMax-styr+1);}
-     {k=N_Fparm;}
+  if(N_Fparm>0)    // continuous F
+     {k=N_Fparm;
+      Fparm_PH_dim.deallocate();
+      Fparm_PH_dim.allocate(1,N_Fparm);
+      for (int j=1;j<=N_Fparm;j++) Fparm_PH_dim(j) = Fparm_PH[j];
+      }
   else
     {k=-1;}
  END_CALCS
-  init_bounded_number_vector F_rate(1,k,0.,Fparm_max,Fparm_PH)
+ //  defining F_rate as number_vector allows for Fparm_PH to be element specific
+  init_bounded_number_vector F_rate(1,k,0.,max_harvest_rate,Fparm_PH_dim)
 
   vector Nmigr(1,pop);
   number Nsurvive;
