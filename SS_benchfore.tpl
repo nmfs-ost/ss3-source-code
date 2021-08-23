@@ -980,6 +980,118 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
 
     if(rundetail>0 && mceval_counter==0 && show_MSY==1) cout<<" got Fmsy "<<MSY_Fmult<<" "<<MSY<<endl;
 
+  else  //  find F giving B as fraction of Bmsy
+  {
+// ******************************************************
+    
+    if(show_MSY==1)
+    {
+      report5<<"#"<<endl<<"Find_target_SSB/Blimit; where Blimit is a fraction of Bmsy"<<endl<<"Iter Fmult ann_F SPR Catch SSB Recruits SSB/Bzero Tot_catch";
+      for (p=1;p<=pop;p++)
+      for (gp=1;gp<=N_GP;gp++)
+      {report5<<" SSB_Area:"<<p<<"_GP:"<<gp;}
+      report5<<endl;
+    }
+
+    F1(1)=log(1.0e-3); last_calc=0.; Fchange=-4.0; df=1.e-5; Closer=1.;
+    dvariable Closer2;
+    if(SR_fxn==5) {Closer2=0.001; Nloops=40;} else {Closer2=0.10; Nloops=28;}
+
+//    Btgttgt=BTGT_target*SSB_virgin;   //  this is relative to virgin, not to the average biology from benchmark years
+    Btgttgt2=0.5*Bmsy;   //  now relative to Bmark
+
+    for (j=0;j<=Nloops;j++)   // loop find Btarget
+      {
+      if(fabs(Fchange)<=Closer2)
+        {
+        jj=3;
+        F1(2) = F1(1) + df*.5;
+        F1(3) = F1(2) - df;
+        }
+      else
+        {jj=1;}
+      for (int ii=jj;ii>=1;ii--)
+      {
+        if(j==0) {Fmult=0.0;} else {Fmult=40.00/(1.00+mfexp(-F1(ii)));}
+        for (f=1;f<=Nfleet;f++)
+        {
+          if(fleet_type(f)==1 || (fleet_type(f)==2 && bycatch_setup(f,3)==1))
+          {
+            for (s=1;s<=nseas;s++) {t=bio_t_base+s; Hrate(f,t)=Fmult*Bmark_RelF_Use(s,f);}
+          }
+          //  else  Hrate for bycatch fleets set above
+        }
+        Do_Equil_Calc(equ_Recr);
+        SPR_Btgt2 = SSB_equil/SPR_unfished;
+//  SPAWN-RECR:   calc equil spawn-recr for Btarget calcs;  need to make area-specific
+        SPR_temp=SSB_equil;
+        Equ_SpawnRecr_Result = Equil_Spawn_Recr_Fxn(SR_parm_work(2), SR_parm_work(3), SSB_unf, Recr_unf, SPR_temp);  //  returns 2 element vector containing equilibrium biomass and recruitment at this SPR
+        yld1(ii)=Equ_SpawnRecr_Result(1);
+      }
+
+      Btgt2=Equ_SpawnRecr_Result(1);  //  so uses benchmark average years
+
+      if(jj==3)
+        {
+        Closer *=0.5;
+        dyld=(yld1(2) - yld1(3))/df;                      // First derivative
+        if(dyld!=0.)
+          {last_F1=F1(1); F1(1) -= (Btgt2-Btgttgt2)/(dyld+0.001);
+           F1(1)=(1.-Closer)*F1(1)+(Closer)*last_F1;
+          }        // weighted average with last good value to keep from changing too fast
+        else
+          {F1(1)=(F1(1)+last_F1)*0.5;}    // go halfway back towards previous value
+        }
+      else
+        {
+          temp=(last_calc-Btgttgt2)*(Btgt2-Btgttgt2)/(sfabs(last_calc-Btgttgt2)*sfabs(Btgt2-Btgttgt2));  // values of -1 or 1
+          temp1=temp-1.;  // values of -2 or 0
+          Fchange*=exp(temp1/4.)*temp;
+          F1(1)+=Fchange;  last_calc=Btgt2;
+        }
+
+      if(show_MSY==1)
+      {
+        report5<<j<<" "<<Fmult<<" "<<equ_F_std<<" "<<SPR_Btgt2<<" "<<YPR_dead*Equ_SpawnRecr_Result(2)<<" "<<Btgt2<<" "<<Equ_SpawnRecr_Result(2)
+        <<" "<<Btgt2/(Bmsy)<<" "<<sum(equ_catch_fleet(2))*Equ_SpawnRecr_Result(2);
+        for (p=1;p<=pop;p++)
+        for (gp=1;gp<=N_GP;gp++)
+        {report5<<" "<<SSB_equil_pop_gp(p,gp)*Equ_SpawnRecr_Result(2);}
+        report5<<endl;
+      }
+      }   // end search loop
+
+    Btgt_Rec2=Equ_SpawnRecr_Result(2);
+
+    if(show_MSY==1)
+    {
+      if(fabs(log(Btgt2/Btgttgt2))>=0.001)
+      {N_warn++;  warning<<N_warn<<" warning: poor convergence in Btarget search "<<Btgttgt2<<" "<<Btgt2<<endl;}
+      report5<<"seas fleet Hrate encB deadB retB encN deadN retN): "<<endl;
+      for (s=1;s<=nseas;s++)
+      for (f=1;f<=Nfleet;f++)
+      if(fleet_type(f)<=2)
+      {
+        report5<<s<<" "<<f<<" "<<Hrate(f,bio_t_base+s);
+        for (g=1;g<=6;g++) {report5<<" "<<Btgt_Rec2*equ_catch_fleet(g,s,f);}
+        report5<<endl;
+      }
+    }
+
+    Btgt_Fmult2=Fmult;
+    if(rundetail>0 && mceval_counter==0 && show_MSY==1) cout<<" got_F_Blimit "<<Btgt_Fmult2<<" "<<Btgt2/(Bmsy)<<endl;
+//    YPR_Btgt_enc  = YPR_enc;         //  total encountered yield per recruit
+//    YPR_Btgt_dead = YPR_dead;           // total dead yield per recruit
+//    YPR_Btgt_N_dead = YPR_N_dead;           // total dead yield per recruit
+//    YPR_Btgt_ret = YPR_ret;
+//    Vbio_Btgt=totbio; Vbio1_Btgt=smrybio;
+//    Mgmt_quant(7)=equ_F_std;
+//    Mgmt_quant(5)=Btgt;
+//    Mgmt_quant(6)=SPR_Btgt;
+//    Mgmt_quant(8)=YPR_dead*Btgt_Rec;
+  } //  end finding F for Blimit
+
+
 // ***************** show management report   SS_Label_740
     if(show_MSY==1)
     {
