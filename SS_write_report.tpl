@@ -3308,11 +3308,15 @@ FUNCTION void SPR_profile()
     
     equ_Recr=1.0;
     Fishon=0;
+    int SPRloop1_end;
+    if(Do_Benchmark==3) {SPRloop1_end==8;}
+      else
+      {SPRloop1_end==7;}
     int SPRloops;
     Do_Equil_Calc(equ_Recr);
     if(N_bycatch==0) {k=0;} else {k=1;}
     for (int with_BYC=0; with_BYC<=k;with_BYC++)
-    for (int SPRloop1=0; SPRloop1<=8; SPRloop1++)
+    for (int SPRloop1=0; SPRloop1<=SPRloop1_end; SPRloop1++)
     {
       Fmultchanger1=value(pow(0.0001/Fcrash,0.025));
       Fmultchanger2=value(Fcrash/39.);
@@ -3472,7 +3476,7 @@ FUNCTION void SPR_profile()
     SS2out<<"#value 4 is Fspr: "<<SPR_Fmult<<endl;
     SS2out<<"#value 5 is Fbtgt: "<<Btgt_Fmult<<endl;
     SS2out<<"#value 6 is Fmsy: "<<MSY_Fmult<<endl;
-    SS2out<<"#value 8 is F_Blimit: "<<Btgt_Fmult2<<endl;
+    if(Do_Benchmark==3) SS2out<<"#value 8 is F_Blimit: "<<Btgt_Fmult2<<endl;
     SS2out<<"#Profile 7 increases from Fmsy to Fcrash"<<endl;
     SS2out<<"#NOTE: meanage_of_catch_is_for_total_catch_of_fleet_type==1_or_bycatch_fleets_with_scaled_Hrate"<<endl;
 // end SPR/YPR_Profile

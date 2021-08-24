@@ -2915,30 +2915,47 @@
     }
   }
  END_CALCS
-  !!echoinput<<"read Do_Benchmark(0/1), then MSY basis(1=F_SPR,2=F_Btarget,3=calcMSY,4=mult*F_endyr)"<<endl;
-  init_int Do_Benchmark  // 0=skip; 1= do Fspr, Fbtgt, Fmsy; 2=do Fspr, F0.1, Fmsy
-  !!echoinput<<Do_Benchmark<<" echoed Do_Benchmark "<<endl;
-  init_int Do_MSY   //  1= set to F(SPR); 2=calc F(MSY); 3=set to F(Btgt) or F0.1; 4=set to F(endyr)
-  !!echoinput<<Do_MSY<<" echoed MSY basis"<<endl;
-
+  int Do_Benchmark  // 0=skip; 1= do Fspr, Fbtgt, Fmsy; 2=do Fspr, F0.1, Fmsy
+  int Do_MSY   //  1= set to F(SPR); 2=calc F(MSY); 3=set to F(Btgt) or F0.1; 4=set to F(endyr)
   int did_MSY;
   int show_MSY;
   int wrote_bigreport;
-  !! show_MSY=0;
-  !! did_MSY=0;
-  !! wrote_bigreport=0;
-
-  !!echoinput<<"next read SPR target and Biomass target as fractions"<<endl;
-  init_number SPR_target
-  !!echoinput<<SPR_target<<" echoed SPR_target "<<endl;
-  init_number BTGT_target
-  !!echoinput<<BTGT_target<<" echoed B_target "<<endl;
-  !!echoinput<<"next read 10 Benchmark years for:  beg-end bio; beg-end selex; beg-end relF; beg-end recr_dist; beg-end SRparm"<<endl;
-  !!echoinput<<"codes: -999 means start year; >0 is an actual year; <=0 is relative to endyr"<<endl;
+  ivector Bmark_Yr_rd(1,10)
   ivector Bmark_Yr(1,10)
   ivector Bmark_t(1,2)  //  for range of time values for averaging body size
-  init_ivector Bmark_Yr_rd(1,10)
+  number SPR_target
+  number BTGT_target
+  number Blim_frac
+
  LOCAL_CALCS
+  echoinput<<"read Do_Benchmark(0=skip; 1= do Fspr, Fbtgt, Fmsy; 2=do Fspr, F0.1, Fmsy;  3=Fspr, Fbtgt, Fmsy, F_Blimit)"<<endl;
+  *(ad_comm::global_datafile) >> Do_Benchmark;
+  echoinput<<Do_Benchmark<<" echoed Do_Benchmark "<<endl;
+  echoinput<<"read Do_MSY (1=F_SPR,2=F_Btarget,3=calcMSY,4=mult*F_endyr (disabled))"<<endl;
+  *(ad_comm::global_datafile) >> Do_MSY;
+  echoinput<<Do_MSY<<" echoed Do_MSY basis"<<endl;
+
+  show_MSY=0;
+  did_MSY=0;
+  wrote_bigreport=0;
+  Blim_frac=0.5;  //  default
+  echoinput<<"next read SPR target and Biomass target as fractions"<<endl;
+  *(ad_comm::global_datafile) >>  SPR_target;
+  echoinput<<SPR_target<<" echoed SPR_target "<<endl;
+  *(ad_comm::global_datafile) >>  BTGT_target;
+  echoinput<<BTGT_target<<" echoed B_target "<<endl;
+
+  if(Do_Benchmark==3)
+    {
+      echoinput<<"if Do_Benchmark==3, read Blimit as fraction of Bmsy (neg value to use as frac of Bzero)"<<endl;
+      *(ad_comm::global_datafile) >>  Blim_frac;
+      echoinput<<Blim_frac<<" echoed Blim_frac "<<endl;
+    }
+
+  echoinput<<"next read 10 Benchmark years for:  beg-end bio; beg-end selex; beg-end relF; beg-end recr_dist; beg-end SRparm"<<endl;
+  echoinput<<"codes: -999 means start year; >0 is an actual year; <=0 is relative to endyr"<<endl;
+  *(ad_comm::global_datafile) >> Bmark_Yr_rd(1,10);
+
   Bmark_Yr=0;
   if(Do_Benchmark==2 && N_bycatch>0)
   	{N_warn++;  warning<<N_warn<<" "<<"F0.1 does not work well with bycatch fleets; check output carefully"<<endl;}

@@ -743,7 +743,6 @@ FINAL_SECTION
      if(mceval_phase()==0) cout<<" finished StdDev quantities"<<endl;
      get_posteriors();
      if(mceval_phase()==0) cout<<" finished posteriors"<<endl;
-
 //  SS_Label_Info_12.4.2 #Call fxn write_summaryoutput()
     if(Do_CumReport>0) write_summaryoutput();
 

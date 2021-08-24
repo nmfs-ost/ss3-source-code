@@ -980,13 +980,11 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
 
     if(rundetail>0 && mceval_counter==0 && show_MSY==1) cout<<" got Fmsy "<<MSY_Fmult<<" "<<MSY<<endl;
 
-  else  //  find F giving B as fraction of Bmsy
+  else if (Do_Benchmark==3)  //  find F giving B as fraction of Bmsy
   {
-// ******************************************************
-    
     if(show_MSY==1)
     {
-      report5<<"#"<<endl<<"Find_target_SSB/Blimit; where Blimit is a fraction of Bmsy"<<endl<<"Iter Fmult ann_F SPR Catch SSB Recruits SSB/Bzero Tot_catch";
+      report5<<"#"<<endl<<"Find_target_SSB/Blimit; where Blimit is a fraction of Bmsy"<<Blim_frac<<endl<<"Iter Fmult ann_F SPR Catch SSB Recruits SSB/Bzero Tot_catch";
       for (p=1;p<=pop;p++)
       for (gp=1;gp<=N_GP;gp++)
       {report5<<" SSB_Area:"<<p<<"_GP:"<<gp;}
@@ -998,7 +996,11 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
     if(SR_fxn==5) {Closer2=0.001; Nloops=40;} else {Closer2=0.10; Nloops=28;}
 
 //    Btgttgt=BTGT_target*SSB_virgin;   //  this is relative to virgin, not to the average biology from benchmark years
-    Btgttgt2=0.5*Bmsy;   //  now relative to Bmark
+    double Blim_report;
+    if(Blim_frac>0.0)
+      {Btgttgt2=Blim_frac*Bmsy; Blim_report=value(Bmsy);}
+      else
+      {Btgttgt2=-Blim_frac*SSB_virgin; Blim_report=value(SSB_virgin); }
 
     for (j=0;j<=Nloops;j++)   // loop find Btarget
       {
@@ -1053,7 +1055,7 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
       if(show_MSY==1)
       {
         report5<<j<<" "<<Fmult<<" "<<equ_F_std<<" "<<SPR_Btgt2<<" "<<YPR_dead*Equ_SpawnRecr_Result(2)<<" "<<Btgt2<<" "<<Equ_SpawnRecr_Result(2)
-        <<" "<<Btgt2/(Bmsy)<<" "<<sum(equ_catch_fleet(2))*Equ_SpawnRecr_Result(2);
+        <<" "<<Btgt2/Blim_report<<" "<<sum(equ_catch_fleet(2))*Equ_SpawnRecr_Result(2);
         for (p=1;p<=pop;p++)
         for (gp=1;gp<=N_GP;gp++)
         {report5<<" "<<SSB_equil_pop_gp(p,gp)*Equ_SpawnRecr_Result(2);}
@@ -1066,7 +1068,7 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
     if(show_MSY==1)
     {
       if(fabs(log(Btgt2/Btgttgt2))>=0.001)
-      {N_warn++;  warning<<N_warn<<" warning: poor convergence in Btarget search "<<Btgttgt2<<" "<<Btgt2<<endl;}
+      {N_warn++;  warning<<N_warn<<" warning: poor convergence in Blimit search "<<Btgttgt2<<" "<<Btgt2<<endl;}
       report5<<"seas fleet Hrate encB deadB retB encN deadN retN): "<<endl;
       for (s=1;s<=nseas;s++)
       for (f=1;f<=Nfleet;f++)
@@ -1079,16 +1081,10 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
     }
 
     Btgt_Fmult2=Fmult;
-    if(rundetail>0 && mceval_counter==0 && show_MSY==1) cout<<" got_F_Blimit "<<Btgt_Fmult2<<" "<<Btgt2/(Bmsy)<<endl;
-//    YPR_Btgt_enc  = YPR_enc;         //  total encountered yield per recruit
-//    YPR_Btgt_dead = YPR_dead;           // total dead yield per recruit
-//    YPR_Btgt_N_dead = YPR_N_dead;           // total dead yield per recruit
-//    YPR_Btgt_ret = YPR_ret;
-//    Vbio_Btgt=totbio; Vbio1_Btgt=smrybio;
-//    Mgmt_quant(7)=equ_F_std;
-//    Mgmt_quant(5)=Btgt;
-//    Mgmt_quant(6)=SPR_Btgt;
-//    Mgmt_quant(8)=YPR_dead*Btgt_Rec;
+    if(rundetail>0 && mceval_counter==0 && show_MSY==1) cout<<" got_F_Blimit "<<Btgt_Fmult2<<" "<<Btgt2/Blim_report<<endl;
+    Mgmt_quant(18)=Btgt2;
+    Mgmt_quant(19)=equ_F_std;
+    Mgmt_quant(20)=sum(equ_catch_fleet(2))*Equ_SpawnRecr_Result(2);
   } //  end finding F for Blimit
 
 
