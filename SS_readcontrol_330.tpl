@@ -4603,6 +4603,7 @@
   if(Do_Benchmark>0)
   {
     N_STD_Mgmt_Quant=17;
+    if(Do_Benchmark==3) N_STD_Mgmt_Quant+=3;  //  for Blimit
   }
   else
   {N_STD_Mgmt_Quant=4;}
@@ -5150,7 +5151,7 @@
       ParmLabel+="Totbio_unfished"+CRLF(1); CoVar_Count++; j++; active_parm(CoVar_Count)=j;
       ParmLabel+="SmryBio_unfished"+CRLF(1); CoVar_Count++; j++; active_parm(CoVar_Count)=j;
       ParmLabel+="Recr_unfished"+CRLF(1); CoVar_Count++; j++; active_parm(CoVar_Count)=j;
-      if(Do_Benchmark==1)
+      if(Do_Benchmark==1 || Do_Benchmark==3)
       {
         ParmLabel+="SSB_Btgt"+CRLF(1); CoVar_Count++; j++; active_parm(CoVar_Count)=j;
         ParmLabel+="SPR_Btgt"+CRLF(1); CoVar_Count++; j++; active_parm(CoVar_Count)=j;
@@ -5173,6 +5174,13 @@
       ParmLabel+="Dead_Catch_MSY"+CRLF(1); CoVar_Count++; j++; active_parm(CoVar_Count)=j;
       ParmLabel+="Ret_Catch_MSY"+CRLF(1); CoVar_Count++; j++; active_parm(CoVar_Count)=j;
       ParmLabel+="B_MSY/SSB_unfished"+CRLF(1); CoVar_Count++; j++; active_parm(CoVar_Count)=j;
+        if(Do_Benchmark==3)
+          {
+            ParmLabel+="SSB_Blim"+CRLF(1); CoVar_Count++; j++; active_parm(CoVar_Count)=j;
+            ParmLabel+="annF_Blim"+CRLF(1); CoVar_Count++; j++; active_parm(CoVar_Count)=j;
+            ParmLabel+="Dead_Catch_Blim"+CRLF(1); CoVar_Count++; j++; active_parm(CoVar_Count)=j;
+          }
+
     }
     else
     {

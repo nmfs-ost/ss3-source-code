@@ -227,6 +227,12 @@ PARAMETER_SECTION
   number Btgt_Fmult;
   number MSY_SPR;
 
+  number Btgt2;
+  number Btgttgt2;
+  number SPR_Btgt2;
+  number Btgt_Rec2;
+  number Btgt_Fmult2;
+
   3darray SSB_pop_gp(styr-3,YrMax,1,pop,1,N_GP)         //Spawning biomass
   vector SSB_yr(styr-3,YrMax)
   vector SSB_B_yr(styr-3,YrMax)  //  mature biomass (no fecundity)
