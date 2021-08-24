@@ -3248,7 +3248,7 @@ FUNCTION void SPR_profile()
   int bio_t_base;
   dvariable Fmult2=maxpossF;
   dvariable Fcrash=Fmult2;
-  dvariable Fmultchanger0=value(Fmult2/39.);
+  dvariable Fmultchanger0=Fmult2/39.;
   dvariable Fmultchanger1;
   dvariable Fmultchanger2;
   dvariable Btgt_prof;
@@ -3309,9 +3309,9 @@ FUNCTION void SPR_profile()
     equ_Recr=1.0;
     Fishon=0;
     int SPRloop1_end;
-    if(Do_Benchmark==3) {SPRloop1_end==8;}
+    if(Do_Benchmark==3) {SPRloop1_end=8;}
       else
-      {SPRloop1_end==7;}
+      {SPRloop1_end=7;}
     int SPRloops;
     Do_Equil_Calc(equ_Recr);
     if(N_bycatch==0) {k=0;} else {k=1;}
