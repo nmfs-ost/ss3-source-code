@@ -1045,6 +1045,7 @@ FUNCTION void Process_STDquant()
 
 //  SS_Label_7.8  get extra std quantities
     // selectivity
+    //  f = Do_Selex_Std
     if(Selex_Std_Cnt>0)
     {
       for (i=1;i<=Selex_Std_Cnt;i++)
@@ -1062,9 +1063,17 @@ FUNCTION void Process_STDquant()
         }
         else if(Selex_Std_AL==3)
         {
-//  need to re-write this section to reference    save_sel_fec(t,g,f)
-//          Extra_Std(i)=sel_al_3(Selex_Std_Year,Do_Selex_Std,1,j);
-//          if(gender==2) Extra_Std(i+Selex_Std_Cnt)=sel_al_3(Selex_Std_Year,Do_Selex_Std,2,j);
+//  4darray sel_al_3(1,nseas,1,gmorph,1,Nfleet,0,nages);  // selected numbers
+//  4darray save_sel_fec(styr-3*nseas,TimeMax_Fcast_std+nseas,1,gmorph,0,Nfleet,0,nages)  //  save sel_al_3 (Asel_2) and save fecundity for output;  +nseas covers no forecast setups
+
+          int t_write=styr+(Selex_Std_Year-styr)*nseas;  //  season 1 of selected year
+          g=g_Start(1)+N_platoon; //  mid morph for first GP for females
+          Extra_Std(i)=save_sel_fec(t_write,g,Do_Selex_Std,j);
+          if(gender==2)
+            {
+              g=g_Start(1+N_GP)+N_platoon; //  mid morph for first GP for males
+              Extra_Std(i+Selex_Std_Cnt)=save_sel_fec(t_write,g,Do_Selex_Std,j);
+            }
         }
       }
     }
