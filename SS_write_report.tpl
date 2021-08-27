@@ -11,9 +11,9 @@ FUNCTION void write_bigoutput()
   SS2out.open ("Report.sso");   // this file was created in globals so accessible to the report_parm function
   ofstream SS_compout("CompReport.sso");
 
-  SS2out<<version_info<<endl<<version_info2<<endl<<version_info3<<endl<<endl;
+  SS2out<<version_info(1)<<version_info(2)<<version_info(3)<<endl<<version_info2<<endl;
   time(&finish);
-  SS_compout<<version_info<<endl<<"StartTime: "<<ctime(&start);
+  SS_compout<<version_info(1)<<version_info(2)<<version_info(3)<<endl<<"StartTime: "<<ctime(&start);
 
   cout<<" writing big output now "<<endl;
   SS2out<<"StartTime: "<<ctime(&start);

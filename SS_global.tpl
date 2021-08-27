@@ -83,9 +83,7 @@ GLOBALS_SECTION
   adstring anystring;
   adstring anystring2;
   adstring_array version_info;
-  adstring version_info2;
-  adstring version_info3;
-  adstring version_info_short;
+  adstring_array version_info2;
   adstring_array Starter_Comments;
   adstring_array Data_Comments;
   adstring_array Control_Comments;
