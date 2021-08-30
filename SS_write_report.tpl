@@ -2396,7 +2396,7 @@ FUNCTION void write_bigoutput()
       {
         g++;
         if(use_morph(g)>0)
-        {for (s=1;s<=nseas;s++) SS2out<<gp<<" "<<gg<<" "<<settle<<" "<<s<<" "<<natM_unf(s,g)/(Bmark_Yr(2)-Bmark_Yr(1)+1)<<endl;}
+        {for (s=1;s<=nseas;s++) SS2out<<gp<<" "<<gg<<" "<<settle<<" "<<s<<" "<<natM_unf(s,g)<<endl;}
       }
 
     SS2out<<"#"<<endl<<"Natural_Mortality_endyr"<<endl<<"Bio_Pattern Sex Settlement Seas "<<age_vector<<endl;
