@@ -951,6 +951,20 @@ PRELIMINARY_CALCS_SECTION
 //  SS_Label_Info_6.8.4 #Call fxn get_natmort()
     echoinput<<"ready to do natmort "<<endl;
     get_natmort();
+    natM_M1=natM;  //  base M1 to which M2 is added
+  if(N_predparms>0)
+  {
+    for(f1=1;f1<=N_pred;f1++)
+    {
+      f=predator(f1);
+      pred_M2(f1)(styr-2,styr)=MGparm(predparm_pointer+f1-1);
+      for (s=1;s<=nseas;s++)
+      for (gp=1;gp<=N_GP*gender*N_settle_timings;gp++)
+      {natM(s,gp)=natM_M1(s,gp)+pred_M2(f1,styr-2); //  need to bring in selectivity
+      }
+    }
+  }
+
     natM = value(natM);
     surv1 = value(surv1);
     surv2 = value(surv2);

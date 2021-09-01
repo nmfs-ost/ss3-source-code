@@ -132,10 +132,15 @@ FUNCTION void get_initial_conditions()
   get_mat_fec();  //  does just spawn season and subseason using ALK calculated just above
   if(Hermaphro_Option!=0) get_Hermaphro();
 
-  if(MG_active(1)>0) get_natmort();
+  if(MG_active(1)>0) 
+    {
+      get_natmort();
+      natM_M1=natM;
+    }
  #ifdef DO_ONCE
   if(do_once==1) cout<<" natmort OK"<<endl;
  #endif
+
   if(y>=Bmark_Yr(1)&&y<=Bmark_Yr(2))
   {
     for (s=1;s<=nseas;s++)
@@ -241,6 +246,28 @@ FUNCTION void get_initial_conditions()
   //  SS_Label_Info_23.3.3 #for each platoon, combine size_at_age distribution with length selectivity and weight-at-length to get combined selectivity vectors
       Make_FishSelex();
     }
+
+      if(N_predparms>0)
+      {
+        for(f1=1;f1<=N_pred;f1++)
+        {
+          f=predator(f1);
+          pred_M2(f1)(styr-2,styr)=mgp_adj(predparm_pointer+f1-1);
+
+          for (gp=1;gp<=N_GP*gender;gp++)
+          {g=g_Start(gp);  //  base platoon
+            for (settle=1;settle<=N_settle_timings;settle++)
+            {
+              g+=N_platoon;
+              int gpi=GP3(g);   // GP*gender*settlement
+              natM(s,gpi)=natM_M1(s,gpi)+pred_M2(f1,styr-2)*sel_al_3(s,g,f);
+              surv1(s,gpi)=mfexp(-natM(s,gpi)*seasdur_half(s));
+              surv2(s,gpi)=square(surv1(s,gpi));
+              if(do_once==1) echoinput<<y<<" "<<gpi<<"  M1+M2: "<<natM(s,gpi)<<endl;
+            }
+          }
+        }
+      }
   }
 
  #ifdef DO_ONCE
@@ -634,7 +661,25 @@ FUNCTION void get_time_series()
         // but Maunder's M in get_natmort() may use the fecundity vector, so would be using the most recently calculated  Problem??
         if(Hermaphro_Option!=0) get_Hermaphro();
       }
-      if(timevary_MG(y,1)>0) get_natmort();
+      if(timevary_MG(y,1)>0) 
+      {
+        get_natmort();
+        natM_M1=natM;
+        if(N_predparms>0)
+        {
+          for(f1=1;f1<=N_pred;f1++)
+          { 
+            f=predator(f1);
+            pred_M2(f1)(styr-2,styr)=MGparm(predparm_pointer+f1-1);
+            for (s=1;s<=nseas;s++)
+            for (gp=1;gp<=N_GP*gender*N_settle_timings;gp++)
+            {natM(s,gp)=natM_M1(s,gp)+pred_M2(f1,styr-2); //  need to bring in selectivity
+          }
+        }
+      }
+
+      }
+
       if(y>=Bmark_Yr(1)&&y<=Bmark_Yr(2))
       {
         for (s=1;s<=nseas;s++)
@@ -756,6 +801,29 @@ FUNCTION void get_time_series()
         for (g=1;g<=gmorph;g++)
         if(use_morph(g)>0)
         {Make_FishSelex();}
+
+      if(N_predparms>0)
+      {
+        for(f1=1;f1<=N_pred;f1++)
+        {
+          f=predator(f1);
+          pred_M2(f1)(y)=mgp_adj(predparm_pointer+f1-1);
+
+          for (gp=1;gp<=N_GP*gender;gp++)
+          {g=g_Start(gp);  //  base platoon
+            for (settle=1;settle<=N_settle_timings;settle++)
+            {
+              g+=N_platoon;
+              int gpi=GP3(g);   // GP*gender*settlement
+              natM(s,gpi)=natM_M1(s,gpi)+pred_M2(f1,y)*sel_al_3(s,g,f);
+              surv1(s,gpi)=mfexp(-natM(s,gpi)*seasdur_half(s));
+              surv2(s,gpi)=square(surv1(s,gpi));
+              if(do_once==1) echoinput<<y<<" "<<gpi<<"  M1+M2: "<<natM(s,gpi)<<endl;
+            }
+          }
+        }
+      }
+
       }
 
 //  SS_Label_Info_24.2.2 #Compute spawning biomass if this is spawning season so recruits could occur later this season
