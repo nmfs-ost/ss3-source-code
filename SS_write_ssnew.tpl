@@ -25,7 +25,7 @@ FUNCTION void write_nudata()
   }
 
   ofstream report1("data.ss_new");
-  report1<<version_info<<endl<<version_info2<<endl<<version_info3<<endl<<"#_Start_time: "<<ctime(&start);
+  report1<<version_info(1)<<version_info(2)<<version_info(3)<<endl<<version_info2<<endl<<"#_Start_time: "<<ctime(&start);
   report1  << "#_Number_of_datafiles: " << N_nudata << endl;
   for (Nudat=1;Nudat<=N_nudata;Nudat++)
   {
@@ -39,7 +39,7 @@ FUNCTION void write_nudata()
   else
   { 
   report1 << "#_bootstrap file: " << Nudat-2 <<"  irand_seed: "<<irand_seed<<" first rand#: "<<randn(radm)<<endl;}
-  report1<<version_info<<endl;
+  report1<<version_info(1)<<version_info(2)<<version_info(3)<<endl;
   report1 << styr << " #_StartYr"<<endl;
   report1 << endyr <<" #_EndYr"<< endl;
   report1 << nseas <<" #_Nseas"<< endl;
@@ -1138,7 +1138,7 @@ FUNCTION void write_nucontrol()
   {
   cout<<" Write new starter file "<<endl;
   ofstream NuStart("starter.ss_new");
-  NuStart<<version_info<<endl<<version_info2<<endl<<version_info3<<endl;
+  NuStart<<version_info(1)<<version_info(2)<<version_info(3)<<endl<<version_info2<<endl;
   if(N_SC>0) NuStart<<Starter_Comments<<endl;
   NuStart<<datfilename<<endl<<ctlfilename<<endl;
   NuStart<<readparfile<<" # 0=use init values in control file; 1=use ss.par"<<endl;
@@ -1191,7 +1191,7 @@ FUNCTION void write_nucontrol()
 
   cout<<" Write new forecast file "<<endl;
   ofstream NuFore("forecast.ss_new");
-  NuFore<<version_info<<endl;
+  NuFore<<version_info(1)<<version_info(2)<<version_info(3)<<endl;
   if(N_FC>0) NuFore<<Forecast_Comments<<endl;
   NuFore<<"# for all year entries except rebuilder; enter either: actual year, -999 for styr, 0 for endyr, neg number for rel. endyr"<<endl;
   NuFore<<Do_Benchmark<<" # Benchmarks: 0=skip; 1=calc F_spr,F_btgt,F_msy; 2=calc F_spr,F0.1,F_msy;  3=add F_Blimit"<<endl;
@@ -1327,8 +1327,8 @@ FUNCTION void write_nucontrol()
   cout<<" Write new control file "<<endl;
 
   ofstream report4("control.ss_new");
-  report4<<version_info<<endl;
-  report4<<version_info2<<endl<<version_info3<<endl;
+  report4<<version_info(1)<<version_info(2)<<version_info(3)<<endl;
+  report4<<version_info2<<endl;
   if(N_CC>0) report4<<Control_Comments<<endl;
   report4 << "#_data_and_control_files: "<<datfilename<<" // "<<ctlfilename<<endl;
   report4<<WTage_rd<<"  # 0 means do not read wtatage.ss; 1 means read and use wtatage.ss and also read and use growth parameters"<<endl;
