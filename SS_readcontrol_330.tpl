@@ -4440,12 +4440,16 @@
       if(Selex_Std_AL==1) // length-based selex
       {
         if(Selex_Std_Pick(i)<=0) Selex_Std_Pick(i)=1;
-        if(Selex_Std_Pick(i)>nlength) Selex_Std_Pick(i)=nlength;
+        if(Selex_Std_Pick(i)>nlength) {
+          N_warn++; warning<<N_warn<<" Selex_std requested output past nlength, resets to nlength, may produce duplicates"<<endl;
+          Selex_Std_Pick(i)=nlength;}
       }
       else // age-based or age-length-combined selex
       {
         if(Selex_Std_Pick(i)<0) Selex_Std_Pick(i)=0;
-        if(Selex_Std_Pick(i)>nages) Selex_Std_Pick(i)=nages;
+        if(Selex_Std_Pick(i)>nages) {
+          N_warn++; warning<<N_warn<<" Selex_std requested output past nages, resets to nages, may produce duplicates"<<endl;
+          Selex_Std_Pick(i)=nages;}
       }
     }
     // increment count
