@@ -665,19 +665,6 @@ FUNCTION void get_time_series()
       {
         get_natmort();
         natM_M1=natM;
-        if(N_predparms>0)
-        {
-          for(f1=1;f1<=N_pred;f1++)
-          { 
-            f=predator(f1);
-            pred_M2(f1)(styr-2,styr)=MGparm(predparm_pointer+f1-1);
-            for (s=1;s<=nseas;s++)
-            for (gp=1;gp<=N_GP*gender*N_settle_timings;gp++)
-            {natM(s,gp)=natM_M1(s,gp)+pred_M2(f1,styr-2); //  need to bring in selectivity
-          }
-        }
-      }
-
       }
 
       if(y>=Bmark_Yr(1)&&y<=Bmark_Yr(2))
@@ -807,7 +794,7 @@ FUNCTION void get_time_series()
         for(f1=1;f1<=N_pred;f1++)
         {
           f=predator(f1);
-          pred_M2(f1)(y)=mgp_adj(predparm_pointer+f1-1);
+          pred_M2(f1,y)=mgp_adj(predparm_pointer+f1-1);
 
           for (gp=1;gp<=N_GP*gender;gp++)
           {g=g_Start(gp);  //  base platoon
@@ -818,7 +805,7 @@ FUNCTION void get_time_series()
               natM(s,gpi)=natM_M1(s,gpi)+pred_M2(f1,y)*sel_al_3(s,g,f);
               surv1(s,gpi)=mfexp(-natM(s,gpi)*seasdur_half(s));
               surv2(s,gpi)=square(surv1(s,gpi));
-              if(do_once==1) echoinput<<y<<" "<<gpi<<"  M1+M2: "<<natM(s,gpi)<<endl;
+              if(do_once==1) echoinput<<y<<" "<<gpi<<" pred: "<<f1<<"  M1+M2: "<<natM(s,gpi)<<endl;
             }
           }
         }

@@ -2409,6 +2409,28 @@ FUNCTION void write_bigoutput()
         if(use_morph(g)>0)
         {for (s=1;s<=nseas;s++) SS2out<<gp<<" "<<gg<<" "<<settle<<" "<<s<<" "<<natM_endyr(s,g)<<endl;}
       }
+
+      if(N_predparms>0)
+      {
+        SS2out<<endl<<"Predator_(M2); Values_are_apical_M2; total_M-at-age_(M1+M2)_reported_in_table_No_fishery_for_Z=M "<<endl<<"Yr ";
+        for(f1=1;f1<=N_pred;f1++)
+        {f=predator(f1); SS2out<<fleetname(f)<<" ";}
+        SS2out<<endl;
+        for(y=styr-2;y<=YrMax;y++)
+        {
+          SS2out<<y;
+       if(y==styr-2)
+         {SS2out<<" VIRG ";}
+       else if (y==styr-1)
+         {SS2out<<" INIT ";}
+       else if (y<=endyr)
+         {SS2out<<" TIME ";}
+       else
+         {SS2out<<" FORE ";}
+        for(f1=1;f1<=N_pred;f1++) {SS2out<<pred_M2(f1,y);}
+        SS2out<<endl;
+        }
+      }
     }
 // REPORT_KEYWORD 44 AGE_SPECIFIC_K
     if(pick_report_use(44)=="Y" && Grow_type>=3 && Grow_type<=6) {
