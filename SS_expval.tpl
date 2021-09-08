@@ -285,7 +285,10 @@ FUNCTION void Get_expected_values(const int y,const int t);
                   }
                   case 2:   //  F rate
                   {
-                   vbio=Hrate(f,t);
+                   if(fleet_type(f)<4)
+                    {vbio=Hrate(f,t);}
+                    else
+                    {vbio=pred_M2(predator_rev(f),t);}
                    break;
                   }
                   case 30:  // spawning biomass  #30
@@ -469,6 +472,17 @@ FUNCTION void Get_expected_values(const int y,const int t);
                   if(disc_units(f)==2) exp_disc(f,j) /= (catch_fleet(t,f,4) + 0.0000001);
                 }
                 if(exp_disc(f,j)<0.0)  warning<<N_warn<<" "<<f<<" "<<j<<" "<<exp_disc(f,j)<<" catches "<<catch_fleet(t,f)<<endl;
+              }
+              else if (fleet_type(f)==4)  //  predator consumption stored in discard
+              {
+                if(disc_units(f)==3)  // numbers 
+                {
+                  exp_disc(f,j)=catch_fleet(t,f,4);  // consumption in numbers
+                }
+                else
+                {
+                  exp_disc(f,j)=catch_fleet(t,f,1);  // consumption in biomass
+                }
               }
               else
               {

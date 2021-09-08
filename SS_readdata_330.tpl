@@ -205,6 +205,7 @@
   ivector fleet_type(1,Nfleet)   // 1=fleet with catch; 2=discard only fleet with F; 3=survey(ignore catch); 4=M2=predator
   ivector fish_fleet(1,Nfleet)   // list of catch_fleets that are type 1 or 2, so have a F
   ivector predator(1,Nfleet)   // list of "fleets" that are type 4, so are added to M rather than to F
+  ivector predator_rev(1,Nfleet)   // predator given f
   ivector need_catch_mult(1,Nfleet)  // 0=no, 1=need catch_multiplier parameter
   vector surveytime(1,Nfleet)   // (-1, 1) code for fisheries to indicate use of season-wide observations, or specifically timed observations
   ivector fleet_area(1,Nfleet)    // areas in which each fleet/survey operates
@@ -269,6 +270,7 @@
           {
             N_pred++;
             predator(N_pred)=f;
+            predator_rev(f)=N_pred;
             surveytime(f)=-1.;
           }
       if(fleet_type(f)>1 && need_catch_mult(f)>0)

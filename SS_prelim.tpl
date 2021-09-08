@@ -957,10 +957,10 @@ PRELIMINARY_CALCS_SECTION
     for(f1=1;f1<=N_pred;f1++)
     {
       f=predator(f1);
-      pred_M2(f1)(styr-2,styr)=MGparm(predparm_pointer+f1-1);
+      pred_M2(f1)(styr-1,styr+nseas-1)=MGparm(predparm_pointer+f1-1);
       for (s=1;s<=nseas;s++)
       for (gp=1;gp<=N_GP*gender*N_settle_timings;gp++)
-      {natM(s,gp)=natM_M1(s,gp)+pred_M2(f1,styr-2); //  need to bring in selectivity
+      {natM(s,gp)=natM_M1(s,gp)+pred_M2(f1,styr);
       }
     }
   }

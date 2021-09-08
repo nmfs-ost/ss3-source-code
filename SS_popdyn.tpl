@@ -141,17 +141,6 @@ FUNCTION void get_initial_conditions()
   if(do_once==1) cout<<" natmort OK"<<endl;
  #endif
 
-  if(y>=Bmark_Yr(1)&&y<=Bmark_Yr(2))
-  {
-    for (s=1;s<=nseas;s++)
-    for (gp=1;gp<=N_GP*gender*N_settle_timings;gp++)
-    {
-      natM_unf(s,gp)+=natM(s,gp);   //  need nseas to capture differences due to settlement
-      surv1_unf(s,gp)+=surv1(s,gp);   //  need nseas to capture differences due to settlement
-      surv2_unf(s,gp)+=surv2(s,gp);   //  need nseas to capture differences due to settlement
-    }
-  }
-
   if(MG_active(4)>0) get_recr_distribution();
   if(y>=Bmark_Yr(7)&&y<=Bmark_Yr(8))
   {
@@ -252,15 +241,14 @@ FUNCTION void get_initial_conditions()
         for(f1=1;f1<=N_pred;f1++)
         {
           f=predator(f1);
-          pred_M2(f1)(styr-2,styr)=mgp_adj(predparm_pointer+f1-1);
-
+          pred_M2(f1)(styr-1,styr+nseas-1)=mgp_adj(predparm_pointer+f1-1);
           for (gp=1;gp<=N_GP*gender;gp++)
           {g=g_Start(gp);  //  base platoon
             for (settle=1;settle<=N_settle_timings;settle++)
             {
               g+=N_platoon;
               int gpi=GP3(g);   // GP*gender*settlement
-              natM(s,gpi)=natM_M1(s,gpi)+pred_M2(f1,styr-2)*sel_al_3(s,g,f);
+              natM(s,gpi)=natM_M1(s,gpi)+pred_M2(f1,t)*sel_al_3(s,g,f);
               surv1(s,gpi)=mfexp(-natM(s,gpi)*seasdur_half(s));
               surv2(s,gpi)=square(surv1(s,gpi));
               if(do_once==1) echoinput<<y<<" "<<gpi<<"  M1+M2: "<<natM(s,gpi)<<endl;
@@ -268,6 +256,15 @@ FUNCTION void get_initial_conditions()
           }
         }
       }
+  if(y>=Bmark_Yr(1)&&y<=Bmark_Yr(2))
+  {
+    for (gp=1;gp<=N_GP*gender*N_settle_timings;gp++)
+    {
+      natM_unf(s,gp)+=natM(s,gp);   //  need nseas to capture differences due to settlement
+      surv1_unf(s,gp)+=surv1(s,gp);   //  need nseas to capture differences due to settlement
+      surv2_unf(s,gp)+=surv2(s,gp);   //  need nseas to capture differences due to settlement
+    }
+  }
   }
 
  #ifdef DO_ONCE
@@ -667,16 +664,6 @@ FUNCTION void get_time_series()
         natM_M1=natM;
       }
 
-      if(y>=Bmark_Yr(1)&&y<=Bmark_Yr(2))
-      {
-        for (s=1;s<=nseas;s++)
-        for (gp=1;gp<=N_GP*gender*N_settle_timings;gp++)
-        {
-          natM_unf(s,gp)+=natM(s,gp);
-          surv1_unf(s,gp)+=surv1(s,gp);
-          surv2_unf(s,gp)+=surv2(s,gp);
-        }
-      }
       if(timevary_MG(y,4)>0) get_recr_distribution();
       if(y>=Bmark_Yr(7)&&y<=Bmark_Yr(8))
       {
@@ -788,21 +775,19 @@ FUNCTION void get_time_series()
         for (g=1;g<=gmorph;g++)
         if(use_morph(g)>0)
         {Make_FishSelex();}
-
       if(N_predparms>0)
       {
         for(f1=1;f1<=N_pred;f1++)
         {
           f=predator(f1);
-          pred_M2(f1,y)=mgp_adj(predparm_pointer+f1-1);
-
+          pred_M2(f1)(t,t+nseas-1)=mgp_adj(predparm_pointer+f1-1);
           for (gp=1;gp<=N_GP*gender;gp++)
           {g=g_Start(gp);  //  base platoon
             for (settle=1;settle<=N_settle_timings;settle++)
             {
               g+=N_platoon;
               int gpi=GP3(g);   // GP*gender*settlement
-              natM(s,gpi)=natM_M1(s,gpi)+pred_M2(f1,y)*sel_al_3(s,g,f);
+              natM(s,gpi)=natM_M1(s,gpi)+pred_M2(f1,t)*sel_al_3(s,g,f);
               surv1(s,gpi)=mfexp(-natM(s,gpi)*seasdur_half(s));
               surv2(s,gpi)=square(surv1(s,gpi));
               if(do_once==1) echoinput<<y<<" "<<gpi<<" pred: "<<f1<<"  M1+M2: "<<natM(s,gpi)<<endl;
@@ -810,9 +795,17 @@ FUNCTION void get_time_series()
           }
         }
       }
-
+      if(y>=Bmark_Yr(1)&&y<=Bmark_Yr(2))
+      {
+        for (gp=1;gp<=N_GP*gender*N_settle_timings;gp++)
+        {
+          natM_unf(s,gp)+=natM(s,gp);
+          surv1_unf(s,gp)+=surv1(s,gp);
+          surv2_unf(s,gp)+=surv2(s,gp);
+        }
       }
 
+      }
 //  SS_Label_Info_24.2.2 #Compute spawning biomass if this is spawning season so recruits could occur later this season
 //  SPAWN-RECR:   calc SPB in time series if spawning is at beginning of the season
       if(s==spawn_seas && spawn_time_seas<0.0001)    //  compute spawning biomass if spawning at beginning of season so recruits could occur later this season
@@ -951,7 +944,7 @@ FUNCTION void get_time_series()
   //  SS_Label_Info_24.3.3 #Do fishing mortality
         catage_tot.initialize();
 
-        if(catch_seas_area(t,p,0)==1 && fishery_on_off==1)
+        if( (catch_seas_area(t,p,0)==1 && fishery_on_off==1))
         {
           if(F_Method>1)  //  not Pope's
           {
@@ -992,7 +985,7 @@ FUNCTION void get_time_series()
                 for (g=1;g<=gmorph;g++)
                 if(use_morph(g)>0)
                 {
-                  Z_rate(t,p,g)=natM(s,GP3(g));
+                  Z_rate(t,p,g)=natM(s,GP3(g));  //  where natM already includes M2
                   for (f=1;f<=Nfleet;f++)       //loop over fishing fleets to get Z
                   if (catch_seas_area(t,p,f)!=0)
                   {
@@ -1100,7 +1093,7 @@ FUNCTION void get_time_series()
                     }
                 }  //close gmorph loop
               }  // close fishery
-            }   //  end continuous F method
+          }   //  end continuous F method
 
           }
           else
@@ -1188,8 +1181,28 @@ FUNCTION void get_time_series()
   //  SS_Label_Info_24.3.3.4 #No catch or fishery turned off, so set Z=M
           for (g=1;g<=gmorph;g++)
           if(use_morph(g)>0)
-          {Z_rate(t,p,g)=natM(s,GP3(g));}
+          {Z_rate(t,p,g)=natM(s,GP3(g));
+           Zrate2(p,g)=elem_div( (1.-mfexp(-seasdur(s)*Z_rate(t,p,g))), Z_rate(t,p,g));
+          }
         }
+              if(N_predparms>0)
+              {
+                for(f1=1;f1<=N_pred;f1++)
+                {
+                  f=predator(f1);
+                for (g=1;g<=gmorph;g++)
+                if(use_morph(g)>0)
+                {
+                  catch_fleet(t,f,1)+=pred_M2(f1,t)*elem_prod(natage(t,p,g),sel_al_1(s,g,f))*Zrate2(p,g);
+                  catch_fleet(t,f,2)+=pred_M2(f1,t)*elem_prod(natage(t,p,g),deadfish_B(s,g,f))*Zrate2(p,g);
+                  catch_fleet(t,f,3)+=pred_M2(f1,t)*elem_prod(natage(t,p,g),sel_al_2(s,g,f))*Zrate2(p,g); // retained bio
+                  catch_fleet(t,f,4)+=pred_M2(f1,t)*elem_prod(natage(t,p,g),sel_al_3(s,g,f))*Zrate2(p,g);
+                  catch_fleet(t,f,5)+=pred_M2(f1,t)*elem_prod(natage(t,p,g),deadfish(s,g,f))*Zrate2(p,g);
+                  catch_fleet(t,f,6)+=pred_M2(f1,t)*elem_prod(natage(t,p,g),sel_al_4(s,g,f))*Zrate2(p,g);  // retained numbers
+                  catage(t,f,g)=pred_M2(f1,t)*elem_prod(elem_prod(natage(t,p,g),deadfish(s,g,f)),Zrate2(p,g));
+                }  //close gmorph loop
+              }
+              }
       } //close area loop
       if(s==1 && save_for_report==1){
         Smry_Table(y,1)=totbio;
