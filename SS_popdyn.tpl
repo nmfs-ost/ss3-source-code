@@ -251,6 +251,7 @@ FUNCTION void get_initial_conditions()
               natM(s,gpi)=natM_M1(s,gpi)+pred_M2(f1,t)*sel_al_3(s,g,f);
               surv1(s,gpi)=mfexp(-natM(s,gpi)*seasdur_half(s));
               surv2(s,gpi)=square(surv1(s,gpi));
+              if(do_once==1) echoinput<<y<<" "<<gpi<<"  M1: "<<natM_M1(s,gpi)<<endl;
               if(do_once==1) echoinput<<y<<" "<<gpi<<"  M1+M2: "<<natM(s,gpi)<<endl;
             }
           }
@@ -790,6 +791,7 @@ FUNCTION void get_time_series()
               natM(s,gpi)=natM_M1(s,gpi)+pred_M2(f1,t)*sel_al_3(s,g,f);
               surv1(s,gpi)=mfexp(-natM(s,gpi)*seasdur_half(s));
               surv2(s,gpi)=square(surv1(s,gpi));
+              if(do_once==1) echoinput<<y<<" "<<gpi<<" pred: "<<f1<<"  M1: "<<natM_M1(s,gpi)<<endl;
               if(do_once==1) echoinput<<y<<" "<<gpi<<" pred: "<<f1<<"  M1+M2: "<<natM(s,gpi)<<endl;
             }
           }
