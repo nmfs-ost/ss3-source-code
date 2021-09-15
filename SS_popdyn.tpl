@@ -236,27 +236,31 @@ FUNCTION void get_initial_conditions()
       Make_FishSelex();
     }
 
-      if(N_predparms>0)
-      {
-        for(f1=1;f1<=N_pred;f1++)
-        {
-          f=predator(f1);
-          pred_M2(f1)(styr-1,styr+nseas-1)=mgp_adj(predparm_pointer+f1-1);
+//  SS_Label_Info_23.3.4 #add predator M2 to M1 to update seasonal M in styr
+  if(N_pred>0)
+  {
+    for(f1=1;f1<=N_pred;f1++)
+    {
+      f=predator(f1);
+      pred_M2(f1,t)=mgp_adj(predparm_pointer(f1));  //  base with no seasonal effect
+      if(nseas>1) pred_M2(f1,t)*=mgp_adj(predparm_pointer(f1)+s);
+
           for (gp=1;gp<=N_GP*gender;gp++)
           {g=g_Start(gp);  //  base platoon
             for (settle=1;settle<=N_settle_timings;settle++)
             {
               g+=N_platoon;
               int gpi=GP3(g);   // GP*gender*settlement
-              natM(s,gpi)=natM_M1(s,gpi)+pred_M2(f1,t)*sel_al_3(s,g,f);
+              natM(s,gpi)+=pred_M2(f1,t)*sel_al_3(s,g,f);
               surv1(s,gpi)=mfexp(-natM(s,gpi)*seasdur_half(s));
               surv2(s,gpi)=square(surv1(s,gpi));
-              if(do_once==1) echoinput<<y<<" "<<gpi<<"  M1: "<<natM_M1(s,gpi)<<endl;
-              if(do_once==1) echoinput<<y<<" "<<gpi<<"  M1+M2: "<<natM(s,gpi)<<endl;
+              if(do_once==1) echoinput<<y<<" s "<<s<<" t "<<t<<" gp "<<gpi<<"  M1: "<<natM_M1(s,gpi)<<endl;
+              if(do_once==1) echoinput<<y<<" s "<<s<<" t "<<t<<" gp "<<gpi<<"  M1+M2: "<<natM(s,gpi)<<endl;
             }
           }
-        }
-      }
+    }
+  }
+
   if(y>=Bmark_Yr(1)&&y<=Bmark_Yr(2))
   {
     for (gp=1;gp<=N_GP*gender*N_settle_timings;gp++)
@@ -776,27 +780,31 @@ FUNCTION void get_time_series()
         for (g=1;g<=gmorph;g++)
         if(use_morph(g)>0)
         {Make_FishSelex();}
-      if(N_predparms>0)
-      {
-        for(f1=1;f1<=N_pred;f1++)
-        {
-          f=predator(f1);
-          pred_M2(f1)(t,t+nseas-1)=mgp_adj(predparm_pointer+f1-1);
+
+// SS_Label_Info_24.x.x #add predator M2 inside the yr,seas loop
+  if(N_pred>0)
+  {
+    for(f1=1;f1<=N_pred;f1++)
+    {
+      f=predator(f1);
+      pred_M2(f1,t)=mgp_adj(predparm_pointer(f1));  //  base with no seasonal effect
+      if(nseas>1) pred_M2(f1,t)*=mgp_adj(predparm_pointer(f1)+s);
           for (gp=1;gp<=N_GP*gender;gp++)
           {g=g_Start(gp);  //  base platoon
             for (settle=1;settle<=N_settle_timings;settle++)
             {
               g+=N_platoon;
               int gpi=GP3(g);   // GP*gender*settlement
-              natM(s,gpi)=natM_M1(s,gpi)+pred_M2(f1,t)*sel_al_3(s,g,f);
+              natM(s,gpi)+=pred_M2(f1,t)*sel_al_3(s,g,f);
               surv1(s,gpi)=mfexp(-natM(s,gpi)*seasdur_half(s));
               surv2(s,gpi)=square(surv1(s,gpi));
-              if(do_once==1) echoinput<<y<<" "<<gpi<<" pred: "<<f1<<"  M1: "<<natM_M1(s,gpi)<<endl;
-              if(do_once==1) echoinput<<y<<" "<<gpi<<" pred: "<<f1<<"  M1+M2: "<<natM(s,gpi)<<endl;
+              if(do_once==1) echoinput<<y<<" s "<<s<<" t "<<t<<" gp "<<gpi<<"  M1: "<<natM_M1(s,gpi)<<endl;
+              if(do_once==1) echoinput<<y<<" s "<<s<<" t "<<t<<" gp "<<gpi<<"  M1+M2: "<<natM(s,gpi)<<endl;
             }
           }
-        }
-      }
+    }
+  }
+
       if(y>=Bmark_Yr(1)&&y<=Bmark_Yr(2))
       {
         for (gp=1;gp<=N_GP*gender*N_settle_timings;gp++)

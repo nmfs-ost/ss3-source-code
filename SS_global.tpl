@@ -80,6 +80,7 @@ GLOBALS_SECTION
   adstring F_report_label;
   adstring SPR_report_label;
   adstring onenum(4);
+  adstring onenum2(4);
   adstring anystring;
   adstring anystring2;
   adstring_array version_info;

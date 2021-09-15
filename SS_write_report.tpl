@@ -689,7 +689,7 @@ FUNCTION void write_bigoutput()
    k1=YrMax;
    SS2out<<endl<<pick_report_name(7)<<endl;
   SS2out<<"Yr   Change? ";
-   for (i=1;i<=N_MGparm;i++) SS2out<<" "<<ParmLabel(i);
+   for (i=1;i<=N_MGparm2;i++) SS2out<<" "<<ParmLabel(i);
    SS2out<<endl;
    for (y=styr;y<=k1;y++)
      SS2out<<y<<" "<<timevary_MG(y,0)<<" "<<mgp_save(y)<<endl;

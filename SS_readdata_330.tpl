@@ -899,7 +899,7 @@
          disc_maxval(f)=max(disc_maxval(f),obs_disc(f,j));
          if( discdata[i](4)<0.0)  discdata[i](3)=-fabs( discdata[i](3));  //  convert to new format using negative fleet
          if( discdata[i](3)<0) {yr_disc_use(f,j)=-1;} else {yr_disc_use(f,j)=1;disc_N_fleet_use(f)++;}
-         if(catch_ret_obs(f,t)<=0.0)
+         if(fleet_type(f)<3 && catch_ret_obs(f,t)<=0.0)
          {
            N_warn++;  warning<<N_warn<<" discard observation: "<<i<<" has no corresponding catch "<<discdata[i]<<endl;
          }

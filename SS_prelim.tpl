@@ -952,15 +952,25 @@ PRELIMINARY_CALCS_SECTION
     echoinput<<"ready to do natmort "<<endl;
     get_natmort();
     natM_M1=natM;  //  base M1 to which M2 is added
-  if(N_predparms>0)
+
+//  SS_Label_Info_6.8.5 #add M2 for predator mortality
+  if(N_pred>0)
   {
     for(f1=1;f1<=N_pred;f1++)
     {
-      f=predator(f1);
-      pred_M2(f1)(styr-1,styr+nseas-1)=MGparm(predparm_pointer+f1-1);
-      for (s=1;s<=nseas;s++)
-      for (gp=1;gp<=N_GP*gender*N_settle_timings;gp++)
-      {natM(s,gp)=natM_M1(s,gp)+pred_M2(f1,styr);
+      pred_M2(f1,styr)=MGparm(predparm_pointer(f1));  //  base with no seasonal effect
+      if(nseas==1)
+      {
+        for (gp=1;gp<=N_GP*gender*N_settle_timings;gp++)  {natM(s,gp)+=pred_M2(f1,styr);}
+      }
+      else
+      {
+        t=styr-1;  // resets for each predator
+        for (s=1;s<=nseas;s++)
+        {
+          t++;
+          for (gp=1;gp<=N_GP*gender*N_settle_timings;gp++)  {natM(s,gp)+=pred_M2(f1,styr)*MGparm(predparm_pointer(f1)+s);}
+        }
       }
     }
   }
