@@ -1302,7 +1302,7 @@ FUNCTION dvariable Get_Prior(const int T, const double& Pmin, const double& Pmax
         mu=(Pr-Pmin) / (Pmax-Pmin);  // CASAL's v
         tau=(Pr-Pmin)*(Pmax-Pr)/square(Psd)-1.0;
         Bprior=tau*mu;  Aprior=tau*(1.0-mu);  // CASAL's m and n
-        if(Bprior<=1.0 || Aprior <=1.0) { warning<<N_warn<<" "<<" bad Beta prior "<<Pval<<" "<<Pr<<endl;N_warn++;}
+        if(Bprior<=1.0 || Aprior <=1.0) { N_warn++; warning<<N_warn<<" "<<" bad Beta prior "<<Pval<<" "<<Pr<<endl;}
         Prior_Like =  (1.0-Bprior)*log(Pconst+Pval-Pmin) + (1.0-Aprior)*log(Pconst+Pmax-Pval)
               -(1.0-Bprior)*log(Pconst+Pr-Pmin) - (1.0-Aprior)*log(Pconst+Pmax-Pr);
         break;
