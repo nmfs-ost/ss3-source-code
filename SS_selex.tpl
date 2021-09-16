@@ -1133,7 +1133,6 @@ FUNCTION void get_selectivity()
                   {tempvec_a(a)=sp(j-seltype(f,4));}  //  use female parameter for males
                 else  //  so value is -999 so set to next younger age
                 {tempvec_a(a) = tempvec_a(a-1);}
-          //     N_warn++; warning<<N_warn<<" "<<" sex "<<gg<<" a "<<a<<"  j "<<j<<"  sp "<<sp(j)<<" use "<<tempvec_a(a)<<endl;
               }
               int low_bin  = int(value(sp(2)));
               int high_bin = int(value(sp(3)));

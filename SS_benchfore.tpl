@@ -2087,7 +2087,6 @@ FUNCTION void Get_Forecast()
                       }
                       join1=1./(1.+mfexp(30.*(temp-0.95*max_harvest_rate)));
                       Hrate(f,t)=join1*temp + (1.-join1)*max_harvest_rate; // new F value for this fleet, constrained by max_harvest_rate
-//                      if(f==1)  N_warn++; warning<<N_warn<<" "<<y<<" "<<Tune_F<<" stored old F "<<H_temp(f)<<" catch "<<C_temp(f)<<" tempF "<<temp<<" join "<<join1<<" new F "<<Hrate(f,t)<<endl;
                       C_old(f)=C_temp(f);
                       H_old(f)=H_temp(f);
                     }
@@ -2377,7 +2376,6 @@ FUNCTION void Get_Forecast()
                  countN += 1; // increment count of values included in average
                  annual_F(y,2) += log(tempM)-log(tempZ);  // F=Z-M
                  annual_F(y,3) += log(tempbase)-log(tempM);  // M
-//              if(save_for_report==1)  N_warn++; warning<<N_warn<<" "<<y<<"  age: "<<a<<" count: "<<countN<<" Z: "<<log(tempbase)-log(tempZ)<<" M: "<<log(tempbase)-log(tempM)<<" F: "<<log(tempM)-log(tempZ)<<" "<<annual_F(y)(2,3)<<endl;
             }
             annual_F(y,3) /= countN;  // M
             annual_F(y,2) /= countN;   // F
