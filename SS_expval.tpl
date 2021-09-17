@@ -468,8 +468,11 @@ FUNCTION void Get_expected_values(const int y,const int t);
                   exp_disc(f,j)=catch_fleet(t,f,4)-catch_fleet(t,f,6);   // discard in numbers
                   if(disc_units(f)==2) exp_disc(f,j) /= (catch_fleet(t,f,4) + 0.0000001);
                 }
-                if(exp_disc(f,j)<0.0)  warning<<N_warn<<" "<<f<<" "<<j<<" "<<exp_disc(f,j)<<" catches "<<catch_fleet(t,f)<<endl;
-              }
+                if(exp_disc(f,j)<0.0) {
+			      N_warn++;
+				  warning<<N_warn<<" "<<f<<" "<<j<<" "<<exp_disc(f,j)<<" catches "<<catch_fleet(t,f)<<endl;
+                }  
+			  }
               else
               {
                 exp_disc(f,j)=-1.;

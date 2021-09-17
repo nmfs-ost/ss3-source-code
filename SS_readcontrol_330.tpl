@@ -3359,7 +3359,6 @@
           selparm_1(k,2)=new_upper_bound;
 
            warning<<N_warn<<" "<<"new min, max, init, prior: "<<selparm_1(k)(1,4)<<endl;
-//          if (selparm_1(k,8) !=0 || selparm_1(k,9)!=0 || selparm_1(k,13)!=0)  warning<<N_warn<<" "<<"Timevarying, so you must do timevary parm conversion manually"<<endl;
         }
     }
     parmcount+=N_selparmvec(f);
