@@ -2412,7 +2412,7 @@ FUNCTION void write_bigoutput()
 
       if(N_predparms>0)
       {
-        SS2out<<endl<<"Predator_(M2); Values_are_apical_M2; total_M-at-age_(M1+M2)_reported_in_table_No_fishery_for_Z=M "<<endl<<"Yr ";
+        SS2out<<endl<<"Predator_(M2); Values_are_apical_M2; total_M-at-age_(M1+M2)_reported_in_table_No_fishery_for_Z=M "<<endl<<"Yr Era seas ";
         for(f1=1;f1<=N_pred;f1++)
         {f=predator(f1); SS2out<<fleetname(f)<<"_M2 Bio Num";}
         SS2out<<endl;

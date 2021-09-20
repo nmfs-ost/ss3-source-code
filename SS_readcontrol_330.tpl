@@ -1256,7 +1256,7 @@
       predparm_pointer(pc)=ParCount;  //  first parm for this predator
       onenum="    ";
       sprintf(onenum, "%d", pc);
-      ParmLabel+="PredM2_"+onenum;
+      ParmLabel+="M2_pred"+onenum;
       Parm_info+="val";
       Parm_minmax.push_back (3);
       if(nseas>1)
@@ -1266,7 +1266,7 @@
           ParCount++;
           onenum2="    ";
           sprintf(onenum2, "%d", s);
-          ParmLabel+="PredM2_"+onenum+"_s"+onenum2;
+          ParmLabel+="M2_pred"+onenum+"_s"+onenum2;
           Parm_info+="val";
           Parm_minmax.push_back (3);
           
