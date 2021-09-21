@@ -241,8 +241,8 @@
       if(j==0) {N_SC++; Starter_Comments+=readline;}
     }
   }
-  echoinput<<version_info<<endl<<ctime(&start)<<endl;
-  warning<<version_info<<endl<<ctime(&start)<<endl;
+  echoinput<<version_info(1)<<version_info(2)<<version_info(3)<<endl<<version_info2<<endl;
+  warning<<version_info(1)<<version_info(2)<<version_info(3)<<endl<<version_info2<<endl;
   warning<<"This file contains warnings, suggestions and notes generated as files are read and processed"<<endl<<endl;
   adstring sw;  //  used for reading of ADMB switches from command line
   mcmcFlag = 0;

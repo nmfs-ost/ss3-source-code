@@ -3391,7 +3391,6 @@
           selparm_1(k,2)=new_upper_bound;
 
            warning<<N_warn<<" "<<"new min, max, init, prior: "<<selparm_1(k)(1,4)<<endl;
-//          if (selparm_1(k,8) !=0 || selparm_1(k,9)!=0 || selparm_1(k,13)!=0)  warning<<N_warn<<" "<<"Timevarying, so you must do timevary parm conversion manually"<<endl;
         }
     }
     parmcount+=N_selparmvec(f);
@@ -4342,6 +4341,7 @@
   More_Std_Input.initialize();
   if(Do_More_Std>0)
   {
+    echoinput<<"inpt_as_read: "<<temp_std_input<<endl;
     More_Std_Input(1,More_Std_N_Inputs) = temp_std_input(1,More_Std_N_Inputs);
     echoinput<<More_Std_Input(1,4)<<" # Selectivity: (1) 0 to skip or fleet, (2) 1=len/2=age/3=combined, (3) year, (4) N selex bins; NOTE: combined reports in age bins"<<endl;
     echoinput<<More_Std_Input(5,6)<<" # Growth: (1) 0 to skip or growth pattern, (2) growth ages; NOTE: does each sex"<<endl;
@@ -4471,12 +4471,16 @@
       if(Selex_Std_AL==1) // length-based selex
       {
         if(Selex_Std_Pick(i)<=0) Selex_Std_Pick(i)=1;
-        if(Selex_Std_Pick(i)>nlength) Selex_Std_Pick(i)=nlength;
+        if(Selex_Std_Pick(i)>nlength) {
+          N_warn++; warning<<N_warn<<" Selex_std requested output past nlength, resets to nlength, may produce duplicates"<<endl;
+          Selex_Std_Pick(i)=nlength;}
       }
       else // age-based or age-length-combined selex
       {
         if(Selex_Std_Pick(i)<0) Selex_Std_Pick(i)=0;
-        if(Selex_Std_Pick(i)>nages) Selex_Std_Pick(i)=nages;
+        if(Selex_Std_Pick(i)>nages) {
+          N_warn++; warning<<N_warn<<" Selex_std requested output past nages, resets to nages, may produce duplicates"<<endl;
+          Selex_Std_Pick(i)=nages;}
       }
     }
     // increment count
@@ -5275,12 +5279,11 @@
         }
         else if(Selex_Std_AL==3)
         {
-            N_warn++; cout<<" EXIT - see warning "<<endl;  warning<<N_warn<<" "<<" stderr on combined length-age selectivity is under repair "<<endl; exit(1);
           if(Selex_Std_Pick(i)>nages)
           {
             N_warn++; cout<<" EXIT - see warning "<<endl;  warning<<N_warn<<" "<<" cannot select stdev for age bin greater than maxage "<<Selex_Std_Pick(i)<<" > "<<nages<<endl; exit(1);
           }
-          ParmLabel+="AgeLenSelex_std_"+NumLbl(Do_Selex_Std)+"_"+GenderLbl(g)+"_A_"+NumLbl0(age_vector(Selex_Std_Pick(i))+1)+CRLF(1);
+          ParmLabel+="AgeLenSelex_std_"+NumLbl(Do_Selex_Std)+"_GP1_"+GenderLbl(g)+"_A_"+NumLbl0(age_vector(Selex_Std_Pick(i))+1)+CRLF(1);
         }
       }
     }

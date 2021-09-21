@@ -2176,7 +2176,6 @@
                obs_a_all(1,f,a)+=obs_a(f,j,n_abins+a);  //  males
              }
            }
-//            warning<<N_warn<<" "<<obs_a(f,j)(1,6)<<endl;
          }
        }
      }

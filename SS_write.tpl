@@ -17,7 +17,7 @@ FUNCTION void write_summaryoutput()
   report2<<runnumber<<" Files: "<<datfilename<<" "<<ctlfilename;
   if(readparfile>=1) report2<<" Start_from_ss.par";
   report2<<endl<<runnumber<<" N_iter: "<<niter<<" runtime(sec): "<<elapsed_time<<" starttime: "<<ctime(&start);
-  report2<<runnumber<<version_info<<endl;
+  report2<<runnumber<<version_info(1)<<version_info(2)<<version_info(3)<<endl;
   report2<<runnumber<<" F_Method: "<<F_Method<<" Retro_YR: "<<retro_yr<<" Forecast_Type: "<<Do_Forecast<<" MSY_Type: "<<Do_MSY<<endl;
   if(N_SC>0)
   {
@@ -264,7 +264,7 @@ FUNCTION void write_summaryoutput()
 FUNCTION void write_SS_summary()
   {
     ofstream SS_smry("ss_summary.sso");
-    SS_smry<<version_info<<endl;
+    SS_smry<<version_info(1)<<version_info(2)<<version_info(3)<<endl;
     SS_smry<<datfilename<<" #_DataFile "<<endl;
     SS_smry<<ctlfilename<<" #_Control "<<endl;
     SS_smry<<"Run_Date: "<<ctime(&start);

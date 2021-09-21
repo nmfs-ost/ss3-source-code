@@ -84,9 +84,7 @@ GLOBALS_SECTION
   adstring anystring;
   adstring anystring2;
   adstring_array version_info;
-  adstring version_info2;
-  adstring version_info3;
-  adstring version_info_short;
+  adstring_array version_info2;
   adstring_array Starter_Comments;
   adstring_array Data_Comments;
   adstring_array Control_Comments;
@@ -282,7 +280,6 @@ GLOBALS_SECTION
       if (z>0)  //  blocks with z as the block pattern
       {
         Nblocks=0.5*(block_design_pass.size());
-//        if(z>N_Block_Designs) {N_warn++;  warning<<N_warn<<" "<<"parm: "<<j<<" ERROR, Block > N Blocks "<<z<<" "<<N_Block_Designs<<endl; exit(1);}
         k=int(baseparm_list(14));  //  block method
         echoinput<<"block pattern: "<<z<<" method "<<k<<" Nblocks: "<<Nblocks<<endl;
 
@@ -598,7 +595,6 @@ GLOBALS_SECTION
        }
 //       timevary_setup(12)=-5;  //  set reasonable phase for devs;
 //       baseparm_list(12)=-5;
-//       N_warn++;  warning<<N_warn<<" "<<"A parameter dev vector has been created with phase set to negative.  Edit phase as needed "<<endl;
       }
       timevary_parm_rd.push_back (dvector(tempvec(1,7)));
 

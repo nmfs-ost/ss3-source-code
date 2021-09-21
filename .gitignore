@@ -11,3 +11,6 @@ ss_opt.tpl
 ss_trans.tpl
 ~$*.*
 Compile/ss.log
+.Rproj.user
+*.Rproj
+.Rhistory
