@@ -1417,9 +1417,16 @@ FUNCTION void write_bigoutput()
   SS2out<<"#_Fleet units errtype"<<endl;
   if(Ndisc_fleets>0)
   {
-    for (f=1;f<=Nfleet;f++)
-    if(fleet_type(f)<=2)
-    if(disc_units(f)>0) SS2out<<f<<" "<<disc_units(f)<<" "<<disc_errtype(f)<<" # "<<fleetname(f)<<endl;
+    for (int ff=1;ff<=N_catchfleets;ff++)
+    {
+      f=fish_fleet(ff);
+      if(disc_units(f)>0) SS2out<<f<<" "<<disc_units(f)<<" "<<disc_errtype(f)<<" # "<<fleetname(f)<<endl;
+    }
+  }
+  for(int ff=1;ff<=N_pred;ff++)
+  {
+    f=predator(ff);
+    SS2out<<f<<" "<<disc_units(f)<<" "<<disc_errtype(f)<<" # "<<fleetname(f)<<" is_M2_fleet"<<endl;
   }
 
 // REPORT_KEYWORD 25 DISCARD_OUTPUT  Discard observations by year
