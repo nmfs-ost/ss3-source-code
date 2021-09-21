@@ -50,7 +50,7 @@ FUNCTION void write_nudata()
   report1 << nages<<" #_Nages=accumulator age, first age is always age 0"<< endl;
   report1 << pop<<" #_Nareas"<<endl;
   report1 << Nfleet<<" #_Nfleets (including surveys)"<< endl;
-  report1<<"#_fleet_type: 1=catch fleet; 2=bycatch only fleet; 3=survey; 4=ignore "<<endl;
+  report1<<"#_fleet_type: 1=catch fleet; 2=bycatch only fleet; 3=survey; 4=predator(M2) "<<endl;
   report1<<"#_sample_timing: -1 for fishing fleet to use season-long catch-at-age for observations, or 1 to use observation month;  (always 1 for surveys)"<<endl;
   report1<<"#_fleet_area:  area the fleet/survey operates in "<<endl;
   report1<<"#_units of catch:  1=bio; 2=num (ignored for surveys; their units read later)"<<endl;
@@ -1562,6 +1562,14 @@ FUNCTION void write_nucontrol()
           MGparm_1(NP,3)=value(MGparm(NP));
           report4<<MGparm_1(NP)<<" # "<<ParmLabel(NP)<<endl;
     }
+  }
+  
+  report4<<"#  M2 parameter for each predator fleet"<<endl;
+  for(int gp=1;gp<=N_predparms;gp++)
+  {
+    NP++;
+    MGparm_1(NP,3)=value(MGparm(NP));
+    report4<<MGparm_1(NP)<<" # "<<ParmLabel(NP)<<endl;
   }
 
   report4<<"#"<<endl;

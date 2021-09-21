@@ -866,7 +866,8 @@ FUNCTION void write_Bzero_output()
     }
     SS2out << endl << "Z_AT_AGE_Annual";
     if(fishery_on_off==0) {SS2out<<"_1 No_fishery_for_Z=M_and_dynamic_Bzero";} else {SS2out<<"_2 With_fishery";}
-    if(Hermaphro_Option!=0) SS2out<<"_hermaphrodites_combined_sex_output";
+    if(Hermaphro_Option!=0) SS2out<<";_hermaphrodites_combined_sex_output";
+    if(N_pred>0 && fishery_on_off==0) SS2out<<";_reported_M_includes_PredM2";
     SS2out << endl;
     SS2out << "Bio_Pattern Sex Yr "<<age_vector <<endl;
     for (gg=1;gg<=gender;gg++)

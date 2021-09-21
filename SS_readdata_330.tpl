@@ -202,8 +202,10 @@
 
 //  SS_Label_Info_2.1.5  #Define fleets, surveys and areas
   imatrix pfleetname(1,Nfleet,1,2)
-  ivector fleet_type(1,Nfleet)   // 1=fleet with catch; 2=discard only fleet with F; 3=survey(ignore catch); 4=ignore completely
+  ivector fleet_type(1,Nfleet)   // 1=fleet with catch; 2=discard only fleet with F; 3=survey(ignore catch); 4=M2=predator
   ivector fish_fleet(1,Nfleet)   // list of catch_fleets that are type 1 or 2, so have a F
+  ivector predator(1,Nfleet)   // list of "fleets" that are type 4, so are added to M rather than to F
+  ivector predator_rev(1,Nfleet)   // predator given f
   ivector need_catch_mult(1,Nfleet)  // 0=no, 1=need catch_multiplier parameter
   vector surveytime(1,Nfleet)   // (-1, 1) code for fisheries to indicate use of season-wide observations, or specifically timed observations
   ivector fleet_area(1,Nfleet)    // areas in which each fleet/survey operates
@@ -224,7 +226,7 @@
   ivector YPR_mask(1,Nfleet)
   int N_bycatch;  //  number of bycatch only fleets
   int N_catchfleets; //  number of bycatch plus landed catch fleets
-
+  int N_pred;  //  number of predator fleets
   ivector retParmLoc(1,1)
   int N_retParm
 
@@ -236,6 +238,8 @@
     N_bycatch=0;
     N_catchfleets=0;
     fish_fleet.initialize();
+    N_pred=0;
+    predator.initialize();
     echoinput<<"rows are fleets; columns are: Fleet_#, fleet_type, timing, area, units, need_catch_mult"<<endl;
     for(f=1;f<=Nfleet;f++)
     {
@@ -246,6 +250,9 @@
       if(fleet_type(f)==2) N_bycatch++;
       surveytime(f) = fleet_setup(f,2)/fabs(fleet_setup(f,2));
       fleet_setup(f,2)=surveytime(f);
+      fleet_area(f) = int(fleet_setup(f,3));
+      catchunits(f) = int(fleet_setup(f,4));
+      need_catch_mult(f) = int(fleet_setup(f,5));
       if(fleet_type(f)<=2)
         {
           N_catchfleets++;
@@ -259,9 +266,13 @@
           {N_warn++;  warning<<N_warn<<" "<<"survey fleet: "<<f<<" surveytime read as: "<<surveytime(f)<<" SS resets to 1 for all survey fleets, and always overridden by indiv. obs. month"<<endl;
             surveytime(f)=1.;}
           }
-      fleet_area(f) = int(fleet_setup(f,3));
-      catchunits(f) = int(fleet_setup(f,4));
-      need_catch_mult(f) = int(fleet_setup(f,5));
+        else if (fleet_type(f)==4)  //  predator, e.g. red tide
+          {
+            N_pred++;
+            predator(N_pred)=f;
+            predator_rev(f)=N_pred;
+            surveytime(f)=-1.;
+          }
       if(fleet_type(f)>1 && need_catch_mult(f)>0)
         {N_warn++; cout<<"exit with warning"<<endl; warning<<N_warn<<" "<<"Need_catch_mult can be used only for fleet_type=1 fleet= "<<f<<endl; exit(1);}
       echoinput<<f<<" # "<<fleet_setup(f)<<" # "<<fleetname(f)<<endl;
@@ -499,7 +510,7 @@
       t=styr+(y-styr)*nseas+s-1;
       for (p=1;p<=pop;p++)
       for (f=1;f<=Nfleet;f++)
-      if(fleet_area(f)==p && catch_ret_obs(f,t) > 0.0 && fleet_type(f)<=2)  //  excludes survey fleets
+      if(fleet_area(f)==p && catch_ret_obs(f,t) > 0.0 && fleet_type(f)<=2)  //  excludes survey and predator fleets
       {
         catch_seas_area(t,p,f)=1;
         catch_seas_area(t,p,0)=1;
@@ -888,7 +899,7 @@
          disc_maxval(f)=max(disc_maxval(f),obs_disc(f,j));
          if( discdata[i](4)<0.0)  discdata[i](3)=-fabs( discdata[i](3));  //  convert to new format using negative fleet
          if( discdata[i](3)<0) {yr_disc_use(f,j)=-1;} else {yr_disc_use(f,j)=1;disc_N_fleet_use(f)++;}
-         if(catch_ret_obs(f,t)<=0.0)
+         if(fleet_type(f)<3 && catch_ret_obs(f,t)<=0.0)
          {
            N_warn++;  warning<<N_warn<<" discard observation: "<<i<<" has no corresponding catch "<<discdata[i]<<endl;
          }

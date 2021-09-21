@@ -49,6 +49,8 @@ PARAMETER_SECTION
 //  vector natM2(1,N_GP*gender)
   matrix natMparms(1,N_natMparms,1,N_GP*gender)
   3darray natM(1,nseas,1,N_GP*gender*N_settle_timings,0,nages)   //  need nseas to capture differences due to settlement
+  3darray natM_M1(1,nseas,1,N_GP*gender*N_settle_timings,0,nages)   //  need nseas to capture differences due to settlement
+  matrix pred_M2(1,N_pred,styr-3*nseas,TimeMax_Fcast_std+nseas);  //  index by t
   3darray natM_unf(1,nseas,1,N_GP*gender*N_settle_timings,0,nages)   //  need nseas to capture differences due to settlement
   3darray natM_endyr(1,nseas,1,N_GP*gender*N_settle_timings,0,nages)   //  need nseas to capture differences due to settlement
   3darray surv1(1,nseas,1,N_GP*gender*N_settle_timings,0,nages)

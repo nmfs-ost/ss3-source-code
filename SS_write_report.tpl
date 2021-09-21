@@ -689,7 +689,7 @@ FUNCTION void write_bigoutput()
    k1=YrMax;
    SS2out<<endl<<pick_report_name(7)<<endl;
   SS2out<<"Yr   Change? ";
-   for (i=1;i<=N_MGparm;i++) SS2out<<" "<<ParmLabel(i);
+   for (i=1;i<=N_MGparm2;i++) SS2out<<" "<<ParmLabel(i);
    SS2out<<endl;
    for (y=styr;y<=k1;y++)
      SS2out<<y<<" "<<timevary_MG(y,0)<<" "<<mgp_save(y)<<endl;
@@ -968,7 +968,7 @@ FUNCTION void write_bigoutput()
   dvector Bio_Comp(1,N_GP*gender);
   dvector Num_Comp(1,N_GP*gender);
   for (f=1;f<=Nfleet;f++)
-  if(fleet_type(f)<=2)
+  if(fleet_type(f)<=2 )
   {
     SS2out<<" sel(B):_"<<f<<" dead(B):_"<<f<<" retain(B):_"<<f<<
     " sel(N):_"<<f<<" dead(N):_"<<f<<" retain(N):_"<<f<<
@@ -1417,9 +1417,16 @@ FUNCTION void write_bigoutput()
   SS2out<<"#_Fleet units errtype"<<endl;
   if(Ndisc_fleets>0)
   {
-    for (f=1;f<=Nfleet;f++)
-    if(fleet_type(f)<=2)
-    if(disc_units(f)>0) SS2out<<f<<" "<<disc_units(f)<<" "<<disc_errtype(f)<<" # "<<fleetname(f)<<endl;
+    for (int ff=1;ff<=N_catchfleets;ff++)
+    {
+      f=fish_fleet(ff);
+      if(disc_units(f)>0) SS2out<<f<<" "<<disc_units(f)<<" "<<disc_errtype(f)<<" # "<<fleetname(f)<<endl;
+    }
+  }
+  for(int ff=1;ff<=N_pred;ff++)
+  {
+    f=predator(ff);
+    SS2out<<f<<" "<<disc_units(f)<<" "<<disc_errtype(f)<<" # "<<fleetname(f)<<" is_M2_fleet"<<endl;
   }
 
 // REPORT_KEYWORD 25 DISCARD_OUTPUT  Discard observations by year
@@ -1428,7 +1435,7 @@ FUNCTION void write_bigoutput()
   data_type=2;
   if(nobs_disc>0)
   for (f=1;f<=Nfleet;f++)
-  if(fleet_type(f)<=2)
+  if(fleet_type(f)<=2 || fleet_type(f)==4)
   {
     for (i=1;i<=disc_N_fleet(f);i++)
     {
@@ -2283,7 +2290,7 @@ FUNCTION void write_bigoutput()
     SS2out<<endl<<pick_report_name(40)<<endl;
      SS2out << "Area Fleet Sex  XX XX Type Morph Yr Seas XX Era"<<age_vector <<endl;
      for (f=1;f<=Nfleet;f++)
-     if(fleet_type(f)<=2)
+     if(fleet_type(f)<=2 || fleet_type(f)==4)
      for (g=1;g<=gmorph;g++)
      {
      if(use_morph(g)>0)
@@ -2310,7 +2317,7 @@ FUNCTION void write_bigoutput()
     SS2out<<endl<<pick_report_name(41)<<endl;
      SS2out << "Area Fleet Sex  XX XX Type Morph Yr Seas XX Era"<<age_vector <<endl;
      for (f=1;f<=Nfleet;f++)
-     if(fleet_type(f)<=2 && Do_Retain(f)>0)
+     if((fleet_type(f)<=2 && Do_Retain(f)>0) || fleet_type(f)==4)
      for (g=1;g<=gmorph;g++)
      {
      if(use_morph(g)>0)
@@ -2408,6 +2415,33 @@ FUNCTION void write_bigoutput()
         g++;
         if(use_morph(g)>0)
         {for (s=1;s<=nseas;s++) SS2out<<gp<<" "<<gg<<" "<<settle<<" "<<s<<" "<<natM_endyr(s,g)<<endl;}
+      }
+
+      if(N_predparms>0)
+      {
+        SS2out<<endl<<"Predator_(M2); Values_are_apical_M2; total_M-at-age_(M1+M2)_reported_in_table_No_fishery_for_Z=M "<<endl<<"Yr Era seas ";
+        for(f1=1;f1<=N_pred;f1++)
+        {f=predator(f1); SS2out<<fleetname(f)<<"_M2 Bio Num";}
+        SS2out<<endl;
+        for(y=styr-2;y<=YrMax;y++)
+        {
+          for(s=1;s<=nseas;s++)
+          {
+            t=styr+(y-styr)*nseas+s-1;
+            SS2out<<y;
+            if(y==styr-2)
+            {SS2out<<" VIRG ";}
+            else if (y==styr-1)
+            {SS2out<<" INIT ";}
+            else if (y<=endyr)
+            {SS2out<<" TIME ";}
+            else
+            {SS2out<<" FORE ";}
+            SS2out<<s<<" ";
+            for(f1=1;f1<=N_pred;f1++) {SS2out<<pred_M2(f1,t)<<" "<<catch_fleet(t,predator(f1),1)<<" "<<catch_fleet(t,predator(f1),4)<<" ";}
+            SS2out<<endl;
+          }
+        }
       }
     }
 // REPORT_KEYWORD 44 AGE_SPECIFIC_K

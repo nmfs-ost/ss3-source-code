@@ -600,6 +600,8 @@
 // read setup for natmort parameters:  LO, HI, INIT, PRIOR, PR_type, CV, PHASE, use_env, use_dev, dev_minyr, dev_maxyr, dev_phase, Block, Block_type
   int N_MGparm
   int N_natMparms
+  int N_predparms
+  ivector predparm_pointer(1,Nfleet+1)
   int N_growparms
   int N_M_Grow_parms
   int recr_dist_parms
@@ -618,6 +620,7 @@
 // read natmort setup
  LOCAL_CALCS
    N_natMparms=0;
+   N_predparms=N_pred+N_pred*nseas;
    natM_5_opt=0;
    MGparm_point.initialize();
 //  0=1Parm; 1=segmented; 2=Lorenzen; 3=agespecific; 4=agespec with seas interpolate; 5=Maunder_M
@@ -1044,6 +1047,7 @@
         	break;
         }
       }
+
       switch (Grow_type)
       {
         case 1:
@@ -1245,6 +1249,32 @@
   {
     ParCount++; ParmLabel+="FracFemale_GP_"+NumLbl(gp);
   }
+  predparm_pointer=-1;
+  for(int pc=1;pc<=N_pred;pc++)
+    {
+      ParCount++;
+      predparm_pointer(pc)=ParCount;  //  first parm for this predator
+      onenum="    ";
+      sprintf(onenum, "%d", pc);
+      ParmLabel+="M2_pred"+onenum;
+      Parm_info+="val";
+      Parm_minmax.push_back (3);
+      if(nseas>1)
+      {
+        for(s=1;s<=nseas;s++)
+        {
+          ParCount++;
+          onenum2="    ";
+          sprintf(onenum2, "%d", s);
+          ParmLabel+="M2_pred"+onenum+"_s"+onenum2;
+          Parm_info+="val";
+          Parm_minmax.push_back (3);
+          
+        }
+      }
+    }
+  predparm_pointer(Nfleet+1)=ParCount;
+  echoinput<<" predparm pointer"<<predparm_pointer<<endl;
   N_MGparm=ParCount;
 
  END_CALCS
@@ -1322,6 +1352,7 @@
    if(Use_AgeKeyZero>0) mgp_type(AgeKeyParm,N_MGparm)=6;
    if(catch_mult_pointer>0) mgp_type(catch_mult_pointer,N_MGparm)=7;
    for(f=frac_female_pointer; f<=frac_female_pointer+N_GP-1;f++) mgp_type(f)=4;
+   if(N_pred>0) mgp_type(predparm_pointer(1),predparm_pointer(1)+N_predparms-1)=1;
    echoinput<<"mgparm_type for each parm: 1=M; 2=growth; 3=wtlen,mat,fec,hermo; 4=recr&femfrac; 5=migr; 6=ageerror; 7=catchmult"<<endl<<mgp_type<<endl;
  END_CALCS
 
@@ -1500,6 +1531,7 @@
   int MGparm_doseas
   int N_MGparm_seas                            // number of MGparms that use seasonal effects
  LOCAL_CALCS
+  echoinput<<"seasonal effects as read: "<<MGparm_seas_effects<<endl;
   adstring_array MGseasLbl;
   MGseasLbl+="F-WL1"+CRLF(1);
   MGseasLbl+="F-WL2"+CRLF(1);

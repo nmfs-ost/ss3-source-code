@@ -285,7 +285,10 @@ FUNCTION void Get_expected_values(const int y,const int t);
                   }
                   case 2:   //  F rate
                   {
-                   vbio=Hrate(f,t);
+                   if(fleet_type(f)<4)
+                    {vbio=Hrate(f,t);}
+                    else
+                    {vbio=pred_M2(predator_rev(f),t);}
                    break;
                   }
                   case 30:  // spawning biomass  #30
@@ -448,31 +451,48 @@ FUNCTION void Get_expected_values(const int y,const int t);
             case(2):  //  DISCARD_OUTPUT
    /* SS_Label_46.2 expected discard amount */
             {
-              j=have_data(ALK_time,f,data_type,0);  //  number of observations
-            if(j>0)
+            if(have_data(ALK_time,f,data_type,0)>0) //  number of observations
             {
               j=have_data(ALK_time,f,data_type,1);  //  only getting first observation for now
-              if(catch_ret_obs(f,t)>0.0 || y>endyr)
+              if(fleet_type(f)<=2)
               {
-                if(disc_units(f)==3)  // numbers regardless of catchunits for retained catch
+                if(catch_ret_obs(f,t)>0.0 || y>endyr)
                 {
-                  exp_disc(f,j)=catch_fleet(t,f,4)-catch_fleet(t,f,6);
-                }
-                else if(catchunits(f)==1)  // biomass units for retained and discarded catch
-                {
-                  exp_disc(f,j)=catch_fleet(t,f,1)-catch_fleet(t,f,3);  // discard in biomass
-                  if(disc_units(f)==2) exp_disc(f,j) /= (catch_fleet(t,f,1) + 0.0000001);
-                }
-                else   // numbers for retained and discarded catch
-                {
-                  exp_disc(f,j)=catch_fleet(t,f,4)-catch_fleet(t,f,6);   // discard in numbers
-                  if(disc_units(f)==2) exp_disc(f,j) /= (catch_fleet(t,f,4) + 0.0000001);
-                }
+                  if(disc_units(f)==3)  // numbers regardless of catchunits for retained catch
+                  {
+                    exp_disc(f,j)=catch_fleet(t,f,4)-catch_fleet(t,f,6);
+                  }
+                  else if(catchunits(f)==1)  // biomass units for retained and discarded catch
+                  {
+                    exp_disc(f,j)=catch_fleet(t,f,1)-catch_fleet(t,f,3);  // discard in biomass
+                    if(disc_units(f)==2) exp_disc(f,j) /= (catch_fleet(t,f,1) + 0.0000001);
+                  }
+                  else   // numbers for retained and discarded catch
+                  {
+                    exp_disc(f,j)=catch_fleet(t,f,4)-catch_fleet(t,f,6);   // discard in numbers
+                    if(disc_units(f)==2) exp_disc(f,j) /= (catch_fleet(t,f,4) + 0.0000001);
+                  }
                 if(exp_disc(f,j)<0.0) {
 			      N_warn++;
 				  warning<<N_warn<<" "<<f<<" "<<j<<" "<<exp_disc(f,j)<<" catches "<<catch_fleet(t,f)<<endl;
                 }  
-			  }
+                }
+                else
+                {
+                  exp_disc(f,j)=-1.;
+                }
+              }
+              else if (fleet_type(f)==4)  //  predator consumption stored in discard
+              {
+                if(disc_units(f)==3)  // numbers 
+                {
+                  exp_disc(f,j)=catch_fleet(t,f,4);  // consumption in numbers
+                }
+                else
+                {
+                  exp_disc(f,j)=catch_fleet(t,f,1);  // consumption in biomass
+                }
+              }
               else
               {
                 exp_disc(f,j)=-1.;
