@@ -12,10 +12,13 @@ We welcome all contributions! For example, report bugs or request features throu
 
 ## How to submit a pull request to Stock Synthesis
 
+All code contributions should be submitted as pull requests to be reviewed by an SS team member.
+
 1. [Fork](https://docs.github.com/en/github/getting-started-with-github/fork-a-repo) the stock synthesis repository (or, if you are a member of the nmfs-stock-synthesis organization, clone the repository).
 2. Create a new branch, make the changes, and test out by [building stock synthesis](#how-to-build-stock-synthesis-from-source) locally.
 3. Commit the changes and push up to the github fork.
 4. [Submit a pull request](https://docs.github.com/en/github/collaborating-with-issues-and-pull-requests/creating-a-pull-request-from-a-fork) to the main branch of Stock Synthesis Repository.
+5. An SS team member will work with you to accept or make corrections to the pull request.
 
 ## How to build Stock Synthesis from source
 
