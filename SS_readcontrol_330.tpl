@@ -151,12 +151,16 @@
       {
         *(ad_comm::global_datafile) >> N_settle_assignments;
         *(ad_comm::global_datafile) >> recr_dist_inx;
+        if(N_settle_assignments>1)
+          {
+            N_warn++; cout<<"exit with warning"<<endl; warning<<N_warn<<" Need to change to recr_dist_method=3 because >1 settle assignments requested"<<endl; exit(1);
+          }
         break;
       }
   }
   echoinput<<N_settle_assignments<<" Number of settlement events: GP/area/month to read (>=0) "<<endl;
   if(recr_dist_method==1)
-    {N_warn++;cout<<" EXIT - see warning "<<endl;   warning<<N_warn<<" "<<"fatal error:  recr_dist_method cannot be 1 in SS3.30 "<<endl; exit(1);}
+    {N_warn++;cout<<" EXIT - see warning "<<endl;   warning<<N_warn<<" fatal error:  recr_dist_method cannot be 1 in SS3.30 "<<endl; exit(1);}
   else if(N_settle_assignments==1 && recr_dist_method!=4)
     {N_warn++;  warning<<N_warn<<" "<<"NOTE: This model has just one settlement event. Changing to recr_dist_method 4 and removing the recruitment distribution parameters at the end of the MG parms section (below growth parameters) will produce identical results and simplify the model."<<endl;}
   else if(recr_dist_method==2)

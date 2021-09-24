@@ -174,7 +174,7 @@
      N_warn++;  warning<<N_warn<<" spawn_seas index must be <= nseas "<<endl;
    }
  END_CALCS
-  int pop   // number of areas (populations)
+  int pop   // number of areas
   int gender_rd
   int gender  //  number of sexes
   int nages  //  maxage as accumulator
