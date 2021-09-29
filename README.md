@@ -24,13 +24,13 @@ framework for fish stock assessment and fishery management. Fisheries Research,
 
 ## Installation
 
-Download the latest compiled versions on the [Stock Synthesis Website](https://vlab.noaa.gov/web/stock-synthesis/document-library/-/document_library/0LmuycloZeIt/view/5042555) or [Github Releases](https://github.com/nmfs-stock-synthesis/stock-synthesis/releases).
+Download the latest compiled versions from [Github Releases](https://github.com/nmfs-stock-synthesis/stock-synthesis/releases).
 
 ## How can I learn how to use Stock Synthesis?
 
-To learn more about how to use stock synthesis, see the [getting started guide with SS guide](https://vlab.noaa.gov/web/stock-synthesis/document-library/-/document_library/0LmuycloZeIt/view_file/7137387). To learn how to build your own models in SS, see the [Develop an SS model guide](https://vlab.noaa.gov/web/stock-synthesis/document-library/-/document_library/0LmuycloZeIt/view_file/7137399).
+To learn more about how to use Stock Synthesis, see the [getting started guide with SS guide](https://nmfs-stock-synthesis.github.io/ss-documentation/Getting_Started_SS.html). To learn how to build your own models in SS, see the [Develop an SS model guide](https://nmfs-stock-synthesis.github.io/ss-documentation/ss_model_tips.html).
 
-The [SS user manual](https://vlab.noaa.gov/web/stock-synthesis/document-library/-/document_library/0LmuycloZeIt/view_file/11684231) provides the complete documentation of SS, while the [helper spreadsheets](https://vlab.noaa.gov/web/stock-synthesis/document-library/-/document_library/0LmuycloZeIt/view/978337) are useful cheatsheets that outline inputs necessary for options that are widely used within SS.
+The [SS user manual](https://github.com/nmfs-stock-synthesis/ss-documentation/releases) provides the complete documentation of SS, while the [helper spreadsheets](https://github.com/nmfs-stock-synthesis/ss-documentation/tree/main/Helper_Spreadsheets) are useful cheatsheets that outline inputs necessary for options that are widely used within SS.
 
 ## How do I ask questions about Stock Synthesis?
 
