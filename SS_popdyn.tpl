@@ -204,9 +204,9 @@ FUNCTION void get_initial_conditions()
       for (g=1;g<=gmorph;g++)
       if(use_morph(g)>0)
       {
-        Wt_Age_beg(s,g)=WTage_emp(t,GP3(g),0);
-        Wt_Age_mid(s,g)=WTage_emp(t,GP3(g),-1);
-        if(s==spawn_seas) fec(g)=WTage_emp(t,GP3(g),-2);
+        Wt_Age_beg(s,g)=Wt_Age_emp(t,GP3(g),0);
+        Wt_Age_mid(s,g)=Wt_Age_emp(t,GP3(g),-1);
+        if(s==spawn_seas) fec(g)=Wt_Age_emp(t,GP3(g),-2);
       }
     }
       else if(MG_active(2)>0 || MG_active(3)>0 || save_for_report>0 || do_once==1)
@@ -226,7 +226,7 @@ FUNCTION void get_initial_conditions()
       }
     }
 
-    Save_Wt_Age(t)=Wt_Age_beg(s);
+    Wt_Age_save(t)=Wt_Age_beg(s);
 
     for (g=1;g<=gmorph;g++)
     if(use_morph(g)>0)
@@ -607,8 +607,8 @@ FUNCTION void get_time_series()
         for (g=1;g<=gmorph;g++)
         if(use_morph(g)>0)
         {
-          Wt_Age_beg(s,g)=WTage_emp(t,GP3(g),0);
-          Wt_Age_mid(s,g)=WTage_emp(t,GP3(g),-1);
+          Wt_Age_beg(s,g)=Wt_Age_emp(t,GP3(g),0);
+          Wt_Age_mid(s,g)=Wt_Age_emp(t,GP3(g),-1);
         }
       }
       else if(timevary_MG(y,2)>0 || timevary_MG(y,3)>0 || save_for_report==1)
@@ -745,11 +745,11 @@ FUNCTION void get_time_series()
         for (g=1;g<=gmorph;g++)
         if(use_morph(g)>0)
         {
-          Wt_Age_beg(s,g)=WTage_emp(t,GP3(g),0);
-          Wt_Age_mid(s,g)=WTage_emp(t,GP3(g),-1);
+          Wt_Age_beg(s,g)=Wt_Age_emp(t,GP3(g),0);
+          Wt_Age_mid(s,g)=Wt_Age_emp(t,GP3(g),-1);
           if(s==spawn_seas)
             {
-              fec(g)=WTage_emp(t,GP3(g),-2);
+              fec(g)=Wt_Age_emp(t,GP3(g),-2);
               save_sel_fec(t,g,0)= fec(g);
 //              if(y==endyr) save_sel_fec(t+nseas,g,0)=fec(g);
               }
@@ -769,7 +769,7 @@ FUNCTION void get_time_series()
         }
       }
 
-      Save_Wt_Age(t)=Wt_Age_beg(s);
+      Wt_Age_save(t)=Wt_Age_beg(s);
 
       if(y>styr)    // because styr is done as part of initial conditions
       {
@@ -843,7 +843,7 @@ FUNCTION void get_time_series()
             for (g=1;g<=gmorph;g++)
             if(sx(g)==2 && use_morph(g)>0)     //  male; all assumed to be mature
             {
-              MaleSPB(y,p,GP4(g)) += Save_Wt_Age(t,g)*natage(t,p,g);   // accumulates SSB by area and by growthpattern
+              MaleSPB(y,p,GP4(g)) += Wt_Age_save(t,g)*natage(t,p,g);   // accumulates SSB by area and by growthpattern
             }
           }
           if(Hermaphro_maleSPB>0.0)  // add MaleSPB to female SSB
@@ -1243,7 +1243,7 @@ FUNCTION void get_time_series()
             for (g=1;g<=gmorph;g++)
             if(sx(g)==2 && use_morph(g)>0)     //  male; all assumed to be mature
             {
-              MaleSPB(y,p,GP4(g)) += Save_Wt_Age(t,g)*elem_prod(natage(t,p,g),mfexp(-Z_rate(t,p,g)*spawn_time_seas));   // accumulates SSB by area and by growthpattern
+              MaleSPB(y,p,GP4(g)) += Wt_Age_save(t,g)*elem_prod(natage(t,p,g),mfexp(-Z_rate(t,p,g)*spawn_time_seas));   // accumulates SSB by area and by growthpattern
             }
           }
           if(Hermaphro_maleSPB>0.0)  // add MaleSPB to female SSB

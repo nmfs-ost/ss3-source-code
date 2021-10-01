@@ -111,7 +111,7 @@ PARAMETER_SECTION
   3darray Sd_Size_between(1,N_subseas*nseas,1,gmorph,0,nages)
   4darray Ave_Size(styr-3*nseas,TimeMax_Fcast_std+nseas,1,N_subseas,1,gmorph,0,nages)
   3darray CV_G(1,N_GP*gender,1,N_subseas*nseas,0,nages);   //  temporary storage of CV enroute to sd of len-at-age
-  3darray Save_Wt_Age(styr-3*nseas,TimeMax_Fcast_std+nseas,1,gmorph,0,nages)
+  3darray Wt_Age_save(styr-3*nseas,TimeMax_Fcast_std+nseas,1,gmorph,0,nages)
   3darray Wt_Age_beg(1,nseas,1,gmorph,0,nages)
   3darray Wt_Age_mid(1,nseas,1,gmorph,0,nages)
 

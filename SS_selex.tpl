@@ -1645,7 +1645,7 @@ FUNCTION void Make_FishSelex()
     gg=sx(g);
 //    if(y>endyr) {yz=endyr; } else {yz=y;}  //  not used
     if(y>endyr+1 && Fcast_Specify_Selex==0) {yf=endyr+1;} else {yf=y;}    //  yf stores in endyr+1 the average selex from a range of years if Fcast_Specify_Selex==0
-    tz=styr+(y-styr)*nseas+s-1;  // can use y, not yf, because wtage_emp values are read in and can extend into forecast
+    tz=styr+(y-styr)*nseas+s-1;  // can use y, not yf, because Wt_Age_emp values are read in and can extend into forecast
     for (f=1;f<=Nfleet;f++)
     {
       if(timevary_sel(yf,f)>0 || timevary_sel(yf,f+Nfleet)>0 || WTage_rd==1 || save_for_report>0)
@@ -1655,8 +1655,8 @@ FUNCTION void Make_FishSelex()
         {
           if(WTage_rd==1)
           {
-            sel_al_1(s,g,f)=elem_prod(sel_a(yf,f,gg),WTage_emp(tz,GP3(g),f));   // selected wt-at-age
-            fish_body_wt(tz,g,f)=WTage_emp(tz,GP3(g),f);
+            sel_al_1(s,g,f)=elem_prod(sel_a(yf,f,gg),Wt_Age_emp(tz,GP3(g),f));   // selected wt-at-age
+            fish_body_wt(tz,g,f)=Wt_Age_emp(tz,GP3(g),f);
           }
           else
           {

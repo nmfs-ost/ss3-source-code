@@ -1440,7 +1440,7 @@ FUNCTION void get_mat_fec();
         }
         case 5:  //  Maturity_Option=5   read age-fecundity from wtatage.ss
         {
-          fec(g)=WTage_emp(t,GP3(g),-2);
+          fec(g)=Wt_Age_emp(t,GP3(g),-2);
           make_mature_numbers(g)=fec(g);  //  not defined
           make_mature_bio(g)=fec(g);   //  not defined
            break;
@@ -1788,7 +1788,7 @@ FUNCTION void Make_Fecundity()
         }
         case 5:  //  Maturity_Option=5   read age-fecundity from wtatage.ss
         {
-          fec(g)=WTage_emp(t,GP3(g),-2);
+          fec(g)=Wt_Age_emp(t,GP3(g),-2);
            break;
         }
         default:

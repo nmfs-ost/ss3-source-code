@@ -996,10 +996,10 @@ FUNCTION void write_bigoutput()
     {
 //     if(s==Bseas(g)) Recr(p,y)+=natage(t,p,g,0);
      gg=sx(g);
-     temp=natage(t,p,g)(Smry_Age,nages)*Save_Wt_Age(bio_t,g)(Smry_Age,nages);
+     temp=natage(t,p,g)(Smry_Age,nages)*Wt_Age_save(bio_t,g)(Smry_Age,nages);
      Bio_Comp(GP(g))+=value(temp);   //sums to accumulate across platoons and settlements
      Num_Comp(GP(g))+=value(sum(natage(t,p,g)(Smry_Age,nages)));   //sums to accumulate across platoons and settlements
-     totbio+= natage(t,p,g)*Save_Wt_Age(bio_t,g);
+     totbio+= natage(t,p,g)*Wt_Age_save(bio_t,g);
      smrybio+= temp;
      smrynum+=sum(natage(t,p,g)(Smry_Age,nages));
      smryage+=natage(t,p,g)(Smry_Age,nages)*r_ages(Smry_Age,nages);
@@ -2569,7 +2569,7 @@ FUNCTION void write_bigoutput()
       {
         for (f=1;f<=Nfleet;f++) SS2out<<
         " "<<ALK(ALK_idx_mid,g,a)*elem_prod(sel_l(endyr,f,sx(g)),len_bins_m)/(ALK(ALK_idx_mid,g,a)*sel_l(endyr,f,sx(g)))<<
-        " "<<WTage_emp(t,GP3(g),f,a)<<" "<<WTage_emp(t,GP3(g),f,a);
+        " "<<Wt_Age_emp(t,GP3(g),f,a)<<" "<<Wt_Age_emp(t,GP3(g),f,a);
       }
       SS2out<<endl;
     }}}}
@@ -2590,7 +2590,7 @@ FUNCTION void write_bigoutput()
     for (s=1;s<=nseas;s++)
      {
       t = styr+(y-styr)*nseas+s-1;
-       SS2out<<g<<" "<<y<<" "<<s<<" "<<Save_Wt_Age(t,g)<<endl;
+       SS2out<<g<<" "<<y<<" "<<s<<" "<<Wt_Age_save(t,g)<<endl;
      }
     }
   }
