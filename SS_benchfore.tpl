@@ -63,7 +63,7 @@ FUNCTION void setup_Benchmark()
         for (g=1;g<=gmorph;g++)
         if(use_morph(g)>0 && sx(g)==1)
         {
-          fec(g)=save_sel_fec(t,g,0);
+          fec(g)=save_sel_fec(t,0,g);
        }
 
      if (Fcast_Loop_Control(3)==3)  //  using mean recruitment from range of years
@@ -170,9 +170,9 @@ FUNCTION void setup_Benchmark()
               tempvec_a.initialize();
               for (t=Bmark_t(1);t<=Bmark_t(2);t+=nseas) 
               {
-                tempvec_a+=save_sel_fec(t+s,g,f);
+                tempvec_a+=save_sel_fec(t+s,f,g);
               }
-              save_sel_fec(styr-3*nseas+s,g,f)=tempvec_a/temp;
+              save_sel_fec(styr-3*nseas+s,f,g)=tempvec_a/temp;
             }
 // natmort_unf is accumulated while doing the time_series
 // then it's mean is calculated in Get_Benchmarks and assigned back to natmort
@@ -372,7 +372,7 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
   //  SPAWN-RECR:   call make_fecundity for benchmarks
         if(s==spawn_seas)
         {
-          for(g=1;g<=gmorph;g++) {fec(g)=save_sel_fec(styr-3*nseas+s-1,g,0);}
+          for(g=1;g<=gmorph;g++) {fec(g)=save_sel_fec(styr-3*nseas+s-1,0,g);}
         }
         for(g=1;g<=gmorph;g++)
         {
@@ -394,7 +394,7 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
         for(s=1;s<=nseas;s++)
         {
           tempvec_a.initialize();
-          for(f=1;f<=Nfleet;f++) {tempvec_a+=Bmark_RelF_Use(s,f)*deadfish(s,g,f);}
+          for(f=1;f<=Nfleet;f++) {tempvec_a+=Bmark_RelF_Use(s,f)*deadfish(s,f,g);}
           temp=max(tempvec_a);
           if(temp>maxpossF) maxpossF=temp;
         }
@@ -1624,9 +1624,9 @@ FUNCTION void Get_Forecast()
               for (g=1;g<=gmorph;g++)
               if(use_morph(g)>0)
               {
-                Wt_Age_beg(s,g)=Wt_Age_emp(t,GP3(g),0);
-                Wt_Age_mid(s,g)=Wt_Age_emp(t,GP3(g),-1);
-                if(s==spawn_seas) fec(g)=Wt_Age_emp(t,GP3(g),-2);
+                Wt_Age_beg(s,g)=Wt_Age_emp(t,0,GP3(g));
+                Wt_Age_mid(s,g)=Wt_Age_emp(t,-1,GP3(g));
+                if(s==spawn_seas) fec(g)=Wt_Age_emp(t,-2,GP3(g));
               }
             }
             else if(timevary_MG(y,2)>0 || timevary_MG(y,3)>0 ||  bigsaver==1 )
@@ -1665,7 +1665,7 @@ FUNCTION void Get_Forecast()
             {
               g+=N_platoon;
               int gpi=GP3(g);   // GP*gender*settlement
-              natM(s,gpi)+=pred_M2(f1,t)*sel_al_3(s,g,f);
+              natM(s,gpi)+=pred_M2(f1,t)*sel_al_3(s,f,g);
               surv1(s,gpi)=mfexp(-natM(s,gpi)*seasdur_half(s));
               surv2(s,gpi)=square(surv1(s,gpi));
             }
@@ -1929,16 +1929,16 @@ FUNCTION void Get_Forecast()
                         if(catchunits(f)==1)  //  catch in weight
                         {
                           if(Fcast_InputCatch(t,f,2)==2)
-                            {temp+=Nmid(g)*deadfish_B(s,g,f);}      // dead catch bio
+                            {temp+=Nmid(g)*deadfish_B(s,f,g);}      // dead catch bio
                           else if(Fcast_InputCatch(t,f,2)==3)
-                            {temp+=Nmid(g)*sel_al_2(s,g,f);}      // retained catch bio
+                            {temp+=Nmid(g)*sel_al_2(s,f,g);}      // retained catch bio
                         }
                         else   //  catch in numbers
                         {
                           if(Fcast_InputCatch(t,f,2)==2)
-                          {temp+=Nmid(g)*deadfish(s,g,f);}      // deadfish catch numbers
+                          {temp+=Nmid(g)*deadfish(s,f,g);}      // deadfish catch numbers
                           else if(Fcast_InputCatch(t,f,2)==3)
-                          {temp+=Nmid(g)*sel_al_4(s,g,f);}      // retained catch numbers
+                          {temp+=Nmid(g)*sel_al_4(s,f,g);}      // retained catch numbers
                         }
                       }  //close gmorph loop
                       temp1=Fcast_InputCatch(t,f,1)/(temp+NilNumbers);
@@ -1951,13 +1951,13 @@ FUNCTION void Get_Forecast()
                       if(use_morph(g)>0)
                       {
                         if(Fcast_Catch_Basis==2)
-                        {temp+=Nmid(g)*deadfish_B(s,g,f);}      // dead catch bio
+                        {temp+=Nmid(g)*deadfish_B(s,f,g);}      // dead catch bio
                         else if(Fcast_Catch_Basis==3)
-                        {temp+=Nmid(g)*sel_al_2(s,g,f);}      // retained catch bio
+                        {temp+=Nmid(g)*sel_al_2(s,f,g);}      // retained catch bio
                         else if(Fcast_Catch_Basis==5)
-                        {temp+=Nmid(g)*deadfish(s,g,f);}      // deadfish catch numbers
+                        {temp+=Nmid(g)*deadfish(s,f,g);}      // deadfish catch numbers
                         else if(Fcast_Catch_Basis==6)
-                        {temp+=Nmid(g)*sel_al_4(s,g,f);}      // retained catch numbers
+                        {temp+=Nmid(g)*sel_al_4(s,f,g);}      // retained catch numbers
                       }  //close gmorph loop
                       temp1=Fcast_Catch_Store(t,f)/(temp+NilNumbers);
                       join1=1./(1.+mfexp(30.*(temp1-max_harvest_rate)));
@@ -1981,13 +1981,13 @@ FUNCTION void Get_Forecast()
                 for (g=1;g<=gmorph;g++)
                 if(use_morph(g)>0)
                 {
-                  catch_fleet(t,f,1)+=Nmid(g)*sel_al_1(s,g,f);      // encountered catch bio
-                  catch_fleet(t,f,2)+=Nmid(g)*deadfish_B(s,g,f);      // dead catch bio
-                  catch_fleet(t,f,3)+=Nmid(g)*sel_al_2(s,g,f);      // retained catch bio
-                  catch_fleet(t,f,4)+=Nmid(g)*sel_al_3(s,g,f);      // encountered catch numbers
-                  catch_fleet(t,f,5)+=Nmid(g)*deadfish(s,g,f);      // deadfish catch numbers
-                  catch_fleet(t,f,6)+=Nmid(g)*sel_al_4(s,g,f);      // retained catch numbers
-                  catage_w(g)= temp*elem_prod(Nmid(g),deadfish(s,g,f));
+                  catch_fleet(t,f,1)+=Nmid(g)*sel_al_1(s,f,g);      // encountered catch bio
+                  catch_fleet(t,f,2)+=Nmid(g)*deadfish_B(s,f,g);      // dead catch bio
+                  catch_fleet(t,f,3)+=Nmid(g)*sel_al_2(s,f,g);      // retained catch bio
+                  catch_fleet(t,f,4)+=Nmid(g)*sel_al_3(s,f,g);      // encountered catch numbers
+                  catch_fleet(t,f,5)+=Nmid(g)*deadfish(s,f,g);      // deadfish catch numbers
+                  catch_fleet(t,f,6)+=Nmid(g)*sel_al_4(s,f,g);      // retained catch numbers
+                  catage_w(g)= temp*elem_prod(Nmid(g),deadfish(s,f,g));
                   Nsurv(g)-=catage_w(g);
                 }  //close gmorph loop
                 catch_fleet(t,f)*=temp;
@@ -2033,7 +2033,7 @@ FUNCTION void Get_Forecast()
                   for (f=1;f<=Nfleet;f++) 
                   if (fleet_area(f)==p && Fcast_RelF_Use(s,f)>0.0 && fleet_type(f)<=2)
                   {
-                    Z_rate(t,p,g)+=deadfish(s,g,f)*Hrate(f,t);
+                    Z_rate(t,p,g)+=deadfish(s,f,g)*Hrate(f,t);
                   }
                   Zrate2(p,g)=elem_div( (1.-mfexp(-seasdur(s)*Z_rate(t,p,g))), Z_rate(t,p,g));
                 }  //  end morph
@@ -2053,16 +2053,16 @@ FUNCTION void Get_Forecast()
                         if(catchunits(f)==1)  //  catch in weight
                         {
                           if(Fcast_InputCatch(t,f,2)==2)
-                            {C_temp(f)+=elem_prod(natage(t,p,g),deadfish_B(s,g,f))*Zrate2(p,g);}      // dead catch bio
+                            {C_temp(f)+=elem_prod(natage(t,p,g),deadfish_B(s,f,g))*Zrate2(p,g);}      // dead catch bio
                           else if(Fcast_InputCatch(t,f,2)==3)
-                            {C_temp(f)+=elem_prod(natage(t,p,g),sel_al_2(s,g,f))*Zrate2(p,g);}      // retained catch bio
+                            {C_temp(f)+=elem_prod(natage(t,p,g),sel_al_2(s,f,g))*Zrate2(p,g);}      // retained catch bio
                         }
                         else   //  catch in numbers
                         {
                           if(Fcast_InputCatch(t,f,2)==2)
-                          {C_temp(f)+=elem_prod(natage(t,p,g),deadfish(s,g,f))*Zrate2(p,g);}      // deadfish catch numbers
+                          {C_temp(f)+=elem_prod(natage(t,p,g),deadfish(s,f,g))*Zrate2(p,g);}      // deadfish catch numbers
                           else if(Fcast_InputCatch(t,f,2)==3)
-                          {C_temp(f)+=elem_prod(natage(t,p,g),sel_al_4(s,g,f))*Zrate2(p,g);}      // retained catch numbers
+                          {C_temp(f)+=elem_prod(natage(t,p,g),sel_al_4(s,f,g))*Zrate2(p,g);}      // retained catch numbers
                         }
                       }  //close gmorph loop
                       C_temp(f)*=Hrate(f,t);  //  where temp was the available biomass or numbers calculated above and convert to catch here
@@ -2088,13 +2088,13 @@ FUNCTION void Get_Forecast()
                       if(use_morph(g)>0)
                       {
                         if(Fcast_Catch_Basis==2)
-                        {C_temp(f)+=elem_prod(natage(t,p,g),deadfish_B(s,g,f))*Zrate2(p,g);}      // dead catch bio
+                        {C_temp(f)+=elem_prod(natage(t,p,g),deadfish_B(s,f,g))*Zrate2(p,g);}      // dead catch bio
                         else if(Fcast_Catch_Basis==3)
-                        {C_temp(f)+=elem_prod(natage(t,p,g),sel_al_2(s,g,f))*Zrate2(p,g);}      // retained catch bio
+                        {C_temp(f)+=elem_prod(natage(t,p,g),sel_al_2(s,f,g))*Zrate2(p,g);}      // retained catch bio
                         else if(Fcast_Catch_Basis==5)
-                        {C_temp(f)+=elem_prod(natage(t,p,g),deadfish(s,g,f))*Zrate2(p,g);}      // deadfish catch numbers
+                        {C_temp(f)+=elem_prod(natage(t,p,g),deadfish(s,f,g))*Zrate2(p,g);}      // deadfish catch numbers
                         else if(Fcast_Catch_Basis==6)
-                        {C_temp(f)+=elem_prod(natage(t,p,g),sel_al_4(s,g,f))*Zrate2(p,g);}      // retained catch numbers
+                        {C_temp(f)+=elem_prod(natage(t,p,g),sel_al_4(s,f,g))*Zrate2(p,g);}      // retained catch numbers
                       }  //close gmorph loop
                       C_temp(f)*=Hrate(f,t);
                       H_temp(f)=Hrate(f,t);
@@ -2124,13 +2124,13 @@ FUNCTION void Get_Forecast()
                 if(use_morph(g)>0)
                 {
                   tempvec_a=Hrate(f,t)*Zrate2(p,g);
-                  catch_fleet(t,f,1)+=tempvec_a*elem_prod(natage(t,p,g),sel_al_1(s,g,f));      // encountered catch bio
-                  catch_fleet(t,f,2)+=tempvec_a*elem_prod(natage(t,p,g),deadfish_B(s,g,f));      // dead catch bio
-                  catch_fleet(t,f,3)+=tempvec_a*elem_prod(natage(t,p,g),sel_al_2(s,g,f));      // retained catch bio
-                  catch_fleet(t,f,4)+=tempvec_a*elem_prod(natage(t,p,g),sel_al_3(s,g,f));      // encountered catch numbers
-                  catch_fleet(t,f,5)+=tempvec_a*elem_prod(natage(t,p,g),deadfish(s,g,f));      // deadfish catch numbers
-                  catch_fleet(t,f,6)+=tempvec_a*elem_prod(natage(t,p,g),sel_al_4(s,g,f));      // retained catch numbers
-                  catage(t,f,g)=elem_prod(elem_prod(natage(t,p,g),deadfish(s,g,f)),tempvec_a);
+                  catch_fleet(t,f,1)+=tempvec_a*elem_prod(natage(t,p,g),sel_al_1(s,f,g));      // encountered catch bio
+                  catch_fleet(t,f,2)+=tempvec_a*elem_prod(natage(t,p,g),deadfish_B(s,f,g));      // dead catch bio
+                  catch_fleet(t,f,3)+=tempvec_a*elem_prod(natage(t,p,g),sel_al_2(s,f,g));      // retained catch bio
+                  catch_fleet(t,f,4)+=tempvec_a*elem_prod(natage(t,p,g),sel_al_3(s,f,g));      // encountered catch numbers
+                  catch_fleet(t,f,5)+=tempvec_a*elem_prod(natage(t,p,g),deadfish(s,f,g));      // deadfish catch numbers
+                  catch_fleet(t,f,6)+=tempvec_a*elem_prod(natage(t,p,g),sel_al_4(s,f,g));      // retained catch numbers
+                  catage(t,f,g)=elem_prod(elem_prod(natage(t,p,g),deadfish(s,f,g)),tempvec_a);
                 }  //close gmorph loop
               }  // close fishery
 

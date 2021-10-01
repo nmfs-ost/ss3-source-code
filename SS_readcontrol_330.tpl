@@ -5619,7 +5619,7 @@
    echoinput<<" latest fill year for -2 through Nfleet:  "<<filled_once<<endl;
  END_CALCS
   vector junkvec2(0,nages)
-  4darray Wt_Age_emp(styr-3*nseas,k2,1,gender*N_GP*nseas,-2,Nfleet,0,nages)  //  set to begin period for pop (type=0), or mid period for fleet/survey
+  4darray Wt_Age_emp(styr-3*nseas,k2,-2,Nfleet,1,gender*N_GP*nseas,0,nages)  //  set to begin period for pop (type=0), or mid period for fleet/survey
 // read:  yr, seas, gender, morph, settlement, fleet, <age vec> where first value is for age 0!
 // if yr=-yr, then fill remaining years for that seas, growpattern, gender, fleet
 // fleet 0 contains begin season pop WT
@@ -5633,7 +5633,7 @@
     for(t=styr;t<=k2;t++)
     for(g=1;g<=gmorph;g++)
     for(a=0;a<=nages;a++)
-    {Wt_Age_emp(t,g,f,a)=-9999.;}
+    {Wt_Age_emp(t,f,g,a)=-9999.;}
     if(N_WTage_maxage>nages) N_WTage_maxage=nages;  //  so extra ages being read will be ignored
     dvector tempvec(1,7+N_WTage_maxage);
     for (i=0;i<=N_WTage_rd-1;i++)
@@ -5659,9 +5659,9 @@
           for(k=f;k<=f2;k++)
           {
           t=styr+(j-styr)*nseas+s-1;
-          for (a=0;a<=N_WTage_maxage;a++) Wt_Age_emp(t,g,k,a)=tempvec(7+a);
-          for (a=N_WTage_maxage;a<=nages;a++) Wt_Age_emp(t,g,f,a)=Wt_Age_emp(t,g,f,N_WTage_maxage);  //  fills out remaining ages, if any
-          if(j==y && k==f) echoinput<<"year "<<y<<" s "<<s<<" sex "<<gg<<" gp "<<gp<<" bs "<<birthseas<<" morph "<<g<<" pop/fleet "<<f<<" "<<Wt_Age_emp(t,g,f)(0,min(6,nages))<<endl;
+          for (a=0;a<=N_WTage_maxage;a++) Wt_Age_emp(t,k,g,a)=tempvec(7+a);
+          for (a=N_WTage_maxage;a<=nages;a++) Wt_Age_emp(t,f,g,a)=Wt_Age_emp(t,f,g,N_WTage_maxage);  //  fills out remaining ages, if any
+          if(j==y && k==f) echoinput<<"year "<<y<<" s "<<s<<" sex "<<gg<<" gp "<<gp<<" bs "<<birthseas<<" morph "<<g<<" pop/fleet "<<f<<" "<<Wt_Age_emp(t,f,g)(0,min(6,nages))<<endl;
           }
         }
       }
@@ -5670,7 +5670,7 @@
     for(t=styr;t<=k2-1;t++)
     for(g=1;g<=gmorph;g++)
     for(a=0;a<=nages;a++)
-    if(Wt_Age_emp(t,g,f,a)==-9999.)
+    if(Wt_Age_emp(t,f,g,a)==-9999.)
       {N_warn++;  warning<<N_warn<<" "<<"wtatage not assigned for: time, morph, fleet, age: "<<t<<" "<<g<<" "<<f<<" "<<a<<endl;}
       temp=float(Bmark_Yr(2)-Bmark_Yr(1)+1.);  //  get denominator
       echoinput<<" fill benchmark years with mean "<<endl;
@@ -5681,8 +5681,8 @@
         for (s=0;s<=nseas-1;s++)
         {
           junkvec2.initialize();
-          for (t=Bmark_t(1);t<=Bmark_t(2);t+=nseas) {junkvec2+=Wt_Age_emp(t+s,GP3(g),f);}
-          Wt_Age_emp(styr-3*nseas+s,GP3(g),f)=junkvec2/temp;
+          for (t=Bmark_t(1);t<=Bmark_t(2);t+=nseas) {junkvec2+=Wt_Age_emp(t+s,f,GP3(g));}
+          Wt_Age_emp(styr-3*nseas+s,f,GP3(g))=junkvec2/temp;
         }
       }
     echoinput<<"finished reading empirical wt-at-age.ss"<<endl;
