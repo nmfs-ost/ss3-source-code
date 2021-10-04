@@ -1655,8 +1655,8 @@ FUNCTION void Make_FishSelex()
         {
           if(WTage_rd==1)
           {
-            sel_al_1(s,f,g)=elem_prod(sel_a(yf,f,gg),Wt_Age_emp(tz,f,GP3(g)));   // selected wt-at-age
-            fish_body_wt(tz,f,g)=Wt_Age_emp(tz,f,GP3(g));
+            sel_al_1(s,f,g)=elem_prod(sel_a(yf,f,gg),Wt_Age_all(tz,f,g));   // selected wt-at-age
+            fish_body_wt(tz,f,g)=Wt_Age_all(tz,f,g);
           }
           else
           {
@@ -1752,7 +1752,7 @@ FUNCTION void Make_FishSelex()
 
           }
       }  // end need to do it
-      save_sel_fec(t,f,g)= sel_al_3(s,f,g);  //  save sel_al_3 in save_fecundity array for output
+      Wt_Age_all(t,f+Nfleet,g)= sel_al_3(s,f,g);  //  save sel_al_3 in for output
 
     }  // end fleet loop for mortality, retention
   }  // end Make_FishSelex

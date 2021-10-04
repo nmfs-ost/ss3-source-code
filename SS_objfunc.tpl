@@ -1064,15 +1064,15 @@ FUNCTION void Process_STDquant()
         else if(Selex_Std_AL==3)
         {
 //  4darray sel_al_3(1,nseas,1,gmorph,1,Nfleet,0,nages);  // selected numbers
-//  4darray save_sel_fec(styr-3*nseas,TimeMax_Fcast_std+nseas,0,Nfleet,1,gmorph,0,nages)  //  save sel_al_3 (Asel_2) and save fecundity for output;  +nseas covers no forecast setups
+//  4darray Wt_Age_all(styr-3*nseas,TimeMax_Fcast_std+nseas,0,Nfleet,1,gmorph,0,nages)  //  save sel_al_3 (Asel_2) and save fecundity for output;  +nseas covers no forecast setups
 
           int t_write=styr+(Selex_Std_Year-styr)*nseas;  //  season 1 of selected year
           g=g_Start(1)+N_platoon; //  mid morph for first GP for females
-          Extra_Std(i)=save_sel_fec(t_write,Do_Selex_Std,g,j);
+          Extra_Std(i)=Wt_Age_all(t_write,Do_Selex_Std+Nfleet,g,j);
           if(gender==2)
             {
               g=g_Start(1+N_GP)+N_platoon; //  mid morph for first GP for males
-              Extra_Std(i+Selex_Std_Cnt)=save_sel_fec(t_write,Do_Selex_Std,g,j);
+              Extra_Std(i+Selex_Std_Cnt)=Wt_Age_all(t_write,Do_Selex_Std+Nfleet,g,j);
             }
         }
       }
@@ -1179,6 +1179,13 @@ FUNCTION void Process_STDquant()
           }
         }
       }
+    }
+    warning<<"after objfun "<<endl;
+    for(t=2098;t<=2116;t++)
+    {
+      warning<<t<<" ";
+          for(f=-2;f<=Nfleet;f++) warning<<Wt_Age_all(t,f,1,0)<<" ";
+          warning<<endl;
     }
 
   }

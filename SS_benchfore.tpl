@@ -63,7 +63,7 @@ FUNCTION void setup_Benchmark()
         for (g=1;g<=gmorph;g++)
         if(use_morph(g)>0 && sx(g)==1)
         {
-          fec(g)=save_sel_fec(t,0,g);
+          fec(g)=Wt_Age_all(t,-2,g);
        }
 
      if (Fcast_Loop_Control(3)==3)  //  using mean recruitment from range of years
@@ -162,17 +162,14 @@ FUNCTION void setup_Benchmark()
             tempvec_a.initialize();
             for (t=Bmark_t(1);t<=Bmark_t(2);t+=nseas) {tempvec_a+=Ave_Size(t+s,mid_subseas,g);}
             Ave_Size(styr-3*nseas+s,mid_subseas,g)=tempvec_a/temp;
-            tempvec_a.initialize();
-            for (t=Bmark_t(1);t<=Bmark_t(2);t+=nseas) {tempvec_a+=Wt_Age_save(t+s,g);}
-            Wt_Age_save(styr-3*nseas+s,g)=tempvec_a/temp;
-            for (f=0;f<=Nfleet;f++)  //  goes to Nfleet because this contains fecundity as well as asel2(f)
+            for (f=-2;f<=2*Nfleet;f++)  //  goes to Nfleet because this contains fecundity as well as asel2(f)
             {
               tempvec_a.initialize();
               for (t=Bmark_t(1);t<=Bmark_t(2);t+=nseas) 
               {
-                tempvec_a+=save_sel_fec(t+s,f,g);
+                tempvec_a+=Wt_Age_all(t+s,f,g);
               }
-              save_sel_fec(styr-3*nseas+s,f,g)=tempvec_a/temp;
+              Wt_Age_all(styr-3*nseas+s,f,g)=tempvec_a/temp;
             }
 // natmort_unf is accumulated while doing the time_series
 // then it's mean is calculated in Get_Benchmarks and assigned back to natmort
@@ -372,11 +369,11 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
   //  SPAWN-RECR:   call make_fecundity for benchmarks
         if(s==spawn_seas)
         {
-          for(g=1;g<=gmorph;g++) {fec(g)=save_sel_fec(styr-3*nseas+s-1,0,g);}
+          for(g=1;g<=gmorph;g++) {fec(g)=Wt_Age_all(styr-3*nseas+s-1,-2,g);}
         }
         for(g=1;g<=gmorph;g++)
         {
-          Wt_Age_beg(s,g)=Wt_Age_save(styr-3*nseas+s-1,g);
+          Wt_Age_beg(s,g)=Wt_Age_all(styr-3*nseas+s-1,0,g);
         }
       }
 //  following uses the values of sel_l, sel_a, etc. stored in yr=styr-3
@@ -1624,9 +1621,9 @@ FUNCTION void Get_Forecast()
               for (g=1;g<=gmorph;g++)
               if(use_morph(g)>0)
               {
-                Wt_Age_beg(s,g)=Wt_Age_emp(t,0,GP3(g));
-                Wt_Age_mid(s,g)=Wt_Age_emp(t,-1,GP3(g));
-                if(s==spawn_seas) fec(g)=Wt_Age_emp(t,-2,GP3(g));
+                Wt_Age_beg(s,g)=Wt_Age_all(t,0,g);
+                Wt_Age_mid(s,g)=Wt_Age_all(t,-1,g);
+                if(s==spawn_seas) fec(g)=Wt_Age_all(t,-2,g);
               }
             }
             else if(timevary_MG(y,2)>0 || timevary_MG(y,3)>0 ||  bigsaver==1 )
@@ -1645,7 +1642,6 @@ FUNCTION void Get_Forecast()
                  Wt_Age_mid(s,g)=ALK(ALK_idx,g)*wt_len(s,GP(g));  // use for fisheries with no size selectivity
               }
             }
-            Wt_Age_save(t)=Wt_Age_beg(s);
             for (g=1;g<=gmorph;g++)
             if(use_morph(g)>0)
             {
@@ -1707,7 +1703,7 @@ FUNCTION void Get_Forecast()
                 for (g=1;g<=gmorph;g++)
                 if(sx(g)==2 && use_morph(g)>0)     //  male; all assumed to be mature
                 {
-                  MaleSPB(y,p,GP4(g)) += Wt_Age_save(t,g)*natage(t,p,g);   // accumulates SSB by area and by growthpattern
+                  MaleSPB(y,p,GP4(g)) += Wt_Age_all(t,0,g)*natage(t,p,g);   // accumulates SSB by area and by growthpattern
                 }
               }
               if(Hermaphro_maleSPB>0.0)  // add MaleSPB to female SSB
@@ -2240,7 +2236,7 @@ FUNCTION void Get_Forecast()
                 for (g=1;g<=gmorph;g++)
                 if(sx(g)==2 && use_morph(g)>0)     //  male; all assumed to be mature
                 {
-                  MaleSPB(y,p,GP4(g)) += Wt_Age_save(t,g)*elem_prod(natage(t,p,g),mfexp(-Z_rate(t,p,g)*spawn_time_seas));   // accumulates SSB by area and by growthpattern
+                  MaleSPB(y,p,GP4(g)) += Wt_Age_all(t,0,g)*elem_prod(natage(t,p,g),mfexp(-Z_rate(t,p,g)*spawn_time_seas));   // accumulates SSB by area and by growthpattern
                 }
               }
               if(Hermaphro_maleSPB>0.0)  // add MaleSPB to female SSB

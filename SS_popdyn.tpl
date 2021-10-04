@@ -204,9 +204,9 @@ FUNCTION void get_initial_conditions()
       for (g=1;g<=gmorph;g++)
       if(use_morph(g)>0)
       {
-        Wt_Age_beg(s,g)=Wt_Age_emp(t,0,GP3(g));
-        Wt_Age_mid(s,g)=Wt_Age_emp(t,-1,GP3(g));
-        if(s==spawn_seas) fec(g)=Wt_Age_emp(t,-2,GP3(g));
+        Wt_Age_beg(s,g)=Wt_Age_all(t,0,g);
+        Wt_Age_mid(s,g)=Wt_Age_all(t,-1,g);
+        if(s==spawn_seas) fec(g)=Wt_Age_all(t,-2,g);
       }
     }
       else if(MG_active(2)>0 || MG_active(3)>0 || save_for_report>0 || do_once==1)
@@ -224,8 +224,6 @@ FUNCTION void get_initial_conditions()
          Wt_Age_mid(s,g)=ALK(ALK_idx,g)*wt_len(s,GP(g));  // use for fisheries with no size selectivity
       }
     }
-
-    Wt_Age_save(t)=Wt_Age_beg(s);
 
     for (g=1;g<=gmorph;g++)
     if(use_morph(g)>0)
@@ -560,6 +558,15 @@ FUNCTION void get_time_series()
   dvariable Z_adjuster;
   dvariable R0_use;
   dvariable SSB_use;
+
+    warning<<"begin time series "<<endl;
+    for(t=2098;t<=2116;t++)
+    {
+      warning<<t<<" ";
+          for(f=-2;f<=Nfleet;f++) warning<<Wt_Age_all(t,f,1,0)<<" ";
+          warning<<endl;
+    }
+
   if(Do_Morphcomp>0) Morphcomp_exp.initialize();
 
   //  SS_Label_Info_24.0 #Retrieve spawning biomass and recruitment from the initial equilibrium
@@ -606,8 +613,8 @@ FUNCTION void get_time_series()
         for (g=1;g<=gmorph;g++)
         if(use_morph(g)>0)
         {
-          Wt_Age_beg(s,g)=Wt_Age_emp(t,0,GP3(g));
-          Wt_Age_mid(s,g)=Wt_Age_emp(t,-1,GP3(g));
+          Wt_Age_beg(s,g)=Wt_Age_all(t,0,g);
+          Wt_Age_mid(s,g)=Wt_Age_all(t,-1,g);
         }
       }
       else if(timevary_MG(y,2)>0 || timevary_MG(y,3)>0 || save_for_report==1)
@@ -744,12 +751,11 @@ FUNCTION void get_time_series()
         for (g=1;g<=gmorph;g++)
         if(use_morph(g)>0)
         {
-          Wt_Age_beg(s,g)=Wt_Age_emp(t,0,GP3(g));
-          Wt_Age_mid(s,g)=Wt_Age_emp(t,-1,GP3(g));
+          Wt_Age_beg(s,g)=Wt_Age_all(t,0,g);
+          Wt_Age_mid(s,g)=Wt_Age_all(t,-1,g);
           if(s==spawn_seas)
             {
-              fec(g)=Wt_Age_emp(t,-2,GP3(g));
-              save_sel_fec(t,0,g)= fec(g);
+              fec(g)=Wt_Age_all(t,-2,g);
             }
         }
       }
@@ -766,8 +772,6 @@ FUNCTION void get_time_series()
            Wt_Age_mid(s,g)=ALK(ALK_idx2,g)*wt_len(s,GP(g));  // use for fisheries with no size selectivity
         }
       }
-
-      Wt_Age_save(t)=Wt_Age_beg(s);
 
       if(y>styr)    // because styr is done as part of initial conditions
       {
@@ -841,7 +845,7 @@ FUNCTION void get_time_series()
             for (g=1;g<=gmorph;g++)
             if(sx(g)==2 && use_morph(g)>0)     //  male; all assumed to be mature
             {
-              MaleSPB(y,p,GP4(g)) += Wt_Age_save(t,g)*natage(t,p,g);   // accumulates SSB by area and by growthpattern
+              MaleSPB(y,p,GP4(g)) += Wt_Age_all(t,0,g)*natage(t,p,g);   // accumulates SSB by area and by growthpattern
             }
           }
           if(Hermaphro_maleSPB>0.0)  // add MaleSPB to female SSB
@@ -1241,7 +1245,7 @@ FUNCTION void get_time_series()
             for (g=1;g<=gmorph;g++)
             if(sx(g)==2 && use_morph(g)>0)     //  male; all assumed to be mature
             {
-              MaleSPB(y,p,GP4(g)) += Wt_Age_save(t,g)*elem_prod(natage(t,p,g),mfexp(-Z_rate(t,p,g)*spawn_time_seas));   // accumulates SSB by area and by growthpattern
+              MaleSPB(y,p,GP4(g)) += Wt_Age_all(t,0,g)*elem_prod(natage(t,p,g),mfexp(-Z_rate(t,p,g)*spawn_time_seas));   // accumulates SSB by area and by growthpattern
             }
           }
           if(Hermaphro_maleSPB>0.0)  // add MaleSPB to female SSB
@@ -1442,10 +1446,8 @@ FUNCTION void get_time_series()
                 }
               }
             }
-            if(y==21 || y==220)  warning<<endl<<y<<" "<<tempbase<<" "<<tempM<<" "<<tempZ;
             annual_F(y,2) = log(tempM)-log(tempZ);  // F=Z-M
             annual_F(y,3) = log(tempbase)-log(tempM);  // M
-            if(y==21 || y==220)  warning<<annual_F(y,2)<<" "<<annual_F(y,3)<<endl;
           } // end if F_reporting!=5
 
           else
@@ -1562,6 +1564,14 @@ FUNCTION void get_time_series()
  }
 
   if(Do_TG>0) Tag_Recapture();
+
+    warning<<"end time series "<<endl;
+    for(t=2098;t<=2116;t++)
+    {
+      warning<<t<<" ";
+          for(f=-2;f<=Nfleet;f++) warning<<Wt_Age_all(t,f,1,0)<<" ";
+          warning<<endl;
+    }
 
   }  //  end time_series
  #ifdef DO_ONCE

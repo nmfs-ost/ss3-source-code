@@ -1440,7 +1440,7 @@ FUNCTION void get_mat_fec();
         }
         case 5:  //  Maturity_Option=5   read age-fecundity from wtatage.ss
         {
-          fec(g)=Wt_Age_emp(t,-2,GP3(g));
+          fec(g)=Wt_Age_all(t,-2,g);
           make_mature_numbers(g)=fec(g);  //  not defined
           make_mature_bio(g)=fec(g);   //  not defined
            break;
@@ -1457,8 +1457,8 @@ FUNCTION void get_mat_fec();
           make_mature_bio(g)=elem_prod(ALK(ALK_idx,g)*elem_prod(mat_len(GPat),wt_len(s,GP(g))),mat_age(GPat));  //  mature biomass at age
         }
       }
-      if(t>=styr) save_sel_fec(t,0,g)= fec(g);   //  save sel_al_3 and save fecundity for output
-      if(y==endyr) save_sel_fec(t+nseas,0,g)=fec(g);
+      if(t>=styr&&Maturity_Option!=5) Wt_Age_all(t,-2,g)= fec(g);   //  save sel_al_3 and save fecundity for output
+      if(y==endyr&&Maturity_Option!=5) Wt_Age_all(t+nseas,-2,g)=fec(g);
  #ifdef DO_ONCE
      if(do_once==1){
      echoinput<<"gp: "<<GPat<<" g "<<g<<endl<<"mat_len: "<<mat_len(GPat)<<endl<<
@@ -1761,91 +1761,4 @@ FUNCTION void get_saveGparm()
         }
     }
   }  //  end save_gparm
-
-//  this function is no longer used.  It has been moved into get_mat_fec()
-
-FUNCTION void Make_Fecundity()
-  {
-//********************************************************************
-//  this Make_Fecundity function does the dot product of the distribution of length-at-age (ALK) with maturity and fecundity vectors
-//  to calculate the mean fecundity at each age
- // SS_Label_31.1 FUNCTION Make_Fecundity
-//  SPAWN-RECR:   here is the make_Fecundity function
-    fec.initialize();
-    ALK_idx=(spawn_seas-1)*N_subseas+spawn_subseas;
-    for (g=1;g<=gmorph;g++)
-    if(sx(g)==1 && use_morph(g)>0)
-    {
-      GPat=GP4(g);
-      gg=sx(g);
-      switch(Maturity_Option)
-      {
-        case 4:  //  Maturity_Option=4   read age-fecundity into age-maturity
-        {
-          fec(g)=Age_Maturity(GPat);
-          break;
-        }
-        case 5:  //  Maturity_Option=5   read age-fecundity from wtatage.ss
-        {
-          fec(g)=Wt_Age_emp(t,-2,GP3(g));
-          break;
-        }
-        default:
-        {
-              int ALK_finder=(ALK_idx-1)*gmorph+g;
-          for(a=First_Mature_Age;a<=nages;a++)
-          {
-            tempvec_a(a) = ALK(ALK_idx,g,a)(ALK_range_g_lo(ALK_finder,a),ALK_range_g_hi(ALK_finder,a)) *mat_fec_len(GPat)(ALK_range_g_lo(ALK_finder,a),ALK_range_g_hi(ALK_finder,a));
-          }
-          fec(g)(First_Mature_Age,nages) = elem_prod(tempvec_a(First_Mature_Age,nages),mat_age(GPat)(First_Mature_Age,nages));  //  reproductive output at age
-        }
-      }
-      if(t>=styr) save_sel_fec(t,0,g)= fec(g);   //  save sel_al_3 and save fecundity for output
-      if(y==endyr) save_sel_fec(t+nseas,0,g)=fec(g);
-
-      if( bigsaver==1 )
-      {
-      switch(Maturity_Option)
-      {
-        case 1:  //  Maturity_Option=1  length logistic
-        {
-          make_mature_numbers(g)=elem_prod(ALK(ALK_idx,g)*mat_len(GPat),mat_age(GPat));  //  mature numbers at age
-          make_mature_bio(g)=elem_prod(ALK(ALK_idx,g)*elem_prod(mat_len(GPat),wt_len(s,GP(g))),mat_age(GPat));  //  mature biomass at age
-
-          break;
-        }
-        case 2:  //  Maturity_Option=2  age logistic
-        {
-          make_mature_numbers(g)=elem_prod(ALK(ALK_idx,g)*mat_len(GPat),mat_age(GPat));  //  mature numbers at age
-          make_mature_bio(g)=elem_prod(ALK(ALK_idx,g)*elem_prod(mat_len(GPat),wt_len(s,GP(g))),mat_age(GPat));  //  mature biomass at age
-          break;
-        }
-        case 3:  //  Maturity_Option=3  read age-maturity
-        {
-          make_mature_numbers(g)=elem_prod(ALK(ALK_idx,g)*mat_len(GPat),mat_age(GPat));  //  mature numbers at age (Age_Maturity already copied to mat_age)
-          make_mature_bio(g)=elem_prod(ALK(ALK_idx,g)*elem_prod(mat_len(GPat),wt_len(s,GP(g))),mat_age(GPat));  //  mature biomass at age
-          break;
-        }
-        case 4:  //  Maturity_Option=4   read age-fecundity, so no age-maturity
-        {
-          make_mature_numbers(g)=fec(g);  //  not defined
-          make_mature_bio(g)=fec(g);   //  not defined
-          break;
-        }
-        case 5:  //  Maturity_Option=5   read age-fecundity from wtatage.ss
-        {
-          make_mature_numbers(g)=fec(g);  //  not defined
-          make_mature_bio(g)=fec(g);   //  not defined
-          break;
-        }
-        case 6:  //  Maturity_Option=6   read length-maturity
-        {
-          make_mature_numbers(g)=elem_prod(ALK(ALK_idx,g)*mat_len(GPat),mat_age(GPat));  //  mature numbers at age (Length_Maturity already copied to mat_len)
-          make_mature_bio(g)=elem_prod(ALK(ALK_idx,g)*elem_prod(mat_len(GPat),wt_len(s,GP(g))),mat_age(GPat));  //  mature biomass at age
-          break;
-        }
-      }
-      }
-    }
-  }
 

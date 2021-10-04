@@ -11,6 +11,14 @@
 //  SS_Label_Section_7.0 #PROCEDURE_SECTION
 PROCEDURE_SECTION
   {
+    warning<<"begin procedure "<<endl;
+    for(t=2098;t<=2116;t++)
+    {
+      warning<<t<<" ";
+          for(f=-2;f<=Nfleet;f++) warning<<Wt_Age_all(t,f,1,0)<<" ";
+          warning<<endl;
+    }
+
   Mgmt_quant.initialize();
   Extra_Std.initialize();
   CrashPen.initialize();
