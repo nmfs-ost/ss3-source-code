@@ -109,13 +109,6 @@ PRELIMINARY_CALCS_SECTION
       }
     }
 
-    warning<<"after input "<<endl;
-    for(t=2098;t<=2116;t++)
-    {
-      warning<<t<<" ";
-          for(f=-2;f<=Nfleet;f++) warning<<Wt_Age_all(t,f,1,0)<<" ";
-          warning<<endl;
-    }
     for(f=-2;f<=Nfleet;f++)
     for(t=styr;t<=k2-1;t++)
     for(g=1;g<=gmorph;g++)

@@ -85,6 +85,9 @@ FUNCTION void get_initial_conditions()
 //  following call is to routine that does this for all timevary parameters
 //  that are then copied over to replace the base parameter for MG, SRR, Q, Selex, or Tag as needed
   make_timevaryparm();  //  this fills array parm_timevary for all years;   densitydependence must be done year-by-year later
+ #ifdef DO_ONCE
+  if(do_once==1) cout<<" maketimevary OK "<<endl;
+ #endif
   if(MG_active(0)>0 || save_for_report>0)
     {
       get_MGsetup(y);
@@ -558,14 +561,6 @@ FUNCTION void get_time_series()
   dvariable Z_adjuster;
   dvariable R0_use;
   dvariable SSB_use;
-
-    warning<<"begin time series "<<endl;
-    for(t=2098;t<=2116;t++)
-    {
-      warning<<t<<" ";
-          for(f=-2;f<=Nfleet;f++) warning<<Wt_Age_all(t,f,1,0)<<" ";
-          warning<<endl;
-    }
 
   if(Do_Morphcomp>0) Morphcomp_exp.initialize();
 
@@ -1564,15 +1559,6 @@ FUNCTION void get_time_series()
  }
 
   if(Do_TG>0) Tag_Recapture();
-
-    warning<<"end time series "<<endl;
-    for(t=2098;t<=2116;t++)
-    {
-      warning<<t<<" ";
-          for(f=-2;f<=Nfleet;f++) warning<<Wt_Age_all(t,f,1,0)<<" ";
-          warning<<endl;
-    }
-
   }  //  end time_series
  #ifdef DO_ONCE
           if(do_once==1) echoinput<<" finished time series "<<endl;

@@ -1180,14 +1180,6 @@ FUNCTION void Process_STDquant()
         }
       }
     }
-    warning<<"after objfun "<<endl;
-    for(t=2098;t<=2116;t++)
-    {
-      warning<<t<<" ";
-          for(f=-2;f<=Nfleet;f++) warning<<Wt_Age_all(t,f,1,0)<<" ";
-          warning<<endl;
-    }
-
   }
 
 //********************************************************************
