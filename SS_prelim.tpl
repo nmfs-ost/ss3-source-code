@@ -20,7 +20,7 @@ PRELIMINARY_CALCS_SECTION
   offset_l.initialize();
   offset_a.initialize();
   save_sp_len.initialize();
-  save_sel_fec.initialize();
+  save_sel_num.initialize();
   catch_mult=1.0;
 
   //  SS_Label_Info_4.15 #read empirical wt-at-age

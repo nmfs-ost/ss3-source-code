@@ -737,13 +737,9 @@ FUNCTION void get_time_series()
       }
       if(WTage_rd>0)
       {
-          Wt_Age_beg(s)=Wt_Age_t(t,0);
-          Wt_Age_mid(s)=Wt_Age_t(t,-1);
-          if(s==spawn_seas)
-            {
-              fec=Wt_Age_t(t,-2);
-              save_sel_fec(t,0)= fec;
-            }
+        Wt_Age_beg(s)=Wt_Age_t(t,0);
+        Wt_Age_mid(s)=Wt_Age_t(t,-1);
+        if(s==spawn_seas) {fec=Wt_Age_t(t,-2);}
       }
       else if(timevary_MG(y,2)>0 || timevary_MG(y,3)>0 || save_for_report>0 || do_once==1)
       {

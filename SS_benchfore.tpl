@@ -58,13 +58,13 @@ FUNCTION void setup_Benchmark()
 		  }
         }
       }
-        t=styr+(endyr+1-styr)*nseas+spawn_seas-1;
-      
-        for (g=1;g<=gmorph;g++)
-        if(use_morph(g)>0 && sx(g)==1)
-        {
-          fec(g)=save_sel_fec(t,0,g);
-       }
+      t=styr+(endyr+1-styr)*nseas+spawn_seas-1;
+      fec=Wt_Age_t(t,-2);
+//        for (g=1;g<=gmorph;g++)
+//        if(use_morph(g)>0 && sx(g)==1)
+//        {
+//          fec(g)=save_sel_num(t,0,g);
+//       }
 
      if (Fcast_Loop_Control(3)==3)  //  using mean recruitment from range of years
      	{
@@ -162,17 +162,20 @@ FUNCTION void setup_Benchmark()
             tempvec_a.initialize();
             for (t=Bmark_t(1);t<=Bmark_t(2);t+=nseas) {tempvec_a+=Ave_Size(t+s,mid_subseas,g);}
             Ave_Size(styr-3*nseas+s,mid_subseas,g)=tempvec_a/temp;
-            tempvec_a.initialize();
-            for (t=Bmark_t(1);t<=Bmark_t(2);t+=nseas) {tempvec_a+=Wt_Age_t(t+s,0,g);}
-            Wt_Age_t(styr-3*nseas+s,0,g)=tempvec_a/temp;
-            for (f=0;f<=Nfleet;f++)  //  goes to Nfleet because this contains fecundity as well as asel2(f)
+            for(int kk=-2;kk<=0;kk++)  //  get mean fecundity and pop body wt
+            {
+              tempvec_a.initialize();
+              for (t=Bmark_t(1);t<=Bmark_t(2);t+=nseas) {tempvec_a+=Wt_Age_t(t+s,kk,g);}
+              Wt_Age_t(styr-3*nseas+s,kk,g)=tempvec_a/temp;
+            }
+            for (f=1;f<=Nfleet;f++) 
             {
               tempvec_a.initialize();
               for (t=Bmark_t(1);t<=Bmark_t(2);t+=nseas) 
               {
-                tempvec_a+=save_sel_fec(t+s,f,g);
+                tempvec_a+=save_sel_num(t+s,f,g);
               }
-              save_sel_fec(styr-3*nseas+s,f,g)=tempvec_a/temp;
+              save_sel_num(styr-3*nseas+s,f,g)=tempvec_a/temp;
             }
 // natmort_unf is accumulated while doing the time_series
 // then it's mean is calculated in Get_Benchmarks and assigned back to natmort
@@ -372,7 +375,7 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
   //  SPAWN-RECR:   call make_fecundity for benchmarks
         if(s==spawn_seas)
         {
-          {fec=save_sel_fec(styr-3*nseas+s-1,0);}
+          {fec=Wt_Age_t(styr-3*nseas+s-1,-2);}
         }
           Wt_Age_beg(s)=Wt_Age_t(styr-3*nseas+s-1,0);
       }

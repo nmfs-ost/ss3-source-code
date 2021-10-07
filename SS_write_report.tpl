@@ -2024,11 +2024,11 @@ FUNCTION void write_bigoutput()
       for (g=1;g<=gmorph;g++)
       if(use_morph(g)>0 && (y==styr-3 || y>=styr))
       {
-        if(s==spawn_seas && (sx(g)==1 || Hermaphro_Option!=0) ) SS2out<<"Fecund "<<" NA "<<" "<<y<<" "<<s<<" "<<sx(g)<<" "<<g<<" "<<y<<"_"<<"Fecund"<<save_sel_fec(t,0,g)<<endl;
+        if(s==spawn_seas && (sx(g)==1 || Hermaphro_Option!=0) ) SS2out<<"Fecund "<<" NA "<<" "<<y<<" "<<s<<" "<<sx(g)<<" "<<g<<" "<<y<<"_"<<"Fecund"<<Wt_Age_t(t,-2,g)<<endl;
         for (f=1;f<=Nfleet;f++)
         {
-          SS2out<<"Asel2 "<<f<<" "<<y<<" "<<s<<" "<<sx(g)<<" "<<g<<" "<<y<<"_"<<f<<"_Asel2"<<save_sel_fec(t,f,g)<<endl;
-          if(fleet_type(f)<=2) SS2out<<"F "<<f<<" "<<y<<" "<<s<<" "<<sx(g)<<" "<<g<<" "<<y<<"_"<<f<<"_F"<<Hrate(f,t)*save_sel_fec(t,f,g)<<endl;
+          SS2out<<"Asel2 "<<f<<" "<<y<<" "<<s<<" "<<sx(g)<<" "<<g<<" "<<y<<"_"<<f<<"_Asel2"<<save_sel_num(t,f,g)<<endl;
+          if(fleet_type(f)<=2) SS2out<<"F "<<f<<" "<<y<<" "<<s<<" "<<sx(g)<<" "<<g<<" "<<y<<"_"<<f<<"_F"<<Hrate(f,t)*save_sel_num(t,f,g)<<endl;
           SS2out<<"bodywt "<<f<<" "<<y<<" "<<s<<" "<<sx(g)<<" "<<g<<" "<<y<<"_"<<f<<"_bodywt"<<Wt_Age_t(t,f,g)<<endl;
         }
       }
@@ -2279,7 +2279,7 @@ FUNCTION void write_bigoutput()
            {SS2out<<" TIME ";}
          else
            {SS2out<<" FORE ";}
-         SS2out<<Hrate(f,t)*save_sel_fec(t,f,g)<< endl;
+         SS2out<<Hrate(f,t)*save_sel_num(t,f,g)<< endl;
        }
      }
      }
