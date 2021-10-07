@@ -94,7 +94,7 @@ FUNCTION void Tag_Recapture()
               if (fleet_area(f)==p)
               {
 // calculate recaptures by fleet
-// NOTE:  Sel_for_tag(t,f,g,a1) = sel_al_4(s,f,g,a1)*Hrate(f,t)
+// NOTE:  Sel_for_tag(t,f,g,a1) = sel_ret_num(s,f,g,a1)*Hrate(f,t)
                 if(F_Method==1)
                 {
                   TG_recap_exp(TG,TG_t,f)+=TG_alive(p,g)  // tags recaptured

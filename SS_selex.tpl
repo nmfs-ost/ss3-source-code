@@ -1626,12 +1626,12 @@ FUNCTION void Make_FishSelex()
  /*  SS_Label_FUNCTION 32 Make_FishSelex */
 //  where:
 //  4darray fish_body_wt(styr-3*nseas,k,1,gmorph,1,Nfleet,0,nages);  // wt (adjusted for size selex)
-//  4darray sel_al_1(1,nseas,1,gmorph,1,Nfleet,0,nages);  // selected * wt
-//  4darray sel_al_2(1,nseas,1,gmorph,1,Nfleet,0,nages);  // selected * retained * wt
-//  4darray sel_al_3(1,nseas,1,gmorph,1,Nfleet,0,nages);  // selected numbers
-//  4darray sel_al_4(1,nseas,1,gmorph,1,Nfleet,0,nages);  // selected * retained numbers
-//  4darray deadfish(1,nseas,1,gmorph,1,Nfleet,0,nages);  // sel * (retain + (1-retain)*discmort)
-//  4darray deadfish_B(1,nseas,1,gmorph,1,Nfleet,0,nages);  // sel * (retain + (1-retain)*discmort) * wt
+//  4darray sel_bio(1,nseas,1,gmorph,1,Nfleet,0,nages);  // selected * wt
+//  4darray sel_ret_bio(1,nseas,1,gmorph,1,Nfleet,0,nages);  // selected * retained * wt
+//  4darray sel_num(1,nseas,1,gmorph,1,Nfleet,0,nages);  // selected numbers
+//  4darray sel_ret_num(1,nseas,1,gmorph,1,Nfleet,0,nages);  // selected * retained numbers
+//  4darray sel_dead_num(1,nseas,1,gmorph,1,Nfleet,0,nages);  // sel * (retain + (1-retain)*discmort)
+//  4darray sel_dead_bio(1,nseas,1,gmorph,1,Nfleet,0,nages);  // sel * (retain + (1-retain)*discmort) * wt
 
     ALK_idx=(s-1)*N_subseas+mid_subseas;  //for midseason
     int ALK_finder=(ALK_idx-1)*gmorph+g;
@@ -1645,7 +1645,7 @@ FUNCTION void Make_FishSelex()
     gg=sx(g);
 //    if(y>endyr) {yz=endyr; } else {yz=y;}  //  not used
     if(y>endyr+1 && Fcast_Specify_Selex==0) {yf=endyr+1;} else {yf=y;}    //  yf stores in endyr+1 the average selex from a range of years if Fcast_Specify_Selex==0
-    tz=styr+(y-styr)*nseas+s-1;  // can use y, not yf, because Wt_Age_emp values are read in and can extend into forecast
+    tz=styr+(y-styr)*nseas+s-1;  // can use y, not yf, because Wt_Age_t values are read in and can extend into forecast
     for (f=1;f<=Nfleet;f++)
     {
       if(timevary_sel(yf,f)>0 || timevary_sel(yf,f+Nfleet)>0 || WTage_rd==1 || save_for_report>0)
@@ -1655,47 +1655,47 @@ FUNCTION void Make_FishSelex()
         {
           if(WTage_rd==1)
           {
-            sel_al_1(s,f,g)=elem_prod(sel_a(yf,f,gg),Wt_Age_emp(tz,f,GP3(g)));   // selected wt-at-age
-            fish_body_wt(tz,f,g)=Wt_Age_emp(tz,f,GP3(g));
+            sel_bio(s,f,g)=elem_prod(sel_a(yf,f,gg),Wt_Age_t(tz,f,g));   // selected wt-at-age
+            fish_body_wt(tz,f,g)=Wt_Age_t(tz,f,g);
           }
           else
           {
-            sel_al_1(s,f,g)=elem_prod(sel_a(yf,f,gg),Wt_Age_mid(s,g));   // selected wt-at-age
+            sel_bio(s,f,g)=elem_prod(sel_a(yf,f,gg),Wt_Age_mid(s,g));   // selected wt-at-age
             fish_body_wt(tz,f,g)=Wt_Age_mid(s,g);
           }
-          sel_al_3(s,f,g)=sel_a(yf,f,gg);  //  selected numbers
+          sel_num(s,f,g)=sel_a(yf,f,gg);  //  selected numbers
           switch(seltype(f+Nfleet,2))  //  age-retention function
           {
             case 0:
             {
-              sel_al_2(s,f,g)=sel_al_1(s,f,g);  //  retained wt-at-age
-              sel_al_4(s,f,g)=sel_al_3(s,f,g);  //  retained numbers
-              deadfish_B(s,f,g)=sel_al_1(s,f,g);  //  dead wt
-              deadfish(s,f,g)=sel_al_3(s,f,g);  //  dead numbers
+              sel_ret_bio(s,f,g)=sel_bio(s,f,g);  //  retained wt-at-age
+              sel_ret_num(s,f,g)=sel_num(s,f,g);  //  retained numbers
+              sel_dead_bio(s,f,g)=sel_bio(s,f,g);  //  dead wt
+              sel_dead_num(s,f,g)=sel_num(s,f,g);  //  dead numbers
               break;
             }
             case 1:
             {
-              sel_al_2(s,f,g)=elem_prod(sel_al_1(s,f,g),retain_a(y,f,gg));  //  retained wt-at-age
-              sel_al_4(s,f,g)=elem_prod(sel_al_3(s,f,g),retain_a(y,f,gg));  //  retained numbers
-              deadfish_B(s,f,g)=sel_al_2(s,f,g);  //  dead wt
-              deadfish(s,f,g)=sel_al_4(s,f,g);  //  dead numbers
+              sel_ret_bio(s,f,g)=elem_prod(sel_bio(s,f,g),retain_a(y,f,gg));  //  retained wt-at-age
+              sel_ret_num(s,f,g)=elem_prod(sel_num(s,f,g),retain_a(y,f,gg));  //  retained numbers
+              sel_dead_bio(s,f,g)=sel_ret_bio(s,f,g);  //  dead wt
+              sel_dead_num(s,f,g)=sel_ret_num(s,f,g);  //  dead numbers
               break;
             }
             case 2:
             {
-              sel_al_2(s,f,g)=elem_prod(sel_al_1(s,f,g),retain_a(y,f,gg));  //  retained wt-at-age
-              sel_al_4(s,f,g)=elem_prod(sel_al_3(s,f,g),retain_a(y,f,gg));  //  retained numbers
-              deadfish_B(s,f,g)=elem_prod(sel_al_2(s,f,g),discmort_a(y,f,gg));  //  dead wt
-              deadfish(s,f,g)=elem_prod(sel_al_4(s,f,g),discmort_a(y,f,gg));  //  dead numbers
+              sel_ret_bio(s,f,g)=elem_prod(sel_bio(s,f,g),retain_a(y,f,gg));  //  retained wt-at-age
+              sel_ret_num(s,f,g)=elem_prod(sel_num(s,f,g),retain_a(y,f,gg));  //  retained numbers
+              sel_dead_bio(s,f,g)=elem_prod(sel_ret_bio(s,f,g),discmort_a(y,f,gg));  //  dead wt
+              sel_dead_num(s,f,g)=elem_prod(sel_ret_num(s,f,g),discmort_a(y,f,gg));  //  dead numbers
               break;
             }
             case 3:  //  all selected fish are dead
             {
-              sel_al_2(s,f,g)=0.0;  //  retained wt-at-age
-              sel_al_4(s,f,g)=0.0;  //  retained numbers
-              deadfish_B(s,f,g)=sel_al_1(s,f,g);  //  dead wt
-              deadfish(s,f,g)=sel_al_3(s,f,g);  //  dead numbers
+              sel_ret_bio(s,f,g)=0.0;  //  retained wt-at-age
+              sel_ret_num(s,f,g)=0.0;  //  retained numbers
+              sel_dead_bio(s,f,g)=sel_bio(s,f,g);  //  dead wt
+              sel_dead_num(s,f,g)=sel_num(s,f,g);  //  dead numbers
               break;
             }
           }
@@ -1710,29 +1710,29 @@ FUNCTION void Make_FishSelex()
           {
             int llo=ALK_range_lo(a);
             int lhi=ALK_range_hi(a);
-            sel_al_1(s,f,g,a)=sel_a(yf,f,gg,a)*(ALK_w(a)(llo,lhi) * tempvec_l(llo,lhi));
-            sel_al_3(s,f,g,a)=sel_a(yf,f,gg,a)*(ALK_w(a)(llo,lhi) * sel_l(yf,f,gg)(llo,lhi));
+            sel_bio(s,f,g,a)=sel_a(yf,f,gg,a)*(ALK_w(a)(llo,lhi) * tempvec_l(llo,lhi));
+            sel_num(s,f,g,a)=sel_a(yf,f,gg,a)*(ALK_w(a)(llo,lhi) * sel_l(yf,f,gg)(llo,lhi));
             fish_body_wt(tz,f,g,a)=(ALK_w(a)(llo,lhi)*tempvec_l(llo,lhi)) / (ALK_w(a)(llo,lhi)*sel_l(yf,f,gg)(llo,lhi));
             if(seltype(f,2)!=0)  //  size discard, so need retention function
             {
-              sel_al_2(s,f,g,a)=sel_a(yf,f,gg,a)*(ALK_w(a)(llo,lhi) * sel_l_r_w(llo,lhi) );
-              sel_al_4(s,f,g,a)=sel_a(yf,f,gg,a)* (ALK_w(a)(llo,lhi) * sel_l_r(yf,f,gg)(llo,lhi) );
+              sel_ret_bio(s,f,g,a)=sel_a(yf,f,gg,a)*(ALK_w(a)(llo,lhi) * sel_l_r_w(llo,lhi) );
+              sel_ret_num(s,f,g,a)=sel_a(yf,f,gg,a)* (ALK_w(a)(llo,lhi) * sel_l_r(yf,f,gg)(llo,lhi) );
             }
             else if (a==nages)
             {
-              sel_al_2(s,f,g)=sel_al_1(s,f,g);
-              sel_al_4(s,f,g)=sel_al_3(s,f,g);
+              sel_ret_bio(s,f,g)=sel_bio(s,f,g);
+              sel_ret_num(s,f,g)=sel_num(s,f,g);
             }
 
             if(seltype(f,2)>=2)  //  calc discard mortality
             {
-              deadfish(s,f,g,a)=sel_a(yf,f,gg,a)*(ALK_w(a)(llo,lhi) * discmort2(yf,f,gg)(llo,lhi));  //  selected dead by numbers
-              deadfish_B(s,f,g,a)=sel_a(yf,f,gg,a)*(ALK_w(a)(llo,lhi) * disc_wt(llo,lhi)); // selected dead by weight
+              sel_dead_num(s,f,g,a)=sel_a(yf,f,gg,a)*(ALK_w(a)(llo,lhi) * discmort2(yf,f,gg)(llo,lhi));  //  selected dead by numbers
+              sel_dead_bio(s,f,g,a)=sel_a(yf,f,gg,a)*(ALK_w(a)(llo,lhi) * disc_wt(llo,lhi)); // selected dead by weight
             }
             else if(a==nages)
             {
-              deadfish_B(s,f,g)=sel_al_1(s,f,g);
-              deadfish(s,f,g)=sel_al_3(s,f,g);
+              sel_dead_bio(s,f,g)=sel_bio(s,f,g);
+              sel_dead_num(s,f,g)=sel_num(s,f,g);
             }
 
           }  //  end age loop
@@ -1752,7 +1752,7 @@ FUNCTION void Make_FishSelex()
 
           }
       }  // end need to do it
-      save_sel_fec(t,f,g)= sel_al_3(s,f,g);  //  save sel_al_3 in save_fecundity array for output
+      save_sel_fec(t,f,g)= sel_num(s,f,g);  //  save sel_num in save_fecundity array for output
 
     }  // end fleet loop for mortality, retention
   }  // end Make_FishSelex

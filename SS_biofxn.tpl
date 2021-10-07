@@ -1440,7 +1440,7 @@ FUNCTION void get_mat_fec();
         }
         case 5:  //  Maturity_Option=5   read age-fecundity from wtatage.ss
         {
-          fec(g)=Wt_Age_emp(t,-2,GP3(g));
+          fec(g)=Wt_Age_t(t,-2,GP3(g));
           make_mature_numbers(g)=fec(g);  //  not defined
           make_mature_bio(g)=fec(g);   //  not defined
            break;
@@ -1457,7 +1457,7 @@ FUNCTION void get_mat_fec();
           make_mature_bio(g)=elem_prod(ALK(ALK_idx,g)*elem_prod(mat_len(GPat),wt_len(s,GP(g))),mat_age(GPat));  //  mature biomass at age
         }
       }
-      if(t>=styr) save_sel_fec(t,0,g)= fec(g);   //  save sel_al_3 and save fecundity for output
+      if(t>=styr) save_sel_fec(t,0,g)= fec(g);   //  save sel_num and save fecundity for output
       if(y==endyr) save_sel_fec(t+nseas,0,g)=fec(g);
  #ifdef DO_ONCE
      if(do_once==1){
@@ -1787,7 +1787,7 @@ FUNCTION void Make_Fecundity()
         }
         case 5:  //  Maturity_Option=5   read age-fecundity from wtatage.ss
         {
-          fec(g)=Wt_Age_emp(t,-2,GP3(g));
+          fec(g)=Wt_Age_t(t,-2,GP3(g));
           break;
         }
         default:
@@ -1800,7 +1800,7 @@ FUNCTION void Make_Fecundity()
           fec(g)(First_Mature_Age,nages) = elem_prod(tempvec_a(First_Mature_Age,nages),mat_age(GPat)(First_Mature_Age,nages));  //  reproductive output at age
         }
       }
-      if(t>=styr) save_sel_fec(t,0,g)= fec(g);   //  save sel_al_3 and save fecundity for output
+      if(t>=styr) save_sel_fec(t,0,g)= fec(g);   //  save sel_num and save fecundity for output
       if(y==endyr) save_sel_fec(t+nseas,0,g)=fec(g);
 
       if( bigsaver==1 )

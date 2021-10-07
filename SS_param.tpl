@@ -114,6 +114,12 @@ PARAMETER_SECTION
   3darray Wt_Age_save(styr-3*nseas,TimeMax_Fcast_std+nseas,1,gmorph,0,nages)
   3darray Wt_Age_beg(1,nseas,1,gmorph,0,nages)
   3darray Wt_Age_mid(1,nseas,1,gmorph,0,nages)
+  4darray Wt_Age_t(styr-3*nseas,TimeMax_Fcast_std+nseas,-2,Nfleet,1,g,0,nages)  //  set to begin period for pop (type=0), or mid period for fleet/survey
+// read:  yr, seas, gender, morph, settlement, fleet, <age vec> where first value is for age 0!
+// if yr=-yr, then fill remaining years for that seas, growpattern, gender, fleet
+// fleet 0 contains begin season pop WT
+// fleet -1 contains mid season pop WT
+// fleet -2 contains maturity*fecundity
 
   3darray migrrate(styr-3,YrMax,1,do_migr2,0,nages)
   4darray recr_dist(styr-3,YrMax,1,N_GP*gender,1,N_settle_timings,1,pop);
@@ -418,14 +424,14 @@ PARAMETER_SECTION
 
 !!//  SS_Label_Info_5.1.7 #Create arrays for storing derived selectivity quantities for use in mortality calculations
   4darray fish_body_wt(styr-3*nseas,k,1,Nfleet,1,gmorph,0,nages);  // wt (adjusted for size selex)
-  4darray sel_al_1(1,nseas,1,Nfleet,1,gmorph,0,nages);  // selected * wt
-  4darray sel_al_2(1,nseas,1,Nfleet,1,gmorph,0,nages);  // selected * retained * wt
-  4darray sel_al_3(1,nseas,1,Nfleet,1,gmorph,0,nages);  // selected numbers
-  4darray sel_al_4(1,nseas,1,Nfleet,1,gmorph,0,nages);  // selected * retained numbers
-  4darray deadfish(1,nseas,1,Nfleet,1,gmorph,0,nages);  // sel * (retain + (1-retain)*discmort)
-  4darray deadfish_B(1,nseas,1,Nfleet,1,gmorph,0,nages);  // sel * (retain + (1-retain)*discmort) * wt
+  4darray sel_bio(1,nseas,1,Nfleet,1,gmorph,0,nages);  // selected * wt
+  4darray sel_ret_bio(1,nseas,1,Nfleet,1,gmorph,0,nages);  // selected * retained * wt
+  4darray sel_num(1,nseas,1,Nfleet,1,gmorph,0,nages);  // selected numbers
+  4darray sel_ret_num(1,nseas,1,Nfleet,1,gmorph,0,nages);  // selected * retained numbers
+  4darray sel_dead_num(1,nseas,1,Nfleet,1,gmorph,0,nages);  // sel * (retain + (1-retain)*discmort)
+  4darray sel_dead_bio(1,nseas,1,Nfleet,1,gmorph,0,nages);  // sel * (retain + (1-retain)*discmort) * wt
 
-  4darray save_sel_fec(styr-3*nseas,TimeMax_Fcast_std+nseas,0,Nfleet,1,gmorph,0,nages)  //  save sel_al_3 (Asel_2) and save fecundity for output;  +nseas covers no forecast setups
+  4darray save_sel_fec(styr-3*nseas,TimeMax_Fcast_std+nseas,0,Nfleet,1,gmorph,0,nages)  //  save sel_num (Asel_2) and save fecundity for output;  +nseas covers no forecast setups
 
   4darray Sel_for_tag(TG_timestart*Do_TG,TimeMax*Do_TG,1,Nfleet,1,gmorph*Do_TG,0,nages)
   vector TG_report(1,Nfleet*Do_TG);

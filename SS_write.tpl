@@ -628,7 +628,7 @@ FUNCTION void write_rebuilder_output()
         if(sx(g)==gg)
         {
           tempvec_a+=elem_prod(fish_body_wt(t,f,g),natage(t+s-1,p,g)*Fcast_RelF_Use(s,f));  // body wt
-          tempvec2+=elem_prod(sel_al_3(s,f,g),natage(t+s-1,p,g)*Fcast_RelF_Use(s,f));  //no wt
+          tempvec2+=elem_prod(sel_num(s,f,g),natage(t+s-1,p,g)*Fcast_RelF_Use(s,f));  //no wt
           tempvec3+=natage(t+s-1,p,g)*Fcast_RelF_Use(s,f);
         }
       }

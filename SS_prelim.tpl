@@ -23,6 +23,96 @@ PRELIMINARY_CALCS_SECTION
   save_sel_fec.initialize();
   catch_mult=1.0;
 
+  //  SS_Label_Info_4.15 #read empirical wt-at-age
+   last_yr_read.initialize();
+   filled_once.initialize();
+   if(WTage_rd>0)
+   {
+     ad_comm::change_datafile_name("wtatage.ss");
+     *(ad_comm::global_datafile) >>N_WTage_maxage;
+     k=7+N_WTage_maxage;
+   echoinput<<" N_WTage_max "<<N_WTage_maxage<<endl;
+     ender=0;
+     do
+     {
+      dvector tempvec(1,k);
+      *(ad_comm::global_datafile) >> tempvec(1,k);
+      if(tempvec(1)==-9999.) ender=1;
+        echoinput<<tempvec(1,k)<<endl;
+        y=abs(tempvec(1));
+        f=tempvec(6);
+        if(y<9999) last_yr_read(f)=max(y,last_yr_read(f));
+        if(y<9999 && tempvec(1)<0) filled_once(f)=y;  //  record latest fill event for this input category
+      WTage_in.push_back (tempvec(1,k));
+     } while (ender==0);
+     N_WTage_rd=WTage_in.size()-1;
+     k2=TimeMax_Fcast_std+1;
+     echoinput<<" N_WTage_rd "<<N_WTage_rd<<endl;
+     echoinput<<" last year read for -2 through Nfleet:  "<<last_yr_read<<endl;
+     echoinput<<" latest fill year for -2 through Nfleet:  "<<filled_once<<endl;
+
+    for(f=-2;f<=Nfleet;f++)
+    for(t=styr;t<=k2;t++)
+    for(g=1;g<=gmorph;g++)
+    for(a=0;a<=nages;a++)
+    {Wt_Age_t(t,f,g,a)=-9999.;}
+    if(N_WTage_maxage>nages) N_WTage_maxage=nages;  //  so extra ages being read will be ignored
+    dvector tempvec(1,7+N_WTage_maxage);
+    for (i=0;i<=N_WTage_rd-1;i++)
+    {
+      tempvec(1,7+N_WTage_maxage)=WTage_in[i](1,7+N_WTage_maxage);
+      y=abs(tempvec(1));
+      f=tempvec(6);
+      if(y<styr) y=styr;
+      if(tempvec(1)<0 || (y==last_yr_read(f)&&filled_once(f)==0)) {y2=max(YrMax,endyr+50);} else {y2=y;}  //  allows filling to end of time series
+      s=abs(tempvec(2));
+      if(tempvec(2)<0) {f2=Nfleet;} else {f2=f;}  //  allows filling all fleets
+      gg=tempvec(3);
+      gp=tempvec(4);
+      birthseas=tempvec(5);
+      g=(gg-1)*N_GP*nseas + (gp-1)*nseas + birthseas;  //  note  cannot handle platoons
+      if(s<=nseas && gg<=gender && gp<=N_GP && birthseas<=nseas && f<=Nfleet)
+      {
+        for (j=y;j<=y2;j++)  // loop years
+        {
+          for(k=f;k<=f2;k++)
+          {
+          t=styr+(j-styr)*nseas+s-1;
+          for (a=0;a<=N_WTage_maxage;a++) Wt_Age_t(t,k,g,a)=tempvec(7+a);
+          for (a=N_WTage_maxage;a<=nages;a++) Wt_Age_t(t,k,g,a)=Wt_Age_t(t,k,g,N_WTage_maxage);  //  fills out remaining ages, if any
+          if(j==y && k==f) echoinput<<"year "<<y<<" s "<<s<<" sex "<<gg<<" gp "<<gp<<" bs "<<birthseas<<" morph "<<g<<" pop/fleet "<<f<<" "<<Wt_Age_t(t,k,g)(0,min(6,nages))<<endl;
+          }
+        }
+      }
+    }
+    dvar_vector junkvec2(0,nages);
+    for(f=-2;f<=Nfleet;f++)
+    for(t=styr;t<=k2-1;t++)
+    for(g=1;g<=gmorph;g++)
+    for(a=0;a<=nages;a++)
+    if(Wt_Age_t(t,f,g,a)==-9999.)
+      {N_warn++;  warning<<N_warn<<" "<<"wtatage not assigned for: time, morph, fleet, age: "<<t<<" "<<g<<" "<<f<<" "<<a<<endl;}
+      temp=float(Bmark_Yr(2)-Bmark_Yr(1)+1.);  //  get denominator
+      echoinput<<" fill benchmark years with mean "<<endl;
+      for (f=-2;f<=Nfleet;f++)
+      for (g=1;g<=gmorph;g++)
+      if(use_morph(g)>0)
+      {
+        for (s=0;s<=nseas-1;s++)
+        {
+          junkvec2.initialize();
+          for (t=Bmark_t(1);t<=Bmark_t(2);t+=nseas) {junkvec2+=Wt_Age_t(t+s,f,g);}
+          Wt_Age_t(styr-3*nseas+s,f,g)=junkvec2/temp;
+        }
+      }
+    echoinput<<"finished reading empirical wt-at-age.ss"<<endl;
+  }
+  else
+  {
+    N_WTage_rd=0;
+    N_WTage_maxage=nages;
+  }
+
 //  SS_Label_Info_6.1.2 #Initialize the dummy parameter as needed
   if(Turn_off_phase<=0) {dummy_parm=0.99999999999999;} else {dummy_parm=1.0;}
 

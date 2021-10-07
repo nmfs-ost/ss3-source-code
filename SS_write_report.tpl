@@ -2040,12 +2040,12 @@ FUNCTION void write_bigoutput()
        if(use_morph(g)>0)
        for (s=1;s<=nseas;s++)
         {
-        SS2out<<"sel*wt "<<f<<" "<<y<<" "<<s<<" "<<sx(g)<<" "<<g<<" "<<y<<"_"<<f<<"_sel*wt"<<sel_al_1(s,f,g)<<endl;
-        SS2out<<"sel*ret*wt "<<f<<" "<<y<<" "<<s<<" "<<sx(g)<<" "<<g<<" "<<y<<"_"<<f<<"_sel*ret*wt"<<sel_al_2(s,f,g)<<endl;
-        SS2out<<"sel_nums "<<f<<" "<<y<<" "<<s<<" "<<sx(g)<<" "<<g<<" "<<y<<"_"<<f<<"_sel_nums"<<sel_al_3(s,f,g)<<endl;
-        SS2out<<"sel*ret_nums "<<f<<" "<<y<<" "<<s<<" "<<sx(g)<<" "<<g<<" "<<y<<"_"<<f<<"_sel*ret_nums"<<sel_al_4(s,f,g)<<endl;
-        SS2out<<"dead_nums "<<f<<" "<<y<<" "<<s<<" "<<sx(g)<<" "<<g<<" "<<y<<"_"<<f<<"_dead_nums"<<deadfish(s,f,g)<<endl;
-        SS2out<<"dead*wt "<<f<<" "<<y<<" "<<s<<" "<<sx(g)<<" "<<g<<" "<<y<<"_"<<f<<"_dead*wt"<<deadfish_B(s,f,g)<<endl;
+        SS2out<<"sel*wt "<<f<<" "<<y<<" "<<s<<" "<<sx(g)<<" "<<g<<" "<<y<<"_"<<f<<"_sel*wt"<<sel_bio(s,f,g)<<endl;
+        SS2out<<"sel*ret*wt "<<f<<" "<<y<<" "<<s<<" "<<sx(g)<<" "<<g<<" "<<y<<"_"<<f<<"_sel*ret*wt"<<sel_ret_bio(s,f,g)<<endl;
+        SS2out<<"sel_nums "<<f<<" "<<y<<" "<<s<<" "<<sx(g)<<" "<<g<<" "<<y<<"_"<<f<<"_sel_nums"<<sel_num(s,f,g)<<endl;
+        SS2out<<"sel*ret_nums "<<f<<" "<<y<<" "<<s<<" "<<sx(g)<<" "<<g<<" "<<y<<"_"<<f<<"_sel*ret_nums"<<sel_ret_num(s,f,g)<<endl;
+        SS2out<<"dead_nums "<<f<<" "<<y<<" "<<s<<" "<<sx(g)<<" "<<g<<" "<<y<<"_"<<f<<"_dead_nums"<<sel_dead_num(s,f,g)<<endl;
+        SS2out<<"dead*wt "<<f<<" "<<y<<" "<<s<<" "<<sx(g)<<" "<<g<<" "<<y<<"_"<<f<<"_dead*wt"<<sel_dead_bio(s,f,g)<<endl;
         }
 
     }
@@ -2569,7 +2569,7 @@ FUNCTION void write_bigoutput()
       {
         for (f=1;f<=Nfleet;f++) SS2out<<
         " "<<ALK(ALK_idx_mid,g,a)*elem_prod(sel_l(endyr,f,sx(g)),len_bins_m)/(ALK(ALK_idx_mid,g,a)*sel_l(endyr,f,sx(g)))<<
-        " "<<Wt_Age_emp(t,f,GP3(g),a)<<" "<<Wt_Age_emp(t,f,GP3(g),a);
+        " "<<Wt_Age_t(t,f,g,a)<<" "<<Wt_Age_t(t,f,g,a);
       }
       SS2out<<endl;
     }}}}
@@ -3548,12 +3548,12 @@ FUNCTION void Global_MSY()
       {
         for (int SPRloop1=1;SPRloop1<=nages-1;SPRloop1++)
         {
-          sel_al_1.initialize();
-          sel_al_2.initialize();
-          sel_al_3.initialize();
-          sel_al_4.initialize();
-          deadfish.initialize();
-          deadfish_B.initialize();
+          sel_bio.initialize();
+          sel_ret_bio.initialize();
+          sel_num.initialize();
+          sel_ret_num.initialize();
+          sel_dead_num.initialize();
+          sel_dead_bio.initialize();
           SS2out<<SPRloop1<<" ";
           for (s=1;s<=nseas;s++)
           {
@@ -3565,21 +3565,21 @@ FUNCTION void Global_MSY()
               {
               if(MSY_loop==1)
               {
-                sel_al_1(s,f,g)(SPRloop1,nages)=Wt_Age_mid(s,g)(SPRloop1,nages);  // selected * wt
-                sel_al_2(s,f,g)(SPRloop1,nages)=Wt_Age_mid(s,g)(SPRloop1,nages);  // selected * retained * wt
-                sel_al_3(s,f,g)(SPRloop1,nages)=1.00;  // selected numbers
-                sel_al_4(s,f,g)(SPRloop1,nages)=1.00;  // selected * retained numbers
-                deadfish(s,f,g)(SPRloop1,nages)=1.00;  // sel * (retain + (1-retain)*discmort)
-                deadfish_B(s,f,g)(SPRloop1,nages)=Wt_Age_mid(s,g)(SPRloop1,nages);  // sel * (retain + (1-retain)*discmort) * wt
+                sel_bio(s,f,g)(SPRloop1,nages)=Wt_Age_mid(s,g)(SPRloop1,nages);  // selected * wt
+                sel_ret_bio(s,f,g)(SPRloop1,nages)=Wt_Age_mid(s,g)(SPRloop1,nages);  // selected * retained * wt
+                sel_num(s,f,g)(SPRloop1,nages)=1.00;  // selected numbers
+                sel_ret_num(s,f,g)(SPRloop1,nages)=1.00;  // selected * retained numbers
+                sel_dead_num(s,f,g)(SPRloop1,nages)=1.00;  // sel * (retain + (1-retain)*discmort)
+                sel_dead_bio(s,f,g)(SPRloop1,nages)=Wt_Age_mid(s,g)(SPRloop1,nages);  // sel * (retain + (1-retain)*discmort) * wt
               }
                else
               {
-                sel_al_1(s,f,g,SPRloop1)=Wt_Age_mid(s,g,SPRloop1);  // selected * wt
-                sel_al_2(s,f,g,SPRloop1)=Wt_Age_mid(s,g,SPRloop1);  // selected * retained * wt
-                sel_al_3(s,f,g,SPRloop1)=1.00;  // selected numbers
-                sel_al_4(s,f,g,SPRloop1)=1.00;  // selected * retained numbers
-                deadfish(s,f,g,SPRloop1)=1.00;  // sel * (retain + (1-retain)*discmort)
-                deadfish_B(s,f,g,SPRloop1)=Wt_Age_mid(s,g,SPRloop1);  // sel * (retain + (1-retain)*discmort) * wt
+                sel_bio(s,f,g,SPRloop1)=Wt_Age_mid(s,g,SPRloop1);  // selected * wt
+                sel_ret_bio(s,f,g,SPRloop1)=Wt_Age_mid(s,g,SPRloop1);  // selected * retained * wt
+                sel_num(s,f,g,SPRloop1)=1.00;  // selected numbers
+                sel_ret_num(s,f,g,SPRloop1)=1.00;  // selected * retained numbers
+                sel_dead_num(s,f,g,SPRloop1)=1.00;  // sel * (retain + (1-retain)*discmort)
+                sel_dead_bio(s,f,g,SPRloop1)=Wt_Age_mid(s,g,SPRloop1);  // sel * (retain + (1-retain)*discmort) * wt
               }
               }
             }
