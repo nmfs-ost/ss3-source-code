@@ -1625,7 +1625,6 @@ FUNCTION void Make_FishSelex()
 //********************************************************************
  /*  SS_Label_FUNCTION 32 Make_FishSelex */
 //  where:
-//  4darray fish_body_wt(styr-3*nseas,k,1,gmorph,1,Nfleet,0,nages);  // wt (adjusted for size selex)
 //  4darray sel_bio(1,nseas,1,gmorph,1,Nfleet,0,nages);  // selected * wt
 //  4darray sel_ret_bio(1,nseas,1,gmorph,1,Nfleet,0,nages);  // selected * retained * wt
 //  4darray sel_num(1,nseas,1,gmorph,1,Nfleet,0,nages);  // selected numbers
@@ -1656,12 +1655,11 @@ FUNCTION void Make_FishSelex()
           if(WTage_rd==1)
           {
             sel_bio(s,f,g)=elem_prod(sel_a(yf,f,gg),Wt_Age_t(tz,f,g));   // selected wt-at-age
-            fish_body_wt(tz,f,g)=Wt_Age_t(tz,f,g);
           }
           else
           {
             sel_bio(s,f,g)=elem_prod(sel_a(yf,f,gg),Wt_Age_mid(s,g));   // selected wt-at-age
-            fish_body_wt(tz,f,g)=Wt_Age_mid(s,g);
+            Wt_Age_t(tz,f,g)=Wt_Age_mid(s,g);
           }
           sel_num(s,f,g)=sel_a(yf,f,gg);  //  selected numbers
           switch(seltype(f+Nfleet,2))  //  age-retention function
@@ -1712,7 +1710,7 @@ FUNCTION void Make_FishSelex()
             int lhi=ALK_range_hi(a);
             sel_bio(s,f,g,a)=sel_a(yf,f,gg,a)*(ALK_w(a)(llo,lhi) * tempvec_l(llo,lhi));
             sel_num(s,f,g,a)=sel_a(yf,f,gg,a)*(ALK_w(a)(llo,lhi) * sel_l(yf,f,gg)(llo,lhi));
-            fish_body_wt(tz,f,g,a)=(ALK_w(a)(llo,lhi)*tempvec_l(llo,lhi)) / (ALK_w(a)(llo,lhi)*sel_l(yf,f,gg)(llo,lhi));
+            Wt_Age_t(tz,f,g,a)=(ALK_w(a)(llo,lhi)*tempvec_l(llo,lhi)) / (ALK_w(a)(llo,lhi)*sel_l(yf,f,gg)(llo,lhi));
             if(seltype(f,2)!=0)  //  size discard, so need retention function
             {
               sel_ret_bio(s,f,g,a)=sel_a(yf,f,gg,a)*(ALK_w(a)(llo,lhi) * sel_l_r_w(llo,lhi) );
@@ -1739,17 +1737,8 @@ FUNCTION void Make_FishSelex()
         }
         if(write_bodywt>0 && ishadow(GP2(g))==0)
           {
-            if(sum(fish_body_wt(tz,f,g))>0.00001)
-            {
               bodywtout<<y<<" "<<s<<" "<<gg<<" "<<GP4(g)<<" "<<Bseas(g)
-              <<" "<<f<<" "<<fish_body_wt(tz,f,g)<<" #wt_flt_"<<f<<endl;
-            }
-            else
-            {
-              bodywtout<<y<<" "<<s<<" "<<gg<<" "<<GP4(g)<<" "<<Bseas(g)
-              <<" "<<f<<" "<<Wt_Age_mid(s,g)<<" #wt_flt_"<<f<<endl;
-            }
-
+              <<" "<<f<<" "<<Wt_Age_t(tz,f,g)<<" #wt_flt_"<<f<<endl;
           }
       }  // end need to do it
       save_sel_fec(t,f,g)= sel_num(s,f,g);  //  save sel_num in save_fecundity array for output
