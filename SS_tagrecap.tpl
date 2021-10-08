@@ -94,25 +94,25 @@ FUNCTION void Tag_Recapture()
               if (fleet_area(f)==p)
               {
 // calculate recaptures by fleet
-// NOTE:  Sel_for_tag(t,g,f,a1) = sel_al_4(s,g,f,a1)*Hrate(f,t)
+// NOTE:  Sel_for_tag(t,f,g,a1) = sel_ret_num(s,f,g,a1)*Hrate(f,t)
                 if(F_Method==1)
                 {
                   TG_recap_exp(TG,TG_t,f)+=TG_alive(p,g)  // tags recaptured
                   *mfexp(-(natM(s,GP3(g),a1)+TG_chron_loss)*seasdur_half(s))
-                  *Sel_for_tag(t,g,f,a1)
+                  *Sel_for_tag(t,f,g,a1)
                   *TG_report(f)
                   *mfexp(TG_t*TG_rep_decay(f));
                 }
                 else   // use for method 2 and 3
                 {
                   TG_recap_exp(TG,TG_t,f)+=TG_alive(p,g)
-                  *Sel_for_tag(t,g,f,a1)/(Z_rate(t,p,g,a1)+TG_chron_loss)
+                  *Sel_for_tag(t,f,g,a1)/(Z_rate(t,p,g,a1)+TG_chron_loss)
                   *(1.-mfexp(-seasdur(s)*(Z_rate(t,p,g,a1)+TG_chron_loss)))
                   *TG_report(f)
                   *mfexp(TG_t*TG_rep_decay(f));
                 }
                 
-  if(docheckup==1) echoinput<<" TG_"<<TG<<" y_"<<y<<" s_"<<s<<" area_"<<p<<" g_"<<g<<" GP3_"<<GP3(g)<<" f_"<<f<<" a1_"<<a1<<" Sel_"<<Sel_for_tag(t,g,f,a1)<<" TG_alive_"<<TG_alive(p,g)<<" TG_obs_"<<TG_recap_obs(TG,TG_t,f)<<" TG_exp_"<<TG_recap_exp(TG,TG_t,f)<<endl;
+  if(docheckup==1) echoinput<<" TG_"<<TG<<" y_"<<y<<" s_"<<s<<" area_"<<p<<" g_"<<g<<" GP3_"<<GP3(g)<<" f_"<<f<<" a1_"<<a1<<" Sel_"<<Sel_for_tag(t,f,g,a1)<<" TG_alive_"<<TG_alive(p,g)<<" TG_obs_"<<TG_recap_obs(TG,TG_t,f)<<" TG_exp_"<<TG_recap_exp(TG,TG_t,f)<<endl;
               }  // end fleet loop for recaptures
                 TG_alive(p,g)*=mfexp(-seasdur(s)*(Z_rate(t,p,g,a1)+TG_chron_loss));
             }  // end morph loop
