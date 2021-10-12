@@ -1417,9 +1417,9 @@ FUNCTION void write_bigoutput()
   SS2out<<"#_Fleet units errtype"<<endl;
   if(Ndisc_fleets>0)
   {
-    for (int ff=1;ff<=N_catchfleets;ff++)
+    for (int ff=1;ff<=N_catchfleets(0);ff++)
     {
-      f=fish_fleet(ff);
+      f=fish_fleet_area(0,ff);
       if(disc_units(f)>0) SS2out<<f<<" "<<disc_units(f)<<" "<<disc_errtype(f)<<" # "<<fleetname(f)<<endl;
     }
   }

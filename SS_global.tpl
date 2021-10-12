@@ -629,9 +629,9 @@ BETWEEN_PHASES_SECTION
 //  SS_Label_Info_11.2 #For Fmethod=2 & 4, set parameter values (F_rate) equal to Hrate array fromcalculated using hybrid method in previous phase
     if(N_Fparm>0 && j_phase>1)
     {
-      for(int ff=1;ff<=N_catchfleets;ff++)
+      for(int ff=1;ff<=N_catchfleets(0);ff++)
       {
-        f=fish_fleet(ff);
+        f=fish_fleet_area(0,ff);
       if(F_Method_byPH(f,j_phase) < F_Method_byPH(f,j_phase-1))
       {
         for (g=Fparm_loc_st(f);g<=Fparm_loc_end(f);g++)
