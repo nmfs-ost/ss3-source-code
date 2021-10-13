@@ -1899,26 +1899,51 @@ FUNCTION void write_bigoutput()
 // REPORT_KEYWORD 30 OVERALL_COMPS  average composition for all observations
    if(pick_report_use(30)=="Y") {
   SS2out<<endl<<pick_report_name(30)<<endl;
-  SS2out<<"Fleet N_obs len_bins "<<len_bins_dat<<endl;
+  SS2out<<"area seas Fleet N_obs len_bins "<<len_bins_dat<<endl;
+
+       for (f=1;f<=Nfleet;f++)
+       {
+         for(k=1;k<=4;k++)
+         {
+           dvector templen(1,nlen_bin);
+           templen.initialize();
+           for(s=1;s<=nseas;s++) {templen+=obs_l_all(k,s,f);}
+         obs_l_all(k,0,f)=templen/(float(nseas));
+        }
+      }
+      int kseas=1;
+  if(nseas>1) kseas=0;
   for (f=1;f<=Nfleet;f++)
+  for(s=kseas;s<=nseas;s++)
   {
     if(Nobs_l(f)>0)
     {
-      SS2out<<f<<" "<<Nobs_l(f)<<" freq "<<obs_l_all(1,f)<<endl;
-      SS2out<<f<<" "<<Nobs_l(f)<<" cum  "<<obs_l_all(2,f)<<endl;
+      SS2out<<fleet_area(f)<<" "<<s<<" "<<f<<" "<<Nobs_l(f)<<" freq "<<obs_l_all(1,s,f)<<endl;
+      SS2out<<fleet_area(f)<<" "<<s<<" "<<f<<" "<<Nobs_l(f)<<" cum  "<<obs_l_all(2,s,f)<<endl;
+      if(gender==2)
+      {
+      SS2out<<fleet_area(f)<<" "<<s<<" "<<f<<" "<<Nobs_l(f)<<" female  "<<obs_l_all(2,s,f)<<endl;
+      SS2out<<fleet_area(f)<<" "<<s<<" "<<f<<" "<<Nobs_l(f)<<" male  "<<obs_l_all(2,s,f)<<endl;
+      }
     }
   }
 
-  SS2out<<"Fleet N_obs age_bins ";
+  SS2out<<"area seas Fleet N_obs age_bins ";
   if(n_abins>1)
   {
     SS2out<<age_bins(1,n_abins)<<endl;
     for (f=1;f<=Nfleet;f++)
+    for(s=kseas;s<=nseas;s++)
     {
       if(Nobs_a(f)>0)
       {
-        SS2out<<f<<" "<<Nobs_a(f)<<" freq "<<obs_a_all(1,f)<<endl;
-        SS2out<<f<<" "<<Nobs_a(f)<<" cum  "<<obs_a_all(2,f)<<endl;
+      SS2out<<fleet_area(f)<<" "<<s<<" "<<f<<" "<<Nobs_a(f)<<" freq "<<obs_a_all(1,s,f)<<endl;
+      SS2out<<fleet_area(f)<<" "<<s<<" "<<f<<" "<<Nobs_a(f)<<" cum  "<<obs_a_all(2,s,f)<<endl;
+      if(gender==2)
+      {
+      SS2out<<fleet_area(f)<<" "<<s<<" "<<f<<" "<<Nobs_a(f)<<" female  "<<obs_a_all(2,s,f)<<endl;
+      SS2out<<fleet_area(f)<<" "<<s<<" "<<f<<" "<<Nobs_a(f)<<" male  "<<obs_a_all(2,s,f)<<endl;
+      }
       }
     }
   }
