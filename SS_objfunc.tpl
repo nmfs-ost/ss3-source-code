@@ -1,9 +1,9 @@
 // SS_Label_file  #16. **SS_objfunc.tpl**
-// SS_Label_file  #* <u>evaluate_the_objective_function()</u>
-// SS_Label_file  #* <u>Process_STDquant()</u>  //  move info like SSB  to the sd_vectors
-// SS_Label_file  #* <u>Check_Parm()</u> // check parameter against its bounds and do jitter if requested
-// SS_Label_file  #* <u>Get_Prior()</u>  // calc the prior likelihood for a parameter
-// SS_Label_file  #* <u>get_posteriors()</u>  //  writes posteriors.sso and other MCMC relevant outputs
+// SS_Label_file  # * <u>evaluate_the_objective_function()</u>
+// SS_Label_file  # * <u>Process_STDquant()</u>  //  move info like SSB  to the sd_vectors
+// SS_Label_file  # * <u>Check_Parm()</u> // check parameter against its bounds and do jitter if requested
+// SS_Label_file  # * <u>Get_Prior()</u>  // calc the prior likelihood for a parameter
+// SS_Label_file  # * <u>get_posteriors()</u>  //  writes posteriors.sso and other MCMC relevant outputs
 // SS_Label_file  #
 
 //********************************************************************
@@ -93,7 +93,7 @@ FUNCTION void evaluate_the_objective_function()
             {
               Q_parm(Q_setup_parms(f,1))=Svy_log_q(f,1);
             }
-            
+
             if(Svy_errtype(f)==-1)  // normal
             {
               Svy_q(f) = Svy_log_q(f);        //  q already in  arithmetic space
@@ -759,7 +759,7 @@ FUNCTION void evaluate_the_objective_function()
             parm_dev_like(i,2) += float(parm_dev_maxyr(i)-parm_dev_minyr(i)+1.)*log(parm_dev_stddev(i));
             //  include parm_dev_like(i,2) in the total, or not, using sd_offset
           }
-          else if(parm_dev_type(i)==4)  //  for testing only 
+          else if(parm_dev_type(i)==4)  //  for testing only
           {
             dvariable temp;
               temp = 0.5/((1.0-parm_dev_rho(i)*parm_dev_rho(i)));  // temp=1.00 / (2.000*(1.0-parm_dev_rho(i)*parm_dev_rho(i))*square(1.0));
@@ -812,7 +812,7 @@ FUNCTION void evaluate_the_objective_function()
                   }
                   parm_dev_like(i,1)-= - 0.5*temp/(sigmasel*sigmasel);
                 }
-                
+
               }
 //  nll -= - 0.5*log(det(cor)) - 0.5*nages*nyears*log(2.0*PI ) - 0.5*S_hat_vec*inv(cor)*S_hat_vec/pow(sigmaS,2) - 0.5*2*nages*nyears*log(sigmaS);
             }
@@ -878,7 +878,7 @@ FUNCTION void evaluate_the_objective_function()
 //   cout<<" obj_fun catch "<<obj_fun<<catch_like<<endl;
    obj_fun += recr_like*recrdev_lambda(k_phase);
    obj_fun += regime_like*regime_lambda(k_phase);
-   
+
 //   cout<<" obj_fun recr "<<obj_fun<<endl;
    obj_fun += parm_like*parm_prior_lambda(k_phase);
 //   cout<<" obj_fun parm "<<obj_fun<<endl;
@@ -988,7 +988,7 @@ FUNCTION void Process_STDquant()
         }
       }
       if(depletion_log==1) depletion=log(depletion);
-      	
+
 //  Do multi-year average of depletion_std if requested;  assumes that depletion_std is NOT custom, so exists for all years
 //  otherwise, would need to check for positive value for STD_Yr_Reverse_F(y) and need to deal with averaging across not-reporting years = MESSY
 //  note that averaging starts in endyr, not endyr+N_forecast;  otherwise the averaging could span endyr.
@@ -1003,7 +1003,7 @@ FUNCTION void Process_STDquant()
     		depletion(STD_Yr_Reverse_Dep(y))=temp/(y-y1);
     	}
     }
-  	      
+
 //  Use the selected F method for the forecast as the denominator for the F_std ratio
       switch (F_std_basis)
       {
@@ -1028,7 +1028,7 @@ FUNCTION void Process_STDquant()
         }
       }
   if(F_std_log==1) F_std = log(F_std);
-  	
+
 //  Do multi-year average of F_std if requested;  assumes that F_std is NOT custom, so exists for all years
 //  otherwise, would need to check for positive value for STD_Yr_Reverse_F(y) and need to deal with averaging across not-reporting years = MESSY
 //  note that averaging starts in endyr, not endyr+N_forecast;  otherwise the averaging could span endyr.
@@ -1199,7 +1199,7 @@ FUNCTION dvariable Check_Parm(const int iparm, const int& PrPH, const double& Pm
     NewVal=Pval;
     if(Pval>-900){
     if(Pmin>Pmax)
-    {N_warn++; cout<<" EXIT - see warning "<<endl; 
+    {N_warn++; cout<<" EXIT - see warning "<<endl;
     	 warning<<N_warn<<" "<<" parameter min > parameter max "<<Pmin<<" > "<<Pmax<<" for parm: "<<iparm<<endl; cout<<" fatal error, see warning"<<endl;
     	echoinput<<" parameter min > parameter max "<<Pmin<<" > "<<Pmax<<" for parm: "<<iparm<<endl; cout<<" fatal error, see warning"<<endl; exit(1);}
     else if(Pmin==Pmax && PrPH>=0)
@@ -1566,7 +1566,7 @@ FUNCTION void get_posteriors()
     }
   }
   }
-    if(Do_Impl_Error>0){   		
+    if(Do_Impl_Error>0){
     for (i=endyr+1;i<=YrMax;i++)
     {
       posts<<Fcast_impl_error(i)<<" ";
@@ -1690,4 +1690,3 @@ FUNCTION void get_posteriors()
   }
 
   }  //  end get_posteriors
-

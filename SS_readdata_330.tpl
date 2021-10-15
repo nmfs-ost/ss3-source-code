@@ -1,10 +1,10 @@
 // SS_Label_file  #3. **SS_readdata.tpl**
-// SS_Label_file  #* read *data_file* named in STARTER.SS
-// SS_Label_file  #  * create arrays for data with dimensioning defined dynamically
-// SS_Label_file  #  * creates link from each data element to area/time/fleet that datum occur, and other arrays with specification of which data types occur in each area/time
-// SS_Label_file  #  * uses function found in SS_global:  <u>get_data_timing()</u>
-// SS_Label_file  #* read *forecast.ss*
-// SS_Label_file  #  * note that this extends the time dimension of some arrays, so is read before readcontrol
+// SS_Label_file  # * read *data_file* named in STARTER.SS
+// SS_Label_file  #     * create arrays for data with dimensioning defined dynamically
+// SS_Label_file  #     * creates link from each data element to area/time/fleet that datum occur, and other arrays with specification of which data types occur in each area/time
+// SS_Label_file  #     * uses function found in SS_global:  <u>get_data_timing()</u>
+// SS_Label_file  # * read *forecast.ss*
+// SS_Label_file  #     * note that this extends the time dimension of some arrays, so is read before readcontrol
 
 //  SS_Label_Flow  read data file named in STARTER.SS file
 //  SS_Label_Info_2.0 #READ DATA FILE
@@ -279,7 +279,7 @@
       if(f>1){  // check for duplicate fleet names, which will break r4ss
       	for(int f1=1;f1<f;f1++){
       		if(fleetname(f1)==fleetname(f)){
-      			N_warn++; cout<<"exit with warning"<<endl; 
+      			N_warn++; cout<<"exit with warning"<<endl;
       			warning<<N_warn<<" duplicate fleet names for fleets: "<<f1<<" and "<<f<<"; "<<fleetname(f)<<"; SS will exit"<<endl; exit(1);
       		}
       	}
@@ -483,7 +483,7 @@
     obs_equ_catch.initialize();
     for(s=1;s<=nseas;s++)
     {
-      for (f=1;f<=Nfleet;f++) 
+      for (f=1;f<=Nfleet;f++)
       if(fleet_type(f)<=2)
         {obs_equ_catch(s,f)=catch_ret_obs(f,styr-nseas-1+s);}
       echoinput<<" equ, seas:   -1 "<<s<<" catches: "<<obs_equ_catch(s)<<endl;
@@ -529,7 +529,7 @@
     for(f=1;f<=Nfleet;f++)
     {
       echoinput<<f<<" type: "<<fleet_type(f)<<" "<<fleetname(f)<<" catch: "<<catch_by_fleet(f);
-      if(fleet_type(f)==3 && catch_by_fleet(f)>0.0) 
+      if(fleet_type(f)==3 && catch_by_fleet(f)>0.0)
         {
           echoinput<<"  Catch by survey fleet will be ignored ";
           N_warn++;  warning<<N_warn<<"  Catch by survey fleet will be ignored "<<fleet_type(f)<<endl;
@@ -735,7 +735,7 @@
   echoinput<<"Index Survey_name       N   Super_Per    Min_val   max_val  //  Observations:"<<endl;
     for (f=1;f<=Nfleet;f++)
     {
-    	if (Svy_N_fleet(f)>0) 
+    	if (Svy_N_fleet(f)>0)
     		{
     			echoinput<<f<<"    "<<fleetname(f)<<"   "<<Svy_N_fleet(f)<<"     "<<Svy_super_N(f)<<"      "<<Svy_minval(f)<<" "<<Svy_maxval(f)<<" // "<<Svy_obs(f)<<endl;
     			if(Svy_errtype(f)==0 && Svy_minval(f)<=0.)
@@ -924,7 +924,7 @@
   echoinput<<"Index Survey_name       N   Super_Per    Min_val   max_val  //  Observations:"<<endl;
     for (f=1;f<=Nfleet;f++)
     {
-    	if (disc_N_fleet(f)>0) 
+    	if (disc_N_fleet(f)>0)
     		{
     			echoinput<<f<<"    "<<fleetname(f)<<"   "<<disc_N_fleet(f)<<"     "<<N_suprper_disc(f)<<
     			"      "<<disc_minval(f)<<" "<<disc_maxval(f)<<" // "<<obs_disc(f)<<endl;
@@ -1065,7 +1065,7 @@
 !!//  SS_Label_Info_2.7 #Start length data section
   init_int use_length_data  //  0/1 to indicate whether there is any reading of length data
   !!echoinput<<use_length_data<<" indicator for length data  "<<endl;
-  
+
   number min_tail  //min_proportion_for_compressing_tails_of_observed_composition
   number min_comp  //  small value added to each composition bins
   int CombGender_l  //  combine genders through this length bin
@@ -1089,7 +1089,7 @@
   Comp_Err_L2.initialize();
   min_sample_size_L.initialize();
   DM_parmlist.initialize();
-  
+
   if(use_length_data>0)
   {
     echoinput<<"#_now read for each fleet info for processing the length comps:"<<endl;
@@ -1125,7 +1125,7 @@
       }
       else if(Comp_Err_L2(f)>Comp_Err_ParmCount+1)
       {
-        N_warn++; cout<<"fatal input error, see warning "<<endl; 
+        N_warn++; cout<<"fatal input error, see warning "<<endl;
         warning<<N_warn<<"; length D-M must refer to existing parm num, or increment by 1:  "<<Comp_Err_L2(f)<<endl;
         exit(1);
       }
@@ -1242,7 +1242,7 @@
     }
   }
   echoinput<<endl<<"Processed Population length bin info "<<endl<<len_bins<<endl;
-  
+
   maxL=len_bins_m(nlength);
   minL=len_bins(1);
   minL_m=len_bins_m(1);
@@ -1358,7 +1358,7 @@
     do {
       dvector tempvec(1,k);
       *(ad_comm::global_datafile) >> tempvec(1,k);
-      if(sum(tempvec)==0.0) 
+      if(sum(tempvec)==0.0)
       	{N_warn++; cout<<"exit; see warning"<<endl; warning<<N_warn<<" reading past end of file for length data; exit "<<endl;exit(1);}
       if(tempvec(1)==-9999.) ender=1;
       z++;
@@ -1710,13 +1710,13 @@
   vector age_bins1(1,n_abins) // age classes for data
   vector age_bins(1,n_abins2) // age classes for data  female then male end-to-end
   vector age_bins_mean(1,n_abins2)  //  holds mean age for each data age bin
-  3darray age_err_rd(1,1,1,1,0,0)  
+  3darray age_err_rd(1,1,1,1,0,0)
 
  LOCAL_CALCS
   age_bins1.initialize();
   age_bins.initialize();
   age_bins_mean.initialize();
-  
+
   if(n_abins>0)
   {
     *(ad_comm::global_datafile) >> age_bins1;
@@ -1724,7 +1724,7 @@
 
     *(ad_comm::global_datafile) >> N_ageerr;   // number of ageing error matrices to be calculated
     echoinput<<N_ageerr<<" N age error defs "<<endl;
-    
+
     age_err_rd.deallocate();
     age_err_rd.allocate(1,N_ageerr,1,2,0,nages);
     age_err_rd.initialize();
@@ -1744,7 +1744,7 @@
         for (i=1;i<=N_ageerr;i++)
         {
           if(age_err_rd(i,2,0)<0.) {  //  set flag for setup of age error parameters
-            if (Use_AgeKeyZero>0) 
+            if (Use_AgeKeyZero>0)
             {
               N_warn++;  warning<<N_warn<<" "<<"SS can only create 1 age error definition from parameters, ";
                warning<<N_warn<<" "<<"but there are > 1 negative sd values for age 0 in age error definitions."<<endl;
@@ -1790,7 +1790,7 @@
       }
       else if(Comp_Err_A2(f)>Comp_Err_ParmCount+1)
       {
-        N_warn++; cout<<"fatal input error, see warning "<<endl; 
+        N_warn++; cout<<"fatal input error, see warning "<<endl;
         warning<<N_warn<<"; Age D-M must refer to existing parm num, or increment by 1:  "<<Comp_Err_A2(f)<<endl;
         exit(1);
       }
@@ -1802,7 +1802,7 @@
       //  else OK because refers to existing parameter
       }
       echoinput<<"number of D-M parameters needed for length and age comp data: "<<Comp_Err_ParmCount<<endl;
-      
+
       *(ad_comm::global_datafile) >> Lbin_method;
       echoinput << Lbin_method<< " Lbin method for defined size ranges "  << endl;
 
@@ -1841,7 +1841,7 @@
     do {
       dvector tempvec(1,k);
       *(ad_comm::global_datafile) >> tempvec(1,k);
-      if(sum(tempvec)==0.0) 
+      if(sum(tempvec)==0.0)
       	{N_warn++; cout<<"exit; see warning"<<endl; warning<<N_warn<<" reading past end of file for age data; exit "<<endl;exit(1);}
       if(tempvec(1)==-9999.) ender=1;
       z++;
@@ -1955,7 +1955,7 @@
             have_data(ALK_time,f,0,0)=1;  //  so have data of some type
             have_data(ALK_time,f,data_type,0)++;  //  count the number of observations in this subseas
             p=have_data(ALK_time,f,data_type,0);
-            if(p>100) 
+            if(p>100)
             	{N_warn++; cout<<" EXIT - see warning "<<endl;  warning<<N_warn<<" "<<"fatal:  max agecomp obs per fleet*time is 100; you requested "<<p<<" for fleet x year "<<f<<" "<<y<<endl;exit(1);}
             have_data(ALK_time,f,data_type,p)=j;  //  store data index for the p'th observation in this subseas
             have_data_yr(y,f)=1;  have_data_yr(y,0)=1;  //  survey or comp data exist this year
@@ -2225,7 +2225,7 @@
     do {
       dvector tempvec(1,k);
       *(ad_comm::global_datafile) >> tempvec(1,k);
-      if(sum(tempvec)==0.0) 
+      if(sum(tempvec)==0.0)
       	{N_warn++; cout<<"exit; see warning"<<endl; warning<<N_warn<<" reading past end of file for size-at-age data; exit "<<endl;exit(1);}
       if(tempvec(1)==-9999.) ender=1;
       z++;
@@ -2392,7 +2392,7 @@
       dvector tempvec(1,3);
       *(ad_comm::global_datafile) >> tempvec(1,3);
       if(tempvec(1)==-9999.) ender=1;
-      if(sum(tempvec)==0.0) 
+      if(sum(tempvec)==0.0)
       	{N_warn++; cout<<"exit; see warning"<<endl; warning<<N_warn<<" reading past end of file for env data; exit "<<endl;exit(1);}
       env_temp.push_back (tempvec(1,3));
     } while (ender==0);
@@ -2862,7 +2862,7 @@
 
         s=timing_input(2); f=abs(timing_input(3)); t=timing_i_result(2);
         ALK_time=timing_i_result(5);
-        
+
         Morphcomp_nobs++;
         Morphcomp_obs(Morphcomp_nobs)(1,5+Morphcomp_nmorph)=Morphcomp_obs_rd(i)(1,5+Morphcomp_nmorph);  //  save observations to be used
         Morphcomp_obs(Morphcomp_nobs,5+Morphcomp_nmorph+1)=ALK_time;  //  for reporting
@@ -3108,7 +3108,7 @@
   echoinput<<endl<<"next read 4 values for:  control rule shape(0, 1, 2, 3 or 4), inflection (like 0.40), cutoff(like 0.10), scale(like 0.75)"<<endl;
   *(ad_comm::global_datafile) >> HarvestPolicy;
   if(HarvestPolicy==0) echoinput<<"HarvestPolicy=0, so values for top, bottom, buffer will be ignored"<<endl;
-  	
+
   echoinput<<HarvestPolicy<<"  # echoed HarvestPolicy "<<endl;
   *(ad_comm::global_datafile) >> H4010_top;
   echoinput<<H4010_top<<"   # echoed harvest policy inflection "<<endl;
@@ -3237,7 +3237,7 @@
   {
     N_warn++;  warning<<N_warn<<" "<<"Forecast=0 or -1, so rest of forecast file will not be read and can be omitted;"<<endl;
     if(Bmark_RelF_Basis==2) {N_warn++; cout<<" EXIT - see warning "<<endl;  warning<<N_warn<<" "<<"Fatal stop:  no forecast, but bmark set to use fcast"<<endl;  exit(1);}
-  if(Do_Forecast==0) 
+  if(Do_Forecast==0)
   	{
        warning<<N_warn<<" "<<"A one year forecast using recent F will be done automatically"<<endl;
   		Do_Forecast=4;  //  sets simple forecast; else Do_Forecast==-1 causes no forecast
@@ -3250,7 +3250,7 @@
       N_Fcast_Yrs=0;
       YrMax=endyr;
     }
-    	
+
   Fcast_Flevel=1.;
   Fcast_yr=0;
   Fcast_yr_rd=0;
@@ -3491,7 +3491,7 @@
           last_rd_yr=y;
         if(y>YrMax)
           {N_warn++;  warning<<N_warn<<"; "<<y<<" is > YrMax; set to YrMax "<<endl; y=YrMax;}
-        for(k=y;k<=YrMax;k++) 
+        for(k=y;k<=YrMax;k++)
         {
           H4010_scale_vec(k)=H4010_scale_vec_rd[s](2);
         }

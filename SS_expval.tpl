@@ -1,5 +1,5 @@
 // SS_Label_file  #15. **SS_expval.tpl**
-// SS_Label_file  #* <u>Get_expected_values()</u>  // for a specified season and subseason that has data, updates the ALK for that time and calculates expected values for any type of data from any fleet/survey
+// SS_Label_file  # * <u>Get_expected_values()</u>  // for a specified season and subseason that has data, updates the ALK for that time and calculates expected values for any type of data from any fleet/survey
 // SS_Label_file  #
 
 //********************************************************************
@@ -49,7 +49,7 @@ FUNCTION void Get_expected_values(const int y,const int t);
             else  //  explicit timing
             {tempvec_a=elem_prod(natage(t,p,g),elem_prod(mfexp(-Z_rate(t,p,g)*timing),sel_a(y,f,gg)));}
  */
-            if(timing>=0.0) 
+            if(timing>=0.0)
             {tempvec_a=elem_prod(natage(t,p,g),elem_prod(mfexp(-Z_rate(t,p,g)*timing),sel_a(y,f,gg)));}  //  explicit timing
             else
             {
@@ -62,7 +62,7 @@ FUNCTION void Get_expected_values(const int y,const int t);
               }
             }
             tempvec_a=elem_prod(tempvec_a,keep_age(g,ALK_idx));
-            
+
             if(Do_Retain(f)==0)
             {
               if(dolen(f)==1)
@@ -183,7 +183,7 @@ FUNCTION void Get_expected_values(const int y,const int t);
                     }
                   }
                 }
-                if(g==gmorph) 
+                if(g==gmorph)
                	{
                   k=5+Morphcomp_nmorph;
                   Morphcomp_exp(j)(6,k) /= sum(Morphcomp_exp(j)(6,k));
@@ -386,7 +386,7 @@ FUNCTION void Get_expected_values(const int y,const int t);
                }
 
      // SS_Label_Info_46.1.1 #note order of operations,  vbio raised to a power, then constant is added, then later multiplied by Q.  Needs work
- /* 
+ /*
    //  old code here
                switch (Q_setup(f,1))  //  switch is based on the link type: (1=simple q; 2=mirror; 3=q and power; 4=mirror with offset in q)
                {
@@ -398,7 +398,7 @@ FUNCTION void Get_expected_values(const int y,const int t);
                  {
                    //  no break, so do same as case 1
                  }
-                 case 1:  
+                 case 1:
                  {
                    if(Q_setup(f,5)==1 && y<=endyr)  // float Q will be calculated and applied in objfun section, so temporarily store vbio in svy_est.
                    	                                // note that if y is in forecast, then Q has already been calculated so can be applied in the else clause here
@@ -436,7 +436,7 @@ FUNCTION void Get_expected_values(const int y,const int t);
                {Svy_est(f,j)=log(vbio+0.000001);}
                else
                {Svy_est(f,j)=vbio;}
-               
+
                if(Q_setup(f,5)==0 || y>endyr)  // apply Q, but note: float Q will be calculated and applied in objfun section, so temporarily store vbio in svy_est.
                    	                                // if y is in forecast, then Q has already been calculated so can be applied here
                {
@@ -476,7 +476,7 @@ FUNCTION void Get_expected_values(const int y,const int t);
                 if(exp_disc(f,j)<0.0) {
 			      N_warn++;
 				  warning<<N_warn<<" "<<f<<" "<<j<<" "<<exp_disc(f,j)<<" catches "<<catch_fleet(t,f)<<endl;
-                }  
+                }
                 }
                 else
                 {
@@ -485,7 +485,7 @@ FUNCTION void Get_expected_values(const int y,const int t);
               }
               else if (fleet_type(f)==4)  //  predator consumption stored in discard
               {
-                if(disc_units(f)==3)  // numbers 
+                if(disc_units(f)==3)  // numbers
                 {
                   exp_disc(f,j)=catch_fleet(t,f,4);  // consumption in numbers
                 }
@@ -977,4 +977,3 @@ FUNCTION void Get_expected_values(const int y,const int t);
   }  //  end loop of subseasons
   return;
   }  //  end function
-

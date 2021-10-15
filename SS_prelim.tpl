@@ -1,10 +1,11 @@
 // SS_Label_file  #6. **SS_prelim.tpl**
 // SS_Label_file  # - <div style="color: #ff0000">PRELIMINARY_CALCS_SECTION</div>
-// SS_Label_file  #   - preprocessing of the comp logL
-// SS_Label_file  #   - get initial parameter values from *ss.par* or from values in control file
-// SS_Label_file  #   - check parameter initial values and ranges and apply jitter using function check_parm() found in SS_objfun.tpl
-// SS_Label_file  #   - set y=styr and do_once flag=1; then call <u>all biology functions</u> once to check for problems
-// SS_Label_file  #   - exit if turn_off_phase<0, else continue to the PROCEDURE_SECTION found in SS_proced.tpl
+// SS_Label_file  #
+// SS_Label_file  #     - preprocessing of the comp logL
+// SS_Label_file  #     - get initial parameter values from *ss.par* or from values in control file
+// SS_Label_file  #     - check parameter initial values and ranges and apply jitter using function check_parm() found in SS_objfun.tpl
+// SS_Label_file  #     - set y=styr and do_once flag=1; then call <u>all biology functions</u> once to check for problems
+// SS_Label_file  #     - exit if turn_off_phase<0, else continue to the PROCEDURE_SECTION found in SS_proced.tpl
 
 //******************************************************************************************
 //  SS_Label_Section_6.0 #PRELIMINARY_CALCS_SECTION
@@ -207,7 +208,7 @@ PRELIMINARY_CALCS_SECTION
       {
         offset_l(f,i) -= nsamp_l(f,i) *
           obs_l(f,i)(tails_l(f,i,1),tails_l(f,i,2))*log(obs_l(f,i)(tails_l(f,i,1),tails_l(f,i,2)));
-      } 
+      }
       if(gen_l(f,i) >=2 && gender==2)
       {
         offset_l(f,i) -= nsamp_l(f,i) *
@@ -576,7 +577,7 @@ PRELIMINARY_CALCS_SECTION
     if(Q_Npar2>0) {
     for (i=1;i<=Q_Npar2;i++)  {Q_parm(i) = Q_parm_RD(i);}    //  set vector of initial index Q parms
      echoinput<< " Q_parms read from ctl "<<Q_parm<<endl;
-    } 
+    }
 
     if(N_init_F>0)
     {
@@ -597,7 +598,7 @@ PRELIMINARY_CALCS_SECTION
           F_rate(g)=F_parm_intval(f);
           Hrate(f,t)=F_parm_intval(f);
       }
-      
+
       if(F_detail>0)
       {
         for (k=1;k<=F_detail;k++)
@@ -795,7 +796,7 @@ PRELIMINARY_CALCS_SECTION
       }
       else
       {
-      	if(TwoD_AR_def[f](6)<0) 
+      	if(TwoD_AR_def[f](6)<0)
       		{j=TwoD_AR_def[f](13)+1;}
       		else
         {j=TwoD_AR_def[f](13)+TwoD_AR_def[f](6)-TwoD_AR_def[f](4)+1;}  //  first sigmalocation + other sigmasels, then the rho's
@@ -834,7 +835,7 @@ PRELIMINARY_CALCS_SECTION
   	//  the fields are yr, envvar, value
   	//  yr=-2 instructs SS to subtract mean before storing
   	//  yr=-1 instructs SS to subtract mean and divide by stddev
-    
+
     //  first pass to calculate means and other summary data
     for (i=0;i<=N_envdata-1;i++)
     {
@@ -881,7 +882,7 @@ PRELIMINARY_CALCS_SECTION
   {
   	// check for discard obs
   	if(disc_N_fleet(f)>0 && Do_Retain(f)==0) {
-  		N_warn++; cout<<"SS will exit, see warning"<<endl; 
+  		N_warn++; cout<<"SS will exit, see warning"<<endl;
   		 warning<<N_warn<<" "<<"fleet: "<<f<<"  discard data exist but retention fxn not defined; exit"<<endl; exit(1);}
 
     parti_cnt.initialize();
@@ -890,17 +891,17 @@ PRELIMINARY_CALCS_SECTION
   		for(i=1;i<=Nobs_l(f);i++) {parti_cnt(abs(mkt_l(f,i)))++;}
   		if(parti_cnt(1)>0 && Do_Retain(f)==0)
   		{
-  			N_warn++; cout<<"SS will exit, see warning"<<endl; 
+  			N_warn++; cout<<"SS will exit, see warning"<<endl;
   			 warning<<N_warn<<" "<<"fleet: "<<f<<"  lencomp contains N obs with partition==1 and retention fxn not defined; N= "<<parti_cnt(1)<<endl; exit(1);
   		}
   		if(parti_cnt(2)>0 && Do_Retain(f)==0)
   		{
-  			N_warn++; 
+  			N_warn++;
   			 warning<<N_warn<<" "<<"fleet: "<<f<<"  lencomp has obs with partition==2; will treat as partition=0 because retention not defined; N= "<<parti_cnt(2)<<endl;
   		}
   		if(parti_cnt(2)>0 && (fleet_type(f)==2 || seltype(f,2)==3 || seltype(Nfleet+f,2)==3))  //  error if retained catch obs are with no retention fleets
   		{
-  			N_warn++; cout<<"SS will exit, see warning"<<endl; 
+  			N_warn++; cout<<"SS will exit, see warning"<<endl;
   			 warning<<N_warn<<" "<<"fleet: "<<f<<" EXIT; lencomp has obs with partition==2; but fleet does not retain any catch; N= "<<parti_cnt(2)<<endl; exit(1);
   		}
     }
@@ -911,17 +912,17 @@ PRELIMINARY_CALCS_SECTION
   		for(i=1;i<=Nobs_a(f);i++) {parti_cnt(abs(mkt_a(f,i)))++;}
   		if(parti_cnt(1)>0 && Do_Retain(f)==0)
   		{
-  			N_warn++; cout<<"SS will exit, see warning"<<endl; 
+  			N_warn++; cout<<"SS will exit, see warning"<<endl;
   			 warning<<N_warn<<" "<<"fleet: "<<f<<"  agecomp contains N obs with partition==1 and retention fxn not defined; N= "<<parti_cnt(1)<<endl; exit(1);
   		}
   		if(parti_cnt(2)>0 && Do_Retain(f)==0)
   		{
-  			N_warn++; 
+  			N_warn++;
   			 warning<<N_warn<<" "<<"fleet: "<<f<<"  agecomp has obs with partition==2; will treat as partition=0 because retention not defined; N= "<<parti_cnt(2)<<endl;
   		}
   		if(parti_cnt(2)>0 && (fleet_type(f)==2 || seltype(f,2)==3 || seltype(Nfleet+f,2)==3))  //  error if retained catch obs are with no retention fleets
   		{
-  			N_warn++; cout<<"SS will exit, see warning"<<endl; 
+  			N_warn++; cout<<"SS will exit, see warning"<<endl;
   			 warning<<N_warn<<" "<<"fleet: "<<f<<" EXIT; agecomp has obs with partition==2; but fleet does not retain any catch; N= "<<parti_cnt(2)<<endl; exit(1);
   		}
     }
@@ -932,17 +933,17 @@ PRELIMINARY_CALCS_SECTION
   		for(i=1;i<=Nobs_ms(f);i++) {parti_cnt(abs(mkt_ms(f,i)))++;}
   		if(parti_cnt(1)>0 && Do_Retain(f)==0)
   		{
-  			N_warn++; cout<<"SS will exit, see warning"<<endl; 
+  			N_warn++; cout<<"SS will exit, see warning"<<endl;
   			 warning<<N_warn<<" "<<"fleet: "<<f<<"  size-at-age data contains obs with partition==1 and retention fxn not defined; N= "<<parti_cnt(1)<<endl; exit(1);
   		}
   		if(parti_cnt(2)>0 && Do_Retain(f)==0)
   		{
-  			N_warn++; 
+  			N_warn++;
   			 warning<<N_warn<<" "<<"fleet: "<<f<<"  size-at-age data  has obs with partition==2; will treat as partition=0 because retention not defined; N= "<<parti_cnt(2)<<endl;
   		}
   		if(parti_cnt(2)>0 && (fleet_type(f)==2 || seltype(f,2)==3 || seltype(Nfleet+f,2)==3))  //  error if retained catch obs are with no retention fleets
   		{
-  			N_warn++; cout<<"SS will exit, see warning"<<endl; 
+  			N_warn++; cout<<"SS will exit, see warning"<<endl;
   			 warning<<N_warn<<" "<<"fleet: "<<f<<" EXIT; size-at-age data has obs with partition==2; but fleet does not retain any catch; N= "<<parti_cnt(2)<<endl; exit(1);
   		}
     }
@@ -957,17 +958,17 @@ PRELIMINARY_CALCS_SECTION
     		parti_cnt(parti)++;}}
   		if(parti_cnt(1)>0 && Do_Retain(f)==0)
   		{
-  			N_warn++; cout<<"SS will exit, see warning"<<endl; 
+  			N_warn++; cout<<"SS will exit, see warning"<<endl;
   			 warning<<N_warn<<" "<<"fleet: "<<f<<"  meansize data contains obs with partition==1 and retention fxn not defined; N= "<<parti_cnt(1)<<endl; exit(1);
   		}
   		if(parti_cnt(2)>0 && Do_Retain(f)==0)
   		{
-  			N_warn++; 
+  			N_warn++;
   			 warning<<N_warn<<" "<<"fleet: "<<f<<"  meansize data has obs with partition==2; will treat as partition=0 because retention not defined; N= "<<parti_cnt(2)<<endl;
   		}
   		if(parti_cnt(2)>0 && (fleet_type(f)==2 || seltype(f,2)==3 || seltype(Nfleet+f,2)==3))  //  error if retained catch obs are with no retention fleets
   		{
-  			N_warn++; cout<<"SS will exit, see warning"<<endl; 
+  			N_warn++; cout<<"SS will exit, see warning"<<endl;
   			 warning<<N_warn<<" "<<"fleet: "<<f<<" EXIT; meansize data has obs with partition==2; but fleet does not retain any catch; N= "<<parti_cnt(2)<<endl; exit(1);
   		}
     }
@@ -1015,7 +1016,7 @@ PRELIMINARY_CALCS_SECTION
        	<<"; Gpat: "<<GPat<<" settle: "<<settle<<"; L= "<<Ave_Size(styr,1,g,nages)<<endl;}
       }
     }
-    
+
     for (s=1;s<=nseas;s++)  //  get growth here in case needed for Lorenzen
     {
       t = styr+s-1;
@@ -1037,7 +1038,7 @@ PRELIMINARY_CALCS_SECTION
     mat_len=value(mat_len);
     mat_fec_len=value(mat_fec_len);
     mat_age=value(mat_age);
-    
+
 //  SS_Label_Info_6.8.4 #Call fxn get_natmort()
     echoinput<<"ready to do natmort "<<endl;
     get_natmort();
@@ -1135,7 +1136,7 @@ PRELIMINARY_CALCS_SECTION
 
 //  SS_Label_Info_6.10 #Preliminary calcs done; Ready for estimation
 
-    if(pick_report_use(60)=="Y") 
+    if(pick_report_use(60)=="Y")
     {
     bodywtout<<nages<<" # maxage"<<endl;
     bodywtout<<"# if Yr is negative, then fill remaining years for that Seas, growpattern, Bio_Pattern, Fleet"<<endl;
@@ -1150,18 +1151,18 @@ PRELIMINARY_CALCS_SECTION
     if(Turn_off_phase<0)
       {
         cout<<" Requested exit after read when turn_off_phase < 0 "<<endl;
-        N_nudata=1;       
+        N_nudata=1;
         write_nudata();
         cout<<" finished nudata report "<<endl;
         write_nucontrol();
         cout<<" finished nucontrol report "<<endl;
         exit(1);
       }
-      
+
       if(noest_flag==1)
         {
           cout<<endl<<"skip to final section for -noest"<<endl;
-          N_nudata=1;       
+          N_nudata=1;
         }
         else
         {
@@ -1169,4 +1170,3 @@ PRELIMINARY_CALCS_SECTION
         }
     last_objfun=1.0e30;
   }  // end PRELIMINARY_CALCS_SECTION
-

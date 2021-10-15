@@ -1,8 +1,9 @@
 // SS_Label_file  #12. **SS_popdyn.tpl**
-// SS_Label_file  #* <u>setup_recdevs()</u>
-// SS_Label_file  #* <u>get_initial_conditions()</u> // does virgin and initial year by calling <u>Do_Equil_Calc()</u> with F=0, then F=init_F
-// SS_Label_file  #* <u>get_time_series()</u>  //  loops the years, calling biology, selectivity and spawn-recr functions as needed
-// SS_Label_file  #* <u>Do_Equil_Calc()</u>  // does per-recruit calculations and returns SSB/R and Y/R
+// SS_Label_file  # * <u>setup_recdevs()</u>
+// SS_Label_file  # * <u>get_initial_conditions()</u> // does virgin and initial year by calling <u>Do_Equil_Calc()</u> with F=0, then F=init_F
+// SS_Label_file  # * <u>get_time_series()</u>  //  loops the years, calling biology, selectivity and spawn-recr functions as needed
+// SS_Label_file  # * <u>Do_Equil_Calc()</u>  // does per-recruit calculations and returns SSB/R and Y/R
+// SS_Label_file  #
 
 FUNCTION void setup_recdevs()
   {
@@ -131,7 +132,7 @@ FUNCTION void get_initial_conditions()
   get_mat_fec();  //  does just spawn season and subseason using ALK calculated just above
   if(Hermaphro_Option!=0) get_Hermaphro();
 
-  if(MG_active(1)>0) 
+  if(MG_active(1)>0)
     {
       get_natmort();
       natM_M1=natM;
@@ -654,7 +655,7 @@ FUNCTION void get_time_series()
         // but Maunder's M in get_natmort() may use the fecundity vector, so would be using the most recently calculated  Problem??
         if(Hermaphro_Option!=0) get_Hermaphro();
       }
-      if(timevary_MG(y,1)>0) 
+      if(timevary_MG(y,1)>0)
       {
         get_natmort();
         natM_M1=natM;
@@ -1980,4 +1981,3 @@ FUNCTION void Do_Equil_Calc(const prevariable& equ_Recr)
               {SSB_equil+=Hermaphro_maleSPB*sum(MaleSSB_equil_pop_gp);}
 
   }  //  end equil calcs
-

@@ -1,6 +1,6 @@
 // SS_Label_file  #18. **SS_write_ssnew.tpl**
-// SS_Label_file  #* <u>write_nudata()</u>  //  produces *starter.ss_new*, *forecast.ss_new*, *data.ss_new*
-// SS_Label_file  #* <u>write_nucontrol()</u>  //  produces *control.ss_new*
+// SS_Label_file  # * <u>write_nudata()</u>  //  produces *starter.ss_new*, *forecast.ss_new*, *data.ss_new*
+// SS_Label_file  # * <u>write_nucontrol()</u>  //  produces *control.ss_new*
 // SS_Label_file  #
 
 //********************************************************************
@@ -17,9 +17,9 @@ FUNCTION void write_nudata()
   int Nsamp_DM=0;
 //  create bootstrap data files; except first file just replicates the input and second is the estimate without error
   	if(irand_seed<0) irand_seed=long(time(&start));
-  		
+
   random_number_generator radm(irand_seed);
-  for (i=1;i<=1234;i++) 
+  for (i=1;i<=1234;i++)
   {
   	temp = randn(radm);
   }
@@ -37,7 +37,7 @@ FUNCTION void write_nudata()
   else if(Nudat==2)
   {report1 << "#_expected values with no error added " << endl;}
   else
-  { 
+  {
   report1 << "#_bootstrap file: " << Nudat-2 <<"  irand_seed: "<<irand_seed<<" first rand#: "<<randn(radm)<<endl;}
   report1<<version_info(1)<<version_info(2)<<version_info(3)<<endl;
   report1 << styr << " #_StartYr"<<endl;
@@ -543,7 +543,7 @@ FUNCTION void write_nudata()
     if (n_abins <= 0) report1<<"# ";
     report1<<min_tail_A(f)<<" "<<min_comp_A(f)<<" "<<CombGender_A(f)<<" "<<AccumBin_A(f)<<" "<<Comp_Err_A(f)<<" "<<Comp_Err_A2(f)<<" "<<min_sample_size_A(f)<<" #_fleet:"<<f<<"_"<<fleetname(f)<<endl;
   }
-  
+
   if (n_abins <= 0) report1<<"# ";
   report1<<Lbin_method<<" #_Lbin_method_for_Age_Data: 1=poplenbins; 2=datalenbins; 3=lengths"<<endl;
   report1<<"# sex codes:  0=combined; 1=use female only; 2=use male only; 3=use both as joint sexxlength distribution"<<endl;
@@ -803,7 +803,7 @@ FUNCTION void write_nudata()
   report1<<DF_bodywt<<" #_DF_for_meanbodysize_T-distribution_like"<<endl;
   report1<<"# note:  type=1 for mean length; type=2 for mean body weight "<<endl;
   report1<<"#_yr month fleet part type obs stderr"<<endl;
-  
+
   // NOTE, the se stored in mnwtdata(7,i) was adjusted in prelim calc to include the input var_adjustment
   //  so var_adjust is subtracted here when the observation is written
   if(nobs_mnwt>0)
@@ -923,7 +923,7 @@ FUNCTION void write_nudata()
     if (n_abins <= 0) report1<<"# ";
     report1<<min_tail_A(f)<<" "<<min_comp_A(f)<<" "<<CombGender_A(f)<<" "<<AccumBin_A(f)<<" "<<Comp_Err_A(f)<<" "<<Comp_Err_A2(f)<<" "<<min_sample_size_A(f)<<" #_fleet:"<<f<<"_"<<fleetname(f)<<endl;
   }
-  
+
   if (n_abins <= 0) report1<<"# ";
   report1<<Lbin_method<<" #_Lbin_method_for_Age_Data: 1=poplenbins; 2=datalenbins; 3=lengths"<<endl;
   report1<<"# sex codes:  0=combined; 1=use female only; 2=use male only; 3=use both as joint sexxlength distribution"<<endl;
@@ -1153,8 +1153,8 @@ FUNCTION void write_nucontrol()
   		{
   		NuStart<<"# custom report options: -100 to start with minimal; -101 to start with all; -number to remove, +number to add, -999 to end"<<endl;
   		}
-  
-  
+
+
   NuStart<<docheckup<<" # write 1st iteration details to echoinput.sso file (0,1) "<<endl;
   NuStart<<Do_ParmTrace<<" # write parm values to ParmTrace.sso (0=no,1=good,active; 2=good,all; 3=every_iter,all_parms; 4=every,active)"<<endl;
   NuStart<<Do_CumReport<<" # write to cumreport.sso (0=no,1=like&timeseries; 2=add survey fits)"<<endl;
@@ -1217,7 +1217,7 @@ FUNCTION void write_nucontrol()
   if(H4010_scale_rd<0)
   {
     j=H4010_scale_vec_rd.size()-1;
-    for (int s=0; s<=j; s++) 
+    for (int s=0; s<=j; s++)
     {
       NuFore<<H4010_scale_vec_rd[s]<<endl;
     }
@@ -1381,7 +1381,7 @@ FUNCTION void write_nucontrol()
   report4<<"#"<<endl<<"#_Available timevary codes"<<endl;
   report4<<"#_Block types: 0: P_block=P_base*exp(TVP); 1: P_block=P_base+TVP; 2: P_block=TVP; 3: P_block=P_block(-1) + TVP"<<endl;
   report4<<"#_Block_trends: -1: trend bounded by base parm min-max and parms in transformed units (beware); -2: endtrend and infl_year direct values; -3: end and infl as fraction of base range"<<endl;
-  
+
   report4<<"#_EnvLinks:  1: P(y)=P_base*exp(TVP*env(y));  2: P(y)=P_base+TVP*env(y);  3: P(y)=f(TVP,env_Zscore) w/ logit to stay in min-max;  4: P(y)=2.0/(1.0+exp(-TVP1*env(y) - TVP2))"<<endl;
   report4<<"#_DevLinks:  1: P(y)*=exp(dev(y)*dev_se;  2: P(y)+=dev(y)*dev_se;  3: random walk;  4: zero-reverting random walk with rho;  5: like 4 with logit transform to stay in base min-max"<<endl
          <<"#_DevLinks(more):  21-25 keep last dev for rest of years"<<endl<<"#"<<endl;
@@ -1430,7 +1430,7 @@ FUNCTION void write_nucontrol()
     report4<<Hermaphro_Option<<" #_hermaphroditism option:  0=none; 1=female-to-male age-specific fxn; -1=male-to-female age-specific fxn"<<endl;
     if (Hermaphro_Option!=0){
    report4<<Hermaphro_seas_rd<<" # Hermaphro_season.first_age (seas=-1 means all seasons; first_age must be 0 to 9)"<<endl<<Hermaphro_maleSPB<<" # fraction_of_maleSSB_added_to_total_SSB "<<endl;}
-   
+
     report4<<MGparm_def<<" #_parameter_offset_approach for M, G, CV_G:  1- direct, no offset**; 2- male=fem_parm*exp(male_parm); 3: male=female*exp(parm) then old=young*exp(parm)"<<endl;
     report4<<"#_** in option 1, any male parameter with value = 0.0 and phase <0 is set equal to female parameter"<<endl;
   report4<<"#"<<endl;
@@ -1486,7 +1486,7 @@ FUNCTION void write_nucontrol()
           report4<<MGparm_1(NP)<<" # "<<ParmLabel(NP)<<endl;
         }
       }
-      
+
       report4<<"#  Recruitment Distribution  "<<endl;
       j=NP+1;
       if(MGP_CGD>j)
@@ -1498,7 +1498,7 @@ FUNCTION void write_nucontrol()
           report4<<MGparm_1(NP)<<" # "<<ParmLabel(NP)<<endl;
         }
       }
-      
+
       report4<<"#  Cohort growth dev base"<<endl;
       NP++;
       MGparm_1(NP,3)=value(MGparm(NP));
@@ -1563,7 +1563,7 @@ FUNCTION void write_nucontrol()
           report4<<MGparm_1(NP)<<" # "<<ParmLabel(NP)<<endl;
     }
   }
-  
+
   report4<<"#  M2 parameter for each predator fleet"<<endl;
   for(int gp=1;gp<=N_predparms;gp++)
   {
@@ -1885,13 +1885,13 @@ FUNCTION void write_nucontrol()
    report4<<"#Pattern:_25; parm=3; exponential-logistic in length"<<endl;
    report4<<"#Pattern:_27; parm=special+3; cubic spline in length; parm1==1 resets knots; parm1==2 resets all "<<endl;
    report4<<"#Pattern:_42; parm=special+3+2; cubic spline; like 27, with 2 additional param for scaling (average over bin range)"<<endl;
-   
+
    report4<<"#_discard_options:_0=none;_1=define_retention;_2=retention&mortality;_3=all_discarded_dead;_4=define_dome-shaped_retention"<<endl;
    report4<<"#_Pattern Discard Male Special"<<endl;
    for (f=1;f<=Nfleet;f++) report4<<seltype_rd(f)<<" # "<<f<<" "<<fleetname(f)<<endl;
    report4<<"#"<<endl;
-   
-   
+
+
    report4<<"#_age_selex_patterns"<<endl;
    report4<<"#Pattern:_0; parm=0; selex=1.0 for ages 0 to maxage"<<endl;
    report4<<"#Pattern:_10; parm=0; selex=1.0 for ages 1 to maxage"<<endl;
@@ -2140,7 +2140,7 @@ FUNCTION void write_nucontrol()
     report4<<More_Std_Input(1,4)<<" # Selectivity: (1) 0 to skip or fleet, (2) 1=len/2=age/3=combined, (3) year, (4) N selex bins; NOTE: combined reports in age bins"<<endl;
     report4<<More_Std_Input(5,6)<<" # Growth: (1) 0 to skip or growth pattern, (2) growth ages; NOTE: does each sex"<<endl;
     report4<<More_Std_Input(7,9)<<" # Numbers-at-age: (1) 0 or area(-1 for all), (2) year, (3) N ages;  NOTE: sums across morphs"<<endl;
-  } 
+  }
   if(Do_More_Std==2) // additional output when option 2 is selected
   {
     report4<<More_Std_Input(10,11)<<" # Mortality: (1) 0 to skip or growth pattern, (2) N ages for mortality; NOTE: does each sex"<<endl;
