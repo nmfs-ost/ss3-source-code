@@ -1,8 +1,10 @@
 // SS_Label_file  #5. **SS_param.tpl**
 // SS_Label_file  # - <div style="color: #ff0000">INITIALIZE_SECTION</div>
-// SS_Label_file  #   - not used in SS
+// SS_Label_file  #
+// SS_Label_file  #      - not used in SS
 // SS_Label_file  # - <div style="color: #ff0000">PARAMETER_SECTION</div>
-// SS_Label_file  #   - create needed parameters and derived quantities as dvar arrays
+// SS_Label_file  #
+// SS_Label_file  #      - create needed parameters and derived quantities as dvar arrays
 
 
 //  SS_Label_Section_4.99 #INITIALIZE_SECTION (not used in SS)
@@ -169,7 +171,7 @@ PARAMETER_SECTION
   	k=Fcast_recr_PH2; j=YrMax;}
   else
   {k=-1; j=-1;}
-  	
+
  END_CALCS
   init_bounded_vector Fcast_recruitments(recdev_end+1,s,recdev_LO,recdev_HI,Fcast_recr_PH2)
   init_bounded_vector Fcast_impl_error(endyr+1,j,-1,1,k)
@@ -182,7 +184,7 @@ PARAMETER_SECTION
 
   number SSB_unf
   number Recr_unf
-  
+
   number SSB_current;                            // Spawning biomass
   number SSB_equil;
 

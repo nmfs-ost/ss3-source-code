@@ -1,6 +1,6 @@
 // SS_Label_file  #11. **SS_selex.tpl**
-// SS_Label_file  #* <u>get_selectivity()</u>  // does length and age selectivity and retention for all fleets
-// SS_Label_file  #* <u>make_fish_selex()</u>  // for all fleets in a particular season, does the dot product of length distribution with length selectivity and retention vectors to calculate equivalent mean quantities at age for each platoon
+// SS_Label_file  # * <u>get_selectivity()</u>  // does length and age selectivity and retention for all fleets
+// SS_Label_file  # * <u>make_fish_selex()</u>  // for all fleets in a particular season, does the dot product of length distribution with length selectivity and retention vectors to calculate equivalent mean quantities at age for each platoon
 
 FUNCTION void get_selectivity()
   {
@@ -27,7 +27,7 @@ FUNCTION void get_selectivity()
   for (f=1;f<=2*Nfleet;f++)
   {
 //  	echoinput<<" selex fleet: "<<f<<" type "<<seltype(f);
-  	
+
     fs=f-Nfleet;  //index for saving age selex in the fleet arrays
   //  SS_Label_Info_22.2.1 #recalculate selectivity for any fleets or surveys with time-vary flag set for this year
     if(timevary_sel(y,f)==1 || save_for_report>0)
@@ -58,7 +58,7 @@ FUNCTION void get_selectivity()
         {for (j=1;j<=N_selparmvec(f);j++) save_sp_len(y,f,j)=sp(j);
         }
       }
-      	
+
       if(f<=Nfleet)  // do size selectivity, retention, discard mort
       {
       for (gg=1;gg<=gender;gg++)
@@ -195,7 +195,7 @@ FUNCTION void get_selectivity()
           SelPoint=value(sp(1+scaling_offset));   //  first size that will get a parameter.  Value will get incremented by step interval (temp1)
           z=3+scaling_offset;  // parameter counter
           temp1 = (finalSelPoint-SelPoint)/(seltype(f,4)-1.0);  // step interval
-          
+
           for (j=1;j<=nlength;j++)
           {
             if(len_bins_m(j)<SelPoint)
@@ -335,7 +335,7 @@ FUNCTION void get_selectivity()
             }
 
   //  SS_Label_Info_22.3.11 #case 11 selex=1.0 within a range of lengths
-		  case 11: 
+		  case 11:
 		  {
 			sel=mirror_mask(f); // (y,f,1)
 			break;
@@ -683,7 +683,7 @@ FUNCTION void get_selectivity()
       }  // end loop of genders
 
 //  apply 2D_AR adjustment to sex-specific length selectivity
-//  TwoD_AR_def: read:  1-fleet, 2-ymin, 3-ymax, 4-amin, 5-amax, 6-sigma_amax, 7-use_rho, 8-age/len, 9-dev_phase; 10-before_yrs, 11=after_yrs, 
+//  TwoD_AR_def: read:  1-fleet, 2-ymin, 3-ymax, 4-amin, 5-amax, 6-sigma_amax, 7-use_rho, 8-age/len, 9-dev_phase; 10-before_yrs, 11=after_yrs,
 //  calc quantities:  12-N_parm_dev, 13-selparm_location
 
     if(TwoD_AR_use(f)>0)
@@ -752,7 +752,7 @@ FUNCTION void get_selectivity()
             }
             if(k>=0)
             {
-              k++; 
+              k++;
               if(docheckup==1) echoinput<<a<<"  sigmasel: "<<sigmasel<<endl;
               sel_l(y,f,1,a)*=mfexp(sigmasel*parm_dev(z,k));
               if(gender==2) sel_l(y,f,2,a)*=mfexp(sigmasel*parm_dev(z,k));
@@ -1400,7 +1400,7 @@ FUNCTION void get_selectivity()
         }  //  end gender loop
 
 //  apply 2D_AR adjustment to sex-specific age selectivity
-//  TwoD_AR_def: read:  1-fleet, 2-ymin, 3-ymax, 4-amin, 5-amax, 6-sigma_amax, 7-use_rho, 8-age/len, 9-dev_phase; 10-before_yrs, 11=after_yrs, 
+//  TwoD_AR_def: read:  1-fleet, 2-ymin, 3-ymax, 4-amin, 5-amax, 6-sigma_amax, 7-use_rho, 8-age/len, 9-dev_phase; 10-before_yrs, 11=after_yrs,
 //  calc quantities:  12-N_parm_dev, 13-selparm_location
 
     if(TwoD_AR_use(f)>0)
@@ -1469,7 +1469,7 @@ FUNCTION void get_selectivity()
             }
             if(k>=0)
             {
-              k++; 
+              k++;
               if(docheckup==1) echoinput<<a<<"  sigmasel: "<<sigmasel<<endl;
               sel_a(y,fs,1,a)*=mfexp(sigmasel*parm_dev(z,k));
               if(gender==2) sel_a(y,fs,2,a)*=mfexp(sigmasel*parm_dev(z,k));

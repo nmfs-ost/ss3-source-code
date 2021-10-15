@@ -1,7 +1,7 @@
 // SS_Label_file  #13. **SS_recruit.tpl**
-// SS_Label_file  #* <u>Spawn_Recr()</u>  //  gets expected mean recruits from input spawning biomass
-// SS_Label_file  #* <u>apply_recdev()</u>  //  applies recdev to the expected mean recruits 
-// SS_Label_file  #* <u>Equil_Spawn_Recr_Fxn()</u>  // gets equilibrium recruitment and spawning biomass from an input SPR
+// SS_Label_file  # * <u>Spawn_Recr()</u>  //  gets expected mean recruits from input spawning biomass
+// SS_Label_file  # * <u>apply_recdev()</u>  //  applies recdev to the expected mean recruits
+// SS_Label_file  # * <u>Equil_Spawn_Recr_Fxn()</u>  // gets equilibrium recruitment and spawning biomass from an input SPR
 
 //********************************************************************
  /*  SS_Label_FUNCTION 43 Spawner-recruitment function */
@@ -27,7 +27,7 @@ FUNCTION dvariable Spawn_Recr(const prevariable& SSB_virgin_adj, const prevariab
     SSB_curr_adj = SSB_current + 0.100;   // robust
 
     regime_change=SR_parm_work(N_SRparm2-1);  //  this is a persistent deviation off the S/R curve
-   
+
 //  SS_Label_43.3  calculate expected recruitment from the input spawning biomass and the SR curve
 // functions below use Recr_virgin_adj,SSB_virgin_adj which could have been adjusted adjusted above from R0,SSB_virgin
     switch(SR_fxn)
@@ -247,12 +247,12 @@ FUNCTION void apply_recdev(prevariable& NewRecruits,  const prevariable& Recr_vi
 //********************************************************************
  /*  SS_Label_FUNCTION 44 Equil_Spawn_Recr_Fxn */
 //  SPAWN-RECR:   function  Equil_Spawn_Recr_Fxn
-FUNCTION dvar_vector Equil_Spawn_Recr_Fxn(const prevariable &SRparm2, const prevariable &SRparm3, 
+FUNCTION dvar_vector Equil_Spawn_Recr_Fxn(const prevariable &SRparm2, const prevariable &SRparm3,
          const prevariable& SSB_virgin, const prevariable& Recr_virgin, const prevariable& SPR_temp)
   {
     RETURN_ARRAYS_INCREMENT();
     dvar_vector Equil_Spawn_Recr_Calc(1,2);  // values to return 1 is B_equil, 2 is R_equil
-    dvariable B_equil;  
+    dvariable B_equil;
     dvariable R_equil;
     dvariable temp;
     dvariable steepness;
@@ -287,7 +287,7 @@ FUNCTION dvar_vector Equil_Spawn_Recr_Fxn(const prevariable &SRparm2, const prev
       {
         B_equil=SSB_virgin*(1.+(log(Recr_virgin/SSB_virgin)+log(SPR_temp))/steepness);
         R_equil=Recr_virgin*B_equil/SSB_virgin * mfexp(steepness*(1.-B_equil/SSB_virgin));
-        
+
         break;
       }
 //  SS_Label_44.1.3  Beverton-Holt
@@ -347,7 +347,7 @@ FUNCTION dvar_vector Equil_Spawn_Recr_Fxn(const prevariable &SRparm2, const prev
         steepness=0.2+(SRparm2-0.2)/(0.8)*(Hupper-0.2);
         Shep_top=5.0*steepness*(1.0-Shepherd_c2)*(SPR_temp*Recr_virgin)/SSB_virgin-(1.0-5.0*steepness*Shepherd_c2);
         Shep_bot=5.0*steepness-1.0;
-        Shep_top2=posfun(Shep_top,0.001,temp);  
+        Shep_top2=posfun(Shep_top,0.001,temp);
         R_equil=(SSB_virgin/SPR_temp) * pow((Shep_top2/Shep_bot),(1.0/SRparm3));
         B_equil=R_equil*SPR_temp;
         break;
@@ -386,7 +386,7 @@ FUNCTION dvar_vector Equil_Spawn_Recr_Fxn(const prevariable &SRparm2, const prev
 //        steep2=0.20001+(steepness-0.2)/(0.8)*(Hupper-0.2);
         Shep_top=5.0*steepness*(1.0-Shepherd_c2)*(SPR_temp*Recr_virgin)/SSB_virgin-(1.0-5.0*steepness*Shepherd_c2);
         Shep_bot=5.0*steepness-1.0;
-        Shep_top2=posfun(Shep_top,0.001,temp);  
+        Shep_top2=posfun(Shep_top,0.001,temp);
         R_equil=(SSB_virgin/SPR_temp) * pow((Shep_top2/Shep_bot),(1.0/Shepherd_c));
         B_equil=R_equil*SPR_temp;
         break;
@@ -418,4 +418,3 @@ FUNCTION dvar_vector Equil_Spawn_Recr_Fxn(const prevariable &SRparm2, const prev
     RETURN_ARRAYS_DECREMENT();
     return Equil_Spawn_Recr_Calc;
   }  //  end Equil_Spawn_Recr_Fxn
-

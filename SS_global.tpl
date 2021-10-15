@@ -1,27 +1,33 @@
 // SS_Label_file  #7. **SS_global.tpl**
 // SS_Label_file  # - <div style="color: #ff0000">RUNTIME_SECTION</div>
-// SS_Label_file  #   - not used by SS
-// SS_Label_file  # - <div style="color: #ff0000">TOP_OF_MAIN_SECTION</div>
-// SS_Label_file  #   - revise some memory and array constraints
-// SS_Label_file  # - <div style="color: #ff0000">GLOBALS_SECTION</div>
-// SS_Label_file  # 
-// SS_Label_file  #   - open some output files
-// SS_Label_file  #   - create needed adstring_arrays for labels
-// SS_Label_file  #   - create vector_vector arrays that are appended to in readdata
-// SS_Label_file  #   - two functions included here in GLOBALS because need to be used in the DATA_SECTION:
-// SS_Label_file  #     - <u>get_data_timing()</u> and   <u>create_timevary()</u>
-// SS_Label_file  # - <div style="color: #ff0000">BETWEEN_PHASES_SECTION</div>
-// SS_Label_file  #   - for F_method 2, convert F as scaling factors to F as parameters in designated phase
-// SS_Label_file  # - <div style="color: #ff0000">FINAL_SECTION</div>
-// SS_Label_file  #   - output *covar.sso*
-// SS_Label_file  #   - set save_for_report to 1, then call: <u>setup_recdevs()</u>, <u>get_initial_conditions()</u>, <u>get_time_series()</u>, <u>evaluate_the_objective_function()</u>
 // SS_Label_file  #
-// SS_Label_file  #   - call benchmark and forecast if not already done in sdphase
-// SS_Label_file  #   - <u>call Process_STDquant()</u> and <u>get_posteriors()</u>
-// SS_Label_file  #   - write other reports using function calls: *cumreport.sso*, *ss_summary.sso*, *ss_rebuild.sso*, *SIS_table.sso*
-// SS_Label_file  #   - call write_big_output() to produce *report.sso* and *compreport.sso*
-// SS_Label_file  # - <div style="color: #ff0000">REPORT_SECTION</div> 
-// SS_Label_file  #   - produces *ss.rep*, but see write_big_output for the more complete *report.sso*
+// SS_Label_file  #     - not used by SS
+// SS_Label_file  # - <div style="color: #ff0000">TOP_OF_MAIN_SECTION</div>
+// SS_Label_file  #
+// SS_Label_file  #     - revise some memory and array constraints
+// SS_Label_file  # - <div style="color: #ff0000">GLOBALS_SECTION</div>
+// SS_Label_file  #
+// SS_Label_file  #     - open some output files
+// SS_Label_file  #     - create needed adstring_arrays for labels
+// SS_Label_file  #     - create vector_vector arrays that are appended to in readdata
+// SS_Label_file  #     - two functions included here in GLOBALS because need to be used in the DATA_SECTION:
+// SS_Label_file  #         - <u>get_data_timing()</u> and   <u>create_timevary()</u>
+// SS_Label_file  # - <div style="color: #ff0000">BETWEEN_PHASES_SECTION</div>
+// SS_Label_file  #
+// SS_Label_file  #     - for F_method 2, convert F as scaling factors to F as parameters in designated phase
+// SS_Label_file  # - <div style="color: #ff0000">FINAL_SECTION</div>
+// SS_Label_file  #
+// SS_Label_file  #     - output *covar.sso*
+// SS_Label_file  #     - set save_for_report to 1, then call: <u>setup_recdevs()</u>, <u>get_initial_conditions()</u>, <u>get_time_series()</u>, <u>evaluate_the_objective_function()</u>
+// SS_Label_file  #
+// SS_Label_file  #     - call benchmark and forecast if not already done in sdphase
+// SS_Label_file  #     - <u>call Process_STDquant()</u> and <u>get_posteriors()</u>
+// SS_Label_file  #     - write other reports using function calls: *cumreport.sso*, *ss_summary.sso*, *ss_rebuild.sso*, *SIS_table.sso*
+// SS_Label_file  #     - call write_big_output() to produce *report.sso* and *compreport.sso*
+// SS_Label_file  # - <div style="color: #ff0000">REPORT_SECTION</div>
+// SS_Label_file  #
+// SS_Label_file  #     - produces *ss.rep*, but see write_big_output for the more complete *report.sso*
+// SS_Label_file  #
 
 //  SS_Label_Section_8 #RUNTIME_SECTION (not used in SS)
 RUNTIME_SECTION
@@ -214,7 +220,7 @@ GLOBALS_SECTION
     i_result(2)=timing_constants(5)+(y-timing_constants(5))*timing_constants(2)+s-1;  //  t
     i_result(3)=s;
     i_result(4)=f;
-    
+
     if(seas_as_year==0)
     {
       if(i_result(6)>=0)
@@ -306,7 +312,7 @@ GLOBALS_SECTION
             if(autogen_timevary==0 || (autogen_timevary==2 && tempvec(1)==-12345))  //  create or overwrite
             {
               tempvec.fill("{-10,10,0.,0.,5,6,4}");
-              if(baseparm_list(1)<=0.0) 
+              if(baseparm_list(1)<=0.0)
               {N_warn++;  warning<<N_warn<<" "<<" cannot use multiplicative blocks for parameter with a negative lower bound;  exit "<<endl<<
             baseparm_list(1)<<" "<<baseparm_list(2)<<" "<<baseparm_list(3)<<endl;  cout<<"exit, see warning"<<endl; exit(1);}
               tempvec(1)=log(baseparm_list(1)/baseparm_list(3));  //  max negative change
@@ -605,7 +611,7 @@ GLOBALS_SECTION
       tempvec2.initialize();
       if(autogen_timevary>=1) {*(ad_comm::global_datafile) >> tempvec2(1,7);}  // read
       if(autogen_timevary==0 || (autogen_timevary==2 && tempvec2(1)==-12345))  //  create or overwrite
-      {tempvec2.fill("{-0.99,0.99,0.0,0.0,0.5,6,-6}");}  
+      {tempvec2.fill("{-0.99,0.99,0.0,0.0,0.5,6,-6}");}
       timevary_parm_rd.push_back (dvector(tempvec2(1,7)));
       echoinput<<"dev vec: "<<timevary_setup(8)<<" with link: "<<timevary_setup(9)<<" min, max year "<<timevary_setup(10,11)<<endl;
     }
@@ -711,11 +717,11 @@ FINAL_SECTION
     evaluate_the_objective_function();
 //  SS_Label_Info_12.3.3 #Do benchmarks and forecast and stdquantities with save_for_report=1
     if(mceval_phase()==0) {show_MSY=1;} else {show_MSY=0;}  //  turn on reporting if not in mceval
-    if(pick_report_use(60)=="Y") {write_bodywt=1;}  //  turn on bodywt after time series 
+    if(pick_report_use(60)=="Y") {write_bodywt=1;}  //  turn on bodywt after time series
     setup_Benchmark();  //  calculates biology and selectivity to be used
     if(Do_Benchmark>0)
     {
-      if(did_MSY==0) 
+      if(did_MSY==0)
       {
         Get_Benchmarks(show_MSY);
         if(mceval_phase()==0) cout<<" finished benchmark"<<endl;
@@ -756,7 +762,7 @@ FINAL_SECTION
     if(pick_report_use(58)=="Y") {
     	write_SIStable(); //note: SIStable is deprecated, but file with warning written for now
     }
-    
+
 //  SS_Label_Info_12.4 #Do Outputs
 //  SS_Label_Info_12.4.1 #Call fxn write_bigoutput()
     write_bigoutput();
@@ -785,7 +791,7 @@ FINAL_SECTION
         write_Bzero_output();
         cout<<" finished "<<endl;
     }
-    
+
     if (pick_report_use(54)=="Y" && Do_Benchmark>0)
     {
         cout<<"SPR_profile: ";
@@ -805,7 +811,7 @@ FINAL_SECTION
 //  SS_Label_Info_12.4.7 #Finish up with final writes to warning.sso
     if(N_changed_lambdas>0)
       {N_warn++;  warning<<N_warn<<" Reminder: Number of lamdas !=0.0 and !=1.0:  "<<N_changed_lambdas<<endl; }
-    
+
     if(Nparm_on_bound>0) {N_warn++;  warning<<N_warn<<"  Number_of_active_parameters_on_or_near_bounds: "<<Nparm_on_bound<<endl;}
      warning<<"N warnings: "<<N_warn<<endl;
     cout<<endl<<"!!  Run has completed  !!            ";
