@@ -744,17 +744,15 @@ FINAL_SECTION
     if(Do_CumReport>0) write_summaryoutput();
 
     if(pick_report_use(56)=="Y") {
-      write_SS_summary();
-      cout<<" finished SS_summary.sso "<<endl;}
+    write_SS_summary();}
 
 //  SS_Label_Info_12.4.3 #Call fxn write_rebuilder_output to produce rebuilder.sso
     {
     if(pick_report_use(57)=="Y" && Do_Rebuilder>0 && mceval_counter<=1) {
-    	write_rebuilder_output();
-      cout<<" finished rebuilder.sso "<<endl;}
+    write_rebuilder_output();}
 
     if(pick_report_use(58)=="Y") {
-    	write_SIStable(); //note: SIStable is deprecated, but file with warning written for now
+    write_SIStable(); //note: SIStable is deprecated, but file with warning written for now
     }
     
 //  SS_Label_Info_12.4 #Do Outputs
@@ -806,7 +804,11 @@ FINAL_SECTION
     if(N_changed_lambdas>0)
       {N_warn++;  warning<<N_warn<<" Reminder: Number of lamdas !=0.0 and !=1.0:  "<<N_changed_lambdas<<endl; }
     
-    if(Nparm_on_bound>0) {N_warn++;  warning<<N_warn<<"  Number_of_active_parameters_on_or_near_bounds: "<<Nparm_on_bound<<endl;}
+  if(Nparm_on_bound>0)
+    {
+      cout<<Nparm_on_bound<<" parameters are on or within 1% of min-max bound"<<endl;
+      warning<<" N parameters are on or within 1% of min-max bound: "<<Nparm_on_bound<<"; check results, variance may be suspect"<<endl;
+    }
      warning<<"N warnings: "<<N_warn<<endl;
     cout<<endl<<"!!  Run has completed  !!            ";
     if(N_warn>0)
