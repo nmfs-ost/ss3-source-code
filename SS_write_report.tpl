@@ -533,7 +533,6 @@ FUNCTION void write_bigoutput()
     Report_Parm(NP, active_count, Activ, selparm(j), selparm_LO(j), selparm_HI(j), selparm_RD(j), selparm_use(j), selparm_PR(j), selparm_CV(j), selparm_PRtype(j), selparm_PH(j), selparm_Like(j));
   }
 
-
   if(Do_TG>0)
   {
      k=3*N_TG+2*Nfleet1;
@@ -561,7 +560,7 @@ FUNCTION void write_bigoutput()
         active_count++;
         SS2out<<" "<<active_count<<" "<<parm_dev_PH(i)<<" -10 10 "<<parm_dev_RD(i,j)<<" "<<parm_dev_use(i,j);
         temp=(parm_dev(i,j)-(-10))/(20);
-        if(temp==0.0 || temp==1.0)
+        if(temp<=0.0 || temp>=1.0)
           {SS2out<<" BOUND "; Nparm_on_bound++;}
         else if(temp<0.01)
           {SS2out<<" LO "; Nparm_on_bound++;}
@@ -582,7 +581,7 @@ FUNCTION void write_bigoutput()
 
   SS2out<<"#"<<endl<<"Number_of_parameters: "<<NP<<endl;
   SS2out<<"Active_count: "<<active_count<<endl;
-  SS2out<<"Number_of_active_parameters_on_or_near_bounds: "<<Nparm_on_bound<<endl;
+  SS2out<<"Number_of_active_parameters_on_or_within_1%_of_min-max_bound: "<<Nparm_on_bound<<endl;
   }
 
 // REPORT_KEYWORD 6 DERIVED_QUANTITIES
@@ -698,6 +697,7 @@ FUNCTION void write_bigoutput()
 
 // REPORT_KEYWORD 8 SELPARM_SIZE_BY_YEAR
    if(pick_report_use(8)=="Y") {
+   k1=YrMax;
    if(Fcast_Specify_Selex==0)
     {SS2out<<"forecast_selectivity_averaged_over_years:_"<<Fcast_Sel_yr1<<"_to_"<<Fcast_Sel_yr2<<endl;}
     else
@@ -714,6 +714,7 @@ FUNCTION void write_bigoutput()
 
 // REPORT_KEYWORD 9 SELPARM_AGE_BY_YEAR
    if(pick_report_use(9)=="Y") {
+   k1=YrMax;
    SS2out<<endl<<pick_report_name(9)<<endl;
    SS2out<<"Fleet Yr  Change?  Parameters"<<endl;
    for (f=Nfleet+1;f<=2*Nfleet;f++)
@@ -1899,26 +1900,51 @@ FUNCTION void write_bigoutput()
 // REPORT_KEYWORD 30 OVERALL_COMPS  average composition for all observations
    if(pick_report_use(30)=="Y") {
   SS2out<<endl<<pick_report_name(30)<<endl;
-  SS2out<<"Fleet N_obs len_bins "<<len_bins_dat<<endl;
+  SS2out<<"area seas Fleet N_obs len_bins "<<len_bins_dat<<endl;
+
+       for (f=1;f<=Nfleet;f++)
+       {
+         for(k=1;k<=4;k++)
+         {
+           dvector templen(1,nlen_bin);
+           templen.initialize();
+           for(s=1;s<=nseas;s++) {templen+=obs_l_all(k,s,f);}
+         obs_l_all(k,0,f)=templen/(float(nseas));
+        }
+      }
+      int kseas=1;
+  if(nseas>1) kseas=0;
   for (f=1;f<=Nfleet;f++)
+  for(s=kseas;s<=nseas;s++)
   {
     if(Nobs_l(f)>0)
     {
-      SS2out<<f<<" "<<Nobs_l(f)<<" freq "<<obs_l_all(1,f)<<endl;
-      SS2out<<f<<" "<<Nobs_l(f)<<" cum  "<<obs_l_all(2,f)<<endl;
+      SS2out<<fleet_area(f)<<" "<<s<<" "<<f<<" "<<Nobs_l(f)<<" freq "<<obs_l_all(1,s,f)<<endl;
+      SS2out<<fleet_area(f)<<" "<<s<<" "<<f<<" "<<Nobs_l(f)<<" cum  "<<obs_l_all(2,s,f)<<endl;
+      if(gender==2)
+      {
+      SS2out<<fleet_area(f)<<" "<<s<<" "<<f<<" "<<Nobs_l(f)<<" female  "<<obs_l_all(2,s,f)<<endl;
+      SS2out<<fleet_area(f)<<" "<<s<<" "<<f<<" "<<Nobs_l(f)<<" male  "<<obs_l_all(2,s,f)<<endl;
+      }
     }
   }
 
-  SS2out<<"Fleet N_obs age_bins ";
+  SS2out<<"area seas Fleet N_obs age_bins ";
   if(n_abins>1)
   {
     SS2out<<age_bins(1,n_abins)<<endl;
     for (f=1;f<=Nfleet;f++)
+    for(s=kseas;s<=nseas;s++)
     {
       if(Nobs_a(f)>0)
       {
-        SS2out<<f<<" "<<Nobs_a(f)<<" freq "<<obs_a_all(1,f)<<endl;
-        SS2out<<f<<" "<<Nobs_a(f)<<" cum  "<<obs_a_all(2,f)<<endl;
+      SS2out<<fleet_area(f)<<" "<<s<<" "<<f<<" "<<Nobs_a(f)<<" freq "<<obs_a_all(1,s,f)<<endl;
+      SS2out<<fleet_area(f)<<" "<<s<<" "<<f<<" "<<Nobs_a(f)<<" cum  "<<obs_a_all(2,s,f)<<endl;
+      if(gender==2)
+      {
+      SS2out<<fleet_area(f)<<" "<<s<<" "<<f<<" "<<Nobs_a(f)<<" female  "<<obs_a_all(2,s,f)<<endl;
+      SS2out<<fleet_area(f)<<" "<<s<<" "<<f<<" "<<Nobs_a(f)<<" male  "<<obs_a_all(2,s,f)<<endl;
+      }
       }
     }
   }

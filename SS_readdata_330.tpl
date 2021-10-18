@@ -1407,7 +1407,7 @@
   imatrix Len_time_t(1,Nfleet,1,Nobs_l)
   imatrix Len_time_ALK(1,Nfleet,1,Nobs_l)
   3darray obs_l(1,Nfleet,1,Nobs_l,1,nlen_bin2)
-  3darray obs_l_all(1,4,1,Nfleet,1,nlen_bin)  //  for the sum of all length comp data
+  4darray obs_l_all(1,4,0,nseas,1,Nfleet,1,nlen_bin)  //  for the sum of all length comp data
   matrix offset_l(1,Nfleet,1,Nobs_l) // Compute OFFSET for multinomial (i.e, value for the multinonial function
   matrix  nsamp_l(1,Nfleet,1,Nobs_l)
   matrix  nsamp_l_read(1,Nfleet,1,Nobs_l)
@@ -1605,19 +1605,19 @@
             obs_l(f,j)(tails_l(f,j,3),tails_l(f,j,4)) += min_comp_L(f);  // add min_comp to bins in range
           }   // end doing males
           obs_l(f,j) /= sum(obs_l(f,j));                  // make sum to 1.00 again after adding min_comp
-          if(gender==1 || gen_l(f,j)!=2) {obs_l_all(1,f)(1,nlen_bin)+=obs_l(f,j)(1,nlen_bin);}  //  females or combined
+          if(gender==1 || gen_l(f,j)!=2) {obs_l_all(1,s,f)(1,nlen_bin)+=obs_l(f,j)(1,nlen_bin);}  //  females or combined
           if(gender==2)
           {
             if(gen_l(f,j)==1 || gen_l(f,j)==3)  // put females into female only
             {
-              obs_l_all(3,f)(1,nlen_bin)+=obs_l(f,j)(1,nlen_bin);
+              obs_l_all(3,s,f)(1,nlen_bin)+=obs_l(f,j)(1,nlen_bin);
             }
             if(gen_l(f,j)>=2)  //  put males into combined and into male only
             {
               for(z=1;z<=nlen_bin;z++)
               {
-                obs_l_all(1,f,z)+=obs_l(f,j,nlen_bin+z);
-                obs_l_all(4,f,z)+=obs_l(f,j,nlen_bin+z);
+                obs_l_all(1,s,f,z)+=obs_l(f,j,nlen_bin+z);
+                obs_l_all(4,s,f,z)+=obs_l(f,j,nlen_bin+z);
               }
             }
           }
@@ -1626,35 +1626,36 @@
     }
   }
 
-     echoinput<<"Overall_Compositions"<<endl<<"Fleet len_bins "<<len_bins_dat<<endl;
+     echoinput<<"Overall_Compositions"<<endl<<"Seas Fleet len_bins "<<len_bins_dat<<endl;
      for (f=1;f<=Nfleet;f++)
+     for(s=1;s<=nseas;s++)
      {
        for(j=1;j<=4;j++)
        {
           if(j!=2)
           {
-            temp=sum(obs_l_all(j,f));
+            temp=sum(obs_l_all(j,s,f));
             if(temp>0.0)
             {
-               obs_l_all(j,f)/=temp;
+               obs_l_all(j,s,f)/=temp;
             }
             else
             {
-              obs_l_all(j,f)=float(1./nlen_bin);
+              obs_l_all(j,s,f)=float(1./nlen_bin);
             }
           }
        }
-       obs_l_all(2,f,1)=obs_l_all(1,f,1); // first bin
+       obs_l_all(2,s,f,1)=obs_l_all(1,s,f,1); // first bin
        for (z=2;z<=nlen_bin;z++)
        {
-         obs_l_all(2,f,z)=obs_l_all(2,f,z-1)+obs_l_all(1,f,z);
+         obs_l_all(2,s,f,z)=obs_l_all(2,s,f,z-1)+obs_l_all(1,s,f,z);
        }
        if(Nobs_l(f)>0)
        {
-         echoinput<<f<<" freq"<<obs_l_all(1,f)<<endl;
-         echoinput<<f<<" cuml"<<obs_l_all(2,f)<<endl;
-         echoinput<<f<<" female"<<obs_l_all(3,f)<<endl;
-         echoinput<<f<<" male"<<obs_l_all(4,f)<<endl;
+         echoinput<<s<<" "<<f<<" freq"<<obs_l_all(1,s,f)<<endl;
+         echoinput<<s<<" "<<f<<" cuml"<<obs_l_all(2,s,f)<<endl;
+         echoinput<<s<<" "<<f<<" female"<<obs_l_all(3,s,f)<<endl;
+         echoinput<<s<<" "<<f<<" male"<<obs_l_all(4,s,f)<<endl;
        }
      }
 
@@ -1892,7 +1893,7 @@
   imatrix Age_time_t(1,Nfleet,1,Nobs_a)
   imatrix Age_time_ALK(1,Nfleet,1,Nobs_a)
   3darray obs_a(1,Nfleet,1,Nobs_a,1,gender*n_abins)
-  3darray obs_a_all(1,2,1,Nfleet,1,n_abins)  //  for the sum of all age comp data
+  4darray obs_a_all(1,4,0,nseas,1,Nfleet,1,n_abins)  //  for the sum of all age comp data
   matrix  nsamp_a(1,Nfleet,1,Nobs_a)
   matrix  nsamp_a_read(1,Nfleet,1,Nobs_a)
   imatrix  ageerr_type_a(1,Nfleet,1,Nobs_a)
@@ -2168,39 +2169,47 @@
             obs_a(f,j)(tails_a(f,j,3),tails_a(f,j,4)) += min_comp_A(f);  // add min_comp to bins in range
            }
            if(sum(obs_a(f,j))>0.) obs_a(f,j) /= sum(obs_a(f,j));                  // make sum to 1.00 again after adding min_comp
-           if(gender==1 || gen_a(f,j)!=2) obs_a_all(1,f)(1,n_abins)+=obs_a(f,j)(1,n_abins);  //  females or combined
-           if(gender==2 && gen_a(f,j)>=2)
+           s=timing_i_result(3);
+           if(gender==1 || gen_a(f,j)!=2) obs_a_all(1,s,f)(1,n_abins)+=obs_a(f,j)(1,n_abins);  //  females or combined
+           if(gender==2)
            {
+            if(gen_a(f,j)==1 || gen_a(f,j)==3)  // put females into female only
+             {obs_a_all(3,s,f)(1,n_abins)+=obs_a(f,j)(1,n_abins);}
+            if(gen_a(f,j)>=2)  //  put males into combined and into male only
+            {
              for (a=1;a<=n_abins;a++)
              {
-               obs_a_all(1,f,a)+=obs_a(f,j,n_abins+a);  //  males
+               obs_a_all(1,s,f,a)+=obs_a(f,j,n_abins+a);  //  males into combined
+               obs_a_all(4,s,f,a)+=obs_a(f,j,n_abins+a);  //  males
              }
+            }
            }
-         }
        }
      }
 
-     echoinput<<"Fleet age_bins "<<age_bins<<endl;
-     for (f=1;f<=Nfleet;f++)
+     echoinput<<"area seas fleet age_bins "<<age_bins<<endl;
+     for(s=1;s<=nseas;s++)
+     for(f=1;f<=Nfleet;f++)
      {
        if(Nobs_a(f)>0)
        {
-         obs_a_all(1,f)/=sum(obs_a_all(1,f));
+         obs_a_all(1,s,f)/=sum(obs_a_all(1,s,f));
        }
        else
        {
-         obs_a_all(1,f)=float(1./n_abins);
+         obs_a_all(1,s,f)=0.0;
        }
-       obs_a_all(2,f,1)=obs_a_all(1,f,1); // first bin
+       obs_a_all(2,s,f,1)=obs_a_all(1,s,f,1); // first bin
        for (a=2;a<=n_abins;a++)
        {
-         obs_a_all(2,f,a)=obs_a_all(2,f,a-1)+obs_a_all(1,f,a);
+         obs_a_all(2,s,f,a)=obs_a_all(2,s,f,a-1)+obs_a_all(1,s,f,a);
        }
-       echoinput<<f<<" freq "<<obs_a_all(1,f)<<endl;
-       echoinput<<f<<" cuml "<<obs_a_all(2,f)<<endl;
+       echoinput<<fleet_area(f)<<" "<<s<<" "<<f<<" freq "<<obs_a_all(1,s,f)<<endl;
+       echoinput<<fleet_area(f)<<" "<<s<<" "<<f<<" cuml "<<obs_a_all(2,s,f)<<endl;
      }
      echoinput<<endl<<"Successful processing of age data "<<endl;
    }
+  }
  END_CALCS
 
 !!//  SS_Label_Info_2.9 #Read mean Size_at_Age data

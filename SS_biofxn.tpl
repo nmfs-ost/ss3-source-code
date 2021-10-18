@@ -29,8 +29,8 @@ FUNCTION void get_MGsetup(const int yz)
           if(mgp_adj(f)<MGparm_1(f,1) || mgp_adj(f)>MGparm_1(f,2))
           {
             N_warn++;
-             warning<<N_warn<<" "<<" adjusted MGparm out of bounds (Phase, Iter, parm#, yr, min, max, base, adj_value) "<<current_phase()<<" "<<niter<<f<<" "<<yz<<" "<<
-            MGparm_1(f,1)<<" "<<MGparm_1(f,2)<<" "<<MGparm(f)<<" "<<mgp_adj(f)<<" "<<ParmLabel(f)<<endl;
+             warning<<N_warn<<" "<<" adjusted MGparm out of base parm bounds. Phase: "<<current_phase()<<"; Inter: "<<niter<<
+             "; parm#: "<<f<<"; y: "<<yz<<"; min: "<<MGparm_1(f,1)<<"; max: "<<MGparm_1(f,2)<<"; base: "<<MGparm(f)<<" timevary_val: "<<mgp_adj(f)<<" "<<ParmLabel(f)<<endl;
           }
         }
       }

@@ -4875,39 +4875,49 @@
         }
         if(f<=Nfleet)  // doing size Selex
         {
+          dvector templen(1,nlen_bin);
+          templen.initialize();
+          for(s=1;s<=nseas;s++)
+          {templen += obs_l_all(2,s,f);}
+          templen /= double(nseas);
           while(temp<=0.975001)
           {
-            while(obs_l_all(2,f,z)<temp)
+            while(templen(z)<temp)
             {
               z++;
             }
             //  intermediate knots are calculated from data_length_bins
             if(z>1)
-            {selparm_RD(Ip+s)=len_bins_dat(z-1)+(temp-obs_l_all(2,f,z-1))/(obs_l_all(2,f,z)-obs_l_all(2,f,z-1))*(len_bins_dat(z)-len_bins_dat(z-1));}
+            {selparm_RD(Ip+s)=len_bins_dat(z-1)+(temp-templen(z-1)/(templen(z)-templen(z-1)))*(len_bins_dat(z)-len_bins_dat(z-1));}
             else
             {selparm_RD(Ip+s)=len_bins_dat(z);}
             s++;
             temp+=temp1;
           }
-          echoinput<<"len_bins_dat: "<<len_bins_dat<<endl<<"Cum_comp: "<<obs_l_all(2,fs)(1,nlen_bin)<<endl<<"Knots: "<<selparm_RD(Ip+3+1,Ip+3+N_knots)<<endl;
+          echoinput<<"len_bins_dat: "<<len_bins_dat<<endl<<"Cum_comp: "<<templen<<endl<<"Knots: "<<selparm_RD(Ip+3+1,Ip+3+N_knots)<<endl;
         }
         else  //  age selex
         {
+          dvector tempage(1,n_abins);
+          tempage.initialize();
+          for(s=1;s<=nseas;s++)
+          {tempage += obs_a_all(2,s,f);}
+          tempage /= double(nseas);
           while(temp<=0.975001)
           {
-            while(obs_a_all(2,fs,z)<temp)
+            while(tempage(z)<temp)
             {
               z++;
             }
             //  intermediate knots are calculated from data_length_bins
             if(z>1)
-            {selparm_RD(Ip+s)=age_bins(z-1)+(temp-obs_a_all(2,fs,z-1))/(obs_a_all(2,fs,z)-obs_a_all(2,fs,z-1))*(age_bins(z)-age_bins(z-1));}
+            {selparm_RD(Ip+s)=age_bins(z-1)+(temp-tempage(z-1))/(tempage(z)-tempage(z-1))*(age_bins(z)-age_bins(z-1));}
             else
             {selparm_RD(Ip+s)=age_bins(z);}
             s++;
             temp+=temp1;
           }
-          echoinput<<"age_bins: "<<age_bins<<endl<<"Cum_comp: "<<obs_a_all(2,fs)(1,n_abins)<<endl<<"Knots: "<<selparm_RD(Ip+3+1,Ip+3+N_knots)<<endl;
+          echoinput<<"age_bins: "<<age_bins<<endl<<"Cum_comp: "<<tempage(1,n_abins)<<endl<<"Knots: "<<selparm_RD(Ip+3+1,Ip+3+N_knots)<<endl;
         }
         if(k==2)  //  create default bounds, priors, etc.
         {
