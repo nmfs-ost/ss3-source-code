@@ -263,7 +263,7 @@ FUNCTION void write_summaryoutput()
 
 FUNCTION void write_SS_summary()
   {
-    ofstream SS_smry("ss_summary.sso");
+    SS_smry.open(sso_pathname+"ss_summary.sso");
     SS_smry<<version_info(1)<<version_info(2)<<version_info(3)<<endl;
     SS_smry<<datfilename<<" #_DataFile "<<endl;
     SS_smry<<ctlfilename<<" #_Control "<<endl;
@@ -558,8 +558,8 @@ FUNCTION void write_SS_summary()
 FUNCTION void write_rebuilder_output()
   {
     if(rundetail>0 && mceval_counter==0) cout<<" produce output for rebuilding package"<<endl;
-    ofstream rebuilder("rebuild.sso",ios::app);
-    ofstream rebuild_dat("rebuild.dat");
+    rebuilder.open(sso_pathname+"rebuild.sso",ios::app);
+    rebuild_dat.open(sso_pathname+"rebuild.dat");
 
     if(mceval_counter==0) // writing to rebuild.dat
     {
@@ -778,7 +778,7 @@ FUNCTION void write_rebuilder_output()
 
 FUNCTION void write_SIStable() //Note: deprecated, but add a message for now.
   {
-  ofstream SIS_table("SIS_table.sso");
+  SIS_table.open(sso_pathname+"SIS_table.sso");
   SIS_table<<"Note: SIS_table.sso is deprecated, please use the r4ss function get_SIS_info() instead"<<endl;
   }
 //********************************************************************

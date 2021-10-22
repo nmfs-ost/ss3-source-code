@@ -24,22 +24,11 @@ FUNCTION void write_nudata()
   	temp = randn(radm);
   }
 
-    struct stat pathinfo;
-    adstring pathname="";
-    if( stat( "./ssnew", &pathinfo ) != 0 )
-    {
-      pathname="";
-    }
-    else
-      {
-        pathname="./ssnew/";
-      }
-
   for (Nudat=1;Nudat<=N_nudata;Nudat++)
   {
   if(Nudat==1)
   {
-    anystring=pathname+"data_echo.ss_new";
+    anystring=ssnew_pathname+"data_echo.ss_new";
     report1.open(anystring);
     report1<<version_info(1)<<version_info(2)<<version_info(3)<<endl<<version_info2<<endl<<"#_Start_time: "<<ctime(&start);
     report1<<"#_echo_input_data"<<endl;
@@ -47,7 +36,7 @@ FUNCTION void write_nudata()
   }
   else if(Nudat==2)
   {
-    anystring=pathname+"data_expval.ss_new";
+    anystring=ssnew_pathname+"data_expval.ss_new";
     report1.open(anystring);
     report1<<version_info(1)<<version_info(2)<<version_info(3)<<endl<<version_info2<<endl<<"#_Start_time: "<<ctime(&start);
     report1<<"#_expected_values"<<endl;
@@ -56,7 +45,7 @@ FUNCTION void write_nudata()
   else
   {
     sprintf(anystring, "%d", Nudat-2);
-    anystring2=pathname+"data_boot_"+anystring+".ss_new";
+    anystring2=ssnew_pathname+"data_boot_"+anystring+".ss_new";
     report1.open(anystring2);
     report1<<version_info(1)<<version_info(2)<<version_info(3)<<endl<<version_info2<<endl<<"#_Start_time: "<<ctime(&start);
     report1<<"#_bootdata:_"<<Nudat<<endl;
@@ -1162,7 +1151,8 @@ FUNCTION void write_nudata()
 FUNCTION void write_nucontrol()
   {
   cout<<" Write new starter file "<<endl;
-  ofstream NuStart("starter.ss_new");
+  anystring=ssnew_pathname+"starter.ss_new";
+  ofstream NuStart(anystring);
   NuStart<<version_info(1)<<version_info(2)<<version_info(3)<<endl<<version_info2<<endl;
   if(N_SC>0) NuStart<<Starter_Comments<<endl;
   NuStart<<datfilename<<endl<<ctlfilename<<endl;
@@ -1215,7 +1205,8 @@ FUNCTION void write_nucontrol()
   NuStart.close();
 
   cout<<" Write new forecast file "<<endl;
-  ofstream NuFore("forecast.ss_new");
+  anystring=ssnew_pathname+"forecast.ss_new";
+  ofstream NuFore(anystring);
   NuFore<<version_info(1)<<version_info(2)<<version_info(3)<<endl;
   if(N_FC>0) NuFore<<Forecast_Comments<<endl;
   NuFore<<"# for all year entries except rebuilder; enter either: actual year, -999 for styr, 0 for endyr, neg number for rel. endyr"<<endl;
@@ -1351,7 +1342,8 @@ FUNCTION void write_nucontrol()
 //**********************************************************
   cout<<" Write new control file "<<endl;
 
-  ofstream report4("control.ss_new");
+  anystring=ssnew_pathname+"control.ss_new";
+  ofstream report4(anystring);
   report4<<version_info(1)<<version_info(2)<<version_info(3)<<endl;
   report4<<version_info2<<endl;
   if(N_CC>0) report4<<Control_Comments<<endl;

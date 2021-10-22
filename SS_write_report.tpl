@@ -9,30 +9,19 @@
 FUNCTION void write_bigoutput()
   {
 
-    struct stat pathinfo;
-    adstring pathname="";
-    if( stat( "./sso", &pathinfo ) != 0 )
-    {
-      pathname="";
-    }
-    else
-      {
-        pathname="./sso/";
-      }
-
       if(mceval_counter==0)
       {
-        anystring=pathname+"report.sso";
+        anystring=sso_pathname+"Report.sso";
         SS2out.open(anystring);   // this file was created in globals so accessible to the report_parm function
-        anystring=pathname+"CompReport.sso";
+        anystring=sso_pathname+"CompReport.sso";
         SS_compout.open(anystring);
       }
       else
       {
         sprintf(anystring2, "%d", mceval_counter);
-        anystring=pathname+"report_mce_"+anystring2+".sso";
+        anystring=sso_pathname+"Report_mce_"+anystring2+".sso";
         SS2out.open(anystring);
-        anystring=pathname+"CompReport_mce_"+anystring2+".sso";
+        anystring=sso_pathname+"CompReport_mce_"+anystring2+".sso";
         SS_compout.open(anystring);
       }
 
@@ -643,7 +632,6 @@ FUNCTION void write_bigoutput()
     }
     SS2out<<endl;
   }
-  ofstream post_vecs("posterior_vectors.sso",ios::app);
   post_vecs<<runnumber<<" 0 "<<obj_fun<<" F/Fmsy_stdev ";
   for (j=1;j<=N_STD_Yr_F;j++)
   {

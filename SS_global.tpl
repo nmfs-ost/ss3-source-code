@@ -68,22 +68,14 @@ GLOBALS_SECTION
   long hour,minute,second;
   double elapsed_time;
 
-//  SS_Label_Info_10.1 #Open output files using ofstream
-  ofstream warning("warning.sso");
-  ofstream echoinput("echoinput.sso");
-  ofstream ParmTrace("ParmTrace.sso");
-  ofstream report5("Forecast-report.sso");
-  ofstream report2("CumReport.sso",ios::app);
-  ofstream bodywtout("wtatage.ss_new");
-  ofstream SS2out;   // this is just a create
-  ofstream SS_compout;   // this is just a create
-  ofstream report1;  //  for data.ss_new
 //  SS_Label_Info_10.2 #Define some adstring variables
   adstring_array ParmLabel;  // extendable array to hold the parameter labels
   adstring_array Parm_info;  // extendable array to hold the parameter labels
   adstring_array SzFreq_units_label;
   adstring_array SzFreq_scale_label;
   adstring_array fleetname;
+  adstring ssnew_pathname;
+  adstring sso_pathname;
   adstring fleetnameread;
   adstring depletion_basis_label;
   adstring F_report_label;
@@ -105,6 +97,26 @@ GLOBALS_SECTION
   adstring_array CRLF;   // blank to terminate lines
   adstring_array pick_report_name;  //  name of report
   adstring_array pick_report_use;  //  X if used; 0 if not
+
+//  SS_Label_Info_10.1 #Open output files using ofstream
+  ofstream warning;
+  ofstream echoinput;
+  ofstream ParmTrace;
+  ofstream report5;  //  forecast-report
+  ofstream report2;  //  control.ss_new
+  ofstream bodywtout;
+  ofstream SS2out;   // this is just a create
+  ofstream SS_compout;   // this is just a create
+  ofstream report1;  //  for data.ss_new
+  ofstream covarout;
+  ofstream rebuilder;
+  ofstream rebuild_dat;
+  ofstream posts;
+  ofstream der_posts;
+  ofstream post_vecs;
+  ofstream post_obj_func;
+  ofstream SS_smry;
+  ofstream SIS_table;
 //  declare some entities that need global access
   int ParCount; int timevary_parm_cnt; int N_warn;
   int styr; int endyr; int YrMax; int nseas; int Ncycle; int seas_as_year;
@@ -681,7 +693,8 @@ FINAL_SECTION
     {N_warn++;  warning<<N_warn<<" "<<"Final gradient: "<<objective_function_value::pobjfun->gmax <<" is larger than final_conv: "<<final_conv<<endl;}
 
 //  SS_Label_Info_12.2 #Output the covariance matrix to covar.sso
-    ofstream covarout("covar.sso");
+    anystring=sso_pathname+"covar.sso";
+    covarout.open(anystring);
     covarout<<version_info<<endl;
     covarout<<"start_time: "<<ctime(&start)<<endl;
     covarout<<active_parms<<" "<<CoVar_Count<<endl;

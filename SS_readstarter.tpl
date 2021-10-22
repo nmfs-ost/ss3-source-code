@@ -271,6 +271,36 @@
   int rd_background
 
  LOCAL_CALCS
+   struct stat pathinfo;
+    if( stat( "./ssnew", &pathinfo ) != 0 )
+    {
+      ssnew_pathname="";
+    }
+    else
+      {
+        ssnew_pathname="./ssnew/";
+      }
+
+    if( stat( "./sso", &pathinfo ) != 0 )
+    {
+      sso_pathname="";
+    }
+    else
+      {
+        sso_pathname="./sso/";
+      }
+
+  warning.open(sso_pathname+"warning.sso");
+  echoinput.open(sso_pathname+"echoinput.sso");
+  ParmTrace.open(sso_pathname+"ParmTrace.sso");
+  report5.open(sso_pathname+"Forecast-report.sso");
+  report2.open(sso_pathname+"CumReport.sso",ios::app);
+  bodywtout.open(ssnew_pathname+"wtatage.ss_new");
+
+ END_CALCS
+
+
+ LOCAL_CALCS
   if (reportdetail < 0 || reportdetail > 3) reportdetail = 0;
   echoinput<<reportdetail<<"  reportdetail 0=minimal for data-limited, 1=all, 2=no growth, 3=custom"<<endl;
   if(reportdetail==3)
