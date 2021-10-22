@@ -24,21 +24,45 @@ FUNCTION void write_nudata()
   	temp = randn(radm);
   }
 
-  ofstream report1("data.ss_new");
-  report1<<version_info(1)<<version_info(2)<<version_info(3)<<endl<<version_info2<<endl<<"#_Start_time: "<<ctime(&start);
-  report1  << "#_Number_of_datafiles: " << N_nudata << endl;
+    struct stat pathinfo;
+    adstring pathname="";
+    if( stat( "./ssnew", &pathinfo ) != 0 )
+    {
+      pathname="";
+    }
+    else
+      {
+        pathname="./ssnew/";
+      }
+
   for (Nudat=1;Nudat<=N_nudata;Nudat++)
   {
   if(Nudat==1)
   {
+    anystring=pathname+"data_echo.ss_new";
+    report1.open(anystring);
+    report1<<version_info(1)<<version_info(2)<<version_info(3)<<endl<<version_info2<<endl<<"#_Start_time: "<<ctime(&start);
+    report1<<"#_echo_input_data"<<endl;
     report1<<Data_Comments<<endl;
-    report1 << "#_observed data: "<< endl;
   }
   else if(Nudat==2)
-  {report1 << "#_expected values with no error added " << endl;}
+  {
+    anystring=pathname+"data_expval.ss_new";
+    report1.open(anystring);
+    report1<<version_info(1)<<version_info(2)<<version_info(3)<<endl<<version_info2<<endl<<"#_Start_time: "<<ctime(&start);
+    report1<<"#_expected_values"<<endl;
+    report1<<Data_Comments<<endl;
+  }
   else
   {
-  report1 << "#_bootstrap file: " << Nudat-2 <<"  irand_seed: "<<irand_seed<<" first rand#: "<<randn(radm)<<endl;}
+    sprintf(anystring, "%d", Nudat-2);
+    anystring2=pathname+"data_boot_"+anystring+".ss_new";
+    report1.open(anystring2);
+    report1<<version_info(1)<<version_info(2)<<version_info(3)<<endl<<version_info2<<endl<<"#_Start_time: "<<ctime(&start);
+    report1<<"#_bootdata:_"<<Nudat<<endl;
+    report1<<Data_Comments<<endl;
+    report1 << "#_bootstrap file: " << Nudat-2 <<"  irand_seed: "<<irand_seed<<" first rand#: "<<randn(radm)<<endl;
+  }
   report1<<version_info(1)<<version_info(2)<<version_info(3)<<endl;
   report1 << styr << " #_StartYr"<<endl;
   report1 << endyr <<" #_EndYr"<< endl;
@@ -1126,9 +1150,10 @@ FUNCTION void write_nudata()
 
     report1<<"#"<<endl << "999" << endl << endl;
   }
+  report1.close();
   }
 
-  report1 << "ENDDATA" << endl;
+//  report1 << "ENDDATA" << endl;
   return;
   }  //  end of write data
 

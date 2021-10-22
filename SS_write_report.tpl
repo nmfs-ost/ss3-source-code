@@ -8,8 +8,33 @@
  /*  SS_Label_FUNCTION 40 write_bigoutput */
 FUNCTION void write_bigoutput()
   {
-  SS2out.open ("Report.sso");   // this file was created in globals so accessible to the report_parm function
-  ofstream SS_compout("CompReport.sso");
+
+    struct stat pathinfo;
+    adstring pathname="";
+    if( stat( "./sso", &pathinfo ) != 0 )
+    {
+      pathname="";
+    }
+    else
+      {
+        pathname="./sso/";
+      }
+
+      if(mceval_counter==0)
+      {
+        anystring=pathname+"report.sso";
+        SS2out.open(anystring);   // this file was created in globals so accessible to the report_parm function
+        anystring=pathname+"CompReport.sso";
+        SS_compout.open(anystring);
+      }
+      else
+      {
+        sprintf(anystring2, "%d", mceval_counter);
+        anystring=pathname+"report_mce_"+anystring2+".sso";
+        SS2out.open(anystring);
+        anystring=pathname+"CompReport_mce_"+anystring2+".sso";
+        SS_compout.open(anystring);
+      }
 
   SS2out<<version_info(1)<<version_info(2)<<version_info(3)<<endl<<version_info2<<endl;
   time(&finish);
