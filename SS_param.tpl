@@ -200,12 +200,18 @@ PARAMETER_SECTION
   number YPR_Btgt_dead;
   number YPR_Btgt_N_dead;
   number YPR_Btgt_ret;
+  number YPR_Btgt_cost;
+  number YPR_Btgt_revenue;
+  number YPR_Btgt_profit;
   number YPR_Btgt;
 
   number YPR_spr_enc;
   number YPR_spr_dead;
   number YPR_spr_N_dead;
   number YPR_spr_ret;
+  number YPR_spr_cost;
+  number YPR_spr_revenue;
+  number YPR_spr_profit;
 
   number Vbio_spr;
   number Vbio1_spr;
@@ -226,6 +232,9 @@ PARAMETER_SECTION
   number YPR_msy_dead;
   number YPR_msy_N_dead;
   number YPR_msy_ret;
+  number YPR_msy_cost;
+  number YPR_msy_revenue;
+  number YPR_msy_profit;
 
   number YPR_enc;
   number YPR_dead;

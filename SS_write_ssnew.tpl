@@ -1194,8 +1194,8 @@ FUNCTION void write_nucontrol()
   NuFore<<version_info(1)<<version_info(2)<<version_info(3)<<endl;
   if(N_FC>0) NuFore<<Forecast_Comments<<endl;
   NuFore<<"# for all year entries except rebuilder; enter either: actual year, -999 for styr, 0 for endyr, neg number for rel. endyr"<<endl;
-  NuFore<<Do_Benchmark<<" # Benchmarks: 0=skip; 1=calc F_spr,F_btgt,F_msy; 2=calc F_spr,F0.1,F_msy;  3=add F_Blimit"<<endl;
-  NuFore<<Do_MSY<<" # MSY: 1= set to F(SPR); 2=calc F(MSY); 3=set to F(Btgt) or F0.1; 4=set to F(endyr) "<<endl;
+  NuFore<<Do_Benchmark<<" # Benchmarks: 0=skip; 1=calc F_spr,F_btgt,F_msy; 2=calc F_spr,F0.1,F_msy; 3=add F_Blimit; "<<endl;
+  NuFore<<Do_MSY<<" # MSY: 1= set to F(SPR); 2=calc F(MSY); 3=set to F(Btgt) or F0.1; 4=set to F(endyr); 5=calc F(MEY)"<<endl;
   NuFore<<SPR_target<<" # SPR target (e.g. 0.40)"<<endl;
   NuFore<<BTGT_target<<" # Biomass target (e.g. 0.40)"<<endl;
   if(Do_Benchmark==3) NuFore<<Blim_frac<<" # COND: Do_Benchmark==3;  Blimit as fraction of Bmsy (neg value to use as frac of Bzero) (e.g. 0.50)"<<endl;
@@ -1309,6 +1309,13 @@ FUNCTION void write_nucontrol()
     else
     {NuFore<<"# no allocation groups"<<endl;}
 
+  NuFore << "# Cost-per-unit fishing mortality" << endl; 
+  for (f=1;f<=Nfleet;f++)
+   if(fleet_type(f)==1 || (fleet_type(f)==2 && bycatch_setup(f,3)==1))
+     NuFore << CostPerF(f) << " ";
+  NuFore << endl;   
+  NuFore <<"# Price per unit catch mass" << endl;
+  NuFore << Price << endl;
   NuFore<<Fcast_InputCatch_Basis<<
   " # basis for input Fcast catch: -1=read basis with each obs; 2=dead catch; 3=retained catch; 99=input apical_F; NOTE: bio vs num based on fleet's catchunits"<<endl;
 

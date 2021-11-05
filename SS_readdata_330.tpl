@@ -2950,7 +2950,7 @@
   echoinput<<"read Do_Benchmark(0=skip; 1= do Fspr, Fbtgt, Fmsy; 2=do Fspr, F0.1, Fmsy;  3=Fspr, Fbtgt, Fmsy, F_Blimit)"<<endl;
   *(ad_comm::global_datafile) >> Do_Benchmark;
   echoinput<<Do_Benchmark<<" echoed Do_Benchmark "<<endl;
-  echoinput<<"read Do_MSY (1=F_SPR,2=F_Btarget,3=calcMSY,4=mult*F_endyr (disabled))"<<endl;
+  echoinput<<"read Do_MSY (1=F_SPR,2=F_Btarget,3=calcMSY,4=mult*F_endyr (disabled);5=calcMEY)"<<endl;
   *(ad_comm::global_datafile) >> Do_MSY;
   echoinput<<Do_MSY<<" echoed Do_MSY basis"<<endl;
 
@@ -3289,7 +3289,9 @@
  END_CALCS
 
   matrix Fcast_Catch_Allocation(1,N_Fcast_Yrs,1,Nfleet);  //   dimension to Nfleet but use only to N alloc groups
-  vector H4010_scale_vec(endyr+1,YrMax)
+  vector H4010_scale_vec(endyr+1,YrMax);
+  vector CostPerF(1,Nfleet);
+  number Price;
 
  LOCAL_CALCS
   if(Do_Forecast_rd>0)
@@ -3406,6 +3408,13 @@
         }
     }
 
+    CostPerF.initialize();
+    for (f=1;f<=Nfleet;f++)
+     if(fleet_type(f)==1 || (fleet_type(f)==2 && bycatch_setup(f,3)==1))
+      *(ad_comm::global_datafile) >> CostPerF(f);
+    echoinput << "# Cost-per-unit fishing mortality" << endl; 
+    echoinput << CostPerF << endl;
+    *(ad_comm::global_datafile) >> Price;    
     *(ad_comm::global_datafile) >> Fcast_InputCatch_Basis;
     echoinput<<Fcast_InputCatch_Basis<<" # basis for input Fcast catch:  -1= read with each obs; 2=dead catch; 3=retained catch; 99=input Hrate(F); -1=read fleet/time specific (bio/num units are from fleetunits; note new codes in SSV3.20)"<<endl;
     k1 = styr+(endyr-styr)*nseas-1 + nseas + 1;
