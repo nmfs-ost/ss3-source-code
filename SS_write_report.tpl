@@ -1635,7 +1635,7 @@ FUNCTION void write_bigoutput()
 
 //Fleet N Npos mean_effN mean(inputN*Adj) HarMean(effN) Mean(effN/inputN) MeaneffN/MeaninputN Var_Adj
 //long ago, Ian Stewart had the proto-r4ss add a column called "HarEffN/MeanInputN" which was the ratio of the columns "HarMean(effN)" column and the "mean(inputN*Adj)" and has been used as the multiplier on the adjustment factor in the status-quo NWFSC tuning approach.
-//My suggestion would be to remove the columns "Mean(effN/inputN)" and "MeaneffN/MeaninputN" if those are not recommended values for tuning (I don't get the impression that they are) and have SS internally produce the "HarEffN/MeanInputN" column so that it's available to all users.
+//My suggestion would be to remove the columns "Mean(effN/inputN)" and "MeaneffN/MeaninputN" if those are not recommended values for tuning (I don't get the impression that they are) and have SS3 internally produce the "HarEffN/MeanInputN" column so that it's available to all users.
 //It might also be good to add a keyword to the top of those lower tables which could simplify the logic of parsing them separately from the FIT_..._COMPS tables above them and therefore be more robust to changes in format.
 
    SS2out<<"#"<<endl<<"Length_Comp_Fit_Summary"<<endl<<

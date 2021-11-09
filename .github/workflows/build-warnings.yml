@@ -55,7 +55,7 @@ jobs:
           } 
           txt <- txt[-to_rm]
           n_errors <- length(grep(pattern = "^", x = txt, fixed = TRUE))
-          message("There are ", n_errors, " warning messages related to SS.")
+          message("There are ", n_errors, " warning messages related to SS3.")
           write.table(n_errors, "n_warn.txt")
           writeLines(txt, "warnings_ss.txt")
         shell: Rscript {0}

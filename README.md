@@ -1,6 +1,6 @@
 # Stock Synthesis 3.30
 
-Stock Synthesis (SS or SS3) is a generalized age-structured population dynamics model implemented in [ADMB](http://www.admb-project.org/). It is used to assess the effect of fisheries on fish and shellfish stocks while taking into account the influence of environmental factors.
+Stock Synthesis (SS3) is a generalized age-structured population dynamics model implemented in [ADMB](http://www.admb-project.org/). It is used to assess the effect of fisheries on fish and shellfish stocks while taking into account the influence of environmental factors.
 
 # Table of contents
 -   [Citing Stock Synthesis](#citing-stock-synthesis)
@@ -8,7 +8,7 @@ Stock Synthesis (SS or SS3) is a generalized age-structured population dynamics 
 -   [How can I learn how to use Stock Synthesis?](#how-can-i-learn-how-to-use-stock-synthesis)
 -   [How do I ask questions about Stock Synthesis?](#how-do-i-ask-questions-about-stock-synthesis)
 -   [How can I contribute to Stock Synthesis?](#how-can-i-contribute-to-stock-synthesis)
--   [Tools for working with SS](#tools-for-working-with-ss)
+-   [Tools for working with Stock Synthesis](#tools-for-working-with-stock-synthesis)
 -   [Disclaimer](#disclaimer)
 
 
@@ -28,9 +28,9 @@ Download the latest compiled versions from [Github Releases](https://github.com/
 
 ## How can I learn how to use Stock Synthesis?
 
-To learn more about how to use Stock Synthesis, see the [getting started guide with SS guide](https://nmfs-stock-synthesis.github.io/ss-documentation/Getting_Started_SS.html). To learn how to build your own models in SS, see the [Develop an SS model guide](https://nmfs-stock-synthesis.github.io/ss-documentation/ss_model_tips.html).
+To learn more about how to use Stock Synthesis, see the [getting started guide with Stock Synthesis guide](https://nmfs-stock-synthesis.github.io/ss-documentation/Getting_Started_SS.html). To learn how to build your own models in Stock Synthesis, see the [Develop an Stock Synthesis model guide](https://nmfs-stock-synthesis.github.io/ss-documentation/ss_model_tips.html).
 
-The [SS user manual](https://github.com/nmfs-stock-synthesis/ss-documentation/releases) provides the complete documentation of SS, while the [helper spreadsheets](https://github.com/nmfs-stock-synthesis/ss-documentation/tree/main/Helper_Spreadsheets) are useful cheatsheets that outline inputs necessary for options that are widely used within SS.
+The [Stock Synthesis user manual](https://github.com/nmfs-stock-synthesis/ss-documentation/releases) provides the complete documentation of Stock Synthesis, while the [helper spreadsheets](https://github.com/nmfs-stock-synthesis/ss-documentation/tree/main/Helper_Spreadsheets) are useful cheatsheets that outline inputs necessary for options that are widely used within Stock Synthesis.
 
 ## How do I ask questions about Stock Synthesis?
 
@@ -42,19 +42,19 @@ Have feature requests or bug reports? Want to contribute code? Please open an [i
 
 This project and everyone participating in it is governed by the [NMFS Fisheries Toolbox Code of Conduct](https://github.com/nmfs-fish-tools/Resources/blob/master/CODE_OF_CONDUCT.md). By participating, you are expected to uphold this code.
 
-## Tools for working with SS
+## Tools for working with Stock Synthesis
 
-As SS usage has grown, so has the number of tools to work with it. These include [repositories on github with the stock-synthesis topic](https://github.com/topics/stock-synthesis) as well as:
+As Stock Synthesis usage has grown, so has the number of tools to work with it. These include [repositories on github with the stock-synthesis topic](https://github.com/topics/stock-synthesis) as well as:
 
-- [r4ss](https://github.com/r4ss/r4ss): Create plots of SS output and functions to work with SS in R.
-- [ss3diags](https://github.com/jabbamodel/ss3diags): Run advanced diagnostics for SS models.
-- [ss3sim](https://github.com/ss3sim/ss3sim): Conduct simulation studies using SS.
-- [SSI](https://vlab.noaa.gov/web/stock-synthesis/document-library/-/document_library/0LmuycloZeIt/view/5042951): Stock Synthesis Interface, a GUI for developing models and running SS. Links to r4ss.
-- [SSMSE](https://github.com/nmfs-fish-tools/SSMSE): Use SS operating models in Management Strategy Evaluation.
-- [sa4ss](https://github.com/nwfsc-assess/sa4ss): Create accessible R markdown stock assessment documents with results from SS models. Note this tool is intended for use by analysts within the Northwest and Southwest Fisheries Science Centers currently.
+- [r4ss](https://github.com/r4ss/r4ss): Create plots of Stock Synthesis output and functions to work with Stock Synthesis in R.
+- [ss3diags](https://github.com/jabbamodel/ss3diags): Run advanced diagnostics for Stock Synthesis models.
+- [ss3sim](https://github.com/ss3sim/ss3sim): Conduct simulation studies using Stock Synthesis.
+- [SSI](https://vlab.noaa.gov/web/stock-synthesis/document-library/-/document_library/0LmuycloZeIt/view/5042951): Stock Synthesis Interface, a GUI for developing models and running Stock Synthesis. Links to r4ss.
+- [SSMSE](https://github.com/nmfs-fish-tools/SSMSE): Use Stock Synthesis operating models in Management Strategy Evaluation.
+- [sa4ss](https://github.com/nwfsc-assess/sa4ss): Create accessible R markdown stock assessment documents with results from Stock Synthesis models. Note this tool is intended for use by analysts within the Northwest and Southwest Fisheries Science Centers currently.
 - Data limited tools - Options included Simple Stock Synthesis ([SSS](https://github.com/shcaba/SSS)) and Extended Simple Stock Synthesis ([XSSS](https://github.com/chantelwetzel-noaa/XSSS)), as well as [SS-DL-tool](https://github.com/shcaba/SS-DL-tool), a shiny app that includes XSSS and SSS in its functionality.
 
-Have a tool to work with SS that should be mentioned here? Open an issue or pull request to let us know!
+Have a tool to work with Stock Synthesis that should be mentioned here? Open an issue or pull request to let us know!
 
 ## Disclaimer
 

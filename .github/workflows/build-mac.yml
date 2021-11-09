@@ -94,7 +94,7 @@ jobs:
               }
             }
           } else {
-           fix_ver_num <- "beta: not an official version of SS"
+           fix_ver_num <- "beta: not an official version of SS3"
           }
           message("The minor version label is ", ver_num)
           message("The patch version label is ", fix_ver_num)
