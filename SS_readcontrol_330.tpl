@@ -624,7 +624,8 @@
 // read natmort setup
  LOCAL_CALCS
    N_natMparms=0;
-   N_predparms=N_pred+N_pred*nseas;
+   N_predparms=N_pred;
+   if(nseas>1) N_predparms+=N_pred*nseas;
    natM_5_opt=0;
    MGparm_point.initialize();
 //  0=1Parm; 1=segmented; 2=Lorenzen; 3=agespecific; 4=agespec with seas interpolate; 5=Maunder_M
