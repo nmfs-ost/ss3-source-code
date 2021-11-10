@@ -560,7 +560,7 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
     YPR_spr_N_dead = YPR_N_dead;
     YPR_spr_ret = YPR_ret;
     YPR_spr_cost = Cost;
-    YPR_spr_revenue = Price*YPR_ret*Equ_SpawnRecr_Result(2);
+    YPR_spr_revenue = (PricePerF*YPR_val_vec)*Equ_SpawnRecr_Result(2);  //  vector*vector*scalar
     YPR_spr_profit = YPR_spr_revenue - Cost;
     SPR_Fmult=Fmult;
     if(rundetail>0 && mceval_counter==0 && show_MSY==1) cout<<" got Fspr "<<SPR_Fmult<<" "<<SPR_actual/100.<<endl;
@@ -657,7 +657,8 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
     YPR_Btgt_N_dead = YPR_N_dead;           // total dead yield per recruit
     YPR_Btgt_ret = YPR_ret;
     YPR_Btgt_cost = Cost;
-    YPR_Btgt_revenue = Price*YPR_ret*Btgt_Rec;
+    YPR_Btgt_revenue = (PricePerF*YPR_val_vec)*Btgt_Rec;  //  vector*vector*scalar
+//    YPR_Btgt_revenue = Price*YPR_ret*Btgt_Rec;
     YPR_Btgt_profit = YPR_Btgt_revenue - Cost;
     SPR_Btgt=SSB_equil/SPR_unfished;
     Vbio_Btgt=totbio; Vbio1_Btgt=smrybio;
@@ -773,7 +774,8 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
     YPR_Btgt_N_dead = YPR_N_dead;           // total dead yield per recruit
     YPR_Btgt_ret = YPR_ret;
     YPR_Btgt_cost = Cost;
-    YPR_Btgt_revenue = Price*YPR_ret*Btgt_Rec;
+//    YPR_Btgt_revenue = Price*YPR_ret*Btgt_Rec;
+    YPR_Btgt_revenue = (PricePerF*YPR_val_vec)*Btgt_Rec;
     YPR_Btgt_profit = YPR_Btgt_revenue - Cost;
     Vbio_Btgt=totbio; Vbio1_Btgt=smrybio;
     Mgmt_quant(7)=equ_F_std;
@@ -936,7 +938,8 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
           {F1(1)=temp;}
         }   // end search loop
 
-        } // Do_MSY = 0
+        } // end Do_MSY = 2
+        
       // FMEY
       if (Do_MSY==5)
        {
@@ -946,7 +949,7 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
         Fishon=1;
         Closer = 1.0;
         for (j=0;j<=Nloops2;j++)   // loop to find Fmsy
-         {
+        {
           cout << "Nloop2" << j << endl;
           df*=.95;
           Closer*=0.8;
@@ -972,7 +975,7 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
           Bmsy=Equ_SpawnRecr_Result(1);
           Recr_msy=Equ_SpawnRecr_Result(2);
           Yield=YPR_ret*Recr_msy;
-          Profit = Price*Yield-Cost;
+          Profit = (PricePerF*YPR_val_vec)*Recr_msy-Cost;
           yld1(ii)=Profit;   //  *mfexp(-Equ_penalty);
           bestF1+=F2(ii)*(pow(mfexp(Profit/1.0e08),5)-1.);
           bestF2+=pow(mfexp(Profit/1.0e08),5)-1.;
@@ -986,7 +989,7 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
          {
           report5<<j<<" "<<Fmult<<" "<<equ_F_std<<" "<<MSY_SPR<<" "<<yld1(1)<<" "<<Bmsy<<" "<<Recr_msy<<" "<<Bmsy/SSB_unf<<" "
           <<dyld <<" "<<dyldp<<" "<<value(sum(equ_catch_fleet(3))*Recr_msy);
-          report5 << value(equ_catch_fleet(3)*Recr_msy) << " " << Cost << " " << Price*Yield << " " << Profit << " ";
+          report5 << value(equ_catch_fleet(3)*Recr_msy) << " " << Cost << " " << PricePerF*YPR_val_vec << " " << Profit << " ";
           for (p=1;p<=pop;p++)
           for (gp=1;gp<=N_GP;gp++)
           {report5<<" "<<SSB_equil_pop_gp(p,gp)*Recr_msy;}
@@ -1003,7 +1006,7 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
       YPR_msy_N_dead = YPR_N_dead;           // total dead yield
       YPR_msy_ret = YPR_ret;           // total retained yield
       YPR_msy_cost = Cost;
-      YPR_msy_revenue = Price*Yield;
+      YPR_msy_revenue = (PricePerF*YPR_val_vec)*Recr_msy;  //  vector*vector*scalar
       YPR_msy_profit = YPR_msy_revenue - Cost;
       MSY=Yield;
       MSY_Fmult=Fmult;

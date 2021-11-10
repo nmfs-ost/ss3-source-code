@@ -2185,6 +2185,7 @@
             }
            }
        }
+       }
      }
 
      echoinput<<"area seas fleet age_bins "<<age_bins<<endl;
@@ -2208,7 +2209,6 @@
        echoinput<<fleet_area(f)<<" "<<s<<" "<<f<<" cuml "<<obs_a_all(2,s,f)<<endl;
      }
      echoinput<<endl<<"Successful processing of age data "<<endl;
-   }
   }
  END_CALCS
 
@@ -3291,7 +3291,7 @@
   matrix Fcast_Catch_Allocation(1,N_Fcast_Yrs,1,Nfleet);  //   dimension to Nfleet but use only to N alloc groups
   vector H4010_scale_vec(endyr+1,YrMax);
   vector CostPerF(1,Nfleet);
-  number Price;
+  vector PricePerF(1,Nfleet);
 
  LOCAL_CALCS
   if(Do_Forecast_rd>0)
@@ -3409,12 +3409,36 @@
     }
 
     CostPerF.initialize();
-    for (f=1;f<=Nfleet;f++)
-     if(fleet_type(f)==1 || (fleet_type(f)==2 && bycatch_setup(f,3)==1))
-      *(ad_comm::global_datafile) >> CostPerF(f);
-    echoinput << "# Cost-per-unit fishing mortality" << endl; 
-    echoinput << CostPerF << endl;
-    *(ad_comm::global_datafile) >> Price;    
+    CostPerF=-9876;
+    PricePerF=1.0;  // default value per kg
+    if(Do_MSY==5)  //  doing MEY
+    {
+      echoinput<<"enter fleet ID and cost per fleet; negative fleet ID fills for all higher fleet IDs, -999 exits list"<<endl;
+      int fleet_ID=100;
+      double tempcost;
+      double tempprice;
+      while(fleet_ID>-999)
+      {
+        *(ad_comm::global_datafile) >> fleet_ID;
+        *(ad_comm::global_datafile) >> tempcost;
+        *(ad_comm::global_datafile) >> tempprice;
+        echoinput<<fleet_ID<<" "<<tempcost<<" "<<tempprice<<endl;
+        if(fleet_ID>Nfleet)
+          {N_warn++; warning<<"fleetID > Nfleet"<<endl;}
+        else if(fleet_ID>0) 
+          {CostPerF(fleet_ID)=tempcost; PricePerF(fleet_ID)=tempprice;}
+        else if(fleet_ID>-9999)
+          {
+            for(f=-fleet_ID;f<=Nfleet;f++)
+            {
+              if(fleet_type(f)==1 || (fleet_type(f)==2 && bycatch_setup(f,3)==1)) 
+               {CostPerF(f)=tempcost; PricePerF(f)=tempprice;}
+            }
+          }
+        }
+      echoinput << "# Cost-per-unit fishing mortality: " << CostPerF << endl<<"Price per kg: "<<PricePerF<<endl;
+    }
+
     *(ad_comm::global_datafile) >> Fcast_InputCatch_Basis;
     echoinput<<Fcast_InputCatch_Basis<<" # basis for input Fcast catch:  -1= read with each obs; 2=dead catch; 3=retained catch; 99=input Hrate(F); -1=read fleet/time specific (bio/num units are from fleetunits; note new codes in SSV3.20)"<<endl;
     k1 = styr+(endyr-styr)*nseas-1 + nseas + 1;

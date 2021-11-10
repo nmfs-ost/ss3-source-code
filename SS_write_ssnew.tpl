@@ -1309,13 +1309,16 @@ FUNCTION void write_nucontrol()
     else
     {NuFore<<"# no allocation groups"<<endl;}
 
-  NuFore << "# Cost-per-unit fishing mortality" << endl; 
-  for (f=1;f<=Nfleet;f++)
-   if(fleet_type(f)==1 || (fleet_type(f)==2 && bycatch_setup(f,3)==1))
-     NuFore << CostPerF(f) << " ";
-  NuFore << endl;   
-  NuFore <<"# Price per unit catch mass" << endl;
-  NuFore << Price << endl;
+  NuFore << "# Cost-per-unit fishing mortality and price per fleet; list fleet_ID, cost, price; -fleet_ID to fill; -9999 to terminate" << endl; 
+  if(Do_MSY==5)
+  {
+    for (f=1;f<=Nfleet;f++)
+    {
+      if(CostPerF(f)>0.0) NuFore << f<<" "<<CostPerF(f)<<" "<<PricePerF(f)<<endl;
+    }
+    NuFore<<"-9999 1 1 # terminate list of fleet costs and prices"<<endl;
+  }
+  NuFore<<"#"<<endl;
   NuFore<<Fcast_InputCatch_Basis<<
   " # basis for input Fcast catch: -1=read basis with each obs; 2=dead catch; 3=retained catch; 99=input apical_F; NOTE: bio vs num based on fleet's catchunits"<<endl;
 

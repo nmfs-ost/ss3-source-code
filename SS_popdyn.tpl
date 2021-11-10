@@ -1861,15 +1861,19 @@ FUNCTION void Do_Equil_Calc(const prevariable& equ_Recr)
 
      YPR_dead =   sum(equ_catch_fleet(2));    // dead yield per recruit
      if(N_bycatch==0)
-     {YPR_opt=YPR_dead;}
+     {YPR_opt=YPR_dead;}  //  why is this using dead, not retained catch????
      else
      {
        YPR_opt = 0.0;
+       YPR_val_vec.initialize();
        for(f=1;f<=Nfleet;f++)
        {
         if(YPR_mask(f)>0)
          {
-          for (s=1;s<=nseas;s++) {YPR_opt+=equ_catch_fleet(2,s,f);}
+          for (s=1;s<=nseas;s++) {
+            YPR_opt+=equ_catch_fleet(2,s,f);  //  using dead catch
+            YPR_val_vec(f)+=equ_catch_fleet(3,s,f);  //  using retained catch
+            }
          }
        }
      }
