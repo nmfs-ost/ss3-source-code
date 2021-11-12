@@ -1,7 +1,5 @@
-# Run r cmd check
 on: [push, pull_request, workflow_dispatch]
-
 name: call-build-ss3
 jobs:
   call-workflow:
-    uses: nmfs-stock-synthesis/workflows/.github/workflows/build-ss3.yml@ss3_flows
+    uses: nmfs-stock-synthesis/workflows/.github/workflows/build-ss3.yml@main
