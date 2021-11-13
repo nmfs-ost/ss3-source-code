@@ -3318,7 +3318,7 @@ FUNCTION void SPR_profile()
   dvariable YPR_last;
 
     SS2out<<endl<<pick_report_name(54)<<endl;
-    SS2out<<"SPRloop Iter Bycatch Fmult F_report SPR YPR YPR*Recr SSB Recruits SSB/Bzero Tot_Catch ";
+    SS2out<<"SPRloop Iter Bycatch Fmult F_report SPR YPR_dead YPR_dead*Recr YPR_ret*Recr Revenue Cost Profit SSB Recruits SSB/Bzero Tot_Catch ";
     for (f=1;f<=Nfleet;f++) {if(fleet_type(f)<=2) SS2out<<" "<<fleetname(f)<<"("<<f<<")Dead";}
     for (f=1;f<=Nfleet;f++) {if(fleet_type(f)<=2) SS2out<<" "<<fleetname(f)<<"("<<f<<")Ret";}
     for (f=1;f<=Nfleet;f++) {if(fleet_type(f)<=2) SS2out<<" "<<fleetname(f)<<"("<<f<<")Age";}
@@ -3483,7 +3483,8 @@ FUNCTION void SPR_profile()
           if(SPRloop1==0) Fcrash=Fmult2;
         }
         SS2out<<SPRloop1<<" "<<SPRloop<<" "<<with_BYC<<" "<<Fmult2<<" "<<equ_F_std<<" "<<SSB_equil/(SSB_unf/Recr_unf)<<" "<<YPR_dead<<" "
-        <<YPR_dead*Btgt_prof_rec<<" "<<Btgt_prof<<" "<<Btgt_prof_rec<<" "<<Btgt_prof/SSB_unf
+        <<YPR_dead*Btgt_prof_rec<<" "<<YPR_ret*Btgt_prof_rec<<" "<<(PricePerF*YPR_val_vec)*Btgt_prof_rec
+        <<" "<<Cost<<" "<<(PricePerF*YPR_val_vec)*Btgt_prof_rec-Cost<<" "<<Btgt_prof<<" "<<Btgt_prof_rec<<" "<<Btgt_prof/SSB_unf
         <<" "<<value(sum(equ_catch_fleet(2))*Btgt_prof_rec);
         for(f=1;f<=Nfleet;f++)
           if(fleet_type(f)<=2)

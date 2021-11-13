@@ -340,8 +340,10 @@
   	pick_report_use(49)="N";
   	pick_report_use(50)="N";
   	pick_report_use(53)="N";
+  	pick_report_use(55)="N";
   	pick_report_use(57)="N";
   	pick_report_use(58)="N";
+  	pick_report_use(59)="N";
   }
   else  //  all on
   {

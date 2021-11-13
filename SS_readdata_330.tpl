@@ -3025,6 +3025,7 @@
   int Rebuild_Ydecl
   int Rebuild_Yinit
   int HarvestPolicy  // 0=none; 1=west coast adjust catch; 2=AK to adjust F
+  int MSY_units // 1=dead catch, 2=retained catch, 3=retained catch profits
   number H4010_top
   number H4010_bot
   number H4010_scale
@@ -3408,11 +3409,15 @@
         }
     }
 
-    CostPerF.initialize();
-    CostPerF=-9876;
-    PricePerF=1.0;  // default value per kg
-    if(Do_MSY==5)  //  doing MEY
+    PricePerF=1.0;  // default value per mt
+    if(Do_MSY==5)  //  doing advanced MSY options, including MEY
     {
+      echoinput<<"enter quantity to be maximized: (1) dead catch biomass (status quo); (2) retained catch biomass; or (3) retained catch profits"<<endl;
+      *(ad_comm::global_datafile) >> MSY_units;
+      echoinput<<MSY_units<<" # MSY_units as entered"<<endl;
+      
+      CostPerF.initialize();
+      PricePerF.initialize();
       echoinput<<"enter fleet ID and cost per fleet; negative fleet ID fills for all higher fleet IDs, -999 exits list"<<endl;
       int fleet_ID=100;
       double tempcost;
@@ -3437,6 +3442,12 @@
           }
         }
       echoinput << "# Cost-per-unit fishing mortality: " << CostPerF << endl<<"Price per kg: "<<PricePerF<<endl;
+    }
+    else 
+    {
+      CostPerF=0.0;
+      PricePerF=1.0;
+      MSY_units=1; // for dead catch
     }
 
     *(ad_comm::global_datafile) >> Fcast_InputCatch_Basis;

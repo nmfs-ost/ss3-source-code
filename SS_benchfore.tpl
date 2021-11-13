@@ -93,7 +93,7 @@ FUNCTION void setup_Benchmark()
         for (f=1;f<=Nfleet;f++)
         for (s=1;s<=nseas;s++)
         {
-          if(fleet_type(f)==1 || (fleet_type(f)==2 && bycatch_setup(f,3)==1))
+          if(YPR_mask(f)==1)
           {t=styr+(y-styr)*nseas+s-1;
           Fcast_RelF_Use(s,f)+=Hrate(f,t);}
         }
@@ -254,7 +254,7 @@ FUNCTION void setup_Benchmark()
           Bmark_RelF_Use.initialize();
           for (y=Bmark_Yr(5);y<=Bmark_Yr(6);y++)
           for (f=1;f<=Nfleet;f++)
-          if(fleet_type(f)==1 || (fleet_type(f)==2 && bycatch_setup(f,3)==1))
+          if(YPR_mask(f)==1)
           for (s=1;s<=nseas;s++)
           {
             t=styr+(y-styr)*nseas+s-1;
@@ -304,8 +304,6 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
   dvariable F01_origin;
   dvariable F01_second;
   dvariable F01_actual;
-  dvariable Cost;
-  dvariable Profit;
   dvar_vector F1(1,3);
   dvar_vector F2(1,3);
   dvar_vector yld1(1,3);
@@ -360,7 +358,7 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
     {
       //  do not recalc the age-specific vectors
     }
-    else
+    else  // recalc age specific biology and selectivity.  NOTE:  not density-dependent!!
     {
       for (s=1;s<=nseas;s++)
       {
@@ -486,12 +484,11 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
         {
           Fmult=40.00/(1.0+mfexp(-F1(ii)));
 
-          Cost = 0;
           for (f=1;f<=Nfleet;f++)
           {
-            if(fleet_type(f)==1 || (fleet_type(f)==2 && bycatch_setup(f,3)==1))
+            if(YPR_mask(f)==1)
             {
-              for (s=1;s<=nseas;s++) { t=bio_t_base+s; Hrate(f,t)=Fmult*Bmark_RelF_Use(s,f); Cost += CostPerF(f)*Hrate(f,t); }
+              for (int s=1;s<=nseas;s++) {Hrate(f,bio_t_base+s)=Fmult*Bmark_RelF_Use(s,f);}
             }
             //  else  Hrate for bycatch fleets set above
           }
@@ -579,9 +576,9 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
       Fmult=0.001;
       for (f=1;f<=Nfleet;f++)
       {
-        if(fleet_type(f)==1 || (fleet_type(f)==2 && bycatch_setup(f,3)==1))
+        if(YPR_mask(f)==1)
         {
-          for (s=1;s<=nseas;s++) {t=bio_t_base+s; Hrate(f,t)=Fmult*Bmark_RelF_Use(s,f);}
+          for (int s=1;s<=nseas;s++) {t=bio_t_base+s; Hrate(f,t)=Fmult*Bmark_RelF_Use(s,f);}
         }
         //  else  Hrate for bycatch fleets set above
       }
@@ -605,15 +602,13 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
         F1(3) = F1(2) - df;
         for (int ii=3;ii>=1;ii--)
         {
-          Cost = 0;
-          for (f=1;f<=Nfleet;f++)
+        for (f=1;f<=Nfleet;f++)
+        {
+          if(fleet_type(f)==1 || (fleet_type(f)==2 && bycatch_setup(f,3)==1))
           {
-            if(fleet_type(f)==1 || (fleet_type(f)==2 && bycatch_setup(f,3)==1))
-            {
-              for (s=1;s<=nseas;s++) {t=bio_t_base+s; Hrate(f,t)=F1(ii)*Bmark_RelF_Use(s,f); Cost += 10000*Hrate(f,t); }
-            }
-            //  else  Hrate for bycatch fleets set above
-          }
+            for (int s=1;s<=nseas;s++) {Hrate(f,bio_t_base+s)=F1(ii)*Bmark_RelF_Use(s,f); }
+          } //  else  Hrate for bycatch fleets set above
+        }
           Do_Equil_Calc(equ_Recr);
           yld1(ii)=YPR_opt;
         }
@@ -701,14 +696,12 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
       for (int ii=jj;ii>=1;ii--)
       {
         if(j==0) {Fmult=0.0;} else {Fmult=40.00/(1.00+mfexp(-F1(ii)));}
-        Cost = 0;
         for (f=1;f<=Nfleet;f++)
         {
-          if(fleet_type(f)==1 || (fleet_type(f)==2 && bycatch_setup(f,3)==1))
+          if(YPR_mask(f)==1)
           {
-            for (s=1;s<=nseas;s++) {t=bio_t_base+s; Hrate(f,t)=Fmult*Bmark_RelF_Use(s,f); Cost += CostPerF(f)*Hrate(f,t);}
-          }
-          //  else  Hrate for bycatch fleets set above
+            for (int s=1;s<=nseas;s++) {Hrate(f,bio_t_base+s)=Fmult*Bmark_RelF_Use(s,f); }
+          } //  else  Hrate for bycatch fleets set above
         }
         Do_Equil_Calc(equ_Recr);
         SPR_Btgt = SSB_equil/SPR_unfished;
@@ -795,19 +788,13 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
     {
       if(F_Method>=2) {Fmax=3.00*Btgt_Fmult;}
 
-      switch(Do_MSY)
+      switch(Do_MSY)  //  set conditions for the MSY search loops
         {
         case 1:  // set Fmsy=Fspr
           {Fmult=SPR_Fmult;
            if(F_Method==1) {Fmax=SPR_Fmult*1.1;}
            F1(1)=-log(Fmax/SPR_Fmult-1.); last_calc=0.; Fchange=1.0; Closer=1.; Nloops=0; Nloops1=0;Nloops2=0; F2(1)=-log(Fmax/SPR_Fmult-1.);
            break;}
-        case 2:  // calc Fmsy
-          {last_calc=0.; Fchange=0.51; Closer=1.0;
-           if(SR_fxn==5) {Nloops1=40; Nloops2=0; } else {Nloops=19; Nloops2=0; }
-          if(F_Method==1) {Fmax=(Btgt_Fmult+SPR_Fmult)*0.5*SR_parm_work(2)/0.05;}    //  previously /0.18
-           F1(1)=-log(Fmax/Btgt_Fmult-1.); F2(1)=-log(Fmax/SPR_Fmult-1.);
-          break;}
         case 3:  // set Fmsy=Fbtgt
           {Fmult=Btgt_Fmult;
            if(F_Method==1) {Fmax=Btgt_Fmult*1.1;}
@@ -816,6 +803,10 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
         case 4:   //  set fmult for Fmsy to 1
           {Fmult=1; Fmax=1.1; F1(1)=-log(Fmax/Fmult-1.); last_calc=0.; Fchange=1.0; Closer=1.0; Nloops=0; Nloops1=0;Nloops2=0; F2(1)=-log(Fmax/SPR_Fmult-1.);
           break;}
+        case 2:  // calc Fmsy
+          {
+            //  proceed to case 5
+          }
         case 5:  // calc Fmey
           {last_calc=0.; Fchange=0.51; Closer=1.0;
            if(SR_fxn==5) {Nloops1=0; Nloops2=40;} else {Nloops1= 0; Nloops2=19;}
@@ -824,16 +815,12 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
           break;}
         }
 
-      if(show_MSY==1)
+      if(show_MSY==1)  //  report some headers
       {
-        if (Do_MSY!=5)
         report5<<"#"<<endl<<"Find_MSY_catch"<<endl<<"Iter Fmult ann_F SPR Catch SSB Recruits SSB/Bzero Gradient Curvature Tot_Catch";
-        if (Do_MSY==5)
-         {
-          report5<<"#"<<endl<<"Find_MSY_catch"<<endl<<"Iter Fmult ann_F SPR Catch SSB Recruits SSB/Bzero Gradient Curvature Tot_Ret_Catch";
-          for (f=1;f<=Nfleet;f++) report5 << " Ret_Catch:"<<f << " ";
-          report5<< "Cost Revenue Profit ";
-         }
+        report5<<"#"<<endl<<"Find_MEY_catch"<<endl<<"Iter Fmult ann_F SPR Catch SSB Recruits SSB/Bzero Gradient Curvature Tot_Ret_Catch";
+        for (f=1;f<=Nfleet;f++) report5 << " Ret_Catch:"<<f << " ";
+        report5<< "Cost Revenue Profit ";
         for (p=1;p<=pop;p++)
         for (gp=1;gp<=N_GP;gp++)
         {report5<<" Area:"<<p<<"_GP:"<<gp;}
@@ -841,18 +828,16 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
       }
 
       // Compute stats for saving (a bit of a trick)
-      if (Do_MSY==1 || Do_MSY == 3 || Do_MSY == 4)
+      if (Do_MSY==1 || Do_MSY == 3 || Do_MSY == 4)  // Fmsy set to existing quantity, so not estimated
        {
-        Fmult=Fmax/(1.00+mfexp(-F1(1)));
+        Fmult=Fmax/(1.00+mfexp(-F1(1)));  // using the F1 calculated in previous section
         for (f=1;f<=Nfleet;f++)
-         {
-          Cost = 0; 
-          if(fleet_type(f)==1 || (fleet_type(f)==2 && bycatch_setup(f,3)==1))
-           {
-            for (s=1;s<=nseas;s++) {t=bio_t_base+s; Hrate(f,t)=Fmult*Bmark_RelF_Use(s,f); Cost += CostPerF(f)*Hrate(f,t);}
-           }
-          //  else  Hrate for bycatch fleets set above
-         }
+        {
+          if(YPR_mask(f)==1)
+          {
+            for (int s=1;s<=nseas;s++) {Hrate(f,bio_t_base+s)=Fmult*Bmark_RelF_Use(s,f); }
+          } //  else  Hrate for bycatch fleets set above
+        }
 
         Do_Equil_Calc(equ_Recr);
         //  SPAWN-RECR:   calc spawn-recr for MSY calcs;  need to make area-specific
@@ -872,77 +857,10 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
           report5<<endl;
          }
        }
-      // FMSY
-      if (Do_MSY==2)
-       {
-        bestF1.initialize(); bestF2.initialize();
-      df=0.050;
-      jj=3;
-      Fishon=1;
-        Nloops1 = 19;
-        Closer = 1.0;
-        for (j=0;j<=Nloops1;j++)   // loop to find Fmsy
-        {
-          cout << "Nloop" << j << endl;
-         df*=.95;
-        Closer*=0.8;
-          F1(2) = F1(1) + df*.5;
-          F1(3) = F1(2) - df;
-        for (int ii=jj;ii>=1;ii--)
-          {
-          Fmult=Fmax/(1.00+mfexp(-F1(ii)));
-            Cost = 0;
-          for (f=1;f<=Nfleet;f++)
-          {
-            if(fleet_type(f)==1 || (fleet_type(f)==2 && bycatch_setup(f,3)==1))
-            {
-              for (s=1;s<=nseas;s++) {t=bio_t_base+s; Hrate(f,t)=Fmult*Bmark_RelF_Use(s,f);}
-                for (s=1;s<=nseas;s++) {t=bio_t_base+s; Hrate(f,t)=Fmult*Bmark_RelF_Use(s,f); Cost += CostPerF(f)*Hrate(f,t); }
-              }
-            //  else  Hrate for bycatch fleets set above
-          }
-            cout << "FMSY" << j << " " << F1(1) << " " << F1(2) << " " << F1(3) << endl;
 
-          Do_Equil_Calc(equ_Recr);
-//  SPAWN-RECR:   calc spawn-recr for MSY calcs;  need to make area-specific
-          MSY_SPR = SSB_equil/SPR_unfished;
-          SPR_temp=SSB_equil;
-          Equ_SpawnRecr_Result = Equil_Spawn_Recr_Fxn(SR_parm_work(2), SR_parm_work(3), SSB_unf, Recr_unf, SPR_temp);  //  returns 2 element vector containing equilibrium biomass and recruitment at this SPR
-          Bmsy=Equ_SpawnRecr_Result(1);
-          Recr_msy=Equ_SpawnRecr_Result(2);
-          yld1(ii)=YPR_opt*Recr_msy;   //  *mfexp(-Equ_penalty);
-            cout << yld1 << endl;
-          Yield=YPR_opt*Recr_msy;
-          bestF1+=F1(ii)*(pow(mfexp(Yield/1.0e08),5)-1.);
-          bestF2+=pow(mfexp(Yield/1.0e08),5)-1.;
-          }   //  end gradient calc
-
-        dyld   = (yld1(2) - yld1(3))/df;                      // First derivative (to find the root of this)
-        temp  = (yld1(2) + yld1(3) - 2.*yld1(1))/(.25*df*df);   // Second derivative (for Newton Raphson)
-        dyldp = -sqrt(temp*temp+1.);   //  add 1 to keep curvature reasonably large
-        last_F1=F1(1);
-        temp = F1(1)-dyld*(1.-Closer)/(dyldp);
-        if(show_MSY==1)
-        {
-          report5<<j<<" "<<Fmult<<" "<<equ_F_std<<" "<<MSY_SPR<<" "<<yld1(1)<<" "<<Bmsy<<" "<<Recr_msy<<" "<<Bmsy/SSB_unf<<" "
-          <<dyld <<" "<<dyldp<<" "<<value(sum(equ_catch_fleet(2))*Recr_msy);
-          for (p=1;p<=pop;p++)
-          for (gp=1;gp<=N_GP;gp++)
-          {report5<<" "<<SSB_equil_pop_gp(p,gp)*Recr_msy;}
-          report5<<endl;
-        }
-
-        if(j<=9)
-          {F1(1)=(1.-Closer)*temp+Closer*(bestF1/bestF2);}        // averages with best value to keep from changing too fast
-        else
-          {F1(1)=temp;}
-        }   // end search loop
-
-        } // end Do_MSY = 2
-        
-      // FMEY
-      if (Do_MSY==5)
-       {
+      if (Do_MSY==2 || Do_MSY==5)   // search for FMSY, then optionally for FMEY; FMEY embedded inside this section
+      {
+         report5<<"****** Seach for MSY or MEY using MSY_units="<<MSY_units<<endl;
         bestF1.initialize(); bestF2.initialize();
         df=0.050;
         jj=3;
@@ -950,7 +868,6 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
         Closer = 1.0;
         for (j=0;j<=Nloops2;j++)   // loop to find Fmsy
         {
-          cout << "Nloop2" << j << endl;
           df*=.95;
           Closer*=0.8;
           F2(2) = F2(1) + df*.5;
@@ -958,15 +875,13 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
           for (int ii=jj;ii>=1;ii--)
            {
             Fmult=Fmax/(1.00+mfexp(-F2(ii)));
-            Cost = 0;
-            for (f=1;f<=Nfleet;f++)
-             {
-              if(fleet_type(f)==1 || (fleet_type(f)==2 && bycatch_setup(f,3)==1))
-               { for (s=1;s<=nseas;s++) {t=bio_t_base+s; Hrate(f,t)=Fmult*Bmark_RelF_Use(s,f); Cost += CostPerF(f)*Hrate(f,t); }
-             }
-            //  else  Hrate for bycatch fleets set above
-           }
-          cout << "FMEY" << j << " " << F2(1) << " " << F2(2) << " " << F2(3) << endl;
+        for (f=1;f<=Nfleet;f++)
+        {
+          if(YPR_mask(f)==1)
+          {
+            for (int s=1;s<=nseas;s++) {Hrate(f,bio_t_base+s)=Fmult*Bmark_RelF_Use(s,f); }
+          } //  else  Hrate for bycatch fleets set above
+        }
           Do_Equil_Calc(equ_Recr);
           //  SPAWN-RECR:   calc spawn-recr for MSY calcs;  need to make area-specific
           MSY_SPR = SSB_equil/SPR_unfished;
@@ -974,11 +889,22 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
           Equ_SpawnRecr_Result = Equil_Spawn_Recr_Fxn(SR_parm_work(2), SR_parm_work(3), SSB_unf, Recr_unf, SPR_temp);  //  returns 2 element vector containing equilibrium biomass and recruitment at this SPR
           Bmsy=Equ_SpawnRecr_Result(1);
           Recr_msy=Equ_SpawnRecr_Result(2);
-          Yield=YPR_ret*Recr_msy;
           Profit = (PricePerF*YPR_val_vec)*Recr_msy-Cost;
-          yld1(ii)=Profit;   //  *mfexp(-Equ_penalty);
-          bestF1+=F2(ii)*(pow(mfexp(Profit/1.0e08),5)-1.);
-          bestF2+=pow(mfexp(Profit/1.0e08),5)-1.;
+          if(MSY_units==1)  //  dead catch
+          {
+            Yield=YPR_ret*Recr_msy;
+          }
+          else if(MSY_units==2)  //  retained catch
+          {
+            Yield=YPR_ret*Recr_msy;
+          }
+          else //  same as profit
+          {
+            Yield=(PricePerF*YPR_val_vec)*Recr_msy-Cost;
+          }
+          yld1(ii)=Yield;
+          bestF1+=F2(ii)*(pow(mfexp(Yield/1.0e08),5)-1.);
+          bestF2+=pow(mfexp(Yield/1.0e08),5)-1.;
          }   //  end gradient calc
         dyld   = (yld1(2) - yld1(3))/df;                      // First derivative (to find the root of this)
         temp  = (yld1(2) + yld1(3) - 2.*yld1(1))/(.25*df*df);   // Second derivative (for Newton Raphson)
@@ -1000,7 +926,7 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
         else
           {F2(1)=temp;}
         }   // end search loop
-       } 
+
       YPR_msy_enc = YPR_enc;
       YPR_msy_dead = YPR_dead;           // total dead yield
       YPR_msy_N_dead = YPR_N_dead;           // total dead yield
@@ -1021,10 +947,8 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
 
       if(show_MSY==1)
       {
-      if(Do_MSY==2 && fabs(dyld/dyldp)>=0.001)
+      if(fabs(dyld/dyldp)>=0.001)
       {N_warn++;  warning<<N_warn<<" warning: poor convergence in Fmsy, final dy/dy2= "<<dyld/dyldp<<endl;}
-       if(Do_MSY==5 && fabs(dyld/dyldp)>=0.001)
-       {N_warn++;  warning<<N_warn<<" warning: poor convergence in Fmey, final dy/dy2= "<<dyld/dyldp<<endl;}
       report5<<"seas fleet Hrate encB deadB retB encN deadN retN): "<<endl;
       for (s=1;s<=nseas;s++)
       for (f=1;f<=Nfleet;f++)
@@ -1034,8 +958,9 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
         for (g=1;g<=6;g++) {report5<<" "<<Recr_msy*equ_catch_fleet(g,s,f);}
         report5<<endl;
       }
-      report5<<"#"<<endl<<"Total dead catch: "<<Recr_msy*YPR_dead<<"   Total catch for optimize:  "<<MSY<<endl<<"#"<<endl;
-
+      report5<<"#"<<endl<<"Total dead catch: "<<Recr_msy*YPR_dead<<endl<<"Total (dead) catch for optimize: "<<MSY<<endl<<endl;
+      report5<<"Total retained catch: "<<Recr_msy*YPR_ret<<endl;
+      report5<<"Total retained catch for value: YPR_val_vec: "<<sum(YPR_val_vec*Recr_msy)<<"#"<<endl;
     report5<<"Equil_N_at_age_at_MSY_each"<<endl<<"Seas Area GP Sex subM"<<age_vector<<endl;
      for (s=1;s<=nseas;s++)
      for (p=1;p<=pop;p++)
@@ -1114,12 +1039,13 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
     if(Fmult*3.0 <= SPR_Fmult) {N_warn++;  warning<<N_warn<<" Fmsy/mey is <1/3 of Fspr are you sure?  check for convergence "<<endl;}
     if(Fmult/3.0 >= SPR_Fmult) {N_warn++;  warning<<N_warn<<" Fmsy/mey is >3x of Fspr are you sure?  check for convergence "<<endl;}
     if(Fmult/0.98 >= Fmax) {N_warn++;  warning<<N_warn<<" Fmsy.mey is close to max allowed; check for convergence "<<endl;}
+         report5<<"end Seach for MSY"<<endl;
+       } // end Do_MSY = 2
+
       }
     }
 
-    if(rundetail>0 && mceval_counter==0 && show_MSY==1) cout<<" got Fmsy "<<MSY_Fmult<<" "<<MSY<<endl;
-
-  else if (Do_Benchmark==3)  //  find F giving B as fraction of Bmsy
+  if (Do_Benchmark==3)  //  find F giving B as fraction of Bmsy
   {
     if(show_MSY==1)
     {
@@ -1154,14 +1080,12 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
       for (int ii=jj;ii>=1;ii--)
       {
         if(j==0) {Fmult=0.0;} else {Fmult=40.00/(1.00+mfexp(-F1(ii)));}
-        Cost = 0;
         for (f=1;f<=Nfleet;f++)
         {
-          if(fleet_type(f)==1 || (fleet_type(f)==2 && bycatch_setup(f,3)==1))
+          if(YPR_mask(f)==1)
           {
-            for (s=1;s<=nseas;s++) {t=bio_t_base+s; Hrate(f,t)=Fmult*Bmark_RelF_Use(s,f); Cost += CostPerF(f)*Hrate(f,t); }
-          }
-          //  else  Hrate for bycatch fleets set above
+            for (int s=1;s<=nseas;s++) {Hrate(f,bio_t_base+s)=Fmult*Bmark_RelF_Use(s,f); }
+          } //  else  Hrate for bycatch fleets set above
         }
         Do_Equil_Calc(equ_Recr);
         SPR_Btgt2 = SSB_equil/SPR_unfished;
@@ -1227,6 +1151,7 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
     Mgmt_quant(20)=sum(equ_catch_fleet(2))*Equ_SpawnRecr_Result(2);
   } //  end finding F for Blimit
 
+    if(rundetail>0 && mceval_counter==0 && show_MSY==1) cout<<" got Fmsy "<<MSY_Fmult<<" "<<MSY<<endl;
 
 // ***************** show management report   SS_Label_740
     if(show_MSY==1)
@@ -1302,14 +1227,11 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
         report5<<"Biomass_Smry "<<Vbio1_Btgt*Btgt_Rec<<" "<<Vbio1_Btgt<<endl;
       }
 
-      report5<<"#"<<endl<<"Maximum_Sustainable_Yield;_where_Yield_is_Dead_Catch"<<endl;
+      report5<<"#"<<endl<<"Maximum_Sustainable_Yield"<<endl;
       switch(Do_MSY)
         {
         case 1:  // set Fmsy=Fspr
           {report5<<"set_Fmsy=Fspr"<<endl;
-          break;}
-        case 2:  // calc Fmsy
-          {report5<<"calculate_FMSY"<<endl;
           break;}
         case 3:  // set Fmsy=Fbtgt or F0.1
           {
@@ -1319,9 +1241,24 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
         case 4:   //  set fmult for Fmsy to 1
           {report5<<"set_Fmsy_using_input_Fmult"<<endl;
           break;}
+        case 2:  // calc Fmsy
+          {
+          }
         case 5:  // calc Fmey
-          {report5<<"calculate_FMEY"<<endl;
-          break;}
+          {
+            switch(MSY_units)
+            {
+              case 1:
+                {report5<<"find_Fmsy_to_maximize_dead_catch"<<endl;
+                break;}
+              case 2:
+                {report5<<"find_Fmsy_to_maximize_retained_catch"<<endl;
+                break;}
+              case 3:
+                {report5<<"find_Fmsy_to_maximize_profits_(retained_catch_revenue_-_fleet_cost"<<endl;
+                break;}
+            }
+            break;}
         }
       report5<<"SPR "<<MSY_SPR<<endl;
       report5<<"Fmult "<<MSY_Fmult<<endl;
@@ -1419,7 +1356,7 @@ FUNCTION void Get_Forecast()
         for (f=1;f<=Nfleet;f++)
         for (s=1;s<=nseas;s++)
         {
-         if(fleet_type(f)==1 || (fleet_type(f)==2  && bycatch_setup(f,3)==1))
+         if(YPR_mask(f)==1)
          {
            t=styr+(y-styr)*nseas+s-1;
            Fcast_Fmult+=Hrate(f,t);
@@ -1506,7 +1443,7 @@ FUNCTION void Get_Forecast()
       {
         report5<<s<<" "<<seasdur(s);
         for(f=1;f<=Nfleet;f++)
-        {if(fleet_type(f)==1 || (fleet_type(f)==2 && bycatch_setup(f,3)==1))
+        {if(YPR_mask(f)==1)
         {report5<<" "<<Fcast_Fmult*Fcast_RelF_Use(s,f);}
         else if (fleet_type(f)==2)
         {report5<<" "<<bycatch_F(f,s);}
@@ -1523,7 +1460,7 @@ FUNCTION void Get_Forecast()
       {
         report5<<s<<" "<<seasdur(s);
         for(f=1;f<=Nfleet;f++)
-        {if(fleet_type(f)==1 || (fleet_type(f)==2 && bycatch_setup(f,3)==1))
+        {if(YPR_mask(f)==1)
         {report5<<" "<<Fcast_Fmult*Fcast_RelF_Use(s,f)*seasdur(s);}
         else if (fleet_type(f)==2)
         {report5<<" "<<bycatch_F(f,s)*seasdur(s);}

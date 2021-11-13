@@ -1309,9 +1309,10 @@ FUNCTION void write_nucontrol()
     else
     {NuFore<<"# no allocation groups"<<endl;}
 
-  NuFore << "# Cost-per-unit fishing mortality and price per fleet; list fleet_ID, cost, price; -fleet_ID to fill; -9999 to terminate" << endl; 
+  NuFore << "# MSY_Units; then Cost-per-unit fishing mortality and price per fleet; list fleet_ID, cost/F, price/mt; -fleet_ID to fill; -9999 to terminate" << endl; 
   if(Do_MSY==5)
   {
+    NuFore<<MSY_units<<" # MSY_units: 1=dead biomass, 2=retained biomass, 3=profits"<<endl;
     for (f=1;f<=Nfleet;f++)
     {
       if(CostPerF(f)>0.0) NuFore << f<<" "<<CostPerF(f)<<" "<<PricePerF(f)<<endl;

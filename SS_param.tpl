@@ -242,6 +242,8 @@ PARAMETER_SECTION
   vector YPR_val_vec(1,Nfleet);  // used to calculate value, so is multipled by price per unit
   number YPR_N_dead;
   number YPR_ret;
+  number Cost;  //  total fishery cost across all fleets
+  number Profit;  //  total revenues - Cost
   number MSY_Fmult;
   number SPR_Fmult;
   number Btgt_Fmult;

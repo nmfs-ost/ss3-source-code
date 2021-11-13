@@ -1860,9 +1860,9 @@ FUNCTION void Do_Equil_Calc(const prevariable& equ_Recr)
        }
 
      YPR_dead =   sum(equ_catch_fleet(2));    // dead yield per recruit
-     if(N_bycatch==0)
-     {YPR_opt=YPR_dead;}  //  why is this using dead, not retained catch????
-     else
+//     if(N_bycatch==0)
+//     {YPR_opt=YPR_dead;}
+//     else
      {
        YPR_opt = 0.0;
        YPR_val_vec.initialize();
@@ -1977,6 +1977,16 @@ FUNCTION void Do_Equil_Calc(const prevariable& equ_Recr)
         equ_M_std /= countN;
       } // end F_reporting==5
    }
+   
+          Cost = 0;
+          for (f=1;f<=Nfleet;f++)
+          {
+            if(YPR_mask(f)==1)
+            {
+              for (s=1;s<=nseas;s++) {Cost += CostPerF(f)*Hrate(f,t_base+s); }
+            }
+          }
+
    SSB_equil=sum(SSB_equil_pop_gp);
    GenTime/=SSB_equil;
    smryage /= smrynum;
