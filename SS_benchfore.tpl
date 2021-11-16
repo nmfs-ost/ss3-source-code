@@ -93,7 +93,7 @@ FUNCTION void setup_Benchmark()
         for (f=1;f<=Nfleet;f++)
         for (s=1;s<=nseas;s++)
         {
-          if(YPR_mask(f)==1)
+          if(fleet_type(f)==1 || (fleet_type(f)==2 && bycatch_setup(f,3)==1))
           {t=styr+(y-styr)*nseas+s-1;
           Fcast_RelF_Use(s,f)+=Hrate(f,t);}
         }
@@ -254,7 +254,7 @@ FUNCTION void setup_Benchmark()
           Bmark_RelF_Use.initialize();
           for (y=Bmark_Yr(5);y<=Bmark_Yr(6);y++)
           for (f=1;f<=Nfleet;f++)
-          if(YPR_mask(f)==1)
+          if(fleet_type(f)==1 || (fleet_type(f)==2 && bycatch_setup(f,3)==1))
           for (s=1;s<=nseas;s++)
           {
             t=styr+(y-styr)*nseas+s-1;
@@ -486,7 +486,7 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
 
           for (f=1;f<=Nfleet;f++)
           {
-            if(YPR_mask(f)==1)
+            if(fleet_type(f)==1 || (fleet_type(f)==2 && bycatch_setup(f,3)==1))
             {
               for (int s=1;s<=nseas;s++) {Hrate(f,bio_t_base+s)=Fmult*Bmark_RelF_Use(s,f);}
             }
@@ -576,7 +576,7 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
       Fmult=0.001;
       for (f=1;f<=Nfleet;f++)
       {
-        if(YPR_mask(f)==1)
+        if(fleet_type(f)==1 || (fleet_type(f)==2 && bycatch_setup(f,3)==1))
         {
           for (int s=1;s<=nseas;s++) {t=bio_t_base+s; Hrate(f,t)=Fmult*Bmark_RelF_Use(s,f);}
         }
@@ -698,7 +698,7 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
         if(j==0) {Fmult=0.0;} else {Fmult=40.00/(1.00+mfexp(-F1(ii)));}
         for (f=1;f<=Nfleet;f++)
         {
-          if(YPR_mask(f)==1)
+          if(fleet_type(f)==1 || (fleet_type(f)==2 && bycatch_setup(f,3)==1))
           {
             for (int s=1;s<=nseas;s++) {Hrate(f,bio_t_base+s)=Fmult*Bmark_RelF_Use(s,f); }
           } //  else  Hrate for bycatch fleets set above
@@ -877,7 +877,7 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
             Fmult=Fmax/(1.00+mfexp(-F2(ii)));
         for (f=1;f<=Nfleet;f++)
         {
-          if(YPR_mask(f)==1)
+            if(fleet_type(f)==1 || (fleet_type(f)==2 && bycatch_setup(f,3)==1))
           {
             for (int s=1;s<=nseas;s++) {Hrate(f,bio_t_base+s)=Fmult*Bmark_RelF_Use(s,f); }
           } //  else  Hrate for bycatch fleets set above
@@ -1082,7 +1082,7 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
         if(j==0) {Fmult=0.0;} else {Fmult=40.00/(1.00+mfexp(-F1(ii)));}
         for (f=1;f<=Nfleet;f++)
         {
-          if(YPR_mask(f)==1)
+          if(fleet_type(f)==1 || (fleet_type(f)==2 && bycatch_setup(f,3)==1))
           {
             for (int s=1;s<=nseas;s++) {Hrate(f,bio_t_base+s)=Fmult*Bmark_RelF_Use(s,f); }
           } //  else  Hrate for bycatch fleets set above
@@ -1356,7 +1356,7 @@ FUNCTION void Get_Forecast()
         for (f=1;f<=Nfleet;f++)
         for (s=1;s<=nseas;s++)
         {
-         if(YPR_mask(f)==1)
+         if(fleet_type(f)==1 || (fleet_type(f)==2  && bycatch_setup(f,3)==1))
          {
            t=styr+(y-styr)*nseas+s-1;
            Fcast_Fmult+=Hrate(f,t);
@@ -1443,7 +1443,7 @@ FUNCTION void Get_Forecast()
       {
         report5<<s<<" "<<seasdur(s);
         for(f=1;f<=Nfleet;f++)
-        {if(YPR_mask(f)==1)
+        {if(fleet_type(f)==1 || (fleet_type(f)==2 && bycatch_setup(f,3)==1))
         {report5<<" "<<Fcast_Fmult*Fcast_RelF_Use(s,f);}
         else if (fleet_type(f)==2)
         {report5<<" "<<bycatch_F(f,s);}
@@ -1460,7 +1460,7 @@ FUNCTION void Get_Forecast()
       {
         report5<<s<<" "<<seasdur(s);
         for(f=1;f<=Nfleet;f++)
-        {if(YPR_mask(f)==1)
+        {if(fleet_type(f)==1 || (fleet_type(f)==2 && bycatch_setup(f,3)==1))
         {report5<<" "<<Fcast_Fmult*Fcast_RelF_Use(s,f)*seasdur(s);}
         else if (fleet_type(f)==2)
         {report5<<" "<<bycatch_F(f,s)*seasdur(s);}
