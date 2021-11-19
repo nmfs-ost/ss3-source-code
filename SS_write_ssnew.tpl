@@ -1195,7 +1195,18 @@ FUNCTION void write_nucontrol()
   if(N_FC>0) NuFore<<Forecast_Comments<<endl;
   NuFore<<"# for all year entries except rebuilder; enter either: actual year, -999 for styr, 0 for endyr, neg number for rel. endyr"<<endl;
   NuFore<<Do_Benchmark<<" # Benchmarks: 0=skip; 1=calc F_spr,F_btgt,F_msy; 2=calc F_spr,F0.1,F_msy; 3=add F_Blimit; "<<endl;
-  NuFore<<Do_MSY<<" # MSY: 1= set to F(SPR); 2=calc F(MSY); 3=set to F(Btgt) or F0.1; 4=set to F(endyr); 5=calc F(MEY)"<<endl;
+  NuFore<<Do_MSY<<" # Do_MSY: 1= set to F(SPR); 2=calc F(MSY); 3=set to F(Btgt) or F0.1; 4=set to F(endyr); 5=calc F(MEY)"<<endl;
+  NuFore << "# if Do_MSY=5, enter MSY_Units; then list fleet_ID, cost/F, price/mt; -fleet_ID to fill; -9999 to terminate" << endl; 
+  if(Do_MSY==5)
+  {
+    NuFore<<MSY_units<<" # MSY_units: 1=dead biomass, 2=retained biomass, 3=profits"<<endl;
+    for (f=1;f<=Nfleet;f++)
+    {
+      if(YPR_mask(f)>0.0) NuFore << f<<" "<<CostPerF(f)<<" "<<PricePerF(f)<<endl;
+    }
+    NuFore<<"-9999 1 1 # terminate list of fleet costs and prices"<<endl;
+  }
+
   NuFore<<SPR_target<<" # SPR target (e.g. 0.40)"<<endl;
   NuFore<<BTGT_target<<" # Biomass target (e.g. 0.40)"<<endl;
   if(Do_Benchmark==3) NuFore<<Blim_frac<<" # COND: Do_Benchmark==3;  Blimit as fraction of Bmsy (neg value to use as frac of Bzero) (e.g. 0.50)"<<endl;
@@ -1309,16 +1320,6 @@ FUNCTION void write_nucontrol()
     else
     {NuFore<<"# no allocation groups"<<endl;}
 
-  NuFore << "# MSY_Units; then Cost-per-unit fishing mortality and price per fleet; list fleet_ID, cost/F, price/mt; -fleet_ID to fill; -9999 to terminate" << endl; 
-  if(Do_MSY==5)
-  {
-    NuFore<<MSY_units<<" # MSY_units: 1=dead biomass, 2=retained biomass, 3=profits"<<endl;
-    for (f=1;f<=Nfleet;f++)
-    {
-      if(CostPerF(f)>0.0) NuFore << f<<" "<<CostPerF(f)<<" "<<PricePerF(f)<<endl;
-    }
-    NuFore<<"-9999 1 1 # terminate list of fleet costs and prices"<<endl;
-  }
   NuFore<<"#"<<endl;
   NuFore<<Fcast_InputCatch_Basis<<
   " # basis for input Fcast catch: -1=read basis with each obs; 2=dead catch; 3=retained catch; 99=input apical_F; NOTE: bio vs num based on fleet's catchunits"<<endl;

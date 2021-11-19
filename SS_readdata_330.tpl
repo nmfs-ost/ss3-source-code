@@ -2946,6 +2946,10 @@
   number BTGT_target
   number Blim_frac
 
+  int MSY_units // 1=dead catch, 2=retained catch, 3=retained catch profits
+  vector CostPerF(1,Nfleet);
+  vector PricePerF(1,Nfleet);
+
  LOCAL_CALCS
   echoinput<<"read Do_Benchmark(0=skip; 1= do Fspr, Fbtgt, Fmsy; 2=do Fspr, F0.1, Fmsy;  3=Fspr, Fbtgt, Fmsy, F_Blimit)"<<endl;
   *(ad_comm::global_datafile) >> Do_Benchmark;
@@ -2953,6 +2957,43 @@
   echoinput<<"read Do_MSY (1=F_SPR,2=F_Btarget,3=calcMSY,4=mult*F_endyr (disabled);5=calcMEY)"<<endl;
   *(ad_comm::global_datafile) >> Do_MSY;
   echoinput<<Do_MSY<<" echoed Do_MSY basis"<<endl;
+
+    CostPerF=0.0;
+    PricePerF=1.0;  // default value per mt
+    MSY_units=2;  //  default to YPR_opt = dead catch without non-optimized bycatch
+    if(Do_MSY==5)  //  doing advanced MSY options, including MEY
+    {
+      echoinput<<"enter quantity to be maximized: (1) dead catch biomass; (2) dead catch biomass w/o non-opt bycatch; or (3) retained catch profits"<<endl;
+      *(ad_comm::global_datafile) >> MSY_units;
+      echoinput<<MSY_units<<" # MSY_units as entered"<<endl;
+      
+      CostPerF.initialize();
+      PricePerF.initialize();
+      echoinput<<"enter fleet ID and cost per fleet; negative fleet ID fills for all higher fleet IDs, -999 exits list"<<endl;
+      int fleet_ID=100;
+      double tempcost;
+      double tempprice;
+      while(fleet_ID>-999)
+      {
+        *(ad_comm::global_datafile) >> fleet_ID;
+        *(ad_comm::global_datafile) >> tempcost;
+        *(ad_comm::global_datafile) >> tempprice;
+        echoinput<<fleet_ID<<" "<<tempcost<<" "<<tempprice<<endl;
+        if(fleet_ID>Nfleet)
+          {N_warn++; warning<<"fleetID > Nfleet"<<endl;}
+        else if(fleet_ID>0) 
+          {CostPerF(fleet_ID)=tempcost; PricePerF(fleet_ID)=tempprice;}
+        else if(fleet_ID>-9999)
+          {
+            for(f=-fleet_ID;f<=Nfleet;f++)
+            {
+              if(fleet_type(f)==1 || (fleet_type(f)==2 && bycatch_setup(f,3)==1)) 
+               {CostPerF(f)=tempcost; PricePerF(f)=tempprice;}
+            }
+          }
+        }
+      echoinput << "# Cost-per-unit fishing mortality: " << CostPerF << endl<<"Price per kg: "<<PricePerF<<endl;
+    }
 
   show_MSY=0;
   did_MSY=0;
@@ -3025,7 +3066,6 @@
   int Rebuild_Ydecl
   int Rebuild_Yinit
   int HarvestPolicy  // 0=none; 1=west coast adjust catch; 2=AK to adjust F
-  int MSY_units // 1=dead catch, 2=retained catch, 3=retained catch profits
   number H4010_top
   number H4010_bot
   number H4010_scale
@@ -3291,8 +3331,6 @@
 
   matrix Fcast_Catch_Allocation(1,N_Fcast_Yrs,1,Nfleet);  //   dimension to Nfleet but use only to N alloc groups
   vector H4010_scale_vec(endyr+1,YrMax);
-  vector CostPerF(1,Nfleet);
-  vector PricePerF(1,Nfleet);
 
  LOCAL_CALCS
   if(Do_Forecast_rd>0)
@@ -3407,47 +3445,6 @@
         	{Fcast_Catch_Allocation(y)/=sum(Fcast_Catch_Allocation(y)(1,Fcast_Catch_Allocation_Groups));}
         echoinput<<y+endyr<<" "<<Fcast_Catch_Allocation(y)(1,Fcast_Catch_Allocation_Groups)<<endl;
         }
-    }
-
-    PricePerF=1.0;  // default value per mt
-    if(Do_MSY==5)  //  doing advanced MSY options, including MEY
-    {
-      echoinput<<"enter quantity to be maximized: (1) dead catch biomass (status quo); (2) retained catch biomass; or (3) retained catch profits"<<endl;
-      *(ad_comm::global_datafile) >> MSY_units;
-      echoinput<<MSY_units<<" # MSY_units as entered"<<endl;
-      
-      CostPerF.initialize();
-      PricePerF.initialize();
-      echoinput<<"enter fleet ID and cost per fleet; negative fleet ID fills for all higher fleet IDs, -999 exits list"<<endl;
-      int fleet_ID=100;
-      double tempcost;
-      double tempprice;
-      while(fleet_ID>-999)
-      {
-        *(ad_comm::global_datafile) >> fleet_ID;
-        *(ad_comm::global_datafile) >> tempcost;
-        *(ad_comm::global_datafile) >> tempprice;
-        echoinput<<fleet_ID<<" "<<tempcost<<" "<<tempprice<<endl;
-        if(fleet_ID>Nfleet)
-          {N_warn++; warning<<"fleetID > Nfleet"<<endl;}
-        else if(fleet_ID>0) 
-          {CostPerF(fleet_ID)=tempcost; PricePerF(fleet_ID)=tempprice;}
-        else if(fleet_ID>-9999)
-          {
-            for(f=-fleet_ID;f<=Nfleet;f++)
-            {
-              if(fleet_type(f)==1 || (fleet_type(f)==2 && bycatch_setup(f,3)==1)) 
-               {CostPerF(f)=tempcost; PricePerF(f)=tempprice;}
-            }
-          }
-        }
-      echoinput << "# Cost-per-unit fishing mortality: " << CostPerF << endl<<"Price per kg: "<<PricePerF<<endl;
-    }
-    else 
-    {
-      CostPerF=0.0;
-      PricePerF=1.0;
-      MSY_units=1; // for dead catch
     }
 
     *(ad_comm::global_datafile) >> Fcast_InputCatch_Basis;

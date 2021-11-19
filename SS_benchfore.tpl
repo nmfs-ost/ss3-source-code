@@ -815,10 +815,13 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
           break;}
         }
 
+
+      // Compute stats for saving (a bit of a trick)
+      if (Do_MSY==1 || Do_MSY == 3 || Do_MSY == 4)  // Fmsy set to existing quantity, so not estimated
+       {
       if(show_MSY==1)  //  report some headers
       {
-        report5<<"#"<<endl<<"Find_MSY_catch"<<endl<<"Iter Fmult ann_F SPR Catch SSB Recruits SSB/Bzero Gradient Curvature Tot_Catch";
-        report5<<"#"<<endl<<"Find_MEY_catch"<<endl<<"Iter Fmult ann_F SPR Catch SSB Recruits SSB/Bzero Gradient Curvature Tot_Ret_Catch";
+        report5<<"#"<<endl<<"Set_F_MSY using Do_MSY="<<Do_MSY<<endl<<"Iter Fmult ann_F SPR Catch SSB Recruits SSB/Bzero Gradient Curvature Tot_Ret_Catch";
         for (f=1;f<=Nfleet;f++) report5 << " Ret_Catch:"<<f << " ";
         report5<< "Cost Revenue Profit ";
         for (p=1;p<=pop;p++)
@@ -826,10 +829,6 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
         {report5<<" Area:"<<p<<"_GP:"<<gp;}
         report5<<endl;
       }
-
-      // Compute stats for saving (a bit of a trick)
-      if (Do_MSY==1 || Do_MSY == 3 || Do_MSY == 4)  // Fmsy set to existing quantity, so not estimated
-       {
         Fmult=Fmax/(1.00+mfexp(-F1(1)));  // using the F1 calculated in previous section
         for (f=1;f<=Nfleet;f++)
         {
@@ -846,7 +845,7 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
         Equ_SpawnRecr_Result = Equil_Spawn_Recr_Fxn(SR_parm_work(2), SR_parm_work(3), SSB_unf, Recr_unf, SPR_temp);  //  returns 2 element vector containing equilibrium biomass and recruitment at this SPR
         Bmsy=Equ_SpawnRecr_Result(1);
         Recr_msy=Equ_SpawnRecr_Result(2);
-        Yield=YPR_opt*Recr_msy;
+        yld1(1)=YPR_opt*Recr_msy;
         if(show_MSY==1)
          {
           report5<<j<<" "<<Fmult<<" "<<equ_F_std<<" "<<MSY_SPR<<" "<<yld1(1)<<" "<<Bmsy<<" "<<Recr_msy<<" "<<Bmsy/SSB_unf<<" "
@@ -858,9 +857,19 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
          }
        }
 
-      if (Do_MSY==2 || Do_MSY==5)   // search for FMSY, then optionally for FMEY; FMEY embedded inside this section
+      else  //  (Do_MSY==2 || Do_MSY==5)   // search for FMSY, then optionally for FMEY; FMEY embedded inside this section
       {
-         report5<<"****** Seach for MSY or MEY using MSY_units="<<MSY_units<<endl;
+      if(show_MSY==1)  //  report some headers
+      {
+        report5<<"Search for MSY or MEY using MSY_units="<<MSY_units<<endl;
+        report5<<"Iter Fmult ann_F SPR Opt_Catch_Profit SSB Recruits SSB/Bzero Gradient Curvature Tot_Ret_Catch";
+        for (f=1;f<=Nfleet;f++) report5 << " Ret_Catch:"<<f << " ";
+        report5<< "Cost Revenue Profit ";
+        for (p=1;p<=pop;p++)
+        for (gp=1;gp<=N_GP;gp++)
+        {report5<<" Area:"<<p<<"_GP:"<<gp;}
+        report5<<endl;
+      }
         bestF1.initialize(); bestF2.initialize();
         df=0.050;
         jj=3;
@@ -890,21 +899,16 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
           Bmsy=Equ_SpawnRecr_Result(1);
           Recr_msy=Equ_SpawnRecr_Result(2);
           Profit = (PricePerF*YPR_val_vec)*Recr_msy-Cost;
-          if(MSY_units==1)  //  dead catch
-          {
-            Yield=YPR_ret*Recr_msy;
-          }
-          else if(MSY_units==2)  //  retained catch
-          {
-            Yield=YPR_ret*Recr_msy;
-          }
+          if(Do_MSY==2)  //  dead catch without non-optimized 
+          {yld1(ii)=YPR_opt*Recr_msy;}
+          else if(MSY_units==2)  //  retained catch without non-optimized 
+          {yld1(ii)=YPR_opt*Recr_msy;}
+          else if(MSY_units==1)  //  dead catch
+          {yld1(ii)=YPR_dead*Recr_msy;}
           else //  same as profit
-          {
-            Yield=(PricePerF*YPR_val_vec)*Recr_msy-Cost;
-          }
-          yld1(ii)=Yield;
-          bestF1+=F2(ii)*(pow(mfexp(Yield/1.0e08),5)-1.);
-          bestF2+=pow(mfexp(Yield/1.0e08),5)-1.;
+          {yld1(ii)=(PricePerF*YPR_val_vec)*Recr_msy-Cost;}
+          bestF1+=F2(ii)*(pow(mfexp(yld1(ii)/1.0e08),5)-1.);
+          bestF2+=pow(mfexp(yld1(ii)/1.0e08),5)-1.;
          }   //  end gradient calc
         dyld   = (yld1(2) - yld1(3))/df;                      // First derivative (to find the root of this)
         temp  = (yld1(2) + yld1(3) - 2.*yld1(1))/(.25*df*df);   // Second derivative (for Newton Raphson)
@@ -934,9 +938,9 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
       YPR_msy_cost = Cost;
       YPR_msy_revenue = (PricePerF*YPR_val_vec)*Recr_msy;  //  vector*vector*scalar
       YPR_msy_profit = YPR_msy_revenue - Cost;
-      MSY=Yield;
+      MSY=yld1(1);
       MSY_Fmult=Fmult;
-      Mgmt_quant(15)=Yield;
+      Mgmt_quant(15)=yld1(1);
       Mgmt_quant(12)=Bmsy;
       Mgmt_quant(13)=MSY_SPR;
       Mgmt_quant(14)=equ_F_std;
@@ -958,9 +962,6 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
         for (g=1;g<=6;g++) {report5<<" "<<Recr_msy*equ_catch_fleet(g,s,f);}
         report5<<endl;
       }
-      report5<<"#"<<endl<<"Total dead catch: "<<Recr_msy*YPR_dead<<endl<<"Total (dead) catch for optimize: "<<MSY<<endl<<endl;
-      report5<<"Total retained catch: "<<Recr_msy*YPR_ret<<endl;
-      report5<<"Total retained catch for value: YPR_val_vec: "<<sum(YPR_val_vec*Recr_msy)<<"#"<<endl;
     report5<<"Equil_N_at_age_at_MSY_each"<<endl<<"Seas Area GP Sex subM"<<age_vector<<endl;
      for (s=1;s<=nseas;s++)
      for (p=1;p<=pop;p++)
@@ -1227,7 +1228,7 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
         report5<<"Biomass_Smry "<<Vbio1_Btgt*Btgt_Rec<<" "<<Vbio1_Btgt<<endl;
       }
 
-      report5<<"#"<<endl<<"Maximum_Sustainable_Yield"<<endl;
+      report5<<"#"<<endl<<"MSY or MEY"<<endl;
       switch(Do_MSY)
         {
         case 1:  // set Fmsy=Fspr
@@ -1260,12 +1261,12 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
             }
             break;}
         }
-      report5<<"SPR "<<MSY_SPR<<endl;
+      report5<<"SPR@MSY "<<MSY_SPR<<endl;
       report5<<"Fmult "<<MSY_Fmult<<endl;
       report5<<"ann_F "<<Mgmt_quant(14)<<endl;
       report5<<"Exploit(Catch/Bsmry) "<<MSY/(Vbio1_MSY*Recr_msy)<<endl;
       report5<<"Recruits@MSY "<<Recr_msy<<endl;
-      report5<<"SPBio "<<Bmsy<<" "<<Bmsy/Recr_msy<<endl;
+      report5<<"SPBmsy "<<Bmsy<<" "<<Bmsy/Recr_msy<<endl;
       report5<<"SPBmsy/SPB_virgin "<<Bmsy/SSB_virgin<<endl;
       report5<<"SPBmsy/SPB_unfished "<<Bmsy/SSB_unf<<endl;
       report5<<"MSY_for_optimize "<<MSY<<" "<<MSY/Recr_msy<<endl;
@@ -1275,9 +1276,7 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
       report5<<"MSY_revenue " << YPR_msy_revenue << endl;
       report5<<"MSY_cost " << YPR_msy_cost << endl;
       report5<<"MSY_profit " << YPR_msy_profit << endl;
-      report5<<"Biomass_Smry "<<Vbio1_MSY*Recr_msy<<" "<<Vbio1_MSY<<endl;
-
-      report5<<"#"<<endl;
+      report5<<"Biomass_Smry "<<Vbio1_MSY*Recr_msy<<" "<<Vbio1_MSY<<endl<<"#"<<endl;
     }
     else if(show_MSY==2)  //  do brief output
     {
