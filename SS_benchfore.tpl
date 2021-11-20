@@ -829,7 +829,7 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
         {report5<<" Area:"<<p<<"_GP:"<<gp;}
         report5<<endl;
       }
-        Fmult=Fmax/(1.00+mfexp(-F1(1)));  // using the F1 calculated in previous section
+//        Fmult=Fmax/(1.00+mfexp(-F1(1)));  // using the F1 calculated in previous section
         for (f=1;f<=Nfleet;f++)
         {
           if(YPR_mask(f)==1)
@@ -846,15 +846,35 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
         Bmsy=Equ_SpawnRecr_Result(1);
         Recr_msy=Equ_SpawnRecr_Result(2);
         yld1(1)=YPR_opt*Recr_msy;
+      YPR_msy_enc = YPR_enc;
+      YPR_msy_dead = YPR_dead;           // total dead yield
+      YPR_msy_N_dead = YPR_N_dead;           // total dead yield
+      YPR_msy_ret = YPR_ret;           // total retained yield
+      YPR_msy_cost = Cost;
+      YPR_msy_revenue = (PricePerF*YPR_val_vec)*Recr_msy;  //  vector*vector*scalar
+      YPR_msy_profit = YPR_msy_revenue - Cost;
+      MSY=yld1(1);
+      MSY_Fmult=Fmult;
         if(show_MSY==1)
          {
-          report5<<j<<" "<<Fmult<<" "<<equ_F_std<<" "<<MSY_SPR<<" "<<yld1(1)<<" "<<Bmsy<<" "<<Recr_msy<<" "<<Bmsy/SSB_unf<<" "
-            <<dyld <<" "<<dyldp<<" "<<value(sum(equ_catch_fleet(2))*Recr_msy);
+          report5<<1<<" "<<Fmult<<" "<<equ_F_std<<" "<<MSY_SPR<<" "<<yld1(1)<<" "<<Bmsy<<" "<<Recr_msy<<" "<<Bmsy/SSB_unf<<" "
+            <<" na "<<" na "<<YPR_msy_ret*Recr_msy;
+          report5 << value(equ_catch_fleet(3)*Recr_msy) << " " << Cost << " " << YPR_msy_revenue << " " << Profit << " ";
           for (p=1;p<=pop;p++)
           for (gp=1;gp<=N_GP;gp++)
           {report5<<" "<<SSB_equil_pop_gp(p,gp)*Recr_msy;}
           report5<<endl;
          }
+
+      Mgmt_quant(15)=yld1(1);
+      Mgmt_quant(12)=Bmsy;
+      Mgmt_quant(13)=MSY_SPR;
+      Mgmt_quant(14)=equ_F_std;
+      Mgmt_quant(16)=YPR_ret*Recr_msy;
+      Mgmt_quant(17)=Bmsy/SSB_unf;
+      Vbio1_MSY=smrybio;
+      Vbio_MSY=totbio;
+
        }
 
       else  //  (Do_MSY==2 || Do_MSY==5)   // search for FMSY, then optionally for FMEY; FMEY embedded inside this section
@@ -919,7 +939,7 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
          {
           report5<<j<<" "<<Fmult<<" "<<equ_F_std<<" "<<MSY_SPR<<" "<<yld1(1)<<" "<<Bmsy<<" "<<Recr_msy<<" "<<Bmsy/SSB_unf<<" "
           <<dyld <<" "<<dyldp<<" "<<value(sum(equ_catch_fleet(3))*Recr_msy);
-          report5 << value(equ_catch_fleet(3)*Recr_msy) << " " << Cost << " " << PricePerF*YPR_val_vec << " " << Profit << " ";
+          report5 << value(equ_catch_fleet(3)*Recr_msy) << " " << Cost << " " << PricePerF*YPR_val_vec*Recr_msy << " " << Profit << " ";
           for (p=1;p<=pop;p++)
           for (gp=1;gp<=N_GP;gp++)
           {report5<<" "<<SSB_equil_pop_gp(p,gp)*Recr_msy;}
