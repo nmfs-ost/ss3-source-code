@@ -1052,7 +1052,7 @@ PRELIMINARY_CALCS_SECTION
       pred_M2(f1,styr)=MGparm(predparm_pointer(f1));  //  base with no seasonal effect
       if(nseas==1)
       {
-        for (gp=1;gp<=N_GP*gender*N_settle_timings;gp++)  {natM(s,gp)+=pred_M2(f1,styr);}
+        for (gp=1;gp<=N_GP*gender*N_settle_timings;gp++)  {natM(1,gp)+=pred_M2(f1,styr);}
       }
       else
       {

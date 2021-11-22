@@ -1,0 +1,7 @@
+# run models without estimation
+name: call-run-ss3-with-est
+on: [push, pull_request, workflow_dispatch]
+
+jobs:
+  call-workflow:
+    uses: nmfs-stock-synthesis/workflows/.github/workflows/run-ss3-with-est.yml@main

@@ -2343,7 +2343,8 @@ FUNCTION void write_bigoutput()
     SS2out<<endl<<pick_report_name(41)<<endl;
      SS2out << "Area Fleet Sex  XX XX Type Morph Yr Seas XX Era"<<age_vector <<endl;
      for (f=1;f<=Nfleet;f++)
-     if((fleet_type(f)<=2 && Do_Retain(f)>0) || fleet_type(f)==4)
+//     if((fleet_type(f)<=2 && Do_Retain(f)>0) || fleet_type(f)==4)
+     if((fleet_type(f)<=2 && Do_Retain(f)>0))
      for (g=1;g<=gmorph;g++)
      {
      if(use_morph(g)>0)
