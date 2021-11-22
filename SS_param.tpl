@@ -200,12 +200,18 @@ PARAMETER_SECTION
   number YPR_Btgt_dead;
   number YPR_Btgt_N_dead;
   number YPR_Btgt_ret;
+  number YPR_Btgt_cost;
+  number YPR_Btgt_revenue;
+  number YPR_Btgt_profit;
   number YPR_Btgt;
 
   number YPR_spr_enc;
   number YPR_spr_dead;
   number YPR_spr_N_dead;
   number YPR_spr_ret;
+  number YPR_spr_cost;
+  number YPR_spr_revenue;
+  number YPR_spr_profit;
 
   number Vbio_spr;
   number Vbio1_spr;
@@ -226,12 +232,18 @@ PARAMETER_SECTION
   number YPR_msy_dead;
   number YPR_msy_N_dead;
   number YPR_msy_ret;
+  number YPR_msy_cost;
+  number YPR_msy_revenue;
+  number YPR_msy_profit;
 
   number YPR_enc;
   number YPR_dead;
-  number YPR_opt;  //  used to find F0.1 and Fmsy
+  number YPR_opt;  //  used to find F0.1 and Fmsy  contains all dead catch
+  vector YPR_val_vec(1,Nfleet);  // used to calculate value, so is multipled by price per unit
   number YPR_N_dead;
   number YPR_ret;
+  number Cost;  //  total fishery cost across all fleets
+  number Profit;  //  total revenues - Cost
   number MSY_Fmult;
   number SPR_Fmult;
   number Btgt_Fmult;

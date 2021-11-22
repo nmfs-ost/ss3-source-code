@@ -452,6 +452,7 @@ FUNCTION void get_initial_conditions()
    env_data(styr-1,-3)=0.0;
    env_data(styr-1,-4)=0.0;
 
+// save est_equ_catch which has units (biomass vs numbers) according to that fleet; used in objfun
    for (s=1;s<=nseas;s++)
    for (f=1;f<=Nfleet;f++)
    {
@@ -464,6 +465,7 @@ FUNCTION void get_initial_conditions()
       est_equ_catch(s,f)=equ_catch_fleet(5,s,f);
      }
    }
+
    if(save_for_report>0)
    {
      for (s=1;s<=nseas;s++)
@@ -1859,23 +1861,23 @@ FUNCTION void Do_Equil_Calc(const prevariable& equ_Recr)
          }
        }
 
-     YPR_dead =   sum(equ_catch_fleet(2));    // dead yield per recruit
-     if(N_bycatch==0)
-     {YPR_opt=YPR_dead;}
-     else
+//      MSY_units:  quantity to be maximized: (1) dead catch biomass (status quo); (2) retained catch biomass; or (3) retained catch profits"<<endl;
+
+     YPR_dead =   sum(equ_catch_fleet(2));    // dead catch biomass per recruit
+     YPR_N_dead = sum(equ_catch_fleet(5));    // dead numbers per recruit
+     YPR_enc =    sum(equ_catch_fleet(1));    //  encountered biomass per recruit
+     YPR_ret =    sum(equ_catch_fleet(3));    // retained biomass per recruit
+     YPR_opt = 0.0;  //dead biomass per recruit except excludes non-optimized bycatch
+                     // YPR_opt used in F0.1 and in biomass based MSY searches
+     YPR_val_vec.initialize();  // retained biomass per recruit as vector, should be same as YPR_ret
+     for(f=1;f<=Nfleet;f++)
      {
-       YPR_opt = 0.0;
-       for(f=1;f<=Nfleet;f++)
+       for (s=1;s<=nseas;s++)
        {
-        if(YPR_mask(f)>0)
-         {
-          for (s=1;s<=nseas;s++) {YPR_opt+=equ_catch_fleet(2,s,f);}
-         }
+         YPR_opt+=equ_catch_fleet(2,s,f)*YPR_mask(f);  //  using dead catch excluding non-optimized bycatch
+         YPR_val_vec(f)+=equ_catch_fleet(3,s,f)*YPR_mask(f);  //  using retained catch so YPR_mask should be redundant
        }
      }
-     YPR_N_dead = sum(equ_catch_fleet(5));    // dead numbers per recruit
-     YPR_enc =    sum(equ_catch_fleet(1));    //  encountered yield per recruit
-     YPR_ret =    sum(equ_catch_fleet(3));    // retained yield per recruit
 
    if(Fishon==1)
    {
@@ -1973,6 +1975,16 @@ FUNCTION void Do_Equil_Calc(const prevariable& equ_Recr)
         equ_M_std /= countN;
       } // end F_reporting==5
    }
+   
+          Cost = 0;
+          for (f=1;f<=Nfleet;f++)
+          {
+            if(YPR_mask(f)==1)
+            {
+              for (s=1;s<=nseas;s++) {Cost += CostPerF(f)*Hrate(f,t_base+s); }
+            }
+          }
+
    SSB_equil=sum(SSB_equil_pop_gp);
    GenTime/=SSB_equil;
    smryage /= smrynum;
