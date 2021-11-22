@@ -282,7 +282,7 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
   {
 //********************************************************************
  /*  SS_Label_FUNCTION 34 Get_Benchmarks(Find Fspr, MSY) */
-  int jj;  int Nloops; int Nloops1; int Nloops2; 
+  int jj;  int Nloops; int Nloops2; 
 //  int bio_t;
   int bio_t_base;
   dvariable last_F1;  dvariable Closer;
@@ -311,7 +311,7 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
 
     write_bodywt_save=write_bodywt;
     write_bodywt=0;
-
+   Nloops2=0;
    if(show_MSY==1)
    {
      report5<<version_info<<endl<<ctime(&start);
@@ -793,15 +793,15 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
         case 1:  // set Fmsy=Fspr
           {Fmult=SPR_Fmult;
            if(F_Method==1) {Fmax=SPR_Fmult*1.1;}
-           F1(1)=-log(Fmax/SPR_Fmult-1.); last_calc=0.; Fchange=1.0; Closer=1.; Nloops=0; Nloops1=0;Nloops2=0; F2(1)=-log(Fmax/SPR_Fmult-1.);
+           F1(1)=-log(Fmax/SPR_Fmult-1.); last_calc=0.; Fchange=1.0; Closer=1.; Nloops=0;Nloops2=0; F2(1)=-log(Fmax/SPR_Fmult-1.);
            break;}
         case 3:  // set Fmsy=Fbtgt
           {Fmult=Btgt_Fmult;
            if(F_Method==1) {Fmax=Btgt_Fmult*1.1;}
-            F1(1)=-log(Fmax/Btgt_Fmult-1.); last_calc=0.; Fchange=1.0; Closer=1.0; Nloops=0; Nloops1=0;Nloops2=0; F2(1)=-log(Fmax/SPR_Fmult-1.);
+            F1(1)=-log(Fmax/Btgt_Fmult-1.); last_calc=0.; Fchange=1.0; Closer=1.0; Nloops=0; Nloops2=0; F2(1)=-log(Fmax/SPR_Fmult-1.);
           break;}
         case 4:   //  set fmult for Fmsy to 1
-          {Fmult=1; Fmax=1.1; F1(1)=-log(Fmax/Fmult-1.); last_calc=0.; Fchange=1.0; Closer=1.0; Nloops=0; Nloops1=0;Nloops2=0; F2(1)=-log(Fmax/SPR_Fmult-1.);
+          {Fmult=1; Fmax=1.1; F1(1)=-log(Fmax/Fmult-1.); last_calc=0.; Fchange=1.0; Closer=1.0; Nloops=0; Nloops2=0; F2(1)=-log(Fmax/SPR_Fmult-1.);
           break;}
         case 2:  // calc Fmsy
           {
@@ -809,7 +809,7 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
           }
         case 5:  // calc Fmey
           {last_calc=0.; Fchange=0.51; Closer=1.0;
-           if(SR_fxn==5) {Nloops1=0; Nloops2=40;} else {Nloops1= 0; Nloops2=19;}
+           if(SR_fxn==5) {Nloops2=40;} else {Nloops2=19;}
           if(F_Method==1) {Fmax=(Btgt_Fmult+SPR_Fmult)*0.5*SR_parm_work(2)/0.05;}    //  previously /0.18
            F1(1)=-log(Fmax/Btgt_Fmult-1.);F2(1)=-log(Fmax/Btgt_Fmult-1.);
           break;}
