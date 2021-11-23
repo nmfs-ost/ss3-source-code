@@ -228,6 +228,7 @@ PARAMETER_SECTION
   number YPR_enc;
   number YPR_dead;
   number YPR_opt;  //  used to find F0.1 and Fmsy
+  vector YPR_val_vec(1,Nfleet);  // used to calculate value, so is multipled by price per unit
   number YPR_N_dead;
   number YPR_ret;
   number MSY_Fmult;
