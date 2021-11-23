@@ -1071,9 +1071,8 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
       {N_warn++;  warning<<N_warn<<" warning: poor convergence in Blimit search "<<Btgttgt2<<" "<<Btgt2<<endl;}
       report5<<"seas fleet Hrate encB deadB retB encN deadN retN): "<<endl;
       for (s=1;s<=nseas;s++)
-      for (f=1;f<=Nfleet;f++)
-      if(fleet_type(f)<=2)
-      {
+      for(int ff=1;ff<=N_catchfleets(0);ff++)
+      {f=fish_fleet_area(0,ff);
         report5<<s<<" "<<f<<" "<<Hrate(f,bio_t_base+s);
         for (g=1;g<=6;g++) {report5<<" "<<Btgt_Rec2*equ_catch_fleet(g,s,f);}
         report5<<endl;
@@ -1261,9 +1260,9 @@ FUNCTION void Get_Forecast()
       {
         Fcast_Fmult=0.0;
         for (y=Fcast_RelF_yr1;y<=Fcast_RelF_yr2;y++)
-        for (f=1;f<=Nfleet;f++)
         for (s=1;s<=nseas;s++)
-        {
+        for(int ff=1;ff<=N_catchfleets(0);ff++)
+        {f=fish_fleet_area(0,ff);
          if(fleet_type(f)==1 || (fleet_type(f)==2  && bycatch_setup(f,3)==1))
          {
            t=styr+(y-styr)*nseas+s-1;
@@ -1343,15 +1342,15 @@ FUNCTION void Get_Forecast()
     {
       report5<<"Pope's_midseason_exploitation_rate=Fmult*Alloc"<<endl;
       report5<<"seas seas_dur ";
-      for (f=1;f<=Nfleet;f++)
-      if(fleet_type(f)<=2)
-      {report5<<" fleet:"<<f;}
+      for(int ff=1;ff<=N_catchfleets(0);ff++)
+      {f=fish_fleet_area(0,ff); report5<<" fleet:"<<f;}
       report5<<endl;
       for (s=1;s<=nseas;s++)
       {
         report5<<s<<" "<<seasdur(s);
-        for(f=1;f<=Nfleet;f++)
-        {if(fleet_type(f)==1 || (fleet_type(f)==2 && bycatch_setup(f,3)==1))
+        for(int ff=1;ff<=N_catchfleets(0);ff++)
+        {f=fish_fleet_area(0,ff);
+        if(fleet_type(f)==1 || (fleet_type(f)==2 && bycatch_setup(f,3)==1))
         {report5<<" "<<Fcast_Fmult*Fcast_RelF_Use(s,f);}
         else if (fleet_type(f)==2)
         {report5<<" "<<bycatch_F(f,s);}
@@ -1362,13 +1361,16 @@ FUNCTION void Get_Forecast()
     else
     {
       report5<<"Seasonal_apicalF=Fmult*Alloc*seas_dur_(can_be>ann_F_because_of_selex)"<<endl;
-      report5<<"seas seas_dur "; for (f=1;f<=Nfleet;f++) {if(fleet_type(f)<=2) {report5<<" "<<fleetname(f);}}
+      report5<<"seas seas_dur ";
+      for(int ff=1;ff<=N_catchfleets(0);ff++)
+      {f=fish_fleet_area(0,ff); report5<<" "<<fleetname(f);}
       report5<<endl;
       for (s=1;s<=nseas;s++)
       {
         report5<<s<<" "<<seasdur(s);
-        for(f=1;f<=Nfleet;f++)
-        {if(fleet_type(f)==1 || (fleet_type(f)==2 && bycatch_setup(f,3)==1))
+        for(int ff=1;ff<=N_catchfleets(0);ff++)
+        {f=fish_fleet_area(0,ff);
+        if(fleet_type(f)==1 || (fleet_type(f)==2 && bycatch_setup(f,3)==1))
         {report5<<" "<<Fcast_Fmult*Fcast_RelF_Use(s,f)*seasdur(s);}
         else if (fleet_type(f)==2)
         {report5<<" "<<bycatch_F(f,s)*seasdur(s);}
@@ -1449,9 +1451,9 @@ FUNCTION void Get_Forecast()
     if(HarvestPolicy==0) report5<<"pop year ABC_Loop season No_buffer bio-all bio-Smry SpawnBio Depletion recruit-0 ";
     if(HarvestPolicy<=2) report5<<"pop year ABC_Loop season Ramp&Buffer bio-all bio-Smry SpawnBio Depletion recruit-0 ";
     if(HarvestPolicy>=3) report5<<"pop year ABC_Loop season Ramp bio-all bio-Smry SpawnBio Depletion recruit-0 ";
-    for (f=1;f<=Nfleet;f++)
-    if(fleet_type(f)<=2)
-    {report5<<" sel(B):_"<<f<<" dead(B):_"<<f<<" retain(B):_"<<f<<
+    for(int ff=1;ff<=N_catchfleets(0);ff++)
+    {f=fish_fleet_area(0,ff);
+    report5<<" sel(B):_"<<f<<" dead(B):_"<<f<<" retain(B):_"<<f<<
     " sel(N):_"<<f<<" dead(N):_"<<f<<" retain(N):_"<<f<<" F:_"<<f<<" R/C";}
     report5<<" Catch_Cap Total_Catch ann_F"<<endl;
     }
@@ -1544,10 +1546,9 @@ FUNCTION void Get_Forecast()
         for (s=1;s<=nseas;s++)
         {
           t=t_base+s;
-          for (f=1;f<=Nfleet;f++)
-          {
-            if(fleet_type(f)<=2)
-          {Fcast_Catch_Store(t,f)*=mfexp(Fcast_impl_error(y));}  //  should this be bias adjusted?
+          for(int ff=1;ff<=N_catchfleets(0);ff++)
+          {f=fish_fleet_area(0,ff);
+           Fcast_Catch_Store(t,f)*=mfexp(Fcast_impl_error(y));  //  should this be bias adjusted?
           }
         }
       }
@@ -1851,9 +1852,8 @@ FUNCTION void Get_Forecast()
               }
             }
             Tune_F_loops=1;
-            for (f=1;f<=Nfleet;f++)  //  calc the Hrates given the HarvestPolicy, and find which catches are fixed or adjustable
-            if(fleet_type(f)<=2)
-            {
+            for(int ff=1;ff<=N_catchfleets(0);ff++)
+            {f=fish_fleet_area(0,ff);  //  calc the Hrates given the HarvestPolicy, and find which catches are fixed or adjustable
               switch (ABC_Loop)
               {
                 case 1:  //  apply Fmsy and get OFL
