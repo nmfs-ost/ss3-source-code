@@ -1,16 +1,16 @@
 // SS_Label_file  #9. **SS_biofxn.tpl**
-// SS_Label_file  #* <u>get_MGsetup()</u>  // get parameter values for this year
-// SS_Label_file  #* <u>get_growth1()</u>  // prep growth quantities
-// SS_Label_file  #* <u>get_growth2()</u>  // growth to beginning of each season of upcoming year
-// SS_Label_file  #* <u>get_growth3()</u>  // growth to particular time point in a season
-// SS_Label_file  #* <u>get_natmort()</u>
-// SS_Label_file  #* <u>get_recr_distribution()</u>
-// SS_Label_file  #* <u>get_wtlen()</u>
-// SS_Label_file  #* <u>get_mat_fec()</u>
-// SS_Label_file  #* <u>get_Hermaphro()</u>
-// SS_Label_file  #* <u>get_migration()</u>
-// SS_Label_file  #* <u>get_saveGparm()</u>
-
+// SS_Label_file  # * <u>get_MGsetup()</u>  // get parameter values for this year
+// SS_Label_file  # * <u>get_growth1()</u>  // prep growth quantities
+// SS_Label_file  # * <u>get_growth2()</u>  // growth to beginning of each season of upcoming year
+// SS_Label_file  # * <u>get_growth3()</u>  // growth to particular time point in a season
+// SS_Label_file  # * <u>get_natmort()</u>
+// SS_Label_file  # * <u>get_recr_distribution()</u>
+// SS_Label_file  # * <u>get_wtlen()</u>
+// SS_Label_file  # * <u>get_mat_fec()</u>
+// SS_Label_file  # * <u>get_Hermaphro()</u>
+// SS_Label_file  # * <u>get_migration()</u>
+// SS_Label_file  # * <u>get_saveGparm()</u>
+// SS_Label_file  # *
 
 //*********************************************************************
  /*  SS_Label_Function_14 #Get_MGsetup:  apply time-varying factors this year to the MG parameters to create mgp_adj vector */
@@ -29,8 +29,8 @@ FUNCTION void get_MGsetup(const int yz)
           if(mgp_adj(f)<MGparm_1(f,1) || mgp_adj(f)>MGparm_1(f,2))
           {
             N_warn++;
-             warning<<N_warn<<" "<<" adjusted MGparm out of bounds (Phase, Iter, parm#, yr, min, max, base, adj_value) "<<current_phase()<<" "<<niter<<f<<" "<<yz<<" "<<
-            MGparm_1(f,1)<<" "<<MGparm_1(f,2)<<" "<<MGparm(f)<<" "<<mgp_adj(f)<<" "<<ParmLabel(f)<<endl;
+             warning<<N_warn<<" "<<" adjusted MGparm out of base parm bounds. Phase: "<<current_phase()<<"; Inter: "<<niter<<
+             "; parm#: "<<f<<"; y: "<<yz<<"; min: "<<MGparm_1(f,1)<<"; max: "<<MGparm_1(f,2)<<"; base: "<<MGparm(f)<<" timevary_val: "<<mgp_adj(f)<<" "<<ParmLabel(f)<<endl;
           }
         }
       }
@@ -158,11 +158,11 @@ FUNCTION void get_growth2(const int y)
   {
 //  called at beginning of each year, so y is known
 //  if y=styr, then does equilibrium size-at-age according to start year growth parameters
-//  for any year, calculates for each season the size at the beginning of the next season, with growth increment calculated according to that year's parameters 
+//  for any year, calculates for each season the size at the beginning of the next season, with growth increment calculated according to that year's parameters
 
 //Growth Cessation Model code added by Mark Maunder October 2018
-//The growth cessation model is described in 
-//Maunder, M.N., Deriso, R.B., Schaefer, K.M., Fuller, D.W., Aires-da-Silva, A.M., Minte‑Vera, C.V., Campana, S.E. 2018. The growth cessation model: a growth model for species showing a near cessation in growth with application to bigeye tuna (Thunnus obesus). Marine Biology (2018) 165:76. 
+//The growth cessation model is described in
+//Maunder, M.N., Deriso, R.B., Schaefer, K.M., Fuller, D.W., Aires-da-Silva, A.M., Minte‑Vera, C.V., Campana, S.E. 2018. The growth cessation model: a growth model for species showing a near cessation in growth with application to bigeye tuna (Thunnus obesus). Marine Biology (2018) 165:76.
 //Ian Taylor derived the formula for Linf
 
     int k2;
@@ -429,10 +429,10 @@ FUNCTION void get_growth2(const int y)
           //  Linf (asymptotic mean length)
           //  k (steepness of the logistic function that models the reduction in the growth increment) = Richards
                 VBK_temp2=VBK_temp*VBK_seas(0);
-                Ave_Size(styr,1,g)(0,first_grow_age(g)) = Lmin(gp); //assume first_grow_age(g) = 0 
+                Ave_Size(styr,1,g)(0,first_grow_age(g)) = Lmin(gp); //assume first_grow_age(g) = 0
                 for (a=first_grow_age(g);a<=nages;a++)
                 {
-				          Ave_Size(styr,1,g,a) = Lmin(gp)+VBK_temp2*((log(exp(-Richards(gp)*t50)+1)-log(exp(Richards(gp)*(real_age(g,1,a)-AFIX-t50))+1))/Richards(gp)+real_age(g,1,a)-AFIX);  
+				          Ave_Size(styr,1,g,a) = Lmin(gp)+VBK_temp2*((log(exp(-Richards(gp)*t50)+1)-log(exp(Richards(gp)*(real_age(g,1,a)-AFIX-t50))+1))/Richards(gp)+real_age(g,1,a)-AFIX);
                 }  // done ageloop
                 break;
               }
@@ -484,7 +484,7 @@ FUNCTION void get_growth2(const int y)
             }
             else
             {
-               //  no adjustment   
+               //  no adjustment
             }
  #ifdef DO_ONCE
             if(do_once==1) echoinput<<"  adjusted size at maxage "<<Ave_Size(styr,1,g,nages)<<"  using decay of: "<<Linf_decay<<endl;
@@ -568,7 +568,7 @@ FUNCTION void get_growth2(const int y)
                   {
                     Ave_Size(t+1,1,g,a) = len_bins(1)+lin_grow(g,ALK_idx,a)*(Cohort_Lmin(gp,y,a)-len_bins(1));
                   }
-                  
+
                 }  // done ageloop
                 break;
               }
@@ -580,15 +580,15 @@ FUNCTION void get_growth2(const int y)
                   if(a==nages) k2=a;
                   // calculate a full year's growth increment, then multiple by seasdur(s)
                   if(a<nages || s<nseas) Ave_Size(t+1,1,g,k2) =  Ave_Size(t,1,g,a)+
-                  (VBK_temp - (VBK_temp/Richards(gp)) * (log(exp(Richards(gp)*(real_age(g,1,a)+1-t50))+1) - log(exp(Richards(gp)*(real_age(g,1,a)-t50))+1)))*seasdur(s); 
+                  (VBK_temp - (VBK_temp/Richards(gp)) * (log(exp(Richards(gp)*(real_age(g,1,a)+1-t50))+1) - log(exp(Richards(gp)*(real_age(g,1,a)-t50))+1)))*seasdur(s);
                   if(a==nages && s==nseas) plusgroupsize = Ave_Size(t,1,g,nages)+
-                  (VBK_temp - (VBK_temp/Richards(gp)) * (log(exp(Richards(gp)*(real_age(g,1,a)+1-t50))+1) - log(exp(Richards(gp)*(real_age(g,1,a)-t50))+1)))*seasdur(s); 
+                  (VBK_temp - (VBK_temp/Richards(gp)) * (log(exp(Richards(gp)*(real_age(g,1,a)+1-t50))+1) - log(exp(Richards(gp)*(real_age(g,1,a)-t50))+1)))*seasdur(s);
  /*
                   echoinput<<a<<" "<<k2<<" "<<grow_inc<<" lin? "<<lin_grow(g,ALK_idx,a)<<" "<<Cohort_Lmin(gp,y,a)<<endl;
                   if(lin_grow(g,ALK_idx,a)==-2.0)
                   {
-                    if((a<nages || s<nseas)) Ave_Size(t+1,1,g,k2) =  Ave_Size(t,1,g,a)+grow_inc*seasdur(s); 
-                    if(a==nages && s==nseas) plusgroupsize = Ave_Size(t,1,g,nages)+grow_inc*seasdur(s); 
+                    if((a<nages || s<nseas)) Ave_Size(t+1,1,g,k2) =  Ave_Size(t,1,g,a)+grow_inc*seasdur(s);
+                    if(a==nages && s==nseas) plusgroupsize = Ave_Size(t,1,g,nages)+grow_inc*seasdur(s);
                   }
                   else if(lin_grow(g,ALK_idx,a)==-1.0)  // first time point beyond AFIX;  lin_grow will stay at -1 for all remaining subseas of this season
                   {
@@ -805,7 +805,7 @@ FUNCTION void get_growth3(const int y, const int t, const int s, const int subse
             {
               // calculate a full year's growth increment, then multiple by seasdur(s)
               Ave_Size(t,subseas,g,a) = Ave_Size(t,1,g,a) +
-              (VBK_temp - (VBK_temp/Richards(gp)) * (log(exp(Richards(gp)*(real_age(g,ALK_idx,a)+1-t50))+1) - log(exp(Richards(gp)*(real_age(g,ALK_idx,a)-t50))+1)))*subseasdur(s,subseas); 
+              (VBK_temp - (VBK_temp/Richards(gp)) * (log(exp(Richards(gp)*(real_age(g,ALK_idx,a)+1-t50))+1) - log(exp(Richards(gp)*(real_age(g,ALK_idx,a)-t50))+1)))*subseasdur(s,subseas);
             }  // done ageloop
             break;
           }
@@ -1050,7 +1050,7 @@ FUNCTION void get_natmort()
             Maunder_lambda = natMparms(2,gp);      //
             Maunder_Lmat = natMparms(3,gp);    //  constant for juvenile mort
             Maunder_Mmat = natMparms(4,gp);    //
-            if(natM_5_opt<=2){	//use the SS mat50% and mat_slope parameters 
+            if(natM_5_opt<=2){	//use the SS mat50% and mat_slope parameters
   		        Maunder_L50  = wtlen_p(GPat,3); //mat50%
           		Maunder_beta = wtlen_p(GPat,4); //slope
 //          		XX_mature=make_mature_numbers(gpi);  //  will be same for all seasons  THIS LINE SEEMS UNNECESSARY
@@ -1126,11 +1126,11 @@ FUNCTION void get_recr_distribution()
     femfrac(1,N_GP)=fracfemale;
     if(gender==2) femfrac(N_GP,2*N_GP)=1.0-fracfemale;
   }
-  if(gender_rd==-1) 
+  if(gender_rd==-1)
     {
       fracfemale_mult=value(femfrac(1));
     }
-  
+
  #ifdef DO_ONCE
   if(do_once==1)  echoinput<<" femfrac "<<femfrac<<endl;
  #endif
@@ -1150,7 +1150,7 @@ FUNCTION void get_recr_distribution()
 //  SS_Label_Info_18.2  #loop gp * settlements * area and multiply together the recr_dist_parm values
   switch(recr_dist_method)
   {
-    
+
   case 2:
   {
     for (gp=1;gp<=N_GP;gp++)
@@ -1242,7 +1242,7 @@ FUNCTION void get_recr_distribution()
 // 	{for(int yz=styr+1; yz<=YrMax;yz++) recr_dist(yz)=recr_dist(styr);}
 
  #ifdef DO_ONCE
-    if(do_once==1) 
+    if(do_once==1)
       {
         echoinput<<"recruitment distribution in year: "<<y<<endl<<"GP Seas Area Use? female_recr_dist"<<endl;
       for (gp=1;gp<=N_GP;gp++)
@@ -1335,7 +1335,7 @@ FUNCTION void get_mat_fec();
   {
     GPat=GP4(g);
     gg=sx(g);
-    gp=GPat;  //  
+    gp=GPat;  //
    	if(do_once==1) echoinput<<"fecundity option: "<<Fecund_Option<<" parms: "<<wtlen_p(GPat)(5,6)<<endl;
 
     switch (Fecund_Option)
@@ -1608,7 +1608,7 @@ FUNCTION void get_migration2()
   Ip=MGP_CGD;   // base counter for  movement parms
   dvariable move1;  //  movement rate for young fish
   dvariable move2;  //  movement rate for old fish
-  
+
 //  SS_Label_20.1  loop the needed movement rates
   for (k=1;k<=do_migr2;k++)   //  loop all movement rates for this year (includes seas, morphs)
   {
@@ -1728,7 +1728,7 @@ FUNCTION void get_saveGparm()
           save_G_parm(save_gparm,8)=value(-VBK(gp,0)*VBK_seas(0));
           save_G_parm(save_gparm,9)=value( -log(L_inf(gp)/(L_inf(gp)-Lmin(gp))) / (-VBK(gp,0)*VBK_seas(0)) +AFIX+azero_G(g) );
         }
-        
+
         save_G_parm(save_gparm,10)=value(L_inf(gp));
         save_G_parm(save_gparm,11)=value(CVLmin(gp));
         save_G_parm(save_gparm,12)=value(CVLmax(gp));
@@ -1848,4 +1848,3 @@ FUNCTION void Make_Fecundity()
       }
     }
   }
-

@@ -1,6 +1,6 @@
 // SS_Label_file  #21. **SS_timevaryparm.tpl**
-// SS_Label_file  #* <u>make_timevaryparm()</u>  // makes parameters a function of input environmental data time series
-// SS_Label_file  #* <u>make_densitydependent_parm()</u>  // for the current year, changes a parameter value as a function of summary bio or recruitment at beginning of this year 
+// SS_Label_file  # * <u>make_timevaryparm()</u>  // makes parameters a function of input environmental data time series
+// SS_Label_file  # * <u>make_densitydependent_parm()</u>  // for the current year, changes a parameter value as a function of summary bio or recruitment at beginning of this year
 // SS_Label_file  #
 
 //*********************************************************************
@@ -205,7 +205,7 @@ FUNCTION void make_timevaryparm()
           	{
             	dvariable temp;
             	double p_range=baseparm_max-baseparm_min;
-            	
+
               for (int y1=env_data_minyr(timevary_setup(7));y1<=env_data_maxyr(timevary_setup(7));y1++)
               {
                 temp=log((parm_timevary(tvary,y1)-baseparm_min+1.0e-7)/(baseparm_max-parm_timevary(tvary,y1)+1.0e-7));

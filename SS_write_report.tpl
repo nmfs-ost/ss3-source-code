@@ -1,7 +1,7 @@
 // SS_Label_file  #19. **SS_write_report.tpl**
-// SS_Label_file  #* <u>write_bigoutput()</u>  // produces *report.sso* and *compreport.sso*
-// SS_Label_file  #* <u>SPR_profile()</u>  //  calls Do_Equil_Calc() and Equil_Spawn_Recr_Fxn() over a range of F to get SPR, YPR, and SSB and catch curves
-// SS_Label_file  #* <u>global_MSY()</u>  // similar to SPR_profile but first changes all selectivities to knife edge and profiles on age-at-entry
+// SS_Label_file  # * <u>write_bigoutput()</u>  // produces *report.sso* and *compreport.sso*
+// SS_Label_file  # * <u>SPR_profile()</u>  //  calls Do_Equil_Calc() and Equil_Spawn_Recr_Fxn() over a range of F to get SPR, YPR, and SSB and catch curves
+// SS_Label_file  # * <u>global_MSY()</u>  // similar to SPR_profile but first changes all selectivities to knife edge and profiles on age-at-entry
 // SS_Label_file  #
 
 //********************************************************************
@@ -78,8 +78,8 @@ FUNCTION void write_bigoutput()
   if(MGparm_doseas==0) pick_report_use(46)="N";
   if(N_ageerr==0) pick_report_use(51)="N";
   if(use_length_data==0) pick_report_use(46)="N";
-	
-  	
+
+
   SS2out<<endl<<"#_KeyWords_of_tables_available_in_report_sso"<<endl;
   SS2out<<"#NOTE: table_number_is_order_in_which_tables_are_output"<<endl;
   SS2out<<"#_List_Tables_related_to_basic_input_pre-processing_and_output"<<endl;
@@ -93,7 +93,7 @@ FUNCTION void write_bigoutput()
   k=30; SS2out<<pick_report_use(k)<<" "<<pick_report_name(k)<<endl;  // OVERALL_COMPS (average_length_and_age_composition_observed_by_each_fleet)
   k=5; SS2out<<pick_report_use(k)<<" "<<pick_report_name(k)<<endl;  // PARAMETERS
   k=4; SS2out<<pick_report_use(k)<<" "<<pick_report_name(k)<<endl;  // parmdevs_detail
-  
+
   SS2out<<endl<<"# List_Tables_related_to_timeseries_output"<<endl;
   k=36; SS2out<<pick_report_use(k)<<" "<<pick_report_name(k)<<endl;  // BIOMASS_AT_AGE
   k=38; SS2out<<pick_report_use(k)<<" "<<pick_report_name(k)<<endl;  // BIOMASS_AT_LENGTH
@@ -205,7 +205,7 @@ FUNCTION void write_bigoutput()
     SS2out<<f<<" "<<fleet_setup(f)<<" "<<Svy_units(f)<<" "<<Svy_errtype(f)<<" "<<fleetname(f)<<endl;
   }
   	}  //  end DEFINITIONS
-  	
+
 // REPORT_KEYWORD 2 LIKELIHOOD
   if(pick_report_use(2)=="Y") {
   k=current_phase();
@@ -306,7 +306,7 @@ FUNCTION void write_bigoutput()
     	var=sumsq(for_var);
     	cross=0.;
     	Durbin=0;
-    	for(j=y1+1;j<=y2;j++) 
+    	for(j=y1+1;j<=y2;j++)
     	{
     		cross+=for_var(j)*for_AR1(j);
     		Durbin+=square(for_var(j)-for_AR1(j));
@@ -533,7 +533,6 @@ FUNCTION void write_bigoutput()
     Report_Parm(NP, active_count, Activ, selparm(j), selparm_LO(j), selparm_HI(j), selparm_RD(j), selparm_use(j), selparm_PR(j), selparm_CV(j), selparm_PRtype(j), selparm_PH(j), selparm_Like(j));
   }
 
-
   if(Do_TG>0)
   {
      k=3*N_TG+2*Nfleet1;
@@ -561,7 +560,7 @@ FUNCTION void write_bigoutput()
         active_count++;
         SS2out<<" "<<active_count<<" "<<parm_dev_PH(i)<<" -10 10 "<<parm_dev_RD(i,j)<<" "<<parm_dev_use(i,j);
         temp=(parm_dev(i,j)-(-10))/(20);
-        if(temp==0.0 || temp==1.0)
+        if(temp<=0.0 || temp>=1.0)
           {SS2out<<" BOUND "; Nparm_on_bound++;}
         else if(temp<0.01)
           {SS2out<<" LO "; Nparm_on_bound++;}
@@ -582,7 +581,7 @@ FUNCTION void write_bigoutput()
 
   SS2out<<"#"<<endl<<"Number_of_parameters: "<<NP<<endl;
   SS2out<<"Active_count: "<<active_count<<endl;
-  SS2out<<"Number_of_active_parameters_on_or_near_bounds: "<<Nparm_on_bound<<endl;
+  SS2out<<"Number_of_active_parameters_on_or_within_1%_of_min-max_bound: "<<Nparm_on_bound<<endl;
   }
 
 // REPORT_KEYWORD 6 DERIVED_QUANTITIES
@@ -683,7 +682,7 @@ FUNCTION void write_bigoutput()
     }
   }
   }
-  
+
 // REPORT_KEYWORD 7 MGPARM_BY_YEAR
    if(pick_report_use(7)=="Y") {
    k1=YrMax;
@@ -698,6 +697,7 @@ FUNCTION void write_bigoutput()
 
 // REPORT_KEYWORD 8 SELPARM_SIZE_BY_YEAR
    if(pick_report_use(8)=="Y") {
+   k1=YrMax;
    if(Fcast_Specify_Selex==0)
     {SS2out<<"forecast_selectivity_averaged_over_years:_"<<Fcast_Sel_yr1<<"_to_"<<Fcast_Sel_yr2<<endl;}
     else
@@ -714,6 +714,7 @@ FUNCTION void write_bigoutput()
 
 // REPORT_KEYWORD 9 SELPARM_AGE_BY_YEAR
    if(pick_report_use(9)=="Y") {
+   k1=YrMax;
    SS2out<<endl<<pick_report_name(9)<<endl;
    SS2out<<"Fleet Yr  Change?  Parameters"<<endl;
    for (f=Nfleet+1;f<=2*Nfleet;f++)
@@ -754,7 +755,7 @@ FUNCTION void write_bigoutput()
       SS2out<<settle<<" "<<settle_time<<" "<<gp<<" "<<p<<" "<<Settle_month(settle_time)<<" "<<Settle_seas(settle_time)<<" "<<
       Settle_age(settle_time)<<" "<<Settle_timing_seas(settle_time)<<" "<<recr_dist_endyr(gp,settle_time,p)<<endl;
    }
-   
+
    SS2out<<"RECRUITMENT_DIST_TIMESERIES"<<endl<<"Year settle_assignment"<<endl;
    SS2out<<"Year ";
    for (settle=1;settle<=N_settle_assignments;settle++) SS2out<<settle<<" ";
@@ -830,7 +831,7 @@ FUNCTION void write_bigoutput()
 
 // REPORT_KEYWORD 13 MOVEMENT
 
-   if(pick_report_use(13)=="Y" && do_migration>0) {   	
+   if(pick_report_use(13)=="Y" && do_migration>0) {
    SS2out<<endl<<pick_report_name(13)<<endl;
    SS2out<<" Seas GP Source_area Dest_area minage maxage "<<age_vector<<endl;
    for (k=1;k<=do_migr2;k++)
@@ -905,7 +906,7 @@ FUNCTION void write_bigoutput()
      SS2out<<endl;
    }
   }
- 
+
 // REPORT_KEYWORD 15 CATCH
 //  Fleet Fleet_Name Area Yr Era Seas Subseas Month Time
    if(pick_report_use(15)=="Y") {
@@ -1108,7 +1109,7 @@ FUNCTION void write_bigoutput()
   SS2out<<"#"<<endl<<"#NOTE: GENTIME_is_fecundity_weighted_mean_age"<<endl<<
 	"#NOTE: MnAgeSmry_is_numbers_weighted_meanage_at_and_above_smryage(not_accounting_for_settlement_offsets)"<<endl;
  }
- 
+
 // REPORT_KEYWORD 18 Kobe_Plot
    if(pick_report_use(18)=="Y") {
    SS2out<<endl<<pick_report_name(18)<<endl;
@@ -1148,9 +1149,9 @@ FUNCTION void write_bigoutput()
   dvector n_rmse(1,k);
 	// following vectors used for index-related quantities
   dvector mean_CV(1,k);
- 
+
   dvector mean_CV2(1,k);
- 
+
   dvector mean_CV3(1,k);
 
 	// vectors to store mean sample sizes for comp data
@@ -1166,7 +1167,7 @@ FUNCTION void write_bigoutput()
     	double cross=0.0;
     	double Durbin=0.0;
     	double var=0.0;
-    	
+
    for (y=recdev_first;y<=recdev_end;y++)
    {
      temp1=recdev(y);
@@ -1214,7 +1215,7 @@ FUNCTION void write_bigoutput()
   {
     SS2out<<" Ricker_Power: "<<SR_parm(3);
   }
-  
+
   SS2out<<endl;
   SS2out<<sigmaR<<" sigmaR"<<endl;
   SS2out<<init_equ_steepness<<"  # 0/1 to use steepness in initial equ recruitment calculation"<<endl;
@@ -1232,7 +1233,7 @@ FUNCTION void write_bigoutput()
      {N_warn++;  warning<<N_warn<<" "<<" Main recdev biasadj is >2 times ratio of rmse to sigmaR"<<endl; SS2out<<" # Main_recdev_biasadj_is_>2_times_ratio_of_rmse_to_sigmaR";}
    }
    SS2out<<endl;
-   	
+
    SS2out<<"early "<<n_rmse(3)<<" "<<rmse(3)<<" "<<square(rmse(3))/temp<<" "<<rmse(4);
    if(wrote_bigreport==0)  //  first time writing bigreport
    {
@@ -1240,7 +1241,7 @@ FUNCTION void write_bigoutput()
      {N_warn++;  warning<<N_warn<<" "<<" Early recdev biasadj is >2 times ratio of rmse to sigmaR"<<endl; SS2out<<" # Early_recdev_biasadj_is_>2_times_ratio_of_rmse_to_sigmaR";}
    }
    SS2out<<endl;
- 	
+
   SS2out<<"Yr SpawnBio exp_recr with_regime bias_adjusted pred_recr dev biasadjuster era mature_bio mature_num raw_dev"<<endl;
   SS2out<<"S/Rcurve "<<SSB_virgin<<" "<<Recr_virgin<<endl;
   y=styr-2;
@@ -1609,7 +1610,7 @@ FUNCTION void write_bigoutput()
        if(Nsamp_adj>maxsamp(f)) maxsamp(f)=Nsamp_adj;
      }
 
-     
+
 //  SS2out<<"Fleet Fleet_Name Area Yr Month Seas Subseas Time Sexes Part SuprPer Use Nsamp_adj Nsamp_in Nsamp_DM effN Like";
 //      temp=abs(header_l_rd(f,i,2));
 //      if(temp>999) temp-=1000;
@@ -1629,7 +1630,7 @@ FUNCTION void write_bigoutput()
       SS2out<<Nsamp_in<<" "<<Nsamp_adj<<" "<<Nsamp_DM<<" "<<neff_l(f,i)<<" "<<length_like(f,i)<<" ";
       SS2out<<more_comp_info(1,6);
       if(gender==2) SS2out<<" "<<more_comp_info(7,20);
-      SS2out<<endl;      
+      SS2out<<endl;
     } // end loops over observation i and fleet f
 
 //Fleet N Npos mean_effN mean(inputN*Adj) HarMean(effN) Mean(effN/inputN) MeaneffN/MeaninputN Var_Adj
@@ -1641,7 +1642,7 @@ FUNCTION void write_bigoutput()
    "Factor Fleet Recommend_var_adj # N Npos min_Nsamp max_Nsamp mean_Nsamp_in mean_Nsamp_adj mean_Nsamp_DM DM_theta mean_effN HarMean_effN Curr_Var_Adj Fleet_name"<<endl;
    for (f=1;f<=Nfleet;f++)
    {
-     if(n_rmse(f)>0) 
+     if(n_rmse(f)>0)
      {
 		   // calculate summary statistics
        rmse(f)/=n_rmse(f); Hrmse(f)=n_rmse(f)/Hrmse(f); Rrmse(f)/=n_rmse(f);
@@ -1706,8 +1707,8 @@ FUNCTION void write_bigoutput()
       else if(Comp_Err_A(f)==2) //  Dirichlet #2
       {
         dirichlet_Parm=mfexp(selparm(Comp_Err_Parm_Start+Comp_Err_A2(f)));  //  Thorson's beta from eq 12
-        // effN_DM = (n+n*beta)/(n+beta)      computed in Fit_LenComp                           
-        Nsamp_DM = value((nsamp_a(f,i)+dirichlet_Parm*nsamp_a(f,i))/(dirichlet_Parm+nsamp_a(f,i)));                     
+        // effN_DM = (n+n*beta)/(n+beta)      computed in Fit_LenComp
+        Nsamp_DM = value((nsamp_a(f,i)+dirichlet_Parm*nsamp_a(f,i))/(dirichlet_Parm+nsamp_a(f,i)));
       }
 
       if(header_a(f,i,3)>0)
@@ -1779,7 +1780,7 @@ FUNCTION void write_bigoutput()
 // REPORT_KEYWORD 29 FIT_SIZE_COMPS
    if(pick_report_use(29)=="Y" && SzFreq_Nmeth>0) {
     SS2out<<endl<<pick_report_name(29)<<endl;
-    
+
       SzFreq_effN.initialize();
       SzFreq_eachlike.initialize();
       for(int sz_method=1; sz_method<=SzFreq_Nmeth; sz_method++)
@@ -1795,7 +1796,7 @@ FUNCTION void write_bigoutput()
         rmse = 0.0;  n_rmse = 0.0; mean_CV=0.0;  Hrmse=0.0; Rrmse=0.0;
         minsamp=10000.;
         maxsamp=0.;
-       
+
         dvector sz_tails(1,4);
         sz_tails(1)=1;
         sz_tails(2)=SzFreq_Nbins(sz_method);
@@ -1858,7 +1859,7 @@ FUNCTION void write_bigoutput()
                   SzFreq_effN(iobs)=0.;
                   SzFreq_eachlike(iobs)=0.;
                 }
-                temp= SzFreq_obs1(iobs,3);  //  use original input value because 
+                temp= SzFreq_obs1(iobs,3);  //  use original input value because
                 if(temp>999) temp-=1000.;
                 SS2out<<f<<" "<<fleetname(f)<<" "<<fleet_area(f)<<" "<<Show_Time2(ALK_time)<<" "<<data_time(ALK_time,f,1)<<" "<<data_time(ALK_time,f,3)<<" "<<gg<<" "<<p;
      if(SzFreq_obs_hdr(iobs,2)<0 && in_superperiod==0)
@@ -1872,7 +1873,7 @@ FUNCTION void write_bigoutput()
       if(SzFreq_obs_hdr(iobs,3)<0)
       {SS2out<<" skip ";}
       else
-      {SS2out<<" _ ";}                
+      {SS2out<<" _ ";}
                 SS2out<<" "<<SzFreq_sampleN(iobs)<<"  "<<SzFreq_effN(iobs)<<"  "<<SzFreq_eachlike(iobs)<<" "<<more_comp_info(1,6);
                 if(gender==2) SS2out<<" "<<more_comp_info(7,20);
                 SS2out<<endl;
@@ -1899,26 +1900,51 @@ FUNCTION void write_bigoutput()
 // REPORT_KEYWORD 30 OVERALL_COMPS  average composition for all observations
    if(pick_report_use(30)=="Y") {
   SS2out<<endl<<pick_report_name(30)<<endl;
-  SS2out<<"Fleet N_obs len_bins "<<len_bins_dat<<endl;
+  SS2out<<"area seas Fleet N_obs len_bins "<<len_bins_dat<<endl;
+
+       for (f=1;f<=Nfleet;f++)
+       {
+         for(k=1;k<=4;k++)
+         {
+           dvector templen(1,nlen_bin);
+           templen.initialize();
+           for(s=1;s<=nseas;s++) {templen+=obs_l_all(k,s,f);}
+         obs_l_all(k,0,f)=templen/(float(nseas));
+        }
+      }
+      int kseas=1;
+  if(nseas>1) kseas=0;
   for (f=1;f<=Nfleet;f++)
+  for(s=kseas;s<=nseas;s++)
   {
     if(Nobs_l(f)>0)
     {
-      SS2out<<f<<" "<<Nobs_l(f)<<" freq "<<obs_l_all(1,f)<<endl;
-      SS2out<<f<<" "<<Nobs_l(f)<<" cum  "<<obs_l_all(2,f)<<endl;
+      SS2out<<fleet_area(f)<<" "<<s<<" "<<f<<" "<<Nobs_l(f)<<" freq "<<obs_l_all(1,s,f)<<endl;
+      SS2out<<fleet_area(f)<<" "<<s<<" "<<f<<" "<<Nobs_l(f)<<" cum  "<<obs_l_all(2,s,f)<<endl;
+      if(gender==2)
+      {
+      SS2out<<fleet_area(f)<<" "<<s<<" "<<f<<" "<<Nobs_l(f)<<" female  "<<obs_l_all(2,s,f)<<endl;
+      SS2out<<fleet_area(f)<<" "<<s<<" "<<f<<" "<<Nobs_l(f)<<" male  "<<obs_l_all(2,s,f)<<endl;
+      }
     }
   }
 
-  SS2out<<"Fleet N_obs age_bins ";
+  SS2out<<"area seas Fleet N_obs age_bins ";
   if(n_abins>1)
   {
     SS2out<<age_bins(1,n_abins)<<endl;
     for (f=1;f<=Nfleet;f++)
+    for(s=kseas;s<=nseas;s++)
     {
       if(Nobs_a(f)>0)
       {
-        SS2out<<f<<" "<<Nobs_a(f)<<" freq "<<obs_a_all(1,f)<<endl;
-        SS2out<<f<<" "<<Nobs_a(f)<<" cum  "<<obs_a_all(2,f)<<endl;
+      SS2out<<fleet_area(f)<<" "<<s<<" "<<f<<" "<<Nobs_a(f)<<" freq "<<obs_a_all(1,s,f)<<endl;
+      SS2out<<fleet_area(f)<<" "<<s<<" "<<f<<" "<<Nobs_a(f)<<" cum  "<<obs_a_all(2,s,f)<<endl;
+      if(gender==2)
+      {
+      SS2out<<fleet_area(f)<<" "<<s<<" "<<f<<" "<<Nobs_a(f)<<" female  "<<obs_a_all(2,s,f)<<endl;
+      SS2out<<fleet_area(f)<<" "<<s<<" "<<f<<" "<<Nobs_a(f)<<" male  "<<obs_a_all(2,s,f)<<endl;
+      }
       }
     }
   }
@@ -1976,7 +2002,7 @@ FUNCTION void write_bigoutput()
     SS2out<<endl;
   }
   }
-  
+
 // REPORT_KEYWORD 32 AGE_SELEX
    if(pick_report_use(32)=="Y") {
     SS2out<<endl<<pick_report_name(32)<<endl;
@@ -2317,7 +2343,8 @@ FUNCTION void write_bigoutput()
     SS2out<<endl<<pick_report_name(41)<<endl;
      SS2out << "Area Fleet Sex  XX XX Type Morph Yr Seas XX Era"<<age_vector <<endl;
      for (f=1;f<=Nfleet;f++)
-     if((fleet_type(f)<=2 && Do_Retain(f)>0) || fleet_type(f)==4)
+//     if((fleet_type(f)<=2 && Do_Retain(f)>0) || fleet_type(f)==4)
+     if((fleet_type(f)<=2 && Do_Retain(f)>0))
      for (g=1;g<=gmorph;g++)
      {
      if(use_morph(g)>0)
@@ -2768,7 +2795,7 @@ FUNCTION void write_bigoutput()
       temp1=0.0;
       real_month=abs(header_l_rd(f,i,2));
       if(real_month>999) real_month-=1000.;
-      
+
       if(ALK_time==last_t)
       {repli++;}
       else
@@ -2792,10 +2819,10 @@ FUNCTION void write_bigoutput()
         {
             // The following columns printed by the next section:
             // Yr Month Seas Subseas Time Fleet Area Repl. Sexes Kind Part
-            // Ageerr Sex Lbin_lo Lbin_hi Bin Obs Exp 
+            // Ageerr Sex Lbin_lo Lbin_hi Bin Obs Exp
             SS_compout<<header_l(f,i,1)<<" "<<real_month<<" "<<Show_Time2(ALK_time)(2,3)<<" "<<data_time(ALK_time,f,3)<<" "<<f<<" "<<fleet_area(f)<<" "<<repli<<" "<<gen_l(f,i)<<" LEN "<<mkt_l(f,i)<<" 0 "<<s_off<<" "<<
             1<<" "<<1<<" "<<len_bins_dat2(z)<<" "<<obs_l(f,i,z)<<" "<<exp_l(f,i,z)<<" ";
-            // next add these 5 columns: Pearson Nsamp_adj Nsamp_in effN Like 
+            // next add these 5 columns: Pearson Nsamp_adj Nsamp_in effN Like
             temp2+=obs_l(f,i,z);
             temp1+=exp_l(f,i,z);
             if(nsamp_l(f,i)>0 && header_l(f,i,3)>0) // check for values to include
@@ -2846,7 +2873,7 @@ FUNCTION void write_bigoutput()
         {
            // The following columns printed by the next section:
            // Yr Month Seas Subseas Time Fleet Area Repl. Sexes Kind Part
-           // Ageerr Sex Lbin_lo Lbin_hi Bin Obs Exp 
+           // Ageerr Sex Lbin_lo Lbin_hi Bin Obs Exp
            SS_compout<<header_l(f,i,1)<<" "<<real_month<<" "<<Show_Time2(ALK_time)(2,3)<<" "<<data_time(ALK_time,f,3)<<" "<<f<<" "<<fleet_area(f)<<" "<<repli<<" "<<gen_l(f,i)<<" LEN "<<mkt_l(f,i)<<" 0 "<<s_off<<" "<<
            1<<" "<<nlength<<" "<<len_bins_dat2(z)<<" "<<obs_l(f,i,z)<<" "<<exp_l(f,i,z)<<" ";
            // next add Pearson column
@@ -2932,12 +2959,12 @@ FUNCTION void write_bigoutput()
           {
           // The following columns printed by the next section:
           // Yr Month Seas Subseas Time Fleet Area Repl. Sexes Kind Part
-          // Ageerr Sex Lbin_lo Lbin_hi Bin Obs Exp 
+          // Ageerr Sex Lbin_lo Lbin_hi Bin Obs Exp
           SS_compout<<header_a(f,i,1)<<" "<<real_month<<" "<<Show_Time2(ALK_time)(2,3)<<" "<<data_time(ALK_time,f,3)<<" "<<f<<" "<<fleet_area(f)<<" "<<repli<<" "<<gen_a(f,i)<<" AGE "<<mkt_a(f,i)<<" "<<ageerr_type_a(f,i)
           <<" "<<s_off<<" "<<len_bins(Lbin_lo(f,i))<<" "<<len_bins(Lbin_hi(f,i))<<" "<<age_bins(z)<<" "<<obs_a(f,i,z)<<" " <<exp_a(f,i,z)<<" ";
            temp2+=obs_a(f,i,z);
            temp1+=exp_a(f,i,z);
-          // next add these 5 columns: Pearson Nsamp_adj Nsamp_in effN Like 
+          // next add these 5 columns: Pearson Nsamp_adj Nsamp_in effN Like
           if(header_a(f,i,3)>0)
           {
             if(exp_a(f,i,z)!=0.0 && exp_a(f,i,z)!=1.0)
@@ -2983,7 +3010,7 @@ FUNCTION void write_bigoutput()
           {
           // The following columns printed by the next section:
           // Yr Month Seas Subseas Time Fleet Area Repl. Sexes Kind Part
-          // Ageerr Sex Lbin_lo Lbin_hi Bin Obs Exp 
+          // Ageerr Sex Lbin_lo Lbin_hi Bin Obs Exp
           SS_compout<<header_a(f,i,1)<<" "<<header_a(f,i,2)<<" "<<Show_Time2(ALK_time)(2,3)<<" "<<data_time(ALK_time,f,3)<<" "<<f<<" "<<fleet_area(f)<<" "<<repli<<" "<<gen_a(f,i)<<" AGE "<<mkt_a(f,i)<<" "<<ageerr_type_a(f,i)<<" "<<s_off
           <<" "<<len_bins(Lbin_lo(f,i))<<" "<<len_bins(Lbin_hi(f,i))<<" "<<age_bins(z)<<" "<<obs_a(f,i,z)<<" "<<exp_a(f,i,z)<<" ";
           // next add Pearson column
@@ -3139,7 +3166,7 @@ FUNCTION void write_bigoutput()
             s_off=1;
             // The following columns printed by the section:
             // Yr Month Seas Subseas Time Fleet Area Repl. Sexes Kind Part
-            // Ageerr Sex Lbin_lo Lbin_hi Bin Obs Exp 
+            // Ageerr Sex Lbin_lo Lbin_hi Bin Obs Exp
             SS_compout<<SzFreq_obs_hdr(iobs,1)<<" "<<real_month<<" "<<Show_Time2(ALK_time)(2,3)<<" "<<data_time(ALK_time,f,3)<<" "<<f<<" "<<fleet_area(f)<<" "<<repli<<" "<<gg<<" SIZE "<<p<<" "<<k;
             if(z>SzFreq_Nbins(k)) s_off=2;
             SS_compout<<" "<<s_off<<" "<<SzFreq_units(k)<<" "<<SzFreq_scale(k)<<" ";
@@ -3220,9 +3247,9 @@ FUNCTION void write_bigoutput()
           if(Nfleet>1)
           for (f=1;f<=Nfleet;f++)
           {
-            // Fill in columns for: Yr Month Seas Subseas Time Fleet Area Repl. Sexes Kind Part Ageerr Sex Lbin_lo Lbin_hi 
+            // Fill in columns for: Yr Month Seas Subseas Time Fleet Area Repl. Sexes Kind Part Ageerr Sex Lbin_lo Lbin_hi
             SS_compout<<y<<" NA "<<s<<" NA "<<temp<<" "<<f<<" "<<fleet_area(f)<<" "<<TG<<" "<<TG_release(TG,6)<<" TAG1 NA NA NA NA NA "<<
-            // Fill in columns for:: Bin Obs Exp Pearson Nsamp_adj Nsamp_in 
+            // Fill in columns for:: Bin Obs Exp Pearson Nsamp_adj Nsamp_in
             f<<" "<<TG_recap_obs(TG,TG_t,f)<<" "<<TG_recap_exp(TG,TG_t,f)<<" NA "<<TG_recap_obs(TG,TG_t,0)<<" NA "
             <<" NA NA NA NA NA "; // NA values are for: effN Like Cum_obs Cum_exp SuprPer
           // Fill in Used? column
@@ -3236,7 +3263,7 @@ FUNCTION void write_bigoutput()
   if(N_out==0) SS_compout<<styr<<" -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1"<<endl;
   SS_compout<<styr<<" -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1"<<endl<<" End_comp_data"<<endl;
  }
- 
+
 // REPORT_KEYWORD 53 SELEX_database
   if(pick_report_use(53)=="Y") {
 	SS2out<<endl<<pick_report_name(53)<<endl;
@@ -3292,7 +3319,7 @@ FUNCTION void SPR_profile()
   dvariable YPR_last;
 
     SS2out<<endl<<pick_report_name(54)<<endl;
-    SS2out<<"SPRloop Iter Bycatch Fmult F_report SPR YPR YPR*Recr SSB Recruits SSB/Bzero Tot_Catch ";
+    SS2out<<"SPRloop Iter Bycatch Fmult F_report SPR YPR_dead YPR_dead*Recr YPR_ret*Recr Revenue Cost Profit SSB Recruits SSB/Bzero Tot_Catch ";
     for (f=1;f<=Nfleet;f++) {if(fleet_type(f)<=2) SS2out<<" "<<fleetname(f)<<"("<<f<<")Dead";}
     for (f=1;f<=Nfleet;f++) {if(fleet_type(f)<=2) SS2out<<" "<<fleetname(f)<<"("<<f<<")Ret";}
     for (f=1;f<=Nfleet;f++) {if(fleet_type(f)<=2) SS2out<<" "<<fleetname(f)<<"("<<f<<")Age";}
@@ -3339,7 +3366,7 @@ FUNCTION void SPR_profile()
       }
     }
 
-    
+
     equ_Recr=1.0;
     Fishon=0;
     int SPRloop1_end;
@@ -3450,14 +3477,15 @@ FUNCTION void SPR_profile()
         Equ_SpawnRecr_Result = Equil_Spawn_Recr_Fxn(SR_parm_work(2), SR_parm_work(3), SSB_unf, Recr_unf, SPR_temp);  //  returns 2 element vector containing equilibrium biomass and recruitment at this SPR
         Btgt_prof=Equ_SpawnRecr_Result(1);
         Btgt_prof_rec=Equ_SpawnRecr_Result(2);
-        
+
         if(Btgt_prof<0.001 || Btgt_prof_rec<0.001)
         {
           Btgt_prof_rec=0.0; Btgt_prof=0.;
           if(SPRloop1==0) Fcrash=Fmult2;
         }
         SS2out<<SPRloop1<<" "<<SPRloop<<" "<<with_BYC<<" "<<Fmult2<<" "<<equ_F_std<<" "<<SSB_equil/(SSB_unf/Recr_unf)<<" "<<YPR_dead<<" "
-        <<YPR_dead*Btgt_prof_rec<<" "<<Btgt_prof<<" "<<Btgt_prof_rec<<" "<<Btgt_prof/SSB_unf
+        <<YPR_dead*Btgt_prof_rec<<" "<<YPR_ret*Btgt_prof_rec<<" "<<(PricePerF*YPR_val_vec)*Btgt_prof_rec
+        <<" "<<Cost<<" "<<(PricePerF*YPR_val_vec)*Btgt_prof_rec-Cost<<" "<<Btgt_prof<<" "<<Btgt_prof_rec<<" "<<Btgt_prof/SSB_unf
         <<" "<<value(sum(equ_catch_fleet(2))*Btgt_prof_rec);
         for(f=1;f<=Nfleet;f++)
           if(fleet_type(f)<=2)
@@ -3478,7 +3506,7 @@ FUNCTION void SPR_profile()
           if(fleet_type(f)<=2)
         {
           temp=0.0; temp2=0;
-          for(s=1;s<=nseas;s++) 
+          for(s=1;s<=nseas;s++)
           for(g=1;g<=gmorph;g++)
           if(use_morph(g)>0)
           {
@@ -3487,7 +3515,7 @@ FUNCTION void SPR_profile()
           }
           if(temp2>0.0) {SS2out<<" "<<temp/temp2;} else SS2out<<" NA";
         }
-        
+
         for (p=1;p<=pop;p++)
         for (gp=1;gp<=N_GP;gp++)
         {SS2out<<" "<<SSB_equil_pop_gp(p,gp)*Btgt_prof_rec;}
@@ -3516,7 +3544,7 @@ FUNCTION void SPR_profile()
 // end SPR/YPR_Profile
     return;
   }
-	
+
 
 FUNCTION void Global_MSY()
   {
@@ -3601,9 +3629,9 @@ FUNCTION void Global_MSY()
     }
   SS2out<<endl;
 		return;
-  }  
-  
-FUNCTION dvector process_comps(const int sexes, const int sex, dvector &bins,  dvector &means, const dvector &tails, 
+  }
+
+FUNCTION dvector process_comps(const int sexes, const int sex, dvector &bins,  dvector &means, const dvector &tails,
           dvector& obs,  dvector& exp)
   {
     dvector more_comp_info(1,20);
@@ -3669,7 +3697,7 @@ FUNCTION dvector process_comps(const int sexes, const int sex, dvector &bins,  d
        more_comp_info(6)=(more_comp_info(6)/temp1) - 2.0;
      }
 
-    
+
      if(sex==1 || (sex==3&&sexes==2))  //  need females
      {
        //  where means() holds midpoints of the data length bins
@@ -3742,6 +3770,6 @@ FUNCTION dvector process_comps(const int sexes, const int sex, dvector &bins,  d
        }
        more_comp_info(18)=(more_comp_info(18)/temp1) - 2.0;
      }
-     
+
     return more_comp_info;
   }

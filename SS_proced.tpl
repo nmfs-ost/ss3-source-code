@@ -1,9 +1,10 @@
 // SS_Label_file  #8. **SS_proced.tpl**
-// SS_Label_file  # - <div style="color: #ff0000">PROCEDURE_SECTION</div> 
-// SS_Label_file  #   - do iterations under control of ADMB, in each iteration, call:  <u>setup_recdevs()</u>, <u>get_initial_conditions()</u>, <u>get_time_series()</u>, <u>evaluate_the_objective_function()</u>
-// SS_Label_file  #   - writes to *parmtrace.sso*
-// SS_Label_file  #   - calls <u>get_posteriors()</u>  //  to write to *posteriors.sso*
-// SS_Label_file  #  - upon reaching convergence, or if in mceval, do Dynamic_Bzero by calling those functions again with fishery_on_off=0
+// SS_Label_file  # - <div style="color: #ff0000">PROCEDURE_SECTION</div>
+// SS_Label_file  #
+// SS_Label_file  #     - do iterations under control of ADMB, in each iteration, call:  <u>setup_recdevs()</u>, <u>get_initial_conditions()</u>, <u>get_time_series()</u>, <u>evaluate_the_objective_function()</u>
+// SS_Label_file  #     - writes to *parmtrace.sso*
+// SS_Label_file  #     - calls <u>get_posteriors()</u>  //  to write to *posteriors.sso*
+// SS_Label_file  #     - upon reaching convergence, or if in mceval, do Dynamic_Bzero by calling those functions again with fishery_on_off=0
 // SS_Label_file  #
 // SS_Label_file  #  - call <u>setup_Benchmark(), Get_Benchmark(), Get_Forecast()</u>
 
@@ -24,7 +25,7 @@ PROCEDURE_SECTION
         SR_parm(1)+=MCMC_bump;
         cout<<mcmc_counter<<"   adjusted SR_parm in first mcmc call "<<SR_parm(1)<<"  by  "<<MCMC_bump<<endl;
       }
-      
+
     mcmc_counter++;
   }
 
@@ -61,7 +62,7 @@ PROCEDURE_SECTION
 
   //  create bigsaver to simplfy some condition statements later
   if( (save_for_report>0) || ((sd_phase() || mceval_phase()) && (initial_params::mc_phase==0)) )  // (SAVE || ( (SD || EVAL) && (!MCMC) ) )
-    {bigsaver=1;} else 
+    {bigsaver=1;} else
     {bigsaver=0;}
     setup_recdevs();
     y=styr;
@@ -70,7 +71,7 @@ PROCEDURE_SECTION
       if(do_once==1) cout<<" OK with initial conditions "<<endl;
 //  SS_Label_Info_7.4.2 #Call fxn get_time_series() to do population calculations for each year and get expected values for observations
     get_time_series();  //  in procedure_section
-      if(do_once==1) 
+      if(do_once==1)
       	{
       		cout<<" OK with time series"<<endl;
       	}
@@ -90,7 +91,7 @@ PROCEDURE_SECTION
       y=styr;
       get_initial_conditions();
       get_time_series();
-      setup_Benchmark(); 
+      setup_Benchmark();
       if(Do_Benchmark>0)
       {
         Get_Benchmarks(show_MSY); // should not be needed, but something critical is getting setup
@@ -311,4 +312,3 @@ PROCEDURE_SECTION
   }
   }
 //  SS_Label_Info_7.12 #End of PROCEDURE_SECTION
-

@@ -1,8 +1,10 @@
 // SS_Label_file  #5. **SS_param.tpl**
 // SS_Label_file  # - <div style="color: #ff0000">INITIALIZE_SECTION</div>
-// SS_Label_file  #   - not used in SS
+// SS_Label_file  #
+// SS_Label_file  #      - not used in SS
 // SS_Label_file  # - <div style="color: #ff0000">PARAMETER_SECTION</div>
-// SS_Label_file  #   - create needed parameters and derived quantities as dvar arrays
+// SS_Label_file  #
+// SS_Label_file  #      - create needed parameters and derived quantities as dvar arrays
 
 
 //  SS_Label_Section_4.99 #INITIALIZE_SECTION (not used in SS)
@@ -169,7 +171,7 @@ PARAMETER_SECTION
   	k=Fcast_recr_PH2; j=YrMax;}
   else
   {k=-1; j=-1;}
-  	
+
  END_CALCS
   init_bounded_vector Fcast_recruitments(recdev_end+1,s,recdev_LO,recdev_HI,Fcast_recr_PH2)
   init_bounded_vector Fcast_impl_error(endyr+1,j,-1,1,k)
@@ -182,7 +184,7 @@ PARAMETER_SECTION
 
   number SSB_unf
   number Recr_unf
-  
+
   number SSB_current;                            // Spawning biomass
   number SSB_equil;
 
@@ -198,12 +200,18 @@ PARAMETER_SECTION
   number YPR_Btgt_dead;
   number YPR_Btgt_N_dead;
   number YPR_Btgt_ret;
+  number YPR_Btgt_cost;
+  number YPR_Btgt_revenue;
+  number YPR_Btgt_profit;
   number YPR_Btgt;
 
   number YPR_spr_enc;
   number YPR_spr_dead;
   number YPR_spr_N_dead;
   number YPR_spr_ret;
+  number YPR_spr_cost;
+  number YPR_spr_revenue;
+  number YPR_spr_profit;
 
   number Vbio_spr;
   number Vbio1_spr;
@@ -224,13 +232,18 @@ PARAMETER_SECTION
   number YPR_msy_dead;
   number YPR_msy_N_dead;
   number YPR_msy_ret;
+  number YPR_msy_cost;
+  number YPR_msy_revenue;
+  number YPR_msy_profit;
 
   number YPR_enc;
   number YPR_dead;
-  number YPR_opt;  //  used to find F0.1 and Fmsy
+  number YPR_opt;  //  used to find F0.1 and Fmsy  contains all dead catch
   vector YPR_val_vec(1,Nfleet);  // used to calculate value, so is multipled by price per unit
   number YPR_N_dead;
   number YPR_ret;
+  number Cost;  //  total fishery cost across all fleets
+  number Profit;  //  total revenues - Cost
   number MSY_Fmult;
   number SPR_Fmult;
   number Btgt_Fmult;

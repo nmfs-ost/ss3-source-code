@@ -1,7 +1,8 @@
 // SS_Label_file  #10. **SS_miscfxn.tpl**
-// SS_Label_file  #* <u>Join_Fxn()</u>    //  joins line segments in differentiable way
-// SS_Label_file  #* <u>get_age_age()</u>  //  for ageing error
-// SS_Label_file  #* <u>get_catch_mult()</u>
+// SS_Label_file  # * <u>Join_Fxn()</u>    //  joins line segments in differentiable way
+// SS_Label_file  # * <u>get_age_age()</u>  //  for ageing error
+// SS_Label_file  # * <u>get_catch_mult()</u>
+// SS_Label_file  #
 
 //********************************************************************
  /*  SS_Label_FUNCTION 42 Join_Fxn  */

@@ -1,10 +1,10 @@
 // SS_Label_file  #17. **SS_write.tpl**
-// SS_Label_file  #* <u>write_summaryoutput()</u>  //  append writes to *cumreport.sso*
-// SS_Label_file  #* <u>write_SS_summary()</u>  //  writes *ss_summary.sso*
-// SS_Label_file  #* <u>write_rebuilder_output()</u> // special output 
-// SS_Label_file  #* <u>write_SIStable()</u>  //  deprecated, see new r4ss routines
-// SS_Label_file  #* <u>write_Bzero_output()</u>  //  
-// SS_Label_file  #* <u>Report_Parm()</u>  //  used by write_big_report in writing *report.sso*
+// SS_Label_file  # * <u>write_summaryoutput()</u>  //  append writes to *cumreport.sso*
+// SS_Label_file  # * <u>write_SS_summary()</u>  //  writes *ss_summary.sso*
+// SS_Label_file  # * <u>write_rebuilder_output()</u> // special output
+// SS_Label_file  # * <u>write_SIStable()</u>  //  deprecated, see new r4ss routines
+// SS_Label_file  # * <u>write_Bzero_output()</u>  //
+// SS_Label_file  # * <u>Report_Parm()</u>  //  used by write_big_report in writing *report.sso*
 // SS_Label_file  #
 
  /*  SS_Label_FUNCTION 36 write_summaryoutput */
@@ -274,7 +274,7 @@ FUNCTION void write_SS_summary()
     SS_smry<<"#_LIKELIHOOD "<<endl;
     SS_smry<<"Label logL*Lambda"<<endl;
     SS_smry<<"TOTAL_LogL "<<obj_fun<<endl;
-    if(F_Method>1) {SS_smry<<"Catch "<<catch_like*column(catch_lambda,k)<<endl;} 
+    if(F_Method>1) {SS_smry<<"Catch "<<catch_like*column(catch_lambda,k)<<endl;}
     if(N_init_F>0) SS_smry<<"Equil_catch "<<equ_catch_like*column(init_equ_lambda,k)<<endl;
     if(Svy_N>0) SS_smry<<"Survey "<<surv_like*column(surv_lambda,k)<<endl;
     if(nobs_disc>0) SS_smry<<"Discard "<<disc_like*column(disc_lambda,k)<<endl;
@@ -284,7 +284,7 @@ FUNCTION void write_SS_summary()
     if(nobs_ms_tot>0) SS_smry<<"Size_at_age "<<sizeage_like*column(sizeage_lambda,k)<<endl;
     if(SzFreq_Nmeth>0) SS_smry<<"Gen_Size_Comp "<<SzFreq_like*column(SzFreq_lambda,k)<<endl;
     if(Do_Morphcomp>0) SS_smry<<"Morphcomp "<<Morphcomp_lambda(k)*Morphcomp_like<<endl;
-    if(Do_TG>0) 
+    if(Do_TG>0)
     {
       SS_smry <<"Tag_Data_1 "<<TG_like1*column(TG_lambda1,k)<<endl;
       SS_smry <<"Tag_Data_2 "<<TG_like2*column(TG_lambda2,k)<<endl;
@@ -296,7 +296,7 @@ FUNCTION void write_SS_summary()
     SS_smry <<"Parm_priors "<<parm_like*parm_prior_lambda(k)<<endl;
     SS_smry <<"Parm_softbounds "<<SoftBoundPen<<endl;
     SS_smry <<"Parm_devs "<<sum(parm_dev_like)*parm_dev_lambda(k)<<endl;
-    SS_smry <<"F_Ballpark "<<F_ballpark_lambda(k)*F_ballpark_like<<endl; 
+    SS_smry <<"F_Ballpark "<<F_ballpark_lambda(k)*F_ballpark_like<<endl;
     SS_smry <<"Crash_Pen "<<CrashPen_lambda(k)*CrashPen<<endl;
 
   SS_smry<<"#_PARAMETERS"<<endl<<"#label value se active? range"<<endl;
@@ -439,7 +439,7 @@ FUNCTION void write_SS_summary()
   {
     NP++;
     SS_smry<<ParmLabel(NP)<<" "<<parm_dev(i,j)<<" ";
-    if(parm_dev_PH(i)>0) 
+    if(parm_dev_PH(i)>0)
       {active_count++;  SS_smry<<CoVar(active_count,1)<<" ACT ";}
        else
       {SS_smry<<0.0<<" FIX ";}
@@ -451,49 +451,49 @@ FUNCTION void write_SS_summary()
   SS_smry<<"#_Spawn_Bio"<<endl;
   for (j=1;j<=N_STD_Yr;j++)
   {
-    NP++; active_count++; 
+    NP++; active_count++;
     SS_smry<<ParmLabel(NP)<<" "<<SSB_std(j)<<" "<<CoVar(active_count,1)<<endl;
   }
 
   SS_smry<<"#_Recruitment"<<endl;
   for (j=1;j<=N_STD_Yr;j++)
   {
-    NP++; active_count++; 
+    NP++; active_count++;
     SS_smry<<ParmLabel(NP)<<" "<<recr_std(j)<<" "<<CoVar(active_count,1)<<endl;
   }
 
   SS_smry<<"#_SPR Basis= "<<SPR_report_label<<endl;
   for (j=1;j<=N_STD_Yr_Ofish;j++)
   {
-    NP++; active_count++; 
+    NP++; active_count++;
     SS_smry<<ParmLabel(NP)<<" "<<SPR_std(j)<<" "<<CoVar(active_count,1)<<endl;
   }
 
   SS_smry<<"#_F Basis= "<<F_report_label<<endl;
   for (j=1;j<=N_STD_Yr_F;j++)
   {
-    NP++; active_count++; 
+    NP++; active_count++;
     SS_smry<<ParmLabel(NP)<<" "<<F_std(j)<<" "<<CoVar(active_count,1)<<endl;
   }
 
   SS_smry<<"#_Depletion Basis= "<<depletion_basis_label<<endl;
   for (j=1;j<=N_STD_Yr_Dep;j++)
   {
-    NP++; active_count++; 
+    NP++; active_count++;
     SS_smry<<ParmLabel(NP)<<" "<<depletion(j)<<" "<<CoVar(active_count,1)<<endl;
   }
 
   SS_smry<<"#_Mgmt_Quantity"<<endl;
   for (j=1;j<=N_STD_Mgmt_Quant;j++)
   {
-    NP++; active_count++; 
+    NP++; active_count++;
     SS_smry<<ParmLabel(NP)<<" "<<Mgmt_quant(j)<<" "<<CoVar(active_count,1)<<endl;
   }
 
   SS_smry<<"#_Extra_stdev"<<endl;
   for (j=1;j<=Extra_Std_N;j++)
   {
-    NP++; active_count++; 
+    NP++; active_count++;
     SS_smry<<ParmLabel(NP)<<" "<<Extra_Std(j)<<" "<<CoVar(active_count,1)<<endl;
   }
 
@@ -514,8 +514,8 @@ FUNCTION void write_SS_summary()
       {
         for (j=1;j<=Svy_N_fleet(f);j++)
         {
-          active_count++; k++; NP++; 
-          if(Svy_errtype(f)==-1) 
+          active_count++; k++; NP++;
+          if(Svy_errtype(f)==-1)
           {
             SS_smry<<ParmLabel(NP)<<" "<<Svy_sdreport_est(k)<<" "<<CoVar(active_count,1)<<" #: "<<Svy_est(f,j)<<" q: "<<Svy_q(f,j)<<endl;
           }
@@ -788,11 +788,11 @@ FUNCTION void write_Bzero_output()
 //  output annual time series for beginning of year and summing across areas for each GP and gender
     for (fishery_on_off=1;fishery_on_off>=0;fishery_on_off--)
     {
-      
+
  /*
  in first pass, fishery is on (1) so just report current values
  in second pass, rerun the time series with no fishery, then do the same reporting
- */      
+ */
     SS2out<<endl<<pick_report_name(59)<<endl;
     SS2out<<"Spawning_Biomass_Report";
     if(fishery_on_off==0) {SS2out<<"_1 No_fishery_for_Z=M_and_dynamic_Bzero";} else {SS2out<<"_2 With_fishery";}
@@ -858,7 +858,7 @@ FUNCTION void write_Bzero_output()
         if(nseas>1)
         {
      //  add in age 0 fish recruiting in later seasons
-          for (s=2;s<=nseas;s++) 
+          for (s=2;s<=nseas;s++)
           if(Bseas(g)==s) tempvec_a(0) += value(natage(t+s-1,p,g,0));
         }
       }
@@ -880,7 +880,7 @@ FUNCTION void write_Bzero_output()
         t = styr+(y-styr)*nseas;  // first season only
         for (p=1;p<=pop;p++)
         for (g=1;g<=gmorph;g++)
-        if(use_morph(g)>0 && GP4(g)==gp && sx(g)==gg) 
+        if(use_morph(g)>0 && GP4(g)==gp && sx(g)==gg)
         {
           tempvec_a+= value(natage(t,p,g));
           if(nseas>1)
@@ -1037,4 +1037,3 @@ FUNCTION void Report_Parm(const int NParm, const int AC, const int Activ, const 
     {SS2out<<" No_prior ";}
     SS2out<<endl;
   }
-

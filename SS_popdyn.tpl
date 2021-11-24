@@ -1,8 +1,9 @@
 // SS_Label_file  #12. **SS_popdyn.tpl**
-// SS_Label_file  #* <u>setup_recdevs()</u>
-// SS_Label_file  #* <u>get_initial_conditions()</u> // does virgin and initial year by calling <u>Do_Equil_Calc()</u> with F=0, then F=init_F
-// SS_Label_file  #* <u>get_time_series()</u>  //  loops the years, calling biology, selectivity and spawn-recr functions as needed
-// SS_Label_file  #* <u>Do_Equil_Calc()</u>  // does per-recruit calculations and returns SSB/R and Y/R
+// SS_Label_file  # * <u>setup_recdevs()</u>
+// SS_Label_file  # * <u>get_initial_conditions()</u> // does virgin and initial year by calling <u>Do_Equil_Calc()</u> with F=0, then F=init_F
+// SS_Label_file  # * <u>get_time_series()</u>  //  loops the years, calling biology, selectivity and spawn-recr functions as needed
+// SS_Label_file  # * <u>Do_Equil_Calc()</u>  // does per-recruit calculations and returns SSB/R and Y/R
+// SS_Label_file  #
 
 FUNCTION void setup_recdevs()
   {
@@ -131,7 +132,7 @@ FUNCTION void get_initial_conditions()
   get_mat_fec();  //  does just spawn season and subseason using ALK calculated just above
   if(Hermaphro_Option!=0) get_Hermaphro();
 
-  if(MG_active(1)>0) 
+  if(MG_active(1)>0)
     {
       get_natmort();
       natM_M1=natM;
@@ -449,6 +450,7 @@ FUNCTION void get_initial_conditions()
    env_data(styr-1,-3)=0.0;
    env_data(styr-1,-4)=0.0;
 
+// save est_equ_catch which has units (biomass vs numbers) according to that fleet; used in objfun
    for (s=1;s<=nseas;s++)
    for(int ff=1;ff<=N_catchfleets(0);ff++)
    {f=fish_fleet_area(0,ff);
@@ -653,7 +655,7 @@ FUNCTION void get_time_series()
         // but Maunder's M in get_natmort() may use the fecundity vector, so would be using the most recently calculated  Problem??
         if(Hermaphro_Option!=0) get_Hermaphro();
       }
-      if(timevary_MG(y,1)>0) 
+      if(timevary_MG(y,1)>0)
       {
         get_natmort();
         natM_M1=natM;
@@ -1856,6 +1858,7 @@ FUNCTION void Do_Equil_Calc(const prevariable& equ_Recr)
          }
        }
 
+//      MSY_units:  quantity to be maximized: (1) dead catch biomass (status quo); (2) retained catch biomass; or (3) retained catch profits"<<endl;
      YPR_dead =   sum(equ_catch_fleet(2));    // dead catch biomass per recruit
      YPR_N_dead = sum(equ_catch_fleet(5));    // dead numbers per recruit
      YPR_enc =    sum(equ_catch_fleet(1));    //  encountered biomass per recruit
@@ -1863,6 +1866,7 @@ FUNCTION void Do_Equil_Calc(const prevariable& equ_Recr)
      YPR_opt = 0.0;  //dead biomass per recruit except excludes non-optimized bycatch
                      // YPR_opt used in F0.1 and in biomass based MSY searches
      YPR_val_vec.initialize();  // retained biomass per recruit as vector, should be same as YPR_ret
+
        for(int ff=1;ff<=N_catchfleets(0);ff++)
        {f=fish_fleet_area(0,ff);
        for (s=1;s<=nseas;s++)
@@ -1968,6 +1972,16 @@ FUNCTION void Do_Equil_Calc(const prevariable& equ_Recr)
         equ_M_std /= countN;
       } // end F_reporting==5
    }
+   
+          Cost = 0;
+          for (f=1;f<=Nfleet;f++)
+          {
+            if(YPR_mask(f)==1)
+            {
+              for (s=1;s<=nseas;s++) {Cost += CostPerF(f)*Hrate(f,t_base+s); }
+            }
+          }
+
    SSB_equil=sum(SSB_equil_pop_gp);
    GenTime/=SSB_equil;
    smryage /= smrynum;
@@ -1976,4 +1990,3 @@ FUNCTION void Do_Equil_Calc(const prevariable& equ_Recr)
               {SSB_equil+=Hermaphro_maleSPB*sum(MaleSSB_equil_pop_gp);}
 
   }  //  end equil calcs
-

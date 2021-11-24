@@ -1,9 +1,10 @@
-// SS_Label_file  #**SS_readstarter.tpl**
+// SS_Label_file  #1. **SS_readstarter.tpl**
 // SS_Label_file  #  * define many global constants, also see GLOBALS_SECTION
 // SS_Label_file  #  * create list of pick_report_name values
 // SS_Label_file  #  * read and process *starter.ss*
 // SS_Label_file  #  * read *runnumber.ss*
 // SS_Label_file  #  * read *profilevalues.ss*
+// SS_Label_file  #
 
 //*********COUNTERS*************************
   int z // counters for size (length)
@@ -99,14 +100,14 @@
   on=0;
   No_Report=0;
   Ncycle=3;
-  z=0; z1=0; z2=0; L1=0; L2=0; A2=0;  a1=0; f=0; f1=0; fs=0; 
-  gmorph=0; g=0; GPat=0; gg=0; gp=0; gp2=0; 
-  a=0; b=0; p=0; p1=0; p2=0; i=0; y=0; yz=0; s=0; s2=0; 
-  mid_subseas=0;  subseas=0; ALK_idx=0; ALK_time=0; ALK_idx_mid=0; 
-  t=0; mo=0; j=0; j1=0; j2=0; k=0; k1=0; k2=0; k3=0; s_off=0; 
-  Fishon=0; NP=0; Ip=0; firstseas=0; t_base=0; niter=0; loop=0; 
-  TG_t=0; Fcast_catch_start=0; retParCount=0; N_SC=0; N_DC=0; N_CC=0; N_FC=0; catch_mult_pointer=0; frac_female_pointer=0; icycle=0; No_Report=0; 
-  mcmcFlag=0; noest_flag=0; temp=0; temp1=0; save_gparm_print=0; 
+  z=0; z1=0; z2=0; L1=0; L2=0; A2=0;  a1=0; f=0; f1=0; fs=0;
+  gmorph=0; g=0; GPat=0; gg=0; gp=0; gp2=0;
+  a=0; b=0; p=0; p1=0; p2=0; i=0; y=0; yz=0; s=0; s2=0;
+  mid_subseas=0;  subseas=0; ALK_idx=0; ALK_time=0; ALK_idx_mid=0;
+  t=0; mo=0; j=0; j1=0; j2=0; k=0; k1=0; k2=0; k3=0; s_off=0;
+  Fishon=0; NP=0; Ip=0; firstseas=0; t_base=0; niter=0; loop=0;
+  TG_t=0; Fcast_catch_start=0; retParCount=0; N_SC=0; N_DC=0; N_CC=0; N_FC=0; catch_mult_pointer=0; frac_female_pointer=0; icycle=0; No_Report=0;
+  mcmcFlag=0; noest_flag=0; temp=0; temp1=0; save_gparm_print=0;
   finished_minimize=0;
   //  SS_Label_Info_1.1.2  #arrays for parameter labels are created in GLOBAL
 //  adstring_array NumLbl;
@@ -217,7 +218,7 @@
     SDmode = 0;
   }
    echoinput<<" -nohess flag (1 means do Hessian): "<<SDmode<<endl;
-   
+
 //  SS_Label_Info_1.2  #Read the STARTER.SS file
 // /*  SS_Label_Flow  read STARTER.SS */
   ad_comm::change_datafile_name("starter.ss");       //  get filenames
@@ -268,7 +269,7 @@
   !!echoinput<<rundetail<<"  rundetail"<<endl;
   init_int reportdetail
   int rd_background
-  
+
  LOCAL_CALCS
   if (reportdetail < 0 || reportdetail > 3) reportdetail = 0;
   echoinput<<reportdetail<<"  reportdetail 0=minimal for data-limited, 1=all, 2=no growth, 3=custom"<<endl;
@@ -298,7 +299,7 @@
   else{
   	rd_background=reportdetail; //  0=limited; 2=brief; 1=all
   }
-  	
+
 //  set background set of picked reports; then set custom if reportdetail==3
   for(k=1;k<=60;k++) {pick_report_use(k)="N";}  //  all off
   if(rd_background==0)  //  limited
@@ -339,8 +340,10 @@
   	pick_report_use(49)="N";
   	pick_report_use(50)="N";
   	pick_report_use(53)="N";
+  	pick_report_use(55)="N";
   	pick_report_use(57)="N";
   	pick_report_use(58)="N";
+  	pick_report_use(59)="N";
   }
   else  //  all on
   {
@@ -354,13 +357,13 @@
   		else if(reportdetail_list[j](1)>=-60) {
   			pick_report_use(-reportdetail_list[j](1))="N";
   		}
-  		else if(reportdetail_list[j](1)>-100) 
+  		else if(reportdetail_list[j](1)>-100)
   			{
   				N_warn++;  warning<<N_warn<<" "<<"custom report number: "<<reportdetail_list[j](1)<<" is out of range and ignored"<<endl;
   			}
     }
-  } 
-  
+  }
+
   for(k=1;k<=60;k++)
   echoinput<<k<<" "<<pick_report_use(k)<<" "<<pick_report_name(k)<<endl;
  END_CALCS
@@ -448,13 +451,13 @@
    	depletion_log=0;
     k=depletion_basis_rd;
     depletion_basis=depletion_basis_rd;  //  default
-    
+
     if(k>=100) //  invokes log(ratio)
     	{k-=100;
     	depletion_log=1;
     	depletion_basis=k;
-    	} 
-    	
+    	}
+
    	if(k>10)  //  invokes multiyr
    	{
    		depletion_multi=int(k/10);
@@ -503,14 +506,14 @@
     echoinput<<F_std_basis_rd<<"  F_std basis as read"<<endl;
     k=F_std_basis_rd;
     F_std_basis=F_std_basis_rd; // default
-    
+
     if(k>=100) //  invokes log(ratio)
   	{
  	  	F_std_log=1;
   		k-=100;
  	  	F_std_basis=k;  //  can be overridden by next test
-  	} 
-    	
+  	}
+
    	if(k>10)  //  invokes multiyr
    	{
    		F_std_multi=int(k/10);
@@ -520,7 +523,7 @@
     echoinput<<"Parse into: F_std_log(ratio): "<<F_std_log<<" F_std_multi: "<<F_std_multi<<" F_std_basis: "<<F_std_basis<<endl;
     if(F_std_multi>1) {N_warn++;  warning<<N_warn<<" "<<"NOTE: new feature for multiyr F_std reporting, be sure STD reporting covers all years from styr to endyr"<<endl;}
    echoinput<<"For Kobe plot, set depletion_basis=2; depletion_level=1.0; F_reporting=your choose; F_std_basis=2"<<endl;
-     
+
     mcmc_output_detail = 0;
     MCMC_bump=0.;
     ALK_tolerance=0.0;
@@ -534,7 +537,7 @@
     //  3.  irand_seed;  added for 3.30.15
     //  xx.  finish_starter
      do
-     {	
+     {
       *(ad_comm::global_datafile) >> tempin;
       finish_starter=tempin;
       if(tempin==3.30 || tempin==999) ender=1;
@@ -553,7 +556,7 @@
      finish_starter=3.30;
      echoinput<<"Read files in 3.30 format"<<endl;
      echoinput<<"SS will continue reading from starter.ss until it reads 3.30"<<endl;
-   	
+
      echoinput<<"read MCMC_output_detail.MCMC_bump as a single real number;  separate values will be parsed from integer and fraction"<<endl;
      mcmc_output_detail = int(tempin);
      MCMC_bump=tempin-mcmc_output_detail;
@@ -573,7 +576,7 @@
 
      echoinput<<"Now get random number seed; enter -1 to use long(time) as the seed"<<endl;
      *(ad_comm::global_datafile) >> tempin;
-      if(tempin==3.30) 
+      if(tempin==3.30)
       {ender=1; irand_seed_rd=-1; irand_seed=-1;}
       	else
      {irand_seed_rd=int(tempin);
@@ -583,7 +586,7 @@
      }
      if(ender==0) {
      *(ad_comm::global_datafile) >> tempin;
-      if(tempin==3.30) 
+      if(tempin==3.30)
       	{ender=1;}
       	else
         {N_warn++; cout<<" EXIT - see warning "<<endl;  warning<<N_warn<<" "<<"starter.ss has extra input lines; check echoinput to verify read"<<endl;

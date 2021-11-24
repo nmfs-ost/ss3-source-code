@@ -1,11 +1,11 @@
 // SS_Label_file  #4. **SS_readcontrol.tpl**
-// SS_Label_file  #* read *control_file* named in STARTER.SS
-// SS_Label_file  #   * define and read needed parameters from model options selected
-// SS_Label_file  #   * creates labels for those parameters
-// SS_Label_file  #   * uses a function found in SS_global, <u>create_timevary()</u>, to create, index and label time-varying parameters; including autogeneration option
-// SS_Label_file  #   * creates and labels derived quantities
-// SS_Label_file  #   * creates covariance matrix 
-// SS_Label_file  #   * reads *wt_at_age.ss* if requested
+// SS_Label_file  # * read *control_file* named in STARTER.SS
+// SS_Label_file  #     * define and read needed parameters from model options selected
+// SS_Label_file  #     * creates labels for those parameters
+// SS_Label_file  #     * uses a function found in SS_global, <u>create_timevary()</u>, to create, index and label time-varying parameters; including autogeneration option
+// SS_Label_file  #     * creates and labels derived quantities
+// SS_Label_file  #     * creates covariance matrix
+// SS_Label_file  #     * reads *wt_at_age.ss* if requested
 // SS_Label_file  # * finish DATA_SECTION
 
  LOCAL_CALCS
@@ -41,7 +41,7 @@
 //  so push_back a code to the ivector Parm_minmax
 //  and add a string to the adstring_array Parm_info
   ivector minmax_types(1,10)  //  set of canned min-max types
- 
+
 !!//  SS_Label_Info_4.2 #Read info for growth patterns, gender, settlement events, platoons
   init_int WTage_rd  // 0 means do not read wtatage.ss; 1 means read and use wtatage.ss and also read and use growth parameters
                      //  future option 2 will suppress reading and use of growth
@@ -335,7 +335,7 @@
   3darray lin_grow(1,gmorph,1,nseas*N_subseas,0,nages)  //  during linear phase has fraction of Size at Afix
   ivector settle_g(1,gmorph)   //  settlement pattern for each platoon
   int ALK_count;
-  
+
  LOCAL_CALCS
   ALK_count=0;
   ALK_range_g_lo=1;
@@ -599,7 +599,7 @@
    // (2)  for recruitment sigmaR
    // (3)  for survey extraSD
 !!  varparm_estimated.initialize();
-   
+
 !!//  SS_Label_Info_4.5 #Read setup and parameters for natmort, growth, biology, recruitment distribution, and migration
 // read setup for natmort parameters:  LO, HI, INIT, PRIOR, PR_type, CV, PHASE, use_env, use_dev, dev_minyr, dev_maxyr, dev_phase, Block, Block_type
   int N_MGparm
@@ -624,7 +624,8 @@
 // read natmort setup
  LOCAL_CALCS
    N_natMparms=0;
-   N_predparms=N_pred+N_pred*nseas;
+   N_predparms=N_pred;
+   if(nseas>1) N_predparms+=N_pred*nseas;
    natM_5_opt=0;
    MGparm_point.initialize();
 //  0=1Parm; 1=segmented; 2=Lorenzen; 3=agespecific; 4=agespec with seas interpolate; 5=Maunder_M
@@ -684,7 +685,7 @@
 //            Maunder_Mmat = natMparms(4,gp);
 //            if(natM_5_opt==3){	//use two parameters  mat50% and mat_slope.
 //        		Maunder_L50  = natMparms(5,gp);
-//		        Maunder_beta = natMparms(6,gp); 
+//		        Maunder_beta = natMparms(6,gp);
   			break;
   		}
   }
@@ -759,7 +760,7 @@
     N_growparms=2;  // for the two CV parameters
     k1=N_GP*gender;  // for reading empirical length_at_age
   }
-  
+
   echoinput<<" N_growparms  "<<N_growparms<<endl;
   AFIX2_forCV=AFIX2;
   if(AFIX2_forCV>nages) AFIX2_forCV=nages;
@@ -838,7 +839,7 @@
         {N_warn++;cout<<" EXIT - see warning "<<endl;   warning<<N_warn<<" "<<"EXIT:  age K points must be unique and decending order "<<endl;exit(1);}
       }
     }
-     
+
    }
    Grow_logN=0;
    switch (CV_depvar)
@@ -930,7 +931,7 @@
   Hermaphro_maleSPB=0.0;
   Hermaphro_firstage=0;
   MGparm_Hermaphro=0;
-  
+
   *(ad_comm::global_datafile) >> Hermaphro_Option;
   echoinput<<Hermaphro_Option<<"  Hermaphro_Option: 0 means No; 1 for F to M; -1 for M to F"<<endl;
   if (Hermaphro_Option!=0)
@@ -938,7 +939,7 @@
   	*(ad_comm::global_datafile) >> Hermaphro_seas_rd;  //  -1 for all seasons, or integer for particular season <=nseas
   		echoinput<<Hermaphro_seas_rd<<endl;
   	Hermaphro_seas=int(Hermaphro_seas_rd);
-  	
+
                                        // fractional part of Hermaphro_seas will be converted to the first age that switches
     if(Hermaphro_seas_rd>0) {
     Hermaphro_firstage=int((Hermaphro_seas_rd-Hermaphro_seas)*10.0+1.0e-6);}
@@ -975,7 +976,7 @@
 
   ParCount=0;
   Parm_minmax.push_back (0);  // to start real info at index "1" to align with ParCount
-  
+
 //  retParCount=-1;   // for 3.24 -> 3.30 dome-shaped retention  replace with ivector N_retparm()
 
 //  SS_Label_Info_4.5.3 #Set up indexing and parameter names for MG parameters
@@ -1126,7 +1127,7 @@
           break;
         }
       }
-//  init_int CV_depvar     //  select CV_growth pattern; 0 CV=f(LAA); 1 CV=F(A); 2 SD=F(LAA); 3 SD=F(A); 4 logSD=f(A) 
+//  init_int CV_depvar     //  select CV_growth pattern; 0 CV=f(LAA); 1 CV=F(A); 2 SD=F(LAA); 3 SD=F(A); 4 logSD=f(A)
       if(CV_depvar<=1)
       {ParmLabel+="CV_young_"+GenderLbl(gg)+GP_Lbl(gp);
       ParmLabel+="CV_old_"+GenderLbl(gg)+GP_Lbl(gp);}
@@ -1136,7 +1137,7 @@
       else
       {ParmLabel+="lnSD_young_"+GenderLbl(gg)+GP_Lbl(gp);
       ParmLabel+="LnSD_old_"+GenderLbl(gg)+GP_Lbl(gp);}
-        
+
       ParCount+=2;
       ParmLabel+="Wtlen_1_"+GenderLbl(gg)+GP_Lbl(gp);
       ParmLabel+="Wtlen_2_"+GenderLbl(gg)+GP_Lbl(gp);
@@ -1179,7 +1180,7 @@
       }
     }
   }
-  
+
   if(Hermaphro_Option==1 || Hermaphro_Option==-1)
   {
      MGparm_Hermaphro=ParCount+1;  // pointer to first hermaphroditism parameter
@@ -1273,7 +1274,7 @@
           ParmLabel+="M2_pred"+onenum+"_s"+onenum2;
           Parm_info+="val";
           Parm_minmax.push_back (3);
-          
+
         }
       }
     }
@@ -1332,7 +1333,7 @@
      mgp_type(Ip,Ip+N_natMparms-1)=1; // natmort parms
      Ip+=N_natMparms;
      mgp_type(Ip,Ip+N_growparms-1)=2;  // growth parms
-     
+
 //  check on estimation of variance parameters for CV_young and CV_old
      for(int kk=Ip+N_growparms-2;kk<=Ip+N_growparms-1;kk++)
      {
@@ -1377,7 +1378,7 @@
                                             // stores years to calc non-constant MG parms (1=natmort; 2=growth; 3=wtlen & fec; 4=recr_dist&femfrac; 5=movement; 6=ageerrorkey; 7=catchmult)
   ivector timevary_pass(styr-3,YrMax+1)    //  extracted column
   ivector MG_active(0,7)  // 0=all, 1=M, 2=growth 3=wtlen, 4=recr_dist&femfrac, 5=migration, 6=ageerror, 7=catchmult
-  vector env_data_pass(1,2)  //  holds min-max year with env data  
+  vector env_data_pass(1,2)  //  holds min-max year with env data
   int  do_densitydependent;
 
 //  timevary_setup(1)=baseparm type;
@@ -1394,7 +1395,7 @@
 //  timevary_setup(12)=dev phase
 //  timevary_setup(13)=all parm index of baseparm
 //  timevary_setup(14)=continue_last dev
-  
+
  LOCAL_CALCS
    do_densitydependent=0;
    timevary_cnt=0;
@@ -1525,7 +1526,7 @@
       }
 //  timevary growth or maturity and Maunder M refers to that maturity
       if((timevary_MG(y,2)>0 || timevary_MG(y,3)>0) && natM_type==5 && natM_5_opt<3) timevary_MG(y,1)=1;
-      	
+
       echoinput<<y<<" timevary_MG: "<<timevary_MG(y)<<endl;
     }
  END_CALCS
@@ -1929,7 +1930,7 @@
   }
 
   recdev_early_start=recdev_early_start_rd;
-  
+
   if(do_recdev==0)
     {
       recdev_PH_rd=-3;
@@ -2128,7 +2129,7 @@
   F_parm_intval=0.05;  //  fill vector
   F_Method_PH=-1;  //  fill vector
   F_Method_byPH.initialize();
-  
+
   *(ad_comm::global_datafile) >> F_Method;
   echoinput<<F_Method<<" F_Method as read"<<endl;
 
@@ -2319,12 +2320,12 @@
 
   Fparm_start = ParCount;
   N_Fparm=0;
-  
+
   ivector tempin(1,2);
   tempin.initialize();
   Fparm_loc.push_back (tempin(1,2));
   Fparm_PH.push_back (0);
-  
+
   if(F_Method==1 || F_Method==3)  //  no F parameters
   {
     for (f=1;f<=Nfleet;f++)
@@ -2390,7 +2391,7 @@
     {
       if(F_Method_byPH(f,50)==2)  //
       {
-        
+
       }
     }
   if(F_detail>0)
@@ -2430,7 +2431,7 @@
            echoinput<<f<<"  F_Method_byPH:  "<<F_Method_byPH(f)(1,10)<<endl;
         }
       }
-      
+
 //  find whether any fleet is hybrid for each phases
     for(j=1;j<=50;j++)
     {
@@ -2537,7 +2538,7 @@
           }
           if(Q_setup(fmirror,5)==1)
           {
-            N_warn++; cout<<" EXIT - see warning "<<endl;  warning<<N_warn<<" "<<" fleet: "<<f<<"  cannot mirror fleet that has float q: "<<fmirror<<endl; 
+            N_warn++; cout<<" EXIT - see warning "<<endl;  warning<<N_warn<<" "<<" fleet: "<<f<<"  cannot mirror fleet that has float q: "<<fmirror<<endl;
             exit(1);
           }
           break;
@@ -2577,7 +2578,7 @@
         if(depletion_type==2)
           echoinput<<"link_info=2  no phase adjustments, can be used when profiling on fixed R0"<<endl;
         if(Q_setup(f,5)==1)
-        	{N_warn++; 
+        	{N_warn++;
         		 warning<<N_warn<<" "<<"change to no_float for depletion fleet # "<<f<<endl
         		<<"++ and you must set phase to negative so not estimated"<<endl; Q_setup(f,5)=0;
         	}
@@ -2625,7 +2626,7 @@
     	{if(Q_parm_1(j,7)>=0)  {N_warn++;   warning<<N_warn<<" "<<"fleet: "<<f<<" SS changed Q to not estimate because it is depletion fleet"<<endl;  Q_parm_1(j,7)=-1; }
     	}
 
-      
+
      //  check for extraSD estimation
      if(Q_setup(f,3)>0)
       {
@@ -2822,7 +2823,7 @@
   ivector Min_selage(1,Nfleet) //  minimum selected age
  LOCAL_CALCS
   echoinput<<" selex types "<<endl<<seltype_rd<<endl;
-  
+
   //  identify fleets with adjusted first_selected age
   seltype=seltype_rd;  //  set matrices to be same
   Min_selage.initialize();
@@ -2861,7 +2862,7 @@
 			}
 		}
   }
-  
+
   RetainParm.initialize();
 //  define number of parameters for each retention type
   N_ret_parm(0)= 0;
@@ -2946,7 +2947,7 @@
        ParCount++; ParmLabel+="SizeSel=1_BinLo_"+fleetname(f)+"("+NumLbl(f)+")";
        ParCount++; ParmLabel+="SizeSel=1_BinHi_"+fleetname(f)+"("+NumLbl(f)+")";
      }
-     
+
      else
      {
        for (j=1;j<=N_selparmvec(f);j++)
@@ -3097,7 +3098,7 @@
        ParCount++; ParmLabel+="first_selage_"+fleetname(f1)+"("+NumLbl(f1)+")";
        ParCount++; ParmLabel+="first_age_mean_"+fleetname(f1)+"("+NumLbl(f1)+")";
        ParCount++; ParmLabel+="last_age_mean_"+fleetname(f1)+"("+NumLbl(f1)+")";
-       if(gender==2) 
+       if(gender==2)
        {
         ParCount++; ParmLabel+="Male_ln(ratio)_"+fleetname(f1)+"("+NumLbl(f1)+")";
         for(int gg=1;gg<=seltype(f,4);gg++)
@@ -3117,7 +3118,7 @@
        ParCount++; ParmLabel+="first_selage_"+fleetname(f1)+"("+NumLbl(f1)+")";
        ParCount++; ParmLabel+="first_age_mean_"+fleetname(f1)+"("+NumLbl(f1)+")";
        ParCount++; ParmLabel+="last_age_mean_"+fleetname(f1)+"("+NumLbl(f1)+")";
-       if(gender==2) 
+       if(gender==2)
        {
         ParCount++; ParmLabel+="Male_ln(ratio)_"+fleetname(f1)+"("+NumLbl(f1)+")";
         for(int gg=1;gg<=seltype(f,4);gg++)
@@ -3237,7 +3238,7 @@
       }
      N_selparm += N_selparmvec(f);
    }
-   
+
 //  create index to fleets with discard
   disc_fleet_list.initialize();
   N_retain_fleets=0;
@@ -3247,9 +3248,9 @@
       {
         N_retain_fleets++;
         disc_fleet_list(f)=N_retain_fleets;  //  for compact storage of disc_age(t,f,g)
-      } 
+      }
   }
-  
+
 //  SS_Label_Info_4.097 #Read parameters needed for estimating variance of composition data
   {
     echoinput<<"#Now count parameters for D-M variance of composition data; CANNOT be time-varying"<<endl;
@@ -3345,7 +3346,7 @@
       k=parmcount+RetainParm(f)+2;
       if(selparm_1(k,1) >=0.0)  // check to see if user has bounds relevant for 3.24 format
         {
-          N_warn++; 
+          N_warn++;
            warning<<N_warn<<" "<<"converting asymptotic retention parameter to 1/(1+e(-x)) format for fleet: "<<f<<" parm: "<<k<<endl;
            warning<<N_warn<<" "<<"old min, max, init, prior: "<<selparm_1(k)(1,4)<<endl;
           echoinput<<"converting asymptotic retention parameter to 1/(1+e(-x)) format for fleet: "<<f<<" parm: "<<k<<endl;
@@ -3403,7 +3404,7 @@
 //  check on mirror bounds
   parmcount=0;
   for(f=1;f<=Nfleet;f++)
-  { 
+  {
   	if(seltype(f,1)==5)  //  uses mirror
   		{
         i=int(selparm_1(parmcount+1,3));
@@ -3455,11 +3456,11 @@
        	echoinput<<"create mirror_mask: "<<mirror_mask(f)<<endl;
 			echoinput<<"end check on min-max ranges for size selex=11"<<endl;
   		}
-		
+
     parmcount+=N_selparmvec(f);
   }
   for(f=1;f<=Nfleet;f++)
-  { 
+  {
   	if(seltype(f+Nfleet,1)==11)  //  setting min-max age range
   		{
         echoinput<<"check on age selex min-max for fleet: "<<f<<" "<<selparm_1(parmcount+1,3)<<" "<<selparm_1(parmcount+2,3)<<" nages: "<<nages<<endl;
@@ -3602,7 +3603,7 @@
   echoinput<<" now read 0/1 for 2D_AR"<<endl;
   *(ad_comm::global_datafile) >> TwoD_AR_do;
   echoinput<<TwoD_AR_do<<"  #_ 0/1 to request experimental 2D_AR selectivity smoother options  "<<endl;
-  
+
 
   if(TwoD_AR_do>0)
   {
@@ -3655,7 +3656,7 @@
          if(tempvec(8)==2) z=f+Nfleet;
          for(y=tempvec(2);y<=tempvec(3)+1;y++)  {timevary_sel(y,z)=1;}
          TwoD_AR_def.push_back (tempvec);
-         
+
          for(j=amin;j<=sigma_amax;j++)
          {
            dvector dtempvec(1,7);  //  Lo, Hi, init, prior, prior_sd, prior_type, phase;
@@ -3675,7 +3676,7 @@
            *(ad_comm::global_datafile) >> dtempvec(1,7);
            timevary_parm_rd.push_back (dtempvec);
            echoinput<<" rho year: "<<dtempvec(3)<<endl;
-           ParCount++; timevary_parm_cnt++; timevary_parm_cnt_sel++; N_selparm2++; 
+           ParCount++; timevary_parm_cnt++; timevary_parm_cnt_sel++; N_selparm2++;
            ParmLabel+="rho_yr_"+fleetname(f)+"("+NumLbl(f)+")_"+anystring;
            }
            {
@@ -3684,7 +3685,7 @@
            *(ad_comm::global_datafile) >> dtempvec(1,7);
            timevary_parm_rd.push_back (dtempvec);
            echoinput<<" rho "<<anystring<<": "<<dtempvec(3)<<endl;
-           ParCount++; timevary_parm_cnt++; timevary_parm_cnt_sel++; N_selparm2++; 
+           ParCount++; timevary_parm_cnt++; timevary_parm_cnt_sel++; N_selparm2++;
            ParmLabel+="rho_"+fleetname(f)+"("+NumLbl(f)+")"+anystring;
           }
          }
@@ -3812,7 +3813,7 @@
   init_int TG_custom;  // 1=read; 0=create default parameters
   !! echoinput<<TG_custom<<" TG_custom (need to read even if no tag data ); tag_data?: "<<Do_TG<<" N_Fleet: "<<Nfleet1<<endl;
   !! k=TG_custom*Do_TG*(3*N_TG+2*Nfleet1);
-  !! 
+  !!
   init_matrix TG_parm1(1,k,1,14);  // read initial values
   !! if(k>0) echoinput<<" Tag parameters as read "<<endl<<TG_parm1<<endl;
   !! k=Do_TG*(3*N_TG+2*Nfleet1);
@@ -3989,7 +3990,7 @@
            	{N_warn++;  warning<<N_warn<<" "<<"for selectivity parmdevs, must change Fcast_Specify_Selex to 1 when using continue last dev"<<endl;
            	 echoinput<<"for selectivity parmdevs, must change Fcast_Specify_Selex to 1 when using continue last dev"<<endl;}
             }
-           if(picker>10) 
+           if(picker>10)
            {
              parm_dev_type(k)=3;  // use objfun using -log(se) to match 3.30.12 and earlier
              picker-=10;
@@ -4120,14 +4121,14 @@
   {
     if(varparm_estimated(1)==1)
     {
-      N_warn++; cout<<"exit with warning"<<endl; 
+      N_warn++; cout<<"exit with warning"<<endl;
        warning<<N_warn<<" "<<" growth variance is estimated parameter, so change sd_offset to 1"<<endl; exit(1);
     }
     if(varparm_estimated(2)==1)
-    {N_warn++; cout<<" EXIT - see warning "<<endl; 
+    {N_warn++; cout<<" EXIT - see warning "<<endl;
        warning<<N_warn<<" "<<" recruitment sigmaR is estimated parameter, so change sd_offset to 1"<<endl; exit(1);}
     if(varparm_estimated(3)==1)
-    {N_warn++; cout<<" EXIT - see warning "<<endl; 
+    {N_warn++; cout<<" EXIT - see warning "<<endl;
        warning<<N_warn<<" "<<" survey extraSD is estimated parameter, so change sd_offset to 1"<<endl; exit(1);}
   }
   if(depletion_fleet>0  && depletion_type<2 && max_lambda_phase<2)
@@ -4460,7 +4461,7 @@
         else if(Selex_Std_Cnt==2)
           {Selex_Std_Pick(1)=nages/2; Selex_Std_Pick(2)=nages;}
         else
-        {         
+        {
           j=nages/(Selex_Std_Cnt-1);
           Selex_Std_Pick(1)=j/2;
           for (i=2;i<=Selex_Std_Cnt-1;i++) Selex_Std_Pick(i)=Selex_Std_Pick(i-1)+j;
@@ -4638,7 +4639,7 @@
   int active_parms;    // count the active parameters
   int deriv_start;  //  start index for derived quantities
   int deriv_covar_start
-  
+
  LOCAL_CALCS
   if(Do_Benchmark>0)
   {
@@ -4670,7 +4671,7 @@
   echoinput<<"Adjust the phases "<<endl;
   Turn_off_phase2=Turn_off_phase;
   echoinput<<" requested turn_off phase: "<<Turn_off_phase<<endl;
-  if(depletion_fleet>0 && depletion_type==1) 
+  if(depletion_fleet>0 && depletion_type==1)
     {
       Turn_off_phase2=1;
       echoinput<<"depletion fleet and type are: "<<depletion_fleet<<" "<<depletion_type<<" so set turn-off to phase 1 "<<endl;
@@ -4792,9 +4793,9 @@
   }
   else
   {Fcast_recr_PH2=-1;}
-  
+
   echoinput<<"Fcast_dev_phase (read and adjusted): "<<Fcast_recr_PH_rd<<" "<<Fcast_recr_PH2<<endl;
-  
+
   for (s=1;s<=nseas;s++)
   for (f=1;f<=Nfleet;f++)
   {
@@ -4875,39 +4876,49 @@
         }
         if(f<=Nfleet)  // doing size Selex
         {
+          dvector templen(1,nlen_bin);
+          templen.initialize();
+          for(s=1;s<=nseas;s++)
+          {templen += obs_l_all(2,s,f);}
+          templen /= double(nseas);
           while(temp<=0.975001)
           {
-            while(obs_l_all(2,f,z)<temp)
+            while(templen(z)<temp)
             {
               z++;
             }
             //  intermediate knots are calculated from data_length_bins
             if(z>1)
-            {selparm_RD(Ip+s)=len_bins_dat(z-1)+(temp-obs_l_all(2,f,z-1))/(obs_l_all(2,f,z)-obs_l_all(2,f,z-1))*(len_bins_dat(z)-len_bins_dat(z-1));}
+            {selparm_RD(Ip+s)=len_bins_dat(z-1)+(temp-templen(z-1)/(templen(z)-templen(z-1)))*(len_bins_dat(z)-len_bins_dat(z-1));}
             else
             {selparm_RD(Ip+s)=len_bins_dat(z);}
             s++;
             temp+=temp1;
           }
-          echoinput<<"len_bins_dat: "<<len_bins_dat<<endl<<"Cum_comp: "<<obs_l_all(2,fs)(1,nlen_bin)<<endl<<"Knots: "<<selparm_RD(Ip+3+1,Ip+3+N_knots)<<endl;
+          echoinput<<"len_bins_dat: "<<len_bins_dat<<endl<<"Cum_comp: "<<templen<<endl<<"Knots: "<<selparm_RD(Ip+3+1,Ip+3+N_knots)<<endl;
         }
         else  //  age selex
         {
+          dvector tempage(1,n_abins);
+          tempage.initialize();
+          for(s=1;s<=nseas;s++)
+          {tempage += obs_a_all(2,s,f);}
+          tempage /= double(nseas);
           while(temp<=0.975001)
           {
-            while(obs_a_all(2,fs,z)<temp)
+            while(tempage(z)<temp)
             {
               z++;
             }
             //  intermediate knots are calculated from data_length_bins
             if(z>1)
-            {selparm_RD(Ip+s)=age_bins(z-1)+(temp-obs_a_all(2,fs,z-1))/(obs_a_all(2,fs,z)-obs_a_all(2,fs,z-1))*(age_bins(z)-age_bins(z-1));}
+            {selparm_RD(Ip+s)=age_bins(z-1)+(temp-tempage(z-1))/(tempage(z)-tempage(z-1))*(age_bins(z)-age_bins(z-1));}
             else
             {selparm_RD(Ip+s)=age_bins(z);}
             s++;
             temp+=temp1;
           }
-          echoinput<<"age_bins: "<<age_bins<<endl<<"Cum_comp: "<<obs_a_all(2,fs)(1,n_abins)<<endl<<"Knots: "<<selparm_RD(Ip+3+1,Ip+3+N_knots)<<endl;
+          echoinput<<"age_bins: "<<age_bins<<endl<<"Cum_comp: "<<tempage(1,n_abins)<<endl<<"Knots: "<<selparm_RD(Ip+3+1,Ip+3+N_knots)<<endl;
         }
         if(k==2)  //  create default bounds, priors, etc.
         {
@@ -5029,7 +5040,7 @@
       }
     }
   }
-  
+
    if(timevary_cnt>0)
    {
      for (j=1;j<=timevary_cnt;j++)  //  loop all timevary to set up devs; note that 2D_AR1 is counted in N_parm_dev, but not in timevary_cnt
@@ -5438,12 +5449,12 @@
       }
     }
     if(depletion_log==1) depletion_basis_label+=";log";
-    if(depletion_multi>1) 
+    if(depletion_multi>1)
     	{
     	sprintf(onenum, "%d", depletion_multi);
     	depletion_basis_label+=";multi:"+onenum;
     	}
-    	
+
    switch (SPR_reporting)
   {
     case 0:      // keep as raw value
@@ -5540,10 +5551,10 @@
       sprintf(onenum, "%d", int(F_reporting_ages(2)));
       F_report_label+="_"+onenum;
       break;
-    }    
+    }
   }
     if(F_std_log==1) F_report_label+=";log";
-    if(F_std_multi>1) 
+    if(F_std_multi>1)
     	{
     	sprintf(onenum, "%d", F_std_multi);
     	F_report_label+=";multi:"+onenum;
@@ -5583,4 +5594,3 @@
   ivector last_yr_read(-2,Nfleet)
   ivector filled_once(-2,Nfleet)
   int f2
-

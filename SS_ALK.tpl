@@ -1,8 +1,8 @@
 // SS_Label_file  #20. **SS_ALK.tpl**
-// SS_Label_file  #* <u>Make_AgeLength_Key()</u>  // calculates age-length key for a particular season and subseason; uses calc_ALK or calc_ALK_log
-// SS_Label_file  #* <u>calc_ALK_range()</u>  //  allows for condensing range of lengths for each age, but no longer used
-// SS_Label_file  #* <u>calc_ALK()</u>      //  calculates normal distribution of length-at-age
-// SS_Label_file  #* <u>calc_ALK_log()</u>  //  for lognormal distribution of length-at-age
+// SS_Label_file  # * <u>Make_AgeLength_Key()</u>  // calculates age-length key for a particular season and subseason; uses calc_ALK or calc_ALK_log
+// SS_Label_file  # * <u>calc_ALK_range()</u>  //  allows for condensing range of lengths for each age, but no longer used
+// SS_Label_file  # * <u>calc_ALK()</u>      //  calculates normal distribution of length-at-age
+// SS_Label_file  # * <u>calc_ALK_log()</u>  //  for lognormal distribution of length-at-age
 // SS_Label_file  #
 
 FUNCTION void Make_AgeLength_Key(const int s, const int subseas)
@@ -13,9 +13,9 @@ FUNCTION void Make_AgeLength_Key(const int s, const int subseas)
  //  checks to see if a re-calc of the ALK is needed for that time step
  //  if it is, then it loops through all possible biological entities "g" (sex, growth pattern, settlement event, platoon)
  //  then it retrieves the previously calculated and stored mean size-at-age from Ave_Size(t,subseas,gstart)
- //  moves these mean sizes into a _W working vector 
+ //  moves these mean sizes into a _W working vector
  //  then it calls calc_ALK to make and store the age-length key for that subseason for each biological entity
- 
+
   int gstart=0;
    ALK_idx=(s-1)*N_subseas+subseas;
    dvar_vector use_Ave_Size_W(0,nages);
@@ -35,7 +35,7 @@ FUNCTION void Make_AgeLength_Key(const int s, const int subseas)
         gstart+=N_platoon;
         if(recr_dist_pattern(GPat,settle,0)>0)
         {
-          
+
 //  update the sd_within and sb_between here.  Used to be in growth2 function
 //  SS_Label_Info_16.5.2  #do calculations related to std.dev. of size-at-age
 //  SS_Label_Info_16.5.3 #if (y=styr), calc CV_G(gp,s,a) by interpolation on age or LAA
@@ -83,7 +83,7 @@ FUNCTION void Make_AgeLength_Key(const int s, const int subseas)
           echoinput<<"sd   "<<Sd_Size_within(ALK_idx,g)(0,min(6,nages))<<" @nages "<<Sd_Size_within(ALK_idx,g,nages)<<endl;
         }
 
-//  end sd_within updating          
+//  end sd_within updating
 
           for (gp2=1;gp2<=N_platoon;gp2++)      // loop the platoons
           {
@@ -91,7 +91,7 @@ FUNCTION void Make_AgeLength_Key(const int s, const int subseas)
 
             use_Ave_Size_W=Ave_Size(t,subseas,gstart);
             use_SD_Size=Sd_Size_within(ALK_idx,gstart);
-            if(N_platoon>1) 
+            if(N_platoon>1)
             	{
             		use_Ave_Size_W += shadow(gp2)*Sd_Size_between(ALK_idx,gstart);
             		Ave_Size(t,subseas,g)=use_Ave_Size_W;  // only needed for reporting because use_Ave_Size_W used for calcs
@@ -145,7 +145,7 @@ FUNCTION imatrix calc_ALK_range(const dvector &len_bins, const dvar_vector &mean
     z=1;
     temp=0.0;
     while(temp<ALK_tolerance && z<nlength)
-    { 
+    {
       len_dev = (len_bins(z) - mean_len_at_age(a)) / (sd_len_at_age(a));
       temp = cumd_norm (len_dev);
       z++;
@@ -181,8 +181,8 @@ FUNCTION dvar_matrix calc_ALK(const dvector &len_bins, const ivector &ALK_range_
   for (a = 0; a <= nages; a++)
   {
     AL.initialize();
-    for (z = ALK_range_lo(a); z <= ALK_range_hi(a); z++) 
-    { 
+    for (z = ALK_range_lo(a); z <= ALK_range_hi(a); z++)
+    {
       len_dev = (len_bins(z) - mean_len_at_age(a)) / (sd_len_at_age(a));
       AL(z) = cumd_norm (len_dev);
     }
@@ -213,8 +213,8 @@ FUNCTION dvar_matrix calc_ALK_log(const dvector &len_bins, const dvar_vector &me
   for (a = 0; a <= nages; a++)
   {
     temp=log(mean_len_at_age(a))-0.5*sd_len_at_age(a)*sd_len_at_age(a);
-    for (z = 2; z <= nlength; z++) 
-    { 
+    for (z = 2; z <= nlength; z++)
+    {
       len_dev = (len_bins(z) - temp) / (sd_len_at_age(a));
       AL(z) = cumd_norm(len_dev);
     } // end length loop
@@ -223,4 +223,3 @@ FUNCTION dvar_matrix calc_ALK_log(const dvector &len_bins, const dvar_vector &me
   RETURN_ARRAYS_DECREMENT();
   return (ALK_w);
   }
-

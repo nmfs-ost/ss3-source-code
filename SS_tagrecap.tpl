@@ -1,5 +1,5 @@
-// SS_Label_file  #22. **SS_tagrecap.tpl **
-// SS_Label_file  #* <u>Tag_Recapture()</u>  //  calculates expected values for number of tags returned by each fleet(and area), in each time step, for each tag release group
+// SS_Label_file  #22. **SS_tagrecap.tpl**
+// SS_Label_file  # * <u>Tag_Recapture()</u>  //  calculates expected values for number of tags returned by each fleet(and area), in each time step, for each tag release group
 // SS_Label_file  #
 
 FUNCTION void Tag_Recapture()
@@ -13,7 +13,7 @@ FUNCTION void Tag_Recapture()
       for (f=1;f<=Nfleet1;f++)
       {
         j=3*N_TG+f;
-      if(TG_parm_PH(j)==-1000.)	
+      if(TG_parm_PH(j)==-1000.)
       	{TG_report(f)=TG_report(f-1);} //  do nothing keep same value
       else
       {
@@ -21,7 +21,7 @@ FUNCTION void Tag_Recapture()
       	TG_report(f)=mfexp(TG_parm(k))/(1.+mfexp(TG_parm(k)));
       }
         j+=Nfleet1;
-      if(TG_parm_PH(j)==-1000.)	
+      if(TG_parm_PH(j)==-1000.)
       	{TG_rep_decay(f)=TG_rep_decay(f-1);}//  do nothing keep same value
       else
       {
@@ -50,17 +50,17 @@ FUNCTION void Tag_Recapture()
           if(sx(g)==gg) {TG_alive(p,g) = natage(t,p,g,a1);}  //  only does the selected gender
         }
       }
-      if(TG_parm_PH(TG)==-1000.)	
+      if(TG_parm_PH(TG)==-1000.)
       	{ }//  do nothing keep same TG_init_loss
       else
       {
         if (TG_parm_PH(TG)>-1000.)	{k=TG;} else {k=-1000-TG_parm_PH(TG);}
       	TG_init_loss=mfexp(TG_parm(k))/(1.+mfexp(TG_parm(k)));
       }
-      
+
 //  get chronic loss parameter
       j=TG+N_TG;
-      if(TG_parm_PH(j)==-1000.)	
+      if(TG_parm_PH(j)==-1000.)
       	{ }//  do nothing keep same value
       else
       {
@@ -111,7 +111,7 @@ FUNCTION void Tag_Recapture()
                   *TG_report(f)
                   *mfexp(TG_t*TG_rep_decay(f));
                 }
-                
+
   if(docheckup==1) echoinput<<" TG_"<<TG<<" y_"<<y<<" s_"<<s<<" area_"<<p<<" g_"<<g<<" GP3_"<<GP3(g)<<" f_"<<f<<" a1_"<<a1<<" Sel_"<<Sel_for_tag(t,f,g,a1)<<" TG_alive_"<<TG_alive(p,g)<<" TG_obs_"<<TG_recap_obs(TG,TG_t,f)<<" TG_exp_"<<TG_recap_exp(TG,TG_t,f)<<endl;
               }  // end fleet loop for recaptures
                 TG_alive(p,g)*=mfexp(-seasdur(s)*(Z_rate(t,p,g,a1)+TG_chron_loss));
@@ -165,7 +165,7 @@ FUNCTION void Tag_Recapture()
       }  // end years
     }  //  end loop of tag groups
   }  // end having tag groups
-  
+
  /*
  //  SS_Label_Info_25.9 #Fit to tag-recapture
  //  This code fragment resides in SS_objfunc.tpl

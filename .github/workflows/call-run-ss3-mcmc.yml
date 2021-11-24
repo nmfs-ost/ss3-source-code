@@ -1,0 +1,10 @@
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+name: call-build-ss3
+jobs:
+  call-workflow:
+    uses: nmfs-stock-synthesis/workflows/.github/workflows/run-ss3-mcmc.yml@main
