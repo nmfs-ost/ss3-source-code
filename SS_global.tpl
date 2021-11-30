@@ -1,7 +1,7 @@
 // SS_Label_file  #7. **SS_global.tpl**
 // SS_Label_file  # - <div style="color: #ff0000">RUNTIME_SECTION</div>
 // SS_Label_file  #
-// SS_Label_file  #     - not used by SS
+// SS_Label_file  #     - not used by SS3
 // SS_Label_file  # - <div style="color: #ff0000">TOP_OF_MAIN_SECTION</div>
 // SS_Label_file  #
 // SS_Label_file  #     - revise some memory and array constraints
@@ -29,7 +29,7 @@
 // SS_Label_file  #     - produces *ss.rep*, but see write_big_output for the more complete *report.sso*
 // SS_Label_file  #
 
-//  SS_Label_Section_8 #RUNTIME_SECTION (not used in SS)
+//  SS_Label_Section_8 #RUNTIME_SECTION (not used in SS3)
 RUNTIME_SECTION
 //  {
 //  maximum_function_evaluations 200, 200, 200, 200, 200, 200, 200, 2000;

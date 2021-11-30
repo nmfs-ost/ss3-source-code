@@ -1,13 +1,13 @@
 // SS_Label_file  #5. **SS_param.tpl**
 // SS_Label_file  # - <div style="color: #ff0000">INITIALIZE_SECTION</div>
 // SS_Label_file  #
-// SS_Label_file  #      - not used in SS
+// SS_Label_file  #      - not used in SS3
 // SS_Label_file  # - <div style="color: #ff0000">PARAMETER_SECTION</div>
 // SS_Label_file  #
 // SS_Label_file  #      - create needed parameters and derived quantities as dvar arrays
 
 
-//  SS_Label_Section_4.99 #INITIALIZE_SECTION (not used in SS)
+//  SS_Label_Section_4.99 #INITIALIZE_SECTION (not used in SS3)
 INITIALIZATION_SECTION
 
 //  SS_Label_Section_5.0 #PARAMETER_SECTION

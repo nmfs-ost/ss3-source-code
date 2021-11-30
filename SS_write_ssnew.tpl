@@ -1042,7 +1042,7 @@ FUNCTION void write_nudata()
   {
     dvector temp_negbin(1,50000);
 
-    // changes authored by Gavin Fay in June 2016 in SS 3.24Y
+    // changes authored by Gavin Fay in June 2016 in SS3 3.24Y
     TG_recap_gen.initialize();
     int N_TG_recap_gen=0;
     for(TG=1;TG<=N_TG;TG++)
@@ -1344,7 +1344,7 @@ FUNCTION void write_nucontrol()
   if(N_CC>0) report4<<Control_Comments<<endl;
   report4 << "#_data_and_control_files: "<<datfilename<<" // "<<ctlfilename<<endl;
   report4<<WTage_rd<<"  # 0 means do not read wtatage.ss; 1 means read and use wtatage.ss and also read and use growth parameters"<<endl;
-  report4 << N_GP << "  #_N_Growth_Patterns (Growth Patterns, Morphs, Bio Patterns, GP are terms used interchangeably in SS)"<<endl;
+  report4 << N_GP << "  #_N_Growth_Patterns (Growth Patterns, Morphs, Bio Patterns, GP are terms used interchangeably in SS3)"<<endl;
   report4 << N_platoon << " #_N_platoons_Within_GrowthPattern "<<endl;
   if(N_platoon==1) report4<<"#_Cond ";
   report4<<sd_ratio<<" #_Platoon_within/between_stdev_ratio (no read if N_platoons=1)"<<endl;
@@ -1659,7 +1659,7 @@ FUNCTION void write_nucontrol()
    report4<<onenum<<recdev_adj(1)<<" #_last_yr_nobias_adj_in_MPD; begin of ramp"<<endl;
    report4<<onenum<<recdev_adj(2)<<" #_first_yr_fullbias_adj_in_MPD; begin of plateau"<<endl;
    report4<<onenum<<recdev_adj(3)<<" #_last_yr_fullbias_adj_in_MPD"<<endl;
-   report4<<onenum<<recdev_adj(4)<<" #_end_yr_for_ramp_in_MPD (can be in forecast to shape ramp, but SS sets bias_adj to 0.0 for fcast yrs)"<<endl;
+   report4<<onenum<<recdev_adj(4)<<" #_end_yr_for_ramp_in_MPD (can be in forecast to shape ramp, but SS3 sets bias_adj to 0.0 for fcast yrs)"<<endl;
    report4<<onenum<<recdev_adj(5)<<" #_max_bias_adj_in_MPD (typical ~0.8; -3 sets all years to 0.0; -2 sets all non-forecast yrs w/ estimated recdevs to 1.0; -1 sets biasadj=1.0 for all yrs w/ recdevs)"<<endl;
    report4<<onenum<<recdev_cycle<<" #_period of cycles in recruitment (N parms read below)"<<endl;
    report4<<onenum<<recdev_LO<<" #min rec_dev"<<endl;

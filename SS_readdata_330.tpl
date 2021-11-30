@@ -1,12 +1,12 @@
 // SS_Label_file  #3. **SS_readdata.tpl**
-// SS_Label_file  # * read *data_file* named in STARTER.SS
+// SS_Label_file  # * read *data_file* named in starter.ss
 // SS_Label_file  #     * create arrays for data with dimensioning defined dynamically
 // SS_Label_file  #     * creates link from each data element to area/time/fleet that datum occur, and other arrays with specification of which data types occur in each area/time
 // SS_Label_file  #     * uses function found in SS_global:  <u>get_data_timing()</u>
 // SS_Label_file  # * read *forecast.ss*
 // SS_Label_file  #     * note that this extends the time dimension of some arrays, so is read before readcontrol
 
-//  SS_Label_Flow  read data file named in STARTER.SS file
+//  SS_Label_Flow  read data file named in starter.ss file
 //  SS_Label_Info_2.0 #READ DATA FILE
 //  SS_Label_Info_2.1 #Read comments and dimension info
 //  SS_Label_Info_2.1.1 #Read and save comments at top of data file
@@ -120,15 +120,15 @@
   echoinput<<" processed subseason cumulative annual time within season "<<endl<<subseasdur<<endl;
   if(seas_as_year==1)
     {
-      echoinput<<"Season durations sum to <11.9, so SS assumes you are doing years as pseudo-seasons."<<endl<<
-      "There can be only 1 season in this timestep and SS will ignore month input and assume all observation occur at middle of this pseudo-year"<<endl<<
+      echoinput<<"Season durations sum to <11.9, so SS3 assumes you are doing years as pseudo-seasons."<<endl<<
+      "There can be only 1 season in this timestep and SS3 will ignore month input and assume all observation occur at middle of this pseudo-year"<<endl<<
       "mortality, growth and movement rates are per annum, so will get multiplied by the duration of this timestep as they are used."<<endl<<
       "What gets reported as age is now age in timesteps; and input of age-specific M or K requires one entry per timestep"<<endl<<
       "Similarly, output of age-specific quantities is in terms of number of timesteps, not real years"<<endl<<
       "spawn_month and settlement_month in control file are best set to 1.0 when doing years as pseudo-seasons"<<endl;
       N_warn++;
-       warning<<N_warn<<" "<<"Season durations sum to <11.9, so SS assumes you are doing years as pseudo-seasons."<<endl<<
-      "There can be only 1 season in this timestep and SS will ignore month input and assume all observation occur at middle of this pseudo-year"<<endl<<
+       warning<<N_warn<<" "<<"Season durations sum to <11.9, so SS3 assumes you are doing years as pseudo-seasons."<<endl<<
+      "There can be only 1 season in this timestep and SS3 will ignore month input and assume all observation occur at middle of this pseudo-year"<<endl<<
       "mortality, growth and movement rates are per annum, so will get multiplied by the duration of this timestep as they are used."<<endl<<
       "What gets reported as age is now age in timesteps; and input of age-specific M or K requires one entry per timestep"<<endl<<
       "Similarly, output of age-specific quantities is in terms of number of timesteps, not real years"<<endl<<
@@ -263,7 +263,7 @@
         }
         else if (fleet_type(f)==3)
           {if(surveytime(f)==-1.)
-          {N_warn++;  warning<<N_warn<<" "<<"survey fleet: "<<f<<" surveytime read as: "<<surveytime(f)<<" SS resets to 1 for all survey fleets, and always overridden by indiv. obs. month"<<endl;
+          {N_warn++;  warning<<N_warn<<" "<<"survey fleet: "<<f<<" surveytime read as: "<<surveytime(f)<<" SS3 resets to 1 for all survey fleets, and always overridden by indiv. obs. month"<<endl;
             surveytime(f)=1.;}
           }
         else if (fleet_type(f)==4)  //  predator, e.g. red tide
@@ -280,7 +280,7 @@
       	for(int f1=1;f1<f;f1++){
       		if(fleetname(f1)==fleetname(f)){
       			N_warn++; cout<<"exit with warning"<<endl;
-      			warning<<N_warn<<" duplicate fleet names for fleets: "<<f1<<" and "<<f<<"; "<<fleetname(f)<<"; SS will exit"<<endl; exit(1);
+      			warning<<N_warn<<" duplicate fleet names for fleets: "<<f1<<" and "<<f<<"; "<<fleetname(f)<<"; SS3 will exit"<<endl; exit(1);
       		}
       	}
       }
@@ -469,7 +469,7 @@
     }
   }
   if(catch_warn>0){
-    N_warn++; warning<<N_warn<<" at least one catch record has seas>nseas; perhaps erroneous entry of month rather than season; SS changed them to nseas"<<endl;
+    N_warn++; warning<<N_warn<<" at least one catch record has seas>nseas; perhaps erroneous entry of month rather than season; SS3 changed them to nseas"<<endl;
   }
 //  warn on duplicate catch records
     for(y=styr-1;y<=endyr;y++)
@@ -697,7 +697,7 @@
           {data_time(ALK_time,f)(1,3)=timing_r_result(1,3);}  // real_month,fraction of season, year.fraction
         else if (timing_r_result(1) ==  data_time(ALK_time,f,1))
           {N_warn++; cout<<"fatal input error, see warning"<<endl;
-          	warning<<N_warn<<" SURVEY: duplicate survey obs for this time-fleet: y,s,f: "<<y<<" "<<s<<" "<<f<<" SS will exit "<<endl;
+          	warning<<N_warn<<" SURVEY: duplicate survey obs for this time-fleet: y,s,f: "<<y<<" "<<s<<" "<<f<<" SS3 will exit "<<endl;
           exit(1);}
 
         have_data(ALK_time,0,0,0)=1;
@@ -739,7 +739,7 @@
     		{
     			echoinput<<f<<"    "<<fleetname(f)<<"   "<<Svy_N_fleet(f)<<"     "<<Svy_super_N(f)<<"      "<<Svy_minval(f)<<" "<<Svy_maxval(f)<<" // "<<Svy_obs(f)<<endl;
     			if(Svy_errtype(f)==0 && Svy_minval(f)<=0.)
-    				{N_warn++; cout<<" exit with bad survey obs "<<endl;  warning<<N_warn<<" "<<"error, SS has exited. A fleet uses lognormal error and has an observation <=0.0; fleet: "<<f<<endl; exit(1);}
+    				{N_warn++; cout<<" exit with bad survey obs "<<endl;  warning<<N_warn<<" "<<"error, SS3 has exited. A fleet uses lognormal error and has an observation <=0.0; fleet: "<<f<<endl; exit(1);}
       	}
     }
   }
@@ -929,7 +929,7 @@
     			echoinput<<f<<"    "<<fleetname(f)<<"   "<<disc_N_fleet(f)<<"     "<<N_suprper_disc(f)<<
     			"      "<<disc_minval(f)<<" "<<disc_maxval(f)<<" // "<<obs_disc(f)<<endl;
     			if(disc_minval(f)<0.)
-    				{N_warn++; cout<<" exit with bad discard obs "<<endl;  warning<<N_warn<<" "<<"error, SS has exited. A discard observation is <0.0; fleet: "<<f<<endl; exit(1);}
+    				{N_warn++; cout<<" exit with bad discard obs "<<endl;  warning<<N_warn<<" "<<"error, SS3 has exited. A discard observation is <0.0; fleet: "<<f<<endl; exit(1);}
       	}
     }
  END_CALCS
@@ -1747,7 +1747,7 @@
           if(age_err_rd(i,2,0)<0.) {  //  set flag for setup of age error parameters
             if (Use_AgeKeyZero>0)
             {
-              N_warn++;  warning<<N_warn<<" "<<"SS can only create 1 age error definition from parameters, ";
+              N_warn++;  warning<<N_warn<<" "<<"SS3 can only create 1 age error definition from parameters, ";
                warning<<N_warn<<" "<<"but there are > 1 negative sd values for age 0 in age error definitions."<<endl;
   			echoinput<<"Error: There are > 1 negative sd values for age 0 in age error definitions."<<endl;
               cout<<" EXIT - see warning "<<endl; exit(1);
@@ -1931,7 +1931,7 @@
      {
        y=Age_Data[i](1);
        if(y>endyr +50)
-       {N_warn++; cout<<" EXIT - see warning "<<endl;  warning<<N_warn<<" "<<"forecast age obs cannot be beyond endyr +50; SS will exit"<<endl; exit(1);}
+       {N_warn++; cout<<" EXIT - see warning "<<endl;  warning<<N_warn<<" "<<"forecast age obs cannot be beyond endyr +50; SS3 will exit"<<endl; exit(1);}
        if(y>=styr)
        {
          f=abs(Age_Data[i](3));
@@ -3439,7 +3439,7 @@
         for(y=1;y<=N_Fcast_Yrs;y++)
         {
         	if(sum(Fcast_Catch_Allocation(y))==0.0)
-        		{N_warn++; warning<<N_warn<<" Fcast_Catch_allocation is blank for year: "<<y+endyr<<"; SS assigning uniform; can override with input catches"<<endl;
+        		{N_warn++; warning<<N_warn<<" Fcast_Catch_allocation is blank for year: "<<y+endyr<<"; SS3 assigning uniform; can override with input catches"<<endl;
         	Fcast_Catch_Allocation(y)(1,Fcast_Catch_Allocation_Groups)=1.0;}
         	else
         	{Fcast_Catch_Allocation(y)/=sum(Fcast_Catch_Allocation(y)(1,Fcast_Catch_Allocation_Groups));}
