@@ -15,8 +15,8 @@ FUNCTION void setup_Benchmark()
 //  SS_Label_Info_7.5.1 #Calc average selectivity to use in forecast; store in endyr+1
         temp=float(Fcast_Sel_yr2-Fcast_Sel_yr1+1.);
         for (gg=1;gg<=gender;gg++)
-        for(int ff=1;ff<=N_catchfleets(0);ff++)
-        {f=fish_fleet_area(0,ff);
+        for (f=1;f<=Nfleet;f++)
+        {
           tempvec_l.initialize();
           for (y=Fcast_Sel_yr1;y<=Fcast_Sel_yr2;y++) {tempvec_l+=sel_l(y,f,gg);}
           for (y=endyr+1;y<=YrMax;y++) {sel_l(y,f,gg)=tempvec_l/temp;}
