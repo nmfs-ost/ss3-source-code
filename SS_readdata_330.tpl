@@ -203,7 +203,10 @@
 //  SS_Label_Info_2.1.5  #Define fleets, surveys and areas
   imatrix pfleetname(1,Nfleet,1,2)
   ivector fleet_type(1,Nfleet)   // 1=fleet with catch; 2=discard only fleet with F; 3=survey(ignore catch); 4=M2=predator
-  ivector fish_fleet(1,Nfleet)   // list of catch_fleets that are type 1 or 2, so have a F
+  int N_bycatch;  //  number of bycatch only fleets
+  int N_pred;  //  number of predator fleets
+  ivector N_catchfleets(0,pop); //  number of bycatch plus landed catch fleets by area
+  imatrix fish_fleet_area(0,pop,0,Nfleet)   // list of catch_fleets that are type 1 or 2, so have a F
   ivector predator(1,Nfleet)   // list of "fleets" that are type 4, so are added to M rather than to F
   ivector predator_rev(1,Nfleet)   // predator given f
   ivector need_catch_mult(1,Nfleet)  // 0=no, 1=need catch_multiplier parameter
@@ -224,9 +227,6 @@
     // 6:  not used"<<endl;
 
   ivector YPR_mask(1,Nfleet)
-  int N_bycatch;  //  number of bycatch only fleets
-  int N_catchfleets; //  number of bycatch plus landed catch fleets
-  int N_pred;  //  number of predator fleets
   ivector retParmLoc(1,1)
   int N_retParm
 
@@ -236,8 +236,8 @@
   catch_se=0.01;  //  initialize to a small value
   {
     N_bycatch=0;
-    N_catchfleets=0;
-    fish_fleet.initialize();
+    N_catchfleets.initialize();
+    fish_fleet_area.initialize();
     N_pred=0;
     predator.initialize();
     echoinput<<"rows are fleets; columns are: Fleet_#, fleet_type, timing, area, units, need_catch_mult"<<endl;
@@ -250,13 +250,16 @@
       if(fleet_type(f)==2) N_bycatch++;
       surveytime(f) = fleet_setup(f,2)/fabs(fleet_setup(f,2));
       fleet_setup(f,2)=surveytime(f);
-      fleet_area(f) = int(fleet_setup(f,3));
+      p=int(fleet_setup(f,3));  //area
+      fleet_area(f)=p;
       catchunits(f) = int(fleet_setup(f,4));
       need_catch_mult(f) = int(fleet_setup(f,5));
       if(fleet_type(f)<=2)
         {
-          N_catchfleets++;
-          fish_fleet(N_catchfleets)=f;  //  to find the original fleet index
+          N_catchfleets(0)++;  //  overall N
+          N_catchfleets(p)++;  //  count by area
+          fish_fleet_area(0,N_catchfleets(0))=f;  //  to find the original fleet index
+          fish_fleet_area(p,N_catchfleets(p))=f;  //  to find the original fleet index
           YPR_mask(f)=1;
           if(surveytime(f)!=-1.)
           {N_warn++;  warning<<N_warn<<" "<<"fishing fleet: "<<f<<" surveytime read as: "<<surveytime(f)<<" normally is -1 for fishing fleet; can override for indiv. obs. using 1000+month"<<endl;}
@@ -320,7 +323,7 @@
       }
     }
     echoinput<<"YPR_optimize_mask: "<<YPR_mask<<endl;
-    Nfleet1 = N_catchfleets;
+    Nfleet1 = N_catchfleets(0);
     N_retParm=0;
   }
  END_CALCS
