@@ -11,6 +11,7 @@ FUNCTION void write_bigoutput()
 
       if(mceval_counter==0)
       {
+        cout<<" writing big output now "<<endl;
         anystring=sso_pathname+"Report.sso";
         SS2out.open(anystring);   // this file was created in globals so accessible to the report_parm function
         anystring=sso_pathname+"CompReport.sso";
@@ -18,18 +19,17 @@ FUNCTION void write_bigoutput()
       }
       else
       {
-        sprintf(anystring2, "%d", mceval_counter);
-        anystring=sso_pathname+"Report_mce_"+anystring2+".sso";
-        SS2out.open(anystring);
-        anystring=sso_pathname+"CompReport_mce_"+anystring2+".sso";
-        SS_compout.open(anystring);
+        sprintf(anystring, "%d", mceval_counter);
+        anystring2=sso_pathname+"Report_mce_"+anystring+".sso";
+        SS2out.open(anystring2);
+        anystring2=sso_pathname+"CompReport_mce_"+anystring+".sso";
+        SS_compout.open(anystring2);
       }
 
   SS2out<<version_info(1)<<version_info(2)<<version_info(3)<<endl<<version_info2<<endl;
   time(&finish);
   SS_compout<<version_info(1)<<version_info(2)<<version_info(3)<<endl<<"StartTime: "<<ctime(&start);
 
-  cout<<" writing big output now "<<endl;
   SS2out<<"StartTime: "<<ctime(&start);
   SS2out<<"EndTime: "<<ctime(&finish);
   elapsed_time = difftime(finish,start);
@@ -3311,6 +3311,8 @@ FUNCTION void write_bigoutput()
   SS2out<<" end selex output "<<endl;
   }  // end do report detail
   wrote_bigreport++;
+  SS2out.close();
+  SS_compout.close();
   return;
   }  //  end write_bigoutput
 

@@ -304,7 +304,27 @@ PROCEDURE_SECTION
       if(obj_fun<=last_objfun) last_objfun=obj_fun;
      docheckup=0;  // turn off reporting to checkup.sso
 //  SS_Label_Info_7.11 #Call fxn get_posteriors if in mceval_phase
-     if(mceval_phase()) get_posteriors();
+     if(mceval_phase()) 
+      {
+        get_posteriors();
+
+        if(mcmc_output_detail>=2)
+        {
+        write_bodywt=0;
+        pick_report_use(54)=0;
+        pick_report_use(55)=0;
+        save_for_report=1;
+        save_gparm=0;
+        y=styr;
+        setup_recdevs();
+        get_initial_conditions();
+        get_time_series();
+        evaluate_the_objective_function();
+        write_bigoutput();
+        save_for_report=0;
+        write_bodywt=0;
+        }
+      }
   }  //  end doing of the calculations
   if(mceval_phase() || initial_params::mc_phase==1)
   {

@@ -36,7 +36,7 @@ FUNCTION void write_nudata()
   }
   else if(Nudat==2)
   {
-    anystring=ssnew_pathname+"data_expval.ss_new";
+    anystring=ssnew_pathname+"data_expval.ss";
     report1.open(anystring);
     report1<<version_info(1)<<version_info(2)<<version_info(3)<<endl<<version_info2<<endl<<"#_Start_time: "<<ctime(&start);
     report1<<"#_expected_values"<<endl;
@@ -45,7 +45,7 @@ FUNCTION void write_nudata()
   else
   {
     sprintf(anystring, "%d", Nudat-2);
-    anystring2=ssnew_pathname+"data_boot_"+anystring+".ss_new";
+    anystring2=ssnew_pathname+"data_boot_"+anystring+".ss";
     report1.open(anystring2);
     report1<<version_info(1)<<version_info(2)<<version_info(3)<<endl<<version_info2<<endl<<"#_Start_time: "<<ctime(&start);
     report1<<"#_bootdata:_"<<Nudat<<endl;
