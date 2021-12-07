@@ -1104,6 +1104,7 @@ FUNCTION void get_natmort()
       } //  end use of this morph
     } // end settlement
   }   // end growth pattern x gender loop
+  natM_M1=natM;  // set M1 equal to M; M2 can be added later if predators are used
   } // end nat mort
 
 FUNCTION void get_recr_distribution()

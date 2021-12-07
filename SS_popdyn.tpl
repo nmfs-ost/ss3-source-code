@@ -135,8 +135,9 @@ FUNCTION void get_initial_conditions()
   if(MG_active(1)>0)
     {
       get_natmort();
-      natM_M1=natM;
     }
+    else // reset to base in case predators are added
+      {natM = natM_M1;}
  #ifdef DO_ONCE
   if(do_once==1) cout<<" natmort OK"<<endl;
  #endif
@@ -238,6 +239,7 @@ FUNCTION void get_initial_conditions()
 //  SS_Label_Info_23.3.4 #add predator M2 to M1 to update seasonal M in styr
   if(N_pred>0)
   {
+    natM=natM_M1;
     for(f1=1;f1<=N_pred;f1++)
     {
       f=predator(f1);
@@ -658,8 +660,9 @@ FUNCTION void get_time_series()
       if(timevary_MG(y,1)>0)
       {
         get_natmort();
-        natM_M1=natM;
       }
+      else
+      {natM=natM_M1;}
 
       if(timevary_MG(y,4)>0) get_recr_distribution();
       if(y>=Bmark_Yr(7)&&y<=Bmark_Yr(8))
@@ -771,7 +774,11 @@ FUNCTION void get_time_series()
     {
       f=predator(f1);
       pred_M2(f1,t)=mgp_adj(predparm_pointer(f1));  //  base with no seasonal effect
+              if(do_once==1) echoinput<<"pred "<<pred_M2(f1,t)<<endl;
       if(nseas>1) pred_M2(f1,t)*=mgp_adj(predparm_pointer(f1)+s);
+              if(do_once==1) echoinput<<"pred "<<pred_M2(f1,t)<<endl;
+              if(do_once==1) echoinput<<"sel "<<sel_num(s,f,1)<<endl;
+              if(do_once==1) echoinput<<"natM_start "<<natM(s,1)<<endl;
           for (gp=1;gp<=N_GP*gender;gp++)
           {g=g_Start(gp);  //  base platoon
             for (settle=1;settle<=N_settle_timings;settle++)
