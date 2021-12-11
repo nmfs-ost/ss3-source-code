@@ -2429,7 +2429,6 @@ FUNCTION void Get_Forecast()
 
             if((Fcast_Loop1==2 || Fcast_Loop_Control(1)==1) && ABC_Loop==1)  // get variance in OFL
             {
-              Mgmt_quant(Fcast_catch_start+N_Fcast_Yrs+y-endyr)=0.;
               for(int ff=1;ff<=N_catchfleets(0);ff++)
               {f=fish_fleet_area(0,ff);
                 if(fleet_type(f)==1)
