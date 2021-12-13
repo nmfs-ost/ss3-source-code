@@ -1,9 +1,16 @@
 on: 
-  workflow_dispatch:
+on: 
   push:
-    branches: [main]
+    branches:
+      - main
+    paths:
+      - '**.tpl'
   pull_request:
-    branches: [main]
+    branches: 
+      - main
+    paths:
+      - '**.tpl'
+  workflow_dispatch:
 name: call-test-r4ss-with-ss3
 jobs:
   call-workflow:
