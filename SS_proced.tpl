@@ -17,6 +17,7 @@ PROCEDURE_SECTION
   CrashPen.initialize();
   niter++;
   if(mceval_phase() ) mceval_counter ++;   // increment the counter
+
   if(initial_params::mc_phase==1) //  in MCMC phase
   {
 
