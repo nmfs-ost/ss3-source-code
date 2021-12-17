@@ -558,21 +558,38 @@ FUNCTION void get_selectivity()
   dvar_vector splineY(1,200);
   splineX.initialize();
   splineY.initialize();
-            j=1;
             k=seltype(f,4);  // n points to include in cubic spline
             for (i=1;i<=k;i++)
             {
               splineX(i)=value(sp(i+3+scaling_offset)); // "value" required to avoid error, but values should be always fixed anyway
               splineY(i)=sp(i+3+k+scaling_offset);
             }
+						// calculate last size bin before first knot
+            z=1;
+            while(len_bins_m(z)<splineX(1)) {z++;}
+            j1=z-1;  //  last size bin before first knot
+            // if first knot is equal to less than the first size bin,
+            // the calculation above needs to be overridden
+            if (j1 == 0) 
+            {
+              j1 = 1;
+            }
+            // calculate first size bin beyond last knot
             z=nlength;
             while(len_bins_m(z)>splineX(k)) {z--;}
-            j2=z+1;  //  first size bin beyond last node
+            j2=z+1;  //  first size bin beyond last knot
+            
             vcubic_spline_function splinefn=vcubic_spline_function(splineX(1,k),splineY(1,k),sp(2+scaling_offset),sp(3+scaling_offset));
             tempvec_l = splinefn(len_bins_m);  // interpolate selectivity at the mid-point of each population size bin
             if (scaling_offset == 0)
             {
-                temp=max(tempvec_l(1,j2));
+              temp=max(tempvec_l(1,j2));
+              // if spline code on first parameter line is 10, 11, or 12, then
+              // scale only based on interval between knots
+              if ( sp(1) >= 10)
+              {
+                temp=max(tempvec_l(j1,j2));
+              }
             }
             else
             {
@@ -596,17 +613,23 @@ FUNCTION void get_selectivity()
                 scaling_offset = 0;     // reset scaling offset
             }
             tempvec_l-=temp;  // rescale to get max of 0.0
-            tempvec_l(j2+1,nlength) = tempvec_l(j2);  //  set constant above last node
+            tempvec_l(j2+1,nlength) = tempvec_l(j2);  //  set constant above last knot
             sel = mfexp(tempvec_l);
+            // if spline code on first parameter line is 10, 11, or 12, then
+            // set to zero before the first knot
+            if ( sp(1) >= 10)
+            {
+              sel(1, j1) = 0;  //  set to 0 before first knot
+            }
             break;
-          }
+          } // end cubic spline (type 42 or 27)
 
           default:
           	{
           		sel=1.0;
           		break;
           	}
-          }
+          } // end select the selectivity pattern
           sel_l(y,f,gg)=sel;    // Store size-selex in year*type array
         }  // end direct calc of selex from parameters
 
@@ -1301,14 +1324,27 @@ FUNCTION void get_selectivity()
               splineX(i)=value(sp(i+3+scaling_offset)); // "value" required to avoid error, but values should be always fixed anyway
               splineY(i)=sp(i+3+k+scaling_offset);
             }
+            // calculate last age before first knot
+            z=0;
+            while(r_ages(z)<splineX(1)) {z++;}
+            j1=z-1;  //  last age before first knot
+						
+            // calculate first age beyond last knot
             z=nages;
             while(r_ages(z)>splineX(k)) {z--;}
-            j2=z+1;  //  first age beyond last node
+            j2=z+1;  //  first age beyond last knot
+						
             vcubic_spline_function splinefn=vcubic_spline_function(splineX(1,k),splineY(1,k),sp(2+scaling_offset),sp(3+scaling_offset));
             tempvec_a= splinefn(r_ages);  // interpolate selectivity at each age
             if (scaling_offset == 0)
             {
                 temp=max(tempvec_a(0,j2));
+                // if spline code on first parameter line is 10, 11, or 12, then
+                // scale only based on interval between knots
+                if ( sp(1) >= 10)
+                {
+                  temp=max(tempvec_a(j1,j2));
+                }
             }
             else
             {
@@ -1332,10 +1368,16 @@ FUNCTION void get_selectivity()
                 scaling_offset = 0;     // reset scaling offset
             }
             tempvec_a-=temp;  // rescale to get max of 0.0
-            tempvec_a(j2+1,nages) = tempvec_a(j2);  //  set constant above last node
+            tempvec_a(j2+1,nages) = tempvec_a(j2);  //  set constant above last knot
             sel_a(y,fs,1)(Min_selage(fs),nages)=mfexp(tempvec_a)(Min_selage(fs),nages);
+            // if spline code on first parameter line is 10, 11, or 12, then
+            // set to zero before the first knot
+            if ( sp(1) >= 10)
+            {
+              sel_a(y,fs,1)(0, j1) = 0;  //  set to 0 before first knot
+            }
             break;
-          }
+          } // end case 27 cubic spline
 
           default:   //  seltype not found.  But really need this check earlier when the N selex parameters are being processed.
           {
