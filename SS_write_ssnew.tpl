@@ -1764,7 +1764,7 @@ FUNCTION void write_nucontrol()
   else if(F_Method==4)
   {
     report4<<"# read list of fleets that do F as parameter; unlisted fleets stay hybrid, bycatch fleets must be included with start_PH=1, high F fleets should switch early"<<endl;
-    report4<<"# (A) fleet, (B) F_initial_value (used if start_PH=1), (C) start_PH for parms (99 to stay in hybrid)"<<endl;
+    report4<<"# (A) fleet, (B) F_starting_value (used if start_PH=1), (C) start_PH for parms (99 to stay in hybrid, <0 to stay at starting value)"<<endl;
     report4<<"# (A) (B) (C)  (terminate list with -9999 for fleet)"<<endl;
     for(int j=1;j<=F_Method_4_input.size()-2;j++) {report4<<F_Method_4_input[j]<<" # "<<fleetname(F_Method_4_input[j](1))<<endl;}
     report4<<"-9999 1 1 # end of list"<<endl;

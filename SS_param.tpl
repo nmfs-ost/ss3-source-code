@@ -317,6 +317,7 @@ PARAMETER_SECTION
   3darray Zrate2(1,pop,1,gmorph,0,nages)
 
  LOCAL_CALCS
+  warning<<"N_Fparm "<<N_Fparm<<endl;
   if(N_Fparm>0)    // continuous F
      {k=N_Fparm;
       Fparm_PH_dim.deallocate();

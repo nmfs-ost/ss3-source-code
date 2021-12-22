@@ -2350,10 +2350,11 @@
       if (fleet_type(f)<=2)  //  catch or bycatch fleet
       {
         {
-          F_Method_byPH(f)(1,50)=3;  //  for early phases
-          if(F_Method_PH(f)>0 && F_Method_PH(f)<99) F_Method_byPH(f)(F_Method_PH(f),50)=2;  //  for later phases, but can be changed by F_detail
-        echoinput<<f<<" phase to switch to parms "<<F_Method_PH(f)<<endl;
-        if(F_Method_byPH(f,50)==2)
+          echoinput<<f<<" phase to switch to parms "<<F_Method_PH(f)<<endl;
+          if(fleet_type(f)==1) F_Method_byPH(f)(1,50)=3;  //  fill hybrid but can overwrite below
+          if(F_Method_PH(f)<0) F_Method_byPH(f)(1,50)=2;  //  parameter for all phases because will be fixed F 
+          if(F_Method_PH(f)>0 && F_Method_PH(f)<99) F_Method_byPH(f)(F_Method_PH(f),50)=2;  //  for later phases
+        if(F_Method_byPH(f,50)==2)  //  end up in parameter state, or using fixed F inputs
         {
           echoinput<<" create parms for fleet "<<f<<endl;
           Fparm_loc_st(f)=N_Fparm+1;
