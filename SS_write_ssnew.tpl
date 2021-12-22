@@ -45,7 +45,12 @@ FUNCTION void write_nudata()
   else
   {
     sprintf(anystring, "%d", Nudat-2);
-    anystring2=ssnew_pathname+"data_boot_"+anystring+".ss";
+    if((Nudat-2) <10)
+    {anystring2=ssnew_pathname+"data_boot_00"+anystring+".ss";}
+    else if((Nudat-2) <100)
+    {anystring2=ssnew_pathname+"data_boot_0"+anystring+".ss";}
+    else
+    {anystring2=ssnew_pathname+"data_boot_"+anystring+".ss";}
     report1.open(anystring2);
     report1<<version_info(1)<<version_info(2)<<version_info(3)<<endl<<version_info2<<endl<<"#_Start_time: "<<ctime(&start);
     report1<<"#_bootdata:_"<<Nudat<<endl;
@@ -1198,8 +1203,8 @@ FUNCTION void write_nucontrol()
   {NuStart<<"#COND 10 15 #_min and max age over which average F will be calculated with F_reporting=4 or 5"<<endl;}
   NuStart<<F_std_basis_rd<<" # F_std_basis: 0=raw_annual_F; 1=F/Fspr; 2=F/Fmsy; 3=F/Fbtgt; where F means annual_F; values >=11 invoke N multiyr (up to 9!) with 10's digit; >100 invokes log(ratio)"<<endl;
   NuStart<<double(mcmc_output_detail)+MCMC_bump<<
-  " # MCMC output detail: integer part (0=default; 1=adds obj func components); and decimal part (added to SR_LN(R0) on first call to mcmc)"<<endl;
-  NuStart<<ALK_tolerance<<" # ALK tolerance (example 0.0001)"<<endl;
+  " # MCMC output detail: integer part (0=default; 1=adds obj func components; 2= +write_report_for_each_mceval); and decimal part (added to SR_LN(R0) on first call to mcmc)"<<endl;
+  NuStart<<ALK_tolerance<<" # ALK tolerance ***disabled in code (example 0.0001)"<<endl;
   NuStart<<irand_seed_rd<<" # random number seed for bootstrap data (-1 to use long(time) as seed): # "<< irand_seed<<endl;
   NuStart<<"3.30 # check value for end of file and for version control"<<endl;
   NuStart.close();

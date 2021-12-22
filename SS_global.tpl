@@ -682,7 +682,7 @@ FINAL_SECTION
 
   if(No_Report==1)
   {
-    cout<<"MCMC finished"<<endl;
+    cout<<"MCMC finished; *.ss_new files not written after MCMC or MCEVAL"<<endl;
   }
 
   else

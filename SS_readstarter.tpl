@@ -589,7 +589,7 @@
      mcmc_output_detail = int(tempin);
      MCMC_bump=tempin-mcmc_output_detail;
      if (mcmc_output_detail < 0 || mcmc_output_detail > 3) mcmc_output_detail = 0;
-     echoinput<<"MCMC output detail:  "<<mcmc_output_detail<<endl;
+     echoinput<<"MCMC output detail(1=more_detail_to_posts; 2=write_report_for_each_mceval):  "<<mcmc_output_detail<<endl;
      echoinput<<"MCMC bump to R0:  "<<MCMC_bump<<endl;
 
      echoinput<<"Now get ALK tolerance (0.0 is OK for no compression; 0.1 is too big;  suggest 0.0001)"<<endl;
