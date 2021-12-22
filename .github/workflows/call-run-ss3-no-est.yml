@@ -1,6 +1,13 @@
 # run models without estimation
 name: run-no-est
-on: [push, pull_request, workflow_dispatch]
+on: 
+  push:
+    paths:
+    - '**.tpl'
+  pull_request:
+    paths:
+      - '**.tpl'
+  workflow_dispatch:
 
 jobs:
   call-workflow:

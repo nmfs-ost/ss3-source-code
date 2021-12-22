@@ -1,8 +1,12 @@
 on:
   workflow_dispatch:
   push:
+    paths:
+      - '**.tpl'
     branches: [main]
   pull_request:
+    paths:
+      - '**.tpl'
     branches: [main]
 name: call-build-ss3
 jobs:
