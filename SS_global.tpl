@@ -682,7 +682,7 @@ FINAL_SECTION
 
   if(No_Report==1)
   {
-    cout<<"MCMC finished; note: .sso and .ss_new files not produced after MCMC "<<endl;
+    cout<<"MCMC finished"<<endl;
   }
 
   else

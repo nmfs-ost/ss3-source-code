@@ -127,6 +127,7 @@ PROCEDURE_SECTION
       setup_Benchmark();
 //  SS_Label_Info_7.6.1 #Call fxn Get_Benchmarks()
       if(mceval_phase()==0) {show_MSY=1;}  //  so only show details if not in mceval
+      if(mceval_phase()>0) save_for_report=1;
       if(show_MSY==1) cout<<"do benchmark and forecast if requested in sdphase"<<endl;
       if(Do_Benchmark>0)
       {
