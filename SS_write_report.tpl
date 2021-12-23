@@ -19,25 +19,27 @@ FUNCTION void write_bigoutput()
       }
       else
       {
+        anystring="      ";
         sprintf(anystring, "%d", mceval_counter);
+
+        anystring2=sso_pathname+"Report_mce_";
         if(mceval_counter<10)
-        {anystring2=sso_pathname+"Report_mce_000"+anystring+".sso";}
+        {anystring2+="000";}
         else if(mceval_counter<100)
-        {anystring2=sso_pathname+"Report_mce_00"+anystring+".sso";}
+        {anystring2+="00";}
         else if(mceval_counter<1000)
-        {anystring2=sso_pathname+"Report_mce_0"+anystring+".sso";}
-        else
-        {anystring2=sso_pathname+"Report_mce_"+anystring+".sso";}
+        {anystring2+="0";}
+        anystring2+=anystring+".sso";
         SS2out.open(anystring2);
 
+        anystring2=sso_pathname+"CompReport_mce_";
         if(mceval_counter<10)
-        {anystring2=sso_pathname+"CompReport_mce_000"+anystring+".sso";}
+        {anystring2+="000";}
         else if(mceval_counter<100)
-        {anystring2=sso_pathname+"CompReport_mce_00"+anystring+".sso";}
+        {anystring2+="00";}
         else if(mceval_counter<1000)
-        {anystring2=sso_pathname+"CompReport_mce_0"+anystring+".sso";}
-        else
-        {anystring2=sso_pathname+"CompReport_mce_"+anystring+".sso";}
+        {anystring2+="0";}
+        anystring2+=anystring+".sso";
         SS_compout.open(anystring2);
       }
 

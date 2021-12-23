@@ -115,7 +115,13 @@ PROCEDURE_SECTION
         }
     	}
 //  end dynamic Bzero
-    	}
+      if (pick_report_use(59)=="Y")
+      {
+          cout<<"dynamic Bzero";
+          write_Bzero_output();
+          cout<<" finished "<<endl;
+      }
+    }
 
       save_gparm=0;
       fishery_on_off=1;

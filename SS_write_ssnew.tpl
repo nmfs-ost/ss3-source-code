@@ -44,6 +44,7 @@ FUNCTION void write_nudata()
   }
   else
   {
+    anystring="     ";
     sprintf(anystring, "%d", Nudat-2);
     if((Nudat-2) <10)
     {anystring2=ssnew_pathname+"data_boot_00"+anystring+".ss";}
