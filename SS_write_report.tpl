@@ -13,6 +13,7 @@ FUNCTION void write_bigoutput()
       {
         cout<<" writing big output now "<<endl;
         anystring=sso_pathname+"Report.sso";
+        report_sso_filename=anystring;
         SS2out.open(anystring);   // this file was created in globals so accessible to the report_parm function
         anystring=sso_pathname+"CompReport.sso";
         SS_compout.open(anystring);
@@ -21,7 +22,8 @@ FUNCTION void write_bigoutput()
       {
         anystring="      ";
         sprintf(anystring, "%d", mceval_counter);
-
+        SS2out.close();
+        SS_compout.close();
         anystring2=sso_pathname+"Report_mce_";
         if(mceval_counter<10)
         {anystring2+="000";}
@@ -31,6 +33,7 @@ FUNCTION void write_bigoutput()
         {anystring2+="0";}
         anystring2+=anystring+".sso";
         SS2out.open(anystring2);
+        report_sso_filename=anystring2; //  save so can be reopened in append mode
 
         anystring2=sso_pathname+"CompReport_mce_";
         if(mceval_counter<10)
@@ -3328,8 +3331,8 @@ FUNCTION void write_bigoutput()
   SS2out<<" end selex output "<<endl;
   }  // end do report detail
   wrote_bigreport++;
-  SS2out.close();
-  SS_compout.close();
+//  SS2out.close();
+//  SS_compout.close();
   return;
   }  //  end write_bigoutput
 

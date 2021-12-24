@@ -62,6 +62,7 @@ PROCEDURE_SECTION
   {
 
   //  create bigsaver to simplfy some condition statements later
+//       cout<<"saver "<<save_for_report<<" sdphase "<<sd_phase()<<" mce "<<mceval_phase()<<" dyn "<<Do_Dyn_Bzero<<endl;
   if( (save_for_report>0) || ((sd_phase() || mceval_phase()) && (initial_params::mc_phase==0)) )  // (SAVE || ( (SD || EVAL) && (!MCMC) ) )
     {bigsaver=1;} else
     {bigsaver=0;}
@@ -83,20 +84,14 @@ PROCEDURE_SECTION
 //  SS_Label_Info_7.6 #If sdphase or mcevalphase, do benchmarks and forecast and derived quantities
     if( (sd_phase() || mceval_phase()) && (initial_params::mc_phase==0))
     {
-
     if(Do_Dyn_Bzero>0) //  do dynamic Bzero
-    	{
+    {
       save_gparm=0;
       fishery_on_off=0;
       setup_recdevs();
       y=styr;
       get_initial_conditions();
       get_time_series();
-      setup_Benchmark();
-      if(Do_Benchmark>0)
-      {
-        Get_Benchmarks(show_MSY); // should not be needed, but something critical is getting setup
-      }
       if(Do_Forecast>0)
       {
         show_MSY=0;
@@ -113,15 +108,9 @@ PROCEDURE_SECTION
         {
           Extra_Std(k)=exp_rec(j,4); k++;
         }
-    	}
-//  end dynamic Bzero
-      if (pick_report_use(59)=="Y")
-      {
-          cout<<"dynamic Bzero";
-          write_Bzero_output();
-          cout<<" finished "<<endl;
       }
-    }
+      write_Bzero_output();
+    }  //  end dynamic Bzero
 
       save_gparm=0;
       fishery_on_off=1;
@@ -316,11 +305,13 @@ PROCEDURE_SECTION
       {
         get_posteriors();
 
+//SS_Label_Info_7.12 #write report_mce_XXXX.sso and compreport_mce_XXXX.sso for each MCEVAL
         if(mcmc_output_detail>=2)
         {
         write_bodywt=0;
         pick_report_use(54)=0;
         pick_report_use(55)=0;
+//  is the following call to the functions necessary??
         save_for_report=1;
         save_gparm=0;
         y=styr;
@@ -328,6 +319,7 @@ PROCEDURE_SECTION
         get_initial_conditions();
         get_time_series();
         evaluate_the_objective_function();
+//  end call to the functions
         write_bigoutput();
         save_for_report=0;
         write_bodywt=0;
@@ -339,4 +331,4 @@ PROCEDURE_SECTION
     No_Report=1;  //  flag to skip output reports after MCMC and McEVAL
   }
   }
-//  SS_Label_Info_7.12 #End of PROCEDURE_SECTION
+//  SS_Label_Info_7.13 #End of PROCEDURE_SECTION

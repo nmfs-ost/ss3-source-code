@@ -84,6 +84,8 @@ GLOBALS_SECTION
   adstring onenum2(4);
   adstring anystring;
   adstring anystring2;
+  adstring report_sso_filename;
+
   adstring_array version_info;
   adstring_array version_info2;
   adstring_array Starter_Comments;
@@ -721,6 +723,34 @@ FINAL_SECTION
 
 //  SS_Label_Info_12.3 #Go thru time series calculations again to get extra output quantities
 //  SS_Label_Info_12.3.2 #Set save_for_report=1 then call initial_conditions and time_series to get other output quantities
+    if(Do_Dyn_Bzero>0) //  do dynamic Bzero
+    {
+      save_gparm=0;
+      fishery_on_off=0;
+      setup_recdevs();
+      y=styr;
+      get_initial_conditions();
+      get_time_series();
+      if(Do_Forecast>0)
+      {
+        show_MSY=0;
+        Get_Forecast();
+      }
+      k=Do_Dyn_Bzero;
+      for(j=styr-2; j<=YrMax;j++)
+      {
+        Extra_Std(k)=SSB_yr(j); k++;
+      }
+      if(More_Std_Input(12)==2)
+    	{
+        for(j=styr-2; j<=YrMax;j++)
+        {
+          Extra_Std(k)=exp_rec(j,4); k++;
+        }
+      }
+    }  //  end dynamic Bzero
+
+    fishery_on_off=1;
     save_for_report=1;
     bigsaver=1;
     save_gparm=0;
@@ -800,7 +830,7 @@ FINAL_SECTION
 //  SS_Label_Info_12.4.6 #Call fxn write_Bzero_output()  appended to report.sso
     if (pick_report_use(59)=="Y")
     {
-        cout<<"dynamic Bzero: ";
+        cout<<"dynamic Bzero in FINAL_SECTION: ";
         write_Bzero_output();
         cout<<" finished "<<endl;
     }
@@ -915,6 +945,7 @@ REPORT_SECTION
   }
 
 //  SS_Label_Info_13.2 #Call fxn write_bigoutput() as last_phase finishes and before doing Hessian
+     cout<<"REPORT_SECTION: last? "<<last_phase()<<" SD? "<<SDmode<<endl;
     if(last_phase() && SDmode==1)
     {
     if(pick_report_use(60)=="Y") {write_bodywt=1;}
@@ -929,6 +960,6 @@ REPORT_SECTION
     cout<<"Wrote bigoutput and bodywt for last_phase in REPORT_SECTION and before hessian, no benchmark or forecast "<<endl;
     save_for_report=0;
     write_bodywt=0;
-    SS2out.close();
+//    SS2out.close();
     }
   }  //  end standard report section
