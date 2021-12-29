@@ -109,8 +109,7 @@ PROCEDURE_SECTION
           Extra_Std(k)=exp_rec(j,4); k++;
         }
       }
-      write_Bzero_output();
-    }  //  end dynamic Bzero
+    }  //  end dynamic Bzero calculations, will write after big report
 
       save_gparm=0;
       fishery_on_off=1;
@@ -321,6 +320,7 @@ PROCEDURE_SECTION
         evaluate_the_objective_function();
 //  end call to the functions
         write_bigoutput();
+        if(Do_Dyn_Bzero>0) write_Bzero_output();
         save_for_report=0;
         write_bodywt=0;
         }

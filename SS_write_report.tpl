@@ -34,7 +34,6 @@ FUNCTION void write_bigoutput()
         anystring2+=anystring+".sso";
         SS2out.open(anystring2);
         report_sso_filename=anystring2; //  save so can be reopened in append mode
-
         anystring2=sso_pathname+"CompReport_mce_";
         if(mceval_counter<10)
         {anystring2+="000";}
