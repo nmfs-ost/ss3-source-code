@@ -2554,7 +2554,37 @@ FUNCTION void write_bigoutput()
 
    SS2out<<endl;
    SS2out<<"Seas Morph Bio_Pattern Sex Settlement Platoon int_Age Real_Age Age_Beg Age_Mid M Len_Beg Len_Mid SD_Beg SD_Mid Wt_Beg Wt_Mid Len_Mat Age_Mat Mat*Fecund Mat_F_wtatage Mat_F_Natage";
-   if(Hermaphro_Option!=0) SS2out<<" Herma_Trans Herma_Cum ";
+   if(Hermaphro_Option!=0) 
+   {
+     SS2out<<" Herma_Trans Herma_Cum ";
+      {if(sx(g)==1) {Herma_Cum=femfrac(GP(g));} else {Herma_Cum=1.0-femfrac(GP(g));}}
+
+        {
+          k=gmorph/2;  //  because first half of the "g" are females
+          for (g=1;g<=k;g++)  //  loop
+          if(Hermaphro_seas==-1 || Hermaphro_seas==s)
+          if(use_morph(g)>0)
+          {
+            if(Hermaphro_Option==1)
+            {
+              for (a=1;a<nages;a++)
+              {
+                natage(t+1,p,g+k,a) += natage(t+1,p,g,a)*Hermaphro_val(GP4(g),a-1); // increment males with females
+                natage(t+1,p,g,a) *= (1.-Hermaphro_val(GP4(g),a-1)); // decrement females
+              }
+            } else
+            if(Hermaphro_Option==-1)
+            {
+              for (a=1;a<nages;a++)
+              {
+                natage(t+1,p,g,a) += natage(t+1,p,g+k,a)*Hermaphro_val(GP4(g+k),a-1); // increment females with males
+                natage(t+1,p,g+k,a) *= (1.-Hermaphro_val(GP4(g+k),a-1)); // decrement males
+              }
+            }
+          }
+        }
+   }
+
    for (f=1;f<=Nfleet;f++) SS2out<<" Len:_"<<f<<" SelWt:_"<<f<<" RetWt:_"<<f;
    SS2out<<endl;
    for (s=1;s<=nseas;s++)
@@ -2565,10 +2595,8 @@ FUNCTION void write_bigoutput()
      for (g=1;g<=gmorph;g++)
      if(use_morph(g)>0)
      {
-     Herma_Cum=femfrac(GP(g));
      for (a=0;a<=nages;a++)
      {
-
       SS2out<<s<<" "<<g<<" "<<GP4(g)<<" "<<sx(g)<<" "<<settle_g(g)<<" "<<GP2(g)<<" "<<a<<" "<<real_age(g,ALK_idx,a)<<" "<<calen_age(g,ALK_idx,a)<<" "<<calen_age(g,ALK_idx_mid,a);
       SS2out<<" "<<natM(s,GP3(g),a)<<" "<<Ave_Size(t,1,g,a)<<" "<<Ave_Size(t,mid_subseas,g,a)<<" "
         <<Sd_Size_within(ALK_idx,g,a)<<" "<<Sd_Size_within(ALK_idx_mid,g,a)<<" "
@@ -2580,10 +2608,25 @@ FUNCTION void write_bigoutput()
       else
         {SS2out<<-1.;}
       SS2out<<" "<<fec(g,a)<<" "<<make_mature_bio(g,a)<<" "<<make_mature_numbers(g,a);
-      if(Hermaphro_Option!=0)
+      if(Hermaphro_Option==1)
       {
-        if(a>1) Herma_Cum*=(1.0-Hermaphro_val(GP4(g),a-1));
-        SS2out<<" "<<Hermaphro_val(GP4(g),a)<<" "<<Herma_Cum;
+        if(sx(g)==1) 
+        {
+          if((Hermaphro_seas==-1 || Hermaphro_seas==s) && (a>0)) Herma_Cum*=(1.0-Hermaphro_val(GP4(g),a-1));
+          SS2out<<" "<<Hermaphro_val(GP4(g),a)<<" "<<Herma_Cum;
+        } 
+        else 
+        {SS2out<<" NA "<<1.0-Herma_Cum;}
+      }
+      else if(Hermaphro_Option==-1)
+      {
+        if(sx(g)==2) 
+        {
+          if((Hermaphro_seas==-1 || Hermaphro_seas==s) && (a>0)) Herma_Cum*=(1.0-Hermaphro_val(GP4(g),a-1));
+          SS2out<<" "<<Hermaphro_val(GP4(g),a)<<" "<<1.0-Herma_Cum;
+        } 
+        else 
+        {SS2out<<" NA "<<Herma_Cum;}
       }
       if(WTage_rd==0)
       {
