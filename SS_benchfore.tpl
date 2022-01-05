@@ -1485,10 +1485,18 @@ FUNCTION void Get_Forecast()
         get_growth3(y,t,s, subseas);  //  in case needed for Lorenzen M
         Make_AgeLength_Key(s, subseas);
       }
-//      if(s==spawn_seas) Make_Fecundity();
-      if(s==spawn_seas) get_mat_fec();
+      if(s==spawn_seas) 
+      {
+        if(WTage_rd==1)
+        {
+          Wt_Age_beg(s)=Wt_Age_t(t,0);  //  used for smrybio
+          Wt_Age_mid(s)=Wt_Age_t(t,-1);
+          if(s==spawn_seas) fec=Wt_Age_t(t,-2);
+        }
+        else
+        {get_mat_fec();}
+      }
     }
-//      get_mat_fec();
   }
 
     for (y=endyr+1;y<=YrMax;y++)

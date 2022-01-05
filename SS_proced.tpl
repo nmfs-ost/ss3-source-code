@@ -62,7 +62,6 @@ PROCEDURE_SECTION
   {
 
   //  create bigsaver to simplfy some condition statements later
-//       cout<<"saver "<<save_for_report<<" sdphase "<<sd_phase()<<" mce "<<mceval_phase()<<" dyn "<<Do_Dyn_Bzero<<endl;
   if( (save_for_report>0) || ((sd_phase() || mceval_phase()) && (initial_params::mc_phase==0)) )  // (SAVE || ( (SD || EVAL) && (!MCMC) ) )
     {bigsaver=1;} else
     {bigsaver=0;}

@@ -788,7 +788,6 @@ FUNCTION void write_Bzero_output()
 //  output annual time series for beginning of year and summing across areas for each GP and gender
     if(SS2out.is_open()) SS2out.close();
     SS2out.open(report_sso_filename,ios::app);
-
     for (fishery_on_off=1;fishery_on_off>=0;fishery_on_off--)
     {
 

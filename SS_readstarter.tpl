@@ -588,7 +588,7 @@
      echoinput<<"read MCMC_output_detail.MCMC_bump as a single real number;  separate values will be parsed from integer and fraction"<<endl;
      mcmc_output_detail = int(tempin);
      MCMC_bump=tempin-mcmc_output_detail;
-     if (mcmc_output_detail < 0 || mcmc_output_detail > 3) mcmc_output_detail = 0;
+     if (mcmc_output_detail < 0 || mcmc_output_detail > 2) mcmc_output_detail = 0;
      echoinput<<"MCMC output detail(1=more_detail_to_posts; 2=write_report_for_each_mceval):  "<<mcmc_output_detail<<endl;
      echoinput<<"MCMC bump to R0:  "<<MCMC_bump<<endl;
 
