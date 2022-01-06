@@ -17,6 +17,7 @@ PROCEDURE_SECTION
   CrashPen.initialize();
   niter++;
   if(mceval_phase() ) mceval_counter ++;   // increment the counter
+
   if(initial_params::mc_phase==1) //  in MCMC phase
   {
 
@@ -82,20 +83,14 @@ PROCEDURE_SECTION
 //  SS_Label_Info_7.6 #If sdphase or mcevalphase, do benchmarks and forecast and derived quantities
     if( (sd_phase() || mceval_phase()) && (initial_params::mc_phase==0))
     {
-
     if(Do_Dyn_Bzero>0) //  do dynamic Bzero
-    	{
+    {
       save_gparm=0;
       fishery_on_off=0;
       setup_recdevs();
       y=styr;
       get_initial_conditions();
       get_time_series();
-      setup_Benchmark();
-      if(Do_Benchmark>0)
-      {
-        Get_Benchmarks(show_MSY); // should not be needed, but something critical is getting setup
-      }
       if(Do_Forecast>0)
       {
         show_MSY=0;
@@ -112,9 +107,8 @@ PROCEDURE_SECTION
         {
           Extra_Std(k)=exp_rec(j,4); k++;
         }
-    	}
-//  end dynamic Bzero
-    	}
+      }
+    }  //  end dynamic Bzero calculations, will write after big report
 
       save_gparm=0;
       fishery_on_off=1;
@@ -126,6 +120,7 @@ PROCEDURE_SECTION
       setup_Benchmark();
 //  SS_Label_Info_7.6.1 #Call fxn Get_Benchmarks()
       if(mceval_phase()==0) {show_MSY=1;}  //  so only show details if not in mceval
+      if(mceval_phase()>0) save_for_report=1;
       if(show_MSY==1) cout<<"do benchmark and forecast if requested in sdphase"<<endl;
       if(Do_Benchmark>0)
       {
@@ -304,11 +299,35 @@ PROCEDURE_SECTION
       if(obj_fun<=last_objfun) last_objfun=obj_fun;
      docheckup=0;  // turn off reporting to checkup.sso
 //  SS_Label_Info_7.11 #Call fxn get_posteriors if in mceval_phase
-     if(mceval_phase()) get_posteriors();
+     if(mceval_phase()) 
+      {
+        get_posteriors();
+
+//SS_Label_Info_7.12 #write report_mce_XXXX.sso and compreport_mce_XXXX.sso for each MCEVAL
+        if(mcmc_output_detail>=2)
+        {
+        write_bodywt=0;
+        pick_report_use(54)=0;
+        pick_report_use(55)=0;
+//  is the following call to the functions necessary??
+        save_for_report=1;
+        save_gparm=0;
+        y=styr;
+        setup_recdevs();
+        get_initial_conditions();
+        get_time_series();
+        evaluate_the_objective_function();
+//  end call to the functions
+        write_bigoutput();
+        if(Do_Dyn_Bzero>0) write_Bzero_output();
+        save_for_report=0;
+        write_bodywt=0;
+        }
+      }
   }  //  end doing of the calculations
   if(mceval_phase() || initial_params::mc_phase==1)
   {
     No_Report=1;  //  flag to skip output reports after MCMC and McEVAL
   }
   }
-//  SS_Label_Info_7.12 #End of PROCEDURE_SECTION
+//  SS_Label_Info_7.13 #End of PROCEDURE_SECTION

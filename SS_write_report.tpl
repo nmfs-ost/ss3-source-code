@@ -8,14 +8,47 @@
  /*  SS_Label_FUNCTION 40 write_bigoutput */
 FUNCTION void write_bigoutput()
   {
-  SS2out.open ("Report.sso");   // this file was created in globals so accessible to the report_parm function
-  ofstream SS_compout("CompReport.sso");
+
+      if(mceval_counter==0)
+      {
+        cout<<" writing big output now "<<endl;
+        anystring=sso_pathname+"Report.sso";
+        report_sso_filename=anystring;
+        SS2out.open(anystring);   // this file was created in globals so accessible to the report_parm function
+        anystring=sso_pathname+"CompReport.sso";
+        SS_compout.open(anystring);
+      }
+      else
+      {
+        anystring="      ";
+        sprintf(anystring, "%d", mceval_counter);
+        SS2out.close();
+        SS_compout.close();
+        anystring2=sso_pathname+"Report_mce_";
+        if(mceval_counter<10)
+        {anystring2+="000";}
+        else if(mceval_counter<100)
+        {anystring2+="00";}
+        else if(mceval_counter<1000)
+        {anystring2+="0";}
+        anystring2+=anystring+".sso";
+        SS2out.open(anystring2);
+        report_sso_filename=anystring2; //  save so can be reopened in append mode
+        anystring2=sso_pathname+"CompReport_mce_";
+        if(mceval_counter<10)
+        {anystring2+="000";}
+        else if(mceval_counter<100)
+        {anystring2+="00";}
+        else if(mceval_counter<1000)
+        {anystring2+="0";}
+        anystring2+=anystring+".sso";
+        SS_compout.open(anystring2);
+      }
 
   SS2out<<version_info(1)<<version_info(2)<<version_info(3)<<endl<<version_info2<<endl;
   time(&finish);
   SS_compout<<version_info(1)<<version_info(2)<<version_info(3)<<endl<<"StartTime: "<<ctime(&start);
 
-  cout<<" writing big output now "<<endl;
   SS2out<<"StartTime: "<<ctime(&start);
   SS2out<<"EndTime: "<<ctime(&finish);
   elapsed_time = difftime(finish,start);
@@ -618,7 +651,6 @@ FUNCTION void write_bigoutput()
     }
     SS2out<<endl;
   }
-  ofstream post_vecs("posterior_vectors.sso",ios::app);
   post_vecs<<runnumber<<" 0 "<<obj_fun<<" F/Fmsy_stdev ";
   for (j=1;j<=N_STD_Yr_F;j++)
   {
@@ -1046,7 +1078,7 @@ FUNCTION void write_bigoutput()
     else
     {
     for (gp=1;gp<=N_GP;gp++) {SS2out<<" _ ";}
-
+    if(Hermaphro_Option!=0) {for (gp=1;gp<=N_GP;gp++) {SS2out<<" _ ";}}
     }
     SS2out<<" "<<Bio_Comp<<" "<<Num_Comp;
     if(s==1 && y<=endyr) {Smry_Table(y,15)+=smryage;}  // already calculated for the forecast years
@@ -3299,6 +3331,8 @@ FUNCTION void write_bigoutput()
   SS2out<<" end selex output "<<endl;
   }  // end do report detail
   wrote_bigreport++;
+//  SS2out.close();
+//  SS_compout.close();
   return;
   }  //  end write_bigoutput
 

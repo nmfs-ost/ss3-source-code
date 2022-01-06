@@ -1355,19 +1355,21 @@ FUNCTION void get_posteriors()
     // but will play through just fine
     // NOTE:  "del" works on Windows only; use "rm" on other operating systems
     //  solution here is to open file to the first record
-    ofstream rebuilder("rebuild.sso",ios::out);
-    ofstream posts("posteriors.sso",ios::out);
-    ofstream der_posts("derived_posteriors.sso",ios::out);
-    ofstream post_vecs("posterior_vectors.sso",ios::out);
-	ofstream post_obj_func("posterior_obj_func.sso",ios::out);
-    if(rundetail>0) cout<<" did system commands "<<endl;
-  };
+    rebuilder.open(sso_pathname+"rebuild.sso",ios::out);
+    posts.open(sso_pathname+"posteriors.sso",ios::out);
+    der_posts.open(sso_pathname+"derived_posteriors.sso",ios::out);
+    post_vecs.open(sso_pathname+"posterior_vectors.sso",ios::out);
+    post_obj_func.open(sso_pathname+"posterior_obj_func.sso",ios::out);
+  }
+  else 
+  {
   // define the mcmc output files;
-  ofstream rebuilder("rebuild.sso",ios::app);
-  ofstream posts("posteriors.sso",ios::app);
-  ofstream der_posts("derived_posteriors.sso",ios::app);
-  ofstream post_vecs("posterior_vectors.sso",ios::app);
-  ofstream post_obj_func("posterior_obj_func.sso",ios::app);
+  rebuilder.open(sso_pathname+"rebuild.sso",ios::app);
+  posts.open(sso_pathname+"posteriors.sso",ios::app);
+  der_posts.open(sso_pathname+"derived_posteriors.sso",ios::app);
+  post_vecs.open(sso_pathname+"posterior_vectors.sso",ios::app);
+  post_obj_func.open(sso_pathname+"posterior_obj_func.sso",ios::app);
+  }
 
   if(mceval_header==0)    // first pass through the mceval phase
   {
@@ -1375,7 +1377,6 @@ FUNCTION void get_posteriors()
     // produce the appropriate headers for the posteriors.rep
     // and derived_posteriors.rep files
     // parameters.rep matches "PARAMETERS" section in Report.SSO file
-    if(rundetail>0) cout<<" write mcmc headers "<<endl;
     posts<<"Iter Objective_function ";
     for (i=1;i<=active_count;i++) {posts<<" "<<ParmLabel(active_parm(i));}
     posts << endl;
@@ -1525,10 +1526,8 @@ FUNCTION void get_posteriors()
     }
   };  //  end writing headers for mceval_counter==1
 
-
   // produce standard output of all estimated parameters
   posts<<mceval_counter<<" "<<obj_fun<<" ";
-
   for (j=1;j<=N_MGparm2;j++)
   {
     if(active(MGparm(j))) posts<<MGparm(j)<<" ";
@@ -1688,5 +1687,8 @@ FUNCTION void get_posteriors()
 
       post_obj_func<<endl;
   }
-
+  posts.close();
+  der_posts.close();
+  post_vecs.close();
+  post_obj_func.close();
   }  //  end get_posteriors

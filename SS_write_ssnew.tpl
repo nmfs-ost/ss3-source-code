@@ -24,21 +24,40 @@ FUNCTION void write_nudata()
   	temp = randn(radm);
   }
 
-  ofstream report1("data.ss_new");
-  report1<<version_info(1)<<version_info(2)<<version_info(3)<<endl<<version_info2<<endl<<"#_Start_time: "<<ctime(&start);
-  report1  << "#_Number_of_datafiles: " << N_nudata << endl;
   for (Nudat=1;Nudat<=N_nudata;Nudat++)
   {
   if(Nudat==1)
   {
+    anystring=ssnew_pathname+"data_echo.ss_new";
+    report1.open(anystring);
+    report1<<version_info(1)<<version_info(2)<<version_info(3)<<endl<<version_info2<<endl<<"#_Start_time: "<<ctime(&start);
+    report1<<"#_echo_input_data"<<endl;
     report1<<Data_Comments<<endl;
-    report1 << "#_observed data: "<< endl;
   }
   else if(Nudat==2)
-  {report1 << "#_expected values with no error added " << endl;}
+  {
+    anystring=ssnew_pathname+"data_expval.ss";
+    report1.open(anystring);
+    report1<<version_info(1)<<version_info(2)<<version_info(3)<<endl<<version_info2<<endl<<"#_Start_time: "<<ctime(&start);
+    report1<<"#_expected_values"<<endl;
+    report1<<Data_Comments<<endl;
+  }
   else
   {
-  report1 << "#_bootstrap file: " << Nudat-2 <<"  irand_seed: "<<irand_seed<<" first rand#: "<<randn(radm)<<endl;}
+    anystring="     ";
+    sprintf(anystring, "%d", Nudat-2);
+    if((Nudat-2) <10)
+    {anystring2=ssnew_pathname+"data_boot_00"+anystring+".ss";}
+    else if((Nudat-2) <100)
+    {anystring2=ssnew_pathname+"data_boot_0"+anystring+".ss";}
+    else
+    {anystring2=ssnew_pathname+"data_boot_"+anystring+".ss";}
+    report1.open(anystring2);
+    report1<<version_info(1)<<version_info(2)<<version_info(3)<<endl<<version_info2<<endl<<"#_Start_time: "<<ctime(&start);
+    report1<<"#_bootdata:_"<<Nudat<<endl;
+    report1<<Data_Comments<<endl;
+    report1 << "#_bootstrap file: " << Nudat-2 <<"  irand_seed: "<<irand_seed<<" first rand#: "<<randn(radm)<<endl;
+  }
   report1<<version_info(1)<<version_info(2)<<version_info(3)<<endl;
   report1 << styr << " #_StartYr"<<endl;
   report1 << endyr <<" #_EndYr"<< endl;
@@ -1126,9 +1145,10 @@ FUNCTION void write_nudata()
 
     report1<<"#"<<endl << "999" << endl << endl;
   }
+  report1.close();
   }
 
-  report1 << "ENDDATA" << endl;
+//  report1 << "ENDDATA" << endl;
   return;
   }  //  end of write data
 
@@ -1137,7 +1157,8 @@ FUNCTION void write_nudata()
 FUNCTION void write_nucontrol()
   {
   cout<<" Write new starter file "<<endl;
-  ofstream NuStart("starter.ss_new");
+  anystring=ssnew_pathname+"starter.ss_new";
+  ofstream NuStart(anystring);
   NuStart<<version_info(1)<<version_info(2)<<version_info(3)<<endl<<version_info2<<endl;
   if(N_SC>0) NuStart<<Starter_Comments<<endl;
   NuStart<<datfilename<<endl<<ctlfilename<<endl;
@@ -1183,14 +1204,15 @@ FUNCTION void write_nucontrol()
   {NuStart<<"#COND 10 15 #_min and max age over which average F will be calculated with F_reporting=4 or 5"<<endl;}
   NuStart<<F_std_basis_rd<<" # F_std_basis: 0=raw_annual_F; 1=F/Fspr; 2=F/Fmsy; 3=F/Fbtgt; where F means annual_F; values >=11 invoke N multiyr (up to 9!) with 10's digit; >100 invokes log(ratio)"<<endl;
   NuStart<<double(mcmc_output_detail)+MCMC_bump<<
-  " # MCMC output detail: integer part (0=default; 1=adds obj func components); and decimal part (added to SR_LN(R0) on first call to mcmc)"<<endl;
-  NuStart<<ALK_tolerance<<" # ALK tolerance (example 0.0001)"<<endl;
+  " # MCMC output detail: integer part (0=default; 1=adds obj func components; 2= +write_report_for_each_mceval); and decimal part (added to SR_LN(R0) on first call to mcmc)"<<endl;
+  NuStart<<ALK_tolerance<<" # ALK tolerance ***disabled in code (example 0.0001)"<<endl;
   NuStart<<irand_seed_rd<<" # random number seed for bootstrap data (-1 to use long(time) as seed): # "<< irand_seed<<endl;
   NuStart<<"3.30 # check value for end of file and for version control"<<endl;
   NuStart.close();
 
   cout<<" Write new forecast file "<<endl;
-  ofstream NuFore("forecast.ss_new");
+  anystring=ssnew_pathname+"forecast.ss_new";
+  ofstream NuFore(anystring);
   NuFore<<version_info(1)<<version_info(2)<<version_info(3)<<endl;
   if(N_FC>0) NuFore<<Forecast_Comments<<endl;
   NuFore<<"# for all year entries except rebuilder; enter either: actual year, -999 for styr, 0 for endyr, neg number for rel. endyr"<<endl;
@@ -1338,7 +1360,8 @@ FUNCTION void write_nucontrol()
 //**********************************************************
   cout<<" Write new control file "<<endl;
 
-  ofstream report4("control.ss_new");
+  anystring=ssnew_pathname+"control.ss_new";
+  ofstream report4(anystring);
   report4<<version_info(1)<<version_info(2)<<version_info(3)<<endl;
   report4<<version_info2<<endl;
   if(N_CC>0) report4<<Control_Comments<<endl;

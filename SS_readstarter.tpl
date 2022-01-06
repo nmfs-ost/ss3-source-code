@@ -271,6 +271,36 @@
   int rd_background
 
  LOCAL_CALCS
+   struct stat pathinfo;
+    if( stat( "./ssnew", &pathinfo ) != 0 )
+    {
+      ssnew_pathname="";
+    }
+    else
+      {
+        ssnew_pathname="./ssnew/";
+      }
+
+    if( stat( "./sso", &pathinfo ) != 0 )
+    {
+      sso_pathname="";
+    }
+    else
+      {
+        sso_pathname="./sso/";
+      }
+
+  warning.open(sso_pathname+"warning.sso");
+  echoinput.open(sso_pathname+"echoinput.sso");
+  ParmTrace.open(sso_pathname+"ParmTrace.sso");
+  report5.open(sso_pathname+"Forecast-report.sso");
+  report2.open(sso_pathname+"CumReport.sso",ios::app);
+  bodywtout.open(ssnew_pathname+"wtatage.ss_new");
+
+ END_CALCS
+
+
+ LOCAL_CALCS
   if (reportdetail < 0 || reportdetail > 3) reportdetail = 0;
   echoinput<<reportdetail<<"  reportdetail 0=minimal for data-limited, 1=all, 2=no growth, 3=custom"<<endl;
   if(reportdetail==3)
@@ -560,8 +590,8 @@
      echoinput<<"read MCMC_output_detail.MCMC_bump as a single real number;  separate values will be parsed from integer and fraction"<<endl;
      mcmc_output_detail = int(tempin);
      MCMC_bump=tempin-mcmc_output_detail;
-     if (mcmc_output_detail < 0 || mcmc_output_detail > 3) mcmc_output_detail = 0;
-     echoinput<<"MCMC output detail:  "<<mcmc_output_detail<<endl;
+     if (mcmc_output_detail < 0 || mcmc_output_detail > 2) mcmc_output_detail = 0;
+     echoinput<<"MCMC output detail(1=more_detail_to_posts; 2=write_report_for_each_mceval):  "<<mcmc_output_detail<<endl;
      echoinput<<"MCMC bump to R0:  "<<MCMC_bump<<endl;
 
      echoinput<<"Now get ALK tolerance (0.0 is OK for no compression; 0.1 is too big;  suggest 0.0001)"<<endl;
