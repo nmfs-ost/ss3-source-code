@@ -580,7 +580,7 @@ FUNCTION void get_selectivity()
               temp=max(tempvec_l(1,j2));
               // if spline code on first parameter line is 10, 11, or 12, then
               // scale only based on interval between knots (unless first knot is at first bin)
-              if ( sp(1) >= 10 & j1 >= 1)
+              if ( (sp(1) >= 10) & (j1 >= 1) )
               {
                 temp=max(tempvec_l(j1,j2));
               }
@@ -611,7 +611,7 @@ FUNCTION void get_selectivity()
             sel = mfexp(tempvec_l);
             // if spline code on first parameter line is 10, 11, or 12, then
             // set to zero before the first knot (unless first knot is at first bin)
-            if ( sp(1) >= 10 & j1 >= 1)
+            if ( (sp(1) >= 10) & (j1 >= 1) )
             {
               sel(1, j1) = 0;  //  set to 0 before first knot
             }
@@ -1335,7 +1335,7 @@ FUNCTION void get_selectivity()
                 temp=max(tempvec_a(0,j2));
                 // if spline code on first parameter line is 10, 11, or 12, then
                 // scale only based on interval between knots (unless first knot is at age 0)
-                if ( sp(1) >= 10 & j1 >= 0)
+                if ( (sp(1) >= 10) & (j1 >= 0) )
                 {
                   temp=max(tempvec_a(j1,j2));
                 }
@@ -1366,7 +1366,7 @@ FUNCTION void get_selectivity()
             sel_a(y,fs,1)(Min_selage(fs),nages)=mfexp(tempvec_a)(Min_selage(fs),nages);
             // if spline code on first parameter line is 10, 11, or 12, then
             // set to zero before the first knot (unless first knot is at age 0)
-            if ( sp(1) >= 10 & j1 >= 0)
+            if ( (sp(1) >= 10) & (j1 >= 0) )
             {
               sel_a(y,fs,1)(0, j1) = 0;  //  set to 0 before first knot (unless first knot is at 0)
             }
