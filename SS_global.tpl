@@ -945,7 +945,6 @@ REPORT_SECTION
   }
 
 //  SS_Label_Info_13.2 #Call fxn write_bigoutput() as last_phase finishes and before doing Hessian
-     cout<<"REPORT_SECTION: last? "<<last_phase()<<" SD? "<<SDmode<<endl;
     if(last_phase() && SDmode==1)
     {
     if(pick_report_use(60)=="Y") {write_bodywt=1;}

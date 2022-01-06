@@ -1078,7 +1078,7 @@ FUNCTION void write_bigoutput()
     else
     {
     for (gp=1;gp<=N_GP;gp++) {SS2out<<" _ ";}
-
+    if(Hermaphro_Option!=0) {for (gp=1;gp<=N_GP;gp++) {SS2out<<" _ ";}}
     }
     SS2out<<" "<<Bio_Comp<<" "<<Num_Comp;
     if(s==1 && y<=endyr) {Smry_Table(y,15)+=smryage;}  // already calculated for the forecast years
