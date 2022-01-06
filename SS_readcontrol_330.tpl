@@ -4884,7 +4884,7 @@
         {
           // exit if no length data available on which to base the knots
           if(Nobs_a(fs) == 0) {
-            N_warn++; cout<<" EXIT - see warning "<<endl;  warning<<N_warn<<" "<<"no age data for fleet "<<fs<<": can't autogenerate cubic spline knots "<<endl;  exit(1);
+            N_warn++; cout<<" EXIT - see warning "<<endl;  warning<<N_warn<<" "<<"no length data for fleet "<<fs<<": can't autogenerate cubic spline knots "<<endl;  exit(1);
           }
           // calculate cumulative length distribution
           dvector templen(1,nlen_bin);
