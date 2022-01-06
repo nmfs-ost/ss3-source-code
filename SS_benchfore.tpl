@@ -1483,7 +1483,7 @@ FUNCTION void Get_Forecast()
       for(subseas=1;subseas<=N_subseas;subseas++)  //  do all subseasons in first year
       {
         get_growth3(y,t,s, subseas);  //  in case needed for Lorenzen M
-        Make_AgeLength_Key(s, subseas);
+        Make_AgeLength_Key(s, subseas);  //  which also updates Wt_Age_beg, etc.
       }
       if(s==spawn_seas) 
       {
