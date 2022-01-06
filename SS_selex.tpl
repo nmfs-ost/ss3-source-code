@@ -568,12 +568,6 @@ FUNCTION void get_selectivity()
             z=1;
             while(len_bins_m(z)<splineX(1)) {z++;}
             j1=z-1;  //  last size bin before first knot
-            // if first knot is equal to less than the first size bin,
-            // the calculation above needs to be overridden
-            if (j1 == 0) 
-            {
-              j1 = 1;
-            }
             // calculate first size bin beyond last knot
             z=nlength;
             while(len_bins_m(z)>splineX(k)) {z--;}
@@ -585,8 +579,8 @@ FUNCTION void get_selectivity()
             {
               temp=max(tempvec_l(1,j2));
               // if spline code on first parameter line is 10, 11, or 12, then
-              // scale only based on interval between knots
-              if ( sp(1) >= 10)
+              // scale only based on interval between knots (unless first knot is at first bin)
+              if ( sp(1) >= 10 & j1 >= 1)
               {
                 temp=max(tempvec_l(j1,j2));
               }
@@ -616,8 +610,8 @@ FUNCTION void get_selectivity()
             tempvec_l(j2+1,nlength) = tempvec_l(j2);  //  set constant above last knot
             sel = mfexp(tempvec_l);
             // if spline code on first parameter line is 10, 11, or 12, then
-            // set to zero before the first knot
-            if ( sp(1) >= 10)
+            // set to zero before the first knot (unless first knot is at first bin)
+            if ( sp(1) >= 10 & j1 >= 1)
             {
               sel(1, j1) = 0;  //  set to 0 before first knot
             }
@@ -1340,8 +1334,8 @@ FUNCTION void get_selectivity()
             {
                 temp=max(tempvec_a(0,j2));
                 // if spline code on first parameter line is 10, 11, or 12, then
-                // scale only based on interval between knots
-                if ( sp(1) >= 10)
+                // scale only based on interval between knots (unless first knot is at age 0)
+                if ( sp(1) >= 10 & j1 >= 0)
                 {
                   temp=max(tempvec_a(j1,j2));
                 }
@@ -1371,10 +1365,10 @@ FUNCTION void get_selectivity()
             tempvec_a(j2+1,nages) = tempvec_a(j2);  //  set constant above last knot
             sel_a(y,fs,1)(Min_selage(fs),nages)=mfexp(tempvec_a)(Min_selage(fs),nages);
             // if spline code on first parameter line is 10, 11, or 12, then
-            // set to zero before the first knot
-            if ( sp(1) >= 10)
+            // set to zero before the first knot (unless first knot is at age 0)
+            if ( sp(1) >= 10 & j1 >= 0)
             {
-              sel_a(y,fs,1)(0, j1) = 0;  //  set to 0 before first knot
+              sel_a(y,fs,1)(0, j1) = 0;  //  set to 0 before first knot (unless first knot is at 0)
             }
             break;
           } // end case 27 cubic spline
