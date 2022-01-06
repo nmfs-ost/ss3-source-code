@@ -900,7 +900,9 @@ FUNCTION void write_Bzero_output()
       }
     }
 
-    SS2out<<endl<<"Report_Z_by_area_morph_platoon"<<endl;
+    SS2out<<endl<<"Report_Z_by_area_morph_platoon";
+    if(fishery_on_off==0) {SS2out<<"_1 No_fishery_for_Z=M_and_dynamic_Bzero";} else {SS2out<<"_2 With_fishery";}
+    SS2out<<endl;
     SS2out<<"Area Bio_Pattern Sex BirthSeas Settlement Platoon Morph Yr Seas Time Beg/Mid Era"<<age_vector <<endl;
     for (p=1;p<=pop;p++)
     for (g=1;g<=gmorph;g++)
