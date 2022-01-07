@@ -4859,12 +4859,18 @@
       k=int(selparm_RD(Ip+1));  // setup method
       N_knots=seltype(f,4);  //  number of knots
 
-      if(k==0)
+      if(k==0 || k==10)
       {}  //  do nothing
-      else if(k==1 || k==2)  //  get new knots according to cumulative distribution of data
+      else if(k==1 || k==2 || k==11 || k==12)  //  get new knots according to cumulative distribution of data
       {
-        echoinput<<"Adjust the cubic_spline setup for fleet: "<<f<<endl;
-        s=4;  // counter for which knot is being set
+        echoinput<<"Adjust the ";
+        if(f<=Nfleet)
+        {echoinput<<"size-based ";}
+        else
+        {echoinput<<"age-based ";}
+        echoinput<<"cubic spline setup for fleet: "<<fs<<endl;
+        
+        j=4;  // counter for which knot is being set (first knot is 4th spline parameter line)
         z=1;  //  counter for  bins in cumulative distribution
         if(N_knots>=3)
         {
@@ -4877,6 +4883,11 @@
         }
         if(f<=Nfleet)  // doing size Selex
         {
+          // exit if no length data available on which to base the knots
+          if(Nobs_a(fs) == 0) {
+            N_warn++; cout<<" EXIT - see warning "<<endl;  warning<<N_warn<<" "<<"no length data for fleet "<<fs<<": can't autogenerate cubic spline knots "<<endl;  exit(1);
+          }
+          // calculate cumulative length distribution
           dvector templen(1,nlen_bin);
           templen.initialize();
           for(s=1;s<=nseas;s++)
@@ -4890,20 +4901,27 @@
             }
             //  intermediate knots are calculated from data_length_bins
             if(z>1)
-            {selparm_RD(Ip+s)=len_bins_dat(z-1)+(temp-templen(z-1)/(templen(z)-templen(z-1)))*(len_bins_dat(z)-len_bins_dat(z-1));}
+            {selparm_RD(Ip+j)=len_bins_dat(z-1)+(temp-templen(z-1))/(templen(z)-templen(z-1))*(len_bins_dat(z)-len_bins_dat(z-1));}
             else
-            {selparm_RD(Ip+s)=len_bins_dat(z);}
-            s++;
+            {selparm_RD(Ip+j)=len_bins_dat(z);}
+            j++;
             temp+=temp1;
           }
-          echoinput<<"len_bins_dat: "<<len_bins_dat<<endl<<"Cum_comp: "<<templen<<endl<<"Knots: "<<selparm_RD(Ip+3+1,Ip+3+N_knots)<<endl;
+          echoinput<<"len_bins_dat: "<<len_bins_dat<<endl;
+          echoinput<<"Cum_comp: "<<templen<<endl;
+          echoinput<<"Knots: "<<selparm_RD(Ip+3+1,Ip+3+N_knots)<<endl;
         }
         else  //  age selex
         {
+          // exit if no age data available on which to base the knots
+          if(Nobs_a(fs) == 0) {
+            N_warn++; cout<<" EXIT - see warning "<<endl;  warning<<N_warn<<" "<<"no age data for fleet "<<fs<<": can't autogenerate cubic spline knots "<<endl;  exit(1);
+          }
+          // calculate cumulative age distribution
           dvector tempage(1,n_abins);
           tempage.initialize();
           for(s=1;s<=nseas;s++)
-          {tempage += obs_a_all(2,s,f);}
+          {tempage += obs_a_all(2,s,fs);}
           tempage /= double(nseas);
           while(temp<=0.975001)
           {
@@ -4911,30 +4929,36 @@
             {
               z++;
             }
-            //  intermediate knots are calculated from data_length_bins
+            //  intermediate knots are calculated from age_bins
             if(z>1)
-            {selparm_RD(Ip+s)=age_bins(z-1)+(temp-tempage(z-1))/(tempage(z)-tempage(z-1))*(age_bins(z)-age_bins(z-1));}
+            {selparm_RD(Ip+j)=age_bins(z-1)+(temp-tempage(z-1))/(tempage(z)-tempage(z-1))*(age_bins(z)-age_bins(z-1));}
             else
-            {selparm_RD(Ip+s)=age_bins(z);}
-            s++;
+            {selparm_RD(Ip+j)=age_bins(z);}
+            j++;
             temp+=temp1;
           }
-          echoinput<<"age_bins: "<<age_bins<<endl<<"Cum_comp: "<<tempage(1,n_abins)<<endl<<"Knots: "<<selparm_RD(Ip+3+1,Ip+3+N_knots)<<endl;
+          echoinput<<"age_bins: "<<age_bins<<endl;
+					echoinput<<"Cum_comp: "<<tempage(1,n_abins)<<endl;
+					echoinput<<"Knots: "<<selparm_RD(Ip+3+1,Ip+3+N_knots)<<endl;
         }
-        if(k==2)  //  create default bounds, priors, etc.
+        if(k==2 || k==12)  //  create default bounds, priors, etc.
         {
-        echoinput<<"Do complete setup of lo, hi, prior, etc."<<endl;
+        echoinput<<"Do complete setup of lo, hi, prior, etc. for cubic spline"<<endl;
           for (z=Ip+4;z<=Ip+3+N_knots;z++)
           {
+					  // set bounds at outer limits of data bins
             if(f<=Nfleet)
             {selparm_LO(z)=len_bins_dat(1);
               selparm_HI(z)=len_bins_dat(nlen_bin);}
             else
             {selparm_LO(z)=age_bins(1);
              selparm_HI(z)=age_bins(n_abins);}
+						// set prior at mid-point
             selparm_PR(z)=int((selparm_LO(z)+selparm_HI(z))/2.);
+						// set prior type to 0 and SD to 1.0
             selparm_PRtype(z)=0;
             selparm_CV(z)=1.0;
+						// set phase for knots to negative
             selparm_PH(z)=-99;
           }
 
@@ -4944,14 +4968,16 @@
           {p=10;}
           else
           {p=3+N_knots+1+0.5*N_knots;}
-
+					// loop over parameters for splines value at each knot
           for (z=N_knots+1+3;z<=3+2*N_knots;z++)
           {
             a=Ip+z;
+						// set initial value for each parameter
             if(z<=p)
             {selparm_RD(a)=-5. + float(z-(N_knots+4))/float(p-(N_knots+4))*4.;}
             else
             {selparm_RD(a)=0.0;}
+						// set bounds and symmetric beta prior
             selparm_LO(a)=-9.;
             selparm_HI(a)=7.;
             selparm_PR(a)=0.;
@@ -4959,10 +4985,11 @@
             selparm_CV(a)=0.001;
             selparm_PH(a)=2;
           }
+					// fix one of the parameters at 0 (because rescaling removes a degree of freedom)
           selparm_PH(Ip+p)=-99;
           selparm_PRtype(Ip+p)=0;
           selparm_CV(Ip+p)=1.0;
-
+					// set values for gradient parameters
           p=Ip+1;
           selparm_LO(p)=0.;
           selparm_HI(p)=2.;
