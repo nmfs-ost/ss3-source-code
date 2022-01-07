@@ -83,6 +83,16 @@ PROCEDURE_SECTION
 //  SS_Label_Info_7.6 #If sdphase or mcevalphase, do benchmarks and forecast and derived quantities
     if( (sd_phase() || mceval_phase()) && (initial_params::mc_phase==0))
     {
+
+//  SS_Label_Info_7.6.1 #Call fxn Get_Benchmarks()
+      if(Do_Benchmark>0)
+      {
+        did_MSY=0;  // so that benchmarks will get calculated here
+        setup_Benchmark();
+        Get_Benchmarks(show_MSY);
+      }
+      did_MSY=1;   //  set flag to not calculate the benchmarks again in final section
+
     if(Do_Dyn_Bzero>0) //  do dynamic Bzero
     {
       save_gparm=0;
@@ -112,26 +122,20 @@ PROCEDURE_SECTION
 
       save_gparm=0;
       fishery_on_off=1;
+      if(mceval_phase()>0) save_for_report=1;
+      if(mceval_phase()==0) {show_MSY=1;}  //  so only show details if not in mceval
+      if(show_MSY==1) cout<<"do benchmark and forecast if requested in sdphase"<<endl;
+
       setup_recdevs();
       y=styr;
       get_initial_conditions();
       get_time_series();  //  in write_big_report
       evaluate_the_objective_function();
-      setup_Benchmark();
-//  SS_Label_Info_7.6.1 #Call fxn Get_Benchmarks()
-      if(mceval_phase()==0) {show_MSY=1;}  //  so only show details if not in mceval
-      if(mceval_phase()>0) save_for_report=1;
-      if(show_MSY==1) cout<<"do benchmark and forecast if requested in sdphase"<<endl;
-      if(Do_Benchmark>0)
-      {
-        Get_Benchmarks(show_MSY);
-      }
-      did_MSY=1;   //  set flag to not calculate the benchmarks again in final section
 
 //  SS_Label_Info_7.6.2 #Call fxn Get_Forecast()
       if(Do_Forecast>0)
       {
-        if(show_MSY==1) report5<<"THIS FORECAST FOR PURPOSES OF STD REPORTING"<<endl;
+        if(show_MSY==1) report5<<"THIS FORECAST FOR PURPOSES OF STD REPORTING"<<endl;  // controls writing to forecast-report.sso
         Get_Forecast();
       }
 
