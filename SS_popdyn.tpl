@@ -974,7 +974,6 @@ FUNCTION void get_time_series()
                     temp1=join1*temp + (1.-join1)*0.95;
       //  SS_Label_Info_24.3.3.3.3 #Convert the harvest rate to a starting value for F
                     Hrate(f,t)=-log(1.-temp1)/seasdur(s);  // initial estimate of F (even though labelled as Hrate)
-  //     if(y==1952)  warning<<"Pope "<<Hrate(f,t)<<" F_tune "<<F_Tune<<endl;
                 }
               }
 
@@ -1442,10 +1441,8 @@ FUNCTION void get_time_series()
                 }
               }
             }
-            if(y==21 || y==220)  warning<<endl<<y<<" "<<tempbase<<" "<<tempM<<" "<<tempZ;
             annual_F(y,2) = log(tempM)-log(tempZ);  // F=Z-M
             annual_F(y,3) = log(tempbase)-log(tempM);  // M
-            if(y==21 || y==220)  warning<<annual_F(y,2)<<" "<<annual_F(y,3)<<endl;
           } // end if F_reporting!=5
 
           else
