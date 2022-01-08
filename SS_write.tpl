@@ -916,7 +916,7 @@ FUNCTION void write_Bzero_output()
        SS2out <<p<<" "<<GP4(g)<<" "<<sx(g)<<" "<<Bseas(g)<<" "<<settle_g(g)<<" "<<GP2(g)<<" "<<g<<" "<<y<<" "<<s<<" "<<temp<<" _ ";
        if(y==styr-2)
          {SS2out<<" VIRG ";}
-       if(y==styr-1)
+       else if(y==styr-1)
          {SS2out<<" INIT ";}
        else if (y<=endyr)
          {SS2out<<" TIME ";}
