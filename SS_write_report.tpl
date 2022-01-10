@@ -8,22 +8,23 @@
  /*  SS_Label_FUNCTION 40 write_bigoutput */
 FUNCTION void write_bigoutput()
   {
-
       if(mceval_counter==0)
       {
         cout<<" writing big output now "<<endl;
         anystring=sso_pathname+"Report.sso";
         report_sso_filename=anystring;
+        if(SS2out.is_open()) SS2out.close();
         SS2out.open(anystring);   // this file was created in globals so accessible to the report_parm function
         anystring=sso_pathname+"CompReport.sso";
+        if(SS_compout.is_open()) SS_compout.close();
         SS_compout.open(anystring);
       }
       else
       {
         anystring="      ";
         sprintf(anystring, "%d", mceval_counter);
-        SS2out.close();
-        SS_compout.close();
+        if(SS2out.is_open()) SS2out.close();
+        if(SS_compout.is_open()) SS_compout.close();
         anystring2=sso_pathname+"Report_mce_";
         if(mceval_counter<10)
         {anystring2+="000";}
