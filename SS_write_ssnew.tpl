@@ -1360,8 +1360,7 @@ FUNCTION void write_nucontrol()
 //**********************************************************
   cout<<" Write new control file "<<endl;
 
-  anystring=ssnew_pathname+"control.ss_new";
-  ofstream report4(anystring);
+  ofstream report4("control.ss_new");
   report4<<version_info(1)<<version_info(2)<<version_info(3)<<endl;
   report4<<version_info2<<endl;
   if(N_CC>0) report4<<Control_Comments<<endl;

@@ -2952,6 +2952,7 @@
   int MSY_units // 1=dead catch, 2=retained catch, 3=retained catch profits
   vector CostPerF(1,Nfleet);
   vector PricePerF(1,Nfleet);
+  ivector AdjustBenchF(1,Nfleet);
 
  LOCAL_CALCS
   echoinput<<"read Do_Benchmark(0=skip; 1= do Fspr, Fbtgt, Fmsy; 2=do Fspr, F0.1, Fmsy;  3=Fspr, Fbtgt, Fmsy, F_Blimit)"<<endl;
@@ -2964,6 +2965,7 @@
     CostPerF=0.0;
     PricePerF=1.0;  // default value per mt
     MSY_units=2;  //  default to YPR_opt = dead catch without non-optimized bycatch
+    AdjustBenchF = 1;
     if(Do_MSY==5)  //  doing advanced MSY options, including MEY
     {
       echoinput<<"enter quantity to be maximized: (1) dead catch biomass; (2) dead catch biomass w/o non-opt bycatch; or (3) retained catch profits"<<endl;
@@ -2976,22 +2978,24 @@
       int fleet_ID=100;
       double tempcost;
       double tempprice;
+      double tempAdjust;
       while(fleet_ID>-999)
       {
         *(ad_comm::global_datafile) >> fleet_ID;
         *(ad_comm::global_datafile) >> tempcost;
         *(ad_comm::global_datafile) >> tempprice;
-        echoinput<<fleet_ID<<" "<<tempcost<<" "<<tempprice<<endl;
+        *(ad_comm::global_datafile) >> tempAdjust;
+        echoinput<<fleet_ID<<" "<<tempcost<<" "<<tempprice<<" "<<tempAdjust<<endl;
         if(fleet_ID>Nfleet)
           {N_warn++; warning<<"fleetID > Nfleet"<<endl;}
         else if(fleet_ID>0) 
-          {CostPerF(fleet_ID)=tempcost; PricePerF(fleet_ID)=tempprice;}
-        else if(fleet_ID>-9999)
+          {CostPerF(fleet_ID)=tempcost; PricePerF(fleet_ID)=tempprice; AdjustBenchF(fleet_ID)=tempAdjust;}
+        else if(fleet_ID>-999)
           {
             for(f=-fleet_ID;f<=Nfleet;f++)
             {
               if(fleet_type(f)==1 || (fleet_type(f)==2 && bycatch_setup(f,3)==1)) 
-               {CostPerF(f)=tempcost; PricePerF(f)=tempprice;}
+               {CostPerF(f)=tempcost; PricePerF(f)=tempprice; AdjustBenchF(f)=tempAdjust; }
             }
           }
         }
