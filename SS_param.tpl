@@ -339,7 +339,9 @@ PARAMETER_SECTION
    number Fchange;
    number last_calc;
    matrix Fcast_RelF_Use(1,nseas,1,Nfleet);
-   matrix Bmark_RelF_Use(1,nseas,1,Nfleet);
+   matrix Bmark_RelF_Use(1,nseas,1,Nfleet);  //  relative F among all catch fleets
+   matrix Bmark_HistF(1,nseas,1,Nfleet);  //  save F to use for non-optimized fleets
+   //  note that bycatch_F(1,Nfleet,1,nseas) has similar role  
    number alpha;
    number beta;
    number GenTime;

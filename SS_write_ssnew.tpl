@@ -1218,15 +1218,16 @@ FUNCTION void write_nucontrol()
   NuFore<<"# for all year entries except rebuilder; enter either: actual year, -999 for styr, 0 for endyr, neg number for rel. endyr"<<endl;
   NuFore<<Do_Benchmark<<" # Benchmarks: 0=skip; 1=calc F_spr,F_btgt,F_msy; 2=calc F_spr,F0.1,F_msy; 3=add F_Blimit; "<<endl;
   NuFore<<Do_MSY<<" # Do_MSY: 1= set to F(SPR); 2=calc F(MSY); 3=set to F(Btgt) or F0.1; 4=set to F(endyr); 5=calc F(MEY)"<<endl;
-  NuFore << "# if Do_MSY=5, enter MSY_Units; then list fleet_ID, cost/F, price/mt; -fleet_ID to fill; -9999 to terminate" << endl; 
+  NuFore << "# if Do_MSY=5, enter MSY_Units; then list fleet_ID, cost/F, price/mt; -fleet_ID to fill; -999 to terminate" << endl; 
   if(Do_MSY==5)
   {
     NuFore<<MSY_units<<" # MSY_units: 1=dead biomass, 2=retained biomass, 3=profits"<<endl;
+    NuFore<<"# Fleet Cost_per_F Price_per_F include_in_Fmey_search"<<endl;
     for (f=1;f<=Nfleet;f++)
     {
-      if(YPR_mask(f)>0.0) NuFore << f<<" "<<CostPerF(f)<<" "<<PricePerF(f)<<endl;
+      if(YPR_mask(f)>0.0) NuFore << f<<" "<<CostPerF(f)<<" "<<PricePerF(f)<<" "<< AdjustBenchF(f)<<endl;
     }
-    NuFore<<"-9999 1 1 # terminate list of fleet costs and prices"<<endl;
+    NuFore<<"-999 1 1 1 # terminate list of fleet costs and prices"<<endl;
   }
 
   NuFore<<SPR_target<<" # SPR target (e.g. 0.40)"<<endl;

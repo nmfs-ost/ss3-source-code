@@ -3047,10 +3047,13 @@
   echoinput<<"next read:  1=use range of years as read for relF; 2 = set same as forecast relF below"<<endl;
  END_CALCS
   init_int Bmark_RelF_Basis
-  !!echoinput<<Bmark_RelF_Basis<<"  echoed Bmark_RelF_year basis"<<endl;
 
-  !!echoinput<<endl<<"next read forecast basis: 0=none; 1=F(SPR); 2=F(MSY) 3=F(Btgt); 4=Ave F (enter yrs); 5=read Fmult"<<endl;
-
+ LOCAL_CALCS
+  echoinput<<Bmark_RelF_Basis<<"  echoed Bmark_RelF_year basis"<<endl;
+  if(Do_MSY==5 && Bmark_RelF_Basis==2)
+  {N_warn++; cout<<"exit with bad input; see warning"<<endl; warning<<N_warn<<"  Do_MSY=5, so must use Bmark_RelF_Basis=1"<<endl; exit(1);}
+  echoinput<<endl<<"next read forecast basis: 0=none; 1=F(SPR); 2=F(MSY) 3=F(Btgt); 4=Ave F (enter yrs); 5=read Fmult"<<endl;
+ END_CALCS
   init_int Do_Forecast_rd
   int Do_Forecast
   !! Do_Forecast=Do_Forecast_rd;
