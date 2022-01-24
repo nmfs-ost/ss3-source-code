@@ -1704,6 +1704,8 @@
   Nobs_a.initialize();
   Nobs_a_use.initialize();
   N_suprper_a.initialize();
+  Comp_Err_A.initialize();
+  Comp_Err_A2.initialize();
   echoinput<<"Enter the number of agebins, or 0 if no age data"<<endl;
   *(ad_comm::global_datafile) >> n_abins;
   echoinput<<n_abins<<" N age bins "<<endl;
@@ -1760,8 +1762,6 @@
         }
       }
 
-      Comp_Err_A.initialize();
-      Comp_Err_A2.initialize();
       echoinput<<"#_now read for each fleet info for processing the age comps:"<<endl;
       echoinput<<"#_mintailcomp: upper and lower distribution for females and males separately are accumulated until exceeding this level."<<endl;
       echoinput<<"#_addtocomp:  after accumulation of tails; this value added to all bins"<<endl;
