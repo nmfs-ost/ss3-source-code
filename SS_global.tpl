@@ -210,6 +210,8 @@ GLOBALS_SECTION
 
       if(seas_as_year==0)
       {
+        if(month>=13.0)
+        {N_warn++; cout<<"fatal read error, see warning"<<endl; warning<<N_warn<<" Fatal error. month must be <13.0, end of year is 12.99, value read is: "<<month<<endl; exit(1);}
         temp1=max(0.00001,(month-1.0)/12.); //  month as fraction of year
       s=1;  // earlist possible seas;
       subseas=1;  //  earliest possible subseas in seas
