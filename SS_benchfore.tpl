@@ -1762,7 +1762,7 @@ FUNCTION void Get_Forecast()
                  Wt_Age_mid(s,g)=ALK(ALK_idx,g)*wt_len(s,GP(g));  // use for fisheries with no size selectivity
               }
             }
-               Wt_Age_t(t,0)=Wt_Age_beg(s);
+            Wt_Age_t(t,0)=Wt_Age_beg(s);
             for (g=1;g<=gmorph;g++)
             if(use_morph(g)>0)
             {

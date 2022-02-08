@@ -131,6 +131,8 @@ PROCEDURE_SECTION
       get_initial_conditions();
       get_time_series();  //  in write_big_report
       evaluate_the_objective_function();
+        setup_Benchmark();
+        Get_Benchmarks(show_MSY);
 
 //  SS_Label_Info_7.6.2 #Call fxn Get_Forecast()
       if(Do_Forecast>0)
@@ -308,20 +310,13 @@ PROCEDURE_SECTION
         get_posteriors();
 
 //SS_Label_Info_7.12 #write report_mce_XXXX.sso and compreport_mce_XXXX.sso for each MCEVAL
+//        warning<<mceval_counter<<" SSB 2021 2022 "<<SSB_std(N_STD_Yr-4)<<" "<<SSB_std(N_STD_Yr-3)<<endl<<endl;
         if(mcmc_output_detail>=2)
         {
         write_bodywt=0;
         pick_report_use(54)=0;
         pick_report_use(55)=0;
-//  is the following call to the functions necessary??
         save_for_report=1;
-        save_gparm=0;
-        y=styr;
-//        setup_recdevs();
-//        get_initial_conditions();
-//        get_time_series();
-//        evaluate_the_objective_function();
-//  end call to the functions
         write_bigoutput();
         if(Do_Dyn_Bzero>0) write_Bzero_output();
         save_for_report=0;
