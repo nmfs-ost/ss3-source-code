@@ -317,10 +317,10 @@ PROCEDURE_SECTION
         save_for_report=1;
         save_gparm=0;
         y=styr;
-        setup_recdevs();
-        get_initial_conditions();
-        get_time_series();
-        evaluate_the_objective_function();
+//        setup_recdevs();
+//        get_initial_conditions();
+//        get_time_series();
+//        evaluate_the_objective_function();
 //  end call to the functions
         write_bigoutput();
         if(Do_Dyn_Bzero>0) write_Bzero_output();

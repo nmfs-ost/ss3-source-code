@@ -686,7 +686,7 @@ FINAL_SECTION
 
   if(No_Report==1)
   {
-    cout<<"MCMC finished; *.ss_new files not written after MCMC or MCEVAL"<<endl;
+    cout<<"MCMC finished; *.ss_new files and most .sso not written after MCMC or MCEVAL"<<endl;
   }
 
   else
@@ -826,7 +826,7 @@ FINAL_SECTION
     }
     else
     {
-    	{N_warn++; warning<<N_warn<<" "<<"NOTE:  *.ss_new files are not produced with N_nudata=0"<<endl;}
+    	{N_warn++; warning<<N_warn<<" "<<"NOTE:  No *.ss_new and fewer *.sso files written after mceval"<<endl;}
     }
 
 //  SS_Label_Info_12.4.6 #Call fxn write_Bzero_output()  appended to report.sso
