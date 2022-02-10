@@ -1335,7 +1335,6 @@ FUNCTION void get_time_series()
   //  SS_Label_Info_24.8  #hermaphroditism
       if(Hermaphro_Option!=0)
       {
-              warning<<y<<" "<<s<<" do herm;"<<endl;
         if(Hermaphro_seas==-1 || Hermaphro_seas==s)
         {
           k=gmorph/2;  //  because first half of the "g" are females
