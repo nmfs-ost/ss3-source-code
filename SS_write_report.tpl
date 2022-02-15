@@ -1147,22 +1147,7 @@ FUNCTION void write_bigoutput()
    if(pick_report_use(18)=="Y") {
    SS2out<<endl<<pick_report_name(18)<<endl;
   if(F_std_basis!=2) SS2out<<"F_report_basis_is_not_=2;_so_info_below_is_not_F/Fmsy"<<endl;
-  SS2out<<"MSY_basis:_";
-  switch(Do_MSY)
-    {
-    case 1:  // set Fmsy=Fspr
-      {SS2out<<"set_Fmsy=Fspr"<<endl;
-      break;}
-    case 2:  // calc Fmsy
-      {SS2out<<"calculate_FMSY"<<endl;
-      break;}
-    case 3:  // set Fmsy=Fbtgt
-      {SS2out<<"set_Fmsy=Fbtgt"<<endl;
-      break;}
-    case 4:   //  set fmult for Fmsy to 1
-      {SS2out<<"set_Fmsy_using_Fmult=1.0"<<endl;
-      break;}
-    }
+  SS2out<<"MSY_basis:_"<<MSY_name<<endl;
   SS2out<<"Yr  B/Bmsy  F/Fmsy"<<endl;
    for (y=styr;y<=YrMax;y++)
    {
@@ -3597,7 +3582,7 @@ FUNCTION void Global_MSY()
     for (int MSY_loop=0;MSY_loop<=2;MSY_loop++)
     {
       if(MSY_loop==0)
-      {SS2out<<"#"<<endl<<"ACTUAL_SELECTIVITY_MSY "<<endl;}
+      {SS2out<<"#"<<endl<<"ACTUAL_SELECTIVITY_MSY with MSY units as: "<<MSY_name<<endl;}
       else if(MSY_loop==1)
       {SS2out<<"#"<<endl<<"KNIFE_AGE_SELECTIVITY_MSY "<<endl;}
       else

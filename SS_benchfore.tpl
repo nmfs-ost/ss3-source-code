@@ -316,7 +316,6 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
   dvar_vector F2(1,3);
   dvar_vector yld1(1,3);
   dvar_vector Fmult_save(1,3);
-
     write_bodywt_save=write_bodywt;
     write_bodywt=0;
 
@@ -837,7 +836,7 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
        {
       if(show_MSY==1)  //  report some headers
       {
-        report5<<"#"<<endl<<"Set_F_MSY using Do_MSY="<<Do_MSY<<endl<<"Iter Fmult ann_F SPR Catch SSB Recruits SSB/Bzero Gradient Curvature Tot_Ret_Catch";
+        report5<<"#"<<endl<<MSY_name<<endl<<"Iter Fmult ann_F SPR Catch SSB Recruits SSB/Bzero Gradient Curvature Tot_Ret_Catch";
         for (f=1;f<=Nfleet;f++) report5 << " Ret_Catch:"<<f << " ";
         report5<< "Cost Revenue Profit ";
         for (p=1;p<=pop;p++)
@@ -897,7 +896,7 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
       {
       if(show_MSY==1)  //  report some headers
       {
-        report5<<"Search for MSY or MEY using MSY_units="<<MSY_units<<endl;
+        report5<<endl<<MSY_name<<endl;
         report5<<"Iter Fmult ann_F SPR Opt_Catch_Profit SSB Recruits SSB/Bzero Gradient Curvature Tot_Ret_Catch";
         for (f=1;f<=Nfleet;f++) report5 << " Ret_Catch:"<<f << " ";
         report5<< "Cost Revenue Profit ";
@@ -944,12 +943,15 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
           Profit = (PricePerF*YPR_val_vec)*Recr_msy-Cost;
           if(Do_MSY==2)  //  dead catch without non-optimized 
           {yld1(ii)=YPR_opt*Recr_msy;}
+
+//  else using the bioecon options that depend on MSY_units
           else if(MSY_units==2)  //  retained catch without non-optimized 
           {yld1(ii)=YPR_opt*Recr_msy;}
           else if(MSY_units==1)  //  dead catch
           {yld1(ii)=YPR_dead*Recr_msy;}
-          else //  same as profit
+          else //  profit
           {yld1(ii)=(PricePerF*YPR_val_vec)*Recr_msy-Cost;}
+
           bestF1+=F2(ii)*(pow(mfexp(yld1(ii)/1.0e08),5)-1.);
           bestF2+=pow(mfexp(yld1(ii)/1.0e08),5)-1.;
          }   //  end gradient calc
@@ -1273,40 +1275,7 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
         report5<<"Biomass_Smry "<<Vbio1_Btgt*Btgt_Rec<<" "<<Vbio1_Btgt<<endl;
       }
 
-      report5<<"#"<<endl<<"MSY or MEY"<<endl;
-      switch(Do_MSY)
-        {
-        case 1:  // set Fmsy=Fspr
-          {report5<<"set_Fmsy=Fspr"<<endl;
-          break;}
-        case 3:  // set Fmsy=Fbtgt or F0.1
-          {
-            if(Do_Benchmark==1) report5<<"set_Fmsy=Fbtgt"<<endl;
-            if(Do_Benchmark==2) report5<<"set_Fmsy=F0.1"<<endl;
-          break;}
-        case 4:   //  set fmult for Fmsy to 1
-          {report5<<"set_Fmsy_using_input_Fmult"<<endl;
-          break;}
-        case 2:  // calc Fmsy
-          {report5<<"find_Fmsy_to_maximize_dead_catch"<<endl;
-          break;
-          }
-        case 5:  // calc Fmey
-          {
-            switch(MSY_units)
-            {
-              case 1:
-                {report5<<"find_Fmsy_to_maximize_dead_catch"<<endl;
-                break;}
-              case 2:
-                {report5<<"find_Fmsy_to_maximize_retained_catch"<<endl;
-                break;}
-              case 3:
-                {report5<<"find_Fmey_to_maximize_profits_(retained_catch_revenue_-_fleet_cost"<<endl;
-                break;}
-            }
-            break;}
-        }
+      report5<<"#"<<endl<<MSY_name<<endl;
       report5<<"SPR@MSY "<<MSY_SPR<<endl;
       report5<<"Fmult "<<MSY_Fmult<<endl;
       report5<<"ann_F "<<Mgmt_quant(14)<<endl;

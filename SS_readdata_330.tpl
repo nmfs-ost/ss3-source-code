@@ -2948,7 +2948,6 @@
   number SPR_target
   number BTGT_target
   number Blim_frac
-
   int MSY_units // 1=dead catch, 2=retained catch, 3=retained catch profits
   vector CostPerF(1,Nfleet);
   vector PricePerF(1,Nfleet);
@@ -2958,9 +2957,10 @@
   echoinput<<"read Do_Benchmark(0=skip; 1= do Fspr, Fbtgt, Fmsy; 2=do Fspr, F0.1, Fmsy;  3=Fspr, Fbtgt, Fmsy, F_Blimit)"<<endl;
   *(ad_comm::global_datafile) >> Do_Benchmark;
   echoinput<<Do_Benchmark<<" echoed Do_Benchmark "<<endl;
-  echoinput<<"read Do_MSY (1=F_SPR,2=F_Btarget,3=calcMSY,4=mult*F_endyr (disabled);5=calcMEY)"<<endl;
+  echoinput<<"read Do_MSY basis (1=F_SPR,2=calcMSY,3=F_Btarget,4=mult*F_endyr (disabled);5=calcMEY)"<<endl;
   *(ad_comm::global_datafile) >> Do_MSY;
   echoinput<<Do_MSY<<" echoed Do_MSY basis"<<endl;
+  if(Do_MSY==3) {echoinput<<"Note that Do_MSY=5 is better option by providing control of MSY_units (dead catch, retained catch, or profits)"<<endl;}
 
     CostPerF=0.0;
     PricePerF=1.0;  // default value per mt
@@ -2974,7 +2974,7 @@
       
       CostPerF.initialize();
       PricePerF.initialize();
-      echoinput<<"enter fleet ID and cost per fleet; negative fleet ID fills for all higher fleet IDs, -999 exits list"<<endl;
+      echoinput<<"enter fleet ID and cost per fleet, price per fleet, and 1 to indicate FMEY applies to this fleet (0) otherwise; negative fleet ID fills for all higher fleet IDs, -999 exits list"<<endl;
       int fleet_ID=100;
       double tempcost;
       double tempprice;
@@ -3001,6 +3001,40 @@
         }
       echoinput << "# Cost-per-unit fishing mortality: " << CostPerF << endl<<"Price per kg: "<<PricePerF<<endl;
     }
+
+      switch(Do_MSY)
+        {
+        case 1:  // set Fmsy=Fspr
+          {MSY_name="set_Fmsy=Fspr";
+          break;}
+        case 3:  // set Fmsy=Fbtgt or F0.1
+          {
+            if(Do_Benchmark==1) MSY_name="set_Fmsy=Fbtgt";
+            if(Do_Benchmark==2) MSY_name="set_Fmsy=F0.1";
+          break;}
+        case 4:   //  set fmult for Fmsy to 1
+          {MSY_name="set_Fmsy_using_input_Fmult";
+          break;}
+        case 2:  // calc Fmsy
+          {MSY_name="find_Fmsy_to_maximize_dead_catch";
+          break;
+          }
+        case 5:  // calc Fmey
+          {
+            switch(MSY_units)
+            {
+              case 1:
+                {MSY_name="find_Fmsy_to_maximize_dead_catch";
+                break;}
+              case 2:
+                {MSY_name="find_Fmsy_to_maximize_retained_catch";
+                break;}
+              case 3:
+                {MSY_name="find_Fmey_to_maximize_profits_(retained_catch_revenue_-_fleet_cost";
+                break;}
+            }
+            break;}
+        }
 
   show_MSY=0;
   did_MSY=0;

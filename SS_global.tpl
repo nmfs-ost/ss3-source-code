@@ -85,6 +85,7 @@ GLOBALS_SECTION
   adstring anystring;
   adstring anystring2;
   adstring report_sso_filename;
+  adstring MSY_name;  // label describing what Do_MSY and MSY_units are being used
 
   adstring_array version_info;
   adstring_array version_info2;
