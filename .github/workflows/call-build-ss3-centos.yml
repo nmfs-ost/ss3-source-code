@@ -1,6 +1,0 @@
-on: 
-  workflow_dispatch:
-name: call-build-ss3-centos
-jobs:
-  call-workflow:
-    uses: nmfs-stock-synthesis/workflows/.github/workflows/build-ss3-centos.yml@main
