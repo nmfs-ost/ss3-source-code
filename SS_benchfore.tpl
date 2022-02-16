@@ -91,7 +91,7 @@ FUNCTION void setup_Benchmark()
         Fcast_RelF_Use.initialize();
         for(int ff=1;ff<=N_catchfleets(0);ff++)
         {f=fish_fleet_area(0,ff);
-         if(YPR_mask(f)==1)
+         if(fleet_type(f)==1 || (fleet_type(f)==2 && bycatch_setup(f,3)==1))
          {
           for (y=Fcast_RelF_yr1;y<=Fcast_RelF_yr2;y++)
           for (s=1;s<=nseas;s++)
@@ -320,12 +320,6 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
     write_bodywt=0;
 
    Nloops2=0;
-   if(show_MSY==1)
-   {
-     report5<<version_info<<endl<<ctime(&start);
-     report5<<"Bmark_relF(by_fleet_&seas)"<<endl<<Bmark_RelF_Use<<endl<<"#"<<endl;
-     report5<<"Bmark_histF(by_fleet_&seas)"<<endl<<Bmark_HistF<<endl<<"#"<<endl;
-   }
 
     y=styr-3;  //  the average biology from specified benchmark years is stored here
     yz=y;
@@ -333,7 +327,6 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
     eq_yr=y;
     t_base=y+(y-styr)*nseas-1;
     bio_t_base=styr+(bio_yr-styr)*nseas-1;
-
 
 //  set the Hrate for bycatch fleets so not scaled with other fleets
 //  bycatch_F(f,s) is created here for use in forecast
@@ -362,6 +355,15 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
         for (s=1;s<=nseas;s++) {t=bio_t_base+s; Hrate(f,t)=0.0;}
       }
     }
+
+   if(show_MSY==1)
+   {
+     report5<<version_info<<endl<<ctime(&start);
+     report5<<"Bmark_relF(by_fleet_&seas) (excluding non-scaled bycatch fleets)"<<endl<<Bmark_RelF_Use<<endl<<"#"<<endl;
+     report5<<"Bmark_histF(by_fleet_&seas)"<<endl<<Bmark_HistF<<endl<<"#"<<endl;
+     report5<<"Bycatch_F"<<endl<<trans(bycatch_F)<<endl<<"#"<<endl;
+     report5<<"YPR_mask for including catch: "<<endl<<YPR_mask<<endl;
+   }
 
     if(show_MSY==2)
     {
@@ -495,8 +497,9 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
 
           for (f=1;f<=Nfleet;f++)
           {
-            if(YPR_mask(f)==1)
-            {for (int s=1;s<=nseas;s++) {Hrate(f,bio_t_base+s)=Fmult*Bmark_RelF_Use(s,f);}
+            if(fleet_type(f)==1 || (fleet_type(f)==2 && bycatch_setup(f,3)==1))
+            {
+              for (int s=1;s<=nseas;s++) {Hrate(f,bio_t_base+s)=Fmult*Bmark_RelF_Use(s,f);}
             } 
             //  else  Hrate for bycatch fleets already set
           }
@@ -847,7 +850,8 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
 //        Fmult=Fmax/(1.00+mfexp(-F1(1)));  // using the F1 calculated in previous section
         for (f=1;f<=Nfleet;f++)
         {
-          if(YPR_mask(f)==1)
+//          if(YPR_mask(f)==1)  // incorrect usage, should use bycatch_setup(f,3) per replacement line below
+          if(fleet_type(f)==1 || (fleet_type(f)==2 && bycatch_setup(f,3)==1))
           {for (int s=1;s<=nseas;s++) {Hrate(f,bio_t_base+s)=Fmult*Bmark_RelF_Use(s,f);}
           } 
           //  else  Hrate for bycatch fleets already set
@@ -1371,7 +1375,7 @@ FUNCTION void Get_Forecast()
         for (s=1;s<=nseas;s++)
         for(int ff=1;ff<=N_catchfleets(0);ff++)
         {f=fish_fleet_area(0,ff);
-        if(YPR_mask(f)==1)
+         if(fleet_type(f)==1 || (fleet_type(f)==2  && bycatch_setup(f,3)==1))
          {
            t=styr+(y-styr)*nseas+s-1;
            Fcast_Fmult+=Hrate(f,t);
@@ -1457,7 +1461,7 @@ FUNCTION void Get_Forecast()
         report5<<s<<" "<<seasdur(s);
         for(int ff=1;ff<=N_catchfleets(0);ff++)
         {f=fish_fleet_area(0,ff);
-        if(YPR_mask(f)==1)
+        if(fleet_type(f)==1 || (fleet_type(f)==2 && bycatch_setup(f,3)==1))
         {report5<<" "<<Fcast_Fmult*Fcast_RelF_Use(s,f);}
         else if (fleet_type(f)==2)
         {report5<<" "<<bycatch_F(f,s);}
@@ -1477,7 +1481,7 @@ FUNCTION void Get_Forecast()
         report5<<s<<" "<<seasdur(s);
         for(int ff=1;ff<=N_catchfleets(0);ff++)
         {f=fish_fleet_area(0,ff);
-        if(YPR_mask(f)==1)
+        if(fleet_type(f)==1 || (fleet_type(f)==2 && bycatch_setup(f,3)==1))
         {report5<<" "<<Fcast_Fmult*Fcast_RelF_Use(s,f)*seasdur(s);}
         else if (fleet_type(f)==2)
         {report5<<" "<<bycatch_F(f,s)*seasdur(s);}
