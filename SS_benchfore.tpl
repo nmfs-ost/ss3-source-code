@@ -925,17 +925,17 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
             Fmult=Fmax/(1.00+mfexp(-F2(ii)));
         for (f=1;f<=Nfleet;f++)
         {
-            if(fleet_type(f)==1 || (fleet_type(f)==2 && bycatch_setup(f,3)==1))
+          if(fleet_type(f)==1 || (fleet_type(f)==2 && bycatch_setup(f,3)==1))
           {
-              if (AdjustBenchF(f)==1)
-               {
-            for (int s=1;s<=nseas;s++) {Hrate(f,bio_t_base+s)=Fmult*Bmark_RelF_Use(s,f); }
-          } //  else  Hrate for bycatch fleets set above
-              else 
-               {
-                for (int s=1;s<=nseas;s++) {Hrate(f,bio_t_base+s)=Bmark_HistF(s,f); }
-               } //  else  Hrate for bycatch fleets set above
-              } 
+            if (AdjustBenchF(f)==1)
+            {
+              for (int s=1;s<=nseas;s++) {Hrate(f,bio_t_base+s)=Fmult*Bmark_RelF_Use(s,f); }
+            }
+            else 
+            {
+              for (int s=1;s<=nseas;s++) {Hrate(f,bio_t_base+s)=Bmark_HistF(s,f); }
+            }
+          }  //  else  Hrate for bycatch fleets set above
         }
           Do_Equil_Calc(equ_Recr);
           //  SPAWN-RECR:   calc spawn-recr for MSY calcs;  need to make area-specific

@@ -2978,7 +2978,7 @@
       int fleet_ID=100;
       double tempcost;
       double tempprice;
-      double tempAdjust;
+      int tempAdjust;
       while(fleet_ID>-999)
       {
         *(ad_comm::global_datafile) >> fleet_ID;
