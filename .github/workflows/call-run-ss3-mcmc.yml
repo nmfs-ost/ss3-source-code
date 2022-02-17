@@ -8,7 +8,7 @@ on:
     paths:
       - '**.tpl'
     branches: [main]
-name: call-build-ss3
+name: call-run-ss3-mcmc
 jobs:
   call-workflow:
     uses: nmfs-stock-synthesis/workflows/.github/workflows/run-ss3-mcmc.yml@main

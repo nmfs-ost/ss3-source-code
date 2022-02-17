@@ -310,6 +310,7 @@ PROCEDURE_SECTION
         get_posteriors();
 
 //SS_Label_Info_7.12 #write report_mce_XXXX.sso and compreport_mce_XXXX.sso for each MCEVAL
+//        warning<<mceval_counter<<" SSB 2021 2022 "<<SSB_std(N_STD_Yr-4)<<" "<<SSB_std(N_STD_Yr-3)<<endl<<endl;
         if(mcmc_output_detail>=2)
         {
         write_bodywt=0;

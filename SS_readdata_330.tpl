@@ -155,6 +155,8 @@
     {
       spawn_month=spawn_rd;
       temp1=(spawn_month-1.0)/sumseas;  //  spawn_month as fraction of year
+      if(spawn_month>=13.0)
+      {N_warn++; cout<<"fatal read error, see warning"<<endl; warning<<N_warn<<" Fatal error. spawn_month must be <13.0, end of year is 12.99, value read is: "<<spawn_month<<endl; exit(1);}
       spawn_seas=1;  // earlist possible spawn_seas;
       spawn_subseas=1;  //  earliest possible subseas in spawn_seas
       temp=azero_seas(spawn_seas)+subseasdur_delta(spawn_seas);  //  starting value
@@ -1704,6 +1706,8 @@
   Nobs_a.initialize();
   Nobs_a_use.initialize();
   N_suprper_a.initialize();
+  Comp_Err_A.initialize();
+  Comp_Err_A2.initialize();
   echoinput<<"Enter the number of agebins, or 0 if no age data"<<endl;
   *(ad_comm::global_datafile) >> n_abins;
   echoinput<<n_abins<<" N age bins "<<endl;
@@ -1760,8 +1764,6 @@
         }
       }
 
-      Comp_Err_A.initialize();
-      Comp_Err_A2.initialize();
       echoinput<<"#_now read for each fleet info for processing the age comps:"<<endl;
       echoinput<<"#_mintailcomp: upper and lower distribution for females and males separately are accumulated until exceeding this level."<<endl;
       echoinput<<"#_addtocomp:  after accumulation of tails; this value added to all bins"<<endl;
@@ -2968,6 +2970,7 @@
     AdjustBenchF = 1;
     if(Do_MSY==5)  //  doing advanced MSY options, including MEY
     {
+      N_warn++;  warning<<N_warn<<" F(mey) is a research feature in 3.30.19; use cautiously and report any issues"<<endl;
       echoinput<<"enter quantity to be maximized: (1) dead catch biomass; (2) dead catch biomass w/o excluded bycatch fleet "<<
       "(3) retained catch; (4) retained catch profits"<<endl;
       *(ad_comm::global_datafile) >> MSY_units;
@@ -3139,6 +3142,8 @@
   Fcast_Catch_Allocation.initialize();
   Fcast_RelF_Input.initialize();
   Fcast_yr.initialize();
+  Do_Impl_Error=0;
+  Do_Rebuilder=0;
  END_CALCS
 //  init_vector Fcast_Input_rd(1,k)
 

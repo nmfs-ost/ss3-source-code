@@ -1352,11 +1352,13 @@ FUNCTION void get_time_series()
             } else
             if(Hermaphro_Option==-1)
             {
+          warning<<"changer: "<<Hermaphro_val(GP4(g+k))<<endl<<natage(t+1,p,g)<<endl<<natage(t+1,p,g+k)<<endl;
               for (a=1;a<nages;a++)
               {
                 natage(t+1,p,g,a) += natage(t+1,p,g+k,a)*Hermaphro_val(GP4(g+k),a-1); // increment females with males
                 natage(t+1,p,g+k,a) *= (1.-Hermaphro_val(GP4(g+k),a-1)); // decrement males
               }
+          warning<<"after: "<<endl<<natage(t+1,p,g)<<endl<<natage(t+1,p,g+k)<<endl<<endl;
             }
           }
         }
