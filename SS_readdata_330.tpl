@@ -2957,29 +2957,30 @@
   echoinput<<"read Do_Benchmark(0=skip; 1= do Fspr, Fbtgt, Fmsy; 2=do Fspr, F0.1, Fmsy;  3=Fspr, Fbtgt, Fmsy, F_Blimit)"<<endl;
   *(ad_comm::global_datafile) >> Do_Benchmark;
   echoinput<<Do_Benchmark<<" echoed Do_Benchmark "<<endl;
-  echoinput<<"read Do_MSY basis (1=F_SPR,2=calcMSY,3=F_Btarget,4=mult*F_endyr (disabled);5=calcMEY)"<<endl;
+  echoinput<<"read Do_MSY basis (1=F_SPR,2=calcMSY,3=F_Btarget,4=mult*F_endyr (disabled);5=calcMEY with MSY_unit options"<<endl;
   *(ad_comm::global_datafile) >> Do_MSY;
   echoinput<<Do_MSY<<" echoed Do_MSY basis"<<endl;
-  if(Do_MSY==3) {echoinput<<"Note that Do_MSY=5 is better option by providing control of MSY_units (dead catch, retained catch, or profits)"<<endl;}
+  if(Do_MSY==2) {echoinput<<"Note that Do_MSY=5 is more flexible than Do_MSY=2 by providing control of MSY_units"<<endl;}
 
     CostPerF=0.0;
     PricePerF=1.0;  // default value per mt
-    MSY_units=2;  //  default to YPR_opt = dead catch without non-optimized bycatch
+    MSY_units=2;  //  default to YPR_opt = dead catch without excluded bycatch fleets, but with size/age discard included
     AdjustBenchF = 1;
     if(Do_MSY==5)  //  doing advanced MSY options, including MEY
     {
-      echoinput<<"enter quantity to be maximized: (1) dead catch biomass; (2) dead catch biomass w/o non-opt bycatch; or (3) retained catch profits"<<endl;
+      echoinput<<"enter quantity to be maximized: (1) dead catch biomass; (2) dead catch biomass w/o excluded bycatch fleet "<<
+      "(3) retained catch; (4) retained catch profits"<<endl;
       *(ad_comm::global_datafile) >> MSY_units;
       echoinput<<MSY_units<<" # MSY_units as entered"<<endl;
       
       CostPerF.initialize();
       PricePerF.initialize();
-      echoinput<<"enter fleet ID and cost per fleet, price per fleet, and 1 to indicate FMEY applies to this fleet (0) otherwise; negative fleet ID fills for all higher fleet IDs, -999 exits list"<<endl;
+      echoinput<<"enter fleet ID and cost per fleet, price per fleet, and 1 to indicate FMEY applies to this fleet (0) otherwise; negative fleet ID fills for all higher fleet IDs, -9999 exits list"<<endl;
       int fleet_ID=100;
       double tempcost;
       double tempprice;
       int tempAdjust;
-      while(fleet_ID>-999)
+      while(fleet_ID>-9999)
       {
         *(ad_comm::global_datafile) >> fleet_ID;
         *(ad_comm::global_datafile) >> tempcost;

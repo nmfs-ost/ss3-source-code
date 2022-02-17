@@ -898,17 +898,17 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
 
       else  //  (Do_MSY==2 || Do_MSY==5)   // search for FMSY, then optionally for FMEY; FMEY embedded inside this section
       {
-      if(show_MSY==1)  //  report some headers
-      {
-        report5<<endl<<MSY_name<<endl;
-        report5<<"Iter Fmult ann_F SPR Opt_Catch_Profit SSB Recruits SSB/Bzero Gradient Curvature Tot_Ret_Catch";
-        for (f=1;f<=Nfleet;f++) report5 << " Ret_Catch:"<<f << " ";
-        report5<< "Cost Revenue Profit ";
-        for (p=1;p<=pop;p++)
-        for (gp=1;gp<=N_GP;gp++)
-        {report5<<" Area:"<<p<<"_GP:"<<gp;}
-        report5<<endl;
-      }
+        if(show_MSY==1)  //  report some headers
+        {
+          report5<<endl<<MSY_name<<endl;
+          report5<<"Iter Fmult ann_F SPR Opt_Catch_Profit SSB Recruits SSB/Bzero Gradient Curvature Tot_Ret_Catch";
+          for (f=1;f<=Nfleet;f++) report5 << " Ret_Catch:"<<f << " ";
+          report5<< "Cost Revenue Profit ";
+          for (p=1;p<=pop;p++)
+          for (gp=1;gp<=N_GP;gp++)
+          {report5<<" Area:"<<p<<"_GP:"<<gp;}
+          report5<<endl;
+        }
         bestF1.initialize(); bestF2.initialize();
         df=0.050;
         jj=3;
@@ -945,14 +945,16 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
           Bmsy=Equ_SpawnRecr_Result(1);
           Recr_msy=Equ_SpawnRecr_Result(2);
           Profit = (PricePerF*YPR_val_vec)*Recr_msy-Cost;
-          if(Do_MSY==2)  //  dead catch without non-optimized 
+          if(Do_MSY==2)  //  dead catch without excluded bycatch fleets
           {yld1(ii)=YPR_opt*Recr_msy;}
 
 //  else using the bioecon options that depend on MSY_units
-          else if(MSY_units==2)  //  retained catch without non-optimized 
+          else if(MSY_units==2)  //  retained catch without excluded bycatch fleets, but still with size/age discard
           {yld1(ii)=YPR_opt*Recr_msy;}
           else if(MSY_units==1)  //  dead catch
           {yld1(ii)=YPR_dead*Recr_msy;}
+          else if(MSY_units==3)  //  retained catch
+          {yld1(ii)=YPR_ret*Recr_msy;}
           else //  profit
           {yld1(ii)=(PricePerF*YPR_val_vec)*Recr_msy-Cost;}
 
