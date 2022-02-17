@@ -264,10 +264,10 @@ FUNCTION void setup_Benchmark()
             Bmark_HistF(s,f)+=Hrate(f,t);
             Bmark_RelF_Use(s,f)+=Hrate(f,t);
           }
-          Bmark_HistF/=float(Bmark_Yr(6)-Bmark_Yr(5));  //  average F(s,f) across benchmark years
+          Bmark_HistF/=float(Bmark_Yr(6)-Bmark_Yr(5)+1.);  //  average F(s,f) across benchmark years
           temp=sum(Bmark_RelF_Use);
 
-//  note that the relF caclulation below is not conditional on whether a fleet is not bycatch and not non-optimized
+//  note that the relF calculation below is not conditional on whether a fleet is not bycatch and not non-optimized
 //  Fmult later calculated as multiplier times Bmark_relF_use and will compensate automatically
           if(temp>0.0)
           {
