@@ -1877,7 +1877,7 @@ FUNCTION void Do_Equil_Calc(const prevariable& equ_Recr)
        {f=fish_fleet_area(0,ff);
        for (s=1;s<=nseas;s++)
        {
-         YPR_opt+=equ_catch_fleet(2,s,f)*YPR_mask(f);  //  using dead catch excluding non-optimized bycatch
+         YPR_opt+=equ_catch_fleet(2,s,f)*YPR_mask(f);  //  using dead catch excluding non-optimized bycatch fleets
          YPR_val_vec(f)+=equ_catch_fleet(3,s,f)*YPR_mask(f);  //  using retained catch so YPR_mask should be redundant
        }
      }

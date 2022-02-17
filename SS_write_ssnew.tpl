@@ -1217,16 +1217,18 @@ FUNCTION void write_nucontrol()
   if(N_FC>0) NuFore<<Forecast_Comments<<endl;
   NuFore<<"# for all year entries except rebuilder; enter either: actual year, -999 for styr, 0 for endyr, neg number for rel. endyr"<<endl;
   NuFore<<Do_Benchmark<<" # Benchmarks: 0=skip; 1=calc F_spr,F_btgt,F_msy; 2=calc F_spr,F0.1,F_msy; 3=add F_Blimit; "<<endl;
-  NuFore<<Do_MSY<<" # Do_MSY: 1= set to F(SPR); 2=calc F(MSY); 3=set to F(Btgt) or F0.1; 4=set to F(endyr); 5=calc F(MEY)"<<endl;
-  NuFore << "# if Do_MSY=5, enter MSY_Units; then list fleet_ID, cost/F, price/mt; -fleet_ID to fill; -9999 to terminate" << endl; 
+  NuFore<<Do_MSY<<" # Do_MSY: 1= set to F(SPR); 2=calc F(MSY); 3=set to F(Btgt) or F0.1; 4=set to F(endyr); 5=calc F(MEY) with MSY_unit options"<<endl;
+  NuFore << "# if Do_MSY=5, enter MSY_Units; then list fleet_ID, cost/F, price/mt, include_in_Fmey_scaling; # -fleet_ID to fill; -9999 to terminate" << endl; 
   if(Do_MSY==5)
   {
-    NuFore<<MSY_units<<" # MSY_units: 1=dead biomass, 2=retained biomass, 3=profits"<<endl;
+    NuFore<<MSY_units<<" # MSY_units: 1=dead biomass, 2=dead biomass w/o excluded bycatch fleet, 3=retained biomass; 4=profits using price and costs"<<endl;
+    NuFore<<"# Note: if a fleet's catch is excluded from the Fmey search, its catch or profits are still included in the MSY value using historical F levels from Bmark_years"<<endl;
+    NuFore<<"# Fleet Cost_per_F Price_per_F include_in_Fmey_search"<<endl;
     for (f=1;f<=Nfleet;f++)
     {
-      if(YPR_mask(f)>0.0) NuFore << f<<" "<<CostPerF(f)<<" "<<PricePerF(f)<<endl;
+      if(YPR_mask(f)>0.0) NuFore << f<<" "<<CostPerF(f)<<" "<<PricePerF(f)<<" "<< AdjustBenchF(f)<<endl;
     }
-    NuFore<<"-9999 1 1 # terminate list of fleet costs and prices"<<endl;
+    NuFore<<"-9999 1 1 1 # terminate list of fleet costs and prices"<<endl;
   }
 
   NuFore<<SPR_target<<" # SPR target (e.g. 0.40)"<<endl;
@@ -1360,8 +1362,7 @@ FUNCTION void write_nucontrol()
 //**********************************************************
   cout<<" Write new control file "<<endl;
 
-  anystring=ssnew_pathname+"control.ss_new";
-  ofstream report4(anystring);
+  ofstream report4("control.ss_new");
   report4<<version_info(1)<<version_info(2)<<version_info(3)<<endl;
   report4<<version_info2<<endl;
   if(N_CC>0) report4<<Control_Comments<<endl;

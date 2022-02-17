@@ -2950,56 +2950,95 @@
   number SPR_target
   number BTGT_target
   number Blim_frac
-
   int MSY_units // 1=dead catch, 2=retained catch, 3=retained catch profits
   vector CostPerF(1,Nfleet);
   vector PricePerF(1,Nfleet);
+  ivector AdjustBenchF(1,Nfleet);
 
  LOCAL_CALCS
   echoinput<<"read Do_Benchmark(0=skip; 1= do Fspr, Fbtgt, Fmsy; 2=do Fspr, F0.1, Fmsy;  3=Fspr, Fbtgt, Fmsy, F_Blimit)"<<endl;
   *(ad_comm::global_datafile) >> Do_Benchmark;
   echoinput<<Do_Benchmark<<" echoed Do_Benchmark "<<endl;
-  echoinput<<"read Do_MSY (1=F_SPR,2=F_Btarget,3=calcMSY,4=mult*F_endyr (disabled);5=calcMEY)"<<endl;
+  echoinput<<"read Do_MSY basis (1=F_SPR,2=calcMSY,3=F_Btarget,4=mult*F_endyr (disabled);5=calcMEY with MSY_unit options"<<endl;
   *(ad_comm::global_datafile) >> Do_MSY;
   echoinput<<Do_MSY<<" echoed Do_MSY basis"<<endl;
+  if(Do_MSY==2) {echoinput<<"Note that Do_MSY=5 is more flexible than Do_MSY=2 by providing control of MSY_units"<<endl;}
 
     CostPerF=0.0;
     PricePerF=1.0;  // default value per mt
-    MSY_units=2;  //  default to YPR_opt = dead catch without non-optimized bycatch
+    MSY_units=2;  //  default to YPR_opt = dead catch without excluded bycatch fleets, but with size/age discard included
+    AdjustBenchF = 1;
     if(Do_MSY==5)  //  doing advanced MSY options, including MEY
     {
       N_warn++;  warning<<N_warn<<" F(mey) is a research feature in 3.30.19; use cautiously and report any issues"<<endl;
-      echoinput<<"enter quantity to be maximized: (1) dead catch biomass; (2) dead catch biomass w/o non-opt fleets; or (3) retained catch profits"<<endl;
+      echoinput<<"enter quantity to be maximized: (1) dead catch biomass; (2) dead catch biomass w/o excluded bycatch fleet "<<
+      "(3) retained catch; (4) retained catch profits"<<endl;
       *(ad_comm::global_datafile) >> MSY_units;
       echoinput<<MSY_units<<" # MSY_units as entered"<<endl;
       
       CostPerF.initialize();
       PricePerF.initialize();
-      echoinput<<"enter fleet ID and cost per fleet; negative fleet ID fills for all higher fleet IDs, -999 exits list"<<endl;
+      echoinput<<"enter fleet ID and cost per fleet, price per fleet, and 1 to indicate FMEY applies to this fleet (0) otherwise; negative fleet ID fills for all higher fleet IDs, -9999 exits list"<<endl;
       int fleet_ID=100;
       double tempcost;
       double tempprice;
-      while(fleet_ID>-999)
+      int tempAdjust;
+      while(fleet_ID>-9999)
       {
         *(ad_comm::global_datafile) >> fleet_ID;
         *(ad_comm::global_datafile) >> tempcost;
         *(ad_comm::global_datafile) >> tempprice;
-        echoinput<<fleet_ID<<" "<<tempcost<<" "<<tempprice<<endl;
+        *(ad_comm::global_datafile) >> tempAdjust;
+        echoinput<<fleet_ID<<" "<<tempcost<<" "<<tempprice<<" "<<tempAdjust<<endl;
         if(fleet_ID>Nfleet)
           {N_warn++; warning<<"fleetID > Nfleet"<<endl;}
         else if(fleet_ID>0) 
-          {CostPerF(fleet_ID)=tempcost; PricePerF(fleet_ID)=tempprice;}
-        else if(fleet_ID>-9999)
+          {CostPerF(fleet_ID)=tempcost; PricePerF(fleet_ID)=tempprice; AdjustBenchF(fleet_ID)=tempAdjust;}
+        else if(fleet_ID>-999)
           {
             for(f=-fleet_ID;f<=Nfleet;f++)
             {
               if(fleet_type(f)==1 || (fleet_type(f)==2 && bycatch_setup(f,3)==1)) 
-               {CostPerF(f)=tempcost; PricePerF(f)=tempprice;}
+               {CostPerF(f)=tempcost; PricePerF(f)=tempprice; AdjustBenchF(f)=tempAdjust; }
             }
           }
         }
       echoinput << "# Cost-per-unit fishing mortality: " << CostPerF << endl<<"Price per kg: "<<PricePerF<<endl;
     }
+
+      switch(Do_MSY)
+        {
+        case 1:  // set Fmsy=Fspr
+          {MSY_name="set_Fmsy=Fspr";
+          break;}
+        case 3:  // set Fmsy=Fbtgt or F0.1
+          {
+            if(Do_Benchmark==1) MSY_name="set_Fmsy=Fbtgt";
+            if(Do_Benchmark==2) MSY_name="set_Fmsy=F0.1";
+          break;}
+        case 4:   //  set fmult for Fmsy to 1
+          {MSY_name="set_Fmsy_using_input_Fmult";
+          break;}
+        case 2:  // calc Fmsy
+          {MSY_name="find_Fmsy_to_maximize_dead_catch";
+          break;
+          }
+        case 5:  // calc Fmey
+          {
+            switch(MSY_units)
+            {
+              case 1:
+                {MSY_name="find_Fmsy_to_maximize_dead_catch";
+                break;}
+              case 2:
+                {MSY_name="find_Fmsy_to_maximize_retained_catch";
+                break;}
+              case 3:
+                {MSY_name="find_Fmey_to_maximize_profits_(retained_catch_revenue_-_fleet_cost";
+                break;}
+            }
+            break;}
+        }
 
   show_MSY=0;
   did_MSY=0;
@@ -3046,10 +3085,13 @@
   echoinput<<"next read:  1=use range of years as read for relF; 2 = set same as forecast relF below"<<endl;
  END_CALCS
   init_int Bmark_RelF_Basis
-  !!echoinput<<Bmark_RelF_Basis<<"  echoed Bmark_RelF_year basis"<<endl;
 
-  !!echoinput<<endl<<"next read forecast basis: 0=none; 1=F(SPR); 2=F(MSY) 3=F(Btgt); 4=Ave F (enter yrs); 5=read Fmult"<<endl;
-
+ LOCAL_CALCS
+  echoinput<<Bmark_RelF_Basis<<"  echoed Bmark_RelF_year basis"<<endl;
+  if(Do_MSY==5 && Bmark_RelF_Basis==2)
+  {N_warn++; cout<<"exit with bad input; see warning"<<endl; warning<<N_warn<<"  Do_MSY=5, so must use Bmark_RelF_Basis=1"<<endl; exit(1);}
+  echoinput<<endl<<"next read forecast basis: 0=none; 1=F(SPR); 2=F(MSY) 3=F(Btgt); 4=Ave F (enter yrs); 5=read Fmult"<<endl;
+ END_CALCS
   init_int Do_Forecast_rd
   int Do_Forecast
   !! Do_Forecast=Do_Forecast_rd;
