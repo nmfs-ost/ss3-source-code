@@ -1181,7 +1181,7 @@ FUNCTION void write_nucontrol()
   NuStart<<Do_CumReport<<" # write to cumreport.sso (0=no,1=like&timeseries; 2=add survey fits)"<<endl;
   NuStart<<Do_all_priors<<" # Include prior_like for non-estimated parameters (0,1) "<<endl;
   NuStart<<SoftBound<<" # Use Soft Boundaries to aid convergence (0,1) (recommended)"<<endl;
-  NuStart<<"#"<<endl<<N_nudata_read<<" # Number of datafiles to produce: 1st is input, 2nd is estimates, 3rd and higher are bootstrap, 0 turns off all *.ss_new output"<<endl;
+  NuStart<<"#"<<endl<<N_nudata_read<<" # Number of datafiles to produce:  0 turns off all *.ss_new; 1st is data_echo.ss_new, 2nd is data_expval.ss, 3rd and higher are data_boot_**N.ss,"<<endl;
   NuStart<<Turn_off_phase_rd<<" # Turn off estimation for parameters entering after this phase"<<endl;
   NuStart<<"#"<<endl<<burn_intvl<<" # MCeval burn interval"<<endl;
   NuStart<<thin_intvl<<" # MCeval thin interval"<<endl;
