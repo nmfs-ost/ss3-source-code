@@ -12,5 +12,6 @@
 - [ ] Changes in r4ss
 - [ ] Changes to SS3 manual
 - [ ] Changes to SSI (the SS3 GUI)
+- [ ] An entry in the stock synthesis change log (new features, bug reports)
 
-##  Describe any changes in r4ss/SS3 manual/SSI that are needed (if checked):
+##  Describe any changes in r4ss/SS3 manual/SSI/change log that are needed (if checked):
