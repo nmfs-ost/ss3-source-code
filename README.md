@@ -47,7 +47,7 @@ This project and everyone participating in it is governed by the [NMFS Fisheries
 As Stock Synthesis usage has grown, so has the number of tools to work with it. These include [repositories on github with the stock-synthesis topic](https://github.com/topics/stock-synthesis) as well as:
 
 - [r4ss](https://github.com/r4ss/r4ss): Create plots of Stock Synthesis output and functions to work with Stock Synthesis in R.
-- [ss3diags](https://github.com/jabbamodel/ss3diags): Run advanced diagnostics for Stock Synthesis models.
+- [ss3diags](https://github.com/PIFSCstockassessments/ss3diags): Run advanced diagnostics for Stock Synthesis models.
 - [ss3sim](https://github.com/ss3sim/ss3sim): Conduct simulation studies using Stock Synthesis.
 - [SSI](https://vlab.noaa.gov/web/stock-synthesis/document-library/-/document_library/0LmuycloZeIt/view/5042951): Stock Synthesis Interface, a GUI for developing models and running Stock Synthesis. Links to r4ss.
 - [SSMSE](https://github.com/nmfs-fish-tools/SSMSE): Use Stock Synthesis operating models in Management Strategy Evaluation.
