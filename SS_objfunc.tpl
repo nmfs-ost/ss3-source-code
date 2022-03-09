@@ -520,7 +520,7 @@ FUNCTION void evaluate_the_objective_function()
         	{ }//  do nothing keep k at same value
         else
         {
-          if (TG_parm_PH(j)>-1000.)	{k=j;} else {k=-1000-TG_parm_PH(j)+N_TG;}
+          if (TG_parm_PH(j)>-1000.)	{k=j;} else {k=-1000-TG_parm_PH(j)+2*N_TG;}
         }
         overdisp=TG_parm(k);
         for (TG_t=TG_mixperiod;TG_t<=TG_endtime(TG);TG_t++)

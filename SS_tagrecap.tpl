@@ -29,7 +29,6 @@ FUNCTION void Tag_Recapture()
       	TG_rep_decay(f) = TG_parm(k);
       }
       }
-
     for (TG=1;TG<=N_TG;TG++)
     {
       firstseas=int(TG_release(TG,4));  // release season
@@ -75,7 +74,6 @@ FUNCTION void Tag_Recapture()
         TG_save(TG,1)=value(TG_init_loss);
         TG_save(TG,2)=value(TG_chron_loss);
       }
-
       TG_t=0;
       for (y=TG_release(TG,3);y<=endyr;y++)
       {
@@ -165,24 +163,3 @@ FUNCTION void Tag_Recapture()
       }  // end years
     }  //  end loop of tag groups
   }  // end having tag groups
-
- /*
- //  SS_Label_Info_25.9 #Fit to tag-recapture
- //  This code fragment resides in SS_objfunc.tpl
-    if(Do_TG>0)
-    {
-      for (TG=1;TG<=N_TG;TG++)
-      {
-        overdisp=TG_parm(2*N_TG+TG);
-        for (TG_t=TG_mixperiod;TG_t<=TG_endtime(TG);TG_t++)
-        {
-          TG_recap_exp(TG,TG_t)(1,Nfleet)+=1.0e-6;  // add a tiny amount
-          TG_recap_exp(TG,TG_t,0) = sum(TG_recap_exp(TG,TG_t)(1,Nfleet));
-          TG_recap_exp(TG,TG_t)(1,Nfleet)/=TG_recap_exp(TG,TG_t,0);
-          if(Nfleet>1) TG_like1(TG)-=TG_recap_obs(TG,TG_t,0)* (TG_recap_obs(TG,TG_t)(1,Nfleet) * log(TG_recap_exp(TG,TG_t)(1,Nfleet)));
-          TG_like2(TG)-=log_negbinomial_density(TG_recap_obs(TG,TG_t,0),TG_recap_exp(TG,TG_t,0),overdisp);
-        }
-      }
-    if(do_once==1) cout<<" did tag obj_fun "<<TG_like1<<endl<<TG_like2<<endl;
-    }
- */
