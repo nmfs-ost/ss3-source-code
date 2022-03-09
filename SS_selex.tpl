@@ -113,7 +113,7 @@ FUNCTION void get_selectivity()
           {
 			N_warn++;
 			cout << "EXIT - see warning" << endl;
-			warning << N_warn << " " << "Selectivity pattern 4 discontinued; use pattern 0 and special survey pattern 30 in data file instead."<<endl; 
+			warning << N_warn << " " << "Selectivity pattern 4 discontinued; use pattern 0 and special survey units 30 in data file instead."<<endl; 
 			exit(1); 
 			break;
 		  }
