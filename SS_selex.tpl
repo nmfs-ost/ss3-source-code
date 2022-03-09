@@ -215,7 +215,7 @@ FUNCTION void get_selectivity()
           {
             N_warn++;
 			cout<<" EXIT - see warning "<<endl;
-			warning<<N_warn<<" "<<"Selectivity pattern 7 discontinued; use pattern 8 instead for double logistic. "<<endl;
+			warning<<N_warn<<" "<<"Selectivity pattern 7 discontinued; use pattern 8 instead for double logistic, but recommend pattern 24. "<<endl;
 			exit(1);
             break;
           }
@@ -225,9 +225,15 @@ FUNCTION void get_selectivity()
 
     // 1=peak, 2=init,  3=infl,  4=slope, 5=final, 6=infl2, 7=slope2 8=binwidth;    Mirror=1===const_above_Linf
           {
-		   N_warn++; 
-		   warning << N_warn << " " << "Selectivity pattern 24 is recommended over pattern 8 because it has fewer parameters."<<endl;
-		   
+		  
+		 #ifdef DO_ONCE
+			if(do_once==1)
+			{
+			  N_warn++; 
+		      warning << N_warn << " " << "Selectivity pattern 24 is recommended over pattern 8 because it has fewer parameters."<<endl;
+			}
+		 #endif
+
            t1=minL+(1./(1.+mfexp(-sp(3))))*(sp(1)-minL);    // INFL
            t1min=1./(1.+mfexp(-mfexp(sp(4))*(minL-t1)))*0.9999;  // asc value at minsize
            t1max=1./(1.+mfexp(-mfexp(sp(4))*(sp(1)-t1)))*1.0001;  // asc value at peak
@@ -865,7 +871,13 @@ FUNCTION void get_selectivity()
               case 13:
                                        // 1=peak, 2=init,  3=infl,  4=slope, 5=final, 6=infl2, 7=slope2, 8=plateau
               {
-               	sel_a(y,fs,1).initialize();
+			  #ifdef DO_ONCE
+                if(do_once == 1) {
+				  N_warn++;  
+				  warning<<N_warn<<" "<<" Age selectivity pattern 13 used; suggest using pattern 18 instead. "<<endl;
+				}
+              #endif
+             	sel_a(y,fs,1).initialize();
                 t1=0.+(1./(1.+mfexp(-sp(3))))*(sp(1)-0.);    // INFL
                 t1min=1./(1.+mfexp(-sp(4)*(0.-t1)))*0.9999999;  // asc value at minage
                 t1max=1./(1.+mfexp(-sp(4)*(sp(1)-t1)))*1.00001;  // asc value at peak
@@ -1120,8 +1132,15 @@ FUNCTION void get_selectivity()
               case 18:
                                        // 1=peak, 2=init,  3=infl,  4=slope, 5=final, 6=infl2, 7=slope2
             {
-			 N_warn++; 
-		     warning << N_warn << " " << "Selectivity pattern 20 is recommended over pattern 18 because it has fewer parameters."<<endl;
+			
+			#ifdef DO_ONCE
+			  if(do_once==1)
+			  {
+			    N_warn++; 
+		        warning << N_warn << " " << "Selectivity pattern 20 is recommended over pattern 18 because it has fewer parameters."<<endl;
+			  }
+		    #endif
+
              sel_a(y,fs,1).initialize();
              t1=0.+(1./(1.+mfexp(-sp(3))))*(sp(1)-0.);    // INFL
              t1min=1./(1.+mfexp(-sp(4)*(0.-t1)))*0.9999;  // asc value at minsize
