@@ -1906,7 +1906,6 @@ FUNCTION void write_nucontrol()
 
    report4<<"#Pattern:_0;  parm=0; selex=1.0 for all sizes"<<endl;
    report4<<"#Pattern:_1;  parm=2; logistic; with 95% width specification"<<endl;
-   report4<<"#Pattern:_2;  parm=6; modification of pattern 24 with improved sex-specific offset"<<endl;
    report4<<"#Pattern:_5;  parm=2; mirror another size selex; PARMS pick the min-max bin to mirror"<<endl;
    report4<<"#Pattern:_11; parm=2; selex=1.0  for specified min-max population length bin range"<<endl;
    report4<<"#Pattern:_15; parm=0; mirror another age or length selex"<<endl;
@@ -1927,13 +1926,12 @@ FUNCTION void write_nucontrol()
    for (f=1;f<=Nfleet;f++) report4<<seltype_rd(f)<<" # "<<f<<" "<<fleetname(f)<<endl;
    report4<<"#"<<endl;
 
-
    report4<<"#_age_selex_patterns"<<endl;
    report4<<"#Pattern:_0; parm=0; selex=1.0 for ages 0 to maxage"<<endl;
    report4<<"#Pattern:_10; parm=0; selex=1.0 for ages 1 to maxage"<<endl;
    report4<<"#Pattern:_11; parm=2; selex=1.0  for specified min-max age"<<endl;
    report4<<"#Pattern:_12; parm=2; age logistic"<<endl;
-   report4<<"#Pattern:_13; parm=8; age double logistic"<<endl;
+   report4<<"#Pattern:_13; parm=8; age double logistic. Recommend using pattern 18 instead."<<endl;
    report4<<"#Pattern:_14; parm=nages+1; age empirical"<<endl;
    report4<<"#Pattern:_15; parm=0; mirror another age or length selex"<<endl;
    report4<<"#Pattern:_16; parm=2; Coleraine - Gaussian"<<endl;
