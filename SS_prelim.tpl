@@ -312,7 +312,7 @@ PRELIMINARY_CALCS_SECTION
           else
           {k++;}
         }
-        if(k!=1) {N_warn++; cout<<"error in length data";  warning<<N_warn<<" "<<" must have only 1 sample with real info in length superperiod "<<j<<endl; exit(1);}
+        if(k>1) {N_warn++; cout<<"error in length data";  warning<<N_warn<<" "<<" must have only 1 sample with real info in length superperiod "<<j<<endl; exit(1);}
         for (i=suprper_l1(f,j);i<=suprper_l2(f,j);i++)
         {
           if(header_l(f,i,3)<0)  //  so one of the obs to be combined

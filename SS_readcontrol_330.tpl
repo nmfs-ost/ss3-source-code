@@ -3895,6 +3895,12 @@
         {TG_parm2(k,7)=-1000; } // phase
       }
     }
+
+    TG_parm_LO=column(TG_parm2,1);
+    TG_parm_HI=column(TG_parm2,2);
+    k=3*N_TG+2*Nfleet1;
+    for (j=1;j<=k;j++) TG_parm_PH(j)=TG_parm2(j,7);  // write it out due to no typecast available
+
     echoinput<<"create tag labels  "<<endl;
 //  SS_Label_Info_4.10.1 #Create parameter count and parameter names for tag parameters
        onenum="    ";
@@ -3913,6 +3919,12 @@
       {
        sprintf(onenum, "%d", j);
        ParCount++; ParmLabel+="TG_overdispersion_"+onenum+CRLF(1);
+       if(TG_parm_LO(2*N_TG+j)<1.0)
+       {N_warn++; warning<<N_warn<<" overdispersion par_min is <1.0 for TG= "<<j<<"; value = "<<TG_parm_LO(2*N_TG+j)<<"; changed to 1.001 for run"<<endl;
+        TG_parm_LO(2*N_TG+j)=1.001;}
+       if(TG_parm2(2*N_TG+j,3)<1.0)
+       {N_warn++; warning<<N_warn<<" overdispersion parameter is <1.0 for TG= "<<j<<"; value = "<<TG_parm2(2*N_TG+j,3)<<"; changed to 1.001 for run"<<endl;
+        TG_parm2(2*N_TG+j,3)=1.001;}
       }
        for (j=1;j<=Nfleet;j++)
       {
@@ -3931,10 +3943,6 @@
        }
       }
 
-    TG_parm_LO=column(TG_parm2,1);
-    TG_parm_HI=column(TG_parm2,2);
-    k=3*N_TG+2*Nfleet1;
-    for (j=1;j<=k;j++) TG_parm_PH(j)=TG_parm2(j,7);  // write it out due to no typecast available
     echoinput<<" Processed/generated Tag parameters "<<endl<<TG_parm2<<endl;
 
   }
