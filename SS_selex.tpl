@@ -137,8 +137,6 @@ FUNCTION void get_selectivity()
 		                  warning << N_warn << " " << "Note: Selectivity 2 is a back-compatible (SS 3.30.18 and earlier) version of selectivity 24. Recommend using 24."<<endl;
 			            }
 		               #endif
-						Nwarn++; 
-						warning << Nwarn << " " << "Note: using selectivity 2" << endl;
 					}
 				  t2min=mfexp(-(square(len_bins_m(j2)-peak2)/downselex));  // fxn at last bin
 				}
