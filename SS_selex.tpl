@@ -88,15 +88,86 @@ FUNCTION void get_selectivity()
                 break;
               }
 
-  //  SS_Label_Info_22.3.2 #case 2 discontinued; use pattern 8 for double logistic
-           case 2:
-		   {
-             N_warn++; 
-			 cout<<" EXIT - see warning"<<endl; 
-			 warning<<N_warn<<" "<<"Selectivity pattern 2 discontinued; use pattern 8 instead."<<endl; 
-			 exit(1);
-             break;
-           }
+  //  SS_Label_Info_22.3.2 #case 2 size selectivity using double_normal_plateau and lots of bells and whistles; old version of 24 available for back compatibility
+            case 2:
+  //  SS_Label_Info_22.3.24 #case 24 size selectivity using double_normal_plateau and lots of bells and whistles
+            case 24:
+            {
+			  if(seltype(f,3)<3 || (gg==1 && seltype(f,3)==3) || (gg==2 && seltype(f,3)==4))
+				{peak=sp(1); upselex=mfexp(sp(3)); downselex=mfexp(sp(4)); final=sp(6); Apical_Selex=1.;}
+				else
+				{   // offset male parameters if seltype(f,3)==3, female parameters if seltype(f,3)==4
+				  peak=sp(1)+sp(Maleselparm(f));
+				  upselex=mfexp(sp(3)+sp(Maleselparm(f)+1));
+				  downselex=mfexp(sp(4)+sp(Maleselparm(f)+2));
+				  if(sp(6)>-999.) final=sp(6)+sp(Maleselparm(f)+3);
+				  Apical_Selex=sp(Maleselparm(f)+4);
+				}
+
+				if(sp(5)<-1000.)
+				{
+				  j1=-1001-int(value(sp(5)));      // selex is nil thru bin j1, so set sp(5) equal to first bin with selex (e.g. -1002 to start selex at bin 2)
+				  sel(1,j1)=1.0e-06;
+				}
+				else
+				{
+				  j1=startbin-1;                // start selex at bin equal to min sizecomp databin  (=j1+1)
+				  if(sp(5)>-999)
+				  {
+					point1=1.0/(1.0+mfexp(-sp(5)));
+				  t1min=mfexp(-(square(len_bins_m(startbin)-peak)/upselex));  // fxn at first bin
+				  }
+				}
+				if(sp(6)<-1000.)
+				{
+				  j2=-1000-int(value(sp(6))); // selex is constant beyond this sizebin, so set sp(6) equal to last bin with estimated selex
+				}
+				else
+				{j2=nlength;}
+				peak2=peak+binwidth2+ (0.99*len_bins_m(j2)-peak-binwidth2)/(1.+mfexp(-sp(2)));
+				if(sp(6)>-999)
+				{
+					if(seltype(f,1) == 24) {
+						point2=Apical_Selex/(1.0+mfexp(-final)); // The newer way of doing this
+					} else {
+						point2=1.0/(1.0+mfexp(-final)); // For back compatibility (old  (3.30.18 and earlier) version of pattern 24, now available as 2)
+					  #ifdef DO_ONCE
+			            if(do_once==1) {
+			              N_warn++; 
+		                  warning << N_warn << " " << "Note: Selectivity 2 is a back-compatible (SS 3.30.18 and earlier) version of selectivity 24. Recommend using 24."<<endl;
+			            }
+		               #endif
+						Nwarn++; 
+						warning << Nwarn << " " << "Note: using selectivity 2" << endl;
+					}
+				  t2min=mfexp(-(square(len_bins_m(j2)-peak2)/downselex));  // fxn at last bin
+				}
+				for (j=j1+1;j<=j2;j++)
+				{
+				  t1=len_bins_m(j)-peak;  t2=len_bins_m(j)-peak2;
+				  join1=1.0/(1.0+mfexp(-(20.*t1/(1.0+fabs(t1)))));  //  note the logit transform on t1 causes range of mfexp to be over -20 to 20
+				  join2=1.0/(1.0+mfexp(-(20.*t2/(1.0+fabs(t2)))));
+				  if(sp(5)>-999)
+					{asc=point1+(Apical_Selex-point1)*(mfexp(-square(t1)/upselex)-t1min)/(1.0-t1min);}
+				  else
+					{asc=Apical_Selex*mfexp(-square(t1)/upselex);}
+				  if(sp(6)>-999)
+					{dsc=Apical_Selex+(point2-Apical_Selex)*(mfexp(-square(t2)/downselex)-1.0    )/(t2min-1.0);}
+				  else
+					{dsc=Apical_Selex*mfexp(-square(t2)/downselex);}
+				  sel(j)=asc*(1.0-join1)+join1*(Apical_Selex*(1.0-join2)+dsc*join2);
+				}
+				if(startbin>1 && sp(5)>=-1000.)
+				{
+				  for (j=1;j<=startbin-1;j++)
+				  {
+					sel(j)=square(len_bins_m(j)/len_bins_m(startbin))*sel(startbin);
+				  }
+				}
+
+				if(j2<nlength) {sel(j2+1,nlength)=sel(j2);}
+				break;
+			}
 
   //  SS_Label_Info_22.3.3 #case 3 discontinued
           case 3:
@@ -386,74 +457,6 @@ FUNCTION void get_selectivity()
               else
                 {dsc=mfexp(-square(t2)/downselex);}
               sel(j)=asc*(1.0-join1)+join1*(1.0-join2+dsc*join2);
-            }
-            if(startbin>1 && sp(5)>=-1000.)
-            {
-              for (j=1;j<=startbin-1;j++)
-              {
-                sel(j)=square(len_bins_m(j)/len_bins_m(startbin))*sel(startbin);
-              }
-            }
-
-            if(j2<nlength) {sel(j2+1,nlength)=sel(j2);}
-            break;
-          }
-
-
-  //  SS_Label_Info_22.3.24 #case 24 size selectivity using double_normal_plateau and lots of bells and whistles
-          case 24:
-          {
-          if(seltype(f,3)<3 || (gg==1 && seltype(f,3)==3) || (gg==2 && seltype(f,3)==4))
-            {peak=sp(1); upselex=mfexp(sp(3)); downselex=mfexp(sp(4)); final=sp(6); Apical_Selex=1.;}
-            else
-            {   // offset male parameters if seltype(f,3)==3, female parameters if seltype(f,3)==4
-              peak=sp(1)+sp(Maleselparm(f));
-              upselex=mfexp(sp(3)+sp(Maleselparm(f)+1));
-              downselex=mfexp(sp(4)+sp(Maleselparm(f)+2));
-              if(sp(6)>-999.) final=sp(6)+sp(Maleselparm(f)+3);
-              Apical_Selex=sp(Maleselparm(f)+4);
-            }
-
-            if(sp(5)<-1000.)
-            {
-              j1=-1001-int(value(sp(5)));      // selex is nil thru bin j1, so set sp(5) equal to first bin with selex (e.g. -1002 to start selex at bin 2)
-              sel(1,j1)=1.0e-06;
-            }
-            else
-            {
-              j1=startbin-1;                // start selex at bin equal to min sizecomp databin  (=j1+1)
-              if(sp(5)>-999)
-              {
-                point1=1.0/(1.0+mfexp(-sp(5)));
-              t1min=mfexp(-(square(len_bins_m(startbin)-peak)/upselex));  // fxn at first bin
-              }
-            }
-            if(sp(6)<-1000.)
-            {
-              j2=-1000-int(value(sp(6))); // selex is constant beyond this sizebin, so set sp(6) equal to last bin with estimated selex
-            }
-            else
-            {j2=nlength;}
-            peak2=peak+binwidth2+ (0.99*len_bins_m(j2)-peak-binwidth2)/(1.+mfexp(-sp(2)));
-            if(sp(6)>-999)
-            {
-              point2=1.0/(1.0+mfexp(-final));
-              t2min=mfexp(-(square(len_bins_m(j2)-peak2)/downselex));  // fxn at last bin
-            }
-            for (j=j1+1;j<=j2;j++)
-            {
-              t1=len_bins_m(j)-peak;  t2=len_bins_m(j)-peak2;
-              join1=1.0/(1.0+mfexp(-(20.*t1/(1.0+fabs(t1)))));  //  note the logit transform on t1 causes range of mfexp to be over -20 to 20
-              join2=1.0/(1.0+mfexp(-(20.*t2/(1.0+fabs(t2)))));
-              if(sp(5)>-999)
-                {asc=point1+(Apical_Selex-point1)*(mfexp(-square(t1)/upselex)-t1min)/(1.0-t1min);}
-              else
-                {asc=Apical_Selex*mfexp(-square(t1)/upselex);}
-              if(sp(6)>-999)
-                {dsc=Apical_Selex+(point2-Apical_Selex)*(mfexp(-square(t2)/downselex)-1.0    )/(t2min-1.0);}
-              else
-                {dsc=Apical_Selex*mfexp(-square(t2)/downselex);}
-              sel(j)=asc*(1.0-join1)+join1*(Apical_Selex*(1.0-join2)+dsc*join2);
             }
             if(startbin>1 && sp(5)>=-1000.)
             {

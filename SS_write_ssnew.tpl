@@ -1917,6 +1917,7 @@ FUNCTION void write_nucontrol()
    report4<<"#Pattern:_22; parm=4; double_normal as in CASAL"<<endl;
    report4<<"#Pattern:_23; parm=6; double_normal where final value is directly equal to sp(6) so can be >1.0"<<endl;
    report4<<"#Pattern:_24; parm=6; double_normal with sel(minL) and sel(maxL), using joiners"<<endl;
+   report4<<"#Pattern:_2;  parm=6; double_normal with sel(minL) and sel(maxL), using joiners, back compatibile version of 24 with 3.30.18 and older"<<endl;
    report4<<"#Pattern:_25; parm=3; exponential-logistic in length"<<endl;
    report4<<"#Pattern:_27; parm=special+3; cubic spline in length; parm1==1 resets knots; parm1==2 resets all "<<endl;
    report4<<"#Pattern:_42; parm=special+3+2; cubic spline; like 27, with 2 additional param for scaling (average over bin range)"<<endl;
