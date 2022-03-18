@@ -746,6 +746,11 @@ FUNCTION void write_rebuilder_output()
       rebuild_dat<<"# Defintion of recovery (1=now only;2=now or before)"<<endl<<2<<endl;
       rebuild_dat<<"# Projection type"<<endl<<4<<endl;
       rebuild_dat<<"# Definition of the 40-10 rule"<<endl<<10<<" "<<40<<endl;
+	  rebuild_dat<<"# Sigma Assessment Error (Base, Year1, Slope, MaxSigma)"<<endl<<"1.0 2022 0.075 2.0"<<endl;
+	  rebuild_dat<<"# Pstar"<<endl<<0.45<<endl;
+	  rebuild_dat<<"# Constrain catches by the ABC (1=yes, 2=no)"<<endl<<2<<endl;
+	  rebuild_dat<<"# Implementation Error (0=no; 1=lognormal; 2=uniform)"<<endl<<0<<endl;
+	  rebuild_dat<<"#Parameters of Implementaion Error"<<endl<<"1 0.3"<<endl;
       rebuild_dat<<"# Calculate coefficients of variation (1=Yes)"<<endl<<0<<endl;
       rebuild_dat<<"# Number of replicates to use"<<endl<<10<<endl;
       rebuild_dat<<"# Random number seed"<<endl<<-99004<<endl;
@@ -755,6 +760,8 @@ FUNCTION void write_rebuilder_output()
       rebuild_dat<< k <<" 1 1"<<endl<<"-1 -1 -1"<<endl;
       rebuild_dat<<"# Fixed catch project (1=Yes); Output replaced (1->9); Approach (-1=Read in else 1-9)"<<endl;
       rebuild_dat<<"0 2 -1"<<endl;
+	  rebuild_dat<<"# (48a) Special catch options (1-Yes) [CUT_OFF, Emsy, distribution, MAXCAT, Add, replace_code]"<<endl<<"0 0.18 1.00 1.00 0 6"<<endl;
+	  rebuild_dat<<"# (48b) B1Target"<<endl<<150000<<endl;
       tempvec_a(1,Nfleet)=colsum(Fcast_RelF_Use);
       rebuild_dat<<"# Split of Fs"<<endl;
       rebuild_dat<<Rebuild_Yinit<<" ";
