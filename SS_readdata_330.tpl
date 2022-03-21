@@ -3268,7 +3268,7 @@
   	{N_warn++; warning<<N_warn<<"; changing Imple_Error to 0 because no forecast "<<endl; Impl_Error_Std=0.0; Do_Impl_Error=0;}
   }
 
-  echoinput<<endl<<"#next select rebuilding program output (0/1)"<<endl;
+  echoinput<<endl<<"#next select rebuilding program output: 0=none; 1=standard; 2=expanded"<<endl;
   *(ad_comm::global_datafile) >> Do_Rebuilder;
   echoinput<<Do_Rebuilder<<" # echoed value"<<endl;
 
