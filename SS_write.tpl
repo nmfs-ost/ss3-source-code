@@ -746,7 +746,7 @@ FUNCTION void write_rebuilder_output()
       rebuild_dat<<"# Defintion of recovery (1=now only;2=now or before)"<<endl<<2<<endl;
       rebuild_dat<<"# Projection type"<<endl<<4<<endl;
       rebuild_dat<<"# Definition of the 40-10 rule"<<endl<<10<<" "<<40<<endl;
-	  rebuild_dat<<"# Sigma Assessment Error (Base, Year1, Slope, MaxSigma)"<<endl<<"1.0 2022 0.075 2.0"<<endl;
+	  rebuild_dat<<"# Sigma Assessment Error (Base, Year1, Slope, MaxSigma)"<<endl<<"1.0 "<<endyr+1<<" 0.075 2.0"<<endl;
 	  rebuild_dat<<"# Pstar"<<endl<<0.45<<endl;
 	  rebuild_dat<<"# Constrain catches by the ABC (1=yes, 2=no)"<<endl<<2<<endl;
 	  rebuild_dat<<"# Implementation Error (0=no; 1=lognormal; 2=uniform)"<<endl<<0<<endl;
