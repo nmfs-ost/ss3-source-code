@@ -4665,6 +4665,7 @@
   {
     k+=Do_Dyn_Bzero*(YrMax-(styr-2)-1);
     if(More_Std_Input(12)==2) k+=(YrMax-(styr-2)-1);  //  for recruits
+    k+=Do_se_smrybio*(YrMax-(styr-2)-1);
   }
   k+=3+Svy_N_sdreport;
   echoinput<<"N parameters: "<<ParCount<<endl<<"Parameters plus derived quant: "<<k<<endl;
