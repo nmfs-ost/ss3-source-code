@@ -1102,8 +1102,8 @@
     echoinput<<"#_addtocomp:  after accumulation of tails; this value added to all bins"<<endl;
     echoinput<<"#_males and females treated as combined gender below this bin number "<<endl;
     echoinput<<"#_compressbins: accumulate upper tail by this number of bins; acts simultaneous with mintailcomp; set=0 for no forced accumulation"<<endl;
-    echoinput<<"#_Comp_Error:  0=multinomial, 1=Dirichlet"<<endl;
-    echoinput<<"#_Comp_ERR-2:  index of Dirichlet parameter to use"<<endl;
+    echoinput<<"#_Comp_Error:  0=multinomial, 1=Dirichlet, 2=MV_Tweedie"<<endl;
+    echoinput<<"#_Comp_ERR-2:  index of Dirichlet or MV_Tweedie parameter to use"<<endl;
     echoinput<<"#_minsamplesize: minimum sample size; set to 1 to match 3.24, set to 0 for no minimum"<<endl;
 
     for (f=1;f<=Nfleet;f++)

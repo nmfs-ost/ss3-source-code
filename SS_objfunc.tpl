@@ -290,7 +290,7 @@ FUNCTION void evaluate_the_objective_function()
        if(gen_l(f,i) >=2 && gender==2) length_like(f,i) -= nsamp_l(f,i) *
        obs_l(f,i)(tails_w(3),tails_w(4)) * log(exp_l(f,i)(tails_w(3),tails_w(4)));
       }
-      else  //  dirichlet
+      else if(Comp_Err_L(f)==1)  //  dirichlet
       {
 // from Thorson:  NLL -= gammln(A) - gammln(ninput_t(t)+A) + sum(gammln(ninput_t(t)*extract_row(pobs_ta,t) + A*extract_row(pexp_ta,t))) - sum(lgamma(A*extract_row(pexp_ta,t))) \
 //        dirichlet_Parm=mfexp(selparm(Comp_Err_Parm_Start+Comp_Err_L2(f)))*nsamp_l(f,i);
@@ -320,6 +320,10 @@ FUNCTION void evaluate_the_objective_function()
           temp-=sum(gammln(dirichlet_Parm*exp_l(f,i)(tails_w(3),tails_w(4))));
         }
         length_like(f,i)-=temp;
+      }
+      else   //  MV_Tweedie
+      {
+        
       }
       if(header_l(f,i,3)>0) length_like_tot(f)+=length_like(f,i);
      }
@@ -400,7 +404,7 @@ FUNCTION void evaluate_the_objective_function()
               if(gen_a(f,i) >=2 && gender==2) age_like(f,i) -= nsamp_a(f,i) *
               obs_a(f,i)(tails_w(3),tails_w(4)) * log(exp_a(f,i)(tails_w(3),tails_w(4)));
             }
-            else  // dirichlet
+            else if (Comp_Err_A(f)==1) // dirichlet
             {
 // from Thorson:  NLL -= gammln(A) - gammln(ninput_t(t)+A) + sum(gammln(ninput_t(t)*extract_row(pobs_ta,t) + A*extract_row(pexp_ta,t))) - sum(lgamma(A*extract_row(pexp_ta,t))) \
 //              dirichlet_Parm=mfexp(selparm(Comp_Err_Parm_Start+Comp_Err_A2(f)))*nsamp_a(f,i);
@@ -431,6 +435,10 @@ FUNCTION void evaluate_the_objective_function()
                 temp-=sum(gammln(dirichlet_Parm*exp_a(f,i)(tails_w(3),tails_w(4))));
               }
               age_like(f,i)-=temp;
+            }
+            else  //  MV_Tweedie
+            {
+              
             }
           }
       if(header_a(f,i,3)>0) age_like_tot(f)+=age_like(f,i);
