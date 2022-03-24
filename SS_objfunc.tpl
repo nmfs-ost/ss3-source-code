@@ -290,15 +290,19 @@ FUNCTION void evaluate_the_objective_function()
        if(gen_l(f,i) >=2 && gender==2) length_like(f,i) -= nsamp_l(f,i) *
        obs_l(f,i)(tails_w(3),tails_w(4)) * log(exp_l(f,i)(tails_w(3),tails_w(4)));
       }
+<<<<<<< Updated upstream
       else if(Comp_Err_L(f)==1)  //  dirichlet
+=======
+      if( (Comp_Err_L(f)==1) | (Comp_Err_L(f)==2) ) //  dirichlet
+>>>>>>> Stashed changes
       {
-// from Thorson:  NLL -= gammln(A) - gammln(ninput_t(t)+A) + sum(gammln(ninput_t(t)*extract_row(pobs_ta,t) + A*extract_row(pexp_ta,t))) - sum(lgamma(A*extract_row(pexp_ta,t))) \
-//        dirichlet_Parm=mfexp(selparm(Comp_Err_Parm_Start+Comp_Err_L2(f)))*nsamp_l(f,i);
-// in option 1, dirichlet_Parm = Theta*n from equation (10) of Thorson et al. 2016
-// in option 2, dirichlet_Parm = Beta from equation (4) of Thorson et al. 2016
-        if(Comp_Err_L(f)==1) dirichlet_Parm=mfexp(selparm(Comp_Err_Parm_Start+Comp_Err_L2(f)))*nsamp_l(f,i);
-        if(Comp_Err_L(f)==2) dirichlet_Parm=mfexp(selparm(Comp_Err_Parm_Start+Comp_Err_L2(f)));
-//                             dirichlet_Parm=mfexp(selparm(Comp_Err_Parm_Start+Comp_Err_L2(f)));
+      // from Thorson:  NLL -= gammln(A) - gammln(ninput_t(t)+A) + sum(gammln(ninput_t(t)*extract_row(pobs_ta,t) + A*extract_row(pexp_ta,t))) - sum(lgamma(A*extract_row(pexp_ta,t))) \
+      //        dirichlet_Parm=mfexp(selparm(Comp_Err_Parm_Start+Comp_Err_L2(f)))*nsamp_l(f,i);
+      // in option 1, dirichlet_Parm = Theta*n from equation (10) of Thorson et al. 2016
+      // in option 2, dirichlet_Parm = Beta from equation (4) of Thorson et al. 2016
+              if(Comp_Err_L(f)==1) dirichlet_Parm=mfexp(selparm(Comp_Err_Parm_Start+Comp_Err_L2(f)))*nsamp_l(f,i);
+              if(Comp_Err_L(f)==2) dirichlet_Parm=mfexp(selparm(Comp_Err_Parm_Start+Comp_Err_L2(f)));
+      //                             dirichlet_Parm=mfexp(selparm(Comp_Err_Parm_Start+Comp_Err_L2(f)));
 
         // note: first term in equations (4) and (10) is calculated
         // as offset_l in SS_prelim.tpl and already included in length_like
@@ -321,9 +325,49 @@ FUNCTION void evaluate_the_objective_function()
         }
         length_like(f,i)-=temp;
       }
+<<<<<<< Updated upstream
       else   //  MV_Tweedie
       {
         
+=======
+      else  //  multivariate-Tweedie
+      {
+        // Exponentiate [PARAMETER_1]
+        tweedie_Phi = mfexp( [PARAMETER_1] );
+        // One plus logistic-transform [PARAMETER_1]
+        tweedie_power = 1.0 + mfexp( [PARAMETER_2] ) / (1.0+mfexp( [PARAMETER_2] ));
+
+        if(gen_l(f,i) !=2) //  so not male only
+        {
+          // dtweedie( Type y, Type mu, Type phi, Type p, int give_log=0 )
+          for (tail_index=tails_w(1); tail_index<=tails_w(2); tail_index++)
+            temp += dtweedie( nsamp_l(f,i)*obs_l(f,i)(tail_index), nsamp_l(f,i)*exp_l(f,i)(tail_index), tweedie_Phi, tweedie_power, true );
+          }
+        }
+        //  add male logL
+        if(gen_l(f,i) >=2 && gender==2)
+        {
+          // dtweedie( Type y, Type mu, Type phi, Type p, int give_log=0 )
+          for (tail_index=tails_w(3); tail_index<=tails_w(4); tail_index++)
+            temp += dtweedie( nsamp_l(f,i)*obs_l(f,i)(tail_index), nsamp_l(f,i)*exp_l(f,i)(tail_index), tweedie_Phi, tweedie_power, true );
+          }
+        }
+        length_like(f,i)-=temp;
+
+        // Pre-processing
+        //int n_c = x.size();
+        //vector<Type> p_exp(n_c);
+        //vector<Type> p_obs(n_c);
+        //Type Ntotal = x.sum();
+        //p_exp = prob / prob.sum();
+
+        //Type logres = 0;
+        //for( int c=0; c<n_c; c++){
+        //  // dtweedie( Type y, Type mu, Type phi, Type p, int give_log=0 )
+        //  logres += dtweedie( x(c), p_exp(c)*Ntotal, phi, power, true );
+        //}
+
+>>>>>>> Stashed changes
       }
       if(header_l(f,i,3)>0) length_like_tot(f)+=length_like(f,i);
      }
