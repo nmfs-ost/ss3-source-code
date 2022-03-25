@@ -290,7 +290,7 @@ FUNCTION void evaluate_the_objective_function()
        if(gen_l(f,i) >=2 && gender==2) length_like(f,i) -= nsamp_l(f,i) *
        obs_l(f,i)(tails_w(3),tails_w(4)) * log(exp_l(f,i)(tails_w(3),tails_w(4)));
       }
-      if( (Comp_Err_L(f)==1) || (Comp_Err_L(f)==2) ) //  dirichlet
+      else if( (Comp_Err_L(f)==1) || (Comp_Err_L(f)==2) ) //  dirichlet
       {
       // from Thorson:  NLL -= gammln(A) - gammln(ninput_t(t)+A) + sum(gammln(ninput_t(t)*extract_row(pobs_ta,t) + A*extract_row(pexp_ta,t))) - sum(lgamma(A*extract_row(pexp_ta,t))) \
       //        dirichlet_Parm=mfexp(selparm(Comp_Err_Parm_Start+Comp_Err_L2(f)))*nsamp_l(f,i);
