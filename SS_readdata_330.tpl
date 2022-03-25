@@ -1084,7 +1084,7 @@
   ivector Comp_Err_L2(1,Nfleet)  //  composition error type parameter location
   vector min_sample_size_L(1,Nfleet)  // minimum sample size
   int Comp_Err_ParmCount;  // counts number of fleets that need a parameter for the error estimation
-  ivector DM_parmlist(1,2*Nfleet);
+  ivector DM_parmlist(1,3*Nfleet);  // flag for creating a new comperr parameter; dim for length, age, size comps
  LOCAL_CALCS
   Comp_Err_ParmCount=0;
   min_tail_L.initialize();
@@ -1102,8 +1102,8 @@
     echoinput<<"#_addtocomp:  after accumulation of tails; this value added to all bins"<<endl;
     echoinput<<"#_males and females treated as combined gender below this bin number "<<endl;
     echoinput<<"#_compressbins: accumulate upper tail by this number of bins; acts simultaneous with mintailcomp; set=0 for no forced accumulation"<<endl;
-    echoinput<<"#_Comp_Error:  0=multinomial, 1=Dirichlet, 2=MV_Tweedie"<<endl;
-    echoinput<<"#_Comp_ERR-2:  index of Dirichlet or MV_Tweedie parameter to use"<<endl;
+    echoinput<<"#_Comp_Error:  0=multinomial, 1=dirichlet (rel input N), 2=dirichlet (absolute), 3=MV_Tweedie with 2 parms"<<endl;
+    echoinput<<"#_Comp_ERR-2:  index of parameter (pair for Tweedie) to use"<<endl;
     echoinput<<"#_minsamplesize: minimum sample size; set to 1 to match 3.24, set to 0 for no minimum"<<endl;
 
     for (f=1;f<=Nfleet;f++)
@@ -1137,7 +1137,7 @@
       else if(Comp_Err_L2(f)>Comp_Err_ParmCount)
       {
         Comp_Err_ParmCount++;
-        DM_parmlist(f)=1;
+        DM_parmlist(f)=1;  // flag for creating new parameter because Comp_Err_L2 can point to existing parameter
       }
       //  else OK because refers to existing parameter
     }
@@ -1769,8 +1769,8 @@
       echoinput<<"#_addtocomp:  after accumulation of tails; this value added to all bins"<<endl;
       echoinput<<"#_males and females treated as combined gender below this bin number "<<endl;
       echoinput<<"#_compressbins: accumulate upper tail by this number of bins; acts simultaneous with mintailcomp; set=0 for no forced accumulation"<<endl;
-      echoinput<<"#_Comp_Error:  0=multinomial, 1=dirichlet"<<endl;
-      echoinput<<"#_Comp_ERR-2:  index of parameter to use, cumulative count after DM parms for length comp"<<endl;
+      echoinput<<"#_Comp_Error:  0=multinomial, 1=dirichlet (rel input N), 2=dirichlet (absolute), 3=MV_Tweedie with 2 parms"<<endl;
+      echoinput<<"#_Comp_ERR-2:  index of parameter (pair for Tweedie) to use, cumulative count after DM parms for length comp"<<endl;
       echoinput<<"#_minsamplesize: minimum sample size; set to 1 to match 3.24, set to 0 for no minimum"<<endl;
 
       for (f=1;f<=Nfleet;f++)
@@ -1803,7 +1803,7 @@
       else if(Comp_Err_A2(f)>Comp_Err_ParmCount)
       {
         Comp_Err_ParmCount++;
-        DM_parmlist(f+Nfleet)=1;
+        DM_parmlist(f+Nfleet)=1;  // flag for creating new parameter because Comp_Err_L2 can point to existing parameter
       }
       //  else OK because refers to existing parameter
       }
