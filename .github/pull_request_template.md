@@ -15,3 +15,5 @@
 - [ ] An entry in the stock synthesis change log (new features, bug reports)
 
 ##  Describe any changes in r4ss/SS3 manual/SSI/change log that are needed (if checked):
+
+## Additional information (optional):
