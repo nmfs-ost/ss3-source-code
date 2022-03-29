@@ -4,9 +4,6 @@ on:
   push:
     paths:
     - '**.tpl'
-  pull_request:
-    paths:
-      - '**.tpl'
   workflow_dispatch:
 
 jobs:
