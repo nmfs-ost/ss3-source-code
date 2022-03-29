@@ -515,21 +515,23 @@ FUNCTION void evaluate_the_objective_function()
       k=1+2*N_TG;
       for (TG=1;TG<=N_TG;TG++)
       {
-        j=TG+2*N_TG;
-        if(TG_parm_PH(j)==-1000.)
-        	{ }//  do nothing keep k at same value
-        else
-        {
-          if (TG_parm_PH(j)>-1000.)	{k=j;} else {k=-1000-TG_parm_PH(j)+2*N_TG;}
+        if(TG_use(TG)>=TG_min_recap){
+          j=TG+2*N_TG;
+          if(TG_parm_PH(j)==-1000.)
+          	{ }//  do nothing keep k at same value
+          else
+          {
+            if (TG_parm_PH(j)>-1000.)	{k=j;} else {k=-1000-TG_parm_PH(j)+2*N_TG;}
+          }
+          overdisp=TG_parm(k);
+          for (TG_t=TG_mixperiod;TG_t<=TG_endtime(TG);TG_t++)
+          {
+            TG_recap_exp(TG,TG_t)(1,Nfleet)+=1.0e-6;  // add a tiny amount
+            TG_recap_exp(TG,TG_t,0) = sum(TG_recap_exp(TG,TG_t)(1,Nfleet));
+            TG_recap_exp(TG,TG_t)(1,Nfleet)/=TG_recap_exp(TG,TG_t,0);
+            if(Nfleet>1) TG_like1(TG)-=TG_recap_obs(TG,TG_t,0)* (TG_recap_obs(TG,TG_t)(1,Nfleet) * log(TG_recap_exp(TG,TG_t)(1,Nfleet)));
+            TG_like2(TG)-=log_negbinomial_density(TG_recap_obs(TG,TG_t,0),TG_recap_exp(TG,TG_t,0),overdisp);
         }
-        overdisp=TG_parm(k);
-        for (TG_t=TG_mixperiod;TG_t<=TG_endtime(TG);TG_t++)
-        {
-          TG_recap_exp(TG,TG_t)(1,Nfleet)+=1.0e-6;  // add a tiny amount
-          TG_recap_exp(TG,TG_t,0) = sum(TG_recap_exp(TG,TG_t)(1,Nfleet));
-          TG_recap_exp(TG,TG_t)(1,Nfleet)/=TG_recap_exp(TG,TG_t,0);
-          if(Nfleet>1) TG_like1(TG)-=TG_recap_obs(TG,TG_t,0)* (TG_recap_obs(TG,TG_t)(1,Nfleet) * log(TG_recap_exp(TG,TG_t)(1,Nfleet)));
-          TG_like2(TG)-=log_negbinomial_density(TG_recap_obs(TG,TG_t,0),TG_recap_exp(TG,TG_t,0),overdisp);
         }
       }
     if(do_once==1) cout<<" did tag obj_fun "<<TG_like1<<endl<<TG_like2<<endl;

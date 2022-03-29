@@ -3279,8 +3279,8 @@ FUNCTION void write_bigoutput()
           SS_compout<<y<<" NA "<<s<<" NA "<<temp<<" NA "<<TG_release(TG,2)<<" "<<TG<<" "<<TG_release(TG,6)<<" TAG2 NA NA NA NA NA "<<
           // TAG2 values (total recaptures)
           // Fill in columns for: Obs Exp Pearson Nsamp_adj Nsamp_in effN Like Cum_obs Cum_exp SuprPer Used?
-          temp<<" "<<TG_recap_obs(TG,TG_t,0)<<" "<<TG_recap_exp(TG,TG_t,0)<<" NA NA NA NA NA NA NA NA ";
-          if(TG_t>=TG_mixperiod) {SS_compout<<"_"<<endl;} else {SS_compout<<" skip"<<endl;}
+          TG_t<<" "<<TG_recap_obs(TG,TG_t,0)<<" "<<TG_recap_exp(TG,TG_t,0)<<" NA NA NA NA NA NA NA NA ";
+          if(TG_t>=TG_mixperiod && TG_use(TG)>=TG_min_recap) {SS_compout<<"_"<<endl;} else {SS_compout<<" skip"<<endl;}
           // TAG1 values (proportions for each fleet) associated with the above TAG2 output
           if(Nfleet>1)
           for (f=1;f<=Nfleet;f++)
@@ -3291,7 +3291,7 @@ FUNCTION void write_bigoutput()
             f<<" "<<TG_recap_obs(TG,TG_t,f)<<" "<<TG_recap_exp(TG,TG_t,f)<<" NA "<<TG_recap_obs(TG,TG_t,0)<<" NA "
             <<" NA NA NA NA NA "; // NA values are for: effN Like Cum_obs Cum_exp SuprPer
           // Fill in Used? column
-          if(TG_t>=TG_mixperiod) {SS_compout<<"_"<<endl;} else {SS_compout<<" skip"<<endl;}
+          if(TG_t>=TG_mixperiod && TG_use(TG)>=TG_min_recap) {SS_compout<<"_"<<endl;} else {SS_compout<<" skip"<<endl;}
           }
           s++; if(s>nseas) {s=1; y++;}
         }

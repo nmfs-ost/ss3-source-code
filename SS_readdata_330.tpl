@@ -2736,31 +2736,42 @@
  END_CALCS
 
 !!//  SS_Label_Info_2.12 #Read tag release and recapture data
-  init_int Do_TG
-  !!echoinput<<Do_TG<<" Do_TagData(0/1) "<<endl;
-
-  init_vector TG_temp(1,4*Do_TG)
+  int Do_TG;
   int TG;
   int N_TG   // N tag groups
   int N_TG2;
   int TG_timestart;
   int N_TG_recap;   //  N recapture events
+  int TG_mixperiod_rd;
   int TG_mixperiod; //  First period (seasons) to start comparing obs to expected recoveries; period=0 is the release period
   int TG_maxperiods; //  max number of periods (seasons) to track recoveries; period=0 is the release period
+  int TG_min_recap; //  minimum number of tags recaptured to include this TG in the logL
  LOCAL_CALCS
+  Do_TG=0;
+  *(ad_comm::global_datafile) >> Do_TG;
+  echoinput<<Do_TG<<" Do_TagData(0/1) "<<endl;
   if(Do_TG>0)
   {
     Do_TG=1;
-    N_TG=TG_temp(1);
-    N_TG_recap=TG_temp(2);
-    TG_mixperiod=TG_temp(3);
-    TG_maxperiods=TG_temp(4);
+    *(ad_comm::global_datafile) >> N_TG;
+    *(ad_comm::global_datafile) >> N_TG_recap;
+    *(ad_comm::global_datafile) >> TG_mixperiod_rd;
+    *(ad_comm::global_datafile) >> TG_maxperiods;
+    if(TG_mixperiod_rd>=0){
+      TG_mixperiod=TG_mixperiod_rd;
+      TG_min_recap=0;
+    }
+    else{
+      TG_mixperiod=-TG_mixperiod_rd;
+      *(ad_comm::global_datafile) >> TG_min_recap;
+    }
     N_TG2=N_TG;
     TG_timestart=9999;
     echoinput<<N_TG<<" N tag groups "<<endl
     <<N_TG_recap<<" N recapture events"<<endl
     <<TG_mixperiod<<"  Latency period for mixing"<<endl
-    <<TG_maxperiods<<" N periods to track recoveries"<<endl;
+    <<TG_maxperiods<<" N periods to track recoveries"<<endl
+    <<TG_min_recap<<" min recaps >= mixperiod for inclusion in logL"<<endl;
   }
   else
   {
@@ -2768,16 +2779,19 @@
     N_TG_recap=0;
     TG_mixperiod=0;
     TG_maxperiods=0;
+    TG_min_recap=0;
     N_TG2=1;
     TG_timestart=1;
   }
  END_CALCS
 
   ivector TG_endtime(1,N_TG2)
+  ivector TG_use(1,N_TG2)  //  0/1 flag to indicate N recaptures >= TG_min_recap
   init_matrix TG_release(1,N_TG,1,8)
   // TG area  year season tindex gender age N_released
  LOCAL_CALCS
    TG_endtime(1)=0;
+   TG_use=0;  //  initialize 
    if(N_TG>0)
    {
    echoinput<<" Tag Releases "<<endl<<"TG area year seas tindex gender age N_released "<<endl<<TG_release<<endl;
@@ -2813,9 +2827,12 @@
        N_warn++; cout<<" EXIT - see warning "<<endl;  warning<<N_warn<<" recapture is before tag release for recap: "<<j<<endl;  exit(1);
      }
      TG_recap_obs(TG,t,TG_recap_data(j,4))+=TG_recap_data(j,5);  //   save N recaptures by TG, fleet of recapture, elapsed time
+     if(t>=TG_mixperiod) TG_use(TG)+=TG_recap_data(j,5);  // count total recaptures from this TG
    }
+   echoinput<<"# total recaptures >= mixperiod by tag group"<<endl;
    for (TG=1;TG<=N_TG;TG++)
    {
+     echoinput<<TG<<" "<<TG_use(TG)<<endl;
      for (TG_t=0;TG_t<=TG_endtime(TG);TG_t++)
      {
        TG_recap_obs(TG,TG_t,0) = sum(TG_recap_obs(TG,TG_t)(1,Nfleet));
