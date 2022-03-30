@@ -2736,42 +2736,38 @@
  END_CALCS
 
 !!//  SS_Label_Info_2.12 #Read tag release and recapture data
+  int Do_TG_rd;
   int Do_TG;
   int TG;
   int N_TG   // N tag groups
   int N_TG2;
   int TG_timestart;
   int N_TG_recap;   //  N recapture events
-  int TG_mixperiod_rd;
   int TG_mixperiod; //  First period (seasons) to start comparing obs to expected recoveries; period=0 is the release period
   int TG_maxperiods; //  max number of periods (seasons) to track recoveries; period=0 is the release period
   int TG_min_recap; //  minimum number of tags recaptured to include this TG in the logL
  LOCAL_CALCS
   Do_TG=0;
-  *(ad_comm::global_datafile) >> Do_TG;
-  echoinput<<Do_TG<<" Do_TagData(0/1) "<<endl;
-  if(Do_TG>0)
+  *(ad_comm::global_datafile) >> Do_TG_rd;
+  echoinput<<Do_TG_rd<<" Do_TagData(0/1/2) "<<endl<<"#  where 2 indicates additional read of TG_min_recap"<<endl;
+  if(Do_TG_rd>0)
   {
     Do_TG=1;
     *(ad_comm::global_datafile) >> N_TG;
     *(ad_comm::global_datafile) >> N_TG_recap;
-    *(ad_comm::global_datafile) >> TG_mixperiod_rd;
+    *(ad_comm::global_datafile) >> TG_mixperiod;
     *(ad_comm::global_datafile) >> TG_maxperiods;
-    if(TG_mixperiod_rd>=0){
-      TG_mixperiod=TG_mixperiod_rd;
-      TG_min_recap=0;
-    }
-    else{
-      TG_mixperiod=-TG_mixperiod_rd;
-      *(ad_comm::global_datafile) >> TG_min_recap;
-    }
+    TG_min_recap=0;
     N_TG2=N_TG;
     TG_timestart=9999;
     echoinput<<N_TG<<" N tag groups "<<endl
     <<N_TG_recap<<" N recapture events"<<endl
     <<TG_mixperiod<<"  Latency period for mixing"<<endl
-    <<TG_maxperiods<<" N periods to track recoveries"<<endl
-    <<TG_min_recap<<" min recaps >= mixperiod for inclusion in logL"<<endl;
+    <<TG_maxperiods<<" N periods to track recoveries"<<endl;
+    if(Do_TG_rd==2){
+    *(ad_comm::global_datafile) >> TG_min_recap;
+    echoinput<<TG_min_recap<<" min recaps >= mixperiod for inclusion in logL"<<endl;
+    }
   }
   else
   {
