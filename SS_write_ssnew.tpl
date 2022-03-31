@@ -1282,7 +1282,7 @@ FUNCTION void write_nucontrol()
 
   NuFore<<Impl_Error_Std<<" # stddev of log(realized catch/target catch) in forecast (set value>0.0 to cause active impl_error)"<<endl;
 
-  NuFore<<Do_Rebuilder<<" # Do West Coast gfish rebuilder output: 0=none; 1=standard; 2=expanded "<<endl;
+  NuFore<<Do_Rebuilder<<" # Do West Coast gfish rebuilder output: 0=no; 1=yes "<<endl;
   NuFore<<Rebuild_Ydecl<<" # Rebuilder:  first year catch could have been set to zero (Ydecl)(-1 to set to 1999)"<<endl;
   NuFore<<Rebuild_Yinit<<" # Rebuilder:  year for current age structure (Yinit) (-1 to set to endyear+1)"<<endl;
 

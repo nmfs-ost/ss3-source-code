@@ -3281,7 +3281,7 @@
   	{N_warn++; warning<<N_warn<<"; changing Imple_Error to 0 because no forecast "<<endl; Impl_Error_Std=0.0; Do_Impl_Error=0;}
   }
 
-  echoinput<<endl<<"#next select rebuilding program output: 0=none; 1=standard; 2=expanded"<<endl;
+  echoinput<<endl<<"#next select rebuilding program output: 0=no; 1=yes"<<endl;
   *(ad_comm::global_datafile) >> Do_Rebuilder;
   echoinput<<Do_Rebuilder<<" # echoed value"<<endl;
 
@@ -3612,7 +3612,7 @@
     }
   echoinput<<"H4010_scale: "<<H4010_scale_vec<<endl;
 
-  if(Do_Rebuilder>0 && Do_Forecast_rd<=0) {N_warn++; cout<<" EXIT - see warning "<<endl;  warning<<N_warn<<" error: Rebuilder output selected without requesting forecast"<<endl; exit(1);}
+  if(Do_Rebuilder==1 && Do_Forecast_rd<=0) {N_warn++; cout<<" EXIT - see warning "<<endl;  warning<<N_warn<<" error: Rebuilder output selected without requesting forecast"<<endl; exit(1);}
   if(Do_Benchmark==0)
   {
     if(Do_Forecast_rd>=1 && Do_Forecast_rd<=3) {Do_Benchmark=1; N_warn++;  warning<<N_warn<<" Turn Benchmark on because Forecast needs it"<<endl;}

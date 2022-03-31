@@ -1651,7 +1651,7 @@ FUNCTION void get_posteriors()
 
   der_posts << endl;
 
-  if(Do_Rebuilder>0) write_rebuilder_output();
+  if(Do_Rebuilder==1) write_rebuilder_output();
 
   // derived vectors quantities
   t=styr+(endyr+1-styr)*nseas;
