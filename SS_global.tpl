@@ -802,7 +802,7 @@ FINAL_SECTION
 
 //  SS_Label_Info_12.4.3 #Call fxn write_rebuilder_output to produce rebuilder.sso
     {
-    if(pick_report_use(57)=="Y" && Do_Rebuilder>0 && mceval_counter<=1) {
+    if(pick_report_use(57)=="Y" && Do_Rebuilder==1 && mceval_counter<=1) {
     write_rebuilder_output();}
 
     if(pick_report_use(58)=="Y") {
