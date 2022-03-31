@@ -335,7 +335,7 @@ FUNCTION void write_nudata()
       report1<<TG_min_recap<< " # TG_min_recap ## tag group's N recaps >=mixperiod must be >= min_recap to include tag group in logL)"<<endl;
     }
     else{
-    report1<< " # COND:  TG_min_recap ##  use Do_TG=2 to invoke reading TG_min_recap after TG_maxperiods"<<endl;
+    report1<< "# COND:  TG_min_recap ##  use Do_TG=2 to invoke reading TG_min_recap after TG_maxperiods"<<endl;
     }
 
     // tag releases
