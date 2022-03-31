@@ -323,14 +323,20 @@ FUNCTION void write_nudata()
   }
 
   // begin tagging data section #1 (observed data)
-  report1<<"#"<<endl<<Do_TG<<" # do tags (0/1)"<<endl;
-  if(Do_TG>0)
+  report1<<"# "<<endl<<Do_TG_rd<<" # do tags (0/1/2); where 2 allows entry of TG_min_recap"<<endl;
+  if(Do_TG_rd>0)
   {
     // info on dimensions of tagging data
     report1<<N_TG<<" # N tag groups"<<endl;
     report1<<N_TG_recap<<" # N recap events"<<endl;
-    report1<<TG_mixperiod<<" # mixing latency period: N periods to delay before comparing observed to expected recoveries (0 = release period)"<<endl;
-    report1<<TG_maxperiods<<" # max periods (seasons) to track recoveries, after which tags enter accumulator"<<endl;
+    report1<<TG_mixperiod<<" # TG_mixperiod ## (latency) is the first period in which logL is calculated for this tag group (0 = release period)"<<endl;
+    report1<<TG_maxperiods<<  " # max periods ##  to track recaptures (units=seasons), after which tags are still read into this accumulator period"<<endl;
+    if(Do_TG_rd==2){
+      report1<<TG_min_recap<< " # TG_min_recap ## tag group's N recaps >=mixperiod must be >= min_recap to include tag group in logL)"<<endl;
+    }
+    else{
+    report1<< "# COND:  TG_min_recap ##  use Do_TG=2 to invoke reading TG_min_recap after TG_maxperiods"<<endl;
+    }
 
     // tag releases
     report1<<"# Release data for each tag group.  Tags are considered to be released at the beginning of a season (period)"<<endl;
