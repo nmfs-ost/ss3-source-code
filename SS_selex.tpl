@@ -1642,6 +1642,7 @@ FUNCTION void Make_FishSelex()
 //    if(y>endyr) {yz=endyr; } else {yz=y;}  //  not used
     if(y>endyr+1 && Fcast_Specify_Selex==0) {yf=endyr+1;} else {yf=y;}    //  yf stores in endyr+1 the average selex from a range of years if Fcast_Specify_Selex==0
     tz=styr+(y-styr)*nseas+s-1;  // can use y, not yf, because Wt_Age_t values are read in and can extend into forecast
+
     for (f=1;f<=Nfleet;f++)
     {
       if(timevary_sel(yf,f)>0 || timevary_sel(yf,f+Nfleet)>0 || WTage_rd==1 || save_for_report>0)
@@ -1738,7 +1739,7 @@ FUNCTION void Make_FishSelex()
               <<" "<<f<<" "<<Wt_Age_t(tz,f,g)<<" #wt_flt_"<<f<<endl;
           }
       }  // end need to do it
-      save_sel_num(t,f,g)= sel_num(s,f,g);  //  save sel_num in save_fecundity array for output
+      save_sel_num(tz,f,g)= sel_num(s,f,g);  //  save sel_num in save_fecundity array for output
 
     }  // end fleet loop for mortality, retention
   }  // end Make_FishSelex

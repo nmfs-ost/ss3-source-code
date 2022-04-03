@@ -1042,7 +1042,7 @@ PRELIMINARY_CALCS_SECTION
 //  SS_Label_Info_6.8.4 #Call fxn get_natmort()
     echoinput<<"ready to do natmort "<<endl;
     get_natmort();
-    natM_M1=natM;  //  base M1 to which M2 is added
+      for(s=1;s<=nseas;s++){natM(t_base+s)=natM_M1(s);}  // set M equal to M1; M2 can be added later if predators are used
 
 //  SS_Label_Info_6.8.5 #add M2 for predator mortality
   if(N_pred>0)
@@ -1052,7 +1052,7 @@ PRELIMINARY_CALCS_SECTION
       pred_M2(f1,styr)=MGparm(predparm_pointer(f1));  //  base with no seasonal effect
       if(nseas==1)
       {
-        for (gp=1;gp<=N_GP*gender*N_settle_timings;gp++)  {natM(1,gp)+=pred_M2(f1,styr);}
+        for (gp=1;gp<=N_GP*gender*N_settle_timings;gp++)  {natM(styr,gp)+=pred_M2(f1,styr);}
       }
       else
       {
@@ -1060,13 +1060,13 @@ PRELIMINARY_CALCS_SECTION
         for (s=1;s<=nseas;s++)
         {
           t++;
-          for (gp=1;gp<=N_GP*gender*N_settle_timings;gp++)  {natM(s,gp)+=pred_M2(f1,styr)*MGparm(predparm_pointer(f1)+s);}
+          for (gp=1;gp<=N_GP*gender*N_settle_timings;gp++)  {natM(t,gp)+=pred_M2(f1,styr)*MGparm(predparm_pointer(f1)+s);}
         }
       }
     }
   }
 
-    natM = value(natM);
+    natM_M1 = value(natM_M1);
     surv1 = value(surv1);
     surv2 = value(surv2);
 

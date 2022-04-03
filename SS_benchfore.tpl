@@ -7,7 +7,6 @@
 FUNCTION void setup_Benchmark()
   {
 //  SS_Label_Info_7.5 #Get averages from selected years to use in forecasts
-
     if(Do_Forecast>0)
     {
       if(Fcast_Specify_Selex==0)
@@ -320,7 +319,6 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
     write_bodywt=0;
 
    Nloops2=0;
-
     y=styr-3;  //  the average biology from specified benchmark years is stored here
     yz=y;
     bio_yr=y;
@@ -374,6 +372,7 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
       for (s=1;s<=nseas;s++)
       {
         t = styr-3*nseas+s-1;
+        natM(t)=natM_unf(s);
         subseas=1;  //   for begin of season
         ALK_idx=(s-1)*N_subseas+subseas;
         ALK_subseas_update(ALK_idx)=1;  // new in 3.30.12   force updating
@@ -418,7 +417,6 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
 //  need to deal with possibility that with time-varying biology, the SSB_virgin calculated from virgin conditions will differ from the SSB_virgin used for benchmark conditions
 
 //  note that recr_dist(styr-3), natM_unf, surv1_unf, and surv2_unf updated at end of ss_popdyn.
-    natM=natM_unf;
     surv1=surv1_unf;
     surv2=surv2_unf;
 
@@ -1581,7 +1579,7 @@ FUNCTION void Get_Forecast()
 //  refresh quantities that might have changed in benchmark.
 //  some of these might be change within forecast also
 //    recr_dist(endyr)=recr_dist_endyr;
-    natM=natM_endyr;
+//    natM=natM_endyr;
     surv1=surv1_endyr;
     surv2=surv2_endyr;
 
@@ -1685,7 +1683,14 @@ FUNCTION void Get_Forecast()
           ALK_subseas_update=1;
           get_growth2(y);
         }
-      if(timevary_MG(y,1)>0) get_natmort();
+      if(timevary_MG(y,1)>0){
+        get_natmort();
+      } 
+      else{
+        t_base=styr+(y-styr)*nseas-1;
+        for(s=1;s<=nseas;s++){natM(t_base+s)=natM(t_base-nseas+s);}  // set M equal to last year's; M2 can be added later if predators are used
+      }
+
       if(timevary_MG(y,3)>0){
         get_wtlen();
         if(Hermaphro_Option!=0) get_Hermaphro();
@@ -1783,8 +1788,8 @@ FUNCTION void Get_Forecast()
             {
               g+=N_platoon;
               int gpi=GP3(g);   // GP*gender*settlement
-              natM(s,gpi)+=pred_M2(f1,t)*sel_num(s,f,g);
-              surv1(s,gpi)=mfexp(-natM(s,gpi)*seasdur_half(s));
+              natM(t,gpi)+=pred_M2(f1,t)*sel_num(s,f,g);
+              surv1(s,gpi)=mfexp(-natM(t,gpi)*seasdur_half(s));
               surv2(s,gpi)=square(surv1(s,gpi));
             }
           }
@@ -1866,7 +1871,7 @@ FUNCTION void Get_Forecast()
                 {
 //                  if(y==endyr+1) natage(t+Settle_seas_offset(settle),p,g,Settle_age(settle))=0.0;  //  to negate the additive code
                   natage(t+Settle_seas_offset(settle),p,g,Settle_age(settle)) = Recruits*recr_dist(y,GP(g),settle,p)*platoon_distr(GP2(g))*
-                   mfexp(natM(s,GP3(g),Settle_age(settle))*Settle_timing_seas(settle));
+                   mfexp(natM(t,GP3(g),Settle_age(settle))*Settle_timing_seas(settle));
                   if(Fcast_Loop1==jloop && ABC_Loop==ABC_Loop_end) Recr(p,t+Settle_seas_offset(settle))+=Recruits*recr_dist(y,GP(g),settle,p)*platoon_distr(GP2(g));
                    //  the adjustment for mortality increases recruit value for elapsed time since begin of season because M will then be applied from beginning of season
                 }
@@ -2144,7 +2149,7 @@ FUNCTION void Get_Forecast()
                 for (g=1;g<=gmorph;g++)  //loop over fishing fleets to get Z=M+sum(F)
                 if(use_morph(g)>0)
                 {
-                  Z_rate(t,p,g)=natM(s,GP3(g));
+                  Z_rate(t,p,g)=natM(t,GP3(g));
                   for (f=1;f<=Nfleet;f++)
                   if (fleet_area(f)==p && Fcast_RelF_Use(s,f)>0.0 && fleet_type(f)<=2)
                   {
@@ -2387,7 +2392,7 @@ FUNCTION void Get_Forecast()
 //                  if(y==endyr+1) natage(t+Settle_seas_offset(settle),p,g,Settle_age(settle))=0.0;  //  to negate the additive code
 //                  natage(t+Settle_seas_offset(settle),p,g,Settle_age(settle)) += Recruits*recr_dist(y,GP(g),settle,p)*platoon_distr(GP2(g))*
                   natage(t+Settle_seas_offset(settle),p,g,Settle_age(settle)) = Recruits*recr_dist(y,GP(g),settle,p)*platoon_distr(GP2(g))*
-                   mfexp(natM(s,GP3(g),Settle_age(settle))*Settle_timing_seas(settle));
+                   mfexp(natM(t,GP3(g),Settle_age(settle))*Settle_timing_seas(settle));
                   if(Fcast_Loop1==jloop && ABC_Loop==ABC_Loop_end) Recr(p,t+Settle_seas_offset(settle))+=Recruits*recr_dist(y,GP(g),settle,p)*platoon_distr(GP2(g));
                 }
               }
@@ -2469,7 +2474,7 @@ FUNCTION void Get_Forecast()
                        tempbase+=natage(t-nseas+1,p,g,a);  // sum of numbers at beginning of year
                        tempZ+=natage(t+1,p,g,a+1);  // numbers at beginning of next year
                        temp3=natage(t-nseas+1,p,g,a);  //  numbers at begin of year
-                       for (j=1;j<=nseas;j++) {temp3*=mfexp(-seasdur(j)*natM(j,GP3(g),a));}
+                       for (j=1;j<=nseas;j++) {temp3*=mfexp(-seasdur(j)*natM(t-nseas+j,GP3(g),a));}
                        tempM+=temp3;  //  survivors if just M operating
                     }
                   }
@@ -2497,7 +2502,7 @@ FUNCTION void Get_Forecast()
                       tempbase+=natage(t-nseas+1,p,g,a);  // sum of numbers at beginning of year
                       tempZ+=natage(t+1,p,g,a+1);  // numbers at beginning of next year
                       temp3=natage(t-nseas+1,p,g,a);  //  numbers at begin of year
-                      for (j=1;j<=nseas;j++) {temp3*=mfexp(-seasdur(j)*natM(j,GP3(g),a));}
+                      for (j=1;j<=nseas;j++) {temp3*=mfexp(-seasdur(j)*natM(t-nseas+j,GP3(g),a));}
                       tempM+=temp3;  //  survivors if just M operating
                    }
                  }
@@ -2571,7 +2576,7 @@ FUNCTION void Get_Forecast()
                         if(nseas==1)
                         {
                           temp1+=natage(t+1,p,g,a+1);
-                          temp2+=natage(t,p,g,a)*mfexp(-seasdur(s)*natM(s,GP3(g),a));
+                          temp2+=natage(t,p,g,a)*mfexp(-seasdur(s)*natM(t,GP3(g),a));
                         }
                         else
                         {

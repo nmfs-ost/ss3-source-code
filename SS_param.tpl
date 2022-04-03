@@ -47,20 +47,7 @@ PARAMETER_SECTION
 
   vector Lmin(1,N_GP*gender);
   vector Lmin_last(1,N_GP*gender);
-//  vector natM1(1,N_GP*gender)
-//  vector natM2(1,N_GP*gender)
-  matrix natMparms(1,N_natMparms,1,N_GP*gender)
-  3darray natM(1,nseas,1,N_GP*gender*N_settle_timings,0,nages)   //  need nseas to capture differences due to settlement
-  3darray natM_M1(1,nseas,1,N_GP*gender*N_settle_timings,0,nages)   //  need nseas to capture differences due to settlement
-  matrix pred_M2(1,N_pred,styr-3*nseas,TimeMax_Fcast_std+nseas);  //  index by t
-  3darray natM_unf(1,nseas,1,N_GP*gender*N_settle_timings,0,nages)   //  need nseas to capture differences due to settlement
-  3darray natM_endyr(1,nseas,1,N_GP*gender*N_settle_timings,0,nages)   //  need nseas to capture differences due to settlement
-  3darray surv1(1,nseas,1,N_GP*gender*N_settle_timings,0,nages)
-  3darray surv1_unf(1,nseas,1,N_GP*gender*N_settle_timings,0,nages)
-  3darray surv1_endyr(1,nseas,1,N_GP*gender*N_settle_timings,0,nages)
-  3darray surv2(1,nseas,1,N_GP*gender*N_settle_timings,0,nages)
-  3darray surv2_unf(1,nseas,1,N_GP*gender*N_settle_timings,0,nages)
-  3darray surv2_endyr(1,nseas,1,N_GP*gender*N_settle_timings,0,nages)
+
   vector CVLmin(1,N_GP*gender)
   vector CVLmax(1,N_GP*gender)
   vector CV_const(1,N_GP*gender)
@@ -273,21 +260,41 @@ PARAMETER_SECTION
   3darray natage_temp(1,pop,1,gmorph,0,nages)
   number ave_age    //  average age of fish in unfished population; used to weight R1
 
-!!//  SS_Label_Info_5.1.3 #Create F parameters and associated arrays and constants
+!!//  SS_Label_Info_5.1.3 #Create M,F, and Z parameters and associated arrays and constants
   init_bounded_number_vector init_F(1,N_init_F,init_F_LO,init_F_HI,init_F_PH)
   matrix est_equ_catch(1,nseas,1,Nfleet)
 
+//  gmorph = gender*N_GP*N_settle_timings*N_platoon;  //  total potential number of biological entities, some may not get used so see use_morph(g)
+
+
+  matrix natMparms(1,N_natMparms,1,N_GP*gender)  // will be derived from the MGparms
   !!if(Do_Forecast>0) {k=TimeMax_Fcast_std+nseas;} else {k=TimeMax+nseas;}
+  3darray natM(styr-3*nseas,k,1,N_GP*gender*N_settle_timings,0,nages)  // no area (p) dimension for M
+//  3darray natM(1,nseas,1,N_GP*gender*N_settle_timings,0,nages)
+  3darray natM_M1(1,nseas,1,N_GP*gender*N_settle_timings,0,nages)
+  matrix pred_M2(1,N_pred,styr-3*nseas,TimeMax_Fcast_std+nseas);  //  index by t
+  3darray natM_unf(1,nseas,1,N_GP*gender*N_settle_timings,0,nages)
+  3darray natM_endyr(1,nseas,1,N_GP*gender*N_settle_timings,0,nages)
+  3darray surv1(1,nseas,1,N_GP*gender*N_settle_timings,0,nages)
+  3darray surv1_unf(1,nseas,1,N_GP*gender*N_settle_timings,0,nages)
+  3darray surv1_endyr(1,nseas,1,N_GP*gender*N_settle_timings,0,nages)
+  3darray surv2(1,nseas,1,N_GP*gender*N_settle_timings,0,nages)
+  3darray surv2_unf(1,nseas,1,N_GP*gender*N_settle_timings,0,nages)
+  3darray surv2_endyr(1,nseas,1,N_GP*gender*N_settle_timings,0,nages)
+  4darray Z_rate(styr-3*nseas,k,1,pop,1,gmorph,0,nages)
+  3darray Zrate2(1,pop,1,gmorph,0,nages)
+  matrix Hrate(1,Nfleet,styr-3*nseas,k) //Harvest Rate for each fleet; this is F
+
   4darray natage(styr-3*nseas,k,1,pop,1,gmorph,0,nages)  //  add +1 year
   4darray catage(styr-nseas,k,1,Nfleet,1,gmorph,0,nages)
-  4darray disc_age(styr-3*nseas,TimeMax_Fcast_std+nseas,1,2*N_retain_fleets,1,gmorph,0,nages);
+  4darray disc_age(styr-3*nseas,k,1,2*N_retain_fleets,1,gmorph,0,nages);
+  3darray catch_fleet(styr-3*nseas,k,1,Nfleet,1,6)  //  1=sel_bio, 2=kill_bio; 3=ret_bio; 4=sel_num; 5=kill_num; 6=ret_num
+
   4darray equ_catage(1,nseas,1,Nfleet,1,gmorph,0,nages)
   4darray equ_numbers(1,nseas,1,pop,1,gmorph,0,3*nages)
   4darray equ_Z(1,nseas,1,pop,1,gmorph,0,nages)
   matrix catage_tot(1,gmorph,0,nages)//sum the catches for all fleets, reuse matrix each year
-  matrix Hrate(1,Nfleet,styr-3*nseas,k) //Harvest Rate for each fleet
   matrix bycatch_F(1,Nfleet,1,nseas)
-  3darray catch_fleet(styr-3*nseas,k,1,Nfleet,1,6)  //  1=sel_bio, 2=kill_bio; 3=ret_bio; 4=sel_num; 5=kill_num; 6=ret_num
   matrix annual_catch(styr-1,YrMax,1,6)  //  same six as above
   matrix annual_F(styr-1,YrMax,1,3)  //  1=sum of hrate (if Pope fmethod) or sum hrate*seasdur if F; 2=Z-M for selected ages; 3=M
   3darray equ_catch_fleet(1,6,1,nseas,1,Nfleet)
@@ -313,8 +320,6 @@ PARAMETER_SECTION
   number harvest_rate;                        // Harvest rate
   number maxpossF;
 
-  4darray Z_rate(styr-3*nseas,k,1,pop,1,gmorph,0,nages)
-  3darray Zrate2(1,pop,1,gmorph,0,nages)
 
  LOCAL_CALCS
   if(N_Fparm>0)    // continuous F

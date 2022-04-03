@@ -96,7 +96,7 @@ FUNCTION void Tag_Recapture()
                 if(F_Method==1)
                 {
                   TG_recap_exp(TG,TG_t,f)+=TG_alive(p,g)  // tags recaptured
-                  *mfexp(-(natM(s,GP3(g),a1)+TG_chron_loss)*seasdur_half(s))
+                  *mfexp(-(natM(t,GP3(g),a1)+TG_chron_loss)*seasdur_half(s))
                   *Sel_for_tag(t,f,g,a1)
                   *TG_report(f)
                   *mfexp(TG_t*TG_rep_decay(f));

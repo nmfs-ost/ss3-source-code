@@ -657,7 +657,7 @@ FUNCTION void write_rebuilder_output()
         for (g=1;g<=gmorph;g++)
         if(sx(g)==gg && use_morph(g)>0)
         {
-          tempvec_a+=elem_prod(natM(1,GP3(g)),natage(t,p,g));  tempvec2+=natage(t,p,g);  //  note, uses season 1 only
+          tempvec_a+=elem_prod(natM(t,GP3(g)),natage(t,p,g));  tempvec2+=natage(t,p,g);  //  note, uses season 1 only
         }
       }
       tempvec_a=elem_div(tempvec_a,tempvec2);
@@ -938,46 +938,7 @@ FUNCTION void write_Bzero_output()
     if(nseas>1) SS2out<<" Z for age zero fish is not correct here if recruitment occurs in season after season 1"<<endl;
 
     fishery_on_off=1;
- /*
-    SS2out<<endl<<"Report_Z_by_area_morph_platoon"<<endl;
 
-    for (fishery_on_off=1;fishery_on_off>=0;fishery_on_off--)
-    {
-    if(fishery_on_off==0) {SS2out<<"_1 No_fishery_for_Z=M";} else {SS2out<<"_2 With_fishery";}
-      save_gparm=0;
-        setup_recdevs();
-        get_initial_conditions();
-        get_time_series();  //  in write_big_report
-        if(Do_Forecast>0)
-        {
-          show_MSY=0;
-          report5<<"#"<<endl<<" FORECAST: in M & Z report with fishery onoff= "<<fishery_on_off<<endl;
-          Get_Forecast();
-        }
-    SS2out <<endl<<"Area Bio_Pattern Sex BirthSeas Settlement Platoon Morph Yr Seas Time Beg/Mid Era"<<age_vector <<endl;
-    for (p=1;p<=pop;p++)
-    for (g=1;g<=gmorph;g++)
-    if(use_morph(g)>0)
-      {
-      for (y=styr-2;y<=YrMax;y++)
-      for (s=1;s<=nseas;s++)
-      {
-       t = styr+(y-styr)*nseas+s-1;
-       temp=double(y)+azero_seas(s);
-       SS2out <<p<<" "<<GP4(g)<<" "<<sx(g)<<" "<<Bseas(g)<<" "<<settle_g(g)<<" "<<GP2(g)<<" "<<g<<" "<<y<<" "<<s<<" "<<temp<<" _ ";
-       if(y==styr-2)
-         {SS2out<<" VIRG ";}
-       if(y==styr-1)
-         {SS2out<<" INIT ";}
-       else if (y<=endyr)
-         {SS2out<<" TIME ";}
-       else
-         {SS2out<<" FORE ";}
-       SS2out<<Z_rate(t,p,g)<<endl;
-      }
-      }
-    }
-  */
     return;
   }  //  end write Z report
 
