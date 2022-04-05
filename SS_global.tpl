@@ -782,6 +782,7 @@ FINAL_SECTION
       Get_Forecast();
       if(mceval_phase()==0) cout<<" finished forecast"<<endl;
     }
+    
     if(write_bodywt>0)
     {
     bodywtout<<-9999<<" "<<1<<" "<<1<<" "<<1<<" "<<1<<" "<<0<<" "<<Wt_Age_mid(1,1)<<" #terminator "<<endl;
@@ -794,6 +795,7 @@ FINAL_SECTION
      if(mceval_phase()==0) cout<<" finished StdDev quantities"<<endl;
      get_posteriors();
      if(mceval_phase()==0) cout<<" finished posteriors"<<endl;
+
 //  SS_Label_Info_12.4.2 #Call fxn write_summaryoutput()
     if(Do_CumReport>0) write_summaryoutput();
 
@@ -840,6 +842,8 @@ FINAL_SECTION
 
     if (pick_report_use(54)=="Y" && Do_Benchmark>0)
     {
+        cout<<"setup_benchmark: "<<endl;
+        setup_Benchmark();
         cout<<"SPR_profile: ";
         SPR_profile();
         cout<<" finished "<<endl;

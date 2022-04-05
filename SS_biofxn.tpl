@@ -1337,6 +1337,11 @@ FUNCTION void get_mat_fec();
     GPat=GP4(g);
     gg=sx(g);
     gp=GPat;  //
+    if(WTage_rd==1){
+      fec(g)=Wt_Age_t(t,-2,g);
+    }
+    else{  // make fecundity from biology
+
    	if(do_once==1) echoinput<<"fecundity option: "<<Fecund_Option<<" parms: "<<wtlen_p(GPat)(5,6)<<endl;
 
     switch (Fecund_Option)
@@ -1470,6 +1475,7 @@ FUNCTION void get_mat_fec();
      " fecundity_age: "<<fec(g)<<endl;
      }
  #endif
+    }
   }  // end g loop
 //  end maturity and fecundity in spawn_seas
   }
