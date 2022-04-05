@@ -3513,12 +3513,9 @@ FUNCTION void SPR_profile()
         Do_Equil_Calc(equ_Recr);
 //  SPAWN-RECR:   calc equil spawn-recr in the SPR loop
         SPR_temp=SSB_equil;
-        SS2out<<"unfished S and R: "<<SSB_unf<<" "<<Recr_unf<<" SSB/R: "<<SPR_temp<<" fec: "<<fec<<" ";
-//        Equ_SpawnRecr_Result = Equil_Spawn_Recr_Fxn(SR_parm(2), SR_parm(3), SSB_virgin, Recr_virgin, SPR_temp);  //  returns 2 element vector containing equilibrium biomass and recruitment at this SPR
         Equ_SpawnRecr_Result = Equil_Spawn_Recr_Fxn(SR_parm_work(2), SR_parm_work(3), SSB_unf, Recr_unf, SPR_temp);  //  returns 2 element vector containing equilibrium biomass and recruitment at this SPR
         Btgt_prof=Equ_SpawnRecr_Result(1);
         Btgt_prof_rec=Equ_SpawnRecr_Result(2);
-        SS2out<<"fished S and R: "<<Btgt_prof<<" "<<Btgt_prof_rec<<" SSB/R: "<<Btgt_prof/Btgt_prof_rec<<endl;
         if(Btgt_prof<0.001 || Btgt_prof_rec<0.001)
         {
           Btgt_prof_rec=0.0; Btgt_prof=0.;
