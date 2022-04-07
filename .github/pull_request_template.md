@@ -1,7 +1,7 @@
 
 ## What issue(s) does this PR address? Describe and add issue numbers, if applicable.
 
-- [ ] Link issue on pull request
+Link issue(s) here: 
 
 ## What tests have been done? Upload any model input files created for testing in a zip file, if possible.
 
