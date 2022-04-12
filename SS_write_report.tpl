@@ -3400,20 +3400,6 @@ FUNCTION void SPR_profile()
       }
     }
 
-    SS2out<<"Fecundity: "<<fec(1)<<endl;
-    for (f=1;f<=Nfleet;f++){
-      if(fleet_type(f)<=2){
-        for(s=1;s<=nseas;s++) SS2out<<f<<" "<<s<<" sel_dead_bio: "<<sel_dead_bio(s,f,1)<<endl;
-      }}
-    for (f=1;f<=Nfleet;f++){
-      if(fleet_type(f)<=2){
-        for(s=1;s<=nseas;s++) SS2out<<f<<" "<<s<<" sel_num: "<<sel_num(s,f,1)<<endl;
-      }}
-    for (f=1;f<=Nfleet;f++){
-      if(fleet_type(f)<=2){
-        for(s=1;s<=nseas;s++) SS2out<<f<<" "<<s<<" sel_dead_num: "<<sel_dead_num(s,f,1)<<endl;
-      }}
-        
     SS2out<<"SPRloop Iter Bycatch Fmult F_report SPR YPR_dead YPR_dead*Recr YPR_ret*Recr Revenue Cost Profit SSB Recruits SSB/Bzero Tot_Catch ";
     for (f=1;f<=Nfleet;f++) {if(fleet_type(f)<=2) SS2out<<" "<<fleetname(f)<<"("<<f<<")Dead";}
     for (f=1;f<=Nfleet;f++) {if(fleet_type(f)<=2) SS2out<<" "<<fleetname(f)<<"("<<f<<")Ret";}
@@ -3580,52 +3566,6 @@ FUNCTION void SPR_profile()
           {Fmult2*=Fmultchanger1;}
         else if(SPRloop1==2)
           {Fmult2+=Fmultchanger2;}
-      }
-      if(SPRloop1==6){
-      SS2out<<"seas fleet Hrate encB deadB retB encN deadN retN: "<<endl;
-      for (s=1;s<=nseas;s++)
-      for (f=1;f<=Nfleet;f++)
-      if(fleet_type(f)<=2)
-      {
-        SS2out<<s<<" "<<f<<" "<<Hrate(f,bio_t_base+s);
-        for (g=1;g<=6;g++) {SS2out<<" "<<Recr_msy*equ_catch_fleet(g,s,f);}
-        SS2out<<endl;
-      }
-    SS2out<<"Equil_N_at_age_at_MSY_each"<<endl<<"Seas Area GP Sex subM"<<age_vector<<endl;
-     for (s=1;s<=nseas;s++)
-     for (p=1;p<=pop;p++)
-     for (g=1;g<=gmorph;g++)
-     {if(use_morph(g)>0) SS2out<<s<<" "<<p<<" "<<GP4(g)<<" "<<sx(g)<<" "<<GP2(g)<<" "<<Recr_msy*equ_numbers(s,p,g)(0,nages)<<endl;}
-
-    SS2out<<"Equil_N_at_age_at_MSY_sum"<<endl<<"GP Sex N"<<age_vector<<endl;
-    for (gg=1;gg<=gender;gg++)
-    for (gp=1;gp<=N_GP;gp++)
-    {
-      tempvec_a.initialize();
-      for (p=1;p<=pop;p++)
-      for (g=1;g<=gmorph;g++)
-      if(use_morph(g)>0)
-      {
-        if(GP4(g)==gp && sx(g)==gg) tempvec_a+= value(Recr_msy*equ_numbers(1,p,g)(0,nages));
-      }
-      if(nseas>1)
-      {
-        tempvec_a(0)=0.;
-        for (s=1;s<=nseas;s++)
-        for (p=1;p<=pop;p++)
-        for (g=1;g<=gmorph;g++)
-        if(use_morph(g)>0 && Bseas(g)==s)
-        {
-          if(GP4(g)==gp && sx(g)==gg) tempvec_a(0) += value(Recr_msy*equ_numbers(1,p,g,0));
-        }
-      }
-      SS2out <<gp<<" "<<gg<<" N "<<tempvec_a<<endl;
-    }
-      SS2out <<"natM"<<endl<<natM<<endl;
-      SS2out <<"sel_dead_num"<<endl<<sel_dead_num<<endl;
-      SS2out <<"equil_Z"<<endl<<equ_Z<<endl;
-      SS2out <<"equil_catage"<<endl<<equ_catage<<endl;
-        
       }
     }
 
