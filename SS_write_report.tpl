@@ -3359,14 +3359,6 @@ FUNCTION void SPR_profile()
   dvariable YPR_last;
 
     SS2out<<endl<<pick_report_name(54)<<endl;
-    SS2out<<"SPRloop Iter Bycatch Fmult F_report SPR YPR_dead YPR_dead*Recr YPR_ret*Recr Revenue Cost Profit SSB Recruits SSB/Bzero Tot_Catch ";
-    for (f=1;f<=Nfleet;f++) {if(fleet_type(f)<=2) SS2out<<" "<<fleetname(f)<<"("<<f<<")Dead";}
-    for (f=1;f<=Nfleet;f++) {if(fleet_type(f)<=2) SS2out<<" "<<fleetname(f)<<"("<<f<<")Ret";}
-    for (f=1;f<=Nfleet;f++) {if(fleet_type(f)<=2) SS2out<<" "<<fleetname(f)<<"("<<f<<")Age";}
-    for (p=1;p<=pop;p++)
-    for (gp=1;gp<=N_GP;gp++)
-    {SS2out<<" SSB_Area:"<<p<<"_GP:"<<gp;}
-    SS2out<<endl;
     y=styr-3;
     yz=y;
     bio_yr=y;
@@ -3376,9 +3368,11 @@ FUNCTION void SPR_profile()
 
 //  SPAWN-RECR:  call make_fecundity for benchmark bio for SPR loop
 //  this code section that creates fecundity and selectivity seems antiquated; why is it different from the averages used for benchmark?
+
     for (s=1;s<=nseas;s++)
     {
       t = styr-3*nseas+s-1;
+
       if(MG_active(2)>0 || MG_active(3)>0 || save_for_report>0 || WTage_rd>0)
       {
         subseas=1;
@@ -3390,14 +3384,14 @@ FUNCTION void SPR_profile()
         if(s==spawn_seas)
         {
           subseas=spawn_subseas;
-          if(spawn_subseas!=1 && spawn_subseas!=mid_subseas)
-          {
+          if(spawn_subseas!=1 && spawn_subseas!=mid_subseas){
         //don't call get_growth3(subseas) because using an average ave_size
             Make_AgeLength_Key(s, subseas);  //  spawn subseas
           }
           get_mat_fec();
         }
       }
+
       for (g=1;g<=gmorph;g++)
       if(use_morph(g)>0)
       {
@@ -3406,7 +3400,14 @@ FUNCTION void SPR_profile()
       }
     }
 
-
+    SS2out<<"SPRloop Iter Bycatch Fmult F_report SPR YPR_dead YPR_dead*Recr YPR_ret*Recr Revenue Cost Profit SSB Recruits SSB/Bzero Tot_Catch ";
+    for (f=1;f<=Nfleet;f++) {if(fleet_type(f)<=2) SS2out<<" "<<fleetname(f)<<"("<<f<<")Dead";}
+    for (f=1;f<=Nfleet;f++) {if(fleet_type(f)<=2) SS2out<<" "<<fleetname(f)<<"("<<f<<")Ret";}
+    for (f=1;f<=Nfleet;f++) {if(fleet_type(f)<=2) SS2out<<" "<<fleetname(f)<<"("<<f<<")Age";}
+    for (p=1;p<=pop;p++)
+    for (gp=1;gp<=N_GP;gp++)
+    {SS2out<<" SSB_Area:"<<p<<"_GP:"<<gp;}
+    SS2out<<endl;
     equ_Recr=1.0;
     Fishon=0;
     int SPRloop1_end;
@@ -3513,11 +3514,9 @@ FUNCTION void SPR_profile()
         Do_Equil_Calc(equ_Recr);
 //  SPAWN-RECR:   calc equil spawn-recr in the SPR loop
         SPR_temp=SSB_equil;
-//        Equ_SpawnRecr_Result = Equil_Spawn_Recr_Fxn(SR_parm(2), SR_parm(3), SSB_virgin, Recr_virgin, SPR_temp);  //  returns 2 element vector containing equilibrium biomass and recruitment at this SPR
         Equ_SpawnRecr_Result = Equil_Spawn_Recr_Fxn(SR_parm_work(2), SR_parm_work(3), SSB_unf, Recr_unf, SPR_temp);  //  returns 2 element vector containing equilibrium biomass and recruitment at this SPR
         Btgt_prof=Equ_SpawnRecr_Result(1);
         Btgt_prof_rec=Equ_SpawnRecr_Result(2);
-
         if(Btgt_prof<0.001 || Btgt_prof_rec<0.001)
         {
           Btgt_prof_rec=0.0; Btgt_prof=0.;

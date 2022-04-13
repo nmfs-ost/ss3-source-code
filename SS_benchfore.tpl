@@ -356,15 +356,6 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
       }
     }
 
-   if(show_MSY==1)
-   {
-     report5<<version_info<<endl<<ctime(&start);
-     report5<<"Bmark_relF(by_fleet_&seas) (excluding non-scaled bycatch fleets)"<<endl<<Bmark_RelF_Use<<endl<<"#"<<endl;
-     report5<<"Bmark_histF(by_fleet_&seas)"<<endl<<Bmark_HistF<<endl<<"#"<<endl;
-     report5<<"Bycatch_F"<<endl<<trans(bycatch_F)<<endl<<"#"<<endl;
-     report5<<"YPR_mask for including catch: "<<endl<<YPR_mask<<endl;
-   }
-
     if(show_MSY==2)
     {
       //  do not recalc the age-specific vectors
@@ -397,8 +388,29 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
       if(use_morph(g)>0)
       {
         ALK_idx=(s-1)*N_subseas+mid_subseas;  //  for midseason
-        Make_FishSelex();
+        Make_FishSelex();  //  including sel_dead_num
       }
+   if(show_MSY==1)
+   {
+     report5<<version_info<<endl<<ctime(&start);
+     report5<<"Bmark_relF(by_fleet_&seas) (excluding non-scaled bycatch fleets)"<<endl<<Bmark_RelF_Use<<endl<<"#"<<endl;
+     report5<<"Bmark_histF(by_fleet_&seas)"<<endl<<Bmark_HistF<<endl<<"#"<<endl;
+     report5<<"Bycatch_F"<<endl<<trans(bycatch_F)<<endl<<"#"<<endl;
+     report5<<"YPR_mask for including catch: "<<endl<<YPR_mask<<endl;
+    report5<<"Fecundity: "<<fec(1)<<endl;
+    for (f=1;f<=Nfleet;f++){
+      if(fleet_type(f)<=2){
+        for(s=1;s<=nseas;s++) report5<<f<<" "<<s<<" sel_dead_bio: "<<sel_dead_bio(s,f,1)<<endl;
+      }}
+    for (f=1;f<=Nfleet;f++){
+      if(fleet_type(f)<=2){
+        for(s=1;s<=nseas;s++) report5<<f<<" "<<s<<" sel_num: "<<sel_num(s,f,1)<<endl;
+      }}
+    for (f=1;f<=Nfleet;f++){
+      if(fleet_type(f)<=2){
+        for(s=1;s<=nseas;s++) report5<<f<<" "<<s<<" sel_dead_num: "<<sel_dead_num(s,f,1)<<endl;
+      }}
+    }
     }
 
       maxpossF.initialize();
@@ -970,13 +982,14 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
          {
           report5<<j<<" "<<Fmult<<" "<<equ_F_std<<" "<<MSY_SPR<<" "<<yld1(1)<<" "<<Bmsy<<" "<<Recr_msy<<" "<<Bmsy/SSB_unf<<" "
           <<dyld <<" "<<dyldp<<" "<<value(sum(equ_catch_fleet(3))*Recr_msy);
-          report5 << value(equ_catch_fleet(3)*Recr_msy) << " " << Cost << " " << PricePerF*YPR_val_vec*Recr_msy << " " << Profit << " ";
+//          report5 << " " << value(equ_catch_fleet(3)*Recr_msy) << " " << Cost << " " << PricePerF*YPR_val_vec*Recr_msy << " " << Profit << " ";
+          report5 << " " << Cost << " " << PricePerF*YPR_val_vec*Recr_msy << " " << Profit << " ";
           for (p=1;p<=pop;p++)
           for (gp=1;gp<=N_GP;gp++)
           {report5<<" "<<SSB_equil_pop_gp(p,gp)*Recr_msy;}
         for(int ff=1;ff<=N_catchfleets(0);ff++)
         {f=fish_fleet_area(0,ff);
-        report5<<Hrate(f,bio_t_base+1)<<" ";}
+        report5<<" "<<Hrate(f,bio_t_base+1);}
           report5<<endl;
          }
         if(j<=9)
@@ -1045,11 +1058,12 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
         }
       }
       report5 <<gp<<" "<<gg<<" N "<<tempvec_a<<endl;
-      report5 <<gp<<" "<<gg<<" Z ";
-      for (a=0;a<=nages-2;a++)
-      {report5<<-log(tempvec_a(a+1)/tempvec_a(a))<<" ";}
-      report5<<" NA NA"<<endl;
+
     }
+      report5 <<"natM"<<endl<<natM<<endl;
+      report5 <<"sel_dead_num"<<endl<<sel_dead_num<<endl;
+      report5 <<"equil_Z"<<endl<<equ_Z<<endl;
+      report5 <<"equil_catage"<<endl<<equ_catage<<endl;
 
      Fishon=0;
      Do_Equil_Calc(equ_Recr);
@@ -1867,7 +1881,9 @@ FUNCTION void Get_Forecast()
 //                  if(y==endyr+1) natage(t+Settle_seas_offset(settle),p,g,Settle_age(settle))=0.0;  //  to negate the additive code
                   natage(t+Settle_seas_offset(settle),p,g,Settle_age(settle)) = Recruits*recr_dist(y,GP(g),settle,p)*platoon_distr(GP2(g))*
                    mfexp(natM(s,GP3(g),Settle_age(settle))*Settle_timing_seas(settle));
-                  if(Fcast_Loop1==jloop && ABC_Loop==ABC_Loop_end) Recr(p,t+Settle_seas_offset(settle))+=Recruits*recr_dist(y,GP(g),settle,p)*platoon_distr(GP2(g));
+                  if(Fcast_Loop1==jloop && ABC_Loop==ABC_Loop_end){
+                    if(Settle_seas(settle)==s) Recr(p,t+Settle_seas_offset(settle))+=Recruits*recr_dist(y,GP(g),settle,p)*platoon_distr(GP2(g));
+                  } 
                    //  the adjustment for mortality increases recruit value for elapsed time since begin of season because M will then be applied from beginning of season
                 }
               }
@@ -2388,7 +2404,9 @@ FUNCTION void Get_Forecast()
 //                  natage(t+Settle_seas_offset(settle),p,g,Settle_age(settle)) += Recruits*recr_dist(y,GP(g),settle,p)*platoon_distr(GP2(g))*
                   natage(t+Settle_seas_offset(settle),p,g,Settle_age(settle)) = Recruits*recr_dist(y,GP(g),settle,p)*platoon_distr(GP2(g))*
                    mfexp(natM(s,GP3(g),Settle_age(settle))*Settle_timing_seas(settle));
-                  if(Fcast_Loop1==jloop && ABC_Loop==ABC_Loop_end) Recr(p,t+Settle_seas_offset(settle))+=Recruits*recr_dist(y,GP(g),settle,p)*platoon_distr(GP2(g));
+                  if(Fcast_Loop1==jloop && ABC_Loop==ABC_Loop_end){
+                    if(Settle_seas(settle)==s) Recr(p,t+Settle_seas_offset(settle))+=Recruits*recr_dist(y,GP(g),settle,p)*platoon_distr(GP2(g));
+                  } 
                 }
               }
           }
