@@ -1,5 +1,6 @@
 *.bak
 *.temp
+*.tmp
 *.pdf
 *.cpp
 *.exe
