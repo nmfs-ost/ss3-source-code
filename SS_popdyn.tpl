@@ -1819,10 +1819,10 @@ FUNCTION void Do_Equil_Calc(const prevariable& equ_Recr)
                  equ_catch_fleet(2,s,f)+=Hrate(f,t)*elem_prod(equ_numbers(s,p,g)(0,nages),sel_dead_bio(s,f,g))*Zrate2(p,g);      // dead catch bio
                  equ_catch_fleet(5,s,f)+=Hrate(f,t)*elem_prod(equ_numbers(s,p,g)(0,nages),sel_dead_num(s,f,g))*Zrate2(p,g);      // deadfish catch numbers
                  equ_catch_fleet(3,s,f)+=Hrate(f,t)*elem_prod(equ_numbers(s,p,g)(0,nages),sel_ret_bio(s,f,g))*Zrate2(p,g);      // retained catch bio
-                 equ_catage(s,f,g)=elem_prod(elem_prod(equ_numbers(s,p,g)(0,nages),sel_dead_num(s,f,g)) , Zrate2(p,g));
                  equ_catch_fleet(1,s,f)+=Hrate(f,t)*elem_prod(equ_numbers(s,p,g)(0,nages),sel_bio(s,f,g))*Zrate2(p,g);      // encountered catch bio
                  equ_catch_fleet(4,s,f)+=Hrate(f,t)*elem_prod(equ_numbers(s,p,g)(0,nages),sel_num(s,f,g))*Zrate2(p,g);      // encountered catch bio
                  equ_catch_fleet(6,s,f)+=Hrate(f,t)*elem_prod(equ_numbers(s,p,g)(0,nages),sel_ret_num(s,f,g))*Zrate2(p,g);      // retained catch numbers
+                 equ_catage(s,f,g)=Hrate(f,t)*elem_prod(elem_prod(equ_numbers(s,p,g)(0,nages),sel_dead_num(s,f,g)) , Zrate2(p,g));
                }
              }
              else  // F_method=1
