@@ -5,37 +5,42 @@
 // SS_Label_file  # - <div style="color: #ff0000">PARAMETER_SECTION</div>
 // SS_Label_file  #
 // SS_Label_file  #      - create needed parameters and derived quantities as dvar arrays
-
-
+  
 //  SS_Label_Section_4.99 #INITIALIZE_SECTION (not used in SS3)
 INITIALIZATION_SECTION
-
+  
 //  SS_Label_Section_5.0 #PARAMETER_SECTION
 PARAMETER_SECTION
 //  {
 //  SS_Label_Info_5.0.1 #Setup convergence critera and max func evaluations
  LOCAL_CALCS
-
-    // set the filename to all ADMB output files to "ss.[ext]"
-    ad_comm::adprogram_name = "ss";
-    echoinput<<"now in PARAMETER_SECTION "<<endl;
-    if(readparfile>=1)
-    {cout<<" read parm file"<<endl;
-    ad_comm::change_pinfile_name("ss.par");}
-    maximum_function_evaluations.allocate(func_eval.indexmin(),func_eval.indexmax());
-    maximum_function_evaluations=func_eval;
-    convergence_criteria.allocate(func_conv.indexmin(),func_conv.indexmax());
-    convergence_criteria=func_conv;
-    if(do_ageK==1)  //  need for age-specific K
-      {k=nages;}  // use for dimension of VBK()
-      else
-      {k=0;}
+  
+  // set the filename to all ADMB output files to "ss.[ext]"
+  ad_comm::adprogram_name = "ss";
+  echoinput << "now in PARAMETER_SECTION " << endl;
+  if (readparfile >= 1)
+  {
+    cout << " read parm file" << endl;
+    ad_comm::change_pinfile_name ("ss.par");
+  }
+  maximum_function_evaluations.allocate (func_eval.indexmin(), func_eval.indexmax());
+  maximum_function_evaluations = func_eval;
+  convergence_criteria.allocate (func_conv.indexmin(), func_conv.indexmax());
+  convergence_criteria = func_conv;
+  if (do_ageK == 1) //  need for age-specific K
+  {
+    k = nages;
+  } // use for dimension of VBK()
+  else
+  {
+    k = 0;
+  }
  END_CALCS
-
-!!//  SS_Label_Info_5.0.2 #Create dummy_parm that will be estimated even if turn_off_phase is set to 0
+  
+!! //  SS_Label_Info_5.0.2 #Create dummy_parm that will be estimated even if turn_off_phase is set to 0
   init_bounded_number dummy_parm(0,2,dummy_phase)  //  estimate in phase 0
 
-!!//  SS_Label_Info_5.1.1 #Create MGparm vector and associated arrays
+!! //  SS_Label_Info_5.1.1 #Create MGparm vector and associated arrays
   // natural mortality and growth
   init_bounded_number_vector MGparm(1,N_MGparm2,MGparm_LO,MGparm_HI,MGparm_PH)
   vector femfrac(1,N_GP*gender);

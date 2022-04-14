@@ -22,7 +22,7 @@ BreakBeforeBraces: Allman
 BreakBeforeTernaryOperators: false
 BreakConstructorInitializersBeforeComma: true
 ColumnLimit:     0
-CommentPragmas:  '^ SS_Label'
+CommentPragmas:  'SS_Label'
 ConstructorInitializerAllOnOneLineOrOnePerLine: true
 ConstructorInitializerIndentWidth: 4
 ContinuationIndentWidth: 4
@@ -40,18 +40,18 @@ MacroBlockEnd:   ''
 MaxEmptyLinesToKeep: 1
 NamespaceIndentation: All
 ObjCBlockIndentWidth: 4
-ObjCSpaceAfterProperty: true
-ObjCSpaceBeforeProtocolList: true
+ObjCSpaceAfterProperty: false
+ObjCSpaceBeforeProtocolList: false
 PenaltyBreakBeforeFirstCallParameter: 19
-PenaltyBreakComment: 300
+PenaltyBreakComment: 3000
 PenaltyBreakFirstLessLess: 120
-PenaltyBreakString: 1000
+PenaltyBreakString: 10000
 PenaltyExcessCharacter: 1000000
 PenaltyReturnTypeOnItsOwnLine: 80
 PointerAlignment: Left
 SpaceAfterCStyleCast: false
 SpaceBeforeAssignmentOperators: true
-SpaceBeforeParens: Always
+SpaceBeforeParens: ControlStatements
 SpaceInEmptyParentheses: false
 SpacesBeforeTrailingComments: 1
 SpacesInAngles:  false
