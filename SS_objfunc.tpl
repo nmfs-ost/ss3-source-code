@@ -252,8 +252,7 @@ FUNCTION void evaluate_the_objective_function()
       if (do_once == 1)
       cout << " did meanwt obj_fun " << mnwt_like << endl;
   }
-  //  SS_Label_Info_25.4 
-  Fit to length comp
+  //  SS_Label_Info_25.4 # Fit to length comp
   if (Nobs_l_tot > 0)
   {
     for (f = 1; f <= Nfleet; f++)
@@ -381,49 +380,42 @@ FUNCTION void evaluate_the_objective_function()
                   temp -= sum(gammln(dirichlet_Parm * exp_l(f, i)(tails_w(3), tails_w(4))));
                 }
                 length_like(f, i) -= temp;
-              }
-              if (header_l(f, i, 3) > 0)
+              } else  //  multivariate-Tweedie
+			  {
+				dvariable tweedie_Phi;
+				dvariable tweedie_power;
+				// Exponentiate [PARAMETER_1]
+				tweedie_Phi = mfexp(selparm(Comp_Err_Parm_Start+Comp_Err_L2(f)));
+				// One plus logistic-transform [PARAMETER_1]
+				tweedie_power = 1.0 + mfexp(selparm(Comp_Err_Parm_Start+Comp_Err_L2(f)+1)) / (1.0+mfexp(selparm(Comp_Err_Parm_Start+Comp_Err_L2(f)+1)));
+
+				if(gen_l(f,i) !=2) //  so not male only
+				{
+				  // dtweedie( Type y, Type mu, Type phi, Type p, int give_log=0 )
+				  for (int tail_index=tails_w(1); tail_index<=tails_w(2); tail_index++){
+					temp += 1.;  // dtweedie( nsamp_l(f,i)*obs_l(f,i)(tail_index), nsamp_l(f,i)*exp_l(f,i)(tail_index), tweedie_Phi, tweedie_power, true );
+				  }
+				}
+				//  add male logL
+				if(gen_l(f,i) >=2 && gender==2)
+				{
+				  // dtweedie( Type y, Type mu, Type phi, Type p, int give_log=0 )
+				  for (int tail_index=tails_w(3); tail_index<=tails_w(4); tail_index++){
+					temp += 1.;  // dtweedie( nsamp_l(f,i)*obs_l(f,i)(tail_index), nsamp_l(f,i)*exp_l(f,i)(tail_index), tweedie_Phi, tweedie_power, true );
+				  }
+				}
+				length_like(f,i)-=temp;
+			}
+            if (header_l(f, i, 3) > 0)
+			{
                 length_like_tot(f) += length_like(f, i);
-            }
-          }
-        }
+			}
+         }
       }
-      else  //  multivariate-Tweedie
-      {
-        dvariable tweedie_Phi;
-        dvariable tweedie_power;
-        // Exponentiate [PARAMETER_1]
-        tweedie_Phi = mfexp(selparm(Comp_Err_Parm_Start+Comp_Err_L2(f)));
-        // One plus logistic-transform [PARAMETER_1]
-        tweedie_power = 1.0 + mfexp(selparm(Comp_Err_Parm_Start+Comp_Err_L2(f)+1)) / (1.0+mfexp(selparm(Comp_Err_Parm_Start+Comp_Err_L2(f)+1)));
-
-        if(gen_l(f,i) !=2) //  so not male only
-        {
-          // dtweedie( Type y, Type mu, Type phi, Type p, int give_log=0 )
-          for (int tail_index=tails_w(1); tail_index<=tails_w(2); tail_index++){
-            temp += 1.;  // dtweedie( nsamp_l(f,i)*obs_l(f,i)(tail_index), nsamp_l(f,i)*exp_l(f,i)(tail_index), tweedie_Phi, tweedie_power, true );
-          }
-        }
-        //  add male logL
-        if(gen_l(f,i) >=2 && gender==2)
-        {
-          // dtweedie( Type y, Type mu, Type phi, Type p, int give_log=0 )
-          for (int tail_index=tails_w(3); tail_index<=tails_w(4); tail_index++){
-            temp += 1.;  // dtweedie( nsamp_l(f,i)*obs_l(f,i)(tail_index), nsamp_l(f,i)*exp_l(f,i)(tail_index), tweedie_Phi, tweedie_power, true );
-          }
-        }
-        length_like(f,i)-=temp;
-      }
-      if(header_l(f,i,3)>0) length_like_tot(f)+=length_like(f,i);
-     }
-     }
-    }
    }
-    if (do_once == 1)
-      cout << " did lencomp obj_fun  " << length_like_tot << endl;
-  }
-  
-
+   if (do_once == 1) cout << " did lencomp obj_fun  " << length_like_tot << endl;
+   }
+   }
   //  SS_Label_Info_25.5 #Fit to age composition
   if (Nobs_a_tot > 0)
   {
