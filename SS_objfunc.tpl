@@ -245,12 +245,16 @@ FUNCTION void evaluate_the_objective_function()
   if (nobs_mnwt > 0)
   {
     for (i = 1; i <= nobs_mnwt; i++)
+	{
       if (mnwtdata(3, i) > 0.)
       {
         mnwt_like(mnwtdata(3, i)) += 0.5 * (DF_bodywt + 1.) * log(1. + square(mnwtdata(6, i) - exp_mnwt(i)) / mnwtdata(9, i)) + mnwtdata(10, i);
       }
-      if (do_once == 1)
-      cout << " did meanwt obj_fun " << mnwt_like << endl;
+      if (do_once == 1) 
+	  {
+        cout << " did meanwt obj_fun " << mnwt_like << endl;
+	  }
+	}
   }
   //  SS_Label_Info_25.4 # Fit to length comp
   if (Nobs_l_tot > 0)
