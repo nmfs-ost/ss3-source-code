@@ -1,7 +1,7 @@
 
 ## What issue(s) does this PR address? Describe and add issue numbers, if applicable.
 
-- [ ] Link issue on pull request
+Link issue(s) here: 
 
 ## What tests have been done? Upload any model input files created for testing in a zip file, if possible.
 
@@ -9,9 +9,11 @@
 
 ## Check which is true. This PR requires:
 
-- [ ] Changes in r4ss
-- [ ] Changes to SS3 manual
-- [ ] Changes to SSI (the SS3 GUI)
-- [ ] An entry in the stock synthesis change log (new features, bug reports)
+- [ ] no further changes to r4ss
+- [ ] no further changes to the manual
+- [ ] no further changes to SSI (the SS3 GUI)
+- [ ] no further changes to the stock synthesis change log (new features, bug reports)
 
-##  Describe any changes in r4ss/SS3 manual/SSI/change log that are needed (if checked):
+## Describe any changes in r4ss/SS3 manual/SSI/change log that are needed (if not checked):
+
+## Additional information (optional):
