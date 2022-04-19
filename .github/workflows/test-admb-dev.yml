@@ -1,0 +1,7 @@
+name: test-admb-dev
+on: 
+  push:
+  workflow_dispatch:
+jobs:
+  call-workflow:
+    uses: nmfs-stock-synthesis/workflows/.github/workflows/build-ss3-admb-dev.yml@admb-dev
