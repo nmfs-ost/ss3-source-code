@@ -2,7 +2,7 @@
 // SS_Label_file  # * <u>make_timevaryparm()</u>  // makes parameters a function of input environmental data time series
 // SS_Label_file  # * <u>make_densitydependent_parm()</u>  // for the current year, changes a parameter value as a function of summary bio or recruitment at beginning of this year
 // SS_Label_file  #
-
+  
 //*********************************************************************
  /*  SS_Label_Function_14 #make_timevaryparm():  create trend and block time series */
 FUNCTION void make_timevaryparm()
@@ -15,14 +15,14 @@ FUNCTION void make_timevaryparm()
   dvariable slope;
   dvariable norm_styr;
   //  note:  need to implement the approach that keeps within bounds of base parameter
-
+  
   int timevary_parm_cnt_all;
   timevary_parm_cnt_all = 0;
   if (do_once == 1)
     echoinput << endl
               << "**********************" << endl
               << "number of parameters with timevary:  " << timevary_cnt << endl;
-
+  
   for (int tvary = 1; tvary <= timevary_cnt; tvary++)
   {
     ivector timevary_setup(1, 14);
@@ -102,7 +102,7 @@ FUNCTION void make_timevaryparm()
         break;
       }
     }
-
+  
     timevary_parm_cnt = timevary_setup(3); //  first  parameter used to create timevary effect on baseparm
     if (timevary_setup(4) > 0) //  block
     {
@@ -140,7 +140,7 @@ FUNCTION void make_timevaryparm()
             break;
           }
         }
-
+  
         for (int y1 = Block_Design(z, g); y1 <= Block_Design(z, g + 1); y1++) // loop years for this block
         {
           parm_timevary(tvary, y1) = temp;
@@ -149,7 +149,7 @@ FUNCTION void make_timevaryparm()
       }
       //        timevary_parm_cnt--;    // back out last increment
     } // end uses blocks
-
+  
     else if (timevary_setup(4) < 0) //  trend
     {
       // timevary_parm(timevary_parm_cnt+0) = offset for the trend at endyr; 3 options available below
@@ -179,10 +179,10 @@ FUNCTION void make_timevaryparm()
       }
       slope = timevary_parm(timevary_parm_cnt + 2);
       timevary_parm_cnt += 3;
-
+  
       norm_styr = cumd_norm((r_years(styr) - infl_year) / slope);
       temp = (endtrend - baseparm) / (cumd_norm((r_years(endyr) - infl_year) / slope) - norm_styr); //  delta in cum_norm between styr and endyr
-
+  
       for (int y1 = styr; y1 <= YrMax; y1++)
       {
         if (y1 <= endyr)
@@ -196,7 +196,7 @@ FUNCTION void make_timevaryparm()
       }
       parm_timevary(tvary, styr - 1) = baseparm;
     }
-
+  
     if (timevary_setup(7) > 0) //  env link
     {
       if (do_once == 1)
@@ -225,7 +225,7 @@ FUNCTION void make_timevaryparm()
         {
           dvariable temp;
           double p_range = baseparm_max - baseparm_min;
-
+  
           for (int y1 = env_data_minyr(timevary_setup(7)); y1 <= env_data_maxyr(timevary_setup(7)); y1++)
           {
             temp = log((parm_timevary(tvary, y1) - baseparm_min + 1.0e-7) / (baseparm_max - parm_timevary(tvary, y1) + 1.0e-7));
@@ -256,7 +256,7 @@ FUNCTION void make_timevaryparm()
       parm_dev_stddev(k) = timevary_parm(timevary_parm_cnt);
       parm_dev_rho(k) = timevary_parm(timevary_parm_cnt + 1);
       int picker = timevary_setup(9);
-
+  
       switch (picker)
       {
         case 1:
@@ -341,10 +341,10 @@ FUNCTION void make_timevaryparm()
       echoinput << "result by year: " << parm_timevary(tvary) << endl;
   }
   } //  end timevary_parm setup for all years
-
+  
 FUNCTION void make_densitydependent_parm(int const y1)
   {
-
+  
   for (int tvary = 1; tvary <= timevary_cnt; tvary++)
   {
     ivector timevary_setup(1, 13);
