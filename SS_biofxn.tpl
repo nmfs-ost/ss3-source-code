@@ -1625,31 +1625,31 @@ FUNCTION void get_mat_fec();
         }
         default:
         {
-          int ALK_finder = (ALK_idx - 1) * gmorph + g;
-          for (a = First_Mature_Age; a <= nages; a++)
-          {
-            tempvec_a(a) = ALK(ALK_idx, g, a)(ALK_range_g_lo(ALK_finder, a), ALK_range_g_hi(ALK_finder, a)) * mat_fec_len(GPat)(ALK_range_g_lo(ALK_finder, a), ALK_range_g_hi(ALK_finder, a));
+            int ALK_finder = (ALK_idx - 1) * gmorph + g;
+            for (a = First_Mature_Age; a <= nages; a++)
+            {
+              tempvec_a(a) = ALK(ALK_idx, g, a)(ALK_range_g_lo(ALK_finder, a), ALK_range_g_hi(ALK_finder, a)) * mat_fec_len(GPat)(ALK_range_g_lo(ALK_finder, a), ALK_range_g_hi(ALK_finder, a));
+            }
+            fec(g)(First_Mature_Age, nages) = elem_prod(tempvec_a(First_Mature_Age, nages), mat_age(GPat)(First_Mature_Age, nages)); //  reproductive output at age
+            make_mature_numbers(g) = elem_prod(ALK(ALK_idx, g) * mat_len(GPat), mat_age(GPat)); //  mature numbers at age
+            make_mature_bio(g) = elem_prod(ALK(ALK_idx, g) * elem_prod(mat_len(GPat), wt_len(s, GP(g))), mat_age(GPat)); //  mature biomass at age
           }
-          fec(g)(First_Mature_Age, nages) = elem_prod(tempvec_a(First_Mature_Age, nages), mat_age(GPat)(First_Mature_Age, nages)); //  reproductive output at age
-          make_mature_numbers(g) = elem_prod(ALK(ALK_idx, g) * mat_len(GPat), mat_age(GPat)); //  mature numbers at age
-          make_mature_bio(g) = elem_prod(ALK(ALK_idx, g) * elem_prod(mat_len(GPat), wt_len(s, GP(g))), mat_age(GPat)); //  mature biomass at age
         }
-      }
-      if (t >= styr && WTage_rd == 0)
-        Wt_Age_t(t, -2, g) = fec(g); //  save sel_num and save fecundity for output
-      if (y == endyr && WTage_rd == 0)
-        Wt_Age_t(t + nseas, -2, g) = fec(g);
+        if (t >= styr && WTage_rd == 0)
+          Wt_Age_t(t, -2, g) = fec(g); //  save sel_num and save fecundity for output
+        if (y == endyr && WTage_rd == 0)
+          Wt_Age_t(t + nseas, -2, g) = fec(g);
   #ifdef DO_ONCE
-      if (do_once == 1)
-      {
-        echoinput << "gp: " << GPat << " g " << g << endl
-                  << "mat_len: " << mat_len(GPat) << endl
-                  << " fec_len: " << fec_len(GPat) << endl
-                  << " mat_fec_len: " << mat_fec_len(GPat) << endl
-                  << " mat_age: " << mat_age(GPat) << endl
-                  << " mat_len_age: " << make_mature_numbers(g) << endl
-                  << " fecundity_age: " << fec(g) << endl;
-      }
+        if (do_once == 1)
+        {
+          echoinput << "gp: " << GPat << " g " << g << endl
+                    << "mat_len: " << mat_len(GPat) << endl
+                    << " fec_len: " << fec_len(GPat) << endl
+                    << " mat_fec_len: " << mat_fec_len(GPat) << endl
+                    << " mat_age: " << mat_age(GPat) << endl
+                    << " mat_len_age: " << make_mature_numbers(g) << endl
+                    << " fecundity_age: " << fec(g) << endl;
+        }
   #endif
     } // end g loop
   //  end maturity and fecundity in spawn_seas

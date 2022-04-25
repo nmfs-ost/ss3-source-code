@@ -5,7 +5,7 @@
 // SS_Label_file  # * <u>Get_Prior()</u>  // calc the prior likelihood for a parameter
 // SS_Label_file  # * <u>get_posteriors()</u>  //  writes posteriors.sso and other MCMC relevant outputs
 // SS_Label_file  #
-
+  
 //********************************************************************
 // FUNCTIONS in file: SS_objfunc.tpl
 // evaluate_the_objective_function
@@ -13,7 +13,7 @@
 // Check_Parm
 // Get_Prior
 // get_posteriors
-
+  
  /*  SS_Label_FUNCTION 25 evaluate_the_objective_function */
 FUNCTION void evaluate_the_objective_function()
   {
@@ -39,23 +39,23 @@ FUNCTION void evaluate_the_objective_function()
   regime_like.initialize();
   obj_fun = 0.0;
   SoftBoundPen = 0.0;
-
+  
   int k_phase = current_phase();
   if (k_phase > max_lambda_phase)
     k_phase = max_lambda_phase;
-
+  
   //Q_setup for 3.30
   // 1:  link type
   // 2:  extra input for link, i.e. mirror fleet
   // 3:  0/1 to select extra sd parameter
   // 4:  0/1 for biasadj or not
   // 5:  0/1 to float  k=4;
-
+  
   //  Link types
   //  1  simple q, 1 parm
   //  2  mirror simple q, 1 mirrored parameter
   //  3  q and power, 2 parm
-
+  
   if (Svy_N > 0)
   {
     for (f = 1; f <= Nfleet; f++)
@@ -81,7 +81,7 @@ FUNCTION void evaluate_the_objective_function()
             Svy_est(f, i) = temp;
           } // assign average to each obs
         }
-
+  
         // SS_Label_Info_25.1.2 #apply catchability, Q
         if (Q_setup(f, 5) > 0) //  do float Q
         { //  NOTE:  cannot use float option if error type is normal
@@ -101,7 +101,7 @@ FUNCTION void evaluate_the_objective_function()
                 temp1 += 1.;
               }
             }
-
+  
             if (Q_setup(f, 4) == 0) // mean q, with nobiasadjustment
             {
               Svy_log_q(f) = temp2 / temp;
@@ -118,7 +118,7 @@ FUNCTION void evaluate_the_objective_function()
           {
             Q_parm(Q_setup_parms(f, 1)) = Svy_log_q(f, 1);
           }
-
+  
           if (Svy_errtype(f) == -1) // normal
           {
             Svy_q(f) = Svy_log_q(f); //  q already in  arithmetic space
@@ -128,7 +128,7 @@ FUNCTION void evaluate_the_objective_function()
             Svy_q(f) = mfexp(Svy_log_q(f)); // get q in arithmetic space
           }
         }
-
+  
         // SS_Label_Info_25.1.4 #calc the logL
         if (Svy_errtype(f) == 0) // lognormal
         {
@@ -158,13 +158,13 @@ FUNCTION void evaluate_the_objective_function()
             }
           }
         }
-
+  
       } // end having obs for this survey
     }
     if (do_once == 1)
       cout << " did survey obj_fun " << surv_like << endl;
   }
-
+  
   //  SS_Label_Info_25.2 #Fit to discard
   if (nobs_disc > 0)
   {
@@ -185,7 +185,7 @@ FUNCTION void evaluate_the_objective_function()
               exp_disc(f, i) = temp;
             } // assign back to each obs
           }
-
+  
           if (disc_errtype(f) >= 1) // T -distribution
           {
             for (i = 1; i <= disc_N_fleet(f); i++)
@@ -240,7 +240,7 @@ FUNCTION void evaluate_the_objective_function()
     if (do_once == 1)
       cout << " did discard obj_fun " << disc_like << endl;
   }
-
+  
   //  SS_Label_Info_25.3 #Fit to mean body wt
   if (nobs_mnwt > 0)
   {
@@ -252,7 +252,7 @@ FUNCTION void evaluate_the_objective_function()
     if (do_once == 1)
       cout << " did meanwt obj_fun " << mnwt_like << endl;
   }
-
+  
   //  SS_Label_Info_25.4 #Fit to length comp
   if (Nobs_l_tot > 0)
   {
@@ -261,7 +261,7 @@ FUNCTION void evaluate_the_objective_function()
       {
         if (Nobs_l(f) >= 1)
         {
-
+  
           for (j = 1; j <= N_suprper_l(f); j++) // do each super period
           {
             exp_l_temp_dat.initialize();
@@ -275,7 +275,7 @@ FUNCTION void evaluate_the_objective_function()
               exp_l(f, i) = exp_l_temp_dat; // assign back to all obs
             }
           }
-
+  
           for (i = 1; i <= Nobs_l(f); i++)
           {
             length_like(f, i) = -offset_l(f, i); //  so a perfect fit will approach 0.0
@@ -308,7 +308,7 @@ FUNCTION void evaluate_the_objective_function()
             }
             exp_l(f, i) /= sum(exp_l(f, i));
             tails_w = ivector(tails_l(f, i));
-
+  
             if (gen_l(f, i) != 2)
             {
               if (tails_w(1) > 1)
@@ -323,7 +323,7 @@ FUNCTION void evaluate_the_objective_function()
               }
               exp_l(f, i)(tails_w(1), tails_w(2)) += min_comp_L(f);
             }
-
+  
             if (gender == 2 && gen_l(f, i) >= 2)
             {
               if (tails_w(3) > nlen_binP)
@@ -339,7 +339,7 @@ FUNCTION void evaluate_the_objective_function()
               exp_l(f, i)(tails_w(3), tails_w(4)) += min_comp_L(f);
             }
             exp_l(f, i) /= sum(exp_l(f, i));
-
+  
             if (header_l(f, i, 3) > 0 || save_for_report == 1)
             {
               if (Comp_Err_L(f) == 0) // multinomial
@@ -364,7 +364,7 @@ FUNCTION void evaluate_the_objective_function()
                 if (Comp_Err_L(f) == 2)
                   dirichlet_Parm = mfexp(selparm(Comp_Err_Parm_Start + Comp_Err_L2(f)));
                 //                             dirichlet_Parm=mfexp(selparm(Comp_Err_Parm_Start+Comp_Err_L2(f)));
-
+  
                 // note: first term in equations (4) and (10) is calculated
                 // as offset_l in SS_prelim.tpl and already included in length_like
                 // now add second term which is only dependent on parameters and sample size
@@ -393,7 +393,7 @@ FUNCTION void evaluate_the_objective_function()
     if (do_once == 1)
       cout << " did lencomp obj_fun  " << length_like_tot << endl;
   }
-
+  
   //  SS_Label_Info_25.5 #Fit to age composition
   if (Nobs_a_tot > 0)
   {
@@ -413,7 +413,7 @@ FUNCTION void evaluate_the_objective_function()
             for (i = suprper_a1(f, j); i <= suprper_a2(f, j); i++)
               exp_a(f, i) = exp_a_temp; // assign back to each original obs
           }
-
+  
           for (i = 1; i <= Nobs_a(f); i++)
           {
             age_like(f, i) = -offset_a(f, i); //  so a perfect fit will approach 0.0
@@ -445,7 +445,7 @@ FUNCTION void evaluate_the_objective_function()
               }
             }
             exp_a(f, i) /= (1.0e-15 + sum(exp_a(f, i))); // proportion at binned age
-
+  
             tails_w = ivector(tails_a(f, i));
             if (gen_a(f, i) != 2)
             {
@@ -461,7 +461,7 @@ FUNCTION void evaluate_the_objective_function()
               }
               exp_a(f, i)(tails_w(1), tails_w(2)) += min_comp_A(f);
             }
-
+  
             if (gender == 2 && gen_a(f, i) >= 2)
             {
               if (tails_w(3) > n_abins1)
@@ -476,9 +476,9 @@ FUNCTION void evaluate_the_objective_function()
               }
               exp_a(f, i)(tails_w(3), tails_w(4)) += min_comp_A(f);
             }
-
+  
             exp_a(f, i) /= (1.0e-15 + sum(exp_a(f, i)));
-
+  
             if (header_a(f, i, 3) > 0 || save_for_report == 1)
             {
               if (Comp_Err_A(f) == 0) //  multinomial
@@ -501,7 +501,7 @@ FUNCTION void evaluate_the_objective_function()
                 if (Comp_Err_A(f) == 2)
                   dirichlet_Parm = mfexp(selparm(Comp_Err_Parm_Start + Comp_Err_A2(f)));
                 //              dirichlet_Parm=mfexp(selparm(Comp_Err_Parm_Start+Comp_Err_A2(f)));
-
+  
                 // note: first term in equations (4) and (10) is calculated
                 // as offset_a in SS_prelim.tpl and already included in age_like
                 // now add second term which is only dependent on parameters and sample size
@@ -531,7 +531,7 @@ FUNCTION void evaluate_the_objective_function()
     if (do_once == 1)
       cout << " did agecomp obj_fun " << age_like_tot << endl;
   }
-
+  
   //  SS_Label_Info_25.6 #Fit to mean size@age
   if (nobs_ms_tot > 0)
   {
@@ -548,7 +548,7 @@ FUNCTION void evaluate_the_objective_function()
           for (i = suprper_ms1(f, j); i <= suprper_ms2(f, j); i++)
             exp_ms(f, i) = exp_a_temp; // assign back to each original obs
         }
-
+  
         for (i = 1; i <= Nobs_ms(f); i++)
           if (header_ms(f, i, 3) > 0)
           {
@@ -565,7 +565,7 @@ FUNCTION void evaluate_the_objective_function()
     if (do_once == 1)
       cout << " did meanlength obj_fun " << sizeage_like << endl;
   }
-
+  
   //  SS_Label_Info_25.7 #Fit to generalized Size composition
   if (SzFreq_Nmeth > 0) //  have some sizefreq data
   {
@@ -583,7 +583,7 @@ FUNCTION void evaluate_the_objective_function()
         SzFreq_exp(iobs) = SzFreq_exp(a);
       } //  assign back to all obs
     }
-
+  
     SzFreq_like = -SzFreq_like_base; // initializes
     for (iobs = 1; iobs <= SzFreq_totobs; iobs++)
     {
@@ -596,11 +596,11 @@ FUNCTION void evaluate_the_objective_function()
         SzFreq_like(SzFreq_LikeComponent(f, k)) -= SzFreq_sampleN(iobs) * SzFreq_obs(iobs)(z1, z2) * log(SzFreq_exp(iobs)(z1, z2));
       }
     }
-
+  
     if (do_once == 1)
       cout << " did sizefreq obj_fun: " << SzFreq_like << "  base: " << SzFreq_like_base << endl;
   }
-
+  
   //  SS_Label_Info_25.8 #Fit to morph composition
   if (Do_Morphcomp > 0)
   {
@@ -613,7 +613,7 @@ FUNCTION void evaluate_the_objective_function()
     if (do_once == 1)
       cout << " did morphcomp obj_fun " << Morphcomp_like << endl;
   }
-
+  
   //  SS_Label_Info_25.9 #Fit to tag-recapture
   if (Do_TG > 0)
   {
@@ -653,7 +653,7 @@ FUNCTION void evaluate_the_objective_function()
       cout << " did tag obj_fun " << TG_like1 << endl
            << TG_like2 << endl;
   }
-
+  
   //  SS_Label_Info_25.10 #Fit to initial equilibrium catch
   for (s = 1; s <= nseas; s++)
     for (f = 1; f <= Nfleet; f++)
@@ -665,7 +665,7 @@ FUNCTION void evaluate_the_objective_function()
     }
   if (do_once == 1)
     cout << " initequ_catch -log(L) " << equ_catch_like << endl;
-
+  
   //  SS_Label_Info_25.11 #Fit to catch by fleet/season
   if (F_Method > 1)
   {
@@ -679,12 +679,12 @@ FUNCTION void evaluate_the_objective_function()
       {
         i = 6;
       } //  numbers
-
+  
       for (y = styr; y <= endyr; y++)
         for (s = 1; s <= nseas; s++)
         {
           t = styr + (y - styr) * nseas - 1 + s;
-
+  
           if (fleet_type(f) == 1 && catch_ret_obs(f, t) > 0.0)
           {
             //          catch_like(f) += 0.5*square( (log(catch_ret_obs(f,t)) -log(catch_fleet(t,f,i)+0.000001)) / catch_se(t,f));
@@ -696,7 +696,7 @@ FUNCTION void evaluate_the_objective_function()
     if (do_once == 1)
       cout << " catch -log(L) " << catch_like << endl;
   }
-
+  
   //  SS_Label_Info_25.12 #Likelihood for the recruitment deviations
   //The recruitment prior is assumed to be a lognormal pdf with expected
   // value equal to the deterministic stock-recruitment curve          // SS_Label_260
@@ -709,7 +709,7 @@ FUNCTION void evaluate_the_objective_function()
   //      rec_like(1) += square((chi(i)- rho*chi(i-1)) /(sqrt(1.-rho*rho))) / (2.*sigmaRsq) + log(sigr);
   //  else
   //    rec_like(1)    = (norm2( chi +  sigmaRsq/2. ) / (2*sigmaRsq)) / (2.*sigmaRsq) + size_count(chi)*log(sigr);
-
+  
   if ((recrdev_lambda(k_phase) > 0.0 || save_for_report > 0) && (do_recdev > 0 || recdev_do_early > 0))
   {
     recr_like = sd_offset_rec * log(sigmaR);
@@ -791,7 +791,7 @@ FUNCTION void evaluate_the_objective_function()
   }
   if (Do_Impl_Error > 0)
     Fcast_recr_like += (norm2(Fcast_impl_error(endyr + 1, YrMax))) / (2.0 * Impl_Error_Std * Impl_Error_Std); // implementation error
-
+  
   //  SS_Label_Info_25.13 #Penalty for the parameter priors
   dvariable mu;
   dvariable tau;
@@ -799,7 +799,7 @@ FUNCTION void evaluate_the_objective_function()
   dvariable Bprior;
   dvariable Pconst;
   Pconst = 0.0001;
-
+  
   if (parm_prior_lambda(k_phase) > 0.0 || Do_all_priors > 0 || save_for_report > 0)
   {
     for (i = 1; i <= N_MGparm2; i++)
@@ -814,14 +814,14 @@ FUNCTION void evaluate_the_objective_function()
   init_F_Like(i) = Get_Prior(init_F_PRtype(i), init_F_LO(i), init_F_HI(i), init_F_PR(i), init_F_CV(i), init_F(i));
         parm_like += init_F_Like(i);
       }
-
+  
     for (i = 1; i <= Q_Npar2; i++)
       if (Q_parm_PRtype(i) > 0 && (active(Q_parm(i)) || Do_all_priors > 0))
       {
         Q_parm_Like(i) = Get_Prior(Q_parm_PRtype(i), Q_parm_LO(i), Q_parm_HI(i), Q_parm_PR(i), Q_parm_CV(i), Q_parm(i));
         parm_like += Q_parm_Like(i);
       }
-
+  
     for (i = 1; i <= N_selparm2; i++)
       if (selparm_PRtype(i) > 0 && (active(selparm(i)) || Do_all_priors > 0))
       {
@@ -838,7 +838,7 @@ FUNCTION void evaluate_the_objective_function()
           parm_like += TG_parm_Like(i);
         }
     }
-
+  
     for (i = 1; i <= N_SRparm3; i++)
       if (SR_parm_PRtype(i) > 0 && (active(SR_parm(i)) || Do_all_priors > 0))
       {
@@ -970,14 +970,14 @@ FUNCTION void evaluate_the_objective_function()
       }
     }
   }
-
+  
   for (f = 1; f <= Nfleet; f++)
     if (Q_setup(f, 4) == 3)
     {
       //      parm_dev_like += Q_dev_like(f,1); // mean component for dev approach (var component is already in the parm priors)
       //  do not include for randwalk (Qsetup==4)
     }
-
+  
   //  SS_Label_Info_25.16 #Penalty for F_ballpark
   if (F_ballpark_yr >= styr)
   {
@@ -996,7 +996,7 @@ FUNCTION void evaluate_the_objective_function()
   {
     F_ballpark_like = 0.0;
   }
-
+  
   //  SS_Label_Info_25.17 #Penalty for soft boundaries, uses the symmetric beta prior code
   if (SoftBound > 0)
   {
@@ -1008,7 +1008,7 @@ FUNCTION void evaluate_the_objective_function()
       }
     }
   }
-
+  
   //  SS_Label_Info_25.18 #Crash penalty
   //   CrashPen = square(1.0+CrashPen)-1.0;   this was used until V3.00L  7/10/2008
   CrashPen = square(1.0 + (1000. * CrashPen / (1000. + CrashPen))) - 1.0;
@@ -1026,7 +1026,7 @@ FUNCTION void evaluate_the_objective_function()
   //   cout<<" obj_fun age "<<obj_fun<<endl;
   obj_fun += column(sizeage_lambda, k_phase) * sizeage_like;
   //   cout<<" obj_fun ms "<<obj_fun<<endl;
-
+  
   obj_fun += equ_catch_like * column(init_equ_lambda, k_phase);
   //   cout<<" obj_fun equ_cat "<<obj_fun<<endl;
   obj_fun += column(catch_lambda, k_phase) * catch_like;
@@ -1034,7 +1034,7 @@ FUNCTION void evaluate_the_objective_function()
   //   cout<<" obj_fun catch "<<obj_fun<<catch_like<<endl;
   obj_fun += recr_like * recrdev_lambda(k_phase);
   obj_fun += regime_like * regime_lambda(k_phase);
-
+  
   //   cout<<" obj_fun recr "<<obj_fun<<endl;
   obj_fun += parm_like * parm_prior_lambda(k_phase);
   //   cout<<" obj_fun parm "<<obj_fun<<endl;
@@ -1061,7 +1061,7 @@ FUNCTION void evaluate_the_objective_function()
     obj_fun += TG_like2 * column(TG_lambda2, k_phase);
   //   cout<<" obj_fun final "<<obj_fun<<endl;
   JT_obj_fun = obj_fun - recr_like * recrdev_lambda(k_phase) + noBias_recr_like * recrdev_lambda(k_phase);
-
+  
   if (do_once == 1)
   {
     cout << " OK with obj_func " << obj_fun << endl;
@@ -1083,7 +1083,7 @@ FUNCTION void evaluate_the_objective_function()
     do_once = 0;
   }
   } //  end objective_function
-
+  
 //********************************************************************
  /*  SS_Label_FUNCTION 26 Process_STDquant */
 FUNCTION void Process_STDquant()
@@ -1100,7 +1100,7 @@ FUNCTION void Process_STDquant()
       depletion(STD_Yr_Reverse_Dep(y)) = SSB_yr(y);
     }
   }
-
+  
   switch (SPR_reporting)
   {
     case 0: // keep as raw value
@@ -1129,7 +1129,7 @@ FUNCTION void Process_STDquant()
       break;
     }
   }
-
+  
   switch (depletion_basis)
   {
     case 0:
@@ -1160,11 +1160,11 @@ FUNCTION void Process_STDquant()
   }
   if (depletion_log == 1)
     depletion = log(depletion);
-
+  
   //  Do multi-year average of depletion_std if requested;  assumes that depletion_std is NOT custom, so exists for all years
   //  otherwise, would need to check for positive value for STD_Yr_Reverse_F(y) and need to deal with averaging across not-reporting years = MESSY
   //  note that averaging starts in endyr, not endyr+N_forecast;  otherwise the averaging could span endyr.
-
+  
   if (depletion_multi > 1)
   {
     for (y = endyr; y >= first_catch_yr + 1; y--)
@@ -1177,7 +1177,7 @@ FUNCTION void Process_STDquant()
       depletion(STD_Yr_Reverse_Dep(y)) = temp / (y - y1);
     }
   }
-
+  
   //  Use the selected F method for the forecast as the denominator for the F_std ratio
   switch (F_std_basis)
   {
@@ -1203,7 +1203,7 @@ FUNCTION void Process_STDquant()
   }
   if (F_std_log == 1)
     F_std = log(F_std);
-
+  
   //  Do multi-year average of F_std if requested;  assumes that F_std is NOT custom, so exists for all years
   //  otherwise, would need to check for positive value for STD_Yr_Reverse_F(y) and need to deal with averaging across not-reporting years = MESSY
   //  note that averaging starts in endyr, not endyr+N_forecast;  otherwise the averaging could span endyr.
@@ -1219,7 +1219,7 @@ FUNCTION void Process_STDquant()
       F_std(STD_Yr_Reverse_F(y)) = temp / (y - y1);
     }
   }
-
+  
   //  SS_Label_7.8  get extra std quantities
   // selectivity
   //  f = Do_Selex_Std
@@ -1244,7 +1244,7 @@ FUNCTION void Process_STDquant()
       {
         //  4darray sel_num(1,nseas,1,gmorph,1,Nfleet,0,nages);  // selected numbers
         //  4darray save_sel_num(styr-3*nseas,TimeMax_Fcast_std+nseas,0,Nfleet,1,gmorph,0,nages)  //  save sel_num (Asel_2) and save fecundity for output;  +nseas covers no forecast setups
-
+  
         int t_write = styr + (Selex_Std_Year - styr) * nseas; //  season 1 of selected year
         g = g_Start(1) + N_platoon; //  mid morph for first GP for females
         Extra_Std(i) = save_sel_num(t_write, Do_Selex_Std, g, j);
@@ -1256,7 +1256,7 @@ FUNCTION void Process_STDquant()
       }
     }
   }
-
+  
   // growth
   if (Growth_Std_Cnt > 0)
   {
@@ -1273,7 +1273,7 @@ FUNCTION void Process_STDquant()
       }
     }
   }
-
+  
   // numbers at age
   if (NatAge_Std_Cnt > 0)
   {
@@ -1317,7 +1317,7 @@ FUNCTION void Process_STDquant()
       }
     }
   }
-
+  
   // NatM
   if (NatM_Std_Cnt > 0)
   {
@@ -1334,12 +1334,12 @@ FUNCTION void Process_STDquant()
       }
     }
   }
-
+  
   // ln(SSB)
   Extra_Std(Do_se_LnSSB) = log(SSB_yr(styr));
   Extra_Std(Do_se_LnSSB + 1) = log(SSB_yr(int((styr + endyr) / 2)));
   Extra_Std(Do_se_LnSSB + 2) = log(SSB_yr(endyr));
-
+  
   if (Do_se_smrybio > 0) //  do stderr of SmryBio
   {
     k = Do_se_smrybio;
@@ -1349,7 +1349,7 @@ FUNCTION void Process_STDquant()
       k++;
     }
   }
-
+  
   if (Svy_N > 0)
   {
     int Svy_sdreport_counter = 1;
@@ -1366,7 +1366,7 @@ FUNCTION void Process_STDquant()
     }
   }
   }
-
+  
 //********************************************************************
  /*  SS_Label_FUNCTION 27 Check_Parm */
 FUNCTION dvariable Check_Parm(const int iparm, const int& PrPH, const double& Pmin, const double& Pmax, const int& Prtype, const double& Pr, const double& Psd, const double& jitter, const prevariable& Pval)
@@ -1379,7 +1379,7 @@ FUNCTION dvariable Check_Parm(const int iparm, const int& PrPH, const double& Pm
   dvariable NewVal;
   // dvariable temp;
   dvariable Psigma, zval, kval, kjitter, zjitter, temp;
-
+  
   NewVal = Pval;
   if (Pval > -900)
   {
@@ -1419,7 +1419,7 @@ FUNCTION dvariable Check_Parm(const int iparm, const int& PrPH, const double& Pm
       if (Prtype > 0)
         exit(1);
     }
-
+  
     if (jitter > 0.0 && PrPH >= 0)
     {
       if ((Pmin <= -99 || Pmax >= 999))
@@ -1482,11 +1482,11 @@ FUNCTION dvariable Check_Parm(const int iparm, const int& PrPH, const double& Pm
   {
     //  checking ignored for inputs that are special codes
   }
-
+  
   RETURN_ARRAYS_DECREMENT();
   return NewVal;
   }
-
+  
 //********************************************************************
  /*  SS_Label_FUNCTION 29 Get_Prior */
 FUNCTION dvariable Get_Prior(const int T, const double& Pmin, const double& Pmax, const double& Pr, const double& Psd, const prevariable& Pval)
@@ -1588,7 +1588,7 @@ FUNCTION dvariable Get_Prior(const int T, const double& Pmin, const double& Pmax
   RETURN_ARRAYS_DECREMENT();
   return Prior_Like;
   }
-
+  
 FUNCTION void get_posteriors()
   {
   //********************************************************************
@@ -1597,7 +1597,7 @@ FUNCTION void get_posteriors()
     cout << " mceval counter: " << mceval_counter << endl;
   if (rundetail == 0 && double(mceval_counter) / 200. == double(mceval_counter / 200.))
     cout << " mceval counter: " << mceval_counter << endl;
-
+  
   if (mceval_header == 0 && mceval_phase()) // first pass through the mceval phase
   {
     // delete any old mcmc output files
@@ -1620,7 +1620,7 @@ FUNCTION void get_posteriors()
     post_vecs.open(sso_pathname + "posterior_vectors.sso", ios::app);
     post_obj_func.open(sso_pathname + "posterior_obj_func.sso", ios::app);
   }
-
+  
   if (mceval_header == 0) // first pass through the mceval phase
   {
     mceval_header = 1;
@@ -1633,7 +1633,7 @@ FUNCTION void get_posteriors()
       posts << " " << ParmLabel(active_parm(i));
     }
     posts << endl;
-
+  
     // derived quantities
     // derived_parameters.rep matches "DERIVED_PARAMETERS" section in Report.SSO file
     NP = ParCount;
@@ -1694,24 +1694,24 @@ FUNCTION void get_posteriors()
         post_vecs << y << " ";
     }
     post_vecs << endl;
-
+  
     if (mcmc_output_detail > 0)
     {
       std::stringstream iter_labels;
       std::stringstream lambda_labels;
-
+  
       iter_labels << "Iter | Objective_function";
       lambda_labels << "---- | Lambdas";
-
+  
       if (F_Method > 1)
       {
         iter_labels << " | Catch";
         lambda_labels << " | " << column(catch_lambda, max_lambda_phase);
       }
-
+  
       iter_labels << " | Equil_catch";
       lambda_labels << " | " << column(init_equ_lambda, max_lambda_phase);
-
+  
       if (Svy_N > 0)
       {
         iter_labels << " | Survey";
@@ -1757,39 +1757,39 @@ FUNCTION void get_posteriors()
         iter_labels << " | Tag_comp | Tag_negbin";
         lambda_labels << " | " << column(TG_lambda1, max_lambda_phase) << " | " << column(TG_lambda2, max_lambda_phase);
       }
-
+  
       iter_labels << " | Recruitment";
       lambda_labels << " | " << recrdev_lambda(max_lambda_phase);
-
+  
       iter_labels << " | Forecast_Recruitment";
       lambda_labels << " | " << Fcast_recr_lambda;
-
+  
       iter_labels << " | Parm_priors";
       lambda_labels << " | " << parm_prior_lambda(max_lambda_phase);
-
+  
       if (SoftBound > 0)
       {
         iter_labels << " | Parm_softbounds";
         lambda_labels << " | NA";
       }
-
+  
       iter_labels << " | Parm_devs";
       lambda_labels << " | " << parm_dev_lambda(max_lambda_phase);
-
+  
       if (F_ballpark_yr > 0)
       {
         iter_labels << " | F_Ballpark";
         lambda_labels << " | " << F_ballpark_lambda(max_lambda_phase);
       }
-
+  
       iter_labels << " | Crash_Pen ";
       lambda_labels << " | " << CrashPen_lambda(max_lambda_phase);
-
+  
       post_obj_func << iter_labels.str() << endl;
       post_obj_func << lambda_labels.str() << endl;
     }
   }; //  end writing headers for mceval_counter==1
-
+  
   // produce standard output of all estimated parameters
   posts << mceval_counter << " " << obj_fun << " ";
   for (j = 1; j <= N_MGparm2; j++)
@@ -1802,7 +1802,7 @@ FUNCTION void get_posteriors()
     if (active(SR_parm(i)))
       posts << SR_parm(i) << " ";
   }
-
+  
   if (recdev_cycle > 0)
   {
     for (i = 1; i <= recdev_cycle; i++)
@@ -1883,7 +1883,7 @@ FUNCTION void get_posteriors()
       }
   }
   posts << endl;
-
+  
   // derived quantities
   der_posts << mceval_counter << " " << obj_fun << " ";
   for (j = 1; j <= N_STD_Yr; j++) // spawning biomass
@@ -1914,12 +1914,12 @@ FUNCTION void get_posteriors()
   {
     der_posts << Extra_Std(j) << " ";
   }
-
+  
   der_posts << endl;
-
+  
   if (Do_Rebuilder == 1)
     write_rebuilder_output();
-
+  
   // derived vectors quantities
   t = styr + (endyr + 1 - styr) * nseas;
   for (p = 1; p <= pop; p++)
@@ -1938,12 +1938,12 @@ FUNCTION void get_posteriors()
   }
   post_vecs << runnumber << " " << mceval_counter << " " << obj_fun << " F/Fmsy " << F_std << endl;
   post_vecs << runnumber << " " << mceval_counter << " " << obj_fun << " B/Bmsy " << depletion << endl;
-
+  
   // output objective function components
   if (mcmc_output_detail > 0)
   {
     post_obj_func << mceval_counter << " | " << obj_fun;
-
+  
     if (F_Method > 1)
       post_obj_func << " | " << catch_like;
     post_obj_func << " | " << sum(equ_catch_like);
@@ -1974,7 +1974,7 @@ FUNCTION void get_posteriors()
     if (F_ballpark_yr > 0)
       post_obj_func << " | " << F_ballpark_like;
     post_obj_func << " | " << CrashPen;
-
+  
     post_obj_func << endl;
   }
   posts.close();

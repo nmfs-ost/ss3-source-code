@@ -3,7 +3,7 @@
 // SS_Label_file  # * <u>get_age_age()</u>  //  for ageing error
 // SS_Label_file  # * <u>get_catch_mult()</u>
 // SS_Label_file  #
-
+  
 //********************************************************************
  /*  SS_Label_FUNCTION 42 Join_Fxn  */
 FUNCTION dvariable Join_Fxn(const prevariable& MinPoss, const prevariable& MaxPoss, const prevariable& Inflec, const prevariable& Xvar, const prevariable& Y1, const prevariable& Y2)
@@ -16,7 +16,7 @@ FUNCTION dvariable Join_Fxn(const prevariable& MinPoss, const prevariable& MaxPo
   RETURN_ARRAYS_DECREMENT();
   return Yresult;
   }
-
+  
 //********************************************************************
  /*  SS_Label_FUNCTION 45 get_age_age */
 FUNCTION void get_age_age(const int Keynum, const int AgeKey_StartAge, const int AgeKey_Linear1, const int AgeKey_Linear2)
@@ -26,7 +26,7 @@ FUNCTION void get_age_age(const int Keynum, const int AgeKey_StartAge, const int
   dvariable age;
   dvar_vector age_err_parm(1, 7);
   dvariable temp;
-
+  
   if (Keynum == Use_AgeKeyZero)
   {
     //  SS_Label_45.1 set age_err_parm to mgp_adj, so can be time-varying according to MGparm options
@@ -55,7 +55,7 @@ FUNCTION void get_age_age(const int Keynum, const int AgeKey_StartAge, const int
       age_err(Use_AgeKeyZero, 2)(AgeKey_StartAge, nages) = age_err_parm(5) + (age_err_parm(6) - age_err_parm(5)) * (r_ages(AgeKey_StartAge, nages) - age_err_parm(1)) / (r_ages(nages) - age_err_parm(1));
     }
   }
-
+  
   //  SS_Label_45.5 calc distribution of age' for each age
   for (a = 0; a <= nages; a++)
   {
@@ -64,16 +64,16 @@ FUNCTION void get_age_age(const int Keynum, const int AgeKey_StartAge, const int
       age_err(Keynum, 1, a) = r_ages(a) + 0.5;
     }
     age = age_err(Keynum, 1, a);
-
+  
     for (b = 2; b <= n_abins; b++) //  so the lower tail is accumulated into the first age' bin
       age_age(Keynum, b, a) = cumd_norm((age_bins(b) - age) / age_err(Keynum, 2, a));
-
+  
     for (b = 1; b <= n_abins - 1; b++)
       age_age(Keynum, b, a) = age_age(Keynum, b + 1, a) - age_age(Keynum, b, a);
-
+  
     age_age(Keynum, n_abins, a) = 1. - age_age(Keynum, n_abins, a); // so remainder is accumulated into the last age' bin
   }
-
+  
   if (gender == 2) //  copy ageing error matrix into male location also
   {
     L2 = n_abins;
@@ -86,7 +86,7 @@ FUNCTION void get_age_age(const int Keynum, const int AgeKey_StartAge, const int
   }
   return;
   } //  end age_age key
-
+  
 FUNCTION void get_catch_mult(int y, int catch_mult_pointer)
   {
   /*  SS_Label_FUNCTION 47  catch_multiplier */

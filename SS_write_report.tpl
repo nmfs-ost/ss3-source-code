@@ -4732,7 +4732,6 @@ FUNCTION void SPR_profile()
         Equ_SpawnRecr_Result = Equil_Spawn_Recr_Fxn(SR_parm_work(2), SR_parm_work(3), SSB_unf, Recr_unf, SPR_temp); //  returns 2 element vector containing equilibrium biomass and recruitment at this SPR
         Btgt_prof = Equ_SpawnRecr_Result(1);
         Btgt_prof_rec = Equ_SpawnRecr_Result(2);
-
         if (Btgt_prof < 0.001 || Btgt_prof_rec < 0.001)
         {
           Btgt_prof_rec = 0.0;
