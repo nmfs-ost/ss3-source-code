@@ -324,7 +324,7 @@ FUNCTION void get_initial_conditions()
       }
     }
   } // end season (s) loop
-
+  
   #ifdef DO_ONCE
   if (do_once == 1)
     cout << " ready for virgin age struc " << endl;

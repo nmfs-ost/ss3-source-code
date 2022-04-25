@@ -3,10 +3,11 @@
 // SS_Label_file  # * <u>get_benchmark()</u>  // searches for Fspr, Fmsy, etc. conditioned on average biology and selectivity conditions
 // SS_Label_file  # * <u>get_forecast()</u>  //  calculates forecast quantities, includes all popdy characteristics of the time series, writes forecast-report.sso
 // SS_Label_file  #
-
+  
 FUNCTION void setup_Benchmark()
   {
   //  SS_Label_Info_7.5 #Get averages from selected years to use in forecasts
+  
   if (Do_Forecast > 0)
   {
     if (Fcast_Specify_Selex == 0)
@@ -528,6 +529,8 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
           ALK_idx = (s - 1) * N_subseas + mid_subseas; //  for midseason
           Make_FishSelex ();
         }
+      }
+    }
   }
   
   maxpossF.initialize ();

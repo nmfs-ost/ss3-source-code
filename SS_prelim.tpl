@@ -1340,7 +1340,7 @@
   {
     natM(t_base + s) = natM_M1(s);
   } // set M equal to M1; M2 can be added later if predators are used
-
+  
   //  SS_Label_Info_6.8.5 #add M2 for predator mortality
   if (N_pred > 0)
   {
@@ -1368,7 +1368,7 @@
       }
     }
   }
-
+  
   natM_M1 = value(natM_M1);
   surv1 = value(surv1);
   surv2 = value(surv2);
