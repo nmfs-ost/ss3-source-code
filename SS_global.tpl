@@ -110,7 +110,7 @@ GLOBALS_SECTION
   ofstream bodywtout;
   ofstream SS2out; // this is just a create
   ofstream SS_compout; // this is just a create
-  ofstream report1; //  for data.ss_new
+  ofstream report1; //  for data output files
   ofstream covarout;
   ofstream rebuilder;
   ofstream rebuild_dat;
@@ -1009,10 +1009,10 @@ FINAL_SECTION
       cout << " finished report.sso" << endl;
     }
   
-    //  SS_Label_Info_12.4.4 #Call fxn write_nudata() to create bootstrap data in data.ss_new
+    //  SS_Label_Info_12.4.4 #Call fxn write_nudata() to create bootstrap data
     if (N_nudata > 0)
     {
-      cout << "data.ss_new with N replicates: " << N_nudata;
+      cout << "Creating bootstrap files: " << N_nudata << " files";
       write_nudata();
       cout << " finished" << endl;
   
