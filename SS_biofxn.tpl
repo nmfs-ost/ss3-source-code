@@ -972,7 +972,7 @@ FUNCTION void get_growth3(const int y, const int t, const int s, const int subse
   
 FUNCTION void get_natmort()
   {
-  //  SS_Label_Function #17 get_natmort
+  //  SS_Label_Function #17 get_natmort (natM_M1) for all seasons given this year's parameters
   dvariable Loren_M1;
   dvariable Loren_temp;
   dvariable Loren_temp2;

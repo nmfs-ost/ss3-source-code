@@ -14,27 +14,21 @@ PARAMETER_SECTION
 //  {
 //  SS_Label_Info_5.0.1 #Setup convergence critera and max func evaluations
  LOCAL_CALCS
-  
-  // set the filename to all ADMB output files to "ss.[ext]"
-  ad_comm::adprogram_name = "ss";
-  echoinput << "now in PARAMETER_SECTION " << endl;
-  if (readparfile >= 1)
-  {
-    cout << " read parm file" << endl;
-    ad_comm::change_pinfile_name ("ss.par");
-  }
-  maximum_function_evaluations.allocate (func_eval.indexmin(), func_eval.indexmax());
-  maximum_function_evaluations = func_eval;
-  convergence_criteria.allocate (func_conv.indexmin(), func_conv.indexmax());
-  convergence_criteria = func_conv;
-  if (do_ageK == 1) //  need for age-specific K
-  {
-    k = nages;
-  } // use for dimension of VBK()
-  else
-  {
-    k = 0;
-  }
+
+    // set the filename to all ADMB output files to "ss.[ext]"
+    ad_comm::adprogram_name = "ss";
+    echoinput<<"now in PARAMETER_SECTION "<<endl;
+    if(readparfile>=1)
+    {cout<<" read parm file"<<endl;
+    ad_comm::change_pinfile_name("ss.par");}
+    maximum_function_evaluations.allocate(func_eval.indexmin(),func_eval.indexmax());
+    maximum_function_evaluations=func_eval;
+    convergence_criteria.allocate(func_conv.indexmin(),func_conv.indexmax());
+    convergence_criteria=func_conv;
+    if(do_ageK==1)  //  need for age-specific K
+      {k=nages;}  // use for dimension of VBK()
+      else
+      {k=0;}
  END_CALCS
   
 !! //  SS_Label_Info_5.0.2 #Create dummy_parm that will be estimated even if turn_off_phase is set to 0
@@ -265,7 +259,7 @@ PARAMETER_SECTION
   3darray natage_temp(1,pop,1,gmorph,0,nages)
   number ave_age    //  average age of fish in unfished population; used to weight R1
 
-!!//  SS_Label_Info_5.1.3 #Create M, F, and Z parameters and associated arrays and constants
+!!//  SS_Label_Info_5.1.3 #Create M,F, and Z parameters and associated arrays and constants
   init_bounded_number_vector init_F(1,N_init_F,init_F_LO,init_F_HI,init_F_PH)
   matrix est_equ_catch(1,nseas,1,Nfleet)
 

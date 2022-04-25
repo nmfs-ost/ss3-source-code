@@ -2074,7 +2074,7 @@ FUNCTION void Make_FishSelex()
       }
     } // end need to do it
     save_sel_num(tz, f, g) = sel_num(s, f, g); //  save sel_num in save_fecundity array for output
-  
+
   } // end fleet loop for mortality, retention
   } // end Make_FishSelex
 
