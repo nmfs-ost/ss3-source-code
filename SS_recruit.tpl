@@ -2,7 +2,7 @@
 // SS_Label_file  # * <u>Spawn_Recr()</u>  //  gets expected mean recruits from input spawning biomass
 // SS_Label_file  # * <u>apply_recdev()</u>  //  applies recdev to the expected mean recruits
 // SS_Label_file  # * <u>Equil_Spawn_Recr_Fxn()</u>  // gets equilibrium recruitment and spawning biomass from an input SPR
-  
+
 //********************************************************************
  /*  SS_Label_FUNCTION 43 Spawner-recruitment function */
 //  SPAWN-RECR:   function: to calc R from S
@@ -22,12 +22,12 @@ FUNCTION dvariable Spawn_Recr(const prevariable& SSB_virgin_adj, const prevariab
   dvariable SRZ_0;
   dvariable srz_min;
   dvariable SRZ_surv;
-  
+
   //  SS_Label_43.1  add 0.1 to input spawning biomass value to make calculation more rebust
   SSB_curr_adj = SSB_current + 0.100; // robust
-  
+
   regime_change = SR_parm_work(N_SRparm2 - 1); //  this is a persistent deviation off the S/R curve
-  
+
   //  SS_Label_43.3  calculate expected recruitment from the input spawning biomass and the SR curve
   // functions below use Recr_virgin_adj,SSB_virgin_adj which could have been adjusted adjusted above from R0,SSB_virgin
   switch (SR_fxn)
@@ -58,7 +58,7 @@ FUNCTION dvariable Spawn_Recr(const prevariable& SSB_virgin_adj, const prevariab
           (SSB_virgin_adj * (1. - steepness) + (5. * steepness - 1.) * SSB_curr_adj);
       break;
     }
-  
+
     // Beverton-Holt with alpha beta
     /*
       case 3: // Beverton-Holt
@@ -70,7 +70,7 @@ FUNCTION dvariable Spawn_Recr(const prevariable& SSB_virgin_adj, const prevariab
         break;
       }
    */
-  
+
     //  SS_Label_43.3.4  constant expected recruitment
     case 4: // none
     {
@@ -86,7 +86,7 @@ FUNCTION dvariable Spawn_Recr(const prevariable& SSB_virgin_adj, const prevariab
         NewRecruits = Join_Fxn(0.0 * SSB_virgin_adj, SSB_virgin_adj, steepness * SSB_virgin_adj, SSB_curr_adj, temp, Recr_virgin_adj);
         break;
       }
-  
+
     //  SS_Label_43.3.6  Beverton-Holt, with constraint to have constant R about Bzero
     case 6: //Beverton-Holt constrained
     {
@@ -104,7 +104,7 @@ FUNCTION dvariable Spawn_Recr(const prevariable& SSB_virgin_adj, const prevariab
       NewRecruits = (4. * steepness * Recr_virgin_adj * SSB_BH1) / (SSB_virgin_adj * (1. - steepness) + (5. * steepness - 1.) * SSB_BH1);
       break;
     }
-  
+
     //  SS_Label_43.3.7  survival based
     case 7: // survival based, so constrained such that recruits cannot exceed fecundity
     {
@@ -143,7 +143,7 @@ FUNCTION dvariable Spawn_Recr(const prevariable& SSB_virgin_adj, const prevariab
       exp_rec(y, 4) = NewRecruits;
       break;
     }
-  
+
     //  SS_Label_43.3.8  Shepherd
     case 8: // Shepherd 3-parameter SRR. per Punt & Cope 2017
     {
@@ -156,7 +156,7 @@ FUNCTION dvariable Spawn_Recr(const prevariable& SSB_virgin_adj, const prevariab
           (1.0 - 5.0 * steepness * Shepherd_c2 + (5. * steepness - 1.) * pow(temp, Shepherd_c));
       break;
     }
-  
+
     //  SS_Label_43.3.8  Ricker-power
     case 9: // Ricker power 3-parameter SRR.  per Punt & Cope 2017
     {
@@ -173,7 +173,7 @@ FUNCTION dvariable Spawn_Recr(const prevariable& SSB_virgin_adj, const prevariab
   RETURN_ARRAYS_DECREMENT();
   return NewRecruits;
   } //  end spawner_recruitment
-  
+
 FUNCTION void apply_recdev(prevariable& NewRecruits, const prevariable& Recr_virgin_adj)
   {
   RETURN_ARRAYS_INCREMENT();
@@ -183,7 +183,7 @@ FUNCTION void apply_recdev(prevariable& NewRecruits, const prevariable& Recr_vir
   //    exp_rec(y,3) is with bias adjustment
   //    exp_rec(y,4) is with dev
   regime_change = SR_parm_work(N_SRparm2 - 1); //  this is a persistent deviation off the S/R curve
-  
+
   if (recdev_cycle > 0)
   {
     gg = y - (styr + (int((y - styr) / recdev_cycle)) * recdev_cycle) + 1;
@@ -194,7 +194,7 @@ FUNCTION void apply_recdev(prevariable& NewRecruits, const prevariable& Recr_vir
   if (SR_fxn != 4)
     NewRecruits *= mfexp(-biasadj(y) * half_sigmaRsq); // bias adjustment
   exp_rec(y, 3) = NewRecruits;
-  
+
   if (y <= recdev_end)
   {
     if (recdev_doit(y) > 0)
@@ -209,7 +209,7 @@ FUNCTION void apply_recdev(prevariable& NewRecruits, const prevariable& Recr_vir
       }
     }
   }
-  
+
   else if (Do_Forecast > 0)
   {
     switch (int(Fcast_Loop_Control(3)))
@@ -260,7 +260,7 @@ FUNCTION void apply_recdev(prevariable& NewRecruits, const prevariable& Recr_vir
   exp_rec(y, 4) = NewRecruits;
   RETURN_ARRAYS_DECREMENT();
   } //  end spawner_recruitment
-  
+
 //********************************************************************
  /*  SS_Label_FUNCTION 44 Equil_Spawn_Recr_Fxn */
 //  SPAWN-RECR:   function  Equil_Spawn_Recr_Fxn
@@ -279,7 +279,7 @@ FUNCTION dvar_vector Equil_Spawn_Recr_Fxn(const prevariable& SRparm2, const prev
   dvariable SRZ_0;
   dvariable srz_min;
   dvariable SRZ_surv;
-  
+
   steepness = SRparm2; //  common usage but some different
   //  SS_Label_44.1  calc equilibrium SpawnBio and Recruitment from input SPR_temp, which is spawning biomass per recruit at some given F level
   switch (SR_fxn)
@@ -308,7 +308,7 @@ FUNCTION dvar_vector Equil_Spawn_Recr_Fxn(const prevariable& SRparm2, const prev
     {
       B_equil = SSB_virgin * (1. + (log(Recr_virgin / SSB_virgin) + log(SPR_temp)) / steepness);
       R_equil = Recr_virgin * B_equil / SSB_virgin * mfexp(steepness * (1. - B_equil / SSB_virgin));
-  
+
       break;
     }
     //  SS_Label_44.1.3  Beverton-Holt
@@ -321,7 +321,7 @@ FUNCTION dvar_vector Equil_Spawn_Recr_Fxn(const prevariable& SRparm2, const prev
       R_equil = (4. * steepness * Recr_virgin * B_equil) / (SSB_virgin * (1. - steepness) + (5. * steepness - 1.) * B_equil); //Beverton-Holt
       break;
     }
-  
+
     //  SS_Label_44.1.4  constant recruitment
     case 4: // constant; no bias correction
     {
@@ -349,7 +349,7 @@ FUNCTION dvar_vector Equil_Spawn_Recr_Fxn(const prevariable& SRparm2, const prev
       R_equil = B_equil * SRZ_surv;
       break;
     }
-  
+
     //  SS_Label_44.1.8  3 parameter Shepherd
     case 8: // Shepherd
     {
@@ -374,7 +374,7 @@ FUNCTION dvar_vector Equil_Spawn_Recr_Fxn(const prevariable& SRparm2, const prev
       B_equil = R_equil * SPR_temp;
       break;
     }
-  
+
     //  SS_Label_43.3.8  Ricker-power
     case 9: // Ricker power 3-parameter SRR.  per Punt & Cope 2017
     {
@@ -387,7 +387,7 @@ FUNCTION dvar_vector Equil_Spawn_Recr_Fxn(const prevariable& SRparm2, const prev
       B_equil = R_equil * SPR_temp;
       break;
     }
-  
+
       /*
       case 19:  // re-parameterized Shepherd
       {
@@ -413,7 +413,7 @@ FUNCTION dvar_vector Equil_Spawn_Recr_Fxn(const prevariable& SRparm2, const prev
         B_equil=R_equil*SPR_temp;
         break;
       }
-  
+
 //  SS_Label_43.3.8  Ricker-power
       case 20:  // Ricker power 3-parameter SRR.  per Punt & Cope 2017
       {

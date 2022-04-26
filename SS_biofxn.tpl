@@ -11,14 +11,14 @@
 // SS_Label_file  # * <u>get_migration()</u>
 // SS_Label_file  # * <u>get_saveGparm()</u>
 // SS_Label_file  # *
-  
+
 //*********************************************************************
  /*  SS_Label_Function_14 #Get_MGsetup:  apply time-varying factors this year to the MG parameters to create mgp_adj vector */
 FUNCTION void get_MGsetup(const int yz)
   {
   mgp_adj = MGparm; //  set all to base parm value
   //    int y1;
-  
+
   for (f = 1; f <= N_MGparm; f++)
   {
     if (MGparm_timevary(f) > 0) // timevary
@@ -35,7 +35,7 @@ FUNCTION void get_MGsetup(const int yz)
       }
     }
   } // end parm loop
-  
+
   //  SS_Label_Info_14.5 #if MGparm method =1 (no offsets), then do direct assignment if parm value is 0.0. (only for natMort and growth parms)
   if (MGparm_def == 1)
   {
@@ -71,7 +71,7 @@ FUNCTION void get_MGsetup(const int yz)
   if (save_for_report > 0)
     mgp_save(yz) = value(mgp_adj);
   }
-  
+
 //********************************************************************
  /*  SS_Label_FUNCTION 15 get_growth1;  calc some seasonal and CV_growth biology factors that cannot be time-varying */
 FUNCTION void get_growth1()
@@ -125,7 +125,7 @@ FUNCTION void get_growth1()
     for (s = 1; s <= nseas; s++)
       wtlen_seas(s) = 1.0; // set vector to null effect
   }
-  
+
   //  SS_Label_Info_15.2  #create variability of size-at-age factors using direct assignment or offset approaches
   gp = 0;
   for (gg = 1; gg <= gender; gg++)
@@ -196,7 +196,7 @@ FUNCTION void get_growth1()
       }
     }
   }
-  
+
 //********************************************************************
  /*  SS_Label_Function_ 16 #get_growth2; (do seasonal growth calculations for a selected year) */
 FUNCTION void get_growth2(const int y)
@@ -204,12 +204,12 @@ FUNCTION void get_growth2(const int y)
   //  called at beginning of each year, so y is known
   //  if y=styr, then does equilibrium size-at-age according to start year growth parameters
   //  for any year, calculates for each season the size at the beginning of the next season, with growth increment calculated according to that year's parameters
-  
+
   //Growth Cessation Model code added by Mark Maunder October 2018
   //The growth cessation model is described in
   //Maunder, M.N., Deriso, R.B., Schaefer, K.M., Fuller, D.W., Aires-da-Silva, A.M., Minte‑Vera, C.V., Campana, S.E. 2018. The growth cessation model: a growth model for species showing a near cessation in growth with application to bigeye tuna (Thunnus obesus). Marine Biology (2018) 165:76.
   //Ian Taylor derived the formula for Linf
-  
+
   int k2;
   int add_age;
   int ALK_idx2; //  beginning of first subseas of next season
@@ -232,7 +232,7 @@ FUNCTION void get_growth2(const int y)
       Cohort_Growth(y + a, a) = temp;
     } //  so this multiplier on growth_increment is stored on a diagonal into the future
   }
-  
+
   //  SS_Label_Info_16.2 #Loop growth patterns (sex*N_GP)
   gp = 0;
   #ifdef DO_ONCE
@@ -252,7 +252,7 @@ FUNCTION void get_growth2(const int y)
         {
           break;
         }
-  
+
         default: //  process parameters for all other grow_type
         {
           //  SS_Label_Info_16.2.1  #set Lmin, Lmax, VBK, Richards to this year's values for mgp_adj
@@ -269,7 +269,7 @@ FUNCTION void get_growth2(const int y)
             VBK(gp) = -mgp_adj(Ip + 2); // because always used as negative; assigns to all ages for which VBK is defined
           }
           VBK_temp = VBK(gp, 0); //  will be reset to VBK(gp,nages) if using age-specific K
-  
+
           //  SS_Label_Info_16.2.2  #Set up age specific k
           if (Grow_type == 3) //  age specific k
           {
@@ -325,7 +325,7 @@ FUNCTION void get_growth2(const int y)
             }
             VBK_temp = VBK(gp, nages);
           }
-  
+
           //  get Linf from Lmax
           //  get Richards or growth cessation parameter if appropriate
           if (Grow_type == 2) //  Richards
@@ -386,7 +386,7 @@ FUNCTION void get_growth2(const int y)
   #endif
             }
           }
-  
+
           //  SS_Label_Info_16.2.3  #Set up Lmin and Lmax in Start Year
           if (y == styr)
           {
@@ -448,7 +448,7 @@ FUNCTION void get_growth2(const int y)
                 }
               }
             }
-  
+
             //  SS_Label_Info_16.2.4.1.1  #if y=styr, get size-at-age in first subseason of first season of this first year
             switch (Grow_type)
             {
@@ -518,7 +518,7 @@ FUNCTION void get_growth2(const int y)
               echoinput << "  settlement: " << settle << " g: " << g << endl
                         << "  L@A initial_year (w/o lin): " << Ave_Size(styr, 1, g)(0, min(6, nages)) << " plusgroup: " << Ave_Size(styr, 1, g, nages) << endl;
   #endif
-  
+
             //  SS_Label_Info_16.2.4.1.4  #calc approximation to mean size at maxage to account for growth after reaching the maxage (accumulator age)
             current_size = Ave_Size(styr, 1, g, nages);
             if (Linf_decay > -997.) //  decay rate has been read;  uses same code for Richards and standard
@@ -574,7 +574,7 @@ FUNCTION void get_growth2(const int y)
               echoinput << "  adjusted size at maxage " << Ave_Size(styr, 1, g, nages) << "  using decay of: " << Linf_decay << endl;
   #endif
           } //  end initial year calcs
-  
+
           //  SS_Label_Info_16.2.4.2  #loop seasons for growth calculation
           for (s = 1; s <= nseas; s++)
           {
@@ -619,7 +619,7 @@ FUNCTION void get_growth2(const int y)
                       join1 = 1.0 / (1.0 + mfexp(-(50. * t2 / (1.0 + fabs(t2))))); //  note the logit transform is not perfect, so growth near Linf will not be exactly same as with native growth function
                       t2 *= (1. - join1); // trap to prevent decrease in size-at-age
                     }
-  
+
                     //  SS_Label_info_16.2.4.2.1.1  #calc size at end of the season, which will be size at begin of next season using current seasons growth parms
                     //  with k2 adding an age if at the end of the year
                     if ((a < nages || s < nseas))
@@ -674,7 +674,7 @@ FUNCTION void get_growth2(const int y)
                   {
                     Ave_Size(t + 1, 1, g, a) = len_bins(1) + lin_grow(g, ALK_idx, a) * (Cohort_Lmin(gp, y, a) - len_bins(1));
                   }
-  
+
                 } // done ageloop
                 break;
               }
@@ -739,7 +739,7 @@ FUNCTION void get_growth2(const int y)
                       join1 = 1.0 / (1.0 + mfexp(-(50. * t2 / (1.0 + fabs(t2))))); //  note the logit transform is not perfect, so growth near Linf will not be exactly same as with native growth function
                       t2 *= (1. - join1); // trap to prevent decrease in size-at-age
                     }
-  
+
                     //  SS_Label_info_16.2.4.2.1.1  #calc size at end of the season, which will be size at begin of next season using current seasons growth parms
                     //  with k2 adding an age if at the end of the year
                     if ((a < nages || s < nseas))
@@ -759,14 +759,14 @@ FUNCTION void get_growth2(const int y)
                 break;
               }
             }
-  
+
             //  SS_Label_Info_16.2.4.2.1.2  #after age loop, if(s=nseas) get weighted average for size_at_maxage from carryover fish and fish newly moving into this age
             //  this code needs to execute every year, so need to move to ss_popdyn.  Positioned here, it is only updated in years in which growth changes
             if (s == nseas)
             {
               if (y > styr && Linf_decay != -998.)
               {
-  
+
 //  3.24 code
   #ifdef DO_ONCE
                 if (do_once == 1)
@@ -784,14 +784,14 @@ FUNCTION void get_growth2(const int y)
                 //                  temp=temp4*Ave_Size(t+1,1,g,nages)+(natage(t,1,g,nages)-temp4+0.00000001)*plusgroupsize;
                 //                  if(do_once==1&&g==1) echoinput<<t<<" plus group calc: "<<" N "<<" "<<natage(t-1,1,g,nages-2)<<" "<<natage(t,1,g,nages-1)<<" "<<natage(t,1,g,nages)<<" T4  "<<temp4<<" N-T4  "<<natage(t,1,g,nages)-temp4+0.00000001<<
                 //                  " size in: "<<Ave_Size(t+1,1,g,nages)<<" old size: "<<plusgroupsize<<" ";
-  
+
                 //  prototype code
                 //                  temp4= square(natage(t-1,1,g,nages-1)+0.00000001)/(natage(t-2,1,g,nages-2)+0.00000001);
                 //                  temp2=posfun(natage(t,1,g,nages)-temp4+0.00000001,0.0,temp);
                 //                  temp=temp4*Ave_Size(t+1,1,g,nages)+(temp2)*plusgroupsize;
                 //                  if(do_once==1&&g==1) echoinput<<t<<" plus group calc: "<<" N "<<" "<<natage(t-2,1,g,nages-2)<<" "<<natage(t-1,1,g,nages-1)<<" "<<natage(t,1,g,nages)<<" T4  "<<temp4<<" N-T4  "<<natage(t,1,g,nages)-temp4+0.00000001<<
                 //                  " size in: "<<Ave_Size(t+1,1,g,nages)<<" old size: "<<plusgroupsize<<" ";
-  
+
                 //                  Ave_Size(t+1,1,g,nages)=temp/(natage(t,1,g,nages)+0.00000001);
                 //                  if(do_once==1&&g==1) echoinput<<" temp "<<temp<<" denom "<<(natage(t,1,g,nages)+0.00000001)<<" Z "<<Z_rate(t-1,1,1,nages-1);
               }
@@ -800,13 +800,13 @@ FUNCTION void get_growth2(const int y)
                 Ave_Size(t + 1, 1, g, nages) = Ave_Size(t, 1, g, nages);
               }
             }
-  
+
   #ifdef DO_ONCE
             if (do_once == 1)
               echoinput << "  seas: " << s << "  size@t+1:  " << Ave_Size(t + 1, 1, g)(0, min(6, nages)) << " plusgroup: " << Ave_Size(t + 1, 1, g, nages) << endl;
   #endif
           } // end of season
-  
+
           /*
 //  move this code to popdyn in styr so can use adjustments made by growth3
 //  SS_Label_Info_16.2.4.3  #propagate Ave_Size from early years forward until first year that has time-vary growth
@@ -832,7 +832,7 @@ FUNCTION void get_growth2(const int y)
       Ip += N_M_Grow_parms;
     } // end loop of growth patterns, gp
   } // end do growth
-  
+
 //  *******************************************************************************************************
 //  SS_Label_Function_16.5  #get_growth3 which calculates mean size-at-age for selected subseason
 FUNCTION void get_growth3(const int y, const int t, const int s, const int subseas)
@@ -844,7 +844,7 @@ FUNCTION void get_growth3(const int y, const int t, const int s, const int subse
   dvariable inv_Richards;
   dvariable t50;
   dvariable VBK_temp2;
-  
+
   ALK_idx = (s - 1) * N_subseas + subseas; //  note that this changes a global value
   for (g = g_Start(1) + N_platoon; g <= gmorph; g += N_platoon) // looping the middle platoons for each sex*gp
   {
@@ -969,7 +969,7 @@ FUNCTION void get_growth3(const int y, const int t, const int s, const int subse
     } //  end need this platoon
   } //  done platoon
   } //  end  calc size-at-age at a particular subseason
-  
+
 FUNCTION void get_natmort()
   {
   //  SS_Label_Function #17 get_natmort
@@ -1042,7 +1042,7 @@ FUNCTION void get_natmort()
           }
         } // end switch
       } // end have natmort parms
-  
+
       g = g_Start(gp); //  base platoon
       for (settle = 1; settle <= N_settle_timings; settle++)
       {
@@ -1068,7 +1068,7 @@ FUNCTION void get_natmort()
               }
               break;
             }
-  
+
             //  SS_Label_Info_17.1.2.1  #case 1:  N breakpoints
             case 1: // breakpoints
             {
@@ -1089,7 +1089,7 @@ FUNCTION void get_natmort()
                 natM_amax = NatM_break(1);
                 natM2 = natMparms(1, gp);
                 k = a;
-  
+
                 for (loop = 1; loop <= N_natMparms + 1; loop++)
                 {
                   natM_amin = natM_amax;
@@ -1125,7 +1125,7 @@ FUNCTION void get_natmort()
               } // end season
               break;
             } // end natM_type==1
-  
+
             //  SS_Label_Info_17.1.2.2  #case 2:  lorenzen M
             case 2: //  Lorenzen M
             {
@@ -1156,7 +1156,7 @@ FUNCTION void get_natmort()
               }
               break;
             }
-  
+
             //  SS_Label_Info_17.1.2.4  #case 4:  read age_natmort as constant and interpolate to seasonal real age
             case (4):
             {
@@ -1235,7 +1235,7 @@ FUNCTION void get_natmort()
               break;
             }
           } // end natM_type switch
-  
+
           //  SS_Label_Info_17.2  #calc an ave_age for the first gp as a scaling factor in logL for initial recruitment (R1) deviation
           if (Do_AveAge == 0)
           {
@@ -1255,11 +1255,11 @@ FUNCTION void get_natmort()
     } // end growth pattern x gender loop
   natM_M1 = natM; // set M1 equal to M; M2 can be added later if predators are used
   } // end nat mort
-  
+
 FUNCTION void get_recr_distribution()
   {
   /*  SS_Label_Function_18 #get_recr_distribution among areas and morphs */
-  
+
   //  SS_Label_Info_18.15  #get fraction female
   // fracfemale_mult is not used to distribute recruits; it is a multiplier used in the SSB calc and has default value of 1, and value of femfrac if requested in 1 sex setup
   if (frac_female_pointer > 0)
@@ -1282,7 +1282,7 @@ FUNCTION void get_recr_distribution()
   {
     fracfemale_mult = value(femfrac(1));
   }
-  
+
   #ifdef DO_ONCE
   if (do_once == 1)
     echoinput << " femfrac " << femfrac << endl;
@@ -1296,7 +1296,7 @@ FUNCTION void get_recr_distribution()
     k = MGP_CGD - recr_dist_parms;
   }
   dvar_vector recr_dist_parm(1, k);
-  
+
   //  recr_dist.initialize();
   //  SS_Label_Info_18.1  #set rec_dist_parms = exp(mgp_adj) for this year
   Ip = recr_dist_parms - 1;
@@ -1307,7 +1307,7 @@ FUNCTION void get_recr_distribution()
   //  SS_Label_Info_18.2  #loop gp * settlements * area and multiply together the recr_dist_parm values
   switch (recr_dist_method)
   {
-  
+
     case 2:
     {
       for (gp = 1; gp <= N_GP; gp++)
@@ -1404,7 +1404,7 @@ FUNCTION void get_recr_distribution()
   }
 //  if(y==styr)
 // 	{for(int yz=styr+1; yz<=YrMax;yz++) recr_dist(yz)=recr_dist(styr);}
-  
+
   #ifdef DO_ONCE
   if (do_once == 1)
   {
@@ -1420,7 +1420,7 @@ FUNCTION void get_recr_distribution()
   }
   #endif
   }
-  
+
 //*******************************************************************
  /*  SS_Label_Function 19 get_wtlen, maturity, fecundity, hermaphroditism */
 FUNCTION void get_wtlen()
@@ -1431,16 +1431,16 @@ FUNCTION void get_wtlen()
     for (GPat = 1; GPat <= N_GP; GPat++)
     {
       gp++;
-  
+
       for (s = 1; s <= nseas; s++)
       {
         //  SS_Label_Info_19.2  #loop seasons for wt-len calc
         t = styr + (y - styr) * nseas + s - 1;
         //  SS_Label_Info_19.2.1  #calc wt_at_length for each season to include seasonal effects on wtlen
-  
+
         //  NOTES  wt_len is by gp, but wt_len2 and wt_len_low have males stacked after females
         //  so referenced by GPat
-  
+
         if (gg == 1)
         {
           if (MGparm_seas_effects(1) > 0 || MGparm_seas_effects(2) > 0) //  get seasonal effect on FEMALE wtlen parameters
@@ -1471,7 +1471,7 @@ FUNCTION void get_wtlen()
           wt_len2(s, GPat)(nlength1, nlength2) = wt_len(s, gp).shift(nlength1);
           wt_len(s, gp).shift(1);
         }
-  
+
         //  SS_Label_Info_19.2.3  #calculate first diff of wt_len for use in generalized sizp comp bin calculations
         if (gg == gender)
         {
@@ -1496,11 +1496,11 @@ FUNCTION void get_mat_fec();
   //  these calculations are done in spawn_seas, but are not affected by spawn_time within that season
   //  so age-specific inputs will assume to be at correct timing already; size-specific will later be adjusted to use size-at-age at the exact correct spawn_time_seas
   //  SPAWN-RECR:   calculate maturity and fecundity vectors
-  
+
   make_mature_numbers.initialize();
   int s = spawn_seas; // makes a local version of "s" as this gets called inside a "s" loop
   int ALK_idx = (spawn_seas - 1) * N_subseas + spawn_subseas;
-  
+
   for (g = 1; g <= gmorph; g++)
     if (sx(g) == 1 && use_morph(g) > 0)
     {
@@ -1513,10 +1513,10 @@ FUNCTION void get_mat_fec();
       }
       else
       { // make fecundity from biology
-  
+
         if (do_once == 1)
           echoinput << "fecundity option: " << Fecund_Option << " parms: " << wtlen_p(GPat)(5, 6) << endl;
-  
+
         switch (Fecund_Option)
         {
           case 1: // as eggs/kg (SS original configuration)
@@ -1659,7 +1659,7 @@ FUNCTION void get_mat_fec();
     } // end g loop
   //  end maturity and fecundity in spawn_seas
   }
-  
+
 FUNCTION void get_Hermaphro()
   {
   //  SS_Label_Info_19.2.5  #Do Hermaphroditism (no seasonality and no gp differences)
@@ -1668,7 +1668,7 @@ FUNCTION void get_Hermaphro()
   dvariable infl; // inflection
   dvariable stdev; // standard deviation
   dvariable maxval; // max value
-  
+
   infl = mgp_adj(MGparm_Hermaphro); // inflection
   stdev = mgp_adj(MGparm_Hermaphro + 1); // standard deviation
   maxval = mgp_adj(MGparm_Hermaphro + 2); // max value
@@ -1689,7 +1689,7 @@ FUNCTION void get_Hermaphro()
   }
   return;
   }
-  
+
 FUNCTION void get_migration()
   {
   //*******************************************************************
@@ -1709,7 +1709,7 @@ FUNCTION void get_migration()
       //  set movement rate same for all ages
       if (mgp_adj(Ip + 2) == -9998.)
         mgp_adj(Ip + 2) = mgp_adj(Ip + 1);
-  
+
       //  SS_Label_Info_20.1.1  #age-specific movement strength based on parameters for selected area pairs
       temp = 1. / (move_def2(k, 6) - move_def2(k, 5));
       temp1 = temp * (mgp_adj(Ip + 2) - mgp_adj(Ip + 1));
@@ -1737,7 +1737,7 @@ FUNCTION void get_migration()
       migrrate(yz, k) = 1.;
     }
   }
-  
+
   //  SS_Label_Info_20.2  #loop seasons, GP, source areas
   for (s = 1; s <= nseas; s++)
   {
@@ -1782,7 +1782,7 @@ FUNCTION void get_migration()
       } //  end source areas loop
     } // end growth pattern
   } // end season
-  
+
   //  SS_Label_Info_20.2.4 #Copy annual migration rates forward until first year with time-varying migration rates
   if (yz < YrMax)
   {
@@ -1796,7 +1796,7 @@ FUNCTION void get_migration()
   //  end migration
   return;
   }
-  
+
 FUNCTION void get_migration2()
   {
   //*******************************************************************
@@ -1808,11 +1808,11 @@ FUNCTION void get_migration2()
   //  to ease creation of setups of moderate complexity, use 0 to select all of that dimension
   //  for example, 0 in the sex field would assign the specified rate to both sexes
   //  for example, 0 in all fields would assign the same rate to everything
-  
+
   Ip = MGP_CGD; // base counter for  movement parms
   dvariable move1; //  movement rate for young fish
   dvariable move2; //  movement rate for old fish
-  
+
   //  SS_Label_20.1  loop the needed movement rates
   for (k = 1; k <= do_migr2; k++) //  loop all movement rates for this year (includes seas, morphs)
   {
@@ -1829,7 +1829,7 @@ FUNCTION void get_migration2()
       //  set movement rate same for all ages
       if (mgp_adj(Ip + 2) == -9998.)
         move2 = move1;
-  
+
       //  SS_Label_Info_20.1.1  #age-specific movement strength based on parameters for selected area pairs
       temp = 1. / (move_def2(k, 6) - move_def2(k, 5));
       temp1 = temp * (move2 - move1);
@@ -1845,7 +1845,7 @@ FUNCTION void get_migration2()
       migrrate(yz, k) = 1.;
     }
   }
-  
+
   //  SS_Label_Info_20.2  #loop seasons, GP, source areas
   for (s = 1; s <= nseas; s++)
   {
@@ -1890,7 +1890,7 @@ FUNCTION void get_migration2()
       } //  end source areas loop
     } // end growth pattern
   } // end season
-  
+
   //  SS_Label_Info_20.2.4 #Copy annual migration rates forward until first year with time-varying migration rates
   if (yz < endyr)
   {
@@ -1904,7 +1904,7 @@ FUNCTION void get_migration2()
   //  end migration
   return;
   }
-  
+
 FUNCTION void get_saveGparm()
   {
   //*********************************************************************
@@ -1936,7 +1936,7 @@ FUNCTION void get_saveGparm()
           save_G_parm(save_gparm, 8) = value(-VBK(gp, 0) * VBK_seas(0));
           save_G_parm(save_gparm, 9) = value(-log(L_inf(gp) / (L_inf(gp) - Lmin(gp))) / (-VBK(gp, 0) * VBK_seas(0)) + AFIX + azero_G(g));
         }
-  
+
         save_G_parm(save_gparm, 10) = value(L_inf(gp));
         save_G_parm(save_gparm, 11) = value(CVLmin(gp));
         save_G_parm(save_gparm, 12) = value(CVLmax(gp));
@@ -1973,9 +1973,9 @@ FUNCTION void get_saveGparm()
       }
     }
   } //  end save_gparm
-  
+
 //  this function is no longer used.  It has been moved into get_mat_fec()
-  
+
 FUNCTION void Make_Fecundity()
   {
   //********************************************************************
@@ -2016,7 +2016,7 @@ FUNCTION void Make_Fecundity()
         Wt_Age_t(t, -2, g) = fec(g); //  save sel_num and save fecundity for output
       if (y == endyr)
         Wt_Age_t(t + nseas, -2, g) = fec(g);
-  
+
       if (bigsaver == 1)
       {
         switch (Maturity_Option)
@@ -2025,7 +2025,7 @@ FUNCTION void Make_Fecundity()
           {
             make_mature_numbers(g) = elem_prod(ALK(ALK_idx, g) * mat_len(GPat), mat_age(GPat)); //  mature numbers at age
             make_mature_bio(g) = elem_prod(ALK(ALK_idx, g) * elem_prod(mat_len(GPat), wt_len(s, GP(g))), mat_age(GPat)); //  mature biomass at age
-  
+
             break;
           }
           case 2: //  Maturity_Option=2  age logistic

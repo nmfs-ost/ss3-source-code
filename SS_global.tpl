@@ -28,14 +28,14 @@
 // SS_Label_file  #
 // SS_Label_file  #     - produces *ss.rep*, but see write_big_output for the more complete *report.sso*
 // SS_Label_file  #
-  
+
 //  SS_Label_Section_8 #RUNTIME_SECTION (not used in SS3)
 RUNTIME_SECTION
 //  {
 //  maximum_function_evaluations 200, 200, 200, 200, 200, 200, 200, 2000;
 //  convergence_criteria 100, 10, 1, 0.1, 1e-4, 1e-4, 1e-4, 1e-4;
 //  }
-  
+
 //  SS_Label_Section_9 #TOP_OF_MAIN_SECTION
 TOP_OF_MAIN_SECTION
 //  {
@@ -49,11 +49,11 @@ TOP_OF_MAIN_SECTION
   gradient_structure::set_MAX_NVAR_OFFSET(5000);
   gradient_structure::set_NUM_DEPENDENT_VARIABLES(10000);
   gradient_structure::set_MAX_DLINKS(10000000);
-  
+
 //  SS_Label_Info_9.2 #Set clock start time
   time(&start); //this is to see how long it takes to run
 //  }
-  
+
 //  SS_Label_Section_10. #GLOBALS_SECTION
 GLOBALS_SECTION
 //  {
@@ -67,7 +67,7 @@ GLOBALS_SECTION
   time_t start, finish;
   long hour, minute, second;
   double elapsed_time;
-  
+
 //  SS_Label_Info_10.2 #Define some adstring variables
   adstring_array ParmLabel; // extendable array to hold the parameter labels
   adstring_array Parm_info; // extendable array to hold the parameter labels
@@ -86,7 +86,7 @@ GLOBALS_SECTION
   adstring anystring2;
   adstring report_sso_filename;
   adstring MSY_name; // label describing what Do_MSY and MSY_units are being used
-  
+
   adstring_array version_info;
   adstring_array version_info2;
   adstring_array Starter_Comments;
@@ -100,7 +100,7 @@ GLOBALS_SECTION
   adstring_array CRLF; // blank to terminate lines
   adstring_array pick_report_name; //  name of report
   adstring_array pick_report_use; //  X if used; 0 if not
-  
+
 //  SS_Label_Info_10.1 #Open output files using ofstream
   ofstream warning;
   ofstream echoinput;
@@ -131,10 +131,10 @@ GLOBALS_SECTION
   int Ncycle;
   int seas_as_year;
   int special_flag = 0; //  for whenever I need one
-  
+
 //  SS_Label_Info_10.3  #start random number generator with seed based on time
   random_number_generator radm(long(time(&start)));
-  
+
   std::vector<int> Parm_minmax;
   std::vector<dvector> catch_read;
   std::vector<dvector> Svy_data;
@@ -163,7 +163,7 @@ GLOBALS_SECTION
 // SS_Label_Function_xxxx  #get_data_timing()  called by readdata
   void get_data_timing(const dvector& to_process, const ivector& timing_constants, ivector i_result, dvector r_result, const dvector& seasdur, const dvector& subseasdur_delta, const dvector& azero_seas, const dvector& surveytime)
   {
-  
+
   // r_result(1,3) will contain: real_month, data_timing_seas, data_timing_yr,
   // i_result(1,6) will contain y, t, s, f, ALK_time, use_midseas
   int f, s, subseas, y;
@@ -174,7 +174,7 @@ GLOBALS_SECTION
   //  timing_constants(4)=mid_subseas;
   //  timing_constants(5)=styr;
   //  timing_constants(6)-endyr;
-  
+
   y = int(to_process(1));
   month = fabs(to_process(2));
   f = abs(int(to_process(3)));
@@ -216,7 +216,7 @@ GLOBALS_SECTION
         month -= 1000.;
       }
     }
-  
+
     if (seas_as_year == 0)
     {
       if (month >= 13.0)
@@ -254,7 +254,7 @@ GLOBALS_SECTION
       data_timing_seas = 0.5;
     }
   }
-  
+
   // i_result(1,6) will contain y, t, s, f, ALK_time, use_midseas
   // r_result(1,3) will contain: real_month, data_timing_seas*use_midseas, data_timing_yr,
   //    t=styr+(y-styr)*nseas+s-1;
@@ -263,7 +263,7 @@ GLOBALS_SECTION
   i_result(2) = timing_constants(5) + (y - timing_constants(5)) * timing_constants(2) + s - 1; //  t
   i_result(3) = s;
   i_result(4) = f;
-  
+
   if (seas_as_year == 0)
   {
     if (i_result(6) >= 0)
@@ -293,7 +293,7 @@ GLOBALS_SECTION
   }
   return;
   }
-  
+
 // SS_Label_Function_xxxx  #create_timevary()  called by readdata to create timevary parameters
   void create_timevary(dvector& baseparm_list, ivector& timevary_setup,
     ivector& timevary_byyear, int& autogen_timevary, const int& targettype,
@@ -334,7 +334,7 @@ GLOBALS_SECTION
       Nblocks = 0.5 * (block_design_pass.size());
       k = int(baseparm_list(14)); //  block method
       echoinput << "block pattern: " << z << " method " << k << " Nblocks: " << Nblocks << endl;
-  
+
       g = 1; //  index to list of years in block design; will increment by 2 for begin-end of block
       for (a = 1; a <= Nblocks; a++) //  loop blocks for block pattern z
       {
@@ -344,7 +344,7 @@ GLOBALS_SECTION
         y = block_design_pass(g);
         timevary_byyear(y) = 1;
         sprintf(onenum, "%d", y);
-  
+
         echoinput << " block method " << k << endl;
         switch (k)
         {
@@ -591,7 +591,7 @@ GLOBALS_SECTION
       } //  all years need calculation for trends
     }
   }
-  
+
   if (baseparm_list(8) != 0) //  env effect is used
   {
     k = timevary_setup(6);
@@ -702,7 +702,7 @@ GLOBALS_SECTION
       }
     }
   }
-  
+
   if (baseparm_list(9) > 0) //  devs are used
   {
     N_parm_dev++; //  count of dev vectors that are used
@@ -717,7 +717,7 @@ GLOBALS_SECTION
       y = styr;
     }
     timevary_setup(10) = y;
-  
+
     y = baseparm_list(11);
     if (y > YrMax)
     {
@@ -731,7 +731,7 @@ GLOBALS_SECTION
     {
       timevary_byyear(y) = 1;
     }
-  
+
     ParCount++;
     ParmLabel += ParmLabel(j) + "_dev_se" + CRLF(1);
     timevary_parm_cnt++;
@@ -755,7 +755,7 @@ GLOBALS_SECTION
       //       baseparm_list(12)=-5;
     }
     timevary_parm_rd.push_back(dvector(tempvec(1, 7)));
-  
+
     ParCount++;
     ParmLabel += ParmLabel(j) + "_dev_autocorr" + CRLF(1);
     timevary_parm_cnt++;
@@ -776,19 +776,19 @@ GLOBALS_SECTION
   return;
   }
 //  }  //  end GLOBALS_SECTION
-  
+
 //  SS_Label_Section_11. #BETWEEN_PHASES_SECTION
 BETWEEN_PHASES_SECTION
   {
   int j_phase = current_phase(); // this is the phase to come
   cout << current_phase() - 1 << " " << niter << " -log(L): " << obj_fun << "  between " << endl;
-  
+
   //  SS_Label_Info_11.1 #Save last value of objective function
   if (j_phase > 1)
   {
     last_objfun = obj_fun;
   }
-  
+
   //  SS_Label_Info_11.2 #For Fmethod=2 & 4, set parameter values (F_rate) equal to Hrate array fromcalculated using hybrid method in previous phase
   if (N_Fparm > 0 && j_phase > 1)
   {
@@ -806,9 +806,9 @@ BETWEEN_PHASES_SECTION
     }
   }
   //        warning<<"between: Hrate_2010:  "<<Hrate(1,2010)<<" "<<Hrate(2,2010)<<" "<<Hrate(3,2010)<<" "<<Hrate(4,2010)<<" "<<endl;
-  
+
   } //  end BETWEEN_PHASES_SECTION
-  
+
 //  SS_Label_Section_12. #FINAL_SECTION
 FINAL_SECTION
   {
@@ -823,12 +823,12 @@ FINAL_SECTION
   cout << "Finish time: " << ctime(&finish);
   cout << "Elapsed time: ";
   cout << hour << " hours, " << minute << " minutes, " << second << " seconds." << endl;
-  
+
   if (No_Report == 1)
   {
     cout << "MCMC finished; *.ss_new files and most .sso not written after MCMC or MCEVAL" << endl;
   }
-  
+
   else
   {
     cout << " Iterations: " << niter << " -log(L): " << obj_fun << endl;
@@ -840,7 +840,7 @@ FINAL_SECTION
       warning << N_warn << " "
               << "Final gradient: " << objective_function_value::pobjfun->gmax << " is larger than final_conv: " << final_conv << endl;
     }
-  
+
     //  SS_Label_Info_12.2 #Output the covariance matrix to covar.sso
     anystring = sso_pathname + "covar.sso";
     covarout.open(anystring);
@@ -891,7 +891,7 @@ FINAL_SECTION
       if (mceval_phase() == 0)
         cout << " finished COVAR.SSO" << endl;
     }
-  
+
     //  SS_Label_Info_12.3 #Go thru time series calculations again to get extra output quantities
     //  SS_Label_Info_12.3.2 #Set save_for_report=1 then call initial_conditions and time_series to get other output quantities
     if (Do_Dyn_Bzero > 0) //  do dynamic Bzero
@@ -922,7 +922,7 @@ FINAL_SECTION
         }
       }
     } //  end dynamic Bzero
-  
+
     fishery_on_off = 1;
     save_for_report = 1;
     bigsaver = 1;
@@ -966,14 +966,14 @@ FINAL_SECTION
       if (mceval_phase() == 0)
         cout << " finished forecast" << endl;
     }
-  
+
     if (write_bodywt > 0)
     {
       bodywtout << -9999 << " " << 1 << " " << 1 << " " << 1 << " " << 1 << " " << 0 << " " << Wt_Age_mid(1, 1) << " #terminator " << endl;
       bodywtout.close();
     }
     write_bodywt = 0;
-  
+
     //  SS_Label_Info_12.3.4  #call fxn STDquant()
     Process_STDquant();
     if (mceval_phase() == 0)
@@ -981,41 +981,41 @@ FINAL_SECTION
     get_posteriors();
     if (mceval_phase() == 0)
       cout << " finished posteriors" << endl;
-  
+
     //  SS_Label_Info_12.4.2 #Call fxn write_summaryoutput()
     if (Do_CumReport > 0)
       write_summaryoutput();
-  
+
     if (pick_report_use(56) == "Y")
     {
       write_SS_summary();
     }
-  
+
     //  SS_Label_Info_12.4.3 #Call fxn write_rebuilder_output to produce rebuilder.sso
     {
       if (pick_report_use(57) == "Y" && Do_Rebuilder == 1 && mceval_counter <= 1)
       {
         write_rebuilder_output();
       }
-  
+
       if (pick_report_use(58) == "Y")
       {
         write_SIStable(); //note: SIStable is deprecated, but file with warning written for now
       }
-  
+
       //  SS_Label_Info_12.4 #Do Outputs
       //  SS_Label_Info_12.4.1 #Call fxn write_bigoutput()
       write_bigoutput();
       cout << " finished report.sso" << endl;
     }
-  
+
     //  SS_Label_Info_12.4.4 #Call fxn write_nudata() to create bootstrap data in data.ss_new
     if (N_nudata > 0)
     {
       cout << "data.ss_new with N replicates: " << N_nudata;
       write_nudata();
       cout << " finished" << endl;
-  
+
       //  SS_Label_Info_12.4.5 #Call fxn write_nucontrol() to produce control.ss_new
       write_nucontrol();
     }
@@ -1027,7 +1027,7 @@ FINAL_SECTION
                 << "NOTE:  No *.ss_new and fewer *.sso files written after mceval" << endl;
       }
     }
-  
+
     //  SS_Label_Info_12.4.6 #Call fxn write_Bzero_output()  appended to report.sso
     if (pick_report_use(59) == "Y")
     {
@@ -1035,7 +1035,7 @@ FINAL_SECTION
       write_Bzero_output();
       cout << " finished " << endl;
     }
-  
+
     if (pick_report_use(54) == "Y" && Do_Benchmark > 0)
     {
       cout << "setup_benchmark: " << endl;
@@ -1044,27 +1044,27 @@ FINAL_SECTION
       SPR_profile();
       cout << " finished " << endl;
     }
-  
+
     if (pick_report_use(55) == "Y" && Do_Benchmark > 0)
     {
       cout << "Global_MSY: ";
       Global_MSY();
       cout << " finished " << endl;
     }
-  
+
     if (parm_adjust_method == 3)
     {
       N_warn++;
       warning << N_warn << "  Time-vary parms not bound checked" << endl;
     }
-  
+
     //  SS_Label_Info_12.4.7 #Finish up with final writes to warning.sso
     if (N_changed_lambdas > 0)
     {
       N_warn++;
       warning << N_warn << " Reminder: Number of lamdas !=0.0 and !=1.0:  " << N_changed_lambdas << endl;
     }
-  
+
     if (Nparm_on_bound > 0)
     {
       cout << Nparm_on_bound << " parameters are on or within 1% of min-max bound" << endl;
@@ -1083,7 +1083,7 @@ FINAL_SECTION
     }
   }
   } //  end final section
-  
+
 //  SS_Label_Section_13. #REPORT_SECTION  produces SS3.rep,which is less extensive than report.sso produced in final section
 REPORT_SECTION
   {
@@ -1128,14 +1128,14 @@ REPORT_SECTION
       report << " TG-fleetcomp " << TG_like1 << endl
              << " TG-negbin " << TG_like2 << endl;
     report << " -log(L): " << obj_fun << "  Spbio: " << value(SSB_yr(styr)) << " " << value(SSB_yr(endyr)) << endl;
-  
+
     report << endl
            << "Year Spbio Recruitment" << endl;
     report << "Virg " << SSB_yr(styr - 2) << " " << exp_rec(styr - 2, 4) << endl;
     report << "Init " << SSB_yr(styr - 1) << " " << exp_rec(styr - 1, 4) << endl;
     for (y = styr; y <= endyr; y++)
       report << y << " " << SSB_yr(y) << " " << exp_rec(y, 4) << endl;
-  
+
     report << endl
            << "EXPLOITATION F_Method: ";
     if (F_Method == 1)
@@ -1182,7 +1182,7 @@ REPORT_SECTION
         t = styr + (y - styr) * nseas + s - 1;
         report << y << " " << s << " " << column(Hrate, t) << endl;
       }
-  
+
     report << endl
            << "LEN_SELEX" << endl;
     report << "Fleet Sex " << len_bins_m << endl;
@@ -1194,7 +1194,7 @@ REPORT_SECTION
           report << f << "-" << fleetname(f) << gg << " " << sel_l(endyr, f, gg) << endl;
       }
     }
-  
+
     report << endl
            << "AGE_SELEX" << endl;
     report << "Fleet Sex " << age_vector << endl;
@@ -1207,7 +1207,7 @@ REPORT_SECTION
       }
     }
   }
-  
+
   //  SS_Label_Info_13.2 #Call fxn write_bigoutput() as last_phase finishes and before doing Hessian
   if (last_phase() && SDmode == 1)
   {
