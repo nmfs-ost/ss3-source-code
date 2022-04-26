@@ -148,8 +148,11 @@ PROCEDURE_SECTION
       get_initial_conditions();
       get_time_series(); //  in write_big_report
       evaluate_the_objective_function();
-      setup_Benchmark();
-      Get_Benchmarks(show_MSY);
+      if (Do_Benchmark > 0)
+      {
+        setup_Benchmark();
+        Get_Benchmarks(show_MSY);
+      }
 
       //  SS_Label_Info_7.6.2 #Call fxn Get_Forecast()
       if (Do_Forecast > 0)

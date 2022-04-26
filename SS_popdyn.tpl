@@ -343,18 +343,15 @@ FUNCTION void get_initial_conditions()
     Do_Equil_Calc(equ_Recr); //  call function to do equilibrium calculation
     SSB_virgin = SSB_equil;
     SPR_virgin = SSB_equil / Recr_virgin; //  spawners per recruit
-
-    //  unnecessary because these are now done in benchmark itself
-    //    if(Do_Benchmark==0)
-    //    {
-    //      Mgmt_quant(1)=SSB_virgin;
-    //      SSB_unf=SSB_virgin;
-    //      Recr_unf=Recr_virgin;
-    //      Mgmt_quant(2)=totbio;  //  from equil calcs
-    //      Mgmt_quant(3)=smrybio;  //  from equil calcs
-    //      Mgmt_quant(4)=Recr_virgin;
-    //    }
-
+    if(Do_Benchmark==0)
+    {
+      Mgmt_quant(1)=SSB_virgin;
+      SSB_unf=SSB_virgin;
+      Recr_unf=Recr_virgin;
+      Mgmt_quant(2)=totbio;  //  from equil calcs
+      Mgmt_quant(3)=smrybio;  //  from equil calcs
+      Mgmt_quant(4)=Recr_virgin;
+    }
     Smry_Table(styr - 2, 1) = totbio; //  from equil calcs
     Smry_Table(styr - 2, 2) = smrybio; //  from equil calcs
     Smry_Table(styr - 2, 3) = smrynum; //  from equil calcs
