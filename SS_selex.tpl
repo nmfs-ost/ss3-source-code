@@ -1,7 +1,7 @@
 // SS_Label_file  #11. **SS_selex.tpl**
 // SS_Label_file  # * <u>get_selectivity()</u>  // does length and age selectivity and retention for all fleets
 // SS_Label_file  # * <u>make_fish_selex()</u>  // for all fleets in a particular season, does the dot product of length distribution with length selectivity and retention vectors to calculate equivalent mean quantities at age for each platoon
-  
+
 FUNCTION void get_selectivity()
   {
   //*******************************************************************
@@ -28,15 +28,15 @@ FUNCTION void get_selectivity()
   dvariable finalSelPoint;
   dvariable asc;
   dvariable dsc;
-  
+
   dvar_vector sp(1, 199); // temporary vector for selex parms
-  
+
   Ip = 0;
   //  SS_Label_Info_22.2 #Loop all fisheries and surveys twice; first for size selectivity, then for age selectivity
   for (f = 1; f <= 2 * Nfleet; f++)
   {
     //  	echoinput<<" selex fleet: "<<f<<" type "<<seltype(f);
-  
+
     fs = f - Nfleet; //index for saving age selex in the fleet arrays
     //  SS_Label_Info_22.2.1 #recalculate selectivity for any fleets or surveys with time-vary flag set for this year
     if (timevary_sel(y, f) == 1 || save_for_report > 0)
@@ -75,7 +75,7 @@ FUNCTION void get_selectivity()
             save_sp_len(y, f, j) = sp(j);
         }
       }
-  
+
       if (f <= Nfleet) // do size selectivity, retention, discard mort
       {
         for (gg = 1; gg <= gender; gg++)
@@ -106,7 +106,7 @@ FUNCTION void get_selectivity()
                 }
                 break;
               }
-  
+
               //  SS_Label_Info_22.3.2 #case 2 size selectivity using double_normal_plateau and lots of bells and whistles; old version of 24 available for back compatibility
               case 2:
               //  SS_Label_Info_22.3.24 #case 24 size selectivity using double_normal_plateau and lots of bells and whistles
@@ -129,7 +129,7 @@ FUNCTION void get_selectivity()
                     final = sp(6) + sp(Maleselparm(f) + 3);
                   Apical_Selex = sp(Maleselparm(f) + 4);
                 }
-  
+
                 if (sp(5) < -1000.)
                 {
                   j1 = -1001 - int(value(sp(5))); // selex is nil thru bin j1, so set sp(5) equal to first bin with selex (e.g. -1002 to start selex at bin 2)
@@ -204,14 +204,14 @@ FUNCTION void get_selectivity()
                     sel(j) = square(len_bins_m(j) / len_bins_m(startbin)) * sel(startbin);
                   }
                 }
-  
+
                 if (j2 < nlength)
                 {
                   sel(j2 + 1, nlength) = sel(j2);
                 }
                 break;
               }
-  
+
               //  SS_Label_Info_22.3.3 #case 3 discontinued
               case 3:
               {
@@ -222,7 +222,7 @@ FUNCTION void get_selectivity()
                 exit(1);
                 break;
               }
-  
+
               //  SS_Label_Info_22.3.4 #case 4 discontinued; use pattern 30 to get spawning biomass
               case 4:
               {
@@ -233,7 +233,7 @@ FUNCTION void get_selectivity()
                 exit(1);
                 break;
               }
-  
+
               //  SS_Label_Info_22.3.5 #case 5 mirror another fleets size selectivity for specified bin range
               //  use only the specified bin range using mirror_mask created upon read
               // must refer to a lower numbered type (f)
@@ -242,14 +242,14 @@ FUNCTION void get_selectivity()
                 sel = elem_prod(mirror_mask(f), sel_l(y, seltype(f, 4), 1));
                 break;
               }
-  
+
               //  SS_Label_Info_22.3.15 #case 15 mirror another fleets size selectivity for all size bins
               case 15:
               {
                 sel = sel_l(y, seltype(f, 4), 1);
                 break;
               }
-  
+
               //  SS_Label_Info_22.3.6 #case 6 non-parametric size selex pattern
               // #43 non-parametric size selex scaled by average of values at low bin through high bin
               case 43:
@@ -262,7 +262,7 @@ FUNCTION void get_selectivity()
                 SelPoint = value(sp(1 + scaling_offset)); //  first size that will get a parameter.  Value will get incremented by step interval (temp1)
                 z = 3 + scaling_offset; // parameter counter
                 temp1 = (finalSelPoint - SelPoint) / (seltype(f, 4) - 1.0); // step interval
-  
+
                 for (j = 1; j <= nlength; j++)
                 {
                   if (len_bins_m(j) < SelPoint)
@@ -342,7 +342,7 @@ FUNCTION void get_selectivity()
                 sel = mfexp(tempvec_l - temp);
                 break;
               }
-  
+
               //  SS_Label_Info_22.3.7 #case 7 discontinued; use pattern 8 for double logistic
               case 7:
               {
@@ -353,13 +353,13 @@ FUNCTION void get_selectivity()
                 exit(1);
                 break;
               }
-  
+
               //  SS_Label_Info_22.3.8 #case 8 double logistic  with eight parameters
               case 8:
-  
+
                 // 1=peak, 2=init,  3=infl,  4=slope, 5=final, 6=infl2, 7=slope2 8=binwidth;    Mirror=1===const_above_Linf
                 {
-  
+
   #ifdef DO_ONCE
                   if (do_once == 1)
                   {
@@ -368,12 +368,12 @@ FUNCTION void get_selectivity()
                             << "Selectivity pattern 24 is recommended over pattern 8 because it has fewer parameters." << endl;
                   }
   #endif
-  
+
                   t1 = minL + (1. / (1. + mfexp(-sp(3)))) * (sp(1) - minL); // INFL
                   t1min = 1. / (1. + mfexp(-mfexp(sp(4)) * (minL - t1))) * 0.9999; // asc value at minsize
                   t1max = 1. / (1. + mfexp(-mfexp(sp(4)) * (sp(1) - t1))) * 1.0001; // asc value at peak
                   t1power = log(0.5) / log((0.5 - t1min) / (t1max - t1min)); // so the parameter will actual correspond to 50% point
-  
+
                   if (seltype(f, 4) == 0)
                   {
                     sel_maxL = maxL;
@@ -398,7 +398,7 @@ FUNCTION void get_selectivity()
                   } // end size bin loop
                   break;
                 } // end New double logistic
-  
+
               //  SS_Label_Info_22.3.9 #case 9 old double logistic with 4 parameters
               case 9:
               {
@@ -411,7 +411,7 @@ FUNCTION void get_selectivity()
                 sel /= max(sel);
                 break;
               }
-  
+
               //  SS_Label_Info_22.3.11 #case 11 selex=1.0 within a range of lengths
               case 11:
               {
@@ -428,7 +428,7 @@ FUNCTION void get_selectivity()
                 k = seltype(f, 4); //  N points
                 lastsel = 0.0;
                 lastSelPoint = 0.0;
-  
+
   #ifdef DO_ONCE
                 if (do_once == 1)
                 {
@@ -448,7 +448,7 @@ FUNCTION void get_selectivity()
                   }
                 }
   #endif
-  
+
                 while (j <= nlength)
                 {
                   if (len_bins(j) <= sp(z))
@@ -470,7 +470,7 @@ FUNCTION void get_selectivity()
                 }
                 break;
               }
-  
+
               //  SS_Label_Info_22.3.22 #case 22 size selectivity using double_normal_plateau (similar to CASAL)
               case 22:
               {
@@ -495,7 +495,7 @@ FUNCTION void get_selectivity()
                 }
                 break;
               }
-  
+
               //  SS_Label_Info_22.3.23 #case 23 size selectivity double_normal_plateau where final value can be greater than 1.0
               /*  cannot be used with Pope's because can cause selex to be >1.0 */
               case 23:
@@ -515,7 +515,7 @@ FUNCTION void get_selectivity()
                   if (sp(6) > -999.)
                     final = sp(6) + sp(Maleselparm(f) + 3);
                 }
-  
+
                 if (sp(5) < -1000.)
                 {
                   j1 = -1001 - int(value(sp(5))); // selex is nil thru bin j1, so set sp(5) equal to first bin with selex (e.g. -1002 to start selex at bin 2)
@@ -575,14 +575,14 @@ FUNCTION void get_selectivity()
                     sel(j) = square(len_bins_m(j) / len_bins_m(startbin)) * sel(startbin);
                   }
                 }
-  
+
                 if (j2 < nlength)
                 {
                   sel(j2 + 1, nlength) = sel(j2);
                 }
                 break;
               }
-  
+
               //  SS_Label_Info_22.3.25 #case 25 size selectivity using exponential-logistic
               case 25:
               {
@@ -593,7 +593,7 @@ FUNCTION void get_selectivity()
                 }
                 break;
               }
-  
+
               //  SS_Label_Info_22.3.27 #case 27 size selectivity using cubic spline
               // #42 size selectivity using cubic spline scaled by average of values at low bin through high bin
               /*  first N parameters are the spline knots; second N parameters are ln(selex) at the knot */
@@ -629,7 +629,7 @@ FUNCTION void get_selectivity()
                   z--;
                 }
                 j2 = z + 1; //  first size bin beyond last knot
-  
+
                 vcubic_spline_function splinefn = vcubic_spline_function(splineX(1, k), splineY(1, k), sp(2 + scaling_offset), sp(3 + scaling_offset));
                 tempvec_l = splinefn(len_bins_m); // interpolate selectivity at the mid-point of each population size bin
                 if (scaling_offset == 0)
@@ -701,7 +701,7 @@ FUNCTION void get_selectivity()
             } // end select the selectivity pattern
             sel_l(y, f, gg) = sel; // Store size-selex in year*type array
           } // end direct calc of selex from parameters
-  
+
           //  SS_Label_Info_22.4 #Do male relative to female selex
           if (gg == 2) // males exist and am now in the male loop
           {
@@ -782,13 +782,13 @@ FUNCTION void get_selectivity()
           } // end doing males
           if (docheckup == 1)
             echoinput << gg << "  sel-len" << sel_l(y, f, gg) << endl;
-  
+
         } // end loop of genders
-  
+
         //  apply 2D_AR adjustment to sex-specific length selectivity
         //  TwoD_AR_def: read:  1-fleet, 2-ymin, 3-ymax, 4-amin, 5-amax, 6-sigma_amax, 7-use_rho, 8-age/len, 9-dev_phase; 10-before_yrs, 11=after_yrs,
         //  calc quantities:  12-N_parm_dev, 13-selparm_location
-  
+
         if (TwoD_AR_use(f) > 0)
         {
           j = TwoD_AR_use(f); //  get index for this fleet's effect
@@ -797,7 +797,7 @@ FUNCTION void get_selectivity()
             z = TwoD_AR_def[j](12); // index of dev vector used
             if (docheckup == 1)
               echoinput << "2dar for fleet: " << f << " 2DAR: " << j << " dev: " << z << endl;
-  
+
             if (y == styr && (TwoD_AR_before(j) == 3 || TwoD_AR_after(j) == 3)) //  if needed, calculate average dev for each length over the range of years
             {
               TwoD_AR_ave(j).initialize();
@@ -816,7 +816,7 @@ FUNCTION void get_selectivity()
                 echoinput << "mean 2D AR dev for fleet: " << f << " means: " << TwoD_AR_ave(j) << endl;
   #endif
             }
-  
+
             if (y < TwoD_AR_ymin(j)) //  early years
             {
               if (TwoD_AR_before(j) == 0) //  apply no devs
@@ -852,7 +852,7 @@ FUNCTION void get_selectivity()
                 k = -1;
               }
             }
-  
+
             if (docheckup == 1)
               echoinput << "K value for first dev to use: " << k << endl;
             if (k > -2)
@@ -888,12 +888,12 @@ FUNCTION void get_selectivity()
                         << sel_l(y, f) << endl;
           }
         }
-  
+
         //  SS_Label_Info_22.5.1 #Calculate discmort
         // discmort is the size-specific fraction of discarded fish that die
         //  discmort2 is size-specific fraction that die from being retained or are dead discard
         //   = elem_prod(sel,(retain + (1-retain)*discmort)) */
-  
+
         if (seltype(f, 2) == 0) //  no discard, all retained
         {
           retain(y, f) = 1.0;
@@ -966,7 +966,7 @@ FUNCTION void get_selectivity()
               }
               echoinput << "retention " << retain(y, f) << endl;
             }
-  
+
             if (seltype(f, 2) == 1) // all discards are dead
             {
               discmort(y, f) = 1.0;
@@ -983,7 +983,7 @@ FUNCTION void get_selectivity()
               discmort2(y, f, 1) = elem_prod(sel_l(y, f, 1), retain(y, f)(1, nlength) + elem_prod((1. - retain(y, f)(1, nlength)), discmort(y, f)(1, nlength)));
             }
           }
-  
+
           sel_l_r(y, f, 1) = elem_prod(sel_l(y, f, 1), retain(y, f)(1, nlength));
           if (gender == 2)
           {
@@ -997,9 +997,9 @@ FUNCTION void get_selectivity()
           echoinput << "sel-len-r " << sel_l_r(y, f) << endl;
         if (docheckup == 1 && y == styr)
           echoinput << " dead " << discmort2(y, f) << endl;
-  
+
       } //  end loop of fleets for size selex and retention and discard mortality
-  
+
       //  SS_Label_Info_22.6 #Do age-selectivity
       else
       {
@@ -1010,21 +1010,21 @@ FUNCTION void get_selectivity()
             //  SS_Label_Logic_22.7 #Switch depending on the age-selectivity pattern selected
             switch (seltype(f, 1))
             {
-  
+
               //  SS_Label_Info_22.7.0 #Constant age-specific selex for ages 0 to nages
               case 0:
               {
                 sel_a(y, fs, 1)(0, nages) = 1.00;
                 break;
               }
-  
+
               //  SS_Label_Info_22.7.10 #Constant age-specific selex for ages 1 to nages
               case 10:
               {
                 sel_a(y, fs, 1)(1, nages) = 1.00;
                 break;
               }
-  
+
               //  SS_Label_Info_22.7.11 #Constant age-specific selex for specified age range
               case 11: // selex=1.0 within a range of ages
               {
@@ -1035,7 +1035,7 @@ FUNCTION void get_selectivity()
                 sel_a(y, fs, 1) = mirror_mask_a(fs);
                 break;
               }
-  
+
               //  SS_Label_Info_22.7.12 #age selectivity - logistic
               case 12:
               {
@@ -1043,7 +1043,7 @@ FUNCTION void get_selectivity()
                 sel_a(y, fs, 1)(Min_selage(fs), nages) = 1. / (1. + mfexp(neglog19 * (r_ages(Min_selage(fs), nages) - sp(1)) / sp(2)));
                 break;
               }
-  
+
               //  SS_Label_Info_22.7.13 #age selectivity - double logistic
               case 13:
                 // 1=peak, 2=init,  3=infl,  4=slope, 5=final, 6=infl2, 7=slope2, 8=plateau
@@ -1061,7 +1061,7 @@ FUNCTION void get_selectivity()
                   t1min = 1. / (1. + mfexp(-sp(4) * (0. - t1))) * 0.9999999; // asc value at minage
                   t1max = 1. / (1. + mfexp(-sp(4) * (sp(1) - t1))) * 1.00001; // asc value at peak
                   t1power = log(0.5) / log((0.5 - t1min) / (t1max - t1min));
-  
+
                   t2 = (sp(1) + sp(8)) + (1. / (1. + mfexp(-sp(6)))) * (r_ages(nages) - (sp(1) + sp(8))); // INFL
                   t2min = 1. / (1. + mfexp(-sp(7) * (sp(1) + sp(8) - t2))) * 0.9999; // asc value at peak+
                   t2max = 1. / (1. + mfexp(-sp(7) * (r_ages(nages) - t2))) * 1.00001; // asc value at maxage
@@ -1069,7 +1069,7 @@ FUNCTION void get_selectivity()
                   final = 1. / (1. + mfexp(-sp(5)));
                   k1 = int(value(sp(1)));
                   k2 = int(value(sp(1) + sp(8)));
-  
+
                   for (a = Min_selage(fs); a <= nages; a++) //calculate the value over ages
                   {
                     if (a < k1) // ascending limb
@@ -1087,7 +1087,7 @@ FUNCTION void get_selectivity()
                   } // end age loop
                   break;
                 } // end double logistic
-  
+
               //  SS_Label_Info_22.7.14 #age selectivity - separate parm for each age
               case 14:
               {
@@ -1106,7 +1106,7 @@ FUNCTION void get_selectivity()
                 }
                 break;
               }
-  
+
               //  SS_Label_Info_22.7.15 #age selectivity - mirror selex for lower numbered fleet
               // must refer to a lower numbered type (f)
               case 15:
@@ -1114,7 +1114,7 @@ FUNCTION void get_selectivity()
                 sel_a(y, fs) = sel_a(y, seltype(f, 4));
                 break;
               }
-  
+
               //  SS_Label_Info_22.7.16 #age selectivity: Coleraine - Gaussian
               case 16:
               {
@@ -1133,7 +1133,7 @@ FUNCTION void get_selectivity()
                 }
                 break;
               }
-  
+
               //  SS_Label_Info_22.7.17 #age selectivity: each age has parameter as random walk
               // #41 each age has parameter as random walk scaled by average of values at low age through high age
               //    transformation as selex=exp(parm); some special codes */
@@ -1153,7 +1153,7 @@ FUNCTION void get_selectivity()
                 {
                   lastage = abs(seltype(f, 4));
                 }
-  
+
                 for (a = 1; a <= lastage; a++)
                 {
                   //  with use of -999, lastsel stays constant until changed, so could create a linear change in ln(selex)
@@ -1218,7 +1218,7 @@ FUNCTION void get_selectivity()
                 }
                 break;
               }
-  
+
               case 44: //  like age selex 17 but with separate parameters for males and with revised controls
               {
                 //  sp(1) is first age with non-zero selectivity; can be age 0
@@ -1298,7 +1298,7 @@ FUNCTION void get_selectivity()
                 scaling_offset = 0;
                 break;
               }
-  
+
               case 45: //  like age selex 14 but with separate parameters for males and with revised controls
               {
                 //  parameter value is logit(selectivity)
@@ -1379,12 +1379,12 @@ FUNCTION void get_selectivity()
                 scaling_offset = 0;
                 break;
               }
-  
+
               //  SS_Label_Info_22.7.18 #age selectivity: double logistic with smooth transition
               case 18:
                 // 1=peak, 2=init,  3=infl,  4=slope, 5=final, 6=infl2, 7=slope2
                 {
-  
+
   #ifdef DO_ONCE
                   if (do_once == 1)
                   {
@@ -1393,13 +1393,13 @@ FUNCTION void get_selectivity()
                             << "Selectivity pattern 20 is recommended over pattern 18 because it has fewer parameters." << endl;
                   }
   #endif
-  
+
                   sel_a(y, fs, 1).initialize();
                   t1 = 0. + (1. / (1. + mfexp(-sp(3)))) * (sp(1) - 0.); // INFL
                   t1min = 1. / (1. + mfexp(-sp(4) * (0. - t1))) * 0.9999; // asc value at minsize
                   t1max = 1. / (1. + mfexp(-sp(4) * (sp(1) - t1))) * 1.00001; // asc value at peak
                   t1power = log(0.5) / log((0.5 - t1min) / (t1max - t1min));
-  
+
                   t2 = (sp(1) + sp(8)) + (1. / (1. + mfexp(-sp(6)))) * (r_ages(nages) - (sp(1) + sp(8))); // INFL
                   t2min = 1. / (1. + mfexp(-sp(7) * (sp(1) + sp(8) - t2))) * 0.9999; // asc value at peak+
                   t2max = 1. / (1. + mfexp(-sp(7) * (r_ages(nages) - t2))) * 1.00001; // asc value at maxage
@@ -1420,7 +1420,7 @@ FUNCTION void get_selectivity()
                   } // end age loop
                   break;
                 } // end double logistic with smooth transition
-  
+
               //  SS_Label_Info_22.7.19 #age selectivity: old double logistic
               case 19:
               {
@@ -1432,7 +1432,7 @@ FUNCTION void get_selectivity()
                   sel_a(y, fs, 1)(0, k1 - 1) = 1.0e-6;
                 break;
               }
-  
+
               //  SS_Label_Info_22.7.20 #age selectivity: double normal with plateau
               case 20: // *******double_normal_plateau
               {
@@ -1476,7 +1476,7 @@ FUNCTION void get_selectivity()
                 {
                   j2 = nages;
                 }
-  
+
                 peak2 = peak + 1. + (0.99 * r_ages(j2) - peak - 1.) / (1. + mfexp(-sp(2))); // note, this uses age=j2 as constraint on range of "peak2"
                 //              peak2=peak+.1+(0.99*r_ages(j2)-peak-.1)/(1.+mfexp(-sp(2)));        // note, this uses age=j2 as constraint on range of "peak2"
                 if (sp(6) > -999)
@@ -1484,7 +1484,7 @@ FUNCTION void get_selectivity()
                   point2 = 1. / (1. + mfexp(-final));
                   t2min = mfexp(-(square(r_ages(nages) - peak2) / downselex)); // fxn at last bin
                 }
-  
+
                 for (a = j + 1; a <= j2; a++)
                 {
                   t1 = r_ages(a) - peak;
@@ -1515,7 +1515,7 @@ FUNCTION void get_selectivity()
                 }
                 break;
               }
-  
+
               //  SS_Label_Info_22.7.26 #age selectivity: exponential logistic
               case 26:
               {
@@ -1528,7 +1528,7 @@ FUNCTION void get_selectivity()
                 }
                 break;
               }
-  
+
               //  SS_Label_Info_22.7.27 #age selectivity: cubic spline
               // #42 cubic spline scaled by average of values at low age through high age
               case 42:
@@ -1555,7 +1555,7 @@ FUNCTION void get_selectivity()
                   z++;
                 }
                 j1 = z - 1; //  last age before first knot
-  
+
                 // calculate first age beyond last knot
                 z = nages;
                 while (r_ages(z) > splineX(k))
@@ -1563,7 +1563,7 @@ FUNCTION void get_selectivity()
                   z--;
                 }
                 j2 = z + 1; //  first age beyond last knot
-  
+
                 vcubic_spline_function splinefn = vcubic_spline_function(splineX(1, k), splineY(1, k), sp(2 + scaling_offset), sp(3 + scaling_offset));
                 tempvec_a = splinefn(r_ages); // interpolate selectivity at each age
                 if (scaling_offset == 0)
@@ -1614,7 +1614,7 @@ FUNCTION void get_selectivity()
                 }
                 break;
               } // end case 27 cubic spline
-  
+
               default: //  seltype not found.  But really need this check earlier when the N selex parameters are being processed.
               {
                 N_warn++;
@@ -1624,10 +1624,10 @@ FUNCTION void get_selectivity()
                 exit(1);
                 break;
               }
-  
+
             } // end last age selex pattern
           } // end direct calc of selex from parameters
-  
+
           //  SS_Label_Info_22.8 #age selectivity: one sex selex as offset from other sex
           if (gg == 2) // males exist
           {
@@ -1678,7 +1678,7 @@ FUNCTION void get_selectivity()
                   tempvec_a(2) = max(sel_a(y, fs, 2));
                   temp1 = max(tempvec_a(1, 2));
                   sel_a(y, fs) /= temp1;
-  
+
                   break;
                 }
               }
@@ -1691,11 +1691,11 @@ FUNCTION void get_selectivity()
               echoinput << " sel-age " << sel_a(y, fs) << endl;
           }
         } //  end gender loop
-  
+
         //  apply 2D_AR adjustment to sex-specific age selectivity
         //  TwoD_AR_def: read:  1-fleet, 2-ymin, 3-ymax, 4-amin, 5-amax, 6-sigma_amax, 7-use_rho, 8-age/len, 9-dev_phase; 10-before_yrs, 11=after_yrs,
         //  calc quantities:  12-N_parm_dev, 13-selparm_location
-  
+
         if (TwoD_AR_use(f) > 0)
         {
           j = TwoD_AR_use(f); //  get index for this fleet's effect
@@ -1704,7 +1704,7 @@ FUNCTION void get_selectivity()
             z = TwoD_AR_def[j](12); // index of dev vector used
             if (docheckup == 1)
               echoinput << "age-based 2DAR for fleet: " << f << " 2DAR: " << j << " using dev_vector: " << z << endl;
-  
+
             if (y == styr && (TwoD_AR_before(j) == 3 || TwoD_AR_after(j) == 3)) //  if needed, calculate average dev for each age over the range of years
             {
               TwoD_AR_ave(j).initialize();
@@ -1723,7 +1723,7 @@ FUNCTION void get_selectivity()
                 echoinput << "mean 2D AR dev for fleet: " << f << " means: " << TwoD_AR_ave(j) << endl;
   #endif
             }
-  
+
             if (y < TwoD_AR_ymin(j)) //  early years
             {
               if (TwoD_AR_before(j) == 0) //  apply no devs
@@ -1759,7 +1759,7 @@ FUNCTION void get_selectivity()
                 k = -1;
               }
             }
-  
+
             if (docheckup == 1)
               echoinput << "K value for first dev to use: " << k << endl;
             if (k > -2)
@@ -1795,7 +1795,7 @@ FUNCTION void get_selectivity()
                         << sel_a(y, fs) << endl;
           }
         }
-  
+
         { //  calculation of age retention and discard mortality here
           //  SS_Label_Info_22.5.1 #Calculate age-specific retention and discmort
           // discmort_a is the fraction of discarded fish that die
@@ -1848,10 +1848,10 @@ FUNCTION void get_selectivity()
               {
                 temp1 = 1.0 / (1.0 + mfexp(-sp(k + 2)));
               }
-  
+
               //          temp=1.-sp(k+2);
               //          temp1=1.-posfun(temp,0.0,CrashPen);
-  
+
               retain_a(y, fs, 1) = temp1 / (1. + mfexp(-(r_ages - (sp(k))) / sp(k + 1)));
               if (seltype(f, 2) == 4)
               {
@@ -1878,7 +1878,7 @@ FUNCTION void get_selectivity()
                           << "ages " << r_ages << endl;
                 echoinput << "retention " << retain_a(y, fs) << endl;
               }
-  
+
               if (seltype(f, 2) == 1) // all discards are dead
               {
                 discmort_a(y, fs) = 1.0;
@@ -1902,7 +1902,7 @@ FUNCTION void get_selectivity()
                   discmort2_a(y, fs, 2) = elem_prod(sel_a(y, fs, 2), retain_a(y, fs, 2) + elem_prod((1. - retain_a(y, fs, 2)), discmort_a(y, fs, 2)));
               }
             }
-  
+
             sel_a_r(y, fs, 1) = elem_prod(sel_a(y, fs, 1), retain_a(y, fs, 1));
             if (gender == 2)
             {
@@ -1917,7 +1917,7 @@ FUNCTION void get_selectivity()
         }
       } // end calc of age selex
     } //  end recalc of selex
-  
+
     else
     //  SS_Label_Info_22.9 #Carryover selex from last year because not time-varying
     {
@@ -1935,12 +1935,12 @@ FUNCTION void get_selectivity()
         retain_a(y, fs) = retain_a(y - 1, fs);
       }
     }
-  
+
     Ip += N_selparmvec(f);
-  
+
   } //  end fleet loop for selectivity
   } //  end selectivity FUNCTION
-  
+
 FUNCTION void Make_FishSelex()
   {
   //  Similar to Make_Fecundity, this function does the dot product of length distribution with length selectivity and retention vectors
@@ -1954,7 +1954,7 @@ FUNCTION void Make_FishSelex()
   //  4darray sel_ret_num(1,nseas,1,gmorph,1,Nfleet,0,nages);  // selected * retained numbers
   //  4darray sel_dead_num(1,nseas,1,gmorph,1,Nfleet,0,nages);  // sel * (retain + (1-retain)*discmort)
   //  4darray sel_dead_bio(1,nseas,1,gmorph,1,Nfleet,0,nages);  // sel * (retain + (1-retain)*discmort) * wt
-  
+
   ALK_idx = (s - 1) * N_subseas + mid_subseas; //for midseason
   int ALK_finder = (ALK_idx - 1) * gmorph + g;
   dvar_matrix ALK_w = ALK(ALK_idx, g); //  shallow copy
@@ -2028,7 +2028,7 @@ FUNCTION void Make_FishSelex()
           }
         }
       }
-  
+
       else //  size_selectivity and possible size retention
       {
         tempvec_l = elem_prod(sel_l(yf, f, gg), wt_len(s, GP(g))); //  combine size selex and wt_at_len to get selected contribution to weight-at-age
@@ -2053,7 +2053,7 @@ FUNCTION void Make_FishSelex()
             sel_ret_bio(s, f, g) = sel_bio(s, f, g);
             sel_ret_num(s, f, g) = sel_num(s, f, g);
           }
-  
+
           if (seltype(f, 2) >= 2) //  calc discard mortality
           {
             sel_dead_num(s, f, g, a) = sel_a(yf, f, gg, a) * (ALK_w(a)(llo, lhi) * discmort2(yf, f, gg)(llo, lhi)); //  selected dead by numbers
@@ -2064,7 +2064,7 @@ FUNCTION void Make_FishSelex()
             sel_dead_bio(s, f, g) = sel_bio(s, f, g);
             sel_dead_num(s, f, g) = sel_num(s, f, g);
           }
-  
+
         } //  end age loop
       }
       if (write_bodywt > 0 && ishadow(GP2(g)) == 0)
@@ -2074,7 +2074,7 @@ FUNCTION void Make_FishSelex()
       }
     } // end need to do it
     save_sel_num(tz, f, g) = sel_num(s, f, g); //  save sel_num in save_fecundity array for output
-  
+
   } // end fleet loop for mortality, retention
   } // end Make_FishSelex
 

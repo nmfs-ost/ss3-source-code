@@ -4,16 +4,16 @@
 // SS_Label_file  # * <u>get_time_series()</u>  //  loops the years, calling biology, selectivity and spawn-recr functions as needed
 // SS_Label_file  # * <u>Do_Equil_Calc()</u>  // does per-recruit calculations and returns SSB/R and Y/R
 // SS_Label_file  #
-  
+
 FUNCTION void setup_recdevs()
   {
   //  SS_Label_Info_7.1 #Set up recruitment bias_adjustment vector
   sigmaR = SR_parm(N_SRparm(SR_fxn) + 1);
   two_sigmaRsq = 2.0 * sigmaR * sigmaR;
   half_sigmaRsq = 0.5 * sigmaR * sigmaR;
-  
+
   biasadj.initialize();
-  
+
   if (SR_fxn == 4 || do_recdev == 0)
   {
     // keep all at 0.0 if not using SR fxn
@@ -76,7 +76,7 @@ FUNCTION void setup_recdevs()
   if (Do_Forecast > 0 && do_recdev > 0)
     recdev(recdev_end + 1, YrMax) = Fcast_recruitments(recdev_end + 1, YrMax); // only needed here for reporting
   } //  end setup for recdevs
-  
+
 FUNCTION void get_initial_conditions()
   {
   //*********************************************************************
@@ -86,10 +86,10 @@ FUNCTION void get_initial_conditions()
   annual_catch.initialize();
   annual_F.initialize();
   Recr.initialize();
-  
+
   if (SzFreq_Nmeth > 0)
     SzFreq_exp.initialize();
-  
+
   //  SS_Label_Info_23.1 #call biology and selectivity functions for the initial year
   //  SS_Label_Info_23.1.1 #These rate are calculated once in PRELIMINARY_CALCS_SECTION, so only recalculate if active according to MG_active
   y = styr;
@@ -99,7 +99,7 @@ FUNCTION void get_initial_conditions()
   natM_unf.initialize();
   surv1_unf.initialize();
   surv2_unf.initialize();
-  
+
   //  Create time varying parameters
   //  following call is to routine that does this for all timevary parameters
   //  that are then copied over to replace the base parameter for MG, SRR, Q, Selex, or Tag as needed
@@ -132,7 +132,7 @@ FUNCTION void get_initial_conditions()
         Make_AgeLength_Key(s, subseas);
       }
     }
-  
+
     //  SS_Label_Info_16.2.4.3  #propagate Ave_Size from early years forward until first year that has time-vary growth
     k = styr + 1;
     do
@@ -155,7 +155,7 @@ FUNCTION void get_initial_conditions()
   get_mat_fec(); //  does just spawn season and subseason using ALK calculated just above
   if (Hermaphro_Option != 0)
     get_Hermaphro();
-  
+
   if (MG_active(1) > 0)
   {
     get_natmort();
@@ -179,7 +179,7 @@ FUNCTION void get_initial_conditions()
   if (do_once == 1)
     cout << " natmort OK" << endl;
   #endif
-  
+
   if (MG_active(4) > 0)
     get_recr_distribution();
   if (y >= Bmark_Yr(7) && y <= Bmark_Yr(8))
@@ -194,7 +194,7 @@ FUNCTION void get_initial_conditions()
               recr_dist_unf(gp + N_GP, settle, p) += recr_dist(y, gp + N_GP, settle, p);
           }
   }
-  
+
   if (MG_active(5) > 0)
     get_migration();
   #ifdef DO_ONCE
@@ -209,7 +209,7 @@ FUNCTION void get_initial_conditions()
       catch_mult(j) = catch_mult(y);
     }
   }
-  
+
   if (Use_AgeKeyZero > 0)
   {
     if (MG_active(6) > 0)
@@ -228,25 +228,25 @@ FUNCTION void get_initial_conditions()
     }
   #endif
   }
-  
+
   if (save_for_report > 0)
   {
     get_saveGparm();
   }
-  
+
   //  SS_Label_Info_23.2 #Calculate selectivity in the initial year
   get_selectivity();
   #ifdef DO_ONCE
   if (do_once == 1)
     cout << " selex OK, ready to call ALK and fishselex " << endl;
   #endif
-  
+
   //  SS_Label_Info_23.3 #Loop seasons and subseasons
   t = styr - 1;
   for (s = 1; s <= nseas; s++)
   {
     t++;
-  
+
     if (WTage_rd > 0)
     {
       for (g = 1; g <= gmorph; g++)
@@ -274,16 +274,16 @@ FUNCTION void get_initial_conditions()
           Wt_Age_mid(s, g) = ALK(ALK_idx, g) * wt_len(s, GP(g)); // use for fisheries with no size selectivity
         }
     }
-  
+
     Wt_Age_t(t, 0) = Wt_Age_beg(s);
-  
+
     for (g = 1; g <= gmorph; g++)
       if (use_morph(g) > 0)
       {
         //  SS_Label_Info_23.3.3 #for each platoon, combine size_at_age distribution with length selectivity and weight-at-length to get combined selectivity vectors
         Make_FishSelex();
       }
-  
+
     //  SS_Label_Info_23.3.4 #add predator M2 to M1 to update seasonal M in styr
     if (N_pred > 0)
     {
@@ -294,7 +294,7 @@ FUNCTION void get_initial_conditions()
         pred_M2(f1, t) = mgp_adj(predparm_pointer(f1)); //  base with no seasonal effect
         if (nseas > 1)
           pred_M2(f1, t) *= mgp_adj(predparm_pointer(f1) + s);
-  
+
         for (gp = 1; gp <= N_GP * gender; gp++)
         {
           g = g_Start(gp); //  base platoon
@@ -313,7 +313,7 @@ FUNCTION void get_initial_conditions()
         }
       }
     }
-  
+
     if (y >= Bmark_Yr(1) && y <= Bmark_Yr(2))
     {
       for (gp = 1; gp <= N_GP * gender * N_settle_timings; gp++)
@@ -341,7 +341,7 @@ FUNCTION void get_initial_conditions()
     SR_parm_virg(i) = SR_parm(i);
     SR_parm_work(i) = SR_parm(i);
   }
-  
+
   //  SPAWN-RECR:   get expected recruitment globally or by area
   if (recr_dist_area == 1 || pop == 1) //  do global spawn_recruitment calculations
   {
@@ -354,7 +354,7 @@ FUNCTION void get_initial_conditions()
     Do_Equil_Calc(equ_Recr); //  call function to do equilibrium calculation
     SSB_virgin = SSB_equil;
     SPR_virgin = SSB_equil / Recr_virgin; //  spawners per recruit
-  
+
     //  unnecessary because these are now done in benchmark itself
     //    if(Do_Benchmark==0)
     //    {
@@ -365,7 +365,7 @@ FUNCTION void get_initial_conditions()
     //      Mgmt_quant(3)=smrybio;  //  from equil calcs
     //      Mgmt_quant(4)=Recr_virgin;
     //    }
-  
+
     Smry_Table(styr - 2, 1) = totbio; //  from equil calcs
     Smry_Table(styr - 2, 2) = smrybio; //  from equil calcs
     Smry_Table(styr - 2, 3) = smrynum; //  from equil calcs
@@ -414,7 +414,7 @@ FUNCTION void get_initial_conditions()
   else //  area-specific spawn-recruitment
   {
   }
-  
+
 //  SS_Label_Info_23.5  #Calculate equilibrium using initial F
   #ifdef DO_ONCE
   if (do_once == 1)
@@ -430,7 +430,7 @@ FUNCTION void get_initial_conditions()
   {
     Fishon = 0;
   }
-  
+
   for (f = 1; f <= N_SRparm2; f++)
   {
     if (SR_parm_timevary(f) == 0)
@@ -468,7 +468,7 @@ FUNCTION void get_initial_conditions()
   {
     regime_change = mfexp(SR_parm_work(N_SRparm2 - 1));
   }
-  
+
   if (init_equ_steepness == 0) // Adjustments do not include spawner-recruitment steepness
   {
     //   R1=Recr_virgin*regime_change;
@@ -488,29 +488,29 @@ FUNCTION void get_initial_conditions()
     //  SPAWN-RECR:   calc initial equilibrium pop, SPB, Recruitment
     //    equ_Recr=Recr_virgin;
     equ_Recr = R1_exp * regime_change;
-  
+
     Do_Equil_Calc(equ_Recr);
     CrashPen += Equ_penalty;
     SPR_temp = SSB_equil / equ_Recr; //  spawners per recruit at initial F
     //  get equilibrium SSB and recruitment from SPR_temp, Recr_virgin and virgin steepness
     Equ_SpawnRecr_Result = Equil_Spawn_Recr_Fxn(SR_parm(2), SR_parm(3), SSB_virgin, Recr_virgin, SPR_temp); //  returns 2 element vector containing equilibrium biomass and recruitment at this SPR
-  
+
     R1_exp = Equ_SpawnRecr_Result(2); //  set the expected recruitment equal to this equilibrium
     exp_rec(eq_yr, 1) = R1_exp;
-  
+
     equ_Recr = R1_exp * regime_change;
     exp_rec(eq_yr, 2) = equ_Recr;
     exp_rec(eq_yr, 3) = equ_Recr;
     exp_rec(eq_yr, 4) = equ_Recr;
     R1 = equ_Recr;
-  
+
     Do_Equil_Calc(equ_Recr); // calculated SSB_equil
     CrashPen += Equ_penalty;
   }
   Smry_Table(styr - 1, 1) = totbio; //  from equil calcs
   Smry_Table(styr - 1, 2) = smrybio; //  from equil calcs
   Smry_Table(styr - 1, 3) = smrynum; //  from equil calcs
-  
+
   SSB_pop_gp(eq_yr) = SSB_equil_pop_gp; // dimensions of pop x N_GP
   if (Hermaphro_Option != 0)
     MaleSPB(eq_yr) = MaleSSB_equil_pop_gp;
@@ -522,7 +522,7 @@ FUNCTION void get_initial_conditions()
   env_data(styr - 1, -2) = 0.0;
   env_data(styr - 1, -3) = 0.0;
   env_data(styr - 1, -4) = 0.0;
-  
+
   // save est_equ_catch which has units (biomass vs numbers) according to that fleet; used in objfun
   for (s = 1; s <= nseas; s++)
     for (int ff = 1; ff <= N_catchfleets(0); ff++)
@@ -537,7 +537,7 @@ FUNCTION void get_initial_conditions()
         est_equ_catch(s, f) = equ_catch_fleet(5, s, f);
       }
     }
-  
+
   if (save_for_report > 0)
   {
     for (s = 1; s <= nseas; s++)
@@ -562,7 +562,7 @@ FUNCTION void get_initial_conditions()
       Smry_Table(styr - 1, k + 3) = annual_catch(styr - 1, k);
     }
   }
-  
+
   for (s = 1; s <= nseas; s++)
   {
     t = styr - nseas - 1 + s;
@@ -597,12 +597,12 @@ FUNCTION void get_initial_conditions()
             Recr(p, t + 1 + Settle_seas_offset(settle_g(g))) += equ_Recr * recr_dist(y, GP(g), settle_g(g), p) * platoon_distr(GP2(g));
           }
   }
-  
+
   if (docheckup == 1)
     echoinput << " init equil age comp for styr " << styr << endl
               << natage(styr) << endl
               << endl;
-  
+
   // if recrdevs start before styr, then use them to adjust the initial agecomp
   //  apply a fraction of the bias adjustment, so bias adjustment gets less linearly as proceed back in time
   if (recdev_first < styr)
@@ -629,10 +629,10 @@ FUNCTION void get_initial_conditions()
     }
   }
   SSB_pop_gp(styr) = SSB_pop_gp(styr - 1); //  placeholder in case not calculated early in styr
-  
+
   //  note:  the above keeps SSB_pop_gp(styr) = SSB_equil.  It does not adjust for initial agecomp, but probably should
   } //  end initial_conditions
-  
+
 //*********************************************************************
 FUNCTION void get_time_series()
   {
@@ -645,7 +645,7 @@ FUNCTION void get_time_series()
   dvariable SSB_use;
   if (Do_Morphcomp > 0)
     Morphcomp_exp.initialize();
-  
+
   //  SS_Label_Info_24.0 #Retrieve spawning biomass and recruitment from the initial equilibrium
   //  SPAWN-RECR:   begin of time series, retrieve last spbio and recruitment
   SSB_current = SSB_yr(styr); //  need these initial assignments in case recruitment distribution occurs before spawnbio&recruits
@@ -657,7 +657,7 @@ FUNCTION void get_time_series()
   {
     Recruits = R1;
   }
-  
+
   //  SS_Label_Info_24.1 #Loop the years
   for (y = styr; y <= endyr; y++)
   {
@@ -665,7 +665,7 @@ FUNCTION void get_time_series()
     if (STD_Yr_Reverse_F(y) > 0)
       F_std(STD_Yr_Reverse_F(y)) = 0.0;
     t_base = styr + (y - styr) * nseas - 1;
-  
+
     for (f = 1; f <= N_SRparm2; f++)
     {
       if (SR_parm_timevary(f) == 0)
@@ -678,7 +678,7 @@ FUNCTION void get_time_series()
       }
       SR_parm_byyr(y, f) = SR_parm_work(f);
     }
-  
+
     //  store most recent value for density-dependent effects, NOTE - off by a year if recalc'ed at beginning of season 1
     {
       env_data(y, -1) = log(SSB_current / SSB_yr(styr - 1));
@@ -722,16 +722,16 @@ FUNCTION void get_time_series()
         }
       env_data(y, -3) = log(smrybio / Smry_Table(styr - 1, 2));
       env_data(y, -4) = log(smrynum / Smry_Table(styr - 1, 3));
-  
+
       Smry_Table(y, 2) = smrybio; //  gets used as demoninator for some F_std options
       Smry_Table(y, 3) = smrynum;
     }
     if (y > styr)
     {
-  
+
       if (do_densitydependent == 1)
         make_densitydependent_parm(y); //  call to adjust for density dependence
-  
+
       //  SS_Label_Info_24.1.1 #Update the time varying biology factors if necessary
       if (timevary_MG(y, 0) > 0 || save_for_report > 0)
         get_MGsetup(y);
@@ -760,7 +760,7 @@ FUNCTION void get_time_series()
           natM(t_base + s) = natM(t_base - nseas + s);
         } // set M equal to last year's; M2 can be added later if predators are used
       }
-  
+
       if (timevary_MG(y, 4) > 0)
         get_recr_distribution();
       if (y >= Bmark_Yr(7) && y <= Bmark_Yr(8))
@@ -781,7 +781,7 @@ FUNCTION void get_time_series()
       {
         get_catch_mult(y, catch_mult_pointer);
       }
-  
+
       if (Use_AgeKeyZero > 0)
       {
         if (timevary_MG(y, 6) > 0)
@@ -793,14 +793,14 @@ FUNCTION void get_time_series()
             age_age(save_agekey_count) = age_age(Use_AgeKeyZero);
             age_err(save_agekey_count) = age_err(Use_AgeKeyZero);
           }
-  
+
   #ifdef DO_ONCE
           if (do_once == 1)
             echoinput << " ageerr_key recalc in " << y << endl;
   #endif
         }
       }
-  
+
       if (save_for_report > 0)
       {
         if (timevary_MG(y, 1) > 0 || timevary_MG(y, 2) > 0 || timevary_MG(y, 3) > 0)
@@ -809,7 +809,7 @@ FUNCTION void get_time_series()
         }
       }
     }
-  
+
     //  SS_Label_Info_24.2  #Loop the seasons
     for (s = 1; s <= nseas; s++)
     {
@@ -822,15 +822,15 @@ FUNCTION void get_time_series()
       if (s == 1 && y > styr)
         get_selectivity();
       t = t_base + s;
-  
+
       //  SS_Label_Info_24.2.1 #Update the age-length key and the fishery selectivity for this season
-  
+
       //      if(timevary_MG(y,2)>0 || timevary_MG(y,3)>0 || save_for_report==1 || WTage_rd>0)
       if (timevary_MG(y, 2) > 0 || save_for_report == 1)
       {
         get_growth3(y, t, s, 1); // first subseas of season=s
         Make_AgeLength_Key(s, 1);
-  
+
         get_growth3(y, t, s, mid_subseas); //  for midseason
         Make_AgeLength_Key(s, mid_subseas);
         //  SPAWN-RECR:   call Make_Fecundity in time series
@@ -867,9 +867,9 @@ FUNCTION void get_time_series()
             Wt_Age_mid(s, g) = ALK(ALK_idx2, g) * wt_len(s, GP(g)); // use for fisheries with no size selectivity
           }
       }
-  
+
       Wt_Age_t(t, 0) = Wt_Age_beg(s);
-  
+
       if (y > styr) // because styr is done as part of initial conditions
       {
         for (g = 1; g <= gmorph; g++)
@@ -877,7 +877,7 @@ FUNCTION void get_time_series()
           {
             Make_FishSelex();
           }
-  
+
         // SS_Label_Info_24.x.x #add predator M2 inside the yr,seas loop
         if (N_pred > 0)
         {
@@ -913,7 +913,7 @@ FUNCTION void get_time_series()
             }
           }
         }
-  
+
         if (y >= Bmark_Yr(1) && y <= Bmark_Yr(2))
         {
           for (gp = 1; gp <= N_GP * gender * N_settle_timings; gp++)
@@ -946,7 +946,7 @@ FUNCTION void get_time_series()
         }
         SSB_current = sum(SSB_pop_gp(y));
         SSB_yr(y) = SSB_current;
-  
+
         if (Hermaphro_Option != 0) // get male biomass
         {
           MaleSPB(y).initialize();
@@ -964,7 +964,7 @@ FUNCTION void get_time_series()
             SSB_yr(y) = SSB_current;
           }
         }
-  
+
         //  SS_Label_Info_24.2.3 #Get the total recruitment produced by this spawning biomass
         //  SPAWN-RECR:   calc recruitment in time series; need to make this area-specific
         if (SR_parm_timevary(1) == 0) //  R0 is not time-varying
@@ -990,7 +990,7 @@ FUNCTION void get_time_series()
           }
           SSB_use = SSB_equil;
         }
-  
+
         Recruits = Spawn_Recr(SSB_use, R0_use, SSB_current); // calls to function Spawn_Recr
         apply_recdev(Recruits, R0_use); //  apply recruitment deviation
         // distribute Recruitment of age 0 fish among the current and future settlements; and among areas and morphs
@@ -1025,12 +1025,12 @@ FUNCTION void get_time_series()
             }
           }
       }
-  
+
       else
       {
         //  spawning biomass and total recruits will be calculated later so they can use Z
       }
-  
+
       //  SS_Label_Info_24.3 #Loop the areas
       totbio = 0.;
       smrybio = 0.; //  reset to zero happens every season, but accumulation and storage only in season=1; after area loop
@@ -1073,10 +1073,10 @@ FUNCTION void get_time_series()
               }
             }
           }
-  
+
         //  SS_Label_Info_24.3.3 #Do fishing mortality
         catage_tot.initialize();
-  
+
         if ((catch_seas_area(t, p, 0) == 1 && fishery_on_off == 1))
         {
           if (F_Method > 1) //  not Pope's
@@ -1113,7 +1113,7 @@ FUNCTION void get_time_series()
                   Hrate(f, t) = -log(1. - temp1) / seasdur(s); // initial estimate of F (even though labelled as Hrate)
                 }
               }
-  
+
               //  SS_Label_Info_24.3.3.3.4 #Do a specified number of loops to tune up these F values to more closely match the observed catch
               for (int tune_F = 1; tune_F <= F_Tune - 1; tune_F++)
               {
@@ -1129,7 +1129,7 @@ FUNCTION void get_time_series()
                     }
                     Zrate2(p, g) = elem_div((1. - mfexp(-seasdur(s) * Z_rate(t, p, g))), Z_rate(t, p, g));
                   }
-  
+
                 //  SS_Label_Info_24.3.3.3.6 #Now calc adjustment to Z based on changes to be made to Hrate
                 {
                   interim_tot_catch = 0.0; // this is the expected total catch that would occur with the current Hrates and Z
@@ -1162,7 +1162,7 @@ FUNCTION void get_time_series()
                       Z_rate(t, p, g) = natM(t, GP3(g)) + Z_adjuster * (Z_rate(t, p, g) - natM(t, GP3(g))); // find adjusted Z
                       Zrate2(p, g) = elem_div((1. - mfexp(-seasdur(s) * Z_rate(t, p, g))), Z_rate(t, p, g));
                     }
-  
+
                   for (int ff = 1; ff <= N_catchfleets(p); ff++) //loop over fishing  fleets with input catch
                   {
                     f = fish_fleet_area(p, ff);
@@ -1194,7 +1194,7 @@ FUNCTION void get_time_series()
                 }
               }
             } //  end hybrid F_Method
-  
+
             //  SS_Label_Info_24.3.3.2 #Use a parameter for continuoous F
             // continuous F_method
             {
@@ -1213,7 +1213,7 @@ FUNCTION void get_time_series()
                     Zrate2(p, g) = elem_div((1. - mfexp(-seasdur(s) * Z_rate(t, p, g))), Z_rate(t, p, g));
                   }
                 }
-  
+
               //  SS_Label_Info_24.3.3.2.2 #For each fleet, loop platoons and accumulate catch
               for (int ff = 1; ff <= N_catchfleets(0); ff++)
               {
@@ -1251,7 +1251,7 @@ FUNCTION void get_time_series()
               if (catch_seas_area(t, p, f) == 1)
               {
                 dvar_matrix catage_w = catage(t, f); // do shallow copy
-  
+
                 //  SS_Label_Info_24.3.3.1.2 #loop over platoons and calculate the vulnerable biomass for each fleet
                 vbio.initialize();
                 for (g = 1; g <= gmorph; g++)
@@ -1261,7 +1261,7 @@ FUNCTION void get_time_series()
                     // note that vbio in numbers can be used for both survey abund and fishery available "biomass"
                     // vbio is for retained catch only;  harvest rate = retainedcatch/vbio;
                     // then harvestrate*catage_w = total kill by this fishery for this morph
-  
+
                     if (catchunits(f) == 1)
                     {
                       vbio += Nmid(g) * sel_ret_bio(s, f, g);
@@ -1270,7 +1270,7 @@ FUNCTION void get_time_series()
                     {
                       vbio += Nmid(g) * sel_ret_num(s, f, g);
                     } // retained catch numbers
-  
+
                   } //close gmorph loop
                 if (docheckup == 1)
                   echoinput << "fleet vbio obs_catch catch_mult vbio*catchmult" << f << " " << vbio << " " << catch_ret_obs(f, t) << " " << catch_mult(y, f) << " " << catch_mult(y, f) * vbio << endl;
@@ -1284,7 +1284,7 @@ FUNCTION void get_time_series()
                   cout << y << " " << f << " crash vbio*catchmult " << catch_ret_obs(f, t) / (catch_mult(y, f) * (vbio + NilNumbers)) << " " << crashtemp << " " << crashtemp1 << " " << CrashPen << " " << harvest_rate << endl;
                 }
                 Hrate(f, t) = harvest_rate;
-  
+
                 //  SS_Label_Info_24.3.3.1.4 #Store various catch quantities in catch_fleet
                 for (g = 1; g <= gmorph; g++)
                   if (use_morph(g) > 0)
@@ -1302,7 +1302,7 @@ FUNCTION void get_time_series()
                   } // end g loop
               }
             } // close fishery
-  
+
             //  SS_Label_Info_24.3.3.1.5 #Check for catch_total across fleets being greater than population numbers
             for (g = 1; g <= gmorph; g++)
               if (use_morph(g) > 0)
@@ -1322,7 +1322,7 @@ FUNCTION void get_time_series()
                       echoinput << " crash age " << catage_tot(g, a) / (Nmid(g, a) + 0.0000001) << " " << crashtemp << " " << crashtemp1 << " " << CrashPen << " " << (max_harvest_rate - crashtemp1) * Nmid(g, a) << endl;
                     }
                     catage_tot(g, a) = (max_harvest_rate - crashtemp1) * Nmid(g, a);
-  
+
                     temp = natage(t, p, g, a) * surv2(s, GP3(g), a) - catage_tot(g, a) * surv1(s, GP3(g), a);
                     Z_rate(t, p, g, a) = -log(temp / natage(t, p, g, a)) / seasdur(s);
                   }
@@ -1390,7 +1390,7 @@ FUNCTION void get_time_series()
         }
         SSB_current = sum(SSB_pop_gp(y));
         SSB_yr(y) = SSB_current;
-  
+
         if (Hermaphro_Option != 0) // get male biomass
         {
           MaleSPB(y).initialize();
@@ -1433,10 +1433,10 @@ FUNCTION void get_time_series()
           }
           SSB_use = SSB_equil;
         }
-  
+
         Recruits = Spawn_Recr(SSB_use, R0_use, SSB_current); // calls to function Spawn_Recr
         apply_recdev(Recruits, R0_use); //  apply recruitment deviation
-  
+
         // distribute Recruitment among settlements, areas and morphs
         //  note that because SSB_current is calculated at end of season to take into account Z,
         //  this means that recruitment cannot occur until a subsequent season
@@ -1448,7 +1448,7 @@ FUNCTION void get_time_series()
             {
               if (y == styr)
                 natage(t + Settle_seas_offset(settle), p, g, Settle_age(settle)) = 0.0; //  to negate the additive code
-  
+
               natage(t + Settle_seas_offset(settle), p, g, Settle_age(settle)) += Recruits * recr_dist(y, GP(g), settle, p) * platoon_distr(GP2(g)) *
                   mfexp(natM(t, GP3(g), Settle_age(settle)) * Settle_timing_seas(settle));
               Recr(p, t + Settle_seas_offset(settle)) += Recruits * recr_dist(y, GP(g), settle, p) * platoon_distr(GP2(g));
@@ -1457,7 +1457,7 @@ FUNCTION void get_time_series()
             }
           }
       }
-  
+
       //  SS_Label_Info_24.6 #Survival to next season and saving midseason numbers and biomass
       for (p = 1; p <= pop; p++)
       {
@@ -1473,7 +1473,7 @@ FUNCTION void get_time_series()
           if (use_morph(g) > 0)
           {
             settle = settle_g(g);
-  
+
             {
               j = Settle_age(settle);
               if (s < nseas && Settle_seas(settle) <= s)
@@ -1508,7 +1508,7 @@ FUNCTION void get_time_series()
             }
           } // close gmorph loop
       }
-  
+
       //  SS_Label_Info_24.7  #call to Get_expected_values
       Get_expected_values(y, t);
       //  SS_Label_Info_24.8  #hermaphroditism
@@ -1540,7 +1540,7 @@ FUNCTION void get_time_series()
               }
         }
       }
-  
+
       //  SS_Label_Info_24.9  #migration
       //do migration between populations, for each gmorph and age  PROBLEM  need new container so future recruits not wiped out!
       if (do_migration > 0) // movement between areas in time series
@@ -1557,7 +1557,7 @@ FUNCTION void get_time_series()
                   natage(t + 1, p2, g) += elem_prod(natage_temp(p, g), migrrate(y, k));
               }
       } //  end migration
-  
+
       //  SS_Label_Info_24.10  #save selectivity*Hrate for tag-recapture
       if (Do_TG > 0 && t >= TG_timestart)
       {
@@ -1567,7 +1567,7 @@ FUNCTION void get_time_series()
             Sel_for_tag(t, f, g) = sel_ret_num(s, f, g) * Hrate(f, t);
           }
       }
-  
+
       //  SS_Label_Info_24.11  #calc annual F quantities
       double countN;
       dvariable tempbase;
@@ -1593,13 +1593,13 @@ FUNCTION void get_time_series()
             annual_F(y, 1) += Hrate(f, t) * seasdur(s);
           }
         }
-  
+
         if (s == nseas)
         {
           //  sum across p and g the number of survivors to end of the year
           //  also project from the initial numbers and M, the number of survivors without F
           //  then F = ln(n+1/n)(M+F) - ln(n+1/n)(M only), but ln(n) cancels out, so only need the ln of the ratio of the two ending quantities
-  
+
           // calculated average F weighted by numbers (option 5 is unweighted)
           if (F_reporting != 5)
           {
@@ -1630,7 +1630,7 @@ FUNCTION void get_time_series()
             annual_F(y, 2) = log(tempM) - log(tempZ); // F=Z-M
             annual_F(y, 3) = log(tempbase) - log(tempM); // M
           } // end if F_reporting!=5
-  
+
           else
           { // F_reporting==5 (ICES-style arithmetic mean across ages)
             //  like option 4 above, but F is calculated 1 age at a time to get a
@@ -1665,7 +1665,7 @@ FUNCTION void get_time_series()
             annual_F(y, 3) /= countN; // M
             annual_F(y, 2) /= countN; // F
           } // end F_reporting==5
-  
+
           if (STD_Yr_Reverse_F(y) > 0) //  save selected std quantity
           {
             if (F_reporting <= 1)
@@ -1693,7 +1693,7 @@ FUNCTION void get_time_series()
         for (g = 1; g <= gmorph; g++)
         {
           gg = sx(g);
-  
+
           if (ishadow(GP2(g)) == 0)
           {
             if (s == spawn_seas)
@@ -1705,7 +1705,7 @@ FUNCTION void get_time_series()
       }
     } //close season loop
     //  SS_Label_Info_24.12 #End loop of seasons
-  
+
     //  SS_Label_Info_24.13 #Use current F intensity to calculate the equilibrium SPR for this year
     //    if( (save_for_report>0) || ((sd_phase() || mceval_phase()) && (initial_params::mc_phase==0)) )
     if (bigsaver == 1)
@@ -1734,7 +1734,7 @@ FUNCTION void get_time_series()
       }
     }
   } //close year loop
-  
+
   //  Save end year quantities to refresh for forecast after benchmark is called
   recr_dist_endyr = recr_dist(endyr);
   for (s = 1; s <= nseas; s++)
@@ -1743,7 +1743,7 @@ FUNCTION void get_time_series()
   }
   surv1_endyr = surv1;
   surv2_endyr = surv2;
-  
+
   //  average quantities accumulated during the time series
   if (Do_Benchmark > 0)
   {
@@ -1752,18 +1752,18 @@ FUNCTION void get_time_series()
     surv1_unf /= float(Bmark_Yr(2) - Bmark_Yr(1) + 1);
     surv2_unf / float(Bmark_Yr(2) - Bmark_Yr(1) + 1);
   }
-  
+
   if (Do_TG > 0)
     Tag_Recapture();
-  
+
   } //  end time_series
   #ifdef DO_ONCE
   if (do_once == 1)
   echoinput << " finished time series " << endl;
   #endif
-  
+
 //  SS_Label_Info_24.16  # end of time series function
-  
+
 //********************************************************************
  /*  SS_Label_FUNCTION 30 Do_Equil_Calc */
 FUNCTION void Do_Equil_Calc(const prevariable& equ_Recr)
@@ -1779,7 +1779,7 @@ FUNCTION void Do_Equil_Calc(const prevariable& equ_Recr)
   dvariable crashtemp1;
   dvar_matrix Survivors(1, pop, 1, gmorph);
   dvar_matrix Survivors2(1, pop, 1, gmorph);
-  
+
   t_base = styr + (eq_yr - styr) * nseas - 1;
   GenTime.initialize();
   Equ_penalty.initialize();
@@ -1799,14 +1799,14 @@ FUNCTION void Do_Equil_Calc(const prevariable& equ_Recr)
   smrybio = 0.0;
   smryage = 0.0;
   smrynum = 0.0;
-  
+
   // first seed the recruits; seems redundant
   for (g = 1; g <= gmorph; g++)
   {
     if (use_morph(g) > 0)
     {
       settle = settle_g(g);
-  
+
       for (p = 1; p <= pop; p++)
       {
         equ_numbers(Settle_seas(settle), p, g, Settle_age(settle)) = equ_Recr * recr_dist(y, GP(g), settle, p) * platoon_distr(GP2(g)) *
@@ -1814,7 +1814,7 @@ FUNCTION void Do_Equil_Calc(const prevariable& equ_Recr)
       }
     }
   }
-  
+
   for (a = 0; a <= 3 * nages; a++) // go to 3x nages to approximate the infinite tail, then add the infinite tail
   {
     if (a <= nages)
@@ -1825,17 +1825,17 @@ FUNCTION void Do_Equil_Calc(const prevariable& equ_Recr)
     {
       a1 = nages;
     } // because selex and biology max out at nages
-  
+
     for (s = 1; s <= nseas; s++)
     {
       t = t_base + s;
-  
+
       for (g = 1; g <= gmorph; g++) //  need to loop g inside of a because of hermaphroditism
         if (use_morph(g) > 0)
         {
           gg = sx(g); // gender
           settle = settle_g(g);
-  
+
           for (p = 1; p <= pop; p++)
           {
             if (s == Settle_seas(settle) && a == Settle_age(settle))
@@ -1843,7 +1843,7 @@ FUNCTION void Do_Equil_Calc(const prevariable& equ_Recr)
               equ_numbers(Settle_seas(settle), p, g, Settle_age(settle)) = equ_Recr * recr_dist(y, GP(g), settle, p) * platoon_distr(GP2(g)) *
                   mfexp(natM(t_base + Settle_seas(settle), GP3(g), Settle_age(settle)) * Settle_timing_seas(settle));
             }
-  
+
             if (equ_numbers(s, p, g, a) > 0.0) //  will only be zero if not yet settled
             {
               N_beg = equ_numbers(s, p, g, a);
@@ -1861,14 +1861,14 @@ FUNCTION void Do_Equil_Calc(const prevariable& equ_Recr)
                     f = fish_fleet_area(p, ff);
                     crashtemp += Hrate(f, t) * sel_dead_num(s, f, g, a1);
                   }
-  
+
                   if (crashtemp > 0.20) // only worry about this if the exploit rate is at all high
                   {
                     join1 = 1. / (1. + mfexp(40.0 * (crashtemp - max_harvest_rate))); // steep joiner logistic curve at limit
                     upselex = 1. / (1. + mfexp(Equ_F_joiner * (crashtemp - 0.2))); //  value of a shallow logistic curve that goes through the limit
                     harvest_rate = join1 + (1. - join1) * upselex / (crashtemp); // ratio by which all Hrates will be adjusted
                   }
-  
+
                   for (int ff = 1; ff <= N_catchfleets(p); ff++)
                   {
                     f = fish_fleet_area(p, ff);
@@ -1877,16 +1877,16 @@ FUNCTION void Do_Equil_Calc(const prevariable& equ_Recr)
                     equ_catch_fleet(2, s, f) += temp * sel_dead_bio(s, f, g, a1);
                     equ_catch_fleet(5, s, f) += temp * sel_dead_num(s, f, g, a1);
                     equ_catch_fleet(3, s, f) += temp * sel_ret_bio(s, f, g, a1); // retained fishery kill in biomass
-  
+
                     equ_catch_fleet(1, s, f) += temp * sel_bio(s, f, g, a1); //  total fishery encounter in biomass
                     equ_catch_fleet(4, s, f) += temp * sel_num(s, f, g, a1); // total fishery encounter in numbers
                     equ_catch_fleet(6, s, f) += temp * sel_ret_num(s, f, g, a1); // retained fishery kill in numbers
                     equ_catage(s, f, g, a1) += temp * sel_dead_num(s, f, g, a1); //  dead catch numbers per recruit  (later accumulate N in a1)
                   }
                 } // end removing catch
-  
+
                 Nsurvive *= surv1(s, GP3(g), a1); // decay to end of season
-  
+
                 if (a <= a1)
                 {
                   equ_Z(s, p, g, a1) = -(log((Nsurvive + 1.0e-13) / (N_beg + 1.0e-10))) / seasdur(s);
@@ -1898,9 +1898,9 @@ FUNCTION void Do_Equil_Calc(const prevariable& equ_Recr)
                       maxF(g) = Fishery_Survival;
                   }
                 }
-  
+
               } // end Pope's approx
-  
+
               else // Continuous F for method 2 or 3
               {
                 equ_Z(s, p, g, a1) = natM(t, GP3(g), a1);
@@ -1924,7 +1924,7 @@ FUNCTION void Do_Equil_Calc(const prevariable& equ_Recr)
                   }
                 }
                 Nsurvive = N_beg * mfexp(-seasdur(s) * equ_Z(s, p, g, a1));
-  
+
               } //  end F method
               Survivors(p, g) = Nsurvive;
             }
@@ -1934,7 +1934,7 @@ FUNCTION void Do_Equil_Calc(const prevariable& equ_Recr)
             }
           } // end pop
         } // end morph
-  
+
       if (Hermaphro_Option != 0)
       {
         if (Hermaphro_seas == -1 || Hermaphro_seas == s)
@@ -1975,7 +1975,7 @@ FUNCTION void Do_Equil_Calc(const prevariable& equ_Recr)
           }
         Survivors = Survivors2;
       } // end do migration
-  
+
       for (g = 1; g <= gmorph; g++)
         if (use_morph(g) > 0)
         {
@@ -2011,7 +2011,7 @@ FUNCTION void Do_Equil_Calc(const prevariable& equ_Recr)
         }
     } // end season
   } // end age
-  
+
   // now calc contribution to catch and ssb
   for (g = 1; g <= gmorph; g++)
     if (use_morph(g) > 0)
@@ -2046,7 +2046,7 @@ FUNCTION void Do_Equil_Calc(const prevariable& equ_Recr)
               // already done in the age loop
             }
           }
-  
+
           if (s == 1)
           {
             totbio += equ_numbers(s, p, g)(0, nages) * Wt_Age_beg(s, g)(0, nages);
@@ -2077,7 +2077,7 @@ FUNCTION void Do_Equil_Calc(const prevariable& equ_Recr)
           }
         }
     }
-  
+
   //      MSY_units:  quantity to be maximized: (1) dead catch biomass (status quo); (2) retained catch biomass; or (3) retained catch profits"<<endl;
   YPR_dead = sum(equ_catch_fleet(2)); // dead catch biomass per recruit
   YPR_N_dead = sum(equ_catch_fleet(5)); // dead numbers per recruit
@@ -2086,7 +2086,7 @@ FUNCTION void Do_Equil_Calc(const prevariable& equ_Recr)
   YPR_opt = 0.0; //dead biomass per recruit except excludes non-optimized bycatch
   // YPR_opt used in F0.1 and in biomass based MSY searches
   YPR_val_vec.initialize(); // retained biomass per recruit as vector, should be same as YPR_ret
-  
+
   for (int ff = 1; ff <= N_catchfleets(0); ff++)
   {
     f = fish_fleet_area(0, ff);
@@ -2096,7 +2096,7 @@ FUNCTION void Do_Equil_Calc(const prevariable& equ_Recr)
       YPR_val_vec(f) += equ_catch_fleet(3, s, f) * YPR_mask(f); //  using retained catch so YPR_mask should be redundant
     }
   }
-  
+
   if (Fishon == 1)
   {
     if (F_reporting <= 1)
@@ -2201,7 +2201,7 @@ FUNCTION void Do_Equil_Calc(const prevariable& equ_Recr)
       equ_M_std /= countN;
     } // end F_reporting==5
   }
-  
+
   Cost = 0;
   for (f = 1; f <= Nfleet; f++)
   {
@@ -2213,7 +2213,7 @@ FUNCTION void Do_Equil_Calc(const prevariable& equ_Recr)
       }
     }
   }
-  
+
   SSB_equil = sum(SSB_equil_pop_gp);
   GenTime /= SSB_equil;
   smryage /= smrynum;
@@ -2222,6 +2222,6 @@ FUNCTION void Do_Equil_Calc(const prevariable& equ_Recr)
   {
     SSB_equil += Hermaphro_maleSPB * sum(MaleSSB_equil_pop_gp);
   }
-  
+
   } //  end equil calcs
 
