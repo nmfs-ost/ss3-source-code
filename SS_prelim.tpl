@@ -6,7 +6,7 @@
 // SS_Label_file  #     - check parameter initial values and ranges and apply jitter using function check_parm() found in SS_objfun.tpl
 // SS_Label_file  #     - set y=styr and do_once flag=1; then call <u>all biology functions</u> once to check for problems
 // SS_Label_file  #     - exit if turn_off_phase<0, else continue to the PROCEDURE_SECTION found in SS_proced.tpl
-  
+
 //******************************************************************************************
 //  SS_Label_Section_6.0 #PRELIMINARY_CALCS_SECTION
   PRELIMINARY_CALCS_SECTION
@@ -27,7 +27,7 @@
   save_sp_len.initialize();
   save_sel_num.initialize();
   catch_mult = 1.0;
-  
+
   //  SS_Label_Info_4.15 #read empirical wt-at-age
   last_yr_read.initialize();
   filled_once.initialize();
@@ -58,7 +58,7 @@
     echoinput << " N_WTage_rd " << N_WTage_rd << endl;
     echoinput << " last year read for -2 through Nfleet:  " << last_yr_read << endl;
     echoinput << " latest fill year for -2 through Nfleet:  " << filled_once << endl;
-  
+
     for (f = -2; f <= Nfleet; f++)
       for (t = styr; t <= k2; t++)
         for (g = 1; g <= gmorph; g++)
@@ -148,7 +148,7 @@
     N_WTage_rd = 0;
     N_WTage_maxage = nages;
   }
-  
+
   //  SS_Label_Info_6.1.2 #Initialize the dummy parameter as needed
   if (Turn_off_phase <= 0)
   {
@@ -158,12 +158,12 @@
   {
     dummy_parm = 1.0;
   }
-  
+
   Cohort_Growth = 1.0; // base value for cohort growth deviations
-  
+
   //  SS_Label_Info_6.2 #Apply input variance adjustments to each data type
   //  SS_Label_Info_6.2.1 #Do variance adjustment for surveys
-  
+
   echoinput << " do variance adjustment for surveys " << endl;
   for (f = 1; f <= Nfleet; f++)
     if (Svy_N_fleet(f) > 0)
@@ -171,7 +171,7 @@
       for (i = 1; i <= Svy_N_fleet(f); i++)
       {
         Svy_se(f, i) = Svy_se_rd(f, i); // don't overwrite the input values
-  
+
         if (Svy_use(f, i) > 0)
         {
           if (Svy_errtype(f) >= 0) // lognormal or lognormal T_dist
@@ -199,7 +199,7 @@
       }
     }
   echoinput << " survey stderr has been set-up " << endl;
-  
+
   //  SS_Label_Info_6.2.2 #Set up variance for discard observations
   for (f = 1; f <= Nfleet; f++)
     if (disc_N_fleet(f) > 0)
@@ -220,7 +220,7 @@
             // input is SD
             sd_disc(f, i) = cv_disc(f, i);
           }
-  
+
           sd_disc(f, i) += var_adjust(2, f); // note that adjustment is to the sd, not the CV
           if (sd_disc(f, i) < 0.001)
             sd_disc(f, i) = 0.001;
@@ -228,7 +228,7 @@
       }
     }
   echoinput << " discard stderr has been set-up " << endl;
-  
+
   //  SS_Label_Info_6.2.3 #Set up variance for mean body wt data, note different reference to array that was read
   //  10 items are:  1yr, 2seas, 3fleet, 4part, 5type, 6obs, 7se, then three intermediate variance quantities
   for (i = 1; i <= nobs_mnwt; i++)
@@ -244,7 +244,7 @@
     }
   }
   echoinput << " mean bodywt stderr has been set-up " << endl;
-  
+
   //  SS_Label_Info_6.2.4 #Do variance adjustment and compute OFFSET for length comp
   if (Nobs_l_tot > 0)
     for (f = 1; f <= Nfleet; f++)
@@ -292,7 +292,7 @@
       }
   //  echoinput<<" length_comp offset: "<<offset_l<<endl;
   echoinput << " length comp var adjust has been set-up " << endl;
-  
+
   //  SS_Label_Info_6.2.4.1 #Get sample weights for the super-period components in length comp
   //  the combined obs will have a logL sample size equal to the sample size input for the accumulator observation
   //  the accumulator observation is assigned a weight of 1.0 (because there is no place to read this from)
@@ -341,7 +341,7 @@
         }
       }
     }
-  
+
     if (N_suprper_disc(f) > 0)
     {
       echoinput << "Create superperiod sample weights for discard obs" << endl
@@ -383,7 +383,7 @@
         }
       }
     }
-  
+
     if (N_suprper_l(f) > 0)
     {
       echoinput << "Create superperiod sample weights for length obs" << endl
@@ -425,7 +425,7 @@
         }
       }
     }
-  
+
     if (N_suprper_a(f) > 0)
     {
       echoinput << "Create superperiod sample weights for age obs" << endl
@@ -509,7 +509,7 @@
       }
     }
   }
-  
+
   //  SS_Label_Info_6.2.5 #Do variance adjustment and compute OFFSET for age comp
   if (Nobs_a_tot > 0)
     for (f = 1; f <= Nfleet; f++)
@@ -555,7 +555,7 @@
       }
   //   echoinput<<" agecomp offset "<<offset_a<<endl;
   echoinput << " age comp var adjust has been set-up " << endl;
-  
+
   //  SS_Label_Info_6.2.6 #Do variance adjustment for mean size-at-age data
   if (nobs_ms_tot > 0)
   {
@@ -571,12 +571,12 @@
         }
   }
   echoinput << " setup stderr for mean size-at-age: " << endl;
-  
+
   //  SS_Label_Info_6.2.7 #Input variance adjustment for generalized size comp
   if (SzFreq_Nmeth > 0)
   {
     N_suprper_SzFreq = 0; // redo this counter so can use the counter
-  
+
     in_superperiod = 0;
     for (iobs = 1; iobs <= SzFreq_totobs; iobs++)
     {
@@ -597,7 +597,7 @@
         g = SzFreq_LikeComponent(f, k);
         SzFreq_like_base(g) -= SzFreq_sampleN(iobs) * SzFreq_obs(iobs)(z1, z2) * log(SzFreq_obs(iobs)(z1, z2));
       }
-  
+
       // identify super-period starts and stops
       if (s < 0) // start/stop a super-period  ALL observations must be continguous in the file
       {
@@ -615,12 +615,12 @@
       }
     }
     echoinput << " gen size comp var adjust has been set-up " << endl;
-  
+
     if (N_suprper_SzFreq > 0)
     {
       echoinput << "sizefreq superperiod start obs: " << suprper_SzFreq_start << endl
                 << "sizefreq superperiod end obs:   " << suprper_SzFreq_end << endl;
-  
+
       echoinput << "Create superperiod sample weights for sizecomp obs " << endl
                 << "Flt_num SuperP Obs_num Sample_N_read samp_wt" << endl;
       for (j = 1; j <= N_suprper_SzFreq; j++) // do each super period
@@ -661,10 +661,10 @@
       }
     }
   }
-  
+
   //  SS_Label_Info_6.4 #Conditionally copy the initial parameter values read from the "CTL" file into the parameter arrays
   //   skip this assignment if the parameters are being read from a "SS2.PAR" file
-  
+
   if (readparfile == 0)
   {
     echoinput << " set parms to init values in CTL file " << endl;
@@ -673,13 +673,13 @@
       MGparm(i) = MGparm_RD(i);
     } //  set vector of initial natmort and growth parms
     echoinput << " MGparms read from ctl " << MGparm << endl;
-  
+
     for (i = 1; i <= N_SRparm3; i++)
     {
       SR_parm(i) = SR_parm_RD(i);
     }
     echoinput << " SRR_parms read from ctl " << SR_parm << endl;
-  
+
     if (recdev_cycle > 0)
     {
       for (y = 1; y <= recdev_cycle; y++)
@@ -687,14 +687,14 @@
         recdev_cycle_parm(y) = recdev_cycle_parm_RD(y, 3);
       }
     }
-  
+
     if (recdev_do_early > 0)
       recdev_early.initialize();
     if (Do_Forecast > 0 && do_recdev != 0)
       Fcast_recruitments.initialize();
     if (Do_Impl_Error > 0)
       Fcast_impl_error.initialize();
-  
+
     if (do_recdev == 1)
     {
       recdev1.initialize();
@@ -703,7 +703,7 @@
     {
       recdev2.initialize();
     } // set devs to zero
-  
+
     if (recdev_read > 0)
     {
       for (j = 1; j <= recdev_read; j++)
@@ -744,7 +744,7 @@
       echoinput << recdev1 << endl;
     if (do_recdev >= 2)
       echoinput << recdev2 << endl;
-  
+
     // **************************************************
     if (Q_Npar2 > 0)
     {
@@ -754,14 +754,14 @@
       } //  set vector of initial index Q parms
       echoinput << " Q_parms read from ctl " << Q_parm << endl;
     }
-  
+
     if (N_init_F > 0)
     {
       for (i = 1; i <= N_init_F; i++)
   init_F(i) = init_F_RD(i); //  set vector of initial parms
       echoinput << " initF_parms read from ctl " << init_F << endl;
     }
-  
+
     //SS_Label_Info_xxx setup F as parameters
     if (N_Fparm > 0)
     {
@@ -774,7 +774,7 @@
           F_rate(g) = F_parm_intval(f);
           Hrate(f, t) = F_parm_intval(f);
         }
-  
+
         if (F_detail > 0)
         {
           for (k = 1; k <= F_detail; k++)
@@ -811,11 +811,11 @@
         echoinput << " Fmort_parms obtained from ss.par " << endl;
       }
     }
-  
+
     for (i = 1; i <= N_selparm2; i++)
       selparm(i) = selparm_RD(i); //  set vector of initial selex parms
     echoinput << " selex_parms read from ctl " << selparm << endl;
-  
+
     if (Do_TG > 0)
     {
       k = Do_TG * (3 * N_TG + 2 * Nfleet1);
@@ -826,7 +826,7 @@
       echoinput << " Tag_parms read from ctl " << TG_parm << endl;
     }
   }
-  
+
   //  SS_Label_Info_6.5 #Check parameter bounds and do jitter
   echoinput << endl
             << " now check MGparm bounds and priors and do jitter if requested " << endl;
@@ -836,7 +836,7 @@
   }
   echoinput << " MG_parms after check " << MGparm << endl;
   MGparm_use = value(MGparm);
-  
+
   echoinput << endl
             << " now check SR_parm bounds and priors and do jitter if requested " << endl;
   for (i = 1; i <= N_SRparm3; i++)
@@ -845,7 +845,7 @@
   }
   echoinput << " SRR_parms after check " << SR_parm << endl;
   SR_parm_use = value(SR_parm);
-  
+
   recdev_use.initialize();
   if (recdev_cycle > 0)
   {
@@ -858,20 +858,20 @@
     echoinput << " recdev_cycle after check " << recdev_cycle_parm << endl;
     recdev_cycle_use = value(recdev_cycle_parm);
   }
-  
+
   if (recdev_do_early > 0)
   {
     recdev_RD(recdev_early_start, recdev_early_end) = value(recdev_early(recdev_early_start, recdev_early_end));
-  
+
     for (y = recdev_early_start; y <= recdev_early_end; y++)
     {
       recdev_early(y) = Check_Parm(y, recdev_early_PH, recdev_LO, recdev_HI, 0, 0., 1., jitter, recdev_early(y));
     }
     //      recdev_early -=sum(recdev_early)/(recdev_early_end-recdev_early_start+1);
-  
+
     recdev_use(recdev_early_start, recdev_early_end) = value(recdev_early(recdev_early_start, recdev_early_end));
   }
-  
+
   if (recdev_PH > 0 && do_recdev > 0)
   {
     echoinput << endl
@@ -897,15 +897,15 @@
       recdev_use(recdev_start, recdev_end) = value(recdev2(recdev_start, recdev_end));
     }
   }
-  
+
   if (Do_Forecast >= 0 && do_recdev > 0)
   {
     recdev_RD(recdev_end + 1, YrMax) = value(Fcast_recruitments(recdev_end + 1, YrMax));
     recdev_use(recdev_end + 1, YrMax) = value(Fcast_recruitments(recdev_end + 1, YrMax));
   }
-  
+
   echoinput << " rec_devs after check " << recdev_use << endl;
-  
+
   if (Q_Npar2 > 0)
   {
     echoinput << endl
@@ -917,7 +917,7 @@
     echoinput << " Q_parms after check " << Q_parm << endl;
     Q_parm_use = value(Q_parm);
   }
-  
+
   if (N_init_F > 0)
   {
     echoinput << endl
@@ -929,7 +929,7 @@
     echoinput << " initF_parms after check " << init_F << endl;
   init_F_use = value(init_F);
   }
-  
+
   if (N_Fparm > 0)
   {
     echoinput << endl
@@ -943,7 +943,7 @@
     echoinput << " F_parms after check " << F_rate << endl;
     Fparm_use = value(F_rate);
   }
-  
+
   if (N_selparm2 > 0)
   {
     echoinput << endl
@@ -955,7 +955,7 @@
     echoinput << " selex_parms after check  " << selparm << endl;
     selparm_use = value(selparm);
   }
-  
+
   if (Do_TG > 0)
   {
     echoinput << endl
@@ -970,7 +970,7 @@
     echoinput << " Tag_parms after check  " << TG_parm << endl;
     TG_parm_use = value(TG_parm);
   }
-  
+
   if (N_parm_dev > 0)
   {
     echoinput << endl
@@ -980,7 +980,7 @@
       {
         parm_dev_RD(i, j) = value(parm_dev(i, j));
       }
-  
+
     for (i = 1; i <= N_parm_dev; i++)
       if (parm_dev_PH(i) > 0)
         for (j = parm_dev_minyr(i); j <= parm_dev_maxyr(i); j++)
@@ -1009,7 +1009,7 @@
     cor.initialize();
     det_cor = 1.0;
     inv_cor.initialize();
-  
+
     for (f = 1; f <= TwoD_AR_cnt; f++)
     {
       double rho_a;
@@ -1054,16 +1054,16 @@
   }
   //  SS_Label_Info_6.6 #Copy the environmental data as read into the dmatrix environmental data array
   //  this will allow dynamic derived quantities like biomass and recruitment to be mapped into this same dmatrix
-  
+
   env_data.initialize();
-  
+
   if (N_envdata > 0)
   {
     //  raw input is in vector vector env_temp
     //  the fields are yr, envvar, value
     //  yr=-2 instructs SS3 to subtract mean before storing
     //  yr=-1 instructs SS3 to subtract mean and divide by stddev
-  
+
     //  first pass to calculate means and other summary data
     for (i = 0; i <= N_envdata - 1; i++)
     {
@@ -1082,18 +1082,18 @@
     echoinput << " env matrix after processing" << endl
               << env_data << endl;
   }
-  
+
   //  SS_Label_Info_6.7 #Initialize several rebuilding items
   if (Rebuild_Ydecl == -1)
     Rebuild_Ydecl = 1999;
   if (Rebuild_Yinit == -1)
     Rebuild_Yinit = endyr + 1;
-  
+
   if (Rebuild_Ydecl > YrMax)
     Rebuild_Ydecl = YrMax;
   if (Rebuild_Yinit > YrMax)
     Rebuild_Yinit = YrMax;
-  
+
   migrrate.initialize();
   depletion.initialize();
   natage.initialize();
@@ -1103,7 +1103,7 @@
   discmort.initialize();
   discmort2.initialize();
   discmort2_a.initialize();
-  
+
   for (f = 1; f <= Nfleet; f++)
     for (y = styr; y <= YrMax; y++)
       for (gg = 1; gg <= gender; gg++)
@@ -1114,7 +1114,7 @@
         retain(y, f) = 1.0;
       }
   Richards = 1.0;
-  
+
   //  check data against settings for inconsistencies
   // check for composition obs with partition =1 or =2; use a new summary of obs by partition type for this test
   ivector parti_cnt(0, 2);
@@ -1129,7 +1129,7 @@
               << "fleet: " << f << "  discard data exist but retention fxn not defined; exit" << endl;
       exit(1);
     }
-  
+
     parti_cnt.initialize();
     if (Nobs_l(f) > 0)
     {
@@ -1160,7 +1160,7 @@
         exit(1);
       }
     }
-  
+
     parti_cnt.initialize();
     if (Nobs_a(f) > 0)
     {
@@ -1191,7 +1191,7 @@
         exit(1);
       }
     }
-  
+
     parti_cnt.initialize();
     if (Nobs_ms(f) > 0)
     {
@@ -1222,7 +1222,7 @@
         exit(1);
       }
     }
-  
+
     parti_cnt.initialize();
     if (nobs_mnwt > 0)
     {
@@ -1259,7 +1259,7 @@
       }
     }
   }
-  
+
   //  SS_Label_Info_6.8 #Go thru biological calculations once, with do_once flag=1 to produce extra output to echoinput.sso
   cout << " ready to evaluate once in prelim" << endl;
   echoinput << " ready to evaluate once in prelim" << endl;
@@ -1269,13 +1269,13 @@
   y = styr;
   yz = styr;
   t_base = styr + (y - styr) * nseas - 1;
-  
+
   make_timevaryparm();
-  
+
   //  SS_Label_Info_6.8.1 #Call fxn get_MGsetup() to copy MGparms to working array and applies time-varying factors
   get_MGsetup(styr);
   echoinput << " did MG setup" << endl;
-  
+
   //  SS_Label_Info_6.8.2 #Call fxn get_growth1() to calculate quantities that are not time-varying
   get_growth1();
   echoinput << " did growth1" << endl;
@@ -1283,7 +1283,7 @@
   wtlen_seas = value(wtlen_seas);
   CVLmin = value(CVLmin);
   CVLmax = value(CVLmax);
-  
+
   //  SS_Label_Info_6.8.3 #Call fxn get_growth2() to calculate size-at-age
   get_growth2(styr); //   in preliminary calcs
   gp = 0;
@@ -1310,7 +1310,7 @@
         }
       }
     }
-  
+
   for (s = 1; s <= nseas; s++) //  get growth here in case needed for Lorenzen
   {
     t = styr + s - 1;
@@ -1322,7 +1322,7 @@
       ALK(ALK_idx) = value(ALK(ALK_idx));
     }
   }
-  
+
   //  SS_Label_Info_6.8.5 #Call fxn get_wtlen() and get_mat_fec() to calculate weight-at-length and maturity and fecundity vectors
   get_wtlen();
   get_mat_fec();
@@ -1332,12 +1332,12 @@
   mat_len = value(mat_len);
   mat_fec_len = value(mat_fec_len);
   mat_age = value(mat_age);
-  
+
   //  SS_Label_Info_6.8.4 #Call fxn get_natmort()
   echoinput << "ready to do natmort " << endl;
   get_natmort();
   natM_M1 = natM; //  base M1 to which M2 is added
-  
+
   //  SS_Label_Info_6.8.5 #add M2 for predator mortality
   if (N_pred > 0)
   {
@@ -1365,27 +1365,27 @@
       }
     }
   }
-  
+
   natM = value(natM);
   surv1 = value(surv1);
   surv2 = value(surv2);
-  
+
   s = spawn_seas;
   subseas = spawn_subseas;
   ALK_idx = (s - 1) * N_subseas + subseas;
-  
+
   //  SS_Label_Info_6.8.6 #Call fxn get_recr_distribution() for distribution of recruitment among areas and seasons, which can be time-varying
   echoinput << "do recrdist: " << endl;
   get_recr_distribution();
   recr_dist(y) = value(recr_dist(y)); //  so the just calculated constant values will be used unless its parms are active
-  
+
   //  SS_Label_Info_6.8.7 #Call fxn get_migration()
   if (do_migration > 0) // set up migration rates
   {
     get_migration();
     migrrate = value(migrrate);
   }
-  
+
   //  SS_Label_Info_6.8.8 #Call fxn get_age_age()  transition matrix from real age to observed age'
   if (N_ageerr > 0)
   {
@@ -1423,7 +1423,7 @@
     age_age = value(age_age); //   because these are not based on parameters
   }
   echoinput << " made the age_age' key " << endl;
-  
+
   if (catch_mult_pointer > 0)
   {
     get_catch_mult(y, catch_mult_pointer);
@@ -1432,9 +1432,9 @@
       catch_mult(j) = catch_mult(y);
     }
   }
-  
+
   //  SS_Label_Info_6.8.9 #Calculated values have been set equal to value() to remove derivative info and save space if their parameters are held constant
-  
+
   //  SS_Label_Info_6.9 #Set up headers for ParmTrace
   if (Do_ParmTrace > 0)
     ParmTrace << "Phase Iter ObjFun Change SSB_start SSB_end BiasAdj_st BiasAdj_max BiasAdj_end ";
@@ -1454,9 +1454,9 @@
     }
   }
   ParmTrace << endl;
-  
+
   //  SS_Label_Info_6.10 #Preliminary calcs done; Ready for estimation
-  
+
   if (pick_report_use(60) == "Y")
   {
     bodywtout << nages << " # maxage" << endl;
@@ -1468,7 +1468,7 @@
     bodywtout << "# fleet -2 contains maturity*fecundity" << endl;
     bodywtout << "#Yr Seas Sex Bio_Pattern BirthSeas Fleet " << age_vector << endl;
   }
-  
+
   if (Turn_off_phase < 0)
   {
     cout << " Requested exit after read when turn_off_phase < 0 " << endl;
@@ -1479,7 +1479,7 @@
     cout << " finished nucontrol report " << endl;
     exit(1);
   }
-  
+
   if (noest_flag == 1)
   {
     cout << endl
