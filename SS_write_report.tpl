@@ -1034,7 +1034,7 @@ FUNCTION void write_bigoutput()
       settle_time = settle_assignments_timing(settle);
       SS2out << settle << " " << settle_time << " " << gp << " " << p << " " << Settle_month(settle_time) << " " << Settle_seas(settle_time) << " " << Settle_age(settle_time) << " " << Settle_timing_seas(settle_time) << " " << recr_dist_endyr(gp, settle_time, p) << endl;
     }
-  
+    SS2out << "#" << endl;
     SS2out << "RECRUITMENT_DIST_TIMESERIES" << endl
            << "Year settle_assignment" << endl;
     SS2out << "Year ";
