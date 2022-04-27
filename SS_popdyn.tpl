@@ -172,9 +172,9 @@ FUNCTION void get_initial_conditions()
     natM(t_base - 2 * nseas + s) = natM_M1(s);
     natM(t_base - nseas + s) = natM_M1(s);
   } // set M equal to M1; M2 can be added later if predators are used
-  echoinput << t_base - 2 << " M " << natM(t_base - 2 + 1, 1)(0, 6) << endl;
-  echoinput << t_base - 1 << " M " << natM(t_base - 1 + 1, 1)(0, 6) << endl;
-  echoinput << t_base << " M " << natM(t_base + 1, 1)(0, 6) << endl;
+  echoinput << t_base - 2 << " M " << natM(t_base - 2 * nseas + 1, 1)(0, 6) << endl;
+  echoinput << t_base - 1 << " M " << natM(t_base - nseas + 1, 1)(0, 6) << endl;
+  echoinput << t_base << " M " << natM(t_base, 1)(0, 6) << endl;
   #ifdef DO_ONCE
   if (do_once == 1)
     cout << " natmort OK" << endl;
@@ -501,7 +501,6 @@ FUNCTION void get_initial_conditions()
     exp_rec(eq_yr, 3) = equ_Recr;
     exp_rec(eq_yr, 4) = equ_Recr;
     R1 = equ_Recr;
-
     Do_Equil_Calc(equ_Recr); // calculated SSB_equil
     CrashPen += Equ_penalty;
   }
@@ -573,6 +572,7 @@ FUNCTION void get_initial_conditions()
         Z_rate(t, p, g) = equ_Z(s, p, g);
       }
   }
+
   if (save_for_report > 0)
   {
     t = styr - nseas - 1;
@@ -2154,7 +2154,7 @@ FUNCTION void Do_Equil_Calc(const prevariable& equ_Recr)
               temp3 = equ_numbers(1, p, g, a); //  numbers at begin of year
               for (int kkk = 1; kkk <= nseas; kkk++)
               {
-                temp3 *= mfexp(-seasdur(kkk) * natM(kkk, GP3(g), a));
+                temp3 *= mfexp(-seasdur(kkk) * natM(t_base+kkk, GP3(g), a));
               }
               tempM += temp3; //  survivors if just M operating
             }
@@ -2186,7 +2186,7 @@ FUNCTION void Do_Equil_Calc(const prevariable& equ_Recr)
               temp3 = equ_numbers(1, p, g, a); //  numbers at begin of year
               for (int kkk = 1; kkk <= nseas; kkk++)
               {
-                temp3 *= mfexp(-seasdur(kkk) * natM(kkk, GP3(g), a));
+                temp3 *= mfexp(-seasdur(kkk) * natM(t_base+kkk, GP3(g), a));
               }
               tempM += temp3; //  survivors if just M operating
             }
