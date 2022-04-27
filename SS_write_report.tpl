@@ -3308,7 +3308,7 @@ FUNCTION void write_bigoutput()
           if (use_morph(g) > 0)
           {
             for (s = 1; s <= nseas; s++)
-              SS2out << gp << " " << gg << " " << settle << " " << s << " " << natM(s, g) << endl;
+              SS2out << gp << " " << gg << " " << settle << " " << s << " " << natM(styr, g) << endl;
           }
         }
 
@@ -3516,7 +3516,7 @@ FUNCTION void write_bigoutput()
           for (a = 0; a <= nages; a++)
           {
             SS2out << s << " " << g << " " << GP4(g) << " " << sx(g) << " " << settle_g(g) << " " << GP2(g) << " " << a << " " << real_age(g, ALK_idx, a) << " " << calen_age(g, ALK_idx, a) << " " << calen_age(g, ALK_idx_mid, a);
-            SS2out << " " << natM(s, GP3(g), a) << " " << Ave_Size(t, 1, g, a) << " " << Ave_Size(t, mid_subseas, g, a) << " "
+            SS2out << " " << natM(t, GP3(g), a) << " " << Ave_Size(t, 1, g, a) << " " << Ave_Size(t, mid_subseas, g, a) << " "
                    << Sd_Size_within(ALK_idx, g, a) << " " << Sd_Size_within(ALK_idx_mid, g, a) << " "
                    << Wt_Age_beg(s, g, a) << " " << Wt_Age_mid(s, g, a) << " " << ALK(ALK_idx, g, a) * mat_len(GP4(g)) << " ";
             if (Maturity_Option <= 2)
@@ -4918,6 +4918,7 @@ FUNCTION void Global_MSY()
   return;
   }
 
+//  note that FUNCTION write_Bzero_output() is found in file SS_write.tpl
 FUNCTION dvector process_comps(const int sexes, const int sex, dvector& bins, dvector& means, const dvector& tails,
     dvector& obs, dvector& exp)
   {

@@ -1321,15 +1321,16 @@ FUNCTION void Process_STDquant()
   // NatM
   if (NatM_Std_Cnt > 0)
   {
+    t = styr + (endyr - styr) * nseas; // first season of selected year
     for (i = 1; i <= NatM_Std_Cnt; i++)
     {
       j = NatM_Std_Pick(i); // selected age
       k = g_finder(Do_NatM_Std, 1); // selected GP and gender  gp3
-      Extra_Std(gender * (Selex_Std_Cnt + Growth_Std_Cnt + NatAge_Std_Cnt) + i) = natM(1, k, j);
+      Extra_Std(gender * (Selex_Std_Cnt + Growth_Std_Cnt + NatAge_Std_Cnt) + i) = natM(t, k, j);
       if (gender == 2)
       {
         k = g_finder(Do_NatM_Std, 2); // selected GP and gender  gp3
-        Extra_Std(gender * (Selex_Std_Cnt + Growth_Std_Cnt + NatAge_Std_Cnt) + NatM_Std_Cnt + i) = natM(1, k, j);
+        Extra_Std(gender * (Selex_Std_Cnt + Growth_Std_Cnt + NatAge_Std_Cnt) + NatM_Std_Cnt + i) = natM(t, k, j);
       }
     }
   }
