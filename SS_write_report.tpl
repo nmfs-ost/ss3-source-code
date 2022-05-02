@@ -3823,7 +3823,7 @@ FUNCTION void write_bigoutput()
             repli = 1;
             last_t = ALK_time;
           }
-          in_superperiod = determine_speriod(in_superperiod, anystring, header_l(f,i,2), header_l(f,i,3));
+          in_superperiod = determine_speriod(in_superperiod, anystring, header_l(f, i, 2), header_l(f, i, 3));
 
           if (gen_l(f, i) != 2)
           {
@@ -3973,7 +3973,7 @@ FUNCTION void write_bigoutput()
             repli = 1;
             last_t = ALK_time;
           }
-          in_superperiod = determine_speriod(in_superperiod, anystring, header_a(f,i,2), header_a(f,i,3));
+          in_superperiod = determine_speriod(in_superperiod, anystring, header_a(f, i, 2), header_a(f, i, 3));
 
           if (gen_a(f, i) != 2)
           {
@@ -4126,7 +4126,7 @@ FUNCTION void write_bigoutput()
             repli = 1;
             last_t = ALK_time;
           }
-          in_superperiod = determine_speriod(in_superperiod, anystring, header_ms(f,i,2), header_ms(f,i,3));
+          in_superperiod = determine_speriod(in_superperiod, anystring, header_ms(f, i, 2), header_ms(f, i, 3));
 
           for (z = 1; z <= n_abins2; z++)
           {
