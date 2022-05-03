@@ -500,7 +500,8 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
     for (s = 1; s <= nseas; s++)
     {
       t = styr - 3 * nseas + s - 1;
-      natM(t) = natM_unf(s);
+  //  natM(  shortcut.  doing area 1 only for now
+      natM(t,1) = natM_unf(s);
       subseas = 1; //   for begin of season
       ALK_idx = (s - 1) * N_subseas + subseas;
       ALK_subseas_update(ALK_idx) = 1; // new in 3.30.12   force updating
@@ -2323,29 +2324,43 @@ FUNCTION void Get_Forecast()
               {
                 Make_FishSelex(); // calcs fishery selex by current season, all fleets, current gmorph
               }
-            if (N_pred > 0)
-            {
-              for (f1 = 1; f1 <= N_pred; f1++)
-              {
-                f = predator(f1);
-                pred_M2(f1, t) = mgp_adj(predparm_pointer(f1)); //  base with no seasonal effect
-                if (nseas > 1)
-                  pred_M2(f1, t) *= mgp_adj(predparm_pointer(f1) + s);
+      if(N_pred>0)
+      {
+//  rebase natM to M1
+        for(p = 1; p <= pop; p++)
+        {
+          natM(t, p) = natM(t,0);
+        }
+        for (f1 = 1; f1 <= N_pred; f1++)
+        {
+          f = predator(f1);
+          pred_M2(f1, t) = mgp_adj(predparm_pointer(f1)); //  base with no seasonal effect
+          if (nseas > 1)
+            pred_M2(f1, t) *= mgp_adj(predparm_pointer(f1) + s);
+          p = fleet_area(f);  //  area this predator occurs in
 
-                for (gp = 1; gp <= N_GP * gender; gp++)
-                {
-                  g = g_Start(gp); //  base platoon
-                  for (settle = 1; settle <= N_settle_timings; settle++)
-                  {
-                    g += N_platoon;
-                    int gpi = GP3(g); // GP*gender*settlement
-                    natM(t, gpi) += pred_M2(f1, t) * sel_num(s, f, g);
-                    surv1(s, gpi) = mfexp(-natM(t, gpi) * seasdur_half(s));
-                    surv2(s, gpi) = square(surv1(s, gpi));
-                  }
-                }
-              }
+  //  a new array for indexing g and gpi could simplify below
+  //        for (gp = 1; gp <= N_GP * gender * N_settle_timings; gp++)
+
+          for (gp = 1; gp <= N_GP * gender; gp++)
+          {
+            g = g_Start(gp); //  base platoon
+            for (settle = 1; settle <= N_settle_timings; settle++)
+            {
+              g += N_platoon;
+              int gpi = GP3(g); // GP*gender*settlement
+              natM(t, p,gpi) += pred_M2(f1, t) * sel_num(s, f, g);
             }
+          }
+        }
+      }
+
+      for(p=1; p<=pop; p++)
+      {
+        int s1 = (p-1)*pop + s;
+        surv1(s1) = mfexp(-natM(t,p) * seasdur_half(s));
+        surv2(s1) = square(surv1(s));
+      }
 
           } //  end of seasonal biology
 
@@ -2439,7 +2454,7 @@ FUNCTION void Get_Forecast()
                 {
                   //                  if(y==endyr+1) natage(t+Settle_seas_offset(settle),p,g,Settle_age(settle))=0.0;  //  to negate the additive code
                   natage(t + Settle_seas_offset(settle), p, g, Settle_age(settle)) = Recruits * recr_dist(y, GP(g), settle, p) * platoon_distr(GP2(g)) *
-                      mfexp(natM(t, GP3(g), Settle_age(settle)) * Settle_timing_seas(settle));
+                      mfexp(natM(t, p, GP3(g), Settle_age(settle)) * Settle_timing_seas(settle));
                   if (Fcast_Loop1 == jloop && ABC_Loop == ABC_Loop_end)
                   {
                     if (Settle_seas(settle) == s)
@@ -2751,7 +2766,7 @@ FUNCTION void Get_Forecast()
                 for (g = 1; g <= gmorph; g++) //loop over fishing fleets to get Z=M+sum(F)
                   if (use_morph(g) > 0)
                   {
-                    Z_rate(t, p, g) = natM(t, GP3(g));
+                    Z_rate(t, p, g) = natM(t, p, GP3(g));
                     for (f = 1; f <= Nfleet; f++)
                       if (fleet_area(f) == p && Fcast_RelF_Use(s, f) > 0.0 && fleet_type(f) <= 2)
                       {
@@ -3055,7 +3070,7 @@ FUNCTION void Get_Forecast()
                   //                  if(y==endyr+1) natage(t+Settle_seas_offset(settle),p,g,Settle_age(settle))=0.0;  //  to negate the additive code
                   //                  natage(t+Settle_seas_offset(settle),p,g,Settle_age(settle)) += Recruits*recr_dist(y,GP(g),settle,p)*platoon_distr(GP2(g))*
                   natage(t + Settle_seas_offset(settle), p, g, Settle_age(settle)) = Recruits * recr_dist(y, GP(g), settle, p) * platoon_distr(GP2(g)) *
-                      mfexp(natM(t, GP3(g), Settle_age(settle)) * Settle_timing_seas(settle));
+                      mfexp(natM(t, p, GP3(g), Settle_age(settle)) * Settle_timing_seas(settle));
                   if (Fcast_Loop1 == jloop && ABC_Loop == ABC_Loop_end)
                   {
                     if (Settle_seas(settle) == s)
@@ -3149,7 +3164,7 @@ FUNCTION void Get_Forecast()
                         temp3 = natage(t - nseas + 1, p, g, a); //  numbers at begin of year
                         for (j = 1; j <= nseas; j++)
                         {
-                          temp3 *= mfexp(-seasdur(j) * natM(t - nseas + j, GP3(g), a));
+                          temp3 *= mfexp(-seasdur(j) * natM(t - nseas + j, p, GP3(g), a));
                         }
                         tempM += temp3; //  survivors if just M operating
                       }
@@ -3180,7 +3195,7 @@ FUNCTION void Get_Forecast()
                         temp3 = natage(t - nseas + 1, p, g, a); //  numbers at begin of year
                         for (j = 1; j <= nseas; j++)
                         {
-                          temp3 *= mfexp(-seasdur(j) * natM(t - nseas + j, GP3(g), a));
+                          temp3 *= mfexp(-seasdur(j) * natM(t - nseas + j, p, GP3(g), a));
                         }
                         tempM += temp3; //  survivors if just M operating
                       }

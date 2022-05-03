@@ -272,18 +272,18 @@ PARAMETER_SECTION
 //  gmorph = gender*N_GP*N_settle_timings*N_platoon;  //  total potential number of biological entities, some may not get used so see use_morph(g)
   matrix natMparms(1,N_natMparms,1,N_GP*gender)  // will be derived from the MGparms
   !!if(Do_Forecast>0) {k=TimeMax_Fcast_std+nseas;} else {k=TimeMax+nseas;}
-  3darray natM(styr-3*nseas,k,1,N_GP*gender*N_settle_timings,0,nages)  // no area (p) dimension for M
-//  3darray natM(1,nseas,1,N_GP*gender*N_settle_timings,0,nages)
-  3darray natM_M1(1,nseas,1,N_GP*gender*N_settle_timings,0,nages)
-  matrix pred_M2(1,N_pred,styr-3*nseas,TimeMax_Fcast_std+nseas);  //  index by t
+  4darray natM(styr-3*nseas,k,0,pop,1,N_GP*gender*N_settle_timings,0,nages)  // M1 + pred_M2, see desc. in biofxn.tpl
+  3darray natM_M1(1,nseas,1,N_GP*gender*N_settle_timings,0,nages)  //  base M, biology only
+  matrix pred_M2(1,N_pred,styr-3*nseas,TimeMax_Fcast_std+nseas);  //  predator M2
   3darray natM_unf(1,nseas,1,N_GP*gender*N_settle_timings,0,nages)
   3darray natM_endyr(1,nseas,1,N_GP*gender*N_settle_timings,0,nages)
-  3darray surv1(1,nseas,1,N_GP*gender*N_settle_timings,0,nages)
-  3darray surv1_unf(1,nseas,1,N_GP*gender*N_settle_timings,0,nages)
-  3darray surv1_endyr(1,nseas,1,N_GP*gender*N_settle_timings,0,nages)
-  3darray surv2(1,nseas,1,N_GP*gender*N_settle_timings,0,nages)
-  3darray surv2_unf(1,nseas,1,N_GP*gender*N_settle_timings,0,nages)
-  3darray surv2_endyr(1,nseas,1,N_GP*gender*N_settle_timings,0,nages)
+  //  add area (pop) dimension to same dimension as season; use s1=(p-1)*pop + s
+  3darray surv1(1,nseas*pop,1,N_GP*gender*N_settle_timings,0,nages)
+  3darray surv1_unf(1,nseas*pop,1,N_GP*gender*N_settle_timings,0,nages)
+  3darray surv1_endyr(1,nseas*pop,1,N_GP*gender*N_settle_timings,0,nages)
+  3darray surv2(1,nseas*pop,1,N_GP*gender*N_settle_timings,0,nages)
+  3darray surv2_unf(1,nseas*pop,1,N_GP*gender*N_settle_timings,0,nages)
+  3darray surv2_endyr(1,nseas*pop,1,N_GP*gender*N_settle_timings,0,nages)
   4darray Z_rate(styr-3*nseas,k,1,pop,1,gmorph,0,nages)
   3darray Zrate2(1,pop,1,gmorph,0,nages)
   matrix Hrate(1,Nfleet,styr-3*nseas,k) //Harvest Rate for each fleet; this is F

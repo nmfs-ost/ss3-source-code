@@ -1336,39 +1336,52 @@
   //  SS_Label_Info_6.8.4 #Call fxn get_natmort()
   echoinput << "ready to do natmort " << endl;
   get_natmort();
+  echoinput<<"ok"<<endl;
   for (s = 1; s <= nseas; s++)
   {
-    natM(t_base + s) = natM_M1(s);
+    natM(t_base + s,0) = natM_M1(s);
   } // set M equal to M1; M2 can be added later if predators are used
-
+  echoinput<<" ready for pred "<<endl;
   //  SS_Label_Info_6.8.5 #add M2 for predator mortality
-  if (N_pred > 0)
-  {
-    for (f1 = 1; f1 <= N_pred; f1++)
-    {
-      pred_M2(f1, styr) = MGparm(predparm_pointer(f1)); //  base with no seasonal effect
-      if (nseas == 1)
+      if(N_pred>0)
       {
-        for (gp = 1; gp <= N_GP * gender * N_settle_timings; gp++)
+//  rebase natM to M1
+        for(p = 1; p <= pop; p++)
         {
-          natM(styr, gp) += pred_M2(f1, styr);
+          natM(t, p) = natM(t,0);
         }
-      }
-      else
-      {
-        t = styr - 1; // resets for each predator
-        for (s = 1; s <= nseas; s++)
+        for (f1 = 1; f1 <= N_pred; f1++)
         {
-          t++;
-          for (gp = 1; gp <= N_GP * gender * N_settle_timings; gp++)
+          f = predator(f1);
+          pred_M2(f1, t) = mgp_adj(predparm_pointer(f1)); //  base with no seasonal effect
+          if (nseas > 1)
+            pred_M2(f1, t) *= mgp_adj(predparm_pointer(f1) + s);
+          p = fleet_area(f);  //  area this predator occurs in
+
+  //  a new array for indexing g and gpi could simplify below
+  //        for (gp = 1; gp <= N_GP * gender * N_settle_timings; gp++)
+
+          for (gp = 1; gp <= N_GP * gender; gp++)
           {
-            natM(t, gp) += pred_M2(f1, styr) * MGparm(predparm_pointer(f1) + s);
+            g = g_Start(gp); //  base platoon
+            for (settle = 1; settle <= N_settle_timings; settle++)
+            {
+              g += N_platoon;
+              int gpi = GP3(g); // GP*gender*settlement
+              natM(t, p,gpi) += pred_M2(f1, t) * sel_num(s, f, g);
+            }
           }
         }
       }
-    }
-  }
 
+      for(s=1; s<=nseas; s++)
+      for(p=1; p<=pop; p++)
+      {
+        int s1 = (p-1)*pop + s;
+        surv1(s1) = mfexp(-natM(t,p) * seasdur_half(s));
+        surv2(s1) = square(surv1(s));
+      }
+  echoinput<<"here"<<endl;
   natM_M1 = value(natM_M1);
   surv1 = value(surv1);
   surv2 = value(surv2);

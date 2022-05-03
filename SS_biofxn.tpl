@@ -1058,13 +1058,7 @@ FUNCTION void get_natmort()
             {
               for (s = 1; s <= nseas; s++)
               {
-                if (docheckup == 1)
-                  echoinput << "Natmort " << s << " " << gp << " " << gpi << " " << natMparms(1, gp);
                 natM_M1(s, gpi) = natMparms(1, gp);
-                surv1(s, gpi) = mfexp(-natMparms(1, gp) * seasdur_half(s)); // refers directly to the constant value
-                surv2(s, gpi) = square(surv1(s, gpi));
-                if (docheckup == 1)
-                  echoinput << " surv " << surv1(s, gpi) << endl;
               }
               break;
             }
@@ -1120,8 +1114,6 @@ FUNCTION void get_natmort()
                 }
                 if (k == 1)
                   natM_M1(s, gpi, 0) = natM_M1(s, gpi, 1);
-                surv1(s, gpi) = mfexp(-natM_M1(s, gpi) * seasdur_half(s));
-                surv2(s, gpi) = square(surv1(s, gpi));
               } // end season
               break;
             } // end natM_type==1
@@ -1140,8 +1132,6 @@ FUNCTION void get_natmort()
                     Loren_M1;
                 if (s < Bseas(g))
                   natM_M1(s, gpi, 0) = natM_M1(s + 1, gpi, 0);
-                surv1(s, gpi) = value(mfexp(-natM_M1(s, gpi) * seasdur_half(s)));
-                surv2(s, gpi) = value(square(surv1(s, gpi)));
               }
               break;
             }
@@ -1151,8 +1141,6 @@ FUNCTION void get_natmort()
               for (s = 1; s <= nseas; s++)
               {
                 natM_M1(s, gpi) = Age_NatMort(gp);
-                surv1(s, gpi) = value(mfexp(-natM_M1(s, gpi) * seasdur_half(s)));
-                surv2(s, gpi) = value(square(surv1(s, gpi)));
               }
               break;
             }
@@ -1182,8 +1170,6 @@ FUNCTION void get_natmort()
                   natM_M1(s, gpi, 0) = natM_M1(s, gpi, 1);
                 }
                 natM_M1(s, gpi, nages) = Age_NatMort(gp, nages);
-                surv1(s, gpi) = mfexp(-natM_M1(s, gpi) * seasdur_half(s));
-                surv2(s, gpi) = square(surv1(s, gpi));
               } // end season
               break;
             }
@@ -1242,6 +1228,10 @@ FUNCTION void get_natmort()
             Do_AveAge = 1;
             ave_age = 1.0 / natM_M1(1, gpi, nages / 2) - 0.5;
           }
+
+//                surv1(s, gpi) = mfexp(-natM_M1(s, gpi) * seasdur_half(s));
+//                surv2(s, gpi) = square(surv1(s, gpi));
+
   #ifdef DO_ONCE
           if (do_once == 1)
           {
@@ -1254,8 +1244,11 @@ FUNCTION void get_natmort()
       } // end settlement
     } // end growth pattern x gender loop
   for (s = 1; s <= nseas; s++)
+  for (p = 0; p <= pop; p++)
   {
-    natM(t_base + s) = natM_M1(s); // set M equal to M1; M2 can be added later if predators are used
+    natM(t_base + s,p) = natM_M1(s); // set M equal to M1;
+                                     // p=0 holds that M1 as the base M with no predators
+                                     // pred_M2 will be added later on area-specific basis
   }
   } // end nat mort
 

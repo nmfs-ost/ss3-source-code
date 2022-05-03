@@ -926,7 +926,7 @@ FUNCTION void write_rebuilder_output()
       for (g = 1; g <= gmorph; g++)
         if (sx(g) == gg && use_morph(g) > 0)
         {
-          tempvec_a += elem_prod(natM(t, GP3(g)), natage(t, p, g));
+          tempvec_a += elem_prod(natM(t, p, GP3(g)), natage(t, p, g));
           tempvec2 += natage(t, p, g); //  note, uses season 1 only
         }
     }

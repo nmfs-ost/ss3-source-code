@@ -3298,7 +3298,7 @@ FUNCTION void write_bigoutput()
     SS2out << endl
            << pick_report_name(43) << endl;
     SS2out << "Method: " << natM_type << endl
-           << "Bio_Pattern Sex Settlement Seas " << age_vector << endl;
+           << "Bio_Pattern Sex Settlement Seas Area " << age_vector << endl;
     g = 0;
     for (gg = 1; gg <= gender; gg++)
       for (gp = 1; gp <= N_GP; gp++)
@@ -3308,7 +3308,8 @@ FUNCTION void write_bigoutput()
           if (use_morph(g) > 0)
           {
             for (s = 1; s <= nseas; s++)
-              SS2out << gp << " " << gg << " " << settle << " " << s << " " << natM(styr, g) << endl;
+            for (p = 1; p <= pop; p++)
+              SS2out << gp << " " << gg << " " << settle << " " << s << " " << p <<" " << natM(styr, p, g) << endl;
           }
         }
 
@@ -3516,7 +3517,7 @@ FUNCTION void write_bigoutput()
           for (a = 0; a <= nages; a++)
           {
             SS2out << s << " " << g << " " << GP4(g) << " " << sx(g) << " " << settle_g(g) << " " << GP2(g) << " " << a << " " << real_age(g, ALK_idx, a) << " " << calen_age(g, ALK_idx, a) << " " << calen_age(g, ALK_idx_mid, a);
-            SS2out << " " << natM(t, GP3(g), a) << " " << Ave_Size(t, 1, g, a) << " " << Ave_Size(t, mid_subseas, g, a) << " "
+            SS2out << " " << natM(t, 1, GP3(g), a) << " " << Ave_Size(t, 1, g, a) << " " << Ave_Size(t, mid_subseas, g, a) << " "
                    << Sd_Size_within(ALK_idx, g, a) << " " << Sd_Size_within(ALK_idx_mid, g, a) << " "
                    << Wt_Age_beg(s, g, a) << " " << Wt_Age_mid(s, g, a) << " " << ALK(ALK_idx, g, a) * mat_len(GP4(g)) << " ";
             if (Maturity_Option <= 2)
