@@ -96,9 +96,6 @@ FUNCTION void get_initial_conditions()
   yz = styr;
   t_base = styr - 1;
   recr_dist_unf.initialize();
-  natM_unf.initialize();
-  surv1_unf.initialize();
-  surv2_unf.initialize();
 
   //  Create time varying parameters
   //  following call is to routine that does this for all timevary parameters
@@ -323,21 +320,6 @@ FUNCTION void get_initial_conditions()
         surv1(s1) = mfexp(-natM(t,p) * seasdur_half(s));
         surv2(s1) = square(surv1(s));
       }
-//      if (do_once == 1)
-//       echoinput << y << " s " << s << " t " << t << " gp " << gpi << "  M1: " << natM_M1(s,p) << endl;
-//      if (do_once == 1)
-//      echoinput << y << " s " << s << " t " << t << " gp " << gpi << "  M1+M2: " << natM(t, gpi) << endl;
-
-    if (y >= Bmark_Yr(1) && y <= Bmark_Yr(2))
-    {
-      for (gp = 1; gp <= N_GP * gender * N_settle_timings; gp++)
-      {
-  //  natM(  shortcut.  doing area 1 only for now
-        natM_unf(s, gp) += natM(t, 1, gp); //  need nseas to capture differences due to settlement
-        surv1_unf(s, gp) += surv1(s, 1, gp); //  need nseas to capture differences due to settlement
-        surv2_unf(s, gp) += surv2(s, 1, gp); //  need nseas to capture differences due to settlement
-      }
-    }
   } // end season (s) loop in biology, mortality and selectivity calcs in initial year
 
   #ifdef DO_ONCE
@@ -900,53 +882,42 @@ FUNCTION void get_time_series()
           natM(t, p) = natM(t,0);
         }
         // SS_Label_Info_24.x.x #add predator M2 inside the yr,seas loop
-      if(N_pred>0)
-      {
-  //  add pred_M2 by area
-        for (f1 = 1; f1 <= N_pred; f1++)
+        if(N_pred>0)
         {
-          f = predator(f1);
-          pred_M2(f1, t) = mgp_adj(predparm_pointer(f1)); //  base with no seasonal effect
-          if (nseas > 1)
-            pred_M2(f1, t) *= mgp_adj(predparm_pointer(f1) + s);
-          p = fleet_area(f);  //  area this predator occurs in
-
-  //  a new array for indexing g and gpi could simplify below
-  //        for (gp = 1; gp <= N_GP * gender * N_settle_timings; gp++)
-
-          for (gp = 1; gp <= N_GP * gender; gp++)
+    //  add pred_M2 by area
+          for (f1 = 1; f1 <= N_pred; f1++)
           {
-            g = g_Start(gp); //  base platoon
-            for (settle = 1; settle <= N_settle_timings; settle++)
+            f = predator(f1);
+            pred_M2(f1, t) = mgp_adj(predparm_pointer(f1)); //  base with no seasonal effect
+            if (nseas > 1)
+              pred_M2(f1, t) *= mgp_adj(predparm_pointer(f1) + s);
+            p = fleet_area(f);  //  area this predator occurs in
+
+    //  a new array for indexing g and gpi could simplify below
+    //        for (gp = 1; gp <= N_GP * gender * N_settle_timings; gp++)
+
+            for (gp = 1; gp <= N_GP * gender; gp++)
             {
-              g += N_platoon;
-              int gpi = GP3(g); // GP*gender*settlement
-              natM(t, p,gpi) += pred_M2(f1, t) * sel_num(s, f, g);
-               if (do_once == 1)
-                  echoinput << y << " s " << s << " t " << t << " gp " << gpi << "  M1: " << natM_M1(s, gpi) << endl;
-                if (do_once == 1)
-                  echoinput << y << " s " << s << " t " << t << " gp " << gpi << "  M1+M2: " << natM(t, 1, gpi) << endl;
+              g = g_Start(gp); //  base platoon
+              for (settle = 1; settle <= N_settle_timings; settle++)
+              {
+                g += N_platoon;
+                int gpi = GP3(g); // GP*gender*settlement
+                natM(t, p,gpi) += pred_M2(f1, t) * sel_num(s, f, g);
+                 if (do_once == 1)
+                    echoinput << y << " s " << s << " t " << t << " gp " << gpi << "  M1: " << natM_M1(s, gpi) << endl;
+                  if (do_once == 1)
+                    echoinput << y << " s " << s << " t " << t << " gp " << gpi << "  M1+M2: " << natM(t, 1, gpi) << endl;
+              }
             }
           }
         }
-      }
 
-      for(p=1; p<=pop; p++)
-      {
-        int s1 = (p-1)*pop + s;
-        surv1(s1) = mfexp(-natM(t,p) * seasdur_half(s));
-        surv2(s1) = square(surv1(s));
-      }
- 
-  //  shortcut  doing natM( area 1 only
-        if (y >= Bmark_Yr(1) && y <= Bmark_Yr(2))
+        for(p=1; p<=pop; p++)
         {
-          for (gp = 1; gp <= N_GP * gender * N_settle_timings; gp++)
-          {
-            natM_unf(s, gp) += natM(t, 1, gp);
-            surv1_unf(s, gp) += surv1(s, gp);
-            surv2_unf(s, gp) += surv2(s, gp);
-          }
+          int s1 = (p-1)*pop + s;
+          surv1(s1) = mfexp(-natM(t,p) * seasdur_half(s));
+          surv2(s1) = square(surv1(s));
         }
       }
       //  SS_Label_Info_24.2.2 #Compute spawning biomass if this is spawning season so recruits could occur later this season
@@ -1772,21 +1743,11 @@ FUNCTION void get_time_series()
 
   //  Save end year quantities to refresh for forecast after benchmark is called
   recr_dist_endyr = recr_dist(endyr);
-  for (s = 1; s <= nseas; s++)
-  {
-    //  shortcut natM( area 1 only
-    natM_endyr(s) = natM(styr + (endyr - styr) * nseas + s, 1);
-  }
-  surv1_endyr = surv1;
-  surv2_endyr = surv2;
 
   //  average quantities accumulated during the time series
   if (Do_Benchmark > 0)
   {
     recr_dist(styr - 3) = recr_dist_unf / float(Bmark_Yr(8) - Bmark_Yr(7) + 1);
-    natM_unf /= float(Bmark_Yr(2) - Bmark_Yr(1) + 1);
-    surv1_unf /= float(Bmark_Yr(2) - Bmark_Yr(1) + 1);
-    surv2_unf / float(Bmark_Yr(2) - Bmark_Yr(1) + 1);
   }
 
   if (Do_TG > 0)
@@ -1879,7 +1840,6 @@ FUNCTION void Do_Equil_Calc(const prevariable& equ_Recr)
               equ_numbers(Settle_seas(settle), p, g, Settle_age(settle)) = equ_Recr * recr_dist(y, GP(g), settle, p) * platoon_distr(GP2(g)) *
                   mfexp(natM(t_base + Settle_seas(settle), p, GP3(g), Settle_age(settle)) * Settle_timing_seas(settle));
             }
-  if(a<10) echoinput<<a<<" equ_M "<<natM(t, p, GP3(g),a)<<endl;
 
             if (equ_numbers(s, p, g, a) > 0.0) //  will only be zero if not yet settled
             {
@@ -1961,7 +1921,6 @@ FUNCTION void Do_Equil_Calc(const prevariable& equ_Recr)
                   }
                 }
                 Nsurvive = N_beg * mfexp(-seasdur(s) * equ_Z(s, p, g, a1));
-
               } //  end F method
               Survivors(p, g) = Nsurvive;
             }
@@ -2260,6 +2219,5 @@ FUNCTION void Do_Equil_Calc(const prevariable& equ_Recr)
   {
     SSB_equil += Hermaphro_maleSPB * sum(MaleSSB_equil_pop_gp);
   }
-
   } //  end equil calcs
 

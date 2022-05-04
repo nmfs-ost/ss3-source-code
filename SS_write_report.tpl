@@ -3297,51 +3297,50 @@ FUNCTION void write_bigoutput()
   {
     SS2out << endl
            << pick_report_name(43) << endl;
-    SS2out << "Method: " << natM_type << endl
-           << "Bio_Pattern Sex Settlement Seas Area " << age_vector << endl;
-    g = 0;
-    for (gg = 1; gg <= gender; gg++)
-      for (gp = 1; gp <= N_GP; gp++)
-        for (settle = 1; settle <= N_settle_timings; settle++)
-        {
-          g++;
-          if (use_morph(g) > 0)
-          {
-            for (s = 1; s <= nseas; s++)
-            for (p = 1; p <= pop; p++)
-              SS2out << gp << " " << gg << " " << settle << " " << s << " " << p <<" " << natM(styr, p, g) << endl;
-          }
-        }
-
-    SS2out << "#" << endl
-           << "Natural_Mortality_Bmark" << endl
-           << "Bio_Pattern Sex Settlement Seas " << age_vector << endl;
-    g = 0;
-    for (gg = 1; gg <= gender; gg++)
-      for (gp = 1; gp <= N_GP; gp++)
-        for (settle = 1; settle <= N_settle_timings; settle++)
-        {
-          g++;
-          if (use_morph(g) > 0)
-          {
-            for (s = 1; s <= nseas; s++)
-              SS2out << gp << " " << gg << " " << settle << " " << s << " " << natM_unf(s, g) << endl;
-          }
-        }
-
-    SS2out << "#" << endl
-           << "Natural_Mortality_endyr" << endl
-           << "Bio_Pattern Sex Settlement Seas " << age_vector << endl;
-    g = 0;
-    for (gg = 1; gg <= gender; gg++)
-      for (gp = 1; gp <= N_GP; gp++)
-        for (settle = 1; settle <= N_settle_timings; settle++)
-        {
-          g++;
-          if (use_morph(g) > 0)
-          {
-            for (s = 1; s <= nseas; s++)
-              SS2out << gp << " " << gg << " " << settle << " " << s << " " << natM_endyr(s, g) << endl;
+    SS2out << "Method: " << natM_type << endl;
+    int kkk = 1;
+    if(N_pred>0)
+    {
+      SS2out<< "area 0 is shows M1 only, numbered areas have M1+M2"<<endl;
+      kkk = 0;
+    }
+    SS2out << "Area Bio_Pattern Sex BirthSeas Settlement Platoon Morph Yr Seas Time Beg/Mid Era" << age_vector << endl;
+    for (p = kkk; p <= pop; p++)
+    for (gp = 1; gp <= N_GP * gender; gp++)
+    {
+      g = g_Start(gp); //  base platoon
+      for (settle = 1; settle <= N_settle_timings; settle++)
+      {
+        g += N_platoon;
+        int gpi = GP3(g); // GP*gender*settlement
+        for (y = styr - 3; y <= YrMax; y++)
+        for (s = 1; s <= nseas; s++)
+            {
+              t = styr + (y - styr) * nseas + s - 1;
+              temp = double(y) + azero_seas(s);
+              SS2out << p << " " << GP4(g) << " " << sx(g) << " " << Bseas(g) << " " << settle_g(g) << " " << GP2(g) << " " << g << " " << y << " " << s << " " << temp << " B";
+              if (y == styr - 3)
+              {
+                SS2out << " BENCH ";
+              }
+              if (y == styr - 2)
+              {
+                SS2out << " VIRG ";
+              }
+              else if (y == styr - 1)
+              {
+                SS2out << " INIT ";
+              }
+              else if (y <= endyr)
+              {
+                SS2out << " TIME ";
+              }
+              else
+              {
+                SS2out << " FORE ";
+              }
+              SS2out<<natM(t,p,gpi)<<endl;
+            }
           }
         }
 

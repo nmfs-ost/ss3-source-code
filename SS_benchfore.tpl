@@ -219,12 +219,12 @@ FUNCTION void setup_Benchmark()
   {
     //      if(save_for_report>0 || last_phase() || current_phase()==max_phase || ((sd_phase() || mceval_phase()) && (initial_params::mc_phase==0)))
     {
-      //  calc average body size to use in equil; store in styr-3
+      //  calc average biology to use in equil; store in styr-3
       temp = float(Bmark_Yr(2) - Bmark_Yr(1) + 1.); //  get denominator
       for (g = 1; g <= gmorph; g++)
         if (use_morph(g) > 0)
         {
-          for (s = 0; s <= nseas - 1; s++)
+          for (s = 0; s <= nseas - 1; s++)  //  note -1 baked into the loop index
           {
             tempvec_a.initialize();
             for (t = Bmark_t(1); t <= Bmark_t(2); t += nseas)
@@ -238,6 +238,25 @@ FUNCTION void setup_Benchmark()
               tempvec_a += Ave_Size(t + s, mid_subseas, g);
             }
             Ave_Size(styr - 3 * nseas + s, mid_subseas, g) = tempvec_a / temp;
+
+  //  get mean natM
+            int gpi=GP3(g);
+            for (int p = 0; p <= pop; p++)
+            {
+              tempvec_a.initialize();
+              for (t = Bmark_t(1); t <= Bmark_t(2); t += nseas)
+              {
+                tempvec_a += natM(t + s,p,gpi);
+              }
+              natM(styr - 3 * nseas + s,p,gpi) = tempvec_a / temp;
+              if(p>0)
+              {
+                int s1 = (p-1)*pop + s + 1;
+                surv1(s1,gpi) = mfexp(-natM(styr - 3 * nseas + s,p,gpi) * seasdur_half(s + 1));  //  does all the gpi and ages
+                surv2(s1,gpi) = square(surv1(s1,gpi));
+              }
+            }
+
             for (int kk = -2; kk <= 0; kk++) //  get mean fecundity and pop body wt
             {
               tempvec_a.initialize();
@@ -256,8 +275,6 @@ FUNCTION void setup_Benchmark()
               }
               save_sel_num(styr - 3 * nseas + s, f, g) = tempvec_a / temp;
             }
-            // natmort_unf is accumulated while doing the time_series
-            // then it's mean is calculated in Get_Benchmarks and assigned back to natmort
           }
         }
 
@@ -279,8 +296,6 @@ FUNCTION void setup_Benchmark()
         // recr_dist_unf is accumulated while doing the time_series
         // then its mean is calculated in Get_Benchmarks and assigned to recr_dist
         //  the SR_parm_bench is calculated from Bmark_yrs 9-10 in benchmark code using values stored in SR_parm_byyr
-
-        //  same for natmort and survival (surv1 and surv2)
       }
 
       //  calc average selectivity to use in equil; store in styr-3
@@ -500,8 +515,6 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
     for (s = 1; s <= nseas; s++)
     {
       t = styr - 3 * nseas + s - 1;
-  //  natM(  shortcut.  doing area 1 only for now
-      natM(t,1) = natM_unf(s);
       subseas = 1; //   for begin of season
       ALK_idx = (s - 1) * N_subseas + subseas;
       ALK_subseas_update(ALK_idx) = 1; // new in 3.30.12   force updating
@@ -550,7 +563,10 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
         if (fleet_type(f) <= 2)
         {
           for (s = 1; s <= nseas; s++)
+          {
+            report5 << f << " " << s << " sel_bio: " << sel_bio(s, f, 1) << endl;
             report5 << f << " " << s << " sel_dead_bio: " << sel_dead_bio(s, f, 1) << endl;
+          }
         }
       }
       for (f = 1; f <= Nfleet; f++)
@@ -593,9 +609,7 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
   //  the spawner-recruitment function has Bzero based on virgin biology, not benchmark biology
   //  need to deal with possibility that with time-varying biology, the SSB_virgin calculated from virgin conditions will differ from the SSB_virgin used for benchmark conditions
 
-  //  note that recr_dist(styr-3), natM_unf, surv1_unf, and surv2_unf updated at end of ss_popdyn.
-  surv1 = surv1_unf;
-  surv2 = surv2_unf;
+  //  note that recr_dist(styr-3), updated at end of ss_popdyn.
 
   for (j = 1; j <= N_SRparm2; j++)
   {
@@ -2106,8 +2120,6 @@ FUNCTION void Get_Forecast()
     //  some of these might be change within forecast also
     //    recr_dist(endyr)=recr_dist_endyr;
     //    natM=natM_endyr;
-    surv1 = surv1_endyr;
-    surv2 = surv2_endyr;
 
     y = endyr;
     {
@@ -2561,6 +2573,9 @@ FUNCTION void Get_Forecast()
                 }
               }
             Tune_F_loops = 1;
+
+              int s1 = (p-1)*pop + s;  //  stacks season inside area (p) for use with surv1
+
             for (int ff = 1; ff <= N_catchfleets(0); ff++)
             {
               f = fish_fleet_area(0, ff); //  calc the Hrates given the HarvestPolicy, and find which catches are fixed or adjustable
@@ -2628,7 +2643,7 @@ FUNCTION void Get_Forecast()
               for (g = 1; g <= gmorph; g++)
                 if (use_morph(g) > 0)
                 {
-                  Nmid(g) = elem_prod(natage(t, p, g), surv1(s, GP3(g)));
+                  Nmid(g) = elem_prod(natage(t, p, g), surv1(s1, GP3(g)));
                 }
 
               for (Tune_F = 1; Tune_F <= Tune_F_loops; Tune_F++)
@@ -2735,16 +2750,16 @@ FUNCTION void Get_Forecast()
                   j = Settle_age(settle);
                   if (s < nseas && Settle_seas(settle) <= s)
                   {
-                    natage(t + 1, p, g, j) = Nsurv(g, j) * surv1(s, GP3(g), j);
+                    natage(t + 1, p, g, j) = Nsurv(g, j) * surv1(s1, GP3(g), j);
                   } // advance age zero within year
                   for (a = j + 1; a < nages; a++)
                   {
-                    natage(t + 1, p, g, a) = Nsurv(g, a - adv_age) * surv1(s, GP3(g), a - adv_age);
+                    natage(t + 1, p, g, a) = Nsurv(g, a - adv_age) * surv1(s1, GP3(g), a - adv_age);
                     Z_rate(t, p, g, a) = -log(natage(t + 1, p, g, a) / natage(t, p, g, a - adv_age)) / seasdur(s);
                   }
-                  natage(t + 1, p, g, nages) = Nsurv(g, nages) * surv1(s, GP3(g), nages); // plus group
+                  natage(t + 1, p, g, nages) = Nsurv(g, nages) * surv1(s1, GP3(g), nages); // plus group
                   if (s == nseas)
-                    natage(t + 1, p, g, nages) += Nsurv(g, nages - 1) * surv1(s, GP3(g), nages - 1);
+                    natage(t + 1, p, g, nages) += Nsurv(g, nages - 1) * surv1(s1, GP3(g), nages - 1);
                   if (save_for_report > 0)
                   {
                     j = p + pop;
