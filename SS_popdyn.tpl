@@ -316,9 +316,9 @@ FUNCTION void get_initial_conditions()
   echoinput<<"initial M "<<t<<endl<<natM(t)<<endl;
       for(p=1; p<=pop; p++)
       {
-        int s1 = (p-1)*pop + s;
+        int s1 = (p-1)*nseas + s;
         surv1(s1) = mfexp(-natM(t,p) * seasdur_half(s));
-        surv2(s1) = square(surv1(s));
+        surv2(s1) = square(surv1(s1));
       }
   } // end season (s) loop in biology, mortality and selectivity calcs in initial year
 
@@ -915,9 +915,9 @@ FUNCTION void get_time_series()
 
         for(p=1; p<=pop; p++)
         {
-          int s1 = (p-1)*pop + s;
+          int s1 = (p-1)*nseas + s;
           surv1(s1) = mfexp(-natM(t,p) * seasdur_half(s));
-          surv2(s1) = square(surv1(s));
+          surv2(s1) = square(surv1(s1));
         }
       }
       //  SS_Label_Info_24.2.2 #Compute spawning biomass if this is spawning season so recruits could occur later this season
@@ -933,7 +933,6 @@ FUNCTION void get_time_series()
             if (sx(g) == 1 && use_morph(g) > 0) //  female
             {
               SSB_pop_gp(y, p, GP4(g)) += fracfemale_mult * fec(g) * natage(t, p, g); // accumulates SSB by area and by growthpattern
-  echoinput<<natage(t, p, g)<<endl;
               SSB_B_yr(y) += fracfemale_mult * make_mature_bio(GP4(g)) * natage(t, p, g);
               SSB_N_yr(y) += fracfemale_mult * make_mature_numbers(GP4(g)) * natage(t, p, g);
               //            SSB_pop_gp(y,p,GP4(g)) += fec(g)*natage(t,p,g);   // accumulates SSB by area and by growthpattern
@@ -941,8 +940,7 @@ FUNCTION void get_time_series()
               //            SSB_N_yr(y) += make_mature_numbers(GP4(g))*natage(t,p,g);
             }
         }
-   echoinput<<SSB_pop_gp(y)<<endl;
-         SSB_current = sum(SSB_pop_gp(y));
+        SSB_current = sum(SSB_pop_gp(y));
         SSB_yr(y) = SSB_current;
 
         if (Hermaphro_Option != 0) // get male biomass

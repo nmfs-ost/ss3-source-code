@@ -1313,7 +1313,7 @@
 
   for (s = 1; s <= nseas; s++) //  get growth here in case needed for Lorenzen
   {
-    t = styr + s - 1;
+    t = t_base + s;
     for (subseas = 1; subseas <= N_subseas; subseas++)
     {
       ALK_idx = (s - 1) * N_subseas + subseas;
@@ -1339,28 +1339,28 @@
   echoinput<<"ok"<<endl;
   for (s = 1; s <= nseas; s++)
   {
-    natM(t_base + s,0) = natM_M1(s);
-  } // set M equal to M1; M2 can be added later if predators are used
-  echoinput<<" ready for pred "<<endl;
+    t = t_base + s;
+  // set M equal to M1; M2 can be added later if predators are used
+    natM(t,0) = natM_M1(s);
+    for(p = 1; p <= pop; p++)
+    {
+      natM(t, p) = natM(t,0);
+    }
+
   //  SS_Label_Info_6.8.5 #add M2 for predator mortality
       if(N_pred>0)
       {
-//  rebase natM to M1
-        for(p = 1; p <= pop; p++)
-        {
-          natM(t, p) = natM(t,0);
-        }
         for (f1 = 1; f1 <= N_pred; f1++)
         {
           f = predator(f1);
           pred_M2(f1, t) = mgp_adj(predparm_pointer(f1)); //  base with no seasonal effect
           if (nseas > 1)
             pred_M2(f1, t) *= mgp_adj(predparm_pointer(f1) + s);
-          p = fleet_area(f);  //  area this predator occurs in
 
   //  a new array for indexing g and gpi could simplify below
   //        for (gp = 1; gp <= N_GP * gender * N_settle_timings; gp++)
 
+          p = fleet_area(f);  //  area this predator occurs in
           for (gp = 1; gp <= N_GP * gender; gp++)
           {
             g = g_Start(gp); //  base platoon
@@ -1374,17 +1374,19 @@
         }
       }
 
-      for(s=1; s<=nseas; s++)
+  echoinput<<" ready for surv "<<endl;
       for(p=1; p<=pop; p++)
       {
-        int s1 = (p-1)*pop + s;
+        int s1 = (p-1)*nseas + s;
+  echoinput<<"s1 "<<s<<" "<<p<<" "<<s1<<endl;
         surv1(s1) = mfexp(-natM(t,p) * seasdur_half(s));
-        surv2(s1) = square(surv1(s));
+        surv2(s1) = square(surv1(s1));
       }
   echoinput<<"here"<<endl;
   natM_M1 = value(natM_M1);
   surv1 = value(surv1);
   surv2 = value(surv2);
+  }
 
   s = spawn_seas;
   subseas = spawn_subseas;
