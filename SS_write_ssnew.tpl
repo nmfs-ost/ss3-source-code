@@ -1421,7 +1421,7 @@ FUNCTION void write_nucontrol()
   NuStart << depletion_basis_rd << " # Depletion basis:  denom is: 0=skip; 1=rel X*SPB0; 2=rel SPBmsy; 3=rel X*SPB_styr; 4=rel X*SPB_endyr; values; >=11 invoke N multiyr (up to 9!) with 10's digit; >100 invokes log(ratio)" << endl;
   NuStart << depletion_level << " # Fraction (X) for Depletion denominator (e.g. 0.4)" << endl;
   NuStart << SPR_reporting << " # SPR_report_basis:  0=skip; 1=(1-SPR)/(1-SPR_tgt); 2=(1-SPR)/(1-SPR_MSY); 3=(1-SPR)/(1-SPR_Btarget); 4=rawSPR" << endl;
-  NuStart << F_reporting << " # Annual_F_units: 0=skip; 1=exploitation(Bio); 2=exploitation(Num); 3=sum(Apical_F's); 4=true F for range of ages; 5=unweighted avg. F for range of ages" << endl;
+  NuStart << F_reporting << " # F_reporting_units: 0=skip; 1=exploitation(Bio); 2=exploitation(Num); 3=sum(Apical_F's); 4=true F for range of ages; 5=unweighted avg. F for range of ages" << endl;
   if (F_reporting == 4 || F_reporting == 5)
   {
     NuStart << F_reporting_ages << " #_min and max age over which average F will be calculated, with F=Z-M" << endl;

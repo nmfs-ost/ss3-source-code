@@ -157,7 +157,7 @@ FUNCTION void get_initial_conditions()
   {
     get_natmort();  // gets nat_M1 by season and sets natM(t,p)=natM_M1
     for (s = 1; s <= nseas; s++)
-    for (p = 1; p <= pop; p++)
+    for (p = 0; p <= pop; p++)
     {
       natM(t_base - 2 * nseas + s,p) = natM_M1(s);
       natM(t_base - nseas + s,p) = natM_M1(s);
@@ -299,7 +299,6 @@ FUNCTION void get_initial_conditions()
 
   //  a new array for indexing g and gpi could simplify below
   //        for (gp = 1; gp <= N_GP * gender * N_settle_timings; gp++)
-
           for (gp = 1; gp <= N_GP * gender; gp++)
           {
             g = g_Start(gp); //  base platoon
@@ -311,9 +310,10 @@ FUNCTION void get_initial_conditions()
             }
           }
         }
+        natM(t-nseas) = natM(t);  //for initial equilibrium
+        natM(t-nseas-nseas) = natM(t);  //  for virgin
       }
 
-  echoinput<<"initial M "<<t<<endl<<natM(t)<<endl;
       for(p=1; p<=pop; p++)
       {
         int s1 = (p-1)*nseas + s;
@@ -986,7 +986,6 @@ FUNCTION void get_time_series()
           }
           SSB_use = SSB_equil;
         }
-     echoinput<<SSB_use<<" "<< R0_use<<" "<<SSB_current<<endl<<natM(t)<<endl;
         Recruits = Spawn_Recr(SSB_use, R0_use, SSB_current); // calls to function Spawn_Recr
         apply_recdev(Recruits, R0_use); //  apply recruitment deviation
         // distribute Recruitment of age 0 fish among the current and future settlements; and among areas and morphs
@@ -1037,7 +1036,8 @@ FUNCTION void get_time_series()
           if (use_morph(g) > 0)
           {
             //  SS_Label_Info_24.3.1 #Get middle of season numbers-at-age from M only;
-            Nmid(g) = elem_prod(natage(t, p, g), surv1(s, GP3(g))); //  get numbers-at-age(g,a) surviving to middle of time period
+            int s1 = (p-1)*nseas + s;
+            Nmid(g) = elem_prod(natage(t, p, g), surv1(s1, GP3(g))); //  get numbers-at-age(g,a) surviving to middle of time period
             if (docheckup == 1)
               echoinput << p << " " << g << " " << GP3(g) << " area & morph " << endl
                         << "N-at-age " << natage(t, p, g)(0, min(6, nages)) << endl
@@ -1199,13 +1199,8 @@ FUNCTION void get_time_series()
               for (g = 1; g <= gmorph; g++)
                 if (use_morph(g) > 0)
                 {
-                  Z_rate(t, p, g) = natM(t, p, GP3(g));
-  //  addition of pred_M2 needs equivalent of fleet_area or fish_fleet_area to add M2 to M1 to get Z
-                  for (f1 = 1; f1 <= N_pred; f1++)
-                  {
-                    f = predator(f1);
-                    if (fleet_area(f) == p) Z_rate(t, p, g) += pred_M2(f1, t) * sel_num(s, f, g);
-                  }
+                  Z_rate(t, p, g) = natM(t, p, GP3(g));  //  already includes predators M2
+
                   for (int ff = 1; ff <= N_catchfleets(p); ff++)
                   {
                     f = fish_fleet_area(p, ff);
@@ -1213,8 +1208,8 @@ FUNCTION void get_time_series()
                     {
                       Z_rate(t, p, g) += sel_dead_num(s, f, g) * Hrate(f, t);
                     }
-                    Zrate2(p, g) = elem_div((1. - mfexp(-seasdur(s) * Z_rate(t, p, g))), Z_rate(t, p, g));
                   }
+                  Zrate2(p, g) = elem_div((1. - mfexp(-seasdur(s) * Z_rate(t, p, g))), Z_rate(t, p, g));
                 }
 
               //  SS_Label_Info_24.3.3.2.2 #For each fleet, loop platoons and accumulate catch
@@ -1243,7 +1238,7 @@ FUNCTION void get_time_series()
               } // close fishery
             } //  end continuous F method
           }
-          else
+          else  //  doing F with Pope's approximation.  Predators cannot be used
           {
             //  SS_Label_Info_24.3.3.1 #Use F_Method=1 for Pope's approximation
             //  SS_Label_Info_24.3.3.1.1 #note that pred_M2 not implemented for Pope's
@@ -1344,12 +1339,7 @@ FUNCTION void get_time_series()
           for (g = 1; g <= gmorph; g++)
             if (use_morph(g) > 0)
             {
-              Z_rate(t, p, g) = natM(t, p, GP3(g));
-              for (f1 = 1; f1 <= N_pred; f1++)
-              {
-                f = predator(f1);
-                Z_rate(t, p, g) += pred_M2(f1, t) * sel_num(s, f, g);
-              }
+              Z_rate(t, p, g) = natM(t, p, GP3(g));  //  includes predators
               Zrate2(p, g) = elem_div((1. - mfexp(-seasdur(s) * Z_rate(t, p, g))), Z_rate(t, p, g));
             }
         }
