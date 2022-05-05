@@ -3559,11 +3559,11 @@ FUNCTION void write_bigoutput()
             {
               if (sx(g) == 1)
               {
-                SS2out << natage(t, 1, g, a) / (natage(t, 1, g, a) + natage(t, 1, g + gmorph / 2, a)) << " ";
+                SS2out << " " << natage(t, 1, g, a) / (natage(t, 1, g, a) + natage(t, 1, g + gmorph / 2, a)) << " ";
               }
               else
               {
-                SS2out << natage(t, 1, g, a) / (natage(t, 1, g, a) + natage(t, 1, g - gmorph / 2, a)) << " ";
+                SS2out << " " << natage(t, 1, g, a) / (natage(t, 1, g, a) + natage(t, 1, g - gmorph / 2, a)) << " ";
               }
             }
             if (WTage_rd == 0)
