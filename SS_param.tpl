@@ -41,7 +41,7 @@ PARAMETER_SECTION
   init_bounded_number dummy_parm(0,2,dummy_phase)  //  estimate in phase 0
 
 !! //  SS_Label_Info_5.1.1 #Create MGparm vector and associated arrays
-  // natural mortality and growth
+  // growth
   init_bounded_number_vector MGparm(1,N_MGparm2,MGparm_LO,MGparm_HI,MGparm_PH)
   vector femfrac(1,N_GP*gender);
   vector L_inf(1,N_GP*gender);
@@ -269,7 +269,7 @@ PARAMETER_SECTION
   init_bounded_number_vector init_F(1,N_init_F,init_F_LO,init_F_HI,init_F_PH)
   matrix est_equ_catch(1,nseas,1,Nfleet)
 
-//  gmorph = gender*N_GP*N_settle_timings*N_platoon;  //  total potential number of biological entities, some may not get used so see use_morph(g)
+//  natural, predation and fishing mortality
   matrix natMparms(1,N_natMparms,1,N_GP*gender)  // will be derived from the MGparms
   !!if(Do_Forecast>0) {k=TimeMax_Fcast_std+nseas;} else {k=TimeMax+nseas;}
   4darray natM(styr-3*nseas,k,0,pop,1,N_GP*gender*N_settle_timings,0,nages)  // M1 + pred_M2, see desc. in biofxn.tpl

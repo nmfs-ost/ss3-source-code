@@ -157,19 +157,11 @@ FUNCTION void get_initial_conditions()
   {
     get_natmort();  // gets nat_M1 by season and sets natM(t,p)=natM_M1
     for (s = 1; s <= nseas; s++)
-    for (p = 0; p <= pop; p++)
     {
-      natM(t_base - 2 * nseas + s,p) = natM_M1(s);
-      natM(t_base - nseas + s,p) = natM_M1(s);
+      natM(t_base - 2 * nseas + s) = natM(t_base + s);  //  copy to virgin
+      natM(t_base - nseas + s) = natM(t_base + s);   //  then to init_conditions year
     }
   }
-//  else
-//  { // reset to base in case predators are added
-//    for (s = 1; s <= nseas; s++)
-//  {
-//      natM(t_base + s) = natM_M1(s);
-//    } // set M equal to M1; M2 can be added later if predators are used
-//  }
 
   #ifdef DO_ONCE
   if (do_once == 1)
@@ -282,13 +274,14 @@ FUNCTION void get_initial_conditions()
 
     //  SS_Label_Info_23.3.4 #add predator M2 to M1 to update seasonal, areal natM in styr and calc surv for use in Pope's
 
+      if(N_pred>0)
+      {
+//  rebase natM to M1, which is stored in the p=0 section of array
         for(p = 1; p <= pop; p++)
         {
           natM(t, p) = natM(t,0);
         }
-      if(N_pred>0)
-      {
-//  rebase natM to M1
+//  calc M2
         for (f1 = 1; f1 <= N_pred; f1++)
         {
           f = predator(f1);
@@ -299,6 +292,7 @@ FUNCTION void get_initial_conditions()
 
   //  a new array for indexing g and gpi could simplify below
   //        for (gp = 1; gp <= N_GP * gender * N_settle_timings; gp++)
+  //  add each M2 to get total M
           for (gp = 1; gp <= N_GP * gender; gp++)
           {
             g = g_Start(gp); //  base platoon
@@ -755,7 +749,7 @@ FUNCTION void get_time_series()
         for (s = 1; s <= nseas; s++)
         {
           natM(t_base + s) = natM(t_base - nseas + s);
-        } // set M equal to last year's; M2 can be added later if predators are used
+        } // set M equal to last year's;
           // does all areas (p), but if there are predators, then add of pred_M2 occurs in season loop below
       }
 

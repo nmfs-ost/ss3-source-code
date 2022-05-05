@@ -2240,7 +2240,7 @@ FUNCTION void Get_Forecast()
         for (s = 1; s <= nseas; s++)
         {
           natM(t_base + s) = natM(t_base - nseas + s);
-        } // set M equal to last year's; M2 can be added later if predators are used
+        }
       }
       if (timevary_MG(y, 3) > 0)
       {
@@ -2371,7 +2371,7 @@ FUNCTION void Get_Forecast()
       {
         int s1 = (p-1)*nseas + s;
         surv1(s1) = mfexp(-natM(t,p) * seasdur_half(s));
-        surv2(s1) = square(surv1(s));
+        surv2(s1) = square(surv1(s1));
       }
 
           } //  end of seasonal biology
@@ -2782,11 +2782,14 @@ FUNCTION void Get_Forecast()
                   if (use_morph(g) > 0)
                   {
                     Z_rate(t, p, g) = natM(t, p, GP3(g));
-                    for (f = 1; f <= Nfleet; f++)
-                      if (fleet_area(f) == p && Fcast_RelF_Use(s, f) > 0.0 && fleet_type(f) <= 2)
+                    for (int ff = 1; ff <= N_catchfleets(p); ff++) // get calculated catch
+                    {
+                      f = fish_fleet_area(p, ff);
+                      if (Fcast_RelF_Use(s, f) > 0.0)
                       {
                         Z_rate(t, p, g) += sel_dead_num(s, f, g) * Hrate(f, t);
                       }
+                    }
                     Zrate2(p, g) = elem_div((1. - mfexp(-seasdur(s) * Z_rate(t, p, g))), Z_rate(t, p, g));
                   } //  end morph
 
