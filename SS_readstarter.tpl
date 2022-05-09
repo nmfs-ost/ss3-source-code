@@ -49,7 +49,7 @@
   int k1
   int k2
   int k3
-  int special_flag
+  int special_flag  //  reserved for ephemeral use while developing code
   int s_off  // offset for male section of vectors
   int Fishon  // whether or not to do fishery catch in equil_calc
   int NP  // number of parameters

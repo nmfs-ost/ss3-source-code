@@ -3298,14 +3298,14 @@ FUNCTION void write_bigoutput()
     SS2out << endl
            << pick_report_name(43) << endl;
     SS2out << "Method: " << natM_type << endl;
-    int kkk = 1;
-    if(N_pred>0)
+    int hide_M1 = 1;
+    if(N_pred > 0)
     {
-      SS2out<< "area 0 is shows M1 only, numbered areas have M1+M2"<<endl;
-      kkk = 0;
+      SS2out<< "area 0 shows M1 only, numbered areas have M1+M2"<<endl;
+      hide_M1 = 0;
     }
     SS2out << "Area Bio_Pattern Sex BirthSeas Settlement Platoon Morph Yr Seas Time Beg/Mid Era" << age_vector << endl;
-    for (p = kkk; p <= pop; p++)
+    for (p = hide_M1; p <= pop; p++)
     for (gp = 1; gp <= N_GP * gender; gp++)
     {
       g = g_Start(gp); //  base platoon

@@ -155,7 +155,7 @@ FUNCTION void get_initial_conditions()
 
   if (do_once>0 || MG_active(1) > 0)
   {
-    get_natmort();  // gets nat_M1 by season and sets natM(t,p)=natM_M1
+    get_natmort();  // gets base M (e.g. M1) by season and stores it in natM(t,0).  Later, pred_M2 is added by area
     for (s = 1; s <= nseas; s++)
     {
       natM(t_base - 2 * nseas + s) = natM(t_base + s);  //  copy to virgin
@@ -310,8 +310,8 @@ FUNCTION void get_initial_conditions()
 
       for(p=1; p<=pop; p++)
       {
-        int s1 = (p-1)*nseas + s;
-        surv1(s1) = mfexp(-natM(t,p) * seasdur_half(s));
+        int s1 = (p - 1) * nseas + s;
+        surv1(s1) = mfexp( - natM(t,p) * seasdur_half(s));
         surv2(s1) = square(surv1(s1));
       }
   } // end season (s) loop in biology, mortality and selectivity calcs in initial year
@@ -898,10 +898,10 @@ FUNCTION void get_time_series()
                 g += N_platoon;
                 int gpi = GP3(g); // GP*gender*settlement
                 natM(t, p,gpi) += pred_M2(f1, t) * sel_num(s, f, g);
-                 if (do_once == 1)
-                    echoinput << y << " s " << s << " t " << t << " gp " << gpi << "  M1: " << natM_M1(s, gpi) << endl;
+                 if (do_once == 1 && p == 1)
+                    echoinput << y << " s " << s << " t " << t << " area " << 0 << " gp " << gpi << "  M1: " << natM(t,0, gpi) << endl;
                   if (do_once == 1)
-                    echoinput << y << " s " << s << " t " << t << " gp " << gpi << "  M1+M2: " << natM(t, 1, gpi) << endl;
+                    echoinput << y << " s " << s << " t " << t << " area " << p << " gp " << gpi << "  M1+M2: " << natM(t, p, gpi) << endl;
               }
             }
           }
@@ -909,7 +909,7 @@ FUNCTION void get_time_series()
 
         for(p=1; p<=pop; p++)
         {
-          int s1 = (p-1)*nseas + s;
+          int s1 = (p - 1) * nseas + s;
           surv1(s1) = mfexp(-natM(t,p) * seasdur_half(s));
           surv2(s1) = square(surv1(s1));
         }
@@ -1030,7 +1030,7 @@ FUNCTION void get_time_series()
           if (use_morph(g) > 0)
           {
             //  SS_Label_Info_24.3.1 #Get middle of season numbers-at-age from M only;
-            int s1 = (p-1)*nseas + s;
+            int s1 = (p - 1) * nseas + s;
             Nmid(g) = elem_prod(natage(t, p, g), surv1(s1, GP3(g))); //  get numbers-at-age(g,a) surviving to middle of time period
             if (docheckup == 1)
               echoinput << p << " " << g << " " << GP3(g) << " area & morph " << endl

@@ -273,7 +273,7 @@ PARAMETER_SECTION
   matrix natMparms(1,N_natMparms,1,N_GP*gender)  // will be derived from the MGparms
   !!if(Do_Forecast>0) {k=TimeMax_Fcast_std+nseas;} else {k=TimeMax+nseas;}
   4darray natM(styr-3*nseas,k,0,pop,1,N_GP*gender*N_settle_timings,0,nages)  // M1 + pred_M2, see desc. in biofxn.tpl
-  3darray natM_M1(1,nseas,1,N_GP*gender*N_settle_timings,0,nages)  //  base M, biology only
+//  3darray natM_M1(1,nseas,1,N_GP*gender*N_settle_timings,0,nages)  //  base M, biology only
   matrix pred_M2(1,N_pred,styr-3*nseas,TimeMax_Fcast_std+nseas);  //  predator M2
 
   //  add area (pop) dimension to same dimension as season; use s1=(p-1)*pop + s

@@ -246,14 +246,14 @@ FUNCTION void setup_Benchmark()
               tempvec_a.initialize();
               for (t = Bmark_t(1); t <= Bmark_t(2); t += nseas)
               {
-                tempvec_a += natM(t + s,p,gpi);
+                tempvec_a += natM(t + s, p, gpi);
               }
-              natM(styr - 3 * nseas + s,p,gpi) = tempvec_a / temp;
+              natM(styr - 3 * nseas + s, p, gpi) = tempvec_a / temp;
               if(p>0)
               {
-                int s1 = (p-1)*nseas + s + 1;
-                surv1(s1,gpi) = mfexp(-natM(styr - 3 * nseas + s,p,gpi) * seasdur_half(s + 1));  //  does all the gpi and ages
-                surv2(s1,gpi) = square(surv1(s1,gpi));
+                int s1 = (p - 1)*nseas + s + 1;
+                surv1(s1, gpi) = mfexp(-natM(styr - 3 * nseas + s, p, gpi) * seasdur_half(s + 1));  //  does all the gpi and ages
+                surv2(s1, gpi) = square(surv1(s1, gpi));
               }
             }
 
@@ -753,12 +753,6 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
           {
             report5 << " " << SSB_equil_pop_gp(p, gp);
           }
-        report5 << " Hrate: ";
-        for (int ff = 1; ff <= N_catchfleets(0); ff++)
-        {
-          f = fish_fleet_area(0, ff);
-          report5 << Hrate(f, bio_t_base + 1) << " ";
-        }
         report5 << endl;
       }
     } // end search loop
@@ -1037,12 +1031,6 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
           {
             report5 << " " << SSB_equil_pop_gp(p, gp) * Equ_SpawnRecr_Result(2);
           }
-        report5 << " Hrate: ";
-        for (int ff = 1; ff <= N_catchfleets(0); ff++)
-        {
-          f = fish_fleet_area(0, ff);
-          report5 << Hrate(f, bio_t_base + 1) << " ";
-        }
         report5 << endl;
       }
     } // end search loop
@@ -2341,7 +2329,7 @@ FUNCTION void Get_Forecast()
 //  rebase natM to M1
         for(p = 1; p <= pop; p++)
         {
-          natM(t, p) = natM(t,0);
+          natM(t, p) = natM(t, 0);
         }
         for (f1 = 1; f1 <= N_pred; f1++)
         {
@@ -2361,7 +2349,7 @@ FUNCTION void Get_Forecast()
             {
               g += N_platoon;
               int gpi = GP3(g); // GP*gender*settlement
-              natM(t, p,gpi) += pred_M2(f1, t) * sel_num(s, f, g);
+              natM(t, p, gpi) += pred_M2(f1, t) * sel_num(s, f, g);
             }
           }
         }
@@ -2370,7 +2358,7 @@ FUNCTION void Get_Forecast()
       for(p=1; p<=pop; p++)
       {
         int s1 = (p-1)*nseas + s;
-        surv1(s1) = mfexp(-natM(t,p) * seasdur_half(s));
+        surv1(s1) = mfexp(-natM(t, p) * seasdur_half(s));
         surv2(s1) = square(surv1(s1));
       }
 
@@ -3286,66 +3274,7 @@ FUNCTION void Get_Forecast()
                 {
                   F_std(STD_Yr_Reverse_F(y)) = annual_F(y, 2);
                 }
-                /*
-                else if(F_reporting==4 && s==nseas)
-                {
-        //  sum across p and g the number of survivors to end of the year
-        //  also project from the initial numbers and M, the number of survivors without F
-        //  then F = ln(n+1/n)(M+F) - ln(n+1/n)(M only), but ln(n) cancels out, so only need the ln of the ratio of the two ending quantities
-                  temp1=0.0;
-                  temp2=0.0;
-                  for (g=1;g<=gmorph;g++)
-                  if(use_morph(g)>0)
-                  {
-                    for (p=1;p<=pop;p++)
-                    {
-                      for (a=F_reporting_ages(1);a<=F_reporting_ages(2);a++)   //  should not let a go higher than nages-2 because of accumulator
-                      {
-                        if(nseas==1)
-                        {
-                          temp1+=natage(t+1,p,g,a+1);
-                          temp2+=natage(t,p,g,a)*mfexp(-seasdur(s)*natM(t,GP3(g),a));
-                        }
-                        else
-                        {
-                          temp1+=natage(t+1,p,g,a+1);
-                          temp3=natage(t-nseas+1,p,g,a);  //  numbers at begin of year
-                          for (j=1;j<=nseas;j++) {temp3*=mfexp(-seasdur(j)*natM(j,GP3(g),a));}
-                          temp2+=temp3;
-                        }
-                      }
-                    }
-                  }
-                  F_std(STD_Yr_Reverse_F(y)) = log(temp2)-log(temp1);
-                }
-                else if(F_reporting==5 && s==nseas)
-                {
-              //  F_reporting==5 (ICES-style arithmetic mean across ages)
-              //  like option 4 above, but F is calculated 1 age at a time to get a
-              //  unweighted average across ages within each year
-                  temp=0.0;  // used for count of Fs included in average
-                  for (g=1;g<=gmorph;g++)
-                  if(use_morph(g)>0)
-                  {
-                    for (a=F_reporting_ages(1);a<=F_reporting_ages(2);a++)   //  should not let a go higher than nages-2 because of accumulator
-                    {
-                      temp1=0.0;  //  sum survivors across all g and p
-                      temp2=0.0;
-                      for (p=1;p<=pop;p++)
-                      {
-                        temp1+=natage(t+1,p,g,a+1);
-                        temp3=natage(t-nseas+1,p,g,a);  //  numbers at begin of year
-                        for (j=1;j<=nseas;j++) {temp3*=mfexp(-seasdur(j)*natM(j,GP3(g),a));}
-                        temp2+=temp3; // temp2 and temp3 are redundant but match code above
-                      }
-                        // add F-at-age to tally
-                      F_std(STD_Yr_Reverse_F(y)) += log(temp2)-log(temp1);
-                      temp += 1; // increment count of values included in average
-                    }
-                  }
-                  F_std(STD_Yr_Reverse_F(y)) /= temp;
-                } // end F_reporting==5
-   */
+
               }
               for (int ff = 1; ff <= N_catchfleets(0); ff++)
               {
