@@ -2491,7 +2491,7 @@
     if(SzFreq_bins1(k,1)<0)
     {
       SzFreq_Omit_Small(k)=-1;
-      SzFreq_bins1(k,1)*=-1;  // make this positive for use in model, then write out as negative in data.ss_new
+      SzFreq_bins1(k,1)*=-1;  // make this positive for use in model, then write out as negative in data_echo.ss_new
     }
 
     SzFreq_bins(k)(1,SzFreq_Nbins(k))=SzFreq_bins1(k)(1,SzFreq_Nbins(k));
