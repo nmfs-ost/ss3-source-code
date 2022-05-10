@@ -2,13 +2,13 @@
 // SS_Label_file  # * <u>write_nudata()</u>  //  produces *starter.ss_new*, *forecast.ss_new*, *data_echo.ss_new*, *data_expval.ss*, bootstraps
 // SS_Label_file  # * <u>write_nucontrol()</u>  //  produces *control.ss_new*
 // SS_Label_file  #
-  
+
 //********************************************************************
  /*  SS_Label_FUNCTION 38 write_nudata */
 FUNCTION void write_nudata()
   {
   //  code for multinomial distribution developed by Ian Stewart, Oct 2005
-  
+
   dvector temp_mult(1, 50000);
   dvector temp_probs(1, nlen_bin2);
   int compindex = 0;
@@ -18,13 +18,13 @@ FUNCTION void write_nudata()
   //  create bootstrap data files; except first file just replicates the input and second is the estimate without error
   if (irand_seed < 0)
     irand_seed = long(time(&start));
-  
+
   random_number_generator radm(irand_seed);
   for (i = 1; i <= 1234; i++)
   {
     temp = randn(radm);
   }
-  
+
   for (Nudat = 1; Nudat <= N_nudata; Nudat++)
   {
     if (Nudat == 1)
@@ -106,10 +106,10 @@ FUNCTION void write_nudata()
       if (fleet_type(f) == 2)
         report1 << bycatch_setup(f) << "  # " << fleetname(f) << endl;
     }
-  
+
     if (Nudat == 1) // report back the input data
     {
-  
+
       report1 << "#_Catch data: yr, seas, fleet, catch, catch_se" << endl;
       report1 << "#_catch_se:  standard error of log(catch)" << endl;
       report1 << "#_NOTE:  catch data is ignored for survey fleets" << endl;
@@ -139,7 +139,7 @@ FUNCTION void write_nudata()
       }
       report1 << "-9999 0 0 0 0" << endl
               << "#" << endl;
-  
+
       report1 << " #_CPUE_and_surveyabundance_observations" << endl;
       report1 << "#_Units:  0=numbers; 1=biomass; 2=F; 30=spawnbio; 31=recdev; 32=spawnbio*recdev; 33=recruitment; 34=depletion(&see Qsetup); 35=parm_dev(&see Qsetup)" << endl;
       report1 << "#_Errtype:  -1=normal; 0=lognormal; >0=T" << endl;
@@ -148,7 +148,7 @@ FUNCTION void write_nudata()
       for (f = 1; f <= Nfleet; f++)
         report1 << f << " " << Svy_units(f) << " " << Svy_errtype(f) << " " << Svy_sdreport(f) << " # " << fleetname(f) << endl;
       report1 << "#_yr month fleet obs stderr" << endl;
-  
+
       if (Svy_N > 0)
         for (f = 1; f <= Nfleet; f++)
           for (i = 1; i <= Svy_N_fleet(f); i++)
@@ -159,7 +159,7 @@ FUNCTION void write_nudata()
             report1 << Svy_obs(f, i) << " " << Svy_se_rd(f, i) << " #_ " << fleetname(f) << endl;
           }
       report1 << "-9999 1 1 1 1 # terminator for survey observations " << endl;
-  
+
       report1 << "#" << endl
               << Ndisc_fleets << " #_N_fleets_with_discard" << endl;
       report1 << "#_discard_units (1=same_as_catchunits(bio/num); 2=fraction; 3=numbers)" << endl;
@@ -186,7 +186,7 @@ FUNCTION void write_nudata()
         report1 << "# ";
       }
       report1 << "-9999 0 0 0.0 0.0 # terminator for discard data " << endl;
-  
+
       report1 << "#" << endl
               << do_meanbodywt << " #_use meanbodysize_data (0/1)" << endl;
       if (nobs_mnwt_rd == 0)
@@ -205,7 +205,7 @@ FUNCTION void write_nudata()
       if (do_meanbodywt == 0)
         report1 << "# ";
       report1 << " -9999 0 0 0 0 0 0 # terminator for mean body size data " << endl;
-  
+
       report1 << "#" << endl
               << "# set up population length bin structure (note - irrelevant if not using size data and using empirical wtatage" << endl;
       report1 << LenBin_option << " # length bin method: 1=use databins; 2=generate from binwidth,min,max below; 3=read vector" << endl;
@@ -226,7 +226,7 @@ FUNCTION void write_nudata()
         report1 << nlength << " # number of population size bins " << endl;
         report1 << len_bins << endl;
       }
-  
+
       report1 << use_length_data << " # use length composition data (0/1)" << endl;
       if (use_length_data > 0)
       {
@@ -243,7 +243,7 @@ FUNCTION void write_nudata()
         {
           report1 << min_tail_L(f) << " " << min_comp_L(f) << " " << CombGender_L(f) << " " << AccumBin_L(f) << " " << Comp_Err_L(f) << " " << Comp_Err_L2(f) << " " << min_sample_size_L(f) << " #_fleet:" << f << "_" << fleetname(f) << endl;
         }
-  
+
         report1 << "# sex codes:  0=combined; 1=use female only; 2=use male only; 3=use both as joint sexxlength distribution" << endl;
         report1 << "# partition codes:  (0=combined; 1=discard; 2=retained" << endl;
         report1 << nlen_bin << " #_N_LengthBins; then enter lower edge of each length bin" << endl
@@ -266,7 +266,7 @@ FUNCTION void write_nudata()
       {
         report1 << "# see manual for format of length composition data " << endl;
       }
-  
+
       report1 << "#" << endl
               << n_abins << " #_N_age_bins" << endl;
       if (n_abins > 0)
@@ -280,7 +280,7 @@ FUNCTION void write_nudata()
       report1 << N_ageerr << " #_N_ageerror_definitions" << endl;
       if (N_ageerr > 0)
         report1 << age_err_rd << endl;
-  
+
       report1 << "#_mintailcomp: upper and lower distribution for females and males separately are accumulated until exceeding this level." << endl;
       report1 << "#_addtocomp:  after accumulation of tails; this value added to all bins" << endl;
       report1 << "#_combM+F: males and females treated as combined gender below this bin number " << endl;
@@ -296,7 +296,7 @@ FUNCTION void write_nudata()
           report1 << "# ";
         report1 << min_tail_A(f) << " " << min_comp_A(f) << " " << CombGender_A(f) << " " << AccumBin_A(f) << " " << Comp_Err_A(f) << " " << Comp_Err_A2(f) << " " << min_sample_size_A(f) << " #_fleet:" << f << "_" << fleetname(f) << endl;
       }
-  
+
       if (n_abins <= 0)
         report1 << "# ";
       report1 << Lbin_method << " #_Lbin_method_for_Age_Data: 1=poplenbins; 2=datalenbins; 3=lengths" << endl;
@@ -317,7 +317,7 @@ FUNCTION void write_nudata()
       for (i = 1; i <= f; i++)
         report1 << " 0";
       report1 << endl;
-  
+
       report1 << "#" << endl
               << use_meansizedata << " #_Use_MeanSize-at-Age_obs (0/1)" << endl;
       if (use_meansizedata > 0)
@@ -349,7 +349,7 @@ FUNCTION void write_nudata()
           report1 << endl;
         }
       }
-  
+
       report1 << "#" << endl
               << N_envvar << " #_N_environ_variables" << endl;
       report1 << "# -2 in yr will subtract mean for that env_var; -1 will subtract mean and divide by stddev (e.g. Z-score)" << endl;
@@ -360,7 +360,7 @@ FUNCTION void write_nudata()
           report1 << env_temp[i] << endl;
         report1 << "-9999 0 0" << endl;
       }
-  
+
       report1 << "#" << endl
               << SzFreq_Nmeth << " # N sizefreq methods to read " << endl;
       if (SzFreq_Nmeth > 0)
@@ -379,7 +379,7 @@ FUNCTION void write_nudata()
         report1 << "#_method year month fleet gender partition SampleSize <data> " << endl
                 << SzFreq_obs1 << endl;
       }
-  
+
       // begin tagging data section #1 (observed data)
       report1 << "# " << endl
               << Do_TG_rd << " # do tags (0/1/2); where 2 allows entry of TG_min_recap" << endl;
@@ -398,12 +398,12 @@ FUNCTION void write_nudata()
         {
           report1 << "# COND:  TG_min_recap ##  use Do_TG=2 to invoke reading TG_min_recap after TG_maxperiods" << endl;
         }
-  
+
         // tag releases
         report1 << "# Release data for each tag group.  Tags are considered to be released at the beginning of a season (period)" << endl;
         report1 << "#<TG> area yr season <tfill> gender age Nrelease  (note that the TG and tfill values are placeholders and are replaced by program generated values)" << endl;
         report1 << TG_release << endl;
-  
+
         // tag recaptures
         report1 << "#_TAG  Yr Season Fleet Nrecap" << endl;
         for (j = 1; j <= N_TG_recap; j++)
@@ -415,7 +415,7 @@ FUNCTION void write_nudata()
         }
       }
       // end tagging data section #1 (observed data)
-  
+
       report1 << "#" << endl
               << Do_Morphcomp << " #    morphcomp data(0/1) " << endl;
       if (Do_Morphcomp > 0)
@@ -434,20 +434,20 @@ FUNCTION void write_nudata()
         report1 << "#  Nobs, Nmorphs, mincomp" << endl;
         report1 << "#  yr, seas, type, partition, Nsamp, datavector_by_Nmorphs" << endl;
       }
-  
+
       report1 << "#" << endl
               << Do_SelexData << "  #  Do dataread for selectivity priors(0/1)" << endl;
       report1 << "# Yr, Seas, Fleet,  Age/Size,  Bin,  selex_prior,  prior_sd" << endl;
       report1 << "# feature not yet implemented" << endl;
-  
+
       report1 << "#" << endl
               << "999" << endl
               << endl;
     }
-  
+
     else if (Nudat == 2) // report expected value with no added error
     {
-  
+
       report1 << "#_catch:_columns_are_year,season,fleet,catch,catch_se" << endl;
       report1 << "#_Catch data: yr, seas, fleet, catch, catch_se" << endl;
       k = 0;
@@ -487,7 +487,7 @@ FUNCTION void write_nudata()
       }
       report1 << "-9999 0 0 0 0" << endl
               << "#" << endl;
-  
+
       report1 << "#" << endl
               << " #_CPUE_and_surveyabundance_observations" << endl;
       report1 << "#_Units:  0=numbers; 1=biomass; 2=F; 30=spawnbio; 31=recdev; 32=spawnbio*recdev; 33=recruitment; 34=depletion(&see Qsetup); 35=parm_dev(&see Qsetup)" << endl;
@@ -515,7 +515,7 @@ FUNCTION void write_nudata()
             report1 << " " << Svy_se_rd(f, i) << " #_orig_obs: " << Svy_obs(f, i) << " " << fleetname(f) << endl;
           }
       report1 << "-9999 1 1 1 1 # terminator for survey observations " << endl;
-  
+
       report1 << "#" << endl
               << Ndisc_fleets << " #_N_fleets_with_discard" << endl;
       report1 << "#_discard_units (1=same_as_catchunits(bio/num); 2=fraction; 3=numbers)" << endl;
@@ -546,10 +546,10 @@ FUNCTION void write_nudata()
         report1 << "# ";
       }
       report1 << "-9999 0 0 0.0 0.0 # terminator for discard data " << endl;
-  
+
       report1 << "#" << endl
               << do_meanbodywt << " #_use meanbodysize_data (0/1)" << endl;
-  
+
       if (nobs_mnwt_rd == 0)
         report1 << "#_COND_";
       report1 << DF_bodywt << " #_DF_for_meanbodysize_T-distribution_like" << endl;
@@ -566,7 +566,7 @@ FUNCTION void write_nudata()
       if (do_meanbodywt == 0)
         report1 << "# ";
       report1 << " -9999 0 0 0 0 0 0 # terminator for mean body size data " << endl;
-  
+
       report1 << "#" << endl
               << "# set up population length bin structure (note - irrelevant if not using size data and using empirical wtatage" << endl;
       report1 << LenBin_option << " # length bin method: 1=use databins; 2=generate from binwidth,min,max below; 3=read vector" << endl;
@@ -587,7 +587,7 @@ FUNCTION void write_nudata()
         report1 << nlength << " # number of population size bins " << endl;
         report1 << len_bins << endl;
       }
-  
+
       report1 << use_length_data << " # use length composition data (0/1)" << endl;
       if (use_length_data > 0)
       {
@@ -633,7 +633,7 @@ FUNCTION void write_nudata()
       {
         report1 << "# see manual for format of length composition data " << endl;
       }
-  
+
       report1 << "#" << endl
               << n_abins << " #_N_age_bins" << endl;
       if (n_abins > 0)
@@ -647,7 +647,7 @@ FUNCTION void write_nudata()
       report1 << N_ageerr << " #_N_ageerror_definitions" << endl;
       if (N_ageerr > 0)
         report1 << age_err_rd << endl;
-  
+
       report1 << "#_mintailcomp: upper and lower distribution for females and males separately are accumulated until exceeding this level." << endl;
       report1 << "#_addtocomp:  after accumulation of tails; this value added to all bins" << endl;
       report1 << "#_combM+F: males and females treated as combined gender below this bin number " << endl;
@@ -663,7 +663,7 @@ FUNCTION void write_nudata()
           report1 << "# ";
         report1 << min_tail_A(f) << " " << min_comp_A(f) << " " << CombGender_A(f) << " " << AccumBin_A(f) << " " << Comp_Err_A(f) << " " << Comp_Err_A2(f) << " " << min_sample_size_A(f) << " #_fleet:" << f << "_" << fleetname(f) << endl;
       }
-  
+
       if (n_abins <= 0)
         report1 << "# ";
       report1 << Lbin_method << " #_Lbin_method_for_Age_Data: 1=poplenbins; 2=datalenbins; 3=lengths" << endl;
@@ -693,7 +693,7 @@ FUNCTION void write_nudata()
       for (i = 1; i <= f; i++)
         report1 << " 0";
       report1 << endl;
-  
+
       report1 << "#" << endl
               << use_meansizedata << " #_Use_MeanSize-at-Age_obs (0/1)" << endl;
       if (use_meansizedata > 0)
@@ -733,7 +733,7 @@ FUNCTION void write_nudata()
           report1 << " 0";
         report1 << endl;
       }
-  
+
       report1 << "#" << endl
               << N_envvar << " #_N_environ_variables" << endl;
       report1 << "# -2 in yr will subtract mean for that env_var; -1 will subtract mean and divide by stddev (e.g. Z-score)" << endl;
@@ -744,7 +744,7 @@ FUNCTION void write_nudata()
           report1 << env_temp[i] << endl;
         report1 << "-9999 0 0" << endl;
       }
-  
+
       report1 << "#" << endl
               << SzFreq_Nmeth << " # N sizefreq methods to read " << endl;
       if (SzFreq_Nmeth > 0)
@@ -766,7 +766,7 @@ FUNCTION void write_nudata()
           report1 << SzFreq_obs1(iobs)(1, 7) << " " << SzFreq_exp(iobs) << endl;
         }
       }
-  
+
       // begin tagging data section #2 (expected values)
       report1 << "#" << endl
               << Do_TG << " # do tags (0/1)" << endl;
@@ -777,12 +777,12 @@ FUNCTION void write_nudata()
         report1 << N_TG_recap << " # N recap events" << endl;
         report1 << TG_mixperiod << " # mixing latency period: N periods to delay before comparing observed to expected recoveries (0 = release period)" << endl;
         report1 << TG_maxperiods << " # max periods (seasons) to track recoveries, after which tags enter accumulator" << endl;
-  
+
         // tag releases
         report1 << "# Release data for each tag group.  Tags are considered to be released at the beginning of a season (period)" << endl;
         report1 << "#<TG> area yr season <tfill> sex age Nrelease  (note that the TG and tfill values are placeholders and are replaced by program generated values)" << endl;
         report1 << TG_release << endl;
-  
+
         // tag recaptures
         report1 << "#_Note: Expected values for tag recaptures are reported only for the same combinations of" << endl;
         report1 << "#       group, year, area, and fleet that had observed recaptures. " << endl;
@@ -802,7 +802,7 @@ FUNCTION void write_nudata()
         }
       }
       // end tagging data section #2 (expected values)
-  
+
       report1 << "#" << endl
               << Do_Morphcomp << " #    morphcomp data(0/1) " << endl;
       if (Do_Morphcomp > 0)
@@ -822,20 +822,20 @@ FUNCTION void write_nudata()
         report1 << "#  Nobs, Nmorphs, mincomp" << endl;
         report1 << "#  yr, seas, type, partition, Nsamp, datavector_by_Nmorphs" << endl;
       }
-  
+
       report1 << "#" << endl
               << Do_SelexData << "  #  Do dataread for selectivity priors(0/1)" << endl;
       report1 << "# Yr, Seas, Fleet,  Age/Size,  Bin,  selex_prior,  prior_sd" << endl;
       report1 << "# feature not yet implemented" << endl;
-  
+
       report1 << "#" << endl
               << "999" << endl
               << endl;
     }
-  
+
     else //  create bootstrap data
     {
-  
+
       report1 << "#_catch_biomass(mtons):_columns_are_fisheries,year,season" << endl;
       report1 << "#_catch:_columns_are_year,season,fleet,catch,catch_se" << endl;
       report1 << "#_Catch data: yr, seas, fleet, catch, catch_se" << endl;
@@ -880,7 +880,7 @@ FUNCTION void write_nudata()
       }
       report1 << "-9999 0 0 0 0" << endl
               << "#" << endl;
-  
+
       report1 << " #_CPUE_and_surveyabundance_observations" << endl;
       report1 << "#_Units:  0=numbers; 1=biomass; 2=F; 30=spawnbio; 31=recdev; 32=spawnbio*recdev; 33=recruitment; 34=depletion(&see Qsetup); 35=parm_dev(&see Qsetup)" << endl;
       report1 << "#_Errtype:  -1=normal; 0=lognormal; >0=T" << endl;
@@ -915,7 +915,7 @@ FUNCTION void write_nudata()
             report1 << newobs << " " << Svy_se_rd(f, i) << " #_orig_obs: " << Svy_obs(f, i) << " " << fleetname(f) << endl;
           }
       report1 << "-9999 1 1 1 1 # terminator for survey observations " << endl;
-  
+
       report1 << "#" << endl
               << Ndisc_fleets << " #_N_fleets_with_discard" << endl;
       report1 << "#_discard_units (1=same_as_catchunits(bio/num); 2=fraction; 3=numbers)" << endl;
@@ -964,7 +964,7 @@ FUNCTION void write_nudata()
             }
             if (disc_minval(f) >= 0.0)
               temp = max(value(temp), 0.5 * disc_minval(f));
-  
+
             report1 << " " << temp << " " << cv_disc(f, i) << " #_orig_obs: " << obs_disc(f, i) << " #_ " << fleetname(f) << endl;
           }
       }
@@ -973,7 +973,7 @@ FUNCTION void write_nudata()
         report1 << "# ";
       }
       report1 << "-9999 0 0 0.0 0.0 # terminator for discard data " << endl;
-  
+
       report1 << "#" << endl
               << do_meanbodywt << " #_use meanbodysize_data (0/1)" << endl;
       if (do_meanbodywt == 0)
@@ -981,7 +981,7 @@ FUNCTION void write_nudata()
       report1 << DF_bodywt << " #_DF_for_meanbodysize_T-distribution_like" << endl;
       report1 << "# note:  type=1 for mean length; type=2 for mean body weight " << endl;
       report1 << "#_yr month fleet part type obs stderr" << endl;
-  
+
       // NOTE, the se stored in mnwtdata(7,i) was adjusted in prelim calc to include the input var_adjustment
       //  so var_adjust is subtracted here when the observation is written
       if (nobs_mnwt > 0)
@@ -1000,7 +1000,7 @@ FUNCTION void write_nudata()
       if (do_meanbodywt == 0)
         report1 << "# ";
       report1 << " -9999 0 0 0 0 0 0 # terminator for mean body size data " << endl;
-  
+
       report1 << "#" << endl
               << "# set up population length bin structure (note - irrelevant if not using size data and using empirical wtatage" << endl;
       report1 << LenBin_option << " # length bin method: 1=use databins; 2=generate from binwidth,min,max below; 3=read vector" << endl;
@@ -1021,7 +1021,7 @@ FUNCTION void write_nudata()
         report1 << nlength << " # number of population size bins " << endl;
         report1 << len_bins << endl;
       }
-  
+
       report1 << use_length_data << " # use length composition data (0/1)" << endl;
       if (use_length_data > 0)
       {
@@ -1075,7 +1075,7 @@ FUNCTION void write_nudata()
               {
                 exp_l_temp_dat(temp_mult(compindex)) += 1.0;
               }
-  
+
               report1 << header_l_rd(f, i)(1, 3) << " " << gen_l(f, i) << " " << mkt_l(f, i) << " " << Nsamp_DM << " " << exp_l_temp_dat << endl;
             }
           }
@@ -1089,7 +1089,7 @@ FUNCTION void write_nudata()
       {
         report1 << "# see manual for format of length composition data " << endl;
       }
-  
+
       report1 << "#" << endl
               << n_abins << " #_N_age_bins" << endl;
       if (n_abins > 0)
@@ -1103,7 +1103,7 @@ FUNCTION void write_nudata()
       report1 << N_ageerr << " #_N_ageerror_definitions" << endl;
       if (N_ageerr > 0)
         report1 << age_err_rd << endl;
-  
+
       report1 << "#_mintailcomp: upper and lower distribution for females and males separately are accumulated until exceeding this level." << endl;
       report1 << "#_addtocomp:  after accumulation of tails; this value added to all bins" << endl;
       report1 << "#_combM+F: males and females treated as combined gender below this bin number " << endl;
@@ -1119,13 +1119,13 @@ FUNCTION void write_nudata()
           report1 << "# ";
         report1 << min_tail_A(f) << " " << min_comp_A(f) << " " << CombGender_A(f) << " " << AccumBin_A(f) << " " << Comp_Err_A(f) << " " << Comp_Err_A2(f) << " " << min_sample_size_A(f) << " #_fleet:" << f << "_" << fleetname(f) << endl;
       }
-  
+
       if (n_abins <= 0)
         report1 << "# ";
       report1 << Lbin_method << " #_Lbin_method_for_Age_Data: 1=poplenbins; 2=datalenbins; 3=lengths" << endl;
       report1 << "# sex codes:  0=combined; 1=use female only; 2=use male only; 3=use both as joint sexxlength distribution" << endl;
       report1 << "# partition codes:  (0=combined; 1=discard; 2=retained" << endl;
-  
+
       report1 << "#_yr month fleet sex part ageerr Lbin_lo Lbin_hi Nsamp datavector(female-male)" << endl;
       if (Nobs_a_tot > 0)
         for (f = 1; f <= Nfleet; f++)
@@ -1159,7 +1159,7 @@ FUNCTION void write_nudata()
               {
                 exp_a_temp(temp_mult(compindex)) += 1.0;
               }
-  
+
               report1 << header_a(f, i)(1) << " " << header_a_rd(f, i)(2, 3) << " " << header_a(f, i)(4, 8) << " " << Nsamp_DM << " " << exp_a_temp << endl;
             }
           }
@@ -1171,7 +1171,7 @@ FUNCTION void write_nudata()
       for (i = 1; i <= f; i++)
         report1 << " 0";
       report1 << endl;
-  
+
       report1 << "#" << endl
               << use_meansizedata << " #_Use_MeanSize-at-Age_obs (0/1)" << endl;
       if (use_meansizedata > 0)
@@ -1211,7 +1211,7 @@ FUNCTION void write_nudata()
           report1 << " 0";
         report1 << endl;
       }
-  
+
       report1 << "#" << endl
               << N_envvar << " #_N_environ_variables" << endl;
       report1 << "# -2 in yr will subtract mean for that env_var; -1 will subtract mean and divide by stddev (e.g. Z-score)" << endl;
@@ -1222,7 +1222,7 @@ FUNCTION void write_nudata()
           report1 << env_temp[i] << endl;
         report1 << "-9999 0 0" << endl;
       }
-  
+
       report1 << "#" << endl
               << SzFreq_Nmeth << " # N sizefreq methods to read " << endl;
       if (SzFreq_Nmeth > 0)
@@ -1254,7 +1254,7 @@ FUNCTION void write_nudata()
           {
             SzFreq_newdat(temp_mult(compindex)) += 1.0;
           }
-  
+
           report1 << SzFreq_obs1(iobs)(1, 7) << " " << SzFreq_newdat(1, SzFreq_Setup2(iobs)) << endl;
         }
       }
@@ -1264,14 +1264,14 @@ FUNCTION void write_nudata()
       if (Do_TG > 0)
       {
         dvector temp_negbin(1, 50000);
-  
+
         // changes authored by Gavin Fay in June 2016 in SS3 3.24Y
         TG_recap_gen.initialize();
         int N_TG_recap_gen = 0;
         for (TG = 1; TG <= N_TG; TG++)
         {
           overdisp = TG_parm(2 * N_TG + TG);
-  
+
           dvector TG_fleet_probs(1, Nfleet);
           dvector temp_tags(1, Nfleet);
           //  problem:  TG_recap_exp only dimensioned to TG_endtime
@@ -1308,19 +1308,19 @@ FUNCTION void write_nudata()
             }
           }
         }
-  
+
         // info on dimensions of tagging data
         report1 << N_TG << " # N tag groups" << endl;
         // //report1<<N_TG_recap<<" # N recap events"<<endl;
         report1 << N_TG_recap_gen << " # N recap events" << endl;
         report1 << TG_mixperiod << " # mixing latency period: N periods to delay before comparing observed to expected recoveries (0 = release period)" << endl;
         report1 << TG_maxperiods << " # max periods (seasons) to track recoveries, after which tags enter accumulator" << endl;
-  
+
         // tag releases
         report1 << "# Release data for each tag group.  Tags are considered to be released at the beginning of a season (period)" << endl;
         report1 << "#<TG> area yr season <tfill> sex age Nrelease  (note that the TG and tfill values are placeholders and are replaced by program generated values)" << endl;
         report1 << TG_release << endl;
-  
+
         // tag recaptures
         report1 << "#_Note: Bootstrap values for tag recaptures are produced only for the same combinations of" << endl;
         report1 << "#       group, year, area, and fleet that had observed recaptures. " << endl;
@@ -1331,7 +1331,7 @@ FUNCTION void write_nudata()
         }
       }
       // end tagging data section #3 (bootstrap data)
-  
+
       report1 << "#" << endl
               << Do_Morphcomp << " #    morphcomp data(0/1) " << endl;
       if (Do_Morphcomp > 0)
@@ -1351,23 +1351,23 @@ FUNCTION void write_nudata()
         report1 << "#  Nobs, Nmorphs, mincomp" << endl;
         report1 << "#  yr, seas, type, partition, Nsamp, datavector_by_Nmorphs" << endl;
       }
-  
+
       report1 << "#" << endl
               << Do_SelexData << "  #  Do dataread for selectivity priors(0/1)" << endl;
       report1 << " # Yr, Seas, Fleet,  Age/Size,  Bin,  selex_prior,  prior_sd" << endl;
       report1 << " # feature not yet implemented" << endl;
-  
+
       report1 << "#" << endl
               << "999" << endl
               << endl;
     }
     report1.close();
   }
-  
+
   //  report1 << "ENDDATA" << endl;
   return;
   } //  end of write data
-  
+
 //********************************************************************
  /*  SS_Label_FUNCTION 39 write_nucontrol  write new control file and starter file */
 FUNCTION void write_nucontrol()
@@ -1396,7 +1396,7 @@ FUNCTION void write_nucontrol()
   {
     NuStart << "# custom report options: -100 to start with minimal; -101 to start with all; -number to remove, +number to add, -999 to end" << endl;
   }
-  
+
   NuStart << docheckup << " # write 1st iteration details to echoinput.sso file (0,1) " << endl;
   NuStart << Do_ParmTrace << " # write parm values to ParmTrace.sso (0=no,1=good,active; 2=good,all; 3=every_iter,all_parms; 4=every,active)" << endl;
   NuStart << Do_CumReport << " # write to cumreport.sso (0=no,1=like&timeseries; 2=add survey fits)" << endl;
@@ -1414,7 +1414,7 @@ FUNCTION void write_nucontrol()
   NuStart << N_STD_Yr_RD << " # N individual STD years " << endl;
   NuStart << "#vector of year values " << endl
           << STD_Yr_RD << endl;
-  
+
   NuStart << final_conv << " # final convergence criteria (e.g. 1.0e-04) " << endl;
   NuStart << retro_yr - endyr << " # retrospective year relative to end year (e.g. -4)" << endl;
   NuStart << Smry_Age << " # min age for calc of summary biomass" << endl;
@@ -1436,7 +1436,7 @@ FUNCTION void write_nucontrol()
   NuStart << irand_seed_rd << " # random number seed for bootstrap data (-1 to use long(time) as seed): # " << irand_seed << endl;
   NuStart << "3.30 # check value for end of file and for version control" << endl;
   NuStart.close();
-  
+
   cout << " Write new forecast file " << endl;
   anystring = ssnew_pathname + "forecast.ss_new";
   ofstream NuFore(anystring);
@@ -1459,7 +1459,7 @@ FUNCTION void write_nucontrol()
     }
     NuFore << "-9999 1 1 1 # terminate list of fleet costs and prices" << endl;
   }
-  
+
   NuFore << SPR_target << " # SPR target (e.g. 0.40)" << endl;
   NuFore << BTGT_target << " # Biomass target (e.g. 0.40)" << endl;
   if (Do_Benchmark == 3)
@@ -1478,7 +1478,7 @@ FUNCTION void write_nucontrol()
          << Fcast_yr_rd << endl
          << "# " << Fcast_yr << endl;
   NuFore << Fcast_Specify_Selex << " # Forecast selectivity (0=fcast selex is mean from year range; 1=fcast selectivity from annual time-vary parms)" << endl;
-  
+
   NuFore << HarvestPolicy << " # Control rule method (0: none; 1: ramp does catch=f(SSB), buffer on F; 2: ramp does F=f(SSB), buffer on F; 3: ramp does catch=f(SSB), buffer on catch; 4: ramp does F=f(SSB), buffer on catch) " << endl;
   NuFore << "# values for top, bottom and buffer exist, but not used when Policy=0" << endl;
   NuFore << H4010_top << " # Control rule Biomass level for constant F (as frac of Bzero, e.g. 0.40); (Must be > the no F level below) " << endl;
@@ -1492,7 +1492,7 @@ FUNCTION void write_nucontrol()
       NuFore << H4010_scale_vec_rd[s] << endl;
     }
   }
-  
+
   NuFore << Fcast_Loop_Control(1) << " #_N forecast loops (1=OFL only; 2=ABC; 3=get F from forecast ABC catch with allocations applied)" << endl;
   NuFore << Fcast_Loop_Control(2) << " #_First forecast loop with stochastic recruitment" << endl;
   NuFore << Fcast_Loop_Control(3) << " #_Forecast recruitment:  0= spawn_recr; 1=value*spawn_recr_fxn; 2=value*VirginRecr; 3=recent mean from yr range above (need to set phase to -1 in control to get constant recruitment in MCMC)" << endl;
@@ -1518,18 +1518,18 @@ FUNCTION void write_nucontrol()
   }
   NuFore << Fcast_Loop_Control(5) << " #_Forecast loop control #5 (reserved for future bells&whistles) " << endl;
   NuFore << Fcast_Cap_FirstYear << "  #FirstYear for caps and allocations (should be after years with fixed inputs) " << endl;
-  
+
   NuFore << Impl_Error_Std << " # stddev of log(realized catch/target catch) in forecast (set value>0.0 to cause active impl_error)" << endl;
-  
+
   NuFore << Do_Rebuilder << " # Do West Coast gfish rebuilder output: 0=no; 1=yes " << endl;
   NuFore << Rebuild_Ydecl << " # Rebuilder:  first year catch could have been set to zero (Ydecl)(-1 to set to 1999)" << endl;
   NuFore << Rebuild_Yinit << " # Rebuilder:  year for current age structure (Yinit) (-1 to set to endyear+1)" << endl;
-  
+
   NuFore << Fcast_RelF_Basis << " # fleet relative F:  1=use first-last alloc year; 2=read seas, fleet, alloc list below" << endl;
   NuFore << "# Note that fleet allocation is used directly as average F if Do_Forecast=4 " << endl;
-  
+
   NuFore << Fcast_Catch_Basis << " # basis for fcast catch tuning and for fcast catch caps and allocation  (2=deadbio; 3=retainbio; 5=deadnum; 6=retainnum); NOTE: same units for all fleets" << endl;
-  
+
   NuFore << "# Conditional input if relative F choice = 2" << endl;
   NuFore << "# enter list of:  season,  fleet, relF; if used, terminate with season=-9999" << endl;
   {
@@ -1547,7 +1547,7 @@ FUNCTION void write_nucontrol()
       NuFore << "# ";
     NuFore << "-9999 0 0  # terminator for list of relF" << endl;
   }
-  
+
   NuFore << "# enter list of: fleet number, max annual catch for fleets with a max; terminate with fleet=-9999" << endl;
   for (f = 1; f <= Nfleet; f++)
   {
@@ -1555,7 +1555,7 @@ FUNCTION void write_nucontrol()
       NuFore << f << " " << Fcast_MaxFleetCatch(f) << endl;
   }
   NuFore << "-9999 -1" << endl;
-  
+
   NuFore << "# enter list of area ID and max annual catch; terminate with area=-9999" << endl;
   for (p = 1; p <= pop; p++)
   {
@@ -1563,7 +1563,7 @@ FUNCTION void write_nucontrol()
       NuFore << p << " " << Fcast_MaxAreaCatch(p) << endl;
   }
   NuFore << "-9999 -1" << endl;
-  
+
   NuFore << "# enter list of fleet number and allocation group assignment, if any; terminate with fleet=-9999" << endl;
   for (f = 1; f <= Nfleet; f++)
   {
@@ -1571,11 +1571,11 @@ FUNCTION void write_nucontrol()
       NuFore << f << " " << Allocation_Fleet_Assignments(f) << endl;
   }
   NuFore << "-9999 -1" << endl;
-  
+
   NuFore << "#_if N allocation groups >0, list year, allocation fraction for each group " << endl;
   NuFore << "# list sequentially because read values fill to end of N forecast" << endl;
   NuFore << "# terminate with -9999 in year field " << endl;
-  
+
   if (Fcast_Catch_Allocation_Groups > 0)
   {
     if (finish_starter == 999)
@@ -1599,10 +1599,10 @@ FUNCTION void write_nucontrol()
   {
     NuFore << "# no allocation groups" << endl;
   }
-  
+
   NuFore << "#" << endl;
   NuFore << Fcast_InputCatch_Basis << " # basis for input Fcast catch: -1=read basis with each obs; 2=dead catch; 3=retained catch; 99=input apical_F; NOTE: bio vs num based on fleet's catchunits" << endl;
-  
+
   NuFore << "#enter list of Fcast catches or Fa; terminate with line having year=-9999" << endl;
   NuFore << "#_Yr Seas Fleet Catch(or_F)";
   if (Fcast_InputCatch_Basis == -1)
@@ -1619,10 +1619,10 @@ FUNCTION void write_nucontrol()
   NuFore << "#" << endl
          << 999 << " # verify end of input " << endl;
   NuFore.close();
-  
+
   //**********************************************************
   cout << " Write new control file " << endl;
-  
+
   ofstream report4("control.ss_new");
   report4 << version_info(1) << version_info(2) << version_info(3) << endl;
   report4 << version_info2 << endl;
@@ -1694,12 +1694,12 @@ FUNCTION void write_nucontrol()
   report4 << "# AUTOGEN" << endl;
   report4 << autogen_timevary << " # autogen: 1st element for biology, 2nd for SR, 3rd for Q, 4th reserved, 5th for selex" << endl;
   report4 << "# where: 0 = autogen time-varying parms of this category; 1 = read each time-varying parm line; 2 = read then autogen if parm min==-12345" << endl;
-  
+
   report4 << "#" << endl
           << "#_Available timevary codes" << endl;
   report4 << "#_Block types: 0: P_block=P_base*exp(TVP); 1: P_block=P_base+TVP; 2: P_block=TVP; 3: P_block=P_block(-1) + TVP" << endl;
   report4 << "#_Block_trends: -1: trend bounded by base parm min-max and parms in transformed units (beware); -2: endtrend and infl_year direct values; -3: end and infl as fraction of base range" << endl;
-  
+
   report4 << "#_EnvLinks:  1: P(y)=P_base*exp(TVP*env(y));  2: P(y)=P_base+TVP*env(y);  3: P(y)=f(TVP,env_Zscore) w/ logit to stay in min-max;  4: P(y)=2.0/(1.0+exp(-TVP1*env(y) - TVP2))" << endl;
   report4 << "#_DevLinks:  1: P(y)*=exp(dev(y)*dev_se;  2: P(y)+=dev(y)*dev_se;  3: random walk;  4: zero-reverting random walk with rho;  5: like 4 with logit transform to stay in base min-max" << endl
           << "#_DevLinks(more):  21-25 keep last dev for rest of years" << endl
@@ -1775,7 +1775,7 @@ FUNCTION void write_nucontrol()
             << Length_Maturity << endl;
   }
   report4 << First_Mature_Age << " #_First_Mature_Age" << endl;
-  
+
   report4 << Fecund_Option << " #_fecundity option:(1)eggs=Wt*(a+b*Wt);(2)eggs=a*L^b;(3)eggs=a*Wt^b; (4)eggs=a+b*L; (5)eggs=a+b*W" << endl;
   report4 << Hermaphro_Option << " #_hermaphroditism option:  0=none; 1=female-to-male age-specific fxn; -1=male-to-female age-specific fxn" << endl;
   if (Hermaphro_Option != 0)
@@ -1783,7 +1783,7 @@ FUNCTION void write_nucontrol()
     report4 << Hermaphro_seas_rd << " # Hermaphro_season.first_age (seas=-1 means all seasons; first_age must be 0 to 9)" << endl
             << Hermaphro_maleSPB << " # fraction_of_maleSSB_added_to_total_SSB " << endl;
   }
-  
+
   report4 << MGparm_def << " #_parameter_offset_approach for M, G, CV_G:  1- direct, no offset**; 2- male=fem_parm*exp(male_parm); 3: male=female*exp(parm) then old=young*exp(parm)" << endl;
   report4 << "#_** in option 1, any male parameter with value = 0.0 and phase <0 is set equal to female parameter" << endl;
   report4 << "#" << endl;
@@ -1840,7 +1840,7 @@ FUNCTION void write_nucontrol()
       report4 << MGparm_1(NP) << " # " << ParmLabel(NP) << endl;
     }
   }
-  
+
   report4 << "#  Recruitment Distribution  " << endl;
   j = NP + 1;
   if (MGP_CGD > j)
@@ -1852,12 +1852,12 @@ FUNCTION void write_nucontrol()
       report4 << MGparm_1(NP) << " # " << ParmLabel(NP) << endl;
     }
   }
-  
+
   report4 << "#  Cohort growth dev base" << endl;
   NP++;
   MGparm_1(NP, 3) = value(MGparm(NP));
   report4 << MGparm_1(NP) << " # " << ParmLabel(NP) << endl;
-  
+
   report4 << "#  Movement" << endl;
   if (do_migration > 0)
   {
@@ -1868,7 +1868,7 @@ FUNCTION void write_nucontrol()
       report4 << MGparm_1(NP) << " # " << ParmLabel(NP) << endl;
     }
   }
-  
+
   report4 << "#  Age Error from parameters" << endl;
   if (Use_AgeKeyZero > 0)
   {
@@ -1879,7 +1879,7 @@ FUNCTION void write_nucontrol()
       report4 << MGparm_1(NP) << " # " << ParmLabel(NP) << endl;
     }
   }
-  
+
   report4 << "#  catch multiplier" << endl;
   if (catch_mult_pointer > 0)
   {
@@ -1891,7 +1891,7 @@ FUNCTION void write_nucontrol()
         report4 << MGparm_1(NP) << " # " << ParmLabel(NP) << endl;
       }
   }
-  
+
   //  for (f=1;f<=N_MGparm;f++)
   //  {
   //    NP++;
@@ -1899,7 +1899,7 @@ FUNCTION void write_nucontrol()
   //    report4<<MGparm_1(f)<<" # "<<ParmLabel(NP)<<endl;
   //  }
   report4 << "#  fraction female, by GP" << endl;
-  
+
   if (frac_female_pointer == -1) //  3.24 format
   {
     // placeholders to change fracfemale (3.24) to MGparm (3.30)
@@ -1918,7 +1918,7 @@ FUNCTION void write_nucontrol()
       report4 << MGparm_1(NP) << " # " << ParmLabel(NP) << endl;
     }
   }
-  
+
   report4 << "#  M2 parameter for each predator fleet" << endl;
   for (int gp = 1; gp <= N_predparms; gp++)
   {
@@ -1926,7 +1926,7 @@ FUNCTION void write_nucontrol()
     MGparm_1(NP, 3) = value(MGparm(NP));
     report4 << MGparm_1(NP) << " # " << ParmLabel(NP) << endl;
   }
-  
+
   report4 << "#" << endl;
   j = N_MGparm;
   if (timevary_parm_cnt_MG > 0)
@@ -1945,7 +1945,7 @@ FUNCTION void write_nucontrol()
   {
     report4 << "#_no timevary MG parameters" << endl;
   }
-  
+
   report4 << "#" << endl;
   report4 << "#_seasonal_effects_on_biology_parms" << endl
           << MGparm_seas_effects << " #_femwtlen1,femwtlen2,mat1,mat2,fec1,fec2,Malewtlen1,malewtlen2,L1,K" << endl;
@@ -1964,7 +1964,7 @@ FUNCTION void write_nucontrol()
   {
     report4 << "#_Cond -2 2 0 0 -1 99 -2 #_placeholder when no seasonal MG parameters" << endl;
   }
-  
+
   report4 << "#" << endl;
   report4 << SR_fxn << " #_Spawner-Recruitment; Options: 1=NA; 2=Ricker; 3=std_B-H; 4=SCAA; 5=Hockey; 6=B-H_flattop; 7=survival_3Parm; 8=Shepherd_3Parm; 9=RickerPower_3parm" << endl;
   report4 << init_equ_steepness << "  # 0/1 to use steepness in initial equ recruitment calculation" << endl;
@@ -2001,7 +2001,7 @@ FUNCTION void write_nucontrol()
   {
     report4 << "#_no timevary SR parameters" << endl;
   }
-  
+
   report4 << do_recdev << " #do_recdev:  0=none; 1=devvector (R=F(SSB)+dev); 2=deviations (R=F(SSB)+dev); 3=deviations (R=R0*dev; dev2=R-f(SSB)); 4=like 3 with sum(dev2) adding penalty" << endl;
   report4 << recdev_start << " # first year of main recr_devs; early devs can preceed this era" << endl;
   report4 << recdev_end << " # last year of main recr_devs; forecast devs start in following year" << endl;
@@ -2100,7 +2100,7 @@ FUNCTION void write_nucontrol()
       report4 << " " << recdev(y);
     }
   }
-  
+
   if (do_recdev > 0)
   {
     for (y = recdev_start; y <= recdev_end; y++)
@@ -2109,7 +2109,7 @@ FUNCTION void write_nucontrol()
       report4 << " " << recdev(y);
     }
   }
-  
+
   if (Do_Forecast > 0 && do_recdev > 0)
   {
     for (y = recdev_end + 1; y <= YrMax; y++)
@@ -2133,7 +2133,7 @@ FUNCTION void write_nucontrol()
   report4 << "#Fishing Mortality info " << endl;
   report4 << F_ballpark << " # F ballpark value in units of annual_F" << endl;
   report4 << F_ballpark_yr << " # F ballpark year (neg value to disable)" << endl;
-  
+
   report4 << F_Method << " # F_Method:  1=Pope midseason rate; 2=F as parameter; 3=F as hybrid; 4=fleet-specific parm/hybrid (#4 is superset of #2 and #3 and is recommended)" << endl;
   report4 << max_harvest_rate << " # max F (methods 2-4) or harvest fraction (method 1)" << endl;
   if (F_Method == 1)
@@ -2166,7 +2166,7 @@ FUNCTION void write_nucontrol()
     report4 << "-9999 1 1 # end of list" << endl;
     report4 << F_Tune << " #_number of loops for hybrid tuning; 4 good; 3 faster; 2 enough if switching to parms is enabled" << endl;
   }
-  
+
   report4 << "#" << endl;
   report4 << "#_initial_F_parms; for each fleet x season that has init_catch; nest season in fleet; count = " << N_init_F2 << endl;
   report4 << "#_for unconstrained init_F, use an arbitrary initial catch and set lambda=0 for its logL" << endl;
@@ -2190,7 +2190,7 @@ FUNCTION void write_nucontrol()
       report4 << init_F_parm_1(f) << " # " << ParmLabel(NP) << endl;
     }
   }
-  
+
   report4 << "#" << endl
           << "# F rates by fleet x season" << endl;
   report4 << "# Yr: ";
@@ -2233,7 +2233,7 @@ FUNCTION void write_nucontrol()
     if (depletion_type == 2)
       report4 << "#_Q_setup(f,2)=2  no phase adjustments, can be used when profiling on fixed R0" << endl;
   }
-  
+
   report4 << "#_   fleet      link link_info  extra_se   biasadj     float  #  fleetname" << endl;
   for (f = 1; f <= Nfleet; f++)
   {
@@ -2247,7 +2247,7 @@ FUNCTION void write_nucontrol()
   }
   report4 << "-9999 0 0 0 0 0" << endl
           << "#" << endl;
-  
+
   report4 << "#_Q_parms(if_any);Qunits_are_ln(q)" << endl;
   if (Q_Npar > 0)
   {
@@ -2266,7 +2266,7 @@ FUNCTION void write_nucontrol()
     }
     report4.unsetf(std::ios_base::fixed);
     report4.unsetf(std::ios_base::floatfield);
-  
+
     if (timevary_parm_start_Q > 0)
     {
       report4 << "# timevary Q parameters " << endl;
@@ -2290,7 +2290,7 @@ FUNCTION void write_nucontrol()
   }
   report4 << "#" << endl;
   report4 << "#_size_selex_patterns" << endl;
-  
+
   report4 << "#Pattern:_0;  parm=0; selex=1.0 for all sizes" << endl;
   report4 << "#Pattern:_1;  parm=2; logistic; with 95% width specification" << endl;
   report4 << "#Pattern:_5;  parm=2; mirror another size selex; PARMS pick the min-max bin to mirror" << endl;
@@ -2308,13 +2308,13 @@ FUNCTION void write_nucontrol()
   report4 << "#Pattern:_25; parm=3; exponential-logistic in length" << endl;
   report4 << "#Pattern:_27; parm=special+3; cubic spline in length; parm1==1 resets knots; parm1==2 resets all " << endl;
   report4 << "#Pattern:_42; parm=special+3+2; cubic spline; like 27, with 2 additional param for scaling (average over bin range)" << endl;
-  
+
   report4 << "#_discard_options:_0=none;_1=define_retention;_2=retention&mortality;_3=all_discarded_dead;_4=define_dome-shaped_retention" << endl;
   report4 << "#_Pattern Discard Male Special" << endl;
   for (f = 1; f <= Nfleet; f++)
     report4 << seltype_rd(f) << " # " << f << " " << fleetname(f) << endl;
   report4 << "#" << endl;
-  
+
   report4 << "#_age_selex_patterns" << endl;
   report4 << "#Pattern:_0; parm=0; selex=1.0 for ages 0 to maxage" << endl;
   report4 << "#Pattern:_10; parm=0; selex=1.0 for ages 1 to maxage" << endl;
@@ -2337,13 +2337,13 @@ FUNCTION void write_nucontrol()
   for (f = 1; f <= Nfleet; f++)
     report4 << seltype_rd(f + Nfleet) << " # " << f << " " << fleetname(f) << endl;
   report4 << "#" << endl;
-  
+
   report4 << "#_          LO            HI          INIT         PRIOR         PR_SD       PR_type      PHASE    env-var    use_dev   dev_mnyr   dev_mxyr     dev_PH      Block    Blk_Fxn  #  parm_name" << endl;
-  
+
   // set back to default configuration for output
   report4.unsetf(std::ios_base::fixed);
   report4.unsetf(std::ios_base::floatfield);
-  
+
   {
     k = 0;
     for (f = 1; f <= 2 * Nfleet; f++)
@@ -2392,7 +2392,7 @@ FUNCTION void write_nucontrol()
     {
       report4 << "#_No_Dirichlet parameters" << endl;
     }
-  
+
     if (N_selparm3 > N_selparm)
     {
       report4 << "# timevary selex parameters " << endl;
@@ -2412,7 +2412,7 @@ FUNCTION void write_nucontrol()
     {
       report4 << "#_no timevary selex parameters" << endl;
     }
-  
+
     report4 << "#" << endl
             << TwoD_AR_do << "   #  use 2D_AR1 selectivity(0/1)" << endl;
     if (TwoD_AR_do > 0)
@@ -2434,7 +2434,7 @@ FUNCTION void write_nucontrol()
         {
           anystring = "AGE";
         }
-  
+
         report4 << tempvec << "  #  2d_AR specs for fleet: " << fleetname(tempvec(1)) << " " << anystring << endl;
         int sigma_amax = tempvec(6);
         int use_rho = tempvec(7);
@@ -2463,13 +2463,13 @@ FUNCTION void write_nucontrol()
     {
       report4 << "#_no 2D_AR1 selex offset used" << endl;
     }
-  
+
     report4.unsetf(std::ios_base::fixed);
     report4.unsetf(std::ios_base::floatfield);
   }
-  
+
   j = N_selparm;
-  
+
   report4 << "#" << endl
           << "# Tag loss and Tag reporting parameters go next" << endl;
   if (Do_TG > 0)
@@ -2500,7 +2500,7 @@ FUNCTION void write_nucontrol()
     report4 << "# deviation vectors for timevary parameters" << endl
             << "#  base   base first block   block  env  env   dev   dev   dev   dev   dev" << endl
             << "#  type  index  parm trend pattern link  var  vectr link _mnyr  mxyr phase  dev_vector" << endl;
-  
+
     for (j = 1; j <= timevary_cnt; j++)
     {
       //        report4.precision(6);
@@ -2515,7 +2515,7 @@ FUNCTION void write_nucontrol()
       report4 << setw(6) << endl;
     }
   }
-  
+
   report4 << "#" << endl
           << "# Input variance adjustments factors: " << endl;
   report4 << " #_1=add_to_survey_CV" << endl;
@@ -2532,24 +2532,24 @@ FUNCTION void write_nucontrol()
         report4 << setw(6) << var_adjust_data[f - 1](1, 2) << " " << setw(9) << var_adjust_data[f - 1](3) << endl;
   }
   report4 << " -9999   1    0  # terminator" << endl;
-  
+
   report4.precision(6);
   report4.unsetf(std::ios_base::fixed);
   report4.unsetf(std::ios_base::floatfield);
-  
+
   report4 << "#" << endl
           << max_lambda_phase << " #_maxlambdaphase" << endl;
   report4 << sd_offset << " #_sd_offset; must be 1 if any growthCV, sigmaR, or survey extraSD is an estimated parameter" << endl;
-  
+
   report4 << "# read " << N_lambda_changes << " changes to default Lambdas (default value is 1.0)" << endl;
   report4 << "# Like_comp codes:  1=surv; 2=disc; 3=mnwt; 4=length; 5=age; 6=SizeFreq; 7=sizeage; 8=catch; 9=init_equ_catch; " << endl
           << "# 10=recrdev; 11=parm_prior; 12=parm_dev; 13=CrashPen; 14=Morphcomp; 15=Tag-comp; 16=Tag-negbin; 17=F_ballpark; 18=initEQregime" << endl
           << "#like_comp fleet  phase  value  sizefreq_method" << endl;
-  
+
   if (N_lambda_changes > 0)
     report4 << Lambda_changes << endl;
   report4 << "-9999  1  1  1  1  #  terminator" << endl;
-  
+
   report4 << "#" << endl
           << "# lambdas (for info only; columns are phases)" << endl;
   if (Svy_N > 0)
@@ -2601,9 +2601,9 @@ FUNCTION void write_nucontrol()
   if (Do_Morphcomp > 0)
     report4 << "# " << Morphcomp_lambda << " #_Morphcomplambda" << endl;
   report4 << "# " << F_ballpark_lambda << " # F_ballpark_lambda" << endl;
-  
+
   report4 << Do_More_Std << " # (0/1/2) read specs for more stddev reporting: 0 = skip, 1 = read specs for reporting stdev for selectivity, size, and numbers, 2 = add options for M,Dyn. Bzero, SmryBio" << endl;
-  
+
   //3868      Do_Selex_Std=More_Std_Input(1);
   //3869      Selex_Std_AL=More_Std_Input(2);
   //3870      Selex_Std_Year=More_Std_Input(3);
@@ -2613,7 +2613,7 @@ FUNCTION void write_nucontrol()
   //3876      Do_NatAge_Std=More_Std_Input(7);
   //3877      NatAge_Std_Year=More_Std_Input(8);
   //3879      NatAge_Std_Cnt=More_Std_Input(9);
-  
+
   if (Do_More_Std == 0) // empty/dummy values when extra stddev reporting not used
   {
     report4 << " # 0 2 0 0 # Selectivity: (1) fleet, (2) 1=len/2=age/3=both, (3) year, (4) N selex bins" << endl;

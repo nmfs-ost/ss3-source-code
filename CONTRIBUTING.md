@@ -12,13 +12,13 @@ We welcome all contributions! For example, report bugs or request features throu
 
 ## How to submit a pull request to Stock Synthesis
 
-All code contributions should be submitted as pull requests to be reviewed by an SS team member.
+All code contributions should be submitted as pull requests to be reviewed by an SS3 team member.
 
 1. [Fork](https://docs.github.com/en/github/getting-started-with-github/fork-a-repo) the stock synthesis repository (or, if you are a member of the nmfs-stock-synthesis organization, clone the repository).
 2. Create a new branch, make the changes, and test out by [building stock synthesis](#how-to-build-stock-synthesis-from-source) locally.
 3. Commit the changes and push up to the github fork.
 4. [Submit a pull request](https://docs.github.com/en/github/collaborating-with-issues-and-pull-requests/creating-a-pull-request-from-a-fork) to the main branch of Stock Synthesis Repository.
-5. An SS team member will work with you to accept or make corrections to the pull request.
+5. An SS3 team member will work with you to accept or make corrections to the pull request.
 
 ## How to build Stock Synthesis from source
 
@@ -26,7 +26,7 @@ All code contributions should be submitted as pull requests to be reviewed by an
 2. Download [ADMB](http://www.admb-project.org/). The current version of ADMB used to compile Stock Synthesis is listed in [SS_versioninfo_330safe.tpl](https://github.com/nmfs-stock-synthesis/stock-synthesis/blob/main/SS_versioninfo_330safe.tpl).
 3. Add ADMB to the PATH or use the ADMB command window for the following commands.
 4. On Linux or Mac: Change directory to the cloned Stock Synthesis repository and use the script [Make_SS_330_new.sh](https://github.com/nmfs-stock-synthesis/stock-synthesis/blob/main/Make_SS_330_new.sh) by calling './Make_SS_330_new.sh'. To see all options for the function, use 'help ./Make_SS_330_new.sh'.
-5. On Windows: Change directory to the cloned Stock Synthesis repository's [Compile](https://github.com/nmfs-stock-synthesis/stock-synthesis/tree/main/Compile) subfolder. and call the [Make_SS_safe batch script](https://github.com/nmfs-stock-synthesis/stock-synthesis/blob/main/Compile/Make_SS_safe.bat) to build the "safe" version of Stock Synthesis. (to build the optimized and translation (3.24 to 3.30) versions of Stock Synthesis, call the Make_SS_opt or Make_SS_trans batch scripts instead). Upon calling the batch script, SS will be built in the Compile subfolder.
+5. On Windows: Change directory to the cloned Stock Synthesis repository's [Compile](https://github.com/nmfs-stock-synthesis/stock-synthesis/tree/main/Compile) subfolder and call the [Make_SS_safe batch script](https://github.com/nmfs-stock-synthesis/stock-synthesis/blob/main/Compile/Make_SS_safe.bat) to build the "safe" version of Stock Synthesis. (to build the fast (aka optimized) version of Stock Synthesis, call the Make_SS_fast.bat batch scripts instead). Upon calling the batch script, SS3 will be built in the Compile subfolder.
 
 # Still have a question on the contributing workflow?
 
