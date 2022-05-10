@@ -4,4 +4,4 @@ on:
   workflow_dispatch:
 jobs:
   call-workflow:
-    uses: nmfs-stock-synthesis/workflows/.github/workflows/build-ss3-win-dev.yml@admb-dev
+    uses: nmfs-stock-synthesis/workflows/.github/workflows/build-ss3-admb-dev.yml@admb-dev
