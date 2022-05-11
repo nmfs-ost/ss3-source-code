@@ -308,7 +308,7 @@ FUNCTION void get_initial_conditions()
         natM(t-nseas-nseas) = natM(t);  //  for virgin
       }
 
-      for(p=1; p<=pop; p++)
+      for(p = 1; p <= pop; p++)
       {
         int s1 = (p - 1) * nseas + s;
         surv1(s1) = mfexp( - natM(t,p) * seasdur_half(s));
@@ -907,7 +907,7 @@ FUNCTION void get_time_series()
           }
         }
 
-        for(p=1; p<=pop; p++)
+        for(p = 1; p <= pop; p++)
         {
           int s1 = (p - 1) * nseas + s;
           surv1(s1) = mfexp(-natM(t,p) * seasdur_half(s));

@@ -989,7 +989,7 @@ FUNCTION void get_natmort()
   int K_index;
   K_index = VBK(1).indexmax();
   Do_AveAge = 0;
-  t_base = styr + (yz - styr) * nseas - 1; //  so looping s=1 to nseas; t=t_base+s
+  t_base = styr + (yz - styr) * nseas - 1; //  so looping s=1 to nseas; t=t_base + s
   Ip = -N_M_Grow_parms; // start counter for MGparms
   //  SS_Label_Info_17.1  #loop growth patterns in each gender
   gp = 0;
@@ -1058,7 +1058,7 @@ FUNCTION void get_natmort()
             {
               for (s = 1; s <= nseas; s++)
               {
-                natM(t_base+s, 0, gpi) = natMparms(1, gp);
+                natM(t_base + s, 0, gpi) = natMparms(1, gp);
               }
               break;
             }
@@ -1107,13 +1107,13 @@ FUNCTION void get_natmort()
                   }
                   while (t_age < natM_amax && a <= nages)
                   {
-                    natM(t_base+s, 0, gpi, a) = natM_A + (t_age - natM_amin) * temp;
+                    natM(t_base + s, 0, gpi, a) = natM_A + (t_age - natM_amin) * temp;
                     t_age += 1.0;
                     a++;
                   }
                 }
                 if (k == 1)
-                  natM(t_base+s, 0, gpi, 0) = natM(t_base+s, 0, gpi, 1);
+                  natM(t_base + s, 0, gpi, 0) = natM(t_base + s, 0, gpi, 1);
               } // end season
               break;
             } // end natM_type==1
@@ -1127,11 +1127,11 @@ FUNCTION void get_natmort()
               for (s = nseas; s >= 1; s--)
               {
                 int Loren_t = styr + (yz - styr) * nseas + s - 1;
-                natM(t_base+s, 0, gpi)(0, nages) = log(
+                natM(t_base + s, 0, gpi)(0, nages) = log(
                                              elem_div(Ave_Size(Loren_t, mid_subseas, g)(0, nages), (Ave_Size(Loren_t, mid_subseas, g)(0, nages) + Loren_temp2))) *
                     Loren_M1;
                 if (s < Bseas(g))
-                  {natM(t_base+s, 0, gpi, 0) = natM(t_base+s + 1, 0, gpi, 0);}
+                  {natM(t_base + s, 0, gpi, 0) = natM(t_base + s + 1, 0, gpi, 0);}
               }
               break;
             }
@@ -1140,7 +1140,7 @@ FUNCTION void get_natmort()
             {
               for (s = 1; s <= nseas; s++)
               {
-                natM(t_base+s, 0, gpi) = Age_NatMort(gp);
+                natM(t_base + s, 0, gpi) = Age_NatMort(gp);
               }
               break;
             }
@@ -1156,7 +1156,7 @@ FUNCTION void get_natmort()
                   t_age = azero_seas(s) - azero_G(g);
                   for (a = k; a <= nages - 1; a++)
                   {
-                    natM(t_base+s, gpi, a) = Age_NatMort(gp, a) + t_age * (Age_NatMort(gp, a + 1) - Age_NatMort(gp, a));
+                    natM(t_base + s, gpi, a) = Age_NatMort(gp, a) + t_age * (Age_NatMort(gp, a + 1) - Age_NatMort(gp, a));
                   } // end age
                 }
                 else
@@ -1165,11 +1165,11 @@ FUNCTION void get_natmort()
                   t_age = azero_seas(s) + (1. - azero_G(g));
                   for (a = k; a <= nages - 1; a++)
                   {
-                    natM(t_base+s, 0, gpi, a) = Age_NatMort(gp, a) + t_age * (Age_NatMort(gp, a + 1) - Age_NatMort(gp, a));
+                    natM(t_base + s, 0, gpi, a) = Age_NatMort(gp, a) + t_age * (Age_NatMort(gp, a + 1) - Age_NatMort(gp, a));
                   } // end age
-                  natM(t_base+s, 0, gpi, 0) = natM(t_base+s, 0, gpi, 1);
+                  natM(t_base + s, 0, gpi, 0) = natM(t_base + s, 0, gpi, 1);
                 }
-                natM(t_base+s, 0, gpi, nages) = Age_NatMort(gp, nages);
+                natM(t_base + s, 0, gpi, nages) = Age_NatMort(gp, nages);
               } // end season
               break;
             }
@@ -1200,10 +1200,10 @@ FUNCTION void get_natmort()
                 XX_mature(First_Mature_Age, nages) = 1. / (1. + mfexp(Maunder_beta * (Ave_Size(t, mid_subseas, g)(First_Mature_Age, nages) - Maunder_L50)));
                 {
                   //  original equation had:
-                  //  natM(t_base+s,gpi,a) = Maunder_Mjuv*pow(Ave_Size(t,ALK_idx,g,a)/Maunder_Lmat,Maunder_lambda) +
+                  //  natM(t_base + s,gpi,a) = Maunder_Mjuv*pow(Ave_Size(t,ALK_idx,g,a)/Maunder_Lmat,Maunder_lambda) +
                   //                  (Maunder_Mmat-Maunder_Mjuv*pow(Ave_Size(t,ALK_idx,g,a)/Maunder_Lmat,Maunder_lambda))*XXmaturity_Fem(a)XX;
-                  natM(t_base+s, 0, gpi) = Maunder_Mjuv * pow((Ave_Size(t, mid_subseas, g) / Maunder_Lmat), Maunder_lambda);
-                  natM(t_base+s, 0, gpi) += elem_prod((Maunder_Mmat - natM(t_base+s, 0, gpi)), XX_mature);
+                  natM(t_base + s, 0, gpi) = Maunder_Mjuv * pow((Ave_Size(t, mid_subseas, g) / Maunder_Lmat), Maunder_lambda);
+                  natM(t_base + s, 0, gpi) += elem_prod((Maunder_Mmat - natM(t_base + s, 0, gpi)), XX_mature);
                 }
                 if (do_once == 1)
                 {
@@ -1215,7 +1215,7 @@ FUNCTION void get_natmort()
                   echoinput << "avesize/Lmat " << Ave_Size(t, mid_subseas, g) / Maunder_Lmat << endl;
                   echoinput << " natM_juv: " << Maunder_Mjuv * pow((Ave_Size(t, mid_subseas, g) / Maunder_Lmat), Maunder_lambda) << endl;
                   echoinput << " natM_mat: " << (Maunder_Mmat)*XX_mature << endl;
-                  echoinput << " natM_combined: " << natM(t_base+s, 0, gpi) << endl;
+                  echoinput << " natM_combined: " << natM(t_base + s, 0, gpi) << endl;
                 }
               }
               break;
@@ -1234,7 +1234,7 @@ FUNCTION void get_natmort()
           {
             for (s = 1; s <= nseas; s++)
               echoinput << "Natmort seas:" << s << " sex:" << gg << " Gpat:" << GPat << " sex*Gpat:" << gp << " settlement:" << settle << " gpi:" << gpi << endl
-                        << " M: " << natM(t_base+s, 0, gpi) << endl;
+                        << " M: " << natM(t_base + s, 0, gpi) << endl;
           }
   #endif
         } //  end use of this morph
@@ -1243,7 +1243,7 @@ FUNCTION void get_natmort()
   for (s = 1; s <= nseas; s++)
   for (p = 1; p <= pop; p++)
   {
-    natM(t_base + s, p) = natM(t_base+s, 0); // copy M1 to eack area's M;
+    natM(t_base + s, p) = natM(t_base + s, 0); // copy M1 to eack area's M;
                                      // p=0 holds that M1 as the base M with no predators
                                      // pred_M2 will be added later on area-specific basis
   }

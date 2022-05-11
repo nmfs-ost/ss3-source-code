@@ -277,10 +277,10 @@
         else if (fleet_type(f)==4)  //  predator, e.g. red tide
           {
             N_pred++;
-            predator(N_pred)=f;
-            predator_rev(f)=N_pred;
-            predator_area(0 , N_pred)=f;  // to find the "f" index for a predator when not within an area loop
-            predator_area(p , N_pred)=f;  //  to find the index when in an area loop
+            predator(N_pred) = f;
+            predator_rev(f) = N_pred;
+            predator_area(0, N_pred) = f;  // to find the "f" index for a predator when not within an area loop
+            predator_area(p, N_pred) = f;  //  to find the index when in an area loop
             surveytime(f)=-1.;
           }
       if(fleet_type(f)>1 && need_catch_mult(f)>0)

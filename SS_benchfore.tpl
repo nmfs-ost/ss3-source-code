@@ -2355,9 +2355,9 @@ FUNCTION void Get_Forecast()
         }
       }
 
-      for(p=1; p<=pop; p++)
+      for(p = 1; p <= pop; p++)
       {
-        int s1 = (p-1)*nseas + s;
+        int s1 = (p - 1) * nseas + s;
         surv1(s1) = mfexp(-natM(t, p) * seasdur_half(s));
         surv2(s1) = square(surv1(s1));
       }
@@ -2562,7 +2562,7 @@ FUNCTION void Get_Forecast()
               }
             Tune_F_loops = 1;
 
-              int s1 = (p-1)*nseas + s;  //  stacks season inside area (p) for use with surv1
+              int s1 = (p - 1) * nseas + s;  //  stacks season inside area (p) for use with surv1
 
             for (int ff = 1; ff <= N_catchfleets(0); ff++)
             {
