@@ -3559,11 +3559,11 @@ FUNCTION void write_bigoutput()
             {
               if (sx(g) == 1)
               {
-                SS2out << natage(t, 1, g, a) / (natage(t, 1, g, a) + natage(t, 1, g + gmorph / 2, a)) << " ";
+                SS2out << " " << natage(t, 1, g, a) / (natage(t, 1, g, a) + natage(t, 1, g + gmorph / 2, a)) << " ";
               }
               else
               {
-                SS2out << natage(t, 1, g, a) / (natage(t, 1, g, a) + natage(t, 1, g - gmorph / 2, a)) << " ";
+                SS2out << " " << natage(t, 1, g, a) / (natage(t, 1, g, a) + natage(t, 1, g - gmorph / 2, a)) << " ";
               }
             }
             if (WTage_rd == 0)
@@ -3823,33 +3823,8 @@ FUNCTION void write_bigoutput()
             repli = 1;
             last_t = ALK_time;
           }
-          if (header_l(f, i, 2) < 0 && in_superperiod == 0)
-          {
-            in_superperiod = 1;
-            anystring = "Sup";
-          }
-          else if (header_l(f, i, 2) < 0 && in_superperiod > 0)
-          {
-            anystring = "Sup";
-            in_superperiod = 0;
-          }
-          else if (in_superperiod > 0)
-          {
-            in_superperiod++;
-            anystring = "Sup";
-          }
-          else
-          {
-            anystring = "_";
-          }
-          if (header_l(f, i, 3) < 0)
-          {
-            anystring += " skip";
-          }
-          else
-          {
-            anystring += " _";
-          }
+          in_superperiod = determine_speriod(in_superperiod, anystring, header_l(f, i, 2), header_l(f, i, 3));
+
           if (gen_l(f, i) != 2)
           {
             s_off = 1;
@@ -3998,33 +3973,7 @@ FUNCTION void write_bigoutput()
             repli = 1;
             last_t = ALK_time;
           }
-          if (header_a(f, i, 2) < 0 && in_superperiod == 0)
-          {
-            in_superperiod = 1;
-            anystring = "Sup";
-          }
-          else if (header_a(f, i, 2) < 0 && in_superperiod > 0)
-          {
-            anystring = "Sup";
-            in_superperiod = 0;
-          }
-          else if (in_superperiod > 0)
-          {
-            in_superperiod++;
-            anystring = "Sup";
-          }
-          else
-          {
-            anystring = "_";
-          }
-          if (header_a(f, i, 3) < 0)
-          {
-            anystring += " skip";
-          }
-          else
-          {
-            anystring += " _";
-          }
+          in_superperiod = determine_speriod(in_superperiod, anystring, header_a(f, i, 2), header_a(f, i, 3));
 
           if (gen_a(f, i) != 2)
           {
@@ -4177,33 +4126,7 @@ FUNCTION void write_bigoutput()
             repli = 1;
             last_t = ALK_time;
           }
-          if (header_ms(f, i, 2) < 0 && in_superperiod == 0)
-          {
-            in_superperiod = 1;
-            anystring = "Sup";
-          }
-          else if (header_ms(f, i, 2) < 0 && in_superperiod > 0)
-          {
-            anystring = "Sup";
-            in_superperiod = 0;
-          }
-          else if (in_superperiod > 0)
-          {
-            in_superperiod++;
-            anystring = "Sup";
-          }
-          else
-          {
-            anystring = "_";
-          }
-          if (header_ms(f, i, 3) < 0)
-          {
-            anystring += " skip";
-          }
-          else
-          {
-            anystring += " _";
-          }
+          in_superperiod = determine_speriod(in_superperiod, anystring, header_ms(f, i, 2), header_ms(f, i, 3));
 
           for (z = 1; z <= n_abins2; z++)
           {
@@ -4264,33 +4187,8 @@ FUNCTION void write_bigoutput()
           f = abs(SzFreq_obs_hdr(iobs, 3));
           gg = SzFreq_obs_hdr(iobs, 4); // gender
           k = SzFreq_obs_hdr(iobs, 6);
-          if (SzFreq_obs_hdr(iobs, 2) < 0 && in_superperiod == 0)
-          {
-            in_superperiod = 1;
-            anystring = "Sup";
-          }
-          else if (SzFreq_obs_hdr(iobs, 2) < 0 && in_superperiod > 0)
-          {
-            anystring = "Sup";
-            in_superperiod = 0;
-          }
-          else if (in_superperiod > 0)
-          {
-            in_superperiod++;
-            anystring = "Sup";
-          }
-          else
-          {
-            anystring = "_";
-          }
-          if (SzFreq_obs_hdr(iobs, 3) < 0)
-          {
-            anystring += " skip";
-          }
-          else
-          {
-            anystring += " _";
-          }
+          in_superperiod = determine_speriod(in_superperiod, anystring, SzFreq_obs_hdr(iobs, 2), SzFreq_obs_hdr(iobs, 3));
+
           p = SzFreq_obs_hdr(iobs, 5); // partition
           z1 = SzFreq_obs_hdr(iobs, 7);
           z2 = SzFreq_obs_hdr(iobs, 8);
@@ -5075,5 +4973,37 @@ FUNCTION dvector process_comps(const int sexes, const int sex, dvector& bins, dv
   }
 
   return more_comp_info;
+  }
+
+FUNCTION int determine_speriod(int s_period, adstring a_string, dvariable var2, dvariable var3)
+  {
+  if (var2 < 0 && s_period == 0)
+  {
+    s_period = 1;
+    a_string = "Sup";
+  }
+  else if (var2 < 0 && s_period > 0)
+  {
+    s_period = 0;
+    a_string = "Sup";
+  }
+  else if (s_period > 0)
+  {
+    s_period++;
+    a_string = "Sup";
+  }
+  else
+  {
+    a_string = "_";
+  }
+  if (var3 < 0)
+  {
+    a_string += " skip";
+  }
+  else
+  {
+    a_string += " _";
+  }
+  return s_period;
   }
 
