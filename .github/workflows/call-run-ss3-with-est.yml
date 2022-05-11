@@ -2,9 +2,7 @@
 name: call-run-ss3-with-est
 on: 
   push:
-    paths:
-    - '**.tpl'
   workflow_dispatch:
 jobs:
   call-workflow:
-    uses: nmfs-stock-synthesis/workflows/.github/workflows/run-ss3-with-est.yml@main
+    uses: nmfs-stock-synthesis/workflows/.github/workflows/run-ss3-with-est.yml@admb-dev
