@@ -876,7 +876,7 @@ FINAL_SECTION
         }
       }
       if (mceval_phase() == 0)
-        cout << " finished COVAR.SSO" << endl;
+        echoinput << " finished COVAR.SSO" << endl;
     }
 
     //  SS_Label_Info_12.3 #Go thru time series calculations again to get extra output quantities
@@ -892,7 +892,7 @@ FINAL_SECTION
       if (Do_Forecast > 0)
       {
         show_MSY = 0;
-        Get_Forecast();
+        Get_Forecast(); // First call to forecast
       }
       k = Do_Dyn_Bzero;
       for (j = styr - 2; j <= YrMax; j++)
@@ -941,17 +941,19 @@ FINAL_SECTION
       {
         Get_Benchmarks(show_MSY);
         if (mceval_phase() == 0)
-          cout << " finished benchmark" << endl;
+          cout << "Finished calculating benchmarks" << endl;
+          echoinput << "Finished calculating benchmarks" << endl;
       }
     }
     if (Do_Forecast >= 0)
     {
-      report5 << "THIS FORECAST FOR PURPOSES OF GETTING DISPLAY QUANTITIES" << endl;
+      report5 << "THIS FORECAST IS FOR PURPOSES OF GETTING DISPLAY QUANTITIES" << endl;
       if (did_MSY > 0)
         show_MSY = 0; //  so to not repeat forecast_report.sso
       Get_Forecast();
       if (mceval_phase() == 0)
-        cout << " finished forecast" << endl;
+        cout << "Finished forecast" << endl;
+        echoinput << "Finished forecast" << endl;
     }
 
     if (write_bodywt > 0)
@@ -964,10 +966,13 @@ FINAL_SECTION
     //  SS_Label_Info_12.3.4  #call fxn STDquant()
     Process_STDquant();
     if (mceval_phase() == 0)
-      cout << " finished StdDev quantities" << endl;
+      echoinput << "Finished StdDev quantities" << endl;
     get_posteriors();
     if (mceval_phase() == 0)
-      cout << " finished posteriors" << endl;
+    {
+      cout << "Finished posteriors" << endl;
+      echoinput << "Finished posteriors" << endl;
+    }
 
     //  SS_Label_Info_12.4.2 #Call fxn write_summaryoutput()
     if (Do_CumReport > 0)
@@ -993,17 +998,17 @@ FINAL_SECTION
       //  SS_Label_Info_12.4 #Do Outputs
       //  SS_Label_Info_12.4.1 #Call fxn write_bigoutput()
       write_bigoutput();
-      cout << " finished report.sso" << endl;
+      cout << "Finished final writing of report.sso" << endl;
+      echoinput << "Finished final writing of report.sso" << endl;
     }
     //  SS_Label_Info_12.4.4 #Call fxn write_nudata() to create bootstrap data
     if (N_nudata > 0)
     {
-      cout << "Creating bootstrap files: " << N_nudata << " files";
+      cout << "Begin writing *.ss_new output files: ";
       write_nudata();
-      cout << " finished" << endl;
-
       //  SS_Label_Info_12.4.5 #Call fxn write_nucontrol() to produce control.ss_new
       write_nucontrol();
+      cout << "finished" << endl;
     }
     else
     {
@@ -1014,28 +1019,22 @@ FINAL_SECTION
       }
     }
 
+    echoinput << "Begin final output calculations and warnings" << endl;
     //  SS_Label_Info_12.4.6 #Call fxn write_Bzero_output()  appended to report.sso
     if (pick_report_use(59) == "Y")
     {
-      cout << "dynamic Bzero in FINAL_SECTION: ";
       write_Bzero_output();
-      cout << " finished " << endl;
     }
 
     if (pick_report_use(54) == "Y" && Do_Benchmark > 0)
     {
-      cout << "setup_benchmark: " << endl;
       setup_Benchmark();
-      cout << "SPR_profile: ";
       SPR_profile();
-      cout << " finished " << endl;
     }
 
     if (pick_report_use(55) == "Y" && Do_Benchmark > 0)
     {
-      cout << "Global_MSY: ";
       Global_MSY();
-      cout << " finished " << endl;
     }
 
     if (parm_adjust_method == 3)
@@ -1053,7 +1052,6 @@ FINAL_SECTION
 
     if (Nparm_on_bound > 0)
     {
-      cout << Nparm_on_bound << " parameters are on or within 1% of min-max bound" << endl;
       warning << " N parameters are on or within 1% of min-max bound: " << Nparm_on_bound << "; check results, variance may be suspect" << endl;
     }
     warning << "N warnings: " << N_warn << endl;
@@ -1200,7 +1198,8 @@ REPORT_SECTION
     get_time_series(); //  in ADMB's report_section
     evaluate_the_objective_function();
     write_bigoutput();
-    cout << "Wrote bigoutput and bodywt for last_phase in REPORT_SECTION and before hessian, no benchmark or forecast " << endl;
+    echoinput << "Wrote first version of output files (before hessian, benchmark, and forecast)" << endl;
+    cout << "Wrote first version of output files (before hessian, benchmark, and forecast)" << endl;
     save_for_report = 0;
     write_bodywt = 0;
     //    SS2out.close();

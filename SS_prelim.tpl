@@ -1277,11 +1277,11 @@
 
   //  SS_Label_Info_6.8.1 #Call fxn get_MGsetup() to copy MGparms to working array and applies time-varying factors
   get_MGsetup(styr);
-  echoinput << " did MG setup" << endl;
+  echoinput << "Finished MG setup" << endl;
 
   //  SS_Label_Info_6.8.2 #Call fxn get_growth1() to calculate quantities that are not time-varying
   get_growth1();
-  echoinput << " did growth1" << endl;
+  echoinput << "Finished growth1" << endl;
   VBK_seas = value(VBK_seas);
   wtlen_seas = value(wtlen_seas);
   CVLmin = value(CVLmin);
