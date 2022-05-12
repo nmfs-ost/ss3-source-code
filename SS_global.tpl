@@ -812,16 +812,6 @@ BETWEEN_PHASES_SECTION
 FINAL_SECTION
   {
   //  SS_Label_Info_12.1 #Get run ending time
-  time(&finish);
-  elapsed_time = difftime(finish, start);
-  hour = long(elapsed_time) / 3600;
-  minute = long(elapsed_time) % 3600 / 60;
-  second = (long(elapsed_time) % 3600) % 60;
-  cout << endl
-       << "In final section " << endl;
-  cout << "Finish time: " << ctime(&finish);
-  cout << "Elapsed time: ";
-  cout << hour << " hours, " << minute << " minutes, " << second << " seconds." << endl;
 
   if (No_Report == 1)
   {
@@ -830,9 +820,7 @@ FINAL_SECTION
 
   else
   {
-    cout << " Iterations: " << niter << " -log(L): " << obj_fun << endl;
-    cout << "Final gradient: " << objective_function_value::pobjfun->gmax << endl
-         << endl;
+    cout << " Iterations: " << niter << endl;
     if (objective_function_value::pobjfun->gmax > final_conv)
     {
       N_warn++;
@@ -1069,16 +1057,7 @@ FINAL_SECTION
       warning << " N parameters are on or within 1% of min-max bound: " << Nparm_on_bound << "; check results, variance may be suspect" << endl;
     }
     warning << "N warnings: " << N_warn << endl;
-    cout << endl
-         << "!!  Run has completed  !!            ";
-    if (N_warn > 0)
-    {
-      cout << "See warning.sso for N warnings: " << N_warn << endl;
-    }
-    else
-    {
-      cout << "No warnings :)" << endl;
-    }
+    cout << "See warning.sso for N warnings: " << N_warn << endl;
   }
   } //  end final section
 

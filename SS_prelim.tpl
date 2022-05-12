@@ -1493,9 +1493,6 @@
   }
   else
   {
-    cout << endl
-         << endl
-         << "Begin estimating" << endl;
     echoinput << endl << endl << "Begin estimating" << endl;
   }
   last_objfun = 1.0e30;
