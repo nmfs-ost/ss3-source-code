@@ -1264,8 +1264,8 @@
   }
 
   //  SS_Label_Info_6.8 #Go thru biological calculations once, with do_once flag=1 to produce extra output to echoinput.sso
-  cout << " ready to evaluate once in prelim" << endl;
-  echoinput << " ready to evaluate once in prelim" << endl;
+  cout << "Begin evaluating biology calculations once" << endl;
+  echoinput << "Begin evaluating biology calculations once" << endl;
   ALK_subseas_update = 1; //  vector to indicate if ALK needs recalculating
   do_once = 1;
   niter = 0;
@@ -1459,6 +1459,8 @@
   ParmTrace << endl;
 
   //  SS_Label_Info_6.10 #Preliminary calcs done; Ready for estimation
+  cout << "Finished evaluating biology calculations once" << endl;
+  echoinput << "Finished evaluating biology calculations once" << endl;
 
   if (pick_report_use(60) == "Y")
   {
@@ -1474,12 +1476,12 @@
 
   if (Turn_off_phase < 0)
   {
-    cout << " Requested exit after read when turn_off_phase < 0 " << endl;
+    cout << "Exit requested after read with phase < 0 " << endl;
     N_nudata = 1;
     write_nudata();
-    cout << " finished nudata report " << endl;
+    cout << "Finished writing data_echo.ss_new" << endl;
     write_nucontrol();
-    cout << " finished nucontrol report " << endl;
+    cout << "Finished writing control.ss_new" << endl;
     exit(1);
   }
 
@@ -1493,7 +1495,8 @@
   {
     cout << endl
          << endl
-         << "Estimating...please wait..." << endl;
+         << "Begin estimating" << endl;
+    echoinput << endl << endl << "Begin estimating" << endl;
   }
   last_objfun = 1.0e30;
   } // end PRELIMINARY_CALCS_SECTION

@@ -17,7 +17,8 @@ PARAMETER_SECTION
   
   // set the filename to all ADMB output files to "ss.[ext]"
   ad_comm::adprogram_name = "ss";
-  echoinput << "now in PARAMETER_SECTION " << endl;
+  echoinput << "Begin setting up parameters" << endl;
+  cout << "Begin setting up parameters" << endl;
   if (readparfile >= 1)
   {
     cout << " read parm file" << endl;
@@ -564,6 +565,6 @@ PARAMETER_SECTION
   objective_function_value obj_fun
   number last_objfun
   vector phase_output(1,max_phase+1)
-  !!cout<<" end of parameter section "<<endl;
-  !!echoinput<<"end of parameter section"<<endl;
+  !!cout << "Finished setting up parameters" << endl;
+  !!echoinput << "Finished setting up parameters" << endl;
 //  }  // end of parameter section
