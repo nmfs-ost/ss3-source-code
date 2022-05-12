@@ -13,8 +13,7 @@
 //  SS_Label_Info_4.0 #Begin Reading from Control File
 // /*  SS_Label_Flow  begin reading from control file */
   ad_comm::change_datafile_name(ctlfilename);
-  echoinput<<endl<<" Begin reading control file "<<endl;
-  cout<<" reading from control file"<<endl;
+  echoinput << "Begin reading the control file" << endl;
   ifstream Control_Stream(ctlfilename);   //  even if the global_datafile name is used, there still is a different logical device created
 
 //  SS_Label_Info_4.1 #Read and store comments at top of control file
@@ -4632,14 +4631,14 @@
  LOCAL_CALCS
   if(fim==999)
   {
-  cout<<"End of control file successful! "<<fim<<endl;
-  echoinput<<"End of control file successful! "<<fim<<endl;
+  echoinput << "Finished reading the control file" << endl;
   }
   else
   {
-  cout<<" Unsuccessful end of control file, SS will abort. check echoinput for clues.  Last read is: "<<fim<<endl;
+  cout<<" Unsuccessful end of control file, SS3 will abort. Check echoinput.sso for clues.  Last value read: "<< fim << endl;
   abort();
   }
+  cout << "Finished reading the 4 required input files" << endl << endl;
  END_CALCS
 
 !!//  SS_Label_Info_4.14 #Create count of active parameters and derived quantities

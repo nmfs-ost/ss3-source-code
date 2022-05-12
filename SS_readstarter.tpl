@@ -222,7 +222,7 @@
 //  SS_Label_Info_1.2  #Read the starter.ss file
 // /*  SS_Label_Flow  read starter.ss */
   ad_comm::change_datafile_name("starter.ss");       //  get filenames
-  cout<<" reading from starter.ss"<<endl;
+  cout << "Begin reading the 4 required input files" << endl;
   adstring checkchar;
   line_adstring readline;
   checkchar="";
@@ -243,6 +243,7 @@
     }
   }
   echoinput<<version_info(1)<<version_info(2)<<version_info(3)<<endl<<version_info2<<endl;
+  echoinput << "Begin reading the starter file" << endl;
   warning<<version_info(1)<<version_info(2)<<version_info(3)<<endl<<version_info2<<endl;
   warning<<"This file contains warnings, suggestions and notes generated as files are read and processed"<<endl<<endl;
   adstring sw;  //  used for reading of ADMB switches from command line
@@ -624,7 +625,7 @@
         }
     }
      } while (ender==0);
-   echoinput<<"  finish reading starter.ss"<<endl<<endl;
+   echoinput << "Finished reading the starter file" << endl << endl;
    }
  END_CALCS
 

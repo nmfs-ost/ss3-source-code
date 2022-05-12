@@ -34,6 +34,8 @@
   if (WTage_rd > 0)
   {
     ad_comm::change_datafile_name("wtatage.ss");
+    echoinput << "Begin reading the empirical weight at age file" << endl;
+    cout << "Begin reading the empirical weight at age file" << endl;
     *(ad_comm::global_datafile) >> N_WTage_maxage;
     k = 7 + N_WTage_maxage;
     echoinput << " N_WTage_max " << N_WTage_maxage << endl;
@@ -141,7 +143,8 @@
             Wt_Age_t(styr - 3 * nseas + s, f, g) = junkvec2 / temp;
           }
         }
-    echoinput << "finished reading empirical wt-at-age.ss" << endl;
+    echoinput << "Finished reading the empirical weight at age file" << endl;
+    cout << "Finished reading the empirical weight at age file" << endl;
   }
   else
   {

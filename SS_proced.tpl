@@ -79,12 +79,12 @@ PROCEDURE_SECTION
     //  SS_Label_Info_7.4.1 #Call fxn get_initial_conditions() to get the virgin and initial equilibrium population
     get_initial_conditions();
     if (do_once == 1)
-      cout << " OK with initial conditions " << endl;
+      echoinput << "Finished initial_conditions" << endl;
     //  SS_Label_Info_7.4.2 #Call fxn get_time_series() to do population calculations for each year and get expected values for observations
     get_time_series(); //  in procedure_section
     if (do_once == 1)
     {
-      cout << " OK with time series" << endl;
+      echoinput << "Finished time_series" << endl;
     }
 
     //  SS_Label_Info_7.4.3 #Call fxn evaluate_the_objective_function()

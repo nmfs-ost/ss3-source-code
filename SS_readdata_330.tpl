@@ -14,9 +14,13 @@
 
  LOCAL_CALCS
   ad_comm::change_datafile_name(datfilename);
-  if(finish_starter==999)
-  {N_warn++;  warning<<N_warn<<" "<<"finish_starter=999, so probably used a 3.24 starter.ss; please update"<<endl; finish_starter=3.30;  }
-  cout<<" reading from data file"<<endl;
+  if (finish_starter==999)
+  {
+    N_warn++;
+    warning<<N_warn<<" "<<"finish_starter=999, so probably used a 3.24 starter.ss; please update to 3.30"<<endl;
+    finish_starter=3.30;  
+  }
+  echoinput << "Begin reading the data file" << endl;
   ifstream Data_Stream(datfilename);   //  even if the global_datafile name is used, there still is a different logical device created
   k=0;
   N_DC=0;
@@ -2927,15 +2931,14 @@
 !!//  SS_Label_Info_2.14 #End of datafile indicator
   init_int fid
   !! if(fid!=999) {cout<<" final data value in error "<<fid<<endl; exit(1);}
-  !! cout<<"Data read sucessful "<<fid<<endl<<endl;
-  !!echoinput<<" data read successful"<<endl<<endl;
+  !!echoinput<<"Finished reading the data file"<<endl<<endl;
 
  LOCAL_CALCS
 //  SS_Label_Info_3.0 #Read forecast.ss
 // /*  SS_Label_Flow  #read forecast.ss */
 //  note that forecast.ss is read before control file in order to st up length of some time dimension arrays
   ad_comm::change_datafile_name("forecast.ss");
-  cout<<" reading forecast file "<<endl;
+  echoinput << "Begin reading the forecast file" << endl;
   ifstream Forecast_Stream("forecast.ss");   //  even if the global_datafile name is used, there still is a different logical device created
   k=0;
   N_FC=0;
@@ -3637,14 +3640,18 @@
   did_MSY=0;
   if(Do_Forecast>0) *(ad_comm::global_datafile) >> fif;
 
-  if(Do_Forecast_rd>0 && fif!=999) {cout<<" EXIT, must have 999 to verify end of forecast inputs "<<fif<<endl; exit(1);}
-  echoinput<<" done reading forecast "<<endl<<endl;
-//  if(Do_Forecast==0) Do_Forecast=4;
-    TimeMax_Fcast_std = styr+(max(YrMax,endyr+50)-styr)*nseas+nseas-1;
+  if(Do_Forecast_rd>0 && fif!=999) 
+  {
+    cout << "EXIT, 999 should be last forecast file line, but instead read " << fif << endl;
+    exit(1);
+  }
+  echoinput << "Finished reading the forecast file" << endl << endl;
 
-// redefine ALK_time_max for forecast years longer than 50, but no data past 50 years
-    j=max(YrMax,endyr+50);
-    ALK_time_max=(j-styr+1)*nseas*N_subseas;  //  sets maximum size for data array indexing 50 years into forecast
+  TimeMax_Fcast_std = styr+(max(YrMax,endyr+50)-styr)*nseas+nseas-1;
+
+  // redefine ALK_time_max for forecast years longer than 50, but no data past 50 years
+  j=max(YrMax,endyr+50);
+  ALK_time_max=(j-styr+1)*nseas*N_subseas;  //  sets maximum size for data array indexing 50 years into forecast
  END_CALCS
 
   imatrix Show_Time(styr,TimeMax_Fcast_std,1,2)  //  for each t:  shows year, season
