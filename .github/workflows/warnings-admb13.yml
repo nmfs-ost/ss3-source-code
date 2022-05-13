@@ -2,7 +2,7 @@ name: build-warnings
 
 # Controls when the action will run.
 on:
-  workflow_dispatch:
+  push:
 
 jobs:
   build-warnings:
@@ -19,31 +19,12 @@ jobs:
       - name: setup R
         uses: r-lib/actions/setup-r@master
 
-      - name: checkout admb
-        uses: actions/checkout@v2
-        with:
-          repository: admb-project/admb
-          path: admb
-          ref: admb-13.0
-      - name: flex
-        run: sudo apt-get install flex
-      - name: clean
-        run: cd admb && make clean
-      - name: see where it is
+            - name: Get admb and put in path
         run: |
-          ls
-          cd admb && ls
-      - name: compile admb
-        run: |
-          cd admb && make 
-      - name: see where admb is
-        run: |
-          cd admb && ls -l
-      - name: put admb in path, linux
-        run: |
-          sudo mv admb /usr/local/bin
-          sudo chmod 755 /usr/local/bin/admb
-          echo "/usr/local/bin/admb" >> $GITHUB_PATH
+          wget https://github.com/k-doering-NOAA/r.pkg.sandbox/releases/download/test/admb.zip
+          sudo unzip admb.zip -d /usr/local/bin
+          sudo chmod 755 /usr/local/bin/admb/admb/bin/admb
+          echo "/usr/local/bin/admb/admb/bin" >> $GITHUB_PATH
 
       - name: make the directory if needed
         run: |

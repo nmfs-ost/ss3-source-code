@@ -3,7 +3,7 @@
 name: build-ss3
 
 on:
-  push:
+  workflow_dispatch:
     # inputs:
       # # options: should be "win", "osx, "linux"
       # operating-sys:
