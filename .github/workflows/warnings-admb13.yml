@@ -23,8 +23,8 @@ jobs:
         run: |
           wget https://github.com/k-doering-NOAA/r.pkg.sandbox/releases/download/test/admb.zip
           sudo unzip admb.zip -d /usr/local/bin
-          sudo chmod 755 /usr/local/bin/admb/admb/bin/admb
-          echo "/usr/local/bin/admb/admb/bin" >> $GITHUB_PATH
+          sudo chmod 755 /usr/local/bin/admb/bin/admb
+          echo "/usr/local/bin/admb/bin" >> $GITHUB_PATH
 
       - name: make the directory if needed
         run: |
