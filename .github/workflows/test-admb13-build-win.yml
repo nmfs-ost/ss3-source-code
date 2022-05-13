@@ -171,14 +171,14 @@ jobs:
         shell: Rscript {0}
 
       - name: Build stock synthesis for windows
-        if: matrix.config.os == 'windows-2019'
+        if: matrix.config.os == 'windows-latest'
         run: |
           cd Compile
           ./Make_SS_safe.bat
           ./Make_SS_fast.bat
 
       - name: Move exes to a new folder on windows
-        if: matrix.config.os == 'windows-2019'
+        if: matrix.config.os == 'windows-latest'
         run: |
           mkdir SS330
           mv Compile/ss.exe SS330/
