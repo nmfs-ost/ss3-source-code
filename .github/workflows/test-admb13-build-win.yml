@@ -3,7 +3,7 @@
 name: build-ss3
 
 on:
-  push:
+  workflow_dispatch:
 jobs:
   build-ss3:
     runs-on: ${{ matrix.config.os }}
