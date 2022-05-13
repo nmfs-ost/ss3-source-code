@@ -1,7 +1,6 @@
 name:  call-build-ss3-warnings
 on:
   workflow_dispatch:
-  push:
     paths:
       - '**.tpl'
     branches:

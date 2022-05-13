@@ -28,7 +28,7 @@ jobs:
       - name: Get admb and put in path, windows
         if: matrix.config.os == 'windows-latest'
         run: |
-          Invoke-WebRequest -Uri https://github.com/admb-project/admb/suites/6491261092/artifacts/241229794 -OutFile "D:\a\stock-synthesis\stock-synthesis\admb.zip"
+          Invoke-WebRequest -Uri https://github.com/k-doering-NOAA/r.pkg.sandbox/raw/main/admb_rtools40.zip -OutFile "D:\a\stock-synthesis\stock-synthesis\admb.zip"
           Expand-Archive -LiteralPath "D:\a\stock-synthesis\stock-synthesis\admb.zip" -DestinationPath "D:\a\stock-synthesis\stock-synthesis\"
           echo "D:\a\stock-synthesis\stock-synthesis\admb\bin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
 
