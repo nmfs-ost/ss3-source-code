@@ -45,11 +45,14 @@ jobs:
           sudo chmod 755 /usr/local/bin/admb
           echo "/usr/local/bin/admb" >> $GITHUB_PATH
 
-      - name: Build stock synthesis with warnings
+      - name: make the directory if needed
         run: |
           rm -rf SS330
           mkdir SS330
-          /bin/bash ./Make_SS_330_new.sh -a /usr/local/bin/admb -b SS330 -w &> warnings.txt
+
+      - name: Build stock synthesis with warnings
+        run: |
+          /bin/bash ./Make_SS_330_new.sh -a /usr/local/bin/admb -b SS330 -w
       # Runs a set of commands using the runners shell
       - name: Use R to parse warnings output
         run: |
