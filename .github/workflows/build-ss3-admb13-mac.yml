@@ -4,6 +4,11 @@ name: build-ss3
 
 on:
   push:
+    # inputs:
+      # # options: should be "win", "osx, "linux"
+      # operating-sys:
+      #   required: true
+      #   type: string
 jobs:
   build-ss3:
     runs-on: ${{ matrix.config.os }}
@@ -12,47 +17,38 @@ jobs:
       fail-fast: false
       matrix:
         config:
-          - {os: windows-2019}
+          - {os: macos-latest}
     # Limit run time to 15 min to avoid wasting action minutes.
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
+
       - name: checkout admb
         uses: actions/checkout@v2
         with:
           repository: admb-project/admb
           path: admb
           ref: admb-13.0
+      - name: clean
+        run: cd admb && make clean
       - name: see where it is
         run: |
-          pwd
           ls
           cd admb && ls
       - name: compile admb
         run: |
           cd admb && make 
-      - name: Get admb and put in path, windows
-        if: matrix.config.os == 'windows-2019'
+      - name: see where admb is
         run: |
-          echo "D:\a\stock-synthesis\stock-synthesis\admb\build\admb" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+          cd admb && ls -l
+      - name: put admb in path
+        run: |
+          sudo mv admb /usr/local/bin
+          sudo chmod 755 /usr/local/bin/admb
+          echo "/usr/local/bin/admb" >> $GITHUB_PATH
 
-      - name: Get admb and put in path, mac
-        if: matrix.config.os == 'macOS-latest'
-        run: |
-          curl https://github.com/admb-project/admb/releases/download/admb-12.3/admb-12.3-macos.zip -L -o admb-12.3.zip
-          unzip admb-12.3.zip -d /usr/local/bin
-          ls /usr/local/bin
-          echo "/usr/local/bin/admb-12.3/bin" >> $GITHUB_PATH
           
-      - name: Get admb and put in path, linux
-        if: matrix.config.os == 'ubuntu-latest'
-        run: |
-          wget https://github.com/admb-project/admb/releases/download/admb-12.3/admb-12.3-linux.zip
-          sudo unzip admb-12.3-linux.zip -d /usr/local/bin
-          sudo chmod 755 /usr/local/bin/admb-12.3/bin/admb
-          echo "/usr/local/bin/admb-12.3/bin" >> $GITHUB_PATH
-
       - name: Set up R
         uses: r-lib/actions/setup-r@master
         with:
@@ -61,28 +57,6 @@ jobs:
         run: |
           git fetch --tags
           git fetch --prune --unshallow || true
-
-      - name: Get the last tag on windows
-        id: get-latest-tag-win
-        if: matrix.config.os == 'windows-2019'
-        run: |
-          git tag
-          $latest_tag = (git describe --abbrev=0 --tags)
-          $latest_tag_commit = ( git rev-list -n 1 $latest_tag)
-          $latest_commit = (git rev-list HEAD -n 1)
-          echo "::set-output name=tag::${latest_tag}"
-          echo "::set-output name=tag_commit::${latest_tag_commit}"
-          echo "::set-output name=commit::${latest_commit}"
-
-       # uses: actions-ecosystem/action-get-latest-tag@v1 # for linux
-
-      - name: pull the last tag value to use in the Rscript on windows
-        id: get-version-win
-        if: matrix.config.os == 'windows-2019'
-        run: |
-          Out-File -InputObject ${{ steps.get-latest-tag-win.outputs.tag }} -FilePath .github/last_tag.txt
-          Out-File -InputObject ${{ steps.get-latest-tag-win.outputs.tag_commit }} -FilePath .github/last_tag_commit.txt
-          Out-File -InputObject ${{ steps.get-latest-tag-win.outputs.commit}} -FilePath .github/last_commit.txt
 
       - name: Get the last tag on unix
         id: get-latest-tag-unix

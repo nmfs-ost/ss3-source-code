@@ -1,7 +1,6 @@
 # run models without estimation again
 name: call-run-ss3-with-est
 on: 
-  push:
   workflow_dispatch:
 jobs:
   call-workflow:
