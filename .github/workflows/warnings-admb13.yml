@@ -19,7 +19,7 @@ jobs:
       - name: setup R
         uses: r-lib/actions/setup-r@master
 
-            - name: Get admb and put in path
+      - name: Get admb and put in path
         run: |
           wget https://github.com/k-doering-NOAA/r.pkg.sandbox/releases/download/test/admb.zip
           sudo unzip admb.zip -d /usr/local/bin
