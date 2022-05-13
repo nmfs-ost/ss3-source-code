@@ -31,7 +31,7 @@ jobs:
           echo "D:\a\stock-synthesis\stock-synthesis\admb\bin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
       - name: look at where things are
         run: | 
-          cd D:\a\stock-synthesis\stock-synthesis\admb\bin && ls
+          cd D:\a\stock-synthesis\stock-synthesis\ && ls
       - name: Get admb and put in path, mac
         if: matrix.config.os == 'macOS-latest'
         run: |
