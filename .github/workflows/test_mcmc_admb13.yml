@@ -2,7 +2,6 @@
 name: run-ss3-mcmc
 
 on:
-  push:
 
 jobs:
   run-no-est:
