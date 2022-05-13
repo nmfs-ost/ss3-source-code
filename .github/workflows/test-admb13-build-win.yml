@@ -3,7 +3,12 @@
 name: build-ss3
 
 on:
-  workflow_dispatch:
+  push:
+    # inputs:
+      # # options: should be "win", "osx, "linux"
+      # operating-sys:
+      #   required: true
+      #   type: string
 jobs:
   build-ss3:
     runs-on: ${{ matrix.config.os }}
@@ -14,44 +19,34 @@ jobs:
         config:
           - {os: windows-latest}
     # Limit run time to 15 min to avoid wasting action minutes.
+    timeout-minutes: 15
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
-      - name: checkout admb
-        uses: actions/checkout@v2
-        with:
-          repository: admb-project/admb
-          path: admb
-          ref: admb-13.0
-      - name: see where it is
-        run: |
-          pwd
-          ls
-          cd admb && ls
-      - name: compile admb
-        run: |
-          cd admb && make 
+
       - name: Get admb and put in path, windows
         if: matrix.config.os == 'windows-latest'
         run: |
-          echo "D:\a\stock-synthesis\stock-synthesis\admb\build\admb" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+          Invoke-WebRequest -Uri https://github.com/admb-project/admb/suites/6491261092/artifacts/241229794 -OutFile "D:\a\stock-synthesis\stock-synthesis\admb.zip"
+          Expand-Archive -LiteralPath "D:\a\stock-synthesis\stock-synthesis\admb.zip" -DestinationPath "D:\a\stock-synthesis\stock-synthesis\"
+          echo "D:\a\stock-synthesis\stock-synthesis\admb\bin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
 
       - name: Get admb and put in path, mac
         if: matrix.config.os == 'macOS-latest'
         run: |
-          curl https://github.com/admb-project/admb/releases/download/admb-12.3/admb-12.3-macos.zip -L -o admb-12.3.zip
-          unzip admb-12.3.zip -d /usr/local/bin
+          curl https://github.com/admb-project/admb/releases/download/admb/admb-macos.zip -L -o admb.zip
+          unzip admb.zip -d /usr/local/bin
           ls /usr/local/bin
-          echo "/usr/local/bin/admb-12.3/bin" >> $GITHUB_PATH
+          echo "/usr/local/bin/admb/bin" >> $GITHUB_PATH
           
       - name: Get admb and put in path, linux
         if: matrix.config.os == 'ubuntu-latest'
         run: |
-          wget https://github.com/admb-project/admb/releases/download/admb-12.3/admb-12.3-linux.zip
-          sudo unzip admb-12.3-linux.zip -d /usr/local/bin
-          sudo chmod 755 /usr/local/bin/admb-12.3/bin/admb
-          echo "/usr/local/bin/admb-12.3/bin" >> $GITHUB_PATH
+          wget https://github.com/admb-project/admb/releases/download/admb/admb-linux.zip
+          sudo unzip admb-linux.zip -d /usr/local/bin
+          sudo chmod 755 /usr/local/bin/admb/bin/admb
+          echo "/usr/local/bin/admb/bin" >> $GITHUB_PATH
 
       - name: Set up R
         uses: r-lib/actions/setup-r@master
@@ -186,14 +181,23 @@ jobs:
           mv SS330/ss.exe SS330/ss_win.exe
           mv SS330/ss_opt.exe SS330/ss_opt_win.exe
 
-      - name: Build stock synthesis for unix
-        if: matrix.config.os == 'macOS-latest' || matrix.config.os == 'ubuntu-latest'
+      - name: Build stock synthesis for mac
+        if: matrix.config.os == 'macOS-latest'
         run: |
           rm -rf SS330
           rm -rf ss_osx.tar
           mkdir SS330
           /bin/bash ./Make_SS_330_new.sh -b SS330
           /bin/bash ./Make_SS_330_new.sh -b SS330 -o
+          
+      - name: Build stock synthesis for linux with p flag
+        if:  matrix.config.os == 'ubuntu-latest'
+        run: |
+          rm -rf SS330
+          rm -rf ss_osx.tar
+          mkdir SS330
+          /bin/bash ./Make_SS_330_new.sh -b SS330 -p
+          /bin/bash ./Make_SS_330_new.sh -b SS330 -o -p
 
       - name: Verify binary on mac
         if: matrix.config.os == 'macOS-latest'
