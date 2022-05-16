@@ -21,7 +21,9 @@ function usage()
   echo "  ./Make_SS_330_new.sh [(-s | --source) source_dir] [(-b | --build) build_dir]" 
   echo "   [(-a | --admb) admb_dir] [[-o | --opt] | [-f | --safe]"
   echo "   [-w | --warn] [-h | --help] [-d | --debug]"
-  echo " (Directories may be relative or absolute)"
+  echo ""
+  echo "Either 'opt' or 'safe' build must be selected"
+  echo "Directories may be relative or absolute"
   echo ""
   display_settings
 }
