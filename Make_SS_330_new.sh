@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # script modified by N. Schindler 03-31-2020
 
