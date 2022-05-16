@@ -60,9 +60,8 @@ if [ "$1" == "" ]  ; then
   usage
     exit 1
 fi
-Count=0
+
 while [ "$1" != "" ]; do
-    Count=$Count+1
     case $1 in
          # debug
         -d | --debug )   DEBUG=on
@@ -85,9 +84,7 @@ while [ "$1" != "" ]; do
                          PATH=$ADMB_HOME:$PATH
                          ;;
          # output help - usage
-        -h | --help )    if [$Count==1]  ; then
-                           Type=Default
-                         fi
+        -h | --help )    Type=Default
                          usage
                          exit
                          ;;
