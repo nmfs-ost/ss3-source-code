@@ -54,6 +54,7 @@ DEBUG=off
 GREP=
 Type=Current
 STATICFLAG=
+OPTFLAG=
 
 if [ "$1" == "" ]  ; then
   Type=Default
@@ -96,6 +97,8 @@ while [ "$1" != "" ]; do
                          ;;
          # build fast version
         -o | --opt )     BUILD_TYPE=ss_opt
+                         OPTFLAG=-f
+                         ;;
     esac
     shift
 done
@@ -127,7 +130,7 @@ fi
 
 # change to build dir and build 
 cd $BUILD_DIR
-admb $STATICFLAG $BUILD_TYPE
+admb $OPTFLAG $STATICFLAG $BUILD_TYPE
 chmod a+x $BUILD_TYPE
 
 # output warnings
