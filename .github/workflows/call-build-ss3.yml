@@ -3,6 +3,7 @@ on:
   push:
     paths:
     - '**.tpl'
+    - '**.sh'
   workflow_dispatch:
 jobs:
   call-workflow:
