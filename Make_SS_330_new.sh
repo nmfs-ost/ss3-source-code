@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# script modified by N. Schindler 03-31-2020
+# script modified by N. Schindler 05-17-2022
 
 # output settings 
 function display_settings()
@@ -19,11 +19,14 @@ function usage()
   echo ""
   echo "Call this script as follows:"
   echo "  ./Make_SS_330_new.sh [(-s | --source) source_dir] [(-b | --build) build_dir]" 
-  echo "   [(-a | --admb) admb_dir] [[-o | --opt] | [-f | --safe]"
-  echo "   [-w | --warn] [-h | --help] [-d | --debug]"
+  echo "   [(-a | --admb) admb_dir] [[-o | --opt] | [-f | --safe] [-p] "
+  echo "   [-w | --warn] [-d | --debug] [-h | --help]"
+  echo "Notes:"
+  echo "   -p is an ADMB flag to build statically and will be passed. "
+  echo "   -w re-compiles with common warnings enabled. "
+  echo "   -d will display the settings used to build SS. "
   echo ""
-  echo "Either 'opt' or 'safe' build must be selected"
-  echo "Directories may be relative or absolute"
+  echo "The default is the 'safe' build to directory SS330."
   echo ""
   display_settings
 }
@@ -47,7 +50,7 @@ cat SS_versioninfo_330opt.tpl SS_readstarter.tpl SS_readdata_330.tpl SS_readcont
 # default directories
 SRC_DIR=.
 BUILD_DIR=SS330
-# safe build is the default
+# other defaults (safe build is the default)
 BUILD_TYPE=ss
 WARNINGS=off
 DEBUG=off
@@ -57,8 +60,9 @@ STATICFLAG=
 OPTFLAG=
 
 if [ "$1" == "" ]  ; then
-  Type=Default
-  usage
+    Type=Default
+    display_settings
+    usage
     exit 1
 fi
 
