@@ -3,6 +3,7 @@ name: run-ss3-mcmc
 
 on:
   workflow_dispatch:
+  push:
 jobs:
   run-no-est:
     runs-on: ubuntu-latest
