@@ -1,6 +1,6 @@
-#!/bin/sh
+#!/bin/bash
 
-# script modified by N. Schindler 03-31-2020
+# script modified by N. Schindler 05-17-2022
 
 # output settings 
 function display_settings()
@@ -19,9 +19,14 @@ function usage()
   echo ""
   echo "Call this script as follows:"
   echo "  ./Make_SS_330_new.sh [(-s | --source) source_dir] [(-b | --build) build_dir]" 
-  echo "   [(-a | --admb) admb_dir] [[-o | --opt] | [-f | --safe]"
-  echo "   [-w | --warn] [-h | --help] [-d | --debug]"
-  echo " (Directories may be relative or absolute)"
+  echo "   [(-a | --admb) admb_dir] [[-o | --opt] | [-f | --safe] [-p] "
+  echo "   [-w | --warn] [-d | --debug] [-h | --help]"
+  echo "Notes:"
+  echo "   -p is an ADMB flag to build statically and will be passed. "
+  echo "   -w re-compiles with common warnings enabled. "
+  echo "   -d will display the settings used to build SS. "
+  echo ""
+  echo "The default is the 'safe' build to directory SS330."
   echo ""
   display_settings
 }
@@ -45,22 +50,23 @@ cat SS_versioninfo_330opt.tpl SS_readstarter.tpl SS_readdata_330.tpl SS_readcont
 # default directories
 SRC_DIR=.
 BUILD_DIR=SS330
-# safe build is the default
+# other defaults (safe build is the default)
 BUILD_TYPE=ss
 WARNINGS=off
 DEBUG=off
 GREP=
 Type=Current
 STATICFLAG=
+OPTFLAG=
 
 if [ "$1" == "" ]  ; then
-  Type=Default
-  usage
+    Type=Default
+    display_settings
+    usage
     exit 1
 fi
-Count=0
+
 while [ "$1" != "" ]; do
-    Count=$Count+1
     case $1 in
          # debug
         -d | --debug )   DEBUG=on
@@ -83,9 +89,7 @@ while [ "$1" != "" ]; do
                          PATH=$ADMB_HOME:$PATH
                          ;;
          # output help - usage
-        -h | --help )    if [$Count==1]  ; then
-                           Type=Default
-                         fi
+        -h | --help )    Type=Default
                          usage
                          exit
                          ;;
@@ -97,6 +101,8 @@ while [ "$1" != "" ]; do
                          ;;
          # build fast version
         -o | --opt )     BUILD_TYPE=ss_opt
+                         OPTFLAG=-f
+                         ;;
     esac
     shift
 done
@@ -110,6 +116,7 @@ if [ -f SS_functions.temp ]; then
 fi
 
 # create source files in build dir
+mkdir -p $BUILD_DIR
 case $BUILD_TYPE in
     ss_opt )   grep "opt" SS_versioninfo_330opt.tpl
                cat_opt_files
@@ -127,7 +134,7 @@ fi
 
 # change to build dir and build 
 cd $BUILD_DIR
-admb $STATICFLAG $BUILD_TYPE
+admb $OPTFLAG $STATICFLAG $BUILD_TYPE
 chmod a+x $BUILD_TYPE
 
 # output warnings
