@@ -1989,6 +1989,16 @@ FUNCTION void Get_Forecast()
         report5 << endl;
       }
     }
+    
+    if (H4010_top_rd < 0.0)
+      {
+        H4010_top = Bmsy / SSB_unf;
+        if(H4010_bot > 0.20) {N_warn++; warning<<N_warn<<" Beware: control rule bottom is large and could exceed Bmsy/SSB_unf: "<<H4010_top<<" must be > control rule bottom "<<H4010_bot<<endl;}
+      }
+      else 
+      {
+        H4010_top = H4010_top_rd;
+      }
     report5 << "#" << endl;
     report5 << "N_forecast_yrs: " << N_Fcast_Yrs << endl;
     report5 << "OY_Control_Rule "
