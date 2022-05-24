@@ -941,8 +941,10 @@ FINAL_SECTION
       {
         Get_Benchmarks(show_MSY);
         if (mceval_phase() == 0)
+        {
           cout << "Finished calculating benchmarks" << endl;
           echoinput << "Finished calculating benchmarks" << endl;
+        }
       }
     }
     if (Do_Forecast >= 0)
@@ -951,9 +953,10 @@ FINAL_SECTION
       if (did_MSY > 0)
         show_MSY = 0; //  so to not repeat forecast_report.sso
       Get_Forecast();
-      if (mceval_phase() == 0)
+      if (mceval_phase() == 0) {
         cout << "Finished forecast" << endl;
         echoinput << "Finished forecast" << endl;
+      }
     }
 
     if (write_bodywt > 0)

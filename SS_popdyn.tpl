@@ -228,8 +228,10 @@ FUNCTION void get_initial_conditions()
   get_selectivity();
   #ifdef DO_ONCE
   if (do_once == 1)
+  {
     echoinput << "selectivity OK" << endl;
     echoinput << "Calculate ALK" << endl;
+  }
   #endif
 
   //  SS_Label_Info_23.3 #Loop seasons and subseasons
