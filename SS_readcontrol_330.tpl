@@ -4637,8 +4637,8 @@
   }
   else
   {
-  cout<<" Unsuccessful end of control file, SS will abort. check echoinput for clues.  Last read is: "<<fim<<endl;
-  abort();
+  cout<<" Unsuccessful end of control file. Check echoinput for clues.  Last read is: "<<fim<<endl;
+  exit(1);
   }
  END_CALCS
 
