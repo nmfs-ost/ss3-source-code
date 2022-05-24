@@ -820,7 +820,7 @@ FINAL_SECTION
 
   else
   {
-    cout << " Iterations: " << niter << endl;
+    cout << "Iterations: " << niter << endl;
     if (objective_function_value::pobjfun->gmax > final_conv)
     {
       N_warn++;
@@ -958,6 +958,8 @@ FINAL_SECTION
 
     if (write_bodywt > 0)
     {
+      cout << "Writing wtatage.ss_new" << endl;
+      echoinput << "Writing wtatage.ss_new" << endl;
       bodywtout << -9999 << " " << 1 << " " << 1 << " " << 1 << " " << 1 << " " << 0 << " " << Wt_Age_mid(1, 1) << " #terminator " << endl;
       bodywtout.close();
     }
@@ -1004,11 +1006,11 @@ FINAL_SECTION
     //  SS_Label_Info_12.4.4 #Call fxn write_nudata() to create bootstrap data
     if (N_nudata > 0)
     {
-      cout << "Begin writing *.ss_new output files: ";
+      cout << "Begin writing *.ss_new output files... ";
       write_nudata();
       //  SS_Label_Info_12.4.5 #Call fxn write_nucontrol() to produce control.ss_new
       write_nucontrol();
-      cout << "finished" << endl;
+      cout << "done" << endl; // finish writing *.ss_new output files
     }
     else
     {

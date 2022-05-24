@@ -4638,7 +4638,7 @@
   cout<<" Unsuccessful end of control file, SS3 will abort. Check echoinput.sso for clues.  Last value read: "<< fim << endl;
   abort();
   }
-  cout << "Finished reading the 4 required input files" << endl << endl;
+  cout << "done" << endl; // Finished reading the 4 required input files
  END_CALCS
 
 !!//  SS_Label_Info_4.14 #Create count of active parameters and derived quantities

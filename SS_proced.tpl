@@ -142,7 +142,6 @@ PROCEDURE_SECTION
       } //  so only show details if not in mceval
       if (show_MSY == 1)
       {
-        cout << "Start benchmark and forecast, if requested" << endl;
         echoinput << "Start benchmark and forecast, if requested" << endl;
       }
       setup_recdevs();
@@ -167,8 +166,9 @@ PROCEDURE_SECTION
       //  SS_Label_Info_7.7 #Call fxn Process_STDquant() to move calculated values into sd_containers
       Process_STDquant();
       if (mceval_phase() == 0)
-        cout << "Finished benchmark, forecast, and sdreporting" << endl;
+      {
         echoinput << "Finished benchmark, forecast, and sdreporting" << endl;
+      }
     } // end of things to do in std_phase
 
     //  SS_Label_Info_7.9 #Do screen output of procedure results from this iteration

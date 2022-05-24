@@ -35,7 +35,7 @@
   {
     ad_comm::change_datafile_name("wtatage.ss");
     echoinput << "Begin reading the empirical weight at age file" << endl;
-    cout << "Begin reading the empirical weight at age file" << endl;
+    cout << "Reading the empirical weight at age file...";
     *(ad_comm::global_datafile) >> N_WTage_maxage;
     k = 7 + N_WTage_maxage;
     echoinput << " N_WTage_max " << N_WTage_maxage << endl;
@@ -144,7 +144,7 @@
           }
         }
     echoinput << "Finished reading the empirical weight at age file" << endl;
-    cout << "Finished reading the empirical weight at age file" << endl;
+    cout << "done" << endl; // Done reading the empirical weight at age file
   }
   else
   {
@@ -1264,7 +1264,7 @@
   }
 
   //  SS_Label_Info_6.8 #Go thru biological calculations once, with do_once flag=1 to produce extra output to echoinput.sso
-  cout << "Begin evaluating biology calculations once" << endl;
+  cout << "Evaluating biology calculations once... ";
   echoinput << "Begin evaluating biology calculations once" << endl;
   ALK_subseas_update = 1; //  vector to indicate if ALK needs recalculating
   do_once = 1;
@@ -1459,7 +1459,7 @@
   ParmTrace << endl;
 
   //  SS_Label_Info_6.10 #Preliminary calcs done; Ready for estimation
-  cout << "Finished evaluating biology calculations once" << endl;
+  cout << "done" << endl; // evaluating biology calculations once
   echoinput << "Finished evaluating biology calculations once" << endl;
 
   if (pick_report_use(60) == "Y")

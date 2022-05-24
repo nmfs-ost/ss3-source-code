@@ -666,7 +666,7 @@ FUNCTION void evaluate_the_objective_function()
       }
     }
   if (do_once == 1)
-    cout << " initequ_catch -log(L) " << equ_catch_like << endl;
+    echoinput << " initequ_catch -log(L) " << equ_catch_like << endl;
 
   //  SS_Label_Info_25.11 #Fit to catch by fleet/season
   if (F_Method > 1)
@@ -696,7 +696,7 @@ FUNCTION void evaluate_the_objective_function()
         }
     }
     if (do_once == 1)
-      cout << " catch -log(L) " << catch_like << endl;
+      echoinput << " catch -log(L) " << catch_like << endl;
   }
 
   //  SS_Label_Info_25.12 #Likelihood for the recruitment deviations
@@ -769,7 +769,7 @@ FUNCTION void evaluate_the_objective_function()
     if (do_recdev == 4)
       regime_like += square(sum_recdev);
     if (do_once == 1)
-      cout << "Finished recruitdev obj_fun " << recr_like << " " << sd_offset_rec << " " << two_sigmaRsq << endl;
+      echoinput << "Finished recruitdev obj_fun " << recr_like << " " << sd_offset_rec << " " << two_sigmaRsq << endl;
   }
   if (Do_Forecast > 0 && do_recdev > 0)
   {
@@ -1066,7 +1066,7 @@ FUNCTION void evaluate_the_objective_function()
 
   if (do_once == 1)
   {
-    cout << " OK with obj_func " << obj_fun << endl;
+    echoinput << " OK with obj_func " << obj_fun << endl;
     if (SSB_yr(endyr) < 0.01 * SSB_yr(styr))
     {
       N_warn++;
@@ -1595,10 +1595,13 @@ FUNCTION void get_posteriors()
   //********************************************************************
   /*  SS_Label_FUNCTION 33 get_posteriors  (MCMC eval) */
   if (rundetail > 1)
-    cout << " mceval counter: " << mceval_counter << endl;
+  {
+    cout << "mceval counter: " << mceval_counter << endl;
+  }
   if (rundetail == 0 && double(mceval_counter) / 200. == double(mceval_counter / 200.))
-    cout << " mceval counter: " << mceval_counter << endl;
-
+  {
+    cout << "mceval counter: " << mceval_counter << endl;
+  }
   if (mceval_header == 0 && mceval_phase()) // first pass through the mceval phase
   {
     // delete any old mcmc output files

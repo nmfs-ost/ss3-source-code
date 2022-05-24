@@ -10,8 +10,6 @@ FUNCTION void write_bigoutput()
   {
   if (mceval_counter == 0)
   {
-    echoinput << "Begin writing output files" << endl;
-    cout << "Begin writing output files" << endl;
     anystring = sso_pathname + "Report.sso";
     report_sso_filename = anystring;
     if (SS2out.is_open())

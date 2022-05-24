@@ -222,7 +222,7 @@
 //  SS_Label_Info_1.2  #Read the starter.ss file
 // /*  SS_Label_Flow  read starter.ss */
   ad_comm::change_datafile_name("starter.ss");       //  get filenames
-  cout << "Begin reading the 4 required input files" << endl;
+  cout << "Reading the 4 required input files... " ;
   adstring checkchar;
   line_adstring readline;
   checkchar="";
