@@ -62,6 +62,7 @@ GLOBALS_SECTION
   #include <fvar.hpp>
   #include <vector>
   #include <iostream>
+  #include <sstream>
   #include <sys/types.h>
   #include <sys/stat.h>
   time_t start, finish;
@@ -121,9 +122,11 @@ GLOBALS_SECTION
   ofstream SS_smry;
   ofstream SIS_table;
 //  declare some entities that need global access
+  std::stringstream warnstream;
+  std::string usermsg;
   int ParCount;
   int timevary_parm_cnt;
-  int N_warn;
+  int N_warn = 0;
   int styr;
   int endyr;
   int YrMax;
@@ -160,6 +163,38 @@ GLOBALS_SECTION
   std::vector<int> Fparm_PH;
   ;
 //  function in GLOBALS to do the timing setup in the data section
+
+// SS_Label_Function xxxa write_message(string,int,int); output a message with an option to exit (when fatal)
+  void write_message(std::string msg, int echo, int exitflag)
+  {
+  if (msg.length() > 0)
+  {
+    N_warn++;
+    warning << N_warn << ": " << msg << endl;
+
+    if (echo == 1)
+    {
+      if (exitflag == 1)
+        echoinput << "EXIT:  ";
+      echoinput << msg << endl;
+    }
+    if (exitflag == 1)
+    {
+      cout << "!! " << msg << " !!" << endl;
+      cout << " Fatal Error!" << endl;
+      cout << " EXIT! -> see warning #" << N_warn << " in warning.sso <-" << endl;
+      exit(1);
+    }
+  }
+  }
+// SS_Label_Function_xxxb write_warning(int,int); output a warning with an option to exit (when fatal)
+  void write_warning(int echo, int exitflag)
+  {
+    std::string msg(warnstream.str());
+	write_message(msg, echo, exitflag);
+    warnstream.str("");
+  }
+
 // SS_Label_Function_xxxx  #get_data_timing()  called by readdata
   void get_data_timing(const dvector& to_process, const ivector& timing_constants, ivector i_result, dvector r_result, const dvector& seasdur, const dvector& subseasdur_delta, const dvector& azero_seas, const dvector& surveytime)
   {
@@ -221,10 +256,12 @@ GLOBALS_SECTION
     {
       if (month >= 13.0)
       {
-        N_warn++;
-        cout << "fatal read error, see warning" << endl;
-        warning << N_warn << " Fatal error. month must be <13.0, end of year is 12.99, value read is: " << month << endl;
-        exit(1);
+	  warnstream << "Fatal error. month must be <13.0, end of year is 12.99, value read is: " << month;
+	  write_warning(0, 1);
+//        N_warn++;
+//        cout << "fatal read error, see warning" << endl;
+//        warning << N_warn << " Fatal error. month must be <13.0, end of year is 12.99, value read is: " << month << endl;
+//        exit(1);
       }
       temp1 = max(0.00001, (month - 1.0) / 12.); //  month as fraction of year
       s = 1; // earlist possible seas;
@@ -363,12 +400,15 @@ GLOBALS_SECTION
               tempvec.fill("{-10,10,0.,0.,5,6,4}");
               if (baseparm_list(1) <= 0.0)
               {
-                N_warn++;
-                warning << N_warn << " "
-                        << " cannot use multiplicative blocks for parameter with a negative lower bound;  exit " << endl
+                warnstream << "cannot use multiplicative blocks for parameter with a negative lower bound;  exit " << endl
                         << baseparm_list(1) << " " << baseparm_list(2) << " " << baseparm_list(3) << endl;
-                cout << "exit, see warning" << endl;
-                exit(1);
+                write_warning(0,1);
+//                N_warn++;
+//                warning << N_warn << " "
+//                        << " cannot use multiplicative blocks for parameter with a negative lower bound;  exit " << endl
+//                        << baseparm_list(1) << " " << baseparm_list(2) << " " << baseparm_list(3) << endl;
+//                cout << "exit, see warning" << endl;
+//                exit(1);
               }
               tempvec(1) = log(baseparm_list(1) / baseparm_list(3)); //  max negative change
               tempvec(2) = log(baseparm_list(2) / baseparm_list(3)); //  max positive change
@@ -711,9 +751,11 @@ GLOBALS_SECTION
     y = baseparm_list(10);
     if (y < styr)
     {
-      N_warn++;
-      warning << N_warn << " "
-              << " reset parm_dev start year to styr for parm: " << j << " " << y << endl;
+      warnstream << "reset parm_dev start year to styr for parm: " << j << " " << y;
+      write_warning(0,0);
+//      N_warn++;
+//      warning << N_warn << " "
+//              << " reset parm_dev start year to styr for parm: " << j << " " << y << endl;
       y = styr;
     }
     timevary_setup(10) = y;
@@ -721,9 +763,11 @@ GLOBALS_SECTION
     y = baseparm_list(11);
     if (y > YrMax)
     {
-      N_warn++;
-      warning << N_warn << " "
-              << " reset parm_dev end year to YrMax for parm: " << j << " " << y << endl;
+	  warnstream << " reset parm_dev end year to YrMax for parm: " << j << " " << y;
+	  write_warning(0,0);
+//      N_warn++;
+//      warning << N_warn << " "
+//              << " reset parm_dev end year to YrMax for parm: " << j << " " << y << endl;
       y = YrMax;
     }
     timevary_setup(11) = y;
@@ -775,6 +819,7 @@ GLOBALS_SECTION
   echoinput << "timevary_setup" << timevary_setup << endl;
   return;
   }
+  
 //  }  //  end GLOBALS_SECTION
 
 //  SS_Label_Section_11. #BETWEEN_PHASES_SECTION
@@ -836,9 +881,8 @@ FINAL_SECTION
          << endl;
     if (objective_function_value::pobjfun->gmax > final_conv)
     {
-      N_warn++;
-      warning << N_warn << " "
-              << "Final gradient: " << objective_function_value::pobjfun->gmax << " is larger than final_conv: " << final_conv << endl;
+      warnstream << "Final gradient: " << objective_function_value::pobjfun->gmax << " is larger than final_conv: " << final_conv;
+	  write_warning(0, 0);
     }
 
     //  SS_Label_Info_12.2 #Output the covariance matrix to covar.sso
@@ -1021,9 +1065,8 @@ FINAL_SECTION
     else
     {
       {
-        N_warn++;
-        warning << N_warn << " "
-                << "NOTE:  No *.ss_new and fewer *.sso files written after mceval" << endl;
+        warnstream << "NOTE:  No *.ss_new and fewer *.sso files written after mceval";
+		write_warning(0, 0);
       }
     }
 
@@ -1053,15 +1096,15 @@ FINAL_SECTION
 
     if (parm_adjust_method == 3)
     {
-      N_warn++;
-      warning << N_warn << "  Time-vary parms not bound checked" << endl;
+      warnstream << "Time-vary parms not bound checked";
+	  write_warning(0, 0);
     }
 
     //  SS_Label_Info_12.4.7 #Finish up with final writes to warning.sso
     if (N_changed_lambdas > 0)
     {
-      N_warn++;
-      warning << N_warn << " Reminder: Number of lamdas !=0.0 and !=1.0:  " << N_changed_lambdas << endl;
+      warnstream << "Reminder: Number of lamdas !=0.0 and !=1.0:  " << N_changed_lambdas;
+	  write_warning(0, 0);
     }
 
     if (Nparm_on_bound > 0)
