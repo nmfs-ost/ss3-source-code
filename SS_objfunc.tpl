@@ -355,10 +355,10 @@ FUNCTION void evaluate_the_objective_function()
               }
               else //  dirichlet
               {
-                // from Thorson:  NLL -= gammln(A) - gammln(ninput_t(t)+A) + sum(gammln(ninput_t(t)*extract_row(pobs_ta,t) + A*extract_row(pexp_ta,t))) - sum(lgamma(A*extract_row(pexp_ta,t))) \
-//        dirichlet_Parm=mfexp(selparm(Comp_Err_Parm_Start+Comp_Err_L2(f)))*nsamp_l(f,i);
-                // in option 1, dirichlet_Parm = Theta*n from equation (10) of Thorson et al. 2016
-                // in option 2, dirichlet_Parm = Beta from equation (4) of Thorson et al. 2016
+                /* from Thorson:  NLL -= gammln(A) - gammln(ninput_t(t)+A) + sum(gammln(ninput_t(t)*extract_row(pobs_ta,t) + A*extract_row(pexp_ta,t))) - sum(lgamma(A*extract_row(pexp_ta,t))) \
+                dirichlet_Parm=mfexp(selparm(Comp_Err_Parm_Start+Comp_Err_L2(f)))*nsamp_l(f,i);
+                in option 1, dirichlet_Parm = Theta*n from equation (10) of Thorson et al. 2016
+                in option 2, dirichlet_Parm = Beta from equation (4) of Thorson et al. 2016 */
                 if (Comp_Err_L(f) == 1)
                   dirichlet_Parm = mfexp(selparm(Comp_Err_Parm_Start + Comp_Err_L2(f))) * nsamp_l(f, i);
                 if (Comp_Err_L(f) == 2)
@@ -492,10 +492,11 @@ FUNCTION void evaluate_the_objective_function()
               }
               else // dirichlet
               {
-                // from Thorson:  NLL -= gammln(A) - gammln(ninput_t(t)+A) + sum(gammln(ninput_t(t)*extract_row(pobs_ta,t) + A*extract_row(pexp_ta,t))) - sum(lgamma(A*extract_row(pexp_ta,t))) \
-//              dirichlet_Parm=mfexp(selparm(Comp_Err_Parm_Start+Comp_Err_A2(f)))*nsamp_a(f,i);
-                // in option 1, dirichlet_Parm = Theta*n from equation (10) of Thorson et al. 2016
-                // in option 2, dirichlet_Parm = Beta from equation (4) of Thorson et al. 2016
+                /* from Thorson:  NLL -= gammln(A) - gammln(ninput_t(t)+A) + sum(gammln(ninput_t(t)*extract_row(pobs_ta,t) + A*extract_row(pexp_ta,t))) - sum(lgamma(A*extract_row(pexp_ta,t))) \
+                   dirichlet_Parm=mfexp(selparm(Comp_Err_Parm_Start+Comp_Err_A2(f)))*nsamp_a(f,i);
+                in option 1, dirichlet_Parm = Theta*n from equation (10) of Thorson et al. 2016
+                in option 2, dirichlet_Parm = Beta from equation (4) of Thorson et al. 2016
+                */
                 if (Comp_Err_A(f) == 1)
                   dirichlet_Parm = mfexp(selparm(Comp_Err_Parm_Start + Comp_Err_A2(f))) * nsamp_a(f, i);
                 if (Comp_Err_A(f) == 2)

@@ -13,4 +13,4 @@ on:
       - main
 jobs:
   call-workflow:
-    uses: nmfs-stock-synthesis/workflows/.github/workflows/build-ss3-warnings.yml@main
+    uses: nmfs-stock-synthesis/workflows/.github/workflows/build-ss3-warnings.yml@lower_warning_count
