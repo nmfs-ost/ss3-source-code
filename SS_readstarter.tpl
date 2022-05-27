@@ -7,57 +7,59 @@
 // SS_Label_file  #
 
 //*********COUNTERS*************************
-  int z;  // counters for size (length)
-  int z1; // min for z counter
-  int z2; // max for z counter
-  int L1; //  for selecting sex specific length data
-  int L2; //  used for l+nlength to get length bin for males
-  int A2; //  used for a+nages+1 to get true age bin for males
-  int a1; // use to track a subset of ages
-  int f;  // counter for fleets and surveys.  total is Ntypes
-  int f1; // another fleet counter
-  int fs; //  counter for fleets when looping across size and ageselex; so = f-Ntypes
+  int z // counters for size (length)
+  int z1  // min for z counter
+  int z2  // max for z counter
+  int  L1  //  for selecting sex specific length data
+  int  L2  //  used for l+nlength to get length bin for males
+  int  A2  //  used for a+nages+1 to get true age bin for males
+  int a1  // use to track a subset of ages
+  int f // counter for fleets and surveys.  total is Ntypes
+  int f1  // another fleet counter
+  int fs  //  counter for fleets when looping across size and ageselex; so = f-Ntypes
 
-  int gmorph;// number of biological entities:  gender*GP*BirthEvent*Platoon
-  int g;  // counter for biological entity
-  int GPat; // counter for Gpattern (morph)
-  int gg; // counter for sex
-  int gp; // counter for sex*GPat  or for Gpat
-  int gp2; // used to loop platoons within Gpattern
+  int gmorph // number of biological entities:  gender*GP*BirthEvent*Platoon
+  int g // counter for biological entity
+  int GPat  //  counter for Gpattern (morph)
+  int gg  // counter for sex
+  int gp //  counter for sex*GPat  or for Gpat
+  int gp2  //  used to loop platoons within Gpattern
 
-  int a;  // counter for ages
-  int b;  // counter for age bins
-  int p;  // counter for area
-  int p1;
-  int p2; // counter for destination area in migration
-  int i;  // counter for observations
-  int y;  // counter for year
-  int yz; // year, but not allowed to extend past endyr
-  int s;  // counter for seasons
-  int s2; // destination season
-  int mid_subseas; // index of the subseas that corresponds to the middle of the season
-  int subseas; // subseas, mostly used to calc ALK_idx
-  int ALK_idx; // index to which subseas within current year to use for the ALK  ALK_idx=(s-1)*N_subseas+subseas
-  int ALK_time; // continuous index to subseas =(y-styr)*nseas*N_subseas+ALK_idx
-  int ALK_idx_mid; // index of subseason at middle of season
-  int t;  // counter for time, combining year and season
-  int mo; // month (1-12), not (0-11)
-  int j;
-  int j1;
-  int j2;
-  int k;
-  int k1;
-  int k2;
-  int k3;
-  int s_off; // offset for male section of vectors
-  int Fishon; // whether or not to do fishery catch in equil_calc
-  int NP; // number of parameters
-  int Ip; // parameter counter
-  int firstseas; // used to start season loops at the birthseason
-  int t_base; //
-  int niter;  // iteration count
-  int loop;
-  int TG_t; // time counter (in seasons) for tag groups
+  int a // counter for ages
+  int b // counter for age bins
+  int p // counter for area
+  int p1
+  int p2 // counter for destination area in migration
+  int i // counter for observations
+  int y // counter for year
+  int yz // year, but not allowed to extend past endyr
+  int s // counter for seasons
+  int s2  // destination season
+  int mid_subseas  //  index of the subseas that corresponds to the middle of the season
+  int subseas  //  subseas, mostly used to calc ALK_idx
+  int ALK_idx  //  index to which subseas within current year to use for the ALK  ALK_idx=(s-1)*N_subseas+subseas
+  int ALK_time  //  continuous index to subseas =(y-styr)*nseas*N_subseas+ALK_idx
+  int ALK_idx_mid  //  index of subseason at middle of season
+  int t // counter for time, combining year and season
+  int mo  //  month (1-12), not (0-11)
+  int j
+  int j1
+  int j2
+  int k
+  int k1
+  int k2
+  int k3
+  int special_flag  //  reserved for ephemeral use while developing code
+  int s_off  // offset for male section of vectors
+  int Fishon  // whether or not to do fishery catch in equil_calc
+  int NP  // number of parameters
+  int Ip  // parameter counter
+  int firstseas   // used to start season loops at the birthseason
+  int t_base;    //
+  int niter  // iteration count
+  int loop
+  int TG_t;  // time counter (in seasons) for tag groups
+
   int Fcast_catch_start
 //  int ParCount;
   int retParCount;
@@ -89,6 +91,7 @@
   !! N_warn=0;
   !! write_bodywt=0;
   !! write_bodywt_save=0;
+  !! special_flag=0;
 
   int Nparm_on_bound;
   int on;

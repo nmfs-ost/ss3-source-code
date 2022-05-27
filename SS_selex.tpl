@@ -35,8 +35,6 @@ FUNCTION void get_selectivity()
   //  SS_Label_Info_22.2 #Loop all fisheries and surveys twice; first for size selectivity, then for age selectivity
   for (f = 1; f <= 2 * Nfleet; f++)
   {
-    //  	echoinput<<" selex fleet: "<<f<<" type "<<seltype(f);
-
     fs = f - Nfleet; //index for saving age selex in the fleet arrays
     //  SS_Label_Info_22.2.1 #recalculate selectivity for any fleets or surveys with time-vary flag set for this year
     if (timevary_sel(y, f) == 1 || save_for_report > 0)
