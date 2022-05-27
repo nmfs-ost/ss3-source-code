@@ -7,61 +7,61 @@
 // SS_Label_file  #
 
 //*********COUNTERS*************************
-  int z // counters for size (length)
-  int z1  // min for z counter
-  int z2  // max for z counter
-  int  L1  //  for selecting sex specific length data
-  int  L2  //  used for l+nlength to get length bin for males
-  int  A2  //  used for a+nages+1 to get true age bin for males
-  int a1  // use to track a subset of ages
-  int f // counter for fleets and surveys.  total is Ntypes
-  int f1  // another fleet counter
-  int fs  //  counter for fleets when looping across size and ageselex; so = f-Ntypes
+  int z;  // counters for size (length)
+  int z1; // min for z counter
+  int z2; // max for z counter
+  int L1; //  for selecting sex specific length data
+  int L2; //  used for l+nlength to get length bin for males
+  int A2; //  used for a+nages+1 to get true age bin for males
+  int a1; // use to track a subset of ages
+  int f;  // counter for fleets and surveys.  total is Ntypes
+  int f1; // another fleet counter
+  int fs; //  counter for fleets when looping across size and ageselex; so = f-Ntypes
 
-  int gmorph // number of biological entities:  gender*GP*BirthEvent*Platoon
-  int g // counter for biological entity
-  int GPat  //  counter for Gpattern (morph)
-  int gg  // counter for sex
-  int gp //  counter for sex*GPat  or for Gpat
-  int gp2  //  used to loop platoons within Gpattern
+  int gmorph;// number of biological entities:  gender*GP*BirthEvent*Platoon
+  int g;  // counter for biological entity
+  int GPat; // counter for Gpattern (morph)
+  int gg; // counter for sex
+  int gp; // counter for sex*GPat  or for Gpat
+  int gp2; // used to loop platoons within Gpattern
 
-  int a // counter for ages
-  int b // counter for age bins
-  int p // counter for area
-  int p1
-  int p2 // counter for destination area in migration
-  int i // counter for observations
-  int y // counter for year
-  int yz // year, but not allowed to extend past endyr
-  int s // counter for seasons
-  int s2  // destination season
-  int mid_subseas  //  index of the subseas that corresponds to the middle of the season
-  int subseas  //  subseas, mostly used to calc ALK_idx
-  int ALK_idx  //  index to which subseas within current year to use for the ALK  ALK_idx=(s-1)*N_subseas+subseas
-  int ALK_time  //  continuous index to subseas =(y-styr)*nseas*N_subseas+ALK_idx
-  int ALK_idx_mid  //  index of subseason at middle of season
-  int t // counter for time, combining year and season
-  int mo  //  month (1-12), not (0-11)
-  int j
-  int j1
-  int j2
-  int k
-  int k1
-  int k2
-  int k3
-  int s_off  // offset for male section of vectors
-  int Fishon  // whether or not to do fishery catch in equil_calc
-  int NP  // number of parameters
-  int Ip  // parameter counter
-  int firstseas   // used to start season loops at the birthseason
-  int t_base;    //
-  int niter  // iteration count
-  int loop
-  int TG_t;  // time counter (in seasons) for tag groups
+  int a;  // counter for ages
+  int b;  // counter for age bins
+  int p;  // counter for area
+  int p1;
+  int p2; // counter for destination area in migration
+  int i;  // counter for observations
+  int y;  // counter for year
+  int yz; // year, but not allowed to extend past endyr
+  int s;  // counter for seasons
+  int s2; // destination season
+  int mid_subseas; // index of the subseas that corresponds to the middle of the season
+  int subseas; // subseas, mostly used to calc ALK_idx
+  int ALK_idx; // index to which subseas within current year to use for the ALK  ALK_idx=(s-1)*N_subseas+subseas
+  int ALK_time; // continuous index to subseas =(y-styr)*nseas*N_subseas+ALK_idx
+  int ALK_idx_mid; // index of subseason at middle of season
+  int t;  // counter for time, combining year and season
+  int mo; // month (1-12), not (0-11)
+  int j;
+  int j1;
+  int j2;
+  int k;
+  int k1;
+  int k2;
+  int k3;
+  int s_off; // offset for male section of vectors
+  int Fishon; // whether or not to do fishery catch in equil_calc
+  int NP; // number of parameters
+  int Ip; // parameter counter
+  int firstseas; // used to start season loops at the birthseason
+  int t_base; //
+  int niter;  // iteration count
+  int loop;
+  int TG_t; // time counter (in seasons) for tag groups
   int Fcast_catch_start
 //  int ParCount;
   int retParCount;
-  int N_SC;  // counter for starter comments
+  int N_SC; // counter for starter comments
   int N_DC;
   int N_CC;
   int N_FC;
@@ -70,14 +70,14 @@
 
   int frac_female_pointer;
   int finished_minimize;
-  int icycle
-  int No_Report  //  flag to skip output reports after MCMC and MCeval
-  int mcmcFlag
-  int noest_flag
+  int icycle;
+  int No_Report; // flag to skip output reports after MCMC and MCeval
+  int mcmcFlag;
+  int noest_flag;
   number temp;
   number temp1;
   int save_for_report;
-  int bigsaver;  //  (save_for_report>0) || ((sd_phase() || mceval_phase()) && (initial_params::mc_phase==0))
+  int bigsaver; // (save_for_report>0) || ((sd_phase() || mceval_phase()) && (initial_params::mc_phase==0))
   int write_bodywt;
   int write_bodywt_save;
   int save_gparm;
@@ -91,9 +91,9 @@
   !! write_bodywt_save=0;
 
   int Nparm_on_bound;
- int on;
- int SDmode;
- int maxI;
+  int on;
+  int SDmode;
+  int maxI;
 
  LOCAL_CALCS
   maxI=999;
@@ -109,10 +109,10 @@
   TG_t=0; Fcast_catch_start=0; retParCount=0; N_SC=0; N_DC=0; N_CC=0; N_FC=0; catch_mult_pointer=0; frac_female_pointer=0; icycle=0; No_Report=0;
   mcmcFlag=0; noest_flag=0; temp=0; temp1=0; save_gparm_print=0;
   finished_minimize=0;
-  //  SS_Label_Info_1.1.2  #arrays for parameter labels are created in GLOBAL
-//  adstring_array NumLbl;
-//  adstring_array GenderLbl;   // gender label
-//  adstring_array CRLF;   // blank to terminate lines
+  // SS_Label_Info_1.1.2 #arrays for parameter labels are created in GLOBAL
+// adstring_array NumLbl;
+// adstring_array GenderLbl;   // gender label
+// adstring_array CRLF;   // blank to terminate lines
 
   CRLF+="";
   GenderLbl+="Fem";
@@ -124,17 +124,16 @@
   GP_Lbl+="_GP_5";
   GP_Lbl+="_GP_6";
   onenum="    ";
-  for (i=1;i<=199;i++) /* SS_loop: fill string NumLbl with numbers (start at 1) */
+  for (i = 1; i <= 199; i++) /* SS_loop: fill string NumLbl with numbers (start at 1) */
   {
-  sprintf(onenum, "%d", i);
-  NumLbl+=onenum+CRLF(1);
+    sprintf(onenum, "%d", i);
+    NumLbl += onenum + CRLF(1);
   }
-  for (i=0;i<=198;i++) /* SS_loop: fill string NumLbl0 with numbers (start at 0) */
+  for (i = 0; i <= 198; i++) /* SS_loop: fill string NumLbl0 with numbers (start at 0) */
   {
-  sprintf(onenum, "%d", i);
-  NumLbl0+=onenum+CRLF(1);
+    sprintf(onenum, "%d", i);
+    NumLbl0 += onenum + CRLF(1);
   }
-
     pick_report_name+="DEFINITIONS report:1";pick_report_use+="N";
     pick_report_name+="LIKELIHOOD report:2";pick_report_use+="N";
     pick_report_name+="Input_Variance_Adjustment report:3";pick_report_use+="N";
@@ -198,11 +197,13 @@
 
 //  check command line inputs
 
-  if ( (on=option_match(argc,argv,"-noest"))>-1)
+  if ((on = option_match(argc,argv,"-noest")) > -1)
   {
-    cout<<"SS3 is not configured to work with -noest; use -maxI instead which overrides maxphase in starter.ss"<<endl;
-     N_warn++; warning<<N_warn<<" SS3 exited with -noest, use -maxI <maxphase> instead"<<endl;
-    exit(1);
+    warnstream << "SS3 is not configured to work with -noest; use -maxI <maxphase> instead which overrides maxphase in starter.ss";
+    write_warning(0,1);
+//    cout<<"SS3 is not configured to work with -noest; use -maxI instead which overrides maxphase in starter.ss"<<endl;
+//     N_warn++; warning<<N_warn<<" SS3 exited with -noest, use -maxI <maxphase> instead"<<endl;
+//    exit(1);
   }
 
   if ( (on=option_match(argc,argv,"-maxI"))>-1 || (on=option_match(argc,argv,"-stopph"))>-1)

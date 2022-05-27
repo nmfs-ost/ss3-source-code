@@ -175,14 +175,14 @@ GLOBALS_SECTION
     if (echo == 1)
     {
       if (exitflag == 1)
-        echoinput << "EXIT:  ";
+        echoinput << "Exit:  ";
       echoinput << msg << endl;
     }
     if (exitflag == 1)
     {
-      cout << "!! " << msg << " !!" << endl;
-      cout << " Fatal Error!" << endl;
-      cout << " EXIT! -> see warning #" << N_warn << " in warning.sso <-" << endl;
+      cout << " Fatal Error:" << endl;
+      cout << " -- " << msg << endl;
+      cout << " Exiting SS3. " << endl;
       exit(1);
     }
   }
