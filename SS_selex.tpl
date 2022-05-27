@@ -254,6 +254,7 @@ FUNCTION void get_selectivity()
               // #43 non-parametric size selex scaled by average of values at low bin through high bin
               case 43:
                 scaling_offset = 2;
+                [[fallthrough]];
               case 6:
               {
                 lastsel = -10.0; // log(selex) for first bin;
@@ -600,6 +601,7 @@ FUNCTION void get_selectivity()
               /*  uses max(raw vector) to achieve scale to 1.0 */
               case 42:
                 scaling_offset = 2;
+                [[fallthrough]];
               case 27:
               {
                 int j2;
@@ -1139,6 +1141,7 @@ FUNCTION void get_selectivity()
               //    transformation as selex=exp(parm); some special codes */
               case 41:
                 scaling_offset = 2;
+                [[fallthrough]];
               case 17: //
               {
                 lastsel = 0.0; //  value is the change in log(selex);  this is the reference value for age 0
@@ -1533,6 +1536,7 @@ FUNCTION void get_selectivity()
               // #42 cubic spline scaled by average of values at low age through high age
               case 42:
                 scaling_offset = 2;
+                [[fallthrough]];
               case 27:
               {
                 // define vectors which form the basis for cubic spline selectivity
