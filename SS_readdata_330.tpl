@@ -202,18 +202,19 @@
   }
  END_CALCS
 
-//  SS_Label_Info_2.1.5  #Define fleets, surveys and areas
+//  SS_Label_Info_2.1.5  #Define fleets, surveys, predators and areas
   imatrix pfleetname(1,Nfleet,1,2)
   ivector fleet_type(1,Nfleet)   // 1=fleet with catch; 2=discard only fleet with F; 3=survey(ignore catch); 4=M2=predator
   int N_bycatch;  //  number of bycatch only fleets
   int N_pred;  //  number of predator fleets
   ivector N_catchfleets(0,pop); //  number of bycatch plus landed catch fleets by area
   imatrix fish_fleet_area(0,pop,0,Nfleet)   // list of catch_fleets that are type 1 or 2, so have a F
-  ivector predator(1,Nfleet)   // list of "fleets" that are type 4, so are added to M rather than to F
-  ivector predator_rev(1,Nfleet)   // predator given f
+  ivector predator(1,Nfleet)   // list of "fleets" that are type 4
+  ivector predator_rev(1,Nfleet)   // predator ID given f
+  imatrix predator_area(0,pop,0,Nfleet)   // list of predators by area
   ivector need_catch_mult(1,Nfleet)  // 0=no, 1=need catch_multiplier parameter
   vector surveytime(1,Nfleet)   // (-1, 1) code for fisheries to indicate use of season-wide observations, or specifically timed observations
-  ivector fleet_area(1,Nfleet)    // areas in which each fleet/survey operates
+  ivector fleet_area(1,Nfleet)    // areas in which each fleet/survey/predator operates
   vector catchunits1(1,Nfleet)  // 1=biomass; 2=numbers
 //  vector catch_se_rd1(1,Nfleet)  // units are se of log(catch); use -1 to ignore input catch values for discard only fleets
   vector catchunits(1,Nfleet)
@@ -240,6 +241,7 @@
     N_bycatch=0;
     N_catchfleets.initialize();
     fish_fleet_area.initialize();
+    predator_area.initialize();
     N_pred=0;
     predator.initialize();
     echoinput<<"rows are fleets; columns are: Fleet_#, fleet_type, timing, area, units, need_catch_mult"<<endl;
@@ -260,22 +262,25 @@
         {
           N_catchfleets(0)++;  //  overall N
           N_catchfleets(p)++;  //  count by area
-          fish_fleet_area(0,N_catchfleets(0))=f;  //  to find the original fleet index
-          fish_fleet_area(p,N_catchfleets(p))=f;  //  to find the original fleet index
+          fish_fleet_area(0,N_catchfleets(0))=f;  //  to find the "f" index for a catchfleet when not within an area loop
+          fish_fleet_area(p,N_catchfleets(p))=f;  //  to find the index when in an area loop
           YPR_mask(f)=1;
           if(surveytime(f)!=-1.)
           {N_warn++;  warning<<N_warn<<" "<<"fishing fleet: "<<f<<" surveytime read as: "<<surveytime(f)<<" normally is -1 for fishing fleet; can override for indiv. obs. using 1000+month"<<endl;}
         }
         else if (fleet_type(f)==3)
-          {if(surveytime(f)==-1.)
-          {N_warn++;  warning<<N_warn<<" "<<"survey fleet: "<<f<<" surveytime read as: "<<surveytime(f)<<" SS3 resets to 1 for all survey fleets, and always overridden by indiv. obs. month"<<endl;
+          {
+            if(surveytime(f)==-1.)
+            {N_warn++;  warning<<N_warn<<" "<<"survey fleet: "<<f<<" surveytime read as: "<<surveytime(f)<<" SS3 resets to 1 for all survey fleets, and always overridden by indiv. obs. month"<<endl;
             surveytime(f)=1.;}
           }
         else if (fleet_type(f)==4)  //  predator, e.g. red tide
           {
             N_pred++;
-            predator(N_pred)=f;
-            predator_rev(f)=N_pred;
+            predator(N_pred) = f;
+            predator_rev(f) = N_pred;
+            predator_area(0, N_pred) = f;  // to find the "f" index for a predator when not within an area loop
+            predator_area(p, N_pred) = f;  //  to find the index when in an area loop
             surveytime(f)=-1.;
           }
       if(fleet_type(f)>1 && need_catch_mult(f)>0)
