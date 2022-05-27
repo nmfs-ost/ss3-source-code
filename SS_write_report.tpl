@@ -2180,11 +2180,8 @@ FUNCTION void write_bigoutput()
         dvector tempvec_l(1, exp_l(f, i).size());
         tempvec_l = value(exp_l(f, i));
         more_comp_info = process_comps(gender, gen_l(f, i), len_bins_dat2, len_bins_dat_m2, tails_l(f, i), obs_l(f, i), tempvec_l);
-        if (Comp_Err_L(f) == 0) // multinomial
-        {
-          Nsamp_DM = nsamp_l(f, i); // not used
-        }
-        else if (Comp_Err_L(f) == 1) //  Dirichlet #1
+        Nsamp_DM = Nsamp_adj; // Will remain this if not used
+        if (Comp_Err_L(f) == 1) //  Dirichlet #1
         {
           dirichlet_Parm = mfexp(selparm(Comp_Err_Parm_Start + Comp_Err_L2(f))); //  Thorson's theta fro eq 10
           // effN_DM = 1/(1+theta) + n*theta/(1+theta)
@@ -2328,11 +2325,8 @@ FUNCTION void write_bigoutput()
         tempvec_a = value(exp_a(f, i));
         more_comp_info = process_comps(gender, gen_a(f, i), age_bins, age_bins_mean, tails_a(f, i), obs_a(f, i), tempvec_a);
 
-        if (Comp_Err_A(f) == 0) // multinomial
-        {
-          Nsamp_DM = nsamp_a(f, i);
-        }
-        else if (Comp_Err_A(f) == 1) //  Dirichlet #1
+        Nsamp_DM = Nsamp_adj; // Will stay at this val for multinomial
+        if (Comp_Err_A(f) == 1) //  Dirichlet #1
         {
           dirichlet_Parm = mfexp(selparm(Comp_Err_Parm_Start + Comp_Err_A2(f))); //  Thorson's theta fro eq 10
           // effN_DM = 1/(1+theta) + n*theta/(1+theta)
@@ -4725,7 +4719,6 @@ FUNCTION void Global_MSY()
   {
   // REPORT_KEYWORD 55 GLOBAL_MSY
   //  GLOBAL_MSY with knife-edge age selection, then slot-age selection
-  int bio_t_base;
   SS2out << endl
          << pick_report_name(55) << endl;
   y = styr - 3; //  stores the averaged
@@ -4733,7 +4726,6 @@ FUNCTION void Global_MSY()
   bio_yr = y;
   eq_yr = y;
   t_base = y + (y - styr) * nseas - 1;
-  bio_t_base = styr + (bio_yr - styr) * nseas - 1;
 
   for (int MSY_loop = 0; MSY_loop <= 2; MSY_loop++)
   {

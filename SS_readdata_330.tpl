@@ -526,7 +526,7 @@
     if(totcat(y)>0.0 && first_catch_yr==0) first_catch_yr=y;
     if(y==endyr && totcat(y)==0.0)
     {
-      N_warn++;  warning<<N_warn<<" catch is 0.0 in endyr; this can cause problem in the benchmark and forecast calculations"<<endl;
+      N_warn++;  warning<<N_warn<<" catch is 0.0 in endyr; this can cause problem in the benchmark and forecast calculations. "<<endl;
     }
   }
     echoinput<<endl<<"#_show_total_catch_by_fleet"<<endl;

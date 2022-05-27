@@ -332,10 +332,23 @@ GLOBALS_SECTION
   }
 
 // SS_Label_Function_xxxx  #create_timevary()  called by readdata to create timevary parameters
+  /*
+   where:
+   baseparm_list:           vector with the base parameter which has some type of timevary characteristic
+   timevary_setup:        vector which contains specs of all types of timevary  for this base parameter
+                          will be pushed to timevary_def cumulative across all types of base parameters
+   timevary_byyear:        vector containing column(timevary_MG,mgp_type(j)), will be modified in create_timevary
+   autogen_timevary:      switch to autogenerate or not
+   targettype:           integer with type of MGparm being worked on; analogous to 2*fleet in the selectivity section
+   block_design_pass:       block design, if any, being used
+   env_data_pass:           matrix containing entire set of environmental data as read
+   N_parm_dev:            integer that is incremented in create_timevary as dev vectors are created; cumulative across all types of parameters
+   finish_starter:  End of starter file value
+  */
   void create_timevary(dvector& baseparm_list, ivector& timevary_setup,
     ivector& timevary_byyear, int& autogen_timevary, const int& targettype,
-    const ivector& block_design_pass, const int& parm_adjust_method,
-    const dvector& env_data_pass, int& N_parm_dev, const double& finish_starter)
+    const ivector& block_design_pass, const dvector& env_data_pass, 
+    int& N_parm_dev, const double& finish_starter)
   {
   //  where timevary_byyear is a selected column of a year x type matrix (e.g. timevary_MG) in read_control
   //  timevary_setup(1)=baseparm type;
@@ -1133,7 +1146,7 @@ REPORT_SECTION
   int k1 = parm_gradients.size();
   if (k1 < k)
     k = k1;
-  for (unsigned i = 1; i <= k; i++)
+  for (int i = 1; i <= k; i++)
     parm_gradients(i) = gradients(i);
   if (current_phase() >= max_phase && finished_minimize == 0)
     finished_minimize = 1; //  because REPORT occurs after minimize finished
