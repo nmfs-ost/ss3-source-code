@@ -3224,13 +3224,13 @@
 
   echoinput<<HarvestPolicy<<"  # echoed HarvestPolicy "<<endl;
   *(ad_comm::global_datafile) >> H4010_top_rd;  //  use -1 to set H4010_top to Bmsy/SSB_unf
-  echoinput<<H4010_top_rd<<"   # echoed harvest policy inflection (-1 for H4010_top set to Bmsy/SSB_unf)"<<endl;
+  echoinput<<H4010_top_rd<<"   # echoed control rule inflection (-1 to set to Bmsy/SSB_unf)"<<endl;
   *(ad_comm::global_datafile) >> H4010_bot;
-  echoinput<<H4010_bot<<"   # echoed harvest policy cutoff "<<endl;
+  echoinput<<H4010_bot<<"   # echoed control rule cutoff "<<endl;
   *(ad_comm::global_datafile) >> H4010_scale_rd;
     H4010_scale=H4010_scale_rd;
-  echoinput<<H4010_scale<<"   # echoed harvest policy scalar "<<endl;
-  if(H4010_top_rd > 0.0 && H4010_top_rd<=H4010_bot) {N_warn++; cout<<" EXIT - see warning "<<endl;  warning<<N_warn<<" control rule inflection: "<<H4010_top_rd<<" must be > control rule bottom "<<H4010_bot<<endl; exit(1);}
+  echoinput<<H4010_scale<<"   # echoed control rule scalar "<<endl;
+  if(H4010_top_rd > 0.0 && H4010_top_rd<=H4010_bot) {N_warn++; cout<<" EXIT - see warning "<<endl;  warning<<N_warn<<" control rule inflection: "<<H4010_top_rd<<" must be > control rule cutoff "<<H4010_bot<<endl; exit(1);}
   if(H4010_scale>1.0) {N_warn++;  warning<<N_warn<<" Sure you want control rule scalar > 1.0? "<<H4010_scale<<endl;}
 
   if(H4010_scale<0.0)

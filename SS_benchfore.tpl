@@ -1993,7 +1993,7 @@ FUNCTION void Get_Forecast()
     if (H4010_top_rd < 0.0)
       {
         H4010_top = Bmsy / SSB_unf;
-        if (H4010_bot > 0.25) {N_warn++; warning<<N_warn<<" Beware: control rule bottom is large ("<<H4010_bot<<"); so may not be < calculated Bmsy/SSB_unf ("<<H4010_top<<")"<<endl;}
+        if (H4010_bot > 0.25) {N_warn++; warning<<N_warn<<" Beware: control rule cutoff is large ("<<H4010_bot<<"); so may not be < calculated Bmsy/SSB_unf ("<<H4010_top<<")"<<endl;}
       }
       else 
       {
