@@ -246,6 +246,7 @@ PARAMETER_SECTION
   number SPR_Btgt2;
   number Btgt_Rec2;
   number Btgt_Fmult2;
+  number H4010_top;
 
   3darray SSB_pop_gp(styr-3,YrMax,1,pop,1,N_GP)         //Spawning biomass
   vector SSB_yr(styr-3,YrMax)
