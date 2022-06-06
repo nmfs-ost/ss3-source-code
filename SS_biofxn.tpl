@@ -1169,12 +1169,10 @@ FUNCTION void get_natmort()
                   elem_div(Ave_Size(Loren_t,mid_subseas,g)(loren_minage,ref_age), (Ave_Size(Loren_t,mid_subseas,g)(loren_minage,ref_age)+Loren_temp2))
                   ))+loren_scale_extra*log((Ave_Size(Loren_t,mid_subseas,g)(ref_age))/(Ave_Size(Loren_t,mid_subseas,g)(ref_age)+Loren_temp2)));
                   
-                  natM(s,gpi)(0,nages)=log(
+                  natM(t_base + s, 0,gpi)(0,nages)=log(
                   elem_div(Ave_Size(Loren_t,mid_subseas,g)(0,nages), (Ave_Size(Loren_t,mid_subseas,g)(0,nages)+Loren_temp2))
                   )*Loren_temp;
-                  if(s<Bseas(g)) natM(s,gpi,0)=natM(s+1,gpi,0);
-                  surv1(s,gpi)=value(mfexp(-natM(s,gpi)*seasdur_half(s)));
-                  surv2(s,gpi)=value(square(surv1(s,gpi)));
+                  if(s<Bseas(g)) {natM(t_base + s, 0,gpi,0)=natM(t_base + s + 1, 0,gpi,0);}
                 }
               }
               else
@@ -1184,13 +1182,11 @@ FUNCTION void get_natmort()
                 for (s = nseas; s >= 1; s--)
                 {
                   int Loren_t = styr + (yz - styr) * nseas + s - 1;
-                  natM(s, gpi)(0, nages) = log(
+                  natM(t_base + s, 0, gpi)(0, nages) = log(
                                               elem_div(Ave_Size(Loren_t, mid_subseas, g)(0, nages), (Ave_Size(Loren_t, mid_subseas, g)(0, nages) + Loren_temp2))) *
                       Loren_M1;
                   if (s < Bseas(g))
-                    natM(s, gpi, 0) = natM(s + 1, gpi, 0);
-                  surv1(s, gpi) = value(mfexp(-natM(s, gpi) * seasdur_half(s)));
-                  surv2(s, gpi) = value(square(surv1(s, gpi)));
+                    {natM(t_base + s, 0, gpi, 0) = natM(t_base + s + 1, 0, gpi, 0);}
                 }
               }
               break;
