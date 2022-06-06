@@ -1,14 +1,14 @@
 // SS_Label_file  #22. **SS_tagrecap.tpl**
 // SS_Label_file  # * <u>Tag_Recapture()</u>  //  calculates expected values for number of tags returned by each fleet(and area), in each time step, for each tag release group
 // SS_Label_file  #
-  
+
 FUNCTION void Tag_Recapture()
   {
   //  SS_Label_Info_24.15 #do tag mortality, movement and recapture  revise 7/10/2019
   dvariable TG_init_loss;
   dvariable TG_chron_loss;
   TG_recap_exp.initialize();
-  
+
   //  get reporting rates by fleet that will be used for all Tag Groups
   for (f = 1; f <= Nfleet1; f++)
   {
@@ -54,7 +54,7 @@ FUNCTION void Tag_Recapture()
     p = int(TG_release(TG, 2)); // release area
     gg = int(TG_release(TG, 6)); // gender (1=fem; 2=male; 0=both
     a1 = int(TG_release(TG, 7)); // age at release
-  
+
     TG_alive.initialize();
     if (gg == 0)
     {
@@ -88,7 +88,7 @@ FUNCTION void Tag_Recapture()
       }
       TG_init_loss = mfexp(TG_parm(k)) / (1. + mfexp(TG_parm(k)));
     }
-  
+
     //  get chronic loss parameter
     j = TG + N_TG;
     if (TG_parm_PH(j) == -1000.)
@@ -123,7 +123,7 @@ FUNCTION void Tag_Recapture()
         {
           TG_save(TG, 3 + TG_t) = value(sum(TG_alive));
         } //  OK to do simple sum because only selected morphs are populated
-  
+
         for (p = 1; p <= pop; p++)
         {
           for (g = 1; g <= gmorph; g++)
@@ -137,20 +137,20 @@ FUNCTION void Tag_Recapture()
                   if (F_Method == 1)
                   {
                     TG_recap_exp(TG, TG_t, f) += TG_alive(p, g) // tags recaptured
-                        * mfexp(-(natM(s, GP3(g), a1) + TG_chron_loss) * seasdur_half(s)) * Sel_for_tag(t, f, g, a1) * TG_report(f) * mfexp(TG_t * TG_rep_decay(f));
+                        * mfexp(-(natM(t, p, GP3(g), a1) + TG_chron_loss) * seasdur_half(s)) * Sel_for_tag(t, f, g, a1) * TG_report(f) * mfexp(TG_t * TG_rep_decay(f));
                   }
                   else // use for method 2 and 3
                   {
                     TG_recap_exp(TG, TG_t, f) += TG_alive(p, g) * Sel_for_tag(t, f, g, a1) / (Z_rate(t, p, g, a1) + TG_chron_loss) * (1. - mfexp(-seasdur(s) * (Z_rate(t, p, g, a1) + TG_chron_loss))) * TG_report(f) * mfexp(TG_t * TG_rep_decay(f));
                   }
-  
+
                   if (docheckup == 1)
                     echoinput << " TG_" << TG << " y_" << y << " s_" << s << " area_" << p << " g_" << g << " GP3_" << GP3(g) << " f_" << f << " a1_" << a1 << " Sel_" << Sel_for_tag(t, f, g, a1) << " TG_alive_" << TG_alive(p, g) << " TG_obs_" << TG_recap_obs(TG, TG_t, f) << " TG_exp_" << TG_recap_exp(TG, TG_t, f) << endl;
                 } // end fleet loop for recaptures
               TG_alive(p, g) *= mfexp(-seasdur(s) * (Z_rate(t, p, g, a1) + TG_chron_loss));
             } // end morph loop
         } // end area loop
-  
+
         if (Hermaphro_Option != 0)
         {
           if (Hermaphro_seas == -1 || Hermaphro_seas == s)
@@ -173,7 +173,7 @@ FUNCTION void Tag_Recapture()
                 }
           }
         }
-  
+
         if (do_migration > 0) //  movement between areas of tags
         {
           TG_alive_temp = TG_alive;

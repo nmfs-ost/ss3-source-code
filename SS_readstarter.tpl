@@ -49,6 +49,7 @@
   int k1
   int k2
   int k3
+  int special_flag  //  reserved for ephemeral use while developing code
   int s_off  // offset for male section of vectors
   int Fishon  // whether or not to do fishery catch in equil_calc
   int NP  // number of parameters
@@ -58,10 +59,11 @@
   int niter  // iteration count
   int loop
   int TG_t;  // time counter (in seasons) for tag groups
+
   int Fcast_catch_start
 //  int ParCount;
   int retParCount;
-  int N_SC;  // counter for starter comments
+  int N_SC; // counter for starter comments
   int N_DC;
   int N_CC;
   int N_FC;
@@ -70,14 +72,14 @@
 
   int frac_female_pointer;
   int finished_minimize;
-  int icycle
-  int No_Report  //  flag to skip output reports after MCMC and MCeval
-  int mcmcFlag
-  int noest_flag
+  int icycle;
+  int No_Report; // flag to skip output reports after MCMC and MCeval
+  int mcmcFlag;
+  int noest_flag;
   number temp;
   number temp1;
   int save_for_report;
-  int bigsaver;  //  (save_for_report>0) || ((sd_phase() || mceval_phase()) && (initial_params::mc_phase==0))
+  int bigsaver; // (save_for_report>0) || ((sd_phase() || mceval_phase()) && (initial_params::mc_phase==0))
   int write_bodywt;
   int write_bodywt_save;
   int save_gparm;
@@ -89,11 +91,12 @@
   !! N_warn=0;
   !! write_bodywt=0;
   !! write_bodywt_save=0;
+  !! special_flag=0;
 
   int Nparm_on_bound;
- int on;
- int SDmode;
- int maxI;
+  int on;
+  int SDmode;
+  int maxI;
 
  LOCAL_CALCS
   maxI=999;
@@ -109,10 +112,10 @@
   TG_t=0; Fcast_catch_start=0; retParCount=0; N_SC=0; N_DC=0; N_CC=0; N_FC=0; catch_mult_pointer=0; frac_female_pointer=0; icycle=0; No_Report=0;
   mcmcFlag=0; noest_flag=0; temp=0; temp1=0; save_gparm_print=0;
   finished_minimize=0;
-  //  SS_Label_Info_1.1.2  #arrays for parameter labels are created in GLOBAL
-//  adstring_array NumLbl;
-//  adstring_array GenderLbl;   // gender label
-//  adstring_array CRLF;   // blank to terminate lines
+  // SS_Label_Info_1.1.2 #arrays for parameter labels are created in GLOBAL
+// adstring_array NumLbl;
+// adstring_array GenderLbl;   // gender label
+// adstring_array CRLF;   // blank to terminate lines
 
   CRLF+="";
   GenderLbl+="Fem";
@@ -124,17 +127,16 @@
   GP_Lbl+="_GP_5";
   GP_Lbl+="_GP_6";
   onenum="    ";
-  for (i=1;i<=199;i++) /* SS_loop: fill string NumLbl with numbers (start at 1) */
+  for (i = 1; i <= 199; i++) /* SS_loop: fill string NumLbl with numbers (start at 1) */
   {
-  sprintf(onenum, "%d", i);
-  NumLbl+=onenum+CRLF(1);
+    sprintf(onenum, "%d", i);
+    NumLbl += onenum + CRLF(1);
   }
-  for (i=0;i<=198;i++) /* SS_loop: fill string NumLbl0 with numbers (start at 0) */
+  for (i = 0; i <= 198; i++) /* SS_loop: fill string NumLbl0 with numbers (start at 0) */
   {
-  sprintf(onenum, "%d", i);
-  NumLbl0+=onenum+CRLF(1);
+    sprintf(onenum, "%d", i);
+    NumLbl0 += onenum + CRLF(1);
   }
-
     pick_report_name+="DEFINITIONS report:1";pick_report_use+="N";
     pick_report_name+="LIKELIHOOD report:2";pick_report_use+="N";
     pick_report_name+="Input_Variance_Adjustment report:3";pick_report_use+="N";
@@ -198,11 +200,13 @@
 
 //  check command line inputs
 
-  if ( (on=option_match(argc,argv,"-noest"))>-1)
+  if ((on = option_match(argc,argv,"-noest")) > -1)
   {
-    cout<<"SS3 is not configured to work with -noest; use -maxI instead which overrides maxphase in starter.ss"<<endl;
-     N_warn++; warning<<N_warn<<" SS3 exited with -noest, use -maxI <maxphase> instead"<<endl;
-    exit(1);
+    warnstream << "SS3 is not configured to work with -noest; use -maxI <maxphase> instead which overrides maxphase in starter.ss";
+    write_warning(0,1);
+//    cout<<"SS3 is not configured to work with -noest; use -maxI instead which overrides maxphase in starter.ss"<<endl;
+//     N_warn++; warning<<N_warn<<" SS3 exited with -noest, use -maxI <maxphase> instead"<<endl;
+//    exit(1);
   }
 
   if ( (on=option_match(argc,argv,"-maxI"))>-1 || (on=option_match(argc,argv,"-stopph"))>-1)

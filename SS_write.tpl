@@ -6,7 +6,7 @@
 // SS_Label_file  # * <u>write_Bzero_output()</u>  //
 // SS_Label_file  # * <u>Report_Parm()</u>  //  used by write_big_report in writing *report.sso*
 // SS_Label_file  #
-  
+
  /*  SS_Label_FUNCTION 36 write_summaryoutput */
 FUNCTION void write_summaryoutput()
   {
@@ -64,14 +64,14 @@ FUNCTION void write_summaryoutput()
   if (nobs_ms_tot > 0)
     report2 << runnumber << " Like_Emph MeanLAA All " << column(sizeage_lambda, k) << endl
             << runnumber << " Like_Value MeanLAA " << sizeage_like * column(sizeage_lambda, k) << " " << sizeage_like << endl;
-  
+
   if (F_Method > 1)
     report2 << runnumber << " Like_Emph Catch All " << column(catch_lambda, k) << endl
             << runnumber << " Like_Value Catch " << catch_like * column(catch_lambda, k) << " " << catch_like << endl;
-  
+
   report2 << runnumber << " Like_Emph init_equ All " << column(init_equ_lambda, k) << endl
           << runnumber << " Like_Value Init_Equ " << equ_catch_like * column(init_equ_lambda, k) << " " << catch_like << endl;
-  
+
   if (SzFreq_Nmeth > 0)
     report2 << runnumber << " Like_Emph WeightFreq All " << column(SzFreq_lambda, k) << endl
             << runnumber << " Like_Value WeightFreq " << SzFreq_like * column(SzFreq_lambda, k) << " " << SzFreq_like << endl;
@@ -84,13 +84,13 @@ FUNCTION void write_summaryoutput()
   if (Do_TG > 0)
     report2 << runnumber << " Like_Emph Tag_negbin All " << column(TG_lambda2, k) << endl
             << runnumber << " Like_Value Tag_negbin " << TG_like2 * column(TG_lambda2, k) << " " << TG_like2 << endl;
-  
+
   report2 << runnumber << " Like_Comp Recruits Regime Fcast_Recr Biasadj Priors ParmDevs CrashPen" << endl;
   report2 << runnumber << " Like_Emph " << recrdev_lambda(k) << " " << regime_lambda(k) << " " << Fcast_recr_lambda << " "
           << parm_prior_lambda(k) << " " << parm_dev_lambda(k) << " " << CrashPen_lambda(k) << endl;
   report2 << runnumber << " Like_Value*Emph " << recr_like * recrdev_lambda(k) << " " << regime_like * regime_lambda(k) << " "
           << Fcast_recr_like << " " << parm_like * parm_prior_lambda(k) << " " << sum(parm_dev_like) * parm_dev_lambda(k) << " " << CrashPen * CrashPen_lambda(k) << endl;
-  
+
   report2 << runnumber << " TimeSeries Yr Vir Equ " << years << " ";
   k = YrMax;
   if (k == endyr)
@@ -111,7 +111,7 @@ FUNCTION void write_summaryoutput()
     j = 1;
   if (Do_Benchmark > 0)
     report2 << runnumber << " Mgmt_Quant " << Mgmt_quant(1, 6 + j) << endl;
-  
+
   report2 << runnumber << " Parm Labels ";
   for (i = 1; i <= ParCount; i++)
   {
@@ -154,7 +154,7 @@ FUNCTION void write_summaryoutput()
   if (Do_TG > 0)
     report2 << TG_parm << " ";
   report2 << endl;
-  
+
   NP = 0; // count of number of parameters
   report2 << runnumber << " MG_parm ";
   for (j = 1; j <= N_MGparm2; j++)
@@ -164,7 +164,7 @@ FUNCTION void write_summaryoutput()
   }
   report2 << endl
           << runnumber << " MG_parm " << MGparm << endl;
-  
+
   if (N_parm_dev > 0)
   {
     report2 << runnumber << " MG_parm_dev ";
@@ -179,7 +179,7 @@ FUNCTION void write_summaryoutput()
               << runnumber << " MG_parm_dev " << parm_dev(i) << endl;
     }
   }
-  
+
   report2 << runnumber << " SR_parm ";
   for (i = 1; i <= N_SRparm3 + recdev_cycle; i++)
   {
@@ -191,7 +191,7 @@ FUNCTION void write_summaryoutput()
   if (recdev_cycle > 0)
     report2 << recdev_cycle_parm;
   report2 << endl;
-  
+
   if (recdev_do_early > 0)
   {
     report2 << runnumber << " Recr_early ";
@@ -206,7 +206,7 @@ FUNCTION void write_summaryoutput()
       report2 << " " << recdev(i);
     report2 << endl;
   }
-  
+
   if (do_recdev > 0)
   {
     report2 << runnumber << " Recr_main ";
@@ -221,7 +221,7 @@ FUNCTION void write_summaryoutput()
       report2 << " " << recdev(i);
     report2 << endl;
   }
-  
+
   if (Do_Forecast > 0)
   {
     if (do_recdev > 0)
@@ -253,7 +253,7 @@ FUNCTION void write_summaryoutput()
       report2 << endl;
     }
   }
-  
+
   report2 << runnumber << " init_F ";
   for (i = 1; i <= N_init_F; i++)
   {
@@ -265,7 +265,7 @@ FUNCTION void write_summaryoutput()
   for (i = 1; i <= N_init_F; i++)
     report2 << " " << init_F(i);
   report2 << endl;
-  
+
   if (N_Fparm > 0)
   {
     report2 << runnumber << " F_rate ";
@@ -280,7 +280,7 @@ FUNCTION void write_summaryoutput()
       report2 << " " << F_rate(i);
     report2 << endl;
   }
-  
+
   if (Q_Npar2 > 0)
   {
     report2 << runnumber << " Q_parm ";
@@ -295,7 +295,7 @@ FUNCTION void write_summaryoutput()
       report2 << " " << Q_parm(i);
     report2 << endl;
   }
-  
+
   if (N_selparm2 > 0)
   {
     report2 << runnumber << " Sel_parm ";
@@ -307,7 +307,7 @@ FUNCTION void write_summaryoutput()
     report2 << endl
             << runnumber << " Sel_parm " << selparm << endl;
   }
-  
+
   if (Do_TG > 0)
   {
     report2 << runnumber << " Tag_parm ";
@@ -319,7 +319,7 @@ FUNCTION void write_summaryoutput()
     report2 << endl
             << runnumber << " Tag_parm " << TG_parm << endl;
   }
-  
+
   if (Do_CumReport == 2)
   {
     if (Svy_N > 0)
@@ -343,7 +343,7 @@ FUNCTION void write_summaryoutput()
             report2 << runnumber << " Index:" << f << " EXP " << Svy_est(f) << endl;
           }
         }
-  
+
     data_type = 4;
     for (f = 1; f <= Nfleet; f++)
       if (Nobs_l(f) > 0)
@@ -358,7 +358,7 @@ FUNCTION void write_summaryoutput()
         report2 << endl
                 << runnumber << " Len:" << f << " effN " << neff_l(f) << endl;
       }
-  
+
     data_type = 5;
     for (f = 1; f <= Nfleet; f++)
       if (Nobs_a(f) > 0)
@@ -377,7 +377,7 @@ FUNCTION void write_summaryoutput()
   report2 << endl;
   cout << " finished appending to cumreport.sso " << endl;
   }
-  
+
 FUNCTION void write_SS_summary()
   {
   SS_smry.open(sso_pathname + "ss_summary.sso");
@@ -428,7 +428,7 @@ FUNCTION void write_SS_summary()
   SS_smry << "Parm_devs " << sum(parm_dev_like) * parm_dev_lambda(k) << endl;
   SS_smry << "F_Ballpark " << F_ballpark_lambda(k) * F_ballpark_like << endl;
   SS_smry << "Crash_Pen " << CrashPen_lambda(k) * CrashPen << endl;
-  
+
   SS_smry << "#_PARAMETERS" << endl
           << "#label value se active? range" << endl;
   NP = 0; // count of number of parameters
@@ -465,7 +465,7 @@ FUNCTION void write_SS_summary()
     }
     SS_smry << (SR_parm(j) - SR_parm_LO(j)) / (SR_parm_HI(j) - SR_parm_LO(j) + 1.0e-6) << endl;
   }
-  
+
   if (recdev_cycle > 0)
   {
     for (j = 1; j <= recdev_cycle; j++)
@@ -484,7 +484,7 @@ FUNCTION void write_SS_summary()
       SS_smry << (recdev_cycle_parm(j) - recdev_cycle_LO(j)) / (recdev_cycle_HI(j) - recdev_cycle_LO(j) + 1.0e-6) << endl;
     }
   }
-  
+
   if (recdev_do_early > 0)
   {
     for (j = recdev_early_start; j <= recdev_early_end; j++)
@@ -503,7 +503,7 @@ FUNCTION void write_SS_summary()
       SS_smry << (recdev(j) - recdev_LO) / (recdev_HI - recdev_LO + 1.0e-6) << endl;
     }
   }
-  
+
   if (do_recdev > 0)
   {
     for (j = recdev_start; j <= recdev_end; j++)
@@ -522,7 +522,7 @@ FUNCTION void write_SS_summary()
       SS_smry << (recdev(j) - recdev_LO) / (recdev_HI - recdev_LO + 1.0e-6) << endl;
     }
   }
-  
+
   if (Do_Forecast > 0 && do_recdev > 0)
   {
     for (j = recdev_end + 1; j <= YrMax; j++)
@@ -540,7 +540,7 @@ FUNCTION void write_SS_summary()
       }
       SS_smry << (Fcast_recruitments(j) - recdev_LO) / (recdev_HI - recdev_LO + 1.0e-6) << endl;
     }
-  
+
     if (Do_Impl_Error > 0)
     {
       for (j = endyr + 1; j <= YrMax; j++)
@@ -560,7 +560,7 @@ FUNCTION void write_SS_summary()
       }
     }
   }
-  
+
   if (N_init_F > 0)
   {
     SS_smry << "#_Init_F" << endl;
@@ -580,7 +580,7 @@ FUNCTION void write_SS_summary()
       SS_smry << (init_F(j) - init_F_LO(j)) / (init_F_HI(j) - init_F_LO(j) + 1.0e-6) << endl;
     }
   }
-  
+
   if (N_Fparm > 0)
   {
     SS_smry << "#_F" << endl;
@@ -600,7 +600,7 @@ FUNCTION void write_SS_summary()
       SS_smry << (F_rate(j) - 0.) / (max_harvest_rate - 0 + 1.0e-6) << endl;
     }
   }
-  
+
   if (Q_Npar2 > 0)
   {
     SS_smry << "#_Catchability" << endl;
@@ -620,7 +620,7 @@ FUNCTION void write_SS_summary()
       SS_smry << (Q_parm(j) - Q_parm_LO(j)) / (Q_parm_HI(j) - Q_parm_LO(j) + 1.0e-6) << endl;
     }
   }
-  
+
   SS_smry << "#_Selectivity" << endl;
   if (N_selparm2 > 0)
     for (j = 1; j <= N_selparm2; j++)
@@ -638,7 +638,7 @@ FUNCTION void write_SS_summary()
       }
       SS_smry << (selparm(j) - selparm_LO(j)) / (selparm_HI(j) - selparm_LO(j) + 1.0e-6) << endl;
     }
-  
+
   if (Do_TG > 0)
   {
     SS_smry << "#_Tag_Recapture" << endl;
@@ -658,7 +658,7 @@ FUNCTION void write_SS_summary()
       SS_smry << (TG_parm(j) - TG_parm_LO(j)) / (TG_parm_HI(j) - TG_parm_LO(j) + 1.0e-6) << endl;
     }
   }
-  
+
   if (N_parm_dev > 0)
   {
     SS_smry << "#_Parm_Dev" << endl;
@@ -679,7 +679,7 @@ FUNCTION void write_SS_summary()
         SS_smry << (parm_dev(i, j) - (-10.)) / (10. - (-10) + 1.0e-6) << endl;
       }
   }
-  
+
   SS_smry << "#_Derived_Quantities" << endl;
   SS_smry << "#_Spawn_Bio" << endl;
   for (j = 1; j <= N_STD_Yr; j++)
@@ -688,7 +688,7 @@ FUNCTION void write_SS_summary()
     active_count++;
     SS_smry << ParmLabel(NP) << " " << SSB_std(j) << " " << CoVar(active_count, 1) << endl;
   }
-  
+
   SS_smry << "#_Recruitment" << endl;
   for (j = 1; j <= N_STD_Yr; j++)
   {
@@ -696,7 +696,7 @@ FUNCTION void write_SS_summary()
     active_count++;
     SS_smry << ParmLabel(NP) << " " << recr_std(j) << " " << CoVar(active_count, 1) << endl;
   }
-  
+
   SS_smry << "#_SPR Basis= " << SPR_report_label << endl;
   for (j = 1; j <= N_STD_Yr_Ofish; j++)
   {
@@ -704,7 +704,7 @@ FUNCTION void write_SS_summary()
     active_count++;
     SS_smry << ParmLabel(NP) << " " << SPR_std(j) << " " << CoVar(active_count, 1) << endl;
   }
-  
+
   SS_smry << "#_F Basis= " << F_report_label << endl;
   for (j = 1; j <= N_STD_Yr_F; j++)
   {
@@ -712,7 +712,7 @@ FUNCTION void write_SS_summary()
     active_count++;
     SS_smry << ParmLabel(NP) << " " << F_std(j) << " " << CoVar(active_count, 1) << endl;
   }
-  
+
   SS_smry << "#_Depletion Basis= " << depletion_basis_label << endl;
   for (j = 1; j <= N_STD_Yr_Dep; j++)
   {
@@ -720,7 +720,7 @@ FUNCTION void write_SS_summary()
     active_count++;
     SS_smry << ParmLabel(NP) << " " << depletion(j) << " " << CoVar(active_count, 1) << endl;
   }
-  
+
   SS_smry << "#_Mgmt_Quantity" << endl;
   for (j = 1; j <= N_STD_Mgmt_Quant; j++)
   {
@@ -728,7 +728,7 @@ FUNCTION void write_SS_summary()
     active_count++;
     SS_smry << ParmLabel(NP) << " " << Mgmt_quant(j) << " " << CoVar(active_count, 1) << endl;
   }
-  
+
   SS_smry << "#_Extra_stdev" << endl;
   for (j = 1; j <= Extra_Std_N; j++)
   {
@@ -736,7 +736,7 @@ FUNCTION void write_SS_summary()
     active_count++;
     SS_smry << ParmLabel(NP) << " " << Extra_Std(j) << " " << CoVar(active_count, 1) << endl;
   }
-  
+
   if (Do_se_smrybio == 0)
   {
     SS_smry << "SmryBio_Virgin " << Smry_Table(styr - 2, 2) << " 0.0" << endl;
@@ -746,7 +746,7 @@ FUNCTION void write_SS_summary()
       SS_smry << "SmryBio_" << y << " " << Smry_Table(y, 2) << " 0.0" << endl;
     }
   }
-  
+
   SS_smry << "#_survey_stdev " << Svy_N_sdreport << endl;
   if (Svy_N_sdreport > 0)
   {
@@ -772,7 +772,7 @@ FUNCTION void write_SS_summary()
       }
     }
   }
-  
+
   SS_smry << "#_Biomass" << endl;
   SS_smry << "TotBio_Virgin " << Smry_Table(styr - 2, 1) << " 0.0" << endl;
   SS_smry << "TotBio_Initial " << Smry_Table(styr - 1, 1) << " 0.0" << endl;
@@ -780,24 +780,24 @@ FUNCTION void write_SS_summary()
   {
     SS_smry << "TotBio_" << y << " " << Smry_Table(y, 1) << " 0.0" << endl;
   }
-  
+
   SS_smry << "TotCatch_Virgin " << Smry_Table(styr - 2, 4) << " 0.0" << endl;
   SS_smry << "TotCatch_Initial " << Smry_Table(styr - 1, 4) << " 0.0" << endl;
   for (y = styr; y <= YrMax; y++)
   {
     SS_smry << "TotCatch_" << y << " " << Smry_Table(y, 4) << " 0.0" << endl;
   }
-  
+
   //    report2 <<runnumber<<" Timeseries TotBio "<<column(Smry_Table,1)<<endl;
   //  report2 <<runnumber<<" Timeseries SmryBio-"<<Smry_Age<<" "<<column(Smry_Table,2)<<endl;
   //  report2 <<runnumber<<" Timeseries TotCatch "<<column(Smry_Table,4)<<endl;
   //  report2 <<runnumber<<" Timeseries RetCatch "<<column(Smry_Table,5)<<endl;
-  
+
   SS_smry.close();
   cout << " finished SS_summary.sso" << endl;
   return;
   }
-  
+
 //********************************************************************
  /*  SS_Label_FUNCTION 37 write_rebuilder_output */
 FUNCTION void write_rebuilder_output()
@@ -806,7 +806,7 @@ FUNCTION void write_rebuilder_output()
     cout << " produce output for rebuilding package" << endl;
   rebuilder.open(sso_pathname + "rebuild.sso", ios::app);
   rebuild_dat.open(sso_pathname + "rebuild.dat");
-  
+
   if (mceval_counter == 0) // writing to rebuild.dat
   {
     rebuild_dat << "#Title, #runnumber: " << runnumber << " " << datfilename << " " << ctlfilename << " " << obj_fun << " " << SSB_yr(styr - 2) << " " << SSB_yr(endyr + 1) << " StartTime: " << ctime(&start);
@@ -841,17 +841,17 @@ FUNCTION void write_rebuilder_output()
                 << -1 << endl;
     rebuild_dat << "# Fecundity-at-age" << endl;
   }
-  
+
   // stuff written to both rebuild.dat and rebuild.SSO
   //a. "blank line" with run info
   if (mceval_phase())
     rebuilder << "# mceval phase, cnt=" << mceval_counter << ", StartTime: " << ctime(&start);
   else
     rebuilder << "# in maximization mode, StartTime: " << ctime(&start);
-  
+
   if (mceval_counter == 0)
     rebuild_dat << "#" << age_vector << " #runnumber: " << runnumber << " " << datfilename << " " << ctlfilename << " " << obj_fun << " " << SSB_yr(styr - 2) << " " << SSB_yr(endyr + 1) << endl;
-  
+
   //b.  fecundity-at-age
   t = styr + (Rebuild_Yinit - styr) * nseas;
   dvar_vector tempvec2(0, nages);
@@ -873,7 +873,7 @@ FUNCTION void write_rebuilder_output()
     rebuild_dat << tempvec_a << " #female fecundity; weighted by N in year Y_init across morphs and areas" << endl;
     rebuild_dat << "# Age specific selectivity and weight adjusted for discard and discard mortality" << endl;
   }
-  
+
   //c.  Weight-at-age and selectivity-at-age (ordered by sex and fleet).
   // use the deadfish vectors that account for discard and for mortality of discards
   // average across morphs and areas using N_at_Age in year Yinit and across seasons using Fcast_RelF
@@ -911,11 +911,11 @@ FUNCTION void write_rebuilder_output()
         }
       }
     }
-  
+
   //d.  Natural mortality and numbers-at-age for year Yinit  (females then males).
   if (mceval_counter == 0)
     rebuild_dat << "# M and current age-structure in year Yinit: " << Rebuild_Yinit << endl;
-  
+
   for (gg = 1; gg <= gender; gg++)
   {
     tempvec_a.initialize();
@@ -926,7 +926,7 @@ FUNCTION void write_rebuilder_output()
       for (g = 1; g <= gmorph; g++)
         if (sx(g) == gg && use_morph(g) > 0)
         {
-          tempvec_a += elem_prod(natM(1, GP3(g)), natage(t, p, g));
+          tempvec_a += elem_prod(natM(t, p, GP3(g)), natage(t, p, g));
           tempvec2 += natage(t, p, g); //  note, uses season 1 only
         }
     }
@@ -938,7 +938,7 @@ FUNCTION void write_rebuilder_output()
                   << tempvec_a << endl
                   << tempvec2 << endl;
   }
-  
+
   //e.  Numbers-at-age for year Ydecl  (females then males).
   t = styr + (Rebuild_Ydecl - styr) * nseas;
   if (mceval_counter == 0)
@@ -960,14 +960,14 @@ FUNCTION void write_rebuilder_output()
     if (mceval_counter == 0)
       rebuild_dat << tempvec2 << endl;
   }
-  
+
   k = endyr;
   if (Rebuild_Yinit > k)
     k = Rebuild_Yinit;
-  
+
   //f. "blank line" used for header for following lines
   rebuilder << "#R0 " << years << " #years" << endl;
-  
+
   //g. recruitment
   rebuilder << exp_rec(styr - 2, 4) << " ";
   for (y = styr; y <= k; y++)
@@ -975,18 +975,18 @@ FUNCTION void write_rebuilder_output()
     rebuilder << exp_rec(k, 4) << " ";
   }
   rebuilder << " #Recruits" << endl;
-  
+
   //h. spawnbio
   rebuilder << SSB_yr(styr - 2) << " " << SSB_yr(styr, k) << " #SpawnBio" << endl;
-  
+
   //i. steepness; SigmaR; rho
   rebuilder << SR_parm(2) << " " << sigmaR << " " << SR_parm(N_SRparm2) << " # spawn-recr steepness, sigmaR, autocorr" << endl;
-  
+
   if (mceval_counter == 0)
   {
     rebuild_dat << "# Year for Tmin Age-structure (set to Ydecl by SS)" << endl
                 << Rebuild_Ydecl << endl;
-  
+
     rebuild_dat << "#  recruitment and biomass" << endl
                 << "# Number of historical assessment years" << endl
                 << k - styr + 2 << endl;
@@ -1020,7 +1020,7 @@ FUNCTION void write_rebuilder_output()
     rebuild_dat << "# catches for years with pre-specified catches go next" << endl;
     //      rebuild_dat<<"# Number of future recruitments to override"<<endl<<0<<endl;
     //      rebuild_dat<<"# Process for overiding (-1 for average otherwise index in data list)"<<endl;
-  
+
     rebuild_dat << "# Number of future recruitments to override" << endl;
     rebuild_dat << Rebuild_Yinit - Rebuild_Ydecl << endl;
     rebuild_dat << "# Process for overiding (-1 for average otherwise index in data list)" << endl;
@@ -1029,7 +1029,7 @@ FUNCTION void write_rebuilder_output()
       for (y = Rebuild_Ydecl + 1; y <= Rebuild_Yinit; y++)
         rebuild_dat << y << " " << 1 << " " << y << endl;
     }
-  
+
     rebuild_dat << "# Which probability to product detailed results for (1=0.5; 2=0.6; etc.)" << endl
                 << 3 << endl;
     rebuild_dat << "# Steepness sigma-R Auto-correlation" << endl
@@ -1107,7 +1107,7 @@ FUNCTION void write_rebuilder_output()
                 << 0 << endl;
   }
   } //  end output of rebuilding quantities
-  
+
 FUNCTION void write_SIStable() //Note: deprecated, but add a message for now.
   {
   SIS_table.open(sso_pathname + "SIS_table.sso");
@@ -1123,7 +1123,7 @@ FUNCTION void write_Bzero_output()
   SS2out.open(report_sso_filename, ios::app);
   for (fishery_on_off = 1; fishery_on_off >= 0; fishery_on_off--)
   {
-  
+
     /*
    in first pass, fishery is on (1) so just report current values
    in second pass, rerun the time series with no fishery, then do the same reporting
@@ -1154,14 +1154,14 @@ FUNCTION void write_Bzero_output()
         SS2out << gp << " ";
       }
     SS2out << endl;
-  
+
     save_gparm = 0;
     if (fishery_on_off == 0)
     {
       setup_recdevs();
       get_initial_conditions();
       get_time_series(); //  in write_big_report
-  
+
       if (Do_Forecast > 0)
       {
         show_MSY = 0;
@@ -1170,7 +1170,7 @@ FUNCTION void write_Bzero_output()
         Get_Forecast();
       }
     }
-  
+
     for (y = styr - 2; y <= YrMax; y++)
     {
       SS2out << y;
@@ -1197,7 +1197,7 @@ FUNCTION void write_Bzero_output()
         }
       SS2out << endl;
     }
-  
+
     SS2out << endl
            << "NUMBERS_AT_AGE_Annual";
     if (fishery_on_off == 0)
@@ -1280,7 +1280,7 @@ FUNCTION void write_Bzero_output()
           tempvec2(nages) += value(tempvec_a(nages));
         }
       }
-  
+
     SS2out << endl
            << "Report_Z_by_area_morph_platoon";
     if (fishery_on_off == 0)
@@ -1327,11 +1327,11 @@ FUNCTION void write_Bzero_output()
   SS2out << " Note:  Z calculation for maxage not possible, for maxage-1 includes numbers at maxage, so is approximate" << endl;
   if (nseas > 1)
     SS2out << " Z for age zero fish is not correct here if recruitment occurs in season after season 1" << endl;
-  
+
   fishery_on_off = 1;
   /*
     SS2out<<endl<<"Report_Z_by_area_morph_platoon"<<endl;
-  
+
     for (fishery_on_off=1;fishery_on_off>=0;fishery_on_off--)
     {
     if(fishery_on_off==0) {SS2out<<"_1 No_fishery_for_Z=M";} else {SS2out<<"_2 With_fishery";}
@@ -1371,7 +1371,7 @@ FUNCTION void write_Bzero_output()
   */
   return;
   } //  end write Z report
-  
+
 //********************************************************************
  /*  SS_Label_FUNCTION 28 Report_Parm */
 FUNCTION void Report_Parm(const int NParm, const int AC, const int Activ, const prevariable& Pval, const double& Pmin, const double& Pmax, const double& RD, const double& Jitter, const double& PR, const double& CV, const int PR_T, const int PH, const prevariable& Like)
@@ -1387,7 +1387,7 @@ FUNCTION void Report_Parm(const int NParm, const int AC, const int Activ, const 
   {
     parmvar = CoVar(AC, 1);
     parmgrad = parm_gradients(AC);
-  
+
     SS2out << " " << AC << " " << PH << " " << Pmin << " " << Pmax << " " << RD << " " << Jitter;
     if (Pval == RD)
     {
@@ -1417,7 +1417,7 @@ FUNCTION void Report_Parm(const int NParm, const int AC, const int Activ, const 
       }
     }
     SS2out << " " << parmvar;
-  
+
     SS2out << " " << parmgrad;
   }
   else
@@ -1469,14 +1469,14 @@ FUNCTION void Report_Parm(const int NParm, const int AC, const int Activ, const 
       temp = Pmin;
     parm_val(i) = temp;
     prior_val(i) = Get_Prior(PR_T, Pmin, Pmax, PR, CV, temp);
-  
+
     i = 3;
     temp = Pval + 1.96 * parmvar;
     if (temp > Pmax)
       temp = Pmax;
     parm_val(i) = temp;
     prior_val(i) = Get_Prior(PR_T, Pmin, Pmax, PR, CV, temp);
-  
+
     i = 4;
     temp = Pmin + 0.01 * (Pmax - Pmin);
     parm_val(i) = temp;
@@ -1485,7 +1485,7 @@ FUNCTION void Report_Parm(const int NParm, const int AC, const int Activ, const 
     temp = Pmax - 0.01 * (Pmax - Pmin);
     parm_val(i) = temp;
     prior_val(i) = Get_Prior(PR_T, Pmin, Pmax, PR, CV, temp);
-  
+
     for (int i = 5; i <= 13; i++)
     {
       temp = Pmin + float(i - 4) / 10.0 * (Pmax - Pmin);

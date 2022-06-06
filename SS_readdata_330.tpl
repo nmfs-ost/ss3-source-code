@@ -202,18 +202,19 @@
   }
  END_CALCS
 
-//  SS_Label_Info_2.1.5  #Define fleets, surveys and areas
+//  SS_Label_Info_2.1.5  #Define fleets, surveys, predators and areas
   imatrix pfleetname(1,Nfleet,1,2)
   ivector fleet_type(1,Nfleet)   // 1=fleet with catch; 2=discard only fleet with F; 3=survey(ignore catch); 4=M2=predator
   int N_bycatch;  //  number of bycatch only fleets
   int N_pred;  //  number of predator fleets
   ivector N_catchfleets(0,pop); //  number of bycatch plus landed catch fleets by area
   imatrix fish_fleet_area(0,pop,0,Nfleet)   // list of catch_fleets that are type 1 or 2, so have a F
-  ivector predator(1,Nfleet)   // list of "fleets" that are type 4, so are added to M rather than to F
-  ivector predator_rev(1,Nfleet)   // predator given f
+  ivector predator(1,Nfleet)   // list of "fleets" that are type 4
+  ivector predator_rev(1,Nfleet)   // predator ID given f
+  imatrix predator_area(0,pop,0,Nfleet)   // list of predators by area
   ivector need_catch_mult(1,Nfleet)  // 0=no, 1=need catch_multiplier parameter
   vector surveytime(1,Nfleet)   // (-1, 1) code for fisheries to indicate use of season-wide observations, or specifically timed observations
-  ivector fleet_area(1,Nfleet)    // areas in which each fleet/survey operates
+  ivector fleet_area(1,Nfleet)    // areas in which each fleet/survey/predator operates
   vector catchunits1(1,Nfleet)  // 1=biomass; 2=numbers
 //  vector catch_se_rd1(1,Nfleet)  // units are se of log(catch); use -1 to ignore input catch values for discard only fleets
   vector catchunits(1,Nfleet)
@@ -240,6 +241,7 @@
     N_bycatch=0;
     N_catchfleets.initialize();
     fish_fleet_area.initialize();
+    predator_area.initialize();
     N_pred=0;
     predator.initialize();
     echoinput<<"rows are fleets; columns are: Fleet_#, fleet_type, timing, area, units, need_catch_mult"<<endl;
@@ -260,22 +262,25 @@
         {
           N_catchfleets(0)++;  //  overall N
           N_catchfleets(p)++;  //  count by area
-          fish_fleet_area(0,N_catchfleets(0))=f;  //  to find the original fleet index
-          fish_fleet_area(p,N_catchfleets(p))=f;  //  to find the original fleet index
+          fish_fleet_area(0,N_catchfleets(0))=f;  //  to find the "f" index for a catchfleet when not within an area loop
+          fish_fleet_area(p,N_catchfleets(p))=f;  //  to find the index when in an area loop
           YPR_mask(f)=1;
           if(surveytime(f)!=-1.)
           {N_warn++;  warning<<N_warn<<" "<<"fishing fleet: "<<f<<" surveytime read as: "<<surveytime(f)<<" normally is -1 for fishing fleet; can override for indiv. obs. using 1000+month"<<endl;}
         }
         else if (fleet_type(f)==3)
-          {if(surveytime(f)==-1.)
-          {N_warn++;  warning<<N_warn<<" "<<"survey fleet: "<<f<<" surveytime read as: "<<surveytime(f)<<" SS3 resets to 1 for all survey fleets, and always overridden by indiv. obs. month"<<endl;
+          {
+            if(surveytime(f)==-1.)
+            {N_warn++;  warning<<N_warn<<" "<<"survey fleet: "<<f<<" surveytime read as: "<<surveytime(f)<<" SS3 resets to 1 for all survey fleets, and always overridden by indiv. obs. month"<<endl;
             surveytime(f)=1.;}
           }
         else if (fleet_type(f)==4)  //  predator, e.g. red tide
           {
             N_pred++;
-            predator(N_pred)=f;
-            predator_rev(f)=N_pred;
+            predator(N_pred) = f;
+            predator_rev(f) = N_pred;
+            predator_area(0, N_pred) = f;  // to find the "f" index for a predator when not within an area loop
+            predator_area(p, N_pred) = f;  //  to find the index when in an area loop
             surveytime(f)=-1.;
           }
       if(fleet_type(f)>1 && need_catch_mult(f)>0)
@@ -526,7 +531,7 @@
     if(totcat(y)>0.0 && first_catch_yr==0) first_catch_yr=y;
     if(y==endyr && totcat(y)==0.0)
     {
-      N_warn++;  warning<<N_warn<<" catch is 0.0 in endyr; this can cause problem in the benchmark and forecast calculations"<<endl;
+      N_warn++;  warning<<N_warn<<" catch is 0.0 in endyr; this can cause problem in the benchmark and forecast calculations. "<<endl;
     }
   }
     echoinput<<endl<<"#_show_total_catch_by_fleet"<<endl;
@@ -2491,7 +2496,7 @@
     if(SzFreq_bins1(k,1)<0)
     {
       SzFreq_Omit_Small(k)=-1;
-      SzFreq_bins1(k,1)*=-1;  // make this positive for use in model, then write out as negative in data.ss_new
+      SzFreq_bins1(k,1)*=-1;  // make this positive for use in model, then write out as negative in data_echo.ss_new
     }
 
     SzFreq_bins(k)(1,SzFreq_Nbins(k))=SzFreq_bins1(k)(1,SzFreq_Nbins(k));
@@ -3127,7 +3132,7 @@
   int Rebuild_Ydecl
   int Rebuild_Yinit
   int HarvestPolicy  // 0=none; 1=west coast adjust catch; 2=AK to adjust F
-  number H4010_top
+  number H4010_top_rd
   number H4010_bot
   number H4010_scale
   number H4010_scale_rd
@@ -3223,14 +3228,14 @@
   if(HarvestPolicy==0) echoinput<<"HarvestPolicy=0, so values for top, bottom, buffer will be ignored"<<endl;
 
   echoinput<<HarvestPolicy<<"  # echoed HarvestPolicy "<<endl;
-  *(ad_comm::global_datafile) >> H4010_top;
-  echoinput<<H4010_top<<"   # echoed harvest policy inflection "<<endl;
+  *(ad_comm::global_datafile) >> H4010_top_rd;  //  use -1 to set H4010_top to Bmsy/SSB_unf
+  echoinput<<H4010_top_rd<<"   # echoed control rule inflection (-1 to set to Bmsy/SSB_unf)"<<endl;
   *(ad_comm::global_datafile) >> H4010_bot;
-  echoinput<<H4010_bot<<"   # echoed harvest policy cutoff "<<endl;
+  echoinput<<H4010_bot<<"   # echoed control rule cutoff "<<endl;
   *(ad_comm::global_datafile) >> H4010_scale_rd;
     H4010_scale=H4010_scale_rd;
-  echoinput<<H4010_scale<<"   # echoed harvest policy scalar "<<endl;
-  if(H4010_top<=H4010_bot) {N_warn++; cout<<" EXIT - see warning "<<endl;  warning<<N_warn<<" control rule inflection: "<<H4010_top<<" must be > control rule bottom "<<H4010_bot<<endl; exit(1);}
+  echoinput<<H4010_scale<<"   # echoed control rule scalar "<<endl;
+  if(H4010_top_rd > 0.0 && H4010_top_rd<=H4010_bot) {N_warn++; cout<<" EXIT - see warning "<<endl;  warning<<N_warn<<" control rule inflection: "<<H4010_top_rd<<" must be > control rule cutoff "<<H4010_bot<<endl; exit(1);}
   if(H4010_scale>1.0) {N_warn++;  warning<<N_warn<<" Sure you want control rule scalar > 1.0? "<<H4010_scale<<endl;}
 
   if(H4010_scale<0.0)
@@ -3375,7 +3380,7 @@
   Fcast_Rec_yr1=styr;
   Fcast_Rec_yr2=endyr;
   HarvestPolicy=0;
-  H4010_top=0.001;
+  H4010_top_rd=0.001;
   H4010_bot=0.0001;
   H4010_scale_rd=1.0;
   H4010_scale=1.0;

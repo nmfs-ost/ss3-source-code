@@ -1466,25 +1466,12 @@
        {
          if(z>N_Block_Designs)
           {N_warn++; cout<<"Fatal_input_error, see warning"<<endl;  warning<<N_warn<<" "<<"MG block request exceeds N_block patterns"<<endl;  exit(1);}
-         create_timevary(MGparm_1(j),timevary_setup, timevary_pass, autogen_timevary(timevary_setup(1)), mgp_type(j), Block_Design(z), parm_adjust_method, env_data_pass, N_parm_dev,finish_starter);
+         create_timevary(MGparm_1(j),timevary_setup, timevary_pass, autogen_timevary(timevary_setup(1)), mgp_type(j), Block_Design(z), env_data_pass, N_parm_dev,finish_starter);
        }
        else
        {
-         create_timevary(MGparm_1(j),timevary_setup, timevary_pass, autogen_timevary(timevary_setup(1)), mgp_type(j), block_design_null, parm_adjust_method, env_data_pass, N_parm_dev,finish_starter);
+         create_timevary(MGparm_1(j),timevary_setup, timevary_pass, autogen_timevary(timevary_setup(1)), mgp_type(j), block_design_null, env_data_pass, N_parm_dev,finish_starter);
        }
-  /*
-   where:
-   MGparm_1(j):           vector with the base parameter which has some type of timevary characteristic
-   timevary_setup:        vector which contains specs of all types of timevary  for this base parameter
-                          will be pushed to timevary_def cumulative across all types of base parameters
-   timevary_pass:        vector containing column(timevary_MG,mgp_type(j)), will be modified in create_timevary
-   autogen_timevary:      switch to autogenerate or not
-   mgp_type(j):           integer with type of MGparm being worked on; analogous to 2*fleet in the selectivity section
-   Block_Design(z):       block design, if any, being used
-   parm_adjust_method:    switch to determine if adjusted parameter will stay in bounds; used to create warnings in create_timevary
-   env_data_RD:           matrix containing entire set of environmental data as read
-   N_parm_dev:            integer that is incremented in create_timevary as dev vectors are created; cumulative across all types of parameters
-  */
        timevary_def.push_back (timevary_setup(1,14));
        for(y=styr-3;y<=YrMax+1;y++) {timevary_MG(y,mgp_type(j))=timevary_pass(y);}  // year vector for this category of MGparm
        if(j==MGP_CGD) CGD_onoff=1;
@@ -1779,24 +1766,12 @@
        {
          if(SR_parm_1(j,13)>N_Block_Designs)
           {N_warn++; cout<<"Fatal_input_error, see warning"<<endl;  warning<<N_warn<<" "<<"SR block request exceeds N_block patterns"<<endl;  exit(1);}
-         create_timevary(SR_parm_1(j),timevary_setup, timevary_pass, autogen_timevary(timevary_setup(1)), f, Block_Design(SR_parm_1(j,13)), parm_adjust_method, env_data_pass, N_parm_dev,finish_starter);
+         create_timevary(SR_parm_1(j),timevary_setup, timevary_pass, autogen_timevary(timevary_setup(1)), f, Block_Design(SR_parm_1(j,13)), env_data_pass, N_parm_dev,finish_starter);
        }
        else
        {
-         create_timevary(SR_parm_1(j),timevary_setup, timevary_pass, autogen_timevary(timevary_setup(1)), f, block_design_null, parm_adjust_method, env_data_pass, N_parm_dev,finish_starter);
+         create_timevary(SR_parm_1(j),timevary_setup, timevary_pass, autogen_timevary(timevary_setup(1)), f, block_design_null, env_data_pass, N_parm_dev,finish_starter);
        }
-  /*
-   where:
-   SR_parm_1(j):           vector with the base parameter which has some type of timevary characteristic
-   timevary_setup:        vector which contains specs of all types of timevary  for this base parameter
-                          will be pushed to timevary_def cumulative across all types of base parameters
-   timevary_pass:        vector containing column(timevary_MG,mgp_type(j)), will be modified in create_timevary
-   autogen_timevary:      switch to autogenerate or not
-   block_design(z):       block design, if any, being used
-   parm_adjust_method:    switch to determine if adjusted parameter will stay in bounds; used to create warnings in create_timevary
-   env_data_RD:           matrix containing entire set of environmental data as read
-   N_parm_dev:            integer that is incremented in create_timevary as dev vectors are created; cumulative across all types of parameters
-  */
        timevary_def.push_back (timevary_setup(1,14));
        for(y=styr-3;y<=YrMax+1;y++) {timevary_SRparm(y)=timevary_pass(y);}  // year vector for this category og MGparm
      }
@@ -2676,26 +2651,12 @@
        {
          if(Q_parm_1(j,13)>N_Block_Designs)
           {N_warn++; cout<<"Fatal_input_error, see warning"<<endl;  warning<<N_warn<<" "<<" Error: Q block request exceeds N_block patterns"<<endl;  exit(1);}
-         create_timevary(Q_parm_1(j),timevary_setup, timevary_pass, autogen_timevary(timevary_setup(1)), f, Block_Design(Q_parm_1(j,13)), parm_adjust_method, env_data_pass, N_parm_dev,finish_starter);
+         create_timevary(Q_parm_1(j),timevary_setup, timevary_pass, autogen_timevary(timevary_setup(1)), f, Block_Design(Q_parm_1(j,13)), env_data_pass, N_parm_dev,finish_starter);
        }
        else
        {
-         create_timevary(Q_parm_1(j),timevary_setup, timevary_pass, autogen_timevary(timevary_setup(1)), f, block_design_null, parm_adjust_method, env_data_pass, N_parm_dev,finish_starter);
+         create_timevary(Q_parm_1(j),timevary_setup, timevary_pass, autogen_timevary(timevary_setup(1)), f, block_design_null, env_data_pass, N_parm_dev,finish_starter);
        }
-  /*
-   where:
-   Q_parm_1(j):           vector with the base parameter which has some type of timevary characteristic
-   timevary_setup:        vector which contains specs of all types of timevary  for this base parameter
-                          will be pushed to timevary_def cumulative across all types of base parameters
-   timevary_pass:        vector containing column(timevary_MG,mgp_type(j)), will be modified in create_timevary
-   autogen_timevary:      switch to autogenerate or not
-   f:           integer with type of MGparm being worked on; analogous to 2*fleet in the selectivity section
-   block_design(z):       block design, if any, being used
-   parm_adjust_method:    switch to determine if adjusted parameter will stay in bounds; used to create warnings in create_timevary
-   env_data_RD:           matrix containing entire set of environmental data as read
-   N_parm_dev:            integer that is incremented in create_timevary as dev vectors are created; cumulative across all types of parameters
-  */
-
        timevary_def.push_back (timevary_setup(1,14));
        for(y=styr-3;y<=YrMax+1;y++) {timevary_Qparm(y,f)=timevary_pass(y);}  // year vector for this category og MGparm
      }
@@ -3559,25 +3520,12 @@
        {
          if(z>N_Block_Designs)
           {N_warn++; cout<<"Fatal_input_error, see warning"<<endl;  warning<<N_warn<<" "<<" error: selex block request exceeds N_block patterns"<<endl;  exit(1);}
-         create_timevary(selparm_1(j),timevary_setup, timevary_pass, autogen_timevary(timevary_setup(1)), selparm_fleet(j), Block_Design(z), parm_adjust_method, env_data_pass, N_parm_dev,finish_starter);
+         create_timevary(selparm_1(j),timevary_setup, timevary_pass, autogen_timevary(timevary_setup(1)), selparm_fleet(j), Block_Design(z), env_data_pass, N_parm_dev,finish_starter);
        }
        else
        {
-         create_timevary(selparm_1(j),timevary_setup, timevary_pass, autogen_timevary(timevary_setup(1)), selparm_fleet(j), block_design_null, parm_adjust_method, env_data_pass, N_parm_dev,finish_starter);
+         create_timevary(selparm_1(j),timevary_setup, timevary_pass, autogen_timevary(timevary_setup(1)), selparm_fleet(j), block_design_null, env_data_pass, N_parm_dev,finish_starter);
        }
-  /*
-   where:
-   selparm_1(j):           vector with the base parameter which has some type of timevary characteristic
-   timevary_setup:        vector which contains specs of all types of timevary  for this base parameter
-                          will be pushed to timevary_def cumulative across all types of base parameters
-   timevary_pass:        vector containing column(timevary_MG,mgp_type(j)), will be modified in create_timevary
-   autogen_timevary:      switch to autogenerate or not
-   selparm_fleet(j):           integer with type of MGparm being worked on; analogous to 2*fleet in the selectivity section
-   block_design(z):       block design, if any, being used
-   parm_adjust_method:    switch to determine if adjusted parameter will stay in bounds; used to create warnings in create_timevary
-   env_data_RD:           matrix containing entire set of environmental data as read
-   N_parm_dev:            integer that is incremented in create_timevary as dev vectors are created; cumulative across all types of parameters
-  */
        timevary_def.push_back (timevary_setup(1,14));
        for(y=styr-3;y<=YrMax+1;y++) {timevary_sel(y,selparm_fleet(j))=timevary_pass(y);}  // year vector for this category
      }
@@ -3609,11 +3557,11 @@
   if(TwoD_AR_do>0)
   {
     N_warn++;  warning<<N_warn<<" "<<"The experimental 2D_AR selectivity smoother option is selected!"<<endl;
-    ivector tempvec(1,13);  //  fleet, ymin, ymax, amin, amax, sigma_amax, use_rho, age/len
+    ivector tempvec(1,13);  //  fleet, ymin, ymax, amin, amax, sigma_amax, use_rho, age/len, before, after
     tempvec.initialize();
     TwoD_AR_def.push_back (tempvec);  //  bypass that pesky zeroth row
     TwoD_AR_def_rd.push_back (tempvec);  //  bypass that pesky zeroth row
-    echoinput<<"read specification for first 2D_AR1:  fleet, ymin, ymax, amin, amax, sigma_amax, use_rho, len1/age2"<<endl;
+    echoinput<<"read specification for first 2D_AR1:  fleet, ymin, ymax, amin, amax, sigma_amax, use_rho, len1/age2, before, after"<<endl;
 
     ender=0;
     do
@@ -3650,14 +3598,14 @@
 
          tempvec(12)=N_parm_dev;
 //         apply two lines below later when the timevary_setup is created
-//         tempvec(10)=1;  //  used for dimensioning the dev vectors in SS_param   parm_dev_minyr(k)
-//         tempvec(11)=(tempvec(3)-tempvec(2)+1)*(tempvec(5)-amin+1);   //parm_dev_maxyr(k)
+//         tempvec(12)=1;  //  used for dimensioning the dev vectors in SS_param   parm_dev_minyr(k)
+//         tempvec(13)=(tempvec(3)-tempvec(2)+1)*(tempvec(5)-amin+1);   //parm_dev_maxyr(k)
          tempvec(13)=N_selparm2+1;
          z=f;
          if(tempvec(8)==2) z=f+Nfleet;
          for(y=tempvec(2);y<=tempvec(3)+1;y++)  {timevary_sel(y,z)=1;}
          TwoD_AR_def.push_back (tempvec);
-
+         echoinput<<"now read a parameter line with the sigma for each age from: "<<amin<<" to sigma_amax: "<<sigma_amax<<endl;
          for(j=amin;j<=sigma_amax;j++)
          {
            dvector dtempvec(1,7);  //  Lo, Hi, init, prior, prior_sd, prior_type, phase;
@@ -3671,6 +3619,7 @@
          }
          if(use_rho==1)
          {
+           echoinput<<"read two parameter lines for rho_yr and then rho_age (or length)"<<endl;
            {
            dvector dtempvec(1,7);  //  Lo, Hi, init, prior, prior_sd, prior_type, phase;
            dtempvec.initialize();
@@ -3690,6 +3639,7 @@
            ParmLabel+="rho_"+fleetname(f)+"("+NumLbl(f)+")"+anystring;
           }
          }
+         echoinput<<"ready to read next fleet's 2DAR specs, or terminate by reading line starting with negative fleet"<<endl;
         }
     } while(ender==0);
   }
@@ -4637,8 +4587,8 @@
   }
   else
   {
-  cout<<" Unsuccessful end of control file, SS will abort. check echoinput for clues.  Last read is: "<<fim<<endl;
-  abort();
+  cout<<" Unsuccessful end of control file. Check echoinput for clues.  Last read is: "<<fim<<endl;
+  exit(1);
   }
  END_CALCS
 
