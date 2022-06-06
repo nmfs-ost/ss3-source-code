@@ -1130,18 +1130,76 @@ FUNCTION void get_natmort()
             case 2: //  Lorenzen M
             {
               Loren_temp2 = L_inf(gp) * (mfexp(-VBK(gp, K_index) * VBK_seas(0)) - 1.); // need to verify use of VBK_seas here
-              Loren_temp = Ave_Size(styr, mid_subseas, g, int(natM_amin)); // uses mean size in middle of season 1 for the reference age
-              Loren_M1 = natMparms(1, gp) / log(Loren_temp / (Loren_temp + Loren_temp2));
-              for (s = nseas; s >= 1; s--)
+              if(natM_amin < 0) //Calculate lorenzen M with a user specified survivorship over a reference age range
               {
-                int Loren_t = styr + (yz - styr) * nseas + s - 1;
-                natM(s, gpi)(0, nages) = log(
-                                             elem_div(Ave_Size(Loren_t, mid_subseas, g)(0, nages), (Ave_Size(Loren_t, mid_subseas, g)(0, nages) + Loren_temp2))) *
-                    Loren_M1;
-                if (s < Bseas(g))
-                  natM(s, gpi, 0) = natM(s + 1, gpi, 0);
-                surv1(s, gpi) = value(mfexp(-natM(s, gpi) * seasdur_half(s)));
-                surv2(s, gpi) = value(square(surv1(s, gpi)));
+                double param, fractpart, intpart;
+                int loren_maxage, loren_minage;
+                param = -natM_amin;
+                fractpart = modf (param , &intpart)*1000+0.1;
+                loren_maxage = int(intpart);
+                loren_minage = int(floor(fractpart));
+                
+                Loren_M1=(-log(natMparms(1,gp)));
+                for (s=nseas;s>=1;s--)
+                {
+                  int Loren_t=styr+(yz-styr)*nseas+s-1;
+                  dvariable loren_scale_extra = 0; //start with no extra M multiplier
+                  int ref_age = int(loren_maxage); //start with reference age equal to negative of the input ref age
+                  if(ref_age > nages)//if reference age is greater than accumulator age need math to approximate the unknown size/age bins
+                  {
+                    int extra_years = ref_age - nages;//determine how many extra ages will be included between accumulator age and reference age
+                    
+                    //The following code is a simple difference approach to approximate the first and second differentials to estimate M for ages larger than accumulator age
+                    //calculate proportional change in lorenzen M between second to last and last age group 
+                    dvariable d1 = 1 + (log((Ave_Size(Loren_t,mid_subseas,g)(nages))/(Ave_Size(Loren_t,mid_subseas,g)(nages)+Loren_temp2)) - 
+                    log((Ave_Size(Loren_t,mid_subseas,g)(nages-1))/(Ave_Size(Loren_t,mid_subseas,g)(nages-1)+Loren_temp2)))/
+                    log((Ave_Size(Loren_t,mid_subseas,g)(nages))/(Ave_Size(Loren_t,mid_subseas,g)(nages)+Loren_temp2));
+                    
+                    //calculate proportional change in lorenzen M between third to last and second to last age group 
+                    dvariable d2 = 1 + (log((Ave_Size(Loren_t,mid_subseas,g)(nages-1))/(Ave_Size(Loren_t,mid_subseas,g)(nages-1)+Loren_temp2)) - 
+                    log((Ave_Size(Loren_t,mid_subseas,g)(nages-2))/(Ave_Size(Loren_t,mid_subseas,g)(nages-2)+Loren_temp2)))/
+                    log((Ave_Size(Loren_t,mid_subseas,g)(nages-1))/(Ave_Size(Loren_t,mid_subseas,g)(nages-1)+Loren_temp2));
+                    
+                    //calculate the second order proportional change in proportional changes year to year
+                    dvariable d3 = 1+(d1 - d2)/d1;
+                    
+                    //project total proportion of last years M that will occur in all ages older than accumulator age
+                    for(int(ey)=1;ey<=extra_years;ey++)
+                    {
+                      d1=d1*d3;//each year adjust the first order difference by the second order difference
+                      loren_scale_extra += d1;//add that difference to a bulk scaler that will be multiplied by the accumulator age M reference   
+                    }
+                    ref_age = nages;//set reference age to nages to use all available Ave_Size values 
+                  }
+                  
+                  //Calculate loren_temp multiplier that achieves target survivorship by reference age 
+                  Loren_temp=(Loren_M1)/(sum(log(
+                  elem_div(Ave_Size(Loren_t,mid_subseas,g)(loren_minage,ref_age), (Ave_Size(Loren_t,mid_subseas,g)(loren_minage,ref_age)+Loren_temp2))
+                  ))+loren_scale_extra*log((Ave_Size(Loren_t,mid_subseas,g)(ref_age))/(Ave_Size(Loren_t,mid_subseas,g)(ref_age)+Loren_temp2)));
+                  
+                  natM(s,gpi)(0,nages)=log(
+                  elem_div(Ave_Size(Loren_t,mid_subseas,g)(0,nages), (Ave_Size(Loren_t,mid_subseas,g)(0,nages)+Loren_temp2))
+                  )*Loren_temp;
+                  if(s<Bseas(g)) natM(s,gpi,0)=natM(s+1,gpi,0);
+                  surv1(s,gpi)=value(mfexp(-natM(s,gpi)*seasdur_half(s)));
+                  surv2(s,gpi)=value(square(surv1(s,gpi)));
+                }
+              }
+              else
+              {
+                Loren_temp = Ave_Size(styr, mid_subseas, g, int(natM_amin)); // uses mean size in middle of season 1 for the reference age
+                Loren_M1 = natMparms(1, gp) / log(Loren_temp / (Loren_temp + Loren_temp2));
+                for (s = nseas; s >= 1; s--)
+                {
+                  int Loren_t = styr + (yz - styr) * nseas + s - 1;
+                  natM(s, gpi)(0, nages) = log(
+                                              elem_div(Ave_Size(Loren_t, mid_subseas, g)(0, nages), (Ave_Size(Loren_t, mid_subseas, g)(0, nages) + Loren_temp2))) *
+                      Loren_M1;
+                  if (s < Bseas(g))
+                    natM(s, gpi, 0) = natM(s + 1, gpi, 0);
+                  surv1(s, gpi) = value(mfexp(-natM(s, gpi) * seasdur_half(s)));
+                  surv2(s, gpi) = value(square(surv1(s, gpi)));
+                }
               }
               break;
             }
