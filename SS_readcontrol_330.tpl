@@ -3557,11 +3557,11 @@
   if(TwoD_AR_do>0)
   {
     N_warn++;  warning<<N_warn<<" "<<"The experimental 2D_AR selectivity smoother option is selected!"<<endl;
-    ivector tempvec(1,13);  //  fleet, ymin, ymax, amin, amax, sigma_amax, use_rho, age/len
+    ivector tempvec(1,13);  //  fleet, ymin, ymax, amin, amax, sigma_amax, use_rho, age/len, before, after
     tempvec.initialize();
     TwoD_AR_def.push_back (tempvec);  //  bypass that pesky zeroth row
     TwoD_AR_def_rd.push_back (tempvec);  //  bypass that pesky zeroth row
-    echoinput<<"read specification for first 2D_AR1:  fleet, ymin, ymax, amin, amax, sigma_amax, use_rho, len1/age2"<<endl;
+    echoinput<<"read specification for first 2D_AR1:  fleet, ymin, ymax, amin, amax, sigma_amax, use_rho, len1/age2, before, after"<<endl;
 
     ender=0;
     do
@@ -3598,14 +3598,14 @@
 
          tempvec(12)=N_parm_dev;
 //         apply two lines below later when the timevary_setup is created
-//         tempvec(10)=1;  //  used for dimensioning the dev vectors in SS_param   parm_dev_minyr(k)
-//         tempvec(11)=(tempvec(3)-tempvec(2)+1)*(tempvec(5)-amin+1);   //parm_dev_maxyr(k)
+//         tempvec(12)=1;  //  used for dimensioning the dev vectors in SS_param   parm_dev_minyr(k)
+//         tempvec(13)=(tempvec(3)-tempvec(2)+1)*(tempvec(5)-amin+1);   //parm_dev_maxyr(k)
          tempvec(13)=N_selparm2+1;
          z=f;
          if(tempvec(8)==2) z=f+Nfleet;
          for(y=tempvec(2);y<=tempvec(3)+1;y++)  {timevary_sel(y,z)=1;}
          TwoD_AR_def.push_back (tempvec);
-
+         echoinput<<"now read a parameter line with the sigma for each age from: "<<amin<<" to sigma_amax: "<<sigma_amax<<endl;
          for(j=amin;j<=sigma_amax;j++)
          {
            dvector dtempvec(1,7);  //  Lo, Hi, init, prior, prior_sd, prior_type, phase;
@@ -3619,6 +3619,7 @@
          }
          if(use_rho==1)
          {
+           echoinput<<"read two parameter lines for rho_yr and then rho_age (or length)"<<endl;
            {
            dvector dtempvec(1,7);  //  Lo, Hi, init, prior, prior_sd, prior_type, phase;
            dtempvec.initialize();
@@ -3638,6 +3639,7 @@
            ParmLabel+="rho_"+fleetname(f)+"("+NumLbl(f)+")"+anystring;
           }
          }
+         echoinput<<"ready to read next fleet's 2DAR specs, or terminate by reading line starting with negative fleet"<<endl;
         }
     } while(ender==0);
   }
