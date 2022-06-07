@@ -1156,7 +1156,7 @@ FUNCTION void get_natmort()
                     dvariable d3 = 1+(d1 - d2)/d1;
                     
                     //project total proportion of last years M that will occur in all ages older than accumulator age
-                    for(int(ey)=1;ey<=extra_years;ey++)
+                    for(int ey=1;ey<=extra_years;ey++)
                     {
                       d1=d1*d3;//each year adjust the first order difference by the second order difference
                       loren_scale_extra += d1;//add that difference to a bulk scaler that will be multiplied by the accumulator age M reference   
