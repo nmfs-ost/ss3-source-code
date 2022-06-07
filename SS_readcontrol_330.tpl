@@ -628,7 +628,7 @@
    if(nseas>1) N_predparms+=N_pred*nseas;
    natM_5_opt=0;
    MGparm_point.initialize();
-//  0=1Parm; 1=segmented; 2=Lorenzen; 3=agespecific; 4=agespec with seas interpolate; 5=Maunder_M; 6=Lorenzen survivorship
+//  0=1Parm; 1=segmented; 2=Lorenzen; 3=agespecific; 4=agespec with seas interpolate; 5=Maunder_M; 6=Lorenzen range
   *(ad_comm::global_datafile) >> natM_type;
   echoinput<<natM_type<<" natM_type"<<endl;
   switch(natM_type)
@@ -692,9 +692,9 @@
       {
             N_natMparms=1;
           *(ad_comm::global_datafile) >> natM_amin;
-        echoinput<<natM_amin<<" natM_minage for Lorenzen survivorship"<<endl;
+        echoinput<<natM_amin<<" natM_minage for Lorenzen"<<endl;
           *(ad_comm::global_datafile) >> natM_amax;
-        echoinput<<natM_amax<<" natM_maxage for Lorenzen survivorship"<<endl;
+        echoinput<<natM_amax<<" natM_maxage for Lorenzen"<<endl;
             break;
       }
   }
@@ -1059,7 +1059,7 @@
         case 6:
         {
           ParCount++;
-          ParmLabel+="NatM_Lorenzen_survivorship"+GenderLbl(gg)+GP_Lbl(gp);
+          ParmLabel+="NatM_Lorenzen_average"+GenderLbl(gg)+GP_Lbl(gp);
           Parm_info+="val";
           Parm_minmax.push_back (3);
         	break;

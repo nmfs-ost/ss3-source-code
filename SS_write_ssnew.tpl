@@ -1708,7 +1708,7 @@ FUNCTION void write_nucontrol()
   report4 << "#" << endl
           << "# setup for M, growth, wt-len, maturity, fecundity, (hermaphro), recr_distr, cohort_grow, (movement), (age error), (catch_mult), sex ratio " << endl;
   report4 << "#_NATMORT" << endl
-          << natM_type << " #_natM_type:_0=1Parm; 1=N_breakpoints;_2=Lorenzen;_3=agespecific;_4=agespec_withseasinterpolate;_5=BETA:_Maunder_link_to_maturity;_6=Lorenzen_survivorship" << endl;
+          << natM_type << " #_natM_type:_0=1Parm; 1=N_breakpoints;_2=Lorenzen;_3=agespecific;_4=agespec_withseasinterpolate;_5=BETA:_Maunder_link_to_maturity;_6=Lorenzen_range" << endl;
   if (natM_type == 0)
   {
     report4 << "  #_no additional input for selected M option; read 1P per morph" << endl;
@@ -1724,8 +1724,8 @@ FUNCTION void write_nucontrol()
   }
   else if (natM_type == 6)
   {
-    report4 << natM_amin << " #_minimum age for Lorenzen M survivorship" << endl
-            << natM_amax << " #_maximum age for Lorenzen M survivorship; read 1P per morph" << endl;
+    report4 << natM_amin << " #_minimum age for Lorenzen" << endl
+            << natM_amax << " #_maximum age for Lorenzen; read 1P per morph" << endl;
   }
   else if (natM_type >= 3 && natM_type < 5)
   {
