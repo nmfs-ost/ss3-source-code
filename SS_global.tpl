@@ -167,8 +167,11 @@ GLOBALS_SECTION
 // SS_Label_Function xxxa write_message(string,int,int); output a message with an option to exit (when fatal)
   void write_message(std::string msg, int echo, int exitflag)
   {
-  if (msg.length() > 0)
-  {
+    if (msg.length() == 0)
+    {
+      msg = "unknown condition";
+    }
+  
     N_warn++;
     warning << N_warn << ": " << msg << endl;
 
@@ -185,7 +188,6 @@ GLOBALS_SECTION
       cout << " Exiting SS3. " << endl;
       exit(1);
     }
-  }
   }
 // SS_Label_Function_xxxb write_warning(int,int); output a warning with an option to exit (when fatal)
   void write_warning(int echo, int exitflag)
