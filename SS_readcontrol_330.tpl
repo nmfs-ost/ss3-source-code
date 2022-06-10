@@ -13,7 +13,8 @@
 //  SS_Label_Info_4.0 #Begin Reading from Control File
 // /*  SS_Label_Flow  begin reading from control file */
   ad_comm::change_datafile_name(ctlfilename);
-  echoinput << "Begin reading the control file" << endl;
+  echoinput << endl << " Begin reading control file " << endl;
+  cout << " reading from control file" << endl;
   ifstream Control_Stream(ctlfilename);   //  even if the global_datafile name is used, there still is a different logical device created
 
 //  SS_Label_Info_4.1 #Read and store comments at top of control file
@@ -627,7 +628,7 @@
    if(nseas>1) N_predparms+=N_pred*nseas;
    natM_5_opt=0;
    MGparm_point.initialize();
-//  0=1Parm; 1=segmented; 2=Lorenzen; 3=agespecific; 4=agespec with seas interpolate; 5=Maunder_M
+//  0=1Parm; 1=segmented; 2=Lorenzen; 3=agespecific; 4=agespec with seas interpolate; 5=Maunder_M; 6=Lorenzen range
   *(ad_comm::global_datafile) >> natM_type;
   echoinput<<natM_type<<" natM_type"<<endl;
   switch(natM_type)
@@ -687,6 +688,15 @@
 //		        Maunder_beta = natMparms(6,gp);
   			break;
   		}
+      case 6:
+      {
+            N_natMparms = 1;
+          *(ad_comm::global_datafile) >> natM_amin;
+        echoinput << natM_amin << " natM_minage for Lorenzen" << endl;
+          *(ad_comm::global_datafile) >> natM_amax;
+        echoinput << natM_amax << " natM_maxage for Lorenzen" << endl;
+        break;
+      }
   }
  END_CALCS
 
@@ -1044,6 +1054,14 @@
           Parm_info+="val";
           Parm_minmax.push_back (3);
          }
+        	break;
+        }
+        case 6:
+        {
+          ParCount++;
+          ParmLabel += "NatM_Lorenzen_average" + GenderLbl(gg) + GP_Lbl(gp);
+          Parm_info += "val";
+          Parm_minmax.push_back(3);
         	break;
         }
         default:
@@ -1465,11 +1483,11 @@
        {
          if(z>N_Block_Designs)
           {N_warn++; cout<<"Fatal_input_error, see warning"<<endl;  warning<<N_warn<<" "<<"MG block request exceeds N_block patterns"<<endl;  exit(1);}
-         create_timevary(MGparm_1(j),timevary_setup, timevary_pass, autogen_timevary(timevary_setup(1)), mgp_type(j), Block_Design(z), parm_adjust_method, env_data_pass, N_parm_dev,finish_starter);
+         create_timevary(MGparm_1(j),timevary_setup, timevary_pass, autogen_timevary(timevary_setup(1)), mgp_type(j), Block_Design(z), env_data_pass, N_parm_dev,finish_starter);
        }
        else
        {
-         create_timevary(MGparm_1(j),timevary_setup, timevary_pass, autogen_timevary(timevary_setup(1)), mgp_type(j), block_design_null, parm_adjust_method, env_data_pass, N_parm_dev,finish_starter);
+         create_timevary(MGparm_1(j),timevary_setup, timevary_pass, autogen_timevary(timevary_setup(1)), mgp_type(j), block_design_null, env_data_pass, N_parm_dev,finish_starter);
        }
   /*
    where:
@@ -1592,7 +1610,10 @@
     if(MGparm_PH(f)>0)
     {MG_active(mgp_type(f))=1;}
    }
-   if(natM_type==2 && MG_active(2)>0) MG_active(1)=1;  // lorenzen M depends on growth
+   if ((natM_type == 2 || natM_type == 6) && MG_active(2) > 0)
+   {
+     MG_active(1) = 1;  // lorenzen M depends on growth
+   }
 
    j=N_MGparm;
    if(timevary_parm_cnt_MG>0)
@@ -1778,11 +1799,11 @@
        {
          if(SR_parm_1(j,13)>N_Block_Designs)
           {N_warn++; cout<<"Fatal_input_error, see warning"<<endl;  warning<<N_warn<<" "<<"SR block request exceeds N_block patterns"<<endl;  exit(1);}
-         create_timevary(SR_parm_1(j),timevary_setup, timevary_pass, autogen_timevary(timevary_setup(1)), f, Block_Design(SR_parm_1(j,13)), parm_adjust_method, env_data_pass, N_parm_dev,finish_starter);
+         create_timevary(SR_parm_1(j),timevary_setup, timevary_pass, autogen_timevary(timevary_setup(1)), f, Block_Design(SR_parm_1(j,13)), env_data_pass, N_parm_dev,finish_starter);
        }
        else
        {
-         create_timevary(SR_parm_1(j),timevary_setup, timevary_pass, autogen_timevary(timevary_setup(1)), f, block_design_null, parm_adjust_method, env_data_pass, N_parm_dev,finish_starter);
+         create_timevary(SR_parm_1(j),timevary_setup, timevary_pass, autogen_timevary(timevary_setup(1)), f, block_design_null, env_data_pass, N_parm_dev,finish_starter);
        }
   /*
    where:
@@ -2675,11 +2696,11 @@
        {
          if(Q_parm_1(j,13)>N_Block_Designs)
           {N_warn++; cout<<"Fatal_input_error, see warning"<<endl;  warning<<N_warn<<" "<<" Error: Q block request exceeds N_block patterns"<<endl;  exit(1);}
-         create_timevary(Q_parm_1(j),timevary_setup, timevary_pass, autogen_timevary(timevary_setup(1)), f, Block_Design(Q_parm_1(j,13)), parm_adjust_method, env_data_pass, N_parm_dev,finish_starter);
+         create_timevary(Q_parm_1(j),timevary_setup, timevary_pass, autogen_timevary(timevary_setup(1)), f, Block_Design(Q_parm_1(j,13)), env_data_pass, N_parm_dev,finish_starter);
        }
        else
        {
-         create_timevary(Q_parm_1(j),timevary_setup, timevary_pass, autogen_timevary(timevary_setup(1)), f, block_design_null, parm_adjust_method, env_data_pass, N_parm_dev,finish_starter);
+         create_timevary(Q_parm_1(j),timevary_setup, timevary_pass, autogen_timevary(timevary_setup(1)), f, block_design_null, env_data_pass, N_parm_dev,finish_starter);
        }
   /*
    where:
@@ -3558,11 +3579,11 @@
        {
          if(z>N_Block_Designs)
           {N_warn++; cout<<"Fatal_input_error, see warning"<<endl;  warning<<N_warn<<" "<<" error: selex block request exceeds N_block patterns"<<endl;  exit(1);}
-         create_timevary(selparm_1(j),timevary_setup, timevary_pass, autogen_timevary(timevary_setup(1)), selparm_fleet(j), Block_Design(z), parm_adjust_method, env_data_pass, N_parm_dev,finish_starter);
+         create_timevary(selparm_1(j),timevary_setup, timevary_pass, autogen_timevary(timevary_setup(1)), selparm_fleet(j), Block_Design(z), env_data_pass, N_parm_dev,finish_starter);
        }
        else
        {
-         create_timevary(selparm_1(j),timevary_setup, timevary_pass, autogen_timevary(timevary_setup(1)), selparm_fleet(j), block_design_null, parm_adjust_method, env_data_pass, N_parm_dev,finish_starter);
+         create_timevary(selparm_1(j),timevary_setup, timevary_pass, autogen_timevary(timevary_setup(1)), selparm_fleet(j), block_design_null, env_data_pass, N_parm_dev,finish_starter);
        }
   /*
    where:
@@ -3608,11 +3629,11 @@
   if(TwoD_AR_do>0)
   {
     N_warn++;  warning<<N_warn<<" "<<"The experimental 2D_AR selectivity smoother option is selected!"<<endl;
-    ivector tempvec(1,13);  //  fleet, ymin, ymax, amin, amax, sigma_amax, use_rho, age/len
+    ivector tempvec(1,13);  //  fleet, ymin, ymax, amin, amax, sigma_amax, use_rho, age/len, before, after
     tempvec.initialize();
     TwoD_AR_def.push_back (tempvec);  //  bypass that pesky zeroth row
     TwoD_AR_def_rd.push_back (tempvec);  //  bypass that pesky zeroth row
-    echoinput<<"read specification for first 2D_AR1:  fleet, ymin, ymax, amin, amax, sigma_amax, use_rho, len1/age2"<<endl;
+    echoinput<<"read specification for first 2D_AR1:  fleet, ymin, ymax, amin, amax, sigma_amax, use_rho, len1/age2, before, after"<<endl;
 
     ender=0;
     do
@@ -3649,14 +3670,14 @@
 
          tempvec(12)=N_parm_dev;
 //         apply two lines below later when the timevary_setup is created
-//         tempvec(10)=1;  //  used for dimensioning the dev vectors in SS_param   parm_dev_minyr(k)
-//         tempvec(11)=(tempvec(3)-tempvec(2)+1)*(tempvec(5)-amin+1);   //parm_dev_maxyr(k)
+//         tempvec(12)=1;  //  used for dimensioning the dev vectors in SS_param   parm_dev_minyr(k)
+//         tempvec(13)=(tempvec(3)-tempvec(2)+1)*(tempvec(5)-amin+1);   //parm_dev_maxyr(k)
          tempvec(13)=N_selparm2+1;
          z=f;
          if(tempvec(8)==2) z=f+Nfleet;
          for(y=tempvec(2);y<=tempvec(3)+1;y++)  {timevary_sel(y,z)=1;}
          TwoD_AR_def.push_back (tempvec);
-
+         echoinput<<"now read a parameter line with the sigma for each age from: "<<amin<<" to sigma_amax: "<<sigma_amax<<endl;
          for(j=amin;j<=sigma_amax;j++)
          {
            dvector dtempvec(1,7);  //  Lo, Hi, init, prior, prior_sd, prior_type, phase;
@@ -3670,6 +3691,7 @@
          }
          if(use_rho==1)
          {
+           echoinput<<"read two parameter lines for rho_yr and then rho_age (or length)"<<endl;
            {
            dvector dtempvec(1,7);  //  Lo, Hi, init, prior, prior_sd, prior_type, phase;
            dtempvec.initialize();
@@ -3689,6 +3711,7 @@
            ParmLabel+="rho_"+fleetname(f)+"("+NumLbl(f)+")"+anystring;
           }
          }
+         echoinput<<"ready to read next fleet's 2DAR specs, or terminate by reading line starting with negative fleet"<<endl;
         }
     } while(ender==0);
   }
@@ -4631,14 +4654,14 @@
  LOCAL_CALCS
   if(fim==999)
   {
-  echoinput << "Finished reading the control file" << endl;
+  cout<<"End of control file successful! "<<fim<<endl;
+  echoinput<<"End of control file successful! "<<fim<<endl;
   }
   else
   {
-  cout<<" Unsuccessful end of control file, SS3 will abort. Check echoinput.sso for clues.  Last value read: "<< fim << endl;
-  abort();
+  cout<<" Unsuccessful end of control file. Check echoinput for clues.  Last read is: "<<fim<<endl;
+  exit(1);
   }
-  cout << "done" << endl; // Finished reading the 4 required input files
  END_CALCS
 
 !!//  SS_Label_Info_4.14 #Create count of active parameters and derived quantities
