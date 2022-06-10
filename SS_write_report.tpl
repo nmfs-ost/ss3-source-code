@@ -2179,11 +2179,8 @@ FUNCTION void write_bigoutput()
         dvector tempvec_l(1, exp_l(f, i).size());
         tempvec_l = value(exp_l(f, i));
         more_comp_info = process_comps(gender, gen_l(f, i), len_bins_dat2, len_bins_dat_m2, tails_l(f, i), obs_l(f, i), tempvec_l);
-        if (Comp_Err_L(f) == 0) // multinomial
-        {
-          Nsamp_DM = nsamp_l(f, i); // not used
-        }
-        else if (Comp_Err_L(f) == 1) //  Dirichlet #1
+        Nsamp_DM = Nsamp_adj; // Will remain this if not used
+        if (Comp_Err_L(f) == 1) //  Dirichlet #1
         {
           dirichlet_Parm = mfexp(selparm(Comp_Err_Parm_Start + Comp_Err_L2(f))); //  Thorson's theta fro eq 10
           // effN_DM = 1/(1+theta) + n*theta/(1+theta)
@@ -2327,11 +2324,8 @@ FUNCTION void write_bigoutput()
         tempvec_a = value(exp_a(f, i));
         more_comp_info = process_comps(gender, gen_a(f, i), age_bins, age_bins_mean, tails_a(f, i), obs_a(f, i), tempvec_a);
 
-        if (Comp_Err_A(f) == 0) // multinomial
-        {
-          Nsamp_DM = nsamp_a(f, i);
-        }
-        else if (Comp_Err_A(f) == 1) //  Dirichlet #1
+        Nsamp_DM = Nsamp_adj; // Will stay at this val for multinomial
+        if (Comp_Err_A(f) == 1) //  Dirichlet #1
         {
           dirichlet_Parm = mfexp(selparm(Comp_Err_Parm_Start + Comp_Err_A2(f))); //  Thorson's theta fro eq 10
           // effN_DM = 1/(1+theta) + n*theta/(1+theta)
@@ -3296,50 +3290,50 @@ FUNCTION void write_bigoutput()
   {
     SS2out << endl
            << pick_report_name(43) << endl;
-    SS2out << "Method: " << natM_type << endl
-           << "Bio_Pattern Sex Settlement Seas " << age_vector << endl;
-    g = 0;
-    for (gg = 1; gg <= gender; gg++)
-      for (gp = 1; gp <= N_GP; gp++)
-        for (settle = 1; settle <= N_settle_timings; settle++)
-        {
-          g++;
-          if (use_morph(g) > 0)
-          {
-            for (s = 1; s <= nseas; s++)
-              SS2out << gp << " " << gg << " " << settle << " " << s << " " << natM(s, g) << endl;
-          }
-        }
-
-    SS2out << "#" << endl
-           << "Natural_Mortality_Bmark" << endl
-           << "Bio_Pattern Sex Settlement Seas " << age_vector << endl;
-    g = 0;
-    for (gg = 1; gg <= gender; gg++)
-      for (gp = 1; gp <= N_GP; gp++)
-        for (settle = 1; settle <= N_settle_timings; settle++)
-        {
-          g++;
-          if (use_morph(g) > 0)
-          {
-            for (s = 1; s <= nseas; s++)
-              SS2out << gp << " " << gg << " " << settle << " " << s << " " << natM_unf(s, g) << endl;
-          }
-        }
-
-    SS2out << "#" << endl
-           << "Natural_Mortality_endyr" << endl
-           << "Bio_Pattern Sex Settlement Seas " << age_vector << endl;
-    g = 0;
-    for (gg = 1; gg <= gender; gg++)
-      for (gp = 1; gp <= N_GP; gp++)
-        for (settle = 1; settle <= N_settle_timings; settle++)
-        {
-          g++;
-          if (use_morph(g) > 0)
-          {
-            for (s = 1; s <= nseas; s++)
-              SS2out << gp << " " << gg << " " << settle << " " << s << " " << natM_endyr(s, g) << endl;
+    SS2out << "Method: " << natM_type << endl;
+    int hide_M1 = 1;
+    if(N_pred > 0)
+    {
+      SS2out<< "area 0 shows M1 only, numbered areas have M1+M2"<<endl;
+      hide_M1 = 0;
+    }
+    SS2out << "Area Bio_Pattern Sex BirthSeas Settlement Platoon Morph Yr Seas Time Beg/Mid Era" << age_vector << endl;
+    for (p = hide_M1; p <= pop; p++)
+    for (gp = 1; gp <= N_GP * gender; gp++)
+    {
+      g = g_Start(gp); //  base platoon
+      for (settle = 1; settle <= N_settle_timings; settle++)
+      {
+        g += N_platoon;
+        int gpi = GP3(g); // GP*gender*settlement
+        for (y = styr - 3; y <= YrMax; y++)
+        for (s = 1; s <= nseas; s++)
+            {
+              t = styr + (y - styr) * nseas + s - 1;
+              temp = double(y) + azero_seas(s);
+              SS2out << p << " " << GP4(g) << " " << sx(g) << " " << Bseas(g) << " " << settle_g(g) << " " << GP2(g) << " " << g << " " << y << " " << s << " " << temp << " B";
+              if (y == styr - 3)
+              {
+                SS2out << " BENCH ";
+              }
+              if (y == styr - 2)
+              {
+                SS2out << " VIRG ";
+              }
+              else if (y == styr - 1)
+              {
+                SS2out << " INIT ";
+              }
+              else if (y <= endyr)
+              {
+                SS2out << " TIME ";
+              }
+              else
+              {
+                SS2out << " FORE ";
+              }
+              SS2out<<natM(t,p,gpi)<<endl;
+            }
           }
         }
 
@@ -3515,7 +3509,7 @@ FUNCTION void write_bigoutput()
           for (a = 0; a <= nages; a++)
           {
             SS2out << s << " " << g << " " << GP4(g) << " " << sx(g) << " " << settle_g(g) << " " << GP2(g) << " " << a << " " << real_age(g, ALK_idx, a) << " " << calen_age(g, ALK_idx, a) << " " << calen_age(g, ALK_idx_mid, a);
-            SS2out << " " << natM(s, GP3(g), a) << " " << Ave_Size(t, 1, g, a) << " " << Ave_Size(t, mid_subseas, g, a) << " "
+            SS2out << " " << natM(t, 1, GP3(g), a) << " " << Ave_Size(t, 1, g, a) << " " << Ave_Size(t, mid_subseas, g, a) << " "
                    << Sd_Size_within(ALK_idx, g, a) << " " << Sd_Size_within(ALK_idx_mid, g, a) << " "
                    << Wt_Age_beg(s, g, a) << " " << Wt_Age_mid(s, g, a) << " " << ALK(ALK_idx, g, a) * mat_len(GP4(g)) << " ";
             if (Maturity_Option <= 2)
@@ -4724,7 +4718,6 @@ FUNCTION void Global_MSY()
   {
   // REPORT_KEYWORD 55 GLOBAL_MSY
   //  GLOBAL_MSY with knife-edge age selection, then slot-age selection
-  int bio_t_base;
   SS2out << endl
          << pick_report_name(55) << endl;
   y = styr - 3; //  stores the averaged
@@ -4732,7 +4725,6 @@ FUNCTION void Global_MSY()
   bio_yr = y;
   eq_yr = y;
   t_base = y + (y - styr) * nseas - 1;
-  bio_t_base = styr + (bio_yr - styr) * nseas - 1;
 
   for (int MSY_loop = 0; MSY_loop <= 2; MSY_loop++)
   {
@@ -4815,6 +4807,7 @@ FUNCTION void Global_MSY()
   return;
   }
 
+//  note that FUNCTION write_Bzero_output() is found in file SS_write.tpl
 FUNCTION dvector process_comps(const int sexes, const int sex, dvector& bins, dvector& means, const dvector& tails,
     dvector& obs, dvector& exp)
   {

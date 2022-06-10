@@ -35,8 +35,6 @@ FUNCTION void get_selectivity()
   //  SS_Label_Info_22.2 #Loop all fisheries and surveys twice; first for size selectivity, then for age selectivity
   for (f = 1; f <= 2 * Nfleet; f++)
   {
-    //  	echoinput<<" selex fleet: "<<f<<" type "<<seltype(f);
-
     fs = f - Nfleet; //index for saving age selex in the fleet arrays
     //  SS_Label_Info_22.2.1 #recalculate selectivity for any fleets or surveys with time-vary flag set for this year
     if (timevary_sel(y, f) == 1 || save_for_report > 0)
@@ -254,6 +252,7 @@ FUNCTION void get_selectivity()
               // #43 non-parametric size selex scaled by average of values at low bin through high bin
               case 43:
                 scaling_offset = 2;
+                [[fallthrough]];
               case 6:
               {
                 lastsel = -10.0; // log(selex) for first bin;
@@ -600,6 +599,7 @@ FUNCTION void get_selectivity()
               /*  uses max(raw vector) to achieve scale to 1.0 */
               case 42:
                 scaling_offset = 2;
+                [[fallthrough]];
               case 27:
               {
                 int j2;
@@ -1139,6 +1139,7 @@ FUNCTION void get_selectivity()
               //    transformation as selex=exp(parm); some special codes */
               case 41:
                 scaling_offset = 2;
+                [[fallthrough]];
               case 17: //
               {
                 lastsel = 0.0; //  value is the change in log(selex);  this is the reference value for age 0
@@ -1533,6 +1534,7 @@ FUNCTION void get_selectivity()
               // #42 cubic spline scaled by average of values at low age through high age
               case 42:
                 scaling_offset = 2;
+                [[fallthrough]];
               case 27:
               {
                 // define vectors which form the basis for cubic spline selectivity

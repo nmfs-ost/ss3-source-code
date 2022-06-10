@@ -357,10 +357,10 @@ FUNCTION void evaluate_the_objective_function()
               }
               else //  dirichlet
               {
-                // from Thorson:  NLL -= gammln(A) - gammln(ninput_t(t)+A) + sum(gammln(ninput_t(t)*extract_row(pobs_ta,t) + A*extract_row(pexp_ta,t))) - sum(lgamma(A*extract_row(pexp_ta,t))) \
-//        dirichlet_Parm=mfexp(selparm(Comp_Err_Parm_Start+Comp_Err_L2(f)))*nsamp_l(f,i);
-                // in option 1, dirichlet_Parm = Theta*n from equation (10) of Thorson et al. 2016
-                // in option 2, dirichlet_Parm = Beta from equation (4) of Thorson et al. 2016
+                /* from Thorson:  NLL -= gammln(A) - gammln(ninput_t(t)+A) + sum(gammln(ninput_t(t)*extract_row(pobs_ta,t) + A*extract_row(pexp_ta,t))) - sum(lgamma(A*extract_row(pexp_ta,t))) \
+                dirichlet_Parm=mfexp(selparm(Comp_Err_Parm_Start+Comp_Err_L2(f)))*nsamp_l(f,i);
+                in option 1, dirichlet_Parm = Theta*n from equation (10) of Thorson et al. 2016
+                in option 2, dirichlet_Parm = Beta from equation (4) of Thorson et al. 2016 */
                 if (Comp_Err_L(f) == 1)
                   dirichlet_Parm = mfexp(selparm(Comp_Err_Parm_Start + Comp_Err_L2(f))) * nsamp_l(f, i);
                 if (Comp_Err_L(f) == 2)
@@ -494,10 +494,11 @@ FUNCTION void evaluate_the_objective_function()
               }
               else // dirichlet
               {
-                // from Thorson:  NLL -= gammln(A) - gammln(ninput_t(t)+A) + sum(gammln(ninput_t(t)*extract_row(pobs_ta,t) + A*extract_row(pexp_ta,t))) - sum(lgamma(A*extract_row(pexp_ta,t))) \
-//              dirichlet_Parm=mfexp(selparm(Comp_Err_Parm_Start+Comp_Err_A2(f)))*nsamp_a(f,i);
-                // in option 1, dirichlet_Parm = Theta*n from equation (10) of Thorson et al. 2016
-                // in option 2, dirichlet_Parm = Beta from equation (4) of Thorson et al. 2016
+                /* from Thorson:  NLL -= gammln(A) - gammln(ninput_t(t)+A) + sum(gammln(ninput_t(t)*extract_row(pobs_ta,t) + A*extract_row(pexp_ta,t))) - sum(lgamma(A*extract_row(pexp_ta,t))) \
+                   dirichlet_Parm=mfexp(selparm(Comp_Err_Parm_Start+Comp_Err_A2(f)))*nsamp_a(f,i);
+                in option 1, dirichlet_Parm = Theta*n from equation (10) of Thorson et al. 2016
+                in option 2, dirichlet_Parm = Beta from equation (4) of Thorson et al. 2016
+                */
                 if (Comp_Err_A(f) == 1)
                   dirichlet_Parm = mfexp(selparm(Comp_Err_Parm_Start + Comp_Err_A2(f))) * nsamp_a(f, i);
                 if (Comp_Err_A(f) == 2)
@@ -1321,17 +1322,19 @@ FUNCTION void Process_STDquant()
   }
 
   // NatM
+  //  shortcut  natM( doing area 1 only
   if (NatM_Std_Cnt > 0)
   {
+    t = styr + (endyr - styr) * nseas; // first season of selected year
     for (i = 1; i <= NatM_Std_Cnt; i++)
     {
       j = NatM_Std_Pick(i); // selected age
       k = g_finder(Do_NatM_Std, 1); // selected GP and gender  gp3
-      Extra_Std(gender * (Selex_Std_Cnt + Growth_Std_Cnt + NatAge_Std_Cnt) + i) = natM(1, k, j);
+      Extra_Std(gender * (Selex_Std_Cnt + Growth_Std_Cnt + NatAge_Std_Cnt) + i) = natM(t, 1, k, j);
       if (gender == 2)
       {
         k = g_finder(Do_NatM_Std, 2); // selected GP and gender  gp3
-        Extra_Std(gender * (Selex_Std_Cnt + Growth_Std_Cnt + NatAge_Std_Cnt) + NatM_Std_Cnt + i) = natM(1, k, j);
+        Extra_Std(gender * (Selex_Std_Cnt + Growth_Std_Cnt + NatAge_Std_Cnt) + NatM_Std_Cnt + i) = natM(t, 1, k, j);
       }
     }
   }

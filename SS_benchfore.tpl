@@ -219,12 +219,12 @@ FUNCTION void setup_Benchmark()
   {
     //      if(save_for_report>0 || last_phase() || current_phase()==max_phase || ((sd_phase() || mceval_phase()) && (initial_params::mc_phase==0)))
     {
-      //  calc average body size to use in equil; store in styr-3
+      //  calc average biology to use in equil; store in styr-3
       temp = float(Bmark_Yr(2) - Bmark_Yr(1) + 1.); //  get denominator
       for (g = 1; g <= gmorph; g++)
         if (use_morph(g) > 0)
         {
-          for (s = 0; s <= nseas - 1; s++)
+          for (s = 0; s <= nseas - 1; s++)  //  note -1 baked into the loop index
           {
             tempvec_a.initialize();
             for (t = Bmark_t(1); t <= Bmark_t(2); t += nseas)
@@ -238,6 +238,25 @@ FUNCTION void setup_Benchmark()
               tempvec_a += Ave_Size(t + s, mid_subseas, g);
             }
             Ave_Size(styr - 3 * nseas + s, mid_subseas, g) = tempvec_a / temp;
+
+  //  get mean natM
+            int gpi=GP3(g);
+            for (int p = 0; p <= pop; p++)
+            {
+              tempvec_a.initialize();
+              for (t = Bmark_t(1); t <= Bmark_t(2); t += nseas)
+              {
+                tempvec_a += natM(t + s, p, gpi);
+              }
+              natM(styr - 3 * nseas + s, p, gpi) = tempvec_a / temp;
+              if(p>0)
+              {
+                int s1 = (p - 1)*nseas + s + 1;
+                surv1(s1, gpi) = mfexp(-natM(styr - 3 * nseas + s, p, gpi) * seasdur_half(s + 1));  //  does all the gpi and ages
+                surv2(s1, gpi) = square(surv1(s1, gpi));
+              }
+            }
+
             for (int kk = -2; kk <= 0; kk++) //  get mean fecundity and pop body wt
             {
               tempvec_a.initialize();
@@ -256,8 +275,6 @@ FUNCTION void setup_Benchmark()
               }
               save_sel_num(styr - 3 * nseas + s, f, g) = tempvec_a / temp;
             }
-            // natmort_unf is accumulated while doing the time_series
-            // then it's mean is calculated in Get_Benchmarks and assigned back to natmort
           }
         }
 
@@ -279,8 +296,6 @@ FUNCTION void setup_Benchmark()
         // recr_dist_unf is accumulated while doing the time_series
         // then its mean is calculated in Get_Benchmarks and assigned to recr_dist
         //  the SR_parm_bench is calculated from Bmark_yrs 9-10 in benchmark code using values stored in SR_parm_byyr
-
-        //  same for natmort and survival (surv1 and surv2)
       }
 
       //  calc average selectivity to use in equil; store in styr-3
@@ -475,6 +490,22 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
     }
   }
 
+  if (show_MSY == 1)
+  {
+    report5 << version_info << endl
+            << ctime(&start);
+    report5 << "Bmark_relF(by_fleet_&seas) (excluding non-scaled bycatch fleets)" << endl
+            << Bmark_RelF_Use << endl
+            << "#" << endl;
+    report5 << "Bmark_histF(by_fleet_&seas)" << endl
+            << Bmark_HistF << endl
+            << "#" << endl;
+    report5 << "Bycatch_F" << endl
+            << trans(bycatch_F) << endl
+            << "#" << endl;
+    report5 << "YPR_mask for including catch: " << endl
+            << YPR_mask << endl;
+  }
   if (show_MSY == 2)
   {
     //  do not recalc the age-specific vectors
@@ -532,7 +563,10 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
         if (fleet_type(f) <= 2)
         {
           for (s = 1; s <= nseas; s++)
+          {
+            report5 << f << " " << s << " sel_bio: " << sel_bio(s, f, 1) << endl;
             report5 << f << " " << s << " sel_dead_bio: " << sel_dead_bio(s, f, 1) << endl;
+          }
         }
       }
       for (f = 1; f <= Nfleet; f++)
@@ -575,10 +609,7 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
   //  the spawner-recruitment function has Bzero based on virgin biology, not benchmark biology
   //  need to deal with possibility that with time-varying biology, the SSB_virgin calculated from virgin conditions will differ from the SSB_virgin used for benchmark conditions
 
-  //  note that recr_dist(styr-3), natM_unf, surv1_unf, and surv2_unf updated at end of ss_popdyn.
-  natM = natM_unf;
-  surv1 = surv1_unf;
-  surv2 = surv2_unf;
+  //  note that recr_dist(styr-3), updated at end of ss_popdyn.
 
   for (j = 1; j <= N_SRparm2; j++)
   {
@@ -722,12 +753,6 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
           {
             report5 << " " << SSB_equil_pop_gp(p, gp);
           }
-        report5 << " Hrate: ";
-        for (int ff = 1; ff <= N_catchfleets(0); ff++)
-        {
-          f = fish_fleet_area(0, ff);
-          report5 << Hrate(f, bio_t_base + 1) << " ";
-        }
         report5 << endl;
       }
     } // end search loop
@@ -1008,12 +1033,6 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
           {
             report5 << " " << SSB_equil_pop_gp(p, gp) * Equ_SpawnRecr_Result(2);
           }
-        report5 << " Hrate: ";
-        for (int ff = 1; ff <= N_catchfleets(0); ff++)
-        {
-          f = fish_fleet_area(0, ff);
-          report5 << Hrate(f, bio_t_base + 1) << " ";
-        }
         report5 << endl;
       }
     } // end search loop
@@ -1327,8 +1346,7 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
         {
           report5 << j << " " << Fmult << " " << equ_F_std << " " << MSY_SPR << " " << yld1(1) << " " << Bmsy << " " << Recr_msy << " " << Bmsy / SSB_unf << " "
                   << dyld << " " << dyldp << " " << value(sum(equ_catch_fleet(3)) * Recr_msy);
-          //          report5 << " " << value(equ_catch_fleet(3)*Recr_msy) << " " << Cost << " " << PricePerF*YPR_val_vec*Recr_msy << " " << Profit << " ";
-          report5 << " " << Cost << " " << PricePerF * YPR_val_vec * Recr_msy << " " << Profit << " ";
+          report5 << value(equ_catch_fleet(3) * Recr_msy) << " " << Cost << " " << PricePerF * YPR_val_vec * Recr_msy << " " << Profit << " ";
           for (p = 1; p <= pop; p++)
             for (gp = 1; gp <= N_GP; gp++)
             {
@@ -1337,7 +1355,7 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
           for (int ff = 1; ff <= N_catchfleets(0); ff++)
           {
             f = fish_fleet_area(0, ff);
-            report5 << " " << Hrate(f, bio_t_base + 1);
+            report5 << Hrate(f, bio_t_base + 1) << " ";
           }
           report5 << endl;
         }
@@ -1424,15 +1442,13 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
                     }
             }
             report5 << gp << " " << gg << " N " << tempvec_a << endl;
+            report5 << gp << " " << gg << " Z ";
+            for (a = 0; a <= nages - 2; a++)
+            {
+              report5 << -log(tempvec_a(a + 1) / tempvec_a(a)) << " ";
+            }
+            report5 << " NA NA" << endl;
           }
-        report5 << "natM" << endl
-                << natM << endl;
-        report5 << "sel_dead_num" << endl
-                << sel_dead_num << endl;
-        report5 << "equil_Z" << endl
-                << equ_Z << endl;
-        report5 << "equil_catage" << endl
-                << equ_catage << endl;
 
         Fishon = 0;
         Do_Equil_Calc(equ_Recr);
@@ -1993,6 +2009,16 @@ FUNCTION void Get_Forecast()
         report5 << endl;
       }
     }
+    
+    if (H4010_top_rd < 0.0)
+      {
+        H4010_top = Bmsy / SSB_unf;
+        if (H4010_bot > 0.25) {N_warn++; warning<<N_warn<<" Beware: control rule cutoff is large ("<<H4010_bot<<"); so may not be < calculated Bmsy/SSB_unf ("<<H4010_top<<")"<<endl;}
+      }
+      else 
+      {
+        H4010_top = H4010_top_rd;
+      }
     report5 << "#" << endl;
     report5 << "N_forecast_yrs: " << N_Fcast_Yrs << endl;
     report5 << "OY_Control_Rule "
@@ -2095,9 +2121,7 @@ FUNCTION void Get_Forecast()
     //  refresh quantities that might have changed in benchmark.
     //  some of these might be change within forecast also
     //    recr_dist(endyr)=recr_dist_endyr;
-    natM = natM_endyr;
-    surv1 = surv1_endyr;
-    surv2 = surv2_endyr;
+    //    natM=natM_endyr;
 
     y = endyr;
     {
@@ -2208,9 +2232,17 @@ FUNCTION void Get_Forecast()
         ALK_subseas_update = 1;
         get_growth2(y);
       }
-      if (timevary_MG(y, 1) > 0 || N_pred > 0)
+      if (timevary_MG(y, 1) > 0)
       {
         get_natmort();
+      }
+      else
+      {
+        t_base = styr + (y - styr) * nseas - 1;
+        for (s = 1; s <= nseas; s++)
+        {
+          natM(t_base + s) = natM(t_base - nseas + s);
+        }
       }
       if (timevary_MG(y, 3) > 0)
       {
@@ -2306,29 +2338,43 @@ FUNCTION void Get_Forecast()
               {
                 Make_FishSelex(); // calcs fishery selex by current season, all fleets, current gmorph
               }
-            if (N_pred > 0)
-            {
-              for (f1 = 1; f1 <= N_pred; f1++)
-              {
-                f = predator(f1);
-                pred_M2(f1, t) = mgp_adj(predparm_pointer(f1)); //  base with no seasonal effect
-                if (nseas > 1)
-                  pred_M2(f1, t) *= mgp_adj(predparm_pointer(f1) + s);
+      if(N_pred>0)
+      {
+//  rebase natM to M1
+        for(p = 1; p <= pop; p++)
+        {
+          natM(t, p) = natM(t, 0);
+        }
+        for (f1 = 1; f1 <= N_pred; f1++)
+        {
+          f = predator(f1);
+          pred_M2(f1, t) = mgp_adj(predparm_pointer(f1)); //  base with no seasonal effect
+          if (nseas > 1)
+            pred_M2(f1, t) *= mgp_adj(predparm_pointer(f1) + s);
+          p = fleet_area(f);  //  area this predator occurs in
 
-                for (gp = 1; gp <= N_GP * gender; gp++)
-                {
-                  g = g_Start(gp); //  base platoon
-                  for (settle = 1; settle <= N_settle_timings; settle++)
-                  {
-                    g += N_platoon;
-                    int gpi = GP3(g); // GP*gender*settlement
-                    natM(s, gpi) += pred_M2(f1, t) * sel_num(s, f, g);
-                    surv1(s, gpi) = mfexp(-natM(s, gpi) * seasdur_half(s));
-                    surv2(s, gpi) = square(surv1(s, gpi));
-                  }
-                }
-              }
+  //  a new array for indexing g and gpi could simplify below
+  //        for (gp = 1; gp <= N_GP * gender * N_settle_timings; gp++)
+
+          for (gp = 1; gp <= N_GP * gender; gp++)
+          {
+            g = g_Start(gp); //  base platoon
+            for (settle = 1; settle <= N_settle_timings; settle++)
+            {
+              g += N_platoon;
+              int gpi = GP3(g); // GP*gender*settlement
+              natM(t, p, gpi) += pred_M2(f1, t) * sel_num(s, f, g);
             }
+          }
+        }
+      }
+
+      for(p = 1; p <= pop; p++)
+      {
+        int s1 = (p - 1) * nseas + s;
+        surv1(s1) = mfexp(-natM(t, p) * seasdur_half(s));
+        surv2(s1) = square(surv1(s1));
+      }
 
           } //  end of seasonal biology
 
@@ -2422,7 +2468,7 @@ FUNCTION void Get_Forecast()
                 {
                   //                  if(y==endyr+1) natage(t+Settle_seas_offset(settle),p,g,Settle_age(settle))=0.0;  //  to negate the additive code
                   natage(t + Settle_seas_offset(settle), p, g, Settle_age(settle)) = Recruits * recr_dist(y, GP(g), settle, p) * platoon_distr(GP2(g)) *
-                      mfexp(natM(s, GP3(g), Settle_age(settle)) * Settle_timing_seas(settle));
+                      mfexp(natM(t, p, GP3(g), Settle_age(settle)) * Settle_timing_seas(settle));
                   if (Fcast_Loop1 == jloop && ABC_Loop == ABC_Loop_end)
                   {
                     if (Settle_seas(settle) == s)
@@ -2529,6 +2575,9 @@ FUNCTION void Get_Forecast()
                 }
               }
             Tune_F_loops = 1;
+
+              int s1 = (p - 1) * nseas + s;  //  stacks season inside area (p) for use with surv1
+
             for (int ff = 1; ff <= N_catchfleets(0); ff++)
             {
               f = fish_fleet_area(0, ff); //  calc the Hrates given the HarvestPolicy, and find which catches are fixed or adjustable
@@ -2596,7 +2645,7 @@ FUNCTION void Get_Forecast()
               for (g = 1; g <= gmorph; g++)
                 if (use_morph(g) > 0)
                 {
-                  Nmid(g) = elem_prod(natage(t, p, g), surv1(s, GP3(g)));
+                  Nmid(g) = elem_prod(natage(t, p, g), surv1(s1, GP3(g)));
                 }
 
               for (Tune_F = 1; Tune_F <= Tune_F_loops; Tune_F++)
@@ -2703,16 +2752,16 @@ FUNCTION void Get_Forecast()
                   j = Settle_age(settle);
                   if (s < nseas && Settle_seas(settle) <= s)
                   {
-                    natage(t + 1, p, g, j) = Nsurv(g, j) * surv1(s, GP3(g), j);
+                    natage(t + 1, p, g, j) = Nsurv(g, j) * surv1(s1, GP3(g), j);
                   } // advance age zero within year
                   for (a = j + 1; a < nages; a++)
                   {
-                    natage(t + 1, p, g, a) = Nsurv(g, a - adv_age) * surv1(s, GP3(g), a - adv_age);
+                    natage(t + 1, p, g, a) = Nsurv(g, a - adv_age) * surv1(s1, GP3(g), a - adv_age);
                     Z_rate(t, p, g, a) = -log(natage(t + 1, p, g, a) / natage(t, p, g, a - adv_age)) / seasdur(s);
                   }
-                  natage(t + 1, p, g, nages) = Nsurv(g, nages) * surv1(s, GP3(g), nages); // plus group
+                  natage(t + 1, p, g, nages) = Nsurv(g, nages) * surv1(s1, GP3(g), nages); // plus group
                   if (s == nseas)
-                    natage(t + 1, p, g, nages) += Nsurv(g, nages - 1) * surv1(s, GP3(g), nages - 1);
+                    natage(t + 1, p, g, nages) += Nsurv(g, nages - 1) * surv1(s1, GP3(g), nages - 1);
                   if (save_for_report > 0)
                   {
                     j = p + pop;
@@ -2734,12 +2783,15 @@ FUNCTION void Get_Forecast()
                 for (g = 1; g <= gmorph; g++) //loop over fishing fleets to get Z=M+sum(F)
                   if (use_morph(g) > 0)
                   {
-                    Z_rate(t, p, g) = natM(s, GP3(g));
-                    for (f = 1; f <= Nfleet; f++)
-                      if (fleet_area(f) == p && Fcast_RelF_Use(s, f) > 0.0 && fleet_type(f) <= 2)
+                    Z_rate(t, p, g) = natM(t, p, GP3(g));
+                    for (int ff = 1; ff <= N_catchfleets(p); ff++) // get calculated catch
+                    {
+                      f = fish_fleet_area(p, ff);
+                      if (Fcast_RelF_Use(s, f) > 0.0)
                       {
                         Z_rate(t, p, g) += sel_dead_num(s, f, g) * Hrate(f, t);
                       }
+                    }
                     Zrate2(p, g) = elem_div((1. - mfexp(-seasdur(s) * Z_rate(t, p, g))), Z_rate(t, p, g));
                   } //  end morph
 
@@ -3038,7 +3090,7 @@ FUNCTION void Get_Forecast()
                   //                  if(y==endyr+1) natage(t+Settle_seas_offset(settle),p,g,Settle_age(settle))=0.0;  //  to negate the additive code
                   //                  natage(t+Settle_seas_offset(settle),p,g,Settle_age(settle)) += Recruits*recr_dist(y,GP(g),settle,p)*platoon_distr(GP2(g))*
                   natage(t + Settle_seas_offset(settle), p, g, Settle_age(settle)) = Recruits * recr_dist(y, GP(g), settle, p) * platoon_distr(GP2(g)) *
-                      mfexp(natM(s, GP3(g), Settle_age(settle)) * Settle_timing_seas(settle));
+                      mfexp(natM(t, p, GP3(g), Settle_age(settle)) * Settle_timing_seas(settle));
                   if (Fcast_Loop1 == jloop && ABC_Loop == ABC_Loop_end)
                   {
                     if (Settle_seas(settle) == s)
@@ -3132,7 +3184,7 @@ FUNCTION void Get_Forecast()
                         temp3 = natage(t - nseas + 1, p, g, a); //  numbers at begin of year
                         for (j = 1; j <= nseas; j++)
                         {
-                          temp3 *= mfexp(-seasdur(j) * natM(j, GP3(g), a));
+                          temp3 *= mfexp(-seasdur(j) * natM(t - nseas + j, p, GP3(g), a));
                         }
                         tempM += temp3; //  survivors if just M operating
                       }
@@ -3163,7 +3215,7 @@ FUNCTION void Get_Forecast()
                         temp3 = natage(t - nseas + 1, p, g, a); //  numbers at begin of year
                         for (j = 1; j <= nseas; j++)
                         {
-                          temp3 *= mfexp(-seasdur(j) * natM(j, GP3(g), a));
+                          temp3 *= mfexp(-seasdur(j) * natM(t - nseas + j, p, GP3(g), a));
                         }
                         tempM += temp3; //  survivors if just M operating
                       }
@@ -3236,66 +3288,7 @@ FUNCTION void Get_Forecast()
                 {
                   F_std(STD_Yr_Reverse_F(y)) = annual_F(y, 2);
                 }
-                /*
-                else if(F_reporting==4 && s==nseas)
-                {
-        //  sum across p and g the number of survivors to end of the year
-        //  also project from the initial numbers and M, the number of survivors without F
-        //  then F = ln(n+1/n)(M+F) - ln(n+1/n)(M only), but ln(n) cancels out, so only need the ln of the ratio of the two ending quantities
-                  temp1=0.0;
-                  temp2=0.0;
-                  for (g=1;g<=gmorph;g++)
-                  if(use_morph(g)>0)
-                  {
-                    for (p=1;p<=pop;p++)
-                    {
-                      for (a=F_reporting_ages(1);a<=F_reporting_ages(2);a++)   //  should not let a go higher than nages-2 because of accumulator
-                      {
-                        if(nseas==1)
-                        {
-                          temp1+=natage(t+1,p,g,a+1);
-                          temp2+=natage(t,p,g,a)*mfexp(-seasdur(s)*natM(s,GP3(g),a));
-                        }
-                        else
-                        {
-                          temp1+=natage(t+1,p,g,a+1);
-                          temp3=natage(t-nseas+1,p,g,a);  //  numbers at begin of year
-                          for (j=1;j<=nseas;j++) {temp3*=mfexp(-seasdur(j)*natM(j,GP3(g),a));}
-                          temp2+=temp3;
-                        }
-                      }
-                    }
-                  }
-                  F_std(STD_Yr_Reverse_F(y)) = log(temp2)-log(temp1);
-                }
-                else if(F_reporting==5 && s==nseas)
-                {
-              //  F_reporting==5 (ICES-style arithmetic mean across ages)
-              //  like option 4 above, but F is calculated 1 age at a time to get a
-              //  unweighted average across ages within each year
-                  temp=0.0;  // used for count of Fs included in average
-                  for (g=1;g<=gmorph;g++)
-                  if(use_morph(g)>0)
-                  {
-                    for (a=F_reporting_ages(1);a<=F_reporting_ages(2);a++)   //  should not let a go higher than nages-2 because of accumulator
-                    {
-                      temp1=0.0;  //  sum survivors across all g and p
-                      temp2=0.0;
-                      for (p=1;p<=pop;p++)
-                      {
-                        temp1+=natage(t+1,p,g,a+1);
-                        temp3=natage(t-nseas+1,p,g,a);  //  numbers at begin of year
-                        for (j=1;j<=nseas;j++) {temp3*=mfexp(-seasdur(j)*natM(j,GP3(g),a));}
-                        temp2+=temp3; // temp2 and temp3 are redundant but match code above
-                      }
-                        // add F-at-age to tally
-                      F_std(STD_Yr_Reverse_F(y)) += log(temp2)-log(temp1);
-                      temp += 1; // increment count of values included in average
-                    }
-                  }
-                  F_std(STD_Yr_Reverse_F(y)) /= temp;
-                } // end F_reporting==5
-   */
+
               }
               for (int ff = 1; ff <= N_catchfleets(0); ff++)
               {

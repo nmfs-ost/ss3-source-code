@@ -1424,7 +1424,7 @@ FUNCTION void write_nucontrol()
   NuStart << depletion_basis_rd << " # Depletion basis:  denom is: 0=skip; 1=rel X*SPB0; 2=rel SPBmsy; 3=rel X*SPB_styr; 4=rel X*SPB_endyr; values; >=11 invoke N multiyr (up to 9!) with 10's digit; >100 invokes log(ratio)" << endl;
   NuStart << depletion_level << " # Fraction (X) for Depletion denominator (e.g. 0.4)" << endl;
   NuStart << SPR_reporting << " # SPR_report_basis:  0=skip; 1=(1-SPR)/(1-SPR_tgt); 2=(1-SPR)/(1-SPR_MSY); 3=(1-SPR)/(1-SPR_Btarget); 4=rawSPR" << endl;
-  NuStart << F_reporting << " # Annual_F_units: 0=skip; 1=exploitation(Bio); 2=exploitation(Num); 3=sum(Apical_F's); 4=true F for range of ages; 5=unweighted avg. F for range of ages" << endl;
+  NuStart << F_reporting << " # F_reporting_units: 0=skip; 1=exploitation(Bio); 2=exploitation(Num); 3=sum(Apical_F's); 4=true F for range of ages; 5=unweighted avg. F for range of ages" << endl;
   if (F_reporting == 4 || F_reporting == 5)
   {
     NuStart << F_reporting_ages << " #_min and max age over which average F will be calculated, with F=Z-M" << endl;
@@ -1484,8 +1484,8 @@ FUNCTION void write_nucontrol()
 
   NuFore << HarvestPolicy << " # Control rule method (0: none; 1: ramp does catch=f(SSB), buffer on F; 2: ramp does F=f(SSB), buffer on F; 3: ramp does catch=f(SSB), buffer on catch; 4: ramp does F=f(SSB), buffer on catch) " << endl;
   NuFore << "# values for top, bottom and buffer exist, but not used when Policy=0" << endl;
-  NuFore << H4010_top << " # Control rule Biomass level for constant F (as frac of Bzero, e.g. 0.40); (Must be > the no F level below) " << endl;
-  NuFore << H4010_bot << " # Control rule Biomass level for no F (as frac of Bzero, e.g. 0.10) " << endl;
+  NuFore << H4010_top_rd << " # Control rule inflection for constant F (as frac of Bzero, e.g. 0.40); must be > control rule cutoff, or set to -1 to use Bmsy/SSB_unf " << endl;
+  NuFore << H4010_bot << " # Control rule cutoff for no F (as frac of Bzero, e.g. 0.10) " << endl;
   NuFore << H4010_scale_rd << " # Buffer:  enter Control rule target as fraction of Flimit (e.g. 0.75), negative value invokes list of [year, scalar] with filling from year to YrMax " << endl;
   if (H4010_scale_rd < 0)
   {
@@ -1711,7 +1711,7 @@ FUNCTION void write_nucontrol()
   report4 << "#" << endl
           << "# setup for M, growth, wt-len, maturity, fecundity, (hermaphro), recr_distr, cohort_grow, (movement), (age error), (catch_mult), sex ratio " << endl;
   report4 << "#_NATMORT" << endl
-          << natM_type << " #_natM_type:_0=1Parm; 1=N_breakpoints;_2=Lorenzen;_3=agespecific;_4=agespec_withseasinterpolate;_5=BETA:_Maunder_link_to_maturity" << endl;
+          << natM_type << " #_natM_type:_0=1Parm; 1=N_breakpoints;_2=Lorenzen;_3=agespecific;_4=agespec_withseasinterpolate;_5=BETA:_Maunder_link_to_maturity;_6=Lorenzen_range" << endl;
   if (natM_type == 0)
   {
     report4 << "  #_no additional input for selected M option; read 1P per morph" << endl;
@@ -1724,6 +1724,11 @@ FUNCTION void write_nucontrol()
   else if (natM_type == 2)
   {
     report4 << natM_amin << " #_reference age for Lorenzen M; read 1P per morph" << endl;
+  }
+  else if (natM_type == 6)
+  {
+    report4 << natM_amin << " #_minimum age for Lorenzen" << endl
+            << natM_amax << " #_maximum age for Lorenzen; read 1P per morph" << endl;
   }
   else if (natM_type >= 3 && natM_type < 5)
   {
@@ -2162,7 +2167,7 @@ FUNCTION void write_nucontrol()
     report4 << "# read list of fleets that do F as parameter; unlisted fleets stay hybrid, bycatch fleets must be included with start_PH=1, high F fleets should switch early" << endl;
     report4 << "# (A) fleet, (B) F_starting_value (used if start_PH=1), (C) start_PH for parms (99 to stay in hybrid, <0 to stay at starting value)" << endl;
     report4 << "# (A) (B) (C)  (terminate list with -9999 for fleet)" << endl;
-    for (int j = 1; j <= F_Method_4_input.size() - 2; j++)
+    for (unsigned j = 1; j <= F_Method_4_input.size() - 2; j++)
     {
       report4 << F_Method_4_input[j] << " # " << fleetname(F_Method_4_input[j](1)) << endl;
     }

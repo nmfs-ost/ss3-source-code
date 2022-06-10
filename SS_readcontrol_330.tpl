@@ -1489,19 +1489,6 @@
        {
          create_timevary(MGparm_1(j),timevary_setup, timevary_pass, autogen_timevary(timevary_setup(1)), mgp_type(j), block_design_null, env_data_pass, N_parm_dev,finish_starter);
        }
-  /*
-   where:
-   MGparm_1(j):           vector with the base parameter which has some type of timevary characteristic
-   timevary_setup:        vector which contains specs of all types of timevary  for this base parameter
-                          will be pushed to timevary_def cumulative across all types of base parameters
-   timevary_pass:        vector containing column(timevary_MG,mgp_type(j)), will be modified in create_timevary
-   autogen_timevary:      switch to autogenerate or not
-   mgp_type(j):           integer with type of MGparm being worked on; analogous to 2*fleet in the selectivity section
-   Block_Design(z):       block design, if any, being used
-   parm_adjust_method:    switch to determine if adjusted parameter will stay in bounds; used to create warnings in create_timevary
-   env_data_RD:           matrix containing entire set of environmental data as read
-   N_parm_dev:            integer that is incremented in create_timevary as dev vectors are created; cumulative across all types of parameters
-  */
        timevary_def.push_back (timevary_setup(1,14));
        for(y=styr-3;y<=YrMax+1;y++) {timevary_MG(y,mgp_type(j))=timevary_pass(y);}  // year vector for this category of MGparm
        if(j==MGP_CGD) CGD_onoff=1;
@@ -1805,18 +1792,6 @@
        {
          create_timevary(SR_parm_1(j),timevary_setup, timevary_pass, autogen_timevary(timevary_setup(1)), f, block_design_null, env_data_pass, N_parm_dev,finish_starter);
        }
-  /*
-   where:
-   SR_parm_1(j):           vector with the base parameter which has some type of timevary characteristic
-   timevary_setup:        vector which contains specs of all types of timevary  for this base parameter
-                          will be pushed to timevary_def cumulative across all types of base parameters
-   timevary_pass:        vector containing column(timevary_MG,mgp_type(j)), will be modified in create_timevary
-   autogen_timevary:      switch to autogenerate or not
-   block_design(z):       block design, if any, being used
-   parm_adjust_method:    switch to determine if adjusted parameter will stay in bounds; used to create warnings in create_timevary
-   env_data_RD:           matrix containing entire set of environmental data as read
-   N_parm_dev:            integer that is incremented in create_timevary as dev vectors are created; cumulative across all types of parameters
-  */
        timevary_def.push_back (timevary_setup(1,14));
        for(y=styr-3;y<=YrMax+1;y++) {timevary_SRparm(y)=timevary_pass(y);}  // year vector for this category og MGparm
      }
@@ -2702,20 +2677,6 @@
        {
          create_timevary(Q_parm_1(j),timevary_setup, timevary_pass, autogen_timevary(timevary_setup(1)), f, block_design_null, env_data_pass, N_parm_dev,finish_starter);
        }
-  /*
-   where:
-   Q_parm_1(j):           vector with the base parameter which has some type of timevary characteristic
-   timevary_setup:        vector which contains specs of all types of timevary  for this base parameter
-                          will be pushed to timevary_def cumulative across all types of base parameters
-   timevary_pass:        vector containing column(timevary_MG,mgp_type(j)), will be modified in create_timevary
-   autogen_timevary:      switch to autogenerate or not
-   f:           integer with type of MGparm being worked on; analogous to 2*fleet in the selectivity section
-   block_design(z):       block design, if any, being used
-   parm_adjust_method:    switch to determine if adjusted parameter will stay in bounds; used to create warnings in create_timevary
-   env_data_RD:           matrix containing entire set of environmental data as read
-   N_parm_dev:            integer that is incremented in create_timevary as dev vectors are created; cumulative across all types of parameters
-  */
-
        timevary_def.push_back (timevary_setup(1,14));
        for(y=styr-3;y<=YrMax+1;y++) {timevary_Qparm(y,f)=timevary_pass(y);}  // year vector for this category og MGparm
      }
@@ -3585,19 +3546,6 @@
        {
          create_timevary(selparm_1(j),timevary_setup, timevary_pass, autogen_timevary(timevary_setup(1)), selparm_fleet(j), block_design_null, env_data_pass, N_parm_dev,finish_starter);
        }
-  /*
-   where:
-   selparm_1(j):           vector with the base parameter which has some type of timevary characteristic
-   timevary_setup:        vector which contains specs of all types of timevary  for this base parameter
-                          will be pushed to timevary_def cumulative across all types of base parameters
-   timevary_pass:        vector containing column(timevary_MG,mgp_type(j)), will be modified in create_timevary
-   autogen_timevary:      switch to autogenerate or not
-   selparm_fleet(j):           integer with type of MGparm being worked on; analogous to 2*fleet in the selectivity section
-   block_design(z):       block design, if any, being used
-   parm_adjust_method:    switch to determine if adjusted parameter will stay in bounds; used to create warnings in create_timevary
-   env_data_RD:           matrix containing entire set of environmental data as read
-   N_parm_dev:            integer that is incremented in create_timevary as dev vectors are created; cumulative across all types of parameters
-  */
        timevary_def.push_back (timevary_setup(1,14));
        for(y=styr-3;y<=YrMax+1;y++) {timevary_sel(y,selparm_fleet(j))=timevary_pass(y);}  // year vector for this category
      }
