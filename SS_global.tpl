@@ -106,12 +106,12 @@ GLOBALS_SECTION
   ofstream warning;
   ofstream echoinput;
   ofstream ParmTrace;
-  ofstream report5; //  forecast-report
-  ofstream report2; //  control.ss_new
+  ofstream report5; // forecast-report
+  ofstream report2; // control.ss_new
   ofstream bodywtout;
   ofstream SS2out; // this is just a create
   ofstream SS_compout; // this is just a create
-  ofstream report1; //  for data output files
+  ofstream report1; // for data output files
   ofstream covarout;
   ofstream rebuilder;
   ofstream rebuild_dat;
@@ -165,21 +165,21 @@ GLOBALS_SECTION
 //  function in GLOBALS to do the timing setup in the data section
 
 // SS_Label_Function xxxa write_message(string,int,int); output a message with an option to exit (when fatal)
-  void write_message(std::string msg, int echo, int exitflag)
+  void write_message(std::string msg, int echo, int warn, int exitflag)
   {
     if (msg.length() == 0)
     {
       msg = "unknown condition";
     }
-  
-    N_warn++;
-    warning << N_warn << ": " << msg << endl;
-
     if (echo == 1)
     {
       if (exitflag == 1)
         echoinput << "Exit:  ";
       echoinput << msg << endl;
+    }
+    if (warn == 1)
+    {
+      warning << msg << endl;
     }
     if (exitflag == 1)
     {
@@ -190,10 +190,12 @@ GLOBALS_SECTION
     }
   }
 // SS_Label_Function_xxxb write_warning(int,int); output a warning with an option to exit (when fatal)
-  void write_warning(int echo, int exitflag)
+  void write_warning(int &nwarn, int echo, int exitflag)
   {
     std::string msg(warnstream.str());
-	write_message(msg, echo, exitflag);
+    nwarn++;
+	std::string premsg (std::to_string(nwarn) + " ");
+	write_message(premsg + msg, echo, 1, exitflag);
     warnstream.str("");
   }
 
@@ -259,7 +261,7 @@ GLOBALS_SECTION
       if (month >= 13.0)
       {
 	  warnstream << "Fatal error. month must be <13.0, end of year is 12.99, value read is: " << month;
-	  write_warning(0, 1);
+	  write_warning(N_warn, 0, 1);
 //        N_warn++;
 //        cout << "fatal read error, see warning" << endl;
 //        warning << N_warn << " Fatal error. month must be <13.0, end of year is 12.99, value read is: " << month << endl;
@@ -417,7 +419,7 @@ GLOBALS_SECTION
               {
                 warnstream << "cannot use multiplicative blocks for parameter with a negative lower bound;  exit " << endl
                         << baseparm_list(1) << " " << baseparm_list(2) << " " << baseparm_list(3) << endl;
-                write_warning(0,1);
+                write_warning(N_warn, 0,1);
 //                N_warn++;
 //                warning << N_warn << " "
 //                        << " cannot use multiplicative blocks for parameter with a negative lower bound;  exit " << endl
@@ -767,7 +769,7 @@ GLOBALS_SECTION
     if (y < styr)
     {
       warnstream << "reset parm_dev start year to styr for parm: " << j << " " << y;
-      write_warning(0,0);
+      write_warning(N_warn,0,0);
 //      N_warn++;
 //      warning << N_warn << " "
 //              << " reset parm_dev start year to styr for parm: " << j << " " << y << endl;
@@ -779,7 +781,7 @@ GLOBALS_SECTION
     if (y > YrMax)
     {
 	  warnstream << " reset parm_dev end year to YrMax for parm: " << j << " " << y;
-	  write_warning(0,0);
+	  write_warning(N_warn,0,0);
 //      N_warn++;
 //      warning << N_warn << " "
 //              << " reset parm_dev end year to YrMax for parm: " << j << " " << y << endl;
@@ -897,7 +899,7 @@ FINAL_SECTION
     if (objective_function_value::pobjfun->gmax > final_conv)
     {
       warnstream << "Final gradient: " << objective_function_value::pobjfun->gmax << " is larger than final_conv: " << final_conv;
-	  write_warning(0, 0);
+	  write_warning(N_warn, 0, 0);
     }
 
     //  SS_Label_Info_12.2 #Output the covariance matrix to covar.sso
@@ -1081,7 +1083,7 @@ FINAL_SECTION
     {
       {
         warnstream << "NOTE:  No *.ss_new and fewer *.sso files written after mceval";
-		write_warning(0, 0);
+		write_warning(N_warn, 0, 0);
       }
     }
 
@@ -1112,14 +1114,14 @@ FINAL_SECTION
     if (parm_adjust_method == 3)
     {
       warnstream << "Time-vary parms not bound checked";
-	  write_warning(0, 0);
+	  write_warning(N_warn, 0, 0);
     }
 
     //  SS_Label_Info_12.4.7 #Finish up with final writes to warning.sso
     if (N_changed_lambdas > 0)
     {
       warnstream << "Reminder: Number of lamdas !=0.0 and !=1.0:  " << N_changed_lambdas;
-	  write_warning(0, 0);
+	  write_warning(N_warn, 0, 0);
     }
 
     if (Nparm_on_bound > 0)
