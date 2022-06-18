@@ -284,7 +284,7 @@ PARAMETER_SECTION
   3darray Zrate2(1,pop,1,gmorph,0,nages)
   matrix Hrate(1,Nfleet,styr-3*nseas,k) //Harvest Rate for each fleet; this is F
   4darray natage(styr-3*nseas,k,1,pop,1,gmorph,0,nages)  //  add +1 year
-  4darray catage(styr-nseas,k,1,Nfleet,1,gmorph,0,nages)
+  4darray catage(styr-3*nseas,k,1,Nfleet,1,gmorph,0,nages)
   4darray disc_age(styr-3*nseas,TimeMax_Fcast_std+nseas,1,2*N_retain_fleets,1,gmorph,0,nages);
   4darray equ_catage(1,nseas,1,Nfleet,1,gmorph,0,nages)
   4darray equ_numbers(1,nseas,1,pop,1,gmorph,0,3*nages)
