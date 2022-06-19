@@ -3346,7 +3346,7 @@ FUNCTION void write_bigoutput()
       for (f1 = 1; f1 <= N_pred; f1++)
       {
         f = predator(f1);
-        SS2out << fleetname(f) << "_M2 Bio Num";
+        SS2out << fleetname(f) << "_M2 comsume_Bio consume_Num";
       }
       SS2out << endl;
       for (y = styr - 2; y <= YrMax; y++)
