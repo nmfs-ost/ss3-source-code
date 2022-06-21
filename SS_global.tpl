@@ -174,28 +174,26 @@ GLOBALS_SECTION
     if (echo == 1)
     {
       if (exitflag == 1)
-        echoinput << "Exit:  ";
+        echoinput << "Exit!  ";
       echoinput << msg << endl;
     }
-    if (warn == 1)
+    if (warn > 0)
     {
-      warning << msg << endl;
+      warning << warn << " " << msg << endl;
     }
     if (exitflag == 1)
     {
-      cout << " Fatal Error:" << endl;
-      cout << " -- " << msg << endl;
+      cout << " Fatal Error: see warning.sso " << endl;
       cout << " Exiting SS3. " << endl;
       exit(1);
     }
   }
-// SS_Label_Function_xxxb write_warning(int,int); output a warning with an option to exit (when fatal)
+// SS_Label_Function_xxxb write_warning(int,int,int); increment warning count and output a warning with an option to exit (when fatal)
   void write_warning(int &nwarn, int echo, int exitflag)
   {
     std::string msg(warnstream.str());
     nwarn++;
-	std::string premsg (std::to_string(nwarn) + " ");
-	write_message(premsg + msg, echo, 1, exitflag);
+	write_message(msg, echo, nwarn, exitflag);
     warnstream.str("");
   }
 
@@ -262,10 +260,6 @@ GLOBALS_SECTION
       {
 	  warnstream << "Fatal error. month must be <13.0, end of year is 12.99, value read is: " << month;
 	  write_warning(N_warn, 0, 1);
-//        N_warn++;
-//        cout << "fatal read error, see warning" << endl;
-//        warning << N_warn << " Fatal error. month must be <13.0, end of year is 12.99, value read is: " << month << endl;
-//        exit(1);
       }
       temp1 = max(0.00001, (month - 1.0) / 12.); //  month as fraction of year
       s = 1; // earlist possible seas;
@@ -420,12 +414,6 @@ GLOBALS_SECTION
                 warnstream << "cannot use multiplicative blocks for parameter with a negative lower bound;  exit " << endl
                         << baseparm_list(1) << " " << baseparm_list(2) << " " << baseparm_list(3) << endl;
                 write_warning(N_warn, 0,1);
-//                N_warn++;
-//                warning << N_warn << " "
-//                        << " cannot use multiplicative blocks for parameter with a negative lower bound;  exit " << endl
-//                        << baseparm_list(1) << " " << baseparm_list(2) << " " << baseparm_list(3) << endl;
-//                cout << "exit, see warning" << endl;
-//                exit(1);
               }
               tempvec(1) = log(baseparm_list(1) / baseparm_list(3)); //  max negative change
               tempvec(2) = log(baseparm_list(2) / baseparm_list(3)); //  max positive change
@@ -770,9 +758,6 @@ GLOBALS_SECTION
     {
       warnstream << "reset parm_dev start year to styr for parm: " << j << " " << y;
       write_warning(N_warn,0,0);
-//      N_warn++;
-//      warning << N_warn << " "
-//              << " reset parm_dev start year to styr for parm: " << j << " " << y << endl;
       y = styr;
     }
     timevary_setup(10) = y;
@@ -782,9 +767,6 @@ GLOBALS_SECTION
     {
 	  warnstream << " reset parm_dev end year to YrMax for parm: " << j << " " << y;
 	  write_warning(N_warn,0,0);
-//      N_warn++;
-//      warning << N_warn << " "
-//              << " reset parm_dev end year to YrMax for parm: " << j << " " << y << endl;
       y = YrMax;
     }
     timevary_setup(11) = y;
