@@ -1,5 +1,6 @@
 
-## What issue(s) does this PR address? (note: including the keyword "resolves" means the issue will be closed automatically when merged in.
+## What issue(s) does this PR address? 
+(note: including the keyword "resolves" means the issue will be closed automatically when merged in.)
 
 Link issue(s), replacing everything in `[ ]`: resolves #[add issue number number], resolves #[optional second issue number if more than 1 issue addressed.]
 
@@ -16,7 +17,7 @@ Link issue(s), replacing everything in `[ ]`: resolves #[add issue number number
 - [ ] no further changes to SSI (the SS3 GUI)
 - [ ] no further changes to the stock synthesis change log (new features, bug reports)
 
-## Describe any changes in r4ss/SS3 manual/SSIthat are needed (if not checked):
+## Describe any changes in r4ss/SS3 manual/SSI that are needed (if not checked):
 
 ## If changes are needed in the change log, please fill in the table here:
 
