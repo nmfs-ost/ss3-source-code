@@ -164,7 +164,7 @@ GLOBALS_SECTION
   ;
 //  function in GLOBALS to do the timing setup in the data section
 
-// SS_Label_Function xxxa write_message(string,int,int); output a message with an option to exit (when fatal)
+// SS_Label_Function xxx write_message(string,int,int,int); output a message with an option to exit (when fatal)
   void write_message(std::string msg, int echo, int warn, int exitflag)
   {
     if (msg.length() == 0)
