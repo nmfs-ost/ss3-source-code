@@ -153,9 +153,8 @@
   int Comp_Err_Parm_Start
   int recr_dist_inx
  LOCAL_CALCS
-          // clang-format on
-          * (ad_comm::global_datafile) >>
-      recr_dist_method;
+  // clang-format on
+  * (ad_comm::global_datafile) >> recr_dist_method;
   echoinput << recr_dist_method << "  # Recruitment distribution method; where: 2=parms for main effects for GP, Area, Settle timing; 3=one parm for each Settle event" << endl;
   *(ad_comm::global_datafile) >> recr_dist_area;
   echoinput << recr_dist_area << "  # future option for recr_dist_area: 1 is hardwired to do global SRR; 2 in future will do area-specific SRR" << endl;
