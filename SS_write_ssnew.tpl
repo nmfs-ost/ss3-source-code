@@ -1418,7 +1418,7 @@ FUNCTION void write_nucontrol()
   NuStart << final_conv << " # final convergence criteria (e.g. 1.0e-04) " << endl;
   NuStart << retro_yr - endyr << " # retrospective year relative to end year (e.g. -4)" << endl;
   NuStart << Smry_Age << " # min age for calc of summary biomass" << endl;
-  NuStart << depletion_basis_rd << " # Depletion basis:  denom is: 0=skip; 1=rel X*SPB0; 2=rel SPBmsy; 3=rel X*SPB_styr; 4=rel X*SPB_endyr; values; >=11 invoke N multiyr (up to 9!) with 10's digit; >100 invokes log(ratio)" << endl;
+  NuStart << depletion_basis_rd << " # Depletion basis:  denom is: 0=skip; 1=rel X*SPBvirgin; 2=rel SPBmsy; 3=rel X*SPB_styr; 4=rel X*SPB_endyr; values; >=11 invoke N multiyr (up to 9!) with 10's digit; >100 invokes log(ratio)" << endl;
   NuStart << depletion_level << " # Fraction (X) for Depletion denominator (e.g. 0.4)" << endl;
   NuStart << SPR_reporting << " # SPR_report_basis:  0=skip; 1=(1-SPR)/(1-SPR_tgt); 2=(1-SPR)/(1-SPR_MSY); 3=(1-SPR)/(1-SPR_Btarget); 4=rawSPR" << endl;
   NuStart << F_reporting << " # F_reporting_units: 0=skip; 1=exploitation(Bio); 2=exploitation(Num); 3=sum(Apical_F's); 4=true F for range of ages; 5=unweighted avg. F for range of ages" << endl;
