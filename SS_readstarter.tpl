@@ -202,7 +202,7 @@
 
   if ((on = option_match(argc, argv, "-noest")) > -1)
   {
-    warnstream << "SS3 is not configured to work with -noest; use -maxI <maxphase> instead which overrides maxphase in starter.ss";
+    warnstream << "SS3 is not configured to work with -noest; use -stopph <maxphase> instead which overrides maxphase in starter.ss";
     write_warning(N_warn,0,1);
   }
 
@@ -447,7 +447,7 @@
   int Turn_off_phase;
   init_int Turn_off_phase_rd;
    !!echoinput<<Turn_off_phase_rd<<"  Turn_off_phase"<<endl;
-   !!if(maxI<999) { Turn_off_phase=maxI; echoinput<<"-maxI resets it to: "<<Turn_off_phase<<endl;} else {Turn_off_phase=Turn_off_phase_rd;}
+   !!if(maxI<999) { Turn_off_phase=maxI; echoinput<<"-stopph resets it to: "<<Turn_off_phase<<endl;} else {Turn_off_phase=Turn_off_phase_rd;}
 // read in burn and thinning intervals
   init_int burn_intvl;
    !!echoinput<<burn_intvl<<"  MCeval burn_intvl"<<endl;
