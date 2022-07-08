@@ -5,27 +5,27 @@
 // SS_Label_file  # - <div style="color: #ff0000">PARAMETER_SECTION</div>
 // SS_Label_file  #
 // SS_Label_file  #      - create needed parameters and derived quantities as dvar arrays
-  
+
 //  SS_Label_Section_4.99 #INITIALIZE_SECTION (not used in SS3)
 INITIALIZATION_SECTION
-  
+
 //  SS_Label_Section_5.0 #PARAMETER_SECTION
 PARAMETER_SECTION
 //  {
 //  SS_Label_Info_5.0.1 #Setup convergence critera and max func evaluations
  LOCAL_CALCS
-  
+  // clang-format on
   // set the filename to all ADMB output files to "ss.[ext]"
   ad_comm::adprogram_name = "ss";
   echoinput << "now in PARAMETER_SECTION " << endl;
   if (readparfile >= 1)
   {
     cout << " read parm file" << endl;
-    ad_comm::change_pinfile_name ("ss.par");
+    ad_comm::change_pinfile_name("ss.par");
   }
-  maximum_function_evaluations.allocate (func_eval.indexmin(), func_eval.indexmax());
+  maximum_function_evaluations.allocate(func_eval.indexmin(), func_eval.indexmax());
   maximum_function_evaluations = func_eval;
-  convergence_criteria.allocate (func_conv.indexmin(), func_conv.indexmax());
+  convergence_criteria.allocate(func_conv.indexmin(), func_conv.indexmax());
   convergence_criteria = func_conv;
   if (do_ageK == 1) //  need for age-specific K
   {
@@ -35,13 +35,14 @@ PARAMETER_SECTION
   {
     k = 0;
   }
+  // clang-format off
  END_CALCS
-  
+
 !! //  SS_Label_Info_5.0.2 #Create dummy_parm that will be estimated even if turn_off_phase is set to 0
   init_bounded_number dummy_parm(0,2,dummy_phase)  //  estimate in phase 0
 
 !! //  SS_Label_Info_5.1.1 #Create MGparm vector and associated arrays
-  // natural mortality and growth
+  // growth
   init_bounded_number_vector MGparm(1,N_MGparm2,MGparm_LO,MGparm_HI,MGparm_PH)
   vector femfrac(1,N_GP*gender);
   vector L_inf(1,N_GP*gender);
@@ -52,20 +53,7 @@ PARAMETER_SECTION
 
   vector Lmin(1,N_GP*gender);
   vector Lmin_last(1,N_GP*gender);
-//  vector natM1(1,N_GP*gender)
-//  vector natM2(1,N_GP*gender)
-  matrix natMparms(1,N_natMparms,1,N_GP*gender)
-  3darray natM(1,nseas,1,N_GP*gender*N_settle_timings,0,nages)   //  need nseas to capture differences due to settlement
-  3darray natM_M1(1,nseas,1,N_GP*gender*N_settle_timings,0,nages)   //  need nseas to capture differences due to settlement
-  matrix pred_M2(1,N_pred,styr-3*nseas,TimeMax_Fcast_std+nseas);  //  index by t
-  3darray natM_unf(1,nseas,1,N_GP*gender*N_settle_timings,0,nages)   //  need nseas to capture differences due to settlement
-  3darray natM_endyr(1,nseas,1,N_GP*gender*N_settle_timings,0,nages)   //  need nseas to capture differences due to settlement
-  3darray surv1(1,nseas,1,N_GP*gender*N_settle_timings,0,nages)
-  3darray surv1_unf(1,nseas,1,N_GP*gender*N_settle_timings,0,nages)
-  3darray surv1_endyr(1,nseas,1,N_GP*gender*N_settle_timings,0,nages)
-  3darray surv2(1,nseas,1,N_GP*gender*N_settle_timings,0,nages)
-  3darray surv2_unf(1,nseas,1,N_GP*gender*N_settle_timings,0,nages)
-  3darray surv2_endyr(1,nseas,1,N_GP*gender*N_settle_timings,0,nages)
+
   vector CVLmin(1,N_GP*gender)
   vector CVLmax(1,N_GP*gender)
   vector CV_const(1,N_GP*gender)
@@ -100,10 +88,12 @@ PARAMETER_SECTION
   4darray Save_PopBio(styr-3*nseas,TimeMax_Fcast_std+nseas,1,2*pop,1,gmorph,0,nages)
 
  LOCAL_CALCS
-   mat_len=1.0;
-   mat_age=1.0;
-   mat_fec_len=1.0;
-   fec_len=1.0;
+      // clang-format on
+      mat_len = 1.0;
+  mat_age = 1.0;
+  mat_fec_len = 1.0;
+  fec_len = 1.0;
+  // clang-format off
  END_CALCS
 
   3darray age_age(0,N_ageerr+store_agekey_add,1,n_abins2,0,gender*nages+gender-1)
@@ -145,15 +135,31 @@ PARAMETER_SECTION
   number rho;
   number dirichlet_Parm;
  LOCAL_CALCS
+  // clang-format on
   Ave_Size.initialize();
-//  if(SR_parm(N_SRparm2)!=0.0 || SR_parm_PH(N_SRparm2)>0) {SR_autocorr=1;} else {SR_autocorr=0;}  // flag for recruitment autocorrelation
-  if(do_recdev==1)
-  {k=recdev_start; j=recdev_end; s=1; p=-1;}
-  else if(do_recdev>=2)
-  {s=recdev_start; p=recdev_end; k=1; j=-1;}
+  //  if(SR_parm(N_SRparm2)!=0.0 || SR_parm_PH(N_SRparm2)>0) {SR_autocorr=1;} else {SR_autocorr=0;}  // flag for recruitment autocorrelation
+  if (do_recdev == 1)
+  {
+    k = recdev_start;
+    j = recdev_end;
+    s = 1;
+    p = -1;
+  }
+  else if (do_recdev >= 2)
+  {
+    s = recdev_start;
+    p = recdev_end;
+    k = 1;
+    j = -1;
+  }
   else
-  {s=1; p=-1; k=1; j=-1;}
-
+  {
+    s = 1;
+    p = -1;
+    k = 1;
+    j = -1;
+  }
+  // clang-format off
  END_CALCS
 
 //  vector biasadj(styr-nages,YrMax)  // biasadj as used; depends on whether a recdev is estimated or not
@@ -169,14 +175,26 @@ PARAMETER_SECTION
   vector recdev(recdev_first,YrMax);
 
  LOCAL_CALCS
-  if(do_recdev==0){
-  	s=-1;
-  } else{s=YrMax;}
-  if(Do_Impl_Error>0){
-  	k=Fcast_recr_PH2; j=YrMax;}
+  // clang-format on
+  if (do_recdev == 0)
+  {
+    s = -1;
+  }
   else
-  {k=-1; j=-1;}
-
+  {
+    s = YrMax;
+  }
+  if (Do_Impl_Error > 0)
+  {
+    k = Fcast_recr_PH2;
+    j = YrMax;
+  }
+  else
+  {
+    k = -1;
+    j = -1;
+  }
+  // clang-format off
  END_CALCS
   init_bounded_vector Fcast_recruitments(recdev_end+1,s,recdev_LO,recdev_HI,Fcast_recr_PH2)
   init_bounded_vector Fcast_impl_error(endyr+1,j,-1,1,k)
@@ -259,13 +277,14 @@ PARAMETER_SECTION
   number SPR_Btgt2;
   number Btgt_Rec2;
   number Btgt_Fmult2;
+  number H4010_top;
 
   3darray SSB_pop_gp(styr-3,YrMax,1,pop,1,N_GP)         //Spawning biomass
   vector SSB_yr(styr-3,YrMax)
   vector SSB_B_yr(styr-3,YrMax)  //  mature biomass (no fecundity)
   vector SSB_N_yr(styr-3,YrMax)   //  mature numbers
-  !!k=0;
-  !!if(Hermaphro_Option!=0) k=1;
+!!k=0;
+!!if(Hermaphro_Option!=0) k=1;
 
   3darray MaleSPB(styr-3,YrMax*k,1,pop,1,N_GP)         //Male Spawning biomass
 
@@ -278,19 +297,30 @@ PARAMETER_SECTION
   3darray natage_temp(1,pop,1,gmorph,0,nages)
   number ave_age    //  average age of fish in unfished population; used to weight R1
 
-!!//  SS_Label_Info_5.1.3 #Create F parameters and associated arrays and constants
+!!//  SS_Label_Info_5.1.3 #Create M, F, and Z parameters and associated arrays and constants
   init_bounded_number_vector init_F(1,N_init_F,init_F_LO,init_F_HI,init_F_PH)
   matrix est_equ_catch(1,nseas,1,Nfleet)
 
-  !!if(Do_Forecast>0) {k=TimeMax_Fcast_std+nseas;} else {k=TimeMax+nseas;}
+//  natural, predation and fishing mortality
+  matrix natMparms(1,N_natMparms,1,N_GP*gender)  // will be derived from the MGparms
+!!if(Do_Forecast>0) {k=TimeMax_Fcast_std+nseas;} else {k=TimeMax+nseas;}
+  4darray natM(styr-3*nseas,k,0,pop,1,N_GP*gender*N_settle_timings,0,nages)  // M1 + pred_M2, see desc. in biofxn.tpl
+//  3darray natM_M1(1,nseas,1,N_GP*gender*N_settle_timings,0,nages)  //  base M, biology only
+  matrix pred_M2(1,N_pred,styr-3*nseas,TimeMax_Fcast_std+nseas);  //  predator M2
+
+  //  add area (pop) dimension to same dimension as season; use s1=(p-1)*pop + s
+  3darray surv1(1,nseas*pop,1,N_GP*gender*N_settle_timings,0,nages)
+  3darray surv2(1,nseas*pop,1,N_GP*gender*N_settle_timings,0,nages)
+  4darray Z_rate(styr-3*nseas,k,1,pop,1,gmorph,0,nages)
+  3darray Zrate2(1,pop,1,gmorph,0,nages)
+  matrix Hrate(1,Nfleet,styr-3*nseas,k) //Harvest Rate for each fleet; this is F
   4darray natage(styr-3*nseas,k,1,pop,1,gmorph,0,nages)  //  add +1 year
-  4darray catage(styr-nseas,k,1,Nfleet,1,gmorph,0,nages)
+  4darray catage(styr-3*nseas,k,1,Nfleet,1,gmorph,0,nages)
   4darray disc_age(styr-3*nseas,TimeMax_Fcast_std+nseas,1,2*N_retain_fleets,1,gmorph,0,nages);
   4darray equ_catage(1,nseas,1,Nfleet,1,gmorph,0,nages)
   4darray equ_numbers(1,nseas,1,pop,1,gmorph,0,3*nages)
   4darray equ_Z(1,nseas,1,pop,1,gmorph,0,nages)
   matrix catage_tot(1,gmorph,0,nages)//sum the catches for all fleets, reuse matrix each year
-  matrix Hrate(1,Nfleet,styr-3*nseas,k) //Harvest Rate for each fleet
   matrix bycatch_F(1,Nfleet,1,nseas)
   3darray catch_fleet(styr-3*nseas,k,1,Nfleet,1,6)  //  1=sel_bio, 2=kill_bio; 3=ret_bio; 4=sel_num; 5=kill_num; 6=ret_num
   matrix annual_catch(styr-1,YrMax,1,6)  //  same six as above
@@ -318,18 +348,22 @@ PARAMETER_SECTION
   number harvest_rate;                        // Harvest rate
   number maxpossF;
 
-  4darray Z_rate(styr-3*nseas,k,1,pop,1,gmorph,0,nages)
-  3darray Zrate2(1,pop,1,gmorph,0,nages)
 
  LOCAL_CALCS
-  if(N_Fparm>0)    // continuous F
-     {k=N_Fparm;
-      Fparm_PH_dim.deallocate();
-      Fparm_PH_dim.allocate(1,N_Fparm);
-      for (int j=1;j<=N_Fparm;j++) Fparm_PH_dim(j) = Fparm_PH[j];
-      }
+  // clang-format on
+  if (N_Fparm > 0) // continuous F
+  {
+    k = N_Fparm;
+    Fparm_PH_dim.deallocate();
+    Fparm_PH_dim.allocate(1, N_Fparm);
+    for (int j = 1; j <= N_Fparm; j++)
+      Fparm_PH_dim(j) = Fparm_PH[j];
+  }
   else
-    {k=-1;}
+  {
+    k = -1;
+  }
+  // clang-format off
  END_CALCS
  //  defining F_rate as number_vector allows for Fparm_PH to be element specific
   init_bounded_number_vector F_rate(1,k,0.,max_harvest_rate,Fparm_PH_dim)
@@ -424,7 +458,9 @@ PARAMETER_SECTION
   number overdisp     // overdispersion
 
  LOCAL_CALCS
-  k=Do_TG*(3*N_TG+2*Nfleet1);
+   // clang-format on
+   k = Do_TG * (3 * N_TG + 2 * Nfleet1);
+  // clang-format off
  END_CALCS
 
   init_bounded_number_vector TG_parm(1,k,TG_parm_LO,TG_parm_HI,TG_parm_PH);
@@ -437,10 +473,12 @@ PARAMETER_SECTION
   matrix parm_timevary(1,timevary_cnt,styr-1,YrMax);  //  time series of adjusted parm values for block and trend
 
  LOCAL_CALCS
-  if(Do_Forecast>0)
-  {k=TimeMax_Fcast_std+nseas;}
+  // clang-format on
+  if (Do_Forecast > 0)
+    k = TimeMax_Fcast_std + nseas;
   else
-  {k=TimeMax+nseas;}
+    k = TimeMax + nseas;
+  // clang-format off
  END_CALCS
 
 !!//  SS_Label_Info_5.1.7 #Create arrays for storing derived selectivity quantities for use in mortality calculations
@@ -536,7 +574,7 @@ PARAMETER_SECTION
   matrix TG_save(1,N_TG,1,3+TG_endtime)
 
   // save gradients for all active parameters
-  !! int parm_grad_active_count = max(1,active_count);     // the dummy parameter is still in there even if no other params are estimated
+!! int parm_grad_active_count = max(1,active_count);     // the dummy parameter is still in there even if no other params are estimated
   vector parm_gradients(1,parm_grad_active_count);
 
 !!//  SS_Label_Info_5.2 #Create sdreport vectors
@@ -557,13 +595,16 @@ PARAMETER_SECTION
   vector selparm_Like(1,N_selparm2)
   vector SR_parm_Like(1,N_SRparm3)
   vector recdev_cycle_Like(1,recdev_cycle)
-  !! k=Do_TG*(3*N_TG+2*Nfleet1);
+!! k=Do_TG*(3*N_TG+2*Nfleet1);
   vector TG_parm_Like(1,k);
 
 !!//  SS_Label_Info_5.4  #Define objective function
   objective_function_value obj_fun
   number last_objfun
   vector phase_output(1,max_phase+1)
-  !!cout<<" end of parameter section "<<endl;
-  !!echoinput<<"end of parameter section"<<endl;
+!!cout<<" end of parameter section "<<endl;
+!!echoinput<<"end of parameter section"<<endl;
 //  }  // end of parameter section
+
+
+

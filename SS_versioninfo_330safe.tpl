@@ -1,9 +1,9 @@
 DATA_SECTION
 !! // Stock Synthesis
 !! // Developed by Richard Methot, NOAA Fisheries
-  
+
 !! //  SS_Label_Section_1.0 #DATA_SECTION
-  
+
 !! //  SS_Label_Info_1.1.1  #Create string with version info
 !!version_info += "#V3.30.xx.yy;_safe;_compile_date:_";
 !!version_info += __DATE__;

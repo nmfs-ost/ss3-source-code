@@ -1,7 +1,7 @@
 // SS_Label_file  #15. **SS_expval.tpl**
 // SS_Label_file  # * <u>Get_expected_values()</u>  // for a specified season and subseason that has data, updates the ALK for that time and calculates expected values for any type of data from any fleet/survey
 // SS_Label_file  #
-  
+
 //********************************************************************
  /*  SS_Label_FUNCTION 46  Get_expected_values:  check for data */
 FUNCTION void Get_expected_values(const int y, const int t);
@@ -34,7 +34,7 @@ FUNCTION void Get_expected_values(const int y, const int t);
               int ALK_finder = (ALK_idx - 1) * gmorph + g;
               ivector ALK_range_lo = ALK_range_g_lo(ALK_finder);
               ivector ALK_range_hi = ALK_range_g_hi(ALK_finder);
-  
+
               gg = sx(g);
               if (gg == 2)
               {
@@ -48,7 +48,7 @@ FUNCTION void Get_expected_values(const int y, const int t);
                 L2 = nlength;
                 A2 = 0;
               }
-  
+
               /*
             if(F_Method==1 && surveytime(f)<0.0) //  Pope's approximation
             {tempvec_a=elem_prod(Nmid(g),sel_a(y,f,gg));}  //  CHECK   Nmid may not exist correctly unless still within the area loop
@@ -74,7 +74,7 @@ FUNCTION void Get_expected_values(const int y, const int t);
                 }
               }
               tempvec_a = elem_prod(tempvec_a, keep_age(g, ALK_idx));
-  
+
               if (Do_Retain(f) == 0)
               {
                 if (dolen(f) == 1)
@@ -131,7 +131,7 @@ FUNCTION void Get_expected_values(const int y, const int t);
                   }
                 }
               }
-  
+
               //  code below once erroneously built up catch by morph from exp_AL
               //  that approach is incorrect, because exp_AL already accumulates the morphs!!!!!
               //  putting a morph accumulation into the code above would slow computations for everyone in order to have this rarely used feature
@@ -143,7 +143,7 @@ FUNCTION void Get_expected_values(const int y, const int t);
               {
                 int j = have_data(ALK_time, f, 8, 1); //  observation number
                 //             	{Morphcomp_exp(j,5+GP4(g))+=sum(exp_AL);
-  
+
                 if (Do_Retain(f) == 0)
                 {
                   if (dolen(f) == 1) //  uses length selectivity
@@ -206,7 +206,7 @@ FUNCTION void Get_expected_values(const int y, const int t);
                 }
               }
             } //close gmorph loop
-  
+
           exp_l_temp = colsum(exp_AL); //  total size composition
           agetemp = rowsum(exp_AL); //  total age composition
   #ifdef DO_ONCE
@@ -231,10 +231,10 @@ FUNCTION void Get_expected_values(const int y, const int t);
             exp_truea_ret = agetemp; //  covers cases where retention not used, but observations have partition=2
             exp_l_temp_ret = exp_l_temp;
           }
-  
+
           //          end creation of selected A-L
         }
-  
+
         if (sum(exp_l_temp) < 1.0e-8)
         {
           if (do_once == 1)
@@ -363,7 +363,7 @@ FUNCTION void Get_expected_values(const int y, const int t);
                     vbio = Recruits;
                     break;
                   }
-  
+
                   case 34: // spawning biomass depletion
                   {
                     if (pop == 1 || fleet_area(f) == 0)
@@ -379,7 +379,7 @@ FUNCTION void Get_expected_values(const int y, const int t);
                   case 35: // parm deviation  #35
                   {
                     k = Q_setup(f, 2); //  specify which parameter's time-vary vector will be compared to this survey
-  
+
                     if (y >= parm_dev_minyr(k) && y <= parm_dev_maxyr(k))
                     {
                       vbio = parm_dev(k, y);
@@ -393,7 +393,7 @@ FUNCTION void Get_expected_values(const int y, const int t);
                   }
                 }
                 Svy_selec_abund(f, j) = value(vbio);
-  
+
                 //  get catchability
                 if (Q_setup(f, 1) == 2) // mirror Q from lower numbered survey
                 {
@@ -405,7 +405,7 @@ FUNCTION void Get_expected_values(const int y, const int t);
                   Svy_log_q(f, j) = Svy_log_q(Q_setup(f, 2), 1) + Q_parm(Q_setup_parms(f, 1) + 1);
                   Q_parm(Q_setup_parms(f, 1)) = Svy_log_q(f, 1); // base Q  So this sets parameter equal to the scaling coefficient and can then have a prior
                 }
-  
+
                 else //  Q from parameter
                 {
                   if (Qparm_timevary(Q_setup_parms(f, 1)) == 0) //  not time-varying
@@ -417,7 +417,7 @@ FUNCTION void Get_expected_values(const int y, const int t);
                     Svy_log_q(f, j) = parm_timevary(Qparm_timevary(Q_setup_parms(f, 1)), Svy_yr(f, j));
                   }
                 }
-  
+
                 // SS_Label_Info_25.1.3 #log or not
                 if (Svy_errtype(f) == -1) // normal
                 {
@@ -427,7 +427,7 @@ FUNCTION void Get_expected_values(const int y, const int t);
                 {
                   Svy_q(f) = mfexp(Svy_log_q(f)); // get q in arithmetic space
                 }
-  
+
                 // SS_Label_Info_46.1.1 #note order of operations,  vbio raised to a power, then constant is added, then later multiplied by Q.  Needs work
                 /*
    //  old code here
@@ -471,12 +471,12 @@ FUNCTION void Get_expected_values(const int y, const int t);
                  }
                }
    */
-  
+
                 if (Q_setup(f, 1) == 3) //  link is power function
                 {
                   vbio = pow(vbio, 1.0 + Q_parm(Q_setup_parms(f, 1) + 1));
                 } //  raise vbio to a power
-  
+
                 if (Svy_errtype(f) >= 0) //  lognormal or T-distribution
                 {
                   Svy_est(f, j) = log(vbio + 0.000001);
@@ -485,7 +485,7 @@ FUNCTION void Get_expected_values(const int y, const int t);
                 {
                   Svy_est(f, j) = vbio;
                 }
-  
+
                 if (Q_setup(f, 5) == 0 || y > endyr) // apply Q, but note: float Q will be calculated and applied in objfun section, so temporarily store vbio in svy_est.
                 // if y is in forecast, then Q has already been calculated so can be applied here
                 {
@@ -501,7 +501,7 @@ FUNCTION void Get_expected_values(const int y, const int t);
               }
               break;
             } //  end survey index
-  
+
             case (2): //  DISCARD_OUTPUT
               /* SS_Label_46.2 expected discard amount */
               {
@@ -557,7 +557,7 @@ FUNCTION void Get_expected_values(const int y, const int t);
                 }
                 break;
               } //  end discard
-  
+
             case (3): // mean body weight
               /* SS_Label_46.3 expected mean body weight */
               {
@@ -607,7 +607,7 @@ FUNCTION void Get_expected_values(const int y, const int t);
                 }
                 break;
               }
-  
+
             case (4): //  length composition
               /* SS_Label_46.4  length composition */
               {
@@ -655,7 +655,7 @@ FUNCTION void Get_expected_values(const int y, const int t);
                 }
                 break;
               } // end  length composition
-  
+
             case (5): //  age composition
               /* SS_Label_46.5  age composition */
               {
@@ -692,20 +692,20 @@ FUNCTION void Get_expected_values(const int y, const int t);
                                 << "exp with ageerr " << exp_a(f, i) << endl;
                     //  add code here to store exp_a_true(f,i)=age_exp
                     //  then in data generation the sample can be from true age before ageing error is applied
-  
+
                     //              if(docheckup==1) echoinput<<" real age "<<age_exp<<endl<<"Lbin "<<Lbin_filter(f,i)<<endl<<" obs "<<obs_a(f,i)<<endl<<" exp with ageerr "<<exp_a(f,i)<<endl;
-  
+
                   } // end agecomp loop within fleet/time
                 }
                 break;
               } // end age composition
-  
+
             case (6): //  weight composition (generalized size composition)
               /* SS_Label_46.6  weight composition (generalized size composition) */
               {
                 if (SzFreq_Nmeth > 0) //  have some sizefreq data
                 {
-  
+
                   if (have_data(ALK_time, f, data_type, 0) > 0)
                   {
                     for (j = 1; j <= have_data(ALK_time, f, data_type, 0); j++) // loop all obs of this type
@@ -735,10 +735,10 @@ FUNCTION void Get_expected_values(const int y, const int t);
                             } // male
                             topbin = 0.;
                             botbin = 0.;
-  
+
                             //  NOTE:  wt_len_low is  calculated separately for each growth pattern (GPat)
                             //  but the code below still just uses GPat=1 for calculation of the sizefreq transition matrix
-  
+
                             switch (SzFreq_units(SzFreqMethod)) // biomass vs. numbers are accumulated in the bins
                             {
                               case (1): // units are biomass, so accumulate body weight into the bins;  Assume that bin demarcations are also in biomass
@@ -758,7 +758,7 @@ FUNCTION void Get_expected_values(const int y, const int t);
                                           << " error:  max population size " << wt_len_low(s, 1, z1) << " is less than first data bin " << SzFreq_bins(SzFreqMethod, 1) << " for SzFreqMethod " << SzFreqMethod << endl;
                                   exit(1);
                                 }
-  
+
                                 if (wt_len_low(s, 1, nlength2) < SzFreq_bins(SzFreqMethod, SzFreq_Nbins(SzFreqMethod)))
                                 {
                                   N_warn++;
@@ -767,7 +767,7 @@ FUNCTION void Get_expected_values(const int y, const int t);
                                           << " error:  max population size " << wt_len_low(s, 1, nlength2) << " is less than max data bin " << SzFreq_bins(SzFreqMethod, SzFreq_Nbins(SzFreqMethod)) << " for SzFreqMethod " << SzFreqMethod << endl;
                                   exit(1);
                                 }
-  
+
                                 for (z = z1; z <= z2; z++)
                                 {
                                   if (ibin == SzFreq_Nbins(SzFreqMethod))
@@ -816,7 +816,7 @@ FUNCTION void Get_expected_values(const int y, const int t);
                               } //  end of units in biomass
                               // NOTE: even though  the transition matrix is currently in units of biomass distribution, there is no need to
                               // normalize to sum to 1.0 here because the normalization will occur after it gets used to create SzFreq_exp
-  
+
                               case (2): // units are numbers
                               {
                                 if (SzFreq_scale(SzFreqMethod) <= 2) //  bin demarcations are in weight units (1=kg, 2=lbs), so uses wt_len to compare to bins
@@ -844,7 +844,7 @@ FUNCTION void Get_expected_values(const int y, const int t);
                                             << " error:  max population size " << wt_len_low(s, 1, nlength2) << " is less than max data bin " << SzFreq_bins(SzFreqMethod, SzFreq_Nbins(SzFreqMethod)) << " for SzFreqMethod " << SzFreqMethod << endl;
                                     exit(1);
                                   }
-  
+
                                   for (z = z1; z <= z2; z++)
                                   {
                                     if (ibin == SzFreq_Nbins(SzFreqMethod))
@@ -883,7 +883,7 @@ FUNCTION void Get_expected_values(const int y, const int t);
                                     }
                                   }
                                 }
-  
+
                                 else //  bin demarcations are in length unit (3=cm, 4=inch) so uses population len_bins to compare to data bins
                                 {
                                   if (SzFreq_Omit_Small(SzFreqMethod) == 1)
@@ -894,7 +894,7 @@ FUNCTION void Get_expected_values(const int y, const int t);
                                     }
                                     //  echoinput<<"accumulate starting at bin: "<<z1<<endl;
                                   } // ignore tiny fish
-  
+
                                   if (len_bins2(nlength2) < SzFreq_bins(SzFreqMethod, SzFreq_Nbins(SzFreqMethod)))
                                   {
                                     N_warn++;
@@ -903,7 +903,7 @@ FUNCTION void Get_expected_values(const int y, const int t);
                                             << " error:  max population len bin " << len_bins2(nlength2) << " is less than max data bin " << SzFreq_bins(SzFreqMethod, SzFreq_Nbins(SzFreqMethod)) << " for SzFreqMethod " << SzFreqMethod << endl;
                                     exit(1);
                                   }
-  
+
                                   for (z = z1; z <= z2; z++)
                                   {
                                     if (ibin == SzFreq_Nbins(SzFreqMethod))
@@ -951,7 +951,7 @@ FUNCTION void Get_expected_values(const int y, const int t);
                           } // end gender loop
                         } //  end needing to calc the matrix because it may have changed
                       } // done calculating the SzFreqTransition matrix for this method
-  
+
                       switch (SzFreq_obs_hdr(iobs, 5)) // discard/retained partition
                       {
                         case (0):
@@ -974,7 +974,7 @@ FUNCTION void Get_expected_values(const int y, const int t);
                       if (do_once == 1)
                         echoinput << y << " " << f << " szfreq_exp_initial  " << SzFreq_exp(iobs) << endl;
   #endif
-  
+
                       if (gender == 2)
                       {
                         k = SzFreq_obs_hdr(iobs, 8); // max bins for this method
@@ -1047,7 +1047,7 @@ FUNCTION void Get_expected_values(const int y, const int t);
                 } //  end use of generalized size freq data
                 break;
               } //  end generalized size composition
-  
+
             case (7): //  mean size-at-age
               /* SS_Label_46.7  mean size at age */
               {
@@ -1115,7 +1115,7 @@ FUNCTION void Get_expected_values(const int y, const int t);
                 } // endl size-at-age
                 break;
               } //  end mean size-at-age
-  
+
           } // end switch(data_type)
         } //  end loop for types of data
       }

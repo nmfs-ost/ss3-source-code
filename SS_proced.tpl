@@ -7,7 +7,7 @@
 // SS_Label_file  #     - upon reaching convergence, or if in mceval, do Dynamic_Bzero by calling those functions again with fishery_on_off=0
 // SS_Label_file  #
 // SS_Label_file  #  - call <u>setup_Benchmark(), Get_Benchmark(), Get_Forecast()</u>
-  
+
 // ****************************************************************************************************************
 //  SS_Label_Section_7.0 #PROCEDURE_SECTION
 PROCEDURE_SECTION
@@ -18,19 +18,19 @@ PROCEDURE_SECTION
   niter++;
   if (mceval_phase())
     mceval_counter++; // increment the counter
-  
+
   if (initial_params::mc_phase == 1) //  in MCMC phase
   {
-  
+
     if (mcmc_counter == 0)
     {
       SR_parm(1) += MCMC_bump;
       cout << mcmc_counter << "   adjusted SR_parm in first mcmc call " << SR_parm(1) << "  by  " << MCMC_bump << endl;
     }
-  
+
     mcmc_counter++;
   }
-  
+
   if (mcmcFlag == 1) //  so will do mcmc this run or is in mceval
   {
     if (Do_ParmTrace == 1)
@@ -40,7 +40,7 @@ PROCEDURE_SECTION
     if (mcmc_counter > 10 || mceval_counter > 10)
       Do_ParmTrace = 0;
   }
-  
+
   //  SS_Label_Info_7.3 #get Hrate from the parameter vector F_rate
   //  note that in SS_global  BETWEEN_PHASES is where F_rate, which is the parameter, gets assigned a starting value Hrate from Hrate calculated by hybrid in previous PH
   //  be careful about phases for when this mapping occurs for a whole fleet, versus estimation phase which can be value specific
@@ -60,11 +60,11 @@ PROCEDURE_SECTION
         }
     }
   }
-  
+
   //  SS_Label_Info_7.4 #Do the time series calculations
   if (mceval_counter == 0 || (mceval_counter > burn_intvl && ((double(mceval_counter) / double(thin_intvl)) - double((mceval_counter / thin_intvl)) == 0))) // check to see if burn in period is over
   {
-  
+
     //  create bigsaver to simplfy some condition statements later
     if ((save_for_report > 0) || ((sd_phase() || mceval_phase()) && (initial_params::mc_phase == 0))) // (SAVE || ( (SD || EVAL) && (!MCMC) ) )
     {
@@ -86,14 +86,14 @@ PROCEDURE_SECTION
     {
       cout << " OK with time series" << endl;
     }
-  
+
     //  SS_Label_Info_7.4.3 #Call fxn evaluate_the_objective_function()
     evaluate_the_objective_function();
-  
+
     //  SS_Label_Info_7.6 #If sdphase or mcevalphase, do benchmarks and forecast and derived quantities
     if ((sd_phase() || mceval_phase()) && (initial_params::mc_phase == 0))
     {
-  
+
       //  SS_Label_Info_7.6.1 #Call fxn Get_Benchmarks()
       if (Do_Benchmark > 0)
       {
@@ -102,7 +102,7 @@ PROCEDURE_SECTION
         Get_Benchmarks(show_MSY);
       }
       did_MSY = 1; //  set flag to not calculate the benchmarks again in final section
-  
+
       if (Do_Dyn_Bzero > 0) //  do dynamic Bzero
       {
         save_gparm = 0;
@@ -131,7 +131,7 @@ PROCEDURE_SECTION
           }
         }
       } //  end dynamic Bzero calculations, will write after big report
-  
+
       save_gparm = 0;
       fishery_on_off = 1;
       if (mceval_phase() > 0)
@@ -142,15 +142,18 @@ PROCEDURE_SECTION
       } //  so only show details if not in mceval
       if (show_MSY == 1)
         cout << "do benchmark and forecast if requested in sdphase" << endl;
-  
+
       setup_recdevs();
       y = styr;
       get_initial_conditions();
       get_time_series(); //  in write_big_report
       evaluate_the_objective_function();
-      setup_Benchmark();
-      Get_Benchmarks(show_MSY);
-  
+      if (Do_Benchmark > 0)
+      {
+        setup_Benchmark();
+        Get_Benchmarks(show_MSY);
+      }
+
       //  SS_Label_Info_7.6.2 #Call fxn Get_Forecast()
       if (Do_Forecast > 0)
       {
@@ -158,13 +161,13 @@ PROCEDURE_SECTION
           report5 << "THIS FORECAST FOR PURPOSES OF STD REPORTING" << endl; // controls writing to forecast-report.sso
         Get_Forecast();
       }
-  
+
       //  SS_Label_Info_7.7 #Call fxn Process_STDquant() to move calculated values into sd_containers
       Process_STDquant();
       if (rundetail > 0 && mceval_phase() == 0)
         cout << "finished benchmark, forecast, and sdreporting" << endl;
     } // end of things to do in std_phase
-  
+
     //  SS_Label_Info_7.9 #Do screen output of procedure results from this iteration
     if (current_phase() <= max_phase + 1)
       phase_output(current_phase()) = value(obj_fun);
@@ -241,7 +244,7 @@ PROCEDURE_SECTION
         finished_minimize = 2; //  this prevents _hs flag  for the one iteration that occurs after minimizer ends and before first tweak of Hessian
       if (mceval_phase())
         ParmTrace << "_mc";
-  
+
       ParmTrace << " " << niter << " ";
       ParmTrace.precision(10);
       ParmTrace << obj_fun << " " << obj_fun - last_objfun << " " << value(SSB_yr(styr)) << " " << value(SSB_yr(endyr));
@@ -293,7 +296,7 @@ PROCEDURE_SECTION
         if (Do_Impl_Error > 0)
           ParmTrace << Fcast_impl_error << " ";
       }
-  
+
       for (f = 1; f <= N_init_F; f++)
       {
         if (init_F_PH(f) > 0)
@@ -311,7 +314,7 @@ PROCEDURE_SECTION
           }
         }
       }
-  
+
       for (f = 1; f <= Q_Npar2; f++)
       {
         if (Q_parm_PH(f) > 0)
@@ -426,7 +429,7 @@ PROCEDURE_SECTION
     if (mceval_phase())
     {
       get_posteriors();
-  
+
       //SS_Label_Info_7.12 #write report_mce_XXXX.sso and compreport_mce_XXXX.sso for each MCEVAL
       //        warning<<mceval_counter<<" SSB 2021 2022 "<<SSB_std(N_STD_Yr-4)<<" "<<SSB_std(N_STD_Yr-3)<<endl<<endl;
       if (mcmc_output_detail >= 2)
