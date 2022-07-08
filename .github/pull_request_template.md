@@ -10,6 +10,15 @@ Link issue(s), replacing everything in `[ ]`: resolves #[add issue number number
 
 ## What tests/review still need to be done? Who can do it, and by when is it needed (ideally)?
 
+## is there an input change for users to Stock Synthesis? 
+
+If so, please provide an example of the new inputs needed.
+
+```
+[New example stock synthesis input goes here]
+
+```
+
 ## Check which is true. This PR requires:
 
 - [ ] no further changes to r4ss
