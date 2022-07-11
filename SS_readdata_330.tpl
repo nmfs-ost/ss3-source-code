@@ -4096,6 +4096,10 @@
     echoinput << "# Note that fleet allocation is used directly as average F if Do_Forecast=4 " << endl;
     *(ad_comm::global_datafile) >> Fcast_RelF_Basis;
     echoinput << Fcast_RelF_Basis << " # echoed value" << endl;
+    if (Fcast_RelF_Basis <1 || Fcast_RelF_Basis > 2) {
+      warnstream << "Fcast_relF_Basis value must be 1 or 2" << endl;
+      write_warning(N_warn, 1, 1);
+    }
     if (Do_Forecast_rd == 4 && Fcast_RelF_Basis == 2) {
       warnstream << "Cannot specify forecast fleet relative F because Do_Forecast==4 specifies relative F directly as F;" << endl
                  << "  need to align choice of forecast basis and forecast relative F basis";
