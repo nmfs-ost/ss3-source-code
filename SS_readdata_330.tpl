@@ -4096,7 +4096,7 @@
     echoinput << "# Note that fleet allocation is used directly as average F if Do_Forecast=4 " << endl;
     *(ad_comm::global_datafile) >> Fcast_RelF_Basis;
     echoinput << Fcast_RelF_Basis << " # echoed value" << endl;
-    if (Fcast_RelF_Basis <1 || Fcast_RelF_Basis > 2) {
+    if (Fcast_RelF_Basis < 1 || Fcast_RelF_Basis > 2) {
       warnstream << "Fcast_relF_Basis value must be 1 or 2" << endl;
       write_warning(N_warn, 1, 1);
     }
