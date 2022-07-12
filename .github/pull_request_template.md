@@ -1,16 +1,21 @@
+## Concisely (20 words or less) describe the issue
 
-## What issue(s) does this PR address? 
-(note: including the keyword "resolves" means the issue will be closed automatically when merged in.)
+## Please Link issue(s)
 
-Link issue(s), replacing everything in `[ ]`: resolves #[add issue number number], resolves #[optional second issue number if more than 1 issue addressed.]
-
-## Describe the issue, if not included in the PR
+resolves #[add issue number number], resolves #[optional second issue number if more than 1 issue addressed.]
 
 ## What tests have been done? Upload any model input files created for testing in a zip file, if possible.
 
 ## What tests/review still need to be done? Who can do it, and by when is it needed (ideally)?
 
+## Has any new code been documented?
+
+If not, please add documentation before submitting the Pull Request.
+- [ ] I have documented any new code added (or no new code was added)
+
 ## is there an input change for users to Stock Synthesis? 
+
+- [ ] Yes, there was an input change
 
 If so, please provide an example of the new inputs needed.
 
@@ -30,9 +35,9 @@ If so, please provide an example of the new inputs needed.
 
 ## If changes are needed in the change log, please fill in the table here:
 
-Version | Date       | Description               | Issue        | Input change | Action                | Topic                                     | Type  |
-| ----- | ---------- | ---------------------- | ------------ | ------------ | --------------------- | ----------------------------------------- | --------------------------------------- |
-3.30.20 | [Add date] | [add concise description] | #[add issue] | [yes or no]  | [fix, new, or revise] | [e.g., biology. Use issue label options.] | [input, output, and/or calc, or ALL] |
+| Action                | Topics                                     | Type  |
+| --------------------- | ----------------------------------------- | --------------------------------------- |
+| [fix, new, or revise] | [e.g., biology. Use issue label options.] | [input, output, and/or calc, or ALL] |
 
 
 ## Additional information (optional):
