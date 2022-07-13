@@ -1569,7 +1569,7 @@ FUNCTION void get_mat_fec();
           if (do_once == 1)
           echoinput << "fecundity option: " << Fecund_Option << " parms: " << wtlen_p(GPat)(5, 6) << endl;
           // fec_len should only get calculated in maturity option = 1, 2, 3, or 6
-          // maturity option 4 and 6 bypass maturity and read empirical fecundity-at-age
+          // maturity option 4 and 5 bypass maturity and read empirical fecundity-at-age
 
           switch (Fecund_Option)
           {

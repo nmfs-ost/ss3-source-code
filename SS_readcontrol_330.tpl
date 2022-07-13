@@ -1090,7 +1090,7 @@
   {
     k2 = 0;
   }
-  if (Maturity_Option == 5 || Maturity_Option == 4) {
+  if (Maturity_Option == 4 || Maturity_Option == 5) {
     do_fec_len = 0;
   }
   else {
@@ -1113,7 +1113,7 @@
  END_CALCS
   init_matrix Age_Maturity(1,k1,0,nages) // for maturity option 3 or 4
   init_matrix Length_Maturity(1,k2,1,nlength)  //  for maturity option 6
-!!if(k1>0) echoinput<<"  read Age_Maturity for each GP"<<Age_Maturity<<endl;
+!!if(k1>0) echoinput<<"  read Age_Maturity(3) or Age_Fecundity(4) for each GP"<<Age_Maturity<<endl;
 !!if(k2>0) echoinput<<"  read Length_Maturity for each GP"<<Length_Maturity<<endl;
 
   init_int First_Mature_Age     // first age with non-zero maturity

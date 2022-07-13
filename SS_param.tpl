@@ -92,7 +92,7 @@ PARAMETER_SECTION
   // If empirical wt-at-age is used, maturity and fecundity vectors are set to a distinctive value of 0.5
   // If parameters are used, then the calcs could be age-based or length-based or both, so start with default value of 1.0
   // These calculations happen in function get_mat_fec() in file SS_biofxn.tpl
-   if (WTage_rd == 1) {
+   if (WTage_rd == 1 || Maturity_Option == 4 || Maturity_Option == 5 ) {
      mat_len = 0.5;
      mat_age = 0.5;
      mat_fec_len = 0.5;
