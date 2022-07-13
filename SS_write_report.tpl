@@ -3272,7 +3272,7 @@ FUNCTION void write_bigoutput()
     }
     else
     {
-      SS2out << "GLen_lo Len_mean Wt_F Mat Mat*Fec Fec";
+      SS2out << "GP Bin Len_lo Len_mean Wt_F Mat Mat*Fec Fec";
     }
     if(Maturity_Option == 4 || Maturity_Option == 5) {
       SS2out << " // [Mat, Mat*Fec, and Fec reported as 0.5 because maturity option directly reads age_fecundity]";
