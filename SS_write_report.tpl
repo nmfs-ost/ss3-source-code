@@ -3268,14 +3268,14 @@ FUNCTION void write_bigoutput()
     SS2out << sum(use_morph) << " " << nlength << " " << nages << " " << nseas << " N_Used_morphs;_lengths;_ages;_season;_by_season_in_endyr" << endl;
     if (gender == 2)
     {
-      SS2out << "GP Bin Low Mean_Size Wt_len_F Mat_len Spawn Wt_len_M Fecundity";
+      SS2out << "GP Bin Len_lo Len_mean Wt_F Mat Mat*Fec Wt_M Fec";
     }
     else
     {
-      SS2out << "GP Bin Low Mean_Size Wt_len Mat_len Spawn Fecundity";
+      SS2out << "GLen_lo Len_mean Wt_F Mat Mat*Fec Fec";
     }
     if(Maturity_Option == 4 || Maturity_Option == 5) {
-      SS2out << " // [Mat@Len, Spawn (Mat_Fec@Len), and Fecundity@Len reported as 0.5 because maturity option directly reads age_maturity]";
+      SS2out << " // [Mat, Mat*Fec, and Fec reported as 0.5 because maturity option directly reads age_fecundity]";
     }
     SS2out << endl;
     for (gp = 1; gp <= N_GP; gp++)
