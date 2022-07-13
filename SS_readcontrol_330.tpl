@@ -1066,12 +1066,14 @@
  END_CALCS
 
 !!//  SS_Label_Info_4.5.2 #Process biology
+  int do_fec_len                 //  switch based on maturity option to trigger fecundity calcs
   init_int Maturity_Option       // 1=length logistic; 2=age logistic; 3=read age-maturity
-                                  //  4=read age-fecundity;  6=read length-maturity
+                                  //  4=read age-fecundity;  5=read age-fec from wtatage.ss; 6=read length-maturity
+                            // options 1, 2, 3, 6 can be used with fecundity options to create fecundity-at-age: fec(g)
+                            // options 4 and 5 read fecundity directly, so the concept of maturity is not defined
  LOCAL_CALCS
       // clang-format on
-      echoinput
-      << Maturity_Option << "  Maturity_Option" << endl;
+      echoinput << Maturity_Option << "  Maturity_Option" << endl;
   if (Maturity_Option == 3 || Maturity_Option == 4)
   {
     k1 = N_GP;
@@ -1087,6 +1089,12 @@
   else
   {
     k2 = 0;
+  }
+  if (Maturity_Option == 5 || Maturity_Option == 4) {
+    do_fec_len = 0;
+  }
+  else {
+    do_fec_len = 1;
   }
   
   if (Maturity_Option == 5)

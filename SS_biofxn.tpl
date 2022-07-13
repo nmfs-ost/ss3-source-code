@@ -1557,62 +1557,71 @@ FUNCTION void get_mat_fec();
       if (WTage_rd == 1)
       {
         fec(g) = Wt_Age_t(t, -2, g);
+        make_mature_numbers(g)(First_Mature_Age, nages) = 1.0;
+        //  all other vectors set to contant value of 0.5
       }
       else
-      { // make fecundity from biology
-
-        if (do_once == 1)
-          echoinput << "fecundity option: " << Fecund_Option << " parms: " << wtlen_p(GPat)(5, 6) << endl;
-
-        switch (Fecund_Option)
+      {
+        if (do_fec_len == 1)
         {
-          case 1: // as eggs/kg (SS original configuration)
+          // make fecundity from biology
+
+          if (do_once == 1)
+          echoinput << "fecundity option: " << Fecund_Option << " parms: " << wtlen_p(GPat)(5, 6) << endl;
+          // fec_len should only get calculated in maturity option = 1, 2, 3, or 6
+          // maturity option 4 and 6 bypass maturity and read empirical fecundity-at-age
+
+          switch (Fecund_Option)
           {
-            fec_len(gp) = wtlen_p(GPat, 5) + wtlen_p(GPat, 6) * wt_len(s, gp);
-            fec_len(gp) = elem_prod(wt_len(s, gp), fec_len(gp));
-            break;
-          }
-          case 2:
-          { // as eggs = f(length)
-            fec_len(gp) = wtlen_p(GPat, 5) * pow(len_bins_m, wtlen_p(GPat, 6));
-            break;
-          }
-          case 3:
-          { // as eggs = f(body weight)
-            fec_len(gp) = wtlen_p(GPat, 5) * pow(wt_len(s, gp), wtlen_p(GPat, 6));
-            break;
-          }
-          case 4:
-          { // as eggs = a + b*Len
-            fec_len(gp) = wtlen_p(GPat, 5) + wtlen_p(GPat, 6) * len_bins_m;
-            if (wtlen_p(GPat, 5) < 0.0)
+            case 1: // as eggs/kg (SS original configuration)
             {
-              z = 1;
-              while (fec_len(gp, z) < 0.0)
-              {
-                fec_len(gp, z) = 0.0;
-                z++;
-              }
+              fec_len(gp) = wtlen_p(GPat, 5) + wtlen_p(GPat, 6) * wt_len(s, gp);
+              fec_len(gp) = elem_prod(wt_len(s, gp), fec_len(gp));
+              break;
             }
-            break;
-          }
-          case 5:
-          { // as eggs = a + b*Wt
-            fec_len(gp) = wtlen_p(GPat, 5) + wtlen_p(GPat, 6) * wt_len(s, gp);
-            if (wtlen_p(GPat, 5) < 0.0)
-            {
-              z = 1;
-              while (fec_len(gp, z) < 0.0)
-              {
-                fec_len(gp, z) = 0.0;
-                z++;
-              }
+            case 2:
+            { // as eggs = f(length)
+              fec_len(gp) = wtlen_p(GPat, 5) * pow(len_bins_m, wtlen_p(GPat, 6));
+              break;
             }
-            break;
+            case 3:
+            { // as eggs = f(body weight)
+              fec_len(gp) = wtlen_p(GPat, 5) * pow(wt_len(s, gp), wtlen_p(GPat, 6));
+              break;
+            }
+            case 4:
+            { // as eggs = a + b*Len
+              fec_len(gp) = wtlen_p(GPat, 5) + wtlen_p(GPat, 6) * len_bins_m;
+              if (wtlen_p(GPat, 5) < 0.0)
+              {
+                z = 1;
+                while (fec_len(gp, z) < 0.0)
+                {
+                  fec_len(gp, z) = 0.0;
+                  z++;
+                }
+              }
+              break;
+            }
+            case 5:
+            { // as eggs = a + b*Wt
+              fec_len(gp) = wtlen_p(GPat, 5) + wtlen_p(GPat, 6) * wt_len(s, gp);
+              if (wtlen_p(GPat, 5) < 0.0)
+              {
+                z = 1;
+                while (fec_len(gp, z) < 0.0)
+                {
+                  fec_len(gp, z) = 0.0;
+                  z++;
+                }
+              }
+              break;
+            }
           }
         }
         if (do_once == 1)
           echoinput << "maturity option: " << Maturity_Option << " parms: " << wtlen_p(GPat)(3, 4) << endl;
+
         switch (Maturity_Option)
         {
           case 1: //  Maturity_Option=1  length logistic
