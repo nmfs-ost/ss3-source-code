@@ -1780,8 +1780,10 @@ FUNCTION void write_nucontrol()
             << Length_Maturity << endl;
   }
   report4 << First_Mature_Age << " #_First_Mature_Age" << endl;
-
-  report4 << Fecund_Option << " #_fecundity option:(1)eggs=Wt*(a+b*Wt);(2)eggs=a*L^b;(3)eggs=a*Wt^b; (4)eggs=a+b*L; (5)eggs=a+b*W" << endl;
+  if (Maturity_Option == 4 || Maturity_Option == 5) {
+    report4 << "# NOTE: maturity options 4 and 5 cause fecundity_at_length to be ignored, but parameters still needed " << endl;
+  }
+  report4 << Fecund_Option << " #_fecundity_at_length option:(1)eggs=Wt*(a+b*Wt);(2)eggs=a*L^b;(3)eggs=a*Wt^b; (4)eggs=a+b*L; (5)eggs=a+b*W" << endl;
   report4 << Hermaphro_Option << " #_hermaphroditism option:  0=none; 1=female-to-male age-specific fxn; -1=male-to-female age-specific fxn" << endl;
   if (Hermaphro_Option != 0)
   {
