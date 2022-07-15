@@ -6,11 +6,13 @@ on:
   push:
     paths:
       - '**.tpl'
-    branches: [main]
+    branches:
+      - main
   pull_request:
     paths:
       - '**.tpl'
-    branches: [main]
+    branches:
+      - main
 jobs:
   call-workflow:
     uses: nmfs-stock-synthesis/workflows/.github/workflows/run-ss3-mcmc.yml@main

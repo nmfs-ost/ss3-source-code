@@ -1,16 +1,17 @@
 # Check that SS_output and SS_plots run with changes in ss3.
 name: call-test-r4ss-with-ss3
-on: 
+on:
+  workflow_dispatch:
   push:
+    paths:
+      - '**.tpl'
     branches:
       - main
-    paths:
-      - '**.tpl'
   pull_request:
-    branches: 
-      - main
     paths:
       - '**.tpl'
+    branches:
+      - main
   workflow_dispatch:
 jobs:
   call-workflow:
