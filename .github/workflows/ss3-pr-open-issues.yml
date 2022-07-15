@@ -1,4 +1,5 @@
-name: Open issues on merging PRs in r4ss, doc, and SSI repos
+# Opens issues to r4ss, SSI, and doc repos when changes occur in SS3.
+name: ss3-pr-open-issues.yml
 on:
   pull_request_target:
     types:

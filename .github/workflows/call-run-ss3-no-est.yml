@@ -1,5 +1,5 @@
-# run models without estimation
-name: run-no-est
+# Build SS3 and run models without estimation and no hessian
+name: call-run-ss3-no-est
 on: 
   push:
     paths:
