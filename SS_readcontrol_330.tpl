@@ -3944,29 +3944,86 @@
     {
       echoinput << Comp_Err_ParmCount << "  #_parameters are needed: " << DM_parmlist << endl;
       Comp_Err_Parm_Start = N_selparm;
-      //  create a D-M parameter only for the first fleet that references that parm number
+      //  create a D-M parameter or tweedie parameter pair only for the first fleet that references that parm number
   
+  /*
       for (f = 1; f <= Comp_Err_ParmCount; f++)
       {
         N_selparm++;
         ParCount++;
         ParmLabel += "ln(DM_theta)_" + NumLbl(f);
       }
-      /*
-                for (f=1;f<=Nfleet;f++) {
-                  if(Comp_Err_L2(f)>0){
-                    if (DM_parmlist(f)==1) {
-                      N_selparm++; ParCount++; ParmLabel+="ln(DM_theta)_Len_P"+NumLbl(Comp_Err_L2(f))+"("+NumLbl(f)+")";}}
-                	}
-                for (f=1;f<=Nfleet;f++) {
-                  if(Comp_Err_A2(f)>0){
-                    if (DM_parmlist(f+Nfleet)==1) {
-                      N_selparm++; ParCount++; ParmLabel+="ln(DM_theta)_Age_P"+NumLbl(Comp_Err_A2(f))+"("+NumLbl(f)+")";}}
-                	}
-            */
+  */
+      for (f = 1; f <= Nfleet; f++)
+      {
+//        if( Comp_Err_L2(f) > 0)
+//        {
+          if (DM_parmlist(f) == 1)
+          {
+            N_selparm ++;
+            ParCount ++;
+            switch (Comp_Err_L2(f))
+            {
+              case 1:
+              {
+                ParmLabel += "ln(DM_theta_1)_Len_P" + NumLbl(Comp_Err_L2(f)) + "(" + NumLbl(f) + ")";
+                break;
+              }
+              case 2:
+              {
+                ParmLabel += "ln(DM_theta_2)_Len_P" + NumLbl(Comp_Err_L2(f)) + "(" + NumLbl(f) + ")";
+                break;
+              }
+              case 3:
+              {
+                ParmLabel += "ln(tweedie_Phi)_Len_P" + NumLbl(Comp_Err_L2(f)) + "(" + NumLbl(f) + ")";
+                N_selparm ++;
+                ParCount ++;
+                ParmLabel += "ln(tweedie_Power)_Len_P" + NumLbl(Comp_Err_L2(f)) + "(" + NumLbl(f) + ")";
+                break;
+              }
+            }
+          }
+//       	}
+      }
+
+      for (f = 1; f <= Nfleet; f++)
+      {
+//        if( Comp_Err_L2(f) > 0)
+//        {
+          if (DM_parmlist(f + Nfleet) == 1)
+          {
+            N_selparm ++;
+            ParCount ++;
+            switch (Comp_Err_A2(f))
+            {
+              case 1:
+              {
+                ParmLabel += "ln(DM_theta_1)_Age_P" + NumLbl(Comp_Err_A2(f)) + "(" + NumLbl(f) + ")";
+                break;
+              }
+              case 2:
+              {
+                ParmLabel += "ln(DM_theta_2)_Age_P" + NumLbl(Comp_Err_A2(f)) + "(" + NumLbl(f) + ")";
+                break;
+              }
+              case 3:
+              {
+                ParmLabel += "ln(tweedie_Phi)_Age_P" + NumLbl(Comp_Err_A2(f)) + "(" + NumLbl(f) + ")";
+                N_selparm ++;
+                ParCount ++;
+                ParmLabel += "ln(tweedie_Power)_Age_P" + NumLbl(Comp_Err_A2(f)) + "(" + NumLbl(f) + ")";
+                break;
+              }
+            }
+          }
+//       	}
+      }
+   //  add another loop here to add labels for parms created for generalized size comp
+   //  note that it would take a lot more code to append labels for parameters that are used by more than one fleet or type
     }
   }
-  
+
   for (f = 1; f <= Nfleet; f++)
   {
     if (disc_N_fleet(f) > 0 && seltype(f, 2) == 0 && seltype(f + Nfleet, 2) == 0)
