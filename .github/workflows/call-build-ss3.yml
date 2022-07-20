@@ -1,3 +1,4 @@
+# Build all SS3 binaries, for testing and distribution.
 name: call-build-ss3
 on: 
   push:
