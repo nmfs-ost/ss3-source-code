@@ -1000,7 +1000,6 @@
           {
             warnstream << "unequal number of starts and ends of discard superperiods ";
             write_warning(N_warn, 0, 1);
-            //            N_warn++; cout<<"EXIT - see warning"<<endl;  warning<<N_warn<<" "<<"unequal number of starts and ends of discard superperiods "<<endl; exit(1);
           }
           else
           {
