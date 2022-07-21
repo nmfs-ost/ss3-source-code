@@ -359,11 +359,9 @@ FUNCTION void evaluate_the_objective_function()
                 dirichlet_Parm=mfexp(selparm(Comp_Err_Parm_Start+Comp_Err_L2(f)))*nsamp_l(f,i);
                 in option 1, dirichlet_Parm = Theta*n from equation (10) of Thorson et al. 2016
                 in option 2, dirichlet_Parm = Beta from equation (4) of Thorson et al. 2016 */
+                dirichlet_Parm = mfexp(selparm(Comp_Err_parmloc(Comp_Err_L2(f),1)));
                 if (Comp_Err_L(f) == 1)
-                  dirichlet_Parm = mfexp(selparm(Comp_Err_Parm_Start + Comp_Err_L2(f))) * nsamp_l(f, i);
-                if (Comp_Err_L(f) == 2)
-                  dirichlet_Parm = mfexp(selparm(Comp_Err_Parm_Start + Comp_Err_L2(f)));
-                //                             dirichlet_Parm=mfexp(selparm(Comp_Err_Parm_Start+Comp_Err_L2(f)));
+                  dirichlet_Parm *= nsamp_l(f, i);
 
                 // note: first term in equations (4) and (10) is calculated
                 // as offset_l in SS_prelim.tpl and already included in length_like
@@ -388,9 +386,10 @@ FUNCTION void evaluate_the_objective_function()
 				dvariable tweedie_Phi;
 				dvariable tweedie_power;
 				// Exponentiate [PARAMETER_1]
-				tweedie_Phi = mfexp(selparm(Comp_Err_Parm_Start+Comp_Err_L2(f)));
+				int k1 = Comp_Err_parmloc(Comp_Err_L2(f),1);
+				tweedie_Phi = mfexp(selparm(k1));
 				// One plus logistic-transform [PARAMETER_1]
-				tweedie_power = 1.0 + mfexp(selparm(Comp_Err_Parm_Start+Comp_Err_L2(f)+1)) / (1.0+mfexp(selparm(Comp_Err_Parm_Start+Comp_Err_L2(f)+1)));
+				tweedie_power = 1.0 + mfexp(selparm(k1+1)) / (1.0+mfexp(selparm(k1+1)));
 				if(gen_l(f,i) !=2) //  so not male only
 				{
 				  // dtweedie( Type y, Type mu, Type phi, Type p, int give_log=0 )
@@ -514,17 +513,20 @@ FUNCTION void evaluate_the_objective_function()
                   age_like(f, i) -= nsamp_a(f, i) *
                       obs_a(f, i)(tails_w(3), tails_w(4)) * log(exp_a(f, i)(tails_w(3), tails_w(4)));
               }
-              else if (Comp_Err_A(f)==1) // dirichlet 
+              else if (Comp_Err_A(f)>=1) // dirichlet 
               {
                 /* from Thorson:  NLL -= gammln(A) - gammln(ninput_t(t)+A) + sum(gammln(ninput_t(t)*extract_row(pobs_ta,t) + A*extract_row(pexp_ta,t))) - sum(lgamma(A*extract_row(pexp_ta,t))) \
                    dirichlet_Parm=mfexp(selparm(Comp_Err_Parm_Start+Comp_Err_A2(f)))*nsamp_a(f,i);
                 in option 1, dirichlet_Parm = Theta*n from equation (10) of Thorson et al. 2016
                 in option 2, dirichlet_Parm = Beta from equation (4) of Thorson et al. 2016
                 */
+                dirichlet_Parm = mfexp(selparm(Comp_Err_parmloc(Comp_Err_A2(f),1)));
                 if (Comp_Err_A(f) == 1)
-                  dirichlet_Parm = mfexp(selparm(Comp_Err_Parm_Start + Comp_Err_A2(f))) * nsamp_a(f, i);
-                if (Comp_Err_A(f) == 2)
-                  dirichlet_Parm = mfexp(selparm(Comp_Err_Parm_Start + Comp_Err_A2(f)));
+                  dirichlet_Parm *= nsamp_a(f, i);
+//                if (Comp_Err_A(f) == 1)
+//                  dirichlet_Parm = mfexp(selparm(Comp_Err_Parm_Start + Comp_Err_A2(f))) * nsamp_a(f, i);
+//                if (Comp_Err_A(f) == 2)
+//                  dirichlet_Parm = mfexp(selparm(Comp_Err_Parm_Start + Comp_Err_A2(f)));
                 //              dirichlet_Parm=mfexp(selparm(Comp_Err_Parm_Start+Comp_Err_A2(f)));
 
                 // note: first term in equations (4) and (10) is calculated

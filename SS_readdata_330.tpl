@@ -1326,10 +1326,11 @@
   ivector CombGender_L(1,Nfleet);  //  combine genders through this length bin (0 or -1 for no combine)
   ivector AccumBin_L(1,Nfleet);  //  collapse bins down to this bin number (0 for no collapse; positive value for number to accumulate)
   ivector Comp_Err_L(1,Nfleet);  //  composition error type
-  ivector Comp_Err_L2(1,Nfleet);  //  composition error type parameter location
+  ivector Comp_Err_L2(1,Nfleet);  //  composition error type index
+  imatrix Comp_Err_parmloc(1,3*Nfleet,1,2);  //  for each comp_err_index, locate starting parameter in parcount and in Selparm.  Dimensioned by Nfleet, but doesn't use fleet as index
   vector min_sample_size_L(1,Nfleet);  // minimum sample size
-  int Comp_Err_ParmCount;  // counts number of fleets that need a parameter for the error estimation
-  ivector DM_parmlist(1,3*Nfleet);  // flag for creating a new comperr parameter; dim for length, age, size comps
+  int Comp_Err_ParmCount;  // counts number of comp_err definitions that are created
+  ivector DM_parmlist(1,3*Nfleet);  // flag for creating a new comperr definition; dim for length, age, size comps
  LOCAL_CALCS
   // clang-format on
   Comp_Err_ParmCount = 0;
@@ -1338,6 +1339,7 @@
   AccumBin_L.initialize();
   Comp_Err_L.initialize();
   Comp_Err_L2.initialize();
+  Comp_Err_parmloc.initialize();
   min_sample_size_L.initialize();
   DM_parmlist.initialize();
   
@@ -1349,7 +1351,7 @@
     echoinput << "#_males and females treated as combined gender below this bin number " << endl;
     echoinput << "#_compressbins: accumulate upper tail by this number of bins; acts simultaneous with mintailcomp; set=0 for no forced accumulation" << endl;
     echoinput<<"#_Comp_Error:  0=multinomial, 1=dirichlet (rel input N), 2=dirichlet (absolute), 3=MV_Tweedie with 2 parms"<<endl;
-    echoinput<<"#_Comp_ERR-2:  index of parameter (pair for Tweedie) to use"<<endl;
+    echoinput<<"#_Comp_ERR-2:  consecutive index of error def to use"<<endl;
     echoinput << "#_minsamplesize: minimum sample size; set to 1 to match 3.24, set to 0 for no minimum" << endl;
   
     for (f = 1; f <= Nfleet; f++)
@@ -1370,25 +1372,25 @@
         min_sample_size_L(f) = 0.001;
       }
   
-      if (Comp_Err_L2(f) > 2 * Nfleet)
+      if (Comp_Err_L2(f) > Nfleet)
       {
-        warnstream << "length D-M index for fleet: " << f << " is: " << Comp_Err_L2(f) << " but must be an integer <=2*Nfleet ";
+        warnstream << "length D-M index for fleet: " << f << " is: " << Comp_Err_L2(f) << " but must be an integer <= Nfleet ";
         write_warning(N_warn, 1, 1);
       }
       else if (Comp_Err_L2(f) > Comp_Err_ParmCount + 1)
       {
-        warnstream << "; length D-M must refer to existing parm num, or increment by 1:  " << Comp_Err_L2(f);
+        warnstream << "; length D-M must refer to existing definition, or increment by 1:  " << Comp_Err_L2(f);
         write_warning(N_warn, 1, 1);
       }
       else if (Comp_Err_L2(f) > Comp_Err_ParmCount)
       {
         Comp_Err_ParmCount++;
-        DM_parmlist(f)=1;  // flag for creating new parameter because Comp_Err_L2 can point to existing parameter
+        DM_parmlist(f)=1;  // flag for creating new definition because Comp_Err_L2 can point to existing definition
       }
-      //  else OK because refers to existing parameter
+      //  else OK because refers to existing definition
     }
     //  the count for age data will be added after reading the age data setup
-    echoinput << "number of D-M parameters needed for length comp data: " << Comp_Err_ParmCount << endl
+    echoinput << "number of D-M definitions needed for length comp data: " << Comp_Err_ParmCount << endl
               << endl;
   
     *(ad_comm::global_datafile) >> nlen_bin;
@@ -2073,7 +2075,7 @@
   ivector CombGender_A(1,Nfleet);  //  combine genders through this age bin (0 or -1 for no combine)
   ivector AccumBin_A(1,Nfleet);  //  collapse bins down to this bin number (0 for no collapse; positive value for N to accumulate)
   ivector Comp_Err_A(1,Nfleet);  //  composition error type
-  ivector Comp_Err_A2(1,Nfleet);  //  composition error parameter location
+  ivector Comp_Err_A2(1,Nfleet);  //  composition error definition used
   vector min_sample_size_A(1,Nfleet);  // minimum sample size
   int Nobs_a_tot;
   int nobsa_rd;
@@ -2188,17 +2190,17 @@
         }
         else if (Comp_Err_A2(f) > Comp_Err_ParmCount + 1)
         {
-          warnstream << "Age D-M must refer to existing parm num, or increment by 1:  " << Comp_Err_A2(f);
+          warnstream << "Age D-M must refer to existing index, or increment by 1 to add new defition:  " << Comp_Err_A2(f);
           write_warning(N_warn, 0, 1);
         }
         else if (Comp_Err_A2(f) > Comp_Err_ParmCount)
         {
           Comp_Err_ParmCount++;
-        DM_parmlist(f + Nfleet) = 1;  // flag for creating new parameter because Comp_Err_L2 can point to existing parameter
+          DM_parmlist(f + Nfleet) = 1;  // flag for creating new definition because Comp_Err_L2 can point to existing parameter
         }
-        //  else OK because refers to existing parameter
+        //  else OK because refers to existing definition
       }
-      echoinput << "number of D-M parameters needed for length and age comp data: " << Comp_Err_ParmCount << endl;
+      echoinput << "number of D-M definitions needed for both length and age comp data: " << Comp_Err_ParmCount << endl;
   
       *(ad_comm::global_datafile) >> Lbin_method;
       echoinput << Lbin_method << " Lbin method for defined size ranges " << endl;

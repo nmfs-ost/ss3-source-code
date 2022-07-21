@@ -2253,7 +2253,7 @@ FUNCTION void write_bigoutput()
 
     SS2out << "#" << endl
            << "Length_Comp_Fit_Summary" << endl
-           << "Factor Fleet Recommend_var_adj # N Npos min_Nsamp max_Nsamp mean_Nsamp_in mean_Nsamp_adj mean_Nsamp_DM DM_theta mean_effN HarMean_effN Curr_Var_Adj Fleet_name" << endl;
+           << "Factor Fleet Recommend_var_adj # N Npos min_Nsamp max_Nsamp mean_Nsamp_in mean_Nsamp_adj mean_Nsamp_DM err_method err_index DM_theta MV_power par1 par2 mean_effN HarMean_effN Curr_Var_Adj Fleet_name" << endl;
     for (f = 1; f <= Nfleet; f++)
     {
       if (n_rmse(f) > 0)
@@ -2271,20 +2271,34 @@ FUNCTION void write_bigoutput()
         { // standard multinomial
           SS2out << Hrmse(f) / mean_Nsamp_adj(f) * var_adjust(4, f);
         }
-        if (Comp_Err_L(f) > 0)
+        else
         { // Dirichlet-multinomial (Recommend_var_adj = 1)
           SS2out << "1";
         }
         SS2out << " # " << Nobs_l(f) << " " << n_rmse(f) << " " << minsamp(f) << " " << maxsamp(f) << " " << mean_Nsamp_in(f) << " " << mean_Nsamp_adj(f);
-        if (Comp_Err_L(f) == 0)
-        { // standard multinomial
-          // placeholders for mean_Nsamp_DM and DM_theta (not used)
-          SS2out << " NA NA ";
-        }
-        if (Comp_Err_L(f) > 0)
-        { // Dirichlet-multinomial
-          // mean_Nsamp_DM and DM_theta
-          SS2out << " " << mean_Nsamp_DM(f) << " " << mfexp(selparm(Comp_Err_Parm_Start + Comp_Err_L2(f))) << " ";
+
+        switch (Comp_Err_L(f))
+        {
+          case 0:
+          { // standard multinomial
+            // placeholders for mean_Nsamp_DM and DM_theta (not used)
+            SS2out << " NA 0 NA NA NA ";
+            break;
+          }
+          case 1:   // Dirichlet-multinomial
+          {
+          }
+          case 2:   // Dirichlet-multinomial
+          {
+            // mean_Nsamp_DM and DM_theta
+            SS2out << " " << mean_Nsamp_DM(f) << " " << Comp_Err_L(f) << " " << Comp_Err_L2(f) << " " << mfexp(selparm(Comp_Err_parmloc(Comp_Err_L2(f),1))) << " NA " << ParmLabel(Comp_Err_parmloc(Comp_Err_L2(f),2)) << " NA ";
+            break;
+          }
+          case 3:  //  MV Tweedie
+          {
+            
+            break;
+          }
         }
         SS2out << rmse(f) << " " << Hrmse(f) << " " << var_adjust(4, f) << " " << fleetname(f) << endl;
       }
@@ -2394,7 +2408,7 @@ FUNCTION void write_bigoutput()
 
     SS2out << "#" << endl
            << "Age_Comp_Fit_Summary" << endl
-           << "Factor Fleet Recommend_var_adj # N Npos min_Nsamp max_Nsamp mean_Nsamp_in mean_Nsamp_adj mean_Nsamp_DM DM_theta mean_effN HarMean_effN Curr_Var_Adj Fleet_name" << endl;
+           << "Factor Fleet Recommend_var_adj # N Npos min_Nsamp max_Nsamp mean_Nsamp_in mean_Nsamp_adj mean_Nsamp_DM err_method err_index DM_theta MV_power par1 par2 mean_effN HarMean_effN Curr_Var_Adj Fleet_name" << endl;
     for (f = 1; f <= Nfleet; f++)
     {
       if (n_rmse(f) > 0)
@@ -2412,20 +2426,33 @@ FUNCTION void write_bigoutput()
         { // standard multinomial
           SS2out << Hrmse(f) / mean_Nsamp_adj(f) * var_adjust(5, f);
         }
-        if (Comp_Err_A(f) > 0)
+        else
         { // Dirichlet-multinomial (Recommend_var_adj = 1)
           SS2out << "1";
         }
         SS2out << " # " << Nobs_a(f) << " " << n_rmse(f) << " " << minsamp(f) << " " << maxsamp(f) << " " << mean_Nsamp_in(f) << " " << mean_Nsamp_adj(f);
-        if (Comp_Err_A(f) == 0)
-        { // standard multinomial
-          // placeholders for mean_Nsamp_DM and DM_theta (not used)
-          SS2out << " NA NA ";
-        }
-        if (Comp_Err_A(f) > 0)
-        { // Dirichlet-multinomial
-          // mean_Nsamp_DM and DM_theta
-          SS2out << " " << mean_Nsamp_DM(f) << " " << mfexp(selparm(Comp_Err_Parm_Start + Comp_Err_A2(f))) << " ";
+        switch (Comp_Err_A(f))
+        {
+          case 0:
+          { // standard multinomial
+            // placeholders for mean_Nsamp_DM and DM_theta (not used)
+            SS2out << " NA 0 NA NA NA ";
+            break;
+          }
+          case 1:   // Dirichlet-multinomial
+          {
+          }
+          case 2:   // Dirichlet-multinomial
+          {
+            // mean_Nsamp_DM and DM_theta
+            SS2out << "  " << mean_Nsamp_DM(f) << " " << Comp_Err_A(f) << " " << Comp_Err_A2(f) << " " << mfexp(selparm(Comp_Err_parmloc(Comp_Err_A2(f),1))) << " NA " << ParmLabel(Comp_Err_parmloc(Comp_Err_A2(f),2)) << " NA ";
+            break;
+          }
+          case 3:  //  MV Tweedie
+          {
+            
+            break;
+          }
         }
         SS2out << rmse(f) << " " << Hrmse(f) << " " << var_adjust(5, f) << " " << fleetname(f) << endl;
       }
