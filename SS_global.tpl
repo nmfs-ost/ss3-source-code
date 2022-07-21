@@ -167,23 +167,26 @@ GLOBALS_SECTION
 // SS_Label_Function xxxa write_message(string,int,int); output a message with an option to exit (when fatal)
   void write_message(std::string msg, int echo, int warn, int exitflag)
   {
+    std::string totmsg;
     if (msg.length() == 0)
-    {
-      msg = "unknown condition";
-    }
+      totmsg = "unknown condition";
+
+    if (exitflag == 1)
+      totmsg = " Fatal Error: " + msg + " - EXIT.";
+    else
+      totmsg = msg;
+
     if (echo == 1)
-    {
-      if (exitflag == 1)
-        echoinput << "Exit!  ";
-      echoinput << msg << endl;
-    }
+      echoinput << totmsg << endl;
+
     if (warn > 0)
-    {
-      warning << warn << " " << msg << endl;
-    }
+      warning << warn << " " << totmsg << endl;
+
     if (exitflag == 1)
     {
-      cout << " Fatal Error: see warning.sso " << endl;
+      warning.close();
+	  echoinput.close();
+      cout << " Fatal Error: " << msg << endl;
       cout << " Exiting SS3. " << endl;
       exit(1);
     }
@@ -200,7 +203,6 @@ GLOBALS_SECTION
 // SS_Label_Function_xxxx  #get_data_timing()  called by readdata
   void get_data_timing(const dvector& to_process, const ivector& timing_constants, ivector i_result, dvector r_result, const dvector& seasdur, const dvector& subseasdur_delta, const dvector& azero_seas, const dvector& surveytime)
   {
-
   // r_result(1,3) will contain: real_month, data_timing_seas, data_timing_yr,
   // i_result(1,6) will contain y, t, s, f, ALK_time, use_midseas
   int f, s, subseas, y;
