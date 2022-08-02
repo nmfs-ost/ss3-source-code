@@ -174,7 +174,14 @@
   // adstring_array NumLbl;
   // adstring_array GenderLbl;   // gender label
   // adstring_array CRLF;   // blank to terminate lines
-  
+
+  MessageIntro += " Information: ";
+  MessageIntro += " Suggestion: ";
+  MessageIntro += " Performance: ";
+  MessageIntro += " Error: ";
+  MessageIntro += " Adjustment: ";
+  MessageIntro += " Fatal Error! ";
+
   CRLF += "";
   GenderLbl += "Fem";
   GenderLbl += "Mal";
@@ -315,31 +322,29 @@
   pick_report_use += "N";
   pick_report_name += "wtatage.ss_new report:60";
   pick_report_use += "N";
-  
+
   // check command line inputs
-  
+
   if ((on = option_match(argc, argv, "-noest")) > -1)
   {
-
     warnstream << "SS3 is not configured to work with -noest; use -stopph <maxphase> instead which overrides maxphase in starter.ss";
-    write_warning(N_warn, 0, 1);
-
+    write_message(FATAL, 0);
   }
-  
+
   if ((on = option_match(argc, argv, "-maxI")) > -1 || (on = option_match(argc, argv, "-stopph")) > -1)
   {
     // if maxI > 999, maxphase will reset to maxI
     maxI = atoi(ad_comm::argv[on + 1]);
     echoinput << "read max phase to override starter file's maxphase " << maxI << endl;
   }
-  
+
   SDmode = 1;
   if ((on = option_match(argc, argv, "-nohess")) > -1)
   {
     SDmode = 0;
   }
   echoinput << " -nohess flag (1 means do Hessian): " << SDmode << endl;
-  
+
   // SS_Label_Info_1.2  #Read the starter.ss file
   // SS_Label_Flow  read starter.ss
   ad_comm::change_datafile_name("starter.ss"); //  get filenames
@@ -416,7 +421,7 @@
   {
     ssnew_pathname = "./ssnew/";
   }
-  
+
   if (stat("./sso", &pathinfo) != 0)
   {
     sso_pathname = "";
@@ -425,7 +430,7 @@
   {
     sso_pathname = "./sso/";
   }
-  
+
   warning.open(sso_pathname + "warning.sso");
   echoinput.open(sso_pathname + "echoinput.sso");
   ParmTrace.open(sso_pathname + "ParmTrace.sso");
@@ -470,7 +475,7 @@
   {
     rd_background = reportdetail; // 0=limited; 2=brief; 1=all
   }
-  
+
   // set background set of picked reports; then set custom if reportdetail==3
   for (k = 1; k <= 60; k++)
   {
@@ -544,11 +549,11 @@
       else if (reportdetail_list[j](1) > -100)
       {
         warnstream << "custom report number: " << reportdetail_list[j](1) << " is out of range and ignored";
-        write_warning(N_warn, 0, 0);
+        write_message(WARN, 0);
       }
     }
   }
-  
+
   for (k = 1; k <= 60; k++)
     echoinput << k << " " << pick_report_use(k) << " " << pick_report_name(k) << endl;
   // clang-format off
@@ -639,20 +644,20 @@
   depletion_log = 0;
   k = depletion_basis_rd;
   depletion_basis = depletion_basis_rd; // default
-  
+
   if (k >= 100) //  invokes log(ratio)
   {
     k -= 100;
     depletion_log = 1;
     depletion_basis = k;
   }
-  
+
   if (k > 10) //  invokes multiyr
   {
     depletion_multi = int(k / 10);
     depletion_basis = k - 10 * depletion_multi;
   }
-  
+
   echoinput << "Parse into: depletion_log(ratio): " << depletion_log << " depletion_multi-yr: " << depletion_multi << " depletion_basis: " << depletion_basis << endl;
   // clang-format off
  END_CALCS
@@ -707,28 +712,28 @@
     echoinput << F_std_basis_rd << "  F_std basis as read" << endl;
     k = F_std_basis_rd;
     F_std_basis = F_std_basis_rd; // default
-  
+
     if (k >= 100) // invokes log(ratio)
     {
       F_std_log = 1;
       k -= 100;
       F_std_basis = k; // can be overridden by next test
     }
-  
+
     if (k > 10) //  invokes multiyr
     {
       F_std_multi = int(k / 10);
       F_std_basis = k - 10 * F_std_multi;
     }
-  
+
     echoinput << "Parse into: F_std_log(ratio): " << F_std_log << " F_std_multi: " << F_std_multi << " F_std_basis: " << F_std_basis << endl;
     if (F_std_multi > 1)
     {
-      warnstream << "NOTE: new feature for multiyr F_std reporting, be sure STD reporting covers all years from styr to endyr";
-      write_warning(N_warn, 0, 0);
+      warnstream << "new feature for multiyr F_std reporting, be sure STD reporting covers all years from styr to endyr";
+      write_message(NOTE, 0);
     }
     echoinput << "For Kobe plot, set depletion_basis=2; depletion_level=1.0; F_reporting=your choose; F_std_basis=2" << endl;
-  
+
     mcmc_output_detail = 0;
     MCMC_bump = 0.;
     ALK_tolerance = 0.0;
@@ -747,7 +752,7 @@
       finish_starter = tempin;
       if (tempin == 3.30 || tempin == 999)
         ender = 1;
-  
+
       if (tempin == 999.) // finish read in 3.24 format for ss_trans
       {
         echoinput << "SS read 999 from starter.ss, so will read files in 3.24 format" << endl
@@ -755,7 +760,7 @@
         if (readparfile > 0)
         {
           warnstream << " ss_trans does not read the PAR file; readparfile set to 0" << endl;
-          write_warning(N_warn, 0, 0);
+          write_message(WARN, 0);
           readparfile = 0;
         }
       }
@@ -764,7 +769,7 @@
         finish_starter = 3.30;
         echoinput << "Read files in 3.30 format" << endl;
         echoinput << "SS will continue reading from starter.ss until it reads 3.30" << endl;
-  
+
         echoinput << "read MCMC_output_detail.MCMC_bump as a single real number;  separate values will be parsed from integer and fraction" << endl;
         mcmc_output_detail = int(tempin);
         MCMC_bump = tempin - mcmc_output_detail;
@@ -772,7 +777,7 @@
           mcmc_output_detail = 0;
         echoinput << "MCMC output detail(1=more_detail_to_posts; 2=write_report_for_each_mceval):  " << mcmc_output_detail << endl;
         echoinput << "MCMC bump to R0:  " << MCMC_bump << endl;
-  
+
         echoinput << "Now get ALK tolerance (0.0 is OK for no compression; 0.1 is too big;  suggest 0.0001)" << endl;
         *(ad_comm::global_datafile) >> ALK_tolerance;
         echoinput << "ALK tolerance:  " << ALK_tolerance << endl;
@@ -780,9 +785,9 @@
         if (ALK_tolerance < 0.0 || ALK_tolerance > 0.1)
         {
           warnstream << "Error: ALK_tolerance must be between 0.0 and 0.1: " << ALK_tolerance;
-          write_warning(N_warn, 1, 1);
+          write_message(FATAL, 1);
         }
-  
+
         echoinput << "Now get random number seed; enter -1 to use long(time) as the seed" << endl;
         *(ad_comm::global_datafile) >> tempin;
         if (tempin == 3.30)
@@ -810,7 +815,7 @@
             echoinput << endl
                       << "starter.ss should have read 3.30 here; it read: " << tempin << endl;
             warnstream << "starter.ss has extra input lines; check echoinput to verify read";
-            write_warning(N_warn, 0, 1);
+            write_message(FATAL, 0);
           }
         }
       }
@@ -862,7 +867,7 @@
   ofstream fin2("runnumber.ss", ios::out);
   fin2 << runnumber;
   fin2.close();
-  
+
   // SS_Label_Info_1.4 #Read Profilevalues.ss file
   N_prof_var = 998;
   ifstream fin3("profilevalues.ss", ios::in);
@@ -889,4 +894,3 @@
   // clang-format off
  END_CALCS
   init_vector prof_var(1,prof_junk+runnumber*N_prof_var);
-
