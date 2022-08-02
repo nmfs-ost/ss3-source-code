@@ -1326,7 +1326,6 @@
   ivector AccumBin_L(1,Nfleet);  //  collapse bins down to this bin number (0 for no collapse; positive value for number to accumulate)
   ivector Comp_Err_L(1,Nfleet);  //  composition error type
   ivector Comp_Err_L2(1,Nfleet);  //  composition error type index
-  imatrix Comp_Err_parmloc(1,3*Nfleet,1,2);  //  for each comp_err_index, locate starting parameter in parcount and in Selparm.  Dimensioned by Nfleet, but doesn't use fleet as index
   vector min_sample_size_L(1,Nfleet);  // minimum sample size
   int Comp_Err_ParmCount;  // counts number of comp_err definitions that are created
   ivector DM_parmlist(1,3*Nfleet);  // flag for creating a new comperr definition; dim for length, age, size comps
@@ -2988,8 +2987,21 @@
 //  SS_Label_Info_2.11.1 #Read generalized size frequency data (aka wt frequency)
   int SzFreqMethod;
   int iobs;
-  init_int SzFreq_Nmeth;                                   // number of sizefreq methods to be read
-!!echoinput << SzFreq_Nmeth << " N sizefreq methods to read " << endl;
+  int SzFreq_Nmeth_rd;                                   // number of sizefreq methods to be read
+  int SzFreq_Nmeth;
+ LOCAL_CALCS
+  *(ad_comm::global_datafile) >> SzFreq_Nmeth_rd;
+  if (SzFreq_Nmeth_rd > 0)
+  {
+      SzFreq_Nmeth = SzFreq_Nmeth_rd; 
+  }
+  else if  (SzFreq_Nmeth_rd < 0)
+  {
+    *(ad_comm::global_datafile) >> SzFreq_Nmeth;
+  }
+  echoinput << SzFreq_Nmeth << " N sizefreq methods to read " << endl;
+ END_CALCS
+
   imatrix SzFreq_HaveObs2(1,SzFreq_Nmeth,1,ALK_time_max);
   init_ivector SzFreq_Nbins(1,SzFreq_Nmeth);               //  number of bins for each method
 !!if (SzFreq_Nmeth > 0) echoinput << SzFreq_Nbins << " Sizefreq N bins per method" << endl;
@@ -3004,9 +3016,40 @@
   ivector SzFreq_Nbins_seas_g(1,SzFreq_Nmeth*nseas);   //  array dimensioner used only for the SzFreqTrans array
   ivector SzFreq_Nbins3(1,SzFreq_Nmeth);      // doubles the Nbins if gender==2
   int SzFreqMethod_seas;
-
+  ivector Comp_Err_Sz(1,SzFreq_Nmeth);
+  ivector Comp_Err_Sz2(1,SzFreq_Nmeth);
+  
  LOCAL_CALCS
   // clang-format on
+  Comp_Err_Sz.initialize();
+  Comp_Err_Sz2.initialize();
+  if (SzFreq_Nmeth_rd == -1)
+  {
+    *(ad_comm::global_datafile) >> Comp_Err_Sz(1,SzFreq_Nmeth);
+    echoinput << Comp_Err_Sz << " Sizefreq:  Comp_Err_method " << endl;
+    *(ad_comm::global_datafile) >> Comp_Err_Sz2(1,SzFreq_Nmeth);
+    echoinput << Comp_Err_Sz2 << " Sizefreq:  Comp_Err_index " << endl;
+    for (f = 1; f <= SzFreq_Nmeth; f ++)
+    {
+      if (Comp_Err_Sz2(f) > 2 * Nfleet)  //  2*Nfleet is max dimension for the comp_err list
+      {
+        warnstream << "Size D-M index for fleet: " << f << " is: " << Comp_Err_Sz2(f) << " but must be an integer <=2*Nfleet ";
+        write_warning(N_warn, 0, 1);
+      }
+      else if (Comp_Err_Sz2(f) > Comp_Err_ParmCount + 1)
+      {
+        warnstream << "Sz D-M must refer to existing index, or increment by 1 to add new defition:  " << Comp_Err_Sz2(f);
+        write_warning(N_warn, 0, 1);
+      }
+      else if (Comp_Err_Sz2(f) > Comp_Err_ParmCount)
+      {
+        Comp_Err_ParmCount++;
+        DM_parmlist(f + 2*Nfleet) = 1;  // flag for creating new definition because Comp_Err_Sz2 can point to existing parameter
+      }
+      //  else OK because refers to existing definition
+    }
+  }
+
   SzFreq_units_label += "bio";
   SzFreq_units_label += "numbers";
   SzFreq_scale_label += "kg";
@@ -3035,8 +3078,10 @@
     }
   }
   // clang-format off
+  echoinput<<"here"<<endl;
  END_CALCS
 
+ !!echoinput<<"bins "<<SzFreq_Nbins<<endl;
   init_matrix SzFreq_bins1(1,SzFreq_Nmeth,1,SzFreq_Nbins);    // lower edge of wt bins
 !!if(SzFreq_Nmeth>0) echoinput << " SizeFreq bins-raw " << endl << SzFreq_bins1 << endl;
   matrix SzFreq_bins(1,SzFreq_Nmeth,1,SzFreq_Nbins3);    // szfreq bins as processed and doubled for the males if necessary

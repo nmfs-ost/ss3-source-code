@@ -4081,15 +4081,12 @@ FUNCTION void write_bigoutput()
                 {
                   if (Comp_Err_A(f) == 0)
                     SS_compout << value((obs_a(f, i, z) - exp_a(f, i, z)) / sqrt(exp_a(f, i, z) * (1.0 - exp_a(f, i, z)) / fabs(nsamp_a(f, i)))); // Pearson for multinomial
-                  if (Comp_Err_A(f) == 1)
-                  {
-                    dirichlet_Parm = mfexp(selparm(Comp_Err_Parm_Start + Comp_Err_A2(f))) * nsamp_a(f, i);
-                    SS_compout << value((obs_a(f, i, z) - exp_a(f, i, z)) / sqrt(exp_a(f, i, z) * (1.0 - exp_a(f, i, z)) / fabs(nsamp_a(f, i)) * (fabs(nsamp_a(f, i)) + dirichlet_Parm) / (1. + dirichlet_Parm))); // Pearson for Dirichlet-multinomial using negative-exponential parameterization
-                  }
-                  if (Comp_Err_A(f) == 2)
+                  if (Comp_Err_A(f) == 1 || Comp_Err_A(f) == 2)
                   {
                     dirichlet_Parm = mfexp(selparm(Comp_Err_Parm_Start + Comp_Err_A2(f)));
-                    SS_compout << value((obs_a(f, i, z) - exp_a(f, i, z)) / sqrt(exp_a(f, i, z) * (1.0 - exp_a(f, i, z)) / fabs(nsamp_a(f, i)) * (fabs(nsamp_a(f, i)) + dirichlet_Parm) / (1. + dirichlet_Parm))); // Pearson for Dirichlet-multinomial using harmonic sum parameterization
+                    if (Comp_Err_A(f) == 1)
+                      dirichlet_Parm *= nsamp_a(f, i);
+                    SS_compout << value((obs_a(f, i, z) - exp_a(f, i, z)) / sqrt(exp_a(f, i, z) * (1.0 - exp_a(f, i, z)) / fabs(nsamp_a(f, i)) * (fabs(nsamp_a(f, i)) + dirichlet_Parm) / (1. + dirichlet_Parm))); // Pearson for Dirichlet-multinomial using negative-exponential parameterization
                   }
                 }
                 else

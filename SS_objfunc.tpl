@@ -345,18 +345,20 @@ FUNCTION void evaluate_the_objective_function()
               if (Comp_Err_L(f) == 0) // multinomial
               {
                 // get female or combined sex logL
+                //  logL functions are at end of file SS_miscfxn.tpl
                 if (gen_l(f, i) != 2)
-                  length_like(f, i) -= nsamp_l(f, i) *
-                      obs_l(f, i)(tails_w(1), tails_w(2)) * log(exp_l(f, i)(tails_w(1), tails_w(2)));
+                  length_like(f, i) += Comp_logL_multinomial( nsamp_l(f, i), obs_l(f, i)(tails_w(1), tails_w(2)), exp_l(f, i)(tails_w(1), tails_w(2)) );
+//                  length_like(f, i) -= nsamp_l(f, i) *
+//                      obs_l(f, i)(tails_w(1), tails_w(2)) * log(exp_l(f, i)(tails_w(1), tails_w(2)));
                 //  add male logL
                 if (gen_l(f, i) >= 2 && gender == 2)
-                  length_like(f, i) -= nsamp_l(f, i) *
-                      obs_l(f, i)(tails_w(3), tails_w(4)) * log(exp_l(f, i)(tails_w(3), tails_w(4)));
+                  length_like(f, i) += Comp_logL_multinomial( nsamp_l(f, i), obs_l(f, i)(tails_w(3), tails_w(4)), exp_l(f, i)(tails_w(3), tails_w(4)) );
+//                  length_like(f, i) -= nsamp_l(f, i) *
+//                      obs_l(f, i)(tails_w(3), tails_w(4)) * log(exp_l(f, i)(tails_w(3), tails_w(4)));
               }
              else if( (Comp_Err_L(f)==1) || (Comp_Err_L(f)==2) ) //  dirichlet
               {
                 /* from Thorson:  NLL -= gammln(A) - gammln(ninput_t(t)+A) + sum(gammln(ninput_t(t)*extract_row(pobs_ta,t) + A*extract_row(pexp_ta,t))) - sum(lgamma(A*extract_row(pexp_ta,t))) \
-                dirichlet_Parm=mfexp(selparm(Comp_Err_Parm_Start+Comp_Err_L2(f)))*nsamp_l(f,i);
                 in option 1, dirichlet_Parm = Theta*n from equation (10) of Thorson et al. 2016
                 in option 2, dirichlet_Parm = Beta from equation (4) of Thorson et al. 2016 */
                 dirichlet_Parm = mfexp(selparm(Comp_Err_parmloc(Comp_Err_L2(f),1)));
@@ -371,14 +373,16 @@ FUNCTION void evaluate_the_objective_function()
                 // third and final term in equations (4) and (10)
                 if (gen_l(f, i) != 2) //  so not male only
                 {
-                  temp += sum(gammln(nsamp_l(f, i) * obs_l(f, i)(tails_w(1), tails_w(2)) + dirichlet_Parm * exp_l(f, i)(tails_w(1), tails_w(2))));
-                  temp -= sum(gammln(dirichlet_Parm * exp_l(f, i)(tails_w(1), tails_w(2))));
+                  temp += Comp_logL_Dirichlet( nsamp_l(f, i), dirichlet_Parm, obs_l(f, i)(tails_w(1), tails_w(2)), exp_l(f, i)(tails_w(1), tails_w(2)) );
+//                  temp += sum(gammln(nsamp_l(f, i) * obs_l(f, i)(tails_w(1), tails_w(2)) + dirichlet_Parm * exp_l(f, i)(tails_w(1), tails_w(2))));
+//                  temp -= sum(gammln(dirichlet_Parm * exp_l(f, i)(tails_w(1), tails_w(2))));
                 }
                 //  add male logL
                 if (gen_l(f, i) >= 2 && gender == 2)
                 {
-                  temp += sum(gammln(nsamp_l(f, i) * obs_l(f, i)(tails_w(3), tails_w(4)) + dirichlet_Parm * exp_l(f, i)(tails_w(3), tails_w(4))));
-                  temp -= sum(gammln(dirichlet_Parm * exp_l(f, i)(tails_w(3), tails_w(4))));
+                  temp += Comp_logL_Dirichlet( nsamp_l(f, i), dirichlet_Parm, obs_l(f, i)(tails_w(3), tails_w(4)), exp_l(f, i)(tails_w(3), tails_w(4)) );
+//                  temp += sum(gammln(nsamp_l(f, i) * obs_l(f, i)(tails_w(3), tails_w(4)) + dirichlet_Parm * exp_l(f, i)(tails_w(3), tails_w(4))));
+//                  temp -= sum(gammln(dirichlet_Parm * exp_l(f, i)(tails_w(3), tails_w(4))));
                 }
                 length_like(f, i) -= temp;
               } else  //  multivariate-Tweedie
@@ -507,13 +511,15 @@ FUNCTION void evaluate_the_objective_function()
               if (Comp_Err_A(f) == 0) //  multinomial
               {
                 if (gen_a(f, i) != 2)
-                  age_like(f, i) -= nsamp_a(f, i) *
-                      obs_a(f, i)(tails_w(1), tails_w(2)) * log(exp_a(f, i)(tails_w(1), tails_w(2)));
+                 age_like(f, i) += Comp_logL_multinomial( nsamp_a(f, i), obs_a(f, i)(tails_w(1), tails_w(2)), exp_a(f, i)(tails_w(1), tails_w(2)) );
+//                  age_like(f, i) -= nsamp_a(f, i) *
+//                      obs_a(f, i)(tails_w(1), tails_w(2)) * log(exp_a(f, i)(tails_w(1), tails_w(2)));
                 if (gen_a(f, i) >= 2 && gender == 2)
-                  age_like(f, i) -= nsamp_a(f, i) *
-                      obs_a(f, i)(tails_w(3), tails_w(4)) * log(exp_a(f, i)(tails_w(3), tails_w(4)));
+                 age_like(f, i) += Comp_logL_multinomial( nsamp_a(f, i), obs_a(f, i)(tails_w(3), tails_w(4)), exp_a(f, i)(tails_w(3), tails_w(4)) );
+//                  age_like(f, i) -= nsamp_a(f, i) *
+//                      obs_a(f, i)(tails_w(3), tails_w(4)) * log(exp_a(f, i)(tails_w(3), tails_w(4)));
               }
-              else if (Comp_Err_A(f)>=1) // dirichlet 
+             else if( (Comp_Err_A(f)==1) || (Comp_Err_A(f)==2) ) //  dirichlet
               {
                 /* from Thorson:  NLL -= gammln(A) - gammln(ninput_t(t)+A) + sum(gammln(ninput_t(t)*extract_row(pobs_ta,t) + A*extract_row(pexp_ta,t))) - sum(lgamma(A*extract_row(pexp_ta,t))) \
                    dirichlet_Parm=mfexp(selparm(Comp_Err_Parm_Start+Comp_Err_A2(f)))*nsamp_a(f,i);
@@ -523,12 +529,6 @@ FUNCTION void evaluate_the_objective_function()
                 dirichlet_Parm = mfexp(selparm(Comp_Err_parmloc(Comp_Err_A2(f),1)));
                 if (Comp_Err_A(f) == 1)
                   dirichlet_Parm *= nsamp_a(f, i);
-//                if (Comp_Err_A(f) == 1)
-//                  dirichlet_Parm = mfexp(selparm(Comp_Err_Parm_Start + Comp_Err_A2(f))) * nsamp_a(f, i);
-//                if (Comp_Err_A(f) == 2)
-//                  dirichlet_Parm = mfexp(selparm(Comp_Err_Parm_Start + Comp_Err_A2(f)));
-                //              dirichlet_Parm=mfexp(selparm(Comp_Err_Parm_Start+Comp_Err_A2(f)));
-
                 // note: first term in equations (4) and (10) is calculated
                 // as offset_a in SS_prelim.tpl and already included in age_like
                 // now add second term which is only dependent on parameters and sample size
@@ -538,14 +538,16 @@ FUNCTION void evaluate_the_objective_function()
                 // final term in equations (4) and (10)
                 if (gen_a(f, i) != 2) //  so not male only
                 {
-                  temp += sum(gammln(nsamp_a(f, i) * obs_a(f, i)(tails_w(1), tails_w(2)) + dirichlet_Parm * exp_a(f, i)(tails_w(1), tails_w(2))));
-                  temp -= sum(gammln(dirichlet_Parm * exp_a(f, i)(tails_w(1), tails_w(2))));
+//                  temp += sum(gammln(nsamp_a(f, i) * obs_a(f, i)(tails_w(1), tails_w(2)) + dirichlet_Parm * exp_a(f, i)(tails_w(1), tails_w(2))));
+//                  temp -= sum(gammln(dirichlet_Parm * exp_a(f, i)(tails_w(1), tails_w(2))));
+                  temp += Comp_logL_Dirichlet( nsamp_a(f, i), dirichlet_Parm, obs_a(f, i)(tails_w(1), tails_w(2)), exp_a(f, i)(tails_w(1), tails_w(2)) );
                 }
                 //  add male logL
                 if (gen_a(f, i) >= 2 && gender == 2)
                 {
-                  temp += sum(gammln(nsamp_a(f, i) * obs_a(f, i)(tails_w(3), tails_w(4)) + dirichlet_Parm * exp_a(f, i)(tails_w(3), tails_w(4))));
-                  temp -= sum(gammln(dirichlet_Parm * exp_a(f, i)(tails_w(3), tails_w(4))));
+                  temp += Comp_logL_Dirichlet( nsamp_a(f, i), dirichlet_Parm, obs_a(f, i)(tails_w(3), tails_w(4)), exp_a(f, i)(tails_w(3), tails_w(4)) );
+//                  temp += sum(gammln(nsamp_a(f, i) * obs_a(f, i)(tails_w(3), tails_w(4)) + dirichlet_Parm * exp_a(f, i)(tails_w(3), tails_w(4))));
+//                  temp -= sum(gammln(dirichlet_Parm * exp_a(f, i)(tails_w(3), tails_w(4))));
                 }
                 age_like(f, i) -= temp;
               }
@@ -623,7 +625,35 @@ FUNCTION void evaluate_the_objective_function()
         f = abs(SzFreq_obs_hdr(iobs, 3));
         z1 = SzFreq_obs_hdr(iobs, 7);
         z2 = SzFreq_obs_hdr(iobs, 8);
-        SzFreq_like(SzFreq_LikeComponent(f, k)) -= SzFreq_sampleN(iobs) * SzFreq_obs(iobs)(z1, z2) * log(SzFreq_exp(iobs)(z1, z2));
+        int Sz_method = SzFreq_obs1(iobs, 1);  //  sizecomp method
+        int logL_method = Comp_Err_Sz(Sz_method);
+        
+        switch (logL_method)
+        {
+          case 0:  //  multinomial
+          {
+            SzFreq_like(SzFreq_LikeComponent(f, k)) += Comp_logL_multinomial( SzFreq_sampleN(iobs), SzFreq_obs(iobs)(z1, z2), SzFreq_exp(iobs)(z1, z2));
+            break;
+          }
+          case 1:  // dirichlet with theta*n
+          {
+             dirichlet_Parm = mfexp(selparm(Comp_Err_parmloc(Comp_Err_Sz2(Sz_method),1))) * SzFreq_sampleN(iobs);  //  theta * n
+             SzFreq_like(SzFreq_LikeComponent(f, k)) += gammln(dirichlet_Parm) - gammln( SzFreq_sampleN(iobs) + dirichlet_Parm );
+             SzFreq_like(SzFreq_LikeComponent(f, k)) += Comp_logL_Dirichlet( SzFreq_sampleN(iobs), dirichlet_Parm, SzFreq_obs(iobs)(z1, z2), SzFreq_exp(iobs)(z1, z2));
+             break;
+          }
+          case 2:  // dirichlet with beta
+          {
+             dirichlet_Parm = mfexp(selparm(Comp_Err_parmloc(Comp_Err_Sz2(Sz_method),1)));  //  beta
+             SzFreq_like(SzFreq_LikeComponent(f, k)) += gammln(dirichlet_Parm) - gammln( SzFreq_sampleN(iobs) + dirichlet_Parm );
+             SzFreq_like(SzFreq_LikeComponent(f, k)) += Comp_logL_Dirichlet( SzFreq_sampleN(iobs), dirichlet_Parm, SzFreq_obs(iobs)(z1, z2), SzFreq_exp(iobs)(z1, z2));
+             break;
+          }
+          case 3:  // MV  Tweedie
+          {
+            break;
+          }
+        }
       }
     }
 

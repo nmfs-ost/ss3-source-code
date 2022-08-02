@@ -3270,6 +3270,8 @@
   ivector N_disc_mort_parm(0,6)  //  6 possible discard mortality functions allowed
   ivector Do_Retain(1,Nfleet)  // indicates 0=none, 1=length based, 2=age based
   ivector Min_selage(1,Nfleet) //  minimum selected age
+  imatrix Comp_Err_parmloc(1,Comp_Err_ParmCount,1,2);  //  for each comp_err_index, locate starting parameter in parcount (2) and in Selparm (1).
+
  LOCAL_CALCS
       // clang-format on
       echoinput
@@ -3940,20 +3942,12 @@
   //  SS_Label_Info_4.097 #Read parameters needed for estimating variance of composition data
   {
     echoinput << "#Now create parameters for D-M variance of composition data; CANNOT be time-varying" << endl;
+    Comp_Err_Parm_Start = 0;
     if (Comp_Err_ParmCount > 0)
     {
       echoinput << Comp_Err_ParmCount << "  #_definitions are needed: " << endl;
       Comp_Err_Parm_Start = N_selparm;
       //  create a D-M parameter or tweedie parameter pair only for the first fleet that references that parm number
-  
-  /*
-      for (f = 1; f <= Comp_Err_ParmCount; f++)
-      {
-        N_selparm++;
-        ParCount++;
-        ParmLabel += "ln(DM_theta)_" + NumLbl(f);
-      }
-  */
       for (f = 1; f <= Nfleet; f++)
       {
         if (DM_parmlist(f) > 0)  //  create DM parameter labels for definitions first referenced for lencomp
@@ -3966,20 +3960,20 @@
           {
             case 1:
             {
-              ParmLabel += "ln(DM_theta_1)_Len_P" + NumLbl(Comp_Err_L2(f)) + "(" + NumLbl(f) + ")";
+              ParmLabel += "ln(DM_theta)_Len_P" + NumLbl(Comp_Err_L2(f));
               break;
             }
             case 2:
             {
-              ParmLabel += "ln(DM_theta_2)_Len_P" + NumLbl(Comp_Err_L2(f)) + "(" + NumLbl(f) + ")";
+              ParmLabel += "ln(DM_beta)_Len_P" + NumLbl(Comp_Err_L2(f));
               break;
             }
             case 3:
             {
-              ParmLabel += "ln(tweedie_Phi)_Len_P" + NumLbl(Comp_Err_L2(f)) + "(" + NumLbl(f) + ")";
+              ParmLabel += "ln(tweedie_Phi)_Len_P" + NumLbl(Comp_Err_L2(f));
               N_selparm ++;
               ParCount ++;
-              ParmLabel += "ln(tweedie_Power)_Len_P" + NumLbl(Comp_Err_L2(f)) + "(" + NumLbl(f) + ")";
+              ParmLabel += "ln(tweedie_Power)_Len_P" + NumLbl(Comp_Err_L2(f));
               break;
             }
           }
@@ -3998,26 +3992,57 @@
           {
             case 1:
             {
-              ParmLabel += "ln(DM_theta_1)_Age_P" + NumLbl(Comp_Err_A2(f)) + "(" + NumLbl(f) + ")";
+              ParmLabel += "ln(DM_theta)_Age_P" + NumLbl(Comp_Err_A2(f));
               break;
             }
             case 2:
             {
-              ParmLabel += "ln(DM_theta_2)_Age_P" + NumLbl(Comp_Err_A2(f)) + "(" + NumLbl(f) + ")";
+              ParmLabel += "ln(DM_beta)_Age_P" + NumLbl(Comp_Err_A2(f));
               break;
             }
             case 3:
             {
-              ParmLabel += "ln(tweedie_Phi)_Age_P" + NumLbl(Comp_Err_A2(f)) + "(" + NumLbl(f) + ")";
+              ParmLabel += "ln(tweedie_Phi)_Age_P" + NumLbl(Comp_Err_A2(f));
               N_selparm ++;
               ParCount ++;
-              ParmLabel += "ln(tweedie_Power)_Age_P" + NumLbl(Comp_Err_A2(f)) + "(" + NumLbl(f) + ")";
+              ParmLabel += "ln(tweedie_Power)_Age_P" + NumLbl(Comp_Err_A2(f));
               break;
             }
           }
         }
       }
-   //  add another loop here to add labels for parms created for generalized size comp
+
+      for (int f = 1; f <= SzFreq_Nmeth; f++) 
+      {
+        if (DM_parmlist(f + 2 * Nfleet) > 0) //  create DM parameter labels for definitions first referenced for sizefreq.  note that sizefreq comps are by method, not fleet
+        {
+          N_selparm ++;
+          ParCount ++;
+          Comp_Err_parmloc(Comp_Err_Sz2(f),1) = N_selparm;  //  first parameter used by this method
+          Comp_Err_parmloc(Comp_Err_Sz2(f),2) = ParCount;  //  use this index in write_report to display the correct parameter label
+          switch (Comp_Err_Sz(f))
+          {
+            case 1:
+            {
+              ParmLabel += "ln(DM_theta)_Sz_P" + NumLbl(Comp_Err_Sz2(f));
+              break;
+            }
+            case 2:
+            {
+              ParmLabel += "ln(DM_Beta)_Sz_P" + NumLbl(Comp_Err_Sz2(f));
+              break;
+            }
+            case 3:
+            {
+              ParmLabel += "ln(tweedie_Phi)_Sz_P" + NumLbl(Comp_Err_Sz2(f));
+              N_selparm ++;
+              ParCount ++;
+              ParmLabel += "ln(tweedie_Power)_Sz_P" + NumLbl(Comp_Err_Sz2(f));
+              break;
+            }
+          }
+        }
+      }
    //  note that it would take a lot more code to append labels for parameters that are used by more than one fleet or type
     }
   }
@@ -4052,6 +4077,7 @@
    // clang-format on
    mirror_mask.initialize();
   mirror_mask_a.initialize();
+  selparm_fleet.initialize();
   echoinput << " selex and composition base parameters " << endl;
   for (g = 1; g <= N_selparm; g++)
   {
@@ -4078,23 +4104,28 @@
               << "L_type: " << Comp_Err_L << endl
               << "L_parm: " << Comp_Err_L2 << endl
               << "A_type: " << Comp_Err_A << endl
-              << "A_parm: " << Comp_Err_A2 << endl;
+              << "A_parm: " << Comp_Err_A2 << endl
+              << "Sz_type: " << Comp_Err_Sz << endl
+              << "Sz_parm: " << Comp_Err_Sz2 << endl;
+              
+  /*
     for (f = 1; f <= Nfleet; f++)
     {
       // if Dirichlet was indicated, set fleet for this parameter
       if (Comp_Err_L2(f) > 0)
       {
-        j = Comp_Err_Parm_Start + Comp_Err_L2(f);
+        j = Comp_Err_parmloc(Comp_Err_L2(f),1);
         selparm_fleet(j) = f;
       }
       if (Comp_Err_A2(f) > 0)
       {
-        j = Comp_Err_Parm_Start + Comp_Err_A2(f);
+        j = Comp_Err_parmloc(Comp_Err_A2(f),1);
         selparm_fleet(j) = f;
       }
     }
+   */
   }
-  
+
   //  check on conversion of retention parameter
   echoinput << "check on conversion of retention parameter" << endl;
   int parmcount;
@@ -4178,7 +4209,7 @@
     parmcount += N_selparmvec(f);
   }
   
-  //  check on mirror bounds
+  echoinput << "check on mirror bounds" << endl;
   parmcount = 0;
   for (f = 1; f <= Nfleet; f++)
   {
@@ -4348,7 +4379,6 @@
   {
     echoinput << j << " sel " << selparm_1(j) << endl;
     k = selparm_fleet(j);
-    timevary_pass = column(timevary_sel, k); // year vector for this category of selparm
     if (selparm_1(j, 13) == 0 && selparm_1(j, 8) == 0 && selparm_1(j, 9) == 0)
     {
       //  no time-vary parameter effects
@@ -4392,6 +4422,8 @@
         k = 0;
         env_data_pass.initialize();
       }
+
+      timevary_pass = column(timevary_sel, k); // year vector for this category of selparm
       if (z > 0) //  doing blocks
       {
         if (z > N_Block_Designs)
