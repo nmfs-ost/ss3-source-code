@@ -4108,7 +4108,6 @@
               << "Sz_type: " << Comp_Err_Sz << endl
               << "Sz_parm: " << Comp_Err_Sz2 << endl;
               
-  /*
     for (f = 1; f <= Nfleet; f++)
     {
       // if Dirichlet was indicated, set fleet for this parameter
@@ -4123,9 +4122,8 @@
         selparm_fleet(j) = f;
       }
     }
-   */
   }
-
+  echoinput<<"selparm_fleet:"<<endl<<selparm_fleet<<endl;
   //  check on conversion of retention parameter
   echoinput << "check on conversion of retention parameter" << endl;
   int parmcount;
@@ -4391,6 +4389,7 @@
     }
     else //  set up a timevary parameter defintion
     {
+      timevary_pass = column(timevary_sel, k); // year vector for this category of selparm
       timevary_used = 1;
       ivector timevary_setup(1, 14); //  temporary vector for timevary specs
       timevary_setup.initialize();
@@ -4423,7 +4422,6 @@
         env_data_pass.initialize();
       }
 
-      timevary_pass = column(timevary_sel, k); // year vector for this category of selparm
       if (z > 0) //  doing blocks
       {
         if (z > N_Block_Designs)

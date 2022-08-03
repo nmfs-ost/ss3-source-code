@@ -117,6 +117,6 @@ FUNCTION dvariable Comp_logL_multinomial(const double& Nsamp, const dvector& obs
 FUNCTION dvariable Comp_logL_Dirichlet(const double& Nsamp, const dvariable& dirichlet_Parm, const dvector& obs_comp, const dvar_vector& exp_comp)
   {
     dvariable logL;
-    logL += sum(gammln(Nsamp * obs_comp + dirichlet_Parm * exp_comp)) - sum(gammln(dirichlet_Parm * exp_comp));
+    logL = sum(gammln(Nsamp * obs_comp + dirichlet_Parm * exp_comp)) - sum(gammln(dirichlet_Parm * exp_comp));
     return (logL);
   }
