@@ -3362,7 +3362,7 @@
  END_CALCS
 
 // SS_Label_Info_2.11.3 #Calc logL for a perfect fit to the sizefreq data as an offset
-    vector SzFreq_like_base(1,SzFreq_N_Like); // this is a constant offset, so can be declared in data section
+    vector offset_Sz_tot(1,SzFreq_N_Like); // this is a constant offset, so can be declared in data section
     ivector suprper_SzFreq_start(1,N_suprper_SzFreq);
     ivector suprper_SzFreq_end(1,N_suprper_SzFreq);
     vector suprper_SzFreq_sampwt(1,SzFreq_totobs); // will contain calculated weights for obs within super periods
@@ -3371,7 +3371,7 @@
   // clang-format on
   if (SzFreq_Nmeth > 0)
   {
-    SzFreq_like_base.initialize();
+    offset_Sz_tot.initialize();
     suprper_SzFreq_start.initialize();
     suprper_SzFreq_end.initialize();
     suprper_SzFreq_sampwt.initialize();
@@ -3398,7 +3398,7 @@
     //         z1=SzFreq_obs_hdr(iobs,7);
     //         z2=SzFreq_obs_hdr(iobs,8);
     //         g=SzFreq_LikeComponent(f,k);
-    //         SzFreq_like_base(g)-=SzFreq_sampleN(iobs)*SzFreq_obs(iobs)(z1,z2)*log(SzFreq_obs(iobs)(z1,z2));
+    //         offset_Sz_tot(g)-=SzFreq_sampleN(iobs)*SzFreq_obs(iobs)(z1,z2)*log(SzFreq_obs(iobs)(z1,z2));
     //       }
 
     // identify super-period starts and stops

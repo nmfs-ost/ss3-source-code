@@ -555,7 +555,7 @@ FUNCTION void write_bigoutput()
         }
         SS2out << endl;
       }
-      //    SS2out<<SzFreq_like<<endl<<SzFreq_like_base<<endl;
+      //    SS2out<<SzFreq_like<<endl<<offset_Sz_tot<<endl;
     }
 
     if (Do_TG > 0)
@@ -2183,14 +2183,14 @@ FUNCTION void write_bigoutput()
         Nsamp_DM = Nsamp_adj; // Will remain this if not used
         if (Comp_Err_L(f) == 1) //  Dirichlet #1
         {
-          dirichlet_Parm = mfexp(selparm(Comp_Err_Parm_Start + Comp_Err_L2(f))); //  Thorson's theta fro eq 10
+          dirichlet_Parm = mfexp(selparm(Comp_Err_parmloc(Comp_Err_L2(f),1))); //  Thorson's theta from eq 10
           // effN_DM = 1/(1+theta) + n*theta/(1+theta)
           Nsamp_DM = value(1. / (1. + dirichlet_Parm) + nsamp_l(f, i) * dirichlet_Parm / (1. + dirichlet_Parm));
         }
         else if (Comp_Err_L(f) == 2) //  Dirichlet #2
         {
-          dirichlet_Parm = mfexp(selparm(Comp_Err_Parm_Start + Comp_Err_L2(f))); //  Thorson's beta from eq 12
-          // effN_DM = (n+n*beta)/(n+beta)      computed in Fit_LenComp
+          dirichlet_Parm = mfexp(selparm(Comp_Err_parmloc(Comp_Err_L2(f),1))); //  Thorson's beta from eq 12
+          // effN_DM = (n+n*beta)/(n+beta)
           Nsamp_DM = value((nsamp_l(f, i) + dirichlet_Parm * nsamp_l(f, i)) / (dirichlet_Parm + nsamp_l(f, i)));
         }
 
@@ -2342,14 +2342,14 @@ FUNCTION void write_bigoutput()
         Nsamp_DM = Nsamp_adj; // Will stay at this val for multinomial
         if (Comp_Err_A(f) == 1) //  Dirichlet #1
         {
-          dirichlet_Parm = mfexp(selparm(Comp_Err_Parm_Start + Comp_Err_A2(f))); //  Thorson's theta fro eq 10
+          dirichlet_Parm =mfexp(selparm(Comp_Err_parmloc(Comp_Err_A2(f),1))); //  Thorson's theta from eq 10
           // effN_DM = 1/(1+theta) + n*theta/(1+theta)
           Nsamp_DM = value(1. / (1. + dirichlet_Parm) + nsamp_a(f, i) * dirichlet_Parm / (1. + dirichlet_Parm));
         }
         else if (Comp_Err_A(f) == 2) //  Dirichlet #2
         {
-          dirichlet_Parm = mfexp(selparm(Comp_Err_Parm_Start + Comp_Err_A2(f))); //  Thorson's beta from eq 12
-          // effN_DM = (n+n*beta)/(n+beta)      computed in Fit_LenComp
+          dirichlet_Parm = mfexp(selparm(Comp_Err_parmloc(Comp_Err_A2(f),1))); //  Thorson's beta from eq 12
+          // effN_DM = (n+n*beta)/(n+beta)
           Nsamp_DM = value((nsamp_a(f, i) + dirichlet_Parm * nsamp_a(f, i)) / (dirichlet_Parm + nsamp_a(f, i)));
         }
 
@@ -3870,12 +3870,12 @@ FUNCTION void write_bigoutput()
                     SS_compout << value((obs_l(f, i, z) - exp_l(f, i, z)) / sqrt(exp_l(f, i, z) * (1.0 - exp_l(f, i, z)) / fabs(nsamp_l(f, i)))); // Pearson for multinomial
                   if (Comp_Err_L(f) == 1)
                   {
-                    dirichlet_Parm = mfexp(selparm(Comp_Err_Parm_Start + Comp_Err_L2(f))) * nsamp_l(f, i);
+                    dirichlet_Parm = mfexp(selparm(Comp_Err_parmloc(Comp_Err_L2(f),1))) * nsamp_l(f, i);
                     SS_compout << value((obs_l(f, i, z) - exp_l(f, i, z)) / sqrt(exp_l(f, i, z) * (1.0 - exp_l(f, i, z)) / fabs(nsamp_l(f, i)) * (fabs(nsamp_l(f, i)) + dirichlet_Parm) / (1. + dirichlet_Parm))); // Pearson for Dirichlet-multinomial using negative-exponential parameterization
                   }
                   if (Comp_Err_L(f) == 2)
                   {
-                    dirichlet_Parm = mfexp(selparm(Comp_Err_Parm_Start + Comp_Err_L2(f)));
+                    dirichlet_Parm = mfexp(selparm(Comp_Err_parmloc(Comp_Err_L2(f),1)));
                     SS_compout << value((obs_l(f, i, z) - exp_l(f, i, z)) / sqrt(exp_l(f, i, z) * (1.0 - exp_l(f, i, z)) / fabs(nsamp_l(f, i)) * (fabs(nsamp_l(f, i)) + dirichlet_Parm) / (1. + dirichlet_Parm))); // Pearson for Dirichlet-multinomial using harmonic sum parameterization
                   }
                 }
@@ -3930,12 +3930,12 @@ FUNCTION void write_bigoutput()
                     SS_compout << value((obs_l(f, i, z) - exp_l(f, i, z)) / sqrt(exp_l(f, i, z) * (1.0 - exp_l(f, i, z)) / fabs(nsamp_l(f, i)))); // Pearson for multinomial
                   if (Comp_Err_L(f) == 1)
                   {
-                    dirichlet_Parm = mfexp(selparm(Comp_Err_Parm_Start + Comp_Err_L2(f))) * nsamp_l(f, i);
+                    dirichlet_Parm = mfexp(selparm(Comp_Err_parmloc(Comp_Err_L2(f),1))) * nsamp_l(f, i);
                     SS_compout << value((obs_l(f, i, z) - exp_l(f, i, z)) / sqrt(exp_l(f, i, z) * (1.0 - exp_l(f, i, z)) / fabs(nsamp_l(f, i)) * (fabs(nsamp_l(f, i)) + dirichlet_Parm) / (1. + dirichlet_Parm))); // Pearson for Dirichlet-multinomial using negative-exponential parameterization
                   }
                   if (Comp_Err_L(f) == 2)
                   {
-                    dirichlet_Parm = mfexp(selparm(Comp_Err_Parm_Start + Comp_Err_L2(f)));
+                    dirichlet_Parm = mfexp(selparm(Comp_Err_parmloc(Comp_Err_L2(f),1)));
                     SS_compout << value((obs_l(f, i, z) - exp_l(f, i, z)) / sqrt(exp_l(f, i, z) * (1.0 - exp_l(f, i, z)) / fabs(nsamp_l(f, i)) * (fabs(nsamp_l(f, i)) + dirichlet_Parm) / (1. + dirichlet_Parm))); // Pearson for Dirichlet-multinomial using harmonic sum parameterization
                   }
                 }
@@ -4021,12 +4021,12 @@ FUNCTION void write_bigoutput()
                     SS_compout << value((obs_a(f, i, z) - exp_a(f, i, z)) / sqrt(exp_a(f, i, z) * (1.0 - exp_a(f, i, z)) / fabs(nsamp_a(f, i)))); // Pearson for multinomial
                   if (Comp_Err_A(f) == 1)
                   {
-                    dirichlet_Parm = mfexp(selparm(Comp_Err_Parm_Start + Comp_Err_A2(f))) * nsamp_a(f, i);
+                    dirichlet_Parm = mfexp(selparm(Comp_Err_parmloc(Comp_Err_A2(f),1))) * nsamp_a(f, i);
                     SS_compout << value((obs_a(f, i, z) - exp_a(f, i, z)) / sqrt(exp_a(f, i, z) * (1.0 - exp_a(f, i, z)) / fabs(nsamp_a(f, i)) * (fabs(nsamp_a(f, i)) + dirichlet_Parm) / (1. + dirichlet_Parm))); // Pearson for Dirichlet-multinomial using negative-exponential parameterization
                   }
                   if (Comp_Err_A(f) == 2)
                   {
-                    dirichlet_Parm = mfexp(selparm(Comp_Err_Parm_Start + Comp_Err_A2(f)));
+                    dirichlet_Parm = mfexp(selparm(Comp_Err_parmloc(Comp_Err_A2(f),1)));
                     SS_compout << value((obs_a(f, i, z) - exp_a(f, i, z)) / sqrt(exp_a(f, i, z) * (1.0 - exp_a(f, i, z)) / fabs(nsamp_a(f, i)) * (fabs(nsamp_a(f, i)) + dirichlet_Parm) / (1. + dirichlet_Parm))); // Pearson for Dirichlet-multinomial using harmonic sum parameterization
                   }
                 }

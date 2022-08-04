@@ -348,13 +348,9 @@ FUNCTION void evaluate_the_objective_function()
                 //  logL functions are at end of file SS_miscfxn.tpl
                 if (gen_l(f, i) != 2)
                   length_like(f, i) += Comp_logL_multinomial( nsamp_l(f, i), obs_l(f, i)(tails_w(1), tails_w(2)), exp_l(f, i)(tails_w(1), tails_w(2)) );
-//                  length_like(f, i) -= nsamp_l(f, i) *
-//                      obs_l(f, i)(tails_w(1), tails_w(2)) * log(exp_l(f, i)(tails_w(1), tails_w(2)));
                 //  add male logL
                 if (gen_l(f, i) >= 2 && gender == 2)
                   length_like(f, i) += Comp_logL_multinomial( nsamp_l(f, i), obs_l(f, i)(tails_w(3), tails_w(4)), exp_l(f, i)(tails_w(3), tails_w(4)) );
-//                  length_like(f, i) -= nsamp_l(f, i) *
-//                      obs_l(f, i)(tails_w(3), tails_w(4)) * log(exp_l(f, i)(tails_w(3), tails_w(4)));
               }
              else if( (Comp_Err_L(f)==1) || (Comp_Err_L(f)==2) ) //  dirichlet
               {
@@ -522,7 +518,6 @@ FUNCTION void evaluate_the_objective_function()
              else if( (Comp_Err_A(f)==1) || (Comp_Err_A(f)==2) ) //  dirichlet
               {
                 /* from Thorson:  NLL -= gammln(A) - gammln(ninput_t(t)+A) + sum(gammln(ninput_t(t)*extract_row(pobs_ta,t) + A*extract_row(pexp_ta,t))) - sum(lgamma(A*extract_row(pexp_ta,t))) \
-                   dirichlet_Parm=mfexp(selparm(Comp_Err_Parm_Start+Comp_Err_A2(f)))*nsamp_a(f,i);
                 in option 1, dirichlet_Parm = Theta*n from equation (10) of Thorson et al. 2016
                 in option 2, dirichlet_Parm = Beta from equation (4) of Thorson et al. 2016
                 */
@@ -616,7 +611,7 @@ FUNCTION void evaluate_the_objective_function()
       } //  assign back to all obs
     }
 
-    SzFreq_like = -SzFreq_like_base; // initializes
+    SzFreq_like = -offset_Sz_tot; // initializes
     for (iobs = 1; iobs <= SzFreq_totobs; iobs++)
     {
       if (SzFreq_obs_hdr(iobs, 3) > 0)
@@ -627,7 +622,6 @@ FUNCTION void evaluate_the_objective_function()
         z2 = SzFreq_obs_hdr(iobs, 8);
         int Sz_method = SzFreq_obs1(iobs, 1);  //  sizecomp method
         int logL_method = Comp_Err_Sz(Sz_method);
-        
         switch (logL_method)
         {
           case 0:  //  multinomial
@@ -638,15 +632,15 @@ FUNCTION void evaluate_the_objective_function()
           case 1:  // dirichlet with theta*n
           {
              dirichlet_Parm = mfexp(selparm(Comp_Err_parmloc(Comp_Err_Sz2(Sz_method),1))) * SzFreq_sampleN(iobs);  //  theta * n
-             SzFreq_like(SzFreq_LikeComponent(f, k)) += gammln(dirichlet_Parm) - gammln( SzFreq_sampleN(iobs) + dirichlet_Parm );
-             SzFreq_like(SzFreq_LikeComponent(f, k)) += Comp_logL_Dirichlet( SzFreq_sampleN(iobs), dirichlet_Parm, SzFreq_obs(iobs)(z1, z2), SzFreq_exp(iobs)(z1, z2));
+             SzFreq_like(SzFreq_LikeComponent(f, k)) -= gammln(dirichlet_Parm) - gammln( SzFreq_sampleN(iobs) + dirichlet_Parm );
+             SzFreq_like(SzFreq_LikeComponent(f, k)) -= Comp_logL_Dirichlet( SzFreq_sampleN(iobs), dirichlet_Parm, SzFreq_obs(iobs)(z1, z2), SzFreq_exp(iobs)(z1, z2));
              break;
           }
           case 2:  // dirichlet with beta
           {
              dirichlet_Parm = mfexp(selparm(Comp_Err_parmloc(Comp_Err_Sz2(Sz_method),1)));  //  beta
-             SzFreq_like(SzFreq_LikeComponent(f, k)) += gammln(dirichlet_Parm) - gammln( SzFreq_sampleN(iobs) + dirichlet_Parm );
-             SzFreq_like(SzFreq_LikeComponent(f, k)) += Comp_logL_Dirichlet( SzFreq_sampleN(iobs), dirichlet_Parm, SzFreq_obs(iobs)(z1, z2), SzFreq_exp(iobs)(z1, z2));
+             SzFreq_like(SzFreq_LikeComponent(f, k)) -= gammln(dirichlet_Parm) - gammln( SzFreq_sampleN(iobs) + dirichlet_Parm );
+             SzFreq_like(SzFreq_LikeComponent(f, k)) -= Comp_logL_Dirichlet( SzFreq_sampleN(iobs), dirichlet_Parm, SzFreq_obs(iobs)(z1, z2), SzFreq_exp(iobs)(z1, z2));
              break;
           }
           case 3:  // MV  Tweedie
@@ -658,7 +652,7 @@ FUNCTION void evaluate_the_objective_function()
     }
 
     if (do_once == 1)
-      cout << " did sizefreq obj_fun: " << SzFreq_like << "  base: " << SzFreq_like_base << endl;
+      cout << " did sizefreq obj_fun: " << SzFreq_like << "  base: " << offset_Sz_tot << endl;
   }
 
   //  SS_Label_Info_25.8 #Fit to morph composition

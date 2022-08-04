@@ -1073,15 +1073,15 @@ FUNCTION void write_nudata()
                 }
                 case 1: //  Dirichlet #1
                 {
-                  dirichlet_Parm = mfexp(selparm(Comp_Err_Parm_Start + Comp_Err_L2(f))); //  Thorson's theta from eq 10
+                  dirichlet_Parm = mfexp(selparm(Comp_Err_parmloc(Comp_Err_L2(f),1))); //  Thorson's theta from eq 10
                   // effN_DM = 1/(1+theta) + n*theta/(1+theta)
                   Nsamp_DM = value(1. / (1. + dirichlet_Parm) + nsamp_l(f, i) * dirichlet_Parm / (1. + dirichlet_Parm));
                   break;
                 }
                 case 2:  //  Dirichlet #2
                 {
-                  dirichlet_Parm = mfexp(selparm(Comp_Err_Parm_Start + Comp_Err_L2(f))) * nsamp_l(f, i); //  Thorson's beta from eq 12
-                  // effN_DM = (n+n*beta)/(n+beta)      computed in Fit_LenComp
+                  dirichlet_Parm = mfexp(selparm(Comp_Err_parmloc(Comp_Err_L2(f),1))); //  Thorson's beta from eq 12
+                  // effN_DM = (n+n*beta)/(n+beta)
                   Nsamp_DM = value((nsamp_l(f, i) + dirichlet_Parm * nsamp_l(f, i)) / (dirichlet_Parm + nsamp_l(f, i)));
                   break;
                 }
@@ -1168,14 +1168,14 @@ FUNCTION void write_nudata()
                 }
                 case 1: //  Dirichlet #1
                 {
-                  dirichlet_Parm = mfexp(selparm(Comp_Err_Parm_Start + Comp_Err_A2(f))); //  Thorson's theta from eq 10
+                  dirichlet_Parm = mfexp(selparm(Comp_Err_parmloc(Comp_Err_A2(f),1))); //  Thorson's theta from eq 10
                   // effN_DM = 1/(1+theta) + n*theta/(1+theta)
                   Nsamp_DM = value(1. / (1. + dirichlet_Parm) + nsamp_a(f, i) * dirichlet_Parm / (1. + dirichlet_Parm));
                   break;
                 }
                 case 2:  //  Dirichlet #2
                 {
-                  dirichlet_Parm = mfexp(selparm(Comp_Err_Parm_Start + Comp_Err_A2(f))) * nsamp_a(f, i); //  Thorson's beta from eq 12
+                  dirichlet_Parm = mfexp(selparm(Comp_Err_parmloc(Comp_Err_A2(f),1))); //  Thorson's beta from eq 12
                   // effN_DM = (n+n*beta)/(n+beta)      computed in Fit_LenComp
                   Nsamp_DM = value((nsamp_a(f, i) + dirichlet_Parm * nsamp_a(f, i)) / (dirichlet_Parm + nsamp_a(f, i)));
                   break;
@@ -2448,7 +2448,7 @@ FUNCTION void write_nucontrol()
     }
     if (Comp_Err_ParmCount > 0)
     {
-      report4 << "#_Dirichlet parameters" << endl;
+      report4 << "#_Dirichlet and/or MV Tweedie parameters for composition error" << endl;
       report4 << "#_multiple_fleets_can_refer_to_same_parm;_but_list_cannot_have_gaps" << endl;
       k = Comp_Err_Parm_Start;
       for (f = 1; f <= Comp_Err_ParmCount; f++)
