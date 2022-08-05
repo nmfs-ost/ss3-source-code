@@ -594,6 +594,7 @@ FUNCTION void evaluate_the_objective_function()
   }
 
   //  SS_Label_Info_25.7 #Fit to generalized Size composition
+  dvariable temp_logL;
   if (SzFreq_Nmeth > 0) //  have some sizefreq data
   {
     // create super-period expected values
@@ -622,25 +623,26 @@ FUNCTION void evaluate_the_objective_function()
         z2 = SzFreq_obs_hdr(iobs, 8);
         int Sz_method = SzFreq_obs1(iobs, 1);  //  sizecomp method
         int logL_method = Comp_Err_Sz(Sz_method);
+        temp_logL = 0.0;
         switch (logL_method)
         {
           case 0:  //  multinomial
           {
-            SzFreq_like(SzFreq_LikeComponent(f, k)) += Comp_logL_multinomial( SzFreq_sampleN(iobs), SzFreq_obs(iobs)(z1, z2), SzFreq_exp(iobs)(z1, z2));
+            temp_logL += Comp_logL_multinomial( SzFreq_sampleN(iobs), SzFreq_obs(iobs)(z1, z2), SzFreq_exp(iobs)(z1, z2));
             break;
           }
           case 1:  // dirichlet with theta*n
           {
              dirichlet_Parm = mfexp(selparm(Comp_Err_parmloc(Comp_Err_Sz2(Sz_method),1))) * SzFreq_sampleN(iobs);  //  theta * n
-             SzFreq_like(SzFreq_LikeComponent(f, k)) -= gammln(dirichlet_Parm) - gammln( SzFreq_sampleN(iobs) + dirichlet_Parm );
-             SzFreq_like(SzFreq_LikeComponent(f, k)) -= Comp_logL_Dirichlet( SzFreq_sampleN(iobs), dirichlet_Parm, SzFreq_obs(iobs)(z1, z2), SzFreq_exp(iobs)(z1, z2));
+             temp_logL -= gammln(dirichlet_Parm) - gammln( SzFreq_sampleN(iobs) + dirichlet_Parm );
+             temp_logL -= Comp_logL_Dirichlet( SzFreq_sampleN(iobs), dirichlet_Parm, SzFreq_obs(iobs)(z1, z2), SzFreq_exp(iobs)(z1, z2));
              break;
           }
           case 2:  // dirichlet with beta
           {
              dirichlet_Parm = mfexp(selparm(Comp_Err_parmloc(Comp_Err_Sz2(Sz_method),1)));  //  beta
-             SzFreq_like(SzFreq_LikeComponent(f, k)) -= gammln(dirichlet_Parm) - gammln( SzFreq_sampleN(iobs) + dirichlet_Parm );
-             SzFreq_like(SzFreq_LikeComponent(f, k)) -= Comp_logL_Dirichlet( SzFreq_sampleN(iobs), dirichlet_Parm, SzFreq_obs(iobs)(z1, z2), SzFreq_exp(iobs)(z1, z2));
+             temp_logL -= gammln(dirichlet_Parm) - gammln( SzFreq_sampleN(iobs) + dirichlet_Parm );
+             temp_logL -= Comp_logL_Dirichlet( SzFreq_sampleN(iobs), dirichlet_Parm, SzFreq_obs(iobs)(z1, z2), SzFreq_exp(iobs)(z1, z2));
              break;
           }
           case 3:  // MV  Tweedie
@@ -648,6 +650,8 @@ FUNCTION void evaluate_the_objective_function()
             break;
           }
         }
+        SzFreq_like(SzFreq_LikeComponent(f, k)) += temp_logL;
+        SzFreq_eachlike(iobs) = value(temp_logL) - SzFreq_each_offset(iobs);
       }
     }
 

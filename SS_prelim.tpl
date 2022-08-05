@@ -605,10 +605,12 @@
         if (Comp_Err_Sz(k) == 0) // Multinomial
         {
           offset_Sz_tot(g) -= SzFreq_sampleN(iobs) * SzFreq_obs(iobs)(z1, z2) * log(SzFreq_obs(iobs)(z1, z2));
+          SzFreq_each_offset(iobs) -= SzFreq_sampleN(iobs) * SzFreq_obs(iobs)(z1, z2) * log(SzFreq_obs(iobs)(z1, z2));
         }
         else if (Comp_Err_Sz(k) == 1 || Comp_Err_Sz(k) == 2 ) // Dirichlet
         {
           offset_Sz_tot(g) += gammln(SzFreq_sampleN(iobs) + 1.) - sum(gammln(1. + SzFreq_sampleN(iobs) * SzFreq_obs(iobs)(z1, z2)));
+          SzFreq_each_offset(iobs) += gammln(SzFreq_sampleN(iobs) + 1.) - sum(gammln(1. + SzFreq_sampleN(iobs) * SzFreq_obs(iobs)(z1, z2)));
         }
         else if (Comp_Err_Sz(k) == 3)  //  MV Tweedie
         {

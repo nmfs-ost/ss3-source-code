@@ -2253,7 +2253,7 @@ FUNCTION void write_bigoutput()
 
     SS2out << "#" << endl
            << "Length_Comp_Fit_Summary" << endl
-           << "Factor Fleet Recommend_var_adj # N Npos min_Nsamp max_Nsamp mean_Nsamp_in mean_Nsamp_adj mean_Nsamp_DM err_method err_index DM_theta MV_power par1 par2 mean_effN HarMean_effN Curr_Var_Adj Fleet_name" << endl;
+           << "Factor Fleet Recommend_var_adj # N Npos min_Nsamp max_Nsamp mean_Nsamp_in mean_Nsamp_adj mean_Nsamp_DM err_method err_index par1 val1 par2 val2 mean_effN HarMean_effN Curr_Var_Adj Fleet_name" << endl;
     for (f = 1; f <= Nfleet; f++)
     {
       if (n_rmse(f) > 0)
@@ -2282,7 +2282,7 @@ FUNCTION void write_bigoutput()
           case 0:
           { // standard multinomial
             // placeholders for mean_Nsamp_DM and DM_theta (not used)
-            SS2out << " NA 0 NA NA NA ";
+            SS2out << " NA 0 NA multinomial NA NA NA ";
             break;
           }
           case 1:   // Dirichlet-multinomial
@@ -2291,12 +2291,12 @@ FUNCTION void write_bigoutput()
           case 2:   // Dirichlet-multinomial
           {
             // mean_Nsamp_DM and DM_theta
-            SS2out << " " << mean_Nsamp_DM(f) << " " << Comp_Err_L(f) << " " << Comp_Err_L2(f) << " " << mfexp(selparm(Comp_Err_parmloc(Comp_Err_L2(f),1))) << " NA " << ParmLabel(Comp_Err_parmloc(Comp_Err_L2(f),2)) << " NA ";
+            SS2out << " " << mean_Nsamp_DM(f) << " " << Comp_Err_L(f) << " " << Comp_Err_L2(f) << " " << ParmLabel(Comp_Err_parmloc(Comp_Err_L2(f),2)) << " " << mfexp(selparm(Comp_Err_parmloc(Comp_Err_L2(f),1))) << " NA "<< " NA ";
             break;
           }
           case 3:  //  MV Tweedie
           {
-            
+            SS2out << " NA 3 NA NA NA NA NA ";
             break;
           }
         }
@@ -2408,7 +2408,7 @@ FUNCTION void write_bigoutput()
 
     SS2out << "#" << endl
            << "Age_Comp_Fit_Summary" << endl
-           << "Factor Fleet Recommend_var_adj # N Npos min_Nsamp max_Nsamp mean_Nsamp_in mean_Nsamp_adj mean_Nsamp_DM err_method err_index DM_theta MV_power par1 par2 mean_effN HarMean_effN Curr_Var_Adj Fleet_name" << endl;
+           << "Factor Fleet Recommend_var_adj # N Npos min_Nsamp max_Nsamp mean_Nsamp_in mean_Nsamp_adj mean_Nsamp_DM err_method err_index par1 val1 par2 val2 mean_effN HarMean_effN Curr_Var_Adj Fleet_name" << endl;
     for (f = 1; f <= Nfleet; f++)
     {
       if (n_rmse(f) > 0)
@@ -2436,7 +2436,7 @@ FUNCTION void write_bigoutput()
           case 0:
           { // standard multinomial
             // placeholders for mean_Nsamp_DM and DM_theta (not used)
-            SS2out << " NA 0 NA NA NA ";
+            SS2out << " NA 0 NA multinomial NA NA NA ";
             break;
           }
           case 1:   // Dirichlet-multinomial
@@ -2445,12 +2445,12 @@ FUNCTION void write_bigoutput()
           case 2:   // Dirichlet-multinomial
           {
             // mean_Nsamp_DM and DM_theta
-            SS2out << "  " << mean_Nsamp_DM(f) << " " << Comp_Err_A(f) << " " << Comp_Err_A2(f) << " " << mfexp(selparm(Comp_Err_parmloc(Comp_Err_A2(f),1))) << " NA " << ParmLabel(Comp_Err_parmloc(Comp_Err_A2(f),2)) << " NA ";
+            SS2out << "  " << mean_Nsamp_DM(f) << " " << Comp_Err_A(f) << " " << Comp_Err_A2(f) << " " << ParmLabel(Comp_Err_parmloc(Comp_Err_A2(f),2)) << " " << mfexp(selparm(Comp_Err_parmloc(Comp_Err_A2(f),1))) << " NA "<< " NA ";
             break;
           }
           case 3:  //  MV Tweedie
           {
-            
+            SS2out << " NA 3 NA NA NA NA NA ";
             break;
           }
         }
@@ -2466,14 +2466,13 @@ FUNCTION void write_bigoutput()
            << pick_report_name(29) << endl;
 
     SzFreq_effN.initialize();
-    SzFreq_eachlike.initialize();
     for (int sz_method = 1; sz_method <= SzFreq_Nmeth; sz_method++)
     {
       SS2out << "#Method: " << sz_method;
       SS2out << "  #Units: " << SzFreq_units_label(SzFreq_units(sz_method));
       SS2out << "  #Scale: " << SzFreq_scale_label(SzFreq_scale(sz_method));
       SS2out << "  #Add_to_comp: " << SzFreq_mincomp(sz_method) << "  #N_bins: " << SzFreq_Nbins(sz_method) << endl;
-      SS2out << "Fleet Fleet_Name Area Yr  Seas Subseas Month Time Sexes Part SuprPer Use Nsamp effN Like";
+      SS2out << "Fleet Fleet_Name Area Yr Seas Subseas Month Time Sexes Part SuprPer Use Nsamp_in Nsamp_adj Nsamp_DM effN Like";
       SS2out << " All_obs_mean All_exp_mean All_delta All_exp_5% All_exp_95% All_DurWat";
       if (gender == 2)
         SS2out << " F_obs_mean F_exp_mean F_delta F_exp_5% F_exp_95% F_DurWat M_obs_mean M_exp_mean M_delta M_exp_5% M_exp_95% M_DurWat %F_obs %F_exp ";
@@ -2529,10 +2528,22 @@ FUNCTION void write_bigoutput()
               }
               SzFreq_effN(iobs) = (SzFreq_effN(iobs) + 1.0e-06) / value((temp + 1.0e-06));
               temp1 *= SzFreq_sampleN(iobs);
-              SzFreq_eachlike(iobs) = value(temp1);
               dvector tempvec_l(1, SzFreq_exp(iobs).size());
               tempvec_l = value(SzFreq_exp(iobs));
               more_comp_info = process_comps(gender, gg, SzFreq_bins(sz_method), SzFreq_means(sz_method), sz_tails, SzFreq_obs(iobs), tempvec_l);
+              Nsamp_DM = Nsamp_adj; // Will remain this if not used
+              if (Comp_Err_Sz(sz_method) == 1) //  Dirichlet #1
+              {
+                dirichlet_Parm = mfexp(selparm(Comp_Err_parmloc(Comp_Err_Sz2(sz_method),1))); //  Thorson's theta from eq 10
+                // effN_DM = 1/(1+theta) + n*theta/(1+theta)
+                Nsamp_DM = value(1. / (1. + dirichlet_Parm) + SzFreq_sampleN(iobs) * dirichlet_Parm / (1. + dirichlet_Parm));
+              }
+              else if (Comp_Err_L(sz_method) == 2) //  Dirichlet #2
+              {
+                dirichlet_Parm = mfexp(selparm(Comp_Err_parmloc(Comp_Err_Sz2(sz_method),1))); //  Thorson's beta from eq 12
+                // effN_DM = (n+n*beta)/(n+beta)
+                Nsamp_DM = value((SzFreq_sampleN(iobs) + dirichlet_Parm * SzFreq_sampleN(iobs)) / (dirichlet_Parm + SzFreq_sampleN(iobs)));
+              }
               if (SzFreq_obs_hdr(iobs, 3) > 0)
               {
                 n_rmse(f) += 1.;
@@ -2548,7 +2559,6 @@ FUNCTION void write_bigoutput()
               else
               {
                 SzFreq_effN(iobs) = 0.;
-                SzFreq_eachlike(iobs) = 0.;
               }
               temp = SzFreq_obs1(iobs, 3); //  use original input value because
               if (temp > 999)
@@ -2580,7 +2590,7 @@ FUNCTION void write_bigoutput()
               {
                 SS2out << " _ ";
               }
-              SS2out << " " << SzFreq_sampleN(iobs) << "  " << SzFreq_effN(iobs) << "  " << SzFreq_eachlike(iobs) << " " << more_comp_info(1, 6);
+              SS2out << " " << SzFreq_sampleN(iobs) << "  " << SzFreq_sampleN(iobs) << "  " << Nsamp_DM << " " << SzFreq_effN(iobs) << "  " << SzFreq_eachlike(iobs) << " " << more_comp_info(1, 6);
               if (gender == 2)
                 SS2out << " " << more_comp_info(7, 20);
               SS2out << endl;
@@ -2589,21 +2599,58 @@ FUNCTION void write_bigoutput()
         } //  end loop of observations
       } //  end fleet loop
       //      SS2out<<"Fleet N Npos mean_effN mean(inputN*Adj) HarMean(effN) Mean(effN/inputN) MeaneffN/MeaninputN Var_Adj"<<endl;
-      SS2out << "#" << endl
-             << "Factor Fleet Recommend_Var_Adj # N Npos min_Nsamp_in max_Nsamp_in mean_Nsamp_adj mean_effN HarMean Curr_Var_Adj Fleet_name" << endl;
-      for (f = 1; f <= Nfleet; f++)
+    SS2out << "#" << endl
+           << "Size_Comp_Fit_Summary" << endl
+           << "Factor Fleet Recommend_var_adj # N Npos min_Nsamp max_Nsamp mean_Nsamp_in mean_Nsamp_adj mean_Nsamp_DM err_method err_index par1 val1 par2 val2 mean_effN HarMean_effN Curr_Var_Adj Fleet_name" << endl;
+    for (f = 1; f <= Nfleet; f++)
+    {
+      if (n_rmse(f) > 0)
       {
-        if (n_rmse(f) > 0)
-        {
-          rmse(f) /= n_rmse(f);
-          mean_CV(f) /= n_rmse(f);
-          Hrmse(f) = n_rmse(f) / Hrmse(f);
-          Rrmse(f) /= n_rmse(f);
-          SS2out << "7 " << f << " " << Hrmse(f) / mean_CV(f) * var_adjust(7, f) << " #  NA " << n_rmse(f) << " " << minsamp(f) << " "
-                 << maxsamp(f) << " " << mean_CV(f) << " " << rmse(f) << " " << Hrmse(f)
-                 << " " << var_adjust(7, f) << " " << fleetname(f) << endl;
+        // calculate summary statistics
+        rmse(f) /= n_rmse(f);
+        Hrmse(f) = n_rmse(f) / Hrmse(f);
+        Rrmse(f) /= n_rmse(f);
+        mean_Nsamp_in(f) /= n_rmse(f);
+        mean_Nsamp_adj(f) /= n_rmse(f);
+        mean_Nsamp_DM(f) /= n_rmse(f);
+        // write values to file
+        SS2out << "6 " << f << " ";
+        if (Comp_Err_Sz(sz_method) == 0)
+        { // standard multinomial
+          SS2out << Hrmse(f) / mean_Nsamp_adj(f) * var_adjust(6, f);
         }
+        else
+        { // Dirichlet-multinomial (Recommend_var_adj = 1)
+          SS2out << "1";
+        }
+        SS2out << " # " << n_rmse(f) << " " << n_rmse(f) << " " << minsamp(f) << " " << maxsamp(f) << " " << mean_Nsamp_in(f) << " " << mean_Nsamp_adj(f);
+
+        switch (Comp_Err_Sz(sz_method))
+        {
+          case 0:
+          { // standard multinomial
+            // placeholders for mean_Nsamp_DM and DM_theta (not used)
+            SS2out << " NA 0 NA multinomial NA NA NA ";
+            break;
+          }
+          case 1:   // Dirichlet-multinomial
+          {
+          }
+          case 2:   // Dirichlet-multinomial
+          {
+            // mean_Nsamp_DM and DM_theta
+            SS2out << " " << mean_Nsamp_DM(f) << " " << Comp_Err_Sz(sz_method) << " " << Comp_Err_Sz2(sz_method) << " " << ParmLabel(Comp_Err_parmloc(Comp_Err_Sz2(sz_method),2)) << " " << mfexp(selparm(Comp_Err_parmloc(Comp_Err_Sz2(sz_method),1))) << " NA "<< " NA ";
+            break;
+          }
+          case 3:  //  MV Tweedie
+          {
+            SS2out << " NA 3 NA NA NA NA NA ";
+            break;
+          }
+        }
+        SS2out << rmse(f) << " " << Hrmse(f) << " " << var_adjust(4, f) << " " << fleetname(f) << endl;
       }
+    }
     } //  end loop of methods
   } // end have sizecomp
 

@@ -3193,6 +3193,7 @@
   vector SzFreq_sampleN(1,SzFreq_totobs);
   vector SzFreq_effN(1,SzFreq_totobs);
   vector SzFreq_eachlike(1,SzFreq_totobs);
+  vector SzFreq_each_offset(1,SzFreq_totobs);
   matrix SzFreq_obs(1,SzFreq_totobs,1,SzFreq_Setup2);
   imatrix SzFreq_LikeComponent(1,Nfleet,1,SzFreq_Nmeth);
   number N_suprper_SzFreq; // no real need to keep track of these by method, so just use a number
@@ -3204,6 +3205,8 @@
   {
     SzFreq_LikeComponent.initialize();
     SzFreq_obs.initialize();
+    SzFreq_eachlike.initialize();
+    SzFreq_each_offset.initialize();
     iobs = 0;
     for (k = 1; k <= SzFreq_Nmeth; k++)
     {
