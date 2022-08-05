@@ -68,9 +68,6 @@
   {
     warnstream << "incompatible option:  empirical bodywt-at-age is used, but meanbody_wt obs fit using growth curve";
     write_message (ADJUST, 0);
-//    N_warn++;
-//    warning << N_warn << " "
-//            << "incompatible option:  empirical bodywt-at-age is used, but meanbody_wt obs fit using growth curve" << endl;
   }
 
   if (N_platoon > 1)
@@ -133,12 +130,7 @@
   else
   {
     warnstream << "illegal N platoons: " << N_platoon << ", must be 1, 3 or 5 " ;
-    write_message (FATAL, 1);
-//    N_warn++;
-//    cout << " EXIT - see warning " << endl;
-//    warning << N_warn << " "
-//            << " illegal N platoons, must be 1, 3 or 5 " << N_platoon << endl;
-//    exit(1);
+    write_message (FATAL, 1); // EXIT!
   }
   // clang-format off
 
@@ -194,11 +186,7 @@
       if (N_settle_assignments > 1)
       {
         warnstream << "Need to change to recr_dist_method=3 because >1 settle assignments requested";
-        write_message (FATAL, 0);
-//        N_warn++;
-//        cout << "exit with warning" << endl;
-//        warning << N_warn << " Need to change to recr_dist_method=3 because >1 settle assignments requested" << endl;
-//        exit(1);
+        write_message (FATAL, 0); // EXIT!
       }
       break;
     }
@@ -207,27 +195,17 @@
   if (recr_dist_method == 1)
   {
     warnstream << "recr_dist_method cannot be 1 in SS3.30 ";
-    write_message (FATAL, 0);
-//    N_warn++;
-//    cout << " EXIT - see warning " << endl;
-//    warning << N_warn << " fatal error:  recr_dist_method cannot be 1 in SS3.30 " << endl;
-//    exit(1);
+    write_message (FATAL, 0); // EXIT!
   }
   else if (N_settle_assignments == 1 && recr_dist_method != 4)
   {
     warnstream << "This model has just one settlement event. Changing to recr_dist_method 4 and removing the recruitment distribution parameters at the end of the MG parms section (below growth parameters) will produce identical results and simplify the model.";
     write_message (SUGGEST, 0);
-//    N_warn++;
-//    warning << N_warn << " "
-//            << "NOTE: This model has just one settlement event. Changing to recr_dist_method 4 and removing the recruitment distribution parameters at the end of the MG parms section (below growth parameters) will produce identical results and simplify the model." << endl;
   }
   else if (recr_dist_method == 2)
   {
     warnstream << " recr_dist_method 3 is simpler and takes 1 parm for each settlement";
     write_message (SUGGEST, 0);
-//    N_warn++;
-//    warning << N_warn << " "
-//            << "NOTE: recr_dist_method 3 is simpler and takes 1 parm for each settlement" << endl;
   }
   echoinput << recr_dist_inx << "  # unused option " << endl;
   // clang-format off
@@ -370,10 +348,6 @@
         warnstream << "settle_month is less than spawn_month, so logical age at settlement calculated to be: " << j
                    << "  for settle_time " << settle_time << ".  Does not match read value of " << Settle_age(settle_time) << " are you sure? ";
         write_message (NOTE, 0);
-//        N_warn++;
-//        warning << N_warn << " "
-//                << "settle_month is less than spawn_month, so logical age at settlement calculated to be: " << j << "  for settle_time " << settle_time << ".  Does not match read value of "
-//                << Settle_age(settle_time) << " are you sure? " << endl;
       }
       Settle_seas(settle_time) = k;
       Settle_seas_offset(settle_time) = Settle_seas(settle_time) - spawn_seas + j * nseas; //  number of seasons between spawning and the season in which settlement occurs
@@ -385,13 +359,7 @@
       {
         warnstream << "Cannot have spawn_time_seas after beginning of a season and settlements in the same season" << endl
                    << "++ put spawning at beginning of the season, or move settlements to next season";
-        write_message (FATAL, 0);
-//        N_warn++;
-//        cout << "see warning for fatal input issue" << endl;
-//        warning << N_warn << " "
-//                << "Cannot have spawn_time_seas after beginning of a season and settlements in the same season" << endl
-//                << "put spawning at beginning of the season, or move settlements to next season" << endl;
-//        exit(1);
+        write_message (FATAL, 0); // EXIT!
       }
     }
   }
@@ -544,9 +512,6 @@
         {
           warnstream << "Gender for tag groups must be 0, 1 or 2 ";
           write_message (WARN, 0);
-//          N_warn++;
-//          warning << N_warn << " "
-//                  << " gender for tag groups must be 0, 1 or 2 " << endl;
         }
         if (use_morph(g) > 0 && (TG_release(TG, 6) == 0 || TG_release(TG, 6) == sx(g))) TG_use_morph(TG, g) = 1;
       }
@@ -707,65 +672,38 @@
         if (Block_Design(j, a + 1) < Block_Design(j, a))
         {
           warnstream << "Block:" << j << " " << k << " ends before it starts; fatal error";
-          write_message (FATAL, 0);
-//          N_warn++;
-//          cout << " EXIT - see warning " << endl;
-//          warning << N_warn << " "
-//                  << "Block:" << j << " " << k << " ends before it starts; fatal error" << endl;
-////        exit(1);
+          write_message (FATAL, 0); // EXIT!
         }
         if (Block_Design(j, a) < styr - 1)
         {
           warnstream << "Block:" << j << " " << k << " starts before styr; resetting";
           write_message (ADJUST, 0);
-//          N_warn++;
-//          warning << N_warn << " "
-//                  << "Block:" << j << " " << k << " starts before styr; resetting" << endl;
           Block_Design(j, a) = styr;
         }
         if (Block_Design(j, a + 1) < styr - 1)
         {
           warnstream << "Block:" << j << " " << k << " ends before styr; fatal error";
-          write_message (FATAL, 1);
-//          N_warn++;
-//          cout << " EXIT - see warning " << endl;
-//          warning << N_warn << " "
-//                  << "Block:" << j << " " << k << " ends before styr; fatal error" << endl;
-//          exit(1);
+          write_message (FATAL, 1); // EXIT!
         }
         if (Block_Design(j, a) > retro_yr + 1)
         {
           warnstream << "Block:" << j << " " << k << " starts after retroyr+1; should not estimate ";
           write_message (WARN, 0);
-//          N_warn++;
-//          warning << N_warn << " "
-//                  << "Block:" << j << " " << k << " starts after retroyr+1; should not estimate " << endl;
         }
         if (Block_Design(j, a + 1) > retro_yr + 1)
         {
           warnstream << "Block:" << j << " " << k << " ends in: " << Block_Design(j, a + 1) << " after retroyr+1:  " << retro_yr + 1;
           write_message (WARN, 0);
-//          N_warn++;
-//          warning << N_warn << " "
-//                  << "Block:" << j << " " << k << " ends in: " << Block_Design(j, a + 1) << " after retroyr+1:  " << retro_yr + 1 << endl;
         }
         if (Block_Design(j, a) > YrMax)
         {
           warnstream << "Block:" << j << " " << k << " starts in: " << Block_Design(j, a + 1) << " which is > YrMax:  " << YrMax << " fatal error";
-          write_message (FATAL, 0);
-//          N_warn++;
-//          cout << " EXIT - see warning " << endl;
-//          warning << N_warn << " "
-//                  << "Block:" << j << " " << k << " starts in: " << Block_Design(j, a + 1) << " which is > YrMax:  " << YrMax << " fatal error" << endl;
-//          exit(1);
+          write_message (FATAL, 0); // EXIT!
         }
         if (Block_Design(j, a + 1) > YrMax)
         {
           warnstream << "Block:" << j << " " << k << " ends in: " << Block_Design(j, a + 1) << " reset to YrMax:  " << YrMax;
           write_message (WARN, 0);
-//          N_warn++;
-//          warning << N_warn << " "
-//                  << "Block:" << j << " " << k << " ends in: " << Block_Design(j, a + 1) << " reset to YrMax:  " << YrMax << endl;
           Block_Design(j, a + 1) = YrMax;
         }
       }
@@ -940,18 +878,12 @@
     {
       warnstream << "AFIX2 set to 999 for grow_type==8 because only Linfinity allowed for growth cessation ";
       write_message (ADJUST, 0);
-//      N_warn++;
-//      warning << N_warn << " "
-//              << "AFIX2 set to 999 for grow_type==8 because only Linfinity allowed for growth cessation " << endl;
       AFIX2 = 999.;
     }
     if (Grow_type == 8 && AFIX != 0.0)
     {
       warnstream << "AFIX set to 0.0 for grow_type==8;  growth cessation ";
       write_message (ADJUST, 0);
-//      N_warn++;
-//      warning << N_warn << " "
-//              << "AFIX set to 0.0 for grow_type==8;  growth cessation " << endl;
       AFIX2 = 0.0;
     }
     //  tempvec(4) is a placeholder
@@ -1052,11 +984,6 @@
         {
           warnstream << "Age K points must be unique and ascending order ";
           write_message (FATAL, 0);  // EXIT!
-//          N_warn++;
-//          cout << " EXIT - see warning " << endl;
-//          warning << N_warn << " "
-//                  << "EXIT:  age K points must be unique and ascending order " << endl;
-//          exit(1);
         }
       }
     }
@@ -1068,11 +995,6 @@
         {
           warnstream << "Age K points must be unique and decending order ";
           write_message (FATAL, 0);  // EXIT!
-//          N_warn++;
-//          cout << " EXIT - see warning " << endl;
-//          warning << N_warn << " "
-//                  << "EXIT:  age K points must be unique and decending order " << endl;
-//          exit(1);
         }
       }
     }
@@ -1154,11 +1076,6 @@
     {
       warnstream << "Must set WTage_rd to 1 to use wtatage.ss";
       write_message (FATAL, 0); // EXIT!
-//      N_warn++;
-//      cout << " EXIT - see warning " << endl;
-//      warning << N_warn << " "
-//              << "Must set WTage_rd to 1 to use wtatage.ss" << endl;
-//      exit(1);
     }
   }
   // clang-format off
@@ -1180,7 +1097,6 @@
 //   Value=5 sets eggs=a+b*W
 !! echoinput<<Fecund_Option<<"  Fecundity option"<<endl;
 !! if(Fecund_Option>5) {warnstream<<"Illegal fecundity option:  "<<Fecund_Option;write_message(FATAL,0);} // EXIT!
-//!! if(Fecund_Option>5) {N_warn++; cout<<" EXIT - see warning "<<endl;  warning<<N_warn<<" "<<"Illegal fecundity option:  "<<Fecund_Option<<endl; exit(1);}
 
   int Hermaphro_Option;
   int MGparm_Hermaphro;
@@ -1239,12 +1155,7 @@
   if (parm_adjust_method < 1 || parm_adjust_method > 3)
   {
     warnstream << "Illegal parm_adjust_method; must be 1 or 2 or 3 ";
-    write_message (FATAL, 0);
-//    N_warn++;
-//    cout << " EXIT - see warning " << endl;
-//    warning << N_warn << " "
-//            << " illegal parm_adjust_method; must be 1 or 2 or 3 " << endl;
-//    exit(1);
+    write_message (FATAL, 0); // EXIT!
   }
 
   ParCount = 0;
@@ -1651,12 +1562,7 @@
         if (MGparm_1(kk, 8) != 0 || MGparm_1(kk, 9) != 0 || MGparm_1(kk, 13) != 0)
         {
           warnstream << "CV of growth parameters cannot be time-varying";
-          write_message (FATAL, 0);
-//          N_warn++;
-//          cout << " EXIT - see warning " << endl;
-//          warning << N_warn << " "
-//                  << "CV of growth parameters cannot be time-varying" << endl;
-//          exit(1);
+          write_message (FATAL, 0); // EXIT!
         }
       }
       //     if(MGparm_1(Ip+N_growparms-2,7)>0) varparm_estimated(1)=1;  //  for CV_young
@@ -1794,12 +1700,7 @@
         if (z > N_Block_Designs)
         {
           warnstream << "MG block request exceeds N_block patterns";
-          write_message (FATAL, 0);
-//          N_warn++;
-//          cout << "Fatal_input_error, see warning" << endl;
-//          warning << N_warn << " "
-//                  << "MG block request exceeds N_block patterns" << endl;
-//          exit(1);
+          write_message (FATAL, 0); // EXIT!
         }
         create_timevary(MGparm_1(j), timevary_setup, timevary_pass, autogen_timevary(timevary_setup(1)), mgp_type(j), Block_Design(z), env_data_pass, N_parm_dev, finish_starter);
       }
@@ -2008,11 +1909,6 @@
     {
       warnstream << "B-H constrained curve is now Spawn-Recr option #6";
       write_message (FATAL, 0); // EXIT!
-//      N_warn++;
-//      cout << "Critical error:  see warning" << endl;
-//      warning << N_warn << " "
-//              << "B-H constrained curve is now Spawn-Recr option #6" << endl;
-//      exit(1);
       break;
     }
     case 2: // Ricker
@@ -2132,12 +2028,7 @@
           if (SR_parm_1(j, 13) > N_Block_Designs)
           {
             warnstream << "SR block request exceeds N_block patterns";
-            write_message (FATAL, 0);
-//            N_warn++;
-//            cout << "Fatal_input_error, see warning" << endl;
-//            warning << N_warn << " "
-//                    << "SR block request exceeds N_block patterns" << endl;
-//            exit(1);
+            write_message (FATAL, 0); // EXIT!
           }
           create_timevary(SR_parm_1(j), timevary_setup, timevary_pass, autogen_timevary(timevary_setup(1)), f, Block_Design(SR_parm_1(j, 13)), env_data_pass, N_parm_dev, finish_starter);
         }
@@ -2258,9 +2149,6 @@
     {
       warnstream << "bias adjustment ramp extends into forecast; biasadj set to 0.0 internally for forecast years";
       write_message (WARN, 0);
-//      N_warn++;
-//      warning << N_warn << " "
-//              << "bias adjustment ramp extends into forecast; biasadj set to 0.0 internally for forecast years" << endl;
     }
     recdev_adj(5) = recdev_options(9); // maxbias adj
 
@@ -2314,15 +2202,11 @@
   {
     warnstream << "Mean recruitment for forecast is incompatible with pos. phase for forecast rec_devs; set phase to neg. unless using late rec_devs";
     write_message (WARN, 0);
-//    N_warn++;
-//    warning << N_warn << " mean recruitment for forecast is incompatible with pos. phase for forecast rec_devs; set phase to neg. unless using late rec_devs" << endl;
   }
   if (Do_Impl_Error > 0 && Fcast_recr_PH_rd < 0)
   {
     warnstream << "Implementation error incompatible with neg. phase for forecast rec_devs; SS3 will run without active impl error";
     write_message (WARN, 0);
-//    N_warn++;
-//    warning << N_warn << " Implementation error incompatible with neg. phase for forecast rec_devs; SS3 will run without active impl error" << endl;
   }
   echoinput << recdev_adj(1) << " #_last_early_yr_nobias_adj_in_MPD" << endl;
   echoinput << recdev_adj(2) << " #_first_yr_fullbias_adj_in_MPD" << endl;
@@ -2358,9 +2242,6 @@
   {
     warnstream << " recdev_start: " << recdev_start << " < styr-nages: " << styr - nages << " reset ";
     write_message (ADJUST, 0);
-//    N_warn++;
-//    warning << N_warn << " "
-//            << " recdev_start: " << recdev_start << " <styr-nages: " << styr - nages << " reset " << endl;
     recdev_start = styr - nages;
   }
   recdev_first = recdev_start; // stores first recdev, whether from the early period or the standard dev period
@@ -2368,12 +2249,7 @@
   if (recdev_early_start >= recdev_start)
   {
     warnstream << "Cannot set recdev_early_start: " << recdev_early_start << " after main recdev start: " << recdev_start;
-    write_message (FATAL, 0);
-//    N_warn++;
-//    cout << " EXIT - see warning " << endl;
-//    warning << N_warn << " "
-//            << "Cannot set recdev_early_start: " << recdev_early_start << " after main recdev start: " << recdev_start << endl;
-//    exit(1);
+    write_message (FATAL, 0); // EXIT!
   }
   else if (recdev_early_start == 0) // do not do early rec devs
   {
@@ -2390,17 +2266,11 @@
       recdev_early_start = styr - nages;
       warnstream << "Adjusting recdev_early to: " << recdev_early_start;
       write_message (ADJUST, 0);
-//      N_warn++;
-//      warning << N_warn << " "
-//              << " adjusting recdev_early to: " << recdev_early_start << endl;
     }
     if (recdev_start - recdev_early_start < 6)
     {
       warnstream << "Are you sure you want so few early recrdevs? Better to include in range of main recdevs " << recdev_start - recdev_early_start;
       write_message (SUGGEST, 0);
-//      N_warn++;
-//      warning << N_warn << " "
-//              << " Are you sure you want so few early recrdevs? Better to include in range of main recdevs " << recdev_start - recdev_early_start << endl;
     }
 
     recdev_first = recdev_early_start; // because this is before recdev_start
@@ -2571,11 +2441,7 @@
   if (F_Method < 1 || F_Method > 5)
   {
     warnstream << "F_Method must be 1 or 2 or 3 or 4, value is: " << F_Method;
-    write_message (FATAL, 0);
-//    N_warn++;
-//    warning << N_warn << " ERROR:  F_Method must be 1 or 2 or 3 or 4, value is: " << F_Method << endl;
-//    cout << " EXIT - see warning " << endl;
-//    exit(1);
+    write_message (FATAL, 0); // EXIT!
   }
 
   switch (F_Method)
@@ -2586,20 +2452,12 @@
       if (max_harvest_rate > 0.999)
       {
         warnstream << "Max harvest rate must  be <1.0 for F_method 1 " << max_harvest_rate;
-        write_message (FATAL, 0);
-//        N_warn++;
-//        cout << " EXIT - see warning " << endl;
-//        warning << N_warn << " "
-//                << " max harvest rate must  be <1.0 for F_method 1 " << max_harvest_rate << endl;
-//        exit(1);
+        write_message (FATAL, 0); // EXIT!
       }
       if (max_harvest_rate <= 0.30)
       {
         warnstream << "Unexpectedly small value for max harvest rate for F_method 1:  " << max_harvest_rate;
         write_message (NOTE, 0);
-//        N_warn++;
-//        warning << N_warn << " "
-//                << " unexpectedly small value for max harvest rate for F_method 1:  " << max_harvest_rate << endl;
       }
       break;
     }
@@ -2660,11 +2518,7 @@
       if (byc_count != N_bycatch)
       {
         warnstream << "Not all bycatch fleets have been included in Fparm list";
-        write_message (FATAL, 0);
-//        N_warn++;
-//        cout << "Fatal_input_error, see warning" << endl;
-//        warning << "Fatal_input_error; not all bycatch fleets have been included in Fparm list" << endl;
-//        exit(1);
+        write_message (FATAL, 0); // EXIT!
       }
       echoinput << "now read N tuning loops when doing hybrid (4 recommended)" << endl;
       *(ad_comm::global_datafile) >> F_Tune;
@@ -2686,9 +2540,6 @@
   {
     warnstream << "Max harvest rate typically is >1.0 for F_method 2, 3 or 4 " << max_harvest_rate;
     write_message (NOTE, 0);
-//    N_warn++;
-//    warning << N_warn << " "
-//            << " max harvest rate typically is >1.0 for F_method 2, 3 or 4 " << max_harvest_rate << endl;
   }
   // clang-format off
  END_CALCS
@@ -2768,8 +2619,6 @@
             {
               warnstream << f << " catch: " << obs_equ_catch(s, f) << " initF: " << init_F_RD(j) << " initF is reset to be 0.0";
               write_message (ADJUST, 0);
-//              N_warn++;
-//              warning << N_warn << " " << f << " catch: " << obs_equ_catch(s, f) << " initF: " << init_F_RD(j) << " initF is reset to be 0.0" << endl;
             }
             init_F_RD(j) = 0.0;
             init_F_PH(j) = -1;
@@ -2777,11 +2626,7 @@
           if (obs_equ_catch(s, f) > 0.0 && init_F_RD(j) <= 0.0)
           {
             warnstream << f << " catch: " << obs_equ_catch(s, f) << " initF: " << init_F_RD(j) << " initF must be >0";
-            write_message (FATAL, 0);
-//            N_warn++;
-//            cout << " EXIT - see warning " << endl;
-//            warning << N_warn << " " << f << " catch: " << obs_equ_catch(s, f) << " initF: " << init_F_RD(j) << " initF must be >0" << endl;
-//            exit(1);
+            write_message (FATAL, 0); // EXIT!
           }
         }
       }
@@ -3005,11 +2850,7 @@
       if (Q_setup_check(f) == 0)
       {
         warnstream << "Qsetup;  survey obs exist but no Q setup was read ";
-        write_message (FATAL, 0);
-//        N_warn++;
-//        cout << " EXIT - see warning " << endl;
-//        warning << N_warn << " " << f << " fatal Qsetup error;  survey obs exist but no Q setup was read " << endl;
-//        exit(1);
+        write_message (FATAL, 0); // EXIT!
       }
       Q_Npar++;
       ParCount++;
@@ -3028,12 +2869,7 @@
         if (Q_setup(f, 2) == 0)
         {
           warnstream << "Qsetup:  must enter index of dev_vector surveyed by fleet:  " << f;
-          write_message (FATAL, 0);
-//          N_warn++;
-//          cout << " EXIT - see warning " << endl;
-//          warning << N_warn << " "
-//                  << "fatal Qsetup error:  must enter index of dev_vector surveyed by fleet:  " << f << endl;
-//          exit(1);
+          write_message (FATAL, 0); // EXIT!
         }
       }
       switch (Q_setup(f, 1))
@@ -3049,22 +2885,12 @@
           if (fmirror == 0 || fmirror >= f)
           {
             warnstream << "Illegal mirror for q for fleet: " << f << " trying to mirror fleet: " << Q_setup(f, 2);
-            write_message (FATAL, 0);
-//            N_warn++;
-//            cout << " EXIT - see warning " << endl;
-//            warning << N_warn << " "
-//                    << " illegal mirror for q for fleet: " << f << " trying to mirror fleet: " << Q_setup(f, 2) << endl;
-//            exit(1);
+            write_message (FATAL, 0); // EXIT!
           }
           if (Q_setup(fmirror, 5) == 1)
           {
             warnstream << "Fleet: " << f << "  cannot mirror fleet that has float q: " << fmirror;
-            write_message (FATAL, 0);
-//            N_warn++;
-//            cout << " EXIT - see warning " << endl;
-//            warning << N_warn << " "
-//                    << " fleet: " << f << "  cannot mirror fleet that has float q: " << fmirror << endl;
-//            exit(1);
+            write_message (FATAL, 0); // EXIT!
           }
           break;
         }
@@ -3080,12 +2906,7 @@
           if (Q_setup(f, 2) == 0 || Q_setup(f, 2) >= f)
           {
             warnstream << "Illegal mirror for q for fleet: " << f << " trying to mirror fleet: " << Q_setup(f, 2);
-            write_message (FATAL, 0);
-//            N_warn++;
-//            cout << " EXIT - see warning " << endl;
-//            warning << N_warn << " "
-//                    << " illegal mirror for q for fleet: " << f << " trying to mirror fleet: " << Q_setup(f, 2) << endl;
-//            exit(1);
+            write_message (FATAL, 0); // EXIT!
           }
           Q_Npar++;
           ParCount++;
@@ -3116,10 +2937,6 @@
           warnstream << "Change to no_float for depletion fleet # " << f << endl;
           warnstream << "++ and you must set phase to negative so not estimated";
           write_message (ADJUST, 1);
-//          N_warn++;
-//          warning << N_warn << " "
-//                  << "change to no_float for depletion fleet # " << f << endl
-//                  << "++ and you must set phase to negative so not estimated" << endl;
           Q_setup(f, 5) = 0;
         }
       }
@@ -3129,11 +2946,7 @@
       if (Q_setup_check(f) > 0)
       {
         warnstream << f << " Q setup error; no survey obs but Q setup was read ";
-        write_message (FATAL, 0);
-//        N_warn++;
-//        cout << "exit see warning " << endl;
-//        warning << N_warn << " " << f << " Q setup error; no survey obs but Q setup was read " << endl;
-//        exit(1);
+        write_message (FATAL, 0); // EXIT!
       }
     }
   }
@@ -3171,10 +2984,7 @@
         {
           warnstream << "Fleet: " << f << "  SS3 changed Q to not estimate because it is set to float";
           write_message (ADJUST, 0);
-//          N_warn++;
-//          warning << N_warn << " "
-//                  << "fleet: " << f << "  SS3 changed Q to not estimate because it is set to float" << endl;
-//          Q_parm_1(j, 7) = -1;
+          Q_parm_1(j, 7) = -1;
         }
       }
 
@@ -3185,9 +2995,6 @@
         {
           warnstream << "Fleet: " << f << " SS3 changed Q to not estimate because it is depletion fleet";
           write_message (ADJUST, 0);
-//          N_warn++;
-//          warning << N_warn << " "
-//                  << "fleet: " << f << " SS3 changed Q to not estimate because it is depletion fleet" << endl;
           Q_parm_1(j, 7) = -1;
         }
       }
@@ -3243,12 +3050,7 @@
           if (Q_parm_1(j, 13) > N_Block_Designs)
           {
             warnstream << "Q block request exceeds N_block patterns" ;
-            write_message (FATAL, 0);
-//            N_warn++;
-//            cout << "Fatal_input_error, see warning" << endl;
-//            warning << N_warn << " "
-//                    << " Error: Q block request exceeds N_block patterns" << endl;
-//            exit(1);
+            write_message (FATAL, 0); // EXIT!
           }
           create_timevary(Q_parm_1(j), timevary_setup, timevary_pass, autogen_timevary(timevary_setup(1)), f, Block_Design(Q_parm_1(j, 13)), env_data_pass, N_parm_dev, finish_starter);
         }
@@ -3409,9 +3211,6 @@
       {
         warnstream << "Fleet: " << f << "  cannot use >100 code for length selectivity; SS3 will correct";
         write_message (ADJUST, 0);
-//        N_warn++;
-//        warning << N_warn << " "
-//                << "fleet: " << f << "  cannot use >100 code for length selectivity; SS3 will correct" << endl;
         j = int(seltype(f, 1) / 100);
         k = seltype(f, 1) - 100 * j;
         seltype_rd(f, 1) = k; //  change input value so will be written correctly in ss_new
@@ -3430,27 +3229,18 @@
         {
           warnstream << "Don't use min_selage for age selectivity: " << k << " for fleet: " << f - Nfleet << " because separate control exists; SS3 will correct";
           write_message (ADJUST, 0);
-//          N_warn++;
-//          warning << N_warn << " "
-//                  << "Don't use min_selage for age selectivity: " << k << " for fleet: " << f - Nfleet << " because separate control exists; SS3 will correct" << endl;
           seltype_rd(f, 1) = k;
         } //  change input value so will be written correctly in ss_new
         else if (k == 19)
         {
           warnstream << "Can't use min_selage for age selectivity: " << k << " for fleet: " << f - Nfleet << " because separate control sets sel = 1.0e-06 below a specified age SS3 will correct";
           write_message (ADJUST, 0);
-//          N_warn++;
-//          warning << N_warn << " "
-//                  << "can't use min_selage for age selectivity: " << k << " for fleet: " << f - Nfleet << " because separate control sets sel = 1.0e-06 below a specified age SS3 will correct" << endl;
           seltype_rd(f, 1) = k;
         }
         else if (k == 20)
         {
           warnstream << "OK to use min_selage for age selectivity: " << k << " for fleet: " << f - Nfleet << " but be aware that a separate control for parm 5 can set sel = 1.0e-06 below a specified age";
           write_message (WARN, 0);
-//          N_warn++;
-//          warning << N_warn << " "
-//                  << "OK to use min_selage for age selectivity: " << k << " for fleet: " << f - Nfleet << " but be aware that a separate control for parm 5 can set sel = 1.0e-06 below a specified age" << endl;
         }
         else
         {
@@ -3488,9 +3278,6 @@
     {
       warnstream << "Use of size selectivity not advised when reading empirical wt-at-age ";
       write_message (WARN, 0);
-//      N_warn++;
-//      warning << N_warn << " "
-//              << " Use of size selectivity not advised when reading empirical wt-at-age " << endl;
     }
     N_selparmvec(f) = seltype_Nparam(seltype(f, 1)); // N Length selex parms
     if (seltype(f, 1) == 6 || seltype(f, 1) == 43) N_selparmvec(f) += seltype(f, 4); // special setup of N parms
@@ -3509,12 +3296,7 @@
       if (seltype(f, 4) == 0 || seltype(f, 4) >= f)
       {
         warnstream << "Illegal mirror for len selex fleet " << f << "trying to mirror fleet: " << seltype(f, 4);
-        write_message (FATAL, 1);
-//        N_warn++;
-//        cout << " EXIT - see warning " << endl;
-//        warning << N_warn << " "
-//                << " illegal mirror for len selex fleet " << f << "trying to mirror fleet: " << seltype(f, 4) << endl;
-//        exit(1);
+        write_message (FATAL, 1); // EXIT!
       }
     }
     if (seltype(f, 1) == 43)
@@ -3600,18 +3382,12 @@
       {
         warnstream << "Retention functions not implemented fully when reading empirical wt-at-age ";
         write_message (WARN, 0);
-//        N_warn++;
-//        warning << N_warn << " "
-//                << " BEWARE: Retention functions not implemented fully when reading empirical wt-at-age " << endl;
       }
       Do_Retain(f) = 1;
       if (fleet_type(f) == 2 && seltype(f, 2) != 3)
       {
         warnstream << "Fleet: " << f << " is a bycatch fleet, so consider using retention option =3 so no parameters needed";
         write_message (SUGGEST, 0);
-//        N_warn++;
-//        warning << N_warn << " "
-//                << " fleet: " << f << " is a bycatch fleet, so consider using retention option =3 so no parameters needed" << endl;
       }
       if (seltype(f, 2) == 3)
       {
@@ -3675,12 +3451,7 @@
       if (gender == 1)
       {
         warnstream << "Male selex cannot be used in one sex model; fleet: " << f ;
-        write_message (FATAL, 1);
-//        N_warn++;
-//        cout << " EXIT - see warning " << endl;
-//        warning << N_warn << " "
-//                << " Male selex cannot be used in one sex model; fleet: " << f << endl;
-//        exit(1);
+        write_message (FATAL, 1); // EXIT!
       }
       Maleselparm(f) = N_selparmvec(f) + 1;
       if (seltype(f, 3) == 1 || seltype(f, 3) == 2)
@@ -3734,12 +3505,7 @@
         else
         {
           warnstream << "Illegal male selex option selected for fleet " << f ;
-          write_message (FATAL, 1);
-//          N_warn++;
-//          cout << " EXIT - see warning " << endl;
-//          warning << N_warn << " "
-//                  << "Illegal male selex option selected for fleet " << f << endl;
-//          exit(1);
+          write_message (FATAL, 1); // EXIT!
         }
       }
     }
@@ -3748,17 +3514,11 @@
     {
       warnstream << "Selectivity pattern #7 is no longer supported ";
       write_message (WARN, 0);
-//      N_warn++;
-//      warning << N_warn << " "
-//              << "ERROR:  selectivity pattern #7 is no longer supported " << endl;
     }
     if (seltype(f, 1) == 23 && F_Method == 1)
     {
       warnstream << "Do not use F_Method = Pope's with selex pattern #23 ";
       write_message (WARN, 0);
-//      N_warn++;
-//      warning << N_warn << " "
-//              << "Do not use F_Method = Pope's with selex pattern #23 " << endl;
     }
     N_selparm += N_selparmvec(f);
   }
@@ -3770,12 +3530,7 @@
       if (seltype(f, 4) == 0 || seltype(f, 4) >= f1)
       {
         warnstream << "Illegal mirror for age selex fleet " << f - Nfleet;
-        write_message (FATAL, 0);
-//        N_warn++;
-//        cout << " EXIT - see warning " << endl;
-//        warning << N_warn << " "
-//                << " illegal mirror for age selex fleet " << f - Nfleet << endl;
-//        exit(1);
+        write_message (FATAL, 0); // EXIT!
       }
       N_selparmvec(f) = 0; // Nunber of Age selex parms
     }
@@ -3940,19 +3695,11 @@
       {
         warnstream << "Retention functions not implemented fully when reading empirical wt-at-age ";
         write_message (WARN, 0);
-//        N_warn++;
-//        warning << N_warn << " "
-//                << " BEWARE: Retention functions not implemented fully when reading empirical wt-at-age " << endl;
       }
       if (seltype(f1, 2) > 0)
       {
         warnstream << "cannot have both age and size retention functions " << f << "  but retention parms not setup ";
-        write_message (FATAL, 0);
-//        N_warn++;
-//        cout << " EXIT - see warning " << endl;
-//        warning << N_warn << " "
-//                << " ERROR:  cannot have both age and size retention functions " << f << "  but retention parms not setup " << endl;
-//        exit(1);
+        write_message (FATAL, 0); // EXIT!
       }
       if (seltype(f, 2) == 3)
       {
@@ -4022,12 +3769,7 @@
       if (gender == 1)
       {
         warnstream << "Male selex cannot be used in one sex model; fleet: " << f;
-        write_message (FATAL, 0);
-//        N_warn++;
-//        cout << " EXIT - see warning " << endl;
-//        warning << N_warn << " "
-//                << " Male selex cannot be used in one sex model; fleet: " << f << endl;
-//        exit(1);
+        write_message (FATAL, 0); // EXIT!
       }
       Maleselparm(f) = N_selparmvec(f) + 1;
       if (seltype(f, 3) == 1 || seltype(f, 3) == 2)
@@ -4073,12 +3815,7 @@
       else
       {
         warnstream << "Illegal male selex option selected for fleet " << f;
-        write_message (FATAL, 1);
-//        N_warn++;
-//        cout << " EXIT - see warning " << endl;
-//        warning << N_warn << " "
-//                << "Illegal male selex option selected for fleet " << f << endl;
-//        exit(1);
+        write_message (FATAL, 1); // EXIT!
       }
     }
     N_selparm += N_selparmvec(f);
@@ -4131,20 +3868,12 @@
     if (disc_N_fleet(f) > 0 && seltype(f, 2) == 0 && seltype(f + Nfleet, 2) == 0)
     {
       warnstream << "discard data exists for fleet " << f << "  but retention parms not setup " ;
-      write_message (FATAL, 0);
-//      N_warn++;
-//      cout << " EXIT - see warning " << endl;
-//      warning << N_warn << " "
-//              << " ERROR:  discard data exist for fleet " << f << "  but retention parms not setup " << endl;
-//      exit(1);
+      write_message (FATAL, 0); // EXIT!
     }
     else if (disc_N_fleet(f) == 0 && seltype(f, 2) > 0)
     {
       warnstream << "no discard amount data for fleet " << f << "  but retention parms have been defined ";
       write_message (WARN, 0);
-//      N_warn++;
-//      warning << N_warn << " "
-//              << " WARNING:  no discard amount data for fleet " << f << "  but retention parms have been defined " << endl;
     }
   }
   // clang-format off
@@ -4216,16 +3945,10 @@
       k = parmcount + RetainParm(f) + 2;
       if (selparm_1(k, 1) >= 0.0) // check to see if user has bounds relevant for 3.24 format
       {
-        warnstream << "converting asymptotic retention parameter to 1/(1+e(-x)) format for fleet: " << f << " parm: " << k << endl;
-        warnstream << "               old min, max, init, prior: " << selparm_1(k)(1, 4);
+        warnstream << "Converting asymptotic retention parameter to 1/(1+e(-x)) format for fleet: " << f << " parm: " << k << endl;
+        warnstream << "++      because parm min was >=0.0" << endl;
+        warnstream << "++      old min, max, init, prior: " << selparm_1(k)(1, 4);
         write_message (WARN, 1);
-//        N_warn++;
-//        warning << N_warn << " "
-//                << "converting asymptotic retention parameter to 1/(1+e(-x)) format for fleet: " << f << " parm: " << k << endl;
-//        warning << N_warn << " "
-//                << "old min, max, init, prior: " << selparm_1(k)(1, 4) << endl;
-//        echoinput << "converting asymptotic retention parameter to 1/(1+e(-x)) format for fleet: " << f << " parm: " << k << endl;
-//        echoinput << "because parm min was >=0.0" << endl;
         new_lower_bound = -10.;
         new_upper_bound = 10.;
 
@@ -4284,8 +4007,6 @@
 
         warnstream << "new min, max, init, prior: " << selparm_1(k)(1, 4);
         write_message (WARN, 0);
-//        warning << N_warn << " "
-//                << "new min, max, init, prior: " << selparm_1(k)(1, 4) << endl;
       }
     }
     parmcount += N_selparmvec(f);
@@ -4316,45 +4037,32 @@
       {
         warnstream << "size selex mirror, length range max bin read is (" << j << ") reset to nlength for fleet: " << f;
         write_message (ADJUST, 1);
-//        echoinput << " size selex mirror, length range max bin read is (" << j << ") reset to nlength for fleet: " << f << endl;
         selparm_1(parmcount + 2, 3) = -1;
         j = nlength;
       }
-      if (j > nlength) {
+      if (j > nlength)
+      {
         warnstream << "size selex mirror length is > nlength for fleet: " << f << " reset to nlength";
         write_message (ADJUST, 0);
-//        N_warn++;
-//        warning << N_warn << " "
-//                << " size selex mirror length is > nlength for fleet: " << f << " reset to nlength" << endl;
         selparm_1(parmcount + 2, 3) = -1;
         j = nlength;
       }
-      if (i > j) {
+      if (i > j)
+      {
         warnstream << "size selex mirror length range min (" << i << ") greater than max (" << j << ") for fleet: " << f;
-        write_message (FATAL, 0);
-//        N_warn++;
-//        cout << " EXIT - see warning " << endl;
-//        warning << N_warn << " "
-//                << " Critical error, size selex mirror length range min (" << i << ") greater than max (" << j << ") for fleet: " << f << endl;
-//        exit(1);
+        write_message (FATAL, 0); // EXIT!
       }
-      if (j > nlength) {
+      if (j > nlength)
+      {
         warnstream << "size selex mirror length is > nlength for fleet: " << f << " reset to nlength";
         write_message (ADJUST, 0);
-//        N_warn++;
-//        warning << N_warn << " "
-//                << " size selex mirror length is > nlength for fleet: " << f << " reset to nlength" << endl;
         selparm_1(parmcount + 2, 3) = nlength;
         j = nlength;
       }
-      if (i > j) {
+      if (i > j)
+      {
         warnstream << "size selex mirror length range min (" << i << ") greater than max (" << j << ") for fleet: " << f;
-        write_message (FATAL, 0);
-//        N_warn++;
-//        cout << " EXIT - see warning " << endl;
-//        warning << N_warn << " "
-//                << " Critical error, size selex mirror length range min (" << i << ") greater than max (" << j << ") for fleet: " << f << endl;
-//        exit(1);
+        write_message (FATAL, 0); // EXIT!
       }
       mirror_mask(f) = 1.0e-10;
       mirror_mask(f)(i, j) = 1.;
@@ -4375,27 +4083,18 @@
       {
         warnstream << "fleet: " << f << " age selex range min read is: " << selparm_1(parmcount + 1, 3) << "; SS3 expected an integer and will convert ";
         write_message (ADJUST, 0);
-//        N_warn++;
-//        warning << N_warn << " "
-///                << "fleet: " << f << " size selex range min read is: " << selparm_1(parmcount + 1, 3) << "; SS3 expected an integer and will convert " << endl;
         selparm_1(parmcount + 1, 3) = i;
       }
       if ((selparm_1(parmcount + 2, 3) - j) > 0.)
       {
         warnstream << "fleet: " << f << " age selex range max read is: " << selparm_1(parmcount + 2, 3) << "; SS3 expected an integer and will convert ";
         write_message (ADJUST, 0);
-//        N_warn++;
-//        warning << N_warn << " "
-//                << "fleet: " << f << " size selex range max read is: " << selparm_1(parmcount + 2, 3) << "; SS3 expected an integer and will convert " << endl;
         selparm_1(parmcount + 2, 3) = j;
       }
       if (selparm_1(parmcount + 2, 3) > nlength)
       {
         warnstream << "fleet: " << f << " age selex range max read is: " << selparm_1(parmcount + 2, 3) << "; is >nsizes; SS3 will convert ";
         write_message (ADJUST, 0);
-//        N_warn++;
-//        warning << N_warn << " "
-//                << "fleet: " << f << " size selex range max read is: " << selparm_1(parmcount + 2, 3) << "; is >nsizes; SS3 will convert " << endl;
         selparm_1(parmcount + 2, 3) = nlength;
       }
       echoinput << " accepted range: " << selparm_1(parmcount + 1, 3) << " " << selparm_1(parmcount + 2, 3) << endl;
@@ -4428,27 +4127,18 @@
       {
         warnstream << "fleet: " << f << " age selex range min read is: " << selparm_1(parmcount + 1, 3) << "; SS3 expected an integer and will convert ";
         write_message (ADJUST, 0);
-//        N_warn++;
-//        warning << N_warn << " "
-//                << "fleet: " << f << " age selex range min read is: " << selparm_1(parmcount + 1, 3) << "; SS3 expected an integer and will convert " << endl;
         selparm_1(parmcount + 1, 3) = i;
       }
       if ((selparm_1(parmcount + 2, 3) - j) > 0.)
       {
         warnstream << "fleet: " << f << " age selex range max read is: " << selparm_1(parmcount + 2, 3) << "; SS3 expected an integer and will convert ";
         write_message (ADJUST, 0);
-//        N_warn++;
-//        warning << N_warn << " "
-//                << "fleet: " << f << " age selex range max read is: " << selparm_1(parmcount + 2, 3) << "; SS3 expected an integer and will convert " << endl;
         selparm_1(parmcount + 2, 3) = j;
       }
       if (selparm_1(parmcount + 2, 3) > nages)
       {
         warnstream << "fleet: " << f << " age selex range max read is: " << selparm_1(parmcount + 2, 3) << "; is >nages; SS3 will convert ";
         write_message (ADJUST, 0);
-//        N_warn++;
-//        warning << N_warn << " "
-//                << "fleet: " << f << " age selex range max read is: " << selparm_1(parmcount + 2, 3) << "; is >nages; SS3 will convert " << endl;
         selparm_1(parmcount + 2, 3) = nages;
       }
       echoinput << " accepted range: " << selparm_1(parmcount + 1, 3) << " " << selparm_1(parmcount + 2, 3) << endl;
@@ -4492,9 +4182,6 @@
     {
       warnstream << "Comp_err parameters cannot have timevary effects ";
       write_message (WARN, 0);
-//      N_warn++;
-//      warning << N_warn << " "
-//              << "Comp_err parameters cannot have timevary effects " << endl;
     }
     else //  set up a timevary parameter defintion
     {
@@ -4534,12 +4221,7 @@
         if (z > N_Block_Designs)
         {
           warnstream << "selex block request exceeds N_block patterns";
-          write_message (FATAL, 0);
-//          N_warn++;
-//          cout << "Fatal_input_error, see warning" << endl;
-//          warning << N_warn << " "
-//                  << " error: selex block request exceeds N_block patterns" << endl;
-//          exit(1);
+          write_message (FATAL, 0); // EXIT!
         }
         create_timevary(selparm_1(j), timevary_setup, timevary_pass, autogen_timevary(timevary_setup(1)), selparm_fleet(j), Block_Design(z), env_data_pass, N_parm_dev, finish_starter);
       }
@@ -4580,9 +4262,6 @@
   {
     warnstream << "The experimental 2D_AR selectivity smoother option is selected!";
     write_message (WARN, 0);
-//    N_warn++;
-//    warning << N_warn << " "
-//            << "The experimental 2D_AR selectivity smoother option is selected!" << endl;
     ivector tempvec(1, 13); //  fleet, ymin, ymax, amin, amax, sigma_amax, use_rho, age/len, before, after
     tempvec.initialize();
     TwoD_AR_def.push_back(tempvec); //  bypass that pesky zeroth row
@@ -4755,25 +4434,16 @@
       {
         warnstream << "Fleet:_" << f << "min bound on parameter for size at peak is " << selparm_1(z + 1, 1) << "; should be >= midsize bin 2 (" << len_bins_m(2) << ")";
         write_message (WARN, 0);
-//        N_warn++;
-//        warning << N_warn << " "
-//                << "Fleet:_" << f << " min bound on parameter for size at peak is " << selparm_1(z + 1, 1) << "; should be >= midsize bin 2 (" << len_bins_m(2) << ")" << endl;
       }
       if (selparm_1(z + 1, 1) < len_bins_dat(1) && (seltype(f, 1) == 24 || seltype(f, 1) == 2))
       {
         warnstream << "Fleet:_" << f << "min bound on parameter for size at peak is " << selparm_1(z + 1, 1) << "; which is < min databin (" << len_bins_dat(1) << "), so illogical.";
         write_message (WARN, 0);
-//        N_warn++;
-//        warning << N_warn << " "
-//                << "Fleet:_" << f << " min bound on parameter for size at peak is " << selparm_1(z + 1, 1) << "; which is < min databin (" << len_bins_dat(1) << "), so illogical." << endl;
       }
       if (selparm_1(z + 1, 2) > len_bins_m(nlength - 1))
       {
         warnstream << "Fleet:_" << f << "max bound on parameter for size at peak is " << selparm_1(z + 1, 2) << "; should be <= midsize bin N-1 (" << len_bins_m(nlength - 1) << ")";
         write_message (WARN, 0);
-//        N_warn++;
-//        warning << N_warn << " "
-//                << "Fleet:_" << f << " max bound on parameter for size at peak is " << selparm_1(z + 1, 2) << "; should be <= midsize bin N-1 (" << len_bins_m(nlength - 1) << ")" << endl;
       }
     }
     z += N_selparmvec(f);
@@ -4964,18 +4634,14 @@
       ParmLabel += "TG_overdispersion_" + onenum + CRLF(1);
       if (TG_parm_LO(2 * N_TG + j) < 1.0)
       {
-        warnstream << "overdispersion par_min is <1.0 for TG= " << j << "; value = " << TG_parm_LO(2 * N_TG + j) << "; changed to 1.001 for run";
+        warnstream << "Overdispersion par_min is <1.0 for TG= " << j << "; value = " << TG_parm_LO(2 * N_TG + j) << "; changed to 1.001 for run";
         write_message (ADJUST, 0);
-//        N_warn++;
-//        warning << N_warn << " overdispersion par_min is <1.0 for TG= " << j << "; value = " << TG_parm_LO(2 * N_TG + j) << "; changed to 1.001 for run" << endl;
         TG_parm_LO(2 * N_TG + j) = 1.001;
       }
       if (TG_parm2(2 * N_TG + j, 3) < 1.0)
       {
-        warnstream << "overdispersion parameter is <1.0 for TG= " << j << "; value = " << TG_parm2(2 * N_TG + j, 3) << "; changed to 1.001 for run";
+        warnstream << "Overdispersion parameter is <1.0 for TG= " << j << "; value = " << TG_parm2(2 * N_TG + j, 3) << "; changed to 1.001 for run";
         write_message (ADJUST, 0);
-//        N_warn++;
-//        warning << N_warn << " overdispersion parameter is <1.0 for TG= " << j << "; value = " << TG_parm2(2 * N_TG + j, 3) << "; changed to 1.001 for run" << endl;
         TG_parm2(2 * N_TG + j, 3) = 1.001;
       }
     }
@@ -5056,10 +4722,6 @@
           {
             warnstream << "for selectivity parmdevs, must change Fcast_Specify_Selex to 1 when using continue last dev";
             write_message (WARN, 1);
-//            N_warn++;
-//            warning << N_warn << " "
-//                    << "for selectivity parmdevs, must change Fcast_Specify_Selex to 1 when using continue last dev" << endl;
-//            echoinput << "for selectivity parmdevs, must change Fcast_Specify_Selex to 1 when using continue last dev" << endl;
           }
         }
         if (picker > 10)
@@ -5105,12 +4767,7 @@
           else
           {
             warnstream << "illegal parmdevtype for parm " << f;
-            write_message (FATAL, 0);
-//            N_warn++;
-//            cout << " EXIT - see warning " << endl;
-//            warning << N_warn << " "
-//                    << " illegal parmdevtype for parm " << f << endl;
-//            exit(1);
+            write_message (FATAL, 0); // EXIT!
           }
         }
       }
@@ -5224,32 +4881,17 @@
     if (varparm_estimated(1) == 1)
     {
       warnstream << "growth variance is estimated parameter, so change sd_offset to 1";
-      write_message (FATAL, 0);
-//      N_warn++;
-//      cout << "exit with warning" << endl;
-//      warning << N_warn << " "
-//              << " growth variance is estimated parameter, so change sd_offset to 1" << endl;
-//      exit(1);
+      write_message (FATAL, 0); // EXIT!
     }
     if (varparm_estimated(2) == 1)
     {
       warnstream << "recruitment sigmaR is estimated parameter, so change sd_offset to 1";
-      write_message (FATAL, 0);
-//      N_warn++;
-//      cout << " EXIT - see warning " << endl;
-//      warning << N_warn << " "
-//              << " recruitment sigmaR is estimated parameter, so change sd_offset to 1" << endl;
-//      exit(1);
+      write_message (FATAL, 0); // EXIT!
     }
     if (varparm_estimated(3) == 1)
     {
       warnstream << "survey extraSD is estimated parameter, so change sd_offset to 1";
-      write_message (FATAL, 0);
-//      N_warn++;
-//      cout << " EXIT - see warning " << endl;
-//      warning << N_warn << " "
-//              << " survey extraSD is estimated parameter, so change sd_offset to 1" << endl;
-//      exit(1);
+      write_message (FATAL, 0); // EXIT!
     }
   }
   if (depletion_fleet > 0 && depletion_type < 2 && max_lambda_phase < 2)
@@ -5257,9 +4899,6 @@
     max_lambda_phase = 2;
     warnstream << "Increase max_lambda_phase to 2 because depletion fleet is being used";
     write_message (ADJUST, 0);
-//    N_warn++;
-//    warning << N_warn << " "
-//            << "Increase max_lambda_phase to 2 because depletion fleet is being used" << endl;
   }
   // clang-format off
  END_CALCS
@@ -5377,11 +5016,8 @@
       if (f > Nfleet)
       {
         k = 0;
-        warnstream << "illegal fleet/survey for lambda change at row: " << j << " fleet: " << f << " > Nfleet";
+        warnstream << "Illegal fleet/survey for lambda change at row: " << j << " fleet: " << f << " > Nfleet";
         write_message (ADJUST, 0);
-//        N_warn++;
-//        warning << N_warn << " "
-//                << " illegal fleet/survey for lambda change at row: " << j << " fleet: " << f << " > Nfleet" << endl;
       }
     }
     else if (k <= 16) // tag data
@@ -5389,30 +5025,21 @@
       if (f > N_TG2)
       {
         k = 0;
-        warnstream << "illegal tag group for lambda change at row: " << j << " Tag: " << f << " > N_taggroups";
+        warnstream << "Illegal tag group for lambda change at row: " << j << " Tag: " << f << " > N_taggroups";
         write_message (ADJUST, 0);
-//        N_warn++;
-//        warning << N_warn << " "
-//                << " illegal tag group for lambda change at row: " << j << " Tag: " << f << " > N_taggroups" << endl;
       }
     }
     else if (k > 18)
     {
       k = 0;
-      warnstream << "illegal lambda_type for lambda change at row: " << j << " Method: " << k << " > 17";
+      warnstream << "Illegal lambda_type for lambda change at row: " << j << " Method: " << k << " > 17";
       write_message (ADJUST, 0);
-//      N_warn++;
-//      warning << N_warn << " "
-//              << " illegal lambda_type for lambda change at row: " << j << " Method: " << k << " > 17" << endl;
     }
     if (s > max_lambda_phase)
     {
       k = 0;
-      warnstream << "illegal request for lambda change at row: " << j << " phase: " << s << " > max_lam_phase: " << max_lambda_phase;
+      warnstream << "Illegal request for lambda change at row: " << j << " phase: " << s << " > max_lam_phase: " << max_lambda_phase;
       write_message (ADJUST, 0);
-//      N_warn++;
-//      warning << N_warn << " "
-//              << " illegal request for lambda change at row: " << j << " phase: " << s << " > max_lam_phase: " << max_lambda_phase << endl;
     }
     //      if(s>Turn_off_phase) s=max(1,Turn_off_phase);
     temp = Lambda_changes(j, 4); // value
@@ -5455,12 +5082,7 @@
         if (z > SzFreq_Nmeth)
         {
           warnstream << "reading sizefreq lambda change for method > Nmeth " << Lambda_changes(j, 5);
-          write_message (FATAL, 0);
-//          N_warn++;
-//          cout << " EXIT - see warning " << endl;
-//          warning << N_warn << " "
-//                  << " reading sizefreq lambda change for method > Nmeth " << Lambda_changes(j, 5) << endl;
-//          exit(1);
+          write_message (FATAL, 0); // EXIT!
         }
         SzFreq_lambda(SzFreq_LikeComponent(f, z))(s, max_lambda_phase) = temp;
         break;
@@ -5711,8 +5333,6 @@
         {
           warnstream << "Selex_std requested output past nlength, resets to nlength, may produce duplicates";
           write_message (ADJUST, 0);
-//          N_warn++;
-//          warning << N_warn << " Selex_std requested output past nlength, resets to nlength, may produce duplicates" << endl;
           Selex_Std_Pick(i) = nlength;
         }
       }
@@ -5723,8 +5343,6 @@
         {
           warnstream << "Selex_std requested output past nages, resets to nages, may produce duplicates";
           write_message (ADJUST, 0);
-//          N_warn++;
-//          warning << N_warn << " Selex_std requested output past nages, resets to nages, may produce duplicates" << endl;
           Selex_Std_Pick(i) = nages;
         }
       }
@@ -5745,11 +5363,8 @@
     // turn off growth extra stderr for growth if no estimated growth parameters
     if (MG_active(2) == 0)
     {
-      warnstream << "warning; growth output stderr requested but no growth parameters are estimated, changing growth stddev reporting specifications to 0";
+      warnstream << "Growth output stderr requested but no growth parameters are estimated, changing growth stddev reporting specifications to 0";
       write_message (ADJUST, 0);
-//      N_warn++;
-//      warning << N_warn << " "
-//              << "warning; growth output stderr requested but no growth parameters are estimated, changing growth stddev reporting specifications to 0" << endl;
       Do_Growth_Std = 0;
       //  		More_Std_Input(5)=0;
       //  		More_Std_Input(6)=0;
@@ -6201,26 +5816,16 @@
         }
         else
         {
-          warnstream << "must have at least 3 knots in spline ";
-          write_message (FATAL, 0);
-//          N_warn++;
-//          cout << " EXIT - see warning " << endl;
-//          warning << N_warn << " "
-//                  << "must have at least 3 knots in spline " << endl;
-//          exit(1);
+          warnstream << "There must be at least 3 knots in spline ";
+          write_message (FATAL, 0); // EXIT!
         }
         if (f <= Nfleet) // doing size Selex
         {
           // exit if no length data available on which to base the knots
           if (Nobs_l(fs) == 0)
           {
-            warnstream << "no length data for fleet " << fs << ": can't autogenerate cubic spline knots ";
-            write_message (FATAL, 0);
-//            N_warn++;
-//            cout << " EXIT - see warning " << endl;
-//            warning << N_warn << " "
-//                    << "no length data for fleet " << fs << ": can't autogenerate cubic spline knots " << endl;
-//            exit(1);
+            warnstream << "No length data for fleet " << fs << ": can't autogenerate cubic spline knots ";
+            write_message (FATAL, 0); // EXIT!
           }
           // calculate cumulative length distribution
           dvector templen(1, nlen_bin);
@@ -6258,12 +5863,7 @@
           if (Nobs_a(fs) == 0)
           {
             warnstream << "no age data for fleet " << fs << ": can't autogenerate cubic spline knots ";
-            write_message (FATAL, 0);
-//            N_warn++;
-//            cout << " EXIT - see warning " << endl;
-//            warning << N_warn << " "
-//                    << "no age data for fleet " << fs << ": can't autogenerate cubic spline knots " << endl;
-//            exit(1);
+            write_message (FATAL, 0); // EXIT!
           }
           // calculate cumulative age distribution
           dvector tempage(1, n_abins);
@@ -6800,12 +6400,7 @@
           if (Selex_Std_Pick(i) > nlength)
           {
             warnstream << "cannot select stdev for length bin greater than nlength " << Selex_Std_Pick(i) << " > " << nlength;
-            write_message (FATAL, 0);
-//            N_warn++;
-//            cout << " EXIT - see warning " << endl;
-//            warning << N_warn << " "
-//                    << " cannot select stdev for length bin greater than nlength " << Selex_Std_Pick(i) << " > " << nlength << endl;
-//            exit(1);
+            write_message (FATAL, 0); // EXIT!
           }
           ParmLabel += "LenSelex_std_" + NumLbl(Do_Selex_Std) + "_" + GenderLbl(g) + "_L_" + NumLbl(len_bins(Selex_Std_Pick(i))) + CRLF(1);
         }
@@ -6814,12 +6409,7 @@
           if (Selex_Std_Pick(i) > nages)
           {
             warnstream << "cannot select stdev for age bin greater than maxage " << Selex_Std_Pick(i) << " > " << nages;
-            write_message (FATAL, 0);
-//            N_warn++;
-//            cout << " EXIT - see warning " << endl;
-//            warning << N_warn << " "
-//                    << " cannot select stdev for age bin greater than maxage " << Selex_Std_Pick(i) << " > " << nages << endl;
-//            exit(1);
+            write_message (FATAL, 0); // EXIT!
           }
           ParmLabel += "AgeSelex_std_" + NumLbl(Do_Selex_Std) + "_" + GenderLbl(g) + "_A_" + NumLbl0(age_vector(Selex_Std_Pick(i)) + 1) + CRLF(1);
         }
@@ -6828,12 +6418,7 @@
           if (Selex_Std_Pick(i) > nages)
           {
             warnstream << "cannot select stdev for age bin greater than maxage " << Selex_Std_Pick(i) << " > " << nages;
-            write_message (FATAL, 0);
-//            N_warn++;
-//            cout << " EXIT - see warning " << endl;
-//            warning << N_warn << " "
-//                    << " cannot select stdev for age bin greater than maxage " << Selex_Std_Pick(i) << " > " << nages << endl;
-//            exit(1);
+            write_message (FATAL, 0); // EXIT!
           }
           ParmLabel += "AgeLenSelex_std_" + NumLbl(Do_Selex_Std) + "_GP1_" + GenderLbl(g) + "_A_" + NumLbl0(age_vector(Selex_Std_Pick(i)) + 1) + CRLF(1);
         }

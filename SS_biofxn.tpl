@@ -28,14 +28,11 @@ FUNCTION void get_MGsetup(const int yz)
       {
         if (mgp_adj(f) < MGparm_1(f, 1) || mgp_adj(f) > MGparm_1(f, 2))
         {
-          warnstream << "adjusted MGparm out of base parm bounds. Phase: " << current_phase();
-          warnstream << "; Inter: " << niter << "; parm#: " << f << "; y: " << yz << "; min: ";
-          warnstream << MGparm_1(f, 1) << "; max: " << MGparm_1(f, 2) << "; base: " << MGparm(f);
-          warnstream << " timevary_val: " << mgp_adj(f) << " " << ParmLabel(f);
+          warnstream << "adjusted MGparm out of base parm bounds. Phase: " << current_phase()
+               << "; Inter: " << niter << "; parm#: " << f << "; y: " << yz << "; min: "
+               << MGparm_1(f, 1) << "; max: " << MGparm_1(f, 2) << "; base: " << MGparm(f)
+               << " timevary_val: " << mgp_adj(f) << " " << ParmLabel(f);
           write_message (WARN, 0);
-    //      N_warn++;
-    //      warning << N_warn << " "
-    //              << " adjusted MGparm out of base parm bounds. Phase: " << current_phase() << "; Inter: " << niter << "; parm#: " << f << "; y: " << yz << "; min: " << MGparm_1(f, 1) << "; max: " << MGparm_1(f, 2) << "; base: " << MGparm(f) << " timevary_val: " << mgp_adj(f) << " " << ParmLabel(f) << endl;
         }
       }
     }

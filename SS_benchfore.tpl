@@ -136,8 +136,6 @@ FUNCTION void setup_Benchmark()
         {
           warnstream << "mean recruitment for forecast is incompatible with timevary recr_dist in yr: " << y << "; user must adjust manually";
           write_message(WARN, 0);
-//          N_warn++;
-//          warning << N_warn << " mean recruitment for forecast is incompatible with timevary recr_dist in yr: " << y << "; user must adjust manually" << endl;
         }
         recr_dist(y) = recr_dist_endyr;
       }
@@ -196,8 +194,6 @@ FUNCTION void setup_Benchmark()
             Fcast_RelF_Use(s, f) = 1.0e-6;
             warnstream << "setting positive forecast relF for bycatch fleet: " << f;
             write_message(ADJUST, 0);
-//            N_warn++;
-//            warning << N_warn << "setting positive forecast relF for bycatch fleet: " << f << endl;
           }
         }
     }
@@ -211,8 +207,6 @@ FUNCTION void setup_Benchmark()
             Fcast_RelF_Use(s, f) = 1.0e-6;
             warnstream << "setting positive forecast relF for forecast only fleet: " << f;
             write_message(ADJUST, 0);
-//            N_warn++;
-//            warning << N_warn << " setting positive forecast relF for forecast only fleet: " << f << endl;
           }
         }
     }
@@ -769,15 +763,11 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
       {
         warnstream << "poor convergence in Fspr search " << SPR_target << " " << SPR_actual / 100.;
         write_message(WARN, 0);
-//        N_warn++;
-//        warning << N_warn << " warning: poor convergence in Fspr search " << SPR_target << " " << SPR_actual / 100. << endl;
       }
       if (SPR_actual / SPR_target100 >= 1.01)
       {
         warnstream << "Fmult = " << Fmult << " cannot get high enough to achieve low SPR target: " << SPR_target << "; SPR achieved is: " << SPR_actual / 100.;
         write_message(WARN, 0);
-//        N_warn++;
-//        warning << N_warn << " warning: Fmult = " << Fmult << " cannot get high enough to achieve low SPR target: " << SPR_target << "; SPR achieved is: " << SPR_actual / 100. << endl;
       }
 
       report5 << "seas fleet Hrate encB deadB retB encN deadN retN: " << endl;
@@ -889,8 +879,6 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
       {
         warnstream << "poor convergence in F0.1 search target= " << F01_origin * 0.1 << "  actual= " << F01_actual;
         write_message(WARN, 0);
-//        N_warn++;
-//        warning << N_warn << " warning: poor convergence in F0.1 search target= " << F01_origin * 0.1 << "  actual= " << F01_actual << endl;
       }
       report5 << "seas fleet Hrate encB deadB retB encN deadN retN): " << endl;
       for (s = 1; s <= nseas; s++)
@@ -1055,8 +1043,6 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
       {
         warnstream << "poor convergence in Btarget search " << Btgttgt << " " << Btgt;
         write_message (WARN, 0);
-//        N_warn++;
-//        warning << N_warn << " warning: poor convergence in Btarget search " << Btgttgt << " " << Btgt << endl;
       }
       report5 << "seas fleet Hrate encB deadB retB encN deadN retN): " << endl;
       for (s = 1; s <= nseas; s++)
@@ -1403,8 +1389,6 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
         {
           warnstream << "poor convergence in Fmsy, final dy/dy2= " << dyld / dyldp;
           write_message (WARN, 0);
-//          N_warn++;
-//          warning << N_warn << " warning:  << endl;
         }
         report5 << "seas fleet Hrate encB deadB retB encN deadN retN): " << endl;
         for (s = 1; s <= nseas; s++)
@@ -2029,8 +2013,6 @@ FUNCTION void Get_Forecast()
         {
           warnstream << "control rule cutoff is large (" << H4010_bot << "); so may not be < calculated Bmsy/SSB_unf (" << H4010_top << ")";
           write_message (WARN, 0);
-//          N_warn++;
-//          warning<<N_warn<<" Beware: control rule cutoff is large ("<<H4010_bot<<"); so may not be < calculated Bmsy/SSB_unf ("<<H4010_top<<")"<<endl;
         }
       }
       else

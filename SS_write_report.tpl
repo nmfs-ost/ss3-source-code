@@ -1129,12 +1129,7 @@ FUNCTION void write_bigoutput()
               {
                 warnstream << "Bin widths narrower than pop len bins caused negative allocation in sizefreq method:";
                 warnstream << " method, season, size, bin: " << SzFreqMethod << " " << s << " " << len_bins2(z) << " " << j;
-                write_message (FATAL, 0);
-//                N_warn++;
-//                warning << N_warn << " "
-//                        << " CRITICAL ERROR:  Bin widths narrower than pop len bins caused negative allocation in sizefreq method:"
-//                        << " method, season, size, bin: " << SzFreqMethod << " " << s << " " << len_bins2(z) << " " << j << endl;
-//                exit(1);
+                write_message (FATAL, 0); // EXIT!
               }
             }
             SS2out << endl;
@@ -1742,10 +1737,6 @@ FUNCTION void write_bigoutput()
         warnstream << "Main recdev biasadj is >2 times ratio of rmse to sigmaR";
         SS2out << " # " << warnstream.str() ;
         write_message (WARN, 0);
-//        N_warn++;
-//        warning << N_warn << " "
-//                << " Main recdev biasadj is >2 times ratio of rmse to sigmaR" << endl;
-//        SS2out << " # Main_recdev_biasadj_is_>2_times_ratio_of_rmse_to_sigmaR";
       }
     }
     SS2out << endl;
@@ -1758,10 +1749,6 @@ FUNCTION void write_bigoutput()
         warnstream << "Early recdev biasadj is >2 times ratio of rmse to sigmaR";
         SS2out << " # " << warnstream.str();
         write_message (WARN, 0);
-//        N_warn++;
-//        warning << N_warn << " "
-//                << " Early recdev biasadj is >2 times ratio of rmse to sigmaR" << endl;
-//        SS2out << " # Early_recdev_biasadj_is_>2_times_ratio_of_rmse_to_sigmaR";
       }
     }
     SS2out << endl;

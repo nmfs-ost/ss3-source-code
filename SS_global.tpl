@@ -64,11 +64,11 @@ GLOBALS_SECTION
   #include <iostream>
   #include <sstream>
     #define NOTE    1 // information that could be useful
-    #define SUGGEST 2 // a better way
+    #define SUGGEST 2 // a possible better way
     #define PERFORM 3 // can help performance
     #define WARN    4 // might be a problem, execution continues anyway
     #define ADJUST  5 // adjustment has been made, execution continues
-    #define FATAL   6 // program will exit
+    #define FATAL   6 // major problem, program will exit
     adstring_array MessageIntro;
   #include <sys/types.h>
   #include <sys/stat.h>
@@ -1169,7 +1169,7 @@ FINAL_SECTION
       warnstream << " " << N_warn << " warning" << (N_warn > 1? "s ": " ");
       if (N_note > 0)
       {
-        warnstream << " and " << N_note << " notes" << (N_note > 1? "s ": " ");
+        warnstream << " and " << N_note << " note" << (N_note > 1? "s ": " ");
       }
     }
     else if (N_note > 0)

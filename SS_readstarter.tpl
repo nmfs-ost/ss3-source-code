@@ -85,11 +85,9 @@
   int write_bodywt_save;
   int save_gparm;
   int save_gparm_print;
-//  int N_warn;
 !! save_for_report = 0;
 !! bigsaver = 0;
 !! save_gparm = 0;
-// !! N_warn = 0;
 !! write_bodywt = 0;
 !! write_bodywt_save = 0;
 !! special_flag = 0;
@@ -175,12 +173,12 @@
   // adstring_array GenderLbl;   // gender label
   // adstring_array CRLF;   // blank to terminate lines
 
-  MessageIntro += " Information: ";
-  MessageIntro += " Suggestion: ";
-  MessageIntro += " Performance: ";
-  MessageIntro += " Warning: ";
-  MessageIntro += " Adjustment: ";
-  MessageIntro += " Fatal Error! ";
+  MessageIntro += " Information: "; // information that could be useful
+  MessageIntro += " Suggestion: ";  // a possible better way
+  MessageIntro += " Performance: "; // can help performance
+  MessageIntro += " : ";            // might be a problem, execution continues anyway
+  MessageIntro += " Adjustment: ";  // adjustment has been made, execution continues
+  MessageIntro += " Fatal Error! "; // major problem, program will exit
 
   CRLF += "";
   GenderLbl += "Fem";

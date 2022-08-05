@@ -229,13 +229,7 @@ FUNCTION void evaluate_the_objective_function()
           else
           {
             warnstream << "discard error type for fleet " << f << " = " << disc_errtype(f) << " should be -3, -2, -1, 0, or >=1";
-            write_message (FATAL, 0);
-//            N_warn++;
-//            cout << " EXIT - see warning " << endl;
-//            warning << N_warn << " "
-//                    << " discard error type for fleet " << f << " = " << disc_errtype(f) << " should be -3, -2, -1, 0, or >=1" << endl;
-//            cout << " fatal error, see warning" << endl;
-//            exit(1);
+            write_message (FATAL, 0); // EXIT!
           }
         }
       }
@@ -1072,22 +1066,16 @@ FUNCTION void evaluate_the_objective_function()
     {
       warnstream << "1st iteration warning: ssb(endyr)/ssb(styr)= " << SSB_yr(endyr) / SSB_yr(styr) << "; suggest start with larger R0 to get near 0.4; or use depletion fleet option";
       write_message (WARN, 0);
-//      N_warn++;
-//      warning << N_warn << " 1st iteration warning: ssb(endyr)/ssb(styr)= " << SSB_yr(endyr) / SSB_yr(styr) << "; suggest start with larger R0 to get near 0.4; or use depletion fleet option" << endl;
     }
     if (annual_F(endyr, 3) > 2.0)
     {
       warnstream << "1st iteration warning: annual F in endyr > 2.0; check configuration; suggest start with larger R0";
       write_message (WARN, 0);
-//      N_warn++;
-//      warning << N_warn << " 1st iteration warning: annual F in endyr > 2.0; check configuration; suggest start with larger R0" << endl;
     }
     if (sum(catch_like) > 0.5 * obj_fun && F_Method != 2)
     {
       warnstream << "1st iteration warning: catch logL > 50% total logL; check configuration; suggest start with larger R0";
       write_message (WARN, 0);
-//      N_warn++;
-//      warning << N_warn << " 1st iteration warning: catch logL > 50% total logL; check configuration; suggest start with larger R0" << endl;
     }
     do_once = 0;
   }
@@ -1396,33 +1384,17 @@ FUNCTION dvariable Check_Parm(const int iparm, const int& PrPH, const double& Pm
     if (Pmin > Pmax)
     {
       warnstream << "parameter min > parameter max " << Pmin << " > " << Pmax << " for parm: " << iparm;
-      write_message(FATAL, 1);
-//      N_warn++;
-//      cout << " EXIT - see warning " << endl;
-//      warning << N_warn << " "
-//              << " parameter min > parameter max " << Pmin << " > " << Pmax << " for parm: " << iparm << endl;
-//      cout << " fatal error, see warning" << endl;
-//      echoinput << " parameter min > parameter max " << Pmin << " > " << Pmax << " for parm: " << iparm << endl;
-//      cout << " fatal error, see warning" << endl;
-//      exit(1);
+      write_message(FATAL, 1); // EXIT!
     }
     else if (Pmin == Pmax && PrPH >= 0)
     {
       warnstream << "parameter min is same as parameter max: " << Pmin << " = " << Pmax << " for parm: " << iparm ;
       write_message (WARN, 1);
-//      N_warn++;
-//      warning << N_warn << " "
-//              << " parameter min is same as parameter max: " << Pmin << " = " << Pmax << " for parm: " << iparm << " ; search for <now check> echoinput for parm_type" << endl;
-//      echoinput << " parameter min is same as parameter max" << Pmin << " = " << Pmax << " for parm: " << iparm << endl;
     }
     else if (Pval < Pmin)
     {
       warnstream << "parameter init value is less than parameter min " << Pval << " < " << Pmin << " for parm: " << iparm;
       write_message (WARN, 1);
-//      N_warn++;
-//      warning << N_warn << " "
-//              << "parameter init value is less than parameter min " << Pval << " < " << Pmin << " for parm: " << iparm << " ; search for <now check> in echoinput for parm_type, will exit if prior requested" << endl;
-//      echoinput << " parameter init value is less than parameter min " << Pval << " < " << Pmin << " for parm: " << iparm << endl;
       if (Prtype > 0)
         exit(1);
     }
@@ -1430,10 +1402,6 @@ FUNCTION dvariable Check_Parm(const int iparm, const int& PrPH, const double& Pm
     {
       warnstream << "parameter init value is greater than parameter max " << Pval << " > " << Pmax << " for parm: " << iparm;
       write_message (WARN, 1);
-//      N_warn++;
-//      warning << N_warn << " "
-//              << "parameter init value is greater than parameter max " << Pval << " > " << Pmax << " for parm: " << iparm << " ; search for <now check> echoinput for parm_type, will exit if prior requested" << endl;
-//      echoinput << " parameter init value is greater than parameter max " << Pval << " > " << Pmax << " for parm: " << iparm << endl;
       if (Prtype > 0)
         exit(1);
     }
@@ -1444,9 +1412,6 @@ FUNCTION dvariable Check_Parm(const int iparm, const int& PrPH, const double& Pm
       {
         warnstream << "jitter not done unless parameter min & max are in reasonable parameter range " << Pmin << " " << Pmax;
         write_message (WARN, 0);
-//        N_warn++;
-//        warning << N_warn << " "
-//                << " jitter not done unless parameter min & max are in reasonable parameter range " << Pmin << " " << Pmax << endl;
       }
       else
       {
@@ -1455,13 +1420,7 @@ FUNCTION dvariable Check_Parm(const int iparm, const int& PrPH, const double& Pm
         if (Psigma < 0.00001) // how small a sigma is too small?
         {
           warnstream << "in Check_Parm jitter:  Psigma < 0.00001 " << Psigma;
-          write_message (FATAL, 0);
-//          N_warn++;
-//          cout << " EXIT - see warning " << endl;
-//          warning << N_warn << " "
-//                  << " in Check_Parm jitter:  Psigma < 0.00001 " << Psigma << endl;
-//          cout << " fatal error in jitter, see warning" << endl;
-//          exit(1);
+          write_message (FATAL, 0); // EXIT!
         }
         zval = (Pval - Pmean) / Psigma; //  current parm value converted to zscore
         kval = cumd_norm(zval);
@@ -1489,12 +1448,7 @@ FUNCTION dvariable Check_Parm(const int iparm, const int& PrPH, const double& Pm
       if (Psd <= 0.0)
       {
         warnstream << "A prior is selected but prior sd is zero. Prtype: " << Prtype << " Prior: " << Pr << " Pr_sd: " << Psd << " for parm: " << iparm << " ; see echoinput for parm_type";
-        write_message (FATAL, 0);
-//        N_warn++;
-//        cout << "fatal error in prior check, see warning" << endl;
-//        warning << N_warn << " "
-//                << "FATAL:  A prior is selected but prior sd is zero. Prtype: " << Prtype << " Prior: " << Pr << " Pr_sd: " << Psd << " for parm: " << iparm << " ; see echoinput for parm_type" << endl;
-//        exit(1);
+        write_message (FATAL, 0); // EXIT!
       }
       if (PrPH < 0)
       {
@@ -1548,11 +1502,8 @@ FUNCTION dvariable Get_Prior(const int T, const double& Pmin, const double& Pmax
       Aprior = tau * (1.0 - mu); // CASAL's m and n
       if (Bprior <= 1.0 || Aprior <= 1.0)
       {
-        warnstream << "bad Beta prior " << Pval << " " << Pr;
+        warnstream << "Bad Beta prior " << Pval << " " << Pr;
         write_message (WARN, 0);
-  //      N_warn++;
-  //      warning << N_warn << " "
-  //              << " bad Beta prior " << Pval << " " << Pr << endl;
       }
       Prior_Like = (1.0 - Bprior) * log(Pconst + Pval - Pmin) + (1.0 - Aprior) * log(Pconst + Pmax - Pval) - (1.0 - Bprior) * log(Pconst + Pr - Pmin) - (1.0 - Aprior) * log(Pconst + Pmax - Pr);
       break;
@@ -1565,11 +1516,8 @@ FUNCTION dvariable Get_Prior(const int T, const double& Pmin, const double& Pmax
       }
       else
       {
-        warnstream << "cannot do prior in log space for parm with min <=0.0" ;
+        warnstream << "Cannot do prior in log space for parm with min <=0.0" ;
         write_message (WARN, 0);
-//        N_warn++;
-//        warning << N_warn << " "
-//                << " cannot do prior in log space for parm with min <=0.0" << endl;
       }
       break;
     }
@@ -1579,11 +1527,8 @@ FUNCTION dvariable Get_Prior(const int T, const double& Pmin, const double& Pmax
         Prior_Like = 0.5 * square((log(Pval) - Pr + 0.5 * square(Psd)) / Psd);
       else
       {
-        warnstream << "cannot do prior in log space for parm with min <=0.0";
+        warnstream << "Cannot do prior in log space for parm with min <=0.0";
         write_message (WARN, 0);
-//        N_warn++;
-//        warning << N_warn << " "
-//                << " cannot do prior in log space for parm with min <=0.0" << endl;
       }
       break;
     }
@@ -1594,9 +1539,6 @@ FUNCTION dvariable Get_Prior(const int T, const double& Pmin, const double& Pmax
       {
         warnstream << "Lower bound for gamma prior must be >=0.  Suggest " << warnif * 10.0;
         write_message (WARN, 0);
-//        N_warn++;
-//        warning << N_warn << " "
-//                << "Lower bound for gamma prior must be >=0.  Suggestion " << warnif * 10.0 << endl;
       }
       else
       {
@@ -1605,9 +1547,6 @@ FUNCTION dvariable Get_Prior(const int T, const double& Pmin, const double& Pmax
         {
           warnstream << "Pval too close to zero in gamma prior - can not guarantee reliable calculations.  Suggest rescaling data (e.g. * 1000)? ";
           write_message (WARN, 0);
-//          N_warn++;
-//          warning << N_warn << " "
-//                  << "Pval too close to zero in gamma prior - can not guarantee reliable calculations.  Suggest rescaling data (e.g. * 1000)? " << endl;
         }
         else
         {
