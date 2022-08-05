@@ -286,7 +286,7 @@ FUNCTION void write_nudata()
       report1 << "#_combM+F: males and females treated as combined gender below this bin number " << endl;
       report1 << "#_compressbins: accumulate upper tail by this number of bins; acts simultaneous with mintailcomp; set=0 for no forced accumulation" << endl;
       report1 << "#_Comp_Error:  0=multinomial, 1=dirichlet using Theta*n, 2=dirichlet using beta, 3=MV_Tweedie" << endl;
-      report1 << "#_ParmSelect:  consecutive for dirichlet or MV_Tweedie" << endl;
+      report1 << "#_ParmSelect:  consecutive index for dirichlet or MV_Tweedie" << endl;
       report1 << "#_minsamplesize: minimum sample size; set to 1 to match 3.24, minimum value is 0.001" << endl;
       report1 << "#" << endl;
       report1 << "#_mintailcomp addtocomp combM+F CompressBins CompError ParmSelect minsamplesize" << endl;
@@ -608,7 +608,7 @@ FUNCTION void write_nudata()
         report1 << "#_combM+F: males and females treated as combined gender below this bin number " << endl;
         report1 << "#_compressbins: accumulate upper tail by this number of bins; acts simultaneous with mintailcomp; set=0 for no forced accumulation" << endl;
         report1 << "#_Comp_Error:  0=multinomial, 1=dirichlet, 2=MV_Tweedie" << endl;
-        report1 << "#_ParmSelect:  parm number for dirichlet" << endl;
+        report1 << "#_ParmSelect:  consecutive index for dirichlet or MV_Tweedie" << endl;
         report1 << "#_minsamplesize: minimum sample size; set to 1 to match 3.24, minimum value is 0.001" << endl;
         report1 << "#" << endl;
         report1 << "#_mintailcomp addtocomp combM+F CompressBins CompError ParmSelect minsamplesize" << endl;
@@ -1044,7 +1044,7 @@ FUNCTION void write_nudata()
         report1 << "#_combM+F: males and females treated as combined gender below this bin number " << endl;
         report1 << "#_compressbins: accumulate upper tail by this number of bins; acts simultaneous with mintailcomp; set=0 for no forced accumulation" << endl;
         report1 << "#_Comp_Error:  0=multinomial, 1=dirichlet using Theta*n, 2=dirichlet using beta, 3=MV_Tweedie" << endl;
-        report1 << "#_ParmSelect:  parm number for dirichlet or MV_Tweedie" << endl;
+        report1 << "#_ParmSelect:  consecutive index for dirichlet or MV_Tweedie" << endl;
         report1 << "#_minsamplesize: minimum sample size; set to 1 to match 3.24, minimum value is 0.001" << endl;
         report1 << "#" << endl;
         report1 << "#_mintailcomp addtocomp combM+F CompressBins CompError ParmSelect minsamplesize" << endl;
@@ -1134,7 +1134,7 @@ FUNCTION void write_nudata()
       report1 << "#_combM+F: males and females treated as combined gender below this bin number " << endl;
       report1 << "#_compressbins: accumulate upper tail by this number of bins; acts simultaneous with mintailcomp; set=0 for no forced accumulation" << endl;
       report1 << "#_Comp_Error:  0=multinomial, 1=dirichlet using Theta*n, 2=dirichlet using beta, 3=MV_Tweedie" << endl;
-      report1 << "#_ParmSelect:  parm number for dirichlet or MV_Tweedie" << endl;
+        report1 << "#_ParmSelect:  consecutive index for dirichlet or MV_Tweedie" << endl;
       report1 << "#_minsamplesize: minimum sample size; set to 1 to match 3.24, minimum value is 0.001" << endl;
       report1 << "#" << endl;
       report1 << "#_mintailcomp addtocomp combM+F CompressBins CompError ParmSelect minsamplesize" << endl;

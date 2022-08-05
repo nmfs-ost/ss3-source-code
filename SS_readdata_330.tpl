@@ -454,8 +454,6 @@
 
 //  where ALK_idx=(y-styr)*nseas*N_subseas+(s-1)*N_subseas+subseas   This is index to subseas and used to indicate which ALK is being referenced
 
-//  3darray data_ALK_time(1,Nfleet,0,9,1,<nobsperkind/fleet>)   stores ALK_time
-
 //  ProgLabel_2.2  Read CATCH amount by fleet
   matrix obs_equ_catch(1,nseas,1,Nfleet);    //  initial, equilibrium catch.  now seasonal
  LOCAL_CALCS
@@ -1348,7 +1346,7 @@
     echoinput << "#_addtocomp:  after accumulation of tails; this value added to all bins" << endl;
     echoinput << "#_males and females treated as combined gender below this bin number " << endl;
     echoinput << "#_compressbins: accumulate upper tail by this number of bins; acts simultaneous with mintailcomp; set=0 for no forced accumulation" << endl;
-    echoinput<<"#_Comp_Error:  0=multinomial, 1=dirichlet (rel input N), 2=dirichlet (absolute), 3=MV_Tweedie with 2 parms"<<endl;
+    echoinput<<"#_Comp_Error:  0=multinomial, 1=dirichlet using theta * n, 2=dirichlet using beta, 3=MV_Tweedie with phi and power"<<endl;
     echoinput<<"#_Comp_ERR-2:  consecutive index of error def to use"<<endl;
     echoinput << "#_minsamplesize: minimum sample size; set to 1 to match 3.24, set to 0 for no minimum" << endl;
 
@@ -2160,7 +2158,7 @@
       echoinput << "#_addtocomp:  after accumulation of tails; this value added to all bins" << endl;
       echoinput << "#_males and females treated as combined gender below this bin number " << endl;
       echoinput << "#_compressbins: accumulate upper tail by this number of bins; acts simultaneous with mintailcomp; set=0 for no forced accumulation" << endl;
-      echoinput<<"#_Comp_Error:  0=multinomial, 1=dirichlet (rel input N), 2=dirichlet (absolute), 3=MV_Tweedie with 2 parms"<<endl;
+      echoinput<<"#_Comp_Error:  0=multinomial, 1=dirichlet using theta * n, 2=dirichlet using beta, 3=MV_Tweedie with phi and power"<<endl;
       echoinput<<"#_Comp_ERR-2:  index of parameter (pair for Tweedie) to use, cumulative count after DM parms for length comp"<<endl;
       echoinput << "#_minsamplesize: minimum sample size; set to 1 to match 3.24, set to 0 for no minimum" << endl;
 

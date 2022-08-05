@@ -367,18 +367,12 @@ FUNCTION void evaluate_the_objective_function()
                 temp = gammln(dirichlet_Parm) - gammln(nsamp_l(f, i) + dirichlet_Parm);
                 // get female or combined sex logL
                 // third and final term in equations (4) and (10)
-                if (gen_l(f, i) != 2) //  so not male only
-                {
+                if (gen_l(f, i) != 2) {   //  so not male only
                   temp += Comp_logL_Dirichlet( nsamp_l(f, i), dirichlet_Parm, obs_l(f, i)(tails_w(1), tails_w(2)), exp_l(f, i)(tails_w(1), tails_w(2)) );
-//                  temp += sum(gammln(nsamp_l(f, i) * obs_l(f, i)(tails_w(1), tails_w(2)) + dirichlet_Parm * exp_l(f, i)(tails_w(1), tails_w(2))));
-//                  temp -= sum(gammln(dirichlet_Parm * exp_l(f, i)(tails_w(1), tails_w(2))));
                 }
                 //  add male logL
-                if (gen_l(f, i) >= 2 && gender == 2)
-                {
+                if (gen_l(f, i) >= 2 && gender == 2) {
                   temp += Comp_logL_Dirichlet( nsamp_l(f, i), dirichlet_Parm, obs_l(f, i)(tails_w(3), tails_w(4)), exp_l(f, i)(tails_w(3), tails_w(4)) );
-//                  temp += sum(gammln(nsamp_l(f, i) * obs_l(f, i)(tails_w(3), tails_w(4)) + dirichlet_Parm * exp_l(f, i)(tails_w(3), tails_w(4))));
-//                  temp -= sum(gammln(dirichlet_Parm * exp_l(f, i)(tails_w(3), tails_w(4))));
                 }
                 length_like(f, i) -= temp;
               } else  //  multivariate-Tweedie
@@ -531,18 +525,12 @@ FUNCTION void evaluate_the_objective_function()
                 temp = gammln(dirichlet_Parm) - gammln(nsamp_a(f, i) + dirichlet_Parm);
                 // get female or combined sex logL
                 // final term in equations (4) and (10)
-                if (gen_a(f, i) != 2) //  so not male only
-                {
-//                  temp += sum(gammln(nsamp_a(f, i) * obs_a(f, i)(tails_w(1), tails_w(2)) + dirichlet_Parm * exp_a(f, i)(tails_w(1), tails_w(2))));
-//                  temp -= sum(gammln(dirichlet_Parm * exp_a(f, i)(tails_w(1), tails_w(2))));
+                if (gen_a(f, i) != 2) {  //  so not male only
                   temp += Comp_logL_Dirichlet( nsamp_a(f, i), dirichlet_Parm, obs_a(f, i)(tails_w(1), tails_w(2)), exp_a(f, i)(tails_w(1), tails_w(2)) );
                 }
                 //  add male logL
-                if (gen_a(f, i) >= 2 && gender == 2)
-                {
+                if (gen_a(f, i) >= 2 && gender == 2) {
                   temp += Comp_logL_Dirichlet( nsamp_a(f, i), dirichlet_Parm, obs_a(f, i)(tails_w(3), tails_w(4)), exp_a(f, i)(tails_w(3), tails_w(4)) );
-//                  temp += sum(gammln(nsamp_a(f, i) * obs_a(f, i)(tails_w(3), tails_w(4)) + dirichlet_Parm * exp_a(f, i)(tails_w(3), tails_w(4))));
-//                  temp -= sum(gammln(dirichlet_Parm * exp_a(f, i)(tails_w(3), tails_w(4))));
                 }
                 age_like(f, i) -= temp;
               }
