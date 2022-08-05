@@ -134,8 +134,10 @@ FUNCTION void setup_Benchmark()
       {
         if (timevary_MG(y, 4) > 0)
         {
-          N_warn++;
-          warning << N_warn << " mean recruitment for forecast is incompatible with timevary recr_dist in yr: " << y << "; user must adjust manually" << endl;
+          warnstream << "mean recruitment for forecast is incompatible with timevary recr_dist in yr: " << y << "; user must adjust manually";
+          write_message(WARN, 0);
+//          N_warn++;
+//          warning << N_warn << " mean recruitment for forecast is incompatible with timevary recr_dist in yr: " << y << "; user must adjust manually" << endl;
         }
         recr_dist(y) = recr_dist_endyr;
       }
@@ -192,8 +194,10 @@ FUNCTION void setup_Benchmark()
           if (Fcast_RelF_Use(s, f) == 0. && bycatch_setup(f, 3) > 0)
           {
             Fcast_RelF_Use(s, f) = 1.0e-6;
-            N_warn++;
-            warning << N_warn << " setting positive forecast relF for bycatch fleet: " << f << endl;
+            warnstream << "setting positive forecast relF for bycatch fleet: " << f;
+            write_message(ADJUST, 0);
+//            N_warn++;
+//            warning << N_warn << "setting positive forecast relF for bycatch fleet: " << f << endl;
           }
         }
     }
@@ -205,8 +209,10 @@ FUNCTION void setup_Benchmark()
           if (Fcast_RelF_special(s, f) == 1 && Fcast_RelF_Use(s, f) == 0.0)
           {
             Fcast_RelF_Use(s, f) = 1.0e-6;
-            N_warn++;
-            warning << N_warn << " setting positive forecast relF for forecast only fleet: " << f << endl;
+            warnstream << "setting positive forecast relF for forecast only fleet: " << f;
+            write_message(ADJUST, 0);
+//            N_warn++;
+//            warning << N_warn << " setting positive forecast relF for forecast only fleet: " << f << endl;
           }
         }
     }
@@ -761,13 +767,17 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
     {
       if (fabs(SPR_actual - SPR_target100) >= 0.1)
       {
-        N_warn++;
-        warning << N_warn << " warning: poor convergence in Fspr search " << SPR_target << " " << SPR_actual / 100. << endl;
+        warnstream << "poor convergence in Fspr search " << SPR_target << " " << SPR_actual / 100.;
+        write_message(WARN, 0);
+//        N_warn++;
+//        warning << N_warn << " warning: poor convergence in Fspr search " << SPR_target << " " << SPR_actual / 100. << endl;
       }
       if (SPR_actual / SPR_target100 >= 1.01)
       {
-        N_warn++;
-        warning << N_warn << " warning: Fmult = " << Fmult << " cannot get high enough to achieve low SPR target: " << SPR_target << "; SPR achieved is: " << SPR_actual / 100. << endl;
+        warnstream << "Fmult = " << Fmult << " cannot get high enough to achieve low SPR target: " << SPR_target << "; SPR achieved is: " << SPR_actual / 100.;
+        write_message(WARN, 0);
+//        N_warn++;
+//        warning << N_warn << " warning: Fmult = " << Fmult << " cannot get high enough to achieve low SPR target: " << SPR_target << "; SPR achieved is: " << SPR_actual / 100. << endl;
       }
 
       report5 << "seas fleet Hrate encB deadB retB encN deadN retN: " << endl;
@@ -877,8 +887,10 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
     {
       if (sfabs(F01_origin * 0.1 - F01_actual) >= 0.001)
       {
-        N_warn++;
-        warning << N_warn << " warning: poor convergence in F0.1 search target= " << F01_origin * 0.1 << "  actual= " << F01_actual << endl;
+        warnstream << "poor convergence in F0.1 search target= " << F01_origin * 0.1 << "  actual= " << F01_actual;
+        write_message(WARN, 0);
+//        N_warn++;
+//        warning << N_warn << " warning: poor convergence in F0.1 search target= " << F01_origin * 0.1 << "  actual= " << F01_actual << endl;
       }
       report5 << "seas fleet Hrate encB deadB retB encN deadN retN): " << endl;
       for (s = 1; s <= nseas; s++)
@@ -1041,8 +1053,10 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
     {
       if (fabs(log(Btgt / Btgttgt)) >= 0.001)
       {
-        N_warn++;
-        warning << N_warn << " warning: poor convergence in Btarget search " << Btgttgt << " " << Btgt << endl;
+        warnstream << "poor convergence in Btarget search " << Btgttgt << " " << Btgt;
+        write_message (WARN, 0);
+//        N_warn++;
+//        warning << N_warn << " warning: poor convergence in Btarget search " << Btgttgt << " " << Btgt << endl;
       }
       report5 << "seas fleet Hrate encB deadB retB encN deadN retN): " << endl;
       for (s = 1; s <= nseas; s++)
@@ -1387,8 +1401,10 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
       {
         if (fabs(dyld / dyldp) >= 0.001)
         {
-          N_warn++;
-          warning << N_warn << " warning: poor convergence in Fmsy, final dy/dy2= " << dyld / dyldp << endl;
+          warnstream << "poor convergence in Fmsy, final dy/dy2= " << dyld / dyldp;
+          write_message (WARN, 0);
+//          N_warn++;
+//          warning << N_warn << " warning:  << endl;
         }
         report5 << "seas fleet Hrate encB deadB retB encN deadN retN): " << endl;
         for (s = 1; s <= nseas; s++)
@@ -1496,18 +1512,18 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
 
         if (Fmult * 3.0 <= SPR_Fmult)
         {
-          N_warn++;
-          warning << N_warn << " Fmsy/mey is <1/3 of Fspr are you sure?  check for convergence " << endl;
+          warnstream << "Fmsy/mey is <1/3 of Fspr are you sure?  check for convergence ";
+          write_message (WARN, 0);
         }
         if (Fmult / 3.0 >= SPR_Fmult)
         {
-          N_warn++;
-          warning << N_warn << " Fmsy/mey is >3x of Fspr are you sure?  check for convergence " << endl;
+          warnstream << "Fmsy/mey is >3x of Fspr are you sure?  check for convergence ";
+          write_message (WARN, 0);
         }
         if (Fmult / 0.98 >= Fmax)
         {
-          N_warn++;
-          warning << N_warn << " Fmsy.mey is close to max allowed; check for convergence " << endl;
+          warnstream << "Fmsy.mey is close to max allowed; check for convergence ";
+          write_message (WARN, 0);
         }
         report5 << "end Seach for MSY" << endl;
       } // end Do_MSY = 2
@@ -1645,8 +1661,8 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
     {
       if (fabs(log(Btgt2 / Btgttgt2)) >= 0.001)
       {
-        N_warn++;
-        warning << N_warn << " warning: poor convergence in Blimit search " << Btgttgt2 << " " << Btgt2 << endl;
+        warnstream << "poor convergence in Blimit search " << Btgttgt2 << " " << Btgt2 ;
+        write_message (WARN, 0);
       }
       report5 << "seas fleet Hrate encB deadB retB encN deadN retN): " << endl;
       for (s = 1; s <= nseas; s++)
@@ -1880,9 +1896,9 @@ FUNCTION void Get_Forecast()
     Fcast_Fmult = join1 * Fcast_Fmult + (1. - join1) * max_harvest_rate; // new F value for this fleet, constrained by max_harvest_rate
     if (join1 < 0.999)
     {
-      report5 << "Forecast F capped by max possible F from control file" << max_harvest_rate << endl;
-      N_warn++;
-      warning << N_warn << " Forecast F capped by max possible F from control file: " << max_harvest_rate << endl;
+      warnstream << "Forecast F capped by max possible F from control file" << max_harvest_rate;
+      report5 << warnstream.str() << endl;
+      write_message (WARN, 0);
     }
   }
   else
@@ -2005,13 +2021,19 @@ FUNCTION void Get_Forecast()
         report5 << endl;
       }
     }
-    
+
     if (H4010_top_rd < 0.0)
       {
         H4010_top = Bmsy / SSB_unf;
-        if (H4010_bot > 0.25) {N_warn++; warning<<N_warn<<" Beware: control rule cutoff is large ("<<H4010_bot<<"); so may not be < calculated Bmsy/SSB_unf ("<<H4010_top<<")"<<endl;}
+        if (H4010_bot > 0.25)
+        {
+          warnstream << "control rule cutoff is large (" << H4010_bot << "); so may not be < calculated Bmsy/SSB_unf (" << H4010_top << ")";
+          write_message (WARN, 0);
+//          N_warn++;
+//          warning<<N_warn<<" Beware: control rule cutoff is large ("<<H4010_bot<<"); so may not be < calculated Bmsy/SSB_unf ("<<H4010_top<<")"<<endl;
+        }
       }
-      else 
+      else
       {
         H4010_top = H4010_top_rd;
       }
@@ -3506,4 +3528,3 @@ FUNCTION void Get_Forecast()
   } //  end Fcast_Loop1  for the different stages of the forecast
   }
 //  end forecast function
-

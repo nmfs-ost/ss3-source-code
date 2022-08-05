@@ -63,16 +63,16 @@ GLOBALS_SECTION
   #include <vector>
   #include <iostream>
   #include <sstream>
+    #define NOTE    1 // information that could be useful
+    #define SUGGEST 2 // a better way
+    #define PERFORM 3 // can help performance
+    #define WARN    4 // might be a problem, execution continues anyway
+    #define ADJUST  5 // adjustment has been made, execution continues
+    #define FATAL   6 // program will exit
+    adstring_array MessageIntro;
   #include <sys/types.h>
   #include <sys/stat.h>
 
-  #define FATAL   6 // program will exit
-  #define ADJUST  5 // adjustment has been made, execution continues
-  #define WARN    4 // might be a problem, execution continues anyway
-  #define PERFORM 3 // can help performance
-  #define SUGGEST 2 // a better way
-  #define NOTE    1 // information that could be useful
-  adstring_array MessageIntro;
 
   time_t start, finish;
   long hour, minute, second;
@@ -181,12 +181,24 @@ GLOBALS_SECTION
   {
     std::string totmsg;
     if (msg.length() == 0)
+    {
       msg = "unknown message";
+    }
 
     if (echo == 1)
+    {
       echoinput << msg << endl;
+    }
     if (warn > 0)
-      warning << msg << endl;
+    {
+      size_t b = msg.find ("parameter", 0);
+      warning << msg;
+      if (echo == 1 && (b > 0 && b < msg.size()))
+      {
+        warning << "; search for <now check> in echoinput.sso for parm_type";
+      }
+      warning << endl;
+    }
     if (exitflag == 1)
     {
       warning.close();
@@ -198,13 +210,13 @@ GLOBALS_SECTION
     }
   }
 // SS_Label_Function_xxxb write_message(int,int,int); increment warning count and output a warning with an option to exit (when fatal)
-  /*  void write_message(int &nwarn, int echo, int exitflag)
+    void write_message(int &nwarn, int echo, int exitflag)
   {
     std::string msg(warnstream.str());
     nwarn++;
     write_msg(msg, echo, nwarn, exitflag);
     warnstream.str("");
-  } */
+  }
   void write_message(int type, int echo)
   {
     int exitflag = 0;
@@ -297,8 +309,8 @@ GLOBALS_SECTION
     {
       if (month >= 13.0)
       {
-	  warnstream << "month must be <13.0, end of year is 12.99, value read is: " << month;
-	  write_message(FATAL, 0);
+    	  warnstream << "month must be <13.0, end of year is 12.99, value read is: " << month;
+    	  write_message(FATAL, 0);
       }
       temp1 = max(0.00001, (month - 1.0) / 12.); //  month as fraction of year
       s = 1; // earlist possible seas;
@@ -1147,28 +1159,34 @@ FINAL_SECTION
 
     if (Nparm_on_bound > 0)
     {
-      cout << Nparm_on_bound << " parameters are on or within 1% of min-max bound" << endl;
-      warning << " N parameters are on or within 1% of min-max bound: " << Nparm_on_bound << "; check results, variance may be suspect" << endl;
+      warnstream << " N parameters that are on or within 1% of min-max bound: " << Nparm_on_bound;
+      cout << endl << warnstream.str() << endl;
+      warnstream << "; check results, variance may be suspect";
+      write_message (NOTE, 0);
     }
-    warning << "N warnings: " << N_warn << endl;
-    cout << endl
-         << "!!  Run has completed  !! " << endl;
     if (N_warn > 0)
     {
-      cout << "See warning.sso for N warnings: " << N_warn ;
+      warnstream << " " << N_warn << " warning" << (N_warn > 1? "s ": " ");
+      if (N_note > 0)
+      {
+        warnstream << " and " << N_note << " notes" << (N_note > 1? "s ": " ");
+      }
+    }
+    else if (N_note > 0)
+    {
+      warnstream << " " << N_note << " note" << (N_note > 1? "s ": " ");
+    }
+    warning << warnstream.str() << endl;
+
+    cout << endl
+         << "!!  Run has completed  !! " << endl;
+    if (N_warn + N_note > 0)
+    {
+      cout << "!!  See warning.sso for" << warnstream.str() << endl;
     }
     else
     {
-      cout << "No warnings :)" << endl;
-    }
-    if (N_note > 0)
-    {
-      warning << "N notes: " << N_note << endl;
-      cout << "  N notes: " << N_note << endl;
-    }
-    else
-    {
-      cout << endl;
+      cout << "--  No warnings or notes :)  --" << endl;
     }
   }
   } //  end final section
