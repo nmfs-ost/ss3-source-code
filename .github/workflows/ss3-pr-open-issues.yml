@@ -37,10 +37,15 @@ jobs:
           # look for checklist items like - []
           needs_changes <- grep("-\\s*\\[\\s*\\]", pr_body, ignore.case = TRUE, value = TRUE)
           issue_title <- paste0("Changes need for SS3 PR ",  info$number)
-          issue_body <- paste0("Changes are needed due to the merging of SS3 \n", 
-            "PR #", info$number, ". Please see \n", 
+          issue_body <- paste0("Changes will be needed in this ",
+            "repository due to the opening of SS3 Pull Request ", 
+            info$number, ".\n", 
+            "Please see ", 
             "https://github.com/nmfs-stock-synthesis/stock-synthesis/pull/", 
-            info$number, "\nand its associated issues for more information.")
+            info$number, " and its associated issues for more information.",
+            "\n\nNote: this issue was created automatically via GitHub ",
+            "Action using the workflow in \n",
+            "https://github.com/nmfs-stock-synthesis/stock-synthesis/blob/main/.github/workflows/ss3-pr-open-issues.yml")
           # post r4ss issue if needed
           if (length(grep("r4ss", needs_changes)) == 1) {
             gh::gh("POST /repos/{owner}/{repo}/issues",
