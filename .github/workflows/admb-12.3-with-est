@@ -1,0 +1,9 @@
+
+# run models without estimation again again
+name: admb-12.3-with-est
+on: 
+  push:
+  workflow_dispatch:
+jobs:
+  call-workflow:
+    uses: nmfs-stock-synthesis/workflows/.github/workflows/run-ss3-with-est.yml@main
