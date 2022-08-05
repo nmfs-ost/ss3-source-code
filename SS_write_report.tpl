@@ -2253,7 +2253,7 @@ FUNCTION void write_bigoutput()
 
     SS2out << "#" << endl
            << "Length_Comp_Fit_Summary" << endl
-           << "Factor Fleet Recommend_var_adj # N Npos min_Nsamp max_Nsamp mean_Nsamp_in mean_Nsamp_adj mean_Nsamp_DM err_method err_index par1 val1 par2 val2 mean_effN HarMean_effN Curr_Var_Adj Fleet_name" << endl;
+           << "Data_type Fleet Recommend_var_adj # N Npos min_Nsamp max_Nsamp mean_Nsamp_in mean_Nsamp_adj mean_Nsamp_DM err_method err_index par1 val1 par2 val2 mean_effN HarMean_effN Curr_Var_Adj Fleet_name" << endl;
     for (f = 1; f <= Nfleet; f++)
     {
       if (n_rmse(f) > 0)
@@ -2408,7 +2408,7 @@ FUNCTION void write_bigoutput()
 
     SS2out << "#" << endl
            << "Age_Comp_Fit_Summary" << endl
-           << "Factor Fleet Recommend_var_adj # N Npos min_Nsamp max_Nsamp mean_Nsamp_in mean_Nsamp_adj mean_Nsamp_DM err_method err_index par1 val1 par2 val2 mean_effN HarMean_effN Curr_Var_Adj Fleet_name" << endl;
+           << "Data_type Fleet Recommend_var_adj # N Npos min_Nsamp max_Nsamp mean_Nsamp_in mean_Nsamp_adj mean_Nsamp_DM err_method err_index par1 val1 par2 val2 mean_effN HarMean_effN Curr_Var_Adj Fleet_name" << endl;
     for (f = 1; f <= Nfleet; f++)
     {
       if (n_rmse(f) > 0)
@@ -2479,11 +2479,11 @@ FUNCTION void write_bigoutput()
       SS2out << endl;
       rmse = 0.0;
       n_rmse = 0.0;
-      mean_CV = 0.0;
+      mean_Nsamp_in = 0.0;
+      mean_Nsamp_adj = 0.0;
+      mean_Nsamp_DM = 0.0;
       Hrmse = 0.0;
       Rrmse = 0.0;
-      minsamp = 10000.;
-      maxsamp = 0.;
 
       dvector sz_tails(1, 4);
       sz_tails(1) = 1;
@@ -2531,7 +2531,7 @@ FUNCTION void write_bigoutput()
               dvector tempvec_l(1, SzFreq_exp(iobs).size());
               tempvec_l = value(SzFreq_exp(iobs));
               more_comp_info = process_comps(gender, gg, SzFreq_bins(sz_method), SzFreq_means(sz_method), sz_tails, SzFreq_obs(iobs), tempvec_l);
-              Nsamp_DM = Nsamp_adj; // Will remain this if not used
+              Nsamp_DM = SzFreq_sampleN(iobs); // Will remain this if not used; there is no "adjusted" sample size for sizwfreq
               if (Comp_Err_Sz(sz_method) == 1) //  Dirichlet #1
               {
                 dirichlet_Parm = mfexp(selparm(Comp_Err_parmloc(Comp_Err_Sz2(sz_method),1))); //  Thorson's theta from eq 10
@@ -2544,17 +2544,19 @@ FUNCTION void write_bigoutput()
                 // effN_DM = (n+n*beta)/(n+beta)
                 Nsamp_DM = value((SzFreq_sampleN(iobs) + dirichlet_Parm * SzFreq_sampleN(iobs)) / (dirichlet_Parm + SzFreq_sampleN(iobs)));
               }
-              if (SzFreq_obs_hdr(iobs, 3) > 0)
+              if (SzFreq_obs_hdr(iobs, 3) > 0)  //  dheck for -fleet that is an ignored obs
               {
                 n_rmse(f) += 1.;
                 rmse(f) += SzFreq_effN(iobs);
-                mean_CV(f) += SzFreq_sampleN(iobs);
+                mean_Nsamp_in(f) += SzFreq_sampleN(iobs);
+                mean_Nsamp_adj(f) += SzFreq_sampleN(iobs);
                 if (SzFreq_sampleN(iobs) < minsamp(f))
                   minsamp(f) = SzFreq_sampleN(iobs);
                 if (SzFreq_sampleN(iobs) > maxsamp(f))
                   maxsamp(f) = SzFreq_sampleN(iobs);
                 Hrmse(f) += 1. / SzFreq_effN(iobs);
                 Rrmse(f) += SzFreq_effN(iobs) / SzFreq_sampleN(iobs);
+                mean_Nsamp_DM(f) += Nsamp_DM;
               }
               else
               {
@@ -2601,7 +2603,7 @@ FUNCTION void write_bigoutput()
       //      SS2out<<"Fleet N Npos mean_effN mean(inputN*Adj) HarMean(effN) Mean(effN/inputN) MeaneffN/MeaninputN Var_Adj"<<endl;
     SS2out << "#" << endl
            << "Size_Comp_Fit_Summary" << endl
-           << "Factor Fleet Recommend_var_adj # N Npos min_Nsamp max_Nsamp mean_Nsamp_in mean_Nsamp_adj mean_Nsamp_DM err_method err_index par1 val1 par2 val2 mean_effN HarMean_effN Curr_Var_Adj Fleet_name" << endl;
+           << "Data_type Fleet Recommend_var_adj # N Npos min_Nsamp max_Nsamp mean_Nsamp_in mean_Nsamp_adj mean_Nsamp_DM err_method err_index par1 val1 par2 val2 mean_effN HarMean_effN Curr_Var_Adj Fleet_name" << endl;
     for (f = 1; f <= Nfleet; f++)
     {
       if (n_rmse(f) > 0)
