@@ -1,10 +1,17 @@
-# run models without estimation
-name: run-no-est
-on: 
+# Build SS3 and run models without estimation and no hessian
+name: call-run-ss3-no-est
+on:
+  workflow_dispatch:
   push:
     paths:
-    - '**.tpl'
-  workflow_dispatch:
+      - '**.tpl'
+    branches: 
+      - main
+  pull_request:
+    paths:
+      - '**.tpl'
+    branches: 
+      - main
 
 jobs:
   call-workflow:

@@ -1,0 +1,73 @@
+# Opens issues to r4ss, SSI, and doc repos when changes occur in SS3.
+name: ss3-pr-open-issues.yml
+on:
+  pull_request:
+    types: [ready_for_review]
+#  pull_request_target:
+#    types:
+#      - closed
+jobs:
+  ss3-pr-open-issues:
+    runs-on: ubuntu-latest
+    env:
+      GITHUB_PAT: ${{ secrets.GH_PAT }}
+    #if: github.event.pull_request.merged == true
+    steps:
+      - uses: actions/checkout@v3
+      - uses: r-lib/actions/setup-r@v2
+        with:
+          use-public-rspm: true
+      - name: install the gh pkg
+        run: install.packages("gh")
+        shell: Rscript {0}
+      - name: Get pr info and save
+        run: |
+          Rscript -e 'info <- gh::gh("GET /repos/{owner}/{repo}/pulls/{pull_number}", 
+            owner = "nmfs-stock-synthesis", 
+            repo = "stock-synthesis",
+            pull_number = "${{ github.event.pull_request.number }}")
+          saveRDS(info, file = "info.RDS")'
+      - name: Post issues, if needed
+        run: |
+          info <- readRDS("info.RDS")
+          pr_body  <- strsplit(info$body, "\n" )[[1]]
+          pr_body <- gsub("\r", "",  pr_body, fixed = TRUE)
+          # Get info on which repos need open issues, if a change log entry is needed.
+          # allow some flexibility for getting the spacing wrong, which is easy to do.
+          # look for checklist items like - []
+          needs_changes <- grep("-\\s*\\[\\s*\\]", pr_body, ignore.case = TRUE, value = TRUE)
+          issue_title <- paste0("Changes need for SS3 PR ",  info$number)
+          issue_body <- paste0("Changes will be needed in this ",
+            "repository due to the opening of SS3 Pull Request ", 
+            info$number, ".\n", 
+            "Please see ", 
+            "https://github.com/nmfs-stock-synthesis/stock-synthesis/pull/", 
+            info$number, " and its associated issues for more information.",
+            "\n\nNote: this issue was created automatically via GitHub ",
+            "Action using the workflow in \n",
+            "https://github.com/nmfs-stock-synthesis/stock-synthesis/blob/main/.github/workflows/ss3-pr-open-issues.yml")
+          # post r4ss issue if needed
+          if (length(grep("r4ss", needs_changes)) == 1) {
+            gh::gh("POST /repos/{owner}/{repo}/issues",
+             owner = "r4ss", 
+             repo = "r4ss", 
+             title = issue_title,
+             body = issue_body)
+          }
+          # post SSI issue if needed
+          if (length(grep("SSI", needs_changes)) == 1) {
+                      gh::gh("POST /repos/{owner}/{repo}/issues",
+             owner = "nmfs-stock-synthesis", 
+             repo = "ssi", 
+             title = issue_title,
+             body = issue_body)
+          }
+          # post documentation issue, if needed
+          if (length(grep("manual", needs_changes)) == 1) {
+            gh::gh("POST /repos/{owner}/{repo}/issues",
+             owner = "nmfs-stock-synthesis", 
+             repo = "doc", 
+             title = issue_title,
+             body = issue_body)
+          }
+        shell: Rscript {0}

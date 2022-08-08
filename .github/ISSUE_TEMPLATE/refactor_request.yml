@@ -1,0 +1,26 @@
+name: Refactor
+description: Change the current structure of the code or workflows
+title: "[Refactor]: "
+labels: ["New_Request"]
+assignees:
+  - Rick-Methot-NOAA
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to fill out this refactor request!
+  - type: textarea
+    id: describe
+    attributes:
+      label: Refactor request
+      description: Describe what needs to be refactored and why
+    validations:
+      required: true
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: Expected behavior
+      description: A clear and concise description of what you expected to happen.
+      placeholder: I expect ...
+    validations:
+      required: true
