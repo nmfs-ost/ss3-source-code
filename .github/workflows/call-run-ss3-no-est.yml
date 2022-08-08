@@ -1,4 +1,4 @@
-# run models without estimation
+# run models without estimation...
 name: run-no-est
 on: 
   push:
