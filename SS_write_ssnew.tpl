@@ -362,34 +362,27 @@ FUNCTION void write_nudata()
       }
 
       report1 << "#" << endl << "# Sizefreq data. Defined by method because a fleet can use multiple methods" << endl;
-      report1 << SzFreq_Nmeth_rd << " # N sizefreq methods to read (or negative valued code)" << endl;
-      if (SzFreq_Nmeth_rd < 0)
+      report1 << SzFreq_Nmeth_rd << " # N sizefreq methods to read (or -1 for expanded options)" << endl;
+      if (SzFreq_Nmeth_rd < 0) {
         report1 << SzFreq_Nmeth << " # N sizefreq methods to read" << endl;
-      if (SzFreq_Nmeth != 0)
-      {
+      }
+      if (SzFreq_Nmeth != 0) {
         report1 << "# each row below has entry for each sizefreq method " << endl;
         report1 << SzFreq_Nbins << " #Sizefreq N bins" << endl;
         report1 << SzFreq_units << " #Sizetfreq units(1=bio/2=num)" << endl;
         report1 << SzFreq_scale << " #Sizefreq scale(1=kg/2=lbs/3=cm/4=inches)" << endl;
         report1 << SzFreq_mincomp << " #Sizefreq:  small constant to add to comps" << endl;
-        report1 << Comp_Err_Sz << "#_Comp_Error:  0=multinomial, 1=dirichlet using Theta*n, 2=dirichlet using beta, 3=MV_Tweedie" << endl;
-        report1 << Comp_Err_Sz2 << "#_Comp_Error: index for dirichlet or MV_Tweedie" << endl;
-
         report1 << SzFreq_nobs << " #Sizefreq N obs per method" << endl;
-        if (SzFreq_Nmeth_rd < 0)
-        {
-          report1 << Comp_Err_Sz << " Sizefreq Comp_Err_method" << endl;
-          report1 << Comp_Err_Sz2 << " Sizefreq Comp_Err_index" << endl;
+        if (SzFreq_Nmeth_rd < 0) {
+          report1 << Comp_Err_Sz <<  " #_Comp_Error:  0=multinomial, 1=dirichlet using Theta*n, 2=dirichlet using beta, 3=MV_Tweedie" << endl;
+          report1 << Comp_Err_Sz2 << " #_Comp_Error: index for dirichlet or MV_Tweedie" << endl;
         }
-        
         report1 << "#_Sizefreq bins " << endl
                 << "#Note: negative value for first bin makes it accumulate all smaller fish vs. truncate small fish" << endl;
-        for (i = 1; i <= SzFreq_Nmeth; i++)
-        {
+        for (i = 1; i <= SzFreq_Nmeth; i++) {
           report1 << SzFreq_Omit_Small(i) * SzFreq_bins1(i, 1) << SzFreq_bins1(i)(2, SzFreq_Nbins(i)) << endl;
         }
-        report1 << "#_method year month fleet gender partition SampleSize <data> " << endl
-                << SzFreq_obs1 << endl;
+        report1 << "#_method year month fleet gender partition SampleSize <data> " << endl << SzFreq_obs1 << endl;
       }
 
       // begin tagging data section #1 (observed data)
@@ -757,26 +750,29 @@ FUNCTION void write_nudata()
         report1 << "-9999 0 0" << endl;
       }
 
-      report1 << "#" << endl
-              << SzFreq_Nmeth << " # N sizefreq methods to read " << endl;
-      if (SzFreq_Nmeth > 0)
-      {
-        report1 << SzFreq_Nbins << " #Sizefreq N bins per method" << endl;
-        report1 << SzFreq_units << " #Sizetfreq units(1=bio/2=num) per method" << endl;
-        report1 << SzFreq_scale << " #Sizefreq scale(1=kg/2=lbs/3=cm/4=inches) per method" << endl;
-        report1 << SzFreq_mincomp << " #Sizefreq:  add small constant to comps, per method " << endl;
-        report1 << Comp_Err_Sz << "#_Comp_Error:  0=multinomial, 1=dirichlet using Theta*n, 2=dirichlet using beta, 3=MV_Tweedie" << endl;
-        report1 << Comp_Err_Sz2 << "#_Comp_Error: index for dirichlet or MV_Tweedie" << endl;
+      report1 << "#" << endl << "# Sizefreq data. Defined by method because a fleet can use multiple methods" << endl;
+      report1 << SzFreq_Nmeth_rd << " # N sizefreq methods to read (or -1 for expanded options)" << endl;
+      if (SzFreq_Nmeth_rd < 0) {
+        report1 << SzFreq_Nmeth << " # N sizefreq methods to read" << endl;
+      }
+      if (SzFreq_Nmeth != 0) {
+        report1 << "# each row below has entry for each sizefreq method " << endl;
+        report1 << SzFreq_Nbins << " #Sizefreq N bins" << endl;
+        report1 << SzFreq_units << " #Sizetfreq units(1=bio/2=num)" << endl;
+        report1 << SzFreq_scale << " #Sizefreq scale(1=kg/2=lbs/3=cm/4=inches)" << endl;
+        report1 << SzFreq_mincomp << " #Sizefreq:  small constant to add to comps" << endl;
         report1 << SzFreq_nobs << " #Sizefreq N obs per method" << endl;
+        if (SzFreq_Nmeth_rd < 0) {
+          report1 << Comp_Err_Sz <<  " #_Comp_Error:  0=multinomial, 1=dirichlet using Theta*n, 2=dirichlet using beta, 3=MV_Tweedie" << endl;
+          report1 << Comp_Err_Sz2 << " #_Comp_Error: index for dirichlet or MV_Tweedie" << endl;
+        }
         report1 << "#_Sizefreq bins " << endl
-                << "#_Note: negative value for first bin makes it accumulate all smaller fish vs. truncate small fish" << endl;
-        for (i = 1; i <= SzFreq_Nmeth; i++)
-        {
+                << "#Note: negative value for first bin makes it accumulate all smaller fish vs. truncate small fish" << endl;
+        for (i = 1; i <= SzFreq_Nmeth; i++) {
           report1 << SzFreq_Omit_Small(i) * SzFreq_bins1(i, 1) << SzFreq_bins1(i)(2, SzFreq_Nbins(i)) << endl;
         }
         report1 << "#_method yr month fleet sex partition SampleSize <data> " << endl;
-        for (iobs = 1; iobs <= SzFreq_totobs; iobs++)
-        {
+        for (iobs = 1; iobs <= SzFreq_totobs; iobs++) {
           report1 << SzFreq_obs1(iobs)(1, 7) << " " << SzFreq_exp(iobs) << endl;
         }
       }
@@ -1259,21 +1255,25 @@ FUNCTION void write_nudata()
         report1 << "-9999 0 0" << endl;
       }
 
-      report1 << "#" << endl
-              << SzFreq_Nmeth << " # N sizefreq methods to read " << endl;
-      if (SzFreq_Nmeth > 0)
-      {
-        report1 << SzFreq_Nbins << " #Sizefreq N bins per method" << endl;
-        report1 << SzFreq_units << " #Sizetfreq units(1=bio/2=num) per method" << endl;
-        report1 << SzFreq_scale << " #Sizefreq scale(1=kg/2=lbs/3=cm/4=inches) per method" << endl;
-        report1 << SzFreq_mincomp << " #Sizefreq:  add small constant to comps, per method " << endl;
-        report1 << Comp_Err_Sz << "#_Comp_Error:  0=multinomial, 1=dirichlet using Theta*n, 2=dirichlet using beta, 3=MV_Tweedie" << endl;
-        report1 << Comp_Err_Sz2 << "#_Comp_Error: index for dirichlet or MV_Tweedie" << endl;
+      report1 << "#" << endl << "# Sizefreq data. Defined by method because a fleet can use multiple methods" << endl;
+      report1 << SzFreq_Nmeth_rd << " # N sizefreq methods to read (or -1 for expanded options)" << endl;
+      if (SzFreq_Nmeth_rd < 0) {
+        report1 << SzFreq_Nmeth << " # N sizefreq methods to read" << endl;
+      }
+      if (SzFreq_Nmeth != 0) {
+        report1 << "# each row below has entry for each sizefreq method " << endl;
+        report1 << SzFreq_Nbins << " #Sizefreq N bins" << endl;
+        report1 << SzFreq_units << " #Sizetfreq units(1=bio/2=num)" << endl;
+        report1 << SzFreq_scale << " #Sizefreq scale(1=kg/2=lbs/3=cm/4=inches)" << endl;
+        report1 << SzFreq_mincomp << " #Sizefreq:  small constant to add to comps" << endl;
         report1 << SzFreq_nobs << " #Sizefreq N obs per method" << endl;
+        if (SzFreq_Nmeth_rd < 0) {
+          report1 << Comp_Err_Sz <<  " #_Comp_Error:  0=multinomial, 1=dirichlet using Theta*n, 2=dirichlet using beta, 3=MV_Tweedie" << endl;
+          report1 << Comp_Err_Sz2 << " #_Comp_Error: index for dirichlet or MV_Tweedie" << endl;
+        }
         report1 << "#_Sizefreq bins " << endl
                 << "#Note: negative value for first bin makes it accumulate all smaller fish vs. truncate small fish" << endl;
-        for (i = 1; i <= SzFreq_Nmeth; i++)
-        {
+        for (i = 1; i <= SzFreq_Nmeth; i++) {
           report1 << SzFreq_Omit_Small(i) * SzFreq_bins1(i, 1) << SzFreq_bins1(i)(2, SzFreq_Nbins(i)) << endl;
         }
         report1 << "#_method year month fleet sex partition SampleSize <data> " << endl;

@@ -97,6 +97,10 @@ FUNCTION void write_bigoutput()
       SS2out << "Hessian: " << temp << " is ln(determinant). Hessian is not positive definite, so don't trust variance estimates." << endl;
     }
   }
+  SS2out << "Final_phase: " << current_phase() << endl;
+  SS2out << "N_iterations: " << niter << endl;
+  SS2out << "total_LogL: " << obj_fun << endl;
+
   if (N_SC > 0)
   {
     SS2out << endl
