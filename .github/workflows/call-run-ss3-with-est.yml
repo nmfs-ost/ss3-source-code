@@ -5,4 +5,4 @@ on:
   workflow_dispatch:
 jobs:
   call-workflow:
-    uses: nmfs-stock-synthesis/workflows/.github/workflows/run-ss3-with-est.yml@admb-dev
+    uses: nmfs-stock-synthesis/workflows/.github/workflows/run-ss3-with-est.yml@test_admb12.3
