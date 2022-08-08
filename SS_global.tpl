@@ -1,4 +1,4 @@
-// SS_Label_file  #7. **SS_global.tpl**
+// SS_Label_file  # #### 7. **SS_global.tpl**
 // SS_Label_file  # - <div style="color: #ff0000">RUNTIME_SECTION</div>
 // SS_Label_file  #
 // SS_Label_file  #     - not used by SS3
@@ -12,6 +12,8 @@
 // SS_Label_file  #     - create vector_vector arrays that are appended to in readdata
 // SS_Label_file  #     - two functions included here in GLOBALS because need to be used in the DATA_SECTION:
 // SS_Label_file  #         - <u>get_data_timing()</u> and   <u>create_timevary()</u>
+// SS_Label_file  #     - two functions included here in GLOBALS because need to be used throughout the code:
+// SS_Label_file  #         - <u>[write_warning()](#write_warning)</u> and   <u>[write_message()](#write_message)</u>
 // SS_Label_file  # - <div style="color: #ff0000">BETWEEN_PHASES_SECTION</div>
 // SS_Label_file  #
 // SS_Label_file  #     - for F_method 2, convert F as scaling factors to F as parameters in designated phase
@@ -30,6 +32,7 @@
 // SS_Label_file  #
 
 //  SS_Label_Section_8 #RUNTIME_SECTION (not used in SS3)
+
 RUNTIME_SECTION
 //  {
 //  maximum_function_evaluations 200, 200, 200, 200, 200, 200, 200, 2000;
@@ -37,6 +40,7 @@ RUNTIME_SECTION
 //  }
 
 //  SS_Label_Section_9 #TOP_OF_MAIN_SECTION
+
 TOP_OF_MAIN_SECTION
 //  {
 //  SS_Label_Info_9.1 #Set array and gradient structure space
@@ -51,7 +55,7 @@ TOP_OF_MAIN_SECTION
   gradient_structure::set_MAX_DLINKS(10000000);
 
 //  SS_Label_Info_9.2 #Set clock start time
-  time(&start); //this is to see how long it takes to run
+  time(&start); // Clock start time to see how long it takes to run
 //  }
 
 //  SS_Label_Section_10. #GLOBALS_SECTION
@@ -65,13 +69,24 @@ GLOBALS_SECTION
   #include <sstream>
   #include <sys/types.h>
   #include <sys/stat.h>
-  time_t start, finish;
+// SS_Label_Variable # 
+// SS_Label_Variable # ##### Variables
+// SS_Label_Variable # 
+// SS_Label_Variable # | Name | Type | Description |
+// SS_Label_Variable # | ---: | :--: | :--- |
+// SS_Label_Variable # | start | time_t | run start time |
+  time_t start; //!< Clock start time
+// SS_Label_MD_Variable # | finish | time_t | run ending time |
+  time_t finish;//!< Clock ending time
   long hour, minute, second;
-  double elapsed_time;
+// SS_Label_MD_Variable # | elapsed_time | double | total time for run |
+  double elapsed_time; //!< Total clock time the run took
 
 //  SS_Label_Info_10.2 #Define some adstring variables
-  adstring_array ParmLabel; // extendable array to hold the parameter labels
-  adstring_array Parm_info; // extendable array to hold the parameter labels
+// SS_Label_MD_Variable # |ParmLabel | adstring_array | array to hold the parameter labels |
+  adstring_array ParmLabel; //!< extendable array to hold the parameter labels
+// SS_Label_MD_Variable # | Parm_info | adstring_array | array to hold parameter info |
+  adstring_array Parm_info; //!< extendable array to hold the parameter labels
   adstring_array SzFreq_units_label;
   adstring_array SzFreq_scale_label;
   adstring_array fleetname;
@@ -86,7 +101,7 @@ GLOBALS_SECTION
   adstring anystring;
   adstring anystring2;
   adstring report_sso_filename;
-  adstring MSY_name; // label describing what Do_MSY and MSY_units are being used
+  adstring MSY_name; //!< label describing what Do_MSY and MSY_units are being used
 
   adstring_array version_info;
   adstring_array version_info2;
@@ -94,24 +109,24 @@ GLOBALS_SECTION
   adstring_array Data_Comments;
   adstring_array Control_Comments;
   adstring_array Forecast_Comments;
-  adstring_array NumLbl; // label for numbers 1 to 199
-  adstring_array NumLbl0; // label for numbers 0 to 198 (needed for ages)
-  adstring_array GenderLbl; // gender label
-  adstring_array GP_Lbl; // gender label
-  adstring_array CRLF; // blank to terminate lines
-  adstring_array pick_report_name; //  name of report
-  adstring_array pick_report_use; //  X if used; 0 if not
+  adstring_array NumLbl; //!< label for numbers 1 to 199
+  adstring_array NumLbl0; //!< label for numbers 0 to 198 (needed for ages)
+  adstring_array GenderLbl; //!< gender label
+  adstring_array GP_Lbl; //!< gender label
+  adstring_array CRLF; //!< blank to terminate lines
+  adstring_array pick_report_name; //!<  name of report
+  adstring_array pick_report_use; //!<  X if used; 0 if not
 
 //  SS_Label_Info_10.1 #Open output files using ofstream
-  ofstream warning;
-  ofstream echoinput;
-  ofstream ParmTrace;
-  ofstream report5; // forecast-report
-  ofstream report2; // control.ss_new
+  ofstream warning; //!< warning.sso output file
+  ofstream echoinput; //!< echoinput.sso output file 
+  ofstream ParmTrace; //!< parm trace file
+  ofstream report5; //!< forecast-report
+  ofstream report2; //!< control.ss_new
   ofstream bodywtout;
-  ofstream SS2out; // this is just a create
-  ofstream SS_compout; // this is just a create
-  ofstream report1; // for data output files
+  ofstream SS2out; //!< this is just a create
+  ofstream SS_compout; //!< this is just a create
+  ofstream report1; //!< for data output files
   ofstream covarout;
   ofstream rebuilder;
   ofstream rebuild_dat;
@@ -120,23 +135,30 @@ GLOBALS_SECTION
   ofstream post_vecs;
   ofstream post_obj_func;
   ofstream SS_smry;
-  ofstream SIS_table;
+  ofstream SIS_table; //!< SIS output - no longer supported
 //  declare some entities that need global access
-  std::stringstream warnstream;
+// SS_Label_MD_Variable # |warnstream {#warnstream} | std::stringstream | message stream for warnings |
+  std::stringstream warnstream; //!< message stream for warnings
   std::string usermsg;
   int ParCount;
   int timevary_parm_cnt;
-  int N_warn = 0;
-  int styr;
-  int endyr;
+// SS_Label_MD_Variable # | N_warn {#N_warn} | int   | number of warnings issued |
+  int N_warn = 0; //!< number of warnings issued
+// SS_Label_MD_Variable # | styr   | int   | start year |
+  int styr; //!< start year
+// SS_Label_MD_Variable # | endyr  | int   | ending year |
+  int endyr; //!< ending year
   int YrMax;
-  int nseas;
+// SS_Label_MD_Variable # | nseas  | int   | number of seasons |
+  int nseas; //!< number of seasons
   int Ncycle;
-  int seas_as_year;
-  int special_flag = 0; //  for whenever I need one
+// SS_Label_MD_Variable # | seas_as_year | int  | whether to treat seasons as years or not |
+  int seas_as_year; //!< whether to treat seasons as years or not
+// SS_Label_MD_Variable # | special_flag | int  | reserved for programmer's use |
+  int special_flag = 0; //!< a flag for whenever one is needed
 
 //  SS_Label_Info_10.3  #start random number generator with seed based on time
-  random_number_generator radm(long(time(&start)));
+  random_number_generator radm(long(time(&start))); //!< random number generator seeded with start time
 
   std::vector<int> Parm_minmax;
   std::vector<dvector> catch_read;
@@ -162,42 +184,139 @@ GLOBALS_SECTION
   std::vector<dvector> F_Method_4_input;
   std::vector<int> Fparm_PH;
   ;
-//  function in GLOBALS to do the timing setup in the data section
+//  functions in GLOBALS to output warnings and other messages
 
-// SS_Label_Function xxxa write_message(string,int,int); output a message with an option to exit (when fatal)
+// SS_Label_Function xxxa write_message(string,int,int,int); output a message with an option to exit (when fatal)
+// SS_Label_MD_Function #
+// SS_Label_MD_Function # ##### Functions
+// SS_Label_MD_Function #
+// SS_Label_MD_Function # ###### **write_message**(string,int,int,int) {#write_message}
+// SS_Label_MD_Function # 
+// SS_Label_MD_Function #   Write a message with options to output to echoinput.sso,
+// SS_Label_MD_Function #   warning.sso, and, in the case of a critical error, to exit the
+// SS_Label_MD_Function #   program. This is usually called by [write_warning](write_warning).
+// SS_Label_MD_Function # 
+// SS_Label_MD_Function # |Parameter |Description |
+// SS_Label_MD_Function # |---:      | :---       |
+// SS_Label_MD_Function # | string   | the string to write |
+// SS_Label_MD_Function # | echo     | whether or not to output to warning.sso (0 - no, 1 - yes) |
+// SS_Label_MD_Function # | warn     | whether or not to output to echoinput.sso (0 - no, 1 - yes) |
+// SS_Label_MD_Function # | exitflag | whether or not this is a critical error (0 - no, 1 - yes) |
+// SS_Label_MD_Function # 
+
+  /** @brief Output a message.
+  *
+  *   Write a message with options to output to echoinput.sso,
+  *   warning.sso, and, in the case of a critical error, to exit the
+  *   program. This is usually called by write_warning.
+  *
+  *  @param msg    the message to output
+  *  @param echo   whether or not to output to echoinput.sso
+  *               (0 - no, 1 - yes)
+  *  @param warn   whether or not to output to warning.sso
+  *               (0 - no, 1 - yes)
+  *  @param exitflag  whether or not to exit the program on a
+  *               critical error (0 - no, 1 - yes)
+  *  @see write_warning
+  */
   void write_message(std::string msg, int echo, int warn, int exitflag)
   {
-    if (msg.length() == 0)
-    {
-      msg = "unknown condition";
-    }
-    if (echo == 1)
-    {
-      if (exitflag == 1)
-        echoinput << "Exit!  ";
-      echoinput << msg << endl;
-    }
-    if (warn > 0)
-    {
-      warning << warn << " " << msg << endl;
-    }
+  if (msg.length() == 0)
+  {
+    msg = "Unknown condition";
+  }
+  if (echo == 1)
+  {
     if (exitflag == 1)
-    {
-      cout << " Fatal Error: see warning.sso " << endl;
-      cout << " Exiting SS3. " << endl;
-      exit(1);
-    }
+      echoinput << "Exit!  ";
+    echoinput << msg << endl;
+  }
+  if (warn > 0)
+  {
+    warning << warn << " " << msg << endl;
+  }
+  if (exitflag == 1)
+  {
+    cout << " Fatal Error: see warning.sso " << endl;
+    cout << " Exiting SS3. " << endl;
+    exit(1);
+  }
   }
 // SS_Label_Function_xxxb write_warning(int,int,int); increment warning count and output a warning with an option to exit (when fatal)
-  void write_warning(int &nwarn, int echo, int exitflag)
+// SS_Label_MD_Function #
+// SS_Label_MD_Function # ###### **write_warning**(int, int, int) {#write_warning}
+// SS_Label_MD_Function # 
+// SS_Label_MD_Function #  Write the message from warnstream to warning.sso
+// SS_Label_MD_Function #  with options to write to echoinput.sso and, in the case of a critical
+// SS_Label_MD_Function #  error, to exit the program. This increments nwarn (usually [N_warn](N_warn)), calls [write_message](write_message),
+// SS_Label_MD_Function #  and resets [warnstream](warnstream) to the empty string.
+// SS_Label_MD_Function # 
+// SS_Label_MD_Function # |Parameter |Description |
+// SS_Label_MD_Function # |---:      | :---       |
+// SS_Label_MD_Function # | nwarn    |  either N_warn (which keeps track of the number of warnings) or a dummy variable. |
+// SS_Label_MD_Function # | echo     | whether or not to output to echoinput (0 - no, 1 - yes) |
+// SS_Label_MD_Function # | exitflag | whether or not this is a critical error (0 - no, 1 - yes) |
+// SS_Label_MD_Function # 
+
+  /** @brief Output a warning message.
+  *
+    Output a message that has been put in warnstream to warning.sso
+    with options to output to echoinput.sso and, in the case of a critical
+    error, to exit the program. This increments nwarn, calls write_message,
+    and resets warnstream to the empty string.
+   
+    @param nwarn: either N_warn (which keeps track of the number
+               of warnings) or a dummy variable.
+    @param echo: whether or not to output to echoinput (0 - no, 1 - yes)
+    @param exitflag: whether or not to exit the program on a
+               critical error (0 - no, 1 - yes)
+	 @see write_message(), warnstream, and N_warn
+  */
+  void write_warning(int& nwarn, int echo, int exitflag)
   {
-    std::string msg(warnstream.str());
-    nwarn++;
-	write_message(msg, echo, nwarn, exitflag);
-    warnstream.str("");
+  std::string msg(warnstream.str());
+  nwarn++;
+  write_message(msg, echo, nwarn, exitflag);
+  warnstream.str("");
   }
 
+//  function in GLOBALS to do the timing setup in the data section
+
 // SS_Label_Function_xxxx  #get_data_timing()  called by readdata
+// SS_Label_Function #
+// SS_Label_Function # ###### **get_data_timing**() {#get_data_timing}
+// SS_Label_Function # 
+// SS_Label_Function # Do the timing setup in the data section.
+// SS_Label_Function # 
+// SS_Label_Function # |Parameter |Description |
+// SS_Label_Function # |---:      | :---       |
+// SS_Label_Function # | to_process | the vector to process |
+// SS_Label_Function # | timing_constants | contains read_seas_mo, nseas, N_subseas, mid_subseas, styr, and endyr |
+// SS_Label_Function # | i_result | will contain y, t, s, f, ALK_time, use_midseas |
+// SS_Label_Function # | r_result | will contain real_month, data_timing_seas, data_timing_yr |
+// SS_Label_Function # | seasdur  | duration of season in real months |
+// SS_Label_Function # | subseasdur_delta | |
+// SS_Label_Function # | azero_seas | |
+// SS_Label_Function # |survey time | |
+// SS_Label_Function # 
+  /** \brief Timing setup
+  *
+    *  Do the timing setup in the data section
+    * @param to_process  the vector to process
+	* @param timing_constants will contain the following:
+    *        timing_constants(1)=read_seas_mo;
+    *        timing_constants(2)=nseas;
+    *        timing_constants(3)=N_subseas;
+    *        timing_constants(4)=mid_subseas;
+    *        timing_constants(5)=styr;
+    *        timing_constants(6)-endyr;
+    * @param i_result(1,6) will contain y, t, s, f, ALK_time, use_midseas
+    * @param r_result(1,3) will contain: real_month, data_timing_seas, data_timing_yr,
+	* @param seasdur duration of  seasons in months
+	* @param subseasdur_delta 
+	* @param azero_seas
+	* @param surveytime
+  	*/
   void get_data_timing(const dvector& to_process, const ivector& timing_constants, ivector i_result, dvector r_result, const dvector& seasdur, const dvector& subseasdur_delta, const dvector& azero_seas, const dvector& surveytime)
   {
 
@@ -258,8 +377,8 @@ GLOBALS_SECTION
     {
       if (month >= 13.0)
       {
-	  warnstream << "Fatal error. month must be <13.0, end of year is 12.99, value read is: " << month;
-	  write_warning(N_warn, 0, 1);
+        warnstream << "Fatal error. month must be <13.0, end of year is 12.99, value read is: " << month;
+        write_warning(N_warn, 0, 1);
       }
       temp1 = max(0.00001, (month - 1.0) / 12.); //  month as fraction of year
       s = 1; // earlist possible seas;
@@ -330,22 +449,40 @@ GLOBALS_SECTION
   }
 
 // SS_Label_Function_xxxx  #create_timevary()  called by readdata to create timevary parameters
-  /*
+// SS_Label_MD_Function # ###### **create_timevary**() {#create_timevary}
+// SS_Label_MD_Function # Create default timevary parameters after reading parameters.
+// SS_Label_MD_Function # 
+// SS_Label_MD_Function # |Parameter |Description |
+// SS_Label_MD_Function # |---:      | :---       |
+// SS_Label_MD_Function # | baseparm_list         | vector with the base parameter which has some type of timevary characteristic |
+// SS_Label_MD_Function # | timevary_setup        | vector which contains specs of all types of timevary for this base parameter |
+// SS_Label_MD_Function # | timevary_byyear       | vector containing column(timevary_MG,mgp_type(j)), will be modified in create_timevary |
+// SS_Label_MD_Function # | autogen_timevary      | switch to autogenerate or not |
+// SS_Label_MD_Function # | targettype            | integer with type of MGparm being worked on; analogous to 2*fleet in the selectivity section |
+// SS_Label_MD_Function # | block_design_pass     | block design, if any, being used |
+// SS_Label_MD_Function # | env_data_pass         | matrix containing entire set of environmental data as read |
+// SS_Label_MD_Function # | N_parm_dev            | integer that is incremented in create_timevary as dev vectors are created; cumulative across all types of parameters |
+// SS_Label_MD_Function # | finish_starter        | end of starter file value |
+// SS_Label_MD_Function # 
+  /** \brief Create timevary parameters.
+  *
+      This is called by readdata after parameters are read to create timevary parameters. 
+
    where:
-   baseparm_list:           vector with the base parameter which has some type of timevary characteristic
-   timevary_setup:        vector which contains specs of all types of timevary  for this base parameter
+   @param baseparm_list:           vector with the base parameter which has some type of timevary characteristic
+   @param timevary_setup:        vector which contains specs of all types of timevary  for this base parameter
                           will be pushed to timevary_def cumulative across all types of base parameters
-   timevary_byyear:        vector containing column(timevary_MG,mgp_type(j)), will be modified in create_timevary
-   autogen_timevary:      switch to autogenerate or not
-   targettype:           integer with type of MGparm being worked on; analogous to 2*fleet in the selectivity section
-   block_design_pass:       block design, if any, being used
-   env_data_pass:           matrix containing entire set of environmental data as read
-   N_parm_dev:            integer that is incremented in create_timevary as dev vectors are created; cumulative across all types of parameters
-   finish_starter:  End of starter file value
+   @param timevary_byyear:        vector containing column(timevary_MG,mgp_type(j)), will be modified in create_timevary
+   @param autogen_timevary:      switch to autogenerate or not
+   @param targettype:           integer with type of MGparm being worked on; analogous to 2*fleet in the selectivity section
+   @param block_design_pass:       block design, if any, being used
+   @param env_data_pass:           matrix containing entire set of environmental data as read
+   @param N_parm_dev:            integer that is incremented in create_timevary as dev vectors are created; cumulative across all types of parameters
+   @param finish_starter:  End of starter file value
   */
   void create_timevary(dvector& baseparm_list, ivector& timevary_setup,
     ivector& timevary_byyear, int& autogen_timevary, const int& targettype,
-    const ivector& block_design_pass, const dvector& env_data_pass, 
+    const ivector& block_design_pass, const dvector& env_data_pass,
     int& N_parm_dev, const double& finish_starter)
   {
   //  where timevary_byyear is a selected column of a year x type matrix (e.g. timevary_MG) in read_control
@@ -412,8 +549,8 @@ GLOBALS_SECTION
               if (baseparm_list(1) <= 0.0)
               {
                 warnstream << "cannot use multiplicative blocks for parameter with a negative lower bound;  exit " << endl
-                        << baseparm_list(1) << " " << baseparm_list(2) << " " << baseparm_list(3) << endl;
-                write_warning(N_warn, 0,1);
+                           << baseparm_list(1) << " " << baseparm_list(2) << " " << baseparm_list(3) << endl;
+                write_warning(N_warn, 0, 1);
               }
               tempvec(1) = log(baseparm_list(1) / baseparm_list(3)); //  max negative change
               tempvec(2) = log(baseparm_list(2) / baseparm_list(3)); //  max positive change
@@ -757,7 +894,7 @@ GLOBALS_SECTION
     if (y < styr)
     {
       warnstream << "reset parm_dev start year to styr for parm: " << j << " " << y;
-      write_warning(N_warn,0,0);
+      write_warning(N_warn, 0, 0);
       y = styr;
     }
     timevary_setup(10) = y;
@@ -765,8 +902,8 @@ GLOBALS_SECTION
     y = baseparm_list(11);
     if (y > YrMax)
     {
-	  warnstream << " reset parm_dev end year to YrMax for parm: " << j << " " << y;
-	  write_warning(N_warn,0,0);
+      warnstream << " reset parm_dev end year to YrMax for parm: " << j << " " << y;
+      write_warning(N_warn, 0, 0);
       y = YrMax;
     }
     timevary_setup(11) = y;
@@ -818,22 +955,22 @@ GLOBALS_SECTION
   echoinput << "timevary_setup" << timevary_setup << endl;
   return;
   }
-  
+
 //  }  //  end GLOBALS_SECTION
 
-//  SS_Label_Section_11. #BETWEEN_PHASES_SECTION
+//!  SS_Label_Section_11. #BETWEEN_PHASES_SECTION
 BETWEEN_PHASES_SECTION
   {
   int j_phase = current_phase(); // this is the phase to come
   cout << current_phase() - 1 << " " << niter << " -log(L): " << obj_fun << "  between " << endl;
 
-  //  SS_Label_Info_11.1 #Save last value of objective function
+  //!  SS_Label_Info_11.1 #Save last value of objective function
   if (j_phase > 1)
   {
     last_objfun = obj_fun;
   }
 
-  //  SS_Label_Info_11.2 #For Fmethod=2 & 4, set parameter values (F_rate) equal to Hrate array fromcalculated using hybrid method in previous phase
+  //!  SS_Label_Info_11.2 #For Fmethod=2 & 4, set parameter values (F_rate) equal to Hrate array fromcalculated using hybrid method in previous phase
   if (N_Fparm > 0 && j_phase > 1)
   {
     for (int ff = 1; ff <= N_catchfleets(0); ff++)
@@ -853,10 +990,10 @@ BETWEEN_PHASES_SECTION
 
   } //  end BETWEEN_PHASES_SECTION
 
-//  SS_Label_Section_12. #FINAL_SECTION
+//!  SS_Label_Section_12. #FINAL_SECTION
 FINAL_SECTION
   {
-  //  SS_Label_Info_12.1 #Get run ending time
+  //!  SS_Label_Info_12.1 #Get run ending time
   time(&finish);
   elapsed_time = difftime(finish, start);
   hour = long(elapsed_time) / 3600;
@@ -881,7 +1018,7 @@ FINAL_SECTION
     if (objective_function_value::pobjfun->gmax > final_conv)
     {
       warnstream << "Final gradient: " << objective_function_value::pobjfun->gmax << " is larger than final_conv: " << final_conv;
-	  write_warning(N_warn, 0, 0);
+      write_warning(N_warn, 0, 0);
     }
 
     //  SS_Label_Info_12.2 #Output the covariance matrix to covar.sso
@@ -1065,7 +1202,7 @@ FINAL_SECTION
     {
       {
         warnstream << "NOTE:  No *.ss_new and fewer *.sso files written after mceval";
-		write_warning(N_warn, 0, 0);
+        write_warning(N_warn, 0, 0);
       }
     }
 
@@ -1096,14 +1233,14 @@ FINAL_SECTION
     if (parm_adjust_method == 3)
     {
       warnstream << "Time-vary parms not bound checked";
-	  write_warning(N_warn, 0, 0);
+      write_warning(N_warn, 0, 0);
     }
 
     //  SS_Label_Info_12.4.7 #Finish up with final writes to warning.sso
     if (N_changed_lambdas > 0)
     {
       warnstream << "Reminder: Number of lamdas !=0.0 and !=1.0:  " << N_changed_lambdas;
-	  write_warning(N_warn, 0, 0);
+      write_warning(N_warn, 0, 0);
     }
 
     if (Nparm_on_bound > 0)
@@ -1125,7 +1262,7 @@ FINAL_SECTION
   }
   } //  end final section
 
-//  SS_Label_Section_13. #REPORT_SECTION  produces SS3.rep,which is less extensive than report.sso produced in final section
+//!  SS_Label_Section_13. #REPORT_SECTION  produces SS3.rep,which is less extensive than report.sso produced in final section
 REPORT_SECTION
   {
   int k = gradients.size();
