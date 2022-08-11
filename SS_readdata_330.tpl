@@ -19,7 +19,7 @@
   if (finish_starter == 999)
   {
     warnstream << "finish_starter=999, so probably used a 3.24 starter.ss; please update";
-    write_warning(N_warn, 0, 0);
+    write_message(WARN, 0);
     finish_starter = 3.30;
   }
   cout << " reading from data file" << endl;
@@ -115,7 +115,7 @@
     if (nseas > 1)
     {
       warnstream << "Error.  Can only have 1 season when during seasons as psuedo-years.";
-      write_warning(N_warn, 0, 1);
+      write_message (FATAL, 0);
     }
   }
   seasdur_half = seasdur * 0.5; // half a season
@@ -153,7 +153,7 @@
                << "What gets reported as age is now age in timesteps; and input of age-specific M or K requires one entry per timestep" << endl
                << "Similarly, output of age-specific quantities is in terms of number of timesteps, not real years" << endl
                << "spawn_month and settlement_month in control file are best set to 1.0 when doing years as pseudo-seasons" << endl;
-    write_warning(N_warn, 1, 0);
+    write_message(WARN, 1);
   }
   // clang-format off
  END_CALCS
@@ -180,7 +180,7 @@
     if (spawn_month >= 13.0)
     {
       warnstream << "Fatal error. spawn_month must be <13.0, end of year is 12.99, value read is: " << spawn_month;
-      write_warning(N_warn, 0, 1);
+      write_message (FATAL, 0);
     }
     spawn_seas = 1; // earlist possible spawn_seas;
     spawn_subseas = 1; //  earliest possible subseas in spawn_seas
@@ -204,7 +204,7 @@
   if (spawn_seas > nseas)
   {
     warnstream << " spawn_seas index must be <= nseas ";
-    write_warning(N_warn, 0, 0);
+    write_message(WARN, 0);
   }
   // clang-format off
  END_CALCS
@@ -306,7 +306,7 @@
         if (surveytime(f) != -1.)
         {
           warnstream << "fishing fleet: " << f << " surveytime read as: " << surveytime(f) << " normally is -1 for fishing fleet; can override for indiv. obs. using 1000+month";
-          write_warning(N_warn, 0, 0);
+          write_message(WARN, 0);
         }
       }
       else if (fleet_type(f) == 3)
@@ -314,7 +314,7 @@
         if (surveytime(f) == -1.)
         {
           warnstream << "survey fleet: " << f << " surveytime read as: " << surveytime(f) << " SS3 resets to 1 for all survey fleets, and always overridden by indiv. obs. month";
-          write_warning(N_warn, 0, 0);
+          write_message (FATAL, 0);
           surveytime(f) = 1.;
         }
       }
@@ -330,7 +330,7 @@
       if (fleet_type(f) > 1 && need_catch_mult(f) > 0)
       {
         warnstream << "Need_catch_mult can be used only for fleet_type=1 fleet= " << f;
-        write_warning(N_warn, 0, 1);
+        write_message (FATAL, 0);
       }
       echoinput << f << " # " << fleet_setup(f) << " # " << fleetname(f) << endl;
       if (f > 1) { // check for duplicate fleet names, which will break r4ss
@@ -339,7 +339,7 @@
           if (fleetname(f1) == fleetname(f))
           {
             warnstream << "duplicate fleet names for fleets: " << f1 << " and " << f << "; " << fleetname(f) << "; SS3 will exit";
-            write_warning(N_warn, 0, 1);
+            write_message (FATAL, 0);
           }
         }
       }
@@ -377,7 +377,7 @@
         else
         {
           warnstream << "fleet " << f << " is in bycatch list but not designated as bycatch fleet";
-          write_warning(N_warn, 0, 1);
+          write_message (FATAL, 0);
         }
       }
     }
@@ -417,13 +417,13 @@
     if (F_reporting_ages(1) > (nages - 2) || F_reporting_ages(1) < 0)
     {
       warnstream << "reset lower end of F_reporting_ages to be nages-2  ";
-      write_warning(N_warn, 0, 0);
+      write_message(ADJUST, 0);
       F_reporting_ages(1) = nages - 2;
     }
     if (F_reporting_ages(2) > (nages - 2) || F_reporting_ages(2) < 0)
     {
       warnstream << "reset upper end of F_reporting_ages to be nages-2  ";
-      write_warning(N_warn, 0, 0);
+      write_message(ADJUST, 0);
       F_reporting_ages(2) = nages - 2;
     }
   }
@@ -567,7 +567,7 @@
     else
       warnstream << "one catch record has ";
     warnstream << "seas>nseas; perhaps erroneous entry of month rather than season; changed to nseas";
-    write_warning(N_warn, 0, 0);
+    write_message(ADJUST, 0);
   }
   //  warn on duplicate catch records
   for (y = styr - 1; y <= endyr; y++)
@@ -577,7 +577,7 @@
         if (catch_record_count(f, t) > 1)
         {
           warnstream << catch_record_count(f, t) << " catch records have been accumulated into yr, seas, fleet " << y << " " << s << " " << f << "; total catch= " << catch_ret_obs(f, t);
-          write_warning(N_warn, 0, 0);
+          write_message(WARN, 0);
         }
       }
 
@@ -629,7 +629,7 @@
     if (y == endyr && totcat(y) == 0.0)
     {
       warnstream << "catch is 0.0 in endyr; this can cause problem in the benchmark and forecast calculations. ";
-      write_warning(N_warn, 0, 0);
+      write_message(WARN, 0);
     }
   }
   echoinput << endl
@@ -641,7 +641,7 @@
     if (fleet_type(f) == 3 && catch_by_fleet(f) > 0.0)
     {
       warnstream << " Catch by survey fleet will be ignored " << fleet_type(f);
-      write_warning(N_warn, 1, 0);
+      write_message(WARN, 1);
     }
     echoinput << endl;
   }
@@ -711,7 +711,7 @@
         if (Svy_data[i](5) < 0)
         {
           warnstream << "cannot use negative se to indicate superperiods in survey data";
-          write_warning(N_warn, 0, 1);
+          write_message (FATAL, 0);
         }
         if (Svy_data[i](2) < 0)
           Svy_super_N(f)++; // count the super-periods if seas<0
@@ -725,7 +725,7 @@
         if (2 * j != Svy_super_N(f))
         {
           warnstream << "unequal number of starts and ends of survey superperiods ";
-          write_warning(N_warn, 0, 1);
+          write_message (FATAL, 0);
         }
         else
         {
@@ -788,7 +788,7 @@
       if (y > endyr + 50)
       {
         warnstream << "forecast observations cannot be beyond endyr +50";
-        write_warning(N_warn, 0, 1);
+        write_message (FATAL, 0);
       }
       if (y >= styr)
       {
@@ -835,7 +835,7 @@
         else if (timing_r_result(1) == data_time(ALK_time, f, 1))
         {
           warnstream << "SURVEY: duplicate survey obs for this time-fleet: y,s,f: " << y << " " << s << " " << f << " SS3 will exit ";
-          write_warning(N_warn, 0, 1);
+          write_message (FATAL, 0);
         }
 
         have_data(ALK_time, 0, 0, 0) = 1;
@@ -884,7 +884,7 @@
         if (Svy_errtype(f) == 0 && Svy_minval(f) <= 0.)
         {
           warnstream << "error, SS3 has exited. A fleet uses lognormal error and has an observation <=0.0; fleet: " << f;
-          write_warning(N_warn, 0, 1);
+          write_message (FATAL, 0);
         }
       }
     }
@@ -985,7 +985,7 @@
           if (discdata[i](5) < 0)
           {
             warnstream << "Cannot use negative se as indicator of superperiod in discard data";
-            write_warning(N_warn, 0, 1);
+            write_message (FATAL, 0);
           }
           if (discdata[i](2) < 0)
             N_suprper_disc(f)++; // count the super-periods if seas<0 or se<0
@@ -999,7 +999,7 @@
           if (2 * j != N_suprper_disc(f))
           {
             warnstream << "unequal number of starts and ends of discard superperiods ";
-            write_warning(N_warn, 0, 1);
+            write_message (FATAL, 0);
           }
           else
           {
@@ -1036,7 +1036,7 @@
       if (y > endyr + 50)
       {
         warnstream << "forecast observations cannot be beyond endyr +50";
-        write_warning(N_warn, 0, 1);
+        write_message (FATAL, 0);
       }
       if (y >= styr)
       {
@@ -1060,7 +1060,7 @@
         else if (timing_r_result(1) != data_time(ALK_time, f, 1))
         {
           warnstream << "DISCARD: data_month already set for y,s,f: " << y << " " << s << " " << f << " to real month: " << data_time(ALK_time, f, 1) << "  but read value is: " << timing_r_result(1);
-          write_warning(N_warn, 0, 0);
+          write_message(WARN, 0);
         }
 
         have_data(ALK_time, 0, 0, 0) = 1;
@@ -1087,7 +1087,7 @@
         if (fleet_type(f) < 3 && catch_ret_obs(f, t) <= 0.0)
         {
           warnstream << "discard observation: " << i << " has no corresponding catch " << discdata[i];
-          write_warning(N_warn, 0, 0);
+          write_message(WARN, 0);
         }
 
         // create super_year indexes
@@ -1124,7 +1124,7 @@
       if (disc_minval(f) < 0.)
       {
         warnstream << "error, SS3 has exited. A discard observation is <0.0; fleet: " << f;
-        write_warning(N_warn, 0, 1);
+        write_message (FATAL, 0);
       }
     }
   }
@@ -1198,14 +1198,14 @@
       if (y > endyr + 50)
       {
         warnstream << "mnwt forecast observations cannot be beyond endyr +50";
-        write_warning(N_warn, 0, 1);
+        write_message (FATAL, 0);
       }
       if (y >= styr)
       {
         if (mnwtdata1[i](2) < 0.0)
         {
           warnstream << "negative season not allowed for mnwtdata because superperiods not implemented ";
-          write_warning(N_warn, 0, 0);
+          write_message(WARN, 0);
         }
         timing_input(1, 3) = mnwtdata1[i](1, 3);
         get_data_timing(timing_input, timing_constants, timing_i_result, timing_r_result, seasdur, subseasdur_delta, azero_seas, surveytime);
@@ -1231,7 +1231,7 @@
         else if (timing_r_result(1) != data_time(ALK_time, f, 1))
         {
           warnstream << "MEAN_WEIGHT: data_month already set for y,s,f: " << y << " " << s << " " << f << " to real month: " << data_time(ALK_time, f, 1) << "  but read value is: " << timing_r_result(1);
-          write_warning(N_warn, 0, 0);
+          write_message(WARN, 0);
         }
         have_data(ALK_time, 0, 0, 0) = 1;
         have_data(ALK_time, f, 0, 0) = 1; //  so have data of some type
@@ -1286,7 +1286,7 @@
   else
   {
     warnstream << "LenBin_option must be 1, 2 or 3" << LenBin_option;
-    write_warning(N_warn, 0, 0);
+    write_message(WARN, 0);
   }
   // clang-format off
  END_CALCS
@@ -1365,19 +1365,19 @@
       if (min_sample_size_L(f) < 0.001)
       {
         warnstream << " minimum sample size for length comps must be > 0; minimum sample size set to 0.001 ";
-        write_warning(N_warn, 1, 0);
+        write_message(WARN, 1);
         min_sample_size_L(f) = 0.001;
       }
 
       if (Comp_Err_L2(f) > 2 * Nfleet)
       {
         warnstream << "length D-M index for fleet: " << f << " is: " << Comp_Err_L2(f) << " but must be an integer <=2*Nfleet ";
-        write_warning(N_warn, 1, 1);
+        write_message(FATAL, 1);
       }
       else if (Comp_Err_L2(f) > Comp_Err_ParmCount + 1)
       {
         warnstream << "; length D-M must refer to existing parm num, or increment by 1:  " << Comp_Err_L2(f);
-        write_warning(N_warn, 1, 1);
+        write_message(FATAL, 1);
       }
       else if (Comp_Err_L2(f) > Comp_Err_ParmCount)
       {
@@ -1414,7 +1414,7 @@
       if (CombGender_L(f) > nlen_bin)
       {
         warnstream << "Combgender_L(f) cannot be greater than nlen_bin; resetting for fleet: " << f;
-        write_warning(N_warn, 0, 0);
+        write_message(WARN, 0);
         CombGender_L(f) = nlen_bin;
       }
     }
@@ -1555,12 +1555,12 @@
     if (len_bins_dat(nlen_bin) > len_bins(nlength))
     {
       warnstream << "Data length bins extend beyond pop len bins " << len_bins_dat(nlen_bin) << " " << len_bins(nlength);
-      write_warning(N_warn, 0, 1);
+      write_message(FATAL, 0);
     }
     if (len_bins_dat(nlen_bin) < len_bins(nlength))
     {
-      warnstream << "NOTE:  Max data length bin: " << len_bins_dat(nlen_bin) << "  < max pop len bins: " << len_bins(nlength) << "; so will accumulate larger pop len bins";
-      write_warning(N_warn, 0, 0);
+      warnstream << "Max data length bin: " << len_bins_dat(nlen_bin) << "  < max pop len bins: " << len_bins(nlength) << "; so will accumulate larger pop len bins";
+      write_message(NOTE, 1);
     }
     echoinput << endl
               << "Processed Data length bin info " << endl
@@ -1677,7 +1677,7 @@
       if (sum(tempvec) == 0.0)
       {
         warnstream << "reading past end of file for length data; exit ";
-        write_warning(N_warn, 0, 1);
+        write_message(FATAL, 0);
       }
       if (tempvec(1) == -9999.)
         ender = 1;
@@ -1704,7 +1704,7 @@
           if (lendata[i](6) < 0)
           {
             warnstream << "Error in length data: negative sample size no longer valid as indicator of skip data or superperiods ";
-            write_warning(N_warn, 0, 1);
+            write_message(FATAL, 0);
           }
           if (lendata[i](2) < 0)
             N_suprper_l(f)++; // count the number of starts and ends of super-periods if seas<0
@@ -1718,7 +1718,7 @@
       if (s * 2 != N_suprper_l(f))
       {
         warnstream << "Error: unequal number of length superperiod starts and stops ";
-        write_warning(N_warn, 0, 1);
+        write_message(FATAL, 0);
       }
       else
       { // to get the number of superperiods
@@ -1780,7 +1780,7 @@
         if (y > endyr + 50)
         {
           warnstream << "forecast length obs cannot be beyond endyr +50;";
-          write_warning(N_warn, 0, 1);
+          write_message(FATAL, 0);
         }
         if (y >= styr)
         {
@@ -1806,7 +1806,7 @@
             else if (timing_r_result(1) != data_time(ALK_time, f, 1))
             {
               warnstream << "LENGTH: data_month already set for y,m,f: " << y << " " << timing_r_result(1) << " " << f << " to real month: " << data_time(ALK_time, f, 1) << "  so treat as replicate";
-              write_warning(N_warn, 0, 0);
+              write_message(WARN, 0);
             }
 
             have_data(ALK_time, 0, 0, 0) = 1;
@@ -1820,13 +1820,13 @@
             if (s > nseas)
             {
               warnstream << " Critical error, season for length obs " << i << " is > nseas";
-              write_warning(N_warn, 0, 1);
+              write_message(FATAL, 0);
             }
 
             if (lendata[i](6) < 0.0)
             {
               warnstream << "negative values not allowed for lengthcomp sample size, use -fleet to omit from -logL";
-              write_warning(N_warn, 0, 1);
+              write_message(FATAL, 0);
             }
             header_l(f, j, 1) = y;
             if (lendata[i](2) < 0)
@@ -1874,12 +1874,12 @@
             if (sum(obs_l(f, j)) <= 0.0)
             {
               warnstream << "zero fish in size comp (fleet, year) " << f << " " << y;
-              write_warning(N_warn, 0, 1);
+              write_message(FATAL, 0);
             }
             if (nsamp_l_read(f, j) <= 0.0)
             {
               warnstream << "Input N is <=0.0 in length comp " << header_l_rd(f, j);
-              write_warning(N_warn, 0, 1);
+              write_message(FATAL, 0);
             }
             tails_l(f, j, 1) = 1;
             tails_l(f, j, 2) = nlen_bin;
@@ -2147,7 +2147,7 @@
             {
               warnstream << "Error: There are > 1 negative sd values for age 0 in age error definitions." << endl;
               warnstream << "       but SS3 can only create 1 age error definition from parameters, ";
-              write_warning(N_warn, 1, 1);
+              write_message(FATAL, 1);
             }
             Use_AgeKeyZero = i;
           }
@@ -2177,18 +2177,18 @@
         if (min_sample_size_A(f) < 0.001)
         {
           warnstream << "minimum sample size for age comps must be > 0; minimum sample size set to 0.001 ";
-          write_warning(N_warn, 0, 0);
+          write_message(WARN, 0);
           min_sample_size_A(f) = 0.001;
         }
         if (Comp_Err_A2(f) > 2 * Nfleet)
         {
           warnstream << "Age D-M index for fleet: " << f << " is: " << Comp_Err_A2(f) << " but must be an integer <=2*Nfleet ";
-          write_warning(N_warn, 0, 1);
+          write_message(FATAL, 0);
         }
         else if (Comp_Err_A2(f) > Comp_Err_ParmCount + 1)
         {
           warnstream << "Age D-M must refer to existing parm num, or increment by 1:  " << Comp_Err_A2(f);
-          write_warning(N_warn, 0, 1);
+          write_message(FATAL, 0);
         }
         else if (Comp_Err_A2(f) > Comp_Err_ParmCount)
         {
@@ -2205,14 +2205,14 @@
       if (nobsa_rd > 0 && N_ageerr == 0)
       {
         warnstream << "must define ageerror vectors because age data exist";
-        write_warning(N_warn, 0, 1);
+        write_message(FATAL, 0);
       }
       for (f = 1; f <= Nfleet; f++)
       {
         if (CombGender_A(f) > n_abins2)
         {
           warnstream << "Combgender_A(f) cannot be greater than n_abins for fleet:_" << f << "; resetting";
-          write_warning(N_warn, 0, 0);
+          write_message(WARN, 0);
           CombGender_A(f) = n_abins2;
         }
       }
@@ -2250,7 +2250,7 @@
         if (sum(tempvec) == 0.0)
         {
           warnstream << "reading past end of file for age data; exit ";
-          write_warning(N_warn, 0, 1);
+          write_message(FATAL, 0);
         }
         if (tempvec(1) == -9999.)
           ender = 1;
@@ -2275,12 +2275,12 @@
           if (Age_Data[i](9) < 0)
           {
             warnstream << "Error: negative sample size in age data no longer valid as indicator of skip data or superperiods ";
-            write_warning(N_warn, 0, 1);
+            write_message(FATAL, 0);
           }
           if (Age_Data[i](6) == 0 || Age_Data[i](6) > N_ageerr)
           {
             warnstream << "Error: undefined age_error type: " << Age_Data[i](6) << "  in obs: " << i;
-            write_warning(N_warn, 0, 1);
+            write_message(FATAL, 0);
           }
           if (Age_Data[i](2) < 0)
             N_suprper_a(f)++; // count the number of starts and ends of super-periods if seas<0 or sampsize<0
@@ -2294,7 +2294,7 @@
         if (s * 2 != N_suprper_a(f))
         {
           warnstream << "Error: unequal number of age superperiod starts and stops ";
-          write_warning(N_warn, 0, 1);
+          write_message(FATAL, 0);
         }
         else
         {
@@ -2359,7 +2359,7 @@
         if (y > endyr + 50)
         {
           warnstream << "forecast age obs cannot be beyond endyr +50; SS3 will exit";
-          write_warning(N_warn, 0, 1);
+          write_message(FATAL, 0);
         }
         if (y >= styr)
         {
@@ -2384,7 +2384,7 @@
             else if (timing_r_result(1) != data_time(ALK_time, f, 1))
             {
               warnstream << "AGE: data_month already set for y,m,f: " << y << " " << timing_r_result(1) << " " << f << " to real month: " << data_time(ALK_time, f, 1) << "  so treat as replicate";
-              write_warning(N_warn, 0, 0);
+              write_message(WARN, 0);
             }
             have_data(ALK_time, 0, 0, 0) = 1;
             have_data(ALK_time, f, 0, 0) = 1; //  so have data of some type
@@ -2393,7 +2393,7 @@
             if (p > 100)
             {
               warnstream << "fatal:  max agecomp obs per fleet*time is 100; you requested " << p << " for fleet x year " << f << " " << y;
-              write_warning(N_warn, 0, 1);
+              write_message(FATAL, 0);
             }
             have_data(ALK_time, f, data_type, p) = j; // store data index for the p'th observation in this subseas
             have_data_yr(y, f) = 1;
@@ -2402,13 +2402,13 @@
             if (s > nseas)
             {
               warnstream << "Critical error, season for age obs " << i << " is > nseas";
-              write_warning(N_warn, 0, 1);
+              write_message(FATAL, 0);
             }
 
             if (Age_Data[i](6) < 0.0)
             {
               warnstream << "negative values not allowed for age comp sample size, use -fleet to omit from -logL";
-              write_warning(N_warn, 0, 0);
+              write_message(WARN, 0);
             }
             header_a(f, j)(1, 9) = Age_Data[i](1, 9);
             header_a_rd(f, j)(2, 3) = Age_Data[i](2, 3);
@@ -2432,7 +2432,7 @@
             if (Age_Data[i](6) > N_ageerr)
             {
               warnstream << " ageerror type must be <= " << N_ageerr;
-              write_warning(N_warn, 0, 1);
+              write_message(FATAL, 0);
             }
             ageerr_type_a(f, j) = Age_Data[i](6);
 
@@ -2456,12 +2456,12 @@
             if (sum(obs_a(f, j)) <= 0.0)
             {
               warnstream << " zero fish in age comp " << header_a(f, j);
-              write_warning(N_warn, 0, 1);
+              write_message(FATAL, 0);
             }
             if (nsamp_a_read(f, j) <= 0.0)
             {
               warnstream << "Input N is <=0.0 in age comp " << header_a_rd(f, j);
-              write_warning(N_warn, 0, 1);
+              write_message(FATAL, 0);
             }
 
             Lbin_lo(f, j) = Age_Data[i](7);
@@ -2491,7 +2491,7 @@
                 if (s == 0)
                 {
                   warnstream << "L_bin_lo no match to poplenbins in age comp " << header_a(f, j);
-                  write_warning(N_warn, 0, 1);
+                  write_message(FATAL, 0);
                 }
                 Lbin_lo(f, j) = s;
 
@@ -2504,7 +2504,7 @@
                 if (s == 0)
                 {
                   warnstream << "L_bin_hi no match to poplenbins in age comp " << header_a(f, j);
-                  write_warning(N_warn, 0, 1);
+                  write_message(FATAL, 0);
                 }
                 Lbin_hi(f, j) = s;
                 break;
@@ -2524,7 +2524,7 @@
                 if (s == 0)
                 {
                   warnstream << "L_bin_lo no match to poplenbins in age comp " << header_a(f, j);
-                  write_warning(N_warn, 0, 1);
+                  write_message(FATAL, 0);
                 }
                 Lbin_lo(f, j) = s;
 
@@ -2537,7 +2537,7 @@
                 if (s == 0)
                 {
                   warnstream << "L_bin_hi no match to poplenbins in age comp " << header_a(f, j);
-                  write_warning(N_warn, 0, 1);
+                  write_message(FATAL, 0);
                 }
                 Lbin_hi(f, j) = s;
                 break;
@@ -2548,7 +2548,7 @@
             if (Lbin_lo(f, j) > nlength || Lbin_lo(f, j) > Lbin_hi(f, j))
             {
               warnstream << "L_bin_lo is too high in age comp.  Are you using lengths or bin numbers? " << header_a(f, j);
-              write_warning(N_warn, 0, 1);
+              write_message(FATAL, 0);
             }
             if (Lbin_lo(f, j) == 1 && Lbin_hi(f, j) == nlength)
             {
@@ -2759,7 +2759,7 @@
       if (sum(tempvec) == 0.0)
       {
         warnstream << "reading past end of file for size-at-age data; exit ";
-        write_warning(N_warn, 0, 1);
+        write_message(FATAL, 0);
       }
       if (tempvec(1) == -9999.)
         ender = 1;
@@ -2786,7 +2786,7 @@
           if (sizeAge_Data[i](7) < 0)
           {
             warnstream << "error.  cannot use negative sampsize for meansize data ";
-            write_warning(N_warn, 0, 1);
+            write_message(FATAL, 0);
           }
           if (sizeAge_Data[i](2) < 0)
           {
@@ -2801,7 +2801,7 @@
       if (s * 2 != N_suprper_ms(f))
       {
         warnstream << "Error: unequal number of meansize superperiod starts and stops ";
-        write_warning(N_warn, 0, 1);
+        write_message(FATAL, 0);
       }
       else
       {
@@ -2854,7 +2854,7 @@
         if (y > endyr + 50)
         {
           warnstream << "forecast meansize obs cannot be beyond endyr +50";
-          write_warning(N_warn, 0, 1);
+          write_message(FATAL, 0);
         }
         if (y >= styr)
         {
@@ -2878,7 +2878,7 @@
             else if (timing_r_result(1) != data_time(ALK_time, f, 1))
             {
               warnstream << "LEN@AGE: data_month already set for y,m,f: " << y << " " << timing_r_result(1) << " " << f << " to real month: " << data_time(ALK_time, f, 1) << "  so treat as replicate";
-              write_warning(N_warn, 0, 0);
+              write_message(WARN, 0);
             }
             have_data(ALK_time, 0, 0, 0) = 1;
             have_data(ALK_time, f, 0, 0) = 1; // so have data of some type
@@ -2889,7 +2889,7 @@
             if (s > nseas)
             {
               warnstream << " Critical error, season for size-age obs " << i << " is > nseas";
-              write_warning(N_warn, 0, 1);
+              write_message(FATAL, 0);
             }
 
             header_ms(f, j)(1, 7) = sizeAge_Data[i](1, 7);
@@ -2909,7 +2909,7 @@
             if (abs(sizeAge_Data[i](6)) > N_ageerr)
             {
               warnstream << "in meansize-at-age, ageerror type must be <= " << N_ageerr;
-              write_warning(N_warn, 0, 1);
+              write_message(FATAL, 0);
             }
             ageerr_type_ms(f, j) = sizeAge_Data[i](6);
 
@@ -2972,7 +2972,7 @@
       if (sum(tempvec) == 0.0)
       {
         warnstream << "reading past end of file for env data; exit ";
-        write_warning(N_warn, 0, 1);
+        write_message(FATAL, 0);
       }
       env_temp.push_back(tempvec(1, 3));
     } while (ender == 0);
@@ -3022,7 +3022,7 @@
       if (SzFreq_units(k) == 1 && SzFreq_scale(k) > 2)
       {
         warnstream << "error:  cannot accumulate biomass into length-based szfreq scale for method: " << k;
-        write_warning(N_warn, 0, 1);
+        write_message(FATAL, 0);
       }
       SzFreq_Nbins3(k) = gender * SzFreq_Nbins(k);
       for (s = 1; s <= nseas; s++)
@@ -3197,12 +3197,12 @@
         if (sum(SzFreq_obs(iobs)) <= 0.0)
         {
           warnstream << "zero fish in size comp " << SzFreq_obs_hdr(iobs);
-          write_warning(N_warn, 0, 1);
+          write_message(FATAL, 0);
         }
         if (SzFreq_sampleN(iobs) <= 0.0)
         {
           warnstream << " Input N is <=0.0 in size comp " << SzFreq_obs_hdr(iobs);
-          write_warning(N_warn, 0, 1);
+          write_message(FATAL, 0);
         }
 
         f = abs(SzFreq_obs_hdr(iobs, 3));
@@ -3213,7 +3213,7 @@
         if (y > endyr + 50)
         {
           warnstream << "forecast sizefreq obs cannot be beyond endyr +50";
-          write_warning(N_warn, 0, 1);
+          write_message(FATAL, 0);
         }
 
         timing_input(1, 3) = SzFreq_obs_hdr(iobs)(1, 3);
@@ -3251,7 +3251,7 @@
         if (k != SzFreq_obs1(iobs, 1))
         { // save method code for later use
           warnstream << "sizefreq ID # doesn't match ";
-          write_warning(N_warn, 0, 0);
+          write_message(WARN, 0);
         }
         if (y >= styr)
         {
@@ -3274,7 +3274,7 @@
           else if (timing_r_result(1) != data_time(ALK_time, f, 1))
           {
             warnstream << "SIZE: data_month already set for y,m,f: " << y << " " << timing_r_result(1) << " " << f << " to real month: " << data_time(ALK_time, f, 1) << "  so treat as replicate";
-            write_warning(N_warn, 0, 0);
+            write_message(WARN, 0);
           }
           have_data(ALK_time, 0, 0, 0) = 1;
           have_data(ALK_time, f, 0, 0) = 1; //  so have data of some type
@@ -3302,7 +3302,7 @@
       if (2 * j != N_suprper_SzFreq)
       {
         warnstream << "unequal number of starts and ends of sizefreq superperiods ";
-        write_warning(N_warn, 0, 1);
+        write_message(FATAL, 0);
       }
       else
       {
@@ -3474,7 +3474,7 @@
       if (t < 0)
       {
         warnstream << " recapture is before tag release for recap: " << j;
-        write_warning(N_warn, 0, 1);
+        write_message(FATAL, 0);
       }
       TG_recap_obs(TG, t, TG_recap_data(j, 4)) += TG_recap_data(j, 5); // save N recaptures by TG, fleet of recapture, elapsed time
       if (t >= TG_mixperiod)
@@ -3544,7 +3544,7 @@
         if (timing_input(2) < 0.0)
         {
           warnstream << "negative month not allowed for morphcomp because superperiods not implemented ";
-          write_warning(N_warn, 0, 1);
+          write_message(FATAL, 0);
         }
         get_data_timing(timing_input, timing_constants, timing_i_result, timing_r_result, seasdur, subseasdur_delta, azero_seas, surveytime);
 
@@ -3565,7 +3565,7 @@
         else if (timing_r_result(1) != data_time(ALK_time, f, 1))
         {
           warnstream << "morph_comp: data_month already set for y,s,f: " << y << " " << s << " " << f << " to real month: " << data_time(ALK_time, f, 1) << "  but read value is: " << timing_r_result(1);
-          write_warning(N_warn, 0, 0);
+          write_message(WARN, 0);
         }
         have_data(ALK_time, 0, 0, 0) = 1;
         have_data(ALK_time, f, 0, 0) = 1; //  so have data of some type
@@ -3602,7 +3602,7 @@
   if (fid != 999)
   {
     warnstream << " final value in data file is an error " << fid;
-    write_warning(N_warn, 0, 1);
+    write_message(FATAL, 0);
     //    cout << " final data value in error " << fid << endl;
     //    exit(1);
   }
@@ -3673,7 +3673,7 @@
   if (Do_MSY == 5) //  doing advanced MSY options, including MEY
   {
     warnstream << "F(mey) is a research feature in 3.30.19; use cautiously and report any issues";
-    write_warning(N_warn, 0, 0);
+    write_message(WARN, 0);
     echoinput << "enter quantity to be maximized: (1) dead catch biomass; (2) dead catch biomass w/o excluded bycatch fleet "
               << "(3) retained catch; (4) retained catch profits" << endl;
     *(ad_comm::global_datafile) >> MSY_units;
@@ -3696,7 +3696,7 @@
       if (fleet_ID > Nfleet)
       {
         warnstream << "fleetID > Nfleet";
-        write_warning(N_warn, 0, 0);
+        write_message(WARN, 0);
       }
       else if (fleet_ID > 0)
       {
@@ -3793,7 +3793,7 @@
   if (Do_Benchmark == 2 && N_bycatch > 0)
   {
     warnstream << "F0.1 does not work well with bycatch fleets; check output carefully";
-    write_warning(N_warn, 0, 0);
+    write_message(WARN, 0);
   }
   echoinput << Bmark_Yr_rd << " echoed Benchmark years" << endl;
   for (i = 1; i <= 10; i++) //  beg-end bio; beg-end selex; beg-end relF
@@ -3809,13 +3809,13 @@
     else if (Bmark_Yr_rd(i) < styr)
     {
       warnstream << "benchmark year (" << Bmark_Yr_rd(i) << ") < styr (" << styr << "); change to styr";
-      write_warning(N_warn, 0, 0);
+      write_message(WARN, 0);
       Bmark_Yr(i) = styr;
     }
     else if (Bmark_Yr_rd(i) > endyr)
     {
       warnstream << "benchmark year (" << Bmark_Yr_rd(i) << ") > endyr (" << endyr << "); change to endyr";
-      write_warning(N_warn, 0, 0);
+      write_message(WARN, 0);
       Bmark_Yr(i) = endyr;
     }
     else
@@ -3838,7 +3838,7 @@
   if (Do_MSY == 5 && Bmark_RelF_Basis == 2)
   {
     warnstream << "Do_MSY=5, so must use Bmark_RelF_Basis=1";
-    write_warning(N_warn, 0, 1);
+    write_message(FATAL, 0);
   }
   echoinput << endl
             << "next read forecast basis: 0=none; 1=F(SPR); 2=F(MSY) 3=F(Btgt); 4=Ave F (enter yrs); 5=read Fmult" << endl;
@@ -3917,12 +3917,12 @@
     if (Do_Forecast_rd > 0 && N_Fcast_Yrs <= 0)
     {
       warnstream << "ERROR: cannot do a forecast of zero years: " << N_Fcast_Yrs;
-      write_warning(N_warn, 0, 1);
+      write_message(FATAL, 0);
     }
     if (Do_Forecast_rd > 0 && STD_Yr_max == -1)
     {
-      warnstream << "note: Std_yrmax=-1 in starter, so no variance output for forecast quantities after endyr+1 ";
-      write_warning(N_warn, 0, 0);
+      warnstream << "Std_yrmax=-1 in starter, so no variance output for forecast quantities after endyr+1 ";
+      write_message(NOTE, 0);
     }
 
     YrMax = endyr + N_Fcast_Yrs;
@@ -3998,12 +3998,12 @@
     if (H4010_top_rd > 0.0 && H4010_top_rd <= H4010_bot)
     {
       warnstream << "control rule inflection: " << H4010_top_rd << " must be > control rule cutoff " << H4010_bot;
-      write_warning(N_warn, 0, 1);
+      write_message(FATAL, 0);
     }
     if (H4010_scale > 1.0)
     {
       warnstream << "Sure you want control rule scalar > 1.0? " << H4010_scale;
-      write_warning(N_warn, 0, 0);
+      write_message(WARN, 0);
     }
 
     if (H4010_scale < 0.0)
@@ -4069,7 +4069,7 @@
       else
       {
         warnstream << "changing Imple_Error to 0 because no forecast ";
-        write_warning(N_warn, 1, 0);
+        write_message(WARN, 1);
         Impl_Error_Std = 0.0;
         Do_Impl_Error = 0;
       }
@@ -4097,12 +4097,12 @@
     echoinput << Fcast_RelF_Basis << " # echoed value" << endl;
     if (Fcast_RelF_Basis < 1 || Fcast_RelF_Basis > 2) {
       warnstream << "Fcast_relF_Basis value must be 1 or 2" << endl;
-      write_warning(N_warn, 1, 1);
+      write_message(FATAL, 1);
     }
     if (Do_Forecast_rd == 4 && Fcast_RelF_Basis == 2) {
       warnstream << "Cannot specify forecast fleet relative F because Do_Forecast==4 specifies relative F directly as F;" << endl
                  << "  need to align choice of forecast basis and forecast relative F basis";
-      write_warning(N_warn, 1, 1);
+      write_message(FATAL, 1);
     }
 
     echoinput << endl
@@ -4112,7 +4112,7 @@
     echoinput << Fcast_Catch_Basis << " # echoed value" << endl;
     if (Fcast_Catch_Basis < 2 || Fcast_Catch_Basis > 6) {
       warnstream << "illegal value for Fcast_Catch_Basis";
-      write_warning(N_warn, 1, 1);
+      write_message(FATAL, 1);
     }
 
     if (Fcast_RelF_Basis == 2)
@@ -4145,7 +4145,7 @@
           else
           {
             warnstream << "forecast exit for fleet " << f << "  ;cannot set fcast relF for survey fleets";
-            write_warning(N_warn, 0, 1);
+            write_message(FATAL, 0);
           }
         }
       } while (ender == 0);
@@ -4156,7 +4156,7 @@
         if (fleet_type(f) == 1 && checkfleet(f) == 0)
         {
           warnstream << "fleet: " << f << " " << fleetname(f) << "  is a fishing fleet but forecast relF not read";
-          write_warning(N_warn, 0, 0);
+          write_message(WARN, 0);
         }
       }
     }
@@ -4168,16 +4168,16 @@
   else // set forecast defaults
   {
     warnstream << "Forecast=0 or -1, so rest of forecast file will not be read and can be omitted;";
-    write_warning(N_warn, 0, 0);
+    write_message(WARN, 0);
     if (Bmark_RelF_Basis == 2)
     {
       warnstream << "Fatal stop:  no forecast, but bmark set to use fcast";
-      write_warning(N_warn, 0, 1);
+      write_message(FATAL, 0);
     }
     if (Do_Forecast == 0)
     {
       warnstream << "A one year forecast using recent F will be done automatically";
-      write_warning(N_warn, 0, 0);
+      write_message(WARN, 0);
       Do_Forecast = 4; // sets simple forecast; else Do_Forecast==-1 causes no forecast
       N_Fcast_Yrs = 1;
       YrMax = endyr + 1;
@@ -4249,7 +4249,7 @@
         else
         {
           warnstream << "exit for fleet " << f << "  ;  can only set max catch for retained or discard catch fleets";
-          write_warning(N_warn, 0, 1);
+          write_message(FATAL, 0);
           //          cout<<" EXIT - see warning "<<endl; warning<<"exit for fleet "<<f<<"  ;  can only set max catch for retained or discard catch fleets"<<endl; exit(1);
         }
         Fcast_Do_Fleet_Cap = 1;
@@ -4308,7 +4308,7 @@
         else
         {
           warnstream << "exit for fleet " << f << "  ;  can only put retained catch fleets in allocation groups";
-          write_warning(N_warn, 0, 1);
+          write_message(FATAL, 0);
         }
       }
     } while (ender == 0);
@@ -4337,7 +4337,7 @@
       if (j == 0)
       {
         warnstream << "Error: there are no allocation fractions specified and there are " << Fcast_Catch_Allocation_Groups << " allocation groups";
-        write_warning(N_warn, 1, 1);
+        write_message(FATAL, 1);
       }
 
       for (k = 0; k <= j - 1; k++)
@@ -4356,7 +4356,7 @@
         if (sum(Fcast_Catch_Allocation(y)) == 0.0)
         {
           warnstream << "Fcast_Catch_allocation is blank for year: " << y + endyr << "; SS3 assigning uniform; can override with input catches";
-          write_warning(N_warn, 0, 0);
+          write_message(WARN, 0);
         }
         else
         {
@@ -4439,7 +4439,7 @@
           if (y >= Fcast_Cap_FirstYear)
           {
             warnstream << "Input catches in " << y << " can be overridden by caps or allocations";
-            write_warning(N_warn, 0, 0);
+            write_message(WARN, 0);
           }
           if (Fcast_InputCatch_Basis == -1)
           {
@@ -4473,19 +4473,19 @@
       if (y <= endyr)
       {
         warnstream << "; " << y << " is <= endyr; set to endyr+1 ";
-        write_warning(N_warn, 1, 0);
+        write_message(WARN, 1);
         y = endyr + 1;
       }
       if (y <= last_rd_yr)
       {
         warnstream << "; " << y << " is <= last_rd_yr; overwrite will occur ";
-        write_warning(N_warn, 1, 0);
+        write_message(WARN, 1);
       }
       last_rd_yr = y;
       if (y > YrMax)
       {
         warnstream << "; " << y << " is > YrMax; set to YrMax ";
-        write_warning(N_warn, 0, 0);
+        write_message(WARN, 0);
         y = YrMax;
       }
       for (k = y; k <= YrMax; k++)
@@ -4499,32 +4499,32 @@
   if (Do_Rebuilder == 1 && Do_Forecast_rd <= 0)
   {
     warnstream << "Error: Rebuilder output selected without requesting forecast";
-    write_warning(N_warn, 0, 1);
+    write_message(FATAL, 0);
   }
   if (Do_Benchmark == 0)
   {
     if (Do_Forecast_rd >= 1 && Do_Forecast_rd <= 3) {
       Do_Benchmark = 1;
       warnstream << "Turn Benchmark on because Forecast needs it";
-      write_warning(N_warn, 0, 0);
+      write_message(WARN, 0);
     }
     if (Do_Forecast == 0 && F_std_basis > 0)
     {
       F_std_basis = 0;
       warnstream << "Set F_std_basis=0 because no benchmark or forecast";
-      write_warning(N_warn, 0, 0);
+      write_message(WARN, 0);
     }
     if (depletion_basis == 2)
     {
       depletion_basis = 1;
       warnstream << "Change depletion basis to 1 because benchmarks are off";
-      write_warning(N_warn, 0, 0);
+      write_message(WARN, 0);
     }
     if (SPR_reporting >= 1 && SPR_reporting <= 3)
     {
       SPR_reporting = 4;
       warnstream << "Change SPR_reporting to 4 because benchmarks are off";
-      write_warning(N_warn, 0, 0);
+      write_message(WARN, 0);
     }
   }
   else
@@ -4532,7 +4532,7 @@
     if (Do_MSY == 0)
     {
       warnstream << "Setting Do_MSY=1 because benchmarks are on";
-      write_warning(N_warn, 0, 0);
+      write_message(WARN, 0);
       Do_MSY = 1;
     }
   }
@@ -4542,50 +4542,50 @@
   //    {
   //      Do_MSY = 2;
   //      warnstream << "Set MSY option =2 because Forecast option =2";
-  //      write_warning(N_warn, 0, 0);
+  //      write_message(WARN, 0);
   //    }
   //    if (depletion_basis == 2)
   //    {
   //      Do_MSY = 2;
   //      warnstream << "Set MSY option =2 because depletion basis is B_MSY";
-  //      write_warning(N_warn, 0, 0);
+  //      write_message(WARN, 0);
   //    }
   //    if (SPR_reporting == 2)
   //    {
   //      Do_MSY = 2;
   //      warnstream << "Set MSY option =2 because SPR basis is SPR_MSY";
-  //      write_warning(N_warn, 0, 0);
+  //      write_message(WARN, 0);
   //    }
   //  }
   if (Fcast_Sel_yr1 > Fcast_Sel_yr2)
   {
     warnstream << " Error, Fcast_Sel_Yr1 must be at or before Fcast_Sel_Yr2";
-    write_warning(N_warn, 1, 1);
+    write_message(FATAL, 1);
   }
   if (Fcast_Sel_yr1 > endyr || Fcast_Sel_yr1 < styr)
   {
     warnstream << " Error, Fcast_Sel_Yr1 must be between styr and endyr";
-    write_warning(N_warn, 1, 1);
+    write_message(FATAL, 1);
   }
   if (Fcast_Sel_yr2 > endyr || Fcast_Sel_yr2 < styr)
   {
     warnstream << " Error, Fcast_Sel_Yr2 must be between styr and endyr";
-    write_warning(N_warn, 1, 1);
+    write_message(FATAL, 1);
   }
   if (Fcast_Rec_yr1 > Fcast_Rec_yr2)
   {
     warnstream << " Error, Fcast_Rec_Yr1 must be at or before Fcast_Rec_Yr2";
-    write_warning(N_warn, 1, 1);
+    write_message(FATAL, 1);
   }
   if (Fcast_Rec_yr1 > endyr || Fcast_Rec_yr1 < styr)
   {
     warnstream << " Error, Fcast_Rec_Yr1 must be between styr and endyr";
-    write_warning(N_warn, 1, 1);
+    write_message(FATAL, 1);
   }
   if (Fcast_Rec_yr2 > endyr || Fcast_Rec_yr2 < styr)
   {
     warnstream << " Error, Fcast_Rec_Yr2 must be between styr and endyr";
-    write_warning(N_warn, 1, 1);
+    write_message(FATAL, 1);
   }
 
   did_MSY = 0;
@@ -4595,7 +4595,7 @@
   if (Do_Forecast_rd > 0 && fif != 999)
   {
     warnstream << " Error, must have 999 to verify end of forecast inputs. value: " << fif;
-    write_warning(N_warn, 1, 1);
+    write_message(FATAL, 1);
   }
   echoinput << " done reading forecast " << endl
             << endl;

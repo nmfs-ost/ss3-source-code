@@ -67,17 +67,18 @@ GLOBALS_SECTION
   #include <vector>
   #include <iostream>
   #include <sstream>
+    #define NOTE    1 // information that could be useful
+    #define SUGGEST 2 // a possible better way
+    #define PERFORM 3 // can help performance
+    #define WARN    4 // might be a problem, execution continues anyway
+    #define ADJUST  5 // adjustment has been made, execution continues
+    #define FATAL   6 // major problem, program will exit
+    adstring_array MessageIntro;
   #include <sys/types.h>
   #include <sys/stat.h>
-// SS_Label_Variable # 
-// SS_Label_Variable # ##### Variables
-// SS_Label_Variable # 
-// SS_Label_Variable # | Name | Type | Description |
-// SS_Label_Variable # | ---: | :--: | :--- |
-// SS_Label_Variable # | start | time_t | run start time |
-  time_t start; //!< Clock start time
-// SS_Label_MD_Variable # | finish | time_t | run ending time |
-  time_t finish;//!< Clock ending time
+
+
+  time_t start, finish;
   long hour, minute, second;
 // SS_Label_MD_Variable # | elapsed_time | double | total time for run |
   double elapsed_time; //!< Total clock time the run took
@@ -118,11 +119,11 @@ GLOBALS_SECTION
   adstring_array pick_report_use; //!<  X if used; 0 if not
 
 //  SS_Label_Info_10.1 #Open output files using ofstream
-  ofstream warning; //!< warning.sso output file
-  ofstream echoinput; //!< echoinput.sso output file 
-  ofstream ParmTrace; //!< parm trace file
-  ofstream report5; //!< forecast-report
-  ofstream report2; //!< control.ss_new
+  ofstream warning; // warning.sso - where warnings, notes, etc. are put
+  ofstream echoinput; // echoes input (for debugging) and includes some comments
+  ofstream ParmTrace;
+  ofstream report5; // forecast-report
+  ofstream report2; // control.ss_new
   ofstream bodywtout;
   ofstream SS2out; //!< this is just a create
   ofstream SS_compout; //!< this is just a create
@@ -142,20 +143,16 @@ GLOBALS_SECTION
   std::string usermsg;
   int ParCount;
   int timevary_parm_cnt;
-// SS_Label_MD_Variable # | N_warn {#N_warn} | int   | number of warnings issued |
-  int N_warn = 0; //!< number of warnings issued
-// SS_Label_MD_Variable # | styr   | int   | start year |
-  int styr; //!< start year
-// SS_Label_MD_Variable # | endyr  | int   | ending year |
-  int endyr; //!< ending year
+  int N_warn = 0; // track the number of warnings and adjustments
+  int N_note = 0; // track the number of suggestions and notes
+  int styr;
+  int endyr;
   int YrMax;
 // SS_Label_MD_Variable # | nseas  | int   | number of seasons |
   int nseas; //!< number of seasons
   int Ncycle;
-// SS_Label_MD_Variable # | seas_as_year | int  | whether to treat seasons as years or not |
-  int seas_as_year; //!< whether to treat seasons as years or not
-// SS_Label_MD_Variable # | special_flag | int  | reserved for programmer's use |
-  int special_flag = 0; //!< a flag for whenever one is needed
+  int seas_as_year;
+  int special_flag = 0; //  for whenever a flag is needed
 
 //  SS_Label_Info_10.3  #start random number generator with seed based on time
   random_number_generator radm(long(time(&start))); //!< random number generator seeded with start time
@@ -186,101 +183,92 @@ GLOBALS_SECTION
   ;
 //  functions in GLOBALS to output warnings and other messages
 
-// SS_Label_Function xxxa write_message(string,int,int,int); output a message with an option to exit (when fatal)
-// SS_Label_MD_Function #
-// SS_Label_MD_Function # ##### Functions
-// SS_Label_MD_Function #
-// SS_Label_MD_Function # ###### **write_message**(string,int,int,int) {#write_message}
-// SS_Label_MD_Function # 
-// SS_Label_MD_Function #   Write a message with options to output to echoinput.sso,
-// SS_Label_MD_Function #   warning.sso, and, in the case of a critical error, to exit the
-// SS_Label_MD_Function #   program. This is usually called by [write_warning](write_warning).
-// SS_Label_MD_Function # 
-// SS_Label_MD_Function # |Parameter |Description |
-// SS_Label_MD_Function # |---:      | :---       |
-// SS_Label_MD_Function # | string   | the string to write |
-// SS_Label_MD_Function # | echo     | whether or not to output to warning.sso (0 - no, 1 - yes) |
-// SS_Label_MD_Function # | warn     | whether or not to output to echoinput.sso (0 - no, 1 - yes) |
-// SS_Label_MD_Function # | exitflag | whether or not this is a critical error (0 - no, 1 - yes) |
-// SS_Label_MD_Function # 
-
-  /** @brief Output a message.
-  *
-  *   Write a message with options to output to echoinput.sso,
-  *   warning.sso, and, in the case of a critical error, to exit the
-  *   program. This is usually called by write_warning.
-  *
-  *  @param msg    the message to output
-  *  @param echo   whether or not to output to echoinput.sso
-  *               (0 - no, 1 - yes)
-  *  @param warn   whether or not to output to warning.sso
-  *               (0 - no, 1 - yes)
-  *  @param exitflag  whether or not to exit the program on a
-  *               critical error (0 - no, 1 - yes)
-  *  @see write_warning
-  */
-  void write_message(std::string msg, int echo, int warn, int exitflag)
+// SS_Label_Function_xxxa write_msg(string,int,int,int); output a message.
+// options are output the string to echoinput.sso and warning.sso with an option to exit
+// SS_Label_Function_xxxa # ### write_msg (string, echoflag, warnflag, exitflag)
+// SS_Label_Function_xxxa # 
+// SS_Label_Function_xxxa # Writes a string to either echoinput.sso or warning.sso 
+// SS_Label_Function_xxxa # or both. The last option tells it to exit the program
+// SS_Label_Function_xxxa # with appropriate output to warning.sso and cout.
+// SS_Label_Function_xxxa # 
+  void write_msg(std::string msg, int echo, int warn, int exitflag)
   {
     std::string totmsg;
     if (msg.length() == 0)
-      totmsg = "unknown condition";
-
-    if (exitflag == 1)
-      totmsg = " Fatal Error: " + msg + " - EXIT.";
-    else
-      totmsg = msg;
+    {
+      msg = "unknown message";
+    }
 
     if (echo == 1)
-      echoinput << totmsg << endl;
-
+    {
+      echoinput << msg << endl;
+    }
     if (warn > 0)
-      warning << warn << " " << totmsg << endl;
-
+    {
+      size_t b = msg.find ("parameter", 0);
+      warning << msg;
+      if (echo == 1 && (b > 0 && b < msg.size()))
+      {
+        warning << "; search for <now check> in echoinput.sso for parm_type";
+      }
+      warning << endl;
+    }
     if (exitflag == 1)
     {
       warning.close();
-	  echoinput.close();
-      cout << " Fatal Error: " << msg << endl;
-      cout << " Exiting SS3. " << endl;
+	    echoinput.close();
+      cout << msg << endl;
+      cout << "Also see warning.sso" << endl;
+      cout << "Exiting SS3! " << endl;
       exit(1);
     }
   }
-// SS_Label_Function_xxxb write_warning(int,int,int); increment warning count and output a warning with an option to exit (when fatal)
-// SS_Label_MD_Function #
-// SS_Label_MD_Function # ###### **write_warning**(int, int, int) {#write_warning}
-// SS_Label_MD_Function # 
-// SS_Label_MD_Function #  Write the message from warnstream to warning.sso
-// SS_Label_MD_Function #  with options to write to echoinput.sso and, in the case of a critical
-// SS_Label_MD_Function #  error, to exit the program. This increments nwarn (usually [N_warn](N_warn)), calls [write_message](write_message),
-// SS_Label_MD_Function #  and resets [warnstream](warnstream) to the empty string.
-// SS_Label_MD_Function # 
-// SS_Label_MD_Function # |Parameter |Description |
-// SS_Label_MD_Function # |---:      | :---       |
-// SS_Label_MD_Function # | nwarn    |  either N_warn (which keeps track of the number of warnings) or a dummy variable. |
-// SS_Label_MD_Function # | echo     | whether or not to output to echoinput (0 - no, 1 - yes) |
-// SS_Label_MD_Function # | exitflag | whether or not this is a critical error (0 - no, 1 - yes) |
-// SS_Label_MD_Function # 
 
-  /** @brief Output a warning message.
-  *
-    Output a message that has been put in warnstream to warning.sso
-    with options to output to echoinput.sso and, in the case of a critical
-    error, to exit the program. This increments nwarn, calls write_message,
-    and resets warnstream to the empty string.
-   
-    @param nwarn: either N_warn (which keeps track of the number
-               of warnings) or a dummy variable.
-    @param echo: whether or not to output to echoinput (0 - no, 1 - yes)
-    @param exitflag: whether or not to exit the program on a
-               critical error (0 - no, 1 - yes)
-	 @see write_message(), warnstream, and N_warn
-  */
-  void write_warning(int& nwarn, int echo, int exitflag)
+// SS_Label_Function_xxxb write_message(int,int,int); increment warning count and output a warning with an option to exit (when fatal)
+// SS_Label_Function_xxxb # ### write_message (type, echo)
+// SS_Label_Function_xxxb # 
+// SS_Label_Function_xxxb # type is one of the following:
+// SS_Label_Function_xxxb # - NOTE    : information that could be useful
+// SS_Label_Function_xxxb # - SUGGEST : a possible better way
+// SS_Label_Function_xxxb # - PERFORM : can help performance
+// SS_Label_Function_xxxb # - WARN    : might be a problem, execution continues anyway
+// SS_Label_Function_xxxb # - ADJUST  : adjustment has been made, execution continues
+// SS_Label_Function_xxxb # - FATAL   : major problem, program will exit
+// SS_Label_Function_xxxb # 
+// SS_Label_Function_xxxb # and echo is either 1 to write to echoinput.sso or 0.
+// SS_Label_Function_xxxb # 
+// SS_Label_Function_xxxb # This writes the text in warnstream and resets it.
+// SS_Label_Function_xxxb # 
+  void write_message(int type, int echo)
   {
-  std::string msg(warnstream.str());
-  nwarn++;
-  write_message(msg, echo, nwarn, exitflag);
-  warnstream.str("");
+    int exitflag = 0;
+    int warn = 0;
+    std::string msg(warnstream.str());
+    warnstream.str("");
+    if (msg.length() == 0)
+      msg = "unknown condition.";
+
+    switch (type)
+    {
+      case NOTE:
+      case SUGGEST:
+      case PERFORM:
+        N_note++;
+        warn = N_note;
+        warnstream << "Note " << N_note;
+        break;
+      case FATAL:
+        exitflag = 1;
+      case ADJUST:
+      case WARN:
+        N_warn++;
+        warn = N_warn;
+        warnstream << "Warning " << N_warn;
+        break;
+    }
+    warnstream << MessageIntro(type) << msg;
+    write_msg(warnstream.str(), echo, warn, exitflag);
+    warnstream.str("");
   }
 
 //  function in GLOBALS to do the timing setup in the data section
@@ -379,8 +367,8 @@ GLOBALS_SECTION
     {
       if (month >= 13.0)
       {
-        warnstream << "Fatal error. month must be <13.0, end of year is 12.99, value read is: " << month;
-        write_warning(N_warn, 0, 1);
+    	  warnstream << "month must be <13.0, end of year is 12.99, value read is: " << month;
+    	  write_message(FATAL, 0);
       }
       temp1 = max(0.00001, (month - 1.0) / 12.); //  month as fraction of year
       s = 1; // earlist possible seas;
@@ -551,8 +539,8 @@ GLOBALS_SECTION
               if (baseparm_list(1) <= 0.0)
               {
                 warnstream << "cannot use multiplicative blocks for parameter with a negative lower bound;  exit " << endl
-                           << baseparm_list(1) << " " << baseparm_list(2) << " " << baseparm_list(3) << endl;
-                write_warning(N_warn, 0, 1);
+                        << baseparm_list(1) << " " << baseparm_list(2) << " " << baseparm_list(3) << endl;
+                write_message(FATAL, 0);
               }
               tempvec(1) = log(baseparm_list(1) / baseparm_list(3)); //  max negative change
               tempvec(2) = log(baseparm_list(2) / baseparm_list(3)); //  max positive change
@@ -896,7 +884,7 @@ GLOBALS_SECTION
     if (y < styr)
     {
       warnstream << "reset parm_dev start year to styr for parm: " << j << " " << y;
-      write_warning(N_warn, 0, 0);
+      write_message(ADJUST, 0);
       y = styr;
     }
     timevary_setup(10) = y;
@@ -904,8 +892,8 @@ GLOBALS_SECTION
     y = baseparm_list(11);
     if (y > YrMax)
     {
-      warnstream << " reset parm_dev end year to YrMax for parm: " << j << " " << y;
-      write_warning(N_warn, 0, 0);
+	  warnstream << "reset parm_dev end year to YrMax for parm: " << j << " " << y;
+	  write_message(ADJUST, 0);
       y = YrMax;
     }
     timevary_setup(11) = y;
@@ -1020,7 +1008,7 @@ FINAL_SECTION
     if (objective_function_value::pobjfun->gmax > final_conv)
     {
       warnstream << "Final gradient: " << objective_function_value::pobjfun->gmax << " is larger than final_conv: " << final_conv;
-      write_warning(N_warn, 0, 0);
+	  write_message(WARN, 0);
     }
 
     //  SS_Label_Info_12.2 #Output the covariance matrix to covar.sso
@@ -1203,8 +1191,8 @@ FINAL_SECTION
     else
     {
       {
-        warnstream << "NOTE:  No *.ss_new and fewer *.sso files written after mceval";
-        write_warning(N_warn, 0, 0);
+        warnstream << "No *.ss_new and fewer *.sso files written after mceval";
+		write_message(NOTE, 0);
       }
     }
 
@@ -1235,31 +1223,46 @@ FINAL_SECTION
     if (parm_adjust_method == 3)
     {
       warnstream << "Time-vary parms not bound checked";
-      write_warning(N_warn, 0, 0);
+	  write_message(WARN, 0);
     }
 
     //  SS_Label_Info_12.4.7 #Finish up with final writes to warning.sso
     if (N_changed_lambdas > 0)
     {
       warnstream << "Reminder: Number of lamdas !=0.0 and !=1.0:  " << N_changed_lambdas;
-      write_warning(N_warn, 0, 0);
+	  write_message(WARN, 0);
     }
 
     if (Nparm_on_bound > 0)
     {
-      cout << Nparm_on_bound << " parameters are on or within 1% of min-max bound" << endl;
-      warning << " N parameters are on or within 1% of min-max bound: " << Nparm_on_bound << "; check results, variance may be suspect" << endl;
+      warnstream << " N parameters that are on or within 1% of min-max bound: " << Nparm_on_bound;
+      cout << endl << warnstream.str() << endl;
+      warnstream << "; check results, variance may be suspect";
+      write_message (NOTE, 0);
     }
-    warning << "N warnings: " << N_warn << endl;
-    cout << endl
-         << "!!  Run has completed  !!            ";
     if (N_warn > 0)
     {
-      cout << "See warning.sso for N warnings: " << N_warn << endl;
+      warnstream << " " << N_warn << " warning" << (N_warn > 1? "s ": " ");
+      if (N_note > 0)
+      {
+        warnstream << " and " << N_note << " note" << (N_note > 1? "s ": " ");
+      }
+    }
+    else if (N_note > 0)
+    {
+      warnstream << " " << N_note << " note" << (N_note > 1? "s ": " ");
+    }
+    warning << warnstream.str() << endl;
+
+    cout << endl
+         << "!!  Run has completed  !! " << endl;
+    if (N_warn + N_note > 0)
+    {
+      cout << "!!  See warning.sso for" << warnstream.str() << endl;
     }
     else
     {
-      cout << "No warnings :)" << endl;
+      cout << "--  No warnings or notes :)  --" << endl;
     }
   }
   } //  end final section
@@ -1409,4 +1412,3 @@ REPORT_SECTION
     //    SS2out.close();
   }
   } //  end standard report section
-
