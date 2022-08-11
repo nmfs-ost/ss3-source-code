@@ -175,8 +175,14 @@ GLOBALS_SECTION
 //  function in GLOBALS to do the timing setup in the data section
 
 
-// SS_Label_Function_xxxa write_message(string,int,int,int); output a message
-// options are output to echoinput.sso and warning.sso with an option to exit
+// SS_Label_Function_xxxa write_msg(string,int,int,int); output a message.
+// options are output the string to echoinput.sso and warning.sso with an option to exit
+// SS_Label_Function_xxxa # ### write_msg (string, echoflag, warnflag, exitflag)
+// SS_Label_Function_xxxa # 
+// SS_Label_Function_xxxa # Writes a string to either echoinput.sso or warning.sso 
+// SS_Label_Function_xxxa # or both. The last option tells it to exit the program
+// SS_Label_Function_xxxa # with appropriate output to warning.sso and cout.
+// SS_Label_Function_xxxa # 
   void write_msg(std::string msg, int echo, int warn, int exitflag)
   {
     std::string totmsg;
@@ -210,13 +216,20 @@ GLOBALS_SECTION
     }
   }
 // SS_Label_Function_xxxb write_message(int,int,int); increment warning count and output a warning with an option to exit (when fatal)
-    void write_message(int &nwarn, int echo, int exitflag)
-  {
-    std::string msg(warnstream.str());
-    nwarn++;
-    write_msg(msg, echo, nwarn, exitflag);
-    warnstream.str("");
-  }
+// SS_Label_Function_xxxb # ### write_message (type, echo)
+// SS_Label_Function_xxxb # 
+// SS_Label_Function_xxxb # type is one of the following:
+// SS_Label_Function_xxxb # - NOTE    : information that could be useful
+// SS_Label_Function_xxxb # - SUGGEST : a possible better way
+// SS_Label_Function_xxxb # - PERFORM : can help performance
+// SS_Label_Function_xxxb # - WARN    : might be a problem, execution continues anyway
+// SS_Label_Function_xxxb # - ADJUST  : adjustment has been made, execution continues
+// SS_Label_Function_xxxb # - FATAL   : major problem, program will exit
+// SS_Label_Function_xxxb # 
+// SS_Label_Function_xxxb # and echo is either 1 to write to echoinput.sso or 0.
+// SS_Label_Function_xxxb # 
+// SS_Label_Function_xxxb # This writes the text in warnstream and resets it.
+// SS_Label_Function_xxxb # 
   void write_message(int type, int echo)
   {
     int exitflag = 0;
