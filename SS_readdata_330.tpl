@@ -1375,7 +1375,7 @@
       }
       else if (Comp_Err_L2(f) > Comp_Err_ParmCount + 1)
       {
-        warnstream << "; length D-M must refer to existing parm num, or increment by 1:  " << Comp_Err_L2(f);
+        warnstream << "; length D-M must refer to existing Comp_err definition, or increment by 1:  " << Comp_Err_L2(f);
         write_message(FATAL, 1);
       }
       else if (Comp_Err_L2(f) > Comp_Err_ParmCount)
@@ -2186,7 +2186,7 @@
         }
         else if (Comp_Err_A2(f) > Comp_Err_ParmCount + 1)
         {
-          warnstream << "Age D-M must refer to existing parm num, or increment by 1:  " << Comp_Err_A2(f);
+          warnstream << "Age D-M must refer to existing comp_err definition, or increment by 1:  " << Comp_Err_A2(f);
           write_message(FATAL, 0);
         }
         else if (Comp_Err_A2(f) > Comp_Err_ParmCount)
