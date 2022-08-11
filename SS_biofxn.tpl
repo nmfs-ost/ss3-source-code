@@ -28,9 +28,11 @@ FUNCTION void get_MGsetup(const int yz)
       {
         if (mgp_adj(f) < MGparm_1(f, 1) || mgp_adj(f) > MGparm_1(f, 2))
         {
-          N_warn++;
-          warning << N_warn << " "
-                  << " adjusted MGparm out of base parm bounds. Phase: " << current_phase() << "; Inter: " << niter << "; parm#: " << f << "; y: " << yz << "; min: " << MGparm_1(f, 1) << "; max: " << MGparm_1(f, 2) << "; base: " << MGparm(f) << " timevary_val: " << mgp_adj(f) << " " << ParmLabel(f) << endl;
+          warnstream << "adjusted MGparm out of base parm bounds. Phase: " << current_phase()
+               << "; Inter: " << niter << "; parm#: " << f << "; y: " << yz << "; min: "
+               << MGparm_1(f, 1) << "; max: " << MGparm_1(f, 2) << "; base: " << MGparm(f)
+               << " timevary_val: " << mgp_adj(f) << " " << ParmLabel(f);
+          write_message (WARN, 0);
         }
       }
     }
@@ -1229,45 +1231,45 @@ FUNCTION void get_natmort()
               for (s = nseas ; s >= 1; s--)
               {
                 int Loren_t = styr + (yz - styr) * nseas + s - 1;
-                dvariable loren_scale_extra = 0; //start with no extra scaler. This will be used if the maximum reference age is greater than nages. 
+                dvariable loren_scale_extra = 0; //start with no extra scaler. This will be used if the maximum reference age is greater than nages.
                 int ref_age = int(natM_amax); //start with reference age equal to the input maximum age. This will be adjusted below to equal nages if the maximum age is greater than nages.
                 if (ref_age > nages)//if reference age is greater than accumulator age need math to approximate the unknown size/age bins
                 {
                   int extra_years = ref_age - nages;//determine how many extra ages will be included between accumulator age and reference age
-                    
+
                   //The following code is a simple difference approach to approximate the first and second rate of change in relative M to estimate approximate M for ages older than nages
-                  //calculate proportional change in lorenzen M between second to last and last age group 
-                  dvariable d1 = 1 + (log((Ave_Size(Loren_t, mid_subseas, g)(nages)) / (Ave_Size(Loren_t, mid_subseas, g)(nages) + Loren_temp2)) - 
+                  //calculate proportional change in lorenzen M between second to last and last age group
+                  dvariable d1 = 1 + (log((Ave_Size(Loren_t, mid_subseas, g)(nages)) / (Ave_Size(Loren_t, mid_subseas, g)(nages) + Loren_temp2)) -
                   log((Ave_Size(Loren_t, mid_subseas, g)(nages - 1)) / (Ave_Size(Loren_t, mid_subseas, g)(nages-1) + Loren_temp2))) /
                   log((Ave_Size(Loren_t, mid_subseas, g)(nages)) / (Ave_Size(Loren_t, mid_subseas, g)(nages) + Loren_temp2));
-                    
-                  //calculate proportional change in lorenzen M between third to last and second to last age group 
-                  dvariable d2 = 1 + (log((Ave_Size(Loren_t, mid_subseas, g)(nages - 1))/(Ave_Size(Loren_t, mid_subseas, g)(nages - 1) + Loren_temp2)) - 
+
+                  //calculate proportional change in lorenzen M between third to last and second to last age group
+                  dvariable d2 = 1 + (log((Ave_Size(Loren_t, mid_subseas, g)(nages - 1))/(Ave_Size(Loren_t, mid_subseas, g)(nages - 1) + Loren_temp2)) -
                   log((Ave_Size(Loren_t, mid_subseas, g)(nages - 2)) / (Ave_Size(Loren_t, mid_subseas, g)(nages - 2) + Loren_temp2))) /
                   log((Ave_Size(Loren_t, mid_subseas, g)(nages - 1)) / (Ave_Size(Loren_t, mid_subseas, g)(nages - 1) + Loren_temp2));
-                    
-                  //calculate the second order proportional change in proportional changes during the last two age pairs 
+
+                  //calculate the second order proportional change in proportional changes during the last two age pairs
                   dvariable d3 = 1 + (d1 - d2) / d1;
-                    
+
                   //project total proportion of last years M that will occur in all ages older than nages
                   for (int ey = 1; ey <= extra_years; ey++)
                   {
                     d1 = d1 * d3;//each year adjust the first order proportion by the second order proportion
-                    loren_scale_extra += d1;//add that proportion to a scaler that will be multiplied by the nages M value   
+                    loren_scale_extra += d1;//add that proportion to a scaler that will be multiplied by the nages M value
                   }
-                  ref_age = nages; //set reference age to nages to use all available Ave_Size values 
+                  ref_age = nages; //set reference age to nages to use all available Ave_Size values
                 }
-                  
-                //Calculate loren_temp multiplier that achieves target average M 
+
+                //Calculate loren_temp multiplier that achieves target average M
                 Loren_temp = (Loren_M1 * (natM_amax - natM_amin + 1)) / (sum(log(
                 elem_div(Ave_Size(Loren_t, mid_subseas, g)(natM_amin, ref_age), (Ave_Size(Loren_t, mid_subseas, g)(natM_amin, ref_age) + Loren_temp2))
                 )) + loren_scale_extra * log((Ave_Size(Loren_t, mid_subseas, g)(ref_age)) / (Ave_Size(Loren_t, mid_subseas, g)(ref_age) + Loren_temp2)));
 
                 natM(t_base + s, 0, gpi)(0, nages) = log(
-                elem_div(Ave_Size(Loren_t, mid_subseas, g)(0, nages), 
-                  (Ave_Size(Loren_t, mid_subseas, g)(0, nages) + Loren_temp2))) 
+                elem_div(Ave_Size(Loren_t, mid_subseas, g)(0, nages),
+                  (Ave_Size(Loren_t, mid_subseas, g)(0, nages) + Loren_temp2)))
                   * Loren_temp;
-                if (s < Bseas(g)) 
+                if (s < Bseas(g))
                 {
                   natM(t_base + s, 0, gpi, 0) = natM(t_base + s + 1, 0, gpi, 0);
                 }
@@ -2118,4 +2120,3 @@ FUNCTION void Make_Fecundity()
       }
     }
   }
-
