@@ -3032,12 +3032,12 @@
       if (Comp_Err_Sz2(f) > 2 * Nfleet)  //  2*Nfleet is max dimension for the comp_err list
       {
         warnstream << "Size D-M index for fleet: " << f << " is: " << Comp_Err_Sz2(f) << " but must be an integer <=2*Nfleet ";
-        write_warning(N_warn, 0, 1);
+        write_message(FATAL, 0);
       }
       else if (Comp_Err_Sz2(f) > Comp_Err_ParmCount + 1)
       {
         warnstream << "Sz D-M must refer to existing index, or increment by 1 to add new defition:  " << Comp_Err_Sz2(f);
-        write_warning(N_warn, 0, 1);
+        write_message(FATAL, 0);
       }
       else if (Comp_Err_Sz2(f) > Comp_Err_ParmCount)
       {
