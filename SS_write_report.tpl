@@ -1127,11 +1127,9 @@ FUNCTION void write_bigoutput()
               SS2out << SzFreqTrans(SzFreqMethod_seas, z, j) << " ";
               if (SzFreqTrans(SzFreqMethod_seas, z, j) < 0.0)
               {
-                N_warn++;
-                warning << N_warn << " "
-                        << " CRITICAL ERROR:  Bin widths narrower than pop len bins caused negative allocation in sizefreq method:"
-                        << " method, season, size, bin: " << SzFreqMethod << " " << s << " " << len_bins2(z) << " " << j << endl;
-                exit(1);
+                warnstream << "Bin widths narrower than pop len bins caused negative allocation in sizefreq method:";
+                warnstream << " method, season, size, bin: " << SzFreqMethod << " " << s << " " << len_bins2(z) << " " << j;
+                write_message (FATAL, 0); // EXIT!
               }
             }
             SS2out << endl;
@@ -1736,10 +1734,9 @@ FUNCTION void write_bigoutput()
     {
       if (rmse(1) < 0.5 * sigmaR && rmse(2) > (0.01 + 2.0 * square(rmse(1)) / temp))
       {
-        N_warn++;
-        warning << N_warn << " "
-                << " Main recdev biasadj is >2 times ratio of rmse to sigmaR" << endl;
-        SS2out << " # Main_recdev_biasadj_is_>2_times_ratio_of_rmse_to_sigmaR";
+        warnstream << "Main recdev biasadj is >2 times ratio of rmse to sigmaR";
+        SS2out << " # " << warnstream.str() ;
+        write_message (WARN, 0);
       }
     }
     SS2out << endl;
@@ -1749,10 +1746,9 @@ FUNCTION void write_bigoutput()
     {
       if (rmse(3) < 0.5 * sigmaR && rmse(4) > (0.01 + 2.0 * square(rmse(3)) / temp))
       {
-        N_warn++;
-        warning << N_warn << " "
-                << " Early recdev biasadj is >2 times ratio of rmse to sigmaR" << endl;
-        SS2out << " # Early_recdev_biasadj_is_>2_times_ratio_of_rmse_to_sigmaR";
+        warnstream << "Early recdev biasadj is >2 times ratio of rmse to sigmaR";
+        SS2out << " # " << warnstream.str();
+        write_message (WARN, 0);
       }
     }
     SS2out << endl;
@@ -5002,4 +4998,3 @@ FUNCTION int determine_speriod(int s_period, adstring a_string, dvariable var2, 
   }
   return s_period;
   }
-
