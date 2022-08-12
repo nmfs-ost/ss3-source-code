@@ -3866,7 +3866,15 @@ FUNCTION void write_bigoutput()
     SS_compout << "Yr Month Seas Subseas Time Fleet Area Repl. Sexes Kind Part Ageerr Sex Lbin_lo Lbin_hi Bin Obs Exp Pearson Nsamp_adj Nsamp_in effN Like Cum_obs Cum_exp SuprPer Used?" << endl;
     int repli;
     int N_out;
+    int z_lo = 1;
+    int z_hi = 1;
+    int nbins = 0;
+    double ocomp = 0.0;
+    double ecomp = 0.0;
     N_out = 0;
+    double show_logL = 0.0;
+    double show_Pearson = 0.0;
+    double nsamp = 0.0;
 
     for (f = 1; f <= Nfleet; f++)
     {
@@ -3899,124 +3907,78 @@ FUNCTION void write_bigoutput()
           }
           in_superperiod = determine_speriod(in_superperiod, anystring, header_l(f, i, 2), header_l(f, i, 3));
 
-          if (gen_l(f, i) != 2)
+//        count bins
+          nbins = 0;
+          for (gg = 1; gg <= gender ; gg ++)
           {
-            s_off = 1;
-            for (z = tails_l(f, i, 1); z <= tails_l(f, i, 2); z++)
+            if (gen_l(f, i) != 2 && gg == 1)
             {
-              // The following columns printed by the next section:
-              // Yr Month Seas Subseas Time Fleet Area Repl. Sexes Kind Part
-              // Ageerr Sex Lbin_lo Lbin_hi Bin Obs Exp
-              SS_compout << header_l(f, i, 1) << " " << real_month << " " << Show_Time2(ALK_time)(2, 3) << " " << data_time(ALK_time, f, 3) << " " << f << " " << fleet_area(f) << " " << repli << " " << gen_l(f, i) << " LEN " << mkt_l(f, i) << " 0 " << s_off << " " << 1 << " " << 1 << " " << len_bins_dat2(z) << " " << obs_l(f, i, z) << " " << exp_l(f, i, z) << " ";
-              // next add these 5 columns: Pearson Nsamp_adj Nsamp_in effN Like
-              temp2 += obs_l(f, i, z);
-              temp1 += exp_l(f, i, z);
-              if (nsamp_l(f, i) > 0 && header_l(f, i, 3) > 0) // check for values to include
+              z_lo = tails_l(f, i, 1);
+              z_hi = tails_l(f, i, 2);
+              nbins += z_hi - z_lo + 1;
+            }
+            else if (gen_l(f, i) >= 2 && gg == 2) // do males
+            {
+              z_lo = tails_l(f, i, 3);
+              z_hi = tails_l(f, i, 4);
+              nbins += z_hi - z_lo + 1;
+            }
+          }
+
+          for (gg = 1; gg <= gender ; gg ++)
+          {
+            if (gen_l(f, i) != 2 && gg == 1)
+            {
+              s_off = 1;
+              z_lo = tails_l(f, i, 1);
+              z_hi = tails_l(f, i, 2);
+            }
+            else if (gen_l(f, i) >= 2 && gg == 2) // do males
+            {
+              s_off = 2;
+              z_lo = tails_l(f, i, 3);
+              z_hi = tails_l(f, i, 4);
+            }
+            // temp = gammln(dirichlet_Parm) - gammln(nsamp_l(f, i) + dirichlet_Parm);
+            nsamp = fabs(nsamp_l(f, i));
+            for (z = z_lo; z <= z_hi; z++)
+            {
+              ocomp = obs_l(f, i, z); 
+              ecomp = value( exp_l(f, i, z) ); 
+              // Yr Month Seas Subseas Time Fleet Area Repl. Sexes Kind Part Ageerr Sex Lbin_lo Lbin_hi Bin Obs Exp
+              SS_compout << header_l(f, i, 1) << " " << real_month << " " << Show_Time2(ALK_time)(2, 3) << " " << data_time(ALK_time, f, 3) << " " << f << " " << fleet_area(f) << " " << repli << " " << gen_l(f, i) << " LEN " << mkt_l(f, i) << " 0 " << s_off << " " << 1 << " " << 1 << " " << len_bins_dat2(z) << " " << ocomp << " " << ecomp << " ";
+              // Pearson Nsamp_adj Nsamp_in effN Like
+              temp2 += ocomp;
+              temp1 += ecomp;
+              if (nsamp > 0 && header_l(f, i, 3) > 0 && (ecomp != 0.0 && ecomp != 1.0) && nbins > 0 ) // check for values to include
               {
-                if (exp_l(f, i, z) != 0.0 && exp_l(f, i, z) != 1.0)
-                {
                   if (Comp_Err_L(f) == 0)
-                    SS_compout << value((obs_l(f, i, z) - exp_l(f, i, z)) / sqrt(exp_l(f, i, z) * (1.0 - exp_l(f, i, z)) / fabs(nsamp_l(f, i)))); // Pearson for multinomial
-                  if (Comp_Err_L(f) == 1)
                   {
-                    dirichlet_Parm = mfexp(selparm(Comp_Err_parmloc(Comp_Err_L2(f),1))) * nsamp_l(f, i);
-                    SS_compout << value((obs_l(f, i, z) - exp_l(f, i, z)) / sqrt(exp_l(f, i, z) * (1.0 - exp_l(f, i, z)) / fabs(nsamp_l(f, i)) * (fabs(nsamp_l(f, i)) + dirichlet_Parm) / (1. + dirichlet_Parm))); // Pearson for Dirichlet-multinomial using negative-exponential parameterization
+                    show_Pearson = value((ocomp - ecomp) / sqrt(ecomp * (1.0 - ecomp) / nsamp )); // Pearson for multinomial
+                    show_logL = value(ocomp * log( (ocomp + 1.0e-12) / ( ecomp + 1.0e-12) ) * nsamp);  //  logL
                   }
-                  if (Comp_Err_L(f) == 2)
+                  if (Comp_Err_L(f) == 1 || Comp_Err_L(f) == 2)
                   {
                     dirichlet_Parm = mfexp(selparm(Comp_Err_parmloc(Comp_Err_L2(f),1)));
-                    SS_compout << value((obs_l(f, i, z) - exp_l(f, i, z)) / sqrt(exp_l(f, i, z) * (1.0 - exp_l(f, i, z)) / fabs(nsamp_l(f, i)) * (fabs(nsamp_l(f, i)) + dirichlet_Parm) / (1. + dirichlet_Parm))); // Pearson for Dirichlet-multinomial using harmonic sum parameterization
+                    if (Comp_Err_L(f) == 1 )
+                      { dirichlet_Parm *= nsamp; }
+                    show_Pearson = value((ocomp - ecomp) / sqrt(ecomp * (1.0 - ecomp) / nsamp * (nsamp + dirichlet_Parm) / (1. + dirichlet_Parm))); // Pearson for Dirichlet-multinomial using negative-exponential parameterization
+                    show_logL = value( gammln(nsamp * ocomp + dirichlet_Parm * ecomp) - gammln(dirichlet_Parm * ecomp)) + value( ( gammln(dirichlet_Parm) - gammln(nsamp_l(f, i) + dirichlet_Parm))) / nbins;
                   }
-                }
-                else
-                {
-                  SS_compout << " NA ";
-                }
-                // next add the following columns:
-                // Nsamp_adj Nsamp_in effN
-                SS_compout << " " << nsamp_l(f, i) << " " << nsamp_l_read(f, i) << " " << neff_l(f, i) << " ";
-                // next add Like column
-                if (obs_l(f, i, z) != 0.0 && exp_l(f, i, z) != 0.0)
-                {
-                  SS_compout << " " << value(obs_l(f, i, z) * log(obs_l(f, i, z) / exp_l(f, i, z)) * nsamp_l(f, i));
-                }
-                else
-                {
-                  SS_compout << " NA ";
-                }
+                  if (Comp_Err_L(f) == 3 )  //  MV Tweedie
+                  {
+                  }
+                  SS_compout << show_Pearson << " " << nsamp << " " << nsamp_l_read(f, i) << " " << neff_l(f, i) << " " << show_logL;
               }
               else // sample size zero or skip
               {
-                SS_compout << " NA "; // placeholder for Pearson
-                SS_compout << " " << nsamp_l(f, i) << " " << nsamp_l_read(f, i); // Nsamp_adj and Nsamp_in
-                SS_compout << " NA NA "; // placeholder for effN and Like
+                SS_compout << " NA " << " " << nsamp << " " << nsamp_l_read(f, i) << " NA NA "; // placeholder
               }
-              // next add the following columns:
               // Cum_obs Cum_exp SuprPer Used?
               SS_compout << " " << temp2 << " " << temp1 << " " << anystring << endl;
             }
             // single row representing info from previous bin-specific rows
             SS_compout << header_l(f, i, 1) << " " << header_l(f, i, 2) << " " << Show_Time2(ALK_time)(2, 3) << " " << data_time(ALK_time, f, 3) << " " << f << " " << fleet_area(f) << " " << repli << " " << gen_l(f, i) << " LEN "
-                       << mkt_l(f, i) << " 0 " << s_off << " " << 1 << " " << 1 << endl;
-          }
-          if (gen_l(f, i) >= 2 && gender == 2) // do males
-          {
-            s_off = 2;
-            for (z = tails_l(f, i, 3); z <= tails_l(f, i, 4); z++)
-            {
-              // The following columns printed by the next section:
-              // Yr Month Seas Subseas Time Fleet Area Repl. Sexes Kind Part
-              // Ageerr Sex Lbin_lo Lbin_hi Bin Obs Exp
-              SS_compout << header_l(f, i, 1) << " " << real_month << " " << Show_Time2(ALK_time)(2, 3) << " " << data_time(ALK_time, f, 3) << " " << f << " " << fleet_area(f) << " " << repli << " " << gen_l(f, i) << " LEN " << mkt_l(f, i) << " 0 " << s_off << " " << 1 << " " << nlength << " " << len_bins_dat2(z) << " " << obs_l(f, i, z) << " " << exp_l(f, i, z) << " ";
-              // next add Pearson column
-              temp2 += obs_l(f, i, z);
-              temp1 += exp_l(f, i, z);
-              if (nsamp_l(f, i) > 0 && header_l(f, i, 3) > 0)
-              {
-                if (exp_l(f, i, z) != 0.0 && exp_l(f, i, z) != 1.0)
-                {
-                  if (Comp_Err_L(f) == 0)
-                    SS_compout << value((obs_l(f, i, z) - exp_l(f, i, z)) / sqrt(exp_l(f, i, z) * (1.0 - exp_l(f, i, z)) / fabs(nsamp_l(f, i)))); // Pearson for multinomial
-                  if (Comp_Err_L(f) == 1)
-                  {
-                    dirichlet_Parm = mfexp(selparm(Comp_Err_parmloc(Comp_Err_L2(f),1))) * nsamp_l(f, i);
-                    SS_compout << value((obs_l(f, i, z) - exp_l(f, i, z)) / sqrt(exp_l(f, i, z) * (1.0 - exp_l(f, i, z)) / fabs(nsamp_l(f, i)) * (fabs(nsamp_l(f, i)) + dirichlet_Parm) / (1. + dirichlet_Parm))); // Pearson for Dirichlet-multinomial using negative-exponential parameterization
-                  }
-                  if (Comp_Err_L(f) == 2)
-                  {
-                    dirichlet_Parm = mfexp(selparm(Comp_Err_parmloc(Comp_Err_L2(f),1)));
-                    SS_compout << value((obs_l(f, i, z) - exp_l(f, i, z)) / sqrt(exp_l(f, i, z) * (1.0 - exp_l(f, i, z)) / fabs(nsamp_l(f, i)) * (fabs(nsamp_l(f, i)) + dirichlet_Parm) / (1. + dirichlet_Parm))); // Pearson for Dirichlet-multinomial using harmonic sum parameterization
-                  }
-                }
-                else
-                {
-                  SS_compout << " NA ";
-                }
-                // next add the following columns:
-                // Nsamp_adj Nsamp_in effN
-                SS_compout << " " << nsamp_l(f, i) << " " << nsamp_l_read(f, i) << " " << neff_l(f, i) << " ";
-                // next add Like column
-                if (obs_l(f, i, z) != 0.0 && exp_l(f, i, z) != 0.0)
-                {
-                  SS_compout << " " << value(obs_l(f, i, z) * log(obs_l(f, i, z) / exp_l(f, i, z)) * nsamp_l(f, i));
-                }
-                else
-                {
-                  SS_compout << " NA ";
-                }
-              }
-              else // sample size zero or skip
-              {
-                SS_compout << " NA "; // placeholder for Pearson
-                SS_compout << " " << nsamp_l(f, i) << " " << nsamp_l_read(f, i); // Nsamp_adj and Nsamp_in
-                SS_compout << " NA NA "; // placeholder for effN and Like
-              }
-              // next add the following columns:
-              // Cum_obs Cum_exp SuprPer Used?
-              SS_compout << " " << temp2 << " " << temp1 << " " << anystring << endl;
-            }
-            // single row representing info from previous bin-specific rows
-            SS_compout << header_l(f, i, 1) << " " << real_month << " " << Show_Time2(ALK_time)(2, 3) << " " << data_time(ALK_time, f, 3) << " " << f << " " << fleet_area(f) << " " << repli << " " << gen_l(f, i) << " LEN "
                        << mkt_l(f, i) << " 0 " << s_off << " " << 1 << " " << 1 << endl;
           }
         }
