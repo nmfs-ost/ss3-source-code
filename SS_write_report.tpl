@@ -3954,8 +3954,8 @@ FUNCTION void write_bigoutput()
               {
                   if (Comp_Err_L(f) == 0)
                   {
-                    show_Pearson = value((ocomp - ecomp) / sqrt(ecomp * (1.0 - ecomp) / nsamp )); // Pearson for multinomial
-                    show_logL = value(ocomp * log( (ocomp + 1.0e-12) / ( ecomp + 1.0e-12) ) * nsamp);  //  logL
+                    show_Pearson = (ocomp - ecomp) / sqrt(ecomp * (1.0 - ecomp) / nsamp ); // Pearson for multinomial
+                    show_logL = ocomp * log( (ocomp + 1.0e-12) / ( ecomp + 1.0e-12) ) * nsamp;  //  logL
                   }
                   if (Comp_Err_L(f) == 1 || Comp_Err_L(f) == 2)
                   {
@@ -3963,7 +3963,9 @@ FUNCTION void write_bigoutput()
                     if (Comp_Err_L(f) == 1 )
                       { dirichlet_Parm *= nsamp; }
                     show_Pearson = value((ocomp - ecomp) / sqrt(ecomp * (1.0 - ecomp) / nsamp * (nsamp + dirichlet_Parm) / (1. + dirichlet_Parm))); // Pearson for Dirichlet-multinomial using negative-exponential parameterization
-                    show_logL = value( gammln(nsamp * ocomp + dirichlet_Parm * ecomp) - gammln(dirichlet_Parm * ecomp)) + value( ( gammln(dirichlet_Parm) - gammln(nsamp_l(f, i) + dirichlet_Parm))) / nbins;
+                    show_logL =  -offset_l(f,i) / nbins
+                     - value( gammln(nsamp * ocomp + dirichlet_Parm * ecomp) - gammln(dirichlet_Parm * ecomp))
+                     - value( ( gammln(dirichlet_Parm) - gammln(nsamp + dirichlet_Parm))) / nbins;
                   }
                   if (Comp_Err_L(f) == 3 )  //  MV Tweedie
                   {
@@ -3975,7 +3977,7 @@ FUNCTION void write_bigoutput()
                 SS_compout << " NA " << " " << nsamp << " " << nsamp_l_read(f, i) << " NA NA "; // placeholder
               }
               // Cum_obs Cum_exp SuprPer Used?
-              SS_compout << " " << temp2 << " " << temp1 << " " << anystring << endl;
+              SS_compout << " " << temp2 << " " << temp1 << " " << anystring <<endl;
             }
             // single row representing info from previous bin-specific rows
             SS_compout << header_l(f, i, 1) << " " << header_l(f, i, 2) << " " << Show_Time2(ALK_time)(2, 3) << " " << data_time(ALK_time, f, 3) << " " << f << " " << fleet_area(f) << " " << repli << " " << gen_l(f, i) << " LEN "
@@ -3990,7 +3992,7 @@ FUNCTION void write_bigoutput()
         in_superperiod = 0;
         repli = 0;
         last_t = -999;
-        for (i = 1; i <= Nobs_a(f); i++) // loop all obs in this type
+        for (i = 1; i <= Nobs_a(f); i++) // loop obs in this type/time
         {
           N_out++;
           t = Age_time_t(f, i);
@@ -4000,6 +4002,7 @@ FUNCTION void write_bigoutput()
           real_month = abs(header_a_rd(f, i, 2));
           if (real_month > 999)
             real_month -= 1000.;
+
           if (ALK_time == last_t)
           {
             repli++;
@@ -4011,121 +4014,79 @@ FUNCTION void write_bigoutput()
           }
           in_superperiod = determine_speriod(in_superperiod, anystring, header_a(f, i, 2), header_a(f, i, 3));
 
-          if (gen_a(f, i) != 2)
+//        count bins
+          nbins = 0;
+          for (gg = 1; gg <= gender ; gg ++)
           {
-            s_off = 1;
-            for (z = tails_a(f, i, 1); z <= tails_a(f, i, 2); z++)
+            if (gen_a(f, i) != 2 && gg == 1)
             {
-              // The following columns printed by the next section:
-              // Yr Month Seas Subseas Time Fleet Area Repl. Sexes Kind Part
-              // Ageerr Sex Lbin_lo Lbin_hi Bin Obs Exp
-              SS_compout << header_a(f, i, 1) << " " << real_month << " " << Show_Time2(ALK_time)(2, 3) << " " << data_time(ALK_time, f, 3) << " " << f << " " << fleet_area(f) << " " << repli << " " << gen_a(f, i) << " AGE " << mkt_a(f, i) << " " << ageerr_type_a(f, i)
-                         << " " << s_off << " " << len_bins(Lbin_lo(f, i)) << " " << len_bins(Lbin_hi(f, i)) << " " << age_bins(z) << " " << obs_a(f, i, z) << " " << exp_a(f, i, z) << " ";
-              temp2 += obs_a(f, i, z);
-              temp1 += exp_a(f, i, z);
-              // next add these 5 columns: Pearson Nsamp_adj Nsamp_in effN Like
-              if (header_a(f, i, 3) > 0)
-              {
-                if (exp_a(f, i, z) != 0.0 && exp_a(f, i, z) != 1.0)
-                {
-                  if (Comp_Err_A(f) == 0)
-                    SS_compout << value((obs_a(f, i, z) - exp_a(f, i, z)) / sqrt(exp_a(f, i, z) * (1.0 - exp_a(f, i, z)) / fabs(nsamp_a(f, i)))); // Pearson for multinomial
-                  if (Comp_Err_A(f) == 1)
-                  {
-                    dirichlet_Parm = mfexp(selparm(Comp_Err_parmloc(Comp_Err_A2(f),1))) * nsamp_a(f, i);
-                    SS_compout << value((obs_a(f, i, z) - exp_a(f, i, z)) / sqrt(exp_a(f, i, z) * (1.0 - exp_a(f, i, z)) / fabs(nsamp_a(f, i)) * (fabs(nsamp_a(f, i)) + dirichlet_Parm) / (1. + dirichlet_Parm))); // Pearson for Dirichlet-multinomial using negative-exponential parameterization
-                  }
-                  if (Comp_Err_A(f) == 2)
-                  {
-                    dirichlet_Parm = mfexp(selparm(Comp_Err_parmloc(Comp_Err_A2(f),1)));
-                    SS_compout << value((obs_a(f, i, z) - exp_a(f, i, z)) / sqrt(exp_a(f, i, z) * (1.0 - exp_a(f, i, z)) / fabs(nsamp_a(f, i)) * (fabs(nsamp_a(f, i)) + dirichlet_Parm) / (1. + dirichlet_Parm))); // Pearson for Dirichlet-multinomial using harmonic sum parameterization
-                  }
-                }
-                else
-                {
-                  SS_compout << " NA ";
-                }
-                // next add the following columns:
-                // Nsamp_adj Nsamp_in effN
-                SS_compout << " " << nsamp_a(f, i) << " " << nsamp_a_read(f, i) << " " << neff_a(f, i) << " ";
-                // next add Like column
-                if (obs_a(f, i, z) != 0.0 && exp_a(f, i, z) != 0.0)
-                {
-                  SS_compout << " " << value(obs_a(f, i, z) * log(obs_a(f, i, z) / exp_a(f, i, z)) * nsamp_a(f, i));
-                }
-                else
-                {
-                  SS_compout << " NA ";
-                }
-              }
-              else // sample size zero or skip
-              {
-                SS_compout << " NA "; // placeholder for Pearson
-                SS_compout << " " << nsamp_a(f, i) << " " << nsamp_a_read(f, i); // Nsamp_adj and Nsamp_in
-                SS_compout << " NA NA "; // placeholder for effN and Like
-              }
-              // next add the following columns:
-              // Cum_obs Cum_exp SuprPer Used?
-              SS_compout << " " << temp2 << " " << temp1 << " " << anystring << endl;
+              z_lo = tails_a(f, i, 1);
+              z_hi = tails_a(f, i, 2);
+              nbins += z_hi - z_lo + 1;
             }
-            // single row representing info from previous bin-specific rows
-            SS_compout << header_a(f, i, 1) << " " << real_month << " " << Show_Time2(ALK_time)(2, 3) << " " << data_time(ALK_time, f, 3) << " " << f << " " << fleet_area(f) << " " << repli << " " << gen_a(f, i) << " AGE "
-                       << mkt_a(f, i) << " " << ageerr_type_a(f, i) << " " << s_off << " " << 1 << " " << nlength << endl;
+            else if (gen_a(f, i) >= 2 && gg == 2) // do males
+            {
+              z_lo = tails_a(f, i, 3);
+              z_hi = tails_a(f, i, 4);
+              nbins += z_hi - z_lo + 1;
+            }
           }
 
-          if (gen_a(f, i) >= 2 && gender == 2) // do males
+          for (gg = 1; gg <= gender ; gg ++)
           {
-            s_off = 2;
-            for (z = tails_a(f, i, 3); z <= tails_a(f, i, 4); z++)
+            if (gen_a(f, i) != 2 && gg == 1)
             {
-              // The following columns printed by the next section:
-              // Yr Month Seas Subseas Time Fleet Area Repl. Sexes Kind Part
-              // Ageerr Sex Lbin_lo Lbin_hi Bin Obs Exp
-              SS_compout << header_a(f, i, 1) << " " << header_a(f, i, 2) << " " << Show_Time2(ALK_time)(2, 3) << " " << data_time(ALK_time, f, 3) << " " << f << " " << fleet_area(f) << " " << repli << " " << gen_a(f, i) << " AGE " << mkt_a(f, i) << " " << ageerr_type_a(f, i) << " " << s_off
-                         << " " << len_bins(Lbin_lo(f, i)) << " " << len_bins(Lbin_hi(f, i)) << " " << age_bins(z) << " " << obs_a(f, i, z) << " " << exp_a(f, i, z) << " ";
-              // next add Pearson column
-              temp2 += obs_a(f, i, z);
-              temp1 += exp_a(f, i, z);
-              if (header_a(f, i, 3) > 0)
+              s_off = 1;
+              z_lo = tails_a(f, i, 1);
+              z_hi = tails_a(f, i, 2);
+            }
+            else if (gen_a(f, i) >= 2 && gg == 2) // do males
+            {
+              s_off = 2;
+              z_lo = tails_a(f, i, 3);
+              z_hi = tails_a(f, i, 4);
+            }
+            // temp = gammln(dirichlet_Parm) - gammln(nsamp_l(f, i) + dirichlet_Parm);
+            nsamp = fabs(nsamp_a(f, i));
+            for (z = z_lo; z <= z_hi; z++)
+            {
+              ocomp = obs_a(f, i, z); 
+              ecomp = value( exp_a(f, i, z) ); 
+              // Yr Month Seas Subseas Time Fleet Area Repl. Sexes Kind Part Ageerr Sex Lbin_lo Lbin_hi Bin Obs Exp
+              SS_compout << header_a(f, i, 1) << " " << real_month << " " << Show_Time2(ALK_time)(2, 3) << " " << data_time(ALK_time, f, 3) << " " << f << " " << fleet_area(f) << " " << repli << " " << gen_a(f, i) << " AGE " << mkt_a(f, i) << " " << ageerr_type_a(f, i)
+                         << " " << s_off << " " << len_bins(Lbin_lo(f, i)) << " " << len_bins(Lbin_hi(f, i)) << " " << age_bins(z) << " " << ocomp << " " << ecomp << " ";
+              // Pearson Nsamp_adj Nsamp_in effN Like
+              temp2 += ocomp;
+              temp1 += ecomp;
+
+              if (nsamp > 0 && header_a(f, i, 3) > 0 && (ecomp != 0.0 && ecomp != 1.0) && nbins > 0 ) // check for values to include
               {
-                if (exp_a(f, i, z) != 0.0 && exp_a(f, i, z) != 1.0)
+                if (Comp_Err_A(f) == 0)
                 {
-                  if (Comp_Err_A(f) == 0)
-                    SS_compout << value((obs_a(f, i, z) - exp_a(f, i, z)) / sqrt(exp_a(f, i, z) * (1.0 - exp_a(f, i, z)) / fabs(nsamp_a(f, i)))); // Pearson for multinomial
-                  if (Comp_Err_A(f) == 1 || Comp_Err_A(f) == 2)
-                  {
-                    dirichlet_Parm = mfexp(selparm(Comp_Err_Parm_Start + Comp_Err_A2(f)));
-                    if (Comp_Err_A(f) == 1)
-                      dirichlet_Parm *= nsamp_a(f, i);
-                    SS_compout << value((obs_a(f, i, z) - exp_a(f, i, z)) / sqrt(exp_a(f, i, z) * (1.0 - exp_a(f, i, z)) / fabs(nsamp_a(f, i)) * (fabs(nsamp_a(f, i)) + dirichlet_Parm) / (1. + dirichlet_Parm))); // Pearson for Dirichlet-multinomial using negative-exponential parameterization
-                  }
+                  show_Pearson = (ocomp - ecomp) / sqrt(ecomp * (1.0 - ecomp) / nsamp ); // Pearson for multinomial
+                  show_logL = ocomp * log( (ocomp + 1.0e-12) / ( ecomp + 1.0e-12) ) * nsamp;  //  logL
                 }
-                else
+                if (Comp_Err_A(f) == 1 || Comp_Err_A(f) == 2)
                 {
-                  SS_compout << " NA ";
+                  dirichlet_Parm = mfexp(selparm(Comp_Err_parmloc(Comp_Err_A2(f),1)));
+                  if (Comp_Err_A(f) == 1 )
+                    { dirichlet_Parm *= nsamp; }
+                  show_Pearson = value((ocomp - ecomp) / sqrt(ecomp * (1.0 - ecomp) / nsamp * (nsamp + dirichlet_Parm) / (1. + dirichlet_Parm))); // Pearson for Dirichlet-multinomial using negative-exponential parameterization
+                  show_logL =  -offset_a(f,i) / nbins
+                   - value( gammln(nsamp * ocomp + dirichlet_Parm * ecomp) - gammln(dirichlet_Parm * ecomp))
+                   - value( ( gammln(dirichlet_Parm) - gammln(nsamp + dirichlet_Parm))) / nbins;
                 }
-                // next add the following columns:
-                // Nsamp_adj Nsamp_in effN
-                SS_compout << " " << nsamp_a(f, i) << " " << nsamp_a_read(f, i) << " " << neff_a(f, i) << " ";
-                // next add Like column
-                if (obs_a(f, i, z) != 0.0 && exp_a(f, i, z) != 0.0)
+                if (Comp_Err_A(f) == 3 )  //  MV Tweedie
                 {
-                  SS_compout << " " << value(obs_a(f, i, z) * log(obs_a(f, i, z) / exp_a(f, i, z)) * nsamp_a(f, i));
                 }
-                else
-                {
-                  SS_compout << " NA ";
-                }
+                SS_compout << show_Pearson << " " << nsamp << " " << nsamp_a_read(f, i) << " " << neff_a(f, i) << " " << show_logL;
               }
               else // sample size zero or skip
               {
-                SS_compout << " NA "; // placeholder for Pearson
-                SS_compout << " " << nsamp_a(f, i) << " " << nsamp_a_read(f, i); // Nsamp_adj and Nsamp_in
-                SS_compout << " NA NA "; // placeholder for effN and Like
+                SS_compout << " NA " << " " << nsamp << " " << nsamp_a_read(f, i) << " NA NA "; // placeholder
               }
-              // next add the following columns:
               // Cum_obs Cum_exp SuprPer Used?
-              SS_compout << " " << temp2 << " " << temp1 << " " << anystring << endl;
+              SS_compout << " " << temp2 << " " << temp1 << " " << anystring <<endl;
             }
             // single row representing info from previous bin-specific rows
             SS_compout << header_a(f, i, 1) << " " << real_month << " " << Show_Time2(ALK_time)(2, 3) << " " << data_time(ALK_time, f, 3) << " " << f << " " << fleet_area(f) << " " << repli << " " << gen_a(f, i) << " AGE "
@@ -4209,7 +4170,7 @@ FUNCTION void write_bigoutput()
       for (iobs = 1; iobs <= SzFreq_totobs; iobs++)
       {
         y = SzFreq_obs_hdr(iobs, 1);
-        if (y >= styr && y <= retro_yr) // flag for obs that are used
+        if (y >= styr) // flag for obs that are used
         {
           N_out++;
           temp2 = 0.0;
@@ -4219,14 +4180,18 @@ FUNCTION void write_bigoutput()
             real_month -= 1000.;
           f = abs(SzFreq_obs_hdr(iobs, 3));
           gg = SzFreq_obs_hdr(iobs, 4); // gender
-          k = SzFreq_obs_hdr(iobs, 6);
+          int Sz_method = SzFreq_obs1(iobs, 1);  //  sizecomp method
+          int logL_method = Comp_Err_Sz(Sz_method);
+
           in_superperiod = determine_speriod(in_superperiod, anystring, SzFreq_obs_hdr(iobs, 2), SzFreq_obs_hdr(iobs, 3));
 
           p = SzFreq_obs_hdr(iobs, 5); // partition
-          z1 = SzFreq_obs_hdr(iobs, 7);
-          z2 = SzFreq_obs_hdr(iobs, 8);
+          z_lo = SzFreq_obs_hdr(iobs, 7);
+          z_hi = SzFreq_obs_hdr(iobs, 8);
+          nbins = z_hi - z_lo +1;
           t = SzFreq_time_t(iobs);
           ALK_time = SzFreq_time_ALK(iobs);
+          nsamp = SzFreq_sampleN(iobs);
           temp2 = 0.0;
           temp1 = 0.0;
           if (ALK_time == last_t)
@@ -4238,6 +4203,61 @@ FUNCTION void write_bigoutput()
             repli = 1;
             last_t = ALK_time;
           }
+          for (z = z_lo; z <= z_hi; z++)
+          {
+            ocomp = SzFreq_obs(iobs, z); 
+            ecomp = value( SzFreq_exp(iobs, z));
+            if (z > SzFreq_Nbins(Sz_method))
+            {s_off = 2;}
+            else
+            {s_off = 1;}
+            // Yr Month Seas Subseas Time Fleet Area Repl. Sexes Kind Part Ageerr Sex Lbin_lo Lbin_hi Bin Obs Exp
+            SS_compout << SzFreq_obs_hdr(iobs, 1) << " " << real_month << " " << Show_Time2(ALK_time)(2, 3) << " " << data_time(ALK_time, f, 3) << " " << f << " " << fleet_area(f) << " " << repli << " " << gg << " SIZE " << p << " " << k;
+            SS_compout << " " << s_off << " " << SzFreq_units(Sz_method) << " " << SzFreq_scale(Sz_method) << " ";
+            if (s_off == 1)
+            {
+              SS_compout << SzFreq_bins1(Sz_method, z);
+            }
+            else
+            {
+              SS_compout << SzFreq_bins1(Sz_method, z - SzFreq_Nbins(Sz_method));
+            }
+            SS_compout << " " << ocomp << " " << ecomp << " ";
+            temp2 += ocomp;
+            temp1 += ecomp;
+
+            // Pearson Nsamp_adj Nsamp_in effN Like
+            if (nsamp > 0 && SzFreq_obs_hdr(iobs, 3) && (ecomp != 0.0 && ecomp != 1.0) && nbins > 0 ) // check for values to include
+            {
+                if (logL_method == 0)
+                {
+                  show_Pearson = (ocomp - ecomp) / sqrt(ecomp * (1.0 - ecomp) / nsamp ); // Pearson for multinomial
+                  show_logL = ocomp * log( (ocomp + 1.0e-12) / ( ecomp + 1.0e-12) ) * nsamp;  //  logL
+                }
+                if (logL_method == 1 || logL_method == 2)
+                {
+                  dirichlet_Parm = mfexp(selparm(Comp_Err_parmloc(Comp_Err_Sz2(Sz_method),1)));
+                  if (logL_method == 1 )
+                    { dirichlet_Parm *= nsamp; }
+                  show_Pearson = value((ocomp - ecomp) / sqrt(ecomp * (1.0 - ecomp) / nsamp * (nsamp + dirichlet_Parm) / (1. + dirichlet_Parm))); // Pearson for Dirichlet-multinomial using negative-exponential parameterization
+                  show_logL =  -SzFreq_each_offset(iobs) / nbins
+                   - value( gammln(nsamp * ocomp + dirichlet_Parm * ecomp) - gammln(dirichlet_Parm * ecomp))
+                   - value( ( gammln(dirichlet_Parm) - gammln(nsamp + dirichlet_Parm))) / nbins;
+                }
+                if (logL_method == 3 )  //  MV Tweedie
+                {
+                }
+                SS_compout << show_Pearson << " " << nsamp << " " << SzFreq_sampleN(iobs) << " " << SzFreq_effN(iobs) << " " << show_logL;
+            }
+            else // sample size zero or skip
+            {
+              SS_compout << " NA " << " " << nsamp << " " << SzFreq_sampleN(iobs) << " NA NA "; // placeholder
+            }
+            // Cum_obs Cum_exp SuprPer Used?
+            SS_compout << " " << temp2 << " " << temp1 << " " << anystring <<endl;
+          }
+
+ /*
           for (z = z1; z <= z2; z++)
           {
             s_off = 1;
@@ -4296,6 +4316,7 @@ FUNCTION void write_bigoutput()
             if (z == z2 || z == SzFreq_Nbins(k))
               SS_compout << SzFreq_obs_hdr(iobs, 1) << " " << SzFreq_obs_hdr(iobs, 2) << " " << Show_Time2(ALK_time)(2, 3) << " " << data_time(ALK_time, f, 3) << " " << f << " " << fleet_area(f) << " " << repli << " " << gg << " SIZE " << p << " " << k << " " << s_off << " " << 1 << " " << 2 << endl;
           }
+  */
         }
       }
     }

@@ -596,7 +596,7 @@ FUNCTION void evaluate_the_objective_function()
       } //  assign back to all obs
     }
 
-    SzFreq_like = -offset_Sz_tot; // initializes
+    SzFreq_like = -offset_Sz_tot; // initializes for each Sz_Method
     for (iobs = 1; iobs <= SzFreq_totobs; iobs++)
     {
       if (SzFreq_obs_hdr(iobs, 3) > 0)
