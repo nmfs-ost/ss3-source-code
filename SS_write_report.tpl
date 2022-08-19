@@ -3317,7 +3317,7 @@ FUNCTION void write_bigoutput()
               {
                 SS2out << " BENCH ";
               }
-              if (y == styr - 2)
+              else if (y == styr - 2)
               {
                 SS2out << " VIRG ";
               }
