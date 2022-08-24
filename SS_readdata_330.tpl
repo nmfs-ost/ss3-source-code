@@ -454,8 +454,6 @@
 
 //  where ALK_idx=(y-styr)*nseas*N_subseas+(s-1)*N_subseas+subseas   This is index to subseas and used to indicate which ALK is being referenced
 
-//  3darray data_ALK_time(1,Nfleet,0,9,1,<nobsperkind/fleet>)   stores ALK_time
-
 //  ProgLabel_2.2  Read CATCH amount by fleet
   matrix obs_equ_catch(1,nseas,1,Nfleet);    //  initial, equilibrium catch.  now seasonal
  LOCAL_CALCS
@@ -1325,10 +1323,10 @@
   ivector CombGender_L(1,Nfleet);  //  combine genders through this length bin (0 or -1 for no combine)
   ivector AccumBin_L(1,Nfleet);  //  collapse bins down to this bin number (0 for no collapse; positive value for number to accumulate)
   ivector Comp_Err_L(1,Nfleet);  //  composition error type
-  ivector Comp_Err_L2(1,Nfleet);  //  composition error type parameter location
+  ivector Comp_Err_L2(1,Nfleet);  //  composition error type index
   vector min_sample_size_L(1,Nfleet);  // minimum sample size
-  int Comp_Err_ParmCount;  // counts number of fleets that need a parameter for the error estimation
-  ivector DM_parmlist(1,2*Nfleet);
+  int Comp_Err_ParmCount;  // counts number of comp_err definitions that are created
+  ivector DM_parmlist(1,3*Nfleet);  // flag for creating a new comperr definition; dim for length, age, size comps
  LOCAL_CALCS
   // clang-format on
   Comp_Err_ParmCount = 0;
@@ -1337,6 +1335,7 @@
   AccumBin_L.initialize();
   Comp_Err_L.initialize();
   Comp_Err_L2.initialize();
+  Comp_Err_parmloc.initialize();
   min_sample_size_L.initialize();
   DM_parmlist.initialize();
 
@@ -1347,8 +1346,8 @@
     echoinput << "#_addtocomp:  after accumulation of tails; this value added to all bins" << endl;
     echoinput << "#_males and females treated as combined gender below this bin number " << endl;
     echoinput << "#_compressbins: accumulate upper tail by this number of bins; acts simultaneous with mintailcomp; set=0 for no forced accumulation" << endl;
-    echoinput << "#_Comp_Error:  0=multinomial, 1=Dirichlet" << endl;
-    echoinput << "#_Comp_ERR-2:  index of Dirichlet parameter to use" << endl;
+    echoinput<<"#_Comp_Error:  0=multinomial, 1=dirichlet using theta * n, 2=dirichlet using beta, 3=MV_Tweedie with phi and power"<<endl;
+    echoinput<<"#_Comp_ERR-2:  consecutive index of error def to use"<<endl;
     echoinput << "#_minsamplesize: minimum sample size; set to 1 to match 3.24, set to 0 for no minimum" << endl;
 
     for (f = 1; f <= Nfleet; f++)
@@ -1368,26 +1367,26 @@
         write_message(WARN, 1);
         min_sample_size_L(f) = 0.001;
       }
-
-      if (Comp_Err_L2(f) > 2 * Nfleet)
+  
+      if (Comp_Err_L2(f) > Nfleet)
       {
         warnstream << "length D-M index for fleet: " << f << " is: " << Comp_Err_L2(f) << " but must be an integer <=2*Nfleet ";
         write_message(FATAL, 1);
       }
       else if (Comp_Err_L2(f) > Comp_Err_ParmCount + 1)
       {
-        warnstream << "; length D-M must refer to existing parm num, or increment by 1:  " << Comp_Err_L2(f);
+        warnstream << "; length D-M must refer to existing Comp_err definition, or increment by 1:  " << Comp_Err_L2(f);
         write_message(FATAL, 1);
       }
       else if (Comp_Err_L2(f) > Comp_Err_ParmCount)
       {
         Comp_Err_ParmCount++;
-        DM_parmlist(f) = 1;
+        DM_parmlist(f)=1;  // flag for creating new definition because Comp_Err_L2 can point to existing definition
       }
-      //  else OK because refers to existing parameter
+      //  else OK because refers to existing definition
     }
     //  the count for age data will be added after reading the age data setup
-    echoinput << "number of D-M parameters needed for length comp data: " << Comp_Err_ParmCount << endl
+    echoinput << "number of D-M definitions needed for length comp data: " << Comp_Err_ParmCount << endl
               << endl;
 
     *(ad_comm::global_datafile) >> nlen_bin;
@@ -2072,7 +2071,7 @@
   ivector CombGender_A(1,Nfleet);  //  combine genders through this age bin (0 or -1 for no combine)
   ivector AccumBin_A(1,Nfleet);  //  collapse bins down to this bin number (0 for no collapse; positive value for N to accumulate)
   ivector Comp_Err_A(1,Nfleet);  //  composition error type
-  ivector Comp_Err_A2(1,Nfleet);  //  composition error parameter location
+  ivector Comp_Err_A2(1,Nfleet);  //  composition error definition used
   vector min_sample_size_A(1,Nfleet);  // minimum sample size
   int Nobs_a_tot;
   int nobsa_rd;
@@ -2159,8 +2158,8 @@
       echoinput << "#_addtocomp:  after accumulation of tails; this value added to all bins" << endl;
       echoinput << "#_males and females treated as combined gender below this bin number " << endl;
       echoinput << "#_compressbins: accumulate upper tail by this number of bins; acts simultaneous with mintailcomp; set=0 for no forced accumulation" << endl;
-      echoinput << "#_Comp_Error:  0=multinomial, 1=dirichlet" << endl;
-      echoinput << "#_Comp_ERR-2:  index of parameter to use, cumulative count after DM parms for length comp" << endl;
+      echoinput<<"#_Comp_Error:  0=multinomial, 1=dirichlet using theta * n, 2=dirichlet using beta, 3=MV_Tweedie with phi and power"<<endl;
+      echoinput<<"#_Comp_ERR-2:  index of parameter (pair for Tweedie) to use, cumulative count after DM parms for length comp"<<endl;
       echoinput << "#_minsamplesize: minimum sample size; set to 1 to match 3.24, set to 0 for no minimum" << endl;
 
       for (f = 1; f <= Nfleet; f++)
@@ -2187,18 +2186,18 @@
         }
         else if (Comp_Err_A2(f) > Comp_Err_ParmCount + 1)
         {
-          warnstream << "Age D-M must refer to existing parm num, or increment by 1:  " << Comp_Err_A2(f);
+          warnstream << "Age D-M must refer to existing comp_err definition, or increment by 1:  " << Comp_Err_A2(f);
           write_message(FATAL, 0);
         }
         else if (Comp_Err_A2(f) > Comp_Err_ParmCount)
         {
           Comp_Err_ParmCount++;
-          DM_parmlist(f + Nfleet) = 1;
+          DM_parmlist(f + Nfleet) = 1;  // flag for creating new definition because Comp_Err_L2 can point to existing parameter
         }
-        //  else OK because refers to existing parameter
+        //  else OK because refers to existing definition
       }
-      echoinput << "number of D-M parameters needed for length and age comp data: " << Comp_Err_ParmCount << endl;
-
+      echoinput << "number of D-M definitions needed for both length and age comp data: " << Comp_Err_ParmCount << endl;
+  
       *(ad_comm::global_datafile) >> Lbin_method;
       echoinput << Lbin_method << " Lbin method for defined size ranges " << endl;
 
@@ -2986,8 +2985,21 @@
 //  SS_Label_Info_2.11.1 #Read generalized size frequency data (aka wt frequency)
   int SzFreqMethod;
   int iobs;
-  init_int SzFreq_Nmeth;                                   // number of sizefreq methods to be read
-!!echoinput << SzFreq_Nmeth << " N sizefreq methods to read " << endl;
+  int SzFreq_Nmeth_rd;                                   // number of sizefreq methods to be read
+  int SzFreq_Nmeth;
+ LOCAL_CALCS
+  *(ad_comm::global_datafile) >> SzFreq_Nmeth_rd;
+  if (SzFreq_Nmeth_rd > 0)
+  {
+      SzFreq_Nmeth = SzFreq_Nmeth_rd; 
+  }
+  else if  (SzFreq_Nmeth_rd < 0)
+  {
+    *(ad_comm::global_datafile) >> SzFreq_Nmeth;
+  }
+  echoinput << SzFreq_Nmeth << " N sizefreq methods to read " << endl;
+ END_CALCS
+
   imatrix SzFreq_HaveObs2(1,SzFreq_Nmeth,1,ALK_time_max);
   init_ivector SzFreq_Nbins(1,SzFreq_Nmeth);               //  number of bins for each method
 !!if (SzFreq_Nmeth > 0) echoinput << SzFreq_Nbins << " Sizefreq N bins per method" << endl;
@@ -3002,9 +3014,40 @@
   ivector SzFreq_Nbins_seas_g(1,SzFreq_Nmeth*nseas);   //  array dimensioner used only for the SzFreqTrans array
   ivector SzFreq_Nbins3(1,SzFreq_Nmeth);      // doubles the Nbins if gender==2
   int SzFreqMethod_seas;
-
+  ivector Comp_Err_Sz(1,SzFreq_Nmeth);
+  ivector Comp_Err_Sz2(1,SzFreq_Nmeth);
+  
  LOCAL_CALCS
   // clang-format on
+  Comp_Err_Sz.initialize();
+  Comp_Err_Sz2.initialize();
+  if (SzFreq_Nmeth_rd == -1)
+  {
+    *(ad_comm::global_datafile) >> Comp_Err_Sz(1,SzFreq_Nmeth);
+    echoinput << Comp_Err_Sz << " Sizefreq:  Comp_Err_method " << endl;
+    *(ad_comm::global_datafile) >> Comp_Err_Sz2(1,SzFreq_Nmeth);
+    echoinput << Comp_Err_Sz2 << " Sizefreq:  Comp_Err_index " << endl;
+    for (f = 1; f <= SzFreq_Nmeth; f ++)
+    {
+      if (Comp_Err_Sz2(f) > 2 * Nfleet)  //  2*Nfleet is max dimension for the comp_err list
+      {
+        warnstream << "Size D-M index for fleet: " << f << " is: " << Comp_Err_Sz2(f) << " but must be an integer <=2*Nfleet ";
+        write_message(FATAL, 0);
+      }
+      else if (Comp_Err_Sz2(f) > Comp_Err_ParmCount + 1)
+      {
+        warnstream << "Sz D-M must refer to existing index, or increment by 1 to add new defition:  " << Comp_Err_Sz2(f);
+        write_message(FATAL, 0);
+      }
+      else if (Comp_Err_Sz2(f) > Comp_Err_ParmCount)
+      {
+        Comp_Err_ParmCount++;
+        DM_parmlist(f + 2*Nfleet) = 1;  // flag for creating new definition because Comp_Err_Sz2 can point to existing parameter
+      }
+      //  else OK because refers to existing definition
+    }
+  }
+
   SzFreq_units_label += "bio";
   SzFreq_units_label += "numbers";
   SzFreq_scale_label += "kg";
@@ -3033,8 +3076,10 @@
     }
   }
   // clang-format off
+  echoinput<<"here"<<endl;
  END_CALCS
 
+ !!echoinput<<"bins "<<SzFreq_Nbins<<endl;
   init_matrix SzFreq_bins1(1,SzFreq_Nmeth,1,SzFreq_Nbins);    // lower edge of wt bins
 !!if(SzFreq_Nmeth>0) echoinput << " SizeFreq bins-raw " << endl << SzFreq_bins1 << endl;
   matrix SzFreq_bins(1,SzFreq_Nmeth,1,SzFreq_Nbins3);    // szfreq bins as processed and doubled for the males if necessary
@@ -3146,6 +3191,7 @@
   vector SzFreq_sampleN(1,SzFreq_totobs);
   vector SzFreq_effN(1,SzFreq_totobs);
   vector SzFreq_eachlike(1,SzFreq_totobs);
+  vector SzFreq_each_offset(1,SzFreq_totobs);
   matrix SzFreq_obs(1,SzFreq_totobs,1,SzFreq_Setup2);
   imatrix SzFreq_LikeComponent(1,Nfleet,1,SzFreq_Nmeth);
   number N_suprper_SzFreq; // no real need to keep track of these by method, so just use a number
@@ -3157,6 +3203,8 @@
   {
     SzFreq_LikeComponent.initialize();
     SzFreq_obs.initialize();
+    SzFreq_eachlike.initialize();
+    SzFreq_each_offset.initialize();
     iobs = 0;
     for (k = 1; k <= SzFreq_Nmeth; k++)
     {
@@ -3315,7 +3363,7 @@
  END_CALCS
 
 // SS_Label_Info_2.11.3 #Calc logL for a perfect fit to the sizefreq data as an offset
-    vector SzFreq_like_base(1,SzFreq_N_Like); // this is a constant offset, so can be declared in data section
+    vector offset_Sz_tot(1,SzFreq_N_Like); // this is a constant offset, so can be declared in data section
     ivector suprper_SzFreq_start(1,N_suprper_SzFreq);
     ivector suprper_SzFreq_end(1,N_suprper_SzFreq);
     vector suprper_SzFreq_sampwt(1,SzFreq_totobs); // will contain calculated weights for obs within super periods
@@ -3324,7 +3372,7 @@
   // clang-format on
   if (SzFreq_Nmeth > 0)
   {
-    SzFreq_like_base.initialize();
+    offset_Sz_tot.initialize();
     suprper_SzFreq_start.initialize();
     suprper_SzFreq_end.initialize();
     suprper_SzFreq_sampwt.initialize();
@@ -3351,7 +3399,7 @@
     //         z1=SzFreq_obs_hdr(iobs,7);
     //         z2=SzFreq_obs_hdr(iobs,8);
     //         g=SzFreq_LikeComponent(f,k);
-    //         SzFreq_like_base(g)-=SzFreq_sampleN(iobs)*SzFreq_obs(iobs)(z1,z2)*log(SzFreq_obs(iobs)(z1,z2));
+    //         offset_Sz_tot(g)-=SzFreq_sampleN(iobs)*SzFreq_obs(iobs)(z1,z2)*log(SzFreq_obs(iobs)(z1,z2));
     //       }
 
     // identify super-period starts and stops

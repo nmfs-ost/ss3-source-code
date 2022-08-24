@@ -265,25 +265,28 @@
                 obs_l(f, i)(tails_l(f, i, 3), tails_l(f, i, 4)) * log(obs_l(f, i)(tails_l(f, i, 3), tails_l(f, i, 4)));
           }
         }
-        else
+        else if( (Comp_Err_L(f)==1) || (Comp_Err_L(f)==2) ) //  dirichlet
         {
           // Dirichlet-Multinomial (either 1 = linear, 2 = saturating)
+          // cannot use fxn Comp_Err_Dirichlet for this calc because only need the first part here
+          offset_l(f, i) = gammln(nsamp_l(f, i) + 1.);
           if (gen_l(f, i) != 2)
           {
             int z1 = tails_l(f, i, 1);
             int z2 = tails_l(f, i, 2);
-            offset_l(f, i) += gammln(nsamp_l(f, i) + 1.) -
+            offset_l(f, i) -= sum(gammln(1. + nsamp_l(f, i) * obs_l(f, i)(z1, z2)));
                 //        sum(gammln(1. + nsamp_l(f,i)*obs_l(f,i)(tails_l(f,i,3),tails_l(f,i,4))));
-                sum(gammln(1. + nsamp_l(f, i) * obs_l(f, i)(z1, z2)));
           }
           if (gen_l(f, i) >= 2 && gender == 2)
           {
             int z1 = tails_l(f, i, 3);
             int z2 = tails_l(f, i, 4);
-            offset_l(f, i) += gammln(nsamp_l(f, i) + 1.) -
-                //        sum(gammln(1. + nsamp_l(f,i)*obs_l(f,i)(tails_l(f,i,3),tails_l(f,i,4))));
-                sum(gammln(1. + nsamp_l(f, i) * obs_l(f, i)(z1, z2)));
+            offset_l(f, i) -= sum(gammln(1. + nsamp_l(f, i) * obs_l(f, i)(z1, z2)));
           }
+        }
+        else if( (Comp_Err_L(f)==3)) //  MV Tweedie
+        {
+          //  no MV Tweedie offset
         }
       }
   //  echoinput<<" length_comp offset: "<<offset_l<<endl;
@@ -515,24 +518,28 @@
                 obs_a(f, i)(tails_a(f, i, 3), tails_a(f, i, 4)) * log(obs_a(f, i)(tails_a(f, i, 3), tails_a(f, i, 4)));
           }
         }
-        else
+        else if( (Comp_Err_A(f)==1) || (Comp_Err_A(f)==2) ) //  dirichlet
         {
           // Dirichlet-Multinomial (either 1 = linear, 2 = saturating)
+          offset_a(f, i) = gammln(nsamp_a(f, i) + 1.);
           if (gen_a(f, i) != 2)
           {
             int z1 = tails_a(f, i, 1);
             int z2 = tails_a(f, i, 2);
-            offset_a(f, i) += gammln(nsamp_a(f, i) + 1.) -
-                sum(gammln(1. + nsamp_a(f, i) * obs_a(f, i)(z1, z2)));
+            offset_a(f, i) -= sum(gammln(1. + nsamp_a(f, i) * obs_a(f, i)(z1, z2)));
           }
           if (gen_a(f, i) >= 2 && gender == 2)
           {
             int z1 = tails_a(f, i, 3);
             int z2 = tails_a(f, i, 4);
-            offset_a(f, i) += gammln(nsamp_a(f, i) + 1.) -
-                sum(gammln(1. + nsamp_a(f, i) * obs_a(f, i)(z1, z2)));
+            offset_a(f, i) -= sum(gammln(1. + nsamp_a(f, i) * obs_a(f, i)(z1, z2)));
           }
         }
+        else if( (Comp_Err_A(f)==3) ) //  MV Tweedie
+        {
+          // MV Tweedie has no offset, at least yet
+        }
+
       }
   //   echoinput<<" agecomp offset "<<offset_a<<endl;
   echoinput << " age comp var adjust has been set-up " << endl;
@@ -576,9 +583,21 @@
         z1 = SzFreq_obs_hdr(iobs, 7);
         z2 = SzFreq_obs_hdr(iobs, 8);
         g = SzFreq_LikeComponent(f, k);
-        SzFreq_like_base(g) -= SzFreq_sampleN(iobs) * SzFreq_obs(iobs)(z1, z2) * log(SzFreq_obs(iobs)(z1, z2));
+        if (Comp_Err_Sz(k) == 0) // Multinomial
+        {
+          offset_Sz_tot(g) -= SzFreq_sampleN(iobs) * SzFreq_obs(iobs)(z1, z2) * log(SzFreq_obs(iobs)(z1, z2));
+          SzFreq_each_offset(iobs) -= SzFreq_sampleN(iobs) * SzFreq_obs(iobs)(z1, z2) * log(SzFreq_obs(iobs)(z1, z2));
+        }
+        else if (Comp_Err_Sz(k) == 1 || Comp_Err_Sz(k) == 2 ) // Dirichlet
+        {
+          offset_Sz_tot(g) += gammln(SzFreq_sampleN(iobs) + 1.) - sum(gammln(1. + SzFreq_sampleN(iobs) * SzFreq_obs(iobs)(z1, z2)));
+          SzFreq_each_offset(iobs) += gammln(SzFreq_sampleN(iobs) + 1.) - sum(gammln(1. + SzFreq_sampleN(iobs) * SzFreq_obs(iobs)(z1, z2)));
+        }
+        else if (Comp_Err_Sz(k) == 3)  //  MV Tweedie
+        {
+          //  MV Tweedie not available
+        }
       }
-
       // identify super-period starts and stops
       if (s < 0) // start/stop a super-period  ALL observations must be continguous in the file
       {
@@ -595,7 +614,7 @@
         }
       }
     }
-    echoinput << " gen size comp var adjust has been set-up " << endl;
+    echoinput << " Sizefreq comp var adjust has been applied and offset calculated " << endl;
 
     if (N_suprper_SzFreq > 0)
     {
