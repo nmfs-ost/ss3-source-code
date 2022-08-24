@@ -250,6 +250,7 @@ GLOBALS_SECTION
         break;
       case FATAL:
         exitflag = 1;
+	[[fallthrough]];
       case ADJUST:
       case WARN:
         N_warn++;
