@@ -1,5 +1,6 @@
 ---
 Language:        Cpp
+
 AccessModifierOffset: -4
 AlignAfterOpenBracket: false
 AlignConsecutiveAssignments: false
@@ -18,7 +19,7 @@ AlwaysBreakTemplateDeclarations: false
 BinPackArguments: true
 BinPackParameters: true
 BreakBeforeBinaryOperators: None
-BreakBeforeBraces: Allman
+BreakBeforeBraces: Stroustrup
 BreakBeforeTernaryOperators: false
 BreakConstructorInitializersBeforeComma: true
 ColumnLimit:     0
