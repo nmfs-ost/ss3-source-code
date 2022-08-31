@@ -237,8 +237,8 @@ FUNCTION void write_nudata()
         report1 << "#_addtocomp:  after accumulation of tails; this value added to all bins" << endl;
         report1 << "#_combM+F: males and females treated as combined gender below this bin number " << endl;
         report1 << "#_compressbins: accumulate upper tail by this number of bins; acts simultaneous with mintailcomp; set=0 for no forced accumulation" << endl;
-        report1 << "#_Comp_Error:  0=multinomial, 1=dirichlet" << endl;
-        report1 << "#_ParmSelect:  parm number for dirichlet" << endl;
+        report1 << "#_Comp_Error:  0=multinomial, 1=dirichlet using Theta*n, 2=dirichlet using beta, 3=MV_Tweedie" << endl;
+        report1 << "#_ParmSelect:  consecutive index for dirichlet or MV_Tweedie" << endl;
         report1 << "#_minsamplesize: minimum sample size; set to 1 to match 3.24, minimum value is 0.001" << endl;
         report1 << "#" << endl;
         report1 << "#_mintailcomp addtocomp combM+F CompressBins CompError ParmSelect minsamplesize" << endl;
@@ -288,8 +288,8 @@ FUNCTION void write_nudata()
       report1 << "#_addtocomp:  after accumulation of tails; this value added to all bins" << endl;
       report1 << "#_combM+F: males and females treated as combined gender below this bin number " << endl;
       report1 << "#_compressbins: accumulate upper tail by this number of bins; acts simultaneous with mintailcomp; set=0 for no forced accumulation" << endl;
-      report1 << "#_Comp_Error:  0=multinomial, 1=dirichlet" << endl;
-      report1 << "#_ParmSelect:  parm number for dirichlet" << endl;
+      report1 << "#_Comp_Error:  0=multinomial, 1=dirichlet using Theta*n, 2=dirichlet using beta, 3=MV_Tweedie" << endl;
+      report1 << "#_ParmSelect:  consecutive index for dirichlet or MV_Tweedie" << endl;
       report1 << "#_minsamplesize: minimum sample size; set to 1 to match 3.24, minimum value is 0.001" << endl;
       report1 << "#" << endl;
       report1 << "#_mintailcomp addtocomp combM+F CompressBins CompError ParmSelect minsamplesize" << endl;
@@ -364,23 +364,32 @@ FUNCTION void write_nudata()
         report1 << "-9999 0 0" << endl;
       }
 
-      report1 << "#" << endl
-              << SzFreq_Nmeth << " # N sizefreq methods to read " << endl;
-      if (SzFreq_Nmeth > 0)
+      report1 << "#" << endl << "# Sizefreq data. Defined by method because a fleet can use multiple methods" << endl;
+      report1 << SzFreq_Nmeth_rd << " # N sizefreq methods to read (or -1 for expanded options)" << endl;
+      if (SzFreq_Nmeth_rd < 0) {
+        report1 << SzFreq_Nmeth << " # N sizefreq methods to read" << endl;
+      }
+      if (SzFreq_Nmeth != 0)
       {
-        report1 << SzFreq_Nbins << " #Sizefreq N bins per method" << endl;
-        report1 << SzFreq_units << " #Sizetfreq units(1=bio/2=num) per method" << endl;
-        report1 << SzFreq_scale << " #Sizefreq scale(1=kg/2=lbs/3=cm/4=inches) per method" << endl;
-        report1 << SzFreq_mincomp << " #Sizefreq:  add small constant to comps, per method " << endl;
-        report1 << SzFreq_nobs << " #Sizefreq N obs per method" << endl;
-        report1 << "#_Sizefreq bins " << endl
+        report1 << "# each row below has entry for each sizefreq method " << endl;
+        report1 << "#_ ";
+        for (int j = 1; j <= SzFreq_Nmeth; j++ )
+          { report1 << j << " ";}
+        report1 << " # Method" << endl;
+        report1 << SzFreq_Nbins << " #_Sizefreq N bins" << endl;
+        report1 << SzFreq_units << " #_Sizetfreq units(1=bio/2=num)" << endl;
+        report1 << SzFreq_scale << " #_Sizefreq scale(1=kg/2=lbs/3=cm/4=inches)" << endl;
+        report1 << SzFreq_mincomp << " #_Sizefreq:  small constant to add to comps" << endl;
+        report1 << SzFreq_nobs << " #_Sizefreq number of obs per method" << endl;
+        if (SzFreq_Nmeth_rd < 0) {
+          report1 << Comp_Err_Sz <<  " #_Comp_Error:  0=multinomial, 1=dirichlet using Theta*n, 2=dirichlet using beta, 3=MV_Tweedie" << endl;
+          report1 << Comp_Err_Sz2 << " #_ParmSelect: consecutive index for dirichlet or MV_Tweedie comp_error" << endl;
+        }
+        report1 << "#_Sizefreq bins. one row for each method" << endl
                 << "#Note: negative value for first bin makes it accumulate all smaller fish vs. truncate small fish" << endl;
         for (i = 1; i <= SzFreq_Nmeth; i++)
-        {
-          report1 << SzFreq_Omit_Small(i) * SzFreq_bins1(i, 1) << SzFreq_bins1(i)(2, SzFreq_Nbins(i)) << endl;
-        }
-        report1 << "#_method year month fleet gender partition SampleSize <data> " << endl
-                << SzFreq_obs1 << endl;
+        { report1 << SzFreq_Omit_Small(i) * SzFreq_bins1(i, 1) << SzFreq_bins1(i)(2, SzFreq_Nbins(i)) << endl; }
+        report1 << "#_method year month fleet gender partition SampleSize <data> " << endl << SzFreq_obs1 << endl;
       }
 
       // begin tagging data section #1 (observed data)
@@ -598,8 +607,8 @@ FUNCTION void write_nudata()
         report1 << "#_addtocomp:  after accumulation of tails; this value added to all bins" << endl;
         report1 << "#_combM+F: males and females treated as combined gender below this bin number " << endl;
         report1 << "#_compressbins: accumulate upper tail by this number of bins; acts simultaneous with mintailcomp; set=0 for no forced accumulation" << endl;
-        report1 << "#_Comp_Error:  0=multinomial, 1=dirichlet" << endl;
-        report1 << "#_ParmSelect:  parm number for dirichlet" << endl;
+        report1 << "#_Comp_Error:  0=multinomial, 1=dirichlet, 2=MV_Tweedie" << endl;
+        report1 << "#_ParmSelect:  consecutive index for dirichlet or MV_Tweedie" << endl;
         report1 << "#_minsamplesize: minimum sample size; set to 1 to match 3.24, minimum value is 0.001" << endl;
         report1 << "#" << endl;
         report1 << "#_mintailcomp addtocomp combM+F CompressBins CompError ParmSelect minsamplesize" << endl;
@@ -607,7 +616,7 @@ FUNCTION void write_nudata()
         {
           report1 << min_tail_L(f) << " " << min_comp_L(f) << " " << CombGender_L(f) << " " << AccumBin_L(f) << " " << Comp_Err_L(f) << " " << Comp_Err_L2(f) << " " << min_sample_size_L(f) << " #_fleet:" << f << "_" << fleetname(f) << endl;
         }
-        report1 << "# sex codes:  0=combined; 1=use female only; 2=use male only; 3=use both as joint sexxlength distribution" << endl;
+        report1 << "# sex codes:  0=combined; 1=use female only; 2=use male only; 3=use both as joint sex*length distribution" << endl;
         report1 << "# partition codes:  (0=combined; 1=discard; 2=retained" << endl;
         report1 << nlen_bin << " #_N_LengthBins" << endl
                 << len_bins_dat << endl;
@@ -655,8 +664,8 @@ FUNCTION void write_nudata()
       report1 << "#_addtocomp:  after accumulation of tails; this value added to all bins" << endl;
       report1 << "#_combM+F: males and females treated as combined gender below this bin number " << endl;
       report1 << "#_compressbins: accumulate upper tail by this number of bins; acts simultaneous with mintailcomp; set=0 for no forced accumulation" << endl;
-      report1 << "#_Comp_Error:  0=multinomial, 1=dirichlet" << endl;
-      report1 << "#_ParmSelect:  parm number for dirichlet" << endl;
+      report1 << "#_Comp_Error:  0=multinomial, 1=dirichlet using Theta*n, 2=dirichlet using beta, 3=MV_Tweedie" << endl;
+      report1 << "#_ParmSelect:  parm number for dirichlet or MV_Tweedie" << endl;
       report1 << "#_minsamplesize: minimum sample size; set to 1 to match 3.24, minimum value is 0.001" << endl;
       report1 << "#" << endl;
       report1 << "#_mintailcomp addtocomp combM+F CompressBins CompError ParmSelect minsamplesize" << endl;
@@ -670,7 +679,7 @@ FUNCTION void write_nudata()
       if (n_abins <= 0)
         report1 << "# ";
       report1 << Lbin_method << " #_Lbin_method_for_Age_Data: 1=poplenbins; 2=datalenbins; 3=lengths" << endl;
-      report1 << "# sex codes:  0=combined; 1=use female only; 2=use male only; 3=use both as joint sexxlength distribution" << endl;
+      report1 << "# sex codes:  0=combined; 1=use female only; 2=use male only; 3=use both as joint sex*length distribution" << endl;
       report1 << "# partition codes:  (0=combined; 1=discard; 2=retained" << endl;
       report1 << "#_yr month fleet sex part ageerr Lbin_lo Lbin_hi Nsamp datavector(female-male)" << endl;
       if (Nobs_a_tot > 0)
@@ -748,26 +757,32 @@ FUNCTION void write_nudata()
         report1 << "-9999 0 0" << endl;
       }
 
-      report1 << "#" << endl
-              << SzFreq_Nmeth << " # N sizefreq methods to read " << endl;
-      if (SzFreq_Nmeth > 0)
+      report1 << "#" << endl << "# Sizefreq data. Defined by method because a fleet can use multiple methods" << endl;
+      report1 << SzFreq_Nmeth_rd << " # N sizefreq methods to read (or -1 for expanded options)" << endl;
+      if (SzFreq_Nmeth_rd < 0) {
+        report1 << SzFreq_Nmeth << " # N sizefreq methods to read" << endl;
+      }
+     if (SzFreq_Nmeth != 0)
       {
-        report1 << SzFreq_Nbins << " #Sizefreq N bins per method" << endl;
-        report1 << SzFreq_units << " #Sizetfreq units(1=bio/2=num) per method" << endl;
-        report1 << SzFreq_scale << " #Sizefreq scale(1=kg/2=lbs/3=cm/4=inches) per method" << endl;
-        report1 << SzFreq_mincomp << " #Sizefreq:  add small constant to comps, per method " << endl;
-        report1 << SzFreq_nobs << " #Sizefreq N obs per method" << endl;
-        report1 << "#_Sizefreq bins " << endl
-                << "#_Note: negative value for first bin makes it accumulate all smaller fish vs. truncate small fish" << endl;
+        report1 << "# each row below has entry for each sizefreq method " << endl;
+        report1 << "#_ ";
+        for (int j = 1; j <= SzFreq_Nmeth; j++ )
+          { report1 << j << " ";}
+        report1 << " # Method" << endl;
+        report1 << SzFreq_Nbins << " #_Sizefreq N bins" << endl;
+        report1 << SzFreq_units << " #_Sizetfreq units(1=bio/2=num)" << endl;
+        report1 << SzFreq_scale << " #_Sizefreq scale(1=kg/2=lbs/3=cm/4=inches)" << endl;
+        report1 << SzFreq_mincomp << " #_Sizefreq:  small constant to add to comps" << endl;
+        report1 << SzFreq_nobs << " #_Sizefreq number of obs per method" << endl;
+        if (SzFreq_Nmeth_rd < 0) {
+          report1 << Comp_Err_Sz <<  " #_Comp_Error:  0=multinomial, 1=dirichlet using Theta*n, 2=dirichlet using beta, 3=MV_Tweedie" << endl;
+          report1 << Comp_Err_Sz2 << " #_ParmSelect: consecutive index for dirichlet or MV_Tweedie comp_error" << endl;
+        }
+        report1 << "#_Sizefreq bins. one row for each method" << endl
+                << "#Note: negative value for first bin makes it accumulate all smaller fish vs. truncate small fish" << endl;
         for (i = 1; i <= SzFreq_Nmeth; i++)
-        {
-          report1 << SzFreq_Omit_Small(i) * SzFreq_bins1(i, 1) << SzFreq_bins1(i)(2, SzFreq_Nbins(i)) << endl;
-        }
-        report1 << "#_method yr month fleet sex partition SampleSize <data> " << endl;
-        for (iobs = 1; iobs <= SzFreq_totobs; iobs++)
-        {
-          report1 << SzFreq_obs1(iobs)(1, 7) << " " << SzFreq_exp(iobs) << endl;
-        }
+        { report1 << SzFreq_Omit_Small(i) * SzFreq_bins1(i, 1) << SzFreq_bins1(i)(2, SzFreq_Nbins(i)) << endl; }
+        report1 << "#_method year month fleet gender partition SampleSize <data> " << endl << SzFreq_obs1 << endl;
       }
 
       // begin tagging data section #2 (expected values)
@@ -1032,8 +1047,8 @@ FUNCTION void write_nudata()
         report1 << "#_addtocomp:  after accumulation of tails; this value added to all bins" << endl;
         report1 << "#_combM+F: males and females treated as combined gender below this bin number " << endl;
         report1 << "#_compressbins: accumulate upper tail by this number of bins; acts simultaneous with mintailcomp; set=0 for no forced accumulation" << endl;
-        report1 << "#_Comp_Error:  0=multinomial, 1=dirichlet" << endl;
-        report1 << "#_ParmSelect:  parm number for dirichlet" << endl;
+        report1 << "#_Comp_Error:  0=multinomial, 1=dirichlet using Theta*n, 2=dirichlet using beta, 3=MV_Tweedie" << endl;
+        report1 << "#_ParmSelect:  consecutive index for dirichlet or MV_Tweedie" << endl;
         report1 << "#_minsamplesize: minimum sample size; set to 1 to match 3.24, minimum value is 0.001" << endl;
         report1 << "#" << endl;
         report1 << "#_mintailcomp addtocomp combM+F CompressBins CompError ParmSelect minsamplesize" << endl;
@@ -1053,21 +1068,32 @@ FUNCTION void write_nudata()
           {
             for (i = 1; i <= Nobs_l(f); i++)
             {
-              if (Comp_Err_L(f) == 0) //  multinomial
+              switch (Comp_Err_L(f))
               {
-                Nsamp_DM = nsamp_l(f, i);
-              }
-              else if (Comp_Err_L(f) == 1) //  Dirichlet #1
-              {
-                dirichlet_Parm = mfexp(selparm(Comp_Err_Parm_Start + Comp_Err_L2(f))); //  Thorson's theta fro eq 10
-                // effN_DM = 1/(1+theta) + n*theta/(1+theta)
-                Nsamp_DM = value(1. / (1. + dirichlet_Parm) + nsamp_l(f, i) * dirichlet_Parm / (1. + dirichlet_Parm));
-              }
-              else if (Comp_Err_L(f) == 2) //  Dirichlet #2
-              {
-                dirichlet_Parm = mfexp(selparm(Comp_Err_Parm_Start + Comp_Err_L2(f))) * nsamp_l(f, i); //  Thorson's beta from eq 12
-                // effN_DM = (n+n*beta)/(n+beta)      computed in Fit_LenComp
-                Nsamp_DM = value((nsamp_l(f, i) + dirichlet_Parm * nsamp_l(f, i)) / (dirichlet_Parm + nsamp_l(f, i)));
+                case 0:
+                {
+                  Nsamp_DM = nsamp_l(f, i);
+                  break;
+                }
+                case 1: //  Dirichlet #1
+                {
+                  dirichlet_Parm = mfexp(selparm(Comp_Err_parmloc(Comp_Err_L2(f),1))); //  Thorson's theta from eq 10
+                  // effN_DM = 1/(1+theta) + n*theta/(1+theta)
+                  Nsamp_DM = value(1. / (1. + dirichlet_Parm) + nsamp_l(f, i) * dirichlet_Parm / (1. + dirichlet_Parm));
+                  break;
+                }
+                case 2:  //  Dirichlet #2
+                {
+                  dirichlet_Parm = mfexp(selparm(Comp_Err_parmloc(Comp_Err_L2(f),1))); //  Thorson's beta from eq 12
+                  // effN_DM = (n+n*beta)/(n+beta)
+                  Nsamp_DM = value((nsamp_l(f, i) + dirichlet_Parm * nsamp_l(f, i)) / (dirichlet_Parm + nsamp_l(f, i)));
+                  break;
+                }
+                case 3: //  MV_Tweedie
+                {
+                  //  need MV_tweedie
+                  break;
+                }
               }
               Nsamp_DM = min(Nsamp_DM, 50000);
               Nsamp_DM = max(Nsamp_DM, 1);
@@ -1111,8 +1137,8 @@ FUNCTION void write_nudata()
       report1 << "#_addtocomp:  after accumulation of tails; this value added to all bins" << endl;
       report1 << "#_combM+F: males and females treated as combined gender below this bin number " << endl;
       report1 << "#_compressbins: accumulate upper tail by this number of bins; acts simultaneous with mintailcomp; set=0 for no forced accumulation" << endl;
-      report1 << "#_Comp_Error:  0=multinomial, 1=dirichlet" << endl;
-      report1 << "#_ParmSelect:  parm number for dirichlet" << endl;
+      report1 << "#_Comp_Error:  0=multinomial, 1=dirichlet using Theta*n, 2=dirichlet using beta, 3=MV_Tweedie" << endl;
+        report1 << "#_ParmSelect:  consecutive index for dirichlet or MV_Tweedie" << endl;
       report1 << "#_minsamplesize: minimum sample size; set to 1 to match 3.24, minimum value is 0.001" << endl;
       report1 << "#" << endl;
       report1 << "#_mintailcomp addtocomp combM+F CompressBins CompError ParmSelect minsamplesize" << endl;
@@ -1126,7 +1152,7 @@ FUNCTION void write_nudata()
       if (n_abins <= 0)
         report1 << "# ";
       report1 << Lbin_method << " #_Lbin_method_for_Age_Data: 1=poplenbins; 2=datalenbins; 3=lengths" << endl;
-      report1 << "# sex codes:  0=combined; 1=use female only; 2=use male only; 3=use both as joint sexxlength distribution" << endl;
+      report1 << "# sex codes:  0=combined; 1=use female only; 2=use male only; 3=use both as joint sex*length distribution" << endl;
       report1 << "# partition codes:  (0=combined; 1=discard; 2=retained" << endl;
 
       report1 << "#_yr month fleet sex part ageerr Lbin_lo Lbin_hi Nsamp datavector(female-male)" << endl;
@@ -1137,21 +1163,32 @@ FUNCTION void write_nudata()
           {
             for (i = 1; i <= Nobs_a(f); i++)
             {
-              if (Comp_Err_A(f) == 0) //  multinomial
+              switch (Comp_Err_A(f))
               {
-                Nsamp_DM = nsamp_a(f, i);
-              }
-              else if (Comp_Err_A(f) == 1) //  Dirichlet #1
-              {
-                dirichlet_Parm = mfexp(selparm(Comp_Err_Parm_Start + Comp_Err_A2(f))); //  Thorson's theta from eq 10
-                // effN_DM = 1/(1+theta) + n*theta/(1+theta)
-                Nsamp_DM = value(1. / (1. + dirichlet_Parm) + nsamp_a(f, i) * dirichlet_Parm / (1. + dirichlet_Parm));
-              }
-              else if (Comp_Err_A(f) == 2) //  Dirichlet #2
-              {
-                dirichlet_Parm = mfexp(selparm(Comp_Err_Parm_Start + Comp_Err_A2(f))) * nsamp_a(f, i); //  Thorson's beta from eq 12
-                // effN_DM = (n+n*beta)/(n+beta)      computed in Fit_LenComp
-                Nsamp_DM = value((nsamp_a(f, i) + dirichlet_Parm * nsamp_a(f, i)) / (dirichlet_Parm + nsamp_a(f, i)));
+                case 0:
+                {
+                  Nsamp_DM = nsamp_a(f, i);
+                  break;
+                }
+                case 1: //  Dirichlet #1
+                {
+                  dirichlet_Parm = mfexp(selparm(Comp_Err_parmloc(Comp_Err_A2(f),1))); //  Thorson's theta from eq 10
+                  // effN_DM = 1/(1+theta) + n*theta/(1+theta)
+                  Nsamp_DM = value(1. / (1. + dirichlet_Parm) + nsamp_a(f, i) * dirichlet_Parm / (1. + dirichlet_Parm));
+                  break;
+                }
+                case 2:  //  Dirichlet #2
+                {
+                  dirichlet_Parm = mfexp(selparm(Comp_Err_parmloc(Comp_Err_A2(f),1))); //  Thorson's beta from eq 12
+                  // effN_DM = (n+n*beta)/(n+beta)      computed in Fit_LenComp
+                  Nsamp_DM = value((nsamp_a(f, i) + dirichlet_Parm * nsamp_a(f, i)) / (dirichlet_Parm + nsamp_a(f, i)));
+                  break;
+                }
+                case 3: //  MV_Tweedie
+                {
+                  //  need MV_tweedie
+                  break;
+                }
               }
               Nsamp_DM = min(Nsamp_DM, 50000);
               Nsamp_DM = max(Nsamp_DM, 1);
@@ -1226,41 +1263,34 @@ FUNCTION void write_nudata()
         report1 << "-9999 0 0" << endl;
       }
 
-      report1 << "#" << endl
-              << SzFreq_Nmeth << " # N sizefreq methods to read " << endl;
-      if (SzFreq_Nmeth > 0)
+      report1 << "#" << endl << "# Sizefreq data. Defined by method because a fleet can use multiple methods" << endl;
+      report1 << SzFreq_Nmeth_rd << " # N sizefreq methods to read (or -1 for expanded options)" << endl;
+      if (SzFreq_Nmeth_rd < 0) {
+        report1 << SzFreq_Nmeth << " # N sizefreq methods to read" << endl;
+      }
+      if (SzFreq_Nmeth != 0)
       {
-        report1 << SzFreq_Nbins << " #Sizefreq N bins per method" << endl;
-        report1 << SzFreq_units << " #Sizetfreq units(1=bio/2=num) per method" << endl;
-        report1 << SzFreq_scale << " #Sizefreq scale(1=kg/2=lbs/3=cm/4=inches) per method" << endl;
-        report1 << SzFreq_mincomp << " #Sizefreq:  add small constant to comps, per method " << endl;
-        report1 << SzFreq_nobs << " #Sizefreq N obs per method" << endl;
-        report1 << "#_Sizefreq bins " << endl
+        report1 << "# each row below has entry for each sizefreq method " << endl;
+        report1 << "#_ ";
+        for (int j = 1; j <= SzFreq_Nmeth; j++ )
+          { report1 << j << " ";}
+        report1 << " # Method" << endl;
+        report1 << SzFreq_Nbins << " #_Sizefreq N bins" << endl;
+        report1 << SzFreq_units << " #_Sizetfreq units(1=bio/2=num)" << endl;
+        report1 << SzFreq_scale << " #_Sizefreq scale(1=kg/2=lbs/3=cm/4=inches)" << endl;
+        report1 << SzFreq_mincomp << " #_Sizefreq:  small constant to add to comps" << endl;
+        report1 << SzFreq_nobs << " #_Sizefreq number of obs per method" << endl;
+        if (SzFreq_Nmeth_rd < 0) {
+          report1 << Comp_Err_Sz <<  " #_Comp_Error:  0=multinomial, 1=dirichlet using Theta*n, 2=dirichlet using beta, 3=MV_Tweedie" << endl;
+          report1 << Comp_Err_Sz2 << " #_ParmSelect: consecutive index for dirichlet or MV_Tweedie comp_error" << endl;
+        }
+        report1 << "#_Sizefreq bins. one row for each method" << endl
                 << "#Note: negative value for first bin makes it accumulate all smaller fish vs. truncate small fish" << endl;
         for (i = 1; i <= SzFreq_Nmeth; i++)
-        {
-          report1 << SzFreq_Omit_Small(i) * SzFreq_bins1(i, 1) << SzFreq_bins1(i)(2, SzFreq_Nbins(i)) << endl;
-        }
-        report1 << "#_method year month fleet sex partition SampleSize <data> " << endl;
-        j = 2 * max(SzFreq_Nbins);
-        dvector temp_probs3(1, j);
-        dvector SzFreq_newdat(1, j);
-        for (iobs = 1; iobs <= SzFreq_totobs; iobs++)
-        {
-          j = 50000;
-          if (SzFreq_obs1(iobs, 7) < j)
-            j = SzFreq_obs1(iobs, 7);
-          SzFreq_newdat.initialize();
-          temp_probs3(1, SzFreq_Setup2(iobs)) = value(SzFreq_exp(iobs));
-          temp_mult.fill_multinomial(radm, temp_probs3(1, SzFreq_Setup2(iobs))); // create multinomial draws with prob = expected values
-          for (compindex = 1; compindex <= j; compindex++) // cumulate the multinomial draws by index in the new data
-          {
-            SzFreq_newdat(temp_mult(compindex)) += 1.0;
-          }
-
-          report1 << SzFreq_obs1(iobs)(1, 7) << " " << SzFreq_newdat(1, SzFreq_Setup2(iobs)) << endl;
-        }
+        { report1 << SzFreq_Omit_Small(i) * SzFreq_bins1(i, 1) << SzFreq_bins1(i)(2, SzFreq_Nbins(i)) << endl; }
+        report1 << "#_method year month fleet gender partition SampleSize <data> " << endl << SzFreq_obs1 << endl;
       }
+
       // begin tagging data section #3 (bootstrap data)
       report1 << "#" << endl
               << Do_TG << " # do tags (0/1)" << endl;
@@ -1421,7 +1451,7 @@ FUNCTION void write_nucontrol()
   NuStart << final_conv << " # final convergence criteria (e.g. 1.0e-04) " << endl;
   NuStart << retro_yr - endyr << " # retrospective year relative to end year (e.g. -4)" << endl;
   NuStart << Smry_Age << " # min age for calc of summary biomass" << endl;
-  NuStart << depletion_basis_rd << " # Depletion basis:  denom is: 0=skip; 1=rel X*SPB0; 2=rel SPBmsy; 3=rel X*SPB_styr; 4=rel X*SPB_endyr; values; >=11 invoke N multiyr (up to 9!) with 10's digit; >100 invokes log(ratio)" << endl;
+  NuStart << depletion_basis_rd << " # Depletion basis:  denom is: 0=skip; 1=rel X*SPBvirgin; 2=rel SPBmsy; 3=rel X*SPB_styr; 4=rel X*SPB_endyr; values; >=11 invoke N multiyr (up to 9!) with 10's digit; >100 invokes log(ratio)" << endl;
   NuStart << depletion_level << " # Fraction (X) for Depletion denominator (e.g. 0.4)" << endl;
   NuStart << SPR_reporting << " # SPR_report_basis:  0=skip; 1=(1-SPR)/(1-SPR_tgt); 2=(1-SPR)/(1-SPR_MSY); 3=(1-SPR)/(1-SPR_Btarget); 4=rawSPR" << endl;
   NuStart << F_reporting << " # F_reporting_units: 0=skip; 1=exploitation(Bio); 2=exploitation(Num); 3=sum(Apical_F's); 4=true F for range of ages; 5=unweighted avg. F for range of ages" << endl;
@@ -1783,8 +1813,10 @@ FUNCTION void write_nucontrol()
             << Length_Maturity << endl;
   }
   report4 << First_Mature_Age << " #_First_Mature_Age" << endl;
-
-  report4 << Fecund_Option << " #_fecundity option:(1)eggs=Wt*(a+b*Wt);(2)eggs=a*L^b;(3)eggs=a*Wt^b; (4)eggs=a+b*L; (5)eggs=a+b*W" << endl;
+  if (Maturity_Option == 4 || Maturity_Option == 5) {
+    report4 << "# NOTE: maturity options 4 and 5 cause fecundity_at_length to be ignored, but parameters still needed " << endl;
+  }
+  report4 << Fecund_Option << " #_fecundity_at_length option:(1)eggs=Wt*(a+b*Wt);(2)eggs=a*L^b;(3)eggs=a*Wt^b; (4)eggs=a+b*L; (5)eggs=a+b*W" << endl;
   report4 << Hermaphro_Option << " #_hermaphroditism option:  0=none; 1=female-to-male age-specific fxn; -1=male-to-female age-specific fxn" << endl;
   if (Hermaphro_Option != 0)
   {
@@ -2381,7 +2413,7 @@ FUNCTION void write_nucontrol()
     }
     if (Comp_Err_ParmCount > 0)
     {
-      report4 << "#_Dirichlet parameters" << endl;
+      report4 << "#_Dirichlet and/or MV Tweedie parameters for composition error" << endl;
       report4 << "#_multiple_fleets_can_refer_to_same_parm;_but_list_cannot_have_gaps" << endl;
       k = Comp_Err_Parm_Start;
       for (f = 1; f <= Comp_Err_ParmCount; f++)

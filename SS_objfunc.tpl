@@ -228,12 +228,8 @@ FUNCTION void evaluate_the_objective_function()
           }
           else
           {
-            N_warn++;
-            cout << " EXIT - see warning " << endl;
-            warning << N_warn << " "
-                    << " discard error type for fleet " << f << " = " << disc_errtype(f) << " should be -3, -2, -1, 0, or >=1" << endl;
-            cout << " fatal error, see warning" << endl;
-            exit(1);
+            warnstream << "discard error type for fleet " << f << " = " << disc_errtype(f) << " should be -3, -2, -1, 0, or >=1";
+            write_message (FATAL, 0); // EXIT!
           }
         }
       }
@@ -347,25 +343,21 @@ FUNCTION void evaluate_the_objective_function()
               if (Comp_Err_L(f) == 0) // multinomial
               {
                 // get female or combined sex logL
+                //  logL functions are at end of file SS_miscfxn.tpl
                 if (gen_l(f, i) != 2)
-                  length_like(f, i) -= nsamp_l(f, i) *
-                      obs_l(f, i)(tails_w(1), tails_w(2)) * log(exp_l(f, i)(tails_w(1), tails_w(2)));
+                  length_like(f, i) += Comp_logL_multinomial( nsamp_l(f, i), obs_l(f, i)(tails_w(1), tails_w(2)), exp_l(f, i)(tails_w(1), tails_w(2)) );
                 //  add male logL
                 if (gen_l(f, i) >= 2 && gender == 2)
-                  length_like(f, i) -= nsamp_l(f, i) *
-                      obs_l(f, i)(tails_w(3), tails_w(4)) * log(exp_l(f, i)(tails_w(3), tails_w(4)));
+                  length_like(f, i) += Comp_logL_multinomial( nsamp_l(f, i), obs_l(f, i)(tails_w(3), tails_w(4)), exp_l(f, i)(tails_w(3), tails_w(4)) );
               }
-              else //  dirichlet
+             else if( (Comp_Err_L(f)==1) || (Comp_Err_L(f)==2) ) //  dirichlet
               {
                 /* from Thorson:  NLL -= gammln(A) - gammln(ninput_t(t)+A) + sum(gammln(ninput_t(t)*extract_row(pobs_ta,t) + A*extract_row(pexp_ta,t))) - sum(lgamma(A*extract_row(pexp_ta,t))) \
-                dirichlet_Parm=mfexp(selparm(Comp_Err_Parm_Start+Comp_Err_L2(f)))*nsamp_l(f,i);
                 in option 1, dirichlet_Parm = Theta*n from equation (10) of Thorson et al. 2016
                 in option 2, dirichlet_Parm = Beta from equation (4) of Thorson et al. 2016 */
+                dirichlet_Parm = mfexp(selparm(Comp_Err_parmloc(Comp_Err_L2(f),1)));
                 if (Comp_Err_L(f) == 1)
-                  dirichlet_Parm = mfexp(selparm(Comp_Err_Parm_Start + Comp_Err_L2(f))) * nsamp_l(f, i);
-                if (Comp_Err_L(f) == 2)
-                  dirichlet_Parm = mfexp(selparm(Comp_Err_Parm_Start + Comp_Err_L2(f)));
-                //                             dirichlet_Parm=mfexp(selparm(Comp_Err_Parm_Start+Comp_Err_L2(f)));
+                  dirichlet_Parm *= nsamp_l(f, i);
 
                 // note: first term in equations (4) and (10) is calculated
                 // as offset_l in SS_prelim.tpl and already included in length_like
@@ -373,18 +365,39 @@ FUNCTION void evaluate_the_objective_function()
                 temp = gammln(dirichlet_Parm) - gammln(nsamp_l(f, i) + dirichlet_Parm);
                 // get female or combined sex logL
                 // third and final term in equations (4) and (10)
-                if (gen_l(f, i) != 2) //  so not male only
-                {
-                  temp += sum(gammln(nsamp_l(f, i) * obs_l(f, i)(tails_w(1), tails_w(2)) + dirichlet_Parm * exp_l(f, i)(tails_w(1), tails_w(2))));
-                  temp -= sum(gammln(dirichlet_Parm * exp_l(f, i)(tails_w(1), tails_w(2))));
+                if (gen_l(f, i) != 2) {   //  so not male only
+                  temp += Comp_logL_Dirichlet( nsamp_l(f, i), dirichlet_Parm, obs_l(f, i)(tails_w(1), tails_w(2)), exp_l(f, i)(tails_w(1), tails_w(2)) );
                 }
                 //  add male logL
-                if (gen_l(f, i) >= 2 && gender == 2)
-                {
-                  temp += sum(gammln(nsamp_l(f, i) * obs_l(f, i)(tails_w(3), tails_w(4)) + dirichlet_Parm * exp_l(f, i)(tails_w(3), tails_w(4))));
-                  temp -= sum(gammln(dirichlet_Parm * exp_l(f, i)(tails_w(3), tails_w(4))));
+                if (gen_l(f, i) >= 2 && gender == 2) {
+                  temp += Comp_logL_Dirichlet( nsamp_l(f, i), dirichlet_Parm, obs_l(f, i)(tails_w(3), tails_w(4)), exp_l(f, i)(tails_w(3), tails_w(4)) );
                 }
                 length_like(f, i) -= temp;
+              } else  //  multivariate-Tweedie
+			  {
+				dvariable tweedie_Phi;
+				dvariable tweedie_power;
+				// Exponentiate [PARAMETER_1]
+				int k1 = Comp_Err_parmloc(Comp_Err_L2(f),1);
+				tweedie_Phi = mfexp(selparm(k1));
+				// One plus logistic-transform [PARAMETER_1]
+				tweedie_power = 1.0 + mfexp(selparm(k1+1)) / (1.0+mfexp(selparm(k1+1)));
+				if(gen_l(f,i) !=2) //  so not male only
+				{
+				  // dtweedie( Type y, Type mu, Type phi, Type p, int give_log=0 )
+				  for (int tail_index=tails_w(1); tail_index<=tails_w(2); tail_index++){
+					temp += 1.;  // dtweedie( nsamp_l(f,i)*obs_l(f,i)(tail_index), nsamp_l(f,i)*exp_l(f,i)(tail_index), tweedie_Phi, tweedie_power, true );
+				  }
+				}
+				//  add male logL
+				if(gen_l(f,i) >=2 && gender==2)
+				{
+				  // dtweedie( Type y, Type mu, Type phi, Type p, int give_log=0 )
+				  for (int tail_index=tails_w(3); tail_index<=tails_w(4); tail_index++){
+					temp += 1.;  // dtweedie( nsamp_l(f,i)*obs_l(f,i)(tail_index), nsamp_l(f,i)*exp_l(f,i)(tail_index), tweedie_Phi, tweedie_power, true );
+				  }
+				}
+				length_like(f,i)-=temp;
               }
               if (header_l(f, i, 3) > 0)
                 length_like_tot(f) += length_like(f, i);
@@ -486,25 +499,23 @@ FUNCTION void evaluate_the_objective_function()
               if (Comp_Err_A(f) == 0) //  multinomial
               {
                 if (gen_a(f, i) != 2)
-                  age_like(f, i) -= nsamp_a(f, i) *
-                      obs_a(f, i)(tails_w(1), tails_w(2)) * log(exp_a(f, i)(tails_w(1), tails_w(2)));
+                 age_like(f, i) += Comp_logL_multinomial( nsamp_a(f, i), obs_a(f, i)(tails_w(1), tails_w(2)), exp_a(f, i)(tails_w(1), tails_w(2)) );
+//                  age_like(f, i) -= nsamp_a(f, i) *
+//                      obs_a(f, i)(tails_w(1), tails_w(2)) * log(exp_a(f, i)(tails_w(1), tails_w(2)));
                 if (gen_a(f, i) >= 2 && gender == 2)
-                  age_like(f, i) -= nsamp_a(f, i) *
-                      obs_a(f, i)(tails_w(3), tails_w(4)) * log(exp_a(f, i)(tails_w(3), tails_w(4)));
+                 age_like(f, i) += Comp_logL_multinomial( nsamp_a(f, i), obs_a(f, i)(tails_w(3), tails_w(4)), exp_a(f, i)(tails_w(3), tails_w(4)) );
+//                  age_like(f, i) -= nsamp_a(f, i) *
+//                      obs_a(f, i)(tails_w(3), tails_w(4)) * log(exp_a(f, i)(tails_w(3), tails_w(4)));
               }
-              else // dirichlet
+             else if( (Comp_Err_A(f)==1) || (Comp_Err_A(f)==2) ) //  dirichlet
               {
                 /* from Thorson:  NLL -= gammln(A) - gammln(ninput_t(t)+A) + sum(gammln(ninput_t(t)*extract_row(pobs_ta,t) + A*extract_row(pexp_ta,t))) - sum(lgamma(A*extract_row(pexp_ta,t))) \
-                   dirichlet_Parm=mfexp(selparm(Comp_Err_Parm_Start+Comp_Err_A2(f)))*nsamp_a(f,i);
                 in option 1, dirichlet_Parm = Theta*n from equation (10) of Thorson et al. 2016
                 in option 2, dirichlet_Parm = Beta from equation (4) of Thorson et al. 2016
                 */
+                dirichlet_Parm = mfexp(selparm(Comp_Err_parmloc(Comp_Err_A2(f),1)));
                 if (Comp_Err_A(f) == 1)
-                  dirichlet_Parm = mfexp(selparm(Comp_Err_Parm_Start + Comp_Err_A2(f))) * nsamp_a(f, i);
-                if (Comp_Err_A(f) == 2)
-                  dirichlet_Parm = mfexp(selparm(Comp_Err_Parm_Start + Comp_Err_A2(f)));
-                //              dirichlet_Parm=mfexp(selparm(Comp_Err_Parm_Start+Comp_Err_A2(f)));
-
+                  dirichlet_Parm *= nsamp_a(f, i);
                 // note: first term in equations (4) and (10) is calculated
                 // as offset_a in SS_prelim.tpl and already included in age_like
                 // now add second term which is only dependent on parameters and sample size
@@ -512,19 +523,18 @@ FUNCTION void evaluate_the_objective_function()
                 temp = gammln(dirichlet_Parm) - gammln(nsamp_a(f, i) + dirichlet_Parm);
                 // get female or combined sex logL
                 // final term in equations (4) and (10)
-                if (gen_a(f, i) != 2) //  so not male only
-                {
-                  temp += sum(gammln(nsamp_a(f, i) * obs_a(f, i)(tails_w(1), tails_w(2)) + dirichlet_Parm * exp_a(f, i)(tails_w(1), tails_w(2))));
-                  temp -= sum(gammln(dirichlet_Parm * exp_a(f, i)(tails_w(1), tails_w(2))));
+                if (gen_a(f, i) != 2) {  //  so not male only
+                  temp += Comp_logL_Dirichlet( nsamp_a(f, i), dirichlet_Parm, obs_a(f, i)(tails_w(1), tails_w(2)), exp_a(f, i)(tails_w(1), tails_w(2)) );
                 }
                 //  add male logL
-                if (gen_a(f, i) >= 2 && gender == 2)
-                {
-                  temp += sum(gammln(nsamp_a(f, i) * obs_a(f, i)(tails_w(3), tails_w(4)) + dirichlet_Parm * exp_a(f, i)(tails_w(3), tails_w(4))));
-                  temp -= sum(gammln(dirichlet_Parm * exp_a(f, i)(tails_w(3), tails_w(4))));
+                if (gen_a(f, i) >= 2 && gender == 2) {
+                  temp += Comp_logL_Dirichlet( nsamp_a(f, i), dirichlet_Parm, obs_a(f, i)(tails_w(3), tails_w(4)), exp_a(f, i)(tails_w(3), tails_w(4)) );
                 }
                 age_like(f, i) -= temp;
               }
+            }
+            else  //  MV_Tweedie
+            {
             }
             if (header_a(f, i, 3) > 0)
               age_like_tot(f) += age_like(f, i);
@@ -570,6 +580,7 @@ FUNCTION void evaluate_the_objective_function()
   }
 
   //  SS_Label_Info_25.7 #Fit to generalized Size composition
+  dvariable temp_logL;
   if (SzFreq_Nmeth > 0) //  have some sizefreq data
   {
     // create super-period expected values
@@ -587,7 +598,7 @@ FUNCTION void evaluate_the_objective_function()
       } //  assign back to all obs
     }
 
-    SzFreq_like = -SzFreq_like_base; // initializes
+    SzFreq_like = -offset_Sz_tot; // initializes for each Sz_Method
     for (iobs = 1; iobs <= SzFreq_totobs; iobs++)
     {
       if (SzFreq_obs_hdr(iobs, 3) > 0)
@@ -596,12 +607,42 @@ FUNCTION void evaluate_the_objective_function()
         f = abs(SzFreq_obs_hdr(iobs, 3));
         z1 = SzFreq_obs_hdr(iobs, 7);
         z2 = SzFreq_obs_hdr(iobs, 8);
-        SzFreq_like(SzFreq_LikeComponent(f, k)) -= SzFreq_sampleN(iobs) * SzFreq_obs(iobs)(z1, z2) * log(SzFreq_exp(iobs)(z1, z2));
+        int Sz_method = SzFreq_obs1(iobs, 1);  //  sizecomp method
+        int logL_method = Comp_Err_Sz(Sz_method);
+        temp_logL = 0.0;
+        switch (logL_method)
+        {
+          case 0:  //  multinomial
+          {
+            temp_logL += Comp_logL_multinomial( SzFreq_sampleN(iobs), SzFreq_obs(iobs)(z1, z2), SzFreq_exp(iobs)(z1, z2));
+            break;
+          }
+          case 1:  // dirichlet with theta*n
+          {
+             dirichlet_Parm = mfexp(selparm(Comp_Err_parmloc(Comp_Err_Sz2(Sz_method),1))) * SzFreq_sampleN(iobs);  //  theta * n
+             temp_logL -= gammln(dirichlet_Parm) - gammln( SzFreq_sampleN(iobs) + dirichlet_Parm );
+             temp_logL -= Comp_logL_Dirichlet( SzFreq_sampleN(iobs), dirichlet_Parm, SzFreq_obs(iobs)(z1, z2), SzFreq_exp(iobs)(z1, z2));
+             break;
+          }
+          case 2:  // dirichlet with beta
+          {
+             dirichlet_Parm = mfexp(selparm(Comp_Err_parmloc(Comp_Err_Sz2(Sz_method),1)));  //  beta
+             temp_logL -= gammln(dirichlet_Parm) - gammln( SzFreq_sampleN(iobs) + dirichlet_Parm );
+             temp_logL -= Comp_logL_Dirichlet( SzFreq_sampleN(iobs), dirichlet_Parm, SzFreq_obs(iobs)(z1, z2), SzFreq_exp(iobs)(z1, z2));
+             break;
+          }
+          case 3:  // MV  Tweedie
+          {
+            break;
+          }
+        }
+        SzFreq_like(SzFreq_LikeComponent(f, k)) += temp_logL;
+        SzFreq_eachlike(iobs) = value(temp_logL) - SzFreq_each_offset(iobs);
       }
     }
 
     if (do_once == 1)
-      cout << "Finished sizefreq obj_fun: " << SzFreq_like << "  base: " << SzFreq_like_base << endl;
+      cout << " did sizefreq obj_fun: " << SzFreq_like << "  base: " << offset_Sz_tot << endl;
   }
 
   //  SS_Label_Info_25.8 #Fit to morph composition
@@ -1070,18 +1111,18 @@ FUNCTION void evaluate_the_objective_function()
     echoinput << " OK with obj_func " << obj_fun << endl;
     if (SSB_yr(endyr) < 0.01 * SSB_yr(styr))
     {
-      N_warn++;
-      warning << N_warn << " 1st iteration warning: ssb(endyr)/ssb(styr)= " << SSB_yr(endyr) / SSB_yr(styr) << "; suggest start with larger R0 to get near 0.4; or use depletion fleet option" << endl;
+      warnstream << "1st iteration warning: ssb(endyr)/ssb(styr)= " << SSB_yr(endyr) / SSB_yr(styr) << "; suggest start with larger R0 to get near 0.4; or use depletion fleet option";
+      write_message (WARN, 0);
     }
     if (annual_F(endyr, 3) > 2.0)
     {
-      N_warn++;
-      warning << N_warn << " 1st iteration warning: annual F in endyr > 2.0; check configuration; suggest start with larger R0" << endl;
+      warnstream << "1st iteration warning: annual F in endyr > 2.0; check configuration; suggest start with larger R0";
+      write_message (WARN, 0);
     }
     if (sum(catch_like) > 0.5 * obj_fun && F_Method != 2)
     {
-      N_warn++;
-      warning << N_warn << " 1st iteration warning: catch logL > 50% total logL; check configuration; suggest start with larger R0" << endl;
+      warnstream << "1st iteration warning: catch logL > 50% total logL; check configuration; suggest start with larger R0";
+      write_message (WARN, 0);
     }
     do_once = 0;
   }
@@ -1389,37 +1430,25 @@ FUNCTION dvariable Check_Parm(const int iparm, const int& PrPH, const double& Pm
   {
     if (Pmin > Pmax)
     {
-      N_warn++;
-      cout << " EXIT - see warning " << endl;
-      warning << N_warn << " "
-              << " parameter min > parameter max " << Pmin << " > " << Pmax << " for parm: " << iparm << endl;
-      cout << " fatal error, see warning" << endl;
-      echoinput << " parameter min > parameter max " << Pmin << " > " << Pmax << " for parm: " << iparm << endl;
-      cout << " fatal error, see warning" << endl;
-      exit(1);
+      warnstream << "parameter min > parameter max " << Pmin << " > " << Pmax << " for parm: " << iparm;
+      write_message(FATAL, 1); // EXIT!
     }
     else if (Pmin == Pmax && PrPH >= 0)
     {
-      N_warn++;
-      warning << N_warn << " "
-              << " parameter min is same as parameter max: " << Pmin << " = " << Pmax << " for parm: " << iparm << " ; search for <now check> echoinput for parm_type" << endl;
-      echoinput << " parameter min is same as parameter max" << Pmin << " = " << Pmax << " for parm: " << iparm << endl;
+      warnstream << "parameter min is same as parameter max: " << Pmin << " = " << Pmax << " for parm: " << iparm ;
+      write_message (WARN, 1);
     }
     else if (Pval < Pmin)
     {
-      N_warn++;
-      warning << N_warn << " "
-              << "parameter init value is less than parameter min " << Pval << " < " << Pmin << " for parm: " << iparm << " ; search for <now check> in echoinput for parm_type, will exit if prior requested" << endl;
-      echoinput << " parameter init value is less than parameter min " << Pval << " < " << Pmin << " for parm: " << iparm << endl;
+      warnstream << "parameter init value is less than parameter min " << Pval << " < " << Pmin << " for parm: " << iparm;
+      write_message (WARN, 1);
       if (Prtype > 0)
         exit(1);
     }
     else if (Pval > Pmax)
     {
-      N_warn++;
-      warning << N_warn << " "
-              << "parameter init value is greater than parameter max " << Pval << " > " << Pmax << " for parm: " << iparm << " ; search for <now check> echoinput for parm_type, will exit if prior requested" << endl;
-      echoinput << " parameter init value is greater than parameter max " << Pval << " > " << Pmax << " for parm: " << iparm << endl;
+      warnstream << "parameter init value is greater than parameter max " << Pval << " > " << Pmax << " for parm: " << iparm;
+      write_message (WARN, 1);
       if (Prtype > 0)
         exit(1);
     }
@@ -1428,9 +1457,8 @@ FUNCTION dvariable Check_Parm(const int iparm, const int& PrPH, const double& Pm
     {
       if ((Pmin <= -99 || Pmax >= 999))
       {
-        N_warn++;
-        warning << N_warn << " "
-                << " jitter not done unless parameter min & max are in reasonable parameter range " << Pmin << " " << Pmax << endl;
+        warnstream << "jitter not done unless parameter min & max are in reasonable parameter range " << Pmin << " " << Pmax;
+        write_message (WARN, 0);
       }
       else
       {
@@ -1438,12 +1466,8 @@ FUNCTION dvariable Check_Parm(const int iparm, const int& PrPH, const double& Pm
         Psigma = (Pmax - Pmean) / zmax; // Psigma should also be equal to (Pmin - Pmean) / zmin;
         if (Psigma < 0.00001) // how small a sigma is too small?
         {
-          N_warn++;
-          cout << " EXIT - see warning " << endl;
-          warning << N_warn << " "
-                  << " in Check_Parm jitter:  Psigma < 0.00001 " << Psigma << endl;
-          cout << " fatal error in jitter, see warning" << endl;
-          exit(1);
+          warnstream << "in Check_Parm jitter:  Psigma < 0.00001 " << Psigma;
+          write_message (FATAL, 0); // EXIT!
         }
         zval = (Pval - Pmean) / Psigma; //  current parm value converted to zscore
         kval = cumd_norm(zval);
@@ -1470,11 +1494,8 @@ FUNCTION dvariable Check_Parm(const int iparm, const int& PrPH, const double& Pm
     {
       if (Psd <= 0.0)
       {
-        N_warn++;
-        cout << "fatal error in prior check, see warning" << endl;
-        warning << N_warn << " "
-                << "FATAL:  A prior is selected but prior sd is zero. Prtype: " << Prtype << " Prior: " << Pr << " Pr_sd: " << Psd << " for parm: " << iparm << " ; see echoinput for parm_type" << endl;
-        exit(1);
+        warnstream << "A prior is selected but prior sd is zero. Prtype: " << Prtype << " Prior: " << Pr << " Pr_sd: " << Psd << " for parm: " << iparm << " ; see echoinput for parm_type";
+        write_message (FATAL, 0); // EXIT!
       }
       if (PrPH < 0)
       {
@@ -1528,9 +1549,8 @@ FUNCTION dvariable Get_Prior(const int T, const double& Pmin, const double& Pmax
       Aprior = tau * (1.0 - mu); // CASAL's m and n
       if (Bprior <= 1.0 || Aprior <= 1.0)
       {
-        N_warn++;
-        warning << N_warn << " "
-                << " bad Beta prior " << Pval << " " << Pr << endl;
+        warnstream << "Bad Beta prior " << Pval << " " << Pr;
+        write_message (WARN, 0);
       }
       Prior_Like = (1.0 - Bprior) * log(Pconst + Pval - Pmin) + (1.0 - Aprior) * log(Pconst + Pmax - Pval) - (1.0 - Bprior) * log(Pconst + Pr - Pmin) - (1.0 - Aprior) * log(Pconst + Pmax - Pr);
       break;
@@ -1543,9 +1563,8 @@ FUNCTION dvariable Get_Prior(const int T, const double& Pmin, const double& Pmax
       }
       else
       {
-        N_warn++;
-        warning << N_warn << " "
-                << " cannot do prior in log space for parm with min <=0.0" << endl;
+        warnstream << "Cannot do prior in log space for parm with min <=0.0" ;
+        write_message (WARN, 0);
       }
       break;
     }
@@ -1555,9 +1574,8 @@ FUNCTION dvariable Get_Prior(const int T, const double& Pmin, const double& Pmax
         Prior_Like = 0.5 * square((log(Pval) - Pr + 0.5 * square(Psd)) / Psd);
       else
       {
-        N_warn++;
-        warning << N_warn << " "
-                << " cannot do prior in log space for parm with min <=0.0" << endl;
+        warnstream << "Cannot do prior in log space for parm with min <=0.0";
+        write_message (WARN, 0);
       }
       break;
     }
@@ -1566,18 +1584,16 @@ FUNCTION dvariable Get_Prior(const int T, const double& Pmin, const double& Pmax
       double warnif = 1e-15;
       if (Pmin < 0.0)
       {
-        N_warn++;
-        warning << N_warn << " "
-                << "Lower bound for gamma prior must be >=0.  Suggestion " << warnif * 10.0 << endl;
+        warnstream << "Lower bound for gamma prior must be >=0.  Suggest " << warnif * 10.0;
+        write_message (WARN, 0);
       }
       else
       {
         //Gamma is defined over [0,+inf) but x=zero causes trouble for some mean/variance combos.
         if (Pval < warnif)
         {
-          N_warn++;
-          warning << N_warn << " "
-                  << "Pval too close to zero in gamma prior - can not guarantee reliable calculations.  Suggest rescaling data (e.g. * 1000)? " << endl;
+          warnstream << "Pval too close to zero in gamma prior - can not guarantee reliable calculations.  Suggest rescaling data (e.g. * 1000)? ";
+          write_message (WARN, 0);
         }
         else
         {
@@ -1989,4 +2005,3 @@ FUNCTION void get_posteriors()
   post_vecs.close();
   post_obj_func.close();
   } //  end get_posteriors
-

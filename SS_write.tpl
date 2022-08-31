@@ -7,7 +7,7 @@
 // SS_Label_file  # * <u>Report_Parm()</u>  //  used by write_big_report in writing *report.sso*
 // SS_Label_file  #
 
- /*  SS_Label_FUNCTION 36 write_summaryoutput */
+ /*  SS_Label_FUNCTION 36 write_summaryoutput; Writes in append mode to cumreport.sso */
 FUNCTION void write_summaryoutput()
   {
   random_number_generator radm(long(time(&finish)));

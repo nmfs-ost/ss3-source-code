@@ -239,8 +239,10 @@ FUNCTION void Get_expected_values(const int y, const int t);
         {
           if (do_once == 1)
           {
-            N_warn++;
-            warning << N_warn << " " << current_phase() << " " << niter << "warn in first call: Nil selected fish for year, seas, fleet " << y << " " << s << " " << f << "; SS may recover; suggest check initial parm. values for selectivity and growth" << endl;
+            warnstream << current_phase() << " " << niter
+                 << "warn in first call: Nil selected fish for year, seas, fleet " << y << " " << s << " " << f
+                 << "; SS may recover; suggest check initial parm. values for selectivity and growth";
+            write_message (WARN, 0);
           }
           exp_l_temp += 1.0e-09;
         }
@@ -530,8 +532,8 @@ FUNCTION void Get_expected_values(const int y, const int t);
                       }
                       if (exp_disc(f, j) < 0.0)
                       {
-                        N_warn++;
-                        warning << N_warn << " " << f << " " << j << " " << exp_disc(f, j) << " catches " << catch_fleet(t, f) << endl;
+                        warnstream << f << " " << j << " " << exp_disc(f, j) << " catches " << catch_fleet(t, f);
+                        write_message (WARN, 0);
                       }
                     }
                     else
@@ -752,20 +754,14 @@ FUNCTION void Get_expected_values(const int y, const int t);
                                 } // ignore tiny fish
                                 if (z1 + 1 >= z2)
                                 {
-                                  N_warn++;
-                                  cout << " EXIT - see warning " << endl;
-                                  warning << N_warn << " "
-                                          << " error:  max population size " << wt_len_low(s, 1, z1) << " is less than first data bin " << SzFreq_bins(SzFreqMethod, 1) << " for SzFreqMethod " << SzFreqMethod << endl;
-                                  exit(1);
+                                  warnstream << "max population size " << wt_len_low(s, 1, z1) << " is less than first data bin " << SzFreq_bins(SzFreqMethod, 1) << " for SzFreqMethod " << SzFreqMethod;
+                                  write_message (FATAL, 0); // EXIT!
                                 }
 
                                 if (wt_len_low(s, 1, nlength2) < SzFreq_bins(SzFreqMethod, SzFreq_Nbins(SzFreqMethod)))
                                 {
-                                  N_warn++;
-                                  cout << " EXIT - see warning " << endl;
-                                  warning << N_warn << " "
-                                          << " error:  max population size " << wt_len_low(s, 1, nlength2) << " is less than max data bin " << SzFreq_bins(SzFreqMethod, SzFreq_Nbins(SzFreqMethod)) << " for SzFreqMethod " << SzFreqMethod << endl;
-                                  exit(1);
+                                  warnstream << "max population size " << wt_len_low(s, 1, nlength2) << " is less than max data bin " << SzFreq_bins(SzFreqMethod, SzFreq_Nbins(SzFreqMethod)) << " for SzFreqMethod " << SzFreqMethod;
+                                  write_message (FATAL, 0); // EXIT!
                                 }
 
                                 for (z = z1; z <= z2; z++)
@@ -830,19 +826,13 @@ FUNCTION void Get_expected_values(const int y, const int t);
                                   } // ignore tiny fish
                                   if (z1 + 1 >= z2)
                                   {
-                                    N_warn++;
-                                    cout << " EXIT - see warning " << endl;
-                                    warning << N_warn << " "
-                                            << " error:  max population size " << wt_len_low(s, 1, z1) << " is less than first data bin " << SzFreq_bins(SzFreqMethod, 1) << " for SzFreqMethod " << SzFreqMethod << endl;
-                                    exit(1);
+                                    warnstream << "max population size " << wt_len_low(s, 1, z1) << " is less than first data bin " << SzFreq_bins(SzFreqMethod, 1) << " for SzFreqMethod " << SzFreqMethod;
+                                    write_message (FATAL, 0); // EXIT!
                                   }
                                   if (wt_len_low(s, 1, nlength2) < SzFreq_bins(SzFreqMethod, SzFreq_Nbins(SzFreqMethod)))
                                   {
-                                    N_warn++;
-                                    cout << " EXIT - see warning " << endl;
-                                    warning << N_warn << " "
-                                            << " error:  max population size " << wt_len_low(s, 1, nlength2) << " is less than max data bin " << SzFreq_bins(SzFreqMethod, SzFreq_Nbins(SzFreqMethod)) << " for SzFreqMethod " << SzFreqMethod << endl;
-                                    exit(1);
+                                    warnstream << "max population size " << wt_len_low(s, 1, nlength2) << " is less than max data bin " << SzFreq_bins(SzFreqMethod, SzFreq_Nbins(SzFreqMethod)) << " for SzFreqMethod " << SzFreqMethod;
+                                    write_message (FATAL, 0); // EXIT!
                                   }
 
                                   for (z = z1; z <= z2; z++)
@@ -897,11 +887,8 @@ FUNCTION void Get_expected_values(const int y, const int t);
 
                                   if (len_bins2(nlength2) < SzFreq_bins(SzFreqMethod, SzFreq_Nbins(SzFreqMethod)))
                                   {
-                                    N_warn++;
-                                    cout << " EXIT - see warning " << endl;
-                                    warning << N_warn << " "
-                                            << " error:  max population len bin " << len_bins2(nlength2) << " is less than max data bin " << SzFreq_bins(SzFreqMethod, SzFreq_Nbins(SzFreqMethod)) << " for SzFreqMethod " << SzFreqMethod << endl;
-                                    exit(1);
+                                    warnstream << "max population len bin " << len_bins2(nlength2) << " is less than max data bin " << SzFreq_bins(SzFreqMethod, SzFreq_Nbins(SzFreqMethod)) << " for SzFreqMethod " << SzFreqMethod;
+                                    write_message (FATAL, 0); // EXIT!
                                   }
 
                                   for (z = z1; z <= z2; z++)
@@ -1123,4 +1110,3 @@ FUNCTION void Get_expected_values(const int y, const int t);
   } //  end loop of subseasons
   return;
   } //  end function
-

@@ -292,6 +292,8 @@ FUNCTION void get_initial_conditions()
           pred_M2(f1, t) = mgp_adj(predparm_pointer(f1)); //  base with no seasonal effect
           if (nseas > 1)
             pred_M2(f1, t) *= mgp_adj(predparm_pointer(f1) + s);
+          pred_M2(f1, t-nseas) = pred_M2(f1, t);
+          pred_M2(f1, t-nseas-nseas) = pred_M2(f1, t);
           p = fleet_area(f);  //  area this predator occurs in
 
   //  a new array for indexing g and gpi could simplify below
@@ -305,6 +307,10 @@ FUNCTION void get_initial_conditions()
               g += N_platoon;
               int gpi = GP3(g); // GP*gender*settlement
               natM(t, p,gpi) += pred_M2(f1, t) * sel_num(s, f, g);
+              if (do_once == 1 && p == 1)
+                echoinput << "init " << y << " s " << s << " t " << t << " area " << 0 << " gp " << gpi << "  M1: " << natM(t,0, gpi) << endl;
+              if (do_once == 1)
+                echoinput << "init " << y << " s " << s << " t " << t << " area " << p << " gp " << gpi << "  M1+M2: " << natM(t, p, gpi) << endl;
             }
           }
         }
@@ -386,22 +392,36 @@ FUNCTION void get_initial_conditions()
       SSB_B_yr(eq_yr).initialize();
       SSB_N_yr(eq_yr).initialize();
       for (s = 1; s <= nseas; s++)
-        for (p = 1; p <= pop; p++)
-          for (g = 1; g <= gmorph; g++)
-            if (use_morph(g) > 0)
-            {
-              if (s == spawn_seas && sx(g) == 1)
+        {
+          for (p = 1; p <= pop; p++)
+            for (g = 1; g <= gmorph; g++)
+              if (use_morph(g) > 0)
               {
-                SSB_B_yr(eq_yr) += make_mature_bio(GP4(g)) * natage(t + s, p, g);
-                SSB_N_yr(eq_yr) += make_mature_numbers(GP4(g)) * natage(t + s, p, g);
+                if (s == spawn_seas && sx(g) == 1)
+                {
+                  SSB_B_yr(eq_yr) += make_mature_bio(GP4(g)) * natage(t + s, p, g);
+                  SSB_N_yr(eq_yr) += make_mature_numbers(GP4(g)) * natage(t + s, p, g);
+                }
+                Save_PopAge(t + s, p, g) = natage(t + s, p, g);
+                Save_PopAge(t + s, p + pop, g) = elem_prod(natage(t + s, p, g), mfexp(-Z_rate(t + s, p, g) * 0.5 * seasdur(s)));
+                if (Settle_seas(settle_g(g)) == s)
+                  Recr(p, t + 1 + Settle_seas_offset(settle_g(g))) += equ_Recr * recr_dist(y, GP(g), settle_g(g), p) * platoon_distr(GP2(g));
+                Save_PopBio(t + s, p, g) = elem_prod(natage(t + s, p, g), Wt_Age_beg(s, g));
+                Save_PopBio(t + s, p + pop, g) = elem_prod(Save_PopAge(t + s, p + pop, g), Wt_Age_mid(s, g));
               }
-              Save_PopAge(t + s, p, g) = natage(t + s, p, g);
-              Save_PopAge(t + s, p + pop, g) = elem_prod(natage(t + s, p, g), mfexp(-Z_rate(t + s, p, g) * 0.5 * seasdur(s)));
-              if (Settle_seas(settle_g(g)) == s)
-                Recr(p, t + 1 + Settle_seas_offset(settle_g(g))) += equ_Recr * recr_dist(y, GP(g), settle_g(g), p) * platoon_distr(GP2(g));
-              Save_PopBio(t + s, p, g) = elem_prod(natage(t + s, p, g), Wt_Age_beg(s, g));
-              Save_PopBio(t + s, p + pop, g) = elem_prod(Save_PopAge(t + s, p + pop, g), Wt_Age_mid(s, g));
-            }
+        for (int ff = 1; ff <= N_pred; ff++)
+        {
+          f = predator(ff);
+          for (g = 1; g <= 6; g++)
+          {
+            catch_fleet(t + s, f, g) = equ_catch_fleet(g, s, f);
+          }
+          for (g = 1; g <= gmorph; g++)
+          {
+            catage(t + s, f, g) = equ_catage(s, f, g);
+          }
+        }
+      }
     }
   }
   else //  area-specific spawn-recruitment
@@ -543,6 +563,19 @@ FUNCTION void get_initial_conditions()
           catch_fleet(t, f, g) = equ_catch_fleet(g, s, f);
           annual_catch(styr - 1, g) += equ_catch_fleet(g, s, f);
         }
+        for (g = 1; g <= gmorph; g++)
+        {
+          catage(t, f, g) = equ_catage(s, f, g);
+        }
+      }
+      for (int ff = 1; ff <= N_pred; ff++)
+      {
+        f = predator(ff);
+        for (g = 1; g <= 6; g++)
+        {
+          catch_fleet(t, f, g) = equ_catch_fleet(g, s, f);
+        }
+        warning<<catch_fleet(t, f)<<endl;
         for (g = 1; g <= gmorph; g++)
         {
           catage(t, f, g) = equ_catage(s, f, g);
@@ -2003,12 +2036,12 @@ FUNCTION void Do_Equil_Calc(const prevariable& equ_Recr)
         for (p = 1; p <= pop; p++)
         {
           t = t_base + s;
+          Zrate2(p, g) = elem_div((1. - mfexp(-seasdur(s) * equ_Z(s, p, g))), equ_Z(s, p, g));
           equ_numbers(s, p, g, nages) += sum(equ_numbers(s, p, g)(nages + 1, 3 * nages));
           if (Fishon == 1)
           {
             if (F_Method >= 2)
             {
-              Zrate2(p, g) = elem_div((1. - mfexp(-seasdur(s) * equ_Z(s, p, g))), equ_Z(s, p, g));
               if (s < Bseas(g))
                 Zrate2(p, g, 0) = 0.0;
               for (int ff = 1; ff <= N_catchfleets(p); ff++)
@@ -2027,6 +2060,18 @@ FUNCTION void Do_Equil_Calc(const prevariable& equ_Recr)
             {
               // already done in the age loop
             }
+          }
+          
+          for (f1 = 1; f1 <= N_pred; f1++)
+          {
+            f = predator(f1);
+            equ_catch_fleet(2, s, f) += pred_M2(f1, t) * elem_prod(equ_numbers(s, p, g)(0, nages), sel_dead_bio(s, f, g)) * Zrate2(p, g); // dead catch bio
+            equ_catch_fleet(5, s, f) += pred_M2(f1, t) * elem_prod(equ_numbers(s, p, g)(0, nages), sel_dead_num(s, f, g)) * Zrate2(p, g); // deadfish catch numbers
+            equ_catch_fleet(3, s, f) += pred_M2(f1, t) * elem_prod(equ_numbers(s, p, g)(0, nages), sel_ret_bio(s, f, g)) * Zrate2(p, g); // retained catch bio
+            equ_catch_fleet(1, s, f) += pred_M2(f1, t) * elem_prod(equ_numbers(s, p, g)(0, nages), sel_bio(s, f, g)) * Zrate2(p, g); // encountered catch bio
+            equ_catch_fleet(4, s, f) += pred_M2(f1, t) * elem_prod(equ_numbers(s, p, g)(0, nages), sel_num(s, f, g)) * Zrate2(p, g); // encountered catch bio
+            equ_catch_fleet(6, s, f) += pred_M2(f1, t) * elem_prod(equ_numbers(s, p, g)(0, nages), sel_ret_num(s, f, g)) * Zrate2(p, g); // retained catch numbers
+            equ_catage(s, f, g) = pred_M2(f1, t) * elem_prod(elem_prod(equ_numbers(s, p, g)(0, nages), sel_dead_num(s, f, g)), Zrate2(p, g));
           }
 
           if (s == 1)

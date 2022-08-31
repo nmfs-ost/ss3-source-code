@@ -123,9 +123,8 @@
           for (a = 0; a <= nages; a++)
             if (Wt_Age_t(t, f, g, a) == -9999.)
             {
-              N_warn++;
-              warning << N_warn << " "
-                      << "wtatage not assigned for: time, morph, fleet, age: " << t << " " << g << " " << f << " " << a << endl;
+              warnstream << "wtatage not assigned for: time, morph, fleet, age: " << t << " " << g << " " << f << " " << a;
+              write_message (WARN, 0);
             }
     temp = float(Bmark_Yr(2) - Bmark_Yr(1) + 1.); //  get denominator
     echoinput << " fill benchmark years with mean " << endl;
@@ -181,11 +180,8 @@
           {
             if (Svy_obs(f, i) <= 0.0)
             {
-              N_warn++;
-              cout << " EXIT - see warning " << endl;
-              warning << N_warn << " "
-                      << "Survey obs must be positive for lognormal error" << endl;
-              exit(1);
+              warnstream << "Survey obs must be positive for lognormal error";
+              write_message (FATAL, 0); // EXIT!
             }
             Svy_obs_log(f, i) = log(Svy_obs(f, i));
             Svy_se(f, i) += var_adjust(1, f);
@@ -272,25 +268,28 @@
                 obs_l(f, i)(tails_l(f, i, 3), tails_l(f, i, 4)) * log(obs_l(f, i)(tails_l(f, i, 3), tails_l(f, i, 4)));
           }
         }
-        else
+        else if( (Comp_Err_L(f)==1) || (Comp_Err_L(f)==2) ) //  dirichlet
         {
           // Dirichlet-Multinomial (either 1 = linear, 2 = saturating)
+          // cannot use fxn Comp_Err_Dirichlet for this calc because only need the first part here
+          offset_l(f, i) = gammln(nsamp_l(f, i) + 1.);
           if (gen_l(f, i) != 2)
           {
             int z1 = tails_l(f, i, 1);
             int z2 = tails_l(f, i, 2);
-            offset_l(f, i) += gammln(nsamp_l(f, i) + 1.) -
+            offset_l(f, i) -= sum(gammln(1. + nsamp_l(f, i) * obs_l(f, i)(z1, z2)));
                 //        sum(gammln(1. + nsamp_l(f,i)*obs_l(f,i)(tails_l(f,i,3),tails_l(f,i,4))));
-                sum(gammln(1. + nsamp_l(f, i) * obs_l(f, i)(z1, z2)));
           }
           if (gen_l(f, i) >= 2 && gender == 2)
           {
             int z1 = tails_l(f, i, 3);
             int z2 = tails_l(f, i, 4);
-            offset_l(f, i) += gammln(nsamp_l(f, i) + 1.) -
-                //        sum(gammln(1. + nsamp_l(f,i)*obs_l(f,i)(tails_l(f,i,3),tails_l(f,i,4))));
-                sum(gammln(1. + nsamp_l(f, i) * obs_l(f, i)(z1, z2)));
+            offset_l(f, i) -= sum(gammln(1. + nsamp_l(f, i) * obs_l(f, i)(z1, z2)));
           }
+        }
+        else if( (Comp_Err_L(f)==3)) //  MV Tweedie
+        {
+          //  no MV Tweedie offset
         }
       }
   //  echoinput<<" length_comp offset: "<<offset_l<<endl;
@@ -324,11 +323,8 @@
         }
         if (k != 1)
         {
-          N_warn++;
-          cout << "EXIT - see warning.sso";
-          warning << N_warn << " "
-                  << " must have only 1 sample with real info in survey superperiod " << j << endl;
-          exit(1);
+          warnstream << "There must only be 1 sample with real info in survey superperiod " << j;
+          write_message (FATAL, 0); // EXIT!
         }
         for (i = Svy_super_start(f, j); i <= Svy_super_end(f, j); i++)
         {
@@ -366,11 +362,8 @@
         }
         if (k != 1)
         {
-          N_warn++;
-          cout << "EXIT - see warning.sso";
-          warning << N_warn << " "
-                  << " must have only 1 sample with real info in survey superperiod " << j << endl;
-          exit(1);
+          warnstream << "There must only be 1 sample with real info in survey superperiod " << j;
+          write_message (FATAL, 0); // EXIT!
         }
         for (i = suprper_disc1(f, j); i <= suprper_disc2(f, j); i++)
         {
@@ -408,11 +401,8 @@
         }
         if (k > 1)
         {
-          N_warn++;
-          cout << "error in length data";
-          warning << N_warn << " "
-                  << " must have only 1 sample with real info in length superperiod " << j << endl;
-          exit(1);
+          warnstream << "There must only be 1 sample with real info in length superperiod " << j;
+          write_message (FATAL, 0); // EXIT!
         }
         for (i = suprper_l1(f, j); i <= suprper_l2(f, j); i++)
         {
@@ -450,11 +440,8 @@
         }
         if (k != 1)
         {
-          N_warn++;
-          cout << "error in age data";
-          warning << N_warn << " "
-                  << " must have only 1 sample with real info in age superperiod " << j << endl;
-          exit(1);
+          warnstream << "There must only be 1 sample with real info in age superperiod " << j;
+          write_message (FATAL, 0); // EXIT!
         }
         for (i = suprper_a1(f, j); i <= suprper_a2(f, j); i++)
         {
@@ -491,11 +478,8 @@
         }
         if (k != 1)
         {
-          N_warn++;
-          cout << "error in meansize data";
-          warning << N_warn << " "
-                  << " must have only 1 sample with real info in meansize superperiod " << j << endl;
-          exit(1);
+          warnstream << "There must only be 1 sample with real info in meansize superperiod " << j;
+          write_message (FATAL, 0); // EXIT!
         }
         for (i = suprper_ms1(f, j); i <= suprper_ms2(f, j); i++)
         {
@@ -537,24 +521,28 @@
                 obs_a(f, i)(tails_a(f, i, 3), tails_a(f, i, 4)) * log(obs_a(f, i)(tails_a(f, i, 3), tails_a(f, i, 4)));
           }
         }
-        else
+        else if( (Comp_Err_A(f)==1) || (Comp_Err_A(f)==2) ) //  dirichlet
         {
           // Dirichlet-Multinomial (either 1 = linear, 2 = saturating)
+          offset_a(f, i) = gammln(nsamp_a(f, i) + 1.);
           if (gen_a(f, i) != 2)
           {
             int z1 = tails_a(f, i, 1);
             int z2 = tails_a(f, i, 2);
-            offset_a(f, i) += gammln(nsamp_a(f, i) + 1.) -
-                sum(gammln(1. + nsamp_a(f, i) * obs_a(f, i)(z1, z2)));
+            offset_a(f, i) -= sum(gammln(1. + nsamp_a(f, i) * obs_a(f, i)(z1, z2)));
           }
           if (gen_a(f, i) >= 2 && gender == 2)
           {
             int z1 = tails_a(f, i, 3);
             int z2 = tails_a(f, i, 4);
-            offset_a(f, i) += gammln(nsamp_a(f, i) + 1.) -
-                sum(gammln(1. + nsamp_a(f, i) * obs_a(f, i)(z1, z2)));
+            offset_a(f, i) -= sum(gammln(1. + nsamp_a(f, i) * obs_a(f, i)(z1, z2)));
           }
         }
+        else if( (Comp_Err_A(f)==3) ) //  MV Tweedie
+        {
+          // MV Tweedie has no offset, at least yet
+        }
+
       }
   //   echoinput<<" agecomp offset "<<offset_a<<endl;
   echoinput << " age comp var adjust has been set-up " << endl;
@@ -598,9 +586,21 @@
         z1 = SzFreq_obs_hdr(iobs, 7);
         z2 = SzFreq_obs_hdr(iobs, 8);
         g = SzFreq_LikeComponent(f, k);
-        SzFreq_like_base(g) -= SzFreq_sampleN(iobs) * SzFreq_obs(iobs)(z1, z2) * log(SzFreq_obs(iobs)(z1, z2));
+        if (Comp_Err_Sz(k) == 0) // Multinomial
+        {
+          offset_Sz_tot(g) -= SzFreq_sampleN(iobs) * SzFreq_obs(iobs)(z1, z2) * log(SzFreq_obs(iobs)(z1, z2));
+          SzFreq_each_offset(iobs) -= SzFreq_sampleN(iobs) * SzFreq_obs(iobs)(z1, z2) * log(SzFreq_obs(iobs)(z1, z2));
+        }
+        else if (Comp_Err_Sz(k) == 1 || Comp_Err_Sz(k) == 2 ) // Dirichlet
+        {
+          offset_Sz_tot(g) += gammln(SzFreq_sampleN(iobs) + 1.) - sum(gammln(1. + SzFreq_sampleN(iobs) * SzFreq_obs(iobs)(z1, z2)));
+          SzFreq_each_offset(iobs) += gammln(SzFreq_sampleN(iobs) + 1.) - sum(gammln(1. + SzFreq_sampleN(iobs) * SzFreq_obs(iobs)(z1, z2)));
+        }
+        else if (Comp_Err_Sz(k) == 3)  //  MV Tweedie
+        {
+          //  MV Tweedie not available
+        }
       }
-
       // identify super-period starts and stops
       if (s < 0) // start/stop a super-period  ALL observations must be continguous in the file
       {
@@ -617,7 +617,7 @@
         }
       }
     }
-    echoinput << " gen size comp var adjust has been set-up " << endl;
+    echoinput << " Sizefreq comp var adjust has been applied and offset calculated " << endl;
 
     if (N_suprper_SzFreq > 0)
     {
@@ -643,11 +643,8 @@
         }
         if (k != 1)
         {
-          N_warn++;
-          cout << "error in sizecomp data";
-          warning << N_warn << " "
-                  << " must have only 1 sample with real info in sizecomp superperiod " << j << endl;
-          exit(1);
+          warnstream << "There must only be 1 sample with real info in sizecomp superperiod " << j;
+          write_message (FATAL, 0); // EXIT!
         }
         for (iobs = suprper_SzFreq_start(j); iobs <= suprper_SzFreq_end(j); iobs++)
         {
@@ -736,9 +733,8 @@
         }
         else
         {
-          N_warn++;
-          warning << N_warn << " "
-                  << " Trying to specify a recdev out of allowable range of years " << y << endl;
+          warnstream << "Trying to specify a recdev out of allowable range of years " << y;
+          write_message (WARN, 0);
         }
       }
     }
@@ -1000,9 +996,8 @@
   //  end bound check and jitter
   if (Do_all_priors == 0 && prior_ignore_warning > 0)
   {
-    N_warn++;
-    warning << N_warn << " "
-            << "setting in starter does not request all priors, and " << prior_ignore_warning << " parameters have priors and are not estimated, so their prior not included in obj_fun." << endl;
+    warnstream << "Setting in starter does not request all priors, and " << prior_ignore_warning << " parameters have priors and are not estimated, so their prior not included in obj_fun.";
+    write_message (WARN, 0);
   }
   if (TwoD_AR_cnt > 0)
   {
@@ -1126,11 +1121,8 @@
     // check for discard obs
     if (disc_N_fleet(f) > 0 && Do_Retain(f) == 0)
     {
-      N_warn++;
-      cout << "SS3 will exit, see warning" << endl;
-      warning << N_warn << " "
-              << "fleet: " << f << "  discard data exist but retention fxn not defined; exit" << endl;
-      exit(1);
+      warnstream << "Fleet: " << f << "  discard data exist but retention fxn not defined";
+      write_message (FATAL, 0); // EXIT!
     }
 
     parti_cnt.initialize();
@@ -1142,25 +1134,18 @@
       }
       if (parti_cnt(1) > 0 && Do_Retain(f) == 0)
       {
-        N_warn++;
-        cout << "SS3 will exit, see warning" << endl;
-        warning << N_warn << " "
-                << "fleet: " << f << "  lencomp contains N obs with partition==1 and retention fxn not defined; N= " << parti_cnt(1) << endl;
-        exit(1);
+        warnstream << "Fleet: " << f << "  lencomp contains N obs with partition==1 and retention fxn not defined; N= " << parti_cnt(1);
+        write_message (FATAL, 0); // EXIT!
       }
       if (parti_cnt(2) > 0 && Do_Retain(f) == 0)
       {
-        N_warn++;
-        warning << N_warn << " "
-                << "fleet: " << f << "  lencomp has obs with partition==2; will treat as partition=0 because retention not defined; N= " << parti_cnt(2) << endl;
+        warnstream <<  "fleet: " << f << "  lencomp has obs with partition==2; will treat as partition=0 because retention not defined; N= " << parti_cnt(2);
+        write_message (WARN, 0);
       }
       if (parti_cnt(2) > 0 && (fleet_type(f) == 2 || seltype(f, 2) == 3 || seltype(Nfleet + f, 2) == 3)) //  error if retained catch obs are with no retention fleets
       {
-        N_warn++;
-        cout << "SS3 will exit, see warning" << endl;
-        warning << N_warn << " "
-                << "fleet: " << f << " EXIT; lencomp has obs with partition==2; but fleet does not retain any catch; N= " << parti_cnt(2) << endl;
-        exit(1);
+        warnstream << "Fleet: " << f << "  lencomp has obs with partition==2; but fleet does not retain any catch; N= " << parti_cnt(2);
+        write_message (FATAL, 0); // EXIT!
       }
     }
 
@@ -1173,25 +1158,18 @@
       }
       if (parti_cnt(1) > 0 && Do_Retain(f) == 0)
       {
-        N_warn++;
-        cout << "SS3 will exit, see warning" << endl;
-        warning << N_warn << " "
-                << "fleet: " << f << "  agecomp contains N obs with partition==1 and retention fxn not defined; N= " << parti_cnt(1) << endl;
-        exit(1);
+        warnstream << "Fleet: " << f << "  agecomp contains N obs with partition==1 and retention fxn not defined; N= " << parti_cnt(1);
+        write_message (FATAL, 0); // EXIT!
       }
       if (parti_cnt(2) > 0 && Do_Retain(f) == 0)
       {
-        N_warn++;
-        warning << N_warn << " "
-                << "fleet: " << f << "  agecomp has obs with partition==2; will treat as partition=0 because retention not defined; N= " << parti_cnt(2) << endl;
+        warnstream << "Fleet: " << f << "  agecomp has obs with partition==2; will treat as partition=0 because retention not defined; N= " << parti_cnt(2);
+        write_message (WARN, 0);
       }
       if (parti_cnt(2) > 0 && (fleet_type(f) == 2 || seltype(f, 2) == 3 || seltype(Nfleet + f, 2) == 3)) //  error if retained catch obs are with no retention fleets
       {
-        N_warn++;
-        cout << "SS3 will exit, see warning" << endl;
-        warning << N_warn << " "
-                << "fleet: " << f << " EXIT; agecomp has obs with partition==2; but fleet does not retain any catch; N= " << parti_cnt(2) << endl;
-        exit(1);
+        warnstream << "Fleet: " << f << "  agecomp has obs with partition==2; but fleet does not retain any catch; N= " << parti_cnt(2);
+        write_message (FATAL, 0); // EXIT!
       }
     }
 
@@ -1204,25 +1182,18 @@
       }
       if (parti_cnt(1) > 0 && Do_Retain(f) == 0)
       {
-        N_warn++;
-        cout << "SS3 will exit, see warning" << endl;
-        warning << N_warn << " "
-                << "fleet: " << f << "  size-at-age data contains obs with partition==1 and retention fxn not defined; N= " << parti_cnt(1) << endl;
-        exit(1);
+        warnstream << "Fleet: " << f << "  size-at-age data contains obs with partition==1 and retention fxn not defined; N= " << parti_cnt(1);
+        write_message (FATAL, 0); // EXIT!
       }
       if (parti_cnt(2) > 0 && Do_Retain(f) == 0)
       {
-        N_warn++;
-        warning << N_warn << " "
-                << "fleet: " << f << "  size-at-age data  has obs with partition==2; will treat as partition=0 because retention not defined; N= " << parti_cnt(2) << endl;
+        warnstream << "Fleet: " << f << "  size-at-age data  has obs with partition==2; will treat as partition=0 because retention not defined; N= " << parti_cnt(2);
+        write_message (WARN, 0);
       }
       if (parti_cnt(2) > 0 && (fleet_type(f) == 2 || seltype(f, 2) == 3 || seltype(Nfleet + f, 2) == 3)) //  error if retained catch obs are with no retention fleets
       {
-        N_warn++;
-        cout << "SS3 will exit, see warning" << endl;
-        warning << N_warn << " "
-                << "fleet: " << f << " EXIT; size-at-age data has obs with partition==2; but fleet does not retain any catch; N= " << parti_cnt(2) << endl;
-        exit(1);
+        warnstream << "Fleet: " << f << " EXIT; size-at-age data has obs with partition==2; but fleet does not retain any catch; N= " << parti_cnt(2);
+        write_message (FATAL, 0); // EXIT!
       }
     }
 
@@ -1240,25 +1211,18 @@
       }
       if (parti_cnt(1) > 0 && Do_Retain(f) == 0)
       {
-        N_warn++;
-        cout << "SS3 will exit, see warning" << endl;
-        warning << N_warn << " "
-                << "fleet: " << f << "  meansize data contains obs with partition==1 and retention fxn not defined; N= " << parti_cnt(1) << endl;
-        exit(1);
+        warnstream << "Fleet: " << f << "  meansize data contains obs with partition==1 and retention fxn not defined; N= " << parti_cnt(1);
+        write_message (FATAL, 0); // EXIT!
       }
       if (parti_cnt(2) > 0 && Do_Retain(f) == 0)
       {
-        N_warn++;
-        warning << N_warn << " "
-                << "fleet: " << f << "  meansize data has obs with partition==2; will treat as partition=0 because retention not defined; N= " << parti_cnt(2) << endl;
+        warnstream << "Fleet: " << f << "  meansize data has obs with partition==2; will treat as partition=0 because retention not defined; N= " << parti_cnt(2);
+        write_message (WARN, 0);
       }
       if (parti_cnt(2) > 0 && (fleet_type(f) == 2 || seltype(f, 2) == 3 || seltype(Nfleet + f, 2) == 3)) //  error if retained catch obs are with no retention fleets
       {
-        N_warn++;
-        cout << "SS3 will exit, see warning" << endl;
-        warning << N_warn << " "
-                << "fleet: " << f << " EXIT; meansize data has obs with partition==2; but fleet does not retain any catch; N= " << parti_cnt(2) << endl;
-        exit(1);
+        warnstream << "Fleet: " << f << " EXIT; meansize data has obs with partition==2; but fleet does not retain any catch; N= " << parti_cnt(2);
+        write_message (FATAL, 0); // EXIT!
       }
     }
   }
@@ -1301,15 +1265,15 @@
         echoinput << "sex: " << gg << "; Gpat: " << GPat << " settle: " << settle << "; L-at-Amin: " << Lmin(gp) << "; L at max age: " << Ave_Size(styr, 1, g, nages) << endl;
         if (len_bins(1) > Lmin(gp))
         {
-          N_warn++;
-          warning << N_warn << " Minimum pop size bin:_" << len_bins(1) << "; is > L at Amin for sex: " << gg
-                  << "; Gpat: " << GPat << "; L= " << Lmin(gp) << endl;
+          warnstream << "Minimum pop size bin:_" << len_bins(1) << "; is > L at Amin for sex: " << gg
+                  << "; Gpat: " << GPat << "; L= " << Lmin(gp);
+          write_message (WARN, 0);
         }
         if (Ave_Size(styr, 1, g, nages) > 0.95 * len_bins(nlength))
         {
-          N_warn++;
-          warning << N_warn << " Maximum pop size bin:_" << len_bins(nlength) << "; is within 5% of L at maxage for sex: " << gg
-                  << "; Gpat: " << GPat << " settle: " << settle << "; L= " << Ave_Size(styr, 1, g, nages) << endl;
+          warnstream << "Maximum pop size bin:_" << len_bins(nlength) << "; is within 5% of L at maxage for sex: " << gg
+                  << "; Gpat: " << GPat << " settle: " << settle << "; L= " << Ave_Size(styr, 1, g, nages);
+          write_message (WARN, 0);
         }
       }
     }
@@ -1464,4 +1428,3 @@
   }
   last_objfun = 1.0e30;
   } // end PRELIMINARY_CALCS_SECTION
-

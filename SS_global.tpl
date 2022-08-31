@@ -63,8 +63,17 @@ GLOBALS_SECTION
   #include <vector>
   #include <iostream>
   #include <sstream>
+    #define NOTE    1 // information that could be useful
+    #define SUGGEST 2 // a possible better way
+    #define PERFORM 3 // can help performance
+    #define WARN    4 // might be a problem, execution continues anyway
+    #define ADJUST  5 // adjustment has been made, execution continues
+    #define FATAL   6 // major problem, program will exit
+    adstring_array MessageIntro;
   #include <sys/types.h>
   #include <sys/stat.h>
+
+
   time_t start, finish;
   long hour, minute, second;
   double elapsed_time;
@@ -103,8 +112,8 @@ GLOBALS_SECTION
   adstring_array pick_report_use; //  X if used; 0 if not
 
 //  SS_Label_Info_10.1 #Open output files using ofstream
-  ofstream warning;
-  ofstream echoinput;
+  ofstream warning; // warning.sso - where warnings, notes, etc. are put
+  ofstream echoinput; // echoes input (for debugging) and includes some comments
   ofstream ParmTrace;
   ofstream report5; // forecast-report
   ofstream report2; // control.ss_new
@@ -126,14 +135,15 @@ GLOBALS_SECTION
   std::string usermsg;
   int ParCount;
   int timevary_parm_cnt;
-  int N_warn = 0;
+  int N_warn = 0; // track the number of warnings and adjustments
+  int N_note = 0; // track the number of suggestions and notes
   int styr;
   int endyr;
   int YrMax;
   int nseas;
   int Ncycle;
   int seas_as_year;
-  int special_flag = 0; //  for whenever I need one
+  int special_flag = 0; //  for whenever a flag is needed
 
 //  SS_Label_Info_10.3  #start random number generator with seed based on time
   random_number_generator radm(long(time(&start)));
@@ -164,45 +174,98 @@ GLOBALS_SECTION
   ;
 //  function in GLOBALS to do the timing setup in the data section
 
-// SS_Label_Function xxxa write_message(string,int,int); output a message with an option to exit (when fatal)
-  void write_message(std::string msg, int echo, int warn, int exitflag)
+
+// SS_Label_Function_xxxa write_msg(string,int,int,int); output a message.
+// options are output the string to echoinput.sso and warning.sso with an option to exit
+// SS_Label_Function_xxxa # ### write_msg (string, echoflag, warnflag, exitflag)
+// SS_Label_Function_xxxa # 
+// SS_Label_Function_xxxa # Writes a string to either echoinput.sso or warning.sso 
+// SS_Label_Function_xxxa # or both. The last option tells it to exit the program
+// SS_Label_Function_xxxa # with appropriate output to warning.sso and cout.
+// SS_Label_Function_xxxa # 
+  void write_msg(std::string msg, int echo, int warn, int exitflag)
   {
+    std::string totmsg;
     if (msg.length() == 0)
     {
-      msg = "unknown condition";
+      msg = "unknown message";
     }
+
     if (echo == 1)
     {
-      if (exitflag == 1)
-        echoinput << "Exit:  ";
       echoinput << msg << endl;
     }
-    if (warn == 1)
+    if (warn > 0)
     {
-      warning << msg << endl;
+      size_t b = msg.find ("parameter", 0);
+      warning << msg;
+      if (echo == 1 && (b > 0 && b < msg.size()))
+      {
+        warning << "; search for <now check> in echoinput.sso for parm_type";
+      }
+      warning << endl;
     }
     if (exitflag == 1)
     {
-      cout << " Fatal Error:" << endl;
-      cout << " -- " << msg << endl;
-      cout << " Exiting SS3. " << endl;
+      warning.close();
+	    echoinput.close();
+      cout << msg << endl;
+      cout << "Also see warning.sso" << endl;
+      cout << "Exiting SS3! " << endl;
       exit(1);
     }
   }
-// SS_Label_Function_xxxb write_warning(int,int); output a warning with an option to exit (when fatal)
-  void write_warning(int &nwarn, int echo, int exitflag)
+// SS_Label_Function_xxxb write_message(int,int,int); increment warning count and output a warning with an option to exit (when fatal)
+// SS_Label_Function_xxxb # ### write_message (type, echo)
+// SS_Label_Function_xxxb # 
+// SS_Label_Function_xxxb # type is one of the following:
+// SS_Label_Function_xxxb # - NOTE    : information that could be useful
+// SS_Label_Function_xxxb # - SUGGEST : a possible better way
+// SS_Label_Function_xxxb # - PERFORM : can help performance
+// SS_Label_Function_xxxb # - WARN    : might be a problem, execution continues anyway
+// SS_Label_Function_xxxb # - ADJUST  : adjustment has been made, execution continues
+// SS_Label_Function_xxxb # - FATAL   : major problem, program will exit
+// SS_Label_Function_xxxb # 
+// SS_Label_Function_xxxb # and echo is either 1 to write to echoinput.sso or 0.
+// SS_Label_Function_xxxb # 
+// SS_Label_Function_xxxb # This writes the text in warnstream and resets it.
+// SS_Label_Function_xxxb # 
+  void write_message(int type, int echo)
   {
+    int exitflag = 0;
+    int warn = 0;
     std::string msg(warnstream.str());
-    nwarn++;
-	std::string premsg (std::to_string(nwarn) + " ");
-	write_message(premsg + msg, echo, 1, exitflag);
+    warnstream.str("");
+    if (msg.length() == 0)
+      msg = "unknown condition.";
+
+    switch (type)
+    {
+      case NOTE:
+      case SUGGEST:
+      case PERFORM:
+        N_note++;
+        warn = N_note;
+        warnstream << "Note " << N_note;
+        break;
+      case FATAL:
+        exitflag = 1;
+	[[fallthrough]];
+      case ADJUST:
+      case WARN:
+        N_warn++;
+        warn = N_warn;
+        warnstream << "Warning " << N_warn;
+        break;
+    }
+    warnstream << MessageIntro(type) << msg;
+    write_msg(warnstream.str(), echo, warn, exitflag);
     warnstream.str("");
   }
 
 // SS_Label_Function_xxxx  #get_data_timing()  called by readdata
   void get_data_timing(const dvector& to_process, const ivector& timing_constants, ivector i_result, dvector r_result, const dvector& seasdur, const dvector& subseasdur_delta, const dvector& azero_seas, const dvector& surveytime)
   {
-
   // r_result(1,3) will contain: real_month, data_timing_seas, data_timing_yr,
   // i_result(1,6) will contain y, t, s, f, ALK_time, use_midseas
   int f, s, subseas, y;
@@ -260,12 +323,8 @@ GLOBALS_SECTION
     {
       if (month >= 13.0)
       {
-	  warnstream << "Fatal error. month must be <13.0, end of year is 12.99, value read is: " << month;
-	  write_warning(N_warn, 0, 1);
-//        N_warn++;
-//        cout << "fatal read error, see warning" << endl;
-//        warning << N_warn << " Fatal error. month must be <13.0, end of year is 12.99, value read is: " << month << endl;
-//        exit(1);
+    	  warnstream << "month must be <13.0, end of year is 12.99, value read is: " << month;
+    	  write_message(FATAL, 0);
       }
       temp1 = max(0.00001, (month - 1.0) / 12.); //  month as fraction of year
       s = 1; // earlist possible seas;
@@ -351,7 +410,7 @@ GLOBALS_SECTION
   */
   void create_timevary(dvector& baseparm_list, ivector& timevary_setup,
     ivector& timevary_byyear, int& autogen_timevary, const int& targettype,
-    const ivector& block_design_pass, const dvector& env_data_pass, 
+    const ivector& block_design_pass, const dvector& env_data_pass,
     int& N_parm_dev, const double& finish_starter)
   {
   //  where timevary_byyear is a selected column of a year x type matrix (e.g. timevary_MG) in read_control
@@ -419,13 +478,7 @@ GLOBALS_SECTION
               {
                 warnstream << "cannot use multiplicative blocks for parameter with a negative lower bound;  exit " << endl
                         << baseparm_list(1) << " " << baseparm_list(2) << " " << baseparm_list(3) << endl;
-                write_warning(N_warn, 0,1);
-//                N_warn++;
-//                warning << N_warn << " "
-//                        << " cannot use multiplicative blocks for parameter with a negative lower bound;  exit " << endl
-//                        << baseparm_list(1) << " " << baseparm_list(2) << " " << baseparm_list(3) << endl;
-//                cout << "exit, see warning" << endl;
-//                exit(1);
+                write_message(FATAL, 0);
               }
               tempvec(1) = log(baseparm_list(1) / baseparm_list(3)); //  max negative change
               tempvec(2) = log(baseparm_list(2) / baseparm_list(3)); //  max positive change
@@ -769,10 +822,7 @@ GLOBALS_SECTION
     if (y < styr)
     {
       warnstream << "reset parm_dev start year to styr for parm: " << j << " " << y;
-      write_warning(N_warn,0,0);
-//      N_warn++;
-//      warning << N_warn << " "
-//              << " reset parm_dev start year to styr for parm: " << j << " " << y << endl;
+      write_message(ADJUST, 0);
       y = styr;
     }
     timevary_setup(10) = y;
@@ -780,11 +830,8 @@ GLOBALS_SECTION
     y = baseparm_list(11);
     if (y > YrMax)
     {
-	  warnstream << " reset parm_dev end year to YrMax for parm: " << j << " " << y;
-	  write_warning(N_warn,0,0);
-//      N_warn++;
-//      warning << N_warn << " "
-//              << " reset parm_dev end year to YrMax for parm: " << j << " " << y << endl;
+	  warnstream << "reset parm_dev end year to YrMax for parm: " << j << " " << y;
+	  write_message(ADJUST, 0);
       y = YrMax;
     }
     timevary_setup(11) = y;
@@ -836,7 +883,7 @@ GLOBALS_SECTION
   echoinput << "timevary_setup" << timevary_setup << endl;
   return;
   }
-  
+
 //  }  //  end GLOBALS_SECTION
 
 //  SS_Label_Section_11. #BETWEEN_PHASES_SECTION
@@ -886,7 +933,7 @@ FINAL_SECTION
     if (objective_function_value::pobjfun->gmax > final_conv)
     {
       warnstream << "Final gradient: " << objective_function_value::pobjfun->gmax << " is larger than final_conv: " << final_conv;
-	  write_warning(N_warn, 0, 0);
+	  write_message(WARN, 0);
     }
 
     //  SS_Label_Info_12.2 #Output the covariance matrix to covar.sso
@@ -1079,8 +1126,8 @@ FINAL_SECTION
     else
     {
       {
-        warnstream << "NOTE:  No *.ss_new and fewer *.sso files written after mceval";
-		write_warning(N_warn, 0, 0);
+        warnstream << "No *.ss_new and fewer *.sso files written after mceval";
+		write_message(NOTE, 0);
       }
     }
 
@@ -1105,22 +1152,47 @@ FINAL_SECTION
     if (parm_adjust_method == 3)
     {
       warnstream << "Time-vary parms not bound checked";
-	  write_warning(N_warn, 0, 0);
+	  write_message(WARN, 0);
     }
 
     //  SS_Label_Info_12.4.7 #Finish up with final writes to warning.sso
     if (N_changed_lambdas > 0)
     {
       warnstream << "Reminder: Number of lamdas !=0.0 and !=1.0:  " << N_changed_lambdas;
-	  write_warning(N_warn, 0, 0);
+	  write_message(WARN, 0);
     }
 
     if (Nparm_on_bound > 0)
     {
-      warning << " N parameters are on or within 1% of min-max bound: " << Nparm_on_bound << "; check results, variance may be suspect" << endl;
+      warnstream << " N parameters that are on or within 1% of min-max bound: " << Nparm_on_bound;
+      cout << endl << warnstream.str() << endl;
+      warnstream << "; check results, variance may be suspect";
+      write_message (NOTE, 0);
     }
-    warning << "N warnings: " << N_warn << endl;
-    cout << "See warning.sso for N warnings: " << N_warn << endl;
+    if (N_warn > 0)
+    {
+      warnstream << " " << N_warn << " warning" << (N_warn > 1? "s ": " ");
+      if (N_note > 0)
+      {
+        warnstream << " and " << N_note << " note" << (N_note > 1? "s ": " ");
+      }
+    }
+    else if (N_note > 0)
+    {
+      warnstream << " " << N_note << " note" << (N_note > 1? "s ": " ");
+    }
+    warning << warnstream.str() << endl;
+
+    cout << endl
+         << "!!  Run has completed  !! " << endl;
+    if (N_warn + N_note > 0)
+    {
+      cout << "!!  See warning.sso for" << warnstream.str() << endl;
+    }
+    else
+    {
+      cout << "--  No warnings or notes :)  --" << endl;
+    }
   }
   } //  end final section
 
@@ -1270,4 +1342,3 @@ REPORT_SECTION
     //    SS2out.close();
   }
   } //  end standard report section
-

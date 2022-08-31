@@ -103,3 +103,20 @@ FUNCTION void get_catch_mult(int y, int catch_mult_pointer)
   return;
   }
 
+//********************************************************************
+ /*  SS_Label_FUNCTION 4XX Comp_logL  */
+FUNCTION dvariable Comp_logL_multinomial(const double& Nsamp, const dvector& obs_comp, const dvar_vector& exp_comp)
+  {
+    dvariable logL;
+//    logL = - Nsamp * obs_comp(tail_L, tail_H) * log(exp_comp(tail_L, tail_H));
+//    the call to this function does the subsetting to tail_L and tail_H, so this function can operate cleanly on the entirety of the passed vector
+    logL = - Nsamp * obs_comp * log(exp_comp);
+    return (logL);
+  }
+
+FUNCTION dvariable Comp_logL_Dirichlet(const double& Nsamp, const dvariable& dirichlet_Parm, const dvector& obs_comp, const dvar_vector& exp_comp)
+  {
+    dvariable logL;
+    logL = sum(gammln(Nsamp * obs_comp + dirichlet_Parm * exp_comp)) - sum(gammln(dirichlet_Parm * exp_comp));
+    return (logL);
+  }
