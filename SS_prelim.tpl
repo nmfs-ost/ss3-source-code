@@ -35,7 +35,7 @@
   {
     ad_comm::change_datafile_name("wtatage.ss");
     echoinput << "Begin reading the empirical weight at age file" << endl;
-    cout << "Reading the empirical weight at age file...";
+    cout << "Reading the empirical weight at age file ...";
     *(ad_comm::global_datafile) >> N_WTage_maxage;
     k = 7 + N_WTage_maxage;
     echoinput << " N_WTage_max " << N_WTage_maxage << endl;
@@ -1228,7 +1228,7 @@
   }
 
   //  SS_Label_Info_6.8 #Go thru biological calculations once, with do_once flag=1 to produce extra output to echoinput.sso
-  cout << "Evaluating biology calculations once... ";
+  cout << "Evaluating biology calculations once ... ";
   echoinput << "Begin evaluating biology calculations once" << endl;
   ALK_subseas_update = 1; //  vector to indicate if ALK needs recalculating
   do_once = 1;

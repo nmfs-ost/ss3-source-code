@@ -1117,7 +1117,7 @@ FINAL_SECTION
     //  SS_Label_Info_12.4.4 #Call fxn write_nudata() to create bootstrap data
     if (N_nudata > 0)
     {
-      cout << "Begin writing *.ss_new output files... ";
+      cout << "Begin writing *.ss_new output files ... ";
       write_nudata();
       //  SS_Label_Info_12.4.5 #Call fxn write_nucontrol() to produce control.ss_new
       write_nucontrol();
