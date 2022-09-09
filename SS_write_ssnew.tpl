@@ -1881,7 +1881,7 @@ FUNCTION void write_nucontrol()
     }
   }
 
-  report4 << "#  Recruitment Distribution  " << endl;
+  report4 << "#  Recruitment Distribution " << endl;
   j = NP + 1;
   if (MGP_CGD > j)
   {

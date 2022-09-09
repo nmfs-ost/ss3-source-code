@@ -1112,7 +1112,7 @@
       }
     }
   }
-  echoinput << "Successful read of discard data  " << endl;
+  echoinput << "Successful read of discard data " << endl;
   echoinput << "Index Survey_name       N   Super_Per    Min_val   max_val  //  Observations:" << endl;
   for (f = 1; f <= Nfleet; f++)
   {

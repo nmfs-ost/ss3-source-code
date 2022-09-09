@@ -406,7 +406,7 @@ FUNCTION void evaluate_the_objective_function()
         }
       }
     if (do_once == 1)
-      echoinput << "Finished lencomp obj_fun  " << length_like_tot << endl;
+      echoinput << "Finished lencomp obj_fun " << length_like_tot << endl;
   }
 
   //  SS_Label_Info_25.5 #Fit to age composition
