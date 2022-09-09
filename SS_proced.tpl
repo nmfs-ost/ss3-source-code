@@ -79,12 +79,12 @@ PROCEDURE_SECTION
     //  SS_Label_Info_7.4.1 #Call fxn get_initial_conditions() to get the virgin and initial equilibrium population
     get_initial_conditions();
     if (do_once == 1)
-      cout << " OK with initial conditions " << endl;
+      echoinput << "Finished initial_conditions" << endl;
     //  SS_Label_Info_7.4.2 #Call fxn get_time_series() to do population calculations for each year and get expected values for observations
     get_time_series(); //  in procedure_section
     if (do_once == 1)
     {
-      cout << " OK with time series" << endl;
+      echoinput << "Finished time_series" << endl;
     }
 
     //  SS_Label_Info_7.4.3 #Call fxn evaluate_the_objective_function()
@@ -141,8 +141,9 @@ PROCEDURE_SECTION
         show_MSY = 1;
       } //  so only show details if not in mceval
       if (show_MSY == 1)
-        cout << "do benchmark and forecast if requested in sdphase" << endl;
-
+      {
+        echoinput << "Start benchmark and forecast, if requested" << endl;
+      }
       setup_recdevs();
       y = styr;
       get_initial_conditions();
@@ -164,8 +165,10 @@ PROCEDURE_SECTION
 
       //  SS_Label_Info_7.7 #Call fxn Process_STDquant() to move calculated values into sd_containers
       Process_STDquant();
-      if (rundetail > 0 && mceval_phase() == 0)
-        cout << "finished benchmark, forecast, and sdreporting" << endl;
+      if (mceval_phase() == 0)
+      {
+        echoinput << "Finished benchmark, forecast, and sdreporting" << endl;
+      }
     } // end of things to do in std_phase
 
     //  SS_Label_Info_7.9 #Do screen output of procedure results from this iteration

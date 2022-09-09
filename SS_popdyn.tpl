@@ -107,13 +107,13 @@ FUNCTION void get_initial_conditions()
   }
   #ifdef DO_ONCE
   if (do_once == 1)
-    cout << " MG setup OK " << endl;
+    echoinput << " MGsetup OK " << endl;
   #endif
   if (MG_active(2) > 0)
     get_growth1(); // seasonal effects and CV
   #ifdef DO_ONCE
   if (do_once == 1)
-    cout << " growth1 OK" << endl;
+    echoinput << " growth1 OK" << endl;
   #endif
   if (MG_active(2) > 0 || do_once == 1)
   {
@@ -165,7 +165,7 @@ FUNCTION void get_initial_conditions()
 
   #ifdef DO_ONCE
   if (do_once == 1)
-    cout << " natmort OK" << endl;
+    echoinput << "natmort OK" << endl;
   #endif
 
   if (MG_active(4) > 0)
@@ -187,7 +187,9 @@ FUNCTION void get_initial_conditions()
     get_migration();
   #ifdef DO_ONCE
   if (do_once == 1)
-    cout << " migr OK" << endl;
+  {
+    echoinput << "migr OK" << endl;
+  }
   #endif
   if (MG_active(7) > 0)
   {
@@ -211,8 +213,7 @@ FUNCTION void get_initial_conditions()
   #ifdef DO_ONCE
     if (do_once == 1)
     {
-      cout << " ageerr_key OK" << endl;
-      echoinput << " ageerr_key recalc in " << y << endl;
+      echoinput << "age_err key recalc in " << y << endl;
     }
   #endif
   }
@@ -226,7 +227,10 @@ FUNCTION void get_initial_conditions()
   get_selectivity();
   #ifdef DO_ONCE
   if (do_once == 1)
-    cout << " selex OK, ready to call ALK and fishselex " << endl;
+  {
+    echoinput << "selectivity OK" << endl;
+    echoinput << "Calculate ALK" << endl;
+  }
   #endif
 
   //  SS_Label_Info_23.3 #Loop seasons and subseasons
@@ -324,7 +328,7 @@ FUNCTION void get_initial_conditions()
 
   #ifdef DO_ONCE
   if (do_once == 1)
-    cout << " ready for virgin age struc " << endl;
+    echoinput << "Begin calculating virgin age struc " << endl;
   #endif
   //  SS_Label_Info_23.4 #calculate unfished (virgin) numbers-at-age
   eq_yr = styr - 2;
@@ -427,7 +431,7 @@ FUNCTION void get_initial_conditions()
 //  SS_Label_Info_23.5  #Calculate equilibrium using initial F
   #ifdef DO_ONCE
   if (do_once == 1)
-    cout << " ready for initial age struc " << endl;
+    echoinput << "Begin calculating initial age structure" << endl;
   #endif
   eq_yr = styr - 1;
   bio_yr = styr;

@@ -16,6 +16,7 @@
   // clang-format on
   //
   ad_comm::change_datafile_name(datfilename);
+
   if (finish_starter == 999)
   {
     warnstream << "finish_starter=999, so probably used a 3.24 starter.ss; please update";
@@ -1111,7 +1112,7 @@
       }
     }
   }
-  echoinput << "Successful read of discard data  " << endl;
+  echoinput << "Successful read of discard data " << endl;
   echoinput << "Index Survey_name       N   Super_Per    Min_val   max_val  //  Observations:" << endl;
   for (f = 1; f <= Nfleet; f++)
   {
