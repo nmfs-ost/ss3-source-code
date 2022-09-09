@@ -29,6 +29,7 @@ FUNCTION void write_nudata()
   {
     if (Nudat == 1)
     {
+      echoinput << "Begin writing data_echo.ss_new file" << endl;
       anystring = ssnew_pathname + "data_echo.ss_new";
       report1.open(anystring);
       report1 << version_info(1) << version_info(2) << version_info(3) << endl
@@ -39,6 +40,7 @@ FUNCTION void write_nudata()
     }
     else if (Nudat == 2)
     {
+      echoinput << "Begin writing data_expval.ss file" << endl;
       anystring = ssnew_pathname + "data_expval.ss";
       report1.open(anystring);
       report1 << version_info(1) << version_info(2) << version_info(3) << endl
@@ -49,6 +51,7 @@ FUNCTION void write_nudata()
     }
     else
     {
+      echoinput << "Begin writing bootstrap data file(s)" << endl;
       anystring = "     ";
       sprintf(anystring, "%d", Nudat - 2);
       if ((Nudat - 2) < 10)
@@ -1402,7 +1405,7 @@ FUNCTION void write_nudata()
  /*  SS_Label_FUNCTION 39 write_nucontrol  write new control file and starter file */
 FUNCTION void write_nucontrol()
   {
-  cout << " Write new starter file " << endl;
+  echoinput << "Write starter.ss_new file " << endl;
   anystring = ssnew_pathname + "starter.ss_new";
   ofstream NuStart(anystring);
   NuStart << version_info(1) << version_info(2) << version_info(3) << endl
@@ -1467,7 +1470,7 @@ FUNCTION void write_nucontrol()
   NuStart << "3.30 # check value for end of file and for version control" << endl;
   NuStart.close();
 
-  cout << " Write new forecast file " << endl;
+  echoinput << "Write forecast.ss_new file " << endl;
   anystring = ssnew_pathname + "forecast.ss_new";
   ofstream NuFore(anystring);
   NuFore << version_info(1) << version_info(2) << version_info(3) << endl;
@@ -1651,7 +1654,7 @@ FUNCTION void write_nucontrol()
   NuFore.close();
 
   //**********************************************************
-  cout << " Write new control file " << endl;
+  echoinput << "Write control.ss_new file " << endl;
 
   ofstream report4("control.ss_new");
   report4 << version_info(1) << version_info(2) << version_info(3) << endl;
@@ -1878,7 +1881,7 @@ FUNCTION void write_nucontrol()
     }
   }
 
-  report4 << "#  Recruitment Distribution  " << endl;
+  report4 << "#  Recruitment Distribution " << endl;
   j = NP + 1;
   if (MGP_CGD > j)
   {

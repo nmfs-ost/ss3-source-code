@@ -162,7 +162,7 @@ FUNCTION void evaluate_the_objective_function()
       } // end having obs for this survey
     }
     if (do_once == 1)
-      cout << " did survey obj_fun " << surv_like << endl;
+      echoinput << "Finished survey obj_fun " << surv_like << endl;
   }
 
   //  SS_Label_Info_25.2 #Fit to discard
@@ -234,7 +234,9 @@ FUNCTION void evaluate_the_objective_function()
         }
       }
     if (do_once == 1)
-      cout << " did discard obj_fun " << disc_like << endl;
+    {
+      echoinput << "Finished discard obj_fun " << disc_like << endl;
+    }
   }
 
   //  SS_Label_Info_25.3 #Fit to mean body wt
@@ -246,7 +248,7 @@ FUNCTION void evaluate_the_objective_function()
         mnwt_like(mnwtdata(3, i)) += 0.5 * (DF_bodywt + 1.) * log(1. + square(mnwtdata(6, i) - exp_mnwt(i)) / mnwtdata(9, i)) + mnwtdata(10, i);
       }
     if (do_once == 1)
-      cout << " did meanwt obj_fun " << mnwt_like << endl;
+      echoinput << " Finished meanwt obj_fun " << mnwt_like << endl;
   }
 
   //  SS_Label_Info_25.4 #Fit to length comp
@@ -404,7 +406,7 @@ FUNCTION void evaluate_the_objective_function()
         }
       }
     if (do_once == 1)
-      cout << " did lencomp obj_fun  " << length_like_tot << endl;
+      echoinput << "Finished lencomp obj_fun " << length_like_tot << endl;
   }
 
   //  SS_Label_Info_25.5 #Fit to age composition
@@ -540,7 +542,7 @@ FUNCTION void evaluate_the_objective_function()
         }
       }
     if (do_once == 1)
-      cout << " did agecomp obj_fun " << age_like_tot << endl;
+      echoinput << "Finished agecomp obj_fun " << age_like_tot << endl;
   }
 
   //  SS_Label_Info_25.6 #Fit to mean size@age
@@ -574,7 +576,7 @@ FUNCTION void evaluate_the_objective_function()
           }
       }
     if (do_once == 1)
-      cout << " did meanlength obj_fun " << sizeage_like << endl;
+      echoinput << "Finished meanlength obj_fun " << sizeage_like << endl;
   }
 
   //  SS_Label_Info_25.7 #Fit to generalized Size composition
@@ -653,7 +655,7 @@ FUNCTION void evaluate_the_objective_function()
         Morphcomp_like -= Morphcomp_obs(iobs, 5) * Morphcomp_obs(iobs)(6, k) * log(elem_div(Morphcomp_exp(iobs)(6, k), Morphcomp_obs(iobs)(6, k)));
     }
     if (do_once == 1)
-      cout << " did morphcomp obj_fun " << Morphcomp_like << endl;
+      cout << "Finished morphcomp obj_fun " << Morphcomp_like << endl;
   }
 
   //  SS_Label_Info_25.9 #Fit to tag-recapture
@@ -692,7 +694,7 @@ FUNCTION void evaluate_the_objective_function()
       }
     }
     if (do_once == 1)
-      cout << " did tag obj_fun " << TG_like1 << endl
+      cout << "Finished tag obj_fun " << TG_like1 << endl
            << TG_like2 << endl;
   }
 
@@ -706,7 +708,7 @@ FUNCTION void evaluate_the_objective_function()
       }
     }
   if (do_once == 1)
-    cout << " initequ_catch -log(L) " << equ_catch_like << endl;
+    echoinput << " initequ_catch -log(L) " << equ_catch_like << endl;
 
   //  SS_Label_Info_25.11 #Fit to catch by fleet/season
   if (F_Method > 1)
@@ -736,7 +738,7 @@ FUNCTION void evaluate_the_objective_function()
         }
     }
     if (do_once == 1)
-      cout << " catch -log(L) " << catch_like << endl;
+      echoinput << " catch -log(L) " << catch_like << endl;
   }
 
   //  SS_Label_Info_25.12 #Likelihood for the recruitment deviations
@@ -809,7 +811,7 @@ FUNCTION void evaluate_the_objective_function()
     if (do_recdev == 4)
       regime_like += square(sum_recdev);
     if (do_once == 1)
-      cout << " did recruitdev obj_fun " << recr_like << " " << sd_offset_rec << " " << two_sigmaRsq << endl;
+      echoinput << "Finished recruitdev obj_fun " << recr_like << " " << sd_offset_rec << " " << two_sigmaRsq << endl;
   }
   if (Do_Forecast > 0 && do_recdev > 0)
   {
@@ -1106,7 +1108,7 @@ FUNCTION void evaluate_the_objective_function()
 
   if (do_once == 1)
   {
-    cout << " OK with obj_func " << obj_fun << endl;
+    echoinput << " OK with obj_func " << obj_fun << endl;
     if (SSB_yr(endyr) < 0.01 * SSB_yr(styr))
     {
       warnstream << "1st iteration warning: ssb(endyr)/ssb(styr)= " << SSB_yr(endyr) / SSB_yr(styr) << "; suggest start with larger R0 to get near 0.4; or use depletion fleet option";
@@ -1612,10 +1614,13 @@ FUNCTION void get_posteriors()
   //********************************************************************
   /*  SS_Label_FUNCTION 33 get_posteriors  (MCMC eval) */
   if (rundetail > 1)
-    cout << " mceval counter: " << mceval_counter << endl;
+  {
+    cout << "mceval counter: " << mceval_counter << endl;
+  }
   if (rundetail == 0 && double(mceval_counter) / 200. == double(mceval_counter / 200.))
-    cout << " mceval counter: " << mceval_counter << endl;
-
+  {
+    cout << "mceval counter: " << mceval_counter << endl;
+  }
   if (mceval_header == 0 && mceval_phase()) // first pass through the mceval phase
   {
     // delete any old mcmc output files

@@ -17,7 +17,8 @@ PARAMETER_SECTION
   // clang-format on
   // set the filename to all ADMB output files to "ss.[ext]"
   ad_comm::adprogram_name = "ss";
-  echoinput << "now in PARAMETER_SECTION " << endl;
+  echoinput << "Begin setting up parameters" << endl;
+  cout << "Begin setting up parameters ... ";
   if (readparfile >= 1)
   {
     cout << " read parm file" << endl;
