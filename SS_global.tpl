@@ -930,6 +930,7 @@ FINAL_SECTION
   else
   {
     cout << "Iterations: " << niter << endl;
+    echoinput << "Iterations: " << niter << endl;
     if (objective_function_value::pobjfun->gmax > final_conv)
     {
       warnstream << "Final gradient: " << objective_function_value::pobjfun->gmax << " is larger than final_conv: " << final_conv;
