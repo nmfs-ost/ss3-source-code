@@ -1241,7 +1241,7 @@
 
   //  SS_Label_Info_6.8.1 #Call fxn get_MGsetup() to copy MGparms to working array and applies time-varying factors
   get_MGsetup(styr);
-  echoinput << "Finished MG setup" << endl;
+  echoinput << "Finished MGsetup" << endl;
 
   //  SS_Label_Info_6.8.2 #Call fxn get_growth1() to calculate quantities that are not time-varying
   get_growth1();
