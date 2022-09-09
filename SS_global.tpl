@@ -1121,7 +1121,7 @@ FINAL_SECTION
       write_nudata();
       //  SS_Label_Info_12.4.5 #Call fxn write_nucontrol() to produce control.ss_new
       write_nucontrol();
-      cout << "done" << endl; // finish writing *.ss_new output files
+      cout << "Finished writing *.ss_new output files" << endl;
     }
     else
     {
