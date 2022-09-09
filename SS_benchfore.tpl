@@ -1063,7 +1063,7 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
     Btgt_Fmult = Fmult;
     if (rundetail > 0 && mceval_counter == 0 && show_MSY == 1)
     {
-      echoinput << "Finished Btgt: " << Btgt_Fmult << " " << Btgt / SSB_unf << endl;
+      echoinput << "Calculated Btgt: " << Btgt_Fmult << " " << Btgt / SSB_unf << endl;
     }
     YPR_Btgt_enc = YPR_enc; //  total encountered yield per recruit
     YPR_Btgt_dead = YPR_dead; // total dead yield per recruit
