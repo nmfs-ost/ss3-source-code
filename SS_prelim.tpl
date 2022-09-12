@@ -34,6 +34,8 @@
   if (WTage_rd > 0)
   {
     ad_comm::change_datafile_name("wtatage.ss");
+    echoinput << "Begin reading the empirical weight at age file" << endl;
+    cout << "Reading the empirical weight at age file ...";
     *(ad_comm::global_datafile) >> N_WTage_maxage;
     k = 7 + N_WTage_maxage;
     echoinput << " N_WTage_max " << N_WTage_maxage << endl;
@@ -140,7 +142,8 @@
             Wt_Age_t(styr - 3 * nseas + s, f, g) = junkvec2 / temp;
           }
         }
-    echoinput << "finished reading empirical wt-at-age.ss" << endl;
+    echoinput << "Finished reading the empirical weight at age file" << endl;
+    cout << "done" << endl; // Done reading the empirical weight at age file
   }
   else
   {
@@ -1225,8 +1228,8 @@
   }
 
   //  SS_Label_Info_6.8 #Go thru biological calculations once, with do_once flag=1 to produce extra output to echoinput.sso
-  cout << " ready to evaluate once in prelim" << endl;
-  echoinput << " ready to evaluate once in prelim" << endl;
+  cout << "Evaluating biology calculations once ... ";
+  echoinput << "Begin evaluating biology calculations once" << endl;
   ALK_subseas_update = 1; //  vector to indicate if ALK needs recalculating
   do_once = 1;
   niter = 0;
@@ -1238,11 +1241,11 @@
 
   //  SS_Label_Info_6.8.1 #Call fxn get_MGsetup() to copy MGparms to working array and applies time-varying factors
   get_MGsetup(styr);
-  echoinput << " did MG setup" << endl;
+  echoinput << "Finished MGsetup" << endl;
 
   //  SS_Label_Info_6.8.2 #Call fxn get_growth1() to calculate quantities that are not time-varying
   get_growth1();
-  echoinput << " did growth1" << endl;
+  echoinput << "Finished growth1" << endl;
   VBK_seas = value(VBK_seas);
   wtlen_seas = value(wtlen_seas);
   CVLmin = value(CVLmin);
@@ -1387,6 +1390,8 @@
   ParmTrace << endl;
 
   //  SS_Label_Info_6.10 #Preliminary calcs done; Ready for estimation
+  cout << "done" << endl; // evaluating biology calculations once
+  echoinput << "Finished evaluating biology calculations once" << endl;
 
   if (pick_report_use(60) == "Y")
   {
@@ -1402,12 +1407,12 @@
 
   if (Turn_off_phase < 0)
   {
-    cout << " Requested exit after read when turn_off_phase < 0 " << endl;
+    cout << "Exit requested after read with phase < 0 " << endl;
     N_nudata = 1;
     write_nudata();
-    cout << " finished nudata report " << endl;
+    cout << "Finished writing data_echo.ss_new" << endl;
     write_nucontrol();
-    cout << " finished nucontrol report " << endl;
+    cout << "Finished writing control.ss_new" << endl;
     exit(1);
   }
 
@@ -1419,9 +1424,7 @@
   }
   else
   {
-    cout << endl
-         << endl
-         << "Estimating...please wait..." << endl;
+    echoinput << endl << endl << "Begin estimating" << endl;
   }
   last_objfun = 1.0e30;
   } // end PRELIMINARY_CALCS_SECTION

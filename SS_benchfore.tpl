@@ -798,7 +798,9 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
     YPR_spr_profit = YPR_spr_revenue - Cost;
     SPR_Fmult = Fmult;
     if (rundetail > 0 && mceval_counter == 0 && show_MSY == 1)
-      cout << " got Fspr " << SPR_Fmult << " " << SPR_actual / 100. << endl;
+    {
+      echoinput << "Calculated Fspr " << SPR_Fmult << " " << SPR_actual / 100. << endl;
+    }
     Vbio_spr = totbio;
     Vbio1_spr = smrybio;
     Mgmt_quant(10) = equ_F_std;
@@ -896,7 +898,7 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
 
     Btgt_Fmult = F1(1);
     if (rundetail > 0 && mceval_counter == 0 && show_MSY == 1)
-      cout << " got_F0.1: " << Btgt_Fmult << endl;
+      echoinput << "Calculated F0.1: " << Btgt_Fmult << endl;
     SPR_temp = SSB_equil;
     Equ_SpawnRecr_Result = Equil_Spawn_Recr_Fxn(SR_parm_work(2), SR_parm_work(3), SSB_unf, Recr_unf, SPR_temp); //  returns 2 element vector containing equilibrium biomass and recruitment at this SPR
     Btgt = Equ_SpawnRecr_Result(1);
@@ -1060,7 +1062,9 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
 
     Btgt_Fmult = Fmult;
     if (rundetail > 0 && mceval_counter == 0 && show_MSY == 1)
-      cout << " got_Btgt " << Btgt_Fmult << " " << Btgt / SSB_unf << endl;
+    {
+      echoinput << "Calculated Btgt: " << Btgt_Fmult << " " << Btgt / SSB_unf << endl;
+    }
     YPR_Btgt_enc = YPR_enc; //  total encountered yield per recruit
     YPR_Btgt_dead = YPR_dead; // total dead yield per recruit
     YPR_Btgt_N_dead = YPR_N_dead; // total dead yield per recruit
@@ -1664,14 +1668,14 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
 
     Btgt_Fmult2 = Fmult;
     if (rundetail > 0 && mceval_counter == 0 && show_MSY == 1)
-      cout << " got_F_Blimit " << Btgt_Fmult2 << " " << Btgt2 / Blim_report << endl;
+      echoinput << "Calculated F_Blimit " << Btgt_Fmult2 << " " << Btgt2 / Blim_report << endl;
     Mgmt_quant(18) = Btgt2;
     Mgmt_quant(19) = equ_F_std;
     Mgmt_quant(20) = sum(equ_catch_fleet(2)) * Equ_SpawnRecr_Result(2);
   } //  end finding F for Blimit
 
   if (rundetail > 0 && mceval_counter == 0 && show_MSY == 1)
-    cout << " got Fmsy " << MSY_Fmult << " " << MSY << endl;
+    echoinput << "Calculated Fmsy " << MSY_Fmult << " " << MSY << endl;
 
   // ***************** show management report   SS_Label_740
   if (show_MSY == 1)

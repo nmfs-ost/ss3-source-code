@@ -17,7 +17,7 @@
   echoinput << endl
             << " Begin reading control file " << endl;
   cout << " reading from control file" << endl;
-  ifstream Control_Stream(ctlfilename); //  even if the global_datafile name is used, there still is a different logical device created
+  ifstream Control_Stream(ctlfilename); // even if the global_datafile name is used, there still is a different logical device created
   
   //  SS_Label_Info_4.1 #Read and store comments at top of control file
   k = 0;
@@ -4341,7 +4341,7 @@
   TwoD_AR_cnt = 0;
   echoinput << " now read 0/1 for 2D_AR" << endl;
   *(ad_comm::global_datafile) >> TwoD_AR_do;
-  echoinput << TwoD_AR_do << "  #_ 0/1 to request experimental 2D_AR selectivity smoother options  " << endl;
+  echoinput << TwoD_AR_do << "  #_ 0/1 to request experimental 2D_AR selectivity smoother options " << endl;
   
   if (TwoD_AR_do > 0)
   {
@@ -4696,7 +4696,7 @@
     k = 3 * N_TG + 2 * Nfleet1;
     for (j = 1; j <= k; j++) TG_parm_PH(j) = TG_parm2(j, 7); // write it out due to no typecast available
   
-    echoinput << "create tag labels  " << endl;
+    echoinput << "create tag labels " << endl;
     //  SS_Label_Info_4.10.1 #Create parameter count and parameter names for tag parameters
     onenum = "    ";
     firsttagparm = ParCount;

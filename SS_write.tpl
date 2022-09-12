@@ -794,7 +794,7 @@ FUNCTION void write_SS_summary()
   //  report2 <<runnumber<<" Timeseries RetCatch "<<column(Smry_Table,5)<<endl;
 
   SS_smry.close();
-  cout << " finished SS_summary.sso" << endl;
+  echoinput << "Finished SS_summary.sso" << endl;
   return;
   }
 
