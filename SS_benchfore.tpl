@@ -2236,7 +2236,7 @@ FUNCTION void Get_Forecast()
         ALK_subseas_update = 1;
         get_growth2(y);
       }
-      if (timevary_MG(y, 1) > 0)
+      if (timevary_MG(y, 1) > 0 || N_pred > 0)
       {
         get_natmort();
       }
