@@ -1,7 +1,7 @@
 # Draft programming style for SS3
 SS3 is coded in C++ and ADMB TPL which have different requirements for compilation.
 C++ code is contained in 'LOCAL_CALCS' sections.
-The following is to enhance clarity while building using ADMB tools. 
+The following is to enhance clarity while building using ADMB tools.
 
 ## LOCAL_CALCS Sections
 These sections are between the statements 'LOCAL_CALCS' and 'END_CALCS'
@@ -28,22 +28,25 @@ the expression is used as an index for an array, vector, matrix, etc.
 Examples:
 
     n = (maxread-minread) / binwidth2 + 1;
+
     bins(z) = bins(z-1) + width;
 
 ### Control Statements
 Use a space before the left parenthesis and after the right
 parenthesis in control statements (e.g. for, do while, while, if, else).
-Curly braces should always be used for all code blocks and put on their
+
+Use curly braces for all code blocks. For short blocks, they may be on the same line as the conditional statement, but for large blocks, put them on their
 own line (so that the closing curly brace is obvious).
 
 Example:
 
     if (a > b)
     {
+      . . . // lots of code
       b = 2;
+      . . . // more code
     }
-    else
-    {
+    else {
       b = 4;
     }
 
@@ -75,6 +78,7 @@ consistency, this can be done in the C++ sections also.
 Examples:
 
     vector length(1,nlength);
+    
     ivector parmlist(1,2*number);
 
 ### Semi-colons
