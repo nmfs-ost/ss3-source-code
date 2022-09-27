@@ -1,19 +1,29 @@
 # Draft programming style for SS3
-The purpose of this document is to promote clarity in Stock Synthesis code.
+SS3 is coded in C++ and ADMB TPL which have different requirements for compilation.
+C++ code is contained in 'LOCAL_CALCS' sections.
+The following is to enhance clarity while building using ADMB tools. 
 
-Please notice that the term C++ section is used as short-hand for code
-that is in the LOCAL_CALCS sections of the TPL code.
+## LOCAL_CALCS Sections
+These sections are between the statements 'LOCAL_CALCS' and 'END_CALCS'
+each of which must be one space from the left.
 
-There is a separate section for TPL code.
+If using clang-format, make
+sure these comments are at the beginning and ending of the section:
+// clang-format on, and
+// clang-format off.
 
-The utility clang-format may be used to enforce this style and this is discussed in the last section.
+Example:
 
-## C++ Sections
+    LOCAL_CALCS
+     // clang-format on
+     . . .
+      // clang-format off
+     END_CALCS
+
 
 ### Math Expressions
-Generally, there is a space on each side of a mathematical operator (+ - * / =).
-This may be dispensed with when the expression is used as an index
-for an array, vector, matrix, etc.
+Use spaces on each side of a mathematical operator (+ - * / =), unless
+the expression is used as an index for an array, vector, matrix, etc.
 
 Examples:
 
@@ -21,33 +31,46 @@ Examples:
     bins(z) = bins(z-1) + width;
 
 ### Control Statements
-There can be a space before the left parenthesis and after the right
- parenthesis. Brackets should always be used and put on their own line
- (so that the matching brackets are obvious).
+Use a space before the left parenthesis and after the right
+parenthesis in control statements (e.g. for, do while, while, if, else).
+Curly braces should always be used for all code blocks and put on their
+own line (so that the closing curly brace is obvious).
 
-### Logic Expressions
-There is a space on each side of the logical operators (< > <= >= == !=).
-Math expressions used as indices may contain spaces or not depending on what makes it most clear.
+Example:
 
-Examples:  
+    if (a > b)
+    {
+      b = 2;
+    }
+    else
+    {
+      b = 4;
+    }
+
+#### Logic Expressions
+Use a space on each side of the logical operators (< > <= >= == !=).
+Logical expressions used as indices may contain spaces or not
+depending on what makes it most clear.
+
+Examples:
 
     if (this > that)
-    {
-      Something must be done.
-    }
+
     for (f = 1; f <= number; f++)
-    {
-      Do this a number of times.
-    }
+
 
 ## TPL Sections
-TPL sections deserve special consideration, since some practices inhibit compilation.
+TPL sections deserve special consideration.
+While the LOCAL_CALCS section is treated as pure C++ code,
+the other sections of .tpl files are templates that are
+translated to C++ code before compilation, so there are
+additional syntax rules that must be taken into account.
 
 ### Indices
-Items with multiple indices cannot have spaces between them.  
-In C++, spaces can be inserted, e.g. matrix1 (1, j, 5).
-In TPL, the same item would be matrix1(1,j,5). It is not recommended,
-but for the sake of consistency, this can be done in the C++ sections also.
+Items with multiple indices cannot have spaces between them.
+In C++, spaces can be inserted, e.g. matrix1 (1, j, 5) while in
+TPL, the same item would be matrix1(1,j,5). For the sake of
+consistency, this can be done in the C++ sections also.
 
 Examples:
 
@@ -55,17 +78,10 @@ Examples:
     ivector parmlist(1,2*number);
 
 ### Semi-colons
-Use semi-colons to end each statement, especially if this will be
-passed through "clang-format" or the "pretty_tpl" routine which uses it.
-Clang-format will join statements together if they are not separated by semi-colons.
+Use semi-colons to end each statement.
+Clang-format will join statements together if they are not separated
+by semi-colons.
 
-## Clang Format
-The utility clang-format does not understand TPL code. To contain its activity in C++ sections, insert a line at the beginning
-
-    LOCAL_CALCS
-     // clang-format on
-
-and at the end
-
-     // clang-format off
-    END_CALCS
+## Indenting
+Use 2 spaces to indent each level of code to make it obvious what
+code belongs together.
