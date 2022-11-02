@@ -2001,8 +2001,10 @@ FUNCTION void Make_FishSelex()
           disc_wt = elem_prod(discmort2(yf, f, gg), wt_len(s, GP(g)));
         for (a = 0; a <= nages; a++)
         {
-          int llo = ALK_range_lo(a);
-          int lhi = ALK_range_hi(a);
+//          int llo = ALK_range_lo(a);
+//          int lhi = ALK_range_hi(a);
+          int llo = 1;
+          int lhi = nlength;
           sel_bio(s, f, g, a) = sel_a(yf, f, gg, a) * (ALK_w(a)(llo, lhi) * tempvec_l(llo, lhi));
           sel_num(s, f, g, a) = sel_a(yf, f, gg, a) * (ALK_w(a)(llo, lhi) * sel_l(yf, f, gg)(llo, lhi));
           Wt_Age_t(tz, f, g, a) = (ALK_w(a)(llo, lhi) * tempvec_l(llo, lhi)) / (ALK_w(a)(llo, lhi) * sel_l(yf, f, gg)(llo, lhi));

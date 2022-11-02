@@ -111,13 +111,13 @@ FUNCTION void Make_AgeLength_Key(const int s, const int subseas)
               if (Grow_logN == 0)
               {
                 int ALK_finder = (ALK_idx - 1) * gmorph + g;
-                if ((do_once == 1 || (current_phase() > ALK_phase)) && !last_phase())
-                {
-                  ALK_phase = current_phase();
-                  ALK_range_use = calc_ALK_range(len_bins, use_Ave_Size_W, use_SD_Size, ALK_tolerance); //  later need to offset according to g
-                  ALK_range_g_lo(ALK_finder) = column(ALK_range_use, 1);
-                  ALK_range_g_hi(ALK_finder) = column(ALK_range_use, 2);
-                }
+//                if ((do_once == 1 || (current_phase() > ALK_phase)) && !last_phase())
+//                {
+//                  ALK_phase = current_phase();
+//                  ALK_range_use = calc_ALK_range(len_bins, use_Ave_Size_W, use_SD_Size, ALK_tolerance); //  later need to offset according to g
+//                  ALK_range_g_lo(ALK_finder) = column(ALK_range_use, 1);
+//                  ALK_range_g_hi(ALK_finder) = column(ALK_range_use, 2);
+//                }
                 ALK(ALK_idx, g) = calc_ALK(len_bins, ALK_range_g_lo(ALK_finder), ALK_range_g_hi(ALK_finder), use_Ave_Size_W, use_SD_Size);
               }
               else
