@@ -779,7 +779,7 @@
 //        echoinput << "Now get ALK tolerance (0.0 is OK for no compression; 0.1 is too big;  suggest 0.0001)" << endl;
         echoinput << "Now read ALK tolerance which is deprecated. If not 0, it will be reset to 0." << endl;
         *(ad_comm::global_datafile) >> ALK_tolerance;
-		if (ALK_tolerance > 0.0)
+		if (ALK_tolerance > 0.0 || ALK_tolerance < 0.0)
 		{
 		  warnstream << "ALK tolerance is now deprecated and is set to 0" ;
 		  write_message(ADJUST, 1);

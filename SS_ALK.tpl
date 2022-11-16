@@ -118,7 +118,10 @@ FUNCTION void Make_AgeLength_Key(const int s, const int subseas)
 //                  ALK_range_g_lo(ALK_finder) = column(ALK_range_use, 1);
 //                  ALK_range_g_hi(ALK_finder) = column(ALK_range_use, 2);
 //                }
-                ALK(ALK_idx, g) = calc_ALK(len_bins, ALK_range_g_lo(ALK_finder), ALK_range_g_hi(ALK_finder), use_Ave_Size_W, use_SD_Size);
+//                ALK(ALK_idx, g) = calc_ALK(len_bins, ALK_range_g_lo(ALK_finder), ALK_range_g_hi(ALK_finder), use_Ave_Size_W, use_SD_Size);
+                ivector ALK_range_lo (0, nages);
+				ivector ALK_range_hi (0, nages);
+                ALK(ALK_idx, g) = calc_ALK(len_bins, ALK_range_lo, ALK_range_hi, use_Ave_Size_W, use_SD_Size);
               }
               else
               {
@@ -185,17 +188,20 @@ FUNCTION dvar_matrix calc_ALK(const dvector& len_bins, const ivector& ALK_range_
   dvar_matrix ALK_w(0, nages, 1, nlength); // create matrix to return with length vectors for each age
   dvar_vector AL(1, nlength + 1); // create temporary vector
   dvariable len_dev;
+  int llo = 1;
+  int lhi = nlength;
   //  ALK_count++;
   ALK_w.initialize();
   for (a = 0; a <= nages; a++)
   {
     AL.initialize();
-    for (z = ALK_range_lo(a); z <= ALK_range_hi(a); z++)
+//    for (z = ALK_range_lo(a); z <= ALK_range_hi(a); z++)
+    for (z = llo; z <= lhi; z++)
     {
       len_dev = (len_bins(z) - mean_len_at_age(a)) / (sd_len_at_age(a));
       AL(z) = cumd_norm(len_dev);
     }
-    AL(ALK_range_hi(a) + 1, nlength + 1) = 1.0;
+    AL(lhi + 1, nlength + 1) = 1.0;
     ALK_w(a) = first_difference(AL);
     ALK_w(a, 1) += AL(1); //  because first bin is from cumulative calc
   } // end age loop

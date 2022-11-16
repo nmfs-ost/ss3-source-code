@@ -405,8 +405,8 @@
  LOCAL_CALCS
   // clang-format on
   ALK_count = 0;
-  ALK_range_g_lo = 1;
-  ALK_range_g_hi = nlength;
+//  ALK_range_g_lo = 1;
+//  ALK_range_g_hi = nlength;
   
   use_morph.initialize();
   TG_use_morph.initialize();

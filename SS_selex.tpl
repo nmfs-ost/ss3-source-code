@@ -1921,8 +1921,8 @@ FUNCTION void Make_FishSelex()
   ALK_idx = (s - 1) * N_subseas + mid_subseas; //for midseason
   int ALK_finder = (ALK_idx - 1) * gmorph + g;
   dvar_matrix ALK_w = ALK(ALK_idx, g); //  shallow copy
-  ivector ALK_range_lo = ALK_range_g_lo(ALK_finder);
-  ivector ALK_range_hi = ALK_range_g_hi(ALK_finder);
+//  ivector ALK_range_lo = ALK_range_g_lo(ALK_finder);
+//  ivector ALK_range_hi = ALK_range_g_hi(ALK_finder);
   dvar_vector sel_l_r_w(1, nlength); //  temp vector for retained contribution to weight-at-age
   dvar_vector disc_wt(1, nlength);
   int yf;
