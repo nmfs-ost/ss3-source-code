@@ -6,7 +6,9 @@
 	],
 	"settings": {
 		"files.associations": {
-			"\"*.extension\":": "\"tpl\""
+			"*.tpl": "c",
+			"\"*.extension\":": "\"tpl\"",
+			"*.htp": "c"
 		}
 	}
 }
