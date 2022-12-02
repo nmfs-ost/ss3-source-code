@@ -1347,58 +1347,117 @@
     echoinput << "#_addtocomp:  after accumulation of tails; this value added to all bins" << endl;
     echoinput << "#_males and females treated as combined gender below this bin number " << endl;
     echoinput << "#_compressbins: accumulate upper tail by this number of bins; acts simultaneous with mintailcomp; set=0 for no forced accumulation" << endl;
-    echoinput<<"#_Comp_Error:  0=multinomial, 1=dirichlet using theta * n, 2=dirichlet using beta, 3=MV_Tweedie with phi and power"<<endl;
-    echoinput<<"#_Comp_ERR-2:  consecutive index of error def to use"<<endl;
+    echoinput << "#_Comp_Error:  0=multinomial, 1=dirichlet using theta * n, 2=dirichlet using beta, 3=MV_Tweedie with phi and power"<<endl;
+    echoinput << "#_Comp_ERR-2:  consecutive index of error def to use"<<endl;
     echoinput << "#_minsamplesize: minimum sample size; set to 1 to match 3.24, set to 0 for no minimum" << endl;
+    echoinput << "Use_length_data == 1 invokes original input format; use_length_data == 2 invokes list format for composition controls" << endl;
 
+    if (use_length_data == 1)
+    {
   //  read input into partition 0, then copy to partition 1 and 2
+      for (f = 1; f <= Nfleet; f++)
+      {
+        *(ad_comm::global_datafile) >> min_tail_L(0, f);
+        min_tail_L(1, f) = min_tail_L(0, f);
+        min_tail_L(2, f) = min_tail_L(0, f);
+        *(ad_comm::global_datafile) >> min_comp_L(0, f);
+        min_comp_L(1, f) = min_comp_L(0, f);
+        min_comp_L(2, f) = min_comp_L(0, f);
+        *(ad_comm::global_datafile) >> CombGender_L(0, f);
+        CombGender_L(1, f) = CombGender_L(0, f);
+        CombGender_L(2, f) = CombGender_L(0, f);
+        *(ad_comm::global_datafile) >> AccumBin_L(0, f);
+        AccumBin_L(1, f) = AccumBin_L(0, f);
+        AccumBin_L(2, f) = AccumBin_L(0, f);
+        *(ad_comm::global_datafile) >> Comp_Err_L(0, f);
+        Comp_Err_L(1, f) = Comp_Err_L(0, f);
+        Comp_Err_L(2, f) = Comp_Err_L(0, f);
+        *(ad_comm::global_datafile) >> Comp_Err_L2(0, f);
+        Comp_Err_L2(1, f) = Comp_Err_L2(0, f);
+        Comp_Err_L2(2, f) = Comp_Err_L2(0, f);
+        *(ad_comm::global_datafile) >> min_sample_size_L(0, f);
+        min_sample_size_L(1, f) = min_sample_size_L(0, f);
+        min_sample_size_L(2, f) = min_sample_size_L(0, f);
+      }
+    }
+    else
+    {
+      ender = 0;
+      int parti;
+      int parti_lo;
+      int parti_hi;
+      int f_lo;
+      int f_hi;
+      do
+      {
+        *(ad_comm::global_datafile) >> f;  //  read fleet
+        *(ad_comm::global_datafile) >> parti;  //  read partition
+        *(ad_comm::global_datafile) >> tempvec(1,7);  //  read vector
+
+        if (f == -9999.)
+          {
+            ender = 1;
+          }
+          else
+          {
+            if (f == 0)  //  fill all to create default that is overwritten by later reads
+            {
+              f_lo = 1;
+              f_hi = Nfleet;
+              parti_lo = 0;
+              parti_hi = 2;
+            }
+            else  //  specific input
+            {
+              f_lo = f;
+              f_hi = f;
+              parti_lo = parti;
+              parti_hi = parti;
+            }
+            //  else  other codes could do other types of specialized fills
+
+            for (f = f_lo; f <= f_hi; f++)
+            for (parti = parti_lo; parti <= parti_hi; parti++)
+            {
+              min_tail_L(parti, f) = tempvec(1);
+              min_comp_L(parti, f) = tempvec(2);
+              CombGender_L(parti, f) = int(tempvec(3));
+              AccumBin_L(parti, f) = int(tempvec(4));
+              Comp_Err_L(parti, f) = int(tempvec(5));
+              Comp_Err_L2(parti, f) = int(tempvec(6));
+              min_sample_size_L(parti, f) = tempvec(7);
+            }
+          }
+        } while (ender == 0);
+    }
+    
+    for (int parti = 0; parti <= 2; parti++)
     for (f = 1; f <= Nfleet; f++)
     {
-      *(ad_comm::global_datafile) >> min_tail_L(0,f);
-      min_tail_L(1, f) = min_tail_L(0, f);
-      min_tail_L(2, f) = min_tail_L(0, f);
-      *(ad_comm::global_datafile) >> min_comp_L(0,f);
-      min_comp_L(1, f) = min_comp_L(0, f);
-      min_comp_L(2, f) = min_comp_L(0, f);
-      *(ad_comm::global_datafile) >> CombGender_L(0, f);
-      CombGender_L(1, f) = CombGender_L(0, f);
-      CombGender_L(2, f) = CombGender_L(0, f);
-      *(ad_comm::global_datafile) >> AccumBin_L(0, f);
-      AccumBin_L(1, f) = AccumBin_L(0, f);
-      AccumBin_L(2, f) = AccumBin_L(0, f);
-      *(ad_comm::global_datafile) >> Comp_Err_L(0, f);
-      Comp_Err_L(1, f) = Comp_Err_L(0, f);
-      Comp_Err_L(2, f) = Comp_Err_L(0, f);
-      *(ad_comm::global_datafile) >> Comp_Err_L2(0, f);
-      Comp_Err_L2(1, f) = Comp_Err_L2(0, f);
-      Comp_Err_L2(2, f) = Comp_Err_L2(0, f);
-      *(ad_comm::global_datafile) >> min_sample_size_L(0, f);
-      min_sample_size_L(1, f) = min_sample_size_L(0, f);
-      min_sample_size_L(2, f) = min_sample_size_L(0, f);
-      echoinput << min_tail_L(0, f) << " " << min_comp_L(0, f) << " " << CombGender_L(0, f) << " " << AccumBin_L(0, f) << " " << Comp_Err_L(0, f) << " " << Comp_Err_L2(0, f) << " " << min_sample_size_L(0, f) << "  #_fleet: " << f << " " << fleetname(f) << endl;
+      echoinput << f << " " << parti << " " << min_tail_L(0, f) << " " << min_comp_L(0, f) << " " << CombGender_L(0, f) << " " << AccumBin_L(0, f) << " " << Comp_Err_L(0, f) << " " << Comp_Err_L2(0, f) << " " << min_sample_size_L(0, f) << "  #_fleet: " << f << " " << fleetname(f) << endl;
 
-      if (min_sample_size_L(0, f) < 0.001)
+      if (min_sample_size_L(parti, f) < 0.001)
       {
         warnstream << " minimum sample size for length comps must be > 0; minimum sample size set to 0.001 ";
         write_message(WARN, 1);
-        min_sample_size_L(0, f) = 0.001;
+        min_sample_size_L(parti, f) = 0.001;
       }
   
-      if (Comp_Err_L2(0, f) > Nfleet)
+      if (Comp_Err_L2(parti, f) > Nfleet)
       {
         warnstream << "length D-M index for fleet: " << f << " is: " << Comp_Err_L2(0, f) << " but must be an integer <=Nfleet ";
         write_message(FATAL, 1);
       }
-      else if (Comp_Err_L2(0, f) > Comp_Err_ParmCount + 1)
+      else if (Comp_Err_L2(parti, f) > Comp_Err_ParmCount + 1)
       {
         warnstream << "; length D-M must refer to existing Comp_err definition, or increment by 1:  " << Comp_Err_L2(0, f);
         write_message(FATAL, 1);
       }
-      else if (Comp_Err_L2(0, f) > Comp_Err_ParmCount)
+      else if (Comp_Err_L2(parti, f) > Comp_Err_ParmCount)
       {
         Comp_Err_ParmCount++;
         //  QUESTION:  how will DM_parmlist work with partitions??
-        DM_parmlist(0, f)=1;  // flag for creating new definition because Comp_Err_L2 can point to existing definition
+        DM_parmlist(parti, f)=1;  // flag for creating new definition because Comp_Err_L2 can point to existing definition
       }
       //  else OK because refers to existing definition
     }
