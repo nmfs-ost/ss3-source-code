@@ -1319,15 +1319,15 @@
   int CombGender_l;  //  combine genders through this length bin
 !!//  SS_Label_Info_2.7.1 #Read and process data length bins
   int nlen_bin //number of length bins in length comp data
-  vector min_tail_L(1,Nfleet);  //min_proportion_for_compressing_tails_of_observed_composition
-  vector min_comp_L(1,Nfleet);  //  small value added to each composition bins
-  ivector CombGender_L(1,Nfleet);  //  combine genders through this length bin (0 or -1 for no combine)
-  ivector AccumBin_L(1,Nfleet);  //  collapse bins down to this bin number (0 for no collapse; positive value for number to accumulate)
-  ivector Comp_Err_L(1,Nfleet);  //  composition error type
-  ivector Comp_Err_L2(1,Nfleet);  //  composition error type index
-  vector min_sample_size_L(1,Nfleet);  // minimum sample size
+  matrix min_tail_L(0,2,1,Nfleet);  //min_proportion_for_compressing_tails_of_observed_composition; by partition type and fleet
+  matrix min_comp_L(0,2,1,Nfleet);  //  small value added to each composition bins
+  imatrix CombGender_L(0,2,1,Nfleet);  //  combine genders through this length bin (0 or -1 for no combine)
+  imatrix AccumBin_L(0,2,1,Nfleet);  //  collapse bins down to this bin number (0 for no collapse; positive value for number to accumulate)
+  imatrix Comp_Err_L(0,2,1,Nfleet);  //  composition error type
+  imatrix Comp_Err_L2(0,2,1,Nfleet);  //  composition error type index
+  matrix min_sample_size_L(0,2,1,Nfleet);  // minimum sample size
   int Comp_Err_ParmCount;  // counts number of comp_err definitions that are created
-  ivector DM_parmlist(1,3*Nfleet);  // flag for creating a new comperr definition; dim for length, age, size comps
+  imatrix DM_parmlist(0,2,1,3*Nfleet);  // flag for creating a new comperr definition; 3*Nfleet creates dim for length, age, size comps
  LOCAL_CALCS
   // clang-format on
   Comp_Err_ParmCount = 0;
@@ -1351,38 +1351,54 @@
     echoinput<<"#_Comp_ERR-2:  consecutive index of error def to use"<<endl;
     echoinput << "#_minsamplesize: minimum sample size; set to 1 to match 3.24, set to 0 for no minimum" << endl;
 
+  //  read input into partition 0, then copy to partition 1 and 2
     for (f = 1; f <= Nfleet; f++)
     {
-      *(ad_comm::global_datafile) >> min_tail_L(f);
-      *(ad_comm::global_datafile) >> min_comp_L(f);
-      *(ad_comm::global_datafile) >> CombGender_L(f);
-      *(ad_comm::global_datafile) >> AccumBin_L(f);
-      *(ad_comm::global_datafile) >> Comp_Err_L(f);
-      *(ad_comm::global_datafile) >> Comp_Err_L2(f);
-      *(ad_comm::global_datafile) >> min_sample_size_L(f);
-      echoinput << min_tail_L(f) << " " << min_comp_L(f) << " " << CombGender_L(f) << " " << AccumBin_L(f) << " " << Comp_Err_L(f) << " " << Comp_Err_L2(f) << " " << min_sample_size_L(f) << "  #_fleet: " << f << " " << fleetname(f) << endl;
+      *(ad_comm::global_datafile) >> min_tail_L(0,f);
+      min_tail_L(1, f) = min_tail_L(0, f);
+      min_tail_L(2, f) = min_tail_L(0, f);
+      *(ad_comm::global_datafile) >> min_comp_L(0,f);
+      min_comp_L(1, f) = min_comp_L(0, f);
+      min_comp_L(2, f) = min_comp_L(0, f);
+      *(ad_comm::global_datafile) >> CombGender_L(0, f);
+      CombGender_L(1, f) = CombGender_L(0, f);
+      CombGender_L(2, f) = CombGender_L(0, f);
+      *(ad_comm::global_datafile) >> AccumBin_L(0, f);
+      AccumBin_L(1, f) = AccumBin_L(0, f);
+      AccumBin_L(2, f) = AccumBin_L(0, f);
+      *(ad_comm::global_datafile) >> Comp_Err_L(0, f);
+      Comp_Err_L(1, f) = Comp_Err_L(0, f);
+      Comp_Err_L(2, f) = Comp_Err_L(0, f);
+      *(ad_comm::global_datafile) >> Comp_Err_L2(0, f);
+      Comp_Err_L2(1, f) = Comp_Err_L2(0, f);
+      Comp_Err_L2(2, f) = Comp_Err_L2(0, f);
+      *(ad_comm::global_datafile) >> min_sample_size_L(0, f);
+      min_sample_size_L(1, f) = min_sample_size_L(0, f);
+      min_sample_size_L(2, f) = min_sample_size_L(0, f);
+      echoinput << min_tail_L(0, f) << " " << min_comp_L(0, f) << " " << CombGender_L(0, f) << " " << AccumBin_L(0, f) << " " << Comp_Err_L(0, f) << " " << Comp_Err_L2(0, f) << " " << min_sample_size_L(0, f) << "  #_fleet: " << f << " " << fleetname(f) << endl;
 
-      if (min_sample_size_L(f) < 0.001)
+      if (min_sample_size_L(0, f) < 0.001)
       {
         warnstream << " minimum sample size for length comps must be > 0; minimum sample size set to 0.001 ";
         write_message(WARN, 1);
-        min_sample_size_L(f) = 0.001;
+        min_sample_size_L(0, f) = 0.001;
       }
   
-      if (Comp_Err_L2(f) > Nfleet)
+      if (Comp_Err_L2(0, f) > Nfleet)
       {
-        warnstream << "length D-M index for fleet: " << f << " is: " << Comp_Err_L2(f) << " but must be an integer <=2*Nfleet ";
+        warnstream << "length D-M index for fleet: " << f << " is: " << Comp_Err_L2(0, f) << " but must be an integer <=Nfleet ";
         write_message(FATAL, 1);
       }
-      else if (Comp_Err_L2(f) > Comp_Err_ParmCount + 1)
+      else if (Comp_Err_L2(0, f) > Comp_Err_ParmCount + 1)
       {
-        warnstream << "; length D-M must refer to existing Comp_err definition, or increment by 1:  " << Comp_Err_L2(f);
+        warnstream << "; length D-M must refer to existing Comp_err definition, or increment by 1:  " << Comp_Err_L2(0, f);
         write_message(FATAL, 1);
       }
-      else if (Comp_Err_L2(f) > Comp_Err_ParmCount)
+      else if (Comp_Err_L2(0, f) > Comp_Err_ParmCount)
       {
         Comp_Err_ParmCount++;
-        DM_parmlist(f)=1;  // flag for creating new definition because Comp_Err_L2 can point to existing definition
+        //  QUESTION:  how will DM_parmlist work with partitions??
+        DM_parmlist(0, f)=1;  // flag for creating new definition because Comp_Err_L2 can point to existing definition
       }
       //  else OK because refers to existing definition
     }
@@ -1411,11 +1427,11 @@
 
     for (f = 1; f <= Nfleet; f++)
     {
-      if (CombGender_L(f) > nlen_bin)
+      if (CombGender_L(0, f) > nlen_bin)
       {
-        warnstream << "Combgender_L(f) cannot be greater than nlen_bin; resetting for fleet: " << f;
+        warnstream << "Combgender_L(part,f) cannot be greater than nlen_bin; resetting for fleet: " << f;
         write_message(WARN, 0);
-        CombGender_L(f) = nlen_bin;
+        CombGender_L(0, f) = nlen_bin;
       }
     }
     nlen_binP = nlen_bin + 1;
@@ -1885,14 +1901,14 @@
             tails_l(f, j, 2) = nlen_bin;
             tails_l(f, j, 3) = nlen_binP;
             tails_l(f, j, 4) = nlen_bin2;
-            if (gen_l(f, j) == 3 && gender == 2 && CombGender_L(f) > 0)
+            if (gen_l(f, j) == 3 && gender == 2 && CombGender_L(mkt_l(f, j), f) > 0)
             {
-              for (z = 1; z <= CombGender_L(f); z++)
+              for (z = 1; z <= CombGender_L(mkt_l(f, j), f); z++)
               {
                 obs_l(f, j, z) += obs_l(f, j, z + nlen_bin);
                 obs_l(f, j, z + nlen_bin) = 0.0;
               }
-              tails_l(f, j, 3) = nlen_binP + CombGender_L(f);
+              tails_l(f, j, 3) = nlen_binP + CombGender_L(mkt_l(f, j), f);
             }
             if (gen_l(f, j) == 2) // zero out females for male-only obs
               obs_l(f, j)(1, nlen_bin) = 0.;
@@ -1914,7 +1930,7 @@
                 k = 0;
                 for (z = 1; z <= nlen_bin - 1; z++) // compress Female lower tail until exceeds min_tail
                 {
-                  if (obs_l(f, j, z) <= min_tail_L(f) && k == 0)
+                  if (obs_l(f, j, z) <= min_tail_L(mkt_l(f, j), f) && k == 0)
                   {
                     obs_l(f, j, z + 1) += obs_l(f, j, z);
                     obs_l(f, j, z) = 0.00;
@@ -1929,7 +1945,7 @@
                 k = 0;
                 for (z = nlen_bin; z >= tails_l(f, j, 1); z--) // compress Female upper tail until exceeds min_tail
                 {
-                  if ((obs_l(f, j, z) <= min_tail_L(f) && k == 0) || z > (nlen_bin - AccumBin_L(f)))
+                  if ((obs_l(f, j, z) <= min_tail_L(mkt_l(f, j), f) && k == 0) || z > (nlen_bin - AccumBin_L(mkt_l(f, j), f)))
                   {
                     obs_l(f, j, z - 1) += obs_l(f, j, z);
                     obs_l(f, j, z) = 0.00;
@@ -1941,7 +1957,7 @@
                   }
                 }
               }
-              obs_l(f, j)(tails_l(f, j, 1), tails_l(f, j, 2)) += min_comp_L(f); // add min_comp to bins in range
+              obs_l(f, j)(tails_l(f, j, 1), tails_l(f, j, 2)) += min_comp_L(mkt_l(f, j), f); // add min_comp to bins in range
             }
 
             if (gen_l(f, j) >= 2 && gender == 2) // process males
@@ -1959,7 +1975,7 @@
                 k1 = tails_l(f, j, 3);
                 for (z = k1; z <= nlen_bin2 - 1; z++)
                 {
-                  if (obs_l(f, j, z) <= min_tail_L(f) && k == 0)
+                  if (obs_l(f, j, z) <= min_tail_L(mkt_l(f, j), f) && k == 0)
                   {
                     obs_l(f, j, z + 1) += obs_l(f, j, z);
                     obs_l(f, j, z) = 0.00;
@@ -1974,7 +1990,7 @@
                 k = 0;
                 for (z = nlen_bin2; z >= tails_l(f, j, 3); z--) // compress Male upper tail until exceeds min_tail
                 {
-                  if ((obs_l(f, j, z) <= min_tail_L(f) && k == 0) || z > (nlen_bin2 - AccumBin_L(f)))
+                  if ((obs_l(f, j, z) <= min_tail_L(mkt_l(f, j), f) && k == 0) || z > (nlen_bin2 - AccumBin_L(mkt_l(f, j), f)))
                   {
                     obs_l(f, j, z - 1) += obs_l(f, j, z);
                     obs_l(f, j, z) = 0.00;
@@ -1986,7 +2002,7 @@
                   }
                 }
               }
-              obs_l(f, j)(tails_l(f, j, 3), tails_l(f, j, 4)) += min_comp_L(f); // add min_comp to bins in range
+              obs_l(f, j)(tails_l(f, j, 3), tails_l(f, j, 4)) += min_comp_L(mkt_l(f, j), f); // add min_comp to bins in range
             } // end doing males
             obs_l(f, j) /= sum(obs_l(f, j)); // make sum to 1.00 again after adding min_comp
             if (gender == 1 || gen_l(f, j) != 2)

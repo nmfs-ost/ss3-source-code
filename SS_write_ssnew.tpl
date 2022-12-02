@@ -244,7 +244,7 @@ FUNCTION void write_nudata()
         report1 << "#_mintailcomp addtocomp combM+F CompressBins CompError ParmSelect minsamplesize" << endl;
         for (f = 1; f <= Nfleet; f++)
         {
-          report1 << min_tail_L(f) << " " << min_comp_L(f) << " " << CombGender_L(f) << " " << AccumBin_L(f) << " " << Comp_Err_L(f) << " " << Comp_Err_L2(f) << " " << min_sample_size_L(f) << " #_fleet:" << f << "_" << fleetname(f) << endl;
+          report1 << min_tail_L(0, f) << " " << min_comp_L(0, f) << " " << CombGender_L(0, f) << " " << AccumBin_L(0, f) << " " << Comp_Err_L(0, f) << " " << Comp_Err_L2(0, f) << " " << min_sample_size_L(0, f) << " #_fleet:" << f << "_" << fleetname(f) << endl;
         }
 
         report1 << "# sex codes:  0=combined; 1=use female only; 2=use male only; 3=use both as joint sexxlength distribution" << endl;
@@ -614,7 +614,7 @@ FUNCTION void write_nudata()
         report1 << "#_mintailcomp addtocomp combM+F CompressBins CompError ParmSelect minsamplesize" << endl;
         for (f = 1; f <= Nfleet; f++)
         {
-          report1 << min_tail_L(f) << " " << min_comp_L(f) << " " << CombGender_L(f) << " " << AccumBin_L(f) << " " << Comp_Err_L(f) << " " << Comp_Err_L2(f) << " " << min_sample_size_L(f) << " #_fleet:" << f << "_" << fleetname(f) << endl;
+          report1 << min_tail_L(0, f) << " " << min_comp_L(0, f) << " " << CombGender_L(0, f) << " " << AccumBin_L(0, f) << " " << Comp_Err_L(0, f) << " " << Comp_Err_L2(0, f) << " " << min_sample_size_L(0, f) << " #_fleet:" << f << "_" << fleetname(f) << endl;
         }
         report1 << "# sex codes:  0=combined; 1=use female only; 2=use male only; 3=use both as joint sex*length distribution" << endl;
         report1 << "# partition codes:  (0=combined; 1=discard; 2=retained" << endl;
@@ -1054,7 +1054,7 @@ FUNCTION void write_nudata()
         report1 << "#_mintailcomp addtocomp combM+F CompressBins CompError ParmSelect minsamplesize" << endl;
         for (f = 1; f <= Nfleet; f++)
         {
-          report1 << min_tail_L(f) << " " << min_comp_L(f) << " " << CombGender_L(f) << " " << AccumBin_L(f) << " " << Comp_Err_L(f) << " " << Comp_Err_L2(f) << " " << min_sample_size_L(f) << " #_fleet:" << f << "_" << fleetname(f) << endl;
+          report1 << min_tail_L(0, f) << " " << min_comp_L(0, f) << " " << CombGender_L(0, f) << " " << AccumBin_L(0, f) << " " << Comp_Err_L(0, f) << " " << Comp_Err_L2(0, f) << " " << min_sample_size_L(0, f) << " #_fleet:" << f << "_" << fleetname(f) << endl;
         }
         report1 << nlen_bin << " #_N_LengthBins" << endl
                 << len_bins_dat << endl;
@@ -1068,7 +1068,8 @@ FUNCTION void write_nudata()
           {
             for (i = 1; i <= Nobs_l(f); i++)
             {
-              switch (Comp_Err_L(f))
+              int parti = mkt_l(f, i);
+              switch (Comp_Err_L(parti, f))
               {
                 case 0:
                 {
@@ -1077,14 +1078,14 @@ FUNCTION void write_nudata()
                 }
                 case 1: //  Dirichlet #1
                 {
-                  dirichlet_Parm = mfexp(selparm(Comp_Err_parmloc(Comp_Err_L2(f),1))); //  Thorson's theta from eq 10
+                  dirichlet_Parm = mfexp(selparm(Comp_Err_parmloc(Comp_Err_L2(parti, f), 1))); //  Thorson's theta from eq 10
                   // effN_DM = 1/(1+theta) + n*theta/(1+theta)
                   Nsamp_DM = value(1. / (1. + dirichlet_Parm) + nsamp_l(f, i) * dirichlet_Parm / (1. + dirichlet_Parm));
                   break;
                 }
                 case 2:  //  Dirichlet #2
                 {
-                  dirichlet_Parm = mfexp(selparm(Comp_Err_parmloc(Comp_Err_L2(f),1))); //  Thorson's beta from eq 12
+                  dirichlet_Parm = mfexp(selparm(Comp_Err_parmloc(Comp_Err_L2(parti,f), 1))); //  Thorson's beta from eq 12
                   // effN_DM = (n+n*beta)/(n+beta)
                   Nsamp_DM = value((nsamp_l(f, i) + dirichlet_Parm * nsamp_l(f, i)) / (dirichlet_Parm + nsamp_l(f, i)));
                   break;

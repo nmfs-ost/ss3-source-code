@@ -2180,15 +2180,16 @@ FUNCTION void write_bigoutput()
         tempvec_l = value(exp_l(f, i));
         more_comp_info = process_comps(gender, gen_l(f, i), len_bins_dat2, len_bins_dat_m2, tails_l(f, i), obs_l(f, i), tempvec_l);
         Nsamp_DM = Nsamp_adj; // Will remain this if not used
-        if (Comp_Err_L(f) == 1) //  Dirichlet #1
+        int parti = mkt_l(f, i);
+        if (Comp_Err_L(parti, f) == 1) //  Dirichlet #1
         {
-          dirichlet_Parm = mfexp(selparm(Comp_Err_parmloc(Comp_Err_L2(f),1))); //  Thorson's theta from eq 10
+          dirichlet_Parm = mfexp(selparm(Comp_Err_parmloc(Comp_Err_L2(parti, f),1))); //  Thorson's theta from eq 10
           // effN_DM = 1/(1+theta) + n*theta/(1+theta)
           Nsamp_DM = value(1. / (1. + dirichlet_Parm) + nsamp_l(f, i) * dirichlet_Parm / (1. + dirichlet_Parm));
         }
-        else if (Comp_Err_L(f) == 2) //  Dirichlet #2
+        else if (Comp_Err_L(parti, f) == 2) //  Dirichlet #2
         {
-          dirichlet_Parm = mfexp(selparm(Comp_Err_parmloc(Comp_Err_L2(f),1))); //  Thorson's beta from eq 12
+          dirichlet_Parm = mfexp(selparm(Comp_Err_parmloc(Comp_Err_L2(parti, f),1))); //  Thorson's beta from eq 12
           // effN_DM = (n+n*beta)/(n+beta)
           Nsamp_DM = value((nsamp_l(f, i) + dirichlet_Parm * nsamp_l(f, i)) / (dirichlet_Parm + nsamp_l(f, i)));
         }
@@ -2266,7 +2267,7 @@ FUNCTION void write_bigoutput()
         mean_Nsamp_DM(f) /= n_rmse(f);
         // write values to file
         SS2out << "4 " << f << " ";
-        if (Comp_Err_L(f) == 0)
+        if (Comp_Err_L(0, f) == 0)
         { // standard multinomial
           SS2out << Hrmse(f) / mean_Nsamp_adj(f) * var_adjust(4, f);
         }
@@ -2276,7 +2277,7 @@ FUNCTION void write_bigoutput()
         }
         SS2out << " # " << Nobs_l(f) << " " << n_rmse(f) << " " << minsamp(f) << " " << maxsamp(f) << " " << mean_Nsamp_in(f) << " " << mean_Nsamp_adj(f);
 
-        switch (Comp_Err_L(f))
+        switch (Comp_Err_L(0, f))
         {
           case 0:
           { // standard multinomial
@@ -2290,7 +2291,7 @@ FUNCTION void write_bigoutput()
           case 2:   // Dirichlet-multinomial
           {
             // mean_Nsamp_DM and DM_theta
-            SS2out << " " << mean_Nsamp_DM(f) << " " << Comp_Err_L(f) << " " << Comp_Err_L2(f) << " " << ParmLabel(Comp_Err_parmloc(Comp_Err_L2(f),2)) << " " << mfexp(selparm(Comp_Err_parmloc(Comp_Err_L2(f),1))) << " NA "<< " NA ";
+            SS2out << " " << mean_Nsamp_DM(f) << " " << Comp_Err_L(0, f) << " " << Comp_Err_L2(0, f) << " " << ParmLabel(Comp_Err_parmloc(Comp_Err_L2(0, f),2)) << " " << mfexp(selparm(Comp_Err_parmloc(Comp_Err_L2(0, f),1))) << " NA "<< " NA ";
             break;
           }
           case 3:  //  MV Tweedie
@@ -2537,7 +2538,7 @@ FUNCTION void write_bigoutput()
                 // effN_DM = 1/(1+theta) + n*theta/(1+theta)
                 Nsamp_DM = value(1. / (1. + dirichlet_Parm) + SzFreq_sampleN(iobs) * dirichlet_Parm / (1. + dirichlet_Parm));
               }
-              else if (Comp_Err_L(sz_method) == 2) //  Dirichlet #2
+              else if (Comp_Err_Sz(sz_method) == 2) //  Dirichlet #2
               {
                 dirichlet_Parm = mfexp(selparm(Comp_Err_parmloc(Comp_Err_Sz2(sz_method),1))); //  Thorson's beta from eq 12
                 // effN_DM = (n+n*beta)/(n+beta)
@@ -3958,22 +3959,23 @@ FUNCTION void write_bigoutput()
               temp1 += ecomp;
               if (nsamp > 0 && header_l(f, i, 3) > 0 && (ecomp != 0.0 && ecomp != 1.0) && nbins > 0 ) // check for values to include
               {
-                  if (Comp_Err_L(f) == 0)
+                  int parti = mkt_l(f, i);
+                  if (Comp_Err_L(parti,f) == 0)
                   {
                     show_Pearson = (ocomp - ecomp) / sqrt(ecomp * (1.0 - ecomp) / nsamp ); // Pearson for multinomial
                     show_logL = ocomp * log( (ocomp + 1.0e-12) / ( ecomp + 1.0e-12) ) * nsamp;  //  logL
                   }
-                  if (Comp_Err_L(f) == 1 || Comp_Err_L(f) == 2)
+                  if (Comp_Err_L(parti, f) == 1 || Comp_Err_L(parti, f) == 2)
                   {
-                    dirichlet_Parm = mfexp(selparm(Comp_Err_parmloc(Comp_Err_L2(f),1)));
-                    if (Comp_Err_L(f) == 1 )
+                    dirichlet_Parm = mfexp(selparm(Comp_Err_parmloc(Comp_Err_L2(parti, f),1)));
+                    if (Comp_Err_L(parti, f) == 1 )
                       { dirichlet_Parm *= nsamp; }
                     show_Pearson = value((ocomp - ecomp) / sqrt(ecomp * (1.0 - ecomp) / nsamp * (nsamp + dirichlet_Parm) / (1. + dirichlet_Parm))); // Pearson for Dirichlet-multinomial using negative-exponential parameterization
                     show_logL =  -offset_l(f,i) / nbins
                      - value( gammln(nsamp * ocomp + dirichlet_Parm * ecomp) - gammln(dirichlet_Parm * ecomp))
                      - value( ( gammln(dirichlet_Parm) - gammln(nsamp + dirichlet_Parm))) / nbins;
                   }
-                  if (Comp_Err_L(f) == 3 )  //  MV Tweedie
+                  if (Comp_Err_L(parti, f) == 3 )  //  MV Tweedie
                   {
                   }
                   SS_compout << show_Pearson << " " << nsamp << " " << nsamp_l_read(f, i) << " " << neff_l(f, i) << " " << show_logL;

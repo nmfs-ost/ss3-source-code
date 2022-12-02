@@ -295,9 +295,9 @@ FUNCTION void evaluate_the_objective_function()
               {
                 exp_l(f, i)(1, nlen_bin) = 0.00;
               }
-              else if (gen_l(f, i) == 3 && CombGender_L(f) > 0)
+              else if (gen_l(f, i) == 3 && CombGender_L(mkt_l(f, i), f) > 0)
               {
-                for (z = 1; z <= CombGender_L(f); z++)
+                for (z = 1; z <= CombGender_L(mkt_l(f, i), f); z++)
                 {
                   exp_l(f, i, z) += exp_l(f, i, z + nlen_bin);
                   exp_l(f, i, z + nlen_bin) = 0.00;
@@ -319,7 +319,7 @@ FUNCTION void evaluate_the_objective_function()
                 exp_l(f, i, tails_w(2)) = sum(exp_l(f, i)(tails_w(2), nlen_bin));
                 exp_l(f, i)(tails_w(2) + 1, nlen_bin) = 0.;
               }
-              exp_l(f, i)(tails_w(1), tails_w(2)) += min_comp_L(f);
+              exp_l(f, i)(tails_w(1), tails_w(2)) += min_comp_L(mkt_l(f, i), f);
             }
 
             if (gender == 2 && gen_l(f, i) >= 2)
@@ -334,13 +334,13 @@ FUNCTION void evaluate_the_objective_function()
                 exp_l(f, i, tails_w(4)) = sum(exp_l(f, i)(tails_w(4), nlen_bin2));
                 exp_l(f, i)(tails_w(4) + 1, nlen_bin2) = 0.;
               }
-              exp_l(f, i)(tails_w(3), tails_w(4)) += min_comp_L(f);
+              exp_l(f, i)(tails_w(3), tails_w(4)) += min_comp_L(mkt_l(f, i), f);
             }
             exp_l(f, i) /= sum(exp_l(f, i));
 
             if (header_l(f, i, 3) > 0 || save_for_report == 1)
             {
-              if (Comp_Err_L(f) == 0) // multinomial
+              if (Comp_Err_L(mkt_l(f, i), f) == 0) // multinomial
               {
                 // get female or combined sex logL
                 //  logL functions are at end of file SS_miscfxn.tpl
@@ -350,13 +350,13 @@ FUNCTION void evaluate_the_objective_function()
                 if (gen_l(f, i) >= 2 && gender == 2)
                   length_like(f, i) += Comp_logL_multinomial( nsamp_l(f, i), obs_l(f, i)(tails_w(3), tails_w(4)), exp_l(f, i)(tails_w(3), tails_w(4)) );
               }
-             else if( (Comp_Err_L(f)==1) || (Comp_Err_L(f)==2) ) //  dirichlet
+             else if( (Comp_Err_L(mkt_l(f, i), f)==1) || (Comp_Err_L(mkt_l(f, i), f)==2) ) //  dirichlet
               {
                 /* from Thorson:  NLL -= gammln(A) - gammln(ninput_t(t)+A) + sum(gammln(ninput_t(t)*extract_row(pobs_ta,t) + A*extract_row(pexp_ta,t))) - sum(lgamma(A*extract_row(pexp_ta,t))) \
                 in option 1, dirichlet_Parm = Theta*n from equation (10) of Thorson et al. 2016
                 in option 2, dirichlet_Parm = Beta from equation (4) of Thorson et al. 2016 */
-                dirichlet_Parm = mfexp(selparm(Comp_Err_parmloc(Comp_Err_L2(f),1)));
-                if (Comp_Err_L(f) == 1)
+                dirichlet_Parm = mfexp(selparm(Comp_Err_parmloc(Comp_Err_L2(mkt_l(f, i), f),1)));
+                if (Comp_Err_L(mkt_l(f, i), f) == 1)
                   dirichlet_Parm *= nsamp_l(f, i);
 
                 // note: first term in equations (4) and (10) is calculated
@@ -378,7 +378,7 @@ FUNCTION void evaluate_the_objective_function()
 				dvariable tweedie_Phi;
 				dvariable tweedie_power;
 				// Exponentiate [PARAMETER_1]
-				int k1 = Comp_Err_parmloc(Comp_Err_L2(f),1);
+				int k1 = Comp_Err_parmloc(Comp_Err_L2(mkt_l(f, i), f),1);
 				tweedie_Phi = mfexp(selparm(k1));
 				// One plus logistic-transform [PARAMETER_1]
 				tweedie_power = 1.0 + mfexp(selparm(k1+1)) / (1.0+mfexp(selparm(k1+1)));
