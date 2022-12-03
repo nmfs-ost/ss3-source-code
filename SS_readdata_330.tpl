@@ -1327,6 +1327,7 @@
   imatrix Comp_Err_L2(0,2,1,Nfleet);  //  composition error type index
   matrix min_sample_size_L(0,2,1,Nfleet);  // minimum sample size
   int Comp_Err_ParmCount;  // counts number of comp_err definitions that are created
+  int comp_control_L_count;
   imatrix DM_parmlist(0,2,1,3*Nfleet);  // flag for creating a new comperr definition; 3*Nfleet creates dim for length, age, size comps
  LOCAL_CALCS
   // clang-format on
@@ -1339,7 +1340,7 @@
   Comp_Err_parmloc.initialize();
   min_sample_size_L.initialize();
   DM_parmlist.initialize();
-
+  comp_control_L_count = -1;
   if (use_length_data > 0)
   {
     echoinput << "#_now read for each fleet info for processing the length comps:" << endl;
@@ -1390,10 +1391,12 @@
       int f_hi;
       do
       {
-        *(ad_comm::global_datafile) >> f;  //  read fleet
-        *(ad_comm::global_datafile) >> parti;  //  read partition
-        *(ad_comm::global_datafile) >> tempvec(1,7);  //  read vector
-
+        dvector tempvec(1,9);
+        *(ad_comm::global_datafile) >> tempvec(1,9);  //  read vector
+        f = int(tempvec(1));
+        parti = int(tempvec(2));
+        comp_control_L.push_back(tempvec(1,9));  //  save for write back in ss_new
+        comp_control_L_count ++;
         if (f == -9999.)
           {
             ender = 1;
@@ -1419,22 +1422,22 @@
             for (f = f_lo; f <= f_hi; f++)
             for (parti = parti_lo; parti <= parti_hi; parti++)
             {
-              min_tail_L(parti, f) = tempvec(1);
-              min_comp_L(parti, f) = tempvec(2);
-              CombGender_L(parti, f) = int(tempvec(3));
-              AccumBin_L(parti, f) = int(tempvec(4));
-              Comp_Err_L(parti, f) = int(tempvec(5));
-              Comp_Err_L2(parti, f) = int(tempvec(6));
-              min_sample_size_L(parti, f) = tempvec(7);
+              min_tail_L(parti, f) = tempvec(3);
+              min_comp_L(parti, f) = tempvec(4);
+              CombGender_L(parti, f) = int(tempvec(5));
+              AccumBin_L(parti, f) = int(tempvec(6));
+              Comp_Err_L(parti, f) = int(tempvec(7));
+              Comp_Err_L2(parti, f) = int(tempvec(8));
+              min_sample_size_L(parti, f) = tempvec(9);
             }
           }
         } while (ender == 0);
     }
-    
-    for (int parti = 0; parti <= 2; parti++)
+    echoinput << "fleet partition  mintail  addtocomp conbgender accumbin  comperr  comperrparm"<<endl;
     for (f = 1; f <= Nfleet; f++)
+    for (int parti = 0; parti <= 2; parti++)
     {
-      echoinput << f << " " << parti << " " << min_tail_L(0, f) << " " << min_comp_L(0, f) << " " << CombGender_L(0, f) << " " << AccumBin_L(0, f) << " " << Comp_Err_L(0, f) << " " << Comp_Err_L2(0, f) << " " << min_sample_size_L(0, f) << "  #_fleet: " << f << " " << fleetname(f) << endl;
+      echoinput << f << " " << parti << " " << min_tail_L(parti, f) << " " << min_comp_L(parti, f) << " " << CombGender_L(parti, f) << " " << AccumBin_L(parti, f) << " " << Comp_Err_L(parti, f) << " " << Comp_Err_L2(parti, f) << " " << min_sample_size_L(parti, f) << "  #_fleet: " << f << " " << fleetname(f) << endl;
 
       if (min_sample_size_L(parti, f) < 0.001)
       {

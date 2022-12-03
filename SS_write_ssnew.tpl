@@ -230,7 +230,7 @@ FUNCTION void write_nudata()
         report1 << len_bins << endl;
       }
 
-      report1 << use_length_data << " # use length composition data (0/1)" << endl;
+      report1 << use_length_data << " # use length composition data (0/1/2) where 2 invokes new comp_comtrol format" << endl;
       if (use_length_data > 0)
       {
         report1 << "#_mintailcomp: upper and lower distribution for females and males separately are accumulated until exceeding this level." << endl;
@@ -241,10 +241,21 @@ FUNCTION void write_nudata()
         report1 << "#_ParmSelect:  consecutive index for dirichlet or MV_Tweedie" << endl;
         report1 << "#_minsamplesize: minimum sample size; set to 1 to match 3.24, minimum value is 0.001" << endl;
         report1 << "#" << endl;
+        if(use_length_data == 1)
+        {
+          report1 << "#_Using old format for composition controls" << endl;
         report1 << "#_mintailcomp addtocomp combM+F CompressBins CompError ParmSelect minsamplesize" << endl;
         for (f = 1; f <= Nfleet; f++)
         {
           report1 << min_tail_L(0, f) << " " << min_comp_L(0, f) << " " << CombGender_L(0, f) << " " << AccumBin_L(0, f) << " " << Comp_Err_L(0, f) << " " << Comp_Err_L2(0, f) << " " << min_sample_size_L(0, f) << " #_fleet:" << f << "_" << fleetname(f) << endl;
+        }
+        }
+        else if (use_length_data == 2)
+        {
+          report1 << "#_Using new list format for composition controls" << endl;
+          report1 << "#_fleet partition mintailcomp addtocomp combM+F CompressBins CompError ParmSelect minsamplesize" << endl;
+          for (int i = 0; i <= comp_control_L_count; i++)
+            report1 << comp_control_L[i] << endl;
         }
 
         report1 << "# sex codes:  0=combined; 1=use female only; 2=use male only; 3=use both as joint sexxlength distribution" << endl;
@@ -600,22 +611,34 @@ FUNCTION void write_nudata()
         report1 << len_bins << endl;
       }
 
-      report1 << use_length_data << " # use length composition data (0/1)" << endl;
+      report1 << use_length_data << " # use length composition data (0/1/2) where 2 invokes new comp_comtrol format" << endl;
       if (use_length_data > 0)
       {
         report1 << "#_mintailcomp: upper and lower distribution for females and males separately are accumulated until exceeding this level." << endl;
         report1 << "#_addtocomp:  after accumulation of tails; this value added to all bins" << endl;
         report1 << "#_combM+F: males and females treated as combined gender below this bin number " << endl;
         report1 << "#_compressbins: accumulate upper tail by this number of bins; acts simultaneous with mintailcomp; set=0 for no forced accumulation" << endl;
-        report1 << "#_Comp_Error:  0=multinomial, 1=dirichlet, 2=MV_Tweedie" << endl;
+        report1 << "#_Comp_Error:  0=multinomial, 1=dirichlet using Theta*n, 2=dirichlet using beta, 3=MV_Tweedie" << endl;
         report1 << "#_ParmSelect:  consecutive index for dirichlet or MV_Tweedie" << endl;
         report1 << "#_minsamplesize: minimum sample size; set to 1 to match 3.24, minimum value is 0.001" << endl;
         report1 << "#" << endl;
+        if(use_length_data == 1)
+        {
+          report1 << "#_Using old format for composition controls" << endl;
         report1 << "#_mintailcomp addtocomp combM+F CompressBins CompError ParmSelect minsamplesize" << endl;
         for (f = 1; f <= Nfleet; f++)
         {
           report1 << min_tail_L(0, f) << " " << min_comp_L(0, f) << " " << CombGender_L(0, f) << " " << AccumBin_L(0, f) << " " << Comp_Err_L(0, f) << " " << Comp_Err_L2(0, f) << " " << min_sample_size_L(0, f) << " #_fleet:" << f << "_" << fleetname(f) << endl;
         }
+        }
+        else if (use_length_data == 2)
+        {
+          report1 << "#_Using new list format for composition controls" << endl;
+          report1 << "#_fleet partition mintailcomp addtocomp combM+F CompressBins CompError ParmSelect minsamplesize" << endl;
+          for (int i = 0; i <= comp_control_L_count; i++)
+            report1 << comp_control_L[i] << endl;
+        }
+
         report1 << "# sex codes:  0=combined; 1=use female only; 2=use male only; 3=use both as joint sex*length distribution" << endl;
         report1 << "# partition codes:  (0=combined; 1=discard; 2=retained" << endl;
         report1 << nlen_bin << " #_N_LengthBins" << endl
@@ -1040,7 +1063,7 @@ FUNCTION void write_nudata()
         report1 << len_bins << endl;
       }
 
-      report1 << use_length_data << " # use length composition data (0/1)" << endl;
+      report1 << use_length_data << " # use length composition data (0/1/2) where 2 invokes new comp_comtrol format" << endl;
       if (use_length_data > 0)
       {
         report1 << "#_mintailcomp: upper and lower distribution for females and males separately are accumulated until exceeding this level." << endl;
@@ -1051,14 +1074,24 @@ FUNCTION void write_nudata()
         report1 << "#_ParmSelect:  consecutive index for dirichlet or MV_Tweedie" << endl;
         report1 << "#_minsamplesize: minimum sample size; set to 1 to match 3.24, minimum value is 0.001" << endl;
         report1 << "#" << endl;
+        if(use_length_data == 1)
+        {
+          report1 << "#_Using old format for composition controls" << endl;
         report1 << "#_mintailcomp addtocomp combM+F CompressBins CompError ParmSelect minsamplesize" << endl;
         for (f = 1; f <= Nfleet; f++)
         {
           report1 << min_tail_L(0, f) << " " << min_comp_L(0, f) << " " << CombGender_L(0, f) << " " << AccumBin_L(0, f) << " " << Comp_Err_L(0, f) << " " << Comp_Err_L2(0, f) << " " << min_sample_size_L(0, f) << " #_fleet:" << f << "_" << fleetname(f) << endl;
         }
+        }
+        else if (use_length_data == 2)
+        {
+          report1 << "#_Using new list format for composition controls" << endl;
+          report1 << "#_fleet partition mintailcomp addtocomp combM+F CompressBins CompError ParmSelect minsamplesize" << endl;
+          for (int i = 0; i <= comp_control_L_count; i++)
+            report1 << comp_control_L[i] << endl;
+        }
         report1 << nlen_bin << " #_N_LengthBins" << endl
                 << len_bins_dat << endl;
-        //  report1<<sum(Nobs_l)<<" #_N_Length_obs"<<endl;
         report1 << "# sex codes:  0=combined; 1=use female only; 2=use male only; 3=use both as joint sexxlength distribution" << endl;
         report1 << "# partition codes:  (0=combined; 1=discard; 2=retained" << endl;
         report1 << "#_yr month fleet sex part Nsamp datavector(female-male)" << endl;
