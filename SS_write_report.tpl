@@ -3574,7 +3574,10 @@ FUNCTION void write_bigoutput()
       SS2out << " Herma_Trans ";
     }
     if (gender == 2)
-      SS2out << " sex_ratio ";
+    {
+      for (p = 1; p <=pop; p++)
+        SS2out << " sex_ratio_area:_" << p ;
+    }
     for (f = 1; f <= Nfleet; f++)
       SS2out << " Len:_" << f << " SelWt:_" << f << " RetWt:_" << f;
     SS2out << endl;
@@ -3627,16 +3630,20 @@ FUNCTION void write_bigoutput()
                 SS2out << " NA ";
               }
             }
-            //  write sex ratio in endyr using natage in area 1
+            //  write sex ratio in endyr for each area using natage
+            //  small constant added to denominator so that morph-area combos with no fish will display a value of 0.0, rather than "nan"
+            //  because natage is used, the reported sex ratio values will be responsive to hermaphroditism, and to sex-specific mortality
             if (gender == 2)
             {
               if (sx(g) == 1)
               {
-                SS2out << " " << natage(t, 1, g, a) / (natage(t, 1, g, a) + natage(t, 1, g + gmorph / 2, a)) << " ";
+                for (p = 1; p <= pop; p++)
+                  SS2out << " " << natage(t, p, g, a) / (natage(t, p, g, a) + natage(t, p, g + gmorph / 2, a) + 1.0e-07) << " ";
               }
               else
               {
-                SS2out << " " << natage(t, 1, g, a) / (natage(t, 1, g, a) + natage(t, 1, g - gmorph / 2, a)) << " ";
+                for (p = 1; p <= pop; p++)
+                  SS2out << " " << natage(t, p, g, a) / (natage(t, p, g, a) + natage(t, p, g - gmorph / 2, a) + 1.0e-07) << " ";
               }
             }
             if (WTage_rd == 0)

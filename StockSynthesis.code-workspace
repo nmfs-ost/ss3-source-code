@@ -1,0 +1,14 @@
+{
+	"folders": [
+		{
+			"path": ".."
+		}
+	],
+	"settings": {
+		"files.associations": {
+			"*.tpl": "c",
+			"\"*.extension\":": "\"tpl\"",
+			"*.htp": "c"
+		}
+	}
+}
