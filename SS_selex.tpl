@@ -1921,8 +1921,6 @@ FUNCTION void Make_FishSelex()
   ALK_idx = (s - 1) * N_subseas + mid_subseas; //for midseason
   int ALK_finder = (ALK_idx - 1) * gmorph + g;
   dvar_matrix ALK_w = ALK(ALK_idx, g); //  shallow copy
-  ivector ALK_range_lo = ALK_range_g_lo(ALK_finder);
-  ivector ALK_range_hi = ALK_range_g_hi(ALK_finder);
   dvar_vector sel_l_r_w(1, nlength); //  temp vector for retained contribution to weight-at-age
   dvar_vector disc_wt(1, nlength);
   int yf;
@@ -2001,8 +1999,8 @@ FUNCTION void Make_FishSelex()
           disc_wt = elem_prod(discmort2(yf, f, gg), wt_len(s, GP(g)));
         for (a = 0; a <= nages; a++)
         {
-          int llo = ALK_range_lo(a);
-          int lhi = ALK_range_hi(a);
+          int llo = 1;
+          int lhi = nlength;
           sel_bio(s, f, g, a) = sel_a(yf, f, gg, a) * (ALK_w(a)(llo, lhi) * tempvec_l(llo, lhi));
           sel_num(s, f, g, a) = sel_a(yf, f, gg, a) * (ALK_w(a)(llo, lhi) * sel_l(yf, f, gg)(llo, lhi));
           Wt_Age_t(tz, f, g, a) = (ALK_w(a)(llo, lhi) * tempvec_l(llo, lhi)) / (ALK_w(a)(llo, lhi) * sel_l(yf, f, gg)(llo, lhi));

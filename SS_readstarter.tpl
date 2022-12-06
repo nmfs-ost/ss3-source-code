@@ -776,15 +776,15 @@
         echoinput << "MCMC output detail(1=more_detail_to_posts; 2=write_report_for_each_mceval):  " << mcmc_output_detail << endl;
         echoinput << "MCMC bump to R0:  " << MCMC_bump << endl;
 
-        echoinput << "Now get ALK tolerance (0.0 is OK for no compression; 0.1 is too big;  suggest 0.0001)" << endl;
+        echoinput << "Now read ALK tolerance which is deprecated. If not 0, it will be reset to 0." << endl;
         *(ad_comm::global_datafile) >> ALK_tolerance;
-        echoinput << "ALK tolerance:  " << ALK_tolerance << endl;
-        // enforce valid range of ALK_tolerance
-        if (ALK_tolerance < 0.0 || ALK_tolerance > 0.1)
+        if (ALK_tolerance > 0.0 || ALK_tolerance < 0.0)
         {
-          warnstream << "Error: ALK_tolerance must be between 0.0 and 0.1: " << ALK_tolerance;
-          write_message(FATAL, 1);
+          warnstream << "ALK tolerance is now deprecated and is set to 0" ;
+          write_message(ADJUST, 1);
+          ALK_tolerance = 0;
         }
+        echoinput << "ALK tolerance:  " << ALK_tolerance << endl;
 
         echoinput << "Now get random number seed; enter -1 to use long(time) as the seed" << endl;
         *(ad_comm::global_datafile) >> tempin;
