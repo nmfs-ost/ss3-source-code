@@ -32,8 +32,6 @@ FUNCTION void Get_expected_values(const int y, const int t);
             if (use_morph(g) > 0)
             {
               int ALK_finder = (ALK_idx - 1) * gmorph + g;
-//              ivector ALK_range_lo = ALK_range_g_lo(ALK_finder);
-//              ivector ALK_range_hi = ALK_range_g_hi(ALK_finder);
 
               gg = sx(g);
               if (gg == 2)
@@ -82,7 +80,6 @@ FUNCTION void Get_expected_values(const int y, const int t);
                   for (a = 0; a <= nages; a++)
                   {
                     temp = tempvec_a(a);
-//                    for (z = ALK_range_lo(a); z <= ALK_range_hi(a); z++)
                     for (z = 1; z <= nlength; z++)
                     {
                       exp_AL(a + A2, L1 - 1 + z) += temp * ALK(ALK_idx, g, a, z) * sel_l(y, f, gg, z);
@@ -95,7 +92,6 @@ FUNCTION void Get_expected_values(const int y, const int t);
                   for (a = 0; a <= nages; a++)
                   {
                     temp = tempvec_a(a);
-//                    for (z = ALK_range_lo(a); z <= ALK_range_hi(a); z++)
                     for (z = 1; z <= nlength; z++)
                     {
                       exp_AL(a + A2, L1 - 1 + z) += temp * ALK(ALK_idx, g, a, z);
@@ -112,7 +108,6 @@ FUNCTION void Get_expected_values(const int y, const int t);
                   {
                     temp = tempvec_a(a);
                     temp1 = tempvec_a(a) * retain_a(y, f, gg, a);
-//                    for (z = ALK_range_lo(a); z <= ALK_range_hi(a); z++)
                     for (z = 1; z <= nlength; z++)
                     {
                       exp_AL(a + A2, L1 - 1 + z) += temp * ALK(ALK_idx, g, a, z) * sel_l(y, f, gg, z); //  note that A2 and L1 depend on what sex g is
@@ -126,7 +121,6 @@ FUNCTION void Get_expected_values(const int y, const int t);
                   {
                     temp = tempvec_a(a);
                     temp1 = tempvec_a(a) * retain_a(y, f, gg, a);
-//                    for (z = ALK_range_lo(a); z <= ALK_range_hi(a); z++)
                     for (z = 1; z <= nlength; z++)
                     {
                       exp_AL(a + A2, L1 - 1 + z) += temp * ALK(ALK_idx, g, a, z);

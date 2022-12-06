@@ -1690,7 +1690,6 @@ FUNCTION void get_mat_fec();
             int ALK_finder = (ALK_idx - 1) * gmorph + g;
             for (a = First_Mature_Age; a <= nages; a++)
             {
-//              tempvec_a(a) = ALK(ALK_idx, g, a)(ALK_range_g_lo(ALK_finder, a), ALK_range_g_hi(ALK_finder, a)) * mat_fec_len(GPat)(ALK_range_g_lo(ALK_finder, a), ALK_range_g_hi(ALK_finder, a));
               tempvec_a(a) = ALK(ALK_idx, g, a)(1, nlength) * mat_fec_len(GPat)(1, nlength);
             }
             fec(g)(First_Mature_Age, nages) = elem_prod(tempvec_a(First_Mature_Age, nages), mat_age(GPat)(First_Mature_Age, nages)); //  reproductive output at age
@@ -2066,8 +2065,7 @@ FUNCTION void Make_Fecundity()
           int ALK_finder = (ALK_idx - 1) * gmorph + g;
           for (a = First_Mature_Age; a <= nages; a++)
           {
- //           tempvec_a(a) = ALK(ALK_idx, g, a)(ALK_range_g_lo(ALK_finder, a), ALK_range_g_hi(ALK_finder, a)) * mat_fec_len(GPat)(ALK_range_g_lo(ALK_finder, a), ALK_range_g_hi(ALK_finder, a));
-           tempvec_a(a) = ALK(ALK_idx, g, a)(1, nlength) * mat_fec_len(GPat)(1, nlength);
+            tempvec_a(a) = ALK(ALK_idx, g, a)(1, nlength) * mat_fec_len(GPat)(1, nlength);
           }
           fec(g)(First_Mature_Age, nages) = elem_prod(tempvec_a(First_Mature_Age, nages), mat_age(GPat)(First_Mature_Age, nages)); //  reproductive output at age
         }
