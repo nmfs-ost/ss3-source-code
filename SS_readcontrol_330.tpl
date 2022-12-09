@@ -66,12 +66,13 @@
   // clang-format on
   if (WTage_rd > 0)
   {
+    // Remove unnecessary or confusing reports (issue #383)
     pick_report_use(8) = "N";
     pick_report_use(27) = "N";
     pick_report_use(31) = "N";
     pick_report_use(38) = "N";
     pick_report_use(42) = "N";
-
+    // Incompatible option, fatal condition 
     if (nobs_mnwt > 0)
     {
       warnstream << "incompatible option:  empirical bodywt-at-age is used, but meanbody_wt obs fit using growth curve";
