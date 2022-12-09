@@ -64,10 +64,19 @@
   vector platoon_distr(1,N_platoon);
  LOCAL_CALCS
   // clang-format on
-  if (WTage_rd > 0 && nobs_mnwt > 0)
+  if (WTage_rd > 0)
   {
-    warnstream << "incompatible option:  empirical bodywt-at-age is used, but meanbody_wt obs fit using growth curve";
-    write_message (ADJUST, 0);
+    pick_report_use(8) = "N";
+    pick_report_use(27) = "N";
+    pick_report_use(31) = "N";
+    pick_report_use(38) = "N";
+    pick_report_use(42) = "N";
+
+    if (nobs_mnwt > 0)
+    {
+      warnstream << "incompatible option:  empirical bodywt-at-age is used, but meanbody_wt obs fit using growth curve";
+      write_message (FATAL, 0);
+    }
   }
   
   if (N_platoon > 1)
