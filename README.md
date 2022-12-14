@@ -28,9 +28,9 @@ Download the latest compiled versions from [Github Releases](https://github.com/
 
 ## How can I learn how to use Stock Synthesis?
 
-To learn more about how to use Stock Synthesis, see the [getting started guide with Stock Synthesis guide](https://nmfs-stock-synthesis.github.io/ss-documentation/Getting_Started_SS.html). To learn how to build your own models in Stock Synthesis, see the [Develop an Stock Synthesis model guide](https://nmfs-stock-synthesis.github.io/ss-documentation/ss_model_tips.html).
+To learn more about how to use Stock Synthesis, see the [getting started guide with Stock Synthesis guide](https://nmfs-stock-synthesis.github.io/doc/Getting_Started_SS.html). To learn how to build your own models in Stock Synthesis, see the [Develop an Stock Synthesis model guide](https://nmfs-stock-synthesis.github.io/doc/ss_model_tips.html).
 
-The [Stock Synthesis user manual](https://github.com/nmfs-stock-synthesis/ss-documentation/releases) provides the complete documentation of Stock Synthesis, while the [helper spreadsheets](https://github.com/nmfs-stock-synthesis/ss-documentation/tree/main/Helper_Spreadsheets) are useful cheatsheets that outline inputs necessary for options that are widely used within Stock Synthesis.
+The [Stock Synthesis user manual](https://github.com/nmfs-stock-synthesis/doc/releases) provides the complete documentation of Stock Synthesis, while the [helper spreadsheets](https://github.com/nmfs-stock-synthesis/doc/tree/main/excel_output_viewer) are useful cheatsheets that outline inputs necessary for options that are widely used within Stock Synthesis.
 
 ## How do I ask questions about Stock Synthesis?
 
