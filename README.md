@@ -30,7 +30,7 @@ Download the latest compiled versions from [Github Releases](https://github.com/
 
 To learn more about how to use Stock Synthesis, see the [getting started guide with Stock Synthesis guide](https://nmfs-stock-synthesis.github.io/doc/Getting_Started_SS.html). To learn how to build your own models in Stock Synthesis, see the [Develop an Stock Synthesis model guide](https://nmfs-stock-synthesis.github.io/doc/ss_model_tips.html).
 
-The [Stock Synthesis user manual](https://github.com/nmfs-stock-synthesis/doc/releases) provides the complete documentation of Stock Synthesis, while the [SS3 Shiny helper app](https://connect.fisheries.noaa.gov/ss3-helper/) can help users visualize common selectivity pattern options available within Stock Synthesis.
+The [Stock Synthesis user manual](https://nmfs-stock-synthesis.github.io/doc/SS330_User_Manual.html) provides the complete documentation of Stock Synthesis.
 
 ## How do I ask questions about Stock Synthesis?
 
@@ -50,6 +50,7 @@ As Stock Synthesis usage has grown, so has the number of tools to work with it. 
 - [ss3diags](https://github.com/PIFSCstockassessments/ss3diags): Run advanced diagnostics for Stock Synthesis models.
 - [ss3sim](https://github.com/ss3sim/ss3sim): Conduct simulation studies using Stock Synthesis.
 - [SSI](https://vlab.noaa.gov/web/stock-synthesis/document-library/-/document_library/0LmuycloZeIt/view/5042951): Stock Synthesis Interface, a GUI for developing models and running Stock Synthesis. Links to r4ss.
+- [SS3 Shiny helper app](https://connect.fisheries.noaa.gov/ss3-helper/): Visualize common selectivity pattern options available within Stock Synthesis.
 - [SSMSE](https://github.com/nmfs-fish-tools/SSMSE): Use Stock Synthesis operating models in Management Strategy Evaluation.
 - [sa4ss](https://github.com/nwfsc-assess/sa4ss): Create accessible R markdown stock assessment documents with results from Stock Synthesis models. Note this tool is intended for use by analysts within the Northwest and Southwest Fisheries Science Centers currently.
 - Data limited tools - Options included Simple Stock Synthesis ([SSS](https://github.com/shcaba/SSS)) and Extended Simple Stock Synthesis ([XSSS](https://github.com/chantelwetzel-noaa/XSSS)), as well as [SS-DL-tool](https://github.com/shcaba/SS-DL-tool), a shiny app that includes XSSS and SSS in its functionality.
