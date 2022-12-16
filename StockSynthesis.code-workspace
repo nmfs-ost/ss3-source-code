@@ -8,7 +8,8 @@
 		"files.associations": {
 			"*.tpl": "c",
 			"\"*.extension\":": "\"tpl\"",
-			"*.htp": "c"
+			"*.htp": "c",
+			"ostream": "c"
 		}
 	}
 }
