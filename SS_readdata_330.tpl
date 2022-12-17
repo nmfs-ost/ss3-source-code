@@ -1396,7 +1396,7 @@
         f = int(tempvec(1));
         parti = int(tempvec(2));
         comp_control_L.push_back(tempvec(1,9));  //  save for write back in ss_new
-        comp_control_L_count ++;
+        comp_control_L_count++;
         if (f == -9999.)
           {
             ender = 1;
@@ -1448,19 +1448,19 @@
   
       if (Comp_Err_L2(parti, f) > Nfleet)
       {
-        warnstream << "length D-M index for fleet: " << f << " is: " << Comp_Err_L2(0, f) << " but must be an integer <=Nfleet ";
+        warnstream << "length D-M index for fleet: " << f << " is: " << Comp_Err_L2(parti, f) << " but must be an integer <=Nfleet ";
         write_message(FATAL, 1);
       }
       else if (Comp_Err_L2(parti, f) > Comp_Err_ParmCount + 1)
       {
-        warnstream << "; length D-M must refer to existing Comp_err definition, or increment by 1:  " << Comp_Err_L2(0, f);
+        warnstream << "; length D-M must refer to existing Comp_err definition, or increment by 1:  " << Comp_Err_L2(parti, f);
         write_message(FATAL, 1);
       }
       else if (Comp_Err_L2(parti, f) > Comp_Err_ParmCount)
       {
         Comp_Err_ParmCount++;
-        //  QUESTION:  how will DM_parmlist work with partitions??
-        DM_parmlist(parti, f)=1;  // flag for creating new definition because Comp_Err_L2 can point to existing definition
+        echoinput<<" plus "<<endl;
+        DM_parmlist(parti, f) = 1;  // flag for creating new definition because Comp_Err_L2 can point to existing definition
       }
       //  else OK because refers to existing definition
     }
@@ -2271,7 +2271,8 @@
         else if (Comp_Err_A2(f) > Comp_Err_ParmCount)
         {
           Comp_Err_ParmCount++;
-          DM_parmlist(f + Nfleet) = 1;  // flag for creating new definition because Comp_Err_L2 can point to existing parameter
+          int parti = 0;
+          DM_parmlist(parti, f + Nfleet) = 1;  // flag for creating new definition because Comp_Err_L2 can point to existing parameter
         }
         //  else OK because refers to existing definition
       }
@@ -3121,7 +3122,8 @@
       else if (Comp_Err_Sz2(f) > Comp_Err_ParmCount)
       {
         Comp_Err_ParmCount++;
-        DM_parmlist(f + 2*Nfleet) = 1;  // flag for creating new definition because Comp_Err_Sz2 can point to existing parameter
+        int parti = 0;
+        DM_parmlist(parti, f + 2*Nfleet) = 1;  // flag for creating new definition because Comp_Err_Sz2 can point to existing parameter
       }
       //  else OK because refers to existing definition
     }

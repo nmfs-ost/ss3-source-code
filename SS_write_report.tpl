@@ -2116,7 +2116,7 @@ FUNCTION void write_bigoutput()
   dvar_vector more_comp_info(1, 20);
   dvariable cumdist;
   dvariable cumdist_save;
-  double Nsamp_DM; // equals Nsamp_adj when not using Dirichlet-Multinomial likelihood
+  double Nsamp_DM; // equals Nsamp_adj when not using Dirichlet-Multinomial or Tweedie likelihood
   double Nsamp_adj; // input sample size after input variance adjustment
   double Nsamp_in; // input sample size
   dvector minsamp(1, Nfleet);
@@ -2127,7 +2127,7 @@ FUNCTION void write_bigoutput()
   {
     SS2out << endl
            << pick_report_name(27) << endl;
-    SS2out << "Fleet Fleet_Name Area Yr Seas Subseas Month Time Sexes Part SuprPer Use Nsamp_in Nsamp_adj Nsamp_DM effN Like";
+    SS2out << "Fleet Fleet_Name Area Yr Seas Subseas Month Time Sexes Part SuprPer Use Nsamp_in Nsamp_adj Nsamp_DM effN Like Method DM_parm MV_T_parm ";
     SS2out << " All_obs_mean All_exp_mean All_delta All_exp_5% All_exp_95% All_DurWat";
     if (gender == 2)
       SS2out << " F_obs_mean F_exp_mean F_delta F_exp_5% F_exp_95% F_DurWat M_obs_mean M_exp_mean M_delta M_exp_5% M_exp_95% M_DurWat %F_obs %F_exp ";
@@ -2181,6 +2181,8 @@ FUNCTION void write_bigoutput()
         more_comp_info = process_comps(gender, gen_l(f, i), len_bins_dat2, len_bins_dat_m2, tails_l(f, i), obs_l(f, i), tempvec_l);
         Nsamp_DM = Nsamp_adj; // Will remain this if not used
         int parti = mkt_l(f, i);
+        dirichlet_Parm = 0.0;  //  default gets reported if using multinomial
+        double Tweedie_Parm = 0.0; //  default gets reported if not using MV Tweedie
         if (Comp_Err_L(parti, f) == 1) //  Dirichlet #1
         {
           dirichlet_Parm = mfexp(selparm(Comp_Err_parmloc(Comp_Err_L2(parti, f),1))); //  Thorson's theta from eq 10
@@ -2192,6 +2194,10 @@ FUNCTION void write_bigoutput()
           dirichlet_Parm = mfexp(selparm(Comp_Err_parmloc(Comp_Err_L2(parti, f),1))); //  Thorson's beta from eq 12
           // effN_DM = (n+n*beta)/(n+beta)
           Nsamp_DM = value((nsamp_l(f, i) + dirichlet_Parm * nsamp_l(f, i)) / (dirichlet_Parm + nsamp_l(f, i)));
+        }
+        else if (Comp_Err_L(parti, f) == 3) //  MV  Tweedie
+        {
+          // TBD
         }
 
         if (header_l(f, i, 3) > 0)
@@ -2240,6 +2246,7 @@ FUNCTION void write_bigoutput()
           SS2out << " _ ";
         }
         SS2out << Nsamp_in << " " << Nsamp_adj << " " << Nsamp_DM << " " << neff_l(f, i) << " " << length_like(f, i) << " ";
+        SS2out << Comp_Err_L(parti, f) << " " << dirichlet_Parm << " " << Tweedie_Parm << " ";
         SS2out << more_comp_info(1, 6);
         if (gender == 2)
           SS2out << " " << more_comp_info(7, 20);
@@ -4890,7 +4897,7 @@ FUNCTION dvector process_comps(const int sexes, const int sex, dvector& bins, dv
   //  sex is 0, 1, 2, 3 for range of sexes used in this sample
   int nbins = bins.indexmax() / sexes; // find number of bins
   // do both sexes  tails(4) has been set to tails(2) if males not in this sample
-  if ((sex == 3 && sexes == 2) || sex == 0)
+  if ((sex == 3 && sexes == 2) || sex == 0 || sexes == 1)
   {
     more_comp_info(1) = obs(tails(1), tails(4)) * means(tails(1), tails(4));
     more_comp_info(2) = exp(tails(1), tails(4)) * means(tails(1), tails(4));
