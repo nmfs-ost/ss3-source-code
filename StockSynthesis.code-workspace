@@ -10,6 +10,7 @@
 			"\"*.extension\":": "\"tpl\"",
 			"*.htp": "c",
 			"ostream": "c"
-		}
+		},
+		"explorer.excludeGitIgnore": true
 	}
 }
