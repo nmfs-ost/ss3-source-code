@@ -75,8 +75,8 @@
     // Incompatible option, fatal condition 
     if (nobs_mnwt > 0)
     {
-      warnstream << "incompatible option:  empirical bodywt-at-age is used, but meanbody_wt obs fit using growth curve";
-      write_message (FATAL, 0);
+	  warnstream << "expected value for mean body-wt will be from the growth curve, not from empirical wtatage.
+      write_message (WARN, 1);
     }
   }
   
