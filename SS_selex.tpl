@@ -50,6 +50,7 @@ FUNCTION void get_selectivity()
           else //  time-varying
           {
             sp(j) = parm_timevary(selparm_timevary(Ip + j), y);
+
             if (parm_adjust_method == 1 && (save_for_report > 0 || do_once == 1))
             {
               if (sp(j) > -999 && (sp(j) < selparm_1(Ip + j, 1) || sp(j) > selparm_1(Ip + j, 2)))

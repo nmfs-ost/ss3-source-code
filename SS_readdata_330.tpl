@@ -4029,6 +4029,10 @@
               << "# next read flag for specifying selectivity used in forecasts; 0 is value that mimics 3.24, 1 is experimental" << endl;
     *(ad_comm::global_datafile) >> Fcast_Specify_Selex;
     echoinput << Fcast_Specify_Selex << " # echoed Fcast_Specify_Selex value" << endl;
+    if (do_densitydependent == 1 && Fcast_Specify_Selex == 0) {
+      warnstream << "Fcast_specify_selex is 0 but user should change to 1 if density dependence affects a selectivity parameter or growth "<<endl;
+      write_message(WARN, 0);
+    }
 
     echoinput << endl
               << "next read 4 values for:  control rule shape(0, 1, 2, 3 or 4), inflection (like 0.40), cutoff(like 0.10), scale(like 0.75)" << endl;
