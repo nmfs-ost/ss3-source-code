@@ -75,7 +75,7 @@
     // Incompatible option, fatal condition 
     if (nobs_mnwt > 0)
     {
-	  warnstream << "expected value for mean body-wt will be from the growth curve, not from empirical wtatage.
+	  warnstream << "expected value for mean body-wt will be from the growth curve, not from empirical wtatage.ss";
       write_message (WARN, 1);
     }
   }
