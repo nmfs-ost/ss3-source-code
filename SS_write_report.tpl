@@ -349,18 +349,42 @@ FUNCTION void write_bigoutput()
     SS2out << "Current_phase: " << current_phase() << endl;
     SS2out << "Jitter: " << jitter << endl;
     SS2out << "ALK_tolerance: " << ALK_tolerance << endl;
-    SS2out << "Fleet_name: ";
-    for (f = 1; f <= Nfleet; f++)
+
+    if (use_length_data > 0)
     {
-      SS2out << " " << fleetname(f);
+      SS2out << "#" << endl << "Length_comp_error_controls" << endl << "Fleet partition min_tail add_to_comp comb_sex accum_bin error_type error_parm_ID min_effN" << endl;
+      for (f = 1; f <= Nfleet; f++)
+      if (Nobs_l(f) > 0)
+      {
+        int parti_lo = 0;
+        int parti_hi = 0;
+        if (Do_Retain(f) == 1) parti_hi = 2;
+        for (int parti = parti_lo; parti <= parti_hi ; parti++)
+        {
+          SS2out << f << " " << parti << " " << min_tail_L(parti, f) << " " << min_comp_L(parti, f) << " " << CombGender_L(parti, f) << " " << AccumBin_L(parti, f) << " " << Comp_Err_L(parti, f) << " " << Comp_Err_L2(parti, f) << " " << min_sample_size_L(parti, f) << " #_ " << fleetname(f) << endl;
+        }
+      }
     }
-    SS2out << endl
-           << "Fleet_type: " << fleet_type << endl;
-    SS2out << "Fleet_area: " << fleet_area << endl;
-    SS2out << "Lencomp_error_type: " << Comp_Err_L << endl;
-    SS2out << "Lencomp_error_parms: " << Comp_Err_L2 << endl;
-    SS2out << "Agecomp_error_type: " << Comp_Err_A << endl;
-    SS2out << "Agecomp_error_parms: " << Comp_Err_A2 << endl;
+
+    if (n_abins > 0)
+    {
+      SS2out << "#" << endl << "Age_comp_error_controls" << endl << "#_Fleet  min_tail add_to_comp comb_sex accum_bin error_type error_parm_ID min_effN" << endl;
+      for (f = 1; f <= Nfleet; f++)
+      if (Nobs_a(f) > 0)
+      {
+          SS2out << f << " " << min_tail_A(f) << " " << min_comp_A(f) << " " << CombGender_A(f) << " " << AccumBin_A(f) << " " << Comp_Err_A(f) << " " << Comp_Err_A2(f) << " " << min_sample_size_A(f) << " #_ " << fleetname(f) << endl;
+      }
+    }
+
+    if(SzFreq_Nmeth > 0)
+    {
+    SS2out << "#" << endl << "Size_comp_error_controls" << endl << "#_Sz_method error_type error_parm_ID " << endl;
+    for (f = 1; f <= SzFreq_Nmeth; f++)
+    {
+        SS2out << f << " " << Comp_Err_Sz(f) << " " << Comp_Err_Sz2(f) << endl;
+    }
+    }
+
     SS2out << "#" << endl;
     SS2out << "Fleet fleet_type timing area catch_units catch_mult survey_units survey_error Fleet_name" << endl;
     for (f = 1; f <= Nfleet; f++)

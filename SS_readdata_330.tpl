@@ -1311,7 +1311,7 @@
 !!if(nlength>0) echoinput<<len_bins_rd<<" population length bins as read "<<endl;
 
 !!//  SS_Label_Info_2.7 #Start length data section
-  init_int use_length_data;  //  0/1 to indicate whether there is any reading of length data
+  init_int use_length_data;  //  0/1/2 to indicate whether there is any reading of length data
 !!echoinput<<use_length_data<<" indicator for length data  "<<endl;
 
   number min_tail;  //min_proportion_for_compressing_tails_of_observed_composition
@@ -1343,7 +1343,14 @@
   comp_control_L_count = -1;
   if (use_length_data > 0)
   {
-    echoinput << "#_now read for each fleet info for processing the length comps:" << endl;
+    echoinput << "#_now read controls for processing the length comps:" << endl;
+    echoinput << "Use_length_data == 1: invokes original input format starting with mintailcomp, one row for each fleet" << endl;
+    echoinput << "Use_length_data == 2: invokes list format with fleet and partition preceding controls" << endl;
+    if (use_length_data == 2)
+    {
+      echoinput << "#_fleet: fleet number, or -9999 for terminator row, or negative fleet to use input row as filler for all fleets and partitions" << endl;
+      echoinput << "#_partition: 0=all, 1=discard, 2=retained" << endl;
+    }
     echoinput << "#_mintailcomp: upper and lower distribution for females and males separately are accumulated until exceeding this level." << endl;
     echoinput << "#_addtocomp:  after accumulation of tails; this value added to all bins" << endl;
     echoinput << "#_males and females treated as combined gender below this bin number " << endl;
@@ -1351,7 +1358,6 @@
     echoinput << "#_Comp_Error:  0=multinomial, 1=dirichlet using theta * n, 2=dirichlet using beta, 3=MV_Tweedie with phi and power"<<endl;
     echoinput << "#_Comp_ERR-2:  consecutive index of error def to use"<<endl;
     echoinput << "#_minsamplesize: minimum sample size; set to 1 to match 3.24, set to 0 for no minimum" << endl;
-    echoinput << "Use_length_data == 1 invokes original input format; use_length_data == 2 invokes list format for composition controls" << endl;
 
     if (use_length_data == 1)
     {
@@ -1403,9 +1409,9 @@
           }
           else
           {
-            if (f == 0)  //  fill all to create default that is overwritten by later reads
+            if (f < 0)  //  fill all higher fleets to create default that is overwritten by later reads
             {
-              f_lo = 1;
+              f_lo = abs(f);
               f_hi = Nfleet;
               parti_lo = 0;
               parti_hi = 2;

@@ -230,7 +230,7 @@ FUNCTION void write_nudata()
         report1 << len_bins << endl;
       }
 
-      report1 << use_length_data << " # use length composition data (0/1/2) where 2 invokes new comp_comtrol format" << endl;
+      report1 << use_length_data << " # use length composition data (0/1/2) where 2 invokes new comp_control format" << endl;
       if (use_length_data > 0)
       {
         report1 << "#_mintailcomp: upper and lower distribution for females and males separately are accumulated until exceeding this level." << endl;
@@ -253,6 +253,9 @@ FUNCTION void write_nudata()
         else if (use_length_data == 2)
         {
           report1 << "#_Using new list format for composition controls" << endl;
+          report1 << "#_use negative fleet value to fill for all higher numbered fleets (recommended!)" << endl;
+          report1 << "#_must enter in fleet, partition order; but only need to enter for used combos" << endl;
+          report1 << "#_fleet = -9999 to terminate list" << endl;
           report1 << "#_fleet partition mintailcomp addtocomp combM+F CompressBins CompError ParmSelect minsamplesize" << endl;
           for (int i = 0; i <= comp_control_L_count; i++)
             report1 << comp_control_L[i] << endl;
