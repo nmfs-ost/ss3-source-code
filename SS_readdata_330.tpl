@@ -1439,7 +1439,7 @@
           }
         } while (ender == 0);
     }
-    echoinput << "fleet partition  mintail  addtocomp conbgender accumbin  comperr  comperrparm"<<endl;
+    echoinput << "fleet partition mintailcomp addtocomp combM+F CompressBins CompError ParmSelect minsamplesize" << endl;
     for (f = 1; f <= Nfleet; f++)
     for (int parti = 0; parti <= 2; parti++)
     {
@@ -1465,7 +1465,6 @@
       else if (Comp_Err_L2(parti, f) > Comp_Err_ParmCount)
       {
         Comp_Err_ParmCount++;
-        echoinput<<" plus "<<endl;
         DM_parmlist(parti, f) = 1;  // flag for creating new definition because Comp_Err_L2 can point to existing definition
       }
       //  else OK because refers to existing definition

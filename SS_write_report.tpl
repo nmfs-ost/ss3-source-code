@@ -352,7 +352,7 @@ FUNCTION void write_bigoutput()
 
     if (use_length_data > 0)
     {
-      SS2out << "#" << endl << "Length_comp_error_controls" << endl << "Fleet partition min_tail add_to_comp comb_sex accum_bin error_type error_parm_ID min_effN" << endl;
+      SS2out << "#" << endl << "Length_comp_error_controls" << endl << "Fleet partition mintailcomp addtocomp combM+F CompressBins CompError ParmSelect minsamplesize " << endl;
       for (f = 1; f <= Nfleet; f++)
       if (Nobs_l(f) > 0)
       {
@@ -368,7 +368,7 @@ FUNCTION void write_bigoutput()
 
     if (n_abins > 0)
     {
-      SS2out << "#" << endl << "Age_comp_error_controls" << endl << "#_Fleet  min_tail add_to_comp comb_sex accum_bin error_type error_parm_ID min_effN" << endl;
+      SS2out << "#" << endl << "Age_comp_error_controls" << endl << "Fleet  mintailcomp addtocomp combM+F CompressBins CompError ParmSelect minsamplesize " << endl;
       for (f = 1; f <= Nfleet; f++)
       if (Nobs_a(f) > 0)
       {
