@@ -87,7 +87,6 @@
   int save_gparm_print;
 !! save_for_report = 0;
 !! bigsaver = 0;
-!! save_gparm = 0;
 !! write_bodywt = 0;
 !! write_bodywt_save = 0;
 !! special_flag = 0;

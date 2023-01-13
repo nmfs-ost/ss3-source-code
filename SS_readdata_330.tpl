@@ -4093,6 +4093,14 @@
     {
       echoinput << " #mean recruitment and recrdist from years: " << Fcast_Rec_yr1 << " to " << Fcast_Rec_yr2 << endl;
     }
+    else if (Fcast_Loop_Control(3) == 4)
+    {
+      echoinput << " #mean recruitment from years: " << Fcast_Rec_yr1 << " to " << Fcast_Rec_yr2 << " recrdist from parameters" << endl;
+    }
+    else if (Fcast_Loop_Control(3) == 5)
+    {
+      echoinput << " #mean recrdist from years: " << Fcast_Rec_yr1 << " to " << Fcast_Rec_yr2 << " recruitment is from spawn_recr " << endl;
+    }
     else //  input probably was a -1 from pre 3.30.15, so convert to 0
     {
       Fcast_Loop_Control(3) = 0;

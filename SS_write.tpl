@@ -1155,7 +1155,6 @@ FUNCTION void write_Bzero_output()
       }
     SS2out << endl;
 
-    save_gparm = 0;
     if (fishery_on_off == 0)
     {
       setup_recdevs();
