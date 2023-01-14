@@ -1201,6 +1201,17 @@ FUNCTION void Process_STDquant()
       depletion /= (depletion_level * SSB_yr(endyr));
       break;
     }
+    case 5:  //  dynamic Bzero
+    {
+      for (y = first_catch_yr; y <= YrMax; y++)
+      if (STD_Yr_Reverse_Dep(y) > 0)
+      {
+//        warning<<y<<" "<<STD_Yr_Reverse_Dep(y) <<" Ind "<<Do_Dyn_Bzero<<" "<< Do_Dyn_Bzero+ y - (styr - 2)<<" num: "<<depletion(STD_Yr_Reverse_Dep(y))<<" denom: "<<Extra_Std(Do_Dyn_Bzero + y - (styr -2))<<" depl ";
+        depletion(STD_Yr_Reverse_Dep(y)) /= ( depletion_level * Extra_Std(Do_Dyn_Bzero + y - (styr - 2)));
+//        warning<<depletion(STD_Yr_Reverse_Dep(y))<<endl;
+      }
+      break;
+    }
   }
   if (depletion_log == 1)
     depletion = log(depletion);

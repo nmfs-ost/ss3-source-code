@@ -4753,10 +4753,10 @@
 
 
 !!// SS_Label_Info_3.2 #Create complete list of years for STD reporting
-  ivector STD_Yr_Reverse(styr-2,YrMax);
-  ivector STD_Yr_Reverse_Dep(styr-2,YrMax);
-  ivector STD_Yr_Reverse_Ofish(styr-2,YrMax);
-  ivector STD_Yr_Reverse_F(styr-2,YrMax);
+  ivector STD_Yr_Reverse(styr-2,YrMax);   //  contains 0/1 for each year to indicate std reporting
+  ivector STD_Yr_Reverse_Dep(styr-2,YrMax);  //  contains index number to i'th depletion (e.g. Bratio) std
+  ivector STD_Yr_Reverse_Ofish(styr-2,YrMax);  //  ditto
+  ivector STD_Yr_Reverse_F(styr-2,YrMax);  //  ditto
   int N_STD_Yr_Dep;
   int N_STD_Yr_Ofish;
   int N_STD_Yr_F;
@@ -4782,18 +4782,13 @@
   STD_Yr_Reverse(styr) = 1;
   for (i = 1; i <= N_STD_Yr_RD; i++)
   {
-    if (STD_Yr_RD(i) >= styr && STD_Yr_RD(i) < YrMax)
+    if (STD_Yr_RD(i) >= styr && STD_Yr_RD(i) <= YrMax)
     {
       STD_Yr_Reverse(STD_Yr_RD(i)) = 1;
     }
   }
+  N_STD_Yr = sum(STD_Yr_Reverse);  //  count number of years for which std is requested
 
-  N_STD_Yr = sum(STD_Yr_Reverse);
-  // clang-format off
- END_CALCS
-
- LOCAL_CALCS
-  // clang-format on
   STD_Yr_Reverse_Dep.initialize();
   STD_Yr_Reverse_Ofish.initialize();
   STD_Yr_Reverse_F.initialize();
