@@ -936,7 +936,7 @@
     for (i = 1; i <= N_Fparm; i++)
     {
       {
-        F_rate(i) = Check_Parm(i, Fparm_PH[i], 0., max_harvest_rate, 0, 0.05, 1., jitter, F_rate(i));
+        F_rate(i) = Check_Parm(i, Fparm_PH[i], -10., 5.0, 0, 0.05, 1., jitter, F_rate(i));
       }
     }
     echoinput << " F_parms after check " << F_rate << endl;

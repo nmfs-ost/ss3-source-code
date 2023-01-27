@@ -378,7 +378,9 @@ PARAMETER_SECTION
   // clang-format off
  END_CALCS
  //  defining F_rate as number_vector allows for Fparm_PH to be element specific
-  init_bounded_number_vector F_rate(1,k,0.,max_harvest_rate,Fparm_PH_dim)
+  //  log(max_harvest_rate);
+
+  init_bounded_number_vector F_rate(1,k,-10.,5.,Fparm_PH_dim)
 
   vector Nmigr(1,pop);
   number Nsurvive;
