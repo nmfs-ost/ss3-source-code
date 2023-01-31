@@ -992,7 +992,6 @@ FINAL_SECTION
     //  SS_Label_Info_12.3.2 #Set save_for_report=1 then call initial_conditions and time_series to get other output quantities
     if (Do_Dyn_Bzero > 0) //  do dynamic Bzero
     {
-      save_gparm = 0;
       fishery_on_off = 0;
       setup_recdevs();
       y = styr;
@@ -1022,7 +1021,6 @@ FINAL_SECTION
     fishery_on_off = 1;
     save_for_report = 1;
     bigsaver = 1;
-    save_gparm = 0;
     if (SDmode == 0 && pick_report_use(60) == "Y")
       write_bodywt = 1; //  turn on conditional on SDMode because SDMode=1 situation already written
     y = styr;
@@ -1329,7 +1327,6 @@ REPORT_SECTION
       write_bodywt = 1;
     }
     save_for_report = 1;
-    save_gparm = 0;
     y = styr;
     setup_recdevs();
     get_initial_conditions();

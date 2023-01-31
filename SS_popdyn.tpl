@@ -86,6 +86,7 @@ FUNCTION void get_initial_conditions()
   annual_catch.initialize();
   annual_F.initialize();
   Recr.initialize();
+  save_gparm = 0;  //  index for saving time-varying changes to biology quantities
 
   if (SzFreq_Nmeth > 0)
     SzFreq_exp.initialize();
