@@ -171,7 +171,9 @@ GLOBALS_SECTION
   std::vector<ivector> Fparm_loc;
   std::vector<dvector> F_Method_4_input;
   std::vector<int> Fparm_PH;
-  ;
+  std::vector<dvector> comp_control_L;
+  std::vector<dvector> comp_control_A;
+  std::vector<dvector> comp_control_Sz;
 //  function in GLOBALS to do the timing setup in the data section
 
 
