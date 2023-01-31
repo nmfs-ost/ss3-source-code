@@ -1338,7 +1338,7 @@
   Comp_Err_L.initialize();
   Comp_Err_L2.initialize();
   Comp_Err_parmloc.initialize();
-  min_sample_size_L.initialize();
+  min_sample_size_L = 0.001; // default sample size avoids warnings for partition/fleet combinations which aren't read
   DM_parmlist.initialize();
   comp_control_L_count = -1;
   if (use_length_data > 0)
@@ -1357,7 +1357,7 @@
     echoinput << "#_compressbins: accumulate upper tail by this number of bins; acts simultaneous with mintailcomp; set=0 for no forced accumulation" << endl;
     echoinput << "#_Comp_Error:  0=multinomial, 1=dirichlet using theta * n, 2=dirichlet using beta, 3=MV_Tweedie with phi and power"<<endl;
     echoinput << "#_Comp_ERR-2:  consecutive index of error def to use"<<endl;
-    echoinput << "#_minsamplesize: minimum sample size; set to 1 to match 3.24, set to 0 for no minimum" << endl;
+    echoinput << "#_minsamplesize: minimum sample size; set to 1 to match 3.24, minimum value is 0.001" << endl;
 
     if (use_length_data == 1)
     {
@@ -2242,9 +2242,9 @@
       echoinput << "#_addtocomp:  after accumulation of tails; this value added to all bins" << endl;
       echoinput << "#_males and females treated as combined gender below this bin number " << endl;
       echoinput << "#_compressbins: accumulate upper tail by this number of bins; acts simultaneous with mintailcomp; set=0 for no forced accumulation" << endl;
-      echoinput<<"#_Comp_Error:  0=multinomial, 1=dirichlet using theta * n, 2=dirichlet using beta, 3=MV_Tweedie with phi and power"<<endl;
-      echoinput<<"#_Comp_ERR-2:  index of parameter (pair for Tweedie) to use, cumulative count after DM parms for length comp"<<endl;
-      echoinput << "#_minsamplesize: minimum sample size; set to 1 to match 3.24, set to 0 for no minimum" << endl;
+      echoinput << "#_Comp_Error:  0=multinomial, 1=dirichlet using theta * n, 2=dirichlet using beta, 3=MV_Tweedie with phi and power"<<endl;
+      echoinput << "#_Comp_ERR-2:  index of parameter (pair for Tweedie) to use, cumulative count after DM parms for length comp"<<endl;
+      echoinput << "#_minsamplesize: minimum sample size; set to 1 to match 3.24, minimum value is 0.001" << endl;
 
       for (f = 1; f <= Nfleet; f++)
       {
