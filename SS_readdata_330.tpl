@@ -1452,12 +1452,7 @@
         min_sample_size_L(parti, f) = 0.001;
       }
   
-      if (Comp_Err_L2(parti, f) > Nfleet)
-      {
-        warnstream << "length D-M index for fleet: " << f << " is: " << Comp_Err_L2(parti, f) << " but must be an integer <=Nfleet ";
-        write_message(FATAL, 1);
-      }
-      else if (Comp_Err_L2(parti, f) > Comp_Err_ParmCount + 1)
+      if (Comp_Err_L2(parti, f) > Comp_Err_ParmCount + 1)
       {
         warnstream << "; length D-M must refer to existing Comp_err definition, or increment by 1:  " << Comp_Err_L2(parti, f);
         write_message(FATAL, 1);
@@ -2263,12 +2258,7 @@
           write_message(WARN, 0);
           min_sample_size_A(f) = 0.001;
         }
-        if (Comp_Err_A2(f) > 2 * Nfleet)
-        {
-          warnstream << "Age D-M index for fleet: " << f << " is: " << Comp_Err_A2(f) << " but must be an integer <=2*Nfleet ";
-          write_message(FATAL, 0);
-        }
-        else if (Comp_Err_A2(f) > Comp_Err_ParmCount + 1)
+        if (Comp_Err_A2(f) > Comp_Err_ParmCount + 1)
         {
           warnstream << "Age D-M must refer to existing comp_err definition, or increment by 1:  " << Comp_Err_A2(f);
           write_message(FATAL, 0);
@@ -3114,12 +3104,7 @@
     echoinput << Comp_Err_Sz2 << " Sizefreq:  Comp_Err_index " << endl;
     for (f = 1; f <= SzFreq_Nmeth; f ++)
     {
-      if (Comp_Err_Sz2(f) > 2 * Nfleet)  //  2*Nfleet is max dimension for the comp_err list
-      {
-        warnstream << "Size D-M index for fleet: " << f << " is: " << Comp_Err_Sz2(f) << " but must be an integer <=2*Nfleet ";
-        write_message(FATAL, 0);
-      }
-      else if (Comp_Err_Sz2(f) > Comp_Err_ParmCount + 1)
+      if (Comp_Err_Sz2(f) > Comp_Err_ParmCount + 1)
       {
         warnstream << "Sz D-M must refer to existing index, or increment by 1 to add new defition:  " << Comp_Err_Sz2(f);
         write_message(FATAL, 0);
