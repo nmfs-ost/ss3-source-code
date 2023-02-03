@@ -3106,7 +3106,7 @@
     {
       if (Comp_Err_Sz2(f) > Comp_Err_ParmCount + 1)
       {
-        warnstream << "Sz D-M must refer to existing index, or increment by 1 to add new defition:  " << Comp_Err_Sz2(f);
+        warnstream << "Sz D-M must refer to existing index, or increment by 1 to add new definition:  " << Comp_Err_Sz2(f);
         write_message(FATAL, 0);
       }
       else if (Comp_Err_Sz2(f) > Comp_Err_ParmCount)

@@ -16,3 +16,4 @@ Compile/ss.log
 *.Rproj
 .Rhistory
 Compile/ssFileLabels.txt
+StockSynthesis.code-workspace
