@@ -64,10 +64,20 @@
   vector platoon_distr(1,N_platoon);
  LOCAL_CALCS
   // clang-format on
-  if (WTage_rd > 0 && nobs_mnwt > 0)
+  if (WTage_rd > 0)
   {
-    warnstream << "incompatible option:  empirical bodywt-at-age is used, but meanbody_wt obs fit using growth curve";
-    write_message (ADJUST, 0);
+    // Remove unnecessary or confusing reports (issue #383)
+    pick_report_use(8) = "N";
+    pick_report_use(27) = "N";
+    pick_report_use(31) = "N";
+    pick_report_use(38) = "N";
+    pick_report_use(42) = "N";
+    // Incompatible option, fatal condition 
+    if (nobs_mnwt > 0)
+    {
+	  warnstream << "expected value for mean body-wt will be from the growth curve, not from empirical wtatage.ss";
+      write_message (WARN, 1);
+    }
   }
   
   if (N_platoon > 1)
@@ -3843,31 +3853,32 @@
       Comp_Err_Parm_Start = N_selparm;
       //  create a D-M parameter or tweedie parameter pair only for the first fleet that references that parm number
       for (f = 1; f <= Nfleet; f++)
+      for (int parti = 0; parti <= 2; parti++)
       {
-        if (DM_parmlist(f) > 0)  //  create DM parameter labels for definitions first referenced for lencomp
+        if (DM_parmlist(parti, f) > 0)  //  create DM parameter labels for definitions first referenced for lencomp
         {
           N_selparm ++;
           ParCount ++;
-          Comp_Err_parmloc(Comp_Err_L2(f),1) = N_selparm;  //  first parameter used by this method
-          Comp_Err_parmloc(Comp_Err_L2(f),2) = ParCount;  //  use this index in write_report to display the correct parameter label
-          switch (Comp_Err_L(f))
+          Comp_Err_parmloc(Comp_Err_L2(parti, f),1) = N_selparm;  //  first parameter used by this method
+          Comp_Err_parmloc(Comp_Err_L2(parti, f),2) = ParCount;  //  use this index in write_report to display the correct parameter label
+          switch (Comp_Err_L(parti, f))
           {
             case 1:
             {
-              ParmLabel += "ln(DM_theta)_Len_P" + NumLbl(Comp_Err_L2(f));
+              ParmLabel += "ln(DM_theta)_Len_P" + NumLbl(Comp_Err_L2(parti, f));
               break;
             }
             case 2:
             {
-              ParmLabel += "ln(DM_beta)_Len_P" + NumLbl(Comp_Err_L2(f));
+              ParmLabel += "ln(DM_beta)_Len_P" + NumLbl(Comp_Err_L2(parti, f));
               break;
             }
             case 3:
             {
-              ParmLabel += "ln(tweedie_Phi)_Len_P" + NumLbl(Comp_Err_L2(f));
+              ParmLabel += "ln(tweedie_Phi)_Len_P" + NumLbl(Comp_Err_L2(parti, f));
               N_selparm ++;
               ParCount ++;
-              ParmLabel += "ln(tweedie_Power)_Len_P" + NumLbl(Comp_Err_L2(f));
+              ParmLabel += "ln(tweedie_Power)_Len_P" + NumLbl(Comp_Err_L2(parti, f));
               break;
             }
           }
@@ -3876,7 +3887,7 @@
 
       for (f = 1; f <= Nfleet; f++) 
       {
-        if (DM_parmlist(f + Nfleet) > 0) //  create DM parameter labels for definitions first referenced for agecomp
+        if (DM_parmlist(0, f + Nfleet) > 0) //  create DM parameter labels for definitions first referenced for agecomp
         {
           N_selparm ++;
           ParCount ++;
@@ -3908,7 +3919,7 @@
 
       for (int f = 1; f <= SzFreq_Nmeth; f++) 
       {
-        if (DM_parmlist(f + 2 * Nfleet) > 0) //  create DM parameter labels for definitions first referenced for sizefreq.  note that sizefreq comps are by method, not fleet
+        if (DM_parmlist(0, f + 2 * Nfleet) > 0) //  create DM parameter labels for definitions first referenced for sizefreq.  note that sizefreq comps are by method, not fleet
         {
           N_selparm ++;
           ParCount ++;
@@ -3990,7 +4001,7 @@
   }
   if (Comp_Err_ParmCount > 0)
   {
-    echoinput << "comp_error parameters" << endl
+    echoinput << "comp_error parameter selection by partition (row) and fleet" << endl
               << "L_type: " << Comp_Err_L << endl
               << "L_parm: " << Comp_Err_L2 << endl
               << "A_type: " << Comp_Err_A << endl
@@ -3999,11 +4010,12 @@
               << "Sz_parm: " << Comp_Err_Sz2 << endl;
               
     for (f = 1; f <= Nfleet; f++)
+    for (int parti = 0; parti <= 2; parti++)
     {
       // if Dirichlet was indicated, set fleet for this parameter
-      if (Comp_Err_L2(f) > 0)
+      if (Comp_Err_L2(parti, f) > 0)
       {
-        j = Comp_Err_parmloc(Comp_Err_L2(f),1);
+        j = Comp_Err_parmloc(Comp_Err_L2(parti, f),1);
         selparm_fleet(j) = f;
       }
       if (Comp_Err_A2(f) > 0)
@@ -6692,6 +6704,11 @@
     case 4:
     {
       depletion_basis_label += " " + onenum + "%*EndYr_Biomass";
+      break;
+    }
+    case 5:
+    {
+      depletion_basis_label += " " + onenum + "%*Dyn_Bzero";
       break;
     }
   }

@@ -211,6 +211,10 @@ FUNCTION void apply_recdev(prevariable& NewRecruits, const prevariable& Recr_vir
   {
     switch (int(Fcast_Loop_Control(3)))
     {
+      case 5:
+      {
+        //  fall through to case 0
+      }
       case 0:
       {
         NewRecruits = exp_rec(y, 2);

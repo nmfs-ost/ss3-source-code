@@ -87,7 +87,6 @@
   int save_gparm_print;
 !! save_for_report = 0;
 !! bigsaver = 0;
-!! save_gparm = 0;
 !! write_bodywt = 0;
 !! write_bodywt_save = 0;
 !! special_flag = 0;
@@ -634,7 +633,7 @@
   int depletion_basis;
   int depletion_multi;
   int depletion_log;
-  init_int depletion_basis_rd; // 0=skip; 1=fraction of B0; 2=fraction of Bmsy where fraction is depletion_level 3=rel to styr; values >=11 invoke multiyr with 10's digit; >=100 invoke log(ratio) with hundreds digit
+  init_int depletion_basis_rd; // 0=skip; 1=B0; 2=Bmsy; 3=B_styr; 4=B_endyr; 5=dynamic_Bzero; values >=11 invoke multiyr with 10's digit; >=100 invoke log(ratio) with hundreds digit
  LOCAL_CALCS
   // clang-format on
   echoinput << depletion_basis_rd << "  depletion_basis as read; this is also known as Bratio and is a std quantity; has multi-yr and log(ratio) options" << endl;
@@ -730,7 +729,7 @@
       warnstream << "new feature for multiyr F_std reporting, be sure STD reporting covers all years from styr to endyr";
       write_message(NOTE, 0);
     }
-    echoinput << "For Kobe plot, set depletion_basis=2; depletion_level=1.0; F_reporting=your choose; F_std_basis=2" << endl;
+    echoinput << "For Kobe plot, set depletion_basis=2; depletion_level=1.0; F_reporting=your choice; F_std_basis=2" << endl;
 
     mcmc_output_detail = 0;
     MCMC_bump = 0.;

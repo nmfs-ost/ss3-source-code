@@ -1,7 +1,7 @@
 {
 	"folders": [
 		{
-			"path": ".."
+			"path": "."
 		}
 	],
 	"settings": {
@@ -9,8 +9,8 @@
 			"*.tpl": "c",
 			"\"*.extension\":": "\"tpl\"",
 			"*.htp": "c",
-			"cmath": "c",
 			"ostream": "c"
-		}
+		},
+		"explorer.excludeGitIgnore": true
 	}
 }

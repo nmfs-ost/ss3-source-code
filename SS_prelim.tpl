@@ -253,10 +253,10 @@
         nsamp_l(f, i) *= var_adjust(4, f);
         // {if(nsamp_l(f,i)<=1.0) nsamp_l(f,i)=1.;}                              //  adjust sample size
         // calculate lencomp offsets
-        if (Comp_Err_L(f) == 0)
+        if (Comp_Err_L(0, f) == 0)
         {
           // multinomial
-          nsamp_l(f, i) = max(min_sample_size_L(f), nsamp_l(f, i));
+          nsamp_l(f, i) = max(min_sample_size_L(0, f), nsamp_l(f, i));
           if (gen_l(f, i) != 2)
           {
             offset_l(f, i) -= nsamp_l(f, i) *
@@ -268,7 +268,7 @@
                 obs_l(f, i)(tails_l(f, i, 3), tails_l(f, i, 4)) * log(obs_l(f, i)(tails_l(f, i, 3), tails_l(f, i, 4)));
           }
         }
-        else if( (Comp_Err_L(f)==1) || (Comp_Err_L(f)==2) ) //  dirichlet
+        else if( (Comp_Err_L(0, f)==1) || (Comp_Err_L(0, f)==2) ) //  dirichlet
         {
           // Dirichlet-Multinomial (either 1 = linear, 2 = saturating)
           // cannot use fxn Comp_Err_Dirichlet for this calc because only need the first part here
@@ -287,7 +287,7 @@
             offset_l(f, i) -= sum(gammln(1. + nsamp_l(f, i) * obs_l(f, i)(z1, z2)));
           }
         }
-        else if( (Comp_Err_L(f)==3)) //  MV Tweedie
+        else if( (Comp_Err_L(0, f)==3)) //  MV Tweedie
         {
           //  no MV Tweedie offset
         }

@@ -349,18 +349,42 @@ FUNCTION void write_bigoutput()
     SS2out << "Current_phase: " << current_phase() << endl;
     SS2out << "Jitter: " << jitter << endl;
     SS2out << "ALK_tolerance: " << ALK_tolerance << endl;
-    SS2out << "Fleet_name: ";
-    for (f = 1; f <= Nfleet; f++)
+
+    if (use_length_data > 0)
     {
-      SS2out << " " << fleetname(f);
+      SS2out << "#" << endl << "Length_comp_error_controls" << endl << "Fleet partition mintailcomp addtocomp combM+F CompressBins CompError ParmSelect minsamplesize " << endl;
+      for (f = 1; f <= Nfleet; f++)
+      if (Nobs_l(f) > 0)
+      {
+        int parti_lo = 0;
+        int parti_hi = 0;
+        if (Do_Retain(f) == 1) parti_hi = 2;
+        for (int parti = parti_lo; parti <= parti_hi ; parti++)
+        {
+          SS2out << f << " " << parti << " " << min_tail_L(parti, f) << " " << min_comp_L(parti, f) << " " << CombGender_L(parti, f) << " " << AccumBin_L(parti, f) << " " << Comp_Err_L(parti, f) << " " << Comp_Err_L2(parti, f) << " " << min_sample_size_L(parti, f) << " #_ " << fleetname(f) << endl;
+        }
+      }
     }
-    SS2out << endl
-           << "Fleet_type: " << fleet_type << endl;
-    SS2out << "Fleet_area: " << fleet_area << endl;
-    SS2out << "Lencomp_error_type: " << Comp_Err_L << endl;
-    SS2out << "Lencomp_error_parms: " << Comp_Err_L2 << endl;
-    SS2out << "Agecomp_error_type: " << Comp_Err_A << endl;
-    SS2out << "Agecomp_error_parms: " << Comp_Err_A2 << endl;
+
+    if (n_abins > 0)
+    {
+      SS2out << "#" << endl << "Age_comp_error_controls" << endl << "Fleet  mintailcomp addtocomp combM+F CompressBins CompError ParmSelect minsamplesize " << endl;
+      for (f = 1; f <= Nfleet; f++)
+      if (Nobs_a(f) > 0)
+      {
+          SS2out << f << " " << min_tail_A(f) << " " << min_comp_A(f) << " " << CombGender_A(f) << " " << AccumBin_A(f) << " " << Comp_Err_A(f) << " " << Comp_Err_A2(f) << " " << min_sample_size_A(f) << " #_ " << fleetname(f) << endl;
+      }
+    }
+
+    if(SzFreq_Nmeth > 0)
+    {
+    SS2out << "#" << endl << "Size_comp_error_controls" << endl << "#_Sz_method error_type error_parm_ID " << endl;
+    for (f = 1; f <= SzFreq_Nmeth; f++)
+    {
+        SS2out << f << " " << Comp_Err_Sz(f) << " " << Comp_Err_Sz2(f) << endl;
+    }
+    }
+
     SS2out << "#" << endl;
     SS2out << "Fleet fleet_type timing area catch_units catch_mult survey_units survey_error Fleet_name" << endl;
     for (f = 1; f <= Nfleet; f++)
@@ -2116,7 +2140,7 @@ FUNCTION void write_bigoutput()
   dvar_vector more_comp_info(1, 20);
   dvariable cumdist;
   dvariable cumdist_save;
-  double Nsamp_DM; // equals Nsamp_adj when not using Dirichlet-Multinomial likelihood
+  double Nsamp_DM; // equals Nsamp_adj when not using Dirichlet-Multinomial or Tweedie likelihood
   double Nsamp_adj; // input sample size after input variance adjustment
   double Nsamp_in; // input sample size
   dvector minsamp(1, Nfleet);
@@ -2127,7 +2151,7 @@ FUNCTION void write_bigoutput()
   {
     SS2out << endl
            << pick_report_name(27) << endl;
-    SS2out << "Fleet Fleet_Name Area Yr Seas Subseas Month Time Sexes Part SuprPer Use Nsamp_in Nsamp_adj Nsamp_DM effN Like";
+    SS2out << "Fleet Fleet_Name Area Yr Seas Subseas Month Time Sexes Part SuprPer Use Nsamp_in Nsamp_adj Nsamp_DM effN Like Method DM_parm MV_T_parm ";
     SS2out << " All_obs_mean All_exp_mean All_delta All_exp_5% All_exp_95% All_DurWat";
     if (gender == 2)
       SS2out << " F_obs_mean F_exp_mean F_delta F_exp_5% F_exp_95% F_DurWat M_obs_mean M_exp_mean M_delta M_exp_5% M_exp_95% M_DurWat %F_obs %F_exp ";
@@ -2180,17 +2204,24 @@ FUNCTION void write_bigoutput()
         tempvec_l = value(exp_l(f, i));
         more_comp_info = process_comps(gender, gen_l(f, i), len_bins_dat2, len_bins_dat_m2, tails_l(f, i), obs_l(f, i), tempvec_l);
         Nsamp_DM = Nsamp_adj; // Will remain this if not used
-        if (Comp_Err_L(f) == 1) //  Dirichlet #1
+        int parti = mkt_l(f, i);
+        dirichlet_Parm = 0.0;  //  default gets reported if using multinomial
+        double Tweedie_Parm = 0.0; //  default gets reported if not using MV Tweedie
+        if (Comp_Err_L(parti, f) == 1) //  Dirichlet #1
         {
-          dirichlet_Parm = mfexp(selparm(Comp_Err_parmloc(Comp_Err_L2(f),1))); //  Thorson's theta from eq 10
+          dirichlet_Parm = mfexp(selparm(Comp_Err_parmloc(Comp_Err_L2(parti, f),1))); //  Thorson's theta from eq 10
           // effN_DM = 1/(1+theta) + n*theta/(1+theta)
           Nsamp_DM = value(1. / (1. + dirichlet_Parm) + nsamp_l(f, i) * dirichlet_Parm / (1. + dirichlet_Parm));
         }
-        else if (Comp_Err_L(f) == 2) //  Dirichlet #2
+        else if (Comp_Err_L(parti, f) == 2) //  Dirichlet #2
         {
-          dirichlet_Parm = mfexp(selparm(Comp_Err_parmloc(Comp_Err_L2(f),1))); //  Thorson's beta from eq 12
+          dirichlet_Parm = mfexp(selparm(Comp_Err_parmloc(Comp_Err_L2(parti, f),1))); //  Thorson's beta from eq 12
           // effN_DM = (n+n*beta)/(n+beta)
           Nsamp_DM = value((nsamp_l(f, i) + dirichlet_Parm * nsamp_l(f, i)) / (dirichlet_Parm + nsamp_l(f, i)));
+        }
+        else if (Comp_Err_L(parti, f) == 3) //  MV  Tweedie
+        {
+          // TBD
         }
 
         if (header_l(f, i, 3) > 0)
@@ -2239,6 +2270,7 @@ FUNCTION void write_bigoutput()
           SS2out << " _ ";
         }
         SS2out << Nsamp_in << " " << Nsamp_adj << " " << Nsamp_DM << " " << neff_l(f, i) << " " << length_like(f, i) << " ";
+        SS2out << Comp_Err_L(parti, f) << " " << dirichlet_Parm << " " << Tweedie_Parm << " ";
         SS2out << more_comp_info(1, 6);
         if (gender == 2)
           SS2out << " " << more_comp_info(7, 20);
@@ -2266,7 +2298,7 @@ FUNCTION void write_bigoutput()
         mean_Nsamp_DM(f) /= n_rmse(f);
         // write values to file
         SS2out << "4 " << f << " ";
-        if (Comp_Err_L(f) == 0)
+        if (Comp_Err_L(0, f) == 0)
         { // standard multinomial
           SS2out << Hrmse(f) / mean_Nsamp_adj(f) * var_adjust(4, f);
         }
@@ -2276,7 +2308,7 @@ FUNCTION void write_bigoutput()
         }
         SS2out << " # " << Nobs_l(f) << " " << n_rmse(f) << " " << minsamp(f) << " " << maxsamp(f) << " " << mean_Nsamp_in(f) << " " << mean_Nsamp_adj(f);
 
-        switch (Comp_Err_L(f))
+        switch (Comp_Err_L(0, f))
         {
           case 0:
           { // standard multinomial
@@ -2290,7 +2322,7 @@ FUNCTION void write_bigoutput()
           case 2:   // Dirichlet-multinomial
           {
             // mean_Nsamp_DM and DM_theta
-            SS2out << " " << mean_Nsamp_DM(f) << " " << Comp_Err_L(f) << " " << Comp_Err_L2(f) << " " << ParmLabel(Comp_Err_parmloc(Comp_Err_L2(f),2)) << " " << mfexp(selparm(Comp_Err_parmloc(Comp_Err_L2(f),1))) << " NA "<< " NA ";
+            SS2out << " " << mean_Nsamp_DM(f) << " " << Comp_Err_L(0, f) << " " << Comp_Err_L2(0, f) << " " << ParmLabel(Comp_Err_parmloc(Comp_Err_L2(0, f),2)) << " " << mfexp(selparm(Comp_Err_parmloc(Comp_Err_L2(0, f),1))) << " NA "<< " NA ";
             break;
           }
           case 3:  //  MV Tweedie
@@ -2537,7 +2569,7 @@ FUNCTION void write_bigoutput()
                 // effN_DM = 1/(1+theta) + n*theta/(1+theta)
                 Nsamp_DM = value(1. / (1. + dirichlet_Parm) + SzFreq_sampleN(iobs) * dirichlet_Parm / (1. + dirichlet_Parm));
               }
-              else if (Comp_Err_L(sz_method) == 2) //  Dirichlet #2
+              else if (Comp_Err_Sz(sz_method) == 2) //  Dirichlet #2
               {
                 dirichlet_Parm = mfexp(selparm(Comp_Err_parmloc(Comp_Err_Sz2(sz_method),1))); //  Thorson's beta from eq 12
                 // effN_DM = (n+n*beta)/(n+beta)
@@ -3958,22 +3990,23 @@ FUNCTION void write_bigoutput()
               temp1 += ecomp;
               if (nsamp > 0 && header_l(f, i, 3) > 0 && (ecomp != 0.0 && ecomp != 1.0) && nbins > 0 ) // check for values to include
               {
-                  if (Comp_Err_L(f) == 0)
+                  int parti = mkt_l(f, i);
+                  if (Comp_Err_L(parti,f) == 0)
                   {
                     show_Pearson = (ocomp - ecomp) / sqrt(ecomp * (1.0 - ecomp) / nsamp ); // Pearson for multinomial
                     show_logL = ocomp * log( (ocomp + 1.0e-12) / ( ecomp + 1.0e-12) ) * nsamp;  //  logL
                   }
-                  if (Comp_Err_L(f) == 1 || Comp_Err_L(f) == 2)
+                  if (Comp_Err_L(parti, f) == 1 || Comp_Err_L(parti, f) == 2)
                   {
-                    dirichlet_Parm = mfexp(selparm(Comp_Err_parmloc(Comp_Err_L2(f),1)));
-                    if (Comp_Err_L(f) == 1 )
+                    dirichlet_Parm = mfexp(selparm(Comp_Err_parmloc(Comp_Err_L2(parti, f),1)));
+                    if (Comp_Err_L(parti, f) == 1 )
                       { dirichlet_Parm *= nsamp; }
                     show_Pearson = value((ocomp - ecomp) / sqrt(ecomp * (1.0 - ecomp) / nsamp * (nsamp + dirichlet_Parm) / (1. + dirichlet_Parm))); // Pearson for Dirichlet-multinomial using negative-exponential parameterization
                     show_logL =  -offset_l(f,i) / nbins
                      - value( gammln(nsamp * ocomp + dirichlet_Parm * ecomp) - gammln(dirichlet_Parm * ecomp))
                      - value( ( gammln(dirichlet_Parm) - gammln(nsamp + dirichlet_Parm))) / nbins;
                   }
-                  if (Comp_Err_L(f) == 3 )  //  MV Tweedie
+                  if (Comp_Err_L(parti, f) == 3 )  //  MV Tweedie
                   {
                   }
                   SS_compout << show_Pearson << " " << nsamp << " " << nsamp_l_read(f, i) << " " << neff_l(f, i) << " " << show_logL;
@@ -4888,7 +4921,7 @@ FUNCTION dvector process_comps(const int sexes, const int sex, dvector& bins, dv
   //  sex is 0, 1, 2, 3 for range of sexes used in this sample
   int nbins = bins.indexmax() / sexes; // find number of bins
   // do both sexes  tails(4) has been set to tails(2) if males not in this sample
-  if ((sex == 3 && sexes == 2) || sex == 0)
+  if ((sex == 3 && sexes == 2) || sex == 0 || sexes == 1)
   {
     more_comp_info(1) = obs(tails(1), tails(4)) * means(tails(1), tails(4));
     more_comp_info(2) = exp(tails(1), tails(4)) * means(tails(1), tails(4));
