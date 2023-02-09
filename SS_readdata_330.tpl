@@ -652,13 +652,14 @@
   int Svy_N_rd;
   int Svy_N;
   init_imatrix Svy_units_rd(1,Nfleet,1,4);
-  ivector Svy_units(1,Nfleet);   //0=num; 1=bio; 2=F; >=30 for special patterns
+  ivector Svy_units(1,Nfleet);   // 0=num; 1=bio; 2=F; >=30 for special patterns
   ivector Svy_errtype(1,Nfleet);  // -1=normal / 0=lognormal / >0=T
   ivector Svy_sdreport(1,Nfleet);  // 0=no sdreport; 1=enable sdreport
   int Svy_N_sdreport;
 
  LOCAL_CALCS
   // clang-format on
+
   data_type = 1; //  for surveys
   echoinput << "Units:  0=numbers; 1=biomass; 2=F; >=30 for special patterns" << endl;
   echoinput << "Errtype:  -1=normal; 0=lognormal; >0=T" << endl;
@@ -669,6 +670,16 @@
   Svy_errtype = column(Svy_units_rd, 3);
   Svy_sdreport = column(Svy_units_rd, 4);
 
+  for (f = 1; f<=Nfleet; f++)
+  {
+    if (Svy_units(f) >= 35 && Svy_errtype(f) == 0)
+    {
+      warnstream << " survey error type must not be lognormal for surveys of deviations for fleet: " << f << fleetname(f) << endl;
+      write_message(FATAL, 1);
+    }
+  }
+
+  // read survey data
   ender = 0;
   do
   {
@@ -4099,6 +4110,10 @@
               << "# next read flag for specifying selectivity used in forecasts; 0 is value that mimics 3.24, 1 is experimental" << endl;
     *(ad_comm::global_datafile) >> Fcast_Specify_Selex;
     echoinput << Fcast_Specify_Selex << " # echoed Fcast_Specify_Selex value" << endl;
+    if (do_densitydependent == 1 && Fcast_Specify_Selex == 0) {
+      warnstream << "Fcast_specify_selex is 0 but user should change to 1 if density dependence affects a selectivity parameter or growth "<<endl;
+      write_message(WARN, 0);
+    }
 
     echoinput << endl
               << "next read 4 values for:  control rule shape(0, 1, 2, 3 or 4), inflection (like 0.40), cutoff(like 0.10), scale(like 0.75)" << endl;

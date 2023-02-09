@@ -1627,7 +1627,7 @@
 //  timevary_setup(6)=env link type
 //  timevary_setup(7)=env variable
 //  timevary_setup(8)=dev vector used
-//  timevary_setup(9)=dev link type
+//  timevary_setup(9)=dev link type  used in SS_timevarmparm
 //  timevary_setup(10)=dev min year
 //  timevary_setup(11)=dev maxyear
 //  timevary_setup(12)=dev phase
@@ -4480,6 +4480,10 @@
   // clang-format off
  END_CALCS
 
+!!// SS_Label_Info_4.9.xx #Create arrays needed for timevary_parameters
+  vector baseparm_min(1,timevary_parm_cnt)
+  vector baseparm_max(1,timevary_parm_cnt)
+
 !!//  SS_Label_Info_4.9.9 #Create arrays for the total set of selex parameters
   vector selparm_LO(1,N_selparm2)
   vector selparm_HI(1,N_selparm2)
@@ -4778,7 +4782,7 @@
 
    ivector parm_dev_type(1,N_parm_dev);  //  distinguish parameter dev vectors from 2DAR devs
    ivector parm_dev_use_rho(1,N_parm_dev);  //  uses rho parameter, or not
-   ivector parm_dev_info(1,N_parm_dev);  //  pointer from list of devvectorsto 2DAR list
+   ivector parm_dev_info(1,N_parm_dev);  //  pointer from list of devvectors to 2DAR list
    ivector TwoD_AR_ymin(1,TwoD_AR_cnt)
    ivector TwoD_AR_ymax(1,TwoD_AR_cnt)
    ivector TwoD_AR_amin(1,TwoD_AR_cnt)
@@ -4806,7 +4810,8 @@
         echoinput << " dev vector #:  " << k << " setup: " << timevary_setup << " phase: " << parm_dev_PH(k) << endl;
         f = timevary_setup(13); //  index of base parameter
         int picker = timevary_setup(9);
-        parm_dev_type(k) = 1; //  so P'=P+dev*se with objfun using  -log(1)
+        parm_dev_type(k) = 1; //  so P'=P+dev*se with objfun using  -log(1); so expects se of devs to be approx unit normal
+                              //  parm_dev_type is used in SS_objfunc.tpl
         if (picker > 20)
         {
           picker -= 20;
@@ -4821,7 +4826,7 @@
         }
         if (picker > 10)
         {
-          parm_dev_type(k) = 3; // use objfun using -log(se) to match 3.30.12 and earlier
+          parm_dev_type(k) = 3; // P'=P+dev; objfun using -log(se) to match 3.30.12 and earlier
           picker -= 10;
         }
         if (picker == 6) parm_dev_type(k) = 4; //  add penalty to keep rmse near 1. Needs to estimate stddev factor
@@ -4830,6 +4835,7 @@
         timevary_def[j](9) = picker; //  save in array also
   
         parm_dev_use_rho(k) = 0;
+        // require rho to be used for some dev approaches
         if (picker == 4 || picker == 5 || picker == 6) parm_dev_use_rho(k) = 1;
         for (y = parm_dev_minyr(k); y <= parm_dev_maxyr(k); y++)
         {

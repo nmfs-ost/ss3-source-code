@@ -481,7 +481,7 @@ PARAMETER_SECTION
   matrix parm_dev_rwalk(1,N_parm_dev,parm_dev_minyr,parm_dev_maxyr);
 
   init_bounded_number checksum999(998,1000,-999)  //  set value to 999 to check reading of ss.par
-  vector timevary_parm(1,timevary_parm_cnt);  //  will map to the MGparms and selparms that are the actual parameters
+  vector timevary_parm(1,timevary_parm_cnt);  //  holds the link parameters; in SS_timevaryparm these are set to actual parms in MGparms, SRparms, Qparms, selparms
   matrix parm_timevary(1,timevary_cnt,styr-1,YrMax);  //  time series of adjusted parm values for block and trend
 
  LOCAL_CALCS
