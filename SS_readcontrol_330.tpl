@@ -1944,13 +1944,13 @@
 !!//  SS_Label_Info_4.6 #Read setup for Spawner-Recruitment parameters
   //  SPAWN-RECR: read setup for SR parameters:  LO, HI, INIT, PRIOR, PRtype, CV, PHASE
   init_int SR_fxn
-!!echoinput<<SR_fxn<<" #_SR_function: 1=NA; 2=Ricker(2 parms); 3=BevHolt(2); 4=SCAA(2); 5=Hockey(3); 6=B-H_flattop(2); 7=Survival(3); 8=Shepherd(3); 9=Ricker_Power(3) "<<endl;
+!!echoinput<<SR_fxn<<" #_SR_function: 1=NA; 2=Ricker(2 parms); 3=BevHolt(2); 4=SCAA(2); 5=Hockey(3); 6=B-H_flattop(2); 7=Survival(3); 8=Shepherd(3); 9=Ricker_Power(3); 10=B-H_a,b(4)"<<endl;
   init_int init_equ_steepness;
 !!echoinput<<init_equ_steepness<<"  # 0/1 to use steepness in initial equ recruitment calculation"<<endl;
   init_int sigmaR_dendep;
 !! echoinput<<sigmaR_dendep<<"  #  future feature:  0/1 to make realized sigmaR a function of SR curvature"<<endl;
   ivector N_SRparm(1,10)
-!!N_SRparm.fill("{0,2,2,2,3,2,3,3,3,3}");
+!!N_SRparm.fill("{0,2,2,2,3,2,3,3,3,4}");
   int N_SRparm2
   int N_SRparm3  //  with timevary links included
 !!N_SRparm2=N_SRparm(SR_fxn)+3;
@@ -2031,6 +2031,13 @@
     {
       ParmLabel += "SR_RkrPower_steep";
       ParmLabel += "SR_RkrPower_gamma";
+      break;
+    }
+    case 10: // Bev-Holt a,b
+    {
+      ParmLabel += "SR_BH_steep_derived";
+      ParmLabel += "SR_BH_ln(alpha)";
+      ParmLabel += "SR_BH_ln(beta)";
       break;
     }
   }

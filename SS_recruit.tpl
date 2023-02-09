@@ -49,24 +49,13 @@ FUNCTION dvariable Spawn_Recr(const prevariable& SSB_virgin_adj, const prevariab
     case 3: // Beverton-Holt
     {
       steepness = SR_parm_work(2);
-      alpha = 4.0 * steepness * Recr_virgin / (5. * steepness - 1.);
-      beta = (SSB_virgin_adj * (1. - steepness)) / (5. * steepness - 1.);
+      dvariable SPR = SSB_virgin_adj / Recr_virgin;
+      alpha = ((4.0 * steepness) / (1. - steepness)) / SPR ;
+      beta = (1.0 / Recr_virgin) * (alpha - (1.0 / SPR));
       NewRecruits = (4. * steepness * Recr_virgin_adj * SSB_curr_adj) /
           (SSB_virgin_adj * (1. - steepness) + (5. * steepness - 1.) * SSB_curr_adj);
       break;
     }
-
-    // Beverton-Holt with alpha beta
-    /*
-      case 3: // Beverton-Holt
-      {
-        steepness=SR_parm_work(2);
-        alpha = 4.0 * steepness*Recr_virgin / (5.*steepness-1.);
-        beta = (SSB_virgin_adj*(1.-steepness)) / (5.*steepness-1.);
-        NewRecruits =  (alpha*SSB_curr_adj) / (beta+SSB_curr_adj);
-        break;
-      }
-   */
 
     //  SS_Label_43.3.4  constant expected recruitment
     case 4: // none
@@ -88,8 +77,9 @@ FUNCTION dvariable Spawn_Recr(const prevariable& SSB_virgin_adj, const prevariab
     case 6: //Beverton-Holt constrained
     {
       steepness = SR_parm_work(2);
-      alpha = 4.0 * steepness * Recr_virgin / (5. * steepness - 1.);
-      beta = (SSB_virgin_adj * (1. - steepness)) / (5. * steepness - 1.);
+      dvariable SPR = SSB_virgin_adj / Recr_virgin;
+      alpha = ((4.0 * steepness) / (1. - steepness)) / SPR ;
+      beta = (1.0 / Recr_virgin) * (alpha - (1.0 / SPR));
       if (SSB_curr_adj > SSB_virgin_adj)
       {
         SSB_BH1 = SSB_virgin_adj;
@@ -167,6 +157,14 @@ FUNCTION dvariable Spawn_Recr(const prevariable& SSB_virgin_adj, const prevariab
       NewRecruits = Recr_virgin_adj * temp * mfexp(RkrTop);
       break;
     }
+
+      case 10: // Beverton-Holt with alpha beta
+      {
+        alpha = mfexp(SR_parm_work(3));
+        beta = mfexp(SR_parm_work(4));
+        NewRecruits =  (alpha*SSB_curr_adj) / (1.0 + beta * SSB_curr_adj);
+        break;
+      }
   }
   RETURN_ARRAYS_DECREMENT();
   return NewRecruits;
@@ -270,7 +268,7 @@ FUNCTION void apply_recdev(prevariable& NewRecruits, const prevariable& Recr_vir
 //********************************************************************
  /*  SS_Label_FUNCTION 44 Equil_Spawn_Recr_Fxn */
 //  SPAWN-RECR:   function  Equil_Spawn_Recr_Fxn
-FUNCTION dvar_vector Equil_Spawn_Recr_Fxn(const prevariable& SRparm2, const prevariable& SRparm3,
+FUNCTION dvar_vector Equil_Spawn_Recr_Fxn(const dvar_vector& SRparm,
     const prevariable& SSB_virgin, const prevariable& Recr_virgin, const prevariable& SPR_temp)
   {
   RETURN_ARRAYS_INCREMENT();
@@ -286,7 +284,7 @@ FUNCTION dvar_vector Equil_Spawn_Recr_Fxn(const prevariable& SRparm2, const prev
   dvariable srz_min;
   dvariable SRZ_surv;
 
-  steepness = SRparm2; //  common usage but some different
+  steepness = SRparm(2); //  common usage but some different
   //  SS_Label_44.1  calc equilibrium SpawnBio and Recruitment from input SPR_temp, which is spawning biomass per recruit at some given F level
   switch (SR_fxn)
   {
@@ -296,16 +294,7 @@ FUNCTION dvar_vector Equil_Spawn_Recr_Fxn(const prevariable& SRparm2, const prev
       write_message (FATAL, 0); // EXIT!
       break;
     }
-    //  SS_Label_44.1.1  Beverton-Holt with flattop beyond Bzero
-    case 6: //Beverton-Holt
-    {
-      alpha = 4.0 * steepness * Recr_virgin / (5. * steepness - 1.);
-      beta = (SSB_virgin * (1. - steepness)) / (5. * steepness - 1.);
-      B_equil = alpha * SPR_temp - beta;
-      B_equil = posfun(B_equil, 0.0001, temp);
-      R_equil = (4. * steepness * Recr_virgin * B_equil) / (SSB_virgin * (1. - steepness) + (5. * steepness - 1.) * B_equil);
-      break;
-    }
+
     //  SS_Label_44.1.2  Ricker
     case 2: // Ricker
     {
@@ -314,14 +303,29 @@ FUNCTION dvar_vector Equil_Spawn_Recr_Fxn(const prevariable& SRparm2, const prev
 
       break;
     }
-    //  SS_Label_44.1.3  Beverton-Holt
+      //  SS_Label_44.1.1  Beverton-Holt 
+    case 6: //Beverton-Holt with flattop beyond Bzero, but no flattop in equil calcs
+    {
+    }
+  //  SS_Label_44.1.3  Beverton-Holt
     case 3: // same as case 6
     {
-      alpha = 4.0 * steepness * Recr_virgin / (5. * steepness - 1.);
-      beta = (SSB_virgin * (1. - steepness)) / (5. * steepness - 1.);
+      dvariable SPR = SSB_virgin / Recr_virgin;
+      alpha = ((4.0 * steepness) / (1. - steepness)) / SPR ;
+      beta = (1.0 / Recr_virgin) * (alpha - (1.0 / SPR));
       B_equil = alpha * SPR_temp - beta;
       B_equil = posfun(B_equil, 0.0001, temp);
       R_equil = (4. * steepness * Recr_virgin * B_equil) / (SSB_virgin * (1. - steepness) + (5. * steepness - 1.) * B_equil); //Beverton-Holt
+      break;
+    }
+
+    case 10: // Beverton-Holt with alpha and beta parameterization
+    {
+      alpha = mfexp(SRparm(3));
+      beta = mfexp(SRparm(4));
+      B_equil = alpha * SPR_temp - beta;
+      B_equil = posfun(B_equil, 0.0001, temp);
+      R_equil =  (alpha * Recr_virgin * B_equil) / (1.0 + beta * Recr_virgin * B_equil);
       break;
     }
 
@@ -335,7 +339,7 @@ FUNCTION dvar_vector Equil_Spawn_Recr_Fxn(const prevariable& SRparm2, const prev
     //  SS_Label_44.1.5  Hockey Stick
     case 5: // hockey stick
     {
-      alpha = SRparm3 * Recr_virgin; // min recruitment level
+      alpha = SRparm(3) * Recr_virgin; // min recruitment level
       //        temp=SSB_virgin/R0*steepness;  // spawners per recruit at inflection
       beta = (Recr_virgin - alpha) / (steepness * SSB_virgin); //  slope of recruitment on spawners below the inflection
       B_equil = Join_Fxn(0.0 * SSB_virgin / Recr_virgin, SSB_virgin / Recr_virgin, SSB_virgin / Recr_virgin * steepness, SPR_temp, alpha / ((1. / SPR_temp) - beta), SPR_temp * Recr_virgin);
@@ -347,9 +351,8 @@ FUNCTION dvar_vector Equil_Spawn_Recr_Fxn(const prevariable& SRparm2, const prev
     {
       SRZ_0 = log(1.0 / (SSB_virgin / Recr_virgin));
       srz_min = SRZ_0 * (1.0 - steepness);
-      B_equil = SSB_virgin * (1. - (log(1. / SPR_temp) - SRZ_0) / pow((srz_min - SRZ_0), (1. / SRparm3)));
-      B_equil = posfun(B_equil, 0.0001, temp);
-      SRZ_surv = mfexp((1. - pow((B_equil / SSB_virgin), SRparm3)) * (srz_min - SRZ_0) + SRZ_0); //  survival
+      B_equil = SSB_virgin * (1. - (log(1. / SPR_temp) - SRZ_0) / pow((srz_min - SRZ_0), (1. / SRparm(3))));
+      SRZ_surv = mfexp((1. - pow((B_equil / SSB_virgin), SRparm(3))) * (srz_min - SRZ_0) + SRZ_0); //  survival
       R_equil = B_equil * SRZ_surv;
       break;
     }
@@ -367,14 +370,14 @@ FUNCTION dvar_vector Equil_Spawn_Recr_Fxn(const prevariable& SRparm2, const prev
       //       REC = (TOP/BOT)**(1.0/POWER)*SPRF0/SPR
       // Power = exp(logC);
       // Hupper = 1.0/(5.0 * pow(0.2,Power));
-      Shepherd_c = SRparm3;
-      Shepherd_c2 = pow(0.2, SRparm3);
+      Shepherd_c = SRparm(3);
+      Shepherd_c2 = pow(0.2, SRparm(3));
       Hupper = 1.0 / (5.0 * Shepherd_c2);
-      steepness = 0.2 + (SRparm2 - 0.2) / (0.8) * (Hupper - 0.2);
+      steepness = 0.2 + (SRparm(2) - 0.2) / (0.8) * (Hupper - 0.2);
       Shep_top = 5.0 * steepness * (1.0 - Shepherd_c2) * (SPR_temp * Recr_virgin) / SSB_virgin - (1.0 - 5.0 * steepness * Shepherd_c2);
       Shep_bot = 5.0 * steepness - 1.0;
       Shep_top2 = posfun(Shep_top, 0.001, temp);
-      R_equil = (SSB_virgin / SPR_temp) * pow((Shep_top2 / Shep_bot), (1.0 / SRparm3));
+      R_equil = (SSB_virgin / SPR_temp) * pow((Shep_top2 / Shep_bot), (1.0 / SRparm(3)));
       B_equil = R_equil * SPR_temp;
       break;
     }
@@ -382,8 +385,8 @@ FUNCTION dvar_vector Equil_Spawn_Recr_Fxn(const prevariable& SRparm2, const prev
     //  SS_Label_43.3.8  Ricker-power
     case 9: // Ricker power 3-parameter SRR.  per Punt & Cope 2017
     {
-      steepness = SRparm2;
-      dvariable RkrPower = SRparm3;
+      steepness = SRparm(2);
+      dvariable RkrPower = SRparm(3);
       temp = SSB_virgin / (SPR_temp * Recr_virgin);
       dvariable RkrTop = pow(0.8, RkrPower) * log(temp) / log(5.0 * steepness);
       RkrTop = posfun(RkrTop, 0.000001, CrashPen);
