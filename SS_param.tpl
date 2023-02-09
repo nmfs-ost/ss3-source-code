@@ -416,6 +416,7 @@ PARAMETER_SECTION
    //  note that bycatch_F(1,Nfleet,1,nseas) has similar role  
    number alpha;
    number beta;
+   number steepness;
    number GenTime;
    number Yield;
    number Adj4010;
