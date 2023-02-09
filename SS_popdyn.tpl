@@ -337,17 +337,38 @@ FUNCTION void get_initial_conditions()
   Fishon = 0;
   virg_fec = fec;
   Recr.initialize(); //  will store recruitment by area
+
+  //  SPAWN-RECR:   get expected recruitment globally or by area
+  if (recr_dist_area == 1 || pop == 1) //  do global spawn_recruitment calculations
+  {
+    equ_Recr = 1.0;
+    Do_Equil_Calc(equ_Recr); //  call function to do equilibrium calculation.  Returns SPR because R = 1.0
+    SPR_virgin = SSB_equil; //  spawners per recruit.  Needed for Sr_fxn = 10
+
+    if(SR_fxn == 10)  // B-H with a,b
+    {
+      alpha = mfexp(SR_parm(3));
+      beta = mfexp(SR_parm(4));
+      steepness = alpha * SPR_virgin / (4.00 + alpha * SPR_virgin);
+      Recr_virgin = 1.0 / beta * (alpha - ( 1.0 / SPR_virgin));
+      SR_parm(1) = log(Recr_virgin);
+      SR_parm(2) = steepness;
+      // warning<< SR_parm(1) << " Ln(R0) " << mfexp(SR_parm(1)) << endl
+      //     << " alpha_beta: "<<alpha<<" "<<beta<<endl
+      //   << " spr: "<<SPR_virgin<<endl
+      //    << " der_steep: "<< alpha * SPR_virgin / (4.00 + alpha * SPR_virgin)<<endl
+      //    << "der_R0: "<<  1.0 / beta * (alpha - ( 1.0 / SPR_virgin))<<endl;
+    }
+    else {
+      Recr_virgin = mfexp(SR_parm(1));
+    }
+  
   for (int i = 1; i <= N_SRparm2; i++)
   {
     SR_parm_byyr(eq_yr, i) = SR_parm(i);
     SR_parm_virg(i) = SR_parm(i);
     SR_parm_work(i) = SR_parm(i);
   }
-
-  //  SPAWN-RECR:   get expected recruitment globally or by area
-  if (recr_dist_area == 1 || pop == 1) //  do global spawn_recruitment calculations
-  {
-    Recr_virgin = mfexp(SR_parm(1));
     equ_Recr = Recr_virgin;
     exp_rec(eq_yr, 1) = Recr_virgin; //  expected Recr from s-r parms
     exp_rec(eq_yr, 2) = Recr_virgin;
@@ -507,7 +528,7 @@ FUNCTION void get_initial_conditions()
     CrashPen += Equ_penalty;
     SPR_temp = SSB_equil / equ_Recr; //  spawners per recruit at initial F
     //  get equilibrium SSB and recruitment from SPR_temp, Recr_virgin and virgin steepness
-    Equ_SpawnRecr_Result = Equil_Spawn_Recr_Fxn(SR_parm(2), SR_parm(3), SSB_virgin, Recr_virgin, SPR_temp); //  returns 2 element vector containing equilibrium biomass and recruitment at this SPR
+    Equ_SpawnRecr_Result = Equil_Spawn_Recr_Fxn(SR_parm, SSB_virgin, Recr_virgin, SPR_temp); //  returns 2 element vector containing equilibrium biomass and recruitment at this SPR
 
     R1_exp = Equ_SpawnRecr_Result(2); //  set the expected recruitment equal to this equilibrium
     exp_rec(eq_yr, 1) = R1_exp;
