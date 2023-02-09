@@ -1734,8 +1734,12 @@ FUNCTION void write_bigoutput()
            << pick_report_name(19);
     SS2out << "  Function: " << SR_fxn << "  RecDev_method: " << do_recdev << "   sum_recdev: " << sum_recdev << endl
            << SR_parm(1) << " Ln(R0) " << mfexp(SR_parm(1)) << endl
-           << steepness << " steepness" << endl
+           << steepness << " steepness " << "#_derived_alpha_beta: "<<alpha<<" "<<beta<<endl
            << Bmsy / SSB_virgin << " Bmsy/Bzero ";
+        SS2out << " spr: "<<SPR_virgin<<endl;
+         SS2out << " der_steep: "<< alpha * SPR_virgin / (4.00 + alpha * SPR_virgin)<<endl;
+         SS2out << "der_R0: "<<  1.0 / beta * (alpha - ( 1.0 / SPR_virgin))<<endl;;
+
     if (SR_fxn == 8)
     {
       dvariable Shepherd_c;
@@ -4743,7 +4747,7 @@ FUNCTION void SPR_profile()
         Do_Equil_Calc(equ_Recr);
         //  SPAWN-RECR:   calc equil spawn-recr in the SPR loop
         SPR_temp = SSB_equil;
-        Equ_SpawnRecr_Result = Equil_Spawn_Recr_Fxn(SR_parm_work(2), SR_parm_work(3), SSB_unf, Recr_unf, SPR_temp); //  returns 2 element vector containing equilibrium biomass and recruitment at this SPR
+        Equ_SpawnRecr_Result = Equil_Spawn_Recr_Fxn(SR_parm_work, SSB_unf, Recr_unf, SPR_temp); //  returns 2 element vector containing equilibrium biomass and recruitment at this SPR
         Btgt_prof = Equ_SpawnRecr_Result(1);
         Btgt_prof_rec = Equ_SpawnRecr_Result(2);
         if (Btgt_prof < 0.001 || Btgt_prof_rec < 0.001)
