@@ -2204,7 +2204,6 @@ FUNCTION void Get_Forecast()
       }
       env_data(y, -3) = log(smrybio / Smry_Table(styr - 1, 2));
       env_data(y, -4) = log(smrynum / Smry_Table(styr - 1, 3));
-
       Smry_Table(y).initialize();
       Smry_Table(y, 2) = smrybio; // in forecast
       Smry_Table(y, 3) = smrynum; //sums to accumulate across platoons and settlements
