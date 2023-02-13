@@ -1438,7 +1438,7 @@
     }
   }
   
-  if (N_Platoons > 1)
+  if (N_platoon > 1)
   {
     ParCount ++;
     sd_ratio_param_ptr = ParCount;
@@ -1584,7 +1584,7 @@
   if (recr_dist_method < 4) mgp_type(Ip, MGP_CGD - 1) = 4; // recruit apportionments
   mgp_type(MGP_CGD) = 2; // cohort growth dev
   if (do_migration > 0) mgp_type(MGP_CGD + 1, N_MGparm) = 5; // note that it fills until end of MGparm list, but some get overwritten
-  if (N_Platoons > 1) mgp_type(sd_ratio_param_ptr) = 2;
+  if (N_platoon > 1) mgp_type(sd_ratio_param_ptr) = 2;
   if (Use_AgeKeyZero > 0) mgp_type(AgeKeyParm, N_MGparm) = 6;
   if (catch_mult_pointer > 0) mgp_type(catch_mult_pointer, N_MGparm) = 7;
   for (f = frac_female_pointer; f <= frac_female_pointer + N_GP - 1; f++) mgp_type(f) = 4;

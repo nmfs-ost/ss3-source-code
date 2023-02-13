@@ -27,7 +27,7 @@ FUNCTION void Make_AgeLength_Key(const int s, const int subseas)
     gp = 0;
 	if (N_platoon > 1) // calculate the between and within stdev ratio
     {
-      sd_ratio = MGParm(sd_ratio_param_ptr, 3);
+      sd_ratio = value(MGparm(sd_ratio_param_ptr));
       sd_between_platoon = sqrt(1. / (1. + sd_ratio * sd_ratio));
       sd_within_platoon = sd_ratio * sd_between_platoon;
     }
