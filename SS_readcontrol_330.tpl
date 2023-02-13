@@ -82,14 +82,11 @@
   
   if (N_platoon > 1)
   {
-    *(ad_comm::global_datafile) >> sd_ratio;
     *(ad_comm::global_datafile) >> platoon_distr;
-    echoinput << sd_ratio << "  sd_ratio" << endl;
     echoinput << platoon_distr << "  platoon_distr" << endl;
   }
   else
   {
-    sd_ratio = 1.;
     platoon_distr(1) = 1.;
     echoinput << "  do not read sd_ratio or platoon_distr" << endl;
   }
@@ -111,17 +108,6 @@
   }
   platoon_distr /= sum(platoon_distr);
   
-  if (N_platoon > 1)
-  {
-    sd_within_platoon = sd_ratio * sqrt(1. / (1. + sd_ratio * sd_ratio));
-    sd_between_platoon = sqrt(1. / (1. + sd_ratio * sd_ratio));
-  }
-  else
-  {
-    sd_within_platoon = 1;
-    sd_between_platoon = 0.000001;
-  }
-  
   if (N_platoon == 1)
   {
     ishadow(1) = 0;
@@ -139,7 +125,7 @@
   }
   else
   {
-    warnstream << "illegal N platoons: " << N_platoon << ", must be 1, 3 or 5 " ;
+    warnstream << "illegal N platoons: " << N_platoon << "; must be 1, 3 or 5 " ;
     write_message (FATAL, 1); // EXIT!
   }
   // clang-format off
@@ -1155,7 +1141,8 @@
   int do_once;
   int doit;
 
-  int MGP_CGD
+  int MGP_CGD;
+  int sd_ratio_param_ptr;
   int CGD_onoff;  //  switch for cohort growth dev
 
  LOCAL_CALCS
@@ -1451,6 +1438,13 @@
     }
   }
   
+  if (N_Platoons > 1)
+  {
+    ParCount ++;
+    sd_ratio_param_ptr = ParCount;
+    ParmLabel += "Platoon_SD_Ratio";
+  }
+  
   if (Use_AgeKeyZero > 0)
   {
     AgeKeyParm = ParCount + 1;
@@ -1590,6 +1584,7 @@
   if (recr_dist_method < 4) mgp_type(Ip, MGP_CGD - 1) = 4; // recruit apportionments
   mgp_type(MGP_CGD) = 2; // cohort growth dev
   if (do_migration > 0) mgp_type(MGP_CGD + 1, N_MGparm) = 5; // note that it fills until end of MGparm list, but some get overwritten
+  if (N_Platoons > 1) mgp_type(sd_ratio_param_ptr) = 2;
   if (Use_AgeKeyZero > 0) mgp_type(AgeKeyParm, N_MGparm) = 6;
   if (catch_mult_pointer > 0) mgp_type(catch_mult_pointer, N_MGparm) = 7;
   for (f = frac_female_pointer; f <= frac_female_pointer + N_GP - 1; f++) mgp_type(f) = 4;
