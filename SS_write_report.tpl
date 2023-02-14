@@ -1783,13 +1783,24 @@ FUNCTION void write_bigoutput()
            << pick_report_name(19);
     SS2out << "  Function: " << SR_fxn << "  RecDev_method: " << do_recdev << "   sum_recdev: " << sum_recdev << endl
            << SR_parm(1) << " Ln(R0) " << mfexp(SR_parm(1)) << endl
-           << steepness << " steepness " << "#_derived_alpha_beta: "<<alpha<<" "<<beta<<endl
+           << steepness << " steepness " << endl
            << Bmsy / SSB_virgin << " Bmsy/Bzero ";
-        SS2out << " spr: "<<SPR_virgin<<endl;
-         SS2out << " der_steep: "<< alpha * SPR_virgin / (4.00 + alpha * SPR_virgin)<<endl;
-         SS2out << "der_R0: "<<  1.0 / beta * (alpha - ( 1.0 / SPR_virgin))<<endl;;
-
-    if (SR_fxn == 8)
+    SS2out << " SPR_virgin "<<SPR_virgin<<endl;
+    if (SR_fxn == 10)
+    {
+  //  SR_h = 0.2 * exp(0.8*log(exp(log_SR_a) * exp(log_SPR0)));
+  //  SR_R0 = log(exp(log_SR_a + log_SPR0))/(exp(log_SR_b + log_SPR0));
+      SS2out << " derived_steepness "<< 0.2 * mfexp( 0.8 * log( alpha ) * SPR_virgin)<<" using_virgin_SPR; will be time-varying if biology is time-varying"<<endl;
+      SS2out << "derived_R0 "<<  log( alpha * SPR_virgin ) / ( beta * SPR_virgin)<endl;
+    }
+    else if (SR_fxn == 3)
+    {
+      alpha = 4.0 * steepness / (SPR_virgin * (1. - steepness));
+      beta = (5.0 * steepness - 1.0) / ((1 - steepness) * SSB_virgin);
+      SS2out << " derived_alpha " << alpha << " using_virgin_SPR" << endl;
+      SS2out << "derived_beta " <<  beta <<endl;
+    }
+    else if (SR_fxn == 8)
     {
       dvariable Shepherd_c;
       dvariable Shepherd_c2;

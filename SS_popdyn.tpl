@@ -349,8 +349,8 @@ FUNCTION void get_initial_conditions()
     {
       alpha = mfexp(SR_parm(3));
       beta = mfexp(SR_parm(4));
-      steepness = alpha * SPR_virgin / (4.00 + alpha * SPR_virgin);
-      Recr_virgin = 1.0 / beta * (alpha - ( 1.0 / SPR_virgin));
+      alpha = 4.0 * steepness / (SPR_virgin * (1. - steepness));
+      beta = (5.0 * steepness - 1.0) / ((1 - steepness) * SSB_virgin);
       SR_parm(1) = log(Recr_virgin);
       SR_parm(2) = steepness;
       // warning<< SR_parm(1) << " Ln(R0) " << mfexp(SR_parm(1)) << endl
@@ -529,7 +529,6 @@ FUNCTION void get_initial_conditions()
     SPR_temp = SSB_equil / equ_Recr; //  spawners per recruit at initial F
     //  get equilibrium SSB and recruitment from SPR_temp, Recr_virgin and virgin steepness
     Equ_SpawnRecr_Result = Equil_Spawn_Recr_Fxn(SR_parm, SSB_virgin, Recr_virgin, SPR_temp); //  returns 2 element vector containing equilibrium biomass and recruitment at this SPR
-
     R1_exp = Equ_SpawnRecr_Result(2); //  set the expected recruitment equal to this equilibrium
     exp_rec(eq_yr, 1) = R1_exp;
 
