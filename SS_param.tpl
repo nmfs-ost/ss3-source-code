@@ -575,7 +575,6 @@ PARAMETER_SECTION
   number equ_F_std
   number equ_M_std
   
-
 !!//  SS_Label_Info_5.1.8 #Create matrix called smry to store derived quantities of interest
   matrix Smry_Table(styr-3,YrMax,1,20+2*gmorph);
   // 1=totbio, 2=smrybio, 3=smrynum, 4=enc_catch, 5=dead_catch, 6=ret_catch, 7=spbio, 8=recruit,

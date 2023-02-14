@@ -58,8 +58,8 @@
 !!echoinput<<N_platoon<<"  N platoons (1, 3 or 5)"<<endl;
 
   dvariable sd_ratio;  // ratio of stddev within platoon to between morphs
-  number sd_within_platoon;
-  number sd_between_platoon;
+  dvariable sd_within_platoon;
+  dvariable sd_between_platoon;
 
   ivector ishadow(1,N_platoon);
   vector shadow(1,N_platoon);
