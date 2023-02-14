@@ -16,6 +16,10 @@ FUNCTION void Make_AgeLength_Key(const int s, const int subseas)
   //  moves these mean sizes into a _W working vector
   //  then it calls calc_ALK to make and store the age-length key for that subseason for each biological entity
 
+  dvariable plat_sd_ratio;
+  dvariable sd_betw_plat;
+  dvariable sd_with_plat;
+  
   int gstart = 0;
   ALK_idx = (s - 1) * N_subseas + subseas;
   dvar_vector use_Ave_Size_W(0, nages);
@@ -27,9 +31,12 @@ FUNCTION void Make_AgeLength_Key(const int s, const int subseas)
     gp = 0;
 	if (N_platoon > 1) // calculate the between and within stdev ratio
     {
-      sd_ratio = MGparm(sd_ratio_param_ptr);
-      sd_between_platoon = sqrt(1. / (1. + sd_ratio * sd_ratio));
-      sd_within_platoon = sd_ratio * sd_between_platoon;
+      plat_sd_ratio = MGparm(sd_ratio_param_ptr);
+      sd_betw_plat = sqrt(1. / (1. + plat_sd_ratio * plat_sd_ratio));
+      sd_with_plat = plat_sd_ratio * sd_betw_plat;
+	  platoon_sd_ratio = plat_sd_ratio.xval();
+	  sd_within_platoon = sd_betw_plat.xval();
+	  sd_between_platoon = sd_with_plat.xval();
     }
     for (int sex = 1; sex <= gender; sex++)
       for (GPat = 1; GPat <= N_GP; GPat++)
