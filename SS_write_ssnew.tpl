@@ -1945,10 +1945,13 @@ FUNCTION void write_nucontrol()
   }
 
   report4 << "#  Platoon StDev Ratio " << endl;
-  NP++;
-  MGparm_1(NP, 3) = value(MGparm(NP));
-  report4 << MGparm_1(NP) << " # " << ParmLabel(NP) << endl;
-
+  if (N_platoon > 1)
+  {
+    NP++;
+    MGparm_1(NP, 3) = value(MGparm(NP));
+    report4 << MGparm_1(NP) << " # " << ParmLabel(NP) << endl;
+  }
+  
   report4 << "#  Age Error from parameters" << endl;
   if (Use_AgeKeyZero > 0)
   {

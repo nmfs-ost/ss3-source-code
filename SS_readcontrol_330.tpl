@@ -56,12 +56,15 @@
 !!echoinput<<N_GP<<" N growth patterns "<<endl;
   init_int N_platoon  //  number of platoons  1, 3, 5 are best values to use
 !!echoinput<<N_platoon<<"  N platoons (1, 3 or 5)"<<endl;
-  number sd_ratio;  // ratio of stddev within platoon to between morphs
-  number sd_within_platoon
-  number sd_between_platoon
-  ivector ishadow(1,N_platoon)
-  vector shadow(1,N_platoon)
+
+  dvariable sd_ratio;  // ratio of stddev within platoon to between morphs
+  number sd_within_platoon;
+  number sd_between_platoon;
+
+  ivector ishadow(1,N_platoon);
+  vector shadow(1,N_platoon);
   vector platoon_distr(1,N_platoon);
+  
  LOCAL_CALCS
   // clang-format on
   if (WTage_rd > 0)
