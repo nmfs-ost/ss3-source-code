@@ -7,10 +7,9 @@
 *.htp
 *.obj
 *.log
-ss.tpl
-ss3.tpl
-ss_opt.tpl
-ss_trans.tpl
+Compile/ss.tpl
+Compile/ss_opt.tpl
+Compile/ss_trans.tpl
 ~$*.*
 Compile/ss.log
 Compile/ss3.log
