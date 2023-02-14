@@ -49,9 +49,10 @@ FUNCTION dvariable Spawn_Recr(const prevariable& SSB_virgin_adj, const prevariab
     case 3: // Beverton-Holt
     {
       steepness = SR_parm_work(2);
-      dvariable SPR = SSB_virgin_adj / Recr_virgin;
-      alpha = ((4.0 * steepness) / (1. - steepness)) / SPR ;
-      beta = (1.0 / Recr_virgin) * (alpha - (1.0 / SPR));
+//      dvariable SPR = SSB_virgin_adj / Recr_virgin;
+//      dvariable alpha = (4.0 * steepness) / ( SPR * (1. - steepness)) ;
+//      dvariable beta = (5.0 * steepness - 1.0 )/((1.0 - steepness ) * Recr_virgin * SPR );
+//      beta = (1.0 / Recr_virgin) * (alpha - (1.0 / SPR));
       NewRecruits = (4. * steepness * Recr_virgin_adj * SSB_curr_adj) /
           (SSB_virgin_adj * (1. - steepness) + (5. * steepness - 1.) * SSB_curr_adj);
       break;
@@ -77,9 +78,9 @@ FUNCTION dvariable Spawn_Recr(const prevariable& SSB_virgin_adj, const prevariab
     case 6: //Beverton-Holt constrained
     {
       steepness = SR_parm_work(2);
-      dvariable SPR = SSB_virgin_adj / Recr_virgin;
-      alpha = ((4.0 * steepness) / (1. - steepness)) / SPR ;
-      beta = (1.0 / Recr_virgin) * (alpha - (1.0 / SPR));
+//      dvariable SPR = SSB_virgin_adj / Recr_virgin;
+//      alpha = ((4.0 * steepness) / (1. - steepness)) / SPR ;
+//      beta = (1.0 / Recr_virgin) * (alpha - (1.0 / SPR));
       if (SSB_curr_adj > SSB_virgin_adj)
       {
         SSB_BH1 = SSB_virgin_adj;
@@ -162,7 +163,7 @@ FUNCTION dvariable Spawn_Recr(const prevariable& SSB_virgin_adj, const prevariab
       {
         alpha = mfexp(SR_parm_work(3));
         beta = mfexp(SR_parm_work(4));
-        NewRecruits =  (alpha*SSB_curr_adj) / (1.0 + beta * SSB_curr_adj);
+        NewRecruits =  (alpha * SSB_curr_adj) / (beta + SSB_curr_adj);
         break;
       }
   }
@@ -310,22 +311,34 @@ FUNCTION dvar_vector Equil_Spawn_Recr_Fxn(const dvar_vector& SRparm,
   //  SS_Label_44.1.3  Beverton-Holt
     case 3: // same as case 6
     {
-      dvariable SPR = SSB_virgin / Recr_virgin;
-      alpha = ((4.0 * steepness) / (1. - steepness)) / SPR ;
-      beta = (1.0 / Recr_virgin) * (alpha - (1.0 / SPR));
-      B_equil = alpha * SPR_temp - beta;
+  // from WHAM per Tim Miller:
+  //  WHAM based on R = A*S/(1+B*S)
+  //  log_SR_a = log(4 * SR_h/(exp(log_SPR0)*(1 - SR_h)));
+  //  log_SR_b = log((5*SR_h - 1)/((1-SR_h)*SR_R0*exp(log_SPR0)));
+  //  SR_h = 0.2 * exp(0.8*log(exp(log_SR_a) * exp(log_SPR0)));
+  //  SR_R0 = log(exp(log_SR_a + log_SPR0))/(exp(log_SR_b + log_SPR0));
+
+  //  SS3 previously used alternative formulation: R = A*S/(B+S)
+  //  converting SS3 to align with WHAM
+      alpha = 4.0 * steepness / (SPR_virgin * (1. - steepness));
+      beta = (5.0 * steepness - 1.0) / ((1 - steepness) * SSB_virgin);
+      B_equil = (alpha * SPR_temp - 1.0) / beta;
       B_equil = posfun(B_equil, 0.0001, temp);
-      R_equil = (4. * steepness * Recr_virgin * B_equil) / (SSB_virgin * (1. - steepness) + (5. * steepness - 1.) * B_equil); //Beverton-Holt
+      R_equil = alpha * B_equil / (1.0 + beta * B_equil);
+//      report5<<" WHAM Beq "<<B_equil<<" Req "<<R_equil<<" alpha "<<alpha<<" beta "<<beta<<" SSB_unf "<<SSB_unf<<endl;
+//      R_equil = (4. * steepness * Recr_virgin * B_equil) / (SSB_virgin * (1. - steepness) + (5. * steepness - 1.) * B_equil); //Beverton-Holt
+//      report5<<" SS3 Beq "<<B_equil<<" Req "<<R_equil<<" alpha "<<alpha<<" beta "<<beta<<" SSB_unf "<<SSB_unf<<endl;
       break;
     }
 
-    case 10: // Beverton-Holt with alpha and beta parameterization
+    case 10: // Beverton-Holt with alpha and beta parameterization using  R = A*S/(B+S) approach
     {
       alpha = mfexp(SRparm(3));
       beta = mfexp(SRparm(4));
-      B_equil = alpha * SPR_temp - beta;
+      B_equil = (alpha * SPR_temp - 1.0) / beta;
       B_equil = posfun(B_equil, 0.0001, temp);
-      R_equil =  (alpha * Recr_virgin * B_equil) / (1.0 + beta * Recr_virgin * B_equil);
+      R_equil = alpha * B_equil / (1.0 + beta * B_equil);
+//      report5<<SPR_temp<<" Beq "<<B_equil<<" Req "<<R_equil<<" alpha "<<alpha<<" beta "<<beta<<" SSB_unf "<<SSB_unf<<endl;
       break;
     }
 
