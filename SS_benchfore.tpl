@@ -748,6 +748,7 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
   Recr_unf = mfexp(SR_parm_work(1));
   Do_Equil_Calc(Recr_unf);
   SSB_unf = SSB_equil;
+  report5<<" calc SSBunf "<<SSB_unf<<" recr "<<Recr_unf<<" work "<<SR_parm_work<<" parm "<<SR_parm<<endl;
   SR_parm_work(N_SRparm2 + 1) = SSB_unf;
   if (show_MSY == 1)
     report5 << "SR_parm for benchmark: " << SR_parm_work << endl
@@ -902,7 +903,8 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
     }
 
     //  SPAWN-RECR:   calc equil spawn-recr in YPR; need to make this area-specific
-    Equ_SpawnRecr_Result = Equil_Spawn_Recr_Fxn(SR_parm_work, SSB_unf, Recr_unf, SSB_equil); //  returns 2 element vector containing equilibrium biomass and recruitment at this SPR
+    SPR_temp = SSB_equil;  //  based on most recent call to Do_Equil_Calc
+    Equ_SpawnRecr_Result = Equil_Spawn_Recr_Fxn(SR_parm_work, SSB_unf, Recr_unf, SPR_temp); //  returns 2 element vector containing equilibrium biomass and recruitment at this SPR
 
     Bspr = Equ_SpawnRecr_Result(1);
     Bspr_rec = Equ_SpawnRecr_Result(2);
@@ -1111,6 +1113,7 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
         SPR_Btgt = SSB_equil / SPR_unfished;
         //  SPAWN-RECR:   calc equil spawn-recr for Btarget calcs;  need to make area-specific
         SPR_temp = SSB_equil;
+    
         Equ_SpawnRecr_Result = Equil_Spawn_Recr_Fxn(SR_parm_work, SSB_unf, Recr_unf, SPR_temp); //  returns 2 element vector containing equilibrium biomass and recruitment at this SPR
         yld1(ii) = Equ_SpawnRecr_Result(1);
       }
