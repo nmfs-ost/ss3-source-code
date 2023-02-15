@@ -31,14 +31,15 @@ Note all instances of xx should be replaced with the version number (e.g., the r
 - [ ] Manual release version on website updated once pdf and html built (EG) (update https://github.com/nmfs-stock-synthesis/doc/blob/main/docs/SS330_User_Manual_release.html to the `v3.30.xx` version; update links to link to `v3.30.xx` in https://github.com/nmfs-stock-synthesis/doc/blob/main/docs/index.md#links-to-documentation)
 - [ ] SSI updated (NS)
 - [ ] Make changes to SS3 if any bugs caught in prerelease (RM)
-- [ ] Change log updated in Stock Synthesis repo (RM)
+- [ ] [Change log project board](https://github.com/orgs/nmfs-stock-synthesis/projects/11) updated with any issues labelled "change log" (RM)
 - [ ] Code committed and tagged in repo as `v3.30.xx`, which will trigger a gha to build the release executables (EG) (Instructions on [how to push a a local tag to a remote](https://github.com/nmfs-stock-synthesis/stock-synthesis/wiki/Stock-Synthesis:-practices-for-maintainers#how-to-push-a-local-tag-up-to-github))
 - [ ] Exe and .tpl archived on [Google drive](https://drive.google.com/drive/folders/1Gh_dXi8v3rqawpwn2N6yaaEXZPq6G2io) (EG)
 - [ ] All exes added to github releases as `v3.30.xx` (EG) (get exes in the artifacts of the gha that built the release exes)
 - [ ] Send out release announcement msg (RM)
+- [ ] Add to release discussion on github repository (EG)
 
 ## Checklist for after release
-- [ ] Examples updated in user-examples repo using [this script](https://github.com/nmfs-stock-synthesis/user-examples/blob/main/R/update_examples.R) (EG)
-- [ ] Update ss-test-models reference files to the release version using [this update script](https://github.com/nmfs-stock-synthesis/test-models/blob/main/.github/r_scripts/update_ref_files.R) (EG). Also tag after updating with release number.
+- [ ] Update user-example models using [this github action](https://github.com/nmfs-stock-synthesis/user-examples/blob/main/R/update_examples.R) and tag with new release number after updating (EG)
+- [ ] Update test models using [this github action](https://github.com/nmfs-stock-synthesis/test-models/actions/workflows/update-ss3-models.yml) and tag with new release number after updating (EG)
 - [ ] Removed "resolved" tag and close all issues worked in the milestone for this release (RM)
 - [ ] Move unworked issues for the release milestone to the next milestone (RM)
