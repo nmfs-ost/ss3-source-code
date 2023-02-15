@@ -35,8 +35,8 @@ FUNCTION void Make_AgeLength_Key(const int s, const int subseas)
       sd_betw_plat = sqrt(1. / (1. + plat_sd_ratio * plat_sd_ratio));
       sd_with_plat = plat_sd_ratio * sd_betw_plat;
 	  platoon_sd_ratio = plat_sd_ratio.xval();
-	  sd_within_platoon = sd_betw_plat.xval();
-	  sd_between_platoon = sd_with_plat.xval();
+	  sd_within_platoon = sd_with_plat.xval();
+	  sd_between_platoon = sd_betw_plat.xval();
     }
     for (int sex = 1; sex <= gender; sex++)
       for (GPat = 1; GPat <= N_GP; GPat++)
@@ -92,8 +92,8 @@ FUNCTION void Make_AgeLength_Key(const int s, const int subseas)
             //  SS_Label_Info_16.3.5  #if platoons being used, calc the stddev between platoons
             if (N_platoon > 1)
             {
-              Sd_Size_between(ALK_idx, g) = Sd_Size_within(ALK_idx, g) * sd_between_platoon;
-              Sd_Size_within(ALK_idx, g) *= sd_within_platoon;
+              Sd_Size_between(ALK_idx, g) = Sd_Size_within(ALK_idx, g) * sd_betw_plat;
+              Sd_Size_within(ALK_idx, g) *= sd_with_plat;
             }
 
             if (docheckup == 1)
