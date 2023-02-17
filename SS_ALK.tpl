@@ -29,14 +29,14 @@ FUNCTION void Make_AgeLength_Key(const int s, const int subseas)
   {
     ALK_subseas_update(ALK_idx) = 0; //  reset to 0 to indicate update has been done
     gp = 0;
-	if (N_platoon > 1) // calculate the between and within stdev ratio
+	if (N_platoon > 1 && sd_ratio_rd < 0) // calculate the between and within stdev ratio
     {
       plat_sd_ratio = MGparm(sd_ratio_param_ptr);
-      sd_betw_plat = sqrt(1. / (1. + plat_sd_ratio * plat_sd_ratio));
-      sd_with_plat = plat_sd_ratio * sd_betw_plat;
+      sd_betw_plat_parm = sqrt(1. / (1. + plat_sd_ratio * plat_sd_ratio));
+      sd_with_plat_parm = plat_sd_ratio * sd_betw_plat_parm;
 	  platoon_sd_ratio = plat_sd_ratio.xval();
-	  sd_within_platoon = sd_with_plat.xval();
-	  sd_between_platoon = sd_betw_plat.xval();
+	  sd_within_platoon = sd_with_plat_parm.xval();
+	  sd_between_platoon = sd_betw_plat_parm.xval();
     }
     for (int sex = 1; sex <= gender; sex++)
       for (GPat = 1; GPat <= N_GP; GPat++)
@@ -92,8 +92,16 @@ FUNCTION void Make_AgeLength_Key(const int s, const int subseas)
             //  SS_Label_Info_16.3.5  #if platoons being used, calc the stddev between platoons
             if (N_platoon > 1)
             {
-              Sd_Size_between(ALK_idx, g) = Sd_Size_within(ALK_idx, g) * sd_betw_plat;
-              Sd_Size_within(ALK_idx, g) *= sd_with_plat;
+			  if (sd_ratio_rd < 0)
+			  {
+                Sd_Size_between(ALK_idx, g) = Sd_Size_within(ALK_idx, g) * sd_betw_plat_parm;
+                Sd_Size_within(ALK_idx, g) *= sd_with_plat_parm;
+			  }
+			  else
+			  {
+                Sd_Size_between(ALK_idx, g) = Sd_Size_within(ALK_idx, g) * sd_between_platoon;
+                Sd_Size_within(ALK_idx, g) *= sd_within_platoon;
+			  }
             }
 
             if (docheckup == 1)
