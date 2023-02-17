@@ -17,8 +17,8 @@ FUNCTION void Make_AgeLength_Key(const int s, const int subseas)
   //  then it calls calc_ALK to make and store the age-length key for that subseason for each biological entity
 
   dvariable plat_sd_ratio;
-  dvariable sd_betw_plat;
-  dvariable sd_with_plat;
+  dvariable sd_betw_plat_parm;
+  dvariable sd_with_plat_parm;
   
   int gstart = 0;
   ALK_idx = (s - 1) * N_subseas + subseas;
