@@ -1569,7 +1569,7 @@ FUNCTION dvariable Get_Prior(const int T, const double& Pmin, const double& Pmax
     {
       if (Pmin > 0.0)
       {
-        Prior_Like = 0.5 * square((log(Pval) - Pr) / Psd);
+        Prior_Like = 0.5 * square((log(Pval) - Pr) / Psd) + log(Pval);
       }
       else
       {
@@ -1581,7 +1581,7 @@ FUNCTION dvariable Get_Prior(const int T, const double& Pmin, const double& Pmax
     case 4: //lognormal with bias correction (from Larry Jacobson)
     {
       if (Pmin > 0.0)
-        Prior_Like = 0.5 * square((log(Pval) - Pr + 0.5 * square(Psd)) / Psd);
+        Prior_Like = 0.5 * square((log(Pval) - Pr + 0.5 * square(Psd)) / Psd) + log(Pval);
       else
       {
         warnstream << "Cannot do prior in log space for parm with min <=0.0";
