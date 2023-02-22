@@ -88,7 +88,7 @@
   {
     *(ad_comm::global_datafile) >> sd_ratio_rd;
     *(ad_comm::global_datafile) >> platoon_distr;
-    echoinput << sd_ratio_rd << "  sd_ratio read" << endl;
+    echoinput << sd_ratio_rd << "  sd_ratio_rd" << endl;
     echoinput << platoon_distr << "  platoon_distr" << endl;
   }
   else
@@ -120,13 +120,13 @@
     platoon_sd_ratio = sd_ratio_rd;
     if (N_platoon > 1)
     {
-      sd_within_platoon = sd_ratio_rd * sqrt(1. / (1. + sd_ratio_rd * sd_ratio_rd));
-      sd_between_platoon = sqrt(1. / (1. + sd_ratio_rd * sd_ratio_rd));
+      sd_between_platoon = sqrt(1. / (1. + platoon_sd_ratio * platoon_sd_ratio));
+      sd_within_platoon = platoon_sd_ratio * sd_between_platoon;
     }
     else
     {
-      sd_within_platoon = 1;
       sd_between_platoon = 0.000001;
+      sd_within_platoon = 1;
     }
   }
   else
