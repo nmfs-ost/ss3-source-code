@@ -17,6 +17,9 @@ FUNCTION void Make_AgeLength_Key(const int s, const int subseas)
   //  then it calls calc_ALK to make and store the age-length key for that subseason for each biological entity
 
   int gstart = 0;
+  dvariable dvar_platoon_ratio = 0;
+  dvariable dvar_between_platoon = 0;
+  dvariable dvar_within_platoon = 0;
   ALK_idx = (s - 1) * N_subseas + subseas;
   dvar_vector use_Ave_Size_W(0, nages);
   dvar_vector use_SD_Size(0, nages);
@@ -25,12 +28,17 @@ FUNCTION void Make_AgeLength_Key(const int s, const int subseas)
   {
     ALK_subseas_update(ALK_idx) = 0; //  reset to 0 to indicate update has been done
     gp = 0;
-    if (sd_ratio_rd < 0) // calculate the between and within stdev ratio
-    {
-      platoon_sd_ratio = MGparm(sd_ratio_param_ptr).xval();
-      sd_between_platoon = sqrt(1. / (1. + platoon_sd_ratio * platoon_sd_ratio));
-      sd_within_platoon = platoon_sd_ratio * sd_between_platoon;
+    if (sd_ratio_rd > 0) // calculate the between and within stdev ratio
+	{
+      dvar_platoon_ratio = platoon_sd_ratio;
     }
+    else
+    {
+      dvar_platoon_ratio = MGparm(sd_ratio_param_ptr);
+    }
+    dvar_between_platoon = sqrt(1. / (1. + dvar_platoon_ratio * dvar_platoon_ratio));
+    dvar_within_platoon = dvar_platoon_ratio * dvar_between_platoon;
+
     for (int sex = 1; sex <= gender; sex++)
       for (GPat = 1; GPat <= N_GP; GPat++)
       {
@@ -85,8 +93,8 @@ FUNCTION void Make_AgeLength_Key(const int s, const int subseas)
             //  SS_Label_Info_16.3.5  #if platoons being used, calc the stddev between platoons
             if (N_platoon > 1)
             {
-              Sd_Size_between(ALK_idx, g) = Sd_Size_within(ALK_idx, g) * sd_between_platoon;
-              Sd_Size_within(ALK_idx, g) *= sd_within_platoon;
+              Sd_Size_between(ALK_idx, g) = Sd_Size_within(ALK_idx, g) * dvar_between_platoon;
+              Sd_Size_within(ALK_idx, g) *= dvar_within_platoon;
             }
 
             if (docheckup == 1)
