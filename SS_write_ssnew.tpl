@@ -1705,6 +1705,8 @@ FUNCTION void write_nucontrol()
   report4 << N_platoon << " #_N_platoons_Within_GrowthPattern " << endl;
   if (N_platoon == 1)
     report4 << "#_Cond ";
+  else
+    sd_ratio_rd = (sd_ratio_rd < 0)? -platoon_sd_ratio: platoon_sd_ratio;
   report4 << sd_ratio_rd << " #_Platoon_within/between_stdev_ratio (no read if N_platoons=1)" << endl;
   if (N_platoon == 1)
     report4 << "#_Cond ";

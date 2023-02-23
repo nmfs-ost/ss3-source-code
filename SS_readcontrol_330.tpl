@@ -114,25 +114,26 @@
     }
   }
   platoon_distr /= sum(platoon_distr);
-  
-  if (sd_ratio_rd > 0)
+  // calculate stdev values
+  if (sd_ratio_rd < 0)
   {
-    platoon_sd_ratio = sd_ratio_rd;
-    if (N_platoon > 1)
-    {
-      sd_between_platoon = sqrt(1. / (1. + platoon_sd_ratio * platoon_sd_ratio));
-      sd_within_platoon = platoon_sd_ratio * sd_between_platoon;
-    }
-    else
-    {
-      sd_between_platoon = 0.000001;
-      sd_within_platoon = 1;
-    }
+    platoon_sd_ratio = -sd_ratio_rd;
+    warnstream << "sd_ratio read is < 0, so expecting sd parameter after movement params.";
+    write_message (NOTE, 1);
   }
   else
   {
-    warnstream << "sd_ratio read is < 0, so expecting sd parameter after movement params.";
-    write_message (NOTE, 1);
+    platoon_sd_ratio = sd_ratio_rd;
+  }
+  if (N_platoon > 1)
+  {
+    sd_between_platoon = sqrt(1. / (1. + platoon_sd_ratio * platoon_sd_ratio));
+    sd_within_platoon = platoon_sd_ratio * sd_between_platoon;
+  }
+  else
+  {
+    sd_between_platoon = 0.000001;
+    sd_within_platoon = 1;
   }
   
   if (N_platoon == 1)
