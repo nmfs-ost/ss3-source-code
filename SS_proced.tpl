@@ -21,7 +21,6 @@ PROCEDURE_SECTION
 
   if (initial_params::mc_phase == 1) //  in MCMC phase
   {
-
     if (mcmc_counter == 0)
     {
       SR_parm(1) += MCMC_bump;
@@ -105,7 +104,6 @@ PROCEDURE_SECTION
 
       if (Do_Dyn_Bzero > 0) //  do dynamic Bzero
       {
-        save_gparm = 0;
         fishery_on_off = 0;
         setup_recdevs();
         y = styr;
@@ -132,7 +130,6 @@ PROCEDURE_SECTION
         }
       } //  end dynamic Bzero calculations, will write after big report
 
-      save_gparm = 0;
       fishery_on_off = 1;
       if (mceval_phase() > 0)
         save_for_report = 1;

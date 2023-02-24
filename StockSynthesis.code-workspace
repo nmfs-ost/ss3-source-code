@@ -1,14 +1,16 @@
 {
 	"folders": [
 		{
-			"path": ".."
+			"path": "."
 		}
 	],
 	"settings": {
 		"files.associations": {
 			"*.tpl": "c",
 			"\"*.extension\":": "\"tpl\"",
-			"*.htp": "c"
-		}
+			"*.htp": "c",
+			"ostream": "c"
+		},
+		"explorer.excludeGitIgnore": true
 	}
 }

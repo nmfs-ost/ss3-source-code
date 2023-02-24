@@ -1627,7 +1627,7 @@
 //  timevary_setup(6)=env link type
 //  timevary_setup(7)=env variable
 //  timevary_setup(8)=dev vector used
-//  timevary_setup(9)=dev link type
+//  timevary_setup(9)=dev link type  used in SS_timevarmparm
 //  timevary_setup(10)=dev min year
 //  timevary_setup(11)=dev maxyear
 //  timevary_setup(12)=dev phase
@@ -3853,31 +3853,32 @@
       Comp_Err_Parm_Start = N_selparm;
       //  create a D-M parameter or tweedie parameter pair only for the first fleet that references that parm number
       for (f = 1; f <= Nfleet; f++)
+      for (int parti = 0; parti <= 2; parti++)
       {
-        if (DM_parmlist(f) > 0)  //  create DM parameter labels for definitions first referenced for lencomp
+        if (DM_parmlist(parti, f) > 0)  //  create DM parameter labels for definitions first referenced for lencomp
         {
           N_selparm ++;
           ParCount ++;
-          Comp_Err_parmloc(Comp_Err_L2(f),1) = N_selparm;  //  first parameter used by this method
-          Comp_Err_parmloc(Comp_Err_L2(f),2) = ParCount;  //  use this index in write_report to display the correct parameter label
-          switch (Comp_Err_L(f))
+          Comp_Err_parmloc(Comp_Err_L2(parti, f),1) = N_selparm;  //  first parameter used by this method
+          Comp_Err_parmloc(Comp_Err_L2(parti, f),2) = ParCount;  //  use this index in write_report to display the correct parameter label
+          switch (Comp_Err_L(parti, f))
           {
             case 1:
             {
-              ParmLabel += "ln(DM_theta)_Len_P" + NumLbl(Comp_Err_L2(f));
+              ParmLabel += "ln(DM_theta)_Len_P" + NumLbl(Comp_Err_L2(parti, f));
               break;
             }
             case 2:
             {
-              ParmLabel += "ln(DM_beta)_Len_P" + NumLbl(Comp_Err_L2(f));
+              ParmLabel += "ln(DM_beta)_Len_P" + NumLbl(Comp_Err_L2(parti, f));
               break;
             }
             case 3:
             {
-              ParmLabel += "ln(tweedie_Phi)_Len_P" + NumLbl(Comp_Err_L2(f));
+              ParmLabel += "ln(tweedie_Phi)_Len_P" + NumLbl(Comp_Err_L2(parti, f));
               N_selparm ++;
               ParCount ++;
-              ParmLabel += "ln(tweedie_Power)_Len_P" + NumLbl(Comp_Err_L2(f));
+              ParmLabel += "ln(tweedie_Power)_Len_P" + NumLbl(Comp_Err_L2(parti, f));
               break;
             }
           }
@@ -3886,7 +3887,7 @@
 
       for (f = 1; f <= Nfleet; f++) 
       {
-        if (DM_parmlist(f + Nfleet) > 0) //  create DM parameter labels for definitions first referenced for agecomp
+        if (DM_parmlist(0, f + Nfleet) > 0) //  create DM parameter labels for definitions first referenced for agecomp
         {
           N_selparm ++;
           ParCount ++;
@@ -3918,7 +3919,7 @@
 
       for (int f = 1; f <= SzFreq_Nmeth; f++) 
       {
-        if (DM_parmlist(f + 2 * Nfleet) > 0) //  create DM parameter labels for definitions first referenced for sizefreq.  note that sizefreq comps are by method, not fleet
+        if (DM_parmlist(0, f + 2 * Nfleet) > 0) //  create DM parameter labels for definitions first referenced for sizefreq.  note that sizefreq comps are by method, not fleet
         {
           N_selparm ++;
           ParCount ++;
@@ -4000,7 +4001,7 @@
   }
   if (Comp_Err_ParmCount > 0)
   {
-    echoinput << "comp_error parameters" << endl
+    echoinput << "comp_error parameter selection by partition (row) and fleet" << endl
               << "L_type: " << Comp_Err_L << endl
               << "L_parm: " << Comp_Err_L2 << endl
               << "A_type: " << Comp_Err_A << endl
@@ -4009,11 +4010,12 @@
               << "Sz_parm: " << Comp_Err_Sz2 << endl;
               
     for (f = 1; f <= Nfleet; f++)
+    for (int parti = 0; parti <= 2; parti++)
     {
       // if Dirichlet was indicated, set fleet for this parameter
-      if (Comp_Err_L2(f) > 0)
+      if (Comp_Err_L2(parti, f) > 0)
       {
-        j = Comp_Err_parmloc(Comp_Err_L2(f),1);
+        j = Comp_Err_parmloc(Comp_Err_L2(parti, f),1);
         selparm_fleet(j) = f;
       }
       if (Comp_Err_A2(f) > 0)
@@ -4478,6 +4480,10 @@
   // clang-format off
  END_CALCS
 
+!!// SS_Label_Info_4.9.xx #Create arrays needed for timevary_parameters
+  vector baseparm_min(1,timevary_parm_cnt)
+  vector baseparm_max(1,timevary_parm_cnt)
+
 !!//  SS_Label_Info_4.9.9 #Create arrays for the total set of selex parameters
   vector selparm_LO(1,N_selparm2)
   vector selparm_HI(1,N_selparm2)
@@ -4776,7 +4782,7 @@
 
    ivector parm_dev_type(1,N_parm_dev);  //  distinguish parameter dev vectors from 2DAR devs
    ivector parm_dev_use_rho(1,N_parm_dev);  //  uses rho parameter, or not
-   ivector parm_dev_info(1,N_parm_dev);  //  pointer from list of devvectorsto 2DAR list
+   ivector parm_dev_info(1,N_parm_dev);  //  pointer from list of devvectors to 2DAR list
    ivector TwoD_AR_ymin(1,TwoD_AR_cnt)
    ivector TwoD_AR_ymax(1,TwoD_AR_cnt)
    ivector TwoD_AR_amin(1,TwoD_AR_cnt)
@@ -4804,7 +4810,8 @@
         echoinput << " dev vector #:  " << k << " setup: " << timevary_setup << " phase: " << parm_dev_PH(k) << endl;
         f = timevary_setup(13); //  index of base parameter
         int picker = timevary_setup(9);
-        parm_dev_type(k) = 1; //  so P'=P+dev*se with objfun using  -log(1)
+        parm_dev_type(k) = 1; //  so P'=P+dev*se with objfun using  -log(1); so expects se of devs to be approx unit normal
+                              //  parm_dev_type is used in SS_objfunc.tpl
         if (picker > 20)
         {
           picker -= 20;
@@ -4819,7 +4826,7 @@
         }
         if (picker > 10)
         {
-          parm_dev_type(k) = 3; // use objfun using -log(se) to match 3.30.12 and earlier
+          parm_dev_type(k) = 3; // P'=P+dev; objfun using -log(se) to match 3.30.12 and earlier
           picker -= 10;
         }
         if (picker == 6) parm_dev_type(k) = 4; //  add penalty to keep rmse near 1. Needs to estimate stddev factor
@@ -4828,6 +4835,7 @@
         timevary_def[j](9) = picker; //  save in array also
   
         parm_dev_use_rho(k) = 0;
+        // require rho to be used for some dev approaches
         if (picker == 4 || picker == 5 || picker == 6) parm_dev_use_rho(k) = 1;
         for (y = parm_dev_minyr(k); y <= parm_dev_maxyr(k); y++)
         {
@@ -6696,6 +6704,11 @@
     case 4:
     {
       depletion_basis_label += " " + onenum + "%*EndYr_Biomass";
+      break;
+    }
+    case 5:
+    {
+      depletion_basis_label += " " + onenum + "%*Dyn_Bzero";
       break;
     }
   }
