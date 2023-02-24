@@ -17,9 +17,9 @@ FUNCTION void Make_AgeLength_Key(const int s, const int subseas)
   //  then it calls calc_ALK to make and store the age-length key for that subseason for each biological entity
 
   int gstart = 0;
-  dvariable dvar_platoon_ratio = 0;
-  dvariable dvar_between_platoon = 0;
-  dvariable dvar_within_platoon = 0;
+  dvariable dvar_platoon_ratio = platoon_sd_ratio;
+  dvariable dvar_between_platoon = sd_between_platoon;
+  dvariable dvar_within_platoon = sd_within_platoon;
   dvar_vector use_Ave_Size_W(0, nages);
   dvar_vector use_SD_Size(0, nages);
   imatrix ALK_range_use(0, nages, 1, 2);
@@ -30,13 +30,7 @@ FUNCTION void Make_AgeLength_Key(const int s, const int subseas)
     gp = 0;
     // calculate the between and within stdev ratio
 	// when sd_ratio_rd is > 0, values are constant and calculations are already done.
-    if (sd_ratio_rd > 0)
-    {
-      dvar_platoon_ratio = platoon_sd_ratio;
-      dvar_between_platoon = sd_between_platoon;
-      dvar_within_platoon = sd_within_platoon;
-    }
-    else
+    if (sd_ratio_rd < 0)
     {
       dvar_platoon_ratio = MGparm(sd_ratio_param_ptr);
       dvar_between_platoon = sqrt(1. / (1. + dvar_platoon_ratio * dvar_platoon_ratio));
