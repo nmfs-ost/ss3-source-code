@@ -3801,7 +3801,7 @@ FUNCTION void write_bigoutput()
     if (Grow_logN == 1)
       SS2out << " #Lognormal ";
     SS2out << "#" << endl; // SS_Label_460
-    SS2out << " sdratio " << sd_ratio << endl;
+    SS2out << " sdratio " << platoon_sd_ratio << endl;
     SS2out << " sdwithin " << sd_within_platoon << endl;
     SS2out << " sdbetween " << sd_between_platoon << endl;
     for (s = 1; s <= nseas; s++)

@@ -174,8 +174,8 @@ GLOBALS_SECTION
   std::vector<dvector> comp_control_L;
   std::vector<dvector> comp_control_A;
   std::vector<dvector> comp_control_Sz;
+  
 //  function in GLOBALS to do the timing setup in the data section
-
 
 // SS_Label_Function_xxxa write_msg(string,int,int,int); output a message.
 // options are output the string to echoinput.sso and warning.sso with an option to exit
