@@ -4193,7 +4193,11 @@
       echoinput << Fcast_Loop_Control(4) << " #echoed Forecast loop control #4:  multiplier on spawn_recr" << endl;
     }
 
-    echoinput << Fcast_Loop_Control(5) << " #echoed Forecast loop control #5 (reserved for future use) " << endl;
+    echoinput << Fcast_Loop_Control(5) << " #echoed Fcast_MGparm_averaging:  enter 1 to start list input" << endl;
+  # @Neal
+  #  add new list based input of MG_type, start year, end year
+  #  terminate with MG_type = -9999
+  #  for MG_type, let's plan to use this scheme:  1=M, 2=growth 3=wtlen, 4=recr_dist&femfrac, 5=migration, 6=ageerror, 7=catchmult 8=hermaphroditism
 
     echoinput << endl
               << "#next enter year in which Fcast loop 3 caps and allocations begin to be applied" << endl;
