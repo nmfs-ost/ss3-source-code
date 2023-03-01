@@ -19,6 +19,7 @@ Note all instances of xx should be replaced with the version number (e.g., the r
 
 ## Checklist for before prerelease
 - [ ] SS testing and debugging completed (RM and IT)
+- [ ] Check artifact from the `call-build-ss3-warnings` github action for useful warnings (RM and IT)
 - [ ] r4ss updated (IT)
 - [ ] Put together pre-release announcement (RM)
 - [ ] code committed and tagged in repo as `v3.30.xx-prerel` (RM)
