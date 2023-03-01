@@ -1705,7 +1705,10 @@ FUNCTION void write_nucontrol()
   report4 << N_platoon << " #_N_platoons_Within_GrowthPattern " << endl;
   if (N_platoon == 1)
     report4 << "#_Cond ";
-  report4 << sd_ratio << " #_Platoon_within/between_stdev_ratio (no read if N_platoons=1)" << endl;
+  else
+    sd_ratio_rd = (sd_ratio_rd < 0)? -platoon_sd_ratio: platoon_sd_ratio;
+  report4 << sd_ratio_rd << " #_Platoon_within/between_stdev_ratio (no read if N_platoons=1)" << endl;
+  report4 << "#_Cond sd_ratio_rd < 0: platoon_sd_ratio parameter required after movement params." << endl;
   if (N_platoon == 1)
     report4 << "#_Cond ";
   report4 << platoon_distr(1, N_platoon) << " #vector_platoon_dist_(-1_in_first_val_gives_normal_approx)" << endl;
@@ -1947,6 +1950,14 @@ FUNCTION void write_nucontrol()
     }
   }
 
+  report4 << "#  Platoon StDev Ratio " << endl;
+  if (N_platoon > 1 && sd_ratio_rd < 0)
+  {
+    NP++;
+    MGparm_1(NP, 3) = value(MGparm(NP));
+    report4 << MGparm_1(NP) << " # " << ParmLabel(NP) << endl;
+  }
+  
   report4 << "#  Age Error from parameters" << endl;
   if (Use_AgeKeyZero > 0)
   {
