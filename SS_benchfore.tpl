@@ -141,6 +141,12 @@ FUNCTION void setup_Benchmark()
       }
     }
 
+    // @Neal
+    if (Fcast_Loop_Control(5) == 1)  //  create average of selected MGparms for use in forecast
+    {
+
+    }
+
     //  SS_Label_Info_7.5.2 #Set-up relative F among fleets and seasons for forecast
     if (Fcast_RelF_Basis == 1) // set allocation according to range of years
     {
