@@ -536,6 +536,7 @@ FUNCTION void get_initial_conditions()
   env_data(styr - 1, -3) = 0.0;
   env_data(styr - 1, -4) = 0.0;
 
+  /*
   // save est_equ_catch which has units (biomass vs numbers) according to that fleet; used in objfun
   for (s = 1; s <= nseas; s++)
     for (int ff = 1; ff <= N_catchfleets(0); ff++)
@@ -550,7 +551,7 @@ FUNCTION void get_initial_conditions()
         est_equ_catch(s, f) = equ_catch_fleet(5, s, f);
       }
     }
-
+  */
   if (save_for_report > 0)
   {
     for (s = 1; s <= nseas; s++)
