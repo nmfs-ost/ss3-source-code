@@ -4015,6 +4015,7 @@
   vector Fcast_MaxAreaCatch(1,pop);
   ivector Allocation_Fleet_Assignments(1,Nfleet);
   matrix Fcast_RelF_Input(1,nseas,1,Nfleet);
+  matrix Fcast_MGparm_averaging(1,2,1,3);
   int Fcast_Specify_Selex;   // 0=do not use; 1=specify one selectivity for all fishing fleets for forecasts (not implemented); 2=specify selectivity per fishing fleet for forecasts (not implemented)
 
  LOCAL_CALCS
@@ -4198,7 +4199,35 @@
   //  add new list based input of MG_type, start year, end year
   //  terminate with MG_type = -9999
   //  for MG_type, let's plan to use this scheme:  1=M, 2=growth 3=wtlen, 4=recr_dist&femfrac, 5=migration, 6=ageerror, 7=catchmult 8=hermaphroditism
-
+	int N_Fcast_parm_aves = 0;
+    if (Fcast_Loop_Control(5) == 1)
+    {
+      echoinput << "Fcast_Loop_Control(5)==1, so now read list of MG_type, start year, end year" << endl
+                << "Terminate with -9999 for MG_type" << endl;
+				<< "MG_type: 1=M, 2=growth, 3=wtlen, 4=recr_dist&femfrac, 5=migration, 6=ageerror, 7=catchmult, 8=hermaphroditism" << endl;
+      ender = 0;
+      do
+      {
+        dvector tempvec(1, 3);
+        *(ad_comm::global_datafile) >> tempvec(1, 3);
+        echoinput << tempvec << endl;
+        if (tempvec(1) == -9999.)  
+          ender = 1;
+        fcast_mgparm_ave_rd.push_back(tempvec(1,3));
+      } while (ender == 0);
+	  N_Fcast_parm_aves = fcast_mgparm_ave_rd.size();
+      echoinput << " Forecast MGparm averaging" << endl
+                << fcast_mgparm_ave_rd << endl;
+    }
+  // clang-format off
+ END_CALCS
+ 
+    matrix Fcast_MGparm_averaging.allocate(1,N_Fcast_parm_aves,1,3)
+ LOCAL_CALCS
+  // clang-format on
+      for (f = 1; f <= N_Fcast_parm_aves; f++) 
+        Fcast_MGparm_averaging(f) = fcast_mgparm_ave_rd[f - 1];
+  
     echoinput << endl
               << "#next enter year in which Fcast loop 3 caps and allocations begin to be applied" << endl;
     *(ad_comm::global_datafile) >> Fcast_Cap_FirstYear;

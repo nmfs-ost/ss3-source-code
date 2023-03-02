@@ -144,7 +144,30 @@ FUNCTION void setup_Benchmark()
     // @Neal
     if (Fcast_Loop_Control(5) == 1)  //  create average of selected MGparms for use in forecast
     {
-
+      if (Fcast_MGparm_averaging(1) == 1) // 1=M,
+      {
+      }
+      else if (Fcast_MGparm_averaging(1) == 2)// 2=growth,
+      {
+      }
+      else if (Fcast_MGparm_averaging(1) == 3)// 3=wtlen,
+      {
+      }
+      else if (Fcast_MGparm_averaging(1) == 4)// 4=recr_dist&femfrac,
+      {
+      }
+      else if (Fcast_MGparm_averaging(1) == 5)// 5=migration,
+      {
+      }
+      else if (Fcast_MGparm_averaging(1) == 6)// 6=ageerror,
+      {
+      }
+      else if (Fcast_MGparm_averaging(1) == 7)// 7=catchmult, and
+      {
+      }
+      else if (Fcast_MGparm_averaging(1) == 8)// 8=hermaphroditism,
+      {
+      }
     }
 
     //  SS_Label_Info_7.5.2 #Set-up relative F among fleets and seasons for forecast
