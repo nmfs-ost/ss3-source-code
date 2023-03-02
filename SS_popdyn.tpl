@@ -552,7 +552,7 @@ FUNCTION void get_initial_conditions()
       }
     }
   */
-  if (save_for_report > 0)
+//  if (save_for_report > 0)
   {
     for (s = 1; s <= nseas; s++)
     {
@@ -577,7 +577,6 @@ FUNCTION void get_initial_conditions()
         {
           catch_fleet(t, f, g) = equ_catch_fleet(g, s, f);
         }
-        warning<<catch_fleet(t, f)<<endl;
         for (g = 1; g <= gmorph; g++)
         {
           catage(t, f, g) = equ_catage(s, f, g);

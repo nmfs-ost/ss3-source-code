@@ -643,7 +643,7 @@ FUNCTION void evaluate_the_objective_function()
     }
 
     if (do_once == 1)
-      cout << " did sizefreq obj_fun: " << SzFreq_like << "  base: " << offset_Sz_tot << endl;
+      echoinput << " did sizefreq obj_fun: " << SzFreq_like << "  base: " << offset_Sz_tot << endl;
   }
 
   //  SS_Label_Info_25.8 #Fit to morph composition
@@ -656,7 +656,7 @@ FUNCTION void evaluate_the_objective_function()
         Morphcomp_like -= Morphcomp_obs(iobs, 5) * Morphcomp_obs(iobs)(6, k) * log(elem_div(Morphcomp_exp(iobs)(6, k), Morphcomp_obs(iobs)(6, k)));
     }
     if (do_once == 1)
-      cout << "Finished morphcomp obj_fun " << Morphcomp_like << endl;
+      echoinput << "Finished morphcomp obj_fun " << Morphcomp_like << endl;
   }
 
   //  SS_Label_Info_25.9 #Fit to tag-recapture
@@ -695,7 +695,7 @@ FUNCTION void evaluate_the_objective_function()
       }
     }
     if (do_once == 1)
-      cout << "Finished tag obj_fun " << TG_like1 << endl
+      echoinput << "Finished tag obj_fun " << TG_like1 << endl
            << TG_like2 << endl;
   }
 
@@ -722,23 +722,20 @@ FUNCTION void evaluate_the_objective_function()
       if (fleet_type(f) == 1)  //  fleet has retained catch, so bypassing bycatch and predator fleets
       {
         i = 3 * catchunits(f);  //  because catchunits is 1 for bio and 2 for numbers
-        for (t = styr - nseas; t <= styr - 1; t++)
-        if (catch_ret_obs(f, t) > 0.0)
+        for (y = styr-1; y <= endyr; y++)
+        for (s = 1; s <= nseas; s++)
         {
-          equ_catch_like(f) += 0.5 * square((log(1.1 * catch_ret_obs(f, t)) - log(catch_fleet(t, f, i) * catch_mult(y, f) + 0.1 * catch_ret_obs(f, t))) / catch_se(t, f));
-//          echoinput<< "equ t "<<t<<" f "<<f<<" like "<<equ_catch_like(f)<<" catch "<<catch_fleet(t, f, i)<<" se "<<catch_se(t, f)<<endl;
-        }
-      
-      // replacing y,s loops with equivalent t loop
-      // for (y = styr-1; y <= endyr; y++)
-      // for (s = 1; s <= nseas; s++)
-      // {
-      //   t = styr + (y - styr) * nseas - 1 + s;
-        for (t = styr; t <= endyr + nseas - 1; t++)
-        if (catch_ret_obs(f, t) > 0.0)
-        {
-          //          catch_like(f) += 0.5*square( (log(catch_ret_obs(f,t)) -log(catch_fleet(t,f,i)+0.000001)) / catch_se(t,f));
-          catch_like(f) += 0.5 * square((log(1.1 * catch_ret_obs(f, t)) - log(catch_fleet(t, f, i) * catch_mult(y, f) + 0.1 * catch_ret_obs(f, t))) / catch_se(t, f));
+          t = styr + (y - styr) * nseas - 1 + s;
+          if (catch_ret_obs(f, t) > 0.0)
+          {
+            //          catch_like(f) += 0.5*square( (log(catch_ret_obs(f,t)) -log(catch_fleet(t,f,i)+0.000001)) / catch_se(t,f));
+            temp = 0.5 * square((log(1.1 * catch_ret_obs(f, t)) - log(catch_fleet(t, f, i) * catch_mult(y, f) + 0.1 * catch_ret_obs(f, t))) / catch_se(t, f));
+            if (y == styr - 1)
+            {equ_catch_like(f) += temp;}
+            else
+            {catch_like(f) += temp;}
+//            echoinput<<f<<" y:"<<y<<" s:"<<s<<" c:"<<catch_ret_obs(f, t)<<" ec:"<<catch_fleet(t, f, i)<<" mul:"<<catch_mult(y, f)<<" temp:"<<temp<<" equL:"<<equ_catch_like(f)<<" catL:"<<catch_like(f)<<endl;
+          }
         }
       }
     }
