@@ -4015,7 +4015,6 @@
   vector Fcast_MaxAreaCatch(1,pop);
   ivector Allocation_Fleet_Assignments(1,Nfleet);
   matrix Fcast_RelF_Input(1,nseas,1,Nfleet);
-  matrix Fcast_MGparm_averaging(1,2,1,3);
   int Fcast_Specify_Selex;   // 0=do not use; 1=specify one selectivity for all fishing fleets for forecasts (not implemented); 2=specify selectivity per fishing fleet for forecasts (not implemented)
 
  LOCAL_CALCS
@@ -4195,10 +4194,9 @@
     }
 
     echoinput << Fcast_Loop_Control(5) << " #echoed Fcast_MGparm_averaging:  enter 1 to start list input" << endl;
-  // @Neal
-  //  add new list based input of MG_type, start year, end year
+  //  Fcast_MGparm_averaging: list MG_type, start year, end year
   //  terminate with MG_type = -9999
-  //  for MG_type, let's plan to use this scheme:  1=M, 2=growth 3=wtlen, 4=recr_dist&femfrac, 5=migration, 6=ageerror, 7=catchmult 8=hermaphroditism
+  //  for MG_type:  1=M, 2=growth 3=wtlen, 4=recr_dist&femfrac, 5=migration, 6=ageerror, 7=catchmult 8=hermaphroditism
 	int N_Fcast_parm_aves = 0;
     if (Fcast_Loop_Control(5) == 1)
     {
@@ -4222,7 +4220,7 @@
   // clang-format off
  END_CALCS
  
-    matrix Fcast_MGparm_averaging.allocate(1,N_Fcast_parm_aves,1,3)
+    matrix Fcast_MGparm_averaging(1,N_Fcast_parm_aves,1,3)
  LOCAL_CALCS
   // clang-format on
       for (f = 1; f <= N_Fcast_parm_aves; f++) 

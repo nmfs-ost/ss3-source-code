@@ -141,8 +141,8 @@ FUNCTION void setup_Benchmark()
       }
     }
 
-    // @Neal
-    if (Fcast_Loop_Control(5) == 1)  //  create average of selected MGparms for use in forecast
+    // create average of selected MGparms for use in forecast
+    if (Fcast_Loop_Control(5) == 1)  //  
     {
       if (Fcast_MGparm_averaging(1) == 1) // 1=M,
       {
