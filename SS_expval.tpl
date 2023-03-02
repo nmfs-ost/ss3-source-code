@@ -31,8 +31,6 @@ FUNCTION void Get_expected_values(const int y, const int t);
           for (g = 1; g <= gmorph; g++)
             if (use_morph(g) > 0)
             {
-        //      int ALK_finder = (ALK_idx - 1) * gmorph + g;
-
               gg = sx(g);
               if (gg == 2)
               {

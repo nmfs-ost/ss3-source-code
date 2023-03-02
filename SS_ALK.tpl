@@ -122,13 +122,8 @@ FUNCTION void Make_AgeLength_Key(const int s, const int subseas)
                 Sd_Size_within(ALK_idx, g) = use_SD_Size; //  ditto; also same sd is used for all platoons
               }
 
-            //  int ALK_phase = 0;
               if (Grow_logN == 0)
               {
-            //    int ALK_finder = (ALK_idx - 1) * gmorph + g;
-            //    ivector ALK_range_lo (0, nages);
-            //    ivector ALK_range_hi (0, nages);
-            //    ALK(ALK_idx, g) = calc_ALK(len_bins, ALK_range_lo, ALK_range_hi, use_Ave_Size_W, use_SD_Size);
                 ALK(ALK_idx, g) = calc_ALK(len_bins, use_Ave_Size_W, use_SD_Size);
               }
               else

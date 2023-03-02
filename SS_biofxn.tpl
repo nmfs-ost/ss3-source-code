@@ -1687,7 +1687,6 @@ FUNCTION void get_mat_fec();
           }
           default:
           {
-        //    int ALK_finder = (ALK_idx - 1) * gmorph + g;
             for (a = First_Mature_Age; a <= nages; a++)
             {
               tempvec_a(a) = ALK(ALK_idx, g, a)(1, nlength) * mat_fec_len(GPat)(1, nlength);
@@ -2062,7 +2061,6 @@ FUNCTION void Make_Fecundity()
         }
         default:
         {
-    //      int ALK_finder = (ALK_idx - 1) * gmorph + g;
           for (a = First_Mature_Age; a <= nages; a++)
           {
             tempvec_a(a) = ALK(ALK_idx, g, a)(1, nlength) * mat_fec_len(GPat)(1, nlength);
