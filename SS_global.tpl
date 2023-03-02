@@ -174,7 +174,7 @@ GLOBALS_SECTION
   std::vector<dvector> comp_control_L;
   std::vector<dvector> comp_control_A;
   std::vector<dvector> comp_control_Sz;
-  std::vector<dvector> fcast_mgparm_ave_rd;
+//  std::vector<dvector> fcast_mgparm_ave_rd;
   
 //  function in GLOBALS to do the timing setup in the data section
 

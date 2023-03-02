@@ -4197,7 +4197,7 @@
   //  Fcast_MGparm_averaging: list MG_type, start year, end year
   //  terminate with MG_type = -9999
   //  for MG_type:  1=M, 2=growth 3=wtlen, 4=recr_dist&femfrac, 5=migration, 6=ageerror, 7=catchmult 8=hermaphroditism
-	int N_Fcast_parm_aves = 0;
+  /*	int N_Fcast_parm_aves = 0;
     if (Fcast_Loop_Control(5) == 1)
     {
       echoinput << "Fcast_Loop_Control(5)==1, so now read list of MG_type, start year, end year" << endl
@@ -4225,7 +4225,7 @@
   // clang-format on
       for (f = 1; f <= N_Fcast_parm_aves; f++) 
         Fcast_MGparm_averaging(f) = fcast_mgparm_ave_rd[f - 1];
-  
+  */
     echoinput << endl
               << "#next enter year in which Fcast loop 3 caps and allocations begin to be applied" << endl;
     *(ad_comm::global_datafile) >> Fcast_Cap_FirstYear;

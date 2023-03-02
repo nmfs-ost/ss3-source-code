@@ -142,7 +142,7 @@ FUNCTION void setup_Benchmark()
     }
 
     // create average of selected MGparms for use in forecast
-    if (Fcast_Loop_Control(5) == 1)  //  
+  /*    if (Fcast_Loop_Control(5) == 1)  //  
     {
       if (Fcast_MGparm_averaging(1) == 1) // 1=M,
       {
@@ -168,7 +168,7 @@ FUNCTION void setup_Benchmark()
       else if (Fcast_MGparm_averaging(1) == 8)// 8=hermaphroditism,
       {
       }
-    }
+    }*/
 
     //  SS_Label_Info_7.5.2 #Set-up relative F among fleets and seasons for forecast
     if (Fcast_RelF_Basis == 1) // set allocation according to range of years
