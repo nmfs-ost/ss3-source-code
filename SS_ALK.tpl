@@ -129,7 +129,7 @@ FUNCTION void Make_AgeLength_Key(const int s, const int subseas)
             //    ivector ALK_range_lo (0, nages);
             //    ivector ALK_range_hi (0, nages);
             //    ALK(ALK_idx, g) = calc_ALK(len_bins, ALK_range_lo, ALK_range_hi, use_Ave_Size_W, use_SD_Size);
-                ALK(ALK_idx, g) = calc_ALK(len_bins, ALK_range_lo, ALK_range_hi, use_Ave_Size_W, use_SD_Size);
+                ALK(ALK_idx, g) = calc_ALK(len_bins, use_Ave_Size_W, use_SD_Size);
               }
               else
               {
