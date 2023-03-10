@@ -3737,7 +3737,7 @@
     //    cout << " final data value in error " << fid << endl;
     //    exit(1);
   }
-  cout << "Data read sucessful " << fid << endl
+  cout << "Data read successful " << fid << endl
        << endl;
   echoinput << " data read successful" << endl
             << endl;
