@@ -4196,12 +4196,12 @@
     echoinput << Fcast_Loop_Control(5) << " #echoed Fcast_MGparm_averaging:  enter 1 to start list input" << endl;
   //  Fcast_MGparm_averaging: list MG_type, start year, end year
   //  terminate with MG_type = -9999
-  //  for MG_type:  1=M, 2=growth 3=wtlen, 4=recr_dist&femfrac, 5=migration, 6=ageerror, 7=catchmult 8=hermaphroditism
-  /*	int N_Fcast_parm_aves = 0;
+  //  MG_type:  1=M, 2=growth 3=wtlen, 4=recr_dist&femfrac, 5=migration, 6=ageerror, 7=catchmult 8=hermaphroditism
+    int N_Fcast_parm_aves = 0;
     if (Fcast_Loop_Control(5) == 1)
     {
       echoinput << "Fcast_Loop_Control(5)==1, so now read list of MG_type, start year, end year" << endl
-                << "Terminate with -9999 for MG_type" << endl;
+                << "Terminate with -9999 for MG_type" << endl
 				<< "MG_type: 1=M, 2=growth, 3=wtlen, 4=recr_dist&femfrac, 5=migration, 6=ageerror, 7=catchmult, 8=hermaphroditism" << endl;
       ender = 0;
       do
@@ -4214,8 +4214,7 @@
         fcast_mgparm_ave_rd.push_back(tempvec(1,3));
       } while (ender == 0);
 	  N_Fcast_parm_aves = fcast_mgparm_ave_rd.size();
-      echoinput << " Forecast MGparm averaging" << endl
-                << fcast_mgparm_ave_rd << endl;
+      echoinput << "Number Forecast MGparm averaging: " << endl << N_Fcast_parm_aves << endl;
     }
   // clang-format off
  END_CALCS
@@ -4225,7 +4224,7 @@
   // clang-format on
       for (f = 1; f <= N_Fcast_parm_aves; f++) 
         Fcast_MGparm_averaging(f) = fcast_mgparm_ave_rd[f - 1];
-  */
+  
     echoinput << endl
               << "#next enter year in which Fcast loop 3 caps and allocations begin to be applied" << endl;
     *(ad_comm::global_datafile) >> Fcast_Cap_FirstYear;

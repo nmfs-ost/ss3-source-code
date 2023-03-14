@@ -1569,7 +1569,7 @@ FUNCTION void write_nucontrol()
   NuFore << Fcast_Loop_Control(3) << " #_Forecast recruitment:  0= spawn_recr; 1=value*spawn_recr_fxn; 2=value*VirginRecr; 3=recent mean from yr range above (need to set phase to -1 in control to get constant recruitment in MCMC)" << endl;
   if (Fcast_Loop_Control(3) == 0)
   {
-    NuFore << 1.0 << " # value is ignored " << endl;
+    NuFore << 1.0 << " # for the value of Forecast recruitment, this is ignored " << endl;
   }
   else if (Fcast_Loop_Control(3) == 1)
   {
@@ -1581,13 +1581,14 @@ FUNCTION void write_nucontrol()
   }
   else if (Fcast_Loop_Control(3) == 3)
   {
-    NuFore << Fcast_Loop_Control(4) << " # not used" << endl;
+    NuFore << Fcast_Loop_Control(4) << " # for the value of Forecast recruitment, this is not used" << endl;
   }
   else
   {
-    NuFore << "0 # not used" << endl;
+    NuFore << "0 # for the value of Forecast recruitment, this is not used" << endl;
   }
-  NuFore << Fcast_Loop_Control(5) << " #_Forecast loop control #5 (reserved for future bells&whistles) " << endl;
+  NuFore << Fcast_Loop_Control(5) << " #_Fcast_MGparm_averaging: 0 = not, 1 = do" << endl;
+  NuFore << "#COND_1: list MG_type, start year, end year and terminate with MG_type = -9999" << endl;
   NuFore << Fcast_Cap_FirstYear << "  #FirstYear for caps and allocations (should be after years with fixed inputs) " << endl;
 
   NuFore << Impl_Error_Std << " # stddev of log(realized catch/target catch) in forecast (set value>0.0 to cause active impl_error)" << endl;
