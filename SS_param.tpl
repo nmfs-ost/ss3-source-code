@@ -311,7 +311,7 @@ PARAMETER_SECTION
 
 !!//  SS_Label_Info_5.1.3 #Create M, F, and Z parameters and associated arrays and constants
   init_bounded_number_vector init_F(1,N_init_F,init_F_LO,init_F_HI,init_F_PH)
-  matrix est_equ_catch(1,nseas,1,Nfleet)
+//  matrix est_equ_catch(1,nseas,1,Nfleet)
 
 //  natural, predation and fishing mortality
   matrix natMparms(1,N_natMparms,1,N_GP*gender)  // will be derived from the MGparms

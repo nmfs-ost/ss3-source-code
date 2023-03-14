@@ -643,7 +643,7 @@ FUNCTION void evaluate_the_objective_function()
     }
 
     if (do_once == 1)
-      cout << " did sizefreq obj_fun: " << SzFreq_like << "  base: " << offset_Sz_tot << endl;
+      echoinput << " did sizefreq obj_fun: " << SzFreq_like << "  base: " << offset_Sz_tot << endl;
   }
 
   //  SS_Label_Info_25.8 #Fit to morph composition
@@ -656,7 +656,7 @@ FUNCTION void evaluate_the_objective_function()
         Morphcomp_like -= Morphcomp_obs(iobs, 5) * Morphcomp_obs(iobs)(6, k) * log(elem_div(Morphcomp_exp(iobs)(6, k), Morphcomp_obs(iobs)(6, k)));
     }
     if (do_once == 1)
-      cout << "Finished morphcomp obj_fun " << Morphcomp_like << endl;
+      echoinput << "Finished morphcomp obj_fun " << Morphcomp_like << endl;
   }
 
   //  SS_Label_Info_25.9 #Fit to tag-recapture
@@ -695,10 +695,11 @@ FUNCTION void evaluate_the_objective_function()
       }
     }
     if (do_once == 1)
-      cout << "Finished tag obj_fun " << TG_like1 << endl
+      echoinput << "Finished tag obj_fun " << TG_like1 << endl
            << TG_like2 << endl;
   }
 
+  /*
   //  SS_Label_Info_25.10 #Fit to initial equilibrium catch
   for (s = 1; s <= nseas; s++)
     for (f = 1; f <= Nfleet; f++)
@@ -710,36 +711,39 @@ FUNCTION void evaluate_the_objective_function()
     }
   if (do_once == 1)
     echoinput << " initequ_catch -log(L) " << equ_catch_like << endl;
+  */
 
   //  SS_Label_Info_25.11 #Fit to catch by fleet/season
-  if (F_Method > 1)
+  if (F_Method > 1)  // so not doing Pope's
   {
-    for (f = 1; f <= Nfleet; f++)
+    for (int ff = 1; ff <= N_catchfleets(0); ff++)
     {
-      if (catchunits(f) == 1)
+      f = fish_fleet_area(0, ff);
+      if (fleet_type(f) == 1)  //  fleet has retained catch, so bypassing bycatch and predator fleets
       {
-        i = 3;
-      } //  biomass
-      else
-      {
-        i = 6;
-      } //  numbers
-
-      for (y = styr; y <= endyr; y++)
+        i = 3 * catchunits(f);  //  because catchunits is 1 for bio and 2 for numbers
+        for (y = styr-1; y <= endyr; y++)
         for (s = 1; s <= nseas; s++)
         {
           t = styr + (y - styr) * nseas - 1 + s;
-
-          if (fleet_type(f) == 1 && catch_ret_obs(f, t) > 0.0)
+          if (catch_ret_obs(f, t) > 0.0)
           {
             //          catch_like(f) += 0.5*square( (log(catch_ret_obs(f,t)) -log(catch_fleet(t,f,i)+0.000001)) / catch_se(t,f));
             temp = 0.5 * square((log(1.1 * catch_ret_obs(f, t)) - log(catch_fleet(t, f, i) * catch_mult(y, f) + 0.1 * catch_ret_obs(f, t))) / catch_se(t, f));
-            catch_like(f) += temp;
+            if (y == styr - 1)
+            {equ_catch_like(f) += temp;}
+            else
+            {catch_like(f) += temp;}
+//            echoinput<<f<<" y:"<<y<<" s:"<<s<<" c:"<<catch_ret_obs(f, t)<<" ec:"<<catch_fleet(t, f, i)<<" mul:"<<catch_mult(y, f)<<" temp:"<<temp<<" equL:"<<equ_catch_like(f)<<" catL:"<<catch_like(f)<<endl;
           }
         }
+      }
     }
     if (do_once == 1)
+    {
+      echoinput << " initequ_catch -log(L) " << equ_catch_like << endl;
       echoinput << " catch -log(L) " << catch_like << endl;
+    }
   }
 
   //  SS_Label_Info_25.12 #Likelihood for the recruitment deviations

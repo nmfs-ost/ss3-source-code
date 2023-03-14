@@ -303,6 +303,7 @@
         N_catchfleets(p)++; // count by area
         fish_fleet_area(0, N_catchfleets(0)) = f; // to find the "f" index for a catchfleet when not within an area loop
         fish_fleet_area(p, N_catchfleets(p)) = f; // to find the index when in an area loop
+     
         YPR_mask(f) = 1;
         if (surveytime(f) != -1.)
         {
@@ -3736,7 +3737,7 @@
     //    cout << " final data value in error " << fid << endl;
     //    exit(1);
   }
-  cout << "Data read sucessful " << fid << endl
+  cout << "Data read successful " << fid << endl
        << endl;
   echoinput << " data read successful" << endl
             << endl;

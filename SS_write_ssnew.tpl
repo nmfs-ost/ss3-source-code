@@ -489,12 +489,10 @@ FUNCTION void write_nudata()
               k++;
               t = styr + (y - styr) * nseas + s - 1;
               if (y == styr - 1)
-              {
-                report1 << -999 << " " << s << " " << f << " " << est_equ_catch(s, f) << " " << catch_se(t, f) << endl;
-              }
+              { report1 << -999 << " "; }
               else
-              {
-                report1 << y << " " << s << " " << f << " ";
+              { report1 << y << " "; }
+              report1 << s << " " << f << " ";
                 if (fleet_type(f) == 2 && catch_ret_obs(f, t) > 0.0)
                 {
                   report1 << 0.1 << " " << catch_se(t, f) << endl; //  for bycatch only fleet
@@ -507,7 +505,6 @@ FUNCTION void write_nudata()
                 {
                   report1 << catch_fleet(t, f, 6) << " " << catch_se(t, f) << endl;
                 }
-              }
             }
           }
         }
@@ -896,28 +893,23 @@ FUNCTION void write_nudata()
               k++;
               t = styr + (y - styr) * nseas + s - 1;
               if (y == styr - 1)
+              { report1 << -999 << " "; }
+              else
+              { report1 << y << " "; }
+              report1 << s << " " << f << " ";
+              if (fleet_type(f) == 2 && catch_ret_obs(f, t) > 0.0)
               {
-                report1 << -999 << " " << s << " " << f << " "
-                        << est_equ_catch(s, f) * mfexp(randn(radm) * catch_se(styr - 1, f) - 0.5 * catch_se(styr - 1, f) * catch_se(styr - 1, f))
+                report1 << 0.1 << " " << catch_se(t, f) << endl; //  for bycatch only fleet
+              }
+              else if (catchunits(f) == 1)
+              {
+                report1 << catch_fleet(t, f, 3) * mfexp(randn(radm) * catch_se(t, f) - 0.5 * catch_se(t, f) * catch_se(t, f))
                         << " " << catch_se(t, f) << endl;
               }
               else
               {
-                report1 << y << " " << s << " " << f << " ";
-                if (fleet_type(f) == 2 && catch_ret_obs(f, t) > 0.0)
-                {
-                  report1 << 0.1 << " " << catch_se(t, f) << endl; //  for bycatch only fleet
-                }
-                else if (catchunits(f) == 1)
-                {
-                  report1 << catch_fleet(t, f, 3) * mfexp(randn(radm) * catch_se(t, f) - 0.5 * catch_se(t, f) * catch_se(t, f))
-                          << " " << catch_se(t, f) << endl;
-                }
-                else
-                {
-                  report1 << catch_fleet(t, f, 6) * mfexp(randn(radm) * catch_se(t, f) - 0.5 * catch_se(t, f) * catch_se(t, f))
-                          << " " << catch_se(t, f) << endl;
-                }
+                report1 << catch_fleet(t, f, 6) * mfexp(randn(radm) * catch_se(t, f) - 0.5 * catch_se(t, f) * catch_se(t, f))
+                        << " " << catch_se(t, f) << endl;
               }
             }
           }
