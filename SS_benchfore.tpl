@@ -146,27 +146,43 @@ FUNCTION void setup_Benchmark()
     {
       if (Fcast_MGparm_averaging(1) == 1) // 1=M,
       {
+        warnstream << "Maturity params averaging is not implemented, execution continues. " ;
+        write_message (WARN, 1); 
       }
       else if (Fcast_MGparm_averaging(1) == 2)// 2=growth,
       {
+        warnstream << "Growth params averaging is not implemented, execution continues. " ;
+        write_message (WARN, 1); 
       }
       else if (Fcast_MGparm_averaging(1) == 3)// 3=wtlen,
       {
+        warnstream << "Weight/Length params averaging is not implemented, execution continues. " ;
+        write_message (WARN, 1); 
       }
       else if (Fcast_MGparm_averaging(1) == 4)// 4=recr_dist&femfrac,
       {
+        warnstream << "Recr_dist & fraction female params averaging is not implemented, execution continues. " ;
+        write_message (WARN, 1); 
       }
       else if (Fcast_MGparm_averaging(1) == 5)// 5=migration,
       {
+        warnstream << "Migration params averaging is not implemented, execution continues. " ;
+        write_message (WARN, 1); 
       }
       else if (Fcast_MGparm_averaging(1) == 6)// 6=ageerror,
       {
+        warnstream << "Age Error params averaging is not implemented, execution continues. " ;
+        write_message (WARN, 1); 
       }
       else if (Fcast_MGparm_averaging(1) == 7)// 7=catchmult, and
       {
+        warnstream << "Catch mult params averaging is not implemented, execution continues. " ;
+        write_message (WARN, 1); 
       }
       else if (Fcast_MGparm_averaging(1) == 8)// 8=hermaphroditism,
       {
+        warnstream << "Hermaphroditism params averaging is not implemented, execution continues. " ;
+        write_message (WARN, 1); 
       }
     }
 
