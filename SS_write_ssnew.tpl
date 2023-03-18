@@ -1580,7 +1580,19 @@ FUNCTION void write_nucontrol()
     NuFore << "0 # for the value of Forecast recruitment, this is not used" << endl;
   }
   NuFore << Fcast_Loop_Control(5) << " #_Fcast_MGparm_averaging: 0 = not, 1 = do" << endl;
-  NuFore << "#COND_1: list MG_type, start year, end year and terminate with MG_type = -9999" << endl;
+  if (Fcast_Loop_Control(5) == 1)
+  {
+    NuFore << "# MG_type st_year end_year " << endl;
+    for (int i = 1; i <= N_Fcast_parm_aves; i++)
+	{
+      NuFore << Fcast_MGparm_averaging(i) << endl;
+    }
+    NuFore << "-9999 -1 -1" << endl;
+  }
+  else
+  {
+    NuFore << "#COND_1: list MG_type, start year, end year and terminate with MG_type = -9999" << endl;
+  }
   NuFore << Fcast_Cap_FirstYear << "  #FirstYear for caps and allocations (should be after years with fixed inputs) " << endl;
 
   NuFore << Impl_Error_Std << " # stddev of log(realized catch/target catch) in forecast (set value>0.0 to cause active impl_error)" << endl;

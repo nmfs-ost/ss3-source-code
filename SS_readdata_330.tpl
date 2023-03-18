@@ -4017,6 +4017,7 @@
   ivector Allocation_Fleet_Assignments(1,Nfleet);
   matrix Fcast_RelF_Input(1,nseas,1,Nfleet);
   int Fcast_Specify_Selex;   // 0=do not use; 1=specify one selectivity for all fishing fleets for forecasts (not implemented); 2=specify selectivity per fishing fleet for forecasts (not implemented)
+  int N_Fcast_parm_aves;
 
  LOCAL_CALCS
   // clang-format on
@@ -4198,7 +4199,7 @@
   //  Fcast_MGparm_averaging: list MG_type, start year, end year
   //  terminate with MG_type = -9999
   //  MG_type:  1=M, 2=growth 3=wtlen, 4=recr_dist&femfrac, 5=migration, 6=ageerror, 7=catchmult 8=hermaphroditism
-    int N_Fcast_parm_aves = 0;
+    N_Fcast_parm_aves = 0;
     if (Fcast_Loop_Control(5) == 1)
     {
       echoinput << "Fcast_Loop_Control(5)==1, so now read list of MG_type, start year, end year" << endl
