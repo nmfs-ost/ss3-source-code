@@ -148,7 +148,7 @@ FUNCTION void setup_Benchmark()
       for (int i = 1; i <= N_Fcast_parm_aves; i++)
 	  {
 	    fcast_parm_ave = Fcast_MGparm_averaging(i);
-        if (fcast_parm_ave(1) == 1) // 1=M,
+        if (fcast_parm_ave(1) == 1) // 1=Maturity,
         {
           warnstream << "Maturity params averaging is not implemented, execution continues. " ;
           write_message (WARN, 1); 
@@ -165,13 +165,39 @@ FUNCTION void setup_Benchmark()
         }
         else if (fcast_parm_ave(1) == 4)// 4=recr_dist&femfrac,
         {
-          warnstream << "Recr_dist & fraction female params averaging is not implemented, execution continues. " ;
-          write_message (WARN, 1); 
+          //get average and store in each fcast years
+          recr_dist_endyr.initialize();
+		  temp = float(fcast_parm_ave(3) - fcast_parm_ave(2) + 1.);
+          for (y = fcast_parm_ave(2); y <= fcast_parm_ave(3); y++)
+            for (gp = 1; gp <= N_GP * gender; gp++)
+            {
+              recr_dist_endyr(gp) += recr_dist(y, gp);
+            }
+          recr_dist_endyr /= temp;
+          for (y = endyr + 1; y <= YrMax; y++)
+          {
+            if (timevary_MG(y, 4) > 0)
+            {
+              warnstream << "mean recruitment for forecast is incompatible with timevary recr_dist in yr: " << y << "; user must adjust manually";
+              write_message(WARN, 0);
+            }
+            recr_dist(y) = recr_dist_endyr;
+          }
         }
         else if (fcast_parm_ave(1) == 5)// 5=migration,
         {
-          warnstream << "Migration params averaging is not implemented, execution continues. " ;
-          write_message (WARN, 1); 
+          temp = float(fcast_parm_ave(3) - fcast_parm_ave(2) + 1.); //  get denominator
+          for (j = 1; j <= do_migr2; j++)
+          {
+            tempvec_a.initialize();
+            for (y = fcast_parm_ave(2); y <= fcast_parm_ave(3); y++)
+            {
+              tempvec_a += migrrate(y, j);
+            }
+            tempvec_a /= temp;
+            for (y = endyr + 1; y <= YrMax; y++)
+                migrrate(y, j) = tempvec_a;
+          }
         }
         else if (fcast_parm_ave(1) == 6)// 6=ageerror,
         {

@@ -4213,7 +4213,8 @@
         echoinput << tempvec << endl;
         if (tempvec(1) == -9999.)  
           ender = 1;
-        fcast_mgparm_ave_rd.push_back(tempvec(1,3));
+        else
+          fcast_mgparm_ave_rd.push_back(tempvec(1,3));
       } while (ender == 0);
 	  N_Fcast_parm_aves = fcast_mgparm_ave_rd.size();
       echoinput << "Number Forecast MGparm averaging: " << endl << N_Fcast_parm_aves << endl;
