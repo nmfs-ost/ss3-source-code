@@ -1761,9 +1761,6 @@ FUNCTION void get_time_series()
     }
   } //close year loop
 
-  //  Save end year quantities to refresh for forecast after benchmark is called
-  recr_dist_endyr = recr_dist(endyr);
-
   //  average quantities accumulated during the time series
   if (Do_Benchmark > 0)
   {

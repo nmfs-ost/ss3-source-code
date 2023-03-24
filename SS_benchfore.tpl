@@ -122,6 +122,8 @@ FUNCTION void setup_Benchmark()
 
     if (Fcast_Loop_Control(3) == 3) //  using mean recruitment from range of years
     {
+      warnstream << "This option (mean recruitment) will be deprecated and has been moved to forecast loop 5, averaging parameters, type 4.";
+      write_message(WARN, 0);
       //get average and store in each fcast years
       recr_dist_endyr.initialize();
       for (y = Fcast_Rec_yr1; y <= Fcast_Rec_yr2; y++)
@@ -148,23 +150,25 @@ FUNCTION void setup_Benchmark()
       for (int i = 1; i <= N_Fcast_parm_aves; i++)
 	  {
 	    fcast_parm_ave = Fcast_MGparm_averaging(i);
-        if (fcast_parm_ave(1) == 1) // 1=Maturity,
-        {
-          warnstream << "Maturity params averaging is not implemented, execution continues. " ;
+		int parm_type = fcast_parm_ave(1);
+		switch (parm_type) 
+		{
+        case 1:  // 1=Natural mortality (M),
+          warnstream << "Nat mort params averaging is not implemented, execution continues. " ;
           write_message (WARN, 1); 
-        }
-        else if (fcast_parm_ave(1) == 2)// 2=growth,
-        {
+          break;
+		  
+        case 2: // 2=growth,
           warnstream << "Growth params averaging is not implemented, execution continues. " ;
           write_message (WARN, 1); 
-        }
-        else if (fcast_parm_ave(1) == 3)// 3=wtlen,
-        {
+          break;
+		  
+        case 3: // 3=wtlen,
           warnstream << "Weight/Length params averaging is not implemented, execution continues. " ;
           write_message (WARN, 1); 
-        }
-        else if (fcast_parm_ave(1) == 4)// 4=recr_dist&femfrac,
-        {
+          break;
+		  
+        case 4: // 4=recr_dist&femfrac,
           //get average and store in each fcast years
           recr_dist_endyr.initialize();
 		  temp = float(fcast_parm_ave(3) - fcast_parm_ave(2) + 1.);
@@ -183,9 +187,9 @@ FUNCTION void setup_Benchmark()
             }
             recr_dist(y) = recr_dist_endyr;
           }
-        }
-        else if (fcast_parm_ave(1) == 5)// 5=migration,
-        {
+          break;
+		  
+        case 5: // 5=migration,
           temp = float(fcast_parm_ave(3) - fcast_parm_ave(2) + 1.); //  get denominator
           for (j = 1; j <= do_migr2; j++)
           {
@@ -198,21 +202,27 @@ FUNCTION void setup_Benchmark()
             for (y = endyr + 1; y <= YrMax; y++)
                 migrrate(y, j) = tempvec_a;
           }
-        }
-        else if (fcast_parm_ave(1) == 6)// 6=ageerror,
-        {
+          break;
+		  
+        case 6: // 6=ageerror,
           warnstream << "Age Error params averaging is not implemented, execution continues. " ;
           write_message (WARN, 1); 
-        }
-        else if (fcast_parm_ave(1) == 7)// 7=catchmult, and
-        {
+          break;
+		  
+        case 7: // 7=catchmult,
           warnstream << "Catch mult params averaging is not implemented, execution continues. " ;
           write_message (WARN, 1); 
-        }
-        else if (fcast_parm_ave(1) == 8)// 8=hermaphroditism,
-        {
+          break;
+		  
+        case 8: // 8=hermaphroditism, and
           warnstream << "Hermaphroditism params averaging is not implemented, execution continues. " ;
           write_message (WARN, 1); 
+          break;
+		  
+        case 9: // 9=maturity&fecundity
+          warnstream << "Maturity & fecundity params averaging is not implemented, execution continues. " ;
+          write_message (WARN, 1); 
+          break; 
         }
       }
     }

@@ -1585,13 +1585,23 @@ FUNCTION void write_nucontrol()
     NuFore << "# MG_type st_year end_year " << endl;
     for (int i = 1; i <= N_Fcast_parm_aves; i++)
 	{
-      NuFore << Fcast_MGparm_averaging(i) << endl;
+      NuFore << Fcast_MGparm_averaging(i);
+      if (Fcast_MGparm_averaging(i, 1) == 1) NuFore << " # Maturity " << endl;
+      else if (Fcast_MGparm_averaging(i, 1) == 2) NuFore << " # Growth " << endl;
+      else if (Fcast_MGparm_averaging(i, 1) == 3) NuFore << " # Wt/Len " << endl;
+      else if (Fcast_MGparm_averaging(i, 1) == 4) NuFore << " # RecrDist & FracFemale " << endl;
+      else if (Fcast_MGparm_averaging(i, 1) == 5) NuFore << " # Migration " << endl;
+      else if (Fcast_MGparm_averaging(i, 1) == 6) NuFore << " # Age Error " << endl;
+      else if (Fcast_MGparm_averaging(i, 1) == 7) NuFore << " # CatchMult " << endl;
+      else if (Fcast_MGparm_averaging(i, 1) == 8) NuFore << " # Hermaphroditism " << endl;
     }
     NuFore << "-9999 -1 -1" << endl;
   }
   else
   {
     NuFore << "#COND_1: list MG_type, start year, end year and terminate with MG_type = -9999" << endl;
+	NuFore << "#COND_1: Where MG_type: 1=M, 2=growth, 3=wtlen, 4=recr_dist&femfrac, 5=migration, 6=ageerror, 7=catchmult, 8=hermaphroditism" << endl;
+	NuFore << "#C_  Note: not all options are implemented. " << endl;
   }
   NuFore << Fcast_Cap_FirstYear << "  #FirstYear for caps and allocations (should be after years with fixed inputs) " << endl;
 
