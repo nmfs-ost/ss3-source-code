@@ -4163,46 +4163,42 @@
     *(ad_comm::global_datafile) >> Fcast_Loop_Control(1, 5);
     echoinput << Fcast_Loop_Control(1) << " #echoed N forecast loops (1-3) (recommend 3)" << endl;
     echoinput << Fcast_Loop_Control(2) << " #echoed First forecast loop with stochastic recruitment (recommend 3)" << endl;
-    echoinput << Fcast_Loop_Control(3) << " #echoed Forecast recruitment:  0=spawn_recr; 1=value*spawn_recr; 2=value*VirginRecr; 3=mean from year range" << endl;
+    echoinput << Fcast_Loop_Control(3) << " #echoed Forecast recruitment:  0=spawn_recr; 1=value*spawn_recr; 2=value*VirginRecr; 3&4=mean from year range" << endl;
     if (Fcast_Loop_Control(3) == 0)
     {
-      echoinput << Fcast_Loop_Control(4) << " #echoed Forecast loop control #4 (not used) " << endl;
+      echoinput << Fcast_Loop_Control(4) << " Forecast control #4 (not used) " << endl;
     }
     else if (Fcast_Loop_Control(3) == 1)
     {
-      echoinput << Fcast_Loop_Control(4) << " #echoed Forecast loop control #4:  multiplier on spawn_recr" << endl;
+      echoinput << Fcast_Loop_Control(4) << " Forecast control #4:  multiplier on spawn_recr" << endl;
     }
     else if (Fcast_Loop_Control(3) == 2)
     {
-      echoinput << Fcast_Loop_Control(4) << " #echoed Forecast loop control #4:  multiplier on virgin recr" << endl;
+      echoinput << Fcast_Loop_Control(4) << " #Forecast control #4 is multiplier on virgin recr" << endl;
     }
     else if (Fcast_Loop_Control(3) == 3)
     {
-      echoinput << " #mean recruitment and recrdist from years: " << Fcast_Rec_yr1 << " to " << Fcast_Rec_yr2 << endl;
+      echoinput << " #mean recruitment and recr_dist from years: " << Fcast_Rec_yr1 << " to " << Fcast_Rec_yr2 << endl;
     }
     else if (Fcast_Loop_Control(3) == 4)
     {
-      echoinput << " #mean recruitment from years: " << Fcast_Rec_yr1 << " to " << Fcast_Rec_yr2 << " recrdist from parameters" << endl;
-    }
-    else if (Fcast_Loop_Control(3) == 5)
-    {
-      echoinput << " #mean recrdist from years: " << Fcast_Rec_yr1 << " to " << Fcast_Rec_yr2 << " recruitment is from spawn_recr " << endl;
+      echoinput << " #mean recruitment from years: " << Fcast_Rec_yr1 << " to " << Fcast_Rec_yr2 << " recrdist from parameters, or average using control_5" << endl;
     }
     else //  input probably was a -1 from pre 3.30.15, so convert to 0
     {
       Fcast_Loop_Control(3) = 0;
       Fcast_Loop_Control(4) = 1.0;
-      echoinput << Fcast_Loop_Control(4) << " #echoed Forecast loop control #4:  multiplier on spawn_recr" << endl;
+      echoinput << Fcast_Loop_Control(4) << " #echoed Forecast control #4:  multiplier on recruitment from spawn_recr" << endl;
     }
 
-    echoinput << Fcast_Loop_Control(5) << " #echoed Fcast_MGparm_averaging:  enter 1 to start list input" << endl;
+    echoinput << Fcast_Loop_Control(5) << " #echoed Forecast MGparm averaging:  enter 1 to start list input" << endl;
   //  Fcast_MGparm_averaging: list MG_type, start year, end year
   //  terminate with MG_type = -9999
   //  MG_type:  1=M, 2=growth 3=wtlen, 4=recr_dist&femfrac, 5=migration, 6=ageerror, 7=catchmult 8=hermaphroditism
     N_Fcast_parm_aves = 0;
     if (Fcast_Loop_Control(5) == 1)
     {
-      echoinput << "Fcast_Loop_Control(5)==1, so now read list of MG_type, start year, end year" << endl
+      echoinput << "Fcast Control(5)==1, so now read list of MG_type, start year, end year" << endl
                 << "Terminate with -9999 for MG_type" << endl
 				<< "MG_type: 1=M, 2=growth, 3=wtlen, 4=recr_dist&femfrac, 5=migration, 6=ageerror, 7=catchmult, 8=hermaphroditism" << endl;
       ender = 0;

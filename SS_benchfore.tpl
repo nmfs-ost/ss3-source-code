@@ -120,9 +120,9 @@ FUNCTION void setup_Benchmark()
     //          fec(g)=save_sel_num(t,0,g);
     //       }
 
-    if (Fcast_Loop_Control(3) == 3) //  using mean recruitment from range of years
+    if (Fcast_Loop_Control(3) == 3) //  using mean recr_dist from range of years
     {
-      warnstream << "This option (mean recruitment) will be deprecated and has been moved to forecast loop 5, averaging parameters, type 4.";
+      warnstream << "This option (mean recruitment) may be deprecated; same as forecast option(5), averaging parameters, type 4.";
       write_message(WARN, 0);
       //get average and store in each fcast years
       recr_dist_endyr.initialize();
@@ -136,7 +136,7 @@ FUNCTION void setup_Benchmark()
       {
         if (timevary_MG(y, 4) > 0)
         {
-          warnstream << "mean recruitment for forecast is incompatible with timevary recr_dist in yr: " << y << "; user must adjust manually";
+          warnstream << "mean recr_dist for forecast is incompatible with timevary recr_dist in forecast yr: " << y << "; user must adjust manually";
           write_message(WARN, 0);
         }
         recr_dist(y) = recr_dist_endyr;
@@ -182,7 +182,7 @@ FUNCTION void setup_Benchmark()
           {
             if (timevary_MG(y, 4) > 0)
             {
-              warnstream << "mean recruitment for forecast is incompatible with timevary recr_dist in yr: " << y << "; user must adjust manually";
+              warnstream << "mean recr_dist for forecast is incompatible with timevary recr_dist in forecast yr: " << y << "; user must adjust manually";
               write_message(WARN, 0);
             }
             recr_dist(y) = recr_dist_endyr;
@@ -1984,13 +1984,23 @@ FUNCTION void Get_Forecast()
     report5 << "Annual_Forecast_Fmult: " << Fcast_Fmult << endl;
     report5 << "Fmultiplier_during_selected_relF_years_was: " << Fcurr_Fmult << endl;
     report5 << "Selectivity_averaged_over_yrs:_" << Fcast_Sel_yr1 << "_to_" << Fcast_Sel_yr2 << endl;
-    if (Fcast_Loop_Control(3) == 3)
+
+//  Fcast_Loop_Control(3)  need to embellish this to report all options
+    if (Fcast_Loop_Control(3) == 1)
+    {
+      report5 << "Forecast_recruitment_from_spawn_recr_with_multiplier: " << Fcast_Loop_Control(4) << endl;
+    }
+    if (Fcast_Loop_Control(3) == 2)
+    {
+      report5 << "Forecast_recruitment_is_adjusted_R0_with_multiplier: " << Fcast_Loop_Control(4) << endl;
+    }
+    else if (Fcast_Loop_Control(3) == 3)
     {
       report5 << "Recruitment_and_recrdist_averaged_over_yrs:_" << Fcast_Rec_yr1 << "_to_" << Fcast_Rec_yr2 << endl;
     }
     else
     {
-      report5 << "Recruitment_from_spawn_recr_with_multiplier: " << Fcast_Loop_Control(4) << endl;
+      report5 << "Recruitment_averaged_over_yrs:_" << Fcast_Rec_yr1 << "_to_" << Fcast_Rec_yr2 << " see_control(5)_for_recr_dist_averaging" << endl;
     }
     report5 << "Cap_totalcatch_by_fleet " << endl
             << Fcast_MaxFleetCatch << endl;

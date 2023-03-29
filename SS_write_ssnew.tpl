@@ -1558,10 +1558,11 @@ FUNCTION void write_nucontrol()
 
   NuFore << Fcast_Loop_Control(1) << " #_N forecast loops (1=OFL only; 2=ABC; 3=get F from forecast ABC catch with allocations applied)" << endl;
   NuFore << Fcast_Loop_Control(2) << " #_First forecast loop with stochastic recruitment" << endl;
-  NuFore << Fcast_Loop_Control(3) << " #_Forecast recruitment:  0= spawn_recr; 1=value*spawn_recr_fxn; 2=value*VirginRecr; 3=recent mean from yr range above (need to set phase to -1 in control to get constant recruitment in MCMC)" << endl;
+  NuFore << Fcast_Loop_Control(3) << " #_Forecast recruitment:  0= spawn_recr; 1=value*spawn_recr_fxn; 2=value*VirginRecr; 3=recent mean for recr and recr_dist from yr range above; 4=average for recr only" << endl;
+  NuFore << "#_ for options 3 and 4, need to set phase to -1 in control to get constant recruitment in MCMC" << endl;
   if (Fcast_Loop_Control(3) == 0)
   {
-    NuFore << 1.0 << " # for the value of Forecast recruitment, this is ignored " << endl;
+    NuFore << 1.0 << " # Value multiplier is ignored" << endl;
   }
   else if (Fcast_Loop_Control(3) == 1)
   {
@@ -1571,13 +1572,13 @@ FUNCTION void write_nucontrol()
   {
     NuFore << Fcast_Loop_Control(4) << " # value is multiplier on virgin recr" << endl;
   }
-  else if (Fcast_Loop_Control(3) == 3)
+  else if (Fcast_Loop_Control(3) >= 3)
   {
-    NuFore << Fcast_Loop_Control(4) << " # for the value of Forecast recruitment, this is not used" << endl;
+    NuFore << Fcast_Loop_Control(4) << " # Value multiplier is ignored" << endl;
   }
   else
   {
-    NuFore << "0 # for the value of Forecast recruitment, this is not used" << endl;
+    NuFore << "0 # # Value multiplier is ignored " << endl;
   }
   NuFore << Fcast_Loop_Control(5) << " #_Fcast_MGparm_averaging: 0 = not, 1 = do" << endl;
   if (Fcast_Loop_Control(5) == 1)
@@ -1589,7 +1590,7 @@ FUNCTION void write_nucontrol()
       if (Fcast_MGparm_averaging(i, 1) == 1) NuFore << " # (M) NatMort " << endl;
       else if (Fcast_MGparm_averaging(i, 1) == 2) NuFore << " # Growth " << endl;
       else if (Fcast_MGparm_averaging(i, 1) == 3) NuFore << " # Wt/Len " << endl;
-      else if (Fcast_MGparm_averaging(i, 1) == 4) NuFore << " # RecrDist&FracFemale " << endl;
+      else if (Fcast_MGparm_averaging(i, 1) == 4) NuFore << " # RecrDist " << endl;  //  frac_female may be added later
       else if (Fcast_MGparm_averaging(i, 1) == 5) NuFore << " # Migration " << endl;
       else if (Fcast_MGparm_averaging(i, 1) == 6) NuFore << " # Age Error " << endl;
       else if (Fcast_MGparm_averaging(i, 1) == 7) NuFore << " # CatchMult " << endl;
