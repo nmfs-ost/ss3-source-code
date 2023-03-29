@@ -6618,6 +6618,11 @@
       ParmLabel += "Dyn_Bzero_" + onenum + CRLF(1);
     }
   }
+  else if (depletion_basis_rd == 5)
+  {
+    warnstream << "must select dyn_bzero in control file extra_std for it to be used as depletion denominator ";
+    write_message (FATAL, 0); // EXIT!
+  }
   if (More_Std_Input(12) == 2)
   {
     echoinput << " do Dyn Bzero Recruits std labels " << endl;
