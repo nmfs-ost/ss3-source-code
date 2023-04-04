@@ -151,19 +151,39 @@ FUNCTION void setup_Benchmark()
 	  {
 	    fcast_parm_ave = Fcast_MGparm_averaging(i);
 		int parm_type = fcast_parm_ave(1);
+		int av_start, av_end, gpi;
 		switch (parm_type) 
 		{
         case 1:  // 1=Natural mortality (M),
-          warnstream << "Nat mort params averaging is not implemented, execution continues. " ;
-          write_message (WARN, 1); 
+          temp = float(fcast_parm_ave(3) - fcast_parm_ave(2) + 1.); //  get denominator
+          av_start = styr + (fcast_parm_ave(2) - styr) * nseas; // get start
+          av_end = styr + (fcast_parm_ave(3) - styr) * nseas;   // get end
+          for (int s = 1; s <= nseas; s++)
+            for (int g = 1; g <= gmorph; g++)
+            {
+              gpi=GP3(g);
+              for (int p = 0; p <= pop; p++)
+              {
+                tempvec_a.initialize();
+                for (int t = av_start; t <= av_end; t += nseas)
+                {
+                  tempvec_a += natM(t + s, p, gpi);
+                }
+                tempvec_a /= temp;
+                for (int y = endyr + 1; y <= YrMax; y++)
+                  natM((y - styr) * nseas + s, p, gpi) = tempvec_a; 
+              }
+            }
           break;
 		  
         case 2: // 2=growth,
+          tempvec_a.initialize();
           warnstream << "Growth params averaging is not implemented, execution continues. " ;
           write_message (WARN, 1); 
           break;
 		  
         case 3: // 3=wtlen,
+          tempvec_a.initialize();
           warnstream << "Weight/Length params averaging is not implemented, execution continues. " ;
           write_message (WARN, 1); 
           break;
@@ -205,21 +225,25 @@ FUNCTION void setup_Benchmark()
           break;
 		  
         case 6: // 6=ageerror,
+          tempvec_a.initialize();
           warnstream << "Age Error params averaging is not implemented, execution continues. " ;
           write_message (WARN, 1); 
           break;
 		  
         case 7: // 7=catchmult,
+          tempvec_a.initialize();
           warnstream << "Catch mult params averaging is not implemented, execution continues. " ;
           write_message (WARN, 1); 
           break;
 		  
         case 8: // 8=hermaphroditism, and
+          tempvec_a.initialize();
           warnstream << "Hermaphroditism params averaging is not implemented, execution continues. " ;
           write_message (WARN, 1); 
           break;
 		  
         case 9: // 9=maturity&fecundity
+          tempvec_a.initialize();
           warnstream << "Maturity & fecundity params averaging is not implemented, execution continues. " ;
           write_message (WARN, 1); 
           break; 
