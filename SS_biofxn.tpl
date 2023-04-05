@@ -1159,7 +1159,7 @@ FUNCTION void get_natmort()
                   t_age = azero_seas(s) - azero_G(g);
                   for (a = k; a <= nages - 1; a++)
                   {
-                    natM(t_base + s, gpi, a) = Age_NatMort(gp, a) + t_age * (Age_NatMort(gp, a + 1) - Age_NatMort(gp, a));
+                    natM(t_base + s, 0, gpi, a) = Age_NatMort(gp, a) + t_age * (Age_NatMort(gp, a + 1) - Age_NatMort(gp, a));
                   } // end age
                 }
                 else

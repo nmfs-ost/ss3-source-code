@@ -156,22 +156,24 @@ FUNCTION void setup_Benchmark()
 		{
         case 1:  // 1=Natural mortality (M),
           temp = float(fcast_parm_ave(3) - fcast_parm_ave(2) + 1.); //  get denominator
-          av_start = styr + (fcast_parm_ave(2) - styr) * nseas; // get start
-          av_end = styr + (fcast_parm_ave(3) - styr) * nseas;   // get end
           for (int s = 1; s <= nseas; s++)
             for (int g = 1; g <= gmorph; g++)
             {
               gpi=GP3(g);
-              for (int p = 0; p <= pop; p++)
+              for (int p = 0; p <= pop; p++)  //  question.  Perhaps only do this for area 0 as others filled in later in code
               {
                 tempvec_a.initialize();
-                for (int t = av_start; t <= av_end; t += nseas)
+                for (y = fcast_parm_ave(2); y <= fcast_parm_ave(3); y++)
                 {
-                  tempvec_a += natM(t + s, p, gpi);
+                  t = styr + (y - styr) * nseas - 1 + s;
+                  tempvec_a += natM(t, p, gpi);
                 }
                 tempvec_a /= temp;
                 for (int y = endyr + 1; y <= YrMax; y++)
-                  natM((y - styr) * nseas + s, p, gpi) = tempvec_a; 
+                {
+                  t = styr + (y - styr) * nseas - 1 + s;
+                  natM(t, p, gpi) = tempvec_a; 
+                }
               }
             }
           break;
