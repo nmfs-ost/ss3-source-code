@@ -146,29 +146,30 @@ FUNCTION void setup_Benchmark()
     // create average of selected MGparms for use in forecast
     if (Fcast_Loop_Control(5) == 1)  //  
     {
-      dvector fcast_parm_ave(1,3);
-      for (int i = 1; i <= N_Fcast_parm_aves; i++)
+
+      for (int parm_type = 1; parm_type <= 8; parm_type++)
 	  {
-	    fcast_parm_ave = Fcast_MGparm_averaging(i);
-		int parm_type = fcast_parm_ave(1);
-		int av_start, av_end, gpi;
-		switch (parm_type) 
-		{
+      if(Fcast_MGparm_ave(parm_type, 1) > 0)  //  do averaging
+      {
+      double ave_styr = Fcast_MGparm_ave(parm_type,3);
+      double ave_endyr = Fcast_MGparm_ave(parm_type,4);
+      double N_ave_yrs = ave_endyr - ave_styr + 1.; //  get denominator
+   		switch (parm_type) 
+		  {
         case 1:  // 1=Natural mortality (M),
-          temp = float(fcast_parm_ave(3) - fcast_parm_ave(2) + 1.); //  get denominator
           for (int s = 1; s <= nseas; s++)
             for (int g = 1; g <= gmorph; g++)
             {
-              gpi=GP3(g);
+              int gpi = GP3(g);
               for (int p = 0; p <= pop; p++)  //  question.  Perhaps only do this for area 0 as others filled in later in code
               {
                 tempvec_a.initialize();
-                for (y = fcast_parm_ave(2); y <= fcast_parm_ave(3); y++)
+                for (y = ave_styr; y <= ave_endyr; y++)
                 {
                   t = styr + (y - styr) * nseas - 1 + s;
                   tempvec_a += natM(t, p, gpi);
                 }
-                tempvec_a /= temp;
+                tempvec_a /= N_ave_yrs;
                 for (int y = endyr + 1; y <= YrMax; y++)
                 {
                   t = styr + (y - styr) * nseas - 1 + s;
@@ -193,13 +194,12 @@ FUNCTION void setup_Benchmark()
         case 4: // 4=recr_dist&femfrac,
           //get average and store in each fcast years
           recr_dist_endyr.initialize();
-		  temp = float(fcast_parm_ave(3) - fcast_parm_ave(2) + 1.);
-          for (y = fcast_parm_ave(2); y <= fcast_parm_ave(3); y++)
+          for (y = ave_styr; y <= ave_endyr; y++)
             for (gp = 1; gp <= N_GP * gender; gp++)
             {
               recr_dist_endyr(gp) += recr_dist(y, gp);
             }
-          recr_dist_endyr /= temp;
+          recr_dist_endyr /= N_ave_yrs;
           for (y = endyr + 1; y <= YrMax; y++)
           {
             if (timevary_MG(y, 4) > 0)
@@ -212,15 +212,14 @@ FUNCTION void setup_Benchmark()
           break;
 		  
         case 5: // 5=migration,
-          temp = float(fcast_parm_ave(3) - fcast_parm_ave(2) + 1.); //  get denominator
           for (j = 1; j <= do_migr2; j++)
           {
             tempvec_a.initialize();
-            for (y = fcast_parm_ave(2); y <= fcast_parm_ave(3); y++)
+            for (y = ave_styr; y <= ave_endyr; y++)
             {
               tempvec_a += migrrate(y, j);
             }
-            tempvec_a /= temp;
+            tempvec_a /= N_ave_yrs;
             for (y = endyr + 1; y <= YrMax; y++)
                 migrrate(y, j) = tempvec_a;
           }
@@ -251,6 +250,7 @@ FUNCTION void setup_Benchmark()
           break; 
         }
       }
+    }
     }
 
     //  SS_Label_Info_7.5.2 #Set-up relative F among fleets and seasons for forecast

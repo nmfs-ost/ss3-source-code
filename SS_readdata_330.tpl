@@ -4031,7 +4031,7 @@
   Do_Rebuilder = 0;
   // clang-format off
  END_CALCS
-//  init_vector Fcast_Input_rd(1,k)
+    matrix Fcast_MGparm_ave(1,8,1,4)  //  for the 8 MG_types, method, st_year, end_year
 
  LOCAL_CALCS
   // clang-format on
@@ -4192,40 +4192,38 @@
     }
 
     echoinput << Fcast_Loop_Control(5) << " #echoed Forecast MGparm averaging:  enter 1 to start list input" << endl;
-  //  Fcast_MGparm_averaging: list MG_type, start year, end year
+  //  Fcast_MGparm_ave: read MG_type, method, start year, end year
   //  terminate with MG_type = -9999
   //  MG_type:  1=M, 2=growth 3=wtlen, 4=recr_dist&femfrac, 5=migration, 6=ageerror, 7=catchmult 8=hermaphroditism
     N_Fcast_parm_aves = 0;
     if (Fcast_Loop_Control(5) == 1)
     {
-      echoinput << "Fcast Control(5)==1, so now read list of MG_type, start year, end year" << endl
+      echoinput << "Fcast Control(5)==1, so now read list of MG_type, method (1, 2), start year, end year" << endl
                 << "Terminate with -9999 for MG_type" << endl
-				<< "MG_type: 1=M, 2=growth, 3=wtlen, 4=recr_dist&femfrac, 5=migration, 6=ageerror, 7=catchmult, 8=hermaphroditism" << endl;
+				<< "MG_type: 1=M, 2=growth, 3=wtlen, 4=recr_dist&femfrac, 5=migration, 6=ageerror, 7=catchmult, 8=hermaphroditism" << endl
+        << "Method = 0 (default) means continue time_vary parms; 1 means to use average of derived biology; 2 (future) means average parameter then apply as if time-vary"<<endl;
       ender = 0;
       do
       {
-        dvector tempvec(1, 3);
-        *(ad_comm::global_datafile) >> tempvec(1, 3);
+        dvector tempvec(1, 4);
+        *(ad_comm::global_datafile) >> tempvec(1, 4);
         echoinput << tempvec << endl;
         if (tempvec(1) == -9999.)  
           ender = 1;
         else
-          fcast_mgparm_ave_rd.push_back(tempvec(1,3));
+          {
+            int f1 = tempvec(1);
+            Fcast_MGparm_ave(f1) = tempvec; 
+          }
       } while (ender == 0);
-	  N_Fcast_parm_aves = fcast_mgparm_ave_rd.size();
-      echoinput << "Number Forecast MGparm averaging: " << endl << N_Fcast_parm_aves << endl;
+      echoinput << "Forecast MGparm averaging: " << endl << Fcast_MGparm_ave << endl;
     }
   // clang-format off
  END_CALCS
  
-    matrix Fcast_MGparm_averaging(1,N_Fcast_parm_aves,1,3)
  LOCAL_CALCS
   // clang-format on
-      for (f = 1; f <= N_Fcast_parm_aves; f++) 
-        Fcast_MGparm_averaging(f) = fcast_mgparm_ave_rd[f - 1];
-  
-    echoinput << endl
-              << "#next enter year in which Fcast loop 3 caps and allocations begin to be applied" << endl;
+     echoinput << "#next enter year in which Fcast loop 3 caps and allocations begin to be applied" << endl;
     *(ad_comm::global_datafile) >> Fcast_Cap_FirstYear;
     echoinput << Fcast_Cap_FirstYear << " # echoed value" << endl;
 
