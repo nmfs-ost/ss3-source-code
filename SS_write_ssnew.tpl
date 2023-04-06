@@ -1592,7 +1592,7 @@ FUNCTION void write_nucontrol()
     for (int i = 1; i <= 8; i++)
     if (Fcast_MGparm_ave(i, 1) > 0)
 	  {
-      NuFore << i << Fcast_MGparm_ave(i);
+      NuFore << Fcast_MGparm_ave(i);
       if (Fcast_MGparm_ave(i, 1) == 1) NuFore << " # (M) NatMort " << endl;
       else if (Fcast_MGparm_ave(i, 1) == 2) NuFore << " # Growth " << endl;
       else if (Fcast_MGparm_ave(i, 1) == 3) NuFore << " # Wt/Len " << endl;

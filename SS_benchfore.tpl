@@ -149,7 +149,7 @@ FUNCTION void setup_Benchmark()
 
       for (int parm_type = 1; parm_type <= 8; parm_type++)
 	  {
-      if(Fcast_MGparm_ave(parm_type, 1) == 1)  //  do averaging of derived biology
+      if(Fcast_MGparm_ave(parm_type, 2) == 1)  //  do averaging of derived biology
       {
       double ave_styr = Fcast_MGparm_ave(parm_type,3);
       double ave_endyr = Fcast_MGparm_ave(parm_type,4);
@@ -2358,7 +2358,7 @@ FUNCTION void Get_Forecast()
         get_growth2(y);
       }
   //	"MG_type: 1=M, 2=growth, 3=wtlen, 4=recr_dist&femfrac, 5=migration, 6=ageerror, 7=catchmult, 8=hermaphroditism" << endl
-      if (Fcast_MGparm_ave(1, 1) == 1)
+      if (Fcast_MGparm_ave(1, 2) == 1)
       {
         //  array has been filled with averages already
       }
@@ -2388,7 +2388,7 @@ FUNCTION void Get_Forecast()
       {
         get_recr_distribution();
       }
-      if (Fcast_MGparm_ave(5, 1) == 1)
+      if (Fcast_MGparm_ave(5, 2) == 1)
       {
         //  already filled with averages
       }
