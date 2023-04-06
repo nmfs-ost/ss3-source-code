@@ -149,7 +149,7 @@ FUNCTION void setup_Benchmark()
 
       for (int parm_type = 1; parm_type <= 8; parm_type++)
 	  {
-      if(Fcast_MGparm_ave(parm_type, 1) > 0)  //  do averaging
+      if(Fcast_MGparm_ave(parm_type, 1) == 1)  //  do averaging of derived biology
       {
       double ave_styr = Fcast_MGparm_ave(parm_type,3);
       double ave_endyr = Fcast_MGparm_ave(parm_type,4);
@@ -2357,7 +2357,12 @@ FUNCTION void Get_Forecast()
         ALK_subseas_update = 1;
         get_growth2(y);
       }
-      if (timevary_MG(y, 1) > 0 || N_pred > 0)
+  //	"MG_type: 1=M, 2=growth, 3=wtlen, 4=recr_dist&femfrac, 5=migration, 6=ageerror, 7=catchmult, 8=hermaphroditism" << endl
+      if (Fcast_MGparm_ave(1, 1) == 1)
+      {
+        //  array has been filled with averages already
+      }
+      else if (timevary_MG(y, 1) > 0 || N_pred > 0)
       {
         get_natmort();
       }
@@ -2375,11 +2380,19 @@ FUNCTION void Get_Forecast()
         if (Hermaphro_Option != 0)
           get_Hermaphro();
       }
-      if ((timevary_MG(y, 4) > 0 || timevary_MG(endyr + 1, 4) > 0) && Fcast_Loop_Control(3) != 3)
+      if (Fcast_Loop_Control(3) == 3 || Fcast_MGparm_ave(4, 1) == 1)
+      {
+        //  already filled with averages
+      }
+      else if (timevary_MG(y, 4) > 0 || timevary_MG(endyr + 1, 4) > 0)
       {
         get_recr_distribution();
       }
-      if (timevary_MG(y, 5) > 0)
+      if (Fcast_MGparm_ave(5, 1) == 1)
+      {
+        //  already filled with averages
+      }
+      else if (timevary_MG(y, 5) > 0)
         get_migration();
       if (timevary_MG(y, 7) > 0)
         get_catch_mult(y, catch_mult_pointer);
