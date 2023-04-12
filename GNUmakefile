@@ -1,7 +1,18 @@
-ADMB_HOME=~/admb-main/
+# The admb script should be included in the system PATH. If not, the
+# path to the script can be manually set (See MY_ADMB_HOME below).
+#
+# Usage:
+#   ./stock-synthesis/$ make
 
-#STATIC_BUILD= -p
-DEBUG= -g
+# Uncomment MY_ADMB_HOME to manually set path to admb script
+# and ignore system enviroment PATH.
+# Note: Need to add directory character '/' at the end.
+# MY_ADMB_HOME=~/admb-main/
+
+# Uncomment the variables below for static and/or debugging builds.
+# STATIC_BUILD= -p
+# DEBUG= -g
+
 export CXXFLAGS=-Wall -Wextra
 
 all: clean
@@ -9,10 +20,10 @@ all: clean
 	$(MAKE) ss_opt
 
 ss: ss.tpl
-	$(ADMB_HOME)admb $(DEBUG)$(STATIC_BUILD) ss.tpl
+	$(MY_ADMB_HOME)admb $(DEBUG)$(STATIC_BUILD) ss.tpl
 
 ss_opt: ss_opt.tpl
-	$(ADMB_HOME)admb -f $(DEBUG)$(STATIC_BUILD) ss_opt.tpl
+	$(MY_ADMB_HOME)admb -f $(DEBUG)$(STATIC_BUILD) ss_opt.tpl
 
 ss.tpl: SS_functions.temp
 	cat SS_versioninfo_330safe.tpl SS_readstarter.tpl SS_readdata_330.tpl SS_readcontrol_330.tpl SS_param.tpl SS_prelim.tpl SS_global.tpl SS_proced.tpl SS_functions.temp > ss.tpl
