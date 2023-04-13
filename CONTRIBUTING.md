@@ -25,8 +25,10 @@ All code contributions should be submitted as pull requests to be reviewed by an
 1. Have a local version of the stock synthesis repository (though forking or cloning).
 2. Download [ADMB](http://www.admb-project.org/). The current version of ADMB used to compile Stock Synthesis is listed in [SS_versioninfo_330safe.tpl](https://github.com/nmfs-stock-synthesis/stock-synthesis/blob/main/SS_versioninfo_330safe.tpl).
 3. Add ADMB to the PATH or use the ADMB command window for the following commands.
-4. On Linux or Mac: Change directory to the cloned Stock Synthesis repository and use the script [Make_SS_330_new.sh](https://github.com/nmfs-stock-synthesis/stock-synthesis/blob/main/Make_SS_330_new.sh) by calling './Make_SS_330_new.sh'. To see all options for the function, use './Make_SS_330_new.sh --help'.
-5. On Windows: Change directory to the cloned Stock Synthesis repository's [Compile](https://github.com/nmfs-stock-synthesis/stock-synthesis/tree/main/Compile) subfolder and call the [Make_SS_safe batch script](https://github.com/nmfs-stock-synthesis/stock-synthesis/blob/main/Compile/Make_SS_safe.bat) to build the "safe" version of Stock Synthesis. (to build the fast (aka optimized) version of Stock Synthesis, call the Make_SS_fast.bat batch scripts instead). Upon calling the batch script, SS3 will be built in the Compile subfolder.
+4. On Linux or Mac:
+- Change directory to the cloned Stock Synthesis repository and use the script [Make_SS_330_new.sh](https://github.com/nmfs-stock- synthesis/stock-synthesis/blob/main/Make_SS_330_new.sh) by calling `./Make_SS_330_new.sh`. To see all options for the function, use `./Make_SS_330_new.sh --help`.
+- Follow the instructions found in the [GNUmakefile](https://github.com/nmfs-stock-synthesis/stock-synthesis/blob/main/GNUmakefile) which will allow you to compile Stock Synthesis using the command `~/stock-synthesis$ make` within a command line opened in the cloned Stock Synthesis repository folder.
+6. On Windows: Change directory to the cloned Stock Synthesis repository's [Compile](https://github.com/nmfs-stock-synthesis/stock-synthesis/tree/main/Compile) subfolder and call the [Make_SS_safe batch script](https://github.com/nmfs-stock-synthesis/stock-synthesis/blob/main/Compile/Make_SS_safe.bat) to build the "safe" version of Stock Synthesis. (to build the fast (aka optimized) version of Stock Synthesis, call the Make_SS_fast.bat batch scripts instead). Upon calling the batch script, SS3 will be built in the Compile subfolder.
 
 # Still have a question on the contributing workflow?
 
