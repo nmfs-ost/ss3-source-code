@@ -18,8 +18,18 @@ body:
 - type: textarea
   id: summary
   attributes:
-    label: Summary of Issue History and Discussion 
-    description: A summary of pertinent information on this issue that occurred in the discussion or via email. The person creating the issue is responsible for adding info from the discussion to this section.
+    label: Summary of Issue History, Discussion, and Major Aspects of Code Development 
+    description: A summary of pertinent information on this issue, including major aspects of code development, that occurred in the discussion/via email. The person creating the issue is responsible for adding info from the discussion to this section.
+    placeholder: |
+      - This issue is realted to issue #X.
+      - Will need to create an example vignette for this feature.
+      - example input change
+        ```
+        #_MG_type method st_year end_year 
+        1 1 2002 2003 # (M) NatMort 
+        4 1 2016 2018 # RecrDist 
+        -9999 -1 -1 -1
+        ```
   validations:
     required: true
 - type: textarea
