@@ -1,6 +1,6 @@
 name: SS3 Team Issues - New Template
 description: Issue template for SS3 team members ONLY
-title: "[Issue]: "
+title: "[Issue]: Title of Issue Here"
 assignees:
   - Rick-Methot-NOAA
 body:
@@ -19,11 +19,11 @@ body:
   id: summary
   attributes:
     label: Summary of Issue History, Discussion, and Major Aspects of Code Development 
-    description: A summary of pertinent information on this issue, including major aspects of code development, that occurred in the discussion/via email. The person creating the issue is responsible for adding info from the discussion to this section.
+    description: A summary of pertinent information on this issue, including major aspects of code development, that occurred in the discussion or via email. This section can be added on to/edited at any time and should be completely summarized prior to closing by the person that created the issue.
     placeholder: |
       - This issue is realted to issue #X.
       - Will need to create an example vignette for this feature.
-      - example input change
+      - Below is example input change.
         ```
         #_MG_type method st_year end_year 
         1 1 2002 2003 # (M) NatMort 
@@ -43,21 +43,21 @@ body:
 - type: checkboxes 
   id: documentation
   attributes:
-    label: Does documentation already exist?
-    description: Please check one of the boxes.
+    label: Does documentation already exist in the SS3 User Manual?
+    description: Please review the [SS3 User Manual](https://nmfs-stock-synthesis.github.io/doc/SS330_User_Manual.html) and check the box that applies.
     options:
-      - label: No, documentation needs to be added and is provided below.
-      - label: Yes, the link to the section in the documentation is provided below.
-      - label: Yes, but further documentation/instruction needs to be added and is provided below.
+      - label: Yes, the link to the section in the SS3 User Manual is provided below.
+      - label: Yes, but further documentation needs to be added and is provided below.
+      - label: No, the documentation that should be added to the SS3 User Manual pertaining to this issue is provided below.
   validations:
     required: true
 - type: textarea
   id: add-doc
   attributes:
-    label: Text to add to SS3 documentation
-    description: Please add the text that needs to be added to the documentation along with which section it should be added to.
+    label: Documentation to add to the SS3 User Manual OR link to existing documentation
+    description: Please add the text that needs to be added to the SS3 User Manual along with which section it should be added to.
     placeholder: |
-      - Documentation can be found in section 8.4.2 of the documentation [here](link)
+      - Documentation can be found in section 8.4.2 of the SS3 User Manual [here](link)
       - The following text should be added at the end of the second paragraph in that section: "add text"
   validations:
     required: true
