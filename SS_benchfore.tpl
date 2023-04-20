@@ -2590,7 +2590,7 @@ FUNCTION void Get_Forecast()
             }
 
             Recruits = Spawn_Recr(SSB_use, R0_use, SSB_current); // calls to function Spawn_Recr
-            apply_recdev(Recruits, R0_use); //  apply recruitment deviation
+            if (SR_fxn != 7) apply_recdev(Recruits, R0_use); //  apply recruitment deviation
             if (Fcast_Loop1 < Fcast_Loop_Control(2)) //  use expected recruitment  this should include environ effect - CHECK THIS
             {
               Recruits = exp_rec(y, 2);
@@ -3217,7 +3217,7 @@ FUNCTION void Get_Forecast()
             }
 
             Recruits = Spawn_Recr(SSB_use, R0_use, SSB_current); // calls to function Spawn_Recr
-            apply_recdev(Recruits, R0_use); //  apply recruitment deviation
+            if (SR_fxn != 7) apply_recdev(Recruits, R0_use); //  apply recruitment deviation
             // distribute Recruitment  among the settlements, areas and morphs
             for (g = 1; g <= gmorph; g++)
               if (use_morph(g) > 0)
