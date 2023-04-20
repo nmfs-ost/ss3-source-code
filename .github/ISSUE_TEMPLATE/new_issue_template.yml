@@ -1,6 +1,6 @@
 name: SS3 Team Issues - New Template
 description: Issue template for SS3 team members ONLY
-title: "[Label for Issue Here]: Title of Issue Here"
+title: "[Prefix for Issue Here]: Title of Issue Here"
 assignees:
   - Rick-Methot-NOAA
 body:
@@ -9,8 +9,8 @@ body:
     value: |
       # **Main Issue Information**
       **Instructions**
-        - Add a label the title text above in the brackets "[ ]". This should be a short, suitable "label" for the issue that helps categorize the issue in change log. This label should be one to three words (ex. [Bug], [Feature Request]), you might even find referencing the existing labels (under "labels" in the panel on the right) helpful.
-        - Add a title to the title text above after the colon ":". This should be a short, descriptive title for the issue.
+        - Add a label prefix in the brackets "[ ]". This should be 1 - 2 words that helps categorize the issue (e.g. [Bug], [Feature Request], [Refactor]).
+        - Add a title after the colon ":". This should be a short phrase that describes the issue. It should be suitable for display in the change log.
         - In the sidebar, add labels that apply to this issue.
         - Fill out information below and update the summary with pertinent information from the comments/discussion. 
 - type: textarea
@@ -26,7 +26,7 @@ body:
     label: Summary of issue history, discussion, and major aspects of code development 
     description: A summary of pertinent information on this issue, including major aspects of code development, that occurred in the discussion or via email. This section can be added on to/edited at any time and should be completely summarized prior to closing by the person that created the issue.
     placeholder: |
-      - This issue is realted to issue #X.
+      - This issue is related to issue #X.
       - Will need to create an example vignette for this feature.
       - Below is example input change.
         ```
