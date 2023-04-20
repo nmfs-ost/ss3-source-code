@@ -72,3 +72,25 @@ body:
       - The following text should be added at the end of the second paragraph in that section: "add text"
   validations:
     required: true
+ - type: checkboxes 
+  id: r4ss
+  attributes: 
+    label: Are r4ss changes needed?
+    description: Please check one of the boxes to indicate if r4ss changes are needed.
+    options:
+      - label: No, this issue doesn't require changes to r4ss
+      - label: Yes, this issue requires changes to r4ss (if checking this box, please add iantaylor-NOAA as an Assignee in the panel to the right).
+      - label: I don't know and would like an r4ss consult (if checking this box, please add iantaylor-NOAA as an Assignee in the panel to the right).
+  validations:
+    required: true
+- type: checkboxes 
+  id: SSI
+  attributes: 
+    label: Are SSI changes needed?
+    description: Please check one of the boxes to indicate if SSI changes are needed.
+    options:
+      - label: No, this issue doesn't require changes to SSI
+      - label: Yes, this issue requires changes to SSI (if checking this box, please add nschindler-noaa as an Assignee in the panel to the right).
+      - label: I don't know and would like an SSI consult (if checking this box, please add nschindler-noaa as an Assignee in the panel to the right).
+  validations:
+    required: true
