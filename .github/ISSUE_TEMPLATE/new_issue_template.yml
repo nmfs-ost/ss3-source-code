@@ -72,7 +72,7 @@ body:
       - The following text should be added at the end of the second paragraph in that section: "add text"
   validations:
     required: true
- - type: checkboxes 
+- type: checkboxes 
   id: r4ss
   attributes: 
     label: Are r4ss changes needed?
