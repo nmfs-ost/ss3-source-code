@@ -3963,7 +3963,9 @@ FUNCTION void write_bigoutput()
             }
           }
 
-          for (gg = 1; gg <= gender ; gg ++)
+          int gender2 = gender;
+          if (gen_l(f, i) == 0) gender2 = 1;
+          for (gg = 1; gg <= gender2 ; gg ++)
           {
             if (gen_l(f, i) != 2 && gg == 1)
             {
@@ -4057,6 +4059,7 @@ FUNCTION void write_bigoutput()
           nbins = 0;
           for (gg = 1; gg <= gender ; gg ++)
           {
+            warning<<"obs: "<<i<<" gg "<<gg<<" "<<gen_a(f, i)<<endl;
             if (gen_a(f, i) != 2 && gg == 1)
             {
               z_lo = tails_a(f, i, 1);
@@ -4071,7 +4074,9 @@ FUNCTION void write_bigoutput()
             }
           }
 
-          for (gg = 1; gg <= gender ; gg ++)
+          int gender2 = gender;
+          if (gen_a(f, i) == 0) gender2 = 1;
+          for (gg = 1; gg <= gender2 ; gg ++)
           {
             if (gen_a(f, i) != 2 && gg == 1)
             {
