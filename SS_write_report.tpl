@@ -4059,7 +4059,6 @@ FUNCTION void write_bigoutput()
           nbins = 0;
           for (gg = 1; gg <= gender ; gg ++)
           {
-            warning<<"obs: "<<i<<" gg "<<gg<<" "<<gen_a(f, i)<<endl;
             if (gen_a(f, i) != 2 && gg == 1)
             {
               z_lo = tails_a(f, i, 1);
