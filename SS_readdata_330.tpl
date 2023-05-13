@@ -1839,7 +1839,7 @@
   imatrix  gen_l(1,Nfleet,1,Nobs_l);
   imatrix  mkt_l(1,Nfleet,1,Nobs_l);
   3darray header_l_rd(1,Nfleet,1,Nobs_l,0,3);
-  3darray header_l(1,Nfleet,1,Nobs_l,0,3);
+  3darray header_l(1,Nfleet,1,Nobs_l,0,5);
   3darray tails_l(1,Nfleet,1,Nobs_l,1,4); // min-max bin for females; min-max bin for males
   ivector tails_w(1,4);
 
@@ -1929,7 +1929,8 @@
             }
 
             header_l_rd(f, j)(1, 3) = lendata[i](1, 3); // values as in input file
-            header_l(f, j, 3) = lendata[i](3);
+//            header_l(f, j, 3) = lendata[i](3);
+            header_l(f, j)(3, 5) = lendata[i](3, 5);
             if (y > retro_yr)
               header_l(f, j, 3) = -f;
             if (header_l(f, j, 3) > 0)
