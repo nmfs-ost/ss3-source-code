@@ -656,7 +656,7 @@ FUNCTION void write_nudata()
               if (nsamp_l(f, i) < k)
                 k = nsamp_l(f, i);
               exp_l_temp_dat = nsamp_l(f, i) * value(exp_l(f, i) / sum(exp_l(f, i)));
-              report1 << header_l_rd(f, i)(1, 3) << " " << gen_l(f, i) << " " << header_l(f, i)(5) << " " << nsamp_l(f, i) << " " << exp_l_temp_dat << endl;
+              report1 << header_l_rd(f, i)(1, 3) << " " << gen_l(f, i) << " " << header_l_rd(f, i)(5) << " " << nsamp_l(f, i) << " " << exp_l_temp_dat << endl;
             }
           }
         }
@@ -1135,7 +1135,8 @@ FUNCTION void write_nudata()
                 exp_l_temp_dat(temp_mult(compindex)) += 1.0;
               }
 
-              report1 << header_l_rd(f, i)(1, 3) << " " << gen_l(f, i) << " " << header_l(f, i)(5) << " " << Nsamp_DM << " " << exp_l_temp_dat << endl;
+              report1 << header_l_rd(f, i)(1, 5) << " " << Nsamp_DM << " " << exp_l_temp_dat << endl;
+//              report1 << header_l_rd(f, i)(1, 3) << " " << gen_l(f, i) << " " << header_l_rd(f, i)(5) << " " << Nsamp_DM << " " << exp_l_temp_dat << endl;
             }
           }
         }
