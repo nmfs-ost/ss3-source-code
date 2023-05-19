@@ -1979,7 +1979,7 @@
   SR_parm_timevary.initialize();
   SR_env_link = 0;
   SR_env_target = 0;
-  //#_SR_function: 1=null; 2=Ricker; 3=std_B-H; 4=SCAA; 5=Hockey; 6=B-H_flattop; 7=Survival_3Parm "<<endl;
+  //#_SR_function: 1=null; 2=Ricker; 3=std_B-H; 4=SCAA; 5=Hockey; 6=B-H_flattop; 7=Survival_3Parm; 10=B-H with a,b "<<endl;
   ParmLabel += "SR_LN(R0)";
   switch (SR_fxn)
   {
