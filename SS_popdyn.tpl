@@ -347,17 +347,18 @@ FUNCTION void get_initial_conditions()
 
     if(SR_fxn == 10)  // B-H with a,b
     {
+  //  WHAM based on R = A*S/(1+B*S)
+  //  log_SR_a = log(4 * SR_h/(exp(log_SPR0)*(1 - SR_h)));
+  //  log_SR_b = log((5*SR_h - 1)/((1-SR_h)*SR_R0*exp(log_SPR0)));
+  //  h = a * SPR0 / (4. + a * SPR0)
+  //  R0 = 1/b * (a-1/SPR0)
+
       alpha = mfexp(SR_parm(3));
       beta = mfexp(SR_parm(4));
-      alpha = 4.0 * steepness / (SPR_virgin * (1. - steepness));
-      beta = (5.0 * steepness - 1.0) / ((1 - steepness) * SSB_virgin);
+      steepness = alpha * SPR_virgin / (4. + alpha * SPR_virgin);
+      Recr_virgin = 1. / beta * (alpha - (1. / SPR_virgin));
       SR_parm(1) = log(Recr_virgin);
       SR_parm(2) = steepness;
-      // warning<< SR_parm(1) << " Ln(R0) " << mfexp(SR_parm(1)) << endl
-      //     << " alpha_beta: "<<alpha<<" "<<beta<<endl
-      //   << " spr: "<<SPR_virgin<<endl
-      //    << " der_steep: "<< alpha * SPR_virgin / (4.00 + alpha * SPR_virgin)<<endl
-      //    << "der_R0: "<<  1.0 / beta * (alpha - ( 1.0 / SPR_virgin))<<endl;
     }
     else {
       Recr_virgin = mfexp(SR_parm(1));

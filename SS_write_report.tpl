@@ -1739,17 +1739,15 @@ FUNCTION void write_bigoutput()
     SS2out << " SPR_virgin "<<SPR_virgin<<endl;
     if (SR_fxn == 10)
     {
-  //  SR_h = 0.2 * exp(0.8*log(exp(log_SR_a) * exp(log_SPR0)));
-  //  SR_R0 = log(exp(log_SR_a + log_SPR0))/(exp(log_SR_b + log_SPR0));
-      SS2out << " derived_steepness "<< 0.2 * mfexp( 0.8 * log( alpha ) * SPR_virgin)<<" using_virgin_SPR; will be time-varying if biology is time-varying"<<endl;
-      SS2out << "derived_R0 "<<  log( alpha * SPR_virgin ) / ( beta * SPR_virgin)<endl;
+      SS2out << " Ln_alpha_parameter: " << SR_parm(3) << " alpha " << mfexp(SR_parm(3)) << endl;
+      SS2out << " Ln_beta_parameter: " << SR_parm(4) << " beta " << mfexp(SR_parm(4)) << endl;
     }
     else if (SR_fxn == 3)
     {
       alpha = 4.0 * steepness / (SPR_virgin * (1. - steepness));
       beta = (5.0 * steepness - 1.0) / ((1 - steepness) * SSB_virgin);
-      SS2out << " derived_alpha " << alpha << " using_virgin_SPR" << endl;
-      SS2out << "derived_beta " <<  beta <<endl;
+      SS2out << " Ln_alpha_derived: " << log(alpha) << " alpha " << alpha << endl;
+      SS2out << " Ln_beta_derived: " << log(beta) << " beta " << beta;
     }
     else if (SR_fxn == 8)
     {
