@@ -161,9 +161,10 @@ FUNCTION dvariable Spawn_Recr(const prevariable& SSB_virgin_adj, const prevariab
 
       case 10: // Beverton-Holt with alpha beta
       {
+  //  WHAM based on R = A*S/(1+B*S)
         alpha = mfexp(SR_parm_work(3));
         beta = mfexp(SR_parm_work(4));
-        NewRecruits =  (alpha * SSB_curr_adj) / (beta + SSB_curr_adj);
+        NewRecruits =  (alpha * SSB_curr_adj) / (1.0 + beta * SSB_curr_adj);
         break;
       }
   }
@@ -315,8 +316,6 @@ FUNCTION dvar_vector Equil_Spawn_Recr_Fxn(const dvar_vector& SRparm,
   //  WHAM based on R = A*S/(1+B*S)
   //  log_SR_a = log(4 * SR_h/(exp(log_SPR0)*(1 - SR_h)));
   //  log_SR_b = log((5*SR_h - 1)/((1-SR_h)*SR_R0*exp(log_SPR0)));
-  //  SR_h = 0.2 * exp(0.8*log(exp(log_SR_a) * exp(log_SPR0)));
-  //  SR_R0 = log(exp(log_SR_a + log_SPR0))/(exp(log_SR_b + log_SPR0));
 
   //  SS3 previously used alternative formulation: R = A*S/(B+S)
   //  converting SS3 to align with WHAM
