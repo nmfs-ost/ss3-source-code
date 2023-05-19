@@ -1,0 +1,40 @@
+name: email_when_close_pr
+
+on:
+  pull_request:
+    types: [ closed ]
+
+jobs: 
+  email_when_close_pr:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get Pull Request Number
+        run: |
+          echo github.event.pull_request.number = ${{ github.event.pull_request.number }}
+          echo github.event.pull_request.html_url = ${{ github.event.pull_request.html_url }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          
+      - name: Get issues
+        id: get-issues
+        uses: mondeja/pr-linked-issues-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          
+      - name: Print linked issue numbers
+        run: echo ${{ steps.get-issues.outputs.issues }}   
+  
+      - name: get email
+        id: test
+        uses: evvanErb/get-github-email-by-username-action@v1.25
+        with:
+          github-username: ${{ github.triggering_actor }}
+        
+      # send an email; cannot figure out how to get correct url to PR even just pasting in the link
+      - name: send email
+        uses: cinotify/github-action@main
+        if: ${{ steps.get-issues.outputs.issues != null }}
+        with:
+          to: ${{ steps.test.outputs.email }}
+          subject: 'PR in stock synthesis repository is closed; reminder to fill out info in associated issue'
+          body: "PR #${{ github.event.pull_request.number }} in the nmfs-stock-synthesis/stock-synthesis repository has been closed, please remember to move any pertinent information to the following issue(s) linked to this PR: #${{ steps.get-issues.outputs.issues }}"
