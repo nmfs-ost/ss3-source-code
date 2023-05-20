@@ -11,7 +11,8 @@
 			"*.htp": "c",
 			"ostream": "c",
 			"xlocale": "c",
-			"iosfwd": "c"
+			"iosfwd": "c",
+			"cmath": "c"
 		},
 		"explorer.excludeGitIgnore": true
 	}
