@@ -3652,6 +3652,14 @@ FUNCTION void Get_Forecast()
 
         Smry_Table(y, 11) = SSB_equil;
         Smry_Table(y, 13) = GenTime;
+        if( SR_fxn == 10 )
+        {
+          temp = SSB_equil / equ_Recr;  //  current year's SPB/R with current biology at age
+          alpha = mfexp(SR_parm_work(3));
+          beta = mfexp(SR_parm_work(4));
+          SR_parm_byyr(y, 2) =  alpha * temp / (4. + alpha * temp);  //  implied steepness
+          SR_parm_byyr(y, 1) = log( 1. / beta * (alpha - (1. / temp)));  //  implied ln_R0
+        }
         Fishon = 1;
         Do_Equil_Calc(equ_Recr); //  call function to do equilibrium calculation
         if (STD_Yr_Reverse_Ofish(y) > 0)
