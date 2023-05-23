@@ -1,0 +1,19 @@
+# Check that the NUTS algorithim in ADMB is reproducible with SS3.
+# Developed with Cole Monnahan.
+name: call-run-ss3-mcmc
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - '**.tpl'
+    branches:
+      - main
+  pull_request:
+    paths:
+      - '**.tpl'
+    branches:
+      - main
+jobs:
+  call-workflow:
+    uses: nmfs-stock-synthesis/workflows/.github/workflows/run-ss3-mcmc.yml@main
+    

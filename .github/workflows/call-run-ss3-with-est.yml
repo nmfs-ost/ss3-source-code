@@ -1,0 +1,18 @@
+# Build SS3 and run models with estimation and hessian
+name: call-run-ss3-with-est
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - '**.tpl'
+    branches:
+      - main
+  pull_request:
+    paths:
+      - '**.tpl'
+    branches:
+      - main
+jobs:
+  call-workflow:
+    uses: nmfs-stock-synthesis/workflows/.github/workflows/run-ss3-with-est.yml@main
+    
