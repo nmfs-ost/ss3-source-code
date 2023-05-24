@@ -5,6 +5,7 @@ on:
     paths:
     - '**.tpl'
     - '**.sh'
+    - '**.yml'
   workflow_dispatch:
 jobs:
   call-workflow:

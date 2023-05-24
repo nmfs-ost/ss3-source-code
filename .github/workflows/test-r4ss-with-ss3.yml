@@ -5,13 +5,17 @@ on:
   push:
     paths:
       - '**.tpl'
+      - '**.yml'
     branches:
       - main
+      - transfer-workflows
   pull_request:
     paths:
       - '**.tpl'
+      - '**.yml'
     branches:
       - main
+      - transfer-workflows
 
 # run models without estimation, then run r4ss SS_plots and SS_output
 jobs:

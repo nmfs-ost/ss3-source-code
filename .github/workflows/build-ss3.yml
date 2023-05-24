@@ -7,6 +7,7 @@ on:
       paths:
       - '**.tpl'
       - '**.sh'
+      - '**.yml'
     workflow_dispatch:
     # inputs:
       # # options: should be "win", "osx, "linux"
