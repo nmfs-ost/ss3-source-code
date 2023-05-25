@@ -6,17 +6,13 @@ on:
   push:
     paths:
       - '**.tpl'
-      - '**.yml'
     branches:
       - main
-      - transfer-workflows
   pull_request:
     paths:
       - '**.tpl'
-      - '**.yml'
     branches:
       - main
-      - transfer-workflows
       
 # Check mcmc works
 jobs:

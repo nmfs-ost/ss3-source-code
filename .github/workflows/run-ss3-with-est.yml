@@ -5,17 +5,13 @@ on:
   push:
     paths:
       - '**.tpl'
-      - '**.yml'
     branches:
       - main
-      - transfer-workflows
   pull_request:
     paths:
       - '**.tpl'
-      - '**.yml'
     branches:
       - main
-      - transfer-workflows
 
 # run fast running SS models with estimation
 jobs:

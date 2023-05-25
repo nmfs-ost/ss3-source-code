@@ -7,13 +7,8 @@ on:
       paths:
       - '**.tpl'
       - '**.sh'
-      - '**.yml'
     workflow_dispatch:
-    # inputs:
-      # # options: should be "win", "osx, "linux"
-      # operating-sys:
-      #   required: true
-      #   type: string
+
 jobs:
   build-ss3:
     runs-on: ${{ matrix.config.os }}
