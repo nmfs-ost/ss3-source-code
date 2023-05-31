@@ -319,12 +319,15 @@ FUNCTION dvar_vector Equil_Spawn_Recr_Fxn(const dvar_vector& SRparm,
 
   //  SS3 previously used alternative formulation: R = A*S/(B+S)
   //  converting SS3 to align with WHAM
+      SPR_virgin = SSB_virgin / Recr_virgin;
       alpha = 4.0 * steepness / (SPR_virgin * (1. - steepness));
       beta = (5.0 * steepness - 1.0) / ((1 - steepness) * SSB_virgin);
+      report5<<" alpha "<<alpha<<" beta "<<beta<<" SSB_unf "<<SSB_virgin<<" SPR "<<SPR_virgin<<" steep "<<steepness<<endl;
       B_equil = (alpha * SPR_temp - 1.0) / beta;
+//      report5<<" spr "<<SPR_temp<<"  Beq "<<B_equil<<endl;
       B_equil = posfun(B_equil, 0.0001, temp);
       R_equil = alpha * B_equil / (1.0 + beta * B_equil);
-//      report5<<" WHAM Beq "<<B_equil<<" Req "<<R_equil<<" alpha "<<alpha<<" beta "<<beta<<" SSB_unf "<<SSB_unf<<endl;
+//      report5<<"  Beq "<<B_equil<<" Req "<<R_equil<<endl;
 //      R_equil = (4. * steepness * Recr_virgin * B_equil) / (SSB_virgin * (1. - steepness) + (5. * steepness - 1.) * B_equil); //Beverton-Holt
 //      report5<<" SS3 Beq "<<B_equil<<" Req "<<R_equil<<" alpha "<<alpha<<" beta "<<beta<<" SSB_unf "<<SSB_unf<<endl;
       break;
