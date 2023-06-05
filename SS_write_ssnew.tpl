@@ -2504,9 +2504,10 @@ FUNCTION void write_nucontrol()
       report4 << "#_sigma_amax>amin means create sigma parm for each bin from min to sigma_amax; sigma_amax<0 means just one sigma parm is read and used for all bins" << endl;
       for (j = 1; j <= TwoD_AR_cnt; j++)
       {
-        ivector tempvec(1, 11); //  fleet, ymin, ymax, amin, amax, sigma_amax, use_rho, len1/age2, devphase
-        tempvec(1, 11) = TwoD_AR_def[j](1, 11);
+        ivector tempvec(1, 13); //  fleet, ymin, ymax, amin, amax, sigma_amax, use_rho, len1/age2, devphase
+        tempvec(1, 13) = TwoD_AR_def[j](1, 13);
         tempvec(6) = TwoD_AR_def_rd[j](6); //  restore the read value in case it got changed
+        int isigmasel = TwoD_AR_def[j](13);  //  index of first sigmasel parm in selparm
         if (tempvec(8) == 1)
         {
           anystring = "LEN";
@@ -2516,7 +2517,7 @@ FUNCTION void write_nucontrol()
           anystring = "AGE";
         }
 
-        report4 << tempvec << "  #  2d_AR specs for fleet: " << fleetname(tempvec(1)) << " " << anystring << endl;
+        report4 << tempvec(1, 11) << "  #  2d_AR specs for fleet: " << fleetname(tempvec(1)) << " " << anystring << endl;
         int sigma_amax = tempvec(6);
         int use_rho = tempvec(7);
         int amin = tempvec(4);
@@ -2525,7 +2526,8 @@ FUNCTION void write_nucontrol()
           dvector dtempvec(1, 7); //  Lo, Hi, init, prior, prior_sd, prior_type, phase;
           k++;
           dtempvec = timevary_parm_rd[k](1, 7);
-          report4 << dtempvec << "  # sigma_sel for fleet:_" << tempvec(1) << "; " << anystring << "_" << a << endl;
+          dtempvec(3) = value ( selparm(isigmasel + a - amin) );
+          report4 << dtempvec << "  # sigma_sel for fleet:_" << tempvec(1) << "; " << anystring << "_" << a <<endl;
         }
         if (use_rho == 1)
         {
