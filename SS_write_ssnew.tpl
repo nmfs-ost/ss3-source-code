@@ -14,7 +14,10 @@ FUNCTION void write_nudata()
   int compindex = 0;
   dvector temp_probs2(1, n_abins2);
   int Nudat = 0;
+  int Nubootdat = 0;
   int Nsamp_DM = 0;
+  adstring newdatfilename;
+  adstring datinfostring;
   //  create bootstrap data files; except first file just replicates the input and second is the estimate without error
   if (irand_seed < 0)
     irand_seed = long(time(&start));
@@ -30,50 +33,46 @@ FUNCTION void write_nudata()
     if (Nudat == 1)
     {
       echoinput << "Begin writing data_echo.ss_new file" << endl;
-      anystring = ssnew_pathname + "data_echo.ss_new";
-      report1.open(anystring);
-      report1 << version_info(1) << version_info(2) << version_info(3) << endl
-              << version_info2 << endl
-              << "#_Start_time: " << ctime(&start);
-      report1 << "#_echo_input_data" << endl;
-      report1 << Data_Comments << endl;
+      newdatfilename = "data_echo.ss_new";
+	  datinfostring = "echo_input_data";
     }
     else if (Nudat == 2)
     {
       echoinput << "Begin writing data_expval.ss file" << endl;
-      anystring = ssnew_pathname + "data_expval.ss";
-      report1.open(anystring);
-      report1 << version_info(1) << version_info(2) << version_info(3) << endl
-              << version_info2 << endl
-              << "#_Start_time: " << ctime(&start);
-      report1 << "#_expected_values" << endl;
-      report1 << Data_Comments << endl;
+      newdatfilename = "data_expval.ss";
+	  datinfostring = "expected_values";
     }
-    else
+    else // data_boot files
     {
       echoinput << "Begin writing bootstrap data file(s)" << endl;
-      anystring = "     ";
-      sprintf(anystring, "%d", Nudat - 2);
-      if ((Nudat - 2) < 10)
+      Nubootdat = Nudat - 2;
+      anystring2 = "     ";
+      sprintf(anystring2, "%d", Nubootdat);
+      if (Nubootdat < 10)
       {
-        anystring2 = ssnew_pathname + "data_boot_00" + anystring + ".ss";
+        newdatfilename = "data_boot_00" + anystring2 + ".ss";
       }
-      else if ((Nudat - 2) < 100)
+      else if (Nubootdat < 100)
       {
-        anystring2 = ssnew_pathname + "data_boot_0" + anystring + ".ss";
+        newdatfilename = "data_boot_0" + anystring2 + ".ss";
       }
-      else
+      else // Nubootdat > 99
       {
-        anystring2 = ssnew_pathname + "data_boot_" + anystring + ".ss";
+        newdatfilename = "data_boot_" + anystring2 + ".ss";
       }
-      report1.open(anystring2);
-      report1 << version_info(1) << version_info(2) << version_info(3) << endl
-              << version_info2 << endl
-              << "#_Start_time: " << ctime(&start);
-      report1 << "#_bootdata:_" << Nudat << endl;
-      report1 << Data_Comments << endl;
-      report1 << "#_bootstrap file: " << Nudat - 2 << "  irand_seed: " << irand_seed << " first rand#: " << randn(radm) << endl;
+	  datinfostring = "  ";
+	  sprintf(datinfostring, "bootdata:_%d", Nudat);
     }
+    anystring = ssnew_pathname + newdatfilename;
+    report1.open(anystring);
+    report1 << version_info(1) << version_info(2) << version_info(3) << endl
+            << version_info2 << endl
+            << "#_Start_time: " << ctime(&start);
+    report1 << "#_" << datinfostring << endl;
+    report1 << Data_Comments << endl;
+	if (Nudat > 2)
+	  report1 << "#_bootstrap file: " << Nubootdat << "  irand_seed: " << irand_seed << " first rand#: " << randn(radm) << endl;
+
     report1 << version_info(1) << version_info(2) << version_info(3) << endl;
     report1 << styr << " #_StartYr" << endl;
     report1 << endyr << " #_EndYr" << endl;
@@ -656,7 +655,7 @@ FUNCTION void write_nudata()
               if (nsamp_l(f, i) < k)
                 k = nsamp_l(f, i);
               exp_l_temp_dat = nsamp_l(f, i) * value(exp_l(f, i) / sum(exp_l(f, i)));
-              report1 << header_l_rd(f, i)(1, 3) << " " << gen_l(f, i) << " " << mkt_l(f, i) << " " << nsamp_l(f, i) << " " << exp_l_temp_dat << endl;
+              report1 << header_l_rd(f, i)(1, 3) << " " << gen_l(f, i) << " " << header_l_rd(f, i)(5) << " " << nsamp_l(f, i) << " " << exp_l_temp_dat << endl;
             }
           }
         }
@@ -1135,7 +1134,8 @@ FUNCTION void write_nudata()
                 exp_l_temp_dat(temp_mult(compindex)) += 1.0;
               }
 
-              report1 << header_l_rd(f, i)(1, 3) << " " << gen_l(f, i) << " " << mkt_l(f, i) << " " << Nsamp_DM << " " << exp_l_temp_dat << endl;
+              report1 << header_l_rd(f, i)(1, 5) << " " << Nsamp_DM << " " << exp_l_temp_dat << endl;
+//              report1 << header_l_rd(f, i)(1, 3) << " " << gen_l(f, i) << " " << header_l_rd(f, i)(5) << " " << Nsamp_DM << " " << exp_l_temp_dat << endl;
             }
           }
         }

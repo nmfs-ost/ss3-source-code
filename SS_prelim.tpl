@@ -1131,6 +1131,7 @@
       for (i = 1; i <= Nobs_l(f); i++)
       {
         parti_cnt(abs(mkt_l(f, i)))++;
+        if (Do_Retain(f) == 0) mkt_l(f,i) = 0;  //  force to partition 0 if retention not defined
       }
       if (parti_cnt(1) > 0 && Do_Retain(f) == 0)
       {
@@ -1139,7 +1140,7 @@
       }
       if (parti_cnt(2) > 0 && Do_Retain(f) == 0)
       {
-        warnstream <<  "fleet: " << f << "  lencomp has obs with partition==2; will treat as partition=0 because retention not defined; N= " << parti_cnt(2);
+        warnstream <<  "fleet: " << f << " lencomp has N obs with partition==2 (retained); changed to partition=0 because retention not defined; N= " << parti_cnt(2);
         write_message (WARN, 0);
       }
       if (parti_cnt(2) > 0 && (fleet_type(f) == 2 || seltype(f, 2) == 3 || seltype(Nfleet + f, 2) == 3)) //  error if retained catch obs are with no retention fleets
@@ -1155,6 +1156,7 @@
       for (i = 1; i <= Nobs_a(f); i++)
       {
         parti_cnt(abs(mkt_a(f, i)))++;
+        if (Do_Retain(f) == 0) mkt_a(f,i) = 0;  //  force to partition 0 if retention not defined
       }
       if (parti_cnt(1) > 0 && Do_Retain(f) == 0)
       {
@@ -1163,8 +1165,8 @@
       }
       if (parti_cnt(2) > 0 && Do_Retain(f) == 0)
       {
-        warnstream << "Fleet: " << f << "  agecomp has obs with partition==2; will treat as partition=0 because retention not defined; N= " << parti_cnt(2);
-        write_message (WARN, 0);
+        warnstream << "Fleet: " << f << "  agecomp has N obs with partition==2 (retained); changed to partition=0 because retention not defined; N= " << parti_cnt(2);
+        write_message (ADJUST, 0);
       }
       if (parti_cnt(2) > 0 && (fleet_type(f) == 2 || seltype(f, 2) == 3 || seltype(Nfleet + f, 2) == 3)) //  error if retained catch obs are with no retention fleets
       {
@@ -1179,7 +1181,8 @@
       for (i = 1; i <= Nobs_ms(f); i++)
       {
         parti_cnt(abs(mkt_ms(f, i)))++;
-      }
+        if (Do_Retain(f) == 0) mkt_ms(f, i) = 0;  //  force to partition 0 if retention not defined
+    }
       if (parti_cnt(1) > 0 && Do_Retain(f) == 0)
       {
         warnstream << "Fleet: " << f << "  size-at-age data contains obs with partition==1 and retention fxn not defined; N= " << parti_cnt(1);
@@ -1187,8 +1190,8 @@
       }
       if (parti_cnt(2) > 0 && Do_Retain(f) == 0)
       {
-        warnstream << "Fleet: " << f << "  size-at-age data  has obs with partition==2; will treat as partition=0 because retention not defined; N= " << parti_cnt(2);
-        write_message (WARN, 0);
+        warnstream << "Fleet: " << f << "  size-at-age data has N obs with partition==2 (retained); changed to partition=0 because retention not defined; N= " << parti_cnt(2);
+        write_message (ADJUST, 0);
       }
       if (parti_cnt(2) > 0 && (fleet_type(f) == 2 || seltype(f, 2) == 3 || seltype(Nfleet + f, 2) == 3)) //  error if retained catch obs are with no retention fleets
       {
@@ -1207,6 +1210,7 @@
         {
           int parti = abs(mnwtdata(4, i)); //  partition:  0=all, 1=discard, 2=retained
           parti_cnt(parti)++;
+          if (Do_Retain(f) == 0) mnwtdata(4, i) = 0;  //  force to partition 0 if retention not defined
         }
       }
       if (parti_cnt(1) > 0 && Do_Retain(f) == 0)
@@ -1216,8 +1220,8 @@
       }
       if (parti_cnt(2) > 0 && Do_Retain(f) == 0)
       {
-        warnstream << "Fleet: " << f << "  meansize data has obs with partition==2; will treat as partition=0 because retention not defined; N= " << parti_cnt(2);
-        write_message (WARN, 0);
+        warnstream << "Fleet: " << f << "  meansize data has N obs with partition==2 (retained); changed to partition=0 because retention not defined; N= " << parti_cnt(2);
+        write_message (ADJUST, 0);
       }
       if (parti_cnt(2) > 0 && (fleet_type(f) == 2 || seltype(f, 2) == 3 || seltype(Nfleet + f, 2) == 3)) //  error if retained catch obs are with no retention fleets
       {
