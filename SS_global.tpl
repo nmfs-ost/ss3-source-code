@@ -910,7 +910,7 @@ BETWEEN_PHASES_SECTION
         for (g = Fparm_loc_st(f); g <= Fparm_loc_end(f); g++)
         {
           t = Fparm_loc[g](2);
-          F_rate(g) = Hrate(f, t);
+          F_rate(g) = log( Hrate(f, t));
         }
       }
     }
