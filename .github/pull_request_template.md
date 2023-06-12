@@ -19,7 +19,7 @@
 
 ## What tests have been done? 
 ### Where are the relevant files?
-<!-- Uncomment the option below that best fits the situation and upload the necessary files to the correct location, preferabbly the associated issue(s). -->
+<!-- Uncomment the option below that best fits the situation and upload the necessary files to the correct location, preferably the associated issue(s). -->
 
 <!-- - [x] Test files are in the issue. -->
 <!-- - [x] There is no issue related to this pull request so the files are attached below. -->
