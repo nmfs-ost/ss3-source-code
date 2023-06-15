@@ -367,8 +367,8 @@ PARAMETER_SECTION
   {
     k = N_Fparm;
     Fparm_PH_dim.deallocate();
-    Fparm_PH_dim.allocate(1, N_Fparm);
-    for (int j = 1; j <= N_Fparm; j++)
+    Fparm_PH_dim.allocate(0, N_Fparm);
+    for (int j = 0; j <= N_Fparm; j++)
       Fparm_PH_dim(j) = Fparm_PH[j];
   }
   else
@@ -378,9 +378,10 @@ PARAMETER_SECTION
   // clang-format off
  END_CALCS
  //  defining F_rate as number_vector allows for Fparm_PH to be element specific
+ //  0'th element holds the base F_rate; others are offsets from it
   //  log(max_harvest_rate);
 
-  init_bounded_number_vector F_rate(1,k,-10.,5.,Fparm_PH_dim)
+  init_bounded_number_vector F_rate(0,k,-10.,5.,Fparm_PH_dim)
 
   vector Nmigr(1,pop);
   number Nsurvive;
