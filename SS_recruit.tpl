@@ -344,11 +344,9 @@ FUNCTION dvar_vector Equil_Spawn_Recr_Fxn(const prevariable& SRparm2, const prev
     {
       SRZ_0 = log(1.0 / (SSB_virgin / Recr_virgin));
       srz_min = SRZ_0 * (1.0 - steepness);
-      B_equil = SSB_virgin * (1. - (log(1. / SPR_temp) - SRZ_0) / pow((srz_min - SRZ_0), (1. / 1.)));
+      B_equil = SSB_virgin * (1. - (log(1. / SPR_temp) - SRZ_0) / pow((srz_min - SRZ_0), (1. / SRparm3)));
       B_equil = posfun(B_equil, 0.0001, temp);
-      SRZ_surv = mfexp((1. - pow((B_equil / SSB_virgin), 1.)) * (srz_min - SRZ_0) + SRZ_0); //  survival
-//      B_equil = SSB_virgin * (1. - (log(1. / SPR_temp) - SRZ_0) / pow((srz_min - SRZ_0), (1. / SRparm3)));
-//      SRZ_surv = mfexp((1. - pow((B_equil / SSB_virgin), SRparm3)) * (srz_min - SRZ_0) + SRZ_0); //  survival
+      SRZ_surv = mfexp((1. - pow((B_equil / SSB_virgin), SRparm3)) * (srz_min - SRZ_0) + SRZ_0); //  survival
       R_equil = B_equil * SRZ_surv;
       break;
     }
