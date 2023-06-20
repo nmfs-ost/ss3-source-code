@@ -1580,10 +1580,11 @@ FUNCTION void write_nucontrol()
   {
     NuFore << "0 # # Value multiplier is ignored " << endl;
   }
-  NuFore << Fcast_Loop_Control(5) << " #_Fcast_MGparm_averaging: 0 = not, 1 = do" << endl;
+  NuFore << Fcast_Loop_Control(5) << " #_Fcast_MGvector_averaging: 0 = not, 1 = do" << endl;
   NuFore << "#_read list of MG_type, method (1, 2), start year, end year" << endl
          << "#_Terminate with -9999 for MG_type" << endl
-				 << "#_MG_type: 1=M, 2=growth, 3=wtlen, 4=recr_dist&femfrac, 5=migration, 6=ageerror, 7=catchmult, 8=hermaphroditism" << endl
+//				 << "#_MG_type: 1=M, 2=growth, 3=wtlen, 4=recr_dist&femfrac, 5=migration, 6=ageerror, 7=catchmult, 8=hermaphroditism" << endl
+				 << "#_MG_type: 1=M, 4=recr_dist, 5=migration" << endl
          << "#_Method = 0 (default) means continue time_vary parms; 1 means to use average of derived biology; 2 (future) means average parameter then apply as if time-vary"<<endl;
 
   if (Fcast_Loop_Control(5) == 1)

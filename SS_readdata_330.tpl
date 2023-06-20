@@ -4191,7 +4191,7 @@
       echoinput << Fcast_Loop_Control(4) << " #echoed Forecast control #4:  multiplier on recruitment from spawn_recr" << endl;
     }
 
-    echoinput << Fcast_Loop_Control(5) << " #echoed Forecast MGparm averaging:  enter 1 to start list input" << endl;
+    echoinput << Fcast_Loop_Control(5) << " #echoed Forecast biology averaging:  enter 1 to start list input" << endl;
   //  Fcast_MGparm_ave: read MG_type, method, start year, end year
   //  terminate with MG_type = -9999
   //  MG_type:  1=M, 2=growth 3=wtlen, 4=recr_dist&femfrac, 5=migration, 6=ageerror, 7=catchmult 8=hermaphroditism
@@ -4216,6 +4216,32 @@
             Fcast_MGparm_ave(f1) = tempvec; 
           }
       } while (ender == 0);
+
+   /*
+    //  Neal - please modify below to act on the Fcast_MGparm_ave minyear and maxyear values
+    //  probably need to retain a _rd version for writing to ssnew
+    for (i = 1; i <= 6; i++)
+    {
+      if (Fcast_yr(i) == -999)
+      {
+        Fcast_yr(i) = styr;
+      }
+      else if (Fcast_yr(i) <= 0)
+      {
+        Fcast_yr(i) += endyr;
+      }
+      else if (Fcast_yr(i) < styr)
+      {
+        Fcast_yr(i) = styr;
+      }
+      else if (Fcast_yr(i) > endyr)
+      {
+        Fcast_yr(i) = endyr;
+      }
+      else
+      {
+      } //  OK in range
+ */
       echoinput << "Forecast MGparm averaging: " << endl << Fcast_MGparm_ave << endl;
     }
   // clang-format off
