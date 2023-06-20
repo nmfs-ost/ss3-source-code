@@ -4220,6 +4220,7 @@
    /*
     //  Neal - please modify below to act on the Fcast_MGparm_ave minyear and maxyear values
     //  probably need to retain a _rd version for writing to ssnew
+    //  add option
     for (i = 1; i <= 6; i++)
     {
       if (Fcast_yr(i) == -999)
