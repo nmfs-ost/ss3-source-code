@@ -1,43 +1,47 @@
-## Concisely (20 words or less) describe the issue
+<!-- General instructions -->
+<!--
+* Please read the html comment under each heading and follow the instructions.
+* For smaller changes, feel free to skip sections flagged as "optional".
+* Before opening the pull request (PR), make sure all the GitHub actions are
+  passing on the remote feature branch.
+* Make sure this PR has an informative title rather than the default text.
+* Lastly, before closing the PR, **please make sure that all comments/discussion in this PR that are related to an issue are placed in the summary of that issue**.
+-->
 
-## Please Link issue(s)
+## Concisely describe what has been changed/addressed in the pull request.
+<!--- In less than 20 words describe this PR and link related issues.-->
+<!--- A summary is important if there is no issue related to the PR, otherwise the summary should be in the issue.-->
 
-resolves #[add issue number number], resolves #[optional second issue number if more than 1 issue addressed.]
 
-## What tests have been done? Upload any model input files created for testing in a zip file, if possible.
+<!-- Link related issue(s) using a bulleted list. -->
+<!-- Remove the following bullet if no issues are linked to this PR. -->
+* Resolves issue #
 
-## What tests/review still need to be done? Who can do it, and by when is it needed (ideally)?
+## What tests have been done? 
+### Where are the relevant files?
+<!-- Uncomment the option below that best fits the situation and upload the necessary files to the correct location, preferably the associated issue(s). -->
 
-## Has any new code been documented?
+<!-- - [x] Test files are in the issue. -->
+<!-- - [x] There is no issue related to this pull request so the files are attached below. -->
+<!-- - [x] No test files are required for this pull request. -->
 
-If not, please add documentation before submitting the Pull Request.
-- [ ] I have documented any new code added (or no new code was added)
+### What tests/review still need to be done?
+<!-- If no additional tests are needed, please put None.-->
+<!-- Provide information on who/when for uncompleted tasks -->
 
-## is there an input change for users to Stock Synthesis? 
+## Is there an input change for users to Stock Synthesis? 
+<!-- Uncomment the option below that best fits the situation. -->
+<!-- If needed, uncomment the code block and replace the text. -->
 
-- [ ] Yes, there was an input change
+<!-- - [x] The input change is in the related issue(s). -->
+<!-- - [x] There is no issue related to this pull request so the input change is below. -->
+<!-- - [x] No, there was no input change. -->
 
-If so, please provide an example of the new inputs needed.
-
+<!---
 ```
-[New example stock synthesis input goes here]
-
+If there is no issue related to this PR, replace this text with your example stock synthesis input.
 ```
+-->
 
-## Check which is true. This PR requires:
-
-- [ ] no further changes to r4ss
-- [ ] no further changes to the manual
-- [ ] no further changes to SSI (the SS3 GUI)
-- [ ] no further changes to the stock synthesis change log (new features, bug reports)
-
-## Describe any changes in r4ss/SS3 manual/SSI that are needed (if not checked):
-
-## If changes are needed in the change log, please fill in the table here:
-
-| Action                | Topics                                     | Type  |
-| --------------------- | ----------------------------------------- | --------------------------------------- |
-| [fix, new, or revise] | [e.g., biology. Use issue label options.] | [input, output, and/or calc, or ALL] |
-
-
-## Additional information (optional):
+## Additional information (optional).
+<!--- Any additional information goes here. -->

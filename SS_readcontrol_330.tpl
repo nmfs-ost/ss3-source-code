@@ -4379,20 +4379,20 @@
   if (TwoD_AR_do > 0)
   {
     warnstream << "The experimental 2D_AR selectivity smoother option is selected!";
+      //  elements 1-11 are read from control.ss;  12 and 13 are calculated internally
+      //  1-fleet, 2-ymin, 3-ymax, 4-amin, 5-amax, 6-sigma_amax, 7-use_rho, 8-age/len, 9-dev_phase
+      //  10-before yr range, 11=after yr range, 12-N_parm_dev,  13-selparm_location
     write_message (WARN, 0);
-    ivector tempvec(1, 13); //  fleet, ymin, ymax, amin, amax, sigma_amax, use_rho, age/len, before, after
+    ivector tempvec(1, 13);
     tempvec.initialize();
     TwoD_AR_def.push_back(tempvec); //  bypass that pesky zeroth row
     TwoD_AR_def_rd.push_back(tempvec); //  bypass that pesky zeroth row
     echoinput << "read specification for first 2D_AR1:  fleet, ymin, ymax, amin, amax, sigma_amax, use_rho, len1/age2, before, after" << endl;
-  
     ender = 0;
     do
     {
       ivector tempvec(1, 13);
       ivector tempvec2(1, 13);
-      //  1-fleet, 2-ymin, 3-ymax, 4-amin, 5-amax, 6-sigma_amax, 7-use_rho, 8-age/len, 9-dev_phase
-      //  10-before yr range, 11=after yr range, 12-N_parm_dev,  13-selparm_location
       tempvec.initialize();
       tempvec2.initialize();
       *(ad_comm::global_datafile) >> tempvec(1, 11);
