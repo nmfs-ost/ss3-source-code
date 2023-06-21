@@ -1591,18 +1591,18 @@ FUNCTION void write_nucontrol()
   {
     NuFore << "# MG_type method st_year end_year " << endl;
     for (int i = 1; i <= 8; i++)
-    if (Fcast_MGparm_ave(i, 1) > 0)
+    if (Fcast_MGparm_ave_rd(i, 1) > 0)
 	  {
-      NuFore << Fcast_MGparm_ave(i);
-      if (Fcast_MGparm_ave(i, 1) == 1) NuFore << " # (M) NatMort " << endl;
-      else if (Fcast_MGparm_ave(i, 1) == 2) NuFore << " # Growth " << endl;
-      else if (Fcast_MGparm_ave(i, 1) == 3) NuFore << " # Wt/Len " << endl;
-      else if (Fcast_MGparm_ave(i, 1) == 4) NuFore << " # RecrDist " << endl;  //  frac_female may be added later
-      else if (Fcast_MGparm_ave(i, 1) == 5) NuFore << " # Migration " << endl;
-      else if (Fcast_MGparm_ave(i, 1) == 6) NuFore << " # Age Error " << endl;
-      else if (Fcast_MGparm_ave(i, 1) == 7) NuFore << " # CatchMult " << endl;
-      else if (Fcast_MGparm_ave(i, 1) == 8) NuFore << " # Hermaphroditism " << endl;
-      else if (Fcast_MGparm_ave(i, 1) == 9) NuFore << " # Maturity&Fecundity " << endl;
+      NuFore << Fcast_MGparm_ave_rd(i);
+      if (Fcast_MGparm_ave_rd(i, 1) == 1) NuFore << " # (M) NatMort " << endl;
+      else if (Fcast_MGparm_ave_rd(i, 1) == 2) NuFore << " # Growth " << endl;
+      else if (Fcast_MGparm_ave_rd(i, 1) == 3) NuFore << " # Wt/Len " << endl;
+      else if (Fcast_MGparm_ave_rd(i, 1) == 4) NuFore << " # RecrDist " << endl;  //  frac_female may be added later
+      else if (Fcast_MGparm_ave_rd(i, 1) == 5) NuFore << " # Migration " << endl;
+      else if (Fcast_MGparm_ave_rd(i, 1) == 6) NuFore << " # Age Error " << endl;
+      else if (Fcast_MGparm_ave_rd(i, 1) == 7) NuFore << " # CatchMult " << endl;
+      else if (Fcast_MGparm_ave_rd(i, 1) == 8) NuFore << " # Hermaphroditism " << endl;
+      else if (Fcast_MGparm_ave_rd(i, 1) == 9) NuFore << " # Maturity&Fecundity " << endl;
     }
     NuFore << "-9999 -1 -1 -1" << endl;
   }

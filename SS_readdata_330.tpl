@@ -3735,8 +3735,6 @@
   {
     warnstream << " final value in data file is an error " << fid;
     write_message(FATAL, 0);
-    //    cout << " final data value in error " << fid << endl;
-    //    exit(1);
   }
   cout << "Data read successful " << fid << endl
        << endl;
@@ -4032,7 +4030,8 @@
   Do_Rebuilder = 0;
   // clang-format off
  END_CALCS
-    matrix Fcast_MGparm_ave(1,8,1,4)  //  for the 8 MG_types, method, st_year, end_year
+    matrix Fcast_MGparm_ave_rd(1,8,1,4)  //  for the 8 MG_types, method, st_year, end_year
+    matrix Fcast_MGparm_ave(1,8,1,4)  //  for the 8 MG_types, method, st_year, end_year (real years)
 
  LOCAL_CALCS
   // clang-format on
@@ -4193,7 +4192,7 @@
     }
 
     echoinput << Fcast_Loop_Control(5) << " #echoed Forecast biology averaging:  enter 1 to start list input" << endl;
-  //  Fcast_MGparm_ave: read MG_type, method, start year, end year
+  //  Fcast_MGparm_ave_rd: read MG_type, method, start year, end year
   //  terminate with MG_type = -9999
   //  MG_type:  1=M, 2=growth 3=wtlen, 4=recr_dist&femfrac, 5=migration, 6=ageerror, 7=catchmult 8=hermaphroditism
     N_Fcast_parm_aves = 0;
@@ -4209,41 +4208,45 @@
         dvector tempvec(1, 4);
         *(ad_comm::global_datafile) >> tempvec(1, 4);
         echoinput << tempvec << endl;
-        if (tempvec(1) == -9999.)  
+        if (tempvec(1) == -9999. || tempvec(1) > 8)  
           ender = 1;
         else
           {
             int f1 = tempvec(1);
-            Fcast_MGparm_ave(f1) = tempvec; 
+            Fcast_MGparm_ave_rd(f1) = tempvec; 
+            Fcast_MGparm_ave(f1) = tempvec;
           }
       } while (ender == 0);
 
-   /*
-    //  Neal - please modify below to act on the Fcast_MGparm_ave minyear and maxyear values
-    //  probably need to retain a _rd version for writing to ssnew
-    //  add option
-    for (i = 1; i <= 6; i++)
-    {
-      if (Fcast_yr(i) == -999)
+      //  Adjusting Fcast_MGparm_ave_rd minyear and maxyear values
+      //  for Fcast_MGparm_ave
+      for (i = 1; i <= 8; i++)
       {
-        Fcast_yr(i) = styr;
+        if (Fcast_MGparm_ave_rd(i,1) > 0)
+        {
+          if (Fcast_MGparm_ave_rd(i,3) == -999)
+          {
+            Fcast_MGparm_ave(i,3) = styr;
+          }
+          else if (Fcast_MGparm_ave_rd(i,3) < styr)
+          {
+            Fcast_MGparm_ave(i,3) = styr;
+          }
+
+          if (Fcast_MGparm_ave_rd(i,4) <= 0)
+          {
+            Fcast_MGparm_ave(i,4) += endyr;
+          }
+          else if (Fcast_MGparm_ave_rd(i,4) < styr)
+          {
+            Fcast_MGparm_ave(i,4) += styr;
+          }
+          if (Fcast_MGparm_ave_rd(i,4) > endyr)
+          {
+            Fcast_MGparm_ave(i,4) = endyr;
+          }
+        }
       }
-      else if (Fcast_yr(i) <= 0)
-      {
-        Fcast_yr(i) += endyr;
-      }
-      else if (Fcast_yr(i) < styr)
-      {
-        Fcast_yr(i) = styr;
-      }
-      else if (Fcast_yr(i) > endyr)
-      {
-        Fcast_yr(i) = endyr;
-      }
-      else
-      {
-      } //  OK in range
-   */
       echoinput << "Forecast MGparm averaging: " << endl << Fcast_MGparm_ave << endl;
     }
   // clang-format off
