@@ -4243,7 +4243,7 @@
       else
       {
       } //  OK in range
- */
+   */
       echoinput << "Forecast MGparm averaging: " << endl << Fcast_MGparm_ave << endl;
     }
   // clang-format off
