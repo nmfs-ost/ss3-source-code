@@ -5077,7 +5077,7 @@
  LOCAL_CALCS
   // clang-format on
   for (f = 1; f <= N_lambda_changes; f++) Lambda_changes(f) = lambda_change_data[f - 1];
-  if (N_lambda_changes > 0) echoinput << N_lambda_changes << " lambda changes " << endl
+  if (N_lambda_changes > 0) echoinput << N_lambda_changes << " lambda changes: " << endl
                                       << Lambda_changes << endl;
   surv_lambda = 1.; // 1
   disc_lambda = 1.; // 2
