@@ -3735,8 +3735,6 @@
   {
     warnstream << " final value in data file is an error " << fid;
     write_message(FATAL, 0);
-    //    cout << " final data value in error " << fid << endl;
-    //    exit(1);
   }
   cout << "Data read successful " << fid << endl
        << endl;
@@ -4018,6 +4016,7 @@
   ivector Allocation_Fleet_Assignments(1,Nfleet);
   matrix Fcast_RelF_Input(1,nseas,1,Nfleet);
   int Fcast_Specify_Selex;   // 0=do not use; 1=specify one selectivity for all fishing fleets for forecasts (not implemented); 2=specify selectivity per fishing fleet for forecasts (not implemented)
+  int N_Fcast_parm_aves;
 
  LOCAL_CALCS
   // clang-format on
@@ -4031,7 +4030,8 @@
   Do_Rebuilder = 0;
   // clang-format off
  END_CALCS
-//  init_vector Fcast_Input_rd(1,k)
+    matrix Fcast_MGparm_ave_rd(1,8,1,4)  //  for the 8 MG_types, method, st_year, end_year
+    matrix Fcast_MGparm_ave(1,8,1,4)  //  for the 8 MG_types, method, st_year, end_year (real years)
 
  LOCAL_CALCS
   // clang-format on
@@ -4163,42 +4163,98 @@
     *(ad_comm::global_datafile) >> Fcast_Loop_Control(1, 5);
     echoinput << Fcast_Loop_Control(1) << " #echoed N forecast loops (1-3) (recommend 3)" << endl;
     echoinput << Fcast_Loop_Control(2) << " #echoed First forecast loop with stochastic recruitment (recommend 3)" << endl;
-    echoinput << Fcast_Loop_Control(3) << " #echoed Forecast recruitment:  0=spawn_recr; 1=value*spawn_recr; 2=value*VirginRecr; 3=mean from year range" << endl;
+    echoinput << Fcast_Loop_Control(3) << " #echoed Forecast recruitment:  0=spawn_recr; 1=value*spawn_recr; 2=value*VirginRecr; 3&4=mean from year range" << endl;
     if (Fcast_Loop_Control(3) == 0)
     {
-      echoinput << Fcast_Loop_Control(4) << " #echoed Forecast loop control #4 (not used) " << endl;
+      echoinput << Fcast_Loop_Control(4) << " Forecast control #4 (not used) " << endl;
     }
     else if (Fcast_Loop_Control(3) == 1)
     {
-      echoinput << Fcast_Loop_Control(4) << " #echoed Forecast loop control #4:  multiplier on spawn_recr" << endl;
+      echoinput << Fcast_Loop_Control(4) << " Forecast control #4:  multiplier on spawn_recr" << endl;
     }
     else if (Fcast_Loop_Control(3) == 2)
     {
-      echoinput << Fcast_Loop_Control(4) << " #echoed Forecast loop control #4:  multiplier on virgin recr" << endl;
+      echoinput << Fcast_Loop_Control(4) << " #Forecast control #4 is multiplier on virgin recr" << endl;
     }
     else if (Fcast_Loop_Control(3) == 3)
     {
-      echoinput << " #mean recruitment and recrdist from years: " << Fcast_Rec_yr1 << " to " << Fcast_Rec_yr2 << endl;
+      echoinput << " #mean recruitment and recr_dist from years: " << Fcast_Rec_yr1 << " to " << Fcast_Rec_yr2 << endl;
     }
     else if (Fcast_Loop_Control(3) == 4)
     {
-      echoinput << " #mean recruitment from years: " << Fcast_Rec_yr1 << " to " << Fcast_Rec_yr2 << " recrdist from parameters" << endl;
-    }
-    else if (Fcast_Loop_Control(3) == 5)
-    {
-      echoinput << " #mean recrdist from years: " << Fcast_Rec_yr1 << " to " << Fcast_Rec_yr2 << " recruitment is from spawn_recr " << endl;
+      echoinput << " #mean recruitment from years: " << Fcast_Rec_yr1 << " to " << Fcast_Rec_yr2 << " recrdist from parameters, or average using control_5" << endl;
     }
     else //  input probably was a -1 from pre 3.30.15, so convert to 0
     {
       Fcast_Loop_Control(3) = 0;
       Fcast_Loop_Control(4) = 1.0;
-      echoinput << Fcast_Loop_Control(4) << " #echoed Forecast loop control #4:  multiplier on spawn_recr" << endl;
+      echoinput << Fcast_Loop_Control(4) << " #echoed Forecast control #4:  multiplier on recruitment from spawn_recr" << endl;
     }
 
-    echoinput << Fcast_Loop_Control(5) << " #echoed Forecast loop control #5 (reserved for future use) " << endl;
+    echoinput << Fcast_Loop_Control(5) << " #echoed Forecast biology averaging:  enter 1 to start list input" << endl;
+  //  Fcast_MGparm_ave_rd: read MG_type, method, start year, end year
+  //  terminate with MG_type = -9999
+  //  MG_type:  1=M, 2=growth 3=wtlen, 4=recr_dist&femfrac, 5=migration, 6=ageerror, 7=catchmult 8=hermaphroditism
+    N_Fcast_parm_aves = 0;
+    if (Fcast_Loop_Control(5) == 1)
+    {
+      echoinput << "Fcast Control(5)==1, so now read list of MG_type, method (1, 2), start year, end year" << endl
+                << "Terminate with -9999 for MG_type" << endl
+				<< "MG_type: 1=M, 2=growth, 3=wtlen, 4=recr_dist&femfrac, 5=migration, 6=ageerror, 7=catchmult, 8=hermaphroditism" << endl
+        << "Method = 0 (default) means continue time_vary parms; 1 means to use average of derived biology; 2 (future) means average parameter then apply as if time-vary"<<endl;
+      ender = 0;
+      do
+      {
+        dvector tempvec(1, 4);
+        *(ad_comm::global_datafile) >> tempvec(1, 4);
+        echoinput << tempvec << endl;
+        if (tempvec(1) == -9999. || tempvec(1) > 8)  
+          ender = 1;
+        else
+          {
+            int f1 = tempvec(1);
+            Fcast_MGparm_ave_rd(f1) = tempvec; 
+            Fcast_MGparm_ave(f1) = tempvec;
+          }
+      } while (ender == 0);
 
-    echoinput << endl
-              << "#next enter year in which Fcast loop 3 caps and allocations begin to be applied" << endl;
+      //  Adjusting Fcast_MGparm_ave_rd minyear and maxyear values
+      //  for Fcast_MGparm_ave
+      for (i = 1; i <= 8; i++)
+      {
+        if (Fcast_MGparm_ave_rd(i,1) > 0)
+        {
+          if (Fcast_MGparm_ave_rd(i,3) == -999)
+          {
+            Fcast_MGparm_ave(i,3) = styr;
+          }
+          else if (Fcast_MGparm_ave_rd(i,3) < styr)
+          {
+            Fcast_MGparm_ave(i,3) = styr;
+          }
+
+          if (Fcast_MGparm_ave_rd(i,4) <= 0)
+          {
+            Fcast_MGparm_ave(i,4) += endyr;
+          }
+          else if (Fcast_MGparm_ave_rd(i,4) < styr)
+          {
+            Fcast_MGparm_ave(i,4) += styr;
+          }
+          if (Fcast_MGparm_ave_rd(i,4) > endyr)
+          {
+            Fcast_MGparm_ave(i,4) = endyr;
+          }
+        }
+      }
+      echoinput << "Forecast MGparm averaging: " << endl << Fcast_MGparm_ave << endl;
+    }
+  // clang-format off
+ END_CALCS
+ 
+ LOCAL_CALCS
+  // clang-format on
+     echoinput << "#next enter year in which Fcast loop 3 caps and allocations begin to be applied" << endl;
     *(ad_comm::global_datafile) >> Fcast_Cap_FirstYear;
     echoinput << Fcast_Cap_FirstYear << " # echoed value" << endl;
 

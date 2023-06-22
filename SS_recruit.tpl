@@ -212,10 +212,6 @@ FUNCTION void apply_recdev(prevariable& NewRecruits, const prevariable& Recr_vir
   {
     switch (int(Fcast_Loop_Control(3)))
     {
-      case 5:
-      {
-        //  fall through to case 0
-      }
       case 0:
       {
         NewRecruits = exp_rec(y, 2);
@@ -241,6 +237,11 @@ FUNCTION void apply_recdev(prevariable& NewRecruits, const prevariable& Recr_vir
           NewRecruits *= mfexp(-biasadj(y) * half_sigmaRsq); // bias adjustment
         exp_rec(y, 3) = NewRecruits;
         break;
+      }
+      case 4:
+      {
+        //  fall through to case 3
+        //  case 3 also will do averaging of recr_dist in another section of code
       }
       case 3: //  use recent mean
       {

@@ -120,8 +120,10 @@ FUNCTION void setup_Benchmark()
     //          fec(g)=save_sel_num(t,0,g);
     //       }
 
-    if (Fcast_Loop_Control(3) == 3) //  using mean recruitment from range of years
+    if (Fcast_Loop_Control(3) == 3) //  using mean recr_dist from range of years
     {
+      warnstream << "This option (mean recruitment) may be deprecated; same as forecast option(5), averaging parameters, type 4.";
+      write_message(WARN, 0);
       //get average and store in each fcast years
       recr_dist_endyr.initialize();
       for (y = Fcast_Rec_yr1; y <= Fcast_Rec_yr2; y++)
@@ -134,11 +136,121 @@ FUNCTION void setup_Benchmark()
       {
         if (timevary_MG(y, 4) > 0)
         {
-          warnstream << "mean recruitment for forecast is incompatible with timevary recr_dist in yr: " << y << "; user must adjust manually";
+          warnstream << "mean recr_dist for forecast is incompatible with timevary recr_dist in forecast yr: " << y << "; user must adjust manually";
           write_message(WARN, 0);
         }
         recr_dist(y) = recr_dist_endyr;
       }
+    }
+
+    // create average of selected MGparms for use in forecast
+    if (Fcast_Loop_Control(5) == 1)  //  
+    {
+
+      for (int parm_type = 1; parm_type <= 8; parm_type++)
+	  {
+      if(Fcast_MGparm_ave(parm_type, 2) == 1)  //  do averaging of derived biology
+      {
+      double ave_styr = Fcast_MGparm_ave(parm_type,3);
+      double ave_endyr = Fcast_MGparm_ave(parm_type,4);
+      double N_ave_yrs = ave_endyr - ave_styr + 1.; //  get denominator
+   		switch (parm_type) 
+		  {
+        case 1:  // 1=Natural mortality (M),
+          for (int s = 1; s <= nseas; s++)
+            for (int g = 1; g <= gmorph; g++)
+            {
+              int gpi = GP3(g);
+              for (int p = 0; p <= pop; p++)  //  question.  Perhaps only do this for area 0 as others filled in later in code
+              {
+                tempvec_a.initialize();
+                for (y = ave_styr; y <= ave_endyr; y++)
+                {
+                  t = styr + (y - styr) * nseas - 1 + s;
+                  tempvec_a += natM(t, p, gpi);
+                }
+                tempvec_a /= N_ave_yrs;
+                for (int y = endyr + 1; y <= YrMax; y++)
+                {
+                  t = styr + (y - styr) * nseas - 1 + s;
+                  natM(t, p, gpi) = tempvec_a; 
+                }
+              }
+            }
+          break;
+		  
+        case 2: // 2=growth,
+          tempvec_a.initialize();
+          warnstream << "Growth params averaging is not implemented, execution continues. " ;
+          write_message (WARN, 1); 
+          break;
+		  
+        case 3: // 3=wtlen,
+          tempvec_a.initialize();
+          warnstream << "Weight/Length params averaging is not implemented, execution continues. " ;
+          write_message (WARN, 1); 
+          break;
+		  
+        case 4: // 4=recr_dist&femfrac,
+          //get average and store in each fcast years
+          recr_dist_endyr.initialize();
+          for (y = ave_styr; y <= ave_endyr; y++)
+            for (gp = 1; gp <= N_GP * gender; gp++)
+            {
+              recr_dist_endyr(gp) += recr_dist(y, gp);
+            }
+          recr_dist_endyr /= N_ave_yrs;
+          for (y = endyr + 1; y <= YrMax; y++)
+          {
+            if (timevary_MG(y, 4) > 0)
+            {
+              warnstream << "mean recr_dist for forecast is incompatible with timevary recr_dist in forecast yr: " << y << "; user must adjust manually";
+              write_message(WARN, 0);
+            }
+            recr_dist(y) = recr_dist_endyr;
+          }
+          break;
+		  
+        case 5: // 5=migration,
+          for (j = 1; j <= do_migr2; j++)
+          {
+            tempvec_a.initialize();
+            for (y = ave_styr; y <= ave_endyr; y++)
+            {
+              tempvec_a += migrrate(y, j);
+            }
+            tempvec_a /= N_ave_yrs;
+            for (y = endyr + 1; y <= YrMax; y++)
+                migrrate(y, j) = tempvec_a;
+          }
+          break;
+		  
+        case 6: // 6=ageerror,
+          tempvec_a.initialize();
+          warnstream << "Age Error params averaging is not implemented, execution continues. " ;
+          write_message (WARN, 1); 
+          break;
+		  
+        case 7: // 7=catchmult,
+          tempvec_a.initialize();
+          warnstream << "Catch mult params averaging is not implemented, execution continues. " ;
+          write_message (WARN, 1); 
+          break;
+		  
+        case 8: // 8=hermaphroditism, and
+          tempvec_a.initialize();
+          warnstream << "Hermaphroditism params averaging is not implemented, execution continues. " ;
+          write_message (WARN, 1); 
+          break;
+		  
+        case 9: // 9=maturity&fecundity
+          tempvec_a.initialize();
+          warnstream << "Maturity & fecundity params averaging is not implemented, execution continues. " ;
+          write_message (WARN, 1); 
+          break; 
+        }
+      }
+    }
     }
 
     //  SS_Label_Info_7.5.2 #Set-up relative F among fleets and seasons for forecast
@@ -1898,13 +2010,23 @@ FUNCTION void Get_Forecast()
     report5 << "Annual_Forecast_Fmult: " << Fcast_Fmult << endl;
     report5 << "Fmultiplier_during_selected_relF_years_was: " << Fcurr_Fmult << endl;
     report5 << "Selectivity_averaged_over_yrs:_" << Fcast_Sel_yr1 << "_to_" << Fcast_Sel_yr2 << endl;
-    if (Fcast_Loop_Control(3) == 3)
+
+//  Fcast_Loop_Control(3)  need to embellish this to report all options
+    if (Fcast_Loop_Control(3) == 1)
+    {
+      report5 << "Forecast_recruitment_from_spawn_recr_with_multiplier: " << Fcast_Loop_Control(4) << endl;
+    }
+    if (Fcast_Loop_Control(3) == 2)
+    {
+      report5 << "Forecast_recruitment_is_adjusted_R0_with_multiplier: " << Fcast_Loop_Control(4) << endl;
+    }
+    else if (Fcast_Loop_Control(3) == 3)
     {
       report5 << "Recruitment_and_recrdist_averaged_over_yrs:_" << Fcast_Rec_yr1 << "_to_" << Fcast_Rec_yr2 << endl;
     }
     else
     {
-      report5 << "Recruitment_from_spawn_recr_with_multiplier: " << Fcast_Loop_Control(4) << endl;
+      report5 << "Recruitment_averaged_over_yrs:_" << Fcast_Rec_yr1 << "_to_" << Fcast_Rec_yr2 << " see_control(5)_for_recr_dist_averaging" << endl;
     }
     report5 << "Cap_totalcatch_by_fleet " << endl
             << Fcast_MaxFleetCatch << endl;
@@ -2235,7 +2357,12 @@ FUNCTION void Get_Forecast()
         ALK_subseas_update = 1;
         get_growth2(y);
       }
-      if (timevary_MG(y, 1) > 0 || N_pred > 0)
+  //	"MG_type: 1=M, 2=growth, 3=wtlen, 4=recr_dist&femfrac, 5=migration, 6=ageerror, 7=catchmult, 8=hermaphroditism" << endl
+      if (Fcast_MGparm_ave(1, 2) == 1)
+      {
+        //  array has been filled with averages already
+      }
+      else if (timevary_MG(y, 1) > 0 || N_pred > 0)
       {
         get_natmort();
       }
@@ -2253,11 +2380,19 @@ FUNCTION void Get_Forecast()
         if (Hermaphro_Option != 0)
           get_Hermaphro();
       }
-      if ((timevary_MG(y, 4) > 0 || timevary_MG(endyr + 1, 4) > 0) && Fcast_Loop_Control(3) != 3)
+      if (Fcast_Loop_Control(3) == 3 || Fcast_MGparm_ave(4, 1) == 1)
+      {
+        //  already filled with averages
+      }
+      else if (timevary_MG(y, 4) > 0 || timevary_MG(endyr + 1, 4) > 0)
       {
         get_recr_distribution();
       }
-      if (timevary_MG(y, 5) > 0)
+      if (Fcast_MGparm_ave(5, 2) == 1)
+      {
+        //  already filled with averages
+      }
+      else if (timevary_MG(y, 5) > 0)
         get_migration();
       if (timevary_MG(y, 7) > 0)
         get_catch_mult(y, catch_mult_pointer);

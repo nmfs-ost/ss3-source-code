@@ -1558,10 +1558,11 @@ FUNCTION void write_nucontrol()
 
   NuFore << Fcast_Loop_Control(1) << " #_N forecast loops (1=OFL only; 2=ABC; 3=get F from forecast ABC catch with allocations applied)" << endl;
   NuFore << Fcast_Loop_Control(2) << " #_First forecast loop with stochastic recruitment" << endl;
-  NuFore << Fcast_Loop_Control(3) << " #_Forecast recruitment:  0= spawn_recr; 1=value*spawn_recr_fxn; 2=value*VirginRecr; 3=recent mean from yr range above (need to set phase to -1 in control to get constant recruitment in MCMC)" << endl;
+  NuFore << Fcast_Loop_Control(3) << " #_Forecast recruitment:  0= spawn_recr; 1=value*spawn_recr_fxn; 2=value*VirginRecr; 3=recent mean for recr and recr_dist from yr range above; 4=average for recr only" << endl;
+  NuFore << "#_ for options 3 and 4, need to set phase to -1 in control to get constant recruitment in MCMC" << endl;
   if (Fcast_Loop_Control(3) == 0)
   {
-    NuFore << 1.0 << " # value is ignored " << endl;
+    NuFore << 1.0 << " # Value multiplier is ignored" << endl;
   }
   else if (Fcast_Loop_Control(3) == 1)
   {
@@ -1571,15 +1572,46 @@ FUNCTION void write_nucontrol()
   {
     NuFore << Fcast_Loop_Control(4) << " # value is multiplier on virgin recr" << endl;
   }
-  else if (Fcast_Loop_Control(3) == 3)
+  else if (Fcast_Loop_Control(3) >= 3)
   {
-    NuFore << Fcast_Loop_Control(4) << " # not used" << endl;
+    NuFore << Fcast_Loop_Control(4) << " # Value multiplier is ignored" << endl;
   }
   else
   {
-    NuFore << "0 # not used" << endl;
+    NuFore << "0 # # Value multiplier is ignored " << endl;
   }
-  NuFore << Fcast_Loop_Control(5) << " #_Forecast loop control #5 (reserved for future bells&whistles) " << endl;
+  NuFore << Fcast_Loop_Control(5) << " #_Fcast_MGvector_averaging: 0 = not, 1 = do" << endl;
+  NuFore << "#_read list of MG_type, method (1, 2), start year, end year" << endl
+         << "#_Terminate with -9999 for MG_type" << endl
+//				 << "#_MG_type: 1=M, 2=growth, 3=wtlen, 4=recr_dist&femfrac, 5=migration, 6=ageerror, 7=catchmult, 8=hermaphroditism" << endl
+				 << "#_MG_type: 1=M, 4=recr_dist, 5=migration" << endl
+         << "#_Method = 0 (default) means continue time_vary parms; 1 means to use average of derived biology; 2 (future) means average parameter then apply as if time-vary"<<endl;
+
+  if (Fcast_Loop_Control(5) == 1)
+  {
+    NuFore << "# MG_type method st_year end_year " << endl;
+    for (int i = 1; i <= 8; i++)
+    if (Fcast_MGparm_ave_rd(i, 1) > 0)
+	  {
+      NuFore << Fcast_MGparm_ave_rd(i);
+      if (Fcast_MGparm_ave_rd(i, 1) == 1) NuFore << " # (M) NatMort " << endl;
+      else if (Fcast_MGparm_ave_rd(i, 1) == 2) NuFore << " # Growth " << endl;
+      else if (Fcast_MGparm_ave_rd(i, 1) == 3) NuFore << " # Wt/Len " << endl;
+      else if (Fcast_MGparm_ave_rd(i, 1) == 4) NuFore << " # RecrDist " << endl;  //  frac_female may be added later
+      else if (Fcast_MGparm_ave_rd(i, 1) == 5) NuFore << " # Migration " << endl;
+      else if (Fcast_MGparm_ave_rd(i, 1) == 6) NuFore << " # Age Error " << endl;
+      else if (Fcast_MGparm_ave_rd(i, 1) == 7) NuFore << " # CatchMult " << endl;
+      else if (Fcast_MGparm_ave_rd(i, 1) == 8) NuFore << " # Hermaphroditism " << endl;
+      else if (Fcast_MGparm_ave_rd(i, 1) == 9) NuFore << " # Maturity&Fecundity " << endl;
+    }
+    NuFore << "-9999 -1 -1 -1" << endl;
+  }
+  else
+  {
+    NuFore << "#COND_1: list MG_type, start year, end year and terminate with MG_type = -9999" << endl;
+	NuFore << "#COND_1: Where MG_type: 1=M, 2=growth, 3=wtlen, 4=recr_dist&femfrac, 5=migration, 6=ageerror, 7=catchmult, 8=hermaphroditism, 9=maturity&fecundity" << endl;
+	NuFore << "#C_  Note: not all options are implemented. " << endl;
+  }
   NuFore << Fcast_Cap_FirstYear << "  #FirstYear for caps and allocations (should be after years with fixed inputs) " << endl;
 
   NuFore << Impl_Error_Std << " # stddev of log(realized catch/target catch) in forecast (set value>0.0 to cause active impl_error)" << endl;
