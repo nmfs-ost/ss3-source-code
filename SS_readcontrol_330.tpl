@@ -5051,10 +5051,17 @@
   int N_lambda_changes
   int N_changed_lambdas
  LOCAL_CALCS
-      // clang-format on
-      echoinput
-      << " read lambda changes list until -9999" << endl;
-  ender = 0;
+  // clang-format on
+  echoinput << endl << "LAMBDA" << endl
+  << " each line has 5 values: like_code, fleet, beginning_phase, value, code_for_sizefreq "<< endl
+  << " terminate reading with like_code = -9999" << endl
+  << " like_code options are:  1=surv; 2=disc; 3=mnwt; 4=length; 5=age; 6=SizeFreq; 7=sizeage; 8=catch; 9=init_equ_catch; " << endl
+  << " 10=recrdev; 11=parm_prior; 12=parm_dev; 13=CrashPen; 14=Morphcomp; 15=Tag-comp; 16=Tag-negbin; 17=F_ballpark; 18=initEQregime." << endl
+  << " 2nd value (fleet) only used for like_codes 1 - 9, which are fleet-specific, except" << endl
+  << "   2nd value is used for Tag-Group, instead of fleet, for like_codes 15 & 16." << endl
+  << " 5th value is used only for like_code=6 and specifies the SizeFreq method used, which is in addition to fleet designation." << endl;
+
+  ender = 0;  //  begin reading lambda changes
   do
   {
     dvector tempvec(1, 5);
@@ -5063,17 +5070,14 @@
     lambda_change_data.push_back(tempvec(1, 5));
   } while (ender == 0);
   N_lambda_changes = lambda_change_data.size() - 1;
-  echoinput << " number of lambda change records = " << N_lambda_changes << endl;
   // clang-format off
  END_CALCS
 
   matrix Lambda_changes(1,N_lambda_changes,1,5)
  LOCAL_CALCS
-      // clang-format on
-      for (f = 1; f <= N_lambda_changes; f++) Lambda_changes(f) = lambda_change_data[f - 1];
-  // *(ad_comm::global_datafile) >> tempvec(1,5);  //  read 5 numerics from line
-  echoinput << N_lambda_changes << " N lambda changes " << endl;
-  if (N_lambda_changes > 0) echoinput << " lambda changes " << endl
+  // clang-format on
+  for (f = 1; f <= N_lambda_changes; f++) Lambda_changes(f) = lambda_change_data[f - 1];
+  if (N_lambda_changes > 0) echoinput << N_lambda_changes << " lambda changes: " << endl
                                       << Lambda_changes << endl;
   surv_lambda = 1.; // 1
   disc_lambda = 1.; // 2
@@ -5135,7 +5139,7 @@
     k = Lambda_changes(j, 1); // like component
     f = Lambda_changes(j, 2); // fleet
     s = Lambda_changes(j, 3); // phase
-    if (k <= 14)
+    if (k <= 9)   //  only check those codes that are fleet-specific
     {
       if (f > Nfleet)
       {
@@ -5144,7 +5148,7 @@
         write_message (ADJUST, 0);
       }
     }
-    else if (k <= 16) // tag data
+    else if (k == 15 || k == 16) // tag data
     {
       if (f > N_TG2)
       {
@@ -5162,7 +5166,7 @@
     if (s > max_lambda_phase)
     {
       k = 0;
-      warnstream << "Illegal request for lambda change at row: " << j << " phase: " << s << " > max_lam_phase: " << max_lambda_phase;
+      warnstream << "Illegal request for lambda change at row: " << j << " phase: " << s << " > max_lambda_phase: " << max_lambda_phase;
       write_message (ADJUST, 0);
     }
     //      if(s>Turn_off_phase) s=max(1,Turn_off_phase);
