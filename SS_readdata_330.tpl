@@ -4200,8 +4200,8 @@
     {
       echoinput << "Fcast Control(5)==1, so now read list of MG_type, method (1, 2), start year, end year" << endl
                 << "Terminate with -9999 for MG_type" << endl
-				<< "MG_type: 1=M, 2=growth, 3=wtlen, 4=recr_dist&femfrac, 5=migration, 6=ageerror, 7=catchmult, 8=hermaphroditism" << endl
-        << "Method = 0 (default) means continue time_vary parms; 1 means to use average of derived biology; 2 (future) means average parameter then apply as if time-vary"<<endl;
+                << "MG_type: 1=M, 2=growth, 3=wtlen, 4=recr_dist&femfrac, 5=migration, 6=ageerror, 7=catchmult, 8=hermaphroditism" << endl
+                << "Method = 0 (default) means continue time_vary parms; 1 means to use average of derived biology; 2 (future) means average parameter then apply as if time-vary"<<endl;
       ender = 0;
       do
       {
@@ -4232,16 +4232,24 @@
           {
             Fcast_MGparm_ave(i,3) = styr;
           }
+          else if (Fcast_MGparm_ave_rd(i,3) >= endyr)
+          {
+            Fcast_MGparm_ave(i,3) = endyr - 1;
+          }
 
-          if (Fcast_MGparm_ave_rd(i,4) <= 0)
+          if (Fcast_MGparm_ave_rd(i,4) == -999)
+          {
+            Fcast_MGparm_ave(i,4) = endyr;
+          }
+          else if (Fcast_MGparm_ave_rd(i,4) <= 0)
           {
             Fcast_MGparm_ave(i,4) += endyr;
           }
-          else if (Fcast_MGparm_ave_rd(i,4) < styr)
+          else if (Fcast_MGparm_ave_rd(i,4) <= Fcast_MGparm_ave(i,3))
           {
-            Fcast_MGparm_ave(i,4) += styr;
+            Fcast_MGparm_ave(i,4) = Fcast_MGparm_ave(i,3) + 1;
           }
-          if (Fcast_MGparm_ave_rd(i,4) > endyr)
+          else if (Fcast_MGparm_ave_rd(i,4) > endyr)
           {
             Fcast_MGparm_ave(i,4) = endyr;
           }
