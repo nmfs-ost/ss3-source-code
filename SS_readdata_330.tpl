@@ -4240,7 +4240,7 @@
           else if (Fcast_MGparm_ave_rd(i,3) >= endyr)
           {
             Fcast_MGparm_ave(i,3) = endyr - 1;
-            warnstream << "start year exceeds endyr, setting start year to: " << Fcast_MGparm_ave(i,3);
+            warnstream << "Fcast_MGparm_ave start year exceeds endyr, setting start year to: " << Fcast_MGparm_ave(i,3);
             write_message(ADJUST, 0);
           }
           // Adjust end year
@@ -4255,13 +4255,13 @@
           else if (Fcast_MGparm_ave_rd(i,4) <= Fcast_MGparm_ave(i,3))
           {
             Fcast_MGparm_ave(i,4) = Fcast_MGparm_ave(i,3) + 1;
-            warnstream << "end year before start year, setting end year to: " << Fcast_MGparm_ave(i,4);
+            warnstream << "Fcast_MGparm_ave end year before start year, setting end year to: " << Fcast_MGparm_ave(i,4);
             write_message(ADJUST, 0);
           }
           else if (Fcast_MGparm_ave_rd(i,4) > endyr)
           {
             Fcast_MGparm_ave(i,4) = endyr;
-            warnstream << "end year exceeds endyr, setting end year to: " << endyr;
+            warnstream << "Fcast_MGparm_ave end year exceeds endyr, setting end year to: " << endyr;
             write_message(ADJUST, 0);
           }
         }
