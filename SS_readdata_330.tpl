@@ -4224,9 +4224,14 @@
       {
         if (Fcast_MGparm_ave_rd(i,1) > 0)
         {
+          // Adjust start year
           if (Fcast_MGparm_ave_rd(i,3) == -999)
           {
             Fcast_MGparm_ave(i,3) = styr;
+          }
+          else if (Fcast_MGparm_ave_rd(i,3) < 0)
+          {
+            Fcast_MGparm_ave(i,3) = endyr + Fcast_MGparm_ave_rd(i,3);
           }
           else if (Fcast_MGparm_ave_rd(i,3) < styr)
           {
@@ -4236,7 +4241,7 @@
           {
             Fcast_MGparm_ave(i,3) = endyr - 1;
           }
-
+          // Adjust end year
           if (Fcast_MGparm_ave_rd(i,4) == -999)
           {
             Fcast_MGparm_ave(i,4) = endyr;
