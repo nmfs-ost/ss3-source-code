@@ -4254,7 +4254,7 @@
           }
           else if (Fcast_MGparm_ave_rd(i,4) < Fcast_MGparm_ave(i,3))
           {
-            Fcast_MGparm_ave(i,4) = Fcast_MGparm_ave(i,3) + 1;
+            Fcast_MGparm_ave(i,4) = Fcast_MGparm_ave(i,3);
             warnstream << "Fcast_MGparm_ave maxyear before start year, setting to: " << Fcast_MGparm_ave(i,4);
             write_message(ADJUST, 0);
           }
