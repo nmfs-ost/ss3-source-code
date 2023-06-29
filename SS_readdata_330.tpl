@@ -4180,7 +4180,7 @@
     {
       if (Fcast_Rec_yr2 != endyr)
       {
-        warnstream << "Use of forecast recruitment option 3 or 4 will require last year of rec_devs to be end year.";
+        warnstream << "Use of forecast recruitment option 3 or 4 requires last year of rec_devs to be end year.";
         write_message(ADJUST, 1);
         Fcast_Rec_yr2 = Fcast_yr(6) = endyr;
       }
@@ -4190,7 +4190,7 @@
     {
       if (Fcast_Rec_yr2 != endyr)
       {
-        warnstream << "Use of forecast recruitment option 3 or 4 will require last year of rec_devs to be end year.";
+        warnstream << "Use of forecast recruitment option 3 or 4 requires last year of rec_devs to be end year.";
         write_message(ADJUST, 1);
         Fcast_Rec_yr2 = Fcast_yr(6) = endyr;
       }
