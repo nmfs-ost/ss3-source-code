@@ -4178,22 +4178,10 @@
     }
     else if (Fcast_Loop_Control(3) == 3)
     {
-      if (Fcast_Rec_yr2 != endyr)
-      {
-        warnstream << "Use of forecast recruitment option 3 or 4 requires last year of rec_devs to be end year.";
-        write_message(ADJUST, 1);
-        Fcast_Rec_yr2 = Fcast_yr(6) = endyr;
-      }
       echoinput << " #mean recruitment and recr_dist from years: " << Fcast_Rec_yr1 << " to " << Fcast_Rec_yr2 << endl;
     }
     else if (Fcast_Loop_Control(3) == 4)
     {
-      if (Fcast_Rec_yr2 != endyr)
-      {
-        warnstream << "Use of forecast recruitment option 3 or 4 requires last year of rec_devs to be end year.";
-        write_message(ADJUST, 1);
-        Fcast_Rec_yr2 = Fcast_yr(6) = endyr;
-      }
       echoinput << " #mean recruitment from years: " << Fcast_Rec_yr1 << " to " << Fcast_Rec_yr2 << " recrdist from parameters, or average using control_5" << endl;
     }
     else //  input probably was a -1 from pre 3.30.15, so convert to 0
