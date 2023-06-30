@@ -663,14 +663,14 @@
 
   data_type = 1; //  for surveys
   echoinput << "Units:  0=numbers; 1=biomass; 2=F; >=30 for special patterns" << endl;
-  echoinput << "Errtype:  -1=normal; 0=lognormal; >0=T" << endl;
+  echoinput << "Errtype:  -1=normal; 0=lognormal; >0=T; -2=generalized gamma" << endl;
   echoinput << "SD_Report: 0=no sdreport; 1=enable sdreport" << endl;
   echoinput << "Fleet Units Err_Type SD_Report" << endl;
   echoinput << Svy_units_rd << endl;
   Svy_units = column(Svy_units_rd, 2);
   Svy_errtype = column(Svy_units_rd, 3);
   Svy_sdreport = column(Svy_units_rd, 4);
-
+  int tmpread=5;
   for (f = 1; f<=Nfleet; f++)
   {
     if (Svy_units(f) >= 35 && Svy_errtype(f) == 0)
@@ -678,21 +678,28 @@
       warnstream << " survey error type must not be lognormal for surveys of deviations for fleet: " << f << fleetname(f) << endl;
       write_message(FATAL, 1);
     }
+    if(Svy_errtype(f)==-2)
+    {
+      warnstream << " survey index option for generalized gamma distribution is experimental " << endl;
+      tmpread=6;	  	// extra column needed
+    }	  
+   cout << "Svy_errtype=" << Svy_errtype << endl;
   }
-
   // read survey data
   ender = 0;
+  
   do
   {
-    dvector tempvec(1, 5);
-    *(ad_comm::global_datafile) >> tempvec(1, 5);
+    dvector tempvec(1, tmpread);
+    *(ad_comm::global_datafile) >> tempvec(1, tmpread);
     if (tempvec(1) == -9999.)
       ender = 1;
-    Svy_data.push_back(tempvec(1, 5));
+    Svy_data.push_back(tempvec(1, tmpread));
   } while (ender == 0);
   Svy_N_rd = Svy_data.size() - 1;
   echoinput << Svy_N_rd << " nobs_survey " << endl;
   // clang-format off
+   
  END_CALCS
 
 //   init_matrix Svy_data(1,Svy_N_rd,1,5)
@@ -759,6 +766,7 @@
   matrix  Svy_obs(1,Nfleet,1,Svy_N_fleet);
   matrix  Svy_obs_log(1,Nfleet,1,Svy_N_fleet);
   matrix  Svy_se_rd(1,Nfleet,1,Svy_N_fleet);
+  matrix  Svy_GGD_lambda_rd(1,Nfleet,1,Svy_N_fleet);	  
   matrix  Svy_se(1,Nfleet,1,Svy_N_fleet);
   matrix  Svy_selec_abund(1,Nfleet,1,Svy_N_fleet);        // Vulnerable biomass
 // arrays for Super-years
@@ -818,7 +826,8 @@
         Svy_time_t(f, j) = t;
         Svy_ALK_time(f, j) = ALK_time; //  continuous subseas counter in which jth obs from fleet f occurs
         Svy_se_rd(f, j) = Svy_data[i](5); // later adjust with varadjust, copy to se_cr_use, then adjust with extra se parameter
-        if (Svy_data[i](3) < 0)
+        Svy_GGD_lambda_rd(f,j)=Svy_data[i](tmpread); // will be ignored if not using GGD so fill with last column regardless 
+      if (Svy_data[i](3) < 0)
         {
           Svy_use(f, j) = -1;
         }
@@ -1264,7 +1273,7 @@
   // clang-format off
  END_CALCS
 
-!!//  SS_Label_Info_2.6 #Setup population Length bins
+  //  SS_Label_Info_2.6 #Setup population Length bin
   number binwidth2;  //  width of length bins in population
   number minLread;  // input minimum size in population; this is used as the mean size at age 0.00
   number maxLread;  //  input maximum size to be considered; should be divisible by binwidth2

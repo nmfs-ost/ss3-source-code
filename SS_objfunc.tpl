@@ -63,6 +63,8 @@ FUNCTION void evaluate_the_objective_function()
       if (Svy_N_fleet(f) > 0)
       {
         Svy_se_use(f) = Svy_se(f);
+	Svy_GGD_lambda_use(f)=Svy_GGD_lambda_rd(f);
+	Svy_GGD_mean_use(f)=Svy_obs(f);
         if (Q_setup(f, 3) > 0)
         {
           Svy_se_use(f) += Q_parm(Q_setup_parms(f, 2)); // add extra stderr
@@ -158,7 +160,36 @@ FUNCTION void evaluate_the_objective_function()
             }
           }
         }
-
+        else if (Svy_errtype(f) == -2) // generalized gamma, which has extra parameter lambda
+        {
+          for (i = 1; i <= Svy_N_fleet(f); i++)
+          {
+            if (Svy_use(f, i) > 0)
+            {
+	   if(Svy_GGD_lambda_use(f,i)==0)
+	     { // lognormal when lambda=0
+               surv_like(f) += 0.5 * square((Svy_obs_log(f, i) - Svy_est(f, i)) / Svy_se_use(f, i)) + sd_offset * log(Svy_se_use(f, i));
+	     }
+	   else {// generalized gamma likelihood // added by Cole in July 2023 as experiment
+	     // Need to do some type conversions here or it fails. 
+	     double qtmp=value(Svy_GGD_lambda_use(f,i)); // Q parameter
+	     double sigmatmp=value(Svy_se_use(f,i)); //
+	     double meantmp=value(Svy_GGD_mean_use(f,i));
+	     dvariable xtmp=Svy_est(f,i);
+	     double ktmp = pow( qtmp, -2 );
+	     double Beta = pow( sigmatmp, -1 ) * qtmp;
+	     double log_theta = log(meantmp) - lgamma( (ktmp*Beta+1)/Beta ) + lgamma( ktmp );
+	     double mu = log_theta + log(ktmp) / Beta;
+	     dvariable w = (log(xtmp) - mu) / sigmatmp;
+	     double abs_q = sqrt(qtmp*qtmp);  // = abs(Q); not differentiable!
+	     double qi = 1/square(qtmp);
+	     dvariable qw = qtmp*w;
+	     dvariable logres = -log(sigmatmp*xtmp) + log(abs_q) * (1 - 2 * qi) + qi * (qw - exp(qw)) - lgamma(qi);
+	     surv_like(f) -= logres; // logres is log-likelihood
+	   }
+          }
+        }
+	}
       } // end having obs for this survey
     }
     if (do_once == 1)

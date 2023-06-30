@@ -410,6 +410,8 @@ PARAMETER_SECTION
   matrix Svy_log_q(1,Nfleet,1,Svy_N_fleet);
   matrix Svy_q(1,Nfleet,1,Svy_N_fleet);
   matrix Svy_se_use(1,Nfleet,1,Svy_N_fleet)
+  matrix Svy_GGD_lambda_use(1,Nfleet,1,Svy_N_fleet)  // the generalize gamma "Q" parameter
+  matrix Svy_GGD_mean_use(1,Nfleet,1,Svy_N_fleet)  // the generalize gamma "Q" parameter
   matrix Svy_est(1,Nfleet,1,Svy_N_fleet)    //  will store expected survey in normal or lognormal units as needed
   vector surv_like(1,Nfleet) // likelihood of the indices
   matrix Q_dev_like(1,Nfleet,1,2) // likelihood of the Q deviations
