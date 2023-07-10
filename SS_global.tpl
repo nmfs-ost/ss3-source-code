@@ -211,7 +211,7 @@ GLOBALS_SECTION
     if (exitflag == 1)
     {
       warning.close();
-	    echoinput.close();
+      echoinput.close();
       cout << msg << endl;
       cout << "Also see warning.sso" << endl;
       cout << "Exiting SS3! " << endl;
