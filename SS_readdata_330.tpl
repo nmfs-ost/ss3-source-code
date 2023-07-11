@@ -833,6 +833,8 @@
           Svy_styr(f) = y; // for dimensioning survey q devs
         if (Svy_endyr(f) == 0 || (y <= endyr && y > Svy_endyr(f)))
           Svy_endyr(f) = y; //  for dimensioning survey q devs
+
+        //  Svy_styr and Svy_endyr for recruitment surveys will be checked against recdev start and end in readcontrol
         if (y >= styr && Svy_data[i](3) > 0)
         {
           Svy_minval(f) = min(Svy_minval(f), Svy_obs(f, j));

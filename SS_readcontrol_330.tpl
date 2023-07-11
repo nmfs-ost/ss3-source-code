@@ -2378,6 +2378,21 @@
         ParmLabel += "Impl_err_" + onenum + CRLF(1);
       }
     }
+
+    // check recdev start and end against survey year start and end
+    for (f = 1; f <=Nfleet; f++) {
+      if (Svy_units(f) == 31 || Svy_units(f) == 32 || Svy_units(f) == 33 || Svy_units(f) == 36) { //  select just recruitment surveys
+        if (Svy_styr(f) < recdev_first) {
+          warnstream << "Recruitment survey: " << f << " has data in: " << Svy_styr(f) << ", which is before first early recdev: " << recdev_first << ". Suggest start recdevs earlier";
+          write_message (SUGGEST, 0);
+        }
+        if (Svy_endyr(f) > recdev_end) {
+          warnstream << "Recruitment survey: " << f << " has data in: " << Svy_endyr(f) << ", which is after last main recdev: " << recdev_end << ". Suggest extend recdev_end, or change fore_devs phase: " << Fcast_recr_PH_rd;
+          write_message (SUGGEST, 0);
+        }
+      }
+    }
+
   }
   
   biasadj_full.initialize();

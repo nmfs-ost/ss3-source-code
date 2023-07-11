@@ -334,6 +334,8 @@ FUNCTION void Get_expected_values(const int y, const int t);
                   }
                   case 31: // exp(recruitment deviation)  #31
                   {
+                    vbio = mfexp(recdev(y));
+                    /* 
                     if (y >= recdev_start && y <= recdev_end)
                     {
                       vbio = mfexp(recdev(y));
@@ -342,10 +344,13 @@ FUNCTION void Get_expected_values(const int y, const int t);
                     {
                       vbio = 1.0;
                     }
+                     */
                     break;
                   }
                   case 36: // recruitment deviation  #36
                   {
+                    vbio = recdev(y);
+                    /*
                     if (y >= recdev_start && y <= recdev_end)
                     {
                       vbio = recdev(y);
@@ -354,10 +359,13 @@ FUNCTION void Get_expected_values(const int y, const int t);
                     {
                       vbio = 0.0;
                     }
+                    */
                     break;
                   }
                   case 32: // recruitment without density-dependence (for pre-recruit survey) #32
                   {
+                    vbio = SSB_current * mfexp(recdev(y));
+                    /*
                     if (y >= recdev_start && y <= recdev_end)
                     {
                       vbio = SSB_current * mfexp(recdev(y));
@@ -366,6 +374,7 @@ FUNCTION void Get_expected_values(const int y, const int t);
                     {
                       vbio = SSB_current;
                     }
+                    */
                     break;
                   }
                   case 33: // recruitment  #33
