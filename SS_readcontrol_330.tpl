@@ -2386,8 +2386,8 @@
           warnstream << "Recruitment survey: " << f << " has data in: " << Svy_styr(f) << ", which is before first early recdev: " << recdev_first << ". Suggest start recdevs earlier";
           write_message (SUGGEST, 0);
         }
-        if (Svy_endyr(f) > recdev_end) {
-          warnstream << "Recruitment survey: " << f << " has data in: " << Svy_endyr(f) << ", which is after last main recdev: " << recdev_end << ". Suggest extend recdev_end, or change fore_devs phase: " << Fcast_recr_PH_rd;
+        if (Svy_endyr(f) > recdev_end && Fcast_recr_PH_rd <=0 ) {
+          warnstream << "Recruitment survey: " << f << " has data in: " << Svy_endyr(f) << ", which is after last main recdev: " << recdev_end << ". Suggest extend recdev_end, or use pos. phase for fore_recruitments: " << Fcast_recr_PH_rd;
           write_message (SUGGEST, 0);
         }
       }
