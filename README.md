@@ -1,4 +1,8 @@
 # Stock Synthesis 3.30
+![GitHub release (latest by date)](https://img.shields.io/github/v/release/nmfs-stock-synthesis/stock-synthesis)
+![GitHub Release Date](https://img.shields.io/github/release-date/nmfs-stock-synthesis/stock-synthesis)
+[![GitHub last commit](https://img.shields.io/github/last-commit/nmfs-stock-synthesis/stock-synthesis)](https://github.com/nmfs-stock-synthesis/stock-synthesis/commits/main)
+![GitHub release (latest by date)](https://img.shields.io/github/downloads/nmfs-stock-synthesis/stock-synthesis/latest/total)
 
 Stock Synthesis (SS3) is a generalized age-structured population dynamics model implemented in [ADMB](http://www.admb-project.org/). It is used to assess the effect of fisheries on fish and shellfish stocks while taking into account the influence of environmental factors.
 
