@@ -174,12 +174,14 @@ FUNCTION void evaluate_the_objective_function()
 	     // Need to do some type conversions here or it fails. 
 	     double qtmp=value(Svy_GGD_lambda_use(f,i)); // Q parameter
 	     double sigmatmp=value(Svy_se_use(f,i)); //
-	     double meantmp=value(Svy_GGD_mean_use(f,i));
-	     dvariable xtmp=Svy_est(f,i);
+	     // double meantmp=value(Svy_GGD_mean_use(f,i));
+	     // dvariable xtmp=Svy_est(f,i);
+	     double xtmp=value(Svy_GGD_mean_use(f,i));
+	     dvariable meantmp=Svy_est(f,i);
 	     double ktmp = pow( qtmp, -2 );
 	     double Beta = pow( sigmatmp, -1 ) * qtmp;
-	     double log_theta = log(meantmp) - lgamma( (ktmp*Beta+1)/Beta ) + lgamma( ktmp );
-	     double mu = log_theta + log(ktmp) / Beta;
+	     dvariable log_theta = log(meantmp) - lgamma( (ktmp*Beta+1)/Beta ) + lgamma( ktmp );
+	     dvariable mu = log_theta + log(ktmp) / Beta;
 	     dvariable w = (log(xtmp) - mu) / sigmatmp;
 	     double abs_q = sqrt(qtmp*qtmp);  // = abs(Q); not differentiable!
 	     double qi = 1/square(qtmp);
