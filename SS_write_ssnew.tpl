@@ -2116,7 +2116,7 @@ FUNCTION void write_nucontrol()
   }
 
   report4 << do_recdev << " #do_recdev:  0=none; 1=devvector (R=F(SSB)+dev); 2=deviations (R=F(SSB)+dev); 3=deviations (R=R0*dev; dev2=R-f(SSB)); 4=like 3 with sum(dev2) adding penalty" << endl;
-  report4 << recdev_start << " # first year of main recr_devs; early devs can preceed this era" << endl;
+  report4 << recdev_start << " # first year of main recr_devs; early devs can precede this era" << endl;
   report4 << recdev_end << " # last year of main recr_devs; forecast devs start in following year" << endl;
   report4 << recdev_PH_rd << " #_recdev phase " << endl;
   report4 << recdev_adv << " # (0/1) to read 13 advanced options" << endl;
@@ -2527,7 +2527,7 @@ FUNCTION void write_nucontrol()
     }
 
     report4 << "#" << endl
-            << TwoD_AR_do << "   #  use 2D_AR1 selectivity(0/1)" << endl;
+            << TwoD_AR_do << "   #  use 2D_AR1 selectivity? (0/1)" << endl;
     if (TwoD_AR_do > 0)
     {
       k = timevary_parm_start_sel + N_selparm3 - N_selparm - 1; //  starting point in timevary_parm_rd
@@ -2549,7 +2549,7 @@ FUNCTION void write_nucontrol()
           anystring = "AGE";
         }
 
-        report4 << tempvec(1, 11) << "  #  2d_AR specs for fleet: " << fleetname(tempvec(1)) << " " << anystring << endl;
+        report4 << tempvec(1, 11) << "  #  2D_AR specs for fleet: " << fleetname(tempvec(1)) << " " << anystring << endl;
         int sigma_amax = tempvec(6);
         int use_rho = tempvec(7);
         int amin = tempvec(4);
@@ -2577,6 +2577,10 @@ FUNCTION void write_nucontrol()
     else
     {
       report4 << "#_no 2D_AR1 selex offset used" << endl;
+      report4 << "#_specs:  fleet, ymin, ymax, amin, amax, sigma_amax, use_rho, len1/age2, devphase, before_range, after_range" << endl;
+      report4 << "#_sigma_amax>amin means create sigma parm for each bin from min to sigma_amax; sigma_amax<0 means just one sigma parm is read and used for all bins" << endl;
+      report4 << "#_needed parameters follow each fleet's specifications"<<endl;
+      report4 << "# -9999  0 0 0 0 0 0 0 0 0 0 # terminator" << endl;
     }
 
     report4.unsetf(std::ios_base::fixed);
