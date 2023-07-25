@@ -701,6 +701,12 @@
           Block_Design(j, b) = YrMax;
         }
         // check block year values
+        if (Block_Design(j, b) > YrMax)
+        {
+          warnstream << "Block:" << j << " " << k << " ends in: " << Block_Design(j, a + 1) << " reset to YrMax:  " << YrMax;
+          write_message (ADJUST, 0);
+          Block_Design(j, b) = YrMax;
+        }
         if (Block_Design(j, b) < Block_Design(j, a))
         {
           warnstream << "Block:" << j << " " << k << " ends before it starts; fatal error";
@@ -731,12 +737,6 @@
         {
           warnstream << "Block:" << j << " " << k << " starts in: " << Block_Design(j, a + 1) << " which is > YrMax:  " << YrMax << " fatal error";
           write_message (FATAL, 0); // EXIT!
-        }
-        if (Block_Design(j, b) > YrMax)
-        {
-          warnstream << "Block:" << j << " " << k << " ends in: " << Block_Design(j, a + 1) << " reset to YrMax:  " << YrMax;
-          write_message (ADJUST, 0);
-          Block_Design(j, b) = YrMax;
         }
         if (Block_Design(j, b) == endyr)
         {
