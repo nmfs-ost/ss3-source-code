@@ -707,16 +707,16 @@
           write_message (ADJUST, 0);
           Block_Design(j, b) = YrMax;
         }
-        if (Block_Design(j, b) < Block_Design(j, a))
-        {
-          warnstream << "Block:" << j << " " << k << " ends before it starts; fatal error";
-          write_message (FATAL, 0); // EXIT!
-        }
         if (Block_Design(j, a) < styr - 1)
         {
           warnstream << "Block:" << j << " " << k << " starts before styr; resetting";
           write_message (ADJUST, 0);
           Block_Design(j, a) = styr;
+        }
+        if (Block_Design(j, b) < Block_Design(j, a))
+        {
+          warnstream << "Block:" << j << " " << k << " ends before it starts; fatal error";
+          write_message (FATAL, 0); // EXIT!
         }
         if (Block_Design(j, b) < styr - 1)
         {
