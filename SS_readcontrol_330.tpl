@@ -683,18 +683,29 @@
     Nblk2 = Nblk + Nblk;
     Block_Design.deallocate();
     Block_Design.allocate(1, N_Block_Designs, 1, Nblk2);
+    bool endyrChk = false;
     for (j = 1; j <= N_Block_Designs; j++)
     {
       *(ad_comm::global_datafile) >> Block_Design(j)(1, Nblk2(j));
-      echoinput << " block design #: " << j << "  read year pairs: " << Block_Design(j) << endl;
       a = -1;
       for (k = 1; k <= Nblk(j); k++)
       {
         a += 2;
-        if (Block_Design(j, a + 1) < Block_Design(j, a))
+        b = a + 1;
+        if (Block_Design(j, b) == -1)
         {
-          warnstream << "Block:" << j << " " << k << " ends before it starts; fatal error";
-          write_message (FATAL, 0); // EXIT!
+          Block_Design(j, b) = endyr;
+        }
+        else if (Block_Design(j, b) == -2)
+        {
+          Block_Design(j, b) = YrMax;
+        }
+        // check block year values
+        if (Block_Design(j, b) > YrMax)
+        {
+          warnstream << "Block:" << j << " " << k << " ends in: " << Block_Design(j, a + 1) << " reset to YrMax:  " << YrMax;
+          write_message (ADJUST, 0);
+          Block_Design(j, b) = YrMax;
         }
         if (Block_Design(j, a) < styr - 1)
         {
@@ -702,7 +713,12 @@
           write_message (ADJUST, 0);
           Block_Design(j, a) = styr;
         }
-        if (Block_Design(j, a + 1) < styr - 1)
+        if (Block_Design(j, b) < Block_Design(j, a))
+        {
+          warnstream << "Block:" << j << " " << k << " ends before it starts; fatal error";
+          write_message (FATAL, 0); // EXIT!
+        }
+        if (Block_Design(j, b) < styr - 1)
         {
           warnstream << "Block:" << j << " " << k << " ends before styr; fatal error";
           write_message (FATAL, 1); // EXIT!
@@ -712,7 +728,7 @@
           warnstream << "Block:" << j << " " << k << " starts after retroyr+1; should not estimate ";
           write_message (WARN, 0);
         }
-        if (Block_Design(j, a + 1) > retro_yr + 1)
+        if (Block_Design(j, b) > retro_yr + 1)
         {
           warnstream << "Block:" << j << " " << k << " ends in: " << Block_Design(j, a + 1) << " after retroyr+1:  " << retro_yr + 1;
           write_message (WARN, 0);
@@ -722,13 +738,17 @@
           warnstream << "Block:" << j << " " << k << " starts in: " << Block_Design(j, a + 1) << " which is > YrMax:  " << YrMax << " fatal error";
           write_message (FATAL, 0); // EXIT!
         }
-        if (Block_Design(j, a + 1) > YrMax)
+        if (Block_Design(j, b) == endyr)
         {
-          warnstream << "Block:" << j << " " << k << " ends in: " << Block_Design(j, a + 1) << " reset to YrMax:  " << YrMax;
-          write_message (WARN, 0);
-          Block_Design(j, a + 1) = YrMax;
+          endyrChk = true;
         }
       }
+      echoinput << " block design #: " << j << "  read year pairs: " << Block_Design(j) << endl;
+    }
+    if (endyrChk == true)
+    {
+      warnstream << "At least one block pattern ends in endyr. Check the output parameter value time series to see if the values in forecast years are as intended.";
+      write_message (WARN, 0);
     }
   }
   else
