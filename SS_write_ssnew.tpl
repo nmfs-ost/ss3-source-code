@@ -1558,23 +1558,27 @@ FUNCTION void write_nucontrol()
 
   NuFore << Fcast_Loop_Control(1) << " #_N forecast loops (1=OFL only; 2=ABC; 3=get F from forecast ABC catch with allocations applied)" << endl;
   NuFore << Fcast_Loop_Control(2) << " #_First forecast loop with stochastic recruitment" << endl;
-  NuFore << Fcast_Loop_Control(3) << " #_Forecast recruitment:  0= spawn_recr; 1=value*spawn_recr_fxn; 2=value*VirginRecr; 3=recent mean for recr and recr_dist from yr range above; 4=average for recr only" << endl;
-  NuFore << "#_ for options 3 and 4, need to set phase to -1 in control to get constant recruitment in MCMC" << endl;
+  NuFore << Fcast_Loop_Control(3) << " #_Forecast recruitment:  0= spawn_recr; 1=mult*spawn_recr_fxn; 2=mult*VirginRecr; 3=recent mean for recr and recr_dist from yr range above; 4=mult * recent mean for recr only" << endl;
+  NuFore << "#_ for options 3 and 4, need to set phase for fore_recr_devs to -1 in control to get requested mean in MCMC" << endl;
   if (Fcast_Loop_Control(3) == 0)
   {
     NuFore << 1.0 << " # Value multiplier is ignored" << endl;
   }
   else if (Fcast_Loop_Control(3) == 1)
   {
-    NuFore << Fcast_Loop_Control(4) << " # value is multiplier of SRR " << endl;
+    NuFore << Fcast_Loop_Control(4) << " # multiplier on SRR " << endl;
   }
   else if (Fcast_Loop_Control(3) == 2)
   {
-    NuFore << Fcast_Loop_Control(4) << " # value is multiplier on virgin recr" << endl;
+    NuFore << Fcast_Loop_Control(4) << " # multiplier on virgin recr" << endl;
   }
-  else if (Fcast_Loop_Control(3) >= 3)
+  else if (Fcast_Loop_Control(3) == 3)
   {
-    NuFore << Fcast_Loop_Control(4) << " # Value multiplier is ignored" << endl;
+    NuFore << Fcast_Loop_Control(4) << " # multiplier is ignored" << endl;
+  }
+  else if (Fcast_Loop_Control(3) == 4)
+  {
+    NuFore << Fcast_Loop_Control(4) << " # multiplier on recent mean" << endl;
   }
   else
   {
