@@ -262,24 +262,26 @@ FUNCTION void Get_expected_values(const int y, const int t);
                     //  should sum over all g, but the g is already subsummed when agetemp is created by gender
                     {
                       vbio = 0.0;
+//                      warning<<f<<" "<<y<<" "<<s<<" "<<t<<" y_wts "<<Wt_Age_t(y, f, 1)<<endl;
+//                      warning<<f<<" "<<y<<" "<<s<<" "<<t<<" t_wts "<<Wt_Age_t(t, f, 1)<<endl;
                       if (Do_Retain(f) == 0) //  all retained
                       {
                         for (a = 0; a <= nages; a++)
-                          vbio += Wt_Age_t(y, f, 1, a) * agetemp(a);
+                          vbio += Wt_Age_t(t, f, 1, a) * agetemp(a);
                         if (gender == 2)
                         {
                           for (a = 0; a <= nages; a++)
-                            vbio += Wt_Age_t(y, f, 2, a) * agetemp(a + nages + 1);
+                            vbio += Wt_Age_t(t, f, 2, a) * agetemp(a + nages + 1);
                         }
                       }
                       else
                       {
                         for (a = 0; a <= nages; a++)
-                          vbio += Wt_Age_t(y, f, 1, a) * exp_truea_ret(a);
+                          vbio += Wt_Age_t(t, f, 1, a) * exp_truea_ret(a);
                         if (gender == 2)
                         {
                           for (a = 0; a <= nages; a++)
-                            vbio += Wt_Age_t(y, f, 2, a) * exp_truea_ret(a + nages + 1);
+                            vbio += Wt_Age_t(t, f, 2, a) * exp_truea_ret(a + nages + 1);
                         }
                       }
                     }
