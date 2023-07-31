@@ -252,6 +252,7 @@ FUNCTION void apply_recdev(prevariable& NewRecruits, const prevariable& Recr_vir
           NewRecruits += exp_rec(j, 4);
         }
         NewRecruits /= (Fcast_Rec_yr2 - Fcast_Rec_yr1 + 1);
+        if(Fcast_Loop_Control(3) == 4) NewRecruits *= Fcast_Loop_Control(4);  //  apply multiplier
         exp_rec(y, 2) = NewRecruits;
         exp_rec(y, 3) = NewRecruits; //  store in the bias-adjusted field
         break;

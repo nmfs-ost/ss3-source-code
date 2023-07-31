@@ -4160,31 +4160,32 @@
     }
 
     echoinput << endl
-              << "# next enter 2 values that control looping through the forecast (see manual), then 3 placeholder values" << endl;
+              << "# next enter 2 values that control looping through the forecast (see manual), then 3 additional controls" << endl;
     echoinput << "# first does F_msy or proxy; 2nd applies control rule; 3rd applies caps and allocations" << endl;
     *(ad_comm::global_datafile) >> Fcast_Loop_Control(1, 5);
-    echoinput << Fcast_Loop_Control(1) << " #echoed N forecast loops (1-3) (recommend 3)" << endl;
+    echoinput << Fcast_Loop_Control(1) << " #echoed N forecast loops (1-3) (recommend 3 to get full variance for short-term forecasts)" << endl;
     echoinput << Fcast_Loop_Control(2) << " #echoed First forecast loop with stochastic recruitment (recommend 3)" << endl;
-    echoinput << Fcast_Loop_Control(3) << " #echoed Forecast recruitment:  0=spawn_recr; 1=value*spawn_recr; 2=value*VirginRecr; 3&4=mean from year range" << endl;
+    echoinput << Fcast_Loop_Control(3) << " #echoed Forecast recruitment:  0=spawn_recr; 1=mult*spawn_recr; 2=mult*VirginRecr; 3=mean from yr range; 4=mult*mean from yr range" << endl;
     if (Fcast_Loop_Control(3) == 0)
     {
       echoinput << Fcast_Loop_Control(4) << " Forecast control #4 (not used) " << endl;
     }
     else if (Fcast_Loop_Control(3) == 1)
     {
-      echoinput << Fcast_Loop_Control(4) << " Forecast control #4:  multiplier on spawn_recr" << endl;
+      echoinput << Fcast_Loop_Control(4) << "multiplier on spawn_recr" << endl;
     }
     else if (Fcast_Loop_Control(3) == 2)
     {
-      echoinput << Fcast_Loop_Control(4) << " #Forecast control #4 is multiplier on virgin recr" << endl;
+      echoinput << Fcast_Loop_Control(4) << "multiplier on virgin recr" << endl;
     }
     else if (Fcast_Loop_Control(3) == 3)
     {
-      echoinput << " #mean recruitment and recr_dist from years: " << Fcast_Rec_yr1 << " to " << Fcast_Rec_yr2 << endl;
+      echoinput << "mean recruitment and recr_dist from years: " << Fcast_Rec_yr1 << " to " << Fcast_Rec_yr2 << endl;
     }
     else if (Fcast_Loop_Control(3) == 4)
     {
-      echoinput << " #mean recruitment from years: " << Fcast_Rec_yr1 << " to " << Fcast_Rec_yr2 << " recrdist from parameters, or average using control_5" << endl;
+      echoinput << "mult * mean recruitment from years: " << Fcast_Rec_yr1 << " to " << Fcast_Rec_yr2 << " recrdist from parameters, or average using control_5" << endl;
+      echoinput << Fcast_Loop_Control(4) << " multiplier on recent mean recr" << endl;
     }
     else //  input probably was a -1 from pre 3.30.15, so convert to 0
     {
