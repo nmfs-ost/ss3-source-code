@@ -4779,20 +4779,36 @@
   //      write_message(WARN, 0);
   //    }
   //  }
-  if (Fcast_Sel_yr1 > Fcast_Sel_yr2)
+
+  if (Fcast_Specify_Selex == 0)  //  averaged selectivity will be used in the forecast
   {
-    warnstream << " Error, Fcast_Sel_Yr1 must be at or before Fcast_Sel_Yr2";
-    write_message(FATAL, 1);
-  }
-  if (Fcast_Sel_yr1 > endyr || Fcast_Sel_yr1 < styr)
-  {
-    warnstream << " Error, Fcast_Sel_Yr1 must be between styr and endyr";
-    write_message(FATAL, 1);
-  }
-  if (Fcast_Sel_yr2 > endyr || Fcast_Sel_yr2 < styr)
-  {
-    warnstream << " Error, Fcast_Sel_Yr2 must be between styr and endyr";
-    write_message(FATAL, 1);
+    if (Fcast_Sel_yr1 < styr)
+    {
+      warnstream << " Adjust, Fcast_Sel_Yr1 set to styr";
+      write_message(ADJUST, 0);
+      Fcast_Sel_yr1 = styr;
+    }
+    if (Fcast_Sel_yr1 > endyr)
+    {
+      warnstream << " Error, Fcast_Sel_Yr1 must be < endyr";
+      write_message(FATAL, 1);
+    }
+    if (Fcast_Sel_yr2 > endyr)
+    {
+      warnstream << " Adjust, Fcast_Sel_Yr2 set to endyr";
+      write_message(ADJUST, 0);
+      Fcast_Sel_yr2 = endyr;
+    }
+    if (Fcast_Sel_yr2 > retro_yr)
+    {
+      warnstream << " attention, Fcast_Sel_Yr2 is > retro_yr, no auto-adjustment";
+      write_message(WARN, 0);
+    }
+    if (Fcast_Sel_yr1 > Fcast_Sel_yr2)
+    {
+      warnstream << " Error, Fcast_Sel_Yr1 must be at or before Fcast_Sel_Yr2";
+      write_message(FATAL, 1);
+    }
   }
   if (Fcast_Rec_yr1 > Fcast_Rec_yr2)
   {

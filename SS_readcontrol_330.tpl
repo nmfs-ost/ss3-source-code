@@ -747,7 +747,7 @@
     }
     if (endyrChk == true)
     {
-      warnstream << "At least one block pattern ends in endyr. Check the output parameter value time series to see if the values in forecast years are as intended.";
+      warnstream << "At least one block pattern ends in endyr. Check output to see if the values in forecast years are as intended.";
       write_message (WARN, 0);
     }
   }
@@ -1790,6 +1790,7 @@
       timevary_MG(y, 2) = 1;
     }
   }
+  //  MG_type:  1=M, 2=growth 3=wtlen, 4=recr_dist&femfrac, 5=migration, 6=ageerror, 7=catchmult, future: 8=hermaphroditism
   for (y = styr - 1; y <= YrMax; y++)
   {
     for (f = 1; f <= 7; f++)
@@ -1798,6 +1799,14 @@
       {
         MG_active(f) = 1;
         timevary_MG(y, 0) = 1; // tracks active status for all MG types
+        //  check to see if averaging is requested for a time-varying parameter
+        //  reset under presumption that averaging will override time-vary
+        if (y > endyr && Fcast_MGparm_ave(f,2) > 0)
+        {
+          warnstream << "Set averaging of MG_type to override time_vary during forecast " << y << " type: " << f;
+          write_message(ADJUST, 0);
+          timevary_MG(y,f) = 0;
+        }
       }
     }
     //  timevary growth or maturity and Maunder M refers to that maturity
@@ -2249,11 +2258,14 @@
   echoinput << recdev_early_PH_rd << " #_recdev_early_phase" << endl;
   echoinput << Fcast_recr_PH_rd << " #_forecast_recruitment phase (incl. late recr) (0 value resets to maxphase+1)" << endl;
   echoinput << Fcast_recr_lambda << " #_lambda for Fcast_recr_like occurring before endyr+1" << endl;
+  /*
+  // This warning is removed because the mean is on the expected values, not the expected+dev values
   if (Fcast_Loop_Control(3) >= 3 && Fcast_recr_PH_rd >= 0)
   {
     warnstream << "Mean recruitment for forecast is incompatible with pos. phase for forecast rec_devs; set phase to neg. unless using late rec_devs";
     write_message (WARN, 0);
   }
+  */
   if (Do_Impl_Error > 0 && Fcast_recr_PH_rd < 0)
   {
     warnstream << "Implementation error incompatible with neg. phase for forecast rec_devs; SS3 will run without active impl error";
@@ -2291,9 +2303,9 @@
   }
   if (recdev_end < endyr && (Fcast_Loop_Control(3) == 3 || Fcast_Loop_Control(3) == 4))
   {
-    warnstream << "Fcast recr option is 3 or 4 and recdev_end: " << recdev_end << " < endyr: " << endyr << " reset ";
-    write_message (ADJUST, 0);
-    recdev_end = endyr;
+    warnstream << "Fcast recr option is 3 or 4 and recdev_end: " << recdev_end << " < endyr: " << endyr << "; so late recrdevs may not be estimated, suggest setting recdev_end";
+    write_message (WARN, 0);
+    // recdev_end = endyr;
   }
   if (recdev_start < (styr - nages))
   {
@@ -4985,7 +4997,7 @@
     TwoD_AR_degfree(f) *= (TwoD_AR_amax(f) - TwoD_AR_amin(f) + 1);
     echoinput << TwoD_AR_degfree(f) << endl;
   }
-  
+
   echoinput << " read var_adjust list until -9999" << endl;
   ender = 0;
   do

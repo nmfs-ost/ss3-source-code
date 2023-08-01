@@ -825,7 +825,7 @@
       echoinput << " Tag_parms read from ctl " << TG_parm << endl;
     }
   }
-
+  
   //  SS_Label_Info_6.5 #Check parameter bounds and do jitter
   echoinput << endl
             << " now check MGparm bounds and priors and do jitter if requested " << endl;

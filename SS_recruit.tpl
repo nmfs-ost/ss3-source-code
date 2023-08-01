@@ -208,6 +208,11 @@ FUNCTION void apply_recdev(prevariable& NewRecruits, const prevariable& Recr_vir
     }
   }
 
+  else if (y <= endyr)  //  late recdevs
+  {
+    warning<<"late rec_dev"<<y<<" doit "<<recdev_doit(y)<<endl;
+  }
+
   else if (Do_Forecast > 0)
   {
     switch (int(Fcast_Loop_Control(3)))
