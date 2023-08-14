@@ -824,6 +824,16 @@
       }
       echoinput << " Tag_parms read from ctl " << TG_parm << endl;
     }
+    checksum999 = 999.;
+  }
+  else
+  {
+        echoinput << "checksum from par file "<<checksum999<<endl;
+    if (checksum999 != 999.)
+    {
+          warnstream << "error on ss.par read; final value was not 999; total number parms changed  " << checksum999;
+          write_message (FATAL, 1);
+    }
   }
   
   //  SS_Label_Info_6.5 #Check parameter bounds and do jitter
