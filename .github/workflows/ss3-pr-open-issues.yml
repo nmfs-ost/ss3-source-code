@@ -24,14 +24,14 @@ jobs:
         run:
           Rscript -e "install.packages('gh')"
       - name: Get pr info and save
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           Rscript -e 'info <- gh::gh("GET /repos/{owner}/{repo}/pulls/{pull_number}", 
             owner = "nmfs-stock-synthesis", 
             repo = "stock-synthesis",
             pull_number = "${{ github.event.pull_request.number }}")
           saveRDS(info, file = "info.RDS")'
-         env: 
-           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Post issues, if needed
         run: |
           info <- readRDS("info.RDS")
