@@ -26,13 +26,13 @@ jobs:
       - name: install the gh and curl pkgs
         run:
           Rscript -e "install.packages('gh')"
-      # - name: Get pr info and save
-      #   run: |
-      #     Rscript -e 'info <- gh::gh("GET /repos/{owner}/{repo}/pulls/{pull_number}", 
-      #       owner = "nmfs-stock-synthesis", 
-      #       repo = "stock-synthesis",
-      #       pull_number = "${{ github.event.pull_request.number }}")
-      #     saveRDS(info, file = "info.RDS")'
+      - name: Get pr info and save
+        run: |
+          Rscript -e 'info <- gh::gh("GET /repos/{owner}/{repo}/pulls/{pull_number}", 
+            owner = "nmfs-stock-synthesis", 
+            repo = "stock-synthesis",
+            pull_number = "${{ github.event.pull_request.number }}")
+          saveRDS(info, file = "info.RDS")'
       # - name: Post issues, if needed
       #   run: |
       #     info <- readRDS("info.RDS")
