@@ -15,14 +15,14 @@ jobs:
     #if: github.event.pull_request.merged == true
     steps:
       - name: Update Ubuntu packages
-        run: sudo apt-get update
+        run: sudo apt update && sudo apt install -y libcurl4-openssl-dev
       - uses: actions/checkout@v3
       - uses: r-lib/actions/setup-r@v2
        # with:
        #   use-public-rspm: true
       - name: install the gh and curl pkgs
         run:
-          Rscript -e "install.packages(c('gh', 'curl'))"
+          Rscript -e "install.packages('gh')"
       - name: Get pr info and save
         run: |
           Rscript -e 'info <- gh::gh("GET /repos/{owner}/{repo}/pulls/{pull_number}", 
