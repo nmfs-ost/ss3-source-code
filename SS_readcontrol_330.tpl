@@ -1593,6 +1593,7 @@
  END_CALCS
 
   ivector mgp_type(1,N_MGparm)  //  contains category to parameter (1=natmort; 2=growth; 3=wtlen & fec; 4=recr_dist&femfrac; 5=movement; 6=ageerrorkey; 7=catchmult)
+  //  labels for the types are found in:  MGtype_Lbl
  LOCAL_CALCS
       // clang-format on
       gp = 0;
@@ -1637,8 +1638,8 @@
   if (catch_mult_pointer > 0) mgp_type(catch_mult_pointer, N_MGparm) = 7;
   for (f = frac_female_pointer; f <= frac_female_pointer + N_GP - 1; f++) mgp_type(f) = 4;
   if (N_pred > 0) mgp_type(predparm_pointer(1), predparm_pointer(1) + N_predparms - 1) = 1;
-  echoinput << "mgparm_type for each parm: 1=M; 2=growth; 3=wtlen,mat,fec,hermo; 4=recr&femfrac; 5=migr; 6=ageerror; 7=catchmult" << endl
-            << mgp_type << endl;
+  echoinput << "mgparm_type for each parm:"<<endl;
+  for (f = 1; f<= N_MGparm; f++) echoinput << f << " " << MGtype_Lbl(mgp_type(f)) << endl;
   // clang-format off
  END_CALCS
 
@@ -1805,6 +1806,20 @@
   
     echoinput << y << " timevary_MG: " << timevary_MG(y) << endl;
   }
+
+  for (y = endyr + 1; y <= YrMax; y++)
+  {
+    for (f = 1; f <= 7; f++)
+    {
+      if (timevary_MG(y, f) > 0 && Fcast_MGparm_ave(f,2) > 0)
+      {
+          warnstream << "mean MGparm for forecast is incompatible with timevary parm in forecast yr: " << y << "; for type: " << f << "; SS3 will disable time-vary";
+          write_message(WARN, 0);
+          timevary_MG(y, f) = 0;
+      }
+    }
+  }
+
   // clang-format off
  END_CALCS
 
@@ -2251,12 +2266,12 @@
   echoinput << Fcast_recr_lambda << " #_lambda for Fcast_recr_like occurring before endyr+1" << endl;
   if (Fcast_Loop_Control(3) >= 3 && Fcast_recr_PH_rd >= 0)
   {
-    warnstream << "Mean recruitment for forecast is incompatible with pos. phase for forecast rec_devs; set phase to neg. unless using late rec_devs";
-    write_message (WARN, 0);
+    warnstream << "Forecast devs will be applied to mean base recruitment over range of historical years in forecast.ss";
+    write_message (NOTE, 0);
   }
   if (Do_Impl_Error > 0 && Fcast_recr_PH_rd < 0)
   {
-    warnstream << "Implementation error incompatible with neg. phase for forecast rec_devs; SS3 will run without active impl error";
+    warnstream << "Implementation error has null effect unless Fcast_recr_PH is >=0";
     write_message (WARN, 0);
   }
   echoinput << recdev_adj(1) << " #_last_early_yr_nobias_adj_in_MPD" << endl;
@@ -4374,6 +4389,10 @@
         k = 0;
         env_data_pass.initialize();
       }
+    if (do_densitydependent == 1 && Fcast_timevary_Selex == 0) {
+      warnstream << "Fcast_timevary_Selex is 0 but user should change to 1 because density dependence affects a selectivity parameter or growth "<<endl;
+      write_message(WARN, 0);
+    }
 
       if (z > 0) //  doing blocks
       {
@@ -4881,10 +4900,10 @@
           picker -= 20;
           timevary_setup(14) = 1; //  flag to continue last dev through to YrMax
           timevary_def[j](14) = 1; //  save in array also
-          echoinput << j << " setting flag to continue last dev " << Fcast_Specify_Selex << " " << firstselparm << " " << f << " " << firstselparm + N_selparm << " " << endl;
-          if (Fcast_Specify_Selex == 0 && f >= firstselparm && f <= (firstselparm + N_selparm))
+          echoinput << j << " setting flag to continue last dev " << Fcast_timevary_Selex << " " << firstselparm << " " << f << " " << firstselparm + N_selparm << " " << endl;
+          if (Fcast_timevary_Selex == 0 && f >= firstselparm && f <= (firstselparm + N_selparm))
           {
-            warnstream << "for selectivity parmdevs, must change Fcast_Specify_Selex to 1 when using continue last dev";
+            warnstream << "for selectivity parmdevs, must change Fcast_timevary_Selex to 1 when using continue last dev";
             write_message (WARN, 1);
           }
         }
