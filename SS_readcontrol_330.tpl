@@ -1805,6 +1805,20 @@
   
     echoinput << y << " timevary_MG: " << timevary_MG(y) << endl;
   }
+
+  for (y = endyr + 1; y <= YrMax; y++)
+  {
+    for (f = 1; f <= 7; f++)
+    {
+      if (timevary_MG(y, f) > 0 && Fcast_MGparm_ave(f,2) > 0)
+      {
+          warnstream << "mean MGparm for forecast is incompatible with timevary parm in forecast yr: " << y << "; for type: " << f << "; SS3 will disable time-vary";
+          write_message(WARN, 0);
+          timevary_MG(y, f) = 0;
+      }
+    }
+  }
+
   // clang-format off
  END_CALCS
 
@@ -2251,12 +2265,12 @@
   echoinput << Fcast_recr_lambda << " #_lambda for Fcast_recr_like occurring before endyr+1" << endl;
   if (Fcast_Loop_Control(3) >= 3 && Fcast_recr_PH_rd >= 0)
   {
-    warnstream << "Mean recruitment for forecast is incompatible with pos. phase for forecast rec_devs; set phase to neg. unless using late rec_devs";
-    write_message (WARN, 0);
+    warnstream << "Forecast devs will be applied to mean base recruitment over range of historical years in forecast.ss";
+    write_message (NOTE, 0);
   }
   if (Do_Impl_Error > 0 && Fcast_recr_PH_rd < 0)
   {
-    warnstream << "Implementation error incompatible with neg. phase for forecast rec_devs; SS3 will run without active impl error";
+    warnstream << "Implementation error has null effect unless Fcast_recr_PH is >=0";
     write_message (WARN, 0);
   }
   echoinput << recdev_adj(1) << " #_last_early_yr_nobias_adj_in_MPD" << endl;

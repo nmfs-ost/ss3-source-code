@@ -147,9 +147,9 @@ FUNCTION void setup_Benchmark()
     if (Fcast_Loop_Control(5) == 1)  //  
     {
 
-      for (int parm_type = 1; parm_type <= 8; parm_type++)
+      for (int parm_type = 1; parm_type <= 12; parm_type++)
 	  {
-      if(Fcast_MGparm_ave(parm_type, 2) == 1)  //  do averaging of derived biology
+      if(Fcast_MGparm_ave(parm_type, 2) == 1)  //  do averaging of derived factor
       {
       double ave_styr = Fcast_MGparm_ave(parm_type,3);
       double ave_endyr = Fcast_MGparm_ave(parm_type,4);
@@ -248,6 +248,11 @@ FUNCTION void setup_Benchmark()
           warnstream << "Maturity & fecundity params averaging is not implemented, execution continues. " ;
           write_message (WARN, 1); 
           break; 
+
+        case 10: // 9=selectivity
+          tempvec_a.initialize();
+          break; 
+
         }
       }
     }
