@@ -21,8 +21,8 @@ jobs:
        # with:
        #   use-public-rspm: true
       - name: install the gh and curl pkgs
-        run: install.packages(c("gh","curl"))
-        shell: Rscript {0}
+        run:
+          Rscript -e "install.packages(c('gh', 'curl'))"
       - name: Get pr info and save
         run: |
           Rscript -e 'info <- gh::gh("GET /repos/{owner}/{repo}/pulls/{pull_number}", 
