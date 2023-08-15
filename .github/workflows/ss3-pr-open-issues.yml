@@ -2,7 +2,7 @@
 name: ss3-pr-open-issues.yml
 on:
   pull_request:
-    types: [opened]
+#    types: [opened]
   push:
 #  pull_request_target:
 #    types:
