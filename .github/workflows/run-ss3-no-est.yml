@@ -1,12 +1,13 @@
 # Build SS3 and run models without estimation (from .par) and no hessian
+# Runs on every push and PR (even draft PRs)
 name: run-ss3-no-est
 on:
   workflow_dispatch:
   push:
     paths:
       - '**.tpl'
-    branches: 
-      - main
+    # branches: 
+    #   - main
   pull_request:
     paths:
       - '**.tpl'
@@ -16,7 +17,6 @@ on:
 # run models without estimation, then try to run again with .ss_new
 jobs:
   run-ss3-no-est:
-    if: github.event.pull_request.draft == false
     runs-on: ubuntu-latest
     env:
       R_REMOTES_NO_ERRORS_FROM_WARNINGS: true

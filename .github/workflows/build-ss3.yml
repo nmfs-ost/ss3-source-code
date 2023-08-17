@@ -1,5 +1,6 @@
 # Builds the stock synthesis executables for testing and distribution.
 # for mac, linux, windows
+# Runs on every push and PR (even draft PRs)
 name: build-ss3
 
 on:
@@ -11,7 +12,6 @@ on:
 
 jobs:
   build-ss3:
-    if: github.event.pull_request.draft == false
     runs-on: ${{ matrix.config.os }}
     name: ${{ matrix.config.os }}
     strategy:
