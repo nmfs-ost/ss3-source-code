@@ -1539,6 +1539,8 @@ FUNCTION void write_nucontrol()
   NuFore << Fcast_Flevel << " # Fmult (only used for Do_Forecast==5) such that apical_F(f)=Fmult*relF(f)" << endl;
   if(Fcast_yr_rd(1) != -12345)
   {   //  write in old format
+  if(Fcast_yr_rd(1) != -12345)
+  {   //  write in old format
   NuFore << "#_Fcast_years:  beg_selex, end_selex, beg_relF, end_relF, beg_mean recruits, end_recruits  (enter actual year, or values of 0 or -integer to be rel. endyr)" << endl
          << Fcast_yr_rd << endl
          << "# " << Fcast_yr << endl;
