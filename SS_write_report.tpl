@@ -992,7 +992,7 @@ FUNCTION void write_bigoutput()
   if (pick_report_use(8) == "Y")
   {
     k1 = YrMax;
-    if (Fcast_Specify_Selex == 0)
+    if (Fcast_timevary_Selex == 0)
     {
       SS2out << "forecast_selectivity_averaged_over_years:_" << Fcast_Sel_yr1 << "_to_" << Fcast_Sel_yr2 << endl;
     }

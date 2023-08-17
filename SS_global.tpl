@@ -106,6 +106,7 @@ GLOBALS_SECTION
   adstring_array NumLbl; // label for numbers 1 to 199
   adstring_array NumLbl0; // label for numbers 0 to 198 (needed for ages)
   adstring_array GenderLbl; // gender label
+  adstring_array MGtype_Lbl; // label for MGtypes, i.e. Natmort, Growth
   adstring_array GP_Lbl; // gender label
   adstring_array CRLF; // blank to terminate lines
   adstring_array pick_report_name; //  name of report
