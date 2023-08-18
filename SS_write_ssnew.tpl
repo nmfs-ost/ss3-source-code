@@ -1537,19 +1537,21 @@ FUNCTION void write_nucontrol()
   NuFore << "# where none and simple require no input after this line; simple sets forecast F same as end year F" << endl;
   NuFore << N_Fcast_Yrs << " # N forecast years " << endl;
   NuFore << Fcast_Flevel << " # Fmult (only used for Do_Forecast==5) such that apical_F(f)=Fmult*relF(f)" << endl;
+  anystring = "";
   if(Fcast_yr_rd(1) != -12345)
   {   //  write in old format
-  NuFore << "#_Fcast_years:  beg_selex, end_selex, beg_relF, end_relF, beg_mean recruits, end_recruits  (enter actual year, or values of 0 or -integer to be rel. endyr)" << endl
+    NuFore << "#_Fcast_years:  beg_selex, end_selex, beg_relF, end_relF, beg_mean recruits, end_recruits  (enter actual year, or values of 0 or -integer to be rel. endyr)" << endl
          << Fcast_yr_rd << endl
          << "# " << Fcast_yr << endl;
-  NuFore << Fcast_timevary_Selex << " # Forecast selectivity (0=fcast selex is mean from year range; 1=fcast selectivity from annual time-vary parms)" << endl;
-  NuFore << "# A revised protocol for the Fcast_yr specification is available and recommended";
-          warnstream << "A revised protocol for the Fcast_yr specification is available and recommended";
+    NuFore << Fcast_timevary_Selex << " # Forecast selectivity (0=fcast selex is mean from year range; 1=fcast selectivity from annual time-vary parms)" << endl;
+    NuFore << "# A revised protocol for the Fcast_yr specification is available and recommended" << endl;
+          warnstream << "A revised protocol for the Fcast_yr specification is available and recommended. Template is below.";
           write_message (NOTE, 1);
+    anystring = "#";
   }
-  else
+//  else
   {  //  new list based format for Fcast years
-  NuFore << "-12345  # code to invoke new format" << endl
+  NuFore << anystring << endl << anystring << "-12345  # code to invoke new format" << endl
          << "# biology and selectivity vectors will be updated annually in the forecast according to timevary parameters, so check end year of blocks and dev vectors" << endl
          << "# input in this section directs creation of averages over historical years to override any time_vary changes" << endl
 				 << "#_Types implemented so far: 1=M, 4=recr_dist, 5=migration, 10=selectivity, 11=rel. F" << endl
@@ -1562,9 +1564,9 @@ FUNCTION void write_nucontrol()
     for (int i = 1; i <= 12; i++)
     if (Fcast_MGparm_ave_rd(i, 1) > 0)
 	  {
-      NuFore << Fcast_MGparm_ave_rd(i) << " # " << MGtype_Lbl(i) << "; use: "  << Fcast_MGparm_ave(i) << endl;
+      NuFore << anystring << Fcast_MGparm_ave_rd(i) << " # " << MGtype_Lbl(i) << "; use: "  << Fcast_MGparm_ave(i) << endl;
     }
-    NuFore << "-9999 -1 -1 -1" << endl;
+    NuFore << anystring << "-9999 -1 -1 -1" << endl << "#" <<endl;
   }
 
   NuFore << HarvestPolicy << " # Control rule method (0: none; 1: ramp does catch=f(SSB), buffer on F; 2: ramp does F=f(SSB), buffer on F; 3: ramp does catch=f(SSB), buffer on catch; 4: ramp does F=f(SSB), buffer on catch) " << endl;

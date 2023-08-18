@@ -1739,10 +1739,11 @@
         env_data_pass(1) = env_data_minyr(k);
         env_data_pass(2) = env_data_maxyr(k);
       }
-      else //  density-dependence
+      else if (abs(MGparm_1(j, 8) > 0)) //  density-dependence
       {
         timevary_setup(7) = -int(abs(MGparm_1(j, 8)) - k * 100);
         do_densitydependent = 1;
+  echoinput << "Density-dependent flag for MGparms " << do_densitydependent << " MGparm: " << j << endl;
         k = 0;
         env_data_pass.initialize();
       }
@@ -1813,7 +1814,7 @@
     {
       if (timevary_MG(y, f) > 0 && Fcast_MGparm_ave(f,2) > 0)
       {
-          warnstream << "mean MGparm for forecast is incompatible with timevary parm in forecast yr: " << y << "; for type: " << f << "; SS3 will disable time-vary";
+          warnstream << "mean MGparm for forecast is incompatible with timevary parm in forecast yr: " << y << "; for type: " << f << " " << MGtype_Lbl(f) << "; SS3 will disable time-vary";
           write_message(WARN, 0);
           timevary_MG(y, f) = 0;
       }
@@ -2081,7 +2082,7 @@
           env_data_pass(1) = env_data_minyr(k);
           env_data_pass(2) = env_data_maxyr(k);
         }
-        else //  density-dependence
+        else if (abs(SR_parm_1(j, 8) > 0)) //  density-dependence
         {
           timevary_setup(7) = -int(abs(SR_parm_1(j, 8)) - k * 100);
           do_densitydependent = 1;
@@ -3124,7 +3125,7 @@
           env_data_pass(1) = env_data_minyr(k);
           env_data_pass(2) = env_data_maxyr(k);
         }
-        else //  density-dependence
+        else if (abs(Q_parm_1(j, 8) > 0)) //  density-dependence
         {
           timevary_setup(7) = -int(abs(Q_parm_1(j, 8)) - k * 100);
           do_densitydependent = 1;
@@ -4382,18 +4383,13 @@
         env_data_pass(1) = env_data_minyr(k);
         env_data_pass(2) = env_data_maxyr(k);
       }
-      else //  density-dependence
+        else if (abs(selparm_1(j, 8) > 0)) //  density-dependence
       {
         timevary_setup(7) = -int(abs(selparm_1(j, 8)) - k * 100);
         do_densitydependent = 1;
         k = 0;
         env_data_pass.initialize();
       }
-    if (do_densitydependent == 1 && Fcast_timevary_Selex == 0) {
-      warnstream << "Fcast_timevary_Selex is 0 but user should change to 1 because density dependence affects a selectivity parameter or growth "<<endl;
-      write_message(WARN, 0);
-    }
-
       if (z > 0) //  doing blocks
       {
         if (z > N_Block_Designs)
@@ -4413,6 +4409,11 @@
       } // year vector for this category
     }
   }
+    if (do_densitydependent == 1 && Fcast_timevary_Selex == 0) {
+      warnstream << "Fcast_timevary_Selex is 0 (do averages) but user should change to 1 because density dependence affects a selectivity parameter or growth "<<endl;
+      write_message(WARN, 0);
+    }
+
   
   timevary_setup.initialize();
   timevary_setup(3) = timevary_parm_cnt + 1; //  one past last one used

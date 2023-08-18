@@ -4145,7 +4145,7 @@
     Fcast_MGparm_ave(12,2) = 1;
     Fcast_MGparm_ave(12,3) = Fcast_yr_rd(5);  // for recruitment
     Fcast_MGparm_ave(12,4) = Fcast_yr_rd(6);
-
+    Fcast_MGparm_ave_rd = Fcast_MGparm_ave;
     }  //  end old approach for Fcast years
     else
     {  //  read fcast year ranges in new list-based format
@@ -4235,7 +4235,7 @@
           case 10:  // 10=selectivity
           Fcast_Sel_yr1 = Fcast_MGparm_ave(i,3);
           Fcast_Sel_yr2 = Fcast_MGparm_ave(i,4);
-          Fcast_timevary_Selex = 0;  //  tells SS3 to use averages, not time-vary parms
+          Fcast_timevary_Selex = Fcast_MGparm_ave(i,2);  //  tells SS3 to use averages (0) vs. time-vary parms (1)
           break;
 
           case 11:  // 11=relative F
