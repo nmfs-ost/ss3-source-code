@@ -1543,23 +1543,24 @@ FUNCTION void write_nucontrol()
     NuFore << "#_Fcast_years:  beg_selex, end_selex, beg_relF, end_relF, beg_mean recruits, end_recruits  (enter actual year, or values of 0 or -integer to be rel. endyr)" << endl
          << Fcast_yr_rd << endl
          << "# " << Fcast_yr << endl;
-    NuFore << Fcast_timevary_Selex << " # Forecast selectivity (0=fcast selex is mean from year range; 1=fcast selectivity from annual time-vary parms)" << endl;
-    NuFore << "# A revised protocol for the Fcast_yr specification is available and recommended" << endl;
-          warnstream << "A revised protocol for the Fcast_yr specification is available and recommended. Template is below.";
+    NuFore << Fcast_timevary_Selex_rd << " # Forecast selectivity (0=fcast selex is mean from year range; 1=fcast selectivity from time-vary parms). NOTE: logic reverses in new format" << endl;
+    //  
+    NuFore << "# A revised protocol for the Fcast_yr specification is available and recommended. Template is below." << endl;
+          warnstream << "A revised protocol for the Fcast_yr specification is available and recommended.";
           write_message (NOTE, 1);
     anystring = "#";
   }
 //  else
   {  //  new list based format for Fcast years
-  NuFore << anystring << endl << anystring << "-12345  # code to invoke new format" << endl
-         << "# biology and selectivity vectors will be updated annually in the forecast according to timevary parameters, so check end year of blocks and dev vectors" << endl
+  NuFore << anystring << endl << anystring << "-12345  # code to invoke new format for expanded fcast year controls" << endl
+         << "# biology and selectivity vectors are updated annually in the forecast according to timevary parameters, so check end year of blocks and dev vectors" << endl
          << "# input in this section directs creation of averages over historical years to override any time_vary changes" << endl
-				 << "#_Types implemented so far: 1=M, 4=recr_dist, 5=migration, 10=selectivity, 11=rel. F" << endl
-         << "#_list of type, method (1, 2), start year, end year" << endl
+				 << "#_Types implemented so far: 1=M, 4=recr_dist, 5=migration, 10=selectivity, 11=rel. F, recruitment" << endl
+         << "#_list: type, method (1, 2), start year, end year" << endl
          << "#_Terminate with -9999 for type" << endl
-         << "#_ for years:  enter actual year, or values of 0 or -integer to be rel. styr or endyr" << endl
+         << "#_ year input can be actual year, or values <=0 to be rel. styr or endyr" << endl
 //				 << "#_MG_type: 1=M, 2=growth, 3=wtlen, 4=recr_dist&femfrac, 5=migration, 6=ageerror, 7=catchmult, 8=hermaphroditism" << endl
-         << "#_Method = 0 (or omitted) means continue using time_vary parms; 1 means to use average of derived factor; 2 (future) means average parameter then apply as if time-vary"<<endl;
+         << "#_Method = 0 (or omitted) means continue using time_vary parms; 1 means to use average of derived factor"<<endl;
     NuFore << "# MG_type method st_year end_year " << endl;
     for (int i = 1; i <= 12; i++)
     if (Fcast_MGparm_ave_rd(i, 1) > 0)
@@ -1583,10 +1584,10 @@ FUNCTION void write_nucontrol()
     }
   }
 
-  NuFore << Fcast_Loop_Control(1) << " #_N forecast loops (1=OFL only; 2=ABC; 3=get F from forecast ABC catch with allocations applied)" << endl;
+  NuFore << "#" << endl << Fcast_Loop_Control(1) << " #_N forecast loops (1=OFL only; 2=ABC; 3=get F from forecast ABC catch with allocations applied)" << endl;
   NuFore << Fcast_Loop_Control(2) << " #_First forecast loop with stochastic recruitment" << endl;
-  NuFore << Fcast_Loop_Control(3) << " #_Forecast base recruitment:  0= spawn_recr; 1=mult*spawn_recr_fxn; 2=mult*VirginRecr; 3=recent mean for recr and recr_dist from yr range above; 4=mult * recent mean for recr only" << endl;
-  NuFore << "#_ for options 3 and 4, need to set phase for fore_recr_devs to -1 in control to get constant mean in MCMC" << endl;
+  NuFore << Fcast_Loop_Control(3) << " #_Forecast base recruitment:  0= spawn_recr; 1=mult*spawn_recr_fxn; 2=mult*VirginRecr; 3=deprecated; 4=mult*average over yr range" << endl;
+  NuFore << "#_ for option 4, set phase for fore_recr_devs to -1 in control to get constant mean in MCMC, else devs will be applied" << endl;
   if (Fcast_Loop_Control(3) == 0)
   {
     NuFore << 1.0 << " # Value multiplier is ignored" << endl;
@@ -1595,7 +1596,7 @@ FUNCTION void write_nucontrol()
   {
     NuFore << Fcast_Loop_Control(4) << " # multiplier on base recruitment " << endl;
   }
-  NuFore << Fcast_Loop_Control(5) << " #_not used" << endl;
+  NuFore << Fcast_Loop_Control(5) << " #_not used" << endl << "#" << endl;
 
   NuFore << Fcast_Cap_FirstYear << "  #FirstYear for caps and allocations (should be after years with fixed inputs) " << endl;
 

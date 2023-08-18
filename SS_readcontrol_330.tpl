@@ -4409,8 +4409,8 @@
       } // year vector for this category
     }
   }
-    if (do_densitydependent == 1 && Fcast_timevary_Selex == 0) {
-      warnstream << "Fcast_timevary_Selex is 0 (do averages) but user should change to 1 because density dependence affects a selectivity parameter or growth "<<endl;
+    if (do_densitydependent == 1 && Fcast_timevary_Selex == 1) {
+      warnstream << "Fcast_timevary_Selex is 1 (do averages); user should change to 0 (timevary) because density dependence affects a selectivity parameter or growth "<<endl;
       write_message(WARN, 0);
     }
 
@@ -4902,9 +4902,9 @@
           timevary_setup(14) = 1; //  flag to continue last dev through to YrMax
           timevary_def[j](14) = 1; //  save in array also
           echoinput << j << " setting flag to continue last dev " << Fcast_timevary_Selex << " " << firstselparm << " " << f << " " << firstselparm + N_selparm << " " << endl;
-          if (Fcast_timevary_Selex == 0 && f >= firstselparm && f <= (firstselparm + N_selparm))
+          if (Fcast_timevary_Selex == 1 && f >= firstselparm && f <= (firstselparm + N_selparm))
           {
-            warnstream << "for selectivity parmdevs, must change Fcast_timevary_Selex to 1 when using continue last dev";
+            warnstream << "for selectivity parmdevs, must change Fcast_timevary_Selex to 0 when using continue last dev";
             write_message (WARN, 1);
           }
         }
