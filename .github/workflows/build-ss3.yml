@@ -1,5 +1,6 @@
 # Builds the stock synthesis executables for testing and distribution.
 # for mac, linux, windows
+# Runs on every push and PR (even draft PRs)
 name: build-ss3
 
 on:

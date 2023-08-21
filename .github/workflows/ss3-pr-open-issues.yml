@@ -8,18 +8,23 @@ on:
 #      - closed
 jobs:
   ss3-pr-open-issues:
+    if: github.event.pull_request.draft == false
     runs-on: ubuntu-latest
     env:
       GITHUB_PAT: ${{ secrets.GH_PAT }}
-    #if: github.event.pull_request.merged == true
     steps:
+      - name: Update Ubuntu packages
+        run: sudo apt update && sudo apt install -y libcurl4-openssl-dev
+      - name: Get Pull Request Number
+        run: |
+          echo github.event.pull_request.number = ${{ github.event.pull_request.number }}
       - uses: actions/checkout@v3
       - uses: r-lib/actions/setup-r@v2
-        with:
-          use-public-rspm: true
-      - name: install the gh pkg
-        run: install.packages("gh")
-        shell: Rscript {0}
+       # with:
+       #   use-public-rspm: true
+      - name: install the gh and curl pkgs
+        run:
+          Rscript -e "install.packages('gh')"
       - name: Get pr info and save
         run: |
           Rscript -e 'info <- gh::gh("GET /repos/{owner}/{repo}/pulls/{pull_number}", 

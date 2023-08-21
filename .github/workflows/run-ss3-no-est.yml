@@ -1,12 +1,13 @@
 # Build SS3 and run models without estimation (from .par) and no hessian
+# Runs on every push and PR (even draft PRs)
 name: run-ss3-no-est
 on:
   workflow_dispatch:
   push:
     paths:
       - '**.tpl'
-    branches: 
-      - main
+    # branches: 
+    #   - main
   pull_request:
     paths:
       - '**.tpl'
