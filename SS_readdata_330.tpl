@@ -4194,39 +4194,38 @@
 
       //  Adjusting Fcast_MGparm_ave_rd minyear and maxyear values
       //  for Fcast_MGparm_ave
-      for (i = 1; i <= 12; i++)  // tagcode
+      for (i = 1; i <= 12; i++)
       {
         if (Fcast_MGparm_ave_rd(i,1) > 0)
         {
+          echoinput<<Fcast_MGparm_ave(i)<<endl;
           // Adjust start year
-          if (Fcast_MGparm_ave_rd(i,3) == -999)
+          if (Fcast_MGparm_ave(i,3) == -999)
           {
             Fcast_MGparm_ave(i,3) = styr;
           }
-          else if (Fcast_MGparm_ave_rd(i,3) < 0)
+          else if (Fcast_MGparm_ave(i,3) <= 0)
           {
-            Fcast_MGparm_ave(i,3) = endyr + Fcast_MGparm_ave_rd(i,3);
+            Fcast_MGparm_ave(i,3) += endyr;
           }
-          else if (Fcast_MGparm_ave_rd(i,3) < styr)
+          if (Fcast_MGparm_ave(i,3) < styr)
           {
             Fcast_MGparm_ave(i,3) = styr;
           }
-          else if (Fcast_MGparm_ave_rd(i,3) > endyr)
+          else if (Fcast_MGparm_ave(i,3) > endyr)
           {
             Fcast_MGparm_ave(i,3) = endyr;
-            warnstream << "Fcast_MGparm_ave minyear exceeds endyr, setting to: " << endyr;
-            write_message(ADJUST, 0);
           }
           // Adjust end year
-          if (Fcast_MGparm_ave_rd(i,4) == -999)
+          if (Fcast_MGparm_ave(i,4) == -999)
           {
             Fcast_MGparm_ave(i,4) = endyr;
           }
-          else if (Fcast_MGparm_ave_rd(i,4) <= 0)
+          else if (Fcast_MGparm_ave(i,4) <= 0)
           {
             Fcast_MGparm_ave(i,4) += endyr;
           }
-          else if (Fcast_MGparm_ave_rd(i,4) < Fcast_MGparm_ave(i,3))
+          if (Fcast_MGparm_ave(i,4) < Fcast_MGparm_ave(i,3))
           {
             Fcast_MGparm_ave(i,4) = Fcast_MGparm_ave(i,3);
             warnstream << "Fcast_MGparm_ave maxyear before minyear, setting to: " << Fcast_MGparm_ave(i,4);
@@ -4235,8 +4234,6 @@
           if (Fcast_MGparm_ave(i,4) > endyr)
           {
             Fcast_MGparm_ave(i,4) = endyr;
-            warnstream << "Fcast_MGparm_ave maxyear exceeds endyr, setting to: " << endyr;
-            write_message(ADJUST, 0);
           }
           switch (i) 
           {
@@ -4245,13 +4242,16 @@
           Fcast_Sel_yr2 = Fcast_MGparm_ave(i,4);
           Fcast_timevary_Selex = Fcast_MGparm_ave(i,2);  //  tells SS3 to use averages (1) vs. time-vary parms (0)
           break;
-
           case 11:  // 11=relative F
           Fcast_RelF_yr1 = Fcast_MGparm_ave(i,3);
           Fcast_RelF_yr2 = Fcast_MGparm_ave(i,4);
           //  only year range read here; invocation will be read later:  Fcast_RelF_Basis;  //  tells SS3 to use averages, not time-vary parms
           break;
-
+          case 12:  // 12=recruitment
+          Fcast_Rec_yr1 = Fcast_MGparm_ave(i,3);
+          Fcast_Rec_yr2 = Fcast_MGparm_ave(i,4);
+          //  only year range read here; invocation will be read later
+          break;
           }
         }
       }
