@@ -3999,7 +3999,7 @@
   vector Fcast_Input(1,24);
 
   int N_Fcast_Yrs;
-  ivector Fcast_yr(1,6); // yr range for selex, then yr range for either allocation or for average F
+  ivector Fcast_yr(1,6); // yr range for selex, then yr range for either allocation or for mean F
   ivector Fcast_yr_rd(1,6);
   int Fcast_Sel_yr1;
   int Fcast_Sel_yr2;
@@ -4032,8 +4032,8 @@
   vector Fcast_MaxAreaCatch(1,pop);
   ivector Allocation_Fleet_Assignments(1,Nfleet);
   matrix Fcast_RelF_Input(1,nseas,1,Nfleet);
-  int Fcast_timevary_Selex_rd;   // old logic: 0 = fcast selectivity is average over range of years; 1=use time-varying parameters to control selectivity in forecast
-  int Fcast_timevary_Selex;   // new logic: 1 = fcast selectivity is average over range of years; 0=use time-varying parameters to control selectivity in forecast
+  int Fcast_timevary_Selex_rd;   // old logic: 0 = fcast selectivity is mean over range of years; 1=use time-varying parameters to control selectivity in forecast
+  int Fcast_timevary_Selex;   // new logic: 1 = fcast selectivity is mean over range of years; 0=use time-varying parameters to control selectivity in forecast
   int N_Fcast_parm_aves;
 
  LOCAL_CALCS
@@ -4054,7 +4054,7 @@
 
  LOCAL_CALCS
   // clang-format on
-  Fcast_timevary_Selex_rd = 0; // default means do averages
+  Fcast_timevary_Selex_rd = 0; // default; do mean
   Fcast_MGparm_ave.initialize();
   Fcast_MGparm_ave_rd.initialize();
   if (Do_Forecast_rd > 0)
@@ -4130,11 +4130,11 @@
     echoinput << Fcast_yr << "  # After Transformation" << endl;
 
     echoinput << endl
-              << "# read flag for selectivity used in forecasts; 0 creates average to use for all years; 1 implements time-varying selectivity per parameters" << endl;
+              << "# read flag for selectivity used in forecasts; 0 creates mean to use for all years; 1 implements time-varying selectivity per parameters" << endl;
     *(ad_comm::global_datafile) >> Fcast_timevary_Selex_rd;
     //  change polarity to match new code logic
     if(Fcast_timevary_Selex_rd == 0) 
-    {Fcast_timevary_Selex = 1;}  //  do averages
+    {Fcast_timevary_Selex = 1;}  //  do means
     else
     {Fcast_timevary_Selex = 0;}
     
@@ -4167,7 +4167,7 @@
     Fcast_Rec_yr2 = Fcast_yr(6);
     Fcast_timevary_Selex = 0;
 
-    echoinput << " #_Read year ranges for forecast factors that will use averages" << endl
+    echoinput << " #_Read year ranges for forecast factors that will use means" << endl
     << "#_ range will be endyr to endyr unless explicitly set below" << endl;
   //  Fcast_MGparm_ave_rd: read MGtype, method, start year, end year
   //  terminate with Factor = -9999
@@ -4175,7 +4175,7 @@
                 << "Terminate with -9999 for factor" << endl
                 << "Factors: 1=M, 2=growth, 3=wtlen, 4=recr_dist&femfrac, 5=migration, 6=ageerror, 7=catchmult, 8=hermaphroditism" << endl
                 << "10=selectivity, 11=rel.F, 12=recruitment"
-                << "Method = 0 means use parameters (with time_vary); 1 means to use average of derived factor"<<endl;
+                << "Method = 0 to use parameters (with time_vary); 1 to use mean of derived factor over year range"<<endl;
       ender = 0;
       do
       {
@@ -4240,12 +4240,12 @@
           case 10:  // 10=selectivity
           Fcast_Sel_yr1 = Fcast_MGparm_ave(i,3);
           Fcast_Sel_yr2 = Fcast_MGparm_ave(i,4);
-          Fcast_timevary_Selex = Fcast_MGparm_ave(i,2);  //  tells SS3 to use averages (1) vs. time-vary parms (0)
+          Fcast_timevary_Selex = Fcast_MGparm_ave(i,2);  //  tells SS3 to use mean (1) vs. time-vary parms (0)
           break;
           case 11:  // 11=relative F
           Fcast_RelF_yr1 = Fcast_MGparm_ave(i,3);
           Fcast_RelF_yr2 = Fcast_MGparm_ave(i,4);
-          //  only year range read here; invocation will be read later:  Fcast_RelF_Basis;  //  tells SS3 to use averages, not time-vary parms
+          //  only year range read here; invocation will be read later:  Fcast_RelF_Basis;  //  tells SS3 to use mean, not time-vary parms
           break;
           case 12:  // 12=recruitment
           Fcast_Rec_yr1 = Fcast_MGparm_ave(i,3);
@@ -4308,14 +4308,14 @@
     echoinput << Fcast_Loop_Control(3) << " #echo: Forecast base recruitment:  0=spawn_recr; 1=mult*spawn_recr; 2=mult*VirginRecr; 3=deprecated; 4=mult*mean from yr range" << endl;
     if (Fcast_Loop_Control(3) == 3)
     {
-      echoinput << "This option deprecated. Use option 4 for mean recruitment and use year-average controls for recrdist" << endl;
+      echoinput << "This option deprecated. Use option 4 for mean recruitment and use mean over year range controls for recrdist" << endl;
       warnstream << "Option 3 for mean forecast recruitment is deprecated. Changing to option 4. User can do recrdist with new fcast year controls";
       write_message(ADJUST, 0);
       Fcast_Loop_Control(3) = 4;
     }
     if (Fcast_Loop_Control(3) == 4)
     {
-      echoinput << "Forecast base recruitment is mean from years: " << Fcast_Rec_yr1 << " to " << Fcast_Rec_yr2 << " recrdist from parameters, or average fcast year controls" << endl;
+      echoinput << "Forecast base recruitment is mean from years: " << Fcast_Rec_yr1 << " to " << Fcast_Rec_yr2 << " recrdist from parameters, or mean fcast year controls" << endl;
     }
     else if (Fcast_Loop_Control(3) < 0) //  input probably was a -1 from pre 3.30.15, so convert to 0
     {
@@ -4368,8 +4368,8 @@
     echoinput << Rebuild_Yinit << " # echoed value" << endl;
 
     echoinput << endl
-              << "#next select fleet relative F:  1=average over year range read above; 2=read list of seas, fleet, relF below" << endl;
-    echoinput << "# Note that fleet allocation is used directly as average F if Do_Forecast=4 " << endl;
+              << "#next select fleet relative F:  1=mean over year range read above; 2=read list of seas, fleet, relF below" << endl;
+    echoinput << "# Note that fleet allocation is used directly as F if Do_Forecast=4 " << endl;
     *(ad_comm::global_datafile) >> Fcast_RelF_Basis;
     echoinput << Fcast_RelF_Basis << " # echoed value" << endl;
     if (Fcast_RelF_Basis < 1 || Fcast_RelF_Basis > 2) {
