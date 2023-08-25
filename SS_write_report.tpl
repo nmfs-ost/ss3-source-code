@@ -4609,6 +4609,7 @@ FUNCTION void SPR_profile()
     SPRloop1_end = 7;
   }
   int SPRloops;
+  SS2out << "ready for equilcalc "<<endl;
   Do_Equil_Calc(equ_Recr);
   if (N_bycatch == 0)
   {
@@ -4618,6 +4619,7 @@ FUNCTION void SPR_profile()
   {
     k = 1;
   }
+  SS2out << "ready for loops "<<endl;
   for (int with_BYC = 0; with_BYC <= k; with_BYC++)
     for (int SPRloop1 = 0; SPRloop1 <= SPRloop1_end; SPRloop1++)
     {
