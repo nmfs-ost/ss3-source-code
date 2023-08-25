@@ -4308,10 +4308,11 @@
     echoinput << Fcast_Loop_Control(3) << " #echo: Forecast base recruitment:  0=spawn_recr; 1=mult*spawn_recr; 2=mult*VirginRecr; 3=deprecated; 4=mult*mean from yr range" << endl;
     if (Fcast_Loop_Control(3) == 3)
     {
-      echoinput << "This option deprecated. Use option 4 for mean recruitment and use mean over year range controls for recrdist" << endl;
+      echoinput << "Option 3 deprecated, converting to option 4 for mean recruitment. Use mean over year range controls for recrdist" << endl;
       warnstream << "Option 3 for mean forecast recruitment is deprecated. Changing to option 4. User can do recrdist with new fcast year controls";
       write_message(ADJUST, 0);
       Fcast_Loop_Control(3) = 4;
+      Fcast_Loop_Control(4) = 1.0;  //  safeguard in case user had value here
     }
     if (Fcast_Loop_Control(3) == 4)
     {

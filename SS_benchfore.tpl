@@ -2015,20 +2015,17 @@ FUNCTION void Get_Forecast()
 //  Fcast_Loop_Control(3)  need to embellish this to report all options
     if (Fcast_Loop_Control(3) == 1)
     {
-      report5 << "Forecast_recruitment_from_spawn_recr_with_multiplier: " << Fcast_Loop_Control(4) << endl;
+      report5 << "Forecast_base_recruitment_from_spawn_recr_with_multiplier: " << Fcast_Loop_Control(4) << endl;
     }
-    if (Fcast_Loop_Control(3) == 2)
+    else if (Fcast_Loop_Control(3) == 2)
     {
-      report5 << "Forecast_recruitment_is_adjusted_R0_with_multiplier: " << Fcast_Loop_Control(4) << endl;
+      report5 << "Forecast_base_recruitment_is_adjusted_R0_with_multiplier: " << Fcast_Loop_Control(4) << endl;
     }
-    else if (Fcast_Loop_Control(3) == 3)
+    else if (Fcast_Loop_Control(3) == 4)
     {
-      report5 << "Recruitment_and_recrdist_averaged_over_yrs:_" << Fcast_Rec_yr1 << "_to_" << Fcast_Rec_yr2 << endl;
+      report5 << "Forecast_base_recruitment_mean_from_yrs:_" << Fcast_Rec_yr1 << "_to_" << Fcast_Rec_yr2 << endl;
     }
-    else
-    {
-      report5 << "Recruitment_averaged_over_yrs:_" << Fcast_Rec_yr1 << "_to_" << Fcast_Rec_yr2 << " see_control(5)_for_recr_dist_averaging" << endl;
-    }
+
     report5 << "Cap_totalcatch_by_fleet " << endl
             << Fcast_MaxFleetCatch << endl;
     report5 << "Cap_totalcatch_by_area " << endl
