@@ -1487,11 +1487,11 @@ FUNCTION void write_nucontrol()
   NuStart << F_reporting << " # F_reporting_units: 0=skip; 1=exploitation(Bio); 2=exploitation(Num); 3=sum(Apical_F's); 4=true F for range of ages; 5=unweighted avg. F for range of ages" << endl;
   if (F_reporting == 4 || F_reporting == 5)
   {
-    NuStart << F_reporting_ages << " #_min and max age over which average F will be calculated, with F=Z-M" << endl;
+    NuStart << F_reporting_ages << " #_min and max age over which mean F will be calculated, with F=Z-M" << endl;
   }
   else
   {
-    NuStart << "#COND 10 15 #_min and max age over which average F will be calculated with F_reporting=4 or 5" << endl;
+    NuStart << "#COND 10 15 #_min and max age over which mean F will be calculated with F_reporting=4 or 5" << endl;
   }
   NuStart << F_std_basis_rd << " # F_std_basis: 0=raw_annual_F; 1=F/Fspr; 2=F/Fmsy; 3=F/Fbtgt; where F means annual_F; values >=11 invoke N multiyr (up to 9!) with 10's digit; >100 invokes log(ratio)" << endl;
   NuStart << double(mcmc_output_detail) + MCMC_bump << " # MCMC output detail: integer part (0=default; 1=adds obj func components; 2= +write_report_for_each_mceval); and decimal part (added to SR_LN(R0) on first call to mcmc)" << endl;
@@ -1537,10 +1537,40 @@ FUNCTION void write_nucontrol()
   NuFore << "# where none and simple require no input after this line; simple sets forecast F same as end year F" << endl;
   NuFore << N_Fcast_Yrs << " # N forecast years " << endl;
   NuFore << Fcast_Flevel << " # Fmult (only used for Do_Forecast==5) such that apical_F(f)=Fmult*relF(f)" << endl;
-  NuFore << "#_Fcast_years:  beg_selex, end_selex, beg_relF, end_relF, beg_mean recruits, end_recruits  (enter actual year, or values of 0 or -integer to be rel. endyr)" << endl
+  anystring = "";
+  if(Fcast_yr_rd(1) != -12345)
+  {   //  write in old format
+    NuFore << "#_Fcast_years for averaging:  beg_selex, end_selex, beg_relF, end_relF, beg_mean recruits, end_recruits  (enter actual year, or values of 0 or -integer to be rel. endyr)" << endl
          << Fcast_yr_rd << endl
          << "# " << Fcast_yr << endl;
-  NuFore << Fcast_Specify_Selex << " # Forecast selectivity (0=fcast selex is mean from year range; 1=fcast selectivity from annual time-vary parms)" << endl;
+    NuFore << Fcast_timevary_Selex_rd << " # Forecast selectivity (0=fcast selex is mean from year range; 1=fcast selectivity from time-vary parms). NOTE: logic reverses in new format" << endl;
+    //  
+    NuFore << "# A revised protocol for the Fcast_yr specification is available and recommended. Template is below." << endl;
+          warnstream << "A revised protocol for the Fcast_yr specification is available and recommended.";
+          write_message (NOTE, 1);
+    anystring = "#";
+  }
+//  else
+  {  //  new list based format for Fcast years
+  NuFore << anystring << endl << anystring << "-12345  # code to invoke new format for expanded fcast year controls" << endl
+         << "# biology and selectivity vectors are updated annually in the forecast according to timevary parameters, so check end year of blocks and dev vectors" << endl
+         << "# input in this section directs creation of means over historical years to override any time_vary changes" << endl
+				 << "# Factors implemented so far: 1=M, 4=recr_dist, 5=migration, 10=selectivity, 11=rel_F, 12=recruitment" << endl
+         << "# rel_F and Recruitment also have additional controls later in forecast.ss" << endl
+         << "# input as list: Factor, method (0, 1), st_yr, end_yr" << endl
+         << "# Terminate with -9999 for Factor" << endl
+         << "# st_yr and end_yr input can be actual year; <=0 sets rel. to timeseries endyr; Except -999 for st_yr sets to first year if time series" << endl
+//				 << "#_Factor: 1=M, 2=growth, 3=wtlen, 4=recr_dist&femfrac, 5=migration, 6=ageerror, 7=catchmult, 8=hermaphroditism" << endl
+         << "# Method = 0 (or omitted) continue using time_vary parms; 1  use mean of derived factor over specified year range"<<endl;
+    NuFore << "# Factor method st_yr end_yr " << endl;
+    for (int i = 1; i <= 12; i++)
+    if (Fcast_MGparm_ave_rd(i, 1) > 0)
+	  {
+      NuFore << anystring << Fcast_MGparm_ave_rd(i) << " # " << MGtype_Lbl(i) << "; use: "  << Fcast_MGparm_ave(i) << endl;
+    }
+
+    NuFore << anystring << "-9999 0 0 0" << endl << "#" <<endl;
+  }
 
   NuFore << HarvestPolicy << " # Control rule method (0: none; 1: ramp does catch=f(SSB), buffer on F; 2: ramp does F=f(SSB), buffer on F; 3: ramp does catch=f(SSB), buffer on catch; 4: ramp does F=f(SSB), buffer on catch) " << endl;
   NuFore << "# values for top, bottom and buffer exist, but not used when Policy=0" << endl;
@@ -1556,67 +1586,21 @@ FUNCTION void write_nucontrol()
     }
   }
 
-  NuFore << Fcast_Loop_Control(1) << " #_N forecast loops (1=OFL only; 2=ABC; 3=get F from forecast ABC catch with allocations applied)" << endl;
-  NuFore << Fcast_Loop_Control(2) << " #_First forecast loop with stochastic recruitment" << endl;
-  NuFore << Fcast_Loop_Control(3) << " #_Forecast recruitment:  0= spawn_recr; 1=mult*spawn_recr_fxn; 2=mult*VirginRecr; 3=recent mean for recr and recr_dist from yr range above; 4=mult * recent mean for recr only" << endl;
-  NuFore << "#_ for options 3 and 4, need to set phase for fore_recr_devs to -1 in control to get requested mean in MCMC" << endl;
+  NuFore << "#" << endl << Fcast_Loop_Control(1) << " #_N forecast loops (1=OFL only; 2=ABC; 3=get F from forecast ABC catch with allocations applied)" << endl;
+  NuFore << Fcast_Loop_Control(2) << " # First forecast loop with stochastic recruitment" << endl;
+  NuFore << Fcast_Loop_Control(3) << " # Forecast base recruitment:  0= spawn_recr; 1=mult*spawn_recr_fxn; 2=mult*VirginRecr; 3=deprecated; 4=mult*mean_over_yr_range" << endl;
+  NuFore << "# for option 4, set phase for fore_recr_devs to -1 in control to get constant mean in MCMC, else devs will be applied" << endl;
   if (Fcast_Loop_Control(3) == 0)
   {
     NuFore << 1.0 << " # Value multiplier is ignored" << endl;
   }
-  else if (Fcast_Loop_Control(3) == 1)
-  {
-    NuFore << Fcast_Loop_Control(4) << " # multiplier on SRR " << endl;
-  }
-  else if (Fcast_Loop_Control(3) == 2)
-  {
-    NuFore << Fcast_Loop_Control(4) << " # multiplier on virgin recr" << endl;
-  }
-  else if (Fcast_Loop_Control(3) == 3)
-  {
-    NuFore << Fcast_Loop_Control(4) << " # multiplier is ignored" << endl;
-  }
-  else if (Fcast_Loop_Control(3) == 4)
-  {
-    NuFore << Fcast_Loop_Control(4) << " # multiplier on recent mean" << endl;
-  }
   else
   {
-    NuFore << "0 # # Value multiplier is ignored " << endl;
+    NuFore << Fcast_Loop_Control(4) << " # multiplier on base recruitment " << endl;
   }
-  NuFore << Fcast_Loop_Control(5) << " #_Fcast_MGvector_averaging: 0 = not, 1 = do" << endl;
-  NuFore << "#_read list of MG_type, method (1, 2), start year, end year" << endl
-         << "#_Terminate with -9999 for MG_type" << endl
-//				 << "#_MG_type: 1=M, 2=growth, 3=wtlen, 4=recr_dist&femfrac, 5=migration, 6=ageerror, 7=catchmult, 8=hermaphroditism" << endl
-				 << "#_MG_type: 1=M, 4=recr_dist, 5=migration" << endl
-         << "#_Method = 0 (default) means continue time_vary parms; 1 means to use average of derived biology; 2 (future) means average parameter then apply as if time-vary"<<endl;
+  NuFore << Fcast_Loop_Control(5) << " # not used" << endl << "#" << endl;
 
-  if (Fcast_Loop_Control(5) == 1)
-  {
-    NuFore << "# MG_type method st_year end_year " << endl;
-    for (int i = 1; i <= 8; i++)
-    if (Fcast_MGparm_ave_rd(i, 1) > 0)
-	  {
-      NuFore << Fcast_MGparm_ave_rd(i);
-      if (Fcast_MGparm_ave_rd(i, 1) == 1) NuFore << " # (M) NatMort " << endl;
-      else if (Fcast_MGparm_ave_rd(i, 1) == 2) NuFore << " # Growth " << endl;
-      else if (Fcast_MGparm_ave_rd(i, 1) == 3) NuFore << " # Wt/Len " << endl;
-      else if (Fcast_MGparm_ave_rd(i, 1) == 4) NuFore << " # RecrDist " << endl;  //  frac_female may be added later
-      else if (Fcast_MGparm_ave_rd(i, 1) == 5) NuFore << " # Migration " << endl;
-      else if (Fcast_MGparm_ave_rd(i, 1) == 6) NuFore << " # Age Error " << endl;
-      else if (Fcast_MGparm_ave_rd(i, 1) == 7) NuFore << " # CatchMult " << endl;
-      else if (Fcast_MGparm_ave_rd(i, 1) == 8) NuFore << " # Hermaphroditism " << endl;
-      else if (Fcast_MGparm_ave_rd(i, 1) == 9) NuFore << " # Maturity&Fecundity " << endl;
-    }
-    NuFore << "-9999 -1 -1 -1" << endl;
-  }
-  else
-  {
-    NuFore << "#COND_1: list MG_type, start year, end year and terminate with MG_type = -9999" << endl;
-	NuFore << "#COND_1: Where MG_type: 1=M, 2=growth, 3=wtlen, 4=recr_dist&femfrac, 5=migration, 6=ageerror, 7=catchmult, 8=hermaphroditism, 9=maturity&fecundity" << endl;
-	NuFore << "#C_  Note: not all options are implemented. " << endl;
-  }
-  NuFore << Fcast_Cap_FirstYear << "  #FirstYear for caps and allocations (should be after years with fixed inputs) " << endl;
+  NuFore << Fcast_Cap_FirstYear << "  # FirstYear for caps and allocations (should be after years with fixed inputs) " << endl;
 
   NuFore << Impl_Error_Std << " # stddev of log(realized catch/target catch) in forecast (set value>0.0 to cause active impl_error)" << endl;
 
@@ -1624,8 +1608,8 @@ FUNCTION void write_nucontrol()
   NuFore << Rebuild_Ydecl << " # Rebuilder:  first year catch could have been set to zero (Ydecl)(-1 to set to 1999)" << endl;
   NuFore << Rebuild_Yinit << " # Rebuilder:  year for current age structure (Yinit) (-1 to set to endyear+1)" << endl;
 
-  NuFore << Fcast_RelF_Basis << " # fleet relative F:  1=use first-last alloc year; 2=read seas, fleet, alloc list below" << endl;
-  NuFore << "# Note that fleet allocation is used directly as average F if Do_Forecast=4 " << endl;
+  NuFore << Fcast_RelF_Basis << " # fleet relative F:  1=use mean over year range; 2=read seas, fleet, alloc list below" << endl;
+  NuFore << "# Note that fleet allocation values is used directly as F if Do_Forecast=4 " << endl;
 
   NuFore << Fcast_Catch_Basis << " # basis for fcast catch tuning and for fcast catch caps and allocation  (2=deadbio; 3=retainbio; 5=deadnum; 6=retainnum); NOTE: same units for all fleets" << endl;
 
@@ -2414,7 +2398,7 @@ FUNCTION void write_nucontrol()
   report4 << "#Pattern:_11; parm=2; selex=1.0  for specified min-max population length bin range" << endl;
   report4 << "#Pattern:_15; parm=0; mirror another age or length selex" << endl;
   report4 << "#Pattern:_6;  parm=2+special; non-parm len selex" << endl;
-  report4 << "#Pattern:_43; parm=2+special+2;  like 6, with 2 additional param for scaling (average over bin range)" << endl;
+  report4 << "#Pattern:_43; parm=2+special+2;  like 6, with 2 additional param for scaling (mean over bin range)" << endl;
   report4 << "#Pattern:_8;  parm=8; double_logistic with smooth transitions and constant above Linf option" << endl;
   report4 << "#Pattern:_9;  parm=6; simple 4-parm double logistic with starting length; parm 5 is first length; parm 6=1 does desc as offset" << endl;
   report4 << "#Pattern:_21; parm=2+special; non-parm len selex, read as pairs of size, then selex" << endl;
@@ -2424,7 +2408,7 @@ FUNCTION void write_nucontrol()
   report4 << "#Pattern:_2;  parm=6; double_normal with sel(minL) and sel(maxL), using joiners, back compatibile version of 24 with 3.30.18 and older" << endl;
   report4 << "#Pattern:_25; parm=3; exponential-logistic in length" << endl;
   report4 << "#Pattern:_27; parm=special+3; cubic spline in length; parm1==1 resets knots; parm1==2 resets all " << endl;
-  report4 << "#Pattern:_42; parm=special+3+2; cubic spline; like 27, with 2 additional param for scaling (average over bin range)" << endl;
+  report4 << "#Pattern:_42; parm=special+3+2; cubic spline; like 27, with 2 additional param for scaling (mean over bin range)" << endl;
 
   report4 << "#_discard_options:_0=none;_1=define_retention;_2=retention&mortality;_3=all_discarded_dead;_4=define_dome-shaped_retention" << endl;
   report4 << "#_Pattern Discard Male Special" << endl;
@@ -2442,13 +2426,13 @@ FUNCTION void write_nucontrol()
   report4 << "#Pattern:_15; parm=0; mirror another age or length selex" << endl;
   report4 << "#Pattern:_16; parm=2; Coleraine - Gaussian" << endl;
   report4 << "#Pattern:_17; parm=nages+1; empirical as random walk  N parameters to read can be overridden by setting special to non-zero" << endl;
-  report4 << "#Pattern:_41; parm=2+nages+1; // like 17, with 2 additional param for scaling (average over bin range)" << endl;
+  report4 << "#Pattern:_41; parm=2+nages+1; // like 17, with 2 additional param for scaling (mean over bin range)" << endl;
   report4 << "#Pattern:_18; parm=8; double logistic - smooth transition" << endl;
   report4 << "#Pattern:_19; parm=6; simple 4-parm double logistic with starting age" << endl;
   report4 << "#Pattern:_20; parm=6; double_normal,using joiners" << endl;
   report4 << "#Pattern:_26; parm=3; exponential-logistic in age" << endl;
   report4 << "#Pattern:_27; parm=3+special; cubic spline in age; parm1==1 resets knots; parm1==2 resets all " << endl;
-  report4 << "#Pattern:_42; parm=2+special+3; // cubic spline; with 2 additional param for scaling (average over bin range)" << endl;
+  report4 << "#Pattern:_42; parm=2+special+3; // cubic spline; with 2 additional param for scaling (mean over bin range)" << endl;
   report4 << "#Age patterns entered with value >100 create Min_selage from first digit and pattern from remainder" << endl;
   report4 << "#_Pattern Discard Male Special" << endl;
   for (f = 1; f <= Nfleet; f++)

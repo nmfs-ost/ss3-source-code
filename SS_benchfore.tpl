@@ -4,13 +4,13 @@
 // SS_Label_file  # * <u>get_forecast()</u>  //  calculates forecast quantities, includes all popdy characteristics of the time series, writes forecast-report.sso
 // SS_Label_file  #
 
-FUNCTION void setup_Benchmark()
+FUNCTION void setup_Benchmark()  // and forecast
   {
   //  SS_Label_Info_7.5 #Get averages from selected years to use in forecasts
 
   if (Do_Forecast > 0)
   {
-    if (Fcast_Specify_Selex == 0)
+    if (Fcast_timevary_Selex == 1)
     {
       //  SS_Label_Info_7.5.1 #Calc average selectivity to use in forecast; store in endyr+1
       temp = float(Fcast_Sel_yr2 - Fcast_Sel_yr1 + 1.);
@@ -144,12 +144,9 @@ FUNCTION void setup_Benchmark()
     }
 
     // create average of selected MGparms for use in forecast
-    if (Fcast_Loop_Control(5) == 1)  //  
-    {
-
-      for (int parm_type = 1; parm_type <= 8; parm_type++)
+    for (int parm_type = 1; parm_type <= 12; parm_type++)
 	  {
-      if(Fcast_MGparm_ave(parm_type, 2) == 1)  //  do averaging of derived biology
+      if(Fcast_MGparm_ave(parm_type, 2) == 1)  //  do averaging of derived factor
       {
       double ave_styr = Fcast_MGparm_ave(parm_type,3);
       double ave_endyr = Fcast_MGparm_ave(parm_type,4);
@@ -248,9 +245,13 @@ FUNCTION void setup_Benchmark()
           warnstream << "Maturity & fecundity params averaging is not implemented, execution continues. " ;
           write_message (WARN, 1); 
           break; 
+
+        case 10: // 9=selectivity
+          tempvec_a.initialize();
+          break; 
+
         }
       }
-    }
     }
 
     //  SS_Label_Info_7.5.2 #Set-up relative F among fleets and seasons for forecast
@@ -2014,20 +2015,17 @@ FUNCTION void Get_Forecast()
 //  Fcast_Loop_Control(3)  need to embellish this to report all options
     if (Fcast_Loop_Control(3) == 1)
     {
-      report5 << "Forecast_recruitment_from_spawn_recr_with_multiplier: " << Fcast_Loop_Control(4) << endl;
+      report5 << "Forecast_base_recruitment_from_spawn_recr_with_multiplier: " << Fcast_Loop_Control(4) << endl;
     }
-    if (Fcast_Loop_Control(3) == 2)
+    else if (Fcast_Loop_Control(3) == 2)
     {
-      report5 << "Forecast_recruitment_is_adjusted_R0_with_multiplier: " << Fcast_Loop_Control(4) << endl;
+      report5 << "Forecast_base_recruitment_is_adjusted_R0_with_multiplier: " << Fcast_Loop_Control(4) << endl;
     }
-    else if (Fcast_Loop_Control(3) == 3)
+    else if (Fcast_Loop_Control(3) == 4)
     {
-      report5 << "Recruitment_and_recrdist_averaged_over_yrs:_" << Fcast_Rec_yr1 << "_to_" << Fcast_Rec_yr2 << endl;
+      report5 << "Forecast_base_recruitment_mean_from_yrs:_" << Fcast_Rec_yr1 << "_to_" << Fcast_Rec_yr2 << endl;
     }
-    else
-    {
-      report5 << "Recruitment_averaged_over_yrs:_" << Fcast_Rec_yr1 << "_to_" << Fcast_Rec_yr2 << " see_control(5)_for_recr_dist_averaging" << endl;
-    }
+
     report5 << "Cap_totalcatch_by_fleet " << endl
             << Fcast_MaxFleetCatch << endl;
     report5 << "Cap_totalcatch_by_area " << endl
@@ -2405,7 +2403,7 @@ FUNCTION void Get_Forecast()
         }
       }
       //  SS_Label_Info_24.1.2  #Call selectivity, which does its own internal check for time-varying changes
-      if (Fcast_Specify_Selex > 0)
+      if (Fcast_timevary_Selex == 0)
         get_selectivity();
 
       // ABC_loop:  1=get OFL; 2=get_ABC, use input catches; 3=recalc with caps and allocations

@@ -992,7 +992,7 @@ FUNCTION void write_bigoutput()
   if (pick_report_use(8) == "Y")
   {
     k1 = YrMax;
-    if (Fcast_Specify_Selex == 0)
+    if (Fcast_timevary_Selex == 0)
     {
       SS2out << "forecast_selectivity_averaged_over_years:_" << Fcast_Sel_yr1 << "_to_" << Fcast_Sel_yr2 << endl;
     }
@@ -4609,6 +4609,7 @@ FUNCTION void SPR_profile()
     SPRloop1_end = 7;
   }
   int SPRloops;
+  SS2out << "ready for equilcalc "<<endl;
   Do_Equil_Calc(equ_Recr);
   if (N_bycatch == 0)
   {
@@ -4618,6 +4619,7 @@ FUNCTION void SPR_profile()
   {
     k = 1;
   }
+  SS2out << "ready for loops "<<endl;
   for (int with_BYC = 0; with_BYC <= k; with_BYC++)
     for (int SPRloop1 = 0; SPRloop1 <= SPRloop1_end; SPRloop1++)
     {
