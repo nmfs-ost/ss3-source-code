@@ -9,7 +9,7 @@ on:
       - main
   pull_request:
     paths:
-      - '**.tpl'
+      # - '**.tpl'
     branches:
       - main
       - fix-pr-workflows
