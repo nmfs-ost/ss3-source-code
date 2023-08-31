@@ -12,6 +12,7 @@ on:
       - '**.tpl'
     branches:
       - main
+      - fix-pr-workflows
 
 # run models without estimation, then run r4ss SS_plots and SS_output
 jobs:
