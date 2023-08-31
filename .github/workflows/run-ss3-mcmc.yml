@@ -9,15 +9,17 @@ on:
     branches:
       - main
   pull_request:
+    types: ['opened', 'edited', 'reopened', 'synchronize', 'ready_for_review']
     paths:
-      - '**.tpl'
+      # - '**.tpl'
     branches:
       - main
+      - fix-pr-workflows
       
 # Check mcmc works
 jobs:
   run-ss3-no-est:
-    if: github.event.pull_request.ready_for_review == true || github.event.pull_request.draft_for_review == false
+    if: github.event.pull_request.draft_for_review == false
     runs-on: ubuntu-latest
     env:
       R_REMOTES_NO_ERRORS_FROM_WARNINGS: true
