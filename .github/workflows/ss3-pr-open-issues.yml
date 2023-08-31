@@ -8,7 +8,7 @@ on:
 #      - closed
 jobs:
   ss3-pr-open-issues:
-    if: github.event.pull_request.draft_for_review == false
+    if: github.event.pull_request.draft == false
     runs-on: ubuntu-latest
     env:
       GITHUB_PAT: ${{ secrets.GH_PAT }}
