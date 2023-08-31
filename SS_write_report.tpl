@@ -2842,7 +2842,7 @@ FUNCTION void write_bigoutput()
     SS2out << endl
            << pick_report_name(32) << endl;
     SS2out << "Asel_is_age_selectivity_alone" << endl;
-    SS2out << "Asel2_is_sizesel*size_at_age(ALK)" << endl;
+    SS2out << "Asel2_is_Asel*(selL*size_at_age(ALK)); Q and F parameters may appear higher than expected because Asel2 may have max < 1.0; " << endl;
     SS2out << "Aret_is_age_retention" << endl;
     SS2out << "COMBINED_ALK*selL*selA*wtlen*ret*discmort_in_makefishsel_yr: " << makefishsel_yr << " With_MeanSel_From: " << Fcast_Sel_yr1 << " - " << Fcast_Sel_yr2; // SS_Label_380
     SS2out << "; Year_styr-3_(" << styr - 3 << ")_stores_average_used_for_benchmark" << endl;
