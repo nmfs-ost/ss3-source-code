@@ -18,7 +18,7 @@ on:
 # run models without estimation, then run r4ss SS_plots and SS_output
 jobs:
   test-r4ss-with-ss3:
-    if: github.event.pull_request.draft_for_review == false
+    if: github.event.pull_request.draft == false
     runs-on: ubuntu-latest
     env:
       R_REMOTES_NO_ERRORS_FROM_WARNINGS: true
