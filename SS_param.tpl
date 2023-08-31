@@ -338,6 +338,8 @@ PARAMETER_SECTION
   matrix annual_catch(styr-1,YrMax,1,6)  //  same six as above
   matrix annual_F(styr-1,YrMax,1,3)  //  1=sum of hrate (if Pope fmethod) or sum hrate*seasdur if F; 2=Z-M for selected ages; 3=M
   3darray equ_catch_fleet(1,6,1,nseas,1,Nfleet)
+  matrix vuln_bio(styr-3*nseas,k,1,Nfleet)  //  biomass selected by each fleet
+  matrix vuln_num(styr-3*nseas,k,1,Nfleet)  //  numbers selected by each fleet
 
   matrix fec(1,gmorph,0,nages)            //relative fecundity at age, is the maturity times the weight-at-age times eggs/kg for females
   matrix make_mature_bio(1,gmorph,0,nages)  //  mature female weight at age
