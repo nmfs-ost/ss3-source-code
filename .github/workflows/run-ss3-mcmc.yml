@@ -11,10 +11,9 @@ on:
   pull_request:
     types: ['opened', 'edited', 'reopened', 'synchronize', 'ready_for_review']
     paths:
-      # - '**.tpl'
+      - '**.tpl'
     branches:
       - main
-      - fix-pr-workflows
       
 # Check mcmc works
 jobs:
