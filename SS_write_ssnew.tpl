@@ -1484,7 +1484,7 @@ FUNCTION void write_nucontrol()
   NuStart << depletion_basis_rd << " # Depletion basis:  denom is: 0=skip; 1=X*SPBvirgin; 2=X*SPBmsy; 3=X*SPB_styr; 4=X*SPB_endyr; 5=X*dyn_Bzero;  values>=11 invoke N multiyr (up to 9!) with 10's digit; >100 invokes log(ratio)" << endl;
   NuStart << depletion_level << " # Fraction (X) for Depletion denominator (e.g. 0.4)" << endl;
   NuStart << SPR_reporting << " # SPR_report_basis:  0=skip; 1=(1-SPR)/(1-SPR_tgt); 2=(1-SPR)/(1-SPR_MSY); 3=(1-SPR)/(1-SPR_Btarget); 4=rawSPR" << endl;
-  NuStart << F_reporting << " # F_reporting_units: 0=skip; 1=exploitation(Bio); 2=exploitation(Num); 3=sum(Apical_F's); 4=true F for range of ages; 5=unweighted avg. F for range of ages" << endl;
+  NuStart << F_reporting << " # F_std_reporting_units: 0=skip; 1=exploitation(Bio); 2=exploitation(Num); 3=sum(Apical_F's); 4=true F for range of ages; 5=unweighted avg. F for range of ages" << endl;
   if (F_reporting == 4 || F_reporting == 5)
   {
     NuStart << F_reporting_ages << " #_min and max age over which mean F will be calculated, with F=Z-M" << endl;
@@ -1493,7 +1493,7 @@ FUNCTION void write_nucontrol()
   {
     NuStart << "#COND 10 15 #_min and max age over which mean F will be calculated with F_reporting=4 or 5" << endl;
   }
-  NuStart << F_std_basis_rd << " # F_std_basis: 0=raw_annual_F; 1=F/Fspr; 2=F/Fmsy; 3=F/Fbtgt; where F means annual_F; values >=11 invoke N multiyr (up to 9!) with 10's digit; >100 invokes log(ratio)" << endl;
+  NuStart << F_std_basis_rd << " # F_std_scaling: 0=no scaling; 1=F/Fspr; 2=F/Fmsy; 3=F/Fbtgt; where F means annual F_std, Fmsy means F_std@msy; values >=11 invoke N multiyr (up to 9!) with 10's digit; >100 invokes log(ratio)" << endl;
   NuStart << double(mcmc_output_detail) + MCMC_bump << " # MCMC output detail: integer part (0=default; 1=adds obj func components; 2= +write_report_for_each_mceval); and decimal part (added to SR_LN(R0) on first call to mcmc)" << endl;
   NuStart << ALK_tolerance << " # ALK tolerance ***disabled in code (example 0.0001)" << endl;
   NuStart << irand_seed_rd << " # random number seed for bootstrap data (-1 to use long(time) as seed): # " << irand_seed << endl;
