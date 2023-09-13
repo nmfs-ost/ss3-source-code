@@ -142,6 +142,10 @@ FUNCTION void setup_Benchmark()  // and forecast
         recr_dist(y) = recr_dist_endyr;
       }
     }
+    else  //  provide placeholder
+    {
+      recr_dist_endyr = recr_dist(endyr);
+    }
 
     // create average of selected MGparms for use in forecast
     for (int parm_type = 1; parm_type <= 12; parm_type++)

@@ -1305,7 +1305,7 @@ FUNCTION void write_bigoutput()
   {
     SS2out << endl
            << pick_report_name(15) << endl;
-    SS2out << "Fleet Fleet_Name Area Yr Seas Time Obs Exp Mult Exp*Mult se F  Like sel_bio kill_bio ret_bio sel_num kill_num ret_num" << endl;
+    SS2out << "Fleet Fleet_Name Area Yr Seas Time Obs Exp Mult Exp*Mult se F  Like sel_bio kill_bio ret_bio sel_num kill_num ret_num vuln_bio_mid vuln_num_mid" << endl;
     for (f = 1; f <= Nfleet; f++)
     {
       if (fleet_type(f) <= 2)
@@ -1349,7 +1349,7 @@ FUNCTION void write_bigoutput()
             {
               SS2out << "BYCATCH";
             }
-            SS2out << catch_fleet(t, f) << endl;
+            SS2out << catch_fleet(t, f) << " " << vuln_bio(t, f) << " " << vuln_num(t, f) << endl;
           }
       }
     }
@@ -2838,10 +2838,11 @@ FUNCTION void write_bigoutput()
   // REPORT_KEYWORD 32 AGE_SELEX
   if (pick_report_use(32) == "Y")
   {
+    dmatrix selmax(1,Nfleet,1,3);  //  max selectivity for each fleet and year, season
     SS2out << endl
            << pick_report_name(32) << endl;
     SS2out << "Asel_is_age_selectivity_alone" << endl;
-    SS2out << "Asel2_is_sizesel*size_at_age(ALK)" << endl;
+    SS2out << "Asel2_is_Asel*(selL*size_at_age(ALK)); Q and F parameters may appear higher than expected because Asel2 may have max < 1.0; " << endl;
     SS2out << "Aret_is_age_retention" << endl;
     SS2out << "COMBINED_ALK*selL*selA*wtlen*ret*discmort_in_makefishsel_yr: " << makefishsel_yr << " With_MeanSel_From: " << Fcast_Sel_yr1 << " - " << Fcast_Sel_yr2; // SS_Label_380
     SS2out << "; Year_styr-3_(" << styr - 3 << ")_stores_average_used_for_benchmark" << endl;
@@ -2885,6 +2886,9 @@ FUNCTION void write_bigoutput()
     {
       k = endyr;
     }
+
+    selmax = 100.0;  //  set to big number
+
     for (y = styr - 3; y <= k; y++)
       for (s = 1; s <= nseas; s++)
       {
@@ -2900,6 +2904,12 @@ FUNCTION void write_bigoutput()
             for (f = 1; f <= Nfleet; f++)
             {
               SS2out << "Asel2 " << f << " " << y << " " << s << " " << sx(g) << " " << g << " " << y << "_" << f << "_Asel2" << save_sel_num(t, f, g) << endl;
+              temp = max(save_sel_num(t, f, g));
+              if (temp < selmax(f, 3) && y >= styr) 
+                {selmax(f, 3) = value(temp); 
+                 selmax(f, 1) = float(y);
+                 selmax(f, 2) = float(s);}  //  save y.s
+
               if (fleet_type(f) <= 2)
                 SS2out << "F " << f << " " << y << " " << s << " " << sx(g) << " " << g << " " << y << "_" << f << "_F" << Hrate(f, t) * save_sel_num(t, f, g) << endl;
               SS2out << "bodywt " << f << " " << y << " " << s << " " << sx(g) << " " << g << " " << y << "_" << f << "_bodywt" << Wt_Age_t(t, f, g) << endl;
@@ -2920,6 +2930,9 @@ FUNCTION void write_bigoutput()
               SS2out << "dead_nums " << f << " " << y << " " << s << " " << sx(g) << " " << g << " " << y << "_" << f << "_dead_nums" << sel_dead_num(s, f, g) << endl;
               SS2out << "dead*wt " << f << " " << y << " " << s << " " << sx(g) << " " << g << " " << y << "_" << f << "_dead*wt" << sel_dead_bio(s, f, g) << endl;
             }
+    SS2out << endl << "maximum ASEL2" << endl << "Fleet fleet_name year seas max" << endl;
+    for (f = 1; f <=Nfleet; f++)
+    {SS2out << f << " " << fleetname(f) << selmax(f) << endl;}
   }
 
   // REPORT_KEYWORD 33 ENVIRONMENTAL_DATA

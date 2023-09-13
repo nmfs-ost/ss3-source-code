@@ -1375,6 +1375,22 @@ FUNCTION void get_time_series()
               Zrate2(p, g) = elem_div((1. - mfexp(-seasdur(s) * Z_rate(t, p, g))), Z_rate(t, p, g));
             }
         }
+
+      //  SS_Label_Info_24.3.3.4 #save vulnerable biomass and numbers.  Use middle of season
+        if (bigsaver == 1)
+        {
+          vuln_bio(t) = 0.0;
+          vuln_num(t) = 0.0;
+          for (g = 1; g <= gmorph; g++)
+          if (use_morph(g) > 0)
+          {
+            for (f = 1; f<= Nfleet; f++)
+            {
+              vuln_bio(t, f) += sel_bio(s, f, g) * elem_prod(natage(t, p, g), mfexp(-Z_rate(t, p, g) * 0.5 * seasdur(s)));
+              vuln_num(t, f) += sel_num(s, f, g) * elem_prod(natage(t, p, g), mfexp(-Z_rate(t, p, g) * 0.5 * seasdur(s)));
+            }
+          }
+        }
         for (f1 = 1; f1 <= N_pred; f1++)
         {
           f = predator(f1);
