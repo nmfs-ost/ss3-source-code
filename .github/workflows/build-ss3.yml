@@ -5,9 +5,9 @@ name: build-ss3
 
 on:
     push:
-      paths:
-      - '**.tpl'
-      - '**.sh'
+      # paths:
+      # - '**.tpl'
+      # - '**.sh'
     workflow_dispatch:
 
 jobs:
@@ -19,7 +19,7 @@ jobs:
       matrix:
         config:
           - {os: windows-latest}
-          - {os: macos-latest}
+          - {os: macos-13}
           - {os: ubuntu-latest}
     # Limit run time to 90 min to avoid wasting action minutes.
     # was set to 15 and then 30 minutes previously, but compiling admb
@@ -42,30 +42,30 @@ jobs:
           echo "D:\a\stock-synthesis\stock-synthesis\admb-13.1\bin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
 
       - name: checkout admb, mac
-        if: matrix.config.os == 'macos-latest'
+        if: matrix.config.os == 'macos-13'
         uses: actions/checkout@v3
         with:
           repository: admb-project/admb
           path: admb
           ref: admb-13.1
       - name: clean, mac
-        if: matrix.config.os == 'macos-latest'
+        if: matrix.config.os == 'macos-13'
         run: cd admb && make clean
       - name: see where admb is, mac
-        if: matrix.config.os == 'macos-latest'
+        if: matrix.config.os == 'macos-13'
         run: |
           ls
           cd admb && ls
       - name: compile admb, mac
-        if: matrix.config.os == 'macos-latest'
+        if: matrix.config.os == 'macos-13'
         run: |
           cd admb && make 
       - name: see where admb is, mac
-        if: matrix.config.os == 'macos-latest'
+        if: matrix.config.os == 'macos-13'
         run: |
           cd admb && ls -l
       - name: put admb in path, mac
-        if: matrix.config.os == 'macos-latest'
+        if: matrix.config.os == 'macos-13'
         run: |
           sudo mv admb /usr/local/bin
           sudo chmod 755 /usr/local/bin/admb
@@ -117,7 +117,7 @@ jobs:
 
       - name: Get the last tag on unix
         id: get-latest-tag-unix
-        if: matrix.config.os == 'macos-latest' || matrix.config.os == 'ubuntu-latest'
+        if: matrix.config.os == 'macos-13' || matrix.config.os == 'ubuntu-latest'
         run: |
           git tag
           latest_tag=$(git describe --abbrev=0 --tags)
@@ -131,7 +131,7 @@ jobs:
 
       - name: pull the last tag value to use in the Rscript on unix
         id: get-version-unix
-        if: matrix.config.os == 'macos-latest' || matrix.config.os == 'ubuntu-latest'
+        if: matrix.config.os == 'macos-13' || matrix.config.os == 'ubuntu-latest'
         run: |
           echo "${{ steps.get-latest-tag-unix.outputs.tag }}" > .github/last_tag.txt
           echo "${{ steps.get-latest-tag-unix.outputs.tag_commit }}" > .github/last_tag_commit.txt
@@ -218,7 +218,7 @@ jobs:
           mv SS330/ss_opt.exe SS330/ss_opt_win.exe
 
       - name: Build stock synthesis for mac
-        if: matrix.config.os == 'macos-latest'
+        if: matrix.config.os == 'macos-13'
         run: |
           rm -rf SS330
           rm -rf ss_osx.tar
@@ -236,13 +236,13 @@ jobs:
           /bin/bash ./Make_SS_330_new.sh -b SS330 -o -p
 
       - name: Verify binary on mac
-        if: matrix.config.os == 'macos-latest'
+        if: matrix.config.os == 'macos-13'
         run: |
           shasum -a 256 SS330/ss
           shasum -a 256 SS330/ss_opt
           
       - name: Delete unneeded files and change exe names on mac
-        if: matrix.config.os == 'macos-latest'
+        if: matrix.config.os == 'macos-13'
         run: |
           cd SS330
           rm *.obj *.htp *.cpp ss_opt.tpl
