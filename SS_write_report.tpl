@@ -1305,7 +1305,8 @@ FUNCTION void write_bigoutput()
   {
     SS2out << endl
            << pick_report_name(15) << endl;
-    SS2out << "Fleet Fleet_Name Area Yr Seas Time Obs Exp Mult Exp*Mult se F  Like sel_bio kill_bio ret_bio sel_num kill_num ret_num vuln_bio_mid vuln_num_mid" << endl;
+    SS2out << "# where vuln_ is mid-season selected bio or numbers; sel_ is selected total catch; dead_ is catch without live discards; ret_ is retained catch" << endl;
+    SS2out << "Fleet Fleet_Name Area Yr Seas Time Obs Exp Mult Exp*Mult se F  Like vuln_bio sel_bio dead_bio ret_bio vuln_num sel_num dead_num ret_num" << endl;
     for (f = 1; f <= Nfleet; f++)
     {
       if (fleet_type(f) <= 2)
@@ -1349,7 +1350,7 @@ FUNCTION void write_bigoutput()
             {
               SS2out << "BYCATCH";
             }
-            SS2out << catch_fleet(t, f) << " " << vuln_bio(t, f) << " " << vuln_num(t, f) << endl;
+            SS2out << " " << vuln_bio(t, f) << " " << catch_fleet(t, f)(1,3) << " " << vuln_num(t, f) << " " << catch_fleet(t, f)(4,6) << endl;
           }
       }
     }
