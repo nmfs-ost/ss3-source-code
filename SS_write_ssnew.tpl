@@ -1827,8 +1827,8 @@ FUNCTION void write_nucontrol()
   report4 << Grow_type << " # GrowthModel: 1=vonBert with L1&L2; 2=Richards with L1&L2; 3=age_specific_K_incr; 4=age_specific_K_decr; 5=age_specific_K_each; 6=NA; 7=NA; 8=growth cessation" << endl;
   if (Grow_type <= 5 || Grow_type == 8)
   {
-    report4 << AFIX << " #_Age(post-settlement)_for_L1;linear growth below this" << endl
-            << AFIX2 << " #_Growth_Age_for_L2 (999 to use as Linf)" << endl
+    report4 << AFIX << " #_Age(post-settlement) for L1 (aka Amin); first growth parameter is size at this age; linear growth below this" << endl
+            << AFIX2 << " #_Age(post-settlement) for L2 (aka Amax); 999 to treat as Linf" << endl
             << Linf_decay << " #_exponential decay for growth above maxage (value should approx initial Z; -999 replicates 3.24; -998 to not allow growth above maxage)" << endl;
     report4 << "0  #_placeholder for future growth feature" << endl;
     if (Grow_type >= 3 && Grow_type <= 5)
