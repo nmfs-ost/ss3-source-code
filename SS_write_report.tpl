@@ -1300,7 +1300,6 @@ FUNCTION void write_bigoutput()
   }
 
   // REPORT_KEYWORD 15 CATCH
-  //  Fleet Fleet_Name Area Yr Era Seas Subseas Month Time
   if (pick_report_use(15) == "Y")
   {
     SS2out << endl
