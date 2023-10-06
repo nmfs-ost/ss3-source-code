@@ -1388,6 +1388,7 @@ FUNCTION void write_bigoutput()
       {
         SS2out << " SmryNum_SX:" << gg << "_GP:" << gp;
       }
+      SS2out << " mature_bio mature_num ";
     dvector Bio_Comp(1, N_GP * gender);
     dvector Num_Comp(1, N_GP * gender);
     for (f = 1; f <= Nfleet; f++)
@@ -1508,6 +1509,7 @@ FUNCTION void write_bigoutput()
             }
           }
           SS2out << " " << Bio_Comp << " " << Num_Comp;
+          SS2out << " " << SSB_B_yr(y) << " " << SSB_N_yr(y);
           if (s == 1 && y <= endyr)
           {
             Smry_Table(y, 15) += smryage;
