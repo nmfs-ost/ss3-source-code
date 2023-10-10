@@ -1445,7 +1445,7 @@ FUNCTION void write_nucontrol()
   NuStart << datfilename << endl
           << ctlfilename << endl;
   NuStart << readparfile << " # 0=use init values in control file; 1=use ss.par" << endl;
-  NuStart << rundetail << " # run display detail (0,1,2)" << endl;
+  NuStart << rundetail << " # run display detail (0 = minimal; 1=one line per iter; 2=each logL)" << endl;
   NuStart << reportdetail << " # detailed output (0=minimal for data-limited, 1=high (w/ wtatage.ss_new), 2=brief, 3=custom) " << endl;
   if (reportdetail == 3)
   {
@@ -1457,7 +1457,7 @@ FUNCTION void write_nucontrol()
   }
   else
   {
-    NuStart << "# custom report options: -100 to start with minimal; -101 to start with all; -number to remove, +number to add, -999 to end" << endl;
+    NuStart << "#COND: custom report options: -100 to start with minimal; -101 to start with all; -number to remove, +number to add, -999 to end" << endl;
   }
 
   NuStart << docheckup << " # write 1st iteration details to echoinput.sso file (0,1) " << endl;
@@ -1475,7 +1475,7 @@ FUNCTION void write_nucontrol()
   NuStart << STD_Yr_min_rd << " # min yr for sdreport outputs (-1 for styr); #_" << STD_Yr_min << endl;
   NuStart << STD_Yr_max_rd << " # max yr for sdreport outputs (-1 for endyr+1; -2 for endyr+Nforecastyrs); #_" << STD_Yr_max << endl;
   NuStart << N_STD_Yr_RD << " # N individual STD years " << endl;
-  NuStart << "#vector of year values " << endl
+  NuStart << "#COND: vector of year values if N>0" << endl
           << STD_Yr_RD << endl;
 
   NuStart << final_conv << " # final convergence criteria (e.g. 1.0e-04) " << endl;
@@ -1487,7 +1487,7 @@ FUNCTION void write_nucontrol()
   NuStart << F_reporting << " # F_std_reporting_units: 0=skip; 1=exploitation(Bio); 2=exploitation(Num); 3=sum(Apical_F's); 4=mean F for range of ages (numbers weighted); 5=unweighted mean F for range of ages" << endl;
   if (F_reporting == 4 || F_reporting == 5)
   {
-    NuStart << F_reporting_ages << " #_min and max age over which mean F will be calculated, with F=Z-M" << endl;
+    NuStart << F_reporting_ages << " # min and max age over which mean F will be calculated, with F=Z-M" << endl;
   }
   else
   {
@@ -1495,7 +1495,7 @@ FUNCTION void write_nucontrol()
   }
   NuStart << F_std_basis_rd << " # F_std_scaling: 0=no scaling; 1=F/Fspr; 2=F/Fmsy; 3=F/Fbtgt; where F means annual F_std, Fmsy means F_std@msy; values >=11 invoke N multiyr (up to 9!) using 10's digit; >100 invokes log(ratio)" << endl;
   NuStart << double(mcmc_output_detail) + MCMC_bump << " # MCMC output detail: integer part (0=default; 1=adds obj func components; 2= +write_report_for_each_mceval); and decimal part (added to SR_LN(R0) on first call to mcmc)" << endl;
-  NuStart << ALK_tolerance << " # ALK tolerance ***disabled in code (example 0.0001)" << endl;
+  NuStart << ALK_tolerance << " # ALK tolerance ***disabled in code" << endl;
   NuStart << irand_seed_rd << " # random number seed for bootstrap data (-1 to use long(time) as seed): # " << irand_seed << endl;
   NuStart << "3.30 # check value for end of file and for version control" << endl;
   NuStart.close();
