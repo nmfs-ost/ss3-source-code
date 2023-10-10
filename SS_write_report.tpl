@@ -2930,7 +2930,7 @@ FUNCTION void write_bigoutput()
               SS2out << "dead_nums " << f << " " << y << " " << s << " " << sx(g) << " " << g << " " << y << "_" << f << "_dead_nums" << sel_dead_num(s, f, g) << endl;
               SS2out << "dead*wt " << f << " " << y << " " << s << " " << sx(g) << " " << g << " " << y << "_" << f << "_dead*wt" << sel_dead_bio(s, f, g) << endl;
             }
-    SS2out << endl << "maximum ASEL2" << endl << "Fleet fleet_name year seas max" << endl;
+    SS2out << "#" << endl << "maximum ASEL2" << endl << "Fleet fleet_name year seas max" << endl;
     for (f = 1; f <=Nfleet; f++)
     {SS2out << f << " " << fleetname(f) << selmax(f) << endl;}
   }
