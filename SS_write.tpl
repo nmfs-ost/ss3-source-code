@@ -912,6 +912,15 @@ FUNCTION void write_rebuilder_output()
       }
     }
 
+  if (mceval_counter == 0)
+    {
+      rebuild_dat << "# Sex ratio correction" << endl;
+      if (gender_rd < 0) 
+      {rebuild_dat << fracfemale << endl;}  // where fracfemale is set to the sexratio parameter value
+      else
+      {rebuild_dat << "1" << endl;}  // value to indicate not used
+   }  
+
   //d.  Natural mortality and numbers-at-age for year Yinit  (females then males).
   if (mceval_counter == 0)
     rebuild_dat << "# M and current age-structure in year Yinit: " << Rebuild_Yinit << endl;
