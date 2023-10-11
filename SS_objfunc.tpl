@@ -171,23 +171,15 @@ FUNCTION void evaluate_the_objective_function()
                surv_like(f) += 0.5 * square((Svy_obs_log(f, i) - Svy_est(f, i)) / Svy_se_use(f, i)) + sd_offset * log(Svy_se_use(f, i));
 	     }
 	   else {// generalized gamma likelihood // added by Cole in July 2023 as experiment
-	     // Need to do some type conversions here or it fails. 
 	     double qtmp=value(Svy_GGD_lambda_use(f,i)); // Q parameter
 	     double sigmatmp=value(Svy_se_use(f,i)); //
-	     // double meantmp=value(Svy_GGD_mean_use(f,i));
-	     // dvariable xtmp=Svy_est(f,i);
 	     double xtmp=value(Svy_GGD_mean_use(f,i));
-	     dvariable meantmp=Svy_est(f,i);
-	     double ktmp = pow( qtmp, -2 );
-	     double Beta = pow( sigmatmp, -1 ) * qtmp;
-	     dvariable log_theta = log(meantmp) - lgamma( (ktmp*Beta+1)/Beta ) + lgamma( ktmp );
-	     dvariable mu = log_theta + log(ktmp) / Beta;
-	     dvariable w = (log(xtmp) - mu) / sigmatmp;
-	     double abs_q = sqrt(qtmp*qtmp);  // = abs(Q); not differentiable!
-	     double qi = 1/square(qtmp);
-	     dvariable qw = qtmp*w;
-	     dvariable logres = -log(sigmatmp*xtmp) + log(abs_q) * (1 - 2 * qi) + qi * (qw - exp(qw)) - lgamma(qi);
-	     surv_like(f) -= logres; // logres is log-likelihood
+	     dvariable meantmp=Svy_est(f,i)/1e6; // convert to millions of metric tons
+	     surv_like(f) -= dgengamma(xtmp, meantmp, sigmatmp, qtmp);
+	     if(do_once ==1 ){
+	     dvariable test=dgengamma(xtmp, meantmp, sigmatmp, qtmp);
+	     cout << "xtmp=" << xtmp << "  sigmatmp=" << sigmatmp << "  qtmp=" << qtmp << "  meantmp=" << meantmp << "  loglik=" << test << endl;
+	     }
 	   }
           }
         }
@@ -2054,3 +2046,18 @@ FUNCTION void get_posteriors()
   post_vecs.close();
   post_obj_func.close();
   } //  end get_posteriors
+
+FUNCTION dvariable dgengamma(const double& x, dvariable mean, const double& sigma, const double& Q)
+  RETURN_ARRAYS_INCREMENT();
+  double k = pow( Q, -2 );
+  double Beta = pow( sigma, -1 ) * Q;
+  dvariable log_theta = log(mean) - lgamma( (k*Beta+1)/Beta ) + lgamma( k );
+  dvariable mu = log_theta + log(k) / Beta;
+  dvariable w = (log(x) - mu) / sigma;
+  double abs_q = sqrt(Q*Q);  // = abs(Q); not differentiable!
+  double qi = 1/square(Q);
+  dvariable qw = Q*w;
+  dvariable logres = -log(sigma*x)+log(abs_q)*(1-2*qi) + qi * (qw-exp(qw))-lgamma(qi);
+  RETURN_ARRAYS_DECREMENT();
+  return(logres);
+

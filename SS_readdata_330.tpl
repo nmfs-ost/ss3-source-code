@@ -680,10 +680,10 @@
     }
     if(Svy_errtype(f)==-2)
     {
+    // if any surveys use the generalized gamma then a whole extra column is read in and ignored
       warnstream << " survey index option for generalized gamma distribution is experimental " << endl;
       tmpread=6;	  	// extra column needed
     }	  
-   cout << "Svy_errtype=" << Svy_errtype << endl;
   }
   // read survey data
   ender = 0;
