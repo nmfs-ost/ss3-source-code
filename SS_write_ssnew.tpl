@@ -80,7 +80,7 @@ FUNCTION void write_nudata()
     report1 << 12. * seasdur << " #_months/season" << endl;
     report1 << N_subseas << " #_Nsubseasons (even number, minimum is 2)" << endl;
     report1 << spawn_month << " #_spawn_month" << endl;
-    report1 << gender_rd << " #_Ngenders: 1, 2, -1  (use -1 for 1 sex setup with SSB multiplied by female_frac parameter)" << endl;
+    report1 << gender_rd << " #_Nsexes: 1, 2, -1  (use -1 for 1 sex setup with SSB multiplied by female_frac parameter)" << endl;
     report1 << nages << " #_Nages=accumulator age, first age is always age 0" << endl;
     report1 << pop << " #_Nareas" << endl;
     report1 << Nfleet << " #_Nfleets (including surveys)" << endl;
@@ -235,7 +235,7 @@ FUNCTION void write_nudata()
       {
         report1 << "#_mintailcomp: upper and lower distribution for females and males separately are accumulated until exceeding this level." << endl;
         report1 << "#_addtocomp:  after accumulation of tails; this value added to all bins" << endl;
-        report1 << "#_combM+F: males and females treated as combined gender below this bin number " << endl;
+        report1 << "#_combM+F: males and females treated as combined sex below this bin number " << endl;
         report1 << "#_compressbins: accumulate upper tail by this number of bins; acts simultaneous with mintailcomp; set=0 for no forced accumulation" << endl;
         report1 << "#_Comp_Error:  0=multinomial, 1=dirichlet using Theta*n, 2=dirichlet using beta, 3=MV_Tweedie" << endl;
         report1 << "#_ParmSelect:  consecutive index for dirichlet or MV_Tweedie" << endl;
@@ -300,7 +300,7 @@ FUNCTION void write_nudata()
 
       report1 << "#_mintailcomp: upper and lower distribution for females and males separately are accumulated until exceeding this level." << endl;
       report1 << "#_addtocomp:  after accumulation of tails; this value added to all bins" << endl;
-      report1 << "#_combM+F: males and females treated as combined gender below this bin number " << endl;
+      report1 << "#_combM+F: males and females treated as combined sex below this bin number " << endl;
       report1 << "#_compressbins: accumulate upper tail by this number of bins; acts simultaneous with mintailcomp; set=0 for no forced accumulation" << endl;
       report1 << "#_Comp_Error:  0=multinomial, 1=dirichlet using Theta*n, 2=dirichlet using beta, 3=MV_Tweedie" << endl;
       report1 << "#_ParmSelect:  consecutive index for dirichlet or MV_Tweedie" << endl;
@@ -403,7 +403,7 @@ FUNCTION void write_nudata()
                 << "#Note: negative value for first bin makes it accumulate all smaller fish vs. truncate small fish" << endl;
         for (i = 1; i <= SzFreq_Nmeth; i++)
         { report1 << SzFreq_Omit_Small(i) * SzFreq_bins1(i, 1) << SzFreq_bins1(i)(2, SzFreq_Nbins(i)) << endl; }
-        report1 << "#_method year month fleet gender partition SampleSize <data> " << endl << SzFreq_obs1 << endl;
+        report1 << "#_method year month fleet sex partition SampleSize <data> " << endl << SzFreq_obs1 << endl;
       }
 
       // begin tagging data section #1 (observed data)
@@ -427,7 +427,7 @@ FUNCTION void write_nudata()
 
         // tag releases
         report1 << "# Release data for each tag group.  Tags are considered to be released at the beginning of a season (period)" << endl;
-        report1 << "#<TG> area yr season <tfill> gender age Nrelease  (note that the TG and tfill values are placeholders and are replaced by program generated values)" << endl;
+        report1 << "#<TG> area yr season <tfill> sex age Nrelease  (note that the TG and tfill values are placeholders and are replaced by program generated values)" << endl;
         report1 << TG_release << endl;
 
         // tag recaptures
@@ -616,7 +616,7 @@ FUNCTION void write_nudata()
       {
         report1 << "#_mintailcomp: upper and lower distribution for females and males separately are accumulated until exceeding this level." << endl;
         report1 << "#_addtocomp:  after accumulation of tails; this value added to all bins" << endl;
-        report1 << "#_combM+F: males and females treated as combined gender below this bin number " << endl;
+        report1 << "#_combM+F: males and females treated as combined sex below this bin number " << endl;
         report1 << "#_compressbins: accumulate upper tail by this number of bins; acts simultaneous with mintailcomp; set=0 for no forced accumulation" << endl;
         report1 << "#_Comp_Error:  0=multinomial, 1=dirichlet using Theta*n, 2=dirichlet using beta, 3=MV_Tweedie" << endl;
         report1 << "#_ParmSelect:  consecutive index for dirichlet or MV_Tweedie" << endl;
@@ -685,7 +685,7 @@ FUNCTION void write_nudata()
 
       report1 << "#_mintailcomp: upper and lower distribution for females and males separately are accumulated until exceeding this level." << endl;
       report1 << "#_addtocomp:  after accumulation of tails; this value added to all bins" << endl;
-      report1 << "#_combM+F: males and females treated as combined gender below this bin number " << endl;
+      report1 << "#_combM+F: males and females treated as combined sex below this bin number " << endl;
       report1 << "#_compressbins: accumulate upper tail by this number of bins; acts simultaneous with mintailcomp; set=0 for no forced accumulation" << endl;
       report1 << "#_Comp_Error:  0=multinomial, 1=dirichlet using Theta*n, 2=dirichlet using beta, 3=MV_Tweedie" << endl;
       report1 << "#_ParmSelect:  parm number for dirichlet or MV_Tweedie" << endl;
@@ -805,7 +805,7 @@ FUNCTION void write_nudata()
                 << "#Note: negative value for first bin makes it accumulate all smaller fish vs. truncate small fish" << endl;
         for (i = 1; i <= SzFreq_Nmeth; i++)
         { report1 << SzFreq_Omit_Small(i) * SzFreq_bins1(i, 1) << SzFreq_bins1(i)(2, SzFreq_Nbins(i)) << endl; }
-        report1 << "#_method year month fleet gender partition SampleSize <data> " << endl << SzFreq_obs1 << endl;
+        report1 << "#_method year month fleet sex partition SampleSize <data> " << endl << SzFreq_obs1 << endl;
       }
 
       // begin tagging data section #2 (expected values)
@@ -1063,7 +1063,7 @@ FUNCTION void write_nudata()
       {
         report1 << "#_mintailcomp: upper and lower distribution for females and males separately are accumulated until exceeding this level." << endl;
         report1 << "#_addtocomp:  after accumulation of tails; this value added to all bins" << endl;
-        report1 << "#_combM+F: males and females treated as combined gender below this bin number " << endl;
+        report1 << "#_combM+F: males and females treated as combined sex below this bin number " << endl;
         report1 << "#_compressbins: accumulate upper tail by this number of bins; acts simultaneous with mintailcomp; set=0 for no forced accumulation" << endl;
         report1 << "#_Comp_Error:  0=multinomial, 1=dirichlet using Theta*n, 2=dirichlet using beta, 3=MV_Tweedie" << endl;
         report1 << "#_ParmSelect:  consecutive index for dirichlet or MV_Tweedie" << endl;
@@ -1165,7 +1165,7 @@ FUNCTION void write_nudata()
 
       report1 << "#_mintailcomp: upper and lower distribution for females and males separately are accumulated until exceeding this level." << endl;
       report1 << "#_addtocomp:  after accumulation of tails; this value added to all bins" << endl;
-      report1 << "#_combM+F: males and females treated as combined gender below this bin number " << endl;
+      report1 << "#_combM+F: males and females treated as combined sex below this bin number " << endl;
       report1 << "#_compressbins: accumulate upper tail by this number of bins; acts simultaneous with mintailcomp; set=0 for no forced accumulation" << endl;
       report1 << "#_Comp_Error:  0=multinomial, 1=dirichlet using Theta*n, 2=dirichlet using beta, 3=MV_Tweedie" << endl;
         report1 << "#_ParmSelect:  consecutive index for dirichlet or MV_Tweedie" << endl;
@@ -1318,7 +1318,7 @@ FUNCTION void write_nudata()
                 << "#Note: negative value for first bin makes it accumulate all smaller fish vs. truncate small fish" << endl;
         for (i = 1; i <= SzFreq_Nmeth; i++)
         { report1 << SzFreq_Omit_Small(i) * SzFreq_bins1(i, 1) << SzFreq_bins1(i)(2, SzFreq_Nbins(i)) << endl; }
-        report1 << "#_method year month fleet gender partition SampleSize <data> " << endl << SzFreq_obs1 << endl;
+        report1 << "#_method year month fleet sex partition SampleSize <data> " << endl << SzFreq_obs1 << endl;
       }
 
       // begin tagging data section #3 (bootstrap data)
