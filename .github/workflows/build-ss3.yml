@@ -42,7 +42,7 @@ jobs:
         run: |
           mkdir SS330
           docker pull johnoel/admb:linux
-          docker run -it --entrypoint /bin/bash --rm --volume $PWD:/ss3-repo --workdir /ss3-repo johnoel/admb:linux
+          docker run --rm --volume $PWD:/ss3-repo --workdir /ss3-repo johnoel/admb:linux
           /bin/bash ./Make_SS_330_new.sh -b SS330 -p
       
       - name: Verify binary on linux
