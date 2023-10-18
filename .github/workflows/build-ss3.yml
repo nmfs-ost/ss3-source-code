@@ -45,28 +45,29 @@ jobs:
           docker run --rm --volume $PWD:/ss3-repo --workdir /ss3-repo johnoel/admb:linux
           echo "/usr/local/bin/admb/bin" >> $GITHUB_PATH
           pwd
+          ls
           # /bin/bash ./Make_SS_330_new.sh -b SS330 -p
       
-      - name: Verify binary on linux
-        if: matrix.config.os == 'ubuntu-latest'
-        run: |
-          sha256sum SS330/ss
-          sha256sum SS330/ss_opt
+      # - name: Verify binary on linux
+      #   if: matrix.config.os == 'ubuntu-latest'
+      #   run: |
+      #     sha256sum SS330/ss
+      #     sha256sum SS330/ss_opt
       
-      - name: Delete unneeded files and change exe names on linux
-        if: matrix.config.os == 'ubuntu-latest'
-        run: |
-          cd SS330
-          rm *.obj *.htp *.cpp ss_opt.tpl ss.tpl
-          mv ss ss_linux
-          mv ss_opt ss_opt_linux
+      # - name: Delete unneeded files and change exe names on linux
+      #   if: matrix.config.os == 'ubuntu-latest'
+      #   run: |
+      #     cd SS330
+      #     rm *.obj *.htp *.cpp ss_opt.tpl ss.tpl
+      #     mv ss ss_linux
+      #     mv ss_opt ss_opt_linux
   
-      - name: Archive binaries
-        if: success()
-        uses: actions/upload-artifact@main
-        with:
-          name: 'ss3'
-          path: SS330/
+      # - name: Archive binaries
+      #   if: success()
+      #   uses: actions/upload-artifact@main
+      #   with:
+      #     name: 'ss3'
+      #     path: SS330/
 
 
       # - name: Get admb and put in path, windows
