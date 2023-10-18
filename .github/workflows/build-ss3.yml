@@ -30,8 +30,6 @@ jobs:
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v3
-        with:
-          path: ss3-repo
 
       - name: Update Ubuntu packages
         if: matrix.config.os == 'ubuntu-latest'
@@ -42,11 +40,10 @@ jobs:
         run: |
           mkdir SS330
           docker pull johnoel/admb:linux
-          docker run --rm --volume $PWD:/ss3-repo --workdir /ss3-repo johnoel/admb:linux
+          docker run --rm --volume $PWD:/home/runner/work/stock-synthesis/stock-synthesis --workdir /home/runner/work/stock-synthesis/stock-synthesis johnoel/admb:linux
           echo "/usr/local/bin/admb/bin" >> $GITHUB_PATH
           pwd
-          ls
-          # /bin/bash ./Make_SS_330_new.sh -b SS330 -p
+          /bin/bash ./Make_SS_330_new.sh -b SS330 -p
       
       # - name: Verify binary on linux
       #   if: matrix.config.os == 'ubuntu-latest'
