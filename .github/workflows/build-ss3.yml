@@ -44,7 +44,8 @@ jobs:
           docker pull johnoel/admb:linux
           docker run --rm --volume $PWD:/ss3-repo --workdir /ss3-repo johnoel/admb:linux
           echo "/usr/local/bin/admb/bin" >> $GITHUB_PATH
-          /bin/bash ./Make_SS_330_new.sh -b SS330 -p
+          pwd
+          # /bin/bash ./Make_SS_330_new.sh -b SS330 -p
       
       - name: Verify binary on linux
         if: matrix.config.os == 'ubuntu-latest'
