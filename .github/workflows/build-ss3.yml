@@ -34,6 +34,10 @@ jobs:
         if: matrix.config.os == 'ubuntu-latest'
         run: sudo apt-get update
 
+      - name: Use admb docker image for linux
+        run: |
+          docker pull johnoel/admb:linux
+
       - name: Get admb and put in path, windows
         if: matrix.config.os == 'windows-latest'
         run: |
