@@ -39,12 +39,8 @@ jobs:
         if: matrix.config.os == 'ubuntu-latest'
         run: |
           mkdir SS330
-          docker pull johnoel/admb:linux
-          # docker run --rm --volume $PWD:/home/runner/work/stock-synthesis/stock-synthesis --workdir /home/runner/work/stock-synthesis/stock-synthesis johnoel/admb:linux
-          # docker run --rm --volume $PWD:/workspaces/stock-synthesis --workdir /workspaces/stock-synthesis johnoel/admb:linux
-          echo "/usr/local/bin/admb/bin" >> $GITHUB_PATH
-          pwd
-          /bin/bash /workspaces/stock-synthesis/Make_SS_330_new.sh -b SS330 -p
+          make docker
+          mv -t SS330 ss ss.cpp ss.htp ss.obj ss.tpl 
 
       
       # - name: Verify binary on linux
