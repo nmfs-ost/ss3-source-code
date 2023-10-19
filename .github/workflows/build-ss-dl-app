@@ -1,0 +1,68 @@
+# Check that SS_output and SS_plots run with changes in ss3.
+name: test-ss-dl-tool-app
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - '**.tpl'
+    branches:
+      - main
+  pull_request:
+    types: ['opened', 'edited', 'reopened', 'synchronize', 'ready_for_review']
+    paths:
+      - '**.tpl'
+    branches:
+      - main
+
+# run models without estimation, then run r4ss SS_plots and SS_output
+jobs:
+  test-ss-dl-tool-app:
+    if: github.event.pull_request.draft == false
+    runs-on: ubuntu-latest
+    env:
+      R_REMOTES_NO_ERRORS_FROM_WARNINGS: true
+      GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
+      R_KEEP_PKG_SOURCE: yes
+
+    steps:
+      - name: Checkout ss3 repo
+        uses: actions/checkout@v3
+
+      - name: Checkout models repo
+        uses: actions/checkout@v3
+        with:
+          repository: 'shcaba/SS-DL-tool'
+          path: ss-dl-tool
+
+      - name: install libcurl
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libcurl4-openssl-dev
+
+      - name: Get admb and put in path, linux
+        run: |
+          wget https://github.com/admb-project/admb/releases/download/admb-13.1/admb-13.1-linux.zip
+          sudo unzip admb-13.1-linux.zip -d /usr/local/bin
+          sudo chmod 755 /usr/local/bin/admb-13.1/bin/admb
+          echo "/usr/local/bin/admb-13.1/bin" >> $GITHUB_PATH
+
+      - name: Build stock synthesis
+        run: |
+          rm -rf SS330
+          mkdir SS330
+          /bin/bash ./Make_SS_330_new.sh -b SS330
+
+      - name: move exes, scripts to needed locations
+        run: mv SS330/ss ss-dl-tool/SSS_files/sssexample_BH/ss_linux
+
+      - name: change permissions on ss3 exes
+        run: chmod a+x ss-dl-tool/SSS_files/sssexample_BH/ss_linux
+    
+      - name: setup R
+        uses: r-lib/actions/setup-r@v2
+
+      - name: install remotes
+        run: Rscript -e 'install.packages("remotes", "shiny")'
+
+      - name: install r4ss
+        run: Rscript -e 'remotes::install_github("r4ss/r4ss")'
