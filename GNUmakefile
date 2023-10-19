@@ -10,8 +10,9 @@
 # MY_ADMB_HOME=~/admb-main/
 
 # Uncomment the variables below for static and/or debugging builds.
-# STATIC_BUILD= -p
-# DEBUG= -g
+# OPT_BUILD=-f 
+# STATIC_BUILD=-p 
+# DEBUG=-g 
 
 export CXXFLAGS=-Wall -Wextra
 
@@ -19,11 +20,14 @@ all: clean
 	$(MAKE) ss
 	$(MAKE) ss_opt
 
+docker: ss.tpl 
+	docker run --rm --volume $(CURDIR):/stock-synthesis --workdir /stock-synthesis johnoel/admb:linux $(OPT_BUILD)$(DEBUG)$(STATIC_BUILD)ss.tpl
+
 ss: ss.tpl
-	$(MY_ADMB_HOME)admb $(DEBUG)$(STATIC_BUILD) ss.tpl
+	$(MY_ADMB_HOME)admb $(DEBUG)$(STATIC_BUILD)ss.tpl
 
 ss_opt: ss_opt.tpl
-	$(MY_ADMB_HOME)admb -f $(DEBUG)$(STATIC_BUILD) ss_opt.tpl
+	$(MY_ADMB_HOME)admb -f $(DEBUG)$(STATIC_BUILD)ss_opt.tpl
 
 ss.tpl: SS_functions.temp
 	cat SS_versioninfo_330safe.tpl SS_readstarter.tpl SS_readdata_330.tpl SS_readcontrol_330.tpl SS_param.tpl SS_prelim.tpl SS_global.tpl SS_proced.tpl SS_functions.temp > ss.tpl
