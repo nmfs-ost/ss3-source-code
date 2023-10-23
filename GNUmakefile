@@ -24,11 +24,11 @@ docker: docker_ss docker_ss_opt
 
 # docker run --rm --volume $(CURDIR):/stock-synthesis --workdir /stock-synthesis johnoel/admb:linux $(OPT_BUILD)$(DEBUG)$(STATIC_BUILD)ss.tpl
 docker_ss: ss.tpl
-	docker run --rm --volume $(CURDIR):/home/runner/work/stock-synthesis/stock-synthesis --workdir /home/runner/work/stock-synthesis/stock-synthesis johnoel/admb:linux $(OPT_BUILD)$(DEBUG)$(STATIC_BUILD)ss.tpl
+	docker run --rm --volume $(CURDIR):/stock-synthesis/stock-synthesis --workdir /stock-synthesis/stock-synthesis johnoel/admb:linux $(OPT_BUILD)$(DEBUG)$(STATIC_BUILD)ss.tpl
 
 # docker run --rm --volume $(CURDIR):/stock-synthesis --workdir /stock-synthesis johnoel/admb:linux -f $(DEBUG)$(STATIC_BUILD)ss_opt.tpl
 docker_ss_opt: ss_opt.tpl
-	docker run --rm --volume $(CURDIR):/home/runner/work/stock-synthesis/stock-synthesis --workdir /home/runner/work/stock-synthesis/stock-synthesis johnoel/admb:linux $(OPT_BUILD)$(DEBUG)$(STATIC_BUILD)ss.tpl
+	docker run --rm --volume $(CURDIR):/stock-synthesis/stock-synthesis --workdir /stock-synthesis/stock-synthesis johnoel/admb:linux $(OPT_BUILD)$(DEBUG)$(STATIC_BUILD)ss.tpl
 
 ss: ss.tpl
 	$(MY_ADMB_HOME)admb $(DEBUG)$(STATIC_BUILD)ss.tpl
