@@ -46,11 +46,11 @@ jobs:
             "repository due to the opening of SS3 Pull Request ", 
             info$number, ".\n", 
             "Please see ", 
-            "https://github.com/nmfs-stock-synthesis/stock-synthesis/pull/", 
+            "https://github.com/nmfs-stock-synthesis/ss3-source-code/pull/", 
             info$number, " and its associated issues for more information.",
             "\n\nNote: this issue was created automatically via GitHub ",
             "Action using the workflow in \n",
-            "https://github.com/nmfs-stock-synthesis/stock-synthesis/blob/main/.github/workflows/ss3-pr-open-issues.yml")
+            "https://github.com/nmfs-stock-synthesis/ss3-source-code/blob/main/.github/workflows/ss3-pr-open-issues.yml")
           # post r4ss issue if needed
           if (length(grep("r4ss", needs_changes)) == 1) {
             gh::gh("POST /repos/{owner}/{repo}/issues",
