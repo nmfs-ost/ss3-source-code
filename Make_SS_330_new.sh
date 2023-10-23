@@ -18,7 +18,7 @@ function usage()
 {
   echo ""
   echo "Call this script as follows:"
-  echo "  ./Make_SS_330_new.sh [(-s | --source) source_dir] [(-b | --build) build_dir]" 
+  echo "  ./Make_SS_330_new.sh [(-s | --source) source_dir] [(-b | --build) build_dir]"
   echo "   [(-a | --admb) admb_dir] [[-o | --opt] | [-f | --safe] [-p] "
   echo "   [-w | --warn] [-d | --debug] [-h | --help]"
   echo "Notes:"
@@ -85,8 +85,10 @@ while [ "$1" != "" ]; do
          # check for ADMB directory and set
         -a | --admb )    shift
                          ADMB_HOME=$1
-                         export ADMB_HOME
-                         PATH=$ADMB_HOME:$PATH
+                         if [[ "$1" != "docker" ]] ; then
+                           export ADMB_HOME
+                           PATH=$ADMB_HOME:$PATH
+                         fi
                          ;;
          # output help - usage
         -h | --help )    Type=Default
@@ -134,14 +136,21 @@ fi
 
 # change to build dir and build 
 cd $BUILD_DIR
-admb $OPTFLAG $STATICFLAG $BUILD_TYPE
-chmod a+x $BUILD_TYPE
 
 # output warnings
-if [[ "$WARNINGS" == "on" ]] ; then
-    echo "... compiling a second time to get warnings ..."
-    g++ -c -std=c++0x -O3 -I. -I"$ADMB_HOME/include" -I"/$ADMB_HOME/include/contrib" -o$BUILD_TYPE.obj $BUILD_TYPE.cpp -Wall -Wextra
+if [[ "$ADMB_HOME" == "docker" ]] ; then
+  if [[ "$WARNINGS" == "on" ]] ; then
+    docker run --rm --env CXXFLAGS="-Wall -Wextra" --volume $PWD:/stock-synthesis --workdir /stock-synthesis johnoel/admb:linux $OPTFLAG $STATICFLAG $BUILD_TYPE.tpl
+  else
+    docker run --rm --volume $PWD:/stock-synthesis --workdir /stock-synthesis johnoel/admb:linux $OPTFLAG $STATICFLAG $BUILD_TYPE.tpl
+  fi
+else
+  if [[ "$WARNINGS" == "on" ]] ; then
+    export CXXFLAGS="-Wall -Wextra"
+  fi
+  admb $OPTFLAG $BUILD_TYPE
 fi
+chmod a+x $BUILD_TYPE
 
 
 exit
