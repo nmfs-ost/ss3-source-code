@@ -35,7 +35,7 @@ jobs:
         if: matrix.config.os == 'ubuntu-latest'
         run: sudo apt-get update
 
-        - name: Use admb docker image for linux
+      - name: Use admb docker image for linux
         if: matrix.config.os == 'ubuntu-latest'
         run: |
           pwd
