@@ -15,6 +15,6 @@ copy/b SS_versioninfo_330opt.tpl+SS_readstarter.tpl+SS_readdata_330.tpl+SS_readc
 REM compile executable
 cd "Compile"
 set CXX=g++
-admb -f ss_opt
+REM admb -f ss_opt
 
-
+docker run --rm --volume %CD%:/stock-synthesis --workdir /stock-synthesis johnoel/admb:linux -f ss_opt.tpl
