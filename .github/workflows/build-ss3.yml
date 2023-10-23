@@ -19,7 +19,7 @@ jobs:
       fail-fast: false
       matrix:
         config:
-          - {os: windows-latest}
+          # - {os: windows-latest}
           # - {os: macos-latest}
           - {os: ubuntu-latest}
     # Limit run time to 90 min to avoid wasting action minutes.
@@ -35,7 +35,7 @@ jobs:
         if: matrix.config.os == 'ubuntu-latest'
         run: sudo apt-get update
 
-      - name: get working directory
+      - name: get working directory on action runner
         if: matrix.config.os == 'ubuntu-latest'
         run: |
           pwd
@@ -47,19 +47,19 @@ jobs:
           make docker
           mv -t SS330 ss ss.cpp ss.htp ss.obj ss.tpl ss_opt.cpp ss_opt.htp ss_opt.tpl ss_opt
 
-      - name: Build stock synthesis for windows
-        if: matrix.config.os == 'windows-latest'
-        run: |
-          docker pull johnoel/admb:windows
-          cd Compile
-          ./Make_SS_fast.bat
+      # - name: Build stock synthesis for windows
+      #   if: matrix.config.os == 'windows-latest'
+      #   run: |
+      #     docker pull johnoel/admb:windows
+      #     cd Compile
+      #     ./Make_SS_fast.bat
     
-      - name: Move exes to a new folder on windows
-        if: matrix.config.os == 'windows-latest'
-        run: |
-          mkdir SS330
-          mv Compile/ss_opt.exe SS330/
-          mv SS330/ss_opt.exe SS330/ss_opt_win.exe
+      # - name: Move exes to a new folder on windows
+      #   if: matrix.config.os == 'windows-latest'
+      #   run: |
+      #     mkdir SS330
+      #     mv Compile/ss_opt.exe SS330/
+      #     mv SS330/ss_opt.exe SS330/ss_opt_win.exe
       
       # - name: Verify binary on linux
       #   if: matrix.config.os == 'ubuntu-latest'
