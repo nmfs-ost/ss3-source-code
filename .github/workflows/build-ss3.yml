@@ -39,7 +39,6 @@ jobs:
         if: matrix.config.os == 'ubuntu-latest'
         run: |
           pwd
-          echo "$(pwd)"
 
       - name: Use admb docker image for linux
         if: matrix.config.os == 'ubuntu-latest'
