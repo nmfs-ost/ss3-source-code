@@ -30,7 +30,7 @@ jobs:
       - name: Checkout models repo
         uses: actions/checkout@v3
         with:
-          repository: 'nmfs-stock-synthesis/test-models'
+          repository: 'nmfs-stock-synthesis/ss3-test-models'
           path: test-models-repo
 
       - name: setup R
