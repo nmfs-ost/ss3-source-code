@@ -23,15 +23,15 @@ all: clean
 docker: docker_ss docker_ss_opt
 
 docker_ss: ss.tpl
-	docker run --rm --volume $(CURDIR):/stock-synthesis --workdir /stock-synthesis johnoel/admb:linux $(OPT_BUILD)$(DEBUG)$(STATIC_BUILD)ss.tpl
+	sudo docker run --rm --volume $(CURDIR):/stock-synthesis --workdir /stock-synthesis johnoel/admb:linux $(OPT_BUILD)$(DEBUG)$(STATIC_BUILD)ss.tpl
 
 docker_ss_opt: ss_opt.tpl
-	docker run --rm --volume $(CURDIR):/stock-synthesis --workdir /stock-synthesis johnoel/admb:linux -f $(DEBUG)$(STATIC_BUILD)ss_opt.tpl
+	sudo docker run --rm --volume $(CURDIR):/stock-synthesis --workdir /stock-synthesis johnoel/admb:linux -f $(DEBUG)$(STATIC_BUILD)ss_opt.tpl
 
 debug:
 	docker run --env ADMB_HOME=/usr/local/admb --entrypoint touch --rm --volume $(CURDIR):/workdir --workdir /workdir johnoel/admb:linux myfile
 	docker run --env ADMB_HOME=/usr/local/admb --entrypoint /usr/local/admb/bin/tpl2rem --rm --volume $(CURDIR):/workdir --workdir /workdir johnoel/admb:linux ss
-	
+
 ss: ss.tpl
 	$(MY_ADMB_HOME)admb $(DEBUG)$(STATIC_BUILD)ss.tpl
 
