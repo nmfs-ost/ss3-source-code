@@ -56,6 +56,7 @@ jobs:
       - name: Build stock synthesis for mac
         if: matrix.config.os == 'macos-latest'
         run: |
+          chmod -R 777 .
           brew install docker
           colima start
           docker pull johnoel/admb:linux
