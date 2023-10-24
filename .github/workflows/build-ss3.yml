@@ -43,7 +43,7 @@ jobs:
       - name: Use admb docker image for linux
         if: matrix.config.os == 'ubuntu-latest'
         run: |
-          chmod -R 777 pwd
+          chmod -R 777 .
           find .
           docker pull johnoel/admb:linux
           make docker
