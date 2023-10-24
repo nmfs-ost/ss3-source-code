@@ -20,7 +20,7 @@ jobs:
       matrix:
         config:
           - {os: windows-latest}
-          # - {os: macos-latest}
+          - {os: macos-latest}
           - {os: ubuntu-latest}
     # Limit run time to 90 min to avoid wasting action minutes.
     # was set to 15 and then 30 minutes previously, but compiling admb
@@ -48,10 +48,21 @@ jobs:
       - name: Build stock synthesis for windows
         if: matrix.config.os == 'windows-latest'
         run: |
-          docker pull johnoel/admb:windows
+          docker pull johnoel/admb:linux
           cd Compile
           ./Make_SS_fast.bat
-    
+          ./Make_SS_safe.bat
+      
+      - name: Build stock synthesis for mac
+        if: matrix.config.os == 'macos-latest'
+        run: |
+          docker pull johnoel/admb:linux
+          rm -rf SS330
+          rm -rf ss_osx.tar
+          mkdir SS330
+          /bin/bash ./Make_SS_330_new.sh -b SS330
+          /bin/bash ./Make_SS_330_new.sh -b SS330 -o
+
       # - name: Move exes to a new folder on windows
       #   if: matrix.config.os == 'windows-latest'
       #   run: |
@@ -247,15 +258,6 @@ jobs:
       #       gsub('\\.yy', paste0('\\.', fix_ver_num), ver_info[ver_info_start+1])
       #     writeLines(ver_info, "SS_versioninfo_330opt.tpl")
       #   shell: Rscript {0}
-
-      # - name: Build stock synthesis for mac
-      #   if: matrix.config.os == 'macos-latest'
-      #   run: |
-      #     rm -rf SS330
-      #     rm -rf ss_osx.tar
-      #     mkdir SS330
-      #     /bin/bash ./Make_SS_330_new.sh -b SS330
-      #     /bin/bash ./Make_SS_330_new.sh -b SS330 -o
 
 
       # - name: Build stock synthesis for linux with p flag

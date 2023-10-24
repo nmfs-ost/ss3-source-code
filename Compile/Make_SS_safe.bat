@@ -16,4 +16,7 @@ cd "Compile"
 ::set CXX=cl
 set CXX=g++
 
-admb ss
+REM admb -f ss
+
+docker run --rm --volume %CD%:\stock-synthesis\Compile --workdir \stock-synthesis\Compile johnoel/admb:linux -f ss.tpl
+REM docker run --rm --volume %CD%:\stock-synthesis\Compile --workdir \stock-synthesis\Compile johnoel/admb:windows -f ss.tpl
