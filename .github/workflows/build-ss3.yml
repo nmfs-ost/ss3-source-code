@@ -56,6 +56,8 @@ jobs:
       - name: Build stock synthesis for mac
         if: matrix.config.os == 'macos-latest'
         run: |
+          brew install docker
+          colima start
           docker pull johnoel/admb:linux
           rm -rf SS330
           rm -rf ss_osx.tar
