@@ -45,7 +45,7 @@ jobs:
         run: |
           find .
           sudo docker pull johnoel/admb:linux
-          make docker
+          sudo make docker
           mkdir SS330
           mv -t SS330 ss ss.cpp ss.htp ss.obj ss.tpl ss_opt.cpp ss_opt.htp ss_opt.tpl ss_opt
 
