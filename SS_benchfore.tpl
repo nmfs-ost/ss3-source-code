@@ -1462,8 +1462,9 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
         if (show_MSY == 1)
         {
           report5 << j << " " << Fmult << " " << equ_F_std << " " << MSY_SPR << " " << yld1(1) << " " << Bmsy << " " << Recr_msy << " " << Bmsy / SSB_unf << " "
-                  << dyld << " " << dyldp << " " << value(sum(equ_catch_fleet(3)) * Recr_msy);
-          report5 << value(equ_catch_fleet(3) * Recr_msy) << " " << Cost << " " << PricePerF * YPR_val_vec * Recr_msy << " " << Profit << " ";
+                  << dyld << " " << dyldp << " " << value(sum(equ_catch_fleet(3)) * Recr_msy) << " ";
+          report5 << " " << value(colsum(equ_catch_fleet(3)) * Recr_msy) << " " << Cost << " " << PricePerF * YPR_val_vec * Recr_msy << " " << Profit << " ";
+          //  colsum above sums across seasons so reports annual catch for each fleet, including survey fleets
           for (p = 1; p <= pop; p++)
             for (gp = 1; gp <= N_GP; gp++)
             {
@@ -1472,7 +1473,7 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
           for (int ff = 1; ff <= N_catchfleets(0); ff++)
           {
             f = fish_fleet_area(0, ff);
-            report5 << Hrate(f, bio_t_base + 1) << " ";
+            report5 << " " << Hrate(f, bio_t_base + 1) << " ";
           }
           report5 << endl;
         }
