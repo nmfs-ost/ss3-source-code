@@ -19,11 +19,22 @@ all: clean
 	$(MAKE) ss
 	$(MAKE) ss_opt
 
+docker:
+	$(MAKE) USE_DOCKER=yes all
+
 ss: ss.tpl
+ifdef USE_DOCKER
+	docker run --rm --volume $(CURDIR):/ss --workdir /ss johnoel/admb:linux ss.tpl
+else
 	$(MY_ADMB_HOME)admb $(DEBUG)$(STATIC_BUILD) ss.tpl
+endif
 
 ss_opt: ss_opt.tpl
+ifdef USE_DOCKER
+	docker run --rm --volume $(CURDIR):/ss_opt --workdir /ss_opt johnoel/admb:linux ss_opt.tpl
+else
 	$(MY_ADMB_HOME)admb -f $(DEBUG)$(STATIC_BUILD) ss_opt.tpl
+endif
 
 ss.tpl: SS_functions.temp
 	cat SS_versioninfo_330safe.tpl SS_readstarter.tpl SS_readdata_330.tpl SS_readcontrol_330.tpl SS_param.tpl SS_prelim.tpl SS_global.tpl SS_proced.tpl SS_functions.temp > ss.tpl
