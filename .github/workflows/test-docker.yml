@@ -1,4 +1,4 @@
-name: docker
+name: docker-ubuntu
 
 on: [push]
 
@@ -8,6 +8,7 @@ jobs:
     runs-on: ubuntu-latest
     
     steps:
+    - uses: actions/checkout@main
     - name: run
       run: |
         make docker
