@@ -26,6 +26,7 @@ ifdef USE_DOCKER
 	docker run --name admb-container -d johnoel/admb:linux --entrypoint /bin/bash
 	docker ps -a
 	docker cp ss.tpl admb-container:/workdir
+	docker ps -a
 	docker exec -d admb-container cat /workdir/ss.tpl
 else
 	$(MY_ADMB_HOME)admb $(DEBUG)$(STATIC_BUILD) ss.tpl
