@@ -27,7 +27,7 @@ ifdef USE_DOCKER
 	docker run --name admb -d johnoel/admb:linux
 	docker ps -a
 	docker cp ss.tpl admb:/workdir
-	docker exec --workdir /workdir admb ss.tpl
+	docker exec --workdir /workdir -d admb ss.tpl
 	chmod -R 777 $(CURDIR)
 	docker run --rm --volume $(CURDIR):/workdir/ss:rw --workdir /workdir/ss johnoel/admb:linux ss.tpl
 else
