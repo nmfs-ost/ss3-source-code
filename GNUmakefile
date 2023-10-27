@@ -25,6 +25,7 @@ docker:
 ss: ss.tpl
 ifdef USE_DOCKER
 	docker run johnoel/admb:linux
+	docker ps -a
 	docker cp ss.tpl johnoel/admb:linux:/workdir
 	docker run --rm --workdir /workdir johnoel/admb:linux ss.tpl
 	chmod -R 777 $(CURDIR)
