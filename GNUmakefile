@@ -24,8 +24,8 @@ docker:
 
 ss: ss.tpl
 ifdef USE_DOCKER
-	docker run --rm --volume $(CURDIR):/workdir/ss:rw --workdir /workdir/ss --entrypoint ls johnoel/admb:linux -al /workdir/ss
-	id
+	docker run --rm --volume $(CURDIR):/workdir/ss:rw --workdir /workdir/ss --entrypoint useradd johnoel/admb:linux johnoel
+	id johnoel
 	docker run --rm --volume $(CURDIR):/workdir/ss:rw --workdir /workdir/ss --entrypoint id johnoel/admb:linux
 	docker run --rm --volume $(CURDIR):/workdir/ss:rw --workdir /workdir/ss johnoel/admb:linux ss.tpl
 else
