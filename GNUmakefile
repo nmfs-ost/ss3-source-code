@@ -24,14 +24,14 @@ docker:
 
 ss: ss.tpl
 ifdef USE_DOCKER
-	docker run --rm --volume $(CURDIR):/ss:rw --workdir /ss johnoel/admb:linux ss.tpl
+	docker run --rm --volume $(CURDIR):/tmp/ss:rw --workdir /tmp/ss johnoel/admb:linux ss.tpl
 else
 	$(MY_ADMB_HOME)admb $(DEBUG)$(STATIC_BUILD) ss.tpl
 endif
 
 ss_opt: ss_opt.tpl
 ifdef USE_DOCKER
-	docker run --rm --volume $(CURDIR):/ss_opt:rw --workdir /ss_opt johnoel/admb:linux ss_opt.tpl
+	docker run --rm --volume $(CURDIR):/tmp/ss_opt:rw --workdir /tmp/ss_opt johnoel/admb:linux ss_opt.tpl
 else
 	$(MY_ADMB_HOME)admb -f $(DEBUG)$(STATIC_BUILD) ss_opt.tpl
 endif
