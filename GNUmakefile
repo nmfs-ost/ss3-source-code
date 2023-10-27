@@ -24,9 +24,7 @@ docker:
 
 ss: ss.tpl
 ifdef USE_DOCKER
-	docker run --rm --volume $(CURDIR):/workdir/ss:rw --workdir /workdir/ss --entrypoint useradd johnoel/admb:linux johnoel
-	id johnoel
-	docker run --rm --volume $(CURDIR):/workdir/ss:rw --workdir /workdir/ss --entrypoint id johnoel/admb:linux
+	chmod -R 777 $(CURDIR)
 	docker run --rm --volume $(CURDIR):/workdir/ss:rw --workdir /workdir/ss johnoel/admb:linux ss.tpl
 else
 	$(MY_ADMB_HOME)admb $(DEBUG)$(STATIC_BUILD) ss.tpl
