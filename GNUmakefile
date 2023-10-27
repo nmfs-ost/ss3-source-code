@@ -24,9 +24,9 @@ docker:
 
 ss: ss.tpl
 ifdef USE_DOCKER
-	docker run johnoel/admb:linux
+	docker run --name admb -d johnoel/admb:linux
 	docker ps -a
-	docker cp ss.tpl johnoel/admb:linux:/workdir
+	docker cp ss.tpl admb:/workdir
 	docker run --rm --workdir /workdir johnoel/admb:linux ss.tpl
 	chmod -R 777 $(CURDIR)
 	docker run --rm --volume $(CURDIR):/workdir/ss:rw --workdir /workdir/ss johnoel/admb:linux ss.tpl
