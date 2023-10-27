@@ -24,7 +24,7 @@ docker:
 
 ss: ss.tpl
 ifdef USE_DOCKER
-	docker run --name admb -d johnoel/admb:linux
+	docker run --name admb -d johnoel/admb:linux --entrypoint /bin/bash
 	docker ps -a
 	docker cp ss.tpl admb:/workdir
 	docker exec --workdir /workdir -d admb admb ss.tpl
