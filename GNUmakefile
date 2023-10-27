@@ -17,7 +17,6 @@ export CXXFLAGS=-Wall -Wextra
 
 all: clean
 	$(MAKE) ss
-	$(MAKE) ss_opt
 
 docker:
 	$(MAKE) USE_DOCKER=yes all
@@ -27,15 +26,15 @@ ifdef USE_DOCKER
 	docker run --name admb-container -d johnoel/admb:linux --entrypoint /bin/bash
 	docker ps -a
 	docker cp ss.tpl admb-container:/workdir
-	docker exec -d admb-container find /workdir
-	chmod -R 777 $(CURDIR)
-	docker run --rm --volume $(CURDIR):/workdir/ss:rw --workdir /workdir/ss johnoel/admb:linux ss.tpl
+	docker exec -d admb-container cat /workdir/ss.tpl
 else
 	$(MY_ADMB_HOME)admb $(DEBUG)$(STATIC_BUILD) ss.tpl
 endif
 
 ss_opt: ss_opt.tpl
 ifdef USE_DOCKER
+	chmod -R 777 $(CURDIR)
+	docker run --rm --volume $(CURDIR):/workdir/ss:rw --workdir /workdir/ss johnoel/admb:linux ss.tpl
 	docker run --rm --volume $(CURDIR):/workdir/ss_opt:rw --workdir /workdir/ss_opt johnoel/admb:linux ss_opt.tpl
 else
 	$(MY_ADMB_HOME)admb -f $(DEBUG)$(STATIC_BUILD) ss_opt.tpl
