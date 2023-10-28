@@ -23,7 +23,7 @@ docker:
 
 ss: ss.tpl
 ifdef USE_DOCKER
-	docker container run --attach STDOUT --entrypoint sh --name admb-container johnoel/admb:linux 
+	docker container run -it --attach STDOUT --entrypoint sh --name admb-container johnoel/admb:linux 
 	docker ps -a
 	docker start admb-container
 	docker ps -a
