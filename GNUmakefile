@@ -23,13 +23,10 @@ docker:
 
 ss: ss.tpl
 ifdef USE_DOCKER
-	docker container run -it --attach STDOUT --entrypoint sh --name admb-container johnoel/admb:linux 
+	docker container run --attach STDOUT --entrypoint sh --name admb-container johnoel/admb:linux 
 	docker ps -a
-	docker start admb-container
+	docker container cp ss.tpl admb-container:/workdir
 	docker ps -a
-	docker cp ss.tpl admb-container:/workdir
-	docker ps -a
-	docker exec -i --tty admb-container sh -c "admb ss.tpl"
 else
 	$(MY_ADMB_HOME)admb $(DEBUG)$(STATIC_BUILD) ss.tpl
 endif
