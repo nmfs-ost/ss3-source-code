@@ -23,19 +23,13 @@ docker:
 
 ss: ss.tpl
 ifdef USE_DOCKER
-	docker container run --attach STDOUT --entrypoint sh --name admb-container johnoel/admb:linux 
-	docker ps -a
-	docker container cp ss.tpl admb-container:/workdir
-	docker ps -a
-	docker container start admb-container
-	docker container exec admb-container ls /workdir
+	docker run --rm --volume $(CURDIR):/workdir/ss:rw --workdir /workdir/ss johnoel/admb:linux ss.tpl
 else
 	$(MY_ADMB_HOME)admb $(DEBUG)$(STATIC_BUILD) ss.tpl
 endif
 
 ss_opt: ss_opt.tpl
 ifdef USE_DOCKER
-	chmod -R 777 $(CURDIR)
 	docker run --rm --volume $(CURDIR):/workdir/ss:rw --workdir /workdir/ss johnoel/admb:linux ss.tpl
 	docker run --rm --volume $(CURDIR):/workdir/ss_opt:rw --workdir /workdir/ss_opt johnoel/admb:linux ss_opt.tpl
 else
