@@ -23,6 +23,7 @@ docker:
 
 ss: ss.tpl
 ifdef USE_DOCKER
+	docker run --rm --volume $(CURDIR):/workdir/ss:rw --workdir /workdir/ss --entrypoint //bin//bash johnoel/admb:linux ls -al
 	docker run --rm --volume $(CURDIR):/workdir/ss:rw --workdir /workdir/ss johnoel/admb:linux ss.tpl
 else
 	$(MY_ADMB_HOME)admb $(DEBUG)$(STATIC_BUILD) ss.tpl
