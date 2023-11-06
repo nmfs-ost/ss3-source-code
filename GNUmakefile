@@ -19,7 +19,7 @@ all: clean
 	$(MAKE) ss
 
 docker:
-	chmod -r 777 $(CURDIR)
+	chmod -R 777 $(CURDIR)
 	$(MAKE) USE_DOCKER=yes all
 
 ss: ss.tpl
