@@ -12,5 +12,6 @@ jobs:
     - name: run
       run: |
         brew install docker
+        colima start
         docker pull johnoel/admb:linux
         make docker
