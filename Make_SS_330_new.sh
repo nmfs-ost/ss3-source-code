@@ -137,10 +137,18 @@ fi
 # change to build dir and build 
 cd $BUILD_DIR
 if [[ "$ADMB_HOME" == "docker" ]] ; then
-  if [[ "$WARNINGS" == "on" ]] ; then
-    docker run --env CXXFLAGS="-Wall -Wextra" --rm --volume $PWD:/workdir/$BUILD_TYPE --workdir /workdir/$BUILD_TYPE johnoel/admb:linux $BUILD_TYPE.tpl
+  if [[ "$OS" == "Windows_NT" ]] ; then
+    if [[ "$WARNINGS" == "on" ]] ; then
+      docker run --env CXXFLAGS="-Wall -Wextra" --rm --volume $PWD:/workdir/$BUILD_TYPE --workdir /workdir/$BUILD_TYPE johnoel/admb:windows $BUILD_TYPE.tpl
+    else
+      docker run --rm --volume $PWD:/workdir/$BUILD_TYPE --workdir /workdir/$BUILD_TYPE johnoel/admb:windows $BUILD_TYPE.tpl
+    fi
   else
-    docker run --rm --volume $PWD:/workdir/$BUILD_TYPE --workdir /workdir/$BUILD_TYPE johnoel/admb:linux $BUILD_TYPE.tpl
+    if [[ "$WARNINGS" == "on" ]] ; then
+      docker run --env CXXFLAGS="-Wall -Wextra" --rm --volume $PWD:/workdir/$BUILD_TYPE --workdir /workdir/$BUILD_TYPE johnoel/admb:linux $BUILD_TYPE.tpl
+    else
+      docker run --rm --volume $PWD:/workdir/$BUILD_TYPE --workdir /workdir/$BUILD_TYPE johnoel/admb:linux $BUILD_TYPE.tpl
+    fi
   fi
 else
   admb $OPTFLAG $STATICFLAG $BUILD_TYPE
