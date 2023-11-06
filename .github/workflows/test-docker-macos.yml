@@ -11,5 +11,6 @@ jobs:
     - uses: actions/checkout@main
     - name: run
       run: |
+        brew install docker
         docker pull johnoel/admb:linux
         make docker
