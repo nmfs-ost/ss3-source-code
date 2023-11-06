@@ -137,7 +137,11 @@ fi
 # change to build dir and build 
 cd $BUILD_DIR
 if [[ "$ADMB_HOME" == "docker" ]] ; then
-  docker run --env CXXFLAGS="-Wall -Wextra" --rm --volume $PWD:/workdir/ss:rw --workdir /workdir/ss johnoel/admb:linux ss.tpl
+  if [[ "$WARNINGS" == "on" ]] ; then
+    docker run --env CXXFLAGS="-Wall -Wextra" --rm --volume $PWD:/workdir/$BUILD_TYPE --workdir /workdir/$BUILD_TYPE johnoel/admb:linux $BUILD_TYPE.tpl
+  else
+    docker run --rm --volume $PWD:/workdir/$BUILD_TYPE --workdir /workdir/$BUILD_TYPE johnoel/admb:linux $BUILD_TYPE.tpl
+  fi
 else
   admb $OPTFLAG $STATICFLAG $BUILD_TYPE
 fi
