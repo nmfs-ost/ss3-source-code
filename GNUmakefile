@@ -17,6 +17,7 @@ export CXXFLAGS=-Wall -Wextra
 
 all: clean
 	$(MAKE) ss
+	$(MAKE) ss_opt
 
 docker:
 	chmod -R 777 $(CURDIR)
