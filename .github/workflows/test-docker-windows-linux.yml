@@ -12,3 +12,4 @@ jobs:
     - name: run
       run: |
         choco install docker-desktop --version=2.1.0.3
+        refreshenv
