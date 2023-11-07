@@ -12,6 +12,8 @@ jobs:
     - name: run
       run: |
         choco install docker-cli
-        find C:\ProgramData\chocolatey\lib\docker-cli\*
+        dir C:\ProgramData\chocolatey\lib\docker-cli\*
+        dir C:\ProgramData\chocolatey\lib\docker-cli\bin\*
+        dir C:\ProgramData\chocolatey\lib\docker-cli\lib\*
         C:\ProgramData\chocolatey\lib\docker-cli\dockercli -SwitchLinuxEngine
         docker pull johnoel/admb:linux
