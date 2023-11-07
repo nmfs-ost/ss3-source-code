@@ -12,5 +12,6 @@ jobs:
     - name: run
       run: |
         choco install docker-desktop --version=2.1.0.3
-        cmd
+        ps
+        Import-Module $env:ChocolateyInstall\helpers\chocolateyProfile.psm1
         refreshenv
