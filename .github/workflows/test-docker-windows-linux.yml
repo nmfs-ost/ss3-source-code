@@ -12,5 +12,6 @@ jobs:
     - name: run
       run: |
         choco install docker-desktop --version=2.1.0.3
-        C:\ProgramData\chocolatey\lib\docker-cli\dockercli -SwitchLinuxEngine
+        dir C:\"Program Files"\Docker\Docker\*
+        C:\"Program Files"\Docker\Docker\DockerCli -SwitchLinuxEngine
         docker pull johnoel/admb:linux
