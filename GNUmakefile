@@ -28,7 +28,7 @@ ifdef USE_DOCKER
   ifeq ($(OS),Windows_NT)
 	docker run --rm --volume $(CURDIR):C:/workdir/ss --workdir C:/workdir/ss johnoel/admb:windows ss.tpl
   else
-	docker run --rm --volume $(CURDIR):C:/workdir/ss:rw --workdir C:/workdir/ss johnoel/admb:linux ss.tpl
+	docker run --rm --volume $(CURDIR):/workdir/ss:rw --workdir /workdir/ss johnoel/admb:linux ss.tpl
   endif
 else
 	$(MY_ADMB_HOME)admb $(DEBUG)$(STATIC_BUILD) ss.tpl
@@ -39,7 +39,7 @@ ifdef USE_DOCKER
   ifeq ($(OS),Windows_NT)
 	docker run --rm --volume $(CURDIR):C:/workdir/ss_opt --workdir C:/workdir/ss_opt johnoel/admb:windows ss_opt.tpl
   else
-	docker run --rm --volume $(CURDIR):C:/workdir/ss_opt:rw --workdir C:/workdir/ss_opt johnoel/admb:linux ss_opt.tpl
+	docker run --rm --volume $(CURDIR):/workdir/ss_opt:rw --workdir /workdir/ss_opt johnoel/admb:linux ss_opt.tpl
   endif
 else
 	$(MY_ADMB_HOME)admb -f $(DEBUG)$(STATIC_BUILD) ss_opt.tpl
