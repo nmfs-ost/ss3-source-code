@@ -13,6 +13,7 @@ jobs:
       run: |
         choco install docker-desktop --version=2.1.0.3
         dir C:\"Program Files"\Docker\Docker\*
-        C:\"Program Files"\Docker\Docker\DockerCli.exe -version
-        C:\"Program Files"\Docker\Docker\DockerCli.exe -SwitchDaemon
+        cd C:\"Program Files"\Docker\Docker && pwd
+        cd C:\"Program Files"\Docker\Docker && DockerCli.exe -version
+        cd C:\"Program Files"\Docker\Docker && DockerCli.exe -SwitchDaemon
         docker pull johnoel/admb:linux
