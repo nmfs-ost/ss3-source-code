@@ -1,0 +1,16 @@
+name: docker-windows
+
+on: [push]
+
+jobs:
+  build:
+
+    runs-on: windows-latest
+    
+    steps:
+    - uses: actions/checkout@main
+    - name: run
+      run: |
+        choco install docker-cli
+        dockercli -SwitchLinuxEngine
+        docker pull johnoel/admb:linux
