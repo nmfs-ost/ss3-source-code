@@ -13,4 +13,3 @@ jobs:
       run: |
         choco install docker-desktop --version=2.1.0.3
 	refreshenv
-        dir "C:\Program Files\Docker\Docker"\*
