@@ -15,4 +15,5 @@ jobs:
         ps
         Import-Module $env:ChocolateyInstall\helpers\chocolateyProfile.psm1
         refreshenv
+        echo %PATH%
         DockerCli.exe -SwitchDaemon
