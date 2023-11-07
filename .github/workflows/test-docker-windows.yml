@@ -11,5 +11,5 @@ jobs:
     - uses: actions/checkout@main
     - name: run
       run: |
-        docker pull johnoel/admb:linux
+        docker pull johnoel/admb:windows
         make docker
