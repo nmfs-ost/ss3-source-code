@@ -19,3 +19,4 @@ jobs:
         cd "C:\Program Files\Docker\Docker"
         pwd
         ./DockerCli.exe --help
+        ./DockerCli.exe -SwitchLinuxEngine
