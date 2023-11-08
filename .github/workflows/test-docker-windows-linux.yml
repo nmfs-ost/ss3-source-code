@@ -12,4 +12,5 @@ jobs:
     - name: run
       run: |
         choco install docker-desktop --version=2.1.0.3
-        powershell.exe -Command { Import-Module $env:ChocolateyInstall\helpers\chocolateyProfile.psm1 && refreshenv }
+        powershell.exe -Command { Import-Module $env:ChocolateyInstall\helpers\chocolateyProfile.psm1 }
+        powershell.exe -Command { refreshenv }
