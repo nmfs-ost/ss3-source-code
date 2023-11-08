@@ -12,13 +12,6 @@ jobs:
     - name: run
       run: |
         choco install docker-desktop --version=2.1.0.3
-        ps
-        Import-Module $env:ChocolateyInstall\helpers\chocolateyProfile.psm1
-        refreshenv
-        $ENV:PATH
-        dockerd
-        cd "C:\Program Files\Docker\Docker"
-        pwd
-        ./DockerCli.exe --help
-        ./DockerCli.exe -SwitchDaemon
-        docker pull johnoel/admb:linux
+        ps -Command Import-Module $env:ChocolateyInstall\helpers\chocolateyProfile.psm1
+        ps -Command refreshenv
+        ps -Command ./DockerCli.exe --help
