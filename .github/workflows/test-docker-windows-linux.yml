@@ -18,5 +18,6 @@ jobs:
         $ENV:PATH
         cd "C:\Program Files\Docker\Docker"
         pwd
-        ./DockerCli.exe -SwitchLinuxEngine
+        ./DockerCli.exe --help
+        ./DockerCli.exe -SwitchDaemon
         docker pull johnoel/admb:linux
