@@ -11,7 +11,7 @@ jobs:
     - uses: actions/checkout@main
     - name: run
       run: |
-        choco install docker-desktop --version=2.1.0.3
+        choco install docker-desktop
         ps
         Import-Module $env:ChocolateyInstall\helpers\chocolateyProfile.psm1
         RefreshEnv
