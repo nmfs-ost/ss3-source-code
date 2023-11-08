@@ -16,6 +16,7 @@ jobs:
         Import-Module $env:ChocolateyInstall\helpers\chocolateyProfile.psm1
         refreshenv
         $ENV:PATH
+        dockerd
         cd "C:\Program Files\Docker\Docker"
         pwd
         ./DockerCli.exe --help
