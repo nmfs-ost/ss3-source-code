@@ -15,5 +15,5 @@ jobs:
         ps
         Import-Module $env:ChocolateyInstall\helpers\chocolateyProfile.psm1
         RefreshEnv
-        cd "C:\Program Files\Docker\Docker"
-        DockerCli -SwitchDaemon
+        $env:DOCKER_CONTEXT='desktop-linux'
+        docker context list
