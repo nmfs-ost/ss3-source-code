@@ -12,7 +12,8 @@ jobs:
     - name: run
       run: |
         choco install docker-desktop
-        refreshenv
+        ps
+        Import-Module $env:ChocolateyInstall\helpers\chocolateyProfile.psm1
         "C:\Program Files\Docker\Docker\Docker Desktop.exe"
         docker context list
         docker pull johnoel/admb:linux
