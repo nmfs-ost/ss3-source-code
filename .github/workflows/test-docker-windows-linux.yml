@@ -12,3 +12,5 @@ jobs:
     - name: run
       run: |
         docker context list
+        docker pull johnoel/admb:linux
+        make docker
