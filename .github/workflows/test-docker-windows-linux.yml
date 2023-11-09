@@ -13,7 +13,7 @@ jobs:
       run: |
         choco upgrade
         choco uninstall docker-desktop
-        choco install --version 4.24.2 docker-desktop
+        choco install --version 4.1.0 docker-desktop
         cmd /C refreshenv
         dir "C:\\Program Files\\Docker\\Docker\\DockerCli.exe"
         cmd /C "C:\\Program Files\\Docker\\Docker\\DockerCli.exe" -SwitchLinuxEngine
