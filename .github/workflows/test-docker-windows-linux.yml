@@ -11,6 +11,6 @@ jobs:
     - uses: actions/checkout@main
     - name: run
       run: |
-        "C:\Program Files\Docker\Docker\Docker Desktop.exe"
+        choco upgrade docker-desktop
         docker context list
         docker pull johnoel/admb:linux
