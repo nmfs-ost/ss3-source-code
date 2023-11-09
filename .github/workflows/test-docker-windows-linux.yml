@@ -15,7 +15,8 @@ jobs:
         choco uninstall docker-desktop
         choco install --version 4.24.2 docker-desktop
         cmd /C refreshenv
-        dir "C:\\Program Files\\Docker\\Docker\\"*
+        dir "C:\\Program Files\\Docker\\Docker\\DockerCli.exe"
+        "C:\\Program Files\\Docker\\Docker\\DockerCli.exe" -SwitchLinuxEngine
         docker version
         docker context list
         docker pull johnoel/admb:linux
