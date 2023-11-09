@@ -12,8 +12,7 @@ jobs:
     - name: run
       run: |
         choco upgrade
-        choco install docker-engine
-        cmd /C refreshenv
+        wsl --install
         docker version
         docker context list
         docker pull johnoel/admb:linux
