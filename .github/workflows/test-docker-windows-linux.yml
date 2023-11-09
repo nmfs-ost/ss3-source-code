@@ -11,5 +11,6 @@ jobs:
     - uses: actions/checkout@main
     - name: run
       run: |
+        choco install docker-desktop
         dir "C:\Program Files\Docker\Docker\"*
         docker pull johnoel/admb:linux
