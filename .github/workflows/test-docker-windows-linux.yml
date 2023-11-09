@@ -1,4 +1,4 @@
-name: docker-windows
+name: docker-windows-linux
 
 on: [push]
 
