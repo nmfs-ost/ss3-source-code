@@ -11,6 +11,7 @@ jobs:
     - uses: actions/checkout@main
     - name: run
       run: |
-        choco upgrade docker-desktop
+        choco upgrade
+        docker version
         docker context list
         docker pull johnoel/admb:linux
