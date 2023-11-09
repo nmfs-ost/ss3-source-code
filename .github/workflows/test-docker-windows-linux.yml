@@ -11,6 +11,5 @@ jobs:
     - uses: actions/checkout@main
     - name: run
       run: |
-        docker context list
+        dir "C:\Program Files\Docker\Docker\"*
         docker pull johnoel/admb:linux
-        make docker
