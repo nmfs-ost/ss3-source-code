@@ -12,6 +12,8 @@ jobs:
     - name: run
       run: |
         choco upgrade
+        choco uninstall docker-desktop
+        choco install --version 4.24.2 docker-desktop
         docker version
         docker context list
         docker pull johnoel/admb:linux
