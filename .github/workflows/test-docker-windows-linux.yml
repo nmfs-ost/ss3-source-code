@@ -12,8 +12,6 @@ jobs:
     - name: run
       run: |
         choco upgrade
-        choco uninstall docker-desktop
-        choco uninstall docker-engine
         choco install docker-engine
         cmd /C refreshenv
         docker version
