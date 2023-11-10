@@ -12,7 +12,6 @@ jobs:
     - name: run
       run: |
         choco upgrade
-        wsl --install -d Ubuntu
         docker version
         docker context list
-        docker pull johnoel/admb:linux
+        docker pull ubuntu
