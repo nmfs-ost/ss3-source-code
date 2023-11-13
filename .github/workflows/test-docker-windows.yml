@@ -1,0 +1,17 @@
+name: docker-windows
+
+on: [push]
+
+jobs:
+  build:
+
+    runs-on: windows-latest
+    
+    steps:
+    - uses: actions/checkout@main
+    - name: run
+      run: |
+        kubectl get nodes -o wide
+        docker inspect johnoel/admb:windows
+        docker pull johnoel/admb:windows
+        make docker

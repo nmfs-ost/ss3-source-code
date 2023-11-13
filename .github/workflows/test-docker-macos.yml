@@ -1,0 +1,17 @@
+name: docker-macos
+
+on: [push]
+
+jobs:
+  build:
+
+    runs-on: macos-latest
+    
+    steps:
+    - uses: actions/checkout@main
+    - name: run
+      run: |
+        brew install docker
+        colima start
+        docker pull johnoel/admb:linux
+        make docker
