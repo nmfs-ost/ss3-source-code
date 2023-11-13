@@ -1,0 +1,15 @@
+name: docker-ubuntu
+
+on: [push]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@main
+    - name: run
+      run: |
+        docker pull johnoel/admb:linux
+        make docker
