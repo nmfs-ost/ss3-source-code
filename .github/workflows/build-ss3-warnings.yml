@@ -60,7 +60,7 @@ jobs:
       - name: Use R to parse warnings output
         run: |
           txt <- readLines("warnings.txt", encoding = "UTF-8" )
-          warn_line <- grep(pattern = "compiling a second time to get warnings",
+          warn_line <- grep(pattern = "*** Compile: ss.cpp",
             x = txt,
             fixed = TRUE)
           txt <- txt[(warn_line+1):length(txt)]
