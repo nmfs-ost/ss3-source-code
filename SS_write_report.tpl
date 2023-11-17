@@ -1384,11 +1384,13 @@ FUNCTION void write_bigoutput()
         SS2out << " SmryBio_SX:" << gg << "_GP:" << gp;
       }
     for (gg = 1; gg <= gender; gg++)
+    {
       for (gp = 1; gp <= N_GP; gp++)
       {
         SS2out << " SmryNum_SX:" << gg << "_GP:" << gp;
       }
-      SS2out << " mature_bio mature_num ";
+    }
+    SS2out << " mature_bio mature_num ";
     dvector Bio_Comp(1, N_GP * gender);
     dvector Num_Comp(1, N_GP * gender);
     for (f = 1; f <= Nfleet; f++)
