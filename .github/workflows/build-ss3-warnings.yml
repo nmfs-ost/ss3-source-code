@@ -75,7 +75,7 @@ jobs:
           #  to_rm <- c(to_rm, l:tmp_end_line)
           #}
           #txt <- txt[-to_rm]
-          n_errors <- length(grep(pattern = "^", x = txt, fixed = TRUE))
+          n_errors <- length(grep(pattern = "warning:", x = txt, fixed = TRUE))
           message("There are ", n_errors, " warning messages related to SS.")
           write.table(n_errors, "n_warn.txt")
           writeLines(txt, "warnings_ss.txt")
