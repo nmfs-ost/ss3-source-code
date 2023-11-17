@@ -56,6 +56,7 @@ jobs:
           mkdir SS330
           /bin/bash ./Make_SS_330_new.sh -a /usr/local/bin/admb-13.1 -b SS330 -w &> outputs.txt
           grep -q "ss.cpp" outputs.txt &> outputs2.txt
+          grep -q "warning:" outputs2.txt &> outputs3.txt
 
       # Runs a set of commands using the runners shell
       - name: Use R to parse warnings output
