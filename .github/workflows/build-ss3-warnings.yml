@@ -55,7 +55,7 @@ jobs:
           rm -rf ss_osx.tar
           mkdir SS330
           /bin/bash ./Make_SS_330_new.sh -a /usr/local/bin/admb-13.1 -b SS330 -w &> outputs.txt
-          /bin/bash grep "warning:" outputs.txt | grep "ss.cpp" &> warnings.txt
+          grep "warning:" outputs.txt | grep "ss.cpp" &> warnings.txt
 
       # Runs a set of commands using the runners shell
       - name: Use R to parse warnings output
