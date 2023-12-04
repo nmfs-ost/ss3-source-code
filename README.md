@@ -1,8 +1,12 @@
 # Stock Synthesis 3.30
-![GitHub release (latest by date)](https://img.shields.io/github/v/release/nmfs-stock-synthesis/stock-synthesis)
-![GitHub Release Date](https://img.shields.io/github/release-date/nmfs-stock-synthesis/stock-synthesis)
-[![GitHub last commit](https://img.shields.io/github/last-commit/nmfs-stock-synthesis/stock-synthesis)](https://github.com/nmfs-stock-synthesis/stock-synthesis/commits/main)
-![GitHub release (latest by date)](https://img.shields.io/github/downloads/nmfs-stock-synthesis/stock-synthesis/latest/total)
+![GitHub release (latest by date)](https://img.shields.io/github/v/release/nmfs-ost/ss3-source-code)
+![GitHub Release Date](https://img.shields.io/github/release-date/nmfs-ost/ss3-source-code)
+[![GitHub last commit](https://img.shields.io/github/last-commit/nmfs-ost/ss3-source-code)](https://github.com/nmfs-ost/ss3-source-code/commits/main)
+![GitHub release (latest by date)](https://img.shields.io/github/downloads/nmfs-ost/ss3-source-code/latest/total)
+![GitHub release (latest by date)](https://img.shields.io/github/v/release/nmfs-ost/ss3-source-code)
+![GitHub Release Date](https://img.shields.io/github/release-date/nmfs-ost/ss3-source-code)
+[![GitHub last commit](https://img.shields.io/github/last-commit/nmfs-ost/ss3-source-code)](https://github.com/nmfs-ost/ss3-source-code/commits/main)
+![GitHub release (latest by date)](https://img.shields.io/github/downloads/nmfs-ost/ss3-source-code/latest/total)
 
 Stock Synthesis (SS3) is a generalized age-structured population dynamics model implemented in [ADMB](http://www.admb-project.org/). It is used to assess the effect of fisheries on fish and shellfish stocks while taking into account the influence of environmental factors.
 
@@ -28,21 +32,24 @@ framework for fish stock assessment and fishery management. Fisheries Research,
 
 ## Installation
 
-Download the latest compiled versions from [Github Releases](https://github.com/nmfs-stock-synthesis/stock-synthesis/releases).
+Download the latest compiled versions from [Github Releases](https://github.com/nmfs-ost/ss3-source-code/releases).
+Download the latest compiled versions from [Github Releases](https://github.com/nmfs-ost/ss3-source-code/releases).
 
 ## How can I learn how to use Stock Synthesis?
 
-To learn more about how to use Stock Synthesis, see the [getting started guide with Stock Synthesis guide](https://nmfs-stock-synthesis.github.io/doc/Getting_Started_SS3.html). To learn how to build your own models in Stock Synthesis, see the [Develop an Stock Synthesis model guide](https://nmfs-stock-synthesis.github.io/doc/ss3_model_tips.html).
+To learn more about how to use Stock Synthesis, see the [getting started guide with Stock Synthesis guide](https://nmfs-ost.github.io/ss3-doc/Getting_Started_SS3.html). To learn how to build your own models in Stock Synthesis, see the [Develop an Stock Synthesis model guide](https://nmfs-ost.github.io/ss3-doc/ss3_model_tips.html).
 
-The [Stock Synthesis user manual](https://nmfs-stock-synthesis.github.io/doc/SS330_User_Manual_release.html) provides the complete documentation of Stock Synthesis.
+The [Stock Synthesis user manual](https://nmfs-ost.github.io/doc/SS330_User_Manual_release.html) provides the complete documentation of Stock Synthesis.
 
 ## How do I ask questions about Stock Synthesis?
 
-Please look for answers or submit questions to the [Stock Synthesis forums](https://vlab.noaa.gov/web/stock-synthesis/public-forums). Note that an account is required to ask questions on the forums. Questions can also be asked by opening an [issue](https://github.com/nmfs-stock-synthesis/stock-synthesis/issues) in this repository or by emailing nmfs.stock.synthesis@noaa.gov.
+Please look for answers or submit questions to the [Stock Synthesis forums](https://vlab.noaa.gov/web/stock-synthesis/public-forums). Note that an account is required to ask questions on the forums. Questions can also be asked by opening an [issue](https://github.com/nmfs-ost/ss3-source-code/issues) in this repository or by emailing nmfs.stock.synthesis@noaa.gov.
+Please look for answers or submit questions to the [Stock Synthesis forums](https://vlab.noaa.gov/web/stock-synthesis/public-forums). Note that an account is required to ask questions on the forums. Questions can also be asked by opening an [issue](https://github.com/nmfs-ost/ss3-source-code/issues) in this repository or by emailing nmfs.stock.synthesis@noaa.gov.
 
 ## How can I contribute to Stock Synthesis?
 
-Have feature requests or bug reports? Want to contribute code? Please open an [issue](https://github.com/nmfs-stock-synthesis/stock-synthesis/issues) or submit a pull request. For complete details, please see [CONTRIBUTING.md](CONTRIBUTING.md)
+Have feature requests or bug reports? Want to contribute code? Please open an [issue](https://github.com/nmfs-ost/ss3-source-code/issues) or submit a pull request. For complete details, please see [CONTRIBUTING.md](CONTRIBUTING.md)
+Have feature requests or bug reports? Want to contribute code? Please open an [issue](https://github.com/nmfs-ost/ss3-source-code/issues) or submit a pull request. For complete details, please see [CONTRIBUTING.md](CONTRIBUTING.md)
 
 This project and everyone participating in it is governed by the [NMFS Fisheries Toolbox Code of Conduct](https://github.com/nmfs-fish-tools/Resources/blob/master/CODE_OF_CONDUCT.md). By participating, you are expected to uphold this code.
 

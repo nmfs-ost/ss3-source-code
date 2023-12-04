@@ -55,7 +55,7 @@ body:
   id: documentation
   attributes:
     label: Does documentation already exist in the SS3 User Manual?
-    description: Please review the [SS3 User Manual](https://nmfs-stock-synthesis.github.io/doc/SS330_User_Manual.html) and check the box within the text area that applies.
+    description: Please review the [SS3 User Manual](https://nmfs-ost.github.io/ss3-doc/SS330_User_Manual.html) and check the box within the text area that applies.
     options: 
       - Yes, the link to the section in the SS3 User Manual is provided below.
       - Yes, but further documentation needs to be added and is provided below.

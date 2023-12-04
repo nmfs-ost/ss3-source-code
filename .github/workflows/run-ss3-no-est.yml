@@ -37,7 +37,7 @@ jobs:
       - name: Checkout models repo
         uses: actions/checkout@v3
         with:
-          repository: 'nmfs-stock-synthesis/test-models'
+          repository: 'nmfs-ost/ss3-test-models'
           path: test-models-repo
 
       - name: Update Ubuntu packages
@@ -66,7 +66,7 @@ jobs:
           mv test-models-repo/.github/r_scripts/run_from_par.R test-models-repo/run_from_par.R
           mv test-models-repo/.github/r_scripts/run_compare_noest.R test-models-repo/run_compare_noest.R
 
-      - name: change permissions on ss exes
+      - name: change permissions on ss3 exes
         run: chmod a+x test-models-repo/model_runs/ss
 
       - name: run models without estimation
