@@ -62,7 +62,7 @@ jobs:
 
       - name: run models
         run: |
-          ncores <- parallelly::availableCores() - 1
+          ncores <- parallelly::availableCores(omit = 1)
           future::plan(future::multisession, workers = ncores)
 
           mod_names <- list.dirs(file.path("test-models-repo", "model_runs"), full.names = FALSE, recursive = FALSE)

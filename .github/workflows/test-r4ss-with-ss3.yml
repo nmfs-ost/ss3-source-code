@@ -78,7 +78,7 @@ jobs:
 
       - name: run SS3 output and SS3 plots
         run: |
-          ncores <- parallelly::availableCores() - 1
+          ncores <- parallelly::availableCores(omit = 1)
           future::plan(future::multisession, workers = ncores)
 
           mod_names <- list.dirs("test-models-repo/model_runs", full.names = FALSE, recursive = FALSE)
