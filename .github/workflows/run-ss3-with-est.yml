@@ -86,8 +86,7 @@ jobs:
           }
 
           mod_ran <- furrr::future_map(mod_paths, function(x){tryCatch(run_ss(x),
-          error = function(e) print(e)
-          })
+          error = function(e) print(e))})
 
           mod_errors <- mod_names[unlist(lapply(mod_ran, function(x) "simpleError" %in% class(x)))]
           success <- TRUE
