@@ -84,11 +84,13 @@ while [ "$1" != "" ]; do
                          ;;
          # check for ADMB directory and set
         -a | --admb )    shift
-                         ADMB_HOME=$1
-                         if [[ "$1" != "docker" ]] ; then
+                         if [[ "$1" == "docker" ]] ; then
+                           ADMB_HOME=docker
+			                   else
+                           ADMB_HOME=$1
                            export ADMB_HOME
                            PATH=$ADMB_HOME:$PATH
-                         fi
+			                   fi
                          ;;
          # output help - usage
         -h | --help )    Type=Default
@@ -136,21 +138,26 @@ fi
 
 # change to build dir and build 
 cd $BUILD_DIR
-
-# output warnings
 if [[ "$ADMB_HOME" == "docker" ]] ; then
-  if [[ "$WARNINGS" == "on" ]] ; then
-    docker run --rm --env CXXFLAGS="-Wall -Wextra" --volume $PWD:/stock-synthesis --workdir /stock-synthesis johnoel/admb:linux $OPTFLAG $STATICFLAG $BUILD_TYPE.tpl
+  if [[ "$OS" == "Windows_NT" ]] ; then
+    if [[ "$WARNINGS" == "on" ]] ; then
+      docker run --env CXXFLAGS="-Wall -Wextra -Wno-unused-parameter" --rm --volume $PWD:/workdir/$BUILD_TYPE --workdir /workdir/$BUILD_TYPE johnoel/admb:windows $BUILD_TYPE.tpl
+    else
+      docker run --rm --volume $PWD:/workdir/$BUILD_TYPE --workdir /workdir/$BUILD_TYPE johnoel/admb:windows $BUILD_TYPE.tpl
+    fi
   else
-    docker run --rm --volume $PWD:/stock-synthesis --workdir /stock-synthesis johnoel/admb:linux $OPTFLAG $STATICFLAG $BUILD_TYPE.tpl
+    if [[ "$WARNINGS" == "on" ]] ; then
+      docker run --env CXXFLAGS="-Wall -Wextra -Wno-unused-parameter" --rm --volume $PWD:/workdir/$BUILD_TYPE --workdir /workdir/$BUILD_TYPE johnoel/admb:linux $BUILD_TYPE.tpl
+    else
+      docker run --rm --volume $PWD:/workdir/$BUILD_TYPE --workdir /workdir/$BUILD_TYPE johnoel/admb:linux $BUILD_TYPE.tpl
+    fi
   fi
 else
   if [[ "$WARNINGS" == "on" ]] ; then
-    export CXXFLAGS="-Wall -Wextra"
+    export CXXFLAGS="-Wall -Wextra -Wno-unused-parameter"
   fi
-  admb $OPTFLAG $BUILD_TYPE
+  admb $OPTFLAG $STATICFLAG $BUILD_TYPE
 fi
 chmod a+x $BUILD_TYPE
-
 
 exit
