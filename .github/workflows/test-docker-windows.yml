@@ -15,3 +15,6 @@ jobs:
         docker inspect johnoel/admb:windows
         docker pull johnoel/admb:windows
         make docker
+
+        ./Make_SS_330_new.sh --admb docker --safe
+        ./Make_SS_330_new.sh --admb docker --fast

@@ -15,3 +15,6 @@ jobs:
         colima start
         docker pull johnoel/admb:linux
         make docker
+
+        ./Make_SS_330_new.sh --admb docker --safe
+        ./Make_SS_330_new.sh --admb docker --fast
