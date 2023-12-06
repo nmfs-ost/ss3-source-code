@@ -39,8 +39,8 @@ jobs:
         if: matrix.config.os == 'windows-latest'
         run: |
           kubectl get nodes -o wide
-          docker inspect johnoel/admb:linux
-          docker pull johnoel/admb:linux
+          docker inspect johnoel/admb:windows
+          docker pull johnoel/admb:windows
           make docker
           cd Compile
           ./Make_SS_fast.bat
