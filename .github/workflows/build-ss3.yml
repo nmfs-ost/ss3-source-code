@@ -38,8 +38,6 @@ jobs:
       - name: Use admb docker image for linux
         if: matrix.config.os == 'ubuntu-latest'
         run: |
-          chmod -R 777 .
-          find .
           docker pull johnoel/admb:linux
           make docker
           mkdir SS330
@@ -59,7 +57,6 @@ jobs:
       - name: Build stock synthesis for mac
         if: matrix.config.os == 'macos-latest'
         run: |
-          chmod -R 777 .
           brew install docker
           colima start
           docker pull johnoel/admb:linux
