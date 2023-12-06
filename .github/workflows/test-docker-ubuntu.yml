@@ -14,5 +14,6 @@ jobs:
         docker pull johnoel/admb:linux
         make docker
 
+        chmod a+rwx .
         ./Make_SS_330_new.sh --admb docker --safe
         ./Make_SS_330_new.sh --admb docker --fast
