@@ -64,7 +64,7 @@ jobs:
           rm -rf SS330
           rm -rf ss_osx.tar
           mkdir SS330
-          mv /home/runner/work/ss3-source-code/ss3-source-code/ss 
+          mv /home/runner/work/ss3-source-code/ss3-source-code/ss SS330/ss
          # /bin/bash ./Make_SS_330_new.sh -a docker -b SS330 -p
          # /bin/bash ./Make_SS_330_new.sh -a docker -b SS330 -o -p
 
