@@ -48,7 +48,10 @@ jobs:
       - name: Build stock synthesis for windows
         if: matrix.config.os == 'windows-latest'
         run: |
-          docker pull johnoel/admb:linux
+          kubectl get nodes -o wide
+          docker inspect johnoel/admb:windows
+          docker pull johnoel/admb:windows
+          make docker
           cd Compile
           ./Make_SS_fast.bat
           ./Make_SS_safe.bat
@@ -60,6 +63,7 @@ jobs:
           brew install docker
           colima start
           docker pull johnoel/admb:linux
+          make docker
           rm -rf SS330
           rm -rf ss_osx.tar
           mkdir SS330

@@ -2,7 +2,7 @@
 # path to the script can be manually set (See MY_ADMB_HOME below).
 #
 # Usage:
-#   ./stock-synthesis/$ make
+#   ./ss3-source-code/$ make
 
 # Uncomment MY_ADMB_HOME to manually set path to admb script
 # and ignore system enviroment PATH.
@@ -20,23 +20,31 @@ all: clean
 	$(MAKE) ss
 	$(MAKE) ss_opt
 
-docker: docker_ss docker_ss_opt
-
-docker_ss: ss.tpl
-	docker run --rm --volume $(CURDIR):/stock-synthesis --workdir /stock-synthesis johnoel/admb:linux $(OPT_BUILD)$(DEBUG)$(STATIC_BUILD)ss.tpl
-
-docker_ss_opt: ss_opt.tpl
-	docker run --rm --volume $(CURDIR):/stock-synthesis --workdir /stock-synthesis johnoel/admb:linux -f $(DEBUG)$(STATIC_BUILD)ss_opt.tpl
-
-debug:
-	docker run --env ADMB_HOME=/usr/local/admb --entrypoint touch --rm --volume $(CURDIR):/workdir --workdir /workdir johnoel/admb:linux myfile
-	docker run --env ADMB_HOME=/usr/local/admb --entrypoint /usr/local/admb/bin/tpl2rem --rm --volume $(CURDIR):/workdir --workdir /workdir johnoel/admb:linux ss
+docker:
+	   chmod -R 777 $CURDIR
+	   $(MAKE) USE_DOCKER=yes all
 
 ss: ss.tpl
+ifdef USE_DOCKER
+  ifeq ($(OS),Windows_NT)
+		docker run --rm --volume $(CURDIR):C:\\workdir\\ss --workdir C:\\workdir\\ss johnoel/admb:windows ss.tpl
+  else
+	docker run --rm --volume $(CURDIR):/workdir/ss:rw --workdir /workdir/ss johnoel/admb:linux ss.tpl
+  endif
+else
 	$(MY_ADMB_HOME)admb $(DEBUG)$(STATIC_BUILD)ss.tpl
+endif
 
 ss_opt: ss_opt.tpl
+ifdef USE_DOCKER
+  ifeq ($(OS),Windows_NT)
+	docker run --rm --volume $(CURDIR):C:\\workdir\\ss_opt --workdir C:\\workdir\\ss_opt johnoel/admb:windows ss_opt.tpl
+  else
+	docker run --rm --volume $(CURDIR):/workdir/ss_opt:rw --workdir /workdir/ss_opt johnoel/admb:linux ss_opt.tpl
+  endif
+else
 	$(MY_ADMB_HOME)admb -f $(DEBUG)$(STATIC_BUILD)ss_opt.tpl
+endif
 
 ss.tpl: SS_functions.temp
 	cat SS_versioninfo_330safe.tpl SS_readstarter.tpl SS_readdata_330.tpl SS_readcontrol_330.tpl SS_param.tpl SS_prelim.tpl SS_global.tpl SS_proced.tpl SS_functions.temp > ss.tpl

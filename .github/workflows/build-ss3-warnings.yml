@@ -6,10 +6,10 @@ name: build-ss3-warnings
 on:
   workflow_dispatch:
   push:
-    paths:
-      - '**.tpl'
-    branches:
-      - main
+    # paths:
+    #   - '**.tpl'
+    # branches:
+    #   - main
   pull_request:
     types: ['opened', 'edited', 'reopened', 'synchronize', 'ready_for_review']
     paths:
@@ -54,7 +54,9 @@ jobs:
           rm -rf SS330
           rm -rf ss_osx.tar
           mkdir SS330
-          /bin/bash ./Make_SS_330_new.sh -a /usr/local/bin/admb-13.1 -b SS330 -w &> warnings.txt
+          /bin/bash ./Make_SS_330_new.sh -a /usr/local/bin/admb-13.1 -b SS330 -w &> outputs.txt
+          grep "ss.cpp" outputs.txt &> outputs2.txt || touch outputs2.txt
+          grep "warning:" outputs2.txt &> warnings.txt || touch warnings.txt
 
       # Runs a set of commands using the runners shell
       - name: Use R to parse warnings output
