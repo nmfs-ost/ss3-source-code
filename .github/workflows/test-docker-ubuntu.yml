@@ -14,8 +14,4 @@ jobs:
         docker pull johnoel/admb:linux
         make docker
 
-        pwd
-        find .
-        chmod a+rwx /home/runner/work/stock-synthesis/stock-synthesis
-        ./Make_SS_330_new.sh --admb docker --safe
-        ./Make_SS_330_new.sh --admb docker --fast
+        ./Make_SS_330_new.sh --admb docker
