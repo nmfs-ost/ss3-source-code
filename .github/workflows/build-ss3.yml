@@ -65,6 +65,7 @@ jobs:
           rm -rf ss_osx.tar
           mkdir SS330
           mv /home/runner/work/ss3-source-code/ss3-source-code/ss SS330/ss
+          mv /home/runner/work/ss3-source-code/ss3-source-code/ss_opt SS330/ss_opt
          # /bin/bash ./Make_SS_330_new.sh -a docker -b SS330 -p
          # /bin/bash ./Make_SS_330_new.sh -a docker -b SS330 -o -p
 
@@ -78,9 +79,9 @@ jobs:
         if: matrix.config.os == 'ubuntu-latest'
         run: |
           cd SS330
-        # rm *.obj *.htp *.cpp ss_opt.tpl ss.tpl
           mv ss ss_linux
           mv ss_opt ss_opt_linux
+        # rm *.obj *.htp *.cpp ss_opt.tpl ss.tpl
 
       - name: Build stock synthesis for mac
         if: matrix.config.os == 'macos-latest'
