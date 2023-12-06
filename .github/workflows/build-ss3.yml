@@ -64,9 +64,9 @@ jobs:
           rm -rf SS330
           rm -rf ss_osx.tar
           mkdir SS330
-          chmod a+rwx .
-          /bin/bash ./Make_SS_330_new.sh -a docker -b SS330 -p
-          /bin/bash ./Make_SS_330_new.sh -a docker -b SS330 -o -p
+          mv /home/runner/work/ss3-source-code/ss3-source-code/ss 
+          # /bin/bash ./Make_SS_330_new.sh -a docker -b SS330 -p
+          # /bin/bash ./Make_SS_330_new.sh -a docker -b SS330 -o -p
 
       - name: Verify binary on linux
         if: matrix.config.os == 'ubuntu-latest'
@@ -78,7 +78,7 @@ jobs:
         if: matrix.config.os == 'ubuntu-latest'
         run: |
           cd SS330
-          rm *.obj *.htp *.cpp ss_opt.tpl ss.tpl
+          # rm *.obj *.htp *.cpp ss_opt.tpl ss.tpl
           mv ss ss_linux
           mv ss_opt ss_opt_linux
 
@@ -92,7 +92,6 @@ jobs:
           rm -rf SS330
           rm -rf ss_osx.tar
           mkdir SS330
-          chmod a+rwx /home/runner/work/ss3-source-code/ss3-source-code
           /bin/bash ./Make_SS_330_new.sh -a docker -b SS330
           /bin/bash ./Make_SS_330_new.sh -a docker -b SS330 -o
 
@@ -106,7 +105,6 @@ jobs:
         if: matrix.config.os == 'macos-latest'
         run: |
           cd SS330
-          rm *.obj *.htp *.cpp ss_opt.tpl
           mv ss ss_osx
           mv ss_opt ss_opt_osx
       
