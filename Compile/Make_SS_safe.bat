@@ -18,5 +18,5 @@ set CXX=g++
 
 REM admb -f ss
 
-docker run --rm --volume %CD%:\ss3-source-code\Compile --workdir \ss3-source-code\Compile johnoel/admb:linux -f ss.tpl
-REM docker run --rm --volume %CD%:\ss3-source-code\Compile --workdir \ss3-source-code\Compile johnoel/admb:linux -f ss.tpl
+docker run --rm --volume %CD%:\ss3-source-code\Compile --workdir \ss3-source-code\Compile docker -f ss.tpl
+REM docker run --rm --volume %CD%:\ss3-source-code\Compile --workdir \ss3-source-code\Compile docker -f ss.tpl
