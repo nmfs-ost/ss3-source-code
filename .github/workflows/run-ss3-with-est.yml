@@ -56,9 +56,15 @@ jobs:
 
       - name: change permissions on ss exes
         run: chmod a+x test-models-repo/model_runs/ss
+      
+      - name: download R packages for parallel
+        run: Rscript -e 'install.packages(c("parallely", "furrr", "future"))'
 
       - name: run models
         run: |
+          ncores <- parallelly::availableCores(omit = 1)
+          future::plan(future::multisession, workers = ncores)
+
           mod_names <- list.dirs(file.path("test-models-repo", "model_runs"), full.names = FALSE, recursive = FALSE)
           mod_paths <- list.dirs(file.path("test-models-repo", "model_runs"), full.names = TRUE, recursive = FALSE)
           print(mod_names)
@@ -79,9 +85,9 @@ jobs:
             return(model_ran)
           }
 
-          mod_ran <- lapply(mod_paths, function(x) tryCatch(run_ss(x),
-                                                   error = function(e) print(e)
-                                                   ))
+          mod_ran <- furrr::future_map(mod_paths, function(x){tryCatch(run_ss(x),
+          error = function(e) print(e))})
+
           mod_errors <- mod_names[unlist(lapply(mod_ran, function(x) "simpleError" %in% class(x)))]
           success <- TRUE
           if(length(mod_errors) > 0) {

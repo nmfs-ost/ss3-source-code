@@ -73,6 +73,9 @@ jobs:
         run: |
          cd test-models-repo && Rscript run_from_par.R
 
+      - name: download R packages for parallel
+        run: Rscript -e 'install.packages(c("parallely", "furrr", "future"))'
+
       - name: Run comparison
         run: |
           mkdir test-models-repo/run_R
@@ -118,9 +121,12 @@ jobs:
             return(model_ran)
           }
 
-          mod_ran <- lapply(mod_paths, function(x) tryCatch(run_ssnew(x),
+          ncores <- parallelly::availableCores(omit = 1)
+          future::plan(future::multisession, workers = ncores)
+
+          mod_ran <- furrr::future_map(mod_paths, function(x) {tryCatch(run_ssnew(x),
                                                  error = function(e) print(e)
-                                                 )
+                                                 )}
                      )
           mod_errors <- mod_names[unlist(lapply(mod_ran, function(x) "simpleError" %in% class(x)))]
           success <- TRUE
