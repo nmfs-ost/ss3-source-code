@@ -92,7 +92,7 @@ jobs:
           rm -rf SS330
           rm -rf ss_osx.tar
           mkdir SS330
-          chmod a+rwx .
+          chmod a+rwx /home/runner/work/ss3-source-code/ss3-source-code
           /bin/bash ./Make_SS_330_new.sh -a docker -b SS330
           /bin/bash ./Make_SS_330_new.sh -a docker -b SS330 -o
 
