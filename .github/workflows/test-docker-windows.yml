@@ -16,11 +16,11 @@ jobs:
         docker pull johnoel/admb:windows
         make docker
 
-        ./Make_SS_330_new.sh --admb docker --safe
-        ./Make_SS_330_new.sh --admb docker --fast
-        ./Make_SS_330_new.sh --admb docker --safe --warn
-        ./Make_SS_330_new.sh --admb docker --fast --warn
-        ./Make_SS_330_new.sh --admb docker --safe --debug
-        ./Make_SS_330_new.sh --admb docker --fast --debug
-        ./Make_SS_330_new.sh --admb docker --safe --warn --debug
-        ./Make_SS_330_new.sh --admb docker --fast --warn --debug
+        sh Make_SS_330_new.sh --admb docker --safe
+        sh Make_SS_330_new.sh --admb docker --fast
+        sh Make_SS_330_new.sh --admb docker --safe --warn
+        sh Make_SS_330_new.sh --admb docker --fast --warn
+        sh Make_SS_330_new.sh --admb docker --safe --debug
+        sh Make_SS_330_new.sh --admb docker --fast --debug
+        sh Make_SS_330_new.sh --admb docker --safe --warn --debug
+        sh Make_SS_330_new.sh --admb docker --fast --warn --debug
