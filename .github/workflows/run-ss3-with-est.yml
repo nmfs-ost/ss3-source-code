@@ -3,10 +3,10 @@ name: run-ss3-with-est
 on:
   workflow_dispatch:
   push:
-    paths:
-      - '**.tpl'
-    branches:
-      - main
+    # paths:
+    #   - '**.tpl'
+    # branches:
+    #   - main
   pull_request:
     types: ['opened', 'edited', 'reopened', 'synchronize', 'ready_for_review']
     paths:
@@ -36,18 +36,17 @@ jobs:
       - name: setup R
         uses: r-lib/actions/setup-r@v2
 
-      - name: Get admb and put in path, linux
-        run: |
-          wget https://github.com/admb-project/admb/releases/download/admb-13.1/admb-13.1-linux.zip
-          sudo unzip admb-13.1-linux.zip -d /usr/local/bin
-          sudo chmod 755 /usr/local/bin/admb-13.1/bin/admb
-          echo "/usr/local/bin/admb-13.1/bin" >> $GITHUB_PATH
+      # - name: Get admb and put in path, linux
+      #   run: |
+      #     wget https://github.com/admb-project/admb/releases/download/admb-13.1/admb-13.1-linux.zip
+      #     sudo unzip admb-13.1-linux.zip -d /usr/local/bin
+      #     sudo chmod 755 /usr/local/bin/admb-13.1/bin/admb
+      #     echo "/usr/local/bin/admb-13.1/bin" >> $GITHUB_PATH
 
       - name: Build stock synthesis
         run: |
-          rm -rf SS330
-          mkdir SS330
-          /bin/bash ./Make_SS_330_new.sh -b SS330
+          docker pull johnoel/admb:linux
+          make docker
 
       - name: move exes, scripts to needed locations
         run: |
