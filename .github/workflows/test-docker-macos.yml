@@ -18,3 +18,9 @@ jobs:
 
         ./Make_SS_330_new.sh --admb docker --safe
         ./Make_SS_330_new.sh --admb docker --fast
+        ./Make_SS_330_new.sh --admb docker --safe --warn
+        ./Make_SS_330_new.sh --admb docker --fast --warn
+        ./Make_SS_330_new.sh --admb docker --safe --debug
+        ./Make_SS_330_new.sh --admb docker --fast --debug
+        ./Make_SS_330_new.sh --admb docker --safe --warn --debug
+        ./Make_SS_330_new.sh --admb docker --fast --warn --debug
