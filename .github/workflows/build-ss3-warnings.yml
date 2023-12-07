@@ -5,11 +5,11 @@ name: build-ss3-warnings
 # Controls when the action will run.
 on:
   workflow_dispatch:
-  # push:
-    # paths:
-    #   - '**.tpl'
-    # branches:
-    #   - main
+  push:
+    paths:
+      - '**.tpl'
+    branches:
+      - main
   pull_request:
     types: ['opened', 'edited', 'reopened', 'synchronize', 'ready_for_review']
     paths:
@@ -46,7 +46,7 @@ jobs:
         run: |
           docker pull johnoel/admb:linux
           make docker
-          ./Make_SS_330_new.sh --admb docker --warn
+          /bin/bash ./Make_SS_330_new.sh --admb docker --warn
 
       - name: Build stock synthesis with warnings again to save to file
         run: |
