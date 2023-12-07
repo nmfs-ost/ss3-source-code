@@ -150,6 +150,7 @@ if [[ "$ADMB_HOME" == "docker" ]] ; then
       docker run --env CXXFLAGS="-Wall -Wextra -Wno-unused-parameter" --rm --volume $PWD:/workdir/$BUILD_TYPE --workdir /workdir/$BUILD_TYPE johnoel/admb:linux $BUILD_TYPE.tpl
     else
       echo "docker run --rm --volume $PWD:/workdir/$BUILD_TYPE --workdir /workdir/$BUILD_TYPE johnoel/admb:linux $BUILD_TYPE.tpl"
+      docker run --rm --volume $PWD:/workdir/$BUILD_TYPE --workdir /workdir/$BUILD_TYPE johnoel/admb:linux $BUILD_TYPE.tpl
     fi
   fi
 else
