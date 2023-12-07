@@ -5,7 +5,7 @@ name: build-ss3-warnings
 # Controls when the action will run.
 on:
   workflow_dispatch:
-  push:
+  # push:
     # paths:
     #   - '**.tpl'
     # branches:

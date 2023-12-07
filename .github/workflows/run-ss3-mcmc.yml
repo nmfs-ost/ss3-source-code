@@ -3,7 +3,7 @@
 name: run-ss3-mcmc
 on:
   workflow_dispatch:
-  # push:
+  push:
   #   paths:
   #     - '**.tpl'
   #   branches:
