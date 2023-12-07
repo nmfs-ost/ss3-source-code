@@ -51,9 +51,8 @@ jobs:
         run: |
           docker pull johnoel/admb:linux
           make docker
-          mv /home/runner/work/ss3-source-code/ss3-source-code/ss ss
 
-      - name: move exes, scripts to needed locations
+      - name: move scripts to needed locations
         run: |
           mv test-models-repo/models/Simple/starter.ss starter.ss
           mv test-models-repo/models/Simple/forecast.ss forecast.ss
