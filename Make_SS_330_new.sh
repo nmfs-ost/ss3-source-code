@@ -142,7 +142,7 @@ if [[ "$ADMB_HOME" == "docker" ]] ; then
     if [[ "$WARNINGS" == "on" ]] ; then
       docker run --env CXXFLAGS="-Wall -Wextra" --rm --volume $PWD:C:\\workdir\\$BUILD_TYPE --workdir C:\\workdir\\$BUILD_TYPE johnoel/admb:windows $BUILD_TYPE.tpl
     else
-      docker run --rm --volume $PWD:C:\\workdir\\$BUILD_TYPE --workdir C:\\workdir\\$BUILD_TYPE johnoel/admb:windows $BUILD_TYPE.tpl
+      docker run --rm --volume "cygpath -w $PWD":C:\\workdir\\$BUILD_TYPE --workdir C:\\workdir\\$BUILD_TYPE johnoel/admb:windows $BUILD_TYPE.tpl
     fi
   else
     if [[ "$WARNINGS" == "on" ]] ; then
