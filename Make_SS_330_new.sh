@@ -137,7 +137,7 @@ else
 fi
 
 # change to build dir and build 
-cd $BUILD_DIR
+# cd $BUILD_DIR
 if [[ "$ADMB_HOME" == "docker" ]] ; then
   if [[ "$OS" == "Windows_NT" ]] ; then
     if [[ "$WARNINGS" == "on" ]] ; then
