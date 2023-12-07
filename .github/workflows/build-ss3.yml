@@ -5,9 +5,9 @@ name: build-ss3
 
 on:
     push:
-      # paths:
-      # - '**.tpl'
-      # - '**.sh'
+      paths:
+      - '**.tpl'
+      - '**.sh'
       # - '**.yml'
     workflow_dispatch:
 
@@ -148,7 +148,7 @@ jobs:
             gsub('\\.yy', paste0('\\.', fix_ver_num), ver_info[ver_info_start+1])
           writeLines(ver_info, "SS_versioninfo_330opt.tpl")
         shell: Rscript {0}
-        
+
       - name: Build stock synthesis for windows
         if: matrix.config.os == 'windows-latest'
         run: |
