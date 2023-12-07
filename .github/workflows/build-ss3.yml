@@ -43,8 +43,8 @@ jobs:
           docker pull johnoel/admb:windows
           make docker
           mkdir SS330
-          mv /home/runner/work/ss3-source-code/ss3-source-code/ss SS330/ss
-          mv /home/runner/work/ss3-source-code/ss3-source-code/ss_opt SS330/ss_opt
+          mv D:/a/ss3-source-code/ss3-source-code/ss SS330/ss
+          mv D:/a/ss3-source-code/ss3-source-code/ss_opt SS330/ss_opt
 
       - name: Move exes to a new folder on windows
         if: matrix.config.os == 'windows-latest'
@@ -64,8 +64,8 @@ jobs:
           rm -rf SS330
           rm -rf ss_osx.tar
           mkdir SS330
-          mv D:/a/ss3-source-code/ss3-source-code/ss SS330/ss
-          mv D:/a/ss3-source-code/ss3-source-code/ss_opt SS330/ss_opt
+          mv /home/runner/work/ss3-source-code/ss3-source-code/ss SS330/ss
+          mv /home/runner/work/ss3-source-code/ss3-source-code/ss_opt SS330/ss_opt
          # /bin/bash ./Make_SS_330_new.sh -a docker -b SS330 -p
          # /bin/bash ./Make_SS_330_new.sh -a docker -b SS330 -o -p
 
