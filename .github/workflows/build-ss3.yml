@@ -43,8 +43,8 @@ jobs:
           docker pull johnoel/admb:windows
           make docker
           mkdir SS330
-          mv D:/a/ss3-source-code/ss3-source-code/ss SS330/ss
-          mv D:/a/ss3-source-code/ss3-source-code/ss_opt SS330/ss_opt
+          sh Make_SS_330_new.sh --admb docker --safe -b SS330
+
 
       - name: Move exes to a new folder on windows
         if: matrix.config.os == 'windows-latest'
