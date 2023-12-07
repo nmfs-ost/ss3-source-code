@@ -140,9 +140,9 @@ fi
 if [[ "$ADMB_HOME" == "docker" ]] ; then
   if [[ "$OS" == "Windows_NT" ]] ; then
     if [[ "$WARNINGS" == "on" ]] ; then
-      docker run --env CXXFLAGS="-Wall -Wextra" --rm --volume $PWD:/workdir/$BUILD_TYPE --workdir /workdir/$BUILD_TYPE johnoel/admb:windows $BUILD_TYPE.tpl
+      docker run --env CXXFLAGS="-Wall -Wextra" --rm --volume $PWD:C:\\workdir\\$BUILD_TYPE --workdir C:\\workdir\\$BUILD_TYPE johnoel/admb:windows $BUILD_TYPE.tpl
     else
-      docker run --rm --volume $PWD:/workdir/$BUILD_TYPE:rw --workdir /workdir/$BUILD_TYPE johnoel/admb:windows $BUILD_TYPE.tpl
+      docker run --rm --volume $PWD:C:\\workdir\\$BUILD_TYPE --workdir C:\\workdir\\$BUILD_TYPE johnoel/admb:windows $BUILD_TYPE.tpl
     fi
   else
     if [[ "$WARNINGS" == "on" ]] ; then
