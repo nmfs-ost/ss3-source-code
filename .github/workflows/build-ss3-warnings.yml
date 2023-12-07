@@ -46,13 +46,13 @@ jobs:
         run: |
           docker pull johnoel/admb:linux
           make docker
-          /bin/bash ./Make_SS_330_new.sh --admb docker --warn
+          sudo ./Make_SS_330_new.sh --admb docker --warn
 
       - name: Build stock synthesis with warnings again to save to file
         run: |
           docker pull johnoel/admb:linux
           make docker
-          ./Make_SS_330_new.sh --admb docker --warn &> outputs.txt
+          sudo ./Make_SS_330_new.sh --admb docker --warn &> outputs.txt
           grep "ss.cpp" outputs.txt &> outputs2.txt || touch outputs2.txt
           grep "warning:" outputs2.txt &> warnings.txt || touch warnings.txt
 
