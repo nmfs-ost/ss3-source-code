@@ -42,20 +42,20 @@ jobs:
           docker inspect johnoel/admb:windows
           docker pull johnoel/admb:windows
           make docker
-          cd Compile
-          ./Make_SS_fast.bat
-          ./Make_SS_safe.bat
-          ls Compile
+          mkdir SS330
+          mv /home/runner/work/ss3-source-code/ss3-source-code/ss SS330/ss
+          mv /home/runner/work/ss3-source-code/ss3-source-code/ss_opt SS330/ss_opt
 
-      # - name: Move exes to a new folder on windows
-      #   if: matrix.config.os == 'windows-latest'
-      #   run: |
-      #     mkdir SS330
-      #     mv Compile/ss.exe SS330/
-      #     mv Compile/ss_opt.exe SS330/
-      #     mv SS330/ss.exe SS330/ss_win.exe
-      #     mv SS330/ss_opt.exe SS330/ss_opt_win.exe
+      - name: Move exes to a new folder on windows
+        if: matrix.config.os == 'windows-latest'
+        run: |
+          mv SS330/ss.exe SS330/ss_win.exe
+          mv SS330/ss_opt.exe SS330/ss_opt_win.exe
 
+        # mkdir SS330
+        # mv Compile/ss.exe SS330/
+        # mv Compile/ss_opt.exe SS330/
+        
       - name: Use admb docker image for linux to compile ss3
         if: matrix.config.os == 'ubuntu-latest'
         run: |
@@ -93,8 +93,8 @@ jobs:
           rm -rf SS330
           rm -rf ss_osx.tar
           mkdir SS330
-          /bin/bash ./Make_SS_330_new.sh -a docker -b SS330
-          /bin/bash ./Make_SS_330_new.sh -a docker -b SS330 -o
+          mv /home/runner/work/ss3-source-code/ss3-source-code/ss SS330/ss
+          mv /home/runner/work/ss3-source-code/ss3-source-code/ss_opt SS330/ss_opt
 
       - name: Verify binary on mac
         if: matrix.config.os == 'macos-latest'
