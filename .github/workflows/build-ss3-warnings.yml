@@ -61,7 +61,7 @@ jobs:
 
       # sudo ./Make_SS_330_new.sh --admb docker --warn &> outputs.txt
 
-      Runs a set of commands using the runners shell
+      # Runs a set of commands using the runners shell
       - name: Use R to parse warnings output
         run: |
           txt <- readLines("warnings.txt", encoding = "UTF-8" )
