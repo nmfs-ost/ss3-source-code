@@ -153,12 +153,11 @@ jobs:
         if: matrix.config.os == 'windows-latest'
         run: |
           kubectl get nodes -o wide
-          docker inspect johnoel/admb:windows
           docker pull johnoel/admb:windows
           make docker
           mkdir SS330
-          mv d/a/ss3-source-code/ss3-source-code/ss.exe SS330/ss.exe
-          mv d/a/ss3-source-code/ss3-source-code/ss_opt.exe SS330/ss_opt.exe
+          mv ss.exe SS330/ss.exe
+          mv ss_opt.exe SS330/ss_opt.exe
 
       - name: Move exes to a new folder on windows
         if: matrix.config.os == 'windows-latest'
