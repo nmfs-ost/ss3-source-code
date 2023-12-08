@@ -51,8 +51,9 @@ jobs:
 
       - name: Build stock synthesis with warnings again to save to file
         run: |
-          docker pull johnoel/admb:linux
           make docker --warn &>outputs.txt
+          
+      # docker pull johnoel/admb:linux
       # grep "ss.cpp" outputs.txt &> outputs2.txt || touch outputs2.txt
       # grep "warning:" outputs2.txt &> warnings.txt || touch warnings.txt
 
