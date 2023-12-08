@@ -45,17 +45,17 @@ jobs:
       - name: Build stock synthesis with warnings displayed in console
         run: |
           docker pull johnoel/admb:linux
-          make docker
-          sudo ./Make_SS_330_new.sh --admb docker --warn
+          make docker --warn
+      # ./Make_SS_330_new.sh --admb docker --warn
 
       - name: Build stock synthesis with warnings again to save to file
         run: |
           docker pull johnoel/admb:linux
-          make docker
-          sudo ./Make_SS_330_new.sh --admb docker --warn &> outputs.txt
+          make docker --warn &>outputs.txt
           grep "ss.cpp" outputs.txt &> outputs2.txt || touch outputs2.txt
           grep "warning:" outputs2.txt &> warnings.txt || touch warnings.txt
-
+      # sudo ./Make_SS_330_new.sh --admb docker --warn &> outputs.txt
+      
       # Runs a set of commands using the runners shell
       - name: Use R to parse warnings output
         run: |
