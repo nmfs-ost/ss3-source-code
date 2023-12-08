@@ -45,14 +45,14 @@ jobs:
       - name: Build stock synthesis with warnings displayed in console
         run: |
           docker pull johnoel/admb:linux
-          make docker --warn
+          make docker --warn 2>&1 | tee outputs.txt
 
       # ./Make_SS_330_new.sh --admb docker --warn
 
-      - name: Build stock synthesis with warnings again to save to file
-        run: |
-          make docker --warn &>outputs.txt
-          
+      # - name: Build stock synthesis with warnings again to save to file
+      #   run: |
+      #     make docker --warn &>outputs.txt
+
       # docker pull johnoel/admb:linux
       # grep "ss.cpp" outputs.txt &> outputs2.txt || touch outputs2.txt
       # grep "warning:" outputs2.txt &> warnings.txt || touch warnings.txt
