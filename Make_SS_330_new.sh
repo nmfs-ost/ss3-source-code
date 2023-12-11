@@ -145,7 +145,7 @@ if [[ "$ADMB_HOME" == "docker" ]] ; then
       docker run --rm --volume `cygpath -w $PWD`:C:\\workdir\\$BUILD_TYPE --workdir C:\\workdir\\$BUILD_TYPE johnoel/admb:windows $BUILD_TYPE.tpl
     fi
   else
-        if [[ "$WARNINGS" == "on" ]] ; then
+    if [[ "$WARNINGS" == "on" ]] ; then
       docker run --env CXXFLAGS="-Wall -Wextra" --rm --volume $PWD:/workdir/$BUILD_TYPE --workdir /workdir/$BUILD_TYPE johnoel/admb:linux $BUILD_TYPE.tpl
     else
       docker run --rm --volume $PWD:/workdir/$BUILD_TYPE --workdir /workdir/$BUILD_TYPE johnoel/admb:linux $BUILD_TYPE.tpl
@@ -157,6 +157,5 @@ else
   fi
   admb $OPTFLAG $STATICFLAG $BUILD_TYPE
 fi
-chmod a+x $BUILD_TYPE
 
 exit
