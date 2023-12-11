@@ -10,7 +10,6 @@
 # MY_ADMB_HOME=~/admb-main/
 
 # Uncomment the variables below for static and/or debugging builds.
-# OPT_BUILD=-f 
 # STATIC_BUILD=-p 
 # DEBUG=-g 
 
