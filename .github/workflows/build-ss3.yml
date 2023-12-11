@@ -154,9 +154,8 @@ jobs:
         run: |
           docker pull johnoel/admb:windows
           make docker
-          mkdir SS330
-          sh Make_SS_330_new.sh --admb docker --safe
-          ls SS330
+          
+        # mkdir SS330
 
         # mv ss.exe SS330/ss.exe
         # mv ss_opt SS330/ss_opt.exe
