@@ -152,11 +152,11 @@ jobs:
       - name: Build stock synthesis for windows
         if: matrix.config.os == 'windows-latest'
         run: |
-          kubectl get nodes -o wide
           docker pull johnoel/admb:windows
           make docker
           mkdir SS330
-          mv ss SS330/ss.exe
+          sh Make_SS_330_new.sh --admb docker --safe
+          mv ss.exe SS330/ss.exe
           mv ss_opt SS330/ss_opt.exe
 
       - name: Move exes to a new folder on windows
