@@ -31,7 +31,7 @@ ifdef USE_DOCKER
 	docker run --rm --volume $(CURDIR):/workdir/ss:rw --workdir /workdir/ss johnoel/admb:linux ss.tpl
   endif
 else
-	$(MY_ADMB_HOME)admb $(DEBUG)$(STATIC_BUILD)ss.tpl
+	$(MY_ADMB_HOME)admb $(DEBUG)$(STATIC_BUILD) ss.tpl
 endif
 
 ss_opt: ss_opt.tpl
@@ -42,7 +42,7 @@ ifdef USE_DOCKER
 	docker run --rm --volume $(CURDIR):/workdir/ss_opt:rw --workdir /workdir/ss_opt johnoel/admb:linux ss_opt.tpl
   endif
 else
-	$(MY_ADMB_HOME)admb -f $(DEBUG)$(STATIC_BUILD)ss_opt.tpl
+	$(MY_ADMB_HOME)admb -f $(DEBUG)$(STATIC_BUILD) ss_opt.tpl
 endif
 
 ss.tpl: SS_functions.temp
