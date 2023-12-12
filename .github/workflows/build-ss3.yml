@@ -204,16 +204,15 @@ jobs:
       - name: Build stock synthesis for windows
         if: matrix.config.os == 'windows-latest'
         run: |
-          cd Compile
-          ./Make_SS_safe.bat
-          ./Make_SS_fast.bat
+          /bin/bash ./Make_SS_330_new.sh --admb docker --opt
+          /bin/bash ./Make_SS_330_new.sh --admb docker --safe
 
       - name: Move exes to a new folder on windows
         if: matrix.config.os == 'windows-latest'
         run: |
           mkdir SS330
-          mv Compile/ss.exe SS330/
-          mv Compile/ss_opt.exe SS330/
+          mv ss.exe SS330/
+          mv ss_opt.exe SS330/
           mv SS330/ss.exe SS330/ss_win.exe
           mv SS330/ss_opt.exe SS330/ss_opt_win.exe
 
