@@ -153,15 +153,11 @@ jobs:
         if: matrix.config.os == 'windows-latest'
         run: |
           docker pull johnoel/admb:windows
-
+          make docker
           ./Make_SS_330_new.sh --admb docker --safe
           ./Make_SS_330_new.sh --admb docker --fast
-          
-          mkdir SS330
 
           ls 
-          dir /b/s ss.exe
-          dir /a:h-d /b/s
 
          # mv ss.exe SS330/ss.exe
          # mv ss_opt SS330/ss_opt.exe
