@@ -156,16 +156,19 @@ jobs:
           docker inspect johnoel/admb:windows
           docker pull johnoel/admb:windows
           make docker
-          sh Make_SS_330_new.sh --admb docker --safe
-          mkdir SS330
-          mv ss.exe SS330/ss.exe
-          mv ss_opt SS330/ss_opt.exe
 
-      - name: Move exes to a new folder on windows
-        if: matrix.config.os == 'windows-latest'
-        run: |
-          mv SS330/ss.exe SS330/ss_win.exe
-          mv SS330/ss_opt.exe SS330/ss_opt_win.exe
+          sh Make_SS_330_new.sh --admb docker --safe
+          ls
+          ls SS330
+
+        # mv ss.exe SS330/ss.exe
+        # mv ss_opt SS330/ss_opt.exe
+
+      # - name: Move exes to a new folder on windows
+      #   if: matrix.config.os == 'windows-latest'
+      #   run: |
+      #     mv SS330/ss.exe SS330/ss_win.exe
+      #     mv SS330/ss_opt.exe SS330/ss_opt_win.exe
 
       - name: Use admb docker image for linux to compile ss3
         if: matrix.config.os == 'ubuntu-latest'
