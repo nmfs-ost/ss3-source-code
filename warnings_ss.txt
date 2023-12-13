@@ -1,0 +1,9 @@
+In file included from ss.cpp:7:
+In file included from ss.cpp:7:
+ss.cpp: In member function ‘void model_parameters::write_bigoutput()’:
+ss.cpp:34714:5: warning: this ‘for’ clause does not guard... [-Wmisleading-indentation]
+34714 |     for (gg = 1; gg <= gender; gg++)
+      |     ^~~
+ss.cpp:34719:7: note: ...this statement, but the latter is misleadingly indented as if it were guarded by the ‘for’
+34719 |       SS2out << " mature_bio mature_num ";
+      |       ^~~~~~
