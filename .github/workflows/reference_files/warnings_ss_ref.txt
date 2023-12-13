@@ -1,2 +1,0 @@
-In file included from ss.cpp:7:
-In file included from ss.cpp:7:
