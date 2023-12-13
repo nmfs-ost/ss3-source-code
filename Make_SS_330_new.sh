@@ -150,7 +150,7 @@ if [[ "$ADMB_HOME" == "docker" ]] ; then
       docker run --env CXXFLAGS="-Wall -Wextra" --rm --volume $PWD:/workdir/$BUILD_TYPE --workdir /workdir/$BUILD_TYPE johnoel/admb:linux $BUILD_TYPE.tpl
     else
       make clean
-      make USE_DOCKER=yes ss
+      make USE_DOCKER=yes all
     fi
   fi
 else
