@@ -136,6 +136,8 @@ else
 fi
 
 # change to build dir and build 
+ls ss.tpl
+pwd
 if [[ "$ADMB_HOME" == "docker" ]] ; then
   if [[ "$OS" == "Windows_NT" ]] ; then
     if [[ "$WARNINGS" == "on" ]] ; then
