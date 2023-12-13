@@ -34,13 +34,13 @@ FUNCTION void write_nudata()
     {
       echoinput << "Begin writing data_echo.ss_new file" << endl;
       newdatfilename = "data_echo.ss_new";
-	  datinfostring = "echo_input_data";
+	    datinfostring = "echo_input_data";
     }
     else if (Nudat == 2)
     {
       echoinput << "Begin writing data_expval.ss file" << endl;
       newdatfilename = "data_expval.ss";
-	  datinfostring = "expected_values";
+	    datinfostring = "expected_values";
     }
     else // data_boot files
     {
@@ -60,8 +60,8 @@ FUNCTION void write_nudata()
       {
         newdatfilename = "data_boot_" + anystring2 + ".ss";
       }
-	  datinfostring = "  ";
-	  sprintf(datinfostring, "bootdata:_%d", Nudat);
+	    datinfostring = "bootstrap";
+//	    sprintf(datinfostring, "bootdata:_%d", Nudat);
     }
     anystring = ssnew_pathname + newdatfilename;
     report1.open(anystring);
