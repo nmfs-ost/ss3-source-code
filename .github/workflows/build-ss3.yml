@@ -226,6 +226,7 @@ jobs:
       - name: Build stock synthesis for linux with p flag
         if:  matrix.config.os == 'ubuntu-latest'
         run: |
+          make docker
           ./Make_SS_330_new.sh --admb docker --safe
 
       - name: Verify binary on mac
