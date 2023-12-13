@@ -120,7 +120,10 @@ if [ -f SS_functions.temp ]; then
 fi
 
 # create source files in build dir
-mkdir -p $BUILD_DIR
+if [ ! -d "$BUILD_DIR" ]; then
+  mkdir -p $BUILD_DIR
+  chmod -R 777 $BUILD_DIR
+fi
 case $BUILD_TYPE in
     ss_opt )   grep "opt" SS_versioninfo_330opt.tpl
                cat_opt_files
@@ -137,6 +140,7 @@ else
 fi
 
 # change to build dir and build 
+pushd $BUILD_DIR
 if [[ "$ADMB_HOME" == "docker" ]] ; then
   if [[ "$OS" == "Windows_NT" ]] ; then
     if [[ "$WARNINGS" == "on" ]] ; then
@@ -157,5 +161,6 @@ else
   fi
   admb $OPTFLAG $STATICFLAG $BUILD_TYPE
 fi
+SS_popdyn
 
 exit
