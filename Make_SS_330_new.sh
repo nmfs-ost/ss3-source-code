@@ -151,7 +151,7 @@ if [[ "$ADMB_HOME" == "docker" ]] ; then
     else
       echo "docker run --rm --volume /home/runner/work/stock-synthesis/stock-synthesis:/workdir/ss_opt:rw --workdir /workdir/ss_opt johnoel/admb:linux ss_opt.tpl"
       echo "docker run --rm --volume $PWD:/workdir/$BUILD_TYPE --workdir /workdir/$BUILD_TYPE johnoel/admb:linux $BUILD_TYPE.tpl"
-      docker run --rm --volume $PWD:/workdir/$BUILD_TYPE --workdir /workdir/$BUILD_TYPE johnoel/admb:linux $BUILD_TYPE.tpl
+      docker run --rm --volume $PWD:/workdir/$BUILD_TYPE:rw --workdir /workdir/$BUILD_TYPE johnoel/admb:linux $BUILD_TYPE.tpl
     fi
   fi
 else
