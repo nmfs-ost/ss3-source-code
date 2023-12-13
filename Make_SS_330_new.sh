@@ -138,6 +138,7 @@ fi
 # change to build dir and build 
 ls ss.tpl
 pwd
+chmod -R 777 $PWD
 if [[ "$ADMB_HOME" == "docker" ]] ; then
   if [[ "$OS" == "Windows_NT" ]] ; then
     if [[ "$WARNINGS" == "on" ]] ; then
