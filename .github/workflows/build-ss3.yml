@@ -153,7 +153,8 @@ jobs:
         if: matrix.config.os == 'windows-latest'
         run: |
           docker pull johnoel/admb:windows
-          /bin/bash ./Make_SS_330_new.sh --admb docker
+          make docker
+          ./Make_SS_330_new.sh --admb docker
 
       - name: Move exes to a new folder on windows
         if: matrix.config.os == 'windows-latest'
