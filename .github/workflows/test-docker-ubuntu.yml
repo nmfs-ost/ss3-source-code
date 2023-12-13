@@ -12,7 +12,6 @@ jobs:
     - name: run
       run: |
         docker pull johnoel/admb:linux
-        make docker
 
         ./Make_SS_330_new.sh --admb docker --safe
         ./Make_SS_330_new.sh --admb docker --fast
@@ -22,3 +21,5 @@ jobs:
         ./Make_SS_330_new.sh --admb docker --fast --debug
         ./Make_SS_330_new.sh --admb docker --safe --warn --debug
         ./Make_SS_330_new.sh --admb docker --fast --warn --debug
+
+        make docker
