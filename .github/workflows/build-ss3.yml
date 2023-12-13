@@ -152,6 +152,7 @@ jobs:
       - name: Build stock synthesis for windows
         if: matrix.config.os == 'windows-latest'
         run: |
+          docker pull johnoel/admb:windows
           /bin/bash ./Make_SS_330_new.sh --admb docker
 
       - name: Move exes to a new folder on windows
@@ -159,25 +160,20 @@ jobs:
         run: |
           mkdir SS330
           mv ss.exe SS330/ss.exe
+          mv ss_opt.exe SS330/ss_opt.exe
           mv SS330/ss.exe SS330/ss_win.exe
           mv SS330/ss_opt.exe SS330/ss_opt_win.exe
 
-      - name: Build stock synthesis for linux with p flag
-        if:  matrix.config.os == 'ubuntu-latest'
+      - name: Use admb docker image for linux to compile ss3
+        if: matrix.config.os == 'ubuntu-latest'
         run: |
+          docker pull johnoel/admb:linux
           make docker
-          ./Make_SS_330_new.sh --admb docker --safe
-
-      # - name: Use admb docker image for linux to compile ss3
-      #   if: matrix.config.os == 'ubuntu-latest'
-      #   run: |
-      #     docker pull johnoel/admb:linux
-      #     make docker
-      #     rm -rf SS330
-      #     rm -rf ss_osx.tar
-      #     mkdir SS330
-      #     mv /home/runner/work/ss3-source-code/ss3-source-code/ss SS330/ss
-      #     mv /home/runner/work/ss3-source-code/ss3-source-code/ss_opt SS330/ss_opt
+          rm -rf SS330
+          rm -rf ss_osx.tar
+          mkdir SS330
+          mv /home/runner/work/ss3-source-code/ss3-source-code/ss SS330/ss
+          mv /home/runner/work/ss3-source-code/ss3-source-code/ss_opt SS330/ss_opt
 
       - name: Verify binary on linux
         if: matrix.config.os == 'ubuntu-latest'
@@ -195,23 +191,15 @@ jobs:
       - name: Build stock synthesis for mac
         if: matrix.config.os == 'macos-latest'
         run: |
+          brew install docker
+          colima start
+          docker pull johnoel/admb:linux
+          make docker
           rm -rf SS330
           rm -rf ss_osx.tar
           mkdir SS330
-          /bin/bash ./Make_SS_330_new.sh --admb docker
-          
-      # - name: Build stock synthesis for mac
-      #   if: matrix.config.os == 'macos-latest'
-      #   run: |
-      #     brew install docker
-      #     colima start
-      #     docker pull johnoel/admb:linux
-      #     make docker
-      #     rm -rf SS330
-      #     rm -rf ss_osx.tar
-      #     mkdir SS330
-      #     mv /Users/runner/work/ss3-source-code/ss3-source-code/ss SS330/ss
-      #     mv /Users/runner/work/ss3-source-code/ss3-source-code/ss_opt SS330/ss_opt
+          mv /Users/runner/work/ss3-source-code/ss3-source-code/ss SS330/ss
+          mv /Users/runner/work/ss3-source-code/ss3-source-code/ss_opt SS330/ss_opt
 
       - name: Verify binary on mac
         if: matrix.config.os == 'macos-latest'
