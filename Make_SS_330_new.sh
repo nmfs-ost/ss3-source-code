@@ -123,6 +123,8 @@ fi
 if [ ! -d "$BUILD_DIR" ]; then
   mkdir -p $BUILD_DIR
   chmod -R 777 $BUILD_DIR
+else
+  rm -vf $BUILD_DIR/*
 fi
 case $BUILD_TYPE in
     ss_opt )   grep "opt" SS_versioninfo_330opt.tpl
