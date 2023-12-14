@@ -92,7 +92,6 @@ jobs:
               } else {
                   message("Acceptable number of warnings"
               }
-          }
         shell: Rscript {0}
 
       - name: Archive warnings text file
