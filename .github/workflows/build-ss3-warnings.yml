@@ -90,7 +90,7 @@ jobs:
               if (n_warn < length(ref)){
                 stop("Number of warnings of decreased compared to reference warning file")
               } else {
-                  message("Acceptable number of warnings"
+                  message("Acceptable number of warnings")
               }
         shell: Rscript {0}
 
