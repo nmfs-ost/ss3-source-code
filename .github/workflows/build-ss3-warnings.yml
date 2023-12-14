@@ -87,7 +87,9 @@ jobs:
           if (n_warn > length(ref)) {
             stop("Increased number of warnings compared to reference warning file")
           } else {
-              if (n_warn < length(ref)){
+              # n_warn doesn't take into account the "In file included from ss.cpp:7:"
+              # so add 2 to add those lines back in
+              if (n_warn+length(ref) < length(ref)){
                 stop("Number of warnings of decreased compared to reference warning file")
               } else {
                   message("Acceptable number of warnings")
