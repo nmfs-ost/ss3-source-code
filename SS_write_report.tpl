@@ -1355,6 +1355,8 @@ FUNCTION void write_bigoutput()
     }
   }
   int bio_t;
+  dvector Bio_Comp(1, N_GP * gender);
+  dvector Num_Comp(1, N_GP * gender);
   // REPORT_KEYWORD 16 TIME_SERIES
   //  Fleet Fleet_Name Area Yr Era Seas Subseas Month Time
   if (pick_report_use(16) == "Y")
@@ -1391,8 +1393,7 @@ FUNCTION void write_bigoutput()
       }
     }
     SS2out << " mature_bio mature_num ";
-    dvector Bio_Comp(1, N_GP * gender);
-    dvector Num_Comp(1, N_GP * gender);
+
     for (f = 1; f <= Nfleet; f++)
       if (fleet_type(f) <= 2)
       {
@@ -1908,7 +1909,6 @@ FUNCTION void write_bigoutput()
           }
           else // normal
           {
-            //            temp = Svy_est(f,i)*Svy_q(f,i);
             SS2out << Svy_est(f, i) << " " << Svy_q(f, i) << " " << Svy_est(f, i) / Svy_selec_abund(f, i) << " " << Svy_se_use(f, i) << " " << Svy_se(f, i);
             if (Svy_use(f, i) > 0)
             {
