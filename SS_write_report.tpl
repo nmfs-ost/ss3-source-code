@@ -4270,7 +4270,7 @@ FUNCTION void write_bigoutput()
             else
             {s_off = 1;}
             // Yr Month Seas Subseas Time Fleet Area Repl. Sexes Kind Part Ageerr Sex Lbin_lo Lbin_hi Bin Obs Exp
-            SS_compout << SzFreq_obs_hdr(iobs, 1) << " " << real_month << " " << Show_Time2(ALK_time)(2, 3) << " " << data_time(ALK_time, f, 3) << " " << f << " " << fleet_area(f) << " " << repli << " " << gg << " SIZE " << p << " " << k;
+            SS_compout << SzFreq_obs_hdr(iobs, 1) << " " << real_month << " " << Show_Time2(ALK_time)(2, 3) << " " << data_time(ALK_time, f, 3) << " " << f << " " << fleet_area(f) << " " << repli << " " << gg << " SIZE " << p << " " << Sz_method;
             SS_compout << " " << s_off << " " << SzFreq_units(Sz_method) << " " << SzFreq_scale(Sz_method) << " ";
             if (s_off == 1)
             {
