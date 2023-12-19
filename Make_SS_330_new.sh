@@ -122,7 +122,7 @@ fi
 # create source files in build dir
 if [ ! -d "$BUILD_DIR" ]; then
   mkdir -p $BUILD_DIR
-  chmod -R 777 $BUILD_DIR
+  chmod -R 777 $BUILD_DIR/$BUILD_TYPE
 else
   rm -vf $BUILD_DIR/*
 fi
