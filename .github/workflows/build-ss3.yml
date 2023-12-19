@@ -238,9 +238,8 @@ jobs:
       - name: Verify binary on mac
         if: matrix.config.os == 'macos-latest'
         run: |
-          find .
-          shasum -a 256 SS330/ss
-          shasum -a 256 SS330/ss_opt
+          [ -f SS330/ss ] && shasum -a 256 SS330/ss
+          [ -f SS330/ss_opt ] && shasum -a 256 SS330/ss_opt
           
       - name: Delete unneeded files and change exe names on mac
         if: matrix.config.os == 'macos-latest'
