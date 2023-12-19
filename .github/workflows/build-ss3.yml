@@ -37,9 +37,9 @@ jobs:
       - name: Get admb and put in path, windows
         if: matrix.config.os == 'windows-latest'
         run: |
-          Invoke-WebRequest -Uri https://github.com/admb-project/admb/releases/download/admb-13.1/admb-13.1-windows.zip -OutFile "D:\a\stock-synthesis\stock-synthesis\admb-13.1.zip"
-          Expand-Archive -LiteralPath "D:\a\stock-synthesis\stock-synthesis\admb-13.1.zip" -DestinationPath "D:\a\stock-synthesis\stock-synthesis\"
-          echo "D:\a\stock-synthesis\stock-synthesis\admb-13.1\bin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+          Invoke-WebRequest -Uri https://github.com/admb-project/admb/releases/download/admb-13.1/admb-13.1-windows.zip -OutFile "D:\a\ss3-source-code\ss3-source-code\admb-13.1.zip"
+          Expand-Archive -LiteralPath "D:\a\ss3-source-code\ss3-source-code\admb-13.1.zip" -DestinationPath "D:\a\ss3-source-code\ss3-source-code\"
+          echo "D:\a\ss3-source-code\ss3-source-code\admb-13.1\bin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
 
       - name: checkout admb, mac
         if: matrix.config.os == 'macos-latest'
@@ -204,14 +204,16 @@ jobs:
       - name: Build stock synthesis for windows
         if: matrix.config.os == 'windows-latest'
         run: |
-          /bin/bash ./Make_SS_330_new.sh --admb docker
+          cd Compile
+          ./Make_SS_safe.bat
+          ./Make_SS_fast.bat
 
       - name: Move exes to a new folder on windows
         if: matrix.config.os == 'windows-latest'
         run: |
           mkdir SS330
-          mv ss.exe SS330/
-          mv ss_opt.exe SS330/
+          mv Compile/ss.exe SS330/
+          mv Compile/ss_opt.exe SS330/
           mv SS330/ss.exe SS330/ss_win.exe
           mv SS330/ss_opt.exe SS330/ss_opt_win.exe
 
@@ -221,13 +223,17 @@ jobs:
           rm -rf SS330
           rm -rf ss_osx.tar
           mkdir SS330
-          /bin/bash ./Make_SS_330_new.sh --admb docker
+          /bin/bash ./Make_SS_330_new.sh -b SS330
+          /bin/bash ./Make_SS_330_new.sh -b SS330 -o
           
       - name: Build stock synthesis for linux with p flag
         if:  matrix.config.os == 'ubuntu-latest'
         run: |
-          make docker
-          ./Make_SS_330_new.sh --admb docker --safe
+          rm -rf SS330
+          rm -rf ss_osx.tar
+          mkdir SS330
+          /bin/bash ./Make_SS_330_new.sh -b SS330 -p
+          /bin/bash ./Make_SS_330_new.sh -b SS330 -o -p
 
       - name: Verify binary on mac
         if: matrix.config.os == 'macos-latest'
@@ -261,5 +267,5 @@ jobs:
         if: success()
         uses: actions/upload-artifact@main
         with:
-          name: 'ss3'
+          name: ss3-${{ matrix.config.os }}
           path: SS330/
