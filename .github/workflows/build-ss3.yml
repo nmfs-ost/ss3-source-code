@@ -252,8 +252,8 @@ jobs:
       - name: Verify binary on linux
         if: matrix.config.os == 'ubuntu-latest'
         run: |
-          sha256sum SS330/ss
-          sha256sum SS330/ss_opt
+          [ -f SS330/ss ] && sha256sum SS330/ss
+          [ -f SS330/ss_opt ] && sha256sum SS330/ss_opt
     
       - name: Delete unneeded files and change exe names on linux
         if: matrix.config.os == 'ubuntu-latest'
