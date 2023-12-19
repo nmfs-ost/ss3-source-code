@@ -267,5 +267,5 @@ jobs:
         if: success()
         uses: actions/upload-artifact@main
         with:
-          name: 'ss3'
+          name: ss3-${{ matrix.config.os }}
           path: SS330/
