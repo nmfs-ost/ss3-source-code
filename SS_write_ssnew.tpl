@@ -390,7 +390,7 @@ FUNCTION void write_nudata()
           { report1 << j << " ";}
         report1 << " # Method" << endl;
         report1 << SzFreq_Nbins << " #_Sizefreq N bins" << endl;
-        report1 << SzFreq_units << " #_Sizetfreq units(1=bio/2=num)" << endl;
+        report1 << SzFreq_units << " #_Sizefreq units(1=bio/2=num)" << endl;
         report1 << SzFreq_scale << " #_Sizefreq scale(1=kg/2=lbs/3=cm/4=inches)" << endl;
         report1 << SzFreq_mincomp << " #_Sizefreq:  small constant to add to comps" << endl;
         report1 << SzFreq_nobs << " #_Sizefreq number of obs per method" << endl;
@@ -792,7 +792,7 @@ FUNCTION void write_nudata()
           { report1 << j << " ";}
         report1 << " # Method" << endl;
         report1 << SzFreq_Nbins << " #_Sizefreq N bins" << endl;
-        report1 << SzFreq_units << " #_Sizetfreq units(1=bio/2=num)" << endl;
+        report1 << SzFreq_units << " #_Sizefreq units(1=bio/2=num)" << endl;
         report1 << SzFreq_scale << " #_Sizefreq scale(1=kg/2=lbs/3=cm/4=inches)" << endl;
         report1 << SzFreq_mincomp << " #_Sizefreq:  small constant to add to comps" << endl;
         report1 << SzFreq_nobs << " #_Sizefreq number of obs per method" << endl;
@@ -1308,7 +1308,7 @@ FUNCTION void write_nudata()
           { report1 << j << " ";}
         report1 << " # Method" << endl;
         report1 << SzFreq_Nbins << " #_Sizefreq N bins" << endl;
-        report1 << SzFreq_units << " #_Sizetfreq units(1=bio/2=num)" << endl;
+        report1 << SzFreq_units << " #_Sizefreq units(1=bio/2=num)" << endl;
         report1 << SzFreq_scale << " #_Sizefreq scale(1=kg/2=lbs/3=cm/4=inches)" << endl;
         report1 << SzFreq_mincomp << " #_Sizefreq:  small constant to add to comps" << endl;
         report1 << SzFreq_nobs << " #_Sizefreq number of obs per method" << endl;
