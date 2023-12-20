@@ -260,9 +260,11 @@ jobs:
         run: |
           cd SS330
           ls *
-          rm *.obj *.htp *.cpp ss_opt.tpl ss.tpl
-          mv ss ss_linux
-          mv ss_opt ss_opt_linux
+          rm *.obj *.htp *.cpp
+          [ -f ss.tpl ] && ss.tpl
+          [ -f ss_opt.tpl ] && ss_opt.tpl
+          [ -f ss ] && mv ss ss_linux
+          [ -f ss ] && mv ss_opt ss_opt_linux
 
       - name: Archive binaries
         if: success()
