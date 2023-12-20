@@ -246,8 +246,8 @@ jobs:
         run: |
           cd SS330
           rm *.obj *.htp *.cpp ss_opt.tpl
-          mv ss ss_osx
-          mv ss_opt ss_opt_osx
+          [ -f ss ] && mv ss ss_osx
+          [ -f ss_opt ] && mv ss_opt ss_opt_osx
           
       - name: Verify binary on linux
         if: matrix.config.os == 'ubuntu-latest'
