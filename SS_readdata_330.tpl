@@ -669,7 +669,7 @@
   int Svy_N;
   init_imatrix Svy_units_rd(1,Nfleet,1,4);
   ivector Svy_units(1,Nfleet);   // 0=num; 1=bio; 2=F; >=30 for special patterns
-  ivector Svy_errtype(1,Nfleet);  // -1=normal / 0=lognormal / >0=T
+  ivector Svy_errtype(1,Nfleet);  // -2=gamma(Cole); -1=normal; 0=lognormal ; 1=lognormal w/ biascorr; >1000=T-dist
   ivector Svy_sdreport(1,Nfleet);  // 0=no sdreport; 1=enable sdreport
   int Svy_N_sdreport;
 
@@ -678,7 +678,7 @@
 
   data_type = 1; //  for surveys
   echoinput << "Units:  0=numbers; 1=biomass; 2=F; >=30 for special patterns" << endl;
-  echoinput << "Errtype:  -1=normal; 0=lognormal; >0=T" << endl;
+  echoinput << "Errtype:  -2=gamma(future); -1=normal; 0=lognormal ; 1=lognormal w/ biascorr; >1XXX=T-dist with DF=XXX" << endl;
   echoinput << "SD_Report: 0=no sdreport; 1=enable sdreport" << endl;
   echoinput << "Fleet Units Err_Type SD_Report" << endl;
   echoinput << Svy_units_rd << endl;
@@ -688,7 +688,7 @@
 
   for (f = 1; f<=Nfleet; f++)
   {
-    if (Svy_units(f) >= 35 && Svy_errtype(f) == 0)
+    if (Svy_units(f) >= 35 && Svy_errtype(f) >= 0)
     {
       warnstream << " survey error type must not be lognormal for surveys of deviations for fleet: " << f << fleetname(f) << endl;
       write_message(FATAL, 1);
@@ -775,7 +775,6 @@
   matrix  Svy_obs_log(1,Nfleet,1,Svy_N_fleet);
   matrix  Svy_se_rd(1,Nfleet,1,Svy_N_fleet);
   matrix  Svy_se(1,Nfleet,1,Svy_N_fleet);
-  matrix  Svy_selec_abund(1,Nfleet,1,Svy_N_fleet);        // Vulnerable biomass
 // arrays for Super-years
   imatrix Svy_super(1,Nfleet,1,Svy_N_fleet); // indicator used to display start/stop in reports
   imatrix Svy_super_start(1,Nfleet,1,Svy_super_N); // where Svy_super_N is a vector
@@ -909,7 +908,7 @@
       if (Svy_N_fleet(f) > 0)
       {
         echoinput << f << "    " << fleetname(f) << "   " << Svy_N_fleet(f) << "     " << Svy_super_N(f) << "      " << Svy_minval(f) << " " << Svy_maxval(f) << " // " << Svy_obs(f) << endl;
-        if (Svy_errtype(f) == 0 && Svy_minval(f) <= 0.)
+        if (Svy_errtype(f) >= 0 && Svy_minval(f) <= 0.)
         {
           warnstream << "error, SS3 has exited. A fleet uses lognormal error and has an observation <=0.0; fleet: " << f;
           write_message (FATAL, 0);

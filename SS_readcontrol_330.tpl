@@ -2947,7 +2947,7 @@
       {
         ParmLabel += "Q_base_" + fleetname(f) + "(" + NumLbl(f) + ")";
       }
-      else
+      else if (Svy_errtype(f) >= 0)  // lognormal or T-dist
       {
         ParmLabel += "LnQ_base_" + fleetname(f) + "(" + NumLbl(f) + ")";
       }

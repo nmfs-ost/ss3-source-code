@@ -413,6 +413,8 @@ PARAMETER_SECTION
   matrix Svy_q(1,Nfleet,1,Svy_N_fleet);
   matrix Svy_se_use(1,Nfleet,1,Svy_N_fleet)
   matrix Svy_est(1,Nfleet,1,Svy_N_fleet)    //  will store expected survey in normal or lognormal units as needed
+  matrix Svy_selec_abund(1,Nfleet,1,Svy_N_fleet);        // Vulnerable biomass
+  matrix Svy_like_I(1,Nfleet,1,Svy_N_fleet)  
   vector surv_like(1,Nfleet) // likelihood of the indices
   matrix Q_dev_like(1,Nfleet,1,2) // likelihood of the Q deviations
 

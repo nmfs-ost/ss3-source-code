@@ -334,7 +334,7 @@ FUNCTION void write_summaryoutput()
           }
           report2 << endl
                   << runnumber << " Index:" << f << " OBS " << Svy_obs(f) << endl;
-          if (Svy_errtype(f) >= 0) // lognormal or lognormal T_dist
+          if (Svy_errtype(f) >= 0) // lognormal or lognormal T-dist
           {
             report2 << runnumber << " Index:" << f << " EXP " << mfexp(Svy_est(f)) << endl;
           }

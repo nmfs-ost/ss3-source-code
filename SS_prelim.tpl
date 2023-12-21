@@ -176,7 +176,7 @@
 
         if (Svy_use(f, i) > 0)
         {
-          if (Svy_errtype(f) >= 0) // lognormal or lognormal T_dist
+          if (Svy_errtype(f) >= 0) // lognormal or lognormal T-dist
           {
             if (Svy_obs(f, i) <= 0.0)
             {
