@@ -15,14 +15,17 @@ PARAMETER_SECTION
 //  SS_Label_Info_5.0.1 #Setup convergence critera and max func evaluations
  LOCAL_CALCS
   // clang-format on
-  // set the filename to all ADMB output files to "ss.[ext]"
-  ad_comm::adprogram_name = "ss";
+  // set the filename to all ADMB output files to "base_modelname.[ext]"
+  //  where base_modelname can be read from command line with command modelname followed by text
+  //  e.g.  ss3_win.exe -nohess -stopph 3  modelname ss4you
+  ad_comm::adprogram_name = base_modelname;
   echoinput << "Begin setting up parameters" << endl;
   cout << "Begin setting up parameters ... ";
   if (readparfile >= 1)
   {
     cout << " read parm file" << endl;
-    ad_comm::change_pinfile_name("ss.par");
+    anystring = base_modelname + ".par";
+    ad_comm::change_pinfile_name(anystring);
   }
   maximum_function_evaluations.allocate(func_eval.indexmin(), func_eval.indexmax());
   maximum_function_evaluations = func_eval;
