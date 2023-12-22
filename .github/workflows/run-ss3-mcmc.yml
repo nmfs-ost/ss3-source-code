@@ -75,7 +75,7 @@ jobs:
           for (i in 1:niters) {
             message("Running iteration ", i)
             # run simple model
-            system("./ss  -maxfn 0 -phase 40 -nohess -mcmc 10 -nuts -mcseed 1 -max_treedepth 3")
+            system("./ss3  -maxfn 0 -phase 40 -nohess -mcmc 10 -nuts -mcseed 1 -max_treedepth 3")
             # read in adaption.csv
             adapt_df <- read.csv("adaptation.csv")
             if(i == 1) {
