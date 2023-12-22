@@ -39,7 +39,6 @@ jobs:
         with:
           repository: 'nmfs-ost/ss3-test-models'
           path: test-models-repo
-          ref: specify-exe-name
 
       - name: Update Ubuntu packages
         run: sudo apt-get update
