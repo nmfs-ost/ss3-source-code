@@ -39,6 +39,7 @@ jobs:
         with:
           repository: 'nmfs-ost/ss3-test-models'
           path: test-models-repo
+          ref: specify-exe-name
 
       - name: Update Ubuntu packages
         run: sudo apt-get update
@@ -116,7 +117,7 @@ jobs:
             # run the models without estimation
             file.remove(file.path(dir, "Report.sso"))
             # see if model finishes without error
-            system(paste0("cd ", dir, " && ../ss3 -stopph 0 -nohess modelname ss")) # may need to change path to ss exe
+            system(paste0("cd ", dir, " && ../ss3 -stopph 0 -nohess modelname ss"))
             model_ran <- file.exists(file.path(dir, "control.ss_new"))
             return(model_ran)
           }
