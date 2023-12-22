@@ -214,8 +214,8 @@ jobs:
           mkdir SS330
           mv Compile/ss.exe SS330/
           mv Compile/ss_opt.exe SS330/
-          mv SS330/ss.exe SS330/ss_win.exe
-          mv SS330/ss_opt.exe SS330/ss_opt_win.exe
+          mv SS330/ss.exe SS330/ss3_win.exe
+          mv SS330/ss_opt.exe SS330/ss3_opt_win.exe
 
       - name: Build stock synthesis for mac
         if: matrix.config.os == 'macos-latest'
@@ -246,8 +246,8 @@ jobs:
         run: |
           cd SS330
           rm *.obj *.htp *.cpp ss_opt.tpl
-          mv ss ss_osx
-          mv ss_opt ss_opt_osx
+          mv ss ss3_osx
+          mv ss_opt ss3_opt_osx
           
       - name: Verify binary on linux
         if: matrix.config.os == 'ubuntu-latest'
@@ -260,8 +260,8 @@ jobs:
         run: |
           cd SS330
           rm *.obj *.htp *.cpp ss_opt.tpl ss.tpl
-          mv ss ss_linux
-          mv ss_opt ss_opt_linux
+          mv ss ss3_linux
+          mv ss_opt ss3_opt_linux
 
       - name: Archive binaries
         if: success()
