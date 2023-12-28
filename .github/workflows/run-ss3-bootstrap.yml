@@ -78,7 +78,7 @@ jobs:
           # Change to have model output 8 bootstrap files
           boot_files <- r4ss::SS_read(dir = boot_mod_dir)
           boot_files$start$N_bootstraps <- 10
-          r4ss::SS_write(boot_files, dir = boot_mod_dir)
+          r4ss::SS_write(boot_files, dir = boot_mod_dir, overwrite = TRUE)
           r4ss::run(dir = boot_mod_dir, exe = file.path("test-models-repo", "model_runs", "ss3")
 
           bootstrap_length <- length(list.files(boot_mod_dir, pattern = "data_boot"))
