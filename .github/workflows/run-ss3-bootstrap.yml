@@ -79,7 +79,7 @@ jobs:
           boot_files <- r4ss::SS_read(dir = boot_mod_dir)
           boot_files$start$N_bootstraps <- 10
           r4ss::SS_write(boot_files, dir = boot_mod_dir, overwrite = TRUE)
-          r4ss::run(dir = boot_mod_dir, exe = file.path(getwd(), "test-models-repo", "model_runs", "ss3"))
+          r4ss::run(dir = boot_mod_dir, exe = file.path(getwd(), "test-models-repo", "model_runs", "Simple_with_DM_sizefreq", "ss3"))
 
           bootstrap_length <- length(list.files(boot_mod_dir, pattern = "data_boot"))
 
