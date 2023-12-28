@@ -1,5 +1,5 @@
 # Build SS3 and run models with estimation and hessian
-name: run-ss3-with-est
+name: run-ss3-bootstrap-files
 on:
   workflow_dispatch:
   push:
@@ -16,13 +16,13 @@ on:
 
 # run fast running SS3 models with estimation
 jobs:
-  run-ss3-with-est:
+  run-ss3-bootstrap-files:
     if: github.event.pull_request.draft == false
     runs-on: ubuntu-latest
     env:
       R_REMOTES_NO_ERRORS_FROM_WARNINGS: true
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
-      RSPM: "https://packagemanager.rstudio.com/cran/__linux__/focal/latest"
+      R_KEEP_PKG_SOURCE: yes
 
     steps:
       - name: Checkout ss3 repo
@@ -34,6 +34,11 @@ jobs:
           repository: 'nmfs-ost/ss3-test-models'
           path: test-models-repo
           ref: add-DM-test-model
+
+      - name: install libcurl
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libcurl4-openssl-dev
 
       - name: setup R
         uses: r-lib/actions/setup-r@v2
