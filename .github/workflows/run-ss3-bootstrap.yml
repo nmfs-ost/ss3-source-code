@@ -3,10 +3,10 @@ name: run-ss3-bootstrap-files
 on:
   workflow_dispatch:
   push:
-    # paths:
-    #   - '**.tpl'
-    # branches:
-    #   - main
+    paths:
+      - '**.tpl'
+    branches:
+      - main
   pull_request:
     types: ['opened', 'edited', 'reopened', 'synchronize', 'ready_for_review']
     paths:
