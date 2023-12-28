@@ -83,7 +83,7 @@ jobs:
 
           bootstrap_length <- length(list.files(boot_mod_dir, pattern = "data_boot"))
 
-          if(bootstrap_length) != (boot_files$start$N_bootstraps - 2)){
+          if(bootstrap_length != (boot_files$start$N_bootstraps - 2)){
               stop("Did not produce the amount of bootstrap files specified.")
           } else {
               message("All bootstrap files produced.")
