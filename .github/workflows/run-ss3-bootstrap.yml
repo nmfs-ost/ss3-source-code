@@ -77,74 +77,74 @@ jobs:
 
           # Change to have model output 8 bootstrap files
           boot_files <- r4ss::SS_read(dir = boot_mod_dir)
-          # boot_files$start$N_bootstraps <- 10
-          # r4ss::SS_write(boot_files, dir = boot_mod_dir)
-          # r4ss::run(dir = boot_mod_dir, exe = file.path("test-models-repo", "model_runs", "ss3")
+          boot_files$start$N_bootstraps <- 10
+          r4ss::SS_write(boot_files, dir = boot_mod_dir)
+          r4ss::run(dir = boot_mod_dir, exe = file.path("test-models-repo", "model_runs", "ss3")
 
-          # bootstrap_length <- length(list.files(boot_mod_dir, pattern = "data_boot"))
+          bootstrap_length <- length(list.files(boot_mod_dir, pattern = "data_boot"))
 
-          # if(bootstrap_length) == (boot_files$start$N_bootstraps - 2)){
-          #     stop("Did not produce the amount of bootstrap files specified.")
-          # } else {
-          #     message("All bootstrap files produced.")
-          #     }
+          if(bootstrap_length) == (boot_files$start$N_bootstraps - 2)){
+              stop("Did not produce the amount of bootstrap files specified.")
+          } else {
+              message("All bootstrap files produced.")
+              }
           
           # Make sure values in echo and bootstrap files are different
-          # dat <-  r4ss::SS_readdat(file = file.path(boot_mod_dir,"data_echo.ss_new"))
-          # boot1 <- r4ss::SS_readdat(file = file.path(boot_mod_dir,"data_boot_001.ss"))
-          # boot2 <- r4ss::SS_readdat(file = file.path(boot_mod_dir,"data_boot_002.ss"))
+          dat <-  r4ss::SS_readdat(file = file.path(boot_mod_dir,"data_echo.ss_new"))
+          boot1 <- r4ss::SS_readdat(file = file.path(boot_mod_dir,"data_boot_001.ss"))
+          boot2 <- r4ss::SS_readdat(file = file.path(boot_mod_dir,"data_boot_002.ss"))
           
-          # # unlist sizefreq data
-          # dat_sizefreq <- purrr::map_df(dat$sizefreq_data_list, ~.x)
-          # boot1_sizefreq <- purrr::map_df(boot1$sizefreq_data_list, ~.x)
-          # boot2_sizefreq <- purrr::map_df(boot2$sizefreq_data_list, ~.x)
+          # unlist sizefreq data
+          dat_sizefreq <- purrr::map_df(dat$sizefreq_data_list, ~.x)
+          boot1_sizefreq <- purrr::map_df(boot1$sizefreq_data_list, ~.x)
+          boot2_sizefreq <- purrr::map_df(boot2$sizefreq_data_list, ~.x)
 
-          # df <- data.frame(
-          #     var = c("lencomp", "lencomp","catch","catch","CPUE","CPUE", "agecomp","agecomp","sizefreq","sizefreq"),
-          #     data_compare = rep(c("dat_boot1", "boot1_boot2"), 5),
-          #     n_diff = c(
-          #         sum(summary(arsenal::comparedf(dat$lencomp, boot1$lencomp))$diffs.byvar.table$n),
-          #         sum(summary(arsenal::comparedf(boot1$lencomp, boot2$lencomp))$diffs.byvar.table$n),
-          #         length(summary(arsenal::comparedf(dat$catch, boot1$catch, int.as.num = TRUE))$diffs.table$row.x),
-          #         length(summary(arsenal::comparedf(dat$catch, boot1$catch, int.as.num = TRUE))$diffs.table$row.x),
-          #         length(summary(arsenal::comparedf(dat$CPUE, boot1$CPUE, int.as.num = TRUE))$diffs.table$row.x),
-          #         length(summary(arsenal::comparedf(boot1$CPUE, boot2$CPUE, int.as.num = TRUE))$diffs.table$row.x),
-          #         sum(summary(arsenal::comparedf(dat$agecomp, boot1$agecomp))$diffs.byvar.table$n),
-          #         sum(summary(arsenal::comparedf(boot1$agecomp, boot2$agecomp))$diffs.byvar.table$n),
-          #         sum(summary(arsenal::comparedf(dat_sizefreq, boot1_sizefreq))$diffs.byvar.table$n),
-          #         sum(summary(arsenal::comparedf(boot1_sizefreq, boot2_sizefreq))$diffs.byvar.table$n)
-          #     )
-          # )
+          df <- data.frame(
+              var = c("lencomp", "lencomp","catch","catch","CPUE","CPUE", "agecomp","agecomp","sizefreq","sizefreq"),
+              data_compare = rep(c("dat_boot1", "boot1_boot2"), 5),
+              n_diff = c(
+                  sum(summary(arsenal::comparedf(dat$lencomp, boot1$lencomp))$diffs.byvar.table$n),
+                  sum(summary(arsenal::comparedf(boot1$lencomp, boot2$lencomp))$diffs.byvar.table$n),
+                  length(summary(arsenal::comparedf(dat$catch, boot1$catch, int.as.num = TRUE))$diffs.table$row.x),
+                  length(summary(arsenal::comparedf(dat$catch, boot1$catch, int.as.num = TRUE))$diffs.table$row.x),
+                  length(summary(arsenal::comparedf(dat$CPUE, boot1$CPUE, int.as.num = TRUE))$diffs.table$row.x),
+                  length(summary(arsenal::comparedf(boot1$CPUE, boot2$CPUE, int.as.num = TRUE))$diffs.table$row.x),
+                  sum(summary(arsenal::comparedf(dat$agecomp, boot1$agecomp))$diffs.byvar.table$n),
+                  sum(summary(arsenal::comparedf(boot1$agecomp, boot2$agecomp))$diffs.byvar.table$n),
+                  sum(summary(arsenal::comparedf(dat_sizefreq, boot1_sizefreq))$diffs.byvar.table$n),
+                  sum(summary(arsenal::comparedf(boot1_sizefreq, boot2_sizefreq))$diffs.byvar.table$n)
+              )
+          )
 
-          # df_error <- df |>
-          #     dplyr::filter(dplyr::if_any(dplyr::where(is.numeric), ~ .x < 20))
+          df_error <- df |>
+              dplyr::filter(dplyr::if_any(dplyr::where(is.numeric), ~ .x < 20))
 
-          # print_and_capture <- function(x){
-          #     paste(utils::capture.output(print(x)), collapse = "\n")
-          # }
+          print_and_capture <- function(x){
+              paste(utils::capture.output(print(x)), collapse = "\n")
+          }
 
-          # if(length(df_error > 0)){
-          #     stop("Bootstrap data produced less than 20 changes in a data type, see printed table below.\n", print_and_capture(df_error))
-          # } else {
-          #     message("Bootstrap data types all have > 20 changes")
-          #     }
+          if(length(df_error > 0)){
+              stop("Bootstrap data produced less than 20 changes in a data type, see printed table below.\n", print_and_capture(df_error))
+          } else {
+              message("Bootstrap data types all have > 20 changes")
+              }
           
-          # # Check that the model produced all .ss_new files and that they have content in them
-          # ss_new_files <- list.files(boot_mod_dir, pattern = ".ss_new")
-          # ss_new_validate <- c("control.ss_new", "data_echo.ss_new", "forecast.ss_new", "starter.ss_new", "wtatage.ss_new")
+          # Check that the model produced all .ss_new files and that they have content in them
+          ss_new_files <- list.files(boot_mod_dir, pattern = ".ss_new")
+          ss_new_validate <- c("control.ss_new", "data_echo.ss_new", "forecast.ss_new", "starter.ss_new", "wtatage.ss_new")
 
-          # new_dif <- setdiff(ss_new_files, ss_new_validate)
-          # if(length(new_dif) > 0){
-          #     stop("Not all .ss_new files were produced")
-          # } else {
-          #     message("All .ss_new files produced")
-          #     }
+          new_dif <- setdiff(ss_new_files, ss_new_validate)
+          if(length(new_dif) > 0){
+              stop("Not all .ss_new files were produced")
+          } else {
+              message("All .ss_new files produced")
+              }
 
-          # ss_new_length <- purrr::map(ss_new_files, ~length(readLines(file.path(boot_mod_dir, .x))))
-          # ss_new_too_short <- any(ss_new_length |> purrr::map_lgl(~.x < 10))
-          # if(ss_new_too_short == TRUE){
-          #   stop("Error producing all lines in one or more .ss_new files")
-          # } else {
-          #     message("All .ss_new files seem to be appropriate length")
-          #     }
+          ss_new_length <- purrr::map(ss_new_files, ~length(readLines(file.path(boot_mod_dir, .x))))
+          ss_new_too_short <- any(ss_new_length |> purrr::map_lgl(~.x < 10))
+          if(ss_new_too_short == TRUE){
+            stop("Error producing all lines in one or more .ss_new files")
+          } else {
+              message("All .ss_new files seem to be appropriate length")
+              }
         shell: Rscript {0}
