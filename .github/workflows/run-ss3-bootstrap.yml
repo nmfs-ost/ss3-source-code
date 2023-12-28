@@ -73,7 +73,7 @@ jobs:
       - name: does ss3 produce bootstrap files
         run: |
           # Use Simple_with_DM_sizefreq model to test bootstrap files
-          boot_mod_dir <- grepl("Simple_with_DM_sizefreq", list.dirs(file.path("test-models-repo", "model_runs"), full.names = TRUE, recursive = FALSE))
+          boot_mod_dir <- grep("Simple_with_DM_sizefreq", list.dirs(file.path("test-models-repo", "model_runs"), full.names = TRUE, recursive = FALSE), value = TRUE)
 
           # Change to have model output 8 bootstrap files
           boot_files <- r4ss::SS_read(dir = boot_mod_dir)
