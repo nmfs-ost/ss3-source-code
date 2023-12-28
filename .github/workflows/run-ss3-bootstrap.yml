@@ -3,10 +3,10 @@ name: run-ss3-with-est
 on:
   workflow_dispatch:
   push:
-    paths:
-      - '**.tpl'
-    branches:
-      - main
+    # paths:
+    #   - '**.tpl'
+    # branches:
+    #   - main
   pull_request:
     types: ['opened', 'edited', 'reopened', 'synchronize', 'ready_for_review']
     paths:
@@ -32,6 +32,7 @@ jobs:
         with:
           repository: 'nmfs-ost/ss3-test-models'
           path: test-models-repo
+          ref: add-DM-test-model
 
       - name: setup R
         uses: r-lib/actions/setup-r@v2
@@ -57,120 +58,87 @@ jobs:
       - name: change permissions on ss3 exes
         run: chmod a+x test-models-repo/model_runs/ss3
       
-      - name: download R packages for parallel
-        run: Rscript -e 'install.packages(c("parallely", "furrr", "future"))'
+      - name: download R packages
+        run: Rscript -e 'install.packages(c("remotes", "purrr", "arsenal", "utils"))'
 
-      - name: run models
+      - name: install r4ss
+        run: Rscript -e 'remotes::install_github("r4ss/r4ss")'
+
+      - name: does ss3 produce bootstrap files
         run: |
-          ncores <- parallelly::availableCores(omit = 1)
-          future::plan(future::multisession, workers = ncores)
+          # Use Simple_with_DM_sizefreq model to test bootstrap files
+          boot_mod_dir <- grepl("Simple_with_DM_sizefreq", list.dirs(file.path("test-models-repo", "model_runs"), full.names = TRUE, recursive = FALSE))
 
-          mod_names <- list.dirs(file.path("test-models-repo", "model_runs"), full.names = FALSE, recursive = FALSE)
-          mod_paths <- list.dirs(file.path("test-models-repo", "model_runs"), full.names = TRUE, recursive = FALSE)
-          print(mod_names)
-          run_ss3 <- function(dir) {
-            wd <- getwd()
-            print(wd)
-            on.exit(system(paste0("cd ", wd)))
-            # rename the reference files
-            file.rename(file.path(dir, "ss_summary.sso"),
-                        file.path(dir, "ss_summary_ref.sso"))
-            file.rename(file.path(dir, "warning.sso"),
-                        file.path(dir, "warning_ref.sso"))
-            file.copy(file.path(dir, "ss.par"), file.path(dir, "ss_ref.par"))
-            # run the models with estimation and see if model finishes without error
-            message("running ss on ", basename(dir))
-            system(paste0("cd ", dir, " && ../ss3 -nox"))
-            model_ran <- file.exists(file.path(dir, "control.ss_new"))
-            return(model_ran)
+          # Change to have model output 8 bootstrap files
+          boot_files <- r4ss::SS_read(dir = boot_mod_dir)
+          boot_files$start$N_bootstraps <- 10
+          r4ss::SS_write(boot_files, dir = boot_mod_dir)
+          r4ss::run(dir = boot_mod_dir, exe = file.path("test-models-repo", "model_runs", "ss3")
+
+          bootstrap_length <- length(list.files(boot_mod_dir, pattern = "data_boot"))
+
+          if(bootstrap_length) == (boot_files$start$N_bootstraps - 2)){
+              stop("Did not produce the amount of bootstrap files specified.")
+          } else {
+              message("All bootstrap files produced.")
+              }
+          
+          # Make sure values in echo and bootstrap files are different
+          dat <-  r4ss::SS_readdat(file = file.path(boot_mod_dir,"data_echo.ss_new"))
+          boot1 <- r4ss::SS_readdat(file = file.path(boot_mod_dir,"data_boot_001.ss"))
+          boot2 <- r4ss::SS_readdat(file = file.path(boot_mod_dir,"data_boot_002.ss"))
+          
+          # unlist sizefreq data
+          dat_sizefreq <- purrr::map_df(dat$sizefreq_data_list, ~.x)
+          boot1_sizefreq <- purrr::map_df(boot1$sizefreq_data_list, ~.x)
+          boot2_sizefreq <- purrr::map_df(boot2$sizefreq_data_list, ~.x)
+
+          df <- data.frame(
+              var = c("lencomp", "lencomp","catch","catch","CPUE","CPUE", "agecomp","agecomp","sizefreq","sizefreq"),
+              data_compare = rep(c("dat_boot1", "boot1_boot2"), 5),
+              n_diff = c(
+                  sum(summary(arsenal::comparedf(dat$lencomp, boot1$lencomp))$diffs.byvar.table$n),
+                  sum(summary(arsenal::comparedf(boot1$lencomp, boot2$lencomp))$diffs.byvar.table$n),
+                  length(summary(arsenal::comparedf(dat$catch, boot1$catch, int.as.num = TRUE))$diffs.table$row.x),
+                  length(summary(arsenal::comparedf(dat$catch, boot1$catch, int.as.num = TRUE))$diffs.table$row.x),
+                  length(summary(arsenal::comparedf(dat$CPUE, boot1$CPUE, int.as.num = TRUE))$diffs.table$row.x),
+                  length(summary(arsenal::comparedf(boot1$CPUE, boot2$CPUE, int.as.num = TRUE))$diffs.table$row.x),
+                  sum(summary(arsenal::comparedf(dat$agecomp, boot1$agecomp))$diffs.byvar.table$n),
+                  sum(summary(arsenal::comparedf(boot1$agecomp, boot2$agecomp))$diffs.byvar.table$n),
+                  sum(summary(arsenal::comparedf(dat_sizefreq, boot1_sizefreq))$diffs.byvar.table$n),
+                  sum(summary(arsenal::comparedf(boot1_sizefreq, boot2_sizefreq))$diffs.byvar.table$n)
+              )
+          )
+
+          df_error <- df |>
+              dplyr::filter(dplyr::if_any(dplyr::where(is.numeric), ~ .x < 20))
+
+          print_and_capture <- function(x){
+              paste(utils::capture.output(print(x)), collapse = "\n")
           }
 
-          mod_ran <- furrr::future_map(mod_paths, function(x){tryCatch(run_ss(x),
-          error = function(e) print(e))})
+          if(length(df_error > 0)){
+              stop("Bootstrap data produced less than 20 changes in a data type, see printed table below.\n", print_and_capture(df_error))
+          } else {
+              message("Bootstrap data types all have > 20 changes")
+              }
+          
+          # Check that the model produced all .ss_new files and that they have content in them
+          ss_new_files <- list.files(boot_mod_dir, pattern = ".ss_new")
+          ss_new_validate <- c("control.ss_new", "data_echo.ss_new", "forecast.ss_new", "starter.ss_new", "wtatage.ss_new")
 
-          mod_errors <- mod_names[unlist(lapply(mod_ran, function(x) "simpleError" %in% class(x)))]
-          success <- TRUE
-          if(length(mod_errors) > 0) {
-            message("Model code with errors were: ", paste0(mod_errors, collapse = ", "),
-                    ". See error list above for more details.")
-            success <- FALSE
+          new_dif <- setdiff(ss_new_files, ss_new_validate)
+          if(length(new_dif) > 0){
+              stop("Not all .ss_new files were produced")
           } else {
-            message("All code ran without error, but model runs may still have failed.")
-          }
-          mod_no_run <- mod_names[unlist(lapply(mod_ran, function(x) isFALSE(x)))] # false means model didn't run
-          if(length(mod_no_run) > 0) {
-            message("Models that didn't run are ", paste0(mod_no_run, collapse = ", "))
-            success <- FALSE
+              message("All .ss_new files produced")
+              }
+
+          ss_new_length <- purrr::map(ss_new_files, ~length(readLines(file.path(boot_mod_dir, .x))))
+          ss_new_too_short <- any(ss_new_length |> purrr::map_lgl(~.x < 10))
+          if(ss_new_too_short == TRUE){
+            stop("Error producing all lines in one or more .ss_new files")
           } else {
-            message("All models ran without error.")
-          }
-          # determine if job fails or passes
-          if(success == FALSE) {
-            stop("Job failed due to code with errors or models that didn't run.")
-          } else {
-            message("All models successfully ran.")
-          }
+              message("All .ss_new files seem to be appropriate length")
+              }
         shell: Rscript {0}
-
-      - name: Run comparison
-        run: |
-          source("test-models-repo/.github/r_scripts/compare.R")
-          orig_wd <- getwd()
-          setwd("test-models-repo")
-          on.exit(orig_wd)
-          dir.create("run_R")
-          # get model folder names
-          mod_fold <- file.path("model_runs")
-          mod_names <- list.dirs(mod_fold, full.names = FALSE, recursive = FALSE)
-          message("Will compare ref runs to new results for these models:")
-          print(mod_names)
-          message("Notable changes in total likelihood, max gradients, ",
-                  " and number of warnings:")
-          compare_list <- vector(mode = "list", length = length(mod_names))
-          for(i in mod_names) {
-            pos <- which(mod_names == i)
-            sum_file <- file.path(mod_fold, i, "ss_summary.sso")
-            if (i == "Simple") {
-              file.copy(sum_file, file.path("run_R", paste0(i, "_ss_summary.sso")))
-            }
-            ref_sum_file <- file.path(mod_fold, i, "ss_summary_ref.sso")
-
-            par_file <- file.path(mod_fold, i, "ss.par")
-            ref_par_file <- file.path(mod_fold, i, "ss_ref.par")
-
-            warn_file <- file.path(mod_fold, i, "warning.sso")
-            ref_warn_file <- file.path(mod_fold, i, "warning_ref.sso")
-
-            fail_file <- file.path("run_R", "test_failed.csv")
-
-            compare_list[[pos]] <- compare_ss_runs(mod_name = i,
-                          sum_file = sum_file, ref_sum_file = ref_sum_file,
-                          par_file = par_file, ref_par_file = ref_par_file,
-                          warn_file = warn_file, ref_warn_file = ref_warn_file,
-                          hessian = TRUE,
-                          new_file = NULL, fail_file = fail_file)
-          }
-          # write out all model results
-          compare_df <- do.call("rbind", compare_list)
-          compare_df_print <- format(compare_df, digits = 6, nsmall = 3,
-                                   justify = "left")
-          message("see saved artifact all_results.csv for all compared values and their differences.")
-          # write all model comparison results to csv
-          write.csv(compare_df_print, "run_R/all_results.csv", row.names = FALSE)
-          # write all
-          message("see saved artifact all_changes.csv for only changed values (even if the threshold was too low to fail the job)")
-          filtered_df <- compare_df[compare_df$diff != 0, ]
-          filtered_df <- format(filtered_df, digits = 6, nsmall = 3,
-                                   justify = "left")
-          write.csv(filtered_df, "run_R/all_changes.csv", row.names = FALSE)
-        shell: Rscript {0}
-
-      - name: Determine results of test
-        run: cd test-models-repo && Rscript .github/r_scripts/check_failed.R
-
-      - name: Archive results
-        uses: actions/upload-artifact@main
-        if: always()
-        with:
-          name: 'result_textfiles'
-          path: test-models-repo/run_R/
