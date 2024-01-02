@@ -133,17 +133,23 @@ FUNCTION void evaluate_the_objective_function()
                               + sd_offset * log(Svy_se_use(f, i));
              }
             else if (Svy_errtype(f) == 1) {  // lognormal with bias adjustment
-              Svy_like_I(f,i) = 0.5 * square((Svy_obs_log(f, i) - Svy_est(f, i) + 0.5 * Svy_se_use(f, i) * Svy_se_use(f, i) ) / Svy_se_use(f, i))
+              Svy_like_I(f,i) = 0.5 * square((Svy_obs_log(f, i) - Svy_est(f, i) + 0.5 * square(Svy_se_use(f, i))) / Svy_se_use(f, i))
                               + sd_offset * log(Svy_se_use(f, i));
               }
-            else if (Svy_errtype(f) >= 1000) {  // T-dist
-              dvariable df = Svy_errtype(f) - 1000.;
+            else if (Svy_errtype(f) > 1) {  // T-dist
+              dvariable df = Svy_errtype(f);
               Svy_like_I(f,i) = ((df + 1.) / 2.) * log((1. + square((Svy_obs_log(f, i) - Svy_est(f, i))) / (df * square(Svy_se_use(f, i)))))
                               + sd_offset * log(Svy_se_use(f, i));
               }
             else if (Svy_errtype(f) == -1) {  // normal
               Svy_like_I(f,i) =  0.5 * square((Svy_obs(f, i) - Svy_est(f, i)) / Svy_se_use(f, i))
                               + sd_offset * log(Svy_se_use(f, i));
+            }
+            else if (Svy_errtype(f) == -2) {
+              // gamma option will go here
+            }
+            else {
+              // values <-2 are trapped in readdata
             }
           }
           surv_like(f) = sum(Svy_like_I(f));
