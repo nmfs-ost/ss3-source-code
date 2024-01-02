@@ -143,8 +143,8 @@ FUNCTION void write_nudata()
 
       report1 << "#_CPUE_and_surveyabundance_and_index_observations" << endl;
       report1 << "#_Units: 0=numbers; 1=biomass; 2=F; 30=spawnbio; 31=exp(recdev); 36=recdev; 32=spawnbio*recdev; 33=recruitment; 34=depletion(&see Qsetup); 35=parm_dev(&see Qsetup)" << endl;
-      report1 << "#_Errtype:  -1=normal; 0=lognormal; >0=T" << endl;
-      report1 << "#_SD_Report: 0=no sdreport; 1=enable sdreport" << endl;
+      report1 << "#_Errtype:  -1=normal; 0=lognormal; 1=lognormal with bias correction; >1=df for T-dist" << endl;
+      report1 << "#_SD_Report: 0=not; 1=include survey expected value with se" << endl;
       report1 << "#_note that link functions are specified in Q_setup section of control file" << endl;
       report1 << "#_Fleet Units Errtype SD_Report" << endl;
       for (f = 1; f <= Nfleet; f++)
@@ -513,8 +513,8 @@ FUNCTION void write_nudata()
       report1 << "#" << endl
               << " #_CPUE_and_surveyabundance_observations" << endl;
       report1 << "#_Units:  0=numbers; 1=biomass; 2=F; 30=spawnbio; 31=recdev; 32=spawnbio*recdev; 33=recruitment; 34=depletion(&see Qsetup); 35=parm_dev(&see Qsetup)" << endl;
-      report1 << "#_Errtype:  -1=normal; 0=lognormal; >0=T" << endl;
-      report1 << "#_SD_Report: 0=no sdreport; 1=enable sdreport" << endl;
+      report1 << "#_Errtype:  -1=normal; 0=lognormal; 1=lognormal with bias correction; >1=df for T-dist" << endl;
+      report1 << "#_SD_Report: 0=not; 1=include survey expected value with se" << endl;
       report1 << "#_Fleet Units Errtype SD_Report" << endl;
       for (f = 1; f <= Nfleet; f++)
         report1 << f << " " << Svy_units(f) << " " << Svy_errtype(f) << " " << Svy_sdreport(f) << " # " << fleetname(f) << endl;
@@ -925,8 +925,8 @@ FUNCTION void write_nudata()
 
       report1 << " #_CPUE_and_surveyabundance_observations" << endl;
       report1 << "#_Units:  0=numbers; 1=biomass; 2=F; 30=spawnbio; 31=recdev; 32=spawnbio*recdev; 33=recruitment; 34=depletion(&see Qsetup); 35=parm_dev(&see Qsetup)" << endl;
-      report1 << "#_Errtype:  -1=normal; 0=lognormal; >0=T" << endl;
-      report1 << "#_SD_Report: 0=no sdreport; 1=enable sdreport" << endl;
+      report1 << "#_Errtype:  -1=normal; 0=lognormal; 1=lognormal with bias correction; >1=df for T-dist" << endl;
+      report1 << "#_SD_Report: 0=not; 1=include survey expected value with se" << endl;
       report1 << "#_Fleet Units Errtype SD_Report" << endl;
       for (f = 1; f <= Nfleet; f++)
         report1 << f << " " << Svy_units(f) << " " << Svy_errtype(f) << " " << Svy_sdreport(f) << " # " << fleetname(f) << endl;
