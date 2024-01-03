@@ -33,7 +33,6 @@ jobs:
         with:
           repository: 'nmfs-ost/ss3-test-models'
           path: test-models-repo
-          ref: add-DM-test-model
 
       - name: install libcurl
         run: |
