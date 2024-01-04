@@ -3,10 +3,10 @@ name: test-r4ss-with-ss3
 on:
   workflow_dispatch:
   push:
-    paths:
-      - '**.tpl'
-    branches:
-      - main
+    # paths:
+    #   - '**.tpl'
+    # branches:
+    #   - main
   pull_request:
     types: ['opened', 'edited', 'reopened', 'synchronize', 'ready_for_review']
     paths:
@@ -33,6 +33,7 @@ jobs:
         with:
           repository: 'nmfs-ost/ss3-test-models'
           path: test-models-repo
+          ref: remove-modelname
 
       - name: install libcurl
         run: |
