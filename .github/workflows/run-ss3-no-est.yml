@@ -116,7 +116,7 @@ jobs:
             # run the models without estimation
             file.remove(file.path(dir, "Report.sso"))
             # see if model finishes without error
-            system(paste0("cd ", dir, " && ../ss3 -stopph 0 -nohess modelname ss"))
+            system(paste0("cd ", dir, " && ../ss3 -stopph 0 -nohess"))
             model_ran <- file.exists(file.path(dir, "control.ss_new"))
             return(model_ran)
           }

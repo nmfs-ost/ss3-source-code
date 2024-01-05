@@ -80,7 +80,7 @@ jobs:
             file.copy(file.path(dir, "ss.par"), file.path(dir, "ss_ref.par"))
             # run the models with estimation and see if model finishes without error
             message("running ss on ", basename(dir))
-            system(paste0("cd ", dir, " && ../ss3 -nox modelname ss"))
+            system(paste0("cd ", dir, " && ../ss3 -nox"))
             model_ran <- file.exists(file.path(dir, "control.ss_new"))
             return(model_ran)
           }
