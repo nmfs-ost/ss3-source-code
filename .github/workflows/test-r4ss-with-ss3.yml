@@ -3,10 +3,10 @@ name: test-r4ss-with-ss3
 on:
   workflow_dispatch:
   push:
-    # paths:
-    #   - '**.tpl'
-    # branches:
-    #   - main
+    paths:
+      - '**.tpl'
+    branches:
+      - main
   pull_request:
     types: ['opened', 'edited', 'reopened', 'synchronize', 'ready_for_review']
     paths:
@@ -47,7 +47,7 @@ jobs:
         run: Rscript -e 'install.packages(c("remotes","parallely", "furrr", "future"))'
 
       - name: install r4ss
-        run: Rscript -e 'remotes::install_github("r4ss/r4ss#899")'
+        run: Rscript -e 'remotes::install_github("r4ss/r4ss")'
 
       - name: Get admb and put in path, linux
         run: |
