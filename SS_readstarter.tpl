@@ -335,12 +335,37 @@
     echoinput << "read max phase to override starter file's maxphase " << maxI << endl;
   }
 
+  if ((on = option_match(argc, argv, "modelname")) > -1 )
+  {
+    base_modelname = ad_comm::argv[on + 1];
+    echoinput << "read basemodel name to use instead of ss3 " << base_modelname << endl;
+  cout << " base name " << base_modelname << endl;
+  }
+
   SDmode = 1;
   if ((on = option_match(argc, argv, "-nohess")) > -1)
   {
     SDmode = 0;
   }
   echoinput << " -nohess flag (1 means do Hessian): " << SDmode << endl;
+  adstring sw; //  used for reading of ADMB switches from command line
+  mcmcFlag = 0;
+  noest_flag = 0;
+  for (i = 0; i < argc; i++) /* SS_loop: check command line arguments for mcmc commands */
+  {
+    sw = argv[i];
+    j = strcmp(sw, "-mcmc");
+    if (j == 0)
+    {
+      mcmcFlag = 1;
+    }
+    j = strcmp(sw, "-mceval");
+    if (j == 0)
+    {
+      mcmcFlag = 1;
+    }
+  }
+  // clang-format off
 
   // SS_Label_Info_1.2  #Read the starter.ss file
   // SS_Label_Flow  read starter.ss
@@ -375,24 +400,6 @@
           << version_info2 << endl;
   warning << "This file contains warnings, suggestions and notes generated as files are read and processed" << endl
           << endl;
-  adstring sw; //  used for reading of ADMB switches from command line
-  mcmcFlag = 0;
-  noest_flag = 0;
-  for (i = 0; i < argc; i++) /* SS_loop: check command line arguments for mcmc commands */
-  {
-    sw = argv[i];
-    j = strcmp(sw, "-mcmc");
-    if (j == 0)
-    {
-      mcmcFlag = 1;
-    }
-    j = strcmp(sw, "-mceval");
-    if (j == 0)
-    {
-      mcmcFlag = 1;
-    }
-  }
-  // clang-format off
  END_CALCS
 
 
