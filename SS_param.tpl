@@ -26,7 +26,7 @@ PARAMETER_SECTION
   if (readparfile >= 1)
   {
     anystring = base_modelname + ".par";
-    cout << " read parm file" << endl;
+    cout << " read parm file: " << anystring << endl;
 
     ifstream fin(anystring);
     if(fin.fail() ) {
@@ -38,7 +38,7 @@ PARAMETER_SECTION
       anystring = "ss.par";
       ifstream fin(anystring);
       if(fin.fail() ) {
-    	  warnstream << "could not find requested parfile " << anystring;
+    	  warnstream << "could not find ss3.par, ss.par, or requested parfile " << base_modelname << ".par";
     	  write_message(FATAL, 0);
       }
     }}
