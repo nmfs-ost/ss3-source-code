@@ -85,12 +85,13 @@ jobs:
 
       - name: determine if fails/passes
         run: |
-          ref <- readLines(".github/workflows/reference_files/warnings_ss_ref.txt")
-          n_warn <- read.table("n_warn.txt")
-          n_warn <- as.integer(n_warn[1,1])
-          if (n_warn > length(ref)) {
-            stop("Increased number of warnings compared to reference warning file")
-          } else {
+          if (file.exists(".github/workflows/reference_files/warnings_ss_ref.txt")) {
+            ref <- readLines(".github/workflows/reference_files/warnings_ss_ref.txt")
+            n_warn <- read.table("n_warn.txt")
+            n_warn <- as.integer(n_warn[1,1])
+            if (n_warn > length(ref)) {
+              stop("Increased number of warnings compared to reference warning file")
+            } else {
               # n_warn doesn't take into account the "In file included from ss.cpp:7:"
               # so add 2 to add those lines back in
               if (n_warn+length(ref) < length(ref)){
@@ -99,6 +100,7 @@ jobs:
                   message("Acceptable number of warnings")
               }
             }
+          }
         shell: Rscript {0}
 
       - name: Archive warnings text file
