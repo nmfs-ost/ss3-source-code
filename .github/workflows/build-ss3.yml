@@ -238,22 +238,22 @@ jobs:
       - name: Verify binary on mac
         if: matrix.config.os == 'macos-latest'
         run: |
-          [ -f SS330/ss ] && shasum -a 256 SS330/ss
-          [ -f SS330/ss_opt ] && shasum -a 256 SS330/ss_opt
+          shasum -a 256 SS330/ss
+          shasum -a 256 SS330/ss_opt
           
       - name: Delete unneeded files and change exe names on mac
         if: matrix.config.os == 'macos-latest'
         run: |
           cd SS330
           rm *.obj *.htp *.cpp ss_opt.tpl
-          [ -f ss ] && mv ss ss_osx
-          [ -f ss_opt ] && mv ss_opt ss_opt_osx
+          mv ss ss_osx
+          mv ss_opt ss_opt_osx
           
       - name: Verify binary on linux
         if: matrix.config.os == 'ubuntu-latest'
         run: |
-          [ -f SS330/ss ] && sha256sum SS330/ss
-          [ -f SS330/ss_opt ] && sha256sum SS330/ss_opt
+          sha256sum SS330/ss
+          sha256sum SS330/ss_opt
     
       - name: Delete unneeded files and change exe names on linux
         if: matrix.config.os == 'ubuntu-latest'
@@ -261,10 +261,10 @@ jobs:
           cd SS330
           ls *
           rm *.obj *.htp *.cpp
-          [ -f ss.tpl ] && rm -f ss.tpl
-          [ -f ss_opt.tpl ] && rm -f ss_opt.tpl
-          [ -f ss ] && mv ss ss_linux
-          [ -f ss_opt ] && mv ss_opt ss_opt_linux
+          rm -f ss.tpl
+          rm -f ss_opt.tpl
+          mv ss ss_linux
+          mv ss_opt ss_opt_linux
 
       - name: Archive binaries
         if: success()
