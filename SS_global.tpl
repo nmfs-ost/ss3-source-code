@@ -86,6 +86,7 @@ GLOBALS_SECTION
   adstring_array fleetname;
   adstring ssnew_pathname;
   adstring sso_pathname;
+  adstring base_modelname = "ss3";
   adstring fleetnameread;
   adstring depletion_basis_label;
   adstring F_report_label;

@@ -25,13 +25,13 @@ jobs:
       RSPM: "https://packagemanager.rstudio.com/cran/__linux__/focal/latest"
 
     steps:
-      - name: Checkout ss repo
+      - name: Checkout ss3 repo
         uses: actions/checkout@v3
 
       - name: Checkout models repo
         uses: actions/checkout@v3
         with:
-          repository: 'nmfs-stock-synthesis/test-models'
+          repository: 'nmfs-ost/ss3-test-models'
           path: test-models-repo
 
       - name: Update Ubuntu packages
@@ -59,23 +59,23 @@ jobs:
           mv test-models-repo/models/Simple/forecast.ss forecast.ss
           mv test-models-repo/models/Simple/control.ss control.ss
           mv test-models-repo/models/Simple/data.ss data.ss
-          mv SS330/ss ss
+          mv SS330/ss ss3
           ls
 
       - name: change permissions on ss exe
-        run: chmod a+x ss
+        run: chmod a+x ss3
 
       - name: run models without estimation
         run: |
           # Run NUTS algorithim in ADMB to make sure still works with stock synthesis
           # run the simple model with -hbf option to get the necessary files
-          system("./ss -hbf")
+          system("./ss3 -hbf")
           # run the simple model 30 times using the NUTS algorithim
           niters <- 100
           for (i in 1:niters) {
             message("Running iteration ", i)
             # run simple model
-            system("./ss  -maxfn 0 -phase 40 -nohess -mcmc 10 -nuts -mcseed 1 -max_treedepth 3")
+            system("./ss3  -maxfn 0 -phase 40 -nohess -mcmc 10 -nuts -mcseed 1 -max_treedepth 3")
             # read in adaption.csv
             adapt_df <- read.csv("adaptation.csv")
             if(i == 1) {

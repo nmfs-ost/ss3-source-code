@@ -14,7 +14,7 @@ on:
     branches:
       - main
 
-# run fast running SS models with estimation
+# run fast running SS3 models with estimation
 jobs:
   run-ss3-with-est:
     if: github.event.pull_request.draft == false
@@ -30,7 +30,7 @@ jobs:
       - name: Checkout models repo
         uses: actions/checkout@v3
         with:
-          repository: 'nmfs-stock-synthesis/test-models'
+          repository: 'nmfs-ost/ss3-test-models'
           path: test-models-repo
 
       - name: setup R
@@ -52,13 +52,19 @@ jobs:
       - name: move exes, scripts to needed locations
         run: |
           mv test-models-repo/models test-models-repo/model_runs
-          mv SS330/ss test-models-repo/model_runs/ss
+          mv SS330/ss test-models-repo/model_runs/ss3
 
       - name: change permissions on ss exes
-        run: chmod a+x test-models-repo/model_runs/ss
+        run: chmod a+x test-models-repo/model_runs/ss3
+      
+      - name: download R packages for parallel
+        run: Rscript -e 'install.packages(c("parallely", "furrr", "future"))'
 
       - name: run models
         run: |
+          ncores <- parallelly::availableCores(omit = 1)
+          future::plan(future::multisession, workers = ncores)
+
           mod_names <- list.dirs(file.path("test-models-repo", "model_runs"), full.names = FALSE, recursive = FALSE)
           mod_paths <- list.dirs(file.path("test-models-repo", "model_runs"), full.names = TRUE, recursive = FALSE)
           print(mod_names)
@@ -74,14 +80,14 @@ jobs:
             file.copy(file.path(dir, "ss.par"), file.path(dir, "ss_ref.par"))
             # run the models with estimation and see if model finishes without error
             message("running ss on ", basename(dir))
-            system(paste0("cd ", dir, " && ../ss -nox"))
+            system(paste0("cd ", dir, " && ../ss3 -nox"))
             model_ran <- file.exists(file.path(dir, "control.ss_new"))
             return(model_ran)
           }
 
-          mod_ran <- lapply(mod_paths, function(x) tryCatch(run_ss(x),
-                                                   error = function(e) print(e)
-                                                   ))
+          mod_ran <- furrr::future_map(mod_paths, function(x){tryCatch(run_ss(x),
+          error = function(e) print(e))})
+
           mod_errors <- mod_names[unlist(lapply(mod_ran, function(x) "simpleError" %in% class(x)))]
           success <- TRUE
           if(length(mod_errors) > 0) {

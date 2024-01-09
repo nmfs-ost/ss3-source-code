@@ -34,13 +34,13 @@ FUNCTION void write_nudata()
     {
       echoinput << "Begin writing data_echo.ss_new file" << endl;
       newdatfilename = "data_echo.ss_new";
-	  datinfostring = "echo_input_data";
+	    datinfostring = "echo_input_data";
     }
     else if (Nudat == 2)
     {
       echoinput << "Begin writing data_expval.ss file" << endl;
       newdatfilename = "data_expval.ss";
-	  datinfostring = "expected_values";
+	    datinfostring = "expected_values";
     }
     else // data_boot files
     {
@@ -60,8 +60,7 @@ FUNCTION void write_nudata()
       {
         newdatfilename = "data_boot_" + anystring2 + ".ss";
       }
-	  datinfostring = "  ";
-	  sprintf(datinfostring, "bootdata:_%d", Nudat);
+	    datinfostring = "bootstrap";
     }
     anystring = ssnew_pathname + newdatfilename;
     report1.open(anystring);
@@ -391,7 +390,7 @@ FUNCTION void write_nudata()
           { report1 << j << " ";}
         report1 << " # Method" << endl;
         report1 << SzFreq_Nbins << " #_Sizefreq N bins" << endl;
-        report1 << SzFreq_units << " #_Sizetfreq units(1=bio/2=num)" << endl;
+        report1 << SzFreq_units << " #_Sizefreq units(1=bio/2=num)" << endl;
         report1 << SzFreq_scale << " #_Sizefreq scale(1=kg/2=lbs/3=cm/4=inches)" << endl;
         report1 << SzFreq_mincomp << " #_Sizefreq:  small constant to add to comps" << endl;
         report1 << SzFreq_nobs << " #_Sizefreq number of obs per method" << endl;
@@ -793,7 +792,7 @@ FUNCTION void write_nudata()
           { report1 << j << " ";}
         report1 << " # Method" << endl;
         report1 << SzFreq_Nbins << " #_Sizefreq N bins" << endl;
-        report1 << SzFreq_units << " #_Sizetfreq units(1=bio/2=num)" << endl;
+        report1 << SzFreq_units << " #_Sizefreq units(1=bio/2=num)" << endl;
         report1 << SzFreq_scale << " #_Sizefreq scale(1=kg/2=lbs/3=cm/4=inches)" << endl;
         report1 << SzFreq_mincomp << " #_Sizefreq:  small constant to add to comps" << endl;
         report1 << SzFreq_nobs << " #_Sizefreq number of obs per method" << endl;
@@ -805,7 +804,10 @@ FUNCTION void write_nudata()
                 << "#Note: negative value for first bin makes it accumulate all smaller fish vs. truncate small fish" << endl;
         for (i = 1; i <= SzFreq_Nmeth; i++)
         { report1 << SzFreq_Omit_Small(i) * SzFreq_bins1(i, 1) << SzFreq_bins1(i)(2, SzFreq_Nbins(i)) << endl; }
-        report1 << "#_method year month fleet sex partition SampleSize <data> " << endl << SzFreq_obs1 << endl;
+        report1 << "#_method year month fleet sex partition SampleSize <data> " << endl;
+        for (iobs = 1; iobs <= SzFreq_totobs; iobs++) {
+          report1 << SzFreq_obs1(iobs)(1, 7) << " " << SzFreq_exp(iobs) << endl;
+        }
       }
 
       // begin tagging data section #2 (expected values)
@@ -1306,7 +1308,7 @@ FUNCTION void write_nudata()
           { report1 << j << " ";}
         report1 << " # Method" << endl;
         report1 << SzFreq_Nbins << " #_Sizefreq N bins" << endl;
-        report1 << SzFreq_units << " #_Sizetfreq units(1=bio/2=num)" << endl;
+        report1 << SzFreq_units << " #_Sizefreq units(1=bio/2=num)" << endl;
         report1 << SzFreq_scale << " #_Sizefreq scale(1=kg/2=lbs/3=cm/4=inches)" << endl;
         report1 << SzFreq_mincomp << " #_Sizefreq:  small constant to add to comps" << endl;
         report1 << SzFreq_nobs << " #_Sizefreq number of obs per method" << endl;
@@ -1318,7 +1320,55 @@ FUNCTION void write_nudata()
                 << "#Note: negative value for first bin makes it accumulate all smaller fish vs. truncate small fish" << endl;
         for (i = 1; i <= SzFreq_Nmeth; i++)
         { report1 << SzFreq_Omit_Small(i) * SzFreq_bins1(i, 1) << SzFreq_bins1(i)(2, SzFreq_Nbins(i)) << endl; }
-        report1 << "#_method year month fleet sex partition SampleSize <data> " << endl << SzFreq_obs1 << endl;
+        report1 << "#_method year month fleet sex partition SampleSize <data> " << endl;
+        j = 2 * max(SzFreq_Nbins);
+        dvector temp_probs3(1, j);
+        dvector SzFreq_newdat(1, j);
+        for (iobs = 1; iobs <= SzFreq_totobs; iobs++)
+        {
+          f = SzFreq_obs1(iobs, 1);  //  sizefreq method
+          double Nsamp_dat = 50000;
+          if (SzFreq_obs1(iobs, 7) < Nsamp_dat)
+          Nsamp_dat = SzFreq_obs1(iobs, 7);
+          SzFreq_newdat.initialize();
+
+              switch (Comp_Err_Sz(f))
+              {
+                case 0:
+                {
+                  Nsamp_DM = Nsamp_dat;
+                  break;
+                }
+                case 1: //  Dirichlet #1
+                {
+                  dirichlet_Parm = mfexp(selparm(Comp_Err_parmloc(Comp_Err_Sz2(f),1))); //  Thorson's theta from eq 10
+                  // effN_DM = 1/(1+theta) + n*theta/(1+theta)
+                  Nsamp_DM = value(1. / (1. + dirichlet_Parm) + Nsamp_dat * dirichlet_Parm / (1. + dirichlet_Parm));
+                  break;
+                }
+                case 2:  //  Dirichlet #2
+                {
+                  dirichlet_Parm = mfexp(selparm(Comp_Err_parmloc(Comp_Err_Sz2(f),1)));  //  Thorson's beta from eq 12
+                  // effN_DM = (n+n*beta)/(n+beta)      computed in Fit_LenComp
+                  Nsamp_DM = value((nsamp_l(f, i) + dirichlet_Parm * nsamp_l(f, i)) / (dirichlet_Parm + Nsamp_dat));
+                  break;
+                }
+                case 3: //  MV_Tweedie
+                {
+                  //  need MV_tweedie
+                  break;
+                }
+              }
+
+          temp_probs3(1, SzFreq_Setup2(iobs)) = value(SzFreq_exp(iobs));
+          temp_mult.fill_multinomial(radm, temp_probs3(1, SzFreq_Setup2(iobs))); // create multinomial draws with prob = expected values
+          for (compindex = 1; compindex <= j; compindex++) // cumulate the multinomial draws by index in the new data
+          {
+            SzFreq_newdat(temp_mult(compindex)) += 1.0;
+          }
+
+          report1 << SzFreq_obs1(iobs)(1, 7) << " " << SzFreq_newdat(1, SzFreq_Setup2(iobs)) << endl;
+        }        
       }
 
       // begin tagging data section #3 (bootstrap data)

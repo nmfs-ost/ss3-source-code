@@ -15,15 +15,38 @@ PARAMETER_SECTION
 //  SS_Label_Info_5.0.1 #Setup convergence critera and max func evaluations
  LOCAL_CALCS
   // clang-format on
-  // set the filename to all ADMB output files to "ss.[ext]"
-  ad_comm::adprogram_name = "ss";
+  // set the filename to all ADMB output files to "base_modelname.[ext]"
+  //  where base_modelname can be read from command line with command modelname followed by text
+  //  e.g.  ss3_win.exe -nohess -stopph 3  modelname ss4you
+  //  if requested modelname.par is not found, then will attempt to read from ss3.par then ss.par
+  //  whatever name is read, the write will be to modelname.par.  Which has default of ss3.par
+  ad_comm::adprogram_name = base_modelname;
   echoinput << "Begin setting up parameters" << endl;
   cout << "Begin setting up parameters ... ";
   if (readparfile >= 1)
   {
-    cout << " read parm file" << endl;
-    ad_comm::change_pinfile_name("ss.par");
+    anystring = base_modelname + ".par";
+    cout << " read parm file: " << anystring << endl;
+
+    ifstream fin(anystring);
+    if(fin.fail() ) {
+      cout << " no find, try ss3.par" << endl;
+      anystring = "ss3.par";
+      ifstream fin(anystring);
+      if(fin.fail() ) {
+      cout << " no find, try ss.par" << endl;
+      anystring = "ss.par";
+      ifstream fin(anystring);
+      if(fin.fail() ) {
+    	  warnstream << "could not find ss3.par, ss.par, or requested parfile " << base_modelname << ".par";
+    	  write_message(FATAL, 0);
+      }
+    }}
+    cout << " found "<<anystring<<endl;
+
+    ad_comm::change_pinfile_name(anystring);
   }
+
   maximum_function_evaluations.allocate(func_eval.indexmin(), func_eval.indexmax());
   maximum_function_evaluations = func_eval;
   convergence_criteria.allocate(func_conv.indexmin(), func_conv.indexmax());

@@ -37,4 +37,4 @@ jobs:
         with:
           to: ${{ steps.test.outputs.email }}
           subject: 'PR in stock synthesis repository is closed; reminder to fill out info in associated issue'
-          body: "PR #${{ github.event.pull_request.number }} in the nmfs-stock-synthesis/stock-synthesis repository has been closed, please remember to move any pertinent information to the following linked issue(s): #${{ steps.get-issues.outputs.issues }}"
+          body: "PR #${{ github.event.pull_request.number }} in the nmfs-ost/ss3-source-code repository has been closed, please remember to move any pertinent information to the following linked issue(s): #${{ steps.get-issues.outputs.issues }}"

@@ -37,7 +37,7 @@ jobs:
       - name: Checkout models repo
         uses: actions/checkout@v3
         with:
-          repository: 'nmfs-stock-synthesis/test-models'
+          repository: 'nmfs-ost/ss3-test-models'
           path: test-models-repo
 
       - name: Update Ubuntu packages
@@ -62,16 +62,19 @@ jobs:
       - name: move exes, scripts to needed locations
         run: |
           mv test-models-repo/models test-models-repo/model_runs
-          mv SS330/ss test-models-repo/model_runs/ss
+          mv SS330/ss test-models-repo/model_runs/ss3
           mv test-models-repo/.github/r_scripts/run_from_par.R test-models-repo/run_from_par.R
           mv test-models-repo/.github/r_scripts/run_compare_noest.R test-models-repo/run_compare_noest.R
 
-      - name: change permissions on ss exes
-        run: chmod a+x test-models-repo/model_runs/ss
+      - name: change permissions on ss3 exes
+        run: chmod a+x test-models-repo/model_runs/ss3
 
       - name: run models without estimation
         run: |
          cd test-models-repo && Rscript run_from_par.R
+
+      - name: download R packages for parallel
+        run: Rscript -e 'install.packages(c("parallely", "furrr", "future"))'
 
       - name: Run comparison
         run: |
@@ -113,14 +116,17 @@ jobs:
             # run the models without estimation
             file.remove(file.path(dir, "Report.sso"))
             # see if model finishes without error
-            system(paste0("cd ", dir, " && ../ss -stopph 0 -nohess")) # may need to change path to ss exe
+            system(paste0("cd ", dir, " && ../ss3 -stopph 0 -nohess"))
             model_ran <- file.exists(file.path(dir, "control.ss_new"))
             return(model_ran)
           }
 
-          mod_ran <- lapply(mod_paths, function(x) tryCatch(run_ssnew(x),
+          ncores <- parallelly::availableCores(omit = 1)
+          future::plan(future::multisession, workers = ncores)
+
+          mod_ran <- furrr::future_map(mod_paths, function(x) {tryCatch(run_ssnew(x),
                                                  error = function(e) print(e)
-                                                 )
+                                                 )}
                      )
           mod_errors <- mod_names[unlist(lapply(mod_ran, function(x) "simpleError" %in% class(x)))]
           success <- TRUE
