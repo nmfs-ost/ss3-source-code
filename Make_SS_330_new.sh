@@ -122,7 +122,9 @@ if [ -f SS_functions.temp ]; then
 fi
 
 # create source files in build dir
-mkdir -p $BUILD_DIR
+if [[ ! -d "$BUILD_DIR" ]]; then
+  mkdir -p $BUILD_DIR
+fi
 case $BUILD_TYPE in
     ss_opt )   grep "opt" SS_versioninfo_330opt.tpl
                cat_opt_files
