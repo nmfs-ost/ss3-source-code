@@ -3,11 +3,11 @@
 name: run-ss3-mcmc
 on:
   workflow_dispatch:
-  push:
-    paths:
-      - '**.tpl'
-    branches:
-      - main
+  # push:
+  #   paths:
+  #     - '**.tpl'
+  #   branches:
+  #     - main
   pull_request:
     types: ['opened', 'edited', 'reopened', 'synchronize', 'ready_for_review']
     paths:

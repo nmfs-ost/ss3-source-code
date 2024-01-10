@@ -5,11 +5,11 @@ name: build-ss3-warnings
 # Controls when the action will run.
 on:
   workflow_dispatch:
-  push:
-    paths:
-      - '**.tpl'
-    branches:
-      - main
+  # push:
+  #   paths:
+  #     - '**.tpl'
+  #   branches:
+  #     - main
   pull_request:
     types: ['opened', 'edited', 'reopened', 'synchronize', 'ready_for_review']
     paths:
