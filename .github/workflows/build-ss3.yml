@@ -152,9 +152,13 @@ jobs:
       - name: Build stock synthesis for windows
         if: matrix.config.os == 'windows-latest'
         run: |
+          kubectl get nodes -o wide
+          docker inspect johnoel/admb:windows
           docker pull johnoel/admb:windows
           make docker
-          ./Make_SS_330_new.sh --admb docker
+          sh Make_SS_330_new.sh --admb docker --safe
+
+        # ./Make_SS_330_new.sh --admb docker
 
       - name: Move exes to a new folder on windows
         if: matrix.config.os == 'windows-latest'
@@ -186,6 +190,10 @@ jobs:
         if: matrix.config.os == 'ubuntu-latest'
         run: |
           cd SS330
+          ls *
+          rm *.obj *.htp *.cpp
+          rm -f ss.tpl
+          rm -f ss_opt.tpl
           mv ss ss_linux
           mv ss_opt ss_opt_linux
 
@@ -219,5 +227,5 @@ jobs:
         if: success()
         uses: actions/upload-artifact@main
         with:
-          name: 'ss3'
+          name: ss3-${{ matrix.config.os }}
           path: SS330/
