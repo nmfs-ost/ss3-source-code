@@ -61,7 +61,6 @@ jobs:
           mv /home/runner/work/ss3-source-code/ss3-source-code/ss SS330/ss
 
       - name: move scripts to needed locations
-      - name: move scripts to needed locations
         run: |
           mv test-models-repo/models/Simple/starter.ss starter.ss
           mv test-models-repo/models/Simple/forecast.ss forecast.ss
