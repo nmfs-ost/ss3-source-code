@@ -57,8 +57,8 @@ jobs:
         run: |
           docker pull johnoel/admb:linux
           make docker
-          docker pull johnoel/admb:linux
-          make docker
+          mkdir SS330
+          mv /home/runner/work/ss3-source-code/ss3-source-code/ss SS330/ss
 
       - name: move scripts to needed locations
       - name: move scripts to needed locations
@@ -71,7 +71,7 @@ jobs:
           ls
 
       - name: change permissions on ss exe
-        run: chmod a+x ss3
+        run: sudo chmod a+x ss3
 
       - name: run models without estimation
         run: |
