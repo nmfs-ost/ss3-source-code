@@ -208,9 +208,9 @@ jobs:
         if: matrix.config.os == 'macos-latest'
         run: |
           cd SS330
-          rm *.obj *.htp *.cpp ss_opt.tpl
           mv ss ss3_osx
           mv ss_opt ss3_opt_osx
+        # rm *.obj *.htp *.cpp ss_opt.tpl
           
       - name: Verify binary on linux
         if: matrix.config.os == 'ubuntu-latest'
@@ -222,9 +222,9 @@ jobs:
         if: matrix.config.os == 'ubuntu-latest'
         run: |
           cd SS330
-          rm *.obj *.htp *.cpp ss_opt.tpl ss.tpl
           mv ss ss3_linux
           mv ss_opt ss3_opt_linux
+        # rm *.obj *.htp *.cpp ss_opt.tpl ss.tpl
 
       - name: Archive binaries
         if: success()
