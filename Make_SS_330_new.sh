@@ -140,9 +140,9 @@ fi
 cd $BUILD_DIR
 #if [[ "$ADMB_HOME" == "docker" ]] ; then
   if [[ "$OS" == "Windows_NT" ]] ; then
-      docker run --rm --volume `cygpath -w $PWD`:C:\\workdir\\$BUILD_TYPE --workdir C:\\workdir\\$BUILD_TYPE johnoel/admb:windows $BUILD_TYPE.tpl
+    docker run --rm --volume `cygpath -w $PWD`:C:\\workdir --workdir C:\\workdir johnoel/admb:windows $BUILD_TYPE.tpl
   else
-      docker run --rm --volume $PWD:/workdir/$BUILD_TYPE --workdir /workdir/$BUILD_TYPE johnoel/admb:linux $BUILD_TYPE.tpl
+    docker run --rm --volume $PWD:/workdir --workdir /workdir johnoel/admb:linux $BUILD_TYPE.tpl
   fi
 #else
 #  admb $OPTFLAG $STATICFLAG $BUILD_TYPE
