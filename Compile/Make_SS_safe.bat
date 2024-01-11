@@ -16,4 +16,4 @@ REM cd "Compile"
 REM ::set CXX=cl
 REM set CXX=g++
 REM admb ss
-docker run --rm --volume -w d:\a\ss3-source-code\ss3-source-code:c:\\workdir --workdir c:\\workdir\\compile johnoel/admb:windows ss.tpl
+docker run --rm --volume -w d:\\a\\ss3-source-code\\ss3-source-code:c:\\workdir --workdir c:\\workdir\\compile johnoel/admb:windows ss.tpl
