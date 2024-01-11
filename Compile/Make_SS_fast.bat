@@ -17,4 +17,4 @@ REM cd "Compile"
 REM set CXX=g++
 REM admb -f ss_opt
 
-docker run --rm --volume -w %CD%:C:\\workdir --workdir C:\\workdir\\Compile johnoel/admb:windows ss_opt.tpl
+docker run --rm --volume -w %CD%:c:\\workdir --workdir c:\\workdir\\compile johnoel/admb:windows ss_opt.tpl
