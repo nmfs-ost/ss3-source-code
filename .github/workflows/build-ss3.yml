@@ -212,6 +212,7 @@ jobs:
         if: matrix.config.os == 'windows-latest'
         run: |
           mkdir SS330
+          chmod 777 SS330
           mv Compile/ss.exe SS330/
           mv Compile/ss_opt.exe SS330/
           mv SS330/ss.exe SS330/ss3_win.exe
@@ -223,6 +224,7 @@ jobs:
           rm -rf SS330
           rm -rf ss_osx.tar
           mkdir SS330
+          chmod 777 SS330
           /bin/bash ./Make_SS_330_new.sh -b SS330
           /bin/bash ./Make_SS_330_new.sh -b SS330 -o
           
@@ -232,6 +234,7 @@ jobs:
           rm -rf SS330
           rm -rf ss_osx.tar
           mkdir SS330
+          chmod 777 SS330
           /bin/bash ./Make_SS_330_new.sh -b SS330 -p
           /bin/bash ./Make_SS_330_new.sh -b SS330 -o -p
 
