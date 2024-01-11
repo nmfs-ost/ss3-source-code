@@ -18,4 +18,4 @@ REM set CXX=g++
 REM admb ss
 REM set CURDIR=%CD:\=\\%
 set CURDIR=d:\\a\\ss3-source-code\\ss3-source-code
-docker run --rm --mount type=bind,source=%CURDIR%,target=c:\\workdir --workdir c:\\workdir\\compile johnoel/admb:windows ss.tpl
+docker run --rm --mount type=volume,source=%CURDIR%,target=c:\\workdir --workdir c:\\workdir\\compile johnoel/admb:windows ss.tpl
