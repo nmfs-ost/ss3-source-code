@@ -145,6 +145,7 @@ else
 fi
 
 # change to build dir and build 
+chmod 777 $BUILD_DIR
 #if [[ "$ADMB_HOME" == "docker" ]] ; then
   if [[ "$OS" == "Windows_NT" ]] ; then
     docker run --rm --volume `cygpath -w $PWD`:C:\\workdir --workdir C:\\workdir johnoel/admb:windows $BUILD_TYPE.tpl
