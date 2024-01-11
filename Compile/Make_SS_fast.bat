@@ -13,8 +13,8 @@ REM combine remaining files to create ss.tpl
 copy/b SS_versioninfo_330opt.tpl+SS_readstarter.tpl+SS_readdata_330.tpl+SS_readcontrol_330.tpl+SS_param.tpl+SS_prelim.tpl+SS_global.tpl+SS_proced.tpl+SS_functions.temp "Compile\ss_opt.tpl"
 
 REM compile executable
-cd "Compile"
-set CXX=g++
-admb -f ss_opt
+REM cd "Compile"
+REM set CXX=g++
+REM admb -f ss_opt
 
-
+docker run --rm --volume `cygpath -w $PWD`:C:\\workdir --workdir C:\\workdir\\Compile johnoel/admb:windows ss_opt.tpl
