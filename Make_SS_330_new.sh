@@ -154,7 +154,7 @@ fi
 #else
 #  admb $OPTFLAG $STATICFLAG $BUILD_TYPE
 #fi
-chmod a+x $BUILD_DIR/$BUILD_TYPE
+#chmod a+x $BUILD_DIR/$BUILD_TYPE
 
 # output warnings
 if [[ "$WARNINGS" == "on" ]] ; then
