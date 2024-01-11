@@ -205,8 +205,8 @@ jobs:
         if: matrix.config.os == 'windows-latest'
         run: |
           pushd Compile
-          cmd /k Make_SS_safe.bat
-          cmd /k Make_SS_fast.bat
+          Make_SS_safe.bat
+          Make_SS_fast.bat
           popd
 
       - name: Move exes to a new folder on windows
