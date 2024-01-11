@@ -12,8 +12,10 @@ copy/b SS_versioninfo_330safe.tpl+SS_readstarter.tpl+SS_readdata_330.tpl+SS_read
 
 ::path=c:\admb;C:\rtools40\mingw64\bin;%path%
 
-cd "Compile"
-::set CXX=cl
-set CXX=g++
-
-admb ss
+REM cd "Compile"
+REM ::set CXX=cl
+REM set CXX=g++
+REM admb ss
+REM set CURDIR=%CD:\=\\%
+set CURDIR=d:\\a\\ss3-source-code\\ss3-source-code
+docker run --rm --mount type=volume,source=%CURDIR%,target=c:\\workdir --workdir c:\\workdir\\compile johnoel/admb:windows ss.tpl
