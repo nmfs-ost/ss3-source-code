@@ -130,7 +130,14 @@ case $BUILD_TYPE in
                ;;
     ss )       grep "safe" SS_versioninfo_330safe.tpl
                cat_safe_files
+               ;;
 esac
+if [ -f $BUILD_DIR/$BUILD_TYPE.tpl ]; then
+  cat $BUILD_DIR/$BUILD_TYPE.tpl
+else
+  echo "No $BUILD_DIR/$BUILD_TYPE.tpl"
+  exit
+fi
 
 # debug info
 if [[ "$DEBUG" == "on" ]] ; then
@@ -141,7 +148,6 @@ fi
 
 # change to build dir and build 
 cd $BUILD_DIR
-cat $BUILD_DIR/$BUILD_TYPE.tpl
 echo $PWD
 #if [[ "$ADMB_HOME" == "docker" ]] ; then
   if [[ "$OS" == "Windows_NT" ]] ; then
