@@ -123,6 +123,7 @@ fi
 if [[ ! -d "$BUILD_DIR" ]]; then
   mkdir -p $BUILD_DIR
 fi
+echo "--$BUILD_TYPE--"
 case $BUILD_TYPE in
     ss_opt )   grep "opt" SS_versioninfo_330opt.tpl
                cat_opt_files
