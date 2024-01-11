@@ -18,7 +18,7 @@ jobs:
       fail-fast: false
       matrix:
         config:
-          # - {os: windows-latest}
+          - {os: windows-latest}
           - {os: macos-latest}
           - {os: ubuntu-latest}
     # Limit run time to 90 min to avoid wasting action minutes.
@@ -50,27 +50,27 @@ jobs:
           git fetch --tags
           git fetch --prune --unshallow || true
 
-      # - name: Get the last tag on windows
-      #   id: get-latest-tag-win
-      #   if: matrix.config.os == 'windows-latest'
-      #   run: |
-      #     git tag
-      #     $latest_tag = (git describe --abbrev=0 --tags)
-      #     $latest_tag_commit = ( git rev-list -n 1 $latest_tag)
-      #     $latest_commit = (git rev-list HEAD -n 1)
-      #     echo "tag=${latest_tag}" >> $env:GITHUB_OUTPUT
-      #     echo "tag_commit=${latest_tag_commit}" >> $env:GITHUB_OUTPUT
-      #     echo "commit=${latest_commit}" >> $env:GITHUB_OUTPUT
+      - name: Get the last tag on windows
+        id: get-latest-tag-win
+        if: matrix.config.os == 'windows-latest'
+        run: |
+          git tag
+          $latest_tag = (git describe --abbrev=0 --tags)
+          $latest_tag_commit = ( git rev-list -n 1 $latest_tag)
+          $latest_commit = (git rev-list HEAD -n 1)
+          echo "tag=${latest_tag}" >> $env:GITHUB_OUTPUT
+          echo "tag_commit=${latest_tag_commit}" >> $env:GITHUB_OUTPUT
+          echo "commit=${latest_commit}" >> $env:GITHUB_OUTPUT
 
-       # uses: actions-ecosystem/action-get-latest-tag@v1 # for linux
+      #  uses: actions-ecosystem/action-get-latest-tag@v1 # for linux
 
-      # - name: pull the last tag value to use in the Rscript on windows
-      #   id: get-version-win
-      #   if: matrix.config.os == 'windows-latest'
-      #   run: |
-      #     Out-File -InputObject ${{ steps.get-latest-tag-win.outputs.tag }} -FilePath .github/last_tag.txt
-      #     Out-File -InputObject ${{ steps.get-latest-tag-win.outputs.tag_commit }} -FilePath .github/last_tag_commit.txt
-      #     Out-File -InputObject ${{ steps.get-latest-tag-win.outputs.commit}} -FilePath .github/last_commit.txt
+      - name: pull the last tag value to use in the Rscript on windows
+        id: get-version-win
+        if: matrix.config.os == 'windows-latest'
+        run: |
+          Out-File -InputObject ${{ steps.get-latest-tag-win.outputs.tag }} -FilePath .github/last_tag.txt
+          Out-File -InputObject ${{ steps.get-latest-tag-win.outputs.tag_commit }} -FilePath .github/last_tag_commit.txt
+          Out-File -InputObject ${{ steps.get-latest-tag-win.outputs.commit}} -FilePath .github/last_commit.txt
 
       - name: Get the last tag on unix
         id: get-latest-tag-unix
@@ -158,21 +158,21 @@ jobs:
           writeLines(ver_info, "SS_versioninfo_330opt.tpl")
         shell: Rscript {0}
 
-      # - name: Build stock synthesis for windows
-      #   if: matrix.config.os == 'windows-latest'
-      #   run: |
-      #     cd Compile
-      #     ./Make_SS_safe.bat
-      #     ./Make_SS_fast.bat
+      - name: Build stock synthesis for windows
+        if: matrix.config.os == 'windows-latest'
+        run: |
+          cd Compile
+          ./Make_SS_safe.bat
+          ./Make_SS_fast.bat
 
-      # - name: Move exes to a new folder on windows
-      #   if: matrix.config.os == 'windows-latest'
-      #   run: |
-      #     mkdir SS330
-      #     mv Compile/ss.exe SS330/
-      #     mv Compile/ss_opt.exe SS330/
-      #     mv SS330/ss.exe SS330/ss3_win.exe
-      #     mv SS330/ss_opt.exe SS330/ss3_opt_win.exe
+      - name: Move exes to a new folder on windows
+        if: matrix.config.os == 'windows-latest'
+        run: |
+          mkdir SS330
+          mv Compile/ss.exe SS330/
+          mv Compile/ss_opt.exe SS330/
+          mv SS330/ss.exe SS330/ss3_win.exe
+          mv SS330/ss_opt.exe SS330/ss3_opt_win.exe
 
       - name: Build stock synthesis for mac
         if: matrix.config.os == 'macos-latest'
@@ -184,9 +184,14 @@ jobs:
           rm -rf SS330
           rm -rf ss_osx.tar
           mkdir SS330
+          chmod 777 SS330
           mv /Users/runner/work/ss3-source-code/ss3-source-code/ss SS330/ss
           mv /Users/runner/work/ss3-source-code/ss3-source-code/ss_opt SS330/ss_opt
-          
+        
+        # can remove make docker and mv commands and put these two lines instead
+        # /bin/bash ./Make_SS_330_new.sh -b SS330
+        # /bin/bash ./Make_SS_330_new.sh -b SS330 -o
+
       - name: Build stock synthesis for linux with p flag
         if:  matrix.config.os == 'ubuntu-latest'
         run: |
@@ -195,8 +200,13 @@ jobs:
           rm -rf SS330
           rm -rf ss_osx.tar
           mkdir SS330
+          chmod 777 SS330
           mv /home/runner/work/ss3-source-code/ss3-source-code/ss SS330/ss
           mv /home/runner/work/ss3-source-code/ss3-source-code/ss_opt SS330/ss_opt
+        
+        # can remove make docker and mv commands and put these two lines instead
+        # /bin/bash ./Make_SS_330_new.sh -b SS330 -p
+        # /bin/bash ./Make_SS_330_new.sh -b SS330 -o -p
 
       - name: Verify binary on mac
         if: matrix.config.os == 'macos-latest'
@@ -210,7 +220,6 @@ jobs:
           cd SS330
           mv ss ss3_osx
           mv ss_opt ss3_opt_osx
-        # rm *.obj *.htp *.cpp ss_opt.tpl
           
       - name: Verify binary on linux
         if: matrix.config.os == 'ubuntu-latest'
@@ -224,7 +233,6 @@ jobs:
           cd SS330
           mv ss ss3_linux
           mv ss_opt ss3_opt_linux
-        # rm *.obj *.htp *.cpp ss_opt.tpl ss.tpl
 
       - name: Archive binaries
         if: success()
