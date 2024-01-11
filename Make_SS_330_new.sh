@@ -132,9 +132,7 @@ case $BUILD_TYPE in
                cat_safe_files
                ;;
 esac
-if [ -f $BUILD_DIR/$BUILD_TYPE.tpl ]; then
-  cat $BUILD_DIR/$BUILD_TYPE.tpl
-else
+if [ ! -f $BUILD_DIR/$BUILD_TYPE.tpl ]; then
   echo "No $BUILD_DIR/$BUILD_TYPE.tpl"
   exit
 fi
