@@ -15,6 +15,5 @@ copy/b SS_versioninfo_330safe.tpl+SS_readstarter.tpl+SS_readdata_330.tpl+SS_read
 REM cd "Compile"
 REM ::set CXX=cl
 REM set CXX=g++
-
 REM admb ss
 docker run --rm --volume `cygpath -w $PWD`:C:\\workdir --workdir C:\\workdir\\Compile johnoel/admb:windows ss.tpl
