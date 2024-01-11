@@ -18,4 +18,4 @@ REM set CXX=g++
 REM admb -f ss_opt
 
 set CURDIR=%CD:\=\\%
-docker run --rm --mount type=volume,source=%CURDIR%,target=c:\\workdir --workdir c:\\workdir\\compile johnoel/admb:windows ss_opt.tpl
+docker run --rm --mount type=volume,source=%CURDIR%,target=C:\\workdir --workdir C:\\workdir\\compile johnoel/admb:windows ss_opt.tpl
