@@ -20,5 +20,5 @@ copy/b SS_versioninfo_330opt.tpl+SS_readstarter.tpl+SS_readdata_330.tpl+SS_readc
 popd
 
 @REM compile executable
-set CURDIR=%CD%\compile
+set CURDIR=%CD%
 docker run --rm --mount source=%CURDIR%,destination=C:\compile,type=bind --workdir C:\\compile johnoel/admb:windows ss_opt.tpl
