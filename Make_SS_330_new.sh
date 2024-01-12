@@ -123,7 +123,6 @@ fi
 if [[ ! -d "$BUILD_DIR" ]]; then
   mkdir -p $BUILD_DIR
 fi
-echo "--$BUILD_TYPE--"
 case $BUILD_TYPE in
     ss_opt )   grep "opt" SS_versioninfo_330opt.tpl
                cat_opt_files
@@ -133,7 +132,7 @@ case $BUILD_TYPE in
                ;;
 esac
 if [ ! -f $BUILD_DIR/$BUILD_TYPE.tpl ]; then
-  echo "No $BUILD_DIR/$BUILD_TYPE.tpl"
+  echo "Error: Unable to find $BUILD_DIR/$BUILD_TYPE.tpl"
   exit
 fi
 
@@ -161,6 +160,5 @@ if [[ "$WARNINGS" == "on" ]] ; then
     echo "... compiling a second time to get warnings ..."
     g++ -c -std=c++0x -O3 -I. -I"$ADMB_HOME/include" -I"/$ADMB_HOME/include/contrib" -o$BUILD_TYPE.obj $BUILD_TYPE.cpp -Wall -Wextra
 fi
-
 
 exit
