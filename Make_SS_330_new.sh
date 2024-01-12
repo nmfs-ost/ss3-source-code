@@ -136,29 +136,35 @@ if [ ! -f $BUILD_DIR/$BUILD_TYPE.tpl ]; then
   exit
 fi
 
+# if admb is not in path, use docker to build.
+if [[ "$ADMB_HOME" != "docker" ]] ; then
+  if [[ "$OS" == "Windows_NT" ]] ; then
+    if [[ -x "$(command -v admb.sh)" ]] ; then
+      ADMB_HOME="$(dirname $(command -v admb.sh))"
+    else
+      unset ADMB_HOME
+    fi
+  else
+    if [[ -x "$(command -v admb)" ]] ; then
+      ADMB_HOME="$(dirname $(command -v admb))"
+    else
+      unset ADMB_HOME
+    fi
+  fi
+  if [[ -z "$ADMB_HOME" ]] ; then
+    ADMB_HOME=docker
+  fi
+fi
+
 # debug info
 if [[ "$DEBUG" == "on" ]] ; then
   display_settings
 else
-  echo "-- Building $BUILD_TYPE in '$BUILD_DIR' --"
-fi
-
-if [[ "$OS" == "Windows_NT" ]] ; then
-  if [[ -x "$(command -v admb.sh)" ]] ; then
-    set ADMB_HOME=$(dirname $(command -v admb.sh))
+  if [[ "$ADMB_HOME" == "docker" ]] ; then
+    echo "-- Building $BUILD_TYPE with docker in '$BUILD_DIR' --"
   else
-    unset ADMB_HOME
+    echo "-- Building $BUILD_TYPE in '$BUILD_DIR' --"
   fi
-else
-  if [[ -x "$(command -v admb)" ]] ; then
-    set ADMB_HOME=$(dirname $(command -v admb))
-  else
-    unset ADMB_HOME
-  fi
-fi
-
-if [[ -z "$ADMB_HOME" ]] ; then
-  ADMB_HOME=docker
 fi
 
 # change to build dir and build 
@@ -177,15 +183,17 @@ if [[ "$ADMB_HOME" == "docker" ]] ; then
     fi
   fi
 else
+  command pushd $BUILD_DIR > /dev/null
   if [[ "$WARNINGS" == "on" ]] ; then
     export CXXFLAGS="-Wall -Wextra"
   fi
   if [[ "$OS" == "Windows_NT" ]] ; then
     admb.sh $OPTFLAG $STATICFLAG $BUILD_TYPE
-    chmod a+x $BUILD_DIR/$BUILD_TYPE
+    chmod a+x $BUILD_TYPE
   else
     admb $OPTFLAG $STATICFLAG $BUILD_TYPE
   fi
+  command popd > /dev/null
 fi
 
 # output warnings
