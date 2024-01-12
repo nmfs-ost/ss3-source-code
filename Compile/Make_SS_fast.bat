@@ -16,7 +16,7 @@ copy/b SS_versioninfo_330opt.tpl+SS_readstarter.tpl+SS_readdata_330.tpl+SS_readc
 @REM cd "Compile"
 popd
 
-set ADMB_HOME=
+set "ADMB_HOME="
 
 @REM compile executable
 if not defined ADMB_HOME (

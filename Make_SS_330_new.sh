@@ -143,8 +143,11 @@ else
   echo "-- Building $BUILD_TYPE in '$BUILD_DIR' --"
 fi
 
-ADMB_HOME=docker
-WARNINGS=on
+unset ADMB_HOME
+
+if [[ -z "$ADMB_HOME" ]] ; then
+  ADMB_HOME=docker
+fi
 
 # change to build dir and build 
 if [[ "$ADMB_HOME" == "docker" ]] ; then
