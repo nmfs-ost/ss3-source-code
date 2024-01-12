@@ -161,9 +161,10 @@ jobs:
       - name: Build stock synthesis for windows
         if: matrix.config.os == 'windows-latest'
         run: |
-          cd Compile
+          pushd Compile
           ./Make_SS_safe.bat
           ./Make_SS_fast.bat
+          popd
 
       - name: Move exes to a new folder on windows
         if: matrix.config.os == 'windows-latest'
