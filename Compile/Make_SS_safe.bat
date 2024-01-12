@@ -24,8 +24,10 @@ for /f "tokens=*" %%i in ('where admb.cmd 2^>^&1 ^| findstr "admb.cmd"') do (
 
 @REM compile executable
 if not defined ADMB_HOME (
+  @echo "-- Building ss.exe with docker in '%CD%' --"
   docker run --rm --mount source=%CD%,destination=C:\compile,type=bind --workdir C:\\compile johnoel/admb:windows ss.tpl
 ) else (
+  @echo "-- Building ss.exe in '%CD%' --"
   @REM set CXX=cl
   set CXX=g++
   admb ss
