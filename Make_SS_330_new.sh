@@ -143,22 +143,38 @@ else
   echo "-- Building $BUILD_TYPE in '$BUILD_DIR' --"
 fi
 
+ADMB_HOME=docker
+WARNINGS=on
+
 # change to build dir and build 
-#if [[ "$ADMB_HOME" == "docker" ]] ; then
+if [[ "$ADMB_HOME" == "docker" ]] ; then
   if [[ "$OS" == "Windows_NT" ]] ; then
-    docker run --rm --volume `cygpath -w $PWD`:C:\\workdir --workdir C:\\workdir\\$BUILD_DIR johnoel/admb:windows $BUILD_TYPE.tpl
+    if [[ "$WARNINGS" == "on" ]] ; then
+      docker run --env CXXFLAGS="-Wall -Wextra" --rm --volume `cygpath -w $PWD`:C:\\workdir --workdir C:\\workdir\\$BUILD_DIR johnoel/admb:windows $BUILD_TYPE.tpl
+    else
+      docker run --rm --volume `cygpath -w $PWD`:C:\\workdir --workdir C:\\workdir\\$BUILD_DIR johnoel/admb:windows $BUILD_TYPE.tpl
+    fi
   else
-    docker run --rm --volume $PWD:/workdir --workdir /workdir/$BUILD_DIR  johnoel/admb:linux $BUILD_TYPE.tpl
+    if [[ "$WARNINGS" == "on" ]] ; then
+      docker run --env CXXFLAGS="-Wall -Wextra" --rm --volume $PWD:/workdir --workdir /workdir/$BUILD_DIR johnoel/admb:linux $BUILD_TYPE.tpl
+    else
+      docker run --rm --volume $PWD:/workdir --workdir /workdir/$BUILD_DIR johnoel/admb:linux $BUILD_TYPE.tpl
+    fi
   fi
-#else
-#  admb $OPTFLAG $STATICFLAG $BUILD_TYPE
-#fi
-#chmod a+x $BUILD_DIR/$BUILD_TYPE
+else
+  if [[ "$WARNINGS" == "on" ]] ; then
+    export CXXFLAGS="-Wall -Wextra"
+  fi
+  admb $OPTFLAG $STATICFLAG $BUILD_TYPE
+  if [[ "$OS" == "Windows_NT" ]] ; then
+    chmod a+x $BUILD_DIR/$BUILD_TYPE
+  fi
+fi
 
 # output warnings
-if [[ "$WARNINGS" == "on" ]] ; then
-    echo "... compiling a second time to get warnings ..."
-    g++ -c -std=c++0x -O3 -I. -I"$ADMB_HOME/include" -I"/$ADMB_HOME/include/contrib" -o$BUILD_TYPE.obj $BUILD_TYPE.cpp -Wall -Wextra
-fi
+#if [[ "$WARNINGS" == "on" ]] ; then
+#    echo "... compiling a second time to get warnings ..."
+#    g++ -c -std=c++0x -O3 -I. -I"$ADMB_HOME/include" -I"/$ADMB_HOME/include/contrib" -o$BUILD_TYPE.obj $BUILD_TYPE.cpp -Wall -Wextra
+#fi
 
 exit
