@@ -16,7 +16,10 @@ copy/b SS_versioninfo_330opt.tpl+SS_readstarter.tpl+SS_readdata_330.tpl+SS_readc
 @REM cd "Compile"
 popd
 
-set "ADMB_HOME="
+@REM check if admb.cmd is in path
+for /f "tokens=*" %%i in ('where admb.cmd 2^>^&1 ^| findstr "admb.cmd"') do (
+  set "ADMB_HOME="
+)
 
 @REM compile executable
 if not defined ADMB_HOME (
