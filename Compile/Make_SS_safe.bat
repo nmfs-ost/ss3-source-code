@@ -15,11 +15,15 @@ copy/b SS_versioninfo_330safe.tpl+SS_readstarter.tpl+SS_readdata_330.tpl+SS_read
 ::path=c:\admb;C:\rtools40\mingw64\bin;%path%
 
 @REM cd "Compile"
-@REM ::set CXX=cl
-@REM set CXX=g++
-@REM admb ss
-
 popd
 
+set ADMB_HOME=
+
 @REM compile executable
-docker run --rm --mount source=%CD%,destination=C:\compile,type=bind --workdir C:\\compile johnoel/admb:windows ss.tpl
+if not defined ADMB_HOME (
+  docker run --rm --mount source=%CD%,destination=C:\compile,type=bind --workdir C:\\compile johnoel/admb:windows ss.tpl
+) else (
+  @REM set CXX=cl
+  set CXX=g++
+  admb ss
+)

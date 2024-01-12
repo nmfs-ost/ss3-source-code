@@ -14,10 +14,14 @@ copy/b SS_biofxn.tpl+SS_miscfxn.tpl+SS_selex.tpl+SS_popdyn.tpl+SS_recruit.tpl+SS
 copy/b SS_versioninfo_330opt.tpl+SS_readstarter.tpl+SS_readdata_330.tpl+SS_readcontrol_330.tpl+SS_param.tpl+SS_prelim.tpl+SS_global.tpl+SS_proced.tpl+SS_functions.temp "Compile\ss_opt.tpl"
 
 @REM cd "Compile"
-@REM set CXX=g++
-@REM admb -f ss_opt
-
 popd
 
+set ADMB_HOME=
+
 @REM compile executable
-docker run --rm --mount source=%CD%,destination=C:\compile,type=bind --workdir C:\\compile johnoel/admb:windows ss_opt.tpl
+if not defined ADMB_HOME (
+  docker run --rm --mount source=%CD%,destination=C:\compile,type=bind --workdir C:\\compile johnoel/admb:windows ss_opt.tpl
+) else (
+  set CXX=g++
+  admb -f ss_opt
+)
