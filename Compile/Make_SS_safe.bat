@@ -1,6 +1,8 @@
 ::compiling ss.exe (safe executable) with generic path
 ::requires "Compile" directory in the same directory as the .tpl files and this .bat file
-cd ..
+
+pushd ..
+
 ::deleted temporary file
 del SS_functions.temp
 
@@ -12,10 +14,19 @@ copy/b SS_versioninfo_330safe.tpl+SS_readstarter.tpl+SS_readdata_330.tpl+SS_read
 
 ::path=c:\admb;C:\rtools40\mingw64\bin;%path%
 
-REM cd "Compile"
-REM ::set CXX=cl
-REM set CXX=g++
-REM admb ss
-REM set CURDIR=%CD:\=\\%
-set CURDIR=d:\\a\\ss3-source-code\\ss3-source-code
-docker run --rm --mount type=volume,source=%CURDIR%,target=c:\\workdir --workdir c:\\workdir\\compile johnoel/admb:windows ss.tpl
+@REM cd "Compile"
+popd
+
+:: check if admb.cmd is in path
+for /f "tokens=*" %%i in ('where admb.cmd 2^>^&1 ^| findstr "admb.cmd"') do (
+  set "ADMB_HOME="
+)
+
+@REM compile executable
+if not defined ADMB_HOME (
+  docker run --rm --mount source=%CD%,destination=C:\compile,type=bind --workdir C:\\compile johnoel/admb:windows ss.tpl
+) else (
+  @REM set CXX=cl
+  set CXX=g++
+  admb ss
+)

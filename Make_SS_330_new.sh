@@ -122,9 +122,6 @@ fi
 # create source files in build dir
 if [ ! -d "$BUILD_DIR" ]; then
   mkdir -p $BUILD_DIR
-  chmod -R 777 $BUILD_DIR/$BUILD_TYPE
-else
-  rm -vf $BUILD_DIR/*
 fi
 case $BUILD_TYPE in
     ss_opt )   grep "opt" SS_versioninfo_330opt.tpl
@@ -132,37 +129,77 @@ case $BUILD_TYPE in
                ;;
     ss )       grep "safe" SS_versioninfo_330safe.tpl
                cat_safe_files
+               ;;
 esac
+if [ ! -f $BUILD_DIR/$BUILD_TYPE.tpl ]; then
+  echo "Error: Unable to find $BUILD_DIR/$BUILD_TYPE.tpl"
+  exit
+fi
+
+# if admb is not in path, use docker to build.
+if [[ "$ADMB_HOME" != "docker" ]] ; then
+  if [[ "$OS" == "Windows_NT" ]] ; then
+    if [[ -x "$(command -v admb.sh)" ]] ; then
+      ADMB_HOME="$(dirname $(command -v admb.sh))"
+    else
+      unset ADMB_HOME
+    fi
+  else
+    if [[ -x "$(command -v admb)" ]] ; then
+      ADMB_HOME="$(dirname $(command -v admb))"
+    else
+      unset ADMB_HOME
+    fi
+  fi
+  if [[ -z "$ADMB_HOME" ]] ; then
+    ADMB_HOME=docker
+  fi
+fi
 
 # debug info
 if [[ "$DEBUG" == "on" ]] ; then
   display_settings
 else
-  echo "-- Building $BUILD_TYPE in '$BUILD_DIR' --"
+  if [[ "$ADMB_HOME" == "docker" ]] ; then
+    echo "-- Building $BUILD_TYPE with docker in '$BUILD_DIR' --"
+  else
+    echo "-- Building $BUILD_TYPE in '$BUILD_DIR' --"
+  fi
 fi
 
 # change to build dir and build 
-pushd $BUILD_DIR
 if [[ "$ADMB_HOME" == "docker" ]] ; then
   if [[ "$OS" == "Windows_NT" ]] ; then
     if [[ "$WARNINGS" == "on" ]] ; then
-      docker run --env CXXFLAGS="-Wall -Wextra" --rm --volume `cygpath -w $PWD`:C:\\workdir\\$BUILD_TYPE --workdir C:\\workdir\\$BUILD_TYPE johnoel/admb:windows $BUILD_TYPE.tpl
+      docker run --env CXXFLAGS="-Wall -Wextra" --rm --mount source=`cygpath -w $PWD`\\$BUILD_DIR,destination=C:\\$BUILD_TYPE,mount=bind --workdir C:\\$BUILD_TYPE johnoel/admb:windows $BUILD_TYPE.tpl
     else
-      docker run --rm --volume `cygpath -w $PWD`:C:\\workdir\\$BUILD_TYPE --workdir C:\\workdir\\$BUILD_TYPE johnoel/admb:windows $BUILD_TYPE.tpl
+      docker run --rm --mount source=`cygpath -w $PWD`\\$BUILD_DIR,destination=C:\\$BUILD_TYPE,mount=bind --workdir C:\\$BUILD_TYPE johnoel/admb:windows $BUILD_TYPE.tpl
     fi
   else
     if [[ "$WARNINGS" == "on" ]] ; then
-      docker run --env CXXFLAGS="-Wall -Wextra" --rm --volume $PWD:/workdir/$BUILD_TYPE --workdir /workdir/$BUILD_TYPE johnoel/admb:linux $BUILD_TYPE.tpl
+      docker run --env CXXFLAGS="-Wall -Wextra" --rm --mount source=$PWD/$BUILD_DIR,destination=/$BUILD_TYPE,type=bind --workdir /$BUILD_TYPE johnoel/admb:linux $BUILD_TYPE.tpl
     else
-      docker run --rm --volume $PWD:/workdir/$BUILD_TYPE --workdir /workdir/$BUILD_TYPE johnoel/admb:linux $BUILD_TYPE.tpl
+      docker run --rm --mount source=$PWD/$BUILD_DIR,destination=/$BUILD_TYPE,type=bind --workdir /$BUILD_TYPE johnoel/admb:linux $BUILD_TYPE.tpl
     fi
   fi
 else
+  command pushd $BUILD_DIR > /dev/null
   if [[ "$WARNINGS" == "on" ]] ; then
-    export CXXFLAGS="-Wall -Wextra -Wno-unused-parameter"
+    export CXXFLAGS="-Wall -Wextra"
   fi
-  admb $OPTFLAG $STATICFLAG $BUILD_TYPE
+  if [[ "$OS" == "Windows_NT" ]] ; then
+    admb.sh $OPTFLAG $STATICFLAG $BUILD_TYPE
+    chmod a+x $BUILD_TYPE
+  else
+    admb $OPTFLAG $STATICFLAG $BUILD_TYPE
+  fi
+  command popd > /dev/null
 fi
-popd
+
+# output warnings
+#if [[ "$WARNINGS" == "on" ]] ; then
+#    echo "... compiling a second time to get warnings ..."
+#    g++ -c -std=c++0x -O3 -I. -I"$ADMB_HOME/include" -I"/$ADMB_HOME/include/contrib" -o$BUILD_TYPE.obj $BUILD_TYPE.cpp -Wall -Wextra
+#fi
 
 exit
