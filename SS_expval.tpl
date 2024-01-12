@@ -383,7 +383,6 @@ FUNCTION void Get_expected_values(const int y, const int t);
                     break;
                   }
                 }
-                Svy_selec_abund(f, j) = value(vbio);
 
                 //  get catchability
                 if (Q_setup(f, 1) == 2) // mirror Q from lower numbered survey
@@ -391,7 +390,7 @@ FUNCTION void Get_expected_values(const int y, const int t);
                   Svy_log_q(f, j) = Svy_log_q(Q_setup(f, 2), 1);
                   Q_parm(Q_setup_parms(f, 1)) = Svy_log_q(f, 1); // base Q  So this sets parameter equal to the scaling coefficient and can then have a prior
                 }
-                else if (Q_setup(f, 1) == 4)
+                else if (Q_setup(f, 1) == 4)  // mirror Q plus an offset
                 {
                   Svy_log_q(f, j) = Svy_log_q(Q_setup(f, 2), 1) + Q_parm(Q_setup_parms(f, 1) + 1);
                   Q_parm(Q_setup_parms(f, 1)) = Svy_log_q(f, 1); // base Q  So this sets parameter equal to the scaling coefficient and can then have a prior
@@ -414,7 +413,7 @@ FUNCTION void Get_expected_values(const int y, const int t);
                 {
                   Svy_q(f) = Svy_log_q(f); //  q already in  arithmetic space
                 }
-                else //  lognormal, or t-distribution in lognormal
+                else if (Svy_errtype(f) >= 0 ) // lognormal, or T-dist
                 {
                   Svy_q(f) = mfexp(Svy_log_q(f)); // get q in arithmetic space
                 }
@@ -425,6 +424,7 @@ FUNCTION void Get_expected_values(const int y, const int t);
                   vbio = pow(vbio, 1.0 + Q_parm(Q_setup_parms(f, 1) + 1));
                 } //  raise vbio to a power
 
+                Svy_selec_abund(f, j) = vbio;  //  e.g. the abundance that has been selected through selectivity or other assignment process
                 if (Svy_errtype(f) >= 0) //  lognormal or T-distribution
                 {
                   Svy_est(f, j) = log(vbio + 0.000001);
@@ -434,10 +434,12 @@ FUNCTION void Get_expected_values(const int y, const int t);
                   Svy_est(f, j) = vbio;
                 }
 
-                if (Q_setup(f, 5) == 0 || y > endyr) // apply Q, but note: float Q will be calculated and applied in objfun section, so temporarily store vbio in svy_est.
-                // if y is in forecast, then Q has already been calculated so can be applied here
+                //  apply catchability, except if float is used.
+                //  With float, catchability is calculated in ss_objfun after all obs have a value for svy_selec_abund
+                if (Q_setup(f, 5) == 0 || y > endyr) // apply Q if float is not used
+                // except if y is in forecast, then float Q has already been calculated so can be applied here
                 {
-                  if (Svy_errtype(f) >= 0) //  lognormal or T-distribution
+                  if (Svy_errtype(f) >= 0) //  lognormal or T-dist
                   {
                     Svy_est(f, j) += Svy_log_q(f, j);
                   }

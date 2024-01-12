@@ -18,6 +18,7 @@
 FUNCTION void evaluate_the_objective_function()
   {
   surv_like.initialize();
+  Svy_like_I.initialize();
   Q_dev_like.initialize();
   disc_like.initialize();
   length_like.initialize();
@@ -96,69 +97,62 @@ FUNCTION void evaluate_the_objective_function()
             {
               if (Svy_use(f, i) > 0)
               {
+                Svy_est(f, i) = log( Svy_selec_abund(f, i) );  //  before q is applied
                 temp2 += (Svy_obs_log(f, i) - Svy_est(f, i)) / square(Svy_se_use(f, i));
                 temp += 1.0 / square(Svy_se_use(f, i));
                 temp1 += 1.;
               }
             }
 
-            if (Q_setup(f, 4) == 0) // mean q, with nobiasadjustment
+            //  calc q and apply to all obs
+            if (Q_setup(f, 4) == 0) // mean q, with no bias adjustment
             {
               Svy_log_q(f) = temp2 / temp;
               Svy_est(f) += temp2 / temp;
             }
-            else // for value = 1 or 5       // mean q with variance bias adjustment
+            else // any value mean q with variance bias adjustment
             {
               Svy_log_q(f) = (temp2 + temp1 * 0.5) / temp;
               Svy_est(f) += (temp2 + temp1 * 0.5) / temp;
             }
+            Svy_q(f) = mfexp(Svy_log_q(f)); // get q in arithmetic space
             Q_parm(Q_setup_parms(f, 1)) = Svy_log_q(f, 1); // base Q  So this sets parameter equal to the scaling coefficient and can then have a prior
           }
           else //  no observations
           {
             Q_parm(Q_setup_parms(f, 1)) = Svy_log_q(f, 1);
           }
-
-          if (Svy_errtype(f) == -1) // normal
-          {
-            Svy_q(f) = Svy_log_q(f); //  q already in  arithmetic space
-          }
-          else
-          {
-            Svy_q(f) = mfexp(Svy_log_q(f)); // get q in arithmetic space
-          }
         }
 
         // SS_Label_Info_25.1.4 #calc the logL
-        if (Svy_errtype(f) == 0) // lognormal
-        {
-          for (i = 1; i <= Svy_N_fleet(f); i++)
-            if (Svy_use(f, i) > 0)
-            {
-              surv_like(f) += 0.5 * square((Svy_obs_log(f, i) - Svy_est(f, i)) / Svy_se_use(f, i)) + sd_offset * log(Svy_se_use(f, i));
-              //            should add a term for 0.5*s^2 for bias adjustment so that parameter approach will be same as the  biasadjusted scaling approach
-            }
-        }
-        else if (Svy_errtype(f) > 0) // t-distribution
-        {
-          dvariable df = Svy_errtype(f);
-          for (i = 1; i <= Svy_N_fleet(f); i++)
-            if (Svy_use(f, i) > 0)
-            {
-              surv_like(f) += ((df + 1.) / 2.) * log((1. + square((Svy_obs_log(f, i) - Svy_est(f, i))) / (df * square(Svy_se_use(f, i))))) + sd_offset * log(Svy_se_use(f, i));
-            }
-        }
-        else if (Svy_errtype(f) == -1) // normal
-        {
-          for (i = 1; i <= Svy_N_fleet(f); i++)
+        for (i = 1; i <= Svy_N_fleet(f); i++)
+          if (Svy_use(f, i) > 0)
           {
-            if (Svy_use(f, i) > 0)
-            {
-              surv_like(f) += 0.5 * square((Svy_obs(f, i) - Svy_est(f, i)) / Svy_se_use(f, i)) + sd_offset * log(Svy_se_use(f, i));
+            if (Svy_errtype(f) == 0) {  // lognormal
+              Svy_like_I(f,i) = 0.5 * square((Svy_obs_log(f, i) - Svy_est(f, i)) / Svy_se_use(f, i))
+                              + sd_offset * log(Svy_se_use(f, i));
+             }
+            else if (Svy_errtype(f) == 1) {  // lognormal with bias adjustment
+              Svy_like_I(f,i) = 0.5 * square((Svy_obs_log(f, i) - Svy_est(f, i) + 0.5 * square(Svy_se_use(f, i))) / Svy_se_use(f, i))
+                              + sd_offset * log(Svy_se_use(f, i));
+              }
+            else if (Svy_errtype(f) > 1) {  // T-dist
+              dvariable df = Svy_errtype(f);
+              Svy_like_I(f,i) = ((df + 1.) / 2.) * log((1. + square((Svy_obs_log(f, i) - Svy_est(f, i))) / (df * square(Svy_se_use(f, i)))))
+                              + sd_offset * log(Svy_se_use(f, i));
+              }
+            else if (Svy_errtype(f) == -1) {  // normal
+              Svy_like_I(f,i) =  0.5 * square((Svy_obs(f, i) - Svy_est(f, i)) / Svy_se_use(f, i))
+                              + sd_offset * log(Svy_se_use(f, i));
+            }
+            else if (Svy_errtype(f) == -2) {
+              // gamma option will go here
+            }
+            else {
+              // values <-2 are trapped in readdata
             }
           }
-        }
-
+          surv_like(f) = sum(Svy_like_I(f));
       } // end having obs for this survey
     }
     if (do_once == 1)

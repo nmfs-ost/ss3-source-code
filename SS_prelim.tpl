@@ -176,7 +176,7 @@
 
         if (Svy_use(f, i) > 0)
         {
-          if (Svy_errtype(f) >= 0) // lognormal or lognormal T_dist
+          if (Svy_errtype(f) >= 0) // lognormal or lognormal T-dist
           {
             if (Svy_obs(f, i) <= 0.0)
             {
@@ -188,12 +188,17 @@
             if (Svy_se(f, i) <= 0.0)
               Svy_se(f, i) = 0.001;
           }
-          else // normal distribution
+          else if ( Svy_errtype(f) == -1 ) // normal distribution
           {
             Svy_se(f, i) += var_adjust(1, f);
             if (Svy_se(f, i) <= 0.0)
               Svy_se(f, i) = 0.001;
           }
+          else
+          {
+            //  gamma will go here
+          }
+          
         }
       }
     }
