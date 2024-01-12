@@ -143,7 +143,19 @@ else
   echo "-- Building $BUILD_TYPE in '$BUILD_DIR' --"
 fi
 
-unset ADMB_HOME
+if [[ "$OS" == "Windows_NT" ]] ; then
+  if [[ -x "$(command -v admb.sh)" ]] ; then
+    set ADMB_HOME=$(dirname $(command -v admb.sh))
+  else
+    unset ADMB_HOME
+  fi
+else
+  if [[ -x "$(command -v admb)" ]] ; then
+    set ADMB_HOME=$(dirname $(command -v admb))
+  else
+    unset ADMB_HOME
+  fi
+fi
 
 if [[ -z "$ADMB_HOME" ]] ; then
   ADMB_HOME=docker
@@ -168,9 +180,11 @@ else
   if [[ "$WARNINGS" == "on" ]] ; then
     export CXXFLAGS="-Wall -Wextra"
   fi
-  admb $OPTFLAG $STATICFLAG $BUILD_TYPE
   if [[ "$OS" == "Windows_NT" ]] ; then
+    admb.sh $OPTFLAG $STATICFLAG $BUILD_TYPE
     chmod a+x $BUILD_DIR/$BUILD_TYPE
+  else
+    admb $OPTFLAG $STATICFLAG $BUILD_TYPE
   fi
 fi
 
