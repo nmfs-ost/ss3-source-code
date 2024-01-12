@@ -153,15 +153,15 @@ fi
 if [[ "$ADMB_HOME" == "docker" ]] ; then
   if [[ "$OS" == "Windows_NT" ]] ; then
     if [[ "$WARNINGS" == "on" ]] ; then
-      docker run --env CXXFLAGS="-Wall -Wextra" --rm --volume `cygpath -w $PWD`:C:\\workdir --workdir C:\\workdir\\$BUILD_DIR johnoel/admb:windows $BUILD_TYPE.tpl
+      docker run --env CXXFLAGS="-Wall -Wextra" --rm --mount source=`cygpath -w $PWD`,destination=C:\\$BUILD_TYPE,mount=bind --workdir C:\\$BUILD_TYPE johnoel/admb:windows $BUILD_TYPE.tpl
     else
-      docker run --rm --volume `cygpath -w $PWD`:C:\\workdir --workdir C:\\workdir\\$BUILD_DIR johnoel/admb:windows $BUILD_TYPE.tpl
+      docker run --rm --mount source=`cygpath -w $PWD`,destination=C:\\$BUILD_TYPE,mount=bind --workdir C:\\$BUILD_TYPE johnoel/admb:windows $BUILD_TYPE.tpl
     fi
   else
     if [[ "$WARNINGS" == "on" ]] ; then
-      docker run --env CXXFLAGS="-Wall -Wextra" --rm --volume $PWD:/workdir --workdir /workdir/$BUILD_DIR johnoel/admb:linux $BUILD_TYPE.tpl
+      docker run --env CXXFLAGS="-Wall -Wextra" --rm --mount source=$PWD,destination=/$BUILD_TYPE,type=bind --workdir /$BUILD_TYPE johnoel/admb:linux $BUILD_TYPE.tpl
     else
-      docker run --rm --volume $PWD:/workdir --workdir /workdir/$BUILD_DIR johnoel/admb:linux $BUILD_TYPE.tpl
+      docker run --rm --mount source=$PWD,destination=/$BUILD_TYPE,type=bind --workdir /$BUILD_TYPE johnoel/admb:linux $BUILD_TYPE.tpl
     fi
   fi
 else
