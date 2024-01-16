@@ -63,8 +63,11 @@ jobs:
       # Runs a set of commands using the runners shell
       - name: Use R to parse warnings output
         run: |
-          txt <- readLines("warnings_ss.txt", encoding = "UTF-8" )
-          rm_warn_start_lines <- grep(pattern = "/usr/local/admb/include/admodel", x = txt, fixed = TRUE)
+          txt <- readLines("warnings.txt", encoding = "UTF-8" )
+          warn_line <- grep(pattern = "g++ -c -std=c++17 -O3 -Wall -Wextra -D_USE_MATH_DEFINES -DUSE_ADMB_CONTRIBS", x = txt, fixed = TRUE)
+          end_warn_line <- grep(pattern = "*** Linking: ss.obj ", x = txt, fixed = TRUE)
+          txt <- txt[(warn_line+2):(end_warn_line-1)]
+          rm_warn_start_lines <- grep(pattern = "/usr/local/admb/include/admodel.h", x = txt, fixed = TRUE)
           all_warning_end_lines <- grep(pattern = "^", x = txt, fixed = TRUE)
           to_rm <- NULL
           for (l in rm_warn_start_lines) {
