@@ -26,7 +26,7 @@ docker:
 ss: ss.tpl
 ifdef USE_DOCKER
   ifeq ($(OS),Windows_NT)
-	docker run --rm --volume $(CURDIR):C:\\workdir\\ss --workdir C:\\workdir\\ss johnoel/admb:windows ss.tpl
+	docker run --rm --volume $(CURDIR):C:\\workdir\\ss --workdir C:\\workdir\\ss johnoel/admb:windows-ltsc2022-winlibs ss.tpl
   else
 	docker run --rm --volume $(CURDIR):/workdir/ss:rw --workdir /workdir/ss johnoel/admb:linux ss.tpl
   endif
@@ -37,7 +37,7 @@ endif
 ss_opt: ss_opt.tpl
 ifdef USE_DOCKER
   ifeq ($(OS),Windows_NT)
-	docker run --rm --volume $(CURDIR):C:\\workdir\\ss_opt --workdir C:\\workdir\\ss_opt johnoel/admb:windows ss_opt.tpl
+	docker run --rm --volume $(CURDIR):C:\\workdir\\ss_opt --workdir C:\\workdir\\ss_opt johnoel/admb:windows-ltsc2022-winlibs ss_opt.tpl
   else
 	docker run --rm --volume $(CURDIR):/workdir/ss_opt:rw --workdir /workdir/ss_opt johnoel/admb:linux ss_opt.tpl
   endif
