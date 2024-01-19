@@ -1402,6 +1402,11 @@
         min_tail_L(1, f) = min_tail_L(0, f);
         min_tail_L(2, f) = min_tail_L(0, f);
         *(ad_comm::global_datafile) >> min_comp_L(0, f);
+        if (min_comp_L(0, f) <= 0) {
+          warnstream << "addtocomp input for length comps fleet " << f << 
+          " is " << min_comp_L(0, f) << " but should be > 0 to avoid log(0) in likelihood";
+          write_message(WARN, 0);      
+        }
         min_comp_L(1, f) = min_comp_L(0, f);
         min_comp_L(2, f) = min_comp_L(0, f);
         *(ad_comm::global_datafile) >> CombGender_L(0, f);
@@ -2280,6 +2285,11 @@
       {
         *(ad_comm::global_datafile) >> min_tail_A(f);
         *(ad_comm::global_datafile) >> min_comp_A(f);
+        if (min_comp_A(f) <= 0) {
+          warnstream << "addtocomp input for age comps fleet " << f << 
+          " is " << min_comp_A(f) << " but should be > 0 to avoid log(0) in likelihood";
+          write_message(WARN, 0);      
+        }
         *(ad_comm::global_datafile) >> CombGender_A(f);
         *(ad_comm::global_datafile) >> AccumBin_A(f);
         *(ad_comm::global_datafile) >> Comp_Err_A(f);
