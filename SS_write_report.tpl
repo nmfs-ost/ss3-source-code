@@ -1877,23 +1877,14 @@ FUNCTION void write_bigoutput()
           t = Svy_time_t(f, i);
           ALK_time = Svy_ALK_time(f, i);
           SS2out << f << " " << fleetname(f) << " " << fleet_area(f) << " " << Show_Time2(ALK_time) << " " << data_time(ALK_time, f, 1) << " " << data_time(ALK_time, f, 3) << " " << Svy_selec_abund(f, i) << " " << Svy_obs(f, i) << " ";
-          if (Svy_errtype(f) >= 0) // lognormal or student's T
+          if (Svy_errtype(f) >= 0) // lognormal or T-dist
           {
             temp = mfexp(Svy_est(f, i));
             SS2out << temp << " " << Svy_q(f, i) << " " << temp / Svy_selec_abund(f, i) << " " << Svy_se_use(f, i) << " " << Svy_se(f, i);
             if (Svy_use(f, i) > 0)
             {
               SS2out << " " << Svy_obs_log(f, i) - Svy_est(f, i) << " ";
-              if (Svy_errtype(f) == 0) // lognormal
-              {
-                SS2out << 0.5 * square((Svy_obs_log(f, i) - Svy_est(f, i)) / Svy_se_use(f, i)) << " "
-                       << 0.5 * square((Svy_obs_log(f, i) - Svy_est(f, i)) / Svy_se_use(f, i)) + log(Svy_se_use(f, i));
-              }
-              else // student's T
-              {
-                SS2out << ((Svy_errtype(f) + 1.) / 2.) * log((1. + square((Svy_obs_log(f, i) - Svy_est(f, i))) / (Svy_errtype(f) * square(Svy_se_use(f, i))))) << " "
-                       << ((Svy_errtype(f) + 1.) / 2.) * log((1. + square((Svy_obs_log(f, i) - Svy_est(f, i))) / (Svy_errtype(f) * square(Svy_se_use(f, i))))) + log(Svy_se_use(f, i));
-              }
+              SS2out << Svy_like_I(f, i) - log(Svy_se_use(f, i)) << " " << Svy_like_I(f,i) << " ";
               rmse(f) += value(square(Svy_obs_log(f, i) - Svy_est(f, i)));
               n_rmse(f) += 1.;
               mean_CV(f) += Svy_se_rd(f, i);
@@ -1911,8 +1902,7 @@ FUNCTION void write_bigoutput()
             if (Svy_use(f, i) > 0)
             {
               SS2out << " " << Svy_obs(f, i) - Svy_est(f, i) << " ";
-              SS2out << 0.5 * square((Svy_obs(f, i) - Svy_est(f, i)) / Svy_se_use(f, i)) << " "
-                     << 0.5 * square((Svy_obs(f, i) - Svy_est(f, i)) / Svy_se_use(f, i)) + log(Svy_se_use(f, i));
+              SS2out << Svy_like_I(f, i) - log(Svy_se_use(f, i)) << " " << Svy_like_I(f,i) << " ";
               rmse(f) += value(square(Svy_obs(f, i) - Svy_est(f, i)));
               n_rmse(f) += 1.;
               mean_CV(f) += Svy_se_rd(f, i);
@@ -1959,13 +1949,13 @@ FUNCTION void write_bigoutput()
     SS2out << endl
            << pick_report_name(21) << endl;
     SS2out << "Fleet Link Link+ ExtraStd BiasAdj Float   Q Num=0/Bio=1 Err_type"
-           << " N Npos RMSE mean_input_SE Input+VarAdj Input+VarAdj+extra VarAdj New_VarAdj penalty_mean_Qdev rmse_Qdev fleetname" << endl;
+           << " N Npos RMSE logL  mean_input_SE Input+VarAdj Input+VarAdj+extra VarAdj New_VarAdj penalty_mean_Qdev rmse_Qdev fleetname" << endl;
     for (f = 1; f <= Nfleet; f++)
     {
       if (Svy_N_fleet(f) > 0)
       {
         SS2out << f << " " << Q_setup(f) << " " << Svy_q(f, 1) << " " << Svy_units(f) << " " << Svy_errtype(f)
-               << " " << Svy_N_fleet(f) << " " << n_rmse(f) << " " << rmse(f)
+               << " " << Svy_N_fleet(f) << " " << n_rmse(f) << " " << rmse(f)<< " " << surv_like(f) 
                << " " << mean_CV(f) << " " << mean_CV3(f) << " " << mean_CV2(f) << " " << var_adjust(1, f)
                << " " << var_adjust(1, f) + rmse(f) - mean_CV(f)
                << " " << Q_dev_like(f, 1) << " " << Q_dev_like(f, 2) << " " << fleetname(f) << endl;
@@ -2007,7 +1997,7 @@ FUNCTION void write_bigoutput()
     SS2out << "2:  discard_as_fraction_of_total_catch(based_on_bio_or_num_depending_on_fleet_catchunits)" << endl;
     SS2out << "3:  discard_as_numbers(1000s)_regardless_of_fleet_catchunits" << endl;
     SS2out << "Discard_errtype_options" << endl;
-    SS2out << ">1:  log(L)_based_on_T_distribution_with_specified_DF" << endl;
+    SS2out << ">1:  log(L)_based_on_T-distribution_with_specified_DF" << endl;
     SS2out << "0:  log(L)_based_on_normal_with_Std_in_as_CV" << endl;
     SS2out << "-1:  log(L)_based_on_normal_with_Std_in_as_stddev" << endl;
     SS2out << "-2:  log(L)_based_on_lognormal_with_Std_in_as_stddev_in_logspace" << endl;
