@@ -24,8 +24,17 @@ for /f "tokens=*" %%i in ('where admb.cmd 2^>^&1 ^| findstr "admb.cmd"') do (
 
 @REM compile executable
 if not defined ADMB_HOME (
-  docker run --rm --mount source=%CD%,destination=C:\compile,type=bind --workdir C:\\compile johnoel/admb:windows ss.tpl
+  @echo "-- Building ss.exe with docker in '%CD%' --"
+  for /f "tokens=*" %%j in ('ver ^| find "10.0.1"') do (
+    set "ISWINDOWS10=found"
+  )
+  if defined ISWINDOWS10 (
+    docker run --rm --mount source=%CD%,destination=C:\compile,type=bind --workdir C:\\compile johnoel/admb:windows-ltsc2019-winlibs ss.tpl
+  ) else (
+    docker run --rm --mount source=%CD%,destination=C:\compile,type=bind --workdir C:\\compile johnoel/admb:windows-ltsc2022-winlibs ss.tpl
+  )
 ) else (
+  @echo "-- Building ss.exe in '%CD%' --"
   @REM set CXX=cl
   set CXX=g++
   admb ss

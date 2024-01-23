@@ -1,3 +1,5 @@
+@echo off
+
 @REM compiling ss.exe (safe executable) with generic path
 @REM requires "Compile" directory in the same directory where
 @REM the .tpl files and this .bat file sit.
@@ -23,8 +25,17 @@ for /f "tokens=*" %%i in ('where admb.cmd 2^>^&1 ^| findstr "admb.cmd"') do (
 
 @REM compile executable
 if not defined ADMB_HOME (
-  docker run --rm --mount source=%CD%,destination=C:\compile,type=bind --workdir C:\\compile johnoel/admb:windows ss_opt.tpl
+  @echo "-- Building ss_opt.exe with docker in '%CD%' --"
+  for /f "tokens=*" %%j in ('ver ^| find "10.0.1"') do (
+    set "ISWINDOWS10=found"
+  )
+  if defined ISWINDOWS10 (
+    docker run --rm --mount source=%CD%,destination=C:\compile,type=bind --workdir C:\\compile johnoel/admb:windows-ltsc2019-winlibs ss_opt.tpl
+  ) else (
+    docker run --rm --mount source=%CD%,destination=C:\compile,type=bind --workdir C:\\compile johnoel/admb:windows-ltsc2022-winlibs ss_opt.tpl
+  )
 ) else (
+  @echo "-- Building ss_opt.exe in '%CD%' --"
   set CXX=g++
   admb -f ss_opt
 )
