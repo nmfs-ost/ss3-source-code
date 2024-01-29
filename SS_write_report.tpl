@@ -2405,7 +2405,7 @@ FUNCTION void write_bigoutput()
         temp = abs(header_a_rd(f, i, 2));
         if (temp > 999)
           temp -= 1000;
-        SS2out << f << " " << fleetname(f) << " " << fleet_area(f) << Show_Time2(ALK_time) << " " << data_time(ALK_time, f, 1) << " " << data_time(ALK_time, f, 3) << " " << gen_a(f, i) << " " << mkt_a(f, i) << " " << ageerr_type_a(f, i) << " " << Lbin_lo(f, i) << " " << Lbin_hi(f, i) << " ";
+        SS2out << f << " " << fleetname(f) << " " << fleet_area(f) << Show_Time2(ALK_time) << " " << data_time(ALK_time, f, 1) << " " << data_time(ALK_time, f, 3) << " " << gen_a(f, i) << " " << mkt_a(f, i) << " " << ageerr_type_a(f, i) << " " << len_bins(Lbin_lo(f, i)) << " " << len_bins(Lbin_hi(f, i)) << " ";
         if (header_a(f, i, 2) < 0 && in_superperiod == 0)
         {
           SS2out << " start ";
