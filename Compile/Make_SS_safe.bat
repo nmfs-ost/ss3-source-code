@@ -19,15 +19,27 @@ copy/b SS_versioninfo_330safe.tpl+SS_readstarter.tpl+SS_readdata_330.tpl+SS_read
 @REM cd "Compile"
 popd
 
-:: check if admb.cmd is in path
+if defined ADMB_HOME (
+  if exist "%ADMB_HOME%\\admb.cmd" (
+    @echo "-- Building ss.exe with %ADMB_HOME%\admb.cmd in '%CD%' --"
+    set CXX=g++
+    %ADMB_HOME%\\admb.cmd ss
+    goto EOF
+  )
+)
+
+@REM check if admb.cmd is in path
 for /f "tokens=*" %%i in ('where admb.cmd 2^>^&1 ^| findstr "admb.cmd"') do (
-  set "ADMB_HOME="
+  @echo "-- Building ss.exe with admb.cmd in '%CD%' --"
+  set CXX=g++
+  admb.cmd ss
+  goto EOF
 )
 
 @REM compile executable
-if not defined ADMB_HOME (
+for /f "tokens=*" %%i in ('where docker.exe 2^>^&1 ^| findstr "docker.exe"') do (
   @echo "-- Building ss.exe with docker in '%CD%' --"
-  for /f "tokens=*" %%j in ('ver ^| find "10.0.1"') do (
+  for /f "tokens=*" %%j in ('ver ^| findstr "10.0.1"') do (
     set "ISWINDOWS10=found"
   )
   if defined ISWINDOWS10 (
@@ -35,9 +47,10 @@ if not defined ADMB_HOME (
   ) else (
     docker run --rm --mount source=%CD%,destination=C:\compile,type=bind --workdir C:\\compile johnoel/admb:windows-ltsc2022-winlibs ss.tpl
   )
-) else (
-  @echo "-- Building ss.exe in '%CD%' --"
-  @REM set CXX=cl
-  set CXX=g++
-  admb ss
+  goto EOF
 )
+
+@echo "Error: Unable to build ss.exe"
+exit /b 1
+
+:EOF
