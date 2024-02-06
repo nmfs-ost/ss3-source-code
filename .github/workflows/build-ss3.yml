@@ -34,9 +34,14 @@ jobs:
         if: matrix.config.os == 'windows-latest'
         run: |
           pushd Compile
+          echo %ERRORLEVEL%
           ./Make_SS_safe.bat
+          echo %ERRORLEVEL%
           ./Make_SS_fast.bat
+          echo %ERRORLEVEL%
           popd
+          echo %ERRORLEVEL%
+        shell: cmd
 
       - name: Update Ubuntu packages
         if: matrix.config.os == 'ubuntu-latest'
@@ -65,6 +70,8 @@ jobs:
           chmod 777 SS330
           /bin/bash ./Make_SS_330_new.sh --admb docker -b SS330
           /bin/bash ./Make_SS_330_new.sh --admb docker -b SS330 -o
+
+          colima stop
 
       - name: Get admb and put in path, windows
         if: matrix.config.os == 'windows-latest'
