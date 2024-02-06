@@ -30,9 +30,15 @@ if defined ADMB_HOME (
 
 @REM check if admb.cmd is in path
 for /f "tokens=*" %%i in ('where admb.cmd 2^>^&1 ^| findstr "admb.cmd"') do (
+  @echo "a !ERRORLEVEL!"
   @echo "-- Building ss.exe with admb.cmd in '%CD%' --"
+  @echo !ERRORLEVEL!
+  @echo "b !ERRORLEVEL!"
   set CXX=g++
+  @echo !ERRORLEVEL!
+  @echo "c !ERRORLEVEL!"
   admb.cmd ss
+  @echo "d !ERRORLEVEL!"
   goto EOF
 )
 
@@ -51,7 +57,6 @@ for /f "tokens=*" %%i in ('where docker.exe 2^>^&1 ^| findstr "docker.exe"') do 
 )
 
 @echo "Error: Unable to build ss.exe"
-exit /b 1
+exit /b !ERRORLEVEL!
 
 :EOF
-exit /b 0
