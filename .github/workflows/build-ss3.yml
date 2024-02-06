@@ -30,19 +30,6 @@ jobs:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v3
 
-      - name: Build stock synthesis for windows with docker
-        if: matrix.config.os == 'windows-latest'
-        run: |
-          pushd Compile
-          echo %ERRORLEVEL%
-          ./Make_SS_safe.bat
-          echo %ERRORLEVEL%
-          ./Make_SS_fast.bat
-          echo %ERRORLEVEL%
-          popd
-          echo %ERRORLEVEL%
-        shell: cmd
-
       - name: Update Ubuntu packages
         if: matrix.config.os == 'ubuntu-latest'
         run: sudo apt-get update
@@ -72,13 +59,6 @@ jobs:
           /bin/bash ./Make_SS_330_new.sh --admb docker -b SS330 -o
 
           colima stop
-
-      - name: Get admb and put in path, windows
-        if: matrix.config.os == 'windows-latest'
-        run: |
-          Invoke-WebRequest -Uri https://github.com/admb-project/admb/releases/download/admb-13.1/admb-13.1-windows.zip -OutFile "D:\a\ss3-source-code\ss3-source-code\admb-13.1.zip"
-          Expand-Archive -LiteralPath "D:\a\ss3-source-code\ss3-source-code\admb-13.1.zip" -DestinationPath "D:\a\ss3-source-code\ss3-source-code\"
-          echo "D:\a\ss3-source-code\ss3-source-code\admb-13.1\bin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
 
       - name: checkout admb, mac
         if: matrix.config.os == 'macos-latest'
@@ -121,12 +101,6 @@ jobs:
       - name: Set up R
         uses: r-lib/actions/setup-r@v2
           
-      - name: get info on gcc version and path
-        if: matrix.config.os == 'windows-latest'
-        run: |
-          g++ -v
-          echo $env:GITHUB_PATH
-
       - name: Fetch tags
         run: |
           git fetch --tags
@@ -240,12 +214,38 @@ jobs:
           writeLines(ver_info, "SS_versioninfo_330opt.tpl")
         shell: Rscript {0}
 
-      - name: Build stock synthesis for windows
+      - name: Build stock synthesis for windows with docker
         if: matrix.config.os == 'windows-latest'
         run: |
           pushd Compile
           ./Make_SS_safe.bat
           ./Make_SS_fast.bat
+          popd
+        shell: cmd
+
+      - name: Get admb and put in path, windows
+        if: matrix.config.os == 'windows-latest'
+        run: |
+          Invoke-WebRequest -Uri https://github.com/admb-project/admb/releases/download/admb-13.1/admb-13.1-windows.zip -OutFile "D:\a\ss3-source-code\ss3-source-code\admb-13.1.zip"
+          Expand-Archive -LiteralPath "D:\a\ss3-source-code\ss3-source-code\admb-13.1.zip" -DestinationPath "D:\a\ss3-source-code\ss3-source-code\"
+          echo "D:\a\ss3-source-code\ss3-source-code\admb-13.1\bin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+
+      - name: get info on gcc version and path
+        if: matrix.config.os == 'windows-latest'
+        run: |
+          g++ -v
+          echo $env:GITHUB_PATH
+
+      - name: Build stock synthesis for windows
+        if: matrix.config.os == 'windows-latest'
+        run: |
+          echo %ERRORLEVEL%
+          pushd Compile
+          echo %ERRORLEVEL%
+          ./Make_SS_safe.bat
+          echo %ERRORLEVEL%
+          ./Make_SS_fast.bat
+          echo %ERRORLEVEL%
           popd
 
       - name: Move exes to a new folder on windows
