@@ -1,7 +1,5 @@
 @echo off
 
-goto EOF
-
 ::compiling ss.exe (safe executable) with generic path
 ::requires "Compile" directory in the same directory as the .tpl files and this .bat file
 
@@ -20,6 +18,8 @@ copy/b SS_versioninfo_330safe.tpl+SS_readstarter.tpl+SS_readdata_330.tpl+SS_read
 
 @REM cd "Compile"
 popd
+
+goto EOF
 
 if defined ADMB_HOME (
   if exist "%ADMB_HOME%\\admb.cmd" (
