@@ -52,4 +52,3 @@ for /f "tokens=*" %%i in ('where docker.exe 2^>^&1 ^| findstr "docker.exe"') do 
 exit /b 1
 
 :EOF
-exit /b 0
