@@ -239,13 +239,8 @@ jobs:
       - name: Build stock synthesis for windows
         if: matrix.config.os == 'windows-latest'
         run: |
-          echo %ERRORLEVEL%
           pushd Compile
-          echo %ERRORLEVEL%
           ./Make_SS_safe.bat
-          echo %ERRORLEVEL%
-          ./Make_SS_fast.bat
-          echo %ERRORLEVEL%
           popd
 
       - name: Move exes to a new folder on windows
