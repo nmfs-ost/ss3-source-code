@@ -30,6 +30,14 @@ jobs:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v3
 
+      - name: Build stock synthesis for windows with docker
+        if: matrix.config.os == 'windows-latest'
+        run: |
+          pushd Compile
+          ./Make_SS_safe.bat
+          ./Make_SS_fast.bat
+          popd
+
       - name: Update Ubuntu packages
         if: matrix.config.os == 'ubuntu-latest'
         run: sudo apt-get update
