@@ -30,7 +30,7 @@ if defined ADMB_HOME (
 for /f "tokens=*" %%i in ('where admb.cmd 2^>^&1 ^| findstr "admb.cmd"') do (
   @echo "-- Building ss_opt.exe with admb.cmd in '%CD%' --"
   set CXX=g++
-  admb.cmd -f ss_opt
+  @REM admb.cmd -f ss_opt
   goto EOF
 )
 
