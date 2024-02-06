@@ -18,8 +18,6 @@ copy/b SS_versioninfo_330opt.tpl+SS_readstarter.tpl+SS_readdata_330.tpl+SS_readc
 @REM cd "Compile"
 popd
 
-goto EOF
-
 if defined ADMB_HOME (
   if exist "%ADMB_HOME%\\admb.cmd" (
     @echo "-- Building ss_opt.exe with %ADMB_HOME%\admb.cmd in '%CD%' --"
@@ -33,7 +31,7 @@ if defined ADMB_HOME (
 for /f "tokens=*" %%i in ('where admb.cmd 2^>^&1 ^| findstr "admb.cmd"') do (
   @echo "-- Building ss_opt.exe with admb.cmd in '%CD%' --"
   set CXX=g++
-  admb.cmd -f ss_opt
+  @REM admb.cmd -f ss_opt
   goto EOF
 )
 
