@@ -56,12 +56,16 @@
 !!echoinput<<N_GP<<" N growth patterns "<<endl;
   init_int N_platoon  //  number of platoons  1, 3, 5 are best values to use
 !!echoinput<<N_platoon<<"  N platoons (1, 3 or 5)"<<endl;
-  number sd_ratio;  // ratio of stddev within platoon to between morphs
-  number sd_within_platoon
-  number sd_between_platoon
-  ivector ishadow(1,N_platoon)
-  vector shadow(1,N_platoon)
+
+  number sd_ratio_rd;  // ratio of stddev within platoon to between morphs from file
+  number platoon_sd_ratio;  // ratio of stddev within platoon to between morphs
+  number sd_within_platoon;
+  number sd_between_platoon;
+
+  ivector ishadow(1,N_platoon);
+  vector shadow(1,N_platoon);
   vector platoon_distr(1,N_platoon);
+
  LOCAL_CALCS
   // clang-format on
   if (WTage_rd > 0)
@@ -82,14 +86,14 @@
   
   if (N_platoon > 1)
   {
-    *(ad_comm::global_datafile) >> sd_ratio;
+    *(ad_comm::global_datafile) >> sd_ratio_rd;
     *(ad_comm::global_datafile) >> platoon_distr;
-    echoinput << sd_ratio << "  sd_ratio" << endl;
+    echoinput << sd_ratio_rd << "  sd_ratio_rd" << endl;
     echoinput << platoon_distr << "  platoon_distr" << endl;
   }
   else
   {
-    sd_ratio = 1.;
+    sd_ratio_rd = 1.;
     platoon_distr(1) = 1.;
     echoinput << "  do not read sd_ratio or platoon_distr" << endl;
   }
@@ -110,16 +114,26 @@
     }
   }
   platoon_distr /= sum(platoon_distr);
-  
-  if (N_platoon > 1)
+  // calculate stdev values
+  if (sd_ratio_rd < 0)
   {
-    sd_within_platoon = sd_ratio * sqrt(1. / (1. + sd_ratio * sd_ratio));
-    sd_between_platoon = sqrt(1. / (1. + sd_ratio * sd_ratio));
+    platoon_sd_ratio = -sd_ratio_rd;
+    warnstream << "sd_ratio read is < 0, so expecting sd parameter after movement params.";
+    write_message (NOTE, 1);
   }
   else
   {
-    sd_within_platoon = 1;
+    platoon_sd_ratio = sd_ratio_rd;
+  }
+  if (N_platoon > 1)
+  {
+    sd_between_platoon = sqrt(1. / (1. + platoon_sd_ratio * platoon_sd_ratio));
+    sd_within_platoon = platoon_sd_ratio * sd_between_platoon;
+  }
+  else
+  {
     sd_between_platoon = 0.000001;
+    sd_within_platoon = 1;
   }
   
   if (N_platoon == 1)
@@ -139,7 +153,7 @@
   }
   else
   {
-    warnstream << "illegal N platoons: " << N_platoon << ", must be 1, 3 or 5 " ;
+    warnstream << "illegal N platoons: " << N_platoon << "; must be 1, 3 or 5 " ;
     write_message (FATAL, 1); // EXIT!
   }
   // clang-format off
@@ -669,18 +683,29 @@
     Nblk2 = Nblk + Nblk;
     Block_Design.deallocate();
     Block_Design.allocate(1, N_Block_Designs, 1, Nblk2);
+    bool endyrChk = false;
     for (j = 1; j <= N_Block_Designs; j++)
     {
       *(ad_comm::global_datafile) >> Block_Design(j)(1, Nblk2(j));
-      echoinput << " block design #: " << j << "  read year pairs: " << Block_Design(j) << endl;
       a = -1;
       for (k = 1; k <= Nblk(j); k++)
       {
         a += 2;
-        if (Block_Design(j, a + 1) < Block_Design(j, a))
+        b = a + 1;
+        if (Block_Design(j, b) == -1)
         {
-          warnstream << "Block:" << j << " " << k << " ends before it starts; fatal error";
-          write_message (FATAL, 0); // EXIT!
+          Block_Design(j, b) = endyr;
+        }
+        else if (Block_Design(j, b) == -2)
+        {
+          Block_Design(j, b) = YrMax;
+        }
+        // check block year values
+        if (Block_Design(j, b) > YrMax)
+        {
+          warnstream << "Block:" << j << " " << k << " ends in: " << Block_Design(j, a + 1) << " reset to YrMax:  " << YrMax;
+          write_message (ADJUST, 0);
+          Block_Design(j, b) = YrMax;
         }
         if (Block_Design(j, a) < styr - 1)
         {
@@ -688,7 +713,12 @@
           write_message (ADJUST, 0);
           Block_Design(j, a) = styr;
         }
-        if (Block_Design(j, a + 1) < styr - 1)
+        if (Block_Design(j, b) < Block_Design(j, a))
+        {
+          warnstream << "Block:" << j << " " << k << " ends before it starts; fatal error";
+          write_message (FATAL, 0); // EXIT!
+        }
+        if (Block_Design(j, b) < styr - 1)
         {
           warnstream << "Block:" << j << " " << k << " ends before styr; fatal error";
           write_message (FATAL, 1); // EXIT!
@@ -698,7 +728,7 @@
           warnstream << "Block:" << j << " " << k << " starts after retroyr+1; should not estimate ";
           write_message (WARN, 0);
         }
-        if (Block_Design(j, a + 1) > retro_yr + 1)
+        if (Block_Design(j, b) > retro_yr + 1)
         {
           warnstream << "Block:" << j << " " << k << " ends in: " << Block_Design(j, a + 1) << " after retroyr+1:  " << retro_yr + 1;
           write_message (WARN, 0);
@@ -708,13 +738,17 @@
           warnstream << "Block:" << j << " " << k << " starts in: " << Block_Design(j, a + 1) << " which is > YrMax:  " << YrMax << " fatal error";
           write_message (FATAL, 0); // EXIT!
         }
-        if (Block_Design(j, a + 1) > YrMax)
+        if (Block_Design(j, b) == endyr)
         {
-          warnstream << "Block:" << j << " " << k << " ends in: " << Block_Design(j, a + 1) << " reset to YrMax:  " << YrMax;
-          write_message (WARN, 0);
-          Block_Design(j, a + 1) = YrMax;
+          endyrChk = true;
         }
       }
+      echoinput << " block design #: " << j << "  read year pairs: " << Block_Design(j) << endl;
+    }
+    if (endyrChk == true)
+    {
+      warnstream << "At least one block pattern ends in endyr. Check the output parameter value time series to see if the values in forecast years are as intended.";
+      write_message (WARN, 0);
     }
   }
   else
@@ -1155,7 +1189,8 @@
   int do_once;
   int doit;
 
-  int MGP_CGD
+  int MGP_CGD;
+  int sd_ratio_param_ptr;
   int CGD_onoff;  //  switch for cohort growth dev
 
  LOCAL_CALCS
@@ -1451,6 +1486,13 @@
     }
   }
   
+  if (N_platoon > 1 && sd_ratio_rd < 0)
+  {
+    ParCount ++;
+    sd_ratio_param_ptr = ParCount;
+    ParmLabel += "Platoon_SD_Ratio";
+  }
+  
   if (Use_AgeKeyZero > 0)
   {
     AgeKeyParm = ParCount + 1;
@@ -1551,6 +1593,7 @@
  END_CALCS
 
   ivector mgp_type(1,N_MGparm)  //  contains category to parameter (1=natmort; 2=growth; 3=wtlen & fec; 4=recr_dist&femfrac; 5=movement; 6=ageerrorkey; 7=catchmult)
+  //  labels for the types are found in:  MGtype_Lbl
  LOCAL_CALCS
       // clang-format on
       gp = 0;
@@ -1590,12 +1633,13 @@
   if (recr_dist_method < 4) mgp_type(Ip, MGP_CGD - 1) = 4; // recruit apportionments
   mgp_type(MGP_CGD) = 2; // cohort growth dev
   if (do_migration > 0) mgp_type(MGP_CGD + 1, N_MGparm) = 5; // note that it fills until end of MGparm list, but some get overwritten
+  if (N_platoon > 1 && sd_ratio_rd < 0) mgp_type(sd_ratio_param_ptr) = 2;
   if (Use_AgeKeyZero > 0) mgp_type(AgeKeyParm, N_MGparm) = 6;
   if (catch_mult_pointer > 0) mgp_type(catch_mult_pointer, N_MGparm) = 7;
   for (f = frac_female_pointer; f <= frac_female_pointer + N_GP - 1; f++) mgp_type(f) = 4;
   if (N_pred > 0) mgp_type(predparm_pointer(1), predparm_pointer(1) + N_predparms - 1) = 1;
-  echoinput << "mgparm_type for each parm: 1=M; 2=growth; 3=wtlen,mat,fec,hermo; 4=recr&femfrac; 5=migr; 6=ageerror; 7=catchmult" << endl
-            << mgp_type << endl;
+  echoinput << "mgparm_type for each parm:"<<endl;
+  for (f = 1; f<= N_MGparm; f++) echoinput << f << " " << MGtype_Lbl(mgp_type(f)) << endl;
   // clang-format off
  END_CALCS
 
@@ -1695,10 +1739,11 @@
         env_data_pass(1) = env_data_minyr(k);
         env_data_pass(2) = env_data_maxyr(k);
       }
-      else //  density-dependence
+      else if (abs(MGparm_1(j, 8) > 0)) //  density-dependence
       {
         timevary_setup(7) = -int(abs(MGparm_1(j, 8)) - k * 100);
         do_densitydependent = 1;
+  echoinput << "Density-dependent flag for MGparms " << do_densitydependent << " MGparm: " << j << endl;
         k = 0;
         env_data_pass.initialize();
       }
@@ -1762,6 +1807,20 @@
   
     echoinput << y << " timevary_MG: " << timevary_MG(y) << endl;
   }
+
+  for (y = endyr + 1; y <= YrMax; y++)
+  {
+    for (f = 1; f <= 7; f++)
+    {
+      if (timevary_MG(y, f) > 0 && Fcast_MGparm_ave(f,2) > 0)
+      {
+          warnstream << "mean MGparm for forecast is incompatible with timevary parm in forecast yr: " << y << "; for type: " << f << " " << MGtype_Lbl(f) << "; SS3 will disable time-vary";
+          write_message(WARN, 0);
+          timevary_MG(y, f) = 0;
+      }
+    }
+  }
+
   // clang-format off
  END_CALCS
 
@@ -2023,7 +2082,7 @@
           env_data_pass(1) = env_data_minyr(k);
           env_data_pass(2) = env_data_maxyr(k);
         }
-        else //  density-dependence
+        else if (abs(SR_parm_1(j, 8) > 0)) //  density-dependence
         {
           timevary_setup(7) = -int(abs(SR_parm_1(j, 8)) - k * 100);
           do_densitydependent = 1;
@@ -2206,14 +2265,14 @@
   echoinput << recdev_early_PH_rd << " #_recdev_early_phase" << endl;
   echoinput << Fcast_recr_PH_rd << " #_forecast_recruitment phase (incl. late recr) (0 value resets to maxphase+1)" << endl;
   echoinput << Fcast_recr_lambda << " #_lambda for Fcast_recr_like occurring before endyr+1" << endl;
-  if (Fcast_Loop_Control(3) == 3 && Fcast_recr_PH_rd >= 0)
+  if (Fcast_Loop_Control(3) >= 3 && Fcast_recr_PH_rd >= 0)
   {
-    warnstream << "Mean recruitment for forecast is incompatible with pos. phase for forecast rec_devs; set phase to neg. unless using late rec_devs";
-    write_message (WARN, 0);
+    warnstream << "Forecast devs will be applied to mean base recruitment over range of historical years in forecast.ss";
+    write_message (NOTE, 0);
   }
   if (Do_Impl_Error > 0 && Fcast_recr_PH_rd < 0)
   {
-    warnstream << "Implementation error incompatible with neg. phase for forecast rec_devs; SS3 will run without active impl error";
+    warnstream << "Implementation error has null effect unless Fcast_recr_PH is >=0";
     write_message (WARN, 0);
   }
   echoinput << recdev_adj(1) << " #_last_early_yr_nobias_adj_in_MPD" << endl;
@@ -2245,6 +2304,12 @@
     warnstream << " recdev_end: " << recdev_end << " > retro_yr: " << retro_yr << " reset ";
     write_message (ADJUST, 0);
     recdev_end = retro_yr;
+  }
+  if (recdev_end < endyr && (Fcast_Loop_Control(3) == 3 || Fcast_Loop_Control(3) == 4))
+  {
+    warnstream << "Fcast recr option is 3 or 4 and recdev_end: " << recdev_end << " < endyr: " << endyr << " reset ";
+    write_message (ADJUST, 0);
+    recdev_end = endyr;
   }
   if (recdev_start < (styr - nages))
   {
@@ -2349,6 +2414,21 @@
         ParmLabel += "Impl_err_" + onenum + CRLF(1);
       }
     }
+
+    // check recdev start and end against survey year start and end
+    for (f = 1; f <=Nfleet; f++) {
+      if (Svy_units(f) == 31 || Svy_units(f) == 32 || Svy_units(f) == 33 || Svy_units(f) == 36) { //  select just recruitment surveys
+        if (Svy_styr(f) < recdev_first) {
+          warnstream << "Recruitment survey: " << f << " has data in: " << Svy_styr(f) << ", which is before first early recdev: " << recdev_first << ". Suggest start recdevs earlier";
+          write_message (SUGGEST, 0);
+        }
+        if (Svy_endyr(f) > recdev_end && Fcast_recr_PH_rd <=0 ) {
+          warnstream << "Recruitment survey: " << f << " has data in: " << Svy_endyr(f) << ", which is after last main recdev: " << recdev_end << ". Suggest extend recdev_end, or use pos. phase for fore_recruitments: " << Fcast_recr_PH_rd;
+          write_message (SUGGEST, 0);
+        }
+      }
+    }
+
   }
   
   biasadj_full.initialize();
@@ -2871,7 +2951,7 @@
       {
         ParmLabel += "Q_base_" + fleetname(f) + "(" + NumLbl(f) + ")";
       }
-      else
+      else if (Svy_errtype(f) >= 0)  // lognormal or T-dist
       {
         ParmLabel += "LnQ_base_" + fleetname(f) + "(" + NumLbl(f) + ")";
       }
@@ -3049,7 +3129,7 @@
           env_data_pass(1) = env_data_minyr(k);
           env_data_pass(2) = env_data_maxyr(k);
         }
-        else //  density-dependence
+        else if (abs(Q_parm_1(j, 8) > 0)) //  density-dependence
         {
           timevary_setup(7) = -int(abs(Q_parm_1(j, 8)) - k * 100);
           do_densitydependent = 1;
@@ -4307,14 +4387,13 @@
         env_data_pass(1) = env_data_minyr(k);
         env_data_pass(2) = env_data_maxyr(k);
       }
-      else //  density-dependence
+        else if (abs(selparm_1(j, 8) > 0)) //  density-dependence
       {
         timevary_setup(7) = -int(abs(selparm_1(j, 8)) - k * 100);
         do_densitydependent = 1;
         k = 0;
         env_data_pass.initialize();
       }
-
       if (z > 0) //  doing blocks
       {
         if (z > N_Block_Designs)
@@ -4334,6 +4413,11 @@
       } // year vector for this category
     }
   }
+    if (do_densitydependent == 1 && Fcast_timevary_Selex == 1) {
+      warnstream << "Fcast_timevary_Selex is 1 (do averages); user should change to 0 (timevary) because density dependence affects a selectivity parameter or growth "<<endl;
+      write_message(WARN, 0);
+    }
+
   
   timevary_setup.initialize();
   timevary_setup(3) = timevary_parm_cnt + 1; //  one past last one used
@@ -4359,21 +4443,21 @@
   
   if (TwoD_AR_do > 0)
   {
-    warnstream << "The experimental 2D_AR selectivity smoother option is selected!";
+    warnstream << "2D_AR selectivity deviations option is selected!";
+      //  elements 1-11 are read from control.ss;  12 and 13 are calculated internally
+      //  1-fleet, 2-ymin, 3-ymax, 4-amin, 5-amax, 6-sigma_amax, 7-use_rho, 8-age/len, 9-dev_phase
+      //  10-before yr range, 11=after yr range, 12-N_parm_dev,  13-selparm_location
     write_message (WARN, 0);
-    ivector tempvec(1, 13); //  fleet, ymin, ymax, amin, amax, sigma_amax, use_rho, age/len, before, after
+    ivector tempvec(1, 13);
     tempvec.initialize();
     TwoD_AR_def.push_back(tempvec); //  bypass that pesky zeroth row
     TwoD_AR_def_rd.push_back(tempvec); //  bypass that pesky zeroth row
-    echoinput << "read specification for first 2D_AR1:  fleet, ymin, ymax, amin, amax, sigma_amax, use_rho, len1/age2, before, after" << endl;
-  
+    echoinput << "read specification for first 2D_AR1:  fleet, ymin, ymax, amin, amax, sigma_amax, use_rho, len1/age2, phase before, after" << endl;
     ender = 0;
     do
     {
       ivector tempvec(1, 13);
       ivector tempvec2(1, 13);
-      //  1-fleet, 2-ymin, 3-ymax, 4-amin, 5-amax, 6-sigma_amax, 7-use_rho, 8-age/len, 9-dev_phase
-      //  10-before yr range, 11=after yr range, 12-N_parm_dev,  13-selparm_location
       tempvec.initialize();
       tempvec2.initialize();
       *(ad_comm::global_datafile) >> tempvec(1, 11);
@@ -4821,10 +4905,10 @@
           picker -= 20;
           timevary_setup(14) = 1; //  flag to continue last dev through to YrMax
           timevary_def[j](14) = 1; //  save in array also
-          echoinput << j << " setting flag to continue last dev " << Fcast_Specify_Selex << " " << firstselparm << " " << f << " " << firstselparm + N_selparm << " " << endl;
-          if (Fcast_Specify_Selex == 0 && f >= firstselparm && f <= (firstselparm + N_selparm))
+          echoinput << j << " setting flag to continue last dev " << Fcast_timevary_Selex << " " << firstselparm << " " << f << " " << firstselparm + N_selparm << " " << endl;
+          if (Fcast_timevary_Selex == 1 && f >= firstselparm && f <= (firstselparm + N_selparm))
           {
-            warnstream << "for selectivity parmdevs, must change Fcast_Specify_Selex to 1 when using continue last dev";
+            warnstream << "for selectivity parmdevs, must change Fcast_timevary_Selex to 0 when using continue last dev";
             write_message (WARN, 1);
           }
         }
@@ -5032,10 +5116,17 @@
   int N_lambda_changes
   int N_changed_lambdas
  LOCAL_CALCS
-      // clang-format on
-      echoinput
-      << " read lambda changes list until -9999" << endl;
-  ender = 0;
+  // clang-format on
+  echoinput << endl << "LAMBDA" << endl
+  << " each line has 5 values: like_code, fleet, beginning_phase, value, code_for_sizefreq "<< endl
+  << " terminate reading with like_code = -9999" << endl
+  << " like_code options are:  1=surv; 2=disc; 3=mnwt; 4=length; 5=age; 6=SizeFreq; 7=sizeage; 8=catch; 9=init_equ_catch; " << endl
+  << " 10=recrdev; 11=parm_prior; 12=parm_dev; 13=CrashPen; 14=Morphcomp; 15=Tag-comp; 16=Tag-negbin; 17=F_ballpark; 18=initEQregime." << endl
+  << " 2nd value (fleet) only used for like_codes 1 - 9, which are fleet-specific, except" << endl
+  << "   2nd value is used for Tag-Group, instead of fleet, for like_codes 15 & 16." << endl
+  << " 5th value is used only for like_code=6 and specifies the SizeFreq method used, which is in addition to fleet designation." << endl;
+
+  ender = 0;  //  begin reading lambda changes
   do
   {
     dvector tempvec(1, 5);
@@ -5044,17 +5135,14 @@
     lambda_change_data.push_back(tempvec(1, 5));
   } while (ender == 0);
   N_lambda_changes = lambda_change_data.size() - 1;
-  echoinput << " number of lambda change records = " << N_lambda_changes << endl;
   // clang-format off
  END_CALCS
 
   matrix Lambda_changes(1,N_lambda_changes,1,5)
  LOCAL_CALCS
-      // clang-format on
-      for (f = 1; f <= N_lambda_changes; f++) Lambda_changes(f) = lambda_change_data[f - 1];
-  // *(ad_comm::global_datafile) >> tempvec(1,5);  //  read 5 numerics from line
-  echoinput << N_lambda_changes << " N lambda changes " << endl;
-  if (N_lambda_changes > 0) echoinput << " lambda changes " << endl
+  // clang-format on
+  for (f = 1; f <= N_lambda_changes; f++) Lambda_changes(f) = lambda_change_data[f - 1];
+  if (N_lambda_changes > 0) echoinput << N_lambda_changes << " lambda changes: " << endl
                                       << Lambda_changes << endl;
   surv_lambda = 1.; // 1
   disc_lambda = 1.; // 2
@@ -5116,7 +5204,7 @@
     k = Lambda_changes(j, 1); // like component
     f = Lambda_changes(j, 2); // fleet
     s = Lambda_changes(j, 3); // phase
-    if (k <= 14)
+    if (k <= 9)   //  only check those codes that are fleet-specific
     {
       if (f > Nfleet)
       {
@@ -5125,7 +5213,7 @@
         write_message (ADJUST, 0);
       }
     }
-    else if (k <= 16) // tag data
+    else if (k == 15 || k == 16) // tag data
     {
       if (f > N_TG2)
       {
@@ -5143,7 +5231,7 @@
     if (s > max_lambda_phase)
     {
       k = 0;
-      warnstream << "Illegal request for lambda change at row: " << j << " phase: " << s << " > max_lam_phase: " << max_lambda_phase;
+      warnstream << "Illegal request for lambda change at row: " << j << " phase: " << s << " > max_lambda_phase: " << max_lambda_phase;
       write_message (ADJUST, 0);
     }
     //      if(s>Turn_off_phase) s=max(1,Turn_off_phase);
@@ -6598,6 +6686,11 @@
       sprintf(onenum, "%d", y);
       ParmLabel += "Dyn_Bzero_" + onenum + CRLF(1);
     }
+  }
+  else if (depletion_basis_rd == 5)
+  {
+    warnstream << "must select dyn_bzero in control file extra_std for it to be used as depletion denominator ";
+    write_message (FATAL, 0); // EXIT!
   }
   if (More_Std_Input(12) == 2)
   {

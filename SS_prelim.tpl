@@ -176,7 +176,7 @@
 
         if (Svy_use(f, i) > 0)
         {
-          if (Svy_errtype(f) >= 0) // lognormal or lognormal T_dist
+          if (Svy_errtype(f) >= 0) // lognormal or lognormal T-dist
           {
             if (Svy_obs(f, i) <= 0.0)
             {
@@ -188,12 +188,17 @@
             if (Svy_se(f, i) <= 0.0)
               Svy_se(f, i) = 0.001;
           }
-          else // normal distribution
+          else if ( Svy_errtype(f) == -1 ) // normal distribution
           {
             Svy_se(f, i) += var_adjust(1, f);
             if (Svy_se(f, i) <= 0.0)
               Svy_se(f, i) = 0.001;
           }
+          else
+          {
+            //  gamma will go here
+          }
+          
         }
       }
     }
@@ -826,6 +831,16 @@
       }
       echoinput << " Tag_parms read from ctl " << TG_parm << endl;
     }
+    checksum999 = 999.;
+  }
+  else
+  {
+        echoinput << "checksum from par file "<<checksum999<<endl;
+    if (checksum999 != 999.)
+    {
+          warnstream << "error on ss.par read; final value was not 999; total number parms changed  " << checksum999;
+          write_message (FATAL, 1);
+    }
   }
 
   //  SS_Label_Info_6.5 #Check parameter bounds and do jitter
@@ -1133,6 +1148,7 @@
       for (i = 1; i <= Nobs_l(f); i++)
       {
         parti_cnt(abs(mkt_l(f, i)))++;
+        if (Do_Retain(f) == 0) mkt_l(f,i) = 0;  //  force to partition 0 if retention not defined
       }
       if (parti_cnt(1) > 0 && Do_Retain(f) == 0)
       {
@@ -1141,7 +1157,7 @@
       }
       if (parti_cnt(2) > 0 && Do_Retain(f) == 0)
       {
-        warnstream <<  "fleet: " << f << "  lencomp has obs with partition==2; will treat as partition=0 because retention not defined; N= " << parti_cnt(2);
+        warnstream <<  "fleet: " << f << " lencomp has N obs with partition==2 (retained); changed to partition=0 because retention not defined; N= " << parti_cnt(2);
         write_message (WARN, 0);
       }
       if (parti_cnt(2) > 0 && (fleet_type(f) == 2 || seltype(f, 2) == 3 || seltype(Nfleet + f, 2) == 3)) //  error if retained catch obs are with no retention fleets
@@ -1157,6 +1173,7 @@
       for (i = 1; i <= Nobs_a(f); i++)
       {
         parti_cnt(abs(mkt_a(f, i)))++;
+        if (Do_Retain(f) == 0) mkt_a(f,i) = 0;  //  force to partition 0 if retention not defined
       }
       if (parti_cnt(1) > 0 && Do_Retain(f) == 0)
       {
@@ -1165,8 +1182,8 @@
       }
       if (parti_cnt(2) > 0 && Do_Retain(f) == 0)
       {
-        warnstream << "Fleet: " << f << "  agecomp has obs with partition==2; will treat as partition=0 because retention not defined; N= " << parti_cnt(2);
-        write_message (WARN, 0);
+        warnstream << "Fleet: " << f << "  agecomp has N obs with partition==2 (retained); changed to partition=0 because retention not defined; N= " << parti_cnt(2);
+        write_message (ADJUST, 0);
       }
       if (parti_cnt(2) > 0 && (fleet_type(f) == 2 || seltype(f, 2) == 3 || seltype(Nfleet + f, 2) == 3)) //  error if retained catch obs are with no retention fleets
       {
@@ -1181,7 +1198,8 @@
       for (i = 1; i <= Nobs_ms(f); i++)
       {
         parti_cnt(abs(mkt_ms(f, i)))++;
-      }
+        if (Do_Retain(f) == 0) mkt_ms(f, i) = 0;  //  force to partition 0 if retention not defined
+    }
       if (parti_cnt(1) > 0 && Do_Retain(f) == 0)
       {
         warnstream << "Fleet: " << f << "  size-at-age data contains obs with partition==1 and retention fxn not defined; N= " << parti_cnt(1);
@@ -1189,8 +1207,8 @@
       }
       if (parti_cnt(2) > 0 && Do_Retain(f) == 0)
       {
-        warnstream << "Fleet: " << f << "  size-at-age data  has obs with partition==2; will treat as partition=0 because retention not defined; N= " << parti_cnt(2);
-        write_message (WARN, 0);
+        warnstream << "Fleet: " << f << "  size-at-age data has N obs with partition==2 (retained); changed to partition=0 because retention not defined; N= " << parti_cnt(2);
+        write_message (ADJUST, 0);
       }
       if (parti_cnt(2) > 0 && (fleet_type(f) == 2 || seltype(f, 2) == 3 || seltype(Nfleet + f, 2) == 3)) //  error if retained catch obs are with no retention fleets
       {
@@ -1209,6 +1227,7 @@
         {
           int parti = abs(mnwtdata(4, i)); //  partition:  0=all, 1=discard, 2=retained
           parti_cnt(parti)++;
+          if (Do_Retain(f) == 0) mnwtdata(4, i) = 0;  //  force to partition 0 if retention not defined
         }
       }
       if (parti_cnt(1) > 0 && Do_Retain(f) == 0)
@@ -1218,8 +1237,8 @@
       }
       if (parti_cnt(2) > 0 && Do_Retain(f) == 0)
       {
-        warnstream << "Fleet: " << f << "  meansize data has obs with partition==2; will treat as partition=0 because retention not defined; N= " << parti_cnt(2);
-        write_message (WARN, 0);
+        warnstream << "Fleet: " << f << "  meansize data has N obs with partition==2 (retained); changed to partition=0 because retention not defined; N= " << parti_cnt(2);
+        write_message (ADJUST, 0);
       }
       if (parti_cnt(2) > 0 && (fleet_type(f) == 2 || seltype(f, 2) == 3 || seltype(Nfleet + f, 2) == 3)) //  error if retained catch obs are with no retention fleets
       {

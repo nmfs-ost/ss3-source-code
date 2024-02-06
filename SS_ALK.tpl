@@ -17,14 +17,29 @@ FUNCTION void Make_AgeLength_Key(const int s, const int subseas)
   //  then it calls calc_ALK to make and store the age-length key for that subseason for each biological entity
 
   int gstart = 0;
-  ALK_idx = (s - 1) * N_subseas + subseas;
+  dvariable dvar_platoon_ratio = platoon_sd_ratio;
+  dvariable dvar_between_platoon = sd_between_platoon;
+  dvariable dvar_within_platoon = sd_within_platoon;
   dvar_vector use_Ave_Size_W(0, nages);
   dvar_vector use_SD_Size(0, nages);
   imatrix ALK_range_use(0, nages, 1, 2);
+  ALK_idx = (s - 1) * N_subseas + subseas;
   if (ALK_subseas_update(ALK_idx) == 1) //  so need to calculate
   {
     ALK_subseas_update(ALK_idx) = 0; //  reset to 0 to indicate update has been done
     gp = 0;
+    // calculate the between and within stdev ratio
+	// when sd_ratio_rd is > 0, values are constant and calculations are already done.
+    if (sd_ratio_rd < 0)
+    {
+      dvar_platoon_ratio = MGparm(sd_ratio_param_ptr);
+      dvar_between_platoon = sqrt(1. / (1. + dvar_platoon_ratio * dvar_platoon_ratio));
+      dvar_within_platoon = dvar_platoon_ratio * dvar_between_platoon;
+      platoon_sd_ratio = value(dvar_platoon_ratio);
+      sd_between_platoon = value(dvar_between_platoon);
+      sd_within_platoon = value(dvar_within_platoon);
+    }
+
     for (int sex = 1; sex <= gender; sex++)
       for (GPat = 1; GPat <= N_GP; GPat++)
       {
@@ -79,8 +94,8 @@ FUNCTION void Make_AgeLength_Key(const int s, const int subseas)
             //  SS_Label_Info_16.3.5  #if platoons being used, calc the stddev between platoons
             if (N_platoon > 1)
             {
-              Sd_Size_between(ALK_idx, g) = Sd_Size_within(ALK_idx, g) * sd_between_platoon;
-              Sd_Size_within(ALK_idx, g) *= sd_within_platoon;
+              Sd_Size_between(ALK_idx, g) = Sd_Size_within(ALK_idx, g) * dvar_between_platoon;
+              Sd_Size_within(ALK_idx, g) *= dvar_within_platoon;
             }
 
             if (docheckup == 1)
@@ -107,13 +122,9 @@ FUNCTION void Make_AgeLength_Key(const int s, const int subseas)
                 Sd_Size_within(ALK_idx, g) = use_SD_Size; //  ditto; also same sd is used for all platoons
               }
 
-              int ALK_phase = 0;
               if (Grow_logN == 0)
               {
-                int ALK_finder = (ALK_idx - 1) * gmorph + g;
-                ivector ALK_range_lo (0, nages);
-                ivector ALK_range_hi (0, nages);
-                ALK(ALK_idx, g) = calc_ALK(len_bins, ALK_range_lo, ALK_range_hi, use_Ave_Size_W, use_SD_Size);
+                ALK(ALK_idx, g) = calc_ALK(len_bins, use_Ave_Size_W, use_SD_Size);
               }
               else
               {
@@ -169,7 +180,7 @@ FUNCTION imatrix calc_ALK_range(const dvector& len_bins, const dvar_vector& mean
   }
 
 // the function calc_ALK is called by Make_AgeLength_Key to calculate the distribution of length for each age
-FUNCTION dvar_matrix calc_ALK(const dvector& len_bins, const ivector& ALK_range_lo, const ivector& ALK_range_hi, const dvar_vector& mean_len_at_age, const dvar_vector& sd_len_at_age)
+FUNCTION dvar_matrix calc_ALK(const dvector& len_bins, const dvar_vector& mean_len_at_age, const dvar_vector& sd_len_at_age)
   {
   // the function calc_ALK is called by Make_AgeLength_Key to calculate the distribution of length for each age
   RETURN_ARRAYS_INCREMENT();

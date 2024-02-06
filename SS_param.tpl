@@ -15,15 +15,38 @@ PARAMETER_SECTION
 //  SS_Label_Info_5.0.1 #Setup convergence critera and max func evaluations
  LOCAL_CALCS
   // clang-format on
-  // set the filename to all ADMB output files to "ss.[ext]"
-  ad_comm::adprogram_name = "ss";
+  // set the filename to all ADMB output files to "base_modelname.[ext]"
+  //  where base_modelname can be read from command line with command modelname followed by text
+  //  e.g.  ss3_win.exe -nohess -stopph 3  modelname ss4you
+  //  if requested modelname.par is not found, then will attempt to read from ss3.par then ss.par
+  //  whatever name is read, the write will be to modelname.par.  Which has default of ss3.par
+  ad_comm::adprogram_name = base_modelname;
   echoinput << "Begin setting up parameters" << endl;
   cout << "Begin setting up parameters ... ";
   if (readparfile >= 1)
   {
-    cout << " read parm file" << endl;
-    ad_comm::change_pinfile_name("ss.par");
+    anystring = base_modelname + ".par";
+    cout << " read parm file: " << anystring << endl;
+
+    ifstream fin(anystring);
+    if(fin.fail() ) {
+      cout << " no find, try ss3.par" << endl;
+      anystring = "ss3.par";
+      ifstream fin(anystring);
+      if(fin.fail() ) {
+      cout << " no find, try ss.par" << endl;
+      anystring = "ss.par";
+      ifstream fin(anystring);
+      if(fin.fail() ) {
+    	  warnstream << "could not find ss3.par, ss.par, or requested parfile " << base_modelname << ".par";
+    	  write_message(FATAL, 0);
+      }
+    }}
+    cout << " found "<<anystring<<endl;
+
+    ad_comm::change_pinfile_name(anystring);
   }
+
   maximum_function_evaluations.allocate(func_eval.indexmin(), func_eval.indexmax());
   maximum_function_evaluations = func_eval;
   convergence_criteria.allocate(func_conv.indexmin(), func_conv.indexmax());
@@ -311,7 +334,7 @@ PARAMETER_SECTION
 
 !!//  SS_Label_Info_5.1.3 #Create M, F, and Z parameters and associated arrays and constants
   init_bounded_number_vector init_F(1,N_init_F,init_F_LO,init_F_HI,init_F_PH)
-  matrix est_equ_catch(1,nseas,1,Nfleet)
+//  matrix est_equ_catch(1,nseas,1,Nfleet)
 
 //  natural, predation and fishing mortality
   matrix natMparms(1,N_natMparms,1,N_GP*gender)  // will be derived from the MGparms
@@ -338,6 +361,8 @@ PARAMETER_SECTION
   matrix annual_catch(styr-1,YrMax,1,6)  //  same six as above
   matrix annual_F(styr-1,YrMax,1,3)  //  1=sum of hrate (if Pope fmethod) or sum hrate*seasdur if F; 2=Z-M for selected ages; 3=M
   3darray equ_catch_fleet(1,6,1,nseas,1,Nfleet)
+  matrix vuln_bio(styr-3*nseas,k,1,Nfleet)  //  biomass selected by each fleet
+  matrix vuln_num(styr-3*nseas,k,1,Nfleet)  //  numbers selected by each fleet
 
   matrix fec(1,gmorph,0,nages)            //relative fecundity at age, is the maturity times the weight-at-age times eggs/kg for females
   matrix make_mature_bio(1,gmorph,0,nages)  //  mature female weight at age
@@ -414,6 +439,8 @@ PARAMETER_SECTION
   matrix Svy_q(1,Nfleet,1,Svy_N_fleet);
   matrix Svy_se_use(1,Nfleet,1,Svy_N_fleet)
   matrix Svy_est(1,Nfleet,1,Svy_N_fleet)    //  will store expected survey in normal or lognormal units as needed
+  matrix Svy_selec_abund(1,Nfleet,1,Svy_N_fleet);        // Vulnerable biomass
+  matrix Svy_like_I(1,Nfleet,1,Svy_N_fleet)  
   vector surv_like(1,Nfleet) // likelihood of the indices
   matrix Q_dev_like(1,Nfleet,1,2) // likelihood of the Q deviations
 
@@ -483,7 +510,7 @@ PARAMETER_SECTION
   init_bounded_vector_vector parm_dev(1,N_parm_dev,parm_dev_minyr,parm_dev_maxyr,-10,10,parm_dev_PH)
   matrix parm_dev_rwalk(1,N_parm_dev,parm_dev_minyr,parm_dev_maxyr);
 
-  init_bounded_number checksum999(998,1000,-999)  //  set value to 999 to check reading of ss.par
+  init_bounded_number checksum999(998,1000,-1)  //  value must be 999 to check reading of ss.par
   vector timevary_parm(1,timevary_parm_cnt);  //  holds the link parameters; in SS_timevaryparm these are set to actual parms in MGparms, SRparms, Qparms, selparms
   matrix parm_timevary(1,timevary_cnt,styr-1,YrMax);  //  time series of adjusted parm values for block and trend
 
@@ -577,7 +604,7 @@ PARAMETER_SECTION
   number equ_Recr
   number equ_F_std
   number equ_M_std
-
+  
 !!//  SS_Label_Info_5.1.8 #Create matrix called smry to store derived quantities of interest
   matrix Smry_Table(styr-3,YrMax,1,20+2*gmorph);
   // 1=totbio, 2=smrybio, 3=smrynum, 4=enc_catch, 5=dead_catch, 6=ret_catch, 7=spbio, 8=recruit,

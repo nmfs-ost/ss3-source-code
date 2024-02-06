@@ -1920,7 +1920,6 @@ FUNCTION void Make_FishSelex()
   //  4darray sel_dead_bio(1,nseas,1,gmorph,1,Nfleet,0,nages);  // sel * (retain + (1-retain)*discmort) * wt
 
   ALK_idx = (s - 1) * N_subseas + mid_subseas; //for midseason
-  int ALK_finder = (ALK_idx - 1) * gmorph + g;
   dvar_matrix ALK_w = ALK(ALK_idx, g); //  shallow copy
   dvar_vector sel_l_r_w(1, nlength); //  temp vector for retained contribution to weight-at-age
   dvar_vector disc_wt(1, nlength);
@@ -1928,14 +1927,14 @@ FUNCTION void Make_FishSelex()
   int tz;
   gg = sx(g);
   //    if(y>endyr) {yz=endyr; } else {yz=y;}  //  not used
-  if (y > endyr + 1 && Fcast_Specify_Selex == 0)
+  if (y > endyr + 1 && Fcast_timevary_Selex == 1)  // do means
   {
     yf = endyr + 1;
   }
   else
   {
     yf = y;
-  } //  yf stores in endyr+1 the average selex from a range of years if Fcast_Specify_Selex==0
+  } //  yf stores in endyr+1 the average selex from a range of years if Fcast_timevary_Selex==1
   tz = styr + (y - styr) * nseas + s - 1; // can use y, not yf, because Wt_Age_t values are read in and can extend into forecast
   for (f = 1; f <= Nfleet; f++)
   {

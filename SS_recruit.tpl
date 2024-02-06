@@ -123,6 +123,7 @@ FUNCTION dvariable Spawn_Recr(const prevariable& SSB_virgin_adj, const prevariab
         SRZ_surv *= mfexp(recdev_cycle_parm(gg));
       }
       exp_rec(y, 2) = SSB_curr_adj * SRZ_surv;
+      exp_rec(y, 2) *= mfexp(regime_change); //  adjust for regime which includes env and block effects; and forecast adjustments
       SRZ_surv *= mfexp(-biasadj(y) * half_sigmaRsq); // bias adjustment
       exp_rec(y, 3) = SSB_curr_adj * SRZ_surv;
       if (y <= recdev_end)
@@ -211,10 +212,6 @@ FUNCTION void apply_recdev(prevariable& NewRecruits, const prevariable& Recr_vir
   {
     switch (int(Fcast_Loop_Control(3)))
     {
-      case 5:
-      {
-        //  fall through to case 0
-      }
       case 0:
       {
         NewRecruits = exp_rec(y, 2);
@@ -241,6 +238,11 @@ FUNCTION void apply_recdev(prevariable& NewRecruits, const prevariable& Recr_vir
         exp_rec(y, 3) = NewRecruits;
         break;
       }
+      case 4:
+      {
+        //  fall through to case 3
+        //  case 3 also will do averaging of recr_dist in another section of code
+      }
       case 3: //  use recent mean
       {
         //  values going into the mean have already been bias adjusted and had dev applied, so take straight mean
@@ -250,11 +252,14 @@ FUNCTION void apply_recdev(prevariable& NewRecruits, const prevariable& Recr_vir
           NewRecruits += exp_rec(j, 4);
         }
         NewRecruits /= (Fcast_Rec_yr2 - Fcast_Rec_yr1 + 1);
+        if(Fcast_Loop_Control(3) == 4) NewRecruits *= Fcast_Loop_Control(4);  //  apply multiplier
         exp_rec(y, 2) = NewRecruits;
         exp_rec(y, 3) = NewRecruits; //  store in the bias-adjusted field
         break;
       }
     }
+  // note that if user requests "mean" as base forecast recr, then devs are still applied
+  // so, phase for forecast recdevs must be <0 to assure that forecast recr do not get added variability
     if (do_recdev > 0)
       NewRecruits *= mfexp(Fcast_recruitments(y)); //  recruitment deviation
   }
@@ -343,6 +348,7 @@ FUNCTION dvar_vector Equil_Spawn_Recr_Fxn(const prevariable& SRparm2, const prev
       SRZ_0 = log(1.0 / (SSB_virgin / Recr_virgin));
       srz_min = SRZ_0 * (1.0 - steepness);
       B_equil = SSB_virgin * (1. - (log(1. / SPR_temp) - SRZ_0) / pow((srz_min - SRZ_0), (1. / SRparm3)));
+      B_equil = posfun(B_equil, 0.0001, temp);
       SRZ_surv = mfexp((1. - pow((B_equil / SSB_virgin), SRparm3)) * (srz_min - SRZ_0) + SRZ_0); //  survival
       R_equil = B_equil * SRZ_surv;
       break;

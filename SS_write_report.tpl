@@ -992,7 +992,7 @@ FUNCTION void write_bigoutput()
   if (pick_report_use(8) == "Y")
   {
     k1 = YrMax;
-    if (Fcast_Specify_Selex == 0)
+    if (Fcast_timevary_Selex == 0)
     {
       SS2out << "forecast_selectivity_averaged_over_years:_" << Fcast_Sel_yr1 << "_to_" << Fcast_Sel_yr2 << endl;
     }
@@ -1300,12 +1300,12 @@ FUNCTION void write_bigoutput()
   }
 
   // REPORT_KEYWORD 15 CATCH
-  //  Fleet Fleet_Name Area Yr Era Seas Subseas Month Time
   if (pick_report_use(15) == "Y")
   {
     SS2out << endl
            << pick_report_name(15) << endl;
-    SS2out << "Fleet Fleet_Name Area Yr Seas Time Obs Exp Mult Exp*Mult se F  Like sel_bio kill_bio ret_bio sel_num kill_num ret_num" << endl;
+    SS2out << "# where vuln_ is mid-season selected bio or numbers; sel_ is selected total catch; dead_ is catch without live discards; ret_ is retained catch" << endl;
+    SS2out << "Fleet Fleet_Name Area Yr Seas Time Obs Exp Mult Exp*Mult se F  Like vuln_bio sel_bio dead_bio ret_bio vuln_num sel_num dead_num ret_num" << endl;
     for (f = 1; f <= Nfleet; f++)
     {
       if (fleet_type(f) <= 2)
@@ -1349,12 +1349,14 @@ FUNCTION void write_bigoutput()
             {
               SS2out << "BYCATCH";
             }
-            SS2out << catch_fleet(t, f) << endl;
+            SS2out << " " << vuln_bio(t, f) << " " << catch_fleet(t, f)(1,3) << " " << vuln_num(t, f) << " " << catch_fleet(t, f)(4,6) << endl;
           }
       }
     }
   }
   int bio_t;
+  dvector Bio_Comp(1, N_GP * gender);
+  dvector Num_Comp(1, N_GP * gender);
   // REPORT_KEYWORD 16 TIME_SERIES
   //  Fleet Fleet_Name Area Yr Era Seas Subseas Month Time
   if (pick_report_use(16) == "Y")
@@ -1388,8 +1390,8 @@ FUNCTION void write_bigoutput()
       {
         SS2out << " SmryNum_SX:" << gg << "_GP:" << gp;
       }
-    dvector Bio_Comp(1, N_GP * gender);
-    dvector Num_Comp(1, N_GP * gender);
+    SS2out << " mature_bio mature_num ";
+
     for (f = 1; f <= Nfleet; f++)
       if (fleet_type(f) <= 2)
       {
@@ -1508,6 +1510,7 @@ FUNCTION void write_bigoutput()
             }
           }
           SS2out << " " << Bio_Comp << " " << Num_Comp;
+          SS2out << " " << SSB_B_yr(y) << " " << SSB_N_yr(y);
           if (s == 1 && y <= endyr)
           {
             Smry_Table(y, 15) += smryage;
@@ -1874,23 +1877,14 @@ FUNCTION void write_bigoutput()
           t = Svy_time_t(f, i);
           ALK_time = Svy_ALK_time(f, i);
           SS2out << f << " " << fleetname(f) << " " << fleet_area(f) << " " << Show_Time2(ALK_time) << " " << data_time(ALK_time, f, 1) << " " << data_time(ALK_time, f, 3) << " " << Svy_selec_abund(f, i) << " " << Svy_obs(f, i) << " ";
-          if (Svy_errtype(f) >= 0) // lognormal or student's T
+          if (Svy_errtype(f) >= 0) // lognormal or T-dist
           {
             temp = mfexp(Svy_est(f, i));
             SS2out << temp << " " << Svy_q(f, i) << " " << temp / Svy_selec_abund(f, i) << " " << Svy_se_use(f, i) << " " << Svy_se(f, i);
             if (Svy_use(f, i) > 0)
             {
               SS2out << " " << Svy_obs_log(f, i) - Svy_est(f, i) << " ";
-              if (Svy_errtype(f) == 0) // lognormal
-              {
-                SS2out << 0.5 * square((Svy_obs_log(f, i) - Svy_est(f, i)) / Svy_se_use(f, i)) << " "
-                       << 0.5 * square((Svy_obs_log(f, i) - Svy_est(f, i)) / Svy_se_use(f, i)) + log(Svy_se_use(f, i));
-              }
-              else // student's T
-              {
-                SS2out << ((Svy_errtype(f) + 1.) / 2.) * log((1. + square((Svy_obs_log(f, i) - Svy_est(f, i))) / (Svy_errtype(f) * square(Svy_se_use(f, i))))) << " "
-                       << ((Svy_errtype(f) + 1.) / 2.) * log((1. + square((Svy_obs_log(f, i) - Svy_est(f, i))) / (Svy_errtype(f) * square(Svy_se_use(f, i))))) + log(Svy_se_use(f, i));
-              }
+              SS2out << Svy_like_I(f, i) - log(Svy_se_use(f, i)) << " " << Svy_like_I(f,i) << " ";
               rmse(f) += value(square(Svy_obs_log(f, i) - Svy_est(f, i)));
               n_rmse(f) += 1.;
               mean_CV(f) += Svy_se_rd(f, i);
@@ -1904,13 +1898,11 @@ FUNCTION void write_bigoutput()
           }
           else // normal
           {
-            //            temp = Svy_est(f,i)*Svy_q(f,i);
             SS2out << Svy_est(f, i) << " " << Svy_q(f, i) << " " << Svy_est(f, i) / Svy_selec_abund(f, i) << " " << Svy_se_use(f, i) << " " << Svy_se(f, i);
             if (Svy_use(f, i) > 0)
             {
               SS2out << " " << Svy_obs(f, i) - Svy_est(f, i) << " ";
-              SS2out << 0.5 * square((Svy_obs(f, i) - Svy_est(f, i)) / Svy_se_use(f, i)) << " "
-                     << 0.5 * square((Svy_obs(f, i) - Svy_est(f, i)) / Svy_se_use(f, i)) + log(Svy_se_use(f, i));
+              SS2out << Svy_like_I(f, i) - log(Svy_se_use(f, i)) << " " << Svy_like_I(f,i) << " ";
               rmse(f) += value(square(Svy_obs(f, i) - Svy_est(f, i)));
               n_rmse(f) += 1.;
               mean_CV(f) += Svy_se_rd(f, i);
@@ -1957,13 +1949,13 @@ FUNCTION void write_bigoutput()
     SS2out << endl
            << pick_report_name(21) << endl;
     SS2out << "Fleet Link Link+ ExtraStd BiasAdj Float   Q Num=0/Bio=1 Err_type"
-           << " N Npos RMSE mean_input_SE Input+VarAdj Input+VarAdj+extra VarAdj New_VarAdj penalty_mean_Qdev rmse_Qdev fleetname" << endl;
+           << " N Npos RMSE logL  mean_input_SE Input+VarAdj Input+VarAdj+extra VarAdj New_VarAdj penalty_mean_Qdev rmse_Qdev fleetname" << endl;
     for (f = 1; f <= Nfleet; f++)
     {
       if (Svy_N_fleet(f) > 0)
       {
         SS2out << f << " " << Q_setup(f) << " " << Svy_q(f, 1) << " " << Svy_units(f) << " " << Svy_errtype(f)
-               << " " << Svy_N_fleet(f) << " " << n_rmse(f) << " " << rmse(f)
+               << " " << Svy_N_fleet(f) << " " << n_rmse(f) << " " << rmse(f)<< " " << surv_like(f) 
                << " " << mean_CV(f) << " " << mean_CV3(f) << " " << mean_CV2(f) << " " << var_adjust(1, f)
                << " " << var_adjust(1, f) + rmse(f) - mean_CV(f)
                << " " << Q_dev_like(f, 1) << " " << Q_dev_like(f, 2) << " " << fleetname(f) << endl;
@@ -2005,7 +1997,7 @@ FUNCTION void write_bigoutput()
     SS2out << "2:  discard_as_fraction_of_total_catch(based_on_bio_or_num_depending_on_fleet_catchunits)" << endl;
     SS2out << "3:  discard_as_numbers(1000s)_regardless_of_fleet_catchunits" << endl;
     SS2out << "Discard_errtype_options" << endl;
-    SS2out << ">1:  log(L)_based_on_T_distribution_with_specified_DF" << endl;
+    SS2out << ">1:  log(L)_based_on_T-distribution_with_specified_DF" << endl;
     SS2out << "0:  log(L)_based_on_normal_with_Std_in_as_CV" << endl;
     SS2out << "-1:  log(L)_based_on_normal_with_Std_in_as_stddev" << endl;
     SS2out << "-2:  log(L)_based_on_lognormal_with_Std_in_as_stddev_in_logspace" << endl;
@@ -2403,7 +2395,7 @@ FUNCTION void write_bigoutput()
         temp = abs(header_a_rd(f, i, 2));
         if (temp > 999)
           temp -= 1000;
-        SS2out << f << " " << fleetname(f) << " " << fleet_area(f) << Show_Time2(ALK_time) << " " << data_time(ALK_time, f, 1) << " " << data_time(ALK_time, f, 3) << " " << gen_a(f, i) << " " << mkt_a(f, i) << " " << ageerr_type_a(f, i) << " " << Lbin_lo(f, i) << " " << Lbin_hi(f, i) << " ";
+        SS2out << f << " " << fleetname(f) << " " << fleet_area(f) << Show_Time2(ALK_time) << " " << data_time(ALK_time, f, 1) << " " << data_time(ALK_time, f, 3) << " " << gen_a(f, i) << " " << mkt_a(f, i) << " " << ageerr_type_a(f, i) << " " << len_bins(Lbin_lo(f, i)) << " " << len_bins(Lbin_hi(f, i)) << " ";
         if (header_a(f, i, 2) < 0 && in_superperiod == 0)
         {
           SS2out << " start ";
@@ -2838,10 +2830,11 @@ FUNCTION void write_bigoutput()
   // REPORT_KEYWORD 32 AGE_SELEX
   if (pick_report_use(32) == "Y")
   {
+    dmatrix selmax(1,Nfleet,1,3);  //  max selectivity for each fleet and year, season
     SS2out << endl
            << pick_report_name(32) << endl;
     SS2out << "Asel_is_age_selectivity_alone" << endl;
-    SS2out << "Asel2_is_sizesel*size_at_age(ALK)" << endl;
+    SS2out << "Asel2_is_Asel*(selL*size_at_age(ALK)); Q and F parameters may appear higher than expected because Asel2 may have max < 1.0; " << endl;
     SS2out << "Aret_is_age_retention" << endl;
     SS2out << "COMBINED_ALK*selL*selA*wtlen*ret*discmort_in_makefishsel_yr: " << makefishsel_yr << " With_MeanSel_From: " << Fcast_Sel_yr1 << " - " << Fcast_Sel_yr2; // SS_Label_380
     SS2out << "; Year_styr-3_(" << styr - 3 << ")_stores_average_used_for_benchmark" << endl;
@@ -2885,6 +2878,9 @@ FUNCTION void write_bigoutput()
     {
       k = endyr;
     }
+
+    selmax = 100.0;  //  set to big number
+
     for (y = styr - 3; y <= k; y++)
       for (s = 1; s <= nseas; s++)
       {
@@ -2900,6 +2896,12 @@ FUNCTION void write_bigoutput()
             for (f = 1; f <= Nfleet; f++)
             {
               SS2out << "Asel2 " << f << " " << y << " " << s << " " << sx(g) << " " << g << " " << y << "_" << f << "_Asel2" << save_sel_num(t, f, g) << endl;
+              temp = max(save_sel_num(t, f, g));
+              if (temp < selmax(f, 3) && y >= styr) 
+                {selmax(f, 3) = value(temp); 
+                 selmax(f, 1) = float(y);
+                 selmax(f, 2) = float(s);}  //  save y.s
+
               if (fleet_type(f) <= 2)
                 SS2out << "F " << f << " " << y << " " << s << " " << sx(g) << " " << g << " " << y << "_" << f << "_F" << Hrate(f, t) * save_sel_num(t, f, g) << endl;
               SS2out << "bodywt " << f << " " << y << " " << s << " " << sx(g) << " " << g << " " << y << "_" << f << "_bodywt" << Wt_Age_t(t, f, g) << endl;
@@ -2920,6 +2922,9 @@ FUNCTION void write_bigoutput()
               SS2out << "dead_nums " << f << " " << y << " " << s << " " << sx(g) << " " << g << " " << y << "_" << f << "_dead_nums" << sel_dead_num(s, f, g) << endl;
               SS2out << "dead*wt " << f << " " << y << " " << s << " " << sx(g) << " " << g << " " << y << "_" << f << "_dead*wt" << sel_dead_bio(s, f, g) << endl;
             }
+    SS2out << "#" << endl << "maximum_ASEL2" << endl << "Fleet fleet_name year seas max" << endl;
+    for (f = 1; f <=Nfleet; f++)
+    {SS2out << f << " " << fleetname(f) << selmax(f) << endl;}
   }
 
   // REPORT_KEYWORD 33 ENVIRONMENTAL_DATA
@@ -3801,7 +3806,7 @@ FUNCTION void write_bigoutput()
     if (Grow_logN == 1)
       SS2out << " #Lognormal ";
     SS2out << "#" << endl; // SS_Label_460
-    SS2out << " sdratio " << sd_ratio << endl;
+    SS2out << " sdratio " << platoon_sd_ratio << endl;
     SS2out << " sdwithin " << sd_within_platoon << endl;
     SS2out << " sdbetween " << sd_between_platoon << endl;
     for (s = 1; s <= nseas; s++)
@@ -3963,7 +3968,9 @@ FUNCTION void write_bigoutput()
             }
           }
 
-          for (gg = 1; gg <= gender ; gg ++)
+          int gender2 = gender;
+          if (gen_l(f, i) == 0) gender2 = 1;
+          for (gg = 1; gg <= gender2 ; gg ++)
           {
             if (gen_l(f, i) != 2 && gg == 1)
             {
@@ -4071,7 +4078,9 @@ FUNCTION void write_bigoutput()
             }
           }
 
-          for (gg = 1; gg <= gender ; gg ++)
+          int gender2 = gender;
+          if (gen_a(f, i) == 0) gender2 = 1;
+          for (gg = 1; gg <= gender2 ; gg ++)
           {
             if (gen_a(f, i) != 2 && gg == 1)
             {
@@ -4251,7 +4260,7 @@ FUNCTION void write_bigoutput()
             else
             {s_off = 1;}
             // Yr Month Seas Subseas Time Fleet Area Repl. Sexes Kind Part Ageerr Sex Lbin_lo Lbin_hi Bin Obs Exp
-            SS_compout << SzFreq_obs_hdr(iobs, 1) << " " << real_month << " " << Show_Time2(ALK_time)(2, 3) << " " << data_time(ALK_time, f, 3) << " " << f << " " << fleet_area(f) << " " << repli << " " << gg << " SIZE " << p << " " << k;
+            SS_compout << SzFreq_obs_hdr(iobs, 1) << " " << real_month << " " << Show_Time2(ALK_time)(2, 3) << " " << data_time(ALK_time, f, 3) << " " << f << " " << fleet_area(f) << " " << repli << " " << gg << " SIZE " << p << " " << Sz_method;
             SS_compout << " " << s_off << " " << SzFreq_units(Sz_method) << " " << SzFreq_scale(Sz_method) << " ";
             if (s_off == 1)
             {
@@ -4605,6 +4614,7 @@ FUNCTION void SPR_profile()
     SPRloop1_end = 7;
   }
   int SPRloops;
+  SS2out << "ready for equilcalc "<<endl;
   Do_Equil_Calc(equ_Recr);
   if (N_bycatch == 0)
   {
@@ -4614,6 +4624,7 @@ FUNCTION void SPR_profile()
   {
     k = 1;
   }
+  SS2out << "ready for loops "<<endl;
   for (int with_BYC = 0; with_BYC <= k; with_BYC++)
     for (int SPRloop1 = 0; SPRloop1 <= SPRloop1_end; SPRloop1++)
     {

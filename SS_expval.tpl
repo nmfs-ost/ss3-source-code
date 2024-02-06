@@ -31,8 +31,6 @@ FUNCTION void Get_expected_values(const int y, const int t);
           for (g = 1; g <= gmorph; g++)
             if (use_morph(g) > 0)
             {
-              int ALK_finder = (ALK_idx - 1) * gmorph + g;
-
               gg = sx(g);
               if (gg == 2)
               {
@@ -264,24 +262,26 @@ FUNCTION void Get_expected_values(const int y, const int t);
                     //  should sum over all g, but the g is already subsummed when agetemp is created by gender
                     {
                       vbio = 0.0;
+//                      warning<<f<<" "<<y<<" "<<s<<" "<<t<<" y_wts "<<Wt_Age_t(y, f, 1)<<endl;
+//                      warning<<f<<" "<<y<<" "<<s<<" "<<t<<" t_wts "<<Wt_Age_t(t, f, 1)<<endl;
                       if (Do_Retain(f) == 0) //  all retained
                       {
                         for (a = 0; a <= nages; a++)
-                          vbio += Wt_Age_t(y, f, 1, a) * agetemp(a);
+                          vbio += Wt_Age_t(t, f, 1, a) * agetemp(a);
                         if (gender == 2)
                         {
                           for (a = 0; a <= nages; a++)
-                            vbio += Wt_Age_t(y, f, 2, a) * agetemp(a + nages + 1);
+                            vbio += Wt_Age_t(t, f, 2, a) * agetemp(a + nages + 1);
                         }
                       }
                       else
                       {
                         for (a = 0; a <= nages; a++)
-                          vbio += Wt_Age_t(y, f, 1, a) * exp_truea_ret(a);
+                          vbio += Wt_Age_t(t, f, 1, a) * exp_truea_ret(a);
                         if (gender == 2)
                         {
                           for (a = 0; a <= nages; a++)
-                            vbio += Wt_Age_t(y, f, 2, a) * exp_truea_ret(a + nages + 1);
+                            vbio += Wt_Age_t(t, f, 2, a) * exp_truea_ret(a + nages + 1);
                         }
                       }
                     }
@@ -336,38 +336,17 @@ FUNCTION void Get_expected_values(const int y, const int t);
                   }
                   case 31: // exp(recruitment deviation)  #31
                   {
-                    if (y >= recdev_start && y <= recdev_end)
-                    {
-                      vbio = mfexp(recdev(y));
-                    }
-                    else
-                    {
-                      vbio = 1.0;
-                    }
+                    vbio = mfexp(recdev(y));
                     break;
                   }
                   case 36: // recruitment deviation  #36
                   {
-                    if (y >= recdev_start && y <= recdev_end)
-                    {
-                      vbio = recdev(y);
-                    }
-                    else
-                    {
-                      vbio = 0.0;
-                    }
+                    vbio = recdev(y);
                     break;
                   }
                   case 32: // recruitment without density-dependence (for pre-recruit survey) #32
                   {
-                    if (y >= recdev_start && y <= recdev_end)
-                    {
-                      vbio = SSB_current * mfexp(recdev(y));
-                    }
-                    else
-                    {
-                      vbio = SSB_current;
-                    }
+                    vbio = SSB_current * mfexp(recdev(y));
                     break;
                   }
                   case 33: // recruitment  #33
@@ -404,7 +383,6 @@ FUNCTION void Get_expected_values(const int y, const int t);
                     break;
                   }
                 }
-                Svy_selec_abund(f, j) = value(vbio);
 
                 //  get catchability
                 if (Q_setup(f, 1) == 2) // mirror Q from lower numbered survey
@@ -412,7 +390,7 @@ FUNCTION void Get_expected_values(const int y, const int t);
                   Svy_log_q(f, j) = Svy_log_q(Q_setup(f, 2), 1);
                   Q_parm(Q_setup_parms(f, 1)) = Svy_log_q(f, 1); // base Q  So this sets parameter equal to the scaling coefficient and can then have a prior
                 }
-                else if (Q_setup(f, 1) == 4)
+                else if (Q_setup(f, 1) == 4)  // mirror Q plus an offset
                 {
                   Svy_log_q(f, j) = Svy_log_q(Q_setup(f, 2), 1) + Q_parm(Q_setup_parms(f, 1) + 1);
                   Q_parm(Q_setup_parms(f, 1)) = Svy_log_q(f, 1); // base Q  So this sets parameter equal to the scaling coefficient and can then have a prior
@@ -435,60 +413,18 @@ FUNCTION void Get_expected_values(const int y, const int t);
                 {
                   Svy_q(f) = Svy_log_q(f); //  q already in  arithmetic space
                 }
-                else //  lognormal, or t-distribution in lognormal
+                else if (Svy_errtype(f) >= 0 ) // lognormal, or T-dist
                 {
                   Svy_q(f) = mfexp(Svy_log_q(f)); // get q in arithmetic space
                 }
 
                 // SS_Label_Info_46.1.1 #note order of operations,  vbio raised to a power, then constant is added, then later multiplied by Q.  Needs work
-                /*
-   //  old code here
-               switch (Q_setup(f,1))  //  switch is based on the link type: (1=simple q; 2=mirror; 3=q and power; 4=mirror with offset in q)
-               {
-                 case 2:
-                 {
-                   //  no break, so do same as case 1
-                 }
-                 case 4:
-                 {
-                   //  no break, so do same as case 1
-                 }
-                 case 1:
-                 {
-                   if(Q_setup(f,5)==1 && y<=endyr)  // float Q will be calculated and applied in objfun section, so temporarily store vbio in svy_est.
-                   	                                // note that if y is in forecast, then Q has already been calculated so can be applied in the else clause here
-                   {
-                     if(Svy_errtype(f)>=0)  //  lognormal or T-distribution
-                     {Svy_est(f,j)=log(vbio+0.000001);}
-                     else
-                     {Svy_est(f,j)=vbio;}
-                   }
-                   else  //  Q based on parameters, or in forecast so Q has already been calculated through float approach in the objfun
-                   {
-                     if(Svy_errtype(f)>=0)  //  lognormal or T-distribution
-                     {Svy_est(f,j)=log(vbio+0.000001)+Svy_log_q(f,j);}
-                     else
-                     {Svy_est(f,j)=vbio*Svy_q(f,j);}
-                   }
-                   break;
-                 }
-                 case 3:  //  link is power function
-                 {
-                   vbio=pow(vbio,1.0+Q_parm(Q_setup_parms(f,1)+1));  //  raise vbio to a power
-                   if(Svy_errtype(f)>=0)  //  lognormal or T-distribution
-                   {Svy_est(f,j)=log(vbio+0.000001)+Svy_log_q(f,j);}
-                   else
-                   {Svy_est(f,j)=vbio*Svy_q(f,j);}
-                   break;
-                 }
-               }
-   */
-
                 if (Q_setup(f, 1) == 3) //  link is power function
                 {
                   vbio = pow(vbio, 1.0 + Q_parm(Q_setup_parms(f, 1) + 1));
                 } //  raise vbio to a power
 
+                Svy_selec_abund(f, j) = vbio;  //  e.g. the abundance that has been selected through selectivity or other assignment process
                 if (Svy_errtype(f) >= 0) //  lognormal or T-distribution
                 {
                   Svy_est(f, j) = log(vbio + 0.000001);
@@ -498,10 +434,12 @@ FUNCTION void Get_expected_values(const int y, const int t);
                   Svy_est(f, j) = vbio;
                 }
 
-                if (Q_setup(f, 5) == 0 || y > endyr) // apply Q, but note: float Q will be calculated and applied in objfun section, so temporarily store vbio in svy_est.
-                // if y is in forecast, then Q has already been calculated so can be applied here
+                //  apply catchability, except if float is used.
+                //  With float, catchability is calculated in ss_objfun after all obs have a value for svy_selec_abund
+                if (Q_setup(f, 5) == 0 || y > endyr) // apply Q if float is not used
+                // except if y is in forecast, then float Q has already been calculated so can be applied here
                 {
-                  if (Svy_errtype(f) >= 0) //  lognormal or T-distribution
+                  if (Svy_errtype(f) >= 0) //  lognormal or T-dist
                   {
                     Svy_est(f, j) += Svy_log_q(f, j);
                   }

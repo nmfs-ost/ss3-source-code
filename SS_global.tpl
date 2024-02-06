@@ -86,6 +86,7 @@ GLOBALS_SECTION
   adstring_array fleetname;
   adstring ssnew_pathname;
   adstring sso_pathname;
+  adstring base_modelname = "ss3";
   adstring fleetnameread;
   adstring depletion_basis_label;
   adstring F_report_label;
@@ -106,6 +107,7 @@ GLOBALS_SECTION
   adstring_array NumLbl; // label for numbers 1 to 199
   adstring_array NumLbl0; // label for numbers 0 to 198 (needed for ages)
   adstring_array GenderLbl; // gender label
+  adstring_array MGtype_Lbl; // label for MGtypes, i.e. Natmort, Growth
   adstring_array GP_Lbl; // gender label
   adstring_array CRLF; // blank to terminate lines
   adstring_array pick_report_name; //  name of report
@@ -174,8 +176,9 @@ GLOBALS_SECTION
   std::vector<dvector> comp_control_L;
   std::vector<dvector> comp_control_A;
   std::vector<dvector> comp_control_Sz;
+  std::vector<dvector> fcast_mgparm_ave_rd;
+  
 //  function in GLOBALS to do the timing setup in the data section
-
 
 // SS_Label_Function_xxxa write_msg(string,int,int,int); output a message.
 // options are output the string to echoinput.sso and warning.sso with an option to exit
@@ -210,7 +213,7 @@ GLOBALS_SECTION
     if (exitflag == 1)
     {
       warning.close();
-	    echoinput.close();
+      echoinput.close();
       cout << msg << endl;
       cout << "Also see warning.sso" << endl;
       cout << "Exiting SS3! " << endl;

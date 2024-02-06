@@ -536,6 +536,7 @@ FUNCTION void get_initial_conditions()
   env_data(styr - 1, -3) = 0.0;
   env_data(styr - 1, -4) = 0.0;
 
+  /*
   // save est_equ_catch which has units (biomass vs numbers) according to that fleet; used in objfun
   for (s = 1; s <= nseas; s++)
     for (int ff = 1; ff <= N_catchfleets(0); ff++)
@@ -550,8 +551,8 @@ FUNCTION void get_initial_conditions()
         est_equ_catch(s, f) = equ_catch_fleet(5, s, f);
       }
     }
-
-  if (save_for_report > 0)
+  */
+//  if (save_for_report > 0)
   {
     for (s = 1; s <= nseas; s++)
     {
@@ -576,7 +577,6 @@ FUNCTION void get_initial_conditions()
         {
           catch_fleet(t, f, g) = equ_catch_fleet(g, s, f);
         }
-        warning<<catch_fleet(t, f)<<endl;
         for (g = 1; g <= gmorph; g++)
         {
           catage(t, f, g) = equ_catage(s, f, g);
@@ -1019,7 +1019,7 @@ FUNCTION void get_time_series()
           SSB_use = SSB_equil;
         }
         Recruits = Spawn_Recr(SSB_use, R0_use, SSB_current); // calls to function Spawn_Recr
-        apply_recdev(Recruits, R0_use); //  apply recruitment deviation
+        if (SR_fxn != 7) apply_recdev(Recruits, R0_use); //  apply recruitment deviation
         // distribute Recruitment of age 0 fish among the current and future settlements; and among areas and morphs
         //  use t offset for each birth event:  Settlement_offset(settle)
         //  so the total number of Recruits will be relative to their numbers at the time of the set of settlement_events.
@@ -1375,6 +1375,22 @@ FUNCTION void get_time_series()
               Zrate2(p, g) = elem_div((1. - mfexp(-seasdur(s) * Z_rate(t, p, g))), Z_rate(t, p, g));
             }
         }
+
+      //  SS_Label_Info_24.3.3.4 #save vulnerable biomass and numbers.  Use middle of season
+        if (bigsaver == 1)
+        {
+          vuln_bio(t) = 0.0;
+          vuln_num(t) = 0.0;
+          for (g = 1; g <= gmorph; g++)
+          if (use_morph(g) > 0)
+          {
+            for (f = 1; f<= Nfleet; f++)
+            {
+              vuln_bio(t, f) += sel_bio(s, f, g) * elem_prod(natage(t, p, g), mfexp(-Z_rate(t, p, g) * 0.5 * seasdur(s)));
+              vuln_num(t, f) += sel_num(s, f, g) * elem_prod(natage(t, p, g), mfexp(-Z_rate(t, p, g) * 0.5 * seasdur(s)));
+            }
+          }
+        }
         for (f1 = 1; f1 <= N_pred; f1++)
         {
           f = predator(f1);
@@ -1461,7 +1477,7 @@ FUNCTION void get_time_series()
         }
 
         Recruits = Spawn_Recr(SSB_use, R0_use, SSB_current); // calls to function Spawn_Recr
-        apply_recdev(Recruits, R0_use); //  apply recruitment deviation
+        if (SR_fxn != 7) apply_recdev(Recruits, R0_use); //  apply recruitment deviation
 
         // distribute Recruitment among settlements, areas and morphs
         //  note that because SSB_current is calculated at end of season to take into account Z,
@@ -1760,9 +1776,6 @@ FUNCTION void get_time_series()
       }
     }
   } //close year loop
-
-  //  Save end year quantities to refresh for forecast after benchmark is called
-  recr_dist_endyr = recr_dist(endyr);
 
   //  average quantities accumulated during the time series
   if (Do_Benchmark > 0)

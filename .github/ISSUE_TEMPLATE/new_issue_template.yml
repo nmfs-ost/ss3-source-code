@@ -1,0 +1,96 @@
+name: SS3 Team Issues - New Template
+description: Issue template for SS3 team members ONLY
+title: "[Prefix for Issue Here]: Title of Issue Here"
+assignees:
+  - Rick-Methot-NOAA
+body:
+- type: markdown
+  attributes:
+    value: |
+      # **Main Issue Information**
+      **Instructions**
+        - Add a label prefix in the brackets "[ ]". This should be 1 - 2 words that helps categorize the issue (e.g. [Bug], [Feature Request], [Refactor]).
+        - Add a title after the colon ":". This should be a short phrase that describes the issue. It should be suitable for display in the change log.
+        - In the sidebar, add labels that apply to this issue.
+        - Fill out information below and update the summary with pertinent information from the comments/discussion. 
+- type: textarea
+  id: describe
+  attributes:
+    label: Issue description
+    description: Please provide a description of the issue.
+  validations:
+    required: true
+- type: textarea
+  id: summary
+  attributes:
+    label: Summary of issue history, discussion, and major aspects of code development 
+    description: A summary of pertinent information on this issue, including major aspects of code development, that occurred in the discussion or via email. This section can be added on to/edited at any time and should be completely summarized prior to closing by the person that created the issue.
+    placeholder: |
+      - This issue is related to issue #X.
+      - Will need to create an example vignette for this feature.
+      - Below is example input change.
+        ```
+        #_MG_type method st_year end_year 
+        1 1 2002 2003 # (M) NatMort 
+        4 1 2016 2018 # RecrDist 
+        -9999 -1 -1 -1
+        ```
+  validations:
+    required: true
+- type: textarea
+  id: tasks
+  attributes:
+    label: Items to do
+    description: Please create a list of tasks to be completed for this issue with the checkboxes.
+    value: "- [ ] First Item"
+  validations:
+    required: true
+- type: markdown
+  attributes:
+    value: |
+      ___
+      
+      # **Other Issue Considerations**
+- type: dropdown
+  id: documentation
+  attributes:
+    label: Does documentation already exist in the SS3 User Manual?
+    description: Please review the [SS3 User Manual](https://nmfs-ost.github.io/ss3-doc/SS330_User_Manual.html) and check the box within the text area that applies.
+    options: 
+      - Yes, the link to the section in the SS3 User Manual is provided below.
+      - Yes, but further documentation needs to be added and is provided below.
+      - No, the documentation that should be added to the SS3 User Manual pertaining to this issue is provided below.
+  validations:
+    required: true
+- type: textarea
+  id: add-doc
+  attributes:
+    label: Documentation to add to the SS3 User Manual OR link to existing documentation
+    description: Please add the text that needs to be added to the SS3 User Manual along with which section it should be added to.
+    placeholder: |
+      - Documentation can be found in section 8.4.2 of the SS3 User Manual [here](link)
+      - The following text should be added at the end of the second paragraph in that section: "add text"
+  validations:
+    required: true
+- type: dropdown 
+  id: r4ss
+  attributes: 
+    label: Are r4ss changes needed?
+    description: Please check one of the boxes to indicate if r4ss changes are needed.
+    options:
+      - No, this issue doesn't require changes to r4ss
+      - Yes, this issue requires changes to r4ss (if selecting this, please add iantaylor-NOAA as an Assignee in the panel to the right).
+      - I don't know and would like an r4ss consult (if selecting this, please add iantaylor-NOAA as an Assignee in the panel to the right).
+  validations:
+    required: true
+- type: dropdown 
+  id: SSI
+  attributes: 
+    label: Are SSI changes needed?
+    description: Please check one of the boxes to indicate if SSI changes are needed.
+    options:
+      - No, this issue doesn't require changes to SSI
+      - Yes, this issue requires changes to SSI (if selecting this, please add nschindler-noaa as an Assignee in the panel to the right).
+      - I don't know and would like an SSI consult (if selecting this, please add nschindler-noaa as an Assignee in the panel to the right).
+  validations:
+    required: true
