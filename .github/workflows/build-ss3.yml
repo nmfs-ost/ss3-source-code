@@ -42,6 +42,30 @@ jobs:
         if: matrix.config.os == 'ubuntu-latest'
         run: sudo apt-get update
 
+      - name: Build stock synthesis for linux with p flag and docker
+        if:  matrix.config.os == 'ubuntu-latest'
+        run: |
+          rm -rf SS330
+          rm -rf ss_osx.tar
+          mkdir SS330
+          chmod 777 SS330
+          /bin/bash ADMB_HOME=docker ./Make_SS_330_new.sh -b SS330 -p
+          /bin/bash ADMB_HOME=docker ./Make_SS_330_new.sh -b SS330 -o -p
+
+      - name: Build stock synthesis for mac with docker
+        if: matrix.config.os == 'macos-latest'
+        run: |
+          brew install docker
+          colima start
+          docker pull johnoel/admb:linux
+
+          rm -rf SS330
+          rm -rf ss_osx.tar
+          mkdir SS330
+          chmod 777 SS330
+          /bin/bash ADMB_HOME=docker ./Make_SS_330_new.sh -b SS330
+          /bin/bash ADMB_HOME=docker ./Make_SS_330_new.sh -b SS330 -o
+
       - name: Get admb and put in path, windows
         if: matrix.config.os == 'windows-latest'
         run: |
@@ -230,10 +254,6 @@ jobs:
       - name: Build stock synthesis for mac
         if: matrix.config.os == 'macos-latest'
         run: |
-          brew install docker
-          colima start
-          docker pull johnoel/admb:linux
-
           rm -rf SS330
           rm -rf ss_osx.tar
           mkdir SS330
