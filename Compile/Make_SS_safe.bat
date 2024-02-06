@@ -1,5 +1,7 @@
 @echo off
 
+goto EOF
+
 ::compiling ss.exe (safe executable) with generic path
 ::requires "Compile" directory in the same directory as the .tpl files and this .bat file
 
@@ -32,7 +34,7 @@ if defined ADMB_HOME (
 for /f "tokens=*" %%i in ('where admb.cmd 2^>^&1 ^| findstr "admb.cmd"') do (
   @echo "-- Building ss.exe with admb.cmd in '%CD%' --"
   set CXX=g++
-  @REM admb.cmd ss
+  admb.cmd ss
   goto EOF
 )
 
@@ -51,6 +53,5 @@ for /f "tokens=*" %%i in ('where docker.exe 2^>^&1 ^| findstr "docker.exe"') do 
 )
 
 @echo "Error: Unable to build ss.exe"
-exit /b !ERRORLEVEL!
 
 :EOF
