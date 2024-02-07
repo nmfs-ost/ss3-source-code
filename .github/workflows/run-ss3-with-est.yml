@@ -77,7 +77,7 @@ jobs:
                         file.path(dir, "ss_summary_ref.sso"))
             file.rename(file.path(dir, "warning.sso"),
                         file.path(dir, "warning_ref.sso"))
-            file.copy(file.path(dir, "ss.par"), file.path(dir, "ss_ref.par"))
+            file.copy(file.path(dir, "ss3.par"), file.path(dir, "ss3_ref.par"))
             # run the models with estimation and see if model finishes without error
             message("running ss on ", basename(dir))
             system(paste0("cd ", dir, " && ../ss3 -nox"))
@@ -135,8 +135,8 @@ jobs:
             }
             ref_sum_file <- file.path(mod_fold, i, "ss_summary_ref.sso")
 
-            par_file <- file.path(mod_fold, i, "ss.par")
-            ref_par_file <- file.path(mod_fold, i, "ss_ref.par")
+            par_file <- file.path(mod_fold, i, "ss3.par")
+            ref_par_file <- file.path(mod_fold, i, "ss3_ref.par")
 
             warn_file <- file.path(mod_fold, i, "warning.sso")
             ref_warn_file <- file.path(mod_fold, i, "warning_ref.sso")
