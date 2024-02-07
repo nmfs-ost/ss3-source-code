@@ -240,8 +240,19 @@ jobs:
         if: matrix.config.os == 'windows-latest'
         run: |
           cd Compile
-          Make_SS_fast.bat
-          Make_SS_safe.bat
+          del SS_functions.temp
+          del ss.exe
+          del ss.tpl
+          del ss.obj
+          del ss.cpp
+          del ss.htp
+          del ss_opt.tpl
+          del ss_opt.exe
+          del ss_opt.obj
+          del ss_opt.cpp
+          del ss_opt.htp
+          ./Make_SS_fast.bat
+          ./Make_SS_safe.bat
           cd ..
         shell: cmd
 

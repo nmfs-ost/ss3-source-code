@@ -56,4 +56,3 @@ if not exist ss.exe (
 ) else (
   exit /b 0
 )
-)
