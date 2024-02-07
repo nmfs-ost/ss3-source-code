@@ -23,7 +23,7 @@ if defined ADMB_HOME (
     @echo "-- Building ss.exe with %ADMB_HOME%\admb.cmd in '%CD%' --"
     set CXX=g++
     %ADMB_HOME%\\admb.cmd ss
-    goto EOF
+    goto CHECK
   )
 )
 
@@ -32,7 +32,7 @@ for /f "tokens=*" %%i in ('where admb.cmd 2^>^&1 ^| findstr "admb.cmd"') do (
   @echo "-- Building ss.exe with admb.cmd in '%CD%' --"
   set CXX=g++
   @REM admb.cmd ss
-  goto EOF
+  goto CHECK
 )
 
 @REM compile executable
@@ -46,11 +46,14 @@ for /f "tokens=*" %%i in ('where docker.exe 2^>^&1 ^| findstr "docker.exe"') do 
   ) else (
     docker run --rm --mount source=%CD%,destination=C:\compile,type=bind --workdir C:\\compile johnoel/admb:windows-ltsc2022-winlibs ss.tpl
   )
-  goto EOF
+  goto CHECK
 )
 
-if not exist ss_opt.exe (
-  @echo "Error: Unable to build ss_opt.exe"
+CHECK:
+if not exist ss.exe (
+  @echo "Error: Unable to build ss.exe"
+  exit /b 1
+) else (
+  exit /b 0
 )
-
-:EOF
+)
