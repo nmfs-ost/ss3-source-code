@@ -31,8 +31,8 @@ if defined ADMB_HOME (
 for /f "tokens=*" %%i in ('where admb.cmd 2^>^&1 ^| findstr "admb.cmd"') do (
   @echo "-- Building ss.exe with admb.cmd in '%CD%' --"
   set CXX=g++
-  admb.cmd ss
-  goto CHECK
+  admb ss.tpl
+  exit /b 0
 )
 
 @REM compile executable
