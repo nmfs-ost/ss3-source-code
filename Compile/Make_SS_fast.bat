@@ -4,7 +4,7 @@
 @REM requires "Compile" directory in the same directory where
 @REM the .tpl files and this .bat file sit.
 
-pushd ..
+cd ..
 
 @REM deleted temporary file
 del SS_functions.temp
@@ -15,8 +15,9 @@ copy/b SS_biofxn.tpl+SS_miscfxn.tpl+SS_selex.tpl+SS_popdyn.tpl+SS_recruit.tpl+SS
 @REM combine remaining files to create ss.tpl
 copy/b SS_versioninfo_330opt.tpl+SS_readstarter.tpl+SS_readdata_330.tpl+SS_readcontrol_330.tpl+SS_param.tpl+SS_prelim.tpl+SS_global.tpl+SS_proced.tpl+SS_functions.temp "Compile\ss_opt.tpl"
 
-@REM cd "Compile"
-popd
+cd Compile
+
+goto EOF
 
 if defined ADMB_HOME (
   if exist "%ADMB_HOME%\\admb.cmd" (
@@ -49,6 +50,8 @@ for /f "tokens=*" %%i in ('where docker.exe 2^>^&1 ^| findstr "docker.exe"') do 
   goto EOF
 )
 
-@echo "Error: Unable to build ss_opt.exe"
+if not exist ss_opt.exe (
+  @echo "Error: Unable to build ss_opt.exe"
+)
 
 :EOF

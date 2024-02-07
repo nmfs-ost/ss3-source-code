@@ -3,7 +3,7 @@
 ::compiling ss.exe (safe executable) with generic path
 ::requires "Compile" directory in the same directory as the .tpl files and this .bat file
 
-pushd ..
+cd ..
 
 ::deleted temporary file
 del SS_functions.temp
@@ -16,8 +16,7 @@ copy/b SS_versioninfo_330safe.tpl+SS_readstarter.tpl+SS_readdata_330.tpl+SS_read
 
 ::path=c:\admb;C:\rtools40\mingw64\bin;%path%
 
-@REM cd "Compile"
-popd
+cd Compile
 
 if defined ADMB_HOME (
   if exist "%ADMB_HOME%\\admb.cmd" (
@@ -50,6 +49,8 @@ for /f "tokens=*" %%i in ('where docker.exe 2^>^&1 ^| findstr "docker.exe"') do 
   goto EOF
 )
 
-@echo "Error: Unable to build ss.exe"
+if not exist ss_opt.exe (
+  @echo "Error: Unable to build ss_opt.exe"
+)
 
 :EOF
