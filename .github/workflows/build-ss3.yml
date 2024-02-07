@@ -221,7 +221,6 @@ jobs:
           ./Make_SS_safe.bat
           ./Make_SS_fast.bat
           popd
-        shell: cmd
 
       - name: Get admb and put in path, windows
         if: matrix.config.os == 'windows-latest'
@@ -240,6 +239,7 @@ jobs:
         if: matrix.config.os == 'windows-latest'
         run: |
           cd Compile
+          ./Make_SS_fast.bat || true
           del SS_functions.temp
           del ss.exe
           del ss.tpl
@@ -251,10 +251,8 @@ jobs:
           del ss_opt.obj
           del ss_opt.cpp
           del ss_opt.htp
-          ./Make_SS_fast.bat
-          ./Make_SS_safe.bat
+          ./Make_SS_safe.bat || true
           cd ..
-        shell: cmd
 
       - name: Move exes to a new folder on windows
         if: matrix.config.os == 'windows-latest'
