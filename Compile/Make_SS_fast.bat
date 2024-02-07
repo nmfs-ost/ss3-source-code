@@ -31,7 +31,7 @@ for /f "tokens=*" %%i in ('where admb.cmd 2^>^&1 ^| findstr "admb.cmd"') do (
   @echo "-- Building ss_opt.exe with admb.cmd in '%CD%' --"
   set CXX=g++
   admb -f ss_opt.tpl
-  exit /b 0
+  goto CHECK
 )
 
 @REM compile executable
@@ -52,6 +52,4 @@ for /f "tokens=*" %%i in ('where docker.exe 2^>^&1 ^| findstr "docker.exe"') do 
 if not exist ss_opt.exe (
   @echo "Error: Unable to build ss_opt.exe"
   exit /b 1
-) else (
-  exit /b 0
 )
