@@ -48,7 +48,7 @@ for /f "tokens=*" %%i in ('where docker.exe 2^>^&1 ^| findstr "docker.exe"') do 
   goto CHECK
 )
 
-CHECK:
+:CHECK
 if not exist ss_opt.exe (
   @echo "Error: Unable to build ss_opt.exe"
   exit /b 1
