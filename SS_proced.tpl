@@ -54,7 +54,7 @@ PROCEDURE_SECTION
           for (g = Fparm_loc_st(f); g <= Fparm_loc_end(f); g++)
           {
             t = Fparm_loc[g](2);
-            Hrate(f, t) = exp(F_rate(g) + F_rate(0));
+            Hrate(f, t) = exp(F_rate(g));
           }
         }
     }

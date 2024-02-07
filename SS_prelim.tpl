@@ -771,13 +771,11 @@
     {
       if (readparfile == 0)
       {
-        echoinput<<"n_fparm "<<N_Fparm<<endl;
         for (g = 1; g <= N_Fparm; g++)
         {
           f = Fparm_loc[g](1);
           t = Fparm_loc[g](2);
-          echoinput<<g<<" "<<f<<" "<<t<<endl;
-          F_rate(g) = F_parm_intval(f) - F_rate(0);
+          F_rate(g) = F_parm_intval(f);
           Hrate(f, t) = F_parm_intval(f);
         }
         echoinput<<"done"<<endl;
@@ -804,7 +802,7 @@
               g = do_Fparm(f, t);
               if (g > 0 && F_setup2(k, 4) != -999)
               {
-                F_rate(g) = F_setup2(k, 4) - F_rate(0);
+                F_rate(g) = F_setup2(k, 4);
                 Hrate(f, t) = F_setup2(k, 4);
               }
             }

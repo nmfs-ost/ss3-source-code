@@ -1881,7 +1881,7 @@ FUNCTION void get_posteriors()
   }
   if (N_Fparm > 0)
   {
-    for (i = 0; i <= N_Fparm; i++)
+    for (i = 1; i <= N_Fparm; i++)
     {
       if (active(F_rate(i)))
         posts << F_rate(i) << " ";

@@ -406,7 +406,7 @@ PARAMETER_SECTION
  //  0'th element holds the base F_rate; others are offsets from it
   //  log(max_harvest_rate);
 
-  init_bounded_number_vector F_rate(0,k,-10.,5.,Fparm_PH_dim)
+  init_bounded_number_vector F_rate(1,k,-20.,15.,Fparm_PH_dim)
 
   vector Nmigr(1,pop);
   number Nsurvive;

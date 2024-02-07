@@ -2727,7 +2727,7 @@
     F_Method_byPH.initialize();
   
     Fparm_start = ParCount;
-    N_Fparm = -1;  //  then +1 to store base F in 0'th element
+    N_Fparm = 0;
   
     ivector tempin(1, 2);
     tempin.initialize();
@@ -2754,9 +2754,9 @@
     }
     else //  need F parameters and to fill F_Method_byPH
     {
-              N_Fparm++;
-              ParCount++;
-              ParmLabel += "F_base" + CRLF(1);
+//              N_Fparm++;
+//              ParCount++;
+//              ParmLabel += "F_base" + CRLF(1);
       for (f = 1; f <= Nfleet; f++)
       {
         if (fleet_type(f) == 2) //  bycatch fleet
@@ -6933,7 +6933,7 @@
     vector recdev_RD(recdev_first,YrMax);
     vector Q_parm_use(1,Q_Npar2);
     vector init_F_use(1,N_init_F);
-    vector Fparm_use(0,N_Fparm);
+    vector Fparm_use(1,N_Fparm);
     vector selparm_use(1,N_selparm2);
 !!k=Do_TG*(3*N_TG+2*Nfleet1);
     vector TG_parm_use(1,k);
