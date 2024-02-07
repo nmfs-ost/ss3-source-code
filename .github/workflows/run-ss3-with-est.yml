@@ -24,7 +24,7 @@ jobs:
       RSPM: "https://packagemanager.rstudio.com/cran/__linux__/focal/latest"
 
     steps:
-      - name: Checkout ss repo
+      - name: Checkout ss3 repo
         uses: actions/checkout@v3
 
       - name: Checkout models repo
@@ -81,7 +81,7 @@ jobs:
                         file.path(dir, "ss_summary_ref.sso"))
             file.rename(file.path(dir, "warning.sso"),
                         file.path(dir, "warning_ref.sso"))
-            file.copy(file.path(dir, "ss.par"), file.path(dir, "ss_ref.par"))
+            file.copy(file.path(dir, "ss3.par"), file.path(dir, "ss3_ref.par"))
             # run the models with estimation and see if model finishes without error
             message("running ss on ", basename(dir))
             system(paste0("cd ", dir, " && ../ss3 -nox"))
