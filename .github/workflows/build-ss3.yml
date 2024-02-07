@@ -158,7 +158,7 @@ jobs:
           writeLines(ver_info, "SS_versioninfo_330opt.tpl")
         shell: Rscript {0}
 
-      - name: Build stock synthesis for windows
+      - name: Build stock synthesis exe for windows
         if: matrix.config.os == 'windows-latest'
         run: |
           cd Compile
