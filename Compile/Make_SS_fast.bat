@@ -4,7 +4,7 @@
 @REM requires "Compile" directory in the same directory where
 @REM the .tpl files and this .bat file sit.
 
-pushd ..
+cd ..
 
 @REM deleted temporary file
 del SS_functions.temp

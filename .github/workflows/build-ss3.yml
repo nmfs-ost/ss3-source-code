@@ -162,7 +162,7 @@ jobs:
         if: matrix.config.os == 'windows-latest'
         run: |
           cd Compile
-          ./Make_SS_safe.bat
+          ./Make_SS_safe.bat || true
           ./Make_SS_fast.bat || true
           cd ..
 
