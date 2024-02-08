@@ -7,6 +7,7 @@
    	"image": "ghcr.io/rocker-org/devcontainer/tidyverse:4.3",
 
 	"features": {
+		"ghcr.io/devcontainers/features/docker-outside-of-docker:1": {},
 		"ghcr.io/rocker-org/devcontainer-features/quarto-cli:1": {},
 		"ghcr.io/rocker-org/devcontainer-features/apt-packages:1": {
             	"packages": "make,gcc,g++,cmake,clang-tidy,clang-format"

@@ -32,7 +32,7 @@ framework for fish stock assessment and fishery management. Fisheries Research,
 
 ## Installation
 
-Download the latest compiled versions from [Github Releases](https://github.com/nmfs-ost/ss3-source-code/releases).
+Download the latest compiled versions from [Github Releases](https://github.com/nmfs-ost/ss3-source-code/releases). For information on specific changes with each release, please refer to the [change log on GitHub](https://github.com/orgs/nmfs-ost/projects/11) for changes from v.3.30.19 onward and the [Excel spreadsheet version of the change log](https://github.com/nmfs-ost/ss3-source-code/blob/v3.30.19/Change_log_for_SS_3.30.xlsx?raw=true) for changes prior to v.3.30.19.
 
 ## How can I learn how to use Stock Synthesis?
 
