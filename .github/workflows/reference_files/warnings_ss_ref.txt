@@ -1,2 +1,8 @@
 In file included from ss.cpp:7:
-In file included from ss.cpp:7:
+ss.cpp: In member function 'void model_parameters::evaluate_the_objective_function()':
+ss.cpp:27544:9: warning: this 'for' clause does not guard... [-Wmisleading-indentation]
+27544 |         for (i = 1; i <= Svy_N_fleet(f); i++)
+      |         ^~~
+ss.cpp:27571:11: note: ...this statement, but the latter is misleadingly indented as if it were guarded by the 'for'
+27571 |           surv_like(f) = sum(Svy_like_I(f));
+      |           ^~~~~~~~~

@@ -34,69 +34,49 @@ jobs:
         if: matrix.config.os == 'ubuntu-latest'
         run: sudo apt-get update
 
-      - name: Build stock synthesis for linux with p flag and docker
-        if:  matrix.config.os == 'ubuntu-latest'
-        run: |
-          rm -rf SS330
-          rm -rf ss_osx.tar
-          mkdir SS330
-          chmod 777 SS330
-          /bin/bash ./Make_SS_330_new.sh --admb docker -b SS330 -p
-          /bin/bash ./Make_SS_330_new.sh --admb docker -b SS330 -o -p
+      # - name: Get admb and put in path, windows
+      #   if: matrix.config.os == 'windows-latest'
+      #   run: |
+      #     Invoke-WebRequest -Uri https://github.com/admb-project/admb/releases/download/admb-13.1/admb-13.1b-windows.zip -OutFile "D:\a\ss3-source-code\ss3-source-code\admb-13.1.zip"
+      #     Expand-Archive -LiteralPath "D:\a\ss3-source-code\ss3-source-code\admb-13.1.zip" -DestinationPath "D:\a\ss3-source-code\ss3-source-code\"
+      #     echo "D:\a\ss3-source-code\ss3-source-code\admb-13.1\bin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+      # - name: checkout admb, mac
+      #   if: matrix.config.os == 'macos-latest'
+      #   uses: actions/checkout@v3
+      #   with:
+      #     repository: admb-project/admb
+      #     path: admb
+      #     ref: admb-13.1
+      # - name: clean, mac
+      #   if: matrix.config.os == 'macos-latest'
+      #   run: cd admb && make clean
+      # - name: see where admb is, mac
+      #   if: matrix.config.os == 'macos-latest'
+      #   run: |
+      #     ls
+      #     cd admb && ls
+      # - name: compile admb, mac
+      #   if: matrix.config.os == 'macos-latest'
+      #   run: |
+      #     cd admb && make 
+      # - name: see where admb is, mac
+      #   if: matrix.config.os == 'macos-latest'
+      #   run: |
+      #     cd admb && ls -l
+      # - name: put admb in path, mac
+      #   if: matrix.config.os == 'macos-latest'
+      #   run: |
+      #     sudo mv admb /usr/local/bin
+      #     sudo chmod 755 /usr/local/bin/admb
+      #     echo "/usr/local/bin/admb" >> $GITHUB_PATH
 
-      - name: Build stock synthesis for mac with docker
-        if: matrix.config.os == 'macos-latest'
-        run: |
-          brew install docker
-          colima start
-          docker pull johnoel/admb:linux
-
-          rm -rf SS330
-          rm -rf ss_osx.tar
-          mkdir SS330
-          chmod 777 SS330
-          /bin/bash ./Make_SS_330_new.sh --admb docker -b SS330
-          /bin/bash ./Make_SS_330_new.sh --admb docker -b SS330 -o
-
-          colima stop
-
-      - name: checkout admb, mac
-        if: matrix.config.os == 'macos-latest'
-        uses: actions/checkout@v3
-        with:
-          repository: admb-project/admb
-          path: admb
-          ref: admb-13.1
-      - name: clean, mac
-        if: matrix.config.os == 'macos-latest'
-        run: cd admb && make clean
-      - name: see where admb is, mac
-        if: matrix.config.os == 'macos-latest'
-        run: |
-          ls
-          cd admb && ls
-      - name: compile admb, mac
-        if: matrix.config.os == 'macos-latest'
-        run: |
-          cd admb && make 
-      - name: see where admb is, mac
-        if: matrix.config.os == 'macos-latest'
-        run: |
-          cd admb && ls -l
-      - name: put admb in path, mac
-        if: matrix.config.os == 'macos-latest'
-        run: |
-          sudo mv admb /usr/local/bin
-          sudo chmod 755 /usr/local/bin/admb
-          echo "/usr/local/bin/admb" >> $GITHUB_PATH
-
-      - name: Get admb and put in path, linux
-        if: matrix.config.os == 'ubuntu-latest'
-        run: |
-          wget https://github.com/admb-project/admb/releases/download/admb-13.1/admb-13.1-linux.zip
-          sudo unzip admb-13.1-linux.zip -d /usr/local/bin
-          sudo chmod 755 /usr/local/bin/admb-13.1/bin/admb
-          echo "/usr/local/bin/admb-13.1/bin" >> $GITHUB_PATH
+      # - name: Get admb and put in path, linux
+      #   if: matrix.config.os == 'ubuntu-latest'
+      #   run: |
+      #     wget https://github.com/admb-project/admb/releases/download/admb-13.1/admb-13.1-linux.zip
+      #     sudo unzip admb-13.1-linux.zip -d /usr/local/bin
+      #     sudo chmod 755 /usr/local/bin/admb-13.1/bin/admb
+      #     echo "/usr/local/bin/admb-13.1/bin" >> $GITHUB_PATH
       
       - name: Set up R
         uses: r-lib/actions/setup-r@v2
@@ -214,28 +194,7 @@ jobs:
           writeLines(ver_info, "SS_versioninfo_330opt.tpl")
         shell: Rscript {0}
 
-      - name: Build stock synthesis for windows with docker
-        if: matrix.config.os == 'windows-latest'
-        run: |
-          pushd Compile
-          ./Make_SS_safe.bat
-          ./Make_SS_fast.bat
-          popd
-
-      - name: Get admb and put in path, windows
-        if: matrix.config.os == 'windows-latest'
-        run: |
-          Invoke-WebRequest -Uri https://github.com/admb-project/admb/releases/download/admb-13.1/admb-13.1b-windows.zip -OutFile "D:\a\ss3-source-code\ss3-source-code\admb-13.1.zip"
-          Expand-Archive -LiteralPath "D:\a\ss3-source-code\ss3-source-code\admb-13.1.zip" -DestinationPath "D:\a\ss3-source-code\ss3-source-code\"
-          echo "D:\a\ss3-source-code\ss3-source-code\admb-13.1\bin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
-
-      - name: get info on gcc version and path
-        if: matrix.config.os == 'windows-latest'
-        run: |
-          g++ -v
-          echo $env:GITHUB_PATH
-
-      - name: Build stock synthesis for windows
+      - name: Build stock synthesis for windows with admb docker image
         if: matrix.config.os == 'windows-latest'
         run: |
           cd Compile
@@ -252,26 +211,22 @@ jobs:
           mv Compile/ss_opt.exe SS330/
           mv SS330/ss.exe SS330/ss3_win.exe
           mv SS330/ss_opt.exe SS330/ss3_opt_win.exe
-
-      - name: Build stock synthesis for mac
+  
+      - name: Build stock synthesis for mac with docker
         if: matrix.config.os == 'macos-latest'
         run: |
+          brew install docker
+          colima start
+          docker pull johnoel/admb:linux
+
           rm -rf SS330
           rm -rf ss_osx.tar
           mkdir SS330
           chmod 777 SS330
-          /bin/bash ./Make_SS_330_new.sh -b SS330
-          /bin/bash ./Make_SS_330_new.sh -b SS330 -o
-          
-      - name: Build stock synthesis for linux with p flag
-        if:  matrix.config.os == 'ubuntu-latest'
-        run: |
-          rm -rf SS330
-          rm -rf ss_osx.tar
-          mkdir SS330
-          chmod 777 SS330
-          /bin/bash ./Make_SS_330_new.sh -b SS330 -p
-          /bin/bash ./Make_SS_330_new.sh -b SS330 -o -p
+          /bin/bash ./Make_SS_330_new.sh --admb docker -b SS330
+          /bin/bash ./Make_SS_330_new.sh --admb docker -b SS330 -o
+
+          colima stop
 
       - name: Verify binary on mac
         if: matrix.config.os == 'macos-latest'
@@ -286,6 +241,16 @@ jobs:
           rm *.obj *.htp *.cpp ss_opt.tpl
           mv ss ss3_osx
           mv ss_opt ss3_opt_osx
+
+      - name: Build stock synthesis for linux with p flag and docker
+        if:  matrix.config.os == 'ubuntu-latest'
+        run: |
+          rm -rf SS330
+          rm -rf ss_osx.tar
+          mkdir SS330
+          chmod 777 SS330
+          /bin/bash ./Make_SS_330_new.sh --admb docker -b SS330 -p
+          /bin/bash ./Make_SS_330_new.sh --admb docker -b SS330 -o -p   
           
       - name: Verify binary on linux
         if: matrix.config.os == 'ubuntu-latest'
