@@ -212,7 +212,7 @@ jobs:
           mv SS330/ss.exe SS330/ss3_win.exe
           mv SS330/ss_opt.exe SS330/ss3_opt_win.exe
   
-      - name: Build stock synthesis for mac with docker
+      - name: Build stock synthesis for mac with admb docker image
         if: matrix.config.os == 'macos-latest'
         run: |
           brew install docker
@@ -242,7 +242,7 @@ jobs:
           mv ss ss3_osx
           mv ss_opt ss3_opt_osx
 
-      - name: Build stock synthesis for linux with p flag and docker
+      - name: Build stock synthesis for linux with p flag and admb docker image
         if:  matrix.config.os == 'ubuntu-latest'
         run: |
           rm -rf SS330

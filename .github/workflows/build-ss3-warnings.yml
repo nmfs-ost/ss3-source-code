@@ -42,7 +42,7 @@ jobs:
         #   sudo chmod 755 /usr/local/bin/admb-13.1/bin/admb
         #   echo "/usr/local/bin/admb-13.1/bin" >> $GITHUB_PATH
 
-      - name: Build stock synthesis with warnings displayed in console
+      - name: Build stock synthesis with warnings displayed in console using admb docker image
         run: |
           rm -rf SS330
           rm -rf ss_osx.tar
