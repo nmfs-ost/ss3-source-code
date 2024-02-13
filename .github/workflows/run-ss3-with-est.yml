@@ -62,8 +62,8 @@ jobs:
           mv test-models-repo/models test-models-repo/model_runs
           mv SS330/ss test-models-repo/model_runs/ss3
 
-      - name: change permissions on ss exes
-        run: chmod a+x test-models-repo/model_runs/ss3
+      - name: change permissions on ss3 exes
+        run: sudo chmod a+x test-models-repo/model_runs/ss3
       
       - name: download R packages for parallel
         run: Rscript -e 'install.packages(c("parallely", "furrr", "future"))'

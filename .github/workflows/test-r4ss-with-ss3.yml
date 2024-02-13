@@ -77,7 +77,7 @@ jobs:
           mv test-models-repo/.github/r_scripts/run_compare_noest.R test-models-repo/run_compare_noest.R
 
       - name: change permissions on ss3 exes
-        run: chmod a+x test-models-repo/model_runs/ss3
+        run: sudo chmod a+x test-models-repo/model_runs/ss3
 
       - name: run models without estimation
         run: |

@@ -71,7 +71,7 @@ jobs:
           ls
 
       - name: change permissions on ss exe
-        run: chmod a+x ss3
+        run: sudo chmod a+x ss3
 
       - name: run models without estimation
         run: |
