@@ -84,9 +84,13 @@ while [ "$1" != "" ]; do
                          ;;
          # check for ADMB directory and set
         -a | --admb )    shift
-                         ADMB_HOME=$1
-                         export ADMB_HOME
-                         PATH=$ADMB_HOME:$PATH
+                         if [[ "$1" == "docker" ]] ; then
+                           ADMB_HOME=docker
+                         else
+                           ADMB_HOME=$1
+                           export ADMB_HOME
+                           PATH=$ADMB_HOME:$PATH
+			 fi
                          ;;
          # output help - usage
         -h | --help )    Type=Default
@@ -116,32 +120,97 @@ if [ -f SS_functions.temp ]; then
 fi
 
 # create source files in build dir
-mkdir -p $BUILD_DIR
+if [[ ! -d "$BUILD_DIR" ]]; then
+  mkdir -p $BUILD_DIR
+fi
 case $BUILD_TYPE in
     ss_opt )   grep "opt" SS_versioninfo_330opt.tpl
                cat_opt_files
                ;;
     ss )       grep "safe" SS_versioninfo_330safe.tpl
                cat_safe_files
+               ;;
 esac
+if [ ! -f $BUILD_DIR/$BUILD_TYPE.tpl ]; then
+  echo "Error: Unable to find $BUILD_DIR/$BUILD_TYPE.tpl"
+  exit
+fi
+
+# if admb is not in path, use docker to build.
+if [[ "$ADMB_HOME" != "docker" ]] ; then
+  if [[ "$OS" == "Windows_NT" ]] ; then
+    if [[ -x "$(command -v admb.sh)" ]] ; then
+      ADMB_HOME="$(dirname $(command -v admb.sh))"
+    else
+      unset ADMB_HOME
+    fi
+  else
+    if [[ -x "$(command -v admb)" ]] ; then
+      ADMB_HOME="$(dirname $(command -v admb))"
+    else
+      unset ADMB_HOME
+    fi
+  fi
+  if [[ -z "$ADMB_HOME" ]] ; then
+    ADMB_HOME=docker
+  fi
+fi
 
 # debug info
 if [[ "$DEBUG" == "on" ]] ; then
   display_settings
 else
-  echo "-- Building $BUILD_TYPE in '$BUILD_DIR' --"
+  if [[ "$ADMB_HOME" == "docker" ]] ; then
+    echo "-- Building $BUILD_TYPE with docker in '$BUILD_DIR' --"
+  else
+    echo "-- Building $BUILD_TYPE in '$BUILD_DIR' --"
+  fi
 fi
 
 # change to build dir and build 
-cd $BUILD_DIR
-admb $OPTFLAG $STATICFLAG $BUILD_TYPE
-chmod a+x $BUILD_TYPE
-
-# output warnings
-if [[ "$WARNINGS" == "on" ]] ; then
-    echo "... compiling a second time to get warnings ..."
-    g++ -c -std=c++0x -O3 -I. -I"$ADMB_HOME/include" -I"/$ADMB_HOME/include/contrib" -o$BUILD_TYPE.obj $BUILD_TYPE.cpp -Wall -Wextra
+if [[ "$ADMB_HOME" == "docker" ]] ; then
+  if [[ "$OS" == "Windows_NT" ]] ; then
+    if [[ "`ver`" =~ "Version 10.0.1" ]]; then
+      WINDOWS10=true
+    fi
+    if [[ "$WARNINGS" == "on" ]] ; then
+      if [[ "$WINDOWS10" == "true" ]] ; then
+        docker run --env CXXFLAGS="-Wall -Wextra" --rm --mount source=`cygpath -w $PWD`\\$BUILD_DIR,destination=C:\\$BUILD_TYPE,mount=bind --workdir C:\\$BUILD_TYPE johnoel/admb:windows-ltsc2019-winlibs $BUILD_TYPE.tpl
+      else
+        docker run --env CXXFLAGS="-Wall -Wextra" --rm --mount source=`cygpath -w $PWD`\\$BUILD_DIR,destination=C:\\$BUILD_TYPE,mount=bind --workdir C:\\$BUILD_TYPE johnoel/admb:windows-ltsc2022-winlibs $BUILD_TYPE.tpl
+      fi 
+    else
+      if [[ "$WINDOWS10" == "true" ]] ; then
+        docker run --rm --mount source=`cygpath -w $PWD`\\$BUILD_DIR,destination=C:\\$BUILD_TYPE,mount=bind --workdir C:\\$BUILD_TYPE johnoel/admb:windows-ltsc2019-winlibs $BUILD_TYPE.tpl
+      else
+        docker run --rm --mount source=`cygpath -w $PWD`\\$BUILD_DIR,destination=C:\\$BUILD_TYPE,mount=bind --workdir C:\\$BUILD_TYPE johnoel/admb:windows-ltsc2022-winlibs $BUILD_TYPE.tpl
+      fi 
+    fi
+  else
+    if [[ "$WARNINGS" == "on" ]] ; then
+      docker run --env CXXFLAGS="-Wall -Wextra" --rm --mount source=$PWD/$BUILD_DIR,destination=/$BUILD_TYPE,type=bind --workdir /$BUILD_TYPE johnoel/admb:linux $BUILD_TYPE.tpl
+    else
+      docker run --rm --mount source=$PWD/$BUILD_DIR,destination=/$BUILD_TYPE,type=bind --workdir /$BUILD_TYPE johnoel/admb:linux $BUILD_TYPE.tpl
+    fi
+  fi
+else
+  command pushd $BUILD_DIR > /dev/null
+  if [[ "$WARNINGS" == "on" ]] ; then
+    export CXXFLAGS="-Wall -Wextra"
+  fi
+  if [[ "$OS" == "Windows_NT" ]] ; then
+    admb.sh $OPTFLAG $STATICFLAG $BUILD_TYPE
+    chmod a+x $BUILD_TYPE
+  else
+    admb $OPTFLAG $STATICFLAG $BUILD_TYPE
+  fi
+  command popd > /dev/null
 fi
 
+# output warnings
+#if [[ "$WARNINGS" == "on" ]] ; then
+#    echo "... compiling a second time to get warnings ..."
+#    g++ -c -std=c++0x -O3 -I. -I"$ADMB_HOME/include" -I"/$ADMB_HOME/include/contrib" -o$BUILD_TYPE.obj $BUILD_TYPE.cpp -Wall -Wextra
+#fi
 
 exit
