@@ -5,9 +5,9 @@ name: build-ss3
 
 on:
     push:
-      paths:
-      - '**.tpl'
-      - '**.sh'
+      # paths:
+      # - '**.tpl'
+      # - '**.sh'
     workflow_dispatch:
 
 jobs:
@@ -251,7 +251,7 @@ jobs:
           chmod 777 SS330
           /bin/bash ./Make_SS_330_new.sh --admb docker -b SS330 -p
           /bin/bash ./Make_SS_330_new.sh --admb docker -b SS330 -o -p   
-          
+
       - name: Verify binary on linux
         if: matrix.config.os == 'ubuntu-latest'
         run: |
