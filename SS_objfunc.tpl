@@ -125,7 +125,7 @@ FUNCTION void evaluate_the_objective_function()
         }
 
         // SS_Label_Info_25.1.4 #calc the logL
-        for (i = 1; i <= Svy_N_fleet(f); i++)
+        for (i = 1; i <= Svy_N_fleet(f); i++) {
           if (Svy_use(f, i) > 0)
           {
             if (Svy_errtype(f) == 0) {  // lognormal
@@ -152,7 +152,8 @@ FUNCTION void evaluate_the_objective_function()
               // values <-2 are trapped in readdata
             }
           }
-          surv_like(f) = sum(Svy_like_I(f));
+        }  // end loop of obs
+        surv_like(f) = sum(Svy_like_I(f));
       } // end having obs for this survey
     }
     if (do_once == 1)
