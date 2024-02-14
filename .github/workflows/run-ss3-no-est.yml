@@ -4,8 +4,8 @@ name: run-ss3-no-est
 on:
   workflow_dispatch:
   push:
-    # paths:
-    #   - '**.tpl'
+    paths:
+      - '**.tpl'
     # branches: 
     #   - main
   pull_request:
