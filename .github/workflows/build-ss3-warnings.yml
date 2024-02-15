@@ -45,7 +45,7 @@ jobs:
       - name: Build stock synthesis with warnings displayed in console using admb docker image
         run: |
           rm -rf SS330
-          rm -rf ss_osx.tar
+          rm -rf ss3_osx.tar
           mkdir SS330
           chmod 777 SS330
           /bin/bash ./Make_SS_330_new.sh --admb docker -b SS330 -w
@@ -53,7 +53,7 @@ jobs:
       - name: Build stock synthesis with warnings again to save to file
         run: |
           rm -rf SS330
-          rm -rf ss_osx.tar
+          rm -rf ss3_osx.tar
           mkdir SS330
           chmod 777 SS330
           /bin/bash ./Make_SS_330_new.sh --admb docker -b SS330 -w &> warnings.txt

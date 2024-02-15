@@ -36,7 +36,7 @@ function cat_safe_files()
 {
 # concatenate all tpl files to a single file
 cat SS_biofxn.tpl SS_miscfxn.tpl SS_selex.tpl SS_popdyn.tpl SS_recruit.tpl SS_benchfore.tpl SS_expval.tpl SS_objfunc.tpl SS_write.tpl SS_write_ssnew.tpl SS_write_report.tpl SS_ALK.tpl SS_timevaryparm.tpl SS_tagrecap.tpl > SS_functions.temp
-cat SS_versioninfo_330safe.tpl SS_readstarter.tpl SS_readdata_330.tpl SS_readcontrol_330.tpl SS_param.tpl SS_prelim.tpl SS_global.tpl SS_proced.tpl SS_functions.temp > $BUILD_DIR/ss.tpl
+cat SS_versioninfo_330safe.tpl SS_readstarter.tpl SS_readdata_330.tpl SS_readcontrol_330.tpl SS_param.tpl SS_prelim.tpl SS_global.tpl SS_proced.tpl SS_functions.temp > $BUILD_DIR/ss3.tpl
 }
 
 # create opt source tpl
@@ -44,14 +44,14 @@ function cat_opt_files()
 {
 # concatenate all tpl files to a single file
 cat SS_biofxn.tpl SS_miscfxn.tpl SS_selex.tpl SS_popdyn.tpl SS_recruit.tpl SS_benchfore.tpl SS_expval.tpl SS_objfunc.tpl SS_write.tpl SS_write_ssnew.tpl SS_write_report.tpl SS_ALK.tpl SS_timevaryparm.tpl SS_tagrecap.tpl > SS_functions.temp
-cat SS_versioninfo_330opt.tpl SS_readstarter.tpl SS_readdata_330.tpl SS_readcontrol_330.tpl SS_param.tpl SS_prelim.tpl SS_global.tpl SS_proced.tpl SS_functions.temp > $BUILD_DIR/ss_opt.tpl
+cat SS_versioninfo_330opt.tpl SS_readstarter.tpl SS_readdata_330.tpl SS_readcontrol_330.tpl SS_param.tpl SS_prelim.tpl SS_global.tpl SS_proced.tpl SS_functions.temp > $BUILD_DIR/ss3_opt.tpl
 }
 
 # default directories
 SRC_DIR=.
 BUILD_DIR=SS330
 # other defaults (safe build is the default)
-BUILD_TYPE=ss
+BUILD_TYPE=ss3
 WARNINGS=off
 DEBUG=off
 GREP=
@@ -101,10 +101,10 @@ while [ "$1" != "" ]; do
         -p )             STATICFLAG=-p
                          ;;
          # build safe version
-        -f | --safe )    BUILD_TYPE=ss
+        -f | --safe )    BUILD_TYPE=ss3
                          ;;
          # build fast version
-        -o | --opt )     BUILD_TYPE=ss_opt
+        -o | --opt )     BUILD_TYPE=ss3_opt
                          OPTFLAG=-f
                          ;;
     esac
@@ -124,10 +124,10 @@ if [[ ! -d "$BUILD_DIR" ]]; then
   mkdir -p $BUILD_DIR
 fi
 case $BUILD_TYPE in
-    ss_opt )   grep "opt" SS_versioninfo_330opt.tpl
+    ss3_opt )   grep "opt" SS_versioninfo_330opt.tpl
                cat_opt_files
                ;;
-    ss )       grep "safe" SS_versioninfo_330safe.tpl
+    ss3 )       grep "safe" SS_versioninfo_330safe.tpl
                cat_safe_files
                ;;
 esac

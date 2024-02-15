@@ -56,7 +56,7 @@ jobs:
       - name: Build stock synthesis with admb docker image
         run: |
           rm -rf SS330
-          rm -rf ss_osx.tar
+          rm -rf ss3_osx.tar
           mkdir SS330
           chmod 777 SS330
           /bin/bash ./Make_SS_330_new.sh --admb docker -b SS330
@@ -67,7 +67,7 @@ jobs:
           mv test-models-repo/models/Simple/forecast.ss forecast.ss
           mv test-models-repo/models/Simple/control.ss control.ss
           mv test-models-repo/models/Simple/data.ss data.ss
-          mv SS330/ss ss3
+          mv SS330/ss3 ss3
           ls
 
       - name: change permissions on ss exe

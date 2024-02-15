@@ -207,10 +207,10 @@ jobs:
         run: |
           mkdir SS330
           chmod 777 SS330
-          mv Compile/ss.exe SS330/
-          mv Compile/ss_opt.exe SS330/
-          mv SS330/ss.exe SS330/ss3_win.exe
-          mv SS330/ss_opt.exe SS330/ss3_opt_win.exe
+          mv Compile/ss3.exe SS330/
+          mv Compile/ss3_opt.exe SS330/
+          mv SS330/ss3.exe SS330/ss3_win.exe
+          mv SS330/ss3_opt.exe SS330/ss3_opt_win.exe
   
       - name: Build stock synthesis for mac with admb docker image
         if: matrix.config.os == 'macos-latest'
@@ -220,7 +220,7 @@ jobs:
           docker pull johnoel/admb:linux
 
           rm -rf SS330
-          rm -rf ss_osx.tar
+          rm -rf ss3_osx.tar
           mkdir SS330
           chmod 777 SS330
           /bin/bash ./Make_SS_330_new.sh --admb docker -b SS330
@@ -231,22 +231,22 @@ jobs:
       - name: Verify binary on mac
         if: matrix.config.os == 'macos-latest'
         run: |
-          shasum -a 256 SS330/ss
-          shasum -a 256 SS330/ss_opt
+          shasum -a 256 SS330/ss3
+          shasum -a 256 SS330/ss3_opt
           
       - name: Delete unneeded files and change exe names on mac
         if: matrix.config.os == 'macos-latest'
         run: |
           cd SS330
-          rm *.obj *.htp *.cpp ss_opt.tpl
-          mv ss ss3_osx
-          mv ss_opt ss3_opt_osx
+          rm *.obj *.htp *.cpp ss3_opt.tpl
+          mv ss3 ss3_osx
+          mv ss3_opt ss3_opt_osx
 
       - name: Build stock synthesis for linux with p flag and admb docker image
         if:  matrix.config.os == 'ubuntu-latest'
         run: |
           rm -rf SS330
-          rm -rf ss_osx.tar
+          rm -rf ss3_osx.tar
           mkdir SS330
           chmod 777 SS330
           /bin/bash ./Make_SS_330_new.sh --admb docker -b SS330 -p
@@ -255,16 +255,16 @@ jobs:
       - name: Verify binary on linux
         if: matrix.config.os == 'ubuntu-latest'
         run: |
-          sha256sum SS330/ss
-          sha256sum SS330/ss_opt
+          sha256sum SS330/ss3
+          sha256sum SS330/ss3_opt
     
       - name: Delete unneeded files and change exe names on linux
         if: matrix.config.os == 'ubuntu-latest'
         run: |
           cd SS330
           rm *.obj *.htp *.cpp ss_opt.tpl ss.tpl
-          mv ss ss3_linux
-          mv ss_opt ss3_opt_linux
+          mv ss3 ss3_linux
+          mv ss3_opt ss3_opt_linux
 
       - name: Archive binaries
         if: success()
