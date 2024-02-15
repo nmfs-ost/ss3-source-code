@@ -42,18 +42,26 @@ jobs:
       - name: setup R
         uses: r-lib/actions/setup-r@v2
 
-      - name: Get admb and put in path, linux
-        run: |
-          wget https://github.com/admb-project/admb/releases/download/admb-13.1/admb-13.1-linux.zip
-          sudo unzip admb-13.1-linux.zip -d /usr/local/bin
-          sudo chmod 755 /usr/local/bin/admb-13.1/bin/admb
-          echo "/usr/local/bin/admb-13.1/bin" >> $GITHUB_PATH
+      # - name: Get admb and put in path, linux
+      #   run: |
+      #     wget https://github.com/admb-project/admb/releases/download/admb-13.1/admb-13.1-linux.zip
+      #     sudo unzip admb-13.1-linux.zip -d /usr/local/bin
+      #     sudo chmod 755 /usr/local/bin/admb-13.1/bin/admb
+      #     echo "/usr/local/bin/admb-13.1/bin" >> $GITHUB_PATH
 
-      - name: Build stock synthesis
+      # - name: Build stock synthesis
+      #   run: |
+      #     rm -rf SS330
+      #     mkdir SS330
+      #     /bin/bash ./Make_SS_330_new.sh -b SS330
+
+      - name: Build stock synthesis with admb docker image
         run: |
           rm -rf SS330
+          rm -rf ss_osx.tar
           mkdir SS330
-          /bin/bash ./Make_SS_330_new.sh -b SS330
+          chmod 777 SS330
+          /bin/bash ./Make_SS_330_new.sh --admb docker -b SS330
 
       - name: move exes, scripts to needed locations
         run: |
@@ -61,7 +69,7 @@ jobs:
           mv SS330/ss test-models-repo/model_runs/Simple_with_DM_sizefreq/ss3
 
       - name: change permissions on ss3 exes
-        run: chmod a+x test-models-repo/model_runs/Simple_with_DM_sizefreq/ss3
+        run: sudo chmod a+x test-models-repo/model_runs/Simple_with_DM_sizefreq/ss3
       
       - name: download R packages
         run: Rscript -e 'install.packages(c("remotes", "purrr", "arsenal", "utils"))'
