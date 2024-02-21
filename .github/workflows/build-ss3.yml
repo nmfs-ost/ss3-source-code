@@ -262,7 +262,7 @@ jobs:
         if: matrix.config.os == 'ubuntu-latest'
         run: |
           cd SS330
-          rm *.obj *.htp *.cpp ss_opt.tpl ss.tpl
+          rm *.obj *.htp *.cpp ss3_opt.tpl ss3.tpl
           mv ss3 ss3_linux
           mv ss3_opt ss3_opt_linux
 
