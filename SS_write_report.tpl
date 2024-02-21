@@ -1390,6 +1390,7 @@ FUNCTION void write_bigoutput()
       {
         SS2out << " SmryNum_SX:" << gg << "_GP:" << gp;
       }
+    
     SS2out << " mature_bio mature_num ";
 
     for (f = 1; f <= Nfleet; f++)
