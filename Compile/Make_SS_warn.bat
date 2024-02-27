@@ -1,5 +1,4 @@
-
-::compiling ss.exe (safe executable) with generic path
+::compiling ss3.exe (safe executable) with generic path with warnings for local compilation
 ::requires "Compile" directory in the same directory as the .tpl files and this .bat file
 
 cd ..
