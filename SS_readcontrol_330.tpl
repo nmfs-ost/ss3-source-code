@@ -2522,115 +2522,113 @@
   
   *(ad_comm::global_datafile) >> F_Method;
   echoinput << F_Method << " F_Method as read" << endl;
-  
-  *(ad_comm::global_datafile) >> max_harvest_rate;
-  echoinput << max_harvest_rate << " max_harvest_rate " << endl;
-  
   if (F_Method < 1 || F_Method > 5)
   {
     warnstream << "F_Method must be 1 or 2 or 3 or 4, value is: " << F_Method;
     write_message (FATAL, 0); // EXIT!
   }
   
-  switch (F_Method)
+  *(ad_comm::global_datafile) >> max_harvest_rate;
+  echoinput << max_harvest_rate << " max_harvest_rate " << endl;
+  if (F_Method == 1)  //  Pope's
   {
-    case 1: //  Pope's  no additional input required
+    if (max_harvest_rate > 0.999)
     {
-      Equ_F_joiner = (log(1. / max_harvest_rate - 1.)) / (max_harvest_rate - 0.2); //  used to spline the harvest rate
-      if (max_harvest_rate > 0.999)
+      warnstream << "Max harvest rate must  be <1.0 for F_method 1 " << max_harvest_rate;
+      write_message (FATAL, 0); // EXIT!
+    }
+    if (max_harvest_rate <= 0.30)
+    {
+      warnstream << "Unexpectedly small value for max harvest rate for F_method 1:  " << max_harvest_rate;
+      write_message (NOTE, 0);
+    }
+    Equ_F_joiner = (log(1. / max_harvest_rate - 1.)) / (max_harvest_rate - 0.2); //  used to spline the harvest rate
+  }
+  else  // exponential F
+  {
+    if (max_harvest_rate < 1.0)
+    {
+      warnstream << "Max harvest rate typically is >1.0 for F_method 2, 3 or 4 " << max_harvest_rate;
+      write_message (NOTE, 0);
+    }
+    switch (F_Method)
+    {
+      case 2: //  F as parameter for all fleets
       {
-        warnstream << "Max harvest rate must  be <1.0 for F_method 1 " << max_harvest_rate;
-        write_message (FATAL, 0); // EXIT!
+        *(ad_comm::global_datafile) >> F_parm_intval(1);
+        *(ad_comm ::global_datafile) >> F_Method_PH(1);
+        *(ad_comm::global_datafile) >> F_detail;
+        F_parm_intval = F_parm_intval(1); //  copy to rest of vector
+        F_Method_PH = F_Method_PH(1);
+        F_Tune = 4;
+        echoinput << F_parm_intval << " initial F value when not starting from hybrid " << endl;
+        echoinput << F_Method_PH(1) << " Phase to switch from hybrid to parameter " << endl;
+        echoinput << F_detail << " N_detailed Fsetups to read (later -1 in yr field fills remaining years for that fleet)" << endl;
+        if (F_detail > 0) {
+          F_setup2.deallocate();
+          F_setup2.allocate(1, F_detail, 1, 6); // fleet, yr, seas, Fvalue, se, phase
+          *(ad_comm::global_datafile) >> F_setup2;  // reads whole table
+          echoinput << " detailed F_setups " << endl
+                    << F_setup2 << endl;
+          //  add some checks to be sure that a -year record has been read for each fleet with fleet_type<=2
+        }
+        break;
       }
-      if (max_harvest_rate <= 0.30)
+      case 3: //  hybrid for all fleets
       {
-        warnstream << "Unexpectedly small value for max harvest rate for F_method 1:  " << max_harvest_rate;
-        write_message (NOTE, 0);
+        *(ad_comm::global_datafile) >> F_Tune;
+        F_Method_PH = 99;
+        echoinput << F_Tune << " N iterations for tuning hybrid F (typically 3-5)" << endl;
+        break;
       }
-      break;
-    }
-    case 2: //  same setup for all fleets
-    {
-      *(ad_comm::global_datafile) >> F_parm_intval(1);
-      *(ad_comm::global_datafile) >> F_Method_PH(1);
-      *(ad_comm::global_datafile) >> F_detail;
-      F_parm_intval = F_parm_intval(1); //  copy to rest of vector
-      F_Method_PH = F_Method_PH(1);
-      F_Tune = 4;
-      echoinput << F_parm_intval << " initial F value when not starting from hybrid " << endl;
-      echoinput << F_Method_PH(1) << " Phase to switch from hybrid to parameter " << endl;
-      echoinput << F_detail << " N_detailed Fsetups to read (later -1 in yr field fills remaining years for that fleet)" << endl;
-      break;
-    }
-    case 3: //  hybrid for all fleets
-    {
-      *(ad_comm::global_datafile) >> F_Tune;
-      F_Method_PH = 99;
-      echoinput << F_Tune << " N iterations for tuning hybrid F (typically 3-5)" << endl;
-      break;
-    }
-    case 4: //  fleet-specific choice for hybrid vs parameters
-    {
-      echoinput << "read list of fleet ID, starting F, and phase to transition to parameters" << endl;
-      //  fishing fleets not listed will use hybrid for all phases
-      //  enter PH = 99 to not create any F parms for the listed fleet
-      //  default each fleet to start with hybrid in phase 1
-      //  except bycatch fleets that start with parm in phase 1
-      //  then read for each fishing fleet the phase for the switch to parm
-      F_Method_PH = 99;  // default to stay in hybrid
-      ender = 0.;
-      F_detail = 0;
-      int byc_count;
-      byc_count = 0;
-      dvector tempvec(1, 3);
-      tempvec.initialize();
-      F_Method_4_input.push_back(tempvec(1, 3));
-      while (ender >= 0.)
+      case 4: //  fleet-specific choice for hybrid vs parameters
       {
+        echoinput << "read list of fleet ID, starting F, and phase to transition to parameters" << endl;
+        //  fishing fleets not listed will use hybrid for all phases
+        //  enter PH = 99 to not create any F parms for the listed fleet
+        //  default each fleet to start with hybrid in phase 1
+        //  except bycatch fleets that start with parm in phase 1
+        //  then read for each fishing fleet the phase for the switch to parm
+        F_Method_PH = 99;  // default is to stay in hybrid
+        ender = 0.;
+        F_detail = 0;
+        int byc_count;
+        byc_count = 0;
         dvector tempvec(1, 3);
-        *(ad_comm::global_datafile) >> tempvec(1, 3);
-        echoinput << tempvec << endl;
+        tempvec.initialize();
         F_Method_4_input.push_back(tempvec(1, 3));
-        ender = tempvec(1);
-        f = int(tempvec(1)); // fleet ID
-        if (f <= Nfleet && ender > 0)
+        while (ender >= 0.)
         {
-          if (fleet_type(f) <= 2)
+          dvector tempvec(1, 3);
+          *(ad_comm::global_datafile) >> tempvec(1, 3);
+          echoinput << tempvec << endl;
+          F_Method_4_input.push_back(tempvec(1, 3));
+          ender = tempvec(1);
+          f = int(tempvec(1)); // fleet ID
+          if (f <= Nfleet && ender > 0)
           {
-            F_parm_intval(f) = tempvec(2);
-            F_Method_PH(f) = tempvec(3);
-            if (fleet_type(f) == 2) {
-              byc_count++;
-            } //  count bycatch fleets listed here
+            if (fleet_type(f) <= 2)
+            {
+              F_parm_intval(f) = tempvec(2);
+              F_Method_PH(f) = tempvec(3);
+              if (fleet_type(f) == 2) {
+                byc_count++;
+              } //  count bycatch fleets listed here
+            }
           }
         }
+        if (byc_count != N_bycatch)
+        {
+          warnstream << "Not all bycatch fleets have been included in Fparm list";
+          write_message (FATAL, 0); // EXIT!
+        }
+        echoinput << "now read N tuning loops while in hybrid phases (2 OK if switching to parm later, 3 OK, 4 more precise with many fleets)" << endl;
+        *(ad_comm::global_datafile) >> F_Tune;
+        echoinput << "hybrid tuning loops as read: " << F_Tune << endl;
+        break;
       }
-      if (byc_count != N_bycatch)
-      {
-        warnstream << "Not all bycatch fleets have been included in Fparm list";
-        write_message (FATAL, 0); // EXIT!
-      }
-      echoinput<<"F_Method_PH: "<< F_Method_PH<<endl;
-      echoinput << "now read N tuning loops when doing hybrid (4 recommended)" << endl;
-      *(ad_comm::global_datafile) >> F_Tune;
-      echoinput << "value as read: " << F_Tune << endl;
-      echoinput << "Note that F_detail cannot be read when using F_Method 4" << endl;
-      break;
     }
-  }
-  if (F_detail > 0) {
-    F_setup2.deallocate();
-    F_setup2.allocate(1, F_detail, 1, 6); // fleet, yr, seas, Fvalue, se, phase
-    *(ad_comm::global_datafile) >> F_setup2;
-    echoinput << " detailed F_setups " << endl
-              << F_setup2 << endl;
-    //  add some checks to be sure that a -year record has been read for each fleet with fleet_type<=2
-  }
-  
-  if (max_harvest_rate < 1.0)
-  {
-    warnstream << "Max harvest rate typically is >1.0 for F_method 2, 3 or 4 " << max_harvest_rate;
-    write_message (NOTE, 0);
+    
   }
   // clang-format off
  END_CALCS
@@ -2778,7 +2776,7 @@
             if (F_Method_byPH(f, 50) == 2) //  end up in parameter state, or using fixed F inputs
             {
               echoinput << " create parms for fleet " << f << endl;
-              Fparm_loc_st(f) = N_Fparm + 1;
+              Fparm_loc_st(f) = N_Fparm + 1;  //  first Fparm for this fleet
               for (y = styr; y <= endyr; y++)
                 for (s = 1; s <= nseas; s++)
                 {
@@ -2798,26 +2796,18 @@
                     ParmLabel += "F_fleet_" + NumLbl(f) + "_YR_" + onenum + "_s_" + NumLbl(s) + CRLF(1);
                   }
                 }
-              Fparm_loc_end(f) = N_Fparm;
+              Fparm_loc_end(f) = N_Fparm;  //  last Fparm for this fleet
             }
           }
         }
       }
-      //  SS_Label_Info_4.7.2 #Create parameter labels for F parameters if F_method==2
       echoinput << "N F parameters " << N_Fparm << endl;
       echoinput << "Fparm_loc_st_by_fleet: " << Fparm_loc_st << endl;
       echoinput << "Fparm_loc_end_by_fleet: " << Fparm_loc_end << endl;
     }
   
-    for (f = 1; f <= Nfleet; f++)
-    {
-      if (F_Method_byPH(f, 50) == 2) //
-      {
-      }
-    }
     if (F_detail > 0)
     {
-      echoinput << "Note that F_Detail can no longer set phase for each F parm; instead use F_Method 4 to set phase for each fleet" << endl;
       for (k = 1; k <= F_detail; k++)
       {
         f = F_setup2(k, 1);
@@ -2834,13 +2824,13 @@
           y2 = endyr;
         }
         echoinput << "detailed F setup #: " << k << ":  " << F_setup2(k) << endl;
-        for (y = y1; y <= y2; y++) //  what do do about s in this y loop?
+        for (y = y1; y <= y2; y++)
+        for (s = 1; s <= nseas; s++)
         {
           t = styr + (y - styr) * nseas + s - 1;
-          j = do_Fparm(f, t);
+          j = do_Fparm(f, t);  //  get index in the F vector
           if (j > 0 && F_setup2(k, 6) != -999) {
-            //          Fparm_PH[j]=F_setup2(k,6);    //   used to setup the phase for each F_rate parameter
-            //          F_Method_byPH(f)(F_setup2(k,6),50)=2;  //  set Fmethod=2 for this and all later phases for this fleet
+            Fparm_PH[j] = F_setup2(k,6);    // phase for each F_rate parameter
           }
           if (j > 0 && F_setup2(k, 5) != -999) catch_se(t, f) = F_setup2(k, 5); //    reset the se for this observation
         }
@@ -5931,17 +5921,21 @@
   
   if (N_Fparm > 0)
   {
+    Fparm_PH_dim.deallocate();
+    Fparm_PH_dim.allocate(1, N_Fparm);
     for (g = 1; g <= N_Fparm; g++)
     {
       ParCount++;
       if (depletion_fleet > 0 && depletion_type < 2 && Fparm_PH[g] > 0) Fparm_PH[g]++; //  increase phase by 1
       if (Fparm_PH[g] > Turn_off_phase2) Fparm_PH[g] = -1;
       if (Fparm_PH[g] > max_phase) max_phase = Fparm_PH[g];
+      Fparm_PH_dim(g) = Fparm_PH[g];  //  move values into ivector
       if (Fparm_PH[g] > 0)
       {
         active_count++;
         active_parm(active_count) = ParCount;
       }
+    echoinput<<g<<" dim  "<<Fparm_PH_dim(g)<<endl;
     }
   }
   

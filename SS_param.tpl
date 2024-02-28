@@ -391,10 +391,6 @@ PARAMETER_SECTION
   if (N_Fparm > 0) // continuous F
   {
     k = N_Fparm;
-    Fparm_PH_dim.deallocate();
-    Fparm_PH_dim.allocate(1, N_Fparm);
-    for (int j = 1; j <= N_Fparm; j++)
-      Fparm_PH_dim(j) = Fparm_PH[j];
   }
   else
   {
