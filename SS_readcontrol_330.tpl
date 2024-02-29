@@ -2625,10 +2625,17 @@
         echoinput << "now read N tuning loops while in hybrid phases (2 OK if switching to parm later, 3 OK, 4 more precise with many fleets)" << endl;
         *(ad_comm::global_datafile) >> F_Tune;
         echoinput << "hybrid tuning loops as read: " << F_Tune << endl;
+        if (ender == -9998)
+        {
+          *(ad_comm::global_datafile) >> F_detail;
+          F_setup2.deallocate();
+          F_setup2.allocate(1, F_detail, 1, 6); // fleet, yr, seas, Fvalue, se, phase
+          *(ad_comm::global_datafile) >> F_setup2;  // reads whole table
+          echoinput << " detailed F_setups " << endl << F_setup2 << endl;
+        }
         break;
       }
     }
-    
   }
   // clang-format off
  END_CALCS

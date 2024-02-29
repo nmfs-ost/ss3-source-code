@@ -2312,15 +2312,24 @@ FUNCTION void write_nucontrol()
   }
   else if (F_Method == 4)
   {
-    report4 << "# read list of fleets that do F as parameter; unlisted fleets stay hybrid, bycatch fleets must be included with start_PH=1, high F fleets should switch early" << endl;
-    report4 << "# (A) fleet, (B) F_starting_value (used if start_PH=1), (C) start_PH for parms (99 to stay in hybrid, <0 to stay at starting value)" << endl;
-    report4 << "# (A) (B) (C)  (terminate list with -9999 for fleet)" << endl;
+    report4 << "# Read list of fleets that do F as parameter; unlisted fleets stay hybrid, bycatch fleets must be included with start_PH=1, high F fleets should switch early" << endl;
+    report4 << "# (A) fleet;" << endl <<"# (B) F_starting_value (ignored if start_PH=1 or reading from ss3.par);" <<
+    endl << "# (C) start_PH for fleet's Fparms (99 to stay in hybrid, <0 to stay at starting value)" << endl << 
+    "# Terminate list with -9999 for fleet (FUTURE: use -9998 to continue with reading fleet-time specific F values)" << endl;
+    report4 << "# (A) (B) (C)" << endl;
     for (unsigned j = 1; j <= F_Method_4_input.size() - 2; j++)
     {
       report4 << F_Method_4_input[j] << " # " << fleetname(F_Method_4_input[j](1)) << endl;
     }
-    report4 << "-9999 1 1 # end of list" << endl;
+    report4 << -9999 + F_detail << " 1 1 # end of list" << endl;  // F_detail = 0 or 1
     report4 << F_Tune << " #_number of loops for hybrid tuning; 4 good; 3 faster; 2 enough if switching to parms is enabled" << endl;
+    if (F_detail > 0)
+    {
+      report4 << F_detail << " # N fleet-time specific F values to read; enter -Yr to fill remaining years; -phase locks value for the run" << endl;
+      report4 << "#Fleet Yr Seas F_value catch_se phase" << endl;
+      report4 << F_setup2 << endl;
+      report4 << "# end of time-specific F inputs " << endl;
+    }
   }
 
   report4 << "#" << endl;

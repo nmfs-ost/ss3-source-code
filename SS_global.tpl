@@ -917,6 +917,43 @@ BETWEEN_PHASES_SECTION
         }
       }
     }
+
+    if (F_detail > 0)
+    {
+      for (k = 1; k <= F_detail; k++)
+      {
+        f = F_setup2(k, 1);
+        warning<<f<<"  check fmethodPH "<< F_Method_byPH(f, j_phase)<<endl;
+        if (F_Method_byPH(f, j_phase) < F_Method_byPH(f, j_phase - 1))
+        {
+          y = F_setup2(k, 2);
+          s = F_setup2(k, 3);
+          if (y > 0)
+          {
+            y1 = y;
+            y2 = y;
+          }
+          else
+          {
+            y1 = -y;
+            y2 = endyr;
+          }
+          for (y = y1; y <= y2; y++)
+          {
+            t = styr + (y - styr) * nseas + s - 1;
+            g = do_Fparm(f, t);
+            warning<<"SET_F "<<f<<" t "<<t<<" g "<<g<<" ph "<<" set_to "<<F_setup2(k, 4)<<endl;
+            if (g > 0 && F_setup2(k, 4) != -999)
+            {
+              F_rate(g) = F_setup2(k, 4);
+              Hrate(f, t) = F_setup2(k, 4);
+            }
+          }
+        }
+      }
+    }
+    echoinput << " Fmort_parms have been set according to F_detail input" << endl;
+
   }
   //        warning<<"between: Hrate_2010:  "<<Hrate(1,2010)<<" "<<Hrate(2,2010)<<" "<<Hrate(3,2010)<<" "<<Hrate(4,2010)<<" "<<endl;
 
