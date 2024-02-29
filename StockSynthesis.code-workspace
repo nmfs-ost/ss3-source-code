@@ -9,7 +9,8 @@
 			"*.tpl": "c",
 			"\"*.extension\":": "\"tpl\"",
 			"*.htp": "c",
-			"ostream": "c"
+			"ostream": "c",
+			"iosfwd": "c"
 		},
 		"explorer.excludeGitIgnore": true
 	}

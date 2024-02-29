@@ -1,8 +1,12 @@
-In file included from ss.cpp:7:
-ss.cpp: In member function 'void model_parameters::evaluate_the_objective_function()':
-ss.cpp:27544:9: warning: this 'for' clause does not guard... [-Wmisleading-indentation]
-27544 |         for (i = 1; i <= Svy_N_fleet(f); i++)
-      |         ^~~
-ss.cpp:27571:11: note: ...this statement, but the latter is misleadingly indented as if it were guarded by the 'for'
-27571 |           surv_like(f) = sum(Svy_like_I(f));
-      |           ^~~~~~~~~
+/usr/local/admb/include/admodel.h:1915:38: warning: unused parameter 'gradients' [-Wunused-parameter]
+ 1915 |   virtual void report(const dvector& gradients){;};
+      |                       ~~~~~~~~~~~~~~~^~~~~~~~~
+/usr/local/admb/include/admodel.h:2501:43: warning: unused parameter 'ofs' [-Wunused-parameter]
+ 2501 |   virtual void save_value(const ofstream& ofs, int prec,const dvector&,
+      |                           ~~~~~~~~~~~~~~~~^~~
+/usr/local/admb/include/admodel.h:2501:52: warning: unused parameter 'prec' [-Wunused-parameter]
+ 2501 |   virtual void save_value(const ofstream& ofs, int prec,const dvector&,
+      |                                                ~~~~^~~~
+/usr/local/admb/include/admodel.h:2502:10: warning: unused parameter 'offset' [-Wunused-parameter]
+ 2502 |     int& offset){}
+      |     ~~~~~^~~~~~

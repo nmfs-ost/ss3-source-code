@@ -2881,6 +2881,11 @@ FUNCTION void Get_Forecast()
                     catch_fleet(t, f, 6) += Nmid(g) * sel_ret_num(s, f, g); // retained catch numbers
                     catage_w(g) = temp * elem_prod(Nmid(g), sel_dead_num(s, f, g));
                     Nsurv(g) -= catage_w(g);
+                    if (Do_Retain(f) > 0)
+                      {
+                        disc_age(t, disc_fleet_list(f), g) = Hrate(f, t) * elem_prod(elem_prod(natage(t, p, g), sel_num(s, f, g)), Zrate2(p, g)); //  selected numbers
+                        disc_age(t, disc_fleet_list(f) + N_retain_fleets, g) = Hrate(f, t) * elem_prod(elem_prod(natage(t, p, g), sel_ret_num(s, f, g)), Zrate2(p, g)); //  selected numbers
+                      }
                   } //close gmorph loop
                 catch_fleet(t, f) *= temp;
               } // close fishery
@@ -3045,6 +3050,11 @@ FUNCTION void Get_Forecast()
                     catch_fleet(t, f, 5) += tempvec_a * elem_prod(natage(t, p, g), sel_dead_num(s, f, g)); // deadfish catch numbers
                     catch_fleet(t, f, 6) += tempvec_a * elem_prod(natage(t, p, g), sel_ret_num(s, f, g)); // retained catch numbers
                     catage(t, f, g) = elem_prod(elem_prod(natage(t, p, g), sel_dead_num(s, f, g)), tempvec_a);
+                    if (Do_Retain(f) > 0)
+                      {
+                        disc_age(t, disc_fleet_list(f), g) = Hrate(f, t) * elem_prod(elem_prod(natage(t, p, g), sel_num(s, f, g)), Zrate2(p, g)); //  selected numbers
+                        disc_age(t, disc_fleet_list(f) + N_retain_fleets, g) = Hrate(f, t) * elem_prod(elem_prod(natage(t, p, g), sel_ret_num(s, f, g)), Zrate2(p, g)); //  selected numbers
+                      }
                   } //close gmorph loop
               } // close fishery
 
