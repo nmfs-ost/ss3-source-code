@@ -2517,7 +2517,7 @@
   F_detail = -1;
   F_Tune = 3;
   F_parm_intval = 0.05; //  fill vector
-  F_Method_PH = -1; //  fill vector
+  F_Method_PH = 99; //  fill vector
   F_Method_byPH.initialize();
   
   *(ad_comm::global_datafile) >> F_Method;
@@ -2565,6 +2565,7 @@
     case 3: //  hybrid for all fleets
     {
       *(ad_comm::global_datafile) >> F_Tune;
+      F_Method_PH = 99;
       echoinput << F_Tune << " N iterations for tuning hybrid F (typically 3-5)" << endl;
       break;
     }
@@ -2576,6 +2577,7 @@
       //  default each fleet to start with hybrid in phase 1
       //  except bycatch fleets that start with parm in phase 1
       //  then read for each fishing fleet the phase for the switch to parm
+      F_Method_PH = 99;  // default to stay in hybrid
       ender = 0.;
       F_detail = 0;
       int byc_count;
@@ -2608,6 +2610,7 @@
         warnstream << "Not all bycatch fleets have been included in Fparm list";
         write_message (FATAL, 0); // EXIT!
       }
+      echoinput<<"F_Method_PH: "<< F_Method_PH<<endl;
       echoinput << "now read N tuning loops when doing hybrid (4 recommended)" << endl;
       *(ad_comm::global_datafile) >> F_Tune;
       echoinput << "value as read: " << F_Tune << endl;
