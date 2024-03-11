@@ -19,7 +19,7 @@ jobs:
       matrix:
         config:
           - {os: windows-latest}
-          - {os: macos-latest}
+          - {os: macos-14}
           - {os: ubuntu-latest}
     # Limit run time to 90 min to avoid wasting action minutes.
     # was set to 15 and then 30 minutes previously, but compiling admb
