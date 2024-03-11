@@ -63,6 +63,7 @@ jobs:
 
       - name: Build stock synthesis with admb docker image
         run: |
+          brew install automake autoconf-archive cmake libtool colima
           brew install docker
           docker pull johnoel/admb:linux
 
