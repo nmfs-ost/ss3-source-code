@@ -64,8 +64,6 @@ jobs:
       - name: Build stock synthesis with admb docker image
         run: |
           brew install docker
-          brew install colima
-          colima start
           docker pull johnoel/admb:linux
 
           rm -rf SS330
@@ -74,8 +72,9 @@ jobs:
           chmod 777 SS330
           /bin/bash ./Make_SS_330_new.sh --admb docker -b SS330
           /bin/bash ./Make_SS_330_new.sh --admb docker -b SS330 -o
-
-          colima stop
+        # brew install colima
+        # colima start
+        # colima stop
 
       - name: move exes, scripts to needed locations
         run: |
