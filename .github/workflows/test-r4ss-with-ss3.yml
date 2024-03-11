@@ -65,6 +65,7 @@ jobs:
         run: |
           brew install automake autoconf-archive cmake libtool colima
           brew install --cask docker
+          colima start
           docker pull johnoel/admb:linux
 
           rm -rf SS330
