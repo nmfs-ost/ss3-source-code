@@ -26,10 +26,10 @@ jobs:
 
     steps:
       - name: Checkout ss3 repo
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Checkout models repo
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           repository: 'nmfs-ost/ss3-test-models'
           path: test-models-repo
@@ -43,7 +43,7 @@ jobs:
         uses: r-lib/actions/setup-r@v2
 
       - name: install R packages
-        run: Rscript -e 'install.packages(c("remotes","parallely", "furrr", "future"))'
+        run: Rscript -e 'install.packages(c("remotes","parallelly", "furrr", "future"))'
 
       - name: install r4ss
         run: Rscript -e 'remotes::install_github("r4ss/r4ss")'
