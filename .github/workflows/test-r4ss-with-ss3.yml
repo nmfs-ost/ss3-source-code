@@ -18,7 +18,7 @@ on:
 jobs:
   test-r4ss-with-ss3:
     if: github.event.pull_request.draft == false
-    runs-on: macos-13
+    runs-on: macos-latest
     env:
       R_REMOTES_NO_ERRORS_FROM_WARNINGS: true
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
@@ -94,7 +94,7 @@ jobs:
 
       - name: run models without estimation
         run: |
-         cd test-models-repo && Rscript run_from_par.R
+          cd test-models-repo && Rscript run_from_par.R
 
       - name: run SS3 output and SS3 plots
         run: |
