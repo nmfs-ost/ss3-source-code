@@ -64,6 +64,7 @@ jobs:
       - name: Build stock synthesis with admb docker image
         run: |
           brew install docker
+          brew install colima
           colima start
           docker pull johnoel/admb:linux
 
