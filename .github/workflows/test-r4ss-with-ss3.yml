@@ -18,7 +18,7 @@ on:
 jobs:
   test-r4ss-with-ss3:
     if: github.event.pull_request.draft == false
-    runs-on: ubuntu-latest
+    runs-on: macos-14
     env:
       R_REMOTES_NO_ERRORS_FROM_WARNINGS: true
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
@@ -63,11 +63,18 @@ jobs:
 
       - name: Build stock synthesis with admb docker image
         run: |
+          brew install docker
+          colima start
+          docker pull johnoel/admb:linux
+
           rm -rf SS330
           rm -rf ss3_osx.tar
           mkdir SS330
           chmod 777 SS330
           /bin/bash ./Make_SS_330_new.sh --admb docker -b SS330
+          /bin/bash ./Make_SS_330_new.sh --admb docker -b SS330 -o
+
+          colima stop
 
       - name: move exes, scripts to needed locations
         run: |
