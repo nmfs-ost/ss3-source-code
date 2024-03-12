@@ -18,9 +18,9 @@ jobs:
       fail-fast: false
       matrix:
         config:
-          - {os: windows-latest}
+          # - {os: windows-latest}
           - {os: macos-14}
-          - {os: ubuntu-latest}
+          # - {os: ubuntu-latest}
     # Limit run time to 90 min to avoid wasting action minutes.
     # was set to 15 and then 30 minutes previously, but compiling admb
     # on mac took too long
@@ -28,11 +28,11 @@ jobs:
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
-      - name: Update Ubuntu packages
-        if: matrix.config.os == 'ubuntu-latest'
-        run: sudo apt-get update
+      # - name: Update Ubuntu packages
+      #   if: matrix.config.os == 'ubuntu-latest'
+      #   run: sudo apt-get update
 
       # - name: Get admb and put in path, windows
       #   if: matrix.config.os == 'windows-latest'
@@ -86,27 +86,27 @@ jobs:
           git fetch --tags
           git fetch --prune --unshallow || true
 
-      - name: Get the last tag on windows
-        id: get-latest-tag-win
-        if: matrix.config.os == 'windows-latest'
-        run: |
-          git tag
-          $latest_tag = (git describe --abbrev=0 --tags)
-          $latest_tag_commit = ( git rev-list -n 1 $latest_tag)
-          $latest_commit = (git rev-list HEAD -n 1)
-          echo "tag=${latest_tag}" >> $env:GITHUB_OUTPUT
-          echo "tag_commit=${latest_tag_commit}" >> $env:GITHUB_OUTPUT
-          echo "commit=${latest_commit}" >> $env:GITHUB_OUTPUT
+      # - name: Get the last tag on windows
+      #   id: get-latest-tag-win
+      #   if: matrix.config.os == 'windows-latest'
+      #   run: |
+      #     git tag
+      #     $latest_tag = (git describe --abbrev=0 --tags)
+      #     $latest_tag_commit = ( git rev-list -n 1 $latest_tag)
+      #     $latest_commit = (git rev-list HEAD -n 1)
+      #     echo "tag=${latest_tag}" >> $env:GITHUB_OUTPUT
+      #     echo "tag_commit=${latest_tag_commit}" >> $env:GITHUB_OUTPUT
+      #     echo "commit=${latest_commit}" >> $env:GITHUB_OUTPUT
 
        # uses: actions-ecosystem/action-get-latest-tag@v1 # for linux
 
-      - name: pull the last tag value to use in the Rscript on windows
-        id: get-version-win
-        if: matrix.config.os == 'windows-latest'
-        run: |
-          Out-File -InputObject ${{ steps.get-latest-tag-win.outputs.tag }} -FilePath .github/last_tag.txt
-          Out-File -InputObject ${{ steps.get-latest-tag-win.outputs.tag_commit }} -FilePath .github/last_tag_commit.txt
-          Out-File -InputObject ${{ steps.get-latest-tag-win.outputs.commit}} -FilePath .github/last_commit.txt
+      # - name: pull the last tag value to use in the Rscript on windows
+      #   id: get-version-win
+      #   if: matrix.config.os == 'windows-latest'
+      #   run: |
+      #     Out-File -InputObject ${{ steps.get-latest-tag-win.outputs.tag }} -FilePath .github/last_tag.txt
+      #     Out-File -InputObject ${{ steps.get-latest-tag-win.outputs.tag_commit }} -FilePath .github/last_tag_commit.txt
+      #     Out-File -InputObject ${{ steps.get-latest-tag-win.outputs.commit}} -FilePath .github/last_commit.txt
 
       - name: Get the last tag on unix
         id: get-latest-tag-unix
@@ -194,30 +194,30 @@ jobs:
           writeLines(ver_info, "SS_versioninfo_330opt.tpl")
         shell: Rscript {0}
 
-      - name: Build stock synthesis for windows with admb docker image
-        if: matrix.config.os == 'windows-latest'
-        run: |
-          cd Compile
-          ./Make_SS_fast.bat || true
-          ./Make_SS_safe.bat || true
-          cd ..
+      # - name: Build stock synthesis for windows with admb docker image
+      #   if: matrix.config.os == 'windows-latest'
+      #   run: |
+      #     cd Compile
+      #     ./Make_SS_fast.bat || true
+      #     ./Make_SS_safe.bat || true
+      #     cd ..
 
-      - name: Move exes to a new folder on windows
-        if: matrix.config.os == 'windows-latest'
-        run: |
-          mkdir SS330
-          chmod 777 SS330
-          mv Compile/ss3.exe SS330/
-          mv Compile/ss3_opt.exe SS330/
-          mv SS330/ss3.exe SS330/ss3_win.exe
-          mv SS330/ss3_opt.exe SS330/ss3_opt_win.exe
+      # - name: Move exes to a new folder on windows
+      #   if: matrix.config.os == 'windows-latest'
+      #   run: |
+      #     mkdir SS330
+      #     chmod 777 SS330
+      #     mv Compile/ss3.exe SS330/
+      #     mv Compile/ss3_opt.exe SS330/
+      #     mv SS330/ss3.exe SS330/ss3_win.exe
+      #     mv SS330/ss3_opt.exe SS330/ss3_opt_win.exe
   
       - name: Build stock synthesis for mac with admb docker image
         if: matrix.config.os == 'macos-14'
         run: |
           brew install docker colima
           colima start
-          docker pull johnoel/admb:linux
+          docker pull johnoel/admb-13.2:linux-arm64
 
           rm -rf SS330
           rm -rf ss3_osx.tar
@@ -242,29 +242,29 @@ jobs:
           mv ss3 ss3_osx
           mv ss3_opt ss3_opt_osx
 
-      - name: Build stock synthesis for linux with p flag and admb docker image
-        if:  matrix.config.os == 'ubuntu-latest'
-        run: |
-          rm -rf SS330
-          rm -rf ss3_osx.tar
-          mkdir SS330
-          chmod 777 SS330
-          /bin/bash ./Make_SS_330_new.sh --admb docker -b SS330 -p
-          /bin/bash ./Make_SS_330_new.sh --admb docker -b SS330 -o -p   
+      # - name: Build stock synthesis for linux with p flag and admb docker image
+      #   if:  matrix.config.os == 'ubuntu-latest'
+      #   run: |
+      #     rm -rf SS330
+      #     rm -rf ss3_osx.tar
+      #     mkdir SS330
+      #     chmod 777 SS330
+      #     /bin/bash ./Make_SS_330_new.sh --admb docker -b SS330 -p
+      #     /bin/bash ./Make_SS_330_new.sh --admb docker -b SS330 -o -p   
 
-      - name: Verify binary on linux
-        if: matrix.config.os == 'ubuntu-latest'
-        run: |
-          sha256sum SS330/ss3
-          sha256sum SS330/ss3_opt
+      # - name: Verify binary on linux
+      #   if: matrix.config.os == 'ubuntu-latest'
+      #   run: |
+      #     sha256sum SS330/ss3
+      #     sha256sum SS330/ss3_opt
     
-      - name: Delete unneeded files and change exe names on linux
-        if: matrix.config.os == 'ubuntu-latest'
-        run: |
-          cd SS330
-          rm *.obj *.htp *.cpp ss3_opt.tpl ss3.tpl
-          mv ss3 ss3_linux
-          mv ss3_opt ss3_opt_linux
+      # - name: Delete unneeded files and change exe names on linux
+      #   if: matrix.config.os == 'ubuntu-latest'
+      #   run: |
+      #     cd SS330
+      #     rm *.obj *.htp *.cpp ss3_opt.tpl ss3.tpl
+      #     mv ss3 ss3_linux
+      #     mv ss3_opt ss3_opt_linux
 
       - name: Archive binaries
         if: success()
