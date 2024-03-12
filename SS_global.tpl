@@ -902,18 +902,20 @@ BETWEEN_PHASES_SECTION
     last_objfun = obj_fun;
   }
 
-  //  SS_Label_Info_11.2 #For Fmethod=2 & 4, set parameter values (F_rate) equal to Hrate array fromcalculated using hybrid method in previous phase
+  //  SS_Label_Info_11.2 #For Fmethod=2 & 4, set parameter values (F_rate) equal to Hrate calculated using hybrid method in previous phase
   if (N_Fparm > 0 && j_phase > 1)
   {
     for (int ff = 1; ff <= N_catchfleets(0); ff++)
     {
       f = fish_fleet_area(0, ff);
-      if (F_Method_byPH(f, j_phase) < F_Method_byPH(f, j_phase - 1))
+      for (g = Fparm_loc_st(f); g <= Fparm_loc_end(f); g++)
       {
-        for (g = Fparm_loc_st(f); g <= Fparm_loc_end(f); g++)
+        t = Fparm_loc[g](2);
+          if(t==1970)  warning<<" global " << t<<" "<<f<<" H_rate: "<<Hrate(f, t) << " parm " << F_rate(g) << F_PH_time(f, t) <<" " << j_phase  <<" " << endl;
+        if (F_PH_time(f, t) == j_phase)
         {
-          t = Fparm_loc[g](2);
           F_rate(g) = Hrate(f, t);
+          echoinput<<"set it"<<endl;
         }
       }
     }
@@ -923,8 +925,8 @@ BETWEEN_PHASES_SECTION
       for (k = 1; k <= F_detail; k++)
       {
         f = F_setup2(k, 1);
-        warning<<f<<"  check fmethodPH "<< F_Method_byPH(f, j_phase)<<endl;
-        if (F_Method_byPH(f, j_phase) < F_Method_byPH(f, j_phase - 1))
+//        warning<<f<<"  check fmethodPH "<< F_PH_time(f, j_phase)<<endl;
+//        if (F_PH_time(f, j_phase) < F_PH_time(f, j_phase - 1))
         {
           y = F_setup2(k, 2);
           s = F_setup2(k, 3);
@@ -941,8 +943,8 @@ BETWEEN_PHASES_SECTION
           for (y = y1; y <= y2; y++)
           {
             t = styr + (y - styr) * nseas + s - 1;
-            g = do_Fparm(f, t);
-            warning<<"SET_F "<<f<<" t "<<t<<" g "<<g<<" ph "<<" set_to "<<F_setup2(k, 4)<<endl;
+            g = do_Fparm_loc(f, t);
+            warning<<"SET_F_detail "<<f<<" t "<<t<<" g "<<g<<" ph "<<" set_to "<<F_setup2(k, 4)<<endl;
             if (g > 0 && F_setup2(k, 4) != -999)
             {
               F_rate(g) = F_setup2(k, 4);

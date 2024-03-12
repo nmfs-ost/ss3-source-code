@@ -1116,13 +1116,15 @@ FUNCTION void get_time_series()
             //  SS_Label_Info_24.3.3.3 #use the hybrid F method by selected fleets
             // hybrid F_method
             k = current_phase();
-            if (F_Method_byPH(0, k) == 3) //  some fleet needs hybrid this phase
+            echoinput << "popdyn "<<y<<endl;
+            if (F_PH_time(0, t) == 99) //  some fleet needs hybrid this phase
             {
               //  SS_Label_Info_24.3.3.3.1 #Start by doing a Pope's approximation
-              for (int ff = 1; ff <= N_catchfleets(p); ff++)
+
+              for (int ff = 1; ff <= N_catchfleets(p); ff++)  // loop fleets in this area (p)
               {
                 f = fish_fleet_area(p, ff);
-                if (F_Method_byPH(f, current_phase()) == 3 && catch_seas_area(t, p, f) == 1) // do hybrid F for this fleet
+                if (F_PH_time(f, t) == 99) // do hybrid F for this fleet
                 {
                   vbio.initialize();
                   for (g = 1; g <= gmorph; g++)
@@ -1168,13 +1170,11 @@ FUNCTION void get_time_series()
                   interim_tot_catch = 0.0; // this is the expected total catch that would occur with the current Hrates and Z
                   // totcatch_byarea(t,p) is now recalculated here just for the fleets doing hybrid in this phase
                   double target_catch = 0.0;
-                  int F_find;
                   for (int ff = 1; ff <= N_catchfleets(p); ff++)
                   {
                     f = fish_fleet_area(p, ff);
-                    F_find = do_Fparm(f, t);  //  will be positive if this f,t has a parameter
-                    if(F_find == 5) warning<<"popdyn "<<f<<" "<<t<<" index "<<do_Fparm(f, t)<<" F:"<<Hrate(f, t)<<" Ph "<<Fparm_PH[F_find]<<endl;
-                    if (F_Method_byPH(f, current_phase()) == 3 && catch_seas_area(t, p, f) == 1 && Fparm_PH[F_find] >=0 ) //  skips bycatch fleets
+                    
+                    if (F_PH_time(f, t) == 99) //  skips bycatch fleets
                     {
                       for (g = 1; g <= gmorph; g++)
                         if (use_morph(g) > 0)
@@ -1202,10 +1202,9 @@ FUNCTION void get_time_series()
                   for (int ff = 1; ff <= N_catchfleets(p); ff++) //loop over fishing  fleets with input catch
                   {
                     f = fish_fleet_area(p, ff);
-                    if (fleet_type(f) == 1)
+//                    if (fleet_type(f) == 1)
                     {
-                      F_find = do_Fparm(f, t);  //  will be positive if this f,t has a parameter
-                      if (F_Method_byPH(f, current_phase()) == 3 && catch_seas_area(t, p, f) == 1 && Fparm_PH[F_find] >=0 ) //  skips bycatch fleets and fixed F values
+                      if (F_PH_time(f, t) == 99) //  skips bycatch fleets and fixed F values
                       {
                         vbio = 0.; // now use this to calc the selected vulnerable biomass (numbers) to each fishery with the adjusted Zrate2
                         //  since catch = N * F*sel * (1-e(-Z))/Z

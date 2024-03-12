@@ -46,17 +46,18 @@ PROCEDURE_SECTION
   if (N_Fparm > 0)
   {
     //      if(current_phase()>=F_parm_PH || (readparfile==1 && current_phase()<=1)) //  set Hrate = Frate parameters on first call if readparfile=1, or for advanced phases
-    //  warning<<"FM by PH "<<endl<<F_Method_byPH<<endl;
+    for (f = 1; f <= Nfleet; f++)
     {
-      for (f = 1; f <= Nfleet; f++)
-        if (F_Method_byPH(f, current_phase()) == 2)
+      if(Fparm_loc_st(f)>0)
+      for (g = Fparm_loc_st(f); g <= Fparm_loc_end(f); g++)
+      {
+        t = Fparm_loc[g](2);
+        if (F_PH_time(f, t) >= current_phase() && F_PH_time(f,t) < 99)
         {
-          for (g = Fparm_loc_st(f); g <= Fparm_loc_end(f); g++)
-          {
-            t = Fparm_loc[g](2);
-            Hrate(f, t) = F_rate(g);
-          }
+          if(t==1970)  warning<< " proced "<<t<<" "<<f<<" H_rate: "<<Hrate(f, t) << " parm " << F_rate(g) << endl;
+          Hrate(f, t) = F_rate(g);
         }
+      }
     }
   }
 
@@ -73,6 +74,7 @@ PROCEDURE_SECTION
     {
       bigsaver = 0;
     }
+    warning << " begin "<<endl;
     setup_recdevs();
     y = styr;
     //  SS_Label_Info_7.4.1 #Call fxn get_initial_conditions() to get the virgin and initial equilibrium population
@@ -80,6 +82,7 @@ PROCEDURE_SECTION
     if (do_once == 1)
       echoinput << "Finished initial_conditions" << endl;
     //  SS_Label_Info_7.4.2 #Call fxn get_time_series() to do population calculations for each year and get expected values for observations
+    warning<<" start time series"<<endl;
     get_time_series(); //  in procedure_section
     if (do_once == 1)
     {
