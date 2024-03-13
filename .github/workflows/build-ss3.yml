@@ -217,9 +217,7 @@ jobs:
       - name: Build stock synthesis for mac with admb docker image
         if: matrix.config.os == 'macos-14'
         run: |
-          brew install docker colima
-          colima delete
-          colima start -f --arch aarch64 
+          brew install docker 
           docker pull johnoel/admb-13.2:linux-arm64
 
           rm -rf SS330
@@ -228,8 +226,10 @@ jobs:
           chmod 777 SS330
           /bin/bash ./Make_SS_330_new.sh --admb docker -b SS330
           /bin/bash ./Make_SS_330_new.sh --admb docker -b SS330 -o
-
-          colima stop
+          
+        # colima delete
+        # colima start -f --arch aarch64 
+        # colima stop
 
       - name: Verify binary on mac
         if: matrix.config.os == 'macos-14'
