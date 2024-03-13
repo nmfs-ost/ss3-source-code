@@ -910,11 +910,9 @@ BETWEEN_PHASES_SECTION
     {
       f = Fparm_loc[g](1);
       t = Fparm_loc[g](2);
-        if(t==1970)  warning<<"GLOBAL " << t<<" "<<f<<" H_rate: "<<Hrate(f, t) << " parm " << F_rate(g) << F_PH_time(f, t) <<" " << j_phase  <<" " << endl;
       if (j_phase == F_PH_time(f, t))
       {
         F_rate(g) = Hrate(f, t);
-        if(t==1970) warning <<"set parm to Hrate in jphase: "<<j_phase<<" fleet: "<< f << endl;
       }
     }
 
@@ -941,17 +939,13 @@ BETWEEN_PHASES_SECTION
           g = do_Fparm_loc(f, t);
           if (j_phase == F_setup2(k, 6))  //  so code will be bypassed if phase is set negative
           {
-            warning<<"SET_F_detail "<<f<<" t "<<t<<" phase "<<F_setup2(k, 6)<<endl;
             F_rate(g) = F_setup2(k, 4);
             Hrate(f, t) = F_setup2(k, 4);
           }
         }
       }
     }
-    echoinput << " Fmort_parms have been set according to F_detail input" << endl;
-
   }
-  //        warning<<"between: Hrate_2010:  "<<Hrate(1,2010)<<" "<<Hrate(2,2010)<<" "<<Hrate(3,2010)<<" "<<Hrate(4,2010)<<" "<<endl;
 
   } //  end BETWEEN_PHASES_SECTION
 

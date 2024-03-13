@@ -51,8 +51,6 @@ PROCEDURE_SECTION
       t = Fparm_loc[g](2);
       if (current_phase() >= F_PH_time(f, t))
       {
-        if(t==1970)  warning << "Procedure: set Hrate to parm " << current_phase() 
-          << " t,f: "<<t<<" "<<f<<" old H_rate: "<<Hrate(f, t) << " parm " << F_rate(g) << endl;
         Hrate(f, t) = F_rate(g);
       }
     }
@@ -71,9 +69,6 @@ PROCEDURE_SECTION
     {
       bigsaver = 0;
     }
-    warning << current_phase() << " iter " << niter << endl;
-    warning << " hrate for 1970: "<<column(Hrate,1970) <<  endl;
-    warning << " frate " << F_rate << endl;
     setup_recdevs();
     y = styr;
     //  SS_Label_Info_7.4.1 #Call fxn get_initial_conditions() to get the virgin and initial equilibrium population
