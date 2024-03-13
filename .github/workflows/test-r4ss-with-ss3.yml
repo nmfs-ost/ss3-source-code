@@ -31,7 +31,8 @@ jobs:
       - name: Checkout models repo
         uses: actions/checkout@v4
         with:
-          repository: 'nmfs-ost/ss3-test-models'
+          repository: nmfs-ost/ss3-test-models
+          ref: try-fix-for-macos-14
           path: test-models-repo
 
       # - name: install libcurl
@@ -77,47 +78,52 @@ jobs:
         # colima start
         # colima stop
       
-      - name: checkout admb, mac
-        uses: actions/checkout@v3
-        with:
-          repository: admb-project/admb
-          path: admb
-          ref: admb-13.2
+      # - name: checkout admb, mac
+      #   uses: actions/checkout@v3
+      #   with:
+      #     repository: admb-project/admb
+      #     path: admb
+      #     ref: admb-13.2
 
-      - name: clean, mac
-        run: cd admb && make clean
+      # - name: clean, mac
+      #   run: cd admb && make clean
 
-      - name: see where admb is, mac
+      # - name: see where admb is, mac
+      #   run: |
+      #     ls
+      #     cd admb && ls
+
+      # - name: compile admb, mac
+      #   run: |
+      #     cd admb && make
+
+      # - name: see where admb is, mac
+      #   run: |
+      #     cd admb && ls -l
+
+      # - name: put admb in path, mac
+      #   run: |
+      #     sudo mv admb /usr/local/bin
+      #     sudo chmod 755 /usr/local/bin/admb
+      #     echo "/usr/local/bin/admb" >> $GITHUB_PATH
+
+      # - name: Build stock synthesis for mac without admb docker image
+      #   run: |
+      #     rm -rf SS330
+      #     rm -rf ss3_osx.tar
+      #     mkdir SS330
+      #     chmod 777 SS330
+      #     /bin/bash ./Make_SS_330_new.sh -b SS330
+      
+      - name: Get the latest SS3 executable and move to expected location
         run: |
-          ls
-          cd admb && ls
-
-      - name: compile admb, mac
-        run: |
-          cd admb && make
-
-      - name: see where admb is, mac
-        run: |
-          cd admb && ls -l
-
-      - name: put admb in path, mac
-        run: |
-          sudo mv admb /usr/local/bin
-          sudo chmod 755 /usr/local/bin/admb
-          echo "/usr/local/bin/admb" >> $GITHUB_PATH
-
-      - name: Build stock synthesis for mac without admb docker image
-        run: |
-          rm -rf SS330
-          rm -rf ss3_osx.tar
-          mkdir SS330
-          chmod 777 SS330
-          /bin/bash ./Make_SS_330_new.sh -b SS330
+          wget -O ss3 https://github.com/nmfs-ost/ss3-source-code/releases/latest/download/ss3_osx
+          sudo chmod a+x ss3
 
       - name: move exes, scripts to needed locations
         run: |
           mv test-models-repo/models test-models-repo/model_runs
-          mv SS330/ss3 test-models-repo/model_runs/ss3
+          mv ss3 test-models-repo/model_runs/ss3
           mv test-models-repo/.github/r_scripts/run_from_par.R test-models-repo/run_from_par.R
           mv test-models-repo/.github/r_scripts/run_compare_noest.R test-models-repo/run_compare_noest.R
 
