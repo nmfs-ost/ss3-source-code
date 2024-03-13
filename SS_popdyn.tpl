@@ -1116,7 +1116,6 @@ FUNCTION void get_time_series()
             if (k < F_PH_time(0, t)) //  some fleet needs hybrid this phase
             {
               //  SS_Label_Info_24.3.3.3.1 #Start by doing a Pope's approximation
-
               for (int ff = 1; ff <= N_catchfleets(p); ff++)  // loop fleets in this area (p)
               {
                 f = fish_fleet_area(p, ff);

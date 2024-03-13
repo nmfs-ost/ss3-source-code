@@ -2502,11 +2502,11 @@
 !! echoinput<<F_ballpark_yr<<" F_ballpark_yr (<0 to ignore)  "<<endl;
 
   int y1;
-// array definitions related to F;  F_rate; Fparm
+// array definitions related to F;  F_rate; Fparm; Hrate
   vector F_parm_intval(1,Nfleet);  //  initial value for F_parm when not using hybrid for early phases
-  matrix F_setup2(1,1,1,1)
+  matrix F_setup2(1,1,1,1)  // later redimensioned to contain the F_detailed setup
   int F_detail;  // number of specific initial values and phases to read
-  ivector F_Method_PH(1,Nfleet);  //  reads phase to transition from hybrid to parameter
+  ivector F_Method_PH(1,Nfleet);  // phase to transition from hybrid to parameter, then used to setup F_PH_time
   imatrix F_PH_time(0,Nfleet,styr,TimeMax+nseas);  // stores Phase to transition from hybrid to parameters; -1 means keep input parameter; 99 means stay as hybrid
   int F_Tune;
   int F_Method;           // 1=Pope's; 2=continuous F; 3=hybrid; 4=fleet-specific
@@ -2515,8 +2515,6 @@
 
   int N_Fparm
   int Fparm_start  //  location in parameter list for first Fparm
-  imatrix do_Fparm(1,Nfleet,styr-nseas,TimeMax+nseas);  // 0 = hybrid; >0 = phase for F estimation
-  //  only the f,t that eventually get estimated will be mapped to the F_rate vector
   imatrix do_Fparm_loc(1,Nfleet,styr-nseas,TimeMax+nseas);  // location in F_rate vector of this fleet x time F; location defined even for hybrid
 //  vector<ivector>Fparm_loc[]  reverse pointer: holds f,t for each element of F_rate vector
   ivector Fparm_loc_st(1,Nfleet);
@@ -2529,8 +2527,8 @@
 
 
  LOCAL_CALCS
-      // clang-format on
-      Equ_F_joiner = 10; //  defaults
+  // clang-format on
+  Equ_F_joiner = 10; //  defaults
   F_detail = -1;
   F_Tune = 3;
   F_parm_intval = 0.05; //  fill vector
@@ -2783,16 +2781,16 @@
     {
       for (f = 1; f <= Nfleet; f++)
       {
-        if (fleet_type(f) == 2)
+        if (fleet_type(f) == 2)  //  bycatch
         {
           warnstream << " cannot use Fmethod 1 or 3 for bycatch fleet: " << f << " " << fleetname(f);
           write_message (FATAL, 0); // EXIT!
         }
-        else if (fleet_type(f) == 3) //  survey fleet
+        else if (fleet_type(f) >= 3) //  survey fleet or predator
         {
-          // F_PH_time(f) already set to -1;
+          // F_PH_time(f) not used;
         }
-        else
+        else //  fleet_type = 1
         {
           for(t = styr; t<= TimeMax+nseas; t++)
           {
@@ -2802,7 +2800,7 @@
             }
             else
             {
-              F_PH_time(f,t) = -1;
+              F_PH_time(f,t) = -1;  //  no catch, so no F needed
             }
           }
         }
@@ -2896,25 +2894,19 @@
       echoinput << "After F_detail:  Phase for each f, t: " << endl << F_PH_time << endl;
     }
   
-    if (readparfile == 1)
     //  all fleets that use parm approach will do so in PH=1
+    // find whether any fleet is hybrid for each phases
+    for (y = styr; y <= endyr; y++)
+    for (s = 1; s <= nseas; s++)
     {
+      t = styr + (y - styr) * nseas + s - 1;
       for (f = 1; f <= Nfleet; f++)
       {
-        if (F_PH_time(f, 50) == 2) //  fleet ends up using parm approach
+        if (F_PH_time(f, t) < 99 && readparfile == 1) //  fleet ends up using parm approach
         {
-          F_PH_time(f)(1, 50) = 2; //  set all PH to use Fmethod=2, so overwrites early PH with hybrid
+          F_PH_time(f,t) = 1; //  so start with parm in phase 1 because using parm
         }
-        echoinput << f << "  F_PH_time:  " << F_PH_time(f)(1, 10) << endl;
-      }
-    }
-  
-    //  find whether any fleet is hybrid for each phases
-    for (j = styr; j <= endyr; j++)  //  loop years
-    {
-      for (f = 1; f <= Nfleet; f++)
-      {
-        if (F_PH_time(f, j) == 99) F_PH_time(0, j) = 99;  //  if one fleet is hybrid in phase, then set flag for hybrid
+        if (F_PH_time(f, t) == 99) F_PH_time(0, t) = 99;  //  if one fleet is hybrid in phase, then set flag for hybrid
       }
     }
     echoinput << f << "  Overall F_PH_time:  " << F_PH_time(0) << endl;
