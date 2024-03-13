@@ -1508,8 +1508,9 @@
   if (j > 0) {
     catch_mult_pointer = ParCount + 1;
   }
-  for (j = 1; j <= Nfleet; j++)
+  for (int ff = 1; ff <= N_catchfleets(0); ff++)
   {
+    j = fish_fleet_area(0, ff);
     if (need_catch_mult(j) == 1)
     {
       ParCount++;
@@ -2696,15 +2697,13 @@
   N_init_F2 = 0;
   
     for (s = 1; s <= nseas; s++)
-      for (f = 1; f <= Nfleet; f++)
+      for (int ff = 1; ff <= N_catchfleets(0); ff++)
       {
-        if (fleet_type(f) <= 2)
+        f = fish_fleet_area(0, ff);
+        if (obs_equ_catch(s, f) != 0.0)
         {
-          if (obs_equ_catch(s, f) != 0.0)
-          {
-            N_init_F++;
-            init_F_loc(s, f) = N_init_F;
-          }
+          N_init_F++;
+          init_F_loc(s, f) = N_init_F;
         }
         N_init_F2 = N_init_F;
       }
@@ -2737,8 +2736,9 @@
     k = nseas;
   
     for (s = 1; s <= k; s++)
-      for (f = 1; f <= Nfleet; f++)
+      for (int ff = 1; ff <= N_catchfleets(0); ff++)
       {
+        f = fish_fleet_area(0, ff);
         if (init_F_loc(s, f) > 0)
         {
           ParCount++;
@@ -2776,8 +2776,9 @@
   
     if (F_Method == 1 || F_Method == 3) //  no F parameters
     {
-      for (f = 1; f <= Nfleet; f++)
+      for (int ff = 1; ff <= N_catchfleets(0); ff++)
       {
+        f = fish_fleet_area(0, ff);
         if (fleet_type(f) == 2)  //  bycatch
         {
           warnstream << " cannot use Fmethod 1 or 3 for bycatch fleet: " << f << " " << fleetname(f);
@@ -2805,8 +2806,9 @@
     }
     else //  need F parameters for Fmethod 2 and 4
     {
-      for (f = 1; f <= Nfleet; f++)
+      for (int ff = 1; ff <= N_catchfleets(0); ff++)
       {
+        f = fish_fleet_area(0, ff);
         if (fleet_type(f) >= 3) //  survey fleet or predator
         {
           //  bypass because F not used for survey or predators 
@@ -2893,8 +2895,9 @@
     for (s = 1; s <= nseas; s++)
     {
       t = styr + (y - styr) * nseas + s - 1;
-      for (f = 1; f <= Nfleet; f++)
+      for (int ff = 1; ff <= N_catchfleets(0); ff++)
       {
+        f = fish_fleet_area(0, ff);
         if (F_PH_time(f, t) < 99 && readparfile == 1) //  fleet ends up using parm approach
         {
           F_PH_time(f,t) = 1; //  so start with parm in phase 1 because using parm
