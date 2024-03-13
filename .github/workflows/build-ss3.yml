@@ -218,7 +218,7 @@ jobs:
         if: matrix.config.os == 'macos-14'
         run: |
           brew update
-          brew install docker 
+          brew install colima docker
           docker pull johnoel/admb-13.2:linux-arm64
 
           rm -rf SS330
