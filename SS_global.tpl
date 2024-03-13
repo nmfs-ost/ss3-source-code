@@ -906,18 +906,15 @@ BETWEEN_PHASES_SECTION
   //  SS_Label_Info_11.2 #For Fmethod=2 & 4, set parameter values (F_rate) equal to Hrate calculated using hybrid method in previous phase
   if (N_Fparm > 0 && j_phase > 1)
   {
-    for (int ff = 1; ff <= N_catchfleets(0); ff++)
+    for (g = 1; g <= N_Fparm; g++)
     {
-      f = fish_fleet_area(0, ff);
-      for (g = Fparm_loc_st(f); g <= Fparm_loc_end(f); g++)
+      f = Fparm_loc[g](1);
+      t = Fparm_loc[g](2);
+        if(t==1970)  warning<<"GLOBAL " << t<<" "<<f<<" H_rate: "<<Hrate(f, t) << " parm " << F_rate(g) << F_PH_time(f, t) <<" " << j_phase  <<" " << endl;
+      if (j_phase == F_PH_time(f, t))
       {
-        t = Fparm_loc[g](2);
-          if(t==1970)  warning<<"GLOBAL " << t<<" "<<f<<" H_rate: "<<Hrate(f, t) << " parm " << F_rate(g) << F_PH_time(f, t) <<" " << j_phase  <<" " << endl;
-        if (j_phase == F_PH_time(f, t))
-        {
-          F_rate(g) = Hrate(f, t);
-          if(t==1970) warning <<"set parm to Hrate in jphase: "<<j_phase<<" fleet: "<< f << endl;
-        }
+        F_rate(g) = Hrate(f, t);
+        if(t==1970) warning <<"set parm to Hrate in jphase: "<<j_phase<<" fleet: "<< f << endl;
       }
     }
 

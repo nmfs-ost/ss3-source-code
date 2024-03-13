@@ -2516,9 +2516,7 @@
   int N_Fparm
   int Fparm_start  //  location in parameter list for first Fparm
   imatrix do_Fparm_loc(1,Nfleet,styr-nseas,TimeMax+nseas);  // location in F_rate vector of this fleet x time F; location defined even for hybrid
-//  vector<ivector>Fparm_loc[]  reverse pointer: holds f,t for each element of F_rate vector
-  ivector Fparm_loc_st(1,Nfleet);
-  ivector Fparm_loc_end(1,Nfleet);
+//  vector<ivector>Fparm_loc[]  in global: holds f,t for each element of F_rate vector
   ivector Fparm_PH_dim(1,1);  //  will be redimensioned in param section to (1,N_Fparm)
   // the ivector Fparm_PH_dim is populated from the std::vector<int> Fparm_PH defined in global;
   //  then used to set phase to each F_rate in the parameter vector
@@ -2765,8 +2763,6 @@
 
   {  //  begin processing F_setup to create the F parameters
     do_Fparm_loc.initialize();    // location in Fparm vector of this fleet x time F; location defined even for hybrid
-    Fparm_loc_st.initialize();
-    Fparm_loc_end.initialize();
   
     Fparm_start = ParCount;  //  beginning of Fparms in total parameter list for tracking of parameter labels
     N_Fparm = 0;
@@ -2816,7 +2812,6 @@
         else  // fleet_type is 1 or 2
         {
           echoinput << " creating parms for fleet " << f << " "<<F_Method_PH(f)<<endl;
-          Fparm_loc_st(f) = N_Fparm + 1;  //  first Fparm for this fleet
           for (y = styr; y <= endyr; y++)
           for (s = 1; s <= nseas; s++)
           {
@@ -2846,16 +2841,13 @@
             }
             else
             {
-              /* code */
+              F_PH_time(f, t) = -1;
             }
             
           }
-          Fparm_loc_end(f) = N_Fparm;  //  last Fparm for this fleet
         }
       }
       echoinput << "N F parameters " << N_Fparm << endl;
-      echoinput << "Fparm_loc_st_by_fleet: " << Fparm_loc_st << endl;
-      echoinput << "Fparm_loc_end_by_fleet: " << Fparm_loc_end << endl;
       echoinput << "Phase for each f, t: " << endl << F_PH_time << endl;
     }
   
@@ -2881,7 +2873,7 @@
         for (s = 1; s <= nseas; s++)
         {
           t = styr + (y - styr) * nseas + s - 1;
-          j = do_Fparm_loc(f, t);  //  get index in the F vector
+          j = do_Fparm_loc(f, t);  //  get index in the Fparm vector
           if (j > 0 && F_setup2(k, 6) != -999) {
             Fparm_PH[j] = F_setup2(k,6);    // phase for each F_rate parameter
             F_PH_time(f,t) = F_setup2(k,6);
