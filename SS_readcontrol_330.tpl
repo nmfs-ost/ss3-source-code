@@ -2764,7 +2764,6 @@
   }  //  end processing init_F parameters
 
   {  //  begin processing F_setup to create the F parameters
-    do_Fparm.initialize();  // 0 = no F; -1 = hybrid; >0 = phase for F estimation
     do_Fparm_loc.initialize();    // location in Fparm vector of this fleet x time F; location defined even for hybrid
     Fparm_loc_st.initialize();
     Fparm_loc_end.initialize();
