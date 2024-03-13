@@ -117,7 +117,7 @@ jobs:
       - name: move exes, scripts to needed locations
         run: |
           mv test-models-repo/models test-models-repo/model_runs
-          mv ss3 test-models-repo/model_runs/ss3
+          mv SS330/ss3 test-models-repo/model_runs/ss3
           mv test-models-repo/.github/r_scripts/run_from_par.R test-models-repo/run_from_par.R
           mv test-models-repo/.github/r_scripts/run_compare_noest.R test-models-repo/run_compare_noest.R
 
