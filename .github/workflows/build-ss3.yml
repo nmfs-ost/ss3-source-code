@@ -217,6 +217,7 @@ jobs:
       - name: Build stock synthesis for mac with admb docker image
         if: matrix.config.os == 'macos-14'
         run: |
+          brew update
           brew install docker 
           docker pull johnoel/admb-13.2:linux-arm64
 
@@ -226,7 +227,7 @@ jobs:
           chmod 777 SS330
           /bin/bash ./Make_SS_330_new.sh --admb docker -b SS330
           /bin/bash ./Make_SS_330_new.sh --admb docker -b SS330 -o
-          
+
         # colima delete
         # colima start -f --arch aarch64 
         # colima stop
@@ -271,7 +272,7 @@ jobs:
 
       - name: Archive binaries
         if: success()
-        uses: actions/upload-artifact@main
+        uses: actions/upload-artifact@v4
         with:
           name: ss3-${{ matrix.config.os }}
           path: SS330/
