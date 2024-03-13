@@ -671,9 +671,6 @@ FUNCTION void get_time_series()
   dvariable Z_adjuster;
   dvariable R0_use;
   dvariable SSB_use;
-     warning<<"check "<<endl;
-                    for (j = 1; j<=10; j++)
-                  {warning<<j<<" "<<F_rate(j)<<" "<<Fparm_PH[j]<<endl;}
 
   if (Do_Morphcomp > 0)
     Morphcomp_exp.initialize();
@@ -1116,15 +1113,14 @@ FUNCTION void get_time_series()
             //  SS_Label_Info_24.3.3.3 #use the hybrid F method by selected fleets
             // hybrid F_method
             k = current_phase();
-            echoinput << "popdyn "<<y<<endl;
-            if (F_PH_time(0, t) == 99) //  some fleet needs hybrid this phase
+            if (k < F_PH_time(0, t)) //  some fleet needs hybrid this phase
             {
               //  SS_Label_Info_24.3.3.3.1 #Start by doing a Pope's approximation
 
               for (int ff = 1; ff <= N_catchfleets(p); ff++)  // loop fleets in this area (p)
               {
                 f = fish_fleet_area(p, ff);
-                if (F_PH_time(f, t) == 99) // do hybrid F for this fleet
+                if (k < F_PH_time(f, t)) // do hybrid F for this fleet
                 {
                   vbio.initialize();
                   for (g = 1; g <= gmorph; g++)
@@ -1174,7 +1170,7 @@ FUNCTION void get_time_series()
                   {
                     f = fish_fleet_area(p, ff);
                     
-                    if (F_PH_time(f, t) == 99) //  skips bycatch fleets
+                    if (current_phase() < F_PH_time(f, t)) // so still doing hybrid; skips bycatch fleets
                     {
                       for (g = 1; g <= gmorph; g++)
                         if (use_morph(g) > 0)
@@ -1204,7 +1200,7 @@ FUNCTION void get_time_series()
                     f = fish_fleet_area(p, ff);
 //                    if (fleet_type(f) == 1)
                     {
-                      if (F_PH_time(f, t) == 99) //  skips bycatch fleets and fixed F values
+                      if (current_phase() < F_PH_time(f, t)) //  skips bycatch fleets and fixed F values
                       {
                         vbio = 0.; // now use this to calc the selected vulnerable biomass (numbers) to each fishery with the adjusted Zrate2
                         //  since catch = N * F*sel * (1-e(-Z))/Z

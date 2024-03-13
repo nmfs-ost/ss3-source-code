@@ -172,6 +172,7 @@ GLOBALS_SECTION
   std::vector<ivector> reportdetail_list;
   std::vector<ivector> Fparm_loc;
   std::vector<dvector> F_Method_4_input;
+  std::vector<dvector> F_detail_input;
   std::vector<int> Fparm_PH;
   std::vector<dvector> comp_control_L;
   std::vector<dvector> comp_control_A;
@@ -911,11 +912,11 @@ BETWEEN_PHASES_SECTION
       for (g = Fparm_loc_st(f); g <= Fparm_loc_end(f); g++)
       {
         t = Fparm_loc[g](2);
-          if(t==1970)  warning<<" global " << t<<" "<<f<<" H_rate: "<<Hrate(f, t) << " parm " << F_rate(g) << F_PH_time(f, t) <<" " << j_phase  <<" " << endl;
-        if (F_PH_time(f, t) == j_phase)
+          if(t==1970)  warning<<"GLOBAL " << t<<" "<<f<<" H_rate: "<<Hrate(f, t) << " parm " << F_rate(g) << F_PH_time(f, t) <<" " << j_phase  <<" " << endl;
+        if (j_phase == F_PH_time(f, t))
         {
           F_rate(g) = Hrate(f, t);
-          echoinput<<"set it"<<endl;
+          if(t==1970) warning <<"set parm to Hrate in jphase: "<<j_phase<<" fleet: "<< f << endl;
         }
       }
     }
@@ -925,31 +926,27 @@ BETWEEN_PHASES_SECTION
       for (k = 1; k <= F_detail; k++)
       {
         f = F_setup2(k, 1);
-//        warning<<f<<"  check fmethodPH "<< F_PH_time(f, j_phase)<<endl;
-//        if (F_PH_time(f, j_phase) < F_PH_time(f, j_phase - 1))
+        y = F_setup2(k, 2);
+        s = F_setup2(k, 3);
+        if (y > 0)
         {
-          y = F_setup2(k, 2);
-          s = F_setup2(k, 3);
-          if (y > 0)
+          y1 = y;
+          y2 = y;
+        }
+        else
+        {
+          y1 = -y;
+          y2 = endyr;
+        }
+        for (y = y1; y <= y2; y++)
+        {
+          t = styr + (y - styr) * nseas + s - 1;
+          g = do_Fparm_loc(f, t);
+          if (j_phase == F_setup2(k, 6))  //  so code will be bypassed if phase is set negative
           {
-            y1 = y;
-            y2 = y;
-          }
-          else
-          {
-            y1 = -y;
-            y2 = endyr;
-          }
-          for (y = y1; y <= y2; y++)
-          {
-            t = styr + (y - styr) * nseas + s - 1;
-            g = do_Fparm_loc(f, t);
-            warning<<"SET_F_detail "<<f<<" t "<<t<<" g "<<g<<" ph "<<" set_to "<<F_setup2(k, 4)<<endl;
-            if (g > 0 && F_setup2(k, 4) != -999)
-            {
-              F_rate(g) = F_setup2(k, 4);
-              Hrate(f, t) = F_setup2(k, 4);
-            }
+            warning<<"SET_F_detail "<<f<<" t "<<t<<" phase "<<F_setup2(k, 6)<<endl;
+            F_rate(g) = F_setup2(k, 4);
+            Hrate(f, t) = F_setup2(k, 4);
           }
         }
       }

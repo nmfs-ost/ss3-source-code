@@ -775,12 +775,15 @@
         {
           f = Fparm_loc[g](1);
           t = Fparm_loc[g](2);
+          if(catch_ret_obs(f,t) > 0.0) {
           F_rate(g) = F_parm_intval(f);
           Hrate(f, t) = F_parm_intval(f);
+          }
         }
 
         if (F_detail > 0)
         {
+          // note that detailed phase and catch_se have already been set in readcontrol
           for (k = 1; k <= F_detail; k++)
           {
             f = F_setup2(k, 1);
@@ -799,8 +802,8 @@
             for (y = y1; y <= y2; y++)
             {
               t = styr + (y - styr) * nseas + s - 1;
-              g = do_Fparm(f, t);
-              if (g > 0 && F_setup2(k, 4) != -999)
+              g = do_Fparm_loc(f, t);
+              if (g > 0)
               {
                 F_rate(g) = F_setup2(k, 4);
                 Hrate(f, t) = F_setup2(k, 4);

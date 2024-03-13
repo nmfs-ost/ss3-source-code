@@ -2536,7 +2536,7 @@
   F_parm_intval = 0.05; //  fill vector
   F_Method_PH = 99; //  default is to stay in hybrid
   F_PH_time.initialize();
-  F_PH_time = -1; // so none are estimated or hybrid unless turned on
+  F_PH_time = 99; // so hybrid unless changed
   
   *(ad_comm::global_datafile) >> F_Method;
   echoinput << F_Method << " F_Method as read" << endl;
@@ -2650,10 +2650,29 @@
         echoinput << "hybrid tuning loops as read: " << F_Tune << endl;
         if (ender == -9998)  // flag to trigger reading F_detail for f x t specific F values
         {
-          *(ad_comm::global_datafile) >> F_detail;
+          echoinput << "# now read List of fleet-time specific F related values to read; enter -Yr to fill remaining years&seasons; -999 for phase or catch_se keeps base value for the run" << endl;
+          echoinput << "#Fleet Yr Seas F_value catch_se phase" << endl;
+
+          dvector tempvec(1, 6);
+          tempvec.initialize();
+          F_detail_input.push_back(tempvec(1, 6));  //  fill the nasty zero row
+          ender = 0.;
+          F_detail = -1;
+          while (ender >= 0.)
+          {
+            dvector tempvec(1, 6);
+            *(ad_comm::global_datafile) >> tempvec(1, 6);
+            echoinput << tempvec << endl;
+            F_detail_input.push_back(tempvec(1, 6));
+            ender = tempvec(1);
+            F_detail++;
+          }
           F_setup2.deallocate();
           F_setup2.allocate(1, F_detail, 1, 6); // fleet, yr, seas, Fvalue, se, phase
-          *(ad_comm::global_datafile) >> F_setup2;  // reads whole table
+          for (j = 1; j <= F_detail; j++)
+          {
+            F_setup2(j) = F_detail_input[j];
+          }
           echoinput << " detailed F_setups " << endl << F_setup2 << endl;
         }
         break;
@@ -2777,7 +2796,14 @@
         {
           for(t = styr; t<= TimeMax+nseas; t++)
           {
-            if(catch_ret_obs(f,t) > 0) F_PH_time(f,t) = 99;  //  so never (e.g. PH 99) switch to parameters because Fmethod == 3
+            if(catch_ret_obs(f,t) > 0) 
+            {
+              F_PH_time(f,t) = 99;  //  so never (e.g. PH 99) switch to parameters because Fmethod == 3
+            }
+            else
+            {
+              F_PH_time(f,t) = -1;
+            }
           }
         }
       }
@@ -2821,6 +2847,11 @@
               ParCount++;
               ParmLabel += "F_fleet_" + NumLbl(f) + "_YR_" + onenum + "_s_" + NumLbl(s) + CRLF(1);
             }
+            else
+            {
+              /* code */
+            }
+            
           }
           Fparm_loc_end(f) = N_Fparm;  //  last Fparm for this fleet
         }

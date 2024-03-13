@@ -52,9 +52,10 @@ PROCEDURE_SECTION
       for (g = Fparm_loc_st(f); g <= Fparm_loc_end(f); g++)
       {
         t = Fparm_loc[g](2);
-        if (F_PH_time(f, t) >= current_phase() && F_PH_time(f,t) < 99)
+        if (current_phase() >= F_PH_time(f, t))
         {
-          if(t==1970)  warning<< " proced "<<t<<" "<<f<<" H_rate: "<<Hrate(f, t) << " parm " << F_rate(g) << endl;
+          if(t==1970)  warning << "Procedure: set Hrate to parm " << current_phase() 
+           << " t,f: "<<t<<" "<<f<<" old H_rate: "<<Hrate(f, t) << " parm " << F_rate(g) << endl;
           Hrate(f, t) = F_rate(g);
         }
       }
@@ -74,7 +75,9 @@ PROCEDURE_SECTION
     {
       bigsaver = 0;
     }
-    warning << " begin "<<endl;
+    warning << current_phase() << " iter " << niter << endl;
+    warning << " hrate for 1970: "<<column(Hrate,1970) <<  endl;
+    warning << " frate " << F_rate << endl;
     setup_recdevs();
     y = styr;
     //  SS_Label_Info_7.4.1 #Call fxn get_initial_conditions() to get the virgin and initial equilibrium population
@@ -82,7 +85,6 @@ PROCEDURE_SECTION
     if (do_once == 1)
       echoinput << "Finished initial_conditions" << endl;
     //  SS_Label_Info_7.4.2 #Call fxn get_time_series() to do population calculations for each year and get expected values for observations
-    warning<<" start time series"<<endl;
     get_time_series(); //  in procedure_section
     if (do_once == 1)
     {

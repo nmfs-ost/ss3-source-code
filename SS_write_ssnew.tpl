@@ -2301,7 +2301,7 @@ FUNCTION void write_nucontrol()
     report4 << F_parm_intval(1) << " # overall start F value (all fleets; used if start phase = 1 and not reading parfile)" << endl;
     report4 << F_Method_PH(1) << " # start phase for parms (does hybrid in early phases)" << endl;
     report4 << F_detail << " # N detailed inputs to read" << endl;
-    report4 << "# detailed setup for F_Method=2; -Yr to fill remaining years" << endl;
+    report4 << "# detailed setup for F_Method=2; -Yr to fill remaining years; -999 for phase or se ignores keeps default for those fields " << endl;
     report4 << "#Fleet Yr Seas F_value se phase" << endl;
     if (F_detail > 0)
       report4 << F_setup2 << endl;
@@ -2321,14 +2321,17 @@ FUNCTION void write_nucontrol()
     {
       report4 << F_Method_4_input[j] << " # " << fleetname(F_Method_4_input[j](1)) << endl;
     }
-    report4 << -9999 + F_detail << " 1 1 # end of list" << endl;  // F_detail = 0 or 1
+    if (F_detail <=0 )
+    {report4 << -9999 << " 1 1 # end of list" << endl; }
+    else
+    {report4 << -9998 << " 1 1 # end of list" << endl; }
     report4 << F_Tune << " #_number of loops for hybrid tuning; 4 good; 3 faster; 2 enough if switching to parms is enabled" << endl;
     if (F_detail > 0)
     {
-      report4 << F_detail << " # N fleet-time specific F values to read; enter -Yr to fill remaining years; -phase locks value for the run" << endl;
+      report4 << " # List of fleet-time specific F related values to read; enter -Yr to fill remaining years&seasons; -999 for phase or catch_se keeps base value for the run" << endl;
       report4 << "#Fleet Yr Seas F_value catch_se phase" << endl;
       report4 << F_setup2 << endl;
-      report4 << "# end of time-specific F inputs " << endl;
+      report4 << "-9999 1 1 1 1 1  # end of time-specific F inputs " << endl;
     }
   }
 
