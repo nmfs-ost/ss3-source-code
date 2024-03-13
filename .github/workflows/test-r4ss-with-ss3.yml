@@ -18,7 +18,7 @@ on:
 jobs:
   test-r4ss-with-ss3:
     if: github.event.pull_request.draft == false
-    runs-on: macos-latest
+    runs-on: macos-14
     env:
       R_REMOTES_NO_ERRORS_FROM_WARNINGS: true
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
@@ -77,10 +77,42 @@ jobs:
         # colima start
         # colima stop
       
-      - name: Get the latest SS3 executable and move to expected location
+      - name: checkout admb, mac
+        uses: actions/checkout@v3
+        with:
+          repository: admb-project/admb
+          path: admb
+          ref: admb-13.2
+
+      - name: clean, mac
+        run: cd admb && make clean
+
+      - name: see where admb is, mac
         run: |
-          wget -O ss3 https://github.com/nmfs-ost/ss3-source-code/releases/latest/download/ss3_osx
-          sudo chmod a+x ss3
+          ls
+          cd admb && ls
+
+      - name: compile admb, mac
+        run: |
+          cd admb && make
+
+      - name: see where admb is, mac
+        run: |
+          cd admb && ls -l
+
+      - name: put admb in path, mac
+        run: |
+          sudo mv admb /usr/local/bin
+          sudo chmod 755 /usr/local/bin/admb
+          echo "/usr/local/bin/admb" >> $GITHUB_PATH
+
+      - name: Build stock synthesis for mac without admb docker image
+        run: |
+          rm -rf SS330
+          rm -rf ss3_osx.tar
+          mkdir SS330
+          chmod 777 SS330
+          /bin/bash ./Make_SS_330_new.sh -b SS330
 
       - name: move exes, scripts to needed locations
         run: |
