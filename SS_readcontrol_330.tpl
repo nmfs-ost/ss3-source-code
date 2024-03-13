@@ -2530,6 +2530,7 @@
   F_detail = -1;
   F_Tune = 3;
   F_parm_intval = 0.05; //  fill vector
+
   F_Method_PH = 99; //  default is to stay in hybrid
   F_PH_time.initialize();
   F_PH_time = 99; // so hybrid unless changed
@@ -2562,6 +2563,7 @@
   {
     if (max_harvest_rate < 1.0)
     {
+
       warnstream << "Max harvest rate typically is >1.0 for F_method 2, 3 or 4 " << max_harvest_rate;
       write_message (NOTE, 0);
     }
