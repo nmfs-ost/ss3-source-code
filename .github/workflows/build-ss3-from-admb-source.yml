@@ -38,7 +38,7 @@ jobs:
           repository: admb-project/admb
           path: admb
           ref: admb-13.2
-          
+
       - uses: ilammy/msvc-dev-cmd@v1
         if: matrix.config.os == 'windows-latest'
 
@@ -47,7 +47,8 @@ jobs:
         run: |
           cd admb
           nmake
-          cd admb && ls -l
+          echo "D:\a\ss3-source-code\ss3-source-code\admb\build\admb\bin\" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+          admb
           
         #   Invoke-WebRequest -Uri https://github.com/admb-project/admb/releases/download/admb-13.1/admb-13.1b-windows.zip -OutFile "D:\a\ss3-source-code\ss3-source-code\admb-13.1.zip"
         #   Expand-Archive -LiteralPath "D:\a\ss3-source-code\ss3-source-code\admb-13.1.zip" -DestinationPath "D:\a\ss3-source-code\ss3-source-code\"
