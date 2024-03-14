@@ -223,7 +223,7 @@ jobs:
           brew unlink qemu
           brew install --HEAD qemu
           colima start --arch x86_64
-          docker pull johnoel/admb-13.2:linux-arm64
+          docker pull johnoel/admb-13.2:linux
 
           rm -rf SS330
           rm -rf ss3_osx.tar
