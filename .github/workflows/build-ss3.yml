@@ -218,13 +218,11 @@ jobs:
         if: matrix.config.os == 'macos-14'
         run: |
           brew update
-          brew upgrade
-          brew install --cask docker
+          brew install docker
           brew install --head colima
           brew unlink qemu
           brew install --HEAD qemu
-          colima delete
-          colima start --ssh-agent
+          colima start --arch x86_64
           docker pull johnoel/admb-13.2:linux-arm64
 
           rm -rf SS330
