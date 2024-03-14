@@ -38,6 +38,9 @@ jobs:
           repository: admb-project/admb
           path: admb
           ref: admb-13.2
+          
+      - uses: ilammy/msvc-dev-cmd@v1
+        if: matrix.config.os == 'windows-latest'
 
       - name: Build admb and put in path, windows
         if: matrix.config.os == 'windows-latest'
