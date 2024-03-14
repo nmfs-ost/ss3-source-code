@@ -218,6 +218,7 @@ jobs:
         if: matrix.config.os == 'macos-14'
         run: |
           brew update
+          brew upgrade
           brew uninstall qemu
           brew install docker docker-compose qemu
           brew install --head colima
