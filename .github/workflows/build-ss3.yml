@@ -219,10 +219,12 @@ jobs:
         run: |
           brew update
           brew upgrade
-          brew install docker docker-compose qemu
+          brew install --cask docker
           brew install --head colima
+          brew unlink qemu
+          brew install --HEAD qemu
           colima delete
-          colima start --arch aarch64
+          colima start --ssh-agent
           docker pull johnoel/admb-13.2:linux-arm64
 
           rm -rf SS330
