@@ -45,18 +45,14 @@ PROCEDURE_SECTION
   //  be careful about phases for when this mapping occurs for a whole fleet, versus estimation phase which can be value specific
   if (N_Fparm > 0)
   {
-    //      if(current_phase()>=F_parm_PH || (readparfile==1 && current_phase()<=1)) //  set Hrate = Frate parameters on first call if readparfile=1, or for advanced phases
-    //  warning<<"FM by PH "<<endl<<F_Method_byPH<<endl;
+    for (g = 1; g <= N_Fparm; g++)
     {
-      for (f = 1; f <= Nfleet; f++)
-        if (F_Method_byPH(f, current_phase()) == 2)
-        {
-          for (g = Fparm_loc_st(f); g <= Fparm_loc_end(f); g++)
-          {
-            t = Fparm_loc[g](2);
-            Hrate(f, t) = F_rate(g);
-          }
-        }
+      f = Fparm_loc[g](1);
+      t = Fparm_loc[g](2);
+      if (current_phase() >= F_PH_time(f, t))
+      {
+        Hrate(f, t) = F_rate(g);
+      }
     }
   }
 

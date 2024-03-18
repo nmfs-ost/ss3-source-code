@@ -508,7 +508,6 @@
  END_CALCS
 
   matrix catch_ret_obs(1,Nfleet,styr-nseas,TimeMax+nseas);
-  imatrix do_Fparm(1,Nfleet,styr-nseas,TimeMax+nseas);
   imatrix catch_record_count(1,Nfleet,styr-nseas,TimeMax+nseas);
   3iarray catch_seas_area(styr,TimeMax,1,pop,0,Nfleet);
   matrix totcatch_byarea(styr,TimeMax,1,pop);

@@ -172,6 +172,7 @@ GLOBALS_SECTION
   std::vector<ivector> reportdetail_list;
   std::vector<ivector> Fparm_loc;
   std::vector<dvector> F_Method_4_input;
+  std::vector<dvector> F_detail_input;
   std::vector<int> Fparm_PH;
   std::vector<dvector> comp_control_L;
   std::vector<dvector> comp_control_A;
@@ -902,23 +903,49 @@ BETWEEN_PHASES_SECTION
     last_objfun = obj_fun;
   }
 
-  //  SS_Label_Info_11.2 #For Fmethod=2 & 4, set parameter values (F_rate) equal to Hrate array fromcalculated using hybrid method in previous phase
+  //  SS_Label_Info_11.2 #For Fmethod=2 & 4, set parameter values (F_rate) equal to Hrate calculated using hybrid method in previous phase
   if (N_Fparm > 0 && j_phase > 1)
   {
-    for (int ff = 1; ff <= N_catchfleets(0); ff++)
+    for (g = 1; g <= N_Fparm; g++)
     {
-      f = fish_fleet_area(0, ff);
-      if (F_Method_byPH(f, j_phase) < F_Method_byPH(f, j_phase - 1))
+      f = Fparm_loc[g](1);
+      t = Fparm_loc[g](2);
+      if (j_phase == F_PH_time(f, t))
       {
-        for (g = Fparm_loc_st(f); g <= Fparm_loc_end(f); g++)
+        F_rate(g) = Hrate(f, t);
+      }
+    }
+
+    if (F_detail > 0)
+    {
+      for (k = 1; k <= F_detail; k++)
+      {
+        f = F_setup2(k, 1);
+        y = F_setup2(k, 2);
+        s = F_setup2(k, 3);
+        if (y > 0)
         {
-          t = Fparm_loc[g](2);
-          F_rate(g) = Hrate(f, t);
+          y1 = y;
+          y2 = y;
+        }
+        else
+        {
+          y1 = -y;
+          y2 = endyr;
+        }
+        for (y = y1; y <= y2; y++)
+        {
+          t = styr + (y - styr) * nseas + s - 1;
+          g = do_Fparm_loc(f, t);
+          if (j_phase == F_setup2(k, 6))  //  so code will be bypassed if phase is set negative
+          {
+            F_rate(g) = F_setup2(k, 4);
+            Hrate(f, t) = F_setup2(k, 4);
+          }
         }
       }
     }
   }
-  //        warning<<"between: Hrate_2010:  "<<Hrate(1,2010)<<" "<<Hrate(2,2010)<<" "<<Hrate(3,2010)<<" "<<Hrate(4,2010)<<" "<<endl;
 
   } //  end BETWEEN_PHASES_SECTION
 
