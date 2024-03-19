@@ -77,7 +77,7 @@ jobs:
           mkdir SS330
           chmod 777 SS330
           /bin/bash ./Make_SS_330_new.sh --admb docker -b SS330
-          /bin/bash ./Make_SS_330_new.sh --admb docker -b SS330 -o
+          sudo chmod 777 SS330/ss3
       
       # - name: checkout admb, mac
       #   uses: actions/checkout@v3
