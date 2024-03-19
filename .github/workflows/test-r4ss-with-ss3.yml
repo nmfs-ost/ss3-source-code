@@ -18,7 +18,7 @@ on:
 jobs:
   test-r4ss-with-ss3:
     if: github.event.pull_request.draft == false
-    runs-on: macos-latest
+    runs-on: macos-14
     env:
       R_REMOTES_NO_ERRORS_FROM_WARNINGS: true
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
@@ -62,21 +62,22 @@ jobs:
       #     mkdir SS330
       #     /bin/bash ./Make_SS_330_new.sh -b SS330
 
-      # - name: Build stock synthesis with admb docker image
-      #   run: |
-      #     brew install colima
-      #     brew install --cask docker
-      #     docker pull johnoel/admb:linux
+      - name: Build stock synthesis for mac with admb docker image
+        run: |
+          brew update
+          brew install docker
+          brew install --head colima
+          brew unlink qemu
+          brew install --HEAD qemu
+          colima start --arch x86_64
+          docker pull johnoel/admb-13.2:linux
 
-      #     rm -rf SS330
-      #     rm -rf ss3_osx.tar
-      #     mkdir SS330
-      #     chmod 777 SS330
-      #     /bin/bash ./Make_SS_330_new.sh --admb docker -b SS330
-      #     /bin/bash ./Make_SS_330_new.sh --admb docker -b SS330 -o
-        # brew install colima
-        # colima start
-        # colima stop
+          rm -rf SS330
+          rm -rf ss3_osx.tar
+          mkdir SS330
+          chmod 777 SS330
+          /bin/bash ./Make_SS_330_new.sh --admb docker -b SS330
+          /bin/bash ./Make_SS_330_new.sh --admb docker -b SS330 -o
       
       # - name: checkout admb, mac
       #   uses: actions/checkout@v3
@@ -115,15 +116,15 @@ jobs:
       #     chmod 777 SS330
       #     /bin/bash ./Make_SS_330_new.sh -b SS330
       
-      - name: Get the latest SS3 executable and move to expected location
-        run: |
-          wget -O ss3 https://github.com/nmfs-ost/ss3-source-code/releases/latest/download/ss3_osx
-          sudo chmod a+x ss3
+      # - name: Get the latest SS3 executable and move to expected location
+      #   run: |
+      #     wget -O ss3 https://github.com/nmfs-ost/ss3-source-code/releases/latest/download/ss3_osx
+      #     sudo chmod a+x ss3
 
       - name: move exes, scripts to needed locations
         run: |
           mv test-models-repo/models test-models-repo/model_runs
-          mv ss3 test-models-repo/model_runs/ss3
+          mv SS330/ss3 test-models-repo/model_runs/ss3
           mv test-models-repo/.github/r_scripts/run_from_par.R test-models-repo/run_from_par.R
           mv test-models-repo/.github/r_scripts/run_compare_noest.R test-models-repo/run_compare_noest.R
 
