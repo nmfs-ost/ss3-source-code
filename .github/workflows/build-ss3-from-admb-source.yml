@@ -49,11 +49,9 @@ jobs:
           cd admb
           nmake
           where admb
-          ls D:\a\ss3-source-code\ss3-source-code\admb
-          ls D:\a\ss3-source-code\ss3-source-code\admb\build\admb\bin
-
-        # echo "D:\a\ss3-source-code\ss3-source-code\admb\build\admb\bin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
-        # admb
+          ls D:\a\ss3-source-code\ss3-source-code\admb\build
+          echo "D:\a\ss3-source-code\ss3-source-code\admb\build\admb\bin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+          admb
           
         #   Invoke-WebRequest -Uri https://github.com/admb-project/admb/releases/download/admb-13.1/admb-13.1b-windows.zip -OutFile "D:\a\ss3-source-code\ss3-source-code\admb-13.1.zip"
         #   Expand-Archive -LiteralPath "D:\a\ss3-source-code\ss3-source-code\admb-13.1.zip" -DestinationPath "D:\a\ss3-source-code\ss3-source-code\"
