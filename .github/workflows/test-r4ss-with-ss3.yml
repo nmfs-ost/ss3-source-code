@@ -122,7 +122,7 @@ jobs:
 
       - name: move exes, scripts to needed locations
         run: |
-          sudo chmod 777 test-model-repo
+          sudo chmod 777 test-models-repo
           sudo chmod 777 test-models-repo/model_runs
           sudo chmod 777 test-models-repo/run_from_par.R
           mv test-models-repo/models test-models-repo/model_runs
