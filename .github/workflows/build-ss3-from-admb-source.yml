@@ -39,7 +39,8 @@ jobs:
           path: admb
           ref: admb-13.2
 
-      - uses: ilammy/msvc-dev-cmd@v1
+      - name: get Microsoft Visual C++ for windows
+        uses: ilammy/msvc-dev-cmd@v1
         if: matrix.config.os == 'windows-latest'
 
       - name: Build admb and put in path, windows
