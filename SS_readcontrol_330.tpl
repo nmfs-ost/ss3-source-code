@@ -703,8 +703,11 @@
         // check block year values
         if (Block_Design(j, b) > YrMax)
         {
-          warnstream << "Block:" << j << " " << k << " ends in: " << Block_Design(j, a + 1) << " reset to YrMax:  " << YrMax;
-          write_message (ADJUST, 0);
+          if (Block_Design(j, b) < 999)  // manual suggests use of 9999, so 999 is safe choice here
+          {
+            warnstream << "Block_design:" << j << ", block: " << k << ", ends in: " << Block_Design(j, a + 1) << " reset to YrMax:  " << YrMax;
+            write_message (ADJUST, 0);
+          }
           Block_Design(j, b) = YrMax;
         }
         if (Block_Design(j, a) < styr - 1)
