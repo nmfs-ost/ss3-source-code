@@ -2944,7 +2944,7 @@
   // 5:  0/1 to float
   
   //  read setup and get the parameter count
-  echoinput << "# read Q setup only for fleets with survey/CPUE/effort observations, end with fleet_ID<0 "
+  echoinput << "# read Q setup only for fleets with survey/CPUE/effort observations, end with fleet_ID<0 " << endl
             << "#  fleet_ID link_type link_info  extra_se(0/1)   biasadj(0/1)  float(0/1)" << endl;
   firstQparm = ParCount; //  base index before adding Q parms
   Q_setup.initialize();
@@ -2965,7 +2965,9 @@
       *(ad_comm::global_datafile) >> tempvec(1, 5);
     }
   } while (j > 0);
-  echoinput << "q setup " << endl
+  echoinput << "Q setup " << endl
+            << "Note: control file should only contain rows for fleets with index observations" << endl
+            << "      but setup is reported here as one row for each fleet (with no fleet column)" << endl
             << Q_setup << endl;
   
   //  get base parameter count
@@ -2975,7 +2977,7 @@
     {
       if (Q_setup_check(f) == 0)
       {
-        warnstream << "Qsetup;  survey obs exist but no Q setup was read ";
+        warnstream << "Q setup;  survey obs exist for fleet " << f << " but no Q setup was read ";
         write_message (FATAL, 0); // EXIT!
       }
       Q_Npar++;
@@ -2994,7 +2996,7 @@
         echoinput << "fleet: " << f << "  is a survey of dev vector:  " << Q_setup(f, 2) << endl;
         if (Q_setup(f, 2) == 0)
         {
-          warnstream << "Qsetup:  must enter index of dev_vector surveyed by fleet:  " << f;
+          warnstream << "Q setup:  must enter index of dev_vector surveyed by fleet:  " << f;
           write_message (FATAL, 0); // EXIT!
         }
       }
@@ -3071,15 +3073,15 @@
     {
       if (Q_setup_check(f) > 0)
       {
-        warnstream << f << " Q setup error; no survey obs but Q setup was read ";
+        warnstream << " Q setup error; no survey obs for fleet " << f << " but Q setup was read ";
         write_message (FATAL, 0); // EXIT!
       }
     }
   }
-  
-  echoinput << "q setup " << endl
-            << Q_setup << endl;
-  echoinput << "q setup parms " << endl
+
+  echoinput << "Q_Npar (number of long parameter lines): " << Q_Npar << endl
+            << endl << "Q setup parameter index " << endl
+            << "column have index of first parameter for:  1=base q with link;  2=extrastd; 3=env; 4=block/trend; 5=dev;"
             << Q_setup_parms << endl;
   // clang-format off
  END_CALCS
@@ -3200,7 +3202,7 @@
     echoinput << "Q  uses timevary parms:  " << Qparm_timevary << endl;
     echoinput << " Q  timevary_parm_cnt start and end " << timevary_parm_start_Q << " " << timevary_parm_cnt_Q << endl;
   }
-  echoinput << "Q_Npar and Q_Npar2:  " << Q_Npar << " " << Q_Npar2 << endl;
+  echoinput << "Q_Npar (long lines) and Q_Npar2 (long + short lines):  " << Q_Npar << " " << Q_Npar2 << endl;
   // clang-format off
  END_CALCS
 
