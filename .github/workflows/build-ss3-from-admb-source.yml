@@ -43,9 +43,6 @@ jobs:
         uses: ilammy/msvc-dev-cmd@v1
         if: matrix.config.os == 'windows-latest'
 
-      - name: Install core dependencies
-        if: matrix.config.os == 'windows-latest'
-        run: choco install -y swig --side-by-side --version=3.0.12
 
       # - name: Setup Msys2
       #   uses: msys2/setup-msys2@v2
@@ -71,16 +68,17 @@ jobs:
       - name: Rename and build contributing libraries, windows
         if: matrix.config.os == 'windows-latest'
         run: |
+          set PATH=C:\PortableGit\bin;C:\msys64\usr\bin;C:\msys64\mingw64\bin;%PATH%
           cd D:\a\ss3-source-code\ss3-source-code\admb\build\admb\lib
-          mklink /D libadmb-x86_64-linux-g++12.a libadmb.a || true
-          mklink /D libadmbo-x86_64-linux-g++12.a libadmbo.a || true
+          New-Item -Path libadmb.a -ItemType SymbolicLink -Value libadmb-x86_64-linux-g++12.a || true
+          New-Item -Path libadmbo.a -ItemType SymbolicLink -Value libadmbo-x86_64-linux-g++12.a || true
 
-          mklink /D libadmb-contrib-x86_64-linux-g++12.a libadmb-contrib.a || true
-          mklink /D libadmb-contribo-x86_64-linux-g++12.a libadmb-contribo.a || true
+          New-Item -Path libadmb-contrib.a -ItemType SymbolicLink -Value libadmb-contrib-x86_64-linux-g++12.a || true
+          New-Item -Path libadmb-contribo.a -ItemType SymbolicLink -Value libadmb-contribo-x86_64-linux-g++12.a || true
           mkdir D:\a\ss3-source-code\ss3-source-code\admb\build\ad2csv
           cd D:\a\ss3-source-code\ss3-source-code\admb\contrib\ad2csv
 
-          make
+          make -j 4
         #   Invoke-WebRequest -Uri https://github.com/admb-project/admb/releases/download/admb-13.1/admb-13.1b-windows.zip -OutFile "D:\a\ss3-source-code\ss3-source-code\admb-13.1.zip"
         #   Expand-Archive -LiteralPath "D:\a\ss3-source-code\ss3-source-code\admb-13.1.zip" -DestinationPath "D:\a\ss3-source-code\ss3-source-code\"
         #   echo "D:\a\ss3-source-code\ss3-source-code\admb-13.1\bin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
