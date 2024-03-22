@@ -67,7 +67,6 @@ jobs:
       - name: Rename and build contributing libraries, windows
         if: matrix.config.os == 'windows-latest'
         run: |
-          set PATH=C:\PortableGit\bin;C:\msys64\usr\bin;C:\msys64\mingw64\bin;%PATH%
           cd D:\a\ss3-source-code\ss3-source-code\admb\build\admb\lib
           New-Item -Path libadmb.a -ItemType SymbolicLink -Value libadmb-x86_64-linux-g++12.a || true
           New-Item -Path libadmbo.a -ItemType SymbolicLink -Value libadmbo-x86_64-linux-g++12.a || true
