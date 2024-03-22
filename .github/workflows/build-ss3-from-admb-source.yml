@@ -44,8 +44,8 @@ jobs:
         if: matrix.config.os == 'windows-latest'
 
       - name: Install core dependencies
+        if: matrix.config.os == 'windows-latest'
         run: choco install -y swig --side-by-side --version=3.0.12
-        shell: powershell
 
       # - name: Setup Msys2
       #   uses: msys2/setup-msys2@v2
