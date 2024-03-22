@@ -43,8 +43,25 @@ jobs:
         uses: ilammy/msvc-dev-cmd@v1
         if: matrix.config.os == 'windows-latest'
 
+      - name: Install core dependencies
+        run: choco install -y swig --side-by-side --version=3.0.12
+        shell: powershell
+
+      - name: Setup Msys2
+        uses: msys2/setup-msys2@v2
+        if: matrix.config.os == 'windows-latest'
+        shell: msys2 {0}
+        with:
+          msystem: MSYS
+          update: true
+          install: make cmake ninja python python-devel gcc git diffutils
+        env:
+          MSYS2_PATH_TYPE: inherit
+
+        shell: bash
       - name: Build admb and put in path, windows
         if: matrix.config.os == 'windows-latest'
+        shell: cmd
         run: |
           cd admb
           nmake
