@@ -54,7 +54,7 @@ jobs:
       #   env:
       #     MSYS2_PATH_TYPE: inherit
 
-        shell: bash
+        # shell: bash
       - name: Build admb and put in path, windows
         if: matrix.config.os == 'windows-latest'
         run: |
@@ -65,7 +65,6 @@ jobs:
 
       - name: Rename and build contributing libraries, windows
         if: matrix.config.os == 'windows-latest'
-        # shell: pwsh
         run: |
           cd D:\a\ss3-source-code\ss3-source-code\admb\build\admb\lib
           New-Item -Path libadmb.a -ItemType SymbolicLink -Value libadmb-x86_64-linux-g++12.a || true
