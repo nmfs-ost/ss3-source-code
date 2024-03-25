@@ -58,7 +58,6 @@ jobs:
       - name: Build admb and put in path, windows
         if: matrix.config.os == 'windows-latest'
         run: |
-          set PATH=C:\PortableGit\bin;C:\msys64\usr\bin;C:\msys64\mingw64\bin;%PATH%
           cd admb
           nmake
           echo "D:\a\ss3-source-code\ss3-source-code\admb\build\admb\bin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
@@ -67,7 +66,7 @@ jobs:
       - name: build g++
         run: |
             utilities\\make
-            
+
       # - name: Rename and build contributing libraries, windows
       #   if: matrix.config.os == 'windows-latest'
       #   run: |
