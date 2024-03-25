@@ -72,7 +72,6 @@ jobs:
 
           New-Item -Path libadmb-contrib.a -ItemType SymbolicLink -Value libadmb-contrib-x86_64-linux-g++12.a || true
           New-Item -Path libadmb-contribo.a -ItemType SymbolicLink -Value libadmb-contribo-x86_64-linux-g++12.a || true
-          mkdir D:\a\ss3-source-code\ss3-source-code\admb\build\ad2csv
           cd D:\a\ss3-source-code\ss3-source-code\admb\contrib\ad2csv
 
           make -j 4
