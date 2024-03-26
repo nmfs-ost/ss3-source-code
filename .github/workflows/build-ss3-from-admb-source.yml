@@ -74,8 +74,8 @@ jobs:
       
       - name: build admb, windows using rtools 42
         run: |
-          cd admb\utilities
-          make -j 4 SHELL=
+          cd admb
+          make -j 4
         shell: cmd
 
       - name: But admb in path
