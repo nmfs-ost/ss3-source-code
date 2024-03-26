@@ -80,7 +80,7 @@ jobs:
 
       - name: build g++
         run: |
-            utilities\\make
+          utilities\make -j 4 SHELL=
         shell: cmd
 
       # - name: Rename and build contributing libraries, windows
