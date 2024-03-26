@@ -17,7 +17,7 @@ jobs:
         config:
           - {os: windows-latest}
         #   - {os: macos-latest}
-        #   - {os: ubuntu-latest}
+          - {os: ubuntu-latest}
     # Limit run time to 90 min to avoid wasting action minutes.
     # was set to 15 and then 30 minutes previously, but compiling admb
     # on mac took too long
@@ -27,9 +27,9 @@ jobs:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v4
 
-    #   - name: Update Ubuntu packages
-    #     if: matrix.config.os == 'ubuntu-latest'
-    #     run: sudo apt-get update
+      - name: Update Ubuntu packages
+        if: matrix.config.os == 'ubuntu-latest'
+        run: sudo apt-get update
 
       - name: checkout admb and build from source, windows
         if: matrix.config.os == 'windows-latest'
@@ -39,23 +39,6 @@ jobs:
           path: admb
           ref: admb-13.2
 
-      # - name: get Microsoft Visual C++ for windows
-      #   uses: ilammy/msvc-dev-cmd@v1
-      #   if: matrix.config.os == 'windows-latest'
-
-      # - name: Setup Msys2
-      #   uses: msys2/setup-msys2@v2
-      #   if: matrix.config.os == 'windows-latest'
-      #   shell: msys2 {0}
-      #   with:
-      #     msystem: MSYS
-      #     update: true
-      #     install: make cmake ninja python python-devel gcc git diffutils
-      #   env:
-      #     MSYS2_PATH_TYPE: inherit
-
-        # shell: bash
-
       - name: Set up R
         uses: r-lib/actions/setup-r@v2
         with: 
@@ -63,14 +46,6 @@ jobs:
           rtools-version: '42'
           windows-path-include-rtools: TRUE
           update-rtools: TRUE
-
-      # - name: Build admb, windows
-      #   if: matrix.config.os == 'windows-latest'
-      #   run: |
-      #     pushd "%ProgramFiles%\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build" && call vcvars64.bat && popd
-      #     cd admb
-      #     nmake
-      #   shell: cmd
       
       - name: build admb, windows using rtools 42
         run: |
@@ -83,27 +58,6 @@ jobs:
         run: |
           echo "D:\a\ss3-source-code\ss3-source-code\admb\build\admb\bin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
           echo $env:GITHUB_PATH
-
-      # - name: build g++
-      #   run: |
-      #     utilities\make -j 4 SHELL=
-      #   shell: cmd
-
-      # - name: Rename and build contributing libraries, windows
-      #   if: matrix.config.os == 'windows-latest'
-      #   run: |
-      #     cd D:\a\ss3-source-code\ss3-source-code\admb\build\admb\lib
-      #     New-Item -Path libadmb.a -ItemType SymbolicLink -Value libadmb-x86_64-linux-g++12.a || true
-      #     New-Item -Path libadmbo.a -ItemType SymbolicLink -Value libadmbo-x86_64-linux-g++12.a || true
-
-      #     New-Item -Path libadmb-contrib.a -ItemType SymbolicLink -Value libadmb-contrib-x86_64-linux-g++12.a || true
-      #     New-Item -Path libadmb-contribo.a -ItemType SymbolicLink -Value libadmb-contribo-x86_64-linux-g++12.a || true
-      #     cd D:\a\ss3-source-code\ss3-source-code\admb\contrib\ad2csv
-
-      #     make -j 4
-        #   Invoke-WebRequest -Uri https://github.com/admb-project/admb/releases/download/admb-13.1/admb-13.1b-windows.zip -OutFile "D:\a\ss3-source-code\ss3-source-code\admb-13.1.zip"
-        #   Expand-Archive -LiteralPath "D:\a\ss3-source-code\ss3-source-code\admb-13.1.zip" -DestinationPath "D:\a\ss3-source-code\ss3-source-code\"
-        #   echo "D:\a\ss3-source-code\ss3-source-code\admb-13.1\bin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
 
     # macOS ADMB build
     #   - name: checkout admb and build from source, mac
@@ -136,26 +90,26 @@ jobs:
     #       sudo chmod 755 /usr/local/bin/admb
     #       echo "/usr/local/bin/admb" >> $GITHUB_PATH
 
-    # # Ubuntu admb build
-    #   - name: checkout admb and build from source, mac
-    #     if: matrix.config.os == 'ubuntu-latest'
-    #     uses: actions/checkout@v4
-    #     with:
-    #       repository: admb-project/admb
-    #       path: admb
-    #       ref: admb-13.2
+    # Ubuntu admb build
+      - name: checkout admb and build from source, mac
+        if: matrix.config.os == 'ubuntu-latest'
+        uses: actions/checkout@v4
+        with:
+          repository: admb-project/admb
+          path: admb
+          ref: admb-13.2
 
-    #   - name: Get admb and put in path, linux
-    #     if: matrix.config.os == 'ubuntu-latest'
-    #     run: |
-    #       cd admb && make clean
-    #       ls
-    #       cd admb && ls
-    #       cd admb && make
-    #       cd admb && ls -l
-    #       sudo mv admb /usr/local/bin
-    #       sudo chmod 755 /usr/local/bin/admb
-    #       echo "/usr/local/bin/admb" >> $GITHUB_PATH
+      - name: Get admb and put in path, linux
+        if: matrix.config.os == 'ubuntu-latest'
+        run: |
+          cd admb && make clean
+          ls
+          cd admb && ls
+          cd admb && make
+          cd admb && ls -l
+          sudo mv admb /usr/local/bin
+          sudo chmod 755 /usr/local/bin/admb
+          echo "/usr/local/bin/admb" >> $GITHUB_PATH
 
           
       - name: Fetch tags
@@ -185,27 +139,27 @@ jobs:
           Out-File -InputObject ${{ steps.get-latest-tag-win.outputs.tag_commit }} -FilePath .github/last_tag_commit.txt
           Out-File -InputObject ${{ steps.get-latest-tag-win.outputs.commit}} -FilePath .github/last_commit.txt
 
-    #   - name: Get the last tag on unix
-    #     id: get-latest-tag-unix
-    #     if: matrix.config.os == 'macos-latest' || matrix.config.os == 'ubuntu-latest'
-    #     run: |
-    #       git tag
-    #       latest_tag=$(git describe --abbrev=0 --tags)
-    #       latest_tag_commit=$(git rev-list -n 1 $latest_tag)
-    #       latest_commit=$(git rev-list HEAD -n 1)
-    #       echo "tag=${latest_tag}" >> $GITHUB_OUTPUT
-    #       echo "tag_commit=${latest_tag_commit}" >> $GITHUB_OUTPUT
-    #       echo "commit=${latest_commit}" >> $GITHUB_OUTPUT
+      - name: Get the last tag on unix
+        id: get-latest-tag-unix
+        if: matrix.config.os == 'macos-latest' || matrix.config.os == 'ubuntu-latest'
+        run: |
+          git tag
+          latest_tag=$(git describe --abbrev=0 --tags)
+          latest_tag_commit=$(git rev-list -n 1 $latest_tag)
+          latest_commit=$(git rev-list HEAD -n 1)
+          echo "tag=${latest_tag}" >> $GITHUB_OUTPUT
+          echo "tag_commit=${latest_tag_commit}" >> $GITHUB_OUTPUT
+          echo "commit=${latest_commit}" >> $GITHUB_OUTPUT
 
-    #    # uses: actions-ecosystem/action-get-latest-tag@v1 # for linux
+       # uses: actions-ecosystem/action-get-latest-tag@v1 # for linux
 
-    #   - name: pull the last tag value to use in the Rscript on unix
-    #     id: get-version-unix
-    #     if: matrix.config.os == 'macos-latest' || matrix.config.os == 'ubuntu-latest'
-    #     run: |
-    #       echo "${{ steps.get-latest-tag-unix.outputs.tag }}" > .github/last_tag.txt
-    #       echo "${{ steps.get-latest-tag-unix.outputs.tag_commit }}" > .github/last_tag_commit.txt
-    #       echo "${{ steps.get-latest-tag-unix.outputs.commit }}" >  .github/last_commit.txt
+      - name: pull the last tag value to use in the Rscript on unix
+        id: get-version-unix
+        if: matrix.config.os == 'macos-latest' || matrix.config.os == 'ubuntu-latest'
+        run: |
+          echo "${{ steps.get-latest-tag-unix.outputs.tag }}" > .github/last_tag.txt
+          echo "${{ steps.get-latest-tag-unix.outputs.tag_commit }}" > .github/last_tag_commit.txt
+          echo "${{ steps.get-latest-tag-unix.outputs.commit }}" >  .github/last_commit.txt
 
       - name: Edit the version info for safe version using R code
         run: |
@@ -319,29 +273,29 @@ jobs:
     #       mv ss3 ss3_osx
     #       mv ss3_opt ss3_opt_osx
 
-    #   - name: Build stock synthesis for linux with p flag and admb docker image
-    #     if:  matrix.config.os == 'ubuntu-latest'
-    #     run: |
-    #       rm -rf SS330
-    #       rm -rf ss3_osx.tar
-    #       mkdir SS330
-    #       chmod 777 SS330
-    #       /bin/bash ./Make_SS_330_new.sh --admb docker -b SS330 -p
-    #       /bin/bash ./Make_SS_330_new.sh --admb docker -b SS330 -o -p   
+      - name: Build stock synthesis for linux with p flag and admb docker image
+        if:  matrix.config.os == 'ubuntu-latest'
+        run: |
+          rm -rf SS330
+          rm -rf ss3_osx.tar
+          mkdir SS330
+          chmod 777 SS330
+          /bin/bash ./Make_SS_330_new.sh --admb docker -b SS330 -p
+          /bin/bash ./Make_SS_330_new.sh --admb docker -b SS330 -o -p   
 
-    #   - name: Verify binary on linux
-    #     if: matrix.config.os == 'ubuntu-latest'
-    #     run: |
-    #       sha256sum SS330/ss3
-    #       sha256sum SS330/ss3_opt
+      - name: Verify binary on linux
+        if: matrix.config.os == 'ubuntu-latest'
+        run: |
+          sha256sum SS330/ss3
+          sha256sum SS330/ss3_opt
     
-    #   - name: Delete unneeded files and change exe names on linux
-    #     if: matrix.config.os == 'ubuntu-latest'
-    #     run: |
-    #       cd SS330
-    #       rm *.obj *.htp *.cpp ss3_opt.tpl ss3.tpl
-    #       mv ss3 ss3_linux
-    #       mv ss3_opt ss3_opt_linux
+      - name: Delete unneeded files and change exe names on linux
+        if: matrix.config.os == 'ubuntu-latest'
+        run: |
+          cd SS330
+          rm *.obj *.htp *.cpp ss3_opt.tpl ss3.tpl
+          mv ss3 ss3_linux
+          mv ss3_opt ss3_opt_linux
 
       - name: Archive binaries
         if: success()
