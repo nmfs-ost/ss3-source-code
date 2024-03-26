@@ -48,6 +48,7 @@ jobs:
           update-rtools: TRUE
       
       - name: build admb, windows using rtools 42
+        if: matrix.config.os == 'windows-latest'
         run: |
           cd admb
           make -j 4
