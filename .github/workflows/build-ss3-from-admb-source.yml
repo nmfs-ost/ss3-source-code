@@ -104,10 +104,7 @@ jobs:
         if: matrix.config.os == 'ubuntu-latest'
         run: |
           cd admb && make clean
-          ls
-          cd admb && ls
-          cd admb && make
-          cd admb && ls -l
+          make -j 4
           sudo mv admb /usr/local/bin
           sudo chmod 755 /usr/local/bin/admb
           echo "/usr/local/bin/admb" >> $GITHUB_PATH
