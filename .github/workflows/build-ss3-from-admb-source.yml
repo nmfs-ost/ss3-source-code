@@ -105,10 +105,11 @@ jobs:
         run: |
           cd admb && make clean
           make -j 4
+          ls -l
+          chmod a+x admb
           sudo mv admb /usr/local/bin
-          sudo chmod 755 /usr/local/bin/admb
           echo "/usr/local/bin/admb" >> $GITHUB_PATH
-
+        # chmod a+x /usr/local/bin/admb
           
       - name: Fetch tags
         run: |
