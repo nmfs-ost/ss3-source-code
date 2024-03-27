@@ -1,14 +1,14 @@
 # Builds the stock synthesis executables for testing and distribution.
 # for mac, linux, windows
 # Runs on every push and PR (even draft PRs)
-name: build-ss3-from-admb-source
+name: build-admb-and-ss3-from-source
 
 on:
-    push:
     workflow_dispatch:
+    push:
 
 jobs:
-  build-ss3-from-admb-source:
+  build-admb-and-ss3-from-source:
     runs-on: ${{ matrix.config.os }}
     name: ${{ matrix.config.os }}
     strategy:
@@ -19,35 +19,31 @@ jobs:
           - {os: macos-latest}
           - {os: ubuntu-latest}
     # Limit run time to 90 min to avoid wasting action minutes.
-    # was set to 15 and then 30 minutes previously, but compiling admb
-    # on mac took too long
+    # Compiling admb and ss3 on all operating systems takes ~28 min
     timeout-minutes: 90
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+    # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v4
-
-      - name: Update Ubuntu packages
-        if: matrix.config.os == 'ubuntu-latest'
-        run: sudo apt-get update
-
-      - name: checkout admb and build from source, windows
-        if: matrix.config.os == 'windows-latest'
-        uses: actions/checkout@v4
-        with:
-          repository: admb-project/admb
-          path: admb
-          ref: admb-13.2
-
-      - name: Set up R
+    
+    # Set up R
+      - name: Set up R, specify rtools version and path for windows
         uses: r-lib/actions/setup-r@v2
         with: 
           r-version: 'release'
           rtools-version: '42'
           windows-path-include-rtools: TRUE
           update-rtools: TRUE
-    
-    # windows ADMB build
+          
+    # Checkout ADMB repository
+      - name: checkout admb and build from source, windows
+        uses: actions/checkout@v4
+        with:
+          repository: admb-project/admb
+          path: admb
+          ref: admb-13.2
+
+    # Build ADMB for Windows
       - name: build admb, windows using rtools 42
         if: matrix.config.os == 'windows-latest'
         run: |
@@ -61,30 +57,27 @@ jobs:
           echo "D:\a\ss3-source-code\ss3-source-code\admb\build\admb\bin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
           echo $env:GITHUB_PATH
 
-    # macOS ADMB build
-      - name: checkout admb and build from source, mac
-        if: matrix.config.os == 'macos-latest'
-        uses: actions/checkout@v4
-        with:
-          repository: admb-project/admb
-          path: admb
-          ref: admb-13.2
+    # Build ADMB for macOS
       - name: clean, mac
         if: matrix.config.os == 'macos-latest'
         run: cd admb && make clean
+
       - name: see where admb is, mac
         if: matrix.config.os == 'macos-latest'
         run: |
           ls
           cd admb && ls
+
       - name: compile admb, mac
         if: matrix.config.os == 'macos-latest'
         run: |
           cd admb && make -j 4
+
       - name: see where admb is, mac
         if: matrix.config.os == 'macos-latest'
         run: |
           cd admb && ls -l
+
       - name: put admb in path, mac
         if: matrix.config.os == 'macos-latest'
         run: |
@@ -92,14 +85,10 @@ jobs:
           sudo chmod 755 /usr/local/bin/admb
           echo "/usr/local/bin/admb" >> $GITHUB_PATH
 
-    # Ubuntu admb build
-      - name: checkout admb and build from source, mac
+    # Build ADMB for Linux
+      - name: Update Ubuntu packages
         if: matrix.config.os == 'ubuntu-latest'
-        uses: actions/checkout@v4
-        with:
-          repository: admb-project/admb
-          path: admb
-          ref: admb-13.2
+        run: sudo apt-get update
 
       - name: Get admb and put in path, linux
         if: matrix.config.os == 'ubuntu-latest'
@@ -112,8 +101,8 @@ jobs:
           chmod a+x admb
           sudo mv admb /usr/local/bin
           echo "/usr/local/bin/admb" >> $GITHUB_PATH
-        # chmod a+x /usr/local/bin/admb
-          
+    
+    # Fetch Tags
       - name: Fetch tags
         run: |
           git fetch --tags
@@ -130,8 +119,6 @@ jobs:
           echo "tag=${latest_tag}" >> $env:GITHUB_OUTPUT
           echo "tag_commit=${latest_tag_commit}" >> $env:GITHUB_OUTPUT
           echo "commit=${latest_commit}" >> $env:GITHUB_OUTPUT
-
-    #    # uses: actions-ecosystem/action-get-latest-tag@v1 # for linux
 
       - name: pull the last tag value to use in the Rscript on windows
         id: get-version-win
@@ -153,8 +140,6 @@ jobs:
           echo "tag_commit=${latest_tag_commit}" >> $GITHUB_OUTPUT
           echo "commit=${latest_commit}" >> $GITHUB_OUTPUT
 
-       # uses: actions-ecosystem/action-get-latest-tag@v1 # for linux
-
       - name: pull the last tag value to use in the Rscript on unix
         id: get-version-unix
         if: matrix.config.os == 'macos-latest' || matrix.config.os == 'ubuntu-latest'
@@ -163,6 +148,7 @@ jobs:
           echo "${{ steps.get-latest-tag-unix.outputs.tag_commit }}" > .github/last_tag_commit.txt
           echo "${{ steps.get-latest-tag-unix.outputs.commit }}" >  .github/last_commit.txt
 
+    # R code to edit version info
       - name: Edit the version info for safe version using R code
         run: |
           # Get the version
@@ -226,7 +212,8 @@ jobs:
             gsub('\\.yy', paste0('\\.', fix_ver_num), ver_info[ver_info_start+1])
           writeLines(ver_info, "SS_versioninfo_330opt.tpl")
         shell: Rscript {0}
-
+    
+    # Build SS3 for Windows
       - name: Build stock synthesis for windows with admb docker image
         if: matrix.config.os == 'windows-latest'
         run: |
@@ -244,22 +231,17 @@ jobs:
           mv Compile/ss3_opt.exe SS330/
           mv SS330/ss3.exe SS330/ss3_win.exe
           mv SS330/ss3_opt.exe SS330/ss3_opt_win.exe
-  
+
+    # Build SS3 for macOS
       - name: Build stock synthesis for mac with admb docker image
         if: matrix.config.os == 'macos-latest'
         run: |
-          brew install docker
-          colima start
-          docker pull johnoel/admb:linux
-
           rm -rf SS330
           rm -rf ss3_osx.tar
           mkdir SS330
           chmod 777 SS330
           /bin/bash ./Make_SS_330_new.sh --admb docker -b SS330
           /bin/bash ./Make_SS_330_new.sh --admb docker -b SS330 -o
-
-          colima stop
 
       - name: Verify binary on mac
         if: matrix.config.os == 'macos-latest'
@@ -275,6 +257,7 @@ jobs:
           mv ss3 ss3_osx
           mv ss3_opt ss3_opt_osx
 
+    # Build SS3 for Linux
       - name: Build stock synthesis for linux with p flag and admb docker image
         if:  matrix.config.os == 'ubuntu-latest'
         run: |
@@ -299,6 +282,7 @@ jobs:
           mv ss3 ss3_linux
           mv ss3_opt ss3_opt_linux
 
+    # Archive Binaries
       - name: Archive binaries
         if: success()
         uses: actions/upload-artifact@main
