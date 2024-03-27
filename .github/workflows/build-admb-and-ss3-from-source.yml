@@ -5,7 +5,6 @@ name: build-admb-and-ss3-from-source
 
 on:
     workflow_dispatch:
-    push:
 
 jobs:
   build-admb-and-ss3-from-source:
@@ -19,7 +18,7 @@ jobs:
           - {os: macos-latest}
           - {os: ubuntu-latest}
     # Limit run time to 90 min to avoid wasting action minutes.
-    # Compiling admb and ss3 on all operating systems takes ~28 min
+    # Compiling admb and ss3 on all operating systems takes ~30 min
     timeout-minutes: 90
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
