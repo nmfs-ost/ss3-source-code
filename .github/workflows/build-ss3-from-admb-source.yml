@@ -16,7 +16,7 @@ jobs:
       matrix:
         config:
           - {os: windows-latest}
-        #   - {os: macos-latest}
+          - {os: macos-latest}
           - {os: ubuntu-latest}
     # Limit run time to 90 min to avoid wasting action minutes.
     # was set to 15 and then 30 minutes previously, but compiling admb
@@ -46,12 +46,15 @@ jobs:
           rtools-version: '42'
           windows-path-include-rtools: TRUE
           update-rtools: TRUE
-      
+    
+    # windows ADMB build
       - name: build admb, windows using rtools 42
         if: matrix.config.os == 'windows-latest'
         run: |
           cd admb
-          make -j 4
+          num_cpus=`cat /proc/cpuinfo | grep processor | wc -l`
+          num_cpus_minus1=$((num_cpus-1))
+          make -j $num_cpus_minus1
         shell: cmd
 
       - name: But admb in path
@@ -61,35 +64,37 @@ jobs:
           echo $env:GITHUB_PATH
 
     # macOS ADMB build
-    #   - name: checkout admb and build from source, mac
-    #     if: matrix.config.os == 'macos-latest'
-    #     uses: actions/checkout@v4
-    #     with:
-    #       repository: admb-project/admb
-    #       path: admb
-    #       ref: admb-13.2
-    #   - name: clean, mac
-    #     if: matrix.config.os == 'macos-latest'
-    #     run: cd admb && make clean
-    #   - name: see where admb is, mac
-    #     if: matrix.config.os == 'macos-latest'
-    #     run: |
-    #       ls
-    #       cd admb && ls
-    #   - name: compile admb, mac
-    #     if: matrix.config.os == 'macos-latest'
-    #     run: |
-    #       cd admb && make 
-    #   - name: see where admb is, mac
-    #     if: matrix.config.os == 'macos-latest'
-    #     run: |
-    #       cd admb && ls -l
-    #   - name: put admb in path, mac
-    #     if: matrix.config.os == 'macos-latest'
-    #     run: |
-    #       sudo mv admb /usr/local/bin
-    #       sudo chmod 755 /usr/local/bin/admb
-    #       echo "/usr/local/bin/admb" >> $GITHUB_PATH
+      - name: checkout admb and build from source, mac
+        if: matrix.config.os == 'macos-latest'
+        uses: actions/checkout@v4
+        with:
+          repository: admb-project/admb
+          path: admb
+          ref: admb-13.2
+      - name: clean, mac
+        if: matrix.config.os == 'macos-latest'
+        run: cd admb && make clean
+      - name: see where admb is, mac
+        if: matrix.config.os == 'macos-latest'
+        run: |
+          ls
+          cd admb && ls
+      - name: compile admb, mac
+        if: matrix.config.os == 'macos-latest'
+        run: |
+          num_cpus=`cat /proc/cpuinfo | grep processor | wc -l`
+          num_cpus_minus1=$((num_cpus-1))
+          cd admb && make -j $num_cpus_minus1
+      - name: see where admb is, mac
+        if: matrix.config.os == 'macos-latest'
+        run: |
+          cd admb && ls -l
+      - name: put admb in path, mac
+        if: matrix.config.os == 'macos-latest'
+        run: |
+          sudo mv admb /usr/local/bin
+          sudo chmod 755 /usr/local/bin/admb
+          echo "/usr/local/bin/admb" >> $GITHUB_PATH
 
     # Ubuntu admb build
       - name: checkout admb and build from source, mac
@@ -104,7 +109,9 @@ jobs:
         if: matrix.config.os == 'ubuntu-latest'
         run: |
           cd admb && make clean
-          make -j 4
+          num_cpus=`cat /proc/cpuinfo | grep processor | wc -l`
+          num_cpus_minus1=$((num_cpus-1))
+          make -j $num_cpus_minus1
           ls -l
           chmod a+x admb
           sudo mv admb /usr/local/bin
@@ -242,35 +249,35 @@ jobs:
           mv SS330/ss3.exe SS330/ss3_win.exe
           mv SS330/ss3_opt.exe SS330/ss3_opt_win.exe
   
-    #   - name: Build stock synthesis for mac with admb docker image
-    #     if: matrix.config.os == 'macos-latest'
-    #     run: |
-    #       brew install docker
-    #       colima start
-    #       docker pull johnoel/admb:linux
+      - name: Build stock synthesis for mac with admb docker image
+        if: matrix.config.os == 'macos-latest'
+        run: |
+          brew install docker
+          colima start
+          docker pull johnoel/admb:linux
 
-    #       rm -rf SS330
-    #       rm -rf ss3_osx.tar
-    #       mkdir SS330
-    #       chmod 777 SS330
-    #       /bin/bash ./Make_SS_330_new.sh --admb docker -b SS330
-    #       /bin/bash ./Make_SS_330_new.sh --admb docker -b SS330 -o
+          rm -rf SS330
+          rm -rf ss3_osx.tar
+          mkdir SS330
+          chmod 777 SS330
+          /bin/bash ./Make_SS_330_new.sh --admb docker -b SS330
+          /bin/bash ./Make_SS_330_new.sh --admb docker -b SS330 -o
 
-    #       colima stop
+          colima stop
 
-    #   - name: Verify binary on mac
-    #     if: matrix.config.os == 'macos-latest'
-    #     run: |
-    #       shasum -a 256 SS330/ss3
-    #       shasum -a 256 SS330/ss3_opt
+      - name: Verify binary on mac
+        if: matrix.config.os == 'macos-latest'
+        run: |
+          shasum -a 256 SS330/ss3
+          shasum -a 256 SS330/ss3_opt
           
-    #   - name: Delete unneeded files and change exe names on mac
-    #     if: matrix.config.os == 'macos-latest'
-    #     run: |
-    #       cd SS330
-    #       rm *.obj *.htp *.cpp ss3_opt.tpl
-    #       mv ss3 ss3_osx
-    #       mv ss3_opt ss3_opt_osx
+      - name: Delete unneeded files and change exe names on mac
+        if: matrix.config.os == 'macos-latest'
+        run: |
+          cd SS330
+          rm *.obj *.htp *.cpp ss3_opt.tpl
+          mv ss3 ss3_osx
+          mv ss3_opt ss3_opt_osx
 
       - name: Build stock synthesis for linux with p flag and admb docker image
         if:  matrix.config.os == 'ubuntu-latest'
