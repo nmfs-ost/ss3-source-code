@@ -34,7 +34,7 @@ jobs:
           rtools-version: '42'
           windows-path-include-rtools: TRUE
           update-rtools: TRUE
-          
+
     # Checkout ADMB repository
       - name: checkout admb and build from source, windows
         uses: actions/checkout@v4
@@ -240,8 +240,8 @@ jobs:
           rm -rf ss3_osx.tar
           mkdir SS330
           chmod 777 SS330
-          /bin/bash ./Make_SS_330_new.sh --admb docker -b SS330
-          /bin/bash ./Make_SS_330_new.sh --admb docker -b SS330 -o
+          /bin/bash ./Make_SS_330_new.sh -b SS330
+          /bin/bash ./Make_SS_330_new.sh -b SS330 -o
 
       - name: Verify binary on mac
         if: matrix.config.os == 'macos-latest'
