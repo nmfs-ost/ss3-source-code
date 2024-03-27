@@ -52,9 +52,7 @@ jobs:
         if: matrix.config.os == 'windows-latest'
         run: |
           cd admb
-          num_cpus=`cat /proc/cpuinfo | grep processor | wc -l`
-          num_cpus_minus1=$((num_cpus-1))
-          make -j $num_cpus_minus1
+          make -j 4
         shell: cmd
 
       - name: But admb in path
@@ -82,9 +80,7 @@ jobs:
       - name: compile admb, mac
         if: matrix.config.os == 'macos-latest'
         run: |
-          num_cpus=`cat /proc/cpuinfo | grep processor | wc -l`
-          num_cpus_minus1=$((num_cpus-1))
-          cd admb && make -j $num_cpus_minus1
+          cd admb && make -j 4
       - name: see where admb is, mac
         if: matrix.config.os == 'macos-latest'
         run: |
