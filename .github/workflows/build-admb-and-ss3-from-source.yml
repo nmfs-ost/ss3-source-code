@@ -5,7 +5,8 @@ name: build-admb-and-ss3-from-source
 
 on:
     workflow_dispatch:
-
+    schedule:
+      - cron: '0 15 * * 2' # every Tuesday at 3pm UTC (= 1 0am EST or 11am EDT Eastern time)
 jobs:
   build-admb-and-ss3-from-source:
     runs-on: ${{ matrix.config.os }}
