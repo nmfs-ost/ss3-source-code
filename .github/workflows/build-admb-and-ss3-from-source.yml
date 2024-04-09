@@ -16,7 +16,7 @@ jobs:
       matrix:
         config:
           - {os: windows-latest}
-          - {os: macos-latest}
+          - {os: macos-14}
           - {os: ubuntu-latest}
     # Limit run time to 90 min to avoid wasting action minutes.
     # Compiling admb and ss3 on all operating systems takes ~30 min
