@@ -25,6 +25,8 @@ jobs:
     steps:
     # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v4
+        with:
+          ref: v3.30.22.1
     
     # Set up R
       - name: Set up R, specify rtools version and path for windows
