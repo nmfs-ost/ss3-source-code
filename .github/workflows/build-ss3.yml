@@ -235,8 +235,6 @@ jobs:
           brew update
           brew install docker
           brew install --head colima
-          brew unlink qemu
-          brew install --HEAD qemu
           colima start --arch x86_64
           docker pull johnoel/admb-13.2:linux
 
