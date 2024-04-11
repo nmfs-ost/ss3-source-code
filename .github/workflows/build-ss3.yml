@@ -214,7 +214,7 @@ jobs:
           mv SS330/ss3_opt.exe SS330/ss3_opt_win.exe
   
       - name: Build stock synthesis for mac with admb docker image
-        if: matrix.config.os == 'macos-latest' || matrix.config.os == 'macos-14'
+        if: matrix.config.os == 'macos-latest'
         run: |
           brew install docker
           colima start
@@ -228,6 +228,24 @@ jobs:
           /bin/bash ./Make_SS_330_new.sh --admb docker -b SS330 -o
 
           colima stop
+
+      - name: Build stock synthesis for mac m2 with admb docker image
+        if: matrix.config.os == 'macos-14'
+        run: |
+          brew update
+          brew install docker
+          brew install --head colima
+          brew unlink qemu
+          brew install --HEAD qemu
+          colima start --arch x86_64
+          docker pull johnoel/admb-13.2:linux
+
+          rm -rf SS330
+          rm -rf ss3_osx.tar
+          mkdir SS330
+          chmod 777 SS330
+          /bin/bash ./Make_SS_330_new.sh --admb docker -b SS330
+          /bin/bash ./Make_SS_330_new.sh --admb docker -b SS330 -o
 
       - name: Verify binary on mac
         if: matrix.config.os == 'macos-latest' || matrix.config.os == 'macos-14'
