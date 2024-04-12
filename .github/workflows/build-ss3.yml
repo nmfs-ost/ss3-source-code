@@ -19,7 +19,7 @@ jobs:
       matrix:
         config:
           - {os: windows-latest}
-          - {os: macos-latest}
+          - {os: macos-13}
           - {os: macos-14}
           - {os: ubuntu-latest}
     # Limit run time to 90 min to avoid wasting action minutes.
@@ -111,7 +111,7 @@ jobs:
 
       - name: Get the last tag on unix
         id: get-latest-tag-unix
-        if: matrix.config.os == 'macos-latest' || matrix.config.os == 'macos-14' || matrix.config.os == 'ubuntu-latest'
+        if: matrix.config.os == 'macos-13' || matrix.config.os == 'macos-14' || matrix.config.os == 'ubuntu-latest'
         run: |
           git tag
           latest_tag=$(git describe --abbrev=0 --tags)
@@ -125,7 +125,7 @@ jobs:
 
       - name: pull the last tag value to use in the Rscript on unix
         id: get-version-unix
-        if: matrix.config.os == 'macos-latest' || matrix.config.os == 'macos-14' || matrix.config.os == 'ubuntu-latest'
+        if: matrix.config.os == 'macos-13' || matrix.config.os == 'macos-14' || matrix.config.os == 'ubuntu-latest'
         run: |
           echo "${{ steps.get-latest-tag-unix.outputs.tag }}" > .github/last_tag.txt
           echo "${{ steps.get-latest-tag-unix.outputs.tag_commit }}" > .github/last_tag_commit.txt
@@ -214,7 +214,7 @@ jobs:
           mv SS330/ss3_opt.exe SS330/ss3_opt_win.exe
   
       - name: Build stock synthesis for mac with admb docker image
-        if: matrix.config.os == 'macos-latest'
+        if: matrix.config.os == 'macos-13'
         run: |
           brew install docker
           colima start
@@ -246,13 +246,13 @@ jobs:
           /bin/bash ./Make_SS_330_new.sh --admb docker -b SS330 -o
 
       - name: Verify binary on mac
-        if: matrix.config.os == 'macos-latest' || matrix.config.os == 'macos-14'
+        if: matrix.config.os == 'macos-13' || matrix.config.os == 'macos-14'
         run: |
           shasum -a 256 SS330/ss3
           shasum -a 256 SS330/ss3_opt
           
       - name: Delete unneeded files and change exe names on mac
-        if: matrix.config.os == 'macos-latest' || matrix.config.os == 'macos-14'
+        if: matrix.config.os == 'macos-13' || matrix.config.os == 'macos-14'
         run: |
           cd SS330
           rm *.obj *.htp *.cpp ss3_opt.tpl
