@@ -44,9 +44,9 @@ for /f "tokens=*" %%i in ('where docker.exe 2^>^&1 ^| findstr "docker.exe"') do 
     set "ISWINDOWS10=found"
   )
   if defined ISWINDOWS10 (
-    docker run --rm --mount source=%CD%,destination=C:\compile,type=bind --workdir C:\\compile johnoel/admb:windows-ltsc2019-winlibs ss3.tpl
+    docker run --rm --mount source=%CD%,destination=C:\compile,type=bind --workdir C:\\compile johnoel/admb-13.2:windows-ltsc2019-winlibs ss3.tpl
   ) else (
-    docker run --rm --mount source=%CD%,destination=C:\compile,type=bind --workdir C:\\compile johnoel/admb:windows-ltsc2022-winlibs ss3.tpl
+    docker run --rm --mount source=%CD%,destination=C:\compile,type=bind --workdir C:\\compile johnoel/admb-13.2:windows-ltsc2022-winlibs ss3.tpl
   )
   goto CHECK
 )
