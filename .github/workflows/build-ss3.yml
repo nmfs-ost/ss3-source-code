@@ -218,8 +218,9 @@ jobs:
         run: |
           brew update
           brew install docker
-          brew install colima || true
+          brew install --head colima || true
           brew link --overwrite python@3.11
+          colima start
           docker pull johnoel/admb-13.2:linux
 
           rm -rf SS330
