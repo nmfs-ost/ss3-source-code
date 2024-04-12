@@ -37,7 +37,7 @@ endif
 ss3_opt: ss3_opt.tpl
 ifdef USE_DOCKER
   ifeq ($(OS),Windows_NT)
-	docker run --rm --volume $(CURDIR):C:\\workdir\\ss_opt --workdir C:\\workdir\\ss_opt johnoel/admb-13.2:windows-ltsc2022-winlibs ss3_opt.tpl
+	docker run --rm --volume $(CURDIR):C:\\workdir\\ss_opt --workdir C:\\workdir\\ss_opt johnoel/admb-13.2:windows ss3_opt.tpl
   else
 	docker run --rm --volume $(CURDIR):/workdir/ss_opt:rw --workdir /workdir/ss_opt johnoel/admb-13.2:linux ss3_opt.tpl
   endif

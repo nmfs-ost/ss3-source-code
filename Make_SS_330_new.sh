@@ -175,15 +175,15 @@ if [[ "$ADMB_HOME" == "docker" ]] ; then
     fi
     if [[ "$WARNINGS" == "on" ]] ; then
       if [[ "$WINDOWS10" == "true" ]] ; then
-        docker run --env CXXFLAGS="-Wall -Wextra" --rm --mount source=`cygpath -w $PWD`\\$BUILD_DIR,destination=C:\\$BUILD_TYPE,mount=bind --workdir C:\\$BUILD_TYPE johnoel/admb-13.2:windows-ltsc2019-winlibs $BUILD_TYPE.tpl
+        docker run --env CXXFLAGS="-Wall -Wextra" --rm --mount source=`cygpath -w $PWD`\\$BUILD_DIR,destination=C:\\$BUILD_TYPE,mount=bind --workdir C:\\$BUILD_TYPE johnoel/admb-13.2:windows10 $BUILD_TYPE.tpl
       else
-        docker run --env CXXFLAGS="-Wall -Wextra" --rm --mount source=`cygpath -w $PWD`\\$BUILD_DIR,destination=C:\\$BUILD_TYPE,mount=bind --workdir C:\\$BUILD_TYPE johnoel/admb-13.2:windows-ltsc2022-winlibs $BUILD_TYPE.tpl
+        docker run --env CXXFLAGS="-Wall -Wextra" --rm --mount source=`cygpath -w $PWD`\\$BUILD_DIR,destination=C:\\$BUILD_TYPE,mount=bind --workdir C:\\$BUILD_TYPE johnoel/admb-13.2:windows $BUILD_TYPE.tpl
       fi 
     else
       if [[ "$WINDOWS10" == "true" ]] ; then
-        docker run --rm --mount source=`cygpath -w $PWD`\\$BUILD_DIR,destination=C:\\$BUILD_TYPE,mount=bind --workdir C:\\$BUILD_TYPE johnoel/admb-13.2:windows-ltsc2019-winlibs $BUILD_TYPE.tpl
+        docker run --rm --mount source=`cygpath -w $PWD`\\$BUILD_DIR,destination=C:\\$BUILD_TYPE,mount=bind --workdir C:\\$BUILD_TYPE johnoel/admb-13.2:windows10 $BUILD_TYPE.tpl
       else
-        docker run --rm --mount source=`cygpath -w $PWD`\\$BUILD_DIR,destination=C:\\$BUILD_TYPE,mount=bind --workdir C:\\$BUILD_TYPE johnoel/admb-13.2:windows-ltsc2022-winlibs $BUILD_TYPE.tpl
+        docker run --rm --mount source=`cygpath -w $PWD`\\$BUILD_DIR,destination=C:\\$BUILD_TYPE,mount=bind --workdir C:\\$BUILD_TYPE johnoel/admb-13.2:windows $BUILD_TYPE.tpl
       fi 
     fi
   else
