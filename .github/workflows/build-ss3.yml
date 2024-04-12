@@ -217,7 +217,8 @@ jobs:
         if: matrix.config.os == 'macos-13'
         run: |
           brew install docker
-          colima start
+          brew install --head colima
+          colima start --arch x86_64
           docker pull johnoel/admb:linux
 
           rm -rf SS330
@@ -227,7 +228,7 @@ jobs:
           /bin/bash ./Make_SS_330_new.sh --admb docker -b SS330
           /bin/bash ./Make_SS_330_new.sh --admb docker -b SS330 -o
 
-          colima stop
+        # colima stop
 
       - name: Build stock synthesis for mac m2 with admb docker image
         if: matrix.config.os == 'macos-14'
