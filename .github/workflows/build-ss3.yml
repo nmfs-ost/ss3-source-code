@@ -220,7 +220,7 @@ jobs:
           brew install --head colima
           brew unlink qemu
           brew install --HEAD qemu
-          colima start
+          brew services start colima
           docker pull johnoel/admb:linux
 
           rm -rf SS330
