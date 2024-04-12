@@ -218,10 +218,8 @@ jobs:
         run: |
           brew update
           brew install docker
-          brew install colima
-          brew unlink colima
-          curl -L -o /usr/local/bin/colima https://github.com/abiosoft/colima/releases/download/v0.5.6/colima-Darwin-x86_64 && sudo chmod +x /usr/local/bin/colima
-          colima start --network-address
+          brew install colima || true
+          brew link --overwrite python@3.11
           docker pull johnoel/admb-13.2:linux
 
           rm -rf SS330
