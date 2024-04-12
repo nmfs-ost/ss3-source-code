@@ -218,7 +218,8 @@ jobs:
         run: |
           brew install docker
           brew install --head colima
-          colima start --arch x86_64
+          brew link docker
+          brew services start colima
           docker pull johnoel/admb:linux
 
           rm -rf SS330
