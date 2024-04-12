@@ -216,12 +216,13 @@ jobs:
       - name: Build stock synthesis for mac with admb docker image
         if: matrix.config.os == 'macos-13'
         run: |
+          brew update
           brew install docker
-          brew install --head colima
-          brew unlink qemu
-          brew install --HEAD qemu
-          brew services start colima
-          docker pull johnoel/admb:linux
+          brew install colima
+          brew unlink colima
+          curl -L -o /usr/local/bin/colima https://github.com/abiosoft/colima/releases/download/v0.5.6/colima-Darwin-x86_64 && sudo chmod +x /usr/local/bin/colima
+          colima start --network-address
+          docker pull johnoel/admb-13.2:linux
 
           rm -rf SS330
           rm -rf ss3_osx.tar
