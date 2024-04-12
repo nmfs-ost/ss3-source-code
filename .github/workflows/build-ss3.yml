@@ -218,8 +218,9 @@ jobs:
         run: |
           brew install docker
           brew install --head colima
-          brew services start colima
-          docker context use colima
+          brew unlink qemu
+          brew install --HEAD qemu
+          colima start
           docker pull johnoel/admb:linux
 
           rm -rf SS330
