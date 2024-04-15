@@ -219,7 +219,7 @@ jobs:
           brew update
           brew install docker
           brew install --HEAD colima || true
-          colima start --arch x86_64
+          colima start --arch aarch64
           docker pull johnoel/admb-13.2:linux
 
           rm -rf SS330
@@ -230,7 +230,6 @@ jobs:
           /bin/bash ./Make_SS_330_new.sh --admb docker -b SS330 -o
           colima stop
 
-# brew install --head colima || true (after install docker)
       # - name: Build stock synthesis for mac with admb docker image
       #   if: matrix.config.os == 'macos-12'
       #   run: |
