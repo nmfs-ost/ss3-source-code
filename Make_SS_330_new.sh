@@ -188,9 +188,9 @@ if [[ "$ADMB_HOME" == "docker" ]] ; then
     fi
   else
     if [[ "$WARNINGS" == "on" ]] ; then
-      docker run --platform linux/amd64 --env CXXFLAGS="-Wall -Wextra" --rm --mount source=$PWD/$BUILD_DIR,destination=/$BUILD_TYPE,type=bind --workdir /$BUILD_TYPE johnoel/admb-13.2:linux $BUILD_TYPE.tpl
+      docker run --env CXXFLAGS="-Wall -Wextra" --rm --mount source=$PWD/$BUILD_DIR,destination=/$BUILD_TYPE,type=bind --workdir /$BUILD_TYPE johnoel/admb-13.2:linux $BUILD_TYPE.tpl
     else
-      docker run --platform linux/amd64 --rm --mount source=$PWD/$BUILD_DIR,destination=/$BUILD_TYPE,type=bind --workdir /$BUILD_TYPE johnoel/admb-13.2:linux $BUILD_TYPE.tpl
+      docker run --rm --mount source=$PWD/$BUILD_DIR,destination=/$BUILD_TYPE,type=bind --workdir /$BUILD_TYPE johnoel/admb-13.2:linux $BUILD_TYPE.tpl
     fi
   fi
 else
