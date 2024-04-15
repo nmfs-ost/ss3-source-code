@@ -217,7 +217,8 @@ jobs:
         if: matrix.config.os == 'macos-13'
         run: |
           brew update
-          brew install docker
+          brew install --cask docker
+          brew install --HEAD lima
           brew link --overwrite python@3.11
           colima start
           docker pull johnoel/admb-13.2:linux
