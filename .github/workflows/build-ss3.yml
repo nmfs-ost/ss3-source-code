@@ -212,23 +212,7 @@ jobs:
           mv Compile/ss3_opt.exe SS330/
           mv SS330/ss3.exe SS330/ss3_win.exe
           mv SS330/ss3_opt.exe SS330/ss3_opt_win.exe
-  
-      # - name: Build stock synthesis for mac with admb docker image
-      #   if: matrix.config.os == 'macos-13'
-      #   run: |
-      #     brew update
-      #     brew install docker
-      #     brew install --HEAD colima || true
-      #     colima start
-      #     docker pull johnoel/admb-13.2:linux
 
-      #     rm -rf SS330
-      #     rm -rf ss3_osx.tar
-      #     mkdir SS330
-      #     chmod 777 SS330
-      #     /bin/bash ./Make_SS_330_new.sh --admb docker -b SS330
-      #     /bin/bash ./Make_SS_330_new.sh --admb docker -b SS330 -o
-      #     colima stop
 
       - name: Build stock synthesis for mac with admb docker image
         if: matrix.config.os == 'macos-12'
@@ -245,6 +229,10 @@ jobs:
           /bin/bash ./Make_SS_330_new.sh --admb docker -b SS330 -o
 
           colima stop
+
+        # Once macos-12 no longer is kept up by GitHub actions, we will have to 
+        # build from source the macos-13 and the macos-14 x86_64 images to make versions
+        # compatible with x86_64 machines
 
       - name: Build stock synthesis for mac m2 with admb docker image
         if: matrix.config.os == 'macos-14'
