@@ -16,7 +16,7 @@ jobs:
       matrix:
         config:
           - {os: windows-latest}
-          - {os: macos-14}
+          - {os: macos-latest}
           - {os: macos-13}
           - {os: ubuntu-latest}
     # Limit run time to 90 min to avoid wasting action minutes.
@@ -60,27 +60,27 @@ jobs:
 
     # Build ADMB for macOS
       - name: clean, mac
-        if: matrix.config.os == 'macos-14' || matrix.config.os == 'macos-13'
+        if: matrix.config.os == 'macos-latest' || matrix.config.os == 'macos-13'
         run: cd admb && make clean
 
       - name: see where admb is, mac
-        if: matrix.config.os == 'macos-14' || matrix.config.os == 'macos-13'
+        if: matrix.config.os == 'macos-latest' || matrix.config.os == 'macos-13'
         run: |
           ls
           cd admb && ls
 
       - name: compile admb, mac
-        if: matrix.config.os == 'macos-14' || matrix.config.os == 'macos-13'
+        if: matrix.config.os == 'macos-latest' || matrix.config.os == 'macos-13'
         run: |
           cd admb && make -j 4
 
       - name: see where admb is, mac
-        if: matrix.config.os == 'macos-14' || matrix.config.os == 'macos-13'
+        if: matrix.config.os == 'macos-latest' || matrix.config.os == 'macos-13'
         run: |
           cd admb && ls -l
 
       - name: put admb in path, mac
-        if: matrix.config.os == 'macos-14' || matrix.config.os == 'macos-13'
+        if: matrix.config.os == 'macos-latest' || matrix.config.os == 'macos-13'
         run: |
           sudo mv admb /usr/local/bin
           sudo chmod 755 /usr/local/bin/admb
@@ -131,7 +131,7 @@ jobs:
 
       - name: Get the last tag on unix
         id: get-latest-tag-unix
-        if: matrix.config.os == 'macos-14' || matrix.config.os == 'macos-13' || matrix.config.os == 'ubuntu-latest'
+        if: matrix.config.os == 'macos-latest' || matrix.config.os == 'macos-13' || matrix.config.os == 'ubuntu-latest'
         run: |
           git tag
           latest_tag=$(git describe --abbrev=0 --tags)
@@ -143,7 +143,7 @@ jobs:
 
       - name: pull the last tag value to use in the Rscript on unix
         id: get-version-unix
-        if: matrix.config.os == 'macos-14' || matrix.config.os == 'macos-13' || matrix.config.os == 'ubuntu-latest'
+        if: matrix.config.os == 'macos-latest' || matrix.config.os == 'macos-13' || matrix.config.os == 'ubuntu-latest'
         run: |
           echo "${{ steps.get-latest-tag-unix.outputs.tag }}" > .github/last_tag.txt
           echo "${{ steps.get-latest-tag-unix.outputs.tag_commit }}" > .github/last_tag_commit.txt
@@ -235,7 +235,7 @@ jobs:
 
     # Build SS3 for macOS
       - name: Build stock synthesis for mac with admb docker image
-        if: matrix.config.os == 'macos-14' || matrix.config.os == 'macos-13'
+        if: matrix.config.os == 'macos-latest' || matrix.config.os == 'macos-13'
         run: |
           rm -rf SS330
           rm -rf ss3_osx.tar
@@ -245,13 +245,13 @@ jobs:
           /bin/bash ./Make_SS_330_new.sh -b SS330 -o
 
       - name: Verify binary on mac
-        if: matrix.config.os == 'macos-14' || matrix.config.os == 'macos-13'
+        if: matrix.config.os == 'macos-latest' || matrix.config.os == 'macos-13'
         run: |
           shasum -a 256 SS330/ss3
           shasum -a 256 SS330/ss3_opt
           
       - name: Delete unneeded files and change exe names on mac
-        if: matrix.config.os == 'macos-14' || matrix.config.os == 'macos-13'
+        if: matrix.config.os == 'macos-latest' || matrix.config.os == 'macos-13'
         run: |
           cd SS330
           rm *.obj *.htp *.cpp ss3_opt.tpl
