@@ -640,20 +640,18 @@
   int depletion_basis;
   int depletion_multi;
   int depletion_log;
-  init_int depletion_basis_rd; // 0=skip; 1=B0; 2=Bmsy; 3=B_styr; 4=B_endyr; 5=dynamic_Bzero; values >=11 invoke multiyr with 10's digit; >=100 invoke log(ratio) with hundreds digit
+  init_number depletion_basis_rd; // 0=skip; 1=B0; 2=Bmsy; 3=B_styr; 4=B_endyr; 5=dynamic_Bzero; values >=11 invoke multiyr with 10's digit; append .1 to invoke log(ratio) with hundreds digit
  LOCAL_CALCS
   // clang-format on
   echoinput << depletion_basis_rd << "  depletion_basis as read; this is also known as Bratio and is a std quantity; has multi-yr and log(ratio) options" << endl;
   depletion_multi = 0;
   depletion_log = 0;
-  k = depletion_basis_rd;
-  depletion_basis = depletion_basis_rd; // default
+  depletion_basis = int( depletion_basis_rd ); // discard decimal
+  k = depletion_basis;
 
-  if (k >= 100) //  invokes log(ratio)
+  if (depletion_basis_rd > float( depletion_basis) ) // invokes log(ratio) if decimal value exists
   {
-    k -= 100;
     depletion_log = 1;
-    depletion_basis = k;
   }
 
   if (k > 10) //  invokes multiyr
@@ -695,7 +693,7 @@
   // clang-format off
  END_CALCS
 
-  init_int F_std_basis_rd; // 0=raw; 1=rel Fspr; 2=rel Fmsy ; 3=rel Fbtgt; values >=11 invoke multiyr with 10's digit; >=100 invoke log(ratio) with hundreds digit
+  init_number F_std_basis_rd; // 0=raw; 1=rel Fspr; 2=rel Fmsy ; 3=rel Fbtgt; values >=11 invoke multiyr with 10's digit; >=100 invoke log(ratio) with hundreds digit
   number finish_starter;
   int mcmc_output_detail;
   number MCMC_bump; // value read and added to ln(R0) when starting into MCMC
@@ -714,14 +712,12 @@
     F_std_multi = 0;
     F_std_log = 0;
     echoinput << F_std_basis_rd << "  F_std basis as read" << endl;
-    k = F_std_basis_rd;
-    F_std_basis = F_std_basis_rd; // default
+    F_std_basis = int(F_std_basis_rd);  // discards the decimal
+    k = F_std_basis;  // temp value
 
-    if (k >= 100) // invokes log(ratio)
+    if (F_std_basis_rd > float( F_std_basis) ) // invokes log(ratio) if decimal value exists
     {
       F_std_log = 1;
-      k -= 100;
-      F_std_basis = k; // can be overridden by next test
     }
 
     if (k > 10) //  invokes multiyr
