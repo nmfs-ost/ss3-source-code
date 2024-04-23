@@ -1536,7 +1536,7 @@ FUNCTION void write_nucontrol()
   NuStart << final_conv << " # final convergence criteria (e.g. 1.0e-04) " << endl;
   NuStart << retro_yr - endyr << " # retrospective year relative to end year (e.g. -4)" << endl;
   NuStart << Smry_Age << " # min age for calc of summary biomass" << endl;
-  NuStart << depletion_basis_rd << " # Depletion basis:  denom is: 0=skip; 1=X*SPBvirgin; 2=X*SPBmsy; 3=X*SPB_styr; 4=X*SPB_endyr; 5=X*dyn_Bzero;  values>=11 invoke N multiyr with 10s & 100s digit; append .1 to invoke log(ratio)" << endl;
+  NuStart << depletion_basis_rd << " # Depletion basis:  denom is: 0=skip; 1=X*SPBvirgin; 2=X*SPBmsy; 3=X*SPB_styr; 4=X*SPB_endyr; 5=X*dyn_Bzero;  values>=11 invoke N multiyr with 10s & 100s digit; append .1 to invoke log(ratio); e.g. 122.1 produces log(12 yr trailing average of B/Bmsy)" << endl;
   NuStart << depletion_level << " # Fraction (X) for Depletion denominator (e.g. 0.4)" << endl;
   NuStart << SPR_reporting << " # SPR_report_basis:  0=skip; 1=(1-SPR)/(1-SPR_tgt); 2=(1-SPR)/(1-SPR_MSY); 3=(1-SPR)/(1-SPR_Btarget); 4=rawSPR" << endl;
   NuStart << F_reporting << " # F_std_reporting_units: 0=skip; 1=exploitation(Bio); 2=exploitation(Num); 3=sum(Apical_F's); 4=mean F for range of ages (numbers weighted); 5=unweighted mean F for range of ages" << endl;
