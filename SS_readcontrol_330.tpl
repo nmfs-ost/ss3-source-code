@@ -3044,6 +3044,13 @@
           ParmLabel += "Q_mirror_offset_" + fleetname(f) + "(" + NumLbl(f) + ")";
           break;
         }
+        case 5: //  add offset
+        {
+          Q_Npar++;
+          ParCount++;
+          ParmLabel += "Q_offset_" + fleetname(f) + "(" + NumLbl(f) + ")";
+          break;
+        }
       }
       if (Q_setup(f, 3) > 0)
       {
@@ -3051,6 +3058,14 @@
         ParCount++;
         Q_setup_parms(f, 2) = Q_Npar;
         ParmLabel += "Q_extraSD_" + fleetname(f) + "(" + NumLbl(f) + ")";
+      }
+      if (Svy_units(f) == 35 || Svy_units(f) == 36)  // env index of recdev or parm dev vector
+      {
+        if (Q_setup(f, 1) != 5)
+        {
+          warnstream << "Suggest using Q option 5 to include offset parameter for an ENV index";
+          write_message (WARN, 0);
+        }
       }
       if (Svy_units(f) == 34) //  special code for depletion, so prepare to adjust phases and lambdas
       {

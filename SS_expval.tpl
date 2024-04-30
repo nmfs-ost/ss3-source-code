@@ -418,6 +418,11 @@ FUNCTION void Get_expected_values(const int y, const int t);
                   Svy_q(f) = mfexp(Svy_log_q(f)); // get q in arithmetic space
                 }
 
+                if (Q_setup(f, 1) == 5) //  add offset
+                {
+                  vbio += Q_parm(Q_setup_parms(f, 1) + 1);
+                }
+
                 // SS_Label_Info_46.1.1 #note order of operations,  vbio raised to a power, then constant is added, then later multiplied by Q.  Needs work
                 if (Q_setup(f, 1) == 3) //  link is power function
                 {
