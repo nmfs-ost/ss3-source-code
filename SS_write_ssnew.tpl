@@ -146,6 +146,7 @@ FUNCTION void write_nudata()
       report1 << "#_Errtype:  -1=normal; 0=lognormal; 1=lognormal with bias correction; >1=df for T-dist" << endl;
       report1 << "#_SD_Report: 0=not; 1=include survey expected value with se" << endl;
       report1 << "#_note that link functions are specified in Q_setup section of control file" << endl;
+      report1 << "#_dataunits = 36 and 35 should use Q_type 5 to provide offset parameter" <<endl;
       report1 << "#_Fleet Units Errtype SD_Report" << endl;
       for (f = 1; f <= Nfleet; f++)
         report1 << f << " " << Svy_units(f) << " " << Svy_errtype(f) << " " << Svy_sdreport(f) << " # " << fleetname(f) << endl;
@@ -2386,7 +2387,7 @@ FUNCTION void write_nucontrol()
   report4 << "#" << endl;
   report4 << "#_Q_setup for fleets with cpue or survey data" << endl;
   report4 << "#_1:  fleet number" << endl;
-  report4 << "#_2:  link type: (1=simple q, 1 parm; 2=mirror simple q, 1 mirrored parm; 3=q and power, 2 parm; 4=mirror with offset, 2 parm)" << endl;
+  report4 << "#_2:  link type: (1=simple q, 1 parm; 2=mirror simple q, 1 mirrored parm; 3=q and power (2 parm); 4=mirror with offset, 2 parm; 5=q and offset (2 parm)" << endl;
   report4 << "#_3:  extra input for link, i.e. mirror fleet# or dev index number" << endl;
   report4 << "#_4:  0/1 to select extra sd parameter" << endl;
   report4 << "#_5:  0/1 for biasadj or not" << endl;
