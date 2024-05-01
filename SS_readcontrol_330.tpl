@@ -2985,7 +2985,11 @@
       if (Svy_errtype(f) == -1)
       {
         ParmLabel += "Q_base_" + fleetname(f) + "(" + NumLbl(f) + ")";
-      }
+        if (Q_setup(f, 5) == 1) //  float
+        {
+          warnstream << "Q setup:  can't use float option with normal error distribution, fleet: " << f;
+          write_message (FATAL, 0); // EXIT!
+        }
       else if (Svy_errtype(f) >= 0)  // lognormal or T-dist
       {
         ParmLabel += "LnQ_base_" + fleetname(f) + "(" + NumLbl(f) + ")";
