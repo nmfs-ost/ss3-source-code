@@ -383,8 +383,10 @@ FUNCTION void Get_expected_values(const int y, const int t);
                     break;
                   }
                 }
+                Svy_selec_abund(f, j) = vbio;  //  e.g. the abundance that has been selected through selectivity or other assignment process
 
                 //  get catchability
+                //  for "float" q, the calculations cannot be done on a year-by-year basis.  The calc is done for the whole time series in SS_objfunc.tpl
                 if (Q_setup(f, 1) == 2) // mirror Q from lower numbered survey
                 {
                   Svy_log_q(f, j) = Svy_log_q(Q_setup(f, 2), 1);
@@ -395,7 +397,6 @@ FUNCTION void Get_expected_values(const int y, const int t);
                   Svy_log_q(f, j) = Svy_log_q(Q_setup(f, 2), 1) + Q_parm(Q_setup_parms(f, 1) + 1);
                   Q_parm(Q_setup_parms(f, 1)) = Svy_log_q(f, 1); // base Q  So this sets parameter equal to the scaling coefficient and can then have a prior
                 }
-
                 else //  Q from parameter
                 {
                   if (Qparm_timevary(Q_setup_parms(f, 1)) == 0) //  not time-varying
@@ -418,18 +419,23 @@ FUNCTION void Get_expected_values(const int y, const int t);
                   Svy_q(f) = mfexp(Svy_log_q(f)); // get q in arithmetic space
                 }
 
-                if (Q_setup(f, 1) == 5) //  add offset
+                // Q transformations and offsets
+                // option 5:  add offset
+                // option 3:  use power function
+                // option 6:  add offset, then use power function
+                if (Q_setup(f, 1) == 5 || Q_setup(f, 1) == 6 ) //  add offset
                 {
                   vbio += Q_parm(Q_setup_parms(f, 1) + 1);
                 }
-
-                // SS_Label_Info_46.1.1 #note order of operations,  vbio raised to a power, then constant is added, then later multiplied by Q.  Needs work
                 if (Q_setup(f, 1) == 3) //  link is power function
                 {
                   vbio = pow(vbio, 1.0 + Q_parm(Q_setup_parms(f, 1) + 1));
-                } //  raise vbio to a power
+                }
+                if (Q_setup(f, 1) == 6 ) //  link is power function
+                {
+                  vbio = pow(vbio, 1.0 + Q_parm(Q_setup_parms(f, 1) + 2));  // note that this is 2nd parameter after q
+                }
 
-                Svy_selec_abund(f, j) = vbio;  //  e.g. the abundance that has been selected through selectivity or other assignment process
                 if (Svy_errtype(f) >= 0) //  lognormal or T-distribution
                 {
                   Svy_est(f, j) = log(vbio + 0.000001);
