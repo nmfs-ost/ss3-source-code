@@ -3043,7 +3043,7 @@
           }
           Q_Npar++;
           ParCount++;
-          ParmLabel += "Q_mirror_offset_" + fleetname(f) + "(" + NumLbl(f) + ")";
+          ParmLabel += "Q_mirror_scale_" + fleetname(f) + "(" + NumLbl(f) + ")";
           break;
         }
         case 5: //  add offset
