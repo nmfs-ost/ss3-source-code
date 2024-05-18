@@ -2387,7 +2387,7 @@ FUNCTION void write_nucontrol()
   report4 << "#" << endl;
   report4 << "#_Q_setup for fleets with cpue or survey data" << endl;
   report4 << "#_1:  fleet number" << endl;
-  report4 << "#_2:  link type: 1=simple q; 2=mirror; 3=power (+1 parm); 4=mirror with offset (+1p); 5=offset (+1p); 6=offset & power (+2p)" << endl;
+  report4 << "#_2:  link type: 1=simple q; 2=mirror; 3=power (+1 parm); 4=mirror with scale (+1p); 5=offset (+1p); 6=offset & power (+2p)" << endl;
   report4 << "#_3:  extra input for link, i.e. mirror fleet# or dev index number" << endl;
   report4 << "#_4:  0/1 to select extra sd parameter" << endl;
   report4 << "#_5:  0/1 for biasadj or not" << endl;
