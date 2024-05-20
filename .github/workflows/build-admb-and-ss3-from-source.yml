@@ -266,8 +266,8 @@ jobs:
           rm -rf ss3_osx.tar
           mkdir SS330
           chmod 777 SS330
-          /bin/bash ./Make_SS_330_new.sh --admb docker -b SS330 -p
-          /bin/bash ./Make_SS_330_new.sh --admb docker -b SS330 -o -p   
+          /bin/bash ./Make_SS_330_new.sh -b SS330 -p
+          /bin/bash ./Make_SS_330_new.sh -b SS330 -o -p   
 
       - name: Verify binary on linux
         if: matrix.config.os == 'ubuntu-latest'
