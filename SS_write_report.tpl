@@ -1901,7 +1901,7 @@ FUNCTION void write_bigoutput()
           }
           else // normal
           {
-            SS2out << Svy_est(f, i) << " " << Svy_q(f, i) << " " << Svy_est(f, i) / Svy_selec_abund(f, i) << " " << Svy_se_use(f, i) << " " << Svy_se(f, i);
+            SS2out << Svy_est(f, i) << " " << Svy_q(f, i) << " " << "NA" << " " << Svy_se_use(f, i) << " " << Svy_se(f, i);
             if (Svy_use(f, i) > 0)
             {
               SS2out << " " << Svy_obs(f, i) - Svy_est(f, i) << " ";
@@ -1952,7 +1952,7 @@ FUNCTION void write_bigoutput()
     SS2out << endl
            << pick_report_name(21) << endl;
     SS2out << "Fleet Link Link+ ExtraStd BiasAdj Float   Q Num=0/Bio=1 Err_type"
-           << " N Npos RMSE logL  mean_input_SE Input+VarAdj Input+VarAdj+extra VarAdj New_VarAdj penalty_mean_Qdev rmse_Qdev fleetname" << endl;
+           << " N Npos RMSE logL  mean_input_SE Input+VarAdj Input+VarAdj+extra VarAdj New_VarAdj penalty_mean_Qdev rmse_Qdev Offset Power fleetname" << endl;
     for (f = 1; f <= Nfleet; f++)
     {
       if (Svy_N_fleet(f) > 0)
@@ -1961,7 +1961,16 @@ FUNCTION void write_bigoutput()
                << " " << Svy_N_fleet(f) << " " << n_rmse(f) << " " << rmse(f)<< " " << surv_like(f) 
                << " " << mean_CV(f) << " " << mean_CV3(f) << " " << mean_CV2(f) << " " << var_adjust(1, f)
                << " " << var_adjust(1, f) + rmse(f) - mean_CV(f)
-               << " " << Q_dev_like(f, 1) << " " << Q_dev_like(f, 2) << " " << fleetname(f) << endl;
+               << " " << Q_dev_like(f, 1) << " " << Q_dev_like(f, 2) << " ";
+        if (Q_setup(f, 1) >= 5)
+        {SS2out << Q_parm(Q_setup_parms(f, 1) + 1) << " ";}
+        else
+        {SS2out << " NA ";}
+        if (Q_setup(f, 1) == 3 || Q_setup(f,1) == 6)
+        {SS2out << Q_parm(Q_setup_parms(f, 1) + 2) << " ";}
+        else
+        {SS2out << " NA ";}
+        SS2out << fleetname(f) << endl;
       }
     }
     if (depletion_fleet > 0) //  special code for depletion, so prepare to adjust phases and lambdas

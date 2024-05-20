@@ -34,9 +34,11 @@ jobs:
           repository: 'nmfs-ost/ss3-test-models'
           path: test-models-repo
 
-      - name: install libcurl
+      - name: install libcurl and other packages
         run: |
+          sudo add-apt-repository ppa:ubuntu-toolchain-r/test
           sudo apt-get update
+          sudo apt-get install --only-upgrade libstdc++6
           sudo apt-get install -y libcurl4-openssl-dev
 
       - name: setup R

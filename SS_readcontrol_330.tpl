@@ -2923,7 +2923,6 @@
   int firstQparm;
   int timevary_parm_cnt_Q;
   int timevary_parm_start_Q;
-  ivector Q_link(1,10);
   int depletion_fleet;  //  stores fleet(survey) number for the fleet that is defined as "depletion" by survey type=34
   int depletion_type;  //  entered by Q_setup(f,2) and stores additional controls for depletion fleet
 
@@ -2932,10 +2931,7 @@
   firstQparm = 0;
   timevary_parm_cnt_Q = 0;
   timevary_parm_start_Q = 0;
-  Q_link.initialize();
-  Q_link(1) = 1; //  simple q, 1 parm
-  Q_link(2) = 1; //  mirror simple q, 1 mirrored parameter
-  Q_link(3) = 2; //  q and power, 2 parm
+
   depletion_fleet = 0;
   depletion_type = 0;
   
@@ -2989,6 +2985,11 @@
       if (Svy_errtype(f) == -1)
       {
         ParmLabel += "Q_base_" + fleetname(f) + "(" + NumLbl(f) + ")";
+        if (Q_setup(f, 5) == 1) //  float
+        {
+          warnstream << "Q setup:  can't use float option with normal error distribution, fleet: " << f;
+          write_message (FATAL, 0); // EXIT!
+        }
       }
       else if (Svy_errtype(f) >= 0)  // lognormal or T-dist
       {
@@ -3003,6 +3004,7 @@
           write_message (FATAL, 0); // EXIT!
         }
       }
+
       switch (Q_setup(f, 1))
       {
         case 1: //  simple Q
@@ -3041,7 +3043,24 @@
           }
           Q_Npar++;
           ParCount++;
-          ParmLabel += "Q_mirror_offset_" + fleetname(f) + "(" + NumLbl(f) + ")";
+          ParmLabel += "Q_mirror_scale_" + fleetname(f) + "(" + NumLbl(f) + ")";
+          break;
+        }
+        case 5: //  add offset
+        {
+          Q_Npar++;
+          ParCount++;
+          ParmLabel += "Q_offset_" + fleetname(f) + "(" + NumLbl(f) + ")";
+          break;
+        }
+        case 6: //  add offset and power
+        {
+          Q_Npar++;
+          ParCount++;
+          ParmLabel += "Q_offset_" + fleetname(f) + "(" + NumLbl(f) + ")";
+          Q_Npar++;
+          ParCount++;
+          ParmLabel += "Q_power_" + fleetname(f) + "(" + NumLbl(f) + ")";
           break;
         }
       }
@@ -3051,6 +3070,19 @@
         ParCount++;
         Q_setup_parms(f, 2) = Q_Npar;
         ParmLabel += "Q_extraSD_" + fleetname(f) + "(" + NumLbl(f) + ")";
+      }
+      if (Svy_units(f) == 35 || Svy_units(f) == 36)  // env index of recdev or parm dev vector
+      {
+        if (Q_setup(f, 1) < 5)  //  so OK for 5 and 6
+        {
+          warnstream << "Suggest using Q option 5 to include offset parameter for an index of deviations (type 35 or 36)";
+          write_message (WARN, 0);
+        }
+        if (Q_setup(f, 1) == 3 || Q_setup(f,1) == 6)         
+        {
+          warnstream << "Power function cannot be used for an index of deviations (type 35 or 36) because of negative values";
+          write_message (FATAL, 0);
+        }
       }
       if (Svy_units(f) == 34) //  special code for depletion, so prepare to adjust phases and lambdas
       {
