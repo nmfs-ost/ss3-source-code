@@ -18,4 +18,5 @@ Compile/ss3.log
 *.Rproj
 .Rhistory
 Compile/ssFileLabels.txt
+Compile/Make_SS_warn.bat
 StockSynthesis.code-workspace
