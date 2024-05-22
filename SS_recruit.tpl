@@ -49,14 +49,18 @@ FUNCTION dvariable Spawn_Recr(const prevariable& SSB_virgin_adj, const prevariab
     case 3: // Beverton-Holt
     {
       steepness = SR_parm_work(2);
-//      dvariable SPR = SSB_virgin_adj / Recr_virgin;
-//      dvariable alpha = (4.0 * steepness) / ( SPR * (1. - steepness)) ;
-//      dvariable beta = (5.0 * steepness - 1.0 )/((1.0 - steepness ) * Recr_virgin * SPR );
-//      beta = (1.0 / Recr_virgin) * (alpha - (1.0 / SPR));
       NewRecruits = (4. * steepness * Recr_virgin_adj * SSB_curr_adj) /
           (SSB_virgin_adj * (1. - steepness) + (5. * steepness - 1.) * SSB_curr_adj);
       break;
     }
+
+      case 10: // Beverton-Holt with alpha beta  per WHAM:  R = A*S/(1+B*S)
+      {
+        alpha = mfexp(SR_parm_work(3));
+        beta = mfexp(SR_parm_work(4));
+        NewRecruits =  (alpha * SSB_curr_adj) / (1.0 + beta * SSB_curr_adj);
+        break;
+      }
 
     //  SS_Label_43.3.4  constant expected recruitment
     case 4: // none
@@ -159,14 +163,6 @@ FUNCTION dvariable Spawn_Recr(const prevariable& SSB_virgin_adj, const prevariab
       break;
     }
 
-      case 10: // Beverton-Holt with alpha beta
-      {
-  //  WHAM based on R = A*S/(1+B*S)
-        alpha = mfexp(SR_parm_work(3));
-        beta = mfexp(SR_parm_work(4));
-        NewRecruits =  (alpha * SSB_curr_adj) / (1.0 + beta * SSB_curr_adj);
-        break;
-      }
   }
   RETURN_ARRAYS_DECREMENT();
   return NewRecruits;
@@ -322,18 +318,19 @@ FUNCTION dvar_vector Equil_Spawn_Recr_Fxn(const dvar_vector& SRparm,
       SPR_virgin = SSB_virgin / Recr_virgin;
       alpha = 4.0 * steepness / (SPR_virgin * (1. - steepness));
       beta = (5.0 * steepness - 1.0) / ((1 - steepness) * SSB_virgin);
-      report5<<" alpha "<<alpha<<" beta "<<beta<<" SSB_unf "<<SSB_virgin<<" SPR "<<SPR_virgin<<" steep "<<steepness<<endl;
+
+//      report5 <<" SSB_unf "<<SSB_virgin<<" SPR_unf "<<SPR_virgin<<" steep: "<<steepness<<" R0: "<<Recr_virgin << endl;
+//      report5 <<" derive_alpha "<<alpha<<" derive_beta "<<beta << endl;
+//      report5 << " deriv_h: " << alpha * SPR_virgin / (4. + alpha * SPR_virgin) << " derive_R0: " << 1. / beta * (alpha - (1. / SPR_virgin))<<endl;
       B_equil = (alpha * SPR_temp - 1.0) / beta;
-//      report5<<" spr "<<SPR_temp<<"  Beq "<<B_equil<<endl;
       B_equil = posfun(B_equil, 0.0001, temp);
       R_equil = alpha * B_equil / (1.0 + beta * B_equil);
-//      report5<<"  Beq "<<B_equil<<" Req "<<R_equil<<endl;
-//      R_equil = (4. * steepness * Recr_virgin * B_equil) / (SSB_virgin * (1. - steepness) + (5. * steepness - 1.) * B_equil); //Beverton-Holt
-//      report5<<" SS3 Beq "<<B_equil<<" Req "<<R_equil<<" alpha "<<alpha<<" beta "<<beta<<" SSB_unf "<<SSB_unf<<endl;
+//      report5 << "SPR_input: " << SPR_temp << " B_equil: " << B_equil << " R_equil: "<<R_equil << endl<<endl;
+
       break;
     }
 
-    case 10: // Beverton-Holt with alpha and beta parameterization using  R = A*S/(B+S) approach
+    case 10: // Beverton-Holt with alpha and beta parameterization using  R = A*S/(1+B*S) approach; same as WHAM
     {
       alpha = mfexp(SRparm(3));
       beta = mfexp(SRparm(4));
@@ -354,11 +351,11 @@ FUNCTION dvar_vector Equil_Spawn_Recr_Fxn(const dvar_vector& SRparm,
     //  SS_Label_44.1.5  Hockey Stick
     case 5: // hockey stick
     {
-      alpha = SRparm(3) * Recr_virgin; // min recruitment level
+      dvariable hockey_min = SRparm(3) * Recr_virgin; // min recruitment level
       //        temp=SSB_virgin/R0*steepness;  // spawners per recruit at inflection
-      beta = (Recr_virgin - alpha) / (steepness * SSB_virgin); //  slope of recruitment on spawners below the inflection
-      B_equil = Join_Fxn(0.0 * SSB_virgin / Recr_virgin, SSB_virgin / Recr_virgin, SSB_virgin / Recr_virgin * steepness, SPR_temp, alpha / ((1. / SPR_temp) - beta), SPR_temp * Recr_virgin);
-      R_equil = Join_Fxn(0.0 * SSB_virgin, SSB_virgin, SSB_virgin * steepness, B_equil, alpha + beta * B_equil, Recr_virgin);
+      dvariable hockey_slope = (Recr_virgin - hockey_min) / (steepness * SSB_virgin); //  slope of recruitment on spawners below the inflection
+      B_equil = Join_Fxn(0.0 * SSB_virgin / Recr_virgin, SSB_virgin / Recr_virgin, SSB_virgin / Recr_virgin * steepness, SPR_temp, hockey_min / ((1. / SPR_temp) - hockey_slope), SPR_temp * Recr_virgin);
+      R_equil = Join_Fxn(0.0 * SSB_virgin, SSB_virgin, SSB_virgin * steepness, B_equil, hockey_min + hockey_slope * B_equil, Recr_virgin);
       break;
     }
     //  SS_Label_44.1.7  3 parameter survival based
