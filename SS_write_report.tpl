@@ -1794,7 +1794,7 @@ FUNCTION void write_bigoutput()
     else if (SR_fxn == 3)
     {
       alpha = 4.0 * steepness / (SPR_virgin * (1. - steepness));
-      beta = (5.0 * steepness - 1.0) / ((1 - steepness) * SSB_virgin);
+      beta = (5.0 * steepness - 1.0) / ((1. - steepness) * SSB_virgin);
       SS2out << " Ln_alpha_derived: " << log(alpha) << " alpha " << alpha << endl;
       SS2out << " Ln_beta_derived: " << log(beta) << " beta " << beta;
     }
@@ -1846,7 +1846,7 @@ FUNCTION void write_bigoutput()
     }
     SS2out << endl;
 
-    SS2out << "Yr SpawnBio exp_recr with_regime bias_adjusted pred_recr dev biasadjuster era mature_bio mature_num raw_dev SPR0 h R0" << endl;
+    SS2out << "Yr SpawnBio exp_recr with_regime bias_adjusted pred_recr dev biasadjuster era mature_bio mature_num raw_dev SSBe/R0 h R0" << endl;
     SS2out << "S/Rcurve " << SSB_virgin << " " << Recr_virgin << endl;
     y = styr - 2;
     SS2out << "Virg " << SSB_yr(y) << " " << exp_rec(y) << " - " << 0.0 << " Virg " << SSB_B_yr(y) << " " << SSB_N_yr(y) << " 0.0 " << endl;
@@ -1897,10 +1897,10 @@ FUNCTION void write_bigoutput()
       {
         SS2out << " _ _ Fixed";
       }
-      temp = Smry_Table(y,11) / Recr_virgin;
+      dvariable SPR = Smry_Table(y, 11) / Recr_virgin;
       alpha = mfexp(SR_parm_byyr(y,3));
       beta = mfexp(SR_parm_byyr(y,4));
-      SS2out << " " << temp << " " << alpha * temp / (4. + alpha * temp) << " " << 1. / beta * (alpha - (1. / temp));
+      SS2out << " " << SPR << " " << alpha * SPR / (4. + alpha * SPR) << " " << 1. / beta * (alpha - (1. / SPR));
       SS2out << SR_parm_byyr(y)(1,4) << endl;
     }
 
