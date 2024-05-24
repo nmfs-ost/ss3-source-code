@@ -2168,6 +2168,17 @@
 
   init_int do_recdev  //  0=none; 1=devvector; 2=simple deviations; 3=dev from R0
 !!echoinput<<do_recdev<<" do_recdev"<<endl;
+  // check for use of devvector with MCMC
+ LOCAL_CALCS
+  // clang-format on
+  if (do_recdev == 1 & mcmcFlag == 1)
+  {
+    warnstream << "do_recdev option 1=devvector should not be used with MCMC, recommend option 2=simple deviations. For more detail see https://github.com/admb-project/admb/issues/107.";
+    write_message (FATAL, 0);
+  }
+  // clang-format off
+ END_CALCS
+
   init_int recdev_start;
 !!echoinput<<recdev_start<<" recdev_start"<<endl;
   init_int recdev_end;
