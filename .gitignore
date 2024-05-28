@@ -10,6 +10,8 @@
 Compile/ss.tpl
 Compile/ss_opt.tpl
 Compile/ss_trans.tpl
+Compile/ss3.tpl
+Compile/Make_SS_warn.bat
 ~$*.*
 Compile/ss.log
 Compile/ss3.log
