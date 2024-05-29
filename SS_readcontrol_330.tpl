@@ -2171,7 +2171,7 @@
   // check for use of devvector with MCMC
  LOCAL_CALCS
   // clang-format on
-  if (do_recdev == 1 & mcmcFlag == 1)
+  if (do_recdev == 1 && mcmcFlag == 1)
   {
     warnstream << "do_recdev option 1=devvector should not be used with MCMC, recommend option 2=simple deviations. For more detail see https://github.com/admb-project/admb/issues/107.";
     write_message (FATAL, 0);

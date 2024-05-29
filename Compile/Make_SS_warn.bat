@@ -19,15 +19,15 @@ cd Compile
 
 if exist ss3.exe (
   if exist ss3_old.exe (
-    del ss3old.exe
+    del ss3_old.exe
   )
   ren ss3.exe ss3_old.exe
 )
 
 tpl2cpp ss3
 
-g++ -c -std=c++14 -O2 -D_FILE_OFFSET_BITS=64  -DUSE_ADMB_CONTRIBS -D_USE_MATH_DEFINES -I. -I"C:\ADMB-13.1\include" -I"C:\ADMB-13.1\include\contrib" -Wall -Wextra -o ss3.obj ss3.cpp
+g++ -c -std=c++17 -O2 -D_FILE_OFFSET_BITS=64  -DUSE_ADMB_CONTRIBS -D_USE_MATH_DEFINES -I. -I"C:\ADMB-13.2\include" -I"C:\ADMB-13.2\include\contrib" -Wall -Wextra -o ss3.obj ss3.cpp
 
-g++ -static -o ss3.exe ss3.obj "C:\ADMB-13.1\lib\libadmb-contrib-mingw64-g++8.a"
+g++ -static -o ss3.exe ss3.obj "C:\ADMB-13.2\lib\libadmb-contrib-mingw64-g++12.a"
 
 dir *.exe

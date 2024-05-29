@@ -491,7 +491,7 @@ FUNCTION void Get_expected_values(const int y, const int t);
                       }
                       if (exp_disc(f, j) < 0.0)
                       {
-                        warnstream << f << " " << j << " " << exp_disc(f, j) << " catches " << catch_fleet(t, f);
+                        warnstream << "negative discard occurred for fleet: " << f << "; obs: " << j << "; usually ephemeral issue with bad iteration";
                         write_message (WARN, 0);
                       }
                     }
