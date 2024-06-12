@@ -22,6 +22,7 @@ FUNCTION dvariable Spawn_Recr(const prevariable& SSB_virgin_adj, const prevariab
   dvariable SRZ_0;
   dvariable srz_min;
   dvariable SRZ_surv;
+//  warning << y << "  Tester_R0 " <<  Recr_virgin_adj << " SSB0 " << SSB_virgin_adj << " SSB_curr: " << SSB_current << endl;
 
   //  SS_Label_43.1  add 0.1 to input spawning biomass value to make calculation more rebust
   SSB_curr_adj = SSB_current + 0.100; // robust
@@ -56,8 +57,8 @@ FUNCTION dvariable Spawn_Recr(const prevariable& SSB_virgin_adj, const prevariab
 
       case 10: // Beverton-Holt with alpha beta  per WHAM:  R = A*S/(1+B*S)
       {
-        alpha = mfexp(SR_parm_work(3));
-        beta = mfexp(SR_parm_work(4));
+        dvariable alpha = mfexp(SR_parm_work(3));
+        dvariable beta = mfexp(SR_parm_work(4));
         NewRecruits =  (alpha * SSB_curr_adj) / (1.0 + beta * SSB_curr_adj);
         break;
       }
@@ -315,10 +316,12 @@ FUNCTION dvar_vector Equil_Spawn_Recr_Fxn(const dvar_vector& SRparm,
 
   //  SS3 previously used alternative formulation: R = A*S/(B+S)
   //  converting SS3 to align with WHAM
-      SPR_virgin = SSB_virgin / Recr_virgin;
+  //    SPR_virgin = SSB_virgin / Recr_virgin;  //  this is already defined
       alpha = 4.0 * steepness / (SPR_virgin * (1. - steepness));
       beta = (5.0 * steepness - 1.0) / ((1 - steepness) * SSB_virgin);
 
+      // " h " << steepness << " derive "  << alpha * SPR_virgin / (4. + alpha * SPR_virgin) << " " << endl;
+      // " R0 " << Recr_virgin << " derive "  << 1. / beta * (alpha - 1./SPR_virgin) << endl;
 //      report5 <<" SSB_unf "<<SSB_virgin<<" SPR_unf "<<SPR_virgin<<" steep: "<<steepness<<" R0: "<<Recr_virgin << endl;
 //      report5 <<" derive_alpha "<<alpha<<" derive_beta "<<beta << endl;
 //      report5 << " deriv_h: " << alpha * SPR_virgin / (4. + alpha * SPR_virgin) << " derive_R0: " << 1. / beta * (alpha - (1. / SPR_virgin))<<endl;
@@ -332,8 +335,8 @@ FUNCTION dvar_vector Equil_Spawn_Recr_Fxn(const dvar_vector& SRparm,
 
     case 10: // Beverton-Holt with alpha and beta parameterization using  R = A*S/(1+B*S) approach; same as WHAM
     {
-      alpha = mfexp(SRparm(3));
-      beta = mfexp(SRparm(4));
+      dvariable alpha = mfexp(SRparm(3));
+      dvariable beta = mfexp(SRparm(4));
       B_equil = (alpha * SPR_temp - 1.0) / beta;
       B_equil = posfun(B_equil, 0.0001, temp);
       R_equil = alpha * B_equil / (1.0 + beta * B_equil);
