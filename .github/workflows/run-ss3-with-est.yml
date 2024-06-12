@@ -1,4 +1,5 @@
-# Build SS3 and run models with estimation and hessian
+# Build SS3 and run test models with estimation and hessian
+# Only runs on a pull request and a push to main if the tpl files have changed.
 name: run-ss3-with-est
 on:
   workflow_dispatch:
@@ -14,7 +15,7 @@ on:
     branches:
       - main
 
-# run fast running SS3 models with estimation
+# Run fast running SS3 test models with estimation
 jobs:
   run-ss3-with-est:
     if: github.event.pull_request.draft == false
@@ -39,7 +40,7 @@ jobs:
           sudo apt-get update
           sudo apt-get install --only-upgrade libstdc++6
           
-      - name: setup R
+      - name: Setup R
         uses: r-lib/actions/setup-r@v2
 
       # - name: Get admb and put in path, linux
@@ -63,47 +64,56 @@ jobs:
           chmod 777 SS330
           /bin/bash ./Make_SS_330_new.sh --admb docker -b SS330
 
-      - name: move exes, scripts to needed locations
+      - name: Move exes and R scripts to needed locations
         run: |
           mv test-models-repo/models test-models-repo/model_runs
           mv SS330/ss3 test-models-repo/model_runs/ss3
 
-      - name: change permissions on ss3 exes
+      - name: Change permissions on ss3 exes
         run: sudo chmod a+x test-models-repo/model_runs/ss3
       
-      - name: download R packages for parallel
+      - name: Download R packages to run test models in parallel parallel
         run: Rscript -e 'install.packages(c("parallely", "furrr", "future"))'
 
-      - name: run models
+      - name: Run test models
         run: |
+          # Setup parallel
           ncores <- parallelly::availableCores(omit = 1)
           future::plan(future::multisession, workers = ncores)
 
+          # Get model names and file paths
           mod_names <- list.dirs(file.path("test-models-repo", "model_runs"), full.names = FALSE, recursive = FALSE)
           mod_paths <- list.dirs(file.path("test-models-repo", "model_runs"), full.names = TRUE, recursive = FALSE)
           print(mod_names)
+
+          # Create function to run models with estimation
           run_ss <- function(dir) {
             wd <- getwd()
             print(wd)
             on.exit(system(paste0("cd ", wd)))
-            # rename the reference files
+
+            # Rename the reference files
             file.rename(file.path(dir, "ss_summary.sso"),
                         file.path(dir, "ss_summary_ref.sso"))
             file.rename(file.path(dir, "warning.sso"),
                         file.path(dir, "warning_ref.sso"))
             file.copy(file.path(dir, "ss3.par"), file.path(dir, "ss3_ref.par"))
-            # run the models with estimation and see if model finishes without error
-            message("running ss on ", basename(dir))
+
+            # Run the models with estimation and see if model finishes without error
+            message("running ss3 on ", basename(dir))
             system(paste0("cd ", dir, " && ../ss3 -nox"))
             model_ran <- file.exists(file.path(dir, "control.ss_new"))
             return(model_ran)
           }
 
+          # Run test models in parallel and print out error messages
           mod_ran <- furrr::future_map(mod_paths, function(x){tryCatch(run_ss(x),
           error = function(e) print(e))})
 
           mod_errors <- mod_names[unlist(lapply(mod_ran, function(x) "simpleError" %in% class(x)))]
           success <- TRUE
+
+          # Print list of models with errors if there are any
           if(length(mod_errors) > 0) {
             message("Model code with errors were: ", paste0(mod_errors, collapse = ", "),
                     ". See error list above for more details.")
@@ -111,6 +121,8 @@ jobs:
           } else {
             message("All code ran without error, but model runs may still have failed.")
           }
+          
+          # Print list of models that didn't run if there are any
           mod_no_run <- mod_names[unlist(lapply(mod_ran, function(x) isFALSE(x)))] # false means model didn't run
           if(length(mod_no_run) > 0) {
             message("Models that didn't run are ", paste0(mod_no_run, collapse = ", "))
@@ -118,7 +130,8 @@ jobs:
           } else {
             message("All models ran without error.")
           }
-          # determine if job fails or passes
+
+          # Determine if job fails or passes
           if(success == FALSE) {
             stop("Job failed due to code with errors or models that didn't run.")
           } else {
@@ -126,14 +139,15 @@ jobs:
           }
         shell: Rscript {0}
 
-      - name: Run comparison
+      - name: Run comparison using compare.R file in test models repo
         run: |
           source("test-models-repo/.github/r_scripts/compare.R")
           orig_wd <- getwd()
           setwd("test-models-repo")
           on.exit(orig_wd)
           dir.create("run_R")
-          # get model folder names
+
+          # Get model folder names
           mod_fold <- file.path("model_runs")
           mod_names <- list.dirs(mod_fold, full.names = FALSE, recursive = FALSE)
           message("Will compare ref runs to new results for these models:")
@@ -164,15 +178,18 @@ jobs:
                           hessian = TRUE,
                           new_file = NULL, fail_file = fail_file)
           }
-          # write out all model results
+
+          # Write out all model results
           compare_df <- do.call("rbind", compare_list)
           compare_df_print <- format(compare_df, digits = 6, nsmall = 3,
                                    justify = "left")
-          message("see saved artifact all_results.csv for all compared values and their differences.")
-          # write all model comparison results to csv
+          message("See saved artifact all_results.csv for all compared values and their differences.")
+          
+          # Write all model comparison results to csv
           write.csv(compare_df_print, "run_R/all_results.csv", row.names = FALSE)
-          # write all
-          message("see saved artifact all_changes.csv for only changed values (even if the threshold was too low to fail the job)")
+         
+          # Write all model changes to csv
+          message("See saved artifact all_changes.csv for only changed values (even if the threshold was too low to fail the job).")
           filtered_df <- compare_df[compare_df$diff != 0, ]
           filtered_df <- format(filtered_df, digits = 6, nsmall = 3,
                                    justify = "left")

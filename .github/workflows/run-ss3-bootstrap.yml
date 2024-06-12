@@ -1,4 +1,7 @@
-# Build SS3 and run models with estimation and hessian
+# Build SS3 and run Simple_with_DM_sizefreq model from test models 
+# repo to make sure that ss3 makes bootstrap files and that all 
+# .ss_new files were produced.
+# Only runs on a pull request and a push to main if the tpl files have changed.
 name: run-ss3-bootstrap-files
 on:
   workflow_dispatch:
@@ -14,7 +17,6 @@ on:
     branches:
       - main
 
-# run fast running SS3 models with estimation
 jobs:
   run-ss3-bootstrap-files:
     if: github.event.pull_request.draft == false
@@ -28,20 +30,20 @@ jobs:
       - name: Checkout ss3 repo
         uses: actions/checkout@v4
 
-      - name: Checkout models repo
+      - name: Checkout test models repo
         uses: actions/checkout@v4
         with:
           repository: 'nmfs-ost/ss3-test-models'
           path: test-models-repo
 
-      - name: install libcurl & other necessary packages
+      - name: Install libcurl & other necessary packages
         run: |
           sudo add-apt-repository ppa:ubuntu-toolchain-r/test
           sudo apt-get update
           sudo apt-get install --only-upgrade libstdc++6
           sudo apt-get install -y libcurl4-openssl-dev
 
-      - name: setup R
+      - name: Setup R
         uses: r-lib/actions/setup-r@v2
 
       # - name: Get admb and put in path, linux
@@ -65,26 +67,26 @@ jobs:
           chmod 777 SS330
           /bin/bash ./Make_SS_330_new.sh --admb docker -b SS330
 
-      - name: move exes, scripts to needed locations
+      - name: Move exes, scripts to needed locations
         run: |
           mv test-models-repo/models test-models-repo/model_runs
           mv SS330/ss3 test-models-repo/model_runs/Simple_with_DM_sizefreq/ss3
 
-      - name: change permissions on ss3 exes
+      - name: Change permissions on ss3 exes
         run: sudo chmod a+x test-models-repo/model_runs/Simple_with_DM_sizefreq/ss3
       
-      - name: download R packages
+      - name: Download R packages
         run: Rscript -e 'install.packages(c("remotes", "purrr", "arsenal", "utils"))'
 
-      - name: install r4ss
+      - name: Install r4ss
         run: Rscript -e 'remotes::install_github("r4ss/r4ss")'
 
-      - name: does ss3 produce bootstrap files
+      - name: Ensure that ss3 produces bootstrap files
         run: |
           # Use Simple_with_DM_sizefreq model to test bootstrap files
           boot_mod_dir <- grep("Simple_with_DM_sizefreq", list.dirs(file.path("test-models-repo", "model_runs"), full.names = TRUE, recursive = FALSE), value = TRUE)
 
-          # Change to have model output 8 bootstrap files
+          # Change to have model output 8 bootstrap files and run model
           boot_files <- r4ss::SS_read(dir = boot_mod_dir)
           boot_files$start$N_bootstraps <- 10
           r4ss::SS_write(boot_files, dir = boot_mod_dir, overwrite = TRUE)
@@ -103,11 +105,12 @@ jobs:
           boot1 <- r4ss::SS_readdat(file = file.path(boot_mod_dir,"data_boot_001.ss"))
           boot2 <- r4ss::SS_readdat(file = file.path(boot_mod_dir,"data_boot_002.ss"))
           
-          # unlist sizefreq data
+          # Unlist sizefreq data
           dat_sizefreq <- purrr::map_df(dat$sizefreq_data_list, ~.x)
           boot1_sizefreq <- purrr::map_df(boot1$sizefreq_data_list, ~.x)
           boot2_sizefreq <- purrr::map_df(boot2$sizefreq_data_list, ~.x)
 
+          # Compare data and bootstrap files
           df <- data.frame(
               var = c("lencomp", "lencomp","catch","catch","CPUE","CPUE", "agecomp","agecomp","sizefreq","sizefreq"),
               data_compare = rep(c("dat_boot1", "boot1_boot2"), 5),
@@ -132,13 +135,14 @@ jobs:
               paste(utils::capture.output(print(x)), collapse = "\n")
           }
 
+          # Error if not enough changes made in bootstrap files
           if(length(df_error > 0)){
               stop("Bootstrap data produced less than 20 changes in a data type, see printed table below.\n", print_and_capture(df_error))
           } else {
               message("Bootstrap data types all have > 20 changes")
               }
           
-          # Check that the model produced all .ss_new files and that they have content in them
+          # Check that the model produced all .ss_new files and that they have correct content in them
           ss_new_files <- list.files(boot_mod_dir, pattern = ".ss_new")
           ss_new_validate <- c("control.ss_new", "data_echo.ss_new", "forecast.ss_new", "starter.ss_new", "wtatage.ss_new")
 

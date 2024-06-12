@@ -1,5 +1,7 @@
-# Build stock synthesis with all c++ compiler warnings, and fail job if the
-# number of warnings has increased.
+# Build stock synthesis on linux with all c++ compiler warnings, and fail job if the
+# number of warnings has increased using the warnings_ss_ref.txt file under 
+# workflows > reference_files.
+# Only runs on a pull request and a push to main if the tpl files have changed
 name: build-ss3-warnings
 
 # Controls when the action will run.
@@ -32,7 +34,7 @@ jobs:
       - name: Update Ubuntu packages
         run: sudo apt-get update
         
-      - name: setup R
+      - name: Setup R
         uses: r-lib/actions/setup-r@v2
 
       # - name: Get admb and put in path, linux
@@ -42,7 +44,7 @@ jobs:
         #   sudo chmod 755 /usr/local/bin/admb-13.1/bin/admb
         #   echo "/usr/local/bin/admb-13.1/bin" >> $GITHUB_PATH
 
-      - name: Build stock synthesis with warnings displayed in console using admb docker image
+      - name: Build stock synthesis with warnings using admb docker image and display in console
         run: |
           rm -rf SS330
           rm -rf ss3_osx.tar
@@ -50,7 +52,7 @@ jobs:
           chmod 777 SS330
           /bin/bash ./Make_SS_330_new.sh --admb docker -b SS330 -w
 
-      - name: Build stock synthesis with warnings again to save to file
+      - name: Build stock synthesis with warnings using admb docker image again to save to file
         run: |
           rm -rf SS330
           rm -rf ss3_osx.tar
@@ -77,10 +79,10 @@ jobs:
         # txt <- txt[(warn_line+1):length(txt)]
         shell: Rscript {0}
 
-      - name:  Print warnings
+      - name: Print warnings
         run: cat warnings_ss.txt
 
-      - name: determine if fails/passes
+      - name: Determine if fails/passes based on the number of warnings
         run: |
           ref <- readLines(".github/workflows/reference_files/warnings_ss_ref.txt")
           n_warn <- read.table("n_warn.txt")
