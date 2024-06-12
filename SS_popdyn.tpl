@@ -357,6 +357,7 @@ FUNCTION void get_initial_conditions()
       beta = mfexp(SR_parm(4));
       steepness = alpha * SPR_virgin / (4. + alpha * SPR_virgin);
       Recr_virgin = 1. / beta * (alpha - (1. / SPR_virgin));
+//      warning << " before AB_calcs " << "parm " << SR_parm(1) << " calc " << log(Recr_virgin) << endl;
       SR_parm(1) = log(Recr_virgin);
       SR_parm(2) = steepness;
     }
@@ -370,6 +371,8 @@ FUNCTION void get_initial_conditions()
     SR_parm_virg(i) = SR_parm(i);
     SR_parm_work(i) = SR_parm(i);
   }
+//  if (SR_fxn == 3) warning << "tester_A: " << SR_parm_work(1) << " base: " << SR_parm(1) << endl;
+//  if (SR_fxn == 10) warning << "tester_A: " << SR_parm_work(4) << " base: " << SR_parm(4) << endl;
     equ_Recr = Recr_virgin;
     exp_rec(eq_yr, 1) = Recr_virgin; //  expected Recr from s-r parms
     exp_rec(eq_yr, 2) = Recr_virgin;
@@ -476,6 +479,9 @@ FUNCTION void get_initial_conditions()
     else
     {
       SR_parm_work(f) = parm_timevary(SR_parm_timevary(f), eq_yr);
+//      warning << "tester_B: " << SR_parm_work(f) << " timevary " << " base " << SR_parm(f) <<endl;
+//      warning << parm_timevary(2) << endl;
+
     }
     SR_parm_byyr(eq_yr, f) = SR_parm_work(f);
   }
@@ -529,7 +535,7 @@ FUNCTION void get_initial_conditions()
     CrashPen += Equ_penalty;
     SPR_temp = SSB_equil / equ_Recr; //  spawners per recruit at initial F
     //  get equilibrium SSB and recruitment from SPR_temp, Recr_virgin and virgin steepness
-    Equ_SpawnRecr_Result = Equil_Spawn_Recr_Fxn(SR_parm, SSB_virgin, Recr_virgin, SPR_temp); //  returns 2 element vector containing equilibrium biomass and recruitment at this SPR
+    Equ_SpawnRecr_Result = Equil_Spawn_Recr_Fxn(SR_parm_work, SSB_virgin, Recr_virgin, SPR_temp); //  returns 2 element vector containing equilibrium biomass and recruitment at this SPR
     R1_exp = Equ_SpawnRecr_Result(2); //  set the expected recruitment equal to this equilibrium
     exp_rec(eq_yr, 1) = R1_exp;
 
@@ -725,6 +731,7 @@ FUNCTION void get_time_series()
       else
       {
         SR_parm_work(f) = parm_timevary(SR_parm_timevary(f), y);
+//        warning << "tester_C: " << SR_parm_work(f) << " timevary_year " << endl;
       }
       SR_parm_byyr(y, f) = SR_parm_work(f);
     }
@@ -1017,6 +1024,7 @@ FUNCTION void get_time_series()
 
         //  SS_Label_Info_24.2.3 #Get the total recruitment produced by this spawning biomass
         //  SPAWN-RECR:   calc recruitment in time series; need to make this area-specific
+        //  SR_Fxn  relevant keyword
         if (SR_parm_timevary(1) == 0) //  R0 is not time-varying
         {
           R0_use = Recr_virgin;
@@ -1025,6 +1033,7 @@ FUNCTION void get_time_series()
         else
         {
           R0_use = mfexp(SR_parm_work(1));
+          warning << y << " set R0use to SRparm_work " << R0_use << " vir: " << Recr_virgin << endl;
           equ_Recr = R0_use;
           Fishon = 0;
           eq_yr = y;
@@ -1475,14 +1484,15 @@ FUNCTION void get_time_series()
         }
         //  SS_Label_Info_24.3.4.1 #Get recruitment from this spawning biomass
         //  SPAWN-RECR:   calc recruitment in time series; need to make this area-specific
-        if (SR_parm_timevary(1) == 0) //  R0 is not time-varying
+        //  SR_fxn
+        if (SR_update_SPR0 == 0) //  SR parms are not time-varying
         {
           R0_use = Recr_virgin;
           SSB_use = SSB_virgin;
         }
-        else
+        else  //  update SSB_use and R0_use where will update SPR0 inside the Spawn_recr fxn
         {
-          R0_use = mfexp(SR_parm_work(1));
+          R0_use = mfexp(SR_parm_work(1));  //  check to be sure this works when R0 is derived from B-H with alpha, beta parameters
           equ_Recr = R0_use;
           Fishon = 0;
           eq_yr = y;

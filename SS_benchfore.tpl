@@ -753,7 +753,7 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
   {
     report5 << "SR_parm for benchmark: " << SR_parm_work << endl
             << "mean from years: " << Bmark_Yr(9) << " " << Bmark_Yr(10) << endl;
-    SPR_virgin = SSB_virgin / Recr_virgin;
+    //  SPR_virgin = SSB_virgin / Recr_virgin;  // already defined
     Equ_SpawnRecr_Result = Equil_Spawn_Recr_Fxn(SR_parm_work, SSB_unf, Recr_unf, SPR_virgin); //  returns 2 element vector containing equilibrium biomass and recruitment at this SPR
     report5 << " Virgin SPR0, SSB, R: " << SPR_virgin << " " << Equ_SpawnRecr_Result << endl;
     Equ_SpawnRecr_Result = Equil_Spawn_Recr_Fxn(SR_parm_work, SSB_unf, Recr_unf, SPR_unfished); //  returns 2 element vector containing equilibrium biomass and recruitment at this SPR
@@ -1906,15 +1906,15 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
   }
   else if (show_MSY == 2) //  do brief output
   {
-    SS2out << SPR_actual / 100. << " " << SPR_Fmult << " " << Mgmt_quant(10) << " " << YPR_spr_dead / Vbio1_spr << " " << Bspr_rec << " "
+    report5 << SPR_actual / 100. << " " << SPR_Fmult << " " << Mgmt_quant(10) << " " << YPR_spr_dead / Vbio1_spr << " " << Bspr_rec << " "
            << Bspr << " " << YPR_spr_dead * Bspr_rec << " " << YPR_spr_ret * Bspr_rec
            << " " << Vbio1_spr * Bspr_rec << " # ";
 
-    SS2out << SPR_Btgt << " " << Btgt / SSB_unf << " " << Btgt_Fmult << " " << Mgmt_quant(7) << " " << YPR_Btgt_dead / Vbio1_Btgt << " " << Btgt_Rec << " "
+    report5 << SPR_Btgt << " " << Btgt / SSB_unf << " " << Btgt_Fmult << " " << Mgmt_quant(7) << " " << YPR_Btgt_dead / Vbio1_Btgt << " " << Btgt_Rec << " "
            << Btgt << " " << YPR_Btgt_dead * Btgt_Rec << " " << YPR_Btgt_ret * Btgt_Rec
            << " " << Vbio1_Btgt * Btgt_Rec << " # ";
 
-    SS2out << MSY_SPR << " " << Bmsy / SSB_unf << " " << MSY_Fmult << " " << Mgmt_quant(14) << " " << MSY / (Vbio1_MSY * Recr_msy) << " " << Recr_msy << " "
+    report5 << MSY_SPR << " " << Bmsy / SSB_unf << " " << MSY_Fmult << " " << Mgmt_quant(14) << " " << MSY / (Vbio1_MSY * Recr_msy) << " " << Recr_msy << " "
            << Bmsy << " " << MSY << " " << YPR_msy_dead * Recr_msy << " " << YPR_msy_ret * Recr_msy
            << " " << Vbio1_MSY * Recr_msy << " # " << endl;
   }
@@ -2576,6 +2576,7 @@ FUNCTION void Get_Forecast()
               }
             }
             //  SPAWN-RECR:   get recruitment in forecast;  needs to be area-specific
+            // SR_fxn
             if (SR_parm_timevary(1) == 0) //  R0 is not time-varying
             {
               R0_use = Recr_virgin;
@@ -3212,7 +3213,8 @@ FUNCTION void Get_Forecast()
               }
             }
             //  SS_Label_Info_24.3.4.1 #Get recruitment from this spawning biomass
-            //  SPAWN-RECR:   calc recruitment in time series; need to make this area-specififc
+            //  SPAWN-RECR:   calc recruitment in time series; need to make this area-specific
+            // SR_fxn
             if (SR_parm_timevary(1) == 0) //  R0 is not time-varying
             {
               R0_use = Recr_virgin;
