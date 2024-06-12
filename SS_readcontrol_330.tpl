@@ -1656,6 +1656,7 @@
 
 !!//  SS_Label_Info_4.5.4 #Set up time-varying parameters for MG parms
   int timevary_used;
+  int timevary_MG_firstyr;
   int timevary_parm_cnt_MG;
   int timevary_parm_start_MG;
 
@@ -1704,6 +1705,7 @@
   timevary_parm_start_MG = 0;
   timevary_parm_cnt_MG = 0;
   timevary_used = 0;
+  timevary_MG_firstyr = YrMax;
   MGparm_timevary.initialize();
   ivector block_design_null(1, 1);
   block_design_null.initialize();
@@ -1804,6 +1806,7 @@
       {
         MG_active(f) = 1;
         timevary_MG(y, 0) = 1; // tracks active status for all MG types
+        if(timevary_MG_firstyr == YrMax) timevary_MG_firstyr = y;  // save for reporting in MSY and spawn_recruit output
       }
     }
     //  timevary growth or maturity and Maunder M refers to that maturity
@@ -1961,6 +1964,7 @@
   int timevary_parm_cnt_SR;
   ivector timevary_SRparm(styr-3,YrMax+1);
   ivector SR_parm_timevary(1,N_SRparm2);
+  int SR_update_SPR0  // 0/1 flag to control updating of SPR0 for timevary biology 
 
  LOCAL_CALCS
   // clang-format on
@@ -1972,6 +1976,8 @@
   SR_parm_timevary.initialize();
   SR_env_link = 0;
   SR_env_target = 0;
+  SR_update_SPR0 = 0;
+
   //#_SR_function: 1=null; 2=Ricker; 3=std_B-H; 4=SCAA; 5=Hockey; 6=B-H_flattop; 7=Survival_3Parm; 10=B-H with a,b "<<endl;
   ParmLabel += "SR_LN(R0)";
   switch (SR_fxn)
@@ -2118,6 +2124,9 @@
         for (y = styr - 3; y <= YrMax + 1; y++) {
           timevary_SRparm(y) = timevary_pass(y);
         } // year vector for this category og MGparm
+        // special consideration for impact on spawner-recruitment SPR0 calculations
+        if (SR_fxn == 10 && (SR_parm_timevary(3) > 0 || SR_parm_timevary(4) > 0) )  {SR_update_SPR0 = 1;}  //  alpha or beta is time-varying
+        else if ((SR_parm_timevary(1) > 0 || SR_parm_timevary(2) > 0) )  {SR_update_SPR0 = 1;}  //  R0 or steepness is time-varying
       }
     }
   N_SRparm3 = N_SRparm2;
