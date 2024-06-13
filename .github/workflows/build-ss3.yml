@@ -218,7 +218,7 @@ jobs:
         if: matrix.config.os == 'macos-12'
         run: |
           brew update
-          brew where colima
+          where colima
           brew install docker
           colima start
           docker pull johnoel/admb-13.2:linux
