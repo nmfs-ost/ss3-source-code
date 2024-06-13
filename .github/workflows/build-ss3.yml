@@ -217,8 +217,9 @@ jobs:
       - name: Build stock synthesis for mac with admb docker image
         if: matrix.config.os == 'macos-12'
         run: |
-          curl -OSL https://raw.githubusercontent.com/Homebrew/homebrew-core/dc0669eca9479e9eeb495397ba3a7480aaa45c2e/Formula/qemu.rb
-          brew install ./qemu.rb
+          brew uninstall colima
+          sudo mkdir -p /usr/local/bin
+          sudo curl -L -o /usr/local/bin/colima https://github.com/abiosoft/colima/releases/download/v0.6.8/colima-Darwin-x86_64 && sudo chmod +x /usr/local/bin/colima
           brew install docker
           colima start
           docker pull johnoel/admb-13.2:linux
