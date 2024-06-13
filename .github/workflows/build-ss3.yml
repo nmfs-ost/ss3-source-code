@@ -213,7 +213,6 @@ jobs:
           mv SS330/ss3.exe SS330/ss3_win.exe
           mv SS330/ss3_opt.exe SS330/ss3_opt_win.exe
 
-
       - name: Build stock synthesis for mac with admb docker image
         if: matrix.config.os == 'macos-12'
         run: |
@@ -233,8 +232,12 @@ jobs:
 
           colima stop
 
+        # brew update and colima uninstall and re-install needed to get colima 
+        # to work with macOS-12 runner updates
+
         # Once macos-12 no longer is kept up by GitHub actions, we will have to 
-        # build from source the macos-13 and the macos-14 x86_64 images to make versions
+        # build from source the macos-13 (or figure out how to get docker image
+        # to work with macos-13 and the macos-14 x86_64 images to make versions
         # compatible with x86_64 machines
 
       - name: Build stock synthesis for mac m2 with admb docker image
