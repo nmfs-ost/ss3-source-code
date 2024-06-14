@@ -1,24 +1,28 @@
 # Build SS3 and run test models with estimation and hessian
-# Only runs on a pull request and a push to main if the tpl files have changed.
+# Only runs manual run or if run-ss3-no-est.yml runs successfully
 name: run-ss3-with-est
 on:
   workflow_dispatch:
-  push:
-    paths:
-      - '**.tpl'
-    branches:
-      - main
-  pull_request:
-    types: ['opened', 'edited', 'reopened', 'synchronize', 'ready_for_review']
-    paths:
-      - '**.tpl'
-    branches:
-      - main
+  # push:
+  #   paths:
+  #     - '**.tpl'
+  #   branches:
+  #     - main
+  workflow_run:
+    workflows: ["run-ss3-no-est"]
+    types:
+      - completed
+  # pull_request:
+  #   types: ['opened', 'edited', 'reopened', 'synchronize', 'ready_for_review']
+  #   paths:
+  #     - '**.tpl'
+  #   branches:
+  #     - main
 
 # Run fast running SS3 test models with estimation
 jobs:
   run-ss3-with-est:
-    if: github.event.pull_request.draft == false
+    if: ${{ github.event_name == 'workflow_dispatch' || (github.event.pull_request.draft == 'false' && github.event.workflow_run.conclusion == 'success') }}
     runs-on: ubuntu-latest
     env:
       R_REMOTES_NO_ERRORS_FROM_WARNINGS: true
