@@ -1340,7 +1340,7 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
       MSY_SPR = SSB_equil / SPR_unfished;
       SPR_temp = SSB_equil;
       Equ_SpawnRecr_Result = Equil_Spawn_Recr_Fxn(SR_parm_work, SSB_unf, Recr_unf, SPR_temp); //  returns 2 element vector containing equilibrium biomass and recruitment at this SPR
-      Bmsy = Equ_SpawnRecr_Result(1);
+      Bmsy = Equ_SpawnRecr_Result(1);  //  with MSY set to SPR, not directly estimated
       Recr_msy = Equ_SpawnRecr_Result(2);
       yld1(1) = YPR_opt * Recr_msy;
       YPR_msy_enc = YPR_enc;
@@ -1433,7 +1433,7 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
           MSY_SPR = SSB_equil / SPR_unfished;
           SPR_temp = SSB_equil;
           Equ_SpawnRecr_Result = Equil_Spawn_Recr_Fxn(SR_parm_work, SSB_unf, Recr_unf, SPR_temp); //  returns 2 element vector containing equilibrium biomass and recruitment at this SPR
-          Bmsy = Equ_SpawnRecr_Result(1);
+          Bmsy = Equ_SpawnRecr_Result(1);  //  MSY is directly estimated
           Recr_msy = Equ_SpawnRecr_Result(2);
           Profit = (PricePerF * YPR_val_vec) * Recr_msy - Cost;
           if (Do_MSY == 2) //  dead catch without excluded bycatch fleets
