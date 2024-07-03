@@ -1979,7 +1979,11 @@
   SR_update_SPR0 = 0;
 
   //#_SR_function: 1=null; 2=Ricker; 3=std_B-H; 4=SCAA; 5=Hockey; 6=B-H_flattop; 7=Survival_3Parm; 10=B-H with a,b "<<endl;
-  ParmLabel += "SR_LN(R0)";
+  if (SR_fxn == 10)
+  {ParmLabel += "SR_LN(R0)_derived";}
+  else
+  {ParmLabel += "SR_LN(R0)";}
+  
   switch (SR_fxn)
   {
     case 1: // previous placement for B-H constrained

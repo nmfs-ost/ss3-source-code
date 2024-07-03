@@ -1789,6 +1789,7 @@ FUNCTION void write_bigoutput()
 
     SS2out << endl << "#New_Expanded_Spawn_Recr_report" << endl << pick_report_name(19) << endl;
     SS2out << "SR_Function: " << SR_fxn << endl;
+    SS2out << "N_SRparms: " << N_SRparm2 << endl;
     SS2out << "#" << endl << "parm  parm_label value phase" << endl;
     for (int j = 1; j <=N_SRparm2; j++)
     {
@@ -1796,7 +1797,7 @@ FUNCTION void write_bigoutput()
       if (SR_parm_timevary(j) > 0 && j <= 4 ) //  timevary SRparm exists
       {SS2out << " #_is_time_vary,_so_SRR_updates_base_SPR_annually";} 
   if (j == (N_SRparm2 - 1) && SR_parm_timevary(j) > 0) //  timevary regime exists
-    {SS2out << " #_Persistent_deviations_from_SRR_(e.g.regimes)_exist";}
+    {SS2out << " #_Regime_parameter_used_to_offset_from_SRR";}
       SS2out << endl;
     }
 
@@ -1820,8 +1821,8 @@ FUNCTION void write_bigoutput()
     {
       SS2out << "Ln(alpha): " << SR_parm(3) << " alpha " << mfexp(SR_parm(3)) << endl;
       SS2out << "Ln(beta): " << SR_parm(4) << " beta " << mfexp(SR_parm(4)) << endl;
-      SS2out << "steepness_derived: " << alpha * SPR_virgin / (4. + alpha * SPR_virgin) << endl;  // steepness virgin
       SS2out << "ln(R0)_derived: " << log( 1. / beta * (alpha - (1. / SPR_virgin))) << endl;  //  virgin R0
+      SS2out << "steepness_derived: " << alpha * SPR_virgin / (4. + alpha * SPR_virgin) << endl;  // steepness virgin
       break;
     }
     case 8:
@@ -1833,19 +1834,12 @@ FUNCTION void write_bigoutput()
       Shepherd_c2 = pow(0.2, Shepherd_c);
       Hupper = 1.0 / (5.0 * Shepherd_c2);
       temp = 0.2 + (SR_parm(2) - 0.2) / (0.8) * (Hupper - 0.2);
-      SS2out << " Shepherd_c: " << Shepherd_c << " steepness_limit: " << Hupper << " Adjusted_steepness: " << temp << endl;
-      break;
-    }
-    case 9:
-    {
-      SS2out << " Ricker_Parm1: " << SR_parm(1) << endl;
-      SS2out << " Ricker_Parm2: " << SR_parm(2) << endl;
-      SS2out << " Ricker_Power: " << SR_parm(3) << endl;
+      SS2out << "Shepherd_c: " << Shepherd_c << endl << "Shepard_steepness_limit: " << Hupper << endl << "Shepard_adjusted_steepness: " << temp << endl;
       break;
     }
     default:
     {
-      SS2out << "default output needed " << endl;
+      SS2out << "other_SRR " << endl;
       break;
     }
     }
@@ -1865,8 +1859,8 @@ FUNCTION void write_bigoutput()
     SS2out << "Bmsy/Bunf: "<< Bmsy / Mgmt_quant(1)  << " # using MSY's averaged bio for Bunf" << endl;
 
     SS2out << "#" << endl << "RecDev_method: " << do_recdev << endl << "sum_recdev: " << sum_recdev << endl << "recr_logL: " << recr_like << endl;
-    SS2out << recdev_start << " " << recdev_end << " main_recdev:start_end" << endl
-           << recdev_adj(1) << " " << recdev_adj(2, 5) << " breakpoints_for_bias_adjustment_ramp " << endl;
+    SS2out << "main_recdev:start_end: " << recdev_start << " " << recdev_end << endl
+           << "breakpoints_for_bias_adjustment_ramp: " <<recdev_adj(1,4) << endl << "max_bias_adj: " << recdev_adj(5) <<  endl;
 
     temp = sigmaR * sigmaR; //  sigmaR^2
     SS2out << "ERA    N    RMSE  RMSE^2/sigmaR^2  mean_BiasAdj est_rho Durbin-Watson" << endl;
@@ -1893,8 +1887,17 @@ FUNCTION void write_bigoutput()
       }
     }
     SS2out << endl  << "#" << endl << "Initial_equilibrium: " << init_equ_steepness << "  # 0/1_to_use_spawner-recruitment_in_initial_equ_recruitment_calculation" << endl << "#" << endl;
-
-    SS2out << "Yr SpawnBio exp_recr with_regime bias_adjusted pred_recr dev biasadjuster era mature_bio mature_num raw_dev SPR0_curr h_curr R0_curr P1 P2 P3 P4" << endl;
+    if (SR_fxn == 10) SS2out << "#_Note:_h_curr_and_R0_curr_are_for_info_only;_calculated_from_alpha_beta_and_current_SPR0" << endl;
+    SS2out << "#_columns_with_P_will_show_time_vary_SR_parameters" << endl << "#" << endl;
+    SS2out << "Yr SpawnBio exp_recr with_regime bias_adjusted pred_recr dev biasadjuster era mature_bio mature_num raw_dev SPR0_curr ";
+    if(SR_fxn == 10)
+    {SS2out << "h_curr R0_curr ";}
+    else
+    {SS2out << "NA1 NA2 ";}
+;
+    for (j = 1; j <= N_SRparm2; j++) 
+    {SS2out << "P" << j << " ";}
+    SS2out << endl;
     SS2out << "S/Rcurve " << SSB_virgin << " " << Recr_virgin << endl;
     y = styr - 2;
     SS2out << "Virg " << SSB_yr(y) << " " << exp_rec(y) << " - " << 0.0 << " Virg " << SSB_B_yr(y) << " " << SSB_N_yr(y) << " 0.0 " << endl;
@@ -1947,9 +1950,14 @@ FUNCTION void write_bigoutput()
       }
       dvariable SPR_curr = Smry_Table(y, 11) / Recr_virgin;
       SS2out << " " << SPR_curr << " ";
+      if (SR_fxn == 10)
+      {
       SS2out << alpha * SPR_curr / (4. + alpha * SPR_curr) << " ";  // steepness with current SPR
       SS2out << 1. / beta * (alpha - (1. / SPR_curr)) << " ";  //  R0 with current SPR
-      SS2out << SR_parm_byyr(y)(1,4) << endl;
+      }
+      else
+      {SS2out << " - - ";}
+      SS2out << SR_parm_byyr(y)(1,N_SRparm2) << endl;
     }
 
     // REPORT_KEYWORD SPAWN_RECR_CURVE
