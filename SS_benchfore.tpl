@@ -2612,7 +2612,7 @@ FUNCTION void Get_Forecast()
                       mfexp(natM(t, p, GP3(g), Settle_age(settle)) * Settle_timing_seas(settle));
                   if (Fcast_Loop1 == jloop && ABC_Loop == ABC_Loop_end)
                   {
-                    if (Settle_seas(settle) == s)
+//                    if (Settle_seas(settle) == s)  // delete because logic is flawed
                       Recr(p, t + Settle_seas_offset(settle)) += Recruits * recr_dist(y, GP(g), settle, p) * platoon_distr(GP2(g));
                   }
                   //  the adjustment for mortality increases recruit value for elapsed time since begin of season because M will then be applied from beginning of season
@@ -3244,7 +3244,7 @@ FUNCTION void Get_Forecast()
                       mfexp(natM(t, p, GP3(g), Settle_age(settle)) * Settle_timing_seas(settle));
                   if (Fcast_Loop1 == jloop && ABC_Loop == ABC_Loop_end)
                   {
-                    if (Settle_seas(settle) == s)
+//                    if (Settle_seas(settle) == s)  // delete because logic is flawed
                       Recr(p, t + Settle_seas_offset(settle)) += Recruits * recr_dist(y, GP(g), settle, p) * platoon_distr(GP2(g));
                   }
                 }
