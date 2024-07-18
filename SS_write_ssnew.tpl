@@ -2470,7 +2470,7 @@ FUNCTION void write_nucontrol()
   report4 << "#Pattern:_43; parm=2+special+2;  like 6, with 2 additional param for scaling (mean over bin range)" << endl;
   report4 << "#Pattern:_8;  parm=8; double_logistic with smooth transitions and constant above Linf option" << endl;
   report4 << "#Pattern:_9;  parm=6; simple 4-parm double logistic with starting length; parm 5 is first length; parm 6=1 does desc as offset" << endl;
-  report4 << "#Pattern:_21; parm=2+special; non-parm len selex, read as pairs of size, then selex" << endl;
+  report4 << "#Pattern:_21; parm=2*special; non-parm len selex, read as N break points, then N selex parameters" << endl;
   report4 << "#Pattern:_22; parm=4; double_normal as in CASAL" << endl;
   report4 << "#Pattern:_23; parm=6; double_normal where final value is directly equal to sp(6) so can be >1.0" << endl;
   report4 << "#Pattern:_24; parm=6; double_normal with sel(minL) and sel(maxL), using joiners" << endl;
