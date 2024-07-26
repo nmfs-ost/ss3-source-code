@@ -1424,7 +1424,7 @@
     bodywtout << "# fleet 0 contains begin season pop WT" << endl;
     bodywtout << "# fleet -1 contains mid season pop WT" << endl;
     bodywtout << "# fleet -2 contains maturity*fecundity" << endl;
-    bodywtout << "#Yr Seas Sex Bio_Pattern BirthSeas Fleet " << age_vector << endl;
+    bodywtout << "#_year seas sex bio_pattern birthseas fleet " << age_vector << endl;
   }
 
   if (Turn_off_phase < 0)
