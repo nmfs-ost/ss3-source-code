@@ -15,6 +15,7 @@ PROCEDURE_SECTION
   Mgmt_quant.initialize();
   Extra_Std.initialize();
   CrashPen.initialize();
+  Smry_Table.initialize();
   niter++;
   if (mceval_phase())
     mceval_counter++; // increment the counter
