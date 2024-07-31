@@ -164,7 +164,7 @@ FUNCTION void write_bigoutput()
 
   SS2out << endl
          << "#_KeyWords_of_tables_available_in_report_sso" << endl;
-  SS2out << "#NOTE: table_number_is_order_in_which_tables_are_output" << endl;
+  SS2out << "#_NOTE: table_number_is_order_in_which_tables_are_output" << endl;
   SS2out << "#_List_Tables_related_to_basic_input_pre-processing_and_output" << endl;
   k = 1;
   SS2out << pick_report_use(k) << " " << pick_report_name(k) << endl; // DEFINITIONS"
@@ -217,6 +217,8 @@ FUNCTION void write_bigoutput()
   SS2out << pick_report_use(k) << " " << pick_report_name(k) << endl; // SPR_series (equilibrium_SPR_and_YPR_calculations_for_each_year)
   k = 16;
   SS2out << pick_report_use(k) << " " << pick_report_name(k) << endl; // TIME_SERIES
+  k = 61;
+  SS2out << pick_report_use(k) << " " << pick_report_name(k) << endl; // ANNUAL_TIME_SERIES
 
   SS2out << endl
          << "# List_Tables_related_to_fit_to_data" << endl;
@@ -1100,7 +1102,7 @@ FUNCTION void write_bigoutput()
   {
     SS2out << endl
            << pick_report_name(12) << endl;
-    SS2out << "#NOTE: rows_are_population_length_bins;_columns_are_recipient_size_bins_according_to_the_specified_method" << endl;
+    SS2out << "#_NOTE: rows_are_population_length_bins;_columns_are_recipient_size_bins_according_to_the_specified_method" << endl;
     for (SzFreqMethod = 1; SzFreqMethod <= SzFreq_Nmeth; SzFreqMethod++)
     {
       SS2out << SzFreqMethod << " gp seas len mid-len ";
@@ -1565,13 +1567,13 @@ FUNCTION void write_bigoutput()
   {
     SS2out << endl
            << pick_report_name(17) << endl;
-    SS2out << "#_NOTE:_reports_per_recruit_quantities_using_current_year_biology;_using_same_equil_calc_routine_used_for_reference_points" << endl;
-    SS2out << "#_NOTE:_current_year_biology_is_current_at-age_biology_from_time_series;_not_recalc_biology_from_current_growth_parameters" << endl;
-    SS2out << "#_NOTE:_uses_R0= " << Recr_virgin << endl;
-    SS2out << "#_NOTE:_Y/R_unit_is_Dead_Biomass" << endl;
-    SS2out << "#_NOTE:_gentime_is_mean_age_of_female_spawners_weighted_by_reproductive_value-at-age_(fec(g))" << endl;
+    SS2out << "#_NOTE: reports_per_recruit_quantities_using_current_year_biology;_using_same_equil_calc_routine_used_for_reference_points" << endl;
+    SS2out << "#_NOTE: current_year_biology_is_current_at-age_biology_from_time_series;_not_recalc_biology_from_current_growth_parameters" << endl;
+    SS2out << "#_NOTE: uses_R0= " << Recr_virgin << endl;
+    SS2out << "#_NOTE: YPR_unit_is_Dead_Biomass" << endl;
+    SS2out << "#_NOTE: gentime_is_mean_age_of_female_spawners_weighted_by_reproductive_value-at-age_(fec(g))" << endl;
 
-    SS2out << "Yr Era Bio_all_eq Bio_Smry_eq SSB_unfished_eq SSBfished_eq SSBfished/R SPR  Y/R GenTime" << endl;
+    SS2out << "Yr Era Bio_all_eq Bio_Smry_eq SSB_unfished_eq SSBfished_eq SSBfished/R SPR  YPR GenTime" << endl;
 
     for (y = styr; y <= YrMax; y++)
     {
@@ -1587,15 +1589,23 @@ FUNCTION void write_bigoutput()
       SS2out << (Smry_Table(y, 14) / Recr_virgin) << " " << Smry_Table(y, 13) << endl;
     } // end year loop
     // end SPR time series
+  }
 
-    SS2out << "#" << endl << "ANNUAL_TIME_SERIES report:17a" << endl;
+  if (pick_report_use(61) == "Y")  // ANNUAL_TIME_SERIES report:61
+  {
+    SS2out << endl
+           << pick_report_name(61) << endl;
     SS2out << "#_NOTE: MnAgeSmry_is_numbers_weighted_meanage_at_and_above_smryage:_" << Smry_Age << endl;
     SS2out << "#_NOTE:_mean_age_of_catch_is_numbers-weighted_and_based_on_catage_which_is_the_dead_catch_and_comes_from:_sel_dead_num_=_sel_*_(retain_+_(1-retain)*discmort)" << endl;
     SS2out << "#_NOTE: Depletion_basis: " << depletion_basis << " # " << depletion_basis_label << endl;
     SS2out << "#_NOTE: F_report_basis: " << F_reporting << " # " << F_report_label << endl;
     SS2out << "#_NOTE: SPR_report_basis: " << SPR_reporting << " # " << SPR_report_label << endl;
+    SS2out << "#_NOTE: tot_exploit:_is_dead_catch_B/bio_smry" << endl;
+    SS2out << "#_NOTE: sum_fleet_F:_is_simple_sum_of_full_Fs_among_all_fleets_ignoring_seasonal_and_area_modifiers" << endl;
+    SS2out << "#_NOTE: suffix:_an_emphasizes_that_quantity_is_annual_and_all_areas" << endl;
+
     SS2out << "year Era Bio_all_an Bio_Smry_an Num_Smry_an SSB recruits sel_catch_B_an dead_catch_B_an retain_catch_B_an sel_catch_N_an dead_catch_N_an retain_catch_N_an" <<
-              " dead_catch_B/bio_smry sum_fleet_F F=Z-M M mn_age_SSB mn_age_smry mn_age_catch  SPR_std Depletion_std F_std" << endl;
+              " tot_exploit sum_fleet_F F=Z-M M mn_age_SSB mn_age_smry mn_age_catch SPR_std Depletion_std F_std" << endl;
   // 1=totbio, 2=smrybio, 3=smrynum, 4=enc_catch, 5=dead_catch, 6=ret_catch, 7=spbio, 8=recruit,
   // 9=equ_totbio, 10=equ_smrybio, 11=equ_SSB_virgin, 12=equ_S1, 13=Gentime, 14=YPR, 15=meanage_spawners, 16=meanage_smrynums, 17=meanage_catch
   
@@ -3728,7 +3738,7 @@ FUNCTION void write_bigoutput()
            << pick_report_name(48) << endl;
     if (WTage_rd > 0)
       SS2out << " as read from wtatage.ss";
-    SS2out << "#NOTE: yr=_" << styr - 3 << "_stores_values_for_benchmark" << endl;
+    SS2out << "#_NOTE: yr=_" << styr - 3 << "_stores_values_for_benchmark" << endl;
     SS2out << "Morph Yr Seas" << age_vector << endl;
     for (g = 1; g <= gmorph; g++)
       if (use_morph(g) > 0)
@@ -4842,7 +4852,7 @@ FUNCTION void SPR_profile()
   if (Do_Benchmark == 3)
     SS2out << "#value 8 is F_Blimit: " << Btgt_Fmult2 << endl;
   SS2out << "#Profile 7 increases from Fmsy to Fcrash" << endl;
-  SS2out << "#NOTE: meanage_of_catch_is_for_total_catch_of_fleet_type==1_or_bycatch_fleets_with_scaled_Hrate" << endl;
+  SS2out << "#_NOTE: meanage_of_catch_is_for_total_catch_of_fleet_type==1_or_bycatch_fleets_with_scaled_Hrate" << endl;
   // end SPR/YPR_Profile
   return;
   }
