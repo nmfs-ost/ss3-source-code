@@ -873,8 +873,8 @@ FUNCTION void write_bigoutput()
   {
     SS2out << endl
            << pick_report_name(6) << endl;
-    SS2out << "SPR_report_basis: " << SPR_report_label << endl;
-    SS2out << "F_report_basis: " << F_report_label << endl;
+    SS2out << "SPR_std_report_basis: " << SPR_report_label << endl;
+    SS2out << "F_std_report_basis: " << F_report_label << endl;
     SS2out << "B_ratio_denominator: " << depletion_basis_label << endl;
     NP = deriv_start;
     active_count = deriv_covar_start;
@@ -1185,8 +1185,8 @@ FUNCTION void write_bigoutput()
   {
     SS2out << endl
            << pick_report_name(14) << endl;
-    SS2out << "Info: Displays.various.annual.F.statistics.and.displays.apical.F.for.each.fleet.by.season" << endl;
-    SS2out << "Info: F_Method:=" << F_Method;
+    SS2out << "NOTE: Displays.various.annual.F.statistics.and.displays.apical.F.for.each.fleet.by.season" << endl;
+    SS2out << "NOTE: F_Method:=" << F_Method;
     if (F_Method == 1)
     {
       SS2out << ";.Pope's_approx,.fleet.F.is.mid-season.exploitation.fraction ";
@@ -1196,16 +1196,16 @@ FUNCTION void write_bigoutput()
       SS2out << ";.Continuous_F;.fleet.F.will.be.multiplied.by.season.duration.when.it.is.used.and.in.the.F_std.calculation";
     }
     SS2out << endl
-           << "Info: Displayed.fleet-specific.F.values.are.the.F.for.ages.with.compound.age-length-sex.selectivity=1.0" << endl;
-    SS2out << "Info: F_std_basis:." << F_report_label << endl;
+           << "NOTE: Displayed.fleet-specific.F.values.are.the.F.for.ages.with.compound.age-length-sex.selectivity=1.0" << endl;
+    SS2out << "NOTE: F_std_basis: " << F_report_label << endl;
     SS2out << "F_std averaged over N years: " << F_std_multi << endl;
     if (F_reporting >= 4)
     {
-      SS2out << "Info: Annual_F.shown.here.is.done.by.the.Z-M.method.for.ages:." << F_reporting_ages(1) << "-" << F_reporting_ages(2) << endl;
+      SS2out << "NOTE: Annual_F.shown.here.is.done.by.the.Z-M.method.for.ages:." << F_reporting_ages(1) << "-" << F_reporting_ages(2) << endl;
     }
     else
     {
-      SS2out << "Info: Annual_F.shown.here.is.done.by.the.Z-M.method.for.nages/2=" << nages / 2 << endl;
+      SS2out << "NOTE: Annual_F.shown.here.is.done.by.the.Z-M.method.for.nages/2=" << nages / 2 << endl;
     }
     SS2out << "#" << endl;
     SS2out << "Yr Seas Seas_dur F_std annual_F annual_M ";
@@ -1598,8 +1598,8 @@ FUNCTION void write_bigoutput()
     SS2out << "#_NOTE: MnAgeSmry_is_numbers_weighted_meanage_at_and_above_smryage:_" << Smry_Age << endl;
     SS2out << "#_NOTE:_mean_age_of_catch_is_numbers-weighted_and_based_on_catage_which_is_the_dead_catch_and_comes_from:_sel_dead_num_=_sel_*_(retain_+_(1-retain)*discmort)" << endl;
     SS2out << "#_NOTE: Depletion_basis: " << depletion_basis << " # " << depletion_basis_label << endl;
-    SS2out << "#_NOTE: F_report_basis: " << F_reporting << " # " << F_report_label << endl;
-    SS2out << "#_NOTE: SPR_report_basis: " << SPR_reporting << " # " << SPR_report_label << endl;
+    SS2out << "#_NOTE: F_std_report_basis: " << F_reporting << " # " << F_report_label << endl;
+    SS2out << "#_NOTE: SPR_std_report_basis: " << SPR_reporting << " # " << SPR_report_label << endl;
     SS2out << "#_NOTE: tot_exploit:_is_dead_catch_B/bio_smry" << endl;
     SS2out << "#_NOTE: sum_fleet_F:_is_simple_sum_of_full_Fs_among_all_fleets_ignoring_seasonal_and_area_modifiers" << endl;
     SS2out << "#_NOTE: suffix:_an_emphasizes_that_quantity_is_annual_and_all_areas" << endl;
@@ -4612,7 +4612,7 @@ FUNCTION void SPR_profile()
       }
   }
 
-  SS2out << "SPRloop Iter Bycatch Fmult F_report SPR YPR_dead YPR_dead*Recr YPR_ret*Recr Revenue Cost Profit SSB Recruits SSB/Bzero Tot_Catch ";
+  SS2out << "SPRloop Iter Bycatch Fmult F_std SPR YPR_dead YPR_dead*Recr YPR_ret*Recr Revenue Cost Profit SSB Recruits SSB/Bzero Tot_Catch ";
   for (f = 1; f <= Nfleet; f++)
   {
     if (fleet_type(f) <= 2)
