@@ -36,13 +36,13 @@ Download the latest compiled versions from [Github Releases](https://github.com/
 
 ## How can I learn how to use Stock Synthesis?
 
-To learn more about how to use Stock Synthesis, see the [getting started guide with Stock Synthesis guide](https://nmfs-ost.github.io/ss3-doc/Getting_Started_SS3.html). To learn how to build your own models in Stock Synthesis, see the [Develop an Stock Synthesis model guide](https://nmfs-ost.github.io/ss3-doc/ss3_model_tips.html).
+To learn more about how to use Stock Synthesis, see the [SS3 website](https://nmfs-ost.github.io/ss3-website/) for tutorials to [get started](https://nmfs-ost.github.io/ss3-website/qmds/getting_started_ss3.html) and [build your own models](https://nmfs-ost.github.io/ss3-website/qmds/ss3_model_tips.html) as well as topic-focused vignettes.
 
-The [Stock Synthesis user manual](https://nmfs-ost.github.io/doc/SS330_User_Manual_release.html) provides the complete documentation of Stock Synthesis.
+The [Stock Synthesis user manual](https://nmfs-ost.github.io/ss3-doc/SS330_User_Manual_release.html) provides the complete documentation of Stock Synthesis.
 
 ## How do I ask questions about Stock Synthesis?
 
-Please look for answers or submit questions to the [Stock Synthesis forums](https://vlab.noaa.gov/web/stock-synthesis/public-forums). Note that an account is required to ask questions on the forums. Questions can also be asked by opening an [issue](https://github.com/nmfs-ost/ss3-source-code/issues) in this repository or by emailing nmfs.stock.synthesis@noaa.gov.
+Please look for answers or submit questions to the [Stock Synthesis Google Group](https://groups.google.com/g/ss3-forum) (must request to join first). Questions can also be asked by opening an [issue](https://github.com/nmfs-ost/ss3-source-code/issues) in this repository or by emailing nmfs.stock.synthesis@noaa.gov.
 
 ## How can I contribute to Stock Synthesis?
 
