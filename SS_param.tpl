@@ -417,8 +417,6 @@ PARAMETER_SECTION
    number alpha;
    number beta;
    number GenTime;
-   vector cumF(1,gmorph);
-   vector maxF(1,gmorph);
    number Yield;
    number Adj4010;
 
@@ -599,11 +597,10 @@ PARAMETER_SECTION
   number equ_M_std
   
 !!//  SS_Label_Info_5.1.8 #Create matrix called smry to store derived quantities of interest
-  matrix Smry_Table(styr-3,YrMax,1,20+2*gmorph);
+  matrix Smry_Table(styr-3,YrMax,1,17);
   // 1=totbio, 2=smrybio, 3=smrynum, 4=enc_catch, 5=dead_catch, 6=ret_catch, 7=spbio, 8=recruit,
   // 9=equ_totbio, 10=equ_smrybio, 11=equ_SSB_virgin, 12=equ_S1, 13=Gentime, 14=YPR, 15=meanage_spawners, 16=meanage_smrynums, 17=meanage_catch
-  // 18, 19, 20  not used
-  // 21+cumF-bymorph, maxF-by morph
+ 
 
   matrix env_data(styr-1,YrMax,-4,N_envvar)
   matrix TG_save(1,N_TG,1,3+TG_endtime)
