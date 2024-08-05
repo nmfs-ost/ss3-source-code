@@ -50,7 +50,7 @@ jobs:
         run: Rscript -e 'install.packages(c("remotes","parallely", "furrr", "future"))'
 
       - name: Install r4ss
-        run: Rscript -e 'remotes::install_github("r4ss/r4ss", ref = "spr_split_tables")'
+        run: Rscript -e 'remotes::install_github("r4ss/r4ss")'
 
       # - name: Get admb and put in path, linux
       #   run: |
