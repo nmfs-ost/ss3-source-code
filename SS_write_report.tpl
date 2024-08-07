@@ -1035,51 +1035,81 @@ FUNCTION void write_bigoutput()
   {
     SS2out << endl
            << pick_report_name(10) << endl;
-    SS2out << "Settle# settle_timing# G_pattern Area Settle_Month Seas Age Time_w/in_seas Frac/sex" << endl;
+    SS2out << "Settle# settle_timing# G_pattern Area Settle_Month Seas Age Time_w/in_seas  recr_dist_F recr_dist_M" << endl;
     for (settle = 1; settle <= N_settle_assignments; settle++)
     {
       gp = settlement_pattern_rd(settle, 1); //  growth patterns
       p = settlement_pattern_rd(settle, 3); //  settlement area
       settle_time = settle_assignments_timing(settle);
-      SS2out << settle << " " << settle_time << " " << gp << " " << p << " " << Settle_month(settle_time) << " " << Settle_seas(settle_time) << " " << Settle_age(settle_time) << " " << Settle_timing_seas(settle_time) << " " << recr_dist(styr, gp, settle_time, p) << endl;
+      SS2out << settle << " " << settle_time << " " << gp << " " << p << " " << Settle_month(settle_time) << " " << Settle_seas(settle_time) << " " << Settle_age(settle_time) << " " << Settle_timing_seas(settle_time) << " " << recr_dist(styr, gp, settle_time, p);
+      if (gender == 2) {SS2out << " " << recr_dist(styr, gp + N_GP, settle_time, p) << endl;} else {SS2out << " NA" << endl; }
     }
     SS2out << "#" << endl
            << "RECRUITMENT_DIST_Bmark" << endl
-           << "Settle# settle_timing# G_pattern Area Settle_Month Seas Age Time_w/in_seas Frac/sex" << endl;
+           << "Settle# settle_timing# G_pattern Area Settle_Month Seas Age Time_w/in_seas  recr_dist_F recr_dist_M" << endl;
     for (settle = 1; settle <= N_settle_assignments; settle++)
     {
       gp = settlement_pattern_rd(settle, 1); //  growth patterns
       p = settlement_pattern_rd(settle, 3); //  settlement area
       settle_time = settle_assignments_timing(settle);
-      SS2out << settle << " " << settle_time << " " << gp << " " << p << " " << Settle_month(settle_time) << " " << Settle_seas(settle_time) << " " << Settle_age(settle_time) << " " << Settle_timing_seas(settle_time) << " " << recr_dist_unf(gp, settle_time, p) / (Bmark_Yr(8) - Bmark_Yr(7) + 1) << endl;
+      SS2out << settle << " " << settle_time << " " << gp << " " << p << " " << Settle_month(settle_time) << " " << Settle_seas(settle_time) << " " << Settle_age(settle_time) << " " << Settle_timing_seas(settle_time) << " " << recr_dist_unf(gp, settle_time, p) / (Bmark_Yr(8) - Bmark_Yr(7) + 1);
+      if (gender == 2) {SS2out << " " << recr_dist_unf(gp + N_GP, settle_time, p) / (Bmark_Yr(8) - Bmark_Yr(7) + 1) << endl;} else {SS2out << " NA" << endl; }
     }
     SS2out << "#" << endl
            << "RECRUITMENT_DIST_endyr" << endl
-           << "Settle# settle_timing# G_pattern Area Settle_Month Seas Age Time_w/in_seas Frac/sex" << endl;
+           << "Settle# settle_timing# G_pattern Area Settle_Month Seas Age Time_w/in_seas recr_dist_F recr_dist_M" << endl;
     for (settle = 1; settle <= N_settle_assignments; settle++)
     {
       gp = settlement_pattern_rd(settle, 1); //  growth patterns
       p = settlement_pattern_rd(settle, 3); //  settlement area
       settle_time = settle_assignments_timing(settle);
-      SS2out << settle << " " << settle_time << " " << gp << " " << p << " " << Settle_month(settle_time) << " " << Settle_seas(settle_time) << " " << Settle_age(settle_time) << " " << Settle_timing_seas(settle_time) << " " << recr_dist_endyr(gp, settle_time, p) << endl;
-    }
+      SS2out << settle << " " << settle_time << " " << gp << " " << p << " " << Settle_month(settle_time) << " " << Settle_seas(settle_time) << " " << Settle_age(settle_time) << " " << Settle_timing_seas(settle_time) << " " << recr_dist_endyr(gp, settle_time, p);
+      if (gender == 2) {SS2out << " " << recr_dist(endyr, gp + N_GP, settle_time, p) << endl;} else {SS2out << " NA" << endl; }
+  }
 
     SS2out << "#" << endl;
-    SS2out << "RECRUITMENT_DIST_TIMESERIES" << endl
-           << "Year settle_assignment" << endl;
-    SS2out << "Year ";
-    for (settle = 1; settle <= N_settle_assignments; settle++)
-      SS2out << settle << " ";
+    SS2out << "RECRUITMENT_DIST_TIMESERIES" << endl;
+    SS2out << "GP: ";
+      for (gp = 1; gp <= N_GP; gp++)
+        for (settle = 1; settle <= N_settle_timings; settle++)
+          for (p = 1; p <= pop; p++)
+          for (int sex = 1; sex <= gender; sex++)
+            if (recr_dist_pattern(gp, settle, p) == 1) SS2out << gp << " ";
+    SS2out << endl;
+    SS2out << "settle_timing: ";
+      for (gp = 1; gp <= N_GP; gp++)
+        for (settle = 1; settle <= N_settle_timings; settle++)
+          for (p = 1; p <= pop; p++)
+          for (int sex = 1; sex <= gender; sex++)
+            if (recr_dist_pattern(gp, settle, p) == 1) SS2out << settle << " ";
+    SS2out << endl;
+    SS2out << "area: ";
+      for (gp = 1; gp <= N_GP; gp++)
+        for (settle = 1; settle <= N_settle_timings; settle++)
+          for (p = 1; p <= pop; p++)
+          for (int sex = 1; sex <= gender; sex++)
+            if (recr_dist_pattern(gp, settle, p) == 1) SS2out << p << " ";
+    SS2out << endl;
+    SS2out << "sex: ";
+      for (gp = 1; gp <= N_GP; gp++)
+        for (settle = 1; settle <= N_settle_timings; settle++)
+          for (p = 1; p <= pop; p++)
+          for (int sex = 1; sex <= gender; sex++)
+            {if (recr_dist_pattern(gp, settle, p) == 1) SS2out << sex << " ";}
     SS2out << endl;
 
+    SS2out << "Year recr_dist" << endl;
     for (y = styr; y <= YrMax; y++)
     {
       SS2out << y << " ";
       for (gp = 1; gp <= N_GP; gp++)
         for (settle = 1; settle <= N_settle_timings; settle++)
           for (p = 1; p <= pop; p++)
+          for (int sex = 1; sex <= gender; sex++)
             if (recr_dist_pattern(gp, settle, p) == 1)
-              SS2out << " " << recr_dist(y, gp, settle, p);
+              {
+              SS2out << " " << recr_dist(y, gp + (sex -1) * N_GP, settle, p);
+              }
       SS2out << endl;
     }
   }
