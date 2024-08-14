@@ -166,6 +166,7 @@ PARAMETER_SECTION
   number half_sigmaRsq;
   number sigmaR;
   number SPR_virgin;
+  number SPR_virgin_adj;
   number regime_change;
   number rho;
   number dirichlet_Parm;
