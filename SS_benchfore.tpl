@@ -744,6 +744,18 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
       SR_parm_work(j) = temp / (Bmark_Yr(10) - Bmark_Yr(9) + 1.);
     }
   }
+
+  if(SR_fxn == 10)  //  B-H with alpha, beta
+  {
+      alpha = mfexp(SR_parm_work(3));
+      beta = mfexp(SR_parm_work(4));
+      Fishon = 0;
+      Recr_unf = 1.0;
+      Do_Equil_Calc(Recr_unf);
+      SPR_virgin_adj = SSB_equil / 1.0;
+      SR_parm_work(2) = alpha * SPR_virgin_adj / (4. + alpha * SPR_virgin_adj);  // steepness
+      SR_parm_work(1) = log(1. / beta * (alpha - (1. / SPR_virgin_adj)));  // ln(R0)
+  }
   Fishon = 0;
   Recr_unf = mfexp(SR_parm_work(1));
   Do_Equil_Calc(Recr_unf);
@@ -751,13 +763,17 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
   SPR_unfished = SSB_unf / Recr_unf; //  this corresponds to the biology for benchmark average years, not the virgin SSB_virgin
   if (show_MSY == 1)
   {
-    report5 << "SR_parm for benchmark: " << SR_parm_work << endl
+    report5 << "SR_parms for benchmark: " << SR_parm_work << endl
             << "mean from years: " << Bmark_Yr(9) << " " << Bmark_Yr(10) << endl;
     //  SPR_virgin = SSB_virgin / Recr_virgin;  // already defined
-    Equ_SpawnRecr_Result = Equil_Spawn_Recr_Fxn(SR_parm_work, SSB_unf, Recr_unf, SPR_virgin); //  returns 2 element vector containing equilibrium biomass and recruitment at this SPR
-    report5 << " Virgin SPR0, SSB, R: " << SPR_virgin << " " << Equ_SpawnRecr_Result << endl;
+    report5 << " Virgin SSB, R0: " << SSB_virgin << " " << Recr_virgin << " "  << SPR_virgin_adj << endl;
+    report5 << " unfished SSB, R0: " << SSB_unf << " " << Recr_unf << " "  << SPR_unfished << " with current biology " << Bmark_Yr(1) << " " << Bmark_Yr(2) << endl;
+    Equ_SpawnRecr_Result = Equil_Spawn_Recr_Fxn(SR_parm_work, SSB_virgin, Recr_virgin, SPR_virgin_adj); //  returns 2 element vector containing equilibrium biomass and recruitment at this SPR
+    report5 << " Virgin SPR0, result_SSB, R: " << SPR_virgin_adj << " " << Equ_SpawnRecr_Result << endl << endl;
     Equ_SpawnRecr_Result = Equil_Spawn_Recr_Fxn(SR_parm_work, SSB_unf, Recr_unf, SPR_unfished); //  returns 2 element vector containing equilibrium biomass and recruitment at this SPR
-    report5 << " Benchmark SPR0, SSB, R: " << SPR_unfished << " " << Equ_SpawnRecr_Result << endl;
+    report5 << " Benchmark SPR0, result_SSB, R: " << SPR_unfished << " " << Equ_SpawnRecr_Result << endl << endl;
+    Equ_SpawnRecr_Result = Equil_Spawn_Recr_Fxn(SR_parm_work, SSB_virgin, Recr_virgin, SPR_unfished); //  returns 2 element vector containing equilibrium biomass and recruitment at this SPR
+    report5 << " Benchmark SPR0, result_SSB, R: " << SPR_unfished << " " << Equ_SpawnRecr_Result << " with virgin spawn-recr " << endl;
   }
   SR_parm_work(N_SRparm2 + 1) = SSB_unf;
   Mgmt_quant(1) = SSB_unf;
@@ -1930,7 +1946,7 @@ FUNCTION void Get_Forecast()
   dvariable OFL_catch;
   dvariable Fcast_Crash;
   dvariable totcatch;
-  dvariable R0_use;
+  dvariable R0_use;  // annually updated variable if SR_update_SPR0 == 1
   dvariable SSB_use;
   dvar_matrix catage_w(1, gmorph, 0, nages);
   dvar_vector tempcatch(1, Nfleet);
@@ -2581,7 +2597,7 @@ FUNCTION void Get_Forecast()
             }
             //  SPAWN-RECR:   get recruitment in forecast;  needs to be area-specific
             // SR_fxn
-            if (SR_parm_timevary(1) == 0) //  R0 is not time-varying
+            if (SR_update_SPR0 == 0) //  R0 is not time-varying
             {
               R0_use = Recr_virgin;
               SSB_use = SSB_virgin;
@@ -3221,7 +3237,7 @@ FUNCTION void Get_Forecast()
             //  SS_Label_Info_24.3.4.1 #Get recruitment from this spawning biomass
             //  SPAWN-RECR:   calc recruitment in time series; need to make this area-specific
             // SR_fxn
-            if (SR_parm_timevary(1) == 0) //  R0 is not time-varying
+            if (SR_update_SPR0 == 0) //  R0 is not time-varying
             {
               R0_use = Recr_virgin;
               SSB_use = SSB_virgin;
