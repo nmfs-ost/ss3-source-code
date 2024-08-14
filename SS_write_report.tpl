@@ -1809,7 +1809,7 @@ FUNCTION void write_bigoutput()
     {
       case 3: // Beverton-Holt with steepness
     {
-      alpha = 4.0 * steepness / (SPR_virgin * (1. - steepness));
+      alpha = 4.0 * steepness / (SPR_virgin_adj * (1. - steepness));
       beta = (5.0 * steepness - 1.0) / ((1. - steepness) * SSB_virgin);
       SS2out << "Ln(R0): " << SR_parm(1) << endl << "R0: " << mfexp(SR_parm(1)) << endl;
       SS2out << "steepness: " << steepness << endl;
@@ -1821,8 +1821,8 @@ FUNCTION void write_bigoutput()
     {
       SS2out << "Ln(alpha): " << SR_parm(3) << " alpha " << mfexp(SR_parm(3)) << endl;
       SS2out << "Ln(beta): " << SR_parm(4) << " beta " << mfexp(SR_parm(4)) << endl;
-      SS2out << "ln(R0)_derived: " << log( 1. / beta * (alpha - (1. / SPR_virgin))) << endl;  //  virgin R0
-      SS2out << "steepness_derived: " << alpha * SPR_virgin / (4. + alpha * SPR_virgin) << endl;  // steepness virgin
+      SS2out << "ln(R0)_derived: " << log( 1. / beta * (alpha - (1. / SPR_virgin_adj))) << endl;  //  virgin R0
+      SS2out << "steepness_derived: " << alpha * SPR_virgin_adj / (4. + alpha * SPR_virgin_adj) << endl;  // steepness virgin
       break;
     }
     case 8:
