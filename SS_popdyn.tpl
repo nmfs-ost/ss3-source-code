@@ -344,7 +344,7 @@ FUNCTION void get_initial_conditions()
     equ_Recr = 1.0;
     Do_Equil_Calc(equ_Recr); //  call function to do equilibrium calculation.  Returns SPR because R = 1.0
     SPR_virgin = SSB_equil; //  spawners per recruit.  Needed for Sr_fxn = 10
-
+    SPR_virgin_adj = SSB_equil;
     if(SR_fxn == 10)  // B-H with a,b
     {
   //  WHAM based on R = A*S/(1+B*S)
@@ -355,8 +355,8 @@ FUNCTION void get_initial_conditions()
 
       alpha = mfexp(SR_parm(3));
       beta = mfexp(SR_parm(4));
-      steepness = alpha * SPR_virgin / (4. + alpha * SPR_virgin);
-      Recr_virgin = 1. / beta * (alpha - (1. / SPR_virgin));
+      steepness = alpha * SPR_virgin_adj / (4. + alpha * SPR_virgin_adj);
+      Recr_virgin = 1. / beta * (alpha - (1. / SPR_virgin_adj));
 //      warning << " before AB_calcs " << "parm " << SR_parm(1) << " calc " << log(Recr_virgin) << endl;
       SR_parm(1) = log(Recr_virgin);
       SR_parm(2) = steepness;
@@ -380,7 +380,7 @@ FUNCTION void get_initial_conditions()
     exp_rec(eq_yr, 4) = Recr_virgin;
     Do_Equil_Calc(equ_Recr); //  call function to do equilibrium calculation
     SSB_virgin = SSB_equil;
-    SPR_virgin = SSB_equil / Recr_virgin; //  spawners per recruit
+//    SPR_virgin = SSB_equil / Recr_virgin; //  spawners per recruit already calculated
     if(Do_Benchmark==0)
     {
       Mgmt_quant(1)=SSB_virgin;
@@ -696,7 +696,7 @@ FUNCTION void get_time_series()
   dvariable crashtemp1;
   dvariable interim_tot_catch;
   dvariable Z_adjuster;
-  dvariable R0_use;
+  dvariable R0_use;  // annually updated variable if SR_update_SPR0 == 1; gets passed to Spawn_Recr() function
   dvariable SSB_use;
 
   if (Do_Morphcomp > 0)
@@ -1024,10 +1024,10 @@ FUNCTION void get_time_series()
           }
         }
 
-        //  SS_Label_Info_24.2.3 #Get the total recruitment produced by this spawning biomass
+        //  SS_Label_Info_24.2.3 #Get the total recruitment produced by this spawning biomass at the beginning of the season
         //  SPAWN-RECR:   calc recruitment in time series; need to make this area-specific
         //  SR_Fxn  relevant keyword
-        if (SR_parm_timevary(1) == 0) //  R0 is not time-varying
+        if (SR_update_SPR0 == 0) //  SRparm are not time-varying
         {
           R0_use = Recr_virgin;
           SSB_use = SSB_virgin;
@@ -1035,12 +1035,12 @@ FUNCTION void get_time_series()
         else
         {
           R0_use = mfexp(SR_parm_work(1));
-          warning << y << " set R0use to SRparm_work " << R0_use << " vir: " << Recr_virgin << endl;
           equ_Recr = R0_use;
           Fishon = 0;
           eq_yr = y;
           bio_yr = y;
           Do_Equil_Calc(R0_use); //  call function to do equilibrium calculation
+          SSB_use = SSB_equil;
           if (fishery_on_off == 1)
           {
             Fishon = 1;
@@ -1049,7 +1049,6 @@ FUNCTION void get_time_series()
           {
             Fishon = 0;
           }
-          SSB_use = SSB_equil;
         }
         Recruits = Spawn_Recr(SSB_use, R0_use, SSB_current); // calls to function Spawn_Recr
         if (SR_fxn != 7) apply_recdev(Recruits, R0_use); //  apply recruitment deviation
@@ -1485,7 +1484,7 @@ FUNCTION void get_time_series()
             SSB_yr(y) = SSB_current;
           }
         }
-        //  SS_Label_Info_24.3.4.1 #Get recruitment from this spawning biomass
+        //  SS_Label_Info_24.3.4.1 #Get recruitment from this spawning biomass at some time during the season
         //  SPAWN-RECR:   calc recruitment in time series; need to make this area-specific
         //  SR_fxn
         if (SR_update_SPR0 == 0) //  SR parms are not time-varying
@@ -1501,6 +1500,7 @@ FUNCTION void get_time_series()
           eq_yr = y;
           bio_yr = y;
           Do_Equil_Calc(R0_use); //  call function to do equilibrium calculation
+          SSB_use = SSB_equil;
           if (fishery_on_off == 1)
           {
             Fishon = 1;
@@ -1509,7 +1509,6 @@ FUNCTION void get_time_series()
           {
             Fishon = 0;
           }
-          SSB_use = SSB_equil;
         }
 
         Recruits = Spawn_Recr(SSB_use, R0_use, SSB_current); // calls to function Spawn_Recr
