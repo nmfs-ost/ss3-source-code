@@ -344,7 +344,7 @@ FUNCTION void get_initial_conditions()
     equ_Recr = 1.0;
     Do_Equil_Calc(equ_Recr); //  call function to do equilibrium calculation.  Returns SPR because R = 1.0
     SPR_virgin = SSB_equil; //  spawners per recruit.  Needed for Sr_fxn = 10
-    SPR_virgin_adj = SSB_equil;
+    SPR_virgin_adj = SSB_equil;  //  also needed for Sr_fxn 10.  Will get revised in benchmark to use averaged biology if requested.
     if(SR_fxn == 10)  // B-H with a,b
     {
   //  WHAM based on R = A*S/(1+B*S)
@@ -381,14 +381,14 @@ FUNCTION void get_initial_conditions()
     Do_Equil_Calc(equ_Recr); //  call function to do equilibrium calculation
     SSB_virgin = SSB_equil;
 //    SPR_virgin = SSB_equil / Recr_virgin; //  spawners per recruit already calculated
-    if(Do_Benchmark==0)
+    if(Do_Benchmark==0)  // assign values that would be created in benchmark section
     {
-      Mgmt_quant(1)=SSB_virgin;
-      SSB_unf=SSB_virgin;
-      Recr_unf=Recr_virgin;
-      Mgmt_quant(2)=totbio;  //  from equil calcs
-      Mgmt_quant(3)=smrybio;  //  from equil calcs
-      Mgmt_quant(4)=Recr_virgin;
+      Mgmt_quant(1) = SSB_virgin;
+      SSB_unf = SSB_virgin;
+      Recr_unf = Recr_virgin;
+      Mgmt_quant(2) = totbio;  //  from equil calcs
+      Mgmt_quant(3) = smrybio;  //  from equil calcs
+      Mgmt_quant(4) = Recr_virgin;
     }
     Smry_Table(styr - 2, 1) = totbio; //  from equil calcs
     Smry_Table(styr - 2, 2) = smrybio; //  from equil calcs
@@ -1495,7 +1495,6 @@ FUNCTION void get_time_series()
         else  //  update SSB_use and R0_use where will update SPR0 inside the Spawn_recr fxn
         {
           R0_use = mfexp(SR_parm_work(1));  //  check to be sure this works when R0 is derived from B-H with alpha, beta parameters
-          equ_Recr = R0_use;
           Fishon = 0;
           eq_yr = y;
           bio_yr = y;
