@@ -4612,9 +4612,9 @@
         }
         if (use_rho == 1)
         {
-          warnstream << "2DAR rho is incompletely implemented; it should only be used experimentally and never estimated";
+          warnstream << "2DAR rho is incompletely implemented; it should only be used experimentally and never estimated; phase is reset to negative";
           write_message (WARN, 0);
-          echoinput << "read one parameter line for rho_yr,  then one for rho_age (or length)" << endl;
+          echoinput << "read one parameter line for rho_yr, then one for rho_age (or length)" << endl;
           {
             dvector dtempvec(1, 7); //  Lo, Hi, init, prior, prior_sd, prior_type, phase;
             dtempvec.initialize();
