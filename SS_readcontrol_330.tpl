@@ -6473,7 +6473,7 @@
       active_parm(CoVar_Count) = j;
       if (y == styr - 2)
       {
-        ParmLabel += "Recr_Virgin";
+        ParmLabel += "Recr_virgin";
       }
       else if (y == styr - 1)
       {
