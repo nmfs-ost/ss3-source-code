@@ -745,35 +745,30 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
     }
   }
 
-  if(SR_fxn == 10)  //  B-H with alpha, beta
+  if (SR_update_SPR0 == 0)  //  use virgin biology for the spawner-recruitment R0,h calculations
   {
-      alpha = mfexp(SR_parm_work(3));
-      beta = mfexp(SR_parm_work(4));
-      Fishon = 0;
-      Recr_unf = 1.0;
-      Do_Equil_Calc(Recr_unf);  // 
-      SPR_virgin_adj = SSB_equil / 1.0;
-      SR_parm_work(2) = alpha * SPR_virgin_adj / (4. + alpha * SPR_virgin_adj);  // steepness
-      SR_parm_work(1) = log(1. / beta * (alpha - (1. / SPR_virgin_adj)));  // ln(R0)
+     Recr_unf = Recr_virgin;
+     SSB_unf = SSB_virgin;
+     SPR_unf = SSB_unf / Recr_unf;
   }
-  Fishon = 0;
-  Recr_unf = mfexp(SR_parm_work(1));
-  Do_Equil_Calc(Recr_unf);
-  SSB_unf = SSB_equil;  // equilibrium unfished SSB using the benchmark averaged Recr_unf and benchmark averaged biology
-  SPR_unf = SSB_unf / Recr_unf; //  this corresponds to the biology for benchmark average years, not the virgin SSB_virgin
+  else  // use benchmark biology in the spawner-recruitment R0,h calculations
+  {
+    Fishon = 0;
+    Recr_unf = mfexp(SR_parm_work(1));
+    Do_Equil_Calc(Recr_unf);
+    SSB_unf = SSB_equil;  // equilibrium unfished SSB using the benchmark averaged Recr_unf and benchmark averaged biology
+    SPR_unf = SSB_unf / Recr_unf; //  this corresponds to the biology for benchmark average years, not the virgin SSB_virgin
+  }
   if (show_MSY == 1)
   {
     report5 << "SR_parms for benchmark: " << SR_parm_work << endl
-            << "mean from years: " << Bmark_Yr(9) << " " << Bmark_Yr(10) << endl;
-    //  SPR_virgin = SSB_virgin / Recr_virgin;  // already defined
-    report5 << " Virgin SSB, R0: " << SSB_virgin << " " << Recr_virgin << " "  << SPR_virgin_adj << endl;
-    report5 << " unfished SSB, R0: " << SSB_unf << " " << Recr_unf << " "  << SPR_unf << " with current biology " << Bmark_Yr(1) << " " << Bmark_Yr(2) << endl;
-    Equ_SpawnRecr_Result = Equil_Spawn_Recr_Fxn(SR_parm_work, SSB_virgin, Recr_virgin, SPR_virgin_adj); //  returns 2 element vector containing equilibrium biomass and recruitment at this SPR
-    report5 << " Virgin SPR0, result_SSB, R: " << SPR_virgin_adj << " " << Equ_SpawnRecr_Result << endl << endl;
+            << "Benchmark biology averaged over years: " << Bmark_Yr(1) << " " << Bmark_Yr(2) << endl;
+    if ( SR_update_SPR0 == 1) report5 << "SPR0 for equilibrium spawner-recruit based on benchmark biology, not virgin biology" << endl;
+    Equ_SpawnRecr_Result = Equil_Spawn_Recr_Fxn(SR_parm_work, SSB_virgin, Recr_virgin, SPR_virgin); //  returns 2 element vector containing equilibrium biomass and recruitment at this SPR
+    report5 << " Virgin SSB, R0, SPR0: " << SSB_virgin << " " << Recr_virgin << " "  << SPR_virgin << " equil: " << Equ_SpawnRecr_Result << endl;
+
     Equ_SpawnRecr_Result = Equil_Spawn_Recr_Fxn(SR_parm_work, SSB_unf, Recr_unf, SPR_unf); //  returns 2 element vector containing equilibrium biomass and recruitment at this SPR
-    report5 << " Benchmark SPR0, result_SSB, R: " << SPR_unf << " " << Equ_SpawnRecr_Result << endl << endl;
-    Equ_SpawnRecr_Result = Equil_Spawn_Recr_Fxn(SR_parm_work, SSB_virgin, Recr_virgin, SPR_unf); //  returns 2 element vector containing equilibrium biomass and recruitment at this SPR
-    report5 << " Benchmark SPR0, result_SSB, R: " << SPR_unf << " " << Equ_SpawnRecr_Result << " with virgin spawn-recr " << endl;
+    report5 << " Benchmark SSB, R0, SPR0: " << SSB_unf << " " << Recr_unf << " "  << SPR_unf << " equil: " << Equ_SpawnRecr_Result << endl;
   }
   SR_parm_work(N_SRparm2 + 1) = SSB_unf;
   Mgmt_quant(1) = SSB_unf;
@@ -925,7 +920,6 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
     //  SPAWN-RECR:   calc equil spawn-recr in YPR; need to make this area-specific
     SPR_temp = SSB_equil;  //  based on most recent call to Do_Equil_Calc
     Equ_SpawnRecr_Result = Equil_Spawn_Recr_Fxn(SR_parm_work, SSB_unf, Recr_unf, SPR_temp); //  returns 2 element vector containing equilibrium biomass and recruitment at this SPR
-         report5<<SPR_temp<<" " << Equ_SpawnRecr_Result<<endl;
 
     Bspr = Equ_SpawnRecr_Result(1);
     Bspr_rec = Equ_SpawnRecr_Result(2);
