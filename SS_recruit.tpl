@@ -6,7 +6,7 @@
 //********************************************************************
  /*  SS_Label_FUNCTION 43 Spawner-recruitment function */
 //  SPAWN-RECR:   function: to calc R from S
-FUNCTION dvariable Spawn_Recr(const prevariable& SSB_virgin_adj, const prevariable& Recr_virgin_adj, const prevariable& SSB_current)
+FUNCTION dvariable Spawn_Recr(const prevariable& SSB_virgin_use, const prevariable& Recr_virgin_use, const prevariable& SSB_current)
   {
   RETURN_ARRAYS_INCREMENT();
   dvariable NewRecruits;
@@ -22,7 +22,7 @@ FUNCTION dvariable Spawn_Recr(const prevariable& SSB_virgin_adj, const prevariab
   dvariable SRZ_0;
   dvariable srz_min;
   dvariable SRZ_surv;
-//  warning << y << "  Tester_R0 " <<  Recr_virgin_adj << " SSB0 " << SSB_virgin_adj << " SSB_curr: " << SSB_current << endl;
+//  warning << y << "  Tester_R0 " <<  Recr_virgin_use << " SSB0 " << SSB_virgin_use << " SSB_curr: " << SSB_current << endl;
 
   //  SS_Label_43.1  add 0.1 to input spawning biomass value to make calculation more rebust
   SSB_curr_adj = SSB_current + 0.100; // robust
@@ -30,7 +30,7 @@ FUNCTION dvariable Spawn_Recr(const prevariable& SSB_virgin_adj, const prevariab
   regime_change = SR_parm_work(N_SRparm2 - 1); //  this is a persistent deviation off the S/R curve
 
   //  SS_Label_43.3  calculate expected recruitment from the input spawning biomass and the SR curve
-  // functions below use Recr_virgin_adj,SSB_virgin_adj which could have been adjusted adjusted above from R0,SSB_virgin
+  // functions below use Recr_virgin_use,SSB_virgin_use which could have been adjusted adjusted above from R0,SSB_virgin
   switch (SR_fxn)
   {
     case 1: // previous placement for B-H constrained
@@ -43,15 +43,15 @@ FUNCTION dvariable Spawn_Recr(const prevariable& SSB_virgin_adj, const prevariab
     case 2: // ricker
     {
       steepness = SR_parm_work(2);
-      NewRecruits = Recr_virgin_adj * SSB_curr_adj / SSB_virgin_adj * mfexp(steepness * (1. - SSB_curr_adj / SSB_virgin_adj));
+      NewRecruits = Recr_virgin_use * SSB_curr_adj / SSB_virgin_use * mfexp(steepness * (1. - SSB_curr_adj / SSB_virgin_use));
       break;
     }
     //  SS_Label_43.3.3  Beverton-Holt
     case 3: // Beverton-Holt
     {
       steepness = SR_parm_work(2);
-      NewRecruits = (4. * steepness * Recr_virgin_adj * SSB_curr_adj) /
-          (SSB_virgin_adj * (1. - steepness) + (5. * steepness - 1.) * SSB_curr_adj);
+      NewRecruits = (4. * steepness * Recr_virgin_use * SSB_curr_adj) /
+          (SSB_virgin_use * (1. - steepness) + (5. * steepness - 1.) * SSB_curr_adj);
       break;
     }
 
@@ -66,7 +66,7 @@ FUNCTION dvariable Spawn_Recr(const prevariable& SSB_virgin_adj, const prevariab
     //  SS_Label_43.3.4  constant expected recruitment
     case 4: // none
     {
-      NewRecruits = Recr_virgin_adj;
+      NewRecruits = Recr_virgin_use;
       break;
     }
     //  SS_Label_43.3.5  Hockey stick
@@ -74,8 +74,8 @@ FUNCTION dvariable Spawn_Recr(const prevariable& SSB_virgin_adj, const prevariab
       //  the 3rd parameter allows for a minimum recruitment level
       {
         steepness = SR_parm_work(2);
-        temp = SR_parm_work(3) * Recr_virgin_adj + SSB_curr_adj / (steepness * SSB_virgin_adj) * (Recr_virgin_adj - SR_parm_work(3) * Recr_virgin_adj); //  linear decrease below steepness*SSB_virgin_adj
-        NewRecruits = Join_Fxn(0.0 * SSB_virgin_adj, SSB_virgin_adj, steepness * SSB_virgin_adj, SSB_curr_adj, temp, Recr_virgin_adj);
+        temp = SR_parm_work(3) * Recr_virgin_use + SSB_curr_adj / (steepness * SSB_virgin_use) * (Recr_virgin_use - SR_parm_work(3) * Recr_virgin_use); //  linear decrease below steepness*SSB_virgin_use
+        NewRecruits = Join_Fxn(0.0 * SSB_virgin_use, SSB_virgin_use, steepness * SSB_virgin_use, SSB_curr_adj, temp, Recr_virgin_use);
         break;
       }
 
@@ -83,32 +83,32 @@ FUNCTION dvariable Spawn_Recr(const prevariable& SSB_virgin_adj, const prevariab
     case 6: //Beverton-Holt constrained
     {
       steepness = SR_parm_work(2);
-//      dvariable SPR = SSB_virgin_adj / Recr_virgin;
+//      dvariable SPR = SSB_virgin_use / Recr_virgin;
 //      alpha = ((4.0 * steepness) / (1. - steepness)) / SPR ;
 //      beta = (1.0 / Recr_virgin) * (alpha - (1.0 / SPR));
-      if (SSB_curr_adj > SSB_virgin_adj)
+      if (SSB_curr_adj > SSB_virgin_use)
       {
-        SSB_BH1 = SSB_virgin_adj;
+        SSB_BH1 = SSB_virgin_use;
       }
       else
       {
         SSB_BH1 = SSB_curr_adj;
       }
-      NewRecruits = (4. * steepness * Recr_virgin_adj * SSB_BH1) / (SSB_virgin_adj * (1. - steepness) + (5. * steepness - 1.) * SSB_BH1);
+      NewRecruits = (4. * steepness * Recr_virgin_use * SSB_BH1) / (SSB_virgin_use * (1. - steepness) + (5. * steepness - 1.) * SSB_BH1);
       break;
     }
 
     //  SS_Label_43.3.7  survival based
     case 7: // survival based, so constrained such that recruits cannot exceed fecundity
     {
-      // PPR_0=SSB_virgin_adj/Recr_virgin_adj;  //  pups per recruit at virgin
+      // PPR_0=SSB_virgin_use/Recr_virgin_use;  //  pups per recruit at virgin
       // Surv_0=1./PPR_0;   //  recruits per pup at virgin
-      // Pups_0=SSB_virgin_adj;  //  total population fecundity is the number of pups produced
+      // Pups_0=SSB_virgin_use;  //  total population fecundity is the number of pups produced
       // Sfrac=SR_parm(2);
-      SRZ_0 = log(1.0 / (SSB_virgin_adj / Recr_virgin_adj));
+      SRZ_0 = log(1.0 / (SSB_virgin_use / Recr_virgin_use));
       steepness = SR_parm_work(2);
       srz_min = SRZ_0 * (1.0 - steepness);
-      SRZ_surv = mfexp((1. - pow((SSB_curr_adj / SSB_virgin_adj), SR_parm_work(3))) * (srz_min - SRZ_0) + SRZ_0); //  survival
+      SRZ_surv = mfexp((1. - pow((SSB_curr_adj / SSB_virgin_use), SR_parm_work(3))) * (srz_min - SRZ_0) + SRZ_0); //  survival
       NewRecruits = SSB_curr_adj * SRZ_surv;
       exp_rec(y, 1) = NewRecruits; // expected arithmetic mean recruitment
       //  SS_Label_43.3.7.1  Do variation in recruitment by adjusting survival
@@ -145,8 +145,8 @@ FUNCTION dvariable Spawn_Recr(const prevariable& SSB_virgin_adj, const prevariab
       Shepherd_c2 = pow(0.2, SR_parm_work(3));
       Hupper = 1.0 / (5.0 * Shepherd_c2);
       steepness = 0.2 + (SR_parm_work(2) - 0.2) / (0.8) * (Hupper - 0.2);
-      temp = (SSB_curr_adj) / (SSB_virgin_adj);
-      NewRecruits = (5. * steepness * Recr_virgin_adj * (1. - Shepherd_c2) * temp) /
+      temp = (SSB_curr_adj) / (SSB_virgin_use);
+      NewRecruits = (5. * steepness * Recr_virgin_use * (1. - Shepherd_c2) * temp) /
           (1.0 - 5.0 * steepness * Shepherd_c2 + (5. * steepness - 1.) * pow(temp, Shepherd_c));
       break;
     }
@@ -156,11 +156,11 @@ FUNCTION dvariable Spawn_Recr(const prevariable& SSB_virgin_adj, const prevariab
     {
       steepness = SR_parm_work(2);
       dvariable RkrPower = SR_parm_work(3);
-      temp = SSB_curr_adj / SSB_virgin_adj;
+      temp = SSB_curr_adj / SSB_virgin_use;
       temp2 = posfun(1.0 - temp, 0.0000001, temp3);
       temp = 1.0 - temp2; //  Rick's new line to stabilize recruitment at R0 if B>B0
       dvariable RkrTop = log(5.0 * steepness) * pow(temp2, RkrPower) / pow(0.8, RkrPower);
-      NewRecruits = Recr_virgin_adj * temp * mfexp(RkrTop);
+      NewRecruits = Recr_virgin_use * temp * mfexp(RkrTop);
       break;
     }
 
@@ -169,7 +169,7 @@ FUNCTION dvariable Spawn_Recr(const prevariable& SSB_virgin_adj, const prevariab
   return NewRecruits;
   } //  end spawner_recruitment
 
-FUNCTION void apply_recdev(prevariable& NewRecruits, const prevariable& Recr_virgin_adj)
+FUNCTION void apply_recdev(prevariable& NewRecruits, const prevariable& Recr_virgin_use)
   {
   RETURN_ARRAYS_INCREMENT();
   //  SS_Label_43.4  For non-survival based SRR, get recruitment deviations by adjusting recruitment itself
@@ -196,7 +196,7 @@ FUNCTION void apply_recdev(prevariable& NewRecruits, const prevariable& Recr_vir
     {
       if (do_recdev >= 3)
       {
-        NewRecruits = Recr_virgin_adj * mfexp(recdev(y)); //  recruitment deviation
+        NewRecruits = Recr_virgin_use * mfexp(recdev(y)); //  recruitment deviation
       }
       else if (SR_fxn != 7)
       {
@@ -228,7 +228,7 @@ FUNCTION void apply_recdev(prevariable& NewRecruits, const prevariable& Recr_vir
       }
       case 2: //  use multiplier of R0
       {
-        exp_rec(y, 2) = Recr_virgin_adj * Fcast_Loop_Control(4); //  apply fcast multiplier to the virgin recruitment
+        exp_rec(y, 2) = Recr_virgin_use * Fcast_Loop_Control(4); //  apply fcast multiplier to the virgin recruitment
         NewRecruits = exp_rec(y, 2);
         if (SR_fxn != 4)
           NewRecruits *= mfexp(-biasadj(y) * half_sigmaRsq); // bias adjustment
@@ -268,7 +268,7 @@ FUNCTION void apply_recdev(prevariable& NewRecruits, const prevariable& Recr_vir
  /*  SS_Label_FUNCTION 44 Equil_Spawn_Recr_Fxn */
 //  SPAWN-RECR:   function  Equil_Spawn_Recr_Fxn
 FUNCTION dvar_vector Equil_Spawn_Recr_Fxn(const dvar_vector& SRparm,
-    const prevariable& SSB_temp, const prevariable& RECR_temp, const prevariable& SPR_temp)
+    const prevariable& SSB_virgin_use, const prevariable& Recr_virgin_use, const prevariable& SPR_current)
   {
   RETURN_ARRAYS_INCREMENT();
   dvar_vector Equil_Spawn_Recr_Calc(1, 2); // values to return 1 is B_equil, 2 is R_equil
@@ -284,7 +284,7 @@ FUNCTION dvar_vector Equil_Spawn_Recr_Fxn(const dvar_vector& SRparm,
   dvariable SRZ_surv;
 
   steepness = SRparm(2); //  common usage but some different
-  //  SS_Label_44.1  calc equilibrium SpawnBio and Recruitment from input SPR_temp, which is spawning biomass per recruit at some given F level
+  //  SS_Label_44.1  calc equilibrium SpawnBio and Recruitment from input SPR_current, which is spawning biomass per recruit at some given F level
   switch (SR_fxn)
   {
     case 1: // previous placement for B-H constrained
@@ -297,8 +297,8 @@ FUNCTION dvar_vector Equil_Spawn_Recr_Fxn(const dvar_vector& SRparm,
     //  SS_Label_44.1.2  Ricker
     case 2: // Ricker
     {
-      B_equil = SSB_temp * (1. + (log(RECR_temp / SSB_temp) + log(SPR_temp)) / steepness);
-      R_equil = RECR_temp * B_equil / SSB_temp * mfexp(steepness * (1. - B_equil / SSB_temp));
+      B_equil = SSB_virgin_use * (1. + (log(Recr_virgin_use / SSB_virgin_use) + log(SPR_current)) / steepness);
+      R_equil = Recr_virgin_use * B_equil / SSB_virgin_use * mfexp(steepness * (1. - B_equil / SSB_virgin_use));
 
       break;
     }
@@ -316,19 +316,19 @@ FUNCTION dvar_vector Equil_Spawn_Recr_Fxn(const dvar_vector& SRparm,
 
   //  SS3 previously used alternative formulation: R = A*S/(B+S)
   //  converting SS3 to align with WHAM
-  //    SPR_virgin = SSB_temp / RECR_temp;  //  this is already defined
+  //    SPR_virgin = SSB_virgin_use / Recr_virgin_use;  //  this is already defined
       alpha = 4.0 * steepness / (SPR_virgin_adj * (1. - steepness));
       beta = (5.0 * steepness - 1.0) / ((1 - steepness) * SSB_virgin);
 
       // " h " << steepness << " derive "  << alpha * SPR_virgin / (4. + alpha * SPR_virgin) << " " << endl;
-      // " R0 " << RECR_temp << " derive "  << 1. / beta * (alpha - 1./SPR_virgin) << endl;
-//      report5 <<" SSB_unf "<<SSB_temp<<" SPR_unf "<<SPR_virgin<<" steep: "<<steepness<<" R0: "<<RECR_temp << endl;
-      report5 <<" derive_alpha "<<alpha<<" derive_beta "<<beta << endl;
+      // " R0 " << Recr_virgin_use << " derive "  << 1. / beta * (alpha - 1./SPR_virgin) << endl;
+//      report5 <<" SSB_unf "<<SSB_virgin_use<<" SPR_unf "<<SPR_virgin<<" steep: "<<steepness<<" R0: "<<Recr_virgin_use << endl;
+//      report5 <<" derive_alpha "<<alpha<<" derive_beta "<<beta << endl;
 //      report5 << " deriv_h: " << alpha * SPR_virgin / (4. + alpha * SPR_virgin) << " derive_R0: " << 1. / beta * (alpha - (1. / SPR_virgin))<<endl;
-      B_equil = (alpha * SPR_temp - 1.0) / beta;
+      B_equil = (alpha * SPR_current - 1.0) / beta;
       B_equil = posfun(B_equil, 0.0001, temp);
       R_equil = alpha * B_equil / (1.0 + beta * B_equil);
-//      report5 << "SPR_input: " << SPR_temp << " B_equil: " << B_equil << " R_equil: "<<R_equil << endl<<endl;
+//      report5 << "SPR_input: " << SPR_current << " B_equil: " << B_equil << " R_equil: "<<R_equil << endl<<endl;
 
       break;
     }
@@ -337,37 +337,37 @@ FUNCTION dvar_vector Equil_Spawn_Recr_Fxn(const dvar_vector& SRparm,
     {
       dvariable alpha = mfexp(SRparm(3));
       dvariable beta = mfexp(SRparm(4));
-      B_equil = (alpha * SPR_temp - 1.0) / beta;
+      B_equil = (alpha * SPR_current - 1.0) / beta;
       B_equil = posfun(B_equil, 0.0001, temp);
       R_equil = alpha * B_equil / (1.0 + beta * B_equil);
-//      report5<<SPR_temp<<" Beq "<<B_equil<<" Req "<<R_equil<<" alpha "<<alpha<<" beta "<<beta<<" SSB_unf "<<SSB_unf<<endl;
+//      report5<<SPR_current<<" Beq "<<B_equil<<" Req "<<R_equil<<" alpha "<<alpha<<" beta "<<beta<<" SSB_unf "<<SSB_unf<<endl;
       break;
     }
 
     //  SS_Label_44.1.4  constant recruitment
     case 4: // constant; no bias correction
     {
-      B_equil = SPR_temp * RECR_temp;
-      R_equil = RECR_temp;
+      B_equil = SPR_current * Recr_virgin_use;
+      R_equil = Recr_virgin_use;
       break;
     }
     //  SS_Label_44.1.5  Hockey Stick
     case 5: // hockey stick
     {
-      dvariable hockey_min = SRparm(3) * RECR_temp; // min recruitment level
-      //        temp=SSB_temp/R0*steepness;  // spawners per recruit at inflection
-      dvariable hockey_slope = (RECR_temp - hockey_min) / (steepness * SSB_temp); //  slope of recruitment on spawners below the inflection
-      B_equil = Join_Fxn(0.0 * SSB_temp / RECR_temp, SSB_temp / RECR_temp, SSB_temp / RECR_temp * steepness, SPR_temp, hockey_min / ((1. / SPR_temp) - hockey_slope), SPR_temp * RECR_temp);
-      R_equil = Join_Fxn(0.0 * SSB_temp, SSB_temp, SSB_temp * steepness, B_equil, hockey_min + hockey_slope * B_equil, RECR_temp);
+      dvariable hockey_min = SRparm(3) * Recr_virgin_use; // min recruitment level
+      //        temp=SSB_virgin_use/R0*steepness;  // spawners per recruit at inflection
+      dvariable hockey_slope = (Recr_virgin_use - hockey_min) / (steepness * SSB_virgin_use); //  slope of recruitment on spawners below the inflection
+      B_equil = Join_Fxn(0.0 * SSB_virgin_use / Recr_virgin_use, SSB_virgin_use / Recr_virgin_use, SSB_virgin_use / Recr_virgin_use * steepness, SPR_current, hockey_min / ((1. / SPR_current) - hockey_slope), SPR_current * Recr_virgin_use);
+      R_equil = Join_Fxn(0.0 * SSB_virgin_use, SSB_virgin_use, SSB_virgin_use * steepness, B_equil, hockey_min + hockey_slope * B_equil, Recr_virgin_use);
       break;
     }
     //  SS_Label_44.1.7  3 parameter survival based
     case 7: // survival
     {
-      SRZ_0 = log(1.0 / (SSB_temp / RECR_temp));
+      SRZ_0 = log(1.0 / (SSB_virgin_use / Recr_virgin_use));
       srz_min = SRZ_0 * (1.0 - steepness);
-      B_equil = SSB_temp * (1. - (log(1. / SPR_temp) - SRZ_0) / pow((srz_min - SRZ_0), (1. / SRparm(3))));
-      SRZ_surv = mfexp((1. - pow((B_equil / SSB_temp), SRparm(3))) * (srz_min - SRZ_0) + SRZ_0); //  survival
+      B_equil = SSB_virgin_use * (1. - (log(1. / SPR_current) - SRZ_0) / pow((srz_min - SRZ_0), (1. / SRparm(3))));
+      SRZ_surv = mfexp((1. - pow((B_equil / SSB_virgin_use), SRparm(3))) * (srz_min - SRZ_0) + SRZ_0); //  survival
       R_equil = B_equil * SRZ_surv;
       break;
     }
@@ -389,11 +389,11 @@ FUNCTION dvar_vector Equil_Spawn_Recr_Fxn(const dvar_vector& SRparm,
       Shepherd_c2 = pow(0.2, SRparm(3));
       Hupper = 1.0 / (5.0 * Shepherd_c2);
       steepness = 0.2 + (SRparm(2) - 0.2) / (0.8) * (Hupper - 0.2);
-      Shep_top = 5.0 * steepness * (1.0 - Shepherd_c2) * (SPR_temp * RECR_temp) / SSB_temp - (1.0 - 5.0 * steepness * Shepherd_c2);
+      Shep_top = 5.0 * steepness * (1.0 - Shepherd_c2) * (SPR_current * Recr_virgin_use) / SSB_virgin_use - (1.0 - 5.0 * steepness * Shepherd_c2);
       Shep_bot = 5.0 * steepness - 1.0;
       Shep_top2 = posfun(Shep_top, 0.001, temp);
-      R_equil = (SSB_temp / SPR_temp) * pow((Shep_top2 / Shep_bot), (1.0 / SRparm(3)));
-      B_equil = R_equil * SPR_temp;
+      R_equil = (SSB_virgin_use / SPR_current) * pow((Shep_top2 / Shep_bot), (1.0 / SRparm(3)));
+      B_equil = R_equil * SPR_current;
       break;
     }
 
@@ -402,11 +402,11 @@ FUNCTION dvar_vector Equil_Spawn_Recr_Fxn(const dvar_vector& SRparm,
     {
       steepness = SRparm(2);
       dvariable RkrPower = SRparm(3);
-      temp = SSB_temp / (SPR_temp * RECR_temp);
+      temp = SSB_virgin_use / (SPR_current * Recr_virgin_use);
       dvariable RkrTop = pow(0.8, RkrPower) * log(temp) / log(5.0 * steepness);
       RkrTop = posfun(RkrTop, 0.000001, CrashPen);
-      R_equil = temp * RECR_temp * (1.0 - pow(RkrTop, 1.0 / RkrPower));
-      B_equil = R_equil * SPR_temp;
+      R_equil = temp * Recr_virgin_use * (1.0 - pow(RkrTop, 1.0 / RkrPower));
+      B_equil = R_equil * SPR_current;
       break;
     }
 
@@ -428,11 +428,11 @@ FUNCTION dvar_vector Equil_Spawn_Recr_Fxn(const dvar_vector& SRparm,
         Hupper=1.0/(5.0*Shepherd_c2);
         steepness=0.20001+((0.8)/(1.0+exp(-SRparm2))-0.2)/(0.8)*(Hupper-0.2);
 //        steep2=0.20001+(steepness-0.2)/(0.8)*(Hupper-0.2);
-        Shep_top=5.0*steepness*(1.0-Shepherd_c2)*(SPR_temp*RECR_temp)/SSB_temp-(1.0-5.0*steepness*Shepherd_c2);
+        Shep_top=5.0*steepness*(1.0-Shepherd_c2)*(SPR_current*Recr_virgin_use)/SSB_virgin_use-(1.0-5.0*steepness*Shepherd_c2);
         Shep_bot=5.0*steepness-1.0;
         Shep_top2=posfun(Shep_top,0.001,temp);
-        R_equil=(SSB_temp/SPR_temp) * pow((Shep_top2/Shep_bot),(1.0/Shepherd_c));
-        B_equil=R_equil*SPR_temp;
+        R_equil=(SSB_virgin_use/SPR_current) * pow((Shep_top2/Shep_bot),(1.0/Shepherd_c));
+        B_equil=R_equil*SPR_current;
         break;
       }
 
@@ -448,11 +448,11 @@ FUNCTION dvar_vector Equil_Spawn_Recr_Fxn(const dvar_vector& SRparm,
 //   if (Recs < 0) Rec2 = 0; else Rec2 = Recs;
         steepness = 0.2 + (10.0 - 0.2)/(1+exp(-SR_parm_work(2)));
         dvariable RkrPower=exp(SR_parm_work(3));
-        temp=SSB_virgin/(SPR_temp*RECR_temp);
+        temp=SSB_virgin/(SPR_current*Recr_virgin_use);
         dvariable RkrTop =  pow(0.8,RkrPower)*log(temp)/log(5.0*steepness);
         RkrTop = posfun(RkrTop,0.000001,CrashPen);
-        R_equil = temp *RECR_temp * (1.0 - pow(RkrTop,1.0/RkrPower));
-        B_equil=R_equil*SPR_temp;
+        R_equil = temp *Recr_virgin_use * (1.0 - pow(RkrTop,1.0/RkrPower));
+        B_equil=R_equil*SPR_current;
         break;
       }
    */
