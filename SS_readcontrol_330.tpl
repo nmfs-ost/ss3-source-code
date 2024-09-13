@@ -4521,20 +4521,20 @@
   TwoD_AR_cnt = 0;
   echoinput << " now read 0/1 for 2D_AR" << endl;
   *(ad_comm::global_datafile) >> TwoD_AR_do;
-  echoinput << TwoD_AR_do << "  #_ 0/1 to request experimental 2D_AR selectivity smoother options " << endl;
+  echoinput << TwoD_AR_do << "  #_ 0/1 to request experimental 2D_AR selectivity deviations " << endl;
   
   if (TwoD_AR_do > 0)
   {
-    warnstream << "2D_AR selectivity deviations option is selected!";
       //  elements 1-11 are read from control.ss;  12 and 13 are calculated internally
       //  1-fleet, 2-ymin, 3-ymax, 4-amin, 5-amax, 6-sigma_amax, 7-use_rho, 8-age/len, 9-dev_phase
       //  10-before yr range, 11=after yr range, 12-N_parm_dev,  13-selparm_location
-    write_message (WARN, 0);
+      //  rho is used only to calculate the cor matrix in prelim_calcs; it can never be estimated
+      //  sigma_sel is generally best fixed to a value of 1.0, estimation should not be undertaken without thorough investigation
     ivector tempvec(1, 13);
     tempvec.initialize();
     TwoD_AR_def.push_back(tempvec); //  bypass that pesky zeroth row
     TwoD_AR_def_rd.push_back(tempvec); //  bypass that pesky zeroth row
-    echoinput << "read specification for first 2D_AR1:  fleet, ymin, ymax, amin, amax, sigma_amax, use_rho, len1/age2, phase before, after" << endl;
+    echoinput << "read specification for first 2D_AR1:  fleet, ymin, ymax, amin, amax, sigma_amax, use_rho, len1/age2, phase, before, after" << endl;
     ender = 0;
     do
     {
@@ -4604,14 +4604,22 @@
           timevary_parm_cnt_sel++;
           N_selparm2++;
           ParmLabel += "sigmasel_" + fleetname(f) + "(" + NumLbl(f) + ")_" + anystring + "(" + NumLbl(max(1, j)) + ")";
+          if (dtempvec(7) > 0)
+          {
+            warnstream << "2DAR Sigmasel parameter is not normally estimable; adequate performance usually obtained by fixing to value of 1.0";
+            write_message (WARN, 0);
+          }
         }
         if (use_rho == 1)
         {
-          echoinput << "read two parameter lines for rho_yr and then rho_age (or length)" << endl;
+          warnstream << "2DAR rho is incompletely implemented; it should only be used experimentally and never estimated";
+          write_message (WARN, 0);
+          echoinput << "read one parameter line for rho_yr,  then one for rho_age (or length)" << endl;
           {
             dvector dtempvec(1, 7); //  Lo, Hi, init, prior, prior_sd, prior_type, phase;
             dtempvec.initialize();
             *(ad_comm::global_datafile) >> dtempvec(1, 7);
+            dtempvec(7) = -1;  //  force no estimation
             timevary_parm_rd.push_back(dtempvec);
             echoinput << " rho year: " << dtempvec(3) << endl;
             ParCount++;
@@ -4624,6 +4632,7 @@
             dvector dtempvec(1, 7); //  Lo, Hi, init, prior, prior_sd, prior_type, phase;
             dtempvec.initialize();
             *(ad_comm::global_datafile) >> dtempvec(1, 7);
+            dtempvec(7) = -1;  //  force no estimation
             timevary_parm_rd.push_back(dtempvec);
             echoinput << " rho " << anystring << ": " << dtempvec(3) << endl;
             ParCount++;
