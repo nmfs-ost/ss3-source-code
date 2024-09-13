@@ -535,6 +535,7 @@ FUNCTION void get_initial_conditions()
     CrashPen += Equ_penalty;
     SPR_temp = SSB_equil / equ_Recr; //  spawners per recruit at initial F
     //  get equilibrium SSB and recruitment from SPR_temp, Recr_virgin and virgin steepness
+    //  this is the initial year, so no time-vary effects available, so uses _virgin quantities for spawner-recruitment
     Equ_SpawnRecr_Result = Equil_Spawn_Recr_Fxn(SR_parm_work, SSB_virgin, Recr_virgin, SPR_temp); //  returns 2 element vector containing equilibrium biomass and recruitment at this SPR
     R1_exp = Equ_SpawnRecr_Result(2); //  set the expected recruitment equal to this equilibrium
     exp_rec(eq_yr, 1) = R1_exp;
@@ -1037,7 +1038,7 @@ FUNCTION void get_time_series()
           Fishon = 0;
           eq_yr = y;
           bio_yr = y;
-          Do_Equil_Calc(R0_use); //  call function to do equilibrium calculation
+          Do_Equil_Calc(R0_use); //  call function to do equilibrium calculation with current year's biology and adjusted R0
           SSB_use = SSB_equil;
           if (fishery_on_off == 1)
           {
@@ -1048,7 +1049,7 @@ FUNCTION void get_time_series()
             Fishon = 0;
           }
         }
-        Recruits = Spawn_Recr(SSB_use, R0_use, SSB_current); // calls to function Spawn_Recr
+        Recruits = Spawn_Recr(SSB_use, R0_use, SSB_current); // calls to function Spawn_Recr using either virgin or adjusted R0 and SSB0
         if (SR_fxn != 7) apply_recdev(Recruits, R0_use); //  apply recruitment deviation
         // distribute Recruitment of age 0 fish among the current and future settlements; and among areas and morphs
         //  use t offset for each birth event:  Settlement_offset(settle)
