@@ -1803,13 +1803,13 @@ FUNCTION void write_bigoutput()
 
     SS2out << "# " <<endl;
     SS2out << "sigmaR: "<< sigmaR  << endl;
-    SS2out << "SPR0_(virgin): " << SPR_virgin << " #_uses_biology_from_start_year: " << styr <<endl;
+    SS2out << "SPR0_(virgin): " << SSBpR_virgin << " #_uses_biology_from_start_year: " << styr <<endl;
 
     switch (SR_fxn)
     {
       case 3: // Beverton-Holt with steepness
     {
-      alpha = 4.0 * steepness / (SPR_virgin_adj * (1. - steepness));
+      alpha = 4.0 * steepness / (SSBpR_virgin_adj * (1. - steepness));
       beta = (5.0 * steepness - 1.0) / ((1. - steepness) * SSB_virgin);
       SS2out << "Ln(R0): " << SR_parm(1) << endl << "R0: " << mfexp(SR_parm(1)) << endl;
       SS2out << "steepness: " << steepness << endl;
@@ -1821,8 +1821,8 @@ FUNCTION void write_bigoutput()
     {
       SS2out << "Ln(alpha): " << SR_parm(3) << " alpha " << mfexp(SR_parm(3)) << endl;
       SS2out << "Ln(beta): " << SR_parm(4) << " beta " << mfexp(SR_parm(4)) << endl;
-      SS2out << "ln(R0)_derived: " << log( 1. / beta * (alpha - (1. / SPR_virgin_adj))) << endl;  //  virgin R0
-      SS2out << "steepness_derived: " << alpha * SPR_virgin_adj / (4. + alpha * SPR_virgin_adj) << endl;  // steepness virgin
+      SS2out << "ln(R0)_derived: " << log( 1. / beta * (alpha - (1. / SSBpR_virgin_adj))) << endl;  //  virgin R0
+      SS2out << "steepness_derived: " << alpha * SSBpR_virgin_adj / (4. + alpha * SSBpR_virgin_adj) << endl;  // steepness virgin
       break;
     }
     case 8:
@@ -1854,7 +1854,7 @@ FUNCTION void write_bigoutput()
     { if (Bmark_Yr(k+1) > Bmark_Yr(k))
       {SS2out << "#_range_of_years_is_averaged,_so_reduces_standard_error_of_result;_do_this_only_when_timevarying_makes_necessary:  " << k << " "<< k+1 << endl;}
     }
-    SS2out << "SPR_unfished_benchmark: " << Mgmt_quant(1) / Mgmt_quant(4) << "  #_based_on_averaging_biology_over_benchmark_year_range " << endl;
+    SS2out << "SSBpR_unfished_benchmark: " << Mgmt_quant(1) / Mgmt_quant(4) << "  #_based_on_averaging_biology_over_benchmark_year_range " << endl;
     SS2out << "Bmsy/Bzero: "<< Bmsy / SSB_virgin  << " # using styr bio for Bzero" << endl;
     SS2out << "Bmsy/Bunf: "<< Bmsy / Mgmt_quant(1)  << " # using MSY's averaged bio for Bunf" << endl;
 
@@ -4862,8 +4862,8 @@ FUNCTION void SPR_profile()
 
         Do_Equil_Calc(equ_Recr);
         //  SPAWN-RECR:   calc equil spawn-recr in the SPR loop
-        SPR_temp = SSB_equil;
-        Equ_SpawnRecr_Result = Equil_Spawn_Recr_Fxn(SR_parm_work, SSB_unf, Recr_unf, SPR_temp); //  returns 2 element vector containing equilibrium biomass and recruitment at this SPR
+        SSBpR_temp = SSB_equil;
+        Equ_SpawnRecr_Result = Equil_Spawn_Recr_Fxn(SR_parm_work, SSB_unf, Recr_unf, SSBpR_temp); //  returns 2 element vector containing equilibrium biomass and recruitment at this SPR
         Btgt_prof = Equ_SpawnRecr_Result(1);
         Btgt_prof_rec = Equ_SpawnRecr_Result(2);
         if (Btgt_prof < 0.001 || Btgt_prof_rec < 0.001)

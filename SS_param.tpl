@@ -165,8 +165,8 @@ PARAMETER_SECTION
   number two_sigmaRsq;
   number half_sigmaRsq;
   number sigmaR;
-  number SPR_virgin;
-  number SPR_virgin_adj;
+  number SSBpR_virgin;
+  number SSBpR_virgin_adj;
   number regime_change;
   number rho;
   number dirichlet_Parm;
@@ -249,7 +249,7 @@ PARAMETER_SECTION
 
   number SPR_trial
   number SPR_actual;
-  number SPR_temp;  //  used to pass quantity into Equil_SpawnRecr
+  number SSBpR_temp;  //  SSB per Recruit; used to pass quantity into Equil_SpawnRecr
   number Recruits;                            // Age0 Recruits
   number equ_mat_bio
   number equ_mat_num
