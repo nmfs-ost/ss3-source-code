@@ -343,8 +343,8 @@ FUNCTION void get_initial_conditions()
   {
     equ_Recr = 1.0;
     Do_Equil_Calc(equ_Recr); //  call function to do equilibrium calculation.  Returns SPR because R = 1.0
-    SPR_virgin = SSB_equil; //  spawners per recruit.  Needed for Sr_fxn = 10
-    SPR_virgin_adj = SSB_equil;  //  also needed for Sr_fxn 10.  Will get revised in benchmark to use averaged biology if requested.
+    SSBpR_virgin = SSB_equil; //  spawners per recruit.  Needed for Sr_fxn = 10
+    SSBpR_virgin_adj = SSB_equil;  //  also needed for Sr_fxn 10.  Will get revised in benchmark to use averaged biology if requested.
     if(SR_fxn == 10)  // B-H with a,b
     {
   //  WHAM based on R = A*S/(1+B*S)
@@ -355,8 +355,8 @@ FUNCTION void get_initial_conditions()
 
       alpha = mfexp(SR_parm(3));
       beta = mfexp(SR_parm(4));
-      steepness = alpha * SPR_virgin_adj / (4. + alpha * SPR_virgin_adj);
-      Recr_virgin = 1. / beta * (alpha - (1. / SPR_virgin_adj));
+      steepness = alpha * SSBpR_virgin_adj / (4. + alpha * SSBpR_virgin_adj);
+      Recr_virgin = 1. / beta * (alpha - (1. / SSBpR_virgin_adj));
 //      warning << " before AB_calcs " << "parm " << SR_parm(1) << " calc " << log(Recr_virgin) << endl;
       SR_parm(1) = log(Recr_virgin);
       SR_parm(2) = steepness;
@@ -380,7 +380,7 @@ FUNCTION void get_initial_conditions()
     exp_rec(eq_yr, 4) = Recr_virgin;
     Do_Equil_Calc(equ_Recr); //  call function to do equilibrium calculation
     SSB_virgin = SSB_equil;
-//    SPR_virgin = SSB_equil / Recr_virgin; //  spawners per recruit already calculated
+//    SSBpR_virgin = SSB_equil / Recr_virgin; //  spawners per recruit already calculated
     if(Do_Benchmark==0)  // assign values that would be created in benchmark section
     {
       Mgmt_quant(1) = SSB_virgin;
@@ -533,10 +533,10 @@ FUNCTION void get_initial_conditions()
 
     Do_Equil_Calc(equ_Recr);
     CrashPen += Equ_penalty;
-    SPR_temp = SSB_equil / equ_Recr; //  spawners per recruit at initial F
-    //  get equilibrium SSB and recruitment from SPR_temp, Recr_virgin and virgin steepness
+    SSBpR_temp = SSB_equil / equ_Recr; //  spawners per recruit at initial F
+    //  get equilibrium SSB and recruitment from SSBpR_temp, Recr_virgin and virgin steepness
     //  this is the initial year, so no time-vary effects available, so uses _virgin quantities for spawner-recruitment
-    Equ_SpawnRecr_Result = Equil_Spawn_Recr_Fxn(SR_parm_work, SSB_virgin, Recr_virgin, SPR_temp); //  returns 2 element vector containing equilibrium biomass and recruitment at this SPR
+    Equ_SpawnRecr_Result = Equil_Spawn_Recr_Fxn(SR_parm_work, SSB_virgin, Recr_virgin, SSBpR_temp); //  returns 2 element vector containing equilibrium biomass and recruitment at this SPR
     R1_exp = Equ_SpawnRecr_Result(2); //  set the expected recruitment equal to this equilibrium
     exp_rec(eq_yr, 1) = R1_exp;
 
@@ -1042,6 +1042,7 @@ FUNCTION void get_time_series()
           bio_yr = y;
           Do_Equil_Calc(R0_use); //  call function to do equilibrium calculation with current year's biology and adjusted R0
           SSB_use = SSB_equil;
+          SSBpR_virgin_adj = SSB_use / R0_use;  //  update 
           if (fishery_on_off == 1)
           {
             Fishon = 1;
@@ -1501,6 +1502,7 @@ FUNCTION void get_time_series()
           bio_yr = y;
           Do_Equil_Calc(R0_use); //  call function to do equilibrium calculation
           SSB_use = SSB_equil;
+          SSBpR_virgin_adj = SSB_use / R0_use;  //  update 
           if (fishery_on_off == 1)
           {
             Fishon = 1;
