@@ -327,7 +327,7 @@ FUNCTION void write_bigoutput()
     SS2out << "Season_Durations: " << seasdur << endl;
     SS2out << "Spawn_month: " << spawn_month << endl
            << "Spawn_seas: " << spawn_seas << endl
-           << "Spawn_timing_in_season: " << spawn_time_seas << endl;
+           << "spawntiming as frac. of year: " << spawn_time_seas << endl;
     SS2out << "N_areas: " << pop << endl;
     SS2out << "Start_year: " << styr << endl;
     SS2out << "End_year: " << endyr << endl;

@@ -199,9 +199,10 @@
       }
       temp += subseasdur_delta(spawn_seas);
     }
-    spawn_time_seas = (temp1 - azero_seas(spawn_seas)) / seasdur(spawn_seas); //  remaining fraction of year converted to fraction of season
+//    spawn_time_seas = (temp1 - azero_seas(spawn_seas)) / seasdur(spawn_seas); //  incorrect:   remaining fraction of year converted to fraction of season
+    spawn_time_seas = (temp1 - azero_seas(spawn_seas)); //  timing in units of fraction of year such that exp(-Z*spawn_time_seas) will be correct
   }
-  echoinput << "SPAWN month: " << spawn_month << "; seas: " << spawn_seas << "; subseas_for_ALK: " << spawn_subseas << "; timing_in_season: " << spawn_time_seas << endl;
+  echoinput << "SPAWN month: " << spawn_month << "; seas: " << spawn_seas << "; subseas_for_ALK: " << spawn_subseas << "; spawntiming as frac. of year: " << spawn_time_seas << endl;
   if (spawn_seas > nseas)
   {
     warnstream << " spawn_seas index must be <= nseas ";
