@@ -697,7 +697,7 @@ FUNCTION void get_time_series()
   dvariable crashtemp1;
   dvariable interim_tot_catch;
   dvariable Z_adjuster;
-  dvariable R0_use;  // annually updated variable if SR_update_SPR0 == 1; gets passed to Spawn_Recr() function
+  dvariable R0_use;  // annually updated variable if SR_update_SSBpR0_timeseries == 1; gets passed to Spawn_Recr() function
   dvariable SSB_use;
 
   if (Do_Morphcomp > 0)
@@ -1026,7 +1026,7 @@ FUNCTION void get_time_series()
         //  SS_Label_Info_24.2.3 #Get the total recruitment produced by this spawning biomass at the beginning of the season
         //  SPAWN-RECR:   calc recruitment in time series; need to make this area-specific
         //  SR_Fxn  relevant keyword
-        if (SR_update_SPR0 == 0) //  SRparm are not time-varying
+        if (SR_update_SSBpR0_timeseries == 0) //  SRparm are not time-varying
         {
           R0_use = Recr_virgin;
           SSB_use = SSB_virgin;
@@ -1486,12 +1486,12 @@ FUNCTION void get_time_series()
         //  SS_Label_Info_24.3.4.1 #Get recruitment from this spawning biomass at some time during the season
         //  SPAWN-RECR:   calc recruitment in time series; need to make this area-specific
         //  SR_fxn
-        if (SR_update_SPR0 == 0) //  SR parms are not time-varying
+        if (SR_update_SSBpR0_timeseries == 0) //  SR parms are not time-varying
         {
           R0_use = Recr_virgin;
           SSB_use = SSB_virgin;
         }
-        else  //  update SSB_use and R0_use where will update SPR0 inside the Spawn_recr fxn
+        else  //  update SSB_use and R0_use where will update SSBpR0 inside the Spawn_recr fxn
         {
           R0_use = mfexp(SR_parm_work(1));  //  check to be sure this works when R0 is derived from B-H with alpha, beta parameters
           Fishon = 0;

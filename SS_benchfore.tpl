@@ -745,7 +745,7 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
     }
   }
 
-  if (SR_update_SPR0 == 0)  //  use virgin biology for the spawner-recruitment R0,h calculations
+  if (SR_update_SSBpR0_bmark == 0)  //  use virgin biology for the spawner-recruitment R0,h calculations in bmark
   {
      Recr_unf = Recr_virgin;
      SSB_unf = SSB_virgin;
@@ -764,7 +764,7 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
   {
     report5 << "SR_parms for benchmark: " << SR_parm_work << endl
             << "Benchmark biology averaged over years: " << Bmark_Yr(1) << " " << Bmark_Yr(2) << endl;
-    if ( SR_update_SPR0 == 1) report5 << "SPR0 for equilibrium spawner-recruit based on benchmark biology, not virgin biology" << endl;
+    if ( SR_update_SSBpR0_bmark == 1) report5 << "SPR0 for equilibrium spawner-recruit based on benchmark biology, not virgin biology" << endl;
     Equ_SpawnRecr_Result = Equil_Spawn_Recr_Fxn(SR_parm_work, SSB_virgin, Recr_virgin, SSBpR_virgin); //  returns 2 element vector containing equilibrium biomass and recruitment at this SPR
     report5 << " Virgin SSB, R0, SPR0: " << SSB_virgin << " " << Recr_virgin << " "  << SSBpR_virgin << " equil: " << Equ_SpawnRecr_Result << endl;
 
@@ -1064,7 +1064,7 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
     if (show_MSY == 1)
     {
       report5 << "#" << endl;
-  if (SR_update_SPR0 == 0)  //  use virgin biology for the spawner-recruitment R0,h calculations
+  if (SR_update_SSBpR0_bmark == 0)  //  use virgin biology for the spawner-recruitment R0,h calculations
     {report5 << "Find_target_SSB/Bzero; where Bzero is Virgin SSB:" << SSB_unf << " where SSBpR_unf = " << SSBpR_unf << endl;}
   else
     {report5 << "Find_target_SSB/Bzero; where Bzero is for Bmark biology and updated SPR0: " << SSB_unf << " where SSBpR_unf = " << SSBpR_unf << endl;}
@@ -1945,7 +1945,7 @@ FUNCTION void Get_Forecast()
   dvariable OFL_catch;
   dvariable Fcast_Crash;
   dvariable totcatch;
-  dvariable R0_use;  // annually updated variable if SR_update_SPR0 == 1
+  dvariable R0_use;  // annually updated value if SR_update_SSBpR0_timeseries == 1
   dvariable SSB_use;  // selected version of SSB that gets passes to Spawn_Recr
   dvar_matrix catage_w(1, gmorph, 0, nages);
   dvar_vector tempcatch(1, Nfleet);
@@ -2592,7 +2592,7 @@ FUNCTION void Get_Forecast()
             }
             //  SPAWN-RECR:   get recruitment in forecast;  needs to be area-specific
             // SR_fxn
-            if (SR_update_SPR0 == 0) //  R0 is not time-varying
+            if (SR_update_SSBpR0_timeseries == 0) //  R0 is not time-varying
             {
               R0_use = Recr_virgin;
               SSB_use = SSB_virgin;
@@ -3230,7 +3230,7 @@ FUNCTION void Get_Forecast()
             //  SS_Label_Info_24.3.4.1 #Get recruitment from this spawning biomass
             //  SPAWN-RECR:   calc recruitment in time series; need to make this area-specific
             // SR_fxn
-            if (SR_update_SPR0 == 0) //  R0 is not time-varying
+            if (SR_update_SSBpR0_timeseries == 0) //  R0 is not time-varying
             {
               R0_use = Recr_virgin;
               SSB_use = SSB_virgin;
