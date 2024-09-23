@@ -95,6 +95,7 @@
   int on;
   int SDmode;
   int maxI;
+  number joinsteep;  //  used 
 
  LOCAL_CALCS
   // clang-format on
@@ -167,6 +168,7 @@
   temp1 = 0;
   save_gparm_print = 0;
   finished_minimize = 0;
+  joinsteep = 50.;
   // SS_Label_Info_1.1.2 #arrays for parameter labels are created in GLOBAL
   // adstring_array NumLbl;
   // adstring_array GenderLbl;   // gender label

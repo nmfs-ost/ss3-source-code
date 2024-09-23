@@ -2541,7 +2541,7 @@
 
  LOCAL_CALCS
   // clang-format on
-  Equ_F_joiner = 10; //  defaults
+  Equ_F_joiner = 10; //  only used for Pope's;  a specific value for this is calculated based on maxharvest rate
   F_detail = -1;
   F_Tune = 3;
   F_parm_intval = 0.05; //  fill vector

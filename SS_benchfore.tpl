@@ -1998,7 +1998,7 @@ FUNCTION void Get_Forecast()
         break;
       }
     }
-    join1 = 1. / (1. + mfexp(30. * (Fcast_Fmult - max_harvest_rate)));
+    join1 = 1. / (1. + mfexp(joinsteep * (Fcast_Fmult - max_harvest_rate)));
     Fcast_Fmult = join1 * Fcast_Fmult + (1. - join1) * max_harvest_rate; // new F value for this fleet, constrained by max_harvest_rate
     if (join1 < 0.999)
     {
@@ -2629,8 +2629,8 @@ FUNCTION void Get_Forecast()
           else if (ABC_Loop == 2 && s == 1) // Calc the buffer in season 1, will use last year's spawnbio if multiseas and spawnseas !=1
           {
             temp = SSB_unf;
-            join1 = 1. / (1. + mfexp(10. * (SSB_current - H4010_bot * temp)));
-            join2 = 1. / (1. + mfexp(10. * (SSB_current - H4010_top * temp)));
+            join1 = 1. / (1. + mfexp(joinsteep * (SSB_current - H4010_bot * temp)));
+            join2 = 1. / (1. + mfexp(joinsteep * (SSB_current - H4010_top * temp)));
 
             switch (HarvestPolicy)
             {
@@ -2828,7 +2828,7 @@ FUNCTION void Get_Forecast()
                           }
                         } //close gmorph loop
                       temp1 = Fcast_InputCatch(t, f, 1) / (temp + NilNumbers);
-                      join1 = 1. / (1. + mfexp(30. * (temp1 - max_harvest_rate)));
+                      join1 = 1. / (1. + mfexp(joinsteep * (temp1 - max_harvest_rate)));
                       Hrate(f, t) = join1 * temp1 + (1. - join1) * max_harvest_rate; // new F value for this fleet, constrained by max_harvest_rate
                     }
                     else if (fishery_on_off == 1) //  tune to adjusted catch calculated from ABC_Loop=2
@@ -2854,7 +2854,7 @@ FUNCTION void Get_Forecast()
                           } // retained catch numbers
                         } //close gmorph loop
                       temp1 = Fcast_Catch_Store(t, f) / (temp + NilNumbers);
-                      join1 = 1. / (1. + mfexp(30. * (temp1 - max_harvest_rate)));
+                      join1 = 1. / (1. + mfexp(joinsteep * (temp1 - max_harvest_rate)));
                       Hrate(f, t) = join1 * temp1 + (1. - join1) * max_harvest_rate; // new F value for this fleet, constrained by max_harvest_rate
                     }
                   } // end have fixed catch to be matched
@@ -2989,7 +2989,7 @@ FUNCTION void Get_Forecast()
                       {
                         temp = H_old(f) + (H_temp(f) - H_old(f)) / (C_temp(f) - C_old(f) + 1.0e-6) * (Fcast_InputCatch(t, f, 1) - C_old(f));
                       }
-                      join1 = 1. / (1. + mfexp(30. * (temp - 0.95 * max_harvest_rate)));
+                      join1 = 1. / (1. + mfexp(joinsteep * (temp - 0.95 * max_harvest_rate)));
                       Hrate(f, t) = join1 * temp + (1. - join1) * max_harvest_rate; // new F value for this fleet, constrained by max_harvest_rate
                       C_old(f) = C_temp(f);
                       H_old(f) = H_temp(f);
@@ -3028,7 +3028,7 @@ FUNCTION void Get_Forecast()
                       {
                         temp = (H_old(f) + (H_temp(f) - H_old(f)) / (C_temp(f) - C_old(f) + 1.0e-6) * (Fcast_Catch_Store(t, f) - C_old(f)));
                       }
-                      join1 = 1. / (1. + mfexp(30. * (temp - 0.95 * max_harvest_rate)));
+                      join1 = 1. / (1. + mfexp(joinsteep * (temp - 0.95 * max_harvest_rate)));
                       Hrate(f, t) = join1 * temp + (1. - join1) * max_harvest_rate; // new F value for this fleet, constrained by max_harvest_rate
                       C_old(f) = C_temp(f);
                       H_old(f) = H_temp(f);
@@ -3558,7 +3558,7 @@ FUNCTION void Get_Forecast()
               if (Fcast_MaxFleetCatch(f) > 0.)
               {
                 temp = Fcast_Catch_Calc_Annual(f) / Fcast_MaxFleetCatch(f);
-                join1 = 1. / (1. + mfexp(1000. * (temp - 1.0))); // steep logistic joiner at adjustment of 1.0
+                join1 = 1. / (1. + mfexp(joinsteep * (temp - 1.0))); // steep logistic joiner at adjustment of 1.0
                 temp1 = join1 * 1.0 + (1. - join1) * temp;
                 Fcast_Catch_Calc_Annual(f) /= temp1;
                 for (s = 1; s <= nseas; s++)
@@ -3587,7 +3587,7 @@ FUNCTION void Get_Forecast()
               if (Fcast_MaxAreaCatch(p) > 0.0)
               {
                 temp = Fcast_Catch_ByArea(p) / Fcast_MaxAreaCatch(p);
-                join1 = 1. / (1. + mfexp(1000. * (temp - 1.0))); // steep logistic joiner at adjustment of 1.0
+                join1 = 1. / (1. + mfexp(joinsteep * (temp - 1.0))); // steep logistic joiner at adjustment of 1.0
                 temp1 = join1 * 1.0 + (1. - join1) * temp;
                 for (int ff = 1; ff <= N_catchfleets(p); ff++)
                 {
