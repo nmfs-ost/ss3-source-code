@@ -456,7 +456,7 @@
 //  SS_Label_Info_2.1.6  #Indexes for data timing.  "have_data" and "data_time" hold pointers for data occurrence, timing, and ALK need
   int data_type;
   number data_timing;
-  4iarray have_data(1,ALK_time_max,0,Nfleet,0,9,0,100);
+  4iarray have_data(1,ALK_time_max,0,Nfleet,0,9,0,150);
   imatrix have_data_yr(styr,endyr+50,0,Nfleet);
 
 //  have_data stores the data index of each datum occurring at time ALK_time, for fleet f of observation type k.  Up to 150 data are allowed due to CAAL data
@@ -2509,9 +2509,9 @@
             have_data(ALK_time, f, 0, 0) = 1; //  so have data of some type
             have_data(ALK_time, f, data_type, 0)++; //  count the number of observations in this subseas
             p = have_data(ALK_time, f, data_type, 0);
-            if (p > 100)
+            if (p > 150)
             {
-              warnstream << "fatal:  max agecomp obs per fleet*time is 100; you requested " << p << " for fleet x year " << f << " " << y;
+              warnstream << "fatal:  max agecomp obs per fleet*time is 150; you requested " << p << " for fleet x year " << f << " " << y;
               write_message(FATAL, 0);
             }
             have_data(ALK_time, f, data_type, p) = j; // store data index for the p'th observation in this subseas
