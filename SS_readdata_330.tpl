@@ -5035,10 +5035,10 @@
     if (STD_Yr_Reverse(y) > 0)
     {
       j++;
-      STD_Yr_Reverse(y) = j; // use for SPB and recruitment
+      STD_Yr_Reverse(y) = j; // use for SSB and recruitment
       if (y >= styr)
       {
-        // depletion must start in year AFTER first catch.  It could vary earlier if recdevs happened enough earlier to change spbio, but this is not included
+        // depletion must start in year AFTER first catch.  It could vary earlier if recdevs happened enough earlier to change SSBio, but this is not included
         if ((depletion_basis > 0 && y > first_catch_yr) || y == endyr)
         {
           N_STD_Yr_Dep++;
