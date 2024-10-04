@@ -776,8 +776,6 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
       Equ_SpawnRecr_Result = Equil_Spawn_Recr_Fxn(SR_parm_work, SSB_unf, Recr_unf, SSBpR_unf); //  returns 2 element vector containing equilibrium biomass and recruitment at this SPR
       report5 << " Benchmark SSB, R0, SPR0: " << SSB_unf << " " << Recr_unf << " "  << SSBpR_unf << " equil: " << Equ_SpawnRecr_Result << endl;
     }
-    report5 << 0 << " y: " << y << " Repro_output_by_age_for_morph_1 bench " << fec(1) << endl;
-//    report5 << "Repro_output_by_age_for_morph_1: " << fec(1) << endl;
 
   }
   SR_parm_work(N_SRparm2 + 1) = SSB_unf;
@@ -2211,6 +2209,11 @@ FUNCTION void Get_Forecast()
         break;
       }
     }
+    if (Fcast_Loop_Control(5) <= 1)
+    {HCR_anchor = SSB_unf;}
+    else if (Fcast_Loop_Control(5) ==2)
+    {HCR_anchor = SSB_virgin;}
+    report5 << "Control_rule_anchor_approach: " << Fcast_Loop_Control(5) << " HCR_anchor: " << HCR_anchor << endl;
     report5 << "#" << endl;
   }
 
@@ -2227,7 +2230,7 @@ FUNCTION void Get_Forecast()
 
   for (int Fcast_Loop1 = 1; Fcast_Loop1 <= jloop; Fcast_Loop1++) //   for different forecast conditions
   {
-    report5 << Fcast_Loop1 << " y: " << 0 << " Repro_output_by_age_for_morph_1 top_forecast: " << fec(1) << endl;
+//    report5 << Fcast_Loop1 << " y: " << 0 << " Repro_output_by_age_for_morph_1 top_forecast: " << fec(1) << endl;
 
     switch (Fcast_Loop1) //  select which ABC_loops to use
     {
@@ -2315,7 +2318,7 @@ FUNCTION void Get_Forecast()
         }
       }
     }
-    report5 << Fcast_Loop1 << " y: " << y << " updated_Repro_output_by_age_for_morph_1 endyr: " << fec(1) << endl;
+//    report5 << Fcast_Loop1 << " y: " << y << " updated_Repro_output_by_age_for_morph_1 endyr: " << fec(1) << endl;
     for (y = endyr + 1; y <= YrMax; y++)
     {
       t_base = styr + (y - styr) * nseas - 1;
@@ -2505,7 +2508,7 @@ FUNCTION void Get_Forecast()
                   Wt_Age_mid(s, g) = ALK(ALK_idx, g) * wt_len(s, GP(g)); // use for fisheries with no size selectivity
                 }
             }
-    report5 << Fcast_Loop1 << " y: " << y << " updated_Repro_output_by_age_for_morph_1 annual: " << fec(1) << endl;
+//    report5 << Fcast_Loop1 << " y: " << y << " updated_Repro_output_by_age_for_morph_1 annual: " << fec(1) << endl;
             Wt_Age_t(t, 0) = Wt_Age_beg(s);
             for (g = 1; g <= gmorph; g++)
               if (use_morph(g) > 0)
@@ -2659,9 +2662,9 @@ FUNCTION void Get_Forecast()
           }
           else if (ABC_Loop == 2 && s == 1) // Calc the buffer in season 1, will use last year's spawnbio if multiseas and spawnseas !=1
           {
-            temp = SSB_unf;
-            join1 = 1. / (1. + mfexp(10. * (SSB_current - H4010_bot * temp)));
-            join2 = 1. / (1. + mfexp(10. * (SSB_current - H4010_top * temp)));
+
+            join1 = 1. / (1. + mfexp(10. * (SSB_current - H4010_bot * HCR_anchor)));
+            join2 = 1. / (1. + mfexp(10. * (SSB_current - H4010_top * HCR_anchor)));
 
             switch (HarvestPolicy)
             {
@@ -2674,8 +2677,8 @@ FUNCTION void Get_Forecast()
                 // ramp scales catch as f(B) and buffer (H4010_scale) applied to F
                 {
                   ABC_buffer(y) = H4010_scale_vec(y) *
-                          ((0.0001 * SSB_current / (H4010_bot * temp)) * (join1) // low
-                                      + (0.0001 + (1.0 - 0.0001) * (H4010_top * temp / SSB_current) * (SSB_current - H4010_bot * temp) / (H4010_top * temp - H4010_bot * temp)) * (1.0 - join1) // curve
+                          ((0.0001 * SSB_current / (H4010_bot * HCR_anchor)) * (join1) // low
+                                      + (0.0001 + (1.0 - 0.0001) * (H4010_top * HCR_anchor / SSB_current) * (SSB_current - H4010_bot * HCR_anchor) / (H4010_top * HCR_anchor - H4010_bot * HCR_anchor)) * (1.0 - join1) // curve
                                       ) *
                           (join2) // scale combo
                       +
@@ -2686,8 +2689,8 @@ FUNCTION void Get_Forecast()
                 // ramp scales F as f(B) and buffer (H4010_scale) applied to F
                 {
                   ABC_buffer(y) = H4010_scale_vec(y) *
-                          ((0.0001 * SSB_current / (H4010_bot * temp)) * (join1) // low
-                                      + (0.0001 + (1.0 - 0.0001) * (SSB_current - H4010_bot * temp) / (H4010_top * temp - H4010_bot * temp)) * (1.0 - join1) // curve
+                          ((0.0001 * SSB_current / (H4010_bot * HCR_anchor)) * (join1) // low
+                                      + (0.0001 + (1.0 - 0.0001) * (SSB_current - H4010_bot * HCR_anchor) / (H4010_top * HCR_anchor - H4010_bot * HCR_anchor)) * (1.0 - join1) // curve
                                       ) *
                           (join2) // scale combo
                       +
@@ -2698,8 +2701,8 @@ FUNCTION void Get_Forecast()
                 // ramp scales catch as f(B) and buffer (H4010_scale) applied to catch
                 {
                   ABC_buffer(y) = 1.0 *
-                          ((0.0001 * SSB_current / (H4010_bot * temp)) * (join1) // low
-                                      + (0.0001 + (1.0 - 0.0001) * (H4010_top * temp / SSB_current) * (SSB_current - H4010_bot * temp) / (H4010_top * temp - H4010_bot * temp)) * (1.0 - join1) // curve
+                          ((0.0001 * SSB_current / (H4010_bot * HCR_anchor)) * (join1) // low
+                                      + (0.0001 + (1.0 - 0.0001) * (H4010_top * HCR_anchor / SSB_current) * (SSB_current - H4010_bot * HCR_anchor) / (H4010_top * HCR_anchor - H4010_bot * HCR_anchor)) * (1.0 - join1) // curve
                                       ) *
                           (join2) // scale combo
                       +
@@ -2710,8 +2713,8 @@ FUNCTION void Get_Forecast()
                 // ramp scales F as f(B) and buffer (H4010_scale) applied to catch
                 {
                   ABC_buffer(y) = 1.0 *
-                          ((0.0001 * SSB_current / (H4010_bot * temp)) * (join1) // low
-                                      + (0.0001 + (1.0 - 0.0001) * (SSB_current - H4010_bot * temp) / (H4010_top * temp - H4010_bot * temp)) * (1.0 - join1) // curve
+                          ((0.0001 * SSB_current / (H4010_bot * HCR_anchor)) * (join1) // low
+                                      + (0.0001 + (1.0 - 0.0001) * (SSB_current - H4010_bot * HCR_anchor) / (H4010_top * HCR_anchor - H4010_bot * HCR_anchor)) * (1.0 - join1) // curve
                                       ) *
                           (join2) // scale combo
                       +
@@ -3514,7 +3517,7 @@ FUNCTION void Get_Forecast()
             f = fish_fleet_area(0, ff);
             if (fleet_type(f) == 1)
             {
-              if (ABC_Loop == 2 && HarvestPolicy >= 3)
+              if (ABC_Loop == 2 && HarvestPolicy >= 3)  //  alternative ABC_buffer approach
               {
                 catch_fleet(t, f) *= H4010_scale_vec(y);
               }

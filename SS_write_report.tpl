@@ -4687,7 +4687,7 @@ FUNCTION void SPR_profile()
     Wt_Age_mid(s) = Wt_Age_t(t, -1);
     if (s == spawn_seas)
       fec = Wt_Age_t(t, -2);
-    report5 << 0 << " y: " << y << " updated_Repro_output spr/ypr: " << fec(1) << endl;
+//    report5 << 0 << " y: " << y << " updated_Repro_output spr/ypr: " << fec(1) << endl;
   }
 
   SS2out << "SPRloop Iter Bycatch Fmult F_report SPR YPR_dead YPR_dead*Recr YPR_ret*Recr Revenue Cost Profit SSB Recruits SSB/Bzero Tot_Catch ";
@@ -5020,9 +5020,9 @@ FUNCTION void Global_MSY()
       SS2out << "Actual ";
       show_MSY = 2; //  invokes just brief output in benchmark
       did_MSY = 0;
-    report5 << 0 << " y: " << y << " updated_Repro_output global_1: " << fec(1) << endl;
+//    report5 << 0 << " y: " << y << " updated_Repro_output global_1: " << fec(1) << endl;
       Get_Benchmarks(show_MSY);
-    report5 << 0 << " y: " << y << " updated_Repro_output global_2: " << fec(1) << endl;
+//    report5 << 0 << " y: " << y << " updated_Repro_output global_2: " << fec(1) << endl;
       did_MSY = 0;
     }
   }
