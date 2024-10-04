@@ -1516,8 +1516,8 @@ FUNCTION void write_bigoutput()
           if (s == spawn_seas)
           {
             temp = sum(SSB_pop_gp(y, p));
-            if (Hermaphro_maleSPB > 0)
-              temp += Hermaphro_maleSPB * sum(MaleSPB(y, p));
+            if (Hermaphro_maleSSB > 0)
+              temp += Hermaphro_maleSSB * sum(MaleSSB(y, p));
             SS2out << temp;
           }
           else
@@ -1529,7 +1529,7 @@ FUNCTION void write_bigoutput()
           {
             SS2out << SSB_pop_gp(y, p);
             if (Hermaphro_Option != 0)
-              SS2out << MaleSPB(y, p);
+              SS2out << MaleSSB(y, p);
           }
           else
           {
@@ -1710,7 +1710,7 @@ FUNCTION void write_bigoutput()
   if (k < 4)
     k = 4;
   // quantities to store summary statistics
-  dvector rmse(1, k); //  used in the SpBio, Index, Lencomp and Agecomp reports
+  dvector rmse(1, k); //  used in the SSBio, Index, Lencomp and Agecomp reports
   dvector Hrmse(1, k);
   dvector Rrmse(1, k);
   dvector n_rmse(1, k);
@@ -4733,33 +4733,11 @@ FUNCTION void SPR_profile()
   for (s = 1; s <= nseas; s++)
   {
     t = styr - 3 * nseas + s - 1;
-
-    if (MG_active(2) > 0 || MG_active(3) > 0 || save_for_report > 0 || WTage_rd > 0)
-    {
-      subseas = 1;
-      ALK_idx = (s - 1) * N_subseas + subseas; //  for midseason
-      Make_AgeLength_Key(s, subseas); //  for begin season
-      subseas = mid_subseas;
-      ALK_idx = (s - 1) * N_subseas + subseas; //  for midseason
-      Make_AgeLength_Key(s, subseas); //  for midseason
-      if (s == spawn_seas)
-      {
-        subseas = spawn_subseas;
-        if (spawn_subseas != 1 && spawn_subseas != mid_subseas)
-        {
-          //don't call get_growth3(subseas) because using an average ave_size
-          Make_AgeLength_Key(s, subseas); //  spawn subseas
-        }
-        get_mat_fec();
-      }
-    }
-
-    for (g = 1; g <= gmorph; g++)
-      if (use_morph(g) > 0)
-      {
-        ALK_idx = (s - 1) * N_subseas + mid_subseas; //  for midseason
-        Make_FishSelex();
-      }
+    Wt_Age_beg(s) = Wt_Age_t(t, 0); //  used for smrybio
+    Wt_Age_mid(s) = Wt_Age_t(t, -1);
+    if (s == spawn_seas)
+      fec = Wt_Age_t(t, -2);
+    report5 << 0 << " y: " << y << " updated_Repro_output spr/ypr: " << fec(1) << endl;
   }
 
   SS2out << "SPRloop Iter Bycatch Fmult F_std SPR YPR_dead YPR_dead*Recr YPR_ret*Recr Revenue Cost Profit SSB Recruits SSB/Bzero Tot_Catch ";
@@ -5013,7 +4991,7 @@ FUNCTION void Global_MSY()
   //  GLOBAL_MSY with knife-edge age selection, then slot-age selection
   SS2out << endl
          << pick_report_name(55) << endl;
-  y = styr - 3; //  stores the averaged
+  y = styr - 3; //  stores the averaged biology and selectivity, etc. from benchmark
   yz = y;
   bio_yr = y;
   eq_yr = y;
@@ -5092,7 +5070,9 @@ FUNCTION void Global_MSY()
       SS2out << "Actual ";
       show_MSY = 2; //  invokes just brief output in benchmark
       did_MSY = 0;
+    report5 << 0 << " y: " << y << " updated_Repro_output global_1: " << fec(1) << endl;
       Get_Benchmarks(show_MSY);
+    report5 << 0 << " y: " << y << " updated_Repro_output global_2: " << fec(1) << endl;
       did_MSY = 0;
     }
   }
