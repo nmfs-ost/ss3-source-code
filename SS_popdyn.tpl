@@ -383,7 +383,7 @@ FUNCTION void get_initial_conditions()
 //    SSBpR_virgin = SSB_equil / Recr_virgin; //  spawners per recruit already calculated
     if(Do_Benchmark==0)  // assign values that would be created in benchmark section
     {
-      Mgmt_quant(1) = SSB_virgin;
+      Mgmt_quant(1) = SSB_virgin;  //  can be overwritten in benchmark by updated SSB_unf
       SSB_unf = SSB_virgin;
       Recr_unf = Recr_virgin;
       Mgmt_quant(2) = totbio;  //  from equil calcs
@@ -395,7 +395,7 @@ FUNCTION void get_initial_conditions()
     Smry_Table(styr - 2, 3) = smrynum; //  from equil calcs
     SSB_pop_gp(eq_yr) = SSB_equil_pop_gp; // dimensions of pop x N_GP
     if (Hermaphro_Option != 0)
-      MaleSPB(eq_yr) = MaleSSB_equil_pop_gp;
+      MaleSSB(eq_yr) = MaleSSB_equil_pop_gp;
     SSB_yr(eq_yr) = SSB_equil;
     SR_parm_byyr(eq_yr, N_SRparm2 + 1) = SSB_equil;
     SR_parm_virg(N_SRparm2 + 1) = SSB_equil;
@@ -527,7 +527,7 @@ FUNCTION void get_initial_conditions()
     //  SS_Label_Info_23.5.1.2  #Adjustments  include spawner-recruitment function
     //  do initial equilibrium with R1 based on offset from spawner-recruitment curve, using same approach as the benchmark calculations
     //  first get SPR for this init_F
-    //  SPAWN-RECR:   calc initial equilibrium pop, SPB, Recruitment
+    //  SPAWN-RECR:   calc initial equilibrium pop, SSB, Recruitment
     //    equ_Recr=Recr_virgin;
     equ_Recr = R1_exp * regime_change;
 
@@ -554,7 +554,7 @@ FUNCTION void get_initial_conditions()
 
   SSB_pop_gp(eq_yr) = SSB_equil_pop_gp; // dimensions of pop x N_GP
   if (Hermaphro_Option != 0)
-    MaleSPB(eq_yr) = MaleSSB_equil_pop_gp;
+    MaleSSB(eq_yr) = MaleSSB_equil_pop_gp;
   SSB_yr(eq_yr) = SSB_equil;
   SR_parm_byyr(eq_yr, N_SRparm2 + 1) = SSB_equil;
   SR_parm_work(N_SRparm2 + 1) = SSB_equil;
@@ -697,14 +697,12 @@ FUNCTION void get_time_series()
   dvariable crashtemp1;
   dvariable interim_tot_catch;
   dvariable Z_adjuster;
-  dvariable R0_use;  // annually updated variable if SR_update_SSBpR0_timeseries == 1; gets passed to Spawn_Recr() function
-  dvariable SSB_use;
 
   if (Do_Morphcomp > 0)
     Morphcomp_exp.initialize();
 
   //  SS_Label_Info_24.0 #Retrieve spawning biomass and recruitment from the initial equilibrium
-  //  SPAWN-RECR:   begin of time series, retrieve last spbio and recruitment
+  //  SPAWN-RECR:   begin of time series, retrieve last SSBio and recruitment
   SSB_current = SSB_yr(styr); //  need these initial assignments in case recruitment distribution occurs before spawnbio&recruits
   if (recdev_doit(styr - 1) > 0)
   {
@@ -983,7 +981,7 @@ FUNCTION void get_time_series()
         }
       }
       //  SS_Label_Info_24.2.2 #Compute spawning biomass if this is spawning season so recruits could occur later this season
-      //  SPAWN-RECR:   calc SPB in time series if spawning is at beginning of the season
+      //  SPAWN-RECR:   calc SSB in time series if spawning is at beginning of the season
       if (s == spawn_seas && spawn_time_seas < 0.0001) //  compute spawning biomass if spawning at beginning of season so recruits could occur later this season
       {
         SSB_pop_gp(y).initialize();
@@ -1009,18 +1007,18 @@ FUNCTION void get_time_series()
 
         if (Hermaphro_Option != 0) // get male biomass
         {
-          MaleSPB(y).initialize();
+          MaleSSB(y).initialize();
           for (p = 1; p <= pop; p++)
           {
             for (g = 1; g <= gmorph; g++)
               if (sx(g) == 2 && use_morph(g) > 0) //  male; all assumed to be mature
               {
-                MaleSPB(y, p, GP4(g)) += Wt_Age_t(t, 0, g) * natage(t, p, g); // accumulates SSB by area and by growthpattern
+                MaleSSB(y, p, GP4(g)) += Wt_Age_t(t, 0, g) * natage(t, p, g); // accumulates SSB by area and by growthpattern
               }
           }
-          if (Hermaphro_maleSPB > 0.0) // add MaleSPB to female SSB
+          if (Hermaphro_maleSSB > 0.0) // add MaleSSB to female SSB
           {
-            SSB_current += Hermaphro_maleSPB * sum(MaleSPB(y));
+            SSB_current += Hermaphro_maleSSB * sum(MaleSSB(y));
             SSB_yr(y) = SSB_current;
           }
         }
@@ -1471,18 +1469,18 @@ FUNCTION void get_time_series()
         SSB_yr(y) = SSB_current;
         if (Hermaphro_Option != 0) // get male biomass
         {
-          MaleSPB(y).initialize();
+          MaleSSB(y).initialize();
           for (p = 1; p <= pop; p++)
           {
             for (g = 1; g <= gmorph; g++)
               if (sx(g) == 2 && use_morph(g) > 0) //  male; all assumed to be mature
               {
-                MaleSPB(y, p, GP4(g)) += Wt_Age_t(t, 0, g) * elem_prod(natage(t, p, g), mfexp(-Z_rate(t, p, g) * spawn_time_seas)); // accumulates SSB by area and by growthpattern
+                MaleSSB(y, p, GP4(g)) += Wt_Age_t(t, 0, g) * elem_prod(natage(t, p, g), mfexp(-Z_rate(t, p, g) * spawn_time_seas)); // accumulates SSB by area and by growthpattern
               }
           }
-          if (Hermaphro_maleSPB > 0.0) // add MaleSPB to female SSB
+          if (Hermaphro_maleSSB > 0.0) // add MaleSSB to female SSB
           {
-            SSB_current += Hermaphro_maleSPB * sum(MaleSPB(y));
+            SSB_current += Hermaphro_maleSSB * sum(MaleSSB(y));
             SSB_yr(y) = SSB_current;
           }
         }
@@ -1798,7 +1796,7 @@ FUNCTION void get_time_series()
       Smry_Table(y, 13) = GenTime;
       if( SR_fxn == 10 )
       {
-        temp = SSB_equil / Recr_virgin;  //  current year's SPB/R with current biology at age
+        temp = SSB_equil / Recr_virgin;  //  current year's SSB/R with current biology at age
         alpha = mfexp(SR_parm_work(3));
         beta = mfexp(SR_parm_work(4));
         SR_parm_byyr(y, 2) =  alpha * temp / (4. + alpha * temp);  //  implied steepness
@@ -2284,9 +2282,9 @@ FUNCTION void Do_Equil_Calc(const prevariable& equ_Recr)
   SSB_equil = sum(SSB_equil_pop_gp);
   GenTime /= SSB_equil;
   smryage /= smrynum;
-  if (Hermaphro_maleSPB > 0.0) // add MaleSPB to female SSB
+  if (Hermaphro_maleSSB > 0.0) // add MaleSSB to female SSB
   {
-    SSB_equil += Hermaphro_maleSPB * sum(MaleSSB_equil_pop_gp);
+    SSB_equil += Hermaphro_maleSSB * sum(MaleSSB_equil_pop_gp);
   }
   } //  end equil calcs
 

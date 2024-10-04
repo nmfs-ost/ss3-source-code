@@ -1148,11 +1148,11 @@
   int Hermaphro_seas;
   int Hermaphro_firstage;
   number Hermaphro_seas_rd;
-  number Hermaphro_maleSPB;
+  number Hermaphro_maleSSB;
  LOCAL_CALCS
   // clang-format on
   Hermaphro_seas = 0;
-  Hermaphro_maleSPB = 0.0;
+  Hermaphro_maleSSB = 0.0;
   Hermaphro_firstage = 0;
   MGparm_Hermaphro = 0;
   
@@ -1175,8 +1175,8 @@
     //  so  2.3 will do switch in season 2 beginning with age 3.
     echoinput << Hermaphro_seas << "  Hermaphro_season (-1 means all seasons)" << endl;
     echoinput << Hermaphro_firstage << "  Hermaphro_firstage (from decimal part of seas input; note that firstage can only be a single digit, so 9 is max" << endl;
-    *(ad_comm::global_datafile) >> Hermaphro_maleSPB; // read as a fraction (0.0 to 1.0) of the male SSB added into the total SSB
-    echoinput << Hermaphro_maleSPB << "  Hermaphro_maleSPB " << endl;
+    *(ad_comm::global_datafile) >> Hermaphro_maleSSB; // read as a fraction (0.0 to 1.0) of the male SSB added into the total SSB
+    echoinput << Hermaphro_maleSSB << "  Hermaphro_maleSSB " << endl;
   }
   // clang-format off
  END_CALCS
@@ -2183,6 +2183,7 @@
     SR_update_SSBpR0_timeseries = 0;
     break;
   }
+  echoinput << "SRupdate " << SR_update_parm << " use " << SR_update_SSBpR0_bmark << " rd " << SR_update_SSBpR0_rd<< endl;
   echoinput << "SR_Npar and N_SRparm2 and N_SRparm3:  " << N_SRparm(SR_fxn) << " " << N_SRparm2 << " " << N_SRparm3 << endl;
   // clang-format off
  END_CALCS
@@ -5815,7 +5816,7 @@
     Extra_Std_N += YrMax - (styr - 2) + 1;
     if (More_Std_Input(12) == 2) Extra_Std_N += YrMax - (styr - 2) + 1; //  for recruitment
   }
-  // add 3 values for ln(Spbio)
+  // add 3 values for ln(SSBio)
   // (years are automatically generated as startyr, mid-point, and endyr)
   Do_se_LnSSB = Extra_Std_N + 1;
   Extra_Std_N += 3;
@@ -6869,23 +6870,23 @@
     }
   }
   
-  //  output ln(SPB) std for selected years
-  echoinput << " do ln(SPB) std labels for 3 years" << endl;
+  //  output ln(SSB) std for selected years
+  echoinput << " do ln(SSB) std labels for 3 years" << endl;
   CoVar_Count++;
   j++;
   active_parm(CoVar_Count) = j;
   sprintf(onenum, "%d", styr);
-  ParmLabel += "ln(SPB)_" + onenum + CRLF(1);
+  ParmLabel += "ln(SSB)_" + onenum + CRLF(1);
   CoVar_Count++;
   j++;
   active_parm(CoVar_Count) = j;
   sprintf(onenum, "%d", int((endyr + styr) / 2));
-  ParmLabel += "ln(SPB)_" + onenum + CRLF(1);
+  ParmLabel += "ln(SSB)_" + onenum + CRLF(1);
   CoVar_Count++;
   j++;
   active_parm(CoVar_Count) = j;
   sprintf(onenum, "%d", endyr);
-  ParmLabel += "ln(SPB)_" + onenum + CRLF(1);
+  ParmLabel += "ln(SSB)_" + onenum + CRLF(1);
   
   if (Do_se_smrybio > 0)
   {
