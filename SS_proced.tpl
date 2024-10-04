@@ -205,15 +205,15 @@ PROCEDURE_SECTION
       temp = sqrt((temp + 0.0000001) / (double(recdev_end - recdev_start + 1)));
       if (mcmc_counter == 0 && mceval_counter == 0)
       {
-        cout << current_phase() << " " << niter << " -log(L): " << obj_fun << "  Spbio: " << value(SSB_yr(styr)) << " " << value(SSB_yr(endyr));
+        cout << current_phase() << " " << niter << " -log(L): " << obj_fun << "  SSBio: " << value(SSB_yr(styr)) << " " << value(SSB_yr(endyr));
       }
       else if (mcmc_counter > 0)
       {
-        cout << " MCMC: " << mcmc_counter << " -log(L): " << obj_fun << "  Spbio: " << value(SSB_yr(styr)) << " " << value(SSB_yr(endyr));
+        cout << " MCMC: " << mcmc_counter << " -log(L): " << obj_fun << "  SSBio: " << value(SSB_yr(styr)) << " " << value(SSB_yr(endyr));
       }
       else if (mceval_counter > 0)
       {
-        cout << " MCeval: " << mceval_counter << " -log(L): " << obj_fun << "  Spbio: " << value(SSB_yr(styr)) << " " << value(SSB_yr(endyr));
+        cout << " MCeval: " << mceval_counter << " -log(L): " << obj_fun << "  SSBio: " << value(SSB_yr(styr)) << " " << value(SSB_yr(endyr));
       }
       if (F_Method > 1 && sum(catch_like) > 0.01)
       {

@@ -1270,10 +1270,10 @@ REPORT_SECTION
     if (Do_TG > 0)
       report << " TG-fleetcomp " << TG_like1 << endl
              << " TG-negbin " << TG_like2 << endl;
-    report << " -log(L): " << obj_fun << "  Spbio: " << value(SSB_yr(styr)) << " " << value(SSB_yr(endyr)) << endl;
+    report << " -log(L): " << obj_fun << "  SSBio: " << value(SSB_yr(styr)) << " " << value(SSB_yr(endyr)) << endl;
 
     report << endl
-           << "Year Spbio Recruitment" << endl;
+           << "Year SSBio Recruitment" << endl;
     report << "Virg " << SSB_yr(styr - 2) << " " << exp_rec(styr - 2, 4) << endl;
     report << "Init " << SSB_yr(styr - 1) << " " << exp_rec(styr - 1, 4) << endl;
     for (y = styr; y <= endyr; y++)
