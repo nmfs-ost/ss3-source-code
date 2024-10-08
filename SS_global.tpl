@@ -1189,7 +1189,7 @@ FINAL_SECTION
     //  SS_Label_Info_12.4.7 #Finish up with final writes to warning.sso
     if (N_changed_lambdas > 0)
     {
-      warnstream << "Reminder: Number of lamdas !=0.0 and !=1.0:  " << N_changed_lambdas;
+      warnstream << "Reminder: Number of lambdas !=0.0 and !=1.0:  " << N_changed_lambdas;
 	  write_message(WARN, 0);
     }
 
