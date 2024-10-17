@@ -229,7 +229,7 @@ else {
   init_bounded_vector Fcast_recruitments(recdev_end+1,s,recdev_LO,recdev_HI,Fcast_recr_PH2)
   init_bounded_vector Fcast_impl_error(endyr+1,j,-1,1,k)
   vector ABC_buffer(endyr+1,YrMax);
-  number HCR_anchor  //  basis (denominator) bor inflection in control rule
+  number HCR_anchor  //  basis (denominator) for inflection in control rule.  Select virgin SSB or benchmark SSB
 
 //  SPAWN-RECR:   define some spawning biomass and recruitment entities
   number SSB_virgin
