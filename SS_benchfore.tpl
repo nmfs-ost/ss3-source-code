@@ -767,7 +767,8 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
   if (show_MSY == 1)
   {
     report5 << "SR_parms for benchmark: " << SR_parm_work << endl
-            << "Benchmark biology averaged over years: " << Bmark_Yr(1) << " " << Bmark_Yr(2) << " flag for updating SSBpR0 = " << SR_update_SSBpR0_bmark << endl;
+            << "Benchmark biology averaged over years: " << Bmark_Yr(1) << " " << Bmark_Yr(2) << endl << 
+            "input.SR_update_SSBpR0_rd: " << SR_update_SSBpR0_rd << "flag for updating SSBpR0_Bmark: " << SR_update_SSBpR0_bmark << endl;
     Equ_SpawnRecr_Result = Equil_Spawn_Recr_Fxn(SR_parm_work, SSB_virgin, Recr_virgin, SSBpR_virgin); //  returns 2 element vector containing equilibrium biomass and recruitment at this SPR
     report5 << " Virgin SSB, R0, SPR0: " << SSB_virgin << " " << Recr_virgin << " "  << SSBpR_virgin << " equil: " << Equ_SpawnRecr_Result << endl;
     if ( SR_update_SSBpR0_bmark == 1)
@@ -2176,10 +2177,16 @@ FUNCTION void Get_Forecast()
       {
         H4010_top = H4010_top_rd;
       }
+    if (Fcast_Loop_Control(5) <= 1)
+    {HCR_anchor = SSB_unf;}
+    else if (Fcast_Loop_Control(5) ==2)
+    {HCR_anchor = SSB_virgin;}
     report5 << "#" << endl;
     report5 << "N_forecast_yrs: " << N_Fcast_Yrs << endl;
-    report5 << "OY_Control_Rule "
-            << " Inflection: " << H4010_top << " Intercept: " << H4010_bot << " Scale: " << H4010_scale_vec(endyr + 1) << "; ";
+    report5 << "OY_Control_Rule:  Inflection: " << H4010_top << " Intercept: " << H4010_bot << " Scale: " << H4010_scale_vec(endyr + 1) << endl
+            << "Control_rule_anchor_approach: " << Fcast_Loop_Control(5) << " HCR_anchor: " << HCR_anchor << endl;
+    report5 << "#" << endl;
+
     switch (HarvestPolicy)
     {
       case 0: // none
@@ -2209,13 +2216,7 @@ FUNCTION void Get_Forecast()
         break;
       }
     }
-    if (Fcast_Loop_Control(5) <= 1)
-    {HCR_anchor = SSB_unf;}
-    else if (Fcast_Loop_Control(5) ==2)
-    {HCR_anchor = SSB_virgin;}
-    report5 << "Control_rule_anchor_approach: " << Fcast_Loop_Control(5) << " HCR_anchor: " << HCR_anchor << endl;
-    report5 << "#" << endl;
-  }
+    }
 
   int jloop;
   if (fishery_on_off == 1 || Do_Dyn_Bzero > 0)
@@ -2264,7 +2265,7 @@ FUNCTION void Get_Forecast()
       if (HarvestPolicy == 0)
         report5 << "pop year ABC_Loop season No_buffer bio-all bio-Smry SpawnBio Depletion recruit-0 ";
       if (HarvestPolicy <= 2)
-        report5 << "pop year ABC_Loop season Ramp&Buffer bio-all bio-Smry SpawnBio Depletion recruit-0 ";
+        report5 << "pop year ABC_Loop season Ramp&Buffer Buffer2 bio-all bio-Smry SpawnBio Depletion recruit-0 ";
       if (HarvestPolicy >= 3)
         report5 << "pop year ABC_Loop season Ramp bio-all bio-Smry SpawnBio Depletion recruit-0 ";
       for (int ff = 1; ff <= N_catchfleets(0); ff++)
@@ -3136,7 +3137,7 @@ FUNCTION void Get_Forecast()
             }
             if (show_MSY == 1)
             {
-              report5 << p << " " << y << " " << ABC_Loop << " " << s << " " << ABC_buffer(y) << " " << totbio << " " << smrybio << " ";
+              report5 << p << " " << y << " " << ABC_Loop << " " << s << " " << ABC_buffer(y) << " " << H4010_scale_vec(y) << " " << totbio << " " << smrybio << " ";
               if (s == spawn_seas)
               {
                 report5 << SSB_current << " ";

@@ -1493,9 +1493,9 @@ FUNCTION void write_nucontrol()
   NuFore << HarvestPolicy << " # Control rule method (0: none; 1: ramp does catch=f(SSB), buffer on F; 2: ramp does F=f(SSB), buffer on F; 3: ramp does catch=f(SSB), buffer on catch; 4: ramp does F=f(SSB), buffer on catch) " << endl;
   NuFore << "# values for top, bottom and buffer exist, but not used when Policy=0" << endl;
   NuFore << H4010_top_rd << " # Control rule inflection for constant F (as frac of Bzero, e.g. 0.40); must be > control rule cutoff, or set to -1 to use Bmsy/SSB_unf " << endl;
-  NuFore << "# Also see HCR_anchor below" << endl;
   NuFore << H4010_bot << " # Control rule cutoff for no F (as frac of Bzero, e.g. 0.10) " << endl;
   NuFore << H4010_scale_rd << " # Buffer:  enter Control rule target as fraction of Flimit (e.g. 0.75), negative value invokes list of [year, scalar] with filling from year to YrMax " << endl;
+  NuFore << "# Also see HCR_anchor below" << endl;
   if (H4010_scale_rd < 0) {
     j = H4010_scale_vec_rd.size() - 1;
     for (int s = 0; s <= j; s++) {
