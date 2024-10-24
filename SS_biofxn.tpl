@@ -618,7 +618,7 @@ FUNCTION void get_growth2(const int y)
                     t2 = Ave_Size(t, 1, g, a) - L_inf(gp); //  remaining growth potential from first subseas
                     if (timevary_MG(y, 2) > 0 && t2 > -1.)
                     {
-                      join1 = 1.0 / (1.0 + mfexp(-(50. * t2 / (1.0 + fabs(t2))))); //  note the logit transform is not perfect, so growth near Linf will not be exactly same as with native growth function
+                      join1 = 1.0 / (1.0 + mfexp(-(joinsteep * t2 / (1.0 + fabs(t2))))); //  note the logit transform is not perfect, so growth near Linf will not be exactly same as with native growth function
                       t2 *= (1. - join1); // trap to prevent decrease in size-at-age
                     }
 
@@ -738,7 +738,7 @@ FUNCTION void get_growth2(const int y)
                     t2 = Ave_Size(t, 1, g, a) - L_inf(gp); //  remaining growth potential from first subseas
                     if (timevary_MG(y, 2) > 0 && t2 > -1.)
                     {
-                      join1 = 1.0 / (1.0 + mfexp(-(50. * t2 / (1.0 + fabs(t2))))); //  note the logit transform is not perfect, so growth near Linf will not be exactly same as with native growth function
+                      join1 = 1.0 / (1.0 + mfexp(-(joinsteep * t2 / (1.0 + fabs(t2))))); //  note the logit transform is not perfect, so growth near Linf will not be exactly same as with native growth function
                       t2 *= (1. - join1); // trap to prevent decrease in size-at-age
                     }
 
@@ -868,7 +868,7 @@ FUNCTION void get_growth3(const int y, const int t, const int s, const int subse
               //   the consequence of (t2>-1.) should be investigated for effect on gradient
               if (timevary_MG(y, 2) > 0 && t2 > -1.)
               {
-                join1 = 1.0 / (1.0 + mfexp(-(50. * t2 / (1.0 + fabs(t2))))); //  note the logit transform is not perfect, so growth near Linf will not be exactly same as with native growth function
+                join1 = 1.0 / (1.0 + mfexp(-(joinsteep * t2 / (1.0 + fabs(t2))))); //  note the logit transform is not perfect, so growth near Linf will not be exactly same as with native growth function
                 t2 *= (1. - join1); // trap to prevent decrease in size-at-age
               }
               Ave_Size(t, subseas, g, a) = Ave_Size(t, 1, g, a) + (mfexp(VBK(gp, 0) * subseasdur(s, subseas) * VBK_seas(s)) - 1.0) * t2 * Cohort_Growth(y, a);
@@ -950,7 +950,7 @@ FUNCTION void get_growth3(const int y, const int t, const int s, const int subse
               //   the consequence of (t2>-1.) should be investigated for effect on gradient
               if (timevary_MG(y, 2) > 0 && t2 > -1.)
               {
-                join1 = 1.0 / (1.0 + mfexp(-(50. * t2 / (1.0 + fabs(t2))))); //  note the logit transform is not perfect, so growth near Linf will not be exactly same as with native growth function
+                join1 = 1.0 / (1.0 + mfexp(-(joinsteep * t2 / (1.0 + fabs(t2))))); //  note the logit transform is not perfect, so growth near Linf will not be exactly same as with native growth function
                 t2 *= (1. - join1); // trap to prevent decrease in size-at-age
               }
               Ave_Size(t, subseas, g, a) = Ave_Size(t, 1, g, a) + (mfexp(VBK(gp, a) * subseasdur(s, subseas) * VBK_seas(s)) - 1.0) * t2 * Cohort_Growth(y, a);

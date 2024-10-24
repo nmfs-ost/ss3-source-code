@@ -1138,7 +1138,7 @@ FUNCTION void get_time_series()
                     } //close gmorph loop
                   //  SS_Label_Info_24.3.3.3.2 #Apply constraint so that no fleet's initial calculation of harvest rate would exceed 95%
                   temp = catch_ret_obs(f, t) / (vbio + 0.1 * catch_ret_obs(f, t)); //  Pope's rate  robust
-                  join1 = 1. / (1. + mfexp(30. * (temp - 0.95))); // steep logistic joiner at harvest rate of 0.95
+                  join1 = 1. / (1. + mfexp(joinsteep * (temp - 0.95))); // steep logistic joiner at harvest rate of 0.95
                   temp1 = join1 * temp + (1. - join1) * 0.95;
                   //  SS_Label_Info_24.3.3.3.3 #Convert the harvest rate to a starting value for F
                   Hrate(f, t) = -log(1. - temp1) / seasdur(s); // initial estimate of F (even though labelled as Hrate)
@@ -1219,7 +1219,7 @@ FUNCTION void get_time_series()
                             }
                           } //close gmorph loop
                         temp = catch_ret_obs(f, t) / (catch_mult(y, f) * vbio + 0.0001); //  prototype new F
-                        join1 = 1. / (1. + mfexp(30. * (temp - 0.95 * max_harvest_rate)));
+                        join1 = 1. / (1. + mfexp(joinsteep * (temp - 0.95 * max_harvest_rate)));
                         Hrate(f, t) = join1 * temp + (1. - join1) * max_harvest_rate; //  new F value for this fleet
                       } // close fishery
                     }
@@ -1893,9 +1893,9 @@ FUNCTION void Do_Equil_Calc(const prevariable& equ_Recr)
 
                   if (crashtemp > 0.20) // only worry about this if the exploit rate is at all high
                   {
-                    join1 = 1. / (1. + mfexp(40.0 * (crashtemp - max_harvest_rate))); // steep joiner logistic curve at limit
-                    upselex = 1. / (1. + mfexp(Equ_F_joiner * (crashtemp - 0.2))); //  value of a shallow logistic curve that goes through the limit
-                    harvest_rate = join1 + (1. - join1) * upselex / (crashtemp); // ratio by which all Hrates will be adjusted
+                    join1 = 1. / (1. + mfexp(joinsteep * (crashtemp - max_harvest_rate))); // steep joiner logistic curve at limit
+                    join2 = 1. / (1. + mfexp(Equ_F_joiner * (crashtemp - 0.2))); //  value of a shallow logistic curve that goes through the limit
+                    harvest_rate = join1 + (1. - join1) * join2 / (crashtemp); // ratio by which all Hrates will be adjusted
                   }
 
                   for (int ff = 1; ff <= N_catchfleets(p); ff++)

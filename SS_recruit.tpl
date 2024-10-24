@@ -135,7 +135,7 @@ FUNCTION dvariable Spawn_Recr(const prevariable& SSB_virgin_adj, const prevariab
       {
         SRZ_surv *= mfexp(Fcast_recruitments(y));
       }
-      join = 1. / (1. + mfexp(100 * (SRZ_surv - 1.)));
+      join = 1. / (1. + mfexp(joinsteep * (SRZ_surv - 1.)));
       SRZ_surv = SRZ_surv * join + (1. - join) * 1.0;
       NewRecruits = SSB_curr_adj * SRZ_surv;
       exp_rec(y, 4) = NewRecruits;

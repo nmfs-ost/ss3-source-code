@@ -174,8 +174,8 @@ FUNCTION void get_selectivity()
                 {
                   t1 = len_bins_m(j) - peak;
                   t2 = len_bins_m(j) - peak2;
-                  join1 = 1.0 / (1.0 + mfexp(-(20. * t1 / (1.0 + fabs(t1))))); //  note the logit transform on t1 causes range of mfexp to be over -20 to 20
-                  join2 = 1.0 / (1.0 + mfexp(-(20. * t2 / (1.0 + fabs(t2)))));
+                  join1 = 1.0 / (1.0 + mfexp(-(joinsteep * t1 / (1.0 + fabs(t1))))); //  note the logit transform on t1 causes range of mfexp to be over -20 to 20
+                  join2 = 1.0 / (1.0 + mfexp(-(joinsteep * t2 / (1.0 + fabs(t2)))));
                   if (sp(5) > -999)
                   {
                     asc = point1 + (Apical_Selex - point1) * (mfexp(-square(t1) / upselex) - t1min) / (1.0 - t1min);
@@ -375,9 +375,9 @@ FUNCTION void get_selectivity()
                   final = 1. / (1. + mfexp(-sp(5)));
                   for (j = 1; j <= nlength; j++) //calculate the value over length bins
                   {
-                    join1 = 1. / (1. + mfexp(10. * (len_bins_m(j) - sp(1))));
-                    join2 = 1. / (1. + mfexp(10. * (len_bins_m(j) - (sp(1) + sp(8)))));
-                    join3 = 1. / (1. + mfexp(10. * (len_bins_m(j) - sel_maxL)));
+                    join1 = 1. / (1. + mfexp(joinsteep * (len_bins_m(j) - sp(1))));
+                    join2 = 1. / (1. + mfexp(joinsteep * (len_bins_m(j) - (sp(1) + sp(8)))));
+                    join3 = 1. / (1. + mfexp(joinsteep * (len_bins_m(j) - sel_maxL)));
                     upselex = sp(2) + (1. - sp(2)) * pow(((1. / (1. + mfexp(-mfexp(sp(4)) * (len_bins_m(j) - t1))) - t1min) / (t1max - t1min)), t1power);
                     downselex = (1. + (final - 1.) * pow(fabs((((1. / (1. + mfexp(-mfexp(sp(7)) * (len_bins_m(j) - t2))) - t2min) / (t2max - t2min)))), t2power));
                     sel(j) = ((((upselex * join1) + 1.0 * (1.0 - join1)) * join2) + downselex * (1 - join2)) * join3 + final * (1 - join3);
@@ -530,8 +530,8 @@ FUNCTION void get_selectivity()
                 {
                   t1 = len_bins_m(j) - peak;
                   t2 = len_bins_m(j) - peak2;
-                  join1 = 1.0 / (1.0 + mfexp(-(20. * t1 / (1.0 + fabs(t1))))); //  note the logit transform on t1 causes range of mfexp to be over -20 to 20
-                  join2 = 1.0 / (1.0 + mfexp(-(20. * t2 / (1.0 + fabs(t2)))));
+                  join1 = 1.0 / (1.0 + mfexp(-(joinsteep * t1 / (1.0 + fabs(t1))))); //  note the logit transform on t1 causes range of mfexp to be over -20 to 20
+                  join2 = 1.0 / (1.0 + mfexp(-(joinsteep * t2 / (1.0 + fabs(t2)))));
                   if (sp(5) > -999)
                   {
                     asc = point1 + (1.0 - point1) * (mfexp(-square(t1) / upselex) - t1min) / (1.0 - t1min);
@@ -1457,8 +1457,8 @@ FUNCTION void get_selectivity()
                 {
                   t1 = r_ages(a) - peak;
                   t2 = r_ages(a) - peak2;
-                  join1 = 1. / (1. + mfexp(-(20. / (1. + fabs(t1))) * t1));
-                  join2 = 1. / (1. + mfexp(-(20. / (1. + fabs(t2))) * t2));
+                  join1 = 1. / (1. + mfexp(-(joinsteep / (1. + fabs(t1))) * t1));
+                  join2 = 1. / (1. + mfexp(-(joinsteep / (1. + fabs(t2))) * t2));
                   if (sp(5) > -999)
                   {
                     asc = point1 + (Apical_Selex - point1) * (mfexp(-square(t1) / upselex) - t1min) / (1. - t1min);
