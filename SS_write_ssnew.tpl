@@ -2396,9 +2396,11 @@ FUNCTION void write_nucontrol()
     }
   NP += N_Fparm;
   report4 << "#" << endl;
-  report4 << "#_Q_setup for fleets with cpue or survey data" << endl;
+  report4 << "#_Q_setup for fleets with cpue or survey or deviation data" << endl;
   report4 << "#_1:  fleet number" << endl;
   report4 << "#_2:  link type: 1=simple q; 2=mirror; 3=power (+1 parm); 4=mirror with scale (+1p); 5=offset (+1p); 6=offset & power (+2p)" << endl;
+  report4 << "#_     where power is applied as y = q * x ^ (1 + power); so a power value of 0 has null effect" << endl;
+  report4 << "#_     and with the offset included it is y = q * (x + offset) ^ (1 + power)" << endl;
   report4 << "#_3:  extra input for link, i.e. mirror fleet# or dev index number" << endl;
   report4 << "#_4:  0/1 to select extra sd parameter" << endl;
   report4 << "#_5:  0/1 for biasadj or not" << endl;
