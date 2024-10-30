@@ -420,7 +420,7 @@ FUNCTION void Get_expected_values(const int y, const int t);
                 }
 
                 // Q transformations and offsets
-                // option 5:  add offset
+                // option 5:  add offset, useful when survey units are deviations
                 // option 3:  use power function
                 // option 6:  add offset, then use power function
                 if (Q_setup(f, 1) == 5 || Q_setup(f, 1) == 6 ) //  add offset
