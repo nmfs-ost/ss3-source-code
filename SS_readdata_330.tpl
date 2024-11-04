@@ -199,9 +199,10 @@
       }
       temp += subseasdur_delta(spawn_seas);
     }
-    spawn_time_seas = (temp1 - azero_seas(spawn_seas)) / seasdur(spawn_seas); //  remaining fraction of year converted to fraction of season
+//    spawn_time_seas = (temp1 - azero_seas(spawn_seas)) / seasdur(spawn_seas); //  incorrect:   remaining fraction of year converted to fraction of season
+    spawn_time_seas = (temp1 - azero_seas(spawn_seas)); //  timing in units of fraction of year such that exp(-Z*spawn_time_seas) will be correct
   }
-  echoinput << "SPAWN month: " << spawn_month << "; seas: " << spawn_seas << "; subseas_for_ALK: " << spawn_subseas << "; timing_in_season: " << spawn_time_seas << endl;
+  echoinput << "SPAWN month: " << spawn_month << "; seas: " << spawn_seas << "; subseas_for_ALK: " << spawn_subseas << "; spawntiming as frac. of year: " << spawn_time_seas << endl;
   if (spawn_seas > nseas)
   {
     warnstream << " spawn_seas index must be <= nseas ";
@@ -455,7 +456,7 @@
 //  SS_Label_Info_2.1.6  #Indexes for data timing.  "have_data" and "data_time" hold pointers for data occurrence, timing, and ALK need
   int data_type;
   number data_timing;
-  4iarray have_data(1,ALK_time_max,0,Nfleet,0,9,0,100);
+  4iarray have_data(1,ALK_time_max,0,Nfleet,0,9,0,150);
   imatrix have_data_yr(styr,endyr+50,0,Nfleet);
 
 //  have_data stores the data index of each datum occurring at time ALK_time, for fleet f of observation type k.  Up to 150 data are allowed due to CAAL data
@@ -590,7 +591,7 @@
         t = styr + (y - styr) * nseas + s - 1;
         if (catch_record_count(f, t) > 1)
         {
-          warnstream << catch_record_count(f, t) << " catch records have been accumulated into yr, seas, fleet " << y << " " << s << " " << f << "; total catch= " << catch_ret_obs(f, t);
+          warnstream << catch_record_count(f, t) << " catch records have been accumulated into year, seas, fleet " << y << " " << s << " " << f << "; total catch= " << catch_ret_obs(f, t);
           write_message(WARN, 0);
         }
       }
@@ -982,7 +983,7 @@
   {
     echoinput << "#_discard_units (1=same_as_catchunits(bio/num);2=fraction; 3=numbers)" << endl;
     echoinput << "#_discard_error:  >0 for DF of T-dist(read CV below); 0 for normal with CV; -1 for normal with se; -2 for lognormal; -3 for trunc normal with CV" << endl;
-    echoinput << "#Fleet Units Err_Type" << endl;
+    echoinput << "#_fleet units errtype" << endl;
     echoinput << disc_units_rd << endl;
     for (j = 1; j <= Ndisc_fleets; j++)
     {
@@ -2131,7 +2132,7 @@
   }
 
   echoinput << "Overall_Compositions" << endl
-            << "Seas Fleet len_bins " << len_bins_dat << endl;
+            << "seas fleet len_bins " << len_bins_dat << endl;
   for (f = 1; f <= Nfleet; f++)
   {
     for (s = 1; s <= nseas; s++)
@@ -2508,9 +2509,9 @@
             have_data(ALK_time, f, 0, 0) = 1; //  so have data of some type
             have_data(ALK_time, f, data_type, 0)++; //  count the number of observations in this subseas
             p = have_data(ALK_time, f, data_type, 0);
-            if (p > 100)
+            if (p > 150)
             {
-              warnstream << "fatal:  max agecomp obs per fleet*time is 100; you requested " << p << " for fleet x year " << f << " " << y;
+              warnstream << "fatal:  max agecomp obs per fleet*time is 150; you requested " << p << " for fleet x year " << f << " " << y;
               write_message(FATAL, 0);
             }
             have_data(ALK_time, f, data_type, p) = j; // store data index for the p'th observation in this subseas
@@ -3592,7 +3593,7 @@
   ivector TG_endtime(1,N_TG2)
   ivector TG_use(1,N_TG2)  //  0/1 flag to indicate N recaptures >= TG_min_recap
   init_matrix TG_release(1,N_TG,1,8)
-  // TG area  year season tindex gender age N_released
+  // TG area year seas tfill sex age Nrelease
  LOCAL_CALCS
   // clang-format on
   TG_endtime(1) = 0;
@@ -3600,7 +3601,7 @@
   if (N_TG > 0)
   {
     echoinput << " Tag Releases " << endl
-              << "TG area year seas tindex gender age N_released " << endl
+              << "TG area year seas tfill sex age Nrelease " << endl
               << TG_release << endl;
     for (TG = 1; TG <= N_TG; TG++)
     {
@@ -3619,7 +3620,7 @@
 
 // SS_Label_Info_2.12.1 #Store recapture info by TG group and time to follow it as a cohort
   init_matrix TG_recap_data(1,N_TG_recap,1,5)
-  // TG, year, season, fleet, gender, Number
+  // TG, year, seas, fleet, sex, Nrecap
   3darray TG_recap_obs(1,N_TG2,0,TG_endtime,0,Nfleet);   //  no area index because each fleet is in just one area
  LOCAL_CALCS
   // clang-format on
@@ -3694,7 +3695,7 @@
     data_type = 8; // for morphcomp
 
     echoinput << " morph composition data" << endl
-              << "yr month fleet null Nsamp datavector" << endl;
+              << "year month fleet null Nsamp datavector" << endl;
     Morphcomp_nobs = 0;
     for (i = 1; i <= Morphcomp_nobs_rd; i++)
     {
@@ -3752,7 +3753,7 @@
   // clang-format on
   *(ad_comm::global_datafile) >> Do_SelexData;
   echoinput << "Do dataread for selectivity priors(0/1):  " << Do_SelexData << endl;
-  echoinput << "Yr  Seas Fleet  Age/Size  Bin  selex_prior  prior_sd" << endl;
+  echoinput << "year seas fleet age/size bin selex_prior prior_sd" << endl;
   echoinput << "feature not yet implemented" << endl;
   // clang-format off
  END_CALCS
@@ -4672,12 +4673,12 @@
     if (Fcast_InputCatch_Basis == -1)
     {
       j = 5;
-      echoinput << "# yr seas fleet catch basis" << endl;
+      echoinput << "# year seas fleet catch basis" << endl;
     }
     else
     {
       j = 4;
-      echoinput << "# yr seas fleet catch" << endl;
+      echoinput << "# year seas fleet catch" << endl;
     }
 
     ender = 0;
@@ -4974,7 +4975,7 @@
         else
         { //  no data
         }
-        echoinput << k << " N " << env_data_N(k) << " min-max yr " << env_data_minyr(k) << " " << env_data_maxyr(k) << " mean " << env_data_mean(k) << " stdev " << env_data_stdev(k) << " subtract mean " << env_data_do_mean(k) << " divide stddev " << env_data_do_stdev(k) << endl;
+        echoinput << k << " N " << env_data_N(k) << " min-max year " << env_data_minyr(k) << " " << env_data_maxyr(k) << " mean " << env_data_mean(k) << " stdev " << env_data_stdev(k) << " subtract mean " << env_data_do_mean(k) << " divide stddev " << env_data_do_stdev(k) << endl;
       }
     }
   }

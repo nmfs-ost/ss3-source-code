@@ -987,6 +987,7 @@ FUNCTION void get_time_series()
         SSB_pop_gp(y).initialize();
         SSB_B_yr(y).initialize();
         SSB_N_yr(y).initialize();
+        Smry_Table(y, 15) = 0.0;
         for (p = 1; p <= pop; p++)
         {
           for (g = 1; g <= gmorph; g++)
@@ -995,6 +996,7 @@ FUNCTION void get_time_series()
               SSB_pop_gp(y, p, GP4(g)) += fracfemale_mult * fec(g) * natage(t, p, g); // accumulates SSB by area and by growthpattern
               SSB_B_yr(y) += fracfemale_mult * make_mature_bio(GP4(g)) * natage(t, p, g);
               SSB_N_yr(y) += fracfemale_mult * make_mature_numbers(GP4(g)) * natage(t, p, g);
+              Smry_Table(y, 15) += fracfemale_mult * natage(t, p, g) * elem_prod(fec(g), r_ages);  //  for mean age of female spawners = GenTime
               //            SSB_pop_gp(y,p,GP4(g)) += fec(g)*natage(t,p,g);   // accumulates SSB by area and by growthpattern
               //            SSB_B_yr(y) += make_mature_bio(GP4(g))*natage(t,p,g);
               //            SSB_N_yr(y) += make_mature_numbers(GP4(g))*natage(t,p,g);
@@ -1451,6 +1453,7 @@ FUNCTION void get_time_series()
         SSB_pop_gp(y).initialize();
         SSB_B_yr(y).initialize();
         SSB_N_yr(y).initialize();
+        Smry_Table(y, 15) = 0.0;
         for (p = 1; p <= pop; p++)
         {
           for (g = 1; g <= gmorph; g++)
@@ -1459,11 +1462,11 @@ FUNCTION void get_time_series()
               SSB_pop_gp(y, p, GP4(g)) += fracfemale_mult * fec(g) * elem_prod(natage(t, p, g), mfexp(-Z_rate(t, p, g) * spawn_time_seas)); // accumulates SSB by area and by growthpattern
               SSB_B_yr(y) += fracfemale_mult * make_mature_bio(GP4(g)) * elem_prod(natage(t, p, g), mfexp(-Z_rate(t, p, g) * spawn_time_seas));
               SSB_N_yr(y) += fracfemale_mult * make_mature_numbers(GP4(g)) * elem_prod(natage(t, p, g), mfexp(-Z_rate(t, p, g) * spawn_time_seas));
+              Smry_Table(y, 15) += fracfemale_mult * elem_prod(natage(t, p, g), mfexp(-Z_rate(t, p, g) * spawn_time_seas)) * elem_prod(fec(g), r_ages);  //  for mean age of female spawners = GenTime
             }
         }
         SSB_current = sum(SSB_pop_gp(y));
         SSB_yr(y) = SSB_current;
-
         if (Hermaphro_Option != 0) // get male biomass
         {
           MaleSSB(y).initialize();
@@ -1809,11 +1812,6 @@ FUNCTION void get_time_series()
       Smry_Table(y, 10) = (smrybio);
       Smry_Table(y, 12) = (SSB_equil);
       Smry_Table(y, 14) = (YPR_dead);
-      for (g = 1; g <= gmorph; g++)
-      {
-        Smry_Table(y, 20 + g) = (cumF(g));
-        Smry_Table(y, 20 + gmorph + g) = (maxF(g));
-      }
     }
   } //close year loop
 
@@ -1853,8 +1851,6 @@ FUNCTION void Do_Equil_Calc(const prevariable& equ_Recr)
   t_base = styr + (eq_yr - styr) * nseas - 1;
   GenTime.initialize();
   Equ_penalty.initialize();
-  cumF.initialize();
-  maxF.initialize();
   SSB_equil_pop_gp.initialize();
   if (Hermaphro_Option != 0)
     MaleSSB_equil_pop_gp.initialize();
@@ -1869,6 +1865,7 @@ FUNCTION void Do_Equil_Calc(const prevariable& equ_Recr)
   smrybio = 0.0;
   smryage = 0.0;
   smrynum = 0.0;
+  GenTime = 0.0;
 
   // first seed the recruits; seems redundant
   for (g = 1; g <= gmorph; g++)
@@ -1961,12 +1958,6 @@ FUNCTION void Do_Equil_Calc(const prevariable& equ_Recr)
                 {
                   equ_Z(s, p, g, a1) = -(log((Nsurvive + 1.0e-13) / (N_beg + 1.0e-10))) / seasdur(s);
                   Fishery_Survival = equ_Z(s, p, g, a1) - natM(t, p, GP3(g), a1);
-                  if (a >= Smry_Age)
-                  {
-                    cumF(g) += Fishery_Survival * seasdur(s);
-                    if (Fishery_Survival > maxF(g))
-                      maxF(g) = Fishery_Survival;
-                  }
                 }
 
               } // end Pope's approx
@@ -1982,14 +1973,6 @@ FUNCTION void Do_Equil_Calc(const prevariable& equ_Recr)
                     {
                       f = fish_fleet_area(p, ff);
                       equ_Z(s, p, g, a1) += sel_dead_num(s, f, g, a1) * Hrate(f, t);
-                    }
-                    if (save_for_report > 0)
-                    {
-                      temp = equ_Z(s, p, g, a1) - natM(t, p, GP3(g), a1);
-                      if (a >= Smry_Age && a <= nages)
-                        cumF(g) += temp * seasdur(s);
-                      if (temp > maxF(g))
-                        maxF(g) = temp;
                     }
                   }
                 }
@@ -2299,7 +2282,6 @@ FUNCTION void Do_Equil_Calc(const prevariable& equ_Recr)
   SSB_equil = sum(SSB_equil_pop_gp);
   GenTime /= SSB_equil;
   smryage /= smrynum;
-  cumF /= (r_ages(nages) - r_ages(Smry_Age) + 1.);
   if (Hermaphro_maleSSB > 0.0) // add MaleSSB to female SSB
   {
     SSB_equil += Hermaphro_maleSSB * sum(MaleSSB_equil_pop_gp);

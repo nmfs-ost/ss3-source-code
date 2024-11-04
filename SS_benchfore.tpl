@@ -2571,6 +2571,7 @@ FUNCTION void Get_Forecast()
             SSB_pop_gp(y).initialize();
             SSB_B_yr(y).initialize();
             SSB_N_yr(y).initialize();
+            Smry_Table(y, 15) = 0.0;
             for (p = 1; p <= pop; p++)
             {
               for (g = 1; g <= gmorph; g++)
@@ -2582,6 +2583,7 @@ FUNCTION void Get_Forecast()
                   SSB_pop_gp(y, p, GP4(g)) += fracfemale_mult * fec(g) * natage(t, p, g); // accumulates SSB by area and by growthpattern
                   SSB_B_yr(y) += fracfemale_mult * make_mature_bio(GP4(g)) * natage(t, p, g);
                   SSB_N_yr(y) += fracfemale_mult * make_mature_numbers(GP4(g)) * natage(t, p, g);
+                  Smry_Table(y, 15) += fracfemale_mult * natage(t, p, g) * elem_prod(fec(g), r_ages);  //  for mean age of female spawners = GenTime
                 }
             }
             SSB_current = sum(SSB_pop_gp(y));
@@ -2649,7 +2651,7 @@ FUNCTION void Get_Forecast()
                       mfexp(natM(t, p, GP3(g), Settle_age(settle)) * Settle_timing_seas(settle));
                   if (Fcast_Loop1 == jloop && ABC_Loop == ABC_Loop_end)
                   {
-                    if (Settle_seas(settle) == s)
+//                    if (Settle_seas(settle) == s)  // delete because logic is flawed
                       Recr(p, t + Settle_seas_offset(settle)) += Recruits * recr_dist(y, GP(g), settle, p) * platoon_distr(GP2(g));
                   }
                   //  the adjustment for mortality increases recruit value for elapsed time since begin of season because M will then be applied from beginning of season
@@ -3210,6 +3212,7 @@ FUNCTION void Get_Forecast()
             SSB_pop_gp(y).initialize();
             SSB_B_yr(y).initialize();
             SSB_N_yr(y).initialize();
+            Smry_Table(y, 15) = 0.0;
             for (p = 1; p <= pop; p++)
             {
               for (g = 1; g <= gmorph; g++)
@@ -3218,6 +3221,7 @@ FUNCTION void Get_Forecast()
                   SSB_pop_gp(y, p, GP4(g)) += fracfemale_mult * fec(g) * elem_prod(natage(t, p, g), mfexp(-Z_rate(t, p, g) * spawn_time_seas)); // accumulates SSB by area and by growthpattern
                   SSB_B_yr(y) += fracfemale_mult * make_mature_bio(GP4(g)) * elem_prod(natage(t, p, g), mfexp(-Z_rate(t, p, g) * spawn_time_seas));
                   SSB_N_yr(y) += fracfemale_mult * make_mature_numbers(GP4(g)) * elem_prod(natage(t, p, g), mfexp(-Z_rate(t, p, g) * spawn_time_seas));
+                  Smry_Table(y, 15) += fracfemale_mult * elem_prod(natage(t, p, g), mfexp(-Z_rate(t, p, g) * spawn_time_seas)) * elem_prod(fec(g), r_ages);  //  for mean age of female spawners = GenTime
                 }
             }
             SSB_current = sum(SSB_pop_gp(y));
@@ -3282,7 +3286,7 @@ FUNCTION void Get_Forecast()
                       mfexp(natM(t, p, GP3(g), Settle_age(settle)) * Settle_timing_seas(settle));
                   if (Fcast_Loop1 == jloop && ABC_Loop == ABC_Loop_end)
                   {
-                    if (Settle_seas(settle) == s)
+//                    if (Settle_seas(settle) == s)  // delete because logic is flawed
                       Recr(p, t + Settle_seas_offset(settle)) += Recruits * recr_dist(y, GP(g), settle, p) * platoon_distr(GP2(g));
                   }
                 }
@@ -3698,11 +3702,6 @@ FUNCTION void Get_Forecast()
         Smry_Table(y, 10) = smrybio;
         Smry_Table(y, 12) = SSB_equil;
         Smry_Table(y, 14) = YPR_dead;
-        for (g = 1; g <= gmorph; g++)
-        {
-          Smry_Table(y, 20 + g) = (cumF(g));
-          Smry_Table(y, 20 + gmorph + g) = (maxF(g));
-        }
       }
     } //  end year loop
   } //  end Fcast_Loop1  for the different stages of the forecast

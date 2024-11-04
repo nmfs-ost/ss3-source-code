@@ -164,7 +164,7 @@ FUNCTION void write_bigoutput()
 
   SS2out << endl
          << "#_KeyWords_of_tables_available_in_report_sso" << endl;
-  SS2out << "#NOTE: table_number_is_order_in_which_tables_are_output" << endl;
+  SS2out << "#_NOTE: table_number_is_order_in_which_tables_are_output" << endl;
   SS2out << "#_List_Tables_related_to_basic_input_pre-processing_and_output" << endl;
   k = 1;
   SS2out << pick_report_use(k) << " " << pick_report_name(k) << endl; // DEFINITIONS"
@@ -217,6 +217,8 @@ FUNCTION void write_bigoutput()
   SS2out << pick_report_use(k) << " " << pick_report_name(k) << endl; // SPR_series (equilibrium_SPR_and_YPR_calculations_for_each_year)
   k = 16;
   SS2out << pick_report_use(k) << " " << pick_report_name(k) << endl; // TIME_SERIES
+  k = 61;
+  SS2out << pick_report_use(k) << " " << pick_report_name(k) << endl; // ANNUAL_TIME_SERIES
 
   SS2out << endl
          << "# List_Tables_related_to_fit_to_data" << endl;
@@ -325,7 +327,7 @@ FUNCTION void write_bigoutput()
     SS2out << "Season_Durations: " << seasdur << endl;
     SS2out << "Spawn_month: " << spawn_month << endl
            << "Spawn_seas: " << spawn_seas << endl
-           << "Spawn_timing_in_season: " << spawn_time_seas << endl;
+           << "spawntiming as frac. of year: " << spawn_time_seas << endl;
     SS2out << "N_areas: " << pop << endl;
     SS2out << "Start_year: " << styr << endl;
     SS2out << "End_year: " << endyr << endl;
@@ -871,8 +873,8 @@ FUNCTION void write_bigoutput()
   {
     SS2out << endl
            << pick_report_name(6) << endl;
-    SS2out << "SPR_report_basis: " << SPR_report_label << endl;
-    SS2out << "F_report_basis: " << F_report_label << endl;
+    SS2out << "SPR_std_report_basis: " << SPR_report_label << endl;
+    SS2out << "F_std_report_basis: " << F_report_label << endl;
     SS2out << "B_ratio_denominator: " << depletion_basis_label << endl;
     NP = deriv_start;
     active_count = deriv_covar_start;
@@ -1033,51 +1035,81 @@ FUNCTION void write_bigoutput()
   {
     SS2out << endl
            << pick_report_name(10) << endl;
-    SS2out << "Settle# settle_timing# G_pattern Area Settle_Month Seas Age Time_w/in_seas Frac/sex" << endl;
+    SS2out << "Settle# settle_timing# G_pattern Area Settle_Month Seas Age Time_w/in_seas  recr_dist_F recr_dist_M" << endl;
     for (settle = 1; settle <= N_settle_assignments; settle++)
     {
       gp = settlement_pattern_rd(settle, 1); //  growth patterns
       p = settlement_pattern_rd(settle, 3); //  settlement area
       settle_time = settle_assignments_timing(settle);
-      SS2out << settle << " " << settle_time << " " << gp << " " << p << " " << Settle_month(settle_time) << " " << Settle_seas(settle_time) << " " << Settle_age(settle_time) << " " << Settle_timing_seas(settle_time) << " " << recr_dist(styr, gp, settle_time, p) << endl;
+      SS2out << settle << " " << settle_time << " " << gp << " " << p << " " << Settle_month(settle_time) << " " << Settle_seas(settle_time) << " " << Settle_age(settle_time) << " " << Settle_timing_seas(settle_time) << " " << recr_dist(styr, gp, settle_time, p);
+      if (gender == 2) {SS2out << " " << recr_dist(styr, gp + N_GP, settle_time, p) << endl;} else {SS2out << " NA" << endl; }
     }
     SS2out << "#" << endl
            << "RECRUITMENT_DIST_Bmark" << endl
-           << "Settle# settle_timing# G_pattern Area Settle_Month Seas Age Time_w/in_seas Frac/sex" << endl;
+           << "Settle# settle_timing# G_pattern Area Settle_Month Seas Age Time_w/in_seas  recr_dist_F recr_dist_M" << endl;
     for (settle = 1; settle <= N_settle_assignments; settle++)
     {
       gp = settlement_pattern_rd(settle, 1); //  growth patterns
       p = settlement_pattern_rd(settle, 3); //  settlement area
       settle_time = settle_assignments_timing(settle);
-      SS2out << settle << " " << settle_time << " " << gp << " " << p << " " << Settle_month(settle_time) << " " << Settle_seas(settle_time) << " " << Settle_age(settle_time) << " " << Settle_timing_seas(settle_time) << " " << recr_dist_unf(gp, settle_time, p) / (Bmark_Yr(8) - Bmark_Yr(7) + 1) << endl;
+      SS2out << settle << " " << settle_time << " " << gp << " " << p << " " << Settle_month(settle_time) << " " << Settle_seas(settle_time) << " " << Settle_age(settle_time) << " " << Settle_timing_seas(settle_time) << " " << recr_dist_unf(gp, settle_time, p) / (Bmark_Yr(8) - Bmark_Yr(7) + 1);
+      if (gender == 2) {SS2out << " " << recr_dist_unf(gp + N_GP, settle_time, p) / (Bmark_Yr(8) - Bmark_Yr(7) + 1) << endl;} else {SS2out << " NA" << endl; }
     }
     SS2out << "#" << endl
            << "RECRUITMENT_DIST_endyr" << endl
-           << "Settle# settle_timing# G_pattern Area Settle_Month Seas Age Time_w/in_seas Frac/sex" << endl;
+           << "Settle# settle_timing# G_pattern Area Settle_Month Seas Age Time_w/in_seas recr_dist_F recr_dist_M" << endl;
     for (settle = 1; settle <= N_settle_assignments; settle++)
     {
       gp = settlement_pattern_rd(settle, 1); //  growth patterns
       p = settlement_pattern_rd(settle, 3); //  settlement area
       settle_time = settle_assignments_timing(settle);
-      SS2out << settle << " " << settle_time << " " << gp << " " << p << " " << Settle_month(settle_time) << " " << Settle_seas(settle_time) << " " << Settle_age(settle_time) << " " << Settle_timing_seas(settle_time) << " " << recr_dist_endyr(gp, settle_time, p) << endl;
-    }
+      SS2out << settle << " " << settle_time << " " << gp << " " << p << " " << Settle_month(settle_time) << " " << Settle_seas(settle_time) << " " << Settle_age(settle_time) << " " << Settle_timing_seas(settle_time) << " " << recr_dist_endyr(gp, settle_time, p);
+      if (gender == 2) {SS2out << " " << recr_dist(endyr, gp + N_GP, settle_time, p) << endl;} else {SS2out << " NA" << endl; }
+  }
 
     SS2out << "#" << endl;
-    SS2out << "RECRUITMENT_DIST_TIMESERIES" << endl
-           << "Year settle_assignment" << endl;
-    SS2out << "Year ";
-    for (settle = 1; settle <= N_settle_assignments; settle++)
-      SS2out << settle << " ";
+    SS2out << "RECRUITMENT_DIST_TIMESERIES" << endl;
+    SS2out << "GP: ";
+      for (gp = 1; gp <= N_GP; gp++)
+        for (settle = 1; settle <= N_settle_timings; settle++)
+          for (p = 1; p <= pop; p++)
+          for (int sex = 1; sex <= gender; sex++)
+            if (recr_dist_pattern(gp, settle, p) == 1) SS2out << gp << " ";
+    SS2out << endl;
+    SS2out << "settle_timing: ";
+      for (gp = 1; gp <= N_GP; gp++)
+        for (settle = 1; settle <= N_settle_timings; settle++)
+          for (p = 1; p <= pop; p++)
+          for (int sex = 1; sex <= gender; sex++)
+            if (recr_dist_pattern(gp, settle, p) == 1) SS2out << settle << " ";
+    SS2out << endl;
+    SS2out << "area: ";
+      for (gp = 1; gp <= N_GP; gp++)
+        for (settle = 1; settle <= N_settle_timings; settle++)
+          for (p = 1; p <= pop; p++)
+          for (int sex = 1; sex <= gender; sex++)
+            if (recr_dist_pattern(gp, settle, p) == 1) SS2out << p << " ";
+    SS2out << endl;
+    SS2out << "sex: ";
+      for (gp = 1; gp <= N_GP; gp++)
+        for (settle = 1; settle <= N_settle_timings; settle++)
+          for (p = 1; p <= pop; p++)
+          for (int sex = 1; sex <= gender; sex++)
+            {if (recr_dist_pattern(gp, settle, p) == 1) SS2out << sex << " ";}
     SS2out << endl;
 
+    SS2out << "Year recr_dist" << endl;
     for (y = styr; y <= YrMax; y++)
     {
       SS2out << y << " ";
       for (gp = 1; gp <= N_GP; gp++)
         for (settle = 1; settle <= N_settle_timings; settle++)
           for (p = 1; p <= pop; p++)
+          for (int sex = 1; sex <= gender; sex++)
             if (recr_dist_pattern(gp, settle, p) == 1)
-              SS2out << " " << recr_dist(y, gp, settle, p);
+              {
+              SS2out << " " << recr_dist(y, gp + (sex -1) * N_GP, settle, p);
+              }
       SS2out << endl;
     }
   }
@@ -1100,7 +1132,7 @@ FUNCTION void write_bigoutput()
   {
     SS2out << endl
            << pick_report_name(12) << endl;
-    SS2out << "#NOTE: rows_are_population_length_bins;_columns_are_recipient_size_bins_according_to_the_specified_method" << endl;
+    SS2out << "#_NOTE: rows_are_population_length_bins;_columns_are_recipient_size_bins_according_to_the_specified_method" << endl;
     for (SzFreqMethod = 1; SzFreqMethod <= SzFreq_Nmeth; SzFreqMethod++)
     {
       SS2out << SzFreqMethod << " gp seas len mid-len ";
@@ -1183,8 +1215,8 @@ FUNCTION void write_bigoutput()
   {
     SS2out << endl
            << pick_report_name(14) << endl;
-    SS2out << "Info: Displays.various.annual.F.statistics.and.displays.apical.F.for.each.fleet.by.season" << endl;
-    SS2out << "Info: F_Method:=" << F_Method;
+    SS2out << "NOTE: Displays.various.annual.F.statistics.and.displays.apical.F.for.each.fleet.by.season" << endl;
+    SS2out << "NOTE: F_Method:=" << F_Method;
     if (F_Method == 1)
     {
       SS2out << ";.Pope's_approx,.fleet.F.is.mid-season.exploitation.fraction ";
@@ -1194,16 +1226,16 @@ FUNCTION void write_bigoutput()
       SS2out << ";.Continuous_F;.fleet.F.will.be.multiplied.by.season.duration.when.it.is.used.and.in.the.F_std.calculation";
     }
     SS2out << endl
-           << "Info: Displayed.fleet-specific.F.values.are.the.F.for.ages.with.compound.age-length-sex.selectivity=1.0" << endl;
-    SS2out << "Info: F_std_basis:." << F_report_label << endl;
+           << "NOTE: Displayed.fleet-specific.F.values.are.the.F.for.ages.with.compound.age-length-sex.selectivity=1.0" << endl;
+    SS2out << "NOTE: F_std_basis: " << F_report_label << endl;
     SS2out << "F_std averaged over N years: " << F_std_multi << endl;
     if (F_reporting >= 4)
     {
-      SS2out << "Info: Annual_F.shown.here.is.done.by.the.Z-M.method.for.ages:." << F_reporting_ages(1) << "-" << F_reporting_ages(2) << endl;
+      SS2out << "NOTE: Annual_F.shown.here.is.done.by.the.Z-M.method.for.ages:." << F_reporting_ages(1) << "-" << F_reporting_ages(2) << endl;
     }
     else
     {
-      SS2out << "Info: Annual_F.shown.here.is.done.by.the.Z-M.method.for.nages/2=" << nages / 2 << endl;
+      SS2out << "NOTE: Annual_F.shown.here.is.done.by.the.Z-M.method.for.nages/2=" << nages / 2 << endl;
     }
     SS2out << "#" << endl;
     SS2out << "Yr Seas Seas_dur F_std annual_F annual_M ";
@@ -1414,9 +1446,9 @@ FUNCTION void write_bigoutput()
     {
       for (y = styr - 2; y <= YrMax; y++)
       {
-        if (y <= endyr && p == 1)
+        if (p == 1)
         {
-          Smry_Table(y)(15, 17).initialize();
+          Smry_Table(y)(16, 17).initialize();
         }
         for (s = 1; s <= nseas; s++)
         {
@@ -1447,18 +1479,19 @@ FUNCTION void write_bigoutput()
               smrynum += sum(natage(t, p, g)(Smry_Age, nages));
               smryage += natage(t, p, g)(Smry_Age, nages) * r_ages(Smry_Age, nages);
               SSB_vir_LH += natage(t, p, g) * virg_fec(g);
-              if (y <= endyr)
               {
                 for (f = 1; f <= Nfleet; f++)
                 {
                   if (fleet_area(f) == p && y >= styr - 1 && fleet_type(f) <= 2)
                   {
-                    Smry_Table(y, 16) += sum(catage(t, f, g));
+                    Smry_Table(y, 16) += sum(catage(t, f, g));  // temporary storage spot
                     Smry_Table(y, 17) += catage(t, f, g) * r_ages;
                   }
                 }
               }
             } //close gmorph loop
+          Smry_Table(y, 17) /= ( Smry_Table(y, 16) + 1.0e-06 ); // mean age of catch
+          Smry_Table(y, 16) = smryage / smrynum; //  mean age of summary numbers
           if (gender_rd == -1)
             SSB_vir_LH *= femfrac(1);
           SS2out << p << " " << y;
@@ -1514,10 +1547,6 @@ FUNCTION void write_bigoutput()
           }
           SS2out << " " << Bio_Comp << " " << Num_Comp;
           SS2out << " " << SSB_B_yr(y) << " " << SSB_N_yr(y);
-          if (s == 1 && y <= endyr)
-          {
-            Smry_Table(y, 15) += smryage;
-          } // already calculated for the forecast years
           for (f = 1; f <= Nfleet; f++)
             if (fleet_type(f) <= 2)
             {
@@ -1560,31 +1589,21 @@ FUNCTION void write_bigoutput()
       }
     }
   }
-  // REPORT_KEYWORD 17 SPR_SERIES
-  //  Fleet Fleet_Name Area Yr Era Seas Subseas Month Time
+  // REPORT_KEYWORD 17 SPR_SERIES  (equilibrium_SPR_and_YPR_calculations_for_each_year)
+  // 1=totbio, 2=smrybio, 3=smrynum, 4=enc_catch, 5=dead_catch, 6=ret_catch, 7=spbio, 8=recruit,
+  // 9=equ_totbio, 10=equ_smrybio, 11=equ_SSB_virgin, 12=equ_S1, 13=Gentime, 14=YPR, 15=meanage_spawners, 16=meanage_smrynums, 17=meanage_catch
+
   if (pick_report_use(17) == "Y")
   {
     SS2out << endl
-           << pick_report_name(17);
-    SS2out << "  uses_R0= " << Recr_virgin << endl
-           << "#NOTE: YPR_unit_is_Dead_Biomass" << endl;
-    SS2out << "Depletion_basis: " << depletion_basis << " # " << depletion_basis_label << endl;
-    SS2out << "F_report_basis: " << F_reporting << " # " << F_report_label << endl;
-    SS2out << "SPR_report_basis: " << SPR_reporting << " # " << SPR_report_label << endl;
-    // note  GENTIME is mean age of spawners weighted by fec(a)
-    SS2out << "Yr Era Bio_all Bio_Smry SSBzero SSBfished SSBfished/R SPR SPR_report YPR GenTime Deplete F_report"
-           << " Actual: Bio_all Bio_Smry Num_Smry MnAge_Smry Enc_Catch Dead_Catch Retain_Catch MnAge_Catch SSB Recruits Tot_Exploit"
-           << " More_F(by_Morph): ";
-    for (g = 1; g <= gmorph; g++)
-    {
-      SS2out << " aveF_" << g;
-    }
-    for (g = 1; g <= gmorph; g++)
-    {
-      SS2out << " maxF_" << g;
-    }
-    SS2out << " Enc_Catch_B Dead_Catch_B Retain_Catch_B  Enc_Catch_N Dead_Catch_N Retain_Catch_N sum_Apical_F F=Z-M  M";
-    SS2out << endl;
+           << pick_report_name(17) << endl;
+    SS2out << "#_NOTE: reports_per_recruit_quantities_using_current_year_biology;_using_same_equil_calc_routine_used_for_reference_points" << endl;
+    SS2out << "#_NOTE: current_year_biology_is_current_at-age_biology_from_time_series;_not_recalc_biology_from_current_growth_parameters" << endl;
+    SS2out << "#_NOTE: uses_R0= " << Recr_virgin << endl;
+    SS2out << "#_NOTE: YPR_unit_is_Dead_Biomass" << endl;
+    SS2out << "#_NOTE: gentime_is_mean_age_of_female_spawners_weighted_by_reproductive_value-at-age_(fec(g))" << endl;
+
+    SS2out << "Yr Era Bio_all_eq Bio_Smry_eq SSB_unfished_eq SSBfished_eq SSBfished/R SPR  YPR GenTime" << endl;
 
     for (y = styr; y <= YrMax; y++)
     {
@@ -1597,6 +1616,42 @@ FUNCTION void write_bigoutput()
         SS2out << y << " FORE ";
       }
       SS2out << Smry_Table(y)(9, 12) << " " << (Smry_Table(y, 12) / Recr_virgin) << " " << Smry_Table(y, 12) / Smry_Table(y, 11) << " ";
+      SS2out << (Smry_Table(y, 14) / Recr_virgin) << " " << Smry_Table(y, 13) << endl;
+    } // end year loop
+    // end SPR time series
+  }
+
+  if (pick_report_use(61) == "Y")  // ANNUAL_TIME_SERIES report:61
+  {
+    SS2out << endl
+           << pick_report_name(61) << endl;
+    SS2out << "#_NOTE: MnAgeSmry_is_numbers_weighted_meanage_at_and_above_smryage:_" << Smry_Age << endl;
+    SS2out << "#_NOTE:_mean_age_of_catch_is_numbers-weighted_and_based_on_catage_which_is_the_dead_catch_and_comes_from:_sel_dead_num_=_sel_*_(retain_+_(1-retain)*discmort)" << endl;
+    SS2out << "#_NOTE: Depletion_basis: " << depletion_basis << " # " << depletion_basis_label << endl;
+    SS2out << "#_NOTE: F_std_report_basis: " << F_reporting << " # " << F_report_label << endl;
+    SS2out << "#_NOTE: SPR_std_report_basis: " << SPR_reporting << " # " << SPR_report_label << endl;
+    SS2out << "#_NOTE: tot_exploit:_is_dead_catch_B/bio_smry" << endl;
+    SS2out << "#_NOTE: sum_fleet_F:_is_simple_sum_of_full_Fs_among_all_fleets_ignoring_seasonal_and_area_modifiers" << endl;
+    SS2out << "#_NOTE: suffix:_an_emphasizes_that_quantity_is_annual_and_all_areas" << endl;
+
+    SS2out << "year Era Bio_all_an Bio_Smry_an Num_Smry_an SSB recruits sel_catch_B_an dead_catch_B_an retain_catch_B_an sel_catch_N_an dead_catch_N_an retain_catch_N_an" <<
+              " tot_exploit sum_fleet_F F=Z-M M mn_age_SSB mn_age_smry mn_age_catch SPR_std Depletion_std F_std" << endl;
+  // 1=totbio, 2=smrybio, 3=smrynum, 4=enc_catch, 5=dead_catch, 6=ret_catch, 7=spbio, 8=recruit,
+  // 9=equ_totbio, 10=equ_smrybio, 11=equ_SSB_virgin, 12=equ_S1, 13=Gentime, 14=YPR, 15=meanage_spawners, 16=meanage_smrynums, 17=meanage_catch
+  
+    for (y = styr; y <= YrMax; y++)
+    {
+      if (y <= endyr)
+      {
+        SS2out << y << " TIME ";
+      }
+      else
+      {
+        SS2out << y << " FORE ";
+      }
+      SS2out << Smry_Table(y)(1, 3) << " " << SSB_yr(y) << " " << exp_rec(y, 4) << " ";
+      SS2out << annual_catch(y) << " " << Smry_Table(y, 5) / Smry_Table(y, 2) << " " << annual_F(y) <<  " " << Smry_Table(y, 15) / SSB_yr(y) <<  " " << Smry_Table(y, 16) << " " << Smry_Table(y, 17) << " ";  // 
+  // gentime
       if (STD_Yr_Reverse_Ofish(y) > 0)
       {
         SS2out << SPR_std(STD_Yr_Reverse_Ofish(y)) << " ";
@@ -1605,10 +1660,9 @@ FUNCTION void write_bigoutput()
       {
         SS2out << " _ ";
       }
-      SS2out << (Smry_Table(y, 14) / Recr_virgin) << " " << Smry_Table(y, 13) << " ";
       if (STD_Yr_Reverse_Dep(y) > 0)
       {
-        SS2out << depletion(STD_Yr_Reverse_Dep(y));
+        SS2out << depletion(STD_Yr_Reverse_Dep(y)) << " ";
       }
       else
       {
@@ -1616,20 +1670,15 @@ FUNCTION void write_bigoutput()
       }
       if (y >= styr && STD_Yr_Reverse_F(y) > 0)
       {
-        SS2out << " " << F_std(STD_Yr_Reverse_F(y));
+        SS2out << F_std(STD_Yr_Reverse_F(y));
       }
       else
       {
         SS2out << " _ ";
       }
-      SS2out << " & " << Smry_Table(y)(1, 3) << " " << Smry_Table(y, 15) / Smry_Table(y, 3) << " " << Smry_Table(y)(4, 6) << " " << Smry_Table(y, 17) / (Smry_Table(y, 16) + 1.0e-06);
-      SS2out << " " << SSB_yr(y) << " " << exp_rec(y, 4) << " " << Smry_Table(y, 5) / Smry_Table(y, 2);
-      SS2out << " & " << Smry_Table(y)(21, 20 + gmorph) << " " << Smry_Table(y)(21 + gmorph, 20 + 2 * gmorph) << " " << annual_catch(y) << " " << annual_F(y) << endl;
+      SS2out << endl;
     } // end year loop
-    // end SPR time series
-    SS2out << "#" << endl
-           << "#NOTE: GENTIME_is_fecundity_weighted_mean_age" << endl
-           << "#NOTE: MnAgeSmry_is_numbers_weighted_meanage_at_and_above_smryage(not_accounting_for_settlement_offsets)" << endl;
+      // end ANNUAL_TIME_SERIES
   }
 
   // REPORT_KEYWORD 18 Kobe_Plot
@@ -3394,6 +3443,7 @@ FUNCTION void write_bigoutput()
   {
     SS2out << endl
            << pick_report_name(40) << endl;
+    SS2out << "#_NOTE: catage is based on: sel_dead_num = sel * (retain + (1-retain)*discmort)" << endl;
     SS2out << "Area Fleet Sex  XX XX Type Morph Yr Seas XX Era" << age_vector << endl;
     for (f = 1; f <= Nfleet; f++)
       if (fleet_type(f) <= 2 || fleet_type(f) == 4)
@@ -3838,7 +3888,7 @@ FUNCTION void write_bigoutput()
            << pick_report_name(48) << endl;
     if (WTage_rd > 0)
       SS2out << " as read from wtatage.ss";
-    SS2out << "#NOTE: yr=_" << styr - 3 << "_stores_values_for_benchmark" << endl;
+    SS2out << "#_NOTE: yr=_" << styr - 3 << "_stores_values_for_benchmark" << endl;
     SS2out << "Morph Yr Seas" << age_vector << endl;
     for (g = 1; g <= gmorph; g++)
       if (use_morph(g) > 0)
@@ -4690,7 +4740,7 @@ FUNCTION void SPR_profile()
 //    report5 << 0 << " y: " << y << " updated_Repro_output spr/ypr: " << fec(1) << endl;
   }
 
-  SS2out << "SPRloop Iter Bycatch Fmult F_report SPR YPR_dead YPR_dead*Recr YPR_ret*Recr Revenue Cost Profit SSB Recruits SSB/Bzero Tot_Catch ";
+  SS2out << "SPRloop Iter Bycatch Fmult F_std SPR YPR_dead YPR_dead*Recr YPR_ret*Recr Revenue Cost Profit SSB Recruits SSB/Bzero Tot_Catch ";
   for (f = 1; f <= Nfleet; f++)
   {
     if (fleet_type(f) <= 2)
@@ -4930,7 +4980,7 @@ FUNCTION void SPR_profile()
   if (Do_Benchmark == 3)
     SS2out << "#value 8 is F_Blimit: " << Btgt_Fmult2 << endl;
   SS2out << "#Profile 7 increases from Fmsy to Fcrash" << endl;
-  SS2out << "#NOTE: meanage_of_catch_is_for_total_catch_of_fleet_type==1_or_bycatch_fleets_with_scaled_Hrate" << endl;
+  SS2out << "#_NOTE: meanage_of_catch_is_for_total_catch_of_fleet_type==1_or_bycatch_fleets_with_scaled_Hrate" << endl;
   // end SPR/YPR_Profile
   return;
   }

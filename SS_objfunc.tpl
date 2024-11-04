@@ -966,6 +966,9 @@ FUNCTION void evaluate_the_objective_function()
         }
         else //  2D_AR devs
         {
+//  TwoD_AR_def:  1-fleet, 2-ymin, 3-ymax, 4-amin, 5-amax, 6-sigma_amax, 7-use_rho, 8-age/len, 9-dev_phase
+//  10-mindimension, 11=maxdim, 12-N_parm_dev, 13-selparm_location
+          
           f = parm_dev_info(i); //  pointer from list of devvectors to 2DAR list
           dvariable sigmasel = selparm(TwoD_AR_def[f](13));
           parm_dev_stddev(i) = sigmasel;

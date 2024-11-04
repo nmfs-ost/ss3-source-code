@@ -111,7 +111,7 @@ FUNCTION void write_nudata()
     if (Nudat == 1) // report back the input data
     {
 
-      report1 << "#_Catch data: yr, seas, fleet, catch, catch_se" << endl;
+      report1 << "#_Catch data: year, seas, fleet, catch, catch_se" << endl;
       report1 << "#_catch_se:  standard error of log(catch)" << endl;
       report1 << "#_NOTE:  catch data is ignored for survey fleets" << endl;
       k = 0;
@@ -142,15 +142,15 @@ FUNCTION void write_nudata()
               << "#" << endl;
 
       report1 << "#_CPUE_and_surveyabundance_and_index_observations" << endl;
-      report1 << "#_Units: 0=numbers; 1=biomass; 2=F; 30=spawnbio; 31=exp(recdev); 36=recdev; 32=spawnbio*recdev; 33=recruitment; 34=depletion(&see Qsetup); 35=parm_dev(&see Qsetup)" << endl;
-      report1 << "#_Errtype:  -1=normal; 0=lognormal; 1=lognormal with bias correction; >1=df for T-dist" << endl;
-      report1 << "#_SD_Report: 0=not; 1=include survey expected value with se" << endl;
+      report1 << "#_units: 0=numbers; 1=biomass; 2=F; 30=spawnbio; 31=exp(recdev); 36=recdev; 32=spawnbio*recdev; 33=recruitment; 34=depletion(&see Qsetup); 35=parm_dev(&see Qsetup)" << endl;
+      report1 << "#_errtype:  -1=normal; 0=lognormal; 1=lognormal with bias correction; >1=df for T-dist" << endl;
+      report1 << "#_SD_report: 0=not; 1=include survey expected value with se" << endl;
       report1 << "#_note that link functions are specified in Q_setup section of control file" << endl;
       report1 << "#_dataunits = 36 and 35 should use Q_type 5 to provide offset parameter" <<endl;
-      report1 << "#_Fleet Units Errtype SD_Report" << endl;
+      report1 << "#_fleet units errtype SD_report" << endl;
       for (f = 1; f <= Nfleet; f++)
         report1 << f << " " << Svy_units(f) << " " << Svy_errtype(f) << " " << Svy_sdreport(f) << " # " << fleetname(f) << endl;
-      report1 << "#_yr month fleet obs stderr" << endl;
+      report1 << "#_year month fleet obs stderr" << endl;
 
       if (Svy_N > 0)
         for (f = 1; f <= Nfleet; f++)
@@ -169,13 +169,13 @@ FUNCTION void write_nudata()
       report1 << "#_discard_errtype:  >0 for DF of T-dist(read CV below); 0 for normal with CV; -1 for normal with se; -2 for lognormal; -3 for trunc normal with CV" << endl;
       report1 << "# note: only enter units and errtype for fleets with discard " << endl;
       report1 << "# note: discard data is the total for an entire season, so input of month here must be to a month in that season" << endl;
-      report1 << "#_Fleet units errtype" << endl;
+      report1 << "#_fleet units errtype" << endl;
       if (Ndisc_fleets > 0)
       {
         for (f = 1; f <= Nfleet; f++)
           if (disc_units(f) > 0)
             report1 << f << " " << disc_units(f) << " " << disc_errtype(f) << " # " << fleetname(f) << endl;
-        report1 << "#_yr month fleet obs stderr" << endl;
+        report1 << "#_year month fleet obs stderr" << endl;
         for (f = 1; f <= Nfleet; f++)
           for (i = 1; i <= disc_N_fleet(f); i++)
           {
@@ -196,7 +196,7 @@ FUNCTION void write_nudata()
         report1 << "#_COND_";
       report1 << DF_bodywt << " #_DF_for_meanbodysize_T-distribution_like" << endl;
       report1 << "# note:  type=1 for mean length; type=2 for mean body weight " << endl;
-      report1 << "#_yr month fleet part type obs stderr" << endl;
+      report1 << "#_year month fleet part type obs stderr" << endl;
       if (nobs_mnwt > 0)
       {
         for (i = 1; i <= nobs_mnwt; i++)
@@ -261,12 +261,12 @@ FUNCTION void write_nudata()
             report1 << comp_control_L[i] << endl;
         }
 
-        report1 << "# sex codes:  0=combined; 1=use female only; 2=use male only; 3=use both as joint sexxlength distribution" << endl;
+        report1 << "# sex codes:  0=combined; 1=use female only; 2=use male only; 3=use both as joint sex*length distribution" << endl;
         report1 << "# partition codes:  (0=combined; 1=discard; 2=retained" << endl;
         report1 << nlen_bin << " #_N_LengthBins; then enter lower edge of each length bin" << endl
                 << len_bins_dat << endl;
         //  report1<<nobsl_rd<<" #_N_Length_obs"<<endl;
-        report1 << "#_yr month fleet sex part Nsamp datavector(female-male)" << endl;
+        report1 << "#_year month fleet sex part Nsamp datavector(female-male)" << endl;
         if (nobsl_rd > 0)
         {
           for (i = 0; i <= nobsl_rd - 1; i++)
@@ -317,9 +317,9 @@ FUNCTION void write_nudata()
       if (n_abins <= 0)
         report1 << "# ";
       report1 << Lbin_method << " #_Lbin_method_for_Age_Data: 1=poplenbins; 2=datalenbins; 3=lengths" << endl;
-      report1 << "# sex codes:  0=combined; 1=use female only; 2=use male only; 3=use both as joint sexxlength distribution" << endl;
+      report1 << "# sex codes:  0=combined; 1=use female only; 2=use male only; 3=use both as joint sex*length distribution" << endl;
       report1 << "# partition codes:  (0=combined; 1=discard; 2=retained" << endl;
-      report1 << "#_yr month fleet sex part ageerr Lbin_lo Lbin_hi Nsamp datavector(female-male)" << endl;
+      report1 << "#_year month fleet sex part ageerr Lbin_lo Lbin_hi Nsamp datavector(female-male)" << endl;
       if (nobsa_rd > 0)
       {
         for (i = 0; i <= nobsa_rd - 1; i++)
@@ -339,10 +339,10 @@ FUNCTION void write_nudata()
               << use_meansizedata << " #_Use_MeanSize-at-Age_obs (0/1)" << endl;
       if (use_meansizedata > 0)
       {
-        report1 << "# sex codes:  0=combined; 1=use female only; 2=use male only; 3=use both as joint sexxlength distribution" << endl;
-        report1 << "# partition codes:  (0=combined; 1=discard; 2=retained" << endl;
+        report1 << "# sex codes:  0=combined; 1=use female only; 2=use male only; 3=use both as joint sex*length distribution" << endl;
+        report1 << "# partition codes:  0=combined; 1=discard; 2=retained" << endl;
         report1 << "# ageerr codes:  positive means mean length-at-age; negative means mean bodywt_at_age" << endl;
-        report1 << "#_yr month fleet sex part ageerr ignore datavector(female-male)" << endl;
+        report1 << "#_year month fleet sex part ageerr ignore datavector(female-male)" << endl;
         report1 << "#                                          samplesize(female-male)" << endl;
         if (nobs_ms_rd > 0)
         {
@@ -369,8 +369,8 @@ FUNCTION void write_nudata()
 
       report1 << "#" << endl
               << N_envvar << " #_N_environ_variables" << endl;
-      report1 << "# -2 in yr will subtract mean for that env_var; -1 will subtract mean and divide by stddev (e.g. Z-score)" << endl;
-      report1 << "#Yr Variable Value" << endl;
+      report1 << "# -2 in year will subtract mean for that env_var; -1 will subtract mean and divide by stddev (e.g. Z-score)" << endl;
+      report1 << "#_year variable value" << endl;
       if (N_envvar > 0)
       {
         for (i = 0; i <= N_envdata - 1; i++)
@@ -403,7 +403,7 @@ FUNCTION void write_nudata()
                 << "#Note: negative value for first bin makes it accumulate all smaller fish vs. truncate small fish" << endl;
         for (i = 1; i <= SzFreq_Nmeth; i++)
         { report1 << SzFreq_Omit_Small(i) * SzFreq_bins1(i, 1) << SzFreq_bins1(i)(2, SzFreq_Nbins(i)) << endl; }
-        report1 << "#_method year month fleet sex partition SampleSize <data> " << endl << SzFreq_obs1 << endl;
+        report1 << "#_method year month fleet sex part Nsamp <data> " << endl << SzFreq_obs1 << endl;
       }
 
       // begin tagging data section #1 (observed data)
@@ -427,11 +427,11 @@ FUNCTION void write_nudata()
 
         // tag releases
         report1 << "# Release data for each tag group.  Tags are considered to be released at the beginning of a season (period)" << endl;
-        report1 << "#<TG> area yr season <tfill> sex age Nrelease  (note that the TG and tfill values are placeholders and are replaced by program generated values)" << endl;
+        report1 << "#<TG> area year seas <tfill> sex age Nrelease  (note that the TG and tfill values are placeholders and are replaced by program generated values)" << endl;
         report1 << TG_release << endl;
 
         // tag recaptures
-        report1 << "#_TAG  Yr Season Fleet Nrecap" << endl;
+        report1 << "#_TG year seas fleet Nrecap" << endl;
         for (j = 1; j <= N_TG_recap; j++)
         {
           // fill in first 4 columns:
@@ -449,7 +449,7 @@ FUNCTION void write_nudata()
         report1 << Morphcomp_nobs_rd << "  #  Nobs" << endl;
         report1 << Morphcomp_nmorph << " # Nmorphs" << endl;
         report1 << Morphcomp_mincomp << " # add_to_comp" << endl;
-        report1 << "# yr, month, fleet, null, Nsamp, datavector_by_Nmorphs" << endl;
+        report1 << "#_year, month, fleet, null, Nsamp, datavector_by_Nmorphs" << endl;
         for (i = 1; i <= Morphcomp_nobs_rd; i++)
         {
           report1 << Morphcomp_obs_rd << endl;
@@ -458,12 +458,12 @@ FUNCTION void write_nudata()
       else
       {
         report1 << "#  Nobs, Nmorphs, mincomp" << endl;
-        report1 << "#  yr, seas, type, partition, Nsamp, datavector_by_Nmorphs" << endl;
+        report1 << "#_year, seas, type, partition, Nsamp, datavector_by_Nmorphs" << endl;
       }
 
       report1 << "#" << endl
               << Do_SelexData << "  #  Do dataread for selectivity priors(0/1)" << endl;
-      report1 << "# Yr, Seas, Fleet,  Age/Size,  Bin,  selex_prior,  prior_sd" << endl;
+      report1 << "#_year, seas, fleet, age/size, bin, selex_prior, prior_sd" << endl;
       report1 << "# feature not yet implemented" << endl;
 
       report1 << "#" << endl
@@ -474,8 +474,9 @@ FUNCTION void write_nudata()
     else if (Nudat == 2) // report expected value with no added error
     {
 
-      report1 << "#_catch:_columns_are_year,season,fleet,catch,catch_se" << endl;
-      report1 << "#_Catch data: yr, seas, fleet, catch, catch_se" << endl;
+      report1 << "#_Catch data: year, seas, fleet, catch, catch_se" << endl;
+      report1 << "#_catch_se:  standard error of log(catch)" << endl;
+      report1 << "#_NOTE:  catch data is ignored for survey fleets" << endl;
       k = 0;
       for (f = 1; f <= Nfleet; f++)
       {
@@ -511,12 +512,13 @@ FUNCTION void write_nudata()
       report1 << "-9999 0 0 0 0" << endl
               << "#" << endl;
 
-      report1 << "#" << endl
-              << " #_CPUE_and_surveyabundance_observations" << endl;
-      report1 << "#_Units:  0=numbers; 1=biomass; 2=F; 30=spawnbio; 31=recdev; 32=spawnbio*recdev; 33=recruitment; 34=depletion(&see Qsetup); 35=parm_dev(&see Qsetup)" << endl;
-      report1 << "#_Errtype:  -1=normal; 0=lognormal; 1=lognormal with bias correction; >1=df for T-dist" << endl;
-      report1 << "#_SD_Report: 0=not; 1=include survey expected value with se" << endl;
-      report1 << "#_Fleet Units Errtype SD_Report" << endl;
+      report1 << "#_CPUE_and_surveyabundance_and_index_observations" << endl;
+      report1 << "#_units: 0=numbers; 1=biomass; 2=F; 30=spawnbio; 31=exp(recdev); 36=recdev; 32=spawnbio*recdev; 33=recruitment; 34=depletion(&see Qsetup); 35=parm_dev(&see Qsetup)" << endl;
+      report1 << "#_errtype:  -1=normal; 0=lognormal; 1=lognormal with bias correction; >1=df for T-dist" << endl;
+      report1 << "#_SD_report: 0=not; 1=include survey expected value with se" << endl;
+      report1 << "#_note that link functions are specified in Q_setup section of control file" << endl;
+      report1 << "#_dataunits = 36 and 35 should use Q_type 5 to provide offset parameter" <<endl;
+      report1 << "#_fleet units errtype SD_report" << endl;
       for (f = 1; f <= Nfleet; f++)
         report1 << f << " " << Svy_units(f) << " " << Svy_errtype(f) << " " << Svy_sdreport(f) << " # " << fleetname(f) << endl;
       report1 << "#_year month index obs err" << endl;
@@ -549,13 +551,13 @@ FUNCTION void write_nudata()
       report1 << "#_discard_errtype:  >0 for DF of T-dist(read CV below); 0 for normal with CV; -1 for normal with se; -2 for lognormal; -3 for trunc normal with CV" << endl;
       report1 << "# note: only enter units and errtype for fleets with discard " << endl;
       report1 << "# note: discard data is the total for an entire season, so input of month here must be to a month in that season" << endl;
-      report1 << "#_Fleet units errtype" << endl;
+      report1 << "#_fleet units errtype" << endl;
       if (Ndisc_fleets > 0)
       {
         for (f = 1; f <= Nfleet; f++)
           if (disc_units(f) > 0)
             report1 << f << " " << disc_units(f) << " " << disc_errtype(f) << " # " << fleetname(f) << endl;
-        report1 << "#_yr month fleet obs stderr" << endl;
+        report1 << "#_year month fleet obs stderr" << endl;
         for (f = 1; f <= Nfleet; f++)
           if (disc_N_fleet(f) > 0)
             for (i = 1; i <= disc_N_fleet(f); i++)
@@ -581,7 +583,7 @@ FUNCTION void write_nudata()
         report1 << "#_COND_";
       report1 << DF_bodywt << " #_DF_for_meanbodysize_T-distribution_like" << endl;
       report1 << "# note:  type=1 for mean length; type=2 for mean body weight " << endl;
-      report1 << "#_yr month fleet part type obs stderr" << endl;
+      report1 << "#_year month fleet part type obs stderr" << endl;
       if (nobs_mnwt > 0)
       {
         for (i = 1; i <= nobs_mnwt; i++)
@@ -638,6 +640,9 @@ FUNCTION void write_nudata()
         else if (use_length_data == 2)
         {
           report1 << "#_Using new list format for composition controls" << endl;
+          report1 << "#_use negative fleet value to fill for all higher numbered fleets (recommended!)" << endl;
+          report1 << "#_must enter in fleet, partition order; but only need to enter for used combos" << endl;
+          report1 << "#_fleet = -9999 to terminate list" << endl;
           report1 << "#_fleet partition mintailcomp addtocomp combM+F CompressBins CompError ParmSelect minsamplesize" << endl;
           for (int i = 0; i <= comp_control_L_count; i++)
             report1 << comp_control_L[i] << endl;
@@ -648,7 +653,7 @@ FUNCTION void write_nudata()
         report1 << nlen_bin << " #_N_LengthBins" << endl
                 << len_bins_dat << endl;
         //  report1<<sum(Nobs_l)<<" #_N_Length_obs"<<endl;
-        report1 << "#_yr month fleet sex part Nsamp datavector(female-male)" << endl;
+        report1 << "#_year month fleet sex part Nsamp datavector(female-male)" << endl;
         for (f = 1; f <= Nfleet; f++)
         {
           if (Nobs_l(f) > 0)
@@ -708,7 +713,7 @@ FUNCTION void write_nudata()
       report1 << Lbin_method << " #_Lbin_method_for_Age_Data: 1=poplenbins; 2=datalenbins; 3=lengths" << endl;
       report1 << "# sex codes:  0=combined; 1=use female only; 2=use male only; 3=use both as joint sex*length distribution" << endl;
       report1 << "# partition codes:  (0=combined; 1=discard; 2=retained" << endl;
-      report1 << "#_yr month fleet sex part ageerr Lbin_lo Lbin_hi Nsamp datavector(female-male)" << endl;
+      report1 << "#_year month fleet sex part ageerr Lbin_lo Lbin_hi Nsamp datavector(female-male)" << endl;
       if (Nobs_a_tot > 0)
         for (f = 1; f <= Nfleet; f++)
         {
@@ -737,10 +742,10 @@ FUNCTION void write_nudata()
               << use_meansizedata << " #_Use_MeanSize-at-Age_obs (0/1)" << endl;
       if (use_meansizedata > 0)
       {
-        report1 << "# sex codes:  0=combined; 1=use female only; 2=use male only; 3=use both as joint sexxlength distribution" << endl;
-        report1 << "# partition codes: 0=combined; 1=discard; 2=retained" << endl;
+        report1 << "# sex codes:  0=combined; 1=use female only; 2=use male only; 3=use both as joint sex*length distribution" << endl;
+        report1 << "# partition codes:  0=combined; 1=discard; 2=retained" << endl;
         report1 << "# ageerr codes:  positive means mean length-at-age; negative means mean bodywt_at_age" << endl;
-        report1 << "#_yr month fleet sex part ageerr ignore datavector(female-male)" << endl;
+        report1 << "#_year month fleet sex part ageerr ignore datavector(female-male)" << endl;
         report1 << "#                                          samplesize(female-male)" << endl;
         for (f = 1; f <= Nfleet; f++)
         {
@@ -775,8 +780,8 @@ FUNCTION void write_nudata()
 
       report1 << "#" << endl
               << N_envvar << " #_N_environ_variables" << endl;
-      report1 << "# -2 in yr will subtract mean for that env_var; -1 will subtract mean and divide by stddev (e.g. Z-score)" << endl;
-      report1 << "#Yr Variable Value" << endl;
+      report1 << "# -2 in year will subtract mean for that env_var; -1 will subtract mean and divide by stddev (e.g. Z-score)" << endl;
+      report1 << "#_year variable value" << endl;
       if (N_envvar > 0)
       {
         for (i = 0; i <= N_envdata - 1; i++)
@@ -809,7 +814,7 @@ FUNCTION void write_nudata()
                 << "#Note: negative value for first bin makes it accumulate all smaller fish vs. truncate small fish" << endl;
         for (i = 1; i <= SzFreq_Nmeth; i++)
         { report1 << SzFreq_Omit_Small(i) * SzFreq_bins1(i, 1) << SzFreq_bins1(i)(2, SzFreq_Nbins(i)) << endl; }
-        report1 << "#_method year month fleet sex partition SampleSize <data> " << endl;
+        report1 << "#_method year month fleet sex part Nsamp <data> " << endl;
         for (iobs = 1; iobs <= SzFreq_totobs; iobs++) {
           report1 << SzFreq_obs1(iobs)(1, 7) << " " << SzFreq_exp(iobs) << endl;
         }
@@ -828,13 +833,13 @@ FUNCTION void write_nudata()
 
         // tag releases
         report1 << "# Release data for each tag group.  Tags are considered to be released at the beginning of a season (period)" << endl;
-        report1 << "#<TG> area yr season <tfill> sex age Nrelease  (note that the TG and tfill values are placeholders and are replaced by program generated values)" << endl;
+        report1 << "#<TG> area year seas <tfill> sex age Nrelease  (note that the TG and tfill values are placeholders and are replaced by program generated values)" << endl;
         report1 << TG_release << endl;
 
         // tag recaptures
         report1 << "#_Note: Expected values for tag recaptures are reported only for the same combinations of" << endl;
         report1 << "#       group, year, area, and fleet that had observed recaptures. " << endl;
-        report1 << "#_TAG  Yr Season Fleet Nrecap" << endl;
+        report1 << "#_TG year seas fleet Nrecap" << endl;
         for (j = 1; j <= N_TG_recap; j++)
         {
           // fill in first 4 columns:
@@ -859,7 +864,7 @@ FUNCTION void write_nudata()
         report1 << Morphcomp_nobs << "  #  Nobs" << endl;
         report1 << Morphcomp_nmorph << " # Nmorphs" << endl;
         report1 << Morphcomp_mincomp << " # add_to_comp" << endl;
-        report1 << "# yr, month, fleet, null, Nsamp, datavector_by_Nmorphs" << endl;
+        report1 << "#_year, month, fleet, null, Nsamp, datavector_by_Nmorphs" << endl;
         for (i = 1; i <= Morphcomp_nobs; i++)
         {
           report1 << Morphcomp_obs(i)(1, 5) << " " << Morphcomp_exp(i) << endl;
@@ -868,12 +873,12 @@ FUNCTION void write_nudata()
       else
       {
         report1 << "#  Nobs, Nmorphs, mincomp" << endl;
-        report1 << "#  yr, seas, type, partition, Nsamp, datavector_by_Nmorphs" << endl;
+        report1 << "#_year, seas, type, partition, Nsamp, datavector_by_Nmorphs" << endl;
       }
 
       report1 << "#" << endl
               << Do_SelexData << "  #  Do dataread for selectivity priors(0/1)" << endl;
-      report1 << "# Yr, Seas, Fleet,  Age/Size,  Bin,  selex_prior,  prior_sd" << endl;
+      report1 << "#_year, seas, fleet, age/size, bin, selex_prior, prior_sd" << endl;
       report1 << "# feature not yet implemented" << endl;
 
       report1 << "#" << endl
@@ -884,9 +889,9 @@ FUNCTION void write_nudata()
     else //  create bootstrap data
     {
 
-      report1 << "#_catch_biomass(mtons):_columns_are_fisheries,year,season" << endl;
-      report1 << "#_catch:_columns_are_year,season,fleet,catch,catch_se" << endl;
-      report1 << "#_Catch data: yr, seas, fleet, catch, catch_se" << endl;
+      report1 << "#_Catch data: year, seas, fleet, catch, catch_se" << endl;
+      report1 << "#_catch_se:  standard error of log(catch)" << endl;
+      report1 << "#_NOTE:  catch data is ignored for survey fleets" << endl;
       k = 0;
       for (f = 1; f <= Nfleet; f++)
       {
@@ -924,11 +929,13 @@ FUNCTION void write_nudata()
       report1 << "-9999 0 0 0 0" << endl
               << "#" << endl;
 
-      report1 << " #_CPUE_and_surveyabundance_observations" << endl;
-      report1 << "#_Units:  0=numbers; 1=biomass; 2=F; 30=spawnbio; 31=recdev; 32=spawnbio*recdev; 33=recruitment; 34=depletion(&see Qsetup); 35=parm_dev(&see Qsetup)" << endl;
-      report1 << "#_Errtype:  -1=normal; 0=lognormal; 1=lognormal with bias correction; >1=df for T-dist" << endl;
-      report1 << "#_SD_Report: 0=not; 1=include survey expected value with se" << endl;
-      report1 << "#_Fleet Units Errtype SD_Report" << endl;
+      report1 << "#_CPUE_and_surveyabundance_and_index_observations" << endl;
+      report1 << "#_units: 0=numbers; 1=biomass; 2=F; 30=spawnbio; 31=exp(recdev); 36=recdev; 32=spawnbio*recdev; 33=recruitment; 34=depletion(&see Qsetup); 35=parm_dev(&see Qsetup)" << endl;
+      report1 << "#_errtype:  -1=normal; 0=lognormal; 1=lognormal with bias correction; >1=df for T-dist" << endl;
+      report1 << "#_SD_report: 0=not; 1=include survey expected value with se" << endl;
+      report1 << "#_note that link functions are specified in Q_setup section of control file" << endl;
+      report1 << "#_dataunits = 36 and 35 should use Q_type 5 to provide offset parameter" <<endl;
+      report1 << "#_fleet units errtype SD_report" << endl;
       for (f = 1; f <= Nfleet; f++)
         report1 << f << " " << Svy_units(f) << " " << Svy_errtype(f) << " " << Svy_sdreport(f) << " # " << fleetname(f) << endl;
       report1 << "#_year month index obs err" << endl;
@@ -972,7 +979,7 @@ FUNCTION void write_nudata()
         for (f = 1; f <= Nfleet; f++)
           if (disc_units(f) > 0)
             report1 << f << " " << disc_units(f) << " " << disc_errtype(f) << " # " << fleetname(f) << endl;
-        report1 << "#_yr month fleet obs stderr" << endl;
+        report1 << "#_year month fleet obs stderr" << endl;
         for (f = 1; f <= Nfleet; f++)
           for (i = 1; i <= disc_N_fleet(f); i++)
           {
@@ -1024,7 +1031,7 @@ FUNCTION void write_nudata()
         report1 << "#_COND_";
       report1 << DF_bodywt << " #_DF_for_meanbodysize_T-distribution_like" << endl;
       report1 << "# note:  type=1 for mean length; type=2 for mean body weight " << endl;
-      report1 << "#_yr month fleet part type obs stderr" << endl;
+      report1 << "#_year month fleet part type obs stderr" << endl;
 
       // NOTE, the se stored in mnwtdata(7,i) was adjusted in prelim calc to include the input var_adjustment
       //  so var_adjust is subtracted here when the observation is written
@@ -1089,15 +1096,19 @@ FUNCTION void write_nudata()
         else if (use_length_data == 2)
         {
           report1 << "#_Using new list format for composition controls" << endl;
+          report1 << "#_use negative fleet value to fill for all higher numbered fleets (recommended!)" << endl;
+          report1 << "#_must enter in fleet, partition order; but only need to enter for used combos" << endl;
+          report1 << "#_fleet = -9999 to terminate list" << endl;
           report1 << "#_fleet partition mintailcomp addtocomp combM+F CompressBins CompError ParmSelect minsamplesize" << endl;
           for (int i = 0; i <= comp_control_L_count; i++)
             report1 << comp_control_L[i] << endl;
         }
+
+        report1 << "# sex codes:  0=combined; 1=use female only; 2=use male only; 3=use both as joint sex*length distribution" << endl;
+        report1 << "# partition codes:  (0=combined; 1=discard; 2=retained" << endl;
         report1 << nlen_bin << " #_N_LengthBins" << endl
                 << len_bins_dat << endl;
-        report1 << "# sex codes:  0=combined; 1=use female only; 2=use male only; 3=use both as joint sexxlength distribution" << endl;
-        report1 << "# partition codes:  (0=combined; 1=discard; 2=retained" << endl;
-        report1 << "#_yr month fleet sex part Nsamp datavector(female-male)" << endl;
+        report1 << "#_year month fleet sex part Nsamp datavector(female-male)" << endl;
         for (f = 1; f <= Nfleet; f++)
         {
           if (Nobs_l(f) > 0)
@@ -1193,7 +1204,7 @@ FUNCTION void write_nudata()
       report1 << "# sex codes:  0=combined; 1=use female only; 2=use male only; 3=use both as joint sex*length distribution" << endl;
       report1 << "# partition codes:  (0=combined; 1=discard; 2=retained" << endl;
 
-      report1 << "#_yr month fleet sex part ageerr Lbin_lo Lbin_hi Nsamp datavector(female-male)" << endl;
+      report1 << "#_year month fleet sex part ageerr Lbin_lo Lbin_hi Nsamp datavector(female-male)" << endl;
       if (Nobs_a_tot > 0)
         for (f = 1; f <= Nfleet; f++)
         {
@@ -1254,10 +1265,10 @@ FUNCTION void write_nudata()
               << use_meansizedata << " #_Use_MeanSize-at-Age_obs (0/1)" << endl;
       if (use_meansizedata > 0)
       {
-        report1 << "# sex codes:  0=combined; 1=use female only; 2=use male only; 3=use both as joint sexxlength distribution" << endl;
-        report1 << "# partition codes:  (0=combined; 1=discard; 2=retained" << endl;
+        report1 << "# sex codes:  0=combined; 1=use female only; 2=use male only; 3=use both as joint sex*length distribution" << endl;
+        report1 << "# partition codes:  0=combined; 1=discard; 2=retained" << endl;
         report1 << "# ageerr codes:  positive means mean length-at-age; negative means mean bodywt_at_age" << endl;
-        report1 << "#_yr month fleet sex part ageerr ignore datavector(female-male)" << endl;
+        report1 << "#_year month fleet sex part ageerr ignore datavector(female-male)" << endl;
         report1 << "#                                          samplesize(female-male)" << endl;
         for (f = 1; f <= Nfleet; f++)
         {
@@ -1292,8 +1303,8 @@ FUNCTION void write_nudata()
 
       report1 << "#" << endl
               << N_envvar << " #_N_environ_variables" << endl;
-      report1 << "# -2 in yr will subtract mean for that env_var; -1 will subtract mean and divide by stddev (e.g. Z-score)" << endl;
-      report1 << "#Yr Variable Value" << endl;
+      report1 << "# -2 in year will subtract mean for that env_var; -1 will subtract mean and divide by stddev (e.g. Z-score)" << endl;
+      report1 << "#_year variable value" << endl;
       if (N_envvar > 0)
       {
         for (i = 0; i <= N_envdata - 1; i++)
@@ -1326,7 +1337,7 @@ FUNCTION void write_nudata()
                 << "#Note: negative value for first bin makes it accumulate all smaller fish vs. truncate small fish" << endl;
         for (i = 1; i <= SzFreq_Nmeth; i++)
         { report1 << SzFreq_Omit_Small(i) * SzFreq_bins1(i, 1) << SzFreq_bins1(i)(2, SzFreq_Nbins(i)) << endl; }
-        report1 << "#_method year month fleet sex partition SampleSize <data> " << endl;
+        report1 << "#_method year month fleet sex part Nsamp <data> " << endl;
         j = 2 * max(SzFreq_Nbins);
         dvector temp_probs3(1, j);
         dvector SzFreq_newdat(1, j);
@@ -1437,13 +1448,13 @@ FUNCTION void write_nudata()
 
         // tag releases
         report1 << "# Release data for each tag group.  Tags are considered to be released at the beginning of a season (period)" << endl;
-        report1 << "#<TG> area yr season <tfill> sex age Nrelease  (note that the TG and tfill values are placeholders and are replaced by program generated values)" << endl;
+        report1 << "#<TG> area year seas <tfill> sex age Nrelease  (note that the TG and tfill values are placeholders and are replaced by program generated values)" << endl;
         report1 << TG_release << endl;
 
         // tag recaptures
         report1 << "#_Note: Bootstrap values for tag recaptures are produced only for the same combinations of" << endl;
         report1 << "#       group, year, area, and fleet that had observed recaptures. " << endl;
-        report1 << "#_TAG  Yr Season Fleet Nrecap" << endl;
+        report1 << "#_TG year seas fleet Nrecap" << endl;
         for (j = 1; j <= N_TG_recap_gen; j++)
         {
           report1 << TG_recap_gen(j) << endl;
@@ -1459,7 +1470,7 @@ FUNCTION void write_nudata()
         report1 << Morphcomp_nobs << "  #  Nobs" << endl;
         report1 << Morphcomp_nmorph << " # Nmorphs" << endl;
         report1 << Morphcomp_mincomp << " # add_to_comp" << endl;
-        report1 << "#  yr, month, fleet, null, Nsamp, datavector_by_Nmorphs  (no error added!!!)" << endl;
+        report1 << "#_year, month, fleet, null, Nsamp, datavector_by_Nmorphs (no error added!!!)" << endl;
         for (i = 1; i <= Morphcomp_nobs; i++)
         {
           report1 << Morphcomp_obs(i)(1, 5) << " " << Morphcomp_exp(i) << endl;
@@ -1468,13 +1479,13 @@ FUNCTION void write_nudata()
       else
       {
         report1 << "#  Nobs, Nmorphs, mincomp" << endl;
-        report1 << "#  yr, seas, type, partition, Nsamp, datavector_by_Nmorphs" << endl;
+        report1 << "#_year, seas, type, partition, Nsamp, datavector_by_Nmorphs" << endl;
       }
 
       report1 << "#" << endl
               << Do_SelexData << "  #  Do dataread for selectivity priors(0/1)" << endl;
-      report1 << " # Yr, Seas, Fleet,  Age/Size,  Bin,  selex_prior,  prior_sd" << endl;
-      report1 << " # feature not yet implemented" << endl;
+      report1 << "#_year, seas, fleet, age/size, bin, selex_prior, prior_sd" << endl;
+      report1 << "# feature not yet implemented" << endl;
 
       report1 << "#" << endl
               << "999" << endl
@@ -1528,8 +1539,8 @@ FUNCTION void write_nucontrol()
           << burn_intvl << " # MCeval burn interval" << endl;
   NuStart << thin_intvl << " # MCeval thin interval" << endl;
   NuStart << jitter << " # jitter initial parm value by this fraction" << endl;
-  NuStart << STD_Yr_min_rd << " # min yr for sdreport outputs (-1 for styr); #_" << STD_Yr_min << endl;
-  NuStart << STD_Yr_max_rd << " # max yr for sdreport outputs (-1 for endyr+1; -2 for endyr+Nforecastyrs); #_" << STD_Yr_max << endl;
+  NuStart << STD_Yr_min_rd << " # min year for sdreport outputs (-1 for styr); #_" << STD_Yr_min << endl;
+  NuStart << STD_Yr_max_rd << " # max year for sdreport outputs (-1 for endyr+1; -2 for endyr+Nforecastyrs); #_" << STD_Yr_max << endl;
   NuStart << N_STD_Yr_RD << " # N individual STD years " << endl;
   NuStart << "#COND: vector of year values if N>0" << endl
           << STD_Yr_RD << endl;
@@ -1671,7 +1682,7 @@ FUNCTION void write_nucontrol()
   NuFore << Fcast_Catch_Basis << " # basis for fcast catch tuning and for fcast catch caps and allocation  (2=deadbio; 3=retainbio; 5=deadnum; 6=retainnum); NOTE: same units for all fleets" << endl;
 
   NuFore << "# Conditional input if relative F choice = 2" << endl;
-  NuFore << "# enter list of:  season,  fleet, relF; if used, terminate with season=-9999" << endl;
+  NuFore << "# enter list of:  season, fleet, relF; if used, terminate with season=-9999" << endl;
   {
     for (s = 1; s <= nseas; s++)
       for (f = 1; f <= Nfleet; f++)
@@ -1744,7 +1755,7 @@ FUNCTION void write_nucontrol()
   NuFore << Fcast_InputCatch_Basis << " # basis for input Fcast catch: -1=read basis with each obs; 2=dead catch; 3=retained catch; 99=input apical_F; NOTE: bio vs num based on fleet's catchunits" << endl;
 
   NuFore << "#enter list of Fcast catches or Fa; terminate with line having year=-9999" << endl;
-  NuFore << "#_Yr Seas Fleet Catch(or_F)";
+  NuFore << "#_year seas fleet catch(or_F)";
   if (Fcast_InputCatch_Basis == -1)
     NuFore << " Basis ";
   NuFore << endl;
@@ -2208,7 +2219,7 @@ FUNCTION void write_nucontrol()
   if (recdev_read > 0)
   {
     report4 << "# Specified recr devs to read" << endl;
-    report4 << "#_Yr Input_value # Final_value" << endl;
+    report4 << "#_year Input_value # Final_value" << endl;
     for (j = 1; j <= recdev_read; j++)
     {
       y = recdev_input(j, 1);
@@ -2226,7 +2237,7 @@ FUNCTION void write_nucontrol()
   else
   {
     report4 << "# read specified recr devs" << endl;
-    report4 << "#_Yr Input_value" << endl;
+    report4 << "#_year Input_value" << endl;
   }
   report4 << "#" << endl;
   report4 << "# all recruitment deviations" << endl
@@ -2308,7 +2319,7 @@ FUNCTION void write_nucontrol()
     report4 << F_Method_PH(1) << " # start phase for parms (does hybrid in early phases)" << endl;
     report4 << F_detail << " # N detailed inputs to read" << endl;
     report4 << "# detailed setup for F_Method=2; -Yr to fill remaining years; -999 for phase or se ignores keeps default for those fields " << endl;
-    report4 << "#Fleet Yr Seas F_value se phase" << endl;
+    report4 << "#_fleet year seas F_value se phase" << endl;
     if (F_detail > 0)
       report4 << F_setup2 << endl;
   }
@@ -2329,14 +2340,14 @@ FUNCTION void write_nucontrol()
     }
     if (F_detail <=0 )
     {report4 << -9999 << " 1 1 # end of list" << endl <<
-       "#F_detail template: Fleet Yr Seas F_value catch_se phase" << endl; }
+       "#F_detail template: fleet year seas F_value catch_se phase" << endl; }
     else
     {report4 << -9998 << " 1 1 # end of list, trigger reading F_detail" << endl; }
     report4 << F_Tune << " #_number of loops for hybrid tuning; 4 precise; 3 faster; 2 enough if switching to parms is enabled" << endl;
     if (F_detail > 0)
     {
       report4 << " # F_detail:  List of fleet-time specific F related values to read; enter -Yr to fill remaining years&seasons; -999 for phase or catch_se keeps base value for the run" << endl;
-      report4 << "#Fleet Yr Seas F_value catch_se phase" << endl;
+      report4 << "#fleet year seas F_value catch_se phase" << endl;
       report4 << F_setup2 << endl;
       report4 << "-9999 1 1 1 1 1  # end of F_detail: time-specific F inputs " << endl;
     }
@@ -2368,7 +2379,7 @@ FUNCTION void write_nucontrol()
 
   report4 << "#" << endl
           << "# F rates by fleet x season" << endl;
-  report4 << "# Yr: ";
+  report4 << "#_year: ";
   for (y = styr; y <= YrMax; y++)
     for (s = 1; s <= nseas; s++)
     {
@@ -2390,9 +2401,11 @@ FUNCTION void write_nucontrol()
     }
   NP += N_Fparm;
   report4 << "#" << endl;
-  report4 << "#_Q_setup for fleets with cpue or survey data" << endl;
+  report4 << "#_Q_setup for fleets with cpue or survey or deviation data" << endl;
   report4 << "#_1:  fleet number" << endl;
   report4 << "#_2:  link type: 1=simple q; 2=mirror; 3=power (+1 parm); 4=mirror with scale (+1p); 5=offset (+1p); 6=offset & power (+2p)" << endl;
+  report4 << "#_     where power is applied as y = q * x ^ (1 + power); so a power value of 0 has null effect" << endl;
+  report4 << "#_     and with the offset included it is y = q * (x + offset) ^ (1 + power)" << endl;
   report4 << "#_3:  extra input for link, i.e. mirror fleet# or dev index number" << endl;
   report4 << "#_4:  0/1 to select extra sd parameter" << endl;
   report4 << "#_5:  0/1 for biasadj or not" << endl;
@@ -2475,7 +2488,7 @@ FUNCTION void write_nucontrol()
   report4 << "#Pattern:_43; parm=2+special+2;  like 6, with 2 additional param for scaling (mean over bin range)" << endl;
   report4 << "#Pattern:_8;  parm=8; double_logistic with smooth transitions and constant above Linf option" << endl;
   report4 << "#Pattern:_9;  parm=6; simple 4-parm double logistic with starting length; parm 5 is first length; parm 6=1 does desc as offset" << endl;
-  report4 << "#Pattern:_21; parm=2+special; non-parm len selex, read as pairs of size, then selex" << endl;
+  report4 << "#Pattern:_21; parm=2*special; non-parm len selex, read as N break points, then N selex parameters" << endl;
   report4 << "#Pattern:_22; parm=4; double_normal as in CASAL" << endl;
   report4 << "#Pattern:_23; parm=6; double_normal where final value is directly equal to sp(6) so can be >1.0" << endl;
   report4 << "#Pattern:_24; parm=6; double_normal with sel(minL) and sel(maxL), using joiners" << endl;
@@ -2706,7 +2719,7 @@ FUNCTION void write_nucontrol()
   report4 << " #_5=mult_by_agecomp_N" << endl;
   report4 << " #_6=mult_by_size-at-age_N" << endl;
   report4 << " #_7=mult_by_generalized_sizecomp" << endl;
-  report4 << "#_Factor  Fleet  Value" << endl;
+  report4 << "#_factor  fleet  value" << endl;
   {
     if (var_adjust_data.size() > 0)
       for (f = 1; f <= Do_Var_adjust; f++)
