@@ -420,7 +420,7 @@ FUNCTION void Get_expected_values(const int y, const int t);
                 }
 
                 // Q transformations and offsets
-                // option 5:  add offset
+                // option 5:  add offset, useful when survey units are deviations
                 // option 3:  use power function
                 // option 6:  add offset, then use power function
                 if (Q_setup(f, 1) == 5 || Q_setup(f, 1) == 6 ) //  add offset
@@ -491,7 +491,7 @@ FUNCTION void Get_expected_values(const int y, const int t);
                       }
                       if (exp_disc(f, j) < 0.0)
                       {
-                        warnstream << f << " " << j << " " << exp_disc(f, j) << " catches " << catch_fleet(t, f);
+                        warnstream << "negative discard occurred for fleet: " << f << "; obs: " << j << "; usually ephemeral issue with bad iteration";
                         write_message (WARN, 0);
                       }
                     }

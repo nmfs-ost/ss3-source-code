@@ -319,6 +319,8 @@
   pick_report_use += "N";
   pick_report_name += "wtatage.ss_new report:60";
   pick_report_use += "N";
+  pick_report_name += "ANNUAL_TIME_SERIES report:61";
+  pick_report_use += "N";
 
   // check command line inputs
 
@@ -494,10 +496,11 @@
     pick_report_use(14) = "Y";
     pick_report_use(15) = "Y";
     pick_report_use(16) = "Y";
+    pick_report_use(61) = "Y";
   }
   else if (rd_background == 2) // brief, no growth or length
   {
-    for (k = 1; k <= 60; k++)
+    for (k = 1; k <= 61; k++)
     {
       pick_report_use(k) = "Y"; // start with all on
     }
@@ -533,7 +536,7 @@
   }
   else // all on
   {
-    for (k = 1; k <= 60; k++)
+    for (k = 1; k <= 61; k++)
     {
       pick_report_use(k) = "Y";
     }

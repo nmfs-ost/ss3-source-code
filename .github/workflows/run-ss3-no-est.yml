@@ -1,5 +1,5 @@
-# Build SS3 and run models without estimation (from .par) and no hessian
-# Runs on every push and PR (even draft PRs)
+# Build SS3 and run test models without estimation (from .par) and no hessian
+# Runs on every push and PR (even draft PRs) ONLY if tpl files have changed.
 name: run-ss3-no-est
 on:
   workflow_dispatch:
@@ -14,7 +14,7 @@ on:
     branches: 
       - main
 
-# run models without estimation, then try to run again with .ss_new
+# Run models without estimation, then try to run again with .ss_new
 jobs:
   run-ss3-no-est:
     runs-on: ubuntu-latest
@@ -46,7 +46,7 @@ jobs:
           sudo apt-get update
           sudo apt-get install --only-upgrade libstdc++6
         
-      - name: setup R
+      - name: Setup R
         uses: r-lib/actions/setup-r@v2
 
       # - name: Get admb and put in path, linux
@@ -70,40 +70,41 @@ jobs:
           chmod 777 SS330
           /bin/bash ./Make_SS_330_new.sh --admb docker -b SS330
 
-      - name: move exes, scripts to needed locations
+      - name: Move exes and R scripts to needed locations
         run: |
           mv test-models-repo/models test-models-repo/model_runs
           mv SS330/ss3 test-models-repo/model_runs/ss3
           mv test-models-repo/.github/r_scripts/run_from_par.R test-models-repo/run_from_par.R
           mv test-models-repo/.github/r_scripts/run_compare_noest.R test-models-repo/run_compare_noest.R
 
-      - name: change permissions on ss3 exes
+      - name: Change permissions on ss3 exes
         run: sudo chmod a+x test-models-repo/model_runs/ss3
 
-      - name: run models without estimation
+      - name: Run test models without estimation
         run: |
          cd test-models-repo && Rscript run_from_par.R
 
-      - name: download R packages for parallel
+      - name: Download R packages to run models in parallel
         run: Rscript -e 'install.packages(c("parallely", "furrr", "future"))'
 
-      - name: Run comparison
+      - name: Run comparison using run_compare_noest.R file in test models repo
         run: |
           mkdir test-models-repo/run_R
           cd test-models-repo && Rscript run_compare_noest.R
 
-      - name: Determine results of test
+      - name: Determine results of test using check_failed.R file in test models repo
         run: cd test-models-repo && Rscript .github/r_scripts/check_failed.R
 
-      - name: Run .ss_new
+      - name: Run models using the .ss_new files
         run: |
-          # code to run the ss_new models
+          # Get model names and file paths
           mod_names <- list.dirs("test-models-repo/model_runs",
             full.names = FALSE, recursive = FALSE)
           mod_paths <- list.dirs("test-models-repo/model_runs",
             full.names = TRUE, recursive = FALSE)
           print(mod_names)
 
+          # Create function to run models using .ss_new files
           run_ssnew <- function(dir) {
             wd <- getwd()
             print(wd)
@@ -132,15 +133,19 @@ jobs:
             return(model_ran)
           }
 
+          # Setup parallel
           ncores <- parallelly::availableCores(omit = 1)
           future::plan(future::multisession, workers = ncores)
 
+          # Run models in parallel using .ss_new files and print out error messages
           mod_ran <- furrr::future_map(mod_paths, function(x) {tryCatch(run_ssnew(x),
                                                  error = function(e) print(e)
                                                  )}
                      )
           mod_errors <- mod_names[unlist(lapply(mod_ran, function(x) "simpleError" %in% class(x)))]
           success <- TRUE
+
+          # Print list of models with errors if there are any
           if(length(mod_errors) > 0) {
             message("Model code with errors were: ", paste0(mod_errors, collapse = ", "),
                     ". See error list above for more details.")
@@ -148,7 +153,9 @@ jobs:
           } else {
             message("All code ran without error, but model runs may still have failed.")
           }
-          mod_no_run <- mod_names[unlist(lapply(mod_ran, function(x) isFALSE(x)))] #false means model didn't run
+          
+          # Print list of models that didn't run if there are any
+          mod_no_run <- mod_names[unlist(lapply(mod_ran, function(x) isFALSE(x)))] # false means model didn't run
           if(length(mod_no_run) > 0) {
             message("Models that didn't run are ", paste0(mod_no_run, collapse = ", "))
             success <- FALSE
@@ -156,7 +163,7 @@ jobs:
             message("All models ran without error.")
           }
 
-          # determine if job fails or passes
+          # Determine if job fails or passes
           if(success == FALSE) {
             stop("Job failed due to code with errors or models that didn't run.")
           } else {

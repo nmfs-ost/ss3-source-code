@@ -1740,8 +1740,8 @@ FUNCTION void get_selectivity()
                 if (k >= 0)
                 {
                   k++;
-                  if (docheckup == 1)
-                    echoinput << a << "  sigmasel: " << sigmasel << endl;
+//                  if (docheckup == 1)
+                  temp = sel_a(y, fs, 1, a);
                   sel_a(y, fs, 1, a) *= mfexp(sigmasel * parm_dev(z, k));
                   if (gender == 2)
                     sel_a(y, fs, 2, a) *= mfexp(sigmasel * parm_dev(z, k));
