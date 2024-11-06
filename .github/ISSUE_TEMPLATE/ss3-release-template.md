@@ -16,17 +16,19 @@ assignees:
 
 <!---Note all instances of xx should be replaced with the version number (e.g., the release for v3.30.20 would replace xx with 20)-->
 
-## Checklist for before prerelease
-- [ ] SS3 testing and debugging completed (RM and IT)
-- [ ] Check artifact from the `call-build-ss3-warnings` GitHub action for useful warnings (RM and IT)
-- [ ] r4ss updated (IT)
+## General checklist before pre-release and release
+- [ ] SS3 testing and debugging completed (RM/IT)
+- [ ] Check artifact from the `call-build-ss3-warnings` GitHub action for useful warnings (RM/IT/EP)
+- [ ] r4ss updated (IT/EP)
+
+<!---## Checklist for before pre-release (if pre-release is being done)
 - [ ] Put together pre-release announcement (RM)
 - [ ] code committed and tagged in repo as `v3.30.xx-prerel` (RM)
 - [ ] All exes added to GitHub releases as `v3.30.xx-prerel` (RM)
-- [ ] Announce prerelease (RM)
+- [ ] Announce prerelease (RM)-->
 
 ## Checklist for before release
-- [ ] The following steps should be encompassed in the new manual [release workflow](https://github.com/nmfs-ost/ss3-doc/actions/workflows/release.yml) and [bug fix release workflow](https://github.com/nmfs-ost/ss3-doc/actions/workflows/release_bug_fix.yml) and can be deleted at a future time once the new manual release workflows have been used for a couple releases (EP).
+- [ ] The following steps should be encompassed in the new manual [release workflow](https://github.com/nmfs-ost/ss3-doc/actions/workflows/release.yml) and [bug fix release workflow](https://github.com/nmfs-ost/ss3-doc/actions/workflows/release_bug_fix.yml) and can be deleted at a future time once the new manual release workflows have been used for a couple releases (EP). **Note that the branch protection rules must be briefly turned off to allow this workflow to run**
   - [ ] Manual updated and tagged in repo (EP) - address at least issues with the [`v3.30.xx` release label](add correct link to GitHub issues using filter: is:issue is:open label:"3.30.xx release" when available)
   - [ ] Manual added to a GitHub release, include attaching a pdf version (EP)
   - [ ] Manual release version on website updated once pdf and html built (EP) (update https://github.com/nmfs-ost/ss3-doc/blob/main/docs/SS330_User_Manual_release.html to the `v3.30.xx` version; update links to link to `v3.30.xx` in https://github.com/nmfs-ost/ss3-doc/blob/main/docs/index.md#links-to-documentation)
