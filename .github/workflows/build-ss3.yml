@@ -58,19 +58,19 @@ jobs:
           
       # Build ADMB for macos-13
       - name: Build ADMB for macos-13 and put in path
-        if: matrix.config.os == 'macos-13'
+        if: matrix.config.os == 'macos-13' || matrix.config.os == 'macos-latest'
         run: |
           cd admb && make clean
       - name: See where admb is
-        if: matrix.config.os == 'macos-13'
+        if: matrix.config.os == 'macos-13' || matrix.config.os == 'macos-latest'
         run: |
           cd admb && ls
       - name: Compile admb, macOS
-        if: matrix.config.os == 'macos-13'
+        if: matrix.config.os == 'macos-13' || matrix.config.os == 'macos-latest'
         run: |
           cd admb && make -j 4
       - name: Change permissions of admb and put in path, macOS
-        if: matrix.config.os == 'macos-13'
+        if: matrix.config.os == 'macos-13' || matrix.config.os == 'macos-latest'
         run: |
           sudo mv admb /usr/local/bin
           sudo chmod 755 /usr/local/bin/admb
@@ -199,7 +199,7 @@ jobs:
           mv SS330/ss3_opt.exe SS330/ss3_opt_win.exe
 
       - name: Build stock synthesis for mac with admb from source
-        if: matrix.config.os == 'macos-13'
+        if: matrix.config.os == 'macos-13' || matrix.config.os == 'macos-latest'
         run: |
           rm -rf SS330
           rm -rf ss3_osx.tar
@@ -208,21 +208,21 @@ jobs:
           /bin/bash ./Make_SS_330_new.sh -b SS330
           /bin/bash ./Make_SS_330_new.sh -b SS330 -o
 
-      - name: Build stock synthesis for mac m2 with admb docker image
-        if: matrix.config.os == 'macos-latest'
-        run: |
-          brew update
-          brew install docker
-          brew install --head colima
-          colima start --arch x86_64
-          docker pull johnoel/admb-13.2:linux
+      # - name: Build stock synthesis for mac m2 with admb docker image
+      #   if: matrix.config.os == 'macos-latest'
+      #   run: |
+      #     brew update
+      #     brew install docker
+      #     brew install --head colima
+      #     colima start --arch x86_64
+      #     docker pull johnoel/admb-13.2:linux
 
-          rm -rf SS330
-          rm -rf ss3_osx.tar
-          mkdir SS330
-          chmod 777 SS330
-          /bin/bash ./Make_SS_330_new.sh --admb docker -b SS330
-          /bin/bash ./Make_SS_330_new.sh --admb docker -b SS330 -o
+      #     rm -rf SS330
+      #     rm -rf ss3_osx.tar
+      #     mkdir SS330
+      #     chmod 777 SS330
+      #     /bin/bash ./Make_SS_330_new.sh --admb docker -b SS330
+      #     /bin/bash ./Make_SS_330_new.sh --admb docker -b SS330 -o
 
       - name: Verify binary on mac
         if: matrix.config.os == 'macos-13' || matrix.config.os == 'macos-latest'
@@ -234,7 +234,7 @@ jobs:
         if: matrix.config.os == 'macos-13' || matrix.config.os == 'macos-latest'
         run: |
           cd SS330
-          rm *.obj *.htp *.cpp ss3_opt.tpl
+          rm *.obj *.htp *.cpp ss3_opt.tpl ss3.tpl
           mv ss3 ss3_osx
           mv ss3_opt ss3_opt_osx
 
