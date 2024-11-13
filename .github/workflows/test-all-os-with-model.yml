@@ -1,0 +1,61 @@
+name: test-all-os-with-model
+on:
+  workflow_dispatch:
+  push: 
+#   workflow_run:
+#     workflows: ["build-ss3"]
+#     types:
+#       - completed
+
+jobs:
+  test-all-os-with-model:
+    runs-on: ${{ matrix.config.os }}
+    name: ${{ matrix.config.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        config:
+          - {os: ubuntu-latest}
+    
+    steps:
+      - uses: actions/checkout@v4
+
+    #   - name: Checkout models repo
+    #     uses: actions/checkout@v4
+    #     with:
+    #       repository: 'nmfs-ost/ss3-test-models'
+    #       path: test-models-repo
+
+    #   - name: Install libcurl and other necessary linux packages
+    #     run: |
+    #       sudo add-apt-repository ppa:ubuntu-toolchain-r/test
+    #       sudo apt-get update
+    #       sudo apt-get install --only-upgrade libstdc++6
+    #       sudo apt-get install -y libcurl4-openssl-dev
+    
+    #   - name: Setup R
+    #     uses: r-lib/actions/setup-r@v2
+
+    #   - name: Install R packages to run in parallel
+    #     run: Rscript -e 'install.packages(c("remotes"))'
+
+    #   - name: Install r4ss
+    #     run: Rscript -e 'remotes::install_github("r4ss/r4ss")'
+
+      - name: Download artifact
+        uses: actions/download-artifact@v4
+        with:
+          pattern: ss3-*
+          path: ./
+      
+      - name: list files
+        run: ls
+      
+      # - name: unzip
+      #   run: |
+      #     unzip ss3-ubuntu-latest.zip -d ss3_exes
+      #     mv ss3_exes/ss3_linux test-models-repo/models/BigSkate_2019/ss3
+      #     sudo chmod a+x test-models-repo/models/BigSkate_2019/ss3
+      
+      # - name: run
+      #   run: Rscript -e 'r4ss::run(dir = file.path(getwd(), "test-models-repo/models/BigSkate_2019"))'
