@@ -2327,7 +2327,8 @@ FUNCTION void write_nucontrol()
     report4 << "# Read list of fleets that do F as parameter; unlisted fleets stay hybrid, bycatch fleets must be included with start_PH=1, high F fleets should switch early" << endl;
     report4 << "# (A) fleet;" << endl <<"# (B) F_starting_value (ignored if start_PH=1 or reading from ss3.par);" <<
     endl << "# (C) start_PH for fleet's Fparms (99 to stay in hybrid, <0 to stay at starting value)" << endl << 
-    "# Terminate list with -9999 for fleet (use -9998 to read fleet-time specific F values after reading N hybrid tune loops)" << endl;
+    "# Terminate list with -9999 for fleet" << endl <<
+    "# or terminate with -9998 to invoke reading fleet-time specific F values after first reading N hybrid tune loops)" << endl;
     report4 << "# (A) (B) (C)" << endl;
     for (unsigned j = 1; j <= F_Method_4_input.size() - 2; j++)
     {
@@ -2337,14 +2338,14 @@ FUNCTION void write_nucontrol()
     {report4 << -9999 << " 1 1 # end of list" << endl <<
        "#F_detail template: fleet year seas F_value catch_se phase" << endl; }
     else
-    {report4 << -9998 << " 1 1 # end of list, trigger reading F_detail" << endl; }
+    {report4 << -9998 << " 1 1 # end of list, triggers reading F_detail" << endl; }
     report4 << F_Tune << " #_number of loops for hybrid tuning; 4 precise; 3 faster; 2 enough if switching to parms is enabled" << endl;
     if (F_detail > 0)
     {
-      report4 << " # F_detail:  List of fleet-time specific F related values to read; enter -Yr to fill remaining years&seasons; -999 for phase or catch_se keeps base value for the run" << endl;
+      report4 << "# F_detail:  List of fleet-time specific F related values to read; enter -Yr to fill remaining years&seasons; -999 for phase or catch_se keeps base value for the run" << endl;
       report4 << "#fleet year seas F_value catch_se phase" << endl;
       report4 << F_setup2 << endl;
-      report4 << "-9999 1 1 1 1 1  # end of F_detail: time-specific F inputs " << endl;
+      report4 << "-9999 1 1 1 1 1  # end of F_detail" << endl;
     }
   }
 

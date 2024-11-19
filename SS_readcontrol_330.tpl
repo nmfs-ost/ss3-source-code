@@ -2663,7 +2663,7 @@
         echoinput << "hybrid tuning loops as read: " << F_Tune << endl;
         if (ender == -9998)  // flag to trigger reading F_detail for f x t specific F values
         {
-          echoinput << "# now read List of fleet-time specific F related values to read; enter -Yr to fill remaining years&seasons; -999 for phase or catch_se keeps base value for the run" << endl;
+          echoinput << "# now read List of fleet-time specific F related values to read; enter -Yr to fill remaining years&seasons; -999 for phase or catch_se keeps base value for the run; end that list with -1 for fleet" << endl;
           echoinput << "#Fleet Yr Seas F_value catch_se phase" << endl;
 
           dvector tempvec(1, 6);
