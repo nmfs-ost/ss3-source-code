@@ -1516,8 +1516,8 @@ FUNCTION void write_bigoutput()
           if (s == spawn_seas)
           {
             temp = sum(SSB_pop_gp(y, p));
-            if (Hermaphro_maleSPB > 0)
-              temp += Hermaphro_maleSPB * sum(MaleSPB(y, p));
+            if (Hermaphro_maleSSB > 0)
+              temp += Hermaphro_maleSSB * sum(MaleSSB(y, p));
             SS2out << temp;
           }
           else
@@ -1529,7 +1529,7 @@ FUNCTION void write_bigoutput()
           {
             SS2out << SSB_pop_gp(y, p);
             if (Hermaphro_Option != 0)
-              SS2out << MaleSPB(y, p);
+              SS2out << MaleSSB(y, p);
           }
           else
           {
@@ -1710,7 +1710,7 @@ FUNCTION void write_bigoutput()
   if (k < 4)
     k = 4;
   // quantities to store summary statistics
-  dvector rmse(1, k); //  used in the SpBio, Index, Lencomp and Agecomp reports
+  dvector rmse(1, k); //  used in the SSBio, Index, Lencomp and Agecomp reports
   dvector Hrmse(1, k);
   dvector Rrmse(1, k);
   dvector n_rmse(1, k);
@@ -1779,6 +1779,7 @@ FUNCTION void write_bigoutput()
     var /= (n_rmse(1) + 1.0e-09);
 
     dvariable steepness = SR_parm(2);
+
     SS2out << endl
            << pick_report_name(19);
     SS2out << "  Function: " << SR_fxn << "  RecDev_method: " << do_recdev << "   sum_recdev: " << sum_recdev << endl
@@ -1835,7 +1836,117 @@ FUNCTION void write_bigoutput()
     }
     SS2out << endl;
 
-    SS2out << "Yr SpawnBio exp_recr with_regime bias_adjusted pred_recr dev biasadjuster era mature_bio mature_num raw_dev" << endl;
+    SS2out << endl << "#New_Expanded_Spawn_Recr_report" << endl << pick_report_name(19) << endl;
+    SS2out << "SR_Function: " << SR_fxn << endl;
+    SS2out << "N_SRparms: " << N_SRparm2 << endl;
+    SS2out << "#" << endl << "parm  parm_label value phase" << endl;
+    for (int j = 1; j <=N_SRparm2; j++)
+    {
+      SS2out << j << " " << ParmLabel(firstSRparm + j) << " " << SR_parm(j) << " " << SR_parm_PH(j);
+      if (SR_parm_timevary(j) > 0 && j <= 4 ) //  timevary SRparm exists
+      {SS2out << " #_is_time_vary,_so_SRR_updates_base_SPR_annually";} 
+  if (j == (N_SRparm2 - 1) && SR_parm_timevary(j) > 0) //  timevary regime exists
+    {SS2out << " #_Regime_parameter_used_to_offset_from_SRR";}
+      SS2out << endl;
+    }
+
+    SS2out << "# " <<endl;
+    SS2out << "sigmaR: "<< sigmaR  << endl;
+    SS2out << "SPR0_(virgin): " << SSBpR_virgin << " #_uses_biology_from_start_year: " << styr <<endl;
+
+    switch (SR_fxn)
+    {
+      case 3: // Beverton-Holt with steepness
+    {
+      alpha = 4.0 * steepness / (SSBpR_virgin_adj * (1. - steepness));
+      beta = (5.0 * steepness - 1.0) / ((1. - steepness) * SSB_virgin);
+      SS2out << "Ln(R0): " << SR_parm(1) << endl << "R0: " << mfexp(SR_parm(1)) << endl;
+      SS2out << "steepness: " << steepness << endl;
+      SS2out << "Ln(alpha)_derived: " << log(alpha) << " alpha " << alpha << endl;
+      SS2out << "Ln(beta)_derived: " << log(beta) << " beta " << beta;
+      break;
+    }
+      case 10: // Beverton-Holt with alpha, beta
+    {
+      SS2out << "Ln(alpha): " << SR_parm(3) << " alpha " << mfexp(SR_parm(3)) << endl;
+      SS2out << "Ln(beta): " << SR_parm(4) << " beta " << mfexp(SR_parm(4)) << endl;
+      SS2out << "ln(R0)_derived: " << log( 1. / beta * (alpha - (1. / SSBpR_virgin_adj))) << endl;  //  virgin R0
+      SS2out << "steepness_derived: " << alpha * SSBpR_virgin_adj / (4. + alpha * SSBpR_virgin_adj) << endl;  // steepness virgin
+      break;
+    }
+    case 8:
+    {
+      dvariable Shepherd_c;
+      dvariable Shepherd_c2;
+      dvariable Hupper;
+      Shepherd_c = SR_parm(3);
+      Shepherd_c2 = pow(0.2, Shepherd_c);
+      Hupper = 1.0 / (5.0 * Shepherd_c2);
+      temp = 0.2 + (SR_parm(2) - 0.2) / (0.8) * (Hupper - 0.2);
+      SS2out << "Shepherd_c: " << Shepherd_c << endl << "Shepard_steepness_limit: " << Hupper << endl << "Shepard_adjusted_steepness: " << temp << endl;
+      break;
+    }
+    default:
+    {
+      SS2out << "other_SRR " << endl;
+      break;
+    }
+    }
+
+    SS2out << endl << "#" << endl << "Quantities for MSY and other benchmark calculations " << endl << "Benchmark_years: 1_beg_bio 2_end_bio 3_beg_selex 4_end_selex 5_beg_relF 6_end_relF 7_beg_recr_dist 8_end_recr_dist 9_beg_SRparm 10_end_SRparm" << endl;
+    SS2out << "Benchmark_years: " << Bmark_Yr << endl;
+    if( timevary_MG_firstyr == YrMax)
+    { SS2out << "No_timevary_biology " << endl; }
+    else
+    { SS2out << "First_year_with_timevary_MG: " << timevary_MG_firstyr << endl; }
+    for ( int k = 1; k <=9; k+=2) 
+    { if (Bmark_Yr(k+1) > Bmark_Yr(k))
+      {SS2out << "#_range_of_years_is_averaged,_so_reduces_standard_error_of_result;_do_this_only_when_timevarying_makes_necessary:  " << k << " "<< k+1 << endl;}
+    }
+    SS2out << "SSBpR_unfished_benchmark: " << Mgmt_quant(1) / Mgmt_quant(4) << "  #_based_on_averaging_biology_over_benchmark_year_range " << endl;
+    SS2out << "Bmsy/Bzero: "<< Bmsy / SSB_virgin  << " # using styr bio for Bzero" << endl;
+    SS2out << "Bmsy/Bunf: "<< Bmsy / Mgmt_quant(1)  << " # using MSY's averaged bio for Bunf" << endl;
+
+    SS2out << "#" << endl << "RecDev_method: " << do_recdev << endl << "sum_recdev: " << sum_recdev << endl << "recr_logL: " << recr_like << endl;
+    SS2out << "main_recdev:start_end: " << recdev_start << " " << recdev_end << endl
+           << "breakpoints_for_bias_adjustment_ramp: " <<recdev_adj(1,4) << endl << "max_bias_adj: " << recdev_adj(5) <<  endl;
+
+    temp = sigmaR * sigmaR; //  sigmaR^2
+    SS2out << "ERA    N    RMSE  RMSE^2/sigmaR^2  mean_BiasAdj est_rho Durbin-Watson" << endl;
+    SS2out << "main  " << n_rmse(1) << " " << rmse(1) << " " << square(rmse(1)) / temp << " " << rmse(2) << " " << cross / var << " " << Durbin;
+    if (wrote_bigreport == 0) //  first time writing bigreport
+    {
+      if (rmse(1) < 0.5 * sigmaR && rmse(2) > (0.01 + 2.0 * square(rmse(1)) / temp))
+      {
+        warnstream << "Main recdev biasadj is >2 times ratio of rmse to sigmaR";
+        SS2out << " # " << warnstream.str() ;
+        write_message (WARN, 0);
+      }
+    }
+    SS2out << endl;
+
+    SS2out << "early " << n_rmse(3) << " " << rmse(3) << " " << square(rmse(3)) / temp << " " << rmse(4);
+    if (wrote_bigreport == 0) //  first time writing bigreport
+    {
+      if (rmse(3) < 0.5 * sigmaR && rmse(4) > (0.01 + 2.0 * square(rmse(3)) / temp))
+      {
+        warnstream << "Early recdev biasadj is >2 times ratio of rmse to sigmaR";
+        SS2out << " # " << warnstream.str();
+        write_message (WARN, 0);
+      }
+    }
+    SS2out << endl  << "#" << endl << "Initial_equilibrium: " << init_equ_steepness << "  # 0/1_to_use_spawner-recruitment_in_initial_equ_recruitment_calculation" << endl << "#" << endl;
+    if (SR_fxn == 10) SS2out << "#_Note:_h_curr_and_R0_curr_are_for_info_only;_calculated_from_alpha_beta_and_current_SPR0" << endl;
+    SS2out << "#_columns_with_P_will_show_time_vary_SR_parameters" << endl << "#" << endl;
+    SS2out << "Yr SpawnBio exp_recr with_regime bias_adjusted pred_recr dev biasadjuster era mature_bio mature_num raw_dev SPR0_curr ";
+    if(SR_fxn == 10)
+    {SS2out << "h_curr R0_curr ";}
+    else
+    {SS2out << "NA1 NA2 ";}
+;
+    for (j = 1; j <= N_SRparm2; j++) 
+    {SS2out << "P" << j << " ";}
+    SS2out << endl;
     SS2out << "S/Rcurve " << SSB_virgin << " " << Recr_virgin << endl;
     y = styr - 2;
     SS2out << "Virg " << SSB_yr(y) << " " << exp_rec(y) << " - " << 0.0 << " Virg " << SSB_B_yr(y) << " " << SSB_N_yr(y) << " 0.0 " << endl;
@@ -1886,7 +1997,16 @@ FUNCTION void write_bigoutput()
       {
         SS2out << " _ _ Fixed";
       }
-      SS2out << endl;
+      dvariable SPR_curr = Smry_Table(y, 11) / Recr_virgin;
+      SS2out << " " << SPR_curr << " ";
+      if (SR_fxn == 10)
+      {
+      SS2out << alpha * SPR_curr / (4. + alpha * SPR_curr) << " ";  // steepness with current SPR
+      SS2out << 1. / beta * (alpha - (1. / SPR_curr)) << " ";  //  R0 with current SPR
+      }
+      else
+      {SS2out << " - - ";}
+      SS2out << SR_parm_byyr(y)(1,N_SRparm2) << endl;
     }
 
     // REPORT_KEYWORD SPAWN_RECR_CURVE
@@ -4618,33 +4738,11 @@ FUNCTION void SPR_profile()
   for (s = 1; s <= nseas; s++)
   {
     t = styr - 3 * nseas + s - 1;
-
-    if (MG_active(2) > 0 || MG_active(3) > 0 || save_for_report > 0 || WTage_rd > 0)
-    {
-      subseas = 1;
-      ALK_idx = (s - 1) * N_subseas + subseas; //  for midseason
-      Make_AgeLength_Key(s, subseas); //  for begin season
-      subseas = mid_subseas;
-      ALK_idx = (s - 1) * N_subseas + subseas; //  for midseason
-      Make_AgeLength_Key(s, subseas); //  for midseason
-      if (s == spawn_seas)
-      {
-        subseas = spawn_subseas;
-        if (spawn_subseas != 1 && spawn_subseas != mid_subseas)
-        {
-          //don't call get_growth3(subseas) because using an average ave_size
-          Make_AgeLength_Key(s, subseas); //  spawn subseas
-        }
-        get_mat_fec();
-      }
-    }
-
-    for (g = 1; g <= gmorph; g++)
-      if (use_morph(g) > 0)
-      {
-        ALK_idx = (s - 1) * N_subseas + mid_subseas; //  for midseason
-        Make_FishSelex();
-      }
+    Wt_Age_beg(s) = Wt_Age_t(t, 0); //  used for smrybio
+    Wt_Age_mid(s) = Wt_Age_t(t, -1);
+    if (s == spawn_seas)
+      fec = Wt_Age_t(t, -2);
+//    report5 << 0 << " y: " << y << " updated_Repro_output spr/ypr: " << fec(1) << endl;
   }
 
   SS2out << "SPRloop Iter Bycatch Fmult F_std SPR YPR_dead YPR_dead*Recr YPR_ret*Recr Revenue Cost Profit SSB Recruits SSB/Bzero Tot_Catch ";
@@ -4795,8 +4893,8 @@ FUNCTION void SPR_profile()
 
         Do_Equil_Calc(equ_Recr);
         //  SPAWN-RECR:   calc equil spawn-recr in the SPR loop
-        SPR_temp = SSB_equil;
-        Equ_SpawnRecr_Result = Equil_Spawn_Recr_Fxn(SR_parm_work(2), SR_parm_work(3), SSB_unf, Recr_unf, SPR_temp); //  returns 2 element vector containing equilibrium biomass and recruitment at this SPR
+        SSBpR_temp = SSB_equil;
+        Equ_SpawnRecr_Result = Equil_Spawn_Recr_Fxn(SR_parm_work, SSB_unf, Recr_unf, SSBpR_temp); //  returns 2 element vector containing equilibrium biomass and recruitment at this SPR
         Btgt_prof = Equ_SpawnRecr_Result(1);
         Btgt_prof_rec = Equ_SpawnRecr_Result(2);
         if (Btgt_prof < 0.001 || Btgt_prof_rec < 0.001)
@@ -4896,7 +4994,7 @@ FUNCTION void Global_MSY()
   //  GLOBAL_MSY with knife-edge age selection, then slot-age selection
   SS2out << endl
          << pick_report_name(55) << endl;
-  y = styr - 3; //  stores the averaged
+  y = styr - 3; //  stores the averaged biology and selectivity, etc. from benchmark
   yz = y;
   bio_yr = y;
   eq_yr = y;
@@ -4975,7 +5073,9 @@ FUNCTION void Global_MSY()
       SS2out << "Actual ";
       show_MSY = 2; //  invokes just brief output in benchmark
       did_MSY = 0;
+//    report5 << 0 << " y: " << y << " updated_Repro_output global_1: " << fec(1) << endl;
       Get_Benchmarks(show_MSY);
+//    report5 << 0 << " y: " << y << " updated_Repro_output global_2: " << fec(1) << endl;
       did_MSY = 0;
     }
   }

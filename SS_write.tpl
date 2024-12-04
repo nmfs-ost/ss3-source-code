@@ -1011,7 +1011,7 @@ FUNCTION void write_rebuilder_output()
       rebuild_dat << exp_rec(y, 4) << " ";
     }
     rebuild_dat << " #recruits; first value is R0 (virgin)" << endl;
-    rebuild_dat << SSB_yr(styr - 2) << " " << SSB_yr(styr, k) << " #spbio; first value is SSB_virgin (virgin)" << endl;
+    rebuild_dat << SSB_yr(styr - 2) << " " << SSB_yr(styr, k) << " #SSBio; first value is SSB_virgin (virgin)" << endl;
     rebuild_dat << 1 << " ";
     for (y = styr; y <= k; y++)
       rebuild_dat << 0 << " ";
