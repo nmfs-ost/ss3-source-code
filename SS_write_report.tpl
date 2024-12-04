@@ -1912,6 +1912,7 @@ FUNCTION void write_bigoutput()
     {
       SS2out << endl
              << pick_report_name(22) << endl;
+      SS2out << "NOTE: Calc_Q is Q_base with devs, so does not include power; eff_Q includes effect of Power" << endl;
       //  where show_time(t) contains:  yr, seas
       //  data_time(ALK,f) has real month; 2nd is timing within season; 3rd is year.fraction
       //  show_time2(ALK) has yr, seas, subseas
@@ -2000,23 +2001,27 @@ FUNCTION void write_bigoutput()
     // REPORT_KEYWORD 21 INDEX_1  Survey Fit Summary
     SS2out << endl
            << pick_report_name(21) << endl;
-    SS2out << "Fleet Link Link+ ExtraStd BiasAdj Float   Q Num=0/Bio=1 Err_type"
+    SS2out << "Fleet Link Link+ ExtraStd BiasAdj Float   Qbase Num=0/Bio=1 Err_type"
            << " N Npos RMSE logL  mean_input_SE Input+VarAdj Input+VarAdj+extra VarAdj New_VarAdj penalty_mean_Qdev rmse_Qdev Offset Power fleetname" << endl;
     for (f = 1; f <= Nfleet; f++)
     {
       if (Svy_N_fleet(f) > 0)
       {
-        SS2out << f << " " << Q_setup(f) << " " << Svy_q(f, 1) << " " << Svy_units(f) << " " << Svy_errtype(f)
-               << " " << Svy_N_fleet(f) << " " << n_rmse(f) << " " << rmse(f)<< " " << surv_like(f) 
+        SS2out << f << " " << Q_setup(f)
+               << " " << Svy_q(f, 1) << " " << Svy_units(f) << " " << Svy_errtype(f)
+               << " " << Svy_N_fleet(f) << " " << n_rmse(f) << " " << rmse(f)<< " " << surv_like(f)
                << " " << mean_CV(f) << " " << mean_CV3(f) << " " << mean_CV2(f) << " " << var_adjust(1, f)
                << " " << var_adjust(1, f) + rmse(f) - mean_CV(f)
                << " " << Q_dev_like(f, 1) << " " << Q_dev_like(f, 2) << " ";
         if (Q_setup(f, 1) >= 5)
-        {SS2out << Q_parm(Q_setup_parms(f, 1) + 1) << " ";}
+        {SS2out << " " << Q_parm(Q_setup_parms(f, 1) + 1);}  // offset
         else
         {SS2out << " NA ";}
-        if (Q_setup(f, 1) == 3 || Q_setup(f,1) == 6)
-        {SS2out << Q_parm(Q_setup_parms(f, 1) + 2) << " ";}
+        if (Q_setup(f,1) == 3)
+        {SS2out << " " << Q_parm(Q_setup_parms(f, 1) + 1) << " ";}  // power
+        else
+        if (Q_setup(f,1) == 6)
+        {SS2out << " " << Q_parm(Q_setup_parms(f, 1) + 2) << " ";}  // power
         else
         {SS2out << " NA ";}
         SS2out << fleetname(f) << endl;
@@ -4676,7 +4681,6 @@ FUNCTION void SPR_profile()
     SPRloop1_end = 7;
   }
   int SPRloops;
-  SS2out << "ready for equilcalc "<<endl;
   Do_Equil_Calc(equ_Recr);
   if (N_bycatch == 0)
   {
@@ -4686,7 +4690,6 @@ FUNCTION void SPR_profile()
   {
     k = 1;
   }
-  SS2out << "ready for loops "<<endl;
   for (int with_BYC = 0; with_BYC <= k; with_BYC++)
     for (int SPRloop1 = 0; SPRloop1 <= SPRloop1_end; SPRloop1++)
     {
