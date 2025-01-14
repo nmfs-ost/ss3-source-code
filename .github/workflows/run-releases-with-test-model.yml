@@ -1,0 +1,60 @@
+# Get ss3 releases and run test model with estimation and hessian
+name: run-releases-with-test-model
+on:
+  workflow_dispatch:
+  push:
+  schedule:
+    - cron: '0 15 * * 2' # every Tuesday at 3pm UTC (= 1 0am EST or 11am EDT Eastern time)
+
+
+# Run fast running SS3 test models with estimation
+jobs:
+  run-releases-with-test-model:
+    runs-on: ${{ matrix.config.os }}
+    name: ${{ matrix.config.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        config:
+          - {os: windows-latest}
+          - {os: macos-13}
+          - {os: macos-latest}
+          - {os: ubuntu-latest}
+    env:
+      R_REMOTES_NO_ERRORS_FROM_WARNINGS: true
+
+    steps:
+
+      - name: Checkout models repo
+        uses: actions/checkout@v4
+        with:
+          repository: 'nmfs-ost/ss3-test-models'
+          path: test-models-repo
+
+      - name: Update Ubuntu packages
+        if: matrix.config.os == 'ubuntu-latest'
+        run: |
+          sudo add-apt-repository ppa:ubuntu-toolchain-r/test
+          sudo apt-get update
+          sudo apt-get install --only-upgrade libstdc++6
+          
+      - name: Setup R
+        uses: r-lib/actions/setup-r@v2
+      
+      - name: Install R packages to run in parallel
+        run: Rscript -e 'install.packages(c("remotes","parallely", "furrr", "future"))'
+
+      - name: Install r4ss
+        run: Rscript -e 'remotes::install_github("r4ss/r4ss")'
+
+      - name: Run test model
+        run: |
+          dir <- file.path(getwd(), "two_morph_seas_areas")
+          file.copy(from = file.path(getwd(), "test-models-repo/models/two_morph_seas_areas"), 
+            to = dir, recursive = TRUE, copy.mode = TRUE) 
+          unlink(dir,recursive = TRUE)
+          r4ss::get_ss3_exe(dir = dir)
+          r4ss::run(dir = dir)
+        shell: Rscript {0}
+
+
