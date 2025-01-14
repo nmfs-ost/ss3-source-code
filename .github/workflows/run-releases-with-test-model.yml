@@ -49,10 +49,11 @@ jobs:
 
       - name: Run test model
         run: |
+          old_dir <- file.path(getwd(), "test-models-repo", "models", "two_morph_seas_areas")
           dir <- file.path(getwd(), "two_morph_seas_areas")
           dir.create(dir)
-          file.rename(file.path(getwd(), "test-models-repo", "models", "two_morph_seas_areas"), dir)
-          unlink(dir,recursive = TRUE)
+          file.rename(old_dir, dir)
+          unlink(old_dir,recursive = TRUE)
           r4ss::get_ss3_exe(dir = dir)
           r4ss::run(dir = dir)
         shell: Rscript {0}
