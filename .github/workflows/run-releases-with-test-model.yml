@@ -50,8 +50,8 @@ jobs:
       - name: Run test model
         run: |
           dir <- file.path(getwd(), "two_morph_seas_areas")
-          file.copy(from = file.path(getwd(), "test-models-repo/models/two_morph_seas_areas"), 
-            to = dir, recursive = TRUE, copy.mode = TRUE) 
+          dir.create(dir)
+          file.rename(file.path(getwd(), "test-models-repo", "models", "two_morph_seas_areas"), dir)
           unlink(dir,recursive = TRUE)
           r4ss::get_ss3_exe(dir = dir)
           r4ss::run(dir = dir)
