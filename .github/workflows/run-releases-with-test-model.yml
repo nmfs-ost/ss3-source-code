@@ -57,6 +57,7 @@ jobs:
           unlink(old_dir,recursive = TRUE)
           r4ss::get_ss3_exe(dir = dir)
           r4ss::run(dir = dir)
+          r4ss::SS_output(dir, verbose = TRUE)
         shell: Rscript {0}
 
 
