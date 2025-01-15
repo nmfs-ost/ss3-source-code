@@ -23,6 +23,7 @@ jobs:
     env:
       R_REMOTES_NO_ERRORS_FROM_WARNINGS: true
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
+      R_KEEP_PKG_SOURCE: yes
 
     steps:
 
@@ -38,16 +39,13 @@ jobs:
           sudo add-apt-repository ppa:ubuntu-toolchain-r/test
           sudo apt-get update
           sudo apt-get install --only-upgrade libstdc++6
+          sudo apt-get install -y libcurl4-openssl-dev
           
       - name: Setup R
         uses: r-lib/actions/setup-r@v2
       
       - name: Install R packages to run in parallel
-        run: Rscript -e 'install.packages(c("pak", "remotes"))'
-
-      # - name: Install r4ss (for all but ubuntu)
-      #   if: matrix.config.os == 'macos-13' || matrix.config.os == 'macos-latest' || matrix.config.os == 'windows-latest'
-      #   run: Rscript -e 'pak::pkg_install("r4ss/r4ss")'
+        run: Rscript -e 'install.packages("remotes")'
 
       - name: Install r4ss (ubuntu)
         run: Rscript -e 'remotes::install_github("r4ss/r4ss", ref = "more-gh-fixes-for-gha")'
