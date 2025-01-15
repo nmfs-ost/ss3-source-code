@@ -40,6 +40,7 @@ jobs:
           sudo add-apt-repository ppa:ubuntu-toolchain-r/test
           sudo apt-get update
           sudo apt-get install --only-upgrade libstdc++6
+          sudo apt install libc6
           sudo apt-get install -y libcurl4-openssl-dev
           sudo apt install libfontconfig1-dev
           
