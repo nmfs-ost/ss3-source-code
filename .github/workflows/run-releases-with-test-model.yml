@@ -43,7 +43,7 @@ jobs:
         uses: r-lib/actions/setup-r@v2
       
       - name: Install R packages to run in parallel
-        run: Rscript -e 'install.packages("pak", "remotes")'
+        run: Rscript -e 'install.packages(c("pak", "remotes"))'
 
       - name: Install r4ss (for all but ubuntu)
         run: Rscript -e 'pak::pkg_install("r4ss/r4ss")'
