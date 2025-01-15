@@ -22,6 +22,7 @@ jobs:
           - {os: ubuntu-latest}
     env:
       R_REMOTES_NO_ERRORS_FROM_WARNINGS: true
+      GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
 
     steps:
 
@@ -42,10 +43,15 @@ jobs:
         uses: r-lib/actions/setup-r@v2
       
       - name: Install R packages to run in parallel
-        run: Rscript -e 'install.packages(c("pak","parallely", "furrr", "future"))'
+        run: Rscript -e 'install.packages("pak", "remotes")'
 
-      - name: Install r4ss
+      - name: Install r4ss (for all but ubuntu)
         run: Rscript -e 'pak::pkg_install("r4ss/r4ss")'
+
+      - name: Install r4ss (ubuntu)
+        if: matrix.config.os == 'ubuntu-latest'
+        run: Rscript -e 'remotes::install_github("r4ss/r4ss")'
+
 
       - name: Run test model
         run: |
