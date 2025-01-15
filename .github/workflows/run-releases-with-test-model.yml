@@ -53,15 +53,14 @@ jobs:
           remotes::install_github("r4ss/r4ss", ref = "more-gh-fixes-for-gha")
           library(r4ss)
           old_dir <- file.path(getwd(), "test-models-repo", "models", "two_morph_seas_areas")
-          old_dir <- gsub('/', '\\\\', old_dir)
           dir <- file.path(getwd(), "two_morph_seas_areas")
-          dir <- gsub('/', '\\\\', dir)
           dir.create(dir)
           file.rename(old_dir, dir)
           unlink(old_dir,recursive = TRUE)
           r4ss::get_ss3_exe(dir = dir)
           r4ss::run(dir = dir)
           r4ss::SS_output(dir, verbose = TRUE)
+          unlink(old_dir,recursive = TRUE)
         shell: Rscript {0}
 
 
