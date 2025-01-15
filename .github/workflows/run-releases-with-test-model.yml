@@ -46,7 +46,7 @@ jobs:
 
       - name: Install r4ss and run test model
         run: |
-          install.packages("remotes")
+          install.packages(c("remotes", "svglite", "systemfonts"))
           remotes::install_github("r4ss/r4ss", ref = "more-gh-fixes-for-gha")
           library(r4ss)
           old_dir <- file.path(getwd(), "test-models-repo", "models", "two_morph_seas_areas")
