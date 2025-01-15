@@ -20,7 +20,6 @@ jobs:
           - {os: macos-13}
           - {os: macos-latest}
           - {os: ubuntu-latest}
-          - {os: ubuntu-20.04}
     env:
       R_REMOTES_NO_ERRORS_FROM_WARNINGS: true
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
@@ -35,7 +34,7 @@ jobs:
           path: test-models-repo
 
       - name: Update Ubuntu packages
-        if: matrix.config.os == 'ubuntu-latest' || matrix.config.os == 'ubuntu-20.04'
+        if: matrix.config.os == 'ubuntu-latest'
         run: |
           sudo add-apt-repository ppa:ubuntu-toolchain-r/test
           sudo apt-get update
