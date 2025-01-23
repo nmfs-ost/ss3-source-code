@@ -536,7 +536,7 @@ FUNCTION void get_initial_conditions()
     SSBpR_temp = SSB_equil / equ_Recr; //  spawners per recruit at initial F
     //  get equilibrium SSB and recruitment from SSBpR_temp, Recr_virgin and virgin steepness
     //  this is the initial year, so no time-vary effects available, so uses _virgin quantities for spawner-recruitment
-    Equ_SpawnRecr_Result = Equil_Spawn_Recr_Fxn(SR_parm_work, SSB_virgin, Recr_virgin, SSBpR_temp); //  returns 2 element vector containing equilibrium biomass and recruitment at this SPR
+    Equ_SpawnRecr_Result = Equil_Spawn_Recr_Fxn(SR_parm_work, SSB_virgin, Recr_virgin, SSBpR_virgin_adj, SSBpR_temp); //  returns 2 element vector containing equilibrium biomass and recruitment at this SPR
     R1_exp = Equ_SpawnRecr_Result(2); //  set the expected recruitment equal to this equilibrium
     exp_rec(eq_yr, 1) = R1_exp;
 
