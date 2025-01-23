@@ -4742,10 +4742,10 @@ FUNCTION void SPR_profile()
     Wt_Age_mid(s) = Wt_Age_t(t, -1);
     if (s == spawn_seas)
       fec = Wt_Age_t(t, -2);
-//    report5 << 0 << " y: " << y << " updated_Repro_output spr/ypr: " << fec(1) << endl;
+    report5 << " repro_output for spr/ypr: " << fec(1) << endl;
   }
 
-  SS2out << "SPRloop Iter Bycatch Fmult F_std SPR YPR_dead YPR_dead*Recr YPR_ret*Recr Revenue Cost Profit SSB Recruits SSB/Bzero Tot_Catch ";
+  SS2out << "SPRloop Iter Bycatch Fmult F_std SSBpR YpR_dead YpR_dead*Recr YpR_ret*Recr Revenue Cost Profit SSB Recruits SSB/Bzero Tot_Catch ";
   for (f = 1; f <= Nfleet; f++)
   {
     if (fleet_type(f) <= 2)
@@ -4789,20 +4789,28 @@ FUNCTION void SPR_profile()
     k = 1;
   }
   for (int with_BYC = 0; with_BYC <= k; with_BYC++)
-    for (int SPRloop1 = 0; SPRloop1 <= SPRloop1_end; SPRloop1++)
+    for (int SPRloop1 = -1; SPRloop1 <= SPRloop1_end; SPRloop1++)
     {
       Fmultchanger1 = value(pow(0.0001 / Fcrash, 0.025));
       Fmultchanger2 = value(Fcrash / 39.);
       SPRloops = 40;
       switch (SPRloop1)
       {
+        case -1:
+        {
+          SPRloops = 1;
+          Fmult2 = 0.0;
+          break;
+        }
         case 0:
         {
+          SPRloops = 40;
           Fmult2 = maxpossF;
           break;
         }
         case 1:
         {
+          SPRloops = 40;
           Fmult2 = Fcrash;
           break;
         }
@@ -4894,7 +4902,7 @@ FUNCTION void SPR_profile()
         Do_Equil_Calc(equ_Recr);
         //  SPAWN-RECR:   calc equil spawn-recr in the SPR loop
         SSBpR_temp = SSB_equil;
-        Equ_SpawnRecr_Result = Equil_Spawn_Recr_Fxn(SR_parm_work, SSB_unf, Recr_unf, SSBpR_temp); //  returns 2 element vector containing equilibrium biomass and recruitment at this SPR
+        Equ_SpawnRecr_Result = Equil_Spawn_Recr_Fxn(SR_parm_work, SSB_unf, Recr_unf, SSBpR_virgin_adj, SSBpR_temp); //  returns 2 element vector containing equilibrium biomass and recruitment at this SPR
         Btgt_prof = Equ_SpawnRecr_Result(1);
         Btgt_prof_rec = Equ_SpawnRecr_Result(2);
         if (Btgt_prof < 0.001 || Btgt_prof_rec < 0.001)
@@ -4954,7 +4962,7 @@ FUNCTION void SPR_profile()
           {
             SS2out << " " << SSB_equil_pop_gp(p, gp) * Btgt_prof_rec;
           }
-        SS2out << endl;
+        SS2out << " R " << equ_Recr << "  SSB " << SSB_equil << endl;
         if (SPRloop1 == 0)
         {
           Fmult2 -= Fmultchanger0;

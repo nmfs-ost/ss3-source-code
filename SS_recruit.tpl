@@ -268,7 +268,7 @@ FUNCTION void apply_recdev(prevariable& NewRecruits, const prevariable& Recr_vir
  /*  SS_Label_FUNCTION 44 Equil_Spawn_Recr_Fxn */
 //  SPAWN-RECR:   function  Equil_Spawn_Recr_Fxn
 FUNCTION dvar_vector Equil_Spawn_Recr_Fxn(const dvar_vector& SRparm,
-    const prevariable& SSB_virgin_use, const prevariable& Recr_virgin_use, const prevariable& SSBpR_current)
+    const prevariable& SSB_virgin_use, const prevariable& Recr_virgin_use, const prevariable& SSBpR_virgin_adj, const prevariable& SSBpR_current)
   {
   RETURN_ARRAYS_INCREMENT();
   dvar_vector Equil_Spawn_Recr_Calc(1, 2); // values to return 1 is B_equil, 2 is R_equil
