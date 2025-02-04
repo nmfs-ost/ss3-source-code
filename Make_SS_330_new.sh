@@ -137,7 +137,7 @@ if [ ! -f $BUILD_DIR/$BUILD_TYPE.tpl ]; then
 fi
 
 # if admb is not in path, use docker to build.
-if [[ "$ADMB_HOME" != "docker" ]] ; then
+if [[ "$ADMB_HOME" != "docker" || -z "$ADMB_HOME" ]] ; then
   if [[ "$OS" == "Windows_NT" ]] ; then
     if [[ -x "$(command -v admb.sh)" ]] ; then
       ADMB_HOME="$(dirname $(command -v admb.sh))"
@@ -151,7 +151,7 @@ if [[ "$ADMB_HOME" != "docker" ]] ; then
       unset ADMB_HOME
     fi
   fi
-  if [[ -z "$ADMB_HOME" ]] ; then
+  if [[ "$ADMB_HOME" == "docker" ]] ; then
     ADMB_HOME=docker
   fi
 fi
