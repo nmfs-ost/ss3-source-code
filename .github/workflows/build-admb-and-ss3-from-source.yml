@@ -102,8 +102,11 @@ jobs:
           make -j $num_cpus_minus1
           ls -l
           chmod a+x admb
-          sudo mv admb /usr/local/bin
+          sudo cp -Rvf build/admb /usr/local/admb
+          sudo ln -sf /usr/local/admb/admb /usr/local/bin/admb
           echo "/usr/local/bin/admb" >> $GITHUB_PATH
+
+        # sudo mv admb /usr/local/bin
     
     # Fetch Tags
       - name: Fetch git tags
