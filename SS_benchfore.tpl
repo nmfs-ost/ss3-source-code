@@ -783,6 +783,7 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
     Mgmt_quant(19) = Recr_unf;
     Mgmt_quant(20) = SSB_unf;
     Mgmt_quant(21) = SSB_unf;  //  placeholder to be replaced by SSB_HCR_infl
+    Mgmt_quant(22) = SSB_virgin;
   }
   SR_parm_work(N_SRparm2 + 1) = SSB_unf;
   Mgmt_quant(1) = SSB_unf;
@@ -1824,9 +1825,9 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
     Btgt_Fmult2 = Fmult;
     if (rundetail > 0 && mceval_counter == 0 && show_MSY == 1)
       echoinput << "Calculated F_Blimit " << Btgt_Fmult2 << " " << Btgt2 / Blim_report << endl;
-    Mgmt_quant(22) = Btgt2;
-    Mgmt_quant(23) = equ_F_std;
-    Mgmt_quant(24) = sum(equ_catch_fleet(2)) * Equ_SpawnRecr_Result(2);
+    Mgmt_quant(N_STD_Mgmt_Quant - 2) = Btgt2;
+    Mgmt_quant(N_STD_Mgmt_Quant - 1) = equ_F_std;
+    Mgmt_quant(N_STD_Mgmt_Quant) = sum(equ_catch_fleet(2)) * Equ_SpawnRecr_Result(2);
   } //  end finding F for Blimit
 
   if (rundetail > 0 && mceval_counter == 0 && show_MSY == 1)
@@ -2172,23 +2173,26 @@ FUNCTION void Get_Forecast()
       }
     }
 
-    if (H4010_top_rd < 0.0)
-      {
-        H4010_top = Bmsy / SSB_unf;
-        if (H4010_bot > 0.25)
-        {
-          warnstream << "control rule cutoff is large (" << H4010_bot << "); so may not be < calculated Bmsy/SSB_unf (" << H4010_top << ")";
-          write_message (WARN, 0);
-        }
-      }
-      else
-      {
-        H4010_top = H4010_top_rd;
-      }
     if (Fcast_Loop_Control(5) <= 1)
     {HCR_anchor = SSB_unf;}
     else if (Fcast_Loop_Control(5) ==2)
     {HCR_anchor = SSB_virgin;}
+
+    if (H4010_top_rd < 0.0)
+    {
+      H4010_top = Bmsy / HCR_anchor;  // convert to fraction
+      if (H4010_bot > 0.25)
+      {
+        warnstream << "control rule cutoff is large (" << H4010_bot << "); so may not be < calculated Bmsy/SSB_unf (" << H4010_top << ")";
+        write_message (WARN, 0);
+      }
+    }
+    else
+    {
+      H4010_top = H4010_top_rd;
+    }
+
+    Mgmt_quant(21) = H4010_top * HCR_anchor;
     report5 << "#" << endl;
     report5 << "N_forecast_yrs: " << N_Fcast_Yrs << endl;
     report5 << "OY_Control_Rule:  Inflection: " << H4010_top << " Intercept: " << H4010_bot << " Scale: " << H4010_scale_vec(endyr + 1) << endl
