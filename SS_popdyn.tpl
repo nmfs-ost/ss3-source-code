@@ -383,8 +383,8 @@ FUNCTION void get_initial_conditions()
 //    SSBpR_virgin = SSB_equil / Recr_virgin; //  spawners per recruit already calculated
     if(Do_Benchmark==0)  // assign values that would be created in benchmark section
     {
-      Mgmt_quant(1) = SSB_virgin;  //  can be overwritten in benchmark by updated SSB_unf
       SSB_unf = SSB_virgin;
+      Mgmt_quant(1) = SSB_unf;  //  can be overwritten in benchmark by updated SSB_unf
       Recr_unf = Recr_virgin;
       Mgmt_quant(2) = totbio;  //  from equil calcs
       Mgmt_quant(3) = smrybio;  //  from equil calcs

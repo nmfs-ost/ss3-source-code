@@ -5871,7 +5871,7 @@
       // clang-format on
       if (Do_Benchmark > 0)
   {
-    N_STD_Mgmt_Quant = 21;
+    N_STD_Mgmt_Quant = 22;
     if (Do_Benchmark == 3) N_STD_Mgmt_Quant += 3; //  for Blimit
   }
   else
@@ -6692,6 +6692,10 @@
     j++;
     active_parm(CoVar_Count) = j;
     ParmLabel += "SSB_HCR_infl" + CRLF(1);
+    CoVar_Count++;
+    j++;
+    active_parm(CoVar_Count) = j;
+    ParmLabel += "SSB_virgin_again" + CRLF(1);
     CoVar_Count++;
     j++;
     active_parm(CoVar_Count) = j;
