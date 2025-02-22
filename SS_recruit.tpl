@@ -268,7 +268,7 @@ FUNCTION void apply_recdev(prevariable& NewRecruits, const prevariable& Recr_vir
  /*  SS_Label_FUNCTION 44 Equil_Spawn_Recr_Fxn */
 //  SPAWN-RECR:   function  Equil_Spawn_Recr_Fxn
 FUNCTION dvar_vector Equil_Spawn_Recr_Fxn(const dvar_vector& SRparm,
-    const prevariable& SSB_virgin_use, const prevariable& Recr_virgin_use, const prevariable& SSBpR_virgin_adj, const prevariable& SSBpR_current)
+    const prevariable& SSB_virgin_use, const prevariable& Recr_virgin_use, const prevariable& SSBpR_virgin_use, const prevariable& SSBpR_current)
   {
   RETURN_ARRAYS_INCREMENT();
   dvar_vector Equil_Spawn_Recr_Calc(1, 2); // values to return 1 is B_equil, 2 is R_equil
@@ -316,7 +316,7 @@ FUNCTION dvar_vector Equil_Spawn_Recr_Fxn(const dvar_vector& SRparm,
 
   //  SS3 previously used alternative formulation: R = A*S/(B+S)
   //  converting SS3 to align with WHAM
-      alpha = 4.0 * steepness / (SSBpR_virgin_adj * (1. - steepness));
+      alpha = 4.0 * steepness / (SSBpR_virgin_use * (1. - steepness));
       beta = (5.0 * steepness - 1.0) / ((1 - steepness) * SSB_virgin_use);
       // " h " << steepness << " derive "  << alpha * SSBpR_virgin / (4. + alpha * SSBpR_virgin) << " " << endl;
       // " R0 " << Recr_virgin_use << " derive "  << 1. / beta * (alpha - 1./SSBpR_virgin) << endl;
