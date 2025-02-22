@@ -1858,7 +1858,7 @@ FUNCTION void write_bigoutput()
     {
       case 3: // Beverton-Holt with steepness
     {
-      alpha = 4.0 * steepness / (SSBpR_virgin_adj * (1. - steepness));
+      alpha = 4.0 * steepness / (SSBpR_virgin_4SRR * (1. - steepness));
       beta = (5.0 * steepness - 1.0) / ((1. - steepness) * SSB_virgin);
       SS2out << "Ln(R0): " << SR_parm(1) << endl << "R0: " << mfexp(SR_parm(1)) << endl;
       SS2out << "steepness: " << steepness << endl;
@@ -1870,8 +1870,8 @@ FUNCTION void write_bigoutput()
     {
       SS2out << "Ln(alpha): " << SR_parm(3) << " alpha " << mfexp(SR_parm(3)) << endl;
       SS2out << "Ln(beta): " << SR_parm(4) << " beta " << mfexp(SR_parm(4)) << endl;
-      SS2out << "ln(R0)_derived: " << log( 1. / beta * (alpha - (1. / SSBpR_virgin_adj))) << endl;  //  virgin R0
-      SS2out << "steepness_derived: " << alpha * SSBpR_virgin_adj / (4. + alpha * SSBpR_virgin_adj) << endl;  // steepness virgin
+      SS2out << "ln(R0)_derived: " << log( 1. / beta * (alpha - (1. / SSBpR_virgin_4SRR))) << endl;  //  virgin R0
+      SS2out << "steepness_derived: " << alpha * SSBpR_virgin_4SRR / (4. + alpha * SSBpR_virgin_4SRR) << endl;  // steepness virgin
       break;
     }
     case 8:
@@ -4741,10 +4741,12 @@ FUNCTION void SPR_profile()
     Wt_Age_beg(s) = Wt_Age_t(t, 0); //  used for smrybio
     Wt_Age_mid(s) = Wt_Age_t(t, -1);
     if (s == spawn_seas)
+    {
       fec = Wt_Age_t(t, -2);
-    report5 << " repro_output for spr/ypr: " << fec(1) << endl;
+      SS2out << " repro_output for spr/ypr: " << fec(1) << endl;}
   }
 
+  SS2out << "unfished values for SRR: SSB " << SSB_unf << " R " << Recr_unf << " SSBpR " << SSBpR_virgin_4SRR << endl;
   SS2out << "SPRloop Iter Bycatch Fmult F_std SSBpR YpR_dead YpR_dead*Recr YpR_ret*Recr Revenue Cost Profit SSB Recruits SSB/Bzero Tot_Catch ";
   for (f = 1; f <= Nfleet; f++)
   {
@@ -4902,7 +4904,7 @@ FUNCTION void SPR_profile()
         Do_Equil_Calc(equ_Recr);
         //  SPAWN-RECR:   calc equil spawn-recr in the SPR loop
         SSBpR_temp = SSB_equil;
-        Equ_SpawnRecr_Result = Equil_Spawn_Recr_Fxn(SR_parm_work, SSB_unf, Recr_unf, SSBpR_virgin_adj, SSBpR_temp); //  returns 2 element vector containing equilibrium biomass and recruitment at this SPR
+        Equ_SpawnRecr_Result = Equil_Spawn_Recr_Fxn(SR_parm_work, SSB_unf, Recr_unf, SSBpR_virgin_4SRR, SSBpR_temp); //  returns 2 element vector containing equilibrium biomass and recruitment at this SPR
         Btgt_prof = Equ_SpawnRecr_Result(1);
         Btgt_prof_rec = Equ_SpawnRecr_Result(2);
         if (Btgt_prof < 0.001 || Btgt_prof_rec < 0.001)
