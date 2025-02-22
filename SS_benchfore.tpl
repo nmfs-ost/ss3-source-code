@@ -4,6 +4,15 @@
 // SS_Label_file  # * <u>get_forecast()</u>  //  calculates forecast quantities, includes all popdy characteristics of the time series, writes forecast-report.sso
 // SS_Label_file  #
 
+// Terminology
+// SSB refers to spawning stock biomass, calculated from reproductive output at age (fec()) and numbers-at-age at spawn_month in spawn_seas
+// SSBpR refers to SSB per recruit calculated with equilibrium age composition in equil_calc
+// SPR refers to spawner potential ratio which is the ratio of SSBpR at some level of F to SSBpR with F = 0
+
+// SSBpR_virgin is calculated in popdyn using the start year biology
+// SSBpR_virgin_4SRR  is passed to equil_spawn_recr.  _adj means could be updated if SR_update_SSBpR0_timeseries == 1.
+// Also used to get alpha in equil_spawn_recr B-H
+
 FUNCTION void setup_Benchmark()  // and forecast
   {
   //  SS_Label_Info_7.5 #Get averages from selected years to use in forecasts
@@ -113,12 +122,7 @@ FUNCTION void setup_Benchmark()  // and forecast
         }
     }
     t = styr + (endyr + 1 - styr) * nseas + spawn_seas - 1;
-    fec = Wt_Age_t(t, -2);
-    //        for (g=1;g<=gmorph;g++)
-    //        if(use_morph(g)>0 && sx(g)==1)
-    //        {
-    //          fec(g)=save_sel_num(t,0,g);
-    //       }
+//    fec = Wt_Age_t(t, -2);  this will always be overwritten, so deleting
 
     if (Fcast_Loop_Control(3) == 3) //  using mean recr_dist from range of years
     {
@@ -536,7 +540,7 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
   dvariable last_F1;
   dvariable Closer;
   dvariable Vbio1_unfished;
-  dvariable SPR_unfished;
+  dvariable SSBpR_unf;
   dvariable Vbio_MSY;
   dvariable Vbio1_MSY;
   dvariable junk;
@@ -569,7 +573,6 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
   eq_yr = y;
   t_base = y + (y - styr) * nseas - 1;
   bio_t_base = styr + (bio_yr - styr) * nseas - 1;
-
   //  set the Hrate for bycatch fleets so not scaled with other fleets
   //  bycatch_F(f,s) is created here for use in forecast
   for (f = 1; f <= Nfleet; f++)
@@ -643,6 +646,8 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
       Make_AgeLength_Key(s, subseas);
 
       //  SPAWN-RECR:   call make_fecundity for benchmarks
+      //  this means that any calculation of SSB in benchmark will use the updated fec
+      //  but SSBpR0 will only use that updated fec if SR_update_SSBpR0_bmark == 1
       if (s == spawn_seas)
       {
         {
@@ -744,21 +749,46 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
       SR_parm_work(j) = temp / (Bmark_Yr(10) - Bmark_Yr(9) + 1.);
     }
   }
-  Fishon = 0;
-  Recr_unf = mfexp(SR_parm_work(1));
-  Do_Equil_Calc(Recr_unf);
-  SSB_unf = SSB_equil;
+  Equ_SpawnRecr_Result = Equil_Spawn_Recr_Fxn(SR_parm_work, SSB_virgin, Recr_virgin, SSBpR_virgin_4SRR, SSBpR_virgin); //  returns 2 element vector containing equilibrium biomass and recruitment at this SPR
+  report5 << endl << " virgin - SSB, R0, SPR0: " << SSB_virgin << " " << Recr_virgin << " "  << SSBpR_virgin << " " << SSBpR_virgin << " equil: " << Equ_SpawnRecr_Result << endl<<endl;
+  if (SR_update_SSBpR0_bmark == 0)  //  use virgin biology for the spawner-recruitment R0,h calculations in bmark
+  {
+    Recr_unf = Recr_virgin;
+    SSB_unf = SSB_virgin;
+    Fishon = 0;
+    Recr_unf = Recr_virgin;
+    Do_Equil_Calc(Recr_unf);  // this calcs SSB using benchmark biology
+    temp1 = SSB_equil;  // equilibrium unfished SSB using the benchmark averaged Recr_unf and benchmark averaged biology
+    temp2 = temp1 / Recr_unf;
+    Equ_SpawnRecr_Result = Equil_Spawn_Recr_Fxn(SR_parm_work, SSB_virgin, Recr_virgin, SSBpR_virgin_4SRR, temp2); //  returns 2 element vector containing equilibrium biomass and recruitment at this SPR
+    report5 << " virgSRR_&_bmarkbio - SSB, R0, SPR0: " << SSB_virgin << " " << Recr_virgin << " "  << SSBpR_virgin << " " << SSBpR_virgin_4SRR << " equil: " << Equ_SpawnRecr_Result << endl<<endl;
+  }
+  else  // use benchmark biology in the spawner-recruitment R0,h calculations
+  {
+    Fishon = 0;
+    Recr_unf = mfexp(SR_parm_work(1));
+    Do_Equil_Calc(Recr_unf);  // this calcs SSB using benchmark biology
+    SSB_unf = SSB_equil;  // equilibrium unfished SSB using the benchmark averaged Recr_unf and benchmark averaged biology
+    SSBpR_unf = SSB_unf / Recr_unf; //  this corresponds to the biology for benchmark average years, not the virgin SSB_virgin
+    SSBpR_virgin_4SRR = SSB_unf / Recr_unf;  //  update 
+    Equ_SpawnRecr_Result = Equil_Spawn_Recr_Fxn(SR_parm_work, SSB_unf, Recr_unf, SSBpR_virgin_4SRR, SSBpR_unf); //  returns 2 element vector containing equilibrium biomass and recruitment at this SPR
+    report5 << " bmarkSRR_&_bmarkbio - SSB, R0, SPR0: " << SSB_unf << " " << Recr_unf << " "  << SSBpR_unf << " " << SSBpR_virgin_4SRR << " equil: " << Equ_SpawnRecr_Result << endl<<endl;
+  }
+  if (show_MSY == 1)
+  {
+    report5 << "SR_parms for benchmark: " << SR_parm_work << endl
+            << "Benchmark biology averaged over years: " << Bmark_Yr(1) << " " << Bmark_Yr(2) << endl << endl <<
+            "input_SR_update_SSBpR0_rd: " << SR_update_SSBpR0_rd << ";  flag for updating SSBpR0_Bmark: " << SR_update_SSBpR0_bmark << endl;
+    Mgmt_quant(19) = Recr_unf;
+    Mgmt_quant(20) = SSB_unf;
+    Mgmt_quant(21) = SSB_unf;  //  placeholder to be replaced by SSB_HCR_infl
+    Mgmt_quant(22) = SSB_virgin;
+  }
   SR_parm_work(N_SRparm2 + 1) = SSB_unf;
-  if (show_MSY == 1)
-    report5 << "SR_parm for benchmark: " << SR_parm_work << endl
-            << "for years: " << Bmark_Yr(9) << " " << Bmark_Yr(10) << "  SSB_virgin was: " << SSB_virgin << endl;
-  if (show_MSY == 1)
-    report5 << "Repro_output_by_age_for_morph_1: " << fec(1) << endl;
   Mgmt_quant(1) = SSB_unf;
   Mgmt_quant(2) = totbio;
   Mgmt_quant(3) = smrybio;
   Mgmt_quant(4) = Recr_unf;
-
   // find Fspr             SS_Label_710
   {
     if (show_MSY == 1)
@@ -787,7 +817,7 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
     SPR_target100 = SPR_target * 100.;
 
     Do_Equil_Calc(equ_Recr);
-    SPR_unfished = SSB_unf / Recr_unf; //  this corresponds to the biology for benchmark average years, not the virgin SSB_virgin
+    SSBpR_unf = SSB_unf / Recr_unf; //  this corresponds to the biology for benchmark average years, not the virgin SSB_virgin
     Vbio1_unfished = smrybio; // gets value from equil_calc
     if (show_MSY == 1)
     {
@@ -833,7 +863,7 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
 
         Fishon = 1;
         Do_Equil_Calc(equ_Recr);
-        yld1(ii) = 100. * SSB_equil / SPR_unfished; //  spawning potential ratio
+        yld1(ii) = 100. * SSB_equil / SSBpR_unf; //  spawning potential ratio
       }
       SPR_actual = yld1(1); //  spawning potential ratio
 
@@ -902,7 +932,8 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
     }
 
     //  SPAWN-RECR:   calc equil spawn-recr in YPR; need to make this area-specific
-    Equ_SpawnRecr_Result = Equil_Spawn_Recr_Fxn(SR_parm_work(2), SR_parm_work(3), SSB_unf, Recr_unf, SSB_equil); //  returns 2 element vector containing equilibrium biomass and recruitment at this SPR
+    SSBpR_temp = SSB_equil;  //  based on most recent call to Do_Equil_Calc
+    Equ_SpawnRecr_Result = Equil_Spawn_Recr_Fxn(SR_parm_work, SSB_unf, Recr_unf, SSBpR_virgin_4SRR, SSBpR_temp); //  returns 2 element vector containing equilibrium biomass and recruitment at this SPR
 
     Bspr = Equ_SpawnRecr_Result(1);
     Bspr_rec = Equ_SpawnRecr_Result(2);
@@ -985,7 +1016,7 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
       last_F1 = F1(1);
       if (show_MSY == 1)
       {
-        report5 << j << " " << F1(1) << " " << equ_F_std << " " << SSB_equil / SPR_unfished << " " << YPR_opt << " " << F01_actual << " " << F01_second << " last F1 " << last_F1 << " Closer " << Closer << " delta " << (F01_origin * 0.1 - F01_actual) / (F01_second) << endl;
+        report5 << j << " " << F1(1) << " " << equ_F_std << " " << SSB_equil / SSBpR_unf << " " << YPR_opt << " " << F01_actual << " " << F01_second << " last F1 " << last_F1 << " Closer " << Closer << " delta " << (F01_origin * 0.1 - F01_actual) / (F01_second) << endl;
       }
       F1(1) += (F01_origin * 0.1 - F01_actual) / (F01_second);
       F1(1) = (1. - Closer) * F1(1) + Closer * last_F1;
@@ -1016,8 +1047,8 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
     Btgt_Fmult = F1(1);
     if (rundetail > 0 && mceval_counter == 0 && show_MSY == 1)
       echoinput << "Calculated F0.1: " << Btgt_Fmult << endl;
-    SPR_temp = SSB_equil;
-    Equ_SpawnRecr_Result = Equil_Spawn_Recr_Fxn(SR_parm_work(2), SR_parm_work(3), SSB_unf, Recr_unf, SPR_temp); //  returns 2 element vector containing equilibrium biomass and recruitment at this SPR
+    SSBpR_temp = SSB_equil;
+    Equ_SpawnRecr_Result = Equil_Spawn_Recr_Fxn(SR_parm_work, SSB_unf, Recr_unf, SSBpR_virgin_4SRR, SSBpR_temp); //  returns 2 element vector containing equilibrium biomass and recruitment at this SPR
     Btgt = Equ_SpawnRecr_Result(1);
     Btgt_Rec = Equ_SpawnRecr_Result(2);
     YPR_Btgt_enc = YPR_enc; //  total encountered yield per recruit
@@ -1028,7 +1059,7 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
     YPR_Btgt_revenue = (PricePerF * YPR_val_vec) * Btgt_Rec; //  vector*vector*scalar
     //    YPR_Btgt_revenue = Price*YPR_ret*Btgt_Rec;
     YPR_Btgt_profit = YPR_Btgt_revenue - Cost;
-    SPR_Btgt = SSB_equil / SPR_unfished;
+    SPR_Btgt = SSB_equil / SSBpR_unf;
     Vbio_Btgt = totbio;
     Vbio1_Btgt = smrybio;
     Mgmt_quant(7) = equ_F_std;
@@ -1043,9 +1074,12 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
     // ******************************************************
     if (show_MSY == 1)
     {
-      report5 << "#" << endl
-              << "Find_target_SSB/Bzero; where Bzero is for Bmark years, not Virgin" << endl
-              << "Iter Fmult ann_F SPR Catch SSB Recruits SSB/Bzero Tot_catch";
+      report5 << "#" << endl;
+  if (SR_update_SSBpR0_bmark == 0)  //  use virgin biology for the spawner-recruitment R0,h calculations
+    {report5 << "Find_target_SSB/Bzero; where Bzero is Virgin SSB:" << SSB_unf << " where SSBpR_unf = " << SSBpR_unf << endl;}
+  else
+    {report5 << "Find_target_SSB/Bzero; where Bzero is for Bmark biology and updated SPR0: " << SSB_unf << " where SSBpR_unf = " << SSBpR_unf << endl;}
+  report5  << "Iter Fmult ann_F SPR Catch SSB Recruits SSB/Bzero Tot_catch";
       for (p = 1; p <= pop; p++)
         for (gp = 1; gp <= N_GP; gp++)
         {
@@ -1071,8 +1105,7 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
       Nloops = 28;
     }
 
-    //    Btgttgt=BTGT_target*SSB_virgin;   //  this is relative to virgin, not to the average biology from benchmark years
-    Btgttgt = BTGT_target * SSB_unf; //  now relative to Bmark
+    Btgttgt = BTGT_target * SSB_unf;
 
     for (j = 0; j <= Nloops; j++) // loop find Btarget
     {
@@ -1107,11 +1140,11 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
           }
           //  else  Hrate for bycatch fleets already set
         }
-        Do_Equil_Calc(equ_Recr); //  where equ_Recr=1.0, so returned SSB_equil is a SSB/R,
-        SPR_Btgt = SSB_equil / SPR_unfished;
+        Do_Equil_Calc(equ_Recr); //  where equ_Recr=1.0, so returned SSB_equil is in units of SSB/R,
+        SSBpR_temp = SSB_equil;
+        SPR_Btgt = SSBpR_temp / SSBpR_unf;  //  where SSBpR_unf = SSB_unf / Recr_unf so units of SSB/R; so result is SPR_Btgt = (fished SSB/R) / (unfished SSB/R)
         //  SPAWN-RECR:   calc equil spawn-recr for Btarget calcs;  need to make area-specific
-        SPR_temp = SSB_equil;
-        Equ_SpawnRecr_Result = Equil_Spawn_Recr_Fxn(SR_parm_work(2), SR_parm_work(3), SSB_unf, Recr_unf, SPR_temp); //  returns 2 element vector containing equilibrium biomass and recruitment at this SPR
+        Equ_SpawnRecr_Result = Equil_Spawn_Recr_Fxn(SR_parm_work, SSB_unf, Recr_unf, SSBpR_virgin_4SRR, SSBpR_temp); //  returns 2 element vector containing equilibrium biomass and recruitment at this SPR
         yld1(ii) = Equ_SpawnRecr_Result(1);
       }
 
@@ -1151,6 +1184,7 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
             report5 << " " << SSB_equil_pop_gp(p, gp) * Equ_SpawnRecr_Result(2);
           }
         report5 << endl;
+//        " SSB_unf " << SSB_unf << " recr " <<Recr_unf<< " SSB_equil " << SSB_equil << " ssbpr_virginadj: " << SSBpR_virgin_4SRR << " Btgt " << Btgt << endl;
       }
     } // end search loop
 
@@ -1329,10 +1363,10 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
 
       Do_Equil_Calc(equ_Recr);
       //  SPAWN-RECR:   calc spawn-recr for MSY calcs;  need to make area-specific
-      MSY_SPR = SSB_equil / SPR_unfished;
-      SPR_temp = SSB_equil;
-      Equ_SpawnRecr_Result = Equil_Spawn_Recr_Fxn(SR_parm_work(2), SR_parm_work(3), SSB_unf, Recr_unf, SPR_temp); //  returns 2 element vector containing equilibrium biomass and recruitment at this SPR
-      Bmsy = Equ_SpawnRecr_Result(1);
+      MSY_SPR = SSB_equil / SSBpR_unf;
+      SSBpR_temp = SSB_equil;
+      Equ_SpawnRecr_Result = Equil_Spawn_Recr_Fxn(SR_parm_work, SSB_unf, Recr_unf, SSBpR_virgin_4SRR, SSBpR_temp); //  returns 2 element vector containing equilibrium biomass and recruitment at this SPR
+      Bmsy = Equ_SpawnRecr_Result(1);  //  with MSY set to SPR, not directly estimated
       Recr_msy = Equ_SpawnRecr_Result(2);
       yld1(1) = YPR_opt * Recr_msy;
       YPR_msy_enc = YPR_enc;
@@ -1358,12 +1392,13 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
         report5 << endl;
       }
 
-      Mgmt_quant(15) = yld1(1);
       Mgmt_quant(12) = Bmsy;
       Mgmt_quant(13) = MSY_SPR;
       Mgmt_quant(14) = equ_F_std;
+      Mgmt_quant(15) = yld1(1);
       Mgmt_quant(16) = YPR_ret * Recr_msy;
       Mgmt_quant(17) = Bmsy / SSB_unf;
+      Mgmt_quant(18) = Recr_msy;
       Vbio1_MSY = smrybio;
       Vbio_MSY = totbio;
     }
@@ -1422,10 +1457,10 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
           }
           Do_Equil_Calc(equ_Recr);
           //  SPAWN-RECR:   calc spawn-recr for MSY calcs;  need to make area-specific
-          MSY_SPR = SSB_equil / SPR_unfished;
-          SPR_temp = SSB_equil;
-          Equ_SpawnRecr_Result = Equil_Spawn_Recr_Fxn(SR_parm_work(2), SR_parm_work(3), SSB_unf, Recr_unf, SPR_temp); //  returns 2 element vector containing equilibrium biomass and recruitment at this SPR
-          Bmsy = Equ_SpawnRecr_Result(1);
+          MSY_SPR = SSB_equil / SSBpR_unf;
+          SSBpR_temp = SSB_equil;
+          Equ_SpawnRecr_Result = Equil_Spawn_Recr_Fxn(SR_parm_work, SSB_unf, Recr_unf, SSBpR_virgin_4SRR, SSBpR_temp); //  returns 2 element vector containing equilibrium biomass and recruitment at this SPR
+          Bmsy = Equ_SpawnRecr_Result(1);  //  MSY is directly estimated
           Recr_msy = Equ_SpawnRecr_Result(2);
           Profit = (PricePerF * YPR_val_vec) * Recr_msy - Cost;
           if (Do_MSY == 2) //  dead catch without excluded bycatch fleets
@@ -1496,12 +1531,14 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
       YPR_msy_profit = YPR_msy_revenue - Cost;
       MSY = yld1(1);
       MSY_Fmult = Fmult;
-      Mgmt_quant(15) = yld1(1);
       Mgmt_quant(12) = Bmsy;
       Mgmt_quant(13) = MSY_SPR;
       Mgmt_quant(14) = equ_F_std;
+      Mgmt_quant(15) = yld1(1);
       Mgmt_quant(16) = YPR_ret * Recr_msy;
       Mgmt_quant(17) = Bmsy / SSB_unf;
+      Mgmt_quant(18) = Recr_msy;
+
       Vbio1_MSY = smrybio;
       Vbio_MSY = totbio;
 
@@ -1715,10 +1752,10 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
           //  else  Hrate for bycatch fleets already set
         }
         Do_Equil_Calc(equ_Recr);
-        SPR_Btgt2 = SSB_equil / SPR_unfished;
+        SPR_Btgt2 = SSB_equil / SSBpR_unf;
         //  SPAWN-RECR:   calc equil spawn-recr for Btarget calcs;  need to make area-specific
-        SPR_temp = SSB_equil;
-        Equ_SpawnRecr_Result = Equil_Spawn_Recr_Fxn(SR_parm_work(2), SR_parm_work(3), SSB_unf, Recr_unf, SPR_temp); //  returns 2 element vector containing equilibrium biomass and recruitment at this SPR
+        SSBpR_temp = SSB_equil;
+        Equ_SpawnRecr_Result = Equil_Spawn_Recr_Fxn(SR_parm_work, SSB_unf, Recr_unf, SSBpR_virgin_4SRR, SSBpR_temp); //  returns 2 element vector containing equilibrium biomass and recruitment at this SPR
         yld1(ii) = Equ_SpawnRecr_Result(1);
       }
 
@@ -1787,9 +1824,9 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
     Btgt_Fmult2 = Fmult;
     if (rundetail > 0 && mceval_counter == 0 && show_MSY == 1)
       echoinput << "Calculated F_Blimit " << Btgt_Fmult2 << " " << Btgt2 / Blim_report << endl;
-    Mgmt_quant(18) = Btgt2;
-    Mgmt_quant(19) = equ_F_std;
-    Mgmt_quant(20) = sum(equ_catch_fleet(2)) * Equ_SpawnRecr_Result(2);
+    Mgmt_quant(N_STD_Mgmt_Quant - 2) = Btgt2;
+    Mgmt_quant(N_STD_Mgmt_Quant - 1) = equ_F_std;
+    Mgmt_quant(N_STD_Mgmt_Quant) = sum(equ_catch_fleet(2)) * Equ_SpawnRecr_Result(2);
   } //  end finding F for Blimit
 
   if (rundetail > 0 && mceval_counter == 0 && show_MSY == 1)
@@ -1826,7 +1863,7 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
     report5 << "ann_F " << Mgmt_quant(10) << endl;
     report5 << "Exploit(Catch_dead/B_smry) " << YPR_spr_dead / Vbio1_spr << endl;
     report5 << "Recruits " << Bspr_rec << endl;
-    report5 << "SPBio " << Bspr << " " << Bspr / Bspr_rec << endl;
+    report5 << "SSBio " << Bspr << " " << Bspr / Bspr_rec << endl;
     report5 << "Catch_encountered " << YPR_spr_enc * Bspr_rec << " " << YPR_spr_enc << endl;
     report5 << "Catch_dead " << YPR_spr_dead * Bspr_rec << " " << YPR_spr_dead << endl;
     report5 << "Catch_retain " << YPR_spr_ret * Bspr_rec << " " << YPR_spr_ret << endl;
@@ -1846,7 +1883,7 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
       report5 << "ann_F " << Mgmt_quant(7) << endl;
       report5 << "Exploit(Catch_dead/B_smry) " << YPR_Btgt_dead / Vbio1_Btgt << endl;
       report5 << "Recruits@F0.1 " << Btgt_Rec << endl;
-      report5 << "SPBio " << Btgt << " " << Btgt / Btgt_Rec << endl;
+      report5 << "SSBio " << Btgt << " " << Btgt / Btgt_Rec << endl;
       report5 << "Catch_encountered " << YPR_Btgt_enc * Btgt_Rec << " " << YPR_Btgt_enc << endl;
       report5 << "Catch_dead " << YPR_Btgt_dead * Btgt_Rec << " " << YPR_Btgt_dead << endl;
       report5 << "Catch_retain " << YPR_Btgt_ret * Btgt_Rec << " " << YPR_Btgt_ret << endl;
@@ -1866,7 +1903,7 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
       report5 << "ann_F " << Mgmt_quant(7) << endl;
       report5 << "Exploit(Catch_dead/B_smry) " << YPR_Btgt_dead / Vbio1_Btgt << endl;
       report5 << "Recruits " << Btgt_Rec << endl;
-      report5 << "SPBio " << Btgt << " " << Btgt / Btgt_Rec << endl;
+      report5 << "SSBio " << Btgt << " " << Btgt / Btgt_Rec << endl;
       report5 << "Catch_encountered " << YPR_Btgt_enc * Btgt_Rec << " " << YPR_Btgt_enc << endl;
       report5 << "Catch_dead " << YPR_Btgt_dead * Btgt_Rec << " " << YPR_Btgt_dead << endl;
       report5 << "Catch_retain " << YPR_Btgt_ret * Btgt_Rec << " " << YPR_Btgt_ret << endl;
@@ -1883,9 +1920,9 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
     report5 << "ann_F " << Mgmt_quant(14) << endl;
     report5 << "Exploit(Catch/Bsmry) " << MSY / (Vbio1_MSY * Recr_msy) << endl;
     report5 << "Recruits@MSY " << Recr_msy << endl;
-    report5 << "SPBmsy " << Bmsy << " " << Bmsy / Recr_msy << endl;
-    report5 << "SPBmsy/SPB_virgin " << Bmsy / SSB_virgin << endl;
-    report5 << "SPBmsy/SPB_unfished " << Bmsy / SSB_unf << endl;
+    report5 << "SSBmsy " << Bmsy << " " << Bmsy / Recr_msy << endl;
+    report5 << "SSBmsy/SSB_virgin " << Bmsy / SSB_virgin << endl;
+    report5 << "SSBmsy/SSB_unfished " << Bmsy / SSB_unf << endl;
     report5 << "MSY_for_optimize " << MSY << " " << MSY / Recr_msy << endl;
     report5 << "MSY_encountered " << YPR_msy_enc * Recr_msy << " " << YPR_msy_enc << endl;
     report5 << "MSY_dead " << YPR_msy_dead * Recr_msy << " " << YPR_msy_dead << endl;
@@ -1898,19 +1935,21 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
   }
   else if (show_MSY == 2) //  do brief output
   {
-    SS2out << SPR_actual / 100. << " " << SPR_Fmult << " " << Mgmt_quant(10) << " " << YPR_spr_dead / Vbio1_spr << " " << Bspr_rec << " "
+    report5 << SPR_actual / 100. << " " << SPR_Fmult << " " << Mgmt_quant(10) << " " << YPR_spr_dead / Vbio1_spr << " " << Bspr_rec << " "
            << Bspr << " " << YPR_spr_dead * Bspr_rec << " " << YPR_spr_ret * Bspr_rec
            << " " << Vbio1_spr * Bspr_rec << " # ";
 
-    SS2out << SPR_Btgt << " " << Btgt / SSB_unf << " " << Btgt_Fmult << " " << Mgmt_quant(7) << " " << YPR_Btgt_dead / Vbio1_Btgt << " " << Btgt_Rec << " "
+    report5 << SPR_Btgt << " " << Btgt / SSB_unf << " " << Btgt_Fmult << " " << Mgmt_quant(7) << " " << YPR_Btgt_dead / Vbio1_Btgt << " " << Btgt_Rec << " "
            << Btgt << " " << YPR_Btgt_dead * Btgt_Rec << " " << YPR_Btgt_ret * Btgt_Rec
            << " " << Vbio1_Btgt * Btgt_Rec << " # ";
 
-    SS2out << MSY_SPR << " " << Bmsy / SSB_unf << " " << MSY_Fmult << " " << Mgmt_quant(14) << " " << MSY / (Vbio1_MSY * Recr_msy) << " " << Recr_msy << " "
+    report5 << MSY_SPR << " " << Bmsy / SSB_unf << " " << MSY_Fmult << " " << Mgmt_quant(14) << " " << MSY / (Vbio1_MSY * Recr_msy) << " " << Recr_msy << " "
            << Bmsy << " " << MSY << " " << YPR_msy_dead * Recr_msy << " " << YPR_msy_ret * Recr_msy
            << " " << Vbio1_MSY * Recr_msy << " # " << endl;
   }
   write_bodywt = write_bodywt_save;
+    report5 << 0 << " y: " << y << " Repro_output_by_age_for_morph_1 end_bench: " << fec(1) << endl;
+//    report5 << "Repro_output_by_age_for_morph_1_after_benchmark: " << fec(1) << endl;
   } //  end benchmarks
 
 FUNCTION void Get_Forecast()
@@ -1922,8 +1961,6 @@ FUNCTION void Get_Forecast()
   dvariable OFL_catch;
   dvariable Fcast_Crash;
   dvariable totcatch;
-  dvariable R0_use;
-  dvariable SSB_use;
   dvar_matrix catage_w(1, gmorph, 0, nages);
   dvar_vector tempcatch(1, Nfleet);
   imatrix Do_F_tune(t_base, TimeMax_Fcast_std, 1, Nfleet); //  flag for doing F from catch
@@ -2135,23 +2172,32 @@ FUNCTION void Get_Forecast()
       }
     }
 
+    if (Fcast_Loop_Control(5) <= 1)
+    {HCR_anchor = SSB_unf;}
+    else if (Fcast_Loop_Control(5) ==2)
+    {HCR_anchor = SSB_virgin;}
+
     if (H4010_top_rd < 0.0)
+    {
+      H4010_top = Bmsy / HCR_anchor;  // convert to fraction
+      if (H4010_bot > 0.25)
       {
-        H4010_top = Bmsy / SSB_unf;
-        if (H4010_bot > 0.25)
-        {
-          warnstream << "control rule cutoff is large (" << H4010_bot << "); so may not be < calculated Bmsy/SSB_unf (" << H4010_top << ")";
-          write_message (WARN, 0);
-        }
+        warnstream << "control rule cutoff is large (" << H4010_bot << "); so may not be < calculated Bmsy/SSB_unf (" << H4010_top << ")";
+        write_message (WARN, 0);
       }
-      else
-      {
-        H4010_top = H4010_top_rd;
-      }
+    }
+    else
+    {
+      H4010_top = H4010_top_rd;
+    }
+
+    Mgmt_quant(21) = H4010_top * HCR_anchor;
     report5 << "#" << endl;
     report5 << "N_forecast_yrs: " << N_Fcast_Yrs << endl;
-    report5 << "OY_Control_Rule "
-            << " Inflection: " << H4010_top << " Intercept: " << H4010_bot << " Scale: " << H4010_scale_vec(endyr + 1) << "; ";
+    report5 << "OY_Control_Rule:  Inflection: " << H4010_top << " Intercept: " << H4010_bot << " Scale: " << H4010_scale_vec(endyr + 1) << endl
+            << "Control_rule_anchor_approach: " << Fcast_Loop_Control(5) << " HCR_anchor: " << HCR_anchor << endl;
+    report5 << "#" << endl;
+
     switch (HarvestPolicy)
     {
       case 0: // none
@@ -2181,8 +2227,7 @@ FUNCTION void Get_Forecast()
         break;
       }
     }
-    report5 << "#" << endl;
-  }
+    }
 
   int jloop;
   if (fishery_on_off == 1 || Do_Dyn_Bzero > 0)
@@ -2197,6 +2242,8 @@ FUNCTION void Get_Forecast()
 
   for (int Fcast_Loop1 = 1; Fcast_Loop1 <= jloop; Fcast_Loop1++) //   for different forecast conditions
   {
+//    report5 << Fcast_Loop1 << " y: " << 0 << " Repro_output_by_age_for_morph_1 top_forecast: " << fec(1) << endl;
+
     switch (Fcast_Loop1) //  select which ABC_loops to use
     {
       case 1: // do OFL only
@@ -2229,7 +2276,7 @@ FUNCTION void Get_Forecast()
       if (HarvestPolicy == 0)
         report5 << "pop year ABC_Loop season No_buffer bio-all bio-Smry SpawnBio Depletion recruit-0 ";
       if (HarvestPolicy <= 2)
-        report5 << "pop year ABC_Loop season Ramp&Buffer bio-all bio-Smry SpawnBio Depletion recruit-0 ";
+        report5 << "pop year ABC_Loop season Ramp&Buffer Buffer2 bio-all bio-Smry SpawnBio Depletion recruit-0 ";
       if (HarvestPolicy >= 3)
         report5 << "pop year ABC_Loop season Ramp bio-all bio-Smry SpawnBio Depletion recruit-0 ";
       for (int ff = 1; ff <= N_catchfleets(0); ff++)
@@ -2267,7 +2314,7 @@ FUNCTION void Get_Forecast()
           get_growth3(y, t, s, subseas); //  in case needed for Lorenzen M
           Make_AgeLength_Key(s, subseas); //  which also updates Wt_Age_beg, etc.
         }
-        if (s == spawn_seas)
+//        if (s == spawn_seas)  //  
         {
           if (WTage_rd == 1)
           {
@@ -2278,12 +2325,12 @@ FUNCTION void Get_Forecast()
           }
           else
           {
-            get_mat_fec();
+            get_mat_fec();  // does spawnseas and stores in wt_Age_t(t, -2)
           }
         }
       }
     }
-
+//    report5 << Fcast_Loop1 << " y: " << y << " updated_Repro_output_by_age_for_morph_1 endyr: " << fec(1) << endl;
     for (y = endyr + 1; y <= YrMax; y++)
     {
       t_base = styr + (y - styr) * nseas - 1;
@@ -2473,6 +2520,7 @@ FUNCTION void Get_Forecast()
                   Wt_Age_mid(s, g) = ALK(ALK_idx, g) * wt_len(s, GP(g)); // use for fisheries with no size selectivity
                 }
             }
+//    report5 << Fcast_Loop1 << " y: " << y << " updated_Repro_output_by_age_for_morph_1 annual: " << fec(1) << endl;
             Wt_Age_t(t, 0) = Wt_Age_beg(s);
             for (g = 1; g <= gmorph; g++)
               if (use_morph(g) > 0)
@@ -2554,23 +2602,24 @@ FUNCTION void Get_Forecast()
 
             if (Hermaphro_Option != 0) // get male biomass
             {
-              MaleSPB(y).initialize();
+              MaleSSB(y).initialize();
               for (p = 1; p <= pop; p++)
               {
                 for (g = 1; g <= gmorph; g++)
                   if (sx(g) == 2 && use_morph(g) > 0) //  male; all assumed to be mature
                   {
-                    MaleSPB(y, p, GP4(g)) += Wt_Age_t(t, 0, g) * natage(t, p, g); // accumulates SSB by area and by growthpattern
+                    MaleSSB(y, p, GP4(g)) += Wt_Age_t(t, 0, g) * natage(t, p, g); // accumulates SSB by area and by growthpattern
                   }
               }
-              if (Hermaphro_maleSPB > 0.0) // add MaleSPB to female SSB
+              if (Hermaphro_maleSSB > 0.0) // add MaleSSB to female SSB
               {
-                SSB_current += Hermaphro_maleSPB * sum(MaleSPB(y));
+                SSB_current += Hermaphro_maleSSB * sum(MaleSSB(y));
                 SSB_yr(y) = SSB_current;
               }
             }
             //  SPAWN-RECR:   get recruitment in forecast;  needs to be area-specific
-            if (SR_parm_timevary(1) == 0) //  R0 is not time-varying
+            // SR_fxn
+            if (SR_update_SSBpR0_timeseries == 0) //  R0 is not time-varying
             {
               R0_use = Recr_virgin;
               SSB_use = SSB_virgin;
@@ -2593,7 +2642,6 @@ FUNCTION void Get_Forecast()
               }
               SSB_use = SSB_equil;
             }
-
             Recruits = Spawn_Recr(SSB_use, R0_use, SSB_current); // calls to function Spawn_Recr
             if (SR_fxn != 7) apply_recdev(Recruits, R0_use); //  apply recruitment deviation
             if (Fcast_Loop1 < Fcast_Loop_Control(2)) //  use expected recruitment  this should include environ effect - CHECK THIS
@@ -2628,9 +2676,9 @@ FUNCTION void Get_Forecast()
           }
           else if (ABC_Loop == 2 && s == 1) // Calc the buffer in season 1, will use last year's spawnbio if multiseas and spawnseas !=1
           {
-            temp = SSB_unf;
-            join1 = 1. / (1. + mfexp(10. * (SSB_current - H4010_bot * temp)));
-            join2 = 1. / (1. + mfexp(10. * (SSB_current - H4010_top * temp)));
+
+            join1 = 1. / (1. + mfexp(10. * (SSB_current - H4010_bot * HCR_anchor)));
+            join2 = 1. / (1. + mfexp(10. * (SSB_current - H4010_top * HCR_anchor)));
 
             switch (HarvestPolicy)
             {
@@ -2643,8 +2691,8 @@ FUNCTION void Get_Forecast()
                 // ramp scales catch as f(B) and buffer (H4010_scale) applied to F
                 {
                   ABC_buffer(y) = H4010_scale_vec(y) *
-                          ((0.0001 * SSB_current / (H4010_bot * temp)) * (join1) // low
-                                      + (0.0001 + (1.0 - 0.0001) * (H4010_top * temp / SSB_current) * (SSB_current - H4010_bot * temp) / (H4010_top * temp - H4010_bot * temp)) * (1.0 - join1) // curve
+                          ((0.0001 * SSB_current / (H4010_bot * HCR_anchor)) * (join1) // low
+                                      + (0.0001 + (1.0 - 0.0001) * (H4010_top * HCR_anchor / SSB_current) * (SSB_current - H4010_bot * HCR_anchor) / (H4010_top * HCR_anchor - H4010_bot * HCR_anchor)) * (1.0 - join1) // curve
                                       ) *
                           (join2) // scale combo
                       +
@@ -2655,8 +2703,8 @@ FUNCTION void Get_Forecast()
                 // ramp scales F as f(B) and buffer (H4010_scale) applied to F
                 {
                   ABC_buffer(y) = H4010_scale_vec(y) *
-                          ((0.0001 * SSB_current / (H4010_bot * temp)) * (join1) // low
-                                      + (0.0001 + (1.0 - 0.0001) * (SSB_current - H4010_bot * temp) / (H4010_top * temp - H4010_bot * temp)) * (1.0 - join1) // curve
+                          ((0.0001 * SSB_current / (H4010_bot * HCR_anchor)) * (join1) // low
+                                      + (0.0001 + (1.0 - 0.0001) * (SSB_current - H4010_bot * HCR_anchor) / (H4010_top * HCR_anchor - H4010_bot * HCR_anchor)) * (1.0 - join1) // curve
                                       ) *
                           (join2) // scale combo
                       +
@@ -2667,8 +2715,8 @@ FUNCTION void Get_Forecast()
                 // ramp scales catch as f(B) and buffer (H4010_scale) applied to catch
                 {
                   ABC_buffer(y) = 1.0 *
-                          ((0.0001 * SSB_current / (H4010_bot * temp)) * (join1) // low
-                                      + (0.0001 + (1.0 - 0.0001) * (H4010_top * temp / SSB_current) * (SSB_current - H4010_bot * temp) / (H4010_top * temp - H4010_bot * temp)) * (1.0 - join1) // curve
+                          ((0.0001 * SSB_current / (H4010_bot * HCR_anchor)) * (join1) // low
+                                      + (0.0001 + (1.0 - 0.0001) * (H4010_top * HCR_anchor / SSB_current) * (SSB_current - H4010_bot * HCR_anchor) / (H4010_top * HCR_anchor - H4010_bot * HCR_anchor)) * (1.0 - join1) // curve
                                       ) *
                           (join2) // scale combo
                       +
@@ -2679,8 +2727,8 @@ FUNCTION void Get_Forecast()
                 // ramp scales F as f(B) and buffer (H4010_scale) applied to catch
                 {
                   ABC_buffer(y) = 1.0 *
-                          ((0.0001 * SSB_current / (H4010_bot * temp)) * (join1) // low
-                                      + (0.0001 + (1.0 - 0.0001) * (SSB_current - H4010_bot * temp) / (H4010_top * temp - H4010_bot * temp)) * (1.0 - join1) // curve
+                          ((0.0001 * SSB_current / (H4010_bot * HCR_anchor)) * (join1) // low
+                                      + (0.0001 + (1.0 - 0.0001) * (SSB_current - H4010_bot * HCR_anchor) / (H4010_top * HCR_anchor - H4010_bot * HCR_anchor)) * (1.0 - join1) // curve
                                       ) *
                           (join2) // scale combo
                       +
@@ -3100,7 +3148,7 @@ FUNCTION void Get_Forecast()
             }
             if (show_MSY == 1)
             {
-              report5 << p << " " << y << " " << ABC_Loop << " " << s << " " << ABC_buffer(y) << " " << totbio << " " << smrybio << " ";
+              report5 << p << " " << y << " " << ABC_Loop << " " << s << " " << ABC_buffer(y) << " " << H4010_scale_vec(y) << " " << totbio << " " << smrybio << " ";
               if (s == spawn_seas)
               {
                 report5 << SSB_current << " ";
@@ -3192,24 +3240,25 @@ FUNCTION void Get_Forecast()
 
             if (Hermaphro_Option != 0) // get male biomass
             {
-              MaleSPB(y).initialize();
+              MaleSSB(y).initialize();
               for (p = 1; p <= pop; p++)
               {
                 for (g = 1; g <= gmorph; g++)
                   if (sx(g) == 2 && use_morph(g) > 0) //  male; all assumed to be mature
                   {
-                    MaleSPB(y, p, GP4(g)) += Wt_Age_t(t, 0, g) * elem_prod(natage(t, p, g), mfexp(-Z_rate(t, p, g) * spawn_time_seas)); // accumulates SSB by area and by growthpattern
+                    MaleSSB(y, p, GP4(g)) += Wt_Age_t(t, 0, g) * elem_prod(natage(t, p, g), mfexp(-Z_rate(t, p, g) * spawn_time_seas)); // accumulates SSB by area and by growthpattern
                   }
               }
-              if (Hermaphro_maleSPB > 0.0) // add MaleSPB to female SSB
+              if (Hermaphro_maleSSB > 0.0) // add MaleSSB to female SSB
               {
-                SSB_current += Hermaphro_maleSPB * sum(MaleSPB(y));
+                SSB_current += Hermaphro_maleSSB * sum(MaleSSB(y));
                 SSB_yr(y) = SSB_current;
               }
             }
             //  SS_Label_Info_24.3.4.1 #Get recruitment from this spawning biomass
-            //  SPAWN-RECR:   calc recruitment in time series; need to make this area-specififc
-            if (SR_parm_timevary(1) == 0) //  R0 is not time-varying
+            //  SPAWN-RECR:   calc recruitment in time series; need to make this area-specific
+            // SR_fxn
+            if (SR_update_SSBpR0_timeseries == 0) //  R0 is not time-varying
             {
               R0_use = Recr_virgin;
               SSB_use = SSB_virgin;
@@ -3484,7 +3533,7 @@ FUNCTION void Get_Forecast()
             f = fish_fleet_area(0, ff);
             if (fleet_type(f) == 1)
             {
-              if (ABC_Loop == 2 && HarvestPolicy >= 3)
+              if (ABC_Loop == 2 && HarvestPolicy >= 3)  //  alternative ABC_buffer approach
               {
                 catch_fleet(t, f) *= H4010_scale_vec(y);
               }
@@ -3641,14 +3690,23 @@ FUNCTION void Get_Forecast()
         Smry_Table(y, 4) = Mgmt_quant(Fcast_catch_start + y - endyr);
         eq_yr = y;
         equ_Recr = Recr_unf;
-        bio_yr = endyr;
+        bio_yr = y;
         Fishon = 0;
         Do_Equil_Calc(equ_Recr); //  call function to do equilibrium calculation
 
         Smry_Table(y, 11) = SSB_equil;
         Smry_Table(y, 13) = GenTime;
+        if( SR_fxn == 10 )
+        {
+          temp = SSB_equil / equ_Recr;  //  current year's SSB/R with current biology at age
+          alpha = mfexp(SR_parm_work(3));
+          beta = mfexp(SR_parm_work(4));
+          SR_parm_byyr(y, 2) =  alpha * temp / (4. + alpha * temp);  //  implied steepness
+          SR_parm_byyr(y, 1) = log( 1. / beta * (alpha - (1. / temp)));  //  implied ln_R0
+        }
         Fishon = 1;
         Do_Equil_Calc(equ_Recr); //  call function to do equilibrium calculation
+//             warning <<y<<"  SSB_virgin: " << SSB_virgin<< "SSB_use: "<<SSB_use<<" SSB_unf: "<<SSB_unf<<" fec(15): "<<fec(1,15)<<endl;
         if (STD_Yr_Reverse_Ofish(y) > 0)
           SPR_std(STD_Yr_Reverse_Ofish(y)) = SSB_equil / Smry_Table(y, 11);
         Smry_Table(y, 9) = totbio;
