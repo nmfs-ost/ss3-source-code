@@ -754,12 +754,11 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
   if (SR_update_SSBpR0_bmark == 0)  //  use virgin biology for the spawner-recruitment R0,h calculations in bmark
   {
     Recr_unf = Recr_virgin;
-    SSB_unf = SSB_virgin;
     Fishon = 0;
-    Recr_unf = Recr_virgin;
-    Do_Equil_Calc(Recr_unf);  // this calcs SSB using benchmark biology
-    temp1 = SSB_equil;  // equilibrium unfished SSB using the benchmark averaged Recr_unf and benchmark averaged biology
-    temp2 = temp1 / Recr_unf;
+//    Recr_unf = Recr_virgin;
+    Do_Equil_Calc(Recr_virgin);  // this calcs SSB
+    SSB_unf = SSB_equil;  // equilibrium unfished SSB using the benchmark averaged Recr_unf and benchmark averaged biology
+    temp2 = SSB_unf / Recr_virgin;
     Equ_SpawnRecr_Result = Equil_Spawn_Recr_Fxn(SR_parm_work, SSB_virgin, Recr_virgin, SSBpR_virgin_4SRR, temp2); //  returns 2 element vector containing equilibrium biomass and recruitment at this SPR
     report5 << " virgSRR_&_bmarkbio - SSB, R0, SPR0: " << SSB_virgin << " " << Recr_virgin << " "  << SSBpR_virgin << " " << SSBpR_virgin_4SRR << " equil: " << Equ_SpawnRecr_Result << endl<<endl;
   }
@@ -779,9 +778,12 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
     report5 << "SR_parms for benchmark: " << SR_parm_work << endl
             << "Benchmark biology averaged over years: " << Bmark_Yr(1) << " " << Bmark_Yr(2) << endl << endl <<
             "input_SR_update_SSBpR0_rd: " << SR_update_SSBpR0_rd << ";  flag for updating SSBpR0_Bmark: " << SR_update_SSBpR0_bmark << endl;
-    Mgmt_quant(19) = Recr_unf;
-    Mgmt_quant(20) = SSB_unf;
-    Mgmt_quant(21) = SSB_unf;  //  placeholder to be replaced by SSB_HCR_infl
+    SSB_equil = Equ_SpawnRecr_Result(1);
+    dvariable R_equil = Equ_SpawnRecr_Result(2);
+    Mgmt_quant(19) = R_equil;
+    Do_Equil_Calc(R_equil);  // this calcs SSB using benchmark biology
+    Mgmt_quant(20) = SSB_equil;
+    Mgmt_quant(21) = SSB_equil;  //  placeholder to be replaced by SSB_HCR_infl
     Mgmt_quant(22) = SSB_virgin;
   }
   SR_parm_work(N_SRparm2 + 1) = SSB_unf;
