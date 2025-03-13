@@ -268,7 +268,7 @@ FUNCTION void apply_recdev(prevariable& NewRecruits, const prevariable& Recr_vir
  /*  SS_Label_FUNCTION 44 Equil_Spawn_Recr_Fxn */
 //  SPAWN-RECR:   function  Equil_Spawn_Recr_Fxn
 FUNCTION dvar_vector Equil_Spawn_Recr_Fxn(const dvar_vector& SRparm,
-    const prevariable& SSB_virgin_use, const prevariable& Recr_virgin_use, const prevariable& SSBpR_virgin_use, const prevariable& SSBpR_current)
+    const prevariable& SSB_virgin_use, const prevariable& Recr_virgin_use, const prevariable& SSBpR_current)
   {
   RETURN_ARRAYS_INCREMENT();
   dvar_vector Equil_Spawn_Recr_Calc(1, 2); // values to return 1 is B_equil, 2 is R_equil
@@ -282,7 +282,9 @@ FUNCTION dvar_vector Equil_Spawn_Recr_Fxn(const dvar_vector& SRparm,
   dvariable SRZ_0;
   dvariable srz_min;
   dvariable SRZ_surv;
+  dvariable SSBpR_virgin_use;
 
+  SSBpR_virgin_use = SSB_virgin_use / Recr_virgin_use;  //  local instance of SSBpR_virgin_4_SRR
   steepness = SRparm(2); //  common usage but some different
   //  SS_Label_44.1  calc equilibrium SpawnBio and Recruitment from input SSBpR_current, which is spawning biomass per recruit at some given F level
   switch (SR_fxn)
