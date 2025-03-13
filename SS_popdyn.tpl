@@ -342,9 +342,8 @@ FUNCTION void get_initial_conditions()
   if (recr_dist_area == 1 || pop == 1) //  do global spawn_recruitment calculations
   {
     equ_Recr = 1.0;
-    Do_Equil_Calc(equ_Recr); //  call function to do equilibrium calculation.  Returns SPR because R = 1.0
+    Do_Equil_Calc(equ_Recr); //  call function to do per recruit calculation.  Returns SPR because R = 1.0
     SSBpR_virgin = SSB_equil; //  spawners per recruit.  Needed for Sr_fxn = 10
-    SSBpR_virgin_4SRR = SSB_equil;  //  also needed for Sr_fxn 10.  Will get revised in benchmark to use averaged biology if requested.
     if(SR_fxn == 10)  // B-H with a,b
     {
   //  WHAM based on R = A*S/(1+B*S)
@@ -355,8 +354,8 @@ FUNCTION void get_initial_conditions()
 
       alpha = mfexp(SR_parm(3));
       beta = mfexp(SR_parm(4));
-      steepness = alpha * SSBpR_virgin_4SRR / (4. + alpha * SSBpR_virgin_4SRR);
-      Recr_virgin = 1. / beta * (alpha - (1. / SSBpR_virgin_4SRR));
+      steepness = alpha * SSBpR_virgin / (4. + alpha * SSBpR_virgin);
+      Recr_virgin = 1. / beta * (alpha - (1. / SSBpR_virgin));
 //      warning << " before AB_calcs " << "parm " << SR_parm(1) << " calc " << log(Recr_virgin) << endl;
       SR_parm(1) = log(Recr_virgin);
       SR_parm(2) = steepness;
@@ -378,9 +377,8 @@ FUNCTION void get_initial_conditions()
     exp_rec(eq_yr, 2) = Recr_virgin;
     exp_rec(eq_yr, 3) = Recr_virgin;
     exp_rec(eq_yr, 4) = Recr_virgin;
-    Do_Equil_Calc(equ_Recr); //  call function to do equilibrium calculation
+    Do_Equil_Calc(equ_Recr); //  call function to do per recruit calculation
     SSB_virgin = SSB_equil;
-//    SSBpR_virgin = SSB_equil / Recr_virgin; //  spawners per recruit already calculated
     if(Do_Benchmark==0)  // assign values that would be created in benchmark section
     {
       SSB_unf = SSB_virgin;
@@ -536,7 +534,7 @@ FUNCTION void get_initial_conditions()
     SSBpR_temp = SSB_equil / equ_Recr; //  spawners per recruit at initial F
     //  get equilibrium SSB and recruitment from SSBpR_temp, Recr_virgin and virgin steepness
     //  this is the initial year, so no time-vary effects available, so uses _virgin quantities for spawner-recruitment
-    Equ_SpawnRecr_Result = Equil_Spawn_Recr_Fxn(SR_parm_work, SSB_virgin, Recr_virgin, SSBpR_virgin_4SRR, SSBpR_temp); //  returns 2 element vector containing equilibrium biomass and recruitment at this SPR
+    Equ_SpawnRecr_Result = Equil_Spawn_Recr_Fxn(SR_parm_work, SSB_virgin, Recr_virgin, SSBpR_temp); //  returns 2 element vector containing equilibrium biomass and recruitment at this SPR
     R1_exp = Equ_SpawnRecr_Result(2); //  set the expected recruitment equal to this equilibrium
     exp_rec(eq_yr, 1) = R1_exp;
 
@@ -1038,9 +1036,8 @@ FUNCTION void get_time_series()
           Fishon = 0;
           eq_yr = y;
           bio_yr = y;
-          Do_Equil_Calc(R0_use); //  call function to do equilibrium calculation with current year's biology and adjusted R0
+          Do_Equil_Calc(R0_use); //  call function to do per recruit calculation with current year's biology and adjusted R0
           SSB_use = SSB_equil;
-          SSBpR_virgin_4SRR = SSB_use / R0_use;  //  update 
           if (fishery_on_off == 1)
           {
             Fishon = 1;
@@ -1498,9 +1495,8 @@ FUNCTION void get_time_series()
           Fishon = 0;
           eq_yr = y;
           bio_yr = y;
-          Do_Equil_Calc(R0_use); //  call function to do equilibrium calculation
+          Do_Equil_Calc(R0_use); //  call function to do per recruit calculation
           SSB_use = SSB_equil;
-          SSBpR_virgin_4SRR = SSB_use / R0_use;  //  update 
           if (fishery_on_off == 1)
           {
             Fishon = 1;
@@ -1791,7 +1787,7 @@ FUNCTION void get_time_series()
       equ_Recr = Recr_virgin;
       bio_yr = y;
       Fishon = 0;
-      Do_Equil_Calc(equ_Recr); //  call function to do equilibrium calculation with current year's biology
+      Do_Equil_Calc(equ_Recr); //  call function to do per recruit calculation with current year's biology
       Smry_Table(y, 11) = SSB_equil;
       Smry_Table(y, 13) = GenTime;
       if( SR_fxn == 10 )
@@ -1803,7 +1799,7 @@ FUNCTION void get_time_series()
         SR_parm_byyr(y, 1) = log( 1. / beta * (alpha - (1. / temp)));  //  implied ln_R0
       }
       Fishon = 1;
-      Do_Equil_Calc(equ_Recr); //  call function to do equilibrium calculation with current year's biology and F
+      Do_Equil_Calc(equ_Recr); //  call function to do per recruit calculation with current year's biology and F
       if (STD_Yr_Reverse_Ofish(y) > 0)
       {
         SPR_std(STD_Yr_Reverse_Ofish(y)) = SSB_equil / Smry_Table(y, 11);
@@ -1834,6 +1830,7 @@ FUNCTION void get_time_series()
 
 //********************************************************************
  /*  SS_Label_FUNCTION 30 Do_Equil_Calc */
+ // This function does per recruit calculations, so produces an age composition that is in equilibrium with M+F
 FUNCTION void Do_Equil_Calc(const prevariable& equ_Recr)
   {
   int t_base;
