@@ -1957,9 +1957,11 @@
 //  3 option:  do not update SSBpR0 (do keep start year SPR0), even if R0 or h is set to have time-varying property
   int SR_update_SSBpR0_bmark
   int SR_update_SSBpR0_timeseries
+  int bench_update_equil
  LOCAL_CALCS
   SR_update_SSBpR0_bmark = 0;
   SR_update_SSBpR0_timeseries = 0;
+  bench_update_equil = 0;
   echoinput<<SR_update_SSBpR0_rd<<"  #  controls effect of time-varying biology on spawner-recruitment updating" << endl;
  END_CALCS
 
@@ -2180,14 +2182,17 @@
   case 1:
     SR_update_SSBpR0_bmark = 1 * SR_update_parm;  //  but conditional on SRparm_timevary, so update value there
     SR_update_SSBpR0_timeseries = 1 * SR_update_parm;
+    bench_update_equil = 1;
     break;
   case 2:
     SR_update_SSBpR0_bmark = 1;
     SR_update_SSBpR0_timeseries = 0;
+    bench_update_equil = 0;
     break;
   case 3:
     SR_update_SSBpR0_bmark = 0;
     SR_update_SSBpR0_timeseries = 0;
+    bench_update_equil = 1;
     break;
   }
   echoinput << "SRupdate " << SR_update_parm << " use " << SR_update_SSBpR0_bmark << " rd " << SR_update_SSBpR0_rd<< endl;
