@@ -1564,6 +1564,7 @@ FUNCTION void write_nucontrol()
   NuStart << double(mcmc_output_detail) + MCMC_bump << " # MCMC output detail: integer part (0=default; 1=adds obj func components; 2= +write_report_for_each_mceval); and decimal part (added to SR_LN(R0) on first call to mcmc)" << endl;
   NuStart << ALK_tolerance << " # ALK tolerance ***disabled in code" << endl;
   NuStart << irand_seed_rd << " # random number seed for bootstrap data (-1 to use long(time) as seed): # " << irand_seed << endl;
+  NuStart << TV_bio_compat << " # Compatibility flag for legacy (0) vs improved (1) impact of timevary biology on benchmark SRR calcs >=3.30.24" << endl;
   NuStart << "3.30 # check value for end of file and for version control" << endl;
   NuStart.close();
 
