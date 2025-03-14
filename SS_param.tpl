@@ -159,13 +159,16 @@ PARAMETER_SECTION
   3darray recr_dist_endyr(1,N_GP*gender,1,N_settle_timings,1,pop);
 !!//  SS_Label_Info_5.1.2 #Create SR_parm vector, recruitment vectors
   init_bounded_number_vector SR_parm(1,N_SRparm3,SR_parm_LO,SR_parm_HI,SR_parm_PH)
-  matrix SR_parm_byyr(styr-3,YrMax,1,N_SRparm2+1)  //  R0, steepness, parm3, sigmar, rec_dev_offset, R1, rho, SPB   Time_vary implementation of spawner-recruitment
+  matrix SR_parm_byyr(styr-3,YrMax,1,N_SRparm2+1)  //  R0, steepness, parm3, sigmar, rec_dev_offset, R1, rho, SSB   Time_vary implementation of spawner-recruitment
   vector SR_parm_virg(1,N_SRparm2+1)
   vector SR_parm_work(1,N_SRparm2+1)
   number two_sigmaRsq;
   number half_sigmaRsq;
   number sigmaR;
-  number SPR_virgin;
+  number SSBpR_virgin;
+  number SSB0_4_SRR;
+  number R0_4_SRR;
+  number SSBpR_virgin_4_SRR;  // value of SSB/R used in SRR
   number regime_change;
   number rho;
   number dirichlet_Parm;
@@ -234,21 +237,25 @@ PARAMETER_SECTION
   init_bounded_vector Fcast_recruitments(recdev_end+1,s,recdev_LO,recdev_HI,Fcast_recr_PH2)
   init_bounded_vector Fcast_impl_error(endyr+1,j,-1,1,k)
   vector ABC_buffer(endyr+1,YrMax);
+  number HCR_anchor  //  basis (denominator) for inflection in control rule.  Select virgin SSB or benchmark SSB
 
 //  SPAWN-RECR:   define some spawning biomass and recruitment entities
   number SSB_virgin
   number Recr_virgin
   number SSB_vir_LH
 
-  number SSB_unf
+  number SSB_unf //  SSB unfished, based on benchmark biology
   number Recr_unf
+  number SSB_use
+  number R0_use;  // annually updated value if SR_update_SSBpR0_timeseries == 1
 
+  number SSB_deplete //  SSB that will be used as denominator for depletion calculations and as basis for control rule inflection
   number SSB_current;                            // Spawning biomass
   number SSB_equil;
 
   number SPR_trial
   number SPR_actual;
-  number SPR_temp;  //  used to pass quantity into Equil_SpawnRecr
+  number SSBpR_temp;  //  SSB per Recruit; used to pass quantity into Equil_SpawnRecr
   number Recruits;                            // Age0 Recruits
   number equ_mat_bio
   number equ_mat_num
@@ -321,7 +328,7 @@ PARAMETER_SECTION
 !!k=0;
 !!if(Hermaphro_Option!=0) k=1;
 
-  3darray MaleSPB(styr-3,YrMax*k,1,pop,1,N_GP)         //Male Spawning biomass
+  3darray MaleSSB(styr-3,YrMax*k,1,pop,1,N_GP)         //Male Spawning biomass
 
   matrix SSB_equil_pop_gp(1,pop,1,N_GP);
   matrix MaleSSB_equil_pop_gp(1,pop,1,N_GP);
@@ -416,6 +423,7 @@ PARAMETER_SECTION
    //  note that bycatch_F(1,Nfleet,1,nseas) has similar role  
    number alpha;
    number beta;
+   number steepness;
    number GenTime;
    number Yield;
    number Adj4010;
