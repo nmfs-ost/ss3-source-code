@@ -247,7 +247,7 @@ PARAMETER_SECTION
   number SSB_unf //  SSB unfished, based on benchmark biology
   number Recr_unf
   number SSB_use
-  number R0_use;  // annually updated value if SR_update_SSBpR0_timeseries == 1
+  number R0_use
 
   number SSB_deplete //  SSB that will be used as denominator for depletion calculations and as basis for control rule inflection
   number SSB_current;                            // Spawning biomass

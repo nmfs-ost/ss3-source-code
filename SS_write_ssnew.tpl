@@ -1564,7 +1564,7 @@ FUNCTION void write_nucontrol()
   NuStart << double(mcmc_output_detail) + MCMC_bump << " # MCMC output detail: integer part (0=default; 1=adds obj func components; 2= +write_report_for_each_mceval); and decimal part (added to SR_LN(R0) on first call to mcmc)" << endl;
   NuStart << ALK_tolerance << " # ALK tolerance ***disabled in code" << endl;
   NuStart << irand_seed_rd << " # random number seed for bootstrap data (-1 to use long(time) as seed): # " << irand_seed << endl;
-  NuStart << TV_bio_compat << " # Compatibility flag for legacy (0) vs improved (1) impact of timevary biology on benchmark SRR calcs >=3.30.24" << endl;
+  NuStart << timevary_bio_4SRR << " # Compatibility flag for legacy (0) vs improved (1) impact of timevary biology on benchmark SRR calcs >=3.30.24" << endl;
   NuStart << "3.30 # check value for end of file and for version control" << endl;
   NuStart.close();
 
@@ -2138,11 +2138,7 @@ FUNCTION void write_nucontrol()
   report4 << "#" << endl;
   report4 << SR_fxn << " #_Spawner-Recruitment; Options: 1=NA; 2=Ricker; 3=std_B-H; 4=SCAA; 5=Hockey; 6=B-H_flattop; 7=survival_3Parm; 8=Shepherd_3Parm; 9=RickerPower_3parm" << endl;
   report4 << init_equ_steepness << "  # 0/1 to use steepness in initial equ recruitment calculation" << endl;
-  report4 << SR_update_SSBpR0_rd <<  "  #  SR_update_SSBpR0" << endl <<
-  "#  0 - OK, but only if no timevary biology or SR parm" << endl <<
-  "#  1 - best: update SSBpR0 for benchmark and for time series only if SRparm R0 or h (not regime) is set to have time-varying property" << endl <<
-  "#  2 - incorrect (old, incorrect SS3 approach):  always update SSBpR0 for benchmark's use of spawner-recruitment, but only for the time series if there is a timevary SR parm" << endl <<
-  "#  3 - option:  do not update SSBpR0 (do keep start year SSBpR0), even if R0 or h is set to have time-varying property" << endl << "#" << endl;
+  report4 << " 0 #  not_used" << endl;
   report4 << "#_          LO            HI          INIT         PRIOR         PR_SD       PR_type      PHASE    env-var    use_dev   dev_mnyr   dev_mxyr     dev_PH      Block    Blk_Fxn #  parm_name" << endl;
   report4.unsetf(std::ios_base::fixed);
   report4.unsetf(std::ios_base::floatfield);

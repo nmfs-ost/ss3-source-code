@@ -382,10 +382,10 @@ FUNCTION void get_initial_conditions()
     if(Do_Benchmark==0)  // assign values that would be created in benchmark section
     {
       SSB_unf = SSB_virgin;
-      Mgmt_quant(1) = SSB_unf;  //  can be overwritten in benchmark by updated SSB_unf
-      Recr_unf = Recr_virgin;
-      Mgmt_quant(2) = totbio;  //  from equil calcs
-      Mgmt_quant(3) = smrybio;  //  from equil calcs
+      Mgmt_quant(1) = SSB_unf; //  will be overwritten in benchmark
+      Recr_unf = Recr_virgin;  //  will be overwritten in benchmark
+      Mgmt_quant(2) = totbio;  //  from Do_Equil_Calc
+      Mgmt_quant(3) = smrybio;  //  from Do_Equil_Calc
       Mgmt_quant(4) = Recr_virgin;
     }
     Smry_Table(styr - 2, 1) = totbio; //  from equil calcs
@@ -1024,7 +1024,7 @@ FUNCTION void get_time_series()
         //  SS_Label_Info_24.2.3 #Get the total recruitment produced by this spawning biomass at the beginning of the season
         //  SPAWN-RECR:   calc recruitment in time series; need to make this area-specific
         //  SR_Fxn  relevant keyword
-        if (SR_update_SSBpR0_timeseries == 0) //  SRparm are not time-varying
+        if (timevary_parm_start_SR == 0) //  SRparm are not time-varying
         {
           R0_use = Recr_virgin;
           SSB_use = SSB_virgin;
@@ -1038,6 +1038,7 @@ FUNCTION void get_time_series()
           bio_yr = y;
           Do_Equil_Calc(R0_use); //  call function to do per recruit calculation with current year's biology and adjusted R0
           SSB_use = SSB_equil;
+          //  should call equil_spawn_recr_fxn here to get updated equilibrium with the new SSB/R
           if (fishery_on_off == 1)
           {
             Fishon = 1;
@@ -1484,7 +1485,7 @@ FUNCTION void get_time_series()
         //  SS_Label_Info_24.3.4.1 #Get recruitment from this spawning biomass at some time during the season
         //  SPAWN-RECR:   calc recruitment in time series; need to make this area-specific
         //  SR_fxn
-        if (SR_update_SSBpR0_timeseries == 0) //  SR parms are not time-varying
+        if (timevary_parm_start_SR == 0) //  SR parms are not time-varying
         {
           R0_use = Recr_virgin;
           SSB_use = SSB_virgin;
@@ -1497,6 +1498,7 @@ FUNCTION void get_time_series()
           bio_yr = y;
           Do_Equil_Calc(R0_use); //  call function to do per recruit calculation
           SSB_use = SSB_equil;
+          //  should call equil_spawn_recr_fxn here to get updated equilibrium with the new SSB/R
           if (fishery_on_off == 1)
           {
             Fishon = 1;
