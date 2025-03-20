@@ -4747,7 +4747,8 @@ FUNCTION void SPR_profile()
   SS2out << " stored - SSB, R0, SPR0: " << SSB_unf << " " << Recr_unf << " "  << SSBpR_virgin << " " << SSBpR_virgin_4_SRR<<endl;
 
 //  do not recalculate here so force using values from benchmark
-  if (SR_update_SSBpR0_bmark == 0)  //  use virgin biology for the spawner-recruitment R0,h calculations in bmark
+ /*
+  if (timevary_bio_4SRR == 0)  //  use virgin biology for the spawner-recruitment R0,h calculations in bmark
   {
     Recr_unf = Recr_virgin;
     SSB_unf = SSB_virgin;
@@ -4769,7 +4770,9 @@ FUNCTION void SPR_profile()
     Equ_SpawnRecr_Result = Equil_Spawn_Recr_Fxn(SR_parm_work, SSB0_4_SRR, R0_4_SRR, temp2); //  returns 2 element vector containing equilibrium biomass and recruitment at this SPR
     SS2out << " bmarkSRR_&_bmarkbio - SSB, R0, SPR0: " << SSB_unf << " " << Recr_unf << " "  << temp2 << " " << SSBpR_virgin_4_SRR << " equil: " << Equ_SpawnRecr_Result << endl<<endl;
   }
-  SS2out << "unfished values for SRR: SSB " << SSB_unf << " R " << Recr_unf << " SSBpR " << SSBpR_virgin_4_SRR << endl;
+ */
+  // Equ_SpawnRecr_Result = Equil_Spawn_Recr_Fxn(SR_parm_work, SSB0_4_SRR, R0_4_SRR, SSBpR_temp); 
+  SS2out << "unfished values for SRR: SSB " << SSB0_4_SRR << " R " << R0_4_SRR << " SSBpR " << "  SSBpR: " << SSB0_4_SRR / R0_4_SRR << endl;
   SS2out << "SPRloop Iter Bycatch Fmult F_std SSBpR YpR_dead YpR_dead*Recr YpR_ret*Recr Revenue Cost Profit SSB Recruits SSB/Bzero Tot_Catch ";
   for (f = 1; f <= Nfleet; f++)
   {
