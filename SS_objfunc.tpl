@@ -1187,21 +1187,25 @@ FUNCTION void Process_STDquant()
     case 1:
     {
       depletion /= (depletion_level * SSB_virgin);
+      Mgmt_quant(19) = SSB_virgin;
       break;
     }
     case 2:
     {
       depletion /= (depletion_level * Bmsy);
+      Mgmt_quant(19) = Bmsy;
       break;
     }
     case 3:
     {
       depletion /= (depletion_level * SSB_yr(styr));
+      Mgmt_quant(19) = SSB_yr(styr);
       break;
     }
     case 4:
     {
       depletion /= (depletion_level * SSB_yr(endyr));
+      Mgmt_quant(19) = SSB_yr(endyr);
       break;
     }
     case 5:  //  dynamic Bzero
@@ -1213,6 +1217,13 @@ FUNCTION void Process_STDquant()
         depletion(STD_Yr_Reverse_Dep(y)) /= ( depletion_level * Extra_Std(Do_Dyn_Bzero + y - (styr - 2)));
 //        warning<<depletion(STD_Yr_Reverse_Dep(y))<<endl;
       }
+      Mgmt_quant(19) = 1.;
+      break;
+    }
+    case 6:  // depletion based on benchmark unfished SSB
+    {
+      depletion /= (depletion_level * SSB0_4_SRR);
+      Mgmt_quant(19) = SSB0_4_SRR;
       break;
     }
   }

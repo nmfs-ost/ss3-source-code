@@ -6635,19 +6635,19 @@
     j++;
     active_parm(CoVar_Count) = j;
 // add quantities needed when time-vary life history is used; but report here for all cases; elements 18-21 of mgmt_quant
-    ParmLabel += "Recr_MSY_bmarkbio" + CRLF(1);
+    ParmLabel += "18.Recr_MSY_bmarkbio" + CRLF(1);
     CoVar_Count++;
     j++;
     active_parm(CoVar_Count) = j;
-    ParmLabel += "Recr_unfished_bmarkbio" + CRLF(1);
+    ParmLabel += "19.Depletion_denom" + CRLF(1);
     CoVar_Count++;
     j++;
     active_parm(CoVar_Count) = j;
-    ParmLabel += "SSB_unfished_bmarkbio" + CRLF(1);
+    ParmLabel += "20.HCR_anchor" + CRLF(1);
     CoVar_Count++;
     j++;
     active_parm(CoVar_Count) = j;
-    ParmLabel += "SSB_HCR_infl" + CRLF(1);
+    ParmLabel += "ignore" + CRLF(1);
     CoVar_Count++;
     j++;
     active_parm(CoVar_Count) = j;
