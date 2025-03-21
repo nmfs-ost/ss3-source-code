@@ -1148,11 +1148,11 @@
   int Hermaphro_seas;
   int Hermaphro_firstage;
   number Hermaphro_seas_rd;
-  number Hermaphro_maleSPB;
+  number Hermaphro_maleSSB;
  LOCAL_CALCS
   // clang-format on
   Hermaphro_seas = 0;
-  Hermaphro_maleSPB = 0.0;
+  Hermaphro_maleSSB = 0.0;
   Hermaphro_firstage = 0;
   MGparm_Hermaphro = 0;
   
@@ -1175,8 +1175,8 @@
     //  so  2.3 will do switch in season 2 beginning with age 3.
     echoinput << Hermaphro_seas << "  Hermaphro_season (-1 means all seasons)" << endl;
     echoinput << Hermaphro_firstage << "  Hermaphro_firstage (from decimal part of seas input; note that firstage can only be a single digit, so 9 is max" << endl;
-    *(ad_comm::global_datafile) >> Hermaphro_maleSPB; // read as a fraction (0.0 to 1.0) of the male SSB added into the total SSB
-    echoinput << Hermaphro_maleSPB << "  Hermaphro_maleSPB " << endl;
+    *(ad_comm::global_datafile) >> Hermaphro_maleSSB; // read as a fraction (0.0 to 1.0) of the male SSB added into the total SSB
+    echoinput << Hermaphro_maleSSB << "  Hermaphro_maleSSB " << endl;
   }
   // clang-format off
  END_CALCS
@@ -1656,6 +1656,7 @@
 
 !!//  SS_Label_Info_4.5.4 #Set up time-varying parameters for MG parms
   int timevary_used;
+  int timevary_MG_firstyr;
   int timevary_parm_cnt_MG;
   int timevary_parm_start_MG;
 
@@ -1704,6 +1705,7 @@
   timevary_parm_start_MG = 0;
   timevary_parm_cnt_MG = 0;
   timevary_used = 0;
+  timevary_MG_firstyr = YrMax;
   MGparm_timevary.initialize();
   ivector block_design_null(1, 1);
   block_design_null.initialize();
@@ -1804,6 +1806,7 @@
       {
         MG_active(f) = 1;
         timevary_MG(y, 0) = 1; // tracks active status for all MG types
+        if(timevary_MG_firstyr == YrMax) timevary_MG_firstyr = y;  // save for reporting in MSY and spawn_recruit output
       }
     }
     //  timevary growth or maturity and Maunder M refers to that maturity
@@ -1937,13 +1940,15 @@
 !!//  SS_Label_Info_4.6 #Read setup for Spawner-Recruitment parameters
   //  SPAWN-RECR: read setup for SR parameters:  LO, HI, INIT, PRIOR, PRtype, CV, PHASE
   init_int SR_fxn
-!!echoinput<<SR_fxn<<" #_SR_function: 1=NA; 2=Ricker(2 parms); 3=BevHolt(2); 4=SCAA(2); 5=Hockey(3); 6=B-H_flattop(2); 7=Survival(3); 8=Shepherd(3); 9=Ricker_Power(3) "<<endl;
+!!echoinput<<SR_fxn<<" #_SR_function: 1=NA; 2=Ricker(2 parms); 3=BevHolt(2); 4=SCAA(2); 5=Hockey(3); 6=B-H_flattop(2); 7=Survival(3); 8=Shepherd(3); 9=Ricker_Power(3); 10=B-H_a,b(4)"<<endl;
   init_int init_equ_steepness;
 !!echoinput<<init_equ_steepness<<"  # 0/1 to use steepness in initial equ recruitment calculation"<<endl;
-  init_int sigmaR_dendep;
-!! echoinput<<sigmaR_dendep<<"  #  future feature:  0/1 to make realized sigmaR a function of SR curvature"<<endl;
+  init_int itemp;
+
+//   echoinput<<sigmaR_dendep<<"  #  future feature:  0/1 to make realized sigmaR a function of SR curvature"<<endl;
+
   ivector N_SRparm(1,10)
-!!N_SRparm.fill("{0,2,2,2,3,2,3,3,3,3}");
+!!N_SRparm.fill("{0,2,2,2,3,2,3,3,3,4}");
   int N_SRparm2
   int N_SRparm3  //  with timevary links included
 !!N_SRparm2=N_SRparm(SR_fxn)+3;
@@ -1956,7 +1961,7 @@
   int SR_env_target
   int SR_autocorr;  // will be calculated later
 
-  int timevary_parm_start_SR;
+  int timevary_parm_start_SR;  //   == 0 means that no relevant parms are timevarying
   int firstSRparm;
   int timevary_parm_cnt_SR;
   ivector timevary_SRparm(styr-3,YrMax+1);
@@ -1972,8 +1977,13 @@
   SR_parm_timevary.initialize();
   SR_env_link = 0;
   SR_env_target = 0;
-  //#_SR_function: 1=null; 2=Ricker; 3=std_B-H; 4=SCAA; 5=Hockey; 6=B-H_flattop; 7=Survival_3Parm "<<endl;
-  ParmLabel += "SR_LN(R0)";
+
+  //#_SR_function: 1=null; 2=Ricker; 3=std_B-H; 4=SCAA; 5=Hockey; 6=B-H_flattop; 7=Survival_3Parm; 10=B-H with a,b "<<endl;
+  if (SR_fxn == 10)
+  {ParmLabel += "SR_LN(R0)_derived";}
+  else
+  {ParmLabel += "SR_LN(R0)";}
+  
   switch (SR_fxn)
   {
     case 1: // previous placement for B-H constrained
@@ -2024,6 +2034,13 @@
     {
       ParmLabel += "SR_RkrPower_steep";
       ParmLabel += "SR_RkrPower_gamma";
+      break;
+    }
+    case 10: // Bev-Holt a,b
+    {
+      ParmLabel += "SR_BH_steep_derived";
+      ParmLabel += "SR_BH_ln(alpha)";
+      ParmLabel += "SR_BH_ln(beta)";
       break;
     }
   }
@@ -2113,6 +2130,7 @@
         } // year vector for this category og MGparm
       }
     }
+  
   N_SRparm3 = N_SRparm2;
   if (timevary_parm_start_SR > 0)
   {
@@ -5754,7 +5772,7 @@
     Extra_Std_N += YrMax - (styr - 2) + 1;
     if (More_Std_Input(12) == 2) Extra_Std_N += YrMax - (styr - 2) + 1; //  for recruitment
   }
-  // add 3 values for ln(Spbio)
+  // add 3 values for ln(SSBio)
   // (years are automatically generated as startyr, mid-point, and endyr)
   Do_se_LnSSB = Extra_Std_N + 1;
   Extra_Std_N += 3;
@@ -5797,7 +5815,7 @@
       // clang-format on
       if (Do_Benchmark > 0)
   {
-    N_STD_Mgmt_Quant = 17;
+    N_STD_Mgmt_Quant = 22;
     if (Do_Benchmark == 3) N_STD_Mgmt_Quant += 3; //  for Blimit
   }
   else
@@ -6604,6 +6622,28 @@
     CoVar_Count++;
     j++;
     active_parm(CoVar_Count) = j;
+// add quantities needed when time-vary life history is used; but report here for all cases; elements 18-21 of mgmt_quant
+    ParmLabel += "18.Recr_MSY_bmarkbio" + CRLF(1);
+    CoVar_Count++;
+    j++;
+    active_parm(CoVar_Count) = j;
+    ParmLabel += "19.Depletion_denom" + CRLF(1);
+    CoVar_Count++;
+    j++;
+    active_parm(CoVar_Count) = j;
+    ParmLabel += "20.HCR_anchor" + CRLF(1);
+    CoVar_Count++;
+    j++;
+    active_parm(CoVar_Count) = j;
+    ParmLabel += "ignore" + CRLF(1);
+    CoVar_Count++;
+    j++;
+    active_parm(CoVar_Count) = j;
+    ParmLabel += "SSB_virgin_again" + CRLF(1);
+    CoVar_Count++;
+    j++;
+    active_parm(CoVar_Count) = j;
+
     if (Do_Benchmark == 3)
     {
       ParmLabel += "SSB_Blim" + CRLF(1);
@@ -6808,23 +6848,23 @@
     }
   }
   
-  //  output ln(SPB) std for selected years
-  echoinput << " do ln(SPB) std labels for 3 years" << endl;
+  //  output ln(SSB) std for selected years
+  echoinput << " do ln(SSB) std labels for 3 years" << endl;
   CoVar_Count++;
   j++;
   active_parm(CoVar_Count) = j;
   sprintf(onenum, "%d", styr);
-  ParmLabel += "ln(SPB)_" + onenum + CRLF(1);
+  ParmLabel += "ln(SSB)_" + onenum + CRLF(1);
   CoVar_Count++;
   j++;
   active_parm(CoVar_Count) = j;
   sprintf(onenum, "%d", int((endyr + styr) / 2));
-  ParmLabel += "ln(SPB)_" + onenum + CRLF(1);
+  ParmLabel += "ln(SSB)_" + onenum + CRLF(1);
   CoVar_Count++;
   j++;
   active_parm(CoVar_Count) = j;
   sprintf(onenum, "%d", endyr);
-  ParmLabel += "ln(SPB)_" + onenum + CRLF(1);
+  ParmLabel += "ln(SSB)_" + onenum + CRLF(1);
   
   if (Do_se_smrybio > 0)
   {

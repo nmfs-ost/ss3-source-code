@@ -4345,8 +4345,8 @@
       "even when the base is set to the mean of earlier recruitments" << endl;
     }
 
-    echoinput << Fcast_Loop_Control(5) << " #echo: loop control 5 not used" << endl;
-
+    echoinput << Fcast_Loop_Control(5) << " #control rule anchor: 1=unfished_benchmark_SSB(old_approach), 2=virgin_SSB " << endl;
+    
     echoinput << "#next enter year in which Fcast loop 3 caps and allocations begin to be applied" << endl;
     *(ad_comm::global_datafile) >> Fcast_Cap_FirstYear;
     echoinput << Fcast_Cap_FirstYear << " # echoed value" << endl;
@@ -5035,10 +5035,10 @@
     if (STD_Yr_Reverse(y) > 0)
     {
       j++;
-      STD_Yr_Reverse(y) = j; // use for SPB and recruitment
+      STD_Yr_Reverse(y) = j; // use for SSB and recruitment
       if (y >= styr)
       {
-        // depletion must start in year AFTER first catch.  It could vary earlier if recdevs happened enough earlier to change spbio, but this is not included
+        // depletion must start in year AFTER first catch.  It could vary earlier if recdevs happened enough earlier to change SSBio, but this is not included
         if ((depletion_basis > 0 && y > first_catch_yr) || y == endyr)
         {
           N_STD_Yr_Dep++;
