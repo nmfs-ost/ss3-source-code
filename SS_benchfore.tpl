@@ -801,8 +801,9 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
       if(timevary_parm_start_SR == 0)  // no timevary SRR parms
       {
         SSB_unf = SSB_equil;
-        R0_4_SRR = Recr_unf;
+        R0_4_SRR = Recr_unf;  // same as Recr_virgin because no timevary SRparms
         SSB0_4_SRR = SSB_equil;  // this is legacy, but incorrect, as it moves equil off the SRR, rather than along the SRR
+        SSBpR_bench = SSB0_4_SRR / R0_4_SRR;
         //  Equil_Spawn_Recr_Fxn will be called in more complete approach to use SSBpR_bench to move along the SRR
       }
       else // there are timevary SRR parms.  Legacy code is same
@@ -831,7 +832,7 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
       {
         //  Equ_SpawnRecr_Result = Equil_Spawn_Recr_Fxn(SR_parm_work, SSB_equil, Recr_unf, SSBpR_bench); //  returns 2 element vector containing equilibrium biomass and recruitment at this SPR
       }
-      Do_Equil_Calc(R0_4_SRR);  // this calcs SSBpR and returns it as SSB_equil using benchmark biology
+      Do_Equil_Calc(Recr_unf);  // this calcs SSBpR and returns it as SSB_equil using benchmark biology and the updated equil Recr
       SSB_unf = SSB_equil;
       report5 << " CHECK! - SSB_unf and updated equilibrium SSB0_4_SRR: " << SSB_unf << " " << SSB0_4_SRR << endl;
     }
@@ -846,9 +847,9 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
     Mgmt_quant(4) = Recr_unf;
     report5 << "SR_parms for benchmark: " << SR_parm_work << endl
             << "Benchmark biology averaged over years: " << Bmark_Yr(1) << " " << Bmark_Yr(2) << endl << endl;
-    Mgmt_quant(19) = R0_4_SRR; // recruitment
-    Mgmt_quant(20) = SSB_unf;
-    Mgmt_quant(21) = SSB_unf;  //  placeholder to be replaced by SSB_HCR_infl
+    Mgmt_quant(19) = SSB_unf;  // placeholder for depletion denominator
+    Mgmt_quant(20) = SSB_unf;  //  placeholder to be replaced by SSB_HCR_infl
+    Mgmt_quant(21) = SSB_unf;
     Mgmt_quant(22) = SSB_virgin;
   }
 
@@ -2259,7 +2260,7 @@ FUNCTION void Get_Forecast()
       H4010_top = H4010_top_rd;
     }
 
-    Mgmt_quant(21) = H4010_top * HCR_anchor;
+    Mgmt_quant(20) = HCR_anchor;
     report5 << "#" << endl;
     report5 << "N_forecast_yrs: " << N_Fcast_Yrs << endl;
     report5 << "OY_Control_Rule:  Inflection: " << H4010_top << " Intercept: " << H4010_bot << " Scale: " << H4010_scale_vec(endyr + 1) << endl
@@ -2714,7 +2715,6 @@ FUNCTION void Get_Forecast()
               SSB_use = SSB_equil;
             }
             Recruits = Spawn_Recr(SSB_use, R0_use, SSB_current); // calls to function Spawn_Recr
-            warning << y << " SSB0: " << SSB_use << " R0: " << R0_use << " SSB_curr: " << SSB_current << " R: " << Recruits << endl;
             if (SR_fxn != 7) apply_recdev(Recruits, R0_use); //  apply recruitment deviation
             if (Fcast_Loop1 < Fcast_Loop_Control(2)) //  use expected recruitment  this should include environ effect - CHECK THIS
             {
@@ -3779,9 +3779,8 @@ FUNCTION void Get_Forecast()
         }
         Fishon = 1;
         Do_Equil_Calc(equ_Recr); //  call function to do per recruit calculation
-//             warning <<y<<"  SSB_virgin: " << SSB_virgin<< "SSB_use: "<<SSB_use<<" SSB_unf: "<<SSB_unf<<" fec(15): "<<fec(1,15)<<endl;
         if (STD_Yr_Reverse_Ofish(y) > 0)
-          SPR_std(STD_Yr_Reverse_Ofish(y)) = SSB_equil / Smry_Table(y, 11);
+          {SPR_std(STD_Yr_Reverse_Ofish(y)) = SSB_equil / Smry_Table(y, 11);}
         Smry_Table(y, 9) = totbio;
         Smry_Table(y, 10) = smrybio;
         Smry_Table(y, 12) = SSB_equil;

@@ -4747,31 +4747,6 @@ FUNCTION void SPR_profile()
   SS2out << " stored - SSB, R0, SPR0: " << SSB_unf << " " << Recr_unf << " "  << SSBpR_virgin << " " << SSBpR_virgin_4_SRR<<endl;
 
 //  do not recalculate here so force using values from benchmark
- /*
-  if (timevary_bio_4SRR == 0)  //  use virgin biology for the spawner-recruitment R0,h calculations in bmark
-  {
-    Recr_unf = Recr_virgin;
-    SSB_unf = SSB_virgin;
-    Fishon = 0;
-    Recr_unf = Recr_virgin;
-    Do_Equil_Calc(Recr_unf);  // this calcs SSB using benchmark biology
-    temp1 = SSB_equil;  // equilibrium unfished SSB using the benchmark averaged Recr_unf and benchmark averaged biology
-    temp2 = temp1 / Recr_unf;
-    Equ_SpawnRecr_Result = Equil_Spawn_Recr_Fxn(SR_parm_work, SSB_virgin, Recr_virgin, temp2); //  returns 2 element vector containing equilibrium biomass and recruitment at this SPR
-    SS2out << " virgSRR_&_bmarkbio - SSB, R0, SPR0: " << SSB_virgin << " " << Recr_virgin << " "  << SSBpR_virgin << " " << SSBpR_virgin_4_SRR << " equil: " << Equ_SpawnRecr_Result << endl<<endl;
-  }
-  else  // use benchmark biology in the spawner-recruitment R0,h calculations
-  {
-    Fishon = 0;
-    Recr_unf = mfexp(SR_parm_work(1));
-    Do_Equil_Calc(Recr_unf);  // this calcs SSB using benchmark biology
-    SSB_unf = SSB_equil;  // equilibrium unfished SSB using the benchmark averaged Recr_unf and benchmark averaged biology
-    temp2 = SSB_unf / Recr_unf; //  this corresponds to the biology for benchmark average years, not the virgin SSB_virgin
-    Equ_SpawnRecr_Result = Equil_Spawn_Recr_Fxn(SR_parm_work, SSB0_4_SRR, R0_4_SRR, temp2); //  returns 2 element vector containing equilibrium biomass and recruitment at this SPR
-    SS2out << " bmarkSRR_&_bmarkbio - SSB, R0, SPR0: " << SSB_unf << " " << Recr_unf << " "  << temp2 << " " << SSBpR_virgin_4_SRR << " equil: " << Equ_SpawnRecr_Result << endl<<endl;
-  }
- */
-  // Equ_SpawnRecr_Result = Equil_Spawn_Recr_Fxn(SR_parm_work, SSB0_4_SRR, R0_4_SRR, SSBpR_temp); 
   SS2out << "unfished values for SRR: SSB " << SSB0_4_SRR << " R " << R0_4_SRR << " SSBpR " << "  SSBpR: " << SSB0_4_SRR / R0_4_SRR << endl;
   SS2out << "SPRloop Iter Bycatch Fmult F_std SSBpR YpR_dead YpR_dead*Recr YpR_ret*Recr Revenue Cost Profit SSB Recruits SSB/Bzero Tot_Catch ";
   for (f = 1; f <= Nfleet; f++)
