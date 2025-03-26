@@ -284,7 +284,7 @@ FUNCTION dvar_vector Equil_Spawn_Recr_Fxn(const dvar_vector& SRparm,
   dvariable SRZ_surv;
   dvariable SSBpR_virgin_use;
 
-  SSBpR_virgin_use = SSB_virgin_use / Recr_virgin_use;  //  local instance of SSBpR_virgin_4_SRR
+  SSBpR_virgin_use = SSB_virgin_use / Recr_virgin_use;
   steepness = SRparm(2); //  common usage but some different
   //  SS_Label_44.1  calc equilibrium SpawnBio and Recruitment from input SSBpR_current, which is spawning biomass per recruit at some given F level
   switch (SR_fxn)

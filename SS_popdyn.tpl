@@ -356,11 +356,11 @@ FUNCTION void get_initial_conditions()
       beta = mfexp(SR_parm(4));
       steepness = alpha * SSBpR_virgin / (4. + alpha * SSBpR_virgin);
       Recr_virgin = 1. / beta * (alpha - (1. / SSBpR_virgin));
-//      warning << " before AB_calcs " << "parm " << SR_parm(1) << " calc " << log(Recr_virgin) << endl;
       SR_parm(1) = log(Recr_virgin);
       SR_parm(2) = steepness;
     }
-    else {
+    else
+    {
       Recr_virgin = mfexp(SR_parm(1));
     }
   
