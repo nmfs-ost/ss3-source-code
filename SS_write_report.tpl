@@ -1845,8 +1845,8 @@ FUNCTION void write_bigoutput()
       SS2out << j << " " << ParmLabel(firstSRparm + j) << " " << SR_parm(j) << " " << SR_parm_PH(j);
       if (SR_parm_timevary(j) > 0 && j <= 4 ) //  timevary SRparm exists
       {SS2out << " #_is_time_vary,_so_SRR_updates_base_SPR_annually";} 
-  if (j == (N_SRparm2 - 1) && SR_parm_timevary(j) > 0) //  timevary regime exists
-    {SS2out << " #_Regime_parameter_used_to_offset_from_SRR";}
+      if (j == (N_SRparm2 - 1) && SR_parm_timevary(j) > 0) //  timevary regime exists
+      {SS2out << " #_Regime_parameter_used_to_offset_from_SRR";}
       SS2out << endl;
     }
 
@@ -1858,7 +1858,7 @@ FUNCTION void write_bigoutput()
     {
       case 3: // Beverton-Holt with steepness
     {
-      alpha = 4.0 * steepness / (SSBpR_virgin_4_SRR * (1. - steepness));
+      alpha = 4.0 * steepness / (SSBpR_virgin * (1. - steepness));
       beta = (5.0 * steepness - 1.0) / ((1. - steepness) * SSB_virgin);
       SS2out << "Ln(R0): " << SR_parm(1) << endl << "R0: " << mfexp(SR_parm(1)) << endl;
       SS2out << "steepness: " << steepness << endl;
@@ -1870,8 +1870,8 @@ FUNCTION void write_bigoutput()
     {
       SS2out << "Ln(alpha): " << SR_parm(3) << " alpha " << mfexp(SR_parm(3)) << endl;
       SS2out << "Ln(beta): " << SR_parm(4) << " beta " << mfexp(SR_parm(4)) << endl;
-      SS2out << "ln(R0)_derived: " << log( 1. / beta * (alpha - (1. / SSBpR_virgin_4_SRR))) << endl;  //  virgin R0
-      SS2out << "steepness_derived: " << alpha * SSBpR_virgin_4_SRR / (4. + alpha * SSBpR_virgin_4_SRR) << endl;  // steepness virgin
+      SS2out << "ln(R0)_derived: " << log( 1. / beta * (alpha - (1. / SSBpR_virgin))) << endl;  //  virgin R0
+      SS2out << "steepness_derived: " << alpha * SSBpR_virgin / (4. + alpha * SSBpR_virgin) << endl;  // steepness virgin
       break;
     }
     case 8:
@@ -4744,7 +4744,7 @@ FUNCTION void SPR_profile()
       fec = Wt_Age_t(t, -2);
       SS2out << " repro_output for spr/ypr: " << fec(1) << endl;}
   }
-  SS2out << " stored - SSB, R0, SPR0: " << SSB_unf << " " << Recr_unf << " "  << SSBpR_virgin << " " << SSBpR_virgin_4_SRR<<endl;
+  SS2out << " stored - SSB, R0, SPR0: " << SSB_unf << " " << Recr_unf << " "  << SSBpR_virgin << " " << SSBpR_virgin<<endl;
 
 //  do not recalculate here so force using values from benchmark
   SS2out << "unfished values for SRR: SSB " << SSB0_4_SRR << " R " << R0_4_SRR << " SSBpR " << "  SSBpR: " << SSB0_4_SRR / R0_4_SRR << endl;
@@ -4965,7 +4965,7 @@ FUNCTION void SPR_profile()
           {
             SS2out << " " << SSB_equil_pop_gp(p, gp) * Btgt_prof_rec;
           }
-        SS2out << " R " << equ_Recr << "  SSB " << SSB_equil << endl;
+        SS2out << endl;
         if (SPRloop1 == 0)
         {
           Fmult2 -= Fmultchanger0;

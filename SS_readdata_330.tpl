@@ -4345,7 +4345,19 @@
       "even when the base is set to the mean of earlier recruitments" << endl;
     }
 
-    echoinput << Fcast_Loop_Control(5) << " #control rule anchor: 1=unfished_benchmark_SSB(old_approach), 2=virgin_SSB " << endl;
+    if (Fcast_Loop_Control(5) == 0)  //  default before 3.30.24
+    {
+      echoinput << "basis for HCR anchor was not set; setting to 2 to match default before 3.30.24" << endl;
+      warnstream << "basis for HCR anchor was not set; setting to 2 to match default before 3.30.24";
+      write_message(ADJUST, 0);
+      Fcast_Loop_Control(5) = 2;
+    }
+    echoinput << Fcast_Loop_Control(5) << " #control rule anchor: 1=virgin_SSB; 2=unfished_benchmark_SSB(old_approach)" << endl;
+    if (depletion_basis == 1 && Fcast_Loop_Control(5) == 2)
+    {
+      warnstream << "depletion_basis is using virgin but HCR anchor is using SSB_unf from benchmark. Are you sure?";
+      write_message(WARN, 0);
+    }
     
     echoinput << "#next enter year in which Fcast loop 3 caps and allocations begin to be applied" << endl;
     *(ad_comm::global_datafile) >> Fcast_Cap_FirstYear;
@@ -4814,16 +4826,16 @@
       warnstream << "Set F_std_basis=0 because no benchmark or forecast";
       write_message(WARN, 0);
     }
-    if (depletion_basis == 2)
+    if (depletion_basis == 2 || depletion_basis == 6 )
     {
       depletion_basis = 1;
-      warnstream << "Change depletion basis to 1 because benchmarks are off";
+      warnstream << "Change depletion basis to 1 because benchmarks were not requested";
       write_message(WARN, 0);
     }
     if (SPR_reporting >= 1 && SPR_reporting <= 3)
     {
       SPR_reporting = 4;
-      warnstream << "Change SPR_reporting to 4 because benchmarks are off";
+      warnstream << "Change SPR_reporting to 4 because benchmarks were not requested";
       write_message(WARN, 0);
     }
   }

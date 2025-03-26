@@ -168,7 +168,6 @@ PARAMETER_SECTION
   number SSBpR_virgin;
   number SSB0_4_SRR;
   number R0_4_SRR;
-  number SSBpR_virgin_4_SRR;  // value of SSB/R used in SRR
   number regime_change;
   number rho;
   number dirichlet_Parm;
