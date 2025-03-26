@@ -643,7 +643,7 @@
   int depletion_basis;
   int depletion_multi;
   int depletion_log;
-  init_number depletion_basis_rd; // 0=skip; 1=B0; 2=Bmsy; 3=B_styr; 4=B_endyr; 5=dynamic_Bzero; values >=11 invoke multiyr with 10's digit; append .1 to invoke log(ratio) with hundreds digit
+  init_number depletion_basis_rd; // 0=skip; 1=B0; 2=Bmsy; 3=B_styr; 4=B_endyr; 5=dynamic_Bzero; 6=Bmark_SSB_unf;  values >=11 invoke multiyr with 10's digit; append .1 to invoke log(ratio) with hundreds digit
  LOCAL_CALCS
   // clang-format on
   echoinput << depletion_basis_rd << "  depletion_basis as read; this is also known as Bratio and is a std quantity; has multi-yr and log(ratio) options" << endl;

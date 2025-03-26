@@ -6955,6 +6955,11 @@
       depletion_basis_label += " " + onenum + "%*Dyn_Bzero";
       break;
     }
+    case 6:
+    {
+      depletion_basis_label += " " + onenum + "%*Bmark_Biomass";
+      break;
+    }
   }
   if (depletion_log == 1) depletion_basis_label += ";log";
   if (depletion_multi > 1)
