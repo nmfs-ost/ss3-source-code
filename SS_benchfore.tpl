@@ -783,7 +783,7 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
  */
   Recr_unf = mfexp(SR_parm_work(1));  // R0 to be used
   Fishon = 0;
-  Do_Equil_Calc(Recr_unf);  // this returns SSB_equil using benchmark biology
+  SSBpR_Calc(Recr_unf);  // this returns SSB_equil using benchmark biology
   dvariable SSBpR_bench = SSB_equil / Recr_unf;
 
   if( timevary_MG_firstyr == YrMax && WTage_rd == 0)  // no time-varying biology
@@ -810,7 +810,7 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
       {
         Recr_unf = mfexp(SR_parm_work(1));  // R0 to be used
         // steepness and other SR parms will also come from SR_parm_work
-        Do_Equil_Calc(Recr_unf);  // this returns SSB_equil using benchmark biology
+        SSBpR_Calc(Recr_unf);  // this returns SSB_equil using benchmark biology
         SSB_unf = SSB_equil;
         R0_4_SRR = Recr_unf;
         SSB0_4_SRR = SSB_equil;  // this is legacy, but incorrect, as it moves equil off the SRR, rather than along the SRR
@@ -836,7 +836,7 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
         //  get new equilibrium point for the benchmark SRR
         Recr_unf = mfexp(SR_parm_work(1));  // R0 to be used
         Fishon = 0;
-        Do_Equil_Calc(Recr_unf);  // this returns SSB_equil using benchmark biology
+        SSBpR_Calc(Recr_unf);  // this returns SSB_equil using benchmark biology
         SSBpR_bench = SSB_equil / Recr_unf;
         SSB0_4_SRR = SSB_equil;
         SSB_unf = SSB_equil;
@@ -845,7 +845,7 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
         Equ_SpawnRecr_Result = Equil_Spawn_Recr_Fxn(SR_parm_work, SSB_equil, Recr_unf, SSBpR_bench); //  returns 2 element vector containing equilibrium biomass and recruitment at this SPR
         if (show_MSY == 1) report5 << " use bench SSBpR0 in SRR - SSB: " << SSB_unf << " Recr: " << Recr_unf << " SPR: " << SSBpR_bench << " new equil: " << Equ_SpawnRecr_Result << endl;
       }
-      Do_Equil_Calc(Recr_unf);  // this calcs SSBpR and returns it as SSB_equil using benchmark biology and the updated equil Recr
+      SSBpR_Calc(Recr_unf);  // this calcs SSBpR and returns it as SSB_equil using benchmark biology and the updated equil Recr
       SSB_unf = SSB_equil;
       if (show_MSY == 1) report5 << " CHECK! - SSB_unf based on updated SRR (if any): " << SSB_unf << endl;
     }
@@ -893,7 +893,7 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
     dvariable SPR_target100;
     SPR_target100 = SPR_target * 100.;
 
-    Do_Equil_Calc(equ_Recr);  //  where equ_Recr has been set to 1.0
+    SSBpR_Calc(equ_Recr);  //  where equ_Recr has been set to 1.0
     SSBpR_unf = SSB_equil / equ_Recr; //  this corresponds to the biology for benchmark average years, not the virgin SSB_virgin
     Vbio1_unfished = smrybio; // gets value from equil_calc
     if (show_MSY == 1)
@@ -939,7 +939,7 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
         }
 
         Fishon = 1;
-        Do_Equil_Calc(equ_Recr);
+        SSBpR_Calc(equ_Recr);
         yld1(ii) = 100. * SSB_equil / SSBpR_unf; //  spawning potential ratio
       }
       SPR_actual = yld1(1); //  spawning potential ratio
@@ -1051,7 +1051,7 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
       }
       //  else  Hrate for bycatch fleets already set
     }
-    Do_Equil_Calc(equ_Recr);
+    SSBpR_Calc(equ_Recr);
     F01_origin = YPR_opt / Fmult;
 
     BTGT_target = 0.1; //  now relative to Bmark
@@ -1083,7 +1083,7 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
             }
           } //  else  Hrate for bycatch fleets set above
         }
-        Do_Equil_Calc(equ_Recr);
+        SSBpR_Calc(equ_Recr);
         yld1(ii) = YPR_opt;
       }
 
@@ -1222,7 +1222,7 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
           }
           //  else  Hrate for bycatch fleets already set
         }
-        Do_Equil_Calc(equ_Recr); //  where equ_Recr=1.0, so returned SSB_equil is in units of SSB/R,
+        SSBpR_Calc(equ_Recr); //  where equ_Recr=1.0, so returned SSB_equil is in units of SSB/R,
         SSBpR_temp = SSB_equil;
         SPR_Btgt = SSBpR_temp / SSBpR_unf;  //  where SSBpR_unf = SSB_unf / Recr_unf so units of SSB/R; so result is SPR_Btgt = (fished SSB/R) / (unfished SSB/R)
         //  SPAWN-RECR:   calc equil spawn-recr for Btarget calcs;  need to make area-specific
@@ -1442,7 +1442,7 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
         //  else  Hrate for bycatch fleets already set
       }
 
-      Do_Equil_Calc(equ_Recr);
+      SSBpR_Calc(equ_Recr);
       //  SPAWN-RECR:   calc spawn-recr for MSY calcs;  need to make area-specific
       MSY_SPR = SSB_equil / SSBpR_unf;
       SSBpR_temp = SSB_equil;
@@ -1536,7 +1536,7 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
               }
             } //  else  Hrate for bycatch fleets set above
           }
-          Do_Equil_Calc(equ_Recr);
+          SSBpR_Calc(equ_Recr);
           //  SPAWN-RECR:   calc spawn-recr for MSY calcs;  need to make area-specific
           MSY_SPR = SSB_equil / SSBpR_unf;
           SSBpR_temp = SSB_equil;
@@ -1687,7 +1687,7 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
           }
 
         Fishon = 0;
-        Do_Equil_Calc(equ_Recr);
+        SSBpR_Calc(equ_Recr);
         report5 << "Equil_N_at_age_M_only_Recr_MSY" << endl
                 << "Seas Area GP Sex subM" << age_vector << endl;
         for (s = 1; s <= nseas; s++)
@@ -1837,7 +1837,7 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
           }
           //  else  Hrate for bycatch fleets already set
         }
-        Do_Equil_Calc(equ_Recr);
+        SSBpR_Calc(equ_Recr);
         SPR_Btgt2 = SSB_equil / SSBpR_unf;
         //  SPAWN-RECR:   calc equil spawn-recr for Btarget calcs;  need to make area-specific
         SSBpR_temp = SSB_equil;
@@ -2720,7 +2720,7 @@ FUNCTION void Get_Forecast()
               Fishon = 0;
               eq_yr = y;
               bio_yr = y;
-              Do_Equil_Calc(R0_use); //  call function to do per recruit calculation
+              SSBpR_Calc(R0_use); //  call function to do per recruit calculation
           //  should call equil_spawn_recr_fxn here to get updated equilibrium with the new SSB/R
           if (fishery_on_off == 1)
               {
@@ -3360,7 +3360,7 @@ FUNCTION void Get_Forecast()
               Fishon = 0;
               eq_yr = y;
               bio_yr = y;
-              Do_Equil_Calc(equ_Recr); //  call function to do per recruit calculation
+              SSBpR_Calc(equ_Recr); //  call function to do per recruit calculation
           //  should call equil_spawn_recr_fxn here to get updated equilibrium with the new SSB/R
           if (fishery_on_off == 1)
               {
@@ -3783,7 +3783,7 @@ FUNCTION void Get_Forecast()
         equ_Recr = Recr_unf;
         bio_yr = y;
         Fishon = 0;
-        Do_Equil_Calc(equ_Recr); //  call function to do per recruit calculation
+        SSBpR_Calc(equ_Recr); //  call function to do per recruit calculation
 
         Smry_Table(y, 11) = SSB_equil;
         Smry_Table(y, 13) = GenTime;
@@ -3796,7 +3796,7 @@ FUNCTION void Get_Forecast()
           SR_parm_byyr(y, 1) = log( 1. / beta * (alpha - (1. / temp)));  //  implied ln_R0
         }
         Fishon = 1;
-        Do_Equil_Calc(equ_Recr); //  call function to do per recruit calculation
+        SSBpR_Calc(equ_Recr); //  call function to do per recruit calculation
         if (STD_Yr_Reverse_Ofish(y) > 0)
           {SPR_std(STD_Yr_Reverse_Ofish(y)) = SSB_equil / Smry_Table(y, 11);}
         Smry_Table(y, 9) = totbio;
