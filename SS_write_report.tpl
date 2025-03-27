@@ -1,6 +1,6 @@
 // SS_Label_file  #19. **SS_write_report.tpl**
 // SS_Label_file  # * <u>write_bigoutput()</u>  // produces *report.sso* and *compreport.sso*
-// SS_Label_file  # * <u>SPR_profile()</u>  //  calls Do_Equil_Calc() and Equil_Spawn_Recr_Fxn() over a range of F to get SPR, YPR, and SSB and catch curves
+// SS_Label_file  # * <u>SPR_profile()</u>  //  calls SSBpR_Calc() and Equil_Spawn_Recr_Fxn() over a range of F to get SPR, YPR, and SSB and catch curves
 // SS_Label_file  # * <u>global_MSY()</u>  // similar to SPR_profile but first changes all selectivities to knife edge and profiles on age-at-entry
 // SS_Label_file  #
 
@@ -4782,7 +4782,7 @@ FUNCTION void SPR_profile()
     SPRloop1_end = 7;
   }
   int SPRloops;
-  Do_Equil_Calc(equ_Recr);
+  SSBpR_Calc(equ_Recr);
   if (N_bycatch == 0)
   {
     k = 0;
@@ -4902,7 +4902,7 @@ FUNCTION void SPR_profile()
           }
         Fishon = 1;
 
-        Do_Equil_Calc(equ_Recr);
+        SSBpR_Calc(equ_Recr);
         //  SPAWN-RECR:   calc equil spawn-recr in the SPR loop
         SSBpR_temp = SSB_equil;
         Equ_SpawnRecr_Result = Equil_Spawn_Recr_Fxn(SR_parm_work, SSB0_4_SRR, R0_4_SRR, SSBpR_temp); //  returns 2 element vector containing equilibrium biomass and recruitment at this SPR
