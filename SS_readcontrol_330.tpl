@@ -2068,9 +2068,11 @@
   }
   // flag for recruitment autocorrelation
   echoinput << " Do recruitment_autocorr: " << SR_autocorr << endl;
+
+  // note that the regime parameter seems to bypass use of timevary_SRparm, but timevary_SRparm is used for R0, h beginning 3.30.24
   timevary_used = 0;
-  for (j = 1; j <= N_SRparm(SR_fxn) + 2; j++)
-    if (j != N_SRparm(SR_fxn) + 1) //  because sigmaR and autocorr cannot be time-varying
+  for (j = 1; j <= N_SRparm2 - 1; j++)  // so omits autocorr
+    if (j != N_SRparm2 - 2) //  because sigmaR cannot be time-varying
     {
       if (SR_parm_1(j, 13) == 0 && SR_parm_1(j, 8) == 0 && SR_parm_1(j, 9) == 0)
       {
@@ -2097,7 +2099,7 @@
         timevary_setup(2) = j; //  index of base parm within that type of parameter
         timevary_setup(13) = firstSRparm + j; //  index of base parm relative to ParCount which is continuous across all types of parameters
         timevary_setup(3) = timevary_parm_cnt + 1; //  first parameter within total list of all timevary parms
-        timevary_pass = 1; // placeholder; not used for SR parms
+        timevary_pass = 0; // placeholder; not used for SR parms
         //  set up env link info
         echoinput << " check for env " << SR_parm_1(j, 8) << endl;
         k = int(abs(SR_parm_1(j, 8)) / 100); //  find the env link code
@@ -2132,9 +2134,10 @@
           create_timevary(SR_parm_1(j), timevary_setup, timevary_pass, autogen_timevary(timevary_setup(1)), f, block_design_null, env_data_pass, N_parm_dev, finish_starter);
         }
         timevary_def.push_back(timevary_setup(1, 14));
-        for (y = styr - 3; y <= YrMax + 1; y++) {
-          timevary_SRparm(y) = timevary_pass(y);
-        } // year vector for this category og MGparm
+        for (y = styr - 3; y <= YrMax + 1; y++)
+        {
+          if (timevary_pass(y) > 0 && j != N_SRparm2 - 1) timevary_SRparm(y , YrMax) = timevary_pass(y);  //  set timevary flag, except for regime parameter
+        }
       }
     }
   
