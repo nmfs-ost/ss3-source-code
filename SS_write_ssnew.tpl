@@ -2146,11 +2146,11 @@ FUNCTION void write_nucontrol()
   for (f = 1; f <= N_SRparm2; f++)
   {
     NP++;
-    SR_parm_1(f, 3) = value(SR_parm(f));
+    SRparm_1(f, 3) = value(SRparm(f));
     for (j = 1; j <= 6; j++)
-      report4 << setw(14) << SR_parm_1(f, j);
+      report4 << setw(14) << SRparm_1(f, j);
     for (j = 7; j <= 14; j++)
-      report4 << setw(11) << SR_parm_1(f, j);
+      report4 << setw(11) << SRparm_1(f, j);
     report4 << " # " << ParmLabel(NP) << endl;
   }
   report4.unsetf(std::ios_base::fixed);
@@ -2158,7 +2158,7 @@ FUNCTION void write_nucontrol()
   if (N_SRparm3 > N_SRparm2)
   {
     report4 << "# timevary SR parameters" << endl;
-    for (f = timevary_parm_start_SR; f <= timevary_parm_cnt_SR; f++)
+    for (f = timevary_parm_SR_first; f <= timevary_parm_SR_last; f++)
     {
       NP++;
       timevary_parm_rd[f](3) = value(timevary_parm(f));

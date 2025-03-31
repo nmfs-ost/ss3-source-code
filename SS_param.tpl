@@ -157,11 +157,11 @@ PARAMETER_SECTION
   4darray recr_dist(styr-3,YrMax,1,N_GP*gender,1,N_settle_timings,1,pop);
   3darray recr_dist_unf(1,N_GP*gender,1,N_settle_timings,1,pop);
   3darray recr_dist_endyr(1,N_GP*gender,1,N_settle_timings,1,pop);
-!!//  SS_Label_Info_5.1.2 #Create SR_parm vector, recruitment vectors
-  init_bounded_number_vector SR_parm(1,N_SRparm3,SR_parm_LO,SR_parm_HI,SR_parm_PH)
-  matrix SR_parm_byyr(styr-3,YrMax,1,N_SRparm2+1)  //  R0, steepness, parm3, sigmar, rec_dev_offset, R1, rho, SSB   Time_vary implementation of spawner-recruitment
-  vector SR_parm_virg(1,N_SRparm2+1)
-  vector SR_parm_work(1,N_SRparm2+1)
+!!//  SS_Label_Info_5.1.2 #Create SRparm vector, recruitment vectors
+  init_bounded_number_vector SRparm(1,N_SRparm3,SRparm_LO,SRparm_HI,SRparm_PH)
+  matrix SRparm_byyr(styr-3,YrMax,1,N_SRparm2+1)  //  R0, steepness, parm3, sigmar, rec_dev_offset, R1, rho, SSB   Time_vary implementation of spawner-recruitment
+  vector SRparm_virg(1,N_SRparm2+1)
+  vector SRparm_work(1,N_SRparm2+1)
   number two_sigmaRsq;
   number half_sigmaRsq;
   number sigmaR;
@@ -174,7 +174,7 @@ PARAMETER_SECTION
  LOCAL_CALCS
   // clang-format on
   Ave_Size.initialize();
-  //  if(SR_parm(N_SRparm2)!=0.0 || SR_parm_PH(N_SRparm2)>0) {SR_autocorr=1;} else {SR_autocorr=0;}  // flag for recruitment autocorrelation
+  //  if(SRparm(N_SRparm2)!=0.0 || SRparm_PH(N_SRparm2)>0) {SR_autocorr=1;} else {SR_autocorr=0;}  // flag for recruitment autocorrelation
   if (do_recdev == 1)
   {
     k = recdev_start;
@@ -632,7 +632,7 @@ PARAMETER_SECTION
   vector init_F_Like(1,N_init_F)
   vector Q_parm_Like(1,Q_Npar2)
   vector selparm_Like(1,N_selparm2)
-  vector SR_parm_Like(1,N_SRparm3)
+  vector SRparm_Like(1,N_SRparm3)
   vector recdev_cycle_Like(1,recdev_cycle)
 !! k=Do_TG*(3*N_TG+2*Nfleet1);
   vector TG_parm_Like(1,k);

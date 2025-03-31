@@ -647,12 +647,12 @@ FUNCTION void write_bigoutput()
     {
       NP++;
       Activ = 0;
-      if (active(SR_parm(j)))
+      if (active(SRparm(j)))
       {
         active_count++;
         Activ = 1;
       }
-      Report_Parm(NP, active_count, Activ, SR_parm(j), SR_parm_LO(j), SR_parm_HI(j), SR_parm_RD(j), SR_parm_use(j), SR_parm_PR(j), SR_parm_CV(j), SR_parm_PRtype(j), SR_parm_PH(j), SR_parm_Like(j));
+      Report_Parm(NP, active_count, Activ, SRparm(j), SRparm_LO(j), SRparm_HI(j), SRparm_RD(j), SRparm_use(j), SRparm_PR(j), SRparm_CV(j), SRparm_PRtype(j), SRparm_PH(j), SRparm_Like(j));
     }
 
     if (recdev_cycle > 0)
@@ -1778,12 +1778,12 @@ FUNCTION void write_bigoutput()
     Durbin /= (var + 1.0e-09);
     var /= (n_rmse(1) + 1.0e-09);
 
-    dvariable steepness = SR_parm(2);
+    dvariable steepness = SRparm(2);
 
     SS2out << endl
            << pick_report_name(19);
     SS2out << "  Function: " << SR_fxn << "  RecDev_method: " << do_recdev << "   sum_recdev: " << sum_recdev << endl
-           << SR_parm(1) << " Ln(R0) " << mfexp(SR_parm(1)) << endl
+           << SRparm(1) << " Ln(R0) " << mfexp(SRparm(1)) << endl
            << steepness << " steepness" << endl
            << Bmsy / SSB_virgin << " Bmsy/Bzero ";
     if (SR_fxn == 8)
@@ -1791,22 +1791,22 @@ FUNCTION void write_bigoutput()
       dvariable Shepherd_c;
       dvariable Shepherd_c2;
       dvariable Hupper;
-      Shepherd_c = SR_parm(3);
+      Shepherd_c = SRparm(3);
       Shepherd_c2 = pow(0.2, Shepherd_c);
       Hupper = 1.0 / (5.0 * Shepherd_c2);
-      temp = 0.2 + (SR_parm(2) - 0.2) / (0.8) * (Hupper - 0.2);
+      temp = 0.2 + (SRparm(2) - 0.2) / (0.8) * (Hupper - 0.2);
       SS2out << " Shepherd_c: " << Shepherd_c << " steepness_limit: " << Hupper << " Adjusted_steepness: " << temp;
     }
     else if (SR_fxn == 9)
     {
-      SS2out << " Ricker_Power: " << SR_parm(3);
+      SS2out << " Ricker_Power: " << SRparm(3);
     }
 
     SS2out << endl;
     SS2out << sigmaR << " sigmaR" << endl;
     SS2out << init_equ_steepness << "  # 0/1 to use steepness in initial equ recruitment calculation" << endl;
 
-    SS2out << SR_parm(N_SRparm2 - 1) << " init_eq:  see below" << endl
+    SS2out << SRparm(N_SRparm2 - 1) << " init_eq:  see below" << endl
            << recdev_start << " " << recdev_end << " main_recdev:start_end" << endl
            << recdev_adj(1) << " " << recdev_adj(2, 5) << " breakpoints_for_bias_adjustment_ramp " << endl;
 
@@ -1842,10 +1842,10 @@ FUNCTION void write_bigoutput()
     SS2out << "#" << endl << "parm  parm_label value phase" << endl;
     for (int j = 1; j <=N_SRparm2; j++)
     {
-      SS2out << j << " " << ParmLabel(firstSRparm + j) << " " << SR_parm(j) << " " << SR_parm_PH(j);
-      if (SR_parm_timevary(j) > 0 && j <= 4 ) //  timevary SRparm exists
+      SS2out << j << " " << ParmLabel(firstSRparm + j) << " " << SRparm(j) << " " << SRparm_PH(j);
+      if (SRparm_timevary(j) > 0 && j <= 4 ) //  timevary SRparm exists
       {SS2out << " #_is_time_vary,_so_SRR_updates_base_SPR_annually";} 
-      if (j == (N_SRparm2 - 1) && SR_parm_timevary(j) > 0) //  timevary regime exists
+      if (j == (N_SRparm2 - 1) && SRparm_timevary(j) > 0) //  timevary regime exists
       {SS2out << " #_Regime_parameter_used_to_offset_from_SRR";}
       SS2out << endl;
     }
@@ -1860,7 +1860,7 @@ FUNCTION void write_bigoutput()
     {
       alpha = 4.0 * steepness / (SSBpR_virgin * (1. - steepness));
       beta = (5.0 * steepness - 1.0) / ((1. - steepness) * SSB_virgin);
-      SS2out << "Ln(R0): " << SR_parm(1) << endl << "R0: " << mfexp(SR_parm(1)) << endl;
+      SS2out << "Ln(R0): " << SRparm(1) << endl << "R0: " << mfexp(SRparm(1)) << endl;
       SS2out << "steepness: " << steepness << endl;
       SS2out << "Ln(alpha)_derived: " << log(alpha) << " alpha " << alpha << endl;
       SS2out << "Ln(beta)_derived: " << log(beta) << " beta " << beta;
@@ -1868,8 +1868,8 @@ FUNCTION void write_bigoutput()
     }
       case 10: // Beverton-Holt with alpha, beta
     {
-      SS2out << "Ln(alpha): " << SR_parm(3) << " alpha " << mfexp(SR_parm(3)) << endl;
-      SS2out << "Ln(beta): " << SR_parm(4) << " beta " << mfexp(SR_parm(4)) << endl;
+      SS2out << "Ln(alpha): " << SRparm(3) << " alpha " << mfexp(SRparm(3)) << endl;
+      SS2out << "Ln(beta): " << SRparm(4) << " beta " << mfexp(SRparm(4)) << endl;
       SS2out << "ln(R0)_derived: " << log( 1. / beta * (alpha - (1. / SSBpR_virgin))) << endl;  //  virgin R0
       SS2out << "steepness_derived: " << alpha * SSBpR_virgin / (4. + alpha * SSBpR_virgin) << endl;  // steepness virgin
       break;
@@ -1879,10 +1879,10 @@ FUNCTION void write_bigoutput()
       dvariable Shepherd_c;
       dvariable Shepherd_c2;
       dvariable Hupper;
-      Shepherd_c = SR_parm(3);
+      Shepherd_c = SRparm(3);
       Shepherd_c2 = pow(0.2, Shepherd_c);
       Hupper = 1.0 / (5.0 * Shepherd_c2);
-      temp = 0.2 + (SR_parm(2) - 0.2) / (0.8) * (Hupper - 0.2);
+      temp = 0.2 + (SRparm(2) - 0.2) / (0.8) * (Hupper - 0.2);
       SS2out << "Shepherd_c: " << Shepherd_c << endl << "Shepard_steepness_limit: " << Hupper << endl << "Shepard_adjusted_steepness: " << temp << endl;
       break;
     }
@@ -2006,7 +2006,7 @@ FUNCTION void write_bigoutput()
       }
       else
       {SS2out << " - - ";}
-      SS2out << SR_parm_byyr(y)(1,N_SRparm2) << endl;
+      SS2out << SRparm_byyr(y)(1,N_SRparm2) << endl;
     }
 
     // REPORT_KEYWORD SPAWN_RECR_CURVE
@@ -2017,7 +2017,7 @@ FUNCTION void write_bigoutput()
                << pick_report_name(20) << endl;
         SS2out << "SSB/SSB_virgin    SSB    Recruitment" << endl;
         y = styr;
-        SR_parm_work = SR_parm_byyr(styr);
+        SRparm_work = SRparm_byyr(styr);
         for (f = 1; f <= 120; f++)
         {
           SSB_current = double(f) / 100. * SSB_virgin;
@@ -4905,7 +4905,7 @@ FUNCTION void SPR_profile()
         SSBpR_Calc(equ_Recr);
         //  SPAWN-RECR:   calc equil spawn-recr in the SPR loop
         SSBpR_temp = SSB_equil;
-        Equ_SpawnRecr_Result = Equil_Spawn_Recr_Fxn(SR_parm_work, SSB0_4_SRR, R0_4_SRR, SSBpR_temp); //  returns 2 element vector containing equilibrium biomass and recruitment at this SPR
+        Equ_SpawnRecr_Result = Equil_Spawn_Recr_Fxn(SRparm_work, SSB0_4_SRR, R0_4_SRR, SSBpR_temp); //  returns 2 element vector containing equilibrium biomass and recruitment at this SPR
         Btgt_prof = Equ_SpawnRecr_Result(1);
         Btgt_prof_rec = Equ_SpawnRecr_Result(2);
         if (Btgt_prof < 0.001 || Btgt_prof_rec < 0.001)
