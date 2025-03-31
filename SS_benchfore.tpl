@@ -415,7 +415,7 @@ FUNCTION void setup_Benchmark()  // and forecast
         }
         // recr_dist_unf is accumulated while doing the time_series
         // then its mean is calculated in Get_Benchmarks and assigned to recr_dist
-        //  the SR_parm_bench is calculated from Bmark_yrs 9-10 in benchmark code using values stored in SR_parm_byyr
+        //  the SRparm_bench is calculated from Bmark_yrs 9-10 in benchmark code using values stored in SRparm_byyr
       }
 
       //  calc average selectivity to use in equil; store in styr-3
@@ -733,18 +733,18 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
 
   for (j = 1; j <= N_SRparm2; j++)
   {
-    if (SR_parm_timevary(j) == 0)
+    if (SRparm_timevary(j) == 0)
     {
-      SR_parm_work(j) = SR_parm(j);
+      SRparm_work(j) = SRparm(j);
     }
     else
     {
       temp = 0.;
       for (int y = Bmark_Yr(9); y <= Bmark_Yr(10); y++)
       {
-        temp += SR_parm_byyr(y, j);
+        temp += SRparm_byyr(y, j);
       }
-      SR_parm_work(j) = temp / (Bmark_Yr(10) - Bmark_Yr(9) + 1.);
+      SRparm_work(j) = temp / (Bmark_Yr(10) - Bmark_Yr(9) + 1.);
     }
   }
 
@@ -756,7 +756,7 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
 
  Flags:
   timevary_MG_firstyr == YrMax  // means that no biology is time-varying
-  timevary_parm_start_SR > 0 //  means that R0 or h (i.e. any except regime, sigmaR, autocorr) is time-varying, so SSBpR0 gets updated for time series and for bench
+  timevary_parm_SR_first > 0 //  means that R0 or h (i.e. any except regime, sigmaR, autocorr) is time-varying, so SSBpR0 gets updated for time series and for bench
   timevary_bio_4SRR is new user selected flag:  0 for legacy, vs 1 for improved use of timevary biology in SRR calcs
 
  Legacy approach:
@@ -775,22 +775,24 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
  Improved approach
  SSBpR0 set at start year using start year biology
  SSBpR0 updated during time series if there is time-varying R0; PLUS NEW: equil_spawn_recr_calc called to get new equilibrium R0, SSB0
- SSBpR0 for benchmark stays at virgin unless timevary_bio_4SRR == 0, or if timevary_parm_start_SR > 0
+ SSBpR0 for benchmark stays at virgin unless timevary_bio_4SRR == 0, or if timevary_parm_SR_first > 0
  Btgttgt can now use either frac*SSB_bench or frac*SSB_virgin by using the existing flag for depletion basis
  Btgttgt2 can be fraction of SSB_MSY, of SSB_virgin, or of SSB_bench
  HCR inflection adds option to use SSB_virgin or SSB_bench
  depletion adds option to use SSB_bench
  */
-  Recr_unf = mfexp(SR_parm_work(1));  // R0 to be used
+  Recr_unf = mfexp(SRparm_work(1));  // R0 to be used
   Fishon = 0;
   SSBpR_Calc(Recr_unf);  // this returns SSB_equil using benchmark biology
   dvariable SSBpR_bench = SSB_equil / Recr_unf;
 
+  report5 << "virgin: " << Recr_virgin << " " << SSB_virgin << endl;
+  report5 << "bench: " << Recr_unf << " " << SSB_equil << endl;
   if( timevary_MG_firstyr == YrMax && WTage_rd == 0)  // no time-varying biology
   {
     SSB0_4_SRR = SSB_virgin;
     R0_4_SRR = Recr_virgin;
-    SSB_unf = SSB_equil;  //  should this also depend on timevary_parm_start_SR > 0???
+    SSB_unf = SSB_equil;  //  should this also depend on timevary_parm_SR_first > 0???
   }
   else  //  there is some timevary biology (with any WTage_rd == 1 qualifying as timevarying without actually chacking for different values in diff years)
   {
@@ -798,18 +800,17 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
     {
       warnstream << "There is timevary biology and the legacy approach to benchmark calculations is being used; user should be aware";
       write_message (WARN, 0);
-      if(timevary_parm_start_SR == 0)  // no timevary SRR parms
+      if(timevary_parm_SR_first == 0)  // no timevary SRR parms
       {
         SSB_unf = SSB_equil;
         R0_4_SRR = Recr_unf;  // same as Recr_virgin because no timevary SRparms
         SSB0_4_SRR = SSB_equil;  // this is legacy, but incorrect, as it moves equil off the SRR, rather than along the SRR
         SSBpR_bench = SSB0_4_SRR / R0_4_SRR;
-        //  Equil_Spawn_Recr_Fxn will be called in more complete approach to use SSBpR_bench to move along the SRR
       }
-      else // there are timevary SRR parms, so use benchmark biology to create a whole new SRR
+      else // there are timevary SRR parms
       {
-        Recr_unf = mfexp(SR_parm_work(1));  // R0 to be used
-        // steepness and other SR parms will also come from SR_parm_work
+        Recr_unf = mfexp(SRparm_work(1));  // R0 to be used
+        // steepness and other SR parms will also come from SRparm_work
         SSBpR_Calc(Recr_unf);  // this returns SSB_equil using benchmark biology
         SSB_unf = SSB_equil;
         R0_4_SRR = Recr_unf;
@@ -821,20 +822,20 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
 
     else  // more complete approach to time vary biology will be used (introduced in 3.30.24)
     {
-      if(timevary_parm_start_SR == 0)  // no timevary SRR parms, so SRR will use SSB_virgin, Recr_virgin to internally create virgin SSBpR0 
+      if(timevary_parm_SR_first == 0)  // no timevary SRR parms, so SRR will use SSB_virgin, Recr_virgin to internally create virgin SSBpR0 
       {
         SSB0_4_SRR = SSB_virgin;
         R0_4_SRR = Recr_virgin;
         //  get new equilibrium point using original SRR and SSBpR_bench
-        Equ_SpawnRecr_Result = Equil_Spawn_Recr_Fxn(SR_parm_work, SSB_virgin, Recr_virgin, SSBpR_bench); //  returns 2 element vector containing equilibrium biomass and recruitment at this SPR
+        Equ_SpawnRecr_Result = Equil_Spawn_Recr_Fxn(SRparm_work, SSB_virgin, Recr_virgin, SSBpR_bench); //  returns 2 element vector containing equilibrium biomass and recruitment at this SPR
         SSB_unf = Equ_SpawnRecr_Result(1);
         Recr_unf = Equ_SpawnRecr_Result(2);
         if (show_MSY == 1) report5 << " use virgin SSBpR0 in SRR - SSB: " << SSB_virgin << " Recr: " << Recr_virgin << " SPR: " << SSB_virgin / Recr_virgin << " bench SPR: " << SSBpR_bench << " new equil: " << Equ_SpawnRecr_Result << endl;
       }
-      else  //  use benchmark quantities for SRR, so everything can change
+      else  //  use updated SRparms and benchmark biology
       {
         //  get new equilibrium point for the benchmark SRR
-        Recr_unf = mfexp(SR_parm_work(1));  // R0 to be used
+        Recr_unf = mfexp(SRparm_work(1));  // R0 to be used
         Fishon = 0;
         SSBpR_Calc(Recr_unf);  // this returns SSB_equil using benchmark biology
         SSBpR_bench = SSB_equil / Recr_unf;
@@ -842,23 +843,22 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
         SSB_unf = SSB_equil;
         R0_4_SRR = Recr_unf;
         // verify
-        Equ_SpawnRecr_Result = Equil_Spawn_Recr_Fxn(SR_parm_work, SSB_equil, Recr_unf, SSBpR_bench); //  returns 2 element vector containing equilibrium biomass and recruitment at this SPR
+        Equ_SpawnRecr_Result = Equil_Spawn_Recr_Fxn(SRparm_work, SSB_equil, Recr_unf, SSBpR_bench); //  returns 2 element vector containing equilibrium biomass and recruitment at this SPR
         if (show_MSY == 1) report5 << " use bench SSBpR0 in SRR - SSB: " << SSB_unf << " Recr: " << Recr_unf << " SPR: " << SSBpR_bench << " new equil: " << Equ_SpawnRecr_Result << endl;
       }
       SSBpR_Calc(Recr_unf);  // this calcs SSBpR and returns it as SSB_equil using benchmark biology and the updated equil Recr
       SSB_unf = SSB_equil;
-      if (show_MSY == 1) report5 << " CHECK! - SSB_unf based on updated SRR (if any): " << SSB_unf << endl;
     }
   }
 
   if (show_MSY == 1)
   {
-    SR_parm_work(N_SRparm2 + 1) = SSB0_4_SRR;
+    SRparm_work(N_SRparm2 + 1) = SSB0_4_SRR;
     Mgmt_quant(1) = SSB_unf;
     Mgmt_quant(2) = totbio;  // this is calculated in Do_Equil_Calc
     Mgmt_quant(3) = smrybio;
     Mgmt_quant(4) = Recr_unf;
-    report5 << "SR_parms for benchmark: " << SR_parm_work << endl
+    report5 << "SRparms for benchmark: " << SRparm_work << endl
             << "Benchmark biology averaged over years: " << Bmark_Yr(1) << " " << Bmark_Yr(2) << endl << endl;
     Mgmt_quant(19) = SSB_unf;  // placeholder for depletion denominator
     Mgmt_quant(20) = SSB_unf;  //  placeholder to be replaced by SSB_HCR_infl
@@ -1010,7 +1010,7 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
 
     //  SPAWN-RECR:   calc equil spawn-recr in YPR; need to make this area-specific
     SSBpR_temp = SSB_equil;  //  based on most recent call to Do_Equil_Calc
-    Equ_SpawnRecr_Result = Equil_Spawn_Recr_Fxn(SR_parm_work, SSB0_4_SRR, R0_4_SRR, SSBpR_temp); //  returns 2 element vector containing equilibrium biomass and recruitment at this SPR
+    Equ_SpawnRecr_Result = Equil_Spawn_Recr_Fxn(SRparm_work, SSB0_4_SRR, R0_4_SRR, SSBpR_temp); //  returns 2 element vector containing equilibrium biomass and recruitment at this SPR
 
     Bspr = Equ_SpawnRecr_Result(1);
     Bspr_rec = Equ_SpawnRecr_Result(2);
@@ -1125,7 +1125,7 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
     if (rundetail > 0 && mceval_counter == 0 && show_MSY == 1)
       echoinput << "Calculated F0.1: " << Btgt_Fmult << endl;
     SSBpR_temp = SSB_equil;
-    Equ_SpawnRecr_Result = Equil_Spawn_Recr_Fxn(SR_parm_work, SSB0_4_SRR, R0_4_SRR, SSBpR_temp); //  returns 2 element vector containing equilibrium biomass and recruitment at this SPR
+    Equ_SpawnRecr_Result = Equil_Spawn_Recr_Fxn(SRparm_work, SSB0_4_SRR, R0_4_SRR, SSBpR_temp); //  returns 2 element vector containing equilibrium biomass and recruitment at this SPR
     Btgt = Equ_SpawnRecr_Result(1);
     Btgt_Rec = Equ_SpawnRecr_Result(2);
     YPR_Btgt_enc = YPR_enc; //  total encountered yield per recruit
@@ -1226,7 +1226,7 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
         SSBpR_temp = SSB_equil;
         SPR_Btgt = SSBpR_temp / SSBpR_unf;  //  where SSBpR_unf = SSB_unf / Recr_unf so units of SSB/R; so result is SPR_Btgt = (fished SSB/R) / (unfished SSB/R)
         //  SPAWN-RECR:   calc equil spawn-recr for Btarget calcs;  need to make area-specific
-        Equ_SpawnRecr_Result = Equil_Spawn_Recr_Fxn(SR_parm_work, SSB0_4_SRR, R0_4_SRR, SSBpR_temp); //  returns 2 element vector containing equilibrium biomass and recruitment at this SPR
+        Equ_SpawnRecr_Result = Equil_Spawn_Recr_Fxn(SRparm_work, SSB0_4_SRR, R0_4_SRR, SSBpR_temp); //  returns 2 element vector containing equilibrium biomass and recruitment at this SPR
         yld1(ii) = Equ_SpawnRecr_Result(1);
       }
 
@@ -1402,7 +1402,7 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
         }
         if (F_Method == 1)
         {
-          Fmax = (Btgt_Fmult + SPR_Fmult) * 0.5 * SR_parm_work(2) / 0.05;
+          Fmax = (Btgt_Fmult + SPR_Fmult) * 0.5 * SRparm_work(2) / 0.05;
         } //  previously /0.18
         F1(1) = -log(Fmax / Btgt_Fmult - 1.);
         F2(1) = -log(Fmax / Btgt_Fmult - 1.);
@@ -1446,7 +1446,7 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
       //  SPAWN-RECR:   calc spawn-recr for MSY calcs;  need to make area-specific
       MSY_SPR = SSB_equil / SSBpR_unf;
       SSBpR_temp = SSB_equil;
-      Equ_SpawnRecr_Result = Equil_Spawn_Recr_Fxn(SR_parm_work, SSB0_4_SRR, R0_4_SRR, SSBpR_temp); //  returns 2 element vector containing equilibrium biomass and recruitment at this SPR
+      Equ_SpawnRecr_Result = Equil_Spawn_Recr_Fxn(SRparm_work, SSB0_4_SRR, R0_4_SRR, SSBpR_temp); //  returns 2 element vector containing equilibrium biomass and recruitment at this SPR
       Bmsy = Equ_SpawnRecr_Result(1);  //  with MSY set to SPR, not directly estimated
       Recr_msy = Equ_SpawnRecr_Result(2);
       yld1(1) = YPR_opt * Recr_msy;
@@ -1540,7 +1540,7 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
           //  SPAWN-RECR:   calc spawn-recr for MSY calcs;  need to make area-specific
           MSY_SPR = SSB_equil / SSBpR_unf;
           SSBpR_temp = SSB_equil;
-          Equ_SpawnRecr_Result = Equil_Spawn_Recr_Fxn(SR_parm_work, SSB0_4_SRR, R0_4_SRR, SSBpR_temp); //  returns 2 element vector containing equilibrium biomass and recruitment at this SPR
+          Equ_SpawnRecr_Result = Equil_Spawn_Recr_Fxn(SRparm_work, SSB0_4_SRR, R0_4_SRR, SSBpR_temp); //  returns 2 element vector containing equilibrium biomass and recruitment at this SPR
           Bmsy = Equ_SpawnRecr_Result(1);  //  MSY is directly estimated
           Recr_msy = Equ_SpawnRecr_Result(2);
           Profit = (PricePerF * YPR_val_vec) * Recr_msy - Cost;
@@ -1841,7 +1841,7 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
         SPR_Btgt2 = SSB_equil / SSBpR_unf;
         //  SPAWN-RECR:   calc equil spawn-recr for Btarget calcs;  need to make area-specific
         SSBpR_temp = SSB_equil;
-        Equ_SpawnRecr_Result = Equil_Spawn_Recr_Fxn(SR_parm_work, SSB0_4_SRR, R0_4_SRR, SSBpR_temp); //  returns 2 element vector containing equilibrium biomass and recruitment at this SPR
+        Equ_SpawnRecr_Result = Equil_Spawn_Recr_Fxn(SRparm_work, SSB0_4_SRR, R0_4_SRR, SSBpR_temp); //  returns 2 element vector containing equilibrium biomass and recruitment at this SPR
         yld1(ii) = Equ_SpawnRecr_Result(1);
       }
 
@@ -1923,9 +1923,9 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
   {
     report5 << "#" << endl
             << "Management_report" << endl;
-    report5 << "Virgin: Steepness_Recr_SSB " << SR_parm(2) << " " << Recr_virgin << " " << SSB_virgin << endl;
-    report5 << "Bench:  Steepness_Recr_SSB " << SR_parm_work(2) << " " << R0_4_SRR << " " << SSB0_4_SRR << endl;
-    report5 << "unf  :  Steepness_Recr_SSB " << SR_parm_work(2) << " " << Recr_unf << " " << SSB_unf << endl;
+    report5 << "Virgin: Steepness_Recr_SSB " << SRparm(2) << " " << Recr_virgin << " " << SSB_virgin << endl;
+    report5 << "Bench:  Steepness_Recr_SSB " << SRparm_work(2) << " " << R0_4_SRR << " " << SSB0_4_SRR << endl;
+    report5 << "unf  :  Steepness_Recr_SSB " << SRparm_work(2) << " " << Recr_unf << " " << SSB_unf << endl;
     report5 << "#" << endl
             << "Summary_age: " << Smry_Age << endl;
     report5 << "#_Bmark_years: beg_bio, end_bio, beg_selex, end_selex, beg_relF, end_relF, beg_recr_dist, end_recr_dist, beg_SRparm, end_SRparm" << endl
@@ -2423,15 +2423,15 @@ FUNCTION void Get_Forecast()
       t_base = styr + (y - styr) * nseas - 1;
       for (f = 1; f <= N_SRparm2; f++)
       {
-        if (SR_parm_timevary(f) == 0)
+        if (SRparm_timevary(f) == 0)
         {
-          //  no change to SR_parm_work
+          //  no change to SRparm_work
         }
         else
         {
-          SR_parm_work(f) = parm_timevary(SR_parm_timevary(f), y);
+          SRparm_work(f) = parm_timevary(SRparm_timevary(f), y);
         }
-        SR_parm_byyr(y, f) = SR_parm_work(f);
+        SRparm_byyr(y, f) = SRparm_work(f);
       }
       env_data(y, -1) = log(SSB_current / SSB_yr(styr - 1)); //  store most recent value for density-dependent effects, NOTE - off by a year if recalc'ed at beginning of season 1
       env_data(y, -2) = recdev(y); //  store for density-dependent effects
@@ -2708,14 +2708,14 @@ FUNCTION void Get_Forecast()
             }
             //  SPAWN-RECR:   get recruitment in forecast;  needs to be area-specific
             // SR_fxn
-            if (timevary_parm_start_SR == 0) //  R0 is not time-varying
+            if (timevary_parm_SR_first == 0) //  R0 is not time-varying
             {
               R0_use = Recr_virgin;
               SSB_use = SSB_virgin;
             }
             else
             {
-              R0_use = mfexp(SR_parm_work(1));
+              R0_use = mfexp(SRparm_work(1));
               equ_Recr = R0_use;
               Fishon = 0;
               eq_yr = y;
@@ -3348,14 +3348,14 @@ FUNCTION void Get_Forecast()
             //  SS_Label_Info_24.3.4.1 #Get recruitment from this spawning biomass
             //  SPAWN-RECR:   calc recruitment in time series; need to make this area-specific
             // SR_fxn
-            if (timevary_parm_start_SR == 0) //  R0 is not time-varying
+            if (timevary_parm_SR_first == 0) //  R0 is not time-varying
             {
               R0_use = Recr_virgin;
               SSB_use = SSB_virgin;
             }
             else
             {
-              R0_use = mfexp(SR_parm_work(1));
+              R0_use = mfexp(SRparm_work(1));
               equ_Recr = R0_use;
               Fishon = 0;
               eq_yr = y;
@@ -3790,10 +3790,10 @@ FUNCTION void Get_Forecast()
         if( SR_fxn == 10 )
         {
           temp = SSB_equil / equ_Recr;  //  current year's SSB/R with current biology at age
-          alpha = mfexp(SR_parm_work(3));
-          beta = mfexp(SR_parm_work(4));
-          SR_parm_byyr(y, 2) =  alpha * temp / (4. + alpha * temp);  //  implied steepness
-          SR_parm_byyr(y, 1) = log( 1. / beta * (alpha - (1. / temp)));  //  implied ln_R0
+          alpha = mfexp(SRparm_work(3));
+          beta = mfexp(SRparm_work(4));
+          SRparm_byyr(y, 2) =  alpha * temp / (4. + alpha * temp);  //  implied steepness
+          SRparm_byyr(y, 1) = log( 1. / beta * (alpha - (1. / temp)));  //  implied ln_R0
         }
         Fishon = 1;
         SSBpR_Calc(equ_Recr); //  call function to do per recruit calculation
