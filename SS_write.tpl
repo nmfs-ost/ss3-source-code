@@ -125,7 +125,7 @@ FUNCTION void write_summaryoutput()
     for (j = 1; j <= N_parm_dev; j++)
       report2 << parm_dev(j) << " ";
   }
-  report2 << SR_parm << " ";
+  report2 << SRparm << " ";
   if (recdev_cycle > 0)
     report2 << recdev_cycle_parm << " ";
   if (recdev_do_early > 0)
@@ -180,14 +180,14 @@ FUNCTION void write_summaryoutput()
     }
   }
 
-  report2 << runnumber << " SR_parm ";
+  report2 << runnumber << " SRparm ";
   for (i = 1; i <= N_SRparm3 + recdev_cycle; i++)
   {
     NP++;
     report2 << " " << ParmLabel(NP);
   }
   report2 << endl
-          << runnumber << " SR_parm " << SR_parm << " ";
+          << runnumber << " SRparm " << SRparm << " ";
   if (recdev_cycle > 0)
     report2 << recdev_cycle_parm;
   report2 << endl;
@@ -453,8 +453,8 @@ FUNCTION void write_SS_summary()
   for (j = 1; j <= N_SRparm3; j++)
   {
     NP++;
-    SS_smry << ParmLabel(NP) << " " << SR_parm(j) << " ";
-    if (active(SR_parm(j)))
+    SS_smry << ParmLabel(NP) << " " << SRparm(j) << " ";
+    if (active(SRparm(j)))
     {
       active_count++;
       SS_smry << CoVar(active_count, 1) << " Act ";
@@ -463,7 +463,7 @@ FUNCTION void write_SS_summary()
     {
       SS_smry << 0.0 << " Fix ";
     }
-    SS_smry << (SR_parm(j) - SR_parm_LO(j)) / (SR_parm_HI(j) - SR_parm_LO(j) + 1.0e-6) << endl;
+    SS_smry << (SRparm(j) - SRparm_LO(j)) / (SRparm_HI(j) - SRparm_LO(j) + 1.0e-6) << endl;
   }
 
   if (recdev_cycle > 0)
@@ -989,7 +989,7 @@ FUNCTION void write_rebuilder_output()
   rebuilder << SSB_yr(styr - 2) << " " << SSB_yr(styr, k) << " #SpawnBio" << endl;
 
   //i. steepness; SigmaR; rho
-  rebuilder << SR_parm(2) << " " << sigmaR << " " << SR_parm(N_SRparm2) << " # spawn-recr steepness, sigmaR, autocorr" << endl;
+  rebuilder << SRparm(2) << " " << sigmaR << " " << SRparm(N_SRparm2) << " # spawn-recr steepness, sigmaR, autocorr" << endl;
 
   if (mceval_counter == 0)
   {
@@ -1042,7 +1042,7 @@ FUNCTION void write_rebuilder_output()
     rebuild_dat << "# Which probability to product detailed results for (1=0.5; 2=0.6; etc.)" << endl
                 << 3 << endl;
     rebuild_dat << "# Steepness sigma-R Auto-correlation" << endl
-                << SR_parm(2) << " " << sigmaR << " " << 0 << endl;
+                << SRparm(2) << " " << sigmaR << " " << 0 << endl;
     rebuild_dat << "# Target SPR rate (FMSY Proxy); manually change to SPR_MSY if not using SPR_target" << endl
                 << SPR_target << endl;
     rebuild_dat << "# Discount rate (for cumulative catch)" << endl

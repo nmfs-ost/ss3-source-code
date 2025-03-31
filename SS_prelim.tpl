@@ -689,9 +689,9 @@
 
     for (i = 1; i <= N_SRparm3; i++)
     {
-      SR_parm(i) = SR_parm_RD(i);
+      SRparm(i) = SRparm_RD(i);
     }
-    echoinput << " SRR_parms read from ctl " << SR_parm << endl;
+    echoinput << " SRR_parms read from ctl " << SRparm << endl;
 
     if (recdev_cycle > 0)
     {
@@ -863,13 +863,13 @@
   MGparm_use = value(MGparm);
 
   echoinput << endl
-            << " now check SR_parm bounds and priors and do jitter if requested " << endl;
+            << " now check SRparm bounds and priors and do jitter if requested " << endl;
   for (i = 1; i <= N_SRparm3; i++)
   {
-    SR_parm(i) = Check_Parm(i, SR_parm_PH(i), SR_parm_LO(i), SR_parm_HI(i), SR_parm_PRtype(i), SR_parm_PR(i), SR_parm_CV(i), jitter, SR_parm(i));
+    SRparm(i) = Check_Parm(i, SRparm_PH(i), SRparm_LO(i), SRparm_HI(i), SRparm_PRtype(i), SRparm_PR(i), SRparm_CV(i), jitter, SRparm(i));
   }
-  echoinput << " SRR_parms after check " << SR_parm << endl;
-  SR_parm_use = value(SR_parm);
+  echoinput << " SRR_parms after check " << SRparm << endl;
+  SRparm_use = value(SRparm);
 
   recdev_use.initialize();
   if (recdev_cycle > 0)

@@ -52,15 +52,15 @@ FUNCTION void make_timevaryparm()
       }
       case 2: // SR
       {
-        baseparm = SR_parm(timevary_setup(2)); //  index of base parm
-        baseparm_min(tvary) = SR_parm_LO(timevary_setup(2));
-        baseparm_max(tvary) = SR_parm_HI(timevary_setup(2));
+        baseparm = SRparm(timevary_setup(2)); //  index of base parm
+        baseparm_min(tvary) = SRparm_LO(timevary_setup(2));
+        baseparm_max(tvary) = SRparm_HI(timevary_setup(2));
         if (do_once == 1)
-          echoinput << "base SR_parm " << baseparm << endl;
+          echoinput << "base SRparm " << baseparm << endl;
         for (j = timevary_setup(3); j < timevary_def[tvary + 1](3); j++)
         {
           timevary_parm_cnt_all++;
-          timevary_parm(timevary_parm_cnt_all) = SR_parm(N_SRparm(SR_fxn) + 3 + j - timevary_parm_start_SR + 1);
+          timevary_parm(timevary_parm_cnt_all) = SRparm(N_SRparm(SR_fxn) + 3 + j - timevary_parm_SR_first + 1);
           if (do_once == 1)
             echoinput << j << " timevary_parm: " << timevary_parm(timevary_parm_cnt_all) << endl;
         }
