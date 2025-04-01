@@ -1955,7 +1955,7 @@ FUNCTION void Make_FishSelex()
         sel_num(s, f, g) = sel_a(yf, f, gg); //  selected numbers
         switch (seltype(f + Nfleet, 2)) //  age-retention function
         {
-          case 0:
+          case 0:  // no discarding, so just copy the selected quantities
           {
             sel_ret_bio(s, f, g) = sel_bio(s, f, g); //  retained wt-at-age
             sel_ret_num(s, f, g) = sel_num(s, f, g); //  retained numbers
@@ -1963,7 +1963,7 @@ FUNCTION void Make_FishSelex()
             sel_dead_num(s, f, g) = sel_num(s, f, g); //  dead numbers
             break;
           }
-          case 1:
+          case 1:  // age-based retention function is used; all discarded fish assumed dead and have same bodywt as retained fish
           {
             sel_ret_bio(s, f, g) = elem_prod(sel_bio(s, f, g), retain_a(y, f, gg)); //  retained wt-at-age
             sel_ret_num(s, f, g) = elem_prod(sel_num(s, f, g), retain_a(y, f, gg)); //  retained numbers
@@ -1971,7 +1971,7 @@ FUNCTION void Make_FishSelex()
             sel_dead_num(s, f, g) = sel_ret_num(s, f, g); //  dead numbers
             break;
           }
-          case 2:
+          case 2:  // age-based retention and discard mortality, same body wt as retained fish
           {
             // details of retention and mortality already taken into account with calc of discmort2_a
             sel_ret_bio(s, f, g) = elem_prod(sel_bio(s, f, g), retain_a(y, f, gg)); //  retained wt-at-age
@@ -1980,7 +1980,7 @@ FUNCTION void Make_FishSelex()
             sel_dead_num(s, f, g) = discmort2_a(y, f, gg); //  dead numbers
             break;
           }
-          case 3: //  all selected fish are dead
+          case 3: //  all selected fish are dead; use this for a discard only fleet
           {
             sel_ret_bio(s, f, g) = 0.0; //  retained wt-at-age
             sel_ret_num(s, f, g) = 0.0; //  retained numbers
