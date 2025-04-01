@@ -1973,10 +1973,11 @@ FUNCTION void Make_FishSelex()
           }
           case 2:
           {
+            // details of retention and mortality already taken into account with calc of discmort2_a
             sel_ret_bio(s, f, g) = elem_prod(sel_bio(s, f, g), retain_a(y, f, gg)); //  retained wt-at-age
             sel_ret_num(s, f, g) = elem_prod(sel_num(s, f, g), retain_a(y, f, gg)); //  retained numbers
-            sel_dead_bio(s, f, g) = elem_prod(sel_ret_bio(s, f, g), discmort_a(y, f, gg)); //  dead wt
-            sel_dead_num(s, f, g) = elem_prod(sel_ret_num(s, f, g), discmort_a(y, f, gg)); //  dead numbers
+            sel_dead_bio(s, f, g) = elem_prod(Wt_Age_t(tz, f, g), discmort2_a(y, f, gg)); //  dead wt
+            sel_dead_num(s, f, g) = discmort2_a(y, f, gg); //  dead numbers
             break;
           }
           case 3: //  all selected fish are dead
@@ -1987,6 +1988,11 @@ FUNCTION void Make_FishSelex()
             sel_dead_num(s, f, g) = sel_num(s, f, g); //  dead numbers
             break;
           }
+        }
+        if (docheckup == 1 && y == styr)
+        {
+          echoinput << " sel_ret_bio " << sel_ret_bio(s, f, g) << endl
+                    << " sel_dead_bio " << sel_dead_bio(s, f, g) << endl;
         }
       }
 
