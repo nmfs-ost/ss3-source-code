@@ -1131,7 +1131,14 @@
 !!if(k2>0) echoinput<<"  read Length_Maturity for each GP"<<Length_Maturity<<endl;
 
   init_int First_Mature_Age     // first age with non-zero maturity
-!! echoinput<<First_Mature_Age<<"  First_Mature_Age"<<endl;
+ LOCAL_CALCS
+  echoinput<<First_Mature_Age<<"  First_Mature_Age"<<endl;
+  if (First_Mature_Age == 0)
+  {
+    warnstream<<"First_Mature_Age read as:  " << First_Mature_Age << ", which is unusual. Check logic of spawn_month and settlement time & age";
+    write_message(WARN,0);
+  }
+ END_CALCS
 
   init_int Fecund_Option
 //   Value=1 means interpret the 2 egg parameters as linear eggs/kg on body weight (current SS3 default),

@@ -49,6 +49,15 @@
       echoinput << tempvec(1, k) << endl;
       y = abs(tempvec(1));
       f = tempvec(6);
+      if (f == -2 && First_Mature_Age > 0)
+      {
+        if (tempvec(7 + First_Mature_Age - 1) > 0.0)
+        {
+          warnstream << "WTATAGE.SS has positive fecundity for year, age = " << y << " " << First_Mature_Age - 1 << " setting to 0. because younger than First_Mature_Age";
+          write_message(ADJUST, 0);
+        }
+        tempvec(7, 7 + First_Mature_Age - 1) = 0.0;
+      }
       if (y < 9999)
         last_yr_read(f) = max(y, last_yr_read(f));
       if (y < 9999 && tempvec(1) < 0)
