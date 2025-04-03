@@ -1022,29 +1022,32 @@ FUNCTION void get_time_series()
         }
 
         //  SS_Label_Info_24.2.3 #Get the total recruitment produced by this spawning biomass at the beginning of the season
-        //  SPAWN-RECR:   calc recruitment in time series; need to make this area-specific
-        //  SR_Fxn  relevant keyword
-        if (timevary_parm_SR_first == 0 || timevary_SRparm(y) == 0) //  SRparm are not time-varying (but regime still could be)
+        //  SPAWN-RECR:   calc recruitment in time series
+        if (timevary_SRparm(y) == 0) //  SRparm use virgin values (but regime still could be)
         {
           R0_use = Recr_virgin;
           SSB_use = SSB_virgin;
-          warning << y << " virgin "<<SSB_use<<" "<<R0_use <<"  steep " << SRparm_work(2);
+          warning << y << " virgin_SRR; SSB_use: "<<SSB_use<<"  R0_use: "<<R0_use <<"  steep: " << SRparm_work(2) << endl;
         }
-        else  //  timevary 
+        else if (timevary_SRparm(y) == 1)  //  update R0_use and SSB_use in this year
+                                           //  values will carry forward into subsequent years
         {
           R0_use = mfexp(SRparm_work(1));
-          //  timevary steepness is in SRparm_work(2) and will be applied inside of Equil_Spawn_Recr_Fxn
+          //  timevary steepness is in SRparm_work(2) and will be applied inside of Equil_Spawn_Recr_Fxn() and Spawn_Recr()
           equ_Recr = R0_use;
           Fishon = 0;
           eq_yr = y;
           bio_yr = y;
           SSBpR_Calc(R0_use); //  call function to do per recruit calculation with current year's biology and adjusted R0
           SSB_use = SSB_equil;
-          SSBpR_temp = SSB_use / R0_use;  // get unfished SSBpR
-          Equ_SpawnRecr_Result = Equil_Spawn_Recr_Fxn(SRparm_work, SSB_use, R0_use, SSBpR_temp); //  returns 2 element vector containing equilibrium biomass and recruitment at this SPR
-          warning << y << " pR only "<<SSB_use<<" "<<R0_use<<"  steep " << SRparm_work(2)<< " equil: "<<Equ_SpawnRecr_Result;
-          R0_use = Equ_SpawnRecr_Result(2);
-          SSB_use = Equ_SpawnRecr_Result(1);
+          warning << y << " update_SRR; SSB_use: "<<SSB_use<<"  R0_use: "<<R0_use <<"  steep: " << SRparm_work(2) << endl;
+
+          // test that this stays on equilibrium.  It does.
+//          SSBpR_temp = SSB_use / R0_use;  // get unfished SSBpR
+//          Equ_SpawnRecr_Result = Equil_Spawn_Recr_Fxn(SRparm_work, SSB_use, R0_use, SSBpR_temp); //  returns 2 element vector containing equilibrium biomass and recruitment at this SPR
+//          warning << y << " pR only "<<SSB_use<<" "<<R0_use<<"  steep " << SRparm_work(2)<< " equil: "<<Equ_SpawnRecr_Result;
+//          R0_use = Equ_SpawnRecr_Result(2);
+//          SSB_use = Equ_SpawnRecr_Result(1);
           if (fishery_on_off == 1)
           {
             Fishon = 1;
@@ -1054,8 +1057,12 @@ FUNCTION void get_time_series()
             Fishon = 0;
           }
         }
+        else  //  flag is 2
+        {
+          warning << y << " carry_SRR; SSB_use: "<<SSB_use<<"  R0_use: "<<R0_use <<"  steep: " << SRparm_work(2) << endl;
+        }
         Recruits = Spawn_Recr(SSB_use, R0_use, SSB_current); // calls to function Spawn_Recr using either virgin or adjusted R0 and SSB0
-        warning <<"   SSB_current: " << SSB_current << "  recruits: "<<Recruits<< endl;
+//        warning <<"  SSB: " << SSB_current << "  R: " << Recruits << endl;
         if (SR_fxn != 7) apply_recdev(Recruits, R0_use); //  apply recruitment deviation
         // distribute Recruitment of age 0 fish among the current and future settlements; and among areas and morphs
         //  use t offset for each birth event:  Settlement_offset(settle)
@@ -1492,20 +1499,31 @@ FUNCTION void get_time_series()
         //  SS_Label_Info_24.3.4.1 #Get recruitment from this spawning biomass at some time during the season
         //  SPAWN-RECR:   calc recruitment in time series; need to make this area-specific
         //  SR_fxn
-        if (timevary_parm_SR_first == 0) //  SR parms are not time-varying
+        if (timevary_SRparm(y) == 0) //  SRparm use virgin values (but regime still could be)
         {
           R0_use = Recr_virgin;
           SSB_use = SSB_virgin;
+          warning << y << " virgin_SRR; SSB_use: "<<SSB_use<<"  R0_use: "<<R0_use <<"  steep: " << SRparm_work(2) << endl;
         }
-        else if (timevary_SRparm (y) > 0)
+        else if (timevary_SRparm(y) == 1)  //  update R0_use and SSB_use in this year
+                                           //  values will carry forward into subsequent years
         {
-          R0_use = mfexp(SRparm_work(1));  //  check to be sure this works when R0 is derived from B-H with alpha, beta parameters
+          R0_use = mfexp(SRparm_work(1));
+          //  timevary steepness is in SRparm_work(2) and will be applied inside of Equil_Spawn_Recr_Fxn() and Spawn_Recr()
+          equ_Recr = R0_use;
           Fishon = 0;
           eq_yr = y;
           bio_yr = y;
-          SSBpR_Calc(R0_use); //  call function to do per recruit calculation
+          SSBpR_Calc(R0_use); //  call function to do per recruit calculation with current year's biology and adjusted R0
           SSB_use = SSB_equil;
-          //  should call equil_spawn_recr_fxn here to get updated equilibrium with the new SSB/R
+          warning << y << " update_SRR; SSB_use: "<<SSB_use<<"  R0_use: "<<R0_use <<"  steep: " << SRparm_work(2) << endl;
+
+          // test that this stays on equilibrium.  It does.
+//          SSBpR_temp = SSB_use / R0_use;  // get unfished SSBpR
+//          Equ_SpawnRecr_Result = Equil_Spawn_Recr_Fxn(SRparm_work, SSB_use, R0_use, SSBpR_temp); //  returns 2 element vector containing equilibrium biomass and recruitment at this SPR
+//          warning << y << " pR only "<<SSB_use<<" "<<R0_use<<"  steep " << SRparm_work(2)<< " equil: "<<Equ_SpawnRecr_Result;
+//          R0_use = Equ_SpawnRecr_Result(2);
+//          SSB_use = Equ_SpawnRecr_Result(1);
           if (fishery_on_off == 1)
           {
             Fishon = 1;
@@ -1515,8 +1533,11 @@ FUNCTION void get_time_series()
             Fishon = 0;
           }
         }
-
-        Recruits = Spawn_Recr(SSB_use, R0_use, SSB_current); // calls to function Spawn_Recr
+        else  //  flag is 2
+        {
+          warning << y << " carry_SRR; SSB_use: "<<SSB_use<<"  R0_use: "<<R0_use <<"  steep: " << SRparm_work(2) << endl;
+        }
+        Recruits = Spawn_Recr(SSB_use, R0_use, SSB_current); // calls to function Spawn_Recr using either virgin or adjusted R0 and SSB0
         if (SR_fxn != 7) apply_recdev(Recruits, R0_use); //  apply recruitment deviation
 
         // distribute Recruitment among settlements, areas and morphs

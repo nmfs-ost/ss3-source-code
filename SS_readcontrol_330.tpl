@@ -2134,9 +2134,19 @@
           create_timevary(SRparm_1(j), timevary_setup, timevary_pass, autogen_timevary(timevary_setup(1)), f, block_design_null, env_data_pass, N_parm_dev, finish_starter);
         }
         timevary_def.push_back(timevary_setup(1, 14));
+        int SRflag;
+        SRflag = 0;
         for (y = styr - 3; y <= YrMax + 1; y++)
         {
-          if (timevary_pass(y) > 0 && j != N_SRparm2 - 1) timevary_SRparm(y , YrMax) = timevary_pass(y);  //  set timevary flag, except for regime parameter
+          if (timevary_pass(y) > 0 && j != N_SRparm2 - 1)
+          {
+            timevary_SRparm(y) = timevary_pass(y);  //  set timevary flag, except for regime parameter
+            SRflag = 1; //  first change point
+          }
+          else if(SRflag == 1)
+          {
+            timevary_SRparm(y) = 2;  //  flag to carry forward current SRR info
+          }
         }
       }
     }
