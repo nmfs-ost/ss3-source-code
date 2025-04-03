@@ -162,6 +162,7 @@ PARAMETER_SECTION
   matrix SRparm_byyr(styr-3,YrMax,1,N_SRparm2+1)  //  R0, steepness, parm3, sigmar, rec_dev_offset, R1, rho, SSB   Time_vary implementation of spawner-recruitment
   vector SRparm_virg(1,N_SRparm2+1)
   vector SRparm_work(1,N_SRparm2+1)
+  vector SRparm_bench(1,N_SRparm2+1)
   number two_sigmaRsq;
   number half_sigmaRsq;
   number sigmaR;
