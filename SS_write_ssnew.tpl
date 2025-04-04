@@ -1548,7 +1548,8 @@ FUNCTION void write_nucontrol()
   NuStart << final_conv << " # final convergence criteria (e.g. 1.0e-04) " << endl;
   NuStart << retro_yr - endyr << " # retrospective year relative to end year (e.g. -4)" << endl;
   NuStart << Smry_Age << " # min age for calc of summary biomass" << endl;
-  NuStart << depletion_basis_rd << " # Depletion basis:  denom is: 0=skip; 1=X*SPBvirgin; 2=X*SPBmsy; 3=X*SPB_styr; 4=X*SPB_endyr; 5=X*dyn_Bzero;  values>=11 invoke N multiyr with 10s & 100s digit; append .1 to invoke log(ratio); e.g. 122.1 produces log(12 year trailing average of B/Bmsy)" << endl;
+  NuStart << depletion_basis_rd << " # Depletion basis:  denom is: 0=skip; 1=X*SSBvirgin; 2=X*SSBmsy; 3=X*SSB_styr; 4=X*SSB_endyr; 5=X*dyn_Bzero;  6=X*Bmark_SSB_unf; values>=11 invoke N multiyr with 10s & 100s digit; append .1 to invoke log(ratio); e.g. 122.1 produces log(12 yr trailing average of B/Bmsy)" << endl;
+  NuStart << "# If value = 1, then Btarget in benchmark will be a fraction of SSB_virgin, else will be a fraction of SSB_benchmark" << endl;
   NuStart << depletion_level << " # Fraction (X) for Depletion denominator (e.g. 0.4)" << endl;
   NuStart << SPR_reporting << " # SPR_report_basis:  0=skip; 1=(1-SPR)/(1-SPR_tgt); 2=(1-SPR)/(1-SPR_MSY); 3=(1-SPR)/(1-SPR_Btarget); 4=rawSPR" << endl;
   NuStart << F_reporting << " # F_std_reporting_units: 0=skip; 1=exploitation(Bio); 2=exploitation(Num); 3=sum(Apical_F's); 4=mean F for range of ages (numbers weighted); 5=unweighted mean F for range of ages" << endl;
@@ -1564,6 +1565,7 @@ FUNCTION void write_nucontrol()
   NuStart << double(mcmc_output_detail) + MCMC_bump << " # MCMC output detail: integer part (0=default; 1=adds obj func components; 2= +write_report_for_each_mceval); and decimal part (added to SR_LN(R0) on first call to mcmc)" << endl;
   NuStart << ALK_tolerance << " # ALK tolerance ***disabled in code" << endl;
   NuStart << irand_seed_rd << " # random number seed for bootstrap data (-1 to use long(time) as seed): # " << irand_seed << endl;
+  NuStart << timevary_bio_4SRR << " # Compatibility flag for legacy (0) vs improved (1) impact of timevary biology on benchmark SRR calcs >=3.30.24" << endl;
   NuStart << "3.30 # check value for end of file and for version control" << endl;
   NuStart.close();
 
@@ -1591,7 +1593,7 @@ FUNCTION void write_nucontrol()
   }
 
   NuFore << SPR_target << " # SPR target (e.g. 0.40)" << endl;
-  NuFore << BTGT_target << " # Biomass target (e.g. 0.40)" << endl;
+  NuFore << BTGT_target << " # Biomass target (e.g. 0.40) as fraction of SSB_virgin if depletion basis = 1, else as fraction of SSB_unfished in benchmark" << endl;
   if (Do_Benchmark == 3)
     NuFore << Blim_frac << " # COND: Do_Benchmark==3;  Blimit as fraction of Bmsy (neg value to use as frac of Bzero) (e.g. 0.50)" << endl;
   NuFore << "#_Bmark_years: beg_bio, end_bio, beg_selex, end_selex, beg_relF, end_relF, beg_recr_dist, end_recr_dist, beg_SRparm, end_SRparm (enter actual year, or values of 0 or -integer to be rel. endyr)" << endl
@@ -1641,9 +1643,10 @@ FUNCTION void write_nucontrol()
 
   NuFore << HarvestPolicy << " # Control rule method (0: none; 1: ramp does catch=f(SSB), buffer on F; 2: ramp does F=f(SSB), buffer on F; 3: ramp does catch=f(SSB), buffer on catch; 4: ramp does F=f(SSB), buffer on catch) " << endl;
   NuFore << "# values for top, bottom and buffer exist, but not used when Policy=0" << endl;
-  NuFore << H4010_top_rd << " # Control rule inflection for constant F (as frac of Bzero, e.g. 0.40); must be > control rule cutoff, or set to -1 to use Bmsy/SSB_unf " << endl;
+  NuFore << H4010_top_rd << " # Control rule inflection for constant F (as frac of Bzero, e.g. 0.40); must be > control rule cutoff, or set to -1 to use Bmsy as the inflection " << endl;
   NuFore << H4010_bot << " # Control rule cutoff for no F (as frac of Bzero, e.g. 0.10) " << endl;
   NuFore << H4010_scale_rd << " # Buffer:  enter Control rule target as fraction of Flimit (e.g. 0.75), negative value invokes list of [year, scalar] with filling from year to YrMax " << endl;
+  NuFore << "# Also see HCR_anchor below to use virgin vs benchmark SSB as basis" << endl;
   if (H4010_scale_rd < 0)
   {
     j = H4010_scale_vec_rd.size() - 1;
@@ -1665,7 +1668,7 @@ FUNCTION void write_nucontrol()
   {
     NuFore << Fcast_Loop_Control(4) << " # multiplier on base recruitment " << endl;
   }
-  NuFore << Fcast_Loop_Control(5) << " # not used" << endl << "#" << endl;
+  NuFore << Fcast_Loop_Control(5) << " # HCR_anchor: 0 or 2 uses unfished benchmark SSB (old hardwired approach); 1 = virgin SSB" << endl << "#" << endl;
 
   NuFore << Fcast_Cap_FirstYear << "  # FirstYear for caps and allocations (should be after years with fixed inputs) " << endl;
 
@@ -1941,7 +1944,7 @@ FUNCTION void write_nucontrol()
   if (Hermaphro_Option != 0)
   {
     report4 << Hermaphro_seas_rd << " # Hermaphro_season.first_age (seas=-1 means all seasons; first_age must be 0 to 9)" << endl
-            << Hermaphro_maleSPB << " # fraction_of_maleSSB_added_to_total_SSB " << endl;
+            << Hermaphro_maleSSB << " # fraction_of_maleSSB_added_to_total_SSB " << endl;
   }
 
   report4 << MGparm_def << " #_parameter_offset_approach for M, G, CV_G:  1- direct, no offset**; 2- male=fem_parm*exp(male_parm); 3: male=female*exp(parm) then old=young*exp(parm)" << endl;
@@ -2136,18 +2139,18 @@ FUNCTION void write_nucontrol()
   report4 << "#" << endl;
   report4 << SR_fxn << " #_Spawner-Recruitment; Options: 1=NA; 2=Ricker; 3=std_B-H; 4=SCAA; 5=Hockey; 6=B-H_flattop; 7=survival_3Parm; 8=Shepherd_3Parm; 9=RickerPower_3parm" << endl;
   report4 << init_equ_steepness << "  # 0/1 to use steepness in initial equ recruitment calculation" << endl;
-  report4 << sigmaR_dendep << "  #  future feature:  0/1 to make realized sigmaR a function of SR curvature" << endl;
+  report4 << " 0 #  not_used" << endl;
   report4 << "#_          LO            HI          INIT         PRIOR         PR_SD       PR_type      PHASE    env-var    use_dev   dev_mnyr   dev_mxyr     dev_PH      Block    Blk_Fxn #  parm_name" << endl;
   report4.unsetf(std::ios_base::fixed);
   report4.unsetf(std::ios_base::floatfield);
   for (f = 1; f <= N_SRparm2; f++)
   {
     NP++;
-    SR_parm_1(f, 3) = value(SR_parm(f));
+    SRparm_1(f, 3) = value(SRparm(f));
     for (j = 1; j <= 6; j++)
-      report4 << setw(14) << SR_parm_1(f, j);
+      report4 << setw(14) << SRparm_1(f, j);
     for (j = 7; j <= 14; j++)
-      report4 << setw(11) << SR_parm_1(f, j);
+      report4 << setw(11) << SRparm_1(f, j);
     report4 << " # " << ParmLabel(NP) << endl;
   }
   report4.unsetf(std::ios_base::fixed);
@@ -2155,7 +2158,7 @@ FUNCTION void write_nucontrol()
   if (N_SRparm3 > N_SRparm2)
   {
     report4 << "# timevary SR parameters" << endl;
-    for (f = timevary_parm_start_SR; f <= timevary_parm_cnt_SR; f++)
+    for (f = timevary_SRparm_first; f <= timevary_parm_SR_last; f++)
     {
       NP++;
       timevary_parm_rd[f](3) = value(timevary_parm(f));
