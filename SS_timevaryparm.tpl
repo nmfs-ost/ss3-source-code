@@ -60,7 +60,7 @@ FUNCTION void make_timevaryparm()
         for (j = timevary_setup(3); j < timevary_def[tvary + 1](3); j++)
         {
           timevary_parm_cnt_all++;
-          timevary_parm(timevary_parm_cnt_all) = SRparm(N_SRparm(SR_fxn) + 3 + j - timevary_parm_SR_first + 1);
+          timevary_parm(timevary_parm_cnt_all) = SRparm(N_SRparm(SR_fxn) + 3 + j - timevary_SRparm_first + 1);
           if (do_once == 1)
             echoinput << j << " timevary_parm: " << timevary_parm(timevary_parm_cnt_all) << endl;
         }

@@ -52,6 +52,7 @@
   init_int WTage_rd  // 0 means do not read wtatage.ss; 1 means read and use wtatage.ss and also read and use growth parameters
                      //  future option 2 will suppress reading and use of growth
 !!echoinput<<WTage_rd<<" wtatage switch "<<endl;
+!!if (WTage_rd > 0) timevary_MG_firstyr = styr;
   init_int N_GP  // number of growth patterns (morphs)
 !!echoinput<<N_GP<<" N growth patterns "<<endl;
   init_int N_platoon  //  number of platoons  1, 3, 5 are best values to use
@@ -1968,7 +1969,7 @@
   int SR_env_target
   int SR_autocorr;  // will be calculated later
 
-  int timevary_parm_SR_first;  //   == 0 means that no relevant parms are timevarying
+  int timevary_SRparm_first;  //   == 0 means that no relevant parms are timevarying
   int firstSRparm;
   int timevary_parm_SR_last;
   ivector timevary_SRparm(styr-3,YrMax+1);
@@ -1979,7 +1980,7 @@
   //  SS_Label_Info_4.6.1 #Create S-R parameter labels
   firstSRparm = ParCount;
   timevary_parm_SR_last = 0;
-  timevary_parm_SR_first = 0;
+  timevary_SRparm_first = 0;
   timevary_SRparm.initialize();
   SRparm_timevary.initialize();
   SR_env_link = 0;
@@ -2083,7 +2084,7 @@
         timevary_used = 1;
         ivector timevary_setup(1, 14); //  temporary vector for timevary specs
         timevary_setup.initialize();
-        if (timevary_parm_SR_first == 0) timevary_parm_SR_first = timevary_parm_cnt + 1;  // cumulative index for first timevary SRparm
+        if (timevary_SRparm_first == 0) timevary_SRparm_first = timevary_parm_cnt + 1;  // cumulative index for first timevary SRparm
         echoinput << " timevary for SR parm: " << j << endl;
         timevary_cnt++; //  count parameters with time-vary effect
         SRparm_timevary(j) = timevary_cnt; //  base SR parameter will use this timevary specification
@@ -2152,12 +2153,12 @@
     }
   
   N_SRparm3 = N_SRparm2;
-  if (timevary_parm_SR_first > 0)
+  if (timevary_SRparm_first > 0)
   {
     timevary_parm_SR_last = timevary_parm_cnt;
     if (timevary_used == 1) autogen_timevary(2) = 1; //  indicate that some parameter is time-varying
-    N_SRparm3 += (timevary_parm_SR_last - timevary_parm_SR_first + 1);
-    echoinput << " SR timevary_parm_cnt start and end " << timevary_parm_SR_first << " " << timevary_parm_SR_last << endl;
+    N_SRparm3 += (timevary_parm_SR_last - timevary_SRparm_first + 1);
+    echoinput << " SR timevary_parm_cnt start and end " << timevary_SRparm_first << " " << timevary_parm_SR_last << endl;
     echoinput << "link to timevary parms:  " << SRparm_timevary << endl;
   }
   echoinput << "SR_Npar and N_SRparm2 and N_SRparm3:  " << N_SRparm(SR_fxn) << " " << N_SRparm2 << " " << N_SRparm3 << endl;
@@ -2184,10 +2185,10 @@
     SRparm_PRtype(i) = SRparm_1(i, 6);
     SRparm_PH(i) = SRparm_1(i, 7);
   }
-  if (timevary_parm_SR_first > 0)
+  if (timevary_SRparm_first > 0)
   {
     j = N_SRparm2;
-    for (f = timevary_parm_SR_first; f <= timevary_parm_SR_last; f++)
+    for (f = timevary_SRparm_first; f <= timevary_parm_SR_last; f++)
     {
       j++;
       echoinput << f << " " << j << " " << timevary_parm_rd[f] << endl;
