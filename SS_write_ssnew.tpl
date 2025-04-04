@@ -2158,7 +2158,7 @@ FUNCTION void write_nucontrol()
   if (N_SRparm3 > N_SRparm2)
   {
     report4 << "# timevary SR parameters" << endl;
-    for (f = timevary_parm_SR_first; f <= timevary_parm_SR_last; f++)
+    for (f = timevary_SRparm_first; f <= timevary_parm_SR_last; f++)
     {
       NP++;
       timevary_parm_rd[f](3) = value(timevary_parm(f));

@@ -701,12 +701,9 @@
       }
     }
 
-    if (recdev_do_early > 0)
-      recdev_early.initialize();
-    if (Do_Forecast > 0 && do_recdev != 0)
-      Fcast_recruitments.initialize();
-    if (Do_Impl_Error > 0)
-      Fcast_impl_error.initialize();
+    if (recdev_do_early > 0) recdev_early.initialize();
+    if (Do_Forecast > 0 && do_recdev != 0) Fcast_recruitments.initialize();
+    if (Do_Impl_Error > 0) Fcast_impl_error.initialize();
 
     if (do_recdev == 1)
     {

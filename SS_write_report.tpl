@@ -1779,7 +1779,6 @@ FUNCTION void write_bigoutput()
     var /= (n_rmse(1) + 1.0e-09);
 
     dvariable steepness = SRparm(2);
-
     SS2out << endl
            << pick_report_name(19);
     SS2out << "  Function: " << SR_fxn << "  RecDev_method: " << do_recdev << "   sum_recdev: " << sum_recdev << endl
@@ -1836,23 +1835,99 @@ FUNCTION void write_bigoutput()
     }
     SS2out << endl;
 
-    SS2out << endl << "#New_Expanded_Spawn_Recr_report" << endl << pick_report_name(19) << endl;
-    SS2out << "SR_Function: " << SR_fxn << endl;
-    SS2out << "N_SRparms: " << N_SRparm2 << endl;
-    SS2out << "#" << endl << "parm  parm_label value phase" << endl;
-    for (int j = 1; j <=N_SRparm2; j++)
+    SS2out << "Yr SpawnBio exp_recr with_regime bias_adjusted pred_recr dev biasadjuster era mature_bio mature_num raw_dev" << endl;
+    SS2out << "S/Rcurve " << SSB_virgin << " " << Recr_virgin << endl;
+    y = styr - 2;
+    SS2out << "Virg " << SSB_yr(y) << " " << exp_rec(y) << " - " << 0.0 << " Virg " << SSB_B_yr(y) << " " << SSB_N_yr(y) << " 0.0 " << endl;
+    y = styr - 1;
+    SS2out << "Init " << SSB_yr(y) << " " << exp_rec(y) << " - " << 0.0 << " Init " << SSB_B_yr(y) << " " << SSB_N_yr(y) << " " << 0.0 << endl;
+
+    if (recdev_first < styr)
     {
-      SS2out << j << " " << ParmLabel(firstSRparm + j) << " " << SRparm(j) << " " << SRparm_PH(j);
-      if (SRparm_timevary(j) > 0 && j <= 4 ) //  timevary SRparm exists
-      {SS2out << " #_is_time_vary,_so_SRR_updates_base_SPR_annually";} 
-      if (j == (N_SRparm2 - 1) && SRparm_timevary(j) > 0) //  timevary regime exists
-      {SS2out << " #_Regime_parameter_used_to_offset_from_SRR";}
+      for (y = recdev_first; y <= styr - 1; y++)
+      {
+        SS2out << y << " " << SSB_yr(styr - 1) << " " << exp_rec(styr - 1, 1) << " " << exp_rec(styr - 1, 2) << " " << exp_rec(styr - 1, 3) * mfexp(-biasadj(y) * half_sigmaRsq) << " " << exp_rec(styr - 1, 3) * mfexp(recdev(y) - biasadj(y) * half_sigmaRsq) << " "
+               << recdev(y) << " " << biasadj(y) << " Init_age " << SSB_B_yr(styr - 1) << " " << SSB_N_yr(styr - 1) << " " << recdev(y) << endl; // newdev approach uses devs for initial agecomp directly
+      }
+    }
+    for (y = styr; y <= YrMax; y++)
+    {
+      SS2out << y << " " << SSB_yr(y) << " " << exp_rec(y) << " ";
+      if (recdev_do_early > 0 && y >= recdev_early_start && y <= recdev_early_end)
+      {
+        SS2out << log(exp_rec(y, 4) / exp_rec(y, 3)) << " " << biasadj(y) << " Early " << SSB_B_yr(y) << " " << SSB_N_yr(y) << " " << recdev(y);
+      }
+      else if (y >= recdev_start && y <= recdev_end)
+      {
+        SS2out << log(exp_rec(y, 4) / exp_rec(y, 3)) << " " << biasadj(y) << " Main " << SSB_B_yr(y) << " " << SSB_N_yr(y) << " " << recdev(y);
+      }
+      else if (Do_Forecast > 0 && y > recdev_end)
+      {
+        SS2out << log(exp_rec(y, 4) / exp_rec(y, 3)) << " " << biasadj(y);
+        if (y <= endyr)
+        {
+          SS2out << " Late ";
+        }
+        else
+        {
+          SS2out << " Fore ";
+        }
+        SS2out << SSB_B_yr(y) << " " << SSB_N_yr(y) << " ";
+        if (do_recdev > 0)
+        {
+          SS2out << Fcast_recruitments(y);
+        }
+        else
+        {
+          SS2out << " 0.0";
+        }
+      }
+      else
+      {
+        SS2out << " _ _ Fixed";
+      }
       SS2out << endl;
     }
 
-    SS2out << "# " <<endl;
-    SS2out << "sigmaR: "<< sigmaR  << endl;
-    SS2out << "SPR0_(virgin): " << SSBpR_virgin << " #_uses_biology_from_start_year: " << styr <<endl;
+    SS2out << endl << "#New_Expanded_Spawn_Recr_report" << endl << pick_report_name(19) << endl;
+    SS2out << SR_fxn << " # SR_Function" << endl;
+    SS2out << N_SRparm2 << " # N_SRparms" << endl;
+
+    SS2out << "# " <<endl << "Flags_for_timevary_biology_and_SR" << endl;
+    SS2out << timevary_bio_4SRR << " # timevary_bio_4SRR  #_Compatibility_flag_for_legacy_(0)_vs_improved_(1)_impact_of_timevary_biology_on_benchmark_SRR_calcs" << endl;
+    SS2out << timevary_MG_firstyr << " # timevary_MG_firstyr ";
+    if( timevary_MG_firstyr == YrMax)
+    { SS2out << " #_No_timevary_MGparm " << endl; }
+    else
+    { SS2out << " #_some_timevary_MGparm_or_EWAA: " << timevary_MG_firstyr << endl; }
+
+    SS2out << "#" << endl << "#_SRparm  parm_label value phase" << endl;
+    for (int j = 1; j <=N_SRparm2; j++)
+    {
+      SS2out << "# " << j << " " << ParmLabel(firstSRparm + j) << " " << SRparm(j) << " " << SRparm_PH(j);
+      if (SRparm_timevary(j) > 0 && j <= 4 ) //  timevary SRparm exists
+      {SS2out << " #_TV";} 
+      if (j == (N_SRparm2 - 1) && SRparm_timevary(j) > 0) //  timevary regime exists
+      {SS2out << " #_Regime_used_to_offset_from_SRR";}
+      SS2out << endl;
+    }
+
+    if( timevary_SRparm_first == 0)
+    { SS2out << "0  #_No_timevary_SRparms,_other_than_regime " << endl; }
+    else
+    {
+      for (y = styr; y <= YrMax; y++) if (timevary_SRparm(y) == 1) SS2out << y;
+      SS2out << "  # timevary_SRparm_begin_year" << endl;
+    }
+
+    SS2out << endl << "#" << endl << "Quantities for MSY and other benchmark calculations " << endl << "Benchmark_years: 1_beg_bio 2_end_bio 3_beg_selex 4_end_selex 5_beg_relF 6_end_relF 7_beg_recr_dist 8_end_recr_dist 9_beg_SRparm 10_end_SRparm" << endl;
+    SS2out << "Benchmark_years: " << Bmark_Yr << endl;
+    for ( int k = 1; k <=9; k+=2) 
+    { if (Bmark_Yr(k+1) > Bmark_Yr(k))
+      {SS2out << "#_range_of_years_is_averaged,_so_reduces_standard_error_of_result;_do_this_only_when_timevarying_makes_necessary:  " << k << " "<< k+1 << endl;}
+    }
+    SS2out << "SSBpR0_(virgin): " << SSBpR_virgin << " #_uses_biology_from_start_year: " << styr <<endl;
+    SS2out << "SSBpR_unfished_benchmark: " << Mgmt_quant(1) / Mgmt_quant(4) << "  #_based_on_averaging_biology_over_benchmark_year_range " << endl;
 
     switch (SR_fxn)
     {
@@ -1893,17 +1968,6 @@ FUNCTION void write_bigoutput()
     }
     }
 
-    SS2out << endl << "#" << endl << "Quantities for MSY and other benchmark calculations " << endl << "Benchmark_years: 1_beg_bio 2_end_bio 3_beg_selex 4_end_selex 5_beg_relF 6_end_relF 7_beg_recr_dist 8_end_recr_dist 9_beg_SRparm 10_end_SRparm" << endl;
-    SS2out << "Benchmark_years: " << Bmark_Yr << endl;
-    if( timevary_MG_firstyr == YrMax)
-    { SS2out << "No_timevary_biology " << endl; }
-    else
-    { SS2out << "First_year_with_timevary_MG: " << timevary_MG_firstyr << endl; }
-    for ( int k = 1; k <=9; k+=2) 
-    { if (Bmark_Yr(k+1) > Bmark_Yr(k))
-      {SS2out << "#_range_of_years_is_averaged,_so_reduces_standard_error_of_result;_do_this_only_when_timevarying_makes_necessary:  " << k << " "<< k+1 << endl;}
-    }
-    SS2out << "SSBpR_unfished_benchmark: " << Mgmt_quant(1) / Mgmt_quant(4) << "  #_based_on_averaging_biology_over_benchmark_year_range " << endl;
     SS2out << "Bmsy/Bzero: "<< Bmsy / SSB_virgin  << " # using styr bio for Bzero" << endl;
     SS2out << "Bmsy/Bunf: "<< Bmsy / Mgmt_quant(1)  << " # using MSY's averaged bio for Bunf" << endl;
 
@@ -2021,7 +2085,7 @@ FUNCTION void write_bigoutput()
         for (f = 1; f <= 120; f++)
         {
           SSB_current = double(f) / 100. * SSB_virgin;
-          temp = Spawn_Recr(SSB_virgin, Recr_virgin, SSB_current);
+          temp = Spawn_Recr(SRparm_work, SSB_virgin, Recr_virgin, SSB_current);
           SS2out << SSB_current / SSB_virgin << " " << SSB_current << " " << temp << endl;
         }
       }
@@ -4905,7 +4969,7 @@ FUNCTION void SPR_profile()
         SSBpR_Calc(equ_Recr);
         //  SPAWN-RECR:   calc equil spawn-recr in the SPR loop
         SSBpR_temp = SSB_equil;
-        Equ_SpawnRecr_Result = Equil_Spawn_Recr_Fxn(SRparm_work, SSB0_4_SRR, R0_4_SRR, SSBpR_temp); //  returns 2 element vector containing equilibrium biomass and recruitment at this SPR
+        Equ_SpawnRecr_Result = Equil_Spawn_Recr_Fxn(SRparm_bench , SSB0_4_SRR, R0_4_SRR, SSBpR_temp); //  returns 2 element vector containing equilibrium biomass and recruitment at this SPR
         Btgt_prof = Equ_SpawnRecr_Result(1);
         Btgt_prof_rec = Equ_SpawnRecr_Result(2);
         if (Btgt_prof < 0.001 || Btgt_prof_rec < 0.001)
