@@ -6,7 +6,7 @@
 //********************************************************************
  /*  SS_Label_FUNCTION 43 Spawner-recruitment function */
 //  SPAWN-RECR:   function: to calc R from S
-FUNCTION dvariable Spawn_Recr(const prevariable& SSB_virgin_use, const prevariable& Recr_virgin_use, const prevariable& SSB_current)
+FUNCTION dvariable Spawn_Recr(const dvar_vector& SRparm_work, const prevariable& SSB_virgin_use, const prevariable& Recr_virgin_use, const prevariable& SSB_current)
   {
   RETURN_ARRAYS_INCREMENT();
   dvariable NewRecruits;
