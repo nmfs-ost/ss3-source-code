@@ -3722,7 +3722,6 @@
     {
       N_selparmvec(f) = abs(seltype(f, 4)) + 1; // so reads value for age 0 through this age
       if (seltype(f, 1) == 41) N_selparmvec(f) +=2;  //  for the scaling parameters
-      warning << f << " " << seltype(f, 1) << " " << N_selparmvec(f) << endl;
     }
   
     if (seltype(f, 1) == 41)

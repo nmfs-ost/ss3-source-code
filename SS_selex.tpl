@@ -1128,7 +1128,6 @@ FUNCTION void get_selectivity()
                 {
                   lastage = abs(seltype(f, 4));
                 }
-                warning << "offset  " << scaling_offset << endl;
                 for (a = 1; a <= lastage; a++)
                 {
                   //  with use of -999, lastsel stays constant until changed, so could create a linear change in ln(selex)
