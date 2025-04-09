@@ -3721,6 +3721,7 @@
     else
     {
       N_selparmvec(f) = abs(seltype(f, 4)) + 1; // so reads value for age 0 through this age
+      if (seltype(f, 1) == 41) N_selparmvec(f) +=2;  //  for the scaling parameters
     }
   
     if (seltype(f, 1) == 41)
@@ -3856,7 +3857,10 @@
     }
     else
     {
-      for (j = 1; j <= N_selparmvec(f); j++)
+      
+      k = 0;
+      if (seltype(f, 1) == 41) k = 2;  // reduce count for the scaling parameters
+      for (j = 1; j <= N_selparmvec(f) - k; j++)
       {
         ParCount++;
         ParmLabel += "AgeSel_P" + NumLbl(j) + "_" + fleetname(f1) + "(" + NumLbl(f1) + ")";
@@ -4407,6 +4411,7 @@
       echoinput << "create mirror_mask: " << mirror_mask_a(f) << endl;
       echoinput << "end check on min-max ranges for age selex=11" << endl;
     }
+    //  seltype 41 check on the min-max age range could go here, rather than in selex calcs
     parmcount += N_selparmvec(f + Nfleet);
   }
   // clang-format off

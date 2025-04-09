@@ -1128,7 +1128,6 @@ FUNCTION void get_selectivity()
                 {
                   lastage = abs(seltype(f, 4));
                 }
-
                 for (a = 1; a <= lastage; a++)
                 {
                   //  with use of -999, lastsel stays constant until changed, so could create a linear change in ln(selex)
@@ -1138,6 +1137,7 @@ FUNCTION void get_selectivity()
                     lastsel = sp(a + 1 + scaling_offset);
                   }
                   tempvec_a(a) = tempvec_a(a - 1) + lastsel; // cumulative log(selex)
+//                  warning << a << "SP: " << sp(a + 1 + scaling_offset) << " cumul: " << tempvec_a(a) << endl;
                 }
                 if (scaling_offset == 0)
                 {
@@ -1147,6 +1147,7 @@ FUNCTION void get_selectivity()
                 {
                   int low_bin = int(value(sp(1)));
                   int high_bin = int(value(sp(2)));
+                  //  checks and adjustments below should happen in readcontrol
                   if (low_bin < 0)
                   {
                     low_bin = 0;
@@ -1166,6 +1167,8 @@ FUNCTION void get_selectivity()
                   sp(1) = low_bin;
                   sp(2) = high_bin;
                   temp = mean(tempvec_a(low_bin, high_bin));
+//                  warning << tempvec_a(low_bin, high_bin) << endl;
+//                warning << low_bin << " " << high_bin << " mean " << temp << endl;
                 }
                 sel_a(y, fs, 1) = mfexp(tempvec_a - temp);
                 a = 0;
