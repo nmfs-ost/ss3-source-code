@@ -1,7 +1,7 @@
 name: add-exe-build-artifacts-to-PR
 on:
   workflow_run:
-    workflows: [build-ss3]
+    workflows: ["build-ss3"]
     types: [completed]
   workflow_dispatch:
 
@@ -17,5 +17,6 @@ jobs:
             GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
             prefix: 'Here are the successful executable builds from your PR:'
+            suffix: 'Please download and test them.'
             format: name
-            addTo: pullandissues
+            addTo: pull
