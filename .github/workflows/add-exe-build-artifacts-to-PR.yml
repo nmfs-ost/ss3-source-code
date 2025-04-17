@@ -20,3 +20,4 @@ jobs:
             suffix: 'Please download and test them.'
             format: name
             addTo: pull
+        continue-on-error: true
