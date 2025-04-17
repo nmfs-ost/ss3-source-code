@@ -3563,8 +3563,8 @@
     {
       if (WTage_rd > 0)
       {
-        warnstream << "Retention functions not implemented fully when reading empirical wt-at-age ";
-        write_message (WARN, 0);
+        warnstream << "Length-based retention will use the same empirical wtatage for discard and retained fish for fleet: " << f;
+        write_message (NOTE, 0);
       }
       Do_Retain(f) = 1;
       if (fleet_type(f) == 2 && seltype(f, 2) != 3)
@@ -3880,8 +3880,8 @@
       Do_Retain(f1) = 2;
       if (WTage_rd > 0)
       {
-        warnstream << "Retention functions not implemented fully when reading empirical wt-at-age ";
-        write_message (WARN, 0);
+        warnstream << "Age-based retention will use the same empirical wtatage for discarded and retained fish for fleet: " << f;
+        write_message (NOTE, 0);
       }
       if (seltype(f1, 2) > 0)
       {
