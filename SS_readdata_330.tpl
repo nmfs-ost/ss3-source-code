@@ -4834,8 +4834,8 @@
     }
     if (SPR_reporting >= 1 && SPR_reporting <= 3)
     {
-      SPR_reporting = 4;
-      warnstream << "Change SPR_reporting to 4 because benchmarks were not requested";
+      SPR_reporting = 5;
+      warnstream << "Change SPR_reporting to 5 (raw %SPR) because benchmarks were not requested";
       write_message(WARN, 0);
     }
   }

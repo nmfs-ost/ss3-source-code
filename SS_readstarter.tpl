@@ -669,7 +669,7 @@
 
   init_number depletion_level;
 !!echoinput << depletion_level << "  depletion_level" << endl;
-  init_int SPR_reporting; // 0=skip; 1=SPR; 2=SPR_MSY; 3=SPR_Btarget; 4=(1-SPR)
+  init_int SPR_reporting; // 0=skip; 1=SPR; 2=SPR_MSY; 3=SPR_Btarget; 4=(1-SPR); 5=SPR
 !!echoinput << SPR_reporting << "  SPR_reporting" << endl;
   init_int F_reporting; // 0=skip; 1=exploit(Bio); 2=exploit(Num); 3=sum(frates); 4=true F for range of ages; 5=unweighted avg F for range of ages
  LOCAL_CALCS

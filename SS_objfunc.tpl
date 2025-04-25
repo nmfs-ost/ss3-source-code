@@ -1150,7 +1150,7 @@ FUNCTION void Process_STDquant()
 
   switch (SPR_reporting)
   {
-    case 0: // keep as raw value
+    case 0: // no scaling.  this option skips SPR_reporting
     {
       break;
     }
@@ -1170,9 +1170,13 @@ FUNCTION void Process_STDquant()
       SPR_std = (1. - SPR_std) / (1. - SPR_Btgt);
       break;
     }
-    case 4:
+    case 4:  //  1-%SPR
     {
       SPR_std = 1. - SPR_std;
+      break;
+    }
+    case 5:  //  raw %SPR
+    {
       break;
     }
   }
