@@ -6984,7 +6984,12 @@
   
   switch (SPR_reporting)
   {
-    case 0: // keep as raw value
+    case 0: // skip SPR reporting
+    {
+      SPR_report_label += " raw_SPR";
+      break;
+    }
+    case 5: // keep as raw %SPR value
     {
       SPR_report_label += " raw_SPR";
       break;
