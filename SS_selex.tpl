@@ -1956,7 +1956,15 @@ FUNCTION void Make_FishSelex()
           Wt_Age_t(tz, f, g) = Wt_Age_mid(s, g);
         }
         sel_num(s, f, g) = sel_a(yf, f, gg); //  selected numbers
-        switch (seltype(f + Nfleet, 2)) //  age-retention function
+        int j = seltype(f + Nfleet, 2);
+        int k = j;
+        if (j < 0)  //  invokes mirror
+        {
+          j = -j;  //  fleet number being mirrored for retention
+          k = seltype(j + Nfleet, 2);  //  discard approach for fleet j
+          //  note that retain_a and discmort2_a have already been mirrored earlier in this fxn
+        }
+        switch (k) //  age-retention function
         {
           case 0:  // no discarding, so just copy the selected quantities
           {
@@ -1981,6 +1989,7 @@ FUNCTION void Make_FishSelex()
             sel_ret_num(s, f, g) = elem_prod(sel_num(s, f, g), retain_a(y, f, gg)); //  retained numbers
             sel_dead_bio(s, f, g) = elem_prod(Wt_Age_t(tz, f, g), discmort2_a(y, f, gg)); //  dead wt
             sel_dead_num(s, f, g) = discmort2_a(y, f, gg); //  dead numbers
+//            if (y == styr) warning << f << " sel_ret " << sel_ret_bio(s, f, g) << endl << " sel_dead " << sel_dead_bio(s, f, g) << endl;
             break;
           }
           case 3: //  all selected fish are dead; use this for a discard only fleet
@@ -1992,10 +2001,11 @@ FUNCTION void Make_FishSelex()
             break;
           }
         }
-        if (docheckup == 1 && y == styr)
+        if (docheckup == 1 && y == styr && do_once == 1)
         {
-          echoinput << " sel_ret_bio " << sel_ret_bio(s, f, g) << endl
-                    << " sel_dead_bio " << sel_dead_bio(s, f, g) << endl;
+          echoinput << f << " sel_ret_bio " << sel_ret_bio(s, f, g) << endl
+                    << f << "retain_a " << retain_a(y, f, gg) << endl
+                    << f << " sel_dead_bio " << sel_dead_bio(s, f, g) << endl;
         }
       }
 

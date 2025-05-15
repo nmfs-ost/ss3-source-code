@@ -89,7 +89,7 @@ FUNCTION void setup_Benchmark()  // and forecast
           {
             discmort2_a(y, f, gg) = tempvec_a / temp;
           }
-          if (seltype(f + Nfleet, 2) > 0) // using age retention
+          if (seltype(f + Nfleet, 2) != 0) // using age retention
           {
             tempvec_a.initialize();
             for (y = Fcast_Sel_yr1; y <= Fcast_Sel_yr2; y++)
@@ -470,7 +470,7 @@ FUNCTION void setup_Benchmark()  // and forecast
             tempvec_a += discmort2_a(y, f, gg);
           }
           discmort2_a(styr - 3, f, gg) = tempvec_a / temp;
-          if (seltype(f + Nfleet, 2) > 0) // using age retention
+          if (seltype(f + Nfleet, 2) != 0) // using age retention
           {
             tempvec_a.initialize();
             for (y = Bmark_Yr(3); y <= Bmark_Yr(4); y++)

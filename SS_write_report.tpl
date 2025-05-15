@@ -2924,7 +2924,7 @@ FUNCTION void write_bigoutput()
     }
     for (f = 1; f <= Nfleet; f++)
     {
-      if (seltype(f + Nfleet, 2) > 0) // using age retention
+      if (seltype(f + Nfleet, 2) != 0) // using age retention
       {
         for (y = styr - 3; y <= YrMax; y++)
           for (gg = 1; gg <= gender; gg++)
