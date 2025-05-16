@@ -1801,8 +1801,8 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
     }
     else
     {
-      Btgttgt2 = -Blim_frac * SSB_virgin;
-      Blim_report = value(SSB_virgin);
+      Btgttgt2 = -Blim_frac * SSB_unf;
+      Blim_report = value(SSB_unf);
     }
 
     for (j = 0; j <= Nloops; j++) // loop find Btarget

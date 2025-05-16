@@ -1891,8 +1891,6 @@ FUNCTION void write_bigoutput()
 
     SS2out << endl << "#New_Expanded_Spawn_Recr_report" << endl << pick_report_name(19) << endl;
     SS2out << SR_fxn << " # SR_Function" << endl;
-    SS2out << N_SRparm2 << " # N_SRparms" << endl;
-
     SS2out << "# " <<endl << "Flags_for_timevary_biology_and_SR" << endl;
     SS2out << timevary_bio_4SRR << " # timevary_bio_4SRR  #_Compatibility_flag_for_legacy_(0)_vs_improved_(1)_impact_of_timevary_biology_on_benchmark_SRR_calcs" << endl;
     SS2out << timevary_MG_firstyr << " # timevary_MG_firstyr ";
@@ -1901,6 +1899,7 @@ FUNCTION void write_bigoutput()
     else
     { SS2out << " #_some_timevary_MGparm_or_EWAA: " << timevary_MG_firstyr << endl; }
 
+    SS2out << N_SRparm2 << " # N_SRparms" << endl;
     SS2out << "#" << endl << "#_SRparm  parm_label value phase" << endl;
     for (int j = 1; j <=N_SRparm2; j++)
     {
@@ -1920,7 +1919,7 @@ FUNCTION void write_bigoutput()
       SS2out << "  # timevary_SRparm_begin_year" << endl;
     }
 
-    SS2out << endl << "#" << endl << "Quantities for MSY and other benchmark calculations " << endl << "Benchmark_years: 1_beg_bio 2_end_bio 3_beg_selex 4_end_selex 5_beg_relF 6_end_relF 7_beg_recr_dist 8_end_recr_dist 9_beg_SRparm 10_end_SRparm" << endl;
+    SS2out << "#" << endl << "Quantities for MSY and other benchmark calculations " << endl << "Benchmark_years: 1_beg_bio 2_end_bio 3_beg_selex 4_end_selex 5_beg_relF 6_end_relF 7_beg_recr_dist 8_end_recr_dist 9_beg_SRparm 10_end_SRparm" << endl;
     SS2out << "Benchmark_years: " << Bmark_Yr << endl;
     for ( int k = 1; k <=9; k+=2) 
     { if (Bmark_Yr(k+1) > Bmark_Yr(k))
@@ -1938,7 +1937,7 @@ FUNCTION void write_bigoutput()
       SS2out << "Ln(R0): " << SRparm(1) << endl << "R0: " << mfexp(SRparm(1)) << endl;
       SS2out << "steepness: " << steepness << endl;
       SS2out << "Ln(alpha)_derived: " << log(alpha) << " alpha " << alpha << endl;
-      SS2out << "Ln(beta)_derived: " << log(beta) << " beta " << beta;
+      SS2out << "Ln(beta)_derived: " << log(beta) << " beta " << beta << endl;
       break;
     }
       case 10: // Beverton-Holt with alpha, beta
@@ -2000,22 +1999,12 @@ FUNCTION void write_bigoutput()
       }
     }
     SS2out << endl  << "#" << endl << "Initial_equilibrium: " << init_equ_steepness << "  # 0/1_to_use_spawner-recruitment_in_initial_equ_recruitment_calculation" << endl << "#" << endl;
-    if (SR_fxn == 10) SS2out << "#_Note:_h_curr_and_R0_curr_are_for_info_only;_calculated_from_alpha_beta_and_current_SPR0" << endl;
-    SS2out << "#_columns_with_P_will_show_time_vary_SR_parameters" << endl << "#" << endl;
-    SS2out << "Yr SpawnBio exp_recr with_regime bias_adjusted pred_recr dev biasadjuster era mature_bio mature_num raw_dev SPR0_curr ";
-    if(SR_fxn == 10)
-    {SS2out << "h_curr R0_curr ";}
-    else
-    {SS2out << "NA1 NA2 ";}
-;
-    for (j = 1; j <= N_SRparm2; j++) 
-    {SS2out << "P" << j << " ";}
-    SS2out << endl;
-    SS2out << "S/Rcurve " << SSB_virgin << " " << Recr_virgin << endl;
+    SS2out << "Yr SpawnBio exp_recr with_regime bias_adjusted pred_recr dev biasadjuster era mature_bio mature_num raw_dev SPR0_curr " << endl;
+
     y = styr - 2;
-    SS2out << "Virg " << SSB_yr(y) << " " << exp_rec(y) << " - " << 0.0 << " Virg " << SSB_B_yr(y) << " " << SSB_N_yr(y) << " 0.0 " << endl;
+    SS2out << "Virg " << SSB_yr(y) << " " << exp_rec(y) << " - " << 0.0 << " Virg " << SSB_B_yr(y) << " " << SSB_N_yr(y) << " 0.0 " << " " << SSBpR_virgin << endl;
     y = styr - 1;
-    SS2out << "Init " << SSB_yr(y) << " " << exp_rec(y) << " - " << 0.0 << " Init " << SSB_B_yr(y) << " " << SSB_N_yr(y) << " " << 0.0 << endl;
+    SS2out << "Init " << SSB_yr(y) << " " << exp_rec(y) << " - " << 0.0 << " Init " << SSB_B_yr(y) << " " << SSB_N_yr(y) << " " << 0.0  << " " << SSBpR_virgin << endl;
 
     if (recdev_first < styr)
     {
@@ -2059,18 +2048,9 @@ FUNCTION void write_bigoutput()
       }
       else
       {
-        SS2out << " _ _ Fixed";
+        SS2out << " _ _ Fixed  " << SSB_B_yr(y) << " " << SSB_N_yr(y) << " _ ";
       }
-      dvariable SPR_curr = Smry_Table(y, 11) / Recr_virgin;
-      SS2out << " " << SPR_curr << " ";
-      if (SR_fxn == 10)
-      {
-      SS2out << alpha * SPR_curr / (4. + alpha * SPR_curr) << " ";  // steepness with current SPR
-      SS2out << 1. / beta * (alpha - (1. / SPR_curr)) << " ";  //  R0 with current SPR
-      }
-      else
-      {SS2out << " - - ";}
-      SS2out << SRparm_byyr(y)(1,N_SRparm2) << endl;
+      SS2out << " " << Smry_Table(y, 11) / Recr_virgin << endl;
     }
 
     // REPORT_KEYWORD SPAWN_RECR_CURVE

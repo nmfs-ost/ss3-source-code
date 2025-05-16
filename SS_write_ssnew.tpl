@@ -1509,11 +1509,11 @@ FUNCTION void write_nucontrol()
           << version_info2 << endl;
   if (N_SC > 0)
     NuStart << Starter_Comments << endl;
-  NuStart << datfilename << endl
-          << ctlfilename << endl;
-  NuStart << readparfile << " # 0=use init values in control file; 1=use ss.par" << endl;
-  NuStart << rundetail << " # run display detail (0 = minimal; 1=one line per iter; 2=each logL)" << endl;
-  NuStart << reportdetail << " # detailed output (0=minimal for data-limited, 1=high (w/ wtatage.ss_new), 2=brief, 3=custom) " << endl;
+  NuStart << datfilename << " #_datfile" << endl
+          << ctlfilename << " #_ctlfile" << endl;
+  NuStart << readparfile << " #_init_values_src:  0 (use init values in control file); 1 (use ss3.par)" << endl;
+  NuStart << rundetail << " #_screen_display:  0 (minimal); 1 (one line per iter); 2 (each logL)" << endl;
+  NuStart << reportdetail << " #_report_table_selection:  0 (minimal; no wtatage.ss_new); 1 (all tables); 2 (brief), 3 (custom, read list) " << endl;
   if (reportdetail == 3)
   {
     NuStart << "# custom report options: -100 to start with minimal; -101 to start with all; -number to remove, +number to add, -999 to end" << endl;
@@ -1524,35 +1524,36 @@ FUNCTION void write_nucontrol()
   }
   else
   {
-    NuStart << "#COND: custom report options: -100 to start with minimal; -101 to start with all; -number to remove, +number to add, -999 to end" << endl;
+    NuStart << "# COND: custom report options: -100 to start with minimal; -101 to start with all; -number to remove, +number to add, -999 to end" << endl;
   }
 
-  NuStart << docheckup << " # write 1st iteration details to echoinput.sso file (0,1) " << endl;
-  NuStart << Do_ParmTrace << " # write parm values to ParmTrace.sso (0=no,1=good,active; 2=good,all; 3=every_iter,all_parms; 4=every,active)" << endl;
-  NuStart << Do_CumReport << " # write to cumreport.sso (0=no,1=like&timeseries; 2=add survey fits)" << endl;
-  NuStart << Do_all_priors << " # Include prior_like for non-estimated parameters (0,1) " << endl;
-  NuStart << SoftBound << " # Use Soft Boundaries to aid convergence (0,1) (recommended)" << endl;
+  NuStart << docheckup << " #_checkup:  write more 1st iteration age-specific details to echoinput.sso file (0,1) " << endl;
+  NuStart << Do_ParmTrace << " #_parmtrace:  write parm values to ParmTrace.sso:  0 (no); 1 (good_iter,active_parms); 2 (good,all); 3 (every,all); 4 (every,active)" << endl;
+  NuStart << Do_CumReport << " #_cumreport:  write to cumreport.sso: 0 (no); 1 (like&timeseries); 2 (add survey fits)" << endl;
+  NuStart << Do_all_priors << " #_prior_like:  include prior_like for non-estimated parameters (0,1) " << endl;
+  NuStart << SoftBound << " #_soft_bounds:  Use Soft Boundaries to aid convergence (0,1) (recommended)" << endl;
   NuStart << "#" << endl
-          << N_nudata_read << " # Number of datafiles to produce:  0 turns off all *.ss_new; 1st is data_echo.ss_new, 2nd is data_expval.ss, 3rd and higher are data_boot_**N.ss," << endl;
-  NuStart << Turn_off_phase_rd << " # Turn off estimation for parameters entering after this phase" << endl;
+          << N_nudata_read << " #_N_bootstraps:  Number of datafiles to produce:  0 turns off all *.ss_new; 1st is data_echo.ss_new, 2nd is data_expval.ss, 3rd and higher are data_boot_**N.ss," << endl;
+  NuStart << Turn_off_phase_rd << " #_last_estimation_phase:  turn off estimation for parameters entering after this phase" << endl;
   NuStart << "#" << endl
-          << burn_intvl << " # MCeval burn interval" << endl;
-  NuStart << thin_intvl << " # MCeval thin interval" << endl;
-  NuStart << jitter << " # jitter initial parm value by this fraction" << endl;
-  NuStart << STD_Yr_min_rd << " # min year for sdreport outputs (-1 for styr); #_" << STD_Yr_min << endl;
-  NuStart << STD_Yr_max_rd << " # max year for sdreport outputs (-1 for endyr+1; -2 for endyr+Nforecastyrs); #_" << STD_Yr_max << endl;
-  NuStart << N_STD_Yr_RD << " # N individual STD years " << endl;
+          << burn_intvl << " #_MCMCburn" << endl;
+  NuStart << thin_intvl << " #_MCMCthin" << endl;
+  NuStart << jitter << " # jitter_fraction:  jitter within parameter bounds" << endl;
+
+  NuStart << STD_Yr_min_rd << " #_minyr_sdreport:  min year for sdreport outputs (-1 for styr); #_" << STD_Yr_min << endl;
+  NuStart << STD_Yr_max_rd << " #_maxyr_sdreport:  max year for sdreport outputs (-1 for endyr+1; -2 for endyr+Nforecastyrs); #_" << STD_Yr_max << endl;
+  NuStart << N_STD_Yr_RD << " #_N_STD_yrs:  N individual STD years " << endl;
   NuStart << "#COND: vector of year values if N>0" << endl
           << STD_Yr_RD << endl;
 
-  NuStart << final_conv << " # final convergence criteria (e.g. 1.0e-04) " << endl;
-  NuStart << retro_yr - endyr << " # retrospective year relative to end year (e.g. -4)" << endl;
-  NuStart << Smry_Age << " # min age for calc of summary biomass" << endl;
-  NuStart << depletion_basis_rd << " # Depletion basis:  denom is: 0=skip; 1=X*SSBvirgin; 2=X*SSBmsy; 3=X*SSB_styr; 4=X*SSB_endyr; 5=X*dyn_Bzero;  6=X*Bmark_SSB_unf; values>=11 invoke N multiyr with 10s & 100s digit; append .1 to invoke log(ratio); e.g. 122.1 produces log(12 yr trailing average of B/Bmsy)" << endl;
+  NuStart << final_conv << " #_converge_criterion: (e.g. 1.0e-04) " << endl;
+  NuStart << retro_yr - endyr << " #_retro_yr:  retrospective year relative to end year (e.g. -4)" << endl;
+  NuStart << Smry_Age << " #_min_age_summary_bio" << endl;
+  NuStart << depletion_basis_rd << " #_depl_basis:  Depletion denom is: 0=skip; 1=X*SSB_virgin; 2=X*SSB_msy; 3=X*SSB_styr; 4=X*SSB_endyr; 5=X*dyn_Bzero; 6=X*SSB_unf_bmark; values>=11 invoke N multiyr with 10s & 100s digit; append .1 to invoke log(ratio); e.g. 122.1 produces log(12 yr trailing average of B/Bmsy)" << endl;
   NuStart << "# If value = 1, then Btarget in benchmark will be a fraction of SSB_virgin, else will be a fraction of SSB_benchmark" << endl;
-  NuStart << depletion_level << " # Fraction (X) for Depletion denominator (e.g. 0.4)" << endl;
-  NuStart << SPR_reporting << " # SPR_report_basis:  0=skip; 1=(1-SPR)/(1-SPR_tgt); 2=(1-SPR)/(1-SPR_MSY); 3=(1-SPR)/(1-SPR_Btarget); 4=1-SPR; 5=SPR" << endl;
-  NuStart << F_reporting << " # F_std_reporting_units: 0=skip; 1=exploitation(Bio); 2=exploitation(Num); 3=sum(Apical_F's); 4=mean F for range of ages (numbers weighted); 5=unweighted mean F for range of ages" << endl;
+  NuStart << depletion_level << " #_depl_denom_frac:  fraction (X) for Depletion denominator (e.g. 0.4)" << endl;
+  NuStart << SPR_reporting << " #_SPR_basis:  0 (skip); 1 (1-SPR)/(1-SPR_tgt); 2 (1-SPR)/(1-SPR_MSY); 3 (1-SPR)/(1-SPR_Btarget); 4 (1-SPR); 5 (SPR)" << endl;
+  NuStart << F_reporting << " # F_std_units:  0 (skip); 1 (exploitation(Bio)); 2 (exploitation(Num)); 3 (sum(Apical_F's)); 4 (mean F for range of ages (numbers weighted)); 5 (unweighted mean F for range of ages)" << endl;
   if (F_reporting == 4 || F_reporting == 5)
   {
     NuStart << F_reporting_ages << " # min and max age over which mean F will be calculated, with F=Z-M" << endl;
@@ -1561,12 +1562,12 @@ FUNCTION void write_nucontrol()
   {
     NuStart << "#COND 10 15 #_min and max age over which mean F will be calculated with F_reporting=4 or 5" << endl;
   }
-  NuStart << F_std_basis_rd << " # F_std_scaling: 0=no scaling; 1=F/Fspr; 2=F/Fmsy; 3=F/Fbtgt; where F means annual F_std, Fmsy means F_std@msy; values >=11 invoke N multiyr using 10s and 100s digit; append .1 to invoke log(ratio)" << endl;
-  NuStart << double(mcmc_output_detail) + MCMC_bump << " # MCMC output detail: integer part (0=default; 1=adds obj func components; 2= +write_report_for_each_mceval); and decimal part (added to SR_LN(R0) on first call to mcmc)" << endl;
-  NuStart << ALK_tolerance << " # ALK tolerance ***disabled in code" << endl;
-  NuStart << irand_seed_rd << " # random number seed for bootstrap data (-1 to use long(time) as seed): # " << irand_seed << endl;
-  NuStart << timevary_bio_4SRR << " # Compatibility flag for legacy (0) vs improved (1) impact of timevary biology on benchmark SRR calcs >=3.30.24" << endl;
-  NuStart << "3.30 # check value for end of file and for version control" << endl;
+  NuStart << F_std_basis_rd << " # F_std_basis: 0=no scaling; 1 (F/Fspr); 2 (F/Fmsy); 3 (F/Fbtgt); where F means annual F_std, Fmsy means F_std@msy; values >=11 invoke N multiyr using 10s and 100s digit; append .1 to invoke log(ratio)" << endl;
+  NuStart << double(mcmc_output_detail) + MCMC_bump << " #_MCMC_output_detail: integer part (0=default; 1=adds obj func components; 2= +write_report_for_each_mceval); and decimal part (added to SR_LN(R0) on first call to mcmc)" << endl;
+  NuStart << ALK_tolerance << " #_deprecated:  ALK tolerance ***disabled in code" << endl;
+  NuStart << irand_seed_rd << " #_seed:  random number seed for bootstrap data (-1 to use long(time) as seed): # " << irand_seed << endl;
+  NuStart << timevary_bio_4SRR << " #_Compatibility:  flag for legacy (0) vs improved (1) impact of timevary biology on benchmark SRR calcs >=3.30.24" << endl;
+  NuStart << "3.30 #_final:  check value for end of file and for version control" << endl;
   NuStart.close();
 
   echoinput << "Write forecast.ss_new file " << endl;
@@ -1576,7 +1577,7 @@ FUNCTION void write_nucontrol()
   if (N_FC > 0)
     NuFore << Forecast_Comments << endl;
   NuFore << "# for all year entries except rebuilder; enter either: actual year, -999 for styr, 0 for endyr, neg number for rel. endyr" << endl;
-  NuFore << Do_Benchmark << " # Benchmarks: 0=skip; 1=calc F_spr,F_btgt,F_msy; 2=calc F_spr,F0.1,F_msy; 3=add F_Blimit; " << endl;
+  NuFore << Do_Benchmark << " # Benchmarks: 0=skip; 1=calc F_spr,F_Btgt,F_msy; 2=calc F_spr,F0.1,F_msy; 3=add F_Blimit; " << endl;
   NuFore << Do_MSY << " # Do_MSY: 1= set to F(SPR); 2=calc F(MSY); 3=set to F(Btgt) or F0.1; 4=set to F(endyr); 5=calc F(MEY) with MSY_unit options" << endl;
   NuFore << "# if Do_MSY=5, enter MSY_Units; then list fleet_ID, cost/F, price/mt, include_in_Fmey_scaling; # -fleet_ID to fill; -9999 to terminate" << endl;
   if (Do_MSY == 5)
@@ -1594,13 +1595,13 @@ FUNCTION void write_nucontrol()
 
   NuFore << SPR_target << " # SPR target (e.g. 0.40)" << endl;
   NuFore << BTGT_target << " # Biomass target (e.g. 0.40) as fraction of SSB_virgin if depletion basis = 1, else as fraction of SSB_unfished in benchmark" << endl;
-  if (Do_Benchmark == 3)
-    NuFore << Blim_frac << " # COND: Do_Benchmark==3;  Blimit as fraction of Bmsy (neg value to use as frac of Bzero) (e.g. 0.50)" << endl;
-  NuFore << "#_Bmark_years: beg_bio, end_bio, beg_selex, end_selex, beg_relF, end_relF, beg_recr_dist, end_recr_dist, beg_SRparm, end_SRparm (enter actual year, or values of 0 or -integer to be rel. endyr)" << endl
+  if (Do_Benchmark != 3) NuFore << "#";
+  NuFore << Blim_frac << " # COND: Do_Benchmark==3;  Blimit as fraction of Bmsy (neg value to use as frac of SSB_virgin or SSB_unfished) (e.g. 0.50)";
+  NuFore << "#" << endl << "# Bmark_years: beg_bio, end_bio, beg_selex, end_selex, beg_relF, end_relF, beg_recr_dist, end_recr_dist, beg_SRparm, end_SRparm (enter actual year, or values of 0 or -integer to be rel. endyr)" << endl
          << Bmark_Yr_rd << endl
          << "# " << Bmark_Yr << endl;
   NuFore << "# value <0 convert to endyr-value; except -999 converts to start_yr; must be >=start_yr and <=endyr" << endl;
-  NuFore << Bmark_RelF_Basis << " #Bmark_relF_Basis: 1 = use year range; 2 = set relF same as forecast below" << endl;
+  NuFore << Bmark_RelF_Basis << " # Bmark_relF_Basis: 1 = use year range; 2 = set relF same as forecast below" << endl;
   NuFore << "#" << endl
          << Do_Forecast_rd << " # Forecast: -1=none; 0=simple_1yr; 1=F(SPR); 2=F(MSY) 3=F(Btgt) or F0.1; 4=Ave F (uses first-last relF yrs); 5=input annual F scalar" << endl;
   NuFore << "# where none and simple require no input after this line; simple sets forecast F same as end year F" << endl;
@@ -1621,7 +1622,7 @@ FUNCTION void write_nucontrol()
   }
 //  else
   {  //  new list based format for Fcast years
-  NuFore << anystring << endl << anystring << "-12345  # code to invoke new format for expanded fcast year controls" << endl
+  NuFore << anystring << endl << anystring << " -12345  # code to invoke new format for expanded fcast year controls" << endl
          << "# biology and selectivity vectors are updated annually in the forecast according to timevary parameters, so check end year of blocks and dev vectors" << endl
          << "# input in this section directs creation of means over historical years to override any time_vary changes" << endl
 				 << "# Factors implemented so far: 1=M, 4=recr_dist, 5=migration, 10=selectivity, 11=rel_F, 12=recruitment" << endl
