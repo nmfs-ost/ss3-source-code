@@ -49,6 +49,14 @@
       echoinput << tempvec(1, k) << endl;
       y = abs(tempvec(1));
       f = tempvec(6);
+      if (f == -2)
+      {
+        if (tempvec(7) > 0.0)
+        {
+          warnstream << "WTATAGE.SS has positive fecundity at age 0 for year = " << y << " Are you sure? fecundity is for the time of spawning and age 0 fish normally do not exist at time of spawning";
+          write_message(WARN, 0);
+        }
+      }
       if (y < 9999)
         last_yr_read(f) = max(y, last_yr_read(f));
       if (y < 9999 && tempvec(1) < 0)

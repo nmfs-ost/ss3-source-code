@@ -1128,7 +1128,6 @@ FUNCTION void get_selectivity()
                 {
                   lastage = abs(seltype(f, 4));
                 }
-
                 for (a = 1; a <= lastage; a++)
                 {
                   //  with use of -999, lastsel stays constant until changed, so could create a linear change in ln(selex)
@@ -1138,6 +1137,7 @@ FUNCTION void get_selectivity()
                     lastsel = sp(a + 1 + scaling_offset);
                   }
                   tempvec_a(a) = tempvec_a(a - 1) + lastsel; // cumulative log(selex)
+//                  warning << a << "SP: " << sp(a + 1 + scaling_offset) << " cumul: " << tempvec_a(a) << endl;
                 }
                 if (scaling_offset == 0)
                 {
@@ -1147,6 +1147,7 @@ FUNCTION void get_selectivity()
                 {
                   int low_bin = int(value(sp(1)));
                   int high_bin = int(value(sp(2)));
+                  //  checks and adjustments below should happen in readcontrol
                   if (low_bin < 0)
                   {
                     low_bin = 0;
@@ -1166,6 +1167,8 @@ FUNCTION void get_selectivity()
                   sp(1) = low_bin;
                   sp(2) = high_bin;
                   temp = mean(tempvec_a(low_bin, high_bin));
+//                  warning << tempvec_a(low_bin, high_bin) << endl;
+//                warning << low_bin << " " << high_bin << " mean " << temp << endl;
                 }
                 sel_a(y, fs, 1) = mfexp(tempvec_a - temp);
                 a = 0;
@@ -1953,9 +1956,17 @@ FUNCTION void Make_FishSelex()
           Wt_Age_t(tz, f, g) = Wt_Age_mid(s, g);
         }
         sel_num(s, f, g) = sel_a(yf, f, gg); //  selected numbers
-        switch (seltype(f + Nfleet, 2)) //  age-retention function
+        int j = seltype(f + Nfleet, 2);
+        int k = j;
+        if (j < 0)  //  invokes mirror
         {
-          case 0:
+          j = -j;  //  fleet number being mirrored for retention
+          k = seltype(j + Nfleet, 2);  //  discard approach for fleet j
+          //  note that retain_a and discmort2_a have already been mirrored earlier in this fxn
+        }
+        switch (k) //  age-retention function
+        {
+          case 0:  // no discarding, so just copy the selected quantities
           {
             sel_ret_bio(s, f, g) = sel_bio(s, f, g); //  retained wt-at-age
             sel_ret_num(s, f, g) = sel_num(s, f, g); //  retained numbers
@@ -1963,7 +1974,7 @@ FUNCTION void Make_FishSelex()
             sel_dead_num(s, f, g) = sel_num(s, f, g); //  dead numbers
             break;
           }
-          case 1:
+          case 1:  // age-based retention function is used; all discarded fish assumed dead and have same bodywt as retained fish
           {
             sel_ret_bio(s, f, g) = elem_prod(sel_bio(s, f, g), retain_a(y, f, gg)); //  retained wt-at-age
             sel_ret_num(s, f, g) = elem_prod(sel_num(s, f, g), retain_a(y, f, gg)); //  retained numbers
@@ -1971,15 +1982,17 @@ FUNCTION void Make_FishSelex()
             sel_dead_num(s, f, g) = sel_ret_num(s, f, g); //  dead numbers
             break;
           }
-          case 2:
+          case 2:  // age-based retention and discard mortality, same body wt as retained fish
           {
+            // details of retention and mortality already taken into account with calc of discmort2_a
             sel_ret_bio(s, f, g) = elem_prod(sel_bio(s, f, g), retain_a(y, f, gg)); //  retained wt-at-age
             sel_ret_num(s, f, g) = elem_prod(sel_num(s, f, g), retain_a(y, f, gg)); //  retained numbers
-            sel_dead_bio(s, f, g) = elem_prod(sel_ret_bio(s, f, g), discmort_a(y, f, gg)); //  dead wt
-            sel_dead_num(s, f, g) = elem_prod(sel_ret_num(s, f, g), discmort_a(y, f, gg)); //  dead numbers
+            sel_dead_bio(s, f, g) = elem_prod(Wt_Age_t(tz, f, g), discmort2_a(y, f, gg)); //  dead wt
+            sel_dead_num(s, f, g) = discmort2_a(y, f, gg); //  dead numbers
+//            if (y == styr) warning << f << " sel_ret " << sel_ret_bio(s, f, g) << endl << " sel_dead " << sel_dead_bio(s, f, g) << endl;
             break;
           }
-          case 3: //  all selected fish are dead
+          case 3: //  all selected fish are dead; use this for a discard only fleet
           {
             sel_ret_bio(s, f, g) = 0.0; //  retained wt-at-age
             sel_ret_num(s, f, g) = 0.0; //  retained numbers
@@ -1987,6 +2000,12 @@ FUNCTION void Make_FishSelex()
             sel_dead_num(s, f, g) = sel_num(s, f, g); //  dead numbers
             break;
           }
+        }
+        if (docheckup == 1 && y == styr && do_once == 1)
+        {
+          echoinput << f << " sel_ret_bio " << sel_ret_bio(s, f, g) << endl
+                    << f << "retain_a " << retain_a(y, f, gg) << endl
+                    << f << " sel_dead_bio " << sel_dead_bio(s, f, g) << endl;
         }
       }
 

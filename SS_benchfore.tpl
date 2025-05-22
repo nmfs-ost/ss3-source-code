@@ -97,7 +97,7 @@ FUNCTION void setup_Benchmark()  // and forecast
           {
             discmort2_a(y, f, gg) = tempvec_a / temp;
           }
-          if (seltype(f + Nfleet, 2) > 0) // using age retention
+          if (seltype(f + Nfleet, 2) != 0) // using age retention
           {
             tempvec_a.initialize();
             for (y = Fcast_Sel_yr1; y <= Fcast_Sel_yr2; y++)
@@ -473,7 +473,7 @@ FUNCTION void setup_Benchmark()  // and forecast
             tempvec_a += discmort2_a(y, f, gg);
           }
           discmort2_a(styr - 3, f, gg) = tempvec_a / temp;
-          if (seltype(f + Nfleet, 2) > 0) // using age retention
+          if (seltype(f + Nfleet, 2) != 0) // using age retention
           {
             tempvec_a.initialize();
             for (y = Bmark_Yr(3); y <= Bmark_Yr(4); y++)
@@ -2688,6 +2688,7 @@ FUNCTION void Get_Forecast()
                   //                SSB_pop_gp(y,p,GP4(g)) += fec(g)*elem_prod(natage(t,p,g),mfexp(-Z_rate(t,p,g)*spawn_time_seas));   // accumulates SSB by area and by growthpattern
                   //                SSB_B_yr(y) += make_mature_bio(GP4(g))*elem_prod(natage(t,p,g),mfexp(-Z_rate(t,p,g)*spawn_time_seas));
                   //                SSB_N_yr(y) += make_mature_numbers(GP4(g))*elem_prod(natage(t,p,g),mfexp(-Z_rate(t,p,g)*spawn_time_seas));
+                  natage(t, p, g, 0) = 0.0; // these fish should not exist at beginning of year.  They are created after spawning.  Are here in array only due to Fcast_Loop1
                   SSB_pop_gp(y, p, GP4(g)) += fracfemale_mult * fec(g) * natage(t, p, g); // accumulates SSB by area and by growthpattern
                   SSB_B_yr(y) += fracfemale_mult * make_mature_bio(GP4(g)) * natage(t, p, g);
                   SSB_N_yr(y) += fracfemale_mult * make_mature_numbers(GP4(g)) * natage(t, p, g);
@@ -2705,7 +2706,8 @@ FUNCTION void Get_Forecast()
                 for (g = 1; g <= gmorph; g++)
                   if (sx(g) == 2 && use_morph(g) > 0) //  male; all assumed to be mature
                   {
-                    MaleSSB(y, p, GP4(g)) += Wt_Age_t(t, 0, g) * natage(t, p, g); // accumulates SSB by area and by growthpattern
+                    natage(t, p, g, 0) = 0.0; // these fish do not yet exist
+                    MaleSPB(y, p, GP4(g)) += Wt_Age_t(t, 0, g) * natage(t, p, g); // accumulates SSB by area and by growthpattern
                   }
               }
               if (Hermaphro_maleSSB > 0.0) // add MaleSSB to female SSB

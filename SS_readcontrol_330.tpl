@@ -1132,7 +1132,14 @@
 !!if(k2>0) echoinput<<"  read Length_Maturity for each GP"<<Length_Maturity<<endl;
 
   init_int First_Mature_Age     // first age with non-zero maturity
-!! echoinput<<First_Mature_Age<<"  First_Mature_Age"<<endl;
+ LOCAL_CALCS
+  echoinput<<First_Mature_Age<<"  First_Mature_Age"<<endl;
+  if (First_Mature_Age == 0)
+  {
+    warnstream<<"First_Mature_Age read as:  " << First_Mature_Age << ", which is unusual. Check logic of spawn_month and settlement time & age";
+    write_message(WARN,0);
+  }
+ END_CALCS
 
   init_int Fecund_Option
 //   Value=1 means interpret the 2 egg parameters as linear eggs/kg on body weight (current SS3 default),
@@ -3588,8 +3595,8 @@
     {
       if (WTage_rd > 0)
       {
-        warnstream << "Retention functions not implemented fully when reading empirical wt-at-age ";
-        write_message (WARN, 0);
+        warnstream << "Length-based retention will use the same empirical wtatage for discard and retained fish for fleet: " << f;
+        write_message (NOTE, 0);
       }
       Do_Retain(f) = 1;
       if (fleet_type(f) == 2 && seltype(f, 2) != 3)
@@ -3753,6 +3760,7 @@
     else
     {
       N_selparmvec(f) = abs(seltype(f, 4)) + 1; // so reads value for age 0 through this age
+      if (seltype(f, 1) == 41) N_selparmvec(f) +=2;  //  for the scaling parameters
     }
   
     if (seltype(f, 1) == 41)
@@ -3888,7 +3896,10 @@
     }
     else
     {
-      for (j = 1; j <= N_selparmvec(f); j++)
+      
+      k = 0;
+      if (seltype(f, 1) == 41) k = 2;  // reduce count for the scaling parameters
+      for (j = 1; j <= N_selparmvec(f) - k; j++)
       {
         ParCount++;
         ParmLabel += "AgeSel_P" + NumLbl(j) + "_" + fleetname(f1) + "(" + NumLbl(f1) + ")";
@@ -3901,8 +3912,8 @@
       Do_Retain(f1) = 2;
       if (WTage_rd > 0)
       {
-        warnstream << "Retention functions not implemented fully when reading empirical wt-at-age ";
-        write_message (WARN, 0);
+        warnstream << "Age-based retention will use the same empirical wtatage for discarded and retained fish for fleet: " << f;
+        write_message (NOTE, 0);
       }
       if (seltype(f1, 2) > 0)
       {
@@ -4439,6 +4450,7 @@
       echoinput << "create mirror_mask: " << mirror_mask_a(f) << endl;
       echoinput << "end check on min-max ranges for age selex=11" << endl;
     }
+    //  seltype 41 check on the min-max age range could go here, rather than in selex calcs
     parmcount += N_selparmvec(f + Nfleet);
   }
   // clang-format off
