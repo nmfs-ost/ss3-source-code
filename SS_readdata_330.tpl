@@ -4281,8 +4281,8 @@
       echoinput << "HarvestPolicy=0, so values for top, bottom, buffer will be ignored" << endl;
 
     echoinput << HarvestPolicy << "  # echoed HarvestPolicy " << endl;
-    *(ad_comm::global_datafile) >> H4010_top_rd; //  use -1 to set H4010_top to Bmsy/SSB_unf
-    echoinput << H4010_top_rd << "   # echoed control rule inflection (-1 to set to Bmsy/SSB_unf)" << endl;
+    *(ad_comm::global_datafile) >> H4010_top_rd; //  as fraction of HCR_anchor; use -1 as legacy approach to set H4010_top to Bmsy/SSB_unf
+    echoinput << H4010_top_rd << "   # echoed control rule inflection" << endl;
     *(ad_comm::global_datafile) >> H4010_bot;
     echoinput << H4010_bot << "   # echoed control rule cutoff " << endl;
     *(ad_comm::global_datafile) >> H4010_scale_rd;
@@ -4352,7 +4352,12 @@
       write_message(ADJUST, 0);
       Fcast_Loop_Control(5) = 2;
     }
-    echoinput << Fcast_Loop_Control(5) << " #control rule anchor: 1=virgin_SSB; 2=unfished_benchmark_SSB(old_approach)" << endl;
+    if (H4010_top_rd < 0)  // convert old legacy approach to new approach for using Bmsy
+    {
+      Fcast_Loop_Control(5) = 3;
+      H4010_top_rd = 1.0;
+    }
+    echoinput << Fcast_Loop_Control(5) << " #control rule anchor: 1=virgin_SSB; 2=unfished_benchmark_SSB(old_approach); 3=Bmsy" << endl;
     if (depletion_basis == 1 && Fcast_Loop_Control(5) == 2)
     {
       warnstream << "depletion_basis is using virgin but HCR anchor is using SSB_unf from benchmark. Are you sure?";
