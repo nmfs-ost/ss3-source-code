@@ -2264,8 +2264,10 @@ FUNCTION void Get_Forecast()
     {HCR_anchor = SSB_virgin;}
     else if (Fcast_Loop_Control(5) == 2)
     {HCR_anchor = SSB_unf;}
+    else if (Fcast_Loop_Control(5) == 3)
+    {HCR_anchor = Bmsy;}  // so H4010_top_rd should be 1.0;
 
-    if (H4010_top_rd < 0.0)
+    if (H4010_top_rd < 0.0)  // legacy approach.  This has already been converted to new approach in readdata
     {
       H4010_top = Bmsy / HCR_anchor;  // convert to fraction of anchor
       if (H4010_bot > 0.25)
@@ -2278,13 +2280,20 @@ FUNCTION void Get_Forecast()
     {
       H4010_top = H4010_top_rd;
     }
+    if (Fcast_Loop_Control(5) == 3 && H4010_top_rd != 1.0)
+    {  
+      warnstream << "HCR_anchor is BMSY; so H4010_top normally is 1.0; are you sure you want:  " << H4010_top;
+      write_message (WARN, 0);
+    }
 
-    Mgmt_quant(20) = HCR_anchor;
+    Mgmt_quant(20) = H4010_top * HCR_anchor;
     report5 << "#" << endl;
     report5 << "N_forecast_yrs: " << N_Fcast_Yrs << endl;
     report5 << "OY_Control_Rule:  Inflection: " << H4010_top << " Intercept: " << H4010_bot << " Scale: " << H4010_scale_vec(endyr + 1) << endl
-            << "Control_rule_anchor_approach: " << Fcast_Loop_Control(5) << " HCR_anchor: " << HCR_anchor << endl;
-    report5 << "#" << endl;
+            << "Control_rule_anchor_approach: " << Fcast_Loop_Control(5) << " HCR_anchor: " << HCR_anchor << endl
+            << "intercept(SSB): " << H4010_bot * HCR_anchor << endl
+            << "Inflection(SSB): " << H4010_top * HCR_anchor << endl
+            << "#" << endl;
 
     switch (HarvestPolicy)
     {
@@ -2712,7 +2721,6 @@ FUNCTION void Get_Forecast()
         {
           R0_use = Recr_virgin;
           SSB_use = SSB_virgin;
-          warning << y << " virgin_SRR; SSB_use: "<<SSB_use<<"  R0_use: "<<R0_use <<"  steep: " << SRparm_work(2) << endl;
         }
         else if (timevary_SRparm(y) == 1)  //  update R0_use and SSB_use in this year
                                            //  values will carry forward into subsequent years
@@ -2725,7 +2733,7 @@ FUNCTION void Get_Forecast()
           bio_yr = y;
           SSBpR_Calc(R0_use); //  call function to do per recruit calculation with current year's biology and adjusted R0
           SSB_use = SSB_equil;
-          warning << y << " update_SRR; SSB_use: "<<SSB_use<<"  R0_use: "<<R0_use <<"  steep: " << SRparm_work(2) << endl;
+//          warning << y << " update_SRR; SSB_use: "<<SSB_use<<"  R0_use: "<<R0_use <<"  steep: " << SRparm_work(2) << endl;
 
           // test that this stays on equilibrium.  It does.
 //          SSBpR_temp = SSB_use / R0_use;  // get unfished SSBpR
@@ -2744,7 +2752,7 @@ FUNCTION void Get_Forecast()
         }
         else  //  flag is 2
         {
-          warning << y << " carry_SRR; SSB_use: "<<SSB_use<<"  R0_use: "<<R0_use <<"  steep: " << SRparm_work(2) << endl;
+//          warning << y << " carry_SRR; SSB_use: "<<SSB_use<<"  R0_use: "<<R0_use <<"  steep: " << SRparm_work(2) << endl;
         }
         Recruits = Spawn_Recr(SRparm_work, SSB_use, R0_use, SSB_current); // calls to function Spawn_Recr using either virgin or adjusted R0 and SSB0
 
@@ -3366,7 +3374,6 @@ FUNCTION void Get_Forecast()
             {
               R0_use = Recr_virgin;
               SSB_use = SSB_virgin;
-              warning << y << " virgin_SRR; SSB_use: "<<SSB_use<<"  R0_use: "<<R0_use <<"  steep: " << SRparm_work(2) << endl;
             }
             else if (timevary_SRparm(y) == 1)  //  update R0_use and SSB_use in this year
                                                //  values will carry forward into subsequent years
@@ -3379,7 +3386,7 @@ FUNCTION void Get_Forecast()
               bio_yr = y;
               SSBpR_Calc(R0_use); //  call function to do per recruit calculation with current year's biology and adjusted R0
               SSB_use = SSB_equil;
-              warning << y << " update_SRR; SSB_use: "<<SSB_use<<"  R0_use: "<<R0_use <<"  steep: " << SRparm_work(2) << endl;
+//              warning << y << " update_SRR; SSB_use: "<<SSB_use<<"  R0_use: "<<R0_use <<"  steep: " << SRparm_work(2) << endl;
 
               if (fishery_on_off == 1)
               {
@@ -3392,7 +3399,7 @@ FUNCTION void Get_Forecast()
             }
             else  //  flag is 2
             {
-              warning << y << " carry_SRR; SSB_use: "<<SSB_use<<"  R0_use: "<<R0_use <<"  steep: " << SRparm_work(2) << endl;
+//              warning << y << " carry_SRR; SSB_use: "<<SSB_use<<"  R0_use: "<<R0_use <<"  steep: " << SRparm_work(2) << endl;
             }
             Recruits = Spawn_Recr(SRparm_work, SSB_use, R0_use, SSB_current); // calls to function Spawn_Recr using either virgin or adjusted R0 and SSB0
                 if (SR_fxn != 7) apply_recdev(Recruits, R0_use); //  apply recruitment deviation
