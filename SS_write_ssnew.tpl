@@ -2624,7 +2624,9 @@ FUNCTION void write_nucontrol()
         int sigma_amax = tempvec(6);
         int use_rho = tempvec(7);
         int amin = tempvec(4);
-        for (a = amin; a <= sigma_amax; a++)
+        int kmax = sigma_amax;
+        if (kmax < 0)  kmax = amin;
+        for (a = amin; a <= kmax; a++)
         {
           dvector dtempvec(1, 7); //  Lo, Hi, init, prior, prior_sd, prior_type, phase;
           k++;
