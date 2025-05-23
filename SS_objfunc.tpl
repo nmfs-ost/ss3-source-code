@@ -745,8 +745,8 @@ FUNCTION void evaluate_the_objective_function()
   //The recruitment prior is assumed to be a lognormal pdf with expected
   // value equal to the deterministic stock-recruitment curve          // SS_Label_260
   //  R1 deviation is weighted by ave_age because R1 represents a time series of recruitments
-  //  SR_parm(N_SRparm+1) is sigmaR
-  //  SR_parm(N_SRparm+4) is rho, the autocorrelation coefficient
+  //  SRparm(N_SRparm+1) is sigmaR
+  //  SRparm(N_SRparm+4) is rho, the autocorrelation coefficient
   //  POP code from Ianelli
   //  if (rho>0)
   //    for (i=styr_rec+1;i<=endyr;i++)
@@ -767,7 +767,7 @@ FUNCTION void evaluate_the_objective_function()
       }
       else
       {
-        rho = SR_parm(N_SRparm2);
+        rho = SRparm(N_SRparm2);
         recr_like += square(recdev(recdev_first)) / two_sigmaRsq;
         for (y = recdev_first + 1; y <= recdev_end; y++)
         {
@@ -778,7 +778,7 @@ FUNCTION void evaluate_the_objective_function()
     }
     else
     {
-      rho = SR_parm(N_SRparm2);
+      rho = SRparm(N_SRparm2);
       dvariable dev;
       dvariable dev_last;
       if (recdev_first >= styr)
@@ -884,10 +884,10 @@ FUNCTION void evaluate_the_objective_function()
     }
 
     for (i = 1; i <= N_SRparm3; i++)
-      if (SR_parm_PRtype(i) > 0 && (active(SR_parm(i)) || Do_all_priors > 0))
+      if (SRparm_PRtype(i) > 0 && (active(SRparm(i)) || Do_all_priors > 0))
       {
-        SR_parm_Like(i) = Get_Prior(SR_parm_PRtype(i), SR_parm_LO(i), SR_parm_HI(i), SR_parm_PR(i), SR_parm_CV(i), SR_parm(i));
-        parm_like += SR_parm_Like(i);
+        SRparm_Like(i) = Get_Prior(SRparm_PRtype(i), SRparm_LO(i), SRparm_HI(i), SRparm_PR(i), SRparm_CV(i), SRparm(i));
+        parm_like += SRparm_Like(i);
       }
     //  SS_Label_Info_25.14 #logL for recdev_cycle
     if (recdev_cycle > 0)
@@ -1150,7 +1150,7 @@ FUNCTION void Process_STDquant()
 
   switch (SPR_reporting)
   {
-    case 0: // keep as raw value
+    case 0: // no scaling.  this option skips SPR_reporting
     {
       break;
     }
@@ -1170,9 +1170,13 @@ FUNCTION void Process_STDquant()
       SPR_std = (1. - SPR_std) / (1. - SPR_Btgt);
       break;
     }
-    case 4:
+    case 4:  //  1-%SPR
     {
       SPR_std = 1. - SPR_std;
+      break;
+    }
+    case 5:  //  raw %SPR
+    {
       break;
     }
   }
@@ -1187,21 +1191,25 @@ FUNCTION void Process_STDquant()
     case 1:
     {
       depletion /= (depletion_level * SSB_virgin);
+      Mgmt_quant(19) = SSB_virgin;
       break;
     }
     case 2:
     {
       depletion /= (depletion_level * Bmsy);
+      Mgmt_quant(19) = Bmsy;
       break;
     }
     case 3:
     {
       depletion /= (depletion_level * SSB_yr(styr));
+      Mgmt_quant(19) = SSB_yr(styr);
       break;
     }
     case 4:
     {
       depletion /= (depletion_level * SSB_yr(endyr));
+      Mgmt_quant(19) = SSB_yr(endyr);
       break;
     }
     case 5:  //  dynamic Bzero
@@ -1213,6 +1221,13 @@ FUNCTION void Process_STDquant()
         depletion(STD_Yr_Reverse_Dep(y)) /= ( depletion_level * Extra_Std(Do_Dyn_Bzero + y - (styr - 2)));
 //        warning<<depletion(STD_Yr_Reverse_Dep(y))<<endl;
       }
+      Mgmt_quant(19) = 1.;
+      break;
+    }
+    case 6:  // depletion based on benchmark unfished SSB
+    {
+      depletion /= (depletion_level * SSB0_4_SRR);
+      Mgmt_quant(19) = SSB0_4_SRR;
       break;
     }
   }
@@ -1836,8 +1851,8 @@ FUNCTION void get_posteriors()
   }
   for (i = 1; i <= N_SRparm3; i++)
   {
-    if (active(SR_parm(i)))
-      posts << SR_parm(i) << " ";
+    if (active(SRparm(i)))
+      posts << SRparm(i) << " ";
   }
 
   if (recdev_cycle > 0)

@@ -643,7 +643,7 @@
   int depletion_basis;
   int depletion_multi;
   int depletion_log;
-  init_number depletion_basis_rd; // 0=skip; 1=B0; 2=Bmsy; 3=B_styr; 4=B_endyr; 5=dynamic_Bzero; values >=11 invoke multiyr with 10's digit; append .1 to invoke log(ratio) with hundreds digit
+  init_number depletion_basis_rd; // 0=skip; 1=B0; 2=Bmsy; 3=B_styr; 4=B_endyr; 5=dynamic_Bzero; 6=Bmark_SSB_unf;  values >=11 invoke multiyr with 10's digit; append .1 to invoke log(ratio) with hundreds digit
  LOCAL_CALCS
   // clang-format on
   echoinput << depletion_basis_rd << "  depletion_basis as read; this is also known as Bratio and is a std quantity; has multi-yr and log(ratio) options" << endl;
@@ -669,7 +669,7 @@
 
   init_number depletion_level;
 !!echoinput << depletion_level << "  depletion_level" << endl;
-  init_int SPR_reporting; // 0=skip; 1=SPR; 2=SPR_MSY; 3=SPR_Btarget; 4=(1-SPR)
+  init_int SPR_reporting; // 0=skip; 1=SPR; 2=SPR_MSY; 3=SPR_Btarget; 4=(1-SPR); 5=SPR
 !!echoinput << SPR_reporting << "  SPR_reporting" << endl;
   init_int F_reporting; // 0=skip; 1=exploit(Bio); 2=exploit(Num); 3=sum(frates); 4=true F for range of ages; 5=unweighted avg F for range of ages
  LOCAL_CALCS
@@ -705,6 +705,7 @@
   int ender;
   int irand_seed;
   int irand_seed_rd;
+  int timevary_bio_4SRR;  // flag in 3.30.24 for impact of timevary biology on benchmark SRR calculations
   int F_std_multi; // for multi-year averaging of F_std
   int F_std_log; // for log(ratio) of F_std
   int F_std_basis;
@@ -806,6 +807,21 @@
           echoinput << "random number seed:  " << irand_seed << endl;
           tempin = 0;
         }
+
+        echoinput << "now read flag for dealing with impact of time-varying biology on benchmark SRR calculations" << endl;
+        *(ad_comm::global_datafile) >> tempin;
+        if (tempin == 3.30)  // old format file that does not provide input
+        {
+          ender = 1;
+          timevary_bio_4SRR = 0;
+        }
+        else  // new input beginning 3.30.24
+        {
+          timevary_bio_4SRR = int(tempin);
+          echoinput << "Compatibility flag for legacy (0) vs improved (1) impact of timevary biology on benchmark SRR calcs:  " << timevary_bio_4SRR << endl;
+          tempin = 0;
+        }
+
         if (ender == 0)
         {
           *(ad_comm::global_datafile) >> tempin;
