@@ -77,7 +77,9 @@ FUNCTION void write_bigoutput()
   SS2out << "Data_File: " << datfilename << endl;
   SS2out << "Control_File: " << ctlfilename << endl;
   if (readparfile >= 1)
-    SS2out << "Start_parm_values_from_SS.PAR" << endl;
+    {SS2out << "Start_parm_values_from_SS.PAR" << endl;}
+    else
+    {SS2out << "Start_parm_values_from_control_file" << endl;}
   SS2out << endl
          << "Convergence_Level: " << objective_function_value::pobjfun->gmax << " is_final_gradient" << endl;
   temp = get_ln_det_value();
@@ -1889,44 +1891,36 @@ FUNCTION void write_bigoutput()
       SS2out << endl;
     }
 
-    SS2out << endl << "#New_Expanded_Spawn_Recr_report" << endl << pick_report_name(19) << endl;
+    SS2out << endl << "#Expanded_Spawn_Recr_report" << endl << pick_report_name(19) << endl;
     SS2out << SR_fxn << " # SR_Function" << endl;
-    SS2out << "# " <<endl << "Flags_for_timevary_biology_and_SR" << endl;
-    SS2out << timevary_bio_4SRR << " # timevary_bio_4SRR  #_Compatibility_flag_for_legacy_(0)_vs_improved_(1)_impact_of_timevary_biology_on_benchmark_SRR_calcs" << endl;
-    SS2out << timevary_MG_firstyr << " # timevary_MG_firstyr ";
-    if( timevary_MG_firstyr == YrMax)
-    { SS2out << " #_No_timevary_MGparm " << endl; }
-    else
-    { SS2out << " #_some_timevary_MGparm_or_EWAA: " << timevary_MG_firstyr << endl; }
-
     SS2out << N_SRparm2 << " # N_SRparms" << endl;
-    SS2out << "#" << endl << "#_SRparm  parm_label value phase" << endl;
+    SS2out << "#" << endl << "#_SRparm  parm_label value phase TV_year" << endl;
     for (int j = 1; j <=N_SRparm2; j++)
     {
       SS2out << "# " << j << " " << ParmLabel(firstSRparm + j) << " " << SRparm(j) << " " << SRparm_PH(j);
       if (SRparm_timevary(j) > 0 && j <= 4 ) //  timevary SRparm exists
-      {SS2out << " #_TV";} 
-      if (j == (N_SRparm2 - 1) && SRparm_timevary(j) > 0) //  timevary regime exists
+      {SS2out << " " << timevary_SRparm_first_yr;} else {SS2out << " -";}
+       SS2out << endl;
+    }
+    SS2out << "#" << endl;
+    if (SRparm_timevary(N_SRparm2 - 1) > 0) //  timevary regime exists
       {SS2out << " #_Regime_used_to_offset_from_SRR";}
-      SS2out << endl;
-    }
-
-    if( timevary_SRparm_first == 0)
-    { SS2out << "0  #_No_timevary_SRparms,_other_than_regime " << endl; }
+    SS2out << timevary_bio_4SRR << " # timevary_bio_4SRR  #_Compatibility_flag_for_legacy_(0)_vs_improved_(1)_impact_of_timevary_biology_on_benchmark_SRR_calcs" << endl;
+    if( timevary_MG_firstyr == YrMax)
+    { SS2out << " #_No_timevary_MGparm" << endl; }
     else
-    {
-      for (y = styr; y <= YrMax; y++) if (timevary_SRparm(y) == 1) SS2out << y;
-      SS2out << "  # timevary_SRparm_begin_year" << endl;
-    }
+    { SS2out << timevary_MG_firstyr << " #_first year_timevary_MGparm_(or_any_year_EWAA) " << endl; }
 
-    SS2out << "#" << endl << "Quantities for MSY and other benchmark calculations " << endl << "Benchmark_years: 1_beg_bio 2_end_bio 3_beg_selex 4_end_selex 5_beg_relF 6_end_relF 7_beg_recr_dist 8_end_recr_dist 9_beg_SRparm 10_end_SRparm" << endl;
-    SS2out << "Benchmark_years: " << Bmark_Yr << endl;
+    SS2out << "#" << endl << "Quantities for MSY and other benchmark calculations " << endl
+      << "Benchmark_index: 1 2 3 4 5 6 7 8 9 10" << endl
+      << "Benchmark_label: beg_bio end_bio beg_selex end_selex beg_relF end_relF beg_recr_dist end_recr_dist beg_SRparm end_SRparm" << endl
+      << "Benchmark_years: " << Bmark_Yr << endl;
     for ( int k = 1; k <=9; k+=2) 
     { if (Bmark_Yr(k+1) > Bmark_Yr(k))
-      {SS2out << "#_range_of_years_is_averaged,_so_reduces_standard_error_of_result;_do_this_only_when_timevarying_makes_necessary:  " << k << " "<< k+1 << endl;}
+      {SS2out << "#_NOTE:_using_range_of_years_can_reduce_standard_error_of_result;_do_this_only_when_timevarying_makes_necessary:  " << k << " " << Bmark_Yr(k) << " " << Bmark_Yr(k+1) << endl;}
     }
-    SS2out << "SSBpR0_(virgin): " << SSBpR_virgin << " #_uses_biology_from_start_year: " << styr <<endl;
-    SS2out << "SSBpR_unfished_benchmark: " << Mgmt_quant(1) / Mgmt_quant(4) << "  #_based_on_averaging_biology_over_benchmark_year_range " << endl;
+    SS2out << "SSBpR0_virgin: " << SSBpR_virgin << " #_uses_biology_from_start_year: " << styr <<endl;
+    SS2out << "SSBpR_unfished_benchmark: " << SSBpR_bench << "  #_uses_biology_over_benchmark_year_range " << endl;
 
     switch (SR_fxn)
     {
@@ -1998,13 +1992,13 @@ FUNCTION void write_bigoutput()
         write_message (WARN, 0);
       }
     }
-    SS2out << endl  << "#" << endl << "Initial_equilibrium: " << init_equ_steepness << "  # 0/1_to_use_spawner-recruitment_in_initial_equ_recruitment_calculation" << endl << "#" << endl;
-    SS2out << "Yr SpawnBio exp_recr with_regime bias_adjusted pred_recr dev biasadjuster era mature_bio mature_num raw_dev SPR0_curr " << endl;
+    SS2out << endl  << "#" << endl << init_equ_steepness << "  # Initial_equilibrium:_0/1_to_use_spawner-recruitment_in_initial_equ_recruitment_calculation" << endl << "#" << endl;
+    SS2out << "Yr SpawnBio exp_recr with_regime bias_adjusted pred_recr dev biasadjuster era mature_bio mature_num raw_dev SSBpR(yr) " << endl;
 
     y = styr - 2;
-    SS2out << "Virg " << SSB_yr(y) << " " << exp_rec(y) << " - " << 0.0 << " Virg " << SSB_B_yr(y) << " " << SSB_N_yr(y) << " 0.0 " << " " << SSBpR_virgin << endl;
+    SS2out << "Virg " << SSB_yr(y) << " " << exp_rec(y) << " _ " << 0.0 << " Virg " << SSB_B_yr(y) << " " << SSB_N_yr(y) << " _ " << SSBpR_virgin << endl;
     y = styr - 1;
-    SS2out << "Init " << SSB_yr(y) << " " << exp_rec(y) << " - " << 0.0 << " Init " << SSB_B_yr(y) << " " << SSB_N_yr(y) << " " << 0.0  << " " << SSBpR_virgin << endl;
+    SS2out << "Init " << SSB_yr(y) << " " << exp_rec(y) << " _ " << 0.0 << " Init " << SSB_B_yr(y) << " " << SSB_N_yr(y) << " _ " << SSBpR_virgin << endl;
 
     if (recdev_first < styr)
     {
@@ -2058,9 +2052,9 @@ FUNCTION void write_bigoutput()
     {
       {
         SS2out << endl
-               << pick_report_name(20) << endl;
+               << pick_report_name(20) << endl
+               << "# using_virgin_SR_parameters:  " << SRparm_work << endl;
         SS2out << "SSB/SSB_virgin    SSB    Recruitment" << endl;
-        y = styr;
         SRparm_work = SRparm_byyr(styr);
         for (f = 1; f <= 120; f++)
         {
@@ -2068,6 +2062,17 @@ FUNCTION void write_bigoutput()
           temp = Spawn_Recr(SRparm_work, SSB_virgin, Recr_virgin, SSB_current);
           SS2out << SSB_current / SSB_virgin << " " << SSB_current << " " << temp << endl;
         }
+        SS2out << endl
+               << "SPAWN_RECR_CURVE report:20 Benchmark" << endl  //  revise this name per r4ss needs
+               << "# using_benchmark_SR_parameters:  " << SRparm_bench << endl;
+        SS2out << "SSB/SSB_benchmark    SSB    Recruitment" << endl;
+        for (f = 1; f <= 120; f++)
+        {
+          SSB_current = double(f) / 100. * SSB0_4_SRR;
+          temp = Spawn_Recr(SRparm_bench, SSB0_4_SRR, R0_4_SRR, SSB_current);
+          SS2out << SSB_current / SSB0_4_SRR << " " << SSB_current << " " << temp << endl;
+        }
+
       }
     }
 

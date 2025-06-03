@@ -167,6 +167,7 @@ PARAMETER_SECTION
   number half_sigmaRsq;
   number sigmaR;
   number SSBpR_virgin;
+  number SSBpR_bench;
   number SSB0_4_SRR;
   number R0_4_SRR;
   number regime_change;
