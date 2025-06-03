@@ -1971,6 +1971,7 @@
 
   int timevary_SRparm_first;  //   == 0 means that no relevant parms are timevarying
   int firstSRparm;
+  int timevary_SRparm_first_yr;  //   year
   int timevary_parm_SR_last;
   ivector timevary_SRparm(styr-3,YrMax+1);
   ivector SRparm_timevary(1,N_SRparm2);
@@ -1981,6 +1982,7 @@
   firstSRparm = ParCount;
   timevary_parm_SR_last = 0;
   timevary_SRparm_first = 0;
+  timevary_SRparm_first_yr = 0;
   timevary_SRparm.initialize();
   SRparm_timevary.initialize();
   SR_env_link = 0;
@@ -2142,6 +2144,7 @@
           if (timevary_pass(y) > 0 && j != N_SRparm2 - 1)
           {
             timevary_SRparm(y) = timevary_pass(y);  //  set timevary flag, except for regime parameter
+            timevary_SRparm_first_yr = y;
             SRflag = 1; //  first change point
           }
           else if(SRflag == 1)

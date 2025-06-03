@@ -2138,7 +2138,7 @@ FUNCTION void write_nucontrol()
   }
 
   report4 << "#" << endl;
-  report4 << SR_fxn << " #_Spawner-Recruitment; Options: 1=NA; 2=Ricker; 3=std_B-H; 4=SCAA; 5=Hockey; 6=B-H_flattop; 7=survival_3Parm; 8=Shepherd_3Parm; 9=RickerPower_3parm" << endl;
+  report4 << SR_fxn << " #_Spawner-Recruitment; Options: 1=NA; 2=Ricker; 3=std_B-H; 4=SCAA; 5=Hockey; 6=B-H_flattop; 7=survival_3Parm; 8=Shepherd_3Parm; 9=RickerPower_3parm; 10=B-H_ab" << endl;
   report4 << init_equ_steepness << "  # 0/1 to use steepness in initial equ recruitment calculation" << endl;
   report4 << " 0 #  not_used" << endl;
   report4 << "#_          LO            HI          INIT         PRIOR         PR_SD       PR_type      PHASE    env-var    use_dev   dev_mnyr   dev_mxyr     dev_PH      Block    Blk_Fxn #  parm_name" << endl;

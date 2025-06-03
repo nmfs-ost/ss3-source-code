@@ -785,7 +785,7 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
   Recr_unf = mfexp(SRparm_bench(1));  // R0 to be used
   Fishon = 0;
   SSBpR_Calc(Recr_unf);  // this returns SSB_equil using benchmark biology
-  dvariable SSBpR_bench = SSB_equil / Recr_unf;
+  SSBpR_bench = SSB_equil / Recr_unf;
 
   report5 << "virgin: " << Recr_virgin << " " << SSB_virgin << endl;
   report5 << "bench: " << Recr_unf << " " << SSB_equil << endl;
@@ -855,10 +855,10 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
   if (show_MSY == 1)
   {
     SRparm_bench(N_SRparm2 + 1) = SSB0_4_SRR;
-    Mgmt_quant(1) = SSB_unf;
+    Mgmt_quant(1) = SSB0_4_SRR;
     Mgmt_quant(2) = totbio;  // this is calculated in Do_Equil_Calc
     Mgmt_quant(3) = smrybio;
-    Mgmt_quant(4) = Recr_unf;
+    Mgmt_quant(4) = R0_4_SRR;
     report5 << "SRparms for benchmark: " << SRparm_bench << endl
             << "Benchmark biology averaged over years: " << Bmark_Yr(1) << " " << Bmark_Yr(2) << endl << endl;
     Mgmt_quant(19) = SSB_unf;  // placeholder for depletion denominator
