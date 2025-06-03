@@ -1027,7 +1027,7 @@ FUNCTION void get_time_series()
         {
           R0_use = Recr_virgin;
           SSB_use = SSB_virgin;
-//          warning << y << " virgin_SRR; SSB_use: "<<SSB_use<<"  R0_use: "<<R0_use <<"  steep: " << SRparm_work(2) << endl;
+          warning << y << " virgin_SRR; SSB_use: "<<SSB_use<<"  R0_use: "<<R0_use <<"  steep: " << SRparm_work(2) << endl;
         }
         else if (timevary_SRparm(y) == 1)  //  update R0_use and SSB_use in this year
                                            //  values will carry forward into subsequent years
@@ -1040,7 +1040,7 @@ FUNCTION void get_time_series()
           bio_yr = y;
           SSBpR_Calc(R0_use); //  call function to do per recruit calculation with current year's biology and adjusted R0
           SSB_use = SSB_equil;
-//          warning << y << " update_SRR; SSB_use: "<<SSB_use<<"  R0_use: "<<R0_use <<"  steep: " << SRparm_work(2) << endl;
+          warning << y << " update_SRR; SSB_use: "<<SSB_use<<"  R0_use: "<<R0_use <<"  steep: " << SRparm_work(2) << endl;
 
           if (fishery_on_off == 1)
           {
@@ -1053,7 +1053,7 @@ FUNCTION void get_time_series()
         }
         else  //  flag is 2
         {
-//          warning << y << " carry_SRR; SSB_use: "<<SSB_use<<"  R0_use: "<<R0_use <<"  steep: " << SRparm_work(2) << endl;
+          warning << y << " carry_SRR; SSB_use: "<<SSB_use<<"  R0_use: "<<R0_use <<"  steep: " << SRparm_work(2) << endl;
         }
         Recruits = Spawn_Recr(SRparm_work, SSB_use, R0_use, SSB_current); // calls to function Spawn_Recr using either virgin or adjusted R0 and SSB0
 //        warning <<"  SSB: " << SSB_current << "  R: " << Recruits << endl;
@@ -1497,7 +1497,7 @@ FUNCTION void get_time_series()
         {
           R0_use = Recr_virgin;
           SSB_use = SSB_virgin;
-//          warning << y << " virgin_SRR; SSB_use: "<<SSB_use<<"  R0_use: "<<R0_use <<"  steep: " << SRparm_work(2) << endl;
+          warning << y << " virgin_SRR; SSB_use: "<<SSB_use<<"  R0_use: "<<R0_use <<"  steep: " << SRparm_work(2) << endl;
         }
         else if (timevary_SRparm(y) == 1)  //  update R0_use and SSB_use in this year
                                            //  values will carry forward into subsequent years
@@ -1510,7 +1510,7 @@ FUNCTION void get_time_series()
           bio_yr = y;
           SSBpR_Calc(R0_use); //  call function to do per recruit calculation with current year's biology and adjusted R0
           SSB_use = SSB_equil;
-//          warning << y << " update_SRR; SSB_use: "<<SSB_use<<"  R0_use: "<<R0_use <<"  steep: " << SRparm_work(2) << endl;
+          warning << y << " update_SRR; SSB_use: "<<SSB_use<<"  R0_use: "<<R0_use <<"  steep: " << SRparm_work(2) << endl;
 
           if (fishery_on_off == 1)
           {
@@ -1523,7 +1523,7 @@ FUNCTION void get_time_series()
         }
         else  //  flag is 2
         {
-//          warning << y << " carry_SRR; SSB_use: "<<SSB_use<<"  R0_use: "<<R0_use <<"  steep: " << SRparm_work(2) << endl;
+          warning << y << " carry_SRR; SSB_use: "<<SSB_use<<"  R0_use: "<<R0_use <<"  steep: " << SRparm_work(2) << endl;
         }
         Recruits = Spawn_Recr(SRparm_work, SSB_use, R0_use, SSB_current); // calls to function Spawn_Recr using either virgin or adjusted R0 and SSB0
         if (SR_fxn != 7) apply_recdev(Recruits, R0_use); //  apply recruitment deviation

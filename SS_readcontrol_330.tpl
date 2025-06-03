@@ -6657,7 +6657,7 @@
     CoVar_Count++;
     j++;
     active_parm(CoVar_Count) = j;
-    ParmLabel += "20.HCR_inflect" + CRLF(1);
+    ParmLabel += "20.HCR_anchor" + CRLF(1);
     CoVar_Count++;
     j++;
     active_parm(CoVar_Count) = j;
