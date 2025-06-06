@@ -24,8 +24,8 @@ PROCEDURE_SECTION
   {
     if (mcmc_counter == 0)
     {
-      SR_parm(1) += MCMC_bump;
-      cout << mcmc_counter << "   adjusted SR_parm in first mcmc call " << SR_parm(1) << "  by  " << MCMC_bump << endl;
+      SRparm(1) += MCMC_bump;
+      cout << mcmc_counter << "   adjusted SRparm in first mcmc call " << SRparm(1) << "  by  " << MCMC_bump << endl;
     }
 
     mcmc_counter++;
@@ -206,15 +206,15 @@ PROCEDURE_SECTION
       temp = sqrt((temp + 0.0000001) / (double(recdev_end - recdev_start + 1)));
       if (mcmc_counter == 0 && mceval_counter == 0)
       {
-        cout << current_phase() << " " << niter << " -log(L): " << obj_fun << "  Spbio: " << value(SSB_yr(styr)) << " " << value(SSB_yr(endyr));
+        cout << current_phase() << " " << niter << " -log(L): " << obj_fun << "  SSBio: " << value(SSB_yr(styr)) << " " << value(SSB_yr(endyr));
       }
       else if (mcmc_counter > 0)
       {
-        cout << " MCMC: " << mcmc_counter << " -log(L): " << obj_fun << "  Spbio: " << value(SSB_yr(styr)) << " " << value(SSB_yr(endyr));
+        cout << " MCMC: " << mcmc_counter << " -log(L): " << obj_fun << "  SSBio: " << value(SSB_yr(styr)) << " " << value(SSB_yr(endyr));
       }
       else if (mceval_counter > 0)
       {
-        cout << " MCeval: " << mceval_counter << " -log(L): " << obj_fun << "  Spbio: " << value(SSB_yr(styr)) << " " << value(SSB_yr(endyr));
+        cout << " MCeval: " << mceval_counter << " -log(L): " << obj_fun << "  SSBio: " << value(SSB_yr(styr)) << " " << value(SSB_yr(endyr));
       }
       if (F_Method > 1 && sum(catch_like) > 0.01)
       {
@@ -255,11 +255,11 @@ PROCEDURE_SECTION
           ParmTrace << " " << MGparm(j);
         }
       }
-      for (j = 1; j <= SR_parm_PH.indexmax(); j++)
+      for (j = 1; j <= SRparm_PH.indexmax(); j++)
       {
-        if (SR_parm_PH(j) >= 0)
+        if (SRparm_PH(j) >= 0)
         {
-          ParmTrace << " " << SR_parm(j);
+          ParmTrace << " " << SRparm(j);
         }
       }
       if (recdev_cycle > 0)
@@ -384,7 +384,7 @@ PROCEDURE_SECTION
       ParmTrace << current_phase() << " " << niter << " " << obj_fun << " " << obj_fun - last_objfun
                 << " " << value(SSB_yr(styr)) << " " << value(SSB_yr(endyr)) << " " << biasadj(styr) << " " << max(biasadj) << " " << biasadj(endyr);
       ParmTrace << " " << MGparm << " ";
-      ParmTrace << SR_parm << " ";
+      ParmTrace << SRparm << " ";
       if (recdev_cycle > 0)
         ParmTrace << recdev_cycle_parm;
       if (recdev_do_early > 0)
