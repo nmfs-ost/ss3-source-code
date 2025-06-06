@@ -2051,11 +2051,12 @@ FUNCTION void write_bigoutput()
     if (pick_report_use(20) == "Y")
     {
       {
-        SS2out << endl
+      SRparm_work = SRparm_byyr(styr);
+      y = styr;
+      SS2out << endl
                << pick_report_name(20) << endl
                << "# using_virgin_SR_parameters:  " << SRparm_work << endl;
         SS2out << "SSB/SSB_virgin    SSB    Recruitment" << endl;
-        SRparm_work = SRparm_byyr(styr);
         for (f = 1; f <= 120; f++)
         {
           SSB_current = double(f) / 100. * SSB_virgin;
