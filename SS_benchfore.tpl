@@ -2721,7 +2721,7 @@ FUNCTION void Get_Forecast()
         {
           R0_use = Recr_virgin;
           SSB_use = SSB_virgin;
-          warning << y << " virgin_SRR; SSB_use: "<<SSB_use<<"  R0_use: "<<R0_use <<"  steep: " << SRparm_work(2) << endl;
+//          warning << y << " virgin_SRR; SSB_use: "<<SSB_use<<"  R0_use: "<<R0_use <<"  steep: " << SRparm_work(2) << endl;
         }
         else if (timevary_SRparm(y) == 1)  //  update R0_use and SSB_use in this year
                                            //  values will carry forward into subsequent years
