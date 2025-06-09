@@ -22,7 +22,7 @@ jobs:
           - {os: windows-latest}
           - {os: macos-13}
           - {os: macos-latest}
-          - {os: ubuntu-latest}
+          - {os: ubuntu-22.04}
     # Limit run time to 90 min to avoid wasting action minutes.
     # was set to 15 and then 30 minutes previously, but compiling admb
     # on mac took too long
@@ -44,7 +44,7 @@ jobs:
           ref: admb-13.2
           
       - name: Update Ubuntu packages
-        if: matrix.config.os == 'ubuntu-latest'
+        if: matrix.config.os == 'ubuntu-22.04'
         run: sudo apt-get update
       
       - name: Setup R
@@ -97,7 +97,7 @@ jobs:
 
       - name: Get the last tag on unix (macOS and linux)
         id: get-latest-tag-unix
-        if: matrix.config.os == 'macos-13' || matrix.config.os == 'macos-latest' || matrix.config.os == 'ubuntu-latest'
+        if: matrix.config.os == 'macos-13' || matrix.config.os == 'macos-latest' || matrix.config.os == 'ubuntu-22.04'
         run: |
           git tag
           latest_tag=$(git describe --abbrev=0 --tags)
@@ -109,7 +109,7 @@ jobs:
 
       - name: Pull the last tag value to use in the Rscript on unix (macOS and linux)
         id: get-version-unix
-        if: matrix.config.os == 'macos-13' || matrix.config.os == 'macos-latest' || matrix.config.os == 'ubuntu-latest'
+        if: matrix.config.os == 'macos-13' || matrix.config.os == 'macos-latest' || matrix.config.os == 'ubuntu-22.04'
         run: |
           echo "${{ steps.get-latest-tag-unix.outputs.tag }}" > .github/last_tag.txt
           echo "${{ steps.get-latest-tag-unix.outputs.tag_commit }}" > .github/last_tag_commit.txt
@@ -238,7 +238,7 @@ jobs:
           mv ss3_opt ss3_opt_osx
 
       - name: Build stock synthesis for linux with p flag and admb docker image
-        if:  matrix.config.os == 'ubuntu-latest'
+        if:  matrix.config.os == 'ubuntu-22.04'
         run: |
           rm -rf SS330
           rm -rf ss3_osx.tar
@@ -248,13 +248,13 @@ jobs:
           /bin/bash ./Make_SS_330_new.sh --admb docker -b SS330 -o -p   
 
       - name: Verify binary on linux
-        if: matrix.config.os == 'ubuntu-latest'
+        if: matrix.config.os == 'ubuntu-22.04'
         run: |
           sha256sum SS330/ss3
           sha256sum SS330/ss3_opt
     
       - name: Delete unneeded files and change exe names on linux
-        if: matrix.config.os == 'ubuntu-latest'
+        if: matrix.config.os == 'ubuntu-22.04'
         run: |
           cd SS330
           rm *.obj *.htp *.cpp ss3_opt.tpl ss3.tpl
