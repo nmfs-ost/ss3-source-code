@@ -4345,7 +4345,7 @@
       "even when the base is set to the mean of earlier recruitments" << endl;
     }
 
-    if (Fcast_Loop_Control(5) == 0)  //  default before 3.30.24
+    if (Fcast_Loop_Control(5) <= 0)  //  default before 3.30.24
     {
       echoinput << "basis for HCR anchor was not set; setting to 2 to match default before 3.30.24" << endl;
       warnstream << "basis for HCR anchor was not set; setting to 2 to match default before 3.30.24";
