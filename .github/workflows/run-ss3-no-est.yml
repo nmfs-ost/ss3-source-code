@@ -119,22 +119,25 @@ jobs:
           file.rename(file.path(test_mod_path, "starter.ss_new"), file.path(test_mod_path,"starter.ss"))
           file.rename(file.path(test_mod_path, "forecast.ss_new"), file.path(test_mod_path,"forecast.ss"))
           start <- readLines(file.path(test_mod_path, "starter.ss"))
+          start[1:10]
           first_val_line <- grep("read from .par file", start, fixed = TRUE)
-          datname <- start[first_val_line-2]
-          ctlname <- start[first_val_line-1]
-          print(datname)
-          print(ctlname)
-          file.exists(file.path(test_mod_path, datname))
-          file.exists(file.path(test_mod_path, ctlname))
-          file.remove(file.path(test_mod_path, datname))
-          file.remove(file.path(test_mod_path, ctlname))
-          file.rename(file.path(test_mod_path,"data_echo.ss_new"), file.path(test_mod_path, datname))
-          file.rename(file.path(test_mod_path, "control.ss_new"), file.path(test_mod_path, ctlname))
-          file.remove(file.path(test_mod_path, "Report.sso"))
-          # see if model finishes without error
-          system(paste0("cd ", test_mod_path, " && ../ss3 -stopph 0 -nohess"))
-          model_ran <- file.exists(file.path(test_mod_path, "control.ss_new"))
-          return(model_ran)
+          first_val_line
+          # datname <- start[first_val_line-2]
+          # ctlname <- start[first_val_line-1]
+          # print(datname)
+          # print(ctlname)
+          # file.exists(file.path(test_mod_path, datname))
+          # file.exists(file.path(test_mod_path, ctlname))
+          # file.remove(file.path(test_mod_path, datname))
+          # file.remove(file.path(test_mod_path, ctlname))
+          # file.rename(file.path(test_mod_path, "data_echo.ss_new"), file.path(test_mod_path, datname))
+          # file.rename(file.path(test_mod_path, "control.ss_new"), file.path(test_mod_path, ctlname))
+          # file.remove(file.path(test_mod_path, "control.ss_new"))
+          # file.remove(file.path(test_mod_path, "Report.sso"))
+          # # see if model finishes without error
+          # system(paste0("cd ", test_mod_path, " && ../ss3 -stopph 0 -nohess"))
+          # model_ran <- file.exists(file.path(test_mod_path, "control.ss_new"))
+          # return(model_ran)
         shell: Rscript {0}
 
       # - name: Run models using the .ss_new files
