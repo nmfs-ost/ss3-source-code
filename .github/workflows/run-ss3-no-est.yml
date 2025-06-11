@@ -111,7 +111,7 @@ jobs:
             on.exit(system(paste0("cd ", wd)))
             # delete old starter files, rename forecast.ss_new and starter.ss_new files
             file.remove(file.path(dir, "starter.ss"))
-            file.remove(file.path("forecast.ss"))
+            file.remove(file.path(dir, "forecast.ss"))
             file.rename(file.path(dir, "starter.ss_new"), file.path(dir,"starter.ss"))
             file.rename(file.path(dir, "forecast.ss_new"), file.path(dir,"forecast.ss"))
             # rename control and data files to standardized names (from the starter files)
