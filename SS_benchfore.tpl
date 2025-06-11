@@ -787,8 +787,8 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
   SSBpR_Calc(Recr_unf);  // this returns SSB_equil using benchmark biology
   SSBpR_bench = SSB_equil / Recr_unf;
 
-  report5 << "virgin: " << Recr_virgin << " " << SSB_virgin << endl;
-  report5 << "bench: " << Recr_unf << " " << SSB_equil << endl;
+//  report5 << "virgin: " << Recr_virgin << " " << SSB_virgin << endl;
+//  report5 << "bench: " << Recr_unf << " " << SSB_equil << endl;
   if( timevary_MG_firstyr == YrMax && WTage_rd == 0)  // no time-varying biology
   {
     SSB0_4_SRR = SSB_virgin;
@@ -799,8 +799,6 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
   {
     if( timevary_bio_4SRR == 0)  // legacy approach;  this switch is read from starter.ss
     {
-      warnstream << "There is timevary biology and the legacy approach to benchmark calculations is being used; user should be aware";
-      write_message (WARN, 0);
       if(timevary_SRparm_first == 0)  // no timevary SRR parms
       {
         SSB_unf = SSB_equil;

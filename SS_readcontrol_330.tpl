@@ -1817,10 +1817,20 @@
         if(timevary_MG_firstyr == YrMax) timevary_MG_firstyr = y;  // save for reporting in MSY and spawn_recruit output
       }
     }
+
     //  timevary growth or maturity and Maunder M refers to that maturity
     if ((timevary_MG(y, 2) > 0 || timevary_MG(y, 3) > 0) && natM_type == 5 && natM_5_opt < 3) timevary_MG(y, 1) = 1;
   
     echoinput << y << " timevary_MG: " << timevary_MG(y) << endl;
+  }
+
+  if( timevary_MG_firstyr == YrMax && WTage_rd == 0)  // no time-varying biology
+  {
+    if( timevary_bio_4SRR == 0)  // legacy approach;  this switch is read from starter.ss
+    {
+      warnstream << "There is timevary biology and the legacy approach to benchmark calculations is being used; user should be aware";
+      write_message(WARN, 0);
+    }
   }
 
   for (y = endyr + 1; y <= YrMax; y++)
