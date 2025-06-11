@@ -120,8 +120,12 @@ jobs:
           ctlname <- start[first_val_line-1]
           print(datname)
           print(ctlname)
-          # file.exists(file.path(test_mod_path, datname))
-          # file.exists(file.path(test_mod_path, ctlname))
+          file.exists(file.path(test_mod_path, datname))
+          file.exists(file.path(test_mod_path, ctlname))
+          file.remove(file.path(test_mod_path, datname))
+          file.remove(file.path(test_mod_path, ctlname))
+          file.rename(file.path(test_mod_path,"data_echo.ss_new"), file.path(test_mod_path, datname))
+          file.rename(file.path(test_mod_path, "control.ss_new"), file.path(test_mod_path, ctlname))
         shell: Rscript {0}
 
       # - name: Run models using the .ss_new files
