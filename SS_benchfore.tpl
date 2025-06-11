@@ -2021,20 +2021,19 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
   }
   else if (show_MSY == 2) //  do brief output
   {
-    report5 << SPR_actual / 100. << " " << SPR_Fmult << " " << Mgmt_quant(10) << " " << YPR_spr_dead / Vbio1_spr << " " << Bspr_rec << " "
+    SS2out << SPR_actual / 100. << " " << SPR_Fmult << " " << Mgmt_quant(10) << " " << YPR_spr_dead / Vbio1_spr << " " << Bspr_rec << " "
            << Bspr << " " << YPR_spr_dead * Bspr_rec << " " << YPR_spr_ret * Bspr_rec
            << " " << Vbio1_spr * Bspr_rec << " # ";
 
-    report5 << SPR_Btgt << " " << Btgt / SSB_unf << " " << Btgt_Fmult << " " << Mgmt_quant(7) << " " << YPR_Btgt_dead / Vbio1_Btgt << " " << Btgt_Rec << " "
+    SS2out << SPR_Btgt << " " << Btgt / SSB_unf << " " << Btgt_Fmult << " " << Mgmt_quant(7) << " " << YPR_Btgt_dead / Vbio1_Btgt << " " << Btgt_Rec << " "
            << Btgt << " " << YPR_Btgt_dead * Btgt_Rec << " " << YPR_Btgt_ret * Btgt_Rec
            << " " << Vbio1_Btgt * Btgt_Rec << " # ";
 
-    report5 << MSY_SPR << " " << Bmsy / SSB_unf << " " << MSY_Fmult << " " << Mgmt_quant(14) << " " << MSY / (Vbio1_MSY * Recr_msy) << " " << Recr_msy << " "
+    SS2out << MSY_SPR << " " << Bmsy / SSB_unf << " " << MSY_Fmult << " " << Mgmt_quant(14) << " " << MSY / (Vbio1_MSY * Recr_msy) << " " << Recr_msy << " "
            << Bmsy << " " << MSY << " " << YPR_msy_dead * Recr_msy << " " << YPR_msy_ret * Recr_msy
            << " " << Vbio1_MSY * Recr_msy << " # " << endl;
   }
   write_bodywt = write_bodywt_save;
-    report5 << 0 << " y: " << y << " Repro_output_by_age_for_morph_1 end_bench: " << fec(1) << endl;
 //    report5 << "Repro_output_by_age_for_morph_1_after_benchmark: " << fec(1) << endl;
   } //  end benchmarks
 
