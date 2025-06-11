@@ -114,6 +114,10 @@ jobs:
           file.exists(file.path(test_mod_path, "forecast.ss_new"))
           file.exists(file.path(test_mod_path, "data_echo.ss_new"))
           file.exists(file.path(test_mod_path, "control.ss_new"))
+          file.remove(file.path(test_mod_path, "starter.ss"))
+          file.remove(file.path(test_mod_path, "forecast.ss"))
+          file.rename(file.path(test_mod_path, "starter.ss_new"), file.path(test_mod_path,"starter.ss"))
+          file.rename(file.path(test_mod_path, "forecast.ss_new"), file.path(test_mod_path,"forecast.ss"))
           start <- readLines(file.path(test_mod_path, "starter.ss"))
           first_val_line <- grep("read from .par file", start, fixed = TRUE)
           datname <- start[first_val_line-2]
@@ -126,6 +130,11 @@ jobs:
           file.remove(file.path(test_mod_path, ctlname))
           file.rename(file.path(test_mod_path,"data_echo.ss_new"), file.path(test_mod_path, datname))
           file.rename(file.path(test_mod_path, "control.ss_new"), file.path(test_mod_path, ctlname))
+          file.remove(file.path(test_mod_path, "Report.sso"))
+          # see if model finishes without error
+          system(paste0("cd ", test_mod_path, " && ../ss3 -stopph 0 -nohess"))
+          model_ran <- file.exists(file.path(test_mod_path, "control.ss_new"))
+          return(model_ran)
         shell: Rscript {0}
 
       # - name: Run models using the .ss_new files
@@ -137,7 +146,7 @@ jobs:
       #       on.exit(system(paste0("cd ", wd)))
       #       # delete old starter files, rename forecast.ss_new and starter.ss_new files
       #       file.remove(file.path(dir, "starter.ss"))
-      #       file.remove(file.path("forecast.ss"))
+      #       file.remove(file.path(dir, "forecast.ss"))
       #       file.rename(file.path(dir, "starter.ss_new"), file.path(dir,"starter.ss"))
       #       file.rename(file.path(dir, "forecast.ss_new"), file.path(dir,"forecast.ss"))
       #       # rename control and data files to standardized names (from the starter files)
