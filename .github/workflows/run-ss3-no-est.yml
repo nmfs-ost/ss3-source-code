@@ -119,7 +119,7 @@ jobs:
           file.rename(file.path(test_mod_path, "starter.ss_new"), file.path(test_mod_path,"starter.ss"))
           file.rename(file.path(test_mod_path, "forecast.ss_new"), file.path(test_mod_path,"forecast.ss"))
           start <- readLines(file.path(test_mod_path, "starter.ss"))
-          start[1:10]
+          start[1:15]
           first_val_line <- grep("read from .par file", start, fixed = TRUE)
           first_val_line
           datname <- gsub(" #_datfile", "", start[first_val_line-2])
