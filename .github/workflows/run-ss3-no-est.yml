@@ -115,13 +115,14 @@ jobs:
           file.exists(file.path(test_mod_path, "data_echo.ss_new"))
           file.exists(file.path(test_mod_path, "control.ss_new"))
           start <- readLines(file.path(test_mod_path, "starter.ss"))
-          first_val_line <- grep("0=use init values in control file", start, fixed = TRUE)
-          datname <- start[first_val_line-2]
-          ctlname <- start[first_val_line-1]
-          print(datname)
-          print(ctlname)
-          file.exists(file.path(test_mod_path, datname))
-          file.exists(file.path(test_mod_path, ctlname))
+          start[1:20]
+          # first_val_line <- grep("0=use init values in control file", start, fixed = TRUE)
+          # datname <- start[first_val_line-2]
+          # ctlname <- start[first_val_line-1]
+          # print(datname)
+          # print(ctlname)
+          # file.exists(file.path(test_mod_path, datname))
+          # file.exists(file.path(test_mod_path, ctlname))
         shell: Rscript {0}
 
       # - name: Run models using the .ss_new files
