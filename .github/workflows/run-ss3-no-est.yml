@@ -105,7 +105,7 @@ jobs:
           print(mod_names)
           
           # Testing to see where issue is:
-          lapply(mod_paths, function(dir) {list.files(path = dir, full.names = TRUE)})
+          # lapply(mod_paths, function(dir) {list.files(path = dir, full.names = TRUE)})
           
           test_mod_path <- mod_paths[1]
           file.exists(file.path(test_mod_path, "starter.ss"))
