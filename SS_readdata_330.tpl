@@ -4281,8 +4281,8 @@
       echoinput << "HarvestPolicy=0, so values for top, bottom, buffer will be ignored" << endl;
 
     echoinput << HarvestPolicy << "  # echoed HarvestPolicy " << endl;
-    *(ad_comm::global_datafile) >> H4010_top_rd; //  use -1 to set H4010_top to Bmsy/SSB_unf
-    echoinput << H4010_top_rd << "   # echoed control rule inflection (-1 to set to Bmsy/SSB_unf)" << endl;
+    *(ad_comm::global_datafile) >> H4010_top_rd; //  as fraction of HCR_anchor; use -1 as legacy approach to set H4010_top to Bmsy/SSB_unf
+    echoinput << H4010_top_rd << "   # echoed control rule inflection" << endl;
     *(ad_comm::global_datafile) >> H4010_bot;
     echoinput << H4010_bot << "   # echoed control rule cutoff " << endl;
     *(ad_comm::global_datafile) >> H4010_scale_rd;
@@ -4345,8 +4345,25 @@
       "even when the base is set to the mean of earlier recruitments" << endl;
     }
 
-    echoinput << Fcast_Loop_Control(5) << " #echo: loop control 5 not used" << endl;
-
+    if (Fcast_Loop_Control(5) <= 0)  //  default before 3.30.24
+    {
+      echoinput << "basis for HCR anchor was not set; setting to 2 to match default before 3.30.24" << endl;
+      warnstream << "basis for HCR anchor was not set; setting to 2 to match default before 3.30.24";
+      write_message(ADJUST, 0);
+      Fcast_Loop_Control(5) = 2;
+    }
+    if (H4010_top_rd < 0)  // convert old legacy approach to new approach for using Bmsy
+    {
+      Fcast_Loop_Control(5) = 3;
+      H4010_top_rd = 1.0;
+    }
+    echoinput << Fcast_Loop_Control(5) << " #control rule anchor: 1=virgin_SSB; 2=unfished_benchmark_SSB(old_approach); 3=Bmsy" << endl;
+    if (depletion_basis == 1 && Fcast_Loop_Control(5) == 2)
+    {
+      warnstream << "depletion_basis is using virgin but HCR anchor is using SSB_unf from benchmark. Are you sure?";
+      write_message(WARN, 0);
+    }
+    
     echoinput << "#next enter year in which Fcast loop 3 caps and allocations begin to be applied" << endl;
     *(ad_comm::global_datafile) >> Fcast_Cap_FirstYear;
     echoinput << Fcast_Cap_FirstYear << " # echoed value" << endl;
@@ -4814,16 +4831,16 @@
       warnstream << "Set F_std_basis=0 because no benchmark or forecast";
       write_message(WARN, 0);
     }
-    if (depletion_basis == 2)
+    if (depletion_basis == 2 || depletion_basis == 6 )
     {
       depletion_basis = 1;
-      warnstream << "Change depletion basis to 1 because benchmarks are off";
+      warnstream << "Change depletion basis to 1 because benchmarks were not requested";
       write_message(WARN, 0);
     }
     if (SPR_reporting >= 1 && SPR_reporting <= 3)
     {
-      SPR_reporting = 4;
-      warnstream << "Change SPR_reporting to 4 because benchmarks are off";
+      SPR_reporting = 5;
+      warnstream << "Change SPR_reporting to 5 (raw %SPR) because benchmarks were not requested";
       write_message(WARN, 0);
     }
   }
@@ -5035,10 +5052,10 @@
     if (STD_Yr_Reverse(y) > 0)
     {
       j++;
-      STD_Yr_Reverse(y) = j; // use for SPB and recruitment
+      STD_Yr_Reverse(y) = j; // use for SSB and recruitment
       if (y >= styr)
       {
-        // depletion must start in year AFTER first catch.  It could vary earlier if recdevs happened enough earlier to change spbio, but this is not included
+        // depletion must start in year AFTER first catch.  It could vary earlier if recdevs happened enough earlier to change SSBio, but this is not included
         if ((depletion_basis > 0 && y > first_catch_yr) || y == endyr)
         {
           N_STD_Yr_Dep++;
