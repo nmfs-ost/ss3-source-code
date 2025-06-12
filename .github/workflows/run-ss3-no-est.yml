@@ -121,8 +121,10 @@ jobs:
           start <- readLines(file.path(test_mod_path, "starter.ss"))
           start[1:15]
           datname <- grep("#_datfile", start, fixed = TRUE)
+          datname <- start[datname]
           datname <- gsub(" #_datfile", "", datname)
           ctlname <- grep("#_ctlfile", start, fixed = TRUE)
+          ctlname <- start[ctlname]
           ctlname <- gsub(" #_ctlfile", "", ctlname)
           print(datname)
           print(ctlname)
