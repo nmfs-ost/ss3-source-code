@@ -116,9 +116,10 @@ jobs:
             file.rename(file.path(dir, "forecast.ss_new"), file.path(dir,"forecast.ss"))
             # rename control and data files to standardized names (from the starter files)
             start <- readLines(file.path(dir, "starter.ss"))
-            first_val_line <- grep("read from .par file", start, fixed = TRUE)
-            datname <- start[first_val_line-2]
-            ctlname <- start[first_val_line-1]
+            datname <- start[grep("#_datfile", start, fixed = TRUE)]
+            datname <- gsub(" #_datfile", "", datname)
+            ctlname <- start[grep("#_ctlfile", start, fixed = TRUE)]
+            ctlname <- gsub(" #_ctlfile", "", ctlname)
             print(datname)
             print(ctlname)
             file.remove(file.path(dir, datname))
