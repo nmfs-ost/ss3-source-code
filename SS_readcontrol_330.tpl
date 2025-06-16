@@ -1824,12 +1824,18 @@
     echoinput << y << " timevary_MG: " << timevary_MG(y) << endl;
   }
 
-  if( timevary_MG_firstyr == YrMax && WTage_rd == 0)  // no time-varying biology
+  if( timevary_MG_firstyr < YrMax || WTage_rd == 1)  //  time-varying biology
   {
     if( timevary_bio_4SRR == 0)  // legacy approach;  this switch is read from starter.ss
     {
-      warnstream << "There is timevary biology and the legacy approach to benchmark calculations is being used; user should be aware";
+      warnstream << "There is timevary biology and the legacy approach to benchmark calculations is being used; user should be aware of possible impacts to benchmark results";
       write_message(WARN, 0);
+        if( timevary_bio_4SRR_rd == -1)  // older starter file did not contain necessary flag
+        {
+          warnstream << "There is timevary biology, so the flag for timevary_bio_4SRR must be set to 0 (old default) or 1 (new improved) in starter.ss";
+// make this a WARN while testing, then change to FATAL for operational code
+          write_message(WARN, 0);
+        }
     }
   }
 

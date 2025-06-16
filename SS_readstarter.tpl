@@ -706,6 +706,7 @@
   int irand_seed;
   int irand_seed_rd;
   int timevary_bio_4SRR;  // flag in 3.30.24 for impact of timevary biology on benchmark SRR calculations
+  int timevary_bio_4SRR_rd;  // flag in 3.30.24 for impact of timevary biology on benchmark SRR calculations
   int F_std_multi; // for multi-year averaging of F_std
   int F_std_log; // for log(ratio) of F_std
   int F_std_basis;
@@ -809,15 +810,18 @@
         }
 
         echoinput << "now read flag for dealing with impact of time-varying biology on benchmark SRR calculations" << endl;
+        timevary_bio_4SRR = 0;
+        timevary_bio_4SRR_rd = -1;
         *(ad_comm::global_datafile) >> tempin;
-        if (tempin == 3.30)  // old format file that does not provide input
+        if (tempin == 3.30)  // starter file does not contain the new line for timevary_bio_4SRR, so assign default
         {
           ender = 1;
           timevary_bio_4SRR = 0;
         }
-        else  // new input beginning 3.30.24
+        else  // new input line beginning 3.30.24
         {
           timevary_bio_4SRR = int(tempin);
+          timevary_bio_4SRR_rd = 0;  //  indicates that line was read
           echoinput << "Compatibility flag for legacy (0) vs improved (1) impact of timevary biology on benchmark SRR calcs:  " << timevary_bio_4SRR << endl;
           tempin = 0;
         }
