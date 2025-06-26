@@ -1,5 +1,4 @@
 # Build SS3 and run test models with estimation and hessian
-# Only runs manual run or if run-ss3-no-est.yml runs successfully
 name: run-ss3-with-est
 on:
   workflow_dispatch:
@@ -8,16 +7,16 @@ on:
   #     - '**.tpl'
   #   branches:
   #     - main
-  workflow_run:
-    workflows: ["run-ss3-no-est"]
-    types:
-      - completed
-  # pull_request:
-  #   types: ['opened', 'edited', 'reopened', 'synchronize', 'ready_for_review']
-  #   paths:
-  #     - '**.tpl'
-  #   branches:
-  #     - main
+  # workflow_run:
+  #   workflows: ["run-ss3-no-est"]
+  #   types:
+  #     - completed
+  pull_request:
+    types: ['opened', 'edited', 'reopened', 'synchronize', 'ready_for_review']
+    paths:
+      - '**.tpl'
+    branches:
+      - main
 
 # Run fast running SS3 test models with estimation
 jobs:
@@ -36,6 +35,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: 'nmfs-ost/ss3-test-models'
+          ref: t-v-models-update
           path: test-models-repo
 
       - name: Update Ubuntu packages
