@@ -1919,8 +1919,8 @@ FUNCTION void write_bigoutput()
     { if (Bmark_Yr(k+1) > Bmark_Yr(k))
       {SS2out << "#_NOTE:_using_range_of_years_can_reduce_standard_error_of_result;_do_this_only_when_timevarying_makes_necessary:  " << k << " " << Bmark_Yr(k) << " " << Bmark_Yr(k+1) << endl;}
     }
-    SS2out << "SSBpR0_virgin: " << SSBpR_virgin << " #_uses_biology_from_start_year: " << styr <<endl;
-    SS2out << "SSBpR_unfished_benchmark: " << SSBpR_bench << "  #_uses_biology_over_benchmark_year_range " << endl;
+    SS2out << "SPR_virgin: " << SSBpR_virgin << " #_uses_biology_from_start_year: " << styr <<endl;
+    SS2out << "SPR_unfished_benchmark: " << SSBpR_bench << "  #_uses_biology_over_benchmark_year_range " << endl;
 
     switch (SR_fxn)
     {
@@ -1993,7 +1993,7 @@ FUNCTION void write_bigoutput()
       }
     }
     SS2out << endl  << "#" << endl << init_equ_steepness << "  # Initial_equilibrium:_0/1_to_use_spawner-recruitment_in_initial_equ_recruitment_calculation" << endl << "#" << endl;
-    SS2out << "Yr SpawnBio exp_recr with_regime bias_adjusted pred_recr dev biasadjuster era mature_bio mature_num raw_dev SSBpR(yr) " << endl;
+    SS2out << "Yr SpawnBio exp_recr with_regime bias_adjusted pred_recr dev biasadjuster era mature_bio mature_num raw_dev SPR(yr) " << endl;
 
     y = styr - 2;
     SS2out << "Virg " << SSB_yr(y) << " " << exp_rec(y) << " _ " << 0.0 << " Virg " << SSB_B_yr(y) << " " << SSB_N_yr(y) << " _ " << SSBpR_virgin << endl;
@@ -4792,13 +4792,13 @@ FUNCTION void SPR_profile()
     if (s == spawn_seas)
     {
       fec = Wt_Age_t(t, -2);
-      SS2out << " repro_output for spr/ypr: " << fec(1) << endl;}
+      SS2out << " repro_output for SPR/YPR: " << fec(1) << endl;}
   }
   SS2out << " stored - SSB, R0, SPR0: " << SSB_unf << " " << Recr_unf << " "  << SSBpR_virgin << " " << SSBpR_virgin<<endl;
 
 //  do not recalculate here so force using values from benchmark
-  SS2out << "unfished values for SRR: SSB " << SSB0_4_SRR << " R " << R0_4_SRR << " SSBpR " << "  SSBpR: " << SSB0_4_SRR / R0_4_SRR << endl;
-  SS2out << "SPRloop Iter Bycatch Fmult F_std SSBpR YpR_dead YpR_dead*Recr YpR_ret*Recr Revenue Cost Profit SSB Recruits SSB/Bzero Tot_Catch ";
+  SS2out << "unfished values for SRR: SSB " << SSB0_4_SRR << " R " << R0_4_SRR << " SPR " << SSB0_4_SRR / R0_4_SRR << endl;
+  SS2out << "SPRloop Iter Bycatch Fmult F_std SPR YPR_dead YPR_dead*Recr YPR_ret*Recr Revenue Cost Profit SSB Recruits SSB/Bzero Tot_Catch ";
   for (f = 1; f <= Nfleet; f++)
   {
     if (fleet_type(f) <= 2)
