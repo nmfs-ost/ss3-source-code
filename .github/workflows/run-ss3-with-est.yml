@@ -12,7 +12,6 @@ on:
   #   types:
   #     - completed
   pull_request:
-    types: ['opened', 'edited', 'reopened', 'synchronize', 'ready_for_review']
     paths:
       - '**.tpl'
     branches:
