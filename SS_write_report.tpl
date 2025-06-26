@@ -4792,9 +4792,8 @@ FUNCTION void SPR_profile()
     if (s == spawn_seas)
     {
       fec = Wt_Age_t(t, -2);
-      SS2out << " repro_output for spr/ypr: " << fec(1) << endl;}
+      SS2out << " repro_output for SPR/YPR: " << fec(1) << endl;}
   }
-  SS2out << " stored - SSB, R0, SPR0: " << SSB_unf << " " << Recr_unf << " "  << SSBpR_virgin << " " << SSBpR_virgin<<endl;
 
 //  do not recalculate here so force using values from benchmark
   SS2out << "unfished values for SRR: SSB " << SSB0_4_SRR << " R " << R0_4_SRR << " SSBpR " << "  SSBpR: " << SSB0_4_SRR / R0_4_SRR << endl;
