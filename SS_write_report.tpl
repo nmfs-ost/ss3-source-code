@@ -4788,13 +4788,12 @@ FUNCTION void SPR_profile()
   {
     t = styr - 3 * nseas + s - 1;
     Wt_Age_beg(s) = Wt_Age_t(t, 0); //  used for smrybio
-    Wt_Age_mid(s) = Wt_Age_t(t, -1);
+    Wt_Age_mid(s) = Wt_Age_t(t, -1);  //  used in global MSY
     if (s == spawn_seas)
     {
       fec = Wt_Age_t(t, -2);
       SS2out << " repro_output for SPR/YPR: " << fec(1) << endl;}
   }
-
 //  do not recalculate here so force using values from benchmark
   SS2out << "unfished values for SRR: SSB " << SSB0_4_SRR << " R " << R0_4_SRR << " SSBpR " << "  SSBpR: " << SSB0_4_SRR / R0_4_SRR << endl;
   SS2out << "SPRloop Iter Bycatch Fmult F_std SSBpR YpR_dead YpR_dead*Recr YpR_ret*Recr Revenue Cost Profit SSB Recruits SSB/Bzero Tot_Catch ";

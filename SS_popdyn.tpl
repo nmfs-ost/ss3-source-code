@@ -269,6 +269,7 @@ FUNCTION void get_initial_conditions()
     }
 
     Wt_Age_t(t, 0) = Wt_Age_beg(s);
+    Wt_Age_t(t, -1) = Wt_Age_mid(s);
 
     for (g = 1; g <= gmorph; g++)
       if (use_morph(g) > 0)
@@ -925,6 +926,7 @@ FUNCTION void get_time_series()
       }
 
       Wt_Age_t(t, 0) = Wt_Age_beg(s);
+      Wt_Age_t(t, -1) = Wt_Age_mid(s);
 
       if (y > styr) // because styr is done as part of initial conditions
       {
