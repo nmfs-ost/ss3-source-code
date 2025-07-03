@@ -750,11 +750,6 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
   SRparm_bench = SRparm_work;
 
  /*  
- Early thoughts: 
- 1 #  SR_update_SSBpR0
-  #  1 - best: update SSBpR0 for benchmark and for time series only if SRparm R0 or h (not regime) is set to have time-varying property
-  #  2 - incorrect (old, incorrect SS3 approach):  always update SSBpR0 for benchmark's use of spawner-recruitment, but only for the time series if there is a timevary SR parm
-
  Flags:
   timevary_MG_firstyr == YrMax  // means that no biology is time-varying
   timevary_SRparm_first > 0 //  means that R0 or h (i.e. any except regime, sigmaR, autocorr) is time-varying, so SSBpR0 gets updated for time series and for bench
@@ -762,6 +757,7 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
 
  Legacy approach:
  SSBpR0 set at start year using start year biology
+ SSBpR0 is not itself saved; instead R0_4_SRR and SSB0_4_SRR are saved and passed to the spawn_recruit functions
  SSBpR0 updated during time series if there is time-varying R0, but does not call equil_spawn_recr_calc
  SSBpR with benchmark biology used in benchmark calculations 
  SSBpR0 for benchmark always uses bench biology, which is incorrect
@@ -782,87 +778,80 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
  HCR inflection adds option to use SSB_virgin or SSB_bench
  depletion adds option to use SSB_bench
  */
-  Recr_unf = mfexp(SRparm_bench(1));  // R0 to be used
+  Recr_unf = Recr_virgin;  // default
+  SSB0_4_SRR = SSB_virgin;  // default
+  R0_4_SRR = Recr_virgin;
   Fishon = 0;
   SSBpR_Calc(Recr_unf);  // this returns SSB_equil using benchmark biology
+  // provides basis for values needed below
+  SSB_unf = SSB_equil;
   SSBpR_bench = SSB_equil / Recr_unf;
 
-//  report5 << "virgin: " << Recr_virgin << " " << SSB_virgin << endl;
-//  report5 << "bench: " << Recr_unf << " " << SSB_equil << endl;
-  if( timevary_MG_firstyr == YrMax && WTage_rd == 0)  // no time-varying biology
+  if(timevary_SRparm_first == 0)  // no timevary SRR parms
   {
-    SSB0_4_SRR = SSB_virgin;
-    R0_4_SRR = Recr_virgin;
-    SSB_unf = SSB_equil;  //  should this also depend on timevary_SRparm_first > 0???
-  }
-  else  //  there is some timevary biology (with any WTage_rd == 1 qualifying as timevarying without actually chacking for different values in diff years)
-  {
-    if( timevary_bio_4SRR == 0)  // legacy approach;  this switch is read from starter.ss
+    if( timevary_MG_firstyr == YrMax && WTage_rd == 0)  // no time-varying biology
     {
-      if(timevary_SRparm_first == 0)  // no timevary SRR parms
-      {
-        SSB_unf = SSB_equil;
-        R0_4_SRR = Recr_unf;  // same as Recr_virgin because no timevary SRparms
-        SSB0_4_SRR = SSB_equil;  // this is legacy, but incorrect, as it moves equil off the SRR, rather than along the SRR
-        SSBpR_bench = SSB0_4_SRR / R0_4_SRR;
-      }
-      else // there are timevary SRR parms
-      {
-        Recr_unf = mfexp(SRparm_bench(1));  // R0 to be used
-        // steepness and other SR parms will also come from SRparm_bench
-        SSBpR_Calc(Recr_unf);  // this returns SSB_equil using benchmark biology
-        SSB_unf = SSB_equil;
-        R0_4_SRR = Recr_unf;
-        SSB0_4_SRR = SSB_equil;  // this is legacy, but incorrect, as it moves equil off the SRR, rather than along the SRR
-        SSBpR_bench = SSB0_4_SRR / R0_4_SRR;
-      }
-      if (show_MSY == 1) report5 << " legacy: Recr: " << R0_4_SRR << " SSB: " << SSB0_4_SRR << " bench SPR: " << SSBpR_bench << endl;
+      R0_4_SRR = Recr_virgin;
+      SSB0_4_SRR = SSB_virgin;
+      SSB_unf = SSB_virgin;
     }
-
-    else  // more complete approach to time vary biology will be used (introduced in 3.30.24)
+    else // there is time-varying biology
     {
-      if(timevary_SRparm_first == 0)  // no timevary SRR parms, so SRR will use SSB_virgin, Recr_virgin to internally create virgin SSBpR0 
+      R0_4_SRR = Recr_virgin;  // same as Recr_virgin because no timevary SRparms
+      if( timevary_bio_4SRR == 0)  // legacy approach;  this switch is read from starter.ss
       {
-        SSB0_4_SRR = SSB_virgin;
-        R0_4_SRR = Recr_virgin;
+        SSB_unf = SSB_equil;
+        SSB0_4_SRR = SSB_equil;  // this is inaccurate legacy, as it moves equil off the SRR, rather than along the SRR
+      }
+      else
+      {
         //  get new equilibrium point using original SRR and SSBpR_bench
         Equ_SpawnRecr_Result = Equil_Spawn_Recr_Fxn(SRparm_bench, SSB_virgin, Recr_virgin, SSBpR_bench); //  returns 2 element vector containing equilibrium biomass and recruitment at this SPR
         SSB_unf = Equ_SpawnRecr_Result(1);
         Recr_unf = Equ_SpawnRecr_Result(2);
         if (show_MSY == 1) report5 << " use virgin SSBpR0 in SRR - SSB: " << SSB_virgin << " Recr: " << Recr_virgin << " SPR: " << SSB_virgin / Recr_virgin << " bench SPR: " << SSBpR_bench << " new equil: " << Equ_SpawnRecr_Result << endl;
       }
-      else  //  use updated SRparms and benchmark biology
-      {
-        //  get new equilibrium point for the benchmark SRR
-        Recr_unf = mfexp(SRparm_bench(1));  // R0 to be used
-        Fishon = 0;
-        SSBpR_Calc(Recr_unf);  // this returns SSB_equil using benchmark biology
-        SSBpR_bench = SSB_equil / Recr_unf;
-        SSB0_4_SRR = SSB_equil;
-        SSB_unf = SSB_equil;
-        R0_4_SRR = Recr_unf;
-        // verify
-        Equ_SpawnRecr_Result = Equil_Spawn_Recr_Fxn(SRparm_bench, SSB_equil, Recr_unf, SSBpR_bench); //  returns 2 element vector containing equilibrium biomass and recruitment at this SPR
-        if (show_MSY == 1) report5 << " use bench SSBpR0 in SRR - SSB: " << SSB_unf << " Recr: " << Recr_unf << " SPR: " << SSBpR_bench << " new equil: " << Equ_SpawnRecr_Result << endl;
-      }
-      SSBpR_Calc(Recr_unf);  // this calcs SSBpR and returns it as SSB_equil using benchmark biology and the updated equil Recr
-      SSB_unf = SSB_equil;
+      SSBpR_bench = SSB_unf / Recr_unf;
+    }
+  }
+  else // there are timevary SRR parms; use same code regardless of timevary biology.  Legacy approach does not include new equilibrium
+  {
+    Recr_unf = mfexp(SRparm_bench(1));  // R0 to be used
+    // note that steepness will get updated when SRparm_bench is used in Equ_SpawnRecr_Result
+    SSBpR_Calc(Recr_unf);  // this returns SSB_equil using benchmark biology
+    SSB_unf = SSB_equil;
+    SSBpR_bench = SSB_equil / Recr_unf;
+    if( timevary_bio_4SRR == 0)  // legacy approach;  this switch is read from starter.ss
+    {
+      R0_4_SRR = Recr_unf;
+      SSB0_4_SRR = SSB_equil;  // this is legacy, but incorrect, as it moves equil off the SRR, rather than along the SRR
+    }
+    else  // use improved approach with updated SRparms and benchmark biology
+    {
+      //  get new equilibrium point for the benchmark SRR
+      Equ_SpawnRecr_Result = Equil_Spawn_Recr_Fxn(SRparm_bench, SSB_equil, Recr_unf, SSBpR_bench); //  returns 2 element vector containing equilibrium biomass and recruitment at this SPR
+      SSB_unf = Equ_SpawnRecr_Result(1);
+      SSB0_4_SRR = Equ_SpawnRecr_Result(1);
+      Recr_unf = Equ_SpawnRecr_Result(2);
+      R0_4_SRR = Equ_SpawnRecr_Result(2);
+
+      if (show_MSY == 1) report5 << " use bench SSBpR0 in SRR - SSB: " << SSB_unf << " Recr: " << Recr_unf << " SPR: " << SSBpR_bench << " new equil: " << Equ_SpawnRecr_Result << endl;
     }
   }
 
   if (show_MSY == 1)
   {
-    SRparm_bench(N_SRparm2 + 1) = SSB0_4_SRR;
-    Mgmt_quant(1) = SSB0_4_SRR;
+    SRparm_bench(N_SRparm2 + 1) = SSB_unf;
+    Mgmt_quant(1) = SSB_unf;
     Mgmt_quant(2) = totbio;  // this is calculated in Do_Equil_Calc
     Mgmt_quant(3) = smrybio;
-    Mgmt_quant(4) = R0_4_SRR;
+    Mgmt_quant(4) = Recr_unf;
     report5 << "SRparms for benchmark: " << SRparm_bench << endl
             << "Benchmark biology averaged over years: " << Bmark_Yr(1) << " " << Bmark_Yr(2) << endl << endl;
     Mgmt_quant(19) = SSB_unf;  // placeholder for depletion denominator
     Mgmt_quant(20) = SSB_unf;  //  placeholder to be replaced by SSB_HCR_infl
-    Mgmt_quant(21) = SSB_unf;
-    Mgmt_quant(22) = SSB_virgin;
+    Mgmt_quant(21) = R0_4_SRR;
+    Mgmt_quant(22) = SSB0_4_SRR;
   }
 
   // find Fspr             SS_Label_710
