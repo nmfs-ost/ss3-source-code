@@ -6680,11 +6680,11 @@
     CoVar_Count++;
     j++;
     active_parm(CoVar_Count) = j;
-    ParmLabel += "SSB_unfished_again" + CRLF(1);
+    ParmLabel += "R0_for_SRR_bench" + CRLF(1);
     CoVar_Count++;
     j++;
     active_parm(CoVar_Count) = j;
-    ParmLabel += "SSB_virgin_again" + CRLF(1);
+    ParmLabel += "SSB_for_SRR_bench" + CRLF(1);
     CoVar_Count++;
     j++;
     active_parm(CoVar_Count) = j;

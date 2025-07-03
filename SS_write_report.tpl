@@ -4963,9 +4963,9 @@ FUNCTION void SPR_profile()
           if (SPRloop1 == 0)
             Fcrash = Fmult2;
         }
-        SS2out << SPRloop1 << " " << SPRloop << " " << with_BYC << " " << Fmult2 << " " << equ_F_std << " " << SSB_equil / (SSB_unf / Recr_unf) << " " << YPR_dead << " "
+        SS2out << SPRloop1 << " " << SPRloop << " " << with_BYC << " " << Fmult2 << " " << equ_F_std << " " << SSB_equil / (SSB0_4_SRR / R0_4_SRR) << " " << YPR_dead << " "
                << YPR_dead * Btgt_prof_rec << " " << YPR_ret * Btgt_prof_rec << " " << (PricePerF * YPR_val_vec) * Btgt_prof_rec
-               << " " << Cost << " " << (PricePerF * YPR_val_vec) * Btgt_prof_rec - Cost << " " << Btgt_prof << " " << Btgt_prof_rec << " " << Btgt_prof / SSB_unf
+               << " " << Cost << " " << (PricePerF * YPR_val_vec) * Btgt_prof_rec - Cost << " " << Btgt_prof << " " << Btgt_prof_rec << " " << Btgt_prof / SSB0_4_SRR
                << " " << value(sum(equ_catch_fleet(2)) * Btgt_prof_rec);
         for (f = 1; f <= Nfleet; f++)
           if (fleet_type(f) <= 2)
