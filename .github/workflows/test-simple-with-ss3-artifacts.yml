@@ -170,7 +170,7 @@ jobs:
       - name: Download artifact for this OS mac
         id: download_artifact-mac-intel
         if: runner.os == 'macos-13'
-        shell: /opt/homebrew/bin/bash {0}
+        shell: /usr/local/bin/bash {0}
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
