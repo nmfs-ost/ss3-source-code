@@ -165,11 +165,7 @@ jobs:
         shell: bash
         run: |
           cd ss3-test-models/models/Simple
-          if [ "${{ runner.os }}" = "Windows" ]; then
-            .\${{ matrix.exe_name }} - nohess -stopph 0
-          else
-            ./${{ matrix.exe_name }} -nohess -stopph 0
-          fi
+          ./${{ matrix.exe_name }} -nohess -stopph 0
 
       - name: Archive Simple model output
         uses: actions/upload-artifact@v4
