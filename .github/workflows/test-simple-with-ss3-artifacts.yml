@@ -126,7 +126,7 @@ jobs:
             "/repos/nmfs-ost/ss3-source-code/actions/artifacts/$found_id/zip" > "ss3_artifacts/$os_artifact.zip"
 
       - name: Download artifact for this OS mac
-        id: download_artifact
+        id: download_artifact-mac
         if: startsWith(matrix.os, 'macos-')
         shell: /opt/homebrew/bin/bash {0}
         env:
