@@ -89,22 +89,11 @@ jobs:
           mkdir -p ss3_artifacts
           os_artifact="${{ matrix.artifact_name }}"
           ARTIFACTS_JSON='${{ steps.list_artifacts.outputs.artifacts }}'
-          echo "RAW ARTIFACTS OUTPUT:"
-          echo "$ARTIFACTS_JSON"
-
-
+          ARTIFACTS_JSON=$(echo "$ARTIFACTS_JSON" | tr -d '\r')
           echo "RAW ARTIFACTS OUTPUT:"
           echo "$ARTIFACTS_JSON" | cat -v
-          echo "jq output is:"
-          echo "$ARTIFACTS_JSON" | jq -cr '.[] | select(. != null) | @base64' | cat -v
 
-
-          if [ -z "$ARTIFACTS_JSON" ]; then
-            echo "No artifacts JSON found -- previous step may have failed."
-            exit 1
-          fi
-
-          IFS=$'\n' artifacts=($(echo "$ARTIFACTS_JSON" | jq -r '.[] | @base64'))
+          IFS=$'\n' artifacts=($(echo "$ARTIFACTS_JSON" | jq -cr '.[] | select(. != null) | @base64' | tr -d '\r' | grep -v '^$'))
           if [[ ${#artifacts[@]} -eq 0 ]]; then
             echo "No artifacts found."
             exit 1
