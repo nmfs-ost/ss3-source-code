@@ -92,6 +92,13 @@ jobs:
           echo "RAW ARTIFACTS OUTPUT:"
           echo "$ARTIFACTS_JSON"
 
+
+          echo "RAW ARTIFACTS OUTPUT:"
+          echo "$ARTIFACTS_JSON" | cat -v
+          echo "jq output is:"
+          echo "$ARTIFACTS_JSON" | jq -cr '.[] | select(. != null) | @base64' | cat -v
+
+
           if [ -z "$ARTIFACTS_JSON" ]; then
             echo "No artifacts JSON found -- previous step may have failed."
             exit 1
