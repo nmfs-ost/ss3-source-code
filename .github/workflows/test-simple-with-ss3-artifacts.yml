@@ -130,6 +130,16 @@ jobs:
             -H "Authorization: Bearer $GH_TOKEN" \
             "/repos/nmfs-ost/ss3-source-code/actions/artifacts/$found_id/zip" > "ss3_artifacts/$os_artifact.zip"
 
+      - name: Unzip SS3 executable
+        shell: bash
+        run: |
+          cd ss3_artifacts
+          if [ "${{ runner.os }}" = "Windows" ]; then
+            powershell -Command "Expand-Archive -Path '${{ matrix.artifact_name }}.zip' -DestinationPath ."
+          else
+            unzip -o "${{ matrix.artifact_name }}.zip"
+          fi
+          
       - name: Checkout test models repository
         uses: actions/checkout@v4
         with:
