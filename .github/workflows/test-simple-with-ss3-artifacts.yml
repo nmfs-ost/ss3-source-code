@@ -140,6 +140,12 @@ jobs:
         shell: bash
         run: mkdir -p ss3-test-models/models/Simple
 
+      - name: see what files exist
+        shell: bash
+        run: |
+          echo "Files in ss3_artifacts:"
+          find ss3_artifacts
+
       - name: Copy SS3 executable to Simple model directory
         shell: bash
         run: |
