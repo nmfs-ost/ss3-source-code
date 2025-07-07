@@ -84,11 +84,15 @@ jobs:
           set -e
           mkdir -p ss3_artifacts
           os_artifact="${{ matrix.artifact_name }}"
-          artifacts=$(echo '${{ steps.list_artifacts.outputs.artifacts }}' | jq -r '.[] | @base64')
+          readarray -t artifacts < <(echo '${{ steps.list_artifacts.outputs.artifacts }}' | jq -r '.[] | @base64')
           if [[ ${#artifacts[@]} -eq 0 ]]; then
             echo "No artifacts found."
             exit 1
           fi
+          echo "Available artifacts:"
+          for artifact in "${artifacts[@]}"; do
+            echo "${artifact}" | base64 --decode | jq -r '.name'
+          done
           found_id=""
           for artifact in "${artifacts[@]}"; do
             _jq() {
