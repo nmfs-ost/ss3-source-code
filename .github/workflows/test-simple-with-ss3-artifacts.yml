@@ -141,7 +141,7 @@ jobs:
           path: ss3-test-models
 
       - name: Ensure Simple model directory exists
-        shell: shell: ${{ runner.os == 'macOS' && '/opt/homebrew/bin/bash {0}' || 'bash' }}
+        shell: ${{ runner.os == 'macOS' && '/opt/homebrew/bin/bash {0}' || 'bash' }}
         run: mkdir -p ss3-test-models/models/Simple
 
       - name: Copy SS3 executable to Simple model directory
