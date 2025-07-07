@@ -1,0 +1,150 @@
+on:
+  push:
+      paths:
+      - '**.tpl'
+      - '**.sh'
+  workflow_dispatch:
+
+jobs:
+  test-simple-model:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-13, macos-latest]
+        include:
+          - os: ubuntu-latest
+            artifact_name: ss3-ubuntu-latest
+            exe_name: ss3_linux
+          - os: windows-latest
+            artifact_name: ss3-windows-latest
+            exe_name: ss3_win.exe
+          - os: macos-13
+            artifact_name: ss3-macos-13
+            exe_name: ss3_osx
+          - os: macos-latest
+            artifact_name: ss3-macos-latest
+            exe_name: ss3_osx
+
+    steps:
+      - name: Checkout test repo (this repo)
+        uses: actions/checkout@v4
+
+      - name: Set up jq and unzip (Linux/macOS)
+        if: runner.os != 'Windows'
+        run: |
+          sudo apt-get update || true
+          sudo apt-get install -y jq unzip || brew install jq unzip
+
+      - name: Set up jq (Windows)
+        if: runner.os == 'Windows'
+        run: choco install jq
+
+      - name: Find latest successful ss3-build workflow run in nmfs-ost/ss3-source-code
+        id: get_run
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const { data: workflows } = await github.rest.actions.listRepoWorkflows({
+              owner: "nmfs-ost",
+              repo: "ss3-source-code"
+            });
+            const workflow = workflows.workflows.find(wf => wf.name === "ss3-build");
+            if (!workflow) throw "Workflow 'ss3-build' not found.";
+            const { data: runs } = await github.rest.actions.listWorkflowRuns({
+              owner: "nmfs-ost",
+              repo: "ss3-source-code",
+              workflow_id: workflow.id,
+              status: "success",
+              per_page: 1
+            });
+            if (!runs.workflow_runs.length) throw "No successful runs found for 'ss3-build'.";
+            core.setOutput("run_id", runs.workflow_runs[0].id);
+
+      - name: List artifacts from ss3-build run
+        id: list_artifacts
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const run_id = ${{ steps.get_run.outputs.run_id }};
+            const { data: artifacts } = await github.rest.actions.listWorkflowRunArtifacts({
+              owner: "nmfs-ost",
+              repo: "ss3-source-code",
+              run_id
+            });
+            core.setOutput("artifacts", JSON.stringify(artifacts.artifacts));
+
+      - name: Download artifact for this OS
+        id: download_artifact
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -e
+          mkdir -p ss3_artifacts
+          os_artifact="${{ matrix.artifact_name }}"
+          artifacts=$(echo '${{ steps.list_artifacts.outputs.artifacts }}' | jq -r '.[] | @base64')
+          found_id=""
+          for artifact in $artifacts; do
+            _jq() {
+              echo ${artifact} | base64 --decode | jq -r ${1}
+            }
+            name=$(_jq '.name')
+            id=$(_jq '.id')
+            if [[ "$name" == "$os_artifact" ]]; then
+              found_id="$id"
+              break
+            fi
+          done
+          if [ -z "$found_id" ]; then
+            echo "Artifact $os_artifact not found!"
+            exit 1
+          fi
+          # Download the artifact
+          echo "Downloading artifact: $os_artifact"
+          gh api \
+            -H "Accept: application/vnd.github+json" \
+            -H "Authorization: Bearer $GH_TOKEN" \
+            "/repos/nmfs-ost/ss3-source-code/actions/artifacts/$found_id/zip" > "ss3_artifacts/$os_artifact.zip"
+
+      - name: Unzip SS3 executable
+        run: |
+          cd ss3_artifacts
+          if [ "${{ runner.os }}" = "Windows" ]; then
+            powershell -Command "Expand-Archive -Path '${{ matrix.artifact_name }}.zip' -DestinationPath ."
+          else
+            unzip -o "${{ matrix.artifact_name }}.zip"
+          fi
+
+      - name: Checkout test models repository
+        uses: actions/checkout@v4
+        with:
+          repository: nmfs-ost/ss3-test-models
+          path: ss3-test-models
+
+      - name: Copy SS3 executable to simple model directory
+        run: |
+          exe="${{ matrix.exe_name }}"
+          src="ss3_artifacts/$exe"
+          dest="ss3-test-models/models/simple/$exe"
+          if [ "${{ runner.os }}" = "Windows" ]; then
+            cp "$src" "$dest"
+          else
+            cp "$src" "$dest"
+            chmod +x "$dest"
+          fi
+
+      - name: Run SS3 on simple model
+        run: |
+          cd ss3-test-models/models/simple
+          if [ "${{ runner.os }}" = "Windows" ]; then
+            .\${{ matrix.exe_name }}
+          else
+            ./${{ matrix.exe_name }}
+          fi
+
+      - name: Archive simple model output
+        uses: actions/upload-artifact@v4
+        with:
+          name: simple-model-output-${{ matrix.os }}
+          path: ss3-test-models/models/simple/
