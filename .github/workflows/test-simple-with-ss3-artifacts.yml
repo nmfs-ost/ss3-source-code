@@ -85,7 +85,7 @@ jobs:
 
       - name: Download artifact for this OS
         id: download_artifact
-        shell: shell: ${{ runner.os == 'macOS' && '/opt/homebrew/bin/bash {0}' || 'bash' }}
+        shell: ${{ runner.os == 'macOS' && '/opt/homebrew/bin/bash {0}' || 'bash' }}
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
@@ -125,7 +125,7 @@ jobs:
             "/repos/nmfs-ost/ss3-source-code/actions/artifacts/$found_id/zip" > "ss3_artifacts/$os_artifact.zip"
 
       - name: Unzip SS3 executable
-        shell: shell: ${{ runner.os == 'macOS' && '/opt/homebrew/bin/bash {0}' || 'bash' }}
+        shell: ${{ runner.os == 'macOS' && '/opt/homebrew/bin/bash {0}' || 'bash' }}
         run: |
           cd ss3_artifacts
           if [ "${{ runner.os }}" = "Windows" ]; then
@@ -145,7 +145,7 @@ jobs:
         run: mkdir -p ss3-test-models/models/Simple
 
       - name: Copy SS3 executable to Simple model directory
-        shell: shell: ${{ runner.os == 'macOS' && '/opt/homebrew/bin/bash {0}' || 'bash' }}
+        shell: ${{ runner.os == 'macOS' && '/opt/homebrew/bin/bash {0}' || 'bash' }}
         run: |
           exe="${{ matrix.exe_name }}"
           src="ss3_artifacts/$exe"
@@ -154,7 +154,7 @@ jobs:
           chmod +x "$dest" || true
 
       - name: Run SS3 on Simple model
-        shell: shell: ${{ runner.os == 'macOS' && '/opt/homebrew/bin/bash {0}' || 'bash' }}
+        shell: ${{ runner.os == 'macOS' && '/opt/homebrew/bin/bash {0}' || 'bash' }}
         run: |
           cd ss3-test-models/models/Simple
           if [ "${{ runner.os }}" = "Windows" ]; then
