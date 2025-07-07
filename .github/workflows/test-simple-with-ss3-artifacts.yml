@@ -85,7 +85,6 @@ jobs:
 
       - name: Download artifact for this OS
         id: download_artifact
-        # if: "!startsWith(matrix.os, 'macos-')"
         shell: bash
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -93,138 +92,47 @@ jobs:
           set -e
           mkdir -p ss3_artifacts
           os_artifact="${{ matrix.artifact_name }}"
-          if [[ "${{ matrix.os }}" == "macos-13" ]]; then
-            BASH_PATH="/usr/local/bin/bash"
-          elif [[ "${{ matrix.os }}" == "macos-latest" ]]; then
-            BASH_PATH="/opt/homebrew/bin/bash"
-          else
-            BASH_PATH="bash"
+          ARTIFACTS_JSON='${{ steps.list_artifacts.outputs.artifacts }}'
+          echo "RAW ARTIFACTS OUTPUT:"
+          echo "$ARTIFACTS_JSON"
+
+          if [ -z "$ARTIFACTS_JSON" ]; then
+            echo "No artifacts JSON found -- previous step may have failed."
+            exit 1
           fi
-          $BASH_PATH -c '
-            readarray -t artifacts < <(echo "${{ steps.list_artifacts.outputs.artifacts }}" | jq -r ".[] | @base64")
-            if [[ ${#artifacts[@]} -eq 0 ]]; then
-              echo "No artifacts found."
-              exit 1
-            fi
-            echo "Available artifacts:"
-            for artifact in "${artifacts[@]}"; do
-              echo "${artifact}" | base64 --decode | jq -r ".name"
-            done
-            found_id=""
-            for artifact in "${artifacts[@]}"; do
-              _jq() {
-                echo "${artifact}" | base64 --decode | jq -r "${1}"
-              }
-              name=$(_jq ".name")
-              id=$(_jq ".id")
-              if [[ "$name" == "${os_artifact}" ]]; then
-                found_id="$id"
-                break
-              fi
-            done
-            if [ -z "$found_id" ]; then
-              echo "Artifact ${os_artifact} not found!"
-              exit 1
-            fi
-            echo "Downloading artifact: ${os_artifact}"
-            gh api \
-              -H "Accept: application/vnd.github+json" \
-              -H "Authorization: Bearer $GH_TOKEN" \
-              "/repos/nmfs-ost/ss3-source-code/actions/artifacts/$found_id/zip" > "ss3_artifacts/${os_artifact}.zip"
-          '
 
-      # - name: Download artifact for this OS mac
-      #   id: download_artifact-mac-silicon
-      #   if: runner.os == 'macos-latest'
-      #   shell: /opt/homebrew/bin/bash {0}
-      #   env:
-      #     GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      #   run: |
-      #     set -e
-      #     mkdir -p ss3_artifacts
-      #     os_artifact="${{ matrix.artifact_name }}"
-      #     readarray -t artifacts < <(echo '${{ steps.list_artifacts.outputs.artifacts }}' | jq -r '.[] | @base64')
-      #     if [[ ${#artifacts[@]} -eq 0 ]]; then
-      #       echo "No artifacts found."
-      #       exit 1
-      #     fi
-      #     echo "Available artifacts:"
-      #     for artifact in "${artifacts[@]}"; do
-      #       echo "${artifact}" | base64 --decode | jq -r '.name'
-      #     done
-      #     found_id=""
-      #     for artifact in "${artifacts[@]}"; do
-      #       _jq() {
-      #         echo "${artifact}" | base64 --decode | jq -r "${1}"
-      #       }
-      #       name=$(_jq '.name')
-      #       id=$(_jq '.id')
-      #       if [[ "$name" == "$os_artifact" ]]; then
-      #         found_id="$id"
-      #         break
-      #       fi
-      #     done
-      #     if [ -z "$found_id" ]; then
-      #       echo "Artifact $os_artifact not found!"
-      #       exit 1
-      #     fi
-      #     # Download the artifact
-      #     echo "Downloading artifact: $os_artifact"
-      #     gh api \
-      #       -H "Accept: application/vnd.github+json" \
-      #       -H "Authorization: Bearer $GH_TOKEN" \
-      #       "/repos/nmfs-ost/ss3-source-code/actions/artifacts/$found_id/zip" > "ss3_artifacts/$os_artifact.zip"
+          IFS=$'\n' artifacts=($(echo "$ARTIFACTS_JSON" | jq -r '.[] | @base64'))
+          if [[ ${#artifacts[@]} -eq 0 ]]; then
+            echo "No artifacts found."
+            exit 1
+          fi
 
-      # - name: Download artifact for this OS mac
-      #   id: download_artifact-mac-intel
-      #   if: runner.os == 'macos-13'
-      #   shell: /usr/local/bin/bash {0}
-      #   env:
-      #     GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      #   run: |
-      #     set -e
-      #     mkdir -p ss3_artifacts
-      #     os_artifact="${{ matrix.artifact_name }}"
-      #     readarray -t artifacts < <(echo '${{ steps.list_artifacts.outputs.artifacts }}' | jq -r '.[] | @base64')
-      #     if [[ ${#artifacts[@]} -eq 0 ]]; then
-      #       echo "No artifacts found."
-      #       exit 1
-      #     fi
-      #     echo "Available artifacts:"
-      #     for artifact in "${artifacts[@]}"; do
-      #       echo "${artifact}" | base64 --decode | jq -r '.name'
-      #     done
-      #     found_id=""
-      #     for artifact in "${artifacts[@]}"; do
-      #       _jq() {
-      #         echo "${artifact}" | base64 --decode | jq -r "${1}"
-      #       }
-      #       name=$(_jq '.name')
-      #       id=$(_jq '.id')
-      #       if [[ "$name" == "$os_artifact" ]]; then
-      #         found_id="$id"
-      #         break
-      #       fi
-      #     done
-      #     if [ -z "$found_id" ]; then
-      #       echo "Artifact $os_artifact not found!"
-      #       exit 1
-      #     fi
-      #     # Download the artifact
-      #     echo "Downloading artifact: $os_artifact"
-      #     gh api \
-      #       -H "Accept: application/vnd.github+json" \
-      #       -H "Authorization: Bearer $GH_TOKEN" \
-      #       "/repos/nmfs-ost/ss3-source-code/actions/artifacts/$found_id/zip" > "ss3_artifacts/$os_artifact.zip"
-      # - name: Unzip SS3 executable
-      #   shell: bash
-      #   run: |
-      #     cd ss3_artifacts
-      #     if [ "${{ runner.os }}" = "Windows" ]; then
-      #       powershell -Command "Expand-Archive -Path '${{ matrix.artifact_name }}.zip' -DestinationPath ."
-      #     else
-      #       unzip -o "${{ matrix.artifact_name }}.zip"
-      #     fi
+          echo "Available artifacts:"
+          for artifact in "${artifacts[@]}"; do
+            echo "${artifact}" | base64 --decode | jq -r '.name'
+          done
+
+          found_id=""
+          for artifact in "${artifacts[@]}"; do
+            _jq() {
+              echo "${artifact}" | base64 --decode | jq -r "${1}"
+            }
+            name=$(_jq '.name')
+            id=$(_jq '.id')
+            if [[ "$name" == "$os_artifact" ]]; then
+              found_id="$id"
+              break
+            fi
+          done
+          if [ -z "$found_id" ]; then
+            echo "Artifact $os_artifact not found!"
+            exit 1
+          fi
+          echo "Downloading artifact: $os_artifact"
+          gh api \
+            -H "Accept: application/vnd.github+json" \
+            -H "Authorization: Bearer $GH_TOKEN" \
+            "/repos/nmfs-ost/ss3-source-code/actions/artifacts/$found_id/zip" > "ss3_artifacts/$os_artifact.zip"
 
       - name: Checkout test models repository
         uses: actions/checkout@v4
