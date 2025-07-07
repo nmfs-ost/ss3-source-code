@@ -167,6 +167,14 @@ jobs:
           cd ss3-test-models/models/Simple
           ./${{ matrix.exe_name }} -nohess -stopph 0
 
+      - name: Check if model ran successfully
+        shell: bash
+        run: |
+          if [ ! -f "ss3-test-models/models/Simple/control.ss_new" ]; then
+            echo "ERROR: control.ss_new not found in ss3-test-models/models/Simple
+            exit 1
+          fi
+
       - name: Archive Simple model output
         uses: actions/upload-artifact@v4
         with:
