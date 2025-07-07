@@ -171,7 +171,7 @@ jobs:
         shell: bash
         run: |
           if [ ! -f "ss3-test-models/models/Simple/control.ss_new" ]; then
-            echo "ERROR: control.ss_new not found in ss3-test-models/models/Simple
+            echo "ERROR: control.ss_new not found!"
             exit 1
           fi
 
