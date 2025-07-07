@@ -139,7 +139,7 @@ jobs:
           else
             unzip -o "${{ matrix.artifact_name }}.zip"
           fi
-          
+
       - name: Checkout test models repository
         uses: actions/checkout@v4
         with:
@@ -159,9 +159,8 @@ jobs:
       - name: Copy SS3 executable to Simple model directory
         shell: bash
         run: |
-          subdir="${{ matrix.artifact_name}}"
           exe="${{ matrix.exe_name }}"
-          src="ss3_artifacts/$subdir/$exe"
+          src="ss3_artifacts/$exe"
           dest="ss3-test-models/models/Simple/$exe"
           cp "$src" "$dest"
           chmod +x "$dest" || true
