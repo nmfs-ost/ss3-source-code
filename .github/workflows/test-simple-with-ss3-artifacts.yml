@@ -122,11 +122,11 @@ jobs:
           repository: nmfs-ost/ss3-test-models
           path: ss3-test-models
 
-      - name: Copy SS3 executable to simple model directory
+      - name: Copy SS3 executable to Simple model directory
         run: |
           exe="${{ matrix.exe_name }}"
           src="ss3_artifacts/$exe"
-          dest="ss3-test-models/models/simple/$exe"
+          dest="ss3-test-models/models/Simple/$exe"
           if [ "${{ runner.os }}" = "Windows" ]; then
             cp "$src" "$dest"
           else
@@ -134,17 +134,17 @@ jobs:
             chmod +x "$dest"
           fi
 
-      - name: Run SS3 on simple model
+      - name: Run SS3 on Simple model
         run: |
-          cd ss3-test-models/models/simple
+          cd ss3-test-models/models/Simple
           if [ "${{ runner.os }}" = "Windows" ]; then
             .\${{ matrix.exe_name }}
           else
             ./${{ matrix.exe_name }}
           fi
 
-      - name: Archive simple model output
+      - name: Archive Simple model output
         uses: actions/upload-artifact@v4
         with:
           name: simple-model-output-${{ matrix.os }}
-          path: ss3-test-models/models/simple/
+          path: ss3-test-models/models/Simple/
