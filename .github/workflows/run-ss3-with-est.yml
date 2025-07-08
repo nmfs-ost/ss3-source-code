@@ -34,7 +34,6 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: 'nmfs-ost/ss3-test-models'
-          ref: t-v-models-update
           path: test-models-repo
 
       - name: Update Ubuntu packages
