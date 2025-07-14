@@ -1,12 +1,17 @@
 on:
-  push:
-      # paths:
-      # - '**.tpl'
-      # - '**.sh'
+  workflow_run:
+    workflows: ["build-ss3"]
+    types:
+      - completed
   workflow_dispatch:
+
+concurrency:
+    group: ${{ github.workflow}}-${{ github.ref }}
+    cancel-in-progress: true
 
 jobs:
   test-simple-model:
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:

@@ -16,6 +16,10 @@ on:
     branches:
       - main
 
+concurrency:
+    group: ${{ github.workflow}}-${{ github.ref }}
+    cancel-in-progress: true
+
 # Run models without estimation, then run r4ss SS_plots() and SS_output()
 jobs:
   test-r4ss-with-ss3:

@@ -15,7 +15,11 @@ on:
       - '**.tpl'
     branches:
       - main
-      
+
+concurrency:
+    group: ${{ github.workflow}}-${{ github.ref }}
+    cancel-in-progress: true
+    
 # Check MCMC works
 jobs:
   run-ss3-no-est:
