@@ -2777,8 +2777,8 @@ FUNCTION void Get_Forecast()
           else if (ABC_Loop == 2 && s == 1) // Calc the buffer in season 1, will use last year's spawnbio if multiseas and spawnseas !=1
           {
 
-            join1 = 1. / (1. + mfexp(10. * (SSB_current - H4010_bot * HCR_anchor)));
-            join2 = 1. / (1. + mfexp(10. * (SSB_current - H4010_top * HCR_anchor)));
+            join1 = 1. / (1. + mfexp(100. * (SSB_current - H4010_bot * HCR_anchor)));
+            join2 = 1. / (1. + mfexp(100. * (SSB_current - H4010_top * HCR_anchor)));
 
             switch (HarvestPolicy)
             {
