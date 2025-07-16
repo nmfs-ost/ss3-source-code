@@ -10,7 +10,10 @@ on:
       - '**.sh'
     workflow_dispatch:
 
-
+concurrency:
+    group: ${{ github.workflow}}-${{ github.ref }}
+    cancel-in-progress: true
+    
 jobs:
   build-ss3:
     runs-on: ${{ matrix.config.os }}
