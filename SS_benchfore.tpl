@@ -1212,9 +1212,11 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
         }
         SSBpR_Calc(equ_Recr); //  where equ_Recr=1.0, so returned SSB_equil is in units of SSB/R,
         SSBpR_temp = SSB_equil;
+        warning << equ_Recr << " " << SSB_equil << " " << SRparm_bench << " " << SSBpR_temp << endl;
         SPR_Btgt = SSBpR_temp / SSBpR_unf;  //  where SSBpR_unf = SSB_unf / Recr_unf so units of SSB/R; so result is SPR_Btgt = (fished SSB/R) / (unfished SSB/R)
         //  SPAWN-RECR:   calc equil spawn-recr for Btarget calcs;  need to make area-specific
         Equ_SpawnRecr_Result = Equil_Spawn_Recr_Fxn(SRparm_bench, SSB0_4_SRR, R0_4_SRR, SSBpR_temp); //  returns 2 element vector containing equilibrium biomass and recruitment at this SPR
+        warning << SSB0_4_SRR << " " << R0_4_SRR << Equ_SpawnRecr_Result << endl;
         yld1(ii) = Equ_SpawnRecr_Result(1);
       }
 
