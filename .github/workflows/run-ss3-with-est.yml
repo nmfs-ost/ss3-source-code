@@ -17,6 +17,10 @@ on:
     branches:
       - main
 
+concurrency:
+    group: ${{ github.workflow}}-${{ github.ref }}
+    cancel-in-progress: true
+    
 # Run fast running SS3 test models with estimation
 jobs:
   run-ss3-with-est:

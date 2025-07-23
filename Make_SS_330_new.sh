@@ -19,8 +19,9 @@ function usage()
   echo ""
   echo "Call this script as follows:"
   echo "  ./Make_SS_330_new.sh [(-s | --source) source_dir] [(-b | --build) build_dir]" 
-  echo "   [(-a | --admb) admb_dir] [[-o | --opt] | [-f | --safe] [-p] "
+  echo "   [(-a | --admb) admb_dir] [[-o | --opt] | [-f | --safe] [-p]"
   echo "   [-w | --warn] [-d | --debug] [-h | --help]"
+  # build statically (full static)
   echo "Notes:"
   echo "   -p is an ADMB flag to build statically and will be passed. "
   echo "   -w re-compiles with common warnings enabled. "
@@ -175,28 +176,31 @@ if [[ "$ADMB_HOME" == "docker" ]] ; then
     fi
     if [[ "$WARNINGS" == "on" ]] ; then
       if [[ "$WINDOWS10" == "true" ]] ; then
-        docker run --env CXXFLAGS="-Wall -Wextra" --rm --mount source=`cygpath -w $PWD`\\$BUILD_DIR,destination=C:\\$BUILD_TYPE,mount=bind --workdir C:\\$BUILD_TYPE johnoel/admb-13.2:windows10 $BUILD_TYPE.tpl
+        docker run --env CXXFLAGS="-Wall -Wextra" --rm --mount source=`cygpath -w $PWD`\\$BUILD_DIR,destination=C:\\$BUILD_TYPE,mount=bind --workdir C:\\$BUILD_TYPE johnoel/admb-13.2:windows10 $OPTFLAG $STATICFLAG $BUILD_TYPE.tpl
       else
-        docker run --env CXXFLAGS="-Wall -Wextra" --rm --mount source=`cygpath -w $PWD`\\$BUILD_DIR,destination=C:\\$BUILD_TYPE,mount=bind --workdir C:\\$BUILD_TYPE johnoel/admb-13.2:windows $BUILD_TYPE.tpl
+        docker run --env CXXFLAGS="-Wall -Wextra" --rm --mount source=`cygpath -w $PWD`\\$BUILD_DIR,destination=C:\\$BUILD_TYPE,mount=bind --workdir C:\\$BUILD_TYPE johnoel/admb-13.2:windows $OPTFLAG $STATICFLAG $BUILD_TYPE.tpl
       fi 
     else
       if [[ "$WINDOWS10" == "true" ]] ; then
-        docker run --rm --mount source=`cygpath -w $PWD`\\$BUILD_DIR,destination=C:\\$BUILD_TYPE,mount=bind --workdir C:\\$BUILD_TYPE johnoel/admb-13.2:windows10 $BUILD_TYPE.tpl
+        docker run --rm --mount source=`cygpath -w $PWD`\\$BUILD_DIR,destination=C:\\$BUILD_TYPE,mount=bind --workdir C:\\$BUILD_TYPE johnoel/admb-13.2:windows10 $OPTFLAG $STATICFLAG $BUILD_TYPE.tpl
       else
-        docker run --rm --mount source=`cygpath -w $PWD`\\$BUILD_DIR,destination=C:\\$BUILD_TYPE,mount=bind --workdir C:\\$BUILD_TYPE johnoel/admb-13.2:windows $BUILD_TYPE.tpl
+        docker run --rm --mount source=`cygpath -w $PWD`\\$BUILD_DIR,destination=C:\\$BUILD_TYPE,mount=bind --workdir C:\\$BUILD_TYPE johnoel/admb-13.2:windows $OPTFLAG $STATICFLAG $BUILD_TYPE.tpl
       fi 
     fi
   else
     if [[ "$WARNINGS" == "on" ]] ; then
-      docker run --env CXXFLAGS="-Wall -Wextra" --rm --mount source=$PWD/$BUILD_DIR,destination=/$BUILD_TYPE,type=bind --workdir /$BUILD_TYPE johnoel/admb-13.2:linux $BUILD_TYPE.tpl
+      export CXXFLAGS="-Wall -Wextra -static-libstdc++ -static-libgcc"
     else
-      docker run --rm --mount source=$PWD/$BUILD_DIR,destination=/$BUILD_TYPE,type=bind --workdir /$BUILD_TYPE johnoel/admb-13.2:linux $BUILD_TYPE.tpl
+      export CXXFLAGS="-static-libstdc++ -static-libgcc"
     fi
+    docker run --env CXXFLAGS="$CXXFLAGS" --rm --mount source=$PWD/$BUILD_DIR,destination=/$BUILD_TYPE,type=bind --workdir /$BUILD_TYPE johnoel/admb-13.2:linux $OPTFLAG $STATICFLAG $BUILD_TYPE.tpl
   fi
 else
   command pushd $BUILD_DIR > /dev/null
   if [[ "$WARNINGS" == "on" ]] ; then
-    export CXXFLAGS="-Wall -Wextra"
+    export CXXFLAGS="-Wall -Wextra -static-libstdc++ -static-libgcc"
+  else
+    export CXXFLAGS="-static-libstdc++ -static-libgcc"
   fi
   if [[ "$OS" == "Windows_NT" ]] ; then
     admb.sh $OPTFLAG $STATICFLAG $BUILD_TYPE

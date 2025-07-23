@@ -1,0 +1,191 @@
+on:
+  workflow_run:
+    workflows: ["build-ss3"]
+    types:
+      - completed
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+    group: ${{ github.workflow}}-${{ github.ref }}
+    cancel-in-progress: true
+
+jobs:
+  test-simple-model:
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-13, macos-latest]
+        include:
+          - os: ubuntu-latest
+            artifact_name: ss3-ubuntu-latest
+            exe_name: ss3_linux
+          - os: windows-latest
+            artifact_name: ss3-windows-latest
+            exe_name: ss3_win.exe
+          - os: macos-13
+            artifact_name: ss3-macos-13
+            exe_name: ss3_osx
+          - os: macos-latest
+            artifact_name: ss3-macos-latest
+            exe_name: ss3_osx
+
+    steps:
+      - name: Checkout test repo (this repo)
+        uses: actions/checkout@v4
+
+      - name: Set up jq and unzip (Linux/macOS)
+        if: runner.os != 'Windows'
+        run: |
+          sudo apt-get update || true
+          sudo apt-get install -y jq unzip || brew install jq unzip
+
+      - name: Set up jq (Windows)
+        if: runner.os == 'Windows'
+        run: choco install jq
+
+      - name: Use Bash 5 on macOS
+        if: startsWith(matrix.os, 'macos-')
+        run: brew install bash
+
+      - name: Find latest successful build-ss3 workflow run in nmfs-ost/ss3-source-code
+        id: get_run
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const { data: workflows } = await github.rest.actions.listRepoWorkflows({
+              owner: "nmfs-ost",
+              repo: "ss3-source-code"
+            });
+            const workflow = workflows.workflows.find(wf => wf.name === "build-ss3");
+            if (!workflow) throw "Workflow 'build-ss3' not found.";
+            const { data: runs } = await github.rest.actions.listWorkflowRuns({
+              owner: "nmfs-ost",
+              repo: "ss3-source-code",
+              workflow_id: workflow.id,
+              status: "success",
+              per_page: 1
+            });
+            if (!runs.workflow_runs.length) throw "No successful runs found for 'build-ss3'.";
+            core.setOutput("run_id", runs.workflow_runs[0].id);
+
+      - name: List artifacts from build-ss3 run
+        id: list_artifacts
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const run_id = ${{ steps.get_run.outputs.run_id }};
+            const { data: artifacts } = await github.rest.actions.listWorkflowRunArtifacts({
+              owner: "nmfs-ost",
+              repo: "ss3-source-code",
+              run_id
+            });
+            core.setOutput("artifacts", JSON.stringify(artifacts.artifacts));
+
+      - name: Download artifact for this OS
+        id: download_artifact
+        shell: bash
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -e
+          mkdir -p ss3_artifacts
+          os_artifact="${{ matrix.artifact_name }}"
+          ARTIFACTS_JSON='${{ steps.list_artifacts.outputs.artifacts }}'
+          ARTIFACTS_JSON=$(echo "$ARTIFACTS_JSON" | tr -d '\r')
+          echo "RAW ARTIFACTS OUTPUT:"
+          echo "$ARTIFACTS_JSON" | cat -v
+
+          IFS=$'\n' artifacts=($(echo "$ARTIFACTS_JSON" | jq -cr '.[] | select(. != null) | @base64' | tr -d '\r' | grep -v '^$'))
+          if [[ ${#artifacts[@]} -eq 0 ]]; then
+            echo "No artifacts found."
+            exit 1
+          fi
+
+          echo "Available artifacts:"
+          for artifact in "${artifacts[@]}"; do
+            echo "${artifact}" | base64 --decode | jq -r '.name'
+          done
+
+          found_id=""
+          for artifact in "${artifacts[@]}"; do
+            _jq() {
+              echo "${artifact}" | base64 --decode | jq -r "${1}"
+            }
+            name=$(_jq '.name')
+            id=$(_jq '.id')
+            if [[ "$name" == "$os_artifact" ]]; then
+              found_id="$id"
+              break
+            fi
+          done
+          if [ -z "$found_id" ]; then
+            echo "Artifact $os_artifact not found!"
+            exit 1
+          fi
+          echo "Downloading artifact: $os_artifact"
+          gh api \
+            -H "Accept: application/vnd.github+json" \
+            -H "Authorization: Bearer $GH_TOKEN" \
+            "./repos/nmfs-ost/ss3-source-code/actions/artifacts/$found_id/zip" > "ss3_artifacts/$os_artifact.zip"
+
+      - name: Unzip SS3 executable
+        shell: bash
+        run: |
+          cd ss3_artifacts
+          if [ "${{ runner.os }}" = "Windows" ]; then
+            powershell -Command "Expand-Archive -Path '${{ matrix.artifact_name }}.zip' -DestinationPath ."
+          else
+            unzip -o "${{ matrix.artifact_name }}.zip"
+          fi
+
+      - name: Checkout test models repository
+        uses: actions/checkout@v4
+        with:
+          repository: nmfs-ost/ss3-test-models
+          path: ss3-test-models
+
+      - name: Ensure Simple model directory exists
+        shell: bash
+        run: mkdir -p ss3-test-models/models/Simple
+
+      - name: see what files exist
+        shell: bash
+        run: |
+          echo "Files in ss3_artifacts:"
+          find ss3_artifacts
+
+      - name: Copy SS3 executable to Simple model directory
+        shell: bash
+        run: |
+          exe="${{ matrix.exe_name }}"
+          src="ss3_artifacts/$exe"
+          dest="ss3-test-models/models/Simple/$exe"
+          cp "$src" "$dest"
+          chmod +x "$dest" || true
+
+      - name: Run SS3 on Simple model
+        shell: bash
+        run: |
+          cd ss3-test-models/models/Simple
+          ./${{ matrix.exe_name }} -nohess -stopph 0
+
+      - name: Check if model ran successfully
+        shell: bash
+        run: |
+          if [ ! -f "ss3-test-models/models/Simple/control.ss_new" ]; then
+            echo "ERROR: control.ss_new not found!"
+            exit 1
+          fi
+
+      - name: Archive Simple model output
+        uses: actions/upload-artifact@v4
+        with:
+          name: simple-model-output-${{ matrix.os }}
+          path: ss3-test-models/models/Simple/
