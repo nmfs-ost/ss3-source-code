@@ -3808,7 +3808,7 @@
   ivector Bmark_Yr(1,10);
   ivector Bmark_t(1,2); // for range of time values for averaging body size
   number SPR_target;
-  number BTGT_target;
+  number BTGT_frac;
   number Blim_frac;
   int MSY_units; // 1=dead catch, 2=retained catch, 3=retained catch profits
   vector CostPerF(1,Nfleet);
@@ -3937,8 +3937,8 @@
   echoinput << "next read SPR target and Biomass target as fractions" << endl;
   *(ad_comm::global_datafile) >> SPR_target;
   echoinput << SPR_target << " echoed SPR_target " << endl;
-  *(ad_comm::global_datafile) >> BTGT_target;
-  echoinput << BTGT_target << " echoed B_target " << endl;
+  *(ad_comm::global_datafile) >> BTGT_frac;
+  echoinput << BTGT_frac << " echoed BTGT_frac " << endl;
 
   if (Do_Benchmark == 3)
   {

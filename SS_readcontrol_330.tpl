@@ -7026,7 +7026,7 @@
     }
     case 3: // compare to SPR_Btarget
     {
-      sprintf(onenum, "%d", int(100. * BTGT_target));
+      sprintf(onenum, "%d", int(100. * BTGT_frac));
       SPR_report_label += " (1-SPR)/(1-SPR_at_B" + onenum + "%)";
       break;
     }
@@ -7057,7 +7057,7 @@
     }
     case 3:
     {
-      sprintf(onenum, "%d", int(100. * BTGT_target));
+      sprintf(onenum, "%d", int(100. * BTGT_frac));
       F_report_label = "(F)/(F_at_B" + onenum + "%)";
       break;
     }
