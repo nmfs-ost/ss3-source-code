@@ -1042,7 +1042,7 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
     SSBpR_Calc(equ_Recr);
     F01_origin = YPR_opt / Fmult;
 
-    BTGT_target = 0.1; //  now relative to Bmark
+    BTGT_frac = 0.1; //  now relative to Bmark
     Btgttgt = F01_origin * 0.1;
     if (show_MSY == 1)
     {
@@ -1138,18 +1138,18 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
   {
     // ******************************************************
 
-    if (depletion_basis == 1) 
-      {Btgttgt = BTGT_target * SSB_virgin;}
+    if (depletion_basis == 1 && timevary_bio_4SRR != 0) 
+      {Btgttgt = BTGT_frac * SSB_virgin;}
     else
-      {Btgttgt = BTGT_target * SSB_unf;}  //  current SS3 approach uses benchmark biology
+      {Btgttgt = BTGT_frac * SSB_unf;}  //  current SS3 approach uses benchmark biology
 
       if (show_MSY == 1)
     {
      report5 << "#" << endl;
-     if (depletion_basis == 1)
-     {report5 << "Find_target_SSB as fraction: " << BTGT_target << " of Virgin SSB:" << SSB_virgin << endl;}
+     if (depletion_basis == 1 && timevary_bio_4SRR != 0)
+     {report5 << "Find_target_SSB as fraction: " << BTGT_frac << " of Virgin SSB:" << SSB_virgin << endl;}
      else
-     {report5 << "Find_target_SSB as fraction: " << BTGT_target << " of SSB_unf: "<< SSB_unf << endl;}
+     {report5 << "Find_target_SSB as fraction: " << BTGT_frac << " of SSB_unf: "<< SSB_unf << endl;}
      report5  << "Iter Fmult ann_F SPR Catch SSB Recruits SSB/Bzero Tot_catch";
 
     for (p = 1; p <= pop; p++)
@@ -1212,11 +1212,11 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
         }
         SSBpR_Calc(equ_Recr); //  where equ_Recr=1.0, so returned SSB_equil is in units of SSB/R,
         SSBpR_temp = SSB_equil;
-        warning << equ_Recr << " " << SSB_equil << " " << SRparm_bench << " " << SSBpR_temp << endl;
+//        warning << equ_Recr << " " << SSB_equil << " " << SRparm_bench << " " << SSBpR_temp << endl;
         SPR_Btgt = SSBpR_temp / SSBpR_unf;  //  where SSBpR_unf = SSB_unf / Recr_unf so units of SSB/R; so result is SPR_Btgt = (fished SSB/R) / (unfished SSB/R)
         //  SPAWN-RECR:   calc equil spawn-recr for Btarget calcs;  need to make area-specific
         Equ_SpawnRecr_Result = Equil_Spawn_Recr_Fxn(SRparm_bench, SSB0_4_SRR, R0_4_SRR, SSBpR_temp); //  returns 2 element vector containing equilibrium biomass and recruitment at this SPR
-        warning << SSB0_4_SRR << " " << R0_4_SRR << Equ_SpawnRecr_Result << endl;
+//        warning << SSB0_4_SRR << " " << R0_4_SRR << Equ_SpawnRecr_Result << endl;
         yld1(ii) = Equ_SpawnRecr_Result(1);
       }
 
@@ -1249,7 +1249,7 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
       if (show_MSY == 1)
       {
         report5 << j << " " << Fmult << " " << equ_F_std << " " << SPR_Btgt << " " << YPR_dead * Equ_SpawnRecr_Result(2) << " " << Btgt << " " << Equ_SpawnRecr_Result(2)
-                << " " << Btgt / SSB_unf << " " << sum(equ_catch_fleet(2)) * Equ_SpawnRecr_Result(2);
+                << " " << Btgt / (Btgttgt / BTGT_frac) << " " << sum(equ_catch_fleet(2)) * Equ_SpawnRecr_Result(2);
         for (p = 1; p <= pop; p++)
           for (gp = 1; gp <= N_GP; gp++)
           {
@@ -1776,7 +1776,7 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
       Nloops = 28;
     }
 
-    //    Btgttgt=BTGT_target*SSB_virgin;   //  this is relative to virgin, not to the average biology from benchmark years
+    //    Btgttgt=BTGT_frac*SSB_virgin;   //  this is relative to virgin, not to the average biology from benchmark years
     double Blim_report;
     if (Blim_frac > 0.0)
     {
@@ -1973,7 +1973,7 @@ FUNCTION void Get_Benchmarks(const int show_MSY)
     {
       report5 << "#" << endl
               << "Ratio_SSB/B0_as_target" << endl;
-      report5 << "Ratio_target  " << BTGT_target << endl;
+      report5 << "Ratio_target  " << BTGT_frac << endl;
       report5 << "Ratio_calc " << Btgt / SSB_unf << endl;
       report5 << "SPR@Btgt " << SPR_Btgt << endl;
       report5 << "Fmult " << Btgt_Fmult << endl;

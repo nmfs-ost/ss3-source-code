@@ -1594,7 +1594,7 @@ FUNCTION void write_nucontrol()
   }
 
   NuFore << SPR_target << " # SPR target (e.g. 0.40)" << endl;
-  NuFore << BTGT_target << " # Biomass target (e.g. 0.40) as fraction of SSB_virgin if depletion basis = 1, else as fraction of SSB_unfished in benchmark" << endl;
+  NuFore << BTGT_frac << " # Biomass target (e.g. 0.40) as fraction of SSB_virgin if depletion basis = 1 or time_vary compatibility = 0, else as fraction of SSB_unfished in benchmark" << endl;
   if (Do_Benchmark != 3) NuFore << "#";
   NuFore << Blim_frac << " # COND: Do_Benchmark==3;  Blimit as fraction of Bmsy (neg value to use as frac of SSB_virgin or SSB_unfished) (e.g. 0.50)";
   NuFore << "#" << endl << "# Bmark_years: beg_bio, end_bio, beg_selex, end_selex, beg_relF, end_relF, beg_recr_dist, end_recr_dist, beg_SRparm, end_SRparm (enter actual year, or values of 0 or -integer to be rel. endyr)" << endl
