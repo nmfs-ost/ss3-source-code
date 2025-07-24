@@ -1,0 +1,13 @@
+!!version_info += "#V3.30.xx.yy;_safe;_compile_date:_";
+-- Building ss3 with docker in 'SS330' --
+*** Parse: ss3.tpl
+tpl2cpp ss3 || tpl2rem ss3
+
+*** Compile: ss3.cpp
+g++ -c -std=c++17 -O3 -Wall -Wextra -D_USE_MATH_DEFINES -DUSE_ADMB_CONTRIBS -I. -I"/usr/local/admb/include" -I"/usr/local/admb/include/contrib" -oss3.obj ss3.cpp
+
+*** Linking: ss3.obj 
+g++ -std=c++17 -O3 -oss3 ss3.obj "/usr/local/admb/lib/libadmb-contrib-x86_64-linux-g++13.a"
+
+Successfully built executable.
+
