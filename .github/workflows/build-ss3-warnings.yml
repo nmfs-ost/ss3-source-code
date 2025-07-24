@@ -66,7 +66,7 @@ jobs:
       - name: Use R to parse warnings output and determine if amount of warnings has changed
         run: |
           txt <- readLines("warnings.txt", encoding = "UTF-8")
-          warn_line <- grep(pattern = "g++ -c -std=c++17 -O3 -Wall -Wextra -D_USE_MATH_DEFINES -DUSE_ADMB_CONTRIBS", x = txt, fixed = TRUE)
+          warn_line <- grep(pattern = "g++ -c -std=c++17 -O3 -Wall -Wextra -static-libstdc++ -static-libgcc -D_USE_MATH_DEFINES -DUSE_ADMB_CONTRIBS", x = txt, fixed = TRUE)
           end_warn_line <- grep(pattern = "*** Linking: ss3.obj ", x = txt, fixed = TRUE)
           if (length(warn_line) == 1 & length(end_warn_line) == 1) {
             txt <- txt[(warn_line+3):(end_warn_line-1)]
