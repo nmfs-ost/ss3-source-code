@@ -68,6 +68,7 @@ jobs:
       - name: Use R to parse warnings output
         run: |
           txt <- readLines("warnings.txt", encoding = "UTF-8")
+          txt
           warn_line <- grep(pattern = "g++ -c -std=c++17 -O3 -Wall -Wextra -D_USE_MATH_DEFINES -DUSE_ADMB_CONTRIBS", x = txt, fixed = TRUE)
           end_warn_line <- grep(pattern = "*** Linking: ss3.obj ", x = txt, fixed = TRUE)
           if (length(warn_line) == 1 & length(end_warn_line) == 1) {
@@ -75,6 +76,7 @@ jobs:
             rm_warn_start_lines <- grep(pattern = "/usr/local/admb/include/admodel.h: ", x = txt, fixed = TRUE, invert = TRUE)
             txt <- txt[rm_warn_start_lines]
             n_errors <- length(grep(pattern = "^ [0-9]", x = txt))
+            n_errors
             message("There are ", n_errors, " warning messages related to SS3.")
             write.table(n_errors, "n_warn.txt")
           } 
