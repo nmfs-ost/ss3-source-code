@@ -1,12 +1,3 @@
-/usr/local/admb/include/admodel.h:1915:38: warning: unused parameter 'gradients' [-Wunused-parameter]
- 1915 |   virtual void report(const dvector& gradients){;};
-      |                       ~~~~~~~~~~~~~~~^~~~~~~~~
-/usr/local/admb/include/admodel.h:2501:43: warning: unused parameter 'ofs' [-Wunused-parameter]
- 2501 |   virtual void save_value(const ofstream& ofs, int prec,const dvector&,
-      |                           ~~~~~~~~~~~~~~~~^~~
-/usr/local/admb/include/admodel.h:2501:52: warning: unused parameter 'prec' [-Wunused-parameter]
- 2501 |   virtual void save_value(const ofstream& ofs, int prec,const dvector&,
-      |                                                ~~~~^~~~
-/usr/local/admb/include/admodel.h:2502:10: warning: unused parameter 'offset' [-Wunused-parameter]
- 2502 |     int& offset){}
-      |     ~~~~~^~~~~~
+g++ -std=c++17 -O3 -oss3 ss3.obj "/usr/local/admb/lib/libadmb-contrib-x86_64-linux-g++13.a"
+*** Linking: ss3.obj 
+
