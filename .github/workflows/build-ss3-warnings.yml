@@ -60,6 +60,9 @@ jobs:
           chmod 777 SS330
           /bin/bash ./Make_SS_330_new.sh --admb docker -b SS330 -w &> warnings.txt
 
+      - name: Print warnings
+        run: cat warnings.txt
+
       - name: Use R to parse warnings output and determine if amount of warnings has changed
         run: |
           txt <- readLines("warnings.txt", encoding = "UTF-8")
