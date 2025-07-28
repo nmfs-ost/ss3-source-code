@@ -2378,12 +2378,12 @@
     write_message (ADJUST, 0);
     recdev_end = retro_yr;
   }
-  if (recdev_end < endyr && (Fcast_Loop_Control(3) == 3 || Fcast_Loop_Control(3) == 4))
-  {
-    warnstream << "Fcast recr option is 3 or 4 and recdev_end: " << recdev_end << " < endyr: " << endyr << " reset ";
-    write_message (ADJUST, 0);
-    recdev_end = endyr;
-  }
+//  if (recdev_end < endyr && (Fcast_Loop_Control(3) == 3 || Fcast_Loop_Control(3) == 4))
+//  {
+//    warnstream << "Fcast recr option is 3 or 4 and recdev_end: " << recdev_end << " < endyr: " << endyr << " reset ";
+//    write_message (ADJUST, 0);
+//    recdev_end = endyr;
+//  }
   if (recdev_start < (styr - nages))
   {
     warnstream << " recdev_start: " << recdev_start << " < styr-nages: " << styr - nages << " reset ";
@@ -2459,7 +2459,13 @@
       }
     }
   }
-  
+
+    if (int(Fcast_Loop_Control(3)) >= 4 && Fcast_Rec_yr2 > recdev_end)
+  {
+    warnstream << " Error, Fcast_Rec_Yr2 must be <= recdev_end" << Fcast_Rec_yr2 << " > " << recdev_end;
+    write_message(FATAL, 1);
+  }
+
   if (Do_Forecast > 0)
   {
     if (do_recdev != 0) {
