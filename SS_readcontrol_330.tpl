@@ -2374,7 +2374,7 @@
   //  SS_Label_Info_4.6.4 #Setup recruitment deviations and create parm labels for each year
   if (recdev_end > retro_yr)
   {
-    warnstream << " recdev_end: " << recdev_end << " > retro_yr: " << retro_yr << " reset ";
+    warnstream << " last main recdev: " << recdev_end << " to retro_yr: " << retro_yr << " reset ";
     write_message (ADJUST, 0);
     recdev_end = retro_yr;
   }
@@ -2462,7 +2462,7 @@
 
     if (int(Fcast_Loop_Control(3)) >= 4 && Fcast_Rec_yr2 > recdev_end)
   {
-    warnstream << " Error, Fcast_Rec_Yr2 must be <= recdev_end" << Fcast_Rec_yr2 << " > " << recdev_end;
+    warnstream << " last year of averaging for mean forecast recr must be <= last main recdev" << Fcast_Rec_yr2 << " > " << recdev_end;
     write_message(FATAL, 1);
   }
 
