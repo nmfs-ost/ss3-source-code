@@ -4884,7 +4884,7 @@
     warnstream << " Error, Fcast_Rec_Yr2 must be between styr and endyr";
     write_message(FATAL, 1);
   }
-
+  // note:  one more check will occur after recdev_end is read
   did_MSY = 0;
   if (Do_Forecast > 0)
     *(ad_comm::global_datafile) >> fif;
