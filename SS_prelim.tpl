@@ -859,6 +859,11 @@
   echoinput << " MG_parms after check " << MGparm << endl;
   MGparm_use = value(MGparm);
 
+  if (SR_fxn == 3)
+  {
+    if (SRparm_PH(2) < 0 || SRparm(2) >= 0.999999) use_steepness = 0;
+  }
+
   echoinput << endl
             << " now check SRparm bounds and priors and do jitter if requested " << endl;
   for (i = 1; i <= N_SRparm3; i++)

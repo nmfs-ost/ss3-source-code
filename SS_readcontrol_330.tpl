@@ -2191,6 +2191,7 @@
   ivector SRparm_PRtype(1,N_SRparm3)
   vector SRparm_CV(1,N_SRparm3)
   ivector SRparm_PH(1,N_SRparm3)
+  int use_steepness  //  0/1 to do full steepness calculations with Beverton-Holt; set to 0 if h = 1 and not estimated
 
  LOCAL_CALCS
       // clang-format on
@@ -5956,6 +5957,14 @@
       active_parm(active_count) = ParCount;
     }
   }
+
+  // flag to bypass steepness calculations
+  use_steepness = 1; // default
+  // following test will occur in preliminary calcs such that it will work even if values are read from ss3.par
+  // if (SR_fxn == 3)
+  // {
+  //  if (SRparm_PH(2) < 0 || SRparm(2) >= 0.999999) use_steepness = 0;
+  // }
   
   if (recdev_cycle > 0)
   {
