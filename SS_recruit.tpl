@@ -50,8 +50,13 @@ FUNCTION dvariable Spawn_Recr(const dvar_vector& SRparm_work, const prevariable&
     case 3: // Beverton-Holt
     {
       steepness = SRparm_work(2);
-      NewRecruits = (4. * steepness * Recr_virgin_use * SSB_curr_adj) /
+      if (use_steepness == 1)
+      {
+        NewRecruits = (4. * steepness * Recr_virgin_use * SSB_curr_adj) /
           (SSB_virgin_use * (1. - steepness) + (5. * steepness - 1.) * SSB_curr_adj);
+      }
+      else
+      {NewRecruits = Recr_virgin_use; }
       break;
     }
 
@@ -318,16 +323,22 @@ FUNCTION dvar_vector Equil_Spawn_Recr_Fxn(const dvar_vector& SRparm,
 
   //  SS3 previously used alternative formulation: R = A*S/(B+S)
   //  converting SS3 to align with WHAM
+      if (use_steepness ==1)
+      {
       alpha = 4.0 * steepness / (SSBpR_virgin_use * (1. - steepness));
       beta = (5.0 * steepness - 1.0) / ((1 - steepness) * SSB_virgin_use);
-      // " h " << steepness << " derive "  << alpha * SSBpR_virgin / (4. + alpha * SSBpR_virgin) << " " << endl;
-      // " R0 " << Recr_virgin_use << " derive "  << 1. / beta * (alpha - 1./SSBpR_virgin) << endl;
 //      report5 <<" SSB_unf "<<SSB_virgin_use<<" SSBpR_unf "<<SSBpR_virgin<<" steep: "<<steepness<<" R0: "<<Recr_virgin_use << endl;
 //      report5 <<" derive_alpha "<<alpha<<" derive_beta "<<beta << endl;
 //      report5 << " deriv_h: " << alpha * SSBpR_virgin / (4. + alpha * SSBpR_virgin) << " derive_R0: " << 1. / beta * (alpha - (1. / SSBpR_virgin))<<endl;
       B_equil = (alpha * SSBpR_current - 1.0) / beta;
       B_equil = posfun(B_equil, 0.0001, temp);
       R_equil = alpha * B_equil / (1.0 + beta * B_equil);
+      }
+      else
+      {
+        R_equil = Recr_virgin_use;
+        B_equil = Recr_virgin_use * SSBpR_current;
+      }
 //      report5 << "SPR_input: " << SSBpR_current << " B_equil: " << B_equil << " R_equil: "<<R_equil << endl<<endl;
 
       break;
