@@ -1619,12 +1619,12 @@
       mgp_type(Ip, Ip + N_growparms - 1) = 2; // growth parms
 
       // check on out of bound Lmin values.  Only check females because males can be offset from females
-      if ( gp == 1 && MGparm_1(Ip,1) < len_bins(1))
+      if ( gp == 1 && WTage_rd == 0 && MGparm_1(Ip,1) < len_bins(1))
       {
         warnstream << "parm min for Lmin: " << MGparm_1(Ip,1) << " cannot be less than population min length bin " << len_bins(1);
         write_message (FATAL, 0); // EXIT!
       }
-      if ( gp == 1 &&  MGparm_1(Ip,3) < len_bins(1))
+      if ( gp == 1 && WTage_rd == 0 &&  MGparm_1(Ip,3) < len_bins(1))
       {
         warnstream << "parm init value for Lmin: " << MGparm_1(Ip,3) << " cannot be less than population min length bin " << len_bins(1);
         write_message (FATAL, 0); // EXIT!
