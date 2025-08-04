@@ -43,6 +43,7 @@ jobs:
         with:
           repository: 'nmfs-ost/ss3-test-models'
           path: test-models-repo
+          ref: update-test-models
 
       - name: Update Ubuntu packages
         run: |
