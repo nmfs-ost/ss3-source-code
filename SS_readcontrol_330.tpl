@@ -1617,6 +1617,18 @@
       mgp_type(Ip, Ip + N_natMparms - 1) = 1; // natmort parms
       Ip += N_natMparms;
       mgp_type(Ip, Ip + N_growparms - 1) = 2; // growth parms
+
+      // check on out of bound Lmin values.  Only check females because males can be offset from females
+      if ( gp == 1 && MGparm_1(Ip,1) < len_bins(1))
+      {
+        warnstream << "parm min for Lmin: " << MGparm_1(Ip,1) << " cannot be less than population min length bin " << len_bins(1);
+        write_message (FATAL, 0); // EXIT!
+      }
+      if ( gp == 1 &&  MGparm_1(Ip,3) < len_bins(1))
+      {
+        warnstream << "parm init value for Lmin: " << MGparm_1(Ip,3) << " cannot be less than population min length bin " << len_bins(1);
+        write_message (FATAL, 0); // EXIT!
+      }
   
       //  check on estimation of variance parameters for CV_young and CV_old
       for (int kk = Ip + N_growparms - 2; kk <= Ip + N_growparms - 1; kk++)
