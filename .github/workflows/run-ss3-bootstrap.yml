@@ -39,6 +39,7 @@ jobs:
         with:
           repository: 'nmfs-ost/ss3-test-models'
           path: test-models-repo
+          ref: lmin_lenbin_fix
 
       - name: Install libcurl & other necessary packages
         run: |
