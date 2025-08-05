@@ -1716,6 +1716,7 @@ FUNCTION void write_bigoutput()
   dvector Hrmse(1, k);
   dvector Rrmse(1, k);
   dvector n_rmse(1, k);
+  dvector mean_recr_report(1,4);
   // following vectors used for index-related quantities
   dvector mean_CV(1, k);
 
@@ -1735,6 +1736,7 @@ FUNCTION void write_bigoutput()
 
     rmse = 0.0;
     n_rmse = 0.0;
+    mean_recr_report = 0.0;
     double cross = 0.0;
     double Durbin = 0.0;
     double var = 0.0;
@@ -1759,12 +1761,19 @@ FUNCTION void write_bigoutput()
         rmse(1) += value(square(temp1));
         n_rmse(1) += 1.;
         rmse(2) += biasadj(y);
+        mean_recr_report(1) += value(exp_rec(y, 1));
+        mean_recr_report(2) += value(exp_rec(y, 2));
+        mean_recr_report(3) += value(exp_rec(y, 3));
+        mean_recr_report(4) += value(exp_rec(y, 4));
       }
     }
     if (n_rmse(1) > 0. && rmse(1) > 0.)
       rmse(1) = sqrt(rmse(1) / n_rmse(1)); // rmse during main period
     if (n_rmse(1) > 0.)
+    {
       rmse(2) = rmse(2) / n_rmse(1); // mean biasadj during main period
+      mean_recr_report /= n_rmse(1); // mean recruitment during main for each of 4 stages of recruitment output
+    }
     if (n_rmse(3) > 0. && rmse(3) > 0.)
       rmse(3) = sqrt(rmse(3) / n_rmse(3)); //rmse during early period
     if (n_rmse(3) > 0.)
@@ -1992,7 +2001,12 @@ FUNCTION void write_bigoutput()
         write_message (WARN, 0);
       }
     }
-    SS2out << endl  << "#" << endl << init_equ_steepness << "  # Initial_equilibrium:_0/1_to_use_spawner-recruitment_in_initial_equ_recruitment_calculation" << endl << "#" << endl;
+    SS2out << endl << "#" << endl << "# mean_recruitment_for_main_recdev_years" << endl
+           << "# ratio()_is_controlled_by_max_bias_adj;_ratio_should_be_near_1.0" << endl
+           << "# SR_exp_recr with_regime bias_adjusted pred_recr ratio(w_reg / pred_rec)" << endl
+           << "# " << mean_recr_report << " " << mean_recr_report(2) / mean_recr_report(4) << endl;
+
+    SS2out << "#" << endl << init_equ_steepness << "  # Initial_equilibrium:_0/1_to_use_spawner-recruitment_in_initial_equ_recruitment_calculation" << endl << "#" << endl;
     SS2out << "Yr SpawnBio exp_recr with_regime bias_adjusted pred_recr dev biasadjuster era mature_bio mature_num raw_dev SSBpR(yr) " << endl;
 
     y = styr - 2;
