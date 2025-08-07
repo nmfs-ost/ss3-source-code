@@ -56,7 +56,9 @@ FUNCTION dvariable Spawn_Recr(const dvar_vector& SRparm_work, const prevariable&
           (SSB_virgin_use * (1. - steepness) + (5. * steepness - 1.) * SSB_curr_adj);
       }
       else
-      {NewRecruits = Recr_virgin_use; }
+      {
+        NewRecruits = Recr_virgin_use;
+      }
       break;
     }
 
@@ -323,7 +325,7 @@ FUNCTION dvar_vector Equil_Spawn_Recr_Fxn(const dvar_vector& SRparm,
 
   //  SS3 previously used alternative formulation: R = A*S/(B+S)
   //  converting SS3 to align with WHAM
-      if (use_steepness ==1)
+      if (use_steepness == 1)
       {
       alpha = 4.0 * steepness / (SSBpR_virgin_use * (1. - steepness));
       beta = (5.0 * steepness - 1.0) / ((1 - steepness) * SSB_virgin_use);
