@@ -861,7 +861,7 @@
 
   if (SR_fxn == 3)
   {
-    if (SRparm_PH(2) < 0 || SRparm(2) >= 0.999999) use_steepness = 0;
+    if (SRparm_PH(2) < 0 && SRparm(2) >= 0.999999) use_steepness = 0;
   }
 
   echoinput << endl
