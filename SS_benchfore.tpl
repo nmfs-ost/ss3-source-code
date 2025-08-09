@@ -2676,7 +2676,6 @@ FUNCTION void Get_Forecast()
                   //                SSB_pop_gp(y,p,GP4(g)) += fec(g)*elem_prod(natage(t,p,g),mfexp(-Z_rate(t,p,g)*spawn_time_seas));   // accumulates SSB by area and by growthpattern
                   //                SSB_B_yr(y) += make_mature_bio(GP4(g))*elem_prod(natage(t,p,g),mfexp(-Z_rate(t,p,g)*spawn_time_seas));
                   //                SSB_N_yr(y) += make_mature_numbers(GP4(g))*elem_prod(natage(t,p,g),mfexp(-Z_rate(t,p,g)*spawn_time_seas));
-                  natage(t, p, g, 0) = 0.0; // these fish should not exist at beginning of year.  They are created after spawning.  Are here in array only due to Fcast_Loop1
                   SSB_pop_gp(y, p, GP4(g)) += fracfemale_mult * fec(g) * natage(t, p, g); // accumulates SSB by area and by growthpattern
                   SSB_B_yr(y) += fracfemale_mult * make_mature_bio(GP4(g)) * natage(t, p, g);
                   SSB_N_yr(y) += fracfemale_mult * make_mature_numbers(GP4(g)) * natage(t, p, g);
@@ -2762,7 +2761,9 @@ FUNCTION void Get_Forecast()
                   //                  if(y==endyr+1) natage(t+Settle_seas_offset(settle),p,g,Settle_age(settle))=0.0;  //  to negate the additive code
                   natage(t + Settle_seas_offset(settle), p, g, Settle_age(settle)) = Recruits * recr_dist(y, GP(g), settle, p) * platoon_distr(GP2(g)) *
                       mfexp(natM(t, p, GP3(g), Settle_age(settle)) * Settle_timing_seas(settle));
-                  if (Fcast_Loop1 == jloop && ABC_Loop == ABC_Loop_end)
+                      warning<<y << " " <<s<<" put recruits_here: "<<t + Settle_seas_offset(settle) << " " << natage(t + Settle_seas_offset(settle), p, g, Settle_age(settle))<< endl;
+
+                      if (Fcast_Loop1 == jloop && ABC_Loop == ABC_Loop_end)
                   {
 //                    if (Settle_seas(settle) == s)  // delete because logic is flawed
                       Recr(p, t + Settle_seas_offset(settle)) += Recruits * recr_dist(y, GP(g), settle, p) * platoon_distr(GP2(g));
@@ -3691,7 +3692,6 @@ FUNCTION void Get_Forecast()
             //            report5<<" numbers "<<natage(t,p,g)<<"  Zrate "<<Z_rate(t,p,g);
             report5 << endl;
           }
-
         } //  end loop of seasons
 
         if (ABC_Loop == 2) //  apply caps and store catches to allow calc of adjusted F to match this catch when doing ABC_loop=3, and then when doing Fcast_loop1=3
