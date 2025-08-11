@@ -1080,13 +1080,11 @@ FUNCTION void get_time_series()
             settle = settle_g(g);
             for (p = 1; p <= pop; p++)
             {
-              if (y == styr)
-                natage(t + Settle_seas_offset(settle), p, g, Settle_age(settle)) = 0.0; //  to negate the additive code
-              natage(t + Settle_seas_offset(settle), p, g, Settle_age(settle)) +=
+              natage(t + Settle_seas_offset(settle), p, g, Settle_age(settle)) =
                   Recruits * recr_dist(y, GP(g), settle, p) * platoon_distr(GP2(g)) *
                   mfexp(natM(t, p, GP3(g), Settle_age(settle)) * Settle_timing_seas(settle));
-                Recr(p, t + Settle_seas_offset(settle)) += Recruits * recr_dist(y, GP(g), settle, p) * platoon_distr(GP2(g));
-              //  the adjustment for mortality increases recruit value for elapsed time since begin of season because M will then be applied from beginning of season
+              //  the adjustment for mortality increases stored value for elapsed time since begin of season because M will then be applied from beginning of season
+              Recr(p, t + Settle_seas_offset(settle)) += Recruits * recr_dist(y, GP(g), settle, p) * platoon_distr(GP2(g));
               if (docheckup == 1)
                 echoinput << y << " Recruits, dist, surv, result  " << Recruits << " " << recr_dist(y, GP(g), settle, p) << " " << mfexp(natM(t, p, GP3(g), Settle_age(settle)) * Settle_timing_seas(settle)) << " " << natage(t + Settle_seas_offset(settle), p, g, Settle_age(settle)) << " M "<<natM(t, p, GP3(g), Settle_age(settle)) * Settle_timing_seas(settle)<<endl;
             }
@@ -1539,10 +1537,9 @@ FUNCTION void get_time_series()
             settle = settle_g(g);
             for (p = 1; p <= pop; p++)
             {
-              if (y == styr)
-                natage(t + Settle_seas_offset(settle), p, g, Settle_age(settle)) = 0.0; //  to negate the additive code
-
-              natage(t + Settle_seas_offset(settle), p, g, Settle_age(settle)) += Recruits * recr_dist(y, GP(g), settle, p) * platoon_distr(GP2(g)) *
+//  previous code zero'ed out the natage then used += to add recruits to natage.
+//  that is unnecessary, because each p,g,settle_age is unique
+              natage(t + Settle_seas_offset(settle), p, g, Settle_age(settle)) = Recruits * recr_dist(y, GP(g), settle, p) * platoon_distr(GP2(g)) *
                   mfexp(natM(t, p, GP3(g), Settle_age(settle)) * Settle_timing_seas(settle));
                 Recr(p, t + Settle_seas_offset(settle)) += Recruits * recr_dist(y, GP(g), settle, p) * platoon_distr(GP2(g));
               if (docheckup == 1)
