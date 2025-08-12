@@ -1740,7 +1740,7 @@ FUNCTION void write_bigoutput()
     double cross = 0.0;
     double Durbin = 0.0;
     double var = 0.0;
-
+     warning << recdev_first << " "<<recdev_start << " " << styr << endl;
     for (y = recdev_first; y <= recdev_end; y++)
     {
       temp1 = recdev(y);
@@ -1761,10 +1761,20 @@ FUNCTION void write_bigoutput()
         rmse(1) += value(square(temp1));
         n_rmse(1) += 1.;
         rmse(2) += biasadj(y);
-        mean_recr_report(1) += value(exp_rec(y, 1));
-        mean_recr_report(2) += value(exp_rec(y, 2));
-        mean_recr_report(3) += value(exp_rec(y, 3));
-        mean_recr_report(4) += value(exp_rec(y, 4));
+        if (y < styr)
+        {
+          mean_recr_report(1) += value(exp_rec(styr - 1, 1));
+          mean_recr_report(2) += value(exp_rec(styr - 1, 2));
+          mean_recr_report(3) += value(exp_rec(styr - 1, 3) * mfexp(-biasadj(y) * half_sigmaRsq));
+          mean_recr_report(4) += value(exp_rec(styr - 1, 3) * mfexp(recdev(y) - biasadj(y) * half_sigmaRsq));
+        }
+        else
+        {
+          mean_recr_report(1) += value(exp_rec(y, 1));
+          mean_recr_report(2) += value(exp_rec(y, 2));
+          mean_recr_report(3) += value(exp_rec(y, 3));
+          mean_recr_report(4) += value(exp_rec(y, 4));
+        }
       }
     }
     if (n_rmse(1) > 0. && rmse(1) > 0.)
@@ -2002,7 +2012,7 @@ FUNCTION void write_bigoutput()
       }
     }
     SS2out << endl << "#" << endl << "# mean_recruitment_for_main_recdev_years" << endl
-           << "# ratio()_is_controlled_by_max_bias_adj;_ratio_should_be_near_1.0" << endl
+           << "# NOTE:_ratio()_is_influenced_by_max_bias_adj;_ratio_should_be_near_1.0" << endl
            << "# SR_exp_recr with_regime bias_adjusted pred_recr ratio(w_reg / pred_rec)" << endl
            << "# " << mean_recr_report << " " << mean_recr_report(2) / mean_recr_report(4) << endl;
 
