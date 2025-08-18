@@ -1,3 +1,4 @@
+name: test-simple-with-ss3-artifacts
 on:
   workflow_run:
     workflows: ["build-ss3"]
@@ -10,7 +11,7 @@ permissions:
   actions: read
 
 concurrency:
-    group: ${{ github.workflow}}-${{ github.ref }}
+    group: ${{ github.workflow }}-${{ github.ref }}
     cancel-in-progress: true
 
 jobs:
