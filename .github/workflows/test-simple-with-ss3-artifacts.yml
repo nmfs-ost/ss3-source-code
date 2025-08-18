@@ -90,51 +90,58 @@ jobs:
             core.setOutput("artifacts", JSON.stringify(artifacts.artifacts));
 
       - name: Download artifact for this OS
-        id: download_artifact
-        shell: bash
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          set -e
-          mkdir -p ss3_artifacts
-          os_artifact="${{ matrix.artifact_name }}"
-          ARTIFACTS_JSON='${{ steps.list_artifacts.outputs.artifacts }}'
-          ARTIFACTS_JSON=$(echo "$ARTIFACTS_JSON" | tr -d '\r')
-          echo "RAW ARTIFACTS OUTPUT:"
-          echo "$ARTIFACTS_JSON" | cat -v
+        uses: actions/download-artifact@v4
+        with:
+          name: ${{ matrix.artifact_name }}
+          run-id: ${{ steps.get_run.outputs.run_id }}
+          path: ss3_artifacts
 
-          IFS=$'\n' artifacts=($(echo "$ARTIFACTS_JSON" | jq -cr '.[] | select(. != null) | @base64' | tr -d '\r' | grep -v '^$'))
-          if [[ ${#artifacts[@]} -eq 0 ]]; then
-            echo "No artifacts found."
-            exit 1
-          fi
+      # - name: Download artifact for this OS
+      #   id: download_artifact
+      #   shell: bash
+      #   env:
+      #     GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      #   run: |
+      #     set -e
+      #     mkdir -p ss3_artifacts
+      #     os_artifact="${{ matrix.artifact_name }}"
+      #     ARTIFACTS_JSON='${{ steps.list_artifacts.outputs.artifacts }}'
+      #     ARTIFACTS_JSON=$(echo "$ARTIFACTS_JSON" | tr -d '\r')
+      #     echo "RAW ARTIFACTS OUTPUT:"
+      #     echo "$ARTIFACTS_JSON" | cat -v
 
-          echo "Available artifacts:"
-          for artifact in "${artifacts[@]}"; do
-            echo "${artifact}" | base64 --decode | jq -r '.name'
-          done
+      #     IFS=$'\n' artifacts=($(echo "$ARTIFACTS_JSON" | jq -cr '.[] | select(. != null) | @base64' | tr -d '\r' | grep -v '^$'))
+      #     if [[ ${#artifacts[@]} -eq 0 ]]; then
+      #       echo "No artifacts found."
+      #       exit 1
+      #     fi
 
-          found_id=""
-          for artifact in "${artifacts[@]}"; do
-            _jq() {
-              echo "${artifact}" | base64 --decode | jq -r "${1}"
-            }
-            name=$(_jq '.name')
-            id=$(_jq '.id')
-            if [[ "$name" == "$os_artifact" ]]; then
-              found_id="$id"
-              break
-            fi
-          done
-          if [ -z "$found_id" ]; then
-            echo "Artifact $os_artifact not found!"
-            exit 1
-          fi
-          echo "Downloading artifact: $os_artifact"
-          gh api \
-            -H "Accept: application/vnd.github+json" \
-            -H "Authorization: Bearer $GH_TOKEN" \
-            "./repos/nmfs-ost/ss3-source-code/actions/artifacts/$found_id/zip" > "ss3_artifacts/$os_artifact.zip"
+      #     echo "Available artifacts:"
+      #     for artifact in "${artifacts[@]}"; do
+      #       echo "${artifact}" | base64 --decode | jq -r '.name'
+      #     done
+
+      #     found_id=""
+      #     for artifact in "${artifacts[@]}"; do
+      #       _jq() {
+      #         echo "${artifact}" | base64 --decode | jq -r "${1}"
+      #       }
+      #       name=$(_jq '.name')
+      #       id=$(_jq '.id')
+      #       if [[ "$name" == "$os_artifact" ]]; then
+      #         found_id="$id"
+      #         break
+      #       fi
+      #     done
+      #     if [ -z "$found_id" ]; then
+      #       echo "Artifact $os_artifact not found!"
+      #       exit 1
+      #     fi
+      #     echo "Downloading artifact: $os_artifact"
+      #     gh api \
+      #       -H "Accept: application/vnd.github+json" \
+      #       -H "Authorization: Bearer $GH_TOKEN" \
+      #       "./repos/nmfs-ost/ss3-source-code/actions/artifacts/$found_id/zip" > "ss3_artifacts/$os_artifact.zip"
 
       - name: Unzip SS3 executable
         shell: bash
