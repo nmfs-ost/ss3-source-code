@@ -1124,6 +1124,7 @@ FUNCTION void write_bigoutput()
     SS2out << "Index GP Sex BirthSeas Platoon Platoon_Dist Sex*GP Sex*GP*Settle BirthAge_Rel_Jan1" << endl;
     for (g = 1; g <= gmorph; g++)
     {
+      if (use_morph(g) > 0)
       SS2out << g << " " << GP4(g) << " " << sx(g) << " " << Bseas(g) << " " << GP2(g) << " " << platoon_distr(GP2(g)) << " " << GP(g) << " " << GP3(g) << " " << azero_G(g) << endl;
     }
   }
@@ -3683,6 +3684,8 @@ FUNCTION void write_bigoutput()
       for (settle = 1; settle <= N_settle_timings; settle++)
       {
         g += N_platoon;
+        if (use_morph(g) > 0)
+        {
         int gpi = GP3(g); // GP*gender*settlement
         for (y = styr - 3; y <= YrMax; y++)
         for (s = 1; s <= nseas; s++)
@@ -3712,6 +3715,7 @@ FUNCTION void write_bigoutput()
               }
               SS2out<<natM(t,p,gpi)<<endl;
             }
+          }
           }
         }
 
