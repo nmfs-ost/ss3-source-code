@@ -36,7 +36,7 @@ jobs:
 
     steps:
       - name: Checkout test repo (this repo)
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Set up jq and unzip (Linux/macOS)
         if: runner.os != 'Windows'
@@ -146,7 +146,7 @@ jobs:
           fi
 
       - name: Checkout test models repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           repository: nmfs-ost/ss3-test-models
           path: ss3-test-models
