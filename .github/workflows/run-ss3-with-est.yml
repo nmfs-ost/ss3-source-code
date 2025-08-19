@@ -32,10 +32,10 @@ jobs:
 
     steps:
       - name: Checkout ss3 repo
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Checkout models repo
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           repository: 'nmfs-ost/ss3-test-models'
           path: test-models-repo
