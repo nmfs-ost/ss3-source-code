@@ -75,33 +75,33 @@ jobs:
       #       if (!runs.workflow_runs.length) throw "No successful runs found for 'build-ss3'.";
       #       core.setOutput("run_id", runs.workflow_runs[0].id);
 
-      - name: Get latest ss3-build workflow run ID
-        id: get_run
-        run: |
-          RUN_ID=$(gh api repos/${{ github.repository }}/actions/workflows/ss3-build.yml/runs --jq '.workflow_runs[0].id')
-          echo "run_id=$RUN_ID" >> $GITHUB_OUTPUT
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      # - name: Get latest ss3-build workflow run ID
+      #   id: get_run
+      #   run: |
+      #     RUN_ID=$(gh api repos/${{ github.repository }}/actions/workflows/ss3-build.yml/runs --jq '.workflow_runs[0].id')
+      #     echo "run_id=$RUN_ID" >> $GITHUB_OUTPUT
+      #   env:
+      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: List artifacts from build-ss3 run
-        id: list_artifacts
-        uses: actions/github-script@v7
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: |
-            const run_id = ${{ steps.get_run.outputs.run_id }};
-            const { data: artifacts } = await github.rest.actions.listWorkflowRunArtifacts({
-              owner: "nmfs-ost",
-              repo: "ss3-source-code",
-              run_id
-            });
-            core.setOutput("artifacts", JSON.stringify(artifacts.artifacts));
+      # - name: List artifacts from build-ss3 run
+      #   id: list_artifacts
+      #   uses: actions/github-script@v7
+      #   with:
+      #     github-token: ${{ secrets.GITHUB_TOKEN }}
+      #     script: |
+      #       const run_id = ${{ steps.get_run.outputs.run_id }};
+      #       const { data: artifacts } = await github.rest.actions.listWorkflowRunArtifacts({
+      #         owner: "nmfs-ost",
+      #         repo: "ss3-source-code",
+      #         run_id
+      #       });
+      #       core.setOutput("artifacts", JSON.stringify(artifacts.artifacts));
 
       - name: Download artifact for this OS
         uses: actions/download-artifact@v4
         with:
           name: ${{ matrix.artifact_name }}
-          run-id: ${{ steps.get_run.outputs.run_id }}
+          run-id: ${{ github.event.workflow_run.id }}
           path: ss3_artifacts
 
       # - name: Download artifact for this OS
