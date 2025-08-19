@@ -27,6 +27,14 @@ jobs:
     steps:
     # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v5
+
+      - name: Update Homebrew
+        if: matrix.config.os == 'macos-13'
+        run: brew update
+
+      - name: Install qpdf
+        if: matrix.config.os == 'macos-13'
+        run: brew install qpdf
     
     # Set up R
       - name: Set up R, specify rtools version and path for Windows
