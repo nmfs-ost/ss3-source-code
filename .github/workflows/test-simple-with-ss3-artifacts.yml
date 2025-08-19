@@ -52,12 +52,26 @@ jobs:
       - name: Use Bash 5 on macOS
         if: startsWith(matrix.os, 'macos-')
         run: brew install bash
+      
+      - name: List all artifacts for workflow run
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const run_id = ${{ github.event.workflow_run.id }};
+            const { data: artifacts } = await github.rest.actions.listWorkflowRunArtifacts({
+              owner: "nmfs-ost",
+              repo: "ss3-source-code",
+              run_id
+            });
+            console.log(artifacts.artifacts);
 
       - name: Download artifact for this OS
         uses: actions/download-artifact@v4
         with:
           name: ${{ matrix.artifact_name }}
           run-id: ${{ github.event.workflow_run.id }}
+          repository: nmfs-ost/ss3-source-code
           path: ss3_artifacts
 
       - name: Unzip SS3 executable
