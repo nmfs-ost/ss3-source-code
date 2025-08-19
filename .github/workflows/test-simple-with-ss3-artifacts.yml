@@ -1,3 +1,4 @@
+name: test-simple-with-ss3-artifacts
 on:
   workflow_run:
     workflows: ["build-ss3"]
@@ -10,7 +11,7 @@ permissions:
   actions: read
 
 concurrency:
-    group: ${{ github.workflow}}-${{ github.ref }}
+    group: ${{ github.workflow }}-${{ github.ref }}
     cancel-in-progress: true
 
 jobs:
@@ -51,89 +52,27 @@ jobs:
       - name: Use Bash 5 on macOS
         if: startsWith(matrix.os, 'macos-')
         run: brew install bash
-
-      - name: Find latest successful build-ss3 workflow run in nmfs-ost/ss3-source-code
-        id: get_run
+      
+      - name: List all artifacts for workflow run
         uses: actions/github-script@v7
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
-            const { data: workflows } = await github.rest.actions.listRepoWorkflows({
-              owner: "nmfs-ost",
-              repo: "ss3-source-code"
-            });
-            const workflow = workflows.workflows.find(wf => wf.name === "build-ss3");
-            if (!workflow) throw "Workflow 'build-ss3' not found.";
-            const { data: runs } = await github.rest.actions.listWorkflowRuns({
-              owner: "nmfs-ost",
-              repo: "ss3-source-code",
-              workflow_id: workflow.id,
-              status: "success",
-              per_page: 1
-            });
-            if (!runs.workflow_runs.length) throw "No successful runs found for 'build-ss3'.";
-            core.setOutput("run_id", runs.workflow_runs[0].id);
-
-      - name: List artifacts from build-ss3 run
-        id: list_artifacts
-        uses: actions/github-script@v7
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: |
-            const run_id = ${{ steps.get_run.outputs.run_id }};
+            const run_id = ${{ github.event.workflow_run.id }};
             const { data: artifacts } = await github.rest.actions.listWorkflowRunArtifacts({
               owner: "nmfs-ost",
               repo: "ss3-source-code",
               run_id
             });
-            core.setOutput("artifacts", JSON.stringify(artifacts.artifacts));
+            console.log(artifacts.artifacts);
 
       - name: Download artifact for this OS
-        id: download_artifact
-        shell: bash
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          set -e
-          mkdir -p ss3_artifacts
-          os_artifact="${{ matrix.artifact_name }}"
-          ARTIFACTS_JSON='${{ steps.list_artifacts.outputs.artifacts }}'
-          ARTIFACTS_JSON=$(echo "$ARTIFACTS_JSON" | tr -d '\r')
-          echo "RAW ARTIFACTS OUTPUT:"
-          echo "$ARTIFACTS_JSON" | cat -v
-
-          IFS=$'\n' artifacts=($(echo "$ARTIFACTS_JSON" | jq -cr '.[] | select(. != null) | @base64' | tr -d '\r' | grep -v '^$'))
-          if [[ ${#artifacts[@]} -eq 0 ]]; then
-            echo "No artifacts found."
-            exit 1
-          fi
-
-          echo "Available artifacts:"
-          for artifact in "${artifacts[@]}"; do
-            echo "${artifact}" | base64 --decode | jq -r '.name'
-          done
-
-          found_id=""
-          for artifact in "${artifacts[@]}"; do
-            _jq() {
-              echo "${artifact}" | base64 --decode | jq -r "${1}"
-            }
-            name=$(_jq '.name')
-            id=$(_jq '.id')
-            if [[ "$name" == "$os_artifact" ]]; then
-              found_id="$id"
-              break
-            fi
-          done
-          if [ -z "$found_id" ]; then
-            echo "Artifact $os_artifact not found!"
-            exit 1
-          fi
-          echo "Downloading artifact: $os_artifact"
-          gh api \
-            -H "Accept: application/vnd.github+json" \
-            -H "Authorization: Bearer $GH_TOKEN" \
-            "./repos/nmfs-ost/ss3-source-code/actions/artifacts/$found_id/zip" > "ss3_artifacts/$os_artifact.zip"
+        uses: actions/download-artifact@v4
+        with:
+          name: ${{ matrix.artifact_name }}
+          run-id: ${{ github.event.workflow_run.id }}
+          repository: nmfs-ost/ss3-source-code
+          path: ss3_artifacts
 
       - name: Unzip SS3 executable
         shell: bash
