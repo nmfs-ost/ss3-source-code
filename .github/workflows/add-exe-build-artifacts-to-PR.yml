@@ -1,15 +1,18 @@
 name: add-exe-build-artifacts-to-PR
 on:
   workflow_run:
-    workflows: [build-ss3]
-    types: [completed]
+    workflows: ["build-ss3"]
+    types:
+      - completed
   workflow_dispatch:
 
 jobs:
   artifacts-url-comments:
     name: add artifact links to pull request and related issues job
     runs-on: ubuntu-latest
-    if: ${{ github.event.workflow_run.conclusion == 'success'}}
+    if: >
+      ${{ github.event.workflow_run.event == 'pull_request' && 
+      ${{ github.event.workflow_run.conclusion == 'success'}}
     steps:
       - name: add artifact links to PR and issues
         uses: tonyhallett/artifacts-url-comments@v1.1.0
@@ -18,4 +21,4 @@ jobs:
         with:
             prefix: 'Here are the successful executable builds from your PR:'
             format: name
-            addTo: pullandissues
+            addTo: pull
