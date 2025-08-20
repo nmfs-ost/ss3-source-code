@@ -1,120 +1,103 @@
 name: test-simple-with-ss3-artifacts
+
 on:
   workflow_run:
     workflows: ["build-ss3"]
     types:
       - completed
-  workflow_dispatch:
-
-permissions:
-  contents: read
-  actions: read
-
-concurrency:
-    group: ${{ github.workflow }}-${{ github.ref }}
-    cancel-in-progress: true
 
 jobs:
-  test-simple-model:
-    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+  find_build_artifacts:
+    runs-on: ubuntu-latest # A general runner to get the run ID
+    outputs:
+      run_id: ${{ steps.get_run_id.outputs.run_id }}
+      parent_workflow_event: ${{ github.event.workflow_run.event }}
+    steps:
+      - name: Get workflow_run ID and Parent Event
+        id: get_run_id
+        run: |
+          echo "Run ID of build-ss3 workflow: ${{ github.event.workflow_run.id }}"
+          echo "run_id=${{ github.event.workflow_run.id }}" >> "$GITHUB_OUTPUT"
+          echo "Parent workflow event: ${{ github.event.workflow_run.event }}"
+          echo "parent_workflow_event=${{ github.event.workflow_run.event }}" >> "$GITHUB_OUTPUT"
+
+  test_builds:
+    needs: find_build_artifacts
+    if: needs.find_build_artifacts.outputs.parent_workflow_event == 'pull_request'
+    
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-latest, windows-latest, macos-13, macos-latest]
+        os: [ubuntu-latest, macos-13, macos-latest, windows-latest]
         include:
           - os: ubuntu-latest
             artifact_name: ss3-ubuntu-latest
-            exe_name: ss3_linux
-          - os: windows-latest
-            artifact_name: ss3-windows-latest
-            exe_name: ss3_win.exe
+            exe: ss3_linux
           - os: macos-13
             artifact_name: ss3-macos-13
-            exe_name: ss3_osx
+            exe: ss3_osx
           - os: macos-latest
             artifact_name: ss3-macos-latest
-            exe_name: ss3_osx
+            exe: ss3_osx
+          - os: windows-latest
+            artifact_name: ss3-windows-latest
+            exe: ss3_win.exe
 
     steps:
-      - name: Checkout test repo (this repo)
-        uses: actions/checkout@v5
-
-      - name: Set up jq and unzip (Linux/macOS)
-        if: runner.os != 'Windows'
-        run: |
-          sudo apt-get update || true
-          sudo apt-get install -y jq unzip || brew install jq unzip
-
-      - name: Set up jq (Windows)
-        if: runner.os == 'Windows'
-        run: choco install jq
-
-      - name: Use Bash 5 on macOS
-        if: startsWith(matrix.os, 'macos-')
-        run: brew install bash
-      
-      - name: List all artifacts for workflow run
-        uses: actions/github-script@v7
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: |
-            const run_id = ${{ github.event.workflow_run.id }};
-            const { data: artifacts } = await github.rest.actions.listWorkflowRunArtifacts({
-              owner: "nmfs-ost",
-              repo: "ss3-source-code",
-              run_id
-            });
-            console.log(artifacts.artifacts);
-
-      - name: Download artifact for this OS
-        uses: actions/download-artifact@v4
-        with:
-          name: ${{ matrix.artifact_name }}
-          run-id: ${{ github.event.workflow_run.id }}
-          repository: nmfs-ost/ss3-source-code
-          path: ss3_artifacts
-
-      - name: Unzip SS3 executable
-        shell: bash
-        run: |
-          cd ss3_artifacts
-          if [ "${{ runner.os }}" = "Windows" ]; then
-            powershell -Command "Expand-Archive -Path '${{ matrix.artifact_name }}.zip' -DestinationPath ."
-          else
-            unzip -o "${{ matrix.artifact_name }}.zip"
-          fi
-
-      - name: Checkout test models repository
+      - name: Checkout SS3 Test Models
         uses: actions/checkout@v5
         with:
           repository: nmfs-ost/ss3-test-models
           path: ss3-test-models
 
-      - name: Ensure Simple model directory exists
-        shell: bash
-        run: mkdir -p ss3-test-models/models/Simple
+      - name: Download ${{ matrix.artifact_name }} artifact
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const { owner, repo } = context.repo;
+            const run_id = '${{ needs.find_build_artifacts.outputs.run_id }}';
+            const artifactName = '${{ matrix.artifact_name }}';
+            console.log(`Attempting to download artifact '${artifactName}' from run ID: ${run_id}`);
+            const artifacts = await github.rest.actions.listWorkflowRunArtifacts({
+              owner,
+              repo,
+              run_id: run_id,
+            });
+            const artifact = artifacts.data.artifacts.find(artifact => artifact.name === artifactName);
+            if (artifact) {
+              const download = await github.rest.actions.downloadArtifact({
+                owner,
+                repo,
+                artifact_id: artifact.id,
+                archive_format: 'zip',
+              });
+              const fs = require('fs');
+              fs.writeFileSync(`${process.env.GITHUB_WORKSPACE}/${artifactName}.zip`, Buffer.from(download.data));
+              console.log(`Artifact ${artifactName}.zip downloaded successfully.`);
+            } else {
+              core.setFailed(`Artifact ${artifactName} not found. Please ensure the artifact name matches exactly.`);
+            }
 
-      - name: see what files exist
+      - name: Unzip artifact and set permissions
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          Expand-Archive -Path "${{ github.workspace }}\${{ matrix.artifact_name }}.zip" -DestinationPath "ss3-test-models/models/Simple" -Force
+          
+      - name: Unzip artifact and set permissions
+        if: ${{ runner.os != 'Windows' }}
         shell: bash
         run: |
-          echo "Files in ss3_artifacts:"
-          find ss3_artifacts
-
-      - name: Copy SS3 executable to Simple model directory
-        shell: bash
-        run: |
-          exe="${{ matrix.exe_name }}"
-          src="ss3_artifacts/$exe"
-          dest="ss3-test-models/models/Simple/$exe"
-          cp "$src" "$dest"
-          chmod +x "$dest" || true
-
+          unzip ${{ matrix.artifact_name }}.zip -d ss3-test-models/models/Simple
+          # Make executables runnable on Linux/macOS
+          chmod +x ss3-test-models/models/Simple/${{ matrix.exe }}
+          
       - name: Run SS3 on Simple model
         shell: bash
         run: |
           cd ss3-test-models/models/Simple
-          ./${{ matrix.exe_name }} -nohess -stopph 0
-
+          ./${{ matrix.exe }} -nohess -stopph 0
+          
       - name: Check if model ran successfully
         shell: bash
         run: |
@@ -128,3 +111,4 @@ jobs:
         with:
           name: simple-model-output-${{ matrix.os }}
           path: ss3-test-models/models/Simple/
+          
