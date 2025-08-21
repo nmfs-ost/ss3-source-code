@@ -540,6 +540,7 @@
     {
       pick_report_use(k) = "Y";
     }
+    pick_report_use(55) = "N"; // GLOBAL_MSY report:55
   }
   if (reportdetail == 3)
   {
@@ -561,7 +562,7 @@
     }
   }
 
-  for (k = 1; k <= 60; k++)
+  for (k = 1; k <= 61; k++)
     echoinput << k << " " << pick_report_use(k) << " " << pick_report_name(k) << endl;
   // clang-format off
  END_CALCS
