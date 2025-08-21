@@ -311,7 +311,7 @@ FUNCTION void write_bigoutput()
 
   SS2out << endl
          << "# vector_with_report_usage" << endl;
-  for (k = 1; k <= 60; k++)
+  for (k = 1; k <= 61; k++)
   {
     SS2out << " " << pick_report_use(k);
   }
