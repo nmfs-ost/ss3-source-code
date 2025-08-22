@@ -368,12 +368,12 @@
           k++;
         }
       }
-      if (j != Settle_age(settle_time))
-      {
-        warnstream << "settle_month is less than spawn_month, so logical age at settlement calculated to be: " << j
-                   << "  for settle_time " << settle_time << ".  Does not match read value of " << Settle_age(settle_time) << " are you sure? ";
-        write_message (NOTE, 0);
-      }
+//      if (j != Settle_age(settle_time))
+//      {
+//        warnstream << "settle_month is less than spawn_month, so logical age at settlement calculated to be: " << j
+//                   << "  for settle_time " << settle_time << ".  Does not match read value of " << Settle_age(settle_time) << " are you sure? ";
+//        write_message (NOTE, 0);
+//      }
       Settle_seas(settle_time) = k;
       Settle_seas_offset(settle_time) = Settle_seas(settle_time) - spawn_seas + j * nseas + Settle_age(settle_time) * nseas; //  number of seasons between spawning and the season in which settlement occurs
       Settle_timing_seas(settle_time) -= temp; //  timing from beginning of this season; needed for mortality calculation
