@@ -8,6 +8,10 @@ on:
       paths:
       - '**.tpl'
       - '**.sh'
+    pull_request:
+      paths:
+      - '**.tpl'
+      - '**.sh'
     workflow_dispatch:
 
 concurrency:
