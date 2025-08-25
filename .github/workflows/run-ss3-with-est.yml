@@ -25,7 +25,7 @@ concurrency:
 jobs:
   run-ss3-with-est:
     # if: ${{ github.event_name == 'workflow_dispatch' || (github.event.pull_request.draft == 'false'}}
-    runs-on: macos-latest
+    runs-on: ubuntu-latest
     env:
       R_REMOTES_NO_ERRORS_FROM_WARNINGS: true
       RSPM: "https://packagemanager.rstudio.com/cran/__linux__/focal/latest"
