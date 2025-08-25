@@ -39,8 +39,13 @@ jobs:
         with:
           repository: 'nmfs-ost/ss3-test-models'
           path: test-models-repo
-
-      - name: Update Ubuntu packages
+          
+      - name: Install software-properties-common
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y software-properties-common
+        
+      - name: Update and install other Ubuntu packages
         run: |
           sudo add-apt-repository ppa:ubuntu-toolchain-r/test
           sudo apt-get update
