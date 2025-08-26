@@ -1741,7 +1741,6 @@ FUNCTION void write_bigoutput()
     double cross = 0.0;
     double Durbin = 0.0;
     double var = 0.0;
-     warning << recdev_first << " "<<recdev_start << " " << styr << endl;
     for (y = recdev_first; y <= recdev_end; y++)
     {
       temp1 = recdev(y);
