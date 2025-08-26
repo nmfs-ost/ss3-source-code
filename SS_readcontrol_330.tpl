@@ -5636,6 +5636,14 @@
     Do_Dyn_Bzero = More_Std_Input(12);
     Do_se_smrybio = More_Std_Input(13);
   }
+  else 
+  {
+    // if Do_More_Std == 1, these options should be turned off
+    Do_NatM_Std = 0;
+    NatM_Std_Cnt = 0;
+    Do_Dyn_Bzero = 0;
+    Do_se_smrybio = 0;
+  }
   // clang-format off
  END_CALCS
 
