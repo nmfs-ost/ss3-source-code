@@ -5620,19 +5620,17 @@
     if (Do_NatAge_Std == 0) NatAge_Std_Cnt = 0;
     Do_NatM_Std = 0; // value replaced below if Do_More_Std==2
     NatM_Std_Cnt = 0; // value replaced below if Do_More_Std==2
+    // read additional extra std inputs for NatM (added in 3.30.15)
+    if (Do_More_Std == 2)
+    {
+      Do_NatM_Std = More_Std_Input(10);
+      NatM_Std_Cnt = More_Std_Input(11);
+      if (Do_NatM_Std <= 0) NatM_Std_Cnt = 0;
+      Do_Dyn_Bzero = More_Std_Input(12);
+      Do_se_smrybio = More_Std_Input(13);
+    }
   }
   
-  // read additional extra std inputs for NatM (added in 3.30.15)
-  if (Do_More_Std == 2)
-  {
-    Do_NatM_Std = More_Std_Input(10);
-    NatM_Std_Cnt = More_Std_Input(11);
-    if (Do_NatM_Std <= 0) {
-      NatM_Std_Cnt = 0;
-    }
-    Do_Dyn_Bzero = More_Std_Input(12);
-    Do_se_smrybio = More_Std_Input(13);
-  }
   // clang-format off
  END_CALCS
 
