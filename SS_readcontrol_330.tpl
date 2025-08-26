@@ -5585,24 +5585,21 @@
   // clang-format on
   Extra_Std_N = 0;
   
-  // don't read any extra std inputs
-  if (Do_More_Std == 0)
-  {
-    Do_Selex_Std = 0;
-    Selex_Std_AL = 1;
-    Selex_Std_Year = endyr;
-    Selex_Std_Cnt = 0;
-    Do_Growth_Std = 0;
-    Growth_Std_Cnt = 0;
-    Do_NatAge_Std = 0;
-    NatAge_Std_Cnt = 0;
-    NatAge_Std_Year = endyr;
-    Do_NatM_Std = 0;
-    NatM_Std_Cnt = 0;
-    Do_Dyn_Bzero = 0;
-    Do_se_smrybio = 0;
-    Do_se_LnSSB = 0;
-  }
+  // Itialize all switches for extra std inputs
+  Do_Selex_Std = 0;
+  Selex_Std_AL = 1;
+  Selex_Std_Year = endyr;
+  Selex_Std_Cnt = 0;
+  Do_Growth_Std = 0;
+  Growth_Std_Cnt = 0;
+  Do_NatAge_Std = 0;
+  NatAge_Std_Cnt = 0;
+  NatAge_Std_Year = endyr;
+  Do_NatM_Std = 0;
+  NatM_Std_Cnt = 0;
+  Do_Dyn_Bzero = 0;
+  Do_se_smrybio = 0;
+  Do_se_LnSSB = 0;
   
   // read standard extra std inputs (only option prior to 3.30.15)
   if (Do_More_Std > 0)
@@ -5635,14 +5632,6 @@
     }
     Do_Dyn_Bzero = More_Std_Input(12);
     Do_se_smrybio = More_Std_Input(13);
-  }
-  else 
-  {
-    // if Do_More_Std == 1, these options should be turned off
-    Do_NatM_Std = 0;
-    NatM_Std_Cnt = 0;
-    Do_Dyn_Bzero = 0;
-    Do_se_smrybio = 0;
   }
   // clang-format off
  END_CALCS
