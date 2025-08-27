@@ -1608,6 +1608,7 @@
   //  labels for the types are found in:  MGtype_Lbl
  LOCAL_CALCS
       // clang-format on
+      echoinput<<"start assigning MGparm_type"<<endl;
       gp = 0;
   for (gg = 1; gg <= gender; gg++)
     for (GPat = 1; GPat <= N_GP; GPat++)
@@ -1618,6 +1619,8 @@
       Ip += N_natMparms;
       mgp_type(Ip, Ip + N_growparms - 1) = 2; // growth parms
 
+      echoinput<<"new check on Lmin: "<<Ip<<endl;
+      echoinput<<MGparm_1(Ip)(1,3)<<endl;
       // check on out of bound Lmin values.  Only check females because males can be offset from females
       if ( gp == 1 && WTage_rd == 0 && MGparm_1(Ip,1) < len_bins(1))
       {
@@ -1629,6 +1632,7 @@
         warnstream << "parm init value for Lmin: " << MGparm_1(Ip,3) << " cannot be less than population min length bin " << len_bins(1);
         write_message (FATAL, 0); // EXIT!
       }
+      echoinput<<"check on CV parms"<<endl;
   
       //  check on estimation of variance parameters for CV_young and CV_old
       for (int kk = Ip + N_growparms - 2; kk <= Ip + N_growparms - 1; kk++)
@@ -1655,12 +1659,15 @@
     mgp_type(MGparm_Hermaphro, MGparm_Hermaphro + 2) = 3;
   } //   herma parameters done with wtlen and fecundity
   if (recr_dist_method < 4) mgp_type(Ip, MGP_CGD - 1) = 4; // recruit apportionments
+  echoinput<<"recrdist: "<<Ip<<" "<<MGP_CGD-1<<endl;
   mgp_type(MGP_CGD) = 2; // cohort growth dev
+  echoinput<<"CGD: "<<Ip<<" "<<MGP_CGD<<endl;
   if (do_migration > 0) mgp_type(MGP_CGD + 1, N_MGparm) = 5; // note that it fills until end of MGparm list, but some get overwritten
   if (N_platoon > 1 && sd_ratio_rd < 0) mgp_type(sd_ratio_param_ptr) = 2;
   if (Use_AgeKeyZero > 0) mgp_type(AgeKeyParm, N_MGparm) = 6;
   if (catch_mult_pointer > 0) mgp_type(catch_mult_pointer, N_MGparm) = 7;
   for (f = frac_female_pointer; f <= frac_female_pointer + N_GP - 1; f++) mgp_type(f) = 4;
+  echoinput<<"fracfemale: "<<frac_female_pointer<<" "<<frac_female_pointer + N_GP - 1<<endl;
   if (N_pred > 0) mgp_type(predparm_pointer(1), predparm_pointer(1) + N_predparms - 1) = 1;
   echoinput << "mgparm_type for each parm:"<<endl;
   for (f = 1; f<= N_MGparm; f++) echoinput << f << " " << MGtype_Lbl(mgp_type(f)) << endl;
