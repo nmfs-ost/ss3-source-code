@@ -292,9 +292,7 @@
       }
     }
   }
-  echoinput << "N settle timings: " << N_settle_timings << endl
-            << " unique_settle_times: " << endl
-            << settle_timings_tempvec << endl;
+  echoinput << "N settle timings: " << N_settle_timings << endl;
   echoinput << "settle events use these settle_times: " << settle_assignments_timing << endl;
   
   if (recr_dist_method == 2)
@@ -343,15 +341,16 @@
     for (settle_time = 1; settle_time <= N_settle_timings; settle_time++)
     {
       j = 0; //  temp value for calculated settlement age
-      if (spawn_month > Settle_month(settle_time))
+      if (Settle_month(settle_time) < spawn_month )  //  settlement month before spawn_month, so settlement will be at least 1 calender year increment after spawning
       {
-        k = 1;
-        j++; //  so sets season 1 as earliest possible settlement at age 1
+        k = 1; //  so sets season 1 as earliest possible season for settlement
+        j = max( 1, Settle_age(settle_time) );  //  calendar elapsed years at settlement
       }
-      else
+      else  //  settlement date is at or after spawn_month
       {
-        k = spawn_seas; //  earliest possible season for settlement at age 0
-      }
+        k = spawn_seas; //  earliest possible season for settlement
+        j = Settle_age(settle_time);  //  calendar elapsed years at settlement 
+     }
       temp = azero_seas(k); //  annual elapsed time fraction at begin of this season
       Settle_timing_seas(settle_time) = (Settle_month(settle_time) - 1.0) / sumseas; //  fraction of year at settlement month
   
@@ -360,27 +359,23 @@
         temp += seasdur(k);
         if (k == nseas)
         {
-          k = 1;
-          j++;
+          k = 1;  // got to seas 1 in next year
+          j++;  // advance years since spawning
         }
         else
         {
           k++;
         }
       }
-//      if (j != Settle_age(settle_time))
-//      {
-//        warnstream << "settle_month is less than spawn_month, so logical age at settlement calculated to be: " << j
-//                   << "  for settle_time " << settle_time << ".  Does not match read value of " << Settle_age(settle_time) << " are you sure? ";
-//        write_message (NOTE, 0);
-//      }
+
       Settle_seas(settle_time) = k;
-      Settle_seas_offset(settle_time) = Settle_seas(settle_time) - spawn_seas + j * nseas + Settle_age(settle_time) * nseas; //  number of seasons between spawning and the season in which settlement occurs
+//       echoinput << "Calendar years since spawning: " << j << endl;
+     Settle_seas_offset(settle_time) = Settle_seas(settle_time) - spawn_seas + j * nseas; //  number of seasons between spawning and the season in which settlement occurs
       Settle_timing_seas(settle_time) -= temp; //  timing from beginning of this season; needed for mortality calculation
       echoinput << settle_time << " / " << Settle_month(settle_time);
       echoinput << "  /  " << Settle_seas(settle_time) << " / " << Settle_seas_offset(settle_time) << " / "
                 << Settle_timing_seas(settle_time) << "  / " << Settle_age(settle_time) << endl;
-      if (Settle_seas_offset(settle_time) == 0 && spawn_time_seas > 0.0)
+      if ( Settle_seas_offset(settle_time) == 0 && spawn_time_seas > 0.0 && Settle_age(settle_time) == 0 )
       {
         warnstream << "Cannot have spawn_time_seas after beginning of a season and settlements in the same season" << endl
                    << "++ put spawning at beginning of the season, or move settlements to next season";
