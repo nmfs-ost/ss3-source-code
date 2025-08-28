@@ -1620,7 +1620,7 @@
       mgp_type(Ip, Ip + N_growparms - 1) = 2; // growth parms
 
       // check on out of bound Lmin values.  Only check females because males can be offset from females
-  /*
+
      if ( gp == 1 && WTage_rd == 0)
       {
       echoinput<<"new check on Lmin: "<<Ip<<endl;
@@ -1636,7 +1636,7 @@
           write_message (FATAL, 0); // EXIT!
         }
       }
-  */
+
        echoinput<<"check on CV parms"<<endl;
   
       //  check on estimation of variance parameters for CV_young and CV_old
