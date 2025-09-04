@@ -3165,7 +3165,7 @@ FUNCTION void write_bigoutput()
 
               if (fleet_type(f) <= 2)
                 SS2out << "F " << f << " " << y << " " << s << " " << sx(g) << " " << g << " " << y << "_" << f << "_F" << Hrate(f, t) * save_sel_num(t, f, g) << endl;
-                SS2out << "F+ " << f << " " << y << " " << s << " " << sx(g) << " " << g << " " << y << "_" << f << "_F+" << Hrate(f, t) * sel_dead_num(t, f, g) << endl;
+                SS2out << "F+ " << f << " " << y << " " << s << " " << sx(g) << " " << g << " " << y << "_" << f << "_F+" << Hrate(f, t) * save_F_plus(t, f, g) << endl;
               SS2out << "bodywt " << f << " " << y << " " << s << " " << sx(g) << " " << g << " " << y << "_" << f << "_bodywt" << Wt_Age_t(t, f, g) << endl;
             }
           }
