@@ -2052,7 +2052,7 @@ FUNCTION void Make_FishSelex()
                   << " " << f << " " << Wt_Age_t(tz, f, g) << " #wt_flt_" << f << endl;
       }
     } // end need to do it
-    save_sel_num(t, f, g) = sel_num(s, f, g); //  save sel_num in save_fecundity array for output
-
+    save_sel_num(t, f, g) = sel_num(s, f, g); //  save sel_num for output in age_selex report
+    save_F_plus(t, f, g) = sel_dead_num(s, f, g);  // save for output
   } // end fleet loop for mortality, retention
   } // end Make_FishSelex
