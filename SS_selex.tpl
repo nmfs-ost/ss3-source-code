@@ -1962,7 +1962,7 @@ FUNCTION void Make_FishSelex()
         {
           j = -j;  //  fleet number being mirrored for retention
           k = seltype(j + Nfleet, 2);  //  discard approach for fleet j
-          //  note that retain_a and discmort2_a have already been mirrored earlier in this fxn
+          //  note that retain_a and discmort2_a have already been calculated earlier in this fxn
         }
         switch (k) //  age-retention function
         {
@@ -1978,8 +1978,8 @@ FUNCTION void Make_FishSelex()
           {
             sel_ret_bio(s, f, g) = elem_prod(sel_bio(s, f, g), retain_a(y, f, gg)); //  retained wt-at-age
             sel_ret_num(s, f, g) = elem_prod(sel_num(s, f, g), retain_a(y, f, gg)); //  retained numbers
-            sel_dead_bio(s, f, g) = sel_ret_bio(s, f, g); //  dead wt
-            sel_dead_num(s, f, g) = sel_ret_num(s, f, g); //  dead numbers
+            sel_dead_bio(s, f, g) = elem_prod(Wt_Age_t(tz, f, g), discmort2_a(y, f, gg)); //  dead wt
+            sel_dead_num(s, f, g) = discmort2_a(y, f, gg); //  dead numbers
             break;
           }
           case 2:  // age-based retention and discard mortality, same body wt as retained fish
@@ -1989,7 +1989,6 @@ FUNCTION void Make_FishSelex()
             sel_ret_num(s, f, g) = elem_prod(sel_num(s, f, g), retain_a(y, f, gg)); //  retained numbers
             sel_dead_bio(s, f, g) = elem_prod(Wt_Age_t(tz, f, g), discmort2_a(y, f, gg)); //  dead wt
             sel_dead_num(s, f, g) = discmort2_a(y, f, gg); //  dead numbers
-//            if (y == styr) warning << f << " sel_ret " << sel_ret_bio(s, f, g) << endl << " sel_dead " << sel_dead_bio(s, f, g) << endl;
             break;
           }
           case 3: //  all selected fish are dead; use this for a discard only fleet
