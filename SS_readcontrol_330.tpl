@@ -1615,8 +1615,9 @@
       mgp_type(Ip, Ip + N_growparms - 1) = 2; // growth parms
 
       // check on out of bound Lmin values.  Only check females because males can be offset from females
+      // allow for AFIX < 0 because those models are inputting the age at L=0, which must be negative
 
-     if ( gp == 1 && WTage_rd == 0)
+     if ( gp == 1 && WTage_rd == 0 && AFIX >= 0.0)
       {
         if (MGparm_1(Ip,1) < len_bins(1))
         {
