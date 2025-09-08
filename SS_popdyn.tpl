@@ -130,7 +130,8 @@ FUNCTION void get_initial_conditions()
         Make_AgeLength_Key(s, subseas);
       }
     }
-
+    if ( endyr > styr )
+    {
     //  SS_Label_Info_16.2.4.3  #propagate Ave_Size from early years forward until first year that has time-vary growth
     k = styr + 1;
     do
@@ -146,6 +147,7 @@ FUNCTION void get_initial_conditions()
     {
       t = styr + (k - styr) * nseas;
       Ave_Size(t, 1) = Ave_Size(t - nseas, 1); // prep for time-vary next yr
+    }
     }
   }
   if (MG_active(3) > 0)
