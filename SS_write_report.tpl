@@ -1800,6 +1800,7 @@ FUNCTION void write_bigoutput()
     var /= (n_rmse(1) + 1.0e-09);
 
     dvariable steepness = SRparm(2);
+  /*
     SS2out << endl
            << pick_report_name(19);
     SS2out << "  Function: " << SR_fxn << "  RecDev_method: " << do_recdev << "   sum_recdev: " << sum_recdev << endl
@@ -1910,7 +1911,8 @@ FUNCTION void write_bigoutput()
       SS2out << endl;
     }
 
-    SS2out << endl << "#Expanded_Spawn_Recr_report" << endl << pick_report_name(19) << endl;
+  */
+    SS2out << endl << pick_report_name(19) << endl;
     SS2out << SR_fxn << " # SR_Function" << endl;
     SS2out << N_SRparm2 << " # N_SRparms" << endl;
     SS2out << "#" << endl << "#_SRparm  parm_label value phase TV_year" << endl;
@@ -3164,8 +3166,10 @@ FUNCTION void write_bigoutput()
                  selmax(f, 2) = float(s);}  //  save y.s
 
               if (fleet_type(f) <= 2)
+              {
                 SS2out << "F " << f << " " << y << " " << s << " " << sx(g) << " " << g << " " << y << "_" << f << "_F" << Hrate(f, t) * save_sel_num(t, f, g) << endl;
                 SS2out << "Fdead " << f << " " << y << " " << s << " " << sx(g) << " " << g << " " << y << "_" << f << "_Fdead" << Hrate(f, t) * save_F_dead(t, f, g) << endl;
+              }
               SS2out << "bodywt " << f << " " << y << " " << s << " " << sx(g) << " " << g << " " << y << "_" << f << "_bodywt" << Wt_Age_t(t, f, g) << endl;
             }
           }
