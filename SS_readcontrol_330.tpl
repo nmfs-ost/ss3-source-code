@@ -1614,10 +1614,13 @@
       Ip += N_natMparms;
       mgp_type(Ip, Ip + N_growparms - 1) = 2; // growth parms
 
-      // check on out of bound Lmin values.  Only check females because males can be offset from females
-      // allow for AFIX < 0 because those models are inputting the age at L=0, which must be negative
+      // check on out of bound Lmin values.  Only check females because male parameter can be offset from females
+      // bypass for AFIX <= 0 because those models are inputting the age at L=0, commonly termed t0
+      // note that AFIX is age post-settlement
+      // if AFIX is > 0, then fish settle at age 0.0 at length = len_bins(1), then grow linearly until reaching Lmin at age (post-settlement) = AFIX
+      // keeping LMIN >= len_bins(1) prevents shrinkage during that linear growth stanza
 
-     if ( gp == 1 && WTage_rd == 0 && AFIX >= 0.0)
+     if ( gp == 1 && WTage_rd == 0 && AFIX > 0.0)  // apply test
       {
         if (MGparm_1(Ip,1) < len_bins(1))
         {
