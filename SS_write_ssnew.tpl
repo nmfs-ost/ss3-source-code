@@ -1645,7 +1645,11 @@ FUNCTION void write_nucontrol()
   NuFore << HarvestPolicy << " # Control rule method (0: none; 1: ramp does catch=f(SSB), buffer on F; 2: ramp does F=f(SSB), buffer on F; 3: ramp does catch=f(SSB), buffer on catch; 4: ramp does F=f(SSB), buffer on catch) " << endl;
   NuFore << "# values for top, bottom and buffer required, but not used when Policy=0" << endl;
   NuFore << H4010_top_rd << " # Control rule inflection for constant F (as frac of HCR_anchor, see below); must be > control rule cutoff" << endl;
-  NuFore << H4010_bot << " # Control rule cutoff for no F (as frac of HCR_anchor, e.g. 0.10) " << endl;
+  NuFore << H4010_bot_rd << " # Control rule cutoff for no F (as frac of HCR_anchor, e.g. 0.10); negative value to also invoke read of protection level " << endl;
+  if (H4010_bot_rd < 0)
+  { NuFore << H4010_prot << " # AK protection level:  control rule level below which F goes to 0.0001" << endl;}
+  else
+  { NuFore << " # placeholder for AK protection level:  control rule level below which F goes to 0.0001" << endl;}
   NuFore << H4010_scale_rd << " # Buffer:  enter Control rule target as fraction of Flimit (e.g. 0.75), negative value invokes list of [year, scalar]. -year fills from year to YrMax " << endl;
   NuFore << "# Also see HCR_anchor below to use virgin vs benchmark SSB or Bmsy as basis for inflection and cutoff" << endl;
   if (H4010_scale_rd < 0)
