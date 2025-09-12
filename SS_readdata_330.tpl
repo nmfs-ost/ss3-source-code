@@ -4029,7 +4029,9 @@
   int Rebuild_Yinit;
   int HarvestPolicy; // 0=none; 1=west coast adjust catch; 2=AK to adjust F
   number H4010_top_rd;
+  number H4010_bot_rd;
   number H4010_bot;
+  number H4010_prot;
   number H4010_scale;
   number H4010_scale_rd;
   int Do_Impl_Error;
@@ -4283,8 +4285,17 @@
     echoinput << HarvestPolicy << "  # echoed HarvestPolicy " << endl;
     *(ad_comm::global_datafile) >> H4010_top_rd; //  as fraction of HCR_anchor; use -1 as legacy approach to set H4010_top to Bmsy/SSB_unf
     echoinput << H4010_top_rd << "   # echoed control rule inflection" << endl;
-    *(ad_comm::global_datafile) >> H4010_bot;
-    echoinput << H4010_bot << "   # echoed control rule cutoff " << endl;
+    *(ad_comm::global_datafile) >> H4010_bot_rd;
+    echoinput << H4010_bot_rd << "   # echoed control rule cutoff " << endl;
+    H4010_bot = H4010_bot_rd;
+    H4010_prot = -1000;
+    if (H4010_bot < 0)
+     {
+      H4010_bot *= -1;
+      echoinput << H4010_bot << "   # echoed control rule cutoff " << endl;
+      *(ad_comm::global_datafile) >> H4010_prot;
+      echoinput << H4010_prot << "   # echoed protection level cutoff " << endl;
+     }
     *(ad_comm::global_datafile) >> H4010_scale_rd;
     H4010_scale = H4010_scale_rd;
     echoinput << H4010_scale << "   # echoed control rule scalar " << endl;
