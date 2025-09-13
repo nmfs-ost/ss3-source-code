@@ -1285,6 +1285,7 @@
 
   //  SS_Label_Info_6.8.3 #Call fxn get_growth2() to calculate size-at-age
   get_growth2(styr); //   in preliminary calcs
+  get_growth3(styr, t_base + 1, 1, 1); //  this will apply linear below AFIX
   gp = 0;
   for (gg = 1; gg <= gender; gg++)
     for (int GPat = 1; GPat <= N_GP; GPat++)
@@ -1295,17 +1296,26 @@
       {
         g += N_platoon;
         echoinput << "sex: " << gg << "; Gpat: " << GPat << " settle: " << settle << "; L-at-Amin: " << Lmin(gp) << "; L at max age: " << Ave_Size(styr, 1, g, nages) << endl;
-        if (len_bins(1) > Lmin(gp))
-        {
-          warnstream << "Minimum pop size bin:_" << len_bins(1) << "; is > L at Amin for sex: " << gg
-                  << "; Gpat: " << GPat << "; L= " << Lmin(gp);
-          write_message (WARN, 0);
-        }
         if (Ave_Size(styr, 1, g, nages) > 0.95 * len_bins(nlength))
         {
           warnstream << "Maximum pop size bin:_" << len_bins(nlength) << "; is within 5% of L at maxage for sex: " << gg
                   << "; Gpat: " << GPat << " settle: " << settle << "; L= " << Ave_Size(styr, 1, g, nages);
           write_message (WARN, 0);
+        }
+        for (a = 0; a <= nages; a++)
+        {
+          if (Ave_Size(styr, 1, g, a) < 0.0 && a > AFIX)
+          {
+            warnstream << "Negative Length calculated for: " << "sex: " << gg << "; Gpat: " << GPat << " settle: " << settle
+             << " age: " << a << " Len@age = " << Ave_Size(styr, 1, g, a);
+            write_message (FATAL, 0);
+          }
+          if (a > 0 && Ave_Size(styr, 1, g, a) < Ave_Size(styr, 1, g, a-1))
+          {
+            warnstream << "Decreasing Len@age calculated for sex: " << gg << "; Gpat: " << GPat << " settle: " << settle
+            << " at age: " << a << " Len@age = " << Ave_Size(styr, 1, g, a) << " < " << Ave_Size(styr, 1, g, a - 1);
+            write_message (WARN, 0);
+          }
         }
       }
     }

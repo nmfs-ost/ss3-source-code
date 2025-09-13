@@ -1614,20 +1614,23 @@
       Ip += N_natMparms;
       mgp_type(Ip, Ip + N_growparms - 1) = 2; // growth parms
 
-      // check on out of bound Lmin values.  Only check females because males can be offset from females
-      // allow for AFIX < 0 because those models are inputting the age at L=0, which must be negative
+      // check on out of bound Lmin values.  Only check females because male parameter can be offset from females
+      // bypass for AFIX <= 0 because those models are inputting the age at L=0, commonly termed t0
+      // note that AFIX is age post-settlement
+      // if AFIX is > 0, then fish settle at age 0.0 at length = len_bins(1), then grow linearly until reaching Lmin at age (post-settlement) = AFIX
+      // keeping LMIN >= len_bins(1) prevents shrinkage during that linear growth stanza
 
-     if ( gp == 1 && WTage_rd == 0 && AFIX >= 0.0)
+     if ( gp == 1 && WTage_rd == 0 && AFIX > 0.0)  // apply test
       {
         if (MGparm_1(Ip,1) < len_bins(1))
         {
-          warnstream << "parm min for Lmin: " << MGparm_1(Ip,1) << " cannot be less than population min length bin " << len_bins(1);
-          write_message (FATAL, 0); // EXIT!
+          warnstream << "parm min for Lmin: " << MGparm_1(Ip,1) << " should not be less than population min length bin " << len_bins(1);
+          write_message (WARN, 0); // EXIT!
         }
         if (MGparm_1(Ip,3) < len_bins(1))
         {
-          warnstream << "parm init value for Lmin: " << MGparm_1(Ip,3) << " cannot be less than population min length bin " << len_bins(1);
-          write_message (FATAL, 0); // EXIT!
+          warnstream << "parm init value for Lmin: " << MGparm_1(Ip,3) << " should not be less than population min length bin " << len_bins(1);
+          write_message (WARN, 0); // EXIT!
         }
       }
       //  check on estimation of variance parameters for CV_young and CV_old
