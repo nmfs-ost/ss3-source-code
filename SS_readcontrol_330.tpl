@@ -1624,13 +1624,13 @@
       {
         if (MGparm_1(Ip,1) < len_bins(1))
         {
-          warnstream << "parm min for Lmin: " << MGparm_1(Ip,1) << " cannot be less than population min length bin " << len_bins(1);
-          write_message (FATAL, 0); // EXIT!
+          warnstream << "parm min for Lmin: " << MGparm_1(Ip,1) << " should not be less than population min length bin " << len_bins(1);
+          write_message (WARN, 0); // EXIT!
         }
         if (MGparm_1(Ip,3) < len_bins(1))
         {
-          warnstream << "parm init value for Lmin: " << MGparm_1(Ip,3) << " cannot be less than population min length bin " << len_bins(1);
-          write_message (FATAL, 0); // EXIT!
+          warnstream << "parm init value for Lmin: " << MGparm_1(Ip,3) << " should not be less than population min length bin " << len_bins(1);
+          write_message (WARN, 0); // EXIT!
         }
       }
       //  check on estimation of variance parameters for CV_young and CV_old
