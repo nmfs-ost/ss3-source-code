@@ -1304,7 +1304,7 @@
         }
         for (a = 0; a <= nages; a++)
         {
-          if (Ave_Size(styr, 1, g, a) < 0.0 && a > AFIX)
+          if (Ave_Size(styr, 1, g, a) < 0.0)
           {
             warnstream << "Negative Length calculated for: " << "sex: " << gg << "; Gpat: " << GPat << " settle: " << settle
              << " age: " << a << " Len@age = " << Ave_Size(styr, 1, g, a);
