@@ -3682,6 +3682,40 @@ FUNCTION void write_bigoutput()
       SS2out << save_G_parm(g)(1, 2) << " " << sx(save_G_parm(g, 3)) << " " << save_G_parm(g)(3, 22) << endl;
     }
   }
+
+  gp = 0;
+  for (gg = 1; gg <= gender; gg++)
+    for (int GPat = 1; GPat <= N_GP; GPat++)
+    {
+      gp++;
+      g = g_Start(gp); //  base platoon
+      for (settle = 1; settle <= N_settle_timings; settle++)
+      {
+        g += N_platoon;
+        if (Ave_Size(styr, 1, g, nages) > 0.95 * len_bins(nlength))
+        {
+          warnstream << "Maximum pop size bin:_" << len_bins(nlength) << "; is within 5% of L at maxage for sex: " << gg
+                  << "; Gpat: " << GPat << " settle: " << settle << "; L= " << Ave_Size(styr, 1, g, nages);
+          write_message (WARN, 0);
+        }
+        for (a = 0; a <= nages; a++)
+        {
+          if (Ave_Size(styr, 1, g, a) < 0.0)
+          {
+            warnstream << "Negative Length calculated for: " << "sex: " << gg << "; Gpat: " << GPat << " settle: " << settle
+             << " age: " << a << " Len@age = " << Ave_Size(styr, 1, g, a);
+            write_message (WARN, 0);
+          }
+          if (a > 0 && Ave_Size(styr, 1, g, a) < Ave_Size(styr, 1, g, a-1))
+          {
+            warnstream << "Decreasing Len@age calculated for sex: " << gg << "; Gpat: " << GPat << " settle: " << settle
+            << " at age: " << a << " Len@age = " << Ave_Size(styr, 1, g, a) << " < " << Ave_Size(styr, 1, g, a - 1);
+            write_message (WARN, 0);
+          }
+        }
+      }
+    }
+
   // REPORT_KEYWORD 46 SEASONAL_BIOLOGY
   if (pick_report_use(46) == "Y" && MGparm_doseas > 0)
   {
