@@ -917,15 +917,15 @@
     Linf_decay = tempvec5(3);
     if (Grow_type == 8 && AFIX2 != 999)
     {
-      warnstream << "AFIX2 set to 999 for grow_type==8 because only Linfinity allowed for growth cessation ";
+      warnstream << "AFIX2 (Age post-settlement for L2, aka Amax) set to 999 for grow_type==8 because only Linfinity allowed for growth cessation ";
       write_message (ADJUST, 0);
       AFIX2 = 999.;
     }
     if (Grow_type == 8 && AFIX != 0.0)
     {
-      warnstream << "AFIX set to 0.0 for grow_type==8;  growth cessation ";
+      warnstream << "AFIX (Age post-settlement for L1, aka Amin) set to 0.0 for grow_type==8;  growth cessation ";
       write_message (ADJUST, 0);
-      AFIX2 = 0.0;
+      AFIX = 0.0;
     }
     //  tempvec(4) is a placeholder
   }
