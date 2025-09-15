@@ -2836,15 +2836,13 @@ FUNCTION void Get_Forecast()
                       (1.0) * (1.0 - join2); // scale right side
                   break;
                 }
-              //AEP AEP Add here (protection level)
+              }
+              // protection level; contributed by AEP
               if (H4010_prot > 0)
               {
-                join1 = 1.0 / (1. + mfexp(20.0 * (SSB_current - H4010_prot * temp)));
-                //cout << ABC_buffer(y) << endl;
+                join1 = 1.0 / (1. + mfexp(20.0 * (SSB_current - H4010_prot * HCR_anchor)));
                 ABC_buffer(y) = 0.0001*join1 + (1.0 - 0.0001)*(1.0 - join1)*ABC_buffer(y);
-                //cout  << SSB_current << " " << (SSB_current - H4010_prot * temp) << " " << SSB_current/temp << " " << join1 << " " << ABC_buffer(y) << endl;
               }
-            }
           } // end calc of ABC buffer
           else
           { //  ABC buffer remains at previously calculated value
