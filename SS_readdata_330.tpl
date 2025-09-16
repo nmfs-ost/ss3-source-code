@@ -2445,8 +2445,8 @@
   imatrix  mkt_a(1,Nfleet,1,Nobs_a);
   3darray  Lbin_filter(1,Nfleet,1,Nobs_a,1,nlength2);
   imatrix  use_Lbin_filter(1,Nfleet,1,Nobs_a);
-  imatrix  Lbin_lo(1,Nfleet,1,Nobs_a);
-  imatrix  Lbin_hi(1,Nfleet,1,Nobs_a);
+  matrix  Lbin_lo(1,Nfleet,1,Nobs_a);
+  matrix  Lbin_hi(1,Nfleet,1,Nobs_a);
   3darray tails_a(1,Nfleet,1,Nobs_a,1,4);   // min-max bin for females; min-max bin for males
   3darray header_a(1,Nfleet,1,Nobs_a,1,9);
   3darray header_a_rd(1,Nfleet,1,Nobs_a,2,3);
