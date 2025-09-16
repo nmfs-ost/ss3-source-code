@@ -15,7 +15,7 @@
 
 <!-- Link related issue(s) using a bulleted list. -->
 <!-- Remove the following bullet if no issues are linked to this PR. -->
-* Resolves issue #
+* Resolves #
 
 ## What tests have been done? 
 ### Where are the relevant files?
