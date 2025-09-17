@@ -3692,6 +3692,8 @@ FUNCTION void write_bigoutput()
       for (settle = 1; settle <= N_settle_timings; settle++)
       {
         g += N_platoon;
+        if (use_morph(g) > 0)
+        {
         if (Ave_Size(styr, 1, g, nages) > 0.95 * len_bins(nlength))
         {
           warnstream << "Maximum pop size bin:_" << len_bins(nlength) << "; is within 5% of L at maxage for sex: " << gg
@@ -3713,6 +3715,7 @@ FUNCTION void write_bigoutput()
             write_message (WARN, 0);
           }
         }
+      }
       }
     }
 

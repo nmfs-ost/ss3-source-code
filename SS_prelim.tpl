@@ -1295,6 +1295,8 @@
       for (settle = 1; settle <= N_settle_timings; settle++)
       {
         g += N_platoon;
+        if (use_morph(g) > 0)
+        {
         echoinput << "sex: " << gg << "; Gpat: " << GPat << " settle: " << settle << "; L-at-Amin: " << Lmin(gp) << "; L at max age: " << Ave_Size(styr, 1, g, nages) << endl;
         if (Ave_Size(styr, 1, g, nages) > 0.95 * len_bins(nlength))
         {
@@ -1317,6 +1319,7 @@
             write_message (WARN, 0);
           }
         }
+      }
       }
     }
 
