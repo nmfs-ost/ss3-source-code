@@ -1344,7 +1344,9 @@ FUNCTION void write_nudata()
         for (iobs = 1; iobs <= SzFreq_totobs; iobs++)
         {
           f = SzFreq_obs1(iobs, 1);  //  sizefreq method
+          // maximum sample size for bootstrapping is 50000
           double Nsamp_dat = 50000;
+          // set sample size
           if (SzFreq_obs1(iobs, 7) < Nsamp_dat)
           Nsamp_dat = SzFreq_obs1(iobs, 7);
           SzFreq_newdat.initialize();
@@ -1376,10 +1378,12 @@ FUNCTION void write_nudata()
                   break;
                 }
               }
-
+          // get probabilities for this observation
           temp_probs3(1, SzFreq_Setup2(iobs)) = value(SzFreq_exp(iobs));
+          // generate a vector of multinomial random variables (bin numbers)
           temp_mult.fill_multinomial(radm, temp_probs3(1, SzFreq_Setup2(iobs))); // create multinomial draws with prob = expected values
-          for (compindex = 1; compindex <= j; compindex++) // cumulate the multinomial draws by index in the new data
+          // increment the new data vector by bin number
+          for (compindex = 1; compindex <= Nsamp_dat; compindex++) // cumulate the multinomial draws by index in the new data
           {
             SzFreq_newdat(temp_mult(compindex)) += 1.0;
           }
