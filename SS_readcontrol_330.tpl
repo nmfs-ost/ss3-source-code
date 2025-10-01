@@ -2181,7 +2181,10 @@
           }
           else if(SRflag == 1)
           {
-            timevary_SRparm(y) = 2;  //  flag to carry forward current SRR info
+            if (y > styr)
+            {timevary_SRparm(y) = 2;}  //  flag to carry forward current SRR info
+            else
+            {timevary_SRparm(y) = 1;}  //  keep at 1
           }
         }
       }
@@ -2195,6 +2198,7 @@
     N_SRparm3 += (timevary_parm_SR_last - timevary_SRparm_first + 1);
     echoinput << " SR timevary_parm_cnt start and end " << timevary_SRparm_first << " " << timevary_parm_SR_last << endl;
     echoinput << "link to timevary parms:  " << SRparm_timevary << endl;
+    echoinput << "timevary SRparms:  " << timevary_SRparm << endl;
   }
   echoinput << "SR_Npar and N_SRparm2 and N_SRparm3:  " << N_SRparm(SR_fxn) << " " << N_SRparm2 << " " << N_SRparm3 << endl;
   // clang-format off
