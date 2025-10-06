@@ -5,9 +5,9 @@ name: build-ss3
 
 on:
     push:
-      paths:
-      - '**.tpl'
-      - '**.sh'
+      # paths:
+      # - '**.tpl'
+      # - '**.sh'
     pull_request:
       paths:
       - '**.tpl'
