@@ -1,5 +1,5 @@
 # Builds admb from source and then builds the stock synthesis executables from source for testing and distribution.
-# for macOS 13 (couldn't get this to run on macOS 12), macOS latest (arm64 architecture), linux, Windows
+# for macOS x86_64, macOS latest (arm64 architecture), linux, Windows
 # Runs on a scheduled basis weekly to ensure that this workflow will work IF the build-ss3.yml workflow stops
 # working due to issues with the admb docker image.
 name: build-admb-and-ss3-from-source
@@ -18,7 +18,7 @@ jobs:
         config:
           - {os: windows-latest}
           - {os: macos-latest}
-          - {os: macos-13}
+          - {os: macos-15-intel}
           - {os: ubuntu-latest}
     # Limit run time to 90 min to avoid wasting action minutes.
     # Compiling admb and ss3 on all operating systems takes ~30 min
@@ -29,11 +29,11 @@ jobs:
       - uses: actions/checkout@v5
 
       - name: Update Homebrew
-        if: matrix.config.os == 'macos-13'
+        if: matrix.config.os == 'macos-15-intel'
         run: brew update
 
       - name: Install qpdf
-        if: matrix.config.os == 'macos-13'
+        if: matrix.config.os == 'macos-15-intel'
         run: brew install qpdf
     
     # Set up R
@@ -69,27 +69,27 @@ jobs:
 
     # Build ADMB for macOS
       - name: Clean, macOS
-        if: matrix.config.os == 'macos-latest' || matrix.config.os == 'macos-13'
+        if: matrix.config.os == 'macos-latest' || matrix.config.os == 'macos-15-intel'
         run: cd admb && make clean
 
       - name: See where admb is, macOS
-        if: matrix.config.os == 'macos-latest' || matrix.config.os == 'macos-13'
+        if: matrix.config.os == 'macos-latest' || matrix.config.os == 'macos-15-intel'
         run: |
           ls
           cd admb && ls
 
       - name: Compile admb, macOS
-        if: matrix.config.os == 'macos-latest' || matrix.config.os == 'macos-13'
+        if: matrix.config.os == 'macos-latest' || matrix.config.os == 'macos-15-intel'
         run: |
           cd admb && make -j 4
 
       # - name: See where admb is, mac
-      #   if: matrix.config.os == 'macos-latest' || matrix.config.os == 'macos-13'
+      #   if: matrix.config.os == 'macos-latest' || matrix.config.os == 'macos-15-intel'
       #   run: |
       #     cd admb && ls -l
 
       - name: Change permissions of admb and put in path, macOS
-        if: matrix.config.os == 'macos-latest' || matrix.config.os == 'macos-13'
+        if: matrix.config.os == 'macos-latest' || matrix.config.os == 'macos-15-intel'
         run: |
           sudo mv admb /usr/local/bin
           sudo chmod 755 /usr/local/bin/admb
@@ -140,7 +140,7 @@ jobs:
 
       - name: Get the last tag on unix (macOS and linux)
         id: get-latest-tag-unix
-        if: matrix.config.os == 'macos-latest' || matrix.config.os == 'macos-13' || matrix.config.os == 'ubuntu-latest'
+        if: matrix.config.os == 'macos-latest' || matrix.config.os == 'macos-15-intel' || matrix.config.os == 'ubuntu-latest'
         run: |
           git tag
           latest_tag=$(git describe --abbrev=0 --tags)
@@ -152,7 +152,7 @@ jobs:
 
       - name: Pull the last tag value to use in the Rscript on unix (macOS and linux)
         id: get-version-unix
-        if: matrix.config.os == 'macos-latest' || matrix.config.os == 'macos-13' || matrix.config.os == 'ubuntu-latest'
+        if: matrix.config.os == 'macos-latest' || matrix.config.os == 'macos-15-intel' || matrix.config.os == 'ubuntu-latest'
         run: |
           echo "${{ steps.get-latest-tag-unix.outputs.tag }}" > .github/last_tag.txt
           echo "${{ steps.get-latest-tag-unix.outputs.tag_commit }}" > .github/last_tag_commit.txt
@@ -244,7 +244,7 @@ jobs:
 
     # Build SS3 for macOS
       - name: Build stock synthesis for macOS
-        if: matrix.config.os == 'macos-latest' || matrix.config.os == 'macos-13'
+        if: matrix.config.os == 'macos-latest' || matrix.config.os == 'macos-15-intel'
         run: |
           rm -rf SS330
           rm -rf ss3_osx.tar
@@ -254,13 +254,13 @@ jobs:
           /bin/bash ./Make_SS_330_new.sh -b SS330 -o
 
       - name: Verify binary on macOS
-        if: matrix.config.os == 'macos-latest' || matrix.config.os == 'macos-13'
+        if: matrix.config.os == 'macos-latest' || matrix.config.os == 'macos-15-intel'
         run: |
           shasum -a 256 SS330/ss3
           shasum -a 256 SS330/ss3_opt
           
       - name: Delete unnecessary files and change exe names on macOS
-        if: matrix.config.os == 'macos-latest' || matrix.config.os == 'macos-13'
+        if: matrix.config.os == 'macos-latest' || matrix.config.os == 'macos-15-intel'
         run: |
           cd SS330
           rm *.obj *.htp *.cpp ss3_opt.tpl

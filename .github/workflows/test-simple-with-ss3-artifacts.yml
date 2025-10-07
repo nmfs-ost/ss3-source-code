@@ -28,13 +28,13 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-latest, macos-13, macos-latest, windows-latest]
+        os: [ubuntu-latest, macos-15-intel, macos-latest, windows-latest]
         include:
           - os: ubuntu-latest
             artifact_name: ss3-ubuntu-latest
             exe: ss3_linux
-          - os: macos-13
-            artifact_name: ss3-macos-13
+          - os: macos-15-intel
+            artifact_name: ss3-macos-15-intel
             exe: ss3_osx
           - os: macos-latest
             artifact_name: ss3-macos-latest
