@@ -1,13 +1,13 @@
 # Builds the stock synthesis executables for testing and distribution using the admb docker image.
-# for macOS 12, and macos-14 (arm64 architecture), linux, Windows
+# for macOS x86_64, and macos-latest, linux, Windows
 # Runs on every push and PR (even draft PRs)
 name: build-ss3
 
 on:
     push:
-      # paths:
-      # - '**.tpl'
-      # - '**.sh'
+      paths:
+      - '**.tpl'
+      - '**.sh'
     pull_request:
       paths:
       - '**.tpl'

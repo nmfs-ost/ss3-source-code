@@ -1,12 +1,11 @@
 # Builds admb from source and then builds the stock synthesis executables from source for testing and distribution.
-# for macOS 13 (couldn't get this to run on macOS 12), macOS latest (arm64 architecture), linux, Windows
+# for macOS x86_64, macOS latest (arm64 architecture), linux, Windows
 # Runs on a scheduled basis weekly to ensure that this workflow will work IF the build-ss3.yml workflow stops
 # working due to issues with the admb docker image.
 name: build-admb-and-ss3-from-source
 
 on:
     workflow_dispatch:
-    push:
     schedule:
       - cron: '0 15 * * 2' # every Tuesday at 3pm UTC (= 1 0am EST or 11am EDT Eastern time)
 jobs:
