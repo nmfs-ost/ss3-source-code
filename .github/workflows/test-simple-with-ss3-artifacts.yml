@@ -45,7 +45,7 @@ jobs:
 
     steps:
       - name: Checkout SS3 Test Models
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
         with:
           repository: nmfs-ost/ss3-test-models
           path: ss3-test-models
