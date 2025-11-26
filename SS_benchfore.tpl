@@ -2131,7 +2131,6 @@ FUNCTION void Get_Forecast()
     {HCR_anchor = SSB_unf;}
     else if (Fcast_Loop_Control(5) == 3)
     {HCR_anchor = Bmsy;}  // so H4010_top_rd should be 1.0;
-    echoinput << "HCR_anchor " << Fcast_Loop_Control(5) << HCR_anchor << endl;
 
     if (H4010_top_rd < 0.0)  // legacy approach.  This has already been converted to new approach in readdata
     {
