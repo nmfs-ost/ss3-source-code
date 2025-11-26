@@ -2124,6 +2124,36 @@ FUNCTION void Get_Forecast()
   {
     Fcast_Fmult = 0.0;
   }
+
+    if (Fcast_Loop_Control(5) == 1)
+    {HCR_anchor = SSB_virgin;}
+    else if (Fcast_Loop_Control(5) == 2)
+    {HCR_anchor = SSB_unf;}
+    else if (Fcast_Loop_Control(5) == 3)
+    {HCR_anchor = Bmsy;}  // so H4010_top_rd should be 1.0;
+    echoinput << "HCR_anchor " << Fcast_Loop_Control(5) << HCR_anchor << endl;
+
+    if (H4010_top_rd < 0.0)  // legacy approach.  This has already been converted to new approach in readdata
+    {
+      H4010_top = Bmsy / HCR_anchor;  // convert to fraction of anchor
+      if (H4010_bot > 0.25)
+      {
+        warnstream << "control rule cutoff is large (" << H4010_bot << "); so may not be < calculated Bmsy/SSB_unf (" << H4010_top << ")";
+        write_message (WARN, 0);
+      }
+    }
+    else
+    {
+      H4010_top = H4010_top_rd;
+    }
+    if (Fcast_Loop_Control(5) == 3 && H4010_top_rd != 1.0)
+    {  
+      warnstream << "HCR_anchor is BMSY; so H4010_top normally is 1.0; are you sure you want:  " << H4010_top;
+      write_message (WARN, 0);
+    }
+
+    Mgmt_quant(20) = H4010_top * HCR_anchor;
+
   if (show_MSY == 1) //  write more headers
   {
     report5 << "Annual_Forecast_Fmult: " << Fcast_Fmult << endl;
@@ -2248,33 +2278,6 @@ FUNCTION void Get_Forecast()
       }
     }
 
-    if (Fcast_Loop_Control(5) == 1)
-    {HCR_anchor = SSB_virgin;}
-    else if (Fcast_Loop_Control(5) == 2)
-    {HCR_anchor = SSB_unf;}
-    else if (Fcast_Loop_Control(5) == 3)
-    {HCR_anchor = Bmsy;}  // so H4010_top_rd should be 1.0;
-
-    if (H4010_top_rd < 0.0)  // legacy approach.  This has already been converted to new approach in readdata
-    {
-      H4010_top = Bmsy / HCR_anchor;  // convert to fraction of anchor
-      if (H4010_bot > 0.25)
-      {
-        warnstream << "control rule cutoff is large (" << H4010_bot << "); so may not be < calculated Bmsy/SSB_unf (" << H4010_top << ")";
-        write_message (WARN, 0);
-      }
-    }
-    else
-    {
-      H4010_top = H4010_top_rd;
-    }
-    if (Fcast_Loop_Control(5) == 3 && H4010_top_rd != 1.0)
-    {  
-      warnstream << "HCR_anchor is BMSY; so H4010_top normally is 1.0; are you sure you want:  " << H4010_top;
-      write_message (WARN, 0);
-    }
-
-    Mgmt_quant(20) = H4010_top * HCR_anchor;
     report5 << "#" << endl;
     report5 << "N_forecast_yrs: " << N_Fcast_Yrs << endl;
     report5 << "OY_Control_Rule:  Inflection: " << H4010_top << " Intercept: " << H4010_bot << " Scale: " << H4010_scale_vec(endyr + 1) << endl
