@@ -107,7 +107,7 @@ jobs:
           fi
 
       - name: Archive Simple model output
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v6
         with:
           name: simple-model-output-${{ matrix.os }}
           path: ss3-test-models/models/Simple/
