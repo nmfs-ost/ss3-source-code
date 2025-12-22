@@ -1908,7 +1908,7 @@ FUNCTION void write_nucontrol()
   {
     report4 << AFIX << " #_Age(post-settlement) for L1 (aka Amin); first growth parameter is size at this age; linear growth below this" << endl
             << AFIX2 << " #_Age(post-settlement) for L2 (aka Amax); 999 to treat as Linf" << endl
-            << Linf_decay << " #_exponential decay for growth above maxage (value should approx initial Z; -999 replicates 3.24; -998 to not allow growth above maxage)" << endl;
+            << Linf_decay << " #_exponential decay of numbers for calc of size in plus group in the initial year (value should approx initial Z; -999 replicates 3.24; -998 to not calc growth above maxage)" << endl;
     report4 << "0  #_placeholder for future growth feature" << endl;
     if (Grow_type >= 3 && Grow_type <= 5)
     {
