@@ -585,7 +585,7 @@ FUNCTION void get_growth2(const int y)
             else
               add_age = 0; //      advance age or not
             // growth to next season
-            // following line incorrectly adjusted gor season duration
+            // following line incorrectly adjusted for season duration
             VBK_by_seas = (mfexp(VBK_work * VBK_seas(s)) - 1.0);  // for use inside the growth equation
             if (do_once == 1) echoinput<<"VBK-by-seas: "<<VBK_work * VBK_seas(s) << " VBK_seas: " << VBK_seas << endl;
             //    warning<<t<<" ave_size_grow2_start "<<Ave_Size(t,1,1)(0,6)<<endl;
