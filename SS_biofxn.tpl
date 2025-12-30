@@ -244,7 +244,7 @@ FUNCTION void get_growth2(const int y)
   #ifdef DO_ONCE
   {
     if (do_once == 1)
-      echoinput << "GROWTH,  yr= " << y << endl;
+      echoinput << "GROWTH2 by season in year " << y << endl;
   }
   #endif
   for (gg = 1; gg <= gender; gg++)
@@ -270,7 +270,7 @@ FUNCTION void get_growth2(const int y)
           VBK(gp) = -mgp_adj(Ip + 2); // because always used as negative; assigns to all ages for which VBK is defined
         }
         L_inf(gp) = Lmax_temp(gp);  //  because this is the typical assignment
-        VBK_work = VBK(gp, 0); //  will be reset to VBK(gp,nages) if using age-specific K
+        VBK_work = VBK(gp, 0); //  will be reset to VBK(gp,nages) if using age-specific K; note that this inherits the negative sign
 
         //  get specific growth parameters: Richards/Gompertz, growth cessation, and age-specific VBK
         switch (Grow_type)
@@ -382,8 +382,8 @@ FUNCTION void get_growth2(const int y)
             }
             L_inf(gp) = Lmax_temp(gp);
             // t50 is the calculated inflection age for the decline in K
-            // CHECK the sign of VBK in below
-            t50 = log(exp((L_inf(gp) - Lmin(gp)) * Richards(gp) / (-VBK(gp, 0) * VBK_seas(0))) - 1.0) / Richards(gp);
+            // note use of -VBK_work because VBK_work has negative sign
+            t50 = log(exp((L_inf(gp) - Lmin(gp)) * Richards(gp) / (-VBK_work * VBK_seas(0))) - 1.0) / Richards(gp);
             break;
           }
         }
@@ -391,7 +391,6 @@ FUNCTION void get_growth2(const int y)
         if (L_inf_plus == 1)
         {
           L_inf(gp) = Lmin(gp) + (Lmax_temp(gp) - Lmin(gp)) / (1. - mfexp(VBK_work * VBK_seas(0) * (AFIX_delta)));
-          if (do_once == 1) echoinput << "get Linf from Lmax " << Lmax_temp(gp) << " " << L_inf(gp) << endl;
         }
 
         //  SS_Label_Info_16.2.3  #Set up Lmin and Lmax in Start Year
@@ -415,11 +414,11 @@ FUNCTION void get_growth2(const int y)
   #ifdef DO_ONCE
       if (do_once == 1)
       {
-        echoinput << "sex: " << gg << " GP: " << gp << " Lmin: " << Lmin(gp) << " Linf: " << L_inf(gp) << " VBK_work: " << VBK_work << " VBK@age: " << -VBK(gp) << endl;
+        echoinput << "sex: " << gg << " GP: " << gp << " Lmin: " << Lmin(gp) << " L_max: " << Lmax_temp(gp) << " Linf: " << L_inf(gp) << " VBK@age: " << -VBK(gp) << endl;
         if (Grow_type == 2)
           echoinput << "  Richards: " << Richards(gp) << endl;
         if (Grow_type == 8)
-          echoinput << "  Cessation_decay: " << Richards(gp) << endl;
+          echoinput << "t50 for growth cessation: " << t50 << " using decay_rate: " << Richards(gp) << endl;
       }
   #endif
       if (y == styr)
@@ -506,7 +505,7 @@ FUNCTION void get_growth2(const int y)
                 Ave_Size(styr, 1, g)(0, first_grow_age(g)) = Lmin(gp); //assume first_grow_age(g) = 0
                 for (a = first_grow_age(g); a <= nages; a++)
                 {
-                  Ave_Size(styr, 1, g, a) = Lmin(gp) + VBK_work * VBK_seas(0) * ((log(exp(-Richards(gp) * t50) + 1) - log(exp(Richards(gp) * (real_age(g, 1, a) - AFIX - t50)) + 1)) / Richards(gp) + real_age(g, 1, a) - AFIX);
+                  Ave_Size(styr, 1, g, a) = Lmin(gp) + -VBK_work * VBK_seas(0) * ((log(exp(-Richards(gp) * t50) + 1) - log(exp(Richards(gp) * (real_age(g, 1, a) - AFIX - t50)) + 1)) / Richards(gp) + real_age(g, 1, a) - AFIX);
                 } // done ageloop
                 break;
               }
@@ -520,16 +519,12 @@ FUNCTION void get_growth2(const int y)
             //  SS_Label_Info_16.2.4.1.4  #calc approximation to mean size at maxage to account for growth after reaching the maxage (accumulator age)
             // note that seasonal adjustment to VBK is dropped
             current_size = Ave_Size(styr, 1, g, nages);
-            if (Linf_decay > -997.) //  decay rate has been read;  uses same code for Richards and standard
+            if (Linf_decay > -997.) //  decay rate has been read and not using "-999" for the 3.24 approach whih=ch sets decay = -0.2
             {
               temp1 = 1.0;
               temp4 = 1.0;
               temp = current_size;
               temp2 = mfexp(-Linf_decay); //  cannot use natM or Z because growth is calculated first
-  #ifdef DO_ONCE
-              if (do_once == 1)
-                echoinput << " L_inf " << L_inf(gp) << " size@exactly maxage " << current_size << " Linf_decay: " << Linf_decay << endl;
-  #endif
 
               dvariable VBK_temp = (1.0 - mfexp(VBK_work * VBK_seas(0)));
               for (a = nages + 1; a <= 3 * nages; a++)
@@ -557,13 +552,13 @@ FUNCTION void get_growth2(const int y)
               }
               Ave_Size(styr, 1, g, nages) = temp / temp1; //  this is weighted mean size at nages
             }
-            else
+            else  // decay code set to -998 which omits growth in the plus group
             {
               //  no adjustment
             }
   #ifdef DO_ONCE
             if (do_once == 1)
-              echoinput << "  adjusted size at maxage " << Ave_Size(styr, 1, g, nages) << "  using decay of: " << Linf_decay << endl;
+              echoinput << "  adjusted size in plusgroup: " << Ave_Size(styr, 1, g, nages) << "  using decay of: " << Linf_decay << endl;
   #endif
           } //  end initial year calcs
 
@@ -587,12 +582,7 @@ FUNCTION void get_growth2(const int y)
             // growth to next season
             // following line incorrectly adjusted for season duration
             VBK_by_seas = (mfexp(VBK_work * VBK_seas(s)) - 1.0);  // for use inside the growth equation
-            if (do_once == 1)
-            {
-              echoinput << "VBK-by-seas: " << VBK_work * VBK_seas(s)
-                        << " VBK_seas: " << VBK_seas << endl;
-            }
-            //    warning<<t<<" ave_size_grow2_start "<<Ave_Size(t,1,1)(0,6)<<endl;
+
             switch (Grow_type)
             {
               case 1:  // standard von Bertallanfy
@@ -685,26 +675,10 @@ FUNCTION void get_growth2(const int y)
                   // calculate a full year's growth increment, then multiple by seasdur(s)
                   if (a < nages || s < nseas)
                     Ave_Size(t + 1, 1, g, k2) = Ave_Size(t, 1, g, a) +
-                        (VBK_work - (VBK_work / Richards(gp)) * (log(exp(Richards(gp) * (real_age(g, 1, a) + 1 - t50)) + 1) - log(exp(Richards(gp) * (real_age(g, 1, a) - t50)) + 1))) * seasdur(s);
+                        (-VBK_work - (-VBK_work / Richards(gp)) * (log(exp(Richards(gp) * (real_age(g, 1, a) + 1 - t50)) + 1) - log(exp(Richards(gp) * (real_age(g, 1, a) - t50)) + 1))) * seasdur(s);
                   if (a == nages && s == nseas)
                     plusgroupsize = Ave_Size(t, 1, g, nages) +
-                        (VBK_work - (VBK_work / Richards(gp)) * (log(exp(Richards(gp) * (real_age(g, 1, a) + 1 - t50)) + 1) - log(exp(Richards(gp) * (real_age(g, 1, a) - t50)) + 1))) * seasdur(s);
-                  /*
-                  echoinput<<a<<" "<<k2<<" "<<grow_inc<<" lin? "<<lin_grow(g,ALK_idx,a)<<" "<<Cohort_Lmin(gp,y,a)<<endl;
-                  if(lin_grow(g,ALK_idx,a)==-2.0)
-                  {
-                    if((a<nages || s<nseas)) Ave_Size(t+1,1,g,k2) =  Ave_Size(t,1,g,a)+grow_inc*seasdur(s);
-                    if(a==nages && s==nseas) plusgroupsize = Ave_Size(t,1,g,nages)+grow_inc*seasdur(s);
-                  }
-                  else if(lin_grow(g,ALK_idx,a)==-1.0)  // first time point beyond AFIX;  lin_grow will stay at -1 for all remaining subseas of this season
-                  {
-                    Ave_Size(t+1,1,g,k2) = Cohort_Lmin(gp,y,a)+grow_inc*seasdur(s);
-                  }
-                  else  // in linear phase for subseas
-                  {
-                    Ave_Size(t+1,1,g,a) = len_bins(1)+lin_grow(g,ALK_idx,a)*(Cohort_Lmin(gp,y,a)-len_bins(1));
-                  }
-   */
+                        (-VBK_work - (-VBK_work / Richards(gp)) * (log(exp(Richards(gp) * (real_age(g, 1, a) + 1 - t50)) + 1) - log(exp(Richards(gp) * (real_age(g, 1, a) - t50)) + 1))) * seasdur(s);
                 } // done ageloop
                 break;
               }
@@ -758,24 +732,22 @@ FUNCTION void get_growth2(const int y)
             }
 
             //  SS_Label_Info_16.2.4.2.1.2  #after age loop, if(s=nseas) get weighted average for size_at_maxage from carryover fish and fish newly moving into this age
-            //  this code needs to execute every year, so need to move to ss_popdyn.  Positioned here, it is only updated in years in which growth changes
+            //  this code needs to execute every year, so should move to ss_popdyn.  Positioned here, it is only updated in years in which there is time-vary growth
             if (s == nseas)
             {
-              if (y > styr) //  && Linf_decay != -998.)
+              if (y > styr && Linf_decay != -998.)
               {
-
-//  3.24 code
-  #ifdef DO_ONCE
                 if (do_once == 1)
-                  echoinput << "  plus group calc: "
-                            << " N _entering: " << natage(t, 1, g, nages - 1) << " N_inplus: " << natage(t, 1, g, nages) << " size in: " << Ave_Size(t + 1, 1, g, nages) << " old size: " << plusgroupsize << " ";
-  #endif
-                    echoinput << niter << " " << y << "  plus group calc: "
-                            << " N _entering: " << natage(t, 1, g, nages - 1) << " N_inplus: " << natage(t, 1, g, nages) << " size in: " << Ave_Size(t + 1, 1, g, nages) << " old size: " << plusgroupsize << " ";
-              temp = ((natage(t, 1, g, nages - 1) + 0.01) * Ave_Size(t + 1, 1, g, nages) + (natage(t, 1, g, nages) + 0.01) * plusgroupsize) / (natage(t, 1, g, nages - 1) + natage(t, 1, g, nages) + 0.02);
+                  warnstream << "plus group mean size is being updated in years with time-vary growth; can turn this off with Linf_decay = -998";
+                  write_message (NOTE, 0);
+//  3.24 code
+                if (do_once == 1)
+                  echoinput << niter << " " << y << "  plus group calc: "
+                  << " N _entering: " << natage(t, 1, g, nages - 1) << " N_inplus: " << natage(t, 1, g, nages) << " size in: " << Ave_Size(t + 1, 1, g, nages) << " old size: " << plusgroupsize << " ";
+                temp = ((natage(t, 1, g, nages - 1) + 0.01) * Ave_Size(t + 1, 1, g, nages) + (natage(t, 1, g, nages) + 0.01) * plusgroupsize) / (natage(t, 1, g, nages - 1) + natage(t, 1, g, nages) + 0.02);
                 Ave_Size(t + 1, 1, g, nages) = temp;
-                  echoinput << "  final_val " << Ave_Size(t + 1, 1, g, nages) << endl;
-  #ifdef DO_ONCE
+
+                #ifdef DO_ONCE
                 if (do_once == 1 && g == 1)
                   echoinput << "  final_val " << Ave_Size(t + 1, 1, g, nages) << endl;
   #endif
@@ -917,13 +889,13 @@ FUNCTION void get_growth3(const int y, const int t, const int s, const int subse
         case 8: // Cessation
         {
           // t50 is the calculated inflection age for the decline in K
-          dvariable VBK_work = -VBK(gp, 0);
-          t50 = log(exp((L_inf(gp) - Lmin(gp)) * Richards(gp) / (VBK_work)) - 1.0) / Richards(gp);
+          dvariable VBK_temp = -VBK(gp, 0) * VBK_seas(0);
+          t50 = log(exp((L_inf(gp) - Lmin(gp)) * Richards(gp) / VBK_temp) - 1.0) / Richards(gp);
           for (a = 0; a <= nages; a++)
           {
             // calculate a full year's growth increment, then multiple by seasdur(s)
             Ave_Size(t, subseas, g, a) = Ave_Size(t, 1, g, a) +
-                (VBK_work - (VBK_work / Richards(gp)) * (log(exp(Richards(gp) * (real_age(g, ALK_idx, a) + 1 - t50)) + 1) - log(exp(Richards(gp) * (real_age(g, ALK_idx, a) - t50)) + 1))) * subseasdur(s, subseas);
+                (VBK_temp - (VBK_temp / Richards(gp)) * (log(exp(Richards(gp) * (real_age(g, ALK_idx, a) + 1 - t50)) + 1) - log(exp(Richards(gp) * (real_age(g, ALK_idx, a) - t50)) + 1))) * subseasdur(s, subseas);
           } // done ageloop
           break;
         }
@@ -964,6 +936,10 @@ FUNCTION void get_growth3(const int y, const int t, const int s, const int subse
           break;
         }
       } //  done switch
+  #ifdef DO_ONCE
+            if (do_once == 1)
+              echoinput << "  seas.subseas: " << s << "." << subseas <<" g:" << g <<" size:  " << Ave_Size(t, subseas, g)(0, min(6, nages)) << " plusgroup: " << Ave_Size(t + 1, 1, g, nages) << endl;
+  #endif
     } //  end need this platoon
   } //  done platoon
   } //  end  calc size-at-age at a particular subseason
