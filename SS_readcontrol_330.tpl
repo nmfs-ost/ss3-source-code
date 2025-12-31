@@ -1689,6 +1689,7 @@
                                             // stores years to calc non-constant MG parms (1=natmort; 2=growth; 3=wtlen & fec; 4=recr_dist&femfrac; 5=movement; 6=ageerrorkey; 7=catchmult)
   ivector timevary_pass(styr-3,YrMax+1)    //  extracted column
   ivector MG_active(0,7)  // 0=all, 1=M, 2=growth 3=wtlen, 4=recr_dist&femfrac, 5=migration, 6=ageerror, 7=catchmult
+  ivector MG_active_firstyr(0,7)  //  first year in which a MGparm is timevarying
   vector env_data_pass(1,2)  //  holds min-max year with env data
   int  do_densitydependent;
 
@@ -1724,6 +1725,7 @@
   echoinput << "Now read env, block/trend, and dev adjustments to MGparms " << endl;
   timevary_MG.initialize(); // stores years to calc non-constant MG parms (1=natmort; 2=growth; 3=wtlen & fec; 4=recr_dist; 5=movement)
   MG_active.initialize();
+  MG_active_firstyr.initialize();
   CGD_onoff = 0;
   
   timevary_parm_start_MG = 0;
@@ -1829,6 +1831,7 @@
       if (timevary_MG(y, f) > 0)
       {
         MG_active(f) = 1;
+        if (MG_active_firstyr(2) == 0 ) MG_active_firstyr(f) = y;
         timevary_MG(y, 0) = 1; // tracks active status for all MG types
         if(timevary_MG_firstyr == YrMax) timevary_MG_firstyr = y;  // save for reporting in MSY and spawn_recruit output
       }
