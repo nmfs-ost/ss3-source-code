@@ -1319,6 +1319,16 @@
             write_message (WARN, 0);
           }
         }
+        //  check for vulnerability in plusgroup size
+        warning << Ave_Size(styr, 1, g, nages - 1) << " " << 0.99 * Ave_Size(styr, 1, g, nages) << endl;
+        if (Ave_Size(styr, 1, g, nages - 1) < 0.99 * Ave_Size(styr, 1, g, nages))
+        {
+          if ( Linf_decay == -998 && MG_active_firstyr(2) > 0 )
+          {
+            warnstream << "There is greater than 1% growth in plusgroup, timevary growth starts in : " << MG_active_firstyr(2) << " and Linf_decay = -998 disables updating plusgroup size; suggest setting a Linf_decay value like initial Z";
+            write_message (WARN, 0);
+          }
+        }
       }
       }
     }
