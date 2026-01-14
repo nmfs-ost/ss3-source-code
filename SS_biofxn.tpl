@@ -1,7 +1,7 @@
 // SS_Label_file  #9. **SS_biofxn.tpl**
 // SS_Label_file  # * <u>get_MGsetup()</u>  // get parameter values for this year
-// SS_Label_file  # * <u>get_growth1()</u>  // prep growth quantities
-// SS_Label_file  # * <u>get_growth2()</u>  // growth to beginning of each season of upcoming year
+// SS_Label_file  # * <u>get_growth1()</u>  // prep growth quantities that are not time-varying, especially CV_growth
+// SS_Label_file  # * <u>get_growth2()</u>  // growth to beginning of each season or first season of upcoming year
 // SS_Label_file  # * <u>get_growth3()</u>  // growth to particular time point in a season
 // SS_Label_file  # * <u>get_natmort()</u>
 // SS_Label_file  # * <u>get_recr_distribution()</u>
@@ -79,23 +79,24 @@ FUNCTION void get_MGsetup(const int yz)
 FUNCTION void get_growth1()
   {
   //  SS_Label_Info_15.1  #create seasonal effects for growth K, and for wt_len parameters
-  if (MGparm_doseas > 0)
+  // VBK_seas(0) contains sum of season-specific durations, it will equal 1.0 in annual models and seasonal models
+  // except as modified by seasonal K effects.  It will be less than 1.0 in a seasons-as-years model
+
+  if (MGparm_doseas > 0) // there are seasonal effects
   {
     if (MGparm_seas_effects(10) > 0) // for seasonal K
     {
       VBK_seas(0) = 0.0;
       for (s = 1; s <= nseas; s++)
       {
-        VBK_seas(s) = mfexp(MGparm(MGparm_seas_effects(10) + s));
-        VBK_seas(0) += VBK_seas(s) * seasdur(s);
+        VBK_seas(s) = mfexp(MGparm(MGparm_seas_effects(10) + s));  // so equals 1.0 if the seasonal parameter = 0.0
+        VBK_seas(0) += VBK_seas(s) * seasdur(s);  // sum seasonal effects weighted by season duration
       }
     }
     else
     {
       VBK_seas = sum(seasdur); // set vector to null effect
     }
-    if (do_once == 1)
-      echoinput << "season_duration_as_used_in_growth_calculations: " << VBK_seas(1, nseas) << endl << "summed_for_annual_calcs: " << VBK_seas(0)<<endl;
 
     for (gp = 1; gp <= N_GP; gp++)
       for (j = 1; j <= 8; j++)
@@ -120,12 +121,15 @@ FUNCTION void get_growth1()
         }
       }
   }
-  else
+  else  // no seasonal effects
   {
-    VBK_seas = sum(seasdur); // set vector to null effect
+    VBK_seas(1, nseas) = 1.;
+
+    VBK_seas(0) = sum(seasdur); // set vector to null effect  //  note that seasons_as_years will have value < 1.0
     for (s = 1; s <= nseas; s++)
       wtlen_seas(s) = 1.0; // set vector to null effect
   }
+  if (do_once == 1) echoinput << "VBK_seasonal_adjustment: " << VBK_seas(1, nseas) << " total: " << VBK_seas(0) << endl;
   //  SS_Label_Info_15.2  #create variability of size-at-age factors using direct assignment or offset approaches
   gp = 0;
   for (gg = 1; gg <= gender; gg++)
@@ -205,7 +209,7 @@ FUNCTION void get_growth2(const int y)
   //  if y=styr, then does equilibrium size-at-age according to start year growth parameters
   //  for any year, calculates for each season the size at the beginning of the next season, with growth increment calculated according to that year's parameters
   // VBK(gp,a) is the growth parameter for growth type gp and age.  VBK for age 0 is used for all ages.  set to negative of parameter
-  // VBK_seas(0, nseas) is optional seasonal adjustment to VBK
+  // VBK_seas(1, nseas) is optional seasonal adjustment to VBK
   // VBK_by_seas is VBK adjusted by VBK_seas
   // VBK_work is current value of VBK for the selected model condition
 
@@ -452,7 +456,7 @@ FUNCTION void get_growth2(const int y)
         {
           //  SS_Label_Info_16.2.4.1.1  #if y=styr, get size-at-age in first subseason of first season of this first year
           // VBK_seas(0) is the sum of all the season durations * seasonal K adjustments.  Normally it has a value of 1.0
-          //  but for seasons-as-years, it will be the value equal to the selected duration of those seasons
+          //  but for seasons-as-years, it will be the value equal to the selected duration of the single season
 //            Ave_Size(styr, 1, g)(0, first_grow_age(g)) = Lmin(gp);
 					if (y == styr) 
 					{
@@ -485,7 +489,7 @@ FUNCTION void get_growth2(const int y)
               case 3: //  age-specific K, so need age-by-age calculations
               {
                 ALK_idx = 1;
-                // NOTE: VBK_seas(0) accounts for season duration
+
                 for (a = 0; a <= nages; a++)
                 {
                   k2 = max(0, a - 1);
@@ -584,8 +588,8 @@ FUNCTION void get_growth2(const int y)
             else
               add_age = 0; //      advance age or not
             // growth to next season
-            VBK_by_seas = (mfexp(VBK_work * VBK_seas(s)) - 1.0);  // for use inside the growth equation
-          echoinput<<"ready to update growth by season " << y << endl;
+            VBK_by_seas = (mfexp(VBK_work * VBK_seas(s) * seasdur(s) ) - 1.0);  // for use inside the growth equation
+            if (do_once == 1) echoinput<<"ready to update growth by season " << y << " VBK_w " << VBK_work << " seas " << VBK_seas(s) << " byseas " << VBK_by_seas << endl << " lingrow " <<lin_grow << endl;
             switch (Grow_type)
             {
               case 1:  // standard von Bertallanfy
@@ -623,7 +627,8 @@ FUNCTION void get_growth2(const int y)
                   }
                   else if (lin_grow(g, ALK_idx, a) == -1.0) // first time point beyond AFIX;  lin_grow will stay at -1 for all remaining subseas of this season
                   {
-                    Ave_Size(t + 1, 1, g, k2) = Cohort_Lmin(gp, y, a) + (Cohort_Lmin(gp, y, a) - L_inf(gp)) * (mfexp(VBK_work * (real_age(g, ALK_idx2, k2) - AFIX) * VBK_seas(s)) - 1.0) * Cohort_Growth(y, a);
+                    Ave_Size(t + 1, 1, g, k2) = Cohort_Lmin(gp, y, a) + (Cohort_Lmin(gp, y, a) - L_inf(gp)) * (mfexp(VBK_work * VBK_seas(s) * (real_age(g, ALK_idx2, k2) - AFIX)) - 1.0) * Cohort_Growth(y, a);
+                    echoinput<<" age: "<<k2<<" Lmin "<<Cohort_Lmin(gp, y, a)<<" time:  "<<real_age(g, ALK_idx2, k2) - AFIX << " " <<Ave_Size(t + 1, 1, g, k2) <<endl;
                   }
                   else // in linear phase
                   {
