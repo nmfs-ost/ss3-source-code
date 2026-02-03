@@ -120,3 +120,41 @@ FUNCTION dvariable Comp_logL_Dirichlet(const double& Nsamp, const dvariable& dir
     logL = sum(gammln(Nsamp * obs_comp + dirichlet_Parm * exp_comp)) - sum(gammln(dirichlet_Parm * exp_comp));
     return (logL);
   }
+
+FUNCTION dvector rebin(const dvector& src_edges, const dvector& src_counts, const dvector& dest_edges)
+  {
+    /*
+    This implementation takes two vectors representing the boundaries (edges) of the source
+    and destination bins, and one vector for the source counts.
+
+    Rebins frequency data from one set of boundaries to another.
+    @param src_edges Boundaries of the original bins (size N+1).
+    @param src_counts Frequency/counts in original bins (size N).
+    @param dest_edges Boundaries of the new bins (size M+1).
+    @return Vector of rebinned frequency data (size M).
+    */
+
+    dvector dest_counts(dest_edges.size() - 1, 0.0);
+    for (int i = 0; i < dest_counts.size(); ++i) {
+    double d_low = dest_edges[i];
+    double d_high = dest_edges[i + 1];
+
+    for (int j = 0; j < src_counts.size(); ++j) {
+     double s_low = src_edges[j];
+     double s_high = src_edges[j + 1];
+
+     // Calculate the overlap between [d_low, d_high] and [s_low, s_high]
+     double overlap_low = max(d_low, s_low);
+     double overlap_high = min(d_high, s_high);
+
+     if (overlap_low < overlap_high) {
+         double overlap_width = overlap_high - overlap_low;
+         double src_bin_width = s_high - s_low;
+         
+         // Distribute source count proportionally to the overlap area
+         dest_counts[i] += src_counts[j] * (overlap_width / src_bin_width);
+     }
+    }
+    }
+    return (dest_counts);
+  }
