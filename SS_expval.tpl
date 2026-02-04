@@ -704,7 +704,7 @@ FUNCTION void Get_expected_values(const int y, const int t);
                             {
                               case (1): // units are biomass, so accumulate body weight into the bins;  Assume that bin demarcations are also in biomass
                               {
-                                if (SzFreq_Omit_Small(SzFreqMethod) == 1)
+                                 if (SzFreq_Omit_Small(SzFreqMethod) == 1)
                                 {
                                   while (wt_len_low(s, 1, z1 + 1) < SzFreq_bins(SzFreqMethod, 1) && z1 < z2)
                                   {
@@ -853,6 +853,23 @@ FUNCTION void Get_expected_values(const int y, const int t);
 
                                 else //  bin demarcations are in length unit (3=cm, 4=inch) so uses population len_bins to compare to data bins
                                 {
+  /*                               wt_len_low(s, 1, z1 + 1) < SzFreq_bins(SzFreqMethod, 1) && z1 < z2)
+  FUNCTION dvector rebin(const dvector& src_edges, const dvector& src_counts, const dvector& dest_edges)
+  3darray wt_len_low(1,nseas,1,N_GP,1,nlength2)  //  wt at lower edge of size bin
+  */
+    dvector freq_in(1, z2-z1);  // fill the input
+    freq_in = 1.;
+    echoinput << " z1: " << z1 << " z2: " << z2 << endl;
+    echoinput << " freq_in: " << freq_in << endl;
+    dvector bins_in(1, z2-z1);
+    bins_in = len_bins2(z1, z2); //  input bins shifted
+    echoinput << " bins_in: " << bins_in << endl;
+//  dvector bins_out(1, z2-z1) = SzFreq_bins(SzFreqMethod
+    dvector freq_out(1, SzFreq_Nbins(SzFreqMethod));
+
+    freq_out = rebin(bins_in, freq_in, SzFreq_bins(SzFreqMethod));
+    echoinput << " freq_out: " << freq_out << endl;
+
                                   if (SzFreq_Omit_Small(SzFreqMethod) == 1)
                                   {
                                     while (len_bins2(z1 + 1) < SzFreq_bins(SzFreqMethod, 1))
