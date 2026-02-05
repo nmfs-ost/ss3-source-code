@@ -388,15 +388,14 @@ FUNCTION dvar_vector Equil_Spawn_Recr_Fxn(const dvar_vector& SRparm,
 //      warning << "SPR: " << SSBpR_current / SPR0 << "  Old: " << B_equil << " " << R_equil;
 
 //    formula:    pow( (1.0 - (log (SPR0 / SSBpR_current)) / (steepness * log (SPR0) )), (1. / SRparm(3)));
-//  use a join fxn to keep the quantity above 0.01, which is enough above 0.0 to assure no negative
+//  use a join fxn to keep the quantity positive
       dvariable temp = (1.0 - (log (SPR0 / SSBpR_current)) / (steepness * log (SPR0) ));
-      dvariable join1 = 1. / (1. + mfexp(100. * (temp - 0.01))); // steep logistic joiner
-      dvariable temp1 = join1 * 0.01 + (1. - join1) * (temp - 0.01);
-      B_equil = Recr_virgin_use * SPR0 * 
-      pow( temp1, (1. / SRparm(3)));
+      dvariable join1 = 1. / (1. + mfexp(100. * (-temp))); // steep logistic joiner
+      dvariable temp1 = join1 * temp;
+      B_equil = Recr_virgin_use * SPR0 * pow( temp1, (1. / SRparm(3)));
       R_equil = B_equil / SSBpR_current;
 //      warning << "  log(SPR): " << log (SPR0 / SSBpR_current) << " denom " << steepness * log (SPR0) << "  base: " << 
-//      (1.0 - (log (SPR0 / SSBpR_current)) / (steepness * log (SPR0) )) << "  temp: " << temp << " " << join1 << " " << temp1 << "  New: " << B_equil << " " << R_equil << endl;
+//      (1.0 - (log (SPR0 / SSBpR_current)) / (steepness * log (SPR0) )) << "  temp: " << temp << " join " << join1 << " temp1: " << temp1 << "  New: " << B_equil << " " << R_equil << endl;
       break;
     }
 
