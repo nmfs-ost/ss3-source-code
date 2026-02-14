@@ -4754,7 +4754,7 @@ FUNCTION void SPR_profile()
   }
 //  do not recalculate here so force using values from benchmark
   SS2out << "unfished values for SRR: SSB " << SSB0_4_SRR << " R " << R0_4_SRR << " SSBpR " << "  SSBpR: " << SSB0_4_SRR / R0_4_SRR << endl;
-  SS2out << "SPRloop Iter Bycatch Fmult F_std SSBpR SPR YpR_dead YpR_dead*Recr YpR_ret*Recr Revenue Cost Profit SSB Recruits SSB/Bzero Tot_Catch ";
+  SS2out << "SPRloop Iter Bycatch Fmult F_std SSBpR YpR_dead YpR_dead*Recr YpR_ret*Recr Revenue Cost Profit SSB Recruits SSB/Bzero Tot_Catch ";
   for (f = 1; f <= Nfleet; f++)
   {
     if (fleet_type(f) <= 2)
@@ -4921,7 +4921,7 @@ FUNCTION void SPR_profile()
           if (SPRloop1 == 0)
             Fcrash = Fmult2;
         }
-        SS2out << SPRloop1 << " " << SPRloop << " " << with_BYC << " " << Fmult2 << " " << equ_F_std << " " << SSB_equil << " " << SSB_equil / (SSB0_4_SRR / R0_4_SRR) << " " << YPR_dead << " "
+        SS2out << SPRloop1 << " " << SPRloop << " " << with_BYC << " " << Fmult2 << " " << equ_F_std << " " << SSB_equil / (SSB0_4_SRR / R0_4_SRR) << " " << YPR_dead << " "
                << YPR_dead * Btgt_prof_rec << " " << YPR_ret * Btgt_prof_rec << " " << (PricePerF * YPR_val_vec) * Btgt_prof_rec
                << " " << Cost << " " << (PricePerF * YPR_val_vec) * Btgt_prof_rec - Cost << " " << Btgt_prof << " " << Btgt_prof_rec << " " << Btgt_prof / SSB0_4_SRR
                << " " << value(sum(equ_catch_fleet(2)) * Btgt_prof_rec);
