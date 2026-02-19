@@ -377,11 +377,25 @@ FUNCTION dvar_vector Equil_Spawn_Recr_Fxn(const dvar_vector& SRparm,
     //  SS_Label_44.1.7  3 parameter survival based
     case 7: // survival
     {
-      SRZ_0 = log(1.0 / (SSB_virgin_use / Recr_virgin_use));
-      srz_min = SRZ_0 * (1.0 - steepness);
-      B_equil = SSB_virgin_use * (1. - (log(1. / SSBpR_current) - SRZ_0) / pow((srz_min - SRZ_0), (1. / SRparm(3))));
-      SRZ_surv = mfexp((1. - pow((B_equil / SSB_virgin_use), SRparm(3))) * (srz_min - SRZ_0) + SRZ_0); //  survival
-      R_equil = B_equil * SRZ_surv;
+      // z_frac is steepness
+// incorrect code below was used prior to Jan 2026 revision
+//      SRZ_0 = log(1.0 / (SSB_virgin_use / Recr_virgin_use));
+//      srz_min = SRZ_0 * (1.0 - steepness);
+//      B_equil = SSB_virgin_use * (1. - (log(1. / SSBpR_current) - SRZ_0) / pow((srz_min - SRZ_0), (1. / SRparm(3))));
+//      SRZ_surv = mfexp((1. - pow((B_equil / SSB_virgin_use), SRparm(3))) * (srz_min - SRZ_0) + SRZ_0); //  survival
+//      R_equil = B_equil * SRZ_surv;
+      dvariable SPR0 = SSB_virgin_use / Recr_virgin_use;
+//      warning << "SPR: " << SSBpR_current / SPR0 << "  Old: " << B_equil << " " << R_equil;
+
+//    formula:    pow( (1.0 - (log (SPR0 / SSBpR_current)) / (steepness * log (SPR0) )), (1. / SRparm(3)));
+//  use a join fxn to keep the quantity positive
+      dvariable temp = (1.0 - (log (SPR0 / SSBpR_current)) / (steepness * log (SPR0) ));
+      dvariable join1 = 1. / (1. + mfexp(40. * (-temp))); // steep logistic joiner
+      dvariable temp1 = sqrt( square( join1 * temp)); // to make small negative values positive
+      B_equil = Recr_virgin_use * SPR0 * pow( temp1, (1. / SRparm(3)));
+      R_equil = B_equil / SSBpR_current;
+//      warning << "  log(SPR): " << log (SPR0 / SSBpR_current) << " denom " << steepness * log (SPR0) << "  base: " << 
+//      (1.0 - (log (SPR0 / SSBpR_current)) / (steepness * log (SPR0) )) << "  temp: " << temp << " join " << join1 << " temp1: " << temp1 << "  New: " << B_equil << " " << R_equil << endl;
       break;
     }
 
