@@ -385,16 +385,19 @@ FUNCTION dvar_vector Equil_Spawn_Recr_Fxn(const dvar_vector& SRparm,
 //      SRZ_surv = mfexp((1. - pow((B_equil / SSB_virgin_use), SRparm(3))) * (srz_min - SRZ_0) + SRZ_0); //  survival
 //      R_equil = B_equil * SRZ_surv;
       dvariable SPR0 = SSB_virgin_use / Recr_virgin_use;
-//      warning << "SPR: " << SSBpR_current / SPR0 << "  Old: " << B_equil << " " << R_equil;
 
 //    formula:    pow( (1.0 - (log (SPR0 / SSBpR_current)) / (steepness * log (SPR0) )), (1. / SRparm(3)));
       dvariable temp = (1.0 - (log (SPR0 / SSBpR_current)) / (steepness * log (SPR0) ));
-//      dvariable join1 = 1. / (1. + mfexp(1000. * (-temp))); // steep logistic joiner
-      dvariable temp1 = 1.0e-09; //  sqrt( square( join1 * temp)); // to make small negative values positive
       if (temp > 1.0e-9)
-      {temp1 = temp;}
-      B_equil = Recr_virgin_use * SPR0 * pow( temp1, (1. / SRparm(3)));
-      R_equil = B_equil / SSBpR_current;
+      {
+        B_equil = Recr_virgin_use * SPR0 * pow( temp, (1. / SRparm(3)));
+        R_equil = B_equil / SSBpR_current;
+      }
+      else
+      {
+        B_equil = 1.0e-06;
+        R_equil = 1.0e-06;
+      }
 //      warning << SSBpR_current/SPR0 << "  log(SPR): " << log (SPR0 / SSBpR_current) << " denom " << steepness * log (SPR0) << "  base: " << 
 //      (1.0 - (log (SPR0 / SSBpR_current)) / (steepness * log (SPR0) )) << "  temp: " << temp << " join " << join << " temp1: " << temp1 << "  New: " << B_equil << " " << R_equil << endl;
       break;
