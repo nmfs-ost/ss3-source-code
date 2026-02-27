@@ -1908,12 +1908,16 @@ FUNCTION void write_nucontrol()
   {
     report4 << AFIX << " #_Age(post-settlement) for L1 (aka Amin); first growth parameter is size at this age; linear growth below this" << endl
             << AFIX2 << " #_Age(post-settlement) for L2 (aka Amax); 999 to treat as Linf" << endl
-            << Linf_decay << " #_exponential decay of numbers for calc of size in plus group in the initial year (value should approx initial Z; -999 replicates 3.24; -998 to not calc growth above maxage)" << endl;
+            << Linf_decay << " #_exponential decay for growth within plus group "
+            << " (value should approx initial Z; -999 replicates 3.24 (Z=0.2); -998 or -997 to not allow growth within plus group)" << endl
+            << " #_ -998 also disables time-varying changes in plus group; -997 allows updating time-varying plus group" << endl
+            << " #_ best option is to provide a value for initial Z" << endl;
+
     report4 << "0  #_placeholder for future growth feature" << endl;
     if (Grow_type >= 3 && Grow_type <= 5)
     {
       report4 << Age_K_count << " # number of K multipliers to read" << endl
-              << Age_K_points << " # ages for K multiplier" << endl;
+              << Age_K_points << " # list ages for K multiplier; in descending order for options 4 and 5" << endl;
     }
   }
   else

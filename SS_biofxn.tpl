@@ -560,7 +560,7 @@ FUNCTION void get_growth2(const int y)
               }
               Ave_Size(styr, 1, g, nages) = temp / temp1; //  this is weighted mean size at nages
             }
-            else if (Linf_decay == -998.) // decay code set to -998 which omits growth in the plus group
+            else //  if (Linf_decay == -998. || Linf_decay == -997.) // decay code set to value which omits growth in the plus group in the initial year
             {
               //  no adjustment
             }
@@ -743,43 +743,28 @@ FUNCTION void get_growth2(const int y)
             //  there should be an option to execute this update every year, so code below should move to ss_popdyn.  Positioned here, it is only updated in years in which there is time-vary growth
             if (y > styr && s == nseas)  // do plus group mean size update
             {
-              if (Linf_decay != -998.)
+              if (plusgroupsize_update == 0)  // Linf_decay == -998.
               {
+                Ave_Size(t + 1, 1, g, nages) = Ave_Size(t, 1, g, nages);
                 if (do_once == 1 && timevary_MG_firstyr == y)
+                  {
+                    warnstream << "plus group mean size is carried forward and NOT being updated for time-varying growth for sex: " << sx(g) << ". Suggest setting Linf_decay = -997, or to a pos. value that approximates Z in the initial year for the plus group";
+                    write_message (WARN, 0);
+                  }
+              }
+              else  // Linf_decay == -997 or a positive Linf_decay is used in initial year growth
+              {
+                if (do_once == 1 && timevary_MG_firstyr == y && g == 1)
                   {
                     warnstream << "plus group mean size is updated in years with time-vary growth beginning in: " << y << "; can turn this off with Linf_decay = -998";
                     write_message (NOTE, 0);
                   }
-//  3.24 code
-                if (do_once == 1)
-                  echoinput << niter << " " << y << "  plus group calc: "
-                  << " N _entering: " << natage(t, 1, g, nages - 1) << " N_inplus: " << natage(t, 1, g, nages) << " size in: " << Ave_Size(t + 1, 1, g, nages) << " old size: " << plusgroupsize << " ";
                 temp = ((natage(t, 1, g, nages - 1) + 0.01) * Ave_Size(t + 1, 1, g, nages) + (natage(t, 1, g, nages) + 0.01) * plusgroupsize) / (natage(t, 1, g, nages - 1) + natage(t, 1, g, nages) + 0.02);
+                if (do_once == 1 && g == 1)  // show clculation once
+                  echoinput << " Year: " << y << "  +group calc: "
+                  << " N _entering: " << natage(t, 1, g, nages - 1) << " N_in_+group: " << natage(t, 1, g, nages) << " size in: " << Ave_Size(t + 1, 1, g, nages) << " old +size: " << plusgroupsize << " "
+                  << "  new_+size " << temp << endl;
                 Ave_Size(t + 1, 1, g, nages) = temp;
-
-                #ifdef DO_ONCE
-                if (do_once == 1 && g == 1)
-                  echoinput << "  final_val " << Ave_Size(t + 1, 1, g, nages) << endl;
-  #endif
-                //  early 3.30 code
-                //                  temp4= square(natage(t,1,g,nages-1)+0.00000001)/(natage(t-1,1,g,nages-2)+0.00000001);
-                //                  temp=temp4*Ave_Size(t+1,1,g,nages)+(natage(t,1,g,nages)-temp4+0.00000001)*plusgroupsize;
-                //                  if(do_once==1&&g==1) echoinput<<t<<" plus group calc: "<<" N "<<" "<<natage(t-1,1,g,nages-2)<<" "<<natage(t,1,g,nages-1)<<" "<<natage(t,1,g,nages)<<" T4  "<<temp4<<" N-T4  "<<natage(t,1,g,nages)-temp4+0.00000001<<
-                //                  " size in: "<<Ave_Size(t+1,1,g,nages)<<" old size: "<<plusgroupsize<<" ";
-
-                //  prototype code
-                //                  temp4= square(natage(t-1,1,g,nages-1)+0.00000001)/(natage(t-2,1,g,nages-2)+0.00000001);
-                //                  temp2=posfun(natage(t,1,g,nages)-temp4+0.00000001,0.0,temp);
-                //                  temp=temp4*Ave_Size(t+1,1,g,nages)+(temp2)*plusgroupsize;
-                //                  if(do_once==1&&g==1) echoinput<<t<<" plus group calc: "<<" N "<<" "<<natage(t-2,1,g,nages-2)<<" "<<natage(t-1,1,g,nages-1)<<" "<<natage(t,1,g,nages)<<" T4  "<<temp4<<" N-T4  "<<natage(t,1,g,nages)-temp4+0.00000001<<
-                //                  " size in: "<<Ave_Size(t+1,1,g,nages)<<" old size: "<<plusgroupsize<<" ";
-
-                //                  Ave_Size(t+1,1,g,nages)=temp/(natage(t,1,g,nages)+0.00000001);
-                //                  if(do_once==1&&g==1) echoinput<<" temp "<<temp<<" denom "<<(natage(t,1,g,nages)+0.00000001)<<" Z "<<Z_rate(t-1,1,1,nages-1);
-              }
-              else
-              {
-                Ave_Size(t + 1, 1, g, nages) = Ave_Size(t, 1, g, nages);
               }
             }
 
