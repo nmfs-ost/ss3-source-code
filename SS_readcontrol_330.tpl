@@ -883,6 +883,16 @@
   number AFIX_plus;
   number Linf_decay;  //  decay factor to calculate mean L at maxage from Linf and the decaying abundance above maxage
                       //  forced equal to 0.20 in 3.24 (which also assumed linear, not VBK, growth)
+                      //  -999 code uses the 3.24 approach
+                      //  -998 code sets no growth within the plus group, even if Linf > Length_at_maxage.  Sets plusgroupsize_update = 0
+                      //  -997 code sets no growth within the plus group, but keeps plusgroupsize_update = 1
+
+  int plusgroupsize_update;  // created internally from value of Linf_decay
+                      //  = 0 keeps mean size at maxage (i.e. plusgroup) constant during time series, even if there is time-varying growth
+                      //  = 1 updates mean size at maxage using weighted average of current mean size and size of incoming cohort, but only in years with timevarying growth
+                      //  note that if Linf is > mean size at maxage, then Z during time series logically should cause reduction in mean size at maxage because there are fewer old fish
+                      //  SO! there needs to be an additional option to update the plus group mean size even if growth is not time-varying
+                      //  but this should be implemented in popdyn, not in biofxn to avoid having to update calculations for all ages
   int do_ageK;
   ivector first_grow_age(1,gmorph);
 !! first_grow_age.initialize();
@@ -944,7 +954,8 @@
     N_growparms = 2; // for the two CV parameters
     k1 = N_GP * gender; // for reading empirical length_at_age
   }
-  
+  plusgroupsize_update = 1;  // update mean size in plus group with weighted mean of current size and growth of incoming cohort.  Only implemented beginning in the year for which there is time-varying growth
+  if (Linf_decay == -998) plusgroupsize_update = 0;  // option which omits the updating
   echoinput << " N_growparms  " << N_growparms << endl;
   AFIX2_forCV = AFIX2;
   if (AFIX2_forCV > nages) AFIX2_forCV = nages;
