@@ -3932,10 +3932,6 @@ FUNCTION void write_bigoutput()
       {
         for (y = styr - 3; y <= YrMax; y++)
         {
-          yz = y;
-          if (yz > endyr + 2)
-            yz = endyr + 2;
-          //        if(y==styr-3 || y==styr ||  timevary_MG(yz,2)>0)
           {
             for (s = 1; s <= nseas; s++)
             {
@@ -3948,7 +3944,40 @@ FUNCTION void write_bigoutput()
           }
         }
       }
-    s = 1;
+    if(timevary_MG_firstyr < YrMax)  // timevary growth occurs, so display mean size at age by cohort
+    {
+      int max_t = styr + (YrMax - styr) * nseas + nseas - 1;
+      SS2out << endl << "#_Mean_size_by_cohort " << endl;
+      SS2out << "Morph YearClass Seas SubSeas" << age_vector << endl;
+      for (g = 1; g <= gmorph; g++)
+      if (use_morph(g) > 0)
+      {
+        for (int yc = styr - nages; yc <= YrMax; yc++)  //  loop year classes
+        {
+//          t = styr + (yc - styr - 1) * nseas;  //  t at age 0 for YC  (assumes birthseason = 1)
+          for (s = 1; s <= nseas; s++)
+          {
+            for (i = 1; i <= N_subseas; i++)
+            {
+              int t_out = styr + (yc - styr - 1) * nseas + s - 1;
+              SS2out << g << " " << yc << " " << s << " " << i;
+              for (a = 0; a <= nages; a++)
+              {
+                t_out += nseas;
+                if (t_out <= max_t && t_out >= styr)
+                {SS2out << " " << Ave_Size(t_out, i, g, a);}
+//                {SS2out << " " << t_out;}  // for checking on the index algorithm
+                else
+                {SS2out << " NA";};
+              }
+              SS2out << endl;
+            }
+          }
+        }
+      }
+    }
+
+      s = 1;
     for (i = 1; i <= gender; i++)
     {
       SS2out << "#" << endl
