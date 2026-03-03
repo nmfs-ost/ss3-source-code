@@ -760,7 +760,7 @@ FUNCTION void get_growth2(const int y)
                     write_message (NOTE, 0);
                   }
                 temp = ((natage(t, 1, g, nages - 1) + 0.01) * Ave_Size(t + 1, 1, g, nages) + (natage(t, 1, g, nages) + 0.01) * plusgroupsize) / (natage(t, 1, g, nages - 1) + natage(t, 1, g, nages) + 0.02);
-                if (do_once == 1 && g == 1)  // show clculation once
+                if (do_once == 1 && g == 1)  // show calculation once
                   echoinput << " Year: " << y << "  +group calc: "
                   << " N _entering: " << natage(t, 1, g, nages - 1) << " N_in_+group: " << natage(t, 1, g, nages) << " size in: " << Ave_Size(t + 1, 1, g, nages) << " old +size: " << plusgroupsize << " "
                   << "  new_+size " << temp << endl;

@@ -797,6 +797,7 @@ FUNCTION void get_time_series()
       {
         ALK_subseas_update = 1; // indicate that all ALKs will need re-estimation
         get_growth2(y); //  propagates growth to each season this year and to begin next year
+        t = t_base + 1;
         get_growth3(y, t, 1, 1); //  cleans up the linear growth range for begin of this year
       }
       if (timevary_MG(y, 3) > 0)
