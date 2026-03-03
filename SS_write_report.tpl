@@ -3947,7 +3947,8 @@ FUNCTION void write_bigoutput()
     if(timevary_MG_firstyr < YrMax)  // timevary growth occurs, so display mean size at age by cohort
     {
       int max_t = styr + (YrMax - styr) * nseas + nseas - 1;
-      SS2out << endl << "#_Mean_size_by_cohort " << endl;
+      SS2out << "#" << endl
+             << "mean_size_by_cohort " << endl;
       SS2out << "Morph YearClass Seas SubSeas" << age_vector << endl;
       for (g = 1; g <= gmorph; g++)
       if (use_morph(g) > 0)
