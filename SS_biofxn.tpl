@@ -211,7 +211,6 @@ FUNCTION void get_growth2(const int y)
   //  for any year, calculates for each season the size at the beginning of the next season, with growth increment calculated according to that year's parameters
   // VBK(gp,a) is the growth parameter for growth type gp and age.  VBK for age 0 is used for all ages.  set to negative of parameter
   // VBK_seas(1, nseas) is optional seasonal adjustment to VBK
-  // VBK_by_seas is VBK adjusted by VBK_seas
   // VBK_work is current value of VBK for the selected model condition
 
 
@@ -227,7 +226,7 @@ FUNCTION void get_growth2(const int y)
   dvariable plusgroupsize;
   dvariable current_size;
   dvariable VBK_work;  // working version of VBK
-  dvariable VBK_by_seas; //  with VBKseas(s) multiplied
+  dvariable VBK_by_seas; // = (mfexp(VBK_work * VBK_seas(s) * seasdur(s) ) - 1.0);  // for use inside the growth equation
   dvariable LminR;
   dvariable LmaxR;
   dvariable LinfR;
@@ -526,7 +525,7 @@ FUNCTION void get_growth2(const int y)
 
             //  SS_Label_Info_16.2.4.1.4  #calc approximation to mean size at maxage to account for growth after reaching the maxage (accumulator age)
             // note that seasonal adjustment to VBK is dropped
-            current_size = Ave_Size(styr, 1, g, nages);
+            current_size = Ave_Size(styr, 1, g, nages);  //  used for plus group growth
             if (Linf_decay > 0.0001) //  decay rate has been read.  Should be an estimate of initial Z
             {
               temp1 = 1.0;
@@ -627,7 +626,7 @@ FUNCTION void get_growth2(const int y)
                   }
                   else if (lin_grow(g, ALK_idx, a) == -1.0) // first time point beyond AFIX;  lin_grow will stay at -1 for all remaining subseas of this season
                   {
-                    Ave_Size(t + 1, 1, g, k2) = Cohort_Lmin(gp, y, a) + (Cohort_Lmin(gp, y, a) - L_inf(gp)) * (mfexp(VBK_work * VBK_seas(s) * seasdur(s) * (real_age(g, ALK_idx2, k2) - AFIX)) - 1.0) * Cohort_Growth(y, a);
+                    Ave_Size(t + 1, 1, g, k2) = Cohort_Lmin(gp, y, a) + (Cohort_Lmin(gp, y, a) - L_inf(gp)) * (mfexp(VBK_work * VBK_seas(s) * (real_age(g, ALK_idx2, k2) - AFIX)) - 1.0) * Cohort_Growth(y, a);
                     echoinput<<" age: "<<k2<<" Lmin "<<Cohort_Lmin(gp, y, a)<<" time:  "<<real_age(g, ALK_idx2, k2) - AFIX << " " <<Ave_Size(t + 1, 1, g, k2) <<endl;
                   }
                   else // in linear phase
@@ -661,8 +660,7 @@ FUNCTION void get_growth2(const int y)
                   }
                   else if (lin_grow(g, ALK_idx, a) == -1.0) // first time point beyond AFIX;  lin_grow will stay at -1 for all remaining subseas of this season
                   {
-                    //                  temp=LminR + (LminR-LinfR)*(mfexp(VBK_work*seasdur(s)*(real_age(g,ALK_idx2,k2)-AFIX))-1.0)*Cohort_Growth(y,a);
-                    temp = LminR + (LminR - LinfR) * mfexp(VBK_by_seas * (real_age(g, ALK_idx2, k2) - AFIX)) * Cohort_Growth(y, a);
+                    temp = LminR + (LminR - LinfR) * (mfexp(VBK_work * VBK_seas(s) * (real_age(g, ALK_idx2, k2) - AFIX)) - 1.0) * Cohort_Growth(y, a);
                     Ave_Size(t + 1, 1, g, k2) = pow(temp, inv_Richards);
                   }
                   else // in linear phase for subseas
@@ -728,7 +726,7 @@ FUNCTION void get_growth2(const int y)
                   }
                   else if (lin_grow(g, ALK_idx, a) == -1.0) // first time point beyond AFIX;  lin_grow will stay at -1 for all remaining subseas of this season
                   {
-                    Ave_Size(t + 1, 1, g, k2) = Cohort_Lmin(gp, y, a) + (Cohort_Lmin(gp, y, a) - L_inf(gp)) * (mfexp(VBK(gp, a) * (real_age(g, ALK_idx2, k2) - AFIX) * VBK_seas(s) * seasdur(s)) - 1.0) * Cohort_Growth(y, a);
+                    Ave_Size(t + 1, 1, g, k2) = Cohort_Lmin(gp, y, a) + (Cohort_Lmin(gp, y, a) - L_inf(gp)) * (mfexp(VBK(gp, a) * VBK_seas(s) * (real_age(g, ALK_idx2, k2) - AFIX)) - 1.0) * Cohort_Growth(y, a);
                   }
                   else // in linear phase
                   {
@@ -865,7 +863,7 @@ FUNCTION void get_growth3(const int y, const int t, const int s, const int subse
               //              disable the shrinkage trap because Richard's parameter could be negative
               //              join1=1.0/(1.0+mfexp(-(50.*t2/(1.0+fabs(t2)))));  //  note the logit transform is not perfect, so growth near Linf will not be exactly same as with native growth function
               //              t2*=(1.-join1);  // trap to prevent decrease in size-at-age
-              temp += (mfexp(VBK(gp, 0) * subseasdur(s, subseas) * VBK_seas(s)) - 1.0) * t2 * Cohort_Growth(y, a);
+              temp += (mfexp(VBK(gp, 0) * VBK_seas(s) * subseasdur(s, subseas)) - 1.0) * t2 * Cohort_Growth(y, a);
               Ave_Size(t, subseas, g, a) = pow(temp, inv_Richards);
             }
             else if (lin_grow(g, ALK_idx, a) >= 0.0) // in linear phase for subseas
