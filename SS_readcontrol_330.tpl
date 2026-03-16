@@ -954,6 +954,13 @@
     N_growparms = 2; // for the two CV parameters
     k1 = N_GP * gender; // for reading empirical length_at_age
   }
+  if (AFIX2 != 999 && AFIX2 > nages)
+  {
+    warnstream << "AFIX2 (Age post-settlement for L2, aka Amax) must be <= nages, entered value = " << AFIX2;
+    write_message (FATAL, 0);
+    AFIX2 = 999.;
+  }
+
   plusgroupsize_update = 1;  // update mean size in plus group with weighted mean of current size and growth of incoming cohort.  Only implemented beginning in the year for which there is time-varying growth
   if (Linf_decay == -998) plusgroupsize_update = 0;  // option which omits the updating
   echoinput << " N_growparms  " << N_growparms << endl;
