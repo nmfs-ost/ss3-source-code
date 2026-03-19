@@ -1813,10 +1813,10 @@ FUNCTION void write_bigoutput()
     }
     SS2out << "#" << endl;
     if (SRparm_timevary(N_SRparm2 - 1) > 0) //  timevary regime exists
-      {SS2out << " #_Regime_used_to_offset_from_SRR";}
+      {SS2out << "#_Regime_used_to_offset_from_SRR" << endl;}
     SS2out << timevary_bio_4SRR << " # timevary_bio_4SRR  #_Compatibility_flag_for_legacy_(0)_vs_improved_(1)_impact_of_timevary_biology_on_benchmark_SRR_calcs" << endl;
     if( timevary_MG_firstyr == YrMax)
-    { SS2out << " #_No_timevary_MGparm" << endl; }
+    { SS2out << "#_No_timevary_MGparm" << endl; }
     else
     { SS2out << timevary_MG_firstyr << " #_first year_timevary_MGparm_(or_any_year_EWAA) " << endl; }
 
