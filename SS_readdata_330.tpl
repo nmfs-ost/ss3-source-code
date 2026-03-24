@@ -146,6 +146,7 @@
   echoinput << subseasdur_delta << " processed subseason duration (frac. of year) " << endl;
   echoinput << " processed subseason cumulative annual time within season " << endl
             << subseasdur << endl;
+  echoinput << sumseas << " sum of season durations; used in seas-as-years" << endl;
   if (seas_as_year == 1)
   {
     warnstream << "Season durations sum to <11.9, so SS3 assumes you are doing years as pseudo-seasons." << endl
