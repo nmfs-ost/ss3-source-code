@@ -462,7 +462,7 @@ FUNCTION void get_growth2(const int y)
 					{
             switch (Grow_type)
             {
-              case 1:
+              case 1:  // standard von Bertallanfy in styr
               {
                 for (a = 0; a <= nages; a++)
                 {
@@ -591,7 +591,7 @@ FUNCTION void get_growth2(const int y)
             if (do_once == 1) echoinput<<"ready to update growth by season " << y << " VBK_w " << VBK_work << " seas " << VBK_seas(s) << " byseas " << VBK_by_seas << endl << " lingrow " <<lin_grow << endl;
             switch (Grow_type)
             {
-              case 1:  // standard von Bertallanfy
+              case 1:  // standard von Bertallanfy - seasonal growth
               {
                 //  SS_Label_Info_16.2.4.2.1  #standard von Bert growth, loop ages to get size at age at beginning of next season (t+1) which is subseas=1
                 Ave_Size(t + 1, 1, g, 0) = Ave_Size(t, 1, g, 0); // carryforward, but may be overwritten in some circumstances
@@ -626,7 +626,7 @@ FUNCTION void get_growth2(const int y)
                   }
                   else if (lin_grow(g, ALK_idx, a) == -1.0) // first time point beyond AFIX;  lin_grow will stay at -1 for all remaining subseas of this season
                   {
-                    Ave_Size(t + 1, 1, g, k2) = Cohort_Lmin(gp, y, a) + (Cohort_Lmin(gp, y, a) - L_inf(gp)) * (mfexp(VBK_work * VBK_seas(s) * (real_age(g, ALK_idx2, k2) - AFIX)) - 1.0) * Cohort_Growth(y, a);
+                    Ave_Size(t + 1, 1, g, k2) = Cohort_Lmin(gp, y, a) + (Cohort_Lmin(gp, y, a) - L_inf(gp)) * (mfexp(VBK_work * VBK_seas(s) * seasdur(s) * (real_age(g, ALK_idx2, k2) - AFIX)) - 1.0) * Cohort_Growth(y, a);
                     echoinput<<" age: "<<k2<<" Lmin "<<Cohort_Lmin(gp, y, a)<<" time:  "<<real_age(g, ALK_idx2, k2) - AFIX << " " <<Ave_Size(t + 1, 1, g, k2) <<endl;
                   }
                   else // in linear phase
@@ -660,7 +660,7 @@ FUNCTION void get_growth2(const int y)
                   }
                   else if (lin_grow(g, ALK_idx, a) == -1.0) // first time point beyond AFIX;  lin_grow will stay at -1 for all remaining subseas of this season
                   {
-                    temp = LminR + (LminR - LinfR) * (mfexp(VBK_work * VBK_seas(s) * (real_age(g, ALK_idx2, k2) - AFIX)) - 1.0) * Cohort_Growth(y, a);
+                    temp = LminR + (LminR - LinfR) * (mfexp(VBK_work * VBK_seas(s) * seasdur(s) * (real_age(g, ALK_idx2, k2) - AFIX)) - 1.0) * Cohort_Growth(y, a);
                     Ave_Size(t + 1, 1, g, k2) = pow(temp, inv_Richards);
                   }
                   else // in linear phase for subseas
@@ -726,7 +726,7 @@ FUNCTION void get_growth2(const int y)
                   }
                   else if (lin_grow(g, ALK_idx, a) == -1.0) // first time point beyond AFIX;  lin_grow will stay at -1 for all remaining subseas of this season
                   {
-                    Ave_Size(t + 1, 1, g, k2) = Cohort_Lmin(gp, y, a) + (Cohort_Lmin(gp, y, a) - L_inf(gp)) * (mfexp(VBK(gp, a) * VBK_seas(s) * (real_age(g, ALK_idx2, k2) - AFIX)) - 1.0) * Cohort_Growth(y, a);
+                    Ave_Size(t + 1, 1, g, k2) = Cohort_Lmin(gp, y, a) + (Cohort_Lmin(gp, y, a) - L_inf(gp)) * (mfexp(VBK(gp, a) * VBK_seas(s) * seasdur(s) * (real_age(g, ALK_idx2, k2) - AFIX)) - 1.0) * Cohort_Growth(y, a);
                   }
                   else // in linear phase
                   {
@@ -817,7 +817,7 @@ FUNCTION void get_growth3(const int y, const int t, const int s, const int subse
       gp = GP(g);
       switch (Grow_type)
       {
-        case 1: // regular von B
+        case 1:   // standard von Bertallanfy  inseason growth
         {
           for (a = 0; a <= nages; a++)
           {
@@ -842,7 +842,7 @@ FUNCTION void get_growth3(const int y, const int t, const int s, const int subse
             // NOTE:  there is no seasonal interpolation, age-specific K uses calendar age, not real age.  Maybe someday....
             else if (lin_grow(g, ALK_idx, a) == -1.0) // first time point beyond AFIX;  lin_grow will stay at -1 for all remaining subseas of this season
             {
-              Ave_Size(t, subseas, g, a) = Cohort_Lmin(gp, y, a) + (Cohort_Lmin(gp, y, a) - L_inf(gp)) * (mfexp(VBK(gp, 0) * VBK_seas(s) * (real_age(g, ALK_idx, a) - AFIX)) - 1.0) * Cohort_Growth(y, a);
+              Ave_Size(t, subseas, g, a) = Cohort_Lmin(gp, y, a) + (Cohort_Lmin(gp, y, a) - L_inf(gp)) * (mfexp(VBK(gp, 0) * VBK_seas(s) * seasdur(s) * (real_age(g, ALK_idx, a) - AFIX)) - 1.0) * Cohort_Growth(y, a);
             }
           }
           break;
@@ -873,7 +873,7 @@ FUNCTION void get_growth3(const int y, const int t, const int s, const int subse
             else if (lin_grow(g, ALK_idx, a) == -1.0) // first time point beyond AFIX;  lin_grow will stay at -1 for all remaining subseas of this season
             {
               //              temp=Cohort_Lmin(gp,y,a) + (Cohort_Lmin(gp,y,a)-LinfR)*
-              temp = LminR + (LminR - LinfR) * (mfexp(VBK(gp, 0) * VBK_seas(s) * (real_age(g, ALK_idx, a) - AFIX)) - 1.0) * Cohort_Growth(y, a);
+              temp = LminR + (LminR - LinfR) * (mfexp(VBK(gp, 0) * VBK_seas(s) * seasdur(s) * (real_age(g, ALK_idx, a) - AFIX)) - 1.0) * Cohort_Growth(y, a);
               Ave_Size(t, subseas, g, a) = pow(temp, inv_Richards);
             }
           } // done ageloop
@@ -923,7 +923,7 @@ FUNCTION void get_growth3(const int y, const int t, const int s, const int subse
             // NOTE:  there is no seasonal interpolation, age-specific K uses calendar age, not real age.  Maybe someday....
             else if (lin_grow(g, ALK_idx, a) == -1.0) // first time point beyond AFIX;  lin_grow will stay at -1 for all remaining subseas of this season
             {
-              Ave_Size(t, subseas, g, a) = Cohort_Lmin(gp, y, a) + (Cohort_Lmin(gp, y, a) - L_inf(gp)) * (mfexp(VBK(gp, a) * VBK_seas(s) * (real_age(g, ALK_idx, a) - AFIX) ) - 1.0) * Cohort_Growth(y, a);
+              Ave_Size(t, subseas, g, a) = Cohort_Lmin(gp, y, a) + (Cohort_Lmin(gp, y, a) - L_inf(gp)) * (mfexp(VBK(gp, a) * VBK_seas(s) * seasdur(s) * (real_age(g, ALK_idx, a) - AFIX) ) - 1.0) * Cohort_Growth(y, a);
             }
           }
           break;

@@ -487,11 +487,13 @@
         {
           ALK_idx = (s - 1) * N_subseas + subseas;
           settle_time = settle_g(g);
-          //   real_age is real age since settlement and is used in growth calculations
-          //   calen_age is real age since the beginning of the year in which spawning occurred
+          //  real_age is real age since settlement and is used in growth calculations
+          //  calen_age is real age since the beginning of the year in which spawning occurred
+          //  except with seas-as-years, sumseas is < 1.0 so calen_age needs to be in terms of season count, not age
+          //  so, divide by sumseas
           for (a = 0; a <= nages; a++)
           {
-            calen_age(g, ALK_idx, a) = r_ages(a) + azero_seas(s) + double(subseas - 1) / double(N_subseas) * seasdur(s);
+            calen_age(g, ALK_idx, a) = r_ages(a) + azero_seas(s) + double(subseas - 1) / double(N_subseas) * seasdur(s) / (sumseas / 12.);
             if (a < Settle_age(settle_time))
             {
               real_age(g, ALK_idx, a) = 0.;
@@ -979,10 +981,11 @@
   N_M_Grow_parms = N_natMparms + N_growparms;
   lin_grow.initialize();
   
-  echoinput << "g a seas subseas ALK_idx real_age calen_age lin_grow first_grow_age" << endl;
+  echoinput << "g a seas subseas ALK_idx real_age calen_age lin_grow first_grow_age setfirstgrow" << endl;
   for (g = 1; g <= gmorph; g++)
     if (use_morph(g) > 0)
     {
+      int setfirstgrowage = -1;
       for (a = 0; a <= nages; a++)
       {
         for (s = 1; s <= nseas; s++)
@@ -999,11 +1002,12 @@
             {
               lin_grow(g, ALK_idx, a) = 1.0; //  at the transition from linear to VBK growth
             }
-            else if (first_grow_age(g) == 0)
+            else if (setfirstgrowage == -1)
             {
               lin_grow(g, ALK_idx, a) = -1.0; //  flag for first age on growth curve beyond AFIX
               if (subseas == N_subseas) {
                 first_grow_age(g) = a;
+                setfirstgrowage = a;
               } //  so that lingrow will be -1 for rest of this season
             }
             else
@@ -1012,7 +1016,7 @@
             } //  flag for being in growth curve
   
             if (a < 4) echoinput << g << " " << a << " " << s << " " << subseas << " " << ALK_idx << " " << real_age(g, ALK_idx, a)
-                                 << " " << calen_age(g, ALK_idx, a) << " " << lin_grow(g, ALK_idx, a) << " " << first_grow_age(g) << endl;
+                                 << " " << calen_age(g, ALK_idx, a) << " " << lin_grow(g, ALK_idx, a) << " " << first_grow_age(g) << " " << setfirstgrowage << endl;
           }
       }
     }
