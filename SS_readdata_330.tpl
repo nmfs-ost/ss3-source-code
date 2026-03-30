@@ -92,6 +92,7 @@
   int eq_yr;
   int bio_yr;
   number sumseas;
+  number sumseas_yr;  // sum of season durations in nits of years.
 
   //  SS_Label_Info_2.1.3 #Set up seasons
   vector seasdur_half(1,nseas);   // half a season
@@ -107,12 +108,14 @@
     seasdur /= sumseas;
     seas_as_year = 0;
     sumseas = 12.0; // to be sure it is exactly 12.
+    sumseas_yr = 1.0;
   }
   else
   {
     seasdur /= 12.;
     seas_as_year = 1;
-    // sumseas will now be used as the duration of the pseudo-year, rather than assuming year has 12 months;
+    sumseas_yr = sumseas / 12.;
+    // sumseas_yr will now be used as the duration of the pseudo-year, rather than assuming year has 12 months;
     if (nseas > 1)
     {
       warnstream << "Error.  Can only have 1 season when during seasons as psuedo-years.";

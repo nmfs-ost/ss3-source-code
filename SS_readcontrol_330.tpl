@@ -896,8 +896,6 @@
                       //  SO! there needs to be an additional option to update the plus group mean size even if growth is not time-varying
                       //  but this should be implemented in popdyn, not in biofxn to avoid having to update calculations for all ages
   int do_ageK;
-  ivector first_grow_age(1,gmorph);
-!! first_grow_age.initialize();
 !! k=0;
 !! do_ageK=0;
 !! if(Grow_type<=2 || Grow_type==8) {k=4;}  //  AFIX and AFIX2
@@ -981,7 +979,7 @@
   N_M_Grow_parms = N_natMparms + N_growparms;
   lin_grow.initialize();
   
-  echoinput << "g a seas subseas ALK_idx real_age calen_age lin_grow first_grow_age setfirstgrow" << endl;
+  echoinput << "g a seas subseas ALK_idx real_age calen_age lin_grow" << endl;
   for (g = 1; g <= gmorph; g++)
     if (use_morph(g) > 0)
     {
@@ -1006,7 +1004,6 @@
             {
               lin_grow(g, ALK_idx, a) = -1.0; //  flag for first age on growth curve beyond AFIX
               if (subseas == N_subseas) {
-                first_grow_age(g) = a;
                 setfirstgrowage = a;
               } //  so that lingrow will be -1 for rest of this season
             }
@@ -1016,7 +1013,7 @@
             } //  flag for being in growth curve
   
             if (a < 4) echoinput << g << " " << a << " " << s << " " << subseas << " " << ALK_idx << " " << real_age(g, ALK_idx, a)
-                                 << " " << calen_age(g, ALK_idx, a) << " " << lin_grow(g, ALK_idx, a) << " " << first_grow_age(g) << " " << setfirstgrowage << endl;
+                                 << " " << calen_age(g, ALK_idx, a) << " " << lin_grow(g, ALK_idx, a) << endl;
           }
       }
     }
