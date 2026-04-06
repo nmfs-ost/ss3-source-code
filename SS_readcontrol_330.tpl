@@ -1379,9 +1379,9 @@
         }
         case 8:
         {
-          ParmLabel += "L_at_Amin_" + GenderLbl(gg) + GP_Lbl(gp);
+          ParmLabel += "L_at_Age0_" + GenderLbl(gg) + GP_Lbl(gp);
           ParmLabel += "Linf_" + GenderLbl(gg) + GP_Lbl(gp);
-          ParmLabel += "VonBert_K_" + GenderLbl(gg) + GP_Lbl(gp);
+          ParmLabel += "rmax_" + GenderLbl(gg) + GP_Lbl(gp);
           ParmLabel += "Cessation_" + GenderLbl(gg) + GP_Lbl(gp);
           ParCount += 4;
           break;
