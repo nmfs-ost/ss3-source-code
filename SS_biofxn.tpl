@@ -666,9 +666,19 @@ FUNCTION void get_growth2(const int y)
                   }
                   else // in linear phase for subseas
                   {
-                    Ave_Size(t + 1, 1, g, a) = len_bins(1) + lin_grow(g, ALK_idx, a) * (Cohort_Lmin(gp, y, a) - len_bins(1));
+                    Ave_Size(t + 1, 1, g, k2) = len_bins(1) + lin_grow(g, ALK_idx, a) * (Cohort_Lmin(gp, y, a) - len_bins(1));
                   }
-
+                  if (timevary_MG(y, 2) > 0)
+                  {
+                    t2 = Ave_Size(t + 1, 1, g, k2) - Ave_Size(t, 1, g, a); //  growth increment 
+                    if (t2 < 0.0) // trap to prevent decrease in size-at-age
+                    {
+                      join1 = 1.0 / (1.0 + mfexp(100. * t2 ));
+                      Ave_Size(t + 1, 1, g, k2) = Ave_Size(t, 1, g, a) * join1 + Ave_Size(t + 1, 1, g, k2) * (1 - join1);
+                      if (do_once == 1 && g == 1)
+                      echoinput << y << " " << a << " prevent shrink " << t2 << " " << join1 << " " << Ave_Size(t, 1, g, a) << " " << Ave_Size(t + 1, 1, g, k2) << endl;
+                    }
+                  }
                 } // done ageloop
                 break;
               }
@@ -683,6 +693,17 @@ FUNCTION void get_growth2(const int y)
                   if (a < nages || s < nseas)
                     Ave_Size(t + 1, 1, g, k2) = Ave_Size(t, 1, g, a) +
                         (-VBK_work - (-VBK_work / Richards(gp)) * (log(exp(Richards(gp) * (real_age(g, 1, a) + 1 - t50)) + 1) - log(exp(Richards(gp) * (real_age(g, 1, a) - t50)) + 1))) * seasdur(s);
+                  if (timevary_MG(y, 2) > 0)
+                  {
+                    t2 = Ave_Size(t + 1, 1, g, k2) - Ave_Size(t, 1, g, a); //  growth increment 
+                    if (t2 < 0.0) // trap to prevent decrease in size-at-age
+                    {
+                      join1 = 1.0 / (1.0 + mfexp(100. * t2 ));
+                      Ave_Size(t + 1, 1, g, k2) = Ave_Size(t, 1, g, a) * join1 + Ave_Size(t + 1, 1, g, k2) * (1 - join1);
+                      if (do_once == 1 && g == 1)
+                      echoinput << y << " " << a << " prevent shrink " << t2 << " " << join1 << " " << Ave_Size(t, 1, g, a) << " " << Ave_Size(t + 1, 1, g, k2) << endl;
+                    }
+                  }
                   if (a == nages && s == nseas)
                     plusgroupsize = Ave_Size(t, 1, g, nages) +
                         (-VBK_work - (-VBK_work / Richards(gp)) * (log(exp(Richards(gp) * (real_age(g, 1, a) + 1 - t50)) + 1) - log(exp(Richards(gp) * (real_age(g, 1, a) - t50)) + 1))) * seasdur(s);
@@ -745,7 +766,7 @@ FUNCTION void get_growth2(const int y)
               if (plusgroupsize_update == 0)  // Linf_decay == -998.
               {
                 Ave_Size(t + 1, 1, g, nages) = Ave_Size(t, 1, g, nages);
-                if (do_once == 999 && timevary_MG_firstyr == y)
+                if (do_once == 1 && timevary_MG_firstyr == y)
                   {
                     warnstream << "plus group mean size is carried forward and NOT being updated for time-varying growth for sex: " << sx(g) << ". Suggest setting Linf_decay = -997, or to a pos. value that approximates Z in the initial year for the plus group";
                     write_message (WARN, 0);
@@ -753,7 +774,7 @@ FUNCTION void get_growth2(const int y)
               }
               else  // Linf_decay == -997 or a positive Linf_decay is used in initial year growth
               {
-                if (do_once == 999 && timevary_MG_firstyr == y && g == 1)
+                if (do_once == 1 && timevary_MG_firstyr == y && g == 1)
                   {
                     warnstream << "plus group mean size is updated in years with time-vary growth beginning in: " << y << "; can turn this off with Linf_decay = -998";
                     write_message (NOTE, 0);
@@ -875,6 +896,17 @@ FUNCTION void get_growth3(const int y, const int t, const int s, const int subse
               temp = LminR + (LminR - LinfR) * (mfexp(VBK(gp, 0) * sumseas_yr * VBK_seas(s) * (real_age(g, ALK_idx, a) - AFIX)) - 1.0) * Cohort_Growth(y, a);
               Ave_Size(t, subseas, g, a) = pow(temp, inv_Richards);
             }
+            if (timevary_MG(y, 2) > 0)
+            {
+              t2 = Ave_Size(t, subseas, g, a) - Ave_Size(t, 1, g, a); //  growth increment 
+              if (t2 < 0.0) // trap to prevent decrease in size-at-age
+              {
+                join1 = 1.0 / (1.0 + mfexp(100. * t2 ));
+                Ave_Size(t, subseas, g, a) = Ave_Size(t, 1, g, a) * join1 + Ave_Size(t, subseas, g, a) * (1 - join1);
+                if (do_once == 1 && g == 1)
+                echoinput << y << " " << a << " prevent shrink " << t2 << " " << join1 << " " << Ave_Size(t, 1, g, a) << " " << Ave_Size(t, subseas, g, a) << endl;
+              }
+            }
           } // done ageloop
           break;
         } //  done Richards
@@ -888,6 +920,17 @@ FUNCTION void get_growth3(const int y, const int t, const int s, const int subse
             // calculate a full year's growth increment, then multiple by seasdur(s)
             Ave_Size(t, subseas, g, a) = Ave_Size(t, 1, g, a) +
                 (VBK_temp - (VBK_temp / Richards(gp)) * (log(exp(Richards(gp) * (real_age(g, ALK_idx, a) + 1 - t50)) + 1) - log(exp(Richards(gp) * (real_age(g, ALK_idx, a) - t50)) + 1))) * subseasdur(s, subseas);
+            if (timevary_MG(y, 2) > 0)
+            {
+              t2 = Ave_Size(t, subseas, g, a) - Ave_Size(t, 1, g, a); //  growth increment 
+              if (t2 < 0.0) // trap to prevent decrease in size-at-age
+              {
+                join1 = 1.0 / (1.0 + mfexp(100. * t2 ));
+                Ave_Size(t, subseas, g, a) = Ave_Size(t, 1, g, a) * join1 + Ave_Size(t, subseas, g, a) * (1 - join1);
+                if (do_once == 1 && g == 1)
+                echoinput << y << " " << a << " prevent shrink " << t2 << " " << join1 << " " << Ave_Size(t, 1, g, a) << " " << Ave_Size(t, subseas, g, a) << endl;
+              }
+            }
           } // done ageloop
           break;
         }
