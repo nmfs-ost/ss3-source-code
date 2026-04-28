@@ -83,7 +83,7 @@ PARAMETER_SECTION
   vector CV_const(1,N_GP*gender)
   matrix mgp_save(styr,YrMax,1,N_MGparm2);
   vector mgp_adj(1,N_MGparm2);
-  matrix Cohort_Growth(styr,YrMax,0,nages)
+  matrix Cohort_Growth(styr,YrMax,0,nages)  // multiplier on the growth increment
   3darray Cohort_Lmin(1,N_GP*gender,styr,YrMax,0,nages)
   vector VBK_seas(0,nseas);
 
