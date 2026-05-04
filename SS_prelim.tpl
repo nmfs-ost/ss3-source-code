@@ -1286,6 +1286,8 @@
   //  SS_Label_Info_6.8.3 #Call fxn get_growth2() to calculate size-at-age
   get_growth2(styr); //   in preliminary calcs
   get_growth3(styr, t_base + 1, 1, 1); //  this will apply linear below AFIX
+  if (WTage_rd == 0) // so bypass these checks if WTageRD == 1 (e.g. doing EWAA)
+  {
   gp = 0;
   for (gg = 1; gg <= gender; gg++)
     for (int GPat = 1; GPat <= N_GP; GPat++)
@@ -1330,7 +1332,9 @@
         }
       }
       }
-    }
+      }
+      }
+
 
   for (s = 1; s <= nseas; s++) //  get growth here in case needed for Lorenzen
   {
