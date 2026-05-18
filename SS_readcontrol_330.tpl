@@ -420,6 +420,8 @@
 
   3darray lin_grow(1,gmorph,1,nseas*N_subseas,0,nages)  //  during linear phase has fraction of Size at Afix
   ivector settle_g(1,gmorph)   //  settlement pattern for each platoon
+  imatrix dest_a(1,nseas,0,nages)  //  destination age for growth calcs
+  int add_age;
   int ALK_count;
 
  LOCAL_CALCS
@@ -429,6 +431,7 @@
   use_morph.initialize();
   TG_use_morph.initialize();
   keep_age.initialize();
+  dest_a.initialize();
   keep_age = 1.0;
   
   for (gp = 1; gp <= N_GP * gender; gp++)
@@ -979,6 +982,23 @@
   N_M_Grow_parms = N_natMparms + N_growparms;
   lin_grow.initialize();
   
+    for (s = 1; s <= nseas; s++)
+    {
+      if (s == nseas)
+        add_age = 1;
+      else
+        add_age = 0; //      advance age or not
+      for (a = 0; a <= nages; a++)
+      {
+        if (a == nages)
+          dest_a(s,a) = a;
+        else
+          dest_a(s,a) = a + add_age;
+      }
+    }
+  echoinput << "destination age for each age and season " << endl << dest_a << endl << endl;
+  // values in dest_a will be used in biofxn
+
   echoinput << "g a seas subseas ALK_idx real_age calen_age lin_grow" << endl;
   for (g = 1; g <= gmorph; g++)
     if (use_morph(g) > 0)
@@ -987,8 +1007,9 @@
       for (a = 0; a <= nages; a++)
       {
         for (s = 1; s <= nseas; s++)
-          for (subseas = 1; subseas <= N_subseas; subseas++)
           {
+            for (subseas = 1; subseas <= N_subseas; subseas++)
+            {
             ALK_idx = (s - 1) * N_subseas + subseas;
             //        if(a==0 && s<Bseas(g))
             //          {lin_grow(g,ALK_idx,a)=0.0;}  //  so fish are not yet born so will get zero length
@@ -1015,6 +1036,7 @@
             if (a < 4) echoinput << g << " " << a << " " << s << " " << subseas << " " << ALK_idx << " " << real_age(g, ALK_idx, a)
                                  << " " << calen_age(g, ALK_idx, a) << " " << lin_grow(g, ALK_idx, a) << endl;
           }
+        }
       }
     }
   // clang-format off
