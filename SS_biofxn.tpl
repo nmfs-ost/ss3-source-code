@@ -706,7 +706,7 @@ FUNCTION void get_growth2(const int y)
                           (-VBK_work - (-VBK_work / Richards(gp)) * (log(exp(Richards(gp) * (real_age(g, 1, a) + 1 - t50)) + 1) - log(exp(Richards(gp) * (real_age(g, 1, a) - t50)) + 1))) * seasdur(s);
                     }
                   }
-             if(a<4 && g==1) echoinput <<a<<" G2:-T50 "<<t50<<" VBK: "<<-VBK_work<<" start_size "<<Ave_Size(t, 1, g, a)<<" incre " << t2<<" result "<<Ave_Size(t + 1, 1, g, dest_a(s,a))<<endl;
+//             if(a<4 && g==1) echoinput <<a<<" G2:-T50 "<<t50<<" VBK: "<<-VBK_work<<" start_size "<<Ave_Size(t, 1, g, a)<<" incre " << t2<<" result "<<Ave_Size(t + 1, 1, g, dest_a(s,a))<<endl;
                 } // done ageloop
                 break;
               }
@@ -767,30 +767,35 @@ FUNCTION void get_growth2(const int y)
               else  // Linf_decay == -997 or a positive Linf_decay is used in initial year growth
               {
                 if (do_once == 1 && timevary_MG_firstyr == y && g == 1)
-                  {
-                    warnstream << "plus group mean size is updated in years with time-vary growth beginning in: " << y << "; can turn this off with Linf_decay = -998";
-                    write_message (NOTE, 0);
-                  }
-                    t2 = plusgroupsize - Ave_Size(t, 1, g, nages -1);
-                    if (t2 < 0.0) // trap to prevent decrease in size-at-age
-                    {
-                      join1 = 1.0 / (1.0 + mfexp(100. * t2 ));
-                      plusgroupsize = Ave_Size(t, 1, g, nages) * join1 + plusgroupsize * (1 - join1);
-                      if (do_once == 1 && g == 1)
-                      echoinput << y << " " << a << " prevent plusgroup shrink-G2 " << t2 << " " << join1 << " " << Ave_Size(t, 1, g, nages) << " " << plusgroupsize << endl;
-                    }
+                {
+                  warnstream << "plus group mean size is updated in years with time-vary growth beginning in: " << y << "; can turn this off with Linf_decay = -998";
+                  write_message (NOTE, 0);
+                }
+                t2 = plusgroupsize - Ave_Size(t, 1, g, nages -1);
+                if (t2 < 0.0) // trap to prevent decrease in size-at-age
+                {
+                  join1 = 1.0 / (1.0 + mfexp(100. * t2 ));
+                  plusgroupsize = Ave_Size(t, 1, g, nages) * join1 + plusgroupsize * (1 - join1);
+                  if (do_once == 1)
+                  echoinput << y << " " << a << " prevent plusgroup shrink-G2 " << t2 << " " << join1 << " " << Ave_Size(t, 1, g, nages) << " " << plusgroupsize << endl;
+                }
 
 // numbers weighted averaging uses numbers from the previous year (nseas) because numbers are not yet calculated for this year
-                    temp = ((natage(t - nseas, 1, g, nages - 1) + 0.01) * Ave_Size(t + 1, 1, g, nages) + (natage(t - nseas, 1, g, nages) + 0.01) * plusgroupsize) / (natage(t - nseas, 1, g, nages - 1) + natage(t - nseas, 1, g, nages) + 0.02);
-                if (do_once == 1 && g == 1)  // show calculation once
-                  echoinput << " Year: " << y << " " << s << "  +group calc: "
-                  << " N _entering: " << natage(t - nseas, 1, g, nages - 1) << " N_in_+group: " << natage(t - nseas, 1, g, nages) << " size in: " << Ave_Size(t + 1, 1, g, nages) << " old +size: " << plusgroupsize << " "
+                int plustime;
+                if (nseas == 1) 
+                {plustime = t;}
+                else
+                {plustime = t - nseas;}  // because numbers are not yet calculated for later seasons
+                temp = ((natage(plustime, 1, g, nages - 1) + 0.01) * Ave_Size(t + 1, 1, g, nages) + (natage(plustime, 1, g, nages) + 0.01) * plusgroupsize) / (natage(plustime, 1, g, nages - 1) + natage(plustime, 1, g, nages) + 0.02);
+                if (do_once == 1)  // show calculation once
+                echoinput << " Year: " << y << " " << s << "  +group calc: "
+                  << " N _entering: " << natage(plustime, 1, g, nages - 1) << " N_in_+group: " << natage(plustime, 1, g, nages) << " size in: " << Ave_Size(t + 1, 1, g, nages) << " old +size: " << plusgroupsize << " "
                   << "  new_+size " << temp << endl;
                 Ave_Size(t + 1, 1, g, nages) = temp;
               }
             }
 
-            if (do_once == 1 && g==1)
+            if (do_once == 1)
               echoinput << y << " " << s << " t+1: " << t+1 << " G2+ seas.sub: " << s << "." << 1 <<" g:" << g <<" size: " << Ave_Size(t, 1, g)(0, min(4, nages)) <<" size+: " << Ave_Size(t + 1, 1, g)(0, min(4, nages)) << " plusgroup: " << Ave_Size(t + 1, 1, g, nages) << " Linf: " << L_inf(gp)<< " VBK: " << VBK_by_seas << endl;
           } // end of season
 
