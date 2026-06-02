@@ -2,5 +2,6 @@
     "files.associations": {
         "*.tpl": "c",
         "*.htp": "c"
-    }
+    },
+    "C_Cpp.errorSquiggles": "disabled"
 }
