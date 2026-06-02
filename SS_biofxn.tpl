@@ -222,9 +222,10 @@ FUNCTION void get_growth2(const int y)
   int ALK_idx2; //  beginning of first subseas of next season
   int L_inf_plus = 0;
   dvariable plusgroupsize;
+  dvariable growth_incr;  // growth increment
   dvariable current_size;
   dvariable VBK_work;  // working version of VBK
-  dvariable VBK_by_seas; // = (mfexp(VBK_work * VBK_seas(s) * seasdur(s) ) - 1.0);  // for use inside the growth equation
+  dvariable VBK_by_seas; // = (mfexp(-VBK_work * VBK_seas(s) * seasdur(s) ) - 1.0);  // for use inside the growth equation
   dvariable LminR;
   dvariable LmaxR;
   dvariable LinfR;
@@ -269,7 +270,7 @@ FUNCTION void get_growth2(const int y)
         {
           Lmin(gp) = mgp_adj(Ip);
           Lmax_temp(gp) = mgp_adj(Ip + 1); //  size at A2; could be 999 to indicate L_inf
-          VBK(gp) = -mgp_adj(Ip + 2); // because always used as negative; assigns to all ages for which VBK is defined
+          VBK(gp) = mgp_adj(Ip + 2); // assigns to all ages for which VBK is defined
         }
         L_inf(gp) = Lmax_temp(gp);  //  because this is the typical assignment
         VBK_work = VBK(gp, 0); //  will be reset to VBK(gp,nages) if using age-specific K; note that this inherits the negative sign
@@ -366,7 +367,7 @@ FUNCTION void get_growth2(const int y)
             else
             {
               LmaxR = pow(Lmax_temp(gp), Richards(gp));
-              LinfR = LminR + (LmaxR - LminR) / (1. - mfexp(VBK_work * VBK_seas(0) * (AFIX_delta)));
+              LinfR = LminR + (LmaxR - LminR) / (1. - mfexp(-VBK_work * VBK_seas(0) * (AFIX_delta)));
               L_inf(gp) = pow(LinfR, inv_Richards);
             }
             break;
@@ -385,14 +386,14 @@ FUNCTION void get_growth2(const int y)
             L_inf(gp) = Lmax_temp(gp);
             // t50 is the calculated inflection age for the decline in K
             // note use of -VBK_work because VBK_work has negative sign
-            t50 = log(exp((L_inf(gp) - Lmin(gp)) * Richards(gp) / (-VBK_work * VBK_seas(0))) - 1.0) / Richards(gp);
+            t50 = log(exp((L_inf(gp) - Lmin(gp)) * Richards(gp) / (VBK_work * VBK_seas(0))) - 1.0) / Richards(gp);
             break;
           }
         }
 
         if (L_inf_plus == 1)
         {
-          L_inf(gp) = Lmin(gp) + (Lmax_temp(gp) - Lmin(gp)) / (1. - mfexp(VBK_work * VBK_seas(0) * (AFIX_delta)));
+          L_inf(gp) = Lmin(gp) + (Lmax_temp(gp) - Lmin(gp)) / (1. - mfexp(-VBK_work * VBK_seas(0) * (AFIX_delta)));
         }
 
         //  SS_Label_Info_16.2.3  #Set up Cohort_Lmin in Start Year
@@ -416,7 +417,7 @@ FUNCTION void get_growth2(const int y)
   #ifdef DO_ONCE
       if (do_once == 1)
       {
-        echoinput << "sex: " << gg << " GP: " << gp << " Lmin: " << Lmin(gp) << " L_max: " << Lmax_temp(gp) << " Linf: " << L_inf(gp) << " VBK@age: " << -VBK(gp) << endl;
+        echoinput << "sex: " << gg << " GP: " << gp << " Lmin: " << Lmin(gp) << " L_max: " << Lmax_temp(gp) << " Linf: " << L_inf(gp) << " VBK@age: " << VBK(gp) << endl;
         if (Grow_type == 2)
           echoinput << "  Richards: " << Richards(gp) << endl;
         if (Grow_type == 8)
@@ -463,7 +464,7 @@ FUNCTION void get_growth2(const int y)
               {
                 for (a = 0; a <= nages; a++)
                 {
-                  Ave_Size(styr, 1, g, a) = L_inf(gp) + (Lmin(gp) - L_inf(gp)) * mfexp(VBK_work * VBK_seas(0) * (real_age(g, 1, a) - AFIX));
+                  Ave_Size(styr, 1, g, a) = L_inf(gp) + (Lmin(gp) - L_inf(gp)) * mfexp(-VBK_work * VBK_seas(0) * (real_age(g, 1, a) - AFIX));
                 } // done ageloop
                 break;
               }
@@ -471,7 +472,7 @@ FUNCTION void get_growth2(const int y)
               {
                 for (a = 0; a <= nages; a++)
                 {
-                  temp = LinfR + (LminR - LinfR) * mfexp(VBK_work * VBK_seas(0) * (real_age(g, 1, a) - AFIX));
+                  temp = LinfR + (LminR - LinfR) * mfexp(-VBK_work * VBK_seas(0) * (real_age(g, 1, a) - AFIX));
                   Ave_Size(styr, 1, g, a) = pow(temp, inv_Richards);
                 } // done ageloop
                 break;
@@ -491,11 +492,11 @@ FUNCTION void get_growth2(const int y)
                   int k2 = max(0, a - 1);
                   if (lin_grow(g, ALK_idx, a) >= -1.0) // linear segment, or first time point beyond AFIX;
                   {
-                    Ave_Size(styr, 1, g, a) = Lmin(gp) + (Lmin(gp) - L_inf(gp)) * (mfexp(VBK(gp, k2) * VBK_seas(0) * (real_age(g, 1, a) - AFIX)) - 1.0);
+                    Ave_Size(styr, 1, g, a) = Lmin(gp) + (Lmin(gp) - L_inf(gp)) * (mfexp(-VBK(gp, k2) * VBK_seas(0) * (real_age(g, 1, a) - AFIX)) - 1.0);
                   }
                   else
                   {
-                    Ave_Size(styr, 1, g, a) = Ave_Size(styr, 1, g, k2) + (mfexp(VBK(gp, k2) * VBK_seas(0)) - 1.0) * (Ave_Size(styr, 1, g, k2) - L_inf(gp));
+                    Ave_Size(styr, 1, g, a) = Ave_Size(styr, 1, g, k2) + (mfexp(-VBK(gp, k2) * VBK_seas(0)) - 1.0) * (Ave_Size(styr, 1, g, k2) - L_inf(gp));
                   }
                 } // done ageloop
                 break;
@@ -508,7 +509,7 @@ FUNCTION void get_growth2(const int y)
                 //  k (steepness of the logistic function that models the reduction in the growth increment) = Richards
                 for (a = 0; a <= nages; a++)
                 {
-                  Ave_Size(styr, 1, g, a) = Lmin(gp) + -VBK_work * VBK_seas(0) * ((log(exp(-Richards(gp) * t50) + 1) - log(exp(Richards(gp) * (real_age(g, 1, a) - AFIX - t50)) + 1)) / Richards(gp) + real_age(g, 1, a) - AFIX);
+                  Ave_Size(styr, 1, g, a) = Lmin(gp) + VBK_work * VBK_seas(0) * ((log(exp(-Richards(gp) * t50) + 1) - log(exp(Richards(gp) * (real_age(g, 1, a) - AFIX - t50)) + 1)) / Richards(gp) + real_age(g, 1, a) - AFIX);
                 } // done ageloop
                 break;
               }
@@ -529,7 +530,7 @@ FUNCTION void get_growth2(const int y)
               temp = current_size;
               temp2 = mfexp(-Linf_decay); //  cannot use natM or Z because growth is calculated first
 
-              dvariable VBK_temp = (1.0 - mfexp(VBK_work * VBK_seas(0)));
+              dvariable VBK_temp = (1.0 - mfexp(-VBK_work * VBK_seas(0)));
               for (a = nages + 1; a <= 3 * nages; a++)
               {
                 temp4 *= temp2; //  decay numbers at age by exp(-0.xxx)
@@ -579,8 +580,8 @@ FUNCTION void get_growth2(const int y)
               ALK_idx2 = s * N_subseas + 1; //  for the beginning of first subseas of next season
             }
             // growth to next season
-            VBK_by_seas = (mfexp(VBK_work * VBK_seas(s) * seasdur(s) ) - 1.0);  // for use inside the growth equation
-//            if (do_once == 1) echoinput<<"ready to update growth by season " << y << " s " << s << endl;
+            VBK_by_seas = (1.0 - mfexp(-VBK_work * VBK_seas(s) * seasdur(s) ));  // for use inside the growth equation
+            if (do_once == 1) echoinput<<"ready to update growth by season " << y << " s " << s << " VBK_work " <<VBK_work << " " << VBK_by_seas<< endl;
             Ave_Size(t + 1, 1, g, 0) = Ave_Size(t, 1, g, 0); // carryforward, but may be overwritten in some circumstances
             switch (Grow_type)
             {
@@ -589,37 +590,37 @@ FUNCTION void get_growth2(const int y)
                 //  SS_Label_Info_16.2.4.2.1  #standard von Bert growth, loop ages to get size at age at beginning of next season (t+1) which is subseas=1
                 for (a = 0; a <= nages; a++)
                 {
-                  // NOTE:  there is no seasonal interpolation, or real age adjustment for age-specific K.  Maybe someday....
                   if (lin_grow(g, ALK_idx, a) == -2.0) //  so doing growth curve
                   {
-                    t2 = Ave_Size(t, 1, g, a) - L_inf(gp); //  remaining growth potential from first subseas
-                    if (timevary_MG(y, 2) > 0 && t2 > -1.)
+                    t2 = L_inf(gp) - Ave_Size(t, 1, g, a); //  remaining growth potential from first subseas
+                    if (timevary_MG(y, 2) > 0)
                     {
-                      join1 = 1.0 / (1.0 + mfexp(-(50. * t2 / (1.0 + fabs(t2))))); //  note the logit transform is not perfect, so growth near Linf will not be exactly same as with native growth function
+                      join1 = 1.0 / (1.0 + mfexp((100. * t2 / (1.0 + fabs(t2))))); //  note the logit transform is not perfect, so growth near Linf will not be exactly same as with native growth function
                       t2 *= (1. - join1); // trap to prevent decrease in size-at-age
+            if (a < 4 && g == 1) echoinput << " trap " << a << " delta " << L_inf(gp) - Ave_Size(t, 1, g, a) << " t2 " << t2 << " join " << join1 << " vbk " << VBK_by_seas << endl;
                     }
 
                     //  SS_Label_info_16.2.4.2.1.1  #calc size at end of the season, which will be size at begin of next season using current seasons growth parms
                     //  with dest_a(s,a) adding an age if at the end of the year
                     if ((a < nages || s < nseas))
                       Ave_Size(t + 1, 1, g, dest_a(s,a)) = Ave_Size(t, 1, g, a) + VBK_by_seas * t2 * Cohort_Growth(y, a);
-//                    if (a == nages && s == nseas)
-                    if (a == nages)
+                    if (a == nages && s == nseas)
                     {
-                      plusgroupsize = Ave_Size(t, 1, g, nages) + VBK_by_seas * t2 * Cohort_Growth(y, nages);
+                      plusgroupsize = Ave_Size(t, 1, g, nages) + VBK_by_seas * t2 * Cohort_Growth(y, nages);  // growth of fish already in plus group
+                      if (do_once == 1 && g == 1) echoinput << y << " prev._plus " << Ave_Size(t, 1, g, nages) << " next_at_nages " << Ave_Size(t + 1, 1, g, nages)  << " plusgroup " << plusgroupsize << endl;
                     }
                   }
                   else if (lin_grow(g, ALK_idx, a) == -1.0) // first time point beyond AFIX;  lin_grow will stay at -1 for all remaining subseas of this season
                   {
-                    Ave_Size(t + 1, 1, g, dest_a(s,a)) = Cohort_Lmin(gp, y, a) + (Cohort_Lmin(gp, y, a) - L_inf(gp)) * (mfexp(VBK_work * sumseas_yr * VBK_seas(s) * (real_age(g, ALK_idx2, dest_a(s,a)) - AFIX)) - 1.0) * Cohort_Growth(y, a);
+                    Ave_Size(t + 1, 1, g, dest_a(s,a)) = Cohort_Lmin(gp, y, a) + (Cohort_Lmin(gp, y, a) - L_inf(gp)) * (mfexp(-VBK_work * sumseas_yr * VBK_seas(s) * (real_age(g, ALK_idx2, dest_a(s,a)) - AFIX)) - 1.0) * Cohort_Growth(y, a);
                   }
                   else // in linear phase
                   {
                     Ave_Size(t + 1, 1, g, dest_a(s,a)) = len_bins(1) + lin_grow(g, ALK_idx, a) * (Cohort_Lmin(gp, y, a) - len_bins(1));
                   }
-                  if (a < 4 && g == 1) echoinput << t << " " << a << " " << dest_a(s,a) <<" " << Ave_Size(t, 1, g, a) << " " << Ave_Size(t + 1, 1, g, dest_a(s,a)) << endl;
+                  if (a < 4 && g == 1) echoinput << t << " " << a << " " << dest_a(s,a) <<" " << Ave_Size(t, 1, g, a) << " " << Ave_Size(t + 1, 1, g, dest_a(s,a)) << " T2: " << t2 << " VBK: " <<VBK_by_seas << " " << VBK_work * sumseas_yr * VBK_seas(s)<<endl;
 //                     y << " s: " << s <<" ALKidx: " << ALK_idx <<" "<<ALK_idx2<< " a: " << a <<" real_a: "<<real_age(g, ALK_idx2, a)<< " lin: " << lin_grow(g, ALK_idx, a) << " "<< Ave_Size(t, 1, g, a) <<
-//                   " first " << Cohort_Lmin(gp, y, a) + (Cohort_Lmin(gp, y, a) - L_inf(gp)) * (mfexp(VBK_work * VBK_seas(s) * seasdur(s) * (real_age(g, ALK_idx2, a) - AFIX)) - 1.0) * Cohort_Growth(y, a)<<
+//                   " first " << Cohort_Lmin(gp, y, a) + (Cohort_Lmin(gp, y, a) - L_inf(gp)) * (mfexp(-VBK_work * VBK_seas(s) * seasdur(s) * (real_age(g, ALK_idx2, a) - AFIX)) - 1.0) * Cohort_Growth(y, a)<<
 //                   " grow " << Ave_Size(t, 1, g, a) + VBK_by_seas * t2 * Cohort_Growth(y, a) <<
 //                   " new " << Ave_Size(t + 1, 1, g, dest_a(s,a))<< endl;
                 } // done ageloop
@@ -632,7 +633,7 @@ FUNCTION void get_growth2(const int y)
                   if (lin_grow(g, ALK_idx, a) == -2.0)
                   {
                     temp = pow(Ave_Size(t, 1, g, a), Richards(gp));  // transform current size
-                    t2 = temp - LinfR; //  remaining growth potential in transformed units
+                    t2 = LinfR - temp; //  remaining growth potential in transformed units
                     temp1 = pow(temp + (VBK_by_seas * t2), inv_Richards);  //  new size without cohort growth dev
 //                    if(a<4 && g==1) echoinput << y<<" "<<a <<" lingrow: "<<lin_grow(g, ALK_idx, a)<<" start "<<Ave_Size(t, 1, g, a)<<" t2 "<<t2<<" result "<<temp1;
                     temp1 = Ave_Size(t, 1, g, a) + (temp1 - Ave_Size(t, 1, g, a)) * Cohort_Growth(y, a);
@@ -640,14 +641,14 @@ FUNCTION void get_growth2(const int y)
                     if (a == nages && s == nseas)
                       {
                         plusgroupsize = temp1;
-                        if (do_once == 1 && g == 1) echoinput << y << " at_nages " << Ave_Size(t, 1, g, nages) << " plusgroup " << plusgroupsize << endl;
+                        if (do_once == 1 && g == 1) echoinput << y << " prev._plus " << Ave_Size(t, 1, g, nages) << " next_at_nages " << Ave_Size(t + 1, 1, g, nages)  << " plusgroup " << plusgroupsize << endl;
                       }
                     else
                       {Ave_Size(t + 1, 1, g, dest_a(s,a)) = temp1;}
                   }
                   else if (lin_grow(g, ALK_idx, a) == -1.0) // first time point beyond AFIX;  lin_grow will stay at -1 for all remaining subseas of this season
                   {
-                    t2 = (LminR - LinfR) * (mfexp(VBK_work * sumseas_yr * VBK_seas(s) * (real_age(g, ALK_idx2, dest_a(s,a)) - AFIX)) - 1.0);  // growth potential in transform units
+                    t2 = (LminR - LinfR) * (mfexp(-VBK_work * sumseas_yr * VBK_seas(s) * (real_age(g, ALK_idx2, dest_a(s,a)) - AFIX)) - 1.0);  // growth potential in transform units
                     temp1 = pow((LminR + t2), inv_Richards);  // new size in real units, w/o cohort_growth
                     Ave_Size(t + 1, 1, g, dest_a(s,a)) =  Lmin(gp) + (temp1 - Lmin(gp)) * Cohort_Growth(y, a);
 //                    if(a<4 && g==1) echoinput << y<<" "<<a <<" lingrow: "<<lin_grow(g, ALK_idx, a)<<" first "<<Ave_Size(t, 1, g, a)<<" t2 "<<t2<<" result "<<Ave_Size(t + 1, 1, g, k2)<<endl;
@@ -684,7 +685,7 @@ FUNCTION void get_growth2(const int y)
                     if (a < nages || s < nseas)
                       {
                         Ave_Size(t + 1, 1, g, dest_a(s,a)) = Ave_Size(t, 1, g, a) +
-                        (-VBK_work - (-VBK_work / Richards(gp)) * (log(exp(Richards(gp) * (real_age(g, 1, a) + 1 - t50)) + 1) - log(exp(Richards(gp) * (real_age(g, 1, a) - t50)) + 1))) * seasdur(s);
+                        (VBK_work - (VBK_work / Richards(gp)) * (log(exp(Richards(gp) * (real_age(g, 1, a) + 1 - t50)) + 1) - log(exp(Richards(gp) * (real_age(g, 1, a) - t50)) + 1))) * seasdur(s);
                       }
                     t2 = Ave_Size(t + 1, 1, g, dest_a(s,a)) - Ave_Size(t, 1, g, a); //  growth increment 
                     if (timevary_MG(y, 2) > 0)
@@ -703,7 +704,7 @@ FUNCTION void get_growth2(const int y)
                     if (a == nages && s == nseas)
                     {
                       plusgroupsize = Ave_Size(t, 1, g, nages) +
-                          (-VBK_work - (-VBK_work / Richards(gp)) * (log(exp(Richards(gp) * (real_age(g, 1, a) + 1 - t50)) + 1) - log(exp(Richards(gp) * (real_age(g, 1, a) - t50)) + 1))) * seasdur(s);
+                          (VBK_work - (VBK_work / Richards(gp)) * (log(exp(Richards(gp) * (real_age(g, 1, a) + 1 - t50)) + 1) - log(exp(Richards(gp) * (real_age(g, 1, a) - t50)) + 1))) * seasdur(s);
                     }
                   }
 //             if(a<4 && g==1) echoinput <<a<<" G2:-T50 "<<t50<<" VBK: "<<-VBK_work<<" start_size "<<Ave_Size(t, 1, g, a)<<" incre " << t2<<" result "<<Ave_Size(t + 1, 1, g, dest_a(s,a))<<endl;
@@ -724,28 +725,32 @@ FUNCTION void get_growth2(const int y)
                   // NOTE:  there is no seasonal interpolation, or real age adjustment for age-specific K.  Maybe someday....
                   if (lin_grow(g, ALK_idx, a) == -2.0) //  so doing growth curve
                   {
-                    t2 = Ave_Size(t, 1, g, a) - L_inf(gp); //  remaining growth potential from first subseas
-                    if (timevary_MG(y, 2) > 0 && t2 > -1.)
+                    t2 = L_inf(gp) - Ave_Size(t, 1, g, a); //  remaining growth potential from first subseas
+                    if (timevary_MG(y, 2) > 0)
                     {
-                      join1 = 1.0 / (1.0 + mfexp(-(50. * t2 / (1.0 + fabs(t2))))); //  note the logit transform is not perfect, so growth near Linf will not be exactly same as with native growth function
+                      join1 = 1.0 / (1.0 + mfexp((100. * t2 / (1.0 + fabs(t2))))); //  note the logit transform is not perfect, so growth near Linf will not be exactly same as with native growth function
                       t2 *= (1. - join1); // trap to prevent decrease in size-at-age
                     }
-
+          if (a < 4 && g == 1) echoinput << " trap " << a << " delta " << L_inf(gp) - Ave_Size(t, 1, g, a) << " t2 " << t2 << " join " << join1 << " VBK: " << (1.0 - mfexp(-VBK(gp, a) * VBK_seas(s) * seasdur(s) ))<< endl;
                     //  SS_Label_info_16.2.4.2.1.1  #calc size at end of the season, which will be size at begin of next season using current seasons growth parms
                     //  with dest_a(s,a) adding an age if at the end of the year
                     if ((a < nages || s < nseas))
-                      Ave_Size(t + 1, 1, g, dest_a(s,a)) = Ave_Size(t, 1, g, a) + (mfexp(VBK(gp, a) * VBK_seas(s) * seasdur(s)) - 1.0) * t2 * Cohort_Growth(y, a);
+                      Ave_Size(t + 1, 1, g, dest_a(s,a)) = Ave_Size(t, 1, g, a) + (1.0 - mfexp(-VBK(gp, a) * VBK_seas(s) * seasdur(s) )) * t2 * Cohort_Growth(y, a);
                     if (a == nages && s == nseas)
-                      plusgroupsize = Ave_Size(t, 1, g, nages) + (mfexp(VBK(gp, nages) * VBK_seas(s) * seasdur(s)) - 1.0) * t2 * Cohort_Growth(y, nages);
+                    {
+                      plusgroupsize = Ave_Size(t, 1, g, nages) + (1.0 - mfexp(-VBK(gp, a) * VBK_seas(s) * seasdur(s) )) * t2 * Cohort_Growth(y, nages);  // growth of fish already in plus group
+                      if (do_once == 1 && g == 1) echoinput << y << " prev._plus " << Ave_Size(t, 1, g, nages) << " next_at_nages " << Ave_Size(t + 1, 1, g, nages)  << " plusgroup " << plusgroupsize << endl;
+                    }
                   }
                   else if (lin_grow(g, ALK_idx, a) == -1.0) // first time point beyond AFIX;  lin_grow will stay at -1 for all remaining subseas of this season
                   {
-                    Ave_Size(t + 1, 1, g, dest_a(s,a)) = Cohort_Lmin(gp, y, a) + (Cohort_Lmin(gp, y, a) - L_inf(gp)) * (mfexp(VBK(gp, a) * sumseas_yr * VBK_seas(s) * (real_age(g, ALK_idx2, dest_a(s,a)) - AFIX)) - 1.0) * Cohort_Growth(y, a);
+                    Ave_Size(t + 1, 1, g, dest_a(s,a)) = Cohort_Lmin(gp, y, a) + (Cohort_Lmin(gp, y, a) - L_inf(gp)) * (mfexp(-VBK(gp, a) * sumseas_yr * VBK_seas(s) * (real_age(g, ALK_idx2, dest_a(s,a)) - AFIX)) - 1.0) * Cohort_Growth(y, a);
                   }
                   else // in linear phase
                   {
                     Ave_Size(t + 1, 1, g, a) = len_bins(1) + lin_grow(g, ALK_idx, a) * (Cohort_Lmin(gp, y, a) - len_bins(1));
                   }
+                  if (a < 4 && g == 1) echoinput << t << " " << a << " " << dest_a(s,a) <<" " << Ave_Size(t, 1, g, a) << " " << Ave_Size(t + 1, 1, g, dest_a(s,a)) << " T2: " << t2 << " VBK: " <<VBK_by_seas << " " << VBK_work * sumseas_yr * VBK_seas(s)<<endl;
                 } // done ageloop
                 break;
               }
@@ -786,11 +791,13 @@ FUNCTION void get_growth2(const int y)
                 {plustime = t;}
                 else
                 {plustime = t - nseas;}  // because numbers are not yet calculated for later seasons
-                temp = ((natage(plustime, 1, g, nages - 1) + 0.01) * Ave_Size(t + 1, 1, g, nages) + (natage(plustime, 1, g, nages) + 0.01) * plusgroupsize) / (natage(plustime, 1, g, nages - 1) + natage(plustime, 1, g, nages) + 0.02);
+                temp = ((natage(plustime, 1, g, nages - 1) + 1.0e-9) * Ave_Size(t + 1, 1, g, nages)
+                      + (natage(plustime, 1, g, nages) + 1.0e-9) * plusgroupsize) /
+                        (natage(plustime, 1, g, nages - 1) + natage(plustime, 1, g, nages) + 2.0e-9);
                 if (do_once == 1)  // show calculation once
-                echoinput << " Year: " << y << " " << s << "  +group calc: "
-                  << " N _entering: " << natage(plustime, 1, g, nages - 1) << " N_in_+group: " << natage(plustime, 1, g, nages) << " size in: " << Ave_Size(t + 1, 1, g, nages) << " old +size: " << plusgroupsize << " "
-                  << "  new_+size " << temp << endl;
+                echoinput << " Year: " << y << " s:" << s << " g:" << g << " +group_calc_N_entering: " << natage(plustime, 1, g, nages - 1)
+                  << " N_in_+group: " << natage(plustime, 1, g, nages) << " size_in: " << Ave_Size(t + 1, 1, g, nages) << " old_+size: " 
+                  << plusgroupsize << " " << "  new_+size " << temp << endl;
                 Ave_Size(t + 1, 1, g, nages) = temp;
               }
             }
@@ -835,6 +842,8 @@ FUNCTION void get_growth3(const int y, const int t, const int s, const int subse
   dvariable LminR;
   dvariable inv_Richards;
   dvariable t50;
+  dvariable growth_incr;  // growth increment
+
 
   ALK_idx = (s - 1) * N_subseas + subseas; //  note that this changes a global value
   for (g = g_Start(1) + N_platoon; g <= gmorph; g += N_platoon) // looping the middle platoons for each sex*gp
@@ -850,17 +859,21 @@ FUNCTION void get_growth3(const int y, const int t, const int s, const int subse
           {
             //  SS_Label_Info_16.5.1  #calc subseas size-at-age from begin season size-at-age, accounting for transition from linear to von Bert as necessary
             //  subseasdur is cumulative time to start of this subseas
-            if (lin_grow(g, ALK_idx, a) == -2.0) //  so doing growth curve
+            if (lin_grow(g, ALK_idx, a) == -2.0) //  doing growth curve
             {
-              t2 = Ave_Size(t, 1, g, a) - L_inf(gp); //  remaining growth potential from first subseas
+              t2 = L_inf(gp) - Ave_Size(t, 1, g, a); //  remaining growth potential from first subseas
+              growth_incr = (mfexp(-VBK(gp, 0) * VBK_seas(s) * subseasdur(s, subseas)) - 1.0) * t2;  //  * Cohort_Growth(y, a);
+                if(a<4) echoinput << "in G3.   t2: " << t2 << " start " << Ave_Size(t, 1, g, a) << " growincr "<<growth_incr;
               //  the constant in join needs to be at least 30 to get rapid transition
-              //   the consequence of (t2>-1.) should be investigated for effect on gradient
-              if (timevary_MG(y, 2) > 0 && t2 > -1.)
+              if (timevary_MG(y, 2) > 0)
               {
-                join1 = 1.0 / (1.0 + mfexp(-(50. * t2 / (1.0 + fabs(t2))))); //  note the logit transform is not perfect, so growth near Linf will not be exactly same as with native growth function
-                t2 *= (1. - join1); // trap to prevent decrease in size-at-age
+                growth_incr *= Cohort_Growth(y, a);
+//                join1 = 1.0 / (1.0 + mfexp(-50. * growth_incr));
+                join1 = 1.0 / (1.0 + mfexp(-(50. * growth_incr / (1.0 + fabs(growth_incr))))); //  note the logit transform is not perfect, so growth near Linf will not be exactly same as with native growth function
+                growth_incr *= (1. - join1); // trap to prevent decrease in size-at-age
               }
-              Ave_Size(t, subseas, g, a) = Ave_Size(t, 1, g, a) + (mfexp(VBK(gp, 0) * VBK_seas(s) * subseasdur(s, subseas)) - 1.0) * t2 * Cohort_Growth(y, a);
+              Ave_Size(t, subseas, g, a) = Ave_Size(t, 1, g, a) + growth_incr;  //  (mfexp(-VBK(gp, 0) * VBK_seas(s) * subseasdur(s, subseas)) - 1.0) * t2 * Cohort_Growth(y, a);
+                if(a<4) echoinput << " join: " << join1 << " growincr "<<growth_incr<<" new " << Ave_Size(t, subseas, g, a)<< endl;
             }
             else if (lin_grow(g, ALK_idx, a) >= 0.0) // in linear phase for subseas
             {
@@ -868,7 +881,7 @@ FUNCTION void get_growth3(const int y, const int t, const int s, const int subse
             }
             else if (lin_grow(g, ALK_idx, a) == -1.0) // first time point beyond AFIX;  lin_grow will stay at -1 for all remaining subseas of this season
             {
-              Ave_Size(t, subseas, g, a) = Cohort_Lmin(gp, y, a) + (Cohort_Lmin(gp, y, a) - L_inf(gp)) * (mfexp(VBK(gp, 0) * sumseas_yr * VBK_seas(s) * (real_age(g, ALK_idx, a) - AFIX)) - 1.0) * Cohort_Growth(y, a);
+              Ave_Size(t, subseas, g, a) = Cohort_Lmin(gp, y, a) + (Cohort_Lmin(gp, y, a) - L_inf(gp)) * (mfexp(-VBK(gp, 0) * sumseas_yr * VBK_seas(s) * (real_age(g, ALK_idx, a) - AFIX)) - 1.0) * Cohort_Growth(y, a);
             }
           }
           break;
@@ -887,16 +900,25 @@ FUNCTION void get_growth3(const int y, const int t, const int s, const int subse
 
             if (lin_grow(g, ALK_idx, a) == -2.0) //  so doing growth curve
             {
-//              temp = pow(Ave_Size(t, 1, g, a), Richards(gp));
-//              t2 = temp - LinfR; //  remaining growth potential
-//              temp += (mfexp(VBK(gp, 0) * subseasdur(s, subseas) * VBK_seas(s)) - 1.0) * t2 * Cohort_Growth(y, a);
-//              Ave_Size(t, subseas, g, a) = pow(temp, inv_Richards);
-
               temp = pow(Ave_Size(t, 1, g, a), Richards(gp));
-              t2 = temp - LinfR; //  remaining growth potential in transformed units
-              temp1 = (mfexp(VBK(gp, 0) * VBK_seas(s) * subseasdur(s, subseas)) - 1.0) * t2;  // growth increment in transform units w/o cohort growth dev
+              t2 = LinfR - temp; //  remaining growth potential in transformed units
+              temp1 = (mfexp(-VBK(gp, 0) * VBK_seas(s) * subseasdur(s, subseas)) - 1.0) * t2;  // growth increment in transform units w/o cohort growth dev
               Ave_Size(t, subseas, g, a) = pow((temp + temp1), inv_Richards);  // new size
 //              if(a<4 && g==1) echoinput <<" grow "<<Ave_Size(t, 1, g, a)<<" result "<<Ave_Size(t, subseas, g, a)<<" t2 "<<t2 <<" temp1 " << temp1<<" VB*time " <<(VBK(gp, 0) * VBK_seas(s) * subseasdur(s, subseas))<<endl;
+              if (timevary_MG(y, 2) > 0)
+              {
+                growth_incr = (Ave_Size(t, subseas, g, a) - Ave_Size(t, 1, g, a)) * Cohort_Growth(y, a); //  growth increment with cohort growth dev
+  //                if (do_once == 1 && g == 1 && a<4)
+  //                echoinput << " ; delta " <<Ave_Size(t, subseas, g, a) <<" "<<Ave_Size(t, 1, g, a) << " t2: "<< t2<<endl;
+  //              if (t2 < 0.0) // trap to prevent decrease in size-at-age
+                {
+                  join1 = 1.0 / (1.0 + mfexp(100. * growth_incr ));
+                  growth_incr *= (1. - join1); // trap to prevent negative growth increment
+                  Ave_Size(t, subseas, g, a) = Ave_Size(t, 1, g, a) + growth_incr;
+  //                if (do_once == 1 && g == 1)
+  //                echoinput << y << " " << a << " prevent shrink-G3 " << t2 << " " << join1 << " start " << Ave_Size(t, 1, g, a) << " after " << Ave_Size(t, subseas, g, a) << endl;
+                }
+              }
             }
             else if (lin_grow(g, ALK_idx, a) >= 0.0) // in linear phase for subseas
             {
@@ -905,35 +927,23 @@ FUNCTION void get_growth3(const int y, const int t, const int s, const int subse
             }
             else if (lin_grow(g, ALK_idx, a) == -1.0) // first time point beyond AFIX;  lin_grow will stay at -1 for all remaining subseas of this season
             {
-              temp = LminR + (LminR - LinfR) * (mfexp(VBK(gp, 0)* VBK_seas(s) * sumseas_yr * (real_age(g, ALK_idx, a) - AFIX)) - 1.0);
+              temp = LminR + (LminR - LinfR) * (mfexp(-VBK(gp, 0)* VBK_seas(s) * sumseas_yr * (real_age(g, ALK_idx, a) - AFIX)) - 1.0);
 //            if(a<4 && g==1) echoinput <<" temp " << temp;
-              temp = LinfR + (LminR - LinfR) * mfexp(VBK(gp, 0)* VBK_seas(s) * sumseas_yr * (real_age(g, ALK_idx, a) - AFIX));
+              temp = LinfR + (LminR - LinfR) * mfexp(-VBK(gp, 0)* VBK_seas(s) * sumseas_yr * (real_age(g, ALK_idx, a) - AFIX));
 //            if(a<4 && g==1) echoinput <<" alt " << temp << endl;
               Ave_Size(t, subseas, g, a) = pow(temp, inv_Richards);  // growth in real units
 //              if(a<4 && g==1) echoinput <<" first "<<Ave_Size(t, 1, g, a)<<" result "<<Ave_Size(t, subseas, g, a)<<" temp " << temp<<" LminR " <<LminR <<" " << LinfR<<endl;
             }
- /*
-            if (timevary_MG(y, 2) > 0)
-            {
-              t2 = (Ave_Size(t, subseas, g, a) - Ave_Size(t, 1, g, a)) * Cohort_Growth(y, a); //  growth increment with cohort growth dev
-                if (do_once == 1 && g == 1 && a<4)
-                echoinput << " ; delta " <<Ave_Size(t, subseas, g, a) <<" "<<Ave_Size(t, 1, g, a) << " t2: "<< t2<<endl;
-              if (t2 < 0.0) // trap to prevent decrease in size-at-age
-              {
-                join1 = 1.0 / (1.0 + mfexp(100. * t2 ));
-                Ave_Size(t, subseas, g, a) = Ave_Size(t, 1, g, a) * join1 + Ave_Size(t, subseas, g, a) * (1.0 - join1);
-                if (do_once == 1 && g == 1)
-                echoinput << y << " " << a << " prevent shrink-G3 " << t2 << " " << join1 << " start " << Ave_Size(t, 1, g, a) << " after " << Ave_Size(t, subseas, g, a) << endl;
-              }
-            }
- */            
+ 
+
+           
           } // done ageloop
 //        echoinput << t << " G3-after seas.sub: " << s << "." << subseas <<" g:" << g <<" size:  " << Ave_Size(t, subseas, g)(0, min(6, nages)) << " plusgroup: " << Ave_Size(t, 1, g, nages) << endl;
           break;
         } //  done Richards
         case 8: // Cessation
         {
-          dvariable VBK_temp = -VBK(gp, 0) * VBK_seas(0) * sumseas_yr;
+          dvariable VBK_temp = VBK(gp, 0) * VBK_seas(0) * sumseas_yr;
           // t50 is the calculated inflection age for the decline in K
           t50 = log(exp((L_inf(gp) - Lmin(gp)) * Richards(gp) / VBK_temp) - 1.0) / Richards(gp);
           for (a = 0; a <= nages; a++)
@@ -950,7 +960,7 @@ FUNCTION void get_growth3(const int y, const int t, const int s, const int subse
             if (timevary_MG(y, 2) > 0)
             {
               t2 *= Cohort_Growth(y, a); //  growth increment 
-              if (t2 < 0.0) // trap to prevent decrease in size-at-age
+//              if (t2 < 0.0) // trap to prevent decrease in size-at-age
               {
                 join1 = 1.0 / (1.0 + mfexp(100. * t2 ));
                 t2 *= (1. - join1); // trap to prevent negative growth increment
@@ -978,15 +988,18 @@ FUNCTION void get_growth3(const int y, const int t, const int s, const int subse
             //  subseasdur is cumulative time to start of this subseas
             if (lin_grow(g, ALK_idx, a) == -2.0) //  so doing growth curve
             {
-              t2 = Ave_Size(t, 1, g, a) - L_inf(gp); //  remaining growth potential from first subseas
-              //  the constant in join needs to be at least 30 to get rapid transition
-              //   the consequence of (t2>-1.) should be investigated for effect on gradient
-              if (timevary_MG(y, 2) > 0 && t2 > -1.)
+              t2 = L_inf(gp) - Ave_Size(t, 1, g, a); //  remaining growth potential from first subseas
+              growth_incr = (mfexp(-VBK(gp, a) * VBK_seas(s) * subseasdur(s, subseas)) - 1.0) * t2;  //  * Cohort_Growth(y, a);
+                if(a<4) echoinput << "in G3.   t2: " << t2 << " start " << Ave_Size(t, 1, g, a) << " growincr "<<growth_incr;
+            //  the constant in join needs to be at least 30 to get rapid transition
+              if (timevary_MG(y, 2) > 0)
               {
-                join1 = 1.0 / (1.0 + mfexp(-(50. * t2 / (1.0 + fabs(t2))))); //  note the logit transform is not perfect, so growth near Linf will not be exactly same as with native growth function
-                t2 *= (1. - join1); // trap to prevent decrease in size-at-age
+                growth_incr *= Cohort_Growth(y, a);
+                join1 = 1.0 / (1.0 + mfexp(-(50. * growth_incr / (1.0 + fabs(growth_incr))))); //  note the logit transform is not perfect, so growth near Linf will not be exactly same as with native growth function
+                growth_incr *= (1. - join1); // trap to prevent decrease in size-at-age
               }
-              Ave_Size(t, subseas, g, a) = Ave_Size(t, 1, g, a) + (mfexp(VBK(gp, a) * VBK_seas(s) * subseasdur(s, subseas)) - 1.0) * t2 * Cohort_Growth(y, a);
+              Ave_Size(t, subseas, g, a) = Ave_Size(t, 1, g, a) + growth_incr;  //  (mfexp(-VBK(gp, 0) * VBK_seas(s) * subseasdur(s, subseas)) - 1.0) * t2 * Cohort_Growth(y, a);
+                if(a<4) echoinput << " join: " << join1 << " growincr "<<growth_incr<<" new " << Ave_Size(t, subseas, g, a)<< endl;
             }
             else if (lin_grow(g, ALK_idx, a) >= 0.0) // in linear phase for subseas
             {
@@ -995,7 +1008,7 @@ FUNCTION void get_growth3(const int y, const int t, const int s, const int subse
             // NOTE:  there is no seasonal interpolation, age-specific K uses calendar age, not real age.  Maybe someday....
             else if (lin_grow(g, ALK_idx, a) == -1.0) // first time point beyond AFIX;  lin_grow will stay at -1 for all remaining subseas of this season
             {
-              Ave_Size(t, subseas, g, a) = Cohort_Lmin(gp, y, a) + (Cohort_Lmin(gp, y, a) - L_inf(gp)) * (mfexp(VBK(gp, a) * sumseas_yr * VBK_seas(s) * (real_age(g, ALK_idx, a) - AFIX) ) - 1.0) * Cohort_Growth(y, a);
+              Ave_Size(t, subseas, g, a) = Cohort_Lmin(gp, y, a) + (Cohort_Lmin(gp, y, a) - L_inf(gp)) * (mfexp(-VBK(gp, a) * sumseas_yr * VBK_seas(s) * (real_age(g, ALK_idx, a) - AFIX) ) - 1.0) * Cohort_Growth(y, a);
             }
           }
           break;

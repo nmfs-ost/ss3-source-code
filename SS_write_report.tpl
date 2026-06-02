@@ -3666,7 +3666,7 @@ FUNCTION void write_bigoutput()
       for (gp = 1; gp <= N_GP; gp++)
       {
         g++;
-        SS2out << gp << " " << gg << " " << -VBK(g) << endl;
+        SS2out << gp << " " << gg << " " << VBK(g) << endl;
       }
   }
 
