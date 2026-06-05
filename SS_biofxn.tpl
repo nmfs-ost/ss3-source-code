@@ -1171,7 +1171,7 @@ FUNCTION void get_natmort()
             //  SS_Label_Info_17.1.2.2  #case 2:  lorenzen M
             case 2: //  Lorenzen M
             {
-              Loren_temp2 = L_inf(gp) * (mfexp(-VBK(gp, K_index) * VBK_seas(0)) - 1.); // need to verify use of VBK_seas here
+              Loren_temp2 = L_inf(gp) * (mfexp(VBK(gp, K_index) * VBK_seas(0)) - 1.); // need to verify use of VBK_seas here
               Loren_temp = Ave_Size(styr, mid_subseas, g, int(natM_amin)); // uses mean size in middle of season 1 for the reference age
               Loren_M1 = natMparms(1, gp) / log(Loren_temp / (Loren_temp + Loren_temp2));
               for (s = nseas; s >= 1; s--)
