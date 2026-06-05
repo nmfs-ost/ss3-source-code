@@ -595,7 +595,7 @@ FUNCTION void get_growth2(const int y)
                     t2 = L_inf(gp) - Ave_Size(t, 1, g, a); //  remaining growth potential from first subseas
                     if (timevary_MG(y, 2) > 0)
                     {
-                      join1 = 1.0 / (1.0 + mfexp((100. * t2 / (1.0 + fabs(t2))))); //  note the logit transform is not perfect, so growth near Linf will not be exactly same as with native growth function
+                      join1 = 1.0 / (1.0 + mfexp((200. * t2 / (1.0 + fabs(t2))))); //  note the logit transform is not perfect, so growth near Linf will not be exactly same as with native growth function
                       t2 *= (1. - join1); // trap to prevent decrease in size-at-age
             if (a < 4 && g == 1) echoinput << " trap " << a << " delta " << L_inf(gp) - Ave_Size(t, 1, g, a) << " t2 " << t2 << " join " << join1 << " vbk " << VBK_by_seas << endl;
                     }
@@ -660,9 +660,9 @@ FUNCTION void get_growth2(const int y)
                   if (timevary_MG(y, 2) > 0)
                   {
                     t2 = Ave_Size(t + 1, 1, g, dest_a(s,a)) - Ave_Size(t, 1, g, a); //  growth increment 
-                    if (t2 < 0.0) // trap to prevent decrease in size-at-age
+//                    if (t2 < 0.0) // trap to prevent decrease in size-at-age
                     {
-                      join1 = 1.0 / (1.0 + mfexp(100. * t2 ));
+                      join1 = 1.0 / (1.0 + mfexp((200. * t2 / (1.0 + fabs(t2)))));
                       Ave_Size(t + 1, 1, g, dest_a(s,a)) = Ave_Size(t, 1, g, a) * join1 + Ave_Size(t + 1, 1, g, dest_a(s,a)) * (1 - join1);
 //                      if (do_once == 1 && g == 1)
 //                      echoinput << y << " " << a << " prevent shrink-G2 " << t2 << " " << join1 << " " << Ave_Size(t, 1, g, a) << " " << Ave_Size(t + 1, 1, g, k2) << endl;
@@ -693,7 +693,7 @@ FUNCTION void get_growth2(const int y)
                       t2 *= Cohort_Growth(y, a);  // adjust increment with cohort growth dev
                       if (t2 < 0.0) // trap to prevent decrease in size-at-age
                       {
-                        join1 = 1.0 / (1.0 + mfexp(100. * t2 ));
+                        join1 = 1.0 / (1.0 + mfexp((200. * t2 / (1.0 + fabs(t2)))));
                         t2 *= (1. - join1); // trap to prevent negative growth increment
   //                      Ave_Size(t + 1, 1, g, k2) = Ave_Size(t, 1, g, a) * join1 + Ave_Size(t + 1, 1, g, k2) * (1 - join1);
   //                      if (do_once == 1 && g == 1)
@@ -728,7 +728,7 @@ FUNCTION void get_growth2(const int y)
                     t2 = L_inf(gp) - Ave_Size(t, 1, g, a); //  remaining growth potential from first subseas
                     if (timevary_MG(y, 2) > 0)
                     {
-                      join1 = 1.0 / (1.0 + mfexp((100. * t2 / (1.0 + fabs(t2))))); //  note the logit transform is not perfect, so growth near Linf will not be exactly same as with native growth function
+                      join1 = 1.0 / (1.0 + mfexp((200. * t2 / (1.0 + fabs(t2))))); //  note the logit transform is not perfect, so growth near Linf will not be exactly same as with native growth function
                       t2 *= (1. - join1); // trap to prevent decrease in size-at-age
                     }
           if (a < 4 && g == 1) echoinput << " trap " << a << " delta " << L_inf(gp) - Ave_Size(t, 1, g, a) << " t2 " << t2 << " join " << join1 << " VBK: " << (1.0 - mfexp(-VBK(gp, a) * VBK_seas(s) * seasdur(s) ))<< endl;
@@ -777,9 +777,9 @@ FUNCTION void get_growth2(const int y)
                   write_message (NOTE, 0);
                 }
                 t2 = plusgroupsize - Ave_Size(t, 1, g, nages -1);
-                if (t2 < 0.0) // trap to prevent decrease in size-at-age
+//                if (t2 < 0.0) // trap to prevent decrease in size-at-age
                 {
-                  join1 = 1.0 / (1.0 + mfexp(100. * t2 ));
+                  join1 = 1.0 / (1.0 + mfexp((200. * t2 / (1.0 + fabs(t2)))));
                   plusgroupsize = Ave_Size(t, 1, g, nages) * join1 + plusgroupsize * (1 - join1);
                   if (do_once == 1)
                   echoinput << y << " " << a << " prevent plusgroup shrink-G2 " << t2 << " " << join1 << " " << Ave_Size(t, 1, g, nages) << " " << plusgroupsize << endl;
@@ -862,14 +862,14 @@ FUNCTION void get_growth3(const int y, const int t, const int s, const int subse
             if (lin_grow(g, ALK_idx, a) == -2.0) //  doing growth curve
             {
               t2 = L_inf(gp) - Ave_Size(t, 1, g, a); //  remaining growth potential from first subseas
-              growth_incr = (mfexp(-VBK(gp, 0) * VBK_seas(s) * subseasdur(s, subseas)) - 1.0) * t2;  //  * Cohort_Growth(y, a);
+              growth_incr = ( 1.0 - mfexp(-VBK(gp, 0) * VBK_seas(s) * subseasdur(s, subseas))) * t2;  //  * Cohort_Growth(y, a);
                 if(a<4) echoinput << "in G3.   t2: " << t2 << " start " << Ave_Size(t, 1, g, a) << " growincr "<<growth_incr;
               //  the constant in join needs to be at least 30 to get rapid transition
               if (timevary_MG(y, 2) > 0)
               {
                 growth_incr *= Cohort_Growth(y, a);
 //                join1 = 1.0 / (1.0 + mfexp(-50. * growth_incr));
-                join1 = 1.0 / (1.0 + mfexp(-(50. * growth_incr / (1.0 + fabs(growth_incr))))); //  note the logit transform is not perfect, so growth near Linf will not be exactly same as with native growth function
+                join1 = 1.0 / (1.0 + mfexp((200. * growth_incr / (1.0 + fabs(growth_incr))))); //  note the logit transform is not perfect, so growth near Linf will not be exactly same as with native growth function
                 growth_incr *= (1. - join1); // trap to prevent decrease in size-at-age
               }
               Ave_Size(t, subseas, g, a) = Ave_Size(t, 1, g, a) + growth_incr;  //  (mfexp(-VBK(gp, 0) * VBK_seas(s) * subseasdur(s, subseas)) - 1.0) * t2 * Cohort_Growth(y, a);
@@ -902,7 +902,7 @@ FUNCTION void get_growth3(const int y, const int t, const int s, const int subse
             {
               temp = pow(Ave_Size(t, 1, g, a), Richards(gp));
               t2 = LinfR - temp; //  remaining growth potential in transformed units
-              temp1 = (mfexp(-VBK(gp, 0) * VBK_seas(s) * subseasdur(s, subseas)) - 1.0) * t2;  // growth increment in transform units w/o cohort growth dev
+              temp1 = (1.0 - mfexp(-VBK(gp, 0) * VBK_seas(s) * subseasdur(s, subseas))) * t2;  // growth increment in transform units w/o cohort growth dev
               Ave_Size(t, subseas, g, a) = pow((temp + temp1), inv_Richards);  // new size
 //              if(a<4 && g==1) echoinput <<" grow "<<Ave_Size(t, 1, g, a)<<" result "<<Ave_Size(t, subseas, g, a)<<" t2 "<<t2 <<" temp1 " << temp1<<" VB*time " <<(VBK(gp, 0) * VBK_seas(s) * subseasdur(s, subseas))<<endl;
               if (timevary_MG(y, 2) > 0)
@@ -912,7 +912,7 @@ FUNCTION void get_growth3(const int y, const int t, const int s, const int subse
   //                echoinput << " ; delta " <<Ave_Size(t, subseas, g, a) <<" "<<Ave_Size(t, 1, g, a) << " t2: "<< t2<<endl;
   //              if (t2 < 0.0) // trap to prevent decrease in size-at-age
                 {
-                  join1 = 1.0 / (1.0 + mfexp(100. * growth_incr ));
+                  join1 = 1.0 / (1.0 + mfexp((200. * growth_incr / (1.0 + fabs(growth_incr)))));
                   growth_incr *= (1. - join1); // trap to prevent negative growth increment
                   Ave_Size(t, subseas, g, a) = Ave_Size(t, 1, g, a) + growth_incr;
   //                if (do_once == 1 && g == 1)
@@ -962,7 +962,7 @@ FUNCTION void get_growth3(const int y, const int t, const int s, const int subse
               t2 *= Cohort_Growth(y, a); //  growth increment 
 //              if (t2 < 0.0) // trap to prevent decrease in size-at-age
               {
-                join1 = 1.0 / (1.0 + mfexp(100. * t2 ));
+                join1 = 1.0 / (1.0 + mfexp((200. * t2 / (1.0 + fabs(t2)))));
                 t2 *= (1. - join1); // trap to prevent negative growth increment
 //                if (do_once == 1 && g == 1)
 //                echoinput << y << " " << a << " prevent shrink-G3 " << t2 << " " << join1 << endl;
@@ -989,13 +989,13 @@ FUNCTION void get_growth3(const int y, const int t, const int s, const int subse
             if (lin_grow(g, ALK_idx, a) == -2.0) //  so doing growth curve
             {
               t2 = L_inf(gp) - Ave_Size(t, 1, g, a); //  remaining growth potential from first subseas
-              growth_incr = (mfexp(-VBK(gp, a) * VBK_seas(s) * subseasdur(s, subseas)) - 1.0) * t2;  //  * Cohort_Growth(y, a);
+              growth_incr = (1.0 - mfexp(-VBK(gp, a) * VBK_seas(s) * subseasdur(s, subseas))) * t2;  //  * Cohort_Growth(y, a);
                 if(a<4) echoinput << "in G3.   t2: " << t2 << " start " << Ave_Size(t, 1, g, a) << " growincr "<<growth_incr;
             //  the constant in join needs to be at least 30 to get rapid transition
               if (timevary_MG(y, 2) > 0)
               {
                 growth_incr *= Cohort_Growth(y, a);
-                join1 = 1.0 / (1.0 + mfexp(-(50. * growth_incr / (1.0 + fabs(growth_incr))))); //  note the logit transform is not perfect, so growth near Linf will not be exactly same as with native growth function
+                join1 = 1.0 / (1.0 + mfexp((200. * growth_incr / (1.0 + fabs(growth_incr))))); //  note the logit transform is not perfect, so growth near Linf will not be exactly same as with native growth function
                 growth_incr *= (1. - join1); // trap to prevent decrease in size-at-age
               }
               Ave_Size(t, subseas, g, a) = Ave_Size(t, 1, g, a) + growth_incr;  //  (mfexp(-VBK(gp, 0) * VBK_seas(s) * subseasdur(s, subseas)) - 1.0) * t2 * Cohort_Growth(y, a);
