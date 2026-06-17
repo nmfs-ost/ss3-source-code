@@ -4901,7 +4901,7 @@
   }
   // note:  one more check will occur after recdev_end is read
   did_MSY = 0;
-  if (Do_Forecast > 0)
+  if (Do_Forecast_rd > 0)
     *(ad_comm::global_datafile) >> fif;
 
   if (Do_Forecast_rd > 0 && fif != 999)
