@@ -2085,6 +2085,7 @@ FUNCTION void Get_Forecast()
       }
       case 4:
       {
+        // note that case 0 gets converted to case 4 after it is read
         Fcast_Fmult = 0.0;
         for (y = Fcast_RelF_yr1; y <= Fcast_RelF_yr2; y++)
           for (s = 1; s <= nseas; s++)
@@ -2124,7 +2125,6 @@ FUNCTION void Get_Forecast()
   {
     Fcast_Fmult = 0.0;
   }
-
     if (Fcast_Loop_Control(5) == 1)
     {HCR_anchor = SSB_virgin;}
     else if (Fcast_Loop_Control(5) == 2)
@@ -2151,8 +2151,8 @@ FUNCTION void Get_Forecast()
       write_message (WARN, 0);
     }
 
-    Mgmt_quant(20) = H4010_top * HCR_anchor;
-
+    if (Do_Forecast_rd > 0) Mgmt_quant(20) = H4010_top * HCR_anchor;
+    
   if (show_MSY == 1) //  write more headers
   {
     report5 << "Annual_Forecast_Fmult: " << Fcast_Fmult << endl;
