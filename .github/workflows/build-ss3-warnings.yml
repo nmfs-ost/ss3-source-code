@@ -33,7 +33,7 @@ jobs:
 
     steps:
       - name: Checkout ss3 repo
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       - name: Update Ubuntu packages
         run: sudo apt-get update
