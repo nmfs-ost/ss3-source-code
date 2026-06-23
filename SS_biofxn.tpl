@@ -1988,13 +1988,13 @@ FUNCTION void get_saveGparm()
         save_G_parm(save_gparm, 7) = value(Lmax_temp(gp));
         if (do_ageK == 1)
         {
-          save_G_parm(save_gparm, 8) = value(-VBK(gp, nages) * VBK_seas(0));
-          save_G_parm(save_gparm, 9) = value(-log(L_inf(gp) / (L_inf(gp) - Lmin(gp))) / (-VBK(gp, nages) * VBK_seas(0)) + AFIX + azero_G(g));
+          save_G_parm(save_gparm, 8) = value(VBK(gp, nages) * VBK_seas(0));
+          save_G_parm(save_gparm, 9) = value(-log(L_inf(gp) / (L_inf(gp) - Lmin(gp))) / (VBK(gp, nages) * VBK_seas(0)) + AFIX + azero_G(g));
         }
         else
         {
-          save_G_parm(save_gparm, 8) = value(-VBK(gp, 0) * VBK_seas(0));
-          save_G_parm(save_gparm, 9) = value(-log(L_inf(gp) / (L_inf(gp) - Lmin(gp))) / (-VBK(gp, 0) * VBK_seas(0)) + AFIX + azero_G(g));
+          save_G_parm(save_gparm, 8) = value(VBK(gp, 0) * VBK_seas(0));
+          save_G_parm(save_gparm, 9) = value(-log(L_inf(gp) / (L_inf(gp) - Lmin(gp))) / (VBK(gp, 0) * VBK_seas(0)) + AFIX + azero_G(g));
         }
 
         save_G_parm(save_gparm, 10) = value(L_inf(gp));
