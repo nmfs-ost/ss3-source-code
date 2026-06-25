@@ -704,7 +704,7 @@ FUNCTION void Get_expected_values(const int y, const int t);
                             {
                               case (1): // units are biomass, so accumulate body weight into the bins;  Assume that bin demarcations are also in biomass
                               {
-                                if (SzFreq_Omit_Small(SzFreqMethod) == 1)
+                                 if (SzFreq_Omit_Small(SzFreqMethod) == 1)
                                 {
                                   while (wt_len_low(s, 1, z1 + 1) < SzFreq_bins(SzFreqMethod, 1) && z1 < z2)
                                   {
@@ -776,6 +776,7 @@ FUNCTION void Get_expected_values(const int y, const int t);
                               {
                                 if (SzFreq_scale(SzFreqMethod) <= 2) //  bin demarcations are in weight units (1=kg, 2=lbs), so uses wt_len to compare to bins
                                 {
+                                  warning<<"process_szfreq"<<endl;
                                   if (SzFreq_Omit_Small(SzFreqMethod) == 1)
                                   {
                                     while (wt_len_low(s, 1, z1 + 1) < SzFreq_bins(SzFreqMethod, 1) && z1 < z2)
@@ -796,8 +797,10 @@ FUNCTION void Get_expected_values(const int y, const int t);
 
                                   for (z = z1; z <= z2; z++)
                                   {
+                                    warning<<z <<" size " << wt_len_low(s, 1, z)<<" bin  "<<ibin<< " size_at_bin "<<SzFreq_bins2(SzFreqMethod, ibin)<<" save_ibin " <<ibinsave<<" botbin "<<botbin<<" topbin "<<topbin<< endl;
                                     if (ibin == SzFreq_Nbins(SzFreqMethod))
                                     {
+                                      warning<<" last bin "<<ibin<<endl;
                                       SzFreqTrans(SzFreqMethod_seas, z, ibinsave) = 1.;
                                     } //checkup<<" got to last ibin, so put rest of popbins here"<<endl;
                                     else
@@ -806,25 +809,40 @@ FUNCTION void Get_expected_values(const int y, const int t);
                                       {
                                         ibin++;
                                         ibinsave++;
-                                      } //checkup<<" incr ibin "<<z<<" "<<ibin<<" "<<len_bins(z)<<" "<<len_bins_dat(ibin);
+                                        warning<<" wt>=topbin, so incr ibin "<<ibin<<" ibinsave "<<ibinsave<<endl;
+                                      } 
                                       if (ibin > 1)
                                       {
                                         botbin = SzFreq_bins2(SzFreqMethod, ibin);
+                                        warning<<"  incr botbin to "<<botbin<<endl;
+
                                       }
-                                      if (ibin == SzFreq_Nbins(SzFreqMethod)) // checkup<<" got to last ibin, so put rest of popbins here"<<endl;
+                                      if (ibin == SzFreq_Nbins(SzFreqMethod))
                                       {
+                                        warning<<" got to last ibin, so put rest of popbins here"<<endl;
+
                                         SzFreqTrans(SzFreqMethod_seas, z, ibinsave) = 1.;
                                         topbin = 99999.;
                                       }
                                       else
                                       {
                                         topbin = SzFreq_bins2(SzFreqMethod, ibin + 1);
+                                        warning<<"check using topbin = "<<topbin<<endl;
                                         if (wt_len_low(s, 1, z) >= botbin && wt_len_low(s, 1, z + 1) <= topbin) //checkup<<" pop inside dat, put here"<<endl;
                                         {
+                                          warning<<"all in bin"<<endl;
                                           SzFreqTrans(SzFreqMethod_seas, z, ibinsave) = 1.;
                                         }
-                                        else // checkup<<" overlap"<<endl;
+                                        else if (wt_len_low(s, 1, z) >= topbin)
                                         {
+                                          // this should have the fish in z size range distributed across all bins >= size(z) until get to overlap
+                                          warning<<" size > current bin, increment bin index "<<endl;
+                                          ibin++;
+                                          ibinsave++;
+                                        }
+                                        else
+                                        {
+                                          warning<<" overlap"<<endl;
                                           SzFreqTrans(SzFreqMethod_seas, z, ibinsave + 1) = (wt_len_low(s, 1, z + 1) - topbin) / wt_len_fd(s, 1, z);
                                           SzFreqTrans(SzFreqMethod_seas, z, ibinsave) = 1. - SzFreqTrans(SzFreqMethod_seas, z, ibinsave + 1);
                                         }
@@ -835,6 +853,23 @@ FUNCTION void Get_expected_values(const int y, const int t);
 
                                 else //  bin demarcations are in length unit (3=cm, 4=inch) so uses population len_bins to compare to data bins
                                 {
+  /*                               wt_len_low(s, 1, z1 + 1) < SzFreq_bins(SzFreqMethod, 1) && z1 < z2)
+  FUNCTION dvector rebin(const dvector& src_edges, const dvector& src_counts, const dvector& dest_edges)
+  3darray wt_len_low(1,nseas,1,N_GP,1,nlength2)  //  wt at lower edge of size bin
+  */
+    dvector freq_in(1, z2-z1);  // fill the input
+    freq_in = 1.;
+    echoinput << " z1: " << z1 << " z2: " << z2 << endl;
+    echoinput << " freq_in: " << freq_in << endl;
+    dvector bins_in(1, z2-z1);
+    bins_in = len_bins2(z1, z2); //  input bins shifted
+    echoinput << " bins_in: " << bins_in << endl;
+//  dvector bins_out(1, z2-z1) = SzFreq_bins(SzFreqMethod
+    dvector freq_out(1, SzFreq_Nbins(SzFreqMethod));
+
+    freq_out = rebin(bins_in, freq_in, SzFreq_bins(SzFreqMethod));
+    echoinput << " freq_out: " << freq_out << endl;
+
                                   if (SzFreq_Omit_Small(SzFreqMethod) == 1)
                                   {
                                     while (len_bins2(z1 + 1) < SzFreq_bins(SzFreqMethod, 1))
