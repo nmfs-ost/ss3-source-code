@@ -470,10 +470,18 @@ FUNCTION void get_growth2(const int y)
               }
               case 2: // Richards
               {
+                dvariable VBK_temp2 = -VBK_work * VBK_seas(0);
                 for (a = 0; a <= nages; a++)
                 {
-                  temp = LinfR + (LminR - LinfR) * mfexp(-VBK_work * VBK_seas(0) * (real_age(g, 1, a) - AFIX));
-                  Ave_Size(styr, 1, g, a) = pow(temp, inv_Richards);
+                  if(a > AFIX)
+                  {
+                    temp = LinfR + (LminR - LinfR) * mfexp(VBK_temp2 * (real_age(g, 1, a) - AFIX));
+                    Ave_Size(styr, 1, g, a) = pow(temp, inv_Richards);
+                  }
+                  else
+                  {
+                    Ave_Size(styr, 1, g, a) = Lmin(gp);
+                  }
                 } // done ageloop
                 break;
               }
