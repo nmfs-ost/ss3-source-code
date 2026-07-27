@@ -95,6 +95,7 @@ GLOBALS_SECTION
   adstring onenum2(4);
   adstring anystring;
   adstring anystring2;
+  adstring DD_name;
   adstring report_sso_filename;
   adstring MSY_name; // label describing what Do_MSY and MSY_units are being used
 
@@ -716,13 +717,17 @@ GLOBALS_SECTION
     //      if(timevary_setup(7)==97) timevary_setup(7)=-3;  //  for linking to rel_smrybio
     //      if(timevary_setup(7)==96) timevary_setup(7)=-4;  //  for linking to rel_smry_num
     echoinput << "env link_type: " << k << " env_var: " << timevary_setup(7) << endl;
+    if (timevary_setup(7) >= 0)
+    {DD_name = "X";}
+    else
+    {DD_name = "_DD";}
     switch (k)
     {
       case 1: //  multiplicative
       {
         echoinput << " do env mult for parm: " << j << " " << ParmLabel(j) << endl;
         ParCount++;
-        ParmLabel += ParmLabel(j) + "_ENV_mult";
+        ParmLabel += ParmLabel(j) + "_ENV_mult" + DD_name;
         timevary_parm_cnt++;
         dvector tempvec(1, 7);
         tempvec.initialize();
@@ -741,7 +746,7 @@ GLOBALS_SECTION
       {
         echoinput << " do env additive " << endl;
         ParCount++;
-        ParmLabel += ParmLabel(j) + "_ENV_add";
+        ParmLabel += ParmLabel(j) + "_ENV_add" + DD_name;
         timevary_parm_cnt++;
         dvector tempvec(1, 7);
         tempvec.initialize();
@@ -760,7 +765,7 @@ GLOBALS_SECTION
       {
         echoinput << " do env constrained " << endl;
         ParCount++;
-        ParmLabel += ParmLabel(j) + "_ENV_add_constr";
+        ParmLabel += ParmLabel(j) + "_ENV_add_constr" + DD_name;
         timevary_parm_cnt++;
         dvector tempvec(1, 7);
         tempvec.initialize();
@@ -778,7 +783,7 @@ GLOBALS_SECTION
       case 4: //  logistic with offset
       {
         ParCount++;
-        ParmLabel += ParmLabel(j) + "_ENV_offset";
+        ParmLabel += ParmLabel(j) + "_ENV_offset" + DD_name;
         timevary_parm_cnt++;
         dvector tempvec(1, 7);
         tempvec.initialize();
@@ -792,7 +797,7 @@ GLOBALS_SECTION
         }
         timevary_parm_rd.push_back(tempvec(1, 7));
         ParCount++;
-        ParmLabel += ParmLabel(j) + "_ENV_lgst_slope";
+        ParmLabel += ParmLabel(j) + "_ENV_lgst_slope" + DD_name;
         timevary_parm_cnt++;
         tempvec.initialize();
         if (autogen_timevary >= 1) //  read
