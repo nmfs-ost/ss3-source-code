@@ -1812,7 +1812,7 @@
         env_data_pass(1) = env_data_minyr(k);
         env_data_pass(2) = env_data_maxyr(k);
       }
-      else if (abs(MGparm_1(j, 8) > 0)) //  density-dependence
+      else if (abs(MGparm_1(j, 8)) > 0) //  density-dependence
       {
         timevary_setup(7) = -int(abs(MGparm_1(j, 8)) - k * 100);
         do_densitydependent = 1;
@@ -2191,7 +2191,7 @@
           env_data_pass(1) = env_data_minyr(k);
           env_data_pass(2) = env_data_maxyr(k);
         }
-        else if (abs(SRparm_1(j, 8) > 0)) //  density-dependence
+        else if (abs(SRparm_1(j, 8)) > 0) //  density-dependence
         {
           timevary_setup(7) = -int(abs(SRparm_1(j, 8)) - k * 100);
           do_densitydependent = 1;
@@ -3340,7 +3340,7 @@
           env_data_pass(1) = env_data_minyr(k);
           env_data_pass(2) = env_data_maxyr(k);
         }
-        else if (abs(Q_parm_1(j, 8) > 0)) //  density-dependence
+        else if (abs(Q_parm_1(j, 8)) > 0) //  density-dependence
         {
           timevary_setup(7) = -int(abs(Q_parm_1(j, 8)) - k * 100);
           do_densitydependent = 1;
@@ -4603,7 +4603,7 @@
         env_data_pass(1) = env_data_minyr(k);
         env_data_pass(2) = env_data_maxyr(k);
       }
-        else if (abs(selparm_1(j, 8) > 0)) //  density-dependence
+        else if (abs(selparm_1(j, 8)) > 0) //  density-dependence
       {
         timevary_setup(7) = -int(abs(selparm_1(j, 8)) - k * 100);
         do_densitydependent = 1;
