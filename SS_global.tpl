@@ -718,7 +718,7 @@ GLOBALS_SECTION
     //      if(timevary_setup(7)==96) timevary_setup(7)=-4;  //  for linking to rel_smry_num
     echoinput << "env link_type: " << k << " env_var: " << timevary_setup(7) << endl;
     if (timevary_setup(7) >= 0)
-    {DD_name = "X";}
+    {DD_name = "";}
     else
     {DD_name = "_DD";}
     switch (k)
