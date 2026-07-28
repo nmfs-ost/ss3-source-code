@@ -153,6 +153,8 @@ FUNCTION void write_bigoutput()
     pick_report_use(29) = "N";
   if (N_envvar == 0)
     pick_report_use(33) = "N";
+  if (do_densitydependent == 1)
+    pick_report_use(33) = "Y";
   if (Do_TG == 0)
     pick_report_use(34) = "N";
   if (Grow_type < 3 || Grow_type > 6)
@@ -3082,11 +3084,14 @@ FUNCTION void write_bigoutput()
   }
 
   // REPORT_KEYWORD 33 ENVIRONMENTAL_DATA
-  if (pick_report_use(33) == "Y" && N_envvar > 0)
+  if (pick_report_use(33) == "Y" && (N_envvar > 0 || do_densitydependent == 1) )
   {
     SS2out << endl
            << pick_report_name(33) << endl;
-    SS2out << "#_Begins.in.startyr-1.which.for.model.generated.columns.shows.the.base.value.to.which.other.years.are.scaled" << endl;
+    SS2out << "#_Begins.in.startyr-1= " << styr - 1 << endl;
+    if (do_densitydependent == 1) 
+    { SS2out << "#_some.parameter.is.density-dependent.relative.to.log(X(yr)/X(startyr-1))" << endl;
+    }
     SS2out << "#_Ninput.vectors " << N_envvar << endl;
     SS2out << "#_statistics.for.each.inout.env.vector.where.mc.is.to.meancenter.and.Zscore.also.divides.by.stdev" << endl;
     SS2out << "Index N minyr maxyr mean stdev mc Zscore" << endl;
