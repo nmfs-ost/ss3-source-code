@@ -1274,8 +1274,7 @@
           for (k = 1; k <= N_natMparms; k++)
           {
             ParCount++;
-            onenum = "    ";
-            sprintf(onenum, "%d", k);
+            onenum = str(k);
             ParmLabel += "NatM_break_" + onenum + "_" + GenderLbl(gg) + GP_Lbl(gp);
             Parm_info += "val";
             Parm_minmax.push_back(3);
@@ -1576,8 +1575,7 @@
   {
     ParCount++;
     predparm_pointer(pc) = ParCount; //  first parm for this predator
-    onenum = "    ";
-    sprintf(onenum, "%d", pc);
+    onenum = str(pc);
     ParmLabel += "M2_pred" + onenum;
     Parm_info += "val";
     Parm_minmax.push_back(3);
@@ -1586,8 +1584,7 @@
       for (s = 1; s <= nseas; s++)
       {
         ParCount++;
-        onenum2 = "    ";
-        sprintf(onenum2, "%d", s);
+        onenum2 = str(s);
         ParmLabel += "M2_pred" + onenum + "_s" + onenum2;
         Parm_info += "val";
         Parm_minmax.push_back(3);
@@ -2431,7 +2428,7 @@
     for (y = 1; y <= recdev_cycle; y++)
     {
       ParCount++;
-      sprintf(onenum, "%d", y);
+      onenum = str(y);
       ParmLabel += "RecrDev_Cycle_" + onenum + CRLF(1);
     }
   }
@@ -2492,13 +2489,12 @@
       recdev_doit(y) = 1;
       if (y >= styr)
       {
-        sprintf(onenum, "%d", y);
+        onenum = str(y);
         ParmLabel += "Early_RecrDev_" + onenum + CRLF(1);
       }
       else
       {
-        onenum = "    ";
-        sprintf(onenum, "%d", styr - y);
+        onenum = str(styr - y);
         ParmLabel += "Early_InitAge_" + onenum + CRLF(1);
       }
     }
@@ -2513,13 +2509,12 @@
   
       if (y >= styr)
       {
-        sprintf(onenum, "%d", y);
+        onenum = str(y);
         ParmLabel += "Main_RecrDev_" + onenum + CRLF(1);
       }
       else
       {
-        onenum = "    ";
-        sprintf(onenum, "%d", styr - y);
+        onenum = str(styr - y);
         ParmLabel += "Main_InitAge_" + onenum + CRLF(1);
       }
     }
@@ -2537,7 +2532,7 @@
       for (y = recdev_end + 1; y <= YrMax; y++)
       {
         recdev_doit(y) = 1;
-        sprintf(onenum, "%d", y);
+        onenum = str(y);
         ParCount++;
         if (y > endyr)
         {
@@ -2553,7 +2548,7 @@
     if (Do_Impl_Error > 0) {
       for (y = endyr + 1; y <= YrMax; y++)
       {
-        sprintf(onenum, "%d", y);
+        onenum = str(y);
         ParCount++;
         ParmLabel += "Impl_err_" + onenum + CRLF(1);
       }
@@ -2982,7 +2977,7 @@
               Fparm_loc.push_back(tempin(1, 2));  //  stores the f, t for each Fparm
               Fparm_PH.push_back(F_PH_time(f, t));  //  stores PH in vector for dimensioning Fparm later
               do_Fparm_loc(f, t) = N_Fparm;  // stores parameter count for this f, t location
-              sprintf(onenum, "%d", y);
+              onenum = str(y);
               ParCount++;
               ParmLabel += "F_fleet_" + NumLbl(f) + "_YR_" + onenum + "_s_" + NumLbl(s) + CRLF(1);
             }
@@ -5029,19 +5024,19 @@
     firsttagparm = ParCount;
     for (j = 1; j <= N_TG; j++)
     {
-      sprintf(onenum, "%d", j);
+      onenum = str(j);
       ParCount++;
       ParmLabel += "TG_loss_init_" + onenum + CRLF(1);
     }
     for (j = 1; j <= N_TG; j++)
     {
-      sprintf(onenum, "%d", j);
+      onenum = str(j);
       ParCount++;
       ParmLabel += "TG_loss_chronic_" + onenum + CRLF(1);
     }
     for (j = 1; j <= N_TG; j++)
     {
-      sprintf(onenum, "%d", j);
+      onenum = str(j);
       ParCount++;
       ParmLabel += "TG_overdispersion_" + onenum + CRLF(1);
       if (TG_parm_LO(2 * N_TG + j) < 1.0)
@@ -5061,7 +5056,7 @@
     {
       if (fleet_type(j) <= 2)
       {
-        sprintf(onenum, "%d", j);
+        onenum = str(j);
         ParCount++;
         ParmLabel += "TG_report_fleet:_" + onenum + CRLF(1);
       }
@@ -5070,7 +5065,7 @@
     {
       if (fleet_type(j) <= 2)
       {
-        sprintf(onenum, "%d", j);
+        onenum = str(j);
         ParCount++;
         ParmLabel += "TG_rpt_decay_fleet:_" + onenum + CRLF(1);
       }
@@ -5152,7 +5147,7 @@
         if (picker == 4 || picker == 5 || picker == 6) parm_dev_use_rho(k) = 1;
         for (y = parm_dev_minyr(k); y <= parm_dev_maxyr(k); y++)
         {
-          sprintf(onenum, "%d", y);
+          onenum = str(y);
           ParCount++;
           if (picker == 1)
           {
@@ -5217,8 +5212,8 @@
       TwoD_AR_degfree(f) += have_data_yr(y, timevary_setup(1));
       for (a = TwoD_AR_amin(f); a <= TwoD_AR_amax(f); a++)
       {
-        sprintf(onenum, "%d", y);
-        sprintf(anystring, "%d", a);
+        onenum = str(y);
+        anystring = str(a);
         ParCount++;
         if (TwoD_AR_setup(8) == 1)
         {
@@ -6574,7 +6569,7 @@
       else
       {
         //      _itoa(y,onenum,10);
-        sprintf(onenum, "%d", y);
+        onenum = str(y);
         ParmLabel += "SSB_" + onenum + CRLF(1);
       }
     }
@@ -6599,7 +6594,7 @@
       else
       {
         //      _itoa(y,onenum,10);
-        sprintf(onenum, "%d", y);
+        onenum = str(y);
         ParmLabel += "Recr_" + onenum + CRLF(1);
       }
     }
@@ -6614,7 +6609,7 @@
       j++;
       active_parm(CoVar_Count) = j;
       //      _itoa(y,onenum,10);
-      sprintf(onenum, "%d", y);
+      onenum = str(y);
       ParmLabel += "SPRratio_" + onenum + CRLF(1);
     }
   }
@@ -6629,7 +6624,7 @@
       j++;
       active_parm(CoVar_Count) = j;
       //      _itoa(y,onenum,10);
-      sprintf(onenum, "%d", y);
+      onenum = str(y);
       ParmLabel += "F_" + onenum + CRLF(1);
     }
   }
@@ -6643,7 +6638,7 @@
       j++;
       active_parm(CoVar_Count) = j;
       //      _itoa(y,onenum,10);
-      sprintf(onenum, "%d", y);
+      onenum = str(y);
       ParmLabel += "Bratio_" + onenum + CRLF(1);
     }
   }
@@ -6807,7 +6802,7 @@
       CoVar_Count++;
       j++;
       active_parm(CoVar_Count) = j;
-      sprintf(onenum, "%d", y);
+      onenum = str(y);
       ParmLabel += "ForeCatch_" + onenum + CRLF(1);
     }
     for (y = endyr + 1; y <= YrMax; y++)
@@ -6815,7 +6810,7 @@
       CoVar_Count++;
       j++;
       active_parm(CoVar_Count) = j;
-      sprintf(onenum, "%d", y);
+      onenum = str(y);
       ParmLabel += "OFLCatch_" + onenum + CRLF(1);
     }
     if (max(Do_Retain) > 0)
@@ -6825,7 +6820,7 @@
         CoVar_Count++;
         j++;
         active_parm(CoVar_Count) = j;
-        sprintf(onenum, "%d", y);
+        onenum = str(y);
         ParmLabel += "ForeCatchret_" + onenum + CRLF(1);
       }
     }
@@ -6937,7 +6932,7 @@
       CoVar_Count++;
       j++;
       active_parm(CoVar_Count) = j;
-      sprintf(onenum, "%d", y);
+      onenum = str(y);
       ParmLabel += "Dyn_Bzero_" + onenum + CRLF(1);
     }
   }
@@ -6962,7 +6957,7 @@
       CoVar_Count++;
       j++;
       active_parm(CoVar_Count) = j;
-      sprintf(onenum, "%d", y);
+      onenum = str(y);
       ParmLabel += "Dyn_Recr_" + onenum + CRLF(1);
     }
   }
@@ -6972,17 +6967,17 @@
   CoVar_Count++;
   j++;
   active_parm(CoVar_Count) = j;
-  sprintf(onenum, "%d", styr);
+  onenum = str(styr);
   ParmLabel += "ln(SSB)_" + onenum + CRLF(1);
   CoVar_Count++;
   j++;
   active_parm(CoVar_Count) = j;
-  sprintf(onenum, "%d", int((endyr + styr) / 2));
+  onenum = str(int((endyr + styr) / 2));
   ParmLabel += "ln(SSB)_" + onenum + CRLF(1);
   CoVar_Count++;
   j++;
   active_parm(CoVar_Count) = j;
-  sprintf(onenum, "%d", endyr);
+  onenum = str(endyr);
   ParmLabel += "ln(SSB)_" + onenum + CRLF(1);
   
   if (Do_se_smrybio > 0)
@@ -7001,7 +6996,7 @@
       CoVar_Count++;
       j++;
       active_parm(CoVar_Count) = j;
-      sprintf(onenum, "%d", y);
+      onenum = str(y);
       ParmLabel += "SmryBio_" + onenum + CRLF(1);
     }
   }
@@ -7020,7 +7015,7 @@
           CoVar_Count++;
           j++;
           active_parm(CoVar_Count) = j;
-          sprintf(onenum, "%d", Svy_yr(f, i));
+          onenum = str(Svy_yr(f, i));
           ParmLabel += fleetname(f) + "_" + onenum + CRLF(1);
         }
       }
@@ -7029,7 +7024,7 @@
   
   // additional labels
   echoinput << "parm " << j << " covar " << CoVar_Count << "  after all derived quantities " << endl;
-  sprintf(onenum, "%d", int(100 * depletion_level));
+  onenum = str(int(100 * depletion_level));
   switch (depletion_basis)
   {
     case 0:
@@ -7071,7 +7066,7 @@
   if (depletion_log == 1) depletion_basis_label += ";log";
   if (depletion_multi > 1)
   {
-    sprintf(onenum, "%d", depletion_multi);
+    onenum = str(depletion_multi);
     depletion_basis_label += ";multi:" + onenum;
   }
   
@@ -7089,7 +7084,7 @@
     }
     case 1: // compare to SPR
     {
-      sprintf(onenum, "%d", int(100. * SPR_target));
+      onenum = str(int(100. * SPR_target));
       SPR_report_label += " (1-SPR)/(1-SPR_" + onenum + "%)";
       break;
     }
@@ -7100,7 +7095,7 @@
     }
     case 3: // compare to SPR_Btarget
     {
-      sprintf(onenum, "%d", int(100. * BTGT_frac));
+      onenum = str(int(100. * BTGT_frac));
       SPR_report_label += " (1-SPR)/(1-SPR_at_B" + onenum + "%)";
       break;
     }
@@ -7120,7 +7115,7 @@
     }
     case 1:
     {
-      sprintf(onenum, "%d", int(100. * SPR_target));
+      onenum = str(int(100. * SPR_target));
       F_report_label = "(F)/(F" + onenum + "%SPR)";
       break;
     }
@@ -7131,7 +7126,7 @@
     }
     case 3:
     {
-      sprintf(onenum, "%d", int(100. * BTGT_frac));
+      onenum = str(int(100. * BTGT_frac));
       F_report_label = "(F)/(F_at_B" + onenum + "%)";
       break;
     }
@@ -7162,18 +7157,18 @@
     case 4: // F=Z-M for specified ages
     {
       F_report_label += ";_with_F=Z-M;_for_ages_";
-      sprintf(onenum, "%d", int(F_reporting_ages(1)));
+      onenum = str(int(F_reporting_ages(1)));
       F_report_label += onenum;
-      sprintf(onenum, "%d", int(F_reporting_ages(2)));
+      onenum = str(int(F_reporting_ages(2)));
       F_report_label += "_" + onenum;
       break;
     }
     case 5: // F=Z-M for specified ages (unweighted)
     {
       F_report_label += ";_with_F=Z-M;_for_ages_unweighted_";
-      sprintf(onenum, "%d", int(F_reporting_ages(1)));
+      onenum = str(int(F_reporting_ages(1)));
       F_report_label += onenum;
-      sprintf(onenum, "%d", int(F_reporting_ages(2)));
+      onenum = str(int(F_reporting_ages(2)));
       F_report_label += "_" + onenum;
       break;
     }
@@ -7181,7 +7176,7 @@
   if (F_std_log == 1) F_report_label += ";log";
   if (F_std_multi > 1)
   {
-    sprintf(onenum, "%d", F_std_multi);
+    onenum = str(F_std_multi);
     F_report_label += ";multi:" + onenum;
   }
   
