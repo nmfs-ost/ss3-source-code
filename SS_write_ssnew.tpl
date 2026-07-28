@@ -46,8 +46,7 @@ FUNCTION void write_nudata()
     {
       echoinput << "Begin writing bootstrap data file(s)" << endl;
       Nubootdat = Nudat - 2;
-      anystring2 = "     ";
-      sprintf(anystring2, "%d", Nubootdat);
+      anystring2 = str(Nubootdat);
       if (Nubootdat < 10)
       {
         newdatfilename = "data_boot_00" + anystring2 + ".ss";

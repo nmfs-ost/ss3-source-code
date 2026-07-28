@@ -462,7 +462,7 @@ GLOBALS_SECTION
         echoinput << " create parm for block " << a << endl;
         y = block_design_pass(g);
         timevary_byyear(y) = 1;
-        sprintf(onenum, "%d", y);
+        onenum = str(y);
 
         echoinput << " block method " << k << endl;
         switch (k)

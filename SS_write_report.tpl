@@ -22,8 +22,7 @@ FUNCTION void write_bigoutput()
   }
   else
   {
-    anystring = "      ";
-    sprintf(anystring, "%d", mceval_counter);
+    anystring = str(mceval_counter);
     if (SS2out.is_open())
       SS2out.close();
     if (SS_compout.is_open())

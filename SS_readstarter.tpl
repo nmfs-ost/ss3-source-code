@@ -191,12 +191,12 @@
   onenum = "    ";
   for (i = 1; i <= 199; i++) /* SS_loop: fill string NumLbl with numbers (start at 1) */
   {
-    sprintf(onenum, "%d", i);
+    onenum = str(i);
     NumLbl += onenum + CRLF(1);
   }
   for (i = 0; i <= 198; i++) /* SS_loop: fill string NumLbl0 with numbers (start at 0) */
   {
-    sprintf(onenum, "%d", i);
+    onenum = str(i);
     NumLbl0 += onenum + CRLF(1);
   }
   pick_report_name += "DEFINITIONS report:1";
