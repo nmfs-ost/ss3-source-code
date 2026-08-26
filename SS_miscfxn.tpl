@@ -122,7 +122,7 @@ FUNCTION dvariable Comp_logL_Dirichlet(const double& Nsamp, const dvariable& dir
   }
 
   
-FUNCTION dvector rebin(const dvector& src_edges, const dvector& src_counts, const dvector& dest_edges)
+FUNCTION dvar_vector rebin(const dvector& src_edges, const dvar_vector& src_counts, const dvar_vector& dest_edges)
   {
     /*
     This implementation takes two vectors representing the boundaries (edges) of the source
@@ -135,27 +135,35 @@ FUNCTION dvector rebin(const dvector& src_edges, const dvector& src_counts, cons
     @return Vector of rebinned frequency data (size M).
     */
 
-    dvector dest_counts(dest_edges.size() - 1, 0.0);
-    for (int i = 0; i < dest_counts.size(); ++i) {
-    double d_low = dest_edges[i];
-    double d_high = dest_edges[i + 1];
+    dvar_vector dest_counts(1, dest_edges.size() - 1);  // size to leave off the topbin bounary
+    dest_counts.initialize();
+    echoinput<<"in rebin: "<<endl<<"dest_edges: "<<dest_edges<<endl;
+    echoinput<<"src_counts: "<<src_counts<<endl;
+    for (int i = 1; i <= dest_counts.size(); i++) {
+    dvariable d_low = dest_edges[i];
+    dvariable d_high = dest_edges[i + 1];
 
-    for (int j = 0; j < src_counts.size(); ++j) {
-     double s_low = src_edges[j];
-     double s_high = src_edges[j + 1];
-
+    for (int j = 1; j <= src_counts.size(); j++) {
+     dvariable s_low = src_edges[j];
+     dvariable s_high = src_edges[j + 1];
+//      echoinput<<"dest: "<<i<<" d_low: "<<d_low<<" source: "<<j<<" s_low: "<<s_low;
      // Calculate the overlap between [d_low, d_high] and [s_low, s_high]
-     double overlap_low = max(d_low, s_low);
-     double overlap_high = min(d_high, s_high);
+     dvariable overlap_low = d_low;
+     if( s_low > d_low) overlap_low = s_low;
+     dvariable overlap_high = d_high;
+     if(s_high < d_high) overlap_high = s_high;
+//      = dmin(d_high, s_high);
 
      if (overlap_low < overlap_high) {
-         double overlap_width = overlap_high - overlap_low;
-         double src_bin_width = s_high - s_low;
+         dvariable overlap_width = overlap_high - overlap_low;
+         dvariable src_bin_width = s_high - s_low;
          
          // Distribute source count proportionally to the overlap area
+//         echoinput << " count: "<<src_counts[j]<<" overlap: "<<src_counts[j] * (overlap_width / src_bin_width);
          dest_counts[i] += src_counts[j] * (overlap_width / src_bin_width);
      }
     }
     }
+//    echoinput<<"finish rebin "<<dest_counts<<endl<<"sum_dest: "<<sum(dest_counts)<<endl;
     return (dest_counts);
   }

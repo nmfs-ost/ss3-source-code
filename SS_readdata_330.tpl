@@ -3136,7 +3136,7 @@
   init_ivector SzFreq_nobs(1,SzFreq_Nmeth);
 !!if (SzFreq_Nmeth > 0) echoinput << SzFreq_nobs << " Sizefreq N obs per method" << endl;
   ivector SzFreq_Nbins_seas_g(1,SzFreq_Nmeth*nseas);   //  array dimensioner used only for the SzFreqTrans array
-  ivector SzFreq_Nbins3(1,SzFreq_Nmeth);      // doubles the Nbins if gender==2
+  ivector SzFreq_Nbins3(1,SzFreq_Nmeth);      // values will be doubled if gender==2
   int SzFreqMethod_seas;
   ivector Comp_Err_Sz(1,SzFreq_Nmeth);
   ivector Comp_Err_Sz2(1,SzFreq_Nmeth);
@@ -3196,7 +3196,6 @@
     }
   }
   // clang-format off
-  echoinput<<"here"<<endl;
  END_CALCS
 
  !!echoinput<<"bins "<<SzFreq_Nbins<<endl;
@@ -3266,9 +3265,14 @@
           SzFreq_means(k, z) = SzFreq_means(k, z - 1) + (SzFreq_bins2(k, z) - SzFreq_bins2(k, z - 1));
         }
         if (gender == 2)
+        {
           SzFreq_means(k, z + SzFreq_Nbins(k)) = SzFreq_means(k, z);
+        }
       }
+//      SzFreq_bins2(k, SzFreq_Nbins(k)) = 99999.;
+//      if (gender == 2) SzFreq_bins2(k,SzFreq_Nbins(k) + SzFreq_Nbins(k) + 1) = 99999.;
       echoinput << "Processed_SizeFreqMethod_bins for method: " << k << endl
+                << "bins2: " << SzFreq_bins2(k) << endl
                 << "low: " << SzFreq_bins(k) << endl
                 << "mean: " << SzFreq_means(k) << endl;
     }
