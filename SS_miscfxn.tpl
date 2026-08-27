@@ -133,37 +133,49 @@ FUNCTION dvar_vector rebin(const dvector& src_edges, const dvar_vector& src_coun
     @param src_counts Frequency/counts in original bins (size N).
     @param dest_edges Boundaries of the new bins (size M+1).
     @return Vector of rebinned frequency data (size M).
+    the original code searched all source bins for each destination bins.
+    Here the ordered characteristic of the bins allows for the search for bin (i+1) to continue from search for bin(i)
     */
 
     dvar_vector dest_counts(1, dest_edges.size() - 1);  // size to leave off the topbin bounary
     dest_counts.initialize();
     echoinput<<"in rebin: "<<endl<<"dest_edges: "<<dest_edges<<endl;
-    echoinput<<"src_counts: "<<src_counts<<endl;
-    for (int i = 1; i <= dest_counts.size(); i++) {
-    dvariable d_low = dest_edges[i];
-    dvariable d_high = dest_edges[i + 1];
+    int src_startbin = 1;
+    for (int i = 1; i <= dest_counts.size(); i++) 
+    {
+      int src_stopflag = 0;
+      j = src_startbin;
+//      echoinput<<"dest_bin "<<i<<"  src_start "<<src_startbin<<endl;
+      while(src_stopflag < 2 && j <= src_counts.size())
+      {
+        // Calculate the overlap between [d_low, d_high] and [s_low, s_high]
+        dvariable overlap_low = dest_edges[i];
+        dvariable overlap_high = dest_edges[i + 1];
+        if( src_edges[j] > dest_edges[i]) overlap_low = src_edges[j];
+        if(src_edges[j + 1] < dest_edges[i + 1]) overlap_high = src_edges[j + 1];
+//        echoinput<<" "<<j<<" "<<overlap_low<<" "<<overlap_high;
 
-    for (int j = 1; j <= src_counts.size(); j++) {
-     dvariable s_low = src_edges[j];
-     dvariable s_high = src_edges[j + 1];
-//      echoinput<<"dest: "<<i<<" d_low: "<<d_low<<" source: "<<j<<" s_low: "<<s_low;
-     // Calculate the overlap between [d_low, d_high] and [s_low, s_high]
-     dvariable overlap_low = d_low;
-     if( s_low > d_low) overlap_low = s_low;
-     dvariable overlap_high = d_high;
-     if(s_high < d_high) overlap_high = s_high;
-//      = dmin(d_high, s_high);
+        if (overlap_low < overlap_high)
+        {
+          dest_counts[i] += src_counts[j] * ((overlap_high - overlap_low)) / (src_edges[j + 1] - src_edges[j]);
+          src_startbin = j;  // so start with this bin next time; allows for overlap
+          src_stopflag = 1;  // got at least one bin assigned
+          // Distribute source count proportionally to the overlap area
+          // echoinput<<" store "<<endl;
 
-     if (overlap_low < overlap_high) {
-         dvariable overlap_width = overlap_high - overlap_low;
-         dvariable src_bin_width = s_high - s_low;
-         
-         // Distribute source count proportionally to the overlap area
-//         echoinput << " count: "<<src_counts[j]<<" overlap: "<<src_counts[j] * (overlap_width / src_bin_width);
-         dest_counts[i] += src_counts[j] * (overlap_width / src_bin_width);
-     }
+        }
+        else if (src_stopflag = 1)
+        {  // triggers end of seach for this i
+          // echoinput<<" stop_here: "<<j<<endl;
+          src_stopflag = 2;
+        }
+        else
+        {
+          //  echoinput<<"next bin "<<endl;
+        }
+        j++;
+      }
     }
-    }
-//    echoinput<<"finish rebin "<<dest_counts<<endl<<"sum_dest: "<<sum(dest_counts)<<endl;
+//    echoinput<<"finish rebin "<<dest_counts<<endl<"<"sum_dest: "<<sum(dest_counts)<<endl;
     return (dest_counts);
   }
