@@ -1532,7 +1532,8 @@ FUNCTION void get_wtlen()
           wt_len(s, gp).shift(1);
         }
 
-        //  SS_Label_Info_19.2.3  #calculate first diff of wt_len for use in generalized sizp comp bin calculations
+        //  SS_Label_Info_19.2.3  #calculate first diff of wt_len for use in generalized size comp bin calculations
+        // this may no longer be needed with the rebin method
         if (gg == gender)
         {
           wt_len2_sq(s, GPat) = elem_prod(wt_len2(s, GPat), wt_len2(s, GPat));
