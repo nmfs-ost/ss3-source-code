@@ -122,7 +122,7 @@ FUNCTION dvariable Comp_logL_Dirichlet(const double& Nsamp, const dvariable& dir
   }
 
   
-FUNCTION dvar_vector rebin(const dvector& src_edges, const dvar_vector& src_counts, const dvar_vector& dest_edges)
+FUNCTION dvar_vector rebin(const int omit_small, const dvector& src_edges, const dvar_vector& src_counts, const dvar_vector& dest_edges)
   {
     /*
     This implementation takes two vectors representing the boundaries (edges) of the source
@@ -139,11 +139,12 @@ FUNCTION dvar_vector rebin(const dvector& src_edges, const dvar_vector& src_coun
 
     dvar_vector dest_counts(1, dest_edges.size() - 1);  // size to leave off the topbin bounary
     dest_counts.initialize();
+ /*
     int src_startbin = 1;
     for (int i = 1; i <= dest_counts.size(); i++) 
     {
       int src_stopflag = 0;
-      j = src_startbin;
+      int j = src_startbin;
       while(src_stopflag < 2 && j <= src_counts.size())
       {
         // Calculate the overlap between [d_low, d_high] and [s_low, s_high]
@@ -151,20 +152,67 @@ FUNCTION dvar_vector rebin(const dvector& src_edges, const dvar_vector& src_coun
         dvariable overlap_high = dest_edges[i + 1];
         if( src_edges[j] > dest_edges[i]) overlap_low = src_edges[j];
         if(src_edges[j + 1] < dest_edges[i + 1]) overlap_high = src_edges[j + 1];
-
-        if (overlap_low < overlap_high)
+        echoinput<<"rebin: dest: "<<i<<" "<<dest_edges[i]<<" src: "<<j<<" "<<src_edges[j]<<" overlap_lo "<<overlap_low <<" overlap_hi "<<overlap_high <<  endl;
+        if (overlap_low <= overlap_high)
         {
-          dest_counts[i] += src_counts[j] * ((overlap_high - overlap_low)) / (src_edges[j + 1] - src_edges[j]);
+          echoinput<<" assign to dest "<<i<<endl;
+          dest_counts[i] += src_counts[j] * ((overlap_high - overlap_low)) / (src_edges[j + 1] - src_edges[j]);  // Distribute source count proportionally to the overlap area
           src_startbin = j;  // so start with this bin next time; allows for overlap
           src_stopflag = 1;  // got at least one bin assigned
-          // Distribute source count proportionally to the overlap area
         }
         else if (src_stopflag = 1)
-        {  // triggers end of seach for this i
+        {  // triggers end of search for this i
           src_stopflag = 2;
         }
         j++;
       }
     }
+ */
+    int j_start = 1;
+    if(omit_small == 1) { //  find the first src bin that overlaps into first dest_bin
+      do
+      {
+//        echoinput<<"adjust_jstart: "<<j_start<<" "<<dest_edges[1] << " "<<src_edges[j_start]<<endl;
+        j_start++;
+      } while (dest_edges[1] >= src_edges[j_start + 1]);
+//      echoinput<<"jstart-after-omit "<<j_start<<endl;
+    }
+    for (int i = 1; i <= dest_counts.size(); i++) {
+        dvariable d_low = dest_edges[i];
+        dvariable d_high = dest_edges[i + 1];
+
+        // Advance j_start if the source bin is entirely below the current destination bin.
+        // Because d_low increases with 'i', j_start only ever moves forward.
+        while (j_start <= src_counts.size() && src_edges[j_start + 1] <= d_low) {
+            j_start++;
+//            echoinput<<"incr jstart"<<endl;
+        }
+
+        // Iterate through source bins starting from j_start, but stop as soon 
+        // as the source bin is completely above the current destination bin.
+        for (int j = j_start; j <= src_counts.size() && src_edges[j] < d_high; j++) {
+            dvariable s_low = src_edges[j];
+            dvariable s_high = src_edges[j + 1];
+            // Calculate the overlap bounds
+            dvariable overlap_low = d_low;
+            if (s_low > d_low) overlap_low = s_low;
+            
+            dvariable overlap_high = d_high;
+            if (s_high < d_high) overlap_high = s_high;
+//            echoinput<<"rebin: dest: "<<i<<" "<<dest_edges[i]<<" src: "<<j<<" "<<src_edges[j]<<" overlap_lo "<<overlap_low <<" overlap_hi "<<overlap_high <<  endl;
+
+            // If there is valid overlap, distribute the counts
+            if (overlap_low < overlap_high) {
+                dvariable overlap_width = overlap_high - overlap_low;
+                dvariable src_bin_width = s_high - s_low;
+                
+                // Safety check: Prevent division by zero if source bin edges are identical
+                if (src_bin_width > 1e-8) {
+                    dest_counts[i] += src_counts[j] * (overlap_width / src_bin_width);
+//                    echoinput<<"add src to dest: "<<i<<" "<<j<<endl;
+                }
+            }
+        }
+      }
     return (dest_counts);
   }
