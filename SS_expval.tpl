@@ -779,9 +779,9 @@ FUNCTION void Get_expected_values(const int y, const int t);
       if (do_once == 1) echoinput<<"pass_comp_biomass: "<<pass_comp<<endl;
       //  wt_len being referenced here by gg (sex), but actually is stored by gp which is sex and GPat.  So, only the first Gpat gets used
     }
-    if (do_once == 1) echoinput<<"ready to call rebin, pass_comp: "<<pass_comp<<endl<<"  sum_pass: " << sum(pass_comp)<<endl;
+//    if (do_once == 1) echoinput<<"ready to call rebin, pass_comp: "<<pass_comp<<endl<<"  sum_pass: " << sum(pass_comp)<<endl;
     dest_comp = rebin(SzFreq_Omit_Small(SzFreqMethod), src_edges, pass_comp, dest_edges);
-    if (do_once == 1) echoinput << "dest_comp: "<<dest_comp<<endl<<"  sum_dest: " << sum(dest_comp)<<endl;
+//    if (do_once == 1) echoinput << "dest_comp: "<<dest_comp<<endl<<"  sum_dest: " << sum(dest_comp)<<endl;
 
     if( gg == 1)
     {
@@ -793,7 +793,6 @@ FUNCTION void Get_expected_values(const int y, const int t);
       SzFreq_exp(iobs)(SzFreq_Nbins(SzFreqMethod) + 1, 2 * SzFreq_Nbins(SzFreqMethod)) = dest_comp;
     }
 
-    if (do_once == 1) echoinput<<" sex: "<<gg<<" szfreq_obs: " << SzFreq_exp(iobs)<<endl;
     } // end gender loop
 
                       if (gender == 2)
@@ -861,7 +860,7 @@ FUNCTION void Get_expected_values(const int y, const int t);
                       }
 
                       if (do_once == 1)
-                        echoinput << y << " " << f << "  method: " << SzFreqMethod << " szfreq_exp_after_add_mincomp  " << SzFreq_exp(iobs) << endl;
+                        echoinput << y << " fleet: " << f << "  method: " << SzFreqMethod << " szfreq_exp_after_add_mincomp  " << SzFreq_exp(iobs) << endl;
                     } // end loop of obs for fleet = f
                   } //  end having some obs for this method in this fleet
                 } //  end use of generalized size freq data
