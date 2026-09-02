@@ -133,50 +133,16 @@ FUNCTION dvar_vector rebin(const int omit_small, const dvector& src_edges, const
     @param src_counts Frequency/counts in original bins (size N).
     @param dest_edges Boundaries of the new bins (size M+1).
     @return Vector of rebinned frequency data (size M).
+    src_counts need not be counts; works for real number of fish, or for biomass of fish.
+    However, if src_counts are in biomass units, this rebin method does not account for fact that fish in lower portion of a src bin
+       will weigh less than fish in upper portion.
     the original code searched all source bins for each destination bins.
-    Here the ordered characteristic of the bins allows for the search for bin (i+1) to continue from search for bin(i)
+    Here the ordered characteristic of the bins allows for the search for bin (i+1) to continue from search for bin(i).
     */
 
     dvar_vector dest_counts(1, dest_edges.size() - 1);  // size to leave off the topbin bounary
     dest_counts.initialize();
- /*
-    int src_startbin = 1;
-    for (int i = 1; i <= dest_counts.size(); i++) 
-    {
-      int src_stopflag = 0;
-      int j = src_startbin;
-      while(src_stopflag < 2 && j <= src_counts.size())
-      {
-        // Calculate the overlap between [d_low, d_high] and [s_low, s_high]
-        dvariable overlap_low = dest_edges[i];
-        dvariable overlap_high = dest_edges[i + 1];
-        if( src_edges[j] > dest_edges[i]) overlap_low = src_edges[j];
-        if(src_edges[j + 1] < dest_edges[i + 1]) overlap_high = src_edges[j + 1];
-        echoinput<<"rebin: dest: "<<i<<" "<<dest_edges[i]<<" src: "<<j<<" "<<src_edges[j]<<" overlap_lo "<<overlap_low <<" overlap_hi "<<overlap_high <<  endl;
-        if (overlap_low <= overlap_high)
-        {
-          echoinput<<" assign to dest "<<i<<endl;
-          dest_counts[i] += src_counts[j] * ((overlap_high - overlap_low)) / (src_edges[j + 1] - src_edges[j]);  // Distribute source count proportionally to the overlap area
-          src_startbin = j;  // so start with this bin next time; allows for overlap
-          src_stopflag = 1;  // got at least one bin assigned
-        }
-        else if (src_stopflag = 1)
-        {  // triggers end of search for this i
-          src_stopflag = 2;
-        }
-        j++;
-      }
-    }
- */
     int j_start = 1;
-    if(omit_small == 1) { //  find the first src bin that overlaps into first dest_bin
-      do
-      {
-//        echoinput<<"adjust_jstart: "<<j_start<<" "<<dest_edges[1] << " "<<src_edges[j_start]<<endl;
-        j_start++;
-      } while (dest_edges[1] >= src_edges[j_start + 1]);
-//      echoinput<<"jstart-after-omit "<<j_start<<endl;
-    }
     for (int i = 1; i <= dest_counts.size(); i++) {
         dvariable d_low = dest_edges[i];
         dvariable d_high = dest_edges[i + 1];
@@ -185,7 +151,6 @@ FUNCTION dvar_vector rebin(const int omit_small, const dvector& src_edges, const
         // Because d_low increases with 'i', j_start only ever moves forward.
         while (j_start <= src_counts.size() && src_edges[j_start + 1] <= d_low) {
             j_start++;
-//            echoinput<<"incr jstart"<<endl;
         }
 
         // Iterate through source bins starting from j_start, but stop as soon 
@@ -205,12 +170,8 @@ FUNCTION dvar_vector rebin(const int omit_small, const dvector& src_edges, const
             if (overlap_low < overlap_high) {
                 dvariable overlap_width = overlap_high - overlap_low;
                 dvariable src_bin_width = s_high - s_low;
-                
-                // Safety check: Prevent division by zero if source bin edges are identical
-                if (src_bin_width > 1e-8) {
-                    dest_counts[i] += src_counts[j] * (overlap_width / src_bin_width);
-//                    echoinput<<"add src to dest: "<<i<<" "<<j<<endl;
-                }
+                dest_counts[i] += src_counts[j] * (overlap_width / src_bin_width);
+//                    echoinput<<"add src to dest: "<<dest_edges[i]<<" "<<src_edges[j]<<" result: "<<(overlap_width / src_bin_width)<<endl;
             }
         }
       }
