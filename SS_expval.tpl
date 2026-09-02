@@ -672,12 +672,8 @@ FUNCTION void Get_expected_values(const int y, const int t);
                     {
                       iobs = have_data(ALK_time, f, data_type, j); //  observation index
                       SzFreqMethod = SzFreq_obs_hdr(iobs, 6);
-
-        SzFreqMethod_seas = nseas * (SzFreqMethod - 1) + s; // index that combines sizefreqmethod and season and used in SzFreqTrans
-        if (SzFreq_obs_hdr(iobs, 9) > 0) // first occurrence of this method at this time is with fleet = f
-  // check to see if multiple fleets using szfreq will still get included
-        {
-          for (gg = 1; gg <= gender; gg++)
+                      SzFreqMethod_seas = nseas * (SzFreqMethod - 1) + s; // index that combines sizefreqmethod and season and used in SzFreqTrans
+                      for (gg = 1; gg <= gender; gg++)
           {
             if (gg == 1)
             {
@@ -729,6 +725,7 @@ FUNCTION void Get_expected_values(const int y, const int t);
         int parm_loc = 1 + (gg - 1) * 6;
         wtlen_a = wtlen_p(GPat, parm_loc);
         wtlen_b = wtlen_p(GPat, parm_loc + 1);
+//        if (do_once==1) echoinput<<gg<<" parmloc "<<parm_loc<<" a, b "<<wtlen_a<<" " << wtlen_b<<endl;
         if (MGparm_seas_effects(1) > 0 || MGparm_seas_effects(2) > 0) //  get seasonal effect on wtlen parameters
         {
           wtlen_a *= wtlen_seas(s, GPat, parm_loc);
@@ -863,7 +860,6 @@ FUNCTION void Get_expected_values(const int y, const int t);
                         }
                       }
 
-  } // done calculating the SzFreq obs
                       if (do_once == 1)
                         echoinput << y << " " << f << "  method: " << SzFreqMethod << " szfreq_exp_after_add_mincomp  " << SzFreq_exp(iobs) << endl;
                     } // end loop of obs for fleet = f
