@@ -97,7 +97,6 @@ PARAMETER_SECTION
   3darray wt_len2(1,nseas,1,N_GP,1,nlength2)    //  stores wt at midbin; stacked genders
   3darray wt_len2_sq(1,nseas,1,N_GP,1,nlength2)    //  stores wt at midbin^2; stacked genders
   3darray wt_len_low(1,nseas,1,N_GP,1,nlength2)  //  wt at lower edge of size bin
-  3darray wt_len_fd(1,nseas,1,N_GP,1,nlength2-1)  //  first diff of wt_len_low
 
   matrix mat_len(1,N_GP,1,nlength)
   matrix fec_len(1,N_GP,1,nlength)   // fecundity at length
