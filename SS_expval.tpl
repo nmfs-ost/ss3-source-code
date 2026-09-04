@@ -666,7 +666,6 @@ FUNCTION void Get_expected_values(const int y, const int t);
               {
                 if (SzFreq_Nmeth > 0) //  have some sizefreq data
                 {
-
                   if (have_data(ALK_time, f, data_type, 0) > 0)
                   {
                     for (j = 1; j <= have_data(ALK_time, f, data_type, 0); j++) // loop all obs of this type
@@ -674,252 +673,126 @@ FUNCTION void Get_expected_values(const int y, const int t);
                       iobs = have_data(ALK_time, f, data_type, j); //  observation index
                       SzFreqMethod = SzFreq_obs_hdr(iobs, 6);
                       SzFreqMethod_seas = nseas * (SzFreqMethod - 1) + s; // index that combines sizefreqmethod and season and used in SzFreqTrans
-                      if (SzFreq_obs_hdr(iobs, 9) > 0) // first occurrence of this method at this time is with fleet = f
+                      for (gg = 1; gg <= gender; gg++)
                       {
-                        if (do_once == 1 || (MG_active(3) > 0 && (timevary_MG(y, 3) > 0))) // calc  matrix because wtlen parameters have changed
+                        if (gg == 1)
                         {
-                          for (gg = 1; gg <= gender; gg++)
+                          z1 = 1;
+                          z2 = nlength;
+                        } // female
+                        else
+                        {
+                          z1 = nlength1;
+                          z2 = nlength2;
+                        } // male
+
+                        //  NOTE:  wt_len_low is  calculated separately for each growth pattern (GPat)
+                        //  but the code below still just uses GPat=1 for calculation of the sizefreq transition matrix
+                        dvector src_edges(1, nlength + 1); // +1 to create a dummy bin holding upper edge of the actual last bin
+                        src_edges(1, nlength) = len_bins(1, nlength); 
+                        src_edges(nlength + 1) = src_edges(nlength) + (src_edges(nlength) - src_edges(nlength - 1));
+                        dvar_vector dest_edges(1,SzFreq_Nbins(SzFreqMethod) + 1);  // +1 to create a dummy bin holding upper edge of the actual last bin
+                        dvar_vector dest_edges_wt(1,SzFreq_Nbins(SzFreqMethod) + 1);
+                        dest_edges.initialize();
+                        for (ibin = 1; ibin <= SzFreq_Nbins(SzFreqMethod); ibin++) {
+                          dest_edges(ibin) = SzFreq_bins(SzFreqMethod, ibin);
+                          dest_edges_wt(ibin) = dest_edges(ibin);  // save in raw units
+                        }
+                        dest_edges(SzFreq_Nbins(SzFreqMethod) + 1) = 99999.;
+                        dest_edges_wt(ibin) = dest_edges_wt(ibin - 1) + (dest_edges_wt(ibin - 1) - dest_edges_wt(ibin - 2));
+                        if(SzFreq_Omit_Small(SzFreqMethod) < 0.0)
+                        {
+                          dest_edges(1) = 0.; //  so src_bins smaller than first actual dest_bin are included in first bin
+                        }
+
+                        dvar_vector dest_comp(1,SzFreq_Nbins(SzFreqMethod));  //  destination composition.  one-sex at a time
+                      // convert dest_edges to cm
+                      // as in the legacy method, this conversion is sex and season specific, but only uses Gpat = 1
+                      switch (SzFreq_scale(SzFreqMethod)) // biomass vs. numbers are accumulated in the bins
+                      {
+                        case (1): // scale is kg
+                        {
+                          // fall thru to calcs in the lb case
+                        }
+                        case (2): // scale is lb, or fall thru from kg
+                        {
+                  // bin boundary in lb have already been converted to kg
+                  // wt_len(s, gp) is potentially by season and by Gpat within sex.  Here, only Gpat==1 will be used.  It will be sex-specific
+                  // W=a*L^b; so L = exp((ln(W)-ln(a))/B)
+                          dvariable wtlen_a;
+                          dvariable wtlen_b;
+                          GPat = 1;  // this means that any (unusual) use of multiple Gpatterns will still use biology of GPat 1 for szfreq purposes
+                          // female parms are at 1, 2; males at 7,8
+                          int parm_loc = 1 + (gg - 1) * 6;
+                          wtlen_a = wtlen_p(GPat, parm_loc);
+                          wtlen_b = wtlen_p(GPat, parm_loc + 1);
+                          if (MGparm_seas_effects(1) > 0 || MGparm_seas_effects(2) > 0) //  get seasonal effect on wtlen parameters
                           {
-                            if (gg == 1)
-                            {
-                              z1 = 1;
-                              z2 = nlength;
-                              ibin = 0;
-                              ibinsave = 0;
-                            } // female
-                            else
-                            {
-                              z1 = nlength1;
-                              z2 = nlength2;
-                              ibin = 0;
-                              ibinsave = SzFreq_Nbins(SzFreqMethod);
-                            } // male
-                            topbin = 0.;
-                            botbin = 0.;
+                            wtlen_a *= wtlen_seas(s, GPat, parm_loc);
+                            wtlen_b *= wtlen_seas(s, GPat, parm_loc + 1);
+                          }
+                          dest_edges = exp((log(dest_edges)-log(wtlen_a))/wtlen_b);
+                          break;
+                        }
+                        case (3):  //  scale is in cm
+                        {
+                          break;
+                        }
+                        case 4:  // scale is in inches.  Already converted to cm in readdata.  Relic feature for some ancient recreational fishery data
+                        {
+                          break;
+                        }
+                      }  // end calc of new dest_edges
+                      if (do_once == 1) echoinput << "Szfreq_method: " << SzFreqMethod << "  sex: " << gg << " dest_edges_converted_to_cm "<<dest_edges<<endl;
 
-                            //  NOTE:  wt_len_low is  calculated separately for each growth pattern (GPat)
-                            //  but the code below still just uses GPat=1 for calculation of the sizefreq transition matrix
-
-                            switch (SzFreq_units(SzFreqMethod)) // biomass vs. numbers are accumulated in the bins
-                            {
-                              case (1): // units are biomass, so accumulate body weight into the bins;  Assume that bin demarcations are also in biomass
-                              {
-                                if (SzFreq_Omit_Small(SzFreqMethod) == 1)
-                                {
-                                  while (wt_len_low(s, 1, z1 + 1) < SzFreq_bins(SzFreqMethod, 1) && z1 < z2)
-                                  {
-                                    z1++;
-                                  }
-                                } // ignore tiny fish
-                                if (z1 + 1 >= z2)
-                                {
-                                  warnstream << "max population size " << wt_len_low(s, 1, z1) << " is less than first data bin " << SzFreq_bins(SzFreqMethod, 1) << " for SzFreqMethod " << SzFreqMethod;
-                                  write_message (FATAL, 0); // EXIT!
-                                }
-
-                                if (wt_len_low(s, 1, nlength2) < SzFreq_bins(SzFreqMethod, SzFreq_Nbins(SzFreqMethod)))
-                                {
-                                  warnstream << "max population size " << wt_len_low(s, 1, nlength2) << " is less than max data bin " << SzFreq_bins(SzFreqMethod, SzFreq_Nbins(SzFreqMethod)) << " for SzFreqMethod " << SzFreqMethod;
-                                  write_message (FATAL, 0); // EXIT!
-                                }
-
-                                for (z = z1; z <= z2; z++)
-                                {
-                                  if (ibin == SzFreq_Nbins(SzFreqMethod))
-                                  {
-                                    SzFreqTrans(SzFreqMethod_seas, z, ibinsave) = wt_len2(s, 1, z);
-                                  }
-                                  else
-                                  {
-                                    if (wt_len_low(s, 1, z) >= topbin)
-                                    {
-                                      ibin++;
-                                      ibinsave++;
-                                    }
-                                    if (ibin > 1)
-                                    {
-                                      botbin = SzFreq_bins2(SzFreqMethod, ibin);
-                                    }
-                                    if (ibin == SzFreq_Nbins(SzFreqMethod))
-                                    {
-                                      SzFreqTrans(SzFreqMethod_seas, z, ibinsave) = wt_len2(s, 1, z);
-                                      topbin = 99999.;
-                                    }
-                                    else
-                                    {
-                                      topbin = SzFreq_bins2(SzFreqMethod, ibin + 1);
-                                      if (wt_len_low(s, 1, z) >= botbin && wt_len_low(s, 1, z + 1) <= topbin)
-                                      {
-                                        SzFreqTrans(SzFreqMethod_seas, z, ibinsave) = wt_len2(s, 1, z);
-                                      }
-                                      else
-                                      {
-                                        temp = (wt_len_low(s, 1, z + 1) - topbin) / wt_len_fd(s, 1, z); // frac in pop bin above (data bin +1)
-                                        temp1 = wt_len_low(s, 1, z) + (1. - temp * 0.5) * wt_len_fd(s, 1, z); // approx body wt for these fish
-                                        temp2 = wt_len_low(s, 1, z) + (1. - temp) * 0.5 * wt_len_fd(s, 1, z); // approx body wt for  fish below
-                                        SzFreqTrans(SzFreqMethod_seas, z, ibinsave + 1) = temp * temp1;
-                                        SzFreqTrans(SzFreqMethod_seas, z, ibinsave) = (1. - temp) * temp2;
-                                      }
-                                    }
-                                  }
-                                }
-                                if (SzFreq_scale(SzFreqMethod) == 2 && gg == gender) // convert to pounds
-                                {
-                                  SzFreqTrans(SzFreqMethod_seas) /= 0.4536;
-                                }
-                                break;
-                              } //  end of units in biomass
-                              // NOTE: even though  the transition matrix is currently in units of biomass distribution, there is no need to
-                              // normalize to sum to 1.0 here because the normalization will occur after it gets used to create SzFreq_exp
-
-                              case (2): // units are numbers
-                              {
-                                if (SzFreq_scale(SzFreqMethod) <= 2) //  bin demarcations are in weight units (1=kg, 2=lbs), so uses wt_len to compare to bins
-                                {
-                                  if (SzFreq_Omit_Small(SzFreqMethod) == 1)
-                                  {
-                                    while (wt_len_low(s, 1, z1 + 1) < SzFreq_bins(SzFreqMethod, 1) && z1 < z2)
-                                    {
-                                      z1++;
-                                    }
-                                  } // ignore tiny fish
-                                  if (z1 + 1 >= z2)
-                                  {
-                                    warnstream << "max population size " << wt_len_low(s, 1, z1) << " is less than first data bin " << SzFreq_bins(SzFreqMethod, 1) << " for SzFreqMethod " << SzFreqMethod;
-                                    write_message (FATAL, 0); // EXIT!
-                                  }
-                                  if (wt_len_low(s, 1, nlength2) < SzFreq_bins(SzFreqMethod, SzFreq_Nbins(SzFreqMethod)))
-                                  {
-                                    warnstream << "max population size " << wt_len_low(s, 1, nlength2) << " is less than max data bin " << SzFreq_bins(SzFreqMethod, SzFreq_Nbins(SzFreqMethod)) << " for SzFreqMethod " << SzFreqMethod;
-                                    write_message (FATAL, 0); // EXIT!
-                                  }
-
-                                  for (z = z1; z <= z2; z++)
-                                  {
-                                    if (ibin == SzFreq_Nbins(SzFreqMethod))
-                                    {
-                                      SzFreqTrans(SzFreqMethod_seas, z, ibinsave) = 1.;
-                                    } //checkup<<" got to last ibin, so put rest of popbins here"<<endl;
-                                    else
-                                    {
-                                      if (wt_len_low(s, 1, z) >= topbin)
-                                      {
-                                        ibin++;
-                                        ibinsave++;
-                                      } //checkup<<" incr ibin "<<z<<" "<<ibin<<" "<<len_bins(z)<<" "<<len_bins_dat(ibin);
-                                      if (ibin > 1)
-                                      {
-                                        botbin = SzFreq_bins2(SzFreqMethod, ibin);
-                                      }
-                                      if (ibin == SzFreq_Nbins(SzFreqMethod)) // checkup<<" got to last ibin, so put rest of popbins here"<<endl;
-                                      {
-                                        SzFreqTrans(SzFreqMethod_seas, z, ibinsave) = 1.;
-                                        topbin = 99999.;
-                                      }
-                                      else
-                                      {
-                                        topbin = SzFreq_bins2(SzFreqMethod, ibin + 1);
-                                        if (wt_len_low(s, 1, z) >= botbin && wt_len_low(s, 1, z + 1) <= topbin) //checkup<<" pop inside dat, put here"<<endl;
-                                        {
-                                          SzFreqTrans(SzFreqMethod_seas, z, ibinsave) = 1.;
-                                        }
-                                        else // checkup<<" overlap"<<endl;
-                                        {
-                                          SzFreqTrans(SzFreqMethod_seas, z, ibinsave + 1) = (wt_len_low(s, 1, z + 1) - topbin) / wt_len_fd(s, 1, z);
-                                          SzFreqTrans(SzFreqMethod_seas, z, ibinsave) = 1. - SzFreqTrans(SzFreqMethod_seas, z, ibinsave + 1);
-                                        }
-                                      }
-                                    }
-                                  }
-                                }
-
-                                else //  bin demarcations are in length unit (3=cm, 4=inch) so uses population len_bins to compare to data bins
-                                {
-                                  if (SzFreq_Omit_Small(SzFreqMethod) == 1)
-                                  {
-                                    while (len_bins2(z1 + 1) < SzFreq_bins(SzFreqMethod, 1))
-                                    {
-                                      z1++;
-                                    }
-                                    //  echoinput<<"accumulate starting at bin: "<<z1<<endl;
-                                  } // ignore tiny fish
-
-                                  if (len_bins2(nlength2) < SzFreq_bins(SzFreqMethod, SzFreq_Nbins(SzFreqMethod)))
-                                  {
-                                    warnstream << "max population len bin " << len_bins2(nlength2) << " is less than max data bin " << SzFreq_bins(SzFreqMethod, SzFreq_Nbins(SzFreqMethod)) << " for SzFreqMethod " << SzFreqMethod;
-                                    write_message (FATAL, 0); // EXIT!
-                                  }
-
-                                  for (z = z1; z <= z2; z++)
-                                  {
-                                    if (ibin == SzFreq_Nbins(SzFreqMethod))
-                                    {
-                                      SzFreqTrans(SzFreqMethod_seas, z, ibinsave) = 1.;
-                                    } //checkup<<" got to last ibin, so put rest of popbins here"<<endl;
-                                    else
-                                    {
-                                      if (len_bins2(z) >= topbin)
-                                      {
-                                        ibin++;
-                                        ibinsave++;
-                                      } //checkup<<" incr ibin "<<z<<" "<<ibin<<" "<<len_bins(z)<<" "<<len_bins_dat(ibin);
-                                      if (ibin > 1)
-                                      {
-                                        botbin = SzFreq_bins2(SzFreqMethod, ibin);
-                                      }
-                                      if (ibin == SzFreq_Nbins(SzFreqMethod)) // checkup<<" got to last ibin, so put rest of popbins here"<<endl;
-                                      {
-                                        SzFreqTrans(SzFreqMethod_seas, z, ibinsave) = 1.;
-                                        topbin = 99999.;
-                                      }
-                                      else
-                                      {
-                                        topbin = SzFreq_bins2(SzFreqMethod, ibin + 1);
-                                        if (len_bins2(z) >= botbin && len_bins2(z + 1) <= topbin) //checkup<<" pop inside dat, put here"<<endl;
-                                        {
-                                          SzFreqTrans(SzFreqMethod_seas, z, ibinsave) = 1.;
-                                        }
-                                        else // checkup<<" overlap"<<endl;
-                                        {
-                                          SzFreqTrans(SzFreqMethod_seas, z, ibinsave + 1) = (len_bins2(z + 1) - topbin) / (len_bins2(z + 1) - len_bins2(z));
-                                          SzFreqTrans(SzFreqMethod_seas, z, ibinsave) = 1. - SzFreqTrans(SzFreqMethod_seas, z, ibinsave + 1);
-                                        }
-                                      }
-                                    }
-                                  }
-                                }
-                                break;
-                              } //  end of units in numbers
-                            }
-                            if (docheckup == 1 && gg == gender)
-                              echoinput << " sizefreq trans_matrix: method/season " << SzFreqMethod << " / " << s << endl
-                                        << trans(SzFreqTrans(SzFreqMethod_seas)) << endl;
-                          } // end gender loop
-                        } //  end needing to calc the matrix because it may have changed
-                      } // done calculating the SzFreqTransition matrix for this method
-
+                      dvar_vector pass_comp(z1, z2);  // this gets males or females range according to z1, z2
+                      pass_comp.initialize();
                       switch (SzFreq_obs_hdr(iobs, 5)) // discard/retained partition
                       {
                         case (0):
                         {
-                          SzFreq_exp(iobs) = trans(SzFreqTrans(SzFreqMethod_seas)) * exp_l_temp;
+                          pass_comp = exp_l_temp(z1, z2);
+                  //                          SzFreq_exp(iobs) = trans(SzFreqTrans(SzFreqMethod_seas)) * exp_l_temp;
                           break;
                         }
                         case (1):
                         {
-                          SzFreq_exp(iobs) = trans(SzFreqTrans(SzFreqMethod_seas)) * (exp_l_temp - exp_l_temp_ret);
+                          pass_comp = exp_l_temp(z1, z2) - exp_l_temp_ret(z1, z2);
+                  //                         SzFreq_exp(iobs) = trans(SzFreqTrans(SzFreqMethod_seas)) * (exp_l_temp - exp_l_temp_ret);
                           break;
                         }
                         case (2):
                         {
-                          SzFreq_exp(iobs) = trans(SzFreqTrans(SzFreqMethod_seas)) * exp_l_temp_ret;
+                          pass_comp = exp_l_temp_ret(z1, z2);
+                          // SzFreq_exp(iobs) = trans(SzFreqTrans(SzFreqMethod_seas)) * exp_l_temp_ret;
                           break;
                         }
                       }
-  #ifdef DO_ONCE
-                      if (do_once == 1)
-                        echoinput << y << " " << f << " szfreq_exp_initial  " << SzFreq_exp(iobs) << endl;
-  #endif
+                      int use_GP;
+                      use_GP = 1;
+                      if (gg == 2) {use_GP += N_GP;}  // because GPat is nested in sex; only GPat 1 bio gets used for szfreq data
+                      pass_comp.shift(1);  // change index to 1
+                      if (SzFreq_units(SzFreqMethod) == 1) // biomass is accumulated in the bins
+                      {
+                        dvar_vector pass_src_wt(z1, z2+1);
+                        pass_src_wt(z1,z2) = wt_len_low(s, 1)(z1,z2);  //  just one sex's range is passed
+                        pass_src_wt.shift(1);  // change index to 1
+                        dest_comp = rebin_bio(src_edges, pass_comp, dest_edges, pass_src_wt, dest_edges_wt);
+                      }
+                      else
+                      {
+                        dest_comp = rebin(src_edges, pass_comp, dest_edges);
+                      }
+                      if( gg == 1)
+                      {
+                        SzFreq_exp(iobs)(1, SzFreq_Nbins(SzFreqMethod)) = dest_comp;
+                      }
+                      else
+                      {
+                        dest_comp.shift(SzFreq_Nbins(SzFreqMethod) + 1);
+                        SzFreq_exp(iobs)(SzFreq_Nbins(SzFreqMethod) + 1, 2 * SzFreq_Nbins(SzFreqMethod)) = dest_comp;
+                      }
+                      } // end gender loop
 
                       if (gender == 2)
                       {
@@ -984,10 +857,9 @@ FUNCTION void Get_expected_values(const int y, const int t);
                           SzFreq_exp(iobs)(1, k) /= sum(SzFreq_exp(iobs)(1, k));
                         }
                       }
-  #ifdef DO_ONCE
+
                       if (do_once == 1)
-                        echoinput << y << " " << f << " szfreq_exp_final  " << SzFreq_exp(iobs) << endl;
-  #endif
+                        echoinput << y << " fleet: " << f << "  method: " << SzFreqMethod << " szfreq_exp_after_add_mincomp  " << SzFreq_exp(iobs) << endl;
                     } // end loop of obs for fleet = f
                   } //  end having some obs for this method in this fleet
                 } //  end use of generalized size freq data
