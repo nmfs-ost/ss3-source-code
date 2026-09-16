@@ -140,22 +140,22 @@ FUNCTION dvar_vector rebin(const dvector& src_edges, const dvar_vector& src_coun
     Here the ordered characteristic of the bins allows for the search for bin (i+1) to continue from search for bin(i).
     */
 
-    dvar_vector dest_counts(1, dest_edges.size() - 1);  // size to leave off the topbin bounary
+    dvar_vector dest_counts(1, int(dest_edges.size()) - 1);  // size to leave off the topbin bounary
     dest_counts.initialize();
     int j_start = 1;
-    for (int i = 1; i <= dest_counts.size(); i++) {
+    for (int i = 1; i <= int(dest_counts.size()); i++) {
         dvariable d_low = dest_edges[i];
         dvariable d_high = dest_edges[i + 1];
 
         // Advance j_start if the source bin is entirely below the current destination bin.
         // Because d_low increases with 'i', j_start only ever moves forward.
-        while (j_start <= src_counts.size() && src_edges[j_start + 1] <= d_low) {
+        while (j_start <= int(src_counts.size()) && src_edges[j_start + 1] <= d_low) {
             j_start++;
         }
 
         // Iterate through source bins starting from j_start, but stop as soon 
         // as the source bin is completely above the current destination bin.
-        for (int j = j_start; j <= src_counts.size() && src_edges[j] < d_high; j++) {
+        for (int j = j_start; j <= int(src_counts.size()) && src_edges[j] < d_high; j++) {
             dvariable s_low = src_edges[j];
             dvariable s_high = src_edges[j + 1];
             // Calculate the overlap bounds
@@ -183,30 +183,23 @@ FUNCTION dvar_vector rebin_bio(const dvector& src_edges, const dvar_vector& src_
     /*
     This modification of rebin is used when biomass is accumulated into the bins
     for example, with catch weight composition
-    it takes into account the fact that fish in the lower portion of a length bin have less body weight than fish in the opper portion of the length bin
-    NOTE:  need to undo the conversion of numbers to biomass in SS_expval.  It needs to occur here.
-    legacy szfreq method used this approach:
-      temp = (wt_len_low(s, 1, z + 1) - topbin) / wt_len_fd(s, 1, z); // frac in pop bin above (data bin +1)
-      temp1 = wt_len_low(s, 1, z) + (1. - temp * 0.5) * wt_len_fd(s, 1, z); // approx body wt for these fish
-      temp2 = wt_len_low(s, 1, z) + (1. - temp) * 0.5 * wt_len_fd(s, 1, z); // approx body wt for  fish below
-      SzFreqTrans(SzFreqMethod_seas, z, ibinsave + 1) = temp * temp1;
-      SzFreqTrans(SzFreqMethod_seas, z, ibinsave) = (1. - temp) * temp2;
-    new approach has access to the body wt at boundaries of size range of fish getting rebinned, so will use that to get more exact body weights
+    it takes into account the fact that fish in the lower portion of a length bin have less body weight than fish in the upper portion of the length bin
+    rebin uses body wt at boundaries of size range of fish getting rebinned
     */
-    dvar_vector dest_counts(1, dest_edges.size() - 1);  // sized to leave off the topbin boundary
+    dvar_vector dest_counts(1, int(dest_edges.size()) - 1);  // sized to leave off the topbin boundary
     dest_counts.initialize();
     int j_start = 1;
-    for (int i = 1; i <= dest_counts.size(); i++) {  // loop the destination bins
+    for (int i = 1; i <= int(dest_counts.size()); i++) {  // loop the destination bins
         dvariable d_low = dest_edges[i];
         dvariable d_high = dest_edges[i + 1];
         // Advance j_start if the source bin is entirely below the current destination bin.
         // Because d_low increases with 'i', j_start only ever moves forward.
-        while (j_start <= src_counts.size() && src_edges[j_start + 1] <= d_low) {
+        while (j_start <= int(src_counts.size()) && src_edges[j_start + 1] <= d_low) {
             j_start++;
         }
         // Iterate through source bins starting from j_start, but stop as soon 
         // as the source bin is completely above the current destination bin.
-        for (int j = j_start; j <= src_counts.size() && src_edges[j] < d_high; j++) {
+        for (int j = j_start; j <= int(src_counts.size()) && src_edges[j] < d_high; j++) {
           dvariable s_low = src_edges[j];
           dvariable s_high = src_edges[j + 1];
           // Calculate the overlap bounds

@@ -455,8 +455,6 @@ PARAMETER_SECTION
 
   matrix Morphcomp_exp(1,Morphcomp_nobs,6,5+Morphcomp_nmorph)   // expected value for catch by growthpattern
 
-  3darray SzFreqTrans(1,SzFreq_Nmeth*nseas,1,nlength2,1,SzFreq_Nbins_seas_g);
-
 !!//  SS_Label_Info_5.1.5 #Selectivity-related parameters
 !!  echoinput<<" now dimension the selectivity arrays "<<N_selparm2<<endl;
 !! echoinput<<selparm_LO<<endl;
