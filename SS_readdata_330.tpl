@@ -3135,7 +3135,6 @@
 !!if (SzFreq_Nmeth > 0) echoinput << SzFreq_mincomp << " Sizefreq:  add small constant to comps, per method " << endl;
   init_ivector SzFreq_nobs(1,SzFreq_Nmeth);
 !!if (SzFreq_Nmeth > 0) echoinput << SzFreq_nobs << " Sizefreq N obs per method" << endl;
-  ivector SzFreq_Nbins_seas_g(1,SzFreq_Nmeth*nseas);   //  array dimensioner used only for the SzFreqTrans array
   ivector SzFreq_Nbins3(1,SzFreq_Nmeth);      // values will be doubled if gender==2
   int SzFreqMethod_seas;
   ivector Comp_Err_Sz(1,SzFreq_Nmeth);
@@ -3188,11 +3187,6 @@
         write_message(FATAL, 0);
       }
       SzFreq_Nbins3(k) = gender * SzFreq_Nbins(k);
-      for (s = 1; s <= nseas; s++)
-      {
-        g++;
-        SzFreq_Nbins_seas_g(g) = SzFreq_Nbins(k) * gender;
-      }
     }
   }
   // clang-format off
@@ -3206,7 +3200,7 @@
   ivector SzFreq_Omit_Small(1,SzFreq_Nmeth);
   int SzFreq_totobs;
   int SzFreq_N_Like;
-  matrix SzFreq_means(1,SzFreq_Nmeth,1,SzFreq_Nbins3);   // szfreq mean size in bins as processed and doubled for the males if necessary
+  matrix SzFreq_means(1,SzFreq_Nmeth,1,SzFreq_Nbins3);   // szfreq mean size in bins as processed and doubled for the males; used in comp output
 
  LOCAL_CALCS
   // clang-format on
@@ -3269,8 +3263,6 @@
           SzFreq_means(k, z + SzFreq_Nbins(k)) = SzFreq_means(k, z);
         }
       }
-//      SzFreq_bins2(k, SzFreq_Nbins(k)) = 99999.;
-//      if (gender == 2) SzFreq_bins2(k,SzFreq_Nbins(k) + SzFreq_Nbins(k) + 1) = 99999.;
       echoinput << "Processed_SizeFreqMethod_bins for method: " << k << endl
                 << "bins2: " << SzFreq_bins2(k) << endl
                 << "low: " << SzFreq_bins(k) << endl

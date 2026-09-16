@@ -672,7 +672,7 @@ FUNCTION void Get_expected_values(const int y, const int t);
                     {
                       iobs = have_data(ALK_time, f, data_type, j); //  observation index
                       SzFreqMethod = SzFreq_obs_hdr(iobs, 6);
-                      SzFreqMethod_seas = nseas * (SzFreqMethod - 1) + s; // index that combines sizefreqmethod and season and used in SzFreqTrans
+                      SzFreqMethod_seas = nseas * (SzFreqMethod - 1) + s; // index that combines sizefreqmethod and season
                       for (gg = 1; gg <= gender; gg++)
                       {
                         if (gg == 1)
@@ -718,7 +718,6 @@ FUNCTION void Get_expected_values(const int y, const int t);
                         {
                   // bin boundary in lb have already been converted to kg
                   // wt_len(s, gp) is potentially by season and by Gpat within sex.  Here, only Gpat==1 will be used.  It will be sex-specific
-                  // W=a*L^b; so L = exp((ln(W)-ln(a))/B)
                           dvariable wtlen_a;
                           dvariable wtlen_b;
                           GPat = 1;  // this means that any (unusual) use of multiple Gpatterns will still use biology of GPat 1 for szfreq purposes
@@ -731,7 +730,7 @@ FUNCTION void Get_expected_values(const int y, const int t);
                             wtlen_a *= wtlen_seas(s, GPat, parm_loc);
                             wtlen_b *= wtlen_seas(s, GPat, parm_loc + 1);
                           }
-                          dest_edges = exp((log(dest_edges)-log(wtlen_a))/wtlen_b);
+                          dest_edges = exp((log(dest_edges)-log(wtlen_a))/wtlen_b);  // W=a*L^b; so L = exp((ln(W)-ln(a))/B)
                           break;
                         }
                         case (3):  //  scale is in cm
@@ -752,19 +751,16 @@ FUNCTION void Get_expected_values(const int y, const int t);
                         case (0):
                         {
                           pass_comp = exp_l_temp(z1, z2);
-                  //                          SzFreq_exp(iobs) = trans(SzFreqTrans(SzFreqMethod_seas)) * exp_l_temp;
                           break;
                         }
                         case (1):
                         {
                           pass_comp = exp_l_temp(z1, z2) - exp_l_temp_ret(z1, z2);
-                  //                         SzFreq_exp(iobs) = trans(SzFreqTrans(SzFreqMethod_seas)) * (exp_l_temp - exp_l_temp_ret);
                           break;
                         }
                         case (2):
                         {
                           pass_comp = exp_l_temp_ret(z1, z2);
-                          // SzFreq_exp(iobs) = trans(SzFreqTrans(SzFreqMethod_seas)) * exp_l_temp_ret;
                           break;
                         }
                       }
