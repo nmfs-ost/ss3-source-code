@@ -128,8 +128,6 @@ FUNCTION void write_bigoutput()
 
   if (N_parm_dev == 0)
     pick_report_use(4) = "N";
-  if (SzFreq_Nmeth == 0)
-    pick_report_use(12) = "N";
   if (do_migration == 0)
     pick_report_use(13) = "N";
   if (Svy_N == 0)
@@ -1131,78 +1129,9 @@ FUNCTION void write_bigoutput()
   }
 
   // REPORT_KEYWORD 12 SIZEFREQ_TRANSLATION
-  //  3darray SzFreqTrans(1,SzFreq_Nmeth*nseas,1,nlength2,1,SzFreq_Nbins_seas_g);
-  if (pick_report_use(12) == "Y" && SzFreq_Nmeth > 0)
-  {
-    SS2out << endl
-           << pick_report_name(12) << endl;
-    SS2out << "#_NOTE: rows_are_population_length_bins;_columns_are_recipient_size_bins_according_to_the_specified_method" << endl;
-    for (SzFreqMethod = 1; SzFreqMethod <= SzFreq_Nmeth; SzFreqMethod++)
-    {
-      SS2out << SzFreqMethod << " gp seas len mid-len ";
-      if (SzFreq_scale(SzFreqMethod) == 1)
-      {
-        SS2out << " mid-kg ";
-      }
-      else if (SzFreq_scale(SzFreqMethod) == 2)
-      {
-        SS2out << " mid-lbs ";
-      }
-      else if (SzFreq_scale(SzFreqMethod) == 3)
-      {
-        SS2out << " mid-cm ";
-      }
-      else
-      {
-        SS2out << " mid-inch ";
-      }
-      SS2out << SzFreq_bins1(SzFreqMethod);
-      if (gender == 2)
-        SS2out << SzFreq_bins1(SzFreqMethod);
-      SS2out << endl
-             << SzFreqMethod << " gp seas len mid-len metric " << SzFreq_bins(SzFreqMethod) << endl;
-      ;
-      for (gp = 1; gp <= N_GP; gp++)
-        for (s = 1; s <= nseas; s++)
-        {
-          SzFreqMethod_seas = nseas * (SzFreqMethod - 1) + s; // index that combines sizefreqmethod and season and used in SzFreqTrans
-          for (z = 1; z <= nlength2; z++)
-          {
-            SS2out << SzFreqMethod << " " << gp << " " << s << " " << len_bins2(z) << " " << len_bins_m2(z) << " ";
-            if (SzFreq_scale(SzFreqMethod) == 1)
-            {
-              SS2out << wt_len2(s, gp, z) << " ";
-            }
-            else if (SzFreq_scale(SzFreqMethod) == 2)
-            {
-              SS2out << wt_len2(s, gp, z) / 0.4536 << " ";
-            }
-            else if (SzFreq_scale(SzFreqMethod) == 3)
-            {
-              SS2out << len_bins_m2(z) << " ";
-            }
-            else
-            {
-              SS2out << len_bins_m2(z) / 2.54 << " ";
-            }
-            for (j = 1; j <= gender * SzFreq_Nbins(SzFreqMethod); j++)
-            {
-              SS2out << SzFreqTrans(SzFreqMethod_seas, z, j) << " ";
-              if (SzFreqTrans(SzFreqMethod_seas, z, j) < 0.0)
-              {
-                warnstream << "Bin widths narrower than pop len bins caused negative allocation in sizefreq method:";
-                warnstream << " method, season, size, bin: " << SzFreqMethod << " " << s << " " << len_bins2(z) << " " << j;
-                write_message (FATAL, 0); // EXIT!
-              }
-            }
-            SS2out << endl;
-          }
-        }
-    }
-  }
+  //  deprecated table when method transitioned to rebin
 
   // REPORT_KEYWORD 13 MOVEMENT
-
   if (pick_report_use(13) == "Y" && do_migration > 0)
   {
     SS2out << endl
@@ -2705,7 +2634,7 @@ FUNCTION void write_bigoutput()
               dvector tempvec_l(1, SzFreq_exp(iobs).size());
               tempvec_l = value(SzFreq_exp(iobs));
               more_comp_info = process_comps(gender, gg, SzFreq_bins(sz_method), SzFreq_means(sz_method), sz_tails, SzFreq_obs(iobs), tempvec_l);
-              Nsamp_DM = SzFreq_sampleN(iobs); // Will remain this if not used; there is no "adjusted" sample size for sizwfreq
+              Nsamp_DM = SzFreq_sampleN(iobs); // Will remain this if not used; there is no "adjusted" sample size for sizefreq
               if (Comp_Err_Sz(sz_method) == 1) //  Dirichlet #1
               {
                 dirichlet_Parm = mfexp(selparm(Comp_Err_parmloc(Comp_Err_Sz2(sz_method),1))); //  Thorson's theta from eq 10
@@ -3624,7 +3553,7 @@ FUNCTION void write_bigoutput()
       for (f1 = 1; f1 <= N_pred; f1++)
       {
         f = predator(f1);
-        SS2out << fleetname(f) << "_M2 comsume_Bio consume_Num";
+        SS2out << fleetname(f) << "_M2 consume_Bio consume_Num";
       }
       SS2out << endl;
       for (y = styr - 2; y <= YrMax; y++)

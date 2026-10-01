@@ -1532,19 +1532,14 @@ FUNCTION void get_wtlen()
           wt_len(s, gp).shift(1);
         }
 
-        //  SS_Label_Info_19.2.3  #calculate first diff of wt_len for use in generalized sizp comp bin calculations
         if (gg == gender)
         {
           wt_len2_sq(s, GPat) = elem_prod(wt_len2(s, GPat), wt_len2(s, GPat));
-          wt_len_fd(s, GPat) = first_difference(wt_len_low(s, GPat));
-          if (gender == 2)
-            wt_len_fd(s, GPat, nlength) = wt_len_fd(s, GPat, nlength - 1);
   #ifdef DO_ONCE
           if (do_once == 1)
             echoinput << "wtlen2 " << endl
                       << wt_len2 << endl
-                      << "wtlen2^2 " << wt_len2_sq << endl
-                      << "wtlen2:firstdiff " << wt_len_fd << endl;
+                      << "wtlen2^2 " << wt_len2_sq << endl;
   #endif
         }
       }
