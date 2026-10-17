@@ -773,12 +773,13 @@ FUNCTION void Get_expected_values(const int y, const int t);
                         dvar_vector pass_src_wt(z1, z2+1);
                         pass_src_wt(z1,z2) = wt_len_low(s, 1)(z1,z2);  //  just one sex's range is passed
                         pass_src_wt.shift(1);  // change index to 1
-                        dest_comp = rebin_bio(src_edges, pass_comp, dest_edges, pass_src_wt, dest_edges_wt);
+                        dest_comp = rebin_bio(src_edges, pass_comp, dest_edges, pass_src_wt, dest_edges_wt, wt_len(s, GPat));
                       }
                       else
                       {
                         dest_comp = rebin(src_edges, pass_comp, dest_edges);
                       }
+
                       if( gg == 1)
                       {
                         SzFreq_exp(iobs)(1, SzFreq_Nbins(SzFreqMethod)) = dest_comp;

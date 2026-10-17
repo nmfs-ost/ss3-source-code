@@ -178,7 +178,7 @@ FUNCTION dvar_vector rebin(const dvector& src_edges, const dvar_vector& src_coun
     return (dest_counts);
   }
 
-FUNCTION dvar_vector rebin_bio(const dvector& src_edges, const dvar_vector& src_counts, const dvar_vector& dest_edges, const dvar_vector& src_edges_wt, const dvar_vector& dest_edges_wt )
+FUNCTION dvar_vector rebin_bio(const dvector& src_edges, const dvar_vector& src_counts, const dvar_vector& dest_edges, const dvar_vector& src_edges_wt, const dvar_vector& dest_edges_wt, const dvar_vector& src_mid_wt)
   {
     /*
     This modification of rebin is used when biomass is accumulated into the bins
@@ -222,7 +222,7 @@ FUNCTION dvar_vector rebin_bio(const dvector& src_edges, const dvar_vector& src_
             if (s_low >= d_low)
             {
               if (s_high <= d_high)  // src entirely in dest range range
-                {mean_szwt = (src_edges_wt[j] + src_edges_wt[j+1]) * 0.5;}
+                {mean_szwt = src_mid_wt[j];}  //  (src_edges_wt[j] + src_edges_wt[j+1]) * 0.5;}
               else //  s_high > d_high; calc mean size from s_low and d_high
                 {mean_szwt = (src_edges_wt[j] + dest_edges_wt[i+1]) * 0.5;}
             }
@@ -232,8 +232,8 @@ FUNCTION dvar_vector rebin_bio(const dvector& src_edges, const dvar_vector& src_
               {mean_szwt = (dest_edges_wt[i] + dest_edges_wt[i+1]) * 0.5;}
 
               dest_counts[i] += src_counts[j] * mean_szwt * (overlap_width / src_bin_width);  // add overlap fraction of biomass to dest
-            //  echoinput<<" src: "<<j<<" lo_hi "<<s_low << " "<<s_high<<" dest: "<<i<<" lo_hi "<<d_low<<" "<<d_high<<" overlap: "<<overlap_low <<" "<<overlap_high
-            //  <<" fraction: "<<(overlap_width / src_bin_width)<<" mean: "<<mean_szwt<<endl;
+  //            echoinput<<" src: "<<j<<" s_low "<<s_low << " s_hi "<<s_high<<" dest: "<<i<<" d_low "<<d_low<<" d_hi "<<d_high<<" overlap_low: "<<overlap_low <<" overlap_hi "<<overlap_high
+  //            <<" fraction: "<<(overlap_width / src_bin_width)<<" mean_wt: "<<mean_szwt<<endl;
           }  // end having overlap to be allocated
         }  // end j loop of source bins
       }
