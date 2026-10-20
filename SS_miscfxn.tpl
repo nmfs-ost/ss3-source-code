@@ -233,8 +233,13 @@ FUNCTION dvar_vector rebin_bio(const dvector& src_edges, const dvar_vector& src_
               // weight between source-bin edge weights
               dvariable overlap_mid = 0.5 * (overlap_low + overlap_high);
               dvariable frac_mid = (overlap_mid - s_low) / src_bin_width;
-              if (frac_mid < 0.0) frac_mid = 0.0;
-              if (frac_mid > 1.0) frac_mid = 1.0;
+//              echoinput<<"fracmid "<<frac_mid;
+//              if (frac_mid < 0.0) frac_mid = 0.0;
+              frac_mid = 1.0 / (1.0 + mfexp((-200. * frac_mid / (1.0 + fabs(frac_mid))))); 
+//              echoinput<<"  fracmid_lo "<<frac_mid;
+//              if (frac_mid > 1.0) frac_mid = 1.0;
+              frac_mid += (1.0 - frac_mid) / (1.0 + mfexp((-200. * (frac_mid - 1.0))));
+//              echoinput<<"  fracmid_hi "<<frac_mid<<endl;
               mean_szwt = src_edges_wt[j] + frac_mid * (src_edges_wt[j + 1] - src_edges_wt[j]);
             }
             dest_counts[i] += src_counts[j] * mean_szwt * (overlap_width / src_bin_width);  // add overlap fraction of biomass to dest
