@@ -698,8 +698,9 @@ FUNCTION void Get_expected_values(const int y, const int t);
                           dest_edges(ibin) = SzFreq_bins(SzFreqMethod, ibin);
                           dest_edges_wt(ibin) = dest_edges(ibin);  // save in raw units
                         }
-                        dest_edges(SzFreq_Nbins(SzFreqMethod) + 1) = 99999.;
-                        dest_edges_wt(ibin) = dest_edges_wt(ibin - 1) + (dest_edges_wt(ibin - 1) - dest_edges_wt(ibin - 2));
+                        const int n_dest = SzFreq_Nbins(SzFreqMethod);
+                        dest_edges(n_dest + 1) = 99999.;
+                        dest_edges_wt(n_dest + 1) = dest_edges_wt(n_dest) + (dest_edges_wt(n_dest) - dest_edges_wt(n_dest - 1));
                         if(SzFreq_Omit_Small(SzFreqMethod) < 0.0)
                         {
                           dest_edges(1) = 0.; //  so src_bins smaller than first actual dest_bin are included in first bin
@@ -764,16 +765,31 @@ FUNCTION void Get_expected_values(const int y, const int t);
                           break;
                         }
                       }
-                      int use_GP;
-                      use_GP = 1;
-                      if (gg == 2) {use_GP += N_GP;}  // because GPat is nested in sex; only GPat 1 bio gets used for szfreq data
+                      int use_GP = 1;
+                      if (gg == 2) use_GP += N_GP;  // because GPat is nested in sex; only GPat 1 bio gets used for szfreq data
                       pass_comp.shift(1);  // change index to 1
-                      if (SzFreq_units(SzFreqMethod) == 1) // biomass is accumulated in the bins
+                      if (SzFreq_units(SzFreqMethod) == 1) // biomass accumulated in bins
                       {
-                        dvar_vector pass_src_wt(z1, z2+1);
-                        pass_src_wt(z1,z2) = wt_len_low(s, 1)(z1,z2);  //  just one sex's range is passed
-                        pass_src_wt.shift(1);  // change index to 1
-                        dest_comp = rebin_bio(src_edges, pass_comp, dest_edges, pass_src_wt, dest_edges_wt, wt_len(s, GPat));
+                        // weight at lower edge for the sex-specific GP over the selected source-bin range
+                        dvar_vector pass_src_wt(z1, z2 + 1);
+                        pass_src_wt.initialize();
+                        pass_src_wt(z1, z2) = wt_len_low(s, use_GP)(z1, z2);
+                        pass_src_wt.shift(1);
+
+                        // use the same sex-specific GP for midpoint weights
+                        dvar_vector pass_mid_wt(z1, z2);
+                        pass_mid_wt.initialize();
+                        pass_mid_wt(z1, z2) = wt_len(s, use_GP)(z1, z2);
+                        pass_mid_wt.shift(1);
+
+                        dest_comp = rebin_bio(
+                          src_edges,
+                          pass_comp,
+                          dest_edges,
+                          pass_src_wt,
+                          dest_edges_wt,
+                          pass_mid_wt
+                        );
                       }
                       else
                       {
