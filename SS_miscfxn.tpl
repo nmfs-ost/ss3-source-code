@@ -122,7 +122,10 @@ FUNCTION dvariable Comp_logL_Dirichlet(const double& Nsamp, const dvariable& dir
   }
 
   
-FUNCTION dvar_vector rebin(const dvector& src_edges, const dvar_vector& src_counts, const dvar_vector& dest_edges)
+FUNCTION dvar_vector rebin(
+  const dvector& src_edges, 
+  const dvar_vector& src_counts, 
+  const dvar_vector& dest_edges)
   {
     /*
     This implementation takes two vectors representing the boundaries (edges) of the source
@@ -178,7 +181,13 @@ FUNCTION dvar_vector rebin(const dvector& src_edges, const dvar_vector& src_coun
     return (dest_counts);
   }
 
-FUNCTION dvar_vector rebin_bio(const dvector& src_edges, const dvar_vector& src_counts, const dvar_vector& dest_edges, const dvar_vector& src_edges_wt, const dvar_vector& dest_edges_wt, const dvar_vector& src_mid_wt)
+FUNCTION dvar_vector rebin_bio(
+  const dvector& src_edges, 
+  const dvar_vector& src_counts, 
+  const dvar_vector& dest_edges, 
+  const dvar_vector& src_edges_wt, 
+  const dvar_vector& dest_edges_wt, 
+  const dvar_vector& src_mid_wt)
   {
     /*
     This modification of rebin is used when biomass is accumulated into the bins
