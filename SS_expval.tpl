@@ -731,23 +731,26 @@ FUNCTION void Get_expected_values(const int y, const int t);
                             wtlen_a *= wtlen_seas(s, GPat, parm_loc);
                             wtlen_b *= wtlen_seas(s, GPat, parm_loc + 1);
                           }
-                          // guarded conversion from weight-bin edges to cm edges
-                         dvariable tiny_pos = 1.0e-12;
-                         dvariable safe_wtlen_a = wtlen_a;
-                         if (safe_wtlen_a <= tiny_pos) safe_wtlen_a = tiny_pos;
-                         
-                         dvariable safe_wtlen_b = wtlen_b;
-                         if (fabs(safe_wtlen_b) < 1.0e-12)
-                         {
-                           safe_wtlen_b = (safe_wtlen_b >= 0.0 ? 1.0e-12 : -1.0e-12);
-                         }
-                         
-                         for (ibin = 1; ibin <= n_dest + 1; ibin++)
-                         {
-                           dvariable w_edge = dest_edges(ibin);
-                           if (w_edge <= tiny_pos) w_edge = tiny_pos;
-                           dest_edges(ibin) = exp((log(w_edge) - log(safe_wtlen_a)) / safe_wtlen_b);
-                         }
+                          if (wtlen_a <= 0.0 || wtlen_b <= 0.0)
+                          {
+                            warnstream << "Invalid wtlen parameters (a=" << wtlen_a << ", b=" << wtlen_b
+                                       << ") for SzFreqMethod " << SzFreqMethod << " season " << s << " gender " << gg;
+                            write_message(FATAL, 0);
+                          }
+                          const double edge_eps = 1e-6;
+                          int start_bin = 1;
+                          if (SzFreq_Omit_Small(SzFreqMethod) < 0.0)
+                          {
+                            dest_edges(1) = 0.0;
+                            start_bin = 2;
+                          }
+                          for (ibin = start_bin; ibin <= n_dest + 1; ibin++)
+                          {
+                            dvariable w_val = dest_edges(ibin);
+                            if (w_val < edge_eps)
+                              w_val = edge_eps;
+                            dest_edges(ibin) = mfexp((log(w_val) - log(wtlen_a)) / wtlen_b);
+                          }
                           break;
                         }
                         case (3):  //  scale is in cm
@@ -759,6 +762,19 @@ FUNCTION void Get_expected_values(const int y, const int t);
                           break;
                         }
                       }  // end calc of new dest_edges
+
+                      // Verify monotonic increase in destination edges after conversion
+                      for (ibin = 1; ibin <= n_dest; ibin++)
+                      {
+                        if (dest_edges(ibin + 1) <= dest_edges(ibin))
+                        {
+                          warnstream << "Non-monotonic destination edges after conversion for SzFreqMethod " << SzFreqMethod
+                                     << " season " << s << " gender " << gg
+                                     << " at bin " << ibin << ": " << dest_edges(ibin) << " >= " << dest_edges(ibin + 1);
+                          write_message(FATAL, 0);
+                        }
+                      }
+
                       if (do_once == 1) echoinput << "Szfreq_method: " << SzFreqMethod << "  sex: " << gg << " dest_edges_converted_to_cm "<<dest_edges<<endl;
 
                       dvar_vector pass_comp(z1, z2);  // this gets males or females range according to z1, z2
