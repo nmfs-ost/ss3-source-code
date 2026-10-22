@@ -127,6 +127,7 @@ FUNCTION dvar_vector rebin(
   const dvar_vector& src_counts, 
   const dvar_vector& dest_edges)
   {
+    RETURN_ARRAYS_INCREMENT();
     /*
     This implementation takes two vectors representing the boundaries (edges) of the source
     and destination bins, and one vector for the source counts.
@@ -184,6 +185,7 @@ FUNCTION dvar_vector rebin(
             }
         }
       }
+    RETURN_ARRAYS_DECREMENT();
     return (dest_counts);
   }
 
@@ -195,6 +197,7 @@ FUNCTION dvar_vector rebin_bio(
   const dvar_vector& /* dest_edges_wt */, 
   const dvar_vector& src_mid_wt)
   {
+    RETURN_ARRAYS_INCREMENT();
     /*
     This modification of rebin is used when biomass is accumulated into the bins
     for example, with catch weight composition
@@ -266,5 +269,6 @@ FUNCTION dvar_vector rebin_bio(
           }  // end having overlap to be allocated
         }  // end j loop of source bins
       }
+    RETURN_ARRAYS_DECREMENT();
     return (dest_counts);
   }
