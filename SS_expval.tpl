@@ -787,7 +787,6 @@ FUNCTION void Get_expected_values(const int y, const int t);
                           pass_comp,
                           dest_edges,
                           pass_src_wt,
-                          dest_edges_wt,
                           pass_mid_wt
                         );
                       }

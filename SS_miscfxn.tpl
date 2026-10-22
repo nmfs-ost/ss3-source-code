@@ -186,7 +186,6 @@ FUNCTION dvar_vector rebin_bio(
   const dvar_vector& src_counts, 
   const dvar_vector& dest_edges, 
   const dvar_vector& src_edges_wt, 
-  const dvar_vector& dest_edges_wt, 
   const dvar_vector& src_mid_wt)
   {
     /*
@@ -226,7 +225,6 @@ FUNCTION dvar_vector rebin_bio(
             // get mean weight of fish in range of src being assigned to dest
             // d_low and d_high are the original weight bin boundaries (assumes the weight comp data always uses weight bin boundaries)
             // s_low and s_high have weights stored in wt_len_low(s,GPat)
-            //  src_edges_wt, dest_edges_wt
             dvariable mean_szwt;  // body weight of fish to be allocated from src to dest
             if (s_low >= d_low && s_high <= d_high)
             {
