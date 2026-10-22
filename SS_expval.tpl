@@ -763,6 +763,18 @@ FUNCTION void Get_expected_values(const int y, const int t);
                         }
                       }  // end calc of new dest_edges
 
+                      if (SzFreq_Omit_Small(SzFreqMethod) == 1 && SzFreq_scale(SzFreqMethod) > 2)
+                      {
+                        // Preserve the legacy cutoff: include the whole first source bin
+                        // whose upper edge is at or above the first data-bin boundary.
+                        int first_src = 1;
+                        while (first_src < nlength && src_edges(first_src + 1) < dest_edges(1))
+                        {
+                          first_src++;
+                        }
+                        dest_edges(1) = src_edges(first_src);
+                      }
+
                       // Verify monotonic increase in destination edges after conversion
                       for (ibin = 1; ibin <= n_dest; ibin++)
                       {
