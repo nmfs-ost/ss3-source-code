@@ -143,48 +143,44 @@ FUNCTION dvar_vector rebin(
     Here the ordered characteristic of the bins allows for the search for bin (i+1) to continue from search for bin(i).
     */
 
-    dvar_vector dest_counts(1, int(dest_edges.size()) - 1);  // size to leave off the topbin bounary
+    const int n_src = int(src_counts.size());
+    const int n_dest = int(dest_edges.size()) - 1;
+    if (n_src < 1 || n_dest < 1) {
+      dvar_vector empty_counts(1, (n_dest >= 1 ? n_dest : 1));
+      empty_counts.initialize();
+      return (empty_counts);
+    }
+
+    dvar_vector dest_counts(1, n_dest);  // size to leave off the topbin boundary
     dest_counts.initialize();
     int j_start = 1;
-    for (int i = 1; i <= int(dest_counts.size()); i++) {
+    for (int i = 1; i <= n_dest; i++) {
         dvariable d_low = dest_edges[i];
         dvariable d_high = dest_edges[i + 1];
 
         // Advance j_start if the source bin is entirely below the current destination bin.
         // Because d_low increases with 'i', j_start only ever moves forward.
-        while (j_start <= int(src_counts.size()) && src_edges[j_start + 1] <= d_low) {
+        while (j_start <= n_src && src_edges[j_start + 1] <= d_low) {
             j_start++;
         }
 
         // Iterate through source bins starting from j_start, but stop as soon 
         // as the source bin is completely above the current destination bin.
-        for (int j = j_start; j <= int(src_counts.size()) && src_edges[j] < d_high; j++) {
+        for (int j = j_start; j <= n_src && src_edges[j] < d_high; j++) {
             dvariable s_low = src_edges[j];
             dvariable s_high = src_edges[j + 1];
+            dvariable src_bin_width = s_high - s_low;
+            if (src_bin_width <= 1e-12) continue; // guard against zero/negative source-bin width
+
             // Calculate the overlap bounds
-            dvariable overlap_low = d_low;
-            if (s_low > d_low) overlap_low = s_low;
-            
-            dvariable overlap_high = d_high;
-            if (s_high < d_high) overlap_high = s_high;
-//            echoinput<<"rebin: dest: "<<i<<" "<<dest_edges[i]<<" src: "<<j<<" "<<src_edges[j]<<" overlap_lo "<<overlap_low <<" overlap_hi "<<overlap_high <<  endl;
+            dvariable overlap_low = (s_low > d_low) ? s_low : d_low;
+            dvariable overlap_high = (s_high < d_high) ? s_high : d_high;
 
             // If there is valid overlap, distribute the counts
             if (overlap_low < overlap_high) {
                 dvariable overlap_width = overlap_high - overlap_low;
-                dvariable src_bin_width = s_high - s_low;
-            
-                dvariable denom = src_bin_width;
-                if (fabs(denom) < 1.0e-12)
-                {
-                  denom = (denom >= 0.0 ? 1.0e-12 : -1.0e-12);
-                }
-            
-                dvariable frac = overlap_width / denom;
-                if (frac < 0.0) frac = 0.0;
-                if (frac > 1.0) frac = 1.0;
-            
-                dest_counts[i] += src_counts[j] * frac;
+                if (overlap_width > src_bin_width) overlap_width = src_bin_width;
+                dest_counts[i] += src_counts[j] * (overlap_width / src_bin_width);
             }
         }
       }
@@ -196,7 +192,7 @@ FUNCTION dvar_vector rebin_bio(
   const dvar_vector& src_counts, 
   const dvar_vector& dest_edges, 
   const dvar_vector& src_edges_wt, 
-  const dvar_vector& dest_edges_wt, 
+  const dvar_vector& /* dest_edges_wt */, 
   const dvar_vector& src_mid_wt)
   {
     /*
@@ -205,60 +201,69 @@ FUNCTION dvar_vector rebin_bio(
     it takes into account the fact that fish in the lower portion of a length bin have less body weight than fish in the upper portion of the length bin
     rebin uses body wt at boundaries of size range of fish getting rebinned
     */
-    dvar_vector dest_counts(1, int(dest_edges.size()) - 1);  // sized to leave off the topbin boundary
+    const int n_src = int(src_counts.size());
+    const int n_dest = int(dest_edges.size()) - 1;
+    if (n_src < 1 || n_dest < 1) {
+      dvar_vector empty_counts(1, (n_dest >= 1 ? n_dest : 1));
+      empty_counts.initialize();
+      return (empty_counts);
+    }
+
+    dvar_vector dest_counts(1, n_dest);  // sized to leave off the topbin boundary
     dest_counts.initialize();
     int j_start = 1;
-    for (int i = 1; i <= int(dest_counts.size()); i++) {  // loop the destination bins
+    for (int i = 1; i <= n_dest; i++) {  // loop the destination bins
         dvariable d_low = dest_edges[i];
         dvariable d_high = dest_edges[i + 1];
         // Advance j_start if the source bin is entirely below the current destination bin.
         // Because d_low increases with 'i', j_start only ever moves forward.
-        while (j_start <= int(src_counts.size()) && src_edges[j_start + 1] <= d_low) {
+        while (j_start <= n_src && src_edges[j_start + 1] <= d_low) {
             j_start++;
         }
         // Iterate through source bins starting from j_start, but stop as soon 
         // as the source bin is completely above the current destination bin.
-        for (int j = j_start; j <= int(src_counts.size()) && src_edges[j] < d_high; j++) {
+        for (int j = j_start; j <= n_src && src_edges[j] < d_high; j++) {
           dvariable s_low = src_edges[j];
           dvariable s_high = src_edges[j + 1];
+          dvariable src_bin_width = s_high - s_low;
+          if (src_bin_width <= 1e-12) continue; // guard against zero/negative source-bin width
+
           // Calculate the overlap bounds
-          dvariable overlap_low = d_low;
-          if (s_low > d_low) overlap_low = s_low;
-          
-          dvariable overlap_high = d_high;
-          if (s_high < d_high) overlap_high = s_high;
+          dvariable overlap_low = (s_low > d_low) ? s_low : d_low;
+          dvariable overlap_high = (s_high < d_high) ? s_high : d_high;
 
           // If there is valid overlap, distribute the counts
-         if (overlap_low < overlap_high) {
-           dvariable overlap_width = overlap_high - overlap_low;
-           dvariable src_bin_width = s_high - s_low;
-         
-           dvariable denom = src_bin_width;
-           if (fabs(denom) < 1.0e-12)
-           {
-             denom = (denom >= 0.0 ? 1.0e-12 : -1.0e-12);
-           }
-         
-           dvariable frac = overlap_width / denom;
-           if (frac < 0.0) frac = 0.0;
-           if (frac > 1.0) frac = 1.0;
-         
-           dvariable mean_szwt;
-           if (s_low >= d_low && s_high <= d_high)
-           {
-             mean_szwt = src_mid_wt[j];
-           }
-           else
-           {
-             dvariable overlap_mid = 0.5 * (overlap_low + overlap_high);
-             dvariable frac_mid = (overlap_mid - s_low) / denom;
-             if (frac_mid < 0.0) frac_mid = 0.0;
-             if (frac_mid > 1.0) frac_mid = 1.0;
-             mean_szwt = src_edges_wt[j] + frac_mid * (src_edges_wt[j + 1] - src_edges_wt[j]);
-           }
-         
-           dest_counts[i] += src_counts[j] * mean_szwt * frac;
-         }  // end having overlap to be allocated
+          if (overlap_low < overlap_high) {
+            dvariable overlap_width = overlap_high - overlap_low;
+            if (overlap_width > src_bin_width) overlap_width = src_bin_width;
+
+            // get mean weight of fish in range of src being assigned to dest
+            // d_low and d_high are the original weight bin boundaries (assumes the weight comp data always uses weight bin boundaries)
+            // s_low and s_high have weights stored in wt_len_low(s,GPat)
+            //  src_edges_wt, dest_edges_wt
+            dvariable mean_szwt;  // body weight of fish to be allocated from src to dest
+            if (s_low >= d_low && s_high <= d_high)
+            {
+              // full source bin goes into this destination bin:
+              // match legacy intent by using body weight at the source-bin mid-length
+              mean_szwt = src_mid_wt[j];
+            }
+            else
+            {
+              // overlap case:
+              // approximate mean biomass for the allocated fraction using the midpoint
+              // of the overlap interval in source-length space, then linearly interpolate
+              // weight between source-bin edge weights
+              dvariable overlap_mid = 0.5 * (overlap_low + overlap_high);
+              dvariable frac_mid = (overlap_mid - s_low) / src_bin_width;
+              if (value(frac_mid) < 0.0)
+                frac_mid = 0.0;
+              else if (value(frac_mid) > 1.0)
+                frac_mid = 1.0;
+              mean_szwt = src_edges_wt[j] + frac_mid * (src_edges_wt[j + 1] - src_edges_wt[j]);
+            }
+            dest_counts[i] += src_counts[j] * mean_szwt * (overlap_width / src_bin_width);  // add overlap fraction of biomass to dest
+          }  // end having overlap to be allocated
         }  // end j loop of source bins
       }
     return (dest_counts);
