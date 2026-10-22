@@ -173,8 +173,18 @@ FUNCTION dvar_vector rebin(
             if (overlap_low < overlap_high) {
                 dvariable overlap_width = overlap_high - overlap_low;
                 dvariable src_bin_width = s_high - s_low;
-                dest_counts[i] += src_counts[j] * (overlap_width / src_bin_width);
-//                echoinput<<"add src to dest: "<<dest_edges[i]<<" "<<src_edges[j]<<" result: "<<(overlap_width / src_bin_width)<<endl;
+            
+                dvariable denom = src_bin_width;
+                if (fabs(denom) < 1.0e-12)
+                {
+                  denom = (denom >= 0.0 ? 1.0e-12 : -1.0e-12);
+                }
+            
+                dvariable frac = overlap_width / denom;
+                if (frac < 0.0) frac = 0.0;
+                if (frac > 1.0) frac = 1.0;
+            
+                dest_counts[i] += src_counts[j] * frac;
             }
         }
       }
@@ -219,43 +229,36 @@ FUNCTION dvar_vector rebin_bio(
           if (s_high < d_high) overlap_high = s_high;
 
           // If there is valid overlap, distribute the counts
-          if (overlap_low < overlap_high) {
-            dvariable overlap_width = overlap_high - overlap_low;
-            dvariable src_bin_width = s_high - s_low;
-
-            // get mean weight of fish in range of src being assigned to dest
-            // d_low and d_high are the original weight bin boundaries (assumes the weight comp data always uses weight bin boundaries)
-            // s_low and s_high have weights stored in wt_len_low(s,GPat)
-            //  src_edges_wt, dest_edges_wt
-            dvariable mean_szwt;  // body weight of fish to be allocated from src to dest
-            if (s_low >= d_low && s_high <= d_high)
-            {
-              // full source bin goes into this destination bin:
-              // match legacy intent by using body weight at the source-bin mid-length
-              mean_szwt = src_mid_wt[j];
-            }
-            else
-            {
-              // overlap case:
-              // approximate mean biomass for the allocated fraction using the midpoint
-              // of the overlap interval in source-length space, then linearly interpolate
-              // weight between source-bin edge weights
-              dvariable overlap_mid = 0.5 * (overlap_low + overlap_high);
-              dvariable frac_mid = (overlap_mid - s_low) / src_bin_width;
-//              echoinput<<"fracmid "<<frac_mid;
-//              if (frac_mid < 0.0) frac_mid = 0.0;
-              frac_mid = 1.0 / (1.0 + mfexp((-200. * frac_mid / (1.0 + fabs(frac_mid))))); 
-//              echoinput<<"  fracmid_lo "<<frac_mid;
-//              if (frac_mid > 1.0) frac_mid = 1.0;
-              frac_mid += (1.0 - frac_mid) / (1.0 + mfexp((-200. * (frac_mid - 1.0))));
-//              echoinput<<"  fracmid_hi "<<frac_mid<<endl;
-              mean_szwt = src_edges_wt[j] + frac_mid * (src_edges_wt[j + 1] - src_edges_wt[j]);
-            }
-            dest_counts[i] += src_counts[j] * mean_szwt * (overlap_width / src_bin_width);  // add overlap fraction of biomass to dest
-
-//              echoinput<<" src: "<<j<<" s_low "<<s_low << " s_hi "<<s_high<<" dest: "<<i<<" d_low "<<d_low<<" d_hi "<<d_high<<" overlap_low: "<<overlap_low <<" overlap_hi "<<overlap_high
-//              <<" fraction: "<<(overlap_width / src_bin_width)<<" mean_wt: "<<mean_szwt<<endl;
-          }  // end having overlap to be allocated
+         if (overlap_low < overlap_high) {
+           dvariable overlap_width = overlap_high - overlap_low;
+           dvariable src_bin_width = s_high - s_low;
+         
+           dvariable denom = src_bin_width;
+           if (fabs(denom) < 1.0e-12)
+           {
+             denom = (denom >= 0.0 ? 1.0e-12 : -1.0e-12);
+           }
+         
+           dvariable frac = overlap_width / denom;
+           if (frac < 0.0) frac = 0.0;
+           if (frac > 1.0) frac = 1.0;
+         
+           dvariable mean_szwt;
+           if (s_low >= d_low && s_high <= d_high)
+           {
+             mean_szwt = src_mid_wt[j];
+           }
+           else
+           {
+             dvariable overlap_mid = 0.5 * (overlap_low + overlap_high);
+             dvariable frac_mid = (overlap_mid - s_low) / denom;
+             if (frac_mid < 0.0) frac_mid = 0.0;
+             if (frac_mid > 1.0) frac_mid = 1.0;
+             mean_szwt = src_edges_wt[j] + frac_mid * (src_edges_wt[j + 1] - src_edges_wt[j]);
+           }
+         
+           dest_counts[i] += src_counts[j] * mean_szwt * frac;
+         }  // end having overlap to be allocated
         }  // end j loop of source bins
       }
     return (dest_counts);
