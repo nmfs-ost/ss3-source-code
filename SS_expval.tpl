@@ -731,7 +731,23 @@ FUNCTION void Get_expected_values(const int y, const int t);
                             wtlen_a *= wtlen_seas(s, GPat, parm_loc);
                             wtlen_b *= wtlen_seas(s, GPat, parm_loc + 1);
                           }
-                          dest_edges = exp((log(dest_edges)-log(wtlen_a))/wtlen_b);  // W=a*L^b; so L = exp((ln(W)-ln(a))/B)
+                          // guarded conversion from weight-bin edges to cm edges
+                         dvariable tiny_pos = 1.0e-12;
+                         dvariable safe_wtlen_a = wtlen_a;
+                         if (safe_wtlen_a <= tiny_pos) safe_wtlen_a = tiny_pos;
+                         
+                         dvariable safe_wtlen_b = wtlen_b;
+                         if (fabs(safe_wtlen_b) < 1.0e-12)
+                         {
+                           safe_wtlen_b = (safe_wtlen_b >= 0.0 ? 1.0e-12 : -1.0e-12);
+                         }
+                         
+                         for (ibin = 1; ibin <= n_dest + 1; ibin++)
+                         {
+                           dvariable w_edge = dest_edges(ibin);
+                           if (w_edge <= tiny_pos) w_edge = tiny_pos;
+                           dest_edges(ibin) = exp((log(w_edge) - log(safe_wtlen_a)) / safe_wtlen_b);
+                         }
                           break;
                         }
                         case (3):  //  scale is in cm
