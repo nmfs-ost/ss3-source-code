@@ -149,6 +149,7 @@ FUNCTION dvar_vector rebin(
     if (n_src < 1 || n_dest < 1) {
       dvar_vector empty_counts(1, (n_dest >= 1 ? n_dest : 1));
       empty_counts.initialize();
+      RETURN_ARRAYS_DECREMENT();
       return (empty_counts);
     }
 
@@ -209,6 +210,7 @@ FUNCTION dvar_vector rebin_bio(
     if (n_src < 1 || n_dest < 1) {
       dvar_vector empty_counts(1, (n_dest >= 1 ? n_dest : 1));
       empty_counts.initialize();
+      RETURN_ARRAYS_DECREMENT();
       return (empty_counts);
     }
 
