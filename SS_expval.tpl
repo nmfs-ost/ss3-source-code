@@ -717,8 +717,8 @@ FUNCTION void Get_expected_values(const int y, const int t);
                         }
                         case (2): // scale is lb, or fall thru from kg
                         {
-                  // bin boundary in lb have already been converted to kg
-                  // wt_len(s, gp) is potentially by season and by Gpat within sex.  Here, only Gpat==1 will be used.  It will be sex-specific
+                          // bin boundary in lb have already been converted to kg
+                          // wt_len(s, gp) is potentially by season and by Gpat within sex.  Here, only Gpat==1 will be used.  It will be sex-specific
                           dvariable wtlen_a;
                           dvariable wtlen_b;
                           GPat = 1;  // this means that any (unusual) use of multiple Gpatterns will still use biology of GPat 1 for szfreq purposes
@@ -986,3 +986,4 @@ FUNCTION void Get_expected_values(const int y, const int t);
   } //  end loop of subseasons
   return;
   } //  end function
+
