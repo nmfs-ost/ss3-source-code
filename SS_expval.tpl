@@ -692,118 +692,117 @@ FUNCTION void Get_expected_values(const int y, const int t);
                         src_edges(1, nlength) = len_bins(1, nlength); 
                         src_edges(nlength + 1) = src_edges(nlength) + (src_edges(nlength) - src_edges(nlength - 1));
                         dvar_vector dest_edges(1,SzFreq_Nbins(SzFreqMethod) + 1);  // +1 to create a dummy bin holding upper edge of the actual last bin
-                        dvar_vector dest_edges_wt(1,SzFreq_Nbins(SzFreqMethod) + 1);
                         dest_edges.initialize();
                         for (ibin = 1; ibin <= SzFreq_Nbins(SzFreqMethod); ibin++) {
                           dest_edges(ibin) = SzFreq_bins(SzFreqMethod, ibin);
-                          dest_edges_wt(ibin) = dest_edges(ibin);  // save in raw units
                         }
                         const int n_dest = SzFreq_Nbins(SzFreqMethod);
                         dest_edges(n_dest + 1) = 99999.;
-                        dest_edges_wt(n_dest + 1) = dest_edges_wt(n_dest) + (dest_edges_wt(n_dest) - dest_edges_wt(n_dest - 1));
                         if(SzFreq_Omit_Small(SzFreqMethod) < 0.0)
                         {
                           dest_edges(1) = 0.; //  so src_bins smaller than first actual dest_bin are included in first bin
                         }
 
                         dvar_vector dest_comp(1,SzFreq_Nbins(SzFreqMethod));  //  destination composition.  one-sex at a time
-                      // convert dest_edges to cm
-                      // as in the legacy method, this conversion is sex and season specific, but only uses Gpat = 1
-                      switch (SzFreq_scale(SzFreqMethod)) // biomass vs. numbers are accumulated in the bins
-                      {
-                        case (1): // scale is kg
+                        dest_comp.initialize();
+                        // convert dest_edges to cm
+                        // as in the legacy method, this conversion is sex and season specific, but only uses Gpat = 1
+                        switch (SzFreq_scale(SzFreqMethod)) // biomass vs. numbers are accumulated in the bins
                         {
-                          // fall thru to calcs in the lb case
-                        }
-                        case (2): // scale is lb, or fall thru from kg
-                        {
-                  // bin boundary in lb have already been converted to kg
-                  // wt_len(s, gp) is potentially by season and by Gpat within sex.  Here, only Gpat==1 will be used.  It will be sex-specific
-                          dvariable wtlen_a;
-                          dvariable wtlen_b;
-                          GPat = 1;  // this means that any (unusual) use of multiple Gpatterns will still use biology of GPat 1 for szfreq purposes
-                          // female parms are at 1, 2; males at 7,8
-                          int parm_loc = 1 + (gg - 1) * 6;
-                          wtlen_a = wtlen_p(GPat, parm_loc);
-                          wtlen_b = wtlen_p(GPat, parm_loc + 1);
-                          if (MGparm_seas_effects(1) > 0 || MGparm_seas_effects(2) > 0) //  get seasonal effect on wtlen parameters
+                          case (1): // scale is kg
                           {
-                            wtlen_a *= wtlen_seas(s, GPat, parm_loc);
-                            wtlen_b *= wtlen_seas(s, GPat, parm_loc + 1);
+                            // fall thru to calcs in the lb case
                           }
-                          dest_edges = exp((log(dest_edges)-log(wtlen_a))/wtlen_b);  // W=a*L^b; so L = exp((ln(W)-ln(a))/B)
-                          break;
-                        }
-                        case (3):  //  scale is in cm
-                        {
-                          break;
-                        }
-                        case 4:  // scale is in inches.  Already converted to cm in readdata.  Relic feature for some ancient recreational fishery data
-                        {
-                          break;
-                        }
-                      }  // end calc of new dest_edges
-                      if (do_once == 1) echoinput << "Szfreq_method: " << SzFreqMethod << "  sex: " << gg << " dest_edges_converted_to_cm "<<dest_edges<<endl;
+                          case (2): // scale is lb, or fall thru from kg
+                          {
+                    // bin boundary in lb have already been converted to kg
+                    // wt_len(s, gp) is potentially by season and by Gpat within sex.  Here, only Gpat==1 will be used.  It will be sex-specific
+                            dvariable wtlen_a;
+                            dvariable wtlen_b;
+                            GPat = 1;  // this means that any (unusual) use of multiple Gpatterns will still use biology of GPat 1 for szfreq purposes
+                            // female parms are at 1, 2; males at 7,8
+                            int parm_loc = 1 + (gg - 1) * 6;
+                            wtlen_a = wtlen_p(GPat, parm_loc);
+                            wtlen_b = wtlen_p(GPat, parm_loc + 1);
+                            if (MGparm_seas_effects(1) > 0 || MGparm_seas_effects(2) > 0) //  get seasonal effect on wtlen parameters
+                            {
+                              wtlen_a *= wtlen_seas(s, GPat, parm_loc);
+                              wtlen_b *= wtlen_seas(s, GPat, parm_loc + 1);
+                            }
+                            dest_edges = exp((log(dest_edges)-log(wtlen_a))/wtlen_b);  // W=a*L^b; so L = exp((ln(W)-ln(a))/B)
+                            break;
+                          }
+                          case (3):  //  scale is in cm
+                          {
+                            break;
+                          }
+                          case 4:  // scale is in inches.  Already converted to cm in readdata.  Relic feature for some ancient recreational fishery data
+                          {
+                            break;
+                          }
+                        }  // end calc of new dest_edges
+                        if (do_once == 1) echoinput << "Szfreq_method: " << SzFreqMethod << "  sex: " << gg << " dest_edges_converted_to_cm "<<dest_edges<<endl;
 
-                      dvar_vector pass_comp(z1, z2);  // this gets males or females range according to z1, z2
-                      pass_comp.initialize();
-                      switch (SzFreq_obs_hdr(iobs, 5)) // discard/retained partition
-                      {
-                        case (0):
+                        dvar_vector pass_comp(z1, z2);  // this gets males or females range according to z1, z2
+                        pass_comp.initialize();
+                        switch (SzFreq_obs_hdr(iobs, 5)) // discard/retained partition
                         {
-                          pass_comp = exp_l_temp(z1, z2);
-                          break;
+                          case (0):
+                          {
+                            pass_comp = exp_l_temp(z1, z2);
+                            break;
+                          }
+                          case (1):
+                          {
+                            pass_comp = exp_l_temp(z1, z2) - exp_l_temp_ret(z1, z2);
+                            break;
+                          }
+                          case (2):
+                          {
+                            pass_comp = exp_l_temp_ret(z1, z2);
+                            break;
+                          }
                         }
-                        case (1):
+                        int use_GP = 1;
+                        if (gg == 2) use_GP += N_GP;  // because GPat is nested in sex; only GPat 1 bio gets used for szfreq data
+                        pass_comp.shift(1);  // change index to 1
+                        if (SzFreq_units(SzFreqMethod) == 1) // biomass accumulated in bins
                         {
-                          pass_comp = exp_l_temp(z1, z2) - exp_l_temp_ret(z1, z2);
-                          break;
+                          // weight at lower edge for the sex-specific GP over the selected source-bin range
+                          dvar_vector pass_src_wt(z1, z2 + 1);
+                          pass_src_wt.initialize();
+                          pass_src_wt(z1, z2) = wt_len_low(s, use_GP)(z1, z2);
+                          pass_src_wt.shift(1);
+
+                          // use the same sex-specific GP for midpoint weights
+                          dvar_vector pass_mid_wt(z1, z2);
+                          pass_mid_wt.initialize();
+                          pass_mid_wt(z1, z2) = wt_len(s, use_GP)(z1, z2);
+                          pass_mid_wt.shift(1);
+
+                          dest_comp = rebin_bio(
+                            src_edges,
+                            pass_comp,
+                            dest_edges,
+                            pass_src_wt,
+                            pass_mid_wt
+                          );
                         }
-                        case (2):
+                        else
                         {
-                          pass_comp = exp_l_temp_ret(z1, z2);
-                          break;
+                          dest_comp = rebin(src_edges, pass_comp, dest_edges);
                         }
-                      }
-                      int use_GP = 1;
-                      if (gg == 2) use_GP += N_GP;  // because GPat is nested in sex; only GPat 1 bio gets used for szfreq data
-                      pass_comp.shift(1);  // change index to 1
-                      if (SzFreq_units(SzFreqMethod) == 1) // biomass accumulated in bins
-                      {
-                        // weight at lower edge for the sex-specific GP over the selected source-bin range
-                        dvar_vector pass_src_wt(z1, z2 + 1);
-                        pass_src_wt.initialize();
-                        pass_src_wt(z1, z2) = wt_len_low(s, use_GP)(z1, z2);
-                        pass_src_wt.shift(1);
 
-                        // use the same sex-specific GP for midpoint weights
-                        dvar_vector pass_mid_wt(z1, z2);
-                        pass_mid_wt.initialize();
-                        pass_mid_wt(z1, z2) = wt_len(s, use_GP)(z1, z2);
-                        pass_mid_wt.shift(1);
-
-                        dest_comp = rebin_bio(
-                          src_edges,
-                          pass_comp,
-                          dest_edges,
-                          pass_src_wt,
-                          pass_mid_wt
-                        );
-                      }
-                      else
-                      {
-                        dest_comp = rebin(src_edges, pass_comp, dest_edges);
-                      }
-
-                      if( gg == 1)
-                      {
-                        SzFreq_exp(iobs)(1, SzFreq_Nbins(SzFreqMethod)) = dest_comp;
-                      }
-                      else
-                      {
-                        dest_comp.shift(SzFreq_Nbins(SzFreqMethod) + 1);
-                        SzFreq_exp(iobs)(SzFreq_Nbins(SzFreqMethod) + 1, 2 * SzFreq_Nbins(SzFreqMethod)) = dest_comp;
-                      }
+                        if( gg == 1)
+                        {
+                          SzFreq_exp(iobs)(1, SzFreq_Nbins(SzFreqMethod)) = dest_comp;
+                        }
+                        else
+                        {
+                          dest_comp.shift(SzFreq_Nbins(SzFreqMethod) + 1);
+                          SzFreq_exp(iobs)(SzFreq_Nbins(SzFreqMethod) + 1, 2 * SzFreq_Nbins(SzFreqMethod)) = dest_comp;
+                          dest_comp.shift(1);
+                        }
                       } // end gender loop
 
                       if (gender == 2)
