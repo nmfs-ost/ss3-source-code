@@ -97,7 +97,6 @@ PARAMETER_SECTION
   3darray wt_len2(1,nseas,1,N_GP,1,nlength2)    //  stores wt at midbin; stacked genders
   3darray wt_len2_sq(1,nseas,1,N_GP,1,nlength2)    //  stores wt at midbin^2; stacked genders
   3darray wt_len_low(1,nseas,1,N_GP,1,nlength2)  //  wt at lower edge of size bin
-  3darray wt_len_fd(1,nseas,1,N_GP,1,nlength2-1)  //  first diff of wt_len_low
 
   matrix mat_len(1,N_GP,1,nlength)
   matrix fec_len(1,N_GP,1,nlength)   // fecundity at length
@@ -455,8 +454,6 @@ PARAMETER_SECTION
   vector exp_mnwt(1,nobs_mnwt)
 
   matrix Morphcomp_exp(1,Morphcomp_nobs,6,5+Morphcomp_nmorph)   // expected value for catch by growthpattern
-
-  3darray SzFreqTrans(1,SzFreq_Nmeth*nseas,1,nlength2,1,SzFreq_Nbins_seas_g);
 
 !!//  SS_Label_Info_5.1.5 #Selectivity-related parameters
 !!  echoinput<<" now dimension the selectivity arrays "<<N_selparm2<<endl;

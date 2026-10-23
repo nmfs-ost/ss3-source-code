@@ -1353,7 +1353,6 @@
   get_mat_fec();
   wt_len = value(wt_len);
   wt_len2 = value(wt_len2);
-  wt_len_fd = value(wt_len_fd);
   mat_len = value(mat_len);
   mat_fec_len = value(mat_fec_len);
   mat_age = value(mat_age);

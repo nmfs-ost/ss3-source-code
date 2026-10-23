@@ -221,7 +221,7 @@
   pick_report_use += "N";
   pick_report_name += "MORPH_INDEXING report:11";
   pick_report_use += "N";
-  pick_report_name += "SIZEFREQ_TRANSLATION report:12";
+  pick_report_name += "SIZEFREQ_TRANSLATION deprecated report:12";
   pick_report_use += "N";
   pick_report_name += "MOVEMENT report:13";
   pick_report_use += "N";
@@ -507,7 +507,7 @@
     pick_report_use(7) = "N";
     pick_report_use(8) = "N";
     pick_report_use(11) = "N";
-    pick_report_use(12) = "N";
+    pick_report_use(12) = "N";  // this table was deprecated with 3.30.25
     pick_report_use(13) = "Y";
     pick_report_use(17) = "N";
     pick_report_use(18) = "N";
