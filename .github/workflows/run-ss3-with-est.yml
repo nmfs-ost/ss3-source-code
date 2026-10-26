@@ -112,7 +112,7 @@ jobs:
 
             # Run the models with estimation and see if model finishes without error
             message("running ss3 on ", basename(dir))
-            system(paste0("cd ", dir, " && ../ss3 -nox"))
+            system(paste0("cd ", dir, " && ../ss3 -nox > ss3_run.log 2>&1"))
             model_ran <- file.exists(file.path(dir, "control.ss_new"))
             return(model_ran)
           }
@@ -150,6 +150,65 @@ jobs:
           }
         shell: Rscript {0}
 
+      - name: Collect Hessian diagnostics (always)
+        if: always()
+        run: |
+          mkdir -p test-models-repo/run_R/hessian_debug
+          Rscript -e '
+            mod_root <- file.path("test-models-repo","model_runs")
+            mods <- list.dirs(mod_root, full.names = TRUE, recursive = FALSE)
+
+            extract_lines <- function(f, pat, n_before = 2, n_after = 8) {
+              x <- readLines(f, warn = FALSE)
+              hit <- grep(pat, x, ignore.case = TRUE)
+              if(length(hit) == 0) return(character(0))
+              idx <- unique(unlist(lapply(hit, function(i) seq(max(1,i-n_before), min(length(x),i+n_after)))))
+              paste(x[idx], collapse = "\n")
+            }
+
+            for (d in mods) {
+              m <- basename(d)
+              out <- file.path("test-models-repo","run_R","hessian_debug", paste0(m, "_hessian_debug.txt"))
+              lines <- c(paste0("MODEL: ", m), "")
+
+              files_to_scan <- c("warning.sso","ss3.std","ss3.cor","Report.sso","ss_summary.sso")
+              for (fn in files_to_scan) {
+                f <- file.path(d, fn)
+                lines <- c(lines, paste0("===== ", fn, " ====="))
+                if (!file.exists(f)) {
+                  lines <- c(lines, "MISSING")
+                  next
+                }
+
+                if (fn %in% c("warning.sso","ss_summary.sso","Report.sso")) {
+                  h <- extract_lines(f, "hessian|variance|std|warning|did not converge|not positive definite|failed")
+                  if (length(h) == 0) {
+                    x <- readLines(f, warn = FALSE)
+                    h <- paste(tail(x, 60), collapse = "\n")
+                  }
+                  lines <- c(lines, h)
+                } else {
+                  x <- readLines(f, warn = FALSE)
+                  lines <- c(lines, paste(tail(x, 120), collapse = "\n"))
+                }
+                lines <- c(lines, "")
+              }
+
+              writeLines(lines, out)
+              cat(paste0("\n\n========== ", m, " Hessian diagnostics ==========\n"))
+              cat(paste(lines, collapse = "\n"))
+              cat("\n")
+            }
+          '
+        shell: bash
+
+      - name: Archive Hessian diagnostics
+        uses: actions/upload-artifact@main
+        if: always()
+        with:
+          name: hessian_diagnostics
+          path: test-models-repo/run_R/hessian_debug/
+          
       - name: Run comparison using compare.R file in test models repo
         run: |
           source("test-models-repo/.github/r_scripts/compare.R")
