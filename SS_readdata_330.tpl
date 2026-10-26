@@ -2674,15 +2674,21 @@
               }
             }
 
-            // Lbin_hi is inclusive; reject ranges that share an endpoint with another range's lower bound.
-            for (int j1 = 1; j1 < j; j1++)
+            // Lbin_hi is inclusive; compare overlapping ranges only within the same observation context.
+            for (int p1 = 1; p1 < p; p1++)
             {
-              if ((Lbin_hi(f, j) > Lbin_lo(f, j) && Lbin_hi(f, j) == Lbin_lo(f, j1)) ||
-                  (Lbin_hi(f, j1) > Lbin_lo(f, j1) && Lbin_hi(f, j1) == Lbin_lo(f, j)))
+              int previous_j = have_data(ALK_time, f, data_type, p1);
+              if (header_a(f, j, 1) == header_a(f, previous_j, 1) &&
+                  header_a(f, j, 2) == header_a(f, previous_j, 2) &&
+                  gen_a(f, j) == gen_a(f, previous_j) &&
+                  mkt_a(f, j) == mkt_a(f, previous_j) &&
+                  ageerr_type_a(f, j) == ageerr_type_a(f, previous_j) &&
+                  ((Lbin_hi(f, j) > Lbin_lo(f, j) && Lbin_hi(f, j) == Lbin_lo(f, previous_j)) ||
+                   (Lbin_hi(f, previous_j) > Lbin_lo(f, previous_j) && Lbin_hi(f, previous_j) == Lbin_lo(f, j))))
               {
                 warnstream << "overlapping Lbin ranges in age comps for fleet " << f
                            << ": " << Lbin_lo(f, j) << "-" << Lbin_hi(f, j)
-                           << " and " << Lbin_lo(f, j1) << "-" << Lbin_hi(f, j1);
+                           << " and " << Lbin_lo(f, previous_j) << "-" << Lbin_hi(f, previous_j);
                 write_message(FATAL, 0);
               }
             }
