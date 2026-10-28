@@ -2589,6 +2589,13 @@
 
             Lbin_lo(f, j) = Age_Data[i](7);
             Lbin_hi(f, j) = Age_Data[i](8);
+            // Methods 1 and 2 use bin indices, so reject fractional values before they are truncated.
+            if ((Lbin_method == 1 || Lbin_method == 2) &&
+                (Lbin_lo(f, j) != int(Lbin_lo(f, j)) || Lbin_hi(f, j) != int(Lbin_hi(f, j))))
+            {
+              warnstream << "Lbin_lo and Lbin_hi must be integers when Lbin_method is 1 or 2 in age comp " << header_a(f, j);
+              write_message(FATAL, 0);
+            }
             switch (Lbin_method) //  here all 3 methods are converted to poplenbins for use internally
             {
               case 1: // values are population length bin numbers
@@ -2613,7 +2620,7 @@
                 }
                 if (s == 0)
                 {
-                  warnstream << "L_bin_lo no match to poplenbins in age comp " << header_a(f, j);
+                  warnstream << "Lbin_lo no match to poplenbins in age comp " << header_a(f, j);
                   write_message(FATAL, 0);
                 }
                 Lbin_lo(f, j) = s;
@@ -2626,7 +2633,7 @@
                 }
                 if (s == 0)
                 {
-                  warnstream << "L_bin_hi no match to poplenbins in age comp " << header_a(f, j);
+                  warnstream << "Lbin_hi no match to poplenbins in age comp " << header_a(f, j);
                   write_message(FATAL, 0);
                 }
                 Lbin_hi(f, j) = s;
@@ -2646,7 +2653,7 @@
                 }
                 if (s == 0)
                 {
-                  warnstream << "L_bin_lo no match to poplenbins in age comp " << header_a(f, j);
+                  warnstream << "Lbin_lo no match to poplenbins in age comp " << header_a(f, j);
                   write_message(FATAL, 0);
                 }
                 Lbin_lo(f, j) = s;
@@ -2659,7 +2666,7 @@
                 }
                 if (s == 0)
                 {
-                  warnstream << "L_bin_hi no match to poplenbins in age comp " << header_a(f, j);
+                  warnstream << "Lbin_hi no match to poplenbins in age comp " << header_a(f, j);
                   write_message(FATAL, 0);
                 }
                 Lbin_hi(f, j) = s;
@@ -2667,10 +2674,29 @@
               }
             }
 
+            // Lbin_hi is inclusive; compare overlapping ranges only within the same observation context.
+            for (int p1 = 1; p1 < p; p1++)
+            {
+              int previous_j = have_data(ALK_time, f, data_type, p1);
+              if (header_a(f, j, 1) == header_a(f, previous_j, 1) &&
+                  header_a(f, j, 2) == header_a(f, previous_j, 2) &&
+                  gen_a(f, j) == gen_a(f, previous_j) &&
+                  mkt_a(f, j) == mkt_a(f, previous_j) &&
+                  ageerr_type_a(f, j) == ageerr_type_a(f, previous_j) &&
+                  ((Lbin_hi(f, j) > Lbin_lo(f, j) && Lbin_hi(f, j) == Lbin_lo(f, previous_j)) ||
+                   (Lbin_hi(f, previous_j) > Lbin_lo(f, previous_j) && Lbin_hi(f, previous_j) == Lbin_lo(f, j))))
+              {
+                warnstream << "overlapping Lbin ranges in age comps for fleet " << f
+                           << ": " << Lbin_lo(f, j) << "-" << Lbin_hi(f, j)
+                           << " and " << Lbin_lo(f, previous_j) << "-" << Lbin_hi(f, previous_j);
+                write_message(FATAL, 0);
+              }
+            }
+
             //  lbin_lo and lbin_hi are now in terms of poplenbins; their original values are retained in header_a
             if (Lbin_lo(f, j) > nlength || Lbin_lo(f, j) > Lbin_hi(f, j))
             {
-              warnstream << "L_bin_lo is too high in age comp.  Are you using lengths or bin numbers? " << header_a(f, j);
+              warnstream << "Lbin_lo is too high in age comp.  Are you using lengths or bin numbers? " << header_a(f, j);
               write_message(FATAL, 0);
             }
             if (Lbin_lo(f, j) == 1 && Lbin_hi(f, j) == nlength)
