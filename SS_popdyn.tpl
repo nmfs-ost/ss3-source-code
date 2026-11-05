@@ -1305,7 +1305,7 @@ FUNCTION void get_time_series()
                       if (Do_Retain(f) > 0)
                       {
                         disc_age(t, disc_fleet_list(f), g) = Hrate(f, t) * elem_prod(elem_prod(natage(t, p, g), sel_num(s, f, g)), Zrate2(p, g)); //  selected numbers
-                        disc_age(t, disc_fleet_list(f) + N_retain_fleets, g) = Hrate(f, t) * elem_prod(elem_prod(natage(t, p, g), sel_ret_num(s, f, g)), Zrate2(p, g)); //  selected numbers
+                        disc_age(t, disc_fleet_list(f) + N_retain_fleets, g) = Hrate(f, t) * elem_prod(elem_prod(natage(t, p, g), sel_ret_num(s, f, g)), Zrate2(p, g)); //  retained numbers
                       }
                     } //close gmorph loop
                 }
