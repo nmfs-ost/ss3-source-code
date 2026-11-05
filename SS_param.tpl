@@ -175,6 +175,7 @@ PARAMETER_SECTION
  LOCAL_CALCS
   // clang-format on
   Ave_Size.initialize();
+  Wt_Age_t.initialize();
   //  if(SRparm(N_SRparm2)!=0.0 || SRparm_PH(N_SRparm2)>0) {SR_autocorr=1;} else {SR_autocorr=0;}  // flag for recruitment autocorrelation
   if (do_recdev == 1)
   {
@@ -358,7 +359,7 @@ PARAMETER_SECTION
   matrix Hrate(1,Nfleet,styr-3*nseas,k) //Harvest Rate for each fleet; this is F
   4darray natage(styr-3*nseas,k,1,pop,1,gmorph,0,nages)  //  add +1 year
   4darray catage(styr-3*nseas,k,1,Nfleet,1,gmorph,0,nages)
-  4darray disc_age(styr-3*nseas,TimeMax_Fcast_std+nseas,1,2*N_retain_fleets,1,gmorph,0,nages);
+  4darray disc_age(styr-3*nseas,TimeMax_Fcast_std+nseas,1,4*N_retain_fleets,1,gmorph,0,nages);  // where 3* holds disc_bodywt and 4* holds ret_bodywt
   4darray equ_catage(1,nseas,1,Nfleet,1,gmorph,0,nages)
   4darray equ_numbers(1,nseas,1,pop,1,gmorph,0,3*nages)
   4darray equ_Z(1,nseas,1,pop,1,gmorph,0,nages)
