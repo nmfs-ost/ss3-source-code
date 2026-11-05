@@ -2026,6 +2026,14 @@ FUNCTION void Make_FishSelex()
           {
             sel_ret_bio(s, f, g, a) = sel_a(yf, f, gg, a) * (ALK_w(a)(llo, lhi) * sel_l_r_w(llo, lhi));
             sel_ret_num(s, f, g, a) = sel_a(yf, f, gg, a) * (ALK_w(a)(llo, lhi) * sel_l_r(yf, f, gg)(llo, lhi));
+            if (Do_Retain(f) > 0) {
+              disc_age(tz, disc_fleet_list(f) + 2 * N_retain_fleets, g, a) = 
+                ALK_w(a) * elem_prod(tempvec_l, (1.0 - retain(yf, f)(1, nlength))) / 
+                  (ALK_w(a) * elem_prod((1.0 - retain(yf, f)(1, nlength)), sel_l(yf, f, gg)) + 1.0e-09);  // mean body wt of discarded fish
+              disc_age(tz, disc_fleet_list(f) + 3 * N_retain_fleets, g, a) = 
+                ALK_w(a) * elem_prod(tempvec_l, (retain(yf, f)(1, nlength)))  /
+                  (ALK_w(a) * elem_prod(retain(yf, f)(1, nlength), sel_l(yf, f, gg)) + 1.0e-09);  // mean body wt of retained fish
+            }
           }
           else if (a == nages)
           {
