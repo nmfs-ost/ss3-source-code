@@ -2988,7 +2988,7 @@ FUNCTION void write_bigoutput()
                 SS2out << "F " << f << " " << y << " " << s << " " << sx(g) << " " << g << " " << y << "_" << f << "_F" << Hrate(f, t) * save_sel_num(t, f, g) << endl;
                 SS2out << "Fdead " << f << " " << y << " " << s << " " << sx(g) << " " << g << " " << y << "_" << f << "_Fdead" << Hrate(f, t) * save_F_dead(t, f, g) << endl;
 // if doing length-based retention, then output the body weight for each partition
-                if (Do_Retain(f) == 1) {
+                if (WTage_rd == 0 && Do_Retain(f) == 1) {
                   SS2out << "disc_bodywt " << f << " " << y << " " << s << " " << sx(g) << " " << g << " " << y << "_" << f << "_disc_bodywt " << disc_age(t, disc_fleet_list(f) + 2 * N_retain_fleets, g) << endl;
                   SS2out << "ret_bodywt " << f << " " << y << " " << s << " " << sx(g) << " " << g << " " << y << "_" << f << "_ret_bodywt " << disc_age(t, disc_fleet_list(f) + 3 * N_retain_fleets, g) << endl;
                 }
