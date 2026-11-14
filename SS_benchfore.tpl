@@ -2614,43 +2614,44 @@ FUNCTION void Get_Forecast()
               {
                 Make_FishSelex(); // calcs fishery selex by current season, all fleets, current gmorph
               }
-      if(N_pred>0)
-      {
-//  rebase natM to M1
-        for(p = 1; p <= pop; p++)
-        {
-          natM(t, p) = natM(t, 0);
-        }
-        for (f1 = 1; f1 <= N_pred; f1++)
-        {
-          f = predator(f1);
-          pred_M2(f1, t) = mgp_adj(predparm_pointer(f1)); //  base with no seasonal effect
-          if (nseas > 1)
-            pred_M2(f1, t) *= mgp_adj(predparm_pointer(f1) + s);
-          p = fleet_area(f);  //  area this predator occurs in
 
-  //  a new array for indexing g and gpi could simplify below
-  //        for (gp = 1; gp <= N_GP * gender * N_settle_timings; gp++)
-
-          for (gp = 1; gp <= N_GP * gender; gp++)
-          {
-            g = g_Start(gp); //  base platoon
-            for (settle = 1; settle <= N_settle_timings; settle++)
+      //  rebase natM to M1 if using predators
+            if(N_pred>0)
             {
-              g += N_platoon;
-              int gpi = GP3(g); // GP*gender*settlement
-              natM(t, p, gpi) += pred_M2(f1, t) * sel_num(s, f, g);
-            }
-          }
-        }
-      }
+              for(p = 1; p <= pop; p++)
+              {
+                natM(t, p) = natM(t, 0);
+              }
+              for (f1 = 1; f1 <= N_pred; f1++)
+              {
+                f = predator(f1);
+                pred_M2(f1, t) = mgp_adj(predparm_pointer(f1)); //  base with no seasonal effect
+                if (nseas > 1)
+                  pred_M2(f1, t) *= mgp_adj(predparm_pointer(f1) + s);
+                p = fleet_area(f);  //  area this predator occurs in
 
-      for(p = 1; p <= pop; p++)
-      {
-        int s1 = (p - 1) * nseas + s;
-        surv1(s1) = mfexp(-natM(t, p) * seasdur_half(s));
-        surv2(s1) = square(surv1(s1));
-      }
+        //  a new array for indexing g and gpi could simplify below
+        //        for (gp = 1; gp <= N_GP * gender * N_settle_timings; gp++)
+
+                for (gp = 1; gp <= N_GP * gender; gp++)
+                {
+                  g = g_Start(gp); //  base platoon
+                  for (settle = 1; settle <= N_settle_timings; settle++)
+                  {
+                    g += N_platoon;
+                    int gpi = GP3(g); // GP*gender*settlement
+                    natM(t, p, gpi) += pred_M2(f1, t) * sel_num(s, f, g);
+                  }
+                }
+              }
+            }
+
+            for(p = 1; p <= pop; p++)
+            {
+              int s1 = (p - 1) * nseas + s;
+              surv1(s1) = mfexp(-natM(t, p) * seasdur_half(s));
+              surv2(s1) = square(surv1(s1));
+            }
 
           } //  end of seasonal biology
 
@@ -2839,12 +2840,12 @@ FUNCTION void Get_Forecast()
                   break;
                 }
               }
-              // protection level; contributed by AEP
-              if (H4010_prot > 0)
-              {
-                join1 = 1.0 / (1. + mfexp(20.0 * (SSB_current - H4010_prot * HCR_anchor)));
-                ABC_buffer(y) = 0.0001*join1 + (1.0 - 0.0001)*(1.0 - join1)*ABC_buffer(y);
-              }
+            // protection level; contributed by AEP
+            if (H4010_prot > 0)
+            {
+              join1 = 1.0 / (1. + mfexp(20.0 * (SSB_current - H4010_prot * HCR_anchor)));
+              ABC_buffer(y) = 0.0001*join1 + (1.0 - 0.0001)*(1.0 - join1)*ABC_buffer(y);
+            }
           } // end calc of ABC buffer
           else
           { //  ABC buffer remains at previously calculated value
@@ -2897,37 +2898,47 @@ FUNCTION void Get_Forecast()
                 }
                 case 2: //  apply ABC control rule and store catches
                 {
-                  if (bycatch_setup(f, 3) <= 1)
+                  if (fishery_on_off == 0)  // turn off F for dynamic Bzero
                   {
-                    Hrate(f, t) = ABC_buffer(y) * Fcast_Fmult * Fcast_RelF_Use(s, f);
+                    Hrate(f, t) = 0.0;
+                    Do_F_tune(t, f) = 0;
                   }
                   else
                   {
-                    Hrate(f, t) = bycatch_F(f, s);
-                  }
-                  //  if HarvestPolicy==3 or 4, then H4010_scale is not in ABC_buffer and will need to be applied to catch in first stage of the tuning process below
-                  if (N_Fcast_Input_Catches > 0)
-                    if (Fcast_InputCatch(t, f, 1) > -1.0) //  have an input
+                    if (bycatch_setup(f, 3) <= 1)
                     {
-                      if (Fcast_InputCatch(t, f, 2) <= 3) //  input is catch
+                      Hrate(f, t) = ABC_buffer(y) * Fcast_Fmult * Fcast_RelF_Use(s, f);
+                    }
+                    else
+                    {
+                      Hrate(f, t) = bycatch_F(f, s);
+                    }
+                    //  if HarvestPolicy==3 or 4, then H4010_scale is not in ABC_buffer and will need to be applied to catch in first stage of the tuning process below
+                    if (N_Fcast_Input_Catches > 0)
+                    {
+                      if (Fcast_InputCatch(t, f, 1) > -1.0) //  have an input
                       {
-                        if (Fcast_InputCatch(t, f, 1) == 0.0)
+                        if (Fcast_InputCatch(t, f, 2) <= 3) //  input is catch
                         {
-                          Hrate(f, t) = 0.0;
-                          Do_F_tune(t, f) = 0;
+                          if (Fcast_InputCatch(t, f, 1) == 0.0)
+                          {
+                            Hrate(f, t) = 0.0;
+                            Do_F_tune(t, f) = 0;
+                          }
+                          else
+                          {
+                            Tune_F_loops = 8;
+                            if (Fcast_RelF_Use(s, f) > 0.0)
+                              Do_F_tune(t, f) = 1;
+                          }
                         }
                         else
                         {
-                          Tune_F_loops = 8;
-                          if (Fcast_RelF_Use(s, f) > 0.0)
-                            Do_F_tune(t, f) = 1;
-                        }
+                          Hrate(f, t) = Fcast_InputCatch(t, f, 1);
+                        } // input is as Hrate (F), but do not need tuning
                       }
-                      else
-                      {
-                        Hrate(f, t) = Fcast_InputCatch(t, f, 1);
-                      } // input is as Hrate (F), but do not need tuning
                     }
+                  }
                   break;
                 }
                 case 3: //  always get F to match catch when in ABC_Loop==3
@@ -2947,7 +2958,16 @@ FUNCTION void Get_Forecast()
                 {
                   Nmid(g) = elem_prod(natage(t, p, g), surv1(s1, GP3(g)));
                 }
-
+              if(fishery_on_off == 0) //  doing dynamic Bzero
+              {
+                for (int ff = 1; ff <= N_catchfleets(p); ff++) // get calculated catch
+                {
+                  f = fish_fleet_area(p, ff);
+                  Hrate(f, t) = 0.0;
+                }
+              }
+              else
+              {       
               for (Tune_F = 1; Tune_F <= Tune_F_loops; Tune_F++)
               {
                 for (int ff = 1; ff <= N_catchfleets(p); ff++) // get calculated catch
@@ -2988,7 +3008,7 @@ FUNCTION void Get_Forecast()
                       join1 = 1. / (1. + mfexp(30. * (temp1 - max_harvest_rate)));
                       Hrate(f, t) = join1 * temp1 + (1. - join1) * max_harvest_rate; // new F value for this fleet, constrained by max_harvest_rate
                     }
-                    else if (fishery_on_off == 1) //  tune to adjusted catch calculated from ABC_Loop=2
+                    else //  tune to adjusted catch calculated from ABC_Loop=2
                     {
                       for (g = 1; g <= gmorph; g++)
                         if (use_morph(g) > 0)
@@ -3017,7 +3037,7 @@ FUNCTION void Get_Forecast()
                   } // end have fixed catch to be matched
                 } // end fishery loop
               } //  end finding the Hrates
-
+              }  // end fishery_on+off == 1
               //  now get catch details and survivorship
               Nsurv = Nmid; //  initialize the number of survivors
               for (int ff = 1; ff <= N_catchfleets(p); ff++) // get calculated catch
@@ -3083,6 +3103,22 @@ FUNCTION void Get_Forecast()
 
             else //calculate catch, survival and F using Fmethod== 2 or 3;  continuous F
             {
+              if(fishery_on_off == 0) //  doing dynamic Bzero
+              {
+                for (int ff = 1; ff <= N_catchfleets(p); ff++) // zero out Hrate
+                {
+                  f = fish_fleet_area(p, ff);
+                  Hrate(f, t) = 0.0;
+                }
+                for (g = 1; g <= gmorph; g++) // get Z = M
+                  if (use_morph(g) > 0)
+                  {
+                    Z_rate(t, p, g) = natM(t, p, GP3(g));
+                    Zrate2(p, g) = elem_div((1. - mfexp(-seasdur(s) * Z_rate(t, p, g))), Z_rate(t, p, g));
+                  } //  end morph
+              }
+              else  //  use fishery
+              {
               for (Tune_F = 1; Tune_F <= Tune_F_loops; Tune_F++) //  tune F to match catch
               {
                 for (g = 1; g <= gmorph; g++) //loop over fishing fleets to get Z=M+sum(F)
@@ -3194,6 +3230,7 @@ FUNCTION void Get_Forecast()
                 } // end fishery loop
               } //  done tuning F
 
+              }
               for (int ff = 1; ff <= N_catchfleets(p); ff++)
               {
                 f = fish_fleet_area(p, ff);
