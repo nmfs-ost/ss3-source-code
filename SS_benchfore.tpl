@@ -3800,7 +3800,7 @@ FUNCTION void Get_Forecast()
               }
             //            report5<<Tune_F<<" tune_area"<<Fcast_Catch_Calc_Annual<<endl;
           }
-          if (Fcast_Catch_Allocation_Groups > 0 && y >= Fcast_Cap_FirstYear) // adjust to get a specific fleet allocation
+          if (Fcast_Catch_Allocation_Groups > 0 && y >= Fcast_Cap_FirstYear && fishery_on_off == 1) // adjust to get a specific fleet allocation
           {
             Fcast_Catch_Allocation_Group.initialize();
             for (g = 1; g <= Fcast_Catch_Allocation_Groups; g++)
