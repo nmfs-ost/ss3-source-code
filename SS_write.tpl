@@ -1178,7 +1178,6 @@ FUNCTION void write_Bzero_output()
         Get_Forecast();
       }
     }
-
     for (y = styr - 2; y <= YrMax; y++)
     {
       SS2out << y;
